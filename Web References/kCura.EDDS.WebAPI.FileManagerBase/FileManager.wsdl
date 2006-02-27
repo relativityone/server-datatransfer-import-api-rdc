@@ -1,0 +1,318 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tns="http://www.kCura.com/EDDS/FileManager" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" targetNamespace="http://www.kCura.com/EDDS/FileManager" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <s:schema elementFormDefault="qualified" targetNamespace="http://www.kCura.com/EDDS/FileManager">
+      <s:import namespace="http://www.w3.org/2001/XMLSchema" />
+      <s:element name="RetrieveByProductionArtifactIDForProduction">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="productionArtifactID" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="RetrieveByProductionArtifactIDForProductionResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="RetrieveByProductionArtifactIDForProductionResult">
+              <s:complexType>
+                <s:sequence>
+                  <s:element ref="s:schema" />
+                  <s:any />
+                </s:sequence>
+              </s:complexType>
+            </s:element>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="RetrieveFileGuidsByDocumentIDAndProductionArtifactID">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="documentID" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="productionArtifactID" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="RetrieveFileGuidsByDocumentIDAndProductionArtifactIDResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="RetrieveFileGuidsByDocumentIDAndProductionArtifactIDResult" type="tns:ArrayOfString" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="ArrayOfString">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="string" nillable="true" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="ReturnFileGuidsForOriginalImages">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="documentID" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="documentArtifactID" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ReturnFileGuidsForOriginalImagesResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="ReturnFileGuidsForOriginalImagesResult" type="tns:ArrayOfString" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="Create">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="fileDTO" type="tns:File" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="File">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="Guid" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="DocumentID" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="Order" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="Type" type="s:int" />
+          <s:element minOccurs="0" maxOccurs="1" name="Filename" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="DocumentArtifactID" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="Rotation" type="s:int" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="CreateResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="CreateResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="CreateImages">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="files" type="tns:ArrayOfFileInfoBase" />
+            <s:element minOccurs="1" maxOccurs="1" name="documentID" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="contextArtifactID" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="ArrayOfFileInfoBase">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="FileInfoBase" nillable="true" type="tns:FileInfoBase" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="FileInfoBase">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="FileName" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="FileGuid" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="CreateImagesResponse">
+        <s:complexType />
+      </s:element>
+      <s:element name="CreateNatives">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="files" type="tns:ArrayOfFileInfoBase" />
+            <s:element minOccurs="0" maxOccurs="1" name="documentArtifactIDs" type="tns:ArrayOfInt" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="ArrayOfInt">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="int" type="s:int" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="CreateNativesResponse">
+        <s:complexType />
+      </s:element>
+      <s:element name="GetRotation">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="artifactID" type="s:int" />
+            <s:element minOccurs="0" maxOccurs="1" name="guid" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetRotationResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="GetRotationResult" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="SetRotation">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="artifactID" type="s:int" />
+            <s:element minOccurs="0" maxOccurs="1" name="guid" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="rotation" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="SetRotationResponse">
+        <s:complexType />
+      </s:element>
+    </s:schema>
+  </wsdl:types>
+  <wsdl:message name="RetrieveByProductionArtifactIDForProductionSoapIn">
+    <wsdl:part name="parameters" element="tns:RetrieveByProductionArtifactIDForProduction" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveByProductionArtifactIDForProductionSoapOut">
+    <wsdl:part name="parameters" element="tns:RetrieveByProductionArtifactIDForProductionResponse" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveFileGuidsByDocumentIDAndProductionArtifactIDSoapIn">
+    <wsdl:part name="parameters" element="tns:RetrieveFileGuidsByDocumentIDAndProductionArtifactID" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveFileGuidsByDocumentIDAndProductionArtifactIDSoapOut">
+    <wsdl:part name="parameters" element="tns:RetrieveFileGuidsByDocumentIDAndProductionArtifactIDResponse" />
+  </wsdl:message>
+  <wsdl:message name="ReturnFileGuidsForOriginalImagesSoapIn">
+    <wsdl:part name="parameters" element="tns:ReturnFileGuidsForOriginalImages" />
+  </wsdl:message>
+  <wsdl:message name="ReturnFileGuidsForOriginalImagesSoapOut">
+    <wsdl:part name="parameters" element="tns:ReturnFileGuidsForOriginalImagesResponse" />
+  </wsdl:message>
+  <wsdl:message name="CreateSoapIn">
+    <wsdl:part name="parameters" element="tns:Create" />
+  </wsdl:message>
+  <wsdl:message name="CreateSoapOut">
+    <wsdl:part name="parameters" element="tns:CreateResponse" />
+  </wsdl:message>
+  <wsdl:message name="CreateImagesSoapIn">
+    <wsdl:part name="parameters" element="tns:CreateImages" />
+  </wsdl:message>
+  <wsdl:message name="CreateImagesSoapOut">
+    <wsdl:part name="parameters" element="tns:CreateImagesResponse" />
+  </wsdl:message>
+  <wsdl:message name="CreateNativesSoapIn">
+    <wsdl:part name="parameters" element="tns:CreateNatives" />
+  </wsdl:message>
+  <wsdl:message name="CreateNativesSoapOut">
+    <wsdl:part name="parameters" element="tns:CreateNativesResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetRotationSoapIn">
+    <wsdl:part name="parameters" element="tns:GetRotation" />
+  </wsdl:message>
+  <wsdl:message name="GetRotationSoapOut">
+    <wsdl:part name="parameters" element="tns:GetRotationResponse" />
+  </wsdl:message>
+  <wsdl:message name="SetRotationSoapIn">
+    <wsdl:part name="parameters" element="tns:SetRotation" />
+  </wsdl:message>
+  <wsdl:message name="SetRotationSoapOut">
+    <wsdl:part name="parameters" element="tns:SetRotationResponse" />
+  </wsdl:message>
+  <wsdl:portType name="FileManagerSoap">
+    <wsdl:operation name="RetrieveByProductionArtifactIDForProduction">
+      <wsdl:input message="tns:RetrieveByProductionArtifactIDForProductionSoapIn" />
+      <wsdl:output message="tns:RetrieveByProductionArtifactIDForProductionSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveFileGuidsByDocumentIDAndProductionArtifactID">
+      <wsdl:input message="tns:RetrieveFileGuidsByDocumentIDAndProductionArtifactIDSoapIn" />
+      <wsdl:output message="tns:RetrieveFileGuidsByDocumentIDAndProductionArtifactIDSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ReturnFileGuidsForOriginalImages">
+      <wsdl:input message="tns:ReturnFileGuidsForOriginalImagesSoapIn" />
+      <wsdl:output message="tns:ReturnFileGuidsForOriginalImagesSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="Create">
+      <wsdl:input message="tns:CreateSoapIn" />
+      <wsdl:output message="tns:CreateSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="CreateImages">
+      <wsdl:input message="tns:CreateImagesSoapIn" />
+      <wsdl:output message="tns:CreateImagesSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="CreateNatives">
+      <wsdl:input message="tns:CreateNativesSoapIn" />
+      <wsdl:output message="tns:CreateNativesSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetRotation">
+      <wsdl:input message="tns:GetRotationSoapIn" />
+      <wsdl:output message="tns:GetRotationSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="SetRotation">
+      <wsdl:input message="tns:SetRotationSoapIn" />
+      <wsdl:output message="tns:SetRotationSoapOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="FileManagerSoap" type="tns:FileManagerSoap">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document" />
+    <wsdl:operation name="RetrieveByProductionArtifactIDForProduction">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/FileManager/RetrieveByProductionArtifactIDForProduction" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveFileGuidsByDocumentIDAndProductionArtifactID">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/FileManager/RetrieveFileGuidsByDocumentIDAndProductionArtifactID" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ReturnFileGuidsForOriginalImages">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/FileManager/ReturnFileGuidsForOriginalImages" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Create">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/FileManager/Create" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CreateImages">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/FileManager/CreateImages" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CreateNatives">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/FileManager/CreateNatives" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetRotation">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/FileManager/GetRotation" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SetRotation">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/FileManager/SetRotation" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="FileManager">
+    <documentation xmlns="http://schemas.xmlsoap.org/wsdl/" />
+    <wsdl:port name="FileManagerSoap" binding="tns:FileManagerSoap">
+      <soap:address location="http://localhost/EDDS/WebAPI/FileManager.asmx" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

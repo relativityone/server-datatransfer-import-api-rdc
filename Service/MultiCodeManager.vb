@@ -1,0 +1,20 @@
+Namespace kCura.WinEDDS.Service
+	Public Class MultiCodeManager
+		Inherits kCura.EDDS.WebAPI.MultiCodeManagerBase.MultiCodeManager
+
+		Public Sub New(ByVal credentials As Net.NetworkCredential)
+			MyBase.New()
+			Me.Credentials = credentials
+			Me.Url = String.Format("{0}MultiCodeManager.asmx", kCura.WinEDDS.Config.URI)
+			Me.Timeout = Settings.DefaultTimeOut
+		End Sub
+
+		Protected Overrides Function GetWebRequest(ByVal uri As System.Uri) As System.Net.WebRequest
+			Dim wr As System.Net.HttpWebRequest = DirectCast(MyBase.GetWebRequest(uri), System.Net.HttpWebRequest)
+			wr.UnsafeAuthenticatedConnectionSharing = True
+			wr.Credentials = Me.Credentials
+			Return wr
+		End Function
+
+	End Class
+End Namespace

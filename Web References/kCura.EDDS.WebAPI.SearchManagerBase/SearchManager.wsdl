@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tns="http://www.kCura.com/EDDS/SearchManager" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" targetNamespace="http://www.kCura.com/EDDS/SearchManager" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <s:schema elementFormDefault="qualified" targetNamespace="http://www.kCura.com/EDDS/SearchManager">
+      <s:import namespace="http://www.w3.org/2001/XMLSchema" />
+      <s:element name="SearchBySearchArtifactID">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="searchArtifactID" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="SearchBySearchArtifactIDResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="SearchBySearchArtifactIDResult">
+              <s:complexType>
+                <s:sequence>
+                  <s:element ref="s:schema" />
+                  <s:any />
+                </s:sequence>
+              </s:complexType>
+            </s:element>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="RetrieveNativesForSearch">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="artifactID" type="s:int" />
+            <s:element minOccurs="0" maxOccurs="1" name="documentIDs" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="RetrieveNativesForSearchResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="RetrieveNativesForSearchResult">
+              <s:complexType>
+                <s:sequence>
+                  <s:element ref="s:schema" />
+                  <s:any />
+                </s:sequence>
+              </s:complexType>
+            </s:element>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="RetrieveFullTextFilesForSearch">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="artifactID" type="s:int" />
+            <s:element minOccurs="0" maxOccurs="1" name="documentIDs" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="RetrieveFullTextFilesForSearchResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="RetrieveFullTextFilesForSearchResult">
+              <s:complexType>
+                <s:sequence>
+                  <s:element ref="s:schema" />
+                  <s:any />
+                </s:sequence>
+              </s:complexType>
+            </s:element>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="RetrieveViewsByContextArtifactID">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="contextArtifactID" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="isSearch" type="s:boolean" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="RetrieveViewsByContextArtifactIDResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="RetrieveViewsByContextArtifactIDResult">
+              <s:complexType>
+                <s:sequence>
+                  <s:element ref="s:schema" />
+                  <s:any />
+                </s:sequence>
+              </s:complexType>
+            </s:element>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="RetrieveSearchFields">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="viewArtifactID" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="RetrieveSearchFieldsResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="RetrieveSearchFieldsResult">
+              <s:complexType>
+                <s:sequence>
+                  <s:element ref="s:schema" />
+                  <s:any />
+                </s:sequence>
+              </s:complexType>
+            </s:element>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="SearchByParentArtifactID">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="parentArtifactID" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="searchSubFolders" type="s:boolean" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="SearchByParentArtifactIDResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="SearchByParentArtifactIDResult">
+              <s:complexType>
+                <s:sequence>
+                  <s:element ref="s:schema" />
+                  <s:any />
+                </s:sequence>
+              </s:complexType>
+            </s:element>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+    </s:schema>
+  </wsdl:types>
+  <wsdl:message name="SearchBySearchArtifactIDSoapIn">
+    <wsdl:part name="parameters" element="tns:SearchBySearchArtifactID" />
+  </wsdl:message>
+  <wsdl:message name="SearchBySearchArtifactIDSoapOut">
+    <wsdl:part name="parameters" element="tns:SearchBySearchArtifactIDResponse" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveNativesForSearchSoapIn">
+    <wsdl:part name="parameters" element="tns:RetrieveNativesForSearch" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveNativesForSearchSoapOut">
+    <wsdl:part name="parameters" element="tns:RetrieveNativesForSearchResponse" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveFullTextFilesForSearchSoapIn">
+    <wsdl:part name="parameters" element="tns:RetrieveFullTextFilesForSearch" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveFullTextFilesForSearchSoapOut">
+    <wsdl:part name="parameters" element="tns:RetrieveFullTextFilesForSearchResponse" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveViewsByContextArtifactIDSoapIn">
+    <wsdl:part name="parameters" element="tns:RetrieveViewsByContextArtifactID" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveViewsByContextArtifactIDSoapOut">
+    <wsdl:part name="parameters" element="tns:RetrieveViewsByContextArtifactIDResponse" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveSearchFieldsSoapIn">
+    <wsdl:part name="parameters" element="tns:RetrieveSearchFields" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveSearchFieldsSoapOut">
+    <wsdl:part name="parameters" element="tns:RetrieveSearchFieldsResponse" />
+  </wsdl:message>
+  <wsdl:message name="SearchByParentArtifactIDSoapIn">
+    <wsdl:part name="parameters" element="tns:SearchByParentArtifactID" />
+  </wsdl:message>
+  <wsdl:message name="SearchByParentArtifactIDSoapOut">
+    <wsdl:part name="parameters" element="tns:SearchByParentArtifactIDResponse" />
+  </wsdl:message>
+  <wsdl:portType name="SearchManagerSoap">
+    <wsdl:operation name="SearchBySearchArtifactID">
+      <wsdl:input message="tns:SearchBySearchArtifactIDSoapIn" />
+      <wsdl:output message="tns:SearchBySearchArtifactIDSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveNativesForSearch">
+      <wsdl:input message="tns:RetrieveNativesForSearchSoapIn" />
+      <wsdl:output message="tns:RetrieveNativesForSearchSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveFullTextFilesForSearch">
+      <wsdl:input message="tns:RetrieveFullTextFilesForSearchSoapIn" />
+      <wsdl:output message="tns:RetrieveFullTextFilesForSearchSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveViewsByContextArtifactID">
+      <wsdl:input message="tns:RetrieveViewsByContextArtifactIDSoapIn" />
+      <wsdl:output message="tns:RetrieveViewsByContextArtifactIDSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveSearchFields">
+      <wsdl:input message="tns:RetrieveSearchFieldsSoapIn" />
+      <wsdl:output message="tns:RetrieveSearchFieldsSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="SearchByParentArtifactID">
+      <wsdl:input message="tns:SearchByParentArtifactIDSoapIn" />
+      <wsdl:output message="tns:SearchByParentArtifactIDSoapOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="SearchManagerSoap" type="tns:SearchManagerSoap">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document" />
+    <wsdl:operation name="SearchBySearchArtifactID">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/SearchManager/SearchBySearchArtifactID" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveNativesForSearch">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/SearchManager/RetrieveNativesForSearch" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveFullTextFilesForSearch">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/SearchManager/RetrieveFullTextFilesForSearch" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveViewsByContextArtifactID">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/SearchManager/RetrieveViewsByContextArtifactID" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveSearchFields">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/SearchManager/RetrieveSearchFields" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SearchByParentArtifactID">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/SearchManager/SearchByParentArtifactID" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="SearchManager">
+    <documentation xmlns="http://schemas.xmlsoap.org/wsdl/" />
+    <wsdl:port name="SearchManagerSoap" binding="tns:SearchManagerSoap">
+      <soap:address location="http://localhost/EDDS/WebAPI/SearchManager.asmx" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

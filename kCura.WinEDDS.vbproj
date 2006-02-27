@@ -1,0 +1,706 @@
+<VisualStudioProject>
+    <VisualBasic
+        ProjectType = "Local"
+        ProductVersion = "7.10.3077"
+        SchemaVersion = "2.0"
+        ProjectGuid = "{F16A2219-5DAC-4F2B-89B0-6BD1243CBF8F}"
+    >
+        <Build>
+            <Settings
+                ApplicationIcon = ""
+                AssemblyKeyContainerName = ""
+                AssemblyName = "kCura.WinEDDS"
+                AssemblyOriginatorKeyFile = ""
+                AssemblyOriginatorKeyMode = "None"
+                DefaultClientScript = "JScript"
+                DefaultHTMLPageLayout = "Grid"
+                DefaultTargetSchema = "IE50"
+                DelaySign = "false"
+                OutputType = "Library"
+                OptionCompare = "Binary"
+                OptionExplicit = "On"
+                OptionStrict = "On"
+                RootNamespace = ""
+                StartupObject = ""
+            >
+                <Config
+                    Name = "Debug"
+                    BaseAddress = "285212672"
+                    ConfigurationOverrideFile = ""
+                    DefineConstants = ""
+                    DefineDebug = "true"
+                    DefineTrace = "true"
+                    DebugSymbols = "true"
+                    IncrementalBuild = "true"
+                    Optimize = "false"
+                    OutputPath = "bin\"
+                    RegisterForComInterop = "false"
+                    RemoveIntegerChecks = "false"
+                    TreatWarningsAsErrors = "false"
+                    WarningLevel = "1"
+                />
+                <Config
+                    Name = "Release"
+                    BaseAddress = "285212672"
+                    ConfigurationOverrideFile = ""
+                    DefineConstants = ""
+                    DefineDebug = "false"
+                    DefineTrace = "true"
+                    DebugSymbols = "false"
+                    IncrementalBuild = "false"
+                    Optimize = "true"
+                    OutputPath = "bin\"
+                    RegisterForComInterop = "false"
+                    RemoveIntegerChecks = "false"
+                    TreatWarningsAsErrors = "false"
+                    WarningLevel = "1"
+                />
+                <Config
+                    Name = "Integrate"
+                    BaseAddress = "285212672"
+                    ConfigurationOverrideFile = ""
+                    DefineConstants = ""
+                    DefineDebug = "true"
+                    DefineTrace = "true"
+                    DebugSymbols = "true"
+                    IncrementalBuild = "true"
+                    Optimize = "false"
+                    OutputPath = "bin\"
+                    RegisterForComInterop = "false"
+                    RemoveIntegerChecks = "false"
+                    TreatWarningsAsErrors = "false"
+                    WarningLevel = "1"
+                />
+            </Settings>
+            <References>
+                <Reference
+                    Name = "System"
+                    AssemblyName = "System"
+                />
+                <Reference
+                    Name = "System.Data"
+                    AssemblyName = "System.Data"
+                />
+                <Reference
+                    Name = "System.XML"
+                    AssemblyName = "System.Xml"
+                />
+                <Reference
+                    Name = "kCura.EDDS.Types"
+                    Project = "{6E14C37A-96F5-4488-9E2B-2C1A21C4D140}"
+                    Package = "{F184B08F-C81C-45F6-A57F-5ABD9991F28F}"
+                />
+                <Reference
+                    Name = "system.web.services"
+                    AssemblyName = "System.Web.Services"
+                    HintPath = "..\..\..\..\WINDOWS\Microsoft.NET\Framework\v1.1.4322\system.web.services.dll"
+                />
+                <Reference
+                    Name = "kCura.EDDS.Import"
+                    Project = "{94940707-AFFE-47EB-BD70-5ADE8F7C8A36}"
+                    Package = "{F184B08F-C81C-45F6-A57F-5ABD9991F28F}"
+                />
+                <Reference
+                    Name = "kCura.Utility"
+                    Project = "{E3450350-56E3-4FE9-A47A-4D24960BCBDB}"
+                    Package = "{F184B08F-C81C-45F6-A57F-5ABD9991F28F}"
+                />
+                <Reference
+                    Name = "NullableTypes"
+                    AssemblyName = "NullableTypes"
+                    HintPath = "..\..\..\kCura\trunk\ReferenceDLLs\NullableTypes.dll"
+                />
+                <Reference
+                    Name = "kCura.Windows.Process"
+                    Project = "{B092D1B2-909B-4EF0-9369-A81675C3FC18}"
+                    Package = "{F184B08F-C81C-45F6-A57F-5ABD9991F28F}"
+                />
+                <Reference
+                    Name = "System.Drawing"
+                    AssemblyName = "System.Drawing"
+                    HintPath = "..\..\..\..\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.Drawing.dll"
+                />
+                <Reference
+                    Name = "System.Windows.Forms"
+                    AssemblyName = "System.Windows.Forms"
+                    HintPath = "..\..\..\..\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.Windows.Forms.dll"
+                />
+                <Reference
+                    Name = "kCura.Data"
+                    Project = "{6C4D3211-85B6-4A83-9356-7C7F0C319C75}"
+                    Package = "{F184B08F-C81C-45F6-A57F-5ABD9991F28F}"
+                />
+            </References>
+            <Imports>
+                <Import Namespace = "Microsoft.VisualBasic" />
+                <Import Namespace = "System" />
+                <Import Namespace = "System.Collections" />
+                <Import Namespace = "System.Data" />
+                <Import Namespace = "System.Diagnostics" />
+                <Import Namespace = "NullableTypes" />
+            </Imports>
+        </Build>
+        <Files>
+            <Include>
+                <File
+                    RelPath = "AssemblyInfo.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Config.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "ExportProductionProcess.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "ExportSearchProcess.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "FileUploader.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "FolderList.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "FullTextManager.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "GenericImportProcess.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "ImportFileDirectoryProcess.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "ImportFileDirectorySettings.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "ImportImageFileProcess.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "ImportLoadFileProcess.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Settings.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Utility.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Event\AppEvent.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Event\LoadCaseEvent.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Event\NewFolderEvent.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Exporters\ProductionExporter.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Exporters\SearchExporter.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "FileObjects\ExportFile.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "FileObjects\ImageLoadFile.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "FileObjects\LoadFile.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Importers\FileDirectoryImporter.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Importers\ImageFileImporter.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Importers\LoadFileBase.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Importers\LoadFileImporter.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Importers\LoadFilePreviewer.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Importers\MetaDocument.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Importers\SQL\SQLImporter.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Importers\SQL\SQLImportProcess.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Importers\SQL\SQLImportSettings.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <Folder RelPath = "Process\" />
+                <File
+                    RelPath = "PropertyExtractor\EML.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "PropertyExtractor\File.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Service\CaseManager.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Service\CodeManager.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Service\DocumentManager.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Service\FieldManager.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Service\FieldQuery.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Service\FileIO.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Service\FileManager.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Service\FolderManager.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Service\MultiCodeManager.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Service\ProductionManager.vb"
+                    SubType = "code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Service\SearchManager.vb"
+                    SubType = "code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Types\DocumentField.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Types\DocumentFieldCollection.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Types\DocumentInfo.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Types\ExportEventArgs.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Types\FileInfo.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Types\FolderInfo.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Types\ImportStatusMessagePriority.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Web References\kCura.EDDS.WebAPI.CaseManagerBase\CaseManager.disco"
+                    BuildAction = "None"
+                />
+                <File
+                    RelPath = "Web References\kCura.EDDS.WebAPI.CaseManagerBase\CaseManager.wsdl"
+                    BuildAction = "None"
+                />
+                <File
+                    RelPath = "Web References\kCura.EDDS.WebAPI.CaseManagerBase\Reference.map"
+                    BuildAction = "None"
+                    Generator = "MSDiscoCodeGenerator"
+                    LastGenOutput = "Reference.vb"
+                />
+                <File
+                    RelPath = "Web References\kCura.EDDS.WebAPI.CaseManagerBase\Reference.vb"
+                    DependentUpon = "Reference.map"
+                    SubType = "code"
+                    BuildAction = "Compile"
+                    DesignTime = "True"
+                    AutoGen = "True"
+                />
+                <Folder
+                    RelPath = "Web References\kCura.EDDS.WebAPI.CaseManagerBase\"
+                    WebReferenceUrl = "http://localhost/EDDS/WebAPI/CaseManager.asmx"
+                    UrlBehavior = "Static"
+                />
+                <File
+                    RelPath = "Web References\kCura.EDDS.WebAPI.CodeManagerBase\CodeManager.disco"
+                    BuildAction = "None"
+                />
+                <File
+                    RelPath = "Web References\kCura.EDDS.WebAPI.CodeManagerBase\CodeManager.wsdl"
+                    BuildAction = "None"
+                />
+                <File
+                    RelPath = "Web References\kCura.EDDS.WebAPI.CodeManagerBase\Reference.map"
+                    BuildAction = "None"
+                    Generator = "MSDiscoCodeGenerator"
+                    LastGenOutput = "Reference.vb"
+                />
+                <File
+                    RelPath = "Web References\kCura.EDDS.WebAPI.CodeManagerBase\Reference.vb"
+                    DependentUpon = "Reference.map"
+                    SubType = "code"
+                    BuildAction = "Compile"
+                    DesignTime = "True"
+                    AutoGen = "True"
+                />
+                <Folder
+                    RelPath = "Web References\kCura.EDDS.WebAPI.CodeManagerBase\"
+                    WebReferenceUrl = "http://localhost/EDDS/WebAPI/CodeManager.asmx"
+                    UrlBehavior = "Static"
+                />
+                <File
+                    RelPath = "Web References\kCura.EDDS.WebAPI.DocumentManagerBase\DocumentManager.disco"
+                    BuildAction = "None"
+                />
+                <File
+                    RelPath = "Web References\kCura.EDDS.WebAPI.DocumentManagerBase\DocumentManager.wsdl"
+                    BuildAction = "None"
+                />
+                <File
+                    RelPath = "Web References\kCura.EDDS.WebAPI.DocumentManagerBase\Reference.map"
+                    BuildAction = "None"
+                    Generator = "MSDiscoCodeGenerator"
+                    LastGenOutput = "Reference.vb"
+                />
+                <File
+                    RelPath = "Web References\kCura.EDDS.WebAPI.DocumentManagerBase\Reference.vb"
+                    DependentUpon = "Reference.map"
+                    SubType = "code"
+                    BuildAction = "Compile"
+                    DesignTime = "True"
+                    AutoGen = "True"
+                />
+                <Folder
+                    RelPath = "Web References\kCura.EDDS.WebAPI.DocumentManagerBase\"
+                    WebReferenceUrl = "http://localhost/EDDS/WebAPI/DocumentManager.asmx"
+                    UrlBehavior = "Static"
+                />
+                <File
+                    RelPath = "Web References\kCura.EDDS.WebAPI.FieldManagerBase\FieldManager.disco"
+                    BuildAction = "None"
+                />
+                <File
+                    RelPath = "Web References\kCura.EDDS.WebAPI.FieldManagerBase\FieldManager.wsdl"
+                    BuildAction = "None"
+                />
+                <File
+                    RelPath = "Web References\kCura.EDDS.WebAPI.FieldManagerBase\Reference.map"
+                    BuildAction = "None"
+                    Generator = "MSDiscoCodeGenerator"
+                    LastGenOutput = "Reference.vb"
+                />
+                <File
+                    RelPath = "Web References\kCura.EDDS.WebAPI.FieldManagerBase\Reference.vb"
+                    DependentUpon = "Reference.map"
+                    SubType = "code"
+                    BuildAction = "Compile"
+                    DesignTime = "True"
+                    AutoGen = "True"
+                />
+                <Folder
+                    RelPath = "Web References\kCura.EDDS.WebAPI.FieldManagerBase\"
+                    WebReferenceUrl = "http://localhost/EDDS/WebAPI/FieldManager.asmx"
+                    UrlBehavior = "Static"
+                />
+                <File
+                    RelPath = "Web References\kCura.EDDS.WebAPI.FieldQueryBase\FieldQuery.disco"
+                    BuildAction = "None"
+                />
+                <File
+                    RelPath = "Web References\kCura.EDDS.WebAPI.FieldQueryBase\FieldQuery.wsdl"
+                    BuildAction = "None"
+                />
+                <File
+                    RelPath = "Web References\kCura.EDDS.WebAPI.FieldQueryBase\Reference.map"
+                    BuildAction = "None"
+                    Generator = "MSDiscoCodeGenerator"
+                    LastGenOutput = "Reference.vb"
+                />
+                <File
+                    RelPath = "Web References\kCura.EDDS.WebAPI.FieldQueryBase\Reference.vb"
+                    DependentUpon = "Reference.map"
+                    SubType = "code"
+                    BuildAction = "Compile"
+                    DesignTime = "True"
+                    AutoGen = "True"
+                />
+                <Folder
+                    RelPath = "Web References\kCura.EDDS.WebAPI.FieldQueryBase\"
+                    WebReferenceUrl = "http://localhost/EDDS/WebAPI/FieldQuery.asmx"
+                    UrlBehavior = "Static"
+                />
+                <File
+                    RelPath = "Web References\kCura.EDDS.WebAPI.FileIOBase\FileIO.disco"
+                    BuildAction = "None"
+                />
+                <File
+                    RelPath = "Web References\kCura.EDDS.WebAPI.FileIOBase\FileIO.wsdl"
+                    BuildAction = "None"
+                />
+                <File
+                    RelPath = "Web References\kCura.EDDS.WebAPI.FileIOBase\Reference.map"
+                    BuildAction = "None"
+                    Generator = "MSDiscoCodeGenerator"
+                    LastGenOutput = "Reference.vb"
+                />
+                <File
+                    RelPath = "Web References\kCura.EDDS.WebAPI.FileIOBase\Reference.vb"
+                    DependentUpon = "Reference.map"
+                    SubType = "code"
+                    BuildAction = "Compile"
+                    DesignTime = "True"
+                    AutoGen = "True"
+                />
+                <Folder
+                    RelPath = "Web References\kCura.EDDS.WebAPI.FileIOBase\"
+                    WebReferenceUrl = "http://localhost/EDDS/WebAPI/FileIO.asmx"
+                    UrlBehavior = "Static"
+                />
+                <File
+                    RelPath = "Web References\kCura.EDDS.WebAPI.FileManagerBase\FileManager.disco"
+                    BuildAction = "None"
+                />
+                <File
+                    RelPath = "Web References\kCura.EDDS.WebAPI.FileManagerBase\FileManager.wsdl"
+                    BuildAction = "None"
+                />
+                <File
+                    RelPath = "Web References\kCura.EDDS.WebAPI.FileManagerBase\Reference.map"
+                    BuildAction = "None"
+                    Generator = "MSDiscoCodeGenerator"
+                    LastGenOutput = "Reference.vb"
+                />
+                <File
+                    RelPath = "Web References\kCura.EDDS.WebAPI.FileManagerBase\Reference.vb"
+                    DependentUpon = "Reference.map"
+                    SubType = "code"
+                    BuildAction = "Compile"
+                    DesignTime = "True"
+                    AutoGen = "True"
+                />
+                <Folder
+                    RelPath = "Web References\kCura.EDDS.WebAPI.FileManagerBase\"
+                    WebReferenceUrl = "http://localhost/EDDS/WebAPI/FileManager.asmx"
+                    UrlBehavior = "Static"
+                />
+                <File
+                    RelPath = "Web References\kCura.EDDS.WebAPI.FolderManagerBase\FolderManager.disco"
+                    BuildAction = "None"
+                />
+                <File
+                    RelPath = "Web References\kCura.EDDS.WebAPI.FolderManagerBase\FolderManager.wsdl"
+                    BuildAction = "None"
+                />
+                <File
+                    RelPath = "Web References\kCura.EDDS.WebAPI.FolderManagerBase\Reference.map"
+                    BuildAction = "None"
+                    Generator = "MSDiscoCodeGenerator"
+                    LastGenOutput = "Reference.vb"
+                />
+                <File
+                    RelPath = "Web References\kCura.EDDS.WebAPI.FolderManagerBase\Reference.vb"
+                    DependentUpon = "Reference.map"
+                    SubType = "code"
+                    BuildAction = "Compile"
+                    DesignTime = "True"
+                    AutoGen = "True"
+                />
+                <Folder
+                    RelPath = "Web References\kCura.EDDS.WebAPI.FolderManagerBase\"
+                    WebReferenceUrl = "http://localhost/EDDS/WebAPI/FolderManager.asmx"
+                    UrlBehavior = "Static"
+                />
+                <File
+                    RelPath = "Web References\kCura.EDDS.WebAPI.MultiCodeManagerBase\MultiCodeManager.disco"
+                    BuildAction = "None"
+                />
+                <File
+                    RelPath = "Web References\kCura.EDDS.WebAPI.MultiCodeManagerBase\MultiCodeManager.wsdl"
+                    BuildAction = "None"
+                />
+                <File
+                    RelPath = "Web References\kCura.EDDS.WebAPI.MultiCodeManagerBase\Reference.map"
+                    BuildAction = "None"
+                    Generator = "MSDiscoCodeGenerator"
+                    LastGenOutput = "Reference.vb"
+                />
+                <File
+                    RelPath = "Web References\kCura.EDDS.WebAPI.MultiCodeManagerBase\Reference.vb"
+                    DependentUpon = "Reference.map"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                    DesignTime = "True"
+                    AutoGen = "True"
+                />
+                <Folder
+                    RelPath = "Web References\kCura.EDDS.WebAPI.MultiCodeManagerBase\"
+                    WebReferenceUrl = "http://localhost/EDDS/WebAPI/MultiCodeManager.asmx"
+                    UrlBehavior = "Static"
+                />
+                <File
+                    RelPath = "Web References\kCura.EDDS.WebAPI.ProductionManagerBase\ProductionManager.disco"
+                    BuildAction = "None"
+                />
+                <File
+                    RelPath = "Web References\kCura.EDDS.WebAPI.ProductionManagerBase\ProductionManager.wsdl"
+                    BuildAction = "None"
+                />
+                <File
+                    RelPath = "Web References\kCura.EDDS.WebAPI.ProductionManagerBase\Reference.map"
+                    BuildAction = "None"
+                    Generator = "MSDiscoCodeGenerator"
+                    LastGenOutput = "Reference.vb"
+                />
+                <File
+                    RelPath = "Web References\kCura.EDDS.WebAPI.ProductionManagerBase\Reference.vb"
+                    DependentUpon = "Reference.map"
+                    SubType = "code"
+                    BuildAction = "Compile"
+                    DesignTime = "True"
+                    AutoGen = "True"
+                />
+                <Folder
+                    RelPath = "Web References\kCura.EDDS.WebAPI.ProductionManagerBase\"
+                    WebReferenceUrl = "http://localhost/EDDS/WebAPI/ProductionManager.asmx"
+                    UrlBehavior = "Static"
+                />
+                <File
+                    RelPath = "Web References\kCura.EDDS.WebAPI.SearchManagerBase\Reference.map"
+                    BuildAction = "None"
+                    Generator = "MSDiscoCodeGenerator"
+                    LastGenOutput = "Reference.vb"
+                />
+                <File
+                    RelPath = "Web References\kCura.EDDS.WebAPI.SearchManagerBase\Reference.vb"
+                    DependentUpon = "Reference.map"
+                    SubType = "code"
+                    BuildAction = "Compile"
+                    DesignTime = "True"
+                    AutoGen = "True"
+                />
+                <File
+                    RelPath = "Web References\kCura.EDDS.WebAPI.SearchManagerBase\SearchManager.disco"
+                    BuildAction = "None"
+                />
+                <File
+                    RelPath = "Web References\kCura.EDDS.WebAPI.SearchManagerBase\SearchManager.wsdl"
+                    BuildAction = "None"
+                />
+                <Folder
+                    RelPath = "Web References\kCura.EDDS.WebAPI.SearchManagerBase\"
+                    WebReferenceUrl = "http://localhost/EDDS/WebAPI/SearchManager.asmx"
+                    UrlBehavior = "Static"
+                />
+                <Folder
+                    RelPath = "Web References\"
+                    WebReferences = "TRUE"
+                />
+            </Include>
+        </Files>
+    </VisualBasic>
+</VisualStudioProject>
+

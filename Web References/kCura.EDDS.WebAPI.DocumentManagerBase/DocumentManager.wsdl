@@ -1,0 +1,737 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:s1="http://NullableTypes.SourceForge.Net/NullableInt32XMLSchema" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:s2="http://microsoft.com/wsdl/types/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tns="http://foley.com/EDDS/DocumentManager" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" targetNamespace="http://foley.com/EDDS/DocumentManager" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <s:schema elementFormDefault="qualified" targetNamespace="http://foley.com/EDDS/DocumentManager">
+      <s:import namespace="http://www.w3.org/2001/XMLSchema" />
+      <s:import namespace="http://NullableTypes.SourceForge.Net/NullableInt32XMLSchema" />
+      <s:import namespace="http://microsoft.com/wsdl/types/" />
+      <s:element name="GetAllDocumentsForCase">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="caseID" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetAllDocumentsForCaseResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetAllDocumentsForCaseResult">
+              <s:complexType>
+                <s:sequence>
+                  <s:element ref="s:schema" />
+                  <s:any />
+                </s:sequence>
+              </s:complexType>
+            </s:element>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="NewFileDTO">
+        <s:complexType />
+      </s:element>
+      <s:element name="NewFileDTOResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="NewFileDTOResult" type="tns:File" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="File">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="Guid" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="DocumentID" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="Order" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="Type" type="s:int" />
+          <s:element minOccurs="0" maxOccurs="1" name="Filename" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="DocumentArtifactID" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="Rotation" type="s:int" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="CreateEmptyDocument">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="parentFolderID" type="s:int" />
+            <s:element minOccurs="0" maxOccurs="1" name="identifierValue" type="s:base64Binary" />
+            <s:element minOccurs="0" maxOccurs="1" name="fullTextFileName" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="identifierColumn" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="CreateEmptyDocumentResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="CreateEmptyDocumentResult" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ReadFromDocumentID">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="documentID" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="contextArtifactID" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ReadFromDocumentIDResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="ReadFromDocumentIDResult" type="tns:Document" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="Document">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:Artifact">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="Fields" type="tns:ArrayOfField" />
+              <s:element minOccurs="1" maxOccurs="1" name="DocumentID" type="s:int" />
+              <s:element minOccurs="0" maxOccurs="1" name="Files" type="tns:ArrayOfFile" />
+              <s:element minOccurs="0" maxOccurs="1" name="DocumentAgentFlags" type="tns:DocumentAgentFlags" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="Artifact">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="ArtifactID" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="ArtifactTypeID" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="ParentArtifactID">
+            <s:complexType>
+              <s:sequence>
+                <s:any namespace="http://NullableTypes.SourceForge.Net/NullableInt32XMLSchema" />
+              </s:sequence>
+            </s:complexType>
+          </s:element>
+          <s:element minOccurs="1" maxOccurs="1" name="ContainerID">
+            <s:complexType>
+              <s:sequence>
+                <s:any namespace="http://NullableTypes.SourceForge.Net/NullableInt32XMLSchema" />
+              </s:sequence>
+            </s:complexType>
+          </s:element>
+          <s:element minOccurs="1" maxOccurs="1" name="AccessControlListID" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="AccessControlListIsInherited" type="s:boolean" />
+          <s:element minOccurs="0" maxOccurs="1" name="Keywords" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Notes" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="TextIdentifier" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="LastModifiedOn" type="s:dateTime" />
+          <s:element minOccurs="1" maxOccurs="1" name="LastModifiedBy" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="CreatedBy" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="CreatedOn" type="s:dateTime" />
+          <s:element minOccurs="1" maxOccurs="1" name="DeleteFlag" type="s:boolean" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="Field">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:Artifact">
+            <s:sequence>
+              <s:element minOccurs="1" maxOccurs="1" name="ArtifactViewFieldID" type="s:int" />
+              <s:element minOccurs="0" maxOccurs="1" name="DisplayName" type="s:string" />
+              <s:element minOccurs="1" maxOccurs="1" name="IsRequired" type="s:boolean" />
+              <s:element minOccurs="1" maxOccurs="1" name="Removable" type="s:boolean" />
+              <s:element minOccurs="1" maxOccurs="1" name="CodeArtifactTypeID">
+                <s:complexType>
+                  <s:sequence>
+                    <s:any namespace="http://NullableTypes.SourceForge.Net/NullableInt32XMLSchema" />
+                  </s:sequence>
+                </s:complexType>
+              </s:element>
+              <s:element minOccurs="1" maxOccurs="1" name="MaxLength">
+                <s:complexType>
+                  <s:sequence>
+                    <s:any namespace="http://NullableTypes.SourceForge.Net/NullableInt32XMLSchema" />
+                  </s:sequence>
+                </s:complexType>
+              </s:element>
+              <s:element minOccurs="1" maxOccurs="1" name="FieldTypeID" type="s:int" />
+              <s:element minOccurs="1" maxOccurs="1" name="IsEditable" type="s:boolean" />
+              <s:element minOccurs="1" maxOccurs="1" name="Visible" type="s:boolean" />
+              <s:element minOccurs="1" maxOccurs="1" name="FieldCategoryID" type="s:int" />
+              <s:element minOccurs="1" maxOccurs="1" name="AddToFullText" type="s:boolean" />
+              <s:element minOccurs="1" maxOccurs="1" name="AddToConceptualText" type="s:boolean" />
+              <s:element minOccurs="1" maxOccurs="1" name="IsArtifactBaseField" type="s:boolean" />
+              <s:element minOccurs="0" maxOccurs="1" name="Value" />
+              <s:element minOccurs="1" maxOccurs="1" name="FieldType" type="tns:FieldType" />
+              <s:element minOccurs="0" maxOccurs="1" name="ColumnName" type="s:string" />
+              <s:element minOccurs="1" maxOccurs="1" name="IsReadOnlyInLayout" type="s:boolean" />
+              <s:element minOccurs="0" maxOccurs="1" name="FilterType" type="s:string" />
+              <s:element minOccurs="1" maxOccurs="1" name="FieldDisplayTypeID" type="s:int" />
+              <s:element minOccurs="1" maxOccurs="1" name="IsLinked" type="s:boolean" />
+              <s:element minOccurs="0" maxOccurs="1" name="FormatString" type="s:string" />
+              <s:element minOccurs="1" maxOccurs="1" name="RepeatColumn">
+                <s:complexType>
+                  <s:sequence>
+                    <s:any namespace="http://NullableTypes.SourceForge.Net/NullableInt32XMLSchema" />
+                  </s:sequence>
+                </s:complexType>
+              </s:element>
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:simpleType name="FieldType">
+        <s:restriction base="s:string">
+          <s:enumeration value="Varchar" />
+          <s:enumeration value="Integer" />
+          <s:enumeration value="Date" />
+          <s:enumeration value="Boolean" />
+          <s:enumeration value="Text" />
+          <s:enumeration value="Code" />
+          <s:enumeration value="Decimal" />
+          <s:enumeration value="Currency" />
+          <s:enumeration value="MultiCode" />
+        </s:restriction>
+      </s:simpleType>
+      <s:complexType name="ArrayOfField">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="Field" nillable="true" type="tns:Field" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="ArrayOfFile">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="File" nillable="true" type="tns:File" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="DocumentAgentFlags">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="UpdateFullText" type="s:boolean" />
+          <s:element minOccurs="1" maxOccurs="1" name="IndexStatus" type="s:int" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="DeleteNative">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="documentDTO" type="tns:Document" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="DeleteNativeResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="DeleteNativeResult" type="s:boolean" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="Create">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="docDTO" type="tns:Document" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="CreateResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="CreateResult" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="Update">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="docDTO" type="tns:Document" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="UpdateResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="UpdateResult" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="CreateRange">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="docDTOs" type="tns:ArrayOfDocument" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="ArrayOfDocument">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="Document" nillable="true" type="tns:Document" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="CreateRangeResponse">
+        <s:complexType />
+      </s:element>
+      <s:element name="UpdateRange">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="docDTOs" type="tns:ArrayOfDocument" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="UpdateRangeResponse">
+        <s:complexType />
+      </s:element>
+      <s:element name="AddFullTextToDocumentFromFile">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="contextArtifactID" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="documentID" type="s:int" />
+            <s:element minOccurs="0" maxOccurs="1" name="fullTextFileName" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="AddFullTextToDocumentFromFileResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="AddFullTextToDocumentFromFileResult" type="s:boolean" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetDocumentIDFromIdentifier">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="identifier" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="fieldDisplayName" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="caseID" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetDocumentIDFromIdentifierResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="GetDocumentIDFromIdentifierResult" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ReadFromIdentifier">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="caseID" type="s:int" />
+            <s:element minOccurs="0" maxOccurs="1" name="fieldDisplayName" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="identifier" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ReadFromIdentifierResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="ReadFromIdentifierResult" type="tns:Document" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="UpdateFullTextWithCrackedText">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="documentArtifactID" type="s:int" />
+            <s:element minOccurs="0" maxOccurs="1" name="fileGuid" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="UpdateFullTextWithCrackedTextResponse">
+        <s:complexType />
+      </s:element>
+      <s:element name="ClearImagesFromDocument">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="caseID" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="documentID" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ClearImagesFromDocumentResponse">
+        <s:complexType />
+      </s:element>
+      <s:element name="GetDocumentDirectoryByContextArtifactID">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="contextArtifactID" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetDocumentDirectoryByContextArtifactIDResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetDocumentDirectoryByContextArtifactIDResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetDocumentDirectoryByCaseArtifactID">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="caseArtifactID" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetDocumentDirectoryByCaseArtifactIDResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetDocumentDirectoryByCaseArtifactIDResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetPrintImageGuids">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="artifactID" type="s:int" />
+            <s:element minOccurs="0" maxOccurs="1" name="orderedProductionIDList" type="tns:ArrayOfInt" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="ArrayOfInt">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="int" type="s:int" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="ArrayOfGuid">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="guid" type="s2:guid" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="GetPrintImageGuidsResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetPrintImageGuidsResult" type="tns:ArrayOfGuid" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+    </s:schema>
+    <s:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="http://NullableTypes.SourceForge.Net/NullableInt32XMLSchema" id="NullableInt32">
+      <xs:element name="NullableInt32" nillable="true" type="xs:int" />
+    </s:schema>
+    <s:schema elementFormDefault="qualified" targetNamespace="http://microsoft.com/wsdl/types/">
+      <s:simpleType name="guid">
+        <s:restriction base="s:string">
+          <s:pattern value="[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}" />
+        </s:restriction>
+      </s:simpleType>
+    </s:schema>
+  </wsdl:types>
+  <wsdl:message name="GetAllDocumentsForCaseSoapIn">
+    <wsdl:part name="parameters" element="tns:GetAllDocumentsForCase" />
+  </wsdl:message>
+  <wsdl:message name="GetAllDocumentsForCaseSoapOut">
+    <wsdl:part name="parameters" element="tns:GetAllDocumentsForCaseResponse" />
+  </wsdl:message>
+  <wsdl:message name="NewFileDTOSoapIn">
+    <wsdl:part name="parameters" element="tns:NewFileDTO" />
+  </wsdl:message>
+  <wsdl:message name="NewFileDTOSoapOut">
+    <wsdl:part name="parameters" element="tns:NewFileDTOResponse" />
+  </wsdl:message>
+  <wsdl:message name="CreateEmptyDocumentSoapIn">
+    <wsdl:part name="parameters" element="tns:CreateEmptyDocument" />
+  </wsdl:message>
+  <wsdl:message name="CreateEmptyDocumentSoapOut">
+    <wsdl:part name="parameters" element="tns:CreateEmptyDocumentResponse" />
+  </wsdl:message>
+  <wsdl:message name="ReadFromDocumentIDSoapIn">
+    <wsdl:part name="parameters" element="tns:ReadFromDocumentID" />
+  </wsdl:message>
+  <wsdl:message name="ReadFromDocumentIDSoapOut">
+    <wsdl:part name="parameters" element="tns:ReadFromDocumentIDResponse" />
+  </wsdl:message>
+  <wsdl:message name="DeleteNativeSoapIn">
+    <wsdl:part name="parameters" element="tns:DeleteNative" />
+  </wsdl:message>
+  <wsdl:message name="DeleteNativeSoapOut">
+    <wsdl:part name="parameters" element="tns:DeleteNativeResponse" />
+  </wsdl:message>
+  <wsdl:message name="CreateSoapIn">
+    <wsdl:part name="parameters" element="tns:Create" />
+  </wsdl:message>
+  <wsdl:message name="CreateSoapOut">
+    <wsdl:part name="parameters" element="tns:CreateResponse" />
+  </wsdl:message>
+  <wsdl:message name="UpdateSoapIn">
+    <wsdl:part name="parameters" element="tns:Update" />
+  </wsdl:message>
+  <wsdl:message name="UpdateSoapOut">
+    <wsdl:part name="parameters" element="tns:UpdateResponse" />
+  </wsdl:message>
+  <wsdl:message name="CreateRangeSoapIn">
+    <wsdl:part name="parameters" element="tns:CreateRange" />
+  </wsdl:message>
+  <wsdl:message name="CreateRangeSoapOut">
+    <wsdl:part name="parameters" element="tns:CreateRangeResponse" />
+  </wsdl:message>
+  <wsdl:message name="UpdateRangeSoapIn">
+    <wsdl:part name="parameters" element="tns:UpdateRange" />
+  </wsdl:message>
+  <wsdl:message name="UpdateRangeSoapOut">
+    <wsdl:part name="parameters" element="tns:UpdateRangeResponse" />
+  </wsdl:message>
+  <wsdl:message name="AddFullTextToDocumentFromFileSoapIn">
+    <wsdl:part name="parameters" element="tns:AddFullTextToDocumentFromFile" />
+  </wsdl:message>
+  <wsdl:message name="AddFullTextToDocumentFromFileSoapOut">
+    <wsdl:part name="parameters" element="tns:AddFullTextToDocumentFromFileResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetDocumentIDFromIdentifierSoapIn">
+    <wsdl:part name="parameters" element="tns:GetDocumentIDFromIdentifier" />
+  </wsdl:message>
+  <wsdl:message name="GetDocumentIDFromIdentifierSoapOut">
+    <wsdl:part name="parameters" element="tns:GetDocumentIDFromIdentifierResponse" />
+  </wsdl:message>
+  <wsdl:message name="ReadFromIdentifierSoapIn">
+    <wsdl:part name="parameters" element="tns:ReadFromIdentifier" />
+  </wsdl:message>
+  <wsdl:message name="ReadFromIdentifierSoapOut">
+    <wsdl:part name="parameters" element="tns:ReadFromIdentifierResponse" />
+  </wsdl:message>
+  <wsdl:message name="UpdateFullTextWithCrackedTextSoapIn">
+    <wsdl:part name="parameters" element="tns:UpdateFullTextWithCrackedText" />
+  </wsdl:message>
+  <wsdl:message name="UpdateFullTextWithCrackedTextSoapOut">
+    <wsdl:part name="parameters" element="tns:UpdateFullTextWithCrackedTextResponse" />
+  </wsdl:message>
+  <wsdl:message name="ClearImagesFromDocumentSoapIn">
+    <wsdl:part name="parameters" element="tns:ClearImagesFromDocument" />
+  </wsdl:message>
+  <wsdl:message name="ClearImagesFromDocumentSoapOut">
+    <wsdl:part name="parameters" element="tns:ClearImagesFromDocumentResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetDocumentDirectoryByContextArtifactIDSoapIn">
+    <wsdl:part name="parameters" element="tns:GetDocumentDirectoryByContextArtifactID" />
+  </wsdl:message>
+  <wsdl:message name="GetDocumentDirectoryByContextArtifactIDSoapOut">
+    <wsdl:part name="parameters" element="tns:GetDocumentDirectoryByContextArtifactIDResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetDocumentDirectoryByCaseArtifactIDSoapIn">
+    <wsdl:part name="parameters" element="tns:GetDocumentDirectoryByCaseArtifactID" />
+  </wsdl:message>
+  <wsdl:message name="GetDocumentDirectoryByCaseArtifactIDSoapOut">
+    <wsdl:part name="parameters" element="tns:GetDocumentDirectoryByCaseArtifactIDResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetPrintImageGuidsSoapIn">
+    <wsdl:part name="parameters" element="tns:GetPrintImageGuids" />
+  </wsdl:message>
+  <wsdl:message name="GetPrintImageGuidsSoapOut">
+    <wsdl:part name="parameters" element="tns:GetPrintImageGuidsResponse" />
+  </wsdl:message>
+  <wsdl:portType name="DocumentManagerSoap">
+    <wsdl:operation name="GetAllDocumentsForCase">
+      <wsdl:input message="tns:GetAllDocumentsForCaseSoapIn" />
+      <wsdl:output message="tns:GetAllDocumentsForCaseSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="NewFileDTO">
+      <wsdl:input message="tns:NewFileDTOSoapIn" />
+      <wsdl:output message="tns:NewFileDTOSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="CreateEmptyDocument">
+      <wsdl:input message="tns:CreateEmptyDocumentSoapIn" />
+      <wsdl:output message="tns:CreateEmptyDocumentSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ReadFromDocumentID">
+      <wsdl:input message="tns:ReadFromDocumentIDSoapIn" />
+      <wsdl:output message="tns:ReadFromDocumentIDSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="DeleteNative">
+      <wsdl:input message="tns:DeleteNativeSoapIn" />
+      <wsdl:output message="tns:DeleteNativeSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="Create">
+      <wsdl:input message="tns:CreateSoapIn" />
+      <wsdl:output message="tns:CreateSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="Update">
+      <wsdl:input message="tns:UpdateSoapIn" />
+      <wsdl:output message="tns:UpdateSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="CreateRange">
+      <wsdl:input message="tns:CreateRangeSoapIn" />
+      <wsdl:output message="tns:CreateRangeSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="UpdateRange">
+      <wsdl:input message="tns:UpdateRangeSoapIn" />
+      <wsdl:output message="tns:UpdateRangeSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="AddFullTextToDocumentFromFile">
+      <wsdl:input message="tns:AddFullTextToDocumentFromFileSoapIn" />
+      <wsdl:output message="tns:AddFullTextToDocumentFromFileSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetDocumentIDFromIdentifier">
+      <wsdl:input message="tns:GetDocumentIDFromIdentifierSoapIn" />
+      <wsdl:output message="tns:GetDocumentIDFromIdentifierSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ReadFromIdentifier">
+      <wsdl:input message="tns:ReadFromIdentifierSoapIn" />
+      <wsdl:output message="tns:ReadFromIdentifierSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="UpdateFullTextWithCrackedText">
+      <wsdl:input message="tns:UpdateFullTextWithCrackedTextSoapIn" />
+      <wsdl:output message="tns:UpdateFullTextWithCrackedTextSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ClearImagesFromDocument">
+      <wsdl:input message="tns:ClearImagesFromDocumentSoapIn" />
+      <wsdl:output message="tns:ClearImagesFromDocumentSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetDocumentDirectoryByContextArtifactID">
+      <wsdl:input message="tns:GetDocumentDirectoryByContextArtifactIDSoapIn" />
+      <wsdl:output message="tns:GetDocumentDirectoryByContextArtifactIDSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetDocumentDirectoryByCaseArtifactID">
+      <wsdl:input message="tns:GetDocumentDirectoryByCaseArtifactIDSoapIn" />
+      <wsdl:output message="tns:GetDocumentDirectoryByCaseArtifactIDSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetPrintImageGuids">
+      <wsdl:input message="tns:GetPrintImageGuidsSoapIn" />
+      <wsdl:output message="tns:GetPrintImageGuidsSoapOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="DocumentManagerSoap" type="tns:DocumentManagerSoap">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document" />
+    <wsdl:operation name="GetAllDocumentsForCase">
+      <soap:operation soapAction="http://foley.com/EDDS/DocumentManager/GetAllDocumentsForCase" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="NewFileDTO">
+      <soap:operation soapAction="http://foley.com/EDDS/DocumentManager/NewFileDTO" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CreateEmptyDocument">
+      <soap:operation soapAction="http://foley.com/EDDS/DocumentManager/CreateEmptyDocument" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ReadFromDocumentID">
+      <soap:operation soapAction="http://foley.com/EDDS/DocumentManager/ReadFromDocumentID" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="DeleteNative">
+      <soap:operation soapAction="http://foley.com/EDDS/DocumentManager/DeleteNative" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Create">
+      <soap:operation soapAction="http://foley.com/EDDS/DocumentManager/Create" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Update">
+      <soap:operation soapAction="http://foley.com/EDDS/DocumentManager/Update" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CreateRange">
+      <soap:operation soapAction="http://foley.com/EDDS/DocumentManager/CreateRange" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="UpdateRange">
+      <soap:operation soapAction="http://foley.com/EDDS/DocumentManager/UpdateRange" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="AddFullTextToDocumentFromFile">
+      <soap:operation soapAction="http://foley.com/EDDS/DocumentManager/AddFullTextToDocumentFromFile" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetDocumentIDFromIdentifier">
+      <soap:operation soapAction="http://foley.com/EDDS/DocumentManager/GetDocumentIDFromIdentifier" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ReadFromIdentifier">
+      <soap:operation soapAction="http://foley.com/EDDS/DocumentManager/ReadFromIdentifier" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="UpdateFullTextWithCrackedText">
+      <soap:operation soapAction="http://foley.com/EDDS/DocumentManager/UpdateFullTextWithCrackedText" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ClearImagesFromDocument">
+      <soap:operation soapAction="http://foley.com/EDDS/DocumentManager/ClearImagesFromDocument" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetDocumentDirectoryByContextArtifactID">
+      <soap:operation soapAction="http://foley.com/EDDS/DocumentManager/GetDocumentDirectoryByContextArtifactID" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetDocumentDirectoryByCaseArtifactID">
+      <soap:operation soapAction="http://foley.com/EDDS/DocumentManager/GetDocumentDirectoryByCaseArtifactID" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetPrintImageGuids">
+      <soap:operation soapAction="http://foley.com/EDDS/DocumentManager/GetPrintImageGuids" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="DocumentManager">
+    <documentation xmlns="http://schemas.xmlsoap.org/wsdl/" />
+    <wsdl:port name="DocumentManagerSoap" binding="tns:DocumentManagerSoap">
+      <soap:address location="http://localhost/EDDS/WebAPI/DocumentManager.asmx" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>
