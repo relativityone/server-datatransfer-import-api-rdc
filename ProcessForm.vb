@@ -1,0 +1,450 @@
+Namespace kCura.Windows.Process
+  Public Class ProgressForm
+    Inherits System.Windows.Forms.Form
+
+#Region " Windows Form Designer generated code "
+
+    Public Sub New()
+      MyBase.New()
+
+      'This call is required by the Windows Form Designer.
+      InitializeComponent()
+
+      'Add any initialization after the InitializeComponent() call
+    End Sub
+
+    'Form overrides dispose to clean up the component list.
+    Protected Overloads Overrides Sub Dispose(ByVal disposing As Boolean)
+      If disposing Then
+        If Not (components Is Nothing) Then
+          components.Dispose()
+        End If
+      End If
+      MyBase.Dispose(disposing)
+    End Sub
+
+    'Required by the Windows Form Designer
+    Private components As System.ComponentModel.IContainer
+
+    'NOTE: The following procedure is required by the Windows Form Designer
+    'It can be modified using the Windows Form Designer.  
+    'Do not modify it using the code editor.
+    Friend WithEvents _showDetailButton As System.Windows.Forms.Button
+    Friend WithEvents _progressBar As System.Windows.Forms.ProgressBar
+    Friend WithEvents _currentRecordLabel As System.Windows.Forms.Label
+    Friend WithEvents _overalProgressLabel As System.Windows.Forms.Label
+    Friend WithEvents _stopImportButton As System.Windows.Forms.Button
+    Friend WithEvents _saveOutputButton As System.Windows.Forms.Button
+    Friend WithEvents _saveFileDialog As System.Windows.Forms.SaveFileDialog
+    Friend WithEvents ProgressTab As System.Windows.Forms.TabPage
+    Friend WithEvents SummaryTab As System.Windows.Forms.TabPage
+    Friend WithEvents WarningsTab As System.Windows.Forms.TabPage
+    Friend WithEvents ErrorsTab As System.Windows.Forms.TabPage
+    Friend WithEvents _outputTextBox As kCura.Windows.Forms.OutputRichTextBox
+    Friend WithEvents _Tabs As System.Windows.Forms.TabControl
+    Friend WithEvents _summaryOutput As System.Windows.Forms.TextBox
+    Friend WithEvents _currentMessageStatus As System.Windows.Forms.Label
+    Friend WithEvents _warningsOutputTextBox As kCura.Windows.Forms.OutputRichTextBox
+    Friend WithEvents _errorsOutputTextBox As kCura.Windows.Forms.OutputRichTextBox
+    Friend WithEvents _statusBar As System.Windows.Forms.Label
+    <System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
+      Dim resources As System.Resources.ResourceManager = New System.Resources.ResourceManager(GetType(ProgressForm))
+      Me._stopImportButton = New System.Windows.Forms.Button
+      Me._showDetailButton = New System.Windows.Forms.Button
+      Me._progressBar = New System.Windows.Forms.ProgressBar
+      Me._currentRecordLabel = New System.Windows.Forms.Label
+      Me._overalProgressLabel = New System.Windows.Forms.Label
+      Me._saveOutputButton = New System.Windows.Forms.Button
+      Me._saveFileDialog = New System.Windows.Forms.SaveFileDialog
+      Me._Tabs = New System.Windows.Forms.TabControl
+      Me.SummaryTab = New System.Windows.Forms.TabPage
+      Me._summaryOutput = New System.Windows.Forms.TextBox
+      Me.ProgressTab = New System.Windows.Forms.TabPage
+      Me._outputTextBox = New kCura.Windows.Forms.OutputRichTextBox
+      Me.WarningsTab = New System.Windows.Forms.TabPage
+      Me._warningsOutputTextBox = New kCura.Windows.Forms.OutputRichTextBox
+      Me.ErrorsTab = New System.Windows.Forms.TabPage
+      Me._errorsOutputTextBox = New kCura.Windows.Forms.OutputRichTextBox
+      Me._currentMessageStatus = New System.Windows.Forms.Label
+      Me._statusBar = New System.Windows.Forms.Label
+      Me._Tabs.SuspendLayout()
+      Me.SummaryTab.SuspendLayout()
+      Me.ProgressTab.SuspendLayout()
+      Me.WarningsTab.SuspendLayout()
+      Me.ErrorsTab.SuspendLayout()
+      Me.SuspendLayout()
+      '
+      '_stopImportButton
+      '
+      Me._stopImportButton.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+      Me._stopImportButton.Location = New System.Drawing.Point(384, 36)
+      Me._stopImportButton.Name = "_stopImportButton"
+      Me._stopImportButton.Size = New System.Drawing.Size(84, 23)
+      Me._stopImportButton.TabIndex = 0
+      Me._stopImportButton.Text = "Stop"
+      '
+      '_showDetailButton
+      '
+      Me._showDetailButton.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+      Me._showDetailButton.Location = New System.Drawing.Point(384, 64)
+      Me._showDetailButton.Name = "_showDetailButton"
+      Me._showDetailButton.Size = New System.Drawing.Size(84, 23)
+      Me._showDetailButton.TabIndex = 1
+      Me._showDetailButton.Text = "Hide Detail"
+      '
+      '_progressBar
+      '
+      Me._progressBar.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
+            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+      Me._progressBar.Location = New System.Drawing.Point(4, 44)
+      Me._progressBar.Name = "_progressBar"
+      Me._progressBar.Size = New System.Drawing.Size(372, 23)
+      Me._progressBar.TabIndex = 2
+      '
+      '_currentRecordLabel
+      '
+      Me._currentRecordLabel.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
+            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+      Me._currentRecordLabel.Location = New System.Drawing.Point(4, 8)
+      Me._currentRecordLabel.Name = "_currentRecordLabel"
+      Me._currentRecordLabel.Size = New System.Drawing.Size(372, 16)
+      Me._currentRecordLabel.TabIndex = 4
+      '
+      '_overalProgressLabel
+      '
+      Me._overalProgressLabel.Location = New System.Drawing.Point(4, 72)
+      Me._overalProgressLabel.Name = "_overalProgressLabel"
+      Me._overalProgressLabel.Size = New System.Drawing.Size(368, 16)
+      Me._overalProgressLabel.TabIndex = 5
+      '
+      '_saveOutputButton
+      '
+      Me._saveOutputButton.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+      Me._saveOutputButton.Enabled = False
+      Me._saveOutputButton.Location = New System.Drawing.Point(382, 308)
+      Me._saveOutputButton.Name = "_saveOutputButton"
+      Me._saveOutputButton.Size = New System.Drawing.Size(84, 23)
+      Me._saveOutputButton.TabIndex = 10
+      Me._saveOutputButton.Text = "Save Output..."
+      '
+      '_saveFileDialog
+      '
+      Me._saveFileDialog.DefaultExt = "log"
+      Me._saveFileDialog.Filter = "XML Log Files (*.log)|*.log"
+      '
+      '_Tabs
+      '
+      Me._Tabs.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
+            Or System.Windows.Forms.AnchorStyles.Left) _
+            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+      Me._Tabs.Controls.Add(Me.SummaryTab)
+      Me._Tabs.Controls.Add(Me.ProgressTab)
+      Me._Tabs.Controls.Add(Me.WarningsTab)
+      Me._Tabs.Controls.Add(Me.ErrorsTab)
+      Me._Tabs.Location = New System.Drawing.Point(4, 92)
+      Me._Tabs.Name = "_Tabs"
+      Me._Tabs.SelectedIndex = 0
+      Me._Tabs.Size = New System.Drawing.Size(464, 216)
+      Me._Tabs.TabIndex = 11
+      '
+      'SummaryTab
+      '
+      Me.SummaryTab.Controls.Add(Me._summaryOutput)
+      Me.SummaryTab.Location = New System.Drawing.Point(4, 22)
+      Me.SummaryTab.Name = "SummaryTab"
+      Me.SummaryTab.Size = New System.Drawing.Size(456, 190)
+      Me.SummaryTab.TabIndex = 1
+      Me.SummaryTab.Text = "Summary"
+      '
+      '_summaryOutput
+      '
+      Me._summaryOutput.Dock = System.Windows.Forms.DockStyle.Fill
+      Me._summaryOutput.Font = New System.Drawing.Font("Courier New", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+      Me._summaryOutput.Location = New System.Drawing.Point(0, 0)
+      Me._summaryOutput.Multiline = True
+      Me._summaryOutput.Name = "_summaryOutput"
+      Me._summaryOutput.ScrollBars = System.Windows.Forms.ScrollBars.Both
+      Me._summaryOutput.Size = New System.Drawing.Size(456, 190)
+      Me._summaryOutput.TabIndex = 12
+      Me._summaryOutput.Text = ""
+      '
+      'ProgressTab
+      '
+      Me.ProgressTab.Controls.Add(Me._outputTextBox)
+      Me.ProgressTab.Location = New System.Drawing.Point(4, 22)
+      Me.ProgressTab.Name = "ProgressTab"
+      Me.ProgressTab.Size = New System.Drawing.Size(456, 190)
+      Me.ProgressTab.TabIndex = 0
+      Me.ProgressTab.Text = "Progress"
+      '
+      '_outputTextBox
+      '
+      Me._outputTextBox.Dock = System.Windows.Forms.DockStyle.Fill
+      Me._outputTextBox.Location = New System.Drawing.Point(0, 0)
+      Me._outputTextBox.Name = "_outputTextBox"
+      Me._outputTextBox.Size = New System.Drawing.Size(456, 190)
+      Me._outputTextBox.TabIndex = 10
+      '
+      'WarningsTab
+      '
+      Me.WarningsTab.Controls.Add(Me._warningsOutputTextBox)
+      Me.WarningsTab.Location = New System.Drawing.Point(4, 22)
+      Me.WarningsTab.Name = "WarningsTab"
+      Me.WarningsTab.Size = New System.Drawing.Size(456, 190)
+      Me.WarningsTab.TabIndex = 3
+      Me.WarningsTab.Text = "Warnings"
+      '
+      '_warningsOutputTextBox
+      '
+      Me._warningsOutputTextBox.Dock = System.Windows.Forms.DockStyle.Fill
+      Me._warningsOutputTextBox.Location = New System.Drawing.Point(0, 0)
+      Me._warningsOutputTextBox.Name = "_warningsOutputTextBox"
+      Me._warningsOutputTextBox.Size = New System.Drawing.Size(456, 190)
+      Me._warningsOutputTextBox.TabIndex = 11
+      '
+      'ErrorsTab
+      '
+      Me.ErrorsTab.Controls.Add(Me._errorsOutputTextBox)
+      Me.ErrorsTab.Location = New System.Drawing.Point(4, 22)
+      Me.ErrorsTab.Name = "ErrorsTab"
+      Me.ErrorsTab.Size = New System.Drawing.Size(456, 190)
+      Me.ErrorsTab.TabIndex = 2
+      Me.ErrorsTab.Text = "Errors"
+      '
+      '_errorsOutputTextBox
+      '
+      Me._errorsOutputTextBox.Dock = System.Windows.Forms.DockStyle.Fill
+      Me._errorsOutputTextBox.Location = New System.Drawing.Point(0, 0)
+      Me._errorsOutputTextBox.Name = "_errorsOutputTextBox"
+      Me._errorsOutputTextBox.Size = New System.Drawing.Size(456, 190)
+      Me._errorsOutputTextBox.TabIndex = 11
+      '
+      '_currentMessageStatus
+      '
+      Me._currentMessageStatus.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
+            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+      Me._currentMessageStatus.Location = New System.Drawing.Point(4, 24)
+      Me._currentMessageStatus.Name = "_currentMessageStatus"
+      Me._currentMessageStatus.Size = New System.Drawing.Size(372, 16)
+      Me._currentMessageStatus.TabIndex = 12
+      '
+      '_statusBar
+      '
+      Me._statusBar.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
+      Me._statusBar.Location = New System.Drawing.Point(8, 312)
+      Me._statusBar.Name = "_statusBar"
+      Me._statusBar.Size = New System.Drawing.Size(364, 20)
+      Me._statusBar.TabIndex = 13
+      Me._statusBar.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+      '
+      'ProgressForm
+      '
+      Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
+      Me.ClientSize = New System.Drawing.Size(468, 333)
+      Me.Controls.Add(Me._statusBar)
+      Me.Controls.Add(Me._currentMessageStatus)
+      Me.Controls.Add(Me._Tabs)
+      Me.Controls.Add(Me._saveOutputButton)
+      Me.Controls.Add(Me._overalProgressLabel)
+      Me.Controls.Add(Me._currentRecordLabel)
+      Me.Controls.Add(Me._progressBar)
+      Me.Controls.Add(Me._showDetailButton)
+      Me.Controls.Add(Me._stopImportButton)
+      Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
+      Me.Name = "ProgressForm"
+      Me.Text = "Import Progress..."
+      Me._Tabs.ResumeLayout(False)
+      Me.SummaryTab.ResumeLayout(False)
+      Me.ProgressTab.ResumeLayout(False)
+      Me.WarningsTab.ResumeLayout(False)
+      Me.ErrorsTab.ResumeLayout(False)
+      Me.ResumeLayout(False)
+
+    End Sub
+
+#End Region
+
+    Protected _processId As Guid
+    Protected WithEvents _processObserver As kCura.Windows.Process.ProcessObserver
+    Protected WithEvents _controller As kCura.Windows.Process.Controller
+    Private _inSafeMode As Boolean
+
+
+    Public Property ProcessID() As Guid
+      Get
+        Return _processId
+      End Get
+      Set(ByVal value As Guid)
+        _processId = value
+      End Set
+    End Property
+
+    Public Property ProcessObserver() As kCura.Windows.Process.ProcessObserver
+      Get
+        Return _processObserver
+      End Get
+      Set(ByVal value As kCura.Windows.Process.ProcessObserver)
+        _processObserver = value
+      End Set
+    End Property
+
+    Public Property ProcessController() As kCura.Windows.Process.Controller
+      Get
+        Return _controller
+      End Get
+      Set(ByVal value As kCura.Windows.Process.Controller)
+        _controller = value
+      End Set
+    End Property
+
+    Public Property InSafeMode() As Boolean
+      Get
+        Return _inSafeMode
+      End Get
+      Set(ByVal value As Boolean)
+        _inSafeMode = value
+        _outputTextBox.InSafeMode = Me.InSafeMode
+        _processObserver.InSafeMode = Me.InSafeMode
+      End Set
+    End Property
+
+    Private Sub _stopImportButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _stopImportButton.Click
+      Try
+        If _stopImportButton.Text = "Stop" Then
+          ProcessController.HaltProcess(_processId)
+          _stopImportButton.Enabled = False
+          '_application.CancelImport(_processId)
+        Else
+          '_application.deletethread(processID)
+          Me.Close()
+        End If
+      Catch
+      End Try
+    End Sub
+
+    Private Sub HideDetail()
+      _showDetailButton.Text = "Show Detail"
+      _outputTextBox.Visible = False
+      _saveOutputButton.Visible = False
+      _statusBar.Visible = False
+      Me.Height = 125
+    End Sub
+
+    Private Sub ShowDetail()
+      _showDetailButton.Text = "Hide Detail"
+      _outputTextBox.Visible = True
+      _outputTextBox.Refresh()
+      If Not _inSafeMode Then
+        _saveOutputButton.Visible = True
+      End If
+      _statusBar.Visible = True
+      Me.Height = 332
+    End Sub
+
+    Public Property StopImportButtonText() As String
+      Get
+        Return _stopImportButton.Text
+      End Get
+      Set(ByVal value As String)
+        _stopImportButton.Text = value
+      End Set
+    End Property
+
+    Private Sub _showDetailButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _showDetailButton.Click
+      Select Case _showDetailButton.Text
+        Case "Hide Detail"
+          Me.HideDetail()
+        Case "Show Detail"
+          Me.ShowDetail()
+      End Select
+    End Sub
+
+    Private Sub ImportProgressForm_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
+      Me.HideDetail()
+    End Sub
+
+    Private Sub _saveOutputButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _saveOutputButton.Click
+      _saveFileDialog.ShowDialog()
+    End Sub
+
+    Private Sub _saveFileDialog_FileOk(ByVal sender As System.Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles _saveFileDialog.FileOk
+      _processObserver.SaveOutputFile(_saveFileDialog.FileName)
+    End Sub
+
+#Region " Process Observer"
+
+    Private Sub _processObserver_OnProcessEvent(ByVal evt As kCura.Windows.Process.ProcessEvent) Handles _processObserver.OnProcessEvent
+      _currentRecordLabel.Text = evt.RecordInfo
+      _currentMessageStatus.Text = evt.Message
+      Select Case evt.Type
+        Case kCura.Windows.Process.ProcessEventTypeEnum.Status
+          _outputTextBox.WriteLine(evt.Message + " " + evt.RecordInfo)
+        Case kCura.Windows.Process.ProcessEventTypeEnum.Error
+          _errorsOutputTextBox.WriteLine(evt.Message)
+        Case kCura.Windows.Process.ProcessEventTypeEnum.Warning
+          _warningsOutputTextBox.WriteLine(evt.Message)
+      End Select
+    End Sub
+
+    Private Sub _processObserver_OnProcessProgressEvent(ByVal evt As kCura.Windows.Process.ProcessProgressEvent) Handles _processObserver.OnProcessProgressEvent
+
+      Dim stubDate As DateTime
+
+      _progressBar.Minimum = 0
+      _progressBar.Maximum = evt.TotalRecords
+      _progressBar.Value = evt.TotalRecordsProcessed
+      _overalProgressLabel.Text = evt.TotalRecordsProcessed.ToString + " of " + evt.TotalRecords.ToString + " processed"
+
+      _summaryOutput.Text = ""
+      WriteSummaryLine("Start Time: " + evt.StartTime.ToLongTimeString)
+      If evt.EndTime <> stubDate Then
+        WriteSummaryLine("Finish Time: " + evt.EndTime.ToLongTimeString)
+        WriteSummaryLine("Duration: " + (evt.EndTime.Subtract(evt.StartTime).ToString))
+      Else
+        Dim duration As TimeSpan = DateTime.Now.Subtract(evt.StartTime)
+        WriteSummaryLine("Duration: " + (duration.ToString))
+        WriteSummaryLine("")
+        If evt.TotalRecordsProcessed > 0 Then WriteSummaryLine("Time Left to Completion: " + New TimeSpan(CType(duration.Ticks / CType(evt.TotalRecordsProcessed, Double) * CType((evt.TotalRecords - evt.TotalRecordsProcessed), Double), Long)).ToString)
+      End If
+      WriteSummaryLine("")
+      WriteSummaryLine("Total Records: " + evt.TotalRecords.ToString)
+      WriteSummaryLine("Total Processed: " + evt.TotalRecordsProcessed.ToString)
+      WriteSummaryLine("Total Processed w/Warnings: " + evt.TotalRecordsProcessedWithWarnings.ToString)
+      If evt.TotalRecordsProcessedWithErrors > 0 Then
+        _summaryOutput.ForeColor = System.Drawing.Color.Red
+      End If
+      WriteSummaryLine("Total Processed w/Errors: " + evt.TotalRecordsProcessedWithErrors.ToString)
+      _summaryOutput.Refresh()
+
+    End Sub
+
+    Private Sub _processObserver_OnProcessComplete() Handles _processObserver.OnProcessComplete
+      _currentRecordLabel.Text = "All records have been processed"
+      _currentMessageStatus.Text = ""
+      _stopImportButton.Text = "Close"
+      _stopImportButton.Enabled = True
+      _saveOutputButton.Enabled = True
+    End Sub
+
+    Private Sub _processObserver_OnProcessFatalException(ByVal ex As System.Exception) Handles _processObserver.OnProcessFatalException
+      _outputTextBox.WriteLine(ex.ToString)
+      _errorsOutputTextBox.WriteLine(ex.ToString)
+      _currentRecordLabel.Text = "Fatal Exception Encountered"
+      '_stopImportButton.Text = "Stop"
+			_saveOutputButton.Enabled = True
+			_summaryOutput.ForeColor = System.Drawing.Color.Red
+			Me.ShowDetail()
+    End Sub
+
+#End Region
+
+    Private Sub WriteSummaryLine(ByVal what As String)
+      _summaryOutput.Text = _summaryOutput.Text + what + vbCrLf
+    End Sub
+
+    Private Sub _processObserver_StatusBarEvent(ByVal message As String) Handles _processObserver.StatusBarEvent
+      _statusBar.Text = message
+    End Sub
+  End Class
+
+End Namespace
