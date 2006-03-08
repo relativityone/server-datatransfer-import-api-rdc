@@ -106,11 +106,6 @@
                     Package = "{F184B08F-C81C-45F6-A57F-5ABD9991F28F}"
                 />
                 <Reference
-                    Name = "nunit.framework"
-                    AssemblyName = "nunit.framework"
-                    HintPath = "..\..\..\kCura\trunk\ReferenceDLLs\nunit.framework.dll"
-                />
-                <Reference
                     Name = "kCura.Windows.Process"
                     Project = "{B092D1B2-909B-4EF0-9369-A81675C3FC18}"
                     Package = "{F184B08F-C81C-45F6-A57F-5ABD9991F28F}"
@@ -129,6 +124,11 @@
                     Name = "NullableTypes"
                     AssemblyName = "NullableTypes"
                     HintPath = "..\..\Vendor\kCura\1.0.2131.20968\NullableTypes.dll"
+                />
+                <Reference
+                    Name = "nunit.framework"
+                    AssemblyName = "nunit.framework"
+                    HintPath = "..\..\Vendor\NUnit\2.2.0.0\nunit.framework.dll"
                 />
             </References>
             <Imports>
