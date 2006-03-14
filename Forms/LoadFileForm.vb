@@ -815,6 +815,8 @@ Namespace kCura.EDDS.WinForm
 			Dim selectedFieldNameList As New ArrayList
 			Dim selectedColumnNameList As New ArrayList
 			Dim item As LoadFileFieldMap.LoadFileFieldMapItem
+			_fieldMap.ClearAll()
+			_fileColumns.ClearAll()
 			For Each item In _loadFile.FieldMap
 				If _
 				 Not item.DocumentField Is Nothing AndAlso _
