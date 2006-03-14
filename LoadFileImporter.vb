@@ -17,7 +17,7 @@ Namespace kCura.WinEDDS.NUnit
 			Console.WriteLine("Begin [LoadFileImporter] [SetFieldValue] tests")
 			Dim record As New TestMethodRecord
 			Dim importer As New kCura.WinEDDS.LoadFileImporter(Helper.GetSampleLoadFileObjectIgnoreUploading, Nothing, 0, False)
-			Dim testFields As kCura.WinEDDS.DocumentField() = Helper.GetSampleSelectedFields()
+			Dim testFields As kCura.WinEDDS.DocumentField() = Helper.GetSampleSelectedFields.DocumentFields
 			Dim field As kCura.WinEDDS.DocumentField
 			record.TestDescription = "Generic Varchar - Correct"
 			field = testFields(Helper.FieldDescription.VarCharGeneric)

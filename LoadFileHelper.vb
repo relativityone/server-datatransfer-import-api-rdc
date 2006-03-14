@@ -297,20 +297,25 @@ Namespace kCura.WinEDDS.NUnit
 			Return dt
 		End Function
 
-		Public Function GetSampleSelectedFields() As kCura.WinEDDS.DocumentField()
-      Dim retval As kCura.WinEDDS.DocumentField() = { _
-       New kCura.WinEDDS.DocumentField("VarCharGeneric", 101, 0, 0, NullableInt32.Null, New NullableInt32(255)), _
-       New kCura.WinEDDS.DocumentField("VarCharIdentifier", 102, 0, 2, NullableInt32.Null, New NullableInt32(255)), _
-       New kCura.WinEDDS.DocumentField("TextGeneric", 103, 4, 0, NullableInt32.Null, NullableInt32.Null), _
-       New kCura.WinEDDS.DocumentField("TextFullText", 104, 4, 1, NullableInt32.Null, NullableInt32.Null), _
-       New kCura.WinEDDS.DocumentField("Integer", 105, 1, 0, NullableInt32.Null, NullableInt32.Null), _
-       New kCura.WinEDDS.DocumentField("Date", 106, 2, 0, NullableInt32.Null, NullableInt32.Null), _
-       New kCura.WinEDDS.DocumentField("Boolean", 107, 3, 0, NullableInt32.Null, NullableInt32.Null), _
-       New kCura.WinEDDS.DocumentField("Code", 108, 5, 0, New NullableInt32(1), NullableInt32.Null), _
-       New kCura.WinEDDS.DocumentField("Decimal", 109, 6, 0, NullableInt32.Null, NullableInt32.Null), _
-       New kCura.WinEDDS.DocumentField("Currency", 110, 7, 0, NullableInt32.Null, NullableInt32.Null), _
-       New kCura.WinEDDS.DocumentField("MultiCode", 111, 8, 0, New NullableInt32(3), NullableInt32.Null) _
-      }
+		Public Function GetSampleSelectedFields() As kCura.WinEDDS.LoadFileFieldMap
+			Dim docfields As kCura.WinEDDS.DocumentField() = { _
+			 New kCura.WinEDDS.DocumentField("VarCharGeneric", 101, 0, 0, NullableInt32.Null, New NullableInt32(255)), _
+			 New kCura.WinEDDS.DocumentField("VarCharIdentifier", 102, 0, 2, NullableInt32.Null, New NullableInt32(255)), _
+			 New kCura.WinEDDS.DocumentField("TextGeneric", 103, 4, 0, NullableInt32.Null, NullableInt32.Null), _
+			 New kCura.WinEDDS.DocumentField("TextFullText", 104, 4, 1, NullableInt32.Null, NullableInt32.Null), _
+			 New kCura.WinEDDS.DocumentField("Integer", 105, 1, 0, NullableInt32.Null, NullableInt32.Null), _
+			 New kCura.WinEDDS.DocumentField("Date", 106, 2, 0, NullableInt32.Null, NullableInt32.Null), _
+			 New kCura.WinEDDS.DocumentField("Boolean", 107, 3, 0, NullableInt32.Null, NullableInt32.Null), _
+			 New kCura.WinEDDS.DocumentField("Code", 108, 5, 0, New NullableInt32(1), NullableInt32.Null), _
+			 New kCura.WinEDDS.DocumentField("Decimal", 109, 6, 0, NullableInt32.Null, NullableInt32.Null), _
+			 New kCura.WinEDDS.DocumentField("Currency", 110, 7, 0, NullableInt32.Null, NullableInt32.Null), _
+			 New kCura.WinEDDS.DocumentField("MultiCode", 111, 8, 0, New NullableInt32(3), NullableInt32.Null) _
+			}
+			Dim retval As New kCura.WinEDDS.LoadFileFieldMap
+			Dim i As Int32
+			For i = 0 To docfields.Length - 1
+				retval.Add(New LoadFileFieldMap.LoadFileFieldMapItem(docfields(i), i))
+			Next
 			Return retval
 		End Function
 
@@ -355,8 +360,8 @@ Namespace kCura.WinEDDS.NUnit
 			retval.OverwriteDestination = False
 			retval.QuoteDelimiter = ChrW(254)
 			retval.RecordDelimiter = ChrW(20)
-			retval.SelectedFields = GetSampleSelectedFields()
-			retval.SelectedIdentifierField = retval.SelectedFields(1)
+			retval.FieldMap = GetSampleSelectedFields()
+			retval.SelectedIdentifierField = retval.FieldMap.DocumentFields(1)
 			Return retval
 		End Function
 	End Class
