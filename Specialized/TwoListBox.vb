@@ -292,6 +292,11 @@ Namespace kCura.Windows.Forms
 			End Set
 		End Property
 
+		Public Sub ClearAll()
+			_leftListBox.Items.Clear()
+			_rightListBox.Items.Clear()
+		End Sub
+
 		Public ReadOnly Property LeftListBoxItems() As System.Windows.Forms.ListBox.ObjectCollection
 			Get
 				Return _leftListBox.Items
