@@ -26,6 +26,7 @@ Namespace kCura.WinEDDS
 		Protected _timeZoneOffset As Int32
 		Protected _autoDetect As Boolean
 		Protected _uploadFiles As Boolean
+		Protected _fieldMap As LoadFileFieldMap
 
 		Public Property AllCodes() As kCura.Data.DataView
 			Get
@@ -52,9 +53,10 @@ Namespace kCura.WinEDDS
 		Public Sub New(ByVal args As LoadFile, ByVal timezoneoffset As Int32, ByVal autoDetect As Boolean)
 			MyBase.New(args.RecordDelimiter, args.QuoteDelimiter, args.NewlineDelimiter)
 			'columnsAreInitialized=false
-			_docFields = args.SelectedFields
+			_docFields = args.FieldMap.DocumentFields
 			_filePathColumn = args.NativeFilePathColumn
 			_firstLineContainsColumnNames = args.FirstLineContainsHeaders
+			_fieldMap = args.FieldMap
 
 			_documentManager = New kCura.WinEDDS.Service.DocumentManager(args.Credentials)
 			_uploadManager = New kCura.WinEDDS.Service.FileIO(args.Credentials)
@@ -154,6 +156,18 @@ Namespace kCura.WinEDDS
 		End Function
 
 #End Region
+		Public Sub SetFieldValue(ByVal field As DocumentField, ByVal values As String(), ByVal column As Int32)
+			Dim value As String
+			If column = -1 Then
+				value = String.Empty
+			Else
+				value = values(column)
+			End If
+			If field.FieldCategoryID = kCura.EDDS.Types.FieldCategory.FullText Then
+				value = value.Replace(NewlineProxy, Microsoft.VisualBasic.ControlChars.NewLine)
+			End If
+			SetFieldValue(field, value, column)
+		End Sub
 		Public Sub SetFieldValue(ByVal field As DocumentField, ByVal value As String, ByVal column As Int32)
 			SetFieldValue(field, value, column, False)
 		End Sub
@@ -174,14 +188,14 @@ Namespace kCura.WinEDDS
 					End If
 					field.Value = fieldValue
 				Case kCura.EDDS.Types.FieldTypeHelper.FieldType.MultiCode
-						If value = String.Empty Then
-							field.Value = String.Empty
-						Else
-							Dim codeValues As NullableTypes.NullableInt32() = GetMultiCode(value, column, field, forPreview)
-							Dim i As Int32
-							Dim newVal As String = String.Empty
-							Dim codeName As String
-							If codeValues.Length > 0 Then
+					If value = String.Empty Then
+						field.Value = String.Empty
+					Else
+						Dim codeValues As NullableTypes.NullableInt32() = GetMultiCode(value, column, field, forPreview)
+						Dim i As Int32
+						Dim newVal As String = String.Empty
+						Dim codeName As String
+						If codeValues.Length > 0 Then
 							newVal &= codeValues(0).ToString
 							If forPreview And newVal = "-1" Then
 								newVal = "[new code]"
@@ -196,12 +210,12 @@ Namespace kCura.WinEDDS
 								Next
 							End If
 						End If
-							field.Value = newVal
-						End If
+						field.Value = newVal
+					End If
 				Case kCura.EDDS.Types.FieldTypeHelper.FieldType.Varchar
-						field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(GetNullableFixedString(value, column, field.FieldLength.Value))
+					field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(GetNullableFixedString(value, column, field.FieldLength.Value))
 				Case Else				'FieldTypeHelper.FieldType.Text
-						field.Value = value
+					field.Value = value
 			End Select
 		End Sub
 

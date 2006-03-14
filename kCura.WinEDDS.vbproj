@@ -399,6 +399,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Types\LoadFileFieldMap.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Web References\kCura.EDDS.WebAPI.CaseManagerBase\CaseManager.disco"
                     BuildAction = "None"
                 />

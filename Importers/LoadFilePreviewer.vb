@@ -35,38 +35,59 @@ Namespace kCura.WinEDDS
 			End While
 			Return fieldArrays
 		End Function
-
 		Private Function CheckLine(ByVal values As String()) As DocumentField()
-			Dim docFields(_docFields.Length - 1) As DocumentField
-			Dim docField As DocumentField
-			Dim i As Int32 = 0
+			Dim mapItem As LoadFileFieldMap.LoadFileFieldMapItem
 			Dim lineContainsErrors As Boolean = False
-			'Dim fieldIDs(_docFields.Length - 1) As Int32
-			'Dim fieldValues(_docFields.Length - 1) As String
-			For Each docField In _docfields
-				docField.Value = ""
-			Next
-			For Each docField In _docFields
-				lineContainsErrors = lineContainsErrors Or SetFieldValueOrErrorMessage(docField, values(i), i)
-				i += 1
-				If values.Length - 1 < i Then
-					Exit For
+			Dim retval As New ArrayList
+			For Each mapItem In _fieldMap
+				If mapItem.NativeFileColumnIndex > -1 AndAlso Not mapItem.DocumentField Is Nothing Then
+					Dim docfield As New DocumentField(mapItem.DocumentField)
+					lineContainsErrors = lineContainsErrors Or SetFieldValueOrErrorMessage(docfield, values(mapItem.NativeFileColumnIndex), mapItem.NativeFileColumnIndex)
+					retval.Add(docfield)
 				End If
-			Next
-			For i = 0 To _docFields.Length - 1
-				docFields(i) = New DocumentField(_docFields(i))
-				docFields(i).Value = _docFields(i).Value
 			Next
 			If _errorsOnly Then
 				If lineContainsErrors Then
-					Return docFields
+					Return DirectCast(retval.ToArray(GetType(DocumentField)), DocumentField())
 				Else
 					Return Nothing
 				End If
 			Else
-				Return docFields
+				Return DirectCast(retval.ToArray(GetType(DocumentField)), DocumentField())
 			End If
 		End Function
+
+		'Private Function CheckLine(ByVal values As String()) As DocumentField()
+		'	Dim docFields(_docFields.Length - 1) As DocumentField
+		'	Dim docField As DocumentField
+		'	Dim i As Int32 = 0
+		'	Dim lineContainsErrors As Boolean = False
+		'	'Dim fieldIDs(_docFields.Length - 1) As Int32
+		'	'Dim fieldValues(_docFields.Length - 1) As String
+		'	For Each docField In _docfields
+		'		docField.Value = ""
+		'	Next
+		'	For Each docField In _docFields
+		'		lineContainsErrors = lineContainsErrors Or SetFieldValueOrErrorMessage(docField, values(i), i)
+		'		i += 1
+		'		If values.Length - 1 < i Then
+		'			Exit For
+		'		End If
+		'	Next
+		'	For i = 0 To _docFields.Length - 1
+		'		docFields(i) = New DocumentField(_docFields(i))
+		'		docFields(i).Value = _docFields(i).Value
+		'	Next
+		'	If _errorsOnly Then
+		'		If lineContainsErrors Then
+		'			Return docFields
+		'		Else
+		'			Return Nothing
+		'		End If
+		'	Else
+		'		Return docFields
+		'	End If
+		'End Function
 
 		Private Function SetFieldValueOrErrorMessage(ByVal field As DocumentField, ByVal value As String, ByVal column As Int32) As Boolean
 			Try

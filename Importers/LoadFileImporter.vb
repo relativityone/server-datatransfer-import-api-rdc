@@ -68,7 +68,7 @@ Namespace kCura.WinEDDS
 			_uploader = New kCura.WinEDDS.FileUploader(args.Credentials, _documentManager.GetDocumentDirectoryByCaseArtifactID(args.CaseInfo.ArtifactID) & "\")
 			_extractFullTextFromNative = args.ExtractFullTextFromNativeFile
 			_selectedIdentifier = args.SelectedIdentifierField
-			_docFieldCollection = New DocumentFieldCollection(args.SelectedFields)
+			_docFieldCollection = New DocumentFieldCollection(args.FieldMap.DocumentFields)
 			If autoDetect Then _parentFolderDTO = _foldermanager.Read(_folderID)
 			_processController = processController
 			_continue = True
@@ -85,7 +85,12 @@ Namespace kCura.WinEDDS
 			If Not _firstLineContainsColumnNames Then
 				Dim i As Int32
 				For i = 0 To columnNames.Length - 1
-					columnNames(i) = "Column " & (i + 1).ToString
+					columnNames(i) = "Column (" & (i + 1).ToString & ")"
+				Next
+			Else
+				Dim i As Int32
+				For i = 0 To columnNames.Length - 1
+					columnNames(i) &= String.Format(" ({0})", i + 1)
 				Next
 			End If
 			reader.Close()
@@ -146,7 +151,9 @@ Namespace kCura.WinEDDS
 				_recordCount -= 1
 				_offset = -1
 			End If
-			_filePathColumnIndex = Array.IndexOf(_columnHeaders, _filePathColumn)
+			Dim openParenIndex As Int32 = _filePathColumn.LastIndexOf("("c) + 1
+			Dim closeParenIndex As Int32 = _filePathColumn.LastIndexOf(")"c)
+			_filePathColumnIndex = Int32.Parse(_filePathColumn.Substring(openParenIndex, closeParenIndex - openParenIndex)) - 1
 			_timeKeeper = New TimeKeeper
 		End Sub
 
@@ -334,46 +341,71 @@ Namespace kCura.WinEDDS
 #Region "Field Preparation"
 
 		Private Function PrepareFieldCollectionAndExtractIdentityValue(ByVal fieldCollection As DocumentFieldCollection, ByVal values As String()) As String
-			Dim i As Int32 = 0
+			Dim item As LoadFileFieldMap.LoadFileFieldMapItem
 			Dim identityValue As String = String.Empty
-			Dim docField As DocumentField
-			If _firstTimeThrough Then
-				If _docFields.Length < values.Length Then
-					For i = _docfields.Length To values.Length - 1
-						WriteStatusLine(Windows.Process.EventType.Warning, String.Format("File column '{0}' will be unmapped", i + 1), 0)
-					Next
-				ElseIf _docfields.Length > values.Length Then
-					i = 0
-					For Each docField In _docfields
-						i += 1
-						If i > values.Length Then
-							WriteStatusLine(Windows.Process.EventType.Warning, String.Format("Field '{0}' will be unmapped", docField.FieldName), 0)
-						End If
-					Next
-				End If
-			End If
-			i = 0
-			For Each docField In _docFields
-				docField = New DocumentField(docField)
-				If values.Length - 1 < i Then
-					MyBase.SetFieldValue(docField, String.Empty, -1)
-				Else
-					If docField.FieldCategoryID = kCura.EDDS.Types.FieldCategory.FullText Then
-						MyBase.SetFieldValue(docField, values(i).Replace(NewlineProxy, Microsoft.VisualBasic.ControlChars.NewLine), i)
-					Else
-						MyBase.SetFieldValue(docField, values(i), i)
+			Dim docfield As DocumentField
+			For Each item In _fieldmap
+				If _firstTimeThrough Then
+					If item.DocumentField Is Nothing Then
+						WriteStatusLine(Windows.Process.EventType.Warning, String.Format("File column '{0}' will be unmapped", item.NativeFileColumnIndex + 1), 0)
 					End If
-					If docField.FieldCategoryID = kCura.EDDS.Types.FieldCategory.Identifier Then
-						If docField.FieldName = _selectedIdentifier.FieldName Then
-							identityValue = docField.Value
+					If item.NativeFileColumnIndex = -1 Then
+						WriteStatusLine(Windows.Process.EventType.Warning, String.Format("Field '{0}' will be unmapped", item.DocumentField.FieldName), 0)
+					End If
+				End If
+				If Not item.DocumentField Is Nothing Then
+					docfield = New DocumentField(item.DocumentField)
+					MyBase.SetFieldValue(docfield, values, item.NativeFileColumnIndex)
+					If docfield.FieldCategoryID = kCura.EDDS.Types.FieldCategory.Identifier Then
+						If docfield.FieldName = _selectedIdentifier.FieldName Then
+							identityValue = docfield.Value
 						End If
 					End If
 				End If
-				fieldCollection.Add(docField)
-				i += 1
+				fieldCollection.Add(docfield)
 			Next
 			_firstTimeThrough = False
 			Return identityValue
+			'Dim i As Int32 = 0
+			'Dim identityValue As String = String.Empty
+			'Dim docField As DocumentField
+			'If _firstTimeThrough Then
+			'	If _docFields.Length < values.Length Then
+			'		For i = _docfields.Length To values.Length - 1
+			'			WriteStatusLine(Windows.Process.EventType.Warning, String.Format("File column '{0}' will be unmapped", i + 1), 0)
+			'		Next
+			'	ElseIf _docfields.Length > values.Length Then
+			'		i = 0
+			'		For Each docField In _docfields
+			'			i += 1
+			'			If i > values.Length Then
+			'				WriteStatusLine(Windows.Process.EventType.Warning, String.Format("Field '{0}' will be unmapped", docField.FieldName), 0)
+			'			End If
+			'		Next
+			'	End If
+			'End If
+			'i = 0
+			'For Each docField In _docFields
+			'	docField = New DocumentField(docField)
+			'	If values.Length - 1 < i Then
+			'		MyBase.SetFieldValue(docField, String.Empty, -1)
+			'	Else
+			'		If docField.FieldCategoryID = kCura.EDDS.Types.FieldCategory.FullText Then
+			'			MyBase.SetFieldValue(docField, values(i).Replace(NewlineProxy, Microsoft.VisualBasic.ControlChars.NewLine), i)
+			'		Else
+			'			MyBase.SetFieldValue(docField, values(i), i)
+			'		End If
+			'		If docField.FieldCategoryID = kCura.EDDS.Types.FieldCategory.Identifier Then
+			'			If docField.FieldName = _selectedIdentifier.FieldName Then
+			'				identityValue = docField.Value
+			'			End If
+			'		End If
+			'	End If
+			'	fieldCollection.Add(docField)
+			'	i += 1
+			'Next
+			'_firstTimeThrough = False
+			'Return identityValue
 		End Function
 
 #End Region

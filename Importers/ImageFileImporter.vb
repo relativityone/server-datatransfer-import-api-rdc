@@ -15,7 +15,8 @@ Namespace kCura.WinEDDS
 		Private _selectedIdentifierField As String
 		Private _fileLineCount As Int32
 		Private _continue As Boolean
-    Private _overwriteOK As Boolean
+		Private _overwriteOK As Boolean
+		Private _replaceFullText As Boolean
 		Private _order As Int32
 		Private _csvwriter As System.Text.StringBuilder
 		Private _nextLine As String()
@@ -54,6 +55,7 @@ Namespace kCura.WinEDDS
 			_fileUploader = New kCura.WinEDDS.FileUploader(args.Credential, _docManager.GetDocumentDirectoryByCaseArtifactID(args.CaseInfo.ArtifactID) & "\")
 			_folderID = folderID
 			_overwrite = args.Overwrite
+			_replaceFullText = args.ReplaceFullText
 			_selectedIdentifierField = args.ControlKeyField
 			_processController = controller
 			_continue = True
@@ -118,9 +120,9 @@ Namespace kCura.WinEDDS
 				If _overwrite Then
 					GetImageForDocument(fileLocation, fileDTOs, fullTextBuilder)
 					retval = GetImagesForDocument(fileDTOs, fullTextBuilder)
-					fullTextFileGuid = _fileUploader.UploadTextAsFile(fullTextBuilder.ToString, _folderID, System.Guid.NewGuid.ToString)
+					If _replaceFullText Then fullTextFileGuid = _fileUploader.UploadTextAsFile(fullTextBuilder.ToString, _folderID, System.Guid.NewGuid.ToString)
 					_docManager.ClearImagesFromDocument(_folderID, currentDocID)
-					_docManager.AddFullTextToDocumentFromFile(_folderID, currentDocID, fullTextFileGuid)
+					If _replaceFullText Then _docManager.AddFullTextToDocumentFromFile(_folderID, currentDocID, fullTextFileGuid)
 					'Update Document
 				Else
 					Throw New OverwriteException
@@ -129,7 +131,11 @@ Namespace kCura.WinEDDS
 				'Create Document
 				GetImageForDocument(fileLocation, fileDTOs, fullTextBuilder)
 				retval = GetImagesForDocument(fileDTOs, fullTextBuilder)
-				fullTextFileGuid = _fileUploader.UploadTextAsFile(fullTextBuilder.ToString, _folderID, System.Guid.NewGuid.ToString)
+				If _replaceFullText Then
+					fullTextFileGuid = _fileUploader.UploadTextAsFile(fullTextBuilder.ToString, _folderID, System.Guid.NewGuid.ToString)
+				Else
+					fullTextFileGuid = _fileUploader.UploadTextAsFile(String.Empty, _folderID, System.Guid.NewGuid.ToString)
+				End If
 				currentDocID = CreateDocument(documentIdentifier, fullTextFileGuid)
 			End If
 			_fileManager.CreateImages(DirectCast(fileDTOs.ToArray(GetType(kCura.EDDS.WebAPI.FileManagerBase.FileInfoBase)), kCura.EDDS.WebAPI.FileManagerBase.FileInfoBase()), currentDocID, _folderID)
@@ -156,7 +162,7 @@ Namespace kCura.WinEDDS
 			file.FileGuid = _fileUploader.UploadFile(imageFileName, _folderID)
 			file.FileName = filename
 			fileDTOs.Add(file)
-			If System.IO.File.Exists(extractedTextFileName) Then
+			If _replaceFullText AndAlso System.IO.File.Exists(extractedTextFileName) Then
 				Dim sr As New System.IO.StreamReader(extractedTextFileName)
 				fullTextBuilder.Append(sr.ReadToEnd)
 				sr.Close()

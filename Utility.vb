@@ -20,17 +20,6 @@ Namespace kCura.WinEDDS
 			Return dt
 		End Function
 
-		Public Shared Function BuildSelectedFieldNameList(ByVal allFields As DocumentFieldCollection, ByVal selectedFields As DocumentField()) As String()
-			Dim al As New ArrayList
-			Dim field As DocumentField
-			For Each field In selectedFields
-				If allFields.Exists(field.FieldName) Then
-					al.Add(allFields.Item(field.FieldName).FieldName)
-				End If
-			Next
-			Return DirectCast(al.ToArray(GetType(String)), String())
-		End Function
-
 		Public Shared Function GetFieldNamesFromFieldArray(ByVal documentFields As DocumentField()) As String()
 			Dim i As Int32
 			Dim retval(documentFields.Length - 1) As String

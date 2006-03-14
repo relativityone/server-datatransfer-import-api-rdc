@@ -5,6 +5,7 @@ Namespace kCura.WinEDDS
 		Public FileName As String
 		Public Overwrite As Boolean
 		Public ControlKeyField As String
+		Public ReplaceFullText As Boolean
 		<NonSerialized()> Public Credential As Net.NetworkCredential
 		Public Sub New()
 			MyBase.New()

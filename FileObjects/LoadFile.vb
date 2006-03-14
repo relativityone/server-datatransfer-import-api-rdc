@@ -14,7 +14,8 @@ Namespace kCura.WinEDDS
 		Public NewlineDelimiter As Char
 		Public MultiRecordDelimiter As Char
 		Public OverwriteDestination As Boolean
-		Public SelectedFields() As kCura.WinEDDS.DocumentField
+		'Public SelectedFields() As kCura.WinEDDS.DocumentField
+		Public FieldMap As kCura.WinEDDS.LoadFileFieldMap
 		Public NativeFilePathColumn As String
 		Public SelectedIdentifierField As kCura.WinEDDS.DocumentField
 
@@ -27,6 +28,7 @@ Namespace kCura.WinEDDS
 			Me.NewlineDelimiter = Chr(174)
 			Me.MultiRecordDelimiter = Chr(59)
 			Me.FirstLineContainsHeaders = True
+			Me.FieldMap = New LoadFileFieldMap
 		End Sub
 
 		Public Sub GetObjectData(ByVal info As System.Runtime.Serialization.SerializationInfo, ByVal context As System.Runtime.Serialization.StreamingContext) Implements System.Runtime.Serialization.ISerializable.GetObjectData
@@ -40,7 +42,7 @@ Namespace kCura.WinEDDS
 			info.AddValue("NewlineDelimiter", AscW(Me.NewlineDelimiter), GetType(Integer))
 			info.AddValue("MultiRecordDelimiter", AscW(Me.MultiRecordDelimiter), GetType(Integer))
 			info.AddValue("OverwriteDestination", Me.OverwriteDestination, GetType(Boolean))
-			info.AddValue("SelectedFields", Me.SelectedFields, GetType(kCura.WinEDDS.DocumentField()))
+			info.AddValue("FieldMap", Me.FieldMap, GetType(kCura.WinEDDS.LoadFileFieldMap))
 			info.AddValue("NativeFilePathColumn", Me.NativeFilePathColumn, GetType(String))
 			info.AddValue("SelectedIdentifierField", Me.SelectedIdentifierField, GetType(kCura.WinEDDS.DocumentField))
 		End Sub
@@ -62,7 +64,8 @@ Namespace kCura.WinEDDS
 				Me.MultiRecordDelimiter = ChrW(info.GetInt32("MultiRecordDelimiter"))
 
 				Me.SelectedIdentifierField = DirectCast(info.GetValue("SelectedIdentifierField", GetType(kCura.WinEDDS.DocumentField)), kCura.WinEDDS.DocumentField)
-				Me.SelectedFields = DirectCast(info.GetValue("SelectedFields", GetType(kCura.WinEDDS.DocumentField())), kCura.WinEDDS.DocumentField())
+				'Me.SelectedFields = DirectCast(info.GetValue("SelectedFields", GetType(kCura.WinEDDS.DocumentField())), kCura.WinEDDS.DocumentField())
+				Me.FieldMap = DirectCast(info.GetValue("FieldMap", GetType(kCura.WinEDDS.LoadFileFieldMap)), LoadFileFieldMap)
 			End With
 		End Sub
 	End Class
