@@ -47,6 +47,7 @@ Namespace kCura.EDDS.WinForm
 		Friend WithEvents _saveImageLoadFileDialog As System.Windows.Forms.SaveFileDialog
 		Friend WithEvents _importMenuLoadSettingsItem As System.Windows.Forms.MenuItem
 		Friend WithEvents _loadImageLoadFileDialog As System.Windows.Forms.OpenFileDialog
+		Friend WithEvents _replaceFullText As System.Windows.Forms.CheckBox
 		<System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
 			Dim resources As System.Resources.ResourceManager = New System.Resources.ResourceManager(GetType(ImageLoad))
 			Me.GroupBox3 = New System.Windows.Forms.GroupBox
@@ -65,6 +66,7 @@ Namespace kCura.EDDS.WinForm
 			Me._controlKeyField = New System.Windows.Forms.ComboBox
 			Me._saveImageLoadFileDialog = New System.Windows.Forms.SaveFileDialog
 			Me._loadImageLoadFileDialog = New System.Windows.Forms.OpenFileDialog
+			Me._replaceFullText = New System.Windows.Forms.CheckBox
 			Me.GroupBox3.SuspendLayout()
 			Me.GroupBox233.SuspendLayout()
 			Me.GroupBox1.SuspendLayout()
@@ -104,6 +106,7 @@ Namespace kCura.EDDS.WinForm
 			'
 			'GroupBox233
 			'
+			Me.GroupBox233.Controls.Add(Me._replaceFullText)
 			Me.GroupBox233.Controls.Add(Me._overWrite)
 			Me.GroupBox233.Location = New System.Drawing.Point(292, 60)
 			Me.GroupBox233.Name = "GroupBox233"
@@ -180,10 +183,18 @@ Namespace kCura.EDDS.WinForm
 			'
 			Me._loadImageLoadFileDialog.Filter = "WinEDDS image load files (*.kwi)|*.kwi|All Files (*.*)|*.*"
 			'
+			'_replaceFullText
+			'
+			Me._replaceFullText.Location = New System.Drawing.Point(152, 16)
+			Me._replaceFullText.Name = "_replaceFullText"
+			Me._replaceFullText.Size = New System.Drawing.Size(120, 24)
+			Me._replaceFullText.TabIndex = 3
+			Me._replaceFullText.Text = "Replace Full Text"
+			'
 			'ImageLoad
 			'
 			Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
-			Me.ClientSize = New System.Drawing.Size(576, 117)
+			Me.ClientSize = New System.Drawing.Size(580, 145)
 			Me.Controls.Add(Me.GroupBox1)
 			Me.Controls.Add(Me.GroupBox233)
 			Me.Controls.Add(Me.GroupBox3)
@@ -218,6 +229,7 @@ Namespace kCura.EDDS.WinForm
 			Me.Cursor = Cursors.WaitCursor
 			ImageLoadFile.Overwrite = _overWrite.Checked
 			ImageLoadFile.DestinationFolderID = _application.SelectedCaseFolderID
+			Me.ImageLoadFile.ReplaceFullText = _replaceFullText.Checked
 			If _controlKeyField.SelectedItem Is Nothing Then
 				ImageLoadFile.ControlKeyField = Nothing
 			Else

@@ -27,6 +27,33 @@ Namespace kCura.EDDS.WinForm
 			Return docfields
 		End Function
 
+		Public Shared Function ExtractFieldMap(ByVal caseFields As kCura.Windows.Forms.TwoListBox, ByVal fileColumns As kCura.Windows.Forms.TwoListBox, ByVal docFieldList As DocumentFieldCollection) As LoadFileFieldMap
+			Dim selectedFields As System.Windows.Forms.ListBox.ObjectCollection = caseFields.RightListBoxItems
+			Dim selectedColumns As System.Windows.Forms.ListBox.ObjectCollection = fileColumns.LeftListBoxItems
+			Dim fieldMap As New kCura.winedds.LoadFileFieldMap
+			Dim docfield As DocumentField
+			Dim i As Int32
+			Dim columnIndex As Int32
+			Dim maxfields As Int32 = Math.Max(selectedFields.Count, selectedColumns.Count)
+			For i = 0 To maxfields - 1
+				If i >= selectedFields.Count Then
+					docfield = Nothing
+				Else
+					docfield = docFieldList.Item(CType(selectedFields(i), String))
+				End If
+				If i >= selectedColumns.Count Then
+					columnIndex = -1
+				Else
+					Dim columnname As String = CType(selectedColumns(i), String)
+					Dim openParenIndex As Int32 = columnname.LastIndexOf("("c) + 1
+					Dim closeParenIndex As Int32 = columnname.LastIndexOf(")"c)
+					columnIndex = Int32.Parse(columnname.Substring(openParenIndex, closeParenIndex - openParenIndex)) - 1
+				End If
+				fieldMap.Add(New LoadFileFieldMap.LoadFileFieldMapItem(docfield, columnIndex))
+			Next
+			Return fieldMap
+		End Function
+
 		Public Shared Function ExtractFieldNames(ByVal list As System.Windows.Forms.ListBox.ObjectCollection) As String()
 			Dim i As Int32 = 0
 			Dim names(list.Count - 1) As String
@@ -35,6 +62,7 @@ Namespace kCura.EDDS.WinForm
 			Next
 			Return names
 		End Function
+
 
 		Public Shared Sub ThrowExceptionToGUI(ByVal ex As Exception)
 			Dim frm As New kCura.EDDS.WinForm.ErrorForm(ex)
