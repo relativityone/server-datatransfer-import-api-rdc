@@ -10,6 +10,7 @@ Namespace kCura.WinEDDS
 		Private _selectedCaseInfo As kCura.EDDS.Types.CaseInfo
 		Public DocumentsExported As Int32
 		Public TotalDocuments As Int32
+		Private _downloadManager As FileDownloader
 
 		Private WithEvents _processController As kCura.Windows.Process.Controller
 		Private _continue As Boolean
@@ -104,6 +105,7 @@ Namespace kCura.WinEDDS
 			Me.DocumentsExported = 0
 			Me.TotalDocuments = 1
 			_continue = True
+			_downloadManager = New FileDownloader(cred, selectedCaseInfo.DocumentPath & "\EDDS" & selectedCaseInfo.ArtifactID, selectedCaseInfo.DownloadHandlerURL)
 		End Sub
 
 		Public Sub CreateVolumes()
@@ -165,9 +167,9 @@ Namespace kCura.WinEDDS
 							subdirectoryCount = 0
 						End If
 					End If
-					fileURI = String.Format("{0}Download.aspx?ArtifactID={1}&GUID={2}", Me.SelectedCaseInfo.DownloadHandlerURL, CType(dataTable.Rows(count)("ArtifactID"), Int32), CType(dataTable.Rows(count)("ImageGuid"), String))
+					'fileURI = String.Format("{0}Download.aspx?ArtifactID={1}&GUID={2}", Me.SelectedCaseInfo.DownloadHandlerURL, CType(dataTable.Rows(count)("ArtifactID"), Int32), CType(dataTable.Rows(count)("ImageGuid"), String))
 					fileName = String.Format("{0}{1}\{2}\{3}.tif", Me.FolderPath, currentVolume, currentDirectory, CType(dataTable.Rows(count)("BatesNumber"), String))
-					Me.ExportFile(fileName, fileURI, CType(dataTable.Rows(count)("BatesNumber"), String))
+					Me.ExportFile(fileName, CType(dataTable.Rows(count)("ImageGuid"), String), CType(dataTable.Rows(count)("ArtifactID"), Int32), CType(dataTable.Rows(count)("BatesNumber"), String))
 					volumeLog.Append(BuildVolumeLog(CType(dataTable.Rows(count)("BatesNumber"), String), currentVolume, fileName, (count = 0 OrElse CType(dataTable.Rows(count - 1)("DocumentID"), Int32) <> CType(dataTable.Rows(count)("DocumentID"), Int32))))
 				Catch ex As Exception
 					Me.WriteError(String.Format("Error occurred on document #{0} with message: {1}", count + 1, ex.Message))
@@ -184,18 +186,20 @@ Namespace kCura.WinEDDS
 			Return New kCura.WinEDDS.ExportEventArgs(Me.DocumentsExported, Me.TotalDocuments, line, eventType)
 		End Function
 
-		Private Sub ExportFile(ByVal fileName As String, ByVal fileURI As String, ByVal batesNumber As String)
+		Private Sub ExportFile(ByVal fileName As String, ByVal fileGuid As String, ByVal artifactID As Int32, ByVal batesNumber As String)		'ByVal fileURI As String, ByVal batesNumber As String)
 			If System.IO.File.Exists(fileName) Then
 				If Me.Overwrite Then
 					System.IO.File.Delete(fileName)
 					Me.WriteStatusLine(kCura.Windows.Process.EventType.Status, String.Format("Overwriting document {0}.tif.", batesNumber))
-					Me.WebClient.DownloadFile(fileURI, fileName)
+					_downloadManager.DownloadFile(fileName, fileGuid, artifactID)
+					'Me.WebClient.DownloadFile(fileURI, fileName)
 				Else
 					Me.WriteWarning(String.Format("{0}.tif already exists. Skipping file export.", batesNumber))
 				End If
 			Else
 				Me.WriteStatusLine(kCura.Windows.Process.EventType.Status, String.Format("Now exporting document {0}.tif.", batesNumber))
-				Me.WebClient.DownloadFile(fileURI, fileName)
+				_downloadManager.DownloadFile(fileName, fileGuid, artifactID)
+				'Me.WebClient.DownloadFile(fileURI, fileName)
 			End If
 			Me.DocumentsExported += 1
 			Me.WriteUpdate(String.Format("Finished exporting document {0}.tif.", batesNumber))

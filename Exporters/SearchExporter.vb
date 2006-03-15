@@ -3,7 +3,7 @@ Namespace kCura.WinEDDS
 	Public Class SearchExporter
 		Private _searchManager As kCura.WinEDDS.Service.SearchManager
 		Private _folderManager As kCura.WinEDDS.Service.FolderManager
-		Private _webClient As System.Net.WebClient
+		'Private _webClient As System.Net.WebClient
 		Private _exportFile As kCura.WinEDDS.ExportFile
 		Private _columns As System.Collections.ArrayList
 		Private _sourceDirectory As String
@@ -13,7 +13,7 @@ Namespace kCura.WinEDDS
 		Public FolderList As kCura.WinEDDS.FolderList
 		Private _fullTextDownloader As kCura.WinEDDS.FullTextManager
 		Private WithEvents _processController As kCura.Windows.Process.Controller
-
+		Private _downloadHandler As FileDownloader
 		Private _halt As Boolean
 
 #Region "Public Properties"
@@ -26,14 +26,14 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
-		Public Property WebClient() As System.Net.WebClient
-			Get
-				Return _webClient
-			End Get
-			Set(ByVal value As System.Net.WebClient)
-				_webClient = value
-			End Set
-		End Property
+		'Public Property WebClient() As System.Net.WebClient
+		'	Get
+		'		Return _webClient
+		'	End Get
+		'	Set(ByVal value As System.Net.WebClient)
+		'		_webClient = value
+		'	End Set
+		'End Property
 
 		Public Property Columns() As System.Collections.ArrayList
 			Get
@@ -78,8 +78,9 @@ Namespace kCura.WinEDDS
 			_searchManager = New kCura.WinEDDS.Service.SearchManager(exportFile.Credential)
 			_folderManager = New kCura.WinEDDS.Service.FolderManager(exportFile.Credential)
 			_documentManager = New kCura.WinEDDS.Service.DocumentManager(exportFile.Credential)
-			_webClient = New System.Net.WebClient
-			_webClient.Credentials = exportFile.Credential
+			'_webClient = New System.Net.WebClient
+			'_webClient.Credentials = exportFile.Credential
+			_downloadHandler = New FileDownloader(exportFile.Credential, exportFile.CaseInfo.DocumentPath & "\EDDS" & exportFile.CaseInfo.ArtifactID, exportFile.CaseInfo.DownloadHandlerURL)
 			_halt = False
 			_processController = processController
 			Me.DocumentsExported = 0
@@ -195,8 +196,9 @@ Namespace kCura.WinEDDS
 				Dim nativeRow As System.Data.DataRowView = GetNativeRow(natives, docIDs(i))
 				If Me.ExportFile.ExportNative AndAlso Not nativeRow Is Nothing Then
 					fileName = String.Format("{0}{1}{2}", Me.ExportFile.FolderPath, Me.FolderList.ItemByArtifactID(CType(docRows(i)("ParentArtifactID"), Int32)).SafePath, CType(nativeRow("Filename"), String))
-					Dim fileURI As String = String.Format("{0}Download.aspx?ArtifactID={1}&GUID={2}", Me.ExportFile.CaseInfo.DownloadHandlerURL, CType(docRows(i)("ArtifactID"), Int32), CType(nativeRow("Guid"), String))
-					Me.ExportNative(fileName, fileURI, fileName)
+					'Dim fileURI As String = String.Format("{0}Download.aspx?ArtifactID={1}&GUID={2}", Me.ExportFile.CaseInfo.DownloadHandlerURL, CType(docRows(i)("ArtifactID"), Int32), CType(nativeRow("Guid"), String))
+					Me.ExportNative(fileName, CType(nativeRow("Guid"), String), CType(docRows(i)("ArtifactID"), Int32), fileName)
+					'Me.ExportNative(fileName, fileURI, fileName)
 				End If
 				writer.Write(Me.LogFileEntry(docRows(i), fileName, fullTextFileGuid))
 				Me.DocumentsExported += 1
@@ -275,19 +277,21 @@ Namespace kCura.WinEDDS
 			Return documentIDs.ToString
 		End Function
 
-		Private Sub ExportNative(ByVal exportFileName As String, ByVal fileURI As String, ByVal systemFileName As String)
+		Private Sub ExportNative(ByVal exportFileName As String, ByVal fileGuid As String, ByVal artifactID As Int32, ByVal systemFileName As String) 'ByVal fileURI As String, ByVal systemFileName As String)
 			If Not Me.ExportFile.ExportNative Then Exit Sub
 			If System.IO.File.Exists(exportFileName) Then
 				If Me.ExportFile.Overwrite Then
 					System.IO.File.Delete(exportFileName)
 					Me.WriteStatusLine(kCura.Windows.Process.EventType.Status, String.Format("Overwriting document {0}.", systemFileName))
-					Me.WebClient.DownloadFile(fileURI, exportFileName)
+					_downloadHandler.DownloadFile(exportFileName, fileGuid, artifactID)
+					'Me.WebClient.DownloadFile(fileURI, exportFileName)
 				Else
 					Me.WriteWarning(String.Format("{0} already exists. Skipping file export.", systemFileName))
 				End If
 			Else
 				Me.WriteStatusLine(kCura.Windows.Process.EventType.Status, String.Format("Now exporting document {0}.", systemFileName))
-				Me.WebClient.DownloadFile(fileURI, exportFileName)
+				_downloadHandler.DownloadFile(exportFileName, fileGuid, artifactID)
+				'Me.WebClient.DownloadFile(fileURI, exportFileName)
 			End If
 			Me.WriteUpdate(String.Format("Finished exporting document {0}.", systemFileName))
 		End Sub

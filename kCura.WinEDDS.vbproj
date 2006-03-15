@@ -163,6 +163,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "FileDownloader.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "FileUploader.vb"
                     SubType = "Code"
                     BuildAction = "Compile"

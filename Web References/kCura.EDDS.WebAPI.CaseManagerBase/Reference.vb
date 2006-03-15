@@ -154,5 +154,8 @@ Namespace kCura.EDDS.WebAPI.CaseManagerBase
         
         '<remarks/>
         Public DownloadHandlerURL As String
+        
+        '<remarks/>
+        Public DocumentPath As String
     End Class
 End Namespace
