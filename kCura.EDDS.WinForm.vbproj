@@ -227,16 +227,6 @@
                     BuildAction = "EmbeddedResource"
                 />
                 <File
-                    RelPath = "Forms\HangingFieldsForm.vb"
-                    SubType = "Form"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Forms\HangingFieldsForm.resx"
-                    DependentUpon = "HangingFieldsForm.vb"
-                    BuildAction = "EmbeddedResource"
-                />
-                <File
                     RelPath = "Forms\ImageLoadForm.vb"
                     SubType = "Form"
                     BuildAction = "Compile"
