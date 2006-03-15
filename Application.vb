@@ -1,12 +1,12 @@
 Namespace kCura.EDDS.WinForm
-  Public Class Application
+	Public Class Application
 
 #Region "Singleton Methods"
 
-    Private Shared _instance As Application
+		Private Shared _instance As Application
 
-    Protected Sub New()
-      _processPool = New kCura.Windows.Process.ProcessPool
+		Protected Sub New()
+			_processPool = New kCura.Windows.Process.ProcessPool
 			Dim currentZone As System.TimeZone = System.TimeZone.CurrentTimeZone
 			_timeZoneOffset = currentZone.GetUtcOffset(DateTime.Now).Hours
 
@@ -31,7 +31,7 @@ Namespace kCura.EDDS.WinForm
 		Public Event OnEvent(ByVal appEvent As AppEvent)
 		Public Event ChangeCursor(ByVal cursorStyle As System.Windows.Forms.Cursor)
 
-    Private _processPool As kCura.Windows.Process.ProcessPool
+		Private _processPool As kCura.Windows.Process.ProcessPool
 		Private _selectedCaseInfo As kCura.EDDS.Types.CaseInfo
 		Private _selectedCaseFolderID As Int32
 		Private _credential As System.Net.NetworkCredential
@@ -93,7 +93,7 @@ Namespace kCura.EDDS.WinForm
 					Dim i As Int32
 					For i = 0 To fields.Length - 1
 						With fields(i)
-              _fields.Add(New DocumentField(.DisplayName, .ArtifactID, .FieldTypeID, .FieldCategoryID, .CodeArtifactTypeID, .MaxLength))
+							_fields.Add(New DocumentField(.DisplayName, .ArtifactID, .FieldTypeID, .FieldCategoryID, .CodeArtifactTypeID, .MaxLength))
 						End With
 					Next
 				End If
@@ -350,36 +350,36 @@ Namespace kCura.EDDS.WinForm
 			CursorDefault()
 		End Sub
 
-    Public Sub NewEnronImport(ByVal destinationArtifactID As Int32, ByVal caseInfo As kCura.EDDS.Types.CaseInfo)
-      CursorWait()
-      Dim frm As New ImportFileSystemForm
-      Dim importFileDirectorySettings As New importFileDirectorySettings
-      importFileDirectorySettings.EnronImport = True
-      importFileDirectorySettings.DestinationFolderID = destinationArtifactID
-      importFileDirectorySettings.CaseInfo = caseInfo
-      frm.ImportFileDirectorySettings = importFileDirectorySettings
-      frm.Show()
-      CursorDefault()
-    End Sub
+		Public Sub NewEnronImport(ByVal destinationArtifactID As Int32, ByVal caseInfo As kCura.EDDS.Types.CaseInfo)
+			CursorWait()
+			Dim frm As New ImportFileSystemForm
+			Dim importFileDirectorySettings As New importFileDirectorySettings
+			importFileDirectorySettings.EnronImport = True
+			importFileDirectorySettings.DestinationFolderID = destinationArtifactID
+			importFileDirectorySettings.CaseInfo = caseInfo
+			frm.ImportFileDirectorySettings = importFileDirectorySettings
+			frm.Show()
+			CursorDefault()
+		End Sub
 
-    Public Sub NewOptions()
-      CursorWait()
-      Dim frm As New OptionsForm
-      frm.Show()
-      CursorDefault()
-    End Sub
+		Public Sub NewOptions()
+			CursorWait()
+			Dim frm As New OptionsForm
+			frm.Show()
+			CursorDefault()
+		End Sub
 
-    Public Sub NewLogin()
-      CursorWait()
-      If Not _loginForm Is Nothing Then
-        If Not _loginForm.IsDisposed Then
-          _loginForm.Close()
-        End If
-      End If
-      _loginForm = New LoginForm
-      _loginForm.Show()
-      CursorDefault()
-    End Sub
+		Public Sub NewLogin()
+			CursorWait()
+			If Not _loginForm Is Nothing Then
+				If Not _loginForm.IsDisposed Then
+					_loginForm.Close()
+				End If
+			End If
+			_loginForm = New LoginForm
+			_loginForm.Show()
+			CursorDefault()
+		End Sub
 
 #End Region
 
@@ -393,6 +393,9 @@ Namespace kCura.EDDS.WinForm
 				frm.Text = "Preview Errors"
 			End If
 			frm.Show()
+			If Not CheckFieldMap(LoadFile) Then
+				frm.Close()
+			End If
 			CursorDefault()
 		End Sub
 
@@ -446,7 +449,7 @@ Namespace kCura.EDDS.WinForm
 
 		Public Function ImportDirectory(ByVal importFileDirectorySettings As ImportFileDirectorySettings) As Guid
 			CursorWait()
-      Dim frm As New kCura.Windows.Process.ProgressForm
+			Dim frm As New kCura.Windows.Process.ProgressForm
 			Dim importer As New kCura.WinEDDS.ImportFileDirectoryProcess(Credential)
 			importer.ImportFileDirectorySettings = importFileDirectorySettings
 			frm.ProcessObserver = importer.ProcessObserver
@@ -457,7 +460,7 @@ Namespace kCura.EDDS.WinForm
 
 		Public Function ImportGeneric(ByVal settings As Object) As Guid
 			CursorWait()
-      Dim frm As New kCura.Windows.Process.ProgressForm
+			Dim frm As New kCura.Windows.Process.ProgressForm
 			Dim importer As New kCura.WinEDDS.GenericImportProcess(New WinEDDSGateway)
 			importer.Settings = settings
 			frm.ProcessObserver = importer.ProcessObserver
@@ -468,7 +471,7 @@ Namespace kCura.EDDS.WinForm
 
 		Public Function ImportSQL(ByVal sqlimportsettings As SQLImportSettings) As Guid
 			CursorWait()
-      Dim frm As New kCura.Windows.Process.ProgressForm
+			Dim frm As New kCura.Windows.Process.ProgressForm
 			Dim imporProcess As New kCura.WinEDDS.SQLImportProcess
 			imporProcess.SQLImportSettings = sqlimportsettings
 			frm.ProcessObserver = imporProcess.ProcessObserver
@@ -482,17 +485,19 @@ Namespace kCura.EDDS.WinForm
 			CursorWait()
 			Dim folderManager As New kCura.WinEDDS.Service.FolderManager(Credential)
 			If folderManager.Exists(SelectedCaseFolderID, SelectedCaseInfo.RootFolderID) Then
-        Dim frm As New kCura.Windows.Process.ProgressForm
-				Dim importer As New kCura.WinEDDS.ImportLoadFileProcess
-				importer.LoadFile = loadFile
-				importer.TimeZoneOffset = _timeZoneOffset
-				frm.ProcessObserver = importer.ProcessObserver
-				frm.ProcessController = importer.ProcessController
-				frm.StopImportButtonText = "Stop"
-				frm.Show()
-				frm.ProcessID = _processPool.StartProcess(importer)
-				CursorDefault()
-				Return frm.ProcessID
+				If CheckFieldMap(loadFile) Then
+					Dim frm As New kCura.Windows.Process.ProgressForm
+					Dim importer As New kCura.WinEDDS.ImportLoadFileProcess
+					importer.LoadFile = loadFile
+					importer.TimeZoneOffset = _timeZoneOffset
+					frm.ProcessObserver = importer.ProcessObserver
+					frm.ProcessController = importer.ProcessController
+					frm.StopImportButtonText = "Stop"
+					frm.Show()
+					frm.ProcessID = _processPool.StartProcess(importer)
+					CursorDefault()
+					Return frm.ProcessID
+				End If
 			Else
 				CursorDefault()
 				MsgBox("Selected folder no longer exists.  Please reselect.")
@@ -501,7 +506,7 @@ Namespace kCura.EDDS.WinForm
 
 		Public Function ImportImageFile(ByVal ImageLoadFile As ImageLoadFile) As Guid
 			CursorWait()
-      Dim frm As New kCura.Windows.Process.ProgressForm
+			Dim frm As New kCura.Windows.Process.ProgressForm
 			Dim importer As New kCura.WinEDDS.ImportImageFileProcess
 			importer.ImageLoadFile = ImageLoadFile
 			frm.ProcessObserver = importer.ProcessObserver
@@ -513,7 +518,7 @@ Namespace kCura.EDDS.WinForm
 
 		Public Function StartProduction(ByVal exportFile As ExportFile) As Guid
 			CursorWait()
-      Dim frm As New kCura.Windows.Process.ProgressForm
+			Dim frm As New kCura.Windows.Process.ProgressForm
 			Dim exporter As New kCura.WinEDDS.ExportProductionProcess
 
 			exporter.ExportFile = exportFile
@@ -527,7 +532,7 @@ Namespace kCura.EDDS.WinForm
 
 		Public Function StartSearch(ByVal exportFile As ExportFile) As Guid
 			CursorWait()
-      Dim frm As New kCura.Windows.Process.ProgressForm
+			Dim frm As New kCura.Windows.Process.ProgressForm
 			Dim exporter As New kCura.WinEDDS.ExportSearchProcess
 
 			exporter.ExportFile = exportFile
@@ -661,6 +666,42 @@ Namespace kCura.EDDS.WinForm
 		Public Sub RefreshCaseFolders()
 			RaiseEvent OnEvent(New kCura.WinEDDS.LoadCaseEvent(SelectedCaseInfo))
 		End Sub
+
+		Public Function CheckFieldMap(ByVal loadFile As LoadFile) As Boolean
+			Dim unmapped As String()
+			Dim fmi As LoadFileFieldMap.LoadFileFieldMapItem
+			Dim fieldsNotColumnsMapped As Boolean
+			Dim values As New ArrayList
+			For Each fmi In loadFile.FieldMap
+				If fmi.DocumentField Is Nothing AndAlso fmi.NativeFileColumnIndex <> -1 Then
+					values.Add("Column " & fmi.NativeFileColumnIndex + 1)
+					fieldsNotColumnsMapped = False
+				ElseIf Not fmi.DocumentField Is Nothing AndAlso fmi.NativeFileColumnIndex = -1 Then
+					values.Add(fmi.DocumentField.FieldName)
+					fieldsNotColumnsMapped = True
+				End If
+			Next
+			If values.Count > 0 Then
+				unmapped = DirectCast(values.ToArray(GetType(String)), String())
+				Dim sb As New System.Text.StringBuilder
+				Dim nl As String = System.Environment.NewLine
+				If fieldsNotColumnsMapped Then
+					sb.Append("The following fields are unmapped:" & nl)
+				Else
+					sb.Append("The following file columns are unmapped:" & nl)
+				End If
+				Dim s As String
+				For Each s In unmapped
+					sb.Append(" - " & s & nl)
+				Next
+				sb.Append("Do you wish to continue?")
+				If MsgBox(sb.ToString, MsgBoxStyle.YesNo, "Warning") = MsgBoxResult.No Then
+					Return False
+				Else
+					Return True
+				End If
+			End If
+		End Function
 
 	End Class
 

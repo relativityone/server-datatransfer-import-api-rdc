@@ -32,37 +32,37 @@ Namespace kCura.EDDS.WinForm
     'Do not modify it using the code editor.
     Friend WithEvents _grid As System.Windows.Forms.DataGrid
     <System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
-      Dim resources As System.Resources.ResourceManager = New System.Resources.ResourceManager(GetType(LoadFilePreviewForm))
-      Me._grid = New System.Windows.Forms.DataGrid
-      CType(Me._grid, System.ComponentModel.ISupportInitialize).BeginInit()
-      Me.SuspendLayout()
-      '
-      '_grid
-      '
-      Me._grid.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
-      Me._grid.CaptionVisible = False
-      Me._grid.DataMember = ""
-      Me._grid.Dock = System.Windows.Forms.DockStyle.Fill
-      Me._grid.HeaderForeColor = System.Drawing.SystemColors.ControlText
-      Me._grid.Location = New System.Drawing.Point(0, 0)
-      Me._grid.Name = "_grid"
-      Me._grid.ReadOnly = True
-      Me._grid.RowHeadersVisible = False
-      Me._grid.Size = New System.Drawing.Size(720, 525)
-      Me._grid.TabIndex = 0
-      '
-      'LoadFilePreviewForm
-      '
-      Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
-      Me.ClientSize = New System.Drawing.Size(720, 525)
-      Me.Controls.Add(Me._grid)
-      Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
-      Me.Name = "LoadFilePreviewForm"
-      Me.Text = "Preview Load File..."
-      CType(Me._grid, System.ComponentModel.ISupportInitialize).EndInit()
-      Me.ResumeLayout(False)
+			Dim resources As System.Resources.ResourceManager = New System.Resources.ResourceManager(GetType(LoadFilePreviewForm))
+			Me._grid = New System.Windows.Forms.DataGrid
+			CType(Me._grid, System.ComponentModel.ISupportInitialize).BeginInit()
+			Me.SuspendLayout()
+			'
+			'_grid
+			'
+			Me._grid.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+			Me._grid.CaptionVisible = False
+			Me._grid.DataMember = ""
+			Me._grid.Dock = System.Windows.Forms.DockStyle.Fill
+			Me._grid.HeaderForeColor = System.Drawing.SystemColors.ControlText
+			Me._grid.Location = New System.Drawing.Point(0, 0)
+			Me._grid.Name = "_grid"
+			Me._grid.ReadOnly = True
+			Me._grid.RowHeadersVisible = False
+			Me._grid.Size = New System.Drawing.Size(728, 533)
+			Me._grid.TabIndex = 0
+			'
+			'LoadFilePreviewForm
+			'
+			Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
+			Me.ClientSize = New System.Drawing.Size(728, 533)
+			Me.Controls.Add(Me._grid)
+			Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
+			Me.Name = "LoadFilePreviewForm"
+			Me.Text = "Preview Load File..."
+			CType(Me._grid, System.ComponentModel.ISupportInitialize).EndInit()
+			Me.ResumeLayout(False)
 
-    End Sub
+		End Sub
 
 #End Region
 
