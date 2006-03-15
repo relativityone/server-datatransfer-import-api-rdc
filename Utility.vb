@@ -28,5 +28,19 @@ Namespace kCura.WinEDDS
 			Next
 			Return retval
 		End Function
+
+		Public Shared Function GetFilesystemSafeName(ByVal input As String) As String
+			Dim output As String = String.Copy(input)
+			output = output.Replace("/", " ")
+			output = output.Replace(":", " ")
+			output = output.Replace("?", " ")
+			output = output.Replace("*", " ")
+			output = output.Replace("<", " ")
+			output = output.Replace(">", " ")
+			output = output.Replace("|", " ")
+			output = output.Replace("\", " ")
+			output = output.Replace("""", " ")
+			Return output
+		End Function
 	End Class
 End Namespace

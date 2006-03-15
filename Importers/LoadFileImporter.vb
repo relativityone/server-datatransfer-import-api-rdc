@@ -151,9 +151,13 @@ Namespace kCura.WinEDDS
 				_recordCount -= 1
 				_offset = -1
 			End If
-			Dim openParenIndex As Int32 = _filePathColumn.LastIndexOf("("c) + 1
-			Dim closeParenIndex As Int32 = _filePathColumn.LastIndexOf(")"c)
-			_filePathColumnIndex = Int32.Parse(_filePathColumn.Substring(openParenIndex, closeParenIndex - openParenIndex)) - 1
+			If Not _filePathColumn Is Nothing Then
+				Dim openParenIndex As Int32 = _filePathColumn.LastIndexOf("("c) + 1
+				Dim closeParenIndex As Int32 = _filePathColumn.LastIndexOf(")"c)
+				_filePathColumnIndex = Int32.Parse(_filePathColumn.Substring(openParenIndex, closeParenIndex - openParenIndex)) - 1
+			Else
+				_filePathColumnIndex = -1
+			End If
 			_timeKeeper = New TimeKeeper
 		End Sub
 
@@ -361,8 +365,8 @@ Namespace kCura.WinEDDS
 							identityValue = docfield.Value
 						End If
 					End If
+					fieldCollection.Add(docfield)
 				End If
-				fieldCollection.Add(docfield)
 			Next
 			_firstTimeThrough = False
 			Return identityValue

@@ -11,12 +11,14 @@ Namespace kCura.WinEDDS
 
 		Public ReadOnly Property DocumentFields() As DocumentField()
 			Get
-				Dim retval(_al.Count - 1) As DocumentField
-				Dim i As Int32
-				For i = 0 To _al.Count - 1
-					retval(i) = DirectCast(_al(i), LoadFileFieldMapItem).DocumentField
+				Dim retval As New ArrayList
+				Dim it As LoadFileFieldMapItem
+				For Each it In _al
+					If Not it.DocumentField Is Nothing Then
+						retval.Add(it.DocumentField)
+					End If
 				Next
-				Return retval
+				Return DirectCast(retval.ToArray(GetType(DocumentField)), DocumentField())
 			End Get
 		End Property
 

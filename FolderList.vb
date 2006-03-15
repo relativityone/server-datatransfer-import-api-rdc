@@ -26,19 +26,19 @@ Namespace kCura.WinEDDS
 				End If
 			Next
 		End Function
-
 		Public Sub CreateFolders(ByVal path As String)
 			Dim order As Int32
 			Dim folderItem As kCura.WinEDDS.FolderList.FolderItem
-
+			path = Utility.GetFilesystemSafeName(path)
 			For order = 0 To _maxOrder
 				For Each folderItem In _folders
-					If folderItem.Order = order AndAlso Not System.IO.Directory.Exists(path + folderItem.Path) Then
-						System.IO.Directory.CreateDirectory(path + folderItem.Path)
+					If folderItem.Order = order AndAlso Not System.IO.Directory.Exists(path + folderItem.SafePath) Then
+						System.IO.Directory.CreateDirectory(path + folderItem.SafePath)
 					End If
 				Next
 			Next
 		End Sub
+
 
 		Public Sub New(ByVal folderTable As System.Data.DataTable)
 			Dim row As System.Data.DataRow
@@ -89,6 +89,14 @@ Namespace kCura.WinEDDS
 				Me.ArtifactID = artifactID
 				Me.ParentArtifactID = parentArtifactID
 			End Sub
+
+			Public ReadOnly Property SafePath() As String
+				Get
+					Dim retval As String = Utility.GetFilesystemSafeName(Me.Path)
+					retval = retval.TrimEnd(" "c)
+					Return retval & "\"
+				End Get
+			End Property
 		End Class
 	End Class
 End Namespace

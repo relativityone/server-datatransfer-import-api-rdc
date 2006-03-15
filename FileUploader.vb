@@ -22,39 +22,52 @@ Namespace kCura.WinEDDS
       _credentials = credentials
       _destinationFolderPath = destinationFolderPath
 			'Dim documentManager As kCura.EDDS.WebAPI.DocumentManagerBase.DocumentManager
-      Try
-        System.IO.File.Create(destinationFolderPath & "123").Close()
-        System.IO.File.Delete(destinationFolderPath & "123")
-        Me.UploaderType = Type.Direct
-      Catch ex As Exception
-        Me.UploaderType = Type.Web
-      End Try
-    End Sub
+			SetType(_destinationFolderPath)
+		End Sub
 
-    Public Property UploaderType() As Type
-      Get
-        Return _type
-      End Get
-      Set(ByVal value As Type)
+		Private Sub SetType(ByVal destinationFolderPath As String)
+			Try
+				System.IO.File.Create(destinationFolderPath & "123").Close()
+				System.IO.File.Delete(destinationFolderPath & "123")
+				Me.UploaderType = Type.Direct
+			Catch ex As Exception
+				Me.UploaderType = Type.Web
+			End Try
+		End Sub
+
+		Public Property DestinationFolderPath() As String
+			Get
+				Return _destinationFolderPath
+			End Get
+			Set(ByVal value As String)
+				_destinationFolderPath = value
+			End Set
+		End Property
+
+		Public Property UploaderType() As Type
+			Get
+				Return _type
+			End Get
+			Set(ByVal value As Type)
 				_type = value
 				RaiseEvent UploadModeChangeEvent(value.ToString)
-      End Set
-    End Property
+			End Set
+		End Property
 
-    Private ReadOnly Property Gateway() As kCura.WinEDDS.Service.FileIO
-      Get
-        Return _gateway
-      End Get
-    End Property
+		Private ReadOnly Property Gateway() As kCura.WinEDDS.Service.FileIO
+			Get
+				Return _gateway
+			End Get
+		End Property
 
-    Friend Class Settings
+		Friend Class Settings
 
-      Friend Shared ReadOnly Property ChunkSize() As Int32
-        Get
-          Return 1024000
-        End Get
-      End Property
-    End Class
+			Friend Shared ReadOnly Property ChunkSize() As Int32
+				Get
+					Return 1024000
+				End Get
+			End Property
+		End Class
 
 		Public Function UploadFile(ByVal filePath As String, ByVal contextArtifactID As Int32) As String
 			Return UploadFile(filePath, contextArtifactID, System.Guid.NewGuid.ToString)
