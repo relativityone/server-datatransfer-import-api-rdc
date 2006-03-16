@@ -312,7 +312,7 @@ Namespace kCura.EDDS.WinForm
 
 		Public Sub NewOutlookImport(ByVal destinationArtifactID As Int32, ByVal caseInfo As kCura.EDDS.Types.CaseInfo)
 			Dim importerAssembly As System.Reflection.Assembly
-			importerAssembly = System.Reflection.Assembly.LoadFrom("c:\sourcecode\edds\trunk\kCura.EDDS.Import.Outlook\bin\kCura.EDDS.Import.Outlook.dll")
+      importerAssembly = System.Reflection.Assembly.LoadFrom("c:\sourcecode\trunk\edds\kCura.EDDS.Import.Outlook\bin\kCura.EDDS.Import.Outlook.dll")
 			Dim hostImporterGateway As kCura.EDDS.Import.ImporterGatewayBase
 			hostImporterGateway = CType(importerAssembly.CreateInstance("kCura.EDDS.Import.Outlook.ImporterGateway"), kCura.EDDS.Import.ImporterGatewayBase)
 			Dim frm As Form = hostImporterGateway.GetSettingsForm(New Import.CaseInfo(caseInfo.ArtifactID, caseInfo.RootArtifactID), destinationArtifactID, New WinEDDSGateway)

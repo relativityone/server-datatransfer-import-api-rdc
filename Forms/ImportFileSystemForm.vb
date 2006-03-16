@@ -60,6 +60,9 @@ Namespace kCura.EDDS.WinForm
       Me.GroupBox1 = New System.Windows.Forms.GroupBox
       Me._importDestinationText = New System.Windows.Forms.TextBox
       Me.GroupBox20 = New System.Windows.Forms.GroupBox
+      Me.InventoryButton = New System.Windows.Forms.Button
+      Me.Label5 = New System.Windows.Forms.Label
+      Me.FileExtentionTextBox = New System.Windows.Forms.TextBox
       Me._browseButton = New System.Windows.Forms.Button
       Me._filePath = New System.Windows.Forms.TextBox
       Me.MainMenu = New System.Windows.Forms.MainMenu
@@ -78,9 +81,6 @@ Namespace kCura.EDDS.WinForm
       Me.Label3 = New System.Windows.Forms.Label
       Me._batesNumberSeed = New System.Windows.Forms.TextBox
       Me._batesNumberPrefix = New System.Windows.Forms.TextBox
-      Me.Label5 = New System.Windows.Forms.Label
-      Me.FileExtentionTextBox = New System.Windows.Forms.TextBox
-      Me.InventoryButton = New System.Windows.Forms.Button
       Me.GroupBox1.SuspendLayout()
       Me.GroupBox20.SuspendLayout()
       Me.GroupBox2.SuspendLayout()
@@ -121,6 +121,32 @@ Namespace kCura.EDDS.WinForm
       Me.GroupBox20.TabIndex = 9
       Me.GroupBox20.TabStop = False
       Me.GroupBox20.Text = "File Directory"
+      '
+      'InventoryButton
+      '
+      Me.InventoryButton.Location = New System.Drawing.Point(664, 16)
+      Me.InventoryButton.Name = "InventoryButton"
+      Me.InventoryButton.Size = New System.Drawing.Size(64, 52)
+      Me.InventoryButton.TabIndex = 7
+      Me.InventoryButton.Text = "Inventory Report"
+      '
+      'Label5
+      '
+      Me.Label5.Location = New System.Drawing.Point(8, 44)
+      Me.Label5.Name = "Label5"
+      Me.Label5.Size = New System.Drawing.Size(136, 20)
+      Me.Label5.TabIndex = 6
+      Me.Label5.Text = "File Extentions To Import:"
+      Me.Label5.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+      '
+      'FileExtentionTextBox
+      '
+      Me.FileExtentionTextBox.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+      Me.FileExtentionTextBox.Location = New System.Drawing.Point(148, 44)
+      Me.FileExtentionTextBox.Name = "FileExtentionTextBox"
+      Me.FileExtentionTextBox.Size = New System.Drawing.Size(508, 20)
+      Me.FileExtentionTextBox.TabIndex = 5
+      Me.FileExtentionTextBox.Text = "pdf;txt;doc;rtf;xls;ppt;doc;vsd"
       '
       '_browseButton
       '
@@ -276,32 +302,6 @@ Namespace kCura.EDDS.WinForm
       Me._batesNumberPrefix.TabIndex = 2
       Me._batesNumberPrefix.Text = "FS"
       '
-      'Label5
-      '
-      Me.Label5.Location = New System.Drawing.Point(8, 44)
-      Me.Label5.Name = "Label5"
-      Me.Label5.Size = New System.Drawing.Size(136, 20)
-      Me.Label5.TabIndex = 6
-      Me.Label5.Text = "File Extentions To Import:"
-      Me.Label5.TextAlign = System.Drawing.ContentAlignment.MiddleRight
-      '
-      'FileExtentionTextBox
-      '
-      Me.FileExtentionTextBox.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-      Me.FileExtentionTextBox.Location = New System.Drawing.Point(148, 44)
-      Me.FileExtentionTextBox.Name = "FileExtentionTextBox"
-      Me.FileExtentionTextBox.Size = New System.Drawing.Size(508, 20)
-      Me.FileExtentionTextBox.TabIndex = 5
-      Me.FileExtentionTextBox.Text = ".pdf;.txt;.doc;.rtf;.xls;.ppt;.doc;.vsd"
-      '
-      'InventoryButton
-      '
-      Me.InventoryButton.Location = New System.Drawing.Point(664, 16)
-      Me.InventoryButton.Name = "InventoryButton"
-      Me.InventoryButton.Size = New System.Drawing.Size(64, 52)
-      Me.InventoryButton.TabIndex = 7
-      Me.InventoryButton.Text = "Inventory Report"
-      '
       'ImportFileSystemForm
       '
       Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
@@ -349,6 +349,7 @@ Namespace kCura.EDDS.WinForm
 			ImportFileDirectorySettings.FieldMappings = fieldMappings
       ImportFileDirectorySettings.AttachFiles = _attachFiles.Checked
       ImportFileDirectorySettings.ExtractFullTextFromFile = _extractFullTextFromFile.Checked
+      ImportFileDirectorySettings.FileExtentionsToImport = FileExtentionTextBox.Text
 			_application.ImportDirectory(Me.ImportFileDirectorySettings)
 			Me.Cursor = Cursors.Default
 
@@ -426,6 +427,10 @@ Namespace kCura.EDDS.WinForm
         _extractFullTextFromFile.Checked = False
         _extractFullTextFromFile.Visible = False
       End If
+    End Sub
+
+    Private Sub FileExtentionTextBox_TextChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles FileExtentionTextBox.TextChanged
+
     End Sub
   End Class
 End Namespace
