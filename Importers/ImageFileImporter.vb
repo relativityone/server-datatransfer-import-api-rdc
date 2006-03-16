@@ -163,11 +163,22 @@ Namespace kCura.WinEDDS
 			file.FileName = filename
 			fileDTOs.Add(file)
 			If _replaceFullText AndAlso System.IO.File.Exists(extractedTextFileName) Then
-				Dim sr As New System.IO.StreamReader(extractedTextFileName)
+				'Dim sr As New System.IO.FileStream(extractedTextFileName, FileMode.Open)
+				'Dim b As Int32 = sr.ReadByte
+				'While Not b = -1
+				'	If b = 160 Then
+				'		b = 32
+				'	End If
+				'	fullTextBuilder.Append(ChrW(b))
+				'	b = sr.ReadByte
+				'End While
+				'sr.Close()
+				Dim sr As New System.IO.StreamReader(extractedTextFileName, System.Text.Encoding.Default, True)
 				fullTextBuilder.Append(sr.ReadToEnd)
 				sr.Close()
+
 			Else
-				RaiseStatusEvent(kCura.Windows.Process.EventType.Warning, String.Format("File '{0}' not found.  No text updated.", extractedTextFileName))
+					RaiseStatusEvent(kCura.Windows.Process.EventType.Warning, String.Format("File '{0}' not found.  No text updated.", extractedTextFileName))
 			End If
 		End Sub
 
