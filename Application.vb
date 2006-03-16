@@ -490,6 +490,7 @@ Namespace kCura.EDDS.WinForm
 					Dim importer As New kCura.WinEDDS.ImportLoadFileProcess
 					importer.LoadFile = loadFile
 					importer.TimeZoneOffset = _timeZoneOffset
+					SetWorkingDirectory(loadFile.FilePath)
 					frm.ProcessObserver = importer.ProcessObserver
 					frm.ProcessController = importer.ProcessController
 					frm.StopImportButtonText = "Stop"
@@ -509,6 +510,7 @@ Namespace kCura.EDDS.WinForm
 			Dim frm As New kCura.Windows.Process.ProgressForm
 			Dim importer As New kCura.WinEDDS.ImportImageFileProcess
 			importer.ImageLoadFile = ImageLoadFile
+			SetWorkingDirectory(ImageLoadFile.FileName)
 			frm.ProcessObserver = importer.ProcessObserver
 			frm.ProcessController = importer.ProcessController
 			frm.Show()
@@ -700,9 +702,21 @@ Namespace kCura.EDDS.WinForm
 				Else
 					Return True
 				End If
+			Else
+				Return True
 			End If
+
 		End Function
 
+		Private Sub SetWorkingDirectory(ByVal filePath As String)
+			Dim directory As String
+			If Not filePath.LastIndexOf("\") = filePath.Length - 1 Then
+				directory = filePath.Substring(0, filePath.LastIndexOf("\") + 1)
+			Else
+				directory = String.Copy(filePath)
+			End If
+			System.IO.Directory.SetCurrentDirectory(directory)
+		End Sub
 	End Class
 
 End Namespace
