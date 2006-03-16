@@ -128,10 +128,10 @@ Namespace kCura.WinEDDS
 			'If Me.ExportFile.ExportFullText Then fullTextFiles = _searchManager.RetrieveFullTextFilesForSearch(Me.ExportFile.ArtifactID, GetDocumentsString(documentTable)).Tables(0)
 			_sourceDirectory = _documentManager.GetDocumentDirectoryByContextArtifactID(Me.ExportFile.ArtifactID)
 			_fullTextDownloader = New kCura.WinEDDS.FullTextManager(Me.ExportFile.Credential, _sourceDirectory)
-			If Not System.IO.Directory.Exists(Me.ExportFile.FolderPath & Me.FolderList.BaseFolder.SafePath) Then
-				System.IO.Directory.CreateDirectory(Me.ExportFile.FolderPath & Me.FolderList.BaseFolder.SafePath)
+			If Not System.IO.Directory.Exists(Me.ExportFile.FolderPath & Me.FolderList.BaseFolder.Path) Then
+				System.IO.Directory.CreateDirectory(Me.ExportFile.FolderPath & Me.FolderList.BaseFolder.Path)
 			End If
-			volumeFile = String.Format("{0}{1}export.log", Me.ExportFile.FolderPath, Me.FolderList.BaseFolder.SafePath)
+			volumeFile = String.Format("{0}{1}export.log", Me.ExportFile.FolderPath, Me.FolderList.BaseFolder.Path)
 			If System.IO.File.Exists(volumeFile) Then
 				Me.WriteWarning(String.Format("Search log file '{0}' already exists, overwriting file.", volumeFile))
 				System.IO.File.Delete(volumeFile)
@@ -195,7 +195,7 @@ Namespace kCura.WinEDDS
 				Dim fileName As String = String.Empty
 				Dim nativeRow As System.Data.DataRowView = GetNativeRow(natives, docIDs(i))
 				If Me.ExportFile.ExportNative AndAlso Not nativeRow Is Nothing Then
-					fileName = String.Format("{0}{1}{2}", Me.ExportFile.FolderPath, Me.FolderList.ItemByArtifactID(CType(docRows(i)("ParentArtifactID"), Int32)).SafePath, CType(nativeRow("Filename"), String))
+					fileName = String.Format("{0}{1}{2}", Me.ExportFile.FolderPath, Me.FolderList.ItemByArtifactID(CType(docRows(i)("ParentArtifactID"), Int32)).Path, CType(nativeRow("Filename"), String))
 					'Dim fileURI As String = String.Format("{0}Download.aspx?ArtifactID={1}&GUID={2}", Me.ExportFile.CaseInfo.DownloadHandlerURL, CType(docRows(i)("ArtifactID"), Int32), CType(nativeRow("Guid"), String))
 					Me.ExportNative(fileName, CType(nativeRow("Guid"), String), CType(docRows(i)("ArtifactID"), Int32), fileName)
 					'Me.ExportNative(fileName, fileURI, fileName)

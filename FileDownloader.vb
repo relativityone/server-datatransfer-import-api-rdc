@@ -90,6 +90,12 @@ Namespace kCura.WinEDDS
 				Me.UploaderType = Type.Direct
 				Dim remoteFilePath As String = _destinationFolderPath & remoteFileGuid
 				Try
+					If localFilePath.IndexOf("\") <> -1 Then
+						Dim dir As String = localFilePath.Substring(0, localFilePath.LastIndexOf("\") + 1)
+						If Not System.IO.Directory.Exists(dir) Then
+							System.IO.Directory.CreateDirectory(dir)
+						End If
+					End If
 					System.IO.File.Copy(remoteFilePath, localFilePath)
 					Return True
 				Catch ex As Exception

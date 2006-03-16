@@ -32,8 +32,8 @@ Namespace kCura.WinEDDS
 			path = Utility.GetFilesystemSafeName(path)
 			For order = 0 To _maxOrder
 				For Each folderItem In _folders
-					If folderItem.Order = order AndAlso Not System.IO.Directory.Exists(path + folderItem.SafePath) Then
-						System.IO.Directory.CreateDirectory(path + folderItem.SafePath)
+					If folderItem.Order = order AndAlso Not System.IO.Directory.Exists(path + folderItem.Path) Then
+						System.IO.Directory.CreateDirectory(path + folderItem.Path)
 					End If
 				Next
 			Next
@@ -55,7 +55,7 @@ Namespace kCura.WinEDDS
 			Next
 			For Each folderItem In _folders
 				If folderItem.ParentArtifactID = 0 Then
-					folderItem.Path = folderItem.Name + "\"
+					folderItem.Path = Utility.GetFilesystemSafeName(folderItem.Name) + "\"
 					folderItem.Order = 0
 					PathFolderItems(folderItem)
 				End If
@@ -67,7 +67,7 @@ Namespace kCura.WinEDDS
 
 			For Each folderItem In _folders
 				If folderItem.ParentArtifactID = parentFolderItem.ArtifactID Then
-					folderItem.Path = parentFolderItem.Path + folderItem.Name + "\"
+					folderItem.Path = parentFolderItem.Path + Utility.GetFilesystemSafeName(folderItem.Name) + "\"
 					folderItem.Order = parentFolderItem.Order + 1
 					If folderItem.Order > _maxOrder Then
 						_maxOrder = folderItem.Order
@@ -90,13 +90,13 @@ Namespace kCura.WinEDDS
 				Me.ParentArtifactID = parentArtifactID
 			End Sub
 
-			Public ReadOnly Property SafePath() As String
-				Get
-					Dim retval As String = Utility.GetFilesystemSafeName(Me.Path)
-					retval = retval.TrimEnd(" "c)
-					Return retval & "\"
-				End Get
-			End Property
+			'Public ReadOnly Property SafePath() As String
+			'	Get
+			'		Dim retval As String = Utility.GetFilesystemSafeName(Me.Path)
+			'		retval = retval.TrimEnd(" "c)
+			'		Return retval & "\"
+			'	End Get
+			'End Property
 		End Class
 	End Class
 End Namespace
