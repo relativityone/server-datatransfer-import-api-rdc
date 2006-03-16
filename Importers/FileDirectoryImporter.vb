@@ -18,7 +18,8 @@ Namespace kCura.WinEDDS
 		Private _documentManager As kCura.WinEDDS.Service.DocumentManager
 		Private _fileManager As kCura.WinEDDS.Service.FileManager
 		Private _credential As Net.NetworkCredential
-		Private _currentBatesNumber As Integer
+    Private _currentBatesNumber As Integer
+    Private _fileExtentionsToImport As System.Collections.ArrayList
 
 		Public Overrides Sub Import()
 
@@ -31,6 +32,9 @@ Namespace kCura.WinEDDS
 			' get case fields
 			Dim fieldManager As New kCura.WinEDDS.Service.FieldQuery(_credential)
 			_caseFields = fieldManager.RetrieveAllAsArray(_importFileDirectorySettings.CaseInfo.RootArtifactID)
+
+      ' get valid extentiosn
+      _fileExtentionsToImport = New System.Collections.ArrayList(_importFileDirectorySettings.FileExtentionsToImport.ToUpper.Split(CType(";", Char)))
 
 			' identify the rootfolder ACL and add it to the fodler hash map
 			_rootFolderACLID = _folderManager.Read(_importFileDirectorySettings.DestinationFolderID).AccessControlListID
@@ -64,8 +68,8 @@ Namespace kCura.WinEDDS
 
 		Private Sub _recursiveFileProcessor_OnProcessFile(ByVal evt As kCura.Utility.OnProcessFileEvent) Handles _recursiveFileProcessor.OnProcessFile
 			Me.TotalRecordsProcessed = Me.TotalRecordsProcessed + 1
-			Me.ReportStatus(evt.FileName, "Begin Import")
-			CreateDocumentRecord(evt.FileName)
+      Me.ReportStatus(evt.FileName, "Begin Import")
+      CreateDocumentRecord(evt.FileName)
 			Me.ReportStatus(evt.FileName, "End Import")
 			Me.ReportProgress()
 		End Sub
@@ -99,6 +103,12 @@ Namespace kCura.WinEDDS
       End If
 
       Dim fileInfo As New System.IO.FileInfo(filePath)
+
+      If Not _fileExtentionsToImport.Contains(fileInfo.Extension.ToUpper) Then
+        Me.ReportWarning(filePath, "File Skipped")
+        Exit Sub
+      End If
+
       Dim parentFolderID As Int32 = CType(_folders.Item(fileInfo.Directory.FullName), Folder).FolderID
 
       Dim documentDTO As New kCura.EDDS.WebAPI.DocumentManagerBase.Document

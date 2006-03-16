@@ -9,6 +9,7 @@ Namespace kCura.WinEDDS
     Public AttachFiles As Boolean
     Public ExtractFullTextFromFile As Boolean
     Public EnronImport As Boolean
+    Public FileExtentionsToImport As String
 
 		Public Class FieldMap
 			Public FileField As String
