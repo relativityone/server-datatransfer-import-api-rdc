@@ -202,6 +202,7 @@ Namespace kCura.WinEDDS
 				End If
 				writer.Write(Me.LogFileEntry(docRows(i), fileName, fullTextFileGuid))
 				Me.DocumentsExported += 1
+				Me.WriteUpdate("Exported document " & i + 1)
 				If _halt Then Exit Sub
 			Next
 		End Sub
