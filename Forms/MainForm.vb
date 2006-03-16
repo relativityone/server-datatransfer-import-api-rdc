@@ -53,6 +53,8 @@ Namespace kCura.EDDS.WinForm
 		Friend WithEvents ToolsExportProductionMenu As System.Windows.Forms.MenuItem
 		Friend WithEvents ToolsExportSearchMenu As System.Windows.Forms.MenuItem
 		Friend WithEvents _fileMenuRefresh As System.Windows.Forms.MenuItem
+		Friend WithEvents MenuItem4 As System.Windows.Forms.MenuItem
+		Friend WithEvents _aboutMenuItem As System.Windows.Forms.MenuItem
 		<System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
 			Me.components = New System.ComponentModel.Container
 			Dim resources As System.Resources.ResourceManager = New System.Resources.ResourceManager(GetType(MainForm))
@@ -79,13 +81,15 @@ Namespace kCura.EDDS.WinForm
 			Me.LoggedInUserPanel = New System.Windows.Forms.StatusBarPanel
 			Me._caseFolderExplorer = New kCura.EDDS.WinForm.CaseFolderExplorer
 			Me.EnhancedMenuProvider = New kCura.Windows.Forms.EnhancedMenuProvider(Me.components)
+			Me.MenuItem4 = New System.Windows.Forms.MenuItem
+			Me._aboutMenuItem = New System.Windows.Forms.MenuItem
 			CType(Me.AppStatusPanel, System.ComponentModel.ISupportInitialize).BeginInit()
 			CType(Me.LoggedInUserPanel, System.ComponentModel.ISupportInitialize).BeginInit()
 			Me.SuspendLayout()
 			'
 			'MainMenu
 			'
-			Me.MainMenu.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.MenuItem1, Me.MenuItem2, Me._toolsMenu})
+			Me.MainMenu.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.MenuItem1, Me.MenuItem2, Me._toolsMenu, Me.MenuItem4})
 			'
 			'MenuItem1
 			'
@@ -243,6 +247,19 @@ Namespace kCura.EDDS.WinForm
 			Me._caseFolderExplorer.Size = New System.Drawing.Size(332, 515)
 			Me._caseFolderExplorer.TabIndex = 6
 			'
+			'MenuItem4
+			'
+			Me.EnhancedMenuProvider.SetImageIndex(Me.MenuItem4, -1)
+			Me.MenuItem4.Index = 3
+			Me.MenuItem4.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me._aboutMenuItem})
+			Me.MenuItem4.Text = "Help"
+			'
+			'_aboutMenuItem
+			'
+			Me.EnhancedMenuProvider.SetImageIndex(Me._aboutMenuItem, -1)
+			Me._aboutMenuItem.Index = 0
+			Me._aboutMenuItem.Text = "About"
+			'
 			'MainForm
 			'
 			Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
@@ -270,6 +287,8 @@ Namespace kCura.EDDS.WinForm
 		Private Sub ExitMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ExitMenu.Click
 			_application.ExitApplication()
 		End Sub
+
+
 
 		Private Sub _application_OnEvent(ByVal appEvent As AppEvent) Handles _application.OnEvent
 			Select Case appEvent.EventType
@@ -363,6 +382,15 @@ Namespace kCura.EDDS.WinForm
 			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
 			_application.RefreshCaseFolders()
 			Me.Cursor = System.Windows.Forms.Cursors.Default
+		End Sub
+
+		Private Sub _aboutMenuItem_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles _aboutMenuItem.Click
+			Dim sb As New System.Text.StringBuilder
+			Dim nl As String = System.Environment.NewLine & System.Environment.NewLine
+			sb.Append("   WinEDDS Document Upload Tool" & nl)
+			sb.Append("         Version " & System.Reflection.Assembly.GetExecutingAssembly.FullName.Split(","c)(1).Split("="c)(1) & nl)
+			sb.Append("Copyright © " & System.DateTime.Now.Year & " kCura Corporation")
+			MsgBox(sb.ToString, MsgBoxStyle.OKOnly, "About WinEDDS")
 		End Sub
 	End Class
 

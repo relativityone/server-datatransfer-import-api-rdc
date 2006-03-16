@@ -676,9 +676,16 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 		Private Sub OpenFileDialog_FileOk(ByVal sender As Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles OpenFileDialog.FileOk
-			_filePath.Text = OpenFileDialog.FileName
-			PopulateLoadFileObject()
-			RefreshNativeFilePathFieldAndFileColumnHeaders()
+			Dim oldfilepath As String
+			Try
+				oldfilepath = _filePath.Text
+				_filePath.Text = OpenFileDialog.FileName
+				PopulateLoadFileObject()
+				RefreshNativeFilePathFieldAndFileColumnHeaders()
+			Catch ex As System.IO.IOException
+				MsgBox(ex.Message & Environment.NewLine & "Please close any application that might have a hold on the file before proceeding.", MsgBoxStyle.Exclamation)
+				_filePath.Text = oldfilepath
+			End Try
 		End Sub
 
 		Private Sub _filePath_TextChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _filePath.TextChanged
