@@ -176,9 +176,10 @@ Namespace kCura.WinEDDS
 				Dim sr As New System.IO.StreamReader(extractedTextFileName, System.Text.Encoding.Default, True)
 				fullTextBuilder.Append(sr.ReadToEnd)
 				sr.Close()
-
 			Else
+				If Not _replaceFullText Then
 					RaiseStatusEvent(kCura.Windows.Process.EventType.Warning, String.Format("File '{0}' not found.  No text updated.", extractedTextFileName))
+				End If
 			End If
 		End Sub
 
@@ -187,9 +188,9 @@ Namespace kCura.WinEDDS
 			Dim encoder As New System.Text.ASCIIEncoding
 			Try
 				Return _docManager.CreateEmptyDocument(_folderID, encoder.GetBytes(identifier), fullTextFileName, _selectedIdentifierField)
-      Catch ex As Exception
-        Throw New CreateDocumentException(ex)
-      End Try
+			Catch ex As Exception
+				Throw New CreateDocumentException(ex)
+			End Try
 		End Function
 
 #Region "Events and Event Handling"
@@ -216,10 +217,10 @@ Namespace kCura.WinEDDS
 
 		Public Class CreateDocumentException
 			Inherits kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
-      Public Sub New(ByVal parentException As System.Exception)
-        MyBase.New("Error creating new document.  Skipping line: " & parentException.Message, parentException)
-      End Sub
-    End Class
+			Public Sub New(ByVal parentException As System.Exception)
+				MyBase.New("Error creating new document.  Skipping line: " & parentException.Message, parentException)
+			End Sub
+		End Class
 
 		Public Class OverwriteException
 			Inherits kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
