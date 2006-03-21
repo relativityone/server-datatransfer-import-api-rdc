@@ -55,6 +55,7 @@ Namespace kCura.EDDS.WinForm
 			Me._filePath = New System.Windows.Forms.TextBox
 			Me._openFileDialog = New System.Windows.Forms.OpenFileDialog
 			Me.GroupBox233 = New System.Windows.Forms.GroupBox
+			Me._replaceFullText = New System.Windows.Forms.CheckBox
 			Me._overWrite = New System.Windows.Forms.CheckBox
 			Me.MainMenu = New System.Windows.Forms.MainMenu
 			Me.MenuItem1 = New System.Windows.Forms.MenuItem
@@ -66,7 +67,6 @@ Namespace kCura.EDDS.WinForm
 			Me._controlKeyField = New System.Windows.Forms.ComboBox
 			Me._saveImageLoadFileDialog = New System.Windows.Forms.SaveFileDialog
 			Me._loadImageLoadFileDialog = New System.Windows.Forms.OpenFileDialog
-			Me._replaceFullText = New System.Windows.Forms.CheckBox
 			Me.GroupBox3.SuspendLayout()
 			Me.GroupBox233.SuspendLayout()
 			Me.GroupBox1.SuspendLayout()
@@ -114,6 +114,16 @@ Namespace kCura.EDDS.WinForm
 			Me.GroupBox233.TabIndex = 8
 			Me.GroupBox233.TabStop = False
 			Me.GroupBox233.Text = "Update Behavior"
+			'
+			'_replaceFullText
+			'
+			Me._replaceFullText.Checked = True
+			Me._replaceFullText.CheckState = System.Windows.Forms.CheckState.Checked
+			Me._replaceFullText.Location = New System.Drawing.Point(152, 16)
+			Me._replaceFullText.Name = "_replaceFullText"
+			Me._replaceFullText.Size = New System.Drawing.Size(120, 24)
+			Me._replaceFullText.TabIndex = 3
+			Me._replaceFullText.Text = "Replace Full Text"
 			'
 			'_overWrite
 			'
@@ -182,14 +192,6 @@ Namespace kCura.EDDS.WinForm
 			'_loadImageLoadFileDialog
 			'
 			Me._loadImageLoadFileDialog.Filter = "WinEDDS image load files (*.kwi)|*.kwi|All Files (*.*)|*.*"
-			'
-			'_replaceFullText
-			'
-			Me._replaceFullText.Location = New System.Drawing.Point(152, 16)
-			Me._replaceFullText.Name = "_replaceFullText"
-			Me._replaceFullText.Size = New System.Drawing.Size(120, 24)
-			Me._replaceFullText.TabIndex = 3
-			Me._replaceFullText.Text = "Replace Full Text"
 			'
 			'ImageLoad
 			'
