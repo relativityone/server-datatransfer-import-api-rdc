@@ -12,29 +12,35 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
-		Public Shared ReadOnly Property URI() As String
-			Get
-				Return String.Format(CType(ConfigSettings("uriFormatString"), String), Host)
-			End Get
-		End Property
+    Public Shared ReadOnly Property OutlookImporterLocation() As String
+      Get
+        Return CType(ConfigSettings("OutlookImporterLocation"), String)
+      End Get
+    End Property
 
-		Public Shared ReadOnly Property Host() As String
-			Get
-				Return CType(ConfigSettings("Host"), String)
-			End Get
-		End Property
+    Public Shared ReadOnly Property URI() As String
+      Get
+        Return String.Format(CType(ConfigSettings("uriFormatString"), String), Host)
+      End Get
+    End Property
 
-		Public Shared ReadOnly Property HostURL() As String
-			Get
-				Return String.Format("http://{0}/", Host)
-			End Get
-		End Property
+    Public Shared ReadOnly Property Host() As String
+      Get
+        Return CType(ConfigSettings("Host"), String)
+      End Get
+    End Property
 
-		Public Shared ReadOnly Property SearchExportChunkSize() As Int32
-			Get
-				Return 50		 'TODO: Put this in App.Config
-			End Get
-		End Property
+    Public Shared ReadOnly Property HostURL() As String
+      Get
+        Return String.Format("http://{0}/", Host)
+      End Get
+    End Property
 
-	End Class
+    Public Shared ReadOnly Property SearchExportChunkSize() As Int32
+      Get
+        Return 50   'TODO: Put this in App.Config
+      End Get
+    End Property
+
+  End Class
 End Namespace

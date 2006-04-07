@@ -18,7 +18,7 @@ Namespace kCura.WinEDDS
 
 		Private Function GetImporter() As kCura.EDDS.Import.ImporterBase
 			Dim importerAssembly As System.Reflection.Assembly
-			importerAssembly = System.Reflection.Assembly.LoadFrom("c:\sourcecode\edds\trunk\kCura.EDDS.Import.Outlook\bin\kCura.EDDS.Import.Outlook.dll")
+      importerAssembly = System.Reflection.Assembly.LoadFrom(Config.OutlookImporterLocation)
 			Dim importer As kCura.EDDS.Import.ImporterBase
 			importer = CType(importerAssembly.CreateInstance("kCura.EDDS.Import.Outlook.OutlookImporter"), kCura.EDDS.Import.ImporterBase)
 			Return importer
