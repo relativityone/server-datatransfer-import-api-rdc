@@ -90,19 +90,14 @@ Namespace kCura.EDDS.WinForm
 			Try
 				importer.ReportStatus(recordInfo, "Begin Uploading Document")
 				Dim fileInfo As System.IO.FileInfo = New System.IO.FileInfo(fileName)
-				_uploader.SetDesintationFolderName("C:\EDDS\Documents\EDDS" & caseInfo.ArtifactID & "\")
-				Dim fileIdentifier As String
-				fileIdentifier = _uploader.UploadFile(fileName, documentArtifactID)
+        Dim fileIdentifier As String
+        fileIdentifier = _uploader.UploadFile(fileName, documentArtifactID)
+        _uploader.UploaderType = FileUploader.Type.Web
 				If fileIdentifier <> String.Empty Then
 					_fileManager.CreateFile(documentArtifactID, -1, fileInfo.Name, fileIdentifier, 0, kCura.EDDS.Types.FileType.Native)
-					'If extractFullText Then
-					'  importer.ReportStatus(recordInfo, "Extracting Full Text")
-					'  _documentManager.UpdateFullTextWithCrackedText(documentArtifactID, fileIdentifier)
-					'End If
-
-				End If
-				importer.ReportStatus(recordInfo, "Finished Uploading Document")
-			Catch ex As Exception
+        End If
+        importer.ReportStatus(recordInfo, "Finished Uploading Document")
+      Catch ex As Exception
 				importer.ReportError(recordInfo, "Exception Encountered Uploading Document" + vbCrLf + ex.ToString)
 				importer.TotalRecordsProcessedWithErrors = importer.TotalRecordsProcessedWithErrors + 1
 			End Try
