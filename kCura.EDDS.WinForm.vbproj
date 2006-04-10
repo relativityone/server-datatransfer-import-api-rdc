@@ -182,6 +182,10 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Copy of App.config"
+                    BuildAction = "None"
+                />
+                <File
                     RelPath = "ToDo.txt"
                     BuildAction = "Content"
                 />
