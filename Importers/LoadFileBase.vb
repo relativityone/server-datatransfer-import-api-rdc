@@ -245,13 +245,6 @@ Namespace kCura.WinEDDS
 			Return New NullableDateTime(datevalue)
 		End Function
 
-		Public Function GetNullableFixedString(ByVal value As String, ByVal column As Int32, ByVal fieldLength As Int32) As NullableString
-			If value.Length > fieldLength Then
-				Throw New InputStringExceedsFixedLengthException(CurrentLineNumber, column, fieldLength)
-			Else
-				Return kCura.Utility.NullableTypesHelper.ToNullableString(value)
-			End If
-		End Function
 
 #Region "Exceptions"
 
@@ -262,12 +255,6 @@ Namespace kCura.WinEDDS
 			End Sub
 		End Class
 
-		Public Class InputStringExceedsFixedLengthException
-			Inherits kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
-			Public Sub New(ByVal row As Int32, ByVal column As Int32, ByVal length As Int32)
-				MyBase.New(row, column, String.Format("Input length exceeds maximum set length of {0} for this VarChar field.", length))
-			End Sub
-		End Class
 
 #End Region
 
