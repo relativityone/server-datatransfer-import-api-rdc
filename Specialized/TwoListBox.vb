@@ -42,143 +42,149 @@ Namespace kCura.Windows.Forms
     Friend WithEvents _moveLeftSelectedItemDown As System.Windows.Forms.Button
     Friend WithEvents _moveLeftSelectedItemUp As System.Windows.Forms.Button
     <System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
-      Me._rightListBox = New System.Windows.Forms.ListBox
-      Me._moveAllFieldsLeft = New System.Windows.Forms.Button
-      Me._moveFieldLeft = New System.Windows.Forms.Button
-      Me._moveFieldRight = New System.Windows.Forms.Button
-      Me._moveAllFieldsRight = New System.Windows.Forms.Button
-      Me._leftListBox = New System.Windows.Forms.ListBox
-      Me._moveRightSelectedItemDown = New System.Windows.Forms.Button
-      Me._moveRightSelectedItemUp = New System.Windows.Forms.Button
-      Me._moveLeftSelectedItemDown = New System.Windows.Forms.Button
-      Me._moveLeftSelectedItemUp = New System.Windows.Forms.Button
-      Me.SuspendLayout()
-      '
-      '_rightListBox
-      '
-      Me._rightListBox.Location = New System.Drawing.Point(212, 0)
-      Me._rightListBox.Name = "_rightListBox"
-      Me._rightListBox.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended
-      Me._rightListBox.Size = New System.Drawing.Size(144, 277)
-      Me._rightListBox.TabIndex = 16
-      '
-      '_moveAllFieldsLeft
-      '
-      Me._moveAllFieldsLeft.Font = New System.Drawing.Font("Wingdings", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(2, Byte))
-      Me._moveAllFieldsLeft.Location = New System.Drawing.Point(172, 172)
-      Me._moveAllFieldsLeft.Name = "_moveAllFieldsLeft"
-      Me._moveAllFieldsLeft.Size = New System.Drawing.Size(36, 24)
-      Me._moveAllFieldsLeft.TabIndex = 13
-      Me._moveAllFieldsLeft.Text = "çç"
-      '
-      '_moveFieldLeft
-      '
-      Me._moveFieldLeft.Font = New System.Drawing.Font("Wingdings", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(2, Byte))
-      Me._moveFieldLeft.Location = New System.Drawing.Point(172, 140)
-      Me._moveFieldLeft.Name = "_moveFieldLeft"
-      Me._moveFieldLeft.Size = New System.Drawing.Size(36, 24)
-      Me._moveFieldLeft.TabIndex = 12
-      Me._moveFieldLeft.Text = "ß"
-      '
-      '_moveFieldRight
-      '
-      Me._moveFieldRight.Font = New System.Drawing.Font("Wingdings", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(2, Byte))
-      Me._moveFieldRight.Location = New System.Drawing.Point(172, 108)
-      Me._moveFieldRight.Name = "_moveFieldRight"
-      Me._moveFieldRight.Size = New System.Drawing.Size(36, 24)
-      Me._moveFieldRight.TabIndex = 11
-      Me._moveFieldRight.Text = "à"
-      '
-      '_moveAllFieldsRight
-      '
-      Me._moveAllFieldsRight.Font = New System.Drawing.Font("Wingdings", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(2, Byte))
-      Me._moveAllFieldsRight.Location = New System.Drawing.Point(172, 76)
-      Me._moveAllFieldsRight.Name = "_moveAllFieldsRight"
-      Me._moveAllFieldsRight.Size = New System.Drawing.Size(36, 24)
-      Me._moveAllFieldsRight.TabIndex = 10
-      Me._moveAllFieldsRight.Text = "èè"
-      '
-      '_leftListBox
-      '
-      Me._leftListBox.Location = New System.Drawing.Point(24, 0)
-      Me._leftListBox.Name = "_leftListBox"
-      Me._leftListBox.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended
-      Me._leftListBox.Size = New System.Drawing.Size(144, 277)
-      Me._leftListBox.TabIndex = 9
-      '
-      '_moveRightSelectedItemDown
-      '
-      Me._moveRightSelectedItemDown.Font = New System.Drawing.Font("Wingdings", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(2, Byte))
-      Me._moveRightSelectedItemDown.Location = New System.Drawing.Point(360, 140)
-      Me._moveRightSelectedItemDown.Name = "_moveRightSelectedItemDown"
-      Me._moveRightSelectedItemDown.RightToLeft = System.Windows.Forms.RightToLeft.No
-      Me._moveRightSelectedItemDown.Size = New System.Drawing.Size(20, 24)
-      Me._moveRightSelectedItemDown.TabIndex = 15
-      Me._moveRightSelectedItemDown.Text = "â"
-      '
-      '_moveRightSelectedItemUp
-      '
-      Me._moveRightSelectedItemUp.Font = New System.Drawing.Font("Wingdings", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(2, Byte))
-      Me._moveRightSelectedItemUp.Location = New System.Drawing.Point(360, 108)
-      Me._moveRightSelectedItemUp.Name = "_moveRightSelectedItemUp"
-      Me._moveRightSelectedItemUp.Size = New System.Drawing.Size(20, 24)
-      Me._moveRightSelectedItemUp.TabIndex = 14
-      Me._moveRightSelectedItemUp.Text = "á"
-      '
-      '_moveLeftSelectedItemDown
-      '
-      Me._moveLeftSelectedItemDown.Font = New System.Drawing.Font("Wingdings", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(2, Byte))
-      Me._moveLeftSelectedItemDown.Location = New System.Drawing.Point(0, 140)
-      Me._moveLeftSelectedItemDown.Name = "_moveLeftSelectedItemDown"
-      Me._moveLeftSelectedItemDown.RightToLeft = System.Windows.Forms.RightToLeft.No
-      Me._moveLeftSelectedItemDown.Size = New System.Drawing.Size(20, 24)
-      Me._moveLeftSelectedItemDown.TabIndex = 18
-      Me._moveLeftSelectedItemDown.Text = "â"
-      '
-      '_moveLeftSelectedItemUp
-      '
-      Me._moveLeftSelectedItemUp.Font = New System.Drawing.Font("Wingdings", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(2, Byte))
-      Me._moveLeftSelectedItemUp.Location = New System.Drawing.Point(0, 108)
-      Me._moveLeftSelectedItemUp.Name = "_moveLeftSelectedItemUp"
-      Me._moveLeftSelectedItemUp.Size = New System.Drawing.Size(20, 24)
-      Me._moveLeftSelectedItemUp.TabIndex = 17
-      Me._moveLeftSelectedItemUp.Text = "á"
-      '
-      'TwoListBox
-      '
-      Me.Controls.Add(Me._moveLeftSelectedItemDown)
-      Me.Controls.Add(Me._moveLeftSelectedItemUp)
-      Me.Controls.Add(Me._rightListBox)
-      Me.Controls.Add(Me._moveRightSelectedItemDown)
-      Me.Controls.Add(Me._moveRightSelectedItemUp)
-      Me.Controls.Add(Me._moveAllFieldsLeft)
-      Me.Controls.Add(Me._moveFieldLeft)
-      Me.Controls.Add(Me._moveFieldRight)
-      Me.Controls.Add(Me._moveAllFieldsRight)
-      Me.Controls.Add(Me._leftListBox)
-      Me.Name = "TwoListBox"
-      Me.Size = New System.Drawing.Size(380, 280)
-      Me.ResumeLayout(False)
+			Me._rightListBox = New System.Windows.Forms.ListBox
+			Me._moveAllFieldsLeft = New System.Windows.Forms.Button
+			Me._moveFieldLeft = New System.Windows.Forms.Button
+			Me._moveFieldRight = New System.Windows.Forms.Button
+			Me._moveAllFieldsRight = New System.Windows.Forms.Button
+			Me._leftListBox = New System.Windows.Forms.ListBox
+			Me._moveRightSelectedItemDown = New System.Windows.Forms.Button
+			Me._moveRightSelectedItemUp = New System.Windows.Forms.Button
+			Me._moveLeftSelectedItemDown = New System.Windows.Forms.Button
+			Me._moveLeftSelectedItemUp = New System.Windows.Forms.Button
+			Me.SuspendLayout()
+			'
+			'_rightListBox
+			'
+			Me._rightListBox.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
+									Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
+			Me._rightListBox.Location = New System.Drawing.Point(212, 0)
+			Me._rightListBox.Name = "_rightListBox"
+			Me._rightListBox.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended
+			Me._rightListBox.Size = New System.Drawing.Size(144, 277)
+			Me._rightListBox.TabIndex = 16
+			'
+			'_moveAllFieldsLeft
+			'
+			Me._moveAllFieldsLeft.Font = New System.Drawing.Font("Wingdings", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(2, Byte))
+			Me._moveAllFieldsLeft.Location = New System.Drawing.Point(172, 172)
+			Me._moveAllFieldsLeft.Name = "_moveAllFieldsLeft"
+			Me._moveAllFieldsLeft.Size = New System.Drawing.Size(36, 24)
+			Me._moveAllFieldsLeft.TabIndex = 13
+			Me._moveAllFieldsLeft.Text = "çç"
+			'
+			'_moveFieldLeft
+			'
+			Me._moveFieldLeft.Font = New System.Drawing.Font("Wingdings", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(2, Byte))
+			Me._moveFieldLeft.Location = New System.Drawing.Point(172, 140)
+			Me._moveFieldLeft.Name = "_moveFieldLeft"
+			Me._moveFieldLeft.Size = New System.Drawing.Size(36, 24)
+			Me._moveFieldLeft.TabIndex = 12
+			Me._moveFieldLeft.Text = "ß"
+			'
+			'_moveFieldRight
+			'
+			Me._moveFieldRight.Font = New System.Drawing.Font("Wingdings", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(2, Byte))
+			Me._moveFieldRight.Location = New System.Drawing.Point(172, 108)
+			Me._moveFieldRight.Name = "_moveFieldRight"
+			Me._moveFieldRight.Size = New System.Drawing.Size(36, 24)
+			Me._moveFieldRight.TabIndex = 11
+			Me._moveFieldRight.Text = "à"
+			'
+			'_moveAllFieldsRight
+			'
+			Me._moveAllFieldsRight.Font = New System.Drawing.Font("Wingdings", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(2, Byte))
+			Me._moveAllFieldsRight.Location = New System.Drawing.Point(172, 76)
+			Me._moveAllFieldsRight.Name = "_moveAllFieldsRight"
+			Me._moveAllFieldsRight.Size = New System.Drawing.Size(36, 24)
+			Me._moveAllFieldsRight.TabIndex = 10
+			Me._moveAllFieldsRight.Text = "èè"
+			'
+			'_leftListBox
+			'
+			Me._leftListBox.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
+									Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
+			Me._leftListBox.Location = New System.Drawing.Point(24, 0)
+			Me._leftListBox.Name = "_leftListBox"
+			Me._leftListBox.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended
+			Me._leftListBox.Size = New System.Drawing.Size(144, 277)
+			Me._leftListBox.TabIndex = 9
+			'
+			'_moveRightSelectedItemDown
+			'
+			Me._moveRightSelectedItemDown.Font = New System.Drawing.Font("Wingdings", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(2, Byte))
+			Me._moveRightSelectedItemDown.Location = New System.Drawing.Point(360, 140)
+			Me._moveRightSelectedItemDown.Name = "_moveRightSelectedItemDown"
+			Me._moveRightSelectedItemDown.RightToLeft = System.Windows.Forms.RightToLeft.No
+			Me._moveRightSelectedItemDown.Size = New System.Drawing.Size(20, 24)
+			Me._moveRightSelectedItemDown.TabIndex = 15
+			Me._moveRightSelectedItemDown.Text = "â"
+			'
+			'_moveRightSelectedItemUp
+			'
+			Me._moveRightSelectedItemUp.Font = New System.Drawing.Font("Wingdings", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(2, Byte))
+			Me._moveRightSelectedItemUp.Location = New System.Drawing.Point(360, 108)
+			Me._moveRightSelectedItemUp.Name = "_moveRightSelectedItemUp"
+			Me._moveRightSelectedItemUp.Size = New System.Drawing.Size(20, 24)
+			Me._moveRightSelectedItemUp.TabIndex = 14
+			Me._moveRightSelectedItemUp.Text = "á"
+			'
+			'_moveLeftSelectedItemDown
+			'
+			Me._moveLeftSelectedItemDown.Font = New System.Drawing.Font("Wingdings", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(2, Byte))
+			Me._moveLeftSelectedItemDown.Location = New System.Drawing.Point(0, 140)
+			Me._moveLeftSelectedItemDown.Name = "_moveLeftSelectedItemDown"
+			Me._moveLeftSelectedItemDown.RightToLeft = System.Windows.Forms.RightToLeft.No
+			Me._moveLeftSelectedItemDown.Size = New System.Drawing.Size(20, 24)
+			Me._moveLeftSelectedItemDown.TabIndex = 18
+			Me._moveLeftSelectedItemDown.Text = "â"
+			'
+			'_moveLeftSelectedItemUp
+			'
+			Me._moveLeftSelectedItemUp.Font = New System.Drawing.Font("Wingdings", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(2, Byte))
+			Me._moveLeftSelectedItemUp.Location = New System.Drawing.Point(0, 108)
+			Me._moveLeftSelectedItemUp.Name = "_moveLeftSelectedItemUp"
+			Me._moveLeftSelectedItemUp.Size = New System.Drawing.Size(20, 24)
+			Me._moveLeftSelectedItemUp.TabIndex = 17
+			Me._moveLeftSelectedItemUp.Text = "á"
+			'
+			'TwoListBox
+			'
+			Me.Controls.Add(Me._moveLeftSelectedItemDown)
+			Me.Controls.Add(Me._moveLeftSelectedItemUp)
+			Me.Controls.Add(Me._rightListBox)
+			Me.Controls.Add(Me._moveRightSelectedItemDown)
+			Me.Controls.Add(Me._moveRightSelectedItemUp)
+			Me.Controls.Add(Me._moveAllFieldsLeft)
+			Me.Controls.Add(Me._moveFieldLeft)
+			Me.Controls.Add(Me._moveFieldRight)
+			Me.Controls.Add(Me._moveAllFieldsRight)
+			Me.Controls.Add(Me._leftListBox)
+			Me.Name = "TwoListBox"
+			Me.Size = New System.Drawing.Size(380, 280)
+			Me.ResumeLayout(False)
 
-    End Sub
+		End Sub
 
 #End Region
 
-    Private Sub MoveAllItems(ByVal giver As System.Windows.Forms.ListBox, ByVal receiver As System.Windows.Forms.ListBox)
-      receiver.Items.AddRange(giver.Items)
+		Private _buttonsCentered As Boolean
+
+		Private Sub MoveAllItems(ByVal giver As System.Windows.Forms.ListBox, ByVal receiver As System.Windows.Forms.ListBox)
+			receiver.Items.AddRange(giver.Items)
 			giver.Items.Clear()
 			RaiseEvent ItemsShifted()
-    End Sub
+		End Sub
 
-    Private Sub ShiftSelectedItems(ByVal giver As System.Windows.Forms.ListBox, ByVal receiver As System.Windows.Forms.ListBox)
-      If giver.SelectedItems.Count > 0 Then
-        Dim i As Int32 = 0
-        For i = 0 To giver.SelectedItems.Count - 1
-          receiver.Items.Add(giver.SelectedItems.Item(i))
-        Next
-        While giver.SelectedItems.Count > 0
-          giver.Items.Remove(giver.SelectedItems.Item(0))
-        End While
+		Private Sub ShiftSelectedItems(ByVal giver As System.Windows.Forms.ListBox, ByVal receiver As System.Windows.Forms.ListBox)
+			If giver.SelectedItems.Count > 0 Then
+				Dim i As Int32 = 0
+				For i = 0 To giver.SelectedItems.Count - 1
+					receiver.Items.Add(giver.SelectedItems.Item(i))
+				Next
+				While giver.SelectedItems.Count > 0
+					giver.Items.Remove(giver.SelectedItems.Item(0))
+				End While
 			End If
 			RaiseEvent ItemsShifted()
 		End Sub
@@ -278,9 +284,38 @@ Namespace kCura.Windows.Forms
 			End Set
 		End Property
 
+		Public Property KeepButtonsCentered() As Boolean
+			Get
+				Return _buttonsCentered
+			End Get
+			Set(ByVal value As Boolean)
+				_buttonsCentered = value
+				If _buttonsCentered Then
+					CenterButtons()
+				End If
+			End Set
+		End Property
+
+		Public Sub CenterButtons()
+			Dim center As Int32 = CType(Me.Size.Height / 2, Int32)
+			SetYPosition(_moveFieldRight, center - 32)
+			SetYPosition(_moveAllFieldsRight, center - 64)
+			SetYPosition(_moveFieldLeft, center)
+			SetYPosition(_moveAllFieldsLeft, center + 32)
+			SetYPosition(_moveRightSelectedItemDown, center)
+			SetYPosition(_moveRightSelectedItemUp, center - 24)
+			SetYPosition(_moveLeftSelectedItemDown, center)
+			SetYPosition(_moveLeftSelectedItemUp, center - 24)
+		End Sub
+
 		Public Sub AdjustXPosition(ByVal control As System.Windows.Forms.Control, ByVal movement As Int32)
 			control.Location = New System.Drawing.Point(control.Location.X + movement, control.Location.Y)
 		End Sub
+
+		Public Sub SetYPosition(ByVal control As System.Windows.Forms.Control, ByVal yPosition As Int32)
+			control.Location = New System.Drawing.Point(control.Location.X, yPosition)
+		End Sub
+
 
 		Public Property RightOrderControlVisible() As Boolean
 			Get
