@@ -58,6 +58,7 @@ Namespace kCura.Windows.Forms
 			'
 			Me._rightListBox.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
 									Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
+			Me._rightListBox.HorizontalScrollbar = True
 			Me._rightListBox.Location = New System.Drawing.Point(212, 0)
 			Me._rightListBox.Name = "_rightListBox"
 			Me._rightListBox.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended
@@ -104,6 +105,7 @@ Namespace kCura.Windows.Forms
 			'
 			Me._leftListBox.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
 									Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
+			Me._leftListBox.HorizontalScrollbar = True
 			Me._leftListBox.Location = New System.Drawing.Point(24, 0)
 			Me._leftListBox.Name = "_leftListBox"
 			Me._leftListBox.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended
