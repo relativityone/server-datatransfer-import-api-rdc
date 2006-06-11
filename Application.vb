@@ -13,6 +13,7 @@ Namespace kCura.EDDS.WinForm
 			'If currentZone.IsDaylightSavingTime(DateTime.Now) Then
 			'	_timeZoneOffset -= 1
 			'End If
+			System.Net.ServicePointManager.CertificatePolicy = New TrustAllCertificatePolicy
 		End Sub
 
 		Public Shared ReadOnly Property Instance() As Application

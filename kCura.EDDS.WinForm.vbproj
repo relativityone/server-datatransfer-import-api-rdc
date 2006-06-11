@@ -182,12 +182,13 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Copy of App.config"
-                    BuildAction = "None"
-                />
-                <File
                     RelPath = "ToDo.txt"
                     BuildAction = "Content"
+                />
+                <File
+                    RelPath = "TrustAllCertificatePolicy.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
                     RelPath = "Utility.vb"
