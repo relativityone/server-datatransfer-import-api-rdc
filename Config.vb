@@ -20,7 +20,7 @@ Namespace kCura.WinEDDS
 
     Public Shared ReadOnly Property URI() As String
       Get
-        Return String.Format(CType(ConfigSettings("uriFormatString"), String), Host)
+				Return String.Format(CType(ConfigSettings("uriFormatString"), String), Host, Protocol)
       End Get
     End Property
 
@@ -32,7 +32,7 @@ Namespace kCura.WinEDDS
 
     Public Shared ReadOnly Property HostURL() As String
       Get
-        Return String.Format("http://{0}/", Host)
+				Return String.Format("{1}://{0}/", Host, protocol)
       End Get
     End Property
 
@@ -42,5 +42,10 @@ Namespace kCura.WinEDDS
       End Get
     End Property
 
-  End Class
+		Public Shared ReadOnly Property Protocol() As String
+			Get
+				Return String.Format(CType(ConfigSettings("Protocol"), String), Host)
+			End Get
+		End Property
+	End Class
 End Namespace

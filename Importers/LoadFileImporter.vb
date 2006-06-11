@@ -300,6 +300,7 @@ Namespace kCura.WinEDDS
 				docDTO.DocumentAgentFlags.UpdateFullText = extractText
 				docDTO.DocumentAgentFlags.IndexStatus = kCura.EDDS.Types.IndexStatus.IndexLowPriority
 				SetFieldValues(docDTO, fieldCollection)
+				Dim fileList As New ArrayList
 				If uploadFile Then
 					Dim oldFile As kCura.EDDS.WebAPI.DocumentManagerBase.File
 					If Not docDTO.Files Is Nothing Then
@@ -311,12 +312,25 @@ Namespace kCura.WinEDDS
 					End If
 					Dim fileDTO As kCura.EDDS.WebAPI.DocumentManagerBase.File = CreateFileDTO(fileName, fileGuid)
 					If oldFile Is Nothing Then
-						docDTO.Files = New kCura.EDDS.WebAPI.DocumentManagerBase.File() {fileDTO}
+						fileList.Add(fileDTO)
 					Else
-						docDTO.Files = New kCura.EDDS.WebAPI.DocumentManagerBase.File() {fileDTO, oldFile}
+						fileList.Add(fileDTO)
+						fileList.Add(oldFile)
 					End If
-				Else
+				End If
+				Dim fullTextFileDTO As kCura.EDDS.WebAPI.DocumentManagerBase.File
+				For Each fullTextFileDTO In docDTO.Files
+					If fullTextFileDTO.Type = 2 Then
+						Exit For
+					End If
+				Next
+				If fullTextFileDTO.Type = 2 Then
+					fileList.Add(fullTextFileDTO)
+				End If
+				If fileList.Count = 0 Then
 					docDTO.Files = Nothing
+				Else
+					docDTO.Files = DirectCast(fileList.ToArray(GetType(kCura.EDDS.WebAPI.DocumentManagerBase.File)), kCura.EDDS.WebAPI.DocumentManagerBase.File())
 				End If
 				Try
 					_documentManager.Update(docDTO)
@@ -325,8 +339,8 @@ Namespace kCura.WinEDDS
 				End Try
 				Return docDTO.ArtifactID
 			Else
-				Throw New DocumentOverwriteException
-			End If
+					Throw New DocumentOverwriteException
+				End If
 		End Function
 
 		Private Function CreateFileDTO(ByVal filename As String, ByVal fileguid As String) As kCura.EDDS.WebAPI.DocumentManagerBase.File
