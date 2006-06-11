@@ -81,11 +81,11 @@ Namespace kCura.Windows.Process
 
       If Not Me.InSafeMode Then
         Dim serializer As New System.xml.Serialization.XmlSerializer(evt.GetType)
-        If _sw Is Nothing Then
-          Me.OpenFile()
-        End If
-        serializer.Serialize(_sw.BaseStream, evt)
-      End If
+				If _sw Is Nothing OrElse _sw.BaseStream Is Nothing Then
+					Me.OpenFile()
+				End If
+				serializer.Serialize(_sw.BaseStream, evt)
+			End If
     End Sub
 
     Private Sub OpenFile()
