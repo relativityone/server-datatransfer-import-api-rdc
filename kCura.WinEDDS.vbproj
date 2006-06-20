@@ -208,12 +208,22 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "PreviewLoadFileProcess.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Settings.vb"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "Utility.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "ValueThrower.vb"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

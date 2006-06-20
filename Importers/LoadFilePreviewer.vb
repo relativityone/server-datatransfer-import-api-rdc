@@ -9,15 +9,86 @@ Namespace kCura.WinEDDS
 
 #Region "Constructors"
 
-		Public Sub New(ByVal args As LoadFile, ByVal timeZoneOffset As Int32, ByVal errorsOnly As Boolean)
+		Public Sub New(ByVal args As LoadFile, ByVal timeZoneOffset As Int32, ByVal errorsOnly As Boolean, Optional ByVal processController As kCura.Windows.Process.Controller = Nothing)
 			MyBase.New(args, timeZoneOffset)
 			_errorsOnly = errorsOnly
 		End Sub
 
 #End Region
 
+#Region "Event"
+
+		Public Enum EventType
+			Begin
+			Complete
+			Progress
+		End Enum
+
+		Public Class EventArgs
+			Private _bytesRead As Int32
+			Private _totalBytes As Int32
+			Private _stepSize As Int32
+			Private _type As EventType
+
+			Public ReadOnly Property BytesRead() As Int32
+				Get
+					Return _bytesRead
+				End Get
+			End Property
+
+			Public ReadOnly Property TotalBytes() As Int32
+				Get
+					Return _totalBytes
+				End Get
+			End Property
+
+			Public ReadOnly Property StepSize() As Int32
+				Get
+					Return _stepSize
+				End Get
+			End Property
+			Public ReadOnly Property Type() As EventType
+				Get
+					Return _type
+				End Get
+			End Property
+
+			Public Sub New(ByVal type As EventType, ByVal bytes As Int32, ByVal total As Int32, ByVal [step] As Int32)
+				_bytesRead = bytes
+				_totalBytes = total
+				_stepSize = [step]
+				_type = type
+			End Sub
+		End Class
+		Public Event OnEvent(ByVal e As EventArgs)
+
+		Private Sub ProcessStart(ByVal bytes As Int32, ByVal total As Int32, ByVal [step] As Int32)
+			RaiseOnEvent(EventType.Begin, bytes, total, [step])
+		End Sub
+
+		Private Sub ProcessProgress(ByVal bytes As Int32, ByVal total As Int32, ByVal [step] As Int32)
+			RaiseOnEvent(EventType.Progress, bytes, total, [step])
+		End Sub
+
+		Private Sub ProcessComplete(ByVal bytes As Int32, ByVal total As Int32, ByVal [step] As Int32)
+			RaiseOnEvent(EventType.Complete, bytes, total, [step])
+		End Sub
+
+		Private Sub RaiseOnEvent(ByVal type As EventType, ByVal bytes As Int32, ByVal total As Int32, ByVal [step] As Int32)
+			RaiseEvent OnEvent(New EventArgs(type, bytes, total, [step]))
+		End Sub
+#End Region
+
+		Private Function GetPosition() As Int32
+			Return CType(Me.Reader.BaseStream.Position, Int32)
+		End Function
+
 		Public Overrides Function ReadFile(ByVal path As String) As Object
+			Dim earlyexit As Boolean = False
 			Reader = New System.IO.StreamReader(path, System.Text.Encoding.Default)
+			Dim filesize As Int32 = CType(Reader.BaseStream.Length, Int32)
+			Dim stepsize As Int32 = CType(filesize / 100, Int32)
+			ProcessStart(0, filesize, stepsize)
 			Dim fieldArrays As New System.Collections.ArrayList
 			If _firstLineContainsColumnNames Then
 				_columnHeaders = GetLine
@@ -29,10 +100,17 @@ Namespace kCura.WinEDDS
 					Dim x As DocumentField() = CheckLine(getline)
 					If Not x Is Nothing Then fieldArrays.Add(x)
 					i += 1
+					If i Mod 100 = 0 Then ProcessProgress(GetPosition, filesize, stepsize)
 				Else
+					earlyexit = True
 					Exit While
 				End If
 			End While
+			If earlyexit Then
+				ProcessComplete(-1, filesize, -1)
+			Else
+				ProcessComplete(filesize, filesize, stepsize)
+			End If
 			Return fieldArrays
 		End Function
 		Private Function CheckLine(ByVal values As String()) As DocumentField()

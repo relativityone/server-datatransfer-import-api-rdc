@@ -215,7 +215,11 @@ Namespace kCura.WinEDDS
 				Case kCura.EDDS.Types.FieldTypeHelper.FieldType.Varchar
 					field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(GetNullableFixedString(value, column, field.FieldLength.Value))
 				Case Else				'FieldTypeHelper.FieldType.Text
-					field.Value = value
+					If value.Length > 100 AndAlso forPreview Then
+						field.Value = value.Substring(0, 100) & "...."
+					Else
+						field.Value = value
+					End If
 			End Select
 		End Sub
 

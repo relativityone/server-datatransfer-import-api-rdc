@@ -12,7 +12,7 @@ Namespace kCura.WinEDDS
 		Private _selectedIdentifier As DocumentField
 		Private _docFieldCollection As DocumentFieldCollection
 		Private _parentFolderDTO As kCura.EDDS.WebAPI.FolderManagerBase.Folder
-		Private _recordCount As Int32
+		Private _recordCount As Int32 = -1
 		Private _extractFullTextFromNative As Boolean
 		Private _allFields As kCura.EDDS.WebAPI.DocumentManagerBase.Field()
 		Protected _continue As Boolean
@@ -27,7 +27,8 @@ Namespace kCura.WinEDDS
 		Private _timeKeeper As TimeKeeper
 		Private _killWorker As Boolean
 		Private _workerRunning As Boolean
-
+		Private WithEvents _lineCounter As kCura.Utility.File.LineCounter
+		Private _genericTimestamp As System.DateTime
 #End Region
 
 #Region "Accessors"
@@ -139,26 +140,14 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Private Sub InitializeMembers(ByVal path As String)
-			_recordCount = kCura.Utility.File.CountLinesInFile(path)
-			_columnHeaders = GetColumnNames(path)
-			_processedDocumentIdentifiers = New Collections.Specialized.NameValueCollection
-			Reader = New System.IO.StreamReader(path, System.Text.Encoding.Default)
-			_docsToAdd = New ArrayList
-			_docsToUpdate = New ArrayList
-			_docsToProcess = New ArrayList
-			If _firstLineContainsColumnNames Then
-				_columnHeaders = GetLine
-				_recordCount -= 1
-				_offset = -1
-			End If
-			If Not _filePathColumn Is Nothing Then
-				Dim openParenIndex As Int32 = _filePathColumn.LastIndexOf("("c) + 1
-				Dim closeParenIndex As Int32 = _filePathColumn.LastIndexOf(")"c)
-				_filePathColumnIndex = Int32.Parse(_filePathColumn.Substring(openParenIndex, closeParenIndex - openParenIndex)) - 1
-			Else
-				_filePathColumnIndex = -1
-			End If
-			_timeKeeper = New TimeKeeper
+			_lineCounter = New kCura.Utility.File.LineCounter
+			_lineCounter.Path = path
+			'Dim t As New System.Threading.Thread(AddressOf _lineCounter.CountLines)
+			't.Start()
+			_lineCounter.CountLines()
+			'While _recordCount = -1
+			'	System.Threading.Thread.CurrentThread.Join(1000)
+			'End While
 		End Sub
 
 		Private Function ManageDocument(ByVal values As String()) As String
@@ -554,6 +543,80 @@ Namespace kCura.WinEDDS
 		Public Event StartFileImport()
 		Public Event UploadModeChangeEvent(ByVal mode As String)
 
+#Region "File Prep Event"
+		Public Event FilePrepEvent(ByVal e As FilePrepEventArgs)
+		Public Class FilePrepEventArgs
+			Public Enum FilePrepEventType
+				OpenFile
+				CloseFile
+				ReadEvent
+			End Enum
+			Private _type As FilePrepEventType
+			Private _newlinesRead As Int32
+			Private _bytesRead As Int32
+			Private _totalBytes As Int32
+			Private _stepSize As Int32
+			Private _startTime As System.DateTime
+			Private _endTime As System.DateTime
+
+#Region "Accessors"
+
+			Public ReadOnly Property Type() As FilePrepEventType
+				Get
+					Return _type
+				End Get
+			End Property
+
+			Public ReadOnly Property NewlinesRead() As Int32
+				Get
+					Return _newlinesRead
+				End Get
+			End Property
+
+			Public ReadOnly Property BytesRead() As Int32
+				Get
+					Return _bytesRead
+				End Get
+			End Property
+
+			Public ReadOnly Property TotalBytes() As Int32
+				Get
+					Return _totalBytes
+				End Get
+			End Property
+
+			Public ReadOnly Property StepSize() As Int32
+				Get
+					Return _stepSize
+				End Get
+			End Property
+
+			Public ReadOnly Property StartTime() As System.DateTime
+				Get
+					Return _startTime
+				End Get
+			End Property
+
+			Public ReadOnly Property EndTime() As System.DateTime
+				Get
+					Return _endTime
+				End Get
+			End Property
+
+#End Region
+
+			Public Sub New(ByVal eventType As FilePrepEventType, ByVal newlines As Int32, ByVal bytes As Int32, ByVal total As Int32, ByVal [step] As Int32, ByVal start As System.DateTime, ByVal [end] As System.DateTime)
+				_type = eventType
+				_newlinesRead = newlines
+				_bytesRead = bytes
+				_totalBytes = total
+				_stepSize = [step]
+				_startTime = start
+				_endTime = [end]
+			End Sub
+		End Class
+#End Region
+
 #End Region
 
 #Region "Event Handlers"
@@ -564,6 +627,7 @@ Namespace kCura.WinEDDS
 
 		Private Sub _processController_HaltProcessEvent(ByVal processID As System.Guid) Handles _processController.HaltProcessEvent
 			_continue = False
+			_lineCounter.StopCounting()
 		End Sub
 
 #End Region
@@ -656,5 +720,41 @@ Namespace kCura.WinEDDS
 
 #End Region
 
+
+
+		Private Sub _lineCounter_OnEvent(ByVal e As kCura.Utility.File.LineCounter.EventArgs) Handles _lineCounter.OnEvent
+			Select Case e.Type
+				Case kCura.Utility.File.LineCounter.EventType.Begin
+					_genericTimestamp = System.DateTime.Now
+					RaiseEvent FilePrepEvent(New FilePrepEventArgs(FilePrepEventArgs.FilePrepEventType.OpenFile, 0, 0, e.TotalBytes, e.StepSize, _genericTimestamp, System.DateTime.Now))
+				Case kCura.Utility.File.LineCounter.EventType.Progress
+					RaiseEvent FilePrepEvent(New FilePrepEventArgs(FilePrepEventArgs.FilePrepEventType.ReadEvent, e.NewlinesRead, e.BytesRead, e.TotalBytes, e.StepSize, _genericTimestamp, System.DateTime.Now))
+				Case kCura.Utility.File.LineCounter.EventType.Complete
+					'_recordCount = kCura.Utility.File.CountLinesInFile(path)
+					_recordCount = e.NewlinesRead
+					RaiseEvent FilePrepEvent(New FilePrepEventArgs(FilePrepEventArgs.FilePrepEventType.ReadEvent, e.NewlinesRead, e.TotalBytes, e.TotalBytes, e.StepSize, _genericTimestamp, System.DateTime.Now))
+					'RaiseEvent FilePrepEvent(New FilePrepEventArgs(FilePrepEventArgs.FilePrepEventType.CloseFile, e.NewlinesRead, e.BytesRead, e.TotalBytes, e.StepSize, _genericTimestamp, System.DateTime.Now))
+					Dim path As String = _lineCounter.Path
+					_columnHeaders = GetColumnNames(path)
+					_processedDocumentIdentifiers = New Collections.Specialized.NameValueCollection
+					Reader = New System.IO.StreamReader(path, System.Text.Encoding.Default)
+					_docsToAdd = New ArrayList
+					_docsToUpdate = New ArrayList
+					_docsToProcess = New ArrayList
+					If _firstLineContainsColumnNames Then
+						_columnHeaders = GetLine
+						_recordCount -= 1
+						_offset = -1
+					End If
+					If Not _filePathColumn Is Nothing Then
+						Dim openParenIndex As Int32 = _filePathColumn.LastIndexOf("("c) + 1
+						Dim closeParenIndex As Int32 = _filePathColumn.LastIndexOf(")"c)
+						_filePathColumnIndex = Int32.Parse(_filePathColumn.Substring(openParenIndex, closeParenIndex - openParenIndex)) - 1
+					Else
+						_filePathColumnIndex = -1
+					End If
+					_timeKeeper = New TimeKeeper
+			End Select
+		End Sub
 	End Class
 End Namespace

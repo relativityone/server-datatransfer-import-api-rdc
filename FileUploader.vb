@@ -12,15 +12,15 @@ Namespace kCura.WinEDDS
     Private _destinationFolderPath As String
 
 		Public Sub SetDesintationFolderName(ByVal value As String)
-      _destinationFolderPath = value
+			_destinationFolderPath = value
 		End Sub
 
-    Public Sub New(ByVal credentials As Net.NetworkCredential, ByVal destinationFolderPath As String)
-      _gateway = New kCura.WinEDDS.Service.FileIO(credentials)
-      _gateway.Credentials = credentials
-      _gateway.Timeout = Int32.MaxValue
-      _credentials = credentials
-      _destinationFolderPath = destinationFolderPath
+		Public Sub New(ByVal credentials As Net.NetworkCredential, ByVal destinationFolderPath As String)
+			_gateway = New kCura.WinEDDS.Service.FileIO(credentials)
+			_gateway.Credentials = credentials
+			_gateway.Timeout = Int32.MaxValue
+			_credentials = credentials
+			_destinationFolderPath = destinationFolderPath
 			'Dim documentManager As kCura.EDDS.WebAPI.DocumentManagerBase.DocumentManager
 			SetType(_destinationFolderPath)
 		End Sub
