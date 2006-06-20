@@ -3,7 +3,7 @@ Namespace kCura.EDDS.WinForm
     Inherits System.Windows.Forms.Form
 
 #Region " Windows Form Designer generated code "
-
+		Private _application As Application
     Public Sub New()
       MyBase.New()
 
@@ -11,7 +11,7 @@ Namespace kCura.EDDS.WinForm
       InitializeComponent()
 
       'Add any initialization after the InitializeComponent() call
-
+			_application = Application.Instance
     End Sub
 
     'Form overrides dispose to clean up the component list.
@@ -65,13 +65,65 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 #End Region
+		Private WithEvents _thrower As kCura.WinEDDS.ValueThrower
+		Public DataSource As DataTable
+		Public IsError As Boolean
+		Public Property Thrower() As kCura.WinEDDS.ValueThrower
+			Get
+				Return _thrower
+			End Get
+			Set(ByVal value As kCura.WinEDDS.ValueThrower)
+				_thrower = value
+			End Set
+		End Property
 
-		Public Sub SetGridDataSource(ByVal dataSource As DataTable)
+		Public Sub SetGridDataSource(ByVal ds As DataTable)
 			Dim column As New System.Data.DataColumn
 			Dim tablestyles As New DataGridTableStyle
+			DataSource = ds
 			tablestyles.DataGrid = _grid
-			_grid.DataSource = dataSource
+			_grid.DataSource = ds
 		End Sub
 
+		Private Sub _thrower_OnEvent(ByVal value As Object) Handles _thrower.OnEvent
+			Dim args As Object() = DirectCast(value, Object())
+			Me.DataSource = _application.BuildLoadFileDataSource(DirectCast(args(0), ArrayList))
+			Me.IsError = CType(args(1), Boolean)
+			Me.Invoke(New HandleDataSourceDelegate(AddressOf HandleDataSource))
+			'HandleDataSource(value)
+		End Sub
+
+		Public Sub HandleDataSource()
+			Me.SetGridDataSource(Me.DataSource)
+			If Me.IsError Then Me.Text = "Preview Errors"
+			'Me.Show()
+		End Sub
+		'Public Sub SetGridDataSource(ByVal ds As DataTable)
+		'	Dim column As New System.Data.DataColumn
+		'	Dim tablestyles As New DataGridTableStyle
+		'	DataSource = ds
+		'	tablestyles.DataGrid = _grid
+		'	_grid.DataSource = ds
+		'End Sub
+
+		'Private Sub _thrower_OnEvent(ByVal value As Object) Handles _thrower.OnEvent
+		'	Dim args As Object() = DirectCast(value, Object())
+		'	Me.Invoke(New HandleDataSourceDelegate(AddressOf HandleDataSource))
+		'	HandleDataSource(value)
+		'End Sub
+
+		'Public Sub HandleDataSource(ByVal value As Object)
+		'	Dim args As Object() = DirectCast(value, Object())
+		'	Me.SetGridDataSource(_application.BuildLoadFileDataSource(DirectCast(args(0), ArrayList)))
+		'	If CType(args(1), Boolean) Then
+		'		Me.Text = "Preview Errors"
+		'	End If
+		'	'Me.Show()
+		'End Sub
+
+		Delegate Sub HandleDataSourceDelegate()
+
 	End Class
+
+
 End Namespace

@@ -40,7 +40,7 @@ Namespace kCura.EDDS.WinForm
 		Private _selectedCaseFolderPath As String
 		Private _timeZoneOffset As Int32
 		Private WithEvents _loginForm As LoginForm
-
+		Private Shared _cache As New Hashtable
 #End Region
 
 #Region "Properties"
@@ -263,6 +263,113 @@ Namespace kCura.EDDS.WinForm
 			Return "\" & _selectedCaseInfo.Name & _selectedCaseFolderPath
 		End Function
 
+		'Worker function for PreviewLoadFile
+		Public Function BuildLoadFileDataSource(ByVal al As ArrayList) As DataTable
+			Try
+				'Dim previewer As New kCura.WinEDDS.LoadFilePreviewer(loadFile, _timeZoneOffset, errorsOnly)
+				'Dim al As ArrayList = DirectCast(previewer.ReadFile(loadFile.FilePath), ArrayList)
+				'previewer.Close()
+				Dim item As Object
+				Dim field As DocumentField
+				Dim fields As DocumentField()
+				Dim firstTimeThrough As Boolean = True
+				Dim row As ArrayList
+				Dim dt As New DataTable
+				Dim i As Int32 = 0
+				If al.Count = 0 Then
+					dt.Columns.Add("  ")
+					dt.Rows.Add(New String() {"No errors"})
+				Else
+					For Each item In al
+						If Not item Is Nothing Then
+							row = New ArrayList
+							fields = DirectCast(item, DocumentField())
+							If firstTimeThrough Then
+								dt.Columns.Add("Record Number")
+								For Each field In fields
+									dt.Columns.Add(field.FieldName)
+								Next
+								firstTimeThrough = False
+							End If
+							AddRow(dt, row, fields, i)
+						End If
+					Next
+				End If
+				Return dt
+			Catch ex As Exception
+				kCura.EDDS.WinForm.Utility.ThrowExceptionToGUI(ex)
+			End Try
+		End Function
+
+		Private Sub AddRow(ByVal dt As DataTable, ByVal row As System.collections.ArrayList, ByVal fields As DocumentField(), ByRef counter As Int32)
+			Try
+				counter += 1
+				Dim field As DocumentField
+				row.Add(counter.ToString())
+				For Each field In fields
+					row.Add(field.Value)
+				Next
+				dt.Rows.Add(row.ToArray)
+			Catch x As Exception
+				Throw
+			End Try
+
+		End Sub
+
+
+		Public Sub RefreshCaseFolders()
+			RaiseEvent OnEvent(New kCura.WinEDDS.LoadCaseEvent(SelectedCaseInfo))
+		End Sub
+
+		Public Function CheckFieldMap(ByVal loadFile As LoadFile) As Boolean
+			Dim unmapped As String()
+			Dim fmi As LoadFileFieldMap.LoadFileFieldMapItem
+			Dim fieldsNotColumnsMapped As Boolean
+			Dim values As New ArrayList
+			For Each fmi In loadFile.FieldMap
+				If fmi.DocumentField Is Nothing AndAlso fmi.NativeFileColumnIndex <> -1 Then
+					values.Add("Column " & fmi.NativeFileColumnIndex + 1)
+					fieldsNotColumnsMapped = False
+				ElseIf Not fmi.DocumentField Is Nothing AndAlso fmi.NativeFileColumnIndex = -1 Then
+					values.Add(fmi.DocumentField.FieldName)
+					fieldsNotColumnsMapped = True
+				End If
+			Next
+			If values.Count > 0 Then
+				unmapped = DirectCast(values.ToArray(GetType(String)), String())
+				Dim sb As New System.Text.StringBuilder
+				Dim nl As String = System.Environment.NewLine
+				If fieldsNotColumnsMapped Then
+					sb.Append("The following fields are unmapped:" & nl)
+				Else
+					sb.Append("The following file columns are unmapped:" & nl)
+				End If
+				Dim s As String
+				For Each s In unmapped
+					sb.Append(" - " & s & nl)
+				Next
+				sb.Append("Do you wish to continue?")
+				If MsgBox(sb.ToString, MsgBoxStyle.YesNo, "Warning") = MsgBoxResult.No Then
+					Return False
+				Else
+					Return True
+				End If
+			Else
+				Return True
+			End If
+
+		End Function
+
+		Private Sub SetWorkingDirectory(ByVal filePath As String)
+			Dim directory As String
+			If Not filePath.LastIndexOf("\") = filePath.Length - 1 Then
+				directory = filePath.Substring(0, filePath.LastIndexOf("\") + 1)
+			Else
+				directory = String.Copy(filePath)
+			End If
+			System.IO.Directory.SetCurrentDirectory(directory)
+		End Sub
+
 #End Region
 
 #Region "Form Initializers"
@@ -313,8 +420,8 @@ Namespace kCura.EDDS.WinForm
 
 		Public Sub NewOutlookImport(ByVal destinationArtifactID As Int32, ByVal caseInfo As kCura.EDDS.Types.CaseInfo)
 			Dim importerAssembly As System.Reflection.Assembly
-      importerAssembly = System.Reflection.Assembly.LoadFrom(Config.OutlookImporterLocation)
-      Dim hostImporterGateway As kCura.EDDS.Import.ImporterGatewayBase
+			importerAssembly = System.Reflection.Assembly.LoadFrom(Config.OutlookImporterLocation)
+			Dim hostImporterGateway As kCura.EDDS.Import.ImporterGatewayBase
 			hostImporterGateway = CType(importerAssembly.CreateInstance("kCura.EDDS.Import.Outlook.ImporterGateway"), kCura.EDDS.Import.ImporterGatewayBase)
 			Dim frm As Form = hostImporterGateway.GetSettingsForm(New Import.CaseInfo(caseInfo.ArtifactID, caseInfo.RootArtifactID), destinationArtifactID, New WinEDDSGateway)
 			frm.Show()
@@ -386,67 +493,26 @@ Namespace kCura.EDDS.WinForm
 
 #Region "Process Management"
 
-		Public Sub PreviewLoadFile(ByVal LoadFile As LoadFile, ByVal errorsOnly As Boolean)
+		Public Function PreviewLoadFile(ByVal loadFileToPreview As LoadFile, ByVal errorsOnly As Boolean) As Guid
 			CursorWait()
-			Dim frm As New LoadFilePreviewForm
-			frm.SetGridDataSource(Me.BuildLoadFileDataSource(LoadFile, errorsOnly))
-			If errorsOnly Then
-				frm.Text = "Preview Errors"
+			If Not CheckFieldMap(loadFileToPreview) Then
+				CursorDefault()
+				Exit Function
 			End If
+			Dim frm As New kCura.Windows.Process.ProgressForm
+			Dim previewer As New kCura.WinEDDS.PreviewLoadFileProcess
+			Dim previewfrm As New LoadFilePreviewForm
+			Dim thrower As New ValueThrower
+			previewer.Thrower = thrower
+			previewfrm.Thrower = previewer.Thrower
+			previewer.LoadFile = loadFileToPreview
+			frm.ProcessObserver = previewer.ProcessObserver
+			frm.ProcessController = previewer.ProcessController
+			previewfrm.Show()
 			frm.Show()
-			If Not CheckFieldMap(LoadFile) Then
-				frm.Close()
-			End If
+			_processPool.StartProcess(previewer)
 			CursorDefault()
-		End Sub
-
-		'Worker function for PreviewLoadFile
-		Public Function BuildLoadFileDataSource(ByVal loadFile As LoadFile, ByVal errorsOnly As Boolean) As DataTable
-			Try
-				Dim previewer As New kCura.WinEDDS.LoadFilePreviewer(loadFile, _timeZoneOffset, errorsOnly)
-				Dim al As ArrayList = DirectCast(previewer.ReadFile(loadFile.FilePath), ArrayList)
-				previewer.Close()
-				Dim item As Object
-				Dim field As DocumentField
-				Dim fields As DocumentField()
-				Dim firstTimeThrough As Boolean = True
-				Dim row As ArrayList
-				Dim dt As New DataTable
-				Dim i As Int32 = 0
-				If al.Count = 0 Then
-					dt.Columns.Add("  ")
-					dt.Rows.Add(New String() {"No errors"})
-				Else
-					For Each item In al
-						If Not item Is Nothing Then
-							row = New ArrayList
-							fields = DirectCast(item, DocumentField())
-							If firstTimeThrough Then
-								dt.Columns.Add("Record Number")
-								For Each field In fields
-									dt.Columns.Add(field.FieldName)
-								Next
-								firstTimeThrough = False
-							End If
-							AddRow(dt, row, fields, i)
-						End If
-					Next
-				End If
-				Return dt
-			Catch ex As Exception
-				kCura.EDDS.WinForm.Utility.ThrowExceptionToGUI(ex)
-			End Try
 		End Function
-
-		Private Sub AddRow(ByVal dt As DataTable, ByVal row As System.collections.ArrayList, ByVal fields As DocumentField(), ByRef counter As Int32)
-			counter += 1
-			Dim field As DocumentField
-			row.Add(counter.ToString())
-			For Each field In fields
-				row.Add(field.Value)
-			Next
-			dt.Rows.Add(row.ToArray)
-		End Sub
 
 		Public Function ImportDirectory(ByVal importFileDirectorySettings As ImportFileDirectorySettings) As Guid
 			CursorWait()
@@ -666,58 +732,6 @@ Namespace kCura.EDDS.WinForm
 
 #End Region
 
-		Public Sub RefreshCaseFolders()
-			RaiseEvent OnEvent(New kCura.WinEDDS.LoadCaseEvent(SelectedCaseInfo))
-		End Sub
-
-		Public Function CheckFieldMap(ByVal loadFile As LoadFile) As Boolean
-			Dim unmapped As String()
-			Dim fmi As LoadFileFieldMap.LoadFileFieldMapItem
-			Dim fieldsNotColumnsMapped As Boolean
-			Dim values As New ArrayList
-			For Each fmi In loadFile.FieldMap
-				If fmi.DocumentField Is Nothing AndAlso fmi.NativeFileColumnIndex <> -1 Then
-					values.Add("Column " & fmi.NativeFileColumnIndex + 1)
-					fieldsNotColumnsMapped = False
-				ElseIf Not fmi.DocumentField Is Nothing AndAlso fmi.NativeFileColumnIndex = -1 Then
-					values.Add(fmi.DocumentField.FieldName)
-					fieldsNotColumnsMapped = True
-				End If
-			Next
-			If values.Count > 0 Then
-				unmapped = DirectCast(values.ToArray(GetType(String)), String())
-				Dim sb As New System.Text.StringBuilder
-				Dim nl As String = System.Environment.NewLine
-				If fieldsNotColumnsMapped Then
-					sb.Append("The following fields are unmapped:" & nl)
-				Else
-					sb.Append("The following file columns are unmapped:" & nl)
-				End If
-				Dim s As String
-				For Each s In unmapped
-					sb.Append(" - " & s & nl)
-				Next
-				sb.Append("Do you wish to continue?")
-				If MsgBox(sb.ToString, MsgBoxStyle.YesNo, "Warning") = MsgBoxResult.No Then
-					Return False
-				Else
-					Return True
-				End If
-			Else
-				Return True
-			End If
-
-		End Function
-
-		Private Sub SetWorkingDirectory(ByVal filePath As String)
-			Dim directory As String
-			If Not filePath.LastIndexOf("\") = filePath.Length - 1 Then
-				directory = filePath.Substring(0, filePath.LastIndexOf("\") + 1)
-			Else
-				directory = String.Copy(filePath)
-			End If
-			System.IO.Directory.SetCurrentDirectory(directory)
-		End Sub
 	End Class
 
 End Namespace
