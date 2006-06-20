@@ -23,7 +23,7 @@ Namespace kCura.Windows.Process
     Public Event OnProcessFatalException(ByVal ex As Exception)
     Public Event OnProcessEvent(ByVal evt As ProcessEvent)
     Public Event OnProcessProgressEvent(ByVal evt As ProcessProgressEvent)
-    Public Event OnProcessComplete()
+		Public Event OnProcessComplete(ByVal closeForm As Boolean)
     Public Event StatusBarEvent(ByVal message As String)
 
 #End Region
@@ -48,26 +48,26 @@ Namespace kCura.Windows.Process
       WriteToFile(evt)
     End Sub
 
-    Public Sub RaiseProgressEvent(ByVal totalRecords As Int32, ByVal totalRecordsProcessed As Int32, ByVal totalRecordsProccessedWithWarnings As Int32, ByVal totalRecordsProcessedWithErrors As Int32, ByVal startTime As DateTime, ByVal endTime As DateTime)
-      RaiseEvent OnProcessProgressEvent(New ProcessProgressEvent(totalRecords, totalRecordsProcessed, totalRecordsProccessedWithWarnings, totalRecordsProcessedWithErrors, startTime, endTime))
-    End Sub
+		Public Sub RaiseProgressEvent(ByVal totalRecords As Int32, ByVal totalRecordsProcessed As Int32, ByVal totalRecordsProccessedWithWarnings As Int32, ByVal totalRecordsProcessedWithErrors As Int32, ByVal startTime As DateTime, ByVal endTime As DateTime, Optional ByVal totalRecordsDisplay As String = Nothing, Optional ByVal totalRecordsProcessedDisplay As String = Nothing)
+			RaiseEvent OnProcessProgressEvent(New ProcessProgressEvent(totalRecords, totalRecordsProcessed, totalRecordsProccessedWithWarnings, totalRecordsProcessedWithErrors, startTime, endTime, totalRecordsDisplay, totalRecordsProcessedDisplay))
+		End Sub
 
-    Public Sub RaiseProcessCompleteEvent()
-      RaiseEvent OnProcessComplete()
-      If Not _sw Is Nothing Then
-        _sw.Close()
-      End If
-    End Sub
+		Public Sub RaiseProcessCompleteEvent(Optional ByVal closeForm As Boolean = False)
+			RaiseEvent OnProcessComplete(closeForm)
+			If Not _sw Is Nothing Then
+				_sw.Close()
+			End If
+		End Sub
 
-    Public Sub RaiseFatalExceptionEvent(ByVal ex As Exception)
-      RaiseEvent OnProcessFatalException(ex)
-      Dim evt As New ProcessEvent(ProcessEventTypeEnum.Error, "", ex.ToString)
-      WriteToFile(evt)
-    End Sub
+		Public Sub RaiseFatalExceptionEvent(ByVal ex As Exception)
+			RaiseEvent OnProcessFatalException(ex)
+			Dim evt As New ProcessEvent(ProcessEventTypeEnum.Error, "", ex.ToString)
+			WriteToFile(evt)
+		End Sub
 
-    Public Sub RaiseStatusBarEvent(ByVal message As String)
-      RaiseEvent StatusBarEvent(message)
-    End Sub
+		Public Sub RaiseStatusBarEvent(ByVal message As String)
+			RaiseEvent StatusBarEvent(message)
+		End Sub
 
 #End Region
 

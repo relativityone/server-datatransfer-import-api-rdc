@@ -396,7 +396,7 @@ Namespace kCura.Windows.Process
       _progressBar.Minimum = 0
       _progressBar.Maximum = evt.TotalRecords
       _progressBar.Value = evt.TotalRecordsProcessed
-      _overalProgressLabel.Text = evt.TotalRecordsProcessed.ToString + " of " + evt.TotalRecords.ToString + " processed"
+			_overalProgressLabel.Text = evt.TotalRecordsProcessedDisplay + " of " + evt.TotalRecordsDisplay + " processed"
 
       _summaryOutput.Text = ""
       WriteSummaryLine("Start Time: " + evt.StartTime.ToLongTimeString)
@@ -421,23 +421,27 @@ Namespace kCura.Windows.Process
 
     End Sub
 
-    Private Sub _processObserver_OnProcessComplete() Handles _processObserver.OnProcessComplete
-      _currentRecordLabel.Text = "All records have been processed"
-      _currentMessageStatus.Text = ""
-      _stopImportButton.Text = "Close"
-      _stopImportButton.Enabled = True
-      _saveOutputButton.Enabled = True
-    End Sub
+		Private Sub _processObserver_OnProcessComplete(ByVal closeForm As Boolean) Handles _processObserver.OnProcessComplete
+			If closeForm Then
+				Me.Close()
+			Else
+				_currentRecordLabel.Text = "All records have been processed"
+				_currentMessageStatus.Text = ""
+				_stopImportButton.Text = "Close"
+				_stopImportButton.Enabled = True
+				_saveOutputButton.Enabled = True
+			End If
+		End Sub
 
-    Private Sub _processObserver_OnProcessFatalException(ByVal ex As System.Exception) Handles _processObserver.OnProcessFatalException
-      _outputTextBox.WriteLine(ex.ToString)
-      _errorsOutputTextBox.WriteLine(ex.ToString)
-      _currentRecordLabel.Text = "Fatal Exception Encountered"
-      '_stopImportButton.Text = "Stop"
+		Private Sub _processObserver_OnProcessFatalException(ByVal ex As System.Exception) Handles _processObserver.OnProcessFatalException
+			_outputTextBox.WriteLine(ex.ToString)
+			_errorsOutputTextBox.WriteLine(ex.ToString)
+			_currentRecordLabel.Text = "Fatal Exception Encountered"
+			'_stopImportButton.Text = "Stop"
 			_saveOutputButton.Enabled = True
 			_summaryOutput.ForeColor = System.Drawing.Color.Red
 			Me.ShowDetail()
-    End Sub
+		End Sub
 
 #End Region
 
