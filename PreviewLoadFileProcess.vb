@@ -15,8 +15,6 @@ Namespace kCura.WinEDDS
 		Public ReturnValueCollection As Hashtable
 		Public ReturnValueKey As Guid
 
-		Public dg As [Delegate]
-
 		Public Property TimeZoneOffset() As Int32
 			Get
 				Return _timeZoneOffset

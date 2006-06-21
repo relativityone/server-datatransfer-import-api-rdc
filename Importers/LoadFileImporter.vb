@@ -130,9 +130,6 @@ Namespace kCura.WinEDDS
 				WriteEndImport("Finish")
 				Me.Close()
 				_timeKeeper.Add("Total", DateTime.Now.Subtract(markStart).TotalMilliseconds)
-        'Dim sw As New System.IO.StreamWriter("C:\UploadMetrics\" & DateTime.Now.Year & DateTime.Now.Month.ToString.PadLeft(2, "0"c) & DateTime.Now.Day.ToString.PadLeft(2, "0"c) & System.Guid.NewGuid.ToString & ".txt")
-        'sw.Write(_timeKeeper.ToCollectionString)
-        'sw.Close()
 				Return True
 			Catch ex As Exception
 				WriteFatalError(Me.CurrentLineNumber, ex)
@@ -142,16 +139,15 @@ Namespace kCura.WinEDDS
 		Private Sub InitializeMembers(ByVal path As String)
 			_lineCounter = New kCura.Utility.File.LineCounter
 			_lineCounter.Path = path
-			'Dim t As New System.Threading.Thread(AddressOf _lineCounter.CountLines)
-			't.Start()
 			_lineCounter.CountLines()
-			'While _recordCount = -1
-			'	System.Threading.Thread.CurrentThread.Join(1000)
-			'End While
 		End Sub
 
 		Private Function ManageDocument(ByVal values As String()) As String
-			'Raise doc start event
+			If _docsToProcess.Count > 1000 Then
+				While _docsToProcess.Count > 500
+					System.Threading.Thread.CurrentThread.Join(1000)
+				End While
+			End If
 			Dim markStart As DateTime = DateTime.Now
 			Dim filename As String
 			Dim fileGuid As String = String.Empty
@@ -373,46 +369,6 @@ Namespace kCura.WinEDDS
 			Next
 			_firstTimeThrough = False
 			Return identityValue
-			'Dim i As Int32 = 0
-			'Dim identityValue As String = String.Empty
-			'Dim docField As DocumentField
-			'If _firstTimeThrough Then
-			'	If _docFields.Length < values.Length Then
-			'		For i = _docfields.Length To values.Length - 1
-			'			WriteStatusLine(Windows.Process.EventType.Warning, String.Format("File column '{0}' will be unmapped", i + 1), 0)
-			'		Next
-			'	ElseIf _docfields.Length > values.Length Then
-			'		i = 0
-			'		For Each docField In _docfields
-			'			i += 1
-			'			If i > values.Length Then
-			'				WriteStatusLine(Windows.Process.EventType.Warning, String.Format("Field '{0}' will be unmapped", docField.FieldName), 0)
-			'			End If
-			'		Next
-			'	End If
-			'End If
-			'i = 0
-			'For Each docField In _docFields
-			'	docField = New DocumentField(docField)
-			'	If values.Length - 1 < i Then
-			'		MyBase.SetFieldValue(docField, String.Empty, -1)
-			'	Else
-			'		If docField.FieldCategoryID = kCura.EDDS.Types.FieldCategory.FullText Then
-			'			MyBase.SetFieldValue(docField, values(i).Replace(NewlineProxy, Microsoft.VisualBasic.ControlChars.NewLine), i)
-			'		Else
-			'			MyBase.SetFieldValue(docField, values(i), i)
-			'		End If
-			'		If docField.FieldCategoryID = kCura.EDDS.Types.FieldCategory.Identifier Then
-			'			If docField.FieldName = _selectedIdentifier.FieldName Then
-			'				identityValue = docField.Value
-			'			End If
-			'		End If
-			'	End If
-			'	fieldCollection.Add(docField)
-			'	i += 1
-			'Next
-			'_firstTimeThrough = False
-			'Return identityValue
 		End Function
 
 #End Region
@@ -513,6 +469,7 @@ Namespace kCura.WinEDDS
 		Private Sub WriteFatalError(ByVal lineNumber As Int32, ByVal ex As Exception)
 			RaiseEvent FatalErrorEvent("Error processing line: " + lineNumber.ToString, ex)
 		End Sub
+
 		Private Sub WriteError(ByVal line As String)
 			WriteStatusLine(kCura.Windows.Process.EventType.Error, line)
 		End Sub
@@ -720,7 +677,7 @@ Namespace kCura.WinEDDS
 
 #End Region
 
-
+#Region "Preprocessing"
 
 		Private Sub _lineCounter_OnEvent(ByVal e As kCura.Utility.File.LineCounter.EventArgs) Handles _lineCounter.OnEvent
 			Select Case e.Type
@@ -730,10 +687,8 @@ Namespace kCura.WinEDDS
 				Case kCura.Utility.File.LineCounter.EventType.Progress
 					RaiseEvent FilePrepEvent(New FilePrepEventArgs(FilePrepEventArgs.FilePrepEventType.ReadEvent, e.NewlinesRead, e.BytesRead, e.TotalBytes, e.StepSize, _genericTimestamp, System.DateTime.Now))
 				Case kCura.Utility.File.LineCounter.EventType.Complete
-					'_recordCount = kCura.Utility.File.CountLinesInFile(path)
 					_recordCount = e.NewlinesRead
 					RaiseEvent FilePrepEvent(New FilePrepEventArgs(FilePrepEventArgs.FilePrepEventType.ReadEvent, e.NewlinesRead, e.TotalBytes, e.TotalBytes, e.StepSize, _genericTimestamp, System.DateTime.Now))
-					'RaiseEvent FilePrepEvent(New FilePrepEventArgs(FilePrepEventArgs.FilePrepEventType.CloseFile, e.NewlinesRead, e.BytesRead, e.TotalBytes, e.StepSize, _genericTimestamp, System.DateTime.Now))
 					Dim path As String = _lineCounter.Path
 					_columnHeaders = GetColumnNames(path)
 					_processedDocumentIdentifiers = New Collections.Specialized.NameValueCollection
@@ -756,5 +711,8 @@ Namespace kCura.WinEDDS
 					_timeKeeper = New TimeKeeper
 			End Select
 		End Sub
+
+#End Region
+
 	End Class
 End Namespace

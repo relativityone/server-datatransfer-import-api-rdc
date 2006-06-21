@@ -85,7 +85,7 @@ Namespace kCura.WinEDDS
 					Me.ProcessObserver.RaiseProgressEvent(e.TotalBytes, e.BytesRead, 0, 0, e.StartTime, System.DateTime.Now, totaldisplay, processeddisplay)
 					Me.ProcessObserver.RaiseStatusEvent("", "Preparing file for import")
 				Case LoadFileImporter.FilePrepEventArgs.FilePrepEventType.ReadEvent
-					Me.ProcessObserver.RaiseProgressEvent(e.TotalBytes, e.BytesRead, 0, 0, System.DateTime.Now, System.DateTime.Now, totaldisplay, processeddisplay)
+					Me.ProcessObserver.RaiseProgressEvent(e.TotalBytes, e.BytesRead, 0, 0, e.StartTime, System.DateTime.Now, totaldisplay, processeddisplay)
 					Me.ProcessObserver.RaiseStatusEvent("", "Preparing file for import")
 			End Select
 			System.Threading.Monitor.Exit(Me.ProcessObserver)
