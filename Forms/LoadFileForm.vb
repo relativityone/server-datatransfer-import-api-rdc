@@ -49,8 +49,6 @@ Namespace kCura.EDDS.WinForm
 		Friend WithEvents _fieldMap As kCura.Windows.Forms.TwoListBox
 		Friend WithEvents Label1 As System.Windows.Forms.Label
 		Friend WithEvents Label7 As System.Windows.Forms.Label
-		Friend WithEvents GroupBox233 As System.Windows.Forms.GroupBox
-		Friend WithEvents _overWrite As System.Windows.Forms.CheckBox
 		Friend WithEvents GroupBox3 As System.Windows.Forms.GroupBox
 		Friend WithEvents _identifiersDropDown As System.Windows.Forms.ComboBox
 		Friend WithEvents _loadNativeFiles As System.Windows.Forms.CheckBox
@@ -75,6 +73,11 @@ Namespace kCura.EDDS.WinForm
 		Friend WithEvents _filePath As System.Windows.Forms.TextBox
 		Friend WithEvents HelpProvider1 As System.Windows.Forms.HelpProvider
 		Friend WithEvents _fileColumns As kCura.Windows.Forms.TwoListBox
+		Friend WithEvents GroupBox233 As System.Windows.Forms.GroupBox
+		Friend WithEvents _overWrite As System.Windows.Forms.CheckBox
+		Friend WithEvents MenuItem3 As System.Windows.Forms.MenuItem
+		Friend WithEvents _fileMenuCloseItem As System.Windows.Forms.MenuItem
+		Friend WithEvents MenuItem5 As System.Windows.Forms.MenuItem
 		<System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
 			Dim resources As System.Resources.ResourceManager = New System.Resources.ResourceManager(GetType(LoadFileForm))
 			Me.OpenFileDialog = New System.Windows.Forms.OpenFileDialog
@@ -115,13 +118,16 @@ Namespace kCura.EDDS.WinForm
 			Me.Label5 = New System.Windows.Forms.Label
 			Me.GroupBox3 = New System.Windows.Forms.GroupBox
 			Me._identifiersDropDown = New System.Windows.Forms.ComboBox
-			Me.GroupBox233 = New System.Windows.Forms.GroupBox
-			Me._overWrite = New System.Windows.Forms.CheckBox
 			Me.Label7 = New System.Windows.Forms.Label
 			Me.Label1 = New System.Windows.Forms.Label
 			Me._fileColumns = New kCura.Windows.Forms.TwoListBox
 			Me._fieldMap = New kCura.Windows.Forms.TwoListBox
 			Me.HelpProvider1 = New System.Windows.Forms.HelpProvider
+			Me.GroupBox233 = New System.Windows.Forms.GroupBox
+			Me._overWrite = New System.Windows.Forms.CheckBox
+			Me.MenuItem3 = New System.Windows.Forms.MenuItem
+			Me._fileMenuCloseItem = New System.Windows.Forms.MenuItem
+			Me.MenuItem5 = New System.Windows.Forms.MenuItem
 			Me.GroupBox1.SuspendLayout()
 			Me.TabControl1.SuspendLayout()
 			Me._loadFileTab.SuspendLayout()
@@ -166,18 +172,18 @@ Namespace kCura.EDDS.WinForm
 			'MenuItem1
 			'
 			Me.MenuItem1.Index = 0
-			Me.MenuItem1.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me._fileSaveFieldMapMenuItem, Me._fileLoadFieldMapMenuItem})
+			Me.MenuItem1.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me._fileLoadFieldMapMenuItem, Me.MenuItem5, Me._fileSaveFieldMapMenuItem, Me.MenuItem3, Me._fileMenuCloseItem})
 			Me.MenuItem1.Text = "&File"
 			'
 			'_fileSaveFieldMapMenuItem
 			'
-			Me._fileSaveFieldMapMenuItem.Index = 0
+			Me._fileSaveFieldMapMenuItem.Index = 2
 			Me._fileSaveFieldMapMenuItem.Shortcut = System.Windows.Forms.Shortcut.CtrlS
 			Me._fileSaveFieldMapMenuItem.Text = "Save Field Map"
 			'
 			'_fileLoadFieldMapMenuItem
 			'
-			Me._fileLoadFieldMapMenuItem.Index = 1
+			Me._fileLoadFieldMapMenuItem.Index = 0
 			Me._fileLoadFieldMapMenuItem.Shortcut = System.Windows.Forms.Shortcut.CtrlO
 			Me._fileLoadFieldMapMenuItem.Text = "Load Field Map"
 			'
@@ -379,9 +385,9 @@ Namespace kCura.EDDS.WinForm
 			'
 			'_fieldMapTab
 			'
+			Me._fieldMapTab.Controls.Add(Me.GroupBox233)
 			Me._fieldMapTab.Controls.Add(Me.GroupBox4)
 			Me._fieldMapTab.Controls.Add(Me.GroupBox3)
-			Me._fieldMapTab.Controls.Add(Me.GroupBox233)
 			Me._fieldMapTab.Controls.Add(Me.Label7)
 			Me._fieldMapTab.Controls.Add(Me.Label1)
 			Me._fieldMapTab.Controls.Add(Me._fileColumns)
@@ -398,7 +404,7 @@ Namespace kCura.EDDS.WinForm
 			Me.GroupBox4.Controls.Add(Me._extractFullTextFromNativeFile)
 			Me.GroupBox4.Controls.Add(Me._nativeFilePathField)
 			Me.GroupBox4.Controls.Add(Me.Label5)
-			Me.GroupBox4.Location = New System.Drawing.Point(328, 20)
+			Me.GroupBox4.Location = New System.Drawing.Point(204, 20)
 			Me.GroupBox4.Name = "GroupBox4"
 			Me.GroupBox4.Size = New System.Drawing.Size(404, 64)
 			Me.GroupBox4.TabIndex = 26
@@ -407,7 +413,7 @@ Namespace kCura.EDDS.WinForm
 			'
 			'_loadNativeFiles
 			'
-			Me._loadNativeFiles.Location = New System.Drawing.Point(8, 36)
+			Me._loadNativeFiles.Location = New System.Drawing.Point(8, 16)
 			Me._loadNativeFiles.Name = "_loadNativeFiles"
 			Me._loadNativeFiles.Size = New System.Drawing.Size(116, 20)
 			Me._loadNativeFiles.TabIndex = 22
@@ -416,7 +422,7 @@ Namespace kCura.EDDS.WinForm
 			'_extractFullTextFromNativeFile
 			'
 			Me._extractFullTextFromNativeFile.Enabled = False
-			Me._extractFullTextFromNativeFile.Location = New System.Drawing.Point(8, 16)
+			Me._extractFullTextFromNativeFile.Location = New System.Drawing.Point(8, 36)
 			Me._extractFullTextFromNativeFile.Name = "_extractFullTextFromNativeFile"
 			Me._extractFullTextFromNativeFile.Size = New System.Drawing.Size(180, 20)
 			Me._extractFullTextFromNativeFile.TabIndex = 23
@@ -443,7 +449,7 @@ Namespace kCura.EDDS.WinForm
 			'GroupBox3
 			'
 			Me.GroupBox3.Controls.Add(Me._identifiersDropDown)
-			Me.GroupBox3.Location = New System.Drawing.Point(128, 20)
+			Me.GroupBox3.Location = New System.Drawing.Point(4, 20)
 			Me.GroupBox3.Name = "GroupBox3"
 			Me.GroupBox3.Size = New System.Drawing.Size(196, 64)
 			Me.GroupBox3.TabIndex = 21
@@ -458,24 +464,6 @@ Namespace kCura.EDDS.WinForm
 			Me._identifiersDropDown.Size = New System.Drawing.Size(184, 21)
 			Me._identifiersDropDown.TabIndex = 19
 			Me._identifiersDropDown.Text = "Select..."
-			'
-			'GroupBox233
-			'
-			Me.GroupBox233.Controls.Add(Me._overWrite)
-			Me.GroupBox233.Location = New System.Drawing.Point(4, 20)
-			Me.GroupBox233.Name = "GroupBox233"
-			Me.GroupBox233.Size = New System.Drawing.Size(116, 64)
-			Me.GroupBox233.TabIndex = 5
-			Me.GroupBox233.TabStop = False
-			Me.GroupBox233.Text = "Update Behavior"
-			'
-			'_overWrite
-			'
-			Me._overWrite.Location = New System.Drawing.Point(12, 24)
-			Me._overWrite.Name = "_overWrite"
-			Me._overWrite.Size = New System.Drawing.Size(96, 20)
-			Me._overWrite.TabIndex = 2
-			Me._overWrite.Text = "Overwrite"
 			'
 			'Label7
 			'
@@ -497,6 +485,7 @@ Namespace kCura.EDDS.WinForm
 			'
 			'_fileColumns
 			'
+			Me._fileColumns.KeepButtonsCentered = False
 			Me._fileColumns.LeftOrderControlsVisible = True
 			Me._fileColumns.Location = New System.Drawing.Point(372, 112)
 			Me._fileColumns.Name = "_fileColumns"
@@ -506,12 +495,47 @@ Namespace kCura.EDDS.WinForm
 			'
 			'_fieldMap
 			'
+			Me._fieldMap.KeepButtonsCentered = False
 			Me._fieldMap.LeftOrderControlsVisible = False
 			Me._fieldMap.Location = New System.Drawing.Point(4, 112)
 			Me._fieldMap.Name = "_fieldMap"
 			Me._fieldMap.RightOrderControlVisible = True
 			Me._fieldMap.Size = New System.Drawing.Size(360, 276)
 			Me._fieldMap.TabIndex = 1
+			'
+			'GroupBox233
+			'
+			Me.GroupBox233.Controls.Add(Me._overWrite)
+			Me.GroupBox233.Location = New System.Drawing.Point(612, 20)
+			Me.GroupBox233.Name = "GroupBox233"
+			Me.GroupBox233.Size = New System.Drawing.Size(116, 64)
+			Me.GroupBox233.TabIndex = 27
+			Me.GroupBox233.TabStop = False
+			Me.GroupBox233.Text = "Update Behavior"
+			'
+			'_overWrite
+			'
+			Me._overWrite.Location = New System.Drawing.Point(12, 32)
+			Me._overWrite.Name = "_overWrite"
+			Me._overWrite.Size = New System.Drawing.Size(96, 20)
+			Me._overWrite.TabIndex = 2
+			Me._overWrite.Text = "Overwrite"
+			'
+			'MenuItem3
+			'
+			Me.MenuItem3.Index = 3
+			Me.MenuItem3.Text = "-"
+			'
+			'_fileMenuCloseItem
+			'
+			Me._fileMenuCloseItem.Index = 4
+			Me._fileMenuCloseItem.Shortcut = System.Windows.Forms.Shortcut.CtrlW
+			Me._fileMenuCloseItem.Text = "Close"
+			'
+			'MenuItem5
+			'
+			Me.MenuItem5.Index = 1
+			Me.MenuItem5.Text = "-"
 			'
 			'LoadFileForm
 			'
@@ -720,7 +744,7 @@ Namespace kCura.EDDS.WinForm
 			ActionMenuEnabled = ReadyToRun
 		End Sub
 
-		Private Sub _overWrite_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _overWrite.CheckedChanged
+		Private Sub _overWrite_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs)
 			LoadFile.OverwriteDestination = _overWrite.Checked
 			ActionMenuEnabled = ReadyToRun
 			'_identifiersDropDown.Enabled = _overWrite.Checked
@@ -801,10 +825,6 @@ Namespace kCura.EDDS.WinForm
 			ActionMenuEnabled = ReadyToRun
 		End Sub
 
-		Private Sub _quoteDelimiter_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs)
-
-		End Sub
-
 		Private Sub _characterDropdown_SelectedIndexChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles _recordDelimiter.SelectedIndexChanged, _quoteDelimiter.SelectedIndexChanged, _newLineDelimiter.SelectedIndexChanged, _multiRecordDelimiter.SelectedIndexChanged
 			'PopulateLoadFileObject()
 			RefreshNativeFilePathFieldAndFileColumnHeaders()
@@ -850,6 +870,10 @@ Namespace kCura.EDDS.WinForm
 					_fileColumns.RightListBoxItems.Add(name)
 				End If
 			Next
+		End Sub
+
+		Private Sub _fileMenuCloseItem_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles _fileMenuCloseItem.Click
+			Me.Close()
 		End Sub
 	End Class
 End Namespace
