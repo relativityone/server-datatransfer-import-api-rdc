@@ -504,6 +504,8 @@ Namespace kCura.EDDS.WinForm
 			Dim previewfrm As New LoadFilePreviewForm
 			Dim thrower As New ValueThrower
 			previewer.Thrower = thrower
+			previewer.TimeZoneOffset = _timeZoneOffset
+			previewer.ErrorsOnly = errorsOnly
 			previewfrm.Thrower = previewer.Thrower
 			previewer.LoadFile = loadFileToPreview
 			frm.ProcessObserver = previewer.ProcessObserver
