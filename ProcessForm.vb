@@ -47,7 +47,11 @@ Namespace kCura.Windows.Process
     Friend WithEvents _warningsOutputTextBox As kCura.Windows.Forms.OutputRichTextBox
     Friend WithEvents _errorsOutputTextBox As kCura.Windows.Forms.OutputRichTextBox
     Friend WithEvents _statusBar As System.Windows.Forms.Label
-    <System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
+		Friend WithEvents ErrorReportTab As System.Windows.Forms.TabPage
+		Friend WithEvents _reportDataGrid As System.Windows.Forms.DataGrid
+		Friend WithEvents _exportErrorsDialog As System.Windows.Forms.SaveFileDialog
+		Friend WithEvents _exportErrorReportBtn As System.Windows.Forms.Button
+		<System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
 			Dim resources As System.Resources.ResourceManager = New System.Resources.ResourceManager(GetType(ProgressForm))
 			Me._stopImportButton = New System.Windows.Forms.Button
 			Me._showDetailButton = New System.Windows.Forms.Button
@@ -59,19 +63,25 @@ Namespace kCura.Windows.Process
 			Me._Tabs = New System.Windows.Forms.TabControl
 			Me.SummaryTab = New System.Windows.Forms.TabPage
 			Me._summaryOutput = New System.Windows.Forms.TextBox
+			Me.ErrorsTab = New System.Windows.Forms.TabPage
+			Me._errorsOutputTextBox = New kCura.Windows.Forms.OutputRichTextBox
 			Me.ProgressTab = New System.Windows.Forms.TabPage
 			Me._outputTextBox = New kCura.Windows.Forms.OutputRichTextBox
 			Me.WarningsTab = New System.Windows.Forms.TabPage
 			Me._warningsOutputTextBox = New kCura.Windows.Forms.OutputRichTextBox
-			Me.ErrorsTab = New System.Windows.Forms.TabPage
-			Me._errorsOutputTextBox = New kCura.Windows.Forms.OutputRichTextBox
+			Me.ErrorReportTab = New System.Windows.Forms.TabPage
+			Me._exportErrorReportBtn = New System.Windows.Forms.Button
+			Me._reportDataGrid = New System.Windows.Forms.DataGrid
 			Me._currentMessageStatus = New System.Windows.Forms.Label
 			Me._statusBar = New System.Windows.Forms.Label
+			Me._exportErrorsDialog = New System.Windows.Forms.SaveFileDialog
 			Me._Tabs.SuspendLayout()
 			Me.SummaryTab.SuspendLayout()
+			Me.ErrorsTab.SuspendLayout()
 			Me.ProgressTab.SuspendLayout()
 			Me.WarningsTab.SuspendLayout()
-			Me.ErrorsTab.SuspendLayout()
+			Me.ErrorReportTab.SuspendLayout()
+			CType(Me._reportDataGrid, System.ComponentModel.ISupportInitialize).BeginInit()
 			Me.SuspendLayout()
 			'
 			'_stopImportButton
@@ -138,9 +148,10 @@ Namespace kCura.Windows.Process
 									Or System.Windows.Forms.AnchorStyles.Left) _
 									Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me._Tabs.Controls.Add(Me.SummaryTab)
+			Me._Tabs.Controls.Add(Me.ErrorsTab)
 			Me._Tabs.Controls.Add(Me.ProgressTab)
 			Me._Tabs.Controls.Add(Me.WarningsTab)
-			Me._Tabs.Controls.Add(Me.ErrorsTab)
+			Me._Tabs.Controls.Add(Me.ErrorReportTab)
 			Me._Tabs.Location = New System.Drawing.Point(4, 104)
 			Me._Tabs.Name = "_Tabs"
 			Me._Tabs.SelectedIndex = 0
@@ -168,48 +179,12 @@ Namespace kCura.Windows.Process
 			Me._summaryOutput.TabIndex = 12
 			Me._summaryOutput.Text = ""
 			'
-			'ProgressTab
-			'
-			Me.ProgressTab.Controls.Add(Me._outputTextBox)
-			Me.ProgressTab.Location = New System.Drawing.Point(4, 22)
-			Me.ProgressTab.Name = "ProgressTab"
-			Me.ProgressTab.Size = New System.Drawing.Size(456, 190)
-			Me.ProgressTab.TabIndex = 0
-			Me.ProgressTab.Text = "Progress"
-			'
-			'_outputTextBox
-			'
-			Me._outputTextBox.Dock = System.Windows.Forms.DockStyle.Fill
-			Me._outputTextBox.InSafeMode = False
-			Me._outputTextBox.Location = New System.Drawing.Point(0, 0)
-			Me._outputTextBox.Name = "_outputTextBox"
-			Me._outputTextBox.Size = New System.Drawing.Size(456, 190)
-			Me._outputTextBox.TabIndex = 10
-			'
-			'WarningsTab
-			'
-			Me.WarningsTab.Controls.Add(Me._warningsOutputTextBox)
-			Me.WarningsTab.Location = New System.Drawing.Point(4, 22)
-			Me.WarningsTab.Name = "WarningsTab"
-			Me.WarningsTab.Size = New System.Drawing.Size(456, 190)
-			Me.WarningsTab.TabIndex = 3
-			Me.WarningsTab.Text = "Warnings"
-			'
-			'_warningsOutputTextBox
-			'
-			Me._warningsOutputTextBox.Dock = System.Windows.Forms.DockStyle.Fill
-			Me._warningsOutputTextBox.InSafeMode = False
-			Me._warningsOutputTextBox.Location = New System.Drawing.Point(0, 0)
-			Me._warningsOutputTextBox.Name = "_warningsOutputTextBox"
-			Me._warningsOutputTextBox.Size = New System.Drawing.Size(456, 190)
-			Me._warningsOutputTextBox.TabIndex = 11
-			'
 			'ErrorsTab
 			'
 			Me.ErrorsTab.Controls.Add(Me._errorsOutputTextBox)
 			Me.ErrorsTab.Location = New System.Drawing.Point(4, 22)
 			Me.ErrorsTab.Name = "ErrorsTab"
-			Me.ErrorsTab.Size = New System.Drawing.Size(456, 190)
+			Me.ErrorsTab.Size = New System.Drawing.Size(456, 202)
 			Me.ErrorsTab.TabIndex = 2
 			Me.ErrorsTab.Text = "Errors"
 			'
@@ -219,8 +194,74 @@ Namespace kCura.Windows.Process
 			Me._errorsOutputTextBox.InSafeMode = False
 			Me._errorsOutputTextBox.Location = New System.Drawing.Point(0, 0)
 			Me._errorsOutputTextBox.Name = "_errorsOutputTextBox"
-			Me._errorsOutputTextBox.Size = New System.Drawing.Size(456, 190)
+			Me._errorsOutputTextBox.Size = New System.Drawing.Size(456, 202)
 			Me._errorsOutputTextBox.TabIndex = 11
+			'
+			'ProgressTab
+			'
+			Me.ProgressTab.Controls.Add(Me._outputTextBox)
+			Me.ProgressTab.Location = New System.Drawing.Point(4, 22)
+			Me.ProgressTab.Name = "ProgressTab"
+			Me.ProgressTab.Size = New System.Drawing.Size(456, 202)
+			Me.ProgressTab.TabIndex = 0
+			Me.ProgressTab.Text = "Progress"
+			'
+			'_outputTextBox
+			'
+			Me._outputTextBox.Dock = System.Windows.Forms.DockStyle.Fill
+			Me._outputTextBox.InSafeMode = False
+			Me._outputTextBox.Location = New System.Drawing.Point(0, 0)
+			Me._outputTextBox.Name = "_outputTextBox"
+			Me._outputTextBox.Size = New System.Drawing.Size(456, 202)
+			Me._outputTextBox.TabIndex = 10
+			'
+			'WarningsTab
+			'
+			Me.WarningsTab.Controls.Add(Me._warningsOutputTextBox)
+			Me.WarningsTab.Location = New System.Drawing.Point(4, 22)
+			Me.WarningsTab.Name = "WarningsTab"
+			Me.WarningsTab.Size = New System.Drawing.Size(456, 202)
+			Me.WarningsTab.TabIndex = 3
+			Me.WarningsTab.Text = "Warnings"
+			'
+			'_warningsOutputTextBox
+			'
+			Me._warningsOutputTextBox.Dock = System.Windows.Forms.DockStyle.Fill
+			Me._warningsOutputTextBox.InSafeMode = False
+			Me._warningsOutputTextBox.Location = New System.Drawing.Point(0, 0)
+			Me._warningsOutputTextBox.Name = "_warningsOutputTextBox"
+			Me._warningsOutputTextBox.Size = New System.Drawing.Size(456, 202)
+			Me._warningsOutputTextBox.TabIndex = 11
+			'
+			'ErrorReportTab
+			'
+			Me.ErrorReportTab.Controls.Add(Me._exportErrorReportBtn)
+			Me.ErrorReportTab.Controls.Add(Me._reportDataGrid)
+			Me.ErrorReportTab.Location = New System.Drawing.Point(4, 22)
+			Me.ErrorReportTab.Name = "ErrorReportTab"
+			Me.ErrorReportTab.Size = New System.Drawing.Size(456, 202)
+			Me.ErrorReportTab.TabIndex = 4
+			Me.ErrorReportTab.Text = "Report"
+			'
+			'_exportErrorReportBtn
+			'
+			Me._exportErrorReportBtn.Location = New System.Drawing.Point(0, 2)
+			Me._exportErrorReportBtn.Name = "_exportErrorReportBtn"
+			Me._exportErrorReportBtn.Size = New System.Drawing.Size(132, 20)
+			Me._exportErrorReportBtn.TabIndex = 2
+			Me._exportErrorReportBtn.Text = "Export To CSV/Excel"
+			'
+			'_reportDataGrid
+			'
+			Me._reportDataGrid.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
+									Or System.Windows.Forms.AnchorStyles.Left) _
+									Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+			Me._reportDataGrid.DataMember = ""
+			Me._reportDataGrid.HeaderForeColor = System.Drawing.SystemColors.ControlText
+			Me._reportDataGrid.Location = New System.Drawing.Point(0, 24)
+			Me._reportDataGrid.Name = "_reportDataGrid"
+			Me._reportDataGrid.Size = New System.Drawing.Size(480, 176)
+			Me._reportDataGrid.TabIndex = 0
 			'
 			'_currentMessageStatus
 			'
@@ -240,6 +281,10 @@ Namespace kCura.Windows.Process
 			Me._statusBar.TabIndex = 13
 			Me._statusBar.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
 			'
+			'_exportErrorsDialog
+			'
+			Me._exportErrorsDialog.Filter = "CSV Files|*.csv|All Files|*.*"
+			'
 			'ProgressForm
 			'
 			Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
@@ -258,9 +303,11 @@ Namespace kCura.Windows.Process
 			Me.Text = "Import Progress..."
 			Me._Tabs.ResumeLayout(False)
 			Me.SummaryTab.ResumeLayout(False)
+			Me.ErrorsTab.ResumeLayout(False)
 			Me.ProgressTab.ResumeLayout(False)
 			Me.WarningsTab.ResumeLayout(False)
-			Me.ErrorsTab.ResumeLayout(False)
+			Me.ErrorReportTab.ResumeLayout(False)
+			CType(Me._reportDataGrid, System.ComponentModel.ISupportInitialize).EndInit()
 			Me.ResumeLayout(False)
 
 		End Sub
@@ -452,6 +499,21 @@ Namespace kCura.Windows.Process
     Private Sub _processObserver_StatusBarEvent(ByVal message As String) Handles _processObserver.StatusBarEvent
       _statusBar.Text = message
     End Sub
-  End Class
+
+		Private Sub _processObserver_ShowReportEvent(ByVal datasource As System.Data.DataTable, ByVal maxlengthExceeded As Boolean) Handles _processObserver.ShowReportEvent
+			If maxlengthExceeded Then
+				MsgBox("Maximum number of errors has been exceeded." & System.Environment.NewLine & "Export errors to view in entirety.", MsgBoxStyle.Exclamation)
+			End If
+			_reportDataGrid.DataSource = datasource
+		End Sub
+
+		Private Sub _exportErrorReportBtn_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles _exportErrorReportBtn.Click
+			_exportErrorsDialog.ShowDialog()
+		End Sub
+
+		Private Sub _exportErrorsDialog_FileOk(ByVal sender As Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles _exportErrorsDialog.FileOk
+			_processObserver.ExportErrorReport(_exportErrorsDialog.FileName)
+		End Sub
+	End Class
 
 End Namespace
