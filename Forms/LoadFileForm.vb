@@ -669,6 +669,7 @@ Namespace kCura.EDDS.WinForm
 			'		_identifiersDropDown.SelectedItem = caseFieldName
 			'	End If
 			'End If
+			_extractMd5Hash.Enabled = EnableMd5Hash
 			ActionMenuEnabled = ReadyToRun
 			Me.Cursor = System.Windows.Forms.Cursors.Default
 		End Sub
@@ -753,6 +754,7 @@ Namespace kCura.EDDS.WinForm
 			'End If
 			_nativeFilePathField.SelectedItem = Nothing
 			_nativeFilePathField.Text = "Select ..."
+			_extractMd5Hash.Enabled = EnableMd5Hash
 			ActionMenuEnabled = ReadyToRun
 		End Sub
 
@@ -800,16 +802,21 @@ Namespace kCura.EDDS.WinForm
 
 		Private Sub _fieldMap_ItemsShifted() Handles _fieldMap.ItemsShifted
 			ActionMenuEnabled = ReadyToRun
-
-			Dim item As String
-			For Each item In _fieldMap.RightListBoxItems
-				If _application.CurrentFields.Item(item).FieldCategoryID = kCura.EDDS.Types.FieldCategory.DuplicateHash Then
-					_extractMd5Hash.Enabled = False
-					Exit Sub
-				End If
-			Next
-			_extractMd5Hash.Enabled = True
+			_extractMd5Hash.Enabled = EnableMd5Hash
 		End Sub
+
+		Private ReadOnly Property EnableMd5Hash() As Boolean
+			Get
+				If Not _nativeFilePathField.Enabled Then Return False
+				Dim item As String
+				For Each item In _fieldMap.RightListBoxItems
+					If _application.CurrentFields.Item(item).FieldCategoryID = kCura.EDDS.Types.FieldCategory.DuplicateHash Then
+						Return False
+					End If
+				Next
+				Return True
+			End Get
+		End Property
 
 		Private Sub _fileColumns_ItemsShifted() Handles _fileColumns.ItemsShifted
 			ActionMenuEnabled = ReadyToRun
