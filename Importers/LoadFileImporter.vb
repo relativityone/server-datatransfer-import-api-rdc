@@ -359,10 +359,8 @@ Namespace kCura.WinEDDS
 				If Not item.DocumentField Is Nothing Then
 					docfield = New DocumentField(item.DocumentField)
 					MyBase.SetFieldValue(docfield, values, item.NativeFileColumnIndex)
-					If docfield.FieldCategoryID = kCura.EDDS.Types.FieldCategory.Identifier Then
-						If docfield.FieldName = _selectedIdentifier.FieldName Then
-							identityValue = docfield.Value
-						End If
+					If docfield.FieldName = _selectedIdentifier.FieldName Then
+						identityValue = docfield.Value
 					End If
 					fieldCollection.Add(docfield)
 				End If
