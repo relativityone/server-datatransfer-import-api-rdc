@@ -317,7 +317,8 @@ Namespace kCura.Windows.Process
     Protected _processId As Guid
     Protected WithEvents _processObserver As kCura.Windows.Process.ProcessObserver
     Protected WithEvents _controller As kCura.Windows.Process.Controller
-    Private _inSafeMode As Boolean
+		Private _inSafeMode As Boolean
+		Private _errorsDataSource As System.Data.DataTable
 
 
     Public Property ProcessID() As Guid
@@ -504,7 +505,12 @@ Namespace kCura.Windows.Process
 			If maxlengthExceeded Then
 				MsgBox("Maximum number of errors has been exceeded." & System.Environment.NewLine & "Export errors to view in entirety.", MsgBoxStyle.Exclamation)
 			End If
-			_reportDataGrid.DataSource = datasource
+			_errorsDataSource = datasource
+			Me.Invoke(New HandleDataSourceDelegate(AddressOf HandleDataSource))
+		End Sub
+
+		Private Sub HandleDataSource()
+			_reportDataGrid.DataSource = _errorsDataSource
 		End Sub
 
 		Private Sub _exportErrorReportBtn_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles _exportErrorReportBtn.Click
@@ -514,6 +520,9 @@ Namespace kCura.Windows.Process
 		Private Sub _exportErrorsDialog_FileOk(ByVal sender As Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles _exportErrorsDialog.FileOk
 			_processObserver.ExportErrorReport(_exportErrorsDialog.FileName)
 		End Sub
+
+		Delegate Sub HandleDataSourceDelegate()
 	End Class
+
 
 End Namespace
