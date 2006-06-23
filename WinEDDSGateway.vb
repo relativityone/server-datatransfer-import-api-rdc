@@ -53,6 +53,7 @@ Namespace kCura.EDDS.WinForm
 			documentDTO.AccessControlListID = Me.GetRootFolderACLID(destinationFolderID)
 			documentDTO.DocumentAgentFlags = New kCura.EDDS.WebAPI.DocumentManagerBase.DocumentAgentFlags
 			documentDTO.DocumentAgentFlags.UpdateFullText = extractFullText
+			documentDTO.DocumentAgentFlags.IndexStatus = 1
 			importer.ReportStatus(recordInfo, "Building Field Map")
 
 			' set the control field
