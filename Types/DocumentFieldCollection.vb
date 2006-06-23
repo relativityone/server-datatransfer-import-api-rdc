@@ -71,6 +71,24 @@ Namespace kCura.WinEDDS
 			Return retval
 		End Function
 
+		Public Function NamesForIdentifierDropdown() As String()
+			Dim al As New ArrayList
+			Dim field As DocumentField
+			Dim fieldname As String
+			For Each field In _idIndex.Values
+				If ( _
+				 field.FieldCategoryID <> 3 AndAlso _
+				 field.FieldCategoryID <> 5 AndAlso _
+				 field.FieldTypeID = kCura.EDDS.Types.FieldTypeHelper.FieldType.Varchar _
+				) Then
+					al.Add(field.FieldName)
+				End If
+			Next
+			Dim retval As String() = DirectCast(al.ToArray(GetType(String)), String())
+			System.Array.Sort(retval)
+			Return retval
+		End Function
+
 		Public Sub New()
 			_idIndex = New System.Collections.Hashtable
 			_nameIndex = New System.Collections.Hashtable
@@ -80,5 +98,12 @@ Namespace kCura.WinEDDS
 			If Not fields Is Nothing Then Me.AddRange(fields)
 		End Sub
 
+		Public Class FieldComparer
+			Implements IComparer
+			Public Function Compare(ByVal x As Object, ByVal y As Object) As Integer Implements System.Collections.IComparer.Compare
+				Dim lhs As DocumentField = DirectCast(x, DocumentField)
+				Dim rhs As DocumentField = DirectCast(y, DocumentField)
+			End Function
+		End Class
 	End Class
 End Namespace
