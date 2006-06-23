@@ -651,7 +651,7 @@ Namespace kCura.EDDS.WinForm
 			Else
 				_fieldMap.LeftListBoxItems.AddRange(caseFields)
 			End If
-			_identifiersDropDown.Items.AddRange(_application.GetCaseIdentifierFields)
+			_identifiersDropDown.Items.AddRange(_application.IdentiferFieldDropdownPopulator)
 			_overWrite.Checked = LoadFile.OverwriteDestination
 			_identifiersDropDown.Enabled = True			'LoadFile.OverwriteDestination
 			_overWrite.Checked = LoadFile.OverwriteDestination

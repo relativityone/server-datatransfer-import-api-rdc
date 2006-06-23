@@ -143,6 +143,10 @@ Namespace kCura.EDDS.WinForm
 			Return CurrentFields.IdentifierFieldNames
 		End Function
 
+		Public Function IdentiferFieldDropdownPopulator() As String()
+			Return CurrentFields.NamesForIdentifierDropdown
+		End Function
+
 		Public Function GetCaseFields(ByVal caseID As Int32) As String()
 			Return CurrentFields.Names
 		End Function
