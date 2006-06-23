@@ -309,7 +309,7 @@ Namespace kCura.WinEDDS
 						Exit For
 					End If
 				Next
-				If Not fullTextFileDTO Is Nothing AndAlso fullTextFileDTO.Type = 2 Then
+				If Not fullTextFileDTO Is Nothing AndAlso fullTextFileDTO.Type = 2 AndAlso Not extractText Then
 					fileList.Add(fullTextFileDTO)
 				End If
 				If fileList.Count = 0 Then
