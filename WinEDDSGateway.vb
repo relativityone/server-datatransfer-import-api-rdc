@@ -91,14 +91,14 @@ Namespace kCura.EDDS.WinForm
 			Try
 				importer.ReportStatus(recordInfo, "Begin Uploading Document")
 				Dim fileInfo As System.IO.FileInfo = New System.IO.FileInfo(fileName)
-        Dim fileIdentifier As String
-        fileIdentifier = _uploader.UploadFile(fileName, documentArtifactID)
-        _uploader.UploaderType = FileUploader.Type.Web
+				Dim fileIdentifier As String
+				_uploader.UploaderType = FileUploader.Type.Web
+				fileIdentifier = _uploader.UploadFile(fileName, documentArtifactID)
 				If fileIdentifier <> String.Empty Then
 					_fileManager.CreateFile(documentArtifactID, -1, fileInfo.Name, fileIdentifier, 0, kCura.EDDS.Types.FileType.Native)
-        End If
-        importer.ReportStatus(recordInfo, "Finished Uploading Document")
-      Catch ex As Exception
+				End If
+				importer.ReportStatus(recordInfo, "Finished Uploading Document")
+			Catch ex As Exception
 				importer.ReportError(recordInfo, "Exception Encountered Uploading Document" + vbCrLf + ex.ToString)
 				importer.TotalRecordsProcessedWithErrors = importer.TotalRecordsProcessedWithErrors + 1
 			End Try
