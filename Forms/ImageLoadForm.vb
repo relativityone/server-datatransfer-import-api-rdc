@@ -243,7 +243,7 @@ Namespace kCura.EDDS.WinForm
 		Private Sub ImageLoad_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
 			Me.Cursor = Cursors.WaitCursor
 			_controlKeyField.Items.Clear()
-			_controlKeyField.Items.AddRange(_application.GetCaseIdentifierFields)
+			_controlKeyField.Items.AddRange(_application.IdentiferFieldDropdownPopulator)
 			_overWrite.Checked = ImageLoadFile.Overwrite
 			ReadyToRun()
 			Me.Cursor = Cursors.Default
