@@ -211,7 +211,7 @@ Namespace kCura.WinEDDS
 			Dim row As System.Data.DataRow
 			If Me.ExportFile.ExportFullText Then
 				For Each row In dt.Rows
-					If CType(row("ArtifactID"), Int32) = documentArtifactID Then
+					If CType(row("DocumentArtifactID"), Int32) = documentArtifactID Then
 						Return CType(row("Guid"), String)
 					End If
 				Next
@@ -222,7 +222,7 @@ Namespace kCura.WinEDDS
 
 		Private Function GetNativeRow(ByVal dv As System.Data.DataView, ByVal artifactID As Int32) As System.Data.DataRowView
 			If Not Me.ExportFile.ExportNative Then Return Nothing
-			dv.RowFilter = "ArtifactID = " & artifactID.ToString
+			dv.RowFilter = "DocumentArtifactID = " & artifactID.ToString
 			If dv.Count > 0 Then
 				Return dv(0)
 			Else
