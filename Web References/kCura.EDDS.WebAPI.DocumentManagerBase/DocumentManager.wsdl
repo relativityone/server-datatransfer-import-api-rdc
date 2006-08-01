@@ -39,7 +39,6 @@
       <s:complexType name="File">
         <s:sequence>
           <s:element minOccurs="0" maxOccurs="1" name="Guid" type="s:string" />
-          <s:element minOccurs="1" maxOccurs="1" name="DocumentID" type="s:int" />
           <s:element minOccurs="1" maxOccurs="1" name="Order" type="s:int" />
           <s:element minOccurs="1" maxOccurs="1" name="Type" type="s:int" />
           <s:element minOccurs="0" maxOccurs="1" name="Filename" type="s:string" />
@@ -64,18 +63,17 @@
           </s:sequence>
         </s:complexType>
       </s:element>
-      <s:element name="ReadFromDocumentID">
+      <s:element name="Read">
         <s:complexType>
           <s:sequence>
-            <s:element minOccurs="1" maxOccurs="1" name="documentID" type="s:int" />
-            <s:element minOccurs="1" maxOccurs="1" name="contextArtifactID" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="artifactID" type="s:int" />
           </s:sequence>
         </s:complexType>
       </s:element>
-      <s:element name="ReadFromDocumentIDResponse">
+      <s:element name="ReadResponse">
         <s:complexType>
           <s:sequence>
-            <s:element minOccurs="0" maxOccurs="1" name="ReadFromDocumentIDResult" type="tns:Document" />
+            <s:element minOccurs="0" maxOccurs="1" name="ReadResult" type="tns:Document" />
           </s:sequence>
         </s:complexType>
       </s:element>
@@ -84,7 +82,6 @@
           <s:extension base="tns:Artifact">
             <s:sequence>
               <s:element minOccurs="0" maxOccurs="1" name="Fields" type="tns:ArrayOfField" />
-              <s:element minOccurs="1" maxOccurs="1" name="DocumentID" type="s:int" />
               <s:element minOccurs="0" maxOccurs="1" name="Files" type="tns:ArrayOfFile" />
               <s:element minOccurs="0" maxOccurs="1" name="DocumentAgentFlags" type="tns:DocumentAgentFlags" />
             </s:sequence>
@@ -268,8 +265,7 @@
       <s:element name="AddFullTextToDocumentFromFile">
         <s:complexType>
           <s:sequence>
-            <s:element minOccurs="1" maxOccurs="1" name="contextArtifactID" type="s:int" />
-            <s:element minOccurs="1" maxOccurs="1" name="documentID" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="documentArtifactID" type="s:int" />
             <s:element minOccurs="0" maxOccurs="1" name="fullTextFileName" type="s:string" />
           </s:sequence>
         </s:complexType>
@@ -281,7 +277,7 @@
           </s:sequence>
         </s:complexType>
       </s:element>
-      <s:element name="GetDocumentIDFromIdentifier">
+      <s:element name="GetDocumentArtifactIDFromIdentifier">
         <s:complexType>
           <s:sequence>
             <s:element minOccurs="0" maxOccurs="1" name="identifier" type="s:string" />
@@ -290,10 +286,10 @@
           </s:sequence>
         </s:complexType>
       </s:element>
-      <s:element name="GetDocumentIDFromIdentifierResponse">
+      <s:element name="GetDocumentArtifactIDFromIdentifierResponse">
         <s:complexType>
           <s:sequence>
-            <s:element minOccurs="1" maxOccurs="1" name="GetDocumentIDFromIdentifierResult" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="GetDocumentArtifactIDFromIdentifierResult" type="s:int" />
           </s:sequence>
         </s:complexType>
       </s:element>
@@ -327,8 +323,7 @@
       <s:element name="ClearImagesFromDocument">
         <s:complexType>
           <s:sequence>
-            <s:element minOccurs="1" maxOccurs="1" name="caseID" type="s:int" />
-            <s:element minOccurs="1" maxOccurs="1" name="documentID" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="artifactID" type="s:int" />
           </s:sequence>
         </s:complexType>
       </s:element>
@@ -418,11 +413,11 @@
   <wsdl:message name="CreateEmptyDocumentSoapOut">
     <wsdl:part name="parameters" element="tns:CreateEmptyDocumentResponse" />
   </wsdl:message>
-  <wsdl:message name="ReadFromDocumentIDSoapIn">
-    <wsdl:part name="parameters" element="tns:ReadFromDocumentID" />
+  <wsdl:message name="ReadSoapIn">
+    <wsdl:part name="parameters" element="tns:Read" />
   </wsdl:message>
-  <wsdl:message name="ReadFromDocumentIDSoapOut">
-    <wsdl:part name="parameters" element="tns:ReadFromDocumentIDResponse" />
+  <wsdl:message name="ReadSoapOut">
+    <wsdl:part name="parameters" element="tns:ReadResponse" />
   </wsdl:message>
   <wsdl:message name="DeleteNativeSoapIn">
     <wsdl:part name="parameters" element="tns:DeleteNative" />
@@ -460,11 +455,11 @@
   <wsdl:message name="AddFullTextToDocumentFromFileSoapOut">
     <wsdl:part name="parameters" element="tns:AddFullTextToDocumentFromFileResponse" />
   </wsdl:message>
-  <wsdl:message name="GetDocumentIDFromIdentifierSoapIn">
-    <wsdl:part name="parameters" element="tns:GetDocumentIDFromIdentifier" />
+  <wsdl:message name="GetDocumentArtifactIDFromIdentifierSoapIn">
+    <wsdl:part name="parameters" element="tns:GetDocumentArtifactIDFromIdentifier" />
   </wsdl:message>
-  <wsdl:message name="GetDocumentIDFromIdentifierSoapOut">
-    <wsdl:part name="parameters" element="tns:GetDocumentIDFromIdentifierResponse" />
+  <wsdl:message name="GetDocumentArtifactIDFromIdentifierSoapOut">
+    <wsdl:part name="parameters" element="tns:GetDocumentArtifactIDFromIdentifierResponse" />
   </wsdl:message>
   <wsdl:message name="ReadFromIdentifierSoapIn">
     <wsdl:part name="parameters" element="tns:ReadFromIdentifier" />
@@ -515,9 +510,9 @@
       <wsdl:input message="tns:CreateEmptyDocumentSoapIn" />
       <wsdl:output message="tns:CreateEmptyDocumentSoapOut" />
     </wsdl:operation>
-    <wsdl:operation name="ReadFromDocumentID">
-      <wsdl:input message="tns:ReadFromDocumentIDSoapIn" />
-      <wsdl:output message="tns:ReadFromDocumentIDSoapOut" />
+    <wsdl:operation name="Read">
+      <wsdl:input message="tns:ReadSoapIn" />
+      <wsdl:output message="tns:ReadSoapOut" />
     </wsdl:operation>
     <wsdl:operation name="DeleteNative">
       <wsdl:input message="tns:DeleteNativeSoapIn" />
@@ -543,9 +538,9 @@
       <wsdl:input message="tns:AddFullTextToDocumentFromFileSoapIn" />
       <wsdl:output message="tns:AddFullTextToDocumentFromFileSoapOut" />
     </wsdl:operation>
-    <wsdl:operation name="GetDocumentIDFromIdentifier">
-      <wsdl:input message="tns:GetDocumentIDFromIdentifierSoapIn" />
-      <wsdl:output message="tns:GetDocumentIDFromIdentifierSoapOut" />
+    <wsdl:operation name="GetDocumentArtifactIDFromIdentifier">
+      <wsdl:input message="tns:GetDocumentArtifactIDFromIdentifierSoapIn" />
+      <wsdl:output message="tns:GetDocumentArtifactIDFromIdentifierSoapOut" />
     </wsdl:operation>
     <wsdl:operation name="ReadFromIdentifier">
       <wsdl:input message="tns:ReadFromIdentifierSoapIn" />
@@ -601,8 +596,8 @@
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="ReadFromDocumentID">
-      <soap:operation soapAction="http://foley.com/EDDS/DocumentManager/ReadFromDocumentID" style="document" />
+    <wsdl:operation name="Read">
+      <soap:operation soapAction="http://foley.com/EDDS/DocumentManager/Read" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -664,8 +659,8 @@
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="GetDocumentIDFromIdentifier">
-      <soap:operation soapAction="http://foley.com/EDDS/DocumentManager/GetDocumentIDFromIdentifier" style="document" />
+    <wsdl:operation name="GetDocumentArtifactIDFromIdentifier">
+      <soap:operation soapAction="http://foley.com/EDDS/DocumentManager/GetDocumentArtifactIDFromIdentifier" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -729,7 +724,6 @@
     </wsdl:operation>
   </wsdl:binding>
   <wsdl:service name="DocumentManager">
-    <documentation xmlns="http://schemas.xmlsoap.org/wsdl/" />
     <wsdl:port name="DocumentManagerSoap" binding="tns:DocumentManagerSoap">
       <soap:address location="http://localhost/EDDS/WebAPI/DocumentManager.asmx" />
     </wsdl:port>

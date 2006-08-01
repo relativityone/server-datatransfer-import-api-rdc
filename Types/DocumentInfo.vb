@@ -3,7 +3,6 @@ Namespace kCura.WinEDDS
 
 #Region "Members"
 		Private _fields() As DocumentField
-		Private _documentID As Integer
 		Private _files() As FileInfo
 		Private _artifactID As Integer
 		Private _artifactTypeID As Integer
@@ -29,15 +28,6 @@ Namespace kCura.WinEDDS
 			End Get
 			Set(ByVal value As DocumentField())
 				_fields = value
-			End Set
-		End Property
-
-		Public Property DocumentID() As Integer
-			Get
-				Return _documentID
-			End Get
-			Set(ByVal value As Integer)
-				_documentID = value
 			End Set
 		End Property
 
@@ -180,7 +170,7 @@ Namespace kCura.WinEDDS
 
 		Public Function ToDisplayString() As String
 			Dim sb As New System.Text.StringBuilder
-			sb.AppendFormat("[DocumentID: {0}]", Me.DocumentID)
+			sb.AppendFormat("[ArtifactID: {0}]", Me.ArtifactID)
 			Dim docField As DocumentField
 			For Each docField In Fields
 				'If Not IgnoreField(docField.FieldName) Then

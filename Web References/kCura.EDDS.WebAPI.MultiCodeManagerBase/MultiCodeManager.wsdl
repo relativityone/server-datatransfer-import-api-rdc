@@ -108,7 +108,6 @@
     </wsdl:operation>
   </wsdl:binding>
   <wsdl:service name="MultiCodeManager">
-    <documentation xmlns="http://schemas.xmlsoap.org/wsdl/" />
     <wsdl:port name="MultiCodeManagerSoap" binding="tns:MultiCodeManagerSoap">
       <soap:address location="http://localhost/EDDS/WebAPI/MultiCodeManager.asmx" />
     </wsdl:port>

@@ -331,7 +331,6 @@ Namespace kCura.WinEDDS
 		Private Function CreateFileDTO(ByVal filename As String, ByVal fileguid As String) As kCura.EDDS.WebAPI.DocumentManagerBase.File
 			Dim fileDTO As New kCura.EDDS.WebAPI.DocumentManagerBase.File
 			fileDTO.DocumentArtifactID = 0
-			fileDTO.DocumentID = 0
 			fileDTO.Filename = filename
 			fileDTO.Guid = fileguid
 			fileDTO.Order = 0

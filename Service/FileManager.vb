@@ -16,10 +16,9 @@ Namespace kCura.WinEDDS.Service
 			Return wr
 		End Function
 
-		Public Overloads Function CreateFile(ByVal documentArtifactID As Int32, ByVal documentID As Int32, ByVal filename As String, ByVal fileGuid As String, ByVal order As Int32, ByVal type As Int32) As String
+		Public Overloads Function CreateFile(ByVal documentArtifactID As Int32, ByVal filename As String, ByVal fileGuid As String, ByVal order As Int32, ByVal type As Int32) As String
 			Dim fileDTO As New kCura.EDDS.WebAPI.FileManagerBase.File
 			fileDTO.DocumentArtifactID = documentArtifactID
-			fileDTO.DocumentID = documentID
 			fileDTO.Filename = filename
 			fileDTO.Guid = fileGuid
 			fileDTO.Order = order
@@ -28,23 +27,22 @@ Namespace kCura.WinEDDS.Service
 		End Function
 
 		Public Overloads Sub CreateNatives(ByVal fileDTOs As kCura.EDDS.WebAPI.FileManagerBase.File())
-			Dim documentIDs(fileDTOs.Length - 1) As Int32
+			Dim documentArtifactIDs(fileDTOs.Length - 1) As Int32
 			Dim files(fileDTOs.Length - 1) As kCura.EDDS.WebAPI.FileManagerBase.FileInfoBase
 			Dim i As Int32
 			For i = 0 To files.Length - 1
 				Dim file As New kCura.EDDS.WebAPI.FileManagerBase.FileInfoBase
 				file.FileGuid = fileDTOs(i).Guid
 				file.FileName = fileDTOs(i).Filename
-				documentIDs(i) = fileDTOs(i).DocumentArtifactID
+				documentArtifactIDs(i) = fileDTOs(i).DocumentArtifactID
 				files(i) = file
 			Next
-			MyBase.CreateNatives(files, documentIDs)
+			MyBase.CreateNatives(files, documentArtifactIDs)
 		End Sub
 
 		Public Shared Function DTOtoFileInfo(ByVal dto As kCura.EDDS.WebAPI.DocumentManagerBase.File) As FileInfo
 			Dim file As New FileInfo
 			file.DocumentArtifactID = dto.DocumentArtifactID
-			file.DocumentID = dto.DocumentID
 			file.Filename = dto.Filename
 			file.Guid = dto.Guid
 			file.Order = dto.Order

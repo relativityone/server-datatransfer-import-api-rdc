@@ -195,7 +195,6 @@
     </wsdl:operation>
   </wsdl:binding>
   <wsdl:service name="FolderManager">
-    <documentation xmlns="http://schemas.xmlsoap.org/wsdl/" />
     <wsdl:port name="FolderManagerSoap" binding="tns:FolderManagerSoap">
       <soap:address location="http://localhost/EDDS/WebAPI/FolderManager.asmx" />
     </wsdl:port>

@@ -24,18 +24,18 @@
           </s:sequence>
         </s:complexType>
       </s:element>
-      <s:element name="RetrieveFileGuidsByDocumentIDAndProductionArtifactID">
+      <s:element name="RetrieveFileGuidsByDocumentArtifactIDAndProductionArtifactID">
         <s:complexType>
           <s:sequence>
-            <s:element minOccurs="1" maxOccurs="1" name="documentID" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="documentArtifactID" type="s:int" />
             <s:element minOccurs="1" maxOccurs="1" name="productionArtifactID" type="s:int" />
           </s:sequence>
         </s:complexType>
       </s:element>
-      <s:element name="RetrieveFileGuidsByDocumentIDAndProductionArtifactIDResponse">
+      <s:element name="RetrieveFileGuidsByDocumentArtifactIDAndProductionArtifactIDResponse">
         <s:complexType>
           <s:sequence>
-            <s:element minOccurs="0" maxOccurs="1" name="RetrieveFileGuidsByDocumentIDAndProductionArtifactIDResult" type="tns:ArrayOfString" />
+            <s:element minOccurs="0" maxOccurs="1" name="RetrieveFileGuidsByDocumentArtifactIDAndProductionArtifactIDResult" type="tns:ArrayOfString" />
           </s:sequence>
         </s:complexType>
       </s:element>
@@ -47,7 +47,6 @@
       <s:element name="ReturnFileGuidsForOriginalImages">
         <s:complexType>
           <s:sequence>
-            <s:element minOccurs="1" maxOccurs="1" name="documentID" type="s:int" />
             <s:element minOccurs="1" maxOccurs="1" name="documentArtifactID" type="s:int" />
           </s:sequence>
         </s:complexType>
@@ -69,7 +68,6 @@
       <s:complexType name="File">
         <s:sequence>
           <s:element minOccurs="0" maxOccurs="1" name="Guid" type="s:string" />
-          <s:element minOccurs="1" maxOccurs="1" name="DocumentID" type="s:int" />
           <s:element minOccurs="1" maxOccurs="1" name="Order" type="s:int" />
           <s:element minOccurs="1" maxOccurs="1" name="Type" type="s:int" />
           <s:element minOccurs="0" maxOccurs="1" name="Filename" type="s:string" />
@@ -88,7 +86,7 @@
         <s:complexType>
           <s:sequence>
             <s:element minOccurs="0" maxOccurs="1" name="files" type="tns:ArrayOfFileInfoBase" />
-            <s:element minOccurs="1" maxOccurs="1" name="documentID" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="documentArtifactID" type="s:int" />
             <s:element minOccurs="1" maxOccurs="1" name="contextArtifactID" type="s:int" />
           </s:sequence>
         </s:complexType>
@@ -158,11 +156,11 @@
   <wsdl:message name="RetrieveByProductionArtifactIDForProductionSoapOut">
     <wsdl:part name="parameters" element="tns:RetrieveByProductionArtifactIDForProductionResponse" />
   </wsdl:message>
-  <wsdl:message name="RetrieveFileGuidsByDocumentIDAndProductionArtifactIDSoapIn">
-    <wsdl:part name="parameters" element="tns:RetrieveFileGuidsByDocumentIDAndProductionArtifactID" />
+  <wsdl:message name="RetrieveFileGuidsByDocumentArtifactIDAndProductionArtifactIDSoapIn">
+    <wsdl:part name="parameters" element="tns:RetrieveFileGuidsByDocumentArtifactIDAndProductionArtifactID" />
   </wsdl:message>
-  <wsdl:message name="RetrieveFileGuidsByDocumentIDAndProductionArtifactIDSoapOut">
-    <wsdl:part name="parameters" element="tns:RetrieveFileGuidsByDocumentIDAndProductionArtifactIDResponse" />
+  <wsdl:message name="RetrieveFileGuidsByDocumentArtifactIDAndProductionArtifactIDSoapOut">
+    <wsdl:part name="parameters" element="tns:RetrieveFileGuidsByDocumentArtifactIDAndProductionArtifactIDResponse" />
   </wsdl:message>
   <wsdl:message name="ReturnFileGuidsForOriginalImagesSoapIn">
     <wsdl:part name="parameters" element="tns:ReturnFileGuidsForOriginalImages" />
@@ -205,9 +203,9 @@
       <wsdl:input message="tns:RetrieveByProductionArtifactIDForProductionSoapIn" />
       <wsdl:output message="tns:RetrieveByProductionArtifactIDForProductionSoapOut" />
     </wsdl:operation>
-    <wsdl:operation name="RetrieveFileGuidsByDocumentIDAndProductionArtifactID">
-      <wsdl:input message="tns:RetrieveFileGuidsByDocumentIDAndProductionArtifactIDSoapIn" />
-      <wsdl:output message="tns:RetrieveFileGuidsByDocumentIDAndProductionArtifactIDSoapOut" />
+    <wsdl:operation name="RetrieveFileGuidsByDocumentArtifactIDAndProductionArtifactID">
+      <wsdl:input message="tns:RetrieveFileGuidsByDocumentArtifactIDAndProductionArtifactIDSoapIn" />
+      <wsdl:output message="tns:RetrieveFileGuidsByDocumentArtifactIDAndProductionArtifactIDSoapOut" />
     </wsdl:operation>
     <wsdl:operation name="ReturnFileGuidsForOriginalImages">
       <wsdl:input message="tns:ReturnFileGuidsForOriginalImagesSoapIn" />
@@ -245,8 +243,8 @@
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="RetrieveFileGuidsByDocumentIDAndProductionArtifactID">
-      <soap:operation soapAction="http://www.kCura.com/EDDS/FileManager/RetrieveFileGuidsByDocumentIDAndProductionArtifactID" style="document" />
+    <wsdl:operation name="RetrieveFileGuidsByDocumentArtifactIDAndProductionArtifactID">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/FileManager/RetrieveFileGuidsByDocumentArtifactIDAndProductionArtifactID" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -310,7 +308,6 @@
     </wsdl:operation>
   </wsdl:binding>
   <wsdl:service name="FileManager">
-    <documentation xmlns="http://schemas.xmlsoap.org/wsdl/" />
     <wsdl:port name="FileManagerSoap" binding="tns:FileManagerSoap">
       <soap:address location="http://localhost/EDDS/WebAPI/FileManager.asmx" />
     </wsdl:port>

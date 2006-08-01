@@ -149,7 +149,7 @@ Namespace kCura.WinEDDS
 			documentCount = Me.CurrentDocumentCount(dataTable, 0)
 			For count = 0 To dataTable.Rows.Count - 1
 				Try
-					If count > 0 AndAlso CType(dataTable.Rows(count - 1)("DocumentID"), Int32) <> CType(dataTable.Rows(count)("DocumentID"), Int32) Then
+					If count > 0 AndAlso CType(dataTable.Rows(count - 1)("DocumentArtifactID"), Int32) <> CType(dataTable.Rows(count)("DocumentArtifactID"), Int32) Then
 						volumeSize = volumeSize + documentSize
 						documentSize = Me.CurrentDocumentSize(dataTable, count, ProductionArtifactID)
 						If volumeSize + documentSize > production.VolumeMaxSize * 1024 * 1024 Then
@@ -169,8 +169,8 @@ Namespace kCura.WinEDDS
 					End If
 					'fileURI = String.Format("{0}Download.aspx?ArtifactID={1}&GUID={2}", Me.SelectedCaseInfo.DownloadHandlerURL, CType(dataTable.Rows(count)("ArtifactID"), Int32), CType(dataTable.Rows(count)("ImageGuid"), String))
 					fileName = String.Format("{0}{1}\{2}\{3}.tif", Me.FolderPath, currentVolume, currentDirectory, CType(dataTable.Rows(count)("BatesNumber"), String))
-					Me.ExportFile(fileName, CType(dataTable.Rows(count)("ImageGuid"), String), CType(dataTable.Rows(count)("ArtifactID"), Int32), CType(dataTable.Rows(count)("BatesNumber"), String))
-					volumeLog.Append(BuildVolumeLog(CType(dataTable.Rows(count)("BatesNumber"), String), currentVolume, fileName, (count = 0 OrElse CType(dataTable.Rows(count - 1)("DocumentID"), Int32) <> CType(dataTable.Rows(count)("DocumentID"), Int32))))
+					Me.ExportFile(fileName, CType(dataTable.Rows(count)("ImageGuid"), String), CType(dataTable.Rows(count)("DocumentArtifactID"), Int32), CType(dataTable.Rows(count)("BatesNumber"), String))
+					volumeLog.Append(BuildVolumeLog(CType(dataTable.Rows(count)("BatesNumber"), String), currentVolume, fileName, (count = 0 OrElse CType(dataTable.Rows(count - 1)("DocumentArtifactID"), Int32) <> CType(dataTable.Rows(count)("DocumentArtifactID"), Int32))))
 				Catch ex As Exception
 					Me.WriteError(String.Format("Error occurred on document #{0} with message: {1}", count + 1, ex.Message))
 				End Try
@@ -235,12 +235,12 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Private Function CurrentDocumentSize(ByVal dataTable As System.Data.DataTable, ByVal initialPosition As Int32, ByVal productionArtifactID As Int32) As Long
-			Dim documentID As Int32
+			Dim documentArtifactID As Int32
 			Dim count As Int32 = initialPosition
 			Dim size As Long = 0
 
-			documentID = CType(dataTable.Rows(count)("DocumentID"), Int32)
-			While count < dataTable.Rows.Count AndAlso CType(dataTable.Rows(count)("DocumentID"), Int32) = documentID
+			documentArtifactID = CType(dataTable.Rows(count)("DocumentArtifactID"), Int32)
+			While count < dataTable.Rows.Count AndAlso CType(dataTable.Rows(count)("documentArtifactID"), Int32) = documentArtifactID
 				size = size + CType(dataTable.Rows(count)("ImageSize"), Long)
 				count = count + 1
 			End While
@@ -248,11 +248,11 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Private Function CurrentDocumentCount(ByVal dataTable As System.Data.DataTable, ByVal initialPosition As Int32) As Int32
-			Dim documentID As Int32
+			Dim documentArtifactID As Int32
 			Dim count As Int32 = initialPosition
 
-			documentID = CType(dataTable.Rows(count)("DocumentID"), Int32)
-			While count < dataTable.Rows.Count AndAlso CType(dataTable.Rows(count)("DocumentID"), Int32) = documentID
+			documentArtifactID = CType(dataTable.Rows(count)("DocumentArtifactID"), Int32)
+			While count < dataTable.Rows.Count AndAlso CType(dataTable.Rows(count)("documentArtifactID"), Int32) = documentArtifactID
 				count = count + 1
 			End While
 			Return count - initialPosition

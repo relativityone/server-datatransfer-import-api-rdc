@@ -3,7 +3,6 @@ Namespace kCura.WinEDDS
 
 #Region "Members"
 		Private _guid As String
-		Private _documentID As Integer
 		Private _order As Integer
 		Private _type As Integer
 		Private _filename As String
@@ -17,15 +16,6 @@ Namespace kCura.WinEDDS
 			End Get
 			Set(ByVal value As String)
 				_guid = value
-			End Set
-		End Property
-
-		Public Property DocumentID() As Integer
-			Get
-				Return _documentID
-			End Get
-			Set(ByVal value As Integer)
-				_documentID = value
 			End Set
 		End Property
 
@@ -68,7 +58,7 @@ Namespace kCura.WinEDDS
 
 		Public Shared Function op_Equality(ByVal fi1 As FileInfo, ByVal fi2 As FileInfo) As Boolean
 			Dim areEqual As Boolean
-			areEqual = fi1.DocumentID = fi2.DocumentID
+			areEqual = fi1.DocumentArtifactID = fi2.DocumentArtifactID
 			areEqual = areEqual And fi1.Filename = fi2.Filename
 			areEqual = areEqual And fi1.Order = fi2.Order
 			areEqual = areEqual And fi1.Type = fi2.Type

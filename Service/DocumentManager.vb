@@ -17,8 +17,8 @@ Namespace kCura.WinEDDS.Service
 			Return wr
 		End Function
 
-		Public Shadows Function ReadFromDocumentID(ByVal documentID As Int32, ByVal contextArtifactID As Int32) As kCura.EDDS.WebAPI.DocumentManagerBase.Document
-			Dim doc As kCura.EDDS.WebAPI.DocumentManagerBase.Document = MyBase.ReadFromDocumentID(documentID, contextArtifactID)
+		Public Shadows Function ReadFromDocumentArtifactID(ByVal documentArtifactID As Int32) As kCura.EDDS.WebAPI.DocumentManagerBase.Document
+			Dim doc As kCura.EDDS.WebAPI.DocumentManagerBase.Document = MyBase.Read(documentArtifactID)
 			Dim field As kCura.EDDS.WebAPI.DocumentManagerBase.Field
 			For Each field In doc.Fields
 				If field.FieldCategoryID = kCura.EDDS.Types.FieldCategory.FullText Then
@@ -33,13 +33,12 @@ Namespace kCura.WinEDDS.Service
 			Dim doc As New DocumentInfo
 			doc.AccessControlListID = dto.AccessControlListID
 			doc.AccessControlListIsInherited = dto.AccessControlListIsInherited
-			doc.ArtifactID = dto.AccessControlListID
+			doc.ArtifactID = dto.ArtifactID
 			doc.ArtifactTypeID = dto.ArtifactTypeID
 			doc.ContainerID = dto.ContainerID
 			doc.CreatedBy = dto.CreatedBy
 			doc.CreatedOn = dto.CreatedOn
 			doc.DeleteFlag = dto.DeleteFlag
-			doc.DocumentID = dto.DocumentID
 			doc.Fields = FieldManager.DTOsToDocumentField(dto.Fields)
 			doc.Files = FileManager.DTOsToFileInfo(dto.Files)
 			doc.Keywords = dto.Keywords

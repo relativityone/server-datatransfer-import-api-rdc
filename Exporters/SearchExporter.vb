@@ -105,7 +105,7 @@ Namespace kCura.WinEDDS
 			Dim fileURI As String
 			Dim fileName As String
 			Dim fullTextFileGuid As String
-			Dim documentSpot, currentDocID As Int32
+			Dim documentSpot As Int32
 			Dim count As Int32
 			Dim writer As System.IO.StreamWriter
 			Dim volumeFile As String
@@ -144,21 +144,21 @@ Namespace kCura.WinEDDS
 
 			Dim i As Int32 = 0
 			Dim docRow As System.Data.DataRow
-			Dim docIDs As New ArrayList
+			Dim artifactIDs As New ArrayList
 			Dim docRows As New ArrayList
 			For Each docRow In documentTable.Rows
 				If Not _halt Then
 					i += 1
-					docIDs.Add(CType(docRow("DocumentID"), Int32))
+					artifactIDs.Add(CType(docRow("ArtifactID"), Int32))
 					docRows.Add(docRow)
 					If i Mod Config.SearchExportChunkSize = 0 Then
-						ExportChunk(DirectCast(docIDs.ToArray(GetType(Int32)), Int32()), DirectCast(docRows.ToArray(GetType(System.Data.DataRow)), System.Data.DataRow()), writer)
-						docIDs.Clear()
+						ExportChunk(DirectCast(artifactIDs.ToArray(GetType(Int32)), Int32()), DirectCast(docRows.ToArray(GetType(System.Data.DataRow)), System.Data.DataRow()), writer)
+						artifactIDs.Clear()
 						docRows.Clear()
 					End If
 				End If
 			Next
-			If docIDs.Count > 0 Then ExportChunk(DirectCast(docIDs.ToArray(GetType(Int32)), Int32()), DirectCast(docRows.ToArray(GetType(System.Data.DataRow)), System.Data.DataRow()), writer)
+			If artifactIDs.Count > 0 Then ExportChunk(DirectCast(artifactIDs.ToArray(GetType(Int32)), Int32()), DirectCast(docRows.ToArray(GetType(System.Data.DataRow)), System.Data.DataRow()), writer)
 			writer.Close()
 			'Me.TotalDocuments = fileTable.Rows.Count()
 			'logFile.Append(Me.LoadAndWriteColumns())
@@ -184,16 +184,16 @@ Namespace kCura.WinEDDS
 
 #Region "Private Helper Functions"
 
-		Private Sub ExportChunk(ByVal docIDs As Int32(), ByVal docRows As System.Data.DataRow(), ByVal writer As System.io.StreamWriter)
+		Private Sub ExportChunk(ByVal documentArtifactIDs As Int32(), ByVal docRows As System.Data.DataRow(), ByVal writer As System.io.StreamWriter)
 			Dim natives As New System.Data.DataView
 			Dim fullTexts As New System.Data.DataView
 			Dim i As Int32 = 0
-			If Me.ExportFile.ExportNative Then natives.Table = _searchManager.RetrieveNativesForSearch(Me.ExportFile.ArtifactID, kCura.Utility.Array.IntArrayToCSV(docIDs)).Tables(0)
-			If Me.ExportFile.ExportFullText Then fullTexts.Table = _searchManager.RetrieveFullTextFilesForSearch(Me.ExportFile.ArtifactID, kCura.Utility.Array.IntArrayToCSV(docIDs)).Tables(0)
-			For i = 0 To docIDs.Length - 1
-				Dim fullTextFileGuid As String = GetFullTextFileGuid(fullTexts.Table, docIDs(i))
+			If Me.ExportFile.ExportNative Then natives.Table = _searchManager.RetrieveNativesForSearch(Me.ExportFile.ArtifactID, kCura.Utility.Array.IntArrayToCSV(documentArtifactIDs)).Tables(0)
+			If Me.ExportFile.ExportFullText Then fullTexts.Table = _searchManager.RetrieveFullTextFilesForSearch(Me.ExportFile.ArtifactID, kCura.Utility.Array.IntArrayToCSV(documentArtifactIDs)).Tables(0)
+			For i = 0 To documentArtifactIDs.Length - 1
+				Dim fullTextFileGuid As String = GetFullTextFileGuid(fullTexts.Table, documentArtifactIDs(i))
 				Dim fileName As String = String.Empty
-				Dim nativeRow As System.Data.DataRowView = GetNativeRow(natives, docIDs(i))
+				Dim nativeRow As System.Data.DataRowView = GetNativeRow(natives, documentArtifactIDs(i))
 				If Me.ExportFile.ExportNative AndAlso Not nativeRow Is Nothing Then
 					fileName = String.Format("{0}{1}{2}", Me.ExportFile.FolderPath, Me.FolderList.ItemByArtifactID(CType(docRows(i)("ParentArtifactID"), Int32)).Path, CType(nativeRow("Filename"), String))
 					'Dim fileURI As String = String.Format("{0}Download.aspx?ArtifactID={1}&GUID={2}", Me.ExportFile.CaseInfo.DownloadHandlerURL, CType(docRows(i)("ArtifactID"), Int32), CType(nativeRow("Guid"), String))
@@ -207,11 +207,11 @@ Namespace kCura.WinEDDS
 			Next
 		End Sub
 
-		Private Function GetFullTextFileGuid(ByVal dt As System.Data.DataTable, ByVal docID As Int32) As String
+		Private Function GetFullTextFileGuid(ByVal dt As System.Data.DataTable, ByVal documentArtifactID As Int32) As String
 			Dim row As System.Data.DataRow
 			If Me.ExportFile.ExportFullText Then
 				For Each row In dt.Rows
-					If CType(row("DocumentID"), Int32) = docID Then
+					If CType(row("ArtifactID"), Int32) = documentArtifactID Then
 						Return CType(row("Guid"), String)
 					End If
 				Next
@@ -220,9 +220,9 @@ Namespace kCura.WinEDDS
 			End If
 		End Function
 
-		Private Function GetNativeRow(ByVal dv As System.Data.DataView, ByVal docID As Int32) As System.Data.DataRowView
+		Private Function GetNativeRow(ByVal dv As System.Data.DataView, ByVal artifactID As Int32) As System.Data.DataRowView
 			If Not Me.ExportFile.ExportNative Then Return Nothing
-			dv.RowFilter = "DocumentID = " & docID.ToString
+			dv.RowFilter = "ArtifactID = " & artifactID.ToString
 			If dv.Count > 0 Then
 				Return dv(0)
 			Else
@@ -268,17 +268,17 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Private Function GetDocumentsString(ByVal documentTable As System.Data.DataTable) As String
-			Dim documentIDs As New System.Text.StringBuilder
+			Dim artifactIDs As New System.Text.StringBuilder
 			Dim row As System.Data.DataRow
 
 			For Each row In documentTable.Rows
-				documentIDs.AppendFormat(",{0}", CType(row("DocumentID"), Int32))
+				artifactIDs.AppendFormat(",{0}", CType(row("ArtifactID"), Int32))
 			Next
-			documentIDs.Remove(0, 1)
-			Return documentIDs.ToString
+			artifactIDs.Remove(0, 1)
+			Return artifactIDs.ToString
 		End Function
 
-		Private Sub ExportNative(ByVal exportFileName As String, ByVal fileGuid As String, ByVal artifactID As Int32, ByVal systemFileName As String) 'ByVal fileURI As String, ByVal systemFileName As String)
+		Private Sub ExportNative(ByVal exportFileName As String, ByVal fileGuid As String, ByVal artifactID As Int32, ByVal systemFileName As String)		'ByVal fileURI As String, ByVal systemFileName As String)
 			If Not Me.ExportFile.ExportNative Then Exit Sub
 			If System.IO.File.Exists(exportFileName) Then
 				If Me.ExportFile.Overwrite Then

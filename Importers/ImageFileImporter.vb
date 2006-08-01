@@ -11,7 +11,6 @@ Namespace kCura.WinEDDS
 		Private _folderID As Int32
 		Private _overwrite As Boolean
 		Private _filePath As String
-		Private _currentDocID As Int32
 		Private _selectedIdentifierField As String
 		Private _fileLineCount As Int32
 		Private _continue As Boolean
@@ -23,7 +22,7 @@ Namespace kCura.WinEDDS
 		Private WithEvents _processController As kCura.Windows.Process.Controller
 
 		Private Enum Columns
-			DocID = 0
+			DocumentArtifactID = 0
 			FileLocation = 2
 			MultiPageIndicator = 3
 		End Enum
@@ -111,18 +110,18 @@ Namespace kCura.WinEDDS
 			Dim fileDTOs As New ArrayList
 			Dim fullTextFileGuid As String
 			Dim retval As String()
-			Dim documentIdentifier As String = String.Copy(valueArray(Columns.DocID))
+			Dim documentIdentifier As String = String.Copy(valueArray(Columns.DocumentArtifactID))
 			Dim fileLocation As String = String.Copy(valueArray(Columns.FileLocation))
 			Dim multipageindicator As String = String.Copy(valueArray(Columns.MultiPageIndicator))
 
-			Dim currentDocID As Int32 = _docManager.GetDocumentIDFromIdentifier(documentIdentifier, _selectedIdentifierField, _folderID)
-			If currentDocID > 0 Then
+			Dim currentDocumentArtifactID As Int32 = _docManager.GetDocumentArtifactIDFromIdentifier(documentIdentifier, _selectedIdentifierField, _folderID)
+			If currentDocumentArtifactID > 0 Then
 				If _overwrite Then
 					GetImageForDocument(fileLocation, fileDTOs, fullTextBuilder)
 					retval = GetImagesForDocument(fileDTOs, fullTextBuilder)
 					If _replaceFullText Then fullTextFileGuid = _fileUploader.UploadTextAsFile(fullTextBuilder.ToString, _folderID, System.Guid.NewGuid.ToString)
-					_docManager.ClearImagesFromDocument(_folderID, currentDocID)
-					If _replaceFullText Then _docManager.AddFullTextToDocumentFromFile(_folderID, currentDocID, fullTextFileGuid)
+					_docManager.ClearImagesFromDocument(currentDocumentArtifactID)
+					If _replaceFullText Then _docManager.AddFullTextToDocumentFromFile(currentDocumentArtifactID, fullTextFileGuid)
 					'Update Document
 				Else
 					Throw New OverwriteException
@@ -136,9 +135,9 @@ Namespace kCura.WinEDDS
 				Else
 					fullTextFileGuid = _fileUploader.UploadTextAsFile(String.Empty, _folderID, System.Guid.NewGuid.ToString)
 				End If
-				currentDocID = CreateDocument(documentIdentifier, fullTextFileGuid)
+				currentDocumentArtifactID = CreateDocument(documentIdentifier, fullTextFileGuid)
 			End If
-			_fileManager.CreateImages(DirectCast(fileDTOs.ToArray(GetType(kCura.EDDS.WebAPI.FileManagerBase.FileInfoBase)), kCura.EDDS.WebAPI.FileManagerBase.FileInfoBase()), currentDocID, _folderID)
+			_fileManager.CreateImages(DirectCast(fileDTOs.ToArray(GetType(kCura.EDDS.WebAPI.FileManagerBase.FileInfoBase)), kCura.EDDS.WebAPI.FileManagerBase.FileInfoBase()), currentDocumentArtifactID, _folderID)
 			'For i = 0 To fileNames.Count - 1
 			'	_fileManager.CreateFile(_folderID, currentDocID, fileNames(i).ToString, fileGuids(i).ToString, i, kCura.EDDS.Types.FileType.Tif)
 			'Next
