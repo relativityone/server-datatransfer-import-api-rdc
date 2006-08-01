@@ -95,7 +95,7 @@ Namespace kCura.EDDS.WinForm
 				_uploader.UploaderType = FileUploader.Type.Web
 				fileIdentifier = _uploader.UploadFile(fileName, documentArtifactID)
 				If fileIdentifier <> String.Empty Then
-					_fileManager.CreateFile(documentArtifactID, -1, fileInfo.Name, fileIdentifier, 0, kCura.EDDS.Types.FileType.Native)
+					_fileManager.CreateFile(documentArtifactID, fileInfo.Name, fileIdentifier, 0, kCura.EDDS.Types.FileType.Native)
 				End If
 				importer.ReportStatus(recordInfo, "Finished Uploading Document")
 			Catch ex As Exception
