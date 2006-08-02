@@ -11,9 +11,11 @@ Namespace kCura.WinEDDS
 		Public DocumentsExported As Int32
 		Public TotalDocuments As Int32
 		Private _downloadManager As FileDownloader
+		Private _loadFileFormat As kCura.WinEDDS.LoadFileType.FileFormat
 
 		Private WithEvents _processController As kCura.Windows.Process.Controller
 		Private _continue As Boolean
+
 #Region "Public Properties"
 		Public Property ProductionArtifactID() As Int32
 			Get
@@ -92,7 +94,7 @@ Namespace kCura.WinEDDS
 #End Region
 
 		Public Sub New(ByVal cred As Net.NetworkCredential, ByVal productionArtifactID As Int32, ByVal folderPath As String, _
-		ByVal selectedCaseInfo As kCura.EDDS.Types.CaseInfo, ByVal overwrite As Boolean, ByVal controller As kCura.Windows.Process.Controller)
+		ByVal selectedCaseInfo As kCura.EDDS.Types.CaseInfo, ByVal overwrite As Boolean, ByVal controller As kCura.Windows.Process.Controller, ByVal fileformat As kCura.WinEDDS.LoadFileType.FileFormat)
 			_productionManager = New kCura.WinEDDS.Service.ProductionManager(cred)
 			_fileManager = New kCura.WinEDDS.Service.FileManager(cred)
 			_productionArtifactID = productionArtifactID
@@ -101,6 +103,7 @@ Namespace kCura.WinEDDS
 			_webClient = New System.Net.WebClient
 			_webClient.Credentials = cred
 			_processController = controller
+			_loadFileFormat = fileformat
 			Me.SelectedCaseInfo = selectedCaseInfo
 			Me.DocumentsExported = 0
 			Me.TotalDocuments = 1
@@ -170,7 +173,11 @@ Namespace kCura.WinEDDS
 					'fileURI = String.Format("{0}Download.aspx?ArtifactID={1}&GUID={2}", Me.SelectedCaseInfo.DownloadHandlerURL, CType(dataTable.Rows(count)("ArtifactID"), Int32), CType(dataTable.Rows(count)("ImageGuid"), String))
 					fileName = String.Format("{0}{1}\{2}\{3}.tif", Me.FolderPath, currentVolume, currentDirectory, CType(dataTable.Rows(count)("BatesNumber"), String))
 					Me.ExportFile(fileName, CType(dataTable.Rows(count)("ImageGuid"), String), CType(dataTable.Rows(count)("DocumentArtifactID"), Int32), CType(dataTable.Rows(count)("BatesNumber"), String))
-					volumeLog.Append(BuildVolumeLog(CType(dataTable.Rows(count)("BatesNumber"), String), currentVolume, fileName, (count = 0 OrElse CType(dataTable.Rows(count - 1)("DocumentArtifactID"), Int32) <> CType(dataTable.Rows(count)("DocumentArtifactID"), Int32))))
+					If _loadFileFormat = kCura.WinEDDS.LoadFileType.FileFormat.Concordance Then
+						volumeLog.Append(BuildVolumeLog(CType(dataTable.Rows(count)("BatesNumber"), String), currentVolume, fileName, (count = 0 OrElse CType(dataTable.Rows(count - 1)("DocumentArtifactID"), Int32) <> CType(dataTable.Rows(count)("DocumentArtifactID"), Int32))))
+					Else
+						volumeLog.Append(BuildIproLog(CType(dataTable.Rows(count)("BatesNumber"), String), currentVolume, currentDirectory, (count = 0 OrElse CType(dataTable.Rows(count - 1)("DocumentArtifactID"), Int32) <> CType(dataTable.Rows(count)("DocumentArtifactID"), Int32))))
+					End If
 				Catch ex As Exception
 					Me.WriteError(String.Format("Error occurred on document #{0} with message: {1}", count + 1, ex.Message))
 				End Try
@@ -266,6 +273,20 @@ Namespace kCura.WinEDDS
 				log.Append("Y")
 			End If
 			log.AppendFormat(",,,{0}", Microsoft.VisualBasic.ControlChars.NewLine)
+			Return log.ToString
+		End Function
+
+		Private Function BuildIproLog(ByVal batesNumber As String, ByVal currentVolume As String, ByVal pathToImage As String, ByVal firstDocument As Boolean) As String
+			Dim log As New System.Text.StringBuilder
+
+			log.AppendFormat("IM,{0},", batesNumber)
+			If firstDocument Then
+				log.Append("D,")
+			Else
+				log.Append(" ,")
+			End If
+			log.AppendFormat("0,{0};{1};{2}.tif;2", currentVolume, pathToImage, batesNumber)
+			log.AppendFormat("{0}", Microsoft.VisualBasic.ControlChars.NewLine)
 			Return log.ToString
 		End Function
 

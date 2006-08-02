@@ -14,6 +14,7 @@ Namespace kCura.WinEDDS
 		Protected _credential As Net.NetworkCredential
 		Protected _exportFullText As Boolean
 		Protected _exportNative As Boolean
+		Protected _logFileFormat As kCura.WinEDDS.LoadFileType.FileFormat
 
 #Region "Public Properties"
 
@@ -143,6 +144,15 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
+		Public Property LogFileFormat() As kCura.WinEDDS.LoadFileType.FileFormat
+			Get
+				Return _logFileFormat
+			End Get
+			Set(ByVal value As kCura.WinEDDS.LoadFileType.FileFormat)
+				_logFileFormat = value
+			End Set
+		End Property
+
 #End Region
 
 		Public Sub New()
@@ -158,5 +168,6 @@ Namespace kCura.WinEDDS
 			ParentSearch
 			AncestorSearch
 		End Enum
+
 	End Class
 End Namespace
