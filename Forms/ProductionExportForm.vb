@@ -40,6 +40,8 @@ Namespace kCura.EDDS.WinForm
 		Friend WithEvents _productionList As System.Windows.Forms.ComboBox
 		Friend WithEvents _folderPath As System.Windows.Forms.TextBox
 		Friend WithEvents _overwriteButton As System.Windows.Forms.CheckBox
+		Friend WithEvents GroupBox2 As System.Windows.Forms.GroupBox
+		Friend WithEvents _loadFileFormat As System.Windows.Forms.ComboBox
 		<System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
 			Dim resources As System.Resources.ResourceManager = New System.Resources.ResourceManager(GetType(ProductionExportForm))
 			Me.GroupBox3 = New System.Windows.Forms.GroupBox
@@ -52,8 +54,11 @@ Namespace kCura.EDDS.WinForm
 			Me.ExportMenu = New System.Windows.Forms.MenuItem
 			Me.RunMenu = New System.Windows.Forms.MenuItem
 			Me._destinationFolderDialog = New System.Windows.Forms.FolderBrowserDialog
+			Me.GroupBox2 = New System.Windows.Forms.GroupBox
+			Me._loadFileFormat = New System.Windows.Forms.ComboBox
 			Me.GroupBox3.SuspendLayout()
 			Me.GroupBox1.SuspendLayout()
+			Me.GroupBox2.SuspendLayout()
 			Me.SuspendLayout()
 			'
 			'GroupBox3
@@ -66,7 +71,7 @@ Namespace kCura.EDDS.WinForm
 			Me.GroupBox3.Size = New System.Drawing.Size(568, 72)
 			Me.GroupBox3.TabIndex = 8
 			Me.GroupBox3.TabStop = False
-			Me.GroupBox3.Text = "Export Location"
+			Me.GroupBox3.Text = "Select a Location..."
 			'
 			'_overwriteButton
 			'
@@ -127,10 +132,30 @@ Namespace kCura.EDDS.WinForm
 			Me.RunMenu.Shortcut = System.Windows.Forms.Shortcut.F5
 			Me.RunMenu.Text = "&Run..."
 			'
+			'GroupBox2
+			'
+			Me.GroupBox2.Controls.Add(Me._loadFileFormat)
+			Me.GroupBox2.Location = New System.Drawing.Point(4, 140)
+			Me.GroupBox2.Name = "GroupBox2"
+			Me.GroupBox2.Size = New System.Drawing.Size(568, 52)
+			Me.GroupBox2.TabIndex = 10
+			Me.GroupBox2.TabStop = False
+			Me.GroupBox2.Text = "Export Load File Format"
+			'
+			'_loadFileFormat
+			'
+			Me._loadFileFormat.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+			Me._loadFileFormat.DropDownWidth = 150
+			Me._loadFileFormat.Location = New System.Drawing.Point(8, 20)
+			Me._loadFileFormat.Name = "_loadFileFormat"
+			Me._loadFileFormat.Size = New System.Drawing.Size(150, 21)
+			Me._loadFileFormat.TabIndex = 8
+			'
 			'ProductionExportForm
 			'
 			Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
-			Me.ClientSize = New System.Drawing.Size(576, 137)
+			Me.ClientSize = New System.Drawing.Size(576, 201)
+			Me.Controls.Add(Me.GroupBox2)
 			Me.Controls.Add(Me.GroupBox1)
 			Me.Controls.Add(Me.GroupBox3)
 			Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
@@ -139,6 +164,7 @@ Namespace kCura.EDDS.WinForm
 			Me.Text = "Export Production"
 			Me.GroupBox3.ResumeLayout(False)
 			Me.GroupBox1.ResumeLayout(False)
+			Me.GroupBox2.ResumeLayout(False)
 			Me.ResumeLayout(False)
 
 		End Sub
@@ -176,6 +202,7 @@ Namespace kCura.EDDS.WinForm
 			_exportFile.FolderPath = _folderPath.Text
 			_exportFile.ArtifactID = CType(_productionList.SelectedValue, Int32)
 			_exportFile.Overwrite = _overwriteButton.Checked
+			_exportFile.LogFileFormat = CType(_loadFileFormat.SelectedIndex, kCura.WinEDDS.LoadFileType.FileFormat)
 			_application.StartProduction(Me.ExportFile)
 			Me.Cursor = System.Windows.Forms.Cursors.Default
 		End Sub
@@ -189,6 +216,9 @@ Namespace kCura.EDDS.WinForm
 			_productionList.DataSource = ExportFile.DataTable
 			_productionList.DisplayMember = "Name"
 			_productionList.ValueMember = "ArtifactID"
+			_loadFileFormat.DataSource = kCura.WinEDDS.LoadFileType.GetLoadFileTypes
+			_loadFileFormat.DisplayMember = "DisplayName"
+			_loadFileFormat.ValueMember = "Value"
 			RunMenu.Enabled = ReadyToRun()
 		End Sub
 
@@ -198,6 +228,10 @@ Namespace kCura.EDDS.WinForm
 
 		Private Sub _productionList_SelectedIndexChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles _productionList.SelectedIndexChanged
 			RunMenu.Enabled = ReadyToRun()
+		End Sub
+
+		Private Sub _loadFileFormat_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _loadFileFormat.SelectedIndexChanged
+
 		End Sub
 	End Class
 End Namespace
