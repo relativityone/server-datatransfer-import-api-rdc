@@ -175,6 +175,25 @@ Namespace kCura.EDDS.WebAPI.FileManagerBase
         Public Sub EndSetRotation(ByVal asyncResult As System.IAsyncResult)
             Me.EndInvoke(asyncResult)
         End Sub
+        
+        '<remarks/>
+        <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/FileManager/GetFullTextGuidsByDocumentArtifactIdAndType"& _ 
+"", RequestNamespace:="http://www.kCura.com/EDDS/FileManager", ResponseNamespace:="http://www.kCura.com/EDDS/FileManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
+        Public Function GetFullTextGuidsByDocumentArtifactIdAndType(ByVal documentArtifactID As Integer, ByVal TypeId As Integer) As String
+            Dim results() As Object = Me.Invoke("GetFullTextGuidsByDocumentArtifactIdAndType", New Object() {documentArtifactID, TypeId})
+            Return CType(results(0),String)
+        End Function
+        
+        '<remarks/>
+        Public Function BeginGetFullTextGuidsByDocumentArtifactIdAndType(ByVal documentArtifactID As Integer, ByVal TypeId As Integer, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("GetFullTextGuidsByDocumentArtifactIdAndType", New Object() {documentArtifactID, TypeId}, callback, asyncState)
+        End Function
+        
+        '<remarks/>
+        Public Function EndGetFullTextGuidsByDocumentArtifactIdAndType(ByVal asyncResult As System.IAsyncResult) As String
+            Dim results() As Object = Me.EndInvoke(asyncResult)
+            Return CType(results(0),String)
+        End Function
     End Class
     
     '<remarks/>

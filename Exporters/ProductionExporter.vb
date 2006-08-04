@@ -10,9 +10,11 @@ Namespace kCura.WinEDDS
 		Private _selectedCaseInfo As kCura.EDDS.Types.CaseInfo
 		Public DocumentsExported As Int32
 		Public TotalDocuments As Int32
-		Private _downloadManager As FileDownloader
+		Private _downloadManager As kCura.WinEDDS.FileDownloader
+		Private _fullTextDownloader As kCura.WinEDDS.FullTextManager
 		Private _loadFileFormat As kCura.WinEDDS.LoadFileType.FileFormat
-
+		Private _documentManager As kCura.WinEDDS.Service.DocumentManager
+		Private _sourceDirectory As String
 		Private WithEvents _processController As kCura.Windows.Process.Controller
 		Private _continue As Boolean
 
@@ -109,6 +111,9 @@ Namespace kCura.WinEDDS
 			Me.TotalDocuments = 1
 			_continue = True
 			_downloadManager = New FileDownloader(cred, selectedCaseInfo.DocumentPath & "\EDDS" & selectedCaseInfo.ArtifactID, selectedCaseInfo.DownloadHandlerURL)
+			_documentManager = New kCura.WinEDDS.Service.DocumentManager(cred)
+			_sourceDirectory = _documentManager.GetDocumentDirectoryByContextArtifactID(Me.SelectedCaseInfo.RootArtifactID)
+			_fullTextDownloader = New kCura.WinEDDS.FullTextManager(cred, _sourceDirectory)
 		End Sub
 
 		Public Sub CreateVolumes()
@@ -122,6 +127,7 @@ Namespace kCura.WinEDDS
 		Private Sub ExportProduction()
 			Dim production As kCura.EDDS.WebAPI.ProductionManagerBase.Production
 			Dim dataTable As System.Data.DataTable
+			Dim guidTable As System.Data.DataTable
 
 			Dim fileURI As String
 			Dim fileName As String
@@ -136,6 +142,10 @@ Namespace kCura.WinEDDS
 			Dim documentCount As Int32
 			Dim documentSize As Long
 			Dim count As Int32
+
+			Dim currentBates As String = ""
+			Dim fullTextLog As New System.Text.StringBuilder
+			Dim fulltextguid As String
 
 			Me.WriteUpdate("Retrieving export data from the server...")
 			dataTable = _fileManager.RetrieveByProductionArtifactIDForProduction(Me.ProductionArtifactID).Tables(0)
@@ -176,8 +186,11 @@ Namespace kCura.WinEDDS
 					If _loadFileFormat = kCura.WinEDDS.LoadFileType.FileFormat.Concordance Then
 						volumeLog.Append(BuildVolumeLog(CType(dataTable.Rows(count)("BatesNumber"), String), currentVolume, fileName, (count = 0 OrElse CType(dataTable.Rows(count - 1)("DocumentArtifactID"), Int32) <> CType(dataTable.Rows(count)("DocumentArtifactID"), Int32))))
 					Else
+						fulltextguid = _fileManager.GetFullTextGuidsByDocumentArtifactIdAndType(CType(dataTable.Rows(count)("documentArtifactID"), Int32), 2)
 						volumeLog.Append(BuildIproLog(CType(dataTable.Rows(count)("BatesNumber"), String), currentVolume, currentDirectory, (count = 0 OrElse CType(dataTable.Rows(count - 1)("DocumentArtifactID"), Int32) <> CType(dataTable.Rows(count)("DocumentArtifactID"), Int32))))
+						volumeLog.AppendFormat("FT,{0}{1}", Me.ExtractFullTextFromGuid(fulltextguid), Microsoft.VisualBasic.ControlChars.NewLine)
 					End If
+
 				Catch ex As Exception
 					Me.WriteError(String.Format("Error occurred on document #{0} with message: {1}", count + 1, ex.Message))
 				End Try
@@ -189,6 +202,20 @@ Namespace kCura.WinEDDS
 		End Sub
 
 #Region "Private Helper Functions"
+
+		Private Function ExtractFullTextFromGuid(ByVal fullTextGuid As String) As String
+			Dim bodyText As String
+			If fulltextGuid Is Nothing Then
+				bodyText = String.Empty
+			Else
+				bodyText = _fullTextDownloader.ReadFullTextFile(_sourceDirectory & fullTextGuid)
+				'bodyText = bodyText.Replace(System.Environment.NewLine, ChrW(10).ToString)
+				'bodyText = bodyText.Replace(ChrW(13), ChrW(10))
+				bodyText = bodyText.Replace(ChrW(10), "®"c)
+			End If
+			Return bodyText
+		End Function
+
 		Private Function ExportArgs(ByVal line As String, ByVal eventType As kCura.Windows.Process.EventType) As kCura.WinEDDS.ExportEventArgs
 			Return New kCura.WinEDDS.ExportEventArgs(Me.DocumentsExported, Me.TotalDocuments, line, eventType)
 		End Function
@@ -285,7 +312,7 @@ Namespace kCura.WinEDDS
 			Else
 				log.Append(" ,")
 			End If
-			log.AppendFormat("0,{0};{1};{2}.tif;2", currentVolume, pathToImage, batesNumber)
+			log.AppendFormat("0,@{0};{1};{2}.tif;2", currentVolume, pathToImage, batesNumber)
 			log.AppendFormat("{0}", Microsoft.VisualBasic.ControlChars.NewLine)
 			Return log.ToString
 		End Function
@@ -304,6 +331,21 @@ Namespace kCura.WinEDDS
 			writer.Close()
 			Me.WriteStatusLine(kCura.Windows.Process.EventType.Status, String.Format("Created image log file for volume {0}.", currentVolume))
 		End Sub
+
+		Private Sub CreateFullTextFile(ByVal currentBates As String, ByVal productionName As String, ByVal volumeLog As String)
+			Dim writer As System.IO.StreamWriter
+			Dim fullTextFile As String
+
+			fullTextFile = String.Format("{0}.txt", currentBates)
+			If System.IO.File.Exists(fullTextFile) Then
+				Me.WriteWarning(String.Format("Full text file '{0}'.txt already exists, overwriting file.", currentBates))
+				System.IO.File.Delete(fullTextFile)
+			End If
+			writer = System.IO.File.CreateText(fullTextFile)
+			writer.Write(volumeLog)
+			writer.Close()
+		End Sub
+
 #End Region
 
 		Private Sub _processController_HaltProcessEvent(ByVal processID As System.Guid) Handles _processController.HaltProcessEvent

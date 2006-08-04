@@ -1,7 +1,7 @@
 Namespace kCura.WinEDDS
 	Public Class LoadFileType
 		Public Enum FileFormat
-			Ipro
+			IPRO
 			Concordance
 		End Enum
 
@@ -11,7 +11,7 @@ Namespace kCura.WinEDDS
 			dt.Columns.Add("Value", GetType(Int32))
 			dt.Rows.Add(New Object() {"Select...", 0})
 			dt.Rows.Add(New Object() {FileFormat.Concordance, 1})
-			dt.Rows.Add(New Object() {FileFormat.Ipro, 2})
+			dt.Rows.Add(New Object() {FileFormat.IPRO, 2})
 			Return dt
 		End Function
 	End Class
