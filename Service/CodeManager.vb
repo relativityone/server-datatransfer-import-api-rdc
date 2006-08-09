@@ -5,7 +5,7 @@ Namespace kCura.WinEDDS.Service
 		Public Sub New(ByVal credentials As Net.NetworkCredential)
 			MyBase.New()
 			Me.Credentials = credentials
-			Me.Url = String.Format("{0}CodeManager.asmx", kCura.WinEDDS.Config.URI)
+			Me.Url = String.Format("{0}CodeManager.asmx", kCura.WinEDDS.Config.WebServiceURL)
 			Me.Timeout = Settings.DefaultTimeOut
 		End Sub
 
