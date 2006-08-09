@@ -322,6 +322,16 @@
                     BuildAction = "EmbeddedResource"
                 />
                 <File
+                    RelPath = "Forms\SetWebServiceURL.vb"
+                    SubType = "Form"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Forms\SetWebServiceURL.resx"
+                    DependentUpon = "SetWebServiceURL.vb"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
                     RelPath = "Forms\SQLImportForm.vb"
                     SubType = "Form"
                     BuildAction = "Compile"

@@ -35,13 +35,18 @@ Namespace kCura.EDDS.WinForm
 		Friend WithEvents _timeZoneDropDown As System.Windows.Forms.ComboBox
 		Friend WithEvents _okButton As System.Windows.Forms.Button
 		Friend WithEvents _cancelButton As System.Windows.Forms.Button
+		Friend WithEvents WebServiceUrlGroupbox As System.Windows.Forms.GroupBox
+		Friend WithEvents _WebServiceUrl As System.Windows.Forms.TextBox
 		<System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
 			Dim resources As System.Resources.ResourceManager = New System.Resources.ResourceManager(GetType(OptionsForm))
 			Me.TimeZoneGroupBox = New System.Windows.Forms.GroupBox
 			Me._timeZoneDropDown = New System.Windows.Forms.ComboBox
 			Me._okButton = New System.Windows.Forms.Button
 			Me._cancelButton = New System.Windows.Forms.Button
+			Me.WebServiceUrlGroupbox = New System.Windows.Forms.GroupBox
+			Me._WebServiceUrl = New System.Windows.Forms.TextBox
 			Me.TimeZoneGroupBox.SuspendLayout()
+			Me.WebServiceUrlGroupbox.SuspendLayout()
 			Me.SuspendLayout()
 			'
 			'TimeZoneGroupBox
@@ -64,7 +69,7 @@ Namespace kCura.EDDS.WinForm
 			'
 			'_okButton
 			'
-			Me._okButton.Location = New System.Drawing.Point(384, 80)
+			Me._okButton.Location = New System.Drawing.Point(384, 144)
 			Me._okButton.Name = "_okButton"
 			Me._okButton.TabIndex = 1
 			Me._okButton.Text = "OK"
@@ -72,17 +77,36 @@ Namespace kCura.EDDS.WinForm
 			'_cancelButton
 			'
 			Me._cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel
-			Me._cancelButton.Location = New System.Drawing.Point(472, 80)
+			Me._cancelButton.Location = New System.Drawing.Point(472, 144)
 			Me._cancelButton.Name = "_cancelButton"
 			Me._cancelButton.TabIndex = 2
 			Me._cancelButton.Text = "Cancel"
+			'
+			'WebServiceUrlGroupbox
+			'
+			Me.WebServiceUrlGroupbox.Controls.Add(Me._WebServiceUrl)
+			Me.WebServiceUrlGroupbox.Location = New System.Drawing.Point(8, 72)
+			Me.WebServiceUrlGroupbox.Name = "WebServiceUrlGroupbox"
+			Me.WebServiceUrlGroupbox.Size = New System.Drawing.Size(536, 48)
+			Me.WebServiceUrlGroupbox.TabIndex = 3
+			Me.WebServiceUrlGroupbox.TabStop = False
+			Me.WebServiceUrlGroupbox.Text = "WebService URL"
+			'
+			'_WebServiceUrl
+			'
+			Me._WebServiceUrl.Location = New System.Drawing.Point(8, 16)
+			Me._WebServiceUrl.Name = "_WebServiceUrl"
+			Me._WebServiceUrl.Size = New System.Drawing.Size(520, 20)
+			Me._WebServiceUrl.TabIndex = 0
+			Me._WebServiceUrl.Text = ""
 			'
 			'OptionsForm
 			'
 			Me.AcceptButton = Me._okButton
 			Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
 			Me.CancelButton = Me._cancelButton
-			Me.ClientSize = New System.Drawing.Size(552, 109)
+			Me.ClientSize = New System.Drawing.Size(552, 181)
+			Me.Controls.Add(Me.WebServiceUrlGroupbox)
 			Me.Controls.Add(Me._cancelButton)
 			Me.Controls.Add(Me._okButton)
 			Me.Controls.Add(Me.TimeZoneGroupBox)
@@ -90,6 +114,7 @@ Namespace kCura.EDDS.WinForm
 			Me.Name = "OptionsForm"
 			Me.Text = " Options"
 			Me.TimeZoneGroupBox.ResumeLayout(False)
+			Me.WebServiceUrlGroupbox.ResumeLayout(False)
 			Me.ResumeLayout(False)
 
 		End Sub
@@ -100,6 +125,7 @@ Namespace kCura.EDDS.WinForm
 
 		Protected Overrides Sub OnLoad(ByVal e As System.EventArgs)
 			InitializeTimeZoneDropDown()
+			_WebServiceUrl.Text = Config.WebServiceURL
 		End Sub
 
 		Public Sub InitializeTimeZoneDropDown()
@@ -145,14 +171,21 @@ Namespace kCura.EDDS.WinForm
 			dt.Rows.Add(al.ToArray)
 		End Sub
 
-
 		Private Sub _okButton_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles _okButton.Click
 			_application.TimeZoneOffset = CType(_timeZoneDropDown.SelectedValue, Int32)
+			If Not _WebServiceUrl.Text.Chars(_WebServiceUrl.Text.Length - 1) = "/" Then
+				_WebServiceUrl.Text &= "/"
+			End If
+			_application.TemporaryWebServiceURL = _WebServiceUrl.Text
 			Me.Close()
 		End Sub
 
 		Private Sub _cancelButton_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles _cancelButton.Click
 			Me.Close()
+		End Sub
+
+		Private Sub TimeZoneGroupBox_Enter(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles TimeZoneGroupBox.Enter
+
 		End Sub
 	End Class
 End Namespace

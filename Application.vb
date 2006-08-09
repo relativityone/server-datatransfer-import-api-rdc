@@ -39,8 +39,10 @@ Namespace kCura.EDDS.WinForm
 		Private _fields As kCura.WinEDDS.DocumentFieldCollection
 		Private _selectedCaseFolderPath As String
 		Private _timeZoneOffset As Int32
+		Private _hostURL As String = ""
 		Private WithEvents _loginForm As LoginForm
 		Private Shared _cache As New Hashtable
+		Private _temporaryWebServiceURL As String
 #End Region
 
 #Region "Properties"
@@ -85,6 +87,18 @@ Namespace kCura.EDDS.WinForm
 			End Get
 		End Property
 
+		'Public Property HostURL() As String
+		'	Get
+		'		If _hostURL = "" Then
+		'			_hostURL = Config.WebServiceURL
+		'		End If
+		'		Return _hostURL
+		'	End Get
+		'	Set(ByVal Value As String)
+		'		_hostURL = Value
+		'	End Set
+		'End Property
+
 		Public ReadOnly Property CurrentFields() As DocumentFieldCollection
 			Get
 				If _fields Is Nothing Then
@@ -111,6 +125,15 @@ Namespace kCura.EDDS.WinForm
 			End Get
 		End Property
 
+		Public Property TemporaryWebServiceURL() As String
+			Get
+				Return _temporaryWebServiceURL
+			End Get
+			Set(ByVal value As String)
+				_temporaryWebServiceURL = value
+			End Set
+		End Property
+
 #End Region
 
 #Region "Event Throwers"
@@ -120,6 +143,9 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 		Public Sub ExitApplication()
+			If Not Me.TemporaryWebServiceURL Is Nothing AndAlso Not Me.TemporaryWebServiceURL = "" Then
+				Config.WebServiceURL = Me.TemporaryWebServiceURL
+			End If
 			RaiseEvent OnEvent(New AppEvent(AppEvent.AppEventType.ExitApplication))
 		End Sub
 
@@ -234,11 +260,15 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 		Public Sub OpenCase()
-			Dim caseInfo As kCura.EDDS.Types.CaseInfo = Me.GetCase
-			If Not caseInfo Is Nothing Then
-				_selectedCaseInfo = caseInfo
-				RaiseEvent OnEvent(New LoadCaseEvent(caseInfo))
-			End If
+			Try
+				Dim caseInfo As kCura.EDDS.Types.CaseInfo = Me.GetCase
+				If Not caseInfo Is Nothing Then
+					_selectedCaseInfo = caseInfo
+					RaiseEvent OnEvent(New LoadCaseEvent(caseInfo))
+				End If
+			Catch ex As Exception
+				Me.ChangeWebServiceURL()
+			End Try
 		End Sub
 
 		'TODO : consider renaming this to something more GUI specific
@@ -424,7 +454,7 @@ Namespace kCura.EDDS.WinForm
 
 		Public Sub NewOutlookImport(ByVal destinationArtifactID As Int32, ByVal caseInfo As kCura.EDDS.Types.CaseInfo)
 			Dim importerAssembly As System.Reflection.Assembly
-			importerAssembly = System.Reflection.Assembly.LoadFrom(Config.OutlookImporterLocation)
+			importerAssembly = System.Reflection.Assembly.LoadFrom(kCura.WinEDDS.Config.OutlookImporterLocation)
 			Dim hostImporterGateway As kCura.EDDS.Import.ImporterGatewayBase
 			hostImporterGateway = CType(importerAssembly.CreateInstance("kCura.EDDS.Import.Outlook.ImporterGateway"), kCura.EDDS.Import.ImporterGatewayBase)
 			Dim frm As Form = hostImporterGateway.GetSettingsForm(New Import.CaseInfo(caseInfo.ArtifactID, caseInfo.RootArtifactID), destinationArtifactID, New WinEDDSGateway)
@@ -477,6 +507,13 @@ Namespace kCura.EDDS.WinForm
 		Public Sub NewOptions()
 			CursorWait()
 			Dim frm As New OptionsForm
+			frm.Show()
+			CursorDefault()
+		End Sub
+
+		Public Sub ChangeWebServiceURL()
+			CursorWait()
+			Dim frm As New SetWebServiceURL
 			frm.Show()
 			CursorDefault()
 		End Sub
@@ -727,7 +764,7 @@ Namespace kCura.EDDS.WinForm
 
 		Friend Function CredentialsAreGood(ByVal credential As Net.ICredentials) As Boolean
 			Try
-				Dim myHttpWebRequest As System.Net.HttpWebRequest = DirectCast(System.Net.WebRequest.Create(Config.HostURL), System.Net.HttpWebRequest)
+				Dim myHttpWebRequest As System.Net.HttpWebRequest = DirectCast(System.Net.WebRequest.Create(kCura.WinEDDS.Config.HostURL), System.Net.HttpWebRequest)
 				myHttpWebRequest.Credentials = System.Net.CredentialCache.DefaultCredentials
 				Dim myHttpWebResponse As System.Net.HttpWebResponse = DirectCast(myHttpWebRequest.GetResponse(), System.Net.HttpWebResponse)
 				Return True

@@ -288,8 +288,6 @@ Namespace kCura.EDDS.WinForm
 			_application.ExitApplication()
 		End Sub
 
-
-
 		Private Sub _application_OnEvent(ByVal appEvent As AppEvent) Handles _application.OnEvent
 			Select Case appEvent.EventType
 				Case appEvent.AppEventType.LoadCase
@@ -320,6 +318,8 @@ Namespace kCura.EDDS.WinForm
 			kCura.Windows.Forms.EnhancedMenuProvider.Hook(Me)
 			If Not _application.DefaultCredentialsAreGood() Then
 				_application.NewLogin()
+			ElseIf Config.WebServiceURL = "" Then
+				_application.ChangeWebServiceURL()
 			Else
 				_application.OpenCase()
 			End If
