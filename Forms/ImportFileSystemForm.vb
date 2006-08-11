@@ -54,13 +54,11 @@ Namespace kCura.EDDS.WinForm
     Friend WithEvents _extractFullTextFromFile As System.Windows.Forms.CheckBox
     Friend WithEvents Label5 As System.Windows.Forms.Label
     Friend WithEvents FileExtentionTextBox As System.Windows.Forms.TextBox
-    Friend WithEvents InventoryButton As System.Windows.Forms.Button
     <System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
       Dim resources As System.Resources.ResourceManager = New System.Resources.ResourceManager(GetType(ImportFileSystemForm))
       Me.GroupBox1 = New System.Windows.Forms.GroupBox
       Me._importDestinationText = New System.Windows.Forms.TextBox
       Me.GroupBox20 = New System.Windows.Forms.GroupBox
-      Me.InventoryButton = New System.Windows.Forms.Button
       Me.Label5 = New System.Windows.Forms.Label
       Me.FileExtentionTextBox = New System.Windows.Forms.TextBox
       Me._browseButton = New System.Windows.Forms.Button
@@ -110,7 +108,6 @@ Namespace kCura.EDDS.WinForm
       '
       'GroupBox20
       '
-      Me.GroupBox20.Controls.Add(Me.InventoryButton)
       Me.GroupBox20.Controls.Add(Me.Label5)
       Me.GroupBox20.Controls.Add(Me.FileExtentionTextBox)
       Me.GroupBox20.Controls.Add(Me._browseButton)
@@ -121,14 +118,6 @@ Namespace kCura.EDDS.WinForm
       Me.GroupBox20.TabIndex = 9
       Me.GroupBox20.TabStop = False
       Me.GroupBox20.Text = "File Directory"
-      '
-      'InventoryButton
-      '
-      Me.InventoryButton.Location = New System.Drawing.Point(664, 16)
-      Me.InventoryButton.Name = "InventoryButton"
-      Me.InventoryButton.Size = New System.Drawing.Size(64, 52)
-      Me.InventoryButton.TabIndex = 7
-      Me.InventoryButton.Text = "Inventory Report"
       '
       'Label5
       '
@@ -144,13 +133,13 @@ Namespace kCura.EDDS.WinForm
       Me.FileExtentionTextBox.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
       Me.FileExtentionTextBox.Location = New System.Drawing.Point(148, 44)
       Me.FileExtentionTextBox.Name = "FileExtentionTextBox"
-      Me.FileExtentionTextBox.Size = New System.Drawing.Size(508, 20)
+      Me.FileExtentionTextBox.Size = New System.Drawing.Size(584, 20)
       Me.FileExtentionTextBox.TabIndex = 5
       Me.FileExtentionTextBox.Text = "pdf;txt;doc;rtf;xls;ppt;doc;vsd"
       '
       '_browseButton
       '
-      Me._browseButton.Location = New System.Drawing.Point(632, 16)
+      Me._browseButton.Location = New System.Drawing.Point(708, 16)
       Me._browseButton.Name = "_browseButton"
       Me._browseButton.Size = New System.Drawing.Size(24, 20)
       Me._browseButton.TabIndex = 4
@@ -161,7 +150,7 @@ Namespace kCura.EDDS.WinForm
       Me._filePath.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
       Me._filePath.Location = New System.Drawing.Point(8, 16)
       Me._filePath.Name = "_filePath"
-      Me._filePath.Size = New System.Drawing.Size(620, 20)
+      Me._filePath.Size = New System.Drawing.Size(696, 20)
       Me._filePath.TabIndex = 2
       Me._filePath.Text = "Select a directory ..."
       '
@@ -196,6 +185,7 @@ Namespace kCura.EDDS.WinForm
       '
       '_fileFields
       '
+      Me._fileFields.KeepButtonsCentered = False
       Me._fileFields.LeftOrderControlsVisible = True
       Me._fileFields.Location = New System.Drawing.Point(372, 36)
       Me._fileFields.Name = "_fileFields"
@@ -224,6 +214,7 @@ Namespace kCura.EDDS.WinForm
       '
       '_caseFields
       '
+      Me._caseFields.KeepButtonsCentered = False
       Me._caseFields.LeftOrderControlsVisible = False
       Me._caseFields.Location = New System.Drawing.Point(8, 36)
       Me._caseFields.Name = "_caseFields"
@@ -429,8 +420,5 @@ Namespace kCura.EDDS.WinForm
       End If
     End Sub
 
-    Private Sub FileExtentionTextBox_TextChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles FileExtentionTextBox.TextChanged
-
-    End Sub
   End Class
 End Namespace
