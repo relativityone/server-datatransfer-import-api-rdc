@@ -288,15 +288,17 @@ Namespace kCura.WinEDDS
 				Dim fileList As New ArrayList
 				If uploadFile Then
 					Dim oldFile As kCura.EDDS.WebAPI.DocumentManagerBase.File
+					Dim hasOldFile As Boolean = False
 					If Not docDTO.Files Is Nothing Then
 						For Each oldFile In docDTO.Files
 							If oldFile.Type = kCura.EDDS.Types.FileType.Native Then
+								hasOldFile = True
 								Exit For
 							End If
 						Next
 					End If
 					Dim fileDTO As kCura.EDDS.WebAPI.DocumentManagerBase.File = CreateFileDTO(fileName, fileGuid)
-					If oldFile Is Nothing Then
+					If Not hasOldFile Then
 						fileList.Add(fileDTO)
 					Else
 						fileList.Add(fileDTO)
