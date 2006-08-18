@@ -327,6 +327,7 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 		Private Sub MainForm_Closing(ByVal sender As Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles MyBase.Closing
+			_application.ExitApplication()
 			kCura.Windows.Forms.EnhancedMenuProvider.Unhook()
 		End Sub
 
@@ -379,6 +380,9 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 		Private Sub _fileMenuRefresh_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles _fileMenuRefresh.Click
+			If Not _application.TemporaryWebServiceURL Is Nothing AndAlso Not _application.TemporaryWebServiceURL = "" Then
+				Config.WebServiceURL = _application.TemporaryWebServiceURL
+			End If
 			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
 			_application.RefreshCaseFolders()
 			Me.Cursor = System.Windows.Forms.Cursors.Default
