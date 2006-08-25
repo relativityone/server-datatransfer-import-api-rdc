@@ -374,6 +374,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Service\RelativityManager.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Service\SearchManager.vb"
                     SubType = "code"
                     BuildAction = "Compile"
@@ -691,6 +696,33 @@
                 <Folder
                     RelPath = "Web References\kCura.EDDS.WebAPI.ProductionManagerBase\"
                     WebReferenceUrl = "http://localhost/EDDS/WebAPI/ProductionManager.asmx"
+                    UrlBehavior = "Static"
+                />
+                <File
+                    RelPath = "Web References\kCura.EDDS.WebAPI.RelativityManagerBase\Reference.map"
+                    BuildAction = "None"
+                    Generator = "MSDiscoCodeGenerator"
+                    LastGenOutput = "Reference.vb"
+                />
+                <File
+                    RelPath = "Web References\kCura.EDDS.WebAPI.RelativityManagerBase\Reference.vb"
+                    DependentUpon = "Reference.map"
+                    SubType = "code"
+                    BuildAction = "Compile"
+                    DesignTime = "True"
+                    AutoGen = "True"
+                />
+                <File
+                    RelPath = "Web References\kCura.EDDS.WebAPI.RelativityManagerBase\RelativityManager.disco"
+                    BuildAction = "None"
+                />
+                <File
+                    RelPath = "Web References\kCura.EDDS.WebAPI.RelativityManagerBase\RelativityManager.wsdl"
+                    BuildAction = "None"
+                />
+                <Folder
+                    RelPath = "Web References\kCura.EDDS.WebAPI.RelativityManagerBase\"
+                    WebReferenceUrl = "http://localhost/EDDS/WebAPI/RelativityManager.asmx"
                     UrlBehavior = "Static"
                 />
                 <File
