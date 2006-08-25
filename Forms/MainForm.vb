@@ -279,7 +279,7 @@ Namespace kCura.EDDS.WinForm
 #End Region
 
 		Friend WithEvents _application As kCura.EDDS.WinForm.Application
-
+	
 		Private Sub OpenRepositoryMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles OpenRepositoryMenu.Click
 			_application.OpenCase()
 		End Sub
@@ -314,12 +314,14 @@ Namespace kCura.EDDS.WinForm
 
 		Private Sub MainForm_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles MyBase.Load
 			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
+			If Config.WebServiceURL = String.Empty Then
+				_application.SetWebServiceURL()
+			End If
+
 			_application.LogOn()
 			kCura.Windows.Forms.EnhancedMenuProvider.Hook(Me)
 			If Not _application.DefaultCredentialsAreGood() Then
 				_application.NewLogin()
-			ElseIf Config.WebServiceURL = "" Then
-				_application.ChangeWebServiceURL()
 			Else
 				_application.OpenCase()
 			End If
@@ -327,7 +329,7 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 		Private Sub MainForm_Closing(ByVal sender As Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles MyBase.Closing
-			_application.ExitApplication()
+			_application.UpdateWebServiceURL()
 			kCura.Windows.Forms.EnhancedMenuProvider.Unhook()
 		End Sub
 
@@ -380,9 +382,7 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 		Private Sub _fileMenuRefresh_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles _fileMenuRefresh.Click
-			If Not _application.TemporaryWebServiceURL Is Nothing AndAlso Not _application.TemporaryWebServiceURL = "" Then
-				Config.WebServiceURL = _application.TemporaryWebServiceURL
-			End If
+			_application.UpdateWebServiceURL()
 			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
 			_application.RefreshCaseFolders()
 			Me.Cursor = System.Windows.Forms.Cursors.Default
@@ -395,6 +395,10 @@ Namespace kCura.EDDS.WinForm
 			sb.Append("         Version " & System.Reflection.Assembly.GetExecutingAssembly.FullName.Split(","c)(1).Split("="c)(1) & nl)
 			sb.Append("Copyright © " & System.DateTime.Now.Year & " kCura Corporation")
 			MsgBox(sb.ToString, MsgBoxStyle.OKOnly, "About WinEDDS")
+		End Sub
+
+		Private Sub MainForm_Closed(ByVal sender As Object, ByVal e As System.EventArgs) Handles MyBase.Closed
+			System.Environment.Exit(0)
 		End Sub
 	End Class
 

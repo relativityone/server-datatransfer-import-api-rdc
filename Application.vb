@@ -143,10 +143,14 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 		Public Sub ExitApplication()
+			UpdateWebServiceURL()
+			RaiseEvent OnEvent(New AppEvent(AppEvent.AppEventType.ExitApplication))
+		End Sub
+
+		Public Sub UpdateWebServiceURL()
 			If Not Me.TemporaryWebServiceURL Is Nothing AndAlso Not Me.TemporaryWebServiceURL = "" Then
 				Config.WebServiceURL = Me.TemporaryWebServiceURL
 			End If
-			RaiseEvent OnEvent(New AppEvent(AppEvent.AppEventType.ExitApplication))
 		End Sub
 
 		Public Sub CursorDefault()
@@ -511,6 +515,15 @@ Namespace kCura.EDDS.WinForm
 			CursorDefault()
 		End Sub
 
+		Public Sub SetWebServiceURL()
+			CursorWait()
+			Dim frm As New SetWebServiceURL
+			AddHandler frm.ExitApplication, AddressOf Me.ExitApplication
+			frm.Required = True
+			frm.ShowDialog()
+			CursorDefault()
+		End Sub
+
 		Public Sub ChangeWebServiceURL()
 			CursorWait()
 			Dim frm As New SetWebServiceURL
@@ -767,6 +780,16 @@ Namespace kCura.EDDS.WinForm
 				Dim myHttpWebRequest As System.Net.HttpWebRequest = DirectCast(System.Net.WebRequest.Create(kCura.WinEDDS.Config.HostURL), System.Net.HttpWebRequest)
 				myHttpWebRequest.Credentials = System.Net.CredentialCache.DefaultCredentials
 				Dim myHttpWebResponse As System.Net.HttpWebResponse = DirectCast(myHttpWebRequest.GetResponse(), System.Net.HttpWebResponse)
+
+				Dim relativityManager As New kCura.WinEDDS.Service.RelativityManager(DirectCast(credential, System.Net.NetworkCredential))
+				Dim winRelativityVersion As String = System.Reflection.Assembly.GetExecutingAssembly.FullName.Split(","c)(1).Split("="c)(1)
+				Dim relativityWebVersion As String = relativityManager.RetrieveRelativityVersion()
+
+				If winRelativityVersion <> relativityWebVersion Then
+					MsgBox(String.Format("Your version of WinRelativity is out of date. You are running version {0}, but version {1} is required.", winRelativityVersion, relativityWebVersion), MsgBoxStyle.Critical, "WinRelativity Out Of Date")
+					ExitApplication()
+				End If
+
 				Return True
 			Catch ex As Exception
 				Return False

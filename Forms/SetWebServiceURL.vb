@@ -109,21 +109,43 @@ Public Class SetWebServiceURL
 
 #End Region
 
+	Private _required As Boolean
+	Private _validInput As Boolean
 	Friend WithEvents _application As kCura.EDDS.WinForm.Application
+
+	Public Event ExitApplication()
+
+	Public Property Required() As Boolean
+		Get
+			Return _required
+		End Get
+		Set(ByVal value As Boolean)
+			_required = True
+		End Set
+	End Property
 
 	Protected Overrides Sub OnLoad(ByVal e As System.EventArgs)
 		_WebServiceUrl.Text = Config.WebServiceURL
 	End Sub
 
 	Private Sub _okButton_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles _okButton.Click
-		If Not _WebServiceUrl.Text.Chars(_WebServiceUrl.Text.Length - 1) = "/" Then
-			_WebServiceUrl.Text &= "/"
+		If _WebServiceUrl.Text <> String.Empty Then
+			If Not _WebServiceUrl.Text.Chars(_WebServiceUrl.Text.Length - 1) = "/" Then
+				_WebServiceUrl.Text &= "/"
+			End If
+			Config.WebServiceURL = _WebServiceUrl.Text
+			_validInput = True
+			Me.Close()
 		End If
-		Config.WebServiceURL = _WebServiceUrl.Text
-		Me.Close()
 	End Sub
 
 	Private Sub _cancelButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _cancelButton.Click
 		Me.Close()
+	End Sub
+
+	Private Sub SetWebServiceURL_Closed(ByVal sender As Object, ByVal e As System.EventArgs) Handles MyBase.Closed
+		If Me.Required And Not _validInput Then
+			RaiseEvent ExitApplication()
+		End If
 	End Sub
 End Class

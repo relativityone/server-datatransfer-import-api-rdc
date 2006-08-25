@@ -115,7 +115,6 @@ Namespace kCura.EDDS.WinForm
 			End Get
 		End Property
 
-
 		Private Sub CaseSelectForm_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
 			Me.Cursor = Cursors.WaitCursor
 			Dim dt As DataTable = _application.GetCases.Tables(0)
