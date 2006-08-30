@@ -108,7 +108,7 @@ Namespace kCura.EDDS.WinForm
 					Dim i As Int32
 					For i = 0 To fields.Length - 1
 						With fields(i)
-							_fields.Add(New DocumentField(.DisplayName, .ArtifactID, .FieldTypeID, .FieldCategoryID, .CodeArtifactTypeID, .MaxLength))
+							_fields.Add(New DocumentField(.DisplayName, .ArtifactID, .FieldTypeID, .FieldCategoryID, .CodeTypeID, .MaxLength))
 						End With
 					Next
 				End If
@@ -754,7 +754,8 @@ Namespace kCura.EDDS.WinForm
 
 		Private Sub _loginForm_OK_Click(ByVal cred As System.Net.NetworkCredential) Handles _loginForm.OK_Click
 			_loginForm.Close()
-			If CredentialsAreGood(cred) Then
+			Dim userManager As New kCura.WinEDDS.Service.UserManager(cred)
+			If userManager.Login(cred.UserName, cred.Password) Then			'If CredentialsAreGood(cred) Then
 				_credential = cred
 				OpenCase()
 			Else
@@ -766,36 +767,34 @@ Namespace kCura.EDDS.WinForm
 			End If
 		End Sub
 
-		Friend Function DefaultCredentialsAreGood() As Boolean
-			If CredentialsAreGood(System.Net.CredentialCache.DefaultCredentials) Then
-				_credential = DirectCast(System.Net.CredentialCache.DefaultCredentials, System.Net.NetworkCredential)
-				Return True
-			Else
-				Return False
-			End If
-		End Function
+		'Friend Function CredentialsAreGood(ByVal cred As System.Net.NetworkCredential) As Boolean
+		'	Dim 
+		'End Function
 
-		Friend Function CredentialsAreGood(ByVal credential As Net.ICredentials) As Boolean
+		Friend Function DefaultCredentialsAreGood() As Boolean
 			Try
 				Dim myHttpWebRequest As System.Net.HttpWebRequest = DirectCast(System.Net.WebRequest.Create(kCura.WinEDDS.Config.HostURL), System.Net.HttpWebRequest)
 				myHttpWebRequest.Credentials = System.Net.CredentialCache.DefaultCredentials
 				Dim myHttpWebResponse As System.Net.HttpWebResponse = DirectCast(myHttpWebRequest.GetResponse(), System.Net.HttpWebResponse)
-
-				Dim relativityManager As New kCura.WinEDDS.Service.RelativityManager(DirectCast(credential, System.Net.NetworkCredential))
-				Dim winRelativityVersion As String = System.Reflection.Assembly.GetExecutingAssembly.FullName.Split(","c)(1).Split("="c)(1)
-				Dim relativityWebVersion As String = relativityManager.RetrieveRelativityVersion()
-
-				If winRelativityVersion <> relativityWebVersion Then
-					MsgBox(String.Format("Your version of WinRelativity is out of date. You are running version {0}, but version {1} is required.", winRelativityVersion, relativityWebVersion), MsgBoxStyle.Critical, "WinRelativity Out Of Date")
-					ExitApplication()
-				End If
-
+				CheckVersion(System.Net.CredentialCache.DefaultCredentials)
 				Return True
 			Catch ex As Exception
 				Return False
 			End Try
 		End Function
 
+		Private Sub CheckVersion(ByVal credential As Net.ICredentials)
+			Dim relativityManager As New kCura.WinEDDS.Service.RelativityManager(DirectCast(credential, System.Net.NetworkCredential))
+			Dim winRelativityVersion As String = System.Reflection.Assembly.GetExecutingAssembly.FullName.Split(","c)(1).Split("="c)(1)
+			Dim relativityWebVersion As String = relativityManager.RetrieveRelativityVersion()
+
+			If winRelativityVersion <> relativityWebVersion Then
+				MsgBox(String.Format("Your version of WinRelativity is out of date. You are running version {0}, but version {1} is required.", winRelativityVersion, relativityWebVersion), MsgBoxStyle.Critical, "WinRelativity Out Of Date")
+				ExitApplication()
+			Else
+				Exit Sub
+			End If
+		End Sub
 #End Region
 
 	End Class

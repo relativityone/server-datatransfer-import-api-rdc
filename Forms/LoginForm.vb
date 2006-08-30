@@ -134,12 +134,17 @@ Namespace kCura.EDDS.WinForm
 			End Set
 		End Property
 
+		'Private Sub _okButton_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles _okButton.Click
+		'	If _loginTextBox.Text.IndexOf("\") = -1 Then
+		'		_credential = New Net.NetworkCredential(_loginTextBox.Text, _passwordTextBox.Text)
+		'	Else
+		'		_credential = New Net.NetworkCredential(_loginTextBox.Text.Split("\".ToCharArray)(1), _passwordTextBox.Text, _loginTextBox.Text.Split("\".ToCharArray)(0))
+		'	End If
+		'	RaiseEvent OK_Click(_credential)
+		'End Sub
+
 		Private Sub _okButton_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles _okButton.Click
-			If _loginTextBox.Text.IndexOf("\") = -1 Then
-				_credential = New Net.NetworkCredential(_loginTextBox.Text, _passwordTextBox.Text)
-			Else
-				_credential = New Net.NetworkCredential(_loginTextBox.Text.Split("\".ToCharArray)(1), _passwordTextBox.Text, _loginTextBox.Text.Split("\".ToCharArray)(0))
-			End If
+			_credential = New Net.NetworkCredential(_loginTextBox.Text, _passwordTextBox.Text)
 			RaiseEvent OK_Click(_credential)
 		End Sub
 
