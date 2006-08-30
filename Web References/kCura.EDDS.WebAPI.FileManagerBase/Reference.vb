@@ -217,6 +217,35 @@ Namespace kCura.EDDS.WebAPI.FileManagerBase
         
         '<remarks/>
         Public Rotation As Integer
+        
+        '<remarks/>
+        Public Redactions() As Redaction
+    End Class
+    
+    '<remarks/>
+    <System.Xml.Serialization.XmlTypeAttribute([Namespace]:="http://www.kCura.com/EDDS/FileManager")>  _
+    Public Class Redaction
+        
+        '<remarks/>
+        Public ID As Integer
+        
+        '<remarks/>
+        Public FileGuid As String
+        
+        '<remarks/>
+        Public X As Integer
+        
+        '<remarks/>
+        Public Y As Integer
+        
+        '<remarks/>
+        Public Width As Integer
+        
+        '<remarks/>
+        Public Height As Integer
+        
+        '<remarks/>
+        Public Type As String
     End Class
     
     '<remarks/>

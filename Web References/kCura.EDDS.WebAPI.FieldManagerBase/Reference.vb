@@ -92,7 +92,7 @@ Namespace kCura.EDDS.WebAPI.FieldManagerBase
         Public Removable As Boolean
         
         '<remarks/>
-        Public CodeArtifactTypeID As NullableInt32
+        Public CodeTypeID As NullableInt32
         
         '<remarks/>
         Public MaxLength As NullableInt32

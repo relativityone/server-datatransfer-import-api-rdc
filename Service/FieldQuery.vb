@@ -27,7 +27,7 @@ Namespace kCura.WinEDDS.Service
 				With field
 					.ArtifactID = CType(dv(i)("ArtifactID"), Int32)
 					.ArtifactViewFieldID = CType(dv(i)("ArtifactViewFieldID"), Int32)
-					.CodeArtifactTypeID = NullableTypes.HelperFunctions.DBNullConvert.ToNullableInt32(dv(i)("CodeTypeID"))
+					.CodeTypeID = NullableTypes.HelperFunctions.DBNullConvert.ToNullableInt32(dv(i)("CodeTypeID"))
 					.DisplayName = CType(dv(i)("DisplayName"), String)
 					.FieldCategoryID = CType(dv(i)("FieldCategoryID"), Int32)
 					.FieldType = CType(dv(i)("FieldTypeID"), kCura.EDDS.WebAPI.DocumentManagerBase.FieldType)

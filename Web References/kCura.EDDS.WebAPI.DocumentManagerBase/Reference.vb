@@ -357,6 +357,35 @@ Namespace kCura.EDDS.WebAPI.DocumentManagerBase
         
         '<remarks/>
         Public Rotation As Integer
+        
+        '<remarks/>
+        Public Redactions() As Redaction
+    End Class
+    
+    '<remarks/>
+    <System.Xml.Serialization.XmlTypeAttribute([Namespace]:="http://foley.com/EDDS/DocumentManager")>  _
+    Public Class Redaction
+        
+        '<remarks/>
+        Public ID As Integer
+        
+        '<remarks/>
+        Public FileGuid As String
+        
+        '<remarks/>
+        Public X As Integer
+        
+        '<remarks/>
+        Public Y As Integer
+        
+        '<remarks/>
+        Public Width As Integer
+        
+        '<remarks/>
+        Public Height As Integer
+        
+        '<remarks/>
+        Public Type As String
     End Class
     
     '<remarks/>
@@ -452,7 +481,7 @@ Namespace kCura.EDDS.WebAPI.DocumentManagerBase
         Public Removable As Boolean
         
         '<remarks/>
-        Public CodeArtifactTypeID As NullableInt32
+        Public CodeTypeID As NullableInt32
         
         '<remarks/>
         Public MaxLength As NullableInt32

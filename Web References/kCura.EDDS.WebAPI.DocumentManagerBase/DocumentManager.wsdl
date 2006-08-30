@@ -44,6 +44,23 @@
           <s:element minOccurs="0" maxOccurs="1" name="Filename" type="s:string" />
           <s:element minOccurs="1" maxOccurs="1" name="DocumentArtifactID" type="s:int" />
           <s:element minOccurs="1" maxOccurs="1" name="Rotation" type="s:int" />
+          <s:element minOccurs="0" maxOccurs="1" name="Redactions" type="tns:ArrayOfRedaction" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="ArrayOfRedaction">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="Redaction" nillable="true" type="tns:Redaction" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="Redaction">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="ID" type="s:int" />
+          <s:element minOccurs="0" maxOccurs="1" name="FileGuid" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="X" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="Y" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="Width" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="Height" type="s:int" />
+          <s:element minOccurs="0" maxOccurs="1" name="Type" type="s:string" />
         </s:sequence>
       </s:complexType>
       <s:element name="CreateEmptyDocument">
@@ -126,7 +143,7 @@
               <s:element minOccurs="0" maxOccurs="1" name="DisplayName" type="s:string" />
               <s:element minOccurs="1" maxOccurs="1" name="IsRequired" type="s:boolean" />
               <s:element minOccurs="1" maxOccurs="1" name="Removable" type="s:boolean" />
-              <s:element minOccurs="1" maxOccurs="1" name="CodeArtifactTypeID">
+              <s:element minOccurs="1" maxOccurs="1" name="CodeTypeID">
                 <s:complexType>
                   <s:sequence>
                     <s:any namespace="http://NullableTypes.SourceForge.Net/NullableInt32XMLSchema" />

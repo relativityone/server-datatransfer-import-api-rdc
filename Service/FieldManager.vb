@@ -26,7 +26,7 @@ Namespace kCura.WinEDDS.Service
 		End Sub
 
 		Public Shared Function DTOtoDocumentField(ByVal dto As kCura.EDDS.WebAPI.DocumentManagerBase.Field) As DocumentField
-			Dim retval As New DocumentField(dto.DisplayName, dto.ArtifactID, dto.FieldTypeID, dto.FieldCategoryID, dto.CodeArtifactTypeID, dto.MaxLength)
+			Dim retval As New DocumentField(dto.DisplayName, dto.ArtifactID, dto.FieldTypeID, dto.FieldCategoryID, dto.CodeTypeID, dto.MaxLength)
 			If retval.FieldTypeID = kCura.EDDS.Types.FieldCategory.FullText Then
 				retval.Value = System.Text.ASCIIEncoding.ASCII.GetString(DirectCast(dto.Value, Byte()))
 			Else

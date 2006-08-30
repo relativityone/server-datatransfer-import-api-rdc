@@ -384,6 +384,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Service\UserManager.vb"
+                    SubType = "code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Types\DocumentField.vb"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -750,6 +755,33 @@
                 <Folder
                     RelPath = "Web References\kCura.EDDS.WebAPI.SearchManagerBase\"
                     WebReferenceUrl = "http://localhost/EDDS/WebAPI/SearchManager.asmx"
+                    UrlBehavior = "Static"
+                />
+                <File
+                    RelPath = "Web References\kCura.EDDS.WebAPI.UserManagerBase\Reference.map"
+                    BuildAction = "None"
+                    Generator = "MSDiscoCodeGenerator"
+                    LastGenOutput = "Reference.vb"
+                />
+                <File
+                    RelPath = "Web References\kCura.EDDS.WebAPI.UserManagerBase\Reference.vb"
+                    DependentUpon = "Reference.map"
+                    SubType = "code"
+                    BuildAction = "Compile"
+                    DesignTime = "True"
+                    AutoGen = "True"
+                />
+                <File
+                    RelPath = "Web References\kCura.EDDS.WebAPI.UserManagerBase\UserManager.disco"
+                    BuildAction = "None"
+                />
+                <File
+                    RelPath = "Web References\kCura.EDDS.WebAPI.UserManagerBase\UserManager.wsdl"
+                    BuildAction = "None"
+                />
+                <Folder
+                    RelPath = "Web References\kCura.EDDS.WebAPI.UserManagerBase\"
+                    WebReferenceUrl = "http://localhost/EDDS/WebAPI/UserManager.asmx"
                     UrlBehavior = "Static"
                 />
                 <Folder
