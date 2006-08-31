@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<discovery xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.xmlsoap.org/disco/">
+  <contractRef ref="http://localhost/EDDSWebAPI/CodeManager.asmx?wsdl" docRef="http://localhost/EDDSWebAPI/CodeManager.asmx" xmlns="http://schemas.xmlsoap.org/disco/scl/" />
+  <soap address="http://localhost/EDDSWebAPI/CodeManager.asmx" xmlns:q1="http://foley.com/EDDS/CodeManager" binding="q1:CodeManagerSoap" xmlns="http://schemas.xmlsoap.org/disco/soap/" />
+</discovery>

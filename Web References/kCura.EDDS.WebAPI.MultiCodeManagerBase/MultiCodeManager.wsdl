@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tns="http://tempuri.org//MultiCodeManager" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" targetNamespace="http://tempuri.org//MultiCodeManager" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <s:schema elementFormDefault="qualified" targetNamespace="http://tempuri.org//MultiCodeManager">
+      <s:element name="DeleteFromMultiCodeArtifactByMultiCodeID">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="artifactID" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="multiCodeID" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="DeleteFromMultiCodeArtifactByMultiCodeIDResponse">
+        <s:complexType />
+      </s:element>
+      <s:element name="CreateNewMultiCodeID">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="artifactID" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="CreateNewMultiCodeIDResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="CreateNewMultiCodeIDResult" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="SetMultiCodeValues">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="multiCodeID" type="s:int" />
+            <s:element minOccurs="0" maxOccurs="1" name="values" type="tns:ArrayOfAnyType" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="ArrayOfAnyType">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="anyType" nillable="true" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="SetMultiCodeValuesResponse">
+        <s:complexType />
+      </s:element>
+    </s:schema>
+  </wsdl:types>
+  <wsdl:message name="DeleteFromMultiCodeArtifactByMultiCodeIDSoapIn">
+    <wsdl:part name="parameters" element="tns:DeleteFromMultiCodeArtifactByMultiCodeID" />
+  </wsdl:message>
+  <wsdl:message name="DeleteFromMultiCodeArtifactByMultiCodeIDSoapOut">
+    <wsdl:part name="parameters" element="tns:DeleteFromMultiCodeArtifactByMultiCodeIDResponse" />
+  </wsdl:message>
+  <wsdl:message name="CreateNewMultiCodeIDSoapIn">
+    <wsdl:part name="parameters" element="tns:CreateNewMultiCodeID" />
+  </wsdl:message>
+  <wsdl:message name="CreateNewMultiCodeIDSoapOut">
+    <wsdl:part name="parameters" element="tns:CreateNewMultiCodeIDResponse" />
+  </wsdl:message>
+  <wsdl:message name="SetMultiCodeValuesSoapIn">
+    <wsdl:part name="parameters" element="tns:SetMultiCodeValues" />
+  </wsdl:message>
+  <wsdl:message name="SetMultiCodeValuesSoapOut">
+    <wsdl:part name="parameters" element="tns:SetMultiCodeValuesResponse" />
+  </wsdl:message>
+  <wsdl:portType name="MultiCodeManagerSoap">
+    <wsdl:operation name="DeleteFromMultiCodeArtifactByMultiCodeID">
+      <wsdl:input message="tns:DeleteFromMultiCodeArtifactByMultiCodeIDSoapIn" />
+      <wsdl:output message="tns:DeleteFromMultiCodeArtifactByMultiCodeIDSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="CreateNewMultiCodeID">
+      <wsdl:input message="tns:CreateNewMultiCodeIDSoapIn" />
+      <wsdl:output message="tns:CreateNewMultiCodeIDSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="SetMultiCodeValues">
+      <wsdl:input message="tns:SetMultiCodeValuesSoapIn" />
+      <wsdl:output message="tns:SetMultiCodeValuesSoapOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="MultiCodeManagerSoap" type="tns:MultiCodeManagerSoap">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document" />
+    <wsdl:operation name="DeleteFromMultiCodeArtifactByMultiCodeID">
+      <soap:operation soapAction="http://tempuri.org//MultiCodeManager/DeleteFromMultiCodeArtifactByMultiCodeID" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CreateNewMultiCodeID">
+      <soap:operation soapAction="http://tempuri.org//MultiCodeManager/CreateNewMultiCodeID" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SetMultiCodeValues">
+      <soap:operation soapAction="http://tempuri.org//MultiCodeManager/SetMultiCodeValues" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="MultiCodeManager">
+    <wsdl:port name="MultiCodeManagerSoap" binding="tns:MultiCodeManagerSoap">
+      <soap:address location="http://localhost/EDDSWebAPI/MultiCodeManager.asmx" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>
