@@ -2,9 +2,10 @@ Namespace kCura.WinEDDS.Service
 	Public Class MultiCodeManager
 		Inherits kCura.EDDS.WebAPI.MultiCodeManagerBase.MultiCodeManager
 
-		Public Sub New(ByVal credentials As Net.NetworkCredential)
+		Public Sub New(ByVal credentials As Net.NetworkCredential, ByVal cookieContainer As System.Net.CookieContainer)
 			MyBase.New()
 			Me.Credentials = credentials
+			Me.CookieContainer = cookieContainer
 			Me.Url = String.Format("{0}MultiCodeManager.asmx", kCura.WinEDDS.Config.WebServiceURL)
 			Me.Timeout = Settings.DefaultTimeOut
 		End Sub
