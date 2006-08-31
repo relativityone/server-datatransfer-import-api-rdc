@@ -43,6 +43,7 @@ Namespace kCura.EDDS.WinForm
 		Private WithEvents _loginForm As LoginForm
 		Private Shared _cache As New Hashtable
 		Private _temporaryWebServiceURL As String
+		Private _cookieContainer As System.Net.CookieContainer
 #End Region
 
 #Region "Properties"
@@ -133,6 +134,7 @@ Namespace kCura.EDDS.WinForm
 				_temporaryWebServiceURL = value
 			End Set
 		End Property
+
 
 #End Region
 
@@ -757,6 +759,9 @@ Namespace kCura.EDDS.WinForm
 			Dim userManager As New kCura.WinEDDS.Service.UserManager(cred)
 			If userManager.Login(cred.UserName, cred.Password) Then			'If CredentialsAreGood(cred) Then
 				_credential = cred
+				_credential.Domain = "kcura"
+				System.Net.ServicePointManager.CertificatePolicy = New TrustAllCertificatePolicy
+				_cookieContainer = New System.Net.CookieContainer
 				OpenCase()
 			Else
 				If MsgBox("Invalid login.  Try again?", MsgBoxStyle.YesNo) = MsgBoxResult.Yes Then
@@ -772,15 +777,22 @@ Namespace kCura.EDDS.WinForm
 		'End Function
 
 		Friend Function DefaultCredentialsAreGood() As Boolean
-			Try
-				Dim myHttpWebRequest As System.Net.HttpWebRequest = DirectCast(System.Net.WebRequest.Create(kCura.WinEDDS.Config.HostURL), System.Net.HttpWebRequest)
-				myHttpWebRequest.Credentials = System.Net.CredentialCache.DefaultCredentials
-				Dim myHttpWebResponse As System.Net.HttpWebResponse = DirectCast(myHttpWebRequest.GetResponse(), System.Net.HttpWebResponse)
-				CheckVersion(System.Net.CredentialCache.DefaultCredentials)
-				Return True
-			Catch ex As Exception
+			Dim cred As System.Net.NetworkCredential = DirectCast(System.Net.CredentialCache.DefaultCredentials, System.Net.NetworkCredential)
+			If cred.Domain = "" Or cred.Password = "" Or cred.UserName = "" Then
 				Return False
-			End Try
+			Else
+				Try
+					Dim myHttpWebRequest As System.Net.HttpWebRequest = DirectCast(System.Net.WebRequest.Create(kCura.WinEDDS.Config.HostURL), System.Net.HttpWebRequest)
+					myHttpWebRequest.Credentials = System.Net.CredentialCache.DefaultCredentials
+					Dim myHttpWebResponse As System.Net.HttpWebResponse = DirectCast(myHttpWebRequest.GetResponse(), System.Net.HttpWebResponse)
+					CheckVersion(System.Net.CredentialCache.DefaultCredentials)
+					System.Net.ServicePointManager.CertificatePolicy = New TrustAllCertificatePolicy
+					_cookieContainer = New System.Net.CookieContainer
+					Return True
+				Catch ex As Exception
+					Return False
+				End Try
+			End If
 		End Function
 
 		Private Sub CheckVersion(ByVal credential As Net.ICredentials)
