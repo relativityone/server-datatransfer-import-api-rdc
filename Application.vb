@@ -246,7 +246,7 @@ Namespace kCura.EDDS.WinForm
 
 		Public Function GetCases() As System.Data.DataSet
 			_fields = Nothing
-			Dim csMgr As New kCura.WinEDDS.Service.CaseManager(Credential)
+			Dim csMgr As New kCura.WinEDDS.Service.CaseManager(Credential, _cookieContainer)
 			Return csMgr.RetrieveAll()
 
 			'Dim dsFactory As New kCura.Utility.DataSetFactory
