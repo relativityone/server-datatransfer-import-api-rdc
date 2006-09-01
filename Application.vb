@@ -104,7 +104,7 @@ Namespace kCura.EDDS.WinForm
 			Get
 				If _fields Is Nothing Then
 					_fields = New DocumentFieldCollection
-					Dim fieldManager As New kCura.WinEDDS.Service.FieldQuery(Credential)
+					Dim fieldManager As New kCura.WinEDDS.Service.FieldQuery(Credential, _cookieContainer)
 					Dim fields() As kCura.EDDS.WebAPI.DocumentManagerBase.Field = fieldManager.RetrieveAllAsArray(SelectedCaseRootArtifactID)
 					Dim i As Int32
 					For i = 0 To fields.Length - 1
@@ -135,6 +135,14 @@ Namespace kCura.EDDS.WinForm
 			End Set
 		End Property
 
+		Public Property CookieContainer() As System.Net.CookieContainer
+			Get
+				Return _cookieContainer
+			End Get
+			Set(ByVal value As System.Net.CookieContainer)
+				_cookieContainer = value
+			End Set
+		End Property
 
 #End Region
 
@@ -217,14 +225,14 @@ Namespace kCura.EDDS.WinForm
 		Public Function CreateNewFolder(ByVal parentFolderID As Int32) As Int32
 			Dim name As String = InputBox("Enter Folder Name", "Relativity Review")
 			If name <> "" Then
-				Dim folderManager As New kCura.WinEDDS.Service.FolderManager(Me.Credential)
+				Dim folderManager As New kCura.WinEDDS.Service.FolderManager(Me.Credential, _cookieContainer)
 				Dim folderID As Int32 = folderManager.Create(parentFolderID, name)
 				RaiseEvent OnEvent(New NewFolderEvent(parentFolderID, folderID, name))
 			End If
 		End Function
 
 		Public Function GetCaseFolders(ByVal caseID As Int32) As System.Data.DataSet
-			Dim folderManager As New kCura.WinEDDS.Service.FolderManager(Credential)
+			Dim folderManager As New kCura.WinEDDS.Service.FolderManager(Credential, _cookieContainer)
 			Return folderManager.RetrieveAllByCaseID(caseID)
 			'Dim dsFactory As New kCura.Utility.DataSetFactory
 			'dsFactory.AddColumn("ArtifactID", kCura.Utility.DataSetFactory.DataType.Integer)
@@ -422,6 +430,7 @@ Namespace kCura.EDDS.WinForm
 			loadFile.DestinationFolderID = destinationArtifactID
 			loadFile.CaseInfo = caseInfo
 			loadFile.Credentials = Me.Credential
+			loadFile.CookieContainer = Me.CookieContainer
 			frm.LoadFile = loadFile
 
 			frm.Show()
@@ -430,7 +439,7 @@ Namespace kCura.EDDS.WinForm
 		Public Sub NewProductionExport(ByVal caseInfo As kCura.EDDS.Types.CaseInfo)
 			Dim frm As New ProductionExportForm
 			Dim exportFile As New exportFile
-			Dim productionManager As New kCura.WinEDDS.Service.ProductionManager(Me.Credential)
+			Dim productionManager As New kCura.WinEDDS.Service.ProductionManager(Me.Credential, _cookieContainer)
 			exportFile.CaseInfo = caseInfo
 			exportFile.DataTable = productionManager.RetrieveProducedByContextArtifactID(caseInfo.RootArtifactID).Tables(0)
 			exportFile.Credential = Me.Credential
@@ -443,7 +452,7 @@ Namespace kCura.EDDS.WinForm
 		Public Sub NewSearchExport(ByVal rootFolderID As Int32, ByVal caseInfo As kCura.EDDS.Types.CaseInfo, ByVal typeOfExport As kCura.WinEDDS.ExportFile.ExportType)
 			Dim frm As New SearchExportForm
 			Dim exportFile As New exportFile
-			Dim searchManager As New kCura.WinEDDS.Service.SearchManager(Me.Credential)
+			Dim searchManager As New kCura.WinEDDS.Service.SearchManager(Me.Credential, _cookieContainer)
 			exportFile.ArtifactID = rootFolderID
 			exportFile.CaseInfo = caseInfo
 			If typeOfExport = exportFile.ExportType.ArtifactSearch Then
@@ -575,7 +584,7 @@ Namespace kCura.EDDS.WinForm
 		Public Function ImportDirectory(ByVal importFileDirectorySettings As ImportFileDirectorySettings) As Guid
 			CursorWait()
 			Dim frm As New kCura.Windows.Process.ProgressForm
-			Dim importer As New kCura.WinEDDS.ImportFileDirectoryProcess(Credential)
+			Dim importer As New kCura.WinEDDS.ImportFileDirectoryProcess(Credential, CookieContainer)
 			importer.ImportFileDirectorySettings = importFileDirectorySettings
 			frm.ProcessObserver = importer.ProcessObserver
 			frm.Show()
@@ -608,7 +617,7 @@ Namespace kCura.EDDS.WinForm
 
 		Public Function ImportLoadFile(ByVal loadFile As LoadFile) As Guid
 			CursorWait()
-			Dim folderManager As New kCura.WinEDDS.Service.FolderManager(Credential)
+			Dim folderManager As New kCura.WinEDDS.Service.FolderManager(Credential, _cookieContainer)
 			If folderManager.Exists(SelectedCaseFolderID, SelectedCaseInfo.RootFolderID) Then
 				If CheckFieldMap(loadFile) Then
 					Dim frm As New kCura.Windows.Process.ProgressForm
@@ -756,11 +765,11 @@ Namespace kCura.EDDS.WinForm
 
 		Private Sub _loginForm_OK_Click(ByVal cred As System.Net.NetworkCredential) Handles _loginForm.OK_Click
 			_loginForm.Close()
-			Dim userManager As New kCura.WinEDDS.Service.UserManager(cred)
+			Dim userManager As New kCura.WinEDDS.Service.UserManager(cred, _cookieContainer)
 			If userManager.Login(cred.UserName, cred.Password) Then			'If CredentialsAreGood(cred) Then
 				_credential = cred
 				_credential.Domain = "kcura"
-				System.Net.ServicePointManager.CertificatePolicy = New TrustAllCertificatePolicy
+				'System.Net.ServicePointManager.CertificatePolicy = New TrustAllCertificatePolicy
 				_cookieContainer = New System.Net.CookieContainer
 				OpenCase()
 			Else
@@ -772,10 +781,6 @@ Namespace kCura.EDDS.WinForm
 			End If
 		End Sub
 
-		'Friend Function CredentialsAreGood(ByVal cred As System.Net.NetworkCredential) As Boolean
-		'	Dim 
-		'End Function
-
 		Friend Function DefaultCredentialsAreGood() As Boolean
 			Dim cred As System.Net.NetworkCredential = DirectCast(System.Net.CredentialCache.DefaultCredentials, System.Net.NetworkCredential)
 			If cred.Domain = "" Or cred.Password = "" Or cred.UserName = "" Then
@@ -786,7 +791,7 @@ Namespace kCura.EDDS.WinForm
 					myHttpWebRequest.Credentials = System.Net.CredentialCache.DefaultCredentials
 					Dim myHttpWebResponse As System.Net.HttpWebResponse = DirectCast(myHttpWebRequest.GetResponse(), System.Net.HttpWebResponse)
 					CheckVersion(System.Net.CredentialCache.DefaultCredentials)
-					System.Net.ServicePointManager.CertificatePolicy = New TrustAllCertificatePolicy
+					'System.Net.ServicePointManager.CertificatePolicy = New TrustAllCertificatePolicy
 					_cookieContainer = New System.Net.CookieContainer
 					Return True
 				Catch ex As Exception
@@ -796,7 +801,7 @@ Namespace kCura.EDDS.WinForm
 		End Function
 
 		Private Sub CheckVersion(ByVal credential As Net.ICredentials)
-			Dim relativityManager As New kCura.WinEDDS.Service.RelativityManager(DirectCast(credential, System.Net.NetworkCredential))
+			Dim relativityManager As New kCura.WinEDDS.Service.RelativityManager(DirectCast(credential, System.Net.NetworkCredential), _cookieContainer)
 			Dim winRelativityVersion As String = System.Reflection.Assembly.GetExecutingAssembly.FullName.Split(","c)(1).Split("="c)(1)
 			Dim relativityWebVersion As String = relativityManager.RetrieveRelativityVersion()
 
