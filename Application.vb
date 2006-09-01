@@ -767,9 +767,8 @@ Namespace kCura.EDDS.WinForm
 		Private Sub _loginForm_OK_Click(ByVal cred As System.Net.NetworkCredential) Handles _loginForm.OK_Click
 			_loginForm.Close()
 			Dim userManager As New kCura.WinEDDS.Service.UserManager(cred, _cookieContainer)
-			If userManager.Login(cred.UserName, cred.Password) Then			'If CredentialsAreGood(cred) Then
+			If userManager.Login(cred.UserName, cred.Password) Then
 				_credential = cred
-				_credential.Domain = "kcura"
 				OpenCase()
 			Else
 				If MsgBox("Invalid login.  Try again?", MsgBoxStyle.YesNo) = MsgBoxResult.Yes Then
@@ -782,19 +781,15 @@ Namespace kCura.EDDS.WinForm
 
 		Friend Function DefaultCredentialsAreGood() As Boolean
 			Dim cred As System.Net.NetworkCredential = DirectCast(System.Net.CredentialCache.DefaultCredentials, System.Net.NetworkCredential)
-			If cred.Domain = "" Or cred.Password = "" Or cred.UserName = "" Then
+			Try
+				Dim myHttpWebRequest As System.Net.HttpWebRequest = DirectCast(System.Net.WebRequest.Create(kCura.WinEDDS.Config.HostURL), System.Net.HttpWebRequest)
+				myHttpWebRequest.Credentials = System.Net.CredentialCache.DefaultCredentials
+				Dim myHttpWebResponse As System.Net.HttpWebResponse = DirectCast(myHttpWebRequest.GetResponse(), System.Net.HttpWebResponse)
+				CheckVersion(System.Net.CredentialCache.DefaultCredentials)
+				Return True
+			Catch ex As Exception
 				Return False
-			Else
-				Try
-					Dim myHttpWebRequest As System.Net.HttpWebRequest = DirectCast(System.Net.WebRequest.Create(kCura.WinEDDS.Config.HostURL), System.Net.HttpWebRequest)
-					myHttpWebRequest.Credentials = System.Net.CredentialCache.DefaultCredentials
-					Dim myHttpWebResponse As System.Net.HttpWebResponse = DirectCast(myHttpWebRequest.GetResponse(), System.Net.HttpWebResponse)
-					CheckVersion(System.Net.CredentialCache.DefaultCredentials)
-					Return True
-				Catch ex As Exception
-					Return False
-				End Try
-			End If
+			End Try
 		End Function
 
 		Private Sub CheckVersion(ByVal credential As Net.ICredentials)

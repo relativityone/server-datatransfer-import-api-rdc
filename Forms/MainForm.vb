@@ -325,7 +325,7 @@ Namespace kCura.EDDS.WinForm
 			Else
 				_application.OpenCase()
 			End If
-			'kCura.Windows.Forms.EnhancedMenuProvider.Hook(Me)
+			kCura.Windows.Forms.EnhancedMenuProvider.Hook(Me)
 			Me.Cursor = System.Windows.Forms.Cursors.Default
 		End Sub
 
