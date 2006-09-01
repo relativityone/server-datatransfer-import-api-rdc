@@ -58,13 +58,13 @@ Namespace kCura.WinEDDS
 			_firstLineContainsColumnNames = args.FirstLineContainsHeaders
 			_fieldMap = args.FieldMap
 
-			_documentManager = New kCura.WinEDDS.Service.DocumentManager(args.Credentials)
-			_uploadManager = New kCura.WinEDDS.Service.FileIO(args.Credentials)
-			_codeManager = New kCura.WinEDDS.Service.CodeManager(args.Credentials)
-			_folderManager = New kCura.WinEDDS.Service.FolderManager(args.Credentials)
-			_fieldQuery = New kCura.WinEDDS.Service.FieldQuery(args.Credentials)
-			_fileManager = New kCura.WinEDDS.Service.FileManager(args.Credentials)
-			_multiCodeManager = New kCura.WinEDDS.Service.MultiCodeManager(args.Credentials)
+			_documentManager = New kCura.WinEDDS.Service.DocumentManager(args.Credentials, args.CookieContainer)
+			_uploadManager = New kCura.WinEDDS.Service.FileIO(args.Credentials, args.CookieContainer)
+			_codeManager = New kCura.WinEDDS.Service.CodeManager(args.Credentials, args.CookieContainer)
+			_folderManager = New kCura.WinEDDS.Service.FolderManager(args.Credentials, args.CookieContainer)
+			_fieldQuery = New kCura.WinEDDS.Service.FieldQuery(args.Credentials, args.CookieContainer)
+			_fileManager = New kCura.WinEDDS.Service.FileManager(args.Credentials, args.CookieContainer)
+			_multiCodeManager = New kCura.WinEDDS.Service.MultiCodeManager(args.Credentials, args.CookieContainer)
 
 			_multiValueSeparator = args.MultiRecordDelimiter.ToString.ToCharArray
 			_folderID = args.DestinationFolderID
@@ -156,6 +156,7 @@ Namespace kCura.WinEDDS
 		End Function
 
 #End Region
+
 		Public Sub SetFieldValue(ByVal field As DocumentField, ByVal values As String(), ByVal column As Int32)
 			Dim value As String
 			If column = -1 Then

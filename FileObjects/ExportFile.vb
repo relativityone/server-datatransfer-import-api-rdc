@@ -12,6 +12,7 @@ Namespace kCura.WinEDDS
 		Protected _newlineDelimiter As Char
 		Protected _multiRecordDelimiter As Char
 		Protected _credential As Net.NetworkCredential
+		Protected _cookieContainer As System.Net.CookieContainer
 		Protected _exportFullText As Boolean
 		Protected _exportNative As Boolean
 		Protected _logFileFormat As kCura.WinEDDS.LoadFileType.FileFormat
@@ -123,6 +124,15 @@ Namespace kCura.WinEDDS
 			End Get
 			Set(ByVal value As Net.NetworkCredential)
 				_credential = value
+			End Set
+		End Property
+
+		Public Property CookieContainer() As System.Net.CookieContainer
+			Get
+				Return _cookieContainer
+			End Get
+			Set(ByVal value As System.Net.CookieContainer)
+				_cookieContainer = value
 			End Set
 		End Property
 

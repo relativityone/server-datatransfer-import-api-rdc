@@ -15,8 +15,8 @@ Namespace kCura.WinEDDS
 			_destinationFolderPath = value
 		End Sub
 
-		Public Sub New(ByVal credentials As Net.NetworkCredential, ByVal destinationFolderPath As String)
-			_gateway = New kCura.WinEDDS.Service.FileIO(credentials)
+		Public Sub New(ByVal credentials As Net.NetworkCredential, ByVal destinationFolderPath As String, ByVal cookieContainer As System.Net.CookieContainer)
+			_gateway = New kCura.WinEDDS.Service.FileIO(credentials, cookieContainer)
 			_gateway.Credentials = credentials
 			_gateway.Timeout = Int32.MaxValue
 			_credentials = credentials

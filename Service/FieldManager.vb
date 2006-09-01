@@ -23,7 +23,7 @@ Namespace kCura.WinEDDS.Service
 			Me.CookieContainer = cookieContainer
 			Me.Url = String.Format("{0}FieldManager.asmx", kCura.WinEDDS.Config.WebServiceURL)
 			Me.Timeout = Settings.DefaultTimeOut
-			_query = New kCura.WinEDDS.Service.FieldQuery(credentials)
+			_query = New kCura.WinEDDS.Service.FieldQuery(credentials, Me.CookieContainer)
 		End Sub
 
 		Public Shared Function DTOtoDocumentField(ByVal dto As kCura.EDDS.WebAPI.DocumentManagerBase.Field) As DocumentField

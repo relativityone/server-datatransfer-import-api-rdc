@@ -18,19 +18,20 @@ Namespace kCura.WinEDDS
 		Private _documentManager As kCura.WinEDDS.Service.DocumentManager
 		Private _fileManager As kCura.WinEDDS.Service.FileManager
 		Private _credential As Net.NetworkCredential
+		Private _cookieContainer As System.Net.CookieContainer
     Private _currentBatesNumber As Integer
     Private _fileExtentionsToImport As System.Collections.ArrayList
 
 		Public Overrides Sub Import()
 
       ' create webservice proxies
-      _documentManager = New kCura.WinEDDS.Service.DocumentManager(_credential)
-     _folderManager = New kCura.WinEDDS.Service.FolderManager(_credential)
-      _fileManager = New kCura.WinEDDS.Service.FileManager(_credential)
-      _uploader = New kCura.WinEDDS.FileUploader(_credential, _documentManager.GetDocumentDirectoryByCaseArtifactID(_importFileDirectorySettings.CaseInfo.ArtifactID) & "\")
+			_documentManager = New kCura.WinEDDS.Service.DocumentManager(_credential, _cookieContainer)
+			_folderManager = New kCura.WinEDDS.Service.FolderManager(_credential, _cookieContainer)
+			_fileManager = New kCura.WinEDDS.Service.FileManager(_credential, _cookieContainer)
+			_uploader = New kCura.WinEDDS.FileUploader(_credential, _documentManager.GetDocumentDirectoryByCaseArtifactID(_importFileDirectorySettings.CaseInfo.ArtifactID) & "\", _cookieContainer)
 
 			' get case fields
-			Dim fieldManager As New kCura.WinEDDS.Service.FieldQuery(_credential)
+			Dim fieldManager As New kCura.WinEDDS.Service.FieldQuery(_credential, _cookieContainer)
 			_caseFields = fieldManager.RetrieveAllAsArray(_importFileDirectorySettings.CaseInfo.RootArtifactID)
 
       ' get valid extentiosn
@@ -179,15 +180,17 @@ Namespace kCura.WinEDDS
 		Private Class Folder
 			Public LocalPath As String
 			Public FolderID As Int32
+
 			Public Sub New(ByVal id As Int32, ByVal path As String)
 				FolderID = id
 				LocalPath = path
 			End Sub
 		End Class
 
-		Public Sub New(ByVal importSettings As kCura.WinEDDS.ImportFileDirectorySettings, ByVal credential As Net.NetworkCredential)
+		Public Sub New(ByVal importSettings As kCura.WinEDDS.ImportFileDirectorySettings, ByVal credential As Net.NetworkCredential, ByVal cookieContainer As System.Net.CookieContainer)
 			_importFileDirectorySettings = importSettings
 			_credential = credential
+			_cookieContainer = cookieContainer
 		End Sub
 
 	End Class

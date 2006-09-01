@@ -7,6 +7,8 @@ Namespace kCura.WinEDDS
 		Public ControlKeyField As String
 		Public ReplaceFullText As Boolean
 		<NonSerialized()> Public Credential As Net.NetworkCredential
+		<NonSerialized()> Public CookieContainer As System.Net.CookieContainer
+
 		Public Sub New()
 			MyBase.New()
 			Overwrite = True

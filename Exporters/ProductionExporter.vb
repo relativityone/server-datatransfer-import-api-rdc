@@ -96,9 +96,10 @@ Namespace kCura.WinEDDS
 #End Region
 
 		Public Sub New(ByVal cred As Net.NetworkCredential, ByVal productionArtifactID As Int32, ByVal folderPath As String, _
-		ByVal selectedCaseInfo As kCura.EDDS.Types.CaseInfo, ByVal overwrite As Boolean, ByVal controller As kCura.Windows.Process.Controller, ByVal fileformat As kCura.WinEDDS.LoadFileType.FileFormat)
-			_productionManager = New kCura.WinEDDS.Service.ProductionManager(cred)
-			_fileManager = New kCura.WinEDDS.Service.FileManager(cred)
+		ByVal selectedCaseInfo As kCura.EDDS.Types.CaseInfo, ByVal overwrite As Boolean, ByVal controller As kCura.Windows.Process.Controller, ByVal fileformat As kCura.WinEDDS.LoadFileType.FileFormat, _
+		ByVal cookieContainer As System.Net.CookieContainer)
+			_productionManager = New kCura.WinEDDS.Service.ProductionManager(cred, cookieContainer)
+			_fileManager = New kCura.WinEDDS.Service.FileManager(cred, cookieContainer)
 			_productionArtifactID = productionArtifactID
 			_folderPath = folderPath + "\"
 			_overwrite = overwrite
@@ -110,10 +111,10 @@ Namespace kCura.WinEDDS
 			Me.DocumentsExported = 0
 			Me.TotalDocuments = 1
 			_continue = True
-			_downloadManager = New FileDownloader(cred, selectedCaseInfo.DocumentPath & "\EDDS" & selectedCaseInfo.ArtifactID, selectedCaseInfo.DownloadHandlerURL)
-			_documentManager = New kCura.WinEDDS.Service.DocumentManager(cred)
+			_downloadManager = New FileDownloader(cred, selectedCaseInfo.DocumentPath & "\EDDS" & selectedCaseInfo.ArtifactID, selectedCaseInfo.DownloadHandlerURL, cookieContainer)
+			_documentManager = New kCura.WinEDDS.Service.DocumentManager(cred, cookieContainer)
 			_sourceDirectory = _documentManager.GetDocumentDirectoryByContextArtifactID(Me.SelectedCaseInfo.RootArtifactID)
-			_fullTextDownloader = New kCura.WinEDDS.FullTextManager(cred, _sourceDirectory)
+			_fullTextDownloader = New kCura.WinEDDS.FullTextManager(cred, _sourceDirectory, cookieContainer)
 		End Sub
 
 		Public Sub CreateVolumes()
@@ -205,7 +206,7 @@ Namespace kCura.WinEDDS
 
 		Private Function ExtractFullTextFromGuid(ByVal fullTextGuid As String) As String
 			Dim bodyText As String
-			If fulltextGuid Is Nothing Then
+			If fullTextGuid Is Nothing Then
 				bodyText = String.Empty
 			Else
 				bodyText = _fullTextDownloader.ReadFullTextFile(_sourceDirectory & fullTextGuid)

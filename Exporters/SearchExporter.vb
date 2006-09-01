@@ -75,12 +75,12 @@ Namespace kCura.WinEDDS
 #End Region
 
 		Public Sub New(ByVal exportFile As kCura.WinEDDS.ExportFile, ByVal processController As kCura.Windows.Process.Controller)
-			_searchManager = New kCura.WinEDDS.Service.SearchManager(exportFile.Credential)
-			_folderManager = New kCura.WinEDDS.Service.FolderManager(exportFile.Credential)
-			_documentManager = New kCura.WinEDDS.Service.DocumentManager(exportFile.Credential)
+			_searchManager = New kCura.WinEDDS.Service.SearchManager(exportFile.Credential, exportFile.CookieContainer)
+			_folderManager = New kCura.WinEDDS.Service.FolderManager(exportFile.Credential, exportFile.CookieContainer)
+			_documentManager = New kCura.WinEDDS.Service.DocumentManager(exportFile.Credential, exportFile.CookieContainer)
 			'_webClient = New System.Net.WebClient
 			'_webClient.Credentials = exportFile.Credential
-			_downloadHandler = New FileDownloader(exportFile.Credential, exportFile.CaseInfo.DocumentPath & "\EDDS" & exportFile.CaseInfo.ArtifactID, exportFile.CaseInfo.DownloadHandlerURL)
+			_downloadHandler = New FileDownloader(exportFile.Credential, exportFile.CaseInfo.DocumentPath & "\EDDS" & exportFile.CaseInfo.ArtifactID, exportFile.CaseInfo.DownloadHandlerURL, exportFile.CookieContainer)
 			_halt = False
 			_processController = processController
 			Me.DocumentsExported = 0
@@ -127,7 +127,7 @@ Namespace kCura.WinEDDS
 			Me.FolderList.CreateFolders(Me.ExportFile.FolderPath)
 			'If Me.ExportFile.ExportFullText Then fullTextFiles = _searchManager.RetrieveFullTextFilesForSearch(Me.ExportFile.ArtifactID, GetDocumentsString(documentTable)).Tables(0)
 			_sourceDirectory = _documentManager.GetDocumentDirectoryByContextArtifactID(Me.ExportFile.ArtifactID)
-			_fullTextDownloader = New kCura.WinEDDS.FullTextManager(Me.ExportFile.Credential, _sourceDirectory)
+			_fullTextDownloader = New kCura.WinEDDS.FullTextManager(Me.ExportFile.Credential, _sourceDirectory, Me.ExportFile.CookieContainer)
 			If Not System.IO.Directory.Exists(Me.ExportFile.FolderPath & Me.FolderList.BaseFolder.Path) Then
 				System.IO.Directory.CreateDirectory(Me.ExportFile.FolderPath & Me.FolderList.BaseFolder.Path)
 			End If

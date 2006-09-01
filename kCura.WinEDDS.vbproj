@@ -218,6 +218,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "TrustAllCertificatePolicy.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Utility.vb"
                     SubType = "Code"
                     BuildAction = "Compile"
