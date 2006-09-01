@@ -17,14 +17,16 @@ Namespace kCura.WinEDDS.NUnit
 
 		Public Sub RunDirectiveFileTest(ByVal directiveFilePath As String)
 			Dim cred As Net.NetworkCredential = DirectCast(System.Net.CredentialCache.DefaultCredentials, Net.NetworkCredential)
+			System.Net.ServicePointManager.CertificatePolicy = New kCura.WinEDDS.TrustAllCertificatePolicy
+			Dim cookieContainer As New System.Net.CookieContainer
 			Dim parser As New DirectiveFileParser(directiveFilePath)
 			Dim settings As TestSettings = parser.ReadFile()
 			If settings Is Nothing Then Throw New System.Exception("Setting creation failed")
-			Dim caseBuilder As New caseBuilder(cred, settings)
-			Dim testRunner As New testRunner(cred, settings)
+			Dim caseBuilder As New caseBuilder(cred, settings, cookieContainer)
+			Dim testRunner As New testRunner(cred, settings, cookieContainer)
 			Dim caseInfo As kCura.EDDS.Types.CaseInfo = caseBuilder.BuildCase()
 			Dim actualResults As TestResults = testRunner.RunTest(caseInfo)
-			Dim caseManager As New kCura.WinEDDS.Service.CaseManager(cred)
+			Dim caseManager As New kCura.WinEDDS.Service.CaseManager(cred, cookieContainer)
 			caseManager.Delete(caseInfo.ArtifactID)
 			Dim testpassed As Boolean = TestResults.op_Equality(settings.ExpectedResults, actualResults)
 			If testpassed Then
