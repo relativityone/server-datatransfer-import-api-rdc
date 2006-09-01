@@ -319,12 +319,13 @@ Namespace kCura.EDDS.WinForm
 			End If
 
 			_application.LogOn()
-			kCura.Windows.Forms.EnhancedMenuProvider.Hook(Me)
+
 			If Not _application.DefaultCredentialsAreGood() Then
 				_application.NewLogin()
 			Else
 				_application.OpenCase()
 			End If
+			'kCura.Windows.Forms.EnhancedMenuProvider.Hook(Me)
 			Me.Cursor = System.Windows.Forms.Cursors.Default
 		End Sub
 

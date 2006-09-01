@@ -14,6 +14,7 @@ Namespace kCura.EDDS.WinForm
 			'	_timeZoneOffset -= 1
 			'End If
 			System.Net.ServicePointManager.CertificatePolicy = New TrustAllCertificatePolicy
+			_cookieContainer = New System.Net.CookieContainer
 		End Sub
 
 		Public Shared ReadOnly Property Instance() As Application
@@ -769,8 +770,6 @@ Namespace kCura.EDDS.WinForm
 			If userManager.Login(cred.UserName, cred.Password) Then			'If CredentialsAreGood(cred) Then
 				_credential = cred
 				_credential.Domain = "kcura"
-				'System.Net.ServicePointManager.CertificatePolicy = New TrustAllCertificatePolicy
-				_cookieContainer = New System.Net.CookieContainer
 				OpenCase()
 			Else
 				If MsgBox("Invalid login.  Try again?", MsgBoxStyle.YesNo) = MsgBoxResult.Yes Then
@@ -791,8 +790,6 @@ Namespace kCura.EDDS.WinForm
 					myHttpWebRequest.Credentials = System.Net.CredentialCache.DefaultCredentials
 					Dim myHttpWebResponse As System.Net.HttpWebResponse = DirectCast(myHttpWebRequest.GetResponse(), System.Net.HttpWebResponse)
 					CheckVersion(System.Net.CredentialCache.DefaultCredentials)
-					'System.Net.ServicePointManager.CertificatePolicy = New TrustAllCertificatePolicy
-					_cookieContainer = New System.Net.CookieContainer
 					Return True
 				Catch ex As Exception
 					Return False
