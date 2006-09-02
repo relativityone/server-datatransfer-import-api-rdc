@@ -104,7 +104,8 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Private Function BuildDocument(ByVal valueArray As String()) As String()
-			Dim fullTextBuilder As New System.Text.StringBuilder
+			'Dim fullTextBuilder As New System.Text.StringBuilder
+			Dim fullTextBuilder As New kCura.EDDS.Types.FullTextBuilder
 			Dim fileGuids As New ArrayList
 			Dim fileNames As New ArrayList
 			Dim fileDTOs As New ArrayList
@@ -119,9 +120,9 @@ Namespace kCura.WinEDDS
 				If _overwrite Then
 					GetImageForDocument(fileLocation, fileDTOs, fullTextBuilder)
 					retval = GetImagesForDocument(fileDTOs, fullTextBuilder)
-					If _replaceFullText Then fullTextFileGuid = _fileUploader.UploadTextAsFile(fullTextBuilder.ToString, _folderID, System.Guid.NewGuid.ToString)
+					If _replaceFullText Then fullTextFileGuid = _fileUploader.UploadTextAsFile(fullTextBuilder.FullText, _folderID, System.Guid.NewGuid.ToString)
 					_docManager.ClearImagesFromDocument(currentDocumentArtifactID)
-					If _replaceFullText Then _docManager.AddFullTextToDocumentFromFile(currentDocumentArtifactID, fullTextFileGuid)
+					If _replaceFullText Then _docManager.AddFullTextToDocumentFromFile(currentDocumentArtifactID, fullTextFileGuid, fullTextBuilder)
 					'Update Document
 				Else
 					Throw New OverwriteException
@@ -144,7 +145,7 @@ Namespace kCura.WinEDDS
 			Return retval
 		End Function
 
-		Private Function GetImagesForDocument(ByVal fileDTOs As ArrayList, ByVal fullTextBuilder As System.Text.StringBuilder) As String()
+		Private Function GetImagesForDocument(ByVal fileDTOs As ArrayList, ByVal fullTextBuilder As kCura.EDDS.Types.FullTextBuilder) As String()
 			Dim valueArray As String()
 			While Continue
 				valueArray = Me.GetLine
@@ -153,7 +154,7 @@ Namespace kCura.WinEDDS
 			End While
 		End Function
 
-		Private Sub GetImageForDocument(ByVal imageFileName As String, ByVal fileDTOs As ArrayList, ByVal fullTextBuilder As System.text.StringBuilder)
+		Private Sub GetImageForDocument(ByVal imageFileName As String, ByVal fileDTOs As ArrayList, ByVal fullTextBuilder As kCura.EDDS.Types.FullTextBuilder)
 			Dim filename As String = imageFileName.Substring(imageFileName.LastIndexOf("\") + 1)
 			RaiseStatusEvent(kCura.Windows.Process.EventType.Progress, String.Format("Uploading File '{0}'.", filename))
 			Dim extractedTextFileName As String = imageFileName.Substring(0, imageFileName.LastIndexOf("."c) + 1) & "txt"
@@ -173,7 +174,7 @@ Namespace kCura.WinEDDS
 				'End While
 				'sr.Close()
 				Dim sr As New System.IO.StreamReader(extractedTextFileName, System.Text.Encoding.Default, True)
-				fullTextBuilder.Append(sr.ReadToEnd)
+				fullTextBuilder.AppendPage(sr.ReadToEnd)
 				sr.Close()
 			Else
 				If Not _replaceFullText Then
