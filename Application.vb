@@ -644,6 +644,7 @@ Namespace kCura.EDDS.WinForm
 			CursorWait()
 			Dim frm As New kCura.Windows.Process.ProgressForm
 			Dim importer As New kCura.WinEDDS.ImportImageFileProcess
+			ImageLoadFile.CookieContainer = Me.CookieContainer
 			importer.ImageLoadFile = ImageLoadFile
 			SetWorkingDirectory(ImageLoadFile.FileName)
 			frm.ProcessObserver = importer.ProcessObserver
@@ -786,6 +787,7 @@ Namespace kCura.EDDS.WinForm
 				myHttpWebRequest.Credentials = System.Net.CredentialCache.DefaultCredentials
 				Dim myHttpWebResponse As System.Net.HttpWebResponse = DirectCast(myHttpWebRequest.GetResponse(), System.Net.HttpWebResponse)
 				CheckVersion(System.Net.CredentialCache.DefaultCredentials)
+				_credential = cred
 				Return True
 			Catch ex As Exception
 				Return False
