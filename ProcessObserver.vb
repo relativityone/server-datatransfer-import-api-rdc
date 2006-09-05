@@ -60,7 +60,7 @@ Namespace kCura.Windows.Process
 			RaiseEvent OnProcessComplete(closeForm)
 			If Not _errorsWriter Is Nothing Then _errorsWriter.Close()
 			If Not _outputWriter Is Nothing Then _outputWriter.Close()
-			If Not closeForm Then
+			If Not closeForm AndAlso _errorsFileName <> String.Empty Then
 				Dim o As Object() = Me.BuildErrorReportDatasource()
 				RaiseEvent ShowReportEvent(DirectCast(o(0), System.Data.DataTable), CType(o(1), Boolean))
 			End If
