@@ -27,6 +27,30 @@
           </s:sequence>
         </s:complexType>
       </s:element>
+      <s:element name="LoginWithAuthenticationToken">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="authenticationToken" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="LoginWithAuthenticationTokenResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="LoginWithAuthenticationTokenResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GenerateAuthenticationToken">
+        <s:complexType />
+      </s:element>
+      <s:element name="GenerateAuthenticationTokenResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GenerateAuthenticationTokenResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
     </s:schema>
   </wsdl:types>
   <wsdl:message name="UpdateImageViewerDefaultViewModeSoapIn">
@@ -41,6 +65,18 @@
   <wsdl:message name="LoginSoapOut">
     <wsdl:part name="parameters" element="tns:LoginResponse" />
   </wsdl:message>
+  <wsdl:message name="LoginWithAuthenticationTokenSoapIn">
+    <wsdl:part name="parameters" element="tns:LoginWithAuthenticationToken" />
+  </wsdl:message>
+  <wsdl:message name="LoginWithAuthenticationTokenSoapOut">
+    <wsdl:part name="parameters" element="tns:LoginWithAuthenticationTokenResponse" />
+  </wsdl:message>
+  <wsdl:message name="GenerateAuthenticationTokenSoapIn">
+    <wsdl:part name="parameters" element="tns:GenerateAuthenticationToken" />
+  </wsdl:message>
+  <wsdl:message name="GenerateAuthenticationTokenSoapOut">
+    <wsdl:part name="parameters" element="tns:GenerateAuthenticationTokenResponse" />
+  </wsdl:message>
   <wsdl:portType name="UserManagerSoap">
     <wsdl:operation name="UpdateImageViewerDefaultViewMode">
       <wsdl:input message="tns:UpdateImageViewerDefaultViewModeSoapIn" />
@@ -49,6 +85,14 @@
     <wsdl:operation name="Login">
       <wsdl:input message="tns:LoginSoapIn" />
       <wsdl:output message="tns:LoginSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="LoginWithAuthenticationToken">
+      <wsdl:input message="tns:LoginWithAuthenticationTokenSoapIn" />
+      <wsdl:output message="tns:LoginWithAuthenticationTokenSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GenerateAuthenticationToken">
+      <wsdl:input message="tns:GenerateAuthenticationTokenSoapIn" />
+      <wsdl:output message="tns:GenerateAuthenticationTokenSoapOut" />
     </wsdl:operation>
   </wsdl:portType>
   <wsdl:binding name="UserManagerSoap" type="tns:UserManagerSoap">
@@ -64,6 +108,24 @@
     </wsdl:operation>
     <wsdl:operation name="Login">
       <soap:operation soapAction="http://www.kCura.com/EDDS/UserManager/Login" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="LoginWithAuthenticationToken">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/UserManager/LoginWithAuthenticationToken" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GenerateAuthenticationToken">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/UserManager/GenerateAuthenticationToken" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
