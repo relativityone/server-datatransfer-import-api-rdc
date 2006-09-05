@@ -132,11 +132,11 @@ Namespace kCura.WinEDDS
 				GetImageForDocument(fileLocation, fileDTOs, fullTextBuilder)
 				retval = GetImagesForDocument(fileDTOs, fullTextBuilder)
 				If _replaceFullText Then
-					fullTextFileGuid = _fileUploader.UploadTextAsFile(fullTextBuilder.ToString, _folderID, System.Guid.NewGuid.ToString)
+					fullTextFileGuid = _fileUploader.UploadTextAsFile(fullTextBuilder.FullText, _folderID, System.Guid.NewGuid.ToString)
 				Else
 					fullTextFileGuid = _fileUploader.UploadTextAsFile(String.Empty, _folderID, System.Guid.NewGuid.ToString)
 				End If
-				currentDocumentArtifactID = CreateDocument(documentIdentifier, fullTextFileGuid)
+				currentDocumentArtifactID = CreateDocument(documentIdentifier, fullTextFileGuid, fullTextBuilder)
 			End If
 			_fileManager.CreateImages(DirectCast(fileDTOs.ToArray(GetType(kCura.EDDS.WebAPI.FileManagerBase.FileInfoBase)), kCura.EDDS.WebAPI.FileManagerBase.FileInfoBase()), currentDocumentArtifactID, _folderID)
 			'For i = 0 To fileNames.Count - 1
@@ -183,11 +183,11 @@ Namespace kCura.WinEDDS
 			End If
 		End Sub
 
-		Private Function CreateDocument(ByVal identifier As String, ByVal fullTextFileName As String) As Int32
+		Private Function CreateDocument(ByVal identifier As String, ByVal fullTextFileName As String, ByVal fullTextBuilder As kCura.EDDS.Types.FullTextBuilder) As Int32
 			Dim fieldID As Int32
 			Dim encoder As New System.Text.ASCIIEncoding
 			Try
-				Return _docManager.CreateEmptyDocument(_folderID, encoder.GetBytes(identifier), fullTextFileName, _selectedIdentifierField)
+				Return _docManager.CreateEmptyDocument(_folderID, encoder.GetBytes(identifier), fullTextFileName, _selectedIdentifierField, fullTextBuilder)
 			Catch ex As Exception
 				Throw New CreateDocumentException(ex)
 			End Try

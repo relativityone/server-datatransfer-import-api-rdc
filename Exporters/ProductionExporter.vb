@@ -129,12 +129,14 @@ Namespace kCura.WinEDDS
 			Dim production As kCura.EDDS.WebAPI.ProductionManagerBase.Production
 			Dim dataTable As System.Data.DataTable
 			Dim guidTable As System.Data.DataTable
+			Dim pageTable As System.Data.DataTable
 
 			Dim fileURI As String
 			Dim fileName As String
 			Dim currentVolume As String
 			Dim currentDirectory As String
 			Dim volumeLog As New System.Text.StringBuilder
+			Dim fileFormat As String
 
 			Dim nextVolume As Int32
 			Dim nextDirectory As Int32
@@ -147,9 +149,21 @@ Namespace kCura.WinEDDS
 			Dim currentBates As String = ""
 			Dim fullTextLog As New System.Text.StringBuilder
 			Dim fulltextguid As String
+			Dim fullText, pageText As String
+
+			Dim isFirstDocument As Boolean
+			Dim startindex As Int32
+
+			If _loadFileFormat = kCura.WinEDDS.LoadFileType.FileFormat.Concordance Then
+				fileFormat = "log"
+			Else
+				fileFormat = "lfp"
+			End If
 
 			Me.WriteUpdate("Retrieving export data from the server...")
+			Dim ds As System.Data.DataSet
 			dataTable = _fileManager.RetrieveByProductionArtifactIDForProduction(Me.ProductionArtifactID).Tables(0)
+
 			Me.TotalDocuments = dataTable.Rows.Count()
 			Me.WriteUpdate("Data retrieved. Beginning production export...")
 
@@ -161,13 +175,16 @@ Namespace kCura.WinEDDS
 
 			documentSize = Me.CurrentDocumentSize(dataTable, 0, ProductionArtifactID)
 			documentCount = Me.CurrentDocumentCount(dataTable, 0)
+
 			For count = 0 To dataTable.Rows.Count - 1
+				isFirstDocument = (count = 0 OrElse CType(dataTable.Rows(count - 1)("DocumentArtifactID"), Int32) <> CType(dataTable.Rows(count)("DocumentArtifactID"), Int32))
 				Try
-					If count > 0 AndAlso CType(dataTable.Rows(count - 1)("DocumentArtifactID"), Int32) <> CType(dataTable.Rows(count)("DocumentArtifactID"), Int32) Then
+					'If count > 0 AndAlso CType(dataTable.Rows(count - 1)("DocumentArtifactID"), Int32) <> CType(dataTable.Rows(count)("DocumentArtifactID"), Int32) Then
+					If Not isFirstDocument Then
 						volumeSize = volumeSize + documentSize
 						documentSize = Me.CurrentDocumentSize(dataTable, count, ProductionArtifactID)
 						If volumeSize + documentSize > production.VolumeMaxSize * 1024 * 1024 Then
-							Me.CreateVolumeLogFile(currentVolume, production.Name, volumeLog.ToString)
+							Me.CreateVolumeLogFile(currentVolume, production.Name, volumeLog.ToString, fileFormat)
 							volumeLog = New System.Text.StringBuilder
 							currentVolume = Me.CreateVolumeDirectory(production.VolumePrefix, nextVolume)
 							nextVolume = nextVolume + 1
@@ -181,17 +198,26 @@ Namespace kCura.WinEDDS
 							subdirectoryCount = 0
 						End If
 					End If
+
 					'fileURI = String.Format("{0}Download.aspx?ArtifactID={1}&GUID={2}", Me.SelectedCaseInfo.DownloadHandlerURL, CType(dataTable.Rows(count)("ArtifactID"), Int32), CType(dataTable.Rows(count)("ImageGuid"), String))
 					fileName = String.Format("{0}{1}\{2}\{3}.tif", Me.FolderPath, currentVolume, currentDirectory, CType(dataTable.Rows(count)("BatesNumber"), String))
 					Me.ExportFile(fileName, CType(dataTable.Rows(count)("ImageGuid"), String), CType(dataTable.Rows(count)("DocumentArtifactID"), Int32), CType(dataTable.Rows(count)("BatesNumber"), String))
-					If _loadFileFormat = kCura.WinEDDS.LoadFileType.FileFormat.Concordance Then
-						volumeLog.Append(BuildVolumeLog(CType(dataTable.Rows(count)("BatesNumber"), String), currentVolume, fileName, (count = 0 OrElse CType(dataTable.Rows(count - 1)("DocumentArtifactID"), Int32) <> CType(dataTable.Rows(count)("DocumentArtifactID"), Int32))))
-					Else
-						fulltextguid = _fileManager.GetFullTextGuidsByDocumentArtifactIdAndType(CType(dataTable.Rows(count)("documentArtifactID"), Int32), 2)
-						volumeLog.Append(BuildIproLog(CType(dataTable.Rows(count)("BatesNumber"), String), currentVolume, currentDirectory, (count = 0 OrElse CType(dataTable.Rows(count - 1)("DocumentArtifactID"), Int32) <> CType(dataTable.Rows(count)("DocumentArtifactID"), Int32))))
-						volumeLog.AppendFormat("FT,{0}{1}", Me.ExtractFullTextFromGuid(fulltextguid), Microsoft.VisualBasic.ControlChars.NewLine)
-					End If
 
+					If _loadFileFormat = kCura.WinEDDS.LoadFileType.FileFormat.Concordance Then
+						volumeLog.Append(BuildVolumeLog(CType(dataTable.Rows(count)("BatesNumber"), String), currentVolume, fileName, isFirstDocument))
+					Else
+						If isFirstDocument Then
+							startindex = 0
+							fulltextguid = _fileManager.GetFullTextGuidsByDocumentArtifactIdAndType(CType(dataTable.Rows(count)("documentArtifactID"), Int32), 2)
+							fullText = Me.ExtractFullTextFromGuid(fulltextguid)
+						End If
+
+						pageText = fullText.Substring(startindex, CInt(dataTable.Rows(count)("ByteRange")) - 1)					'Dim iproTextEntry As String = ChrW(sr.Read())
+						startindex += CInt(dataTable.Rows(count)("ByteRange")) - 1
+
+						volumeLog.Append(BuildIproLog(CType(dataTable.Rows(count)("BatesNumber"), String), currentVolume, currentDirectory, isFirstDocument))
+						volumeLog.AppendFormat("FT,{0},1,1,{1}{2}", CStr(dataTable.Rows(count)("BatesNumber")), pageText, Microsoft.VisualBasic.ControlChars.NewLine)
+					End If
 				Catch ex As Exception
 					Me.WriteError(String.Format("Error occurred on document #{0} with message: {1}", count + 1, ex.Message))
 				End Try
@@ -199,7 +225,7 @@ Namespace kCura.WinEDDS
 					Exit For
 				End If
 			Next
-			Me.CreateVolumeLogFile(currentVolume, production.Name, volumeLog.ToString)
+			Me.CreateVolumeLogFile(currentVolume, production.Name, volumeLog.ToString, fileFormat)
 		End Sub
 
 #Region "Private Helper Functions"
@@ -318,11 +344,11 @@ Namespace kCura.WinEDDS
 			Return log.ToString
 		End Function
 
-		Private Sub CreateVolumeLogFile(ByVal currentVolume As String, ByVal productionName As String, ByVal volumeLog As String)
+		Private Sub CreateVolumeLogFile(ByVal currentVolume As String, ByVal productionName As String, ByVal volumeLog As String, ByVal format As String)
 			Dim writer As System.IO.StreamWriter
 			Dim volumeFile As String
 
-			volumeFile = String.Format("{0}{1}\{2}_{3}.log", Me.FolderPath, currentVolume, productionName, currentVolume)
+			volumeFile = String.Format("{0}{1}\{2}_{3}.{4}", Me.FolderPath, currentVolume, productionName, currentVolume, format)
 			If System.IO.File.Exists(volumeFile) Then
 				Me.WriteWarning(String.Format("Image log file '{0}' already exists, overwriting file.", volumeFile))
 				System.IO.File.Delete(volumeFile)
@@ -347,6 +373,10 @@ Namespace kCura.WinEDDS
 			writer.Close()
 		End Sub
 
+		Private Function CreateFullTextIproString(ByVal fullText As String, ByVal pageNumber As Int32, ByVal byteRange As Int32) As String
+
+
+		End Function
 #End Region
 
 		Private Sub _processController_HaltProcessEvent(ByVal processID As System.Guid) Handles _processController.HaltProcessEvent

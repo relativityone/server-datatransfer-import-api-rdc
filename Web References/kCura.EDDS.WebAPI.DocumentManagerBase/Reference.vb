@@ -27,7 +27,8 @@ Namespace kCura.EDDS.WebAPI.DocumentManagerBase
     <System.Diagnostics.DebuggerStepThroughAttribute(),  _
      System.ComponentModel.DesignerCategoryAttribute("code"),  _
      System.Web.Services.WebServiceBindingAttribute(Name:="DocumentManagerSoap", [Namespace]:="http://foley.com/EDDS/DocumentManager"),  _
-     System.Xml.Serialization.XmlIncludeAttribute(GetType(Artifact))>  _
+     System.Xml.Serialization.XmlIncludeAttribute(GetType(Artifact)),  _
+     System.Xml.Serialization.XmlIncludeAttribute(GetType(System.Object()))>  _
     Public Class DocumentManager
         Inherits System.Web.Services.Protocols.SoapHttpClientProtocol
         
@@ -74,128 +75,128 @@ Namespace kCura.EDDS.WebAPI.DocumentManagerBase
         End Function
         
         '<remarks/>
-        <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://foley.com/EDDS/DocumentManager/CreateEmptyDocument", RequestNamespace:="http://foley.com/EDDS/DocumentManager", ResponseNamespace:="http://foley.com/EDDS/DocumentManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
-        Public Function CreateEmptyDocument(ByVal parentFolderID As Integer, <System.Xml.Serialization.XmlElementAttribute(DataType:="base64Binary")> ByVal identifierValue() As Byte, ByVal fullTextFileName As String, ByVal identifierColumn As String) As Integer
-            Dim results() As Object = Me.Invoke("CreateEmptyDocument", New Object() {parentFolderID, identifierValue, fullTextFileName, identifierColumn})
-            Return CType(results(0),Integer)
-        End Function
-        
-        '<remarks/>
-        Public Function BeginCreateEmptyDocument(ByVal parentFolderID As Integer, ByVal identifierValue() As Byte, ByVal fullTextFileName As String, ByVal identifierColumn As String, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
-            Return Me.BeginInvoke("CreateEmptyDocument", New Object() {parentFolderID, identifierValue, fullTextFileName, identifierColumn}, callback, asyncState)
-        End Function
-        
-        '<remarks/>
-        Public Function EndCreateEmptyDocument(ByVal asyncResult As System.IAsyncResult) As Integer
-            Dim results() As Object = Me.EndInvoke(asyncResult)
-            Return CType(results(0),Integer)
-        End Function
-        
-        '<remarks/>
-        <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://foley.com/EDDS/DocumentManager/Read", RequestNamespace:="http://foley.com/EDDS/DocumentManager", ResponseNamespace:="http://foley.com/EDDS/DocumentManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
-        Public Function Read(ByVal artifactID As Integer) As Document
-            Dim results() As Object = Me.Invoke("Read", New Object() {artifactID})
-            Return CType(results(0),Document)
-        End Function
-        
-        '<remarks/>
-        Public Function BeginRead(ByVal artifactID As Integer, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
-            Return Me.BeginInvoke("Read", New Object() {artifactID}, callback, asyncState)
-        End Function
-        
-        '<remarks/>
-        Public Function EndRead(ByVal asyncResult As System.IAsyncResult) As Document
-            Dim results() As Object = Me.EndInvoke(asyncResult)
-            Return CType(results(0),Document)
-        End Function
-        
-        '<remarks/>
-        <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://foley.com/EDDS/DocumentManager/DeleteNative", RequestNamespace:="http://foley.com/EDDS/DocumentManager", ResponseNamespace:="http://foley.com/EDDS/DocumentManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
-        Public Function DeleteNative(ByVal documentDTO As Document) As Boolean
-            Dim results() As Object = Me.Invoke("DeleteNative", New Object() {documentDTO})
-            Return CType(results(0),Boolean)
-        End Function
-        
-        '<remarks/>
-        Public Function BeginDeleteNative(ByVal documentDTO As Document, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
-            Return Me.BeginInvoke("DeleteNative", New Object() {documentDTO}, callback, asyncState)
-        End Function
-        
-        '<remarks/>
-        Public Function EndDeleteNative(ByVal asyncResult As System.IAsyncResult) As Boolean
-            Dim results() As Object = Me.EndInvoke(asyncResult)
-            Return CType(results(0),Boolean)
-        End Function
-        
-        '<remarks/>
-        <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://foley.com/EDDS/DocumentManager/Create", RequestNamespace:="http://foley.com/EDDS/DocumentManager", ResponseNamespace:="http://foley.com/EDDS/DocumentManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
-        Public Function Create(ByVal docDTO As Document) As Integer
-            Dim results() As Object = Me.Invoke("Create", New Object() {docDTO})
-            Return CType(results(0),Integer)
-        End Function
-        
-        '<remarks/>
-        Public Function BeginCreate(ByVal docDTO As Document, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
-            Return Me.BeginInvoke("Create", New Object() {docDTO}, callback, asyncState)
-        End Function
-        
-        '<remarks/>
-        Public Function EndCreate(ByVal asyncResult As System.IAsyncResult) As Integer
-            Dim results() As Object = Me.EndInvoke(asyncResult)
-            Return CType(results(0),Integer)
-        End Function
-        
-        '<remarks/>
-        <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://foley.com/EDDS/DocumentManager/Update", RequestNamespace:="http://foley.com/EDDS/DocumentManager", ResponseNamespace:="http://foley.com/EDDS/DocumentManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
-        Public Function Update(ByVal docDTO As Document) As Integer
-            Dim results() As Object = Me.Invoke("Update", New Object() {docDTO})
-            Return CType(results(0),Integer)
-        End Function
-        
-        '<remarks/>
-        Public Function BeginUpdate(ByVal docDTO As Document, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
-            Return Me.BeginInvoke("Update", New Object() {docDTO}, callback, asyncState)
-        End Function
-        
-        '<remarks/>
-        Public Function EndUpdate(ByVal asyncResult As System.IAsyncResult) As Integer
-            Dim results() As Object = Me.EndInvoke(asyncResult)
-            Return CType(results(0),Integer)
-        End Function
-        
-        '<remarks/>
-        <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://foley.com/EDDS/DocumentManager/CreateRange", RequestNamespace:="http://foley.com/EDDS/DocumentManager", ResponseNamespace:="http://foley.com/EDDS/DocumentManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
-        Public Sub CreateRange(ByVal docDTOs() As Document)
-            Me.Invoke("CreateRange", New Object() {docDTOs})
-        End Sub
-        
-        '<remarks/>
-        Public Function BeginCreateRange(ByVal docDTOs() As Document, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
-            Return Me.BeginInvoke("CreateRange", New Object() {docDTOs}, callback, asyncState)
-        End Function
-        
-        '<remarks/>
-        Public Sub EndCreateRange(ByVal asyncResult As System.IAsyncResult)
-            Me.EndInvoke(asyncResult)
-        End Sub
-        
-        '<remarks/>
-        <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://foley.com/EDDS/DocumentManager/UpdateRange", RequestNamespace:="http://foley.com/EDDS/DocumentManager", ResponseNamespace:="http://foley.com/EDDS/DocumentManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
-        Public Sub UpdateRange(ByVal docDTOs() As Document)
-            Me.Invoke("UpdateRange", New Object() {docDTOs})
-        End Sub
-        
-        '<remarks/>
-        Public Function BeginUpdateRange(ByVal docDTOs() As Document, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
-            Return Me.BeginInvoke("UpdateRange", New Object() {docDTOs}, callback, asyncState)
-        End Function
-        
-        '<remarks/>
-        Public Sub EndUpdateRange(ByVal asyncResult As System.IAsyncResult)
-            Me.EndInvoke(asyncResult)
-        End Sub
-        
-        '<remarks/>
+		<System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://foley.com/EDDS/DocumentManager/CreateEmptyDocument", RequestNamespace:="http://foley.com/EDDS/DocumentManager", ResponseNamespace:="http://foley.com/EDDS/DocumentManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)> _
+		Public Function CreateEmptyDocument(ByVal parentFolderID As Integer, <System.Xml.Serialization.XmlElementAttribute(DataType:="base64Binary")> ByVal identifierValue() As Byte, ByVal fullTextFileName As String, ByVal identifierColumn As String, ByVal fullTextBuilder As kCura.EDDS.Types.FullTextBuilder) As Integer
+			Dim results() As Object = Me.Invoke("CreateEmptyDocument", New Object() {parentFolderID, identifierValue, fullTextFileName, identifierColumn, fullTextBuilder})
+			Return CType(results(0), Integer)
+		End Function
+
+		'<remarks/>
+		Public Function BeginCreateEmptyDocument(ByVal parentFolderID As Integer, ByVal identifierValue() As Byte, ByVal fullTextFileName As String, ByVal identifierColumn As String, ByVal fullTextBuilder As FullTextBuilder, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+			Return Me.BeginInvoke("CreateEmptyDocument", New Object() {parentFolderID, identifierValue, fullTextFileName, identifierColumn, fullTextBuilder}, callback, asyncState)
+		End Function
+
+		'<remarks/>
+		Public Function EndCreateEmptyDocument(ByVal asyncResult As System.IAsyncResult) As Integer
+			Dim results() As Object = Me.EndInvoke(asyncResult)
+			Return CType(results(0), Integer)
+		End Function
+
+		'<remarks/>
+		<System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://foley.com/EDDS/DocumentManager/Read", RequestNamespace:="http://foley.com/EDDS/DocumentManager", ResponseNamespace:="http://foley.com/EDDS/DocumentManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)> _
+		Public Function Read(ByVal artifactID As Integer) As Document
+			Dim results() As Object = Me.Invoke("Read", New Object() {artifactID})
+			Return CType(results(0), Document)
+		End Function
+
+		'<remarks/>
+		Public Function BeginRead(ByVal artifactID As Integer, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+			Return Me.BeginInvoke("Read", New Object() {artifactID}, callback, asyncState)
+		End Function
+
+		'<remarks/>
+		Public Function EndRead(ByVal asyncResult As System.IAsyncResult) As Document
+			Dim results() As Object = Me.EndInvoke(asyncResult)
+			Return CType(results(0), Document)
+		End Function
+
+		'<remarks/>
+		<System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://foley.com/EDDS/DocumentManager/DeleteNative", RequestNamespace:="http://foley.com/EDDS/DocumentManager", ResponseNamespace:="http://foley.com/EDDS/DocumentManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)> _
+		Public Function DeleteNative(ByVal documentDTO As Document) As Boolean
+			Dim results() As Object = Me.Invoke("DeleteNative", New Object() {documentDTO})
+			Return CType(results(0), Boolean)
+		End Function
+
+		'<remarks/>
+		Public Function BeginDeleteNative(ByVal documentDTO As Document, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+			Return Me.BeginInvoke("DeleteNative", New Object() {documentDTO}, callback, asyncState)
+		End Function
+
+		'<remarks/>
+		Public Function EndDeleteNative(ByVal asyncResult As System.IAsyncResult) As Boolean
+			Dim results() As Object = Me.EndInvoke(asyncResult)
+			Return CType(results(0), Boolean)
+		End Function
+
+		'<remarks/>
+		<System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://foley.com/EDDS/DocumentManager/Create", RequestNamespace:="http://foley.com/EDDS/DocumentManager", ResponseNamespace:="http://foley.com/EDDS/DocumentManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)> _
+		Public Function Create(ByVal docDTO As Document) As Integer
+			Dim results() As Object = Me.Invoke("Create", New Object() {docDTO})
+			Return CType(results(0), Integer)
+		End Function
+
+		'<remarks/>
+		Public Function BeginCreate(ByVal docDTO As Document, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+			Return Me.BeginInvoke("Create", New Object() {docDTO}, callback, asyncState)
+		End Function
+
+		'<remarks/>
+		Public Function EndCreate(ByVal asyncResult As System.IAsyncResult) As Integer
+			Dim results() As Object = Me.EndInvoke(asyncResult)
+			Return CType(results(0), Integer)
+		End Function
+
+		'<remarks/>
+		<System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://foley.com/EDDS/DocumentManager/Update", RequestNamespace:="http://foley.com/EDDS/DocumentManager", ResponseNamespace:="http://foley.com/EDDS/DocumentManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)> _
+		Public Function Update(ByVal docDTO As Document) As Integer
+			Dim results() As Object = Me.Invoke("Update", New Object() {docDTO})
+			Return CType(results(0), Integer)
+		End Function
+
+		'<remarks/>
+		Public Function BeginUpdate(ByVal docDTO As Document, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+			Return Me.BeginInvoke("Update", New Object() {docDTO}, callback, asyncState)
+		End Function
+
+		'<remarks/>
+		Public Function EndUpdate(ByVal asyncResult As System.IAsyncResult) As Integer
+			Dim results() As Object = Me.EndInvoke(asyncResult)
+			Return CType(results(0), Integer)
+		End Function
+
+		'<remarks/>
+		<System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://foley.com/EDDS/DocumentManager/CreateRange", RequestNamespace:="http://foley.com/EDDS/DocumentManager", ResponseNamespace:="http://foley.com/EDDS/DocumentManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)> _
+		Public Sub CreateRange(ByVal docDTOs() As Document)
+			Me.Invoke("CreateRange", New Object() {docDTOs})
+		End Sub
+
+		'<remarks/>
+		Public Function BeginCreateRange(ByVal docDTOs() As Document, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+			Return Me.BeginInvoke("CreateRange", New Object() {docDTOs}, callback, asyncState)
+		End Function
+
+		'<remarks/>
+		Public Sub EndCreateRange(ByVal asyncResult As System.IAsyncResult)
+			Me.EndInvoke(asyncResult)
+		End Sub
+
+		'<remarks/>
+		<System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://foley.com/EDDS/DocumentManager/UpdateRange", RequestNamespace:="http://foley.com/EDDS/DocumentManager", ResponseNamespace:="http://foley.com/EDDS/DocumentManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)> _
+		Public Sub UpdateRange(ByVal docDTOs() As Document)
+			Me.Invoke("UpdateRange", New Object() {docDTOs})
+		End Sub
+
+		'<remarks/>
+		Public Function BeginUpdateRange(ByVal docDTOs() As Document, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+			Return Me.BeginInvoke("UpdateRange", New Object() {docDTOs}, callback, asyncState)
+		End Function
+
+		'<remarks/>
+		Public Sub EndUpdateRange(ByVal asyncResult As System.IAsyncResult)
+			Me.EndInvoke(asyncResult)
+		End Sub
+
+		'<remarks/>
 		<System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://foley.com/EDDS/DocumentManager/AddFullTextToDocumentFromFile", RequestNamespace:="http://foley.com/EDDS/DocumentManager", ResponseNamespace:="http://foley.com/EDDS/DocumentManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)> _
 		Public Function AddFullTextToDocumentFromFile(ByVal documentArtifactID As Integer, ByVal fullTextFileName As String, ByVal fullTextBuilder As kCura.EDDS.Types.FullTextBuilder) As Boolean
 			Dim results() As Object = Me.Invoke("AddFullTextToDocumentFromFile", New Object() {documentArtifactID, fullTextFileName, fullTextBuilder})
@@ -390,11 +391,6 @@ Namespace kCura.EDDS.WebAPI.DocumentManagerBase
     
     '<remarks/>
     <System.Xml.Serialization.XmlTypeAttribute([Namespace]:="http://foley.com/EDDS/DocumentManager")>  _
-    Public Class FullTextBuilder
-    End Class
-    
-    '<remarks/>
-    <System.Xml.Serialization.XmlTypeAttribute([Namespace]:="http://foley.com/EDDS/DocumentManager")>  _
     Public Class DocumentAgentFlags
         
         '<remarks/>
@@ -406,8 +402,8 @@ Namespace kCura.EDDS.WebAPI.DocumentManagerBase
     
     '<remarks/>
     <System.Xml.Serialization.XmlTypeAttribute([Namespace]:="http://foley.com/EDDS/DocumentManager"),  _
-     System.Xml.Serialization.XmlIncludeAttribute(GetType(Document)),  _
-     System.Xml.Serialization.XmlIncludeAttribute(GetType(Field))>  _
+     System.Xml.Serialization.XmlIncludeAttribute(GetType(Field)),  _
+     System.Xml.Serialization.XmlIncludeAttribute(GetType(Document))>  _
     Public Class Artifact
         
         '<remarks/>
@@ -451,21 +447,6 @@ Namespace kCura.EDDS.WebAPI.DocumentManagerBase
         
         '<remarks/>
         Public DeleteFlag As Boolean
-    End Class
-    
-    '<remarks/>
-    <System.Xml.Serialization.XmlTypeAttribute([Namespace]:="http://foley.com/EDDS/DocumentManager")>  _
-    Public Class Document
-        Inherits Artifact
-        
-        '<remarks/>
-        Public Fields() As Field
-        
-        '<remarks/>
-        Public Files() As File
-        
-        '<remarks/>
-        Public DocumentAgentFlags As DocumentAgentFlags
     End Class
     
     '<remarks/>
@@ -571,4 +552,27 @@ Namespace kCura.EDDS.WebAPI.DocumentManagerBase
         '<remarks/>
         MultiCode
     End Enum
+    
+    '<remarks/>
+    <System.Xml.Serialization.XmlTypeAttribute([Namespace]:="http://foley.com/EDDS/DocumentManager")>  _
+    Public Class Document
+        Inherits Artifact
+        
+        '<remarks/>
+        Public Fields() As Field
+        
+        '<remarks/>
+        Public Files() As File
+        
+        '<remarks/>
+        Public DocumentAgentFlags As DocumentAgentFlags
+    End Class
+    
+    '<remarks/>
+    <System.Xml.Serialization.XmlTypeAttribute([Namespace]:="http://foley.com/EDDS/DocumentManager")>  _
+    Public Class FullTextBuilder
+        
+        '<remarks/>
+        Public Pages() As Object
+    End Class
 End Namespace
