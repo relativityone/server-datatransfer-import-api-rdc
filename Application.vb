@@ -783,7 +783,7 @@ Namespace kCura.EDDS.WinForm
 		Friend Function DefaultCredentialsAreGood() As Boolean
 			Dim cred As System.Net.NetworkCredential = DirectCast(System.Net.CredentialCache.DefaultCredentials, System.Net.NetworkCredential)
 			Try
-				Dim myHttpWebRequest As System.Net.HttpWebRequest = DirectCast(System.Net.WebRequest.Create(kCura.WinEDDS.Config.HostURL), System.Net.HttpWebRequest)
+				Dim myHttpWebRequest As System.Net.HttpWebRequest = DirectCast(System.Net.WebRequest.Create(kCura.WinEDDS.Config.WebServiceURL), System.Net.HttpWebRequest)
 				myHttpWebRequest.Credentials = System.Net.CredentialCache.DefaultCredentials
 				Dim myHttpWebResponse As System.Net.HttpWebResponse = DirectCast(myHttpWebRequest.GetResponse(), System.Net.HttpWebResponse)
 				CheckVersion(System.Net.CredentialCache.DefaultCredentials)
@@ -800,7 +800,7 @@ Namespace kCura.EDDS.WinForm
 			Dim relativityWebVersion As String = relativityManager.RetrieveRelativityVersion()
 
 			If winRelativityVersion <> relativityWebVersion Then
-				MsgBox(String.Format("Your version of WinRelativity is out of date. You are running version {0}, but version {1} is required.", winRelativityVersion, relativityWebVersion), MsgBoxStyle.Critical, "WinRelativity Out Of Date")
+				MsgBox(String.Format("Your version of WinRelativity is out of date. You are running version {0}, but version {1} is required.", winRelativityVersion, relativityWebVersion), MsgBoxStyle.Critical, "WinRelativity Version Mismatch")
 				ExitApplication()
 			Else
 				Exit Sub
