@@ -202,7 +202,8 @@ Namespace kCura.EDDS.WinForm
 			_exportFile.FolderPath = _folderPath.Text
 			_exportFile.ArtifactID = CType(_productionList.SelectedValue, Int32)
 			_exportFile.Overwrite = _overwriteButton.Checked
-			_exportFile.LogFileFormat = CType(_loadFileFormat.SelectedIndex, kCura.WinEDDS.LoadFileType.FileFormat)
+			_exportFile.LogFileFormat = CType(_loadFileFormat.SelectedValue, kCura.WinEDDS.LoadFileType.FileFormat)
+			_exportFile.CookieContainer = _application.CookieContainer
 			_application.StartProduction(Me.ExportFile)
 			Me.Cursor = System.Windows.Forms.Cursors.Default
 		End Sub
