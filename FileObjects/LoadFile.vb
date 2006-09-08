@@ -21,7 +21,16 @@ Namespace kCura.WinEDDS
 		Public ExtractMD5HashFromNativeFile As Boolean
 
 		<NonSerialized()> Public Credentials As Net.NetworkCredential
-		<NonSerialized()> Public CookieContainer As System.Net.CookieContainer
+		<NonSerialized()> Public _cookieContainer As System.Net.CookieContainer
+
+		Public Property CookieContainer() As System.Net.CookieContainer
+			Get
+				Return _cookieContainer
+			End Get
+			Set(ByVal value As System.Net.CookieContainer)
+				_cookieContainer = value
+			End Set
+		End Property
 
 		Public Sub New()
 			Me.FilePath = "Select file to load..."
