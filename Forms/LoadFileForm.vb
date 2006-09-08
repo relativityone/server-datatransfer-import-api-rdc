@@ -638,7 +638,7 @@ Namespace kCura.EDDS.WinForm
 			Dim caseFields As String() = _application.GetCaseFields(LoadFile.CaseInfo.RootArtifactID)
 			Dim caseFieldName As String
 			If loadFileObjectUpdatedFromFile Then
-				Dim columnHeaders As String() = _application.GetColumnHeadersFromLoadFile(LoadFile, _firstLineContainsColumnNames.Checked)
+				Dim columnHeaders As String() = _application.GetColumnHeadersFromLoadFile(Me.LoadFile, _firstLineContainsColumnNames.Checked)
 				BuildMappingFromLoadFile(caseFields, columnHeaders)
 				If LoadFile.LoadNativeFiles Then
 					_loadNativeFiles.Checked = True
@@ -678,6 +678,9 @@ Namespace kCura.EDDS.WinForm
 			Get
 				If _loadFile Is Nothing Then
 					_loadFile = New kCura.WinEDDS.LoadFile
+				End If
+				If _loadFile.CookieContainer Is Nothing Then
+					_loadFile.CookieContainer = kCura.EDDS.WinForm.Application.Instance.CookieContainer
 				End If
 				Return _loadFile
 			End Get

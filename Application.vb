@@ -298,6 +298,7 @@ Namespace kCura.EDDS.WinForm
 #Region "Utility"
 
 		Public Function GetColumnHeadersFromLoadFile(ByVal loadfile As kCura.WinEDDS.LoadFile, ByVal firstLineContainsColumnHeaders As Boolean) As String()
+
 			Dim parser As New kCura.WinEDDS.LoadFileImporter(loadfile, Nothing, _timeZoneOffset)
 			Return parser.GetColumnNames(loadfile.FilePath)
 			'Dim retValue(3) As String
