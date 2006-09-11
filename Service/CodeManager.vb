@@ -29,6 +29,5 @@ Namespace kCura.WinEDDS.Service
 			code.ContainerID = New NullableTypes.NullableInt32(caseID)
 			Return code
 		End Function
-
 	End Class
 End Namespace

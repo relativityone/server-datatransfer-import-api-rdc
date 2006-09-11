@@ -36,7 +36,5 @@ Namespace kCura.WinEDDS.Service
 		Public Shadows Function Read(ByVal caseArtifactID As Int32) As kCura.EDDS.Types.CaseInfo
 			Return ConvertToCaseInfo(MyBase.Read(caseArtifactID))
 		End Function
-
-
 	End Class
 End Namespace
