@@ -29,7 +29,6 @@ Namespace kCura.EDDS.WinForm
 #End Region
 
 #Region "Members"
-
 		Public Event OnEvent(ByVal appEvent As AppEvent)
 		Public Event ChangeCursor(ByVal cursorStyle As System.Windows.Forms.Cursor)
 
@@ -40,7 +39,6 @@ Namespace kCura.EDDS.WinForm
 		Private _fields As kCura.WinEDDS.DocumentFieldCollection
 		Private _selectedCaseFolderPath As String
 		Private _timeZoneOffset As Int32
-		Private _hostURL As String = ""
 		Private WithEvents _loginForm As LoginForm
 		Private Shared _cache As New Hashtable
 		Private _temporaryWebServiceURL As String
@@ -88,18 +86,6 @@ Namespace kCura.EDDS.WinForm
 				Return winIdent.Name
 			End Get
 		End Property
-
-		'Public Property HostURL() As String
-		'	Get
-		'		If _hostURL = "" Then
-		'			_hostURL = Config.WebServiceURL
-		'		End If
-		'		Return _hostURL
-		'	End Get
-		'	Set(ByVal Value As String)
-		'		_hostURL = Value
-		'	End Set
-		'End Property
 
 		Public ReadOnly Property CurrentFields() As DocumentFieldCollection
 			Get
@@ -769,16 +755,28 @@ Namespace kCura.EDDS.WinForm
 		Private Sub _loginForm_OK_Click(ByVal cred As System.Net.NetworkCredential) Handles _loginForm.OK_Click
 			_loginForm.Close()
 			Dim userManager As New kCura.WinEDDS.Service.UserManager(cred, _cookieContainer)
-			If userManager.Login(cred.UserName, cred.Password) Then
-				_credential = cred
-				OpenCase()
-			Else
-				If MsgBox("Invalid login.  Try again?", MsgBoxStyle.YesNo) = MsgBoxResult.Yes Then
-					NewLogin()
+			Try
+				If userManager.Login(cred.UserName, cred.Password) Then
+					_credential = cred
+					OpenCase()
+				Else
+					If MsgBox("Invalid login.  Try again?", MsgBoxStyle.YesNo) = MsgBoxResult.Yes Then
+						NewLogin()
+					Else
+						ExitApplication()
+					End If
+				End If
+			Catch ex As System.Net.WebException
+				If MsgBox("Invalid URL. Try Again?", MsgBoxStyle.YesNo) = MsgBoxResult.Yes Then
+					Dim url As String = InputBox("Enter New URL:", DefaultResponse:=kCura.WinEDDS.Config.WebServiceURL)
+					If url <> "" Then
+						kCura.WinEDDS.Config.WebServiceURL = url
+						NewLogin()
+					End If
 				Else
 					ExitApplication()
 				End If
-			End If
+			End Try
 		End Sub
 
 		Friend Function DefaultCredentialsAreGood() As Boolean
@@ -810,5 +808,4 @@ Namespace kCura.EDDS.WinForm
 #End Region
 
 	End Class
-
 End Namespace
