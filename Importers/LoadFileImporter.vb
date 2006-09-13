@@ -130,6 +130,13 @@ Namespace kCura.WinEDDS
 				WriteEndImport("Finish")
 				Me.Close()
 				_timeKeeper.Add("Total", DateTime.Now.Subtract(markStart).TotalMilliseconds)
+				Dim filenameFolder As String = "C:\UploadFileMetrics\"
+				Dim now As System.DateTime = System.DateTime.Now
+				Dim filename As String = String.Format("{0}{1}{2}_{3}{4}{5}.csv", now.Year, now.Month.ToString.PadLeft(2, "0"c), now.Day.ToString.PadLeft(2, "0"c), now.Hour.ToString.PadLeft(2, "0"c), now.Minute.ToString.PadLeft(2, "0"c), now.Second.ToString.PadLeft(2, "0"c))
+				Dim sw As New System.IO.StreamWriter(filenameFolder & filename)
+				sw.Write(_timeKeeper.ToCollectionString())
+				sw.Flush()
+				sw.Close()
 				Return True
 			Catch ex As Exception
 				WriteFatalError(Me.CurrentLineNumber, ex)
