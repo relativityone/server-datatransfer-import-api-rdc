@@ -216,6 +216,7 @@ Namespace kCura.WinEDDS
 						End If
 						pageText = fullText.Substring(startindex, CInt(dataTable.Rows(count)("ByteRange")) - 1)						'Dim iproTextEntry As String = ChrW(sr.Read())
 						pageText = pageText.Replace(ChrW(10), " ")
+						pageText = pageText.Replace(",", "")
 						pageText = pageText.Replace(" ", "|0|0|0|0^")
 						fullTextVolumeLog.AppendFormat("FT,{0},1,1,{1}", CType(dataTable.Rows(count)("BatesNumber"), String), pageText)
 						fullTextVolumeLog.AppendFormat("{0}", Microsoft.VisualBasic.ControlChars.NewLine)
@@ -223,7 +224,6 @@ Namespace kCura.WinEDDS
 					End If
 					If Not _loadFileFormat = kCura.WinEDDS.LoadFileType.FileFormat.Concordance Then
 						volumeLog.Append(BuildIproLog(CType(dataTable.Rows(count)("BatesNumber"), String), currentVolume, currentDirectory, isFirstDocument))
-						volumeLog.AppendFormat("{0}", Microsoft.VisualBasic.ControlChars.NewLine)
 					End If
 
 				Catch ex As Exception
