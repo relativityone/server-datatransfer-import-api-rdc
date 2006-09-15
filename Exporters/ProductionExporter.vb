@@ -212,7 +212,11 @@ Namespace kCura.WinEDDS
 						If isFirstDocument Then
 							startindex = 0
 							fulltextguid = _fileManager.GetFullTextGuidsByDocumentArtifactIdAndType(CType(dataTable.Rows(count)("documentArtifactID"), Int32), 2)
-							fullText = _fullTextDownloader.ReadFullTextFile(_sourceDirectory & fulltextguid)
+							Try
+								fullText = _fullTextDownloader.ReadFullTextFile(_sourceDirectory & fulltextguid)
+							Catch ex As System.IO.FileNotFoundException
+								WriteWarning(ex.Message)
+							End Try
 						End If
 						pageText = fullText.Substring(startindex, CInt(dataTable.Rows(count)("ByteRange")) - 1)						'Dim iproTextEntry As String = ChrW(sr.Read())
 						pageText = pageText.Replace(ChrW(10), " ")
