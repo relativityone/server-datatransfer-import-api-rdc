@@ -350,7 +350,7 @@ Namespace kCura.WinEDDS
 			Else
 				log.Append(" ,")
 			End If
-			log.AppendFormat("0,@{0};{1};{2}.tif;2", currentVolume, pathToImage, batesNumber)
+			log.AppendFormat("0,{0};{1};{2}.tif;2", currentVolume, pathToImage, batesNumber)
 			log.AppendFormat("{0}", Microsoft.VisualBasic.ControlChars.NewLine)
 			Return log.ToString
 		End Function
