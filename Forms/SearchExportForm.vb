@@ -310,6 +310,7 @@ Public Class SearchExportForm
 		_exportFile.RecordDelimiter = Chr(CType(_recordDelimiter.SelectedValue, Int32))
 		_exportFile.MultiRecordDelimiter = Chr(CType(_multiRecordDelimiter.SelectedValue, Int32))
 		_exportFile.NewlineDelimiter = Chr(CType(_newLineDelimiter.SelectedValue, Int32))
+		_exportFile.CookieContainer = _application.CookieContainer
 
 		_application.StartSearch(Me.ExportFile)
 		Me.Cursor = System.Windows.Forms.Cursors.Default
