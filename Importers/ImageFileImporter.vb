@@ -85,10 +85,11 @@ Namespace kCura.WinEDDS
 						RaiseStatusEvent(kCura.Windows.Process.EventType.Error, ex.Message)
 					End Try
 				End While
-        'Dim outputfile As String = "C:\UploadMetrics\" & DateTime.Now.Year.ToString & DateTime.Now.Month.ToString & DateTime.Now.Day.ToString & "_" & System.Guid.NewGuid.ToString & ".txt"
-        'Dim sr As New System.IO.StreamWriter(outputfile)
-        'sr.Write(_csvwriter.ToString)
-        'sr.Close()
+				Me.Reader.Close()
+				'Dim outputfile As String = "C:\UploadMetrics\" & DateTime.Now.Year.ToString & DateTime.Now.Month.ToString & DateTime.Now.Day.ToString & "_" & System.Guid.NewGuid.ToString & ".txt"
+				'Dim sr As New System.IO.StreamWriter(outputfile)
+				'sr.Write(_csvwriter.ToString)
+				'sr.Close()
 				RaiseStatusEvent(kCura.Windows.Process.EventType.Progress, "End Image Upload")
 			Catch ex As Exception
 				RaiseFatalError(ex)
