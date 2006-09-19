@@ -29,7 +29,7 @@ Namespace kCura.WinEDDS
 		Public Sub CreateFolders(ByVal path As String)
 			Dim order As Int32
 			Dim folderItem As kCura.WinEDDS.FolderList.FolderItem
-			path = Utility.GetFilesystemSafeName(path)
+			'path = Utility.GetFilesystemSafeName(path)
 			For order = 0 To _maxOrder
 				For Each folderItem In _folders
 					If folderItem.Order = order AndAlso Not System.IO.Directory.Exists(path + folderItem.Path) Then
