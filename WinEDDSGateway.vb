@@ -35,7 +35,7 @@ Namespace kCura.EDDS.WinForm
 
 		Private Function GetDocumentFields(ByVal caseID As Int32) As kCura.EDDS.WebAPI.DocumentManagerBase.Field()
 			If _currentCaseID <> caseID Then
-				Dim fieldManager As New kCura.WinEDDS.Service.FieldQuery(_application.Credential, _application.CookieContainer)
+				Dim fieldManager As New kCura.WinEDDS.Service.FieldQuery(_application.Credential, _application.CookieContainer, _application.Identity)
 				_currentDocumentCaseFields = fieldManager.RetrieveAllAsArray(caseID)
 			End If
 			Return _currentDocumentCaseFields
@@ -98,7 +98,7 @@ Namespace kCura.EDDS.WinForm
 					_fileManager.CreateFile(documentArtifactID, fileInfo.Name, fileIdentifier, 0, kCura.EDDS.Types.FileType.Native)
 				End If
 				importer.ReportStatus(recordInfo, "Finished Uploading Document")
-			Catch ex As Exception
+			Catch ex As System.Exception
 				importer.ReportError(recordInfo, "Exception Encountered Uploading Document" + vbCrLf + ex.ToString)
 				importer.TotalRecordsProcessedWithErrors = importer.TotalRecordsProcessedWithErrors + 1
 			End Try
@@ -106,9 +106,9 @@ Namespace kCura.EDDS.WinForm
 
 		Public Sub New()
 			_application = Application.Instance
-			_folderManager = New kCura.WinEDDS.Service.FolderManager(_application.Credential, _application.CookieContainer)
-			_documentManager = New kCura.WinEDDS.Service.DocumentManager(_application.Credential, _application.CookieContainer)
-			_fileManager = New kCura.WinEDDS.Service.FileManager(_application.Credential, _application.CookieContainer)
+			_folderManager = New kCura.WinEDDS.Service.FolderManager(_application.Credential, _application.CookieContainer, _application.Identity)
+			_documentManager = New kCura.WinEDDS.Service.DocumentManager(_application.Credential, _application.CookieContainer, _application.Identity)
+			_fileManager = New kCura.WinEDDS.Service.FileManager(_application.Credential, _application.CookieContainer, _application.Identity)
 			_uploader = New kCura.WinEDDS.FileUploader(_application.Credential, "", _application.CookieContainer)
 		End Sub
 

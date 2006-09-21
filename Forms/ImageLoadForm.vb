@@ -12,7 +12,7 @@ Namespace kCura.EDDS.WinForm
 
       'Add any initialization after the InitializeComponent() call
       _application = kCura.EDDS.WinForm.Application.Instance
-			_imageLoadFile = New kCura.WinEDDS.ImageLoadFile
+			_imageLoadFile = New kCura.WinEDDS.ImageLoadFile(kCura.EDDS.WinForm.Application.Instance.Identity)
     End Sub
 
     'Form overrides dispose to clean up the component list.

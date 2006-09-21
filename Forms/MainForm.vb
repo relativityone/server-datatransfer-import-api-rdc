@@ -314,7 +314,7 @@ Namespace kCura.EDDS.WinForm
 
 		Private Sub MainForm_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles MyBase.Load
 			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
-			If Config.WebServiceURL = String.Empty Then
+			If kCura.WinEDDS.Config.WebServiceURL = String.Empty Then
 				_application.SetWebServiceURL()
 			End If
 

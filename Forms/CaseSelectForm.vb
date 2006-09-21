@@ -99,10 +99,11 @@ Namespace kCura.EDDS.WinForm
 
 #End Region
 
+#Region " Declarations & Properties "
 		Private WithEvents _application As kCura.EDDS.WinForm.Application
-
 		Private _selectedCaseID As Int32
 		Private _selectedCaseInfo As kCura.EDDS.Types.CaseInfo
+
 		Public ReadOnly Property SelectedCaseID() As Int32
 			Get
 				Return _selectedCaseID
@@ -114,6 +115,7 @@ Namespace kCura.EDDS.WinForm
 				Return _selectedCaseInfo
 			End Get
 		End Property
+#End Region
 
 		Private Sub CaseSelectForm_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
 			Me.Cursor = Cursors.WaitCursor

@@ -125,7 +125,7 @@ Namespace kCura.EDDS.WinForm
 
 		Protected Overrides Sub OnLoad(ByVal e As System.EventArgs)
 			InitializeTimeZoneDropDown()
-			_WebServiceUrl.Text = Config.WebServiceURL
+			_WebServiceUrl.Text = kCura.WinEDDS.Config.WebServiceURL
 		End Sub
 
 		Public Sub InitializeTimeZoneDropDown()

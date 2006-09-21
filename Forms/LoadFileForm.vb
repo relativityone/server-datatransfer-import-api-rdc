@@ -682,6 +682,9 @@ Namespace kCura.EDDS.WinForm
 				If _loadFile.CookieContainer Is Nothing Then
 					_loadFile.CookieContainer = kCura.EDDS.WinForm.Application.Instance.CookieContainer
 				End If
+				If _loadFile.Identity Is Nothing Then
+					_loadFile.Identity = kCura.EDDS.WinForm.Application.Instance.Identity
+				End If
 				Return _loadFile
 			End Get
 			Set(ByVal value As kCura.WinEDDS.LoadFile)

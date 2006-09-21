@@ -2,7 +2,6 @@ Namespace kCura.EDDS.WinForm
 	Public Class Application
 
 #Region "Singleton Methods"
-
 		Private Shared _instance As Application
 
 		Protected Sub New()
@@ -25,7 +24,6 @@ Namespace kCura.EDDS.WinForm
 				Return _instance
 			End Get
 		End Property
-
 #End Region
 
 #Region "Members"
@@ -43,10 +41,10 @@ Namespace kCura.EDDS.WinForm
 		Private Shared _cache As New Hashtable
 		Private _temporaryWebServiceURL As String
 		Private _cookieContainer As System.Net.CookieContainer
+		Private _identity As kCura.EDDS.EDDSIdentity
 #End Region
 
 #Region "Properties"
-
 		Public Property TimeZoneOffset() As Int32
 			Get
 				Return _timeZoneOffset
@@ -56,6 +54,11 @@ Namespace kCura.EDDS.WinForm
 			End Set
 		End Property
 
+		Public ReadOnly Property Identity() As kCura.EDDS.EDDSIdentity
+			Get
+				Return _identity
+			End Get
+		End Property
 
 		Public ReadOnly Property SelectedCaseInfo() As kCura.EDDS.Types.CaseInfo
 			Get
@@ -91,7 +94,7 @@ Namespace kCura.EDDS.WinForm
 			Get
 				If _fields Is Nothing Then
 					_fields = New DocumentFieldCollection
-					Dim fieldManager As New kCura.WinEDDS.Service.FieldQuery(Credential, _cookieContainer)
+					Dim fieldManager As New kCura.WinEDDS.Service.FieldQuery(Credential, _cookieContainer, _identity)
 					Dim fields() As kCura.EDDS.WebAPI.DocumentManagerBase.Field = fieldManager.RetrieveAllAsArray(SelectedCaseRootArtifactID)
 					Dim i As Int32
 					For i = 0 To fields.Length - 1
@@ -130,11 +133,9 @@ Namespace kCura.EDDS.WinForm
 				_cookieContainer = value
 			End Set
 		End Property
-
 #End Region
 
 #Region "Event Throwers"
-
 		Public Sub LogOn()
 			RaiseEvent OnEvent(New AppEvent(AppEvent.AppEventType.LogOn))
 		End Sub
@@ -146,7 +147,7 @@ Namespace kCura.EDDS.WinForm
 
 		Public Sub UpdateWebServiceURL()
 			If Not Me.TemporaryWebServiceURL Is Nothing AndAlso Not Me.TemporaryWebServiceURL = "" Then
-				Config.WebServiceURL = Me.TemporaryWebServiceURL
+				kCura.WinEDDS.Config.WebServiceURL = Me.TemporaryWebServiceURL
 			End If
 		End Sub
 
@@ -157,11 +158,9 @@ Namespace kCura.EDDS.WinForm
 		Public Sub CursorWait()
 			RaiseEvent ChangeCursor(System.Windows.Forms.Cursors.WaitCursor)
 		End Sub
-
 #End Region
 
 #Region "Document Field Collection"
-
 		Public Function GetDocumentFieldFromName(ByVal fieldName As String) As DocumentField
 			Return CurrentFields.Item(fieldName)
 		End Function
@@ -181,7 +180,7 @@ Namespace kCura.EDDS.WinForm
 		Public Function GetSelectedIdentifier(ByVal selectedField As DocumentField) As String
 			Try
 				Return CurrentFields.Item(selectedField.FieldName).FieldName
-			Catch ex As Exception
+			Catch ex As System.Exception
 				Return String.Empty
 			End Try
 		End Function
@@ -204,22 +203,20 @@ Namespace kCura.EDDS.WinForm
 				"Do you wish to continue?", MsgBoxStyle.YesNo, "Warning!") = MsgBoxResult.Yes
 			End If
 		End Function
-
 #End Region
 
 #Region "Folder Management"
-
 		Public Function CreateNewFolder(ByVal parentFolderID As Int32) As Int32
 			Dim name As String = InputBox("Enter Folder Name", "Relativity Review")
 			If name <> "" Then
-				Dim folderManager As New kCura.WinEDDS.Service.FolderManager(Me.Credential, _cookieContainer)
+				Dim folderManager As New kCura.WinEDDS.Service.FolderManager(Me.Credential, _cookieContainer, _identity)
 				Dim folderID As Int32 = folderManager.Create(parentFolderID, name)
 				RaiseEvent OnEvent(New NewFolderEvent(parentFolderID, folderID, name))
 			End If
 		End Function
 
 		Public Function GetCaseFolders(ByVal caseID As Int32) As System.Data.DataSet
-			Dim folderManager As New kCura.WinEDDS.Service.FolderManager(Credential, _cookieContainer)
+			Dim folderManager As New kCura.WinEDDS.Service.FolderManager(Credential, _cookieContainer, _identity)
 			Return folderManager.RetrieveAllByCaseID(caseID)
 			'Dim dsFactory As New kCura.Utility.DataSetFactory
 			'dsFactory.AddColumn("ArtifactID", kCura.Utility.DataSetFactory.DataType.Integer)
@@ -234,14 +231,12 @@ Namespace kCura.EDDS.WinForm
 			'dsFactory.AddRow(7, 3, "Folder 3")
 			'Return dsFactory.BuildDataSet
 		End Function
-
 #End Region
 
 #Region "Case Management"
-
 		Public Function GetCases() As System.Data.DataSet
 			_fields = Nothing
-			Dim csMgr As New kCura.WinEDDS.Service.CaseManager(Credential, _cookieContainer)
+			Dim csMgr As New kCura.WinEDDS.Service.CaseManager(Credential, _cookieContainer, _identity)
 			Return csMgr.RetrieveAll()
 
 			'Dim dsFactory As New kCura.Utility.DataSetFactory
@@ -267,7 +262,7 @@ Namespace kCura.EDDS.WinForm
 					_selectedCaseInfo = caseInfo
 					RaiseEvent OnEvent(New LoadCaseEvent(caseInfo))
 				End If
-			Catch ex As Exception
+			Catch ex As System.Exception
 				Me.ChangeWebServiceURL()
 			End Try
 		End Sub
@@ -277,14 +272,11 @@ Namespace kCura.EDDS.WinForm
 			Dim frm As New CaseSelectForm
 			frm.ShowDialog()
 			Return frm.SelectedCaseInfo
-
 		End Function
 #End Region
 
 #Region "Utility"
-
 		Public Function GetColumnHeadersFromLoadFile(ByVal loadfile As kCura.WinEDDS.LoadFile, ByVal firstLineContainsColumnHeaders As Boolean) As String()
-
 			Dim parser As New kCura.WinEDDS.LoadFileImporter(loadfile, Nothing, _timeZoneOffset)
 			Return parser.GetColumnNames(loadfile.FilePath)
 			'Dim retValue(3) As String
@@ -332,7 +324,7 @@ Namespace kCura.EDDS.WinForm
 					Next
 				End If
 				Return dt
-			Catch ex As Exception
+			Catch ex As System.Exception
 				kCura.EDDS.WinForm.Utility.ThrowExceptionToGUI(ex)
 			End Try
 		End Function
@@ -346,12 +338,10 @@ Namespace kCura.EDDS.WinForm
 					row.Add(field.Value)
 				Next
 				dt.Rows.Add(row.ToArray)
-			Catch x As Exception
+			Catch x As System.Exception
 				Throw
 			End Try
-
 		End Sub
-
 
 		Public Sub RefreshCaseFolders()
 			RaiseEvent OnEvent(New kCura.WinEDDS.LoadCaseEvent(SelectedCaseInfo))
@@ -393,7 +383,6 @@ Namespace kCura.EDDS.WinForm
 			Else
 				Return True
 			End If
-
 		End Function
 
 		Private Sub SetWorkingDirectory(ByVal filePath As String)
@@ -405,13 +394,10 @@ Namespace kCura.EDDS.WinForm
 			End If
 			System.IO.Directory.SetCurrentDirectory(directory)
 		End Sub
-
 #End Region
 
 #Region "Form Initializers"
-
 		Public Sub NewLoadFile(ByVal destinationArtifactID As Int32, ByVal caseInfo As kCura.EDDS.Types.CaseInfo)
-
 			Dim frm As New LoadFileForm
 			Dim loadFile As New loadFile
 			frm._application = Me
@@ -426,8 +412,8 @@ Namespace kCura.EDDS.WinForm
 
 		Public Sub NewProductionExport(ByVal caseInfo As kCura.EDDS.Types.CaseInfo)
 			Dim frm As New ProductionExportForm
-			Dim exportFile As New exportFile
-			Dim productionManager As New kCura.WinEDDS.Service.ProductionManager(Me.Credential, _cookieContainer)
+			Dim exportFile As New exportFile(Me.Identity)
+			Dim productionManager As New kCura.WinEDDS.Service.ProductionManager(Me.Credential, _cookieContainer, _identity)
 			exportFile.CaseInfo = caseInfo
 			exportFile.DataTable = productionManager.RetrieveProducedByContextArtifactID(caseInfo.RootArtifactID).Tables(0)
 			exportFile.Credential = Me.Credential
@@ -439,8 +425,8 @@ Namespace kCura.EDDS.WinForm
 
 		Public Sub NewSearchExport(ByVal rootFolderID As Int32, ByVal caseInfo As kCura.EDDS.Types.CaseInfo, ByVal typeOfExport As kCura.WinEDDS.ExportFile.ExportType)
 			Dim frm As New SearchExportForm
-			Dim exportFile As New exportFile
-			Dim searchManager As New kCura.WinEDDS.Service.SearchManager(Me.Credential, _cookieContainer)
+			Dim exportFile As New exportFile(Me.Identity)
+			Dim searchManager As New kCura.WinEDDS.Service.SearchManager(Me.Credential, _cookieContainer, _identity)
 			exportFile.ArtifactID = rootFolderID
 			exportFile.CaseInfo = caseInfo
 			If typeOfExport = exportFile.ExportType.ArtifactSearch Then
@@ -476,7 +462,7 @@ Namespace kCura.EDDS.WinForm
 		Public Sub NewImageFile(ByVal destinationArtifactID As Int32, ByVal caseinfo As kCura.EDDS.Types.CaseInfo)
 			CursorWait()
 			Dim frm As New ImageLoad
-			Dim imageFile As New ImageLoadFile
+			Dim imageFile As New ImageLoadFile(Me.Identity)
 			imageFile.Credential = Me.Credential
 			imageFile.CaseInfo = caseinfo
 			frm.ImageLoadFile = imageFile
@@ -541,11 +527,9 @@ Namespace kCura.EDDS.WinForm
 			_loginForm.Show()
 			CursorDefault()
 		End Sub
-
 #End Region
 
 #Region "Process Management"
-
 		Public Function PreviewLoadFile(ByVal loadFileToPreview As LoadFile, ByVal errorsOnly As Boolean) As Guid
 			CursorWait()
 			If Not CheckFieldMap(loadFileToPreview) Then
@@ -572,7 +556,7 @@ Namespace kCura.EDDS.WinForm
 		Public Function ImportDirectory(ByVal importFileDirectorySettings As ImportFileDirectorySettings) As Guid
 			CursorWait()
 			Dim frm As New kCura.Windows.Process.ProgressForm
-			Dim importer As New kCura.WinEDDS.ImportFileDirectoryProcess(Credential, CookieContainer)
+			Dim importer As New kCura.WinEDDS.ImportFileDirectoryProcess(Credential, CookieContainer, Me.Identity)
 			importer.ImportFileDirectorySettings = importFileDirectorySettings
 			frm.ProcessObserver = importer.ProcessObserver
 			frm.Show()
@@ -605,7 +589,7 @@ Namespace kCura.EDDS.WinForm
 
 		Public Function ImportLoadFile(ByVal loadFile As LoadFile) As Guid
 			CursorWait()
-			Dim folderManager As New kCura.WinEDDS.Service.FolderManager(Credential, _cookieContainer)
+			Dim folderManager As New kCura.WinEDDS.Service.FolderManager(Credential, _cookieContainer, _identity)
 			If folderManager.Exists(SelectedCaseFolderID, SelectedCaseInfo.RootFolderID) Then
 				If CheckFieldMap(loadFile) Then
 					Dim frm As New kCura.Windows.Process.ProgressForm
@@ -683,7 +667,6 @@ Namespace kCura.EDDS.WinForm
 #End Region
 
 #Region "Save/Load Settings Objects"
-
 		Public Sub SaveLoadFile(ByVal loadFile As LoadFile, ByVal path As String)
 			SaveFileObject(loadFile, path)
 		End Sub
@@ -694,7 +677,7 @@ Namespace kCura.EDDS.WinForm
 			Try
 				serializer.Serialize(sw.BaseStream, fileObject)
 				sw.Close()
-			Catch ex As Exception
+			Catch ex As System.Exception
 				MsgBox("Save Falied", MsgBoxStyle.Critical)
 				'TODO: Log exception
 			End Try
@@ -707,7 +690,7 @@ Namespace kCura.EDDS.WinForm
 			Try
 				tempLoadFile = DirectCast(deserializer.Deserialize(sr.BaseStream), loadFile)
 				sr.Close()
-			Catch ex As Exception
+			Catch ex As System.Exception
 				MsgBox("Load Failed", MsgBoxStyle.Critical)
 				'TODO: Log Exception
 				Return Nothing
@@ -733,7 +716,7 @@ Namespace kCura.EDDS.WinForm
 			Try
 				retval = DirectCast(deserializer.Deserialize(sr.BaseStream), ImageLoadFile)
 				sr.Close()
-			Catch ex As Exception
+			Catch ex As System.Exception
 				MsgBox("Load Failed", MsgBoxStyle.Critical)
 				'TODO: Log Exception
 				Return Nothing
@@ -747,24 +730,21 @@ Namespace kCura.EDDS.WinForm
 		Public Sub SaveImageLoadFile(ByVal imageLoadFile As ImageLoadFile, ByVal path As String)
 			SaveFileObject(imageLoadFile, path)
 		End Sub
-
 #End Region
 
 #Region "Login"
-
 		Private Sub _loginForm_OK_Click(ByVal cred As System.Net.NetworkCredential) Handles _loginForm.OK_Click
 			_loginForm.Close()
 			Dim userManager As New kCura.WinEDDS.Service.UserManager(cred, _cookieContainer)
 			Try
-				If userManager.Login(cred.UserName, cred.Password) Then
-					_credential = cred
-					OpenCase()
+				_identity = userManager.Login(cred.UserName, cred.Password)
+				_credential = cred
+				OpenCase()
+			Catch ex As kCura.WinEDDS.Exception.InvalidLoginException
+				If MsgBox("Invalid login. Try again?", MsgBoxStyle.YesNo) = MsgBoxResult.Yes Then
+					NewLogin()
 				Else
-					If MsgBox("Invalid login.  Try again?", MsgBoxStyle.YesNo) = MsgBoxResult.Yes Then
-						NewLogin()
-					Else
-						ExitApplication()
-					End If
+					ExitApplication()
 				End If
 			Catch ex As System.Net.WebException
 				If MsgBox("Invalid URL. Try Again?", MsgBoxStyle.YesNo) = MsgBoxResult.Yes Then
@@ -788,7 +768,7 @@ Namespace kCura.EDDS.WinForm
 				CheckVersion(System.Net.CredentialCache.DefaultCredentials)
 				_credential = cred
 				Return True
-			Catch ex As Exception
+			Catch ex As System.Exception
 				Return False
 			End Try
 		End Function

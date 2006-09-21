@@ -77,16 +77,15 @@ Namespace kCura.EDDS.WinForm
 
 #End Region
 
-    Private _ex As Exception
+		Private _ex As System.Exception
 
     Private Sub ErrorForm_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles MyBase.Load
       ErrorOutputBox.Text = _ex.ToString
     End Sub
 
-    Public Sub New(ByVal ex As Exception)
-      MyBase.New()
-      _ex = ex
-    End Sub
-
-  End Class
+		Public Sub New(ByVal ex As System.Exception)
+			MyBase.New()
+			_ex = ex
+		End Sub
+	End Class
 End Namespace

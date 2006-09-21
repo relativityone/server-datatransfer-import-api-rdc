@@ -6,11 +6,12 @@ Namespace kCura.EDDS.WinForm
 			ddown.DisplayMember = "Display"
 			ddown.SelectedValue = selectedValue
 		End Sub
+
 		Public Shared Function ExtractValueFromCharacterDropDown(ByVal ddown As System.Windows.Forms.ComboBox, ByRef charvalue As Char) As Char
 			Dim x As Char = charvalue
 			Try
 				charvalue = CType(ddown.SelectedValue, Char)
-			Catch ex As Exception
+			Catch ex As System.Exception
 				charvalue = x
 			End Try
 		End Function
@@ -63,11 +64,9 @@ Namespace kCura.EDDS.WinForm
 			Return names
 		End Function
 
-
-		Public Shared Sub ThrowExceptionToGUI(ByVal ex As Exception)
+		Public Shared Sub ThrowExceptionToGUI(ByVal ex As System.Exception)
 			Dim frm As New kCura.EDDS.WinForm.ErrorForm(ex)
 			frm.Show()
 		End Sub
-
 	End Class
 End Namespace
