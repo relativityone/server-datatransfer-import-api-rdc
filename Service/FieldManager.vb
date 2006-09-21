@@ -33,7 +33,7 @@ Namespace kCura.WinEDDS.Service
 #Region " Translations "
 		Public Shared Function DTOtoDocumentField(ByVal dto As kCura.EDDS.WebAPI.DocumentManagerBase.Field) As DocumentField
 			Dim retval As New DocumentField(dto.DisplayName, dto.ArtifactID, dto.FieldTypeID, dto.FieldCategoryID, dto.CodeTypeID, dto.MaxLength)
-			If retval.FieldTypeID = kCura.EDDS.Types.FieldCategory.FullText Then
+			If retval.FieldCategoryID = kCura.EDDS.Types.FieldCategory.FullText Then
 				retval.Value = System.Text.ASCIIEncoding.ASCII.GetString(DirectCast(dto.Value, Byte()))
 			Else
 				retval.Value = dto.Value.ToString
@@ -59,7 +59,8 @@ Namespace kCura.WinEDDS.Service
 			retVal.FieldCategoryID = dto.FieldCategoryID
 			retVal.CodeTypeID = dto.CodeTypeID
 			retVal.MaxLength = dto.MaxLength
-			If retVal.FieldTypeID = kCura.EDDS.Types.FieldCategory.FullText Then
+			retVal.IsArtifactBaseField = dto.IsArtifactBaseField
+			If retVal.FieldCategoryID = kCura.EDDS.Types.FieldCategory.FullText Then
 				retVal.Value = System.Text.ASCIIEncoding.ASCII.GetString(DirectCast(dto.Value, Byte()))
 			Else
 				retVal.Value = dto.Value.ToString
@@ -76,7 +77,8 @@ Namespace kCura.WinEDDS.Service
 			retVal.FieldCategoryID = dto.FieldCategoryID
 			retVal.CodeTypeID = dto.CodeTypeID
 			retVal.MaxLength = dto.MaxLength
-			If retVal.FieldTypeID = kCura.EDDS.Types.FieldCategory.FullText Then
+			retVal.IsArtifactBaseField = dto.IsArtifactBaseField
+			If retVal.FieldCategoryID = kCura.EDDS.Types.FieldCategory.FullText Then
 				retVal.Value = System.Text.ASCIIEncoding.ASCII.GetString(DirectCast(dto.Value, Byte()))
 			Else
 				retVal.Value = dto.Value.ToString
@@ -102,11 +104,8 @@ Namespace kCura.WinEDDS.Service
 			retVal.FieldCategoryID = field.FieldCategoryID
 			retVal.CodeTypeID = field.CodeTypeID
 			retVal.MaxLength = field.MaxLength
-			If retVal.FieldTypeID = kCura.EDDS.Types.FieldCategory.FullText Then
-				retVal.Value = System.Text.ASCIIEncoding.ASCII.GetString(DirectCast(field.Value, Byte()))
-			Else
-				retVal.Value = field.Value.ToString
-			End If
+			retVal.IsArtifactBaseField = field.IsArtifactBaseField
+			retVal.Value = field.Value.ToString
 			Return retVal
 		End Function
 
@@ -119,11 +118,8 @@ Namespace kCura.WinEDDS.Service
 			retVal.FieldCategoryID = field.FieldCategoryID
 			retVal.CodeTypeID = field.CodeTypeID
 			retVal.MaxLength = field.MaxLength
-			If retVal.FieldTypeID = kCura.EDDS.Types.FieldCategory.FullText Then
-				retVal.Value = System.Text.ASCIIEncoding.ASCII.GetString(DirectCast(field.Value, Byte()))
-			Else
-				retVal.Value = field.Value.ToString
-			End If
+			retVal.IsArtifactBaseField = field.IsArtifactBaseField
+			retVal.Value = field.Value.ToString
 			Return retVal
 		End Function
 

@@ -77,6 +77,9 @@ Namespace kCura.WinEDDS.Service
 			doc.Notes = docDTO.Notes
 			doc.ParentArtifactID = docDTO.ParentArtifactID
 			doc.TextIdentifier = docDTO.TextIdentifier
+			doc.DocumentAgentFlags = New kCura.EDDS.WebAPI.DocumentManagerBase.DocumentAgentFlags
+			doc.DocumentAgentFlags.IndexStatus = docDTO.DocumentAgentFlags.IndexStatus
+			doc.DocumentAgentFlags.UpdateFullText = docDTO.DocumentAgentFlags.UpdateFullText
 			Return doc
 		End Function
 
@@ -106,6 +109,10 @@ Namespace kCura.WinEDDS.Service
 			End If
 			docDTO.ParentArtifactID = doc.ParentArtifactID
 			docDTO.TextIdentifier = doc.TextIdentifier
+
+			docDTO.DocumentAgentFlags = New kCura.EDDS.DTO.DocumentAgentFlags
+			docDTO.DocumentAgentFlags.IndexStatus = doc.DocumentAgentFlags.IndexStatus
+			docDTO.DocumentAgentFlags.UpdateFullText = doc.DocumentAgentFlags.UpdateFullText
 			Return docDTO
 		End Function
 

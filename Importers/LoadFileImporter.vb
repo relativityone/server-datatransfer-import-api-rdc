@@ -4,7 +4,6 @@ Namespace kCura.WinEDDS
 		Inherits kCura.WinEDDS.LoadFileBase
 
 #Region "Members"
-
 		Private _overwrite As Boolean
 		Private WithEvents _uploader As kCura.WinEDDS.FileUploader
 		Private _path As String
