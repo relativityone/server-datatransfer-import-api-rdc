@@ -58,12 +58,12 @@ Namespace kCura.WinEDDS
 			_firstLineContainsColumnNames = args.FirstLineContainsHeaders
 			_fieldMap = args.FieldMap
 
-			_documentManager = New kCura.WinEDDS.Service.DocumentManager(args.Credentials, args.CookieContainer)
+			_documentManager = New kCura.WinEDDS.Service.DocumentManager(args.Credentials, args.CookieContainer, args.Identity)
 			_uploadManager = New kCura.WinEDDS.Service.FileIO(args.Credentials, args.CookieContainer)
-			_codeManager = New kCura.WinEDDS.Service.CodeManager(args.Credentials, args.CookieContainer)
-			_folderManager = New kCura.WinEDDS.Service.FolderManager(args.Credentials, args.CookieContainer)
-			_fieldQuery = New kCura.WinEDDS.Service.FieldQuery(args.Credentials, args.CookieContainer)
-			_fileManager = New kCura.WinEDDS.Service.FileManager(args.Credentials, args.CookieContainer)
+			_codeManager = New kCura.WinEDDS.Service.CodeManager(args.Credentials, args.CookieContainer, args.Identity)
+			_folderManager = New kCura.WinEDDS.Service.FolderManager(args.Credentials, args.CookieContainer, args.Identity)
+			_fieldQuery = New kCura.WinEDDS.Service.FieldQuery(args.Credentials, args.CookieContainer, args.Identity)
+			_fileManager = New kCura.WinEDDS.Service.FileManager(args.Credentials, args.CookieContainer, args.Identity)
 			_multiCodeManager = New kCura.WinEDDS.Service.MultiCodeManager(args.Credentials, args.CookieContainer)
 
 			_multiValueSeparator = args.MultiRecordDelimiter.ToString.ToCharArray
@@ -228,7 +228,7 @@ Namespace kCura.WinEDDS
 			Dim nullableDateValue As NullableDateTime
 			Try
 				nullableDateValue = MyBase.GetNullableDateTime(value, column)
-			Catch ex As Exception
+			Catch ex As System.Exception
 				Select Case value.Trim
 					Case "00/00/0000", "0/0/0000", "0/0/00", "00/00/00", "0/00", "0/0000", "00/00", "00/0000"
 						nullableDateValue = NullableDateTime.Null

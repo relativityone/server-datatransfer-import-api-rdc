@@ -67,39 +67,39 @@ Namespace kCura.WinEDDS
 #End Region
 
 #Region "Public Events"
-		Public Event FatalErrorEvent(ByVal message As String, ByVal ex As Exception)
+		Public Event FatalErrorEvent(ByVal message As String, ByVal ex As System.Exception)
 		Public Event StatusMessage(ByVal exportArgs As ExportEventArgs)
 		Public Event DisableCloseButton()
 		Public Event EnableCloseButton()
 #End Region
 
 #Region "Messaging"
-		Private Sub WriteFatalError(ByVal line As String, ByVal ex As Exception)
+		Private Sub WriteFatalError(ByVal line As String, ByVal ex As System.Exception)
 			RaiseEvent FatalErrorEvent(line, ex)
 		End Sub
 
-    Private Sub WriteStatusLine(ByVal e As kCura.Windows.Process.EventType, ByVal line As String)
-      RaiseEvent StatusMessage(New ExportEventArgs(Me.DocumentsExported, Me.TotalDocuments, line, e))
-    End Sub
+		Private Sub WriteStatusLine(ByVal e As kCura.Windows.Process.EventType, ByVal line As String)
+			RaiseEvent StatusMessage(New ExportEventArgs(Me.DocumentsExported, Me.TotalDocuments, line, e))
+		End Sub
 
-    Private Sub WriteError(ByVal line As String)
-      WriteStatusLine(kCura.Windows.Process.EventType.Error, line)
-    End Sub
+		Private Sub WriteError(ByVal line As String)
+			WriteStatusLine(kCura.Windows.Process.EventType.Error, line)
+		End Sub
 
-    Private Sub WriteWarning(ByVal line As String)
-      WriteStatusLine(kCura.Windows.Process.EventType.Warning, line)
-    End Sub
+		Private Sub WriteWarning(ByVal line As String)
+			WriteStatusLine(kCura.Windows.Process.EventType.Warning, line)
+		End Sub
 
-    Private Sub WriteUpdate(ByVal line As String)
-      WriteStatusLine(kCura.Windows.Process.EventType.Progress, line)
-    End Sub
+		Private Sub WriteUpdate(ByVal line As String)
+			WriteStatusLine(kCura.Windows.Process.EventType.Progress, line)
+		End Sub
 #End Region
 
 		Public Sub New(ByVal cred As Net.NetworkCredential, ByVal productionArtifactID As Int32, ByVal folderPath As String, _
 		ByVal selectedCaseInfo As kCura.EDDS.Types.CaseInfo, ByVal overwrite As Boolean, ByVal controller As kCura.Windows.Process.Controller, ByVal fileformat As kCura.WinEDDS.LoadFileType.FileFormat, _
-		ByVal cookieContainer As System.Net.CookieContainer)
-			_productionManager = New kCura.WinEDDS.Service.ProductionManager(cred, cookieContainer)
-			_fileManager = New kCura.WinEDDS.Service.FileManager(cred, cookieContainer)
+		ByVal cookieContainer As System.Net.CookieContainer, ByVal identity As kCura.EDDS.EDDSIdentity)
+			_productionManager = New kCura.WinEDDS.Service.ProductionManager(cred, cookieContainer, identity)
+			_fileManager = New kCura.WinEDDS.Service.FileManager(cred, cookieContainer, identity)
 			_productionArtifactID = productionArtifactID
 			_folderPath = folderPath + "\"
 			_overwrite = overwrite
@@ -112,7 +112,7 @@ Namespace kCura.WinEDDS
 			Me.TotalDocuments = 1
 			_continue = True
 			_downloadManager = New FileDownloader(cred, selectedCaseInfo.DocumentPath & "\EDDS" & selectedCaseInfo.ArtifactID, selectedCaseInfo.DownloadHandlerURL, cookieContainer)
-			_documentManager = New kCura.WinEDDS.Service.DocumentManager(cred, cookieContainer)
+			_documentManager = New kCura.WinEDDS.Service.DocumentManager(cred, cookieContainer, identity)
 			_sourceDirectory = _documentManager.GetDocumentDirectoryByContextArtifactID(Me.SelectedCaseInfo.RootArtifactID)
 			_fullTextDownloader = New kCura.WinEDDS.FullTextManager(cred, _sourceDirectory, cookieContainer)
 		End Sub
@@ -120,7 +120,7 @@ Namespace kCura.WinEDDS
 		Public Sub CreateVolumes()
 			Try
 				Me.ExportProduction()
-			Catch ex As Exception
+			Catch ex As System.Exception
 				Me.WriteFatalError(String.Format("A fatal error occurred on document #{0}", Me.DocumentsExported), ex)
 			End Try
 		End Sub
@@ -230,7 +230,7 @@ Namespace kCura.WinEDDS
 						volumeLog.Append(BuildIproLog(CType(dataTable.Rows(count)("BatesNumber"), String), currentVolume, currentDirectory, isFirstDocument))
 					End If
 
-				Catch ex As Exception
+				Catch ex As System.Exception
 					Me.WriteError(String.Format("Error occurred on document #{0} with message: {1}", count + 1, ex.Message))
 				End Try
 				If Not _continue Then

@@ -2,12 +2,16 @@ Namespace kCura.WinEDDS.Service
 	Public Class CodeManager
 		Inherits kCura.EDDS.WebAPI.CodeManagerBase.CodeManager
 
-		Public Sub New(ByVal credentials As Net.NetworkCredential, ByVal cookieContainer As System.Net.CookieContainer)
+		Private _identity As kCura.EDDS.EDDSIdentity
+		Private _codeManager As New kCura.EDDS.Service.CodeManager
+
+		Public Sub New(ByVal credentials As Net.NetworkCredential, ByVal cookieContainer As System.Net.CookieContainer, ByVal identity As kCura.EDDS.EDDSIdentity)
 			MyBase.New()
 			Me.Credentials = credentials
 			Me.CookieContainer = cookieContainer
 			Me.Url = String.Format("{0}CodeManager.asmx", kCura.WinEDDS.Config.WebServiceURL)
 			Me.Timeout = Settings.DefaultTimeOut
+			_identity = identity
 		End Sub
 
 		Protected Overrides Function GetWebRequest(ByVal uri As System.Uri) As System.Net.WebRequest
@@ -29,5 +33,38 @@ Namespace kCura.WinEDDS.Service
 			code.ContainerID = New NullableTypes.NullableInt32(caseID)
 			Return code
 		End Function
+
+		Private Function CreateNewCodeDTO(ByVal code As kCura.EDDS.WebAPI.CodeManagerBase.Code) As kCura.Code.DTO.Code
+			Dim codeDTO As New kCura.Code.DTO.Code
+
+			codeDTO.CodeType = code.CodeType
+			codeDTO.IsActive = code.IsActive
+			codeDTO.Name = code.Name
+			codeDTO.Order = code.Order
+			codeDTO.Keywords = code.Keywords
+			codeDTO.Notes = code.Notes
+			codeDTO.ParentArtifactID = code.ParentArtifactID
+			codeDTO.ContainerID = code.ContainerID
+			Return codeDTO
+		End Function
+
+#Region " Shadow Functions "
+		Public Shadows Function RetrieveCodesAndTypesForCase(ByVal caseContextArtifactID As Int32) As System.Data.DataSet
+			If kCura.WinEDDS.Config.UsesWebAPI Then
+				Return MyBase.RetrieveCodesAndTypesForCase(caseContextArtifactID)
+			Else
+				Return _codeManager.ExternalRetrieveCodesAndTypesForCase(caseContextArtifactID, _identity)
+			End If
+		End Function
+
+		Public Shadows Function Create(ByVal code As kCura.EDDS.WebAPI.CodeManagerBase.Code) As Int32
+			If kCura.WinEDDS.Config.UsesWebAPI Then
+				Return MyBase.Create(code)
+			Else
+				Return _codeManager.ExternalCreate(CreateNewCodeDTO(code), _identity)
+			End If
+		End Function
+#End Region
+
 	End Class
 End Namespace

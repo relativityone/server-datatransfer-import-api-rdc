@@ -1,5 +1,6 @@
 Namespace kCura.WinEDDS
 	Public Class ExportFile
+		Protected _identity As kCura.EDDS.EDDSIdentity
 		Protected _caseInfo As kCura.EDDS.Types.CaseInfo
 		Protected _dataTable As System.Data.DataTable
 		Protected _typeOfExport As ExportType
@@ -18,6 +19,14 @@ Namespace kCura.WinEDDS
 		Protected _logFileFormat As kCura.WinEDDS.LoadFileType.FileFormat
 
 #Region "Public Properties"
+		Public Property Identity() As kCura.EDDS.EDDSIdentity
+			Get
+				Return _identity
+			End Get
+			Set(ByVal value As kCura.EDDS.EDDSIdentity)
+				_identity = value
+			End Set
+		End Property
 
 		Public Property CaseInfo() As kCura.EDDS.Types.CaseInfo
 			Get
@@ -165,11 +174,12 @@ Namespace kCura.WinEDDS
 
 #End Region
 
-		Public Sub New()
+		Public Sub New(ByVal identity As kCura.EDDS.EDDSIdentity)
 			Me.RecordDelimiter = Chr(20)
 			Me.QuoteDelimiter = Chr(254)
 			Me.NewlineDelimiter = Chr(174)
 			Me.MultiRecordDelimiter = Chr(59)
+			_identity = identity
 		End Sub
 
 		Public Enum ExportType

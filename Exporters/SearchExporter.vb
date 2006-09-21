@@ -46,38 +46,38 @@ Namespace kCura.WinEDDS
 #End Region
 
 #Region "Public Events"
-		Public Event FatalErrorEvent(ByVal message As String, ByVal ex As Exception)
+		Public Event FatalErrorEvent(ByVal message As String, ByVal ex As System.Exception)
 		Public Event StatusMessage(ByVal exportArgs As ExportEventArgs)
 		Public Event DisableCloseButton()
 		Public Event EnableCloseButton()
 #End Region
 
 #Region "Messaging"
-		Private Sub WriteFatalError(ByVal line As String, ByVal ex As Exception)
+		Private Sub WriteFatalError(ByVal line As String, ByVal ex As System.Exception)
 			RaiseEvent FatalErrorEvent(line, ex)
 		End Sub
 
-    Private Sub WriteStatusLine(ByVal e As kCura.Windows.Process.EventType, ByVal line As String)
-      RaiseEvent StatusMessage(New ExportEventArgs(Me.DocumentsExported, Me.TotalDocuments, line, e))
-    End Sub
+		Private Sub WriteStatusLine(ByVal e As kCura.Windows.Process.EventType, ByVal line As String)
+			RaiseEvent StatusMessage(New ExportEventArgs(Me.DocumentsExported, Me.TotalDocuments, line, e))
+		End Sub
 
-    Private Sub WriteError(ByVal line As String)
-      WriteStatusLine(kCura.Windows.Process.EventType.Error, line)
-    End Sub
+		Private Sub WriteError(ByVal line As String)
+			WriteStatusLine(kCura.Windows.Process.EventType.Error, line)
+		End Sub
 
-    Private Sub WriteWarning(ByVal line As String)
-      WriteStatusLine(kCura.Windows.Process.EventType.Warning, line)
-    End Sub
+		Private Sub WriteWarning(ByVal line As String)
+			WriteStatusLine(kCura.Windows.Process.EventType.Warning, line)
+		End Sub
 
-    Private Sub WriteUpdate(ByVal line As String)
-      WriteStatusLine(kCura.Windows.Process.EventType.Progress, line)
-    End Sub
+		Private Sub WriteUpdate(ByVal line As String)
+			WriteStatusLine(kCura.Windows.Process.EventType.Progress, line)
+		End Sub
 #End Region
 
 		Public Sub New(ByVal exportFile As kCura.WinEDDS.ExportFile, ByVal processController As kCura.Windows.Process.Controller)
-			_searchManager = New kCura.WinEDDS.Service.SearchManager(exportFile.Credential, exportFile.CookieContainer)
-			_folderManager = New kCura.WinEDDS.Service.FolderManager(exportFile.Credential, exportFile.CookieContainer)
-			_documentManager = New kCura.WinEDDS.Service.DocumentManager(exportFile.Credential, exportFile.CookieContainer)
+			_searchManager = New kCura.WinEDDS.Service.SearchManager(exportFile.Credential, exportFile.CookieContainer, exportFile.Identity)
+			_folderManager = New kCura.WinEDDS.Service.FolderManager(exportFile.Credential, exportFile.CookieContainer, exportFile.Identity)
+			_documentManager = New kCura.WinEDDS.Service.DocumentManager(exportFile.Credential, exportFile.CookieContainer, exportFile.Identity)
 			'_webClient = New System.Net.WebClient
 			'_webClient.Credentials = exportFile.Credential
 			_downloadHandler = New FileDownloader(exportFile.Credential, exportFile.CaseInfo.DocumentPath & "\EDDS" & exportFile.CaseInfo.ArtifactID, exportFile.CaseInfo.DownloadHandlerURL, exportFile.CookieContainer)
@@ -92,7 +92,7 @@ Namespace kCura.WinEDDS
 		Public Sub ExportSearch()
 			Try
 				Me.Search()
-			Catch ex As Exception
+			Catch ex As System.Exception
 				Me.WriteFatalError(String.Format("A fatal error occurred on document #{0}", Me.DocumentsExported), ex)
 			End Try
 		End Sub

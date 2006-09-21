@@ -47,10 +47,10 @@ Namespace kCura.WinEDDS
 
 		Public Sub New(ByVal folderID As Int32, ByVal args As ImageLoadFile, ByVal controller As kCura.Windows.Process.Controller)
 			MyBase.New(New Char() {","c})
-			_docManager = New kCura.WinEDDS.Service.DocumentManager(args.Credential, args.CookieContainer)
-			_fieldQuery = New kCura.WinEDDS.Service.FieldQuery(args.Credential, args.CookieContainer)
-			_folderManager = New kCura.WinEDDS.Service.FolderManager(args.Credential, args.CookieContainer)
-			_fileManager = New kCura.WinEDDS.Service.FileManager(args.Credential, args.CookieContainer)
+			_docManager = New kCura.WinEDDS.Service.DocumentManager(args.Credential, args.CookieContainer, args.Identity)
+			_fieldQuery = New kCura.WinEDDS.Service.FieldQuery(args.Credential, args.CookieContainer, args.Identity)
+			_folderManager = New kCura.WinEDDS.Service.FolderManager(args.Credential, args.CookieContainer, args.Identity)
+			_fileManager = New kCura.WinEDDS.Service.FileManager(args.Credential, args.CookieContainer, args.Identity)
 			_fileUploader = New kCura.WinEDDS.FileUploader(args.Credential, _docManager.GetDocumentDirectoryByCaseArtifactID(args.CaseInfo.ArtifactID) & "\", args.CookieContainer)
 			_folderID = folderID
 			_overwrite = args.Overwrite
@@ -81,7 +81,7 @@ Namespace kCura.WinEDDS
 				While Continue
 					Try
 						DoFileUpload()
-					Catch ex As Exception
+					Catch ex As System.Exception
 						RaiseStatusEvent(kCura.Windows.Process.EventType.Error, ex.Message)
 					End Try
 				End While
@@ -91,7 +91,7 @@ Namespace kCura.WinEDDS
 				'sr.Write(_csvwriter.ToString)
 				'sr.Close()
 				RaiseStatusEvent(kCura.Windows.Process.EventType.Progress, "End Image Upload")
-			Catch ex As Exception
+			Catch ex As System.Exception
 				RaiseFatalError(ex)
 			End Try
 		End Function
@@ -189,16 +189,16 @@ Namespace kCura.WinEDDS
 			Dim encoder As New System.Text.ASCIIEncoding
 			Try
 				Return _docManager.CreateEmptyDocument(_folderID, encoder.GetBytes(identifier), fullTextFileName, _selectedIdentifierField, fullTextBuilder)
-			Catch ex As Exception
+			Catch ex As System.Exception
 				Throw New CreateDocumentException(ex)
 			End Try
 		End Function
 
 #Region "Events and Event Handling"
 
-		Public Event FatalErrorEvent(ByVal message As String, ByVal ex As Exception)
+		Public Event FatalErrorEvent(ByVal message As String, ByVal ex As System.Exception)
 
-		Private Sub RaiseFatalError(ByVal ex As Exception)
+		Private Sub RaiseFatalError(ByVal ex As System.Exception)
 			RaiseEvent FatalErrorEvent("Error processing line: " + CurrentLineNumber.ToString, ex)
 		End Sub
 

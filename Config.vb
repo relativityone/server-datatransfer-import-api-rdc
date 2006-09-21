@@ -13,6 +13,12 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
+		Public Shared ReadOnly Property UsesWebAPI() As Boolean
+			Get
+				Return CType(ConfigSettings("UsesWebAPI"), Boolean)
+			End Get
+		End Property
+
 		Public Shared ReadOnly Property OutlookImporterLocation() As String
 			Get
 				Return CType(ConfigSettings("OutlookImporterLocation"), String)

@@ -1,6 +1,5 @@
 Namespace kCura.WinEDDS
 	<Serializable()> Public Class LoadFile
-
 		Implements System.Runtime.Serialization.ISerializable
 
 		<NonSerialized()> Public CaseInfo As kCura.EDDS.Types.CaseInfo
@@ -22,6 +21,7 @@ Namespace kCura.WinEDDS
 
 		<NonSerialized()> Public Credentials As Net.NetworkCredential
 		<NonSerialized()> Public _cookieContainer As System.Net.CookieContainer
+		<NonSerialized()> Public Identity As kCura.EDDS.EDDSIdentity
 
 		Public Property CookieContainer() As System.Net.CookieContainer
 			Get

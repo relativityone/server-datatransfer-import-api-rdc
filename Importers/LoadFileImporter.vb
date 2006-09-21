@@ -138,7 +138,7 @@ Namespace kCura.WinEDDS
 				'sw.Flush()
 				'sw.Close()
 				Return True
-			Catch ex As Exception
+			Catch ex As System.Exception
 				WriteFatalError(Me.CurrentLineNumber, ex)
 			End Try
 		End Function
@@ -232,7 +232,7 @@ Namespace kCura.WinEDDS
 				Dim markReadDoc As DateTime = DateTime.Now
 				Try
 					doc = _documentManager.ReadFromIdentifier(_folderID, _selectedIdentifier.FieldName, metaDoc.IdentityValue)
-				Catch ex As Exception
+				Catch ex As System.Exception
 					Throw New AmbiguousIdentifierValueException(ex)
 				End Try
 				_timeKeeper.Add("ReadUpload", DateTime.Now.Subtract(markReadDoc).TotalMilliseconds)
@@ -277,7 +277,7 @@ Namespace kCura.WinEDDS
 			Try
 				WriteStatusLine(Windows.Process.EventType.Status, String.Format("Creating document '{0}' in database.", identityValue))
 				Return _documentManager.Create(documentDTO)
-			Catch ex As Exception
+			Catch ex As System.Exception
 				Throw New DocumentDomainException(ex)
 			End Try
 		End Function
@@ -328,7 +328,7 @@ Namespace kCura.WinEDDS
 				End If
 				Try
 					_documentManager.Update(docDTO)
-				Catch ex As Exception
+				Catch ex As System.Exception
 					Throw New DocumentDomainException(ex)
 				End Try
 				Return docDTO.ArtifactID
@@ -436,7 +436,7 @@ Namespace kCura.WinEDDS
 				For j = 0 To codeArtifactIDs.Length - 1
 					Try
 						codeArtifactIDs(j) = Int32.Parse(valueArray(j))
-					Catch ex As Exception
+					Catch ex As System.Exception
 					End Try
 				Next
 				If (existingValue = String.Empty OrElse existingValue = "0") AndAlso valueArray.Length > 0 Then
@@ -448,7 +448,7 @@ Namespace kCura.WinEDDS
 					_multiCodeManager.DeleteFromMultiCodeArtifactByMultiCodeID(_folderID, multiCodeID)
 					Dim codeFieldValues As New System.Collections.ArrayList
 					codeFieldValues.AddRange(codeArtifactIDs)
-					_multiCodeManager.SetMultiCodeValues(multiCodeID, codeFieldValues.ToArray)
+					_multiCodeManager.SetMultiCodeValues(multiCodeID, codeFieldValues)
 					fieldDTO.Value = multiCodeID.ToString
 				Else
 					fieldDTO.Value = String.Empty
@@ -472,7 +472,7 @@ Namespace kCura.WinEDDS
 			WriteStatusLine(et, line, Me.CurrentLineNumber)
 		End Sub
 
-		Private Sub WriteFatalError(ByVal lineNumber As Int32, ByVal ex As Exception)
+		Private Sub WriteFatalError(ByVal lineNumber As Int32, ByVal ex As System.Exception)
 			RaiseEvent FatalErrorEvent("Error processing line: " + lineNumber.ToString, ex)
 		End Sub
 
@@ -500,7 +500,7 @@ Namespace kCura.WinEDDS
 
 #Region "Public Events"
 
-		Public Event FatalErrorEvent(ByVal message As String, ByVal ex As Exception)
+		Public Event FatalErrorEvent(ByVal message As String, ByVal ex As System.Exception)
 		Public Event StatusMessage(ByVal args As kCura.Windows.Process.StatusEventArgs)
 		Public Event EndFileImport()
 		Public Event StartFileImport()

@@ -27,7 +27,7 @@ Namespace kCura.WinEDDS
 				System.IO.File.Create(sourceFolderPath & "123").Close()
 				System.IO.File.Delete(sourceFolderPath & "123")
 				Me.Type = ConnectionType.Direct
-			Catch ex As Exception
+			Catch ex As System.Exception
 				Me.Type = ConnectionType.Web
 			End Try
 		End Sub

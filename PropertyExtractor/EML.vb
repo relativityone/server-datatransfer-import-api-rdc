@@ -28,7 +28,7 @@ Namespace kCura.WinEDDS.PropertyExtractor
 									headerValue = lineBuffer.Substring(lineBuffer.IndexOf(":") + 1, lineBuffer.IndexOf("-") - lineBuffer.IndexOf(":") - 2)
 									Try
 										Dim dt As Date = Date.Parse(headerValue)
-									Catch ex As Exception
+									Catch ex As System.Exception
 										' if the field cannot be parsed then set it as empty
 										headerValue = String.Empty
 									End Try

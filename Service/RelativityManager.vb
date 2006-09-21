@@ -16,6 +16,5 @@ Namespace kCura.WinEDDS.Service
 			wr.Credentials = Me.Credentials
 			Return wr
 		End Function
-
 	End Class
 End Namespace

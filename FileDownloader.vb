@@ -39,7 +39,7 @@ Namespace kCura.WinEDDS
 				System.IO.File.Create(destinationFolderPath & "123").Close()
 				System.IO.File.Delete(destinationFolderPath & "123")
 				Me.UploaderType = Type.Direct
-			Catch ex As Exception
+			Catch ex As System.Exception
 				Me.UploaderType = Type.Web
 			End Try
 		End Sub
@@ -98,7 +98,7 @@ Namespace kCura.WinEDDS
 					End If
 					System.IO.File.Copy(remoteFilePath, localFilePath)
 					Return True
-				Catch ex As Exception
+				Catch ex As System.Exception
 					RaiseEvent UploadStatusEvent("Error Uploading File")					'TODO: Change this to a separate error-type event'
 					Throw New ApplicationException("Error Uplaoding File", ex)
 				End Try
@@ -111,7 +111,7 @@ Namespace kCura.WinEDDS
 				remoteuri = String.Format("{0}Download.aspx?ArtifactID={1}&GUID={2}", _downloadUrl, artifactID, remoteFileGuid)
 				_webClient.DownloadFile(remoteuri, localFilePath)
 				Return True
-			Catch ex As Exception
+			Catch ex As System.Exception
 				RaiseEvent UploadStatusEvent("Error Uploading File")				 'TODO: Change this to a separate error-type event'
 				Throw New ApplicationException("Error Uplaoding File", ex)
 			End Try

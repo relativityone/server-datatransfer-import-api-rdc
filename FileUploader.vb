@@ -30,7 +30,7 @@ Namespace kCura.WinEDDS
 				System.IO.File.Create(destinationFolderPath & "123").Close()
 				System.IO.File.Delete(destinationFolderPath & "123")
 				Me.UploaderType = Type.Direct
-			Catch ex As Exception
+			Catch ex As System.Exception
 				Me.UploaderType = Type.Web
 			End Try
 		End Sub
@@ -84,7 +84,7 @@ Namespace kCura.WinEDDS
 				Try
 					System.IO.File.Copy(filePath, String.Format("{0}{1}", _destinationFolderPath, newFileName))
 					Return newFileName
-				Catch ex As Exception
+				Catch ex As System.Exception
 					RaiseEvent UploadStatusEvent("Error Uploading File")					'TODO: Change this to a separate error-type event'
 					Throw New ApplicationException("Error Uplaoding File", ex)
 				End Try
@@ -106,7 +106,7 @@ Namespace kCura.WinEDDS
 					sw = Nothing
 					content = Nothing
 					Return newFileName
-				Catch ex As Exception
+				Catch ex As System.Exception
 					RaiseEvent UploadStatusEvent("Error Uploading File")					'TODO: Change this to a separate error-type event'
 					Throw New ApplicationException("Error Uplaoding File", ex)
 				End Try
@@ -161,7 +161,7 @@ Namespace kCura.WinEDDS
 				'file = Nothing
 				fileStream.Close()
 				Return fileGuid
-			Catch ex As Exception
+			Catch ex As System.Exception
 				Throw ex
 			End Try
 		End Function

@@ -130,6 +130,26 @@
                     Project = "{6C4D3211-85B6-4A83-9356-7C7F0C319C75}"
                     Package = "{F184B08F-C81C-45F6-A57F-5ABD9991F28F}"
                 />
+                <Reference
+                    Name = "kCura.EDDS"
+                    Project = "{EF28D622-41FE-4B1E-A36A-B5DD92D895C7}"
+                    Package = "{F184B08F-C81C-45F6-A57F-5ABD9991F28F}"
+                />
+                <Reference
+                    Name = "kCura.Code"
+                    Project = "{421A7123-1388-49BB-91A3-46EF3E6E4C92}"
+                    Package = "{F184B08F-C81C-45F6-A57F-5ABD9991F28F}"
+                />
+                <Reference
+                    Name = "kCura.Chicago"
+                    Project = "{EBFD2574-AEDA-45D5-B3AC-514A1B88823D}"
+                    Package = "{F184B08F-C81C-45F6-A57F-5ABD9991F28F}"
+                />
+                <Reference
+                    Name = "kCura.EDDS.DynamicFields"
+                    Project = "{B232A705-23B8-4C74-8600-AC5E62482496}"
+                    Package = "{F184B08F-C81C-45F6-A57F-5ABD9991F28F}"
+                />
             </References>
             <Imports>
                 <Import Namespace = "Microsoft.VisualBasic" />
@@ -244,6 +264,11 @@
                 />
                 <File
                     RelPath = "Event\NewFolderEvent.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Exception\InvalidLoginException.vb"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
