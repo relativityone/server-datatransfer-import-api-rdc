@@ -101,14 +101,7 @@ Namespace kCura.EDDS.WinForm
 
 #Region " Declarations & Properties "
 		Private WithEvents _application As kCura.EDDS.WinForm.Application
-		Private _selectedCaseID As Int32
 		Private _selectedCaseInfo As kCura.EDDS.Types.CaseInfo
-
-		Public ReadOnly Property SelectedCaseID() As Int32
-			Get
-				Return _selectedCaseID
-			End Get
-		End Property
 
 		Public ReadOnly Property SelectedCaseInfo() As kCura.EDDS.Types.CaseInfo
 			Get
@@ -133,11 +126,10 @@ Namespace kCura.EDDS.WinForm
 
 		Private Sub CaseListView_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles CaseListView.SelectedIndexChanged
 			If CaseListView.SelectedItems.Count <> 0 Then
-				_selectedCaseID = DirectCast(CaseListView.SelectedItems.Item(0).Tag, kCura.EDDS.Types.CaseInfo).RootArtifactID
 				_selectedCaseInfo = DirectCast(CaseListView.SelectedItems.Item(0).Tag, kCura.EDDS.Types.CaseInfo)
 				_OKButton.Enabled = True
 			Else
-				_selectedCaseID = 0
+				_selectedCaseInfo = Nothing
 			End If
 		End Sub
 
@@ -146,7 +138,7 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 		Private Sub CancelBtn_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles CancelBtn.Click
-			_selectedCaseID = 0
+			_selectedCaseInfo = Nothing
 			Me.Close()
 		End Sub
 
@@ -157,6 +149,5 @@ Namespace kCura.EDDS.WinForm
 		Private Sub CaseListView_DoubleClick(ByVal sender As Object, ByVal e As System.EventArgs) Handles CaseListView.DoubleClick
 			Me.Close()
 		End Sub
-
 	End Class
 End Namespace
