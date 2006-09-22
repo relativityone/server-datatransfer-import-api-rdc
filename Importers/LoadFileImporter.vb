@@ -232,7 +232,11 @@ Namespace kCura.WinEDDS
 				Try
 					doc = _documentManager.ReadFromIdentifier(_folderID, _selectedIdentifier.FieldName, metaDoc.IdentityValue)
 				Catch ex As System.Exception
-					Throw New AmbiguousIdentifierValueException(ex)
+					If kCura.WinEDDS.Config.UsesWebAPI Then
+						Throw New AmbiguousIdentifierValueException(ex)
+					Else
+						Throw
+					End If
 				End Try
 				_timeKeeper.Add("ReadUpload", DateTime.Now.Subtract(markReadDoc).TotalMilliseconds)
 				markReadDoc = DateTime.Now
@@ -277,7 +281,11 @@ Namespace kCura.WinEDDS
 				WriteStatusLine(Windows.Process.EventType.Status, String.Format("Creating document '{0}' in database.", identityValue))
 				Return _documentManager.Create(documentDTO)
 			Catch ex As System.Exception
-				Throw New DocumentDomainException(ex)
+				If kCura.WinEDDS.Config.UsesWebAPI Then
+					Throw New DocumentDomainException(ex)
+				Else
+					Throw
+				End If
 			End Try
 		End Function
 
@@ -328,12 +336,16 @@ Namespace kCura.WinEDDS
 				Try
 					_documentManager.Update(docDTO)
 				Catch ex As System.Exception
-					Throw New DocumentDomainException(ex)
+					If kCura.WinEDDS.Config.UsesWebAPI Then
+						Throw New DocumentDomainException(ex)
+					Else
+						Throw
+					End If
 				End Try
 				Return docDTO.ArtifactID
 			Else
-					Throw New DocumentOverwriteException
-				End If
+				Throw New DocumentOverwriteException
+			End If
 		End Function
 
 		Private Function CreateFileDTO(ByVal filename As String, ByVal fileguid As String) As kCura.EDDS.WebAPI.DocumentManagerBase.File

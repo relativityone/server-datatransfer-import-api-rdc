@@ -190,7 +190,11 @@ Namespace kCura.WinEDDS
 			Try
 				Return _docManager.CreateEmptyDocument(_folderID, encoder.GetBytes(identifier), fullTextFileName, _selectedIdentifierField, fullTextBuilder)
 			Catch ex As System.Exception
-				Throw New CreateDocumentException(ex)
+				If kCura.WinEDDS.Config.UsesWebAPI Then
+					Throw New CreateDocumentException(ex)
+				Else
+					Throw
+				End If
 			End Try
 		End Function
 
