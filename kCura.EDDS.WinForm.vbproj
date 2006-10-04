@@ -173,6 +173,10 @@
                     BuildAction = "None"
                 />
                 <File
+                    RelPath = "App.Disgruntledgoat.config"
+                    BuildAction = "None"
+                />
+                <File
                     RelPath = "App.Prod.config"
                     BuildAction = "None"
                 />
