@@ -6,6 +6,7 @@ Namespace kCura.WinEDDS
 		Private _productionArtifactID As Int32
 		Private _folderPath As String
 		Private _overwrite As Boolean
+		Private _exportNatives As Boolean
 		Private _webClient As System.Net.WebClient
 		Private _selectedCaseInfo As kCura.EDDS.Types.CaseInfo
 		Public DocumentsExported As Int32
@@ -96,13 +97,14 @@ Namespace kCura.WinEDDS
 #End Region
 
 		Public Sub New(ByVal cred As Net.NetworkCredential, ByVal productionArtifactID As Int32, ByVal folderPath As String, _
-		ByVal selectedCaseInfo As kCura.EDDS.Types.CaseInfo, ByVal overwrite As Boolean, ByVal controller As kCura.Windows.Process.Controller, ByVal fileformat As kCura.WinEDDS.LoadFileType.FileFormat, _
+		ByVal selectedCaseInfo As kCura.EDDS.Types.CaseInfo, ByVal overwrite As Boolean, ByVal exportNatives As Boolean, ByVal controller As kCura.Windows.Process.Controller, ByVal fileformat As kCura.WinEDDS.LoadFileType.FileFormat, _
 		ByVal cookieContainer As System.Net.CookieContainer, ByVal identity As kCura.EDDS.EDDSIdentity)
 			_productionManager = New kCura.WinEDDS.Service.ProductionManager(cred, cookieContainer, identity)
 			_fileManager = New kCura.WinEDDS.Service.FileManager(cred, cookieContainer, identity)
 			_productionArtifactID = productionArtifactID
 			_folderPath = folderPath + "\"
 			_overwrite = overwrite
+			_exportNatives = exportNatives
 			_webClient = New System.Net.WebClient
 			_webClient.Credentials = cred
 			_processController = controller
@@ -123,6 +125,13 @@ Namespace kCura.WinEDDS
 			Catch ex As System.Exception
 				Me.WriteFatalError(String.Format("A fatal error occurred on document #{0}", Me.DocumentsExported), ex)
 			End Try
+			If _exportNatives Then
+				Try
+					Me.ExportNatives()
+				Catch ex As System.Exception
+					Me.WriteError(String.Format("Error exporting native file {0}", Me.FolderPath))
+				End Try
+			End If
 		End Sub
 
 		Private Sub ExportProduction()
@@ -241,6 +250,27 @@ Namespace kCura.WinEDDS
 			If _loadFileFormat = kCura.WinEDDS.LoadFileType.FileFormat.IPRO_FullText Then
 				Me.CreateVolumeLogFile(currentVolume, production.Name & "_FT", fullTextVolumeLog.ToString, fileFormat)
 			End If
+			Try
+				'Create Artifact search and retrieve search ArtifactID
+				'Create exportFile:
+				'_exportFile.ArtifactID = search ArtifactID
+				'_exportFile.ViewID = search ArtifactID
+				'_exportFile.Overwrite = _overwrite
+				'_exportFile.ExportFullText = false
+				'_exportFile.ExportNative = true
+				'_exportFile.QuoteDelimiter = Chr(CType(_quoteDelimiter.SelectedValue, Int32))
+				'_exportFile.RecordDelimiter = Chr(CType(_recordDelimiter.SelectedValue, Int32))
+				'_exportFile.MultiRecordDelimiter = Chr(CType(_multiRecordDelimiter.SelectedValue, Int32))
+				'_exportFile.NewlineDelimiter = Chr(CType(_newLineDelimiter.SelectedValue, Int32))
+				'_exportFile.CookieContainer = _application.CookieContainer
+			Catch ex As System.Exception
+
+			End Try
+		End Sub
+
+		Private Sub ExportNatives()
+			Dim searchManager As New kCura.EDDS.Service.SearchManager
+
 		End Sub
 
 #Region "Private Helper Functions"
@@ -357,10 +387,6 @@ Namespace kCura.WinEDDS
 			log.AppendFormat("0,{0};{1};{2}.tif;2", currentVolume, pathToImage, batesNumber)
 			log.AppendFormat("{0}", Microsoft.VisualBasic.ControlChars.NewLine)
 			Return log.ToString
-		End Function
-
-		Private Function BuildFullTextIproLog(ByVal fullText As String, ByVal pageNumber As Int32, ByVal byteRange As Int32) As String
-
 		End Function
 
 		Private Sub CreateVolumeLogFile(ByVal currentVolume As String, ByVal productionName As String, ByVal volumeLog As String, ByVal format As String)

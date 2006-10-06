@@ -39,6 +39,20 @@ Namespace kCura.WinEDDS
 			Next
 		End Sub
 
+		Public Sub DeleteEmptyFolders(ByVal path As String)
+			Dim order As Int32 = _maxOrder
+			Dim folderItem As kCura.WinEDDS.FolderList.FolderItem
+			While order > -1
+				For Each folderItem In _folders
+					If folderItem.Order = order AndAlso System.IO.Directory.Exists(path + folderItem.Path) Then
+						If System.IO.Directory.GetFiles(path + folderItem.Path).Length = 0 AndAlso System.IO.Directory.GetDirectories(path + folderItem.Path).Length = 0 Then
+							System.IO.Directory.Delete(path + folderItem.Path)
+						End If
+					End If
+				Next
+				order = order - 1
+			End While
+		End Sub
 
 		Public Sub New(ByVal folderTable As System.Data.DataTable)
 			Dim row As System.Data.DataRow

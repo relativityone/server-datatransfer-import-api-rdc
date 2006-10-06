@@ -110,9 +110,6 @@ Namespace kCura.WinEDDS
 			Dim writer As System.IO.StreamWriter
 			Dim volumeFile As String
 
-			
-
-
 			Me.WriteUpdate("Retrieving export data from the server...")
 			Select Case Me.ExportFile.TypeOfExport
 				Case ExportFile.ExportType.ArtifactSearch
@@ -160,6 +157,7 @@ Namespace kCura.WinEDDS
 			Next
 			If artifactIDs.Count > 0 Then ExportChunk(DirectCast(artifactIDs.ToArray(GetType(Int32)), Int32()), DirectCast(docRows.ToArray(GetType(System.Data.DataRow)), System.Data.DataRow()), writer)
 			writer.Close()
+			Me.FolderList.DeleteEmptyFolders(Me.ExportFile.FolderPath)
 			'Me.TotalDocuments = fileTable.Rows.Count()
 			'logFile.Append(Me.LoadAndWriteColumns())
 			'Me.WriteUpdate("Data retrieved. Beginning search export...")
