@@ -42,6 +42,7 @@ Namespace kCura.EDDS.WinForm
 		Friend WithEvents _overwriteButton As System.Windows.Forms.CheckBox
 		Friend WithEvents GroupBox2 As System.Windows.Forms.GroupBox
 		Friend WithEvents _loadFileFormat As System.Windows.Forms.ComboBox
+		Friend WithEvents _exportNatives As System.Windows.Forms.CheckBox
 		<System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
 			Dim resources As System.Resources.ResourceManager = New System.Resources.ResourceManager(GetType(ProductionExportForm))
 			Me.GroupBox3 = New System.Windows.Forms.GroupBox
@@ -56,6 +57,7 @@ Namespace kCura.EDDS.WinForm
 			Me._destinationFolderDialog = New System.Windows.Forms.FolderBrowserDialog
 			Me.GroupBox2 = New System.Windows.Forms.GroupBox
 			Me._loadFileFormat = New System.Windows.Forms.ComboBox
+			Me._exportNatives = New System.Windows.Forms.CheckBox
 			Me.GroupBox3.SuspendLayout()
 			Me.GroupBox1.SuspendLayout()
 			Me.GroupBox2.SuspendLayout()
@@ -66,7 +68,7 @@ Namespace kCura.EDDS.WinForm
 			Me.GroupBox3.Controls.Add(Me._overwriteButton)
 			Me.GroupBox3.Controls.Add(Me._browseButton)
 			Me.GroupBox3.Controls.Add(Me._folderPath)
-			Me.GroupBox3.Location = New System.Drawing.Point(4, 60)
+			Me.GroupBox3.Location = New System.Drawing.Point(4, 88)
 			Me.GroupBox3.Name = "GroupBox3"
 			Me.GroupBox3.Size = New System.Drawing.Size(568, 72)
 			Me.GroupBox3.TabIndex = 8
@@ -78,7 +80,7 @@ Namespace kCura.EDDS.WinForm
 			Me._overwriteButton.Location = New System.Drawing.Point(8, 48)
 			Me._overwriteButton.Name = "_overwriteButton"
 			Me._overwriteButton.Size = New System.Drawing.Size(548, 16)
-			Me._overwriteButton.TabIndex = 7
+			Me._overwriteButton.TabIndex = 4
 			Me._overwriteButton.Text = "Overwrite Files"
 			'
 			'_browseButton
@@ -95,15 +97,16 @@ Namespace kCura.EDDS.WinForm
 			Me._folderPath.Location = New System.Drawing.Point(8, 20)
 			Me._folderPath.Name = "_folderPath"
 			Me._folderPath.Size = New System.Drawing.Size(524, 20)
-			Me._folderPath.TabIndex = 5
+			Me._folderPath.TabIndex = 3
 			Me._folderPath.Text = "Select a file ..."
 			'
 			'GroupBox1
 			'
+			Me.GroupBox1.Controls.Add(Me._exportNatives)
 			Me.GroupBox1.Controls.Add(Me._productionList)
 			Me.GroupBox1.Location = New System.Drawing.Point(4, 4)
 			Me.GroupBox1.Name = "GroupBox1"
-			Me.GroupBox1.Size = New System.Drawing.Size(568, 48)
+			Me.GroupBox1.Size = New System.Drawing.Size(568, 76)
 			Me.GroupBox1.TabIndex = 9
 			Me.GroupBox1.TabStop = False
 			Me.GroupBox1.Text = "Production"
@@ -135,7 +138,7 @@ Namespace kCura.EDDS.WinForm
 			'GroupBox2
 			'
 			Me.GroupBox2.Controls.Add(Me._loadFileFormat)
-			Me.GroupBox2.Location = New System.Drawing.Point(4, 140)
+			Me.GroupBox2.Location = New System.Drawing.Point(4, 164)
 			Me.GroupBox2.Name = "GroupBox2"
 			Me.GroupBox2.Size = New System.Drawing.Size(568, 52)
 			Me.GroupBox2.TabIndex = 10
@@ -149,12 +152,20 @@ Namespace kCura.EDDS.WinForm
 			Me._loadFileFormat.Location = New System.Drawing.Point(8, 20)
 			Me._loadFileFormat.Name = "_loadFileFormat"
 			Me._loadFileFormat.Size = New System.Drawing.Size(150, 21)
-			Me._loadFileFormat.TabIndex = 8
+			Me._loadFileFormat.TabIndex = 5
+			'
+			'_exportNatives
+			'
+			Me._exportNatives.Location = New System.Drawing.Point(8, 52)
+			Me._exportNatives.Name = "_exportNatives"
+			Me._exportNatives.Size = New System.Drawing.Size(548, 16)
+			Me._exportNatives.TabIndex = 2
+			Me._exportNatives.Text = "Export Natives"
 			'
 			'ProductionExportForm
 			'
 			Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
-			Me.ClientSize = New System.Drawing.Size(576, 201)
+			Me.ClientSize = New System.Drawing.Size(576, 225)
 			Me.Controls.Add(Me.GroupBox2)
 			Me.Controls.Add(Me.GroupBox1)
 			Me.Controls.Add(Me.GroupBox3)
@@ -202,6 +213,7 @@ Namespace kCura.EDDS.WinForm
 			_exportFile.FolderPath = _folderPath.Text
 			_exportFile.ArtifactID = CType(_productionList.SelectedValue, Int32)
 			_exportFile.Overwrite = _overwriteButton.Checked
+			_exportFile.ExportNative = _exportNatives.Checked
 			_exportFile.LogFileFormat = CType(_loadFileFormat.SelectedValue, kCura.WinEDDS.LoadFileType.FileFormat)
 			_exportFile.CookieContainer = _application.CookieContainer
 			_application.StartProduction(Me.ExportFile)
@@ -229,10 +241,6 @@ Namespace kCura.EDDS.WinForm
 
 		Private Sub _productionList_SelectedIndexChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles _productionList.SelectedIndexChanged
 			RunMenu.Enabled = ReadyToRun()
-		End Sub
-
-		Private Sub _loadFileFormat_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _loadFileFormat.SelectedIndexChanged
-
 		End Sub
 	End Class
 End Namespace
