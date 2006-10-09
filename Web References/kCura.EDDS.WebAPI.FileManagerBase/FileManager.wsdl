@@ -180,6 +180,27 @@
           </s:sequence>
         </s:complexType>
       </s:element>
+      <s:element name="RetrieveNativesForProductionExport">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="productionArtifactID" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="RetrieveNativesForProductionExportResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="RetrieveNativesForProductionExportResult">
+              <s:complexType>
+                <s:sequence>
+                  <s:element ref="s:schema" />
+                  <s:any />
+                </s:sequence>
+              </s:complexType>
+            </s:element>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
     </s:schema>
   </wsdl:types>
   <wsdl:message name="RetrieveByProductionArtifactIDForProductionSoapIn">
@@ -236,6 +257,12 @@
   <wsdl:message name="GetFullTextGuidsByDocumentArtifactIdAndTypeSoapOut">
     <wsdl:part name="parameters" element="tns:GetFullTextGuidsByDocumentArtifactIdAndTypeResponse" />
   </wsdl:message>
+  <wsdl:message name="RetrieveNativesForProductionExportSoapIn">
+    <wsdl:part name="parameters" element="tns:RetrieveNativesForProductionExport" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveNativesForProductionExportSoapOut">
+    <wsdl:part name="parameters" element="tns:RetrieveNativesForProductionExportResponse" />
+  </wsdl:message>
   <wsdl:portType name="FileManagerSoap">
     <wsdl:operation name="RetrieveByProductionArtifactIDForProduction">
       <wsdl:input message="tns:RetrieveByProductionArtifactIDForProductionSoapIn" />
@@ -272,6 +299,10 @@
     <wsdl:operation name="GetFullTextGuidsByDocumentArtifactIdAndType">
       <wsdl:input message="tns:GetFullTextGuidsByDocumentArtifactIdAndTypeSoapIn" />
       <wsdl:output message="tns:GetFullTextGuidsByDocumentArtifactIdAndTypeSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveNativesForProductionExport">
+      <wsdl:input message="tns:RetrieveNativesForProductionExportSoapIn" />
+      <wsdl:output message="tns:RetrieveNativesForProductionExportSoapOut" />
     </wsdl:operation>
   </wsdl:portType>
   <wsdl:binding name="FileManagerSoap" type="tns:FileManagerSoap">
@@ -350,6 +381,15 @@
     </wsdl:operation>
     <wsdl:operation name="GetFullTextGuidsByDocumentArtifactIdAndType">
       <soap:operation soapAction="http://www.kCura.com/EDDS/FileManager/GetFullTextGuidsByDocumentArtifactIdAndType" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveNativesForProductionExport">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/FileManager/RetrieveNativesForProductionExport" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>

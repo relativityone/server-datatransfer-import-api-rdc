@@ -35,6 +35,14 @@ Namespace kCura.WinEDDS.Service
 			Return doc
 		End Function
 
+		'Public Shared Function GetNativesForProduction(ByVal artifactID As Int32, ByVal orderedProductionIDList As Int32()) As Guid()
+		'	If kCura.WinEDDS.Config.UsesWebAPI Then
+		'		Return MyBase.GetPrintImageGuids(artifactID, orderedProductionIDList)
+		'	Else
+		'		Return _documentManager.GetPrintImageGuids(artifactID, orderedProductionIDList, _identity)
+		'	End If
+		'End Function
+
 #Region " Translations "
 		Public Shared Function DTOtoDocumentInfo(ByVal dto As kCura.EDDS.WebAPI.DocumentManagerBase.Document) As DocumentInfo
 			Dim doc As New DocumentInfo

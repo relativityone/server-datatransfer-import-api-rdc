@@ -26,6 +26,7 @@ Namespace kCura.WinEDDS
 				End If
 			Next
 		End Function
+
 		Public Sub CreateFolders(ByVal path As String)
 			Dim order As Int32
 			Dim folderItem As kCura.WinEDDS.FolderList.FolderItem

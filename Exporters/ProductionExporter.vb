@@ -1,50 +1,89 @@
 Imports System.IO
 Namespace kCura.WinEDDS
 	Public Class ProductionExporter
+
+#Region "Members"
 		Private _productionManager As kCura.WinEDDS.Service.ProductionManager
 		Private _fileManager As kCura.WinEDDS.Service.FileManager
-		Private _productionArtifactID As Int32
-		Private _folderPath As String
-		Private _overwrite As Boolean
-		Private _exportNatives As Boolean
-		Private _webClient As System.Net.WebClient
-		Private _selectedCaseInfo As kCura.EDDS.Types.CaseInfo
-		Public DocumentsExported As Int32
-		Public TotalDocuments As Int32
 		Private _downloadManager As kCura.WinEDDS.FileDownloader
 		Private _fullTextDownloader As kCura.WinEDDS.FullTextManager
-		Private _loadFileFormat As kCura.WinEDDS.LoadFileType.FileFormat
 		Private _documentManager As kCura.WinEDDS.Service.DocumentManager
-		Private _sourceDirectory As String
+		Private _folderManager As kCura.WinEDDS.Service.FolderManager
+
 		Private WithEvents _processController As kCura.Windows.Process.Controller
+		Private _webClient As System.Net.WebClient
+		Private _folderList As kCura.WinEDDS.FolderList
+		Private _exportFile As kCura.WinEDDS.ExportFile
+
+		Public DocumentsExported As Int32
+		Public TotalDocuments As Int32
 		Private _continue As Boolean
+		Private _sourceDirectory As String
+#End Region
+
+#Region "Unused Members"
+		'Private _selectedCaseInfo As kCura.EDDS.Types.CaseInfo
+		'Private _productionArtifactID As Int32
+		'Private _folderPath As String
+		'Private _overwrite As Boolean
+		'Private _exportNatives As Boolean
+		'Private _loadFileFormat As kCura.WinEDDS.LoadFileType.FileFormat
+#End Region
 
 #Region "Public Properties"
-		Public Property ProductionArtifactID() As Int32
+
+		Public Property ExportFile() As kCura.WinEDDS.ExportFile
 			Get
-				Return _productionArtifactID
+				Return _exportFile
 			End Get
-			Set(ByVal value As Int32)
-				_productionArtifactID = value
+			Set(ByVal value As kCura.WinEDDS.ExportFile)
+				_exportFile = value
 			End Set
 		End Property
 
-		Public Property FolderPath() As String
+		Public ReadOnly Property ProductionArtifactID() As Int32
 			Get
-				Return _folderPath
+				Return Me.ExportFile.ArtifactID
 			End Get
-			Set(ByVal value As String)
-				_folderPath = value
-			End Set
+			'Set(ByVal value As Int32)
+			'	_productionArtifactID = value
+			'End Set
 		End Property
 
-		Public Property Overwrite() As Boolean
+		Public ReadOnly Property FolderPath() As String
 			Get
-				Return _overwrite
+				Return Me.ExportFile.FolderPath + "\"
 			End Get
-			Set(ByVal value As Boolean)
-				_overwrite = value
-			End Set
+			'Set(ByVal value As String)
+			'	Me.ExportFile.FolderPath = value
+			'End Set
+		End Property
+
+		Public ReadOnly Property Overwrite() As Boolean
+			Get
+				Return Me.ExportFile.Overwrite
+			End Get
+			'Set(ByVal value As Boolean)
+			'	_overwrite = value
+			'End Set
+		End Property
+
+		Public ReadOnly Property LoadFileFormat() As kCura.WinEDDS.LoadFileType.FileFormat
+			Get
+				Return Me.ExportFile.LogFileFormat
+			End Get
+			'Set(ByVal value As Int32)
+			'	_productionArtifactID = value
+			'End Set
+		End Property
+
+		Public ReadOnly Property SelectedCaseInfo() As kCura.EDDS.Types.CaseInfo
+			Get
+				Return Me.ExportFile.CaseInfo
+			End Get
+			'Set(ByVal value As kCura.EDDS.Types.CaseInfo)
+			'	_selectedCaseInfo = value
+			'End Set
 		End Property
 
 		Public Property WebClient() As System.Net.WebClient
@@ -55,16 +94,6 @@ Namespace kCura.WinEDDS
 				_webClient = value
 			End Set
 		End Property
-
-		Public Property SelectedCaseInfo() As kCura.EDDS.Types.CaseInfo
-			Get
-				Return _selectedCaseInfo
-			End Get
-			Set(ByVal value As kCura.EDDS.Types.CaseInfo)
-				_selectedCaseInfo = value
-			End Set
-		End Property
-
 #End Region
 
 #Region "Public Events"
@@ -96,27 +125,32 @@ Namespace kCura.WinEDDS
 		End Sub
 #End Region
 
-		Public Sub New(ByVal cred As Net.NetworkCredential, ByVal productionArtifactID As Int32, ByVal folderPath As String, _
-		ByVal selectedCaseInfo As kCura.EDDS.Types.CaseInfo, ByVal overwrite As Boolean, ByVal exportNatives As Boolean, ByVal controller As kCura.Windows.Process.Controller, ByVal fileformat As kCura.WinEDDS.LoadFileType.FileFormat, _
-		ByVal cookieContainer As System.Net.CookieContainer, ByVal identity As kCura.EDDS.EDDSIdentity)
-			_productionManager = New kCura.WinEDDS.Service.ProductionManager(cred, cookieContainer, identity)
-			_fileManager = New kCura.WinEDDS.Service.FileManager(cred, cookieContainer, identity)
-			_productionArtifactID = productionArtifactID
-			_folderPath = folderPath + "\"
-			_overwrite = overwrite
-			_exportNatives = exportNatives
-			_webClient = New System.Net.WebClient
-			_webClient.Credentials = cred
-			_processController = controller
-			_loadFileFormat = fileformat
-			Me.SelectedCaseInfo = selectedCaseInfo
+		Public Sub New(ByVal exportFile As kCura.WinEDDS.ExportFile, ByVal processController As kCura.Windows.Process.Controller)
+			Dim cred As Net.NetworkCredential = exportFile.Credential
+			Dim cookieContainer As System.Net.CookieContainer = exportFile.CookieContainer
+			Dim identity As kCura.EDDS.EDDSIdentity = exportFile.Identity
+			Dim destinationFolderPath As String = exportFile.CaseInfo.DocumentPath & "\EDDS" & exportFile.CaseInfo.ArtifactID
+
 			Me.DocumentsExported = 0
 			Me.TotalDocuments = 1
+
+			Me.ExportFile = exportFile
+			Me.WebClient = New System.Net.WebClient
+			Me.WebClient.Credentials = cred
+			_processController = processController
 			_continue = True
-			_downloadManager = New FileDownloader(cred, selectedCaseInfo.DocumentPath & "\EDDS" & selectedCaseInfo.ArtifactID, selectedCaseInfo.DownloadHandlerURL, cookieContainer)
+
+			_productionManager = New kCura.WinEDDS.Service.ProductionManager(cred, cookieContainer, identity)
+			_folderManager = New kCura.WinEDDS.Service.FolderManager(cred, cookieContainer, identity)
 			_documentManager = New kCura.WinEDDS.Service.DocumentManager(cred, cookieContainer, identity)
-			_sourceDirectory = _documentManager.GetDocumentDirectoryByContextArtifactID(Me.SelectedCaseInfo.RootArtifactID)
+			_downloadManager = New FileDownloader(cred, destinationFolderPath, exportFile.CaseInfo.DownloadHandlerURL, cookieContainer)
+			_fileManager = New kCura.WinEDDS.Service.FileManager(cred, cookieContainer, identity)
+			_folderManager = New kCura.WinEDDS.Service.FolderManager(cred, cookieContainer, identity)
+			_fileManager = New kCura.WinEDDS.Service.FileManager(cred, cookieContainer, identity)
 			_fullTextDownloader = New kCura.WinEDDS.FullTextManager(cred, _sourceDirectory, cookieContainer)
+
+			_processController = processController
+			_sourceDirectory = _documentManager.GetDocumentDirectoryByContextArtifactID(Me.SelectedCaseInfo.RootArtifactID)
 		End Sub
 
 		Public Sub CreateVolumes()
@@ -125,76 +159,54 @@ Namespace kCura.WinEDDS
 			Catch ex As System.Exception
 				Me.WriteFatalError(String.Format("A fatal error occurred on document #{0}", Me.DocumentsExported), ex)
 			End Try
-			If _exportNatives Then
-				Try
-					Me.ExportNatives()
-				Catch ex As System.Exception
-					Me.WriteError(String.Format("Error exporting native file {0}", Me.FolderPath))
-				End Try
-			End If
 		End Sub
 
 		Private Sub ExportProduction()
 			Dim production As kCura.EDDS.WebAPI.ProductionManagerBase.Production
-			Dim dataTable As System.Data.DataTable
-			Dim guidTable As System.Data.DataTable
-
-			Dim fileURI As String
-			Dim fileName As String
-			Dim currentVolume As String
-			Dim currentDirectory As String
+			Dim documentTable, guidTable As System.Data.DataTable
+			Dim fileName, currentVolume, currentDirectory, fileFormat, fulltextguid, fullText, pageText As String
 			Dim volumeLog As New System.Text.StringBuilder
 			Dim fullTextVolumeLog As New System.Text.StringBuilder
-			Dim fileFormat As String
-
-			Dim nextVolume As Int32
-			Dim nextDirectory As Int32
-			Dim volumeSize As Long = 0
-			Dim subdirectoryCount As Int32 = 0
-			Dim documentCount As Int32
-			Dim documentSize As Long
-			Dim count As Int32
-
-			Dim currentBates As String = ""
 			Dim fullTextLog As New System.Text.StringBuilder
-			Dim fulltextguid As String
-			Dim fullText, pageText As String
-
+			Dim nextVolume, nextDirectory, documentCount, count, startindex As Int32
+			Dim volumeSize As Long = 0
+			Dim documentSize As Long
+			Dim subdirectoryCount As Int32 = 0
+			Dim currentBates As String = ""
 			Dim isFirstDocument As Boolean
-			Dim startindex As Int32
 
-			If _loadFileFormat = kCura.WinEDDS.LoadFileType.FileFormat.Concordance Then
+			If Me.LoadFileFormat = kCura.WinEDDS.LoadFileType.FileFormat.Concordance Then
 				fileFormat = "log"
 			Else
 				fileFormat = "lfp"
 			End If
 
 			Me.WriteUpdate("Retrieving export data from the server...")
-			dataTable = _fileManager.RetrieveByProductionArtifactIDForProduction(Me.ProductionArtifactID).Tables(0)
+			documentTable = _fileManager.RetrieveByProductionArtifactIDForProduction(Me.ProductionArtifactID).Tables(0)
 
-			Me.TotalDocuments = dataTable.Rows.Count()
+			Me.TotalDocuments = documentTable.Rows.Count()
 			Me.WriteUpdate("Data retrieved. Beginning production export...")
 
 			production = _productionManager.Read(Me.ProductionArtifactID)
+
 			currentVolume = Me.CreateVolumeDirectory(production.VolumePrefix, production.VolumeStartNumber)
 			currentDirectory = Me.CreateSubdirectory(production.SubdirectoryPrefix, production.SubdirectoryStartNumber, currentVolume)
 			nextVolume = production.VolumeStartNumber + 1
 			nextDirectory = production.SubdirectoryStartNumber + 1
 
-			documentSize = Me.CurrentDocumentSize(dataTable, 0, ProductionArtifactID)
-			documentCount = Me.CurrentDocumentCount(dataTable, 0)
+			documentSize = Me.CurrentDocumentSize(documentTable, 0, Me.ProductionArtifactID)
+			documentCount = Me.CurrentDocumentCount(documentTable, 0)
 
-			For count = 0 To dataTable.Rows.Count - 1
-				isFirstDocument = (count = 0 OrElse CType(dataTable.Rows(count - 1)("DocumentArtifactID"), Int32) <> CType(dataTable.Rows(count)("DocumentArtifactID"), Int32))
+			For count = 0 To documentTable.Rows.Count - 1
+				isFirstDocument = (count = 0 OrElse CType(documentTable.Rows(count - 1)("DocumentArtifactID"), Int32) <> CType(documentTable.Rows(count)("DocumentArtifactID"), Int32))
 				Try
-					'If count > 0 AndAlso CType(dataTable.Rows(count - 1)("DocumentArtifactID"), Int32) <> CType(dataTable.Rows(count)("DocumentArtifactID"), Int32) Then
 					If Not isFirstDocument Then
 						volumeSize = volumeSize + documentSize
-						documentSize = Me.CurrentDocumentSize(dataTable, count, ProductionArtifactID)
+						documentSize = Me.CurrentDocumentSize(documentTable, count, Me.ProductionArtifactID)
 						If volumeSize + documentSize > production.VolumeMaxSize * 1024 * 1024 Then
 							Me.CreateVolumeLogFile(currentVolume, production.Name, volumeLog.ToString, fileFormat)
-							If _loadFileFormat = kCura.WinEDDS.LoadFileType.FileFormat.IPRO_FullText Then
-								Me.CreateVolumeLogFile(currentVolume, production.Name + "_FT", fullTextVolumeLog.ToString, fileFormat)
+							If Me.LoadFileFormat = kCura.WinEDDS.LoadFileType.FileFormat.IPRO_FullText Then
+								Me.CreateVolumeLogFile(currentVolume, production.Name + "_FT_", fullTextVolumeLog.ToString, fileFormat)
 								fullTextVolumeLog = New System.Text.StringBuilder
 							End If
 							volumeLog = New System.Text.StringBuilder
@@ -203,7 +215,7 @@ Namespace kCura.WinEDDS
 							volumeSize = 0
 						End If
 						subdirectoryCount = subdirectoryCount + documentCount
-						documentCount = Me.CurrentDocumentCount(dataTable, count)
+						documentCount = Me.CurrentDocumentCount(documentTable, count)
 						If subdirectoryCount + documentCount > production.SubdirectoryMaxFiles OrElse volumeSize = 0 Then
 							currentDirectory = Me.CreateSubdirectory(production.SubdirectoryPrefix, nextDirectory, currentVolume)
 							nextDirectory = nextDirectory + 1
@@ -211,32 +223,33 @@ Namespace kCura.WinEDDS
 						End If
 					End If
 
-					'fileURI = String.Format("{0}Download.aspx?ArtifactID={1}&GUID={2}", Me.SelectedCaseInfo.DownloadHandlerURL, CType(dataTable.Rows(count)("ArtifactID"), Int32), CType(dataTable.Rows(count)("ImageGuid"), String))
-					fileName = String.Format("{0}{1}\{2}\{3}.tif", Me.FolderPath, currentVolume, currentDirectory, CType(dataTable.Rows(count)("BatesNumber"), String))
-					Me.ExportFile(fileName, CType(dataTable.Rows(count)("ImageGuid"), String), CType(dataTable.Rows(count)("DocumentArtifactID"), Int32), CType(dataTable.Rows(count)("BatesNumber"), String))
+					fileName = String.Format("{0}{1}\{2}\{3}.tif", Me.FolderPath, currentVolume, currentDirectory, CType(documentTable.Rows(count)("BatesNumber"), String))
+					ExportDocument(fileName, CType(documentTable.Rows(count)("ImageGuid"), String), CType(documentTable.Rows(count)("DocumentArtifactID"), Int32), CType(documentTable.Rows(count)("BatesNumber"), String))
 
-					If _loadFileFormat = kCura.WinEDDS.LoadFileType.FileFormat.Concordance Then
-						volumeLog.Append(BuildVolumeLog(CType(dataTable.Rows(count)("BatesNumber"), String), currentVolume, fileName, isFirstDocument))
-					ElseIf _loadFileFormat = kCura.WinEDDS.LoadFileType.FileFormat.IPRO_FullText Then
+					If Me.LoadFileFormat = kCura.WinEDDS.LoadFileType.FileFormat.Concordance Then
+						volumeLog.Append(BuildVolumeLog(CType(documentTable.Rows(count)("BatesNumber"), String), currentVolume, fileName, isFirstDocument))
+					ElseIf Me.LoadFileFormat = kCura.WinEDDS.LoadFileType.FileFormat.IPRO_FullText Then
 						If isFirstDocument Then
 							startindex = 0
-							fulltextguid = _fileManager.GetFullTextGuidsByDocumentArtifactIdAndType(CType(dataTable.Rows(count)("documentArtifactID"), Int32), 2)
+							fulltextguid = _fileManager.GetFullTextGuidsByDocumentArtifactIdAndType(CType(documentTable.Rows(count)("documentArtifactID"), Int32), 2)
 							Try
 								fullText = _fullTextDownloader.ReadFullTextFile(_sourceDirectory & fulltextguid)
+								pageText = fullText.Substring(startindex, CInt(documentTable.Rows(count)("ByteRange")) - 1)
+								pageText = pageText.Replace(ChrW(10), " ")
+								pageText = pageText.Replace(",", "")
+								pageText = pageText.Replace(" ", "|0|0|0|0^")
+								fullTextVolumeLog.AppendFormat("FT,{0},1,1,{1}", CType(documentTable.Rows(count)("BatesNumber"), String), pageText)
+								fullTextVolumeLog.AppendFormat("{0}", Microsoft.VisualBasic.ControlChars.NewLine)
+								startindex += CInt(documentTable.Rows(count)("ByteRange")) - 1
 							Catch ex As System.IO.FileNotFoundException
 								WriteWarning(ex.Message)
+							Catch ex As System.InvalidCastException
+								Me.WriteWarning(String.Format("Could not retrieve full text for document #{0}", count + 1))
 							End Try
 						End If
-						pageText = fullText.Substring(startindex, CInt(dataTable.Rows(count)("ByteRange")) - 1)						'Dim iproTextEntry As String = ChrW(sr.Read())
-						pageText = pageText.Replace(ChrW(10), " ")
-						pageText = pageText.Replace(",", "")
-						pageText = pageText.Replace(" ", "|0|0|0|0^")
-						fullTextVolumeLog.AppendFormat("FT,{0},1,1,{1}", CType(dataTable.Rows(count)("BatesNumber"), String), pageText)
-						fullTextVolumeLog.AppendFormat("{0}", Microsoft.VisualBasic.ControlChars.NewLine)
-						startindex += CInt(dataTable.Rows(count)("ByteRange")) - 1
 					End If
-					If Not _loadFileFormat = kCura.WinEDDS.LoadFileType.FileFormat.Concordance Then
-						volumeLog.Append(BuildIproLog(CType(dataTable.Rows(count)("BatesNumber"), String), currentVolume, currentDirectory, isFirstDocument))
+					If Not Me.LoadFileFormat = kCura.WinEDDS.LoadFileType.FileFormat.Concordance Then
+						volumeLog.Append(BuildIproLog(CType(documentTable.Rows(count)("BatesNumber"), String), currentVolume, currentDirectory, isFirstDocument))
 					End If
 
 				Catch ex As System.Exception
@@ -246,31 +259,21 @@ Namespace kCura.WinEDDS
 					Exit For
 				End If
 			Next
+
 			Me.CreateVolumeLogFile(currentVolume, production.Name, volumeLog.ToString, fileFormat)
-			If _loadFileFormat = kCura.WinEDDS.LoadFileType.FileFormat.IPRO_FullText Then
+			If Me.LoadFileFormat = kCura.WinEDDS.LoadFileType.FileFormat.IPRO_FullText Then
 				Me.CreateVolumeLogFile(currentVolume, production.Name & "_FT", fullTextVolumeLog.ToString, fileFormat)
 			End If
-			Try
-				'Create Artifact search and retrieve search ArtifactID
-				'Create exportFile:
-				'_exportFile.ArtifactID = search ArtifactID
-				'_exportFile.ViewID = search ArtifactID
-				'_exportFile.Overwrite = _overwrite
-				'_exportFile.ExportFullText = false
-				'_exportFile.ExportNative = true
-				'_exportFile.QuoteDelimiter = Chr(CType(_quoteDelimiter.SelectedValue, Int32))
-				'_exportFile.RecordDelimiter = Chr(CType(_recordDelimiter.SelectedValue, Int32))
-				'_exportFile.MultiRecordDelimiter = Chr(CType(_multiRecordDelimiter.SelectedValue, Int32))
-				'_exportFile.NewlineDelimiter = Chr(CType(_newLineDelimiter.SelectedValue, Int32))
-				'_exportFile.CookieContainer = _application.CookieContainer
-			Catch ex As System.Exception
 
-			End Try
-		End Sub
-
-		Private Sub ExportNatives()
-			Dim searchManager As New kCura.EDDS.Service.SearchManager
-
+			If Me.ExportFile.ExportNative Then
+				Me.ExportFile.FolderPath = String.Format("{0}{1}", Me.FolderPath, currentVolume)
+				Try
+					Dim nativesExporter As New kCura.WinEDDS.NativeFileExporter(Me.ExportFile, _processController, production.VolumeStartNumber, production.Name)
+					nativesExporter.ExportNatives()
+				Catch ex As System.Exception
+					WriteError(String.Format("Could not export Natives: {0}", ex.Message.ToString))
+				End Try
+			End If
 		End Sub
 
 #Region "Private Helper Functions"
@@ -292,20 +295,18 @@ Namespace kCura.WinEDDS
 			Return New kCura.WinEDDS.ExportEventArgs(Me.DocumentsExported, Me.TotalDocuments, line, eventType)
 		End Function
 
-		Private Sub ExportFile(ByVal fileName As String, ByVal fileGuid As String, ByVal artifactID As Int32, ByVal batesNumber As String)		'ByVal fileURI As String, ByVal batesNumber As String)
+		Private Sub ExportDocument(ByVal fileName As String, ByVal fileGuid As String, ByVal artifactID As Int32, ByVal batesNumber As String)		'ByVal fileURI As String, ByVal batesNumber As String)
 			If System.IO.File.Exists(fileName) Then
 				If Me.Overwrite Then
 					System.IO.File.Delete(fileName)
 					Me.WriteStatusLine(kCura.Windows.Process.EventType.Status, String.Format("Overwriting document {0}.tif.", batesNumber))
 					_downloadManager.DownloadFile(fileName, fileGuid, artifactID)
-					'Me.WebClient.DownloadFile(fileURI, fileName)
 				Else
 					Me.WriteWarning(String.Format("{0}.tif already exists. Skipping file export.", batesNumber))
 				End If
 			Else
 				Me.WriteStatusLine(kCura.Windows.Process.EventType.Status, String.Format("Now exporting document {0}.tif.", batesNumber))
 				_downloadManager.DownloadFile(fileName, fileGuid, artifactID)
-				'Me.WebClient.DownloadFile(fileURI, fileName)
 			End If
 			Me.DocumentsExported += 1
 			Me.WriteUpdate(String.Format("Finished exporting document {0}.tif.", batesNumber))

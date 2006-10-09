@@ -133,6 +133,14 @@ Namespace kCura.WinEDDS.Service
 			End If
 		End Function
 
+		Public Shadows Function RetrieveNativesForProductionExport(ByVal productionArtifactID As Int32) As System.Data.DataSet
+			If kCura.WinEDDS.Config.UsesWebAPI Then
+				Return MyBase.RetrieveNativesForProductionExport(productionArtifactID)
+			Else
+				Return kCura.EDDS.Service.FileQuery.RetrieveNativesForProductionExport(productionArtifactID, _identity).ToDataSet()
+			End If
+		End Function
+
 		Public Shadows Function RetrieveFileGuidsByDocumentArtifactIDAndProductionArtifactID(ByVal documentArtifactID As Int32, ByVal productionArtifactID As Int32) As String()
 			If kCura.WinEDDS.Config.UsesWebAPI Then
 				Return MyBase.RetrieveFileGuidsByDocumentArtifactIDAndProductionArtifactID(documentArtifactID, productionArtifactID)
@@ -172,7 +180,7 @@ Namespace kCura.WinEDDS.Service
 			For i = 0 To files.Length - 1
 				Dim file As New kCura.EDDS.WebAPI.FileManagerBase.FileInfoBase
 				file.FileGuid = fileDTOs(i).Guid
-				file.FileName = fileDTOs(i).FileName
+				file.FileName = fileDTOs(i).Filename
 				documentArtifactIDs(i) = fileDTOs(i).DocumentArtifactID
 				files(i) = file
 			Next

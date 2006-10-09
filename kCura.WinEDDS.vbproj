@@ -273,6 +273,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Exporters\NativeFileExporter.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Exporters\ProductionExporter.vb"
                     SubType = "Code"
                     BuildAction = "Compile"
