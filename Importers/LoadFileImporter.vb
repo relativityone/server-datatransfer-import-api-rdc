@@ -227,7 +227,6 @@ Namespace kCura.WinEDDS
 
 		Private Sub ManageDocumentMetaData(ByVal metaDoc As MetaDocument)
 			_number += 1
-			Dim finishTime As DateTime
 			Dim sw As System.IO.StreamWriter
 			Try
 				Dim doc As kCura.EDDS.WebAPI.DocumentManagerBase.Document
@@ -236,10 +235,6 @@ Namespace kCura.WinEDDS
 				If _overwrite Then
 					Try
 						doc = _documentManager.ReadFromIdentifier(_folderID, _selectedIdentifier.FieldName, metaDoc.IdentityValue)
-						'finishTime = DateTime.Now
-						'sw = System.IO.File.AppendText("C:\ReadFromIdentifier.txt")
-						'sw.WriteLine(String.Format("{0}{1}{2}", _number, vbTab, finishTime.Subtract(markReadDoc).TotalMilliseconds))
-						'sw.Close()
 					Catch ex As System.Exception
 						If kCura.WinEDDS.Config.UsesWebAPI Then
 							Throw New AmbiguousIdentifierValueException(ex)
@@ -255,10 +250,6 @@ Namespace kCura.WinEDDS
 				Else
 					documentArtifactID = UpdateDocument(doc, metaDoc, _extractFullTextFromNative)
 				End If
-				'finishTime = DateTime.Now
-				'sw = System.IO.File.AppendText("C:\CreateDocument.txt")
-				'sw.WriteLine(String.Format("{0}{1}{2}", _number, vbTab, finishTime.Subtract(markReadDoc).TotalMilliseconds))
-				'sw.Close()
 				Dim o As New Object
 				_timeKeeper.Add("Manage", DateTime.Now.Subtract(markReadDoc).TotalMilliseconds)
 			Catch ex As kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
