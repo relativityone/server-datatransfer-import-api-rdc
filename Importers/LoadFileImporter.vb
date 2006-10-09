@@ -28,6 +28,7 @@ Namespace kCura.WinEDDS
 		Private _workerRunning As Boolean
 		Private WithEvents _lineCounter As kCura.Utility.File.LineCounter
 		Private _genericTimestamp As System.DateTime
+		Private _number As Int32 = 0
 #End Region
 
 #Region "Accessors"
@@ -225,19 +226,28 @@ Namespace kCura.WinEDDS
 #Region "WebService Calls"
 
 		Private Sub ManageDocumentMetaData(ByVal metaDoc As MetaDocument)
+			_number += 1
+			Dim finishTime As DateTime
+			Dim sw As System.IO.StreamWriter
 			Try
 				Dim doc As kCura.EDDS.WebAPI.DocumentManagerBase.Document
 				Dim documentArtifactID As Int32
 				Dim markReadDoc As DateTime = DateTime.Now
-				Try
-					doc = _documentManager.ReadFromIdentifier(_folderID, _selectedIdentifier.FieldName, metaDoc.IdentityValue)
-				Catch ex As System.Exception
-					If kCura.WinEDDS.Config.UsesWebAPI Then
-						Throw New AmbiguousIdentifierValueException(ex)
-					Else
-						Throw
-					End If
-				End Try
+				If _overwrite Then
+					Try
+						doc = _documentManager.ReadFromIdentifier(_folderID, _selectedIdentifier.FieldName, metaDoc.IdentityValue)
+						'finishTime = DateTime.Now
+						'sw = System.IO.File.AppendText("C:\ReadFromIdentifier.txt")
+						'sw.WriteLine(String.Format("{0}{1}{2}", _number, vbTab, finishTime.Subtract(markReadDoc).TotalMilliseconds))
+						'sw.Close()
+					Catch ex As System.Exception
+						If kCura.WinEDDS.Config.UsesWebAPI Then
+							Throw New AmbiguousIdentifierValueException(ex)
+						Else
+							Throw
+						End If
+					End Try
+				End If
 				_timeKeeper.Add("ReadUpload", DateTime.Now.Subtract(markReadDoc).TotalMilliseconds)
 				markReadDoc = DateTime.Now
 				If doc Is Nothing Then
@@ -245,6 +255,10 @@ Namespace kCura.WinEDDS
 				Else
 					documentArtifactID = UpdateDocument(doc, metaDoc, _extractFullTextFromNative)
 				End If
+				'finishTime = DateTime.Now
+				'sw = System.IO.File.AppendText("C:\CreateDocument.txt")
+				'sw.WriteLine(String.Format("{0}{1}{2}", _number, vbTab, finishTime.Subtract(markReadDoc).TotalMilliseconds))
+				'sw.Close()
 				Dim o As New Object
 				_timeKeeper.Add("Manage", DateTime.Now.Subtract(markReadDoc).TotalMilliseconds)
 			Catch ex As kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
