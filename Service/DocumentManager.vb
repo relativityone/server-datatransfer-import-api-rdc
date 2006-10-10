@@ -35,6 +35,8 @@ Namespace kCura.WinEDDS.Service
 			Return doc
 		End Function
 
+
+
 		'Public Shared Function GetNativesForProduction(ByVal artifactID As Int32, ByVal orderedProductionIDList As Int32()) As Guid()
 		'	If kCura.WinEDDS.Config.UsesWebAPI Then
 		'		Return MyBase.GetPrintImageGuids(artifactID, orderedProductionIDList)
@@ -133,6 +135,11 @@ Namespace kCura.WinEDDS.Service
 			Next
 			Return docDTOs
 		End Function
+
+		Private Function GetWebAPIFullTextBuilder(ByVal eddsftb As kCura.EDDS.Types.FullTextBuilder) As kCura.edds.WebAPI.DocumentManagerBase.FullTextBuilder
+			Dim wapiftb As New kCura.EDDS.WebAPI.DocumentManagerBase.FullTextBuilder
+			wapiftb.Pages = eddsftb.Pages.ToArray
+		End Function
 #End Region
 
 #Region " Shadow Functions "
@@ -150,7 +157,7 @@ Namespace kCura.WinEDDS.Service
 
 		Public Shadows Function CreateEmptyDocument(ByVal parentFolderID As Int32, ByVal identifierValue As Byte(), ByVal fullTextFileName As String, ByVal identifierColumn As String, ByVal fullTextBuilder As kCura.EDDS.Types.FullTextBuilder) As Int32
 			If kCura.WinEDDS.Config.UsesWebAPI Then
-				Return MyBase.CreateEmptyDocument(parentFolderID, identifierValue, fullTextFileName, identifierColumn, fullTextBuilder)
+				Return MyBase.CreateEmptyDocument(parentFolderID, identifierValue, fullTextFileName, identifierColumn, GetWebAPIFullTextBuilder(fullTextBuilder))
 			Else
 				Return _documentManager.CreateEmptyDocument(_identity, parentFolderID, System.Text.Encoding.ASCII.GetString(identifierValue), fullTextFileName, kCura.EDDS.FieldHelper.GetColumnName(identifierColumn), fullTextBuilder)
 			End If
@@ -207,7 +214,7 @@ Namespace kCura.WinEDDS.Service
 
 		Public Shadows Function AddFullTextToDocumentFromFile(ByVal documentArtifactID As Int32, ByVal fullTextFileName As String, ByVal fullTextBuilder As kCura.EDDS.Types.FullTextBuilder) As Boolean
 			If kCura.WinEDDS.Config.UsesWebAPI Then
-				Return MyBase.AddFullTextToDocumentFromFile(documentArtifactID, fullTextFileName, fullTextBuilder)
+				Return MyBase.AddFullTextToDocumentFromFile(documentArtifactID, fullTextFileName, GetWebAPIFullTextBuilder(fullTextBuilder))
 			Else
 				Return _documentManager.AddFullTextToDocumentFromFile(documentArtifactID, fullTextFileName, _identity, fullTextBuilder)
 			End If

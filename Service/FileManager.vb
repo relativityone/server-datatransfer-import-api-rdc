@@ -214,6 +214,14 @@ Namespace kCura.WinEDDS.Service
 				Return _fileManager.ExternalGetFullTextGuidsByDocumentArtifactIdAndType(documentArtifactID, TypeId, _identity)
 			End If
 		End Function
+
+		Public Shadows Function RetrieveNativesFileSize(ByVal sourceDirectory As String, ByVal guid As String) As Long
+			If kCura.WinEDDS.Config.UsesWebAPI Then
+				Return MyBase.RetrieveNativesFileSize(sourceDirectory, guid)
+			Else
+				Return _fileManager.ExternalRetrieveNativeFileSize(sourceDirectory, guid, _identity)
+			End If
+		End Function
 #End Region
 
 	End Class

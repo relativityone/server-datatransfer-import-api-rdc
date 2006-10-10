@@ -212,6 +212,24 @@ Namespace kCura.EDDS.WebAPI.FileManagerBase
             Dim results() As Object = Me.EndInvoke(asyncResult)
             Return CType(results(0),System.Data.DataSet)
         End Function
+        
+        '<remarks/>
+        <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/FileManager/RetrieveNativesFileSize", RequestNamespace:="http://www.kCura.com/EDDS/FileManager", ResponseNamespace:="http://www.kCura.com/EDDS/FileManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
+        Public Function RetrieveNativesFileSize(ByVal sourceDirectory As String, ByVal guid As String) As Long
+            Dim results() As Object = Me.Invoke("RetrieveNativesFileSize", New Object() {sourceDirectory, guid})
+            Return CType(results(0),Long)
+        End Function
+        
+        '<remarks/>
+        Public Function BeginRetrieveNativesFileSize(ByVal sourceDirectory As String, ByVal guid As String, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("RetrieveNativesFileSize", New Object() {sourceDirectory, guid}, callback, asyncState)
+        End Function
+        
+        '<remarks/>
+        Public Function EndRetrieveNativesFileSize(ByVal asyncResult As System.IAsyncResult) As Long
+            Dim results() As Object = Me.EndInvoke(asyncResult)
+            Return CType(results(0),Long)
+        End Function
     End Class
     
     '<remarks/>

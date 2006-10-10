@@ -9,6 +9,7 @@ Namespace kCura.WinEDDS
 		Private _fullTextDownloader As kCura.WinEDDS.FullTextManager
 		Private _documentManager As kCura.WinEDDS.Service.DocumentManager
 		Private _folderManager As kCura.WinEDDS.Service.FolderManager
+		Private _downloadHandler As FileDownloader
 
 		Private WithEvents _processController As kCura.Windows.Process.Controller
 		Private _webClient As System.Net.WebClient
@@ -149,6 +150,7 @@ Namespace kCura.WinEDDS
 			_folderManager = New kCura.WinEDDS.Service.FolderManager(cred, cookieContainer, identity)
 			_fileManager = New kCura.WinEDDS.Service.FileManager(cred, cookieContainer, identity)
 			_fullTextDownloader = New kCura.WinEDDS.FullTextManager(cred, _sourceDirectory, cookieContainer)
+			_downloadHandler = New FileDownloader(cred, exportFile.CaseInfo.DocumentPath & "\EDDS" & exportFile.CaseInfo.ArtifactID, exportFile.CaseInfo.DownloadHandlerURL, exportFile.CookieContainer)
 
 			_processController = processController
 			_sourceDirectory = _documentManager.GetDocumentDirectoryByContextArtifactID(Me.SelectedCaseInfo.RootArtifactID)
@@ -164,14 +166,16 @@ Namespace kCura.WinEDDS
 
 		Private Sub ExportProduction()
 			Dim production As kCura.EDDS.WebAPI.ProductionManagerBase.Production
-			Dim documentTable, guidTable As System.Data.DataTable
-			Dim fileName, currentVolume, currentDirectory, fileFormat, fulltextguid, fullText, pageText As String
+			Dim documentTable, guidTable, nativesTable As System.Data.DataTable
+			Dim fileName, currentVolume, currentDirectory, nativesDirectory, fileFormat, fulltextguid, fullText, pageText As String
 			Dim volumeLog As New System.Text.StringBuilder
+			Dim nativesVolumeLog As New System.Text.StringBuilder
 			Dim fullTextVolumeLog As New System.Text.StringBuilder
 			Dim fullTextLog As New System.Text.StringBuilder
 			Dim nextVolume, nextDirectory, documentCount, count, startindex As Int32
 			Dim volumeSize As Long = 0
 			Dim documentSize As Long
+			Dim nativeSize As Long = 0
 			Dim subdirectoryCount As Int32 = 0
 			Dim currentBates As String = ""
 			Dim isFirstDocument As Boolean
@@ -192,11 +196,23 @@ Namespace kCura.WinEDDS
 
 			currentVolume = Me.CreateVolumeDirectory(production.VolumePrefix, production.VolumeStartNumber)
 			currentDirectory = Me.CreateSubdirectory(production.SubdirectoryPrefix, production.SubdirectoryStartNumber, currentVolume)
+
+			If Me.ExportFile.ExportNative Then
+				nativesTable = _fileManager.RetrieveNativesForProductionExport(Me.ExportFile.ArtifactID).Tables(0)
+				nativesDirectory = Me.CreateSubdirectory("NATIVES", production.SubdirectoryStartNumber, currentVolume)
+				Dim fields As String() = {"BEGBATES", "ENDBATES", "FILE_PATH"}
+				nativesVolumeLog.Append(Me.BuildNativesLog(fields))
+			End If
+
 			nextVolume = production.VolumeStartNumber + 1
 			nextDirectory = production.SubdirectoryStartNumber + 1
 
 			documentSize = Me.CurrentDocumentSize(documentTable, 0, Me.ProductionArtifactID)
 			documentCount = Me.CurrentDocumentCount(documentTable, 0)
+
+			If Me.ExportFile.ExportNative Then
+
+			End If
 
 			For count = 0 To documentTable.Rows.Count - 1
 				isFirstDocument = (count = 0 OrElse CType(documentTable.Rows(count - 1)("DocumentArtifactID"), Int32) <> CType(documentTable.Rows(count)("DocumentArtifactID"), Int32))
@@ -204,28 +220,48 @@ Namespace kCura.WinEDDS
 					If Not isFirstDocument Then
 						volumeSize = volumeSize + documentSize
 						documentSize = Me.CurrentDocumentSize(documentTable, count, Me.ProductionArtifactID)
-						If volumeSize + documentSize > production.VolumeMaxSize * 1024 * 1024 Then
+						If volumeSize + documentSize + nativeSize > production.VolumeMaxSize * 1024 * 1024 Then
+
 							Me.CreateVolumeLogFile(currentVolume, production.Name, volumeLog.ToString, fileFormat)
+							volumeLog = New System.Text.StringBuilder
+
 							If Me.LoadFileFormat = kCura.WinEDDS.LoadFileType.FileFormat.IPRO_FullText Then
 								Me.CreateVolumeLogFile(currentVolume, production.Name + "_FT_", fullTextVolumeLog.ToString, fileFormat)
 								fullTextVolumeLog = New System.Text.StringBuilder
 							End If
-							volumeLog = New System.Text.StringBuilder
+
+							If Me.ExportFile.ExportNative Then
+								Me.CreateVolumeLogFile(currentVolume, production.Name & "_NATIVES", nativesVolumeLog.ToString, "log")
+								nativesVolumeLog = New System.Text.StringBuilder
+							End If
+
 							currentVolume = Me.CreateVolumeDirectory(production.VolumePrefix, nextVolume)
 							nextVolume = nextVolume + 1
 							volumeSize = 0
+
 						End If
 						subdirectoryCount = subdirectoryCount + documentCount
 						documentCount = Me.CurrentDocumentCount(documentTable, count)
 						If subdirectoryCount + documentCount > production.SubdirectoryMaxFiles OrElse volumeSize = 0 Then
 							currentDirectory = Me.CreateSubdirectory(production.SubdirectoryPrefix, nextDirectory, currentVolume)
+							If Me.ExportFile.ExportNative Then
+								nativesDirectory = Me.CreateSubdirectory("NATIVES", nextDirectory, currentVolume)
+							End If
 							nextDirectory = nextDirectory + 1
 							subdirectoryCount = 0
 						End If
 					End If
 
+					If Me.ExportFile.ExportNative Then
+						nativeSize = Me.CurrentNativesSize(nativesTable, CType(documentTable.Rows(count)("DocumentArtifactID"), Int32))
+					End If
+
 					fileName = String.Format("{0}{1}\{2}\{3}.tif", Me.FolderPath, currentVolume, currentDirectory, CType(documentTable.Rows(count)("BatesNumber"), String))
 					ExportDocument(fileName, CType(documentTable.Rows(count)("ImageGuid"), String), CType(documentTable.Rows(count)("DocumentArtifactID"), Int32), CType(documentTable.Rows(count)("BatesNumber"), String))
+
+					If Me.ExportFile.ExportNative Then
+						nativesVolumeLog.Append(Me.ExportNativeFile(nativesDirectory, currentVolume, CType(documentTable.Rows(count)("DocumentArtifactID"), Int32), nativesTable))
+					End If
 
 					If Me.LoadFileFormat = kCura.WinEDDS.LoadFileType.FileFormat.Concordance Then
 						volumeLog.Append(BuildVolumeLog(CType(documentTable.Rows(count)("BatesNumber"), String), currentVolume, fileName, isFirstDocument))
@@ -249,6 +285,7 @@ Namespace kCura.WinEDDS
 							End Try
 						End If
 					End If
+
 					If Not Me.LoadFileFormat = kCura.WinEDDS.LoadFileType.FileFormat.Concordance Then
 						volumeLog.Append(BuildIproLog(CType(documentTable.Rows(count)("BatesNumber"), String), currentVolume, currentDirectory, isFirstDocument))
 					End If
@@ -265,15 +302,8 @@ Namespace kCura.WinEDDS
 			If Me.LoadFileFormat = kCura.WinEDDS.LoadFileType.FileFormat.IPRO_FullText Then
 				Me.CreateVolumeLogFile(currentVolume, production.Name & "_FT", fullTextVolumeLog.ToString, fileFormat)
 			End If
-
 			If Me.ExportFile.ExportNative Then
-				Me.ExportFile.FolderPath = String.Format("{0}{1}", Me.FolderPath, currentVolume)
-				Try
-					Dim nativesExporter As New kCura.WinEDDS.NativeFileExporter(Me.ExportFile, _processController, production.VolumeStartNumber, production.Name)
-					nativesExporter.ExportNatives()
-				Catch ex As System.Exception
-					WriteError(String.Format("Could not export Natives: {0}", ex.Message.ToString))
-				End Try
+				Me.CreateVolumeLogFile(currentVolume, production.Name & "_NATIVES", nativesVolumeLog.ToString, "log")
 			End If
 		End Sub
 
@@ -312,6 +342,42 @@ Namespace kCura.WinEDDS
 			Me.DocumentsExported += 1
 			Me.WriteUpdate(String.Format("Finished exporting document {0}.tif.", batesNumber))
 		End Sub
+
+		Private Function ExportNativeFile(ByVal nativesDirectory As String, ByVal currentVolume As String, ByVal documentArtifactID As Int32, ByVal nativetable As System.Data.DataTable) As String
+			Dim nativeView As New kCura.Data.DataView(nativetable)
+			Dim exportFilePath, bates, fileName, fileGuid As String
+			Dim values As String()
+			Dim flag As Boolean = False
+
+			nativeView.RowFilter = String.Format("documentArtifactID = {0}", documentArtifactID)
+			bates = CType(nativeView(0)("TextIdentifier"), String)
+			fileName = bates & "_" & CType(nativeView(0)("Filename"), String)
+			fileGuid = CType(nativeView(0)("Guid"), String)
+
+			exportFilePath = String.Format("{1}{0}{2}{0}{3}{0}{4}", "\", Me.ExportFile.FolderPath, currentVolume, nativesDirectory, fileName)
+
+			If System.IO.File.Exists(exportFilePath) Then
+				If Me.ExportFile.Overwrite Then
+					System.IO.File.Delete(exportFilePath)
+					Me.WriteStatusLine(kCura.Windows.Process.EventType.Status, String.Format("Overwriting document {0}.", exportFilePath))
+					_downloadHandler.DownloadFile(exportFilePath, fileGuid, documentArtifactID)
+					flag = True
+				Else
+					Me.WriteWarning(String.Format("{0} already exists. Skipping file export.", exportFilePath))
+				End If
+			Else
+				Me.WriteStatusLine(kCura.Windows.Process.EventType.Status, String.Format("Now exporting document {0}.", exportFilePath))
+				_downloadHandler.DownloadFile(exportFilePath, fileGuid, documentArtifactID)
+				flag = True
+			End If
+			Me.WriteUpdate(String.Format("Finished exporting document {0}.", exportFilePath))
+			If flag Then
+				values = New String() {bates, bates, exportFilePath}
+				Return BuildNativesLog(values)
+			Else
+				Return ""
+			End If
+		End Function
 
 		Private Function CreateVolumeDirectory(ByVal volumePrefix As String, ByVal volumeNumber As Integer) As String
 			Dim currentVolume As String
@@ -355,6 +421,12 @@ Namespace kCura.WinEDDS
 			Return size
 		End Function
 
+		Private Function CurrentNativesSize(ByVal nativesTable As System.Data.DataTable, ByVal documentArtifactID As Int32) As Long
+			Dim nativesView As New kCura.Data.DataView(nativesTable)
+			nativesView.RowFilter = String.Format("DocumentArtifactID = {0}", documentArtifactID)
+			Return _fileManager.RetrieveNativesFileSize(_sourceDirectory, CType(nativesView.Item(0)("Guid"), String))
+		End Function
+
 		Private Function CurrentDocumentCount(ByVal dataTable As System.Data.DataTable, ByVal initialPosition As Int32) As Int32
 			Dim documentArtifactID As Int32
 			Dim count As Int32 = initialPosition
@@ -389,6 +461,21 @@ Namespace kCura.WinEDDS
 			log.AppendFormat("0,{0};{1};{2}.tif;2", currentVolume, pathToImage, batesNumber)
 			log.AppendFormat("{0}", Microsoft.VisualBasic.ControlChars.NewLine)
 			Return log.ToString
+		End Function
+
+		Private Function BuildNativesLog(ByVal values As String()) As String
+			Dim retString As New System.Text.StringBuilder
+			Dim i As Int32
+
+			For i = 0 To values.Length - 1
+				retString.AppendFormat("{0}{1}{0}", Me.ExportFile.QuoteDelimiter, values(i))
+				If i = values.Length - 1 Then
+					retString.Append(System.Environment.NewLine)
+				Else
+					retString.Append(Me.ExportFile.RecordDelimiter)
+				End If
+			Next
+			Return retString.ToString
 		End Function
 
 		Private Sub CreateVolumeLogFile(ByVal currentVolume As String, ByVal productionName As String, ByVal volumeLog As String, ByVal format As String)
