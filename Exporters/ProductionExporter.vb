@@ -123,6 +123,7 @@ Namespace kCura.WinEDDS
 		Private Sub WriteUpdate(ByVal line As String)
 			WriteStatusLine(kCura.Windows.Process.EventType.Progress, line)
 		End Sub
+
 #End Region
 
 		Public Sub New(ByVal exportFile As kCura.WinEDDS.ExportFile, ByVal processController As kCura.Windows.Process.Controller)
