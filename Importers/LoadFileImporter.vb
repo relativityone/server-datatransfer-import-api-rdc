@@ -253,7 +253,11 @@ Namespace kCura.WinEDDS
 				Dim o As New Object
 				_timeKeeper.Add("Manage", DateTime.Now.Subtract(markReadDoc).TotalMilliseconds)
 			Catch ex As kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
-				WriteError(ex.Message)
+				If ex.GetBaseException.Message.IndexOf("Cannot insert duplicate key row") > -1 Then
+					WriteError("A record with the selected identifier already exists.")
+				Else
+					WriteError(ex.Message)
+				End If
 			Catch ex As System.Exception
 				WriteFatalError(metaDoc.LineNumber, ex)
 			End Try
