@@ -41,7 +41,7 @@ Namespace kCura.EDDS.WinForm
 		Private Shared _cache As New Hashtable
 		Private _temporaryWebServiceURL As String
 		Private _cookieContainer As System.Net.CookieContainer
-		Private _identity As kCura.EDDS.EDDSIdentity
+		'Private _identity As kCura.EDDS.EDDSIdentity
 #End Region
 
 #Region "Properties"
@@ -54,11 +54,11 @@ Namespace kCura.EDDS.WinForm
 			End Set
 		End Property
 
-		Public ReadOnly Property Identity() As kCura.EDDS.EDDSIdentity
-			Get
-				Return _identity
-			End Get
-		End Property
+		'Public ReadOnly Property Identity() As kCura.EDDS.EDDSIdentity
+		'	Get
+		'		Return _identity
+		'	End Get
+		'End Property
 
 		Public ReadOnly Property SelectedCaseInfo() As kCura.EDDS.Types.CaseInfo
 			Get
@@ -94,7 +94,8 @@ Namespace kCura.EDDS.WinForm
 			Get
 				If _fields Is Nothing Then
 					_fields = New DocumentFieldCollection
-					Dim fieldManager As New kCura.WinEDDS.Service.FieldQuery(Credential, _cookieContainer, _identity)
+					'Dim fieldManager As New kCura.WinEDDS.Service.FieldQuery(Credential, _cookieContainer, _identity)
+					Dim fieldManager As New kCura.WinEDDS.Service.FieldQuery(Credential, _cookieContainer)
 					Dim fields() As kCura.EDDS.WebAPI.DocumentManagerBase.Field = fieldManager.RetrieveAllAsArray(SelectedCaseRootArtifactID)
 					Dim i As Int32
 					For i = 0 To fields.Length - 1
@@ -209,14 +210,14 @@ Namespace kCura.EDDS.WinForm
 		Public Function CreateNewFolder(ByVal parentFolderID As Int32) As Int32
 			Dim name As String = InputBox("Enter Folder Name", "Relativity Review")
 			If name <> "" Then
-				Dim folderManager As New kCura.WinEDDS.Service.FolderManager(Me.Credential, _cookieContainer, _identity)
+				Dim folderManager As New kCura.WinEDDS.Service.FolderManager(Me.Credential, _cookieContainer)
 				Dim folderID As Int32 = folderManager.Create(parentFolderID, name)
 				RaiseEvent OnEvent(New NewFolderEvent(parentFolderID, folderID, name))
 			End If
 		End Function
 
 		Public Function GetCaseFolders(ByVal caseID As Int32) As System.Data.DataSet
-			Dim folderManager As New kCura.WinEDDS.Service.FolderManager(Credential, _cookieContainer, _identity)
+			Dim folderManager As New kCura.WinEDDS.Service.FolderManager(Credential, _cookieContainer)
 			Return folderManager.RetrieveAllByCaseID(caseID)
 			'Dim dsFactory As New kCura.Utility.DataSetFactory
 			'dsFactory.AddColumn("ArtifactID", kCura.Utility.DataSetFactory.DataType.Integer)
@@ -236,7 +237,8 @@ Namespace kCura.EDDS.WinForm
 #Region "Case Management"
 		Public Function GetCases() As System.Data.DataSet
 			_fields = Nothing
-			Dim csMgr As New kCura.WinEDDS.Service.CaseManager(Credential, _cookieContainer, _identity)
+			'Dim csMgr As New kCura.WinEDDS.Service.CaseManager(Credential, _cookieContainer, _identity)
+			Dim csMgr As New kCura.WinEDDS.Service.CaseManager(Credential, _cookieContainer)
 			Return csMgr.RetrieveAll()
 
 			'Dim dsFactory As New kCura.Utility.DataSetFactory
@@ -412,8 +414,10 @@ Namespace kCura.EDDS.WinForm
 
 		Public Sub NewProductionExport(ByVal caseInfo As kCura.EDDS.Types.CaseInfo)
 			Dim frm As New ProductionExportForm
-			Dim exportFile As New exportFile(Me.Identity)
-			Dim productionManager As New kCura.WinEDDS.Service.ProductionManager(Me.Credential, _cookieContainer, _identity)
+			'Dim exportFile As New exportFile(Me.Identity)
+			Dim exportFile As New ExportFile
+			'Dim productionManager As New kCura.WinEDDS.Service.ProductionManager(Me.Credential, _cookieContainer, _identity)
+			Dim productionManager As New kCura.WinEDDS.Service.ProductionManager(Me.Credential, _cookieContainer)
 			exportFile.CaseInfo = caseInfo
 			exportFile.DataTable = productionManager.RetrieveProducedByContextArtifactID(caseInfo.RootArtifactID).Tables(0)
 			exportFile.Credential = Me.Credential
@@ -425,8 +429,10 @@ Namespace kCura.EDDS.WinForm
 
 		Public Sub NewSearchExport(ByVal rootFolderID As Int32, ByVal caseInfo As kCura.EDDS.Types.CaseInfo, ByVal typeOfExport As kCura.WinEDDS.ExportFile.ExportType)
 			Dim frm As New SearchExportForm
-			Dim exportFile As New exportFile(Me.Identity)
-			Dim searchManager As New kCura.WinEDDS.Service.SearchManager(Me.Credential, _cookieContainer, _identity)
+			'Dim exportFile As New exportFile(Me.Identity)
+			Dim exportFile As New exportFile
+			'Dim searchManager As New kCura.WinEDDS.Service.SearchManager(Me.Credential, _cookieContainer, _identity)
+			Dim searchManager As New kCura.WinEDDS.Service.SearchManager(Me.Credential, _cookieContainer)
 			exportFile.ArtifactID = rootFolderID
 			exportFile.CaseInfo = caseInfo
 			If typeOfExport = exportFile.ExportType.ArtifactSearch Then
@@ -462,7 +468,8 @@ Namespace kCura.EDDS.WinForm
 		Public Sub NewImageFile(ByVal destinationArtifactID As Int32, ByVal caseinfo As kCura.EDDS.Types.CaseInfo)
 			CursorWait()
 			Dim frm As New ImageLoad
-			Dim imageFile As New ImageLoadFile(Me.Identity)
+			'Dim imageFile As New ImageLoadFile(Me.Identity)
+			Dim imageFile As New ImageLoadFile
 			imageFile.Credential = Me.Credential
 			imageFile.CaseInfo = caseinfo
 			frm.ImageLoadFile = imageFile
@@ -556,7 +563,8 @@ Namespace kCura.EDDS.WinForm
 		Public Function ImportDirectory(ByVal importFileDirectorySettings As ImportFileDirectorySettings) As Guid
 			CursorWait()
 			Dim frm As New kCura.Windows.Process.ProgressForm
-			Dim importer As New kCura.WinEDDS.ImportFileDirectoryProcess(Credential, CookieContainer, Me.Identity)
+			Dim importer As New kCura.WinEDDS.ImportFileDirectoryProcess(Credential, CookieContainer)
+			'Dim importer As New kCura.WinEDDS.ImportFileDirectoryProcess(Credential, CookieContainer, Me.Identity)
 			importer.ImportFileDirectorySettings = importFileDirectorySettings
 			frm.ProcessObserver = importer.ProcessObserver
 			frm.Show()
@@ -589,7 +597,8 @@ Namespace kCura.EDDS.WinForm
 
 		Public Function ImportLoadFile(ByVal loadFile As LoadFile) As Guid
 			CursorWait()
-			Dim folderManager As New kCura.WinEDDS.Service.FolderManager(Credential, _cookieContainer, _identity)
+			'Dim folderManager As New kCura.WinEDDS.Service.FolderManager(Credential, _cookieContainer, _identity)
+			Dim folderManager As New kCura.WinEDDS.Service.FolderManager(Credential, _cookieContainer)
 			If folderManager.Exists(SelectedCaseFolderID, SelectedCaseInfo.RootFolderID) Then
 				If CheckFieldMap(loadFile) Then
 					Dim frm As New kCura.Windows.Process.ProgressForm
@@ -737,7 +746,8 @@ Namespace kCura.EDDS.WinForm
 			_loginForm.Close()
 			Dim userManager As New kCura.WinEDDS.Service.UserManager(cred, _cookieContainer)
 			Try
-				_identity = userManager.Login(cred.UserName, cred.Password)
+				'_identity = userManager.Login(cred.UserName, cred.Password)
+				userManager.Login(cred.UserName, cred.Password)
 				_credential = cred
 				OpenCase()
 			Catch ex As kCura.WinEDDS.Exception.InvalidLoginException

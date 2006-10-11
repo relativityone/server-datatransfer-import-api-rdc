@@ -12,34 +12,35 @@ Namespace kCura.EDDS.WinForm
 
       'Add any initialization after the InitializeComponent() call
       _application = kCura.EDDS.WinForm.Application.Instance
-			_imageLoadFile = New kCura.WinEDDS.ImageLoadFile(kCura.EDDS.WinForm.Application.Instance.Identity)
-    End Sub
+			'_imageLoadFile = New kCura.WinEDDS.ImageLoadFile(kCura.EDDS.WinForm.Application.Instance.Identity)
+			_imageLoadFile = New kCura.WinEDDS.ImageLoadFile
+		End Sub
 
-    'Form overrides dispose to clean up the component list.
-    Protected Overloads Overrides Sub Dispose(ByVal disposing As Boolean)
-      If disposing Then
-        If Not (components Is Nothing) Then
-          components.Dispose()
-        End If
-      End If
-      MyBase.Dispose(disposing)
-    End Sub
+		'Form overrides dispose to clean up the component list.
+		Protected Overloads Overrides Sub Dispose(ByVal disposing As Boolean)
+			If disposing Then
+				If Not (components Is Nothing) Then
+					components.Dispose()
+				End If
+			End If
+			MyBase.Dispose(disposing)
+		End Sub
 
-    'Required by the Windows Form Designer
-    Private components As System.ComponentModel.IContainer
+		'Required by the Windows Form Designer
+		Private components As System.ComponentModel.IContainer
 
-    'NOTE: The following procedure is required by the Windows Form Designer
-    'It can be modified using the Windows Form Designer.  
-    'Do not modify it using the code editor.
-    Friend WithEvents GroupBox3 As System.Windows.Forms.GroupBox
-    Friend WithEvents _browseButton As System.Windows.Forms.Button
-    Friend WithEvents _filePath As System.Windows.Forms.TextBox
-    Friend WithEvents GroupBox233 As System.Windows.Forms.GroupBox
-    Friend WithEvents _overWrite As System.Windows.Forms.CheckBox
+		'NOTE: The following procedure is required by the Windows Form Designer
+		'It can be modified using the Windows Form Designer.  
+		'Do not modify it using the code editor.
+		Friend WithEvents GroupBox3 As System.Windows.Forms.GroupBox
+		Friend WithEvents _browseButton As System.Windows.Forms.Button
+		Friend WithEvents _filePath As System.Windows.Forms.TextBox
+		Friend WithEvents GroupBox233 As System.Windows.Forms.GroupBox
+		Friend WithEvents _overWrite As System.Windows.Forms.CheckBox
 		Friend WithEvents MainMenu As System.Windows.Forms.MainMenu
-    Friend WithEvents MenuItem1 As System.Windows.Forms.MenuItem
-    Friend WithEvents ImportFileMenu As System.Windows.Forms.MenuItem
-    Friend WithEvents _openFileDialog As System.Windows.Forms.OpenFileDialog
+		Friend WithEvents MenuItem1 As System.Windows.Forms.MenuItem
+		Friend WithEvents ImportFileMenu As System.Windows.Forms.MenuItem
+		Friend WithEvents _openFileDialog As System.Windows.Forms.OpenFileDialog
 		Friend WithEvents GroupBox1 As System.Windows.Forms.GroupBox
 		Friend WithEvents _controlKeyField As System.Windows.Forms.ComboBox
 		Friend WithEvents _importMenuSaveSettingsItem As System.Windows.Forms.MenuItem

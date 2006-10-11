@@ -76,13 +76,13 @@ Namespace kCura.EDDS.WinForm
 			Me.ToolsExportSearchMenu = New System.Windows.Forms.MenuItem
 			Me._toolsMenu = New System.Windows.Forms.MenuItem
 			Me._toolsMenuSettingsItem = New System.Windows.Forms.MenuItem
+			Me.MenuItem4 = New System.Windows.Forms.MenuItem
+			Me._aboutMenuItem = New System.Windows.Forms.MenuItem
 			Me.StatusBar = New System.Windows.Forms.StatusBar
 			Me.AppStatusPanel = New System.Windows.Forms.StatusBarPanel
 			Me.LoggedInUserPanel = New System.Windows.Forms.StatusBarPanel
 			Me._caseFolderExplorer = New kCura.EDDS.WinForm.CaseFolderExplorer
 			Me.EnhancedMenuProvider = New kCura.Windows.Forms.EnhancedMenuProvider(Me.components)
-			Me.MenuItem4 = New System.Windows.Forms.MenuItem
-			Me._aboutMenuItem = New System.Windows.Forms.MenuItem
 			CType(Me.AppStatusPanel, System.ComponentModel.ISupportInitialize).BeginInit()
 			CType(Me.LoggedInUserPanel, System.ComponentModel.ISupportInitialize).BeginInit()
 			Me.SuspendLayout()
@@ -168,6 +168,7 @@ Namespace kCura.EDDS.WinForm
 			Me.ToolsImportFileDirectoryMenu.Index = 2
 			Me.ToolsImportFileDirectoryMenu.OwnerDraw = True
 			Me.ToolsImportFileDirectoryMenu.Text = "&File Directory..."
+			Me.ToolsImportFileDirectoryMenu.Visible = False
 			'
 			'ToolsImportOutlookMenu
 			'
@@ -175,6 +176,7 @@ Namespace kCura.EDDS.WinForm
 			Me.ToolsImportOutlookMenu.Index = 3
 			Me.ToolsImportOutlookMenu.OwnerDraw = True
 			Me.ToolsImportOutlookMenu.Text = "&Outlook..."
+			Me.ToolsImportOutlookMenu.Visible = False
 			'
 			'ToolsImportSQLDatabaseMenu
 			'
@@ -182,6 +184,7 @@ Namespace kCura.EDDS.WinForm
 			Me.ToolsImportSQLDatabaseMenu.Index = 4
 			Me.ToolsImportSQLDatabaseMenu.OwnerDraw = True
 			Me.ToolsImportSQLDatabaseMenu.Text = "&SQL Database..."
+			Me.ToolsImportSQLDatabaseMenu.Visible = False
 			'
 			'ExportMenu
 			'
@@ -221,6 +224,21 @@ Namespace kCura.EDDS.WinForm
 			Me._toolsMenuSettingsItem.OwnerDraw = True
 			Me._toolsMenuSettingsItem.Text = "Settings"
 			'
+			'MenuItem4
+			'
+			Me.EnhancedMenuProvider.SetImageIndex(Me.MenuItem4, -1)
+			Me.MenuItem4.Index = 3
+			Me.MenuItem4.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me._aboutMenuItem})
+			Me.MenuItem4.OwnerDraw = True
+			Me.MenuItem4.Text = "Help"
+			'
+			'_aboutMenuItem
+			'
+			Me.EnhancedMenuProvider.SetImageIndex(Me._aboutMenuItem, -1)
+			Me._aboutMenuItem.Index = 0
+			Me._aboutMenuItem.OwnerDraw = True
+			Me._aboutMenuItem.Text = "About"
+			'
 			'StatusBar
 			'
 			Me.StatusBar.Location = New System.Drawing.Point(0, 515)
@@ -246,19 +264,6 @@ Namespace kCura.EDDS.WinForm
 			Me._caseFolderExplorer.Name = "_caseFolderExplorer"
 			Me._caseFolderExplorer.Size = New System.Drawing.Size(332, 515)
 			Me._caseFolderExplorer.TabIndex = 6
-			'
-			'MenuItem4
-			'
-			Me.EnhancedMenuProvider.SetImageIndex(Me.MenuItem4, -1)
-			Me.MenuItem4.Index = 3
-			Me.MenuItem4.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me._aboutMenuItem})
-			Me.MenuItem4.Text = "Help"
-			'
-			'_aboutMenuItem
-			'
-			Me.EnhancedMenuProvider.SetImageIndex(Me._aboutMenuItem, -1)
-			Me._aboutMenuItem.Index = 0
-			Me._aboutMenuItem.Text = "About"
 			'
 			'MainForm
 			'

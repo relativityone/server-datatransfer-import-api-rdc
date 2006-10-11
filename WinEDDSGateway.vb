@@ -35,7 +35,8 @@ Namespace kCura.EDDS.WinForm
 
 		Private Function GetDocumentFields(ByVal caseID As Int32) As kCura.EDDS.WebAPI.DocumentManagerBase.Field()
 			If _currentCaseID <> caseID Then
-				Dim fieldManager As New kCura.WinEDDS.Service.FieldQuery(_application.Credential, _application.CookieContainer, _application.Identity)
+				'Dim fieldManager As New kCura.WinEDDS.Service.FieldQuery(_application.Credential, _application.CookieContainer, _application.Identity)
+				Dim fieldManager As New kCura.WinEDDS.Service.FieldQuery(_application.Credential, _application.CookieContainer)
 				_currentDocumentCaseFields = fieldManager.RetrieveAllAsArray(caseID)
 			End If
 			Return _currentDocumentCaseFields
@@ -106,9 +107,12 @@ Namespace kCura.EDDS.WinForm
 
 		Public Sub New()
 			_application = Application.Instance
-			_folderManager = New kCura.WinEDDS.Service.FolderManager(_application.Credential, _application.CookieContainer, _application.Identity)
-			_documentManager = New kCura.WinEDDS.Service.DocumentManager(_application.Credential, _application.CookieContainer, _application.Identity)
-			_fileManager = New kCura.WinEDDS.Service.FileManager(_application.Credential, _application.CookieContainer, _application.Identity)
+			'_folderManager = New kCura.WinEDDS.Service.FolderManager(_application.Credential, _application.CookieContainer, _application.Identity)
+			'_documentManager = New kCura.WinEDDS.Service.DocumentManager(_application.Credential, _application.CookieContainer, _application.Identity)
+			'_fileManager = New kCura.WinEDDS.Service.FileManager(_application.Credential, _application.CookieContainer, _application.Identity)
+			_folderManager = New kCura.WinEDDS.Service.FolderManager(_application.Credential, _application.CookieContainer)
+			_documentManager = New kCura.WinEDDS.Service.DocumentManager(_application.Credential, _application.CookieContainer)
+			_fileManager = New kCura.WinEDDS.Service.FileManager(_application.Credential, _application.CookieContainer)
 			_uploader = New kCura.WinEDDS.FileUploader(_application.Credential, "", _application.CookieContainer)
 		End Sub
 

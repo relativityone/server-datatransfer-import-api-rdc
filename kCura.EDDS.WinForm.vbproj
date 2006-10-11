@@ -148,11 +148,6 @@
                     AssemblyName = "NullableTypes"
                     HintPath = "..\..\Vendor\kCura\1.0.2131.20968\NullableTypes.dll"
                 />
-                <Reference
-                    Name = "kCura.EDDS"
-                    Project = "{EF28D622-41FE-4B1E-A36A-B5DD92D895C7}"
-                    Package = "{F184B08F-C81C-45F6-A57F-5ABD9991F28F}"
-                />
             </References>
             <Imports>
                 <Import Namespace = "Microsoft.VisualBasic" />
