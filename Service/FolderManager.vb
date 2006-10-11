@@ -2,16 +2,17 @@ Namespace kCura.WinEDDS.Service
 	Public Class FolderManager
 		Inherits kCura.EDDS.WebAPI.FolderManagerBase.FolderManager
 
-		Private _folderManager As New kCura.EDDS.Service.FolderManager
-		Private _identity As kCura.EDDS.EDDSIdentity
+		'Private _folderManager As New kCura.EDDS.Service.FolderManager
+		'Private _identity As kCura.EDDS.EDDSIdentity
 
-		Public Sub New(ByVal credentials As Net.NetworkCredential, ByVal cookieContainer As System.Net.CookieContainer, ByVal identity As kCura.EDDS.EDDSIdentity)
+		Public Sub New(ByVal credentials As Net.NetworkCredential, ByVal cookieContainer As System.Net.CookieContainer)
+			'Public Sub New(ByVal credentials As Net.NetworkCredential, ByVal cookieContainer As System.Net.CookieContainer, ByVal identity As kCura.EDDS.EDDSIdentity)
 			MyBase.New()
 			Me.Credentials = credentials
 			Me.CookieContainer = cookieContainer
 			Me.Url = String.Format("{0}FolderManager.asmx", kCura.WinEDDS.Config.WebServiceURL)
 			Me.Timeout = Settings.DefaultTimeOut
-			_identity = identity
+			'_identity = identity
 		End Sub
 
 		Protected Overrides Function GetWebRequest(ByVal uri As System.Uri) As System.Net.WebRequest
@@ -22,26 +23,26 @@ Namespace kCura.WinEDDS.Service
 		End Function
 
 #Region " Translations "
-		Public Function DTOToWebAPIFolder(ByVal folderDTO As kCura.EDDS.DTO.Folder) As kCura.EDDS.WebAPI.FolderManagerBase.Folder
-			Dim folder As New kCura.EDDS.WebAPI.FolderManagerBase.Folder
+		'Public Function DTOToWebAPIFolder(ByVal folderDTO As kCura.EDDS.DTO.Folder) As kCura.EDDS.WebAPI.FolderManagerBase.Folder
+		'	Dim folder As New kCura.EDDS.WebAPI.FolderManagerBase.Folder
 
-			folder.AccessControlListID = folderDTO.AccessControlListID
-			folder.AccessControlListIsInherited = folderDTO.AccessControlListIsInherited
-			folder.ArtifactID = folderDTO.ArtifactID
-			folder.ArtifactTypeID = folderDTO.ArtifactTypeID
-			folder.ContainerID = folderDTO.ContainerID
-			folder.CreatedBy = folderDTO.CreatedBy
-			folder.CreatedOn = folderDTO.CreatedOn
-			folder.DeleteFlag = folderDTO.DeleteFlag
-			folder.Keywords = folderDTO.Keywords
-			folder.LastModifiedBy = folderDTO.LastModifiedBy
-			folder.LastModifiedOn = folderDTO.LastModifiedOn
-			folder.Name = folderDTO.Name
-			folder.Notes = folderDTO.Notes
-			folder.ParentArtifactID = folderDTO.ParentArtifactID
-			folder.TextIdentifier = folderDTO.TextIdentifier
-			Return folder
-		End Function
+		'	folder.AccessControlListID = folderDTO.AccessControlListID
+		'	folder.AccessControlListIsInherited = folderDTO.AccessControlListIsInherited
+		'	folder.ArtifactID = folderDTO.ArtifactID
+		'	folder.ArtifactTypeID = folderDTO.ArtifactTypeID
+		'	folder.ContainerID = folderDTO.ContainerID
+		'	folder.CreatedBy = folderDTO.CreatedBy
+		'	folder.CreatedOn = folderDTO.CreatedOn
+		'	folder.DeleteFlag = folderDTO.DeleteFlag
+		'	folder.Keywords = folderDTO.Keywords
+		'	folder.LastModifiedBy = folderDTO.LastModifiedBy
+		'	folder.LastModifiedOn = folderDTO.LastModifiedOn
+		'	folder.Name = folderDTO.Name
+		'	folder.Notes = folderDTO.Notes
+		'	folder.ParentArtifactID = folderDTO.ParentArtifactID
+		'	folder.TextIdentifier = folderDTO.TextIdentifier
+		'	Return folder
+		'End Function
 #End Region
 
 #Region " Shadow Functions "
@@ -49,7 +50,7 @@ Namespace kCura.WinEDDS.Service
 			If kCura.WinEDDS.Config.UsesWebAPI Then
 				Return MyBase.RetrieveAllByCaseID(caseID)
 			Else
-				Return _folderManager.ExternalRetrieveAllByCaseID(caseID, _identity)
+				'Return _folderManager.ExternalRetrieveAllByCaseID(caseID, _identity)
 			End If
 		End Function
 
@@ -57,7 +58,7 @@ Namespace kCura.WinEDDS.Service
 			If kCura.WinEDDS.Config.UsesWebAPI Then
 				Return MyBase.Read(folderArtifactID)
 			Else
-				Return Me.DTOToWebAPIFolder(_folderManager.Read(folderArtifactID, _identity))
+				'Return Me.DTOToWebAPIFolder(_folderManager.Read(folderArtifactID, _identity))
 			End If
 		End Function
 
@@ -65,7 +66,7 @@ Namespace kCura.WinEDDS.Service
 			If kCura.WinEDDS.Config.UsesWebAPI Then
 				Return MyBase.Create(parentArtifactID, name)
 			Else
-				Return _folderManager.Create(parentArtifactID, name, _identity)
+				'Return _folderManager.Create(parentArtifactID, name, _identity)
 			End If
 		End Function
 
@@ -73,7 +74,7 @@ Namespace kCura.WinEDDS.Service
 			If kCura.WinEDDS.Config.UsesWebAPI Then
 				Return MyBase.Exists(artifactID, rootFolderID)
 			Else
-				Return _folderManager.Exists(artifactID, _identity, rootFolderID)
+				'Return _folderManager.Exists(artifactID, _identity, rootFolderID)
 			End If
 		End Function
 #End Region

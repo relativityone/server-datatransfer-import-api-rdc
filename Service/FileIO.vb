@@ -2,7 +2,7 @@ Namespace kCura.WinEDDS.Service
 	Public Class FileIO
 		Inherits kCura.EDDS.WebAPI.FileIOBase.FileIO
 
-		Dim _externalIOManager As New kCura.EDDS.Service.ExternalIO
+		'Dim _externalIOManager As New kCura.EDDS.Service.ExternalIO
 
 		Public Sub New(ByVal credentials As Net.NetworkCredential, ByVal cookieContainer As System.Net.CookieContainer)
 			MyBase.New()
@@ -24,7 +24,7 @@ Namespace kCura.WinEDDS.Service
 			If kCura.WinEDDS.Config.UsesWebAPI Then
 				Return MyBase.BeginFill(b, contextArtifactID, fileGuid)
 			Else
-				Return _externalIOManager.ExternalBeginFill(b, contextArtifactID, fileGuid)
+				'Return _externalIOManager.ExternalBeginFill(b, contextArtifactID, fileGuid)
 			End If
 		End Function
 
@@ -32,7 +32,7 @@ Namespace kCura.WinEDDS.Service
 			If kCura.WinEDDS.Config.UsesWebAPI Then
 				Return MyBase.FileFill(fileName, b, contextArtifactID)
 			Else
-				Return _externalIOManager.ExternalFileFill(fileName, b, contextArtifactID)
+				'Return _externalIOManager.ExternalFileFill(fileName, b, contextArtifactID)
 			End If
 		End Function
 
@@ -40,7 +40,7 @@ Namespace kCura.WinEDDS.Service
 			If kCura.WinEDDS.Config.UsesWebAPI Then
 				MyBase.RemoveFill(fileName, contextArtifactID)
 			Else
-				_externalIOManager.ExternalRemoveFill(fileName, contextArtifactID)
+				'_externalIOManager.ExternalRemoveFill(fileName, contextArtifactID)
 			End If
 		End Sub
 
@@ -48,7 +48,7 @@ Namespace kCura.WinEDDS.Service
 			If kCura.WinEDDS.Config.UsesWebAPI Then
 				Return MyBase.ReadFileAsString(path)
 			Else
-				Return _externalIOManager.ExternalReadFileAsString(path)
+				'Return _externalIOManager.ExternalReadFileAsString(path)
 			End If
 		End Function
 #End Region

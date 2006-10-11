@@ -130,7 +130,7 @@ Namespace kCura.WinEDDS
 		Public Sub New(ByVal exportFile As kCura.WinEDDS.ExportFile, ByVal processController As kCura.Windows.Process.Controller)
 			Dim cred As Net.NetworkCredential = exportFile.Credential
 			Dim cookieContainer As System.Net.CookieContainer = exportFile.CookieContainer
-			Dim identity As kCura.EDDS.EDDSIdentity = exportFile.Identity
+			'Dim identity As kCura.EDDS.EDDSIdentity = exportFile.Identity
 			Dim destinationFolderPath As String = exportFile.CaseInfo.DocumentPath & "\EDDS" & exportFile.CaseInfo.ArtifactID
 
 			Me.DocumentsExported = 0
@@ -142,13 +142,20 @@ Namespace kCura.WinEDDS
 			_processController = processController
 			_continue = True
 
-			_productionManager = New kCura.WinEDDS.Service.ProductionManager(cred, cookieContainer, identity)
-			_folderManager = New kCura.WinEDDS.Service.FolderManager(cred, cookieContainer, identity)
-			_documentManager = New kCura.WinEDDS.Service.DocumentManager(cred, cookieContainer, identity)
+			_productionManager = New kCura.WinEDDS.Service.ProductionManager(cred, cookieContainer)
+			_folderManager = New kCura.WinEDDS.Service.FolderManager(cred, cookieContainer)
+			_documentManager = New kCura.WinEDDS.Service.DocumentManager(cred, cookieContainer)
 			_downloadManager = New FileDownloader(cred, destinationFolderPath, exportFile.CaseInfo.DownloadHandlerURL, cookieContainer)
-			_fileManager = New kCura.WinEDDS.Service.FileManager(cred, cookieContainer, identity)
-			_folderManager = New kCura.WinEDDS.Service.FolderManager(cred, cookieContainer, identity)
-			_fileManager = New kCura.WinEDDS.Service.FileManager(cred, cookieContainer, identity)
+			_fileManager = New kCura.WinEDDS.Service.FileManager(cred, cookieContainer)
+			_folderManager = New kCura.WinEDDS.Service.FolderManager(cred, cookieContainer)
+			_fileManager = New kCura.WinEDDS.Service.FileManager(cred, cookieContainer)
+			'_productionManager = New kCura.WinEDDS.Service.ProductionManager(cred, cookieContainer, identity)
+			'_folderManager = New kCura.WinEDDS.Service.FolderManager(cred, cookieContainer, identity)
+			'_documentManager = New kCura.WinEDDS.Service.DocumentManager(cred, cookieContainer, identity)
+			'_downloadManager = New FileDownloader(cred, destinationFolderPath, exportFile.CaseInfo.DownloadHandlerURL, cookieContainer)
+			'_fileManager = New kCura.WinEDDS.Service.FileManager(cred, cookieContainer, identity)
+			'_folderManager = New kCura.WinEDDS.Service.FolderManager(cred, cookieContainer, identity)
+			'_fileManager = New kCura.WinEDDS.Service.FileManager(cred, cookieContainer, identity)
 			_fullTextDownloader = New kCura.WinEDDS.FullTextManager(cred, _sourceDirectory, cookieContainer)
 			_downloadHandler = New FileDownloader(cred, exportFile.CaseInfo.DocumentPath & "\EDDS" & exportFile.CaseInfo.ArtifactID, exportFile.CaseInfo.DownloadHandlerURL, exportFile.CookieContainer)
 

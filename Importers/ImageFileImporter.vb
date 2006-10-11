@@ -47,10 +47,14 @@ Namespace kCura.WinEDDS
 
 		Public Sub New(ByVal folderID As Int32, ByVal args As ImageLoadFile, ByVal controller As kCura.Windows.Process.Controller)
 			MyBase.New(New Char() {","c})
-			_docManager = New kCura.WinEDDS.Service.DocumentManager(args.Credential, args.CookieContainer, args.Identity)
-			_fieldQuery = New kCura.WinEDDS.Service.FieldQuery(args.Credential, args.CookieContainer, args.Identity)
-			_folderManager = New kCura.WinEDDS.Service.FolderManager(args.Credential, args.CookieContainer, args.Identity)
-			_fileManager = New kCura.WinEDDS.Service.FileManager(args.Credential, args.CookieContainer, args.Identity)
+			'_docManager = New kCura.WinEDDS.Service.DocumentManager(args.Credential, args.CookieContainer, args.Identity)
+			'_fieldQuery = New kCura.WinEDDS.Service.FieldQuery(args.Credential, args.CookieContainer, args.Identity)
+			'_folderManager = New kCura.WinEDDS.Service.FolderManager(args.Credential, args.CookieContainer, args.Identity)
+			'_fileManager = New kCura.WinEDDS.Service.FileManager(args.Credential, args.CookieContainer, args.Identity)
+			_docManager = New kCura.WinEDDS.Service.DocumentManager(args.Credential, args.CookieContainer)
+			_fieldQuery = New kCura.WinEDDS.Service.FieldQuery(args.Credential, args.CookieContainer)
+			_folderManager = New kCura.WinEDDS.Service.FolderManager(args.Credential, args.CookieContainer)
+			_fileManager = New kCura.WinEDDS.Service.FileManager(args.Credential, args.CookieContainer)
 			_fileUploader = New kCura.WinEDDS.FileUploader(args.Credential, _docManager.GetDocumentDirectoryByCaseArtifactID(args.CaseInfo.ArtifactID) & "\", args.CookieContainer)
 			_folderID = folderID
 			_overwrite = args.Overwrite

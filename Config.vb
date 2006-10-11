@@ -25,33 +25,9 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
-		Public Shared ReadOnly Property URI() As String
-			Get
-				Return String.Format(CType(ConfigSettings("uriFormatString"), String), Host, Protocol)
-			End Get
-		End Property
-
-		Public Shared ReadOnly Property Host() As String
-			Get
-				Return CType(ConfigSettings("Host"), String)
-			End Get
-		End Property
-
-		Public Shared ReadOnly Property HostURL() As String
-			Get
-				Return String.Format("{1}://{0}/", Host, Protocol)
-			End Get
-		End Property
-
 		Public Shared ReadOnly Property SearchExportChunkSize() As Int32
 			Get
 				Return CType(ConfigSettings("SearchExportChunkSize"), Int32)
-			End Get
-		End Property
-
-		Public Shared ReadOnly Property Protocol() As String
-			Get
-				Return String.Format(CType(ConfigSettings("Protocol"), String), Host)
 			End Get
 		End Property
 

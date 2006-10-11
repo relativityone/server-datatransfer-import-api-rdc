@@ -8,12 +8,13 @@ Namespace kCura.WinEDDS
 		Public ReplaceFullText As Boolean
 		<NonSerialized()> Public Credential As Net.NetworkCredential
 		<NonSerialized()> Public CookieContainer As System.Net.CookieContainer
-		<NonSerialized()> Public Identity As kCura.EDDS.EDDSIdentity
+		'<NonSerialized()> Public Identity As kCura.EDDS.EDDSIdentity
 
-		Public Sub New(ByVal identity As kCura.EDDS.EDDSIdentity)
+		Public Sub New()
+			'Public Sub New(ByVal identity As kCura.EDDS.EDDSIdentity)
 			MyBase.New()
 			Overwrite = True
-			Me.Identity = identity
+			'Me.Identity = identity
 		End Sub
 	End Class
 End Namespace

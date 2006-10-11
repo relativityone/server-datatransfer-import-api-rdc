@@ -2,7 +2,7 @@ Namespace kCura.WinEDDS.Service
 	Public Class MultiCodeManager
 		Inherits kCura.EDDS.WebAPI.MultiCodeManagerBase.MultiCodeManager
 
-		Private _multiCodeManager As New kCura.Code.Service.MultiCodeManager
+		'Private _multiCodeManager As New kCura.Code.Service.MultiCodeManager
 
 		Public Sub New(ByVal credentials As Net.NetworkCredential, ByVal cookieContainer As System.Net.CookieContainer)
 			MyBase.New()
@@ -24,7 +24,7 @@ Namespace kCura.WinEDDS.Service
 			If kCura.WinEDDS.Config.UsesWebAPI Then
 				MyBase.DeleteFromMultiCodeArtifactByMultiCodeID(artifactID, multiCodeID)
 			Else
-				_multiCodeManager.DeleteFromMultiCodeArtifactByMultiCodeID(artifactID, multiCodeID)
+				'_multiCodeManager.DeleteFromMultiCodeArtifactByMultiCodeID(artifactID, multiCodeID)
 			End If
 		End Sub
 
@@ -32,7 +32,7 @@ Namespace kCura.WinEDDS.Service
 			If kCura.WinEDDS.Config.UsesWebAPI Then
 				Return MyBase.CreateNewMultiCodeID(artifactID)
 			Else
-				Return _multiCodeManager.CreateNewMultiCodeID(artifactID)
+				'Return _multiCodeManager.CreateNewMultiCodeID(artifactID)
 			End If
 		End Function
 
@@ -40,7 +40,7 @@ Namespace kCura.WinEDDS.Service
 			If kCura.WinEDDS.Config.UsesWebAPI Then
 				MyBase.SetMultiCodeValues(multiCodeID, values.ToArray)
 			Else
-				_multiCodeManager.SetMultiCodeValues(multiCodeID, values)
+				'_multiCodeManager.SetMultiCodeValues(multiCodeID, values)
 			End If
 		End Sub
 #End Region
