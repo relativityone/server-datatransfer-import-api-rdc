@@ -26,7 +26,8 @@ Namespace kCura.WinEDDS.NUnit
 			Dim testRunner As New testRunner(cred, settings, cookieContainer)
 			Dim caseInfo As kCura.EDDS.Types.CaseInfo = caseBuilder.BuildCase()
 			Dim actualResults As TestResults = testRunner.RunTest(caseInfo)
-			Dim caseManager As New kCura.WinEDDS.Service.CaseManager(cred, cookieContainer, Nothing)
+			'Dim caseManager As New kCura.WinEDDS.Service.CaseManager(cred, cookieContainer, Nothing)
+			Dim caseManager As New kCura.WinEDDS.Service.CaseManager(cred, cookieContainer)
 			caseManager.Delete(caseInfo.ArtifactID)
 			Dim testpassed As Boolean = TestResults.op_Equality(settings.ExpectedResults, actualResults)
 			If testpassed Then
