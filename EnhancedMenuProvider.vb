@@ -211,16 +211,18 @@ Namespace kCura.Windows.Forms
         rec.Y += 1
         rec.Width -= 2
         rec.Height -= 2
-        .DrawRectangle(pen, rec)
-        If Not sarrSubClass(cintHwndRec)(hwnd) Is Nothing Then
-          rec = DirectCast(sarrSubClass(cintHwndRec)(hwnd), Rectangle)
-          Dim intWidth As Integer = rec.Width + rec.X + Form.ActiveForm.Location.X
-          If intWidth > rec.Width Then intWidth = rec.Width
-          intWidth -= 1
-          If intWidth > 0 Then .DrawLine(pen, 1, 0, intWidth, 0)
-        End If
-        .Dispose()
-      End With
+				.DrawRectangle(pen, rec)
+				If Not Form.ActiveForm Is Nothing Then
+					If Not sarrSubClass(cintHwndRec)(hwnd) Is Nothing Then
+						rec = DirectCast(sarrSubClass(cintHwndRec)(hwnd), Rectangle)
+						Dim intWidth As Integer = rec.Width + rec.X + Form.ActiveForm.Location.X
+						If intWidth > rec.Width Then intWidth = rec.Width
+						intWidth -= 1
+						If intWidth > 0 Then .DrawLine(pen, 1, 0, intWidth, 0)
+					End If
+				End If
+				.Dispose()
+			End With
       If blnRelease Then Win32API.ReleaseDC(hwnd, hDc)
     End Sub
 
