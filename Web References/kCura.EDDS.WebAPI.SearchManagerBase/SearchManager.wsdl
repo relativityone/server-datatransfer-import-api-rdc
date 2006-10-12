@@ -3,10 +3,26 @@
   <wsdl:types>
     <s:schema elementFormDefault="qualified" targetNamespace="http://www.kCura.com/EDDS/SearchManager">
       <s:import namespace="http://www.w3.org/2001/XMLSchema" />
+      <s:element name="CountSearchByArtifactID">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="searchArtifactID" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="CountSearchByArtifactIDResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="CountSearchByArtifactIDResult" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
       <s:element name="SearchBySearchArtifactID">
         <s:complexType>
           <s:sequence>
             <s:element minOccurs="1" maxOccurs="1" name="searchArtifactID" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="start" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="finish" type="s:int" />
           </s:sequence>
         </s:complexType>
       </s:element>
@@ -111,11 +127,28 @@
           </s:sequence>
         </s:complexType>
       </s:element>
+      <s:element name="CountSearchByParentArtifactID">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="parentArtifactID" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="searchSubFolders" type="s:boolean" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="CountSearchByParentArtifactIDResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="CountSearchByParentArtifactIDResult" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
       <s:element name="SearchByParentArtifactID">
         <s:complexType>
           <s:sequence>
             <s:element minOccurs="1" maxOccurs="1" name="parentArtifactID" type="s:int" />
             <s:element minOccurs="1" maxOccurs="1" name="searchSubFolders" type="s:boolean" />
+            <s:element minOccurs="1" maxOccurs="1" name="start" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="finish" type="s:int" />
           </s:sequence>
         </s:complexType>
       </s:element>
@@ -135,6 +168,12 @@
       </s:element>
     </s:schema>
   </wsdl:types>
+  <wsdl:message name="CountSearchByArtifactIDSoapIn">
+    <wsdl:part name="parameters" element="tns:CountSearchByArtifactID" />
+  </wsdl:message>
+  <wsdl:message name="CountSearchByArtifactIDSoapOut">
+    <wsdl:part name="parameters" element="tns:CountSearchByArtifactIDResponse" />
+  </wsdl:message>
   <wsdl:message name="SearchBySearchArtifactIDSoapIn">
     <wsdl:part name="parameters" element="tns:SearchBySearchArtifactID" />
   </wsdl:message>
@@ -165,6 +204,12 @@
   <wsdl:message name="RetrieveSearchFieldsSoapOut">
     <wsdl:part name="parameters" element="tns:RetrieveSearchFieldsResponse" />
   </wsdl:message>
+  <wsdl:message name="CountSearchByParentArtifactIDSoapIn">
+    <wsdl:part name="parameters" element="tns:CountSearchByParentArtifactID" />
+  </wsdl:message>
+  <wsdl:message name="CountSearchByParentArtifactIDSoapOut">
+    <wsdl:part name="parameters" element="tns:CountSearchByParentArtifactIDResponse" />
+  </wsdl:message>
   <wsdl:message name="SearchByParentArtifactIDSoapIn">
     <wsdl:part name="parameters" element="tns:SearchByParentArtifactID" />
   </wsdl:message>
@@ -172,6 +217,10 @@
     <wsdl:part name="parameters" element="tns:SearchByParentArtifactIDResponse" />
   </wsdl:message>
   <wsdl:portType name="SearchManagerSoap">
+    <wsdl:operation name="CountSearchByArtifactID">
+      <wsdl:input message="tns:CountSearchByArtifactIDSoapIn" />
+      <wsdl:output message="tns:CountSearchByArtifactIDSoapOut" />
+    </wsdl:operation>
     <wsdl:operation name="SearchBySearchArtifactID">
       <wsdl:input message="tns:SearchBySearchArtifactIDSoapIn" />
       <wsdl:output message="tns:SearchBySearchArtifactIDSoapOut" />
@@ -192,6 +241,10 @@
       <wsdl:input message="tns:RetrieveSearchFieldsSoapIn" />
       <wsdl:output message="tns:RetrieveSearchFieldsSoapOut" />
     </wsdl:operation>
+    <wsdl:operation name="CountSearchByParentArtifactID">
+      <wsdl:input message="tns:CountSearchByParentArtifactIDSoapIn" />
+      <wsdl:output message="tns:CountSearchByParentArtifactIDSoapOut" />
+    </wsdl:operation>
     <wsdl:operation name="SearchByParentArtifactID">
       <wsdl:input message="tns:SearchByParentArtifactIDSoapIn" />
       <wsdl:output message="tns:SearchByParentArtifactIDSoapOut" />
@@ -199,6 +252,15 @@
   </wsdl:portType>
   <wsdl:binding name="SearchManagerSoap" type="tns:SearchManagerSoap">
     <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document" />
+    <wsdl:operation name="CountSearchByArtifactID">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/SearchManager/CountSearchByArtifactID" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="SearchBySearchArtifactID">
       <soap:operation soapAction="http://www.kCura.com/EDDS/SearchManager/SearchBySearchArtifactID" style="document" />
       <wsdl:input>
@@ -237,6 +299,15 @@
     </wsdl:operation>
     <wsdl:operation name="RetrieveSearchFields">
       <soap:operation soapAction="http://www.kCura.com/EDDS/SearchManager/RetrieveSearchFields" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CountSearchByParentArtifactID">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/SearchManager/CountSearchByParentArtifactID" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>

@@ -101,7 +101,6 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Private Sub Search()
-			Dim documentTable As System.Data.DataTable
 			Dim fileTable As System.Data.DataTable
 			Dim folderTable As System.Data.DataTable
 			Dim fullTextFiles As System.Data.DataTable
@@ -116,11 +115,11 @@ Namespace kCura.WinEDDS
 			Me.WriteUpdate("Retrieving export data from the server...")
 			Select Case Me.ExportFile.TypeOfExport
 				Case ExportFile.ExportType.ArtifactSearch
-					documentTable = _searchManager.SearchBySearchArtifactID(Me.ExportFile.ArtifactID).Tables(0)
+					Me.TotalDocuments = _searchManager.CountSearchByArtifactID(Me.ExportFile.ArtifactID)
 				Case ExportFile.ExportType.ParentSearch
-					documentTable = _searchManager.SearchByParentArtifactID(Me.ExportFile.ArtifactID, False).Tables(0)
+					Me.TotalDocuments = _searchManager.CountSearchByParentArtifactID(Me.ExportFile.ArtifactID, False)
 				Case ExportFile.ExportType.AncestorSearch
-					documentTable = _searchManager.SearchByParentArtifactID(Me.ExportFile.ArtifactID, True).Tables(0)
+					Me.TotalDocuments = _searchManager.CountSearchByParentArtifactID(Me.ExportFile.ArtifactID, True)
 			End Select
 			folderTable = _folderManager.RetrieveAllByCaseID(Me.ExportFile.ArtifactID).Tables(0)
 			Me.FolderList = New kCura.WinEDDS.FolderList(folderTable)
@@ -138,27 +137,51 @@ Namespace kCura.WinEDDS
 			End If
 			writer = System.IO.File.CreateText(volumeFile)
 			Me.WriteStatusLine(kCura.Windows.Process.EventType.Status, "Created search log file.")
-			Me.TotalDocuments = documentTable.Rows.Count()
+			'Me.TotalDocuments = documentTable.Rows.Count()
 			writer.Write(Me.LoadAndWriteColumns())
 			Me.WriteUpdate("Data retrieved. Beginning search export...")
 
-			Dim i As Int32 = 0
-			Dim docRow As System.Data.DataRow
-			Dim artifactIDs As New ArrayList
-			Dim docRows As New ArrayList
-			For Each docRow In documentTable.Rows
-				If Not _halt Then
-					i += 1
+			Dim documentTable As System.Data.DataTable
+			Dim start, finish As Int32
+			For start = 0 To Me.TotalDocuments - 1 Step Config.SearchExportChunkSize
+				finish = Math.Min(Me.TotalDocuments - 1, start + Config.SearchExportChunkSize - 1)
+				Select Case Me.ExportFile.TypeOfExport
+					Case ExportFile.ExportType.ArtifactSearch
+						documentTable = _searchManager.SearchBySearchArtifactID(Me.ExportFile.ArtifactID, start, finish).Tables(0)
+					Case ExportFile.ExportType.ParentSearch
+						documentTable = _searchManager.SearchByParentArtifactID(Me.ExportFile.ArtifactID, False, start, finish).Tables(0)
+					Case ExportFile.ExportType.AncestorSearch
+						documentTable = _searchManager.SearchByParentArtifactID(Me.ExportFile.ArtifactID, True, start, finish).Tables(0)
+				End Select
+				Dim docRow As System.Data.DataRow
+				Dim artifactIDs As New ArrayList
+				Dim docRows As New ArrayList
+				For Each docRow In documentTable.Rows
 					artifactIDs.Add(CType(docRow("ArtifactID"), Int32))
 					docRows.Add(docRow)
-					If i Mod Config.SearchExportChunkSize = 0 Then
-						ExportChunk(DirectCast(artifactIDs.ToArray(GetType(Int32)), Int32()), DirectCast(docRows.ToArray(GetType(System.Data.DataRow)), System.Data.DataRow()), writer)
-						artifactIDs.Clear()
-						docRows.Clear()
-					End If
-				End If
+				Next
+				ExportChunk(DirectCast(artifactIDs.ToArray(GetType(Int32)), Int32()), DirectCast(docRows.ToArray(GetType(System.Data.DataRow)), System.Data.DataRow()), writer)
+				artifactIDs.Clear()
+				docRows.Clear()
+				If _halt Then Exit For
 			Next
-			If artifactIDs.Count > 0 Then ExportChunk(DirectCast(artifactIDs.ToArray(GetType(Int32)), Int32()), DirectCast(docRows.ToArray(GetType(System.Data.DataRow)), System.Data.DataRow()), writer)
+
+			'Dim docRow As System.Data.DataRow
+			'Dim artifactIDs As New ArrayList
+			'Dim docRows As New ArrayList
+			'For Each docRow In documentTable.Rows
+			'	If Not _halt Then
+			'		i += 1
+			'		artifactIDs.Add(CType(docRow("ArtifactID"), Int32))
+			'		docRows.Add(docRow)
+			'		If i Mod Config.SearchExportChunkSize = 0 Then
+			'			ExportChunk(DirectCast(artifactIDs.ToArray(GetType(Int32)), Int32()), DirectCast(docRows.ToArray(GetType(System.Data.DataRow)), System.Data.DataRow()), writer)
+			'			artifactIDs.Clear()
+			'			docRows.Clear()
+			'		End If
+			'	End If
+			'Next
+			'If artifactIDs.Count > 0 Then ExportChunk(DirectCast(artifactIDs.ToArray(GetType(Int32)), Int32()), DirectCast(docRows.ToArray(GetType(System.Data.DataRow)), System.Data.DataRow()), writer)
 			writer.Close()
 			Me.FolderList.DeleteEmptyFolders(Me.ExportFile.FolderPath)
 			'Me.TotalDocuments = fileTable.Rows.Count()

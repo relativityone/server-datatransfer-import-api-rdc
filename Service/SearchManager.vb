@@ -24,9 +24,17 @@ Namespace kCura.WinEDDS.Service
 		End Function
 
 #Region " Shadow Functions "
-		Public Shadows Function SearchBySearchArtifactID(ByVal searchArtifactID As Int32) As System.Data.DataSet
+		Public Shadows Function CountSearchByArtifactID(ByVal searchArtifactID As Int32) As Int32
 			If kCura.WinEDDS.Config.UsesWebAPI Then
-				Return MyBase.SearchBySearchArtifactID(searchArtifactID)
+				Return MyBase.CountSearchByArtifactID(searchArtifactID)
+			Else
+				'Return _searchManager.SearchByArtifactIDAsDataSet(_identity, searchArtifactID)
+			End If
+		End Function
+
+		Public Shadows Function SearchBySearchArtifactID(ByVal searchArtifactID As Int32, ByVal start As Int32, ByVal finish As Int32) As System.Data.DataSet
+			If kCura.WinEDDS.Config.UsesWebAPI Then
+				Return MyBase.SearchBySearchArtifactID(searchArtifactID, start, finish)
 			Else
 				'Return _searchManager.SearchByArtifactIDAsDataSet(_identity, searchArtifactID)
 			End If
@@ -64,9 +72,17 @@ Namespace kCura.WinEDDS.Service
 			End If
 		End Function
 
-		Public Shadows Function SearchByParentArtifactID(ByVal parentArtifactID As Int32, ByVal searchSubFolders As Boolean) As System.Data.DataSet
+		Public Shadows Function CountSearchByParentArtifactID(ByVal parentArtifactID As Int32, ByVal searchSubFolders As Boolean) As Int32
 			If kCura.WinEDDS.Config.UsesWebAPI Then
-				Return MyBase.SearchByParentArtifactID(parentArtifactID, searchSubFolders)
+				Return MyBase.CountSearchByParentArtifactID(parentArtifactID, searchSubFolders)
+			Else
+				'Return _searchManager.SearchByParentArtifactIDAsDataSet(_identity, parentArtifactID, searchSubFolders)
+			End If
+		End Function
+
+		Public Shadows Function SearchByParentArtifactID(ByVal parentArtifactID As Int32, ByVal searchSubFolders As Boolean, ByVal start As Int32, ByVal finish As Int32) As System.Data.DataSet
+			If kCura.WinEDDS.Config.UsesWebAPI Then
+				Return MyBase.SearchByParentArtifactID(parentArtifactID, searchSubFolders, start, finish)
 			Else
 				'Return _searchManager.SearchByParentArtifactIDAsDataSet(_identity, parentArtifactID, searchSubFolders)
 			End If
