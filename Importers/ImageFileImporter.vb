@@ -86,7 +86,13 @@ Namespace kCura.WinEDDS
 					Try
 						DoFileUpload()
 					Catch ex As System.Exception
-						RaiseStatusEvent(kCura.Windows.Process.EventType.Error, ex.Message)
+						Dim txt As String = ex.ToString.ToLower
+						If txt.IndexOf("ix_") <> -1 AndAlso txt.IndexOf("duplicate") <> -1 Then
+							txt = "Error creating document - identifier field isn't being properly filled.  Please choose a different 'key' field."
+						Else
+							txt = ex.Message
+						End If
+						RaiseStatusEvent(kCura.Windows.Process.EventType.Error, txt)
 					End Try
 				End While
 				Me.Reader.Close()
