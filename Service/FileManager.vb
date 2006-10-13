@@ -216,7 +216,7 @@ Namespace kCura.WinEDDS.Service
 			End If
 		End Function
 
-		Public Shadows Function RetrieveNativesFileSize(ByVal sourceDirectory As String, ByVal guid As String) As Long
+		Public Shadows Function RetrieveNativeFileSize(ByVal sourceDirectory As String, ByVal guid As String) As Long
 			If kCura.WinEDDS.Config.UsesWebAPI Then
 				Return MyBase.RetrieveNativesFileSize(sourceDirectory, guid)
 			Else
