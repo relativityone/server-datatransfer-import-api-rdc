@@ -115,17 +115,20 @@ Namespace kCura.EDDS.WinForm
       'ImportFileDirectory
       '
       Me.ImportFileDirectory.Index = 2
-      Me.ImportFileDirectory.Text = "&File Directory..."
+			Me.ImportFileDirectory.Text = "&File Directory..."
+			Me.ImportFileDirectory.Visible = False
       '
       'ImportOutlookDirectory
       '
       Me.ImportOutlookDirectory.Index = 3
-      Me.ImportOutlookDirectory.Text = "&Outlook..."
+			Me.ImportOutlookDirectory.Text = "&Outlook..."
+			Me.ImportOutlookDirectory.Visible = False
       '
       'ImportSQLDatabase
       '
       Me.ImportSQLDatabase.Index = 4
-      Me.ImportSQLDatabase.Text = "&SQL Database..."
+			Me.ImportSQLDatabase.Text = "&SQL Database..."
+			Me.ImportSQLDatabase.Visible = False
       '
       'Export
       '
@@ -146,7 +149,8 @@ Namespace kCura.EDDS.WinForm
       'ImportEnronData
       '
       Me.ImportEnronData.Index = 5
-      Me.ImportEnronData.Text = "&Enron Data..."
+			Me.ImportEnronData.Text = "&Enron Data..."
+			Me.ImportEnronData.Visible = False
       '
       'CaseFolderExplorer
       '

@@ -330,6 +330,17 @@ Public Class SearchExportForm
 		kCura.EDDS.WinForm.Utility.InitializeCharacterDropDown(_quoteDelimiter, _exportFile.QuoteDelimiter)
 		kCura.EDDS.WinForm.Utility.InitializeCharacterDropDown(_newLineDelimiter, _exportFile.NewlineDelimiter)
 		kCura.EDDS.WinForm.Utility.InitializeCharacterDropDown(_multiRecordDelimiter, _exportFile.MultiRecordDelimiter)
+		Select Case Me.ExportFile.TypeOfExport
+			Case ExportFile.ExportType.ArtifactSearch
+				_searchesBox.Text = "Searches"
+				Me.Text = "Search Export Form"
+			Case ExportFile.ExportType.ParentSearch, ExportFile.ExportType.AncestorSearch
+				_searchesBox.Text = "Views"
+				Me.Text = "Native Export Form"
+			Case ExportFile.ExportType.Production
+				_searchesBox.Text = "Views"
+				Me.Text = "Production Export Form"
+		End Select
 		RunMenu.Enabled = ReadyToRun()
 	End Sub
 
