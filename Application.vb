@@ -772,7 +772,7 @@ Namespace kCura.EDDS.WinForm
 		Friend Function DefaultCredentialsAreGood() As Boolean
 			Dim cred As System.Net.NetworkCredential = DirectCast(System.Net.CredentialCache.DefaultCredentials, System.Net.NetworkCredential)
 			Try
-				Dim myHttpWebRequest As System.Net.HttpWebRequest = DirectCast(System.Net.WebRequest.Create(kCura.WinEDDS.Config.WebServiceURL), System.Net.HttpWebRequest)
+				Dim myHttpWebRequest As System.Net.HttpWebRequest = DirectCast(System.Net.WebRequest.Create(kCura.WinEDDS.Config.WebServiceURL & "\RelativityManager.asmx"), System.Net.HttpWebRequest)
 				myHttpWebRequest.Credentials = System.Net.CredentialCache.DefaultCredentials
 				Dim myHttpWebResponse As System.Net.HttpWebResponse = DirectCast(myHttpWebRequest.GetResponse(), System.Net.HttpWebResponse)
 				CheckVersion(System.Net.CredentialCache.DefaultCredentials)

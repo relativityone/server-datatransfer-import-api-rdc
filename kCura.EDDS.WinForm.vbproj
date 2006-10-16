@@ -357,7 +357,6 @@
                     RelPath = "images\relativity.ICO"
                     BuildAction = "Content"
                 />
-                <Folder RelPath = "Service\" />
             </Include>
         </Files>
     </VisualBasic>
