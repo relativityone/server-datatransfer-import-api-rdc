@@ -12,7 +12,6 @@ Namespace kCura.WinEDDS
 			_startTime = DateTime.Now
 			_warningCount = 0
 			_errorCount = 0
-			'_productionExporter = New ProductionExporter(ExportFile.Credential, ExportFile.ArtifactID, ExportFile.FolderPath, ExportFile.CaseInfo, ExportFile.Overwrite, ExportFile.ExportNative, Me.ProcessController, ExportFile.LogFileFormat, ExportFile.CookieContainer, ExportFile.Identity)
 			_productionExporter = New ProductionExporter(Me.ExportFile, Me.ProcessController)
 			_productionExporter.CreateVolumes()
 			Me.ProcessObserver.RaiseProcessCompleteEvent()
