@@ -274,7 +274,7 @@ Namespace kCura.WinEDDS
 							fullTextGuid = _fileManager.GetFullTextGuidsByDocumentArtifactIdAndType(CType(documentImagesTable.Rows(count)("DocumentArtifactID"), Int32), 2)
 							Try
 								fullText = _fullTextDownloader.ReadFullTextFile(_sourceDirectory & fullTextGuid)
-								pageText = fullText.Substring(currentPageFirstByteNumber, CInt(documentImagesTable.Rows(count)("ByteRange")) - 1)
+								pageText = fullText.Substring(currentPageFirstByteNumber, CInt(documentImagesTable.Rows(count)("ByteRange")))
 								pageText = pageText.Replace(ChrW(10), " ")
 								pageText = pageText.Replace(",", "")
 								pageText = pageText.Replace(" ", "|0|0|0|0^")
