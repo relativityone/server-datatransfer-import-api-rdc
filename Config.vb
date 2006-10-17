@@ -31,6 +31,12 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
+		Public Shared ReadOnly Property AuthenticationMode() As String
+			Get
+				Return CType(ConfigSettings("AuthenticationMode"), String)
+			End Get
+		End Property
+
 		Public Shared Property WebServiceURL() As String
 			Get
 				Dim value As String = Config.GetRegistryKeyValue("WebServiceURL")

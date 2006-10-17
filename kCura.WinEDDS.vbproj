@@ -345,7 +345,7 @@
                 />
                 <File
                     RelPath = "Service\DocumentManager.vb"
-                    SubType = "Code"
+                    SubType = "code"
                     BuildAction = "Compile"
                 />
                 <File
@@ -355,7 +355,7 @@
                 />
                 <File
                     RelPath = "Service\FieldQuery.vb"
-                    SubType = "Code"
+                    SubType = "code"
                     BuildAction = "Compile"
                 />
                 <File
