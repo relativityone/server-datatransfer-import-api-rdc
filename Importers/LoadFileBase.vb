@@ -252,7 +252,7 @@ Namespace kCura.WinEDDS
 								Try
 									nullableDateValue = New NullableDateTime(New System.DateTime(year, month, day))
 								Catch dx As System.Exception
-									Throw New DateException(Me.CurrentLineNumber, column)
+									Throw New kCura.Utility.DelimitedFileImporter.DateException(Me.CurrentLineNumber, column)
 								End Try
 							End If
 						End If
