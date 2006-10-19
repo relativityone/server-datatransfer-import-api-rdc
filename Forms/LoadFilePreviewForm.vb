@@ -58,6 +58,7 @@ Namespace kCura.EDDS.WinForm
 			Me.Controls.Add(Me._grid)
 			Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
 			Me.Name = "LoadFilePreviewForm"
+			Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
 			Me.Text = "Preview Load File..."
 			CType(Me._grid, System.ComponentModel.ISupportInitialize).EndInit()
 			Me.ResumeLayout(False)

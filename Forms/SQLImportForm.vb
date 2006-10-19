@@ -32,29 +32,30 @@ Namespace kCura.EDDS.WinForm
     'Do not modify it using the code editor.
     Friend WithEvents _go As System.Windows.Forms.Button
     <System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
-      Dim resources As System.Resources.ResourceManager = New System.Resources.ResourceManager(GetType(SQLImportForm))
-      Me._go = New System.Windows.Forms.Button
-      Me.SuspendLayout()
-      '
-      '_go
-      '
-      Me._go.Location = New System.Drawing.Point(4, 4)
-      Me._go.Name = "_go"
-      Me._go.Size = New System.Drawing.Size(280, 264)
-      Me._go.TabIndex = 0
-      Me._go.Text = "Go!"
-      '
-      'SQLImportForm
-      '
-      Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
-      Me.ClientSize = New System.Drawing.Size(292, 273)
-      Me.Controls.Add(Me._go)
-      Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
-      Me.Name = "SQLImportForm"
-      Me.Text = "Import from SQL Database..."
-      Me.ResumeLayout(False)
+			Dim resources As System.Resources.ResourceManager = New System.Resources.ResourceManager(GetType(SQLImportForm))
+			Me._go = New System.Windows.Forms.Button
+			Me.SuspendLayout()
+			'
+			'_go
+			'
+			Me._go.Location = New System.Drawing.Point(4, 4)
+			Me._go.Name = "_go"
+			Me._go.Size = New System.Drawing.Size(280, 264)
+			Me._go.TabIndex = 0
+			Me._go.Text = "Go!"
+			'
+			'SQLImportForm
+			'
+			Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
+			Me.ClientSize = New System.Drawing.Size(292, 273)
+			Me.Controls.Add(Me._go)
+			Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
+			Me.Name = "SQLImportForm"
+			Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
+			Me.Text = "Import from SQL Database..."
+			Me.ResumeLayout(False)
 
-    End Sub
+		End Sub
 
 #End Region
 

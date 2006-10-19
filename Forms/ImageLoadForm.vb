@@ -205,6 +205,7 @@ Namespace kCura.EDDS.WinForm
 			Me.MaximizeBox = False
 			Me.Menu = Me.MainMenu
 			Me.Name = "ImageLoad"
+			Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
 			Me.Text = "Import Image Load File"
 			Me.GroupBox3.ResumeLayout(False)
 			Me.GroupBox233.ResumeLayout(False)

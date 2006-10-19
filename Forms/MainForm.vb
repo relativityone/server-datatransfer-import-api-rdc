@@ -274,6 +274,7 @@ Namespace kCura.EDDS.WinForm
 			Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
 			Me.Menu = Me.MainMenu
 			Me.Name = "MainForm"
+			Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
 			Me.Text = "kCura Relativity Document Review"
 			CType(Me.AppStatusPanel, System.ComponentModel.ISupportInitialize).EndInit()
 			CType(Me.LoggedInUserPanel, System.ComponentModel.ISupportInitialize).EndInit()

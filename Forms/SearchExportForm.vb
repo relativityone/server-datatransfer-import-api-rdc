@@ -258,6 +258,7 @@ Public Class SearchExportForm
 		Me.Controls.Add(Me._searchesBox)
 		Me.Menu = Me.MainMenu1
 		Me.Name = "SearchExportForm"
+		Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
 		Me.Text = "SearchExportForm"
 		Me._searchesBox.ResumeLayout(False)
 		Me.GroupBox3.ResumeLayout(False)

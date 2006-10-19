@@ -51,7 +51,7 @@ Namespace kCura.EDDS.WinForm
 			'
 			Me._loginTextBox.Location = New System.Drawing.Point(8, 24)
 			Me._loginTextBox.Name = "_loginTextBox"
-			Me._loginTextBox.Size = New System.Drawing.Size(232, 20)
+			Me._loginTextBox.Size = New System.Drawing.Size(240, 20)
 			Me._loginTextBox.TabIndex = 0
 			Me._loginTextBox.Text = ""
 			'
@@ -68,7 +68,7 @@ Namespace kCura.EDDS.WinForm
 			Me._passwordTextBox.Location = New System.Drawing.Point(8, 72)
 			Me._passwordTextBox.Name = "_passwordTextBox"
 			Me._passwordTextBox.PasswordChar = Microsoft.VisualBasic.ChrW(42)
-			Me._passwordTextBox.Size = New System.Drawing.Size(232, 20)
+			Me._passwordTextBox.Size = New System.Drawing.Size(240, 20)
 			Me._passwordTextBox.TabIndex = 2
 			Me._passwordTextBox.Text = ""
 			'
@@ -100,7 +100,7 @@ Namespace kCura.EDDS.WinForm
 			Me.AcceptButton = Me._okButton
 			Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
 			Me.CancelButton = Me._cancelButton
-			Me.ClientSize = New System.Drawing.Size(248, 149)
+			Me.ClientSize = New System.Drawing.Size(257, 158)
 			Me.Controls.Add(Me._cancelButton)
 			Me.Controls.Add(Me._okButton)
 			Me.Controls.Add(Me.Label2)
@@ -109,11 +109,12 @@ Namespace kCura.EDDS.WinForm
 			Me.Controls.Add(Me._loginTextBox)
 			Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
 			Me.MaximizeBox = False
-			Me.MaximumSize = New System.Drawing.Size(256, 176)
+			Me.MaximumSize = New System.Drawing.Size(265, 185)
 			Me.MinimizeBox = False
-			Me.MinimumSize = New System.Drawing.Size(256, 176)
+			Me.MinimumSize = New System.Drawing.Size(265, 185)
 			Me.Name = "LoginForm"
 			Me.ShowInTaskbar = False
+			Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
 			Me.Text = "Login"
 			Me.TopMost = True
 			Me.ResumeLayout(False)

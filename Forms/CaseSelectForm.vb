@@ -63,8 +63,8 @@ Namespace kCura.EDDS.WinForm
 			'CaseListView
 			'
 			Me.CaseListView.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-						Or System.Windows.Forms.AnchorStyles.Left) _
-						Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+									Or System.Windows.Forms.AnchorStyles.Left) _
+									Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me.CaseListView.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
 			Me.CaseListView.Columns.AddRange(New System.Windows.Forms.ColumnHeader() {Me.NameColumnHeader})
 			Me.CaseListView.Location = New System.Drawing.Point(4, 4)
@@ -91,6 +91,7 @@ Namespace kCura.EDDS.WinForm
 			Me.MinimizeBox = False
 			Me.Name = "CaseSelectForm"
 			Me.ShowInTaskbar = False
+			Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
 			Me.Text = "Select..."
 			Me.TopMost = True
 			Me.ResumeLayout(False)

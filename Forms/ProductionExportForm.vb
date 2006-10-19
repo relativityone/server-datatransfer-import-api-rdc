@@ -50,6 +50,7 @@ Namespace kCura.EDDS.WinForm
 			Me._browseButton = New System.Windows.Forms.Button
 			Me._folderPath = New System.Windows.Forms.TextBox
 			Me.GroupBox1 = New System.Windows.Forms.GroupBox
+			Me._exportNatives = New System.Windows.Forms.CheckBox
 			Me._productionList = New System.Windows.Forms.ComboBox
 			Me.MainMenu = New System.Windows.Forms.MainMenu
 			Me.ExportMenu = New System.Windows.Forms.MenuItem
@@ -57,7 +58,6 @@ Namespace kCura.EDDS.WinForm
 			Me._destinationFolderDialog = New System.Windows.Forms.FolderBrowserDialog
 			Me.GroupBox2 = New System.Windows.Forms.GroupBox
 			Me._loadFileFormat = New System.Windows.Forms.ComboBox
-			Me._exportNatives = New System.Windows.Forms.CheckBox
 			Me.GroupBox3.SuspendLayout()
 			Me.GroupBox1.SuspendLayout()
 			Me.GroupBox2.SuspendLayout()
@@ -111,6 +111,14 @@ Namespace kCura.EDDS.WinForm
 			Me.GroupBox1.TabStop = False
 			Me.GroupBox1.Text = "Production"
 			'
+			'_exportNatives
+			'
+			Me._exportNatives.Location = New System.Drawing.Point(8, 52)
+			Me._exportNatives.Name = "_exportNatives"
+			Me._exportNatives.Size = New System.Drawing.Size(548, 16)
+			Me._exportNatives.TabIndex = 2
+			Me._exportNatives.Text = "Export Natives"
+			'
 			'_productionList
 			'
 			Me._productionList.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
@@ -154,14 +162,6 @@ Namespace kCura.EDDS.WinForm
 			Me._loadFileFormat.Size = New System.Drawing.Size(150, 21)
 			Me._loadFileFormat.TabIndex = 5
 			'
-			'_exportNatives
-			'
-			Me._exportNatives.Location = New System.Drawing.Point(8, 52)
-			Me._exportNatives.Name = "_exportNatives"
-			Me._exportNatives.Size = New System.Drawing.Size(548, 16)
-			Me._exportNatives.TabIndex = 2
-			Me._exportNatives.Text = "Export Natives"
-			'
 			'ProductionExportForm
 			'
 			Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
@@ -172,6 +172,7 @@ Namespace kCura.EDDS.WinForm
 			Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
 			Me.Menu = Me.MainMenu
 			Me.Name = "ProductionExportForm"
+			Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
 			Me.Text = "Export Production"
 			Me.GroupBox3.ResumeLayout(False)
 			Me.GroupBox1.ResumeLayout(False)

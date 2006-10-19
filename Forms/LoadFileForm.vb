@@ -118,6 +118,7 @@ Namespace kCura.EDDS.WinForm
 			Me.GroupBox233 = New System.Windows.Forms.GroupBox
 			Me._overWrite = New System.Windows.Forms.CheckBox
 			Me.GroupBox4 = New System.Windows.Forms.GroupBox
+			Me._extractMd5Hash = New System.Windows.Forms.CheckBox
 			Me._loadNativeFiles = New System.Windows.Forms.CheckBox
 			Me._extractFullTextFromNativeFile = New System.Windows.Forms.CheckBox
 			Me._nativeFilePathField = New System.Windows.Forms.ComboBox
@@ -129,7 +130,6 @@ Namespace kCura.EDDS.WinForm
 			Me._fileColumns = New kCura.Windows.Forms.TwoListBox
 			Me._fieldMap = New kCura.Windows.Forms.TwoListBox
 			Me.HelpProvider1 = New System.Windows.Forms.HelpProvider
-			Me._extractMd5Hash = New System.Windows.Forms.CheckBox
 			Me.GroupBox1.SuspendLayout()
 			Me.TabControl1.SuspendLayout()
 			Me._loadFileTab.SuspendLayout()
@@ -448,6 +448,14 @@ Namespace kCura.EDDS.WinForm
 			Me.GroupBox4.TabStop = False
 			Me.GroupBox4.Text = "Native File Behavior"
 			'
+			'_extractMd5Hash
+			'
+			Me._extractMd5Hash.Location = New System.Drawing.Point(8, 56)
+			Me._extractMd5Hash.Name = "_extractMd5Hash"
+			Me._extractMd5Hash.Size = New System.Drawing.Size(180, 20)
+			Me._extractMd5Hash.TabIndex = 26
+			Me._extractMd5Hash.Text = "Extract MD5 Hash"
+			'
 			'_loadNativeFiles
 			'
 			Me._loadNativeFiles.Location = New System.Drawing.Point(8, 16)
@@ -523,7 +531,7 @@ Namespace kCura.EDDS.WinForm
 			'_fileColumns
 			'
 			Me._fileColumns.KeepButtonsCentered = False
-			Me._fileColumns.LeftOrderControlsVisible = True
+			Me._fileColumns.LeftOrderControlsVisible = False
 			Me._fileColumns.Location = New System.Drawing.Point(372, 112)
 			Me._fileColumns.Name = "_fileColumns"
 			Me._fileColumns.RightOrderControlVisible = False
@@ -536,17 +544,9 @@ Namespace kCura.EDDS.WinForm
 			Me._fieldMap.LeftOrderControlsVisible = False
 			Me._fieldMap.Location = New System.Drawing.Point(4, 112)
 			Me._fieldMap.Name = "_fieldMap"
-			Me._fieldMap.RightOrderControlVisible = True
+			Me._fieldMap.RightOrderControlVisible = False
 			Me._fieldMap.Size = New System.Drawing.Size(360, 276)
 			Me._fieldMap.TabIndex = 1
-			'
-			'_extractMd5Hash
-			'
-			Me._extractMd5Hash.Location = New System.Drawing.Point(8, 56)
-			Me._extractMd5Hash.Name = "_extractMd5Hash"
-			Me._extractMd5Hash.Size = New System.Drawing.Size(180, 20)
-			Me._extractMd5Hash.TabIndex = 26
-			Me._extractMd5Hash.Text = "Extract MD5 Hash"
 			'
 			'LoadFileForm
 			'
@@ -559,6 +559,7 @@ Namespace kCura.EDDS.WinForm
 			Me.MaximizeBox = False
 			Me.Menu = Me.MainMenu
 			Me.Name = "LoadFileForm"
+			Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
 			Me.Text = "Import Load File"
 			Me.GroupBox1.ResumeLayout(False)
 			Me.TabControl1.ResumeLayout(False)
