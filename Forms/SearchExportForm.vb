@@ -199,7 +199,7 @@ Public Class SearchExportForm
 		Me.Label6.Name = "Label6"
 		Me.Label6.Size = New System.Drawing.Size(120, 16)
 		Me.Label6.TabIndex = 6
-		Me.Label6.Text = "Multi-Record Delimiter"
+		Me.Label6.Text = "Multi-Value Delimiter"
 		'
 		'Label4
 		'
