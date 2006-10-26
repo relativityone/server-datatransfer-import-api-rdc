@@ -124,10 +124,10 @@ Namespace kCura.Windows.Forms
 
 		End Sub
 
-    Private Sub TextBox_Resize(ByVal sender As System.Object, ByVal e As System.EventArgs)
-      _visibleLineCount = CType(System.Math.Round((Me.Height / 15), 0), Int32)
-      DumpOutput()
-    End Sub
+		Private Sub TextBox_Resize1(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles TextBox.Resize
+			_visibleLineCount = CType(System.Math.Round((Me.Height / 15), 0), Int32)
+			DumpOutput()
+		End Sub
 
-  End Class
+	End Class
 End Namespace
