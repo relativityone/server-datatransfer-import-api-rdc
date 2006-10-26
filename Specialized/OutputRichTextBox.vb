@@ -31,9 +31,9 @@ Namespace kCura.Windows.Forms
     'NOTE: The following procedure is required by the Windows Form Designer
     'It can be modified using the Windows Form Designer.  
     'Do not modify it using the code editor.
-    Friend WithEvents TextBox As kCura.Windows.Forms.RichTextBox
+    Friend WithEvents TextBox As System.Windows.Forms.TextBox
     <System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
-      Me.TextBox = New kCura.Windows.Forms.RichTextBox
+      Me.TextBox = New System.Windows.Forms.TextBox
       Me.SuspendLayout()
       '
       'TextBox
@@ -41,20 +41,16 @@ Namespace kCura.Windows.Forms
       Me.TextBox.Dock = System.Windows.Forms.DockStyle.Fill
       Me.TextBox.Font = New System.Drawing.Font("Courier New", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
       Me.TextBox.Location = New System.Drawing.Point(0, 0)
+      Me.TextBox.Multiline = True
       Me.TextBox.Name = "TextBox"
-
-      'removed for safe mode.
-      'Me.TextBox.SelectionBackColor = System.Drawing.Color.Black
-
       Me.TextBox.Size = New System.Drawing.Size(150, 144)
       Me.TextBox.TabIndex = 0
       Me.TextBox.Text = ""
-      Me.TextBox.WordWrap = False
       '
-      'OutputTextBox
+      'OutputRichTextBox
       '
       Me.Controls.Add(Me.TextBox)
-      Me.Name = "OutputTextBox"
+      Me.Name = "OutputRichTextBox"
       Me.Size = New System.Drawing.Size(150, 144)
       Me.ResumeLayout(False)
 
@@ -111,39 +107,27 @@ Namespace kCura.Windows.Forms
 
 		Private Sub DumpOutput()
 
-			' TODO: maybe get the nice colering when you have time
-			'TextBox.SelectionColor = System.Drawing.Color.Black
-			'TextBox.SelectionBackColor = System.Drawing.Color.Gainsboro
-			'TextBox.SelectedText = System.DateTime.Now.ToShortTimeString + " " + _totalOutputLineCount.ToString("000000")
-			'TextBox.Select(TextBox.TextLength, 0)
-			'TextBox.SelectionBackColor = System.Drawing.Color.White
-			'TextBox.SelectionColor = System.Drawing.Color.Black
-			'TextBox.SelectedText = "  " + message
-			'TextBox.Select(TextBox.TextLength, 0)
-			'TextBox.SelectedText = vbCrLf
-			'TextBox.ScrollToBottom()
-
-			If _visibleLineCount > 0 Then
-				Dim sb As New System.Text.StringBuilder
-				Dim i As Int32
-				Dim j As Int32
-				i = _totalOutput.Count - _visibleLineCount
-				If i < 0 Then i = 0
-				For j = i To _totalOutput.Count - 1
-					sb.Append(_totalOutput.Item(j))
-				Next
-				' get rid of last line feed so it doesn't scroll
-				If sb.Length > 2 Then
-					TextBox.Text = sb.Remove(sb.Length - 2, 2).ToString()
-				End If
-			End If
+      If _visibleLineCount > 0 Then
+        Dim sb As New System.Text.StringBuilder
+        Dim i As Int32
+        Dim j As Int32
+        i = _totalOutput.Count - _visibleLineCount
+        If i < 0 Then i = 0
+        For j = i To _totalOutput.Count - 1
+          sb.Append(_totalOutput.Item(j))
+        Next
+        ' get rid of last line feed so it doesn't scroll
+        If sb.Length > 2 Then
+          TextBox.Text = sb.Remove(sb.Length - 2, 2).ToString()
+        End If
+      End If
 
 		End Sub
 
-		Private Sub TextBox_Resize(ByVal sender As Object, ByVal e As System.EventArgs) Handles TextBox.Resize
-			_visibleLineCount = CType(System.Math.Round((Me.Height / 15), 0), Int32)
-			DumpOutput()
-		End Sub
+    Private Sub TextBox_Resize(ByVal sender As System.Object, ByVal e As System.EventArgs)
+      _visibleLineCount = CType(System.Math.Round((Me.Height / 15), 0), Int32)
+      DumpOutput()
+    End Sub
 
-	End Class
+  End Class
 End Namespace
