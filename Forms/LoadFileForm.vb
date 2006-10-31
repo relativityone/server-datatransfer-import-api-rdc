@@ -817,7 +817,7 @@ Namespace kCura.EDDS.WinForm
 				If Not _nativeFilePathField.Enabled Then Return False
 				Dim item As String
 				For Each item In _fieldMap.RightListBoxItems
-					If _application.CurrentFields.Item(item).FieldCategoryID = kCura.EDDS.Types.FieldCategory.DuplicateHash Then
+					If _application.CurrentFields.Item(item).FieldCategoryID = kCura.DynamicFields.Types.FieldCategory.DuplicateHash Then
 						Return False
 					End If
 				Next
