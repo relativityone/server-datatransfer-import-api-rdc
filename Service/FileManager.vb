@@ -134,13 +134,13 @@ Namespace kCura.WinEDDS.Service
 			End If
 		End Function
 
-		Public Shadows Function RetrieveNativesForProductionExport(ByVal productionArtifactID As Int32) As System.Data.DataSet
-			If kCura.WinEDDS.Config.UsesWebAPI Then
-				Return MyBase.RetrieveNativesForProductionExport(productionArtifactID)
-			Else
-				'Return kCura.EDDS.Service.FileQuery.RetrieveNativesForProductionExport(productionArtifactID, _identity).ToDataSet()
-			End If
-		End Function
+		'Public Shadows Function RetrieveNativesForProductionExport(ByVal productionArtifactID As Int32) As System.Data.DataSet
+		'	If kCura.WinEDDS.Config.UsesWebAPI Then
+		'		Return MyBase.RetrieveNativesForProductionExport(productionArtifactID)
+		'	Else
+		'		'Return kCura.EDDS.Service.FileQuery.RetrieveNativesForProductionExport(productionArtifactID, _identity).ToDataSet()
+		'	End If
+		'End Function
 
 		Public Shadows Function RetrieveFileGuidsByDocumentArtifactIDAndProductionArtifactID(ByVal documentArtifactID As Int32, ByVal productionArtifactID As Int32) As String()
 			If kCura.WinEDDS.Config.UsesWebAPI Then

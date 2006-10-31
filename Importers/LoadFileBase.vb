@@ -172,7 +172,7 @@ Namespace kCura.WinEDDS
 			Else
 				value = values(column)
 			End If
-			If field.FieldCategoryID = kCura.EDDS.Types.FieldCategory.FullText Then
+			If field.FieldCategoryID = kCura.DynamicFields.Types.FieldCategory.FullText Then
 				value = value.Replace(NewlineProxy, Microsoft.VisualBasic.ControlChars.NewLine)
 			End If
 			SetFieldValue(field, value, column)
@@ -181,22 +181,22 @@ Namespace kCura.WinEDDS
 			SetFieldValue(field, value, column, False)
 		End Sub
 		Public Sub SetFieldValue(ByVal field As DocumentField, ByVal value As String, ByVal column As Int32, ByVal forPreview As Boolean)
-			Select Case CType(field.FieldTypeID, kCura.EDDS.Types.FieldTypeHelper.FieldType)
-				Case kCura.EDDS.Types.FieldTypeHelper.FieldType.Boolean
+			Select Case CType(field.FieldTypeID, kCura.DynamicFields.Types.FieldTypeHelper.FieldType)
+				Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Boolean
 					field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(GetNullableBoolean(value, column))
-				Case kCura.EDDS.Types.FieldTypeHelper.FieldType.Integer
+				Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Integer
 					field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(GetNullableInteger(value, column))
-				Case kCura.EDDS.Types.FieldTypeHelper.FieldType.Currency, kCura.EDDS.Types.FieldTypeHelper.FieldType.Decimal
+				Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Currency, kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Decimal
 					field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(GetNullableDecimal(value, column))
-				Case kCura.EDDS.Types.FieldTypeHelper.FieldType.Date
+				Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Date
 					field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(GetNullableDateTime(value, column))
-				Case kCura.EDDS.Types.FieldTypeHelper.FieldType.Code
+				Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Code
 					Dim fieldValue As String = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(GetCode(value, column, field, forPreview))
 					If forPreview And fieldValue = "-1" Then
 						fieldValue = "[new code]"
 					End If
 					field.Value = fieldValue
-				Case kCura.EDDS.Types.FieldTypeHelper.FieldType.MultiCode
+				Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.MultiCode
 					If value = String.Empty Then
 						field.Value = String.Empty
 					Else
@@ -221,7 +221,7 @@ Namespace kCura.WinEDDS
 						End If
 						field.Value = newVal
 					End If
-				Case kCura.EDDS.Types.FieldTypeHelper.FieldType.Varchar
+				Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Varchar
 					field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(GetNullableFixedString(value, column, field.FieldLength.Value))
 				Case Else				'FieldTypeHelper.FieldType.Text
 					If value.Length > 100 AndAlso forPreview Then

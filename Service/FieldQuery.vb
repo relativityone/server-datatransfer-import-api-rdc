@@ -41,8 +41,8 @@ Namespace kCura.WinEDDS.Service
 					.IsEditable = CType(dv(i)("IsEditable"), Boolean)
 					.IsRequired = CType(dv(i)("IsRequired"), Boolean)
 					.MaxLength = NullableTypes.HelperFunctions.DBNullConvert.ToNullableInt32(dv(i)("MaxLength"))
-					.Removable = CType(dv(i)("Removable"), Boolean)
-					.Visible = CType(dv(i)("Visible"), Boolean)
+					.IsRemovable = CType(dv(i)("IsRemovable"), Boolean)
+					.IsVisible = CType(dv(i)("IsVisible"), Boolean)
 				End With
 				fields(i) = field
 			Next

@@ -196,24 +196,6 @@ Namespace kCura.EDDS.WebAPI.FileManagerBase
         End Function
         
         '<remarks/>
-        <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/FileManager/RetrieveNativesForProductionExport", RequestNamespace:="http://www.kCura.com/EDDS/FileManager", ResponseNamespace:="http://www.kCura.com/EDDS/FileManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
-        Public Function RetrieveNativesForProductionExport(ByVal productionArtifactID As Integer) As System.Data.DataSet
-            Dim results() As Object = Me.Invoke("RetrieveNativesForProductionExport", New Object() {productionArtifactID})
-            Return CType(results(0),System.Data.DataSet)
-        End Function
-        
-        '<remarks/>
-        Public Function BeginRetrieveNativesForProductionExport(ByVal productionArtifactID As Integer, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
-            Return Me.BeginInvoke("RetrieveNativesForProductionExport", New Object() {productionArtifactID}, callback, asyncState)
-        End Function
-        
-        '<remarks/>
-        Public Function EndRetrieveNativesForProductionExport(ByVal asyncResult As System.IAsyncResult) As System.Data.DataSet
-            Dim results() As Object = Me.EndInvoke(asyncResult)
-            Return CType(results(0),System.Data.DataSet)
-        End Function
-        
-        '<remarks/>
         <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/FileManager/RetrieveNativesFileSize", RequestNamespace:="http://www.kCura.com/EDDS/FileManager", ResponseNamespace:="http://www.kCura.com/EDDS/FileManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
         Public Function RetrieveNativesFileSize(ByVal sourceDirectory As String, ByVal guid As String) As Long
             Dim results() As Object = Me.Invoke("RetrieveNativesFileSize", New Object() {sourceDirectory, guid})

@@ -409,7 +409,7 @@ Namespace kCura.WinEDDS
 			For Each fieldDTO In documentDTO.Fields
 				docField = selectedFields.Item(fieldDTO.ArtifactID)
 				If docField Is Nothing Then
-					If fieldDTO.FieldCategoryID = kCura.EDDS.Types.FieldCategory.FullText Then
+					If fieldDTO.FieldCategoryID = kCura.DynamicFields.Types.FieldCategory.FullText Then
 						fieldDTO.Value = String.Empty
 					Else
 						If fieldDTO.Value Is Nothing Then
@@ -421,7 +421,7 @@ Namespace kCura.WinEDDS
 						Case kCura.EDDS.WebAPI.DocumentManagerBase.FieldType.MultiCode
 							SetMultiCode(fieldDTO, docField)
 						Case Else
-							If docField.FieldCategoryID = kCura.EDDS.Types.FieldCategory.FullText Then
+							If docField.FieldCategoryID = kCura.DynamicFields.Types.FieldCategory.FullText Then
 								fieldDTO.Value = _uploader.UploadTextAsFile(docField.Value, _folderid, System.Guid.NewGuid.ToString)
 								'fieldDTO.Value = encoder.GetBytes(docField.Value)
 							Else

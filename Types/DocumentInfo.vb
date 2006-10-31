@@ -174,7 +174,7 @@ Namespace kCura.WinEDDS
 			Dim docField As DocumentField
 			For Each docField In Fields
 				'If Not IgnoreField(docField.FieldName) Then
-				If Not docField.FieldCategoryID = kCura.EDDS.Types.FieldCategory.FullText AndAlso Not IgnoreField(docField.FieldName) Then
+				If Not docField.FieldCategoryID = kCura.DynamicFields.Types.FieldCategory.FullText AndAlso Not IgnoreField(docField.FieldName) Then
 					sb.AppendFormat(" [{0}: {1}]", docField.FieldName, docField.Value)
 				End If
 			Next

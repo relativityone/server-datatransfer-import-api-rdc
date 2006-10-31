@@ -53,7 +53,7 @@ Namespace kCura.WinEDDS
 			Dim df As DocumentField
 			Dim al As New ArrayList
 			For Each df In _idIndex.Values
-				If df.FieldCategoryID = kCura.EDDS.Types.FieldCategory.Identifier Then
+				If df.FieldCategoryID = kCura.DynamicFields.Types.FieldCategory.Identifier Then
 					al.Add(df)
 				End If
 			Next
@@ -77,9 +77,9 @@ Namespace kCura.WinEDDS
 			Dim fieldname As String
 			For Each field In _idIndex.Values
 				If ( _
-				 field.FieldCategoryID <> 3 AndAlso _
+				 field.FieldCategoryID <> 8 AndAlso _
 				 field.FieldCategoryID <> 5 AndAlso _
-				 field.FieldTypeID = kCura.EDDS.Types.FieldTypeHelper.FieldType.Varchar _
+				 field.FieldTypeID = kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Varchar _
 				) Then
 					al.Add(field.FieldName)
 				End If

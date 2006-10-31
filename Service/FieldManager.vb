@@ -35,7 +35,7 @@ Namespace kCura.WinEDDS.Service
 #Region " Translations "
 		Public Shared Function DTOtoDocumentField(ByVal dto As kCura.EDDS.WebAPI.DocumentManagerBase.Field) As DocumentField
 			Dim retval As New DocumentField(dto.DisplayName, dto.ArtifactID, dto.FieldTypeID, dto.FieldCategoryID, dto.CodeTypeID, dto.MaxLength)
-			If retval.FieldCategoryID = kCura.EDDS.Types.FieldCategory.FullText Then
+			If retval.FieldCategoryID = kCura.DynamicFields.Types.FieldCategory.FullText Then
 				retval.Value = System.Text.ASCIIEncoding.ASCII.GetString(DirectCast(dto.Value, Byte()))
 			Else
 				retval.Value = dto.Value.ToString

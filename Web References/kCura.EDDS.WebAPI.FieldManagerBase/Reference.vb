@@ -80,16 +80,22 @@ Namespace kCura.EDDS.WebAPI.FieldManagerBase
         Inherits Artifact
         
         '<remarks/>
-        Public ArtifactViewFieldID As Integer
+        Public FieldArtifactTypeID As Integer
         
         '<remarks/>
         Public DisplayName As String
         
         '<remarks/>
-        Public IsRequired As Boolean
+        Public FieldTypeID As Integer
         
         '<remarks/>
-        Public Removable As Boolean
+        Public FieldType As FieldType
+        
+        '<remarks/>
+        Public FieldCategoryID As Integer
+        
+        '<remarks/>
+        Public ArtifactViewFieldID As Integer
         
         '<remarks/>
         Public CodeTypeID As NullableInt32
@@ -98,22 +104,16 @@ Namespace kCura.EDDS.WebAPI.FieldManagerBase
         Public MaxLength As NullableInt32
         
         '<remarks/>
-        Public FieldTypeID As Integer
+        Public IsRequired As Boolean
+        
+        '<remarks/>
+        Public IsRemovable As Boolean
         
         '<remarks/>
         Public IsEditable As Boolean
         
         '<remarks/>
-        Public Visible As Boolean
-        
-        '<remarks/>
-        Public FieldCategoryID As Integer
-        
-        '<remarks/>
-        Public AddToFullText As Boolean
-        
-        '<remarks/>
-        Public AddToConceptualText As Boolean
+        Public IsVisible As Boolean
         
         '<remarks/>
         Public IsArtifactBaseField As Boolean
@@ -122,7 +122,7 @@ Namespace kCura.EDDS.WebAPI.FieldManagerBase
         Public Value As Object
         
         '<remarks/>
-        Public FieldType As FieldType
+        Public TableName As String
         
         '<remarks/>
         Public ColumnName As String
@@ -144,7 +144,60 @@ Namespace kCura.EDDS.WebAPI.FieldManagerBase
         
         '<remarks/>
         Public RepeatColumn As NullableInt32
+        
+        '<remarks/>
+        Public AssociativeArtifactTypeID As NullableInt32
+        
+        '<remarks/>
+        Public IsAvailableToAssociativeObjects As Boolean
+        
+        '<remarks/>
+        Public IsGroupByEnabled As Boolean
+        
+        '<remarks/>
+        Public IsIndexEnabled As Boolean
+        
+        '<remarks/>
+        Public IsConceptualEnabled As Boolean
     End Class
+    
+    '<remarks/>
+    <System.Xml.Serialization.XmlTypeAttribute([Namespace]:="http://foley.com/EDDS/FieldManager")>  _
+    Public Enum FieldType
+        
+        '<remarks/>
+        Varchar
+        
+        '<remarks/>
+        [Integer]
+        
+        '<remarks/>
+        [Date]
+        
+        '<remarks/>
+        [Boolean]
+        
+        '<remarks/>
+        [Text]
+        
+        '<remarks/>
+        Code
+        
+        '<remarks/>
+        [Decimal]
+        
+        '<remarks/>
+        Currency
+        
+        '<remarks/>
+        MultiCode
+        
+        '<remarks/>
+        File
+        
+        '<remarks/>
+        [Object]
+    End Enum
     
     '<remarks/>
     <System.Xml.Serialization.XmlTypeAttribute([Namespace]:="http://foley.com/EDDS/FieldManager"),  _
@@ -193,36 +246,4 @@ Namespace kCura.EDDS.WebAPI.FieldManagerBase
         '<remarks/>
         Public DeleteFlag As Boolean
     End Class
-    
-    '<remarks/>
-    <System.Xml.Serialization.XmlTypeAttribute([Namespace]:="http://foley.com/EDDS/FieldManager")>  _
-    Public Enum FieldType
-        
-        '<remarks/>
-        Varchar
-        
-        '<remarks/>
-        [Integer]
-        
-        '<remarks/>
-        [Date]
-        
-        '<remarks/>
-        [Boolean]
-        
-        '<remarks/>
-        [Text]
-        
-        '<remarks/>
-        Code
-        
-        '<remarks/>
-        [Decimal]
-        
-        '<remarks/>
-        Currency
-        
-        '<remarks/>
-        MultiCode
-    End Enum
 End Namespace
