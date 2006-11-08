@@ -232,7 +232,7 @@ Namespace kCura.EDDS.WinForm
 		Private Sub PopulateImageLoadFile()
 			Me.Cursor = Cursors.WaitCursor
 			ImageLoadFile.Overwrite = _overWrite.Checked
-			ImageLoadFile.DestinationFolderID = _application.SelectedCaseFolderID
+			ImageLoadFile.DestinationFolderID = _application.SelectedCaseInfo.RootFolderID
 			Me.ImageLoadFile.ReplaceFullText = _replaceFullText.Checked
 			If _controlKeyField.SelectedItem Is Nothing Then
 				ImageLoadFile.ControlKeyField = Nothing
@@ -249,10 +249,6 @@ Namespace kCura.EDDS.WinForm
 			_overWrite.Checked = ImageLoadFile.Overwrite
 			ReadyToRun()
 			Me.Cursor = Cursors.Default
-			'Dim caseField As String
-			'For Each caseField In _application.GetCaseFields(_application.SelectedCaseInfo.RootArtifactID)
-			'	_controlKeyField.Items.Add(caseField)
-			'Next
 		End Sub
 
 		Private Sub ImportFileMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ImportFileMenu.Click

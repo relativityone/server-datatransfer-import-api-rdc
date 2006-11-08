@@ -636,7 +636,7 @@ Namespace kCura.EDDS.WinForm
 			_identifiersDropDown.Items.Clear()
 			_loadNativeFiles.Checked = LoadFile.LoadNativeFiles
 			RefreshNativeFilePathFieldAndFileColumnHeaders()
-			Dim caseFields As String() = _application.GetCaseFields(LoadFile.CaseInfo.RootArtifactID)
+			Dim caseFields As String() = _application.GetCaseFields(LoadFile.CaseInfo.ArtifactID)
 			Dim caseFieldName As String
 			If loadFileObjectUpdatedFromFile Then
 				Dim columnHeaders As String() = _application.GetColumnHeadersFromLoadFile(Me.LoadFile, _firstLineContainsColumnNames.Checked)

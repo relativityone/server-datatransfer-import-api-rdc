@@ -28,7 +28,7 @@ Namespace kCura.EDDS.WinForm
 
     Private Function GetRootFolderACLID(ByVal destinationFolderID As Int32) As Int32
       If _rootFolderACLID = 0 Then
-        _rootFolderACLID = _folderManager.Read(destinationFolderID).AccessControlListID
+				_rootFolderACLID = _folderManager.Read(_currentCaseID, destinationFolderID).AccessControlListID
       End If
       Return _rootFolderACLID
     End Function
@@ -82,7 +82,7 @@ Namespace kCura.EDDS.WinForm
 			Next
 
 			importer.ReportStatus(recordInfo, "Finished Creating EDDS Record")
-			Dim documentArtifactID As Int32 = _documentManager.Create(documentDTO)
+			Dim documentArtifactID As Int32 = _documentManager.Create(_currentCaseID, documentDTO)
 
 			Return documentArtifactID
 
@@ -96,7 +96,7 @@ Namespace kCura.EDDS.WinForm
 				_uploader.UploaderType = FileUploader.Type.Web
 				fileIdentifier = _uploader.UploadFile(fileName, documentArtifactID)
 				If fileIdentifier <> String.Empty Then
-					_fileManager.CreateFile(documentArtifactID, fileInfo.Name, fileIdentifier, 0, kCura.EDDS.Types.FileType.Native)
+					_fileManager.CreateFile(_currentCaseID, documentArtifactID, fileInfo.Name, fileIdentifier, 0, kCura.EDDS.Types.FileType.Native)
 				End If
 				importer.ReportStatus(recordInfo, "Finished Uploading Document")
 			Catch ex As System.Exception
@@ -113,12 +113,12 @@ Namespace kCura.EDDS.WinForm
 			_folderManager = New kCura.WinEDDS.Service.FolderManager(_application.Credential, _application.CookieContainer)
 			_documentManager = New kCura.WinEDDS.Service.DocumentManager(_application.Credential, _application.CookieContainer)
 			_fileManager = New kCura.WinEDDS.Service.FileManager(_application.Credential, _application.CookieContainer)
-			_uploader = New kCura.WinEDDS.FileUploader(_application.Credential, "", _application.CookieContainer)
+			_uploader = New kCura.WinEDDS.FileUploader(_application.Credential, _currentCaseID, "", _application.CookieContainer)
 		End Sub
 
 		Public Overrides Function CreateFolder(ByVal folderName As String, ByVal parentFolderArtifactID As Integer, ByVal importer As kCura.EDDS.Import.ImporterBase) As Integer
 
-			Dim folderId As Int32 = _folderManager.Create(parentFolderArtifactID, folderName)
+			Dim folderId As Int32 = _folderManager.Create(_currentCaseID, parentFolderArtifactID, folderName)
 			Return folderId
 			importer.ReportStatus("Folder:" + folderName, "Created")
 

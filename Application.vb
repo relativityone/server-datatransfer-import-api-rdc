@@ -65,23 +65,24 @@ Namespace kCura.EDDS.WinForm
 				Return _selectedCaseInfo
 			End Get
 		End Property
-		Public ReadOnly Property SelectedCaseArtifactID() As Int32
-			Get
-				Return _selectedCaseInfo.ArtifactID
-			End Get
-		End Property
 
-		Public ReadOnly Property SelectedCaseRootArtifactID() As Int32
-			Get
-				Return _selectedCaseInfo.RootArtifactID
-			End Get
-		End Property
+		'Public ReadOnly Property SelectedCaseArtifactID() As Int32
+		'	Get
+		'		Return _selectedCaseInfo.ArtifactID
+		'	End Get
+		'End Property
 
-		Public ReadOnly Property SelectedCaseFolderID() As Int32
-			Get
-				Return _selectedCaseFolderID
-			End Get
-		End Property
+		'Public ReadOnly Property SelectedCaseRootArtifactID() As Int32
+		'	Get
+		'		Return _selectedCaseInfo.RootArtifactID
+		'	End Get
+		'End Property
+
+		'Public ReadOnly Property SelectedCaseFolderID() As Int32
+		'	Get
+		'		Return _selectedCaseFolderID
+		'	End Get
+		'End Property
 
 		Public ReadOnly Property LoggedInUser() As String
 			Get
@@ -96,7 +97,7 @@ Namespace kCura.EDDS.WinForm
 					_fields = New DocumentFieldCollection
 					'Dim fieldManager As New kCura.WinEDDS.Service.FieldQuery(Credential, _cookieContainer, _identity)
 					Dim fieldManager As New kCura.WinEDDS.Service.FieldQuery(Credential, _cookieContainer)
-					Dim fields() As kCura.EDDS.WebAPI.DocumentManagerBase.Field = fieldManager.RetrieveAllAsArray(SelectedCaseRootArtifactID)
+					Dim fields() As kCura.EDDS.WebAPI.DocumentManagerBase.Field = fieldManager.RetrieveAllAsArray(SelectedCaseInfo.ArtifactID)
 					Dim i As Int32
 					For i = 0 To fields.Length - 1
 						With fields(i)
@@ -211,7 +212,7 @@ Namespace kCura.EDDS.WinForm
 			Dim name As String = InputBox("Enter Folder Name", "Relativity Review")
 			If name <> "" Then
 				Dim folderManager As New kCura.WinEDDS.Service.FolderManager(Me.Credential, _cookieContainer)
-				Dim folderID As Int32 = folderManager.Create(parentFolderID, name)
+				Dim folderID As Int32 = folderManager.Create(Me.SelectedCaseInfo.ArtifactID, parentFolderID, name)
 				RaiseEvent OnEvent(New NewFolderEvent(parentFolderID, folderID, name))
 			End If
 		End Function
@@ -237,7 +238,6 @@ Namespace kCura.EDDS.WinForm
 #Region "Case Management"
 		Public Function GetCases() As System.Data.DataSet
 			_fields = Nothing
-			'Dim csMgr As New kCura.WinEDDS.Service.CaseManager(Credential, _cookieContainer, _identity)
 			Dim csMgr As New kCura.WinEDDS.Service.CaseManager(Credential, _cookieContainer)
 			Return csMgr.RetrieveAll()
 
@@ -408,18 +408,15 @@ Namespace kCura.EDDS.WinForm
 			loadFile.Credentials = Me.Credential
 			loadFile.CookieContainer = Me.CookieContainer
 			frm.LoadFile = loadFile
-
 			frm.Show()
 		End Sub
 
 		Public Sub NewProductionExport(ByVal caseInfo As kCura.EDDS.Types.CaseInfo)
 			Dim frm As New ProductionExportForm
-			'Dim exportFile As New exportFile(Me.Identity)
-			Dim exportFile As New ExportFile
-			'Dim productionManager As New kCura.WinEDDS.Service.ProductionManager(Me.Credential, _cookieContainer, _identity)
+			Dim exportFile As New exportFile
 			Dim productionManager As New kCura.WinEDDS.Service.ProductionManager(Me.Credential, _cookieContainer)
 			exportFile.CaseInfo = caseInfo
-			exportFile.DataTable = productionManager.RetrieveProducedByContextArtifactID(caseInfo.RootArtifactID).Tables(0)
+			exportFile.DataTable = productionManager.RetrieveProducedByContextArtifactID(caseInfo.ArtifactID).Tables(0)
 			exportFile.Credential = Me.Credential
 			exportFile.TypeOfExport = exportFile.ExportType.Production
 			frm.Application = Me
@@ -429,16 +426,14 @@ Namespace kCura.EDDS.WinForm
 
 		Public Sub NewSearchExport(ByVal rootFolderID As Int32, ByVal caseInfo As kCura.EDDS.Types.CaseInfo, ByVal typeOfExport As kCura.WinEDDS.ExportFile.ExportType)
 			Dim frm As New SearchExportForm
-			'Dim exportFile As New exportFile(Me.Identity)
 			Dim exportFile As New exportFile
-			'Dim searchManager As New kCura.WinEDDS.Service.SearchManager(Me.Credential, _cookieContainer, _identity)
 			Dim searchManager As New kCura.WinEDDS.Service.SearchManager(Me.Credential, _cookieContainer)
 			exportFile.ArtifactID = rootFolderID
 			exportFile.CaseInfo = caseInfo
 			If typeOfExport = exportFile.ExportType.ArtifactSearch Then
-				exportFile.DataTable = searchManager.RetrieveViewsByContextArtifactID(caseInfo.RootArtifactID, True).Tables(0)
+				exportFile.DataTable = searchManager.RetrieveViewsByContextArtifactID(caseInfo.ArtifactID, True).Tables(0)
 			Else
-				exportFile.DataTable = searchManager.RetrieveViewsByContextArtifactID(caseInfo.RootArtifactID, False).Tables(0)
+				exportFile.DataTable = searchManager.RetrieveViewsByContextArtifactID(caseInfo.ArtifactID, False).Tables(0)
 			End If
 			exportFile.Credential = Me.Credential
 			exportFile.TypeOfExport = typeOfExport
@@ -599,7 +594,7 @@ Namespace kCura.EDDS.WinForm
 			CursorWait()
 			'Dim folderManager As New kCura.WinEDDS.Service.FolderManager(Credential, _cookieContainer, _identity)
 			Dim folderManager As New kCura.WinEDDS.Service.FolderManager(Credential, _cookieContainer)
-			If folderManager.Exists(SelectedCaseFolderID, SelectedCaseInfo.RootFolderID) Then
+			If folderManager.Exists(SelectedCaseInfo.ArtifactID, SelectedCaseInfo.RootFolderID) Then
 				If CheckFieldMap(loadFile) Then
 					Dim frm As New kCura.Windows.Process.ProgressForm
 					Dim importer As New kCura.WinEDDS.ImportLoadFileProcess
@@ -706,7 +701,7 @@ Namespace kCura.EDDS.WinForm
 			End Try
 			tempLoadFile.CaseInfo = Me.SelectedCaseInfo
 			tempLoadFile.Credentials = Me.Credential
-			tempLoadFile.DestinationFolderID = Me.SelectedCaseFolderID
+			tempLoadFile.DestinationFolderID = Me.SelectedCaseInfo.RootFolderID
 			Return tempLoadFile
 			'If tempLoadFile.CaseInfo.ArtifactID = loadFile.CaseInfo.ArtifactID Then
 			'	tempLoadFile.Credentials = Me.Credential
@@ -731,7 +726,7 @@ Namespace kCura.EDDS.WinForm
 				Return Nothing
 			End Try
 			retval.CaseInfo = Me.SelectedCaseInfo
-			retval.DestinationFolderID = Me.SelectedCaseFolderID
+			retval.DestinationFolderID = Me.SelectedCaseInfo.RootFolderID
 			retval.Credential = Me.Credential
 			Return retval
 		End Function

@@ -126,6 +126,7 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 		Private Sub CaseListView_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles CaseListView.SelectedIndexChanged
+			Dim caseManager As New kCura.EDDS.WebAPI.CaseManagerBase.CaseManager
 			If CaseListView.SelectedItems.Count <> 0 Then
 				_selectedCaseInfo = DirectCast(CaseListView.SelectedItems.Item(0).Tag, kCura.EDDS.Types.CaseInfo)
 				_OKButton.Enabled = True
