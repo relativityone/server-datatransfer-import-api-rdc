@@ -23,7 +23,7 @@
       <s:element name="Create">
         <s:complexType>
           <s:sequence>
-            <s:element minOccurs="0" maxOccurs="1" name="caseDTO" type="tns:CaseInfo" />
+            <s:element minOccurs="0" maxOccurs="1" name="caseInfo" type="tns:CaseInfo" />
           </s:sequence>
         </s:complexType>
       </s:element>
@@ -50,7 +50,7 @@
       <s:element name="Delete">
         <s:complexType>
           <s:sequence>
-            <s:element minOccurs="1" maxOccurs="1" name="caseArtifactID" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
           </s:sequence>
         </s:complexType>
       </s:element>
@@ -64,7 +64,7 @@
       <s:element name="Read">
         <s:complexType>
           <s:sequence>
-            <s:element minOccurs="1" maxOccurs="1" name="caseArtifactID" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
           </s:sequence>
         </s:complexType>
       </s:element>
@@ -78,7 +78,7 @@
       <s:element name="RetrieveCaseDownloadURI">
         <s:complexType>
           <s:sequence>
-            <s:element minOccurs="1" maxOccurs="1" name="contextArtifactID" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
           </s:sequence>
         </s:complexType>
       </s:element>

@@ -75,14 +75,9 @@ Namespace kCura.WinEDDS
 #End Region
 
 		Public Sub New(ByVal exportFile As kCura.WinEDDS.ExportFile, ByVal processController As kCura.Windows.Process.Controller)
-			'_searchManager = New kCura.WinEDDS.Service.SearchManager(exportFile.Credential, exportFile.CookieContainer, exportFile.Identity)
-			'_folderManager = New kCura.WinEDDS.Service.FolderManager(exportFile.Credential, exportFile.CookieContainer, exportFile.Identity)
-			'_documentManager = New kCura.WinEDDS.Service.DocumentManager(exportFile.Credential, exportFile.CookieContainer, exportFile.Identity)
 			_searchManager = New kCura.WinEDDS.Service.SearchManager(exportFile.Credential, exportFile.CookieContainer)
 			_folderManager = New kCura.WinEDDS.Service.FolderManager(exportFile.Credential, exportFile.CookieContainer)
 			_documentManager = New kCura.WinEDDS.Service.DocumentManager(exportFile.Credential, exportFile.CookieContainer)
-			'_webClient = New System.Net.WebClient
-			'_webClient.Credentials = exportFile.Credential
 			_downloadHandler = New FileDownloader(exportFile.Credential, exportFile.CaseInfo.DocumentPath & "\EDDS" & exportFile.CaseInfo.ArtifactID, exportFile.CaseInfo.DownloadHandlerURL, exportFile.CookieContainer)
 			_halt = False
 			_processController = processController
@@ -115,17 +110,17 @@ Namespace kCura.WinEDDS
 			Me.WriteUpdate("Retrieving export data from the server...")
 			Select Case Me.ExportFile.TypeOfExport
 				Case ExportFile.ExportType.ArtifactSearch
-					Me.TotalDocuments = _searchManager.CountSearchByArtifactID(Me.ExportFile.ArtifactID)
+					Me.TotalDocuments = _searchManager.CountSearchByArtifactID(Me.ExportFile.CaseArtifactID, Me.ExportFile.ArtifactID)
 				Case ExportFile.ExportType.ParentSearch
-					Me.TotalDocuments = _searchManager.CountSearchByParentArtifactID(Me.ExportFile.ArtifactID, False)
+					Me.TotalDocuments = _searchManager.CountSearchByParentArtifactID(Me.ExportFile.CaseArtifactID, Me.ExportFile.ArtifactID, False)
 				Case ExportFile.ExportType.AncestorSearch
-					Me.TotalDocuments = _searchManager.CountSearchByParentArtifactID(Me.ExportFile.ArtifactID, True)
+					Me.TotalDocuments = _searchManager.CountSearchByParentArtifactID(Me.ExportFile.CaseArtifactID, Me.ExportFile.ArtifactID, True)
 			End Select
 			folderTable = _folderManager.RetrieveAllByCaseID(Me.ExportFile.ArtifactID).Tables(0)
 			Me.FolderList = New kCura.WinEDDS.FolderList(folderTable)
 			Me.FolderList.CreateFolders(Me.ExportFile.FolderPath)
 			'If Me.ExportFile.ExportFullText Then fullTextFiles = _searchManager.RetrieveFullTextFilesForSearch(Me.ExportFile.ArtifactID, GetDocumentsString(documentTable)).Tables(0)
-			_sourceDirectory = _documentManager.GetDocumentDirectoryByContextArtifactID(Me.ExportFile.ArtifactID)
+			_sourceDirectory = _documentManager.GetDocumentDirectoryByCaseArtifactID(Me.ExportFile.CaseArtifactID)
 			_fullTextDownloader = New kCura.WinEDDS.FullTextManager(Me.ExportFile.Credential, _sourceDirectory, Me.ExportFile.CookieContainer)
 			If Not System.IO.Directory.Exists(Me.ExportFile.FolderPath & Me.FolderList.BaseFolder.Path) Then
 				System.IO.Directory.CreateDirectory(Me.ExportFile.FolderPath & Me.FolderList.BaseFolder.Path)
@@ -147,11 +142,11 @@ Namespace kCura.WinEDDS
 				finish = Math.Min(Me.TotalDocuments - 1, start + Config.SearchExportChunkSize - 1)
 				Select Case Me.ExportFile.TypeOfExport
 					Case ExportFile.ExportType.ArtifactSearch
-						documentTable = _searchManager.SearchBySearchArtifactID(Me.ExportFile.ArtifactID, start, finish).Tables(0)
+						documentTable = _searchManager.SearchBySearchArtifactID(Me.ExportFile.CaseArtifactID, Me.ExportFile.ArtifactID, start, finish).Tables(0)
 					Case ExportFile.ExportType.ParentSearch
-						documentTable = _searchManager.SearchByParentArtifactID(Me.ExportFile.ArtifactID, False, start, finish).Tables(0)
+						documentTable = _searchManager.SearchByParentArtifactID(Me.ExportFile.CaseArtifactID, Me.ExportFile.ArtifactID, False, start, finish).Tables(0)
 					Case ExportFile.ExportType.AncestorSearch
-						documentTable = _searchManager.SearchByParentArtifactID(Me.ExportFile.ArtifactID, True, start, finish).Tables(0)
+						documentTable = _searchManager.SearchByParentArtifactID(Me.ExportFile.CaseArtifactID, Me.ExportFile.ArtifactID, True, start, finish).Tables(0)
 				End Select
 				Dim docRow As System.Data.DataRow
 				Dim artifactIDs As New ArrayList
@@ -262,9 +257,9 @@ Namespace kCura.WinEDDS
 
 			_columns = New System.Collections.ArrayList
 			If Me.ExportFile.TypeOfExport = ExportFile.ExportType.ArtifactSearch Then
-				table = _searchManager.RetrieveSearchFields(Me.ExportFile.ArtifactID).Tables(0)
+				table = _searchManager.RetrieveSearchFields(Me.ExportFile.CaseArtifactID, Me.ExportFile.ArtifactID).Tables(0)
 			Else
-				table = _searchManager.RetrieveSearchFields(Me.ExportFile.ViewID).Tables(0)
+				table = _searchManager.RetrieveSearchFields(Me.ExportFile.CaseArtifactID, Me.ExportFile.ViewID).Tables(0)
 			End If
 			For count = 0 To table.Rows.Count - 1
 				columnName = CType(table.Rows(count)("ColumnName"), String)

@@ -45,7 +45,7 @@ Namespace kCura.WinEDDS
 		Public ReadOnly Property AllDocumentFields() As kCura.EDDS.WebAPI.DocumentManagerBase.Field()
 			Get
 				If _allFields Is Nothing Then
-					_allFields = _fieldQuery.RetrieveAllAsArray(_folderID)
+					_allFields = _fieldQuery.RetrieveAllAsArray(_caseArtifactID)
 				End If
 				Dim field As kCura.EDDS.WebAPI.DocumentManagerBase.Field
 				For Each field In _allFields
@@ -66,11 +66,11 @@ Namespace kCura.WinEDDS
 		Public Sub New(ByVal args As LoadFile, ByVal processController As kCura.Windows.Process.Controller, ByVal timeZoneOffset As Int32, ByVal autoDetect As Boolean)
 			MyBase.New(args, timeZoneOffset, autoDetect)
 			_overwrite = args.OverwriteDestination
-			_uploader = New kCura.WinEDDS.FileUploader(args.Credentials, _documentManager.GetDocumentDirectoryByCaseArtifactID(args.CaseInfo.ArtifactID) & "\", args.CookieContainer)
+			_uploader = New kCura.WinEDDS.FileUploader(args.Credentials, args.CaseInfo.ArtifactID, _documentManager.GetDocumentDirectoryByCaseArtifactID(args.CaseInfo.ArtifactID) & "\", args.CookieContainer)
 			_extractFullTextFromNative = args.ExtractFullTextFromNativeFile
 			_selectedIdentifier = args.SelectedIdentifierField
 			_docFieldCollection = New DocumentFieldCollection(args.FieldMap.DocumentFields)
-			If autoDetect Then _parentFolderDTO = _foldermanager.Read(_folderID)
+			If autoDetect Then _parentFolderDTO = _foldermanager.Read(args.CaseInfo.ArtifactID, args.CaseInfo.RootFolderID)
 			_processController = processController
 			_continue = True
 			_firstTimeThrough = True
@@ -170,7 +170,7 @@ Namespace kCura.WinEDDS
 				If filename <> String.Empty AndAlso Not fileExists Then Throw New InvalidFilenameException(filename)
 				If fileExists Then
 					Dim now As DateTime = DateTime.Now
-					fileGuid = _uploader.UploadFile(filename, _folderID)
+					fileGuid = _uploader.UploadFile(filename, _caseArtifactID)
 					filename = filename.Substring(filename.LastIndexOf("\") + 1)
 					WriteStatusLine(Windows.Process.EventType.Status, String.Format("End upload file. ({0}ms)", DateTime.op_Subtraction(DateTime.Now, now).Milliseconds))
 				End If
@@ -234,7 +234,7 @@ Namespace kCura.WinEDDS
 				Dim markReadDoc As DateTime = DateTime.Now
 				If _overwrite Then
 					Try
-						doc = _documentManager.ReadFromIdentifier(_folderID, _selectedIdentifier.FieldName, metaDoc.IdentityValue)
+						doc = _documentManager.ReadFromIdentifier(_caseArtifactID, _selectedIdentifier.FieldName, metaDoc.IdentityValue)
 					Catch ex As System.Exception
 						If kCura.WinEDDS.Config.UsesWebAPI Then
 							Throw New AmbiguousIdentifierValueException(ex)
@@ -288,7 +288,7 @@ Namespace kCura.WinEDDS
 
 			Try
 				WriteStatusLine(Windows.Process.EventType.Status, String.Format("Creating document '{0}' in database.", identityValue))
-				Return _documentManager.Create(documentDTO)
+				Return _documentManager.Create(_uploader.CaseArtifactID, documentDTO)
 			Catch ex As System.Exception
 				If kCura.WinEDDS.Config.UsesWebAPI Then
 					Throw New DocumentDomainException(ex)
@@ -343,7 +343,7 @@ Namespace kCura.WinEDDS
 					docDTO.Files = DirectCast(fileList.ToArray(GetType(kCura.EDDS.WebAPI.DocumentManagerBase.File)), kCura.EDDS.WebAPI.DocumentManagerBase.File())
 				End If
 				Try
-					_documentManager.Update(docDTO)
+					_documentManager.Update(_uploader.CaseArtifactID, docDTO)
 				Catch ex As System.Exception
 					If kCura.WinEDDS.Config.UsesWebAPI Then
 						Throw New DocumentDomainException(ex)
@@ -446,9 +446,9 @@ Namespace kCura.WinEDDS
 			Dim valueArray As String() = docField.Value.Split(";".ToCharArray)
 			If valueArray.Length = 1 AndAlso valueArray(0) = String.Empty Then
 				If existingValue = String.Empty Then
-					fieldDTO.Value = _multicodeManager.CreateNewMultiCodeID(_folderID).ToString
+					fieldDTO.Value = _multicodeManager.CreateNewMultiCodeID(_caseartifactid).ToString
 				Else
-					_multiCodeManager.DeleteFromMultiCodeArtifactByMultiCodeID(_folderID, Int32.Parse(existingValue))
+					_multiCodeManager.DeleteFromMultiCodeArtifactByMultiCodeID(_caseArtifactID, Int32.Parse(existingValue))
 				End If
 				'fieldDTO.Value = String.Empty
 			Else
@@ -460,15 +460,15 @@ Namespace kCura.WinEDDS
 					End Try
 				Next
 				If (existingValue = String.Empty OrElse existingValue = "0") AndAlso valueArray.Length > 0 Then
-					multiCodeID = _multiCodeManager.CreateNewMultiCodeID(_folderID)
+					multiCodeID = _multiCodeManager.CreateNewMultiCodeID(_caseArtifactID)
 				Else
 					multiCodeID = Int32.Parse(existingValue)
 				End If
 				If multiCodeID > 0 Then
-					_multiCodeManager.DeleteFromMultiCodeArtifactByMultiCodeID(_folderID, multiCodeID)
+					_multiCodeManager.DeleteFromMultiCodeArtifactByMultiCodeID(_caseArtifactID, multiCodeID)
 					Dim codeFieldValues As New System.Collections.ArrayList
 					codeFieldValues.AddRange(codeArtifactIDs)
-					_multiCodeManager.SetMultiCodeValues(multiCodeID, codeFieldValues)
+					_multiCodeManager.SetMultiCodeValues(_uploader.CaseArtifactID, multiCodeID, codeFieldValues)
 					fieldDTO.Value = multiCodeID.ToString
 				Else
 					fieldDTO.Value = String.Empty

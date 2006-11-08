@@ -40,14 +40,14 @@ Namespace kCura.EDDS.WebAPI.DocumentManagerBase
         
         '<remarks/>
         <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://foley.com/EDDS/DocumentManager/GetAllDocumentsForCase", RequestNamespace:="http://foley.com/EDDS/DocumentManager", ResponseNamespace:="http://foley.com/EDDS/DocumentManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
-        Public Function GetAllDocumentsForCase(ByVal caseID As Integer) As System.Data.DataSet
-            Dim results() As Object = Me.Invoke("GetAllDocumentsForCase", New Object() {caseID})
+        Public Function GetAllDocumentsForCase(ByVal caseContextArtifactID As Integer) As System.Data.DataSet
+            Dim results() As Object = Me.Invoke("GetAllDocumentsForCase", New Object() {caseContextArtifactID})
             Return CType(results(0),System.Data.DataSet)
         End Function
         
         '<remarks/>
-        Public Function BeginGetAllDocumentsForCase(ByVal caseID As Integer, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
-            Return Me.BeginInvoke("GetAllDocumentsForCase", New Object() {caseID}, callback, asyncState)
+        Public Function BeginGetAllDocumentsForCase(ByVal caseContextArtifactID As Integer, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("GetAllDocumentsForCase", New Object() {caseContextArtifactID}, callback, asyncState)
         End Function
         
         '<remarks/>
@@ -76,14 +76,14 @@ Namespace kCura.EDDS.WebAPI.DocumentManagerBase
         
         '<remarks/>
         <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://foley.com/EDDS/DocumentManager/CreateEmptyDocument", RequestNamespace:="http://foley.com/EDDS/DocumentManager", ResponseNamespace:="http://foley.com/EDDS/DocumentManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
-        Public Function CreateEmptyDocument(ByVal parentFolderID As Integer, <System.Xml.Serialization.XmlElementAttribute(DataType:="base64Binary")> ByVal identifierValue() As Byte, ByVal fullTextFileName As String, ByVal identifierColumn As String, ByVal fullTextBuilder As FullTextBuilder) As Integer
-            Dim results() As Object = Me.Invoke("CreateEmptyDocument", New Object() {parentFolderID, identifierValue, fullTextFileName, identifierColumn, fullTextBuilder})
+        Public Function CreateEmptyDocument(ByVal caseContextArtifactID As Integer, ByVal parentFolderID As Integer, <System.Xml.Serialization.XmlElementAttribute(DataType:="base64Binary")> ByVal identifierValue() As Byte, ByVal fullTextFileName As String, ByVal identifierColumn As String, ByVal fullTextBuilder As FullTextBuilder) As Integer
+            Dim results() As Object = Me.Invoke("CreateEmptyDocument", New Object() {caseContextArtifactID, parentFolderID, identifierValue, fullTextFileName, identifierColumn, fullTextBuilder})
             Return CType(results(0),Integer)
         End Function
         
         '<remarks/>
-        Public Function BeginCreateEmptyDocument(ByVal parentFolderID As Integer, ByVal identifierValue() As Byte, ByVal fullTextFileName As String, ByVal identifierColumn As String, ByVal fullTextBuilder As FullTextBuilder, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
-            Return Me.BeginInvoke("CreateEmptyDocument", New Object() {parentFolderID, identifierValue, fullTextFileName, identifierColumn, fullTextBuilder}, callback, asyncState)
+        Public Function BeginCreateEmptyDocument(ByVal caseContextArtifactID As Integer, ByVal parentFolderID As Integer, ByVal identifierValue() As Byte, ByVal fullTextFileName As String, ByVal identifierColumn As String, ByVal fullTextBuilder As FullTextBuilder, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("CreateEmptyDocument", New Object() {caseContextArtifactID, parentFolderID, identifierValue, fullTextFileName, identifierColumn, fullTextBuilder}, callback, asyncState)
         End Function
         
         '<remarks/>
@@ -94,14 +94,14 @@ Namespace kCura.EDDS.WebAPI.DocumentManagerBase
         
         '<remarks/>
         <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://foley.com/EDDS/DocumentManager/Read", RequestNamespace:="http://foley.com/EDDS/DocumentManager", ResponseNamespace:="http://foley.com/EDDS/DocumentManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
-        Public Function Read(ByVal artifactID As Integer) As Document
-            Dim results() As Object = Me.Invoke("Read", New Object() {artifactID})
+        Public Function Read(ByVal caseContextArtifactID As Integer, ByVal artifactID As Integer) As Document
+            Dim results() As Object = Me.Invoke("Read", New Object() {caseContextArtifactID, artifactID})
             Return CType(results(0),Document)
         End Function
         
         '<remarks/>
-        Public Function BeginRead(ByVal artifactID As Integer, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
-            Return Me.BeginInvoke("Read", New Object() {artifactID}, callback, asyncState)
+        Public Function BeginRead(ByVal caseContextArtifactID As Integer, ByVal artifactID As Integer, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("Read", New Object() {caseContextArtifactID, artifactID}, callback, asyncState)
         End Function
         
         '<remarks/>
@@ -112,14 +112,14 @@ Namespace kCura.EDDS.WebAPI.DocumentManagerBase
         
         '<remarks/>
         <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://foley.com/EDDS/DocumentManager/DeleteNative", RequestNamespace:="http://foley.com/EDDS/DocumentManager", ResponseNamespace:="http://foley.com/EDDS/DocumentManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
-        Public Function DeleteNative(ByVal documentDTO As Document) As Boolean
-            Dim results() As Object = Me.Invoke("DeleteNative", New Object() {documentDTO})
+        Public Function DeleteNative(ByVal caseContextArtifactID As Integer, ByVal documentDTO As Document) As Boolean
+            Dim results() As Object = Me.Invoke("DeleteNative", New Object() {caseContextArtifactID, documentDTO})
             Return CType(results(0),Boolean)
         End Function
         
         '<remarks/>
-        Public Function BeginDeleteNative(ByVal documentDTO As Document, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
-            Return Me.BeginInvoke("DeleteNative", New Object() {documentDTO}, callback, asyncState)
+        Public Function BeginDeleteNative(ByVal caseContextArtifactID As Integer, ByVal documentDTO As Document, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("DeleteNative", New Object() {caseContextArtifactID, documentDTO}, callback, asyncState)
         End Function
         
         '<remarks/>
@@ -130,14 +130,14 @@ Namespace kCura.EDDS.WebAPI.DocumentManagerBase
         
         '<remarks/>
         <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://foley.com/EDDS/DocumentManager/Create", RequestNamespace:="http://foley.com/EDDS/DocumentManager", ResponseNamespace:="http://foley.com/EDDS/DocumentManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
-        Public Function Create(ByVal docDTO As Document) As Integer
-            Dim results() As Object = Me.Invoke("Create", New Object() {docDTO})
+        Public Function Create(ByVal caseContextArtifactID As Integer, ByVal docDTO As Document) As Integer
+            Dim results() As Object = Me.Invoke("Create", New Object() {caseContextArtifactID, docDTO})
             Return CType(results(0),Integer)
         End Function
         
         '<remarks/>
-        Public Function BeginCreate(ByVal docDTO As Document, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
-            Return Me.BeginInvoke("Create", New Object() {docDTO}, callback, asyncState)
+        Public Function BeginCreate(ByVal caseContextArtifactID As Integer, ByVal docDTO As Document, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("Create", New Object() {caseContextArtifactID, docDTO}, callback, asyncState)
         End Function
         
         '<remarks/>
@@ -148,14 +148,14 @@ Namespace kCura.EDDS.WebAPI.DocumentManagerBase
         
         '<remarks/>
         <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://foley.com/EDDS/DocumentManager/Update", RequestNamespace:="http://foley.com/EDDS/DocumentManager", ResponseNamespace:="http://foley.com/EDDS/DocumentManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
-        Public Function Update(ByVal docDTO As Document) As Integer
-            Dim results() As Object = Me.Invoke("Update", New Object() {docDTO})
+        Public Function Update(ByVal caseContextArtifactID As Integer, ByVal docDTO As Document) As Integer
+            Dim results() As Object = Me.Invoke("Update", New Object() {caseContextArtifactID, docDTO})
             Return CType(results(0),Integer)
         End Function
         
         '<remarks/>
-        Public Function BeginUpdate(ByVal docDTO As Document, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
-            Return Me.BeginInvoke("Update", New Object() {docDTO}, callback, asyncState)
+        Public Function BeginUpdate(ByVal caseContextArtifactID As Integer, ByVal docDTO As Document, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("Update", New Object() {caseContextArtifactID, docDTO}, callback, asyncState)
         End Function
         
         '<remarks/>
@@ -166,13 +166,13 @@ Namespace kCura.EDDS.WebAPI.DocumentManagerBase
         
         '<remarks/>
         <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://foley.com/EDDS/DocumentManager/CreateRange", RequestNamespace:="http://foley.com/EDDS/DocumentManager", ResponseNamespace:="http://foley.com/EDDS/DocumentManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
-        Public Sub CreateRange(ByVal docDTOs() As Document)
-            Me.Invoke("CreateRange", New Object() {docDTOs})
+        Public Sub CreateRange(ByVal caseContextArtifactID As Integer, ByVal docDTOs() As Document)
+            Me.Invoke("CreateRange", New Object() {caseContextArtifactID, docDTOs})
         End Sub
         
         '<remarks/>
-        Public Function BeginCreateRange(ByVal docDTOs() As Document, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
-            Return Me.BeginInvoke("CreateRange", New Object() {docDTOs}, callback, asyncState)
+        Public Function BeginCreateRange(ByVal caseContextArtifactID As Integer, ByVal docDTOs() As Document, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("CreateRange", New Object() {caseContextArtifactID, docDTOs}, callback, asyncState)
         End Function
         
         '<remarks/>
@@ -182,13 +182,13 @@ Namespace kCura.EDDS.WebAPI.DocumentManagerBase
         
         '<remarks/>
         <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://foley.com/EDDS/DocumentManager/UpdateRange", RequestNamespace:="http://foley.com/EDDS/DocumentManager", ResponseNamespace:="http://foley.com/EDDS/DocumentManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
-        Public Sub UpdateRange(ByVal docDTOs() As Document)
-            Me.Invoke("UpdateRange", New Object() {docDTOs})
+        Public Sub UpdateRange(ByVal caseContextArtifactID As Integer, ByVal docDTOs() As Document)
+            Me.Invoke("UpdateRange", New Object() {caseContextArtifactID, docDTOs})
         End Sub
         
         '<remarks/>
-        Public Function BeginUpdateRange(ByVal docDTOs() As Document, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
-            Return Me.BeginInvoke("UpdateRange", New Object() {docDTOs}, callback, asyncState)
+        Public Function BeginUpdateRange(ByVal caseContextArtifactID As Integer, ByVal docDTOs() As Document, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("UpdateRange", New Object() {caseContextArtifactID, docDTOs}, callback, asyncState)
         End Function
         
         '<remarks/>
@@ -198,14 +198,14 @@ Namespace kCura.EDDS.WebAPI.DocumentManagerBase
         
         '<remarks/>
         <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://foley.com/EDDS/DocumentManager/AddFullTextToDocumentFromFile", RequestNamespace:="http://foley.com/EDDS/DocumentManager", ResponseNamespace:="http://foley.com/EDDS/DocumentManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
-        Public Function AddFullTextToDocumentFromFile(ByVal documentArtifactID As Integer, ByVal fullTextFileName As String, ByVal fullTextBuilder As FullTextBuilder) As Boolean
-            Dim results() As Object = Me.Invoke("AddFullTextToDocumentFromFile", New Object() {documentArtifactID, fullTextFileName, fullTextBuilder})
+        Public Function AddFullTextToDocumentFromFile(ByVal caseContextArtifactID As Integer, ByVal documentArtifactID As Integer, ByVal fullTextFileName As String, ByVal fullTextBuilder As FullTextBuilder) As Boolean
+            Dim results() As Object = Me.Invoke("AddFullTextToDocumentFromFile", New Object() {caseContextArtifactID, documentArtifactID, fullTextFileName, fullTextBuilder})
             Return CType(results(0),Boolean)
         End Function
         
         '<remarks/>
-        Public Function BeginAddFullTextToDocumentFromFile(ByVal documentArtifactID As Integer, ByVal fullTextFileName As String, ByVal fullTextBuilder As FullTextBuilder, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
-            Return Me.BeginInvoke("AddFullTextToDocumentFromFile", New Object() {documentArtifactID, fullTextFileName, fullTextBuilder}, callback, asyncState)
+        Public Function BeginAddFullTextToDocumentFromFile(ByVal caseContextArtifactID As Integer, ByVal documentArtifactID As Integer, ByVal fullTextFileName As String, ByVal fullTextBuilder As FullTextBuilder, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("AddFullTextToDocumentFromFile", New Object() {caseContextArtifactID, documentArtifactID, fullTextFileName, fullTextBuilder}, callback, asyncState)
         End Function
         
         '<remarks/>
@@ -216,14 +216,14 @@ Namespace kCura.EDDS.WebAPI.DocumentManagerBase
         
         '<remarks/>
         <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://foley.com/EDDS/DocumentManager/GetDocumentArtifactIDFromIdentifier", RequestNamespace:="http://foley.com/EDDS/DocumentManager", ResponseNamespace:="http://foley.com/EDDS/DocumentManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
-        Public Function GetDocumentArtifactIDFromIdentifier(ByVal identifier As String, ByVal fieldDisplayName As String, ByVal caseID As Integer) As Integer
-            Dim results() As Object = Me.Invoke("GetDocumentArtifactIDFromIdentifier", New Object() {identifier, fieldDisplayName, caseID})
+        Public Function GetDocumentArtifactIDFromIdentifier(ByVal caseContextArtifactID As Integer, ByVal identifier As String, ByVal fieldDisplayName As String) As Integer
+            Dim results() As Object = Me.Invoke("GetDocumentArtifactIDFromIdentifier", New Object() {caseContextArtifactID, identifier, fieldDisplayName})
             Return CType(results(0),Integer)
         End Function
         
         '<remarks/>
-        Public Function BeginGetDocumentArtifactIDFromIdentifier(ByVal identifier As String, ByVal fieldDisplayName As String, ByVal caseID As Integer, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
-            Return Me.BeginInvoke("GetDocumentArtifactIDFromIdentifier", New Object() {identifier, fieldDisplayName, caseID}, callback, asyncState)
+        Public Function BeginGetDocumentArtifactIDFromIdentifier(ByVal caseContextArtifactID As Integer, ByVal identifier As String, ByVal fieldDisplayName As String, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("GetDocumentArtifactIDFromIdentifier", New Object() {caseContextArtifactID, identifier, fieldDisplayName}, callback, asyncState)
         End Function
         
         '<remarks/>
@@ -234,14 +234,14 @@ Namespace kCura.EDDS.WebAPI.DocumentManagerBase
         
         '<remarks/>
         <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://foley.com/EDDS/DocumentManager/ReadFromIdentifier", RequestNamespace:="http://foley.com/EDDS/DocumentManager", ResponseNamespace:="http://foley.com/EDDS/DocumentManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
-        Public Function ReadFromIdentifier(ByVal caseID As Integer, ByVal fieldDisplayName As String, ByVal identifier As String) As Document
-            Dim results() As Object = Me.Invoke("ReadFromIdentifier", New Object() {caseID, fieldDisplayName, identifier})
+        Public Function ReadFromIdentifier(ByVal caseContextArtifactID As Integer, ByVal fieldDisplayName As String, ByVal identifier As String) As Document
+            Dim results() As Object = Me.Invoke("ReadFromIdentifier", New Object() {caseContextArtifactID, fieldDisplayName, identifier})
             Return CType(results(0),Document)
         End Function
         
         '<remarks/>
-        Public Function BeginReadFromIdentifier(ByVal caseID As Integer, ByVal fieldDisplayName As String, ByVal identifier As String, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
-            Return Me.BeginInvoke("ReadFromIdentifier", New Object() {caseID, fieldDisplayName, identifier}, callback, asyncState)
+        Public Function BeginReadFromIdentifier(ByVal caseContextArtifactID As Integer, ByVal fieldDisplayName As String, ByVal identifier As String, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("ReadFromIdentifier", New Object() {caseContextArtifactID, fieldDisplayName, identifier}, callback, asyncState)
         End Function
         
         '<remarks/>
@@ -252,13 +252,13 @@ Namespace kCura.EDDS.WebAPI.DocumentManagerBase
         
         '<remarks/>
         <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://foley.com/EDDS/DocumentManager/UpdateFullTextWithCrackedText", RequestNamespace:="http://foley.com/EDDS/DocumentManager", ResponseNamespace:="http://foley.com/EDDS/DocumentManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
-        Public Sub UpdateFullTextWithCrackedText(ByVal documentArtifactID As Integer, ByVal fileGuid As String)
-            Me.Invoke("UpdateFullTextWithCrackedText", New Object() {documentArtifactID, fileGuid})
+        Public Sub UpdateFullTextWithCrackedText(ByVal caseContextArtifactID As Integer, ByVal documentArtifactID As Integer, ByVal fileGuid As String)
+            Me.Invoke("UpdateFullTextWithCrackedText", New Object() {caseContextArtifactID, documentArtifactID, fileGuid})
         End Sub
         
         '<remarks/>
-        Public Function BeginUpdateFullTextWithCrackedText(ByVal documentArtifactID As Integer, ByVal fileGuid As String, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
-            Return Me.BeginInvoke("UpdateFullTextWithCrackedText", New Object() {documentArtifactID, fileGuid}, callback, asyncState)
+        Public Function BeginUpdateFullTextWithCrackedText(ByVal caseContextArtifactID As Integer, ByVal documentArtifactID As Integer, ByVal fileGuid As String, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("UpdateFullTextWithCrackedText", New Object() {caseContextArtifactID, documentArtifactID, fileGuid}, callback, asyncState)
         End Function
         
         '<remarks/>
@@ -268,37 +268,19 @@ Namespace kCura.EDDS.WebAPI.DocumentManagerBase
         
         '<remarks/>
         <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://foley.com/EDDS/DocumentManager/ClearImagesFromDocument", RequestNamespace:="http://foley.com/EDDS/DocumentManager", ResponseNamespace:="http://foley.com/EDDS/DocumentManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
-        Public Sub ClearImagesFromDocument(ByVal artifactID As Integer)
-            Me.Invoke("ClearImagesFromDocument", New Object() {artifactID})
+        Public Sub ClearImagesFromDocument(ByVal caseContextArtifactID As Integer, ByVal documentArtifactID As Integer)
+            Me.Invoke("ClearImagesFromDocument", New Object() {caseContextArtifactID, documentArtifactID})
         End Sub
         
         '<remarks/>
-        Public Function BeginClearImagesFromDocument(ByVal artifactID As Integer, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
-            Return Me.BeginInvoke("ClearImagesFromDocument", New Object() {artifactID}, callback, asyncState)
+        Public Function BeginClearImagesFromDocument(ByVal caseContextArtifactID As Integer, ByVal documentArtifactID As Integer, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("ClearImagesFromDocument", New Object() {caseContextArtifactID, documentArtifactID}, callback, asyncState)
         End Function
         
         '<remarks/>
         Public Sub EndClearImagesFromDocument(ByVal asyncResult As System.IAsyncResult)
             Me.EndInvoke(asyncResult)
         End Sub
-        
-        '<remarks/>
-        <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://foley.com/EDDS/DocumentManager/GetDocumentDirectoryByContextArtifactID", RequestNamespace:="http://foley.com/EDDS/DocumentManager", ResponseNamespace:="http://foley.com/EDDS/DocumentManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
-        Public Function GetDocumentDirectoryByContextArtifactID(ByVal contextArtifactID As Integer) As String
-            Dim results() As Object = Me.Invoke("GetDocumentDirectoryByContextArtifactID", New Object() {contextArtifactID})
-            Return CType(results(0),String)
-        End Function
-        
-        '<remarks/>
-        Public Function BeginGetDocumentDirectoryByContextArtifactID(ByVal contextArtifactID As Integer, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
-            Return Me.BeginInvoke("GetDocumentDirectoryByContextArtifactID", New Object() {contextArtifactID}, callback, asyncState)
-        End Function
-        
-        '<remarks/>
-        Public Function EndGetDocumentDirectoryByContextArtifactID(ByVal asyncResult As System.IAsyncResult) As String
-            Dim results() As Object = Me.EndInvoke(asyncResult)
-            Return CType(results(0),String)
-        End Function
         
         '<remarks/>
         <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://foley.com/EDDS/DocumentManager/GetDocumentDirectoryByCaseArtifactID", RequestNamespace:="http://foley.com/EDDS/DocumentManager", ResponseNamespace:="http://foley.com/EDDS/DocumentManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
@@ -320,14 +302,14 @@ Namespace kCura.EDDS.WebAPI.DocumentManagerBase
         
         '<remarks/>
         <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://foley.com/EDDS/DocumentManager/GetPrintImageGuids", RequestNamespace:="http://foley.com/EDDS/DocumentManager", ResponseNamespace:="http://foley.com/EDDS/DocumentManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
-        Public Function GetPrintImageGuids(ByVal artifactID As Integer, ByVal orderedProductionIDList() As Integer) As System.Guid()
-            Dim results() As Object = Me.Invoke("GetPrintImageGuids", New Object() {artifactID, orderedProductionIDList})
+        Public Function GetPrintImageGuids(ByVal caseContextArtifactID As Integer, ByVal artifactID As Integer, ByVal orderedProductionIDList() As Integer) As System.Guid()
+            Dim results() As Object = Me.Invoke("GetPrintImageGuids", New Object() {caseContextArtifactID, artifactID, orderedProductionIDList})
             Return CType(results(0),System.Guid())
         End Function
         
         '<remarks/>
-        Public Function BeginGetPrintImageGuids(ByVal artifactID As Integer, ByVal orderedProductionIDList() As Integer, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
-            Return Me.BeginInvoke("GetPrintImageGuids", New Object() {artifactID, orderedProductionIDList}, callback, asyncState)
+        Public Function BeginGetPrintImageGuids(ByVal caseContextArtifactID As Integer, ByVal artifactID As Integer, ByVal orderedProductionIDList() As Integer, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("GetPrintImageGuids", New Object() {caseContextArtifactID, artifactID, orderedProductionIDList}, callback, asyncState)
         End Function
         
         '<remarks/>

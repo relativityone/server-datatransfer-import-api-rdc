@@ -6,6 +6,7 @@
       <s:element name="CountSearchByArtifactID">
         <s:complexType>
           <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
             <s:element minOccurs="1" maxOccurs="1" name="searchArtifactID" type="s:int" />
           </s:sequence>
         </s:complexType>
@@ -20,6 +21,7 @@
       <s:element name="SearchBySearchArtifactID">
         <s:complexType>
           <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
             <s:element minOccurs="1" maxOccurs="1" name="searchArtifactID" type="s:int" />
             <s:element minOccurs="1" maxOccurs="1" name="start" type="s:int" />
             <s:element minOccurs="1" maxOccurs="1" name="finish" type="s:int" />
@@ -43,7 +45,7 @@
       <s:element name="RetrieveNativesForSearch">
         <s:complexType>
           <s:sequence>
-            <s:element minOccurs="1" maxOccurs="1" name="artifactID" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
             <s:element minOccurs="0" maxOccurs="1" name="documentArtifactIDs" type="s:string" />
           </s:sequence>
         </s:complexType>
@@ -65,7 +67,7 @@
       <s:element name="RetrieveFullTextFilesForSearch">
         <s:complexType>
           <s:sequence>
-            <s:element minOccurs="1" maxOccurs="1" name="artifactID" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
             <s:element minOccurs="0" maxOccurs="1" name="documentArtifactIDs" type="s:string" />
           </s:sequence>
         </s:complexType>
@@ -87,7 +89,7 @@
       <s:element name="RetrieveViewsByContextArtifactID">
         <s:complexType>
           <s:sequence>
-            <s:element minOccurs="1" maxOccurs="1" name="contextArtifactID" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
             <s:element minOccurs="1" maxOccurs="1" name="isSearch" type="s:boolean" />
           </s:sequence>
         </s:complexType>
@@ -109,6 +111,7 @@
       <s:element name="RetrieveSearchFields">
         <s:complexType>
           <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
             <s:element minOccurs="1" maxOccurs="1" name="viewArtifactID" type="s:int" />
           </s:sequence>
         </s:complexType>
@@ -130,6 +133,7 @@
       <s:element name="CountSearchByParentArtifactID">
         <s:complexType>
           <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
             <s:element minOccurs="1" maxOccurs="1" name="parentArtifactID" type="s:int" />
             <s:element minOccurs="1" maxOccurs="1" name="searchSubFolders" type="s:boolean" />
           </s:sequence>
@@ -145,6 +149,7 @@
       <s:element name="SearchByParentArtifactID">
         <s:complexType>
           <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
             <s:element minOccurs="1" maxOccurs="1" name="parentArtifactID" type="s:int" />
             <s:element minOccurs="1" maxOccurs="1" name="searchSubFolders" type="s:boolean" />
             <s:element minOccurs="1" maxOccurs="1" name="start" type="s:int" />

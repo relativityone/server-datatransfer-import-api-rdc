@@ -8,7 +8,7 @@
       <s:element name="RetrieveProducedByContextArtifactID">
         <s:complexType>
           <s:sequence>
-            <s:element minOccurs="1" maxOccurs="1" name="contextArtifactID" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
           </s:sequence>
         </s:complexType>
       </s:element>
@@ -29,6 +29,7 @@
       <s:element name="Read">
         <s:complexType>
           <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
             <s:element minOccurs="1" maxOccurs="1" name="productionArtifactID" type="s:int" />
           </s:sequence>
         </s:complexType>
@@ -201,7 +202,7 @@
       <s:element name="RetrieveProducedWithSecurity">
         <s:complexType>
           <s:sequence>
-            <s:element minOccurs="1" maxOccurs="1" name="contextArtifactID" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
           </s:sequence>
         </s:complexType>
       </s:element>

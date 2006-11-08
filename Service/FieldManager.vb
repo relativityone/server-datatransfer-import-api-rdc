@@ -2,8 +2,6 @@ Namespace kCura.WinEDDS.Service
 	Public Class FieldManager
 		Inherits kCura.EDDS.WebAPI.FieldManagerBase.FieldManager
 
-		'Private _identity As kCura.EDDS.EDDSIdentity
-		'Private _fieldManager As kCura.EDDS.Service.DynamicFields.FieldManager
 		Private _query As kCura.WinEDDS.Service.FieldQuery
 
 		'TODO: FIX THIS SHIZZITY!
@@ -20,16 +18,13 @@ Namespace kCura.WinEDDS.Service
 			Return wr
 		End Function
 
-		'Public Sub New(ByVal credentials As Net.NetworkCredential, ByVal cookieContainer As System.Net.CookieContainer, ByVal identity As kCura.EDDS.EDDSIdentity)
 		Public Sub New(ByVal credentials As Net.NetworkCredential, ByVal cookieContainer As System.Net.CookieContainer)
 			MyBase.New()
 			Me.Credentials = credentials
 			Me.CookieContainer = cookieContainer
 			Me.Url = String.Format("{0}FieldManager.asmx", kCura.WinEDDS.Config.WebServiceURL)
 			Me.Timeout = Settings.DefaultTimeOut
-			'_query = New kCura.WinEDDS.Service.FieldQuery(credentials, Me.CookieContainer, identity)
 			_query = New kCura.WinEDDS.Service.FieldQuery(credentials, Me.CookieContainer)
-			'_identity = identity
 		End Sub
 
 #Region " Translations "
@@ -136,17 +131,17 @@ Namespace kCura.WinEDDS.Service
 #End Region
 
 #Region " Shadow Functions "
-		Public Shadows Function Create(ByVal field As kCura.EDDS.WebAPI.FieldManagerBase.Field) As Int32
+		Public Shadows Function Create(ByVal caseContextArtifactID As Int32, ByVal field As kCura.EDDS.WebAPI.FieldManagerBase.Field) As Int32
 			If kCura.WinEDDS.Config.UsesWebAPI Then
-				Return MyBase.Create(field)
+				Return MyBase.Create(caseContextArtifactID, field)
 			Else
 				'Return _fieldManager.ExternalCreate(Me.WebAPIFieldtoDTO(field), _identity)
 			End If
 		End Function
 
-		Public Shadows Function Read(ByVal fieldArtifactID As Int32) As kCura.EDDS.WebAPI.FieldManagerBase.Field
+		Public Shadows Function Read(ByVal caseContextArtifactID As Int32, ByVal fieldArtifactID As Int32) As kCura.EDDS.WebAPI.FieldManagerBase.Field
 			If kCura.WinEDDS.Config.UsesWebAPI Then
-				Return MyBase.Read(fieldArtifactID)
+				Return MyBase.Read(caseContextArtifactID, fieldArtifactID)
 			Else
 				'Return Me.DTOtoFieldWebAPIField(_fieldManager.Read(fieldArtifactID, _identity))
 			End If

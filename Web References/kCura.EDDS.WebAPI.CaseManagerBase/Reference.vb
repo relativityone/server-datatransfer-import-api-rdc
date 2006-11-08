@@ -56,14 +56,14 @@ Namespace kCura.EDDS.WebAPI.CaseManagerBase
         
         '<remarks/>
         <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/CaseManager/Create", RequestNamespace:="http://www.kCura.com/EDDS/CaseManager", ResponseNamespace:="http://www.kCura.com/EDDS/CaseManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
-        Public Function Create(ByVal caseDTO As CaseInfo) As Integer
-            Dim results() As Object = Me.Invoke("Create", New Object() {caseDTO})
+        Public Function Create(ByVal caseInfo As CaseInfo) As Integer
+            Dim results() As Object = Me.Invoke("Create", New Object() {caseInfo})
             Return CType(results(0),Integer)
         End Function
         
         '<remarks/>
-        Public Function BeginCreate(ByVal caseDTO As CaseInfo, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
-            Return Me.BeginInvoke("Create", New Object() {caseDTO}, callback, asyncState)
+        Public Function BeginCreate(ByVal caseInfo As CaseInfo, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("Create", New Object() {caseInfo}, callback, asyncState)
         End Function
         
         '<remarks/>
@@ -74,14 +74,14 @@ Namespace kCura.EDDS.WebAPI.CaseManagerBase
         
         '<remarks/>
         <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/CaseManager/Delete", RequestNamespace:="http://www.kCura.com/EDDS/CaseManager", ResponseNamespace:="http://www.kCura.com/EDDS/CaseManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
-        Public Function Delete(ByVal caseArtifactID As Integer) As Boolean
-            Dim results() As Object = Me.Invoke("Delete", New Object() {caseArtifactID})
+        Public Function Delete(ByVal caseContextArtifactID As Integer) As Boolean
+            Dim results() As Object = Me.Invoke("Delete", New Object() {caseContextArtifactID})
             Return CType(results(0),Boolean)
         End Function
         
         '<remarks/>
-        Public Function BeginDelete(ByVal caseArtifactID As Integer, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
-            Return Me.BeginInvoke("Delete", New Object() {caseArtifactID}, callback, asyncState)
+        Public Function BeginDelete(ByVal caseContextArtifactID As Integer, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("Delete", New Object() {caseContextArtifactID}, callback, asyncState)
         End Function
         
         '<remarks/>
@@ -92,14 +92,14 @@ Namespace kCura.EDDS.WebAPI.CaseManagerBase
         
         '<remarks/>
         <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/CaseManager/Read", RequestNamespace:="http://www.kCura.com/EDDS/CaseManager", ResponseNamespace:="http://www.kCura.com/EDDS/CaseManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
-        Public Function Read(ByVal caseArtifactID As Integer) As CaseInfo
-            Dim results() As Object = Me.Invoke("Read", New Object() {caseArtifactID})
+        Public Function Read(ByVal caseContextArtifactID As Integer) As CaseInfo
+            Dim results() As Object = Me.Invoke("Read", New Object() {caseContextArtifactID})
             Return CType(results(0),CaseInfo)
         End Function
         
         '<remarks/>
-        Public Function BeginRead(ByVal caseArtifactID As Integer, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
-            Return Me.BeginInvoke("Read", New Object() {caseArtifactID}, callback, asyncState)
+        Public Function BeginRead(ByVal caseContextArtifactID As Integer, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("Read", New Object() {caseContextArtifactID}, callback, asyncState)
         End Function
         
         '<remarks/>
@@ -110,14 +110,14 @@ Namespace kCura.EDDS.WebAPI.CaseManagerBase
         
         '<remarks/>
         <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/CaseManager/RetrieveCaseDownloadURI", RequestNamespace:="http://www.kCura.com/EDDS/CaseManager", ResponseNamespace:="http://www.kCura.com/EDDS/CaseManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
-        Public Function RetrieveCaseDownloadURI(ByVal contextArtifactID As Integer) As String
-            Dim results() As Object = Me.Invoke("RetrieveCaseDownloadURI", New Object() {contextArtifactID})
+        Public Function RetrieveCaseDownloadURI(ByVal caseContextArtifactID As Integer) As String
+            Dim results() As Object = Me.Invoke("RetrieveCaseDownloadURI", New Object() {caseContextArtifactID})
             Return CType(results(0),String)
         End Function
         
         '<remarks/>
-        Public Function BeginRetrieveCaseDownloadURI(ByVal contextArtifactID As Integer, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
-            Return Me.BeginInvoke("RetrieveCaseDownloadURI", New Object() {contextArtifactID}, callback, asyncState)
+        Public Function BeginRetrieveCaseDownloadURI(ByVal caseContextArtifactID As Integer, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("RetrieveCaseDownloadURI", New Object() {caseContextArtifactID}, callback, asyncState)
         End Function
         
         '<remarks/>

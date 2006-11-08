@@ -6,6 +6,7 @@
       <s:element name="Create">
         <s:complexType>
           <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
             <s:element minOccurs="0" maxOccurs="1" name="fieldDTO" type="tns:Field" />
           </s:sequence>
         </s:complexType>
@@ -124,6 +125,7 @@
       <s:element name="Read">
         <s:complexType>
           <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
             <s:element minOccurs="1" maxOccurs="1" name="fieldArtifactID" type="s:int" />
           </s:sequence>
         </s:complexType>

@@ -22,14 +22,14 @@ Namespace kCura.WinEDDS.Service
 			Return wr
 		End Function
 
-		Public Overloads Function CreateFile(ByVal documentArtifactID As Int32, ByVal filename As String, ByVal fileGuid As String, ByVal order As Int32, ByVal type As Int32) As String
+		Public Overloads Function CreateFile(ByVal caseContextArtifactID As Int32, ByVal documentArtifactID As Int32, ByVal filename As String, ByVal fileGuid As String, ByVal order As Int32, ByVal type As Int32) As String
 			Dim fileDTO As New kCura.EDDS.WebAPI.FileManagerBase.File
 			fileDTO.DocumentArtifactID = documentArtifactID
 			fileDTO.Filename = filename
 			fileDTO.Guid = fileGuid
 			fileDTO.Order = order
 			fileDTO.Type = type
-			Return Me.Create(fileDTO)
+			Return Me.Create(caseContextArtifactID, fileDTO)
 		End Function
 
 #Region " Translations "
@@ -126,55 +126,47 @@ Namespace kCura.WinEDDS.Service
 #End Region
 
 #Region " Shadow Functions "
-		Public Shadows Function RetrieveByProductionArtifactIDForProduction(ByVal productionArtifactID As Int32) As System.Data.DataSet
+		Public Shadows Function RetrieveByProductionArtifactIDForProduction(ByVal caseContextArtifactID As Int32, ByVal productionArtifactID As Int32) As System.Data.DataSet
 			If kCura.WinEDDS.Config.UsesWebAPI Then
-				Return MyBase.RetrieveByProductionArtifactIDForProduction(productionArtifactID)
+				Return MyBase.RetrieveByProductionArtifactIDForProduction(caseContextArtifactID, productionArtifactID)
 			Else
 				'Return kCura.EDDS.Service.FileQuery.RetrieveByProductionArtifactIDForProduction(productionArtifactID, _identity).ToDataSet()
 			End If
 		End Function
 
-		'Public Shadows Function RetrieveNativesForProductionExport(ByVal productionArtifactID As Int32) As System.Data.DataSet
-		'	If kCura.WinEDDS.Config.UsesWebAPI Then
-		'		Return MyBase.RetrieveNativesForProductionExport(productionArtifactID)
-		'	Else
-		'		'Return kCura.EDDS.Service.FileQuery.RetrieveNativesForProductionExport(productionArtifactID, _identity).ToDataSet()
-		'	End If
-		'End Function
-
-		Public Shadows Function RetrieveFileGuidsByDocumentArtifactIDAndProductionArtifactID(ByVal documentArtifactID As Int32, ByVal productionArtifactID As Int32) As String()
+		Public Shadows Function RetrieveFileGuidsByDocumentArtifactIDAndProductionArtifactID(ByVal caseContextArtifactID As Int32, ByVal documentArtifactID As Int32, ByVal productionArtifactID As Int32) As String()
 			If kCura.WinEDDS.Config.UsesWebAPI Then
-				Return MyBase.RetrieveFileGuidsByDocumentArtifactIDAndProductionArtifactID(documentArtifactID, productionArtifactID)
+				Return MyBase.RetrieveFileGuidsByDocumentArtifactIDAndProductionArtifactID(caseContextArtifactID, documentArtifactID, productionArtifactID)
 			Else
 				'Return kCura.EDDS.Service.FileQuery.RetrieveFileGuidsByProductionArtifactID(productionArtifactID, documentArtifactID, _identity)
 			End If
 		End Function
 
-		Public Shadows Function ReturnFileGuidsForOriginalImages(ByVal documentArtifactID As Int32) As String()
+		Public Shadows Function ReturnFileGuidsForOriginalImages(ByVal caseContextArtifactID As Int32, ByVal documentArtifactID As Int32) As String()
 			If kCura.WinEDDS.Config.UsesWebAPI Then
-				Return MyBase.ReturnFileGuidsForOriginalImages(documentArtifactID)
+				Return MyBase.ReturnFileGuidsForOriginalImages(caseContextArtifactID, documentArtifactID)
 			Else
 				'Return kCura.EDDS.Service.FileQuery.ReturnFileGuidsForOriginalImages(_identity, documentArtifactID)
 			End If
 		End Function
 
-		Public Shadows Function Create(ByVal file As kCura.EDDS.WebAPI.FileManagerBase.File) As String
+		Public Shadows Function Create(ByVal caseContextArtifactID As Int32, ByVal file As kCura.EDDS.WebAPI.FileManagerBase.File) As String
 			If kCura.WinEDDS.Config.UsesWebAPI Then
-				Return MyBase.Create(file)
+				Return MyBase.Create(caseContextArtifactID, file)
 			Else
 				'Return _fileManager.Create(Me.FileWebAPIFiletoDTO(file), _identity)
 			End If
 		End Function
 
-		Public Shadows Sub CreateImages(ByVal files As kCura.EDDS.WebAPI.FileManagerBase.FileInfoBase(), ByVal documentArtifactID As Int32, ByVal contextArtifactID As Int32)
+		Public Shadows Sub CreateImages(ByVal caseContextArtifactID As Int32, ByVal files As kCura.EDDS.WebAPI.FileManagerBase.FileInfoBase(), ByVal documentArtifactID As Int32)
 			If kCura.WinEDDS.Config.UsesWebAPI Then
-				MyBase.CreateImages(files, documentArtifactID, contextArtifactID)
+				MyBase.CreateImages(caseContextArtifactID, files, documentArtifactID)
 			Else
 				'_fileManager.ExternalCreateImages(WebAPIFileInfostoFileInfos(files), documentArtifactID, contextArtifactID, _identity)
 			End If
 		End Sub
 
-		Public Overloads Sub CreateNatives(ByVal fileDTOs As kCura.EDDS.WebAPI.FileManagerBase.File())
+		Public Overloads Sub CreateNatives(ByVal caseContextArtifactID As Int32, ByVal fileDTOs As kCura.EDDS.WebAPI.FileManagerBase.File())
 			Dim documentArtifactIDs(fileDTOs.Length - 1) As Int32
 			Dim files(fileDTOs.Length - 1) As kCura.EDDS.WebAPI.FileManagerBase.FileInfoBase
 			Dim i As Int32
@@ -186,31 +178,31 @@ Namespace kCura.WinEDDS.Service
 				files(i) = file
 			Next
 			If kCura.WinEDDS.Config.UsesWebAPI Then
-				MyBase.CreateNatives(files, documentArtifactIDs)
+				MyBase.CreateNatives(caseContextArtifactID, files, documentArtifactIDs)
 			Else
 				'_fileManager.ExternalCreateNatives(WebAPIFileInfostoFileInfos(files), documentArtifactIDs, _identity)
 			End If
 		End Sub
 
-		Public Shadows Function GetRotation(ByVal artifactID As Int32, ByVal guid As String) As Int32
+		Public Shadows Function GetRotation(ByVal caseContextArtifactID As Int32, ByVal artifactID As Int32, ByVal guid As String) As Int32
 			If kCura.WinEDDS.Config.UsesWebAPI Then
-				Return MyBase.GetRotation(artifactID, guid)
+				Return MyBase.GetRotation(caseContextArtifactID, artifactID, guid)
 			Else
 				'Return New kCura.EDDS.Service.FileManager().Read(guid, artifactID, _identity).Rotation
 			End If
 		End Function
 
-		Public Shadows Sub SetRotation(ByVal artifactID As Int32, ByVal guid As String, ByVal rotation As Int32)
+		Public Shadows Sub SetRotation(ByVal caseContextArtifactID As Int32, ByVal artifactID As Int32, ByVal guid As String, ByVal rotation As Int32)
 			If kCura.WinEDDS.Config.UsesWebAPI Then
-				MyBase.SetRotation(artifactID, guid, rotation)
+				MyBase.SetRotation(caseContextArtifactID, artifactID, guid, rotation)
 			Else
 				'_fileManager.ExternalSetRotation(artifactID, guid, rotation, _identity)
 			End If
 		End Sub
 
-		Public Shadows Function GetFullTextGuidsByDocumentArtifactIdAndType(ByVal documentArtifactID As Int32, ByVal TypeId As Int32) As String
+		Public Shadows Function GetFullTextGuidsByDocumentArtifactIdAndType(ByVal caseContextArtifactID As Int32, ByVal documentArtifactID As Int32, ByVal TypeId As Int32) As String
 			If kCura.WinEDDS.Config.UsesWebAPI Then
-				Return MyBase.GetFullTextGuidsByDocumentArtifactIdAndType(documentArtifactID, TypeId)
+				Return MyBase.GetFullTextGuidsByDocumentArtifactIdAndType(caseContextArtifactID, documentArtifactID, TypeId)
 			Else
 				'Return _fileManager.ExternalGetFullTextGuidsByDocumentArtifactIdAndType(documentArtifactID, TypeId, _identity)
 			End If

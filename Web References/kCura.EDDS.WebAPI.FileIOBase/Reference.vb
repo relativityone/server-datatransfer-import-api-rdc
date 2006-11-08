@@ -38,14 +38,14 @@ Namespace kCura.EDDS.WebAPI.FileIOBase
         
         '<remarks/>
         <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://foley.com/EDDS/FileManager/BeginFill", RequestNamespace:="http://foley.com/EDDS/FileManager", ResponseNamespace:="http://foley.com/EDDS/FileManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
-        Public Function BeginFill(<System.Xml.Serialization.XmlElementAttribute(DataType:="base64Binary")> ByVal b() As Byte, ByVal contextArtifactID As Integer, ByVal fileGuid As String) As String
-            Dim results() As Object = Me.Invoke("BeginFill", New Object() {b, contextArtifactID, fileGuid})
+        Public Function BeginFill(ByVal caseContextArtifactID As Integer, <System.Xml.Serialization.XmlElementAttribute(DataType:="base64Binary")> ByVal b() As Byte, ByVal fileGuid As String) As String
+            Dim results() As Object = Me.Invoke("BeginFill", New Object() {caseContextArtifactID, b, fileGuid})
             Return CType(results(0),String)
         End Function
         
         '<remarks/>
-        Public Function BeginBeginFill(ByVal b() As Byte, ByVal contextArtifactID As Integer, ByVal fileGuid As String, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
-            Return Me.BeginInvoke("BeginFill", New Object() {b, contextArtifactID, fileGuid}, callback, asyncState)
+        Public Function BeginBeginFill(ByVal caseContextArtifactID As Integer, ByVal b() As Byte, ByVal fileGuid As String, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("BeginFill", New Object() {caseContextArtifactID, b, fileGuid}, callback, asyncState)
         End Function
         
         '<remarks/>
@@ -56,14 +56,14 @@ Namespace kCura.EDDS.WebAPI.FileIOBase
         
         '<remarks/>
         <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://foley.com/EDDS/FileManager/FileFill", RequestNamespace:="http://foley.com/EDDS/FileManager", ResponseNamespace:="http://foley.com/EDDS/FileManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
-        Public Function FileFill(ByVal fileName As String, <System.Xml.Serialization.XmlElementAttribute(DataType:="base64Binary")> ByVal b() As Byte, ByVal contextArtifactID As Integer) As Boolean
-            Dim results() As Object = Me.Invoke("FileFill", New Object() {fileName, b, contextArtifactID})
+        Public Function FileFill(ByVal caseContextArtifactID As Integer, ByVal fileName As String, <System.Xml.Serialization.XmlElementAttribute(DataType:="base64Binary")> ByVal b() As Byte) As Boolean
+            Dim results() As Object = Me.Invoke("FileFill", New Object() {caseContextArtifactID, fileName, b})
             Return CType(results(0),Boolean)
         End Function
         
         '<remarks/>
-        Public Function BeginFileFill(ByVal fileName As String, ByVal b() As Byte, ByVal contextArtifactID As Integer, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
-            Return Me.BeginInvoke("FileFill", New Object() {fileName, b, contextArtifactID}, callback, asyncState)
+        Public Function BeginFileFill(ByVal caseContextArtifactID As Integer, ByVal fileName As String, ByVal b() As Byte, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("FileFill", New Object() {caseContextArtifactID, fileName, b}, callback, asyncState)
         End Function
         
         '<remarks/>
@@ -74,13 +74,13 @@ Namespace kCura.EDDS.WebAPI.FileIOBase
         
         '<remarks/>
         <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://foley.com/EDDS/FileManager/RemoveFill", RequestNamespace:="http://foley.com/EDDS/FileManager", ResponseNamespace:="http://foley.com/EDDS/FileManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
-        Public Sub RemoveFill(ByVal fileName As String, ByVal contextArtifactID As Integer)
-            Me.Invoke("RemoveFill", New Object() {fileName, contextArtifactID})
+        Public Sub RemoveFill(ByVal caseContextArtifactID As Integer, ByVal fileName As String)
+            Me.Invoke("RemoveFill", New Object() {caseContextArtifactID, fileName})
         End Sub
         
         '<remarks/>
-        Public Function BeginRemoveFill(ByVal fileName As String, ByVal contextArtifactID As Integer, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
-            Return Me.BeginInvoke("RemoveFill", New Object() {fileName, contextArtifactID}, callback, asyncState)
+        Public Function BeginRemoveFill(ByVal caseContextArtifactID As Integer, ByVal fileName As String, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("RemoveFill", New Object() {caseContextArtifactID, fileName}, callback, asyncState)
         End Function
         
         '<remarks/>

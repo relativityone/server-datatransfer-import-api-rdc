@@ -39,13 +39,13 @@ Namespace kCura.EDDS.WebAPI.MultiCodeManagerBase
         
         '<remarks/>
         <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://tempuri.org//MultiCodeManager/DeleteFromMultiCodeArtifactByMultiCodeID", RequestNamespace:="http://tempuri.org//MultiCodeManager", ResponseNamespace:="http://tempuri.org//MultiCodeManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
-        Public Sub DeleteFromMultiCodeArtifactByMultiCodeID(ByVal artifactID As Integer, ByVal multiCodeID As Integer)
-            Me.Invoke("DeleteFromMultiCodeArtifactByMultiCodeID", New Object() {artifactID, multiCodeID})
+        Public Sub DeleteFromMultiCodeArtifactByMultiCodeID(ByVal caseContextArtifactID As Integer, ByVal multiCodeID As Integer)
+            Me.Invoke("DeleteFromMultiCodeArtifactByMultiCodeID", New Object() {caseContextArtifactID, multiCodeID})
         End Sub
         
         '<remarks/>
-        Public Function BeginDeleteFromMultiCodeArtifactByMultiCodeID(ByVal artifactID As Integer, ByVal multiCodeID As Integer, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
-            Return Me.BeginInvoke("DeleteFromMultiCodeArtifactByMultiCodeID", New Object() {artifactID, multiCodeID}, callback, asyncState)
+        Public Function BeginDeleteFromMultiCodeArtifactByMultiCodeID(ByVal caseContextArtifactID As Integer, ByVal multiCodeID As Integer, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("DeleteFromMultiCodeArtifactByMultiCodeID", New Object() {caseContextArtifactID, multiCodeID}, callback, asyncState)
         End Function
         
         '<remarks/>
@@ -55,14 +55,14 @@ Namespace kCura.EDDS.WebAPI.MultiCodeManagerBase
         
         '<remarks/>
         <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://tempuri.org//MultiCodeManager/CreateNewMultiCodeID", RequestNamespace:="http://tempuri.org//MultiCodeManager", ResponseNamespace:="http://tempuri.org//MultiCodeManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
-        Public Function CreateNewMultiCodeID(ByVal artifactID As Integer) As Integer
-            Dim results() As Object = Me.Invoke("CreateNewMultiCodeID", New Object() {artifactID})
+        Public Function CreateNewMultiCodeID(ByVal caseContextArtifactID As Integer) As Integer
+            Dim results() As Object = Me.Invoke("CreateNewMultiCodeID", New Object() {caseContextArtifactID})
             Return CType(results(0),Integer)
         End Function
         
         '<remarks/>
-        Public Function BeginCreateNewMultiCodeID(ByVal artifactID As Integer, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
-            Return Me.BeginInvoke("CreateNewMultiCodeID", New Object() {artifactID}, callback, asyncState)
+        Public Function BeginCreateNewMultiCodeID(ByVal caseContextArtifactID As Integer, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("CreateNewMultiCodeID", New Object() {caseContextArtifactID}, callback, asyncState)
         End Function
         
         '<remarks/>
@@ -73,13 +73,13 @@ Namespace kCura.EDDS.WebAPI.MultiCodeManagerBase
         
         '<remarks/>
         <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://tempuri.org//MultiCodeManager/SetMultiCodeValues", RequestNamespace:="http://tempuri.org//MultiCodeManager", ResponseNamespace:="http://tempuri.org//MultiCodeManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
-        Public Sub SetMultiCodeValues(ByVal multiCodeID As Integer, ByVal values() As Object)
-            Me.Invoke("SetMultiCodeValues", New Object() {multiCodeID, values})
+        Public Sub SetMultiCodeValues(ByVal caseContextArtifactID As Integer, ByVal multiCodeID As Integer, ByVal values() As Object)
+            Me.Invoke("SetMultiCodeValues", New Object() {caseContextArtifactID, multiCodeID, values})
         End Sub
         
         '<remarks/>
-        Public Function BeginSetMultiCodeValues(ByVal multiCodeID As Integer, ByVal values() As Object, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
-            Return Me.BeginInvoke("SetMultiCodeValues", New Object() {multiCodeID, values}, callback, asyncState)
+        Public Function BeginSetMultiCodeValues(ByVal caseContextArtifactID As Integer, ByVal multiCodeID As Integer, ByVal values() As Object, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("SetMultiCodeValues", New Object() {caseContextArtifactID, multiCodeID, values}, callback, asyncState)
         End Function
         
         '<remarks/>

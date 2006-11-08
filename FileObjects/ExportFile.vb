@@ -19,14 +19,6 @@ Namespace kCura.WinEDDS
 		Protected _logFileFormat As kCura.WinEDDS.LoadFileType.FileFormat
 
 #Region "Public Properties"
-		'Public Property Identity() As kCura.EDDS.EDDSIdentity
-		'	Get
-		'		Return _identity
-		'	End Get
-		'	Set(ByVal value As kCura.EDDS.EDDSIdentity)
-		'		_identity = value
-		'	End Set
-		'End Property
 
 		Public Property CaseInfo() As kCura.EDDS.Types.CaseInfo
 			Get
@@ -35,6 +27,12 @@ Namespace kCura.WinEDDS
 			Set(ByVal value As kCura.EDDS.Types.CaseInfo)
 				_caseInfo = value
 			End Set
+		End Property
+
+		Public ReadOnly Property CaseArtifactID() As Int32
+			Get
+				Return Me.CaseInfo.ArtifactID
+			End Get
 		End Property
 
 		Public Property DataTable() As System.Data.DataTable

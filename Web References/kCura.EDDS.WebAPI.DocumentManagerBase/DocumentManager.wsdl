@@ -8,7 +8,7 @@
       <s:element name="GetAllDocumentsForCase">
         <s:complexType>
           <s:sequence>
-            <s:element minOccurs="1" maxOccurs="1" name="caseID" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
           </s:sequence>
         </s:complexType>
       </s:element>
@@ -66,6 +66,7 @@
       <s:element name="CreateEmptyDocument">
         <s:complexType>
           <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
             <s:element minOccurs="1" maxOccurs="1" name="parentFolderID" type="s:int" />
             <s:element minOccurs="0" maxOccurs="1" name="identifierValue" type="s:base64Binary" />
             <s:element minOccurs="0" maxOccurs="1" name="fullTextFileName" type="s:string" />
@@ -94,6 +95,7 @@
       <s:element name="Read">
         <s:complexType>
           <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
             <s:element minOccurs="1" maxOccurs="1" name="artifactID" type="s:int" />
           </s:sequence>
         </s:complexType>
@@ -239,6 +241,7 @@
       <s:element name="DeleteNative">
         <s:complexType>
           <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
             <s:element minOccurs="0" maxOccurs="1" name="documentDTO" type="tns:Document" />
           </s:sequence>
         </s:complexType>
@@ -253,6 +256,7 @@
       <s:element name="Create">
         <s:complexType>
           <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
             <s:element minOccurs="0" maxOccurs="1" name="docDTO" type="tns:Document" />
           </s:sequence>
         </s:complexType>
@@ -267,6 +271,7 @@
       <s:element name="Update">
         <s:complexType>
           <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
             <s:element minOccurs="0" maxOccurs="1" name="docDTO" type="tns:Document" />
           </s:sequence>
         </s:complexType>
@@ -281,6 +286,7 @@
       <s:element name="CreateRange">
         <s:complexType>
           <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
             <s:element minOccurs="0" maxOccurs="1" name="docDTOs" type="tns:ArrayOfDocument" />
           </s:sequence>
         </s:complexType>
@@ -296,6 +302,7 @@
       <s:element name="UpdateRange">
         <s:complexType>
           <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
             <s:element minOccurs="0" maxOccurs="1" name="docDTOs" type="tns:ArrayOfDocument" />
           </s:sequence>
         </s:complexType>
@@ -306,6 +313,7 @@
       <s:element name="AddFullTextToDocumentFromFile">
         <s:complexType>
           <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
             <s:element minOccurs="1" maxOccurs="1" name="documentArtifactID" type="s:int" />
             <s:element minOccurs="0" maxOccurs="1" name="fullTextFileName" type="s:string" />
             <s:element minOccurs="0" maxOccurs="1" name="fullTextBuilder" type="tns:FullTextBuilder" />
@@ -322,9 +330,9 @@
       <s:element name="GetDocumentArtifactIDFromIdentifier">
         <s:complexType>
           <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
             <s:element minOccurs="0" maxOccurs="1" name="identifier" type="s:string" />
             <s:element minOccurs="0" maxOccurs="1" name="fieldDisplayName" type="s:string" />
-            <s:element minOccurs="1" maxOccurs="1" name="caseID" type="s:int" />
           </s:sequence>
         </s:complexType>
       </s:element>
@@ -338,7 +346,7 @@
       <s:element name="ReadFromIdentifier">
         <s:complexType>
           <s:sequence>
-            <s:element minOccurs="1" maxOccurs="1" name="caseID" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
             <s:element minOccurs="0" maxOccurs="1" name="fieldDisplayName" type="s:string" />
             <s:element minOccurs="0" maxOccurs="1" name="identifier" type="s:string" />
           </s:sequence>
@@ -354,6 +362,7 @@
       <s:element name="UpdateFullTextWithCrackedText">
         <s:complexType>
           <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
             <s:element minOccurs="1" maxOccurs="1" name="documentArtifactID" type="s:int" />
             <s:element minOccurs="0" maxOccurs="1" name="fileGuid" type="s:string" />
           </s:sequence>
@@ -365,26 +374,13 @@
       <s:element name="ClearImagesFromDocument">
         <s:complexType>
           <s:sequence>
-            <s:element minOccurs="1" maxOccurs="1" name="artifactID" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="documentArtifactID" type="s:int" />
           </s:sequence>
         </s:complexType>
       </s:element>
       <s:element name="ClearImagesFromDocumentResponse">
         <s:complexType />
-      </s:element>
-      <s:element name="GetDocumentDirectoryByContextArtifactID">
-        <s:complexType>
-          <s:sequence>
-            <s:element minOccurs="1" maxOccurs="1" name="contextArtifactID" type="s:int" />
-          </s:sequence>
-        </s:complexType>
-      </s:element>
-      <s:element name="GetDocumentDirectoryByContextArtifactIDResponse">
-        <s:complexType>
-          <s:sequence>
-            <s:element minOccurs="0" maxOccurs="1" name="GetDocumentDirectoryByContextArtifactIDResult" type="s:string" />
-          </s:sequence>
-        </s:complexType>
       </s:element>
       <s:element name="GetDocumentDirectoryByCaseArtifactID">
         <s:complexType>
@@ -403,6 +399,7 @@
       <s:element name="GetPrintImageGuids">
         <s:complexType>
           <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
             <s:element minOccurs="1" maxOccurs="1" name="artifactID" type="s:int" />
             <s:element minOccurs="0" maxOccurs="1" name="orderedProductionIDList" type="tns:ArrayOfInt" />
           </s:sequence>
@@ -521,12 +518,6 @@
   <wsdl:message name="ClearImagesFromDocumentSoapOut">
     <wsdl:part name="parameters" element="tns:ClearImagesFromDocumentResponse" />
   </wsdl:message>
-  <wsdl:message name="GetDocumentDirectoryByContextArtifactIDSoapIn">
-    <wsdl:part name="parameters" element="tns:GetDocumentDirectoryByContextArtifactID" />
-  </wsdl:message>
-  <wsdl:message name="GetDocumentDirectoryByContextArtifactIDSoapOut">
-    <wsdl:part name="parameters" element="tns:GetDocumentDirectoryByContextArtifactIDResponse" />
-  </wsdl:message>
   <wsdl:message name="GetDocumentDirectoryByCaseArtifactIDSoapIn">
     <wsdl:part name="parameters" element="tns:GetDocumentDirectoryByCaseArtifactID" />
   </wsdl:message>
@@ -595,10 +586,6 @@
     <wsdl:operation name="ClearImagesFromDocument">
       <wsdl:input message="tns:ClearImagesFromDocumentSoapIn" />
       <wsdl:output message="tns:ClearImagesFromDocumentSoapOut" />
-    </wsdl:operation>
-    <wsdl:operation name="GetDocumentDirectoryByContextArtifactID">
-      <wsdl:input message="tns:GetDocumentDirectoryByContextArtifactIDSoapIn" />
-      <wsdl:output message="tns:GetDocumentDirectoryByContextArtifactIDSoapOut" />
     </wsdl:operation>
     <wsdl:operation name="GetDocumentDirectoryByCaseArtifactID">
       <wsdl:input message="tns:GetDocumentDirectoryByCaseArtifactIDSoapIn" />
@@ -730,15 +717,6 @@
     </wsdl:operation>
     <wsdl:operation name="ClearImagesFromDocument">
       <soap:operation soapAction="http://foley.com/EDDS/DocumentManager/ClearImagesFromDocument" style="document" />
-      <wsdl:input>
-        <soap:body use="literal" />
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="GetDocumentDirectoryByContextArtifactID">
-      <soap:operation soapAction="http://foley.com/EDDS/DocumentManager/GetDocumentDirectoryByContextArtifactID" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>

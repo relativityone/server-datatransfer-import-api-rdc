@@ -81,17 +81,17 @@ Namespace kCura.WinEDDS.Service
 #End Region
 
 #Region " Shadow Functions "
-		Public Shadows Function RetrieveProducedByContextArtifactID(ByVal contextArtifactID As Int32) As System.Data.DataSet
+		Public Shadows Function RetrieveProducedByContextArtifactID(ByVal caseContextArtifactID As Int32) As System.Data.DataSet
 			If kCura.WinEDDS.Config.UsesWebAPI Then
-				Return MyBase.RetrieveProducedByContextArtifactID(contextArtifactID)
+				Return MyBase.RetrieveProducedByContextArtifactID(caseContextArtifactID)
 			Else
 				'Return _productionManager.ExternalRetrieveProducedByContextArtifactID(contextArtifactID, _identity)
 			End If
 		End Function
 
-		Public Shadows Function Read(ByVal productionArtifactID As Int32) As kCura.EDDS.WebAPI.ProductionManagerBase.Production
+		Public Shadows Function Read(ByVal caseContextArtifactID As Int32, ByVal productionArtifactID As Int32) As kCura.EDDS.WebAPI.ProductionManagerBase.Production
 			If kCura.WinEDDS.Config.UsesWebAPI Then
-				Return MyBase.Read(productionArtifactID)
+				Return MyBase.Read(caseContextArtifactID, productionArtifactID)
 			Else
 				'Return Me.DTOToWebAPIProduction(_productionManager.Read(productionArtifactID, _identity))
 			End If

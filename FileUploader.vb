@@ -1,6 +1,5 @@
 Namespace kCura.WinEDDS
 	Public Class FileUploader
-
 		Public Enum Type
 			Web
 			Direct
@@ -9,19 +8,20 @@ Namespace kCura.WinEDDS
 		Private _gateway As kCura.WinEDDS.Service.FileIO
 		Private _credentials As Net.NetworkCredential
 		Private _type As Type
-    Private _destinationFolderPath As String
+		Private _destinationFolderPath As String
+		Private _caseArtifactID As Int32
 
 		Public Sub SetDesintationFolderName(ByVal value As String)
 			_destinationFolderPath = value
 		End Sub
 
-		Public Sub New(ByVal credentials As Net.NetworkCredential, ByVal destinationFolderPath As String, ByVal cookieContainer As System.Net.CookieContainer)
+		Public Sub New(ByVal credentials As Net.NetworkCredential, ByVal caseArtifactID As Int32, ByVal destinationFolderPath As String, ByVal cookieContainer As System.Net.CookieContainer)
 			_gateway = New kCura.WinEDDS.Service.FileIO(credentials, cookieContainer)
 			_gateway.Credentials = credentials
 			_gateway.Timeout = Int32.MaxValue
 			_credentials = credentials
+			_caseArtifactID = caseArtifactID
 			_destinationFolderPath = destinationFolderPath
-			'Dim documentManager As kCura.EDDS.WebAPI.DocumentManagerBase.DocumentManager
 			SetType(_destinationFolderPath)
 		End Sub
 
@@ -52,6 +52,12 @@ Namespace kCura.WinEDDS
 				_type = value
 				RaiseEvent UploadModeChangeEvent(value.ToString)
 			End Set
+		End Property
+
+		Public ReadOnly Property CaseArtifactID() As Int32
+			Get
+				Return _caseArtifactID
+			End Get
 		End Property
 
 		Private ReadOnly Property Gateway() As kCura.WinEDDS.Service.FileIO
@@ -136,15 +142,15 @@ Namespace kCura.WinEDDS
 					Dim b(readLimit) As Byte
 					fileStream.Read(b, 0, readLimit)
 					If i = 1 Then
-						fileGuid = Gateway.BeginFill(b, contextArtifactID, fileGuid)
+						fileGuid = Gateway.BeginFill(_caseArtifactID, b, fileGuid)
 						If fileGuid = String.Empty Then
 							Return String.Empty
 						End If
 					End If
 					If i <= trips And i > 1 Then
 						RaiseEvent UploadStatusEvent("Trip " & i & " of " & trips)
-						If Not Gateway.FileFill(fileGuid, b, contextArtifactID) Then
-							Gateway.RemoveFill(fileGuid, contextArtifactID)
+						If Not Gateway.FileFill(_caseArtifactID, fileGuid, b, contextArtifactID) Then
+							Gateway.RemoveFill(_caseArtifactID, fileGuid)
 							Return String.Empty
 						End If
 					End If

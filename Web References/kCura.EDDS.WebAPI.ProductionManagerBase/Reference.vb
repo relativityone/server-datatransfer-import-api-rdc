@@ -39,14 +39,14 @@ Namespace kCura.EDDS.WebAPI.ProductionManagerBase
         
         '<remarks/>
         <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/ProductionManager/RetrieveProducedByContextArtifactID", RequestNamespace:="http://www.kCura.com/EDDS/ProductionManager", ResponseNamespace:="http://www.kCura.com/EDDS/ProductionManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
-        Public Function RetrieveProducedByContextArtifactID(ByVal contextArtifactID As Integer) As System.Data.DataSet
-            Dim results() As Object = Me.Invoke("RetrieveProducedByContextArtifactID", New Object() {contextArtifactID})
+        Public Function RetrieveProducedByContextArtifactID(ByVal caseContextArtifactID As Integer) As System.Data.DataSet
+            Dim results() As Object = Me.Invoke("RetrieveProducedByContextArtifactID", New Object() {caseContextArtifactID})
             Return CType(results(0),System.Data.DataSet)
         End Function
         
         '<remarks/>
-        Public Function BeginRetrieveProducedByContextArtifactID(ByVal contextArtifactID As Integer, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
-            Return Me.BeginInvoke("RetrieveProducedByContextArtifactID", New Object() {contextArtifactID}, callback, asyncState)
+        Public Function BeginRetrieveProducedByContextArtifactID(ByVal caseContextArtifactID As Integer, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("RetrieveProducedByContextArtifactID", New Object() {caseContextArtifactID}, callback, asyncState)
         End Function
         
         '<remarks/>
@@ -57,14 +57,14 @@ Namespace kCura.EDDS.WebAPI.ProductionManagerBase
         
         '<remarks/>
         <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/ProductionManager/Read", RequestNamespace:="http://www.kCura.com/EDDS/ProductionManager", ResponseNamespace:="http://www.kCura.com/EDDS/ProductionManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
-        Public Function Read(ByVal productionArtifactID As Integer) As Production
-            Dim results() As Object = Me.Invoke("Read", New Object() {productionArtifactID})
+        Public Function Read(ByVal caseContextArtifactID As Integer, ByVal productionArtifactID As Integer) As Production
+            Dim results() As Object = Me.Invoke("Read", New Object() {caseContextArtifactID, productionArtifactID})
             Return CType(results(0),Production)
         End Function
         
         '<remarks/>
-        Public Function BeginRead(ByVal productionArtifactID As Integer, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
-            Return Me.BeginInvoke("Read", New Object() {productionArtifactID}, callback, asyncState)
+        Public Function BeginRead(ByVal caseContextArtifactID As Integer, ByVal productionArtifactID As Integer, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("Read", New Object() {caseContextArtifactID, productionArtifactID}, callback, asyncState)
         End Function
         
         '<remarks/>
@@ -75,14 +75,14 @@ Namespace kCura.EDDS.WebAPI.ProductionManagerBase
         
         '<remarks/>
         <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/ProductionManager/RetrieveProducedWithSecurity", RequestNamespace:="http://www.kCura.com/EDDS/ProductionManager", ResponseNamespace:="http://www.kCura.com/EDDS/ProductionManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
-        Public Function RetrieveProducedWithSecurity(ByVal contextArtifactID As Integer) As System.Data.DataSet
-            Dim results() As Object = Me.Invoke("RetrieveProducedWithSecurity", New Object() {contextArtifactID})
+        Public Function RetrieveProducedWithSecurity(ByVal caseContextArtifactID As Integer) As System.Data.DataSet
+            Dim results() As Object = Me.Invoke("RetrieveProducedWithSecurity", New Object() {caseContextArtifactID})
             Return CType(results(0),System.Data.DataSet)
         End Function
         
         '<remarks/>
-        Public Function BeginRetrieveProducedWithSecurity(ByVal contextArtifactID As Integer, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
-            Return Me.BeginInvoke("RetrieveProducedWithSecurity", New Object() {contextArtifactID}, callback, asyncState)
+        Public Function BeginRetrieveProducedWithSecurity(ByVal caseContextArtifactID As Integer, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("RetrieveProducedWithSecurity", New Object() {caseContextArtifactID}, callback, asyncState)
         End Function
         
         '<remarks/>

@@ -39,14 +39,14 @@ Namespace kCura.EDDS.WebAPI.FolderManagerBase
         
         '<remarks/>
         <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/FolderManager/RetrieveAllByCaseID", RequestNamespace:="http://www.kCura.com/EDDS/FolderManager", ResponseNamespace:="http://www.kCura.com/EDDS/FolderManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
-        Public Function RetrieveAllByCaseID(ByVal caseID As Integer) As System.Data.DataSet
-            Dim results() As Object = Me.Invoke("RetrieveAllByCaseID", New Object() {caseID})
+        Public Function RetrieveAllByCaseID(ByVal caseContextArtifactID As Integer) As System.Data.DataSet
+            Dim results() As Object = Me.Invoke("RetrieveAllByCaseID", New Object() {caseContextArtifactID})
             Return CType(results(0),System.Data.DataSet)
         End Function
         
         '<remarks/>
-        Public Function BeginRetrieveAllByCaseID(ByVal caseID As Integer, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
-            Return Me.BeginInvoke("RetrieveAllByCaseID", New Object() {caseID}, callback, asyncState)
+        Public Function BeginRetrieveAllByCaseID(ByVal caseContextArtifactID As Integer, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("RetrieveAllByCaseID", New Object() {caseContextArtifactID}, callback, asyncState)
         End Function
         
         '<remarks/>
@@ -57,14 +57,14 @@ Namespace kCura.EDDS.WebAPI.FolderManagerBase
         
         '<remarks/>
         <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/FolderManager/Read", RequestNamespace:="http://www.kCura.com/EDDS/FolderManager", ResponseNamespace:="http://www.kCura.com/EDDS/FolderManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
-        Public Function Read(ByVal folderArtifactID As Integer) As Folder
-            Dim results() As Object = Me.Invoke("Read", New Object() {folderArtifactID})
+        Public Function Read(ByVal caseContextArtifactID As Integer, ByVal folderArtifactID As Integer) As Folder
+            Dim results() As Object = Me.Invoke("Read", New Object() {caseContextArtifactID, folderArtifactID})
             Return CType(results(0),Folder)
         End Function
         
         '<remarks/>
-        Public Function BeginRead(ByVal folderArtifactID As Integer, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
-            Return Me.BeginInvoke("Read", New Object() {folderArtifactID}, callback, asyncState)
+        Public Function BeginRead(ByVal caseContextArtifactID As Integer, ByVal folderArtifactID As Integer, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("Read", New Object() {caseContextArtifactID, folderArtifactID}, callback, asyncState)
         End Function
         
         '<remarks/>
@@ -75,14 +75,14 @@ Namespace kCura.EDDS.WebAPI.FolderManagerBase
         
         '<remarks/>
         <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/FolderManager/Create", RequestNamespace:="http://www.kCura.com/EDDS/FolderManager", ResponseNamespace:="http://www.kCura.com/EDDS/FolderManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
-        Public Function Create(ByVal parentArtifactID As Integer, ByVal name As String) As Integer
-            Dim results() As Object = Me.Invoke("Create", New Object() {parentArtifactID, name})
+        Public Function Create(ByVal caseContextArtifactID As Integer, ByVal parentArtifactID As Integer, ByVal folderName As String) As Integer
+            Dim results() As Object = Me.Invoke("Create", New Object() {caseContextArtifactID, parentArtifactID, folderName})
             Return CType(results(0),Integer)
         End Function
         
         '<remarks/>
-        Public Function BeginCreate(ByVal parentArtifactID As Integer, ByVal name As String, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
-            Return Me.BeginInvoke("Create", New Object() {parentArtifactID, name}, callback, asyncState)
+        Public Function BeginCreate(ByVal caseContextArtifactID As Integer, ByVal parentArtifactID As Integer, ByVal folderName As String, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("Create", New Object() {caseContextArtifactID, parentArtifactID, folderName}, callback, asyncState)
         End Function
         
         '<remarks/>
@@ -93,14 +93,14 @@ Namespace kCura.EDDS.WebAPI.FolderManagerBase
         
         '<remarks/>
         <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/FolderManager/Exists", RequestNamespace:="http://www.kCura.com/EDDS/FolderManager", ResponseNamespace:="http://www.kCura.com/EDDS/FolderManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
-        Public Function Exists(ByVal artifactID As Integer, ByVal rootFolderID As Integer) As Boolean
-            Dim results() As Object = Me.Invoke("Exists", New Object() {artifactID, rootFolderID})
+        Public Function Exists(ByVal caseContextArtifactID As Integer, ByVal folderArtifactID As Integer) As Boolean
+            Dim results() As Object = Me.Invoke("Exists", New Object() {caseContextArtifactID, folderArtifactID})
             Return CType(results(0),Boolean)
         End Function
         
         '<remarks/>
-        Public Function BeginExists(ByVal artifactID As Integer, ByVal rootFolderID As Integer, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
-            Return Me.BeginInvoke("Exists", New Object() {artifactID, rootFolderID}, callback, asyncState)
+        Public Function BeginExists(ByVal caseContextArtifactID As Integer, ByVal folderArtifactID As Integer, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("Exists", New Object() {caseContextArtifactID, folderArtifactID}, callback, asyncState)
         End Function
         
         '<remarks/>

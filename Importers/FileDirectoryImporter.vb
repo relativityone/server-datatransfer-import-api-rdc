@@ -19,7 +19,6 @@ Namespace kCura.WinEDDS
 		Private _fileManager As kCura.WinEDDS.Service.FileManager
 		Private _credential As Net.NetworkCredential
 		Private _cookieContainer As System.Net.CookieContainer
-		'Private _identity As kCura.EDDS.EDDSIdentity
     Private _currentBatesNumber As Integer
     Private _fileExtentionsToImport As System.Collections.ArrayList
 
@@ -29,23 +28,17 @@ Namespace kCura.WinEDDS
 			_documentManager = New kCura.WinEDDS.Service.DocumentManager(_credential, _cookieContainer)
 			_folderManager = New kCura.WinEDDS.Service.FolderManager(_credential, _cookieContainer)
 			_fileManager = New kCura.WinEDDS.Service.FileManager(_credential, _cookieContainer)
-
-			'_documentManager = New kCura.WinEDDS.Service.DocumentManager(_credential, _cookieContainer, _identity)
-			'_folderManager = New kCura.WinEDDS.Service.FolderManager(_credential, _cookieContainer, _identity)
-			'_fileManager = New kCura.WinEDDS.Service.FileManager(_credential, _cookieContainer, _identity)
-
-			_uploader = New kCura.WinEDDS.FileUploader(_credential, _documentManager.GetDocumentDirectoryByCaseArtifactID(_importFileDirectorySettings.CaseInfo.ArtifactID) & "\", _cookieContainer)
+			_uploader = New kCura.WinEDDS.FileUploader(_credential, _importFileDirectorySettings.CaseInfo.ArtifactID, _documentManager.GetDocumentDirectoryByCaseArtifactID(_importFileDirectorySettings.CaseInfo.ArtifactID) & "\", _cookieContainer)
 
 			' get case fields
 			Dim fieldManager As New kCura.WinEDDS.Service.FieldQuery(_credential, _cookieContainer)
-			'Dim fieldManager As New kCura.WinEDDS.Service.FieldQuery(_credential, _cookieContainer, _identity)
-			_caseFields = fieldManager.RetrieveAllAsArray(_importFileDirectorySettings.CaseInfo.RootArtifactID)
+			_caseFields = fieldManager.RetrieveAllAsArray(_importFileDirectorySettings.CaseInfo.ArtifactID)
 
       ' get valid extentiosn
       _fileExtentionsToImport = New System.Collections.ArrayList(_importFileDirectorySettings.FileExtentionsToImport.ToUpper.Split(CType(";", Char)))
 
 			' identify the rootfolder ACL and add it to the fodler hash map
-			_rootFolderACLID = _folderManager.Read(_importFileDirectorySettings.DestinationFolderID).AccessControlListID
+			_rootFolderACLID = _folderManager.Read(_importFileDirectorySettings.CaseInfo.ArtifactID, _importFileDirectorySettings.DestinationFolderID).AccessControlListID
 			' extract parent folder
       Dim dirInfo As New System.IO.DirectoryInfo(_importFileDirectorySettings.FilePath)
       If Not dirInfo.Parent Is Nothing Then
@@ -94,7 +87,7 @@ Namespace kCura.WinEDDS
         parent = dir.Parent.FullName
       End If
       Dim parentFolderID As Int32 = CType(_folders.Item(parent), Folder).FolderID
-      Dim folderId As Int32 = _folderManager.Create(parentFolderID, dir.Name)
+			Dim folderId As Int32 = _folderManager.Create(_importFileDirectorySettings.CaseInfo.ArtifactID, parentFolderID, dir.Name)
       _folders.Add(filePath, New Folder(folderId, filePath))
 
 		End Sub
@@ -163,7 +156,7 @@ Namespace kCura.WinEDDS
 			Next
 
 			Me.ReportStatus(filePath, "Creating EDDS Record")
-			Dim documentArtifactID As Int32 = _documentManager.Create(documentDTO)
+			Dim documentArtifactID As Int32 = _documentManager.Create(_importFileDirectorySettings.CaseInfo.ArtifactID, documentDTO)
 
 			Me.ReportStatus(filePath, "Uploading Document")
 			If _importFileDirectorySettings.AttachFiles Then
@@ -171,7 +164,7 @@ Namespace kCura.WinEDDS
 					Dim fileIdentifier As String
 					fileIdentifier = _uploader.UploadFile(filePath, documentArtifactID)
 					If fileIdentifier <> String.Empty Then
-						_fileManager.CreateFile(documentArtifactID, fileInfo.Name, fileIdentifier, 0, kCura.EDDS.Types.FileType.Native)
+						_fileManager.CreateFile(_importFileDirectorySettings.CaseInfo.ArtifactID, documentArtifactID, fileInfo.Name, fileIdentifier, 0, kCura.EDDS.Types.FileType.Native)
 						Me.ReportStatus(filePath, "Extracting Full Text")
 						'_documentManager.UpdateFullTextWithCrackedText(documentArtifactID, fileIdentifier)
 					End If

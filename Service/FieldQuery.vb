@@ -23,8 +23,8 @@ Namespace kCura.WinEDDS.Service
 			Return wr
 		End Function
 
-		Public Function RetrieveAllAsArray(ByVal caseID As Int32) As kCura.EDDS.WebAPI.DocumentManagerBase.Field()
-			Dim dv As New kCura.Data.DataView(RetrieveAllMappable(caseID))
+		Public Function RetrieveAllAsArray(ByVal caseContextArtifactID As Int32) As kCura.EDDS.WebAPI.DocumentManagerBase.Field()
+			Dim dv As New kCura.Data.DataView(RetrieveAllMappable(caseContextArtifactID))
 			Dim fields(dv.Count - 1) As kCura.EDDS.WebAPI.DocumentManagerBase.Field
 			Dim field As kCura.EDDS.WebAPI.DocumentManagerBase.Field
 			Dim i As Int32
@@ -50,25 +50,25 @@ Namespace kCura.WinEDDS.Service
 		End Function
 
 #Region " Shadow Functions "
-		Public Shadows Function RetrieveDisplayFieldNameByFieldCategoryID(ByVal fieldCategoryID As Int32, ByVal contextArtifactID As Int32) As String
+		Public Shadows Function RetrieveDisplayFieldNameByFieldCategoryID(ByVal caseContextArtifactID As Int32, ByVal fieldCategoryID As Int32) As String
 			If kCura.WinEDDS.Config.UsesWebAPI Then
-				Return MyBase.RetrieveDisplayFieldNameByFieldCategoryID(fieldCategoryID, contextArtifactID)
+				Return MyBase.RetrieveDisplayFieldNameByFieldCategoryID(caseContextArtifactID, fieldCategoryID)
 			Else
 				'Return CType(_fieldQuery.RetrieveByFieldCategoryID(_identity, fieldCategoryID, contextArtifactID)("DisplayName"), String)
 			End If
 		End Function
 
-		Public Shadows Function RetrieveAllMappable(ByVal caseID As Int32) As System.Data.DataSet
+		Public Shadows Function RetrieveAllMappable(ByVal caseContextArtifactID As Int32) As System.Data.DataSet
 			If kCura.WinEDDS.Config.UsesWebAPI Then
-				Return MyBase.RetrieveAllMappable(caseID)
+				Return MyBase.RetrieveAllMappable(caseContextArtifactID)
 			Else
 				'Return _fieldQuery.RetrieveAllMappable(_identity, caseID).ToDataSet
 			End If
 		End Function
 
-		Public Shadows Function RetrieveAll(ByVal caseID As Int32) As System.Data.DataSet
+		Public Shadows Function RetrieveAll(ByVal caseContextArtifactID As Int32) As System.Data.DataSet
 			If kCura.WinEDDS.Config.UsesWebAPI Then
-				Return MyBase.RetrieveAll(caseID)
+				Return MyBase.RetrieveAll(caseContextArtifactID)
 			Else
 				'Return _fieldQuery.RetrieveAllWithSecurity(_identity, caseID).ToDataSet
 			End If

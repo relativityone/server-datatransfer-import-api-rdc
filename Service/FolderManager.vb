@@ -2,17 +2,12 @@ Namespace kCura.WinEDDS.Service
 	Public Class FolderManager
 		Inherits kCura.EDDS.WebAPI.FolderManagerBase.FolderManager
 
-		'Private _folderManager As New kCura.EDDS.Service.FolderManager
-		'Private _identity As kCura.EDDS.EDDSIdentity
-
 		Public Sub New(ByVal credentials As Net.NetworkCredential, ByVal cookieContainer As System.Net.CookieContainer)
-			'Public Sub New(ByVal credentials As Net.NetworkCredential, ByVal cookieContainer As System.Net.CookieContainer, ByVal identity As kCura.EDDS.EDDSIdentity)
 			MyBase.New()
 			Me.Credentials = credentials
 			Me.CookieContainer = cookieContainer
 			Me.Url = String.Format("{0}FolderManager.asmx", kCura.WinEDDS.Config.WebServiceURL)
 			Me.Timeout = Settings.DefaultTimeOut
-			'_identity = identity
 		End Sub
 
 		Protected Overrides Function GetWebRequest(ByVal uri As System.Uri) As System.Net.WebRequest
@@ -46,33 +41,33 @@ Namespace kCura.WinEDDS.Service
 #End Region
 
 #Region " Shadow Functions "
-		Public Shadows Function RetrieveAllByCaseID(ByVal caseID As Int32) As System.Data.DataSet
+		Public Shadows Function RetrieveAllByCaseID(ByVal caseContextArtifactID As Int32) As System.Data.DataSet
 			If kCura.WinEDDS.Config.UsesWebAPI Then
-				Return MyBase.RetrieveAllByCaseID(caseID)
+				Return MyBase.RetrieveAllByCaseID(caseContextArtifactID)
 			Else
 				'Return _folderManager.ExternalRetrieveAllByCaseID(caseID, _identity)
 			End If
 		End Function
 
-		Public Shadows Function Read(ByVal folderArtifactID As Int32) As kCura.EDDS.WebAPI.FolderManagerBase.Folder
+		Public Shadows Function Read(ByVal caseContextArtifactID As Int32, ByVal folderArtifactID As Int32) As kCura.EDDS.WebAPI.FolderManagerBase.Folder
 			If kCura.WinEDDS.Config.UsesWebAPI Then
-				Return MyBase.Read(folderArtifactID)
+				Return MyBase.Read(caseContextArtifactID, folderArtifactID)
 			Else
 				'Return Me.DTOToWebAPIFolder(_folderManager.Read(folderArtifactID, _identity))
 			End If
 		End Function
 
-		Public Shadows Function Create(ByVal parentArtifactID As Int32, ByVal name As String) As Int32
+		Public Shadows Function Create(ByVal caseContextArtifactID As Int32, ByVal parentArtifactID As Int32, ByVal name As String) As Int32
 			If kCura.WinEDDS.Config.UsesWebAPI Then
-				Return MyBase.Create(parentArtifactID, name)
+				Return MyBase.Create(caseContextArtifactID, parentArtifactID, name)
 			Else
 				'Return _folderManager.Create(parentArtifactID, name, _identity)
 			End If
 		End Function
 
-		Public Shadows Function Exists(ByVal artifactID As Int32, ByVal rootFolderID As Int32) As Boolean
+		Public Shadows Function Exists(ByVal caseContextArtifactID As Int32, ByVal rootFolderID As Int32) As Boolean
 			If kCura.WinEDDS.Config.UsesWebAPI Then
-				Return MyBase.Exists(artifactID, rootFolderID)
+				Return MyBase.Exists(caseContextArtifactID, rootFolderID)
 			Else
 				'Return _folderManager.Exists(artifactID, _identity, rootFolderID)
 			End If

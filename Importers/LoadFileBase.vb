@@ -22,7 +22,8 @@ Namespace kCura.WinEDDS
 		Protected _allCodes As kCura.Data.DataView
 		Protected _allCodeTypes As kCura.Data.DataView
 		Protected _folderID As Int32
-		Protected _caseSystemID As Int32
+		'Protected _caseSystemID As Int32
+		Protected _caseArtifactID As Int32
 		Protected _timeZoneOffset As Int32
 		Protected _autoDetect As Boolean
 		Protected _uploadFiles As Boolean
@@ -37,6 +38,7 @@ Namespace kCura.WinEDDS
 				_allCodes = value
 			End Set
 		End Property
+
 		Public Property AllCodeTypes() As kCura.Data.DataView
 			Get
 				InitializeCodeTables()
@@ -50,21 +52,14 @@ Namespace kCura.WinEDDS
 		Public Sub New(ByVal args As LoadFile, ByVal timezoneoffset As Int32)
 			Me.New(args, timezoneoffset, True)
 		End Sub
+
 		Public Sub New(ByVal args As LoadFile, ByVal timezoneoffset As Int32, ByVal autoDetect As Boolean)
 			MyBase.New(args.RecordDelimiter, args.QuoteDelimiter, args.NewlineDelimiter)
-			'columnsAreInitialized=false
+
 			_docFields = args.FieldMap.DocumentFields
 			_filePathColumn = args.NativeFilePathColumn
 			_firstLineContainsColumnNames = args.FirstLineContainsHeaders
 			_fieldMap = args.FieldMap
-
-			'_documentManager = New kCura.WinEDDS.Service.DocumentManager(args.Credentials, args.CookieContainer, args.Identity)
-			'_uploadManager = New kCura.WinEDDS.Service.FileIO(args.Credentials, args.CookieContainer)
-			'_codeManager = New kCura.WinEDDS.Service.CodeManager(args.Credentials, args.CookieContainer, args.Identity)
-			'_folderManager = New kCura.WinEDDS.Service.FolderManager(args.Credentials, args.CookieContainer, args.Identity)
-			'_fieldQuery = New kCura.WinEDDS.Service.FieldQuery(args.Credentials, args.CookieContainer, args.Identity)
-			'_fileManager = New kCura.WinEDDS.Service.FileManager(args.Credentials, args.CookieContainer, args.Identity)
-
 			_documentManager = New kCura.WinEDDS.Service.DocumentManager(args.Credentials, args.CookieContainer)
 			_uploadManager = New kCura.WinEDDS.Service.FileIO(args.Credentials, args.CookieContainer)
 			_codeManager = New kCura.WinEDDS.Service.CodeManager(args.Credentials, args.CookieContainer)
@@ -76,7 +71,8 @@ Namespace kCura.WinEDDS
 
 			_multiValueSeparator = args.MultiRecordDelimiter.ToString.ToCharArray
 			_folderID = args.DestinationFolderID
-			_caseSystemID = args.CaseInfo.RootArtifactID
+			'_caseSystemID = args.CaseInfo.RootArtifactID
+			_caseArtifactID = args.CaseInfo.ArtifactID
 			_timeZoneOffset = timezoneoffset
 			_autoDetect = autoDetect
 			_uploadFiles = args.LoadNativeFiles
@@ -87,7 +83,7 @@ Namespace kCura.WinEDDS
 		Private Sub InitializeCodeTables()
 			If _autoDetect Then
 				If _allCodes Is Nothing Then
-					Dim ds As DataSet = _codeManager.RetrieveCodesAndTypesForCase(_folderID)
+					Dim ds As DataSet = _codeManager.RetrieveCodesAndTypesForCase(_caseArtifactID)
 					_allCodes = New kCura.Data.DataView(ds.Tables("AllCodes"))					'HACK: Hard-coded
 					_allCodeTypes = New kCura.Data.DataView(ds.Tables("AllCodeTypes"))					'HACK: Hard-coded
 				End If
@@ -113,8 +109,8 @@ Namespace kCura.WinEDDS
 				Else
 					If _autoDetect Then
 						newCodeOrderValue = GetNewCodeOrderValue(field.CodeTypeID.Value)
-						Dim code As kCura.EDDS.WebAPI.CodeManagerBase.Code = _codeManager.CreateNewCodeDTOProxy(field.CodeTypeID.Value, value, newCodeOrderValue, _caseSystemID)
-						codeArtifactID = _codeManager.Create(code)
+						Dim code As kCura.EDDS.WebAPI.CodeManagerBase.Code = _codeManager.CreateNewCodeDTOProxy(field.CodeTypeID.Value, value, newCodeOrderValue, _caseArtifactID)
+						codeArtifactID = _codeManager.Create(_caseArtifactID, code)
 						Dim newRow As DataRowView = _allCodes.AddNew
 						_allCodes = Nothing
 						Return New NullableInt32(codeArtifactID)
@@ -177,9 +173,11 @@ Namespace kCura.WinEDDS
 			End If
 			SetFieldValue(field, value, column)
 		End Sub
+
 		Public Sub SetFieldValue(ByVal field As DocumentField, ByVal value As String, ByVal column As Int32)
 			SetFieldValue(field, value, column, False)
 		End Sub
+
 		Public Sub SetFieldValue(ByVal field As DocumentField, ByVal value As String, ByVal column As Int32, ByVal forPreview As Boolean)
 			Select Case CType(field.FieldTypeID, kCura.DynamicFields.Types.FieldTypeHelper.FieldType)
 				Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Boolean
@@ -271,7 +269,6 @@ Namespace kCura.WinEDDS
 			End If
 			Return New NullableDateTime(datevalue)
 		End Function
-
 
 #Region "Exceptions"
 

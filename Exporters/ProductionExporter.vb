@@ -128,7 +128,7 @@ Namespace kCura.WinEDDS
 			_downloadHandler = New FileDownloader(cred, exportFile.CaseInfo.DocumentPath & "\EDDS" & exportFile.CaseInfo.ArtifactID, exportFile.CaseInfo.DownloadHandlerURL, exportFile.CookieContainer)
 
 			_processController = processController
-			_sourceDirectory = _documentManager.GetDocumentDirectoryByContextArtifactID(Me.SelectedCaseInfo.RootArtifactID)
+			_sourceDirectory = _documentManager.GetDocumentDirectoryByCaseArtifactID(Me.SelectedCaseInfo.ArtifactID)
 		End Sub
 
 		Public Sub CreateVolumes()
@@ -168,9 +168,9 @@ Namespace kCura.WinEDDS
 			End If
 			Me.WriteUpdate("Retrieving export data from the server...")
 
-			documentImagesTable = _fileManager.RetrieveByProductionArtifactIDForProduction(Me.ProductionArtifactID).Tables(0)
+			documentImagesTable = _fileManager.RetrieveByProductionArtifactIDForProduction(Me.SelectedCaseInfo.ArtifactID, Me.ProductionArtifactID).Tables(0)
 
-			production = _productionManager.Read(Me.ProductionArtifactID)
+			production = _productionManager.Read(Me.SelectedCaseInfo.ArtifactID, Me.ProductionArtifactID)
 			currentVolumeNumber = production.VolumeStartNumber
 			Me.BeginVolume(currentVolumeName, production.VolumePrefix, currentVolumeNumber, production.SubdirectoryStartNumber, imagesSubdirectoryCount, nativesSubDirectoryCount, volumeLog, fullTextVolumeLog, nativesVolumeLog)
 			currentImagesDirectoryName = Me.CreateSubdirectory(production.SubdirectoryPrefix, production.SubdirectoryStartNumber, currentVolumeName)
@@ -271,7 +271,7 @@ Namespace kCura.WinEDDS
 					If Me.LoadFileFormat = kCura.WinEDDS.LoadFileType.FileFormat.IPRO_FullText Then
 						If isFirstDocumentImage Then
 							currentPageFirstByteNumber = 0
-							fullTextGuid = _fileManager.GetFullTextGuidsByDocumentArtifactIdAndType(CType(documentImagesTable.Rows(count)("DocumentArtifactID"), Int32), 2)
+							fullTextGuid = _fileManager.GetFullTextGuidsByDocumentArtifactIdAndType(Me.SelectedCaseInfo.ArtifactID, CType(documentImagesTable.Rows(count)("DocumentArtifactID"), Int32), 2)
 							Try
 								fullText = _fullTextDownloader.ReadFullTextFile(_sourceDirectory & fullTextGuid)
 								pageText = fullText.Substring(currentPageFirstByteNumber, CInt(documentImagesTable.Rows(count)("ByteRange")))

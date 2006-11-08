@@ -20,25 +20,25 @@ Namespace kCura.WinEDDS.Service
 		End Function
 
 #Region " Shadow Functions "
-		Public Shadows Sub DeleteFromMultiCodeArtifactByMultiCodeID(ByVal artifactID As Int32, ByVal multiCodeID As Int32)
+		Public Shadows Sub DeleteFromMultiCodeArtifactByMultiCodeID(ByVal caseContextArtifactID As Int32, ByVal multiCodeID As Int32)
 			If kCura.WinEDDS.Config.UsesWebAPI Then
-				MyBase.DeleteFromMultiCodeArtifactByMultiCodeID(artifactID, multiCodeID)
+				MyBase.DeleteFromMultiCodeArtifactByMultiCodeID(caseContextArtifactID, multiCodeID)
 			Else
 				'_multiCodeManager.DeleteFromMultiCodeArtifactByMultiCodeID(artifactID, multiCodeID)
 			End If
 		End Sub
 
-		Public Shadows Function CreateNewMultiCodeID(ByVal artifactID As Int32) As Int32
+		Public Shadows Function CreateNewMultiCodeID(ByVal caseContextArtifactID As Int32) As Int32
 			If kCura.WinEDDS.Config.UsesWebAPI Then
-				Return MyBase.CreateNewMultiCodeID(artifactID)
+				Return MyBase.CreateNewMultiCodeID(caseContextArtifactID)
 			Else
 				'Return _multiCodeManager.CreateNewMultiCodeID(artifactID)
 			End If
 		End Function
 
-		Public Shadows Sub SetMultiCodeValues(ByVal multiCodeID As Int32, ByVal values As System.Collections.ArrayList)
+		Public Shadows Sub SetMultiCodeValues(ByVal caseContextArtifactID As Int32, ByVal multiCodeID As Int32, ByVal values As System.Collections.ArrayList)
 			If kCura.WinEDDS.Config.UsesWebAPI Then
-				MyBase.SetMultiCodeValues(multiCodeID, values.ToArray)
+				MyBase.SetMultiCodeValues(caseContextArtifactID, multiCodeID, values.ToArray)
 			Else
 				'_multiCodeManager.SetMultiCodeValues(multiCodeID, values)
 			End If

@@ -6,8 +6,8 @@
       <s:element name="RetrieveDisplayFieldNameByFieldCategoryID">
         <s:complexType>
           <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
             <s:element minOccurs="1" maxOccurs="1" name="fieldCategoryID" type="s:int" />
-            <s:element minOccurs="1" maxOccurs="1" name="contextArtifactID" type="s:int" />
           </s:sequence>
         </s:complexType>
       </s:element>
@@ -21,7 +21,7 @@
       <s:element name="RetrieveAllMappable">
         <s:complexType>
           <s:sequence>
-            <s:element minOccurs="1" maxOccurs="1" name="caseID" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
           </s:sequence>
         </s:complexType>
       </s:element>
@@ -42,7 +42,7 @@
       <s:element name="RetrieveAll">
         <s:complexType>
           <s:sequence>
-            <s:element minOccurs="1" maxOccurs="1" name="caseID" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
           </s:sequence>
         </s:complexType>
       </s:element>

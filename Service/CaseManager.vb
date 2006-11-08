@@ -2,17 +2,12 @@ Namespace kCura.WinEDDS.Service
 	Public Class CaseManager
 		Inherits kCura.EDDS.WebAPI.CaseManagerBase.CaseManager
 
-		'Private _identity As kCura.EDDS.EDDSIdentity
-		'Private _caseManager As New kCura.EDDS.Service.CaseManager
-
-		'Public Sub New(ByVal credentials As Net.NetworkCredential, ByVal cookieContainer As System.Net.CookieContainer, ByVal identity As kCura.EDDS.EDDSIdentity)
 		Public Sub New(ByVal credentials As Net.NetworkCredential, ByVal cookieContainer As System.Net.CookieContainer)
 			MyBase.New()
 			Me.Credentials = credentials
 			Me.CookieContainer = cookieContainer
 			Me.Url = String.Format("{0}CaseManager.asmx", kCura.WinEDDS.Config.WebServiceURL)
 			Me.Timeout = Settings.DefaultTimeOut
-			'_identity = identity
 		End Sub
 
 		Protected Overrides Function GetWebRequest(ByVal uri As System.Uri) As System.Net.WebRequest

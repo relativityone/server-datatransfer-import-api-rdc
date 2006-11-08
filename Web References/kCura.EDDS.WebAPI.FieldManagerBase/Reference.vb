@@ -39,14 +39,14 @@ Namespace kCura.EDDS.WebAPI.FieldManagerBase
         
         '<remarks/>
         <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://foley.com/EDDS/FieldManager/Create", RequestNamespace:="http://foley.com/EDDS/FieldManager", ResponseNamespace:="http://foley.com/EDDS/FieldManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
-        Public Function Create(ByVal fieldDTO As Field) As Integer
-            Dim results() As Object = Me.Invoke("Create", New Object() {fieldDTO})
+        Public Function Create(ByVal caseContextArtifactID As Integer, ByVal fieldDTO As Field) As Integer
+            Dim results() As Object = Me.Invoke("Create", New Object() {caseContextArtifactID, fieldDTO})
             Return CType(results(0),Integer)
         End Function
         
         '<remarks/>
-        Public Function BeginCreate(ByVal fieldDTO As Field, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
-            Return Me.BeginInvoke("Create", New Object() {fieldDTO}, callback, asyncState)
+        Public Function BeginCreate(ByVal caseContextArtifactID As Integer, ByVal fieldDTO As Field, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("Create", New Object() {caseContextArtifactID, fieldDTO}, callback, asyncState)
         End Function
         
         '<remarks/>
@@ -57,14 +57,14 @@ Namespace kCura.EDDS.WebAPI.FieldManagerBase
         
         '<remarks/>
         <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://foley.com/EDDS/FieldManager/Read", RequestNamespace:="http://foley.com/EDDS/FieldManager", ResponseNamespace:="http://foley.com/EDDS/FieldManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
-        Public Function Read(ByVal fieldArtifactID As Integer) As Field
-            Dim results() As Object = Me.Invoke("Read", New Object() {fieldArtifactID})
+        Public Function Read(ByVal caseContextArtifactID As Integer, ByVal fieldArtifactID As Integer) As Field
+            Dim results() As Object = Me.Invoke("Read", New Object() {caseContextArtifactID, fieldArtifactID})
             Return CType(results(0),Field)
         End Function
         
         '<remarks/>
-        Public Function BeginRead(ByVal fieldArtifactID As Integer, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
-            Return Me.BeginInvoke("Read", New Object() {fieldArtifactID}, callback, asyncState)
+        Public Function BeginRead(ByVal caseContextArtifactID As Integer, ByVal fieldArtifactID As Integer, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("Read", New Object() {caseContextArtifactID, fieldArtifactID}, callback, asyncState)
         End Function
         
         '<remarks/>
