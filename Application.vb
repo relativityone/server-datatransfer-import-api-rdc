@@ -764,6 +764,27 @@ Namespace kCura.EDDS.WinForm
 			End Try
 		End Sub
 
+		'Friend Function DefaultCredentialsAreGood() As Boolean
+		'	Dim myHttpWebRequest As System.Net.HttpWebRequest
+		'	Dim myHttpWebResponse As System.Net.HttpWebResponse
+		'	Dim cred As System.Net.NetworkCredential
+		'	cred = DirectCast(System.Net.CredentialCache.DefaultCredentials, System.Net.NetworkCredential)
+		'	Try
+		'		'	myHttpWebRequest = DirectCast(System.Net.WebRequest.Create(kCura.WinEDDS.Config.WebServiceURL), System.Net.HttpWebRequest)
+		'		'	myHttpWebRequest.Credentials = System.Net.CredentialCache.DefaultCredentials
+		'		'	myHttpWebResponse = DirectCast(myHttpWebRequest.GetResponse(), System.Net.HttpWebResponse)
+		'		'Catch ex As System.Net.WebException
+		'		myHttpWebRequest = DirectCast(System.Net.WebRequest.Create(kCura.WinEDDS.Config.WebServiceURL & "\RelativityManager.asmx"), System.Net.HttpWebRequest)
+		'		myHttpWebRequest.Credentials = System.Net.CredentialCache.DefaultCredentials
+		'		myHttpWebResponse = DirectCast(myHttpWebRequest.GetResponse(), System.Net.HttpWebResponse)
+		'	Catch ex2 As System.Exception
+		'		Return False
+		'	End Try
+		'	CheckVersion(System.Net.CredentialCache.DefaultCredentials)
+		'	_credential = cred
+		'	Return True
+		'End Function
+
 		Friend Function DefaultCredentialsAreGood() As Boolean
 			Dim myHttpWebRequest As System.Net.HttpWebRequest
 			Dim cred As System.Net.NetworkCredential = DirectCast(System.Net.CredentialCache.DefaultCredentials, System.Net.NetworkCredential)
@@ -784,16 +805,16 @@ Namespace kCura.EDDS.WinForm
 		End Function
 
 		Private Sub CheckVersion(ByVal credential As Net.ICredentials)
-      'Dim relativityManager As New kCura.WinEDDS.Service.RelativityManager(DirectCast(credential, System.Net.NetworkCredential), _cookieContainer)
-      'Dim winRelativityVersion As String = System.Reflection.Assembly.GetExecutingAssembly.FullName.Split(","c)(1).Split("="c)(1)
-      'Dim relativityWebVersion As String = relativityManager.RetrieveRelativityVersion()
+			'Dim relativityManager As New kCura.WinEDDS.Service.RelativityManager(DirectCast(credential, System.Net.NetworkCredential), _cookieContainer)
+			'Dim winRelativityVersion As String = System.Reflection.Assembly.GetExecutingAssembly.FullName.Split(","c)(1).Split("="c)(1)
+			'Dim relativityWebVersion As String = relativityManager.RetrieveRelativityVersion()
 
-      'If winRelativityVersion <> relativityWebVersion Then
-      '	MsgBox(String.Format("Your version of WinRelativity is out of date. You are running version {0}, but version {1} is required.", winRelativityVersion, relativityWebVersion), MsgBoxStyle.Critical, "WinRelativity Version Mismatch")
-      '	ExitApplication()
-      'Else
-      '	Exit Sub
-      'End If
+			'If winRelativityVersion <> relativityWebVersion Then
+			'	MsgBox(String.Format("Your version of WinRelativity is out of date. You are running version {0}, but version {1} is required.", winRelativityVersion, relativityWebVersion), MsgBoxStyle.Critical, "WinRelativity Version Mismatch")
+			'	ExitApplication()
+			'Else
+			'	Exit Sub
+			'End If
 		End Sub
 #End Region
 
