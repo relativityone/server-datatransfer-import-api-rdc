@@ -139,7 +139,7 @@ Namespace kCura.WinEDDS
 				End If
 				'UpdateStatus(System.IO.Path.GetFileName(filePath), 1, fileStream.Length)
 				For i = 1 To trips
-					Dim b(readLimit) As Byte
+					Dim b(readLimit - 1) As Byte
 					fileStream.Read(b, 0, readLimit)
 					If i = 1 Then
 						fileGuid = Gateway.BeginFill(_caseArtifactID, b, fileGuid)
