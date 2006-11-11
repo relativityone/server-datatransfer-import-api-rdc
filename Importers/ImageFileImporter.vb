@@ -126,7 +126,9 @@ Namespace kCura.WinEDDS
 					retval = GetImagesForDocument(fileDTOs, fullTextBuilder)
 					If _replaceFullText Then fullTextFileGuid = _fileUploader.UploadTextAsFile(fullTextBuilder.FullText, _folderID, System.Guid.NewGuid.ToString)
 					_docManager.ClearImagesFromDocument(_fileUploader.CaseArtifactID, currentDocumentArtifactID)
-					If _replaceFullText Then _docManager.AddFullTextToDocumentFromFile(_fileUploader.CaseArtifactID, currentDocumentArtifactID, fullTextFileGuid, fullTextBuilder)
+					If _replaceFullText Then
+						_docManager.AddFullTextToDocumentFromFile(_fileUploader.CaseArtifactID, currentDocumentArtifactID, fullTextFileGuid, fullTextBuilder)
+					End If
 					'Update Document
 				Else
 					Throw New OverwriteException

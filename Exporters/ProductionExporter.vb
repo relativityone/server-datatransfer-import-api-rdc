@@ -176,12 +176,6 @@ Namespace kCura.WinEDDS
 			currentImagesDirectoryName = Me.CreateSubdirectory(production.SubdirectoryPrefix, production.SubdirectoryStartNumber, currentVolumeName)
 			currentNativeDirectoryName = Me.CreateSubdirectory("NATIVES", production.SubdirectoryStartNumber, currentVolumeName)
 
-			'If Me.ExportFile.ExportNative Then
-			'	currentNativeDirectoryName = Me.CreateSubdirectory("NATIVES", production.SubdirectoryStartNumber, currentVolumeName)
-			'	Dim fields As String() = {"BEGBATES", "ENDBATES", "FILE_PATH"}
-			'	nativesVolumeLog.Append(Me.BuildNativesLog(fields))
-			'End If
-
 			Me.TotalFiles = GetTotalFiles(documentImagesTable)
 			Me.WriteUpdate("Data retrieved. Beginning production export...")
 
@@ -273,7 +267,7 @@ Namespace kCura.WinEDDS
 							currentPageFirstByteNumber = 0
 							fullTextGuid = _fileManager.GetFullTextGuidsByDocumentArtifactIdAndType(Me.SelectedCaseInfo.ArtifactID, CType(documentImagesTable.Rows(count)("DocumentArtifactID"), Int32), 2)
 							Try
-								fullText = _fullTextDownloader.ReadFullTextFile(_sourceDirectory & fullTextGuid)
+								fullText = _fullTextDownloader.ReadFullTextFile(_sourceDirectory & "\" & fullTextGuid)
 								pageText = fullText.Substring(currentPageFirstByteNumber, CInt(documentImagesTable.Rows(count)("ByteRange")))
 								pageText = pageText.Replace(ChrW(10), " ")
 								pageText = pageText.Replace(",", "")
