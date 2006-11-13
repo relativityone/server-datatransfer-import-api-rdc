@@ -116,11 +116,11 @@ Namespace kCura.WinEDDS
 				Case ExportFile.ExportType.AncestorSearch
 					Me.TotalDocuments = _searchManager.CountSearchByParentArtifactID(Me.ExportFile.CaseArtifactID, Me.ExportFile.ArtifactID, True)
 			End Select
-			folderTable = _folderManager.RetrieveAllByCaseID(Me.ExportFile.ArtifactID).Tables(0)
+			folderTable = _folderManager.RetrieveAllByCaseID(Me.ExportFile.CaseArtifactID).Tables(0)
 			Me.FolderList = New kCura.WinEDDS.FolderList(folderTable)
 			Me.FolderList.CreateFolders(Me.ExportFile.FolderPath)
 			'If Me.ExportFile.ExportFullText Then fullTextFiles = _searchManager.RetrieveFullTextFilesForSearch(Me.ExportFile.ArtifactID, GetDocumentsString(documentTable)).Tables(0)
-			_sourceDirectory = _documentManager.GetDocumentDirectoryByCaseArtifactID(Me.ExportFile.CaseArtifactID)
+			_sourceDirectory = _documentManager.GetDocumentDirectoryByCaseArtifactID(Me.ExportFile.CaseArtifactID) & "\"
 			_fullTextDownloader = New kCura.WinEDDS.FullTextManager(Me.ExportFile.Credential, _sourceDirectory, Me.ExportFile.CookieContainer)
 			If Not System.IO.Directory.Exists(Me.ExportFile.FolderPath & Me.FolderList.BaseFolder.Path) Then
 				System.IO.Directory.CreateDirectory(Me.ExportFile.FolderPath & Me.FolderList.BaseFolder.Path)
@@ -207,7 +207,7 @@ Namespace kCura.WinEDDS
 			Dim natives As New System.Data.DataView
 			Dim fullTexts As New System.Data.DataView
 			Dim i As Int32 = 0
-			If Me.ExportFile.ExportNative Then natives.Table = _searchManager.RetrieveNativesForSearch(Me.ExportFile.ArtifactID, kCura.Utility.Array.IntArrayToCSV(documentArtifactIDs)).Tables(0)
+			If Me.ExportFile.ExportNative Then natives.Table = _searchManager.RetrieveNativesForSearch(Me.ExportFile.CaseArtifactID, kCura.Utility.Array.IntArrayToCSV(documentArtifactIDs)).Tables(0)
 			If Me.ExportFile.ExportFullText Then fullTexts.Table = _searchManager.RetrieveFullTextFilesForSearch(Me.ExportFile.ArtifactID, kCura.Utility.Array.IntArrayToCSV(documentArtifactIDs)).Tables(0)
 			For i = 0 To documentArtifactIDs.Length - 1
 				Dim fullTextFileGuid As String = GetFullTextFileGuid(fullTexts.Table, documentArtifactIDs(i))
