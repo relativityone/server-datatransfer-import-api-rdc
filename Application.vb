@@ -737,11 +737,35 @@ Namespace kCura.EDDS.WinForm
 #End Region
 
 #Region "Login"
+
+		Friend Function DefaultCredentialsAreGood() As Boolean
+			Dim myHttpWebRequest As System.Net.HttpWebRequest
+			Dim myHttpWebResponse As System.Net.HttpWebResponse
+			Dim cred As System.Net.NetworkCredential
+			Dim relativityManager As kCura.WinEDDS.Service.RelativityManager
+
+			cred = DirectCast(System.Net.CredentialCache.DefaultCredentials, System.Net.NetworkCredential)
+			myHttpWebRequest = DirectCast(System.Net.WebRequest.Create(kCura.WinEDDS.Config.WebServiceURL & "\RelativityManager.asmx"), System.Net.HttpWebRequest)
+			myHttpWebRequest.Credentials = System.Net.CredentialCache.DefaultCredentials
+			Try
+				myHttpWebResponse = DirectCast(myHttpWebRequest.GetResponse(), System.Net.HttpWebResponse)
+				relativityManager = New kCura.WinEDDS.Service.RelativityManager(cred, _cookieContainer)
+				If relativityManager.ValidateSuccesfulLogin Then
+					CheckVersion(System.Net.CredentialCache.DefaultCredentials)
+					_credential = cred
+					Return True
+				Else
+					Return False
+				End If
+			Catch ex As System.Exception
+				Return False
+			End Try
+		End Function
+
 		Private Sub _loginForm_OK_Click(ByVal cred As System.Net.NetworkCredential) Handles _loginForm.OK_Click
 			_loginForm.Close()
 			Dim userManager As New kCura.WinEDDS.Service.UserManager(cred, _cookieContainer)
 			Try
-				'_identity = userManager.Login(cred.UserName, cred.Password)
 				userManager.Login(cred.UserName, cred.Password)
 				_credential = cred
 				OpenCase()
@@ -763,46 +787,6 @@ Namespace kCura.EDDS.WinForm
 				End If
 			End Try
 		End Sub
-
-		'Friend Function DefaultCredentialsAreGood() As Boolean
-		'	Dim myHttpWebRequest As System.Net.HttpWebRequest
-		'	Dim myHttpWebResponse As System.Net.HttpWebResponse
-		'	Dim cred As System.Net.NetworkCredential
-		'	cred = DirectCast(System.Net.CredentialCache.DefaultCredentials, System.Net.NetworkCredential)
-		'	Try
-		'		'	myHttpWebRequest = DirectCast(System.Net.WebRequest.Create(kCura.WinEDDS.Config.WebServiceURL), System.Net.HttpWebRequest)
-		'		'	myHttpWebRequest.Credentials = System.Net.CredentialCache.DefaultCredentials
-		'		'	myHttpWebResponse = DirectCast(myHttpWebRequest.GetResponse(), System.Net.HttpWebResponse)
-		'		'Catch ex As System.Net.WebException
-		'		myHttpWebRequest = DirectCast(System.Net.WebRequest.Create(kCura.WinEDDS.Config.WebServiceURL & "\RelativityManager.asmx"), System.Net.HttpWebRequest)
-		'		myHttpWebRequest.Credentials = System.Net.CredentialCache.DefaultCredentials
-		'		myHttpWebResponse = DirectCast(myHttpWebRequest.GetResponse(), System.Net.HttpWebResponse)
-		'	Catch ex2 As System.Exception
-		'		Return False
-		'	End Try
-		'	CheckVersion(System.Net.CredentialCache.DefaultCredentials)
-		'	_credential = cred
-		'	Return True
-		'End Function
-
-		Friend Function DefaultCredentialsAreGood() As Boolean
-			Dim myHttpWebRequest As System.Net.HttpWebRequest
-			Dim cred As System.Net.NetworkCredential = DirectCast(System.Net.CredentialCache.DefaultCredentials, System.Net.NetworkCredential)
-			Try
-				If kCura.WinEDDS.Config.AuthenticationMode = "Forms" Then
-					myHttpWebRequest = DirectCast(System.Net.WebRequest.Create(kCura.WinEDDS.Config.WebServiceURL), System.Net.HttpWebRequest)
-				ElseIf kCura.WinEDDS.Config.AuthenticationMode = "Windows" Then
-					myHttpWebRequest = DirectCast(System.Net.WebRequest.Create(kCura.WinEDDS.Config.WebServiceURL & "\RelativityManager.asmx"), System.Net.HttpWebRequest)
-				End If
-				myHttpWebRequest.Credentials = System.Net.CredentialCache.DefaultCredentials
-				Dim myHttpWebResponse As System.Net.HttpWebResponse = DirectCast(myHttpWebRequest.GetResponse(), System.Net.HttpWebResponse)
-				CheckVersion(System.Net.CredentialCache.DefaultCredentials)
-				_credential = cred
-				Return True
-			Catch ex As System.Exception
-				Return False
-			End Try
-		End Function
 
 		Private Sub CheckVersion(ByVal credential As Net.ICredentials)
 			'Dim relativityManager As New kCura.WinEDDS.Service.RelativityManager(DirectCast(credential, System.Net.NetworkCredential), _cookieContainer)

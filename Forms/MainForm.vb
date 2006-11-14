@@ -324,15 +324,14 @@ Namespace kCura.EDDS.WinForm
 				_application.SetWebServiceURL()
 			End If
 
-			_application.LogOn()
-
 			If Not _application.DefaultCredentialsAreGood() Then
 				_application.NewLogin()
 			Else
+				_application.LogOn()
 				_application.OpenCase()
+				kCura.Windows.Forms.EnhancedMenuProvider.Hook(Me)
+				Me.Cursor = System.Windows.Forms.Cursors.Default
 			End If
-			kCura.Windows.Forms.EnhancedMenuProvider.Hook(Me)
-			Me.Cursor = System.Windows.Forms.Cursors.Default
 		End Sub
 
 		Private Sub MainForm_Closing(ByVal sender As Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles MyBase.Closing
