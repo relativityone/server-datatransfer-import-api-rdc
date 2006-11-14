@@ -12,6 +12,16 @@
           </s:sequence>
         </s:complexType>
       </s:element>
+      <s:element name="ValidateSuccessfulLogin">
+        <s:complexType />
+      </s:element>
+      <s:element name="ValidateSuccessfulLoginResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="ValidateSuccessfulLoginResult" type="s:boolean" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
     </s:schema>
   </wsdl:types>
   <wsdl:message name="RetrieveRelativityVersionSoapIn">
@@ -20,16 +30,35 @@
   <wsdl:message name="RetrieveRelativityVersionSoapOut">
     <wsdl:part name="parameters" element="tns:RetrieveRelativityVersionResponse" />
   </wsdl:message>
+  <wsdl:message name="ValidateSuccessfulLoginSoapIn">
+    <wsdl:part name="parameters" element="tns:ValidateSuccessfulLogin" />
+  </wsdl:message>
+  <wsdl:message name="ValidateSuccessfulLoginSoapOut">
+    <wsdl:part name="parameters" element="tns:ValidateSuccessfulLoginResponse" />
+  </wsdl:message>
   <wsdl:portType name="RelativityManagerSoap">
     <wsdl:operation name="RetrieveRelativityVersion">
       <wsdl:input message="tns:RetrieveRelativityVersionSoapIn" />
       <wsdl:output message="tns:RetrieveRelativityVersionSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ValidateSuccessfulLogin">
+      <wsdl:input message="tns:ValidateSuccessfulLoginSoapIn" />
+      <wsdl:output message="tns:ValidateSuccessfulLoginSoapOut" />
     </wsdl:operation>
   </wsdl:portType>
   <wsdl:binding name="RelativityManagerSoap" type="tns:RelativityManagerSoap">
     <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document" />
     <wsdl:operation name="RetrieveRelativityVersion">
       <soap:operation soapAction="http://www.kCura.com/EDDS/RelativityManager/RetrieveRelativityVersion" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ValidateSuccessfulLogin">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/RelativityManager/ValidateSuccessfulLogin" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>

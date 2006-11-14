@@ -16,5 +16,15 @@ Namespace kCura.WinEDDS.Service
 			wr.Credentials = Me.Credentials
 			Return wr
 		End Function
+
+		Public Shadows Function ValidateSuccesfulLogin() As Boolean
+			Dim retVal As Boolean
+			If kCura.WinEDDS.Config.UsesWebAPI Then
+				retVal = MyBase.ValidateSuccessfulLogin
+			Else
+				'retVal = _productionManager.ExternalRetrieveProducedByContextArtifactID(contextArtifactID, _identity)
+			End If
+			Return retVal
+		End Function
 	End Class
 End Namespace

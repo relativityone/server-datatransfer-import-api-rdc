@@ -53,5 +53,23 @@ Namespace kCura.EDDS.WebAPI.RelativityManagerBase
             Dim results() As Object = Me.EndInvoke(asyncResult)
             Return CType(results(0),String)
         End Function
+        
+        '<remarks/>
+        <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/RelativityManager/ValidateSuccessfulLogin", RequestNamespace:="http://www.kCura.com/EDDS/RelativityManager", ResponseNamespace:="http://www.kCura.com/EDDS/RelativityManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
+        Public Function ValidateSuccessfulLogin() As Boolean
+            Dim results() As Object = Me.Invoke("ValidateSuccessfulLogin", New Object(-1) {})
+            Return CType(results(0),Boolean)
+        End Function
+        
+        '<remarks/>
+        Public Function BeginValidateSuccessfulLogin(ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("ValidateSuccessfulLogin", New Object(-1) {}, callback, asyncState)
+        End Function
+        
+        '<remarks/>
+        Public Function EndValidateSuccessfulLogin(ByVal asyncResult As System.IAsyncResult) As Boolean
+            Dim results() As Object = Me.EndInvoke(asyncResult)
+            Return CType(results(0),Boolean)
+        End Function
     End Class
 End Namespace
