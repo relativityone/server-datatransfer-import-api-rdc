@@ -78,11 +78,11 @@ Namespace kCura.EDDS.WinForm
 		'	End Get
 		'End Property
 
-		'Public ReadOnly Property SelectedCaseFolderID() As Int32
-		'	Get
-		'		Return _selectedCaseFolderID
-		'	End Get
-		'End Property
+		Public ReadOnly Property SelectedCaseFolderID() As Int32
+			Get
+				Return _selectedCaseFolderID
+			End Get
+		End Property
 
 		Public ReadOnly Property LoggedInUser() As String
 			Get

@@ -341,25 +341,25 @@ Namespace kCura.EDDS.WinForm
 
 		Private Sub ToolsImportImageFileMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ToolsImportImageFileMenu.Click
 			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
-			_application.NewImageFile(_application.SelectedCaseInfo.RootFolderID, _application.SelectedCaseInfo)
+			_application.NewImageFile(_application.SelectedCaseFolderID, _application.SelectedCaseInfo)
 			Me.Cursor = System.Windows.Forms.Cursors.Default
 		End Sub
 
 		Private Sub ToolsImportLoadFileMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ToolsImportLoadFileMenu.Click
 			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
-			_application.NewLoadFile(_application.SelectedCaseInfo.RootFolderID, _application.SelectedCaseInfo)
+			_application.NewLoadFile(_application.SelectedCaseFolderID, _application.SelectedCaseInfo)
 			Me.Cursor = System.Windows.Forms.Cursors.Default
 		End Sub
 
 		Private Sub ToolsImportFileDirectoryMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ToolsImportFileDirectoryMenu.Click
 			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
-			_application.NewDirectoryImport(_application.SelectedCaseInfo.RootFolderID, _application.SelectedCaseInfo)
+			_application.NewDirectoryImport(_application.SelectedCaseFolderID, _application.SelectedCaseInfo)
 			Me.Cursor = System.Windows.Forms.Cursors.Default
 		End Sub
 
 		Private Sub ToolsImportOutlookMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ToolsImportOutlookMenu.Click
 			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
-			_application.NewOutlookImport(_application.SelectedCaseInfo.RootFolderID, _application.SelectedCaseInfo)
+			_application.NewOutlookImport(_application.SelectedCaseFolderID, _application.SelectedCaseInfo)
 			Me.Cursor = System.Windows.Forms.Cursors.Default
 		End Sub
 
@@ -377,7 +377,7 @@ Namespace kCura.EDDS.WinForm
 
 		Private Sub ToolsImportSQLDatabaseMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ToolsImportSQLDatabaseMenu.Click
 			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
-			_application.NewSQLImport(_application.SelectedCaseInfo.RootFolderID, _application.SelectedCaseInfo)
+			_application.NewSQLImport(_application.SelectedCaseFolderID, _application.SelectedCaseInfo)
 			Me.Cursor = System.Windows.Forms.Cursors.Default
 		End Sub
 
