@@ -22,7 +22,7 @@ Namespace kCura.WinEDDS
 		Protected _allCodes As kCura.Data.DataView
 		Protected _allCodeTypes As kCura.Data.DataView
 		Protected _folderID As Int32
-		'Protected _caseSystemID As Int32
+		Protected _caseSystemID As Int32
 		Protected _caseArtifactID As Int32
 		Protected _timeZoneOffset As Int32
 		Protected _autoDetect As Boolean
@@ -71,7 +71,7 @@ Namespace kCura.WinEDDS
 
 			_multiValueSeparator = args.MultiRecordDelimiter.ToString.ToCharArray
 			_folderID = args.DestinationFolderID
-			'_caseSystemID = args.CaseInfo.RootArtifactID
+			_caseSystemID = args.CaseInfo.RootArtifactID
 			_caseArtifactID = args.CaseInfo.ArtifactID
 			_timeZoneOffset = timezoneoffset
 			_autoDetect = autoDetect
@@ -109,7 +109,7 @@ Namespace kCura.WinEDDS
 				Else
 					If _autoDetect Then
 						newCodeOrderValue = GetNewCodeOrderValue(field.CodeTypeID.Value)
-						Dim code As kCura.EDDS.WebAPI.CodeManagerBase.Code = _codeManager.CreateNewCodeDTOProxy(field.CodeTypeID.Value, value, newCodeOrderValue, _caseArtifactID)
+						Dim code As kCura.EDDS.WebAPI.CodeManagerBase.Code = _codeManager.CreateNewCodeDTOProxy(field.CodeTypeID.Value, value, newCodeOrderValue, _caseSystemID)
 						codeArtifactID = _codeManager.Create(_caseArtifactID, code)
 						Dim newRow As DataRowView = _allCodes.AddNew
 						_allCodes = Nothing
