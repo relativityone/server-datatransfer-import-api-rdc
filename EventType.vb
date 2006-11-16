@@ -4,6 +4,7 @@ Namespace kCura.Windows.Process
     Progress
     [End]
     Warning
-    [Error]
+		[Error]
+		ResetStartTime
   End Enum
 End Namespace

@@ -4,10 +4,10 @@ Namespace kCura.Windows.Process
 #Region "Members"
 		Private _startTime As DateTime
 		Private _endTime As DateTime
-		Private _totalRecords As Int32
-		Private _totalRecordsProcessed As Int32
-		Private _totalRecordsProcessedWithWarnings As Int32
-		Private _totalRecordsProcessedWithErrors As Int32
+		Private _totalRecords As Int64
+		Private _totalRecordsProcessed As Int64
+		Private _totalRecordsProcessedWithWarnings As Int64
+		Private _totalRecordsProcessedWithErrors As Int64
 		Private _totalRecordsDisplay As String
 		Private _totalRecordsProcessedDisplay As String
 #End Region
@@ -31,38 +31,38 @@ Namespace kCura.Windows.Process
 			End Set
 		End Property
 
-		Public Property TotalRecords() As Int32
+		Public Property TotalRecords() As Int64
 			Get
 				Return _totalRecords
 			End Get
-			Set(ByVal value As Int32)
+			Set(ByVal value As Int64)
 				_totalRecords = value
 			End Set
 		End Property
 
-		Public Property TotalRecordsProcessed() As Int32
+		Public Property TotalRecordsProcessed() As Int64
 			Get
 				Return _totalRecordsProcessed
 			End Get
-			Set(ByVal value As Int32)
+			Set(ByVal value As Int64)
 				_totalRecordsProcessed = value
 			End Set
 		End Property
 
-		Public Property TotalRecordsProcessedWithWarnings() As Int32
+		Public Property TotalRecordsProcessedWithWarnings() As Int64
 			Get
 				Return _totalRecordsProcessedWithWarnings
 			End Get
-			Set(ByVal value As Int32)
+			Set(ByVal value As Int64)
 				_totalRecordsProcessedWithWarnings = value
 			End Set
 		End Property
 
-		Public Property TotalRecordsProcessedWithErrors() As Int32
+		Public Property TotalRecordsProcessedWithErrors() As Int64
 			Get
 				Return _totalRecordsProcessedWithErrors
 			End Get
-			Set(ByVal value As Int32)
+			Set(ByVal value As Int64)
 				_totalRecordsProcessedWithErrors = value
 			End Set
 		End Property
@@ -87,7 +87,7 @@ Namespace kCura.Windows.Process
 
 #End Region
 
-		Public Sub New(ByVal totRecs As Int32, ByVal totRecsProc As Int32, ByVal totRecsProcWarn As Int32, ByVal totRecsProcErr As Int32, ByVal sTime As DateTime, ByVal eTime As DateTime, ByVal totRecsDisplay As String, ByVal totRecsProcDisplay As String)
+		Public Sub New(ByVal totRecs As Int64, ByVal totRecsProc As Int64, ByVal totRecsProcWarn As Int64, ByVal totRecsProcErr As Int64, ByVal sTime As DateTime, ByVal eTime As DateTime, ByVal totRecsDisplay As String, ByVal totRecsProcDisplay As String)
 			Me.TotalRecords = totRecs
 			Me.TotalRecordsProcessed = totRecsProc
 			If Not totRecsDisplay Is Nothing Then
