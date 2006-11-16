@@ -25,24 +25,24 @@ Namespace kCura.WinEDDS
 		End Enum
 
 		Public Class EventArgs
-			Private _bytesRead As Int32
-			Private _totalBytes As Int32
-			Private _stepSize As Int32
+			Private _bytesRead As Int64
+			Private _totalBytes As Int64
+			Private _stepSize As Int64
 			Private _type As EventType
 
-			Public ReadOnly Property BytesRead() As Int32
+			Public ReadOnly Property BytesRead() As Int64
 				Get
 					Return _bytesRead
 				End Get
 			End Property
 
-			Public ReadOnly Property TotalBytes() As Int32
+			Public ReadOnly Property TotalBytes() As Int64
 				Get
 					Return _totalBytes
 				End Get
 			End Property
 
-			Public ReadOnly Property StepSize() As Int32
+			Public ReadOnly Property StepSize() As Int64
 				Get
 					Return _stepSize
 				End Get
@@ -53,7 +53,7 @@ Namespace kCura.WinEDDS
 				End Get
 			End Property
 
-			Public Sub New(ByVal type As EventType, ByVal bytes As Int32, ByVal total As Int32, ByVal [step] As Int32)
+			Public Sub New(ByVal type As EventType, ByVal bytes As Int64, ByVal total As Int64, ByVal [step] As Int64)
 				_bytesRead = bytes
 				_totalBytes = total
 				_stepSize = [step]
@@ -62,19 +62,19 @@ Namespace kCura.WinEDDS
 		End Class
 		Public Event OnEvent(ByVal e As EventArgs)
 
-		Private Sub ProcessStart(ByVal bytes As Int32, ByVal total As Int32, ByVal [step] As Int32)
+		Private Sub ProcessStart(ByVal bytes As Int64, ByVal total As Int64, ByVal [step] As Int64)
 			RaiseOnEvent(EventType.Begin, bytes, total, [step])
 		End Sub
 
-		Private Sub ProcessProgress(ByVal bytes As Int32, ByVal total As Int32, ByVal [step] As Int32)
+		Private Sub ProcessProgress(ByVal bytes As Int64, ByVal total As Int64, ByVal [step] As Int64)
 			RaiseOnEvent(EventType.Progress, bytes, total, [step])
 		End Sub
 
-		Private Sub ProcessComplete(ByVal bytes As Int32, ByVal total As Int32, ByVal [step] As Int32)
+		Private Sub ProcessComplete(ByVal bytes As Int64, ByVal total As Int64, ByVal [step] As Int64)
 			RaiseOnEvent(EventType.Complete, bytes, total, [step])
 		End Sub
 
-		Private Sub RaiseOnEvent(ByVal type As EventType, ByVal bytes As Int32, ByVal total As Int32, ByVal [step] As Int32)
+		Private Sub RaiseOnEvent(ByVal type As EventType, ByVal bytes As Int64, ByVal total As Int64, ByVal [step] As Int64)
 			RaiseEvent OnEvent(New EventArgs(type, bytes, total, [step]))
 		End Sub
 #End Region
@@ -86,8 +86,8 @@ Namespace kCura.WinEDDS
 		Public Overrides Function ReadFile(ByVal path As String) As Object
 			Dim earlyexit As Boolean = False
 			Reader = New System.IO.StreamReader(path, System.Text.Encoding.Default)
-			Dim filesize As Int32 = CType(Reader.BaseStream.Length, Int32)
-			Dim stepsize As Int32 = CType(filesize / 100, Int32)
+			Dim filesize As Int64 = Reader.BaseStream.Length
+			Dim stepsize As Int64 = CType(filesize / 100, Int64)
 			ProcessStart(0, filesize, stepsize)
 			Dim fieldArrays As New System.Collections.ArrayList
 			If _firstLineContainsColumnNames Then

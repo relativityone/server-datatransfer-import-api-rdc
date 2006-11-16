@@ -288,6 +288,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Importers\FolderCache.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Importers\ImageFileImporter.vb"
                     SubType = "Code"
                     BuildAction = "Compile"

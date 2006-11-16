@@ -11,7 +11,7 @@ Namespace kCura.WinEDDS
 		Private _selectedIdentifier As DocumentField
 		Private _docFieldCollection As DocumentFieldCollection
 		Private _parentFolderDTO As kCura.EDDS.WebAPI.FolderManagerBase.Folder
-		Private _recordCount As Int32 = -1
+		Private _recordCount As Int64 = -1
 		Private _extractFullTextFromNative As Boolean
 		Private _allFields As kCura.EDDS.WebAPI.DocumentManagerBase.Field()
 		Protected _continue As Boolean
@@ -28,7 +28,9 @@ Namespace kCura.WinEDDS
 		Private _workerRunning As Boolean
 		Private WithEvents _lineCounter As kCura.Utility.File.LineCounter
 		Private _genericTimestamp As System.DateTime
-		Private _number As Int32 = 0
+		Private _number As Int64 = 0
+		Private _destinationFolderColumnIndex As Int32 = -1
+		Private _folderCache As FolderCache
 #End Region
 
 #Region "Accessors"
@@ -146,7 +148,15 @@ Namespace kCura.WinEDDS
 		Private Sub InitializeMembers(ByVal path As String)
 			_lineCounter = New kCura.Utility.File.LineCounter
 			_lineCounter.Path = path
-			_lineCounter.CountLines()
+			_lineCounter.CountLines(New kCura.Utility.File.LineCounter.LineCounterArgs(Me.Bound, Me.Delimiter))
+			If _createFolderStructure Then
+				_folderCache = New FolderCache(_folderManager, _folderID, _caseArtifactID)
+				Dim openParenIndex As Int32 = _destinationFolder.LastIndexOf("("c) + 1
+				Dim closeParenIndex As Int32 = _destinationFolder.LastIndexOf(")"c)
+				_destinationFolderColumnIndex = Int32.Parse(_destinationFolder.Substring(openParenIndex, closeParenIndex - openParenIndex)) - 1
+			End If
+
+			RaiseEvent StatusMessage(New kCura.Windows.Process.StatusEventArgs(Windows.Process.EventType.ResetStartTime, 0, _recordCount, "Reset time for import rolling average"))
 		End Sub
 
 		Private Function ManageDocument(ByVal values As String()) As String
@@ -164,6 +174,7 @@ Namespace kCura.WinEDDS
 			Dim identityValue As String = String.Empty
 			Dim documentArtifactID As Int32
 			Dim markUploadStart As DateTime = DateTime.Now
+			Dim parentFolderID As Int32
 			If uploadFile Then
 				filename = values(_filePathColumnIndex)
 				fileExists = System.IO.File.Exists(filename)
@@ -175,6 +186,11 @@ Namespace kCura.WinEDDS
 					WriteStatusLine(Windows.Process.EventType.Status, String.Format("End upload file. ({0}ms)", DateTime.op_Subtraction(DateTime.Now, now).Milliseconds))
 				End If
 			End If
+			If _createFolderStructure Then
+				parentFolderID = _folderCache.FolderID(Me.CleanDestinationFolderPath(values(_destinationFolderColumnIndex)))
+			Else
+				parentFolderID = _parentFolderDTO.ArtifactID
+			End If
 			_timeKeeper.Add("UploadFile", DateTime.Now.Subtract(markUploadStart).TotalMilliseconds)
 			Dim markPrepareFields As DateTime = DateTime.Now
 			identityValue = PrepareFieldCollectionAndExtractIdentityValue(fieldCollection, values)
@@ -184,9 +200,25 @@ Namespace kCura.WinEDDS
 			ElseIf Not _processedDocumentIdentifiers(identityValue) Is Nothing Then
 				Throw New IdentifierOverlapException(identityValue, _processedDocumentIdentifiers(identityValue))
 			End If
-			Dim metadoc As New MetaDocument(fileGuid, identityValue, fieldCollection, fileExists AndAlso uploadFile AndAlso fileGuid <> String.Empty, filename, uploadFile, CurrentLineNumber)
+			Dim metadoc As New MetaDocument(fileGuid, identityValue, fieldCollection, fileExists AndAlso uploadFile AndAlso fileGuid <> String.Empty, filename, uploadFile, CurrentLineNumber, parentFolderID)
 			_docsToProcess.Add(metadoc)
 			Return identityValue
+		End Function
+
+		Private Function CleanDestinationFolderPath(ByVal path As String) As String
+			While path.IndexOf(".\") <> -1
+				path = path.Replace(".\", "\")
+			End While
+			While path.IndexOf("\\") <> -1
+				path = path.Replace("\\", "\")
+			End While
+			path = path.Replace(":", "_")
+			If path.Chars(0) <> "\"c Then
+				path = "\" & path
+			End If
+			path = path.TrimEnd(New Char() {"\"c})
+			If path = "" Then path = "\"
+			Return path
 		End Function
 
 #End Region
@@ -196,7 +228,7 @@ Namespace kCura.WinEDDS
 		Private Sub MassProcessWorker()
 			_workerRunning = True
 			While (Not _killWorker OrElse _docsToProcess.Count > 0) AndAlso _continue
-				If _docsToProcess.Count > 0 Then
+				If Not _docsToProcess Is Nothing AndAlso _docsToProcess.Count > 0 Then
 					Dim metaDoc As MetaDocument = DirectCast(_docsToProcess(0), MetaDocument)
 					_docsToProcess.RemoveAt(0)
 					Try
@@ -271,7 +303,7 @@ Namespace kCura.WinEDDS
 		Private Function CreateDocument(ByVal fieldCollection As DocumentFieldCollection, ByVal identityValue As String, ByVal extractText As Boolean, ByVal filename As String, ByVal fileguid As String, ByVal mdoc As MetaDocument) As Int32
 			Dim documentDTO As New kCura.EDDS.WebAPI.DocumentManagerBase.Document
 			documentDTO.Fields = AllDocumentFields
-			documentDTO.ParentArtifactID = New NullableTypes.NullableInt32(_folderID)
+			documentDTO.ParentArtifactID = New NullableTypes.NullableInt32(mdoc.ParentFolderID)
 			documentDTO.ContainerID = _parentFolderDTO.ContainerID
 			documentDTO.AccessControlListIsInherited = True
 			documentDTO.AccessControlListID = _parentFolderDTO.AccessControlListID
@@ -541,10 +573,10 @@ Namespace kCura.WinEDDS
 				ReadEvent
 			End Enum
 			Private _type As FilePrepEventType
-			Private _newlinesRead As Int32
-			Private _bytesRead As Int32
-			Private _totalBytes As Int32
-			Private _stepSize As Int32
+			Private _newlinesRead As Int64
+			Private _bytesRead As Int64
+			Private _totalBytes As Int64
+			Private _stepSize As Int64
 			Private _startTime As System.DateTime
 			Private _endTime As System.DateTime
 
@@ -556,25 +588,25 @@ Namespace kCura.WinEDDS
 				End Get
 			End Property
 
-			Public ReadOnly Property NewlinesRead() As Int32
+			Public ReadOnly Property NewlinesRead() As Int64
 				Get
 					Return _newlinesRead
 				End Get
 			End Property
 
-			Public ReadOnly Property BytesRead() As Int32
+			Public ReadOnly Property BytesRead() As Int64
 				Get
 					Return _bytesRead
 				End Get
 			End Property
 
-			Public ReadOnly Property TotalBytes() As Int32
+			Public ReadOnly Property TotalBytes() As Int64
 				Get
 					Return _totalBytes
 				End Get
 			End Property
 
-			Public ReadOnly Property StepSize() As Int32
+			Public ReadOnly Property StepSize() As Int64
 				Get
 					Return _stepSize
 				End Get
@@ -594,7 +626,7 @@ Namespace kCura.WinEDDS
 
 #End Region
 
-			Public Sub New(ByVal eventType As FilePrepEventType, ByVal newlines As Int32, ByVal bytes As Int32, ByVal total As Int32, ByVal [step] As Int32, ByVal start As System.DateTime, ByVal [end] As System.DateTime)
+			Public Sub New(ByVal eventType As FilePrepEventType, ByVal newlines As Int64, ByVal bytes As Int64, ByVal total As Int64, ByVal [step] As Int64, ByVal start As System.DateTime, ByVal [end] As System.DateTime)
 				_type = eventType
 				_newlinesRead = newlines
 				_bytesRead = bytes
@@ -633,7 +665,7 @@ Namespace kCura.WinEDDS
 		Public Class DocumentDomainException
 			Inherits kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
 			Public Sub New(ByVal ex As System.Exception)
-				MyBase.New("Error accessing document information in domain layer", ex)
+				MyBase.New("Error accessing document information in domain layer: " & ex.Message, ex)
 			End Sub
 		End Class
 

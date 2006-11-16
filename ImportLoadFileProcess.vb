@@ -50,6 +50,8 @@ Namespace kCura.WinEDDS
 				Case kCura.Windows.Process.EventType.Warning
 					_warningCount += 1
 					Me.ProcessObserver.RaiseWarningEvent(e.CurrentRecordIndex.ToString, e.Message)
+				Case Windows.Process.EventType.ResetStartTime
+					_startTime = System.DateTime.Now
 			End Select
 			System.Threading.Monitor.Exit(Me.ProcessObserver)
 			'Me.ProcessObserver.RaiseProgressEvent(e.TotalLines, e.CurrentRecordIndex, 0, 0, _startTime, System.DateTime.Now)

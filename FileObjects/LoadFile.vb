@@ -18,7 +18,8 @@ Namespace kCura.WinEDDS
 		Public NativeFilePathColumn As String
 		Public SelectedIdentifierField As kCura.WinEDDS.DocumentField
 		Public ExtractMD5HashFromNativeFile As Boolean
-
+		Public CreateFolderStructure As Boolean
+		Public FolderStructureContainedInColumn As String
 		<NonSerialized()> Public Credentials As Net.NetworkCredential
 		<NonSerialized()> Public _cookieContainer As System.Net.CookieContainer
 		'<NonSerialized()> Public Identity As kCura.EDDS.EDDSIdentity
@@ -57,6 +58,8 @@ Namespace kCura.WinEDDS
 			info.AddValue("FieldMap", Me.FieldMap, GetType(kCura.WinEDDS.LoadFileFieldMap))
 			info.AddValue("NativeFilePathColumn", Me.NativeFilePathColumn, GetType(String))
 			info.AddValue("SelectedIdentifierField", Me.SelectedIdentifierField, GetType(kCura.WinEDDS.DocumentField))
+			info.AddValue("FolderStructureContainedInColumn", Me.FolderStructureContainedInColumn, GetType(String))
+			info.AddValue("CreateFolderStructure", Me.CreateFolderStructure, GetType(Boolean))
 		End Sub
 
 		Private Sub New(ByVal info As System.Runtime.Serialization.SerializationInfo, ByVal Context As System.Runtime.Serialization.StreamingContext)
@@ -79,6 +82,8 @@ Namespace kCura.WinEDDS
 				Me.SelectedIdentifierField = DirectCast(info.GetValue("SelectedIdentifierField", GetType(kCura.WinEDDS.DocumentField)), kCura.WinEDDS.DocumentField)
 				'Me.SelectedFields = DirectCast(info.GetValue("SelectedFields", GetType(kCura.WinEDDS.DocumentField())), kCura.WinEDDS.DocumentField())
 				Me.FieldMap = DirectCast(info.GetValue("FieldMap", GetType(kCura.WinEDDS.LoadFileFieldMap)), LoadFileFieldMap)
+				Me.FolderStructureContainedInColumn = info.GetString("FolderStructureContainedInColumn")
+				Me.CreateFolderStructure = info.GetBoolean("CreateFolderStructure")
 			End With
 		End Sub
 	End Class

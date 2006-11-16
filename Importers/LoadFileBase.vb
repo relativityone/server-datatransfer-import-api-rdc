@@ -28,6 +28,8 @@ Namespace kCura.WinEDDS
 		Protected _autoDetect As Boolean
 		Protected _uploadFiles As Boolean
 		Protected _fieldMap As LoadFileFieldMap
+		Protected _createFolderStructure As Boolean
+		Protected _destinationFolder As String
 
 		Public Property AllCodes() As kCura.Data.DataView
 			Get
@@ -76,6 +78,8 @@ Namespace kCura.WinEDDS
 			_timeZoneOffset = timezoneoffset
 			_autoDetect = autoDetect
 			_uploadFiles = args.LoadNativeFiles
+			_createFolderStructure = args.CreateFolderStructure
+			_destinationFolder = args.FolderStructureContainedInColumn
 		End Sub
 
 #Region "Code Parsing"
