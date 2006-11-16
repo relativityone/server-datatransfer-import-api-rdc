@@ -355,5 +355,6 @@ Namespace kCura.Windows.Forms
 		Private Sub _rightListBox_DoubleClick(ByVal sender As Object, ByVal e As System.EventArgs) Handles _rightListBox.DoubleClick
 			ShiftSelectedItems(_rightListBox, _leftListBox)
 		End Sub
+
 	End Class
 End Namespace
