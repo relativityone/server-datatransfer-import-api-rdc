@@ -73,12 +73,16 @@ Namespace kCura.EDDS.WinForm
 		Friend WithEvents _filePath As System.Windows.Forms.TextBox
 		Friend WithEvents HelpProvider1 As System.Windows.Forms.HelpProvider
 		Friend WithEvents _fileColumns As kCura.Windows.Forms.TwoListBox
-		Friend WithEvents GroupBox233 As System.Windows.Forms.GroupBox
 		Friend WithEvents _overWrite As System.Windows.Forms.CheckBox
 		Friend WithEvents MenuItem3 As System.Windows.Forms.MenuItem
 		Friend WithEvents _fileMenuCloseItem As System.Windows.Forms.MenuItem
-		Friend WithEvents MenuItem5 As System.Windows.Forms.MenuItem
 		Friend WithEvents _extractMd5Hash As System.Windows.Forms.CheckBox
+		Friend WithEvents _destinationFolderPath As System.Windows.Forms.ComboBox
+		Friend WithEvents _buildFolderStructure As System.Windows.Forms.CheckBox
+		Friend WithEvents Label8 As System.Windows.Forms.Label
+		Friend WithEvents GroupBox5 As System.Windows.Forms.GroupBox
+		Friend WithEvents MenuItem4 As System.Windows.Forms.MenuItem
+		Friend WithEvents _fileRefreshMenuItem As System.Windows.Forms.MenuItem
 		<System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
 			Dim resources As System.Resources.ResourceManager = New System.Resources.ResourceManager(GetType(LoadFileForm))
 			Me.OpenFileDialog = New System.Windows.Forms.OpenFileDialog
@@ -87,7 +91,6 @@ Namespace kCura.EDDS.WinForm
 			Me.MainMenu = New System.Windows.Forms.MainMenu
 			Me.MenuItem1 = New System.Windows.Forms.MenuItem
 			Me._fileLoadFieldMapMenuItem = New System.Windows.Forms.MenuItem
-			Me.MenuItem5 = New System.Windows.Forms.MenuItem
 			Me._fileSaveFieldMapMenuItem = New System.Windows.Forms.MenuItem
 			Me.MenuItem3 = New System.Windows.Forms.MenuItem
 			Me._fileMenuCloseItem = New System.Windows.Forms.MenuItem
@@ -115,8 +118,9 @@ Namespace kCura.EDDS.WinForm
 			Me.Label2 = New System.Windows.Forms.Label
 			Me._recordDelimiter = New System.Windows.Forms.ComboBox
 			Me._fieldMapTab = New System.Windows.Forms.TabPage
-			Me.GroupBox233 = New System.Windows.Forms.GroupBox
-			Me._overWrite = New System.Windows.Forms.CheckBox
+			Me.GroupBox5 = New System.Windows.Forms.GroupBox
+			Me._buildFolderStructure = New System.Windows.Forms.CheckBox
+			Me._destinationFolderPath = New System.Windows.Forms.ComboBox
 			Me.GroupBox4 = New System.Windows.Forms.GroupBox
 			Me._extractMd5Hash = New System.Windows.Forms.CheckBox
 			Me._loadNativeFiles = New System.Windows.Forms.CheckBox
@@ -124,12 +128,16 @@ Namespace kCura.EDDS.WinForm
 			Me._nativeFilePathField = New System.Windows.Forms.ComboBox
 			Me.Label5 = New System.Windows.Forms.Label
 			Me.GroupBox3 = New System.Windows.Forms.GroupBox
+			Me.Label8 = New System.Windows.Forms.Label
 			Me._identifiersDropDown = New System.Windows.Forms.ComboBox
+			Me._overWrite = New System.Windows.Forms.CheckBox
 			Me.Label7 = New System.Windows.Forms.Label
 			Me.Label1 = New System.Windows.Forms.Label
 			Me._fileColumns = New kCura.Windows.Forms.TwoListBox
 			Me._fieldMap = New kCura.Windows.Forms.TwoListBox
 			Me.HelpProvider1 = New System.Windows.Forms.HelpProvider
+			Me.MenuItem4 = New System.Windows.Forms.MenuItem
+			Me._fileRefreshMenuItem = New System.Windows.Forms.MenuItem
 			Me.GroupBox1.SuspendLayout()
 			Me.TabControl1.SuspendLayout()
 			Me._loadFileTab.SuspendLayout()
@@ -137,14 +145,15 @@ Namespace kCura.EDDS.WinForm
 			Me.GroupBox2.SuspendLayout()
 			Me.GroupBox23.SuspendLayout()
 			Me._fieldMapTab.SuspendLayout()
-			Me.GroupBox233.SuspendLayout()
+			Me.GroupBox5.SuspendLayout()
 			Me.GroupBox4.SuspendLayout()
 			Me.GroupBox3.SuspendLayout()
 			Me.SuspendLayout()
 			'
 			'OpenFileDialog
 			'
-			Me.OpenFileDialog.Filter = "Text Files (*.txt)|*.txt|Log Files (*.log)|*.log|All files (*.*)|*.*"
+			Me.OpenFileDialog.Filter = "All files (*.*)|*.*|Text Files (*.txt)|*.txt|Log Files (*.log)|*.log|DAT Files|*." & _
+			"dat"
 			'
 			'GroupBox1
 			'
@@ -174,7 +183,7 @@ Namespace kCura.EDDS.WinForm
 			'MenuItem1
 			'
 			Me.MenuItem1.Index = 0
-			Me.MenuItem1.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me._fileLoadFieldMapMenuItem, Me.MenuItem5, Me._fileSaveFieldMapMenuItem, Me.MenuItem3, Me._fileMenuCloseItem})
+			Me.MenuItem1.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me._fileLoadFieldMapMenuItem, Me._fileSaveFieldMapMenuItem, Me.MenuItem3, Me._fileMenuCloseItem, Me.MenuItem4, Me._fileRefreshMenuItem})
 			Me.MenuItem1.Text = "&File"
 			'
 			'_fileLoadFieldMapMenuItem
@@ -183,25 +192,20 @@ Namespace kCura.EDDS.WinForm
 			Me._fileLoadFieldMapMenuItem.Shortcut = System.Windows.Forms.Shortcut.CtrlO
 			Me._fileLoadFieldMapMenuItem.Text = "Load Field Map"
 			'
-			'MenuItem5
-			'
-			Me.MenuItem5.Index = 1
-			Me.MenuItem5.Text = "-"
-			'
 			'_fileSaveFieldMapMenuItem
 			'
-			Me._fileSaveFieldMapMenuItem.Index = 2
+			Me._fileSaveFieldMapMenuItem.Index = 1
 			Me._fileSaveFieldMapMenuItem.Shortcut = System.Windows.Forms.Shortcut.CtrlS
 			Me._fileSaveFieldMapMenuItem.Text = "Save Field Map"
 			'
 			'MenuItem3
 			'
-			Me.MenuItem3.Index = 3
+			Me.MenuItem3.Index = 2
 			Me.MenuItem3.Text = "-"
 			'
 			'_fileMenuCloseItem
 			'
-			Me._fileMenuCloseItem.Index = 4
+			Me._fileMenuCloseItem.Index = 3
 			Me._fileMenuCloseItem.Shortcut = System.Windows.Forms.Shortcut.CtrlW
 			Me._fileMenuCloseItem.Text = "Close"
 			'
@@ -403,7 +407,7 @@ Namespace kCura.EDDS.WinForm
 			'
 			'_fieldMapTab
 			'
-			Me._fieldMapTab.Controls.Add(Me.GroupBox233)
+			Me._fieldMapTab.Controls.Add(Me.GroupBox5)
 			Me._fieldMapTab.Controls.Add(Me.GroupBox4)
 			Me._fieldMapTab.Controls.Add(Me.GroupBox3)
 			Me._fieldMapTab.Controls.Add(Me.Label7)
@@ -416,23 +420,33 @@ Namespace kCura.EDDS.WinForm
 			Me._fieldMapTab.TabIndex = 1
 			Me._fieldMapTab.Text = "Field Map"
 			'
-			'GroupBox233
+			'GroupBox5
 			'
-			Me.GroupBox233.Controls.Add(Me._overWrite)
-			Me.GroupBox233.Location = New System.Drawing.Point(612, 4)
-			Me.GroupBox233.Name = "GroupBox233"
-			Me.GroupBox233.Size = New System.Drawing.Size(116, 84)
-			Me.GroupBox233.TabIndex = 27
-			Me.GroupBox233.TabStop = False
-			Me.GroupBox233.Text = "Update Behavior"
+			Me.GroupBox5.Controls.Add(Me._buildFolderStructure)
+			Me.GroupBox5.Controls.Add(Me._destinationFolderPath)
+			Me.GroupBox5.Location = New System.Drawing.Point(492, 4)
+			Me.GroupBox5.Name = "GroupBox5"
+			Me.GroupBox5.Size = New System.Drawing.Size(236, 72)
+			Me.GroupBox5.TabIndex = 30
+			Me.GroupBox5.TabStop = False
+			Me.GroupBox5.Text = "Folder Info"
 			'
-			'_overWrite
+			'_buildFolderStructure
 			'
-			Me._overWrite.Location = New System.Drawing.Point(12, 32)
-			Me._overWrite.Name = "_overWrite"
-			Me._overWrite.Size = New System.Drawing.Size(96, 20)
-			Me._overWrite.TabIndex = 2
-			Me._overWrite.Text = "Overwrite"
+			Me._buildFolderStructure.Location = New System.Drawing.Point(8, 20)
+			Me._buildFolderStructure.Name = "_buildFolderStructure"
+			Me._buildFolderStructure.Size = New System.Drawing.Size(220, 16)
+			Me._buildFolderStructure.TabIndex = 29
+			Me._buildFolderStructure.Text = "Folder information contained in column:"
+			'
+			'_destinationFolderPath
+			'
+			Me._destinationFolderPath.Enabled = False
+			Me._destinationFolderPath.Location = New System.Drawing.Point(8, 40)
+			Me._destinationFolderPath.Name = "_destinationFolderPath"
+			Me._destinationFolderPath.Size = New System.Drawing.Size(220, 21)
+			Me._destinationFolderPath.TabIndex = 28
+			Me._destinationFolderPath.Text = "Select..."
 			'
 			'GroupBox4
 			'
@@ -441,18 +455,18 @@ Namespace kCura.EDDS.WinForm
 			Me.GroupBox4.Controls.Add(Me._extractFullTextFromNativeFile)
 			Me.GroupBox4.Controls.Add(Me._nativeFilePathField)
 			Me.GroupBox4.Controls.Add(Me.Label5)
-			Me.GroupBox4.Location = New System.Drawing.Point(204, 4)
+			Me.GroupBox4.Location = New System.Drawing.Point(176, 4)
 			Me.GroupBox4.Name = "GroupBox4"
-			Me.GroupBox4.Size = New System.Drawing.Size(404, 84)
+			Me.GroupBox4.Size = New System.Drawing.Size(312, 112)
 			Me.GroupBox4.TabIndex = 26
 			Me.GroupBox4.TabStop = False
 			Me.GroupBox4.Text = "Native File Behavior"
 			'
 			'_extractMd5Hash
 			'
-			Me._extractMd5Hash.Location = New System.Drawing.Point(8, 56)
+			Me._extractMd5Hash.Location = New System.Drawing.Point(8, 36)
 			Me._extractMd5Hash.Name = "_extractMd5Hash"
-			Me._extractMd5Hash.Size = New System.Drawing.Size(180, 20)
+			Me._extractMd5Hash.Size = New System.Drawing.Size(116, 20)
 			Me._extractMd5Hash.TabIndex = 26
 			Me._extractMd5Hash.Text = "Extract MD5 Hash"
 			'
@@ -467,7 +481,8 @@ Namespace kCura.EDDS.WinForm
 			'_extractFullTextFromNativeFile
 			'
 			Me._extractFullTextFromNativeFile.Enabled = False
-			Me._extractFullTextFromNativeFile.Location = New System.Drawing.Point(8, 36)
+			Me._extractFullTextFromNativeFile.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
+			Me._extractFullTextFromNativeFile.Location = New System.Drawing.Point(124, 16)
 			Me._extractFullTextFromNativeFile.Name = "_extractFullTextFromNativeFile"
 			Me._extractFullTextFromNativeFile.Size = New System.Drawing.Size(180, 20)
 			Me._extractFullTextFromNativeFile.TabIndex = 23
@@ -476,44 +491,63 @@ Namespace kCura.EDDS.WinForm
 			'_nativeFilePathField
 			'
 			Me._nativeFilePathField.Enabled = False
-			Me._nativeFilePathField.Location = New System.Drawing.Point(192, 32)
+			Me._nativeFilePathField.Location = New System.Drawing.Point(8, 80)
 			Me._nativeFilePathField.Name = "_nativeFilePathField"
-			Me._nativeFilePathField.Size = New System.Drawing.Size(208, 21)
+			Me._nativeFilePathField.Size = New System.Drawing.Size(288, 21)
 			Me._nativeFilePathField.TabIndex = 24
 			Me._nativeFilePathField.Text = "Select..."
 			'
 			'Label5
 			'
-			Me.Label5.Location = New System.Drawing.Point(180, 16)
+			Me.Label5.Location = New System.Drawing.Point(8, 64)
 			Me.Label5.Name = "Label5"
-			Me.Label5.Size = New System.Drawing.Size(192, 20)
+			Me.Label5.Size = New System.Drawing.Size(192, 13)
 			Me.Label5.TabIndex = 25
 			Me.Label5.Text = "Native file paths contained in column:"
-			Me.Label5.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+			Me.Label5.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
 			'
 			'GroupBox3
 			'
+			Me.GroupBox3.Controls.Add(Me.Label8)
 			Me.GroupBox3.Controls.Add(Me._identifiersDropDown)
+			Me.GroupBox3.Controls.Add(Me._overWrite)
 			Me.GroupBox3.Location = New System.Drawing.Point(4, 4)
 			Me.GroupBox3.Name = "GroupBox3"
-			Me.GroupBox3.Size = New System.Drawing.Size(196, 84)
+			Me.GroupBox3.Size = New System.Drawing.Size(168, 88)
 			Me.GroupBox3.TabIndex = 21
 			Me.GroupBox3.TabStop = False
-			Me.GroupBox3.Text = "Identifier"
+			Me.GroupBox3.Text = "Identity and Update Behavior"
+			'
+			'Label8
+			'
+			Me.Label8.Location = New System.Drawing.Point(6, 19)
+			Me.Label8.Name = "Label8"
+			Me.Label8.Size = New System.Drawing.Size(55, 13)
+			Me.Label8.TabIndex = 26
+			Me.Label8.Text = "Identifier"
+			Me.Label8.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
 			'
 			'_identifiersDropDown
 			'
 			Me._identifiersDropDown.Enabled = False
 			Me._identifiersDropDown.Location = New System.Drawing.Point(8, 32)
 			Me._identifiersDropDown.Name = "_identifiersDropDown"
-			Me._identifiersDropDown.Size = New System.Drawing.Size(184, 21)
+			Me._identifiersDropDown.Size = New System.Drawing.Size(152, 21)
 			Me._identifiersDropDown.TabIndex = 19
 			Me._identifiersDropDown.Text = "Select..."
+			'
+			'_overWrite
+			'
+			Me._overWrite.Location = New System.Drawing.Point(8, 60)
+			Me._overWrite.Name = "_overWrite"
+			Me._overWrite.Size = New System.Drawing.Size(96, 20)
+			Me._overWrite.TabIndex = 2
+			Me._overWrite.Text = "Overwrite"
 			'
 			'Label7
 			'
 			Me.Label7.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-			Me.Label7.Location = New System.Drawing.Point(652, 92)
+			Me.Label7.Location = New System.Drawing.Point(652, 112)
 			Me.Label7.Name = "Label7"
 			Me.Label7.Size = New System.Drawing.Size(76, 16)
 			Me.Label7.TabIndex = 4
@@ -522,7 +556,7 @@ Namespace kCura.EDDS.WinForm
 			'Label1
 			'
 			Me.Label1.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-			Me.Label1.Location = New System.Drawing.Point(4, 92)
+			Me.Label1.Location = New System.Drawing.Point(4, 112)
 			Me.Label1.Name = "Label1"
 			Me.Label1.Size = New System.Drawing.Size(100, 16)
 			Me.Label1.TabIndex = 3
@@ -531,8 +565,8 @@ Namespace kCura.EDDS.WinForm
 			'_fileColumns
 			'
 			Me._fileColumns.KeepButtonsCentered = False
-			Me._fileColumns.LeftOrderControlsVisible = True
-			Me._fileColumns.Location = New System.Drawing.Point(372, 112)
+			Me._fileColumns.LeftOrderControlsVisible = False
+			Me._fileColumns.Location = New System.Drawing.Point(372, 132)
 			Me._fileColumns.Name = "_fileColumns"
 			Me._fileColumns.RightOrderControlVisible = False
 			Me._fileColumns.Size = New System.Drawing.Size(392, 276)
@@ -542,11 +576,22 @@ Namespace kCura.EDDS.WinForm
 			'
 			Me._fieldMap.KeepButtonsCentered = False
 			Me._fieldMap.LeftOrderControlsVisible = False
-			Me._fieldMap.Location = New System.Drawing.Point(4, 112)
+			Me._fieldMap.Location = New System.Drawing.Point(4, 132)
 			Me._fieldMap.Name = "_fieldMap"
-			Me._fieldMap.RightOrderControlVisible = True
+			Me._fieldMap.RightOrderControlVisible = False
 			Me._fieldMap.Size = New System.Drawing.Size(360, 276)
 			Me._fieldMap.TabIndex = 1
+			'
+			'MenuItem4
+			'
+			Me.MenuItem4.Index = 4
+			Me.MenuItem4.Text = "-"
+			'
+			'_fileRefreshMenuItem
+			'
+			Me._fileRefreshMenuItem.Index = 5
+			Me._fileRefreshMenuItem.Shortcut = System.Windows.Forms.Shortcut.CtrlR
+			Me._fileRefreshMenuItem.Text = "Refresh"
 			'
 			'LoadFileForm
 			'
@@ -568,7 +613,7 @@ Namespace kCura.EDDS.WinForm
 			Me.GroupBox2.ResumeLayout(False)
 			Me.GroupBox23.ResumeLayout(False)
 			Me._fieldMapTab.ResumeLayout(False)
-			Me.GroupBox233.ResumeLayout(False)
+			Me.GroupBox5.ResumeLayout(False)
 			Me.GroupBox4.ResumeLayout(False)
 			Me.GroupBox3.ResumeLayout(False)
 			Me.ResumeLayout(False)
@@ -588,6 +633,9 @@ Namespace kCura.EDDS.WinForm
 					rtr = _nativeFilePathField.SelectedIndex <> -1
 				Else
 					rtr = True
+				End If
+				If rtr AndAlso _buildFolderStructure.Checked Then
+					rtr = _destinationFolderPath.SelectedIndex <> -1 AndAlso rtr
 				End If
 				Return _
 				 _fieldMap.RightListBoxItems.Count > 0 AndAlso _
@@ -618,6 +666,16 @@ Namespace kCura.EDDS.WinForm
 					LoadFile.NativeFilePathColumn = Nothing
 				End If
 			End If
+			If Not LoadFile.OverwriteDestination Then
+				LoadFile.CreateFolderStructure = _buildFolderStructure.Checked
+				If LoadFile.CreateFolderStructure Then
+					If Not _destinationFolderPath.SelectedItem Is Nothing Then
+						LoadFile.FolderStructureContainedInColumn = _destinationFolderPath.SelectedItem.ToString
+					Else
+						LoadFile.FolderStructureContainedInColumn = Nothing
+					End If
+				End If
+			End If
 			Me.Cursor = System.Windows.Forms.Cursors.Default
 		End Sub
 
@@ -633,6 +691,7 @@ Namespace kCura.EDDS.WinForm
 			_fileColumns.ClearAll()
 			_fileColumnHeaders.Items.Clear()
 			_nativeFilePathField.Items.Clear()
+			_destinationFolderPath.Items.Clear()
 			_identifiersDropDown.Items.Clear()
 			_loadNativeFiles.Checked = LoadFile.LoadNativeFiles
 			RefreshNativeFilePathFieldAndFileColumnHeaders()
@@ -656,6 +715,7 @@ Namespace kCura.EDDS.WinForm
 			_overWrite.Checked = LoadFile.OverwriteDestination
 			_identifiersDropDown.Enabled = True			'LoadFile.OverwriteDestination
 			_overWrite.Checked = LoadFile.OverwriteDestination
+			_destinationFolderPath.Enabled = Not _overWrite.Checked AndAlso _buildFolderStructure.Checked
 			If Not LoadFile.SelectedIdentifierField Is Nothing Then
 				caseFieldName = _application.GetSelectedIdentifier(LoadFile.SelectedIdentifierField)
 				If caseFieldName <> String.Empty Then
@@ -698,17 +758,20 @@ Namespace kCura.EDDS.WinForm
 			OpenFileDialog.ShowDialog()
 		End Sub
 
-		Private Sub RefreshNativeFilePathFieldAndFileColumnHeaders()
+		Private Function RefreshNativeFilePathFieldAndFileColumnHeaders() As String()
+			Dim columnHeaders As String()
 			_fileColumnHeaders.Items.Clear()
 			_nativeFilePathField.Items.Clear()
+			_destinationFolderPath.Items.Clear()
 			_fileColumns.ClearAll()
 			If System.IO.File.Exists(LoadFile.FilePath) Then
 				PopulateLoadFileDelimiters()
-				Dim columnHeaders As String() = _application.GetColumnHeadersFromLoadFile(LoadFile, _firstLineContainsColumnNames.Checked)
+				columnHeaders = _application.GetColumnHeadersFromLoadFile(LoadFile, _firstLineContainsColumnNames.Checked)
 				'_filePath.Text = LoadFile.FilePath\
 				_fileColumns.RightListBoxItems.AddRange(columnHeaders)
 				_fileColumnHeaders.Items.AddRange(columnHeaders)
 				_nativeFilePathField.Items.AddRange(columnHeaders)
+				_destinationFolderPath.Items.AddRange(columnHeaders)
 				If LoadFile.LoadNativeFiles AndAlso System.IO.File.Exists(LoadFile.FilePath) Then
 					_nativeFilePathField.SelectedItem = LoadFile.NativeFilePathColumn
 				End If
@@ -716,8 +779,11 @@ Namespace kCura.EDDS.WinForm
 			End If
 			_nativeFilePathField.SelectedItem = Nothing
 			_nativeFilePathField.Text = "Select ..."
+			_destinationFolderPath.SelectedItem = Nothing
+			_destinationFolderPath.Text = "Select ..."
 			ActionMenuEnabled = ReadyToRun
-		End Sub
+			Return columnHeaders
+		End Function
 
 		Private Sub OpenFileDialog_FileOk(ByVal sender As Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles OpenFileDialog.FileOk
 			Dim oldfilepath As String
@@ -765,8 +831,18 @@ Namespace kCura.EDDS.WinForm
 			ActionMenuEnabled = ReadyToRun
 		End Sub
 
-		Private Sub _overWrite_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs)
+		Private Sub _overWrite_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _overWrite.CheckedChanged
 			LoadFile.OverwriteDestination = _overWrite.Checked
+			If _overWrite.Checked Then
+				_destinationFolderPath.Enabled = False
+				_buildFolderStructure.Checked = False
+				_buildFolderStructure.Enabled = False
+				_destinationFolderPath.SelectedItem = Nothing
+				_destinationFolderPath.Text = "Select ..."
+			Else
+				_buildFolderStructure.Enabled = True
+				_destinationFolderPath.Enabled = _buildFolderStructure.Checked
+			End If
 			ActionMenuEnabled = ReadyToRun
 			'_identifiersDropDown.Enabled = _overWrite.Checked
 		End Sub
@@ -911,8 +987,48 @@ Namespace kCura.EDDS.WinForm
 			Me.Close()
 		End Sub
 
-		Private Sub _fieldMapTab_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _fieldMapTab.Click
+		Private Sub _buildFolderStructure_CheckedChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles _buildFolderStructure.CheckedChanged
+			If _buildFolderStructure.Checked Then
+				_destinationFolderPath.Enabled = True
+			Else
+				_destinationFolderPath.Enabled = False
+				_destinationFolderPath.SelectedItem = Nothing
+				_destinationFolderPath.Text = "Select ..."
+			End If
+			ActionMenuEnabled = ReadyToRun
+		End Sub
 
+		Private Sub _destinationFolderPath_SelectedIndexChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles _destinationFolderPath.SelectedIndexChanged
+			ActionMenuEnabled = ReadyToRun
+		End Sub
+
+		Private Sub _fileRefreshMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _fileRefreshMenuItem.Click
+			Dim caseFields As String() = _application.GetCaseFields(LoadFile.CaseInfo.ArtifactID, True)
+			Dim fieldName As String
+			For Each fieldName In caseFields
+				If Not _fieldMap.RightListBoxItems.Contains(fieldName) AndAlso Not _fieldMap.LeftListBoxItems.Contains(fieldName) Then
+					_fieldMap.LeftListBoxItems.Add(fieldName)
+				End If
+			Next
+			Dim itemsToRemove As New System.Collections.ArrayList
+			For Each fieldName In _fieldMap.LeftListBoxItems
+				If Array.IndexOf(caseFields, (fieldName)) = -1 Then
+					itemsToRemove.Add(fieldName)
+				End If
+			Next
+			For Each fieldName In itemsToRemove
+				_fieldMap.LeftListBoxItems.Remove(fieldName)
+			Next
+
+			itemsToRemove = New Collections.ArrayList
+			For Each fieldName In _fieldMap.RightListBoxItems
+				If Array.IndexOf(caseFields, (fieldName)) = -1 Then
+					itemsToRemove.Add(fieldName)
+				End If
+			Next
+			For Each fieldName In itemsToRemove
+				_fieldMap.RightListBoxItems.Remove(fieldName)
+			Next
 		End Sub
 	End Class
 End Namespace

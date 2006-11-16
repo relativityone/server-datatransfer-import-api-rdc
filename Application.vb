@@ -91,9 +91,9 @@ Namespace kCura.EDDS.WinForm
 			End Get
 		End Property
 
-		Public ReadOnly Property CurrentFields() As DocumentFieldCollection
+		Public ReadOnly Property CurrentFields(Optional ByVal refresh As Boolean = False) As DocumentFieldCollection
 			Get
-				If _fields Is Nothing Then
+				If _fields Is Nothing OrElse refresh Then
 					_fields = New DocumentFieldCollection
 					'Dim fieldManager As New kCura.WinEDDS.Service.FieldQuery(Credential, _cookieContainer, _identity)
 					Dim fieldManager As New kCura.WinEDDS.Service.FieldQuery(Credential, _cookieContainer)
@@ -175,8 +175,8 @@ Namespace kCura.EDDS.WinForm
 			Return CurrentFields.NamesForIdentifierDropdown
 		End Function
 
-		Public Function GetCaseFields(ByVal caseID As Int32) As String()
-			Return CurrentFields.Names
+		Public Function GetCaseFields(ByVal caseID As Int32, Optional ByVal refresh As Boolean = False) As String()
+			Return CurrentFields(refresh).Names
 		End Function
 
 		Public Function GetSelectedIdentifier(ByVal selectedField As DocumentField) As String
