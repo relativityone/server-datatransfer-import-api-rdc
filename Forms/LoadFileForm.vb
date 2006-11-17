@@ -94,6 +94,8 @@ Namespace kCura.EDDS.WinForm
 			Me._fileSaveFieldMapMenuItem = New System.Windows.Forms.MenuItem
 			Me.MenuItem3 = New System.Windows.Forms.MenuItem
 			Me._fileMenuCloseItem = New System.Windows.Forms.MenuItem
+			Me.MenuItem4 = New System.Windows.Forms.MenuItem
+			Me._fileRefreshMenuItem = New System.Windows.Forms.MenuItem
 			Me.MenuItem2 = New System.Windows.Forms.MenuItem
 			Me.PreviewMenuFile = New System.Windows.Forms.MenuItem
 			Me._importMenuPreviewErrorsItem = New System.Windows.Forms.MenuItem
@@ -136,8 +138,6 @@ Namespace kCura.EDDS.WinForm
 			Me._fileColumns = New kCura.Windows.Forms.TwoListBox
 			Me._fieldMap = New kCura.Windows.Forms.TwoListBox
 			Me.HelpProvider1 = New System.Windows.Forms.HelpProvider
-			Me.MenuItem4 = New System.Windows.Forms.MenuItem
-			Me._fileRefreshMenuItem = New System.Windows.Forms.MenuItem
 			Me.GroupBox1.SuspendLayout()
 			Me.TabControl1.SuspendLayout()
 			Me._loadFileTab.SuspendLayout()
@@ -208,6 +208,17 @@ Namespace kCura.EDDS.WinForm
 			Me._fileMenuCloseItem.Index = 3
 			Me._fileMenuCloseItem.Shortcut = System.Windows.Forms.Shortcut.CtrlW
 			Me._fileMenuCloseItem.Text = "Close"
+			'
+			'MenuItem4
+			'
+			Me.MenuItem4.Index = 4
+			Me.MenuItem4.Text = "-"
+			'
+			'_fileRefreshMenuItem
+			'
+			Me._fileRefreshMenuItem.Index = 5
+			Me._fileRefreshMenuItem.Shortcut = System.Windows.Forms.Shortcut.CtrlR
+			Me._fileRefreshMenuItem.Text = "Refresh"
 			'
 			'MenuItem2
 			'
@@ -565,7 +576,7 @@ Namespace kCura.EDDS.WinForm
 			'_fileColumns
 			'
 			Me._fileColumns.KeepButtonsCentered = False
-			Me._fileColumns.LeftOrderControlsVisible = False
+			Me._fileColumns.LeftOrderControlsVisible = True
 			Me._fileColumns.Location = New System.Drawing.Point(372, 132)
 			Me._fileColumns.Name = "_fileColumns"
 			Me._fileColumns.RightOrderControlVisible = False
@@ -578,20 +589,9 @@ Namespace kCura.EDDS.WinForm
 			Me._fieldMap.LeftOrderControlsVisible = False
 			Me._fieldMap.Location = New System.Drawing.Point(4, 132)
 			Me._fieldMap.Name = "_fieldMap"
-			Me._fieldMap.RightOrderControlVisible = False
+			Me._fieldMap.RightOrderControlVisible = True
 			Me._fieldMap.Size = New System.Drawing.Size(360, 276)
 			Me._fieldMap.TabIndex = 1
-			'
-			'MenuItem4
-			'
-			Me.MenuItem4.Index = 4
-			Me.MenuItem4.Text = "-"
-			'
-			'_fileRefreshMenuItem
-			'
-			Me._fileRefreshMenuItem.Index = 5
-			Me._fileRefreshMenuItem.Shortcut = System.Windows.Forms.Shortcut.CtrlR
-			Me._fileRefreshMenuItem.Text = "Refresh"
 			'
 			'LoadFileForm
 			'
@@ -628,6 +628,7 @@ Namespace kCura.EDDS.WinForm
 
 		Friend ReadOnly Property ReadyToRun() As Boolean
 			Get
+				If Not Me.EnsureConnection() Then Return False
 				Dim rtr As Boolean
 				If _loadNativeFiles.Checked Then
 					rtr = _nativeFilePathField.SelectedIndex <> -1
@@ -649,6 +650,7 @@ Namespace kCura.EDDS.WinForm
 		Private Sub PopulateLoadFileObject()
 			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
 			Me.PopulateLoadFileDelimiters()
+			If Not Me.EnsureConnection() Then Exit Sub
 			Me.LoadFile.FieldMap = kCura.EDDS.WinForm.Utility.ExtractFieldMap(_fieldMap, _fileColumns, _application.CurrentFields)
 			LoadFile.ExtractFullTextFromNativeFile = _extractFullTextFromNativeFile.Checked
 			LoadFile.LoadNativeFiles = _loadNativeFiles.Checked
@@ -695,6 +697,7 @@ Namespace kCura.EDDS.WinForm
 			_identifiersDropDown.Items.Clear()
 			_loadNativeFiles.Checked = LoadFile.LoadNativeFiles
 			RefreshNativeFilePathFieldAndFileColumnHeaders()
+			If Not Me.EnsureConnection() Then Exit Sub
 			Dim caseFields As String() = _application.GetCaseFields(LoadFile.CaseInfo.ArtifactID)
 			Dim caseFieldName As String
 			If loadFileObjectUpdatedFromFile Then
@@ -788,6 +791,7 @@ Namespace kCura.EDDS.WinForm
 		Private Sub OpenFileDialog_FileOk(ByVal sender As Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles OpenFileDialog.FileOk
 			Dim oldfilepath As String
 			Try
+				If Not Me.EnsureConnection Then Exit Sub
 				oldfilepath = _filePath.Text
 				_filePath.Text = OpenFileDialog.FileName
 				PopulateLoadFileObject()
@@ -1004,6 +1008,7 @@ Namespace kCura.EDDS.WinForm
 
 		Private Sub _fileRefreshMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _fileRefreshMenuItem.Click
 			Dim caseFields As String() = _application.GetCaseFields(LoadFile.CaseInfo.ArtifactID, True)
+			If caseFields Is Nothing Then Exit Sub
 			Dim fieldName As String
 			For Each fieldName In caseFields
 				If Not _fieldMap.RightListBoxItems.Contains(fieldName) AndAlso Not _fieldMap.LeftListBoxItems.Contains(fieldName) Then
@@ -1030,5 +1035,24 @@ Namespace kCura.EDDS.WinForm
 				_fieldMap.RightListBoxItems.Remove(fieldName)
 			Next
 		End Sub
+
+		Private Function EnsureConnection() As Boolean
+			If Not _loadFile Is Nothing AndAlso Not _loadFile.CaseInfo Is Nothing Then
+				Dim casefields As String() = Nothing
+				Dim continue As Boolean = True
+				Try
+					casefields = _application.GetCaseFields(_loadFile.CaseInfo.ArtifactID, True)
+					Return Not casefields Is Nothing
+				Catch ex As System.Exception
+					If ex.Message.IndexOf("Need To Re Login") <> -1 Then
+						Return False
+					Else
+						Throw
+					End If
+				End Try
+			Else
+				Return True
+			End If
+		End Function
 	End Class
 End Namespace

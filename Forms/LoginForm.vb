@@ -125,6 +125,7 @@ Namespace kCura.EDDS.WinForm
 		Friend WithEvents _application As kCura.EDDS.WinForm.Application
 
 		Private _credential As System.Net.NetworkCredential
+		Private _openCaseSelector As Boolean = True
 
 		Public Property Credential() As System.Net.NetworkCredential
 			Get
@@ -132,6 +133,15 @@ Namespace kCura.EDDS.WinForm
 			End Get
 			Set(ByVal value As System.Net.NetworkCredential)
 				_credential = value
+			End Set
+		End Property
+
+		Public Property OpenCaseSelector() As Boolean
+			Get
+				Return _openCaseSelector
+			End Get
+			Set(ByVal value As Boolean)
+				_openCaseSelector = value
 			End Set
 		End Property
 
@@ -146,10 +156,10 @@ Namespace kCura.EDDS.WinForm
 
 		Private Sub _okButton_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles _okButton.Click
 			_credential = New Net.NetworkCredential(_loginTextBox.Text, _passwordTextBox.Text)
-			RaiseEvent OK_Click(_credential)
+			RaiseEvent OK_Click(_credential, _openCaseSelector)
 		End Sub
 
-		Public Event OK_Click(ByVal cred As Net.NetworkCredential)
+		Public Event OK_Click(ByVal cred As Net.NetworkCredential, ByVal openCaseSelector As Boolean)
 
 		Private Sub _cancelButton_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles _cancelButton.Click
 			_application.ExitApplication()

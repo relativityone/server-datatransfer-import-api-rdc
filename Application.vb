@@ -93,19 +93,27 @@ Namespace kCura.EDDS.WinForm
 
 		Public ReadOnly Property CurrentFields(Optional ByVal refresh As Boolean = False) As DocumentFieldCollection
 			Get
-				If _fields Is Nothing OrElse refresh Then
-					_fields = New DocumentFieldCollection
-					'Dim fieldManager As New kCura.WinEDDS.Service.FieldQuery(Credential, _cookieContainer, _identity)
-					Dim fieldManager As New kCura.WinEDDS.Service.FieldQuery(Credential, _cookieContainer)
-					Dim fields() As kCura.EDDS.WebAPI.DocumentManagerBase.Field = fieldManager.RetrieveAllAsArray(SelectedCaseInfo.ArtifactID)
-					Dim i As Int32
-					For i = 0 To fields.Length - 1
-						With fields(i)
-							_fields.Add(New DocumentField(.DisplayName, .ArtifactID, .FieldTypeID, .FieldCategoryID, .CodeTypeID, .MaxLength))
-						End With
-					Next
-				End If
-				Return _fields
+				Try
+					If _fields Is Nothing OrElse refresh Then
+						_fields = New DocumentFieldCollection
+						'Dim fieldManager As New kCura.WinEDDS.Service.FieldQuery(Credential, _cookieContainer, _identity)
+						Dim fieldManager As New kCura.WinEDDS.Service.FieldQuery(Credential, _cookieContainer)
+						Dim fields() As kCura.EDDS.WebAPI.DocumentManagerBase.Field = fieldManager.RetrieveAllAsArray(SelectedCaseInfo.ArtifactID)
+						Dim i As Int32
+						For i = 0 To fields.Length - 1
+							With fields(i)
+								_fields.Add(New DocumentField(.DisplayName, .ArtifactID, .FieldTypeID, .FieldCategoryID, .CodeTypeID, .MaxLength))
+							End With
+						Next
+					End If
+					Return _fields
+				Catch ex As System.Exception
+					If ex.Message.IndexOf("Need To Re Login") <> -1 Then
+						NewLogin(False)
+					Else
+						Throw
+					End If
+				End Try
 			End Get
 		End Property
 
@@ -176,7 +184,14 @@ Namespace kCura.EDDS.WinForm
 		End Function
 
 		Public Function GetCaseFields(ByVal caseID As Int32, Optional ByVal refresh As Boolean = False) As String()
-			Return CurrentFields(refresh).Names
+			Dim retval As DocumentFieldCollection = CurrentFields(refresh)
+			If Not retval Is Nothing Then
+				Return CurrentFields(refresh).Names()
+			End If
+		End Function
+
+		Private Function IsConnected(ByVal caseID As Int32) As Boolean
+			Return Not Me.GetCaseFields(caseID, True) Is Nothing
 		End Function
 
 		Public Function GetSelectedIdentifier(ByVal selectedField As DocumentField) As String
@@ -211,15 +226,32 @@ Namespace kCura.EDDS.WinForm
 		Public Function CreateNewFolder(ByVal parentFolderID As Int32) As Int32
 			Dim name As String = InputBox("Enter Folder Name", "Relativity Review")
 			If name <> "" Then
-				Dim folderManager As New kCura.WinEDDS.Service.FolderManager(Me.Credential, _cookieContainer)
-				Dim folderID As Int32 = folderManager.Create(Me.SelectedCaseInfo.ArtifactID, parentFolderID, name)
-				RaiseEvent OnEvent(New NewFolderEvent(parentFolderID, folderID, name))
+				Try
+					Dim folderManager As New kCura.WinEDDS.Service.FolderManager(Me.Credential, _cookieContainer)
+					Dim folderID As Int32 = folderManager.Create(Me.SelectedCaseInfo.ArtifactID, parentFolderID, name)
+					RaiseEvent OnEvent(New NewFolderEvent(parentFolderID, folderID, name))
+				Catch ex As System.Exception
+					If ex.Message.IndexOf("Need To Re Login") <> -1 Then
+						NewLogin(False)
+					Else
+						Throw
+					End If
+				End Try
 			End If
 		End Function
 
 		Public Function GetCaseFolders(ByVal caseID As Int32) As System.Data.DataSet
-			Dim folderManager As New kCura.WinEDDS.Service.FolderManager(Credential, _cookieContainer)
-			Return folderManager.RetrieveAllByCaseID(caseID)
+			Try
+				Dim folderManager As New kCura.WinEDDS.Service.FolderManager(Credential, _cookieContainer)
+				Return folderManager.RetrieveAllByCaseID(caseID)
+			Catch ex As System.Exception
+				If ex.Message.IndexOf("Need To Re Login") <> -1 Then
+					NewLogin(False)
+				Else
+					Throw
+				End If
+			End Try
+
 			'Dim dsFactory As New kCura.Utility.DataSetFactory
 			'dsFactory.AddColumn("ArtifactID", kCura.Utility.DataSetFactory.DataType.Integer)
 			'dsFactory.AddColumn("ParentArtifactID", kCura.Utility.DataSetFactory.DataType.Integer)
@@ -238,8 +270,16 @@ Namespace kCura.EDDS.WinForm
 #Region "Case Management"
 		Public Function GetCases() As System.Data.DataSet
 			_fields = Nothing
-			Dim csMgr As New kCura.WinEDDS.Service.CaseManager(Credential, _cookieContainer)
-			Return csMgr.RetrieveAll()
+			try
+				Dim csMgr As New kCura.WinEDDS.Service.CaseManager(Credential, _cookieContainer)
+				Return csMgr.RetrieveAll()
+			Catch ex As System.Exception
+				If ex.Message.IndexOf("Need To Re Login") <> -1 Then
+					NewLogin(False)
+				Else
+					Throw
+				End If
+			End Try
 
 			'Dim dsFactory As New kCura.Utility.DataSetFactory
 			'dsFactory.AddColumn("CaseID", kCura.Utility.DataSetFactory.DataType.Integer)
@@ -296,6 +336,7 @@ Namespace kCura.EDDS.WinForm
 		'Worker function for PreviewLoadFile
 		Public Function BuildLoadFileDataSource(ByVal al As ArrayList) As DataTable
 			Try
+				Me.GetCaseFields(_selectedCaseInfo.ArtifactID, True)
 				'Dim previewer As New kCura.WinEDDS.LoadFilePreviewer(loadFile, _timeZoneOffset, errorsOnly)
 				'Dim al As ArrayList = DirectCast(previewer.ReadFile(loadFile.FilePath), ArrayList)
 				'previewer.Close()
@@ -400,6 +441,7 @@ Namespace kCura.EDDS.WinForm
 
 #Region "Form Initializers"
 		Public Sub NewLoadFile(ByVal destinationArtifactID As Int32, ByVal caseInfo As kCura.EDDS.Types.CaseInfo)
+			Me.GetCaseFields(caseInfo.ArtifactID, True)
 			Dim frm As New LoadFileForm
 			Dim loadFile As New loadFile
 			frm._application = Me
@@ -414,9 +456,31 @@ Namespace kCura.EDDS.WinForm
 		Public Sub NewProductionExport(ByVal caseInfo As kCura.EDDS.Types.CaseInfo)
 			Dim frm As New ProductionExportForm
 			Dim exportFile As New exportFile
-			Dim productionManager As New kCura.WinEDDS.Service.ProductionManager(Me.Credential, _cookieContainer)
+			Dim productionManager As kCura.WinEDDS.Service.ProductionManager
+			Try
+				productionManager = New kCura.WinEDDS.Service.ProductionManager(Me.Credential, _cookieContainer)
+			Catch ex As System.Exception
+				If ex.Message.IndexOf("Need To Re Login") <> -1 Then
+					NewLogin(False)
+					productionManager = New kCura.WinEDDS.Service.ProductionManager(Me.Credential, _cookieContainer)
+				Else
+					Throw
+				End If
+			End Try
 			exportFile.CaseInfo = caseInfo
-			exportFile.DataTable = productionManager.RetrieveProducedByContextArtifactID(caseInfo.ArtifactID).Tables(0)
+			Dim exportFileDataSet As System.Data.DataSet
+			While exportFileDataSet Is Nothing
+				Try
+					exportFileDataSet = productionManager.RetrieveProducedByContextArtifactID(caseInfo.ArtifactID)
+				Catch ex As System.Exception
+					If ex.Message.IndexOf("Need To Re Login") <> -1 Then
+						NewLogin(False)
+					Else
+						Throw
+					End If
+				End Try
+			End While
+			exportFile.DataTable = exportFileDataSet.Tables(0)
 			exportFile.Credential = Me.Credential
 			exportFile.TypeOfExport = exportFile.ExportType.Production
 			frm.Application = Me
@@ -430,17 +494,33 @@ Namespace kCura.EDDS.WinForm
 			Dim searchManager As New kCura.WinEDDS.Service.SearchManager(Me.Credential, _cookieContainer)
 			exportFile.ArtifactID = rootFolderID
 			exportFile.CaseInfo = caseInfo
-			If typeOfExport = exportFile.ExportType.ArtifactSearch Then
-				exportFile.DataTable = searchManager.RetrieveViewsByContextArtifactID(caseInfo.ArtifactID, True).Tables(0)
-			Else
-				exportFile.DataTable = searchManager.RetrieveViewsByContextArtifactID(caseInfo.ArtifactID, False).Tables(0)
-			End If
+			exportFile.DataTable = Me.GetSearchExportDataSource(searchManager, caseInfo.ArtifactID, typeOfExport = exportFile.ExportType.ArtifactSearch)
 			exportFile.Credential = Me.Credential
 			exportFile.TypeOfExport = typeOfExport
 			frm.Application = Me
 			frm.ExportFile = exportFile
 			frm.Show()
 		End Sub
+
+		Private Function GetSearchExportDataSource(ByVal searchManager As kCura.WinEDDS.Service.SearchManager, ByVal caseArtifactID As Int32, ByVal isArtifactSearch As Boolean) As System.Data.DataTable
+			Dim searchExportDataSet As System.Data.DataSet
+			Try
+				While searchExportDataSet Is Nothing
+					If isArtifactSearch Then
+						searchExportDataSet = searchManager.RetrieveViewsByContextArtifactID(caseArtifactID, True)
+					Else
+						searchExportDataSet = searchManager.RetrieveViewsByContextArtifactID(caseArtifactID, False)
+					End If
+				End While
+			Catch ex As System.Exception
+				If ex.Message.IndexOf("Need To Re Login") <> -1 Then
+					NewLogin(False)
+				Else
+					Throw
+				End If
+			End Try
+			Return searchExportDataSet.Tables(0)
+		End Function
 
 		Public Sub NewOutlookImport(ByVal destinationArtifactID As Int32, ByVal caseInfo As kCura.EDDS.Types.CaseInfo)
 			Dim importerAssembly As System.Reflection.Assembly
@@ -462,6 +542,7 @@ Namespace kCura.EDDS.WinForm
 
 		Public Sub NewImageFile(ByVal destinationArtifactID As Int32, ByVal caseinfo As kCura.EDDS.Types.CaseInfo)
 			CursorWait()
+			Me.GetCaseFields(caseinfo.ArtifactID, True)
 			Dim frm As New ImageLoad
 			'Dim imageFile As New ImageLoadFile(Me.Identity)
 			Dim imageFile As New ImageLoadFile
@@ -474,6 +555,10 @@ Namespace kCura.EDDS.WinForm
 
 		Public Sub NewDirectoryImport(ByVal destinationArtifactID As Int32, ByVal caseInfo As kCura.EDDS.Types.CaseInfo)
 			CursorWait()
+			If Not Me.IsConnected(caseInfo.ArtifactID) Then
+				CursorDefault()
+				Exit Sub
+			End If
 			Dim frm As New ImportFileSystemForm
 			Dim importFileDirectorySettings As New importFileDirectorySettings
 			importFileDirectorySettings.DestinationFolderID = destinationArtifactID
@@ -485,6 +570,10 @@ Namespace kCura.EDDS.WinForm
 
 		Public Sub NewEnronImport(ByVal destinationArtifactID As Int32, ByVal caseInfo As kCura.EDDS.Types.CaseInfo)
 			CursorWait()
+			If Not Me.IsConnected(caseInfo.ArtifactID) Then
+				CursorDefault()
+				Exit Sub
+			End If
 			Dim frm As New ImportFileSystemForm
 			Dim importFileDirectorySettings As New importFileDirectorySettings
 			importFileDirectorySettings.EnronImport = True
@@ -518,7 +607,7 @@ Namespace kCura.EDDS.WinForm
 			CursorDefault()
 		End Sub
 
-		Public Sub NewLogin()
+		Public Sub NewLogin(Optional ByVal openCaseSelector As Boolean = True)
 			CursorWait()
 			If Not _loginForm Is Nothing Then
 				If Not _loginForm.IsDisposed Then
@@ -526,6 +615,7 @@ Namespace kCura.EDDS.WinForm
 				End If
 			End If
 			_loginForm = New LoginForm
+			_loginForm.OpenCaseSelector = openCaseSelector
 			_loginForm.Show()
 			CursorDefault()
 		End Sub
@@ -534,6 +624,10 @@ Namespace kCura.EDDS.WinForm
 #Region "Process Management"
 		Public Function PreviewLoadFile(ByVal loadFileToPreview As LoadFile, ByVal errorsOnly As Boolean) As Guid
 			CursorWait()
+			If Not Me.IsConnected(loadFileToPreview.CaseInfo.ArtifactID) Then
+				CursorDefault()
+				Exit Function
+			End If
 			If Not CheckFieldMap(loadFileToPreview) Then
 				CursorDefault()
 				Exit Function
@@ -557,6 +651,10 @@ Namespace kCura.EDDS.WinForm
 
 		Public Function ImportDirectory(ByVal importFileDirectorySettings As ImportFileDirectorySettings) As Guid
 			CursorWait()
+			If Not Me.IsConnected(importFileDirectorySettings.CaseInfo.ArtifactID) Then
+				CursorDefault()
+				Exit Function
+			End If
 			Dim frm As New kCura.Windows.Process.ProgressForm
 			Dim importer As New kCura.WinEDDS.ImportFileDirectoryProcess(Credential, CookieContainer)
 			'Dim importer As New kCura.WinEDDS.ImportFileDirectoryProcess(Credential, CookieContainer, Me.Identity)
@@ -569,6 +667,10 @@ Namespace kCura.EDDS.WinForm
 
 		Public Function ImportGeneric(ByVal settings As Object) As Guid
 			CursorWait()
+			If Not Me.IsConnected(_selectedCaseInfo.ArtifactID) Then
+				CursorDefault()
+				Exit Function
+			End If
 			Dim frm As New kCura.Windows.Process.ProgressForm
 			Dim importer As New kCura.WinEDDS.GenericImportProcess(New WinEDDSGateway)
 			importer.Settings = settings
@@ -580,6 +682,10 @@ Namespace kCura.EDDS.WinForm
 
 		Public Function ImportSQL(ByVal sqlimportsettings As SQLImportSettings) As Guid
 			CursorWait()
+			If Not Me.IsConnected(_selectedCaseInfo.ArtifactID) Then
+				CursorDefault()
+				Exit Function
+			End If
 			Dim frm As New kCura.Windows.Process.ProgressForm
 			Dim imporProcess As New kCura.WinEDDS.SQLImportProcess
 			imporProcess.SQLImportSettings = sqlimportsettings
@@ -593,6 +699,10 @@ Namespace kCura.EDDS.WinForm
 		Public Function ImportLoadFile(ByVal loadFile As LoadFile) As Guid
 			CursorWait()
 			'Dim folderManager As New kCura.WinEDDS.Service.FolderManager(Credential, _cookieContainer, _identity)
+			If Not Me.IsConnected(_selectedCaseInfo.ArtifactID) Then
+				CursorDefault()
+				Exit Function
+			End If
 			Dim folderManager As New kCura.WinEDDS.Service.FolderManager(Credential, _cookieContainer)
 			If folderManager.Exists(SelectedCaseInfo.ArtifactID, SelectedCaseInfo.RootFolderID) Then
 				If CheckFieldMap(loadFile) Then
@@ -617,6 +727,10 @@ Namespace kCura.EDDS.WinForm
 
 		Public Function ImportImageFile(ByVal ImageLoadFile As ImageLoadFile) As Guid
 			CursorWait()
+			If Not Me.IsConnected(_selectedCaseInfo.ArtifactID) Then
+				CursorDefault()
+				Exit Function
+			End If
 			Dim frm As New kCura.Windows.Process.ProgressForm
 			Dim importer As New kCura.WinEDDS.ImportImageFileProcess
 			ImageLoadFile.CookieContainer = Me.CookieContainer
@@ -631,6 +745,10 @@ Namespace kCura.EDDS.WinForm
 
 		Public Function StartProduction(ByVal exportFile As ExportFile) As Guid
 			CursorWait()
+			If Not Me.IsConnected(_selectedCaseInfo.ArtifactID) Then
+				CursorDefault()
+				Exit Function
+			End If
 			Dim frm As New kCura.Windows.Process.ProgressForm
 			Dim exporter As New kCura.WinEDDS.ExportProductionProcess
 
@@ -645,6 +763,10 @@ Namespace kCura.EDDS.WinForm
 
 		Public Function StartSearch(ByVal exportFile As ExportFile) As Guid
 			CursorWait()
+			If Not Me.IsConnected(_selectedCaseInfo.ArtifactID) Then
+				CursorDefault()
+				Exit Function
+			End If
 			Dim frm As New kCura.Windows.Process.ProgressForm
 			Dim exporter As New kCura.WinEDDS.ExportSearchProcess
 
@@ -762,13 +884,13 @@ Namespace kCura.EDDS.WinForm
 			End Try
 		End Function
 
-		Private Sub _loginForm_OK_Click(ByVal cred As System.Net.NetworkCredential) Handles _loginForm.OK_Click
+		Private Sub _loginForm_OK_Click(ByVal cred As System.Net.NetworkCredential, ByVal openCaseSelector As Boolean) Handles _loginForm.OK_Click
 			_loginForm.Close()
 			Dim userManager As New kCura.WinEDDS.Service.UserManager(cred, _cookieContainer)
 			Try
 				userManager.Login(cred.UserName, cred.Password)
 				_credential = cred
-				OpenCase()
+				If openCaseSelector Then OpenCase()
 			Catch ex As kCura.WinEDDS.Exception.InvalidLoginException
 				If MsgBox("Invalid login. Try again?", MsgBoxStyle.YesNo) = MsgBoxResult.Yes Then
 					NewLogin()

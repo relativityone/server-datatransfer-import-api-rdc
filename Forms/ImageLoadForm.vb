@@ -231,6 +231,10 @@ Namespace kCura.EDDS.WinForm
 
 		Private Sub PopulateImageLoadFile()
 			Me.Cursor = Cursors.WaitCursor
+			If Not Me.EnsureConnection() Then
+				Me.Cursor = Cursors.Default
+				Exit Sub
+			End If
 			ImageLoadFile.Overwrite = _overWrite.Checked
 			ImageLoadFile.DestinationFolderID = _application.SelectedCaseInfo.RootFolderID
 			Me.ImageLoadFile.ReplaceFullText = _replaceFullText.Checked
@@ -245,6 +249,10 @@ Namespace kCura.EDDS.WinForm
 		Private Sub ImageLoad_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
 			Me.Cursor = Cursors.WaitCursor
 			_controlKeyField.Items.Clear()
+			If Not Me.EnsureConnection() Then
+				Me.Cursor = Cursors.Default
+				Exit Sub
+			End If
 			_controlKeyField.Items.AddRange(_application.IdentiferFieldDropdownPopulator)
 			_overWrite.Checked = ImageLoadFile.Overwrite
 			ReadyToRun()
@@ -266,6 +274,10 @@ Namespace kCura.EDDS.WinForm
 
 		Private Sub _openFileDialog_FileOk(ByVal sender As Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles _openFileDialog.FileOk
 			Me.Cursor = Cursors.WaitCursor
+			If Not Me.EnsureConnection() Then
+				Me.Cursor = Cursors.Default
+				Exit Sub
+			End If
 			_imageLoadFile.FileName = _openFileDialog.FileName
 			_filePath.Text = _openFileDialog.FileName
 			ReadyToRun()
@@ -278,6 +290,10 @@ Namespace kCura.EDDS.WinForm
 
 		Private Sub _controlKeyField_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _controlKeyField.SelectedIndexChanged
 			_imageLoadFile.ControlKeyField = _controlKeyField.SelectedItem.ToString
+			If Not Me.EnsureConnection() Then
+				Me.Cursor = Cursors.Default
+				Exit Sub
+			End If
 			ReadyToRun()
 		End Sub
 
@@ -286,12 +302,20 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 		Private Sub _importMenuSaveSettingsItem_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles _importMenuSaveSettingsItem.Click
+			If Not Me.EnsureConnection() Then
+				Me.Cursor = Cursors.Default
+				Exit Sub
+			End If
 			PopulateImageLoadFile()
 			_saveImageLoadFileDialog.ShowDialog()
 		End Sub
 
 		Private Sub _saveImageLoadFileDialog_FileOk(ByVal sender As System.Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles _saveImageLoadFileDialog.FileOk
 			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
+			If Not Me.EnsureConnection() Then
+				Me.Cursor = Cursors.Default
+				Exit Sub
+			End If
 			If Not System.IO.File.Exists(_saveImageLoadFileDialog.FileName) Then
 				System.IO.File.Create(_saveImageLoadFileDialog.FileName).Close()
 			End If
@@ -305,6 +329,10 @@ Namespace kCura.EDDS.WinForm
 
 		Private Sub _loadImageLoadFileDialog_FileOk(ByVal sender As Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles _loadImageLoadFileDialog.FileOk
 			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
+			If Not Me.EnsureConnection() Then
+				Me.Cursor = Cursors.Default
+				Exit Sub
+			End If
 			If System.IO.File.Exists(_loadImageLoadFileDialog.FileName) Then
 				Me.ImageLoadFile = _application.ReadImageLoadFile(_loadImageLoadFileDialog.FileName)
 				_overWrite.Checked = ImageLoadFile.Overwrite
@@ -313,5 +341,25 @@ Namespace kCura.EDDS.WinForm
 			End If
 			Me.Cursor = System.Windows.Forms.Cursors.Default
 		End Sub
+
+		Private Function EnsureConnection() As Boolean
+			If Not _imageLoadFile Is Nothing AndAlso Not _imageLoadFile.CaseInfo Is Nothing Then
+				Dim casefields As String() = Nothing
+				Dim continue As Boolean = True
+				Try
+					casefields = _application.GetCaseFields(_imageLoadFile.CaseInfo.ArtifactID, True)
+					Return Not casefields Is Nothing
+				Catch ex As System.Exception
+					If ex.Message.IndexOf("Need To Re Login") <> -1 Then
+						Return False
+					Else
+						Throw
+					End If
+				End Try
+			Else
+				Return True
+			End If
+		End Function
+
 	End Class
 End Namespace

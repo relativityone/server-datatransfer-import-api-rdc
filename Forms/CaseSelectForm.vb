@@ -113,6 +113,10 @@ Namespace kCura.EDDS.WinForm
 
 		Private Sub CaseSelectForm_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
 			Me.Cursor = Cursors.WaitCursor
+			Dim cases As System.Data.DataSet
+			While cases Is Nothing
+				cases = _application.GetCases
+			End While
 			Dim dt As DataTable = _application.GetCases.Tables(0)
 			Dim row As DataRow
 			For Each row In dt.Rows

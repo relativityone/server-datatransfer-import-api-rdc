@@ -172,7 +172,9 @@ Namespace kCura.EDDS.WinForm
 			_treeView.Nodes.Clear()
 
 			Dim foldersDataSet As System.Data.DataSet
-			foldersDataSet = _application.GetCaseFolders(caseInfo.ArtifactID)
+			While foldersDataSet Is Nothing
+				foldersDataSet = _application.GetCaseFolders(caseInfo.ArtifactID)
+			End While
 			foldersDataSet.Relations.Add("NodeRelation", foldersDataSet.Tables(0).Columns("ArtifactID"), foldersDataSet.Tables(0).Columns("ParentArtifactID"))
 			Dim folderRow As System.Data.DataRow
 			Dim rootFolderNode As New System.Windows.Forms.TreeNode
