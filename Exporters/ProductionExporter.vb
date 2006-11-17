@@ -254,10 +254,11 @@ Namespace kCura.WinEDDS
 			Me.DeleteEmptyFolders(currentVolumeName)
 		End Sub
 
-		Private Sub CreateLoadFileEntries(ByVal volumeLog As System.Text.StringBuilder, ByVal fullTextVolumeLog As System.Text.StringBuilder, ByVal documentImagesTable As System.Data.DataTable, ByVal count As Int32, ByVal currentVolume As String, ByVal filename As String, ByVal isFirstDocumentImage As Boolean, ByVal currentPageFirstByteNumber As Int32, ByVal currentDirectory As String)
+		Private Sub CreateLoadFileEntries(ByVal volumeLog As System.Text.StringBuilder, ByVal fullTextVolumeLog As System.Text.StringBuilder, ByVal documentImagesTable As System.Data.DataTable, ByVal count As Int32, ByVal currentVolume As String, ByVal filename As String, ByVal isFirstDocumentImage As Boolean, ByRef currentPageFirstByteNumber As Int32, ByVal currentDirectory As String)
 			Dim fullTextGuid As String
 			Dim fullText As String
 			Dim pageText As String
+			'Dim currentPage As Int32 = count
 			Select Case Me.LoadFileFormat
 				Case LoadFileType.FileFormat.Concordance
 					volumeLog.Append(BuildVolumeLog(CType(documentImagesTable.Rows(count)("BatesNumber"), String), currentVolume, filename, isFirstDocumentImage))
@@ -265,40 +266,28 @@ Namespace kCura.WinEDDS
 					If Me.LoadFileFormat = kCura.WinEDDS.LoadFileType.FileFormat.IPRO_FullText Then
 						If isFirstDocumentImage Then
 							currentPageFirstByteNumber = 0
-							fullTextGuid = _fileManager.GetFullTextGuidsByDocumentArtifactIdAndType(Me.SelectedCaseInfo.ArtifactID, CType(documentImagesTable.Rows(count)("DocumentArtifactID"), Int32), 2)
-							Try
-								fullText = _fullTextDownloader.ReadFullTextFile(_sourceDirectory & "\" & fullTextGuid)
-								pageText = fullText.Substring(currentPageFirstByteNumber, CInt(documentImagesTable.Rows(count)("ByteRange")))
-								pageText = pageText.Replace(ChrW(10), " ")
-								pageText = pageText.Replace(",", "")
-								pageText = pageText.Replace(" ", "|0|0|0|0^")
-								fullTextVolumeLog.AppendFormat("FT,{0},1,1,{1}", CType(documentImagesTable.Rows(count)("BatesNumber"), String), pageText)
-								fullTextVolumeLog.AppendFormat("{0}", Microsoft.VisualBasic.ControlChars.NewLine)
-								currentPageFirstByteNumber += CInt(documentImagesTable.Rows(count)("ByteRange")) - 1
-							Catch ex As System.IO.FileNotFoundException
-								WriteWarning(ex.Message)
-							Catch ex As System.InvalidCastException
-								Me.WriteWarning(String.Format("Could not retrieve full text for document #{0}", count + 1))
-							End Try
 						End If
+						Try
+							fullTextGuid = _fileManager.GetFullTextGuidsByDocumentArtifactIdAndType(Me.SelectedCaseInfo.ArtifactID, CType(documentImagesTable.Rows(count)("DocumentArtifactID"), Int32), 2)
+							fullText = _fullTextDownloader.ReadFullTextFile(_sourceDirectory & "\" & fullTextGuid)
+							pageText = fullText.Substring(currentPageFirstByteNumber, CInt(documentImagesTable.Rows(count)("ByteRange")))
+							pageText = pageText.Replace(ChrW(10), " ")
+							pageText = pageText.Replace(",", "")
+							pageText = pageText.Replace(" ", "|0|0|0|0^")
+							fullTextVolumeLog.AppendFormat("FT,{0},1,1,{1}", CType(documentImagesTable.Rows(count)("BatesNumber"), String), pageText)
+							fullTextVolumeLog.AppendFormat("{0}", Microsoft.VisualBasic.ControlChars.NewLine)
+							currentPageFirstByteNumber += CInt(documentImagesTable.Rows(count)("ByteRange"))
+						Catch ex As System.InvalidCastException
+							Me.WriteWarning(String.Format("Could not retrieve full text for document #{0}", count + 1))
+						Catch ex As System.IO.FileNotFoundException
+							WriteWarning(ex.Message)
+						End Try
 					End If
 					volumeLog.Append(BuildIproLog(CType(documentImagesTable.Rows(count)("BatesNumber"), String), currentVolume, currentDirectory, isFirstDocumentImage))
 			End Select
 		End Sub
 
 #Region "Private Helper Functions"
-
-		Private Function ExtractFullTextFromGuid(ByVal fullTextGuid As String) As String
-			Dim bodyText As String
-			If fullTextGuid Is Nothing Then
-				bodyText = String.Empty
-			Else
-				bodyText = _fullTextDownloader.ReadFullTextFile(_sourceDirectory & fullTextGuid)
-				bodyText = bodyText.Replace(ChrW(10), "®"c)
-			End If
-			Return bodyText
-		End Function
-
 		Private Function ExportArgs(ByVal line As String, ByVal eventType As kCura.Windows.Process.EventType) As kCura.WinEDDS.ExportEventArgs
 			Return New kCura.WinEDDS.ExportEventArgs(Me.DocumentsExported, Me.TotalFiles, line, eventType)
 		End Function
