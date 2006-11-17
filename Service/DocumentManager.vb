@@ -164,19 +164,39 @@ Namespace kCura.WinEDDS.Service
 		End Function
 
 		Public Shadows Function Create(ByVal caseContextArtifactID As Int32, ByVal document As kCura.EDDS.WebAPI.DocumentManagerBase.Document) As Int32
-			If kCura.WinEDDS.Config.UsesWebAPI Then
-				Return MyBase.Create(caseContextArtifactID, document)
-			Else
-				'Return _documentManager.ExternalCreate(Me.WebAPIDocumentToDTO(document), _identity)
-			End If
+			Try
+				If kCura.WinEDDS.Config.UsesWebAPI Then
+					Return MyBase.Create(caseContextArtifactID, document)
+				Else
+					'Return _documentManager.ExternalCreate(Me.WebAPIDocumentToDTO(document), _identity)
+				End If
+			Catch ex As System.Exception
+				If TypeOf ex Is System.Web.Services.Protocols.SoapException Then
+					If Not ex.InnerException Is Nothing Then
+						Throw ex.InnerException
+					Else
+						Throw
+					End If
+				End If
+			End Try
 		End Function
 
 		Public Shadows Function Update(ByVal caseContextArtifactID As Int32, ByVal document As kCura.EDDS.WebAPI.DocumentManagerBase.Document) As Int32
-			If kCura.WinEDDS.Config.UsesWebAPI Then
-				Return MyBase.Update(caseContextArtifactID, document)
-			Else
-				'Return _documentManager.ExternalUpdate(Me.WebAPIDocumentToDTO(document), _identity)
-			End If
+			Try
+				If kCura.WinEDDS.Config.UsesWebAPI Then
+					Return MyBase.Update(caseContextArtifactID, document)
+				Else
+					'Return _documentManager.ExternalUpdate(Me.WebAPIDocumentToDTO(document), _identity)
+				End If
+			Catch ex As System.Exception
+				If TypeOf ex Is System.Web.Services.Protocols.SoapException Then
+					If Not ex.InnerException Is Nothing Then
+						Throw ex.InnerException
+					Else
+						Throw
+					End If
+				End If
+			End Try
 		End Function
 
 		Public Shadows Sub CreateRange(ByVal caseContextArtifactID As Int32, ByVal documents As kCura.EDDS.WebAPI.DocumentManagerBase.Document())

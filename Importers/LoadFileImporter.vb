@@ -269,6 +269,11 @@ Namespace kCura.WinEDDS
 						doc = _documentManager.ReadFromIdentifier(_caseArtifactID, _selectedIdentifier.FieldName, metaDoc.IdentityValue)
 					Catch ex As System.Exception
 						If kCura.WinEDDS.Config.UsesWebAPI Then
+							If TypeOf ex Is System.Web.Services.Protocols.SoapException Then
+								If Not ex.InnerException Is Nothing Then
+									ex = ex.InnerException
+								End If
+							End If
 							Throw New AmbiguousIdentifierValueException(ex)
 						Else
 							Throw
@@ -665,14 +670,14 @@ Namespace kCura.WinEDDS
 		Public Class DocumentDomainException
 			Inherits kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
 			Public Sub New(ByVal ex As System.Exception)
-				MyBase.New("Error accessing document information in domain layer: " & ex.Message, ex)
+				MyBase.New("Error accessing document information in domain layer: " & ex.Message.Replace("System.Web.Services.Protocols.SoapException: Server was unable to process request. ---> ", ""))
 			End Sub
 		End Class
 
 		Public Class AmbiguousIdentifierValueException
 			Inherits kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
 			Public Sub New(ByVal parentException As System.Exception)
-				MyBase.New("Identifier has more than one row associated with it", parentException)
+				MyBase.New("Identifier has more than one row associated with it: [" & parentException.Message & "]", parentException)
 			End Sub
 		End Class
 
@@ -690,12 +695,12 @@ Namespace kCura.WinEDDS
 			End Sub
 		End Class
 
-		Public Class FileUploadFailedException
-			Inherits kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
-			Public Sub New()
-				MyBase.New(String.Format("File upload failed - file not added."))
-			End Sub
-		End Class
+		'Public Class FileUploadFailedException
+		'	Inherits kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
+		'	Public Sub New()
+		'		MyBase.New(String.Format("File upload failed - file not added."))
+		'	End Sub
+		'End Class
 
 		Public Class IdentifierOverlapException
 			Inherits kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
