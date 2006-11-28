@@ -257,6 +257,8 @@ Namespace kCura.WinEDDS
 									Throw New kCura.Utility.DelimitedFileImporter.DateException(Me.CurrentLineNumber, column)
 								End Try
 							End If
+						Else
+							Throw New kCura.Utility.DelimitedFileImporter.DateException(Me.CurrentLineNumber, column)
 						End If
 				End Select
 			End Try

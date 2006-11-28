@@ -8,6 +8,7 @@ Namespace kCura.WinEDDS
 		Private _uploadFile As Boolean
 		Private _lineNumber As Int32
 		Private _parentFolderID As Int32
+		Private _sourceLine As String()
 
 		Public Property FileGuid() As String
 			Get
@@ -81,6 +82,15 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
+		Public Property SourceLine() As String()
+			Get
+				Return _sourceLine
+			End Get
+			Set(ByVal value As String())
+				_sourceLine = value
+			End Set
+		End Property
+
 		Public Sub New( _
 		 ByVal fileGuid As String, _
 		 ByVal identityValue As String, _
@@ -89,7 +99,8 @@ Namespace kCura.WinEDDS
 		 ByVal filename As String, _
 		 ByVal uploadFile As Boolean, _
 		 ByVal lineNumber As Int32, _
-		 ByVal parentFolderID As Int32 _
+		 ByVal parentFolderID As Int32, _
+		 ByVal sourceLine As String() _
 		 )
 			_fileGuid = fileGuid
 			_identityValue = identityValue
@@ -99,6 +110,7 @@ Namespace kCura.WinEDDS
 			_uploadFile = uploadFile
 			_lineNumber = lineNumber
 			_parentFolderID = parentFolderID
+			_sourceLine = sourceLine
 		End Sub
 	End Class
 End Namespace

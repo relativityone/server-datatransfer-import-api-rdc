@@ -31,6 +31,8 @@ Namespace kCura.WinEDDS
 		Private _number As Int64 = 0
 		Private _destinationFolderColumnIndex As Int32 = -1
 		Private _folderCache As FolderCache
+		Private _errorLogFileName As String = ""
+		Private _errorLogWriter As System.IO.StreamWriter
 #End Region
 
 #Region "Accessors"
@@ -57,6 +59,17 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
+		Public ReadOnly Property ErrorLogFileName() As String
+			Get
+				Return _errorLogFileName
+			End Get
+		End Property
+
+		Public ReadOnly Property HasErrors() As Boolean
+			Get
+				Return _errorLogFileName <> ""
+			End Get
+		End Property
 #End Region
 
 #Region "Constructors"
@@ -110,6 +123,7 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Public Overloads Overrides Function ReadFile(ByVal path As String) As Object
+			Dim line As String()
 			Try
 				RaiseEvent StartFileImport()
 				Dim markStart As DateTime = DateTime.Now
@@ -117,11 +131,12 @@ Namespace kCura.WinEDDS
 				StartMassProcessor()
 				While _continue AndAlso Not HasReachedEOF
 					Try
-						_processedDocumentIdentifiers.Add(ManageDocument(GetLine), CurrentLineNumber.ToString)
+						line = Me.GetLine
+						_processedDocumentIdentifiers.Add(ManageDocument(line), CurrentLineNumber.ToString)
 					Catch ex As kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
-						WriteError(ex.Message)
+						WriteError(ex.Message, line)
 					Catch ex As System.Exception
-						WriteFatalError(Me.CurrentLineNumber, ex)
+						WriteFatalError(Me.CurrentLineNumber, ex, line)
 					End Try
 				End While
 				StopMassProcessor()
@@ -131,6 +146,10 @@ Namespace kCura.WinEDDS
 				RaiseEvent EndFileImport()
 				WriteEndImport("Finish")
 				Me.Close()
+				Try
+					_errorLogWriter.Close()
+				Catch ex As System.Exception
+				End Try
 				_timeKeeper.Add("Total", DateTime.Now.Subtract(markStart).TotalMilliseconds)
 				'Dim filenameFolder As String = "C:\UploadFileMetrics\"
 				'Dim now As System.DateTime = System.DateTime.Now
@@ -141,8 +160,28 @@ Namespace kCura.WinEDDS
 				'sw.Close()
 				Return True
 			Catch ex As System.Exception
-				WriteFatalError(Me.CurrentLineNumber, ex)
+				WriteFatalError(Me.CurrentLineNumber, ex, line)
 			End Try
+		End Function
+
+		Private Sub LogErrorLine(ByVal values As String())
+			If values Is Nothing Then Exit Sub
+			If _errorLogFileName = "" Then
+				_errorLogFileName = System.IO.Path.GetTempFileName()
+				_errorLogWriter = New System.IO.StreamWriter(_errorLogFileName, False, System.Text.Encoding.Default)
+				_errorLogWriter.WriteLine(Me.ToDelimetedLine(_columnHeaders))
+			End If
+			_errorLogWriter.WriteLine(Me.ToDelimetedLine(values))
+		End Sub
+
+		Private Function ToDelimetedLine(ByVal values As String()) As String
+			Dim sb As New System.Text.StringBuilder
+			Dim value As String
+			For Each value In values
+				sb.Append(Me.Bound & value & Me.Bound & Me.Delimiter)
+			Next
+			sb.Remove(sb.Length - 1, 1)
+			Return sb.ToString
 		End Function
 
 		Private Sub InitializeMembers(ByVal path As String)
@@ -200,7 +239,7 @@ Namespace kCura.WinEDDS
 			ElseIf Not _processedDocumentIdentifiers(identityValue) Is Nothing Then
 				Throw New IdentifierOverlapException(identityValue, _processedDocumentIdentifiers(identityValue))
 			End If
-			Dim metadoc As New MetaDocument(fileGuid, identityValue, fieldCollection, fileExists AndAlso uploadFile AndAlso fileGuid <> String.Empty, filename, uploadFile, CurrentLineNumber, parentFolderID)
+			Dim metadoc As New MetaDocument(fileGuid, identityValue, fieldCollection, fileExists AndAlso uploadFile AndAlso fileGuid <> String.Empty, filename, uploadFile, CurrentLineNumber, parentFolderID, values)
 			_docsToProcess.Add(metadoc)
 			Return identityValue
 		End Function
@@ -234,7 +273,7 @@ Namespace kCura.WinEDDS
 					Try
 						ManageDocumentMetaData(metaDoc)
 					Catch ex As System.Exception
-						WriteFatalError(CurrentLineNumber, ex)
+						WriteFatalError(CurrentLineNumber, ex, metaDoc.SourceLine)
 					End Try
 				Else
 					System.Threading.Thread.CurrentThread.Join(1000)
@@ -291,12 +330,12 @@ Namespace kCura.WinEDDS
 				_timeKeeper.Add("Manage", DateTime.Now.Subtract(markReadDoc).TotalMilliseconds)
 			Catch ex As kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
 				If ex.GetBaseException.Message.IndexOf("Cannot insert duplicate key row") > -1 Then
-					WriteError("A record with the selected identifier already exists.")
+					WriteError("A record with the selected identifier already exists.", metaDoc.SourceLine)
 				Else
-					WriteError(ex.Message)
+					WriteError(ex.Message, metaDoc.SourceLine)
 				End If
 			Catch ex As System.Exception
-				WriteFatalError(metaDoc.LineNumber, ex)
+				WriteFatalError(metaDoc.LineNumber, ex, metaDoc.SourceLine)
 			End Try
 			WriteStatusLine(Windows.Process.EventType.Progress, String.Format("Document '{0}' processed.", metaDoc.IdentityValue), metaDoc.LineNumber)
 		End Sub
@@ -535,11 +574,13 @@ Namespace kCura.WinEDDS
 			WriteStatusLine(et, line, Me.CurrentLineNumber)
 		End Sub
 
-		Private Sub WriteFatalError(ByVal lineNumber As Int32, ByVal ex As System.Exception)
+		Private Sub WriteFatalError(ByVal lineNumber As Int32, ByVal ex As System.Exception, ByVal sourceLine As String())
+			Me.LogErrorLine(sourceLine)
 			RaiseEvent FatalErrorEvent("Error processing line: " + lineNumber.ToString, ex)
 		End Sub
 
-		Private Sub WriteError(ByVal line As String)
+		Private Sub WriteError(ByVal line As String, ByVal sourceLine As String())
+			Me.LogErrorLine(sourceLine)
 			WriteStatusLine(kCura.Windows.Process.EventType.Error, line)
 		End Sub
 

@@ -27,7 +27,7 @@ Namespace kCura.WinEDDS
 			_newlineCounter = New kCura.Utility.File.LineCounter
 			_newlineCounter.Path = LoadFile.FilePath
 			If (CType(_loadFileImporter.ReadFile(LoadFile.FilePath), Boolean)) Then
-				Me.ProcessObserver.RaiseProcessCompleteEvent()
+				Me.ProcessObserver.RaiseProcessCompleteEvent(False, _loadFileImporter.ErrorLogFileName)
 			Else
 				Me.ProcessObserver.RaiseStatusEvent("", "Import aborted")
 			End If
