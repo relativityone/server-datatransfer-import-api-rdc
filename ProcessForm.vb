@@ -51,6 +51,8 @@ Namespace kCura.Windows.Process
 		Friend WithEvents _reportDataGrid As System.Windows.Forms.DataGrid
 		Friend WithEvents _exportErrorsDialog As System.Windows.Forms.SaveFileDialog
 		Friend WithEvents _exportErrorReportBtn As System.Windows.Forms.Button
+		Friend WithEvents _exportErrorFileButton As System.Windows.Forms.Button
+		Friend WithEvents _exportErrorFileDialog As System.Windows.Forms.SaveFileDialog
 		<System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
 			Dim resources As System.Resources.ResourceManager = New System.Resources.ResourceManager(GetType(ProgressForm))
 			Me._stopImportButton = New System.Windows.Forms.Button
@@ -70,11 +72,13 @@ Namespace kCura.Windows.Process
 			Me.WarningsTab = New System.Windows.Forms.TabPage
 			Me._warningsOutputTextBox = New kCura.Windows.Forms.OutputRichTextBox
 			Me.ErrorReportTab = New System.Windows.Forms.TabPage
+			Me._exportErrorFileButton = New System.Windows.Forms.Button
 			Me._exportErrorReportBtn = New System.Windows.Forms.Button
 			Me._reportDataGrid = New System.Windows.Forms.DataGrid
 			Me._currentMessageStatus = New System.Windows.Forms.Label
 			Me._statusBar = New System.Windows.Forms.Label
 			Me._exportErrorsDialog = New System.Windows.Forms.SaveFileDialog
+			Me._exportErrorFileDialog = New System.Windows.Forms.SaveFileDialog
 			Me._Tabs.SuspendLayout()
 			Me.SummaryTab.SuspendLayout()
 			Me.ErrorsTab.SuspendLayout()
@@ -105,7 +109,7 @@ Namespace kCura.Windows.Process
 			'_progressBar
 			'
 			Me._progressBar.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-						Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+									Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me._progressBar.Location = New System.Drawing.Point(4, 56)
 			Me._progressBar.Name = "_progressBar"
 			Me._progressBar.Size = New System.Drawing.Size(372, 23)
@@ -114,7 +118,7 @@ Namespace kCura.Windows.Process
 			'_currentRecordLabel
 			'
 			Me._currentRecordLabel.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-						Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+									Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me._currentRecordLabel.Location = New System.Drawing.Point(4, 4)
 			Me._currentRecordLabel.Name = "_currentRecordLabel"
 			Me._currentRecordLabel.Size = New System.Drawing.Size(372, 28)
@@ -145,8 +149,8 @@ Namespace kCura.Windows.Process
 			'_Tabs
 			'
 			Me._Tabs.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-						Or System.Windows.Forms.AnchorStyles.Left) _
-						Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+									Or System.Windows.Forms.AnchorStyles.Left) _
+									Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me._Tabs.Controls.Add(Me.SummaryTab)
 			Me._Tabs.Controls.Add(Me.ErrorsTab)
 			Me._Tabs.Controls.Add(Me.ProgressTab)
@@ -235,6 +239,7 @@ Namespace kCura.Windows.Process
 			'
 			'ErrorReportTab
 			'
+			Me.ErrorReportTab.Controls.Add(Me._exportErrorFileButton)
 			Me.ErrorReportTab.Controls.Add(Me._exportErrorReportBtn)
 			Me.ErrorReportTab.Controls.Add(Me._reportDataGrid)
 			Me.ErrorReportTab.Location = New System.Drawing.Point(4, 22)
@@ -242,6 +247,15 @@ Namespace kCura.Windows.Process
 			Me.ErrorReportTab.Size = New System.Drawing.Size(456, 202)
 			Me.ErrorReportTab.TabIndex = 4
 			Me.ErrorReportTab.Text = "Report"
+			'
+			'_exportErrorFileButton
+			'
+			Me._exportErrorFileButton.Location = New System.Drawing.Point(134, 2)
+			Me._exportErrorFileButton.Name = "_exportErrorFileButton"
+			Me._exportErrorFileButton.Size = New System.Drawing.Size(94, 20)
+			Me._exportErrorFileButton.TabIndex = 3
+			Me._exportErrorFileButton.Text = "Export Error File"
+			Me._exportErrorFileButton.Visible = False
 			'
 			'_exportErrorReportBtn
 			'
@@ -254,8 +268,8 @@ Namespace kCura.Windows.Process
 			'_reportDataGrid
 			'
 			Me._reportDataGrid.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-						Or System.Windows.Forms.AnchorStyles.Left) _
-						Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+									Or System.Windows.Forms.AnchorStyles.Left) _
+									Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me._reportDataGrid.DataMember = ""
 			Me._reportDataGrid.HeaderForeColor = System.Drawing.SystemColors.ControlText
 			Me._reportDataGrid.Location = New System.Drawing.Point(0, 24)
@@ -266,7 +280,7 @@ Namespace kCura.Windows.Process
 			'_currentMessageStatus
 			'
 			Me._currentMessageStatus.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-						Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+									Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me._currentMessageStatus.Location = New System.Drawing.Point(4, 36)
 			Me._currentMessageStatus.Name = "_currentMessageStatus"
 			Me._currentMessageStatus.Size = New System.Drawing.Size(372, 16)
@@ -319,6 +333,7 @@ Namespace kCura.Windows.Process
 		Protected WithEvents _controller As kCura.Windows.Process.Controller
 		Private _inSafeMode As Boolean
 		Private _errorsDataSource As System.Data.DataTable
+		Private _exportErrorFileLocation As String = ""
 
 
 		Public Property ProcessID() As Guid
@@ -476,7 +491,7 @@ Namespace kCura.Windows.Process
 
 		End Sub
 
-		Private Sub _processObserver_OnProcessComplete(ByVal closeForm As Boolean) Handles _processObserver.OnProcessComplete
+		Private Sub _processObserver_OnProcessComplete(ByVal closeForm As Boolean, ByVal exportFilePath As String) Handles _processObserver.OnProcessComplete
 			If closeForm Then
 				Me.Close()
 			Else
@@ -485,6 +500,10 @@ Namespace kCura.Windows.Process
 				_stopImportButton.Text = "Close"
 				_stopImportButton.Enabled = True
 				_saveOutputButton.Enabled = True
+				If exportFilePath <> "" Then
+					_exportErrorFileButton.Visible = True
+					_exportErrorFileLocation = exportFilePath
+				End If
 			End If
 		End Sub
 
@@ -529,6 +548,17 @@ Namespace kCura.Windows.Process
 		End Sub
 
 		Delegate Sub HandleDataSourceDelegate()
+
+		Private Sub _exportErrorFileButton_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles _exportErrorFileButton.Click
+			_exportErrorFileDialog.ShowDialog()
+		End Sub
+
+
+		Private Sub _exportErrorFileDialog_FileOk(ByVal sender As Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles _exportErrorFileDialog.FileOk
+			If System.IO.File.Exists(_exportErrorFileLocation) Then
+				System.IO.File.Copy(_exportErrorFileLocation, _exportErrorFileDialog.FileName)
+			End If
+		End Sub
 	End Class
 
 

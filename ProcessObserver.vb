@@ -25,7 +25,7 @@ Namespace kCura.Windows.Process
     Public Event OnProcessFatalException(ByVal ex As Exception)
     Public Event OnProcessEvent(ByVal evt As ProcessEvent)
     Public Event OnProcessProgressEvent(ByVal evt As ProcessProgressEvent)
-		Public Event OnProcessComplete(ByVal closeForm As Boolean)
+		Public Event OnProcessComplete(ByVal closeForm As Boolean, ByVal exportFilePath As String)
 		Public Event StatusBarEvent(ByVal message As String)
 		Public Event ShowReportEvent(ByVal datasource As System.Data.DataTable, ByVal maxlengthExceeded As Boolean)
 
@@ -56,8 +56,8 @@ Namespace kCura.Windows.Process
 			RaiseEvent OnProcessProgressEvent(New ProcessProgressEvent(totalRecords, totalRecordsProcessed, totalRecordsProccessedWithWarnings, totalRecordsProcessedWithErrors, startTime, endTime, totalRecordsDisplay, totalRecordsProcessedDisplay))
 		End Sub
 
-		Public Sub RaiseProcessCompleteEvent(Optional ByVal closeForm As Boolean = False)
-			RaiseEvent OnProcessComplete(closeForm)
+		Public Sub RaiseProcessCompleteEvent(Optional ByVal closeForm As Boolean = False, Optional ByVal exportFilePath As String = "")
+			RaiseEvent OnProcessComplete(closeForm, exportFilePath)
 			If Not _errorsWriter Is Nothing Then _errorsWriter.Close()
 			If Not _outputWriter Is Nothing Then _outputWriter.Close()
 			If Not closeForm AndAlso _errorsFileName <> String.Empty Then
