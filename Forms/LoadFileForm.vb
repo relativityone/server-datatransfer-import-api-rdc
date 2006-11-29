@@ -73,7 +73,6 @@ Namespace kCura.EDDS.WinForm
 		Friend WithEvents _filePath As System.Windows.Forms.TextBox
 		Friend WithEvents HelpProvider1 As System.Windows.Forms.HelpProvider
 		Friend WithEvents _fileColumns As kCura.Windows.Forms.TwoListBox
-		Friend WithEvents _overWrite As System.Windows.Forms.CheckBox
 		Friend WithEvents MenuItem3 As System.Windows.Forms.MenuItem
 		Friend WithEvents _fileMenuCloseItem As System.Windows.Forms.MenuItem
 		Friend WithEvents _extractMd5Hash As System.Windows.Forms.CheckBox
@@ -83,6 +82,8 @@ Namespace kCura.EDDS.WinForm
 		Friend WithEvents GroupBox5 As System.Windows.Forms.GroupBox
 		Friend WithEvents MenuItem4 As System.Windows.Forms.MenuItem
 		Friend WithEvents _fileRefreshMenuItem As System.Windows.Forms.MenuItem
+		Friend WithEvents Label9 As System.Windows.Forms.Label
+		Friend WithEvents _overwriteDropdown As System.Windows.Forms.ComboBox
 		<System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
 			Dim resources As System.Resources.ResourceManager = New System.Resources.ResourceManager(GetType(LoadFileForm))
 			Me.OpenFileDialog = New System.Windows.Forms.OpenFileDialog
@@ -130,9 +131,10 @@ Namespace kCura.EDDS.WinForm
 			Me._nativeFilePathField = New System.Windows.Forms.ComboBox
 			Me.Label5 = New System.Windows.Forms.Label
 			Me.GroupBox3 = New System.Windows.Forms.GroupBox
+			Me._overwriteDropdown = New System.Windows.Forms.ComboBox
+			Me.Label9 = New System.Windows.Forms.Label
 			Me.Label8 = New System.Windows.Forms.Label
 			Me._identifiersDropDown = New System.Windows.Forms.ComboBox
-			Me._overWrite = New System.Windows.Forms.CheckBox
 			Me.Label7 = New System.Windows.Forms.Label
 			Me.Label1 = New System.Windows.Forms.Label
 			Me._fileColumns = New kCura.Windows.Forms.TwoListBox
@@ -519,19 +521,38 @@ Namespace kCura.EDDS.WinForm
 			'
 			'GroupBox3
 			'
+			Me.GroupBox3.Controls.Add(Me._overwriteDropdown)
+			Me.GroupBox3.Controls.Add(Me.Label9)
 			Me.GroupBox3.Controls.Add(Me.Label8)
 			Me.GroupBox3.Controls.Add(Me._identifiersDropDown)
-			Me.GroupBox3.Controls.Add(Me._overWrite)
 			Me.GroupBox3.Location = New System.Drawing.Point(4, 4)
 			Me.GroupBox3.Name = "GroupBox3"
-			Me.GroupBox3.Size = New System.Drawing.Size(168, 88)
+			Me.GroupBox3.Size = New System.Drawing.Size(168, 92)
 			Me.GroupBox3.TabIndex = 21
 			Me.GroupBox3.TabStop = False
 			Me.GroupBox3.Text = "Identity and Update Behavior"
 			'
+			'_overwriteDropdown
+			'
+			Me._overwriteDropdown.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+			Me._overwriteDropdown.Items.AddRange(New Object() {"None", "Strict", "Append"})
+			Me._overwriteDropdown.Location = New System.Drawing.Point(60, 64)
+			Me._overwriteDropdown.Name = "_overwriteDropdown"
+			Me._overwriteDropdown.Size = New System.Drawing.Size(100, 21)
+			Me._overwriteDropdown.TabIndex = 28
+			'
+			'Label9
+			'
+			Me.Label9.Location = New System.Drawing.Point(7, 68)
+			Me.Label9.Name = "Label9"
+			Me.Label9.Size = New System.Drawing.Size(56, 13)
+			Me.Label9.TabIndex = 27
+			Me.Label9.Text = "Overwrite:"
+			Me.Label9.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+			'
 			'Label8
 			'
-			Me.Label8.Location = New System.Drawing.Point(6, 19)
+			Me.Label8.Location = New System.Drawing.Point(6, 18)
 			Me.Label8.Name = "Label8"
 			Me.Label8.Size = New System.Drawing.Size(55, 13)
 			Me.Label8.TabIndex = 26
@@ -546,14 +567,6 @@ Namespace kCura.EDDS.WinForm
 			Me._identifiersDropDown.Size = New System.Drawing.Size(152, 21)
 			Me._identifiersDropDown.TabIndex = 19
 			Me._identifiersDropDown.Text = "Select..."
-			'
-			'_overWrite
-			'
-			Me._overWrite.Location = New System.Drawing.Point(8, 60)
-			Me._overWrite.Name = "_overWrite"
-			Me._overWrite.Size = New System.Drawing.Size(96, 20)
-			Me._overWrite.TabIndex = 2
-			Me._overWrite.Text = "Overwrite"
 			'
 			'Label7
 			'
@@ -654,7 +667,11 @@ Namespace kCura.EDDS.WinForm
 			Me.LoadFile.FieldMap = kCura.EDDS.WinForm.Utility.ExtractFieldMap(_fieldMap, _fileColumns, _application.CurrentFields)
 			LoadFile.ExtractFullTextFromNativeFile = _extractFullTextFromNativeFile.Checked
 			LoadFile.LoadNativeFiles = _loadNativeFiles.Checked
-			LoadFile.OverwriteDestination = _overWrite.Checked
+			If _overwriteDropdown.SelectedItem Is Nothing Then
+				LoadFile.OverwriteDestination = "None"
+			Else
+				LoadFile.OverwriteDestination = _overwriteDropdown.SelectedItem.ToString
+			End If
 			LoadFile.ExtractMD5HashFromNativeFile = _extractMd5Hash.Enabled AndAlso _extractMd5Hash.Checked
 			LoadFile.FirstLineContainsHeaders = _firstLineContainsColumnNames.Checked
 			If System.IO.File.Exists(_filePath.Text) Then
@@ -668,7 +685,7 @@ Namespace kCura.EDDS.WinForm
 					LoadFile.NativeFilePathColumn = Nothing
 				End If
 			End If
-			If Not LoadFile.OverwriteDestination Then
+			If LoadFile.OverwriteDestination.ToLower <> "strict" AndAlso LoadFile.OverwriteDestination.ToLower <> "append" Then
 				LoadFile.CreateFolderStructure = _buildFolderStructure.Checked
 				If LoadFile.CreateFolderStructure Then
 					If Not _destinationFolderPath.SelectedItem Is Nothing Then
@@ -715,10 +732,13 @@ Namespace kCura.EDDS.WinForm
 				_fieldMap.LeftListBoxItems.AddRange(caseFields)
 			End If
 			_identifiersDropDown.Items.AddRange(_application.IdentiferFieldDropdownPopulator)
-			_overWrite.Checked = LoadFile.OverwriteDestination
+			_overwriteDropdown.SelectedItem = LoadFile.OverwriteDestination
 			_identifiersDropDown.Enabled = True			'LoadFile.OverwriteDestination
-			_overWrite.Checked = LoadFile.OverwriteDestination
-			_destinationFolderPath.Enabled = Not _overWrite.Checked AndAlso _buildFolderStructure.Checked
+			If _overwriteDropdown.SelectedItem Is Nothing Then
+				_destinationFolderPath.Enabled = _buildFolderStructure.Checked
+			Else
+				_destinationFolderPath.Enabled = Not (_overwriteDropdown.SelectedItem.ToString.ToLower = "strict" OrElse _overwriteDropdown.SelectedItem.ToString.ToLower = "append") AndAlso _buildFolderStructure.Checked
+			End If
 			If Not LoadFile.SelectedIdentifierField Is Nothing Then
 				caseFieldName = _application.GetSelectedIdentifier(LoadFile.SelectedIdentifierField)
 				If caseFieldName <> String.Empty Then
@@ -835,18 +855,19 @@ Namespace kCura.EDDS.WinForm
 			ActionMenuEnabled = ReadyToRun
 		End Sub
 
-		Private Sub _overWrite_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _overWrite.CheckedChanged
-			LoadFile.OverwriteDestination = _overWrite.Checked
-			If _overWrite.Checked Then
-				_destinationFolderPath.Enabled = False
-				_buildFolderStructure.Checked = False
-				_buildFolderStructure.Enabled = False
-				_destinationFolderPath.SelectedItem = Nothing
-				_destinationFolderPath.Text = "Select ..."
-			Else
-				_buildFolderStructure.Enabled = True
-				_destinationFolderPath.Enabled = _buildFolderStructure.Checked
-			End If
+		Private Sub _overwriteDestination_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _overwriteDropdown.SelectedIndexChanged
+			LoadFile.OverwriteDestination = _overwriteDropdown.SelectedItem.ToString
+			Select Case LoadFile.OverwriteDestination.ToLower
+				Case "none"
+					_buildFolderStructure.Enabled = True
+					_destinationFolderPath.Enabled = _buildFolderStructure.Checked
+				Case Else
+					_destinationFolderPath.Enabled = False
+					_buildFolderStructure.Checked = False
+					_buildFolderStructure.Enabled = False
+					_destinationFolderPath.SelectedItem = Nothing
+					_destinationFolderPath.Text = "Select ..."
+			End Select
 			ActionMenuEnabled = ReadyToRun
 			'_identifiersDropDown.Enabled = _overWrite.Checked
 		End Sub
