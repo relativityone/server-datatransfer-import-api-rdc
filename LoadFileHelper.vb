@@ -357,7 +357,7 @@ Namespace kCura.WinEDDS.NUnit
 			retval.MultiRecordDelimiter = ";"c
 			retval.NativeFilePathColumn = "FilePath"
 			retval.NewlineDelimiter = ChrW(174)
-			retval.OverwriteDestination = False
+			retval.OverwriteDestination = "None"
 			retval.QuoteDelimiter = ChrW(254)
 			retval.RecordDelimiter = ChrW(20)
 			retval.FieldMap = GetSampleSelectedFields()
