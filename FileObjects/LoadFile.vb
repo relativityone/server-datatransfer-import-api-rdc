@@ -12,7 +12,7 @@ Namespace kCura.WinEDDS
 		Public QuoteDelimiter As Char
 		Public NewlineDelimiter As Char
 		Public MultiRecordDelimiter As Char
-		Public OverwriteDestination As Boolean
+		Public OverwriteDestination As String
 		'Public SelectedFields() As kCura.WinEDDS.DocumentField
 		Public FieldMap As kCura.WinEDDS.LoadFileFieldMap
 		Public NativeFilePathColumn As String
@@ -72,7 +72,7 @@ Namespace kCura.WinEDDS
 				Me.LoadNativeFiles = info.GetBoolean("LoadNativeFiles")
 				Me.ExtractFullTextFromNativeFile = info.GetBoolean("ExtractFullTextFromNativeFile")
 				Me.ExtractMD5HashFromNativeFile = info.GetBoolean("ExtractMD5HashFromNativeFile")
-				Me.OverwriteDestination = info.GetBoolean("OverwriteDestination")
+				Me.OverwriteDestination = info.GetString("OverwriteDestination")
 
 				Me.RecordDelimiter = ChrW(info.GetInt32("RecordDelimiter"))
 				Me.QuoteDelimiter = ChrW(info.GetInt32("QuoteDelimiter"))

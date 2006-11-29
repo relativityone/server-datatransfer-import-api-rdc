@@ -4,7 +4,7 @@ Namespace kCura.WinEDDS
 		Inherits kCura.WinEDDS.LoadFileBase
 
 #Region "Members"
-		Private _overwrite As Boolean
+		Private _overwrite As String
 		Private WithEvents _uploader As kCura.WinEDDS.FileUploader
 		Private _path As String
 		Private _pathIsSet As Boolean = False
@@ -296,6 +296,23 @@ Namespace kCura.WinEDDS
 
 #Region "WebService Calls"
 
+		Private Function ReadDocumentInfo(ByVal identityValue As String) As kCura.EDDS.WebAPI.DocumentManagerBase.Document
+			Try
+				Return _documentManager.ReadFromIdentifier(_caseArtifactID, _selectedIdentifier.FieldName, identityValue)
+			Catch ex As System.Exception
+				If kCura.WinEDDS.Config.UsesWebAPI Then
+					If TypeOf ex Is System.Web.Services.Protocols.SoapException Then
+						If Not ex.InnerException Is Nothing Then
+							ex = ex.InnerException
+						End If
+					End If
+					Throw New AmbiguousIdentifierValueException(ex)
+				Else
+					Throw
+				End If
+			End Try
+		End Function
+
 		Private Sub ManageDocumentMetaData(ByVal metaDoc As MetaDocument)
 			_number += 1
 			Dim sw As System.IO.StreamWriter
@@ -303,22 +320,13 @@ Namespace kCura.WinEDDS
 				Dim doc As kCura.EDDS.WebAPI.DocumentManagerBase.Document
 				Dim documentArtifactID As Int32
 				Dim markReadDoc As DateTime = DateTime.Now
-				If _overwrite Then
-					Try
-						doc = _documentManager.ReadFromIdentifier(_caseArtifactID, _selectedIdentifier.FieldName, metaDoc.IdentityValue)
-					Catch ex As System.Exception
-						If kCura.WinEDDS.Config.UsesWebAPI Then
-							If TypeOf ex Is System.Web.Services.Protocols.SoapException Then
-								If Not ex.InnerException Is Nothing Then
-									ex = ex.InnerException
-								End If
-							End If
-							Throw New AmbiguousIdentifierValueException(ex)
-						Else
-							Throw
-						End If
-					End Try
-				End If
+				Select Case _overwrite.ToLower
+					Case "strict"
+						doc = Me.ReadDocumentInfo(metaDoc.IdentityValue)
+						If doc Is Nothing Then Throw New IdentityValueNotFoundException(metaDoc.IdentityValue)
+					Case "append"
+						doc = Me.ReadDocumentInfo(metaDoc.IdentityValue)
+				End Select
 				_timeKeeper.Add("ReadUpload", DateTime.Now.Subtract(markReadDoc).TotalMilliseconds)
 				markReadDoc = DateTime.Now
 				If doc Is Nothing Then
@@ -379,7 +387,7 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Private Function UpdateDocument(ByVal docDTO As kCura.EDDS.WebAPI.DocumentManagerBase.Document, ByVal fieldCollection As DocumentFieldCollection, ByVal identityValue As String, ByVal uploadFile As Boolean, ByVal extractText As Boolean, ByVal fileName As String, ByVal fileGuid As String) As Int32
-			If _overwrite Then
+			If Not _overwrite.ToLower = "none" Then
 				WriteStatusLine(Windows.Process.EventType.Status, String.Format("Updating document '{0}' in database.", identityValue))
 				docDTO.DocumentAgentFlags.UpdateFullText = extractText
 				docDTO.DocumentAgentFlags.IndexStatus = kCura.EDDS.Types.IndexStatus.IndexLowPriority
@@ -705,6 +713,13 @@ Namespace kCura.WinEDDS
 			Inherits kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
 			Public Sub New()
 				MyBase.New("Identity value not set")
+			End Sub
+		End Class
+
+		Public Class IdentityValueNotFoundException
+			Inherits kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
+			Public Sub New(ByVal value As String)
+				MyBase.New(String.Format("Identity value '{0}' not found", value))
 			End Sub
 		End Class
 
