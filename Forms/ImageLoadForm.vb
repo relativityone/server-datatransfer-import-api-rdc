@@ -236,7 +236,7 @@ Namespace kCura.EDDS.WinForm
 				Exit Sub
 			End If
 			ImageLoadFile.Overwrite = _overWrite.Checked
-			ImageLoadFile.DestinationFolderID = _application.SelectedCaseInfo.RootFolderID
+			ImageLoadFile.DestinationFolderID = _imageLoadFile.DestinationFolderID
 			Me.ImageLoadFile.ReplaceFullText = _replaceFullText.Checked
 			If _controlKeyField.SelectedItem Is Nothing Then
 				ImageLoadFile.ControlKeyField = Nothing

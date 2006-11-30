@@ -548,6 +548,7 @@ Namespace kCura.EDDS.WinForm
 			Dim imageFile As New ImageLoadFile
 			imageFile.Credential = Me.Credential
 			imageFile.CaseInfo = caseinfo
+			imageFile.DestinationFolderID = destinationArtifactID
 			frm.ImageLoadFile = imageFile
 			frm.Show()
 			CursorDefault()
