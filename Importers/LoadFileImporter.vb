@@ -228,7 +228,7 @@ Namespace kCura.WinEDDS
 			If _createFolderStructure Then
 				parentFolderID = _folderCache.FolderID(Me.CleanDestinationFolderPath(values(_destinationFolderColumnIndex)))
 			Else
-				parentFolderID = _parentFolderDTO.ArtifactID
+				parentFolderID = _folderID
 			End If
 			_timeKeeper.Add("UploadFile", DateTime.Now.Subtract(markUploadStart).TotalMilliseconds)
 			Dim markPrepareFields As DateTime = DateTime.Now
