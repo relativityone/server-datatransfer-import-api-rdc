@@ -129,7 +129,7 @@
                 />
                 <File
                     RelPath = "EnhancedMenuProvider.vb"
-                    SubType = "Code"
+                    SubType = "Component"
                     BuildAction = "Compile"
                 />
                 <File
@@ -139,7 +139,7 @@
                 />
                 <File
                     RelPath = "RichTextBox.vb"
-                    SubType = "Code"
+                    SubType = "UserControl"
                     BuildAction = "Compile"
                 />
                 <File
@@ -149,7 +149,7 @@
                 />
                 <File
                     RelPath = "Specialized\OutputRichTextBox.vb"
-                    SubType = "Code"
+                    SubType = "UserControl"
                     BuildAction = "Compile"
                 />
                 <File
