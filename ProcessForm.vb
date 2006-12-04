@@ -135,11 +135,11 @@ Namespace kCura.Windows.Process
 			'
 			Me._saveOutputButton.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me._saveOutputButton.Enabled = False
-			Me._saveOutputButton.Location = New System.Drawing.Point(382, 332)
+			Me._saveOutputButton.Location = New System.Drawing.Point(360, 332)
 			Me._saveOutputButton.Name = "_saveOutputButton"
-			Me._saveOutputButton.Size = New System.Drawing.Size(84, 23)
+			Me._saveOutputButton.Size = New System.Drawing.Size(108, 23)
 			Me._saveOutputButton.TabIndex = 10
-			Me._saveOutputButton.Text = "Save Output..."
+			Me._saveOutputButton.Text = "Save Progress Log"
 			'
 			'_saveFileDialog
 			'
@@ -252,7 +252,7 @@ Namespace kCura.Windows.Process
 			'
 			Me._exportErrorFileButton.Location = New System.Drawing.Point(134, 2)
 			Me._exportErrorFileButton.Name = "_exportErrorFileButton"
-			Me._exportErrorFileButton.Size = New System.Drawing.Size(94, 20)
+			Me._exportErrorFileButton.Size = New System.Drawing.Size(114, 20)
 			Me._exportErrorFileButton.TabIndex = 3
 			Me._exportErrorFileButton.Text = "Export Error File"
 			Me._exportErrorFileButton.Visible = False
@@ -263,7 +263,7 @@ Namespace kCura.Windows.Process
 			Me._exportErrorReportBtn.Name = "_exportErrorReportBtn"
 			Me._exportErrorReportBtn.Size = New System.Drawing.Size(132, 20)
 			Me._exportErrorReportBtn.TabIndex = 2
-			Me._exportErrorReportBtn.Text = "Export To CSV/Excel"
+			Me._exportErrorReportBtn.Text = "Export Error Report"
 			'
 			'_reportDataGrid
 			'
@@ -291,13 +291,16 @@ Namespace kCura.Windows.Process
 			Me._statusBar.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
 			Me._statusBar.Location = New System.Drawing.Point(8, 336)
 			Me._statusBar.Name = "_statusBar"
-			Me._statusBar.Size = New System.Drawing.Size(364, 20)
+			Me._statusBar.Size = New System.Drawing.Size(352, 20)
 			Me._statusBar.TabIndex = 13
 			Me._statusBar.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
 			'
 			'_exportErrorsDialog
 			'
 			Me._exportErrorsDialog.Filter = "CSV Files|*.csv|All Files|*.*"
+			'
+			'_exportErrorFileDialog
+			'
 			'
 			'ProgressForm
 			'
