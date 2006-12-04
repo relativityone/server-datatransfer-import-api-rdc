@@ -66,8 +66,14 @@ Namespace kCura.WinEDDS
 			With info
 				'Me.CaseInfo = DirectCast(info.GetValue("CaseInfo", GetType(kCura.EDDS.Types.CaseInfo)), kCura.EDDS.Types.CaseInfo)
 				Me.FilePath = info.GetString("FilePath")
+				Try
+					If Not System.IO.File.Exists(Me.FilePath) Then
+						Me.FilePath = ""
+					End If
+				Catch ex As System.Exception
+					Me.FilePath = ""
+				End Try
 				Me.NativeFilePathColumn = info.GetString("NativeFilePathColumn")
-
 				Me.FirstLineContainsHeaders = info.GetBoolean("FirstLineContainsHeaders")
 				Me.LoadNativeFiles = info.GetBoolean("LoadNativeFiles")
 				Me.ExtractFullTextFromNativeFile = info.GetBoolean("ExtractFullTextFromNativeFile")
