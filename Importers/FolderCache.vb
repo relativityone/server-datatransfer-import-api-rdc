@@ -19,8 +19,12 @@ Namespace kCura.WinEDDS
 
 		Private Function GetNewFolder(ByVal folderPath As String) As FolderCacheItem
 			Dim pathToDestination As New ArrayList
-			Dim s As String = folderPath.Substring(0, folderPath.LastIndexOf("\"))
-			If s = "" Then s = "\"
+			Dim s As String
+			If folderPath = "" OrElse folderPath = "\" Then
+				s = "\"
+			Else
+				s = folderPath.Substring(0, folderPath.LastIndexOf("\"))
+			End If
 			pathToDestination.Add(folderPath.Substring(folderPath.LastIndexOf("\") + 1))
 			Dim parentFolder As FolderCacheItem = Me.FindParentFolder(s, pathToDestination)
 			Return CreateFolders(parentFolder, pathToDestination)

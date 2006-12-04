@@ -252,8 +252,10 @@ Namespace kCura.WinEDDS
 				path = path.Replace("\\", "\")
 			End While
 			path = path.Replace(":", "_")
-			If path.Chars(0) <> "\"c Then
-				path = "\" & path
+			If Not path.Length = 0 Then
+				If path.Chars(0) <> "\"c Then
+					path = "\" & path
+				End If
 			End If
 			path = path.TrimEnd(New Char() {"\"c})
 			If path = "" Then path = "\"
