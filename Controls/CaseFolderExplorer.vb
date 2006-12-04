@@ -226,9 +226,9 @@ Namespace kCura.EDDS.WinForm
 			parentNode = FindNode(folderDetails.ParentFolderID)
 			Dim newFolderNode As New System.Windows.Forms.TreeNode
 			Dim tag As New FolderInfo(folderDetails.FolderID, "Folder")
-			tag.Path = DirectCast(parentNode.Tag, FolderInfo).Path & folderDetails.Name & "\"
+			tag.Path = DirectCast(parentNode.Tag, FolderInfo).Path & folderDetails.ExportFriendlyName & "\"
 			newFolderNode.Tag = tag
-			newFolderNode.Text = folderDetails.Name
+			newFolderNode.Text = folderDetails.ExportFriendlyName
 			newFolderNode.ImageIndex = 1
 			newFolderNode.SelectedImageIndex = 1
 			parentNode.Nodes.Add(newFolderNode)
