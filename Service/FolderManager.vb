@@ -17,6 +17,10 @@ Namespace kCura.WinEDDS.Service
 			Return wr
 		End Function
 
+		Public Shared Function GetExportFriendlyFolderName(ByVal input As String) As String
+			Return System.Text.RegularExpressions.Regex.Replace(input, "[\*\\\/\:\?\<\>\""\|\$]+", " ").Trim
+		End Function
+
 #Region " Translations "
 		'Public Function DTOToWebAPIFolder(ByVal folderDTO As kCura.EDDS.DTO.Folder) As kCura.EDDS.WebAPI.FolderManagerBase.Folder
 		'	Dim folder As New kCura.EDDS.WebAPI.FolderManagerBase.Folder
@@ -59,7 +63,7 @@ Namespace kCura.WinEDDS.Service
 
 		Public Shadows Function Create(ByVal caseContextArtifactID As Int32, ByVal parentArtifactID As Int32, ByVal name As String) As Int32
 			If kCura.WinEDDS.Config.UsesWebAPI Then
-				Return MyBase.Create(caseContextArtifactID, parentArtifactID, name)
+				Return MyBase.Create(caseContextArtifactID, parentArtifactID, GetExportFriendlyFolderName(name))
 			Else
 				'Return _folderManager.Create(parentArtifactID, name, _identity)
 			End If
