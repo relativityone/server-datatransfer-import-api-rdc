@@ -718,7 +718,14 @@ Namespace kCura.EDDS.WinForm
 			Dim caseFields As String() = _application.GetCaseFields(LoadFile.CaseInfo.ArtifactID)
 			Dim caseFieldName As String
 			If loadFileObjectUpdatedFromFile Then
-				Dim columnHeaders As String() = _application.GetColumnHeadersFromLoadFile(Me.LoadFile, _firstLineContainsColumnNames.Checked)
+				Dim columnHeaders As String()
+				If System.IO.File.Exists(Me.LoadFile.FilePath) Then
+					columnHeaders = _application.GetColumnHeadersFromLoadFile(Me.LoadFile, _firstLineContainsColumnNames.Checked)
+				Else
+					MsgBox("The load file specified does not exist.", MsgBoxStyle.Exclamation, "WinRelativity Warning")
+					columnHeaders = New String() {}
+				End If
+
 				BuildMappingFromLoadFile(caseFields, columnHeaders)
 				If LoadFile.LoadNativeFiles Then
 					_loadNativeFiles.Checked = True
@@ -989,6 +996,11 @@ Namespace kCura.EDDS.WinForm
 				 Then
 					selectedFieldNameList.Add(item.DocumentField.FieldName)
 					selectedColumnNameList.Add(columnHeaders(item.NativeFileColumnIndex))
+				End If
+			Next
+			For Each item In _loadFile.FieldMap
+				If Not item.DocumentField Is Nothing AndAlso columnHeaders.Length = 0 Then
+					selectedFieldNameList.Add(item.DocumentField.FieldName)
 				End If
 			Next
 			Dim selectedFieldNames As String() = DirectCast(selectedFieldNameList.ToArray(GetType(String)), String())
