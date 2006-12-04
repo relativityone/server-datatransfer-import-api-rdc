@@ -5,6 +5,8 @@ Namespace kCura.WinEDDS
 
 #Region "Members"
 		Private _errorsOnly As Boolean
+		Private WithEvents _processController As kCura.Windows.Process.Controller
+		Private _continue As Boolean = True
 #End Region
 
 #Region "Constructors"
@@ -12,6 +14,7 @@ Namespace kCura.WinEDDS
 		Public Sub New(ByVal args As LoadFile, ByVal timeZoneOffset As Int32, ByVal errorsOnly As Boolean, Optional ByVal processController As kCura.Windows.Process.Controller = Nothing)
 			MyBase.New(args, timeZoneOffset)
 			_errorsOnly = errorsOnly
+			_processController = processController
 		End Sub
 
 #End Region
@@ -95,7 +98,7 @@ Namespace kCura.WinEDDS
 				_filePathColumnIndex = Array.IndexOf(_columnHeaders, _filePathColumn)
 			End If
 			Dim i As Int32 = 0
-			While Not HasReachedEOF
+			While Not HasReachedEOF AndAlso _continue
 				If fieldArrays.Count < 1000 Then
 					Dim x As DocumentField() = CheckLine(getline)
 					If Not x Is Nothing Then fieldArrays.Add(x)
@@ -176,6 +179,10 @@ Namespace kCura.WinEDDS
 				Return True
 			End Try
 		End Function
+
+		Private Sub _processController_HaltProcessEvent(ByVal processID As System.Guid) Handles _processController.HaltProcessEvent
+			_continue = False
+		End Sub
 	End Class
 End Namespace
 
