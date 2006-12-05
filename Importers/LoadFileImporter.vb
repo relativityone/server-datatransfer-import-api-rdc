@@ -325,7 +325,9 @@ Namespace kCura.WinEDDS
 				Select Case _overwrite.ToLower
 					Case "strict"
 						doc = Me.ReadDocumentInfo(metaDoc.IdentityValue)
-						If doc Is Nothing Then Throw New IdentityValueNotFoundException(metaDoc.IdentityValue)
+						If doc Is Nothing Then
+							Throw New IdentityValueNotFoundException(metaDoc.IdentityValue)
+						End If
 					Case "append"
 						doc = Me.ReadDocumentInfo(metaDoc.IdentityValue)
 				End Select
@@ -490,7 +492,7 @@ Namespace kCura.WinEDDS
 		Private Sub SetFieldValues(ByVal documentDTO As kCura.EDDS.WebAPI.DocumentManagerBase.Document, ByVal selectedFields As DocumentFieldCollection)
 			Dim fieldDTO As kCura.EDDS.WebAPI.DocumentManagerBase.Field
 			Dim docField As DocumentField
-			Dim encoder As New System.Text.ASCIIEncoding
+			Dim encoder As New System.Text.UnicodeEncoding
 			Dim value As String
 			For Each fieldDTO In documentDTO.Fields
 				docField = selectedFields.Item(fieldDTO.ArtifactID)
@@ -512,13 +514,14 @@ Namespace kCura.WinEDDS
 							Else
 								fieldDTO.Value = docField.Value
 							End If
-						Case Else
+						Case EDDS.WebAPI.DocumentManagerBase.FieldType.Text, EDDS.WebAPI.DocumentManagerBase.FieldType.Varchar
 							If docField.FieldCategoryID = kCura.DynamicFields.Types.FieldCategory.FullText Then
 								fieldDTO.Value = _uploader.UploadTextAsFile(docField.Value, _folderid, System.Guid.NewGuid.ToString)
-								'fieldDTO.Value = encoder.GetBytes(docField.Value)
 							Else
-								fieldDTO.Value = docField.Value
+								fieldDTO.Value = encoder.GetBytes(docField.Value)
 							End If
+						Case Else
+							fieldDTO.Value = docField.Value
 					End Select
 				End If
 			Next

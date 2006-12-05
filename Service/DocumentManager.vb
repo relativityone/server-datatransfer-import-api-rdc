@@ -195,6 +195,8 @@ Namespace kCura.WinEDDS.Service
 					Else
 						Throw
 					End If
+				Else
+					Throw
 				End If
 			End Try
 		End Function
