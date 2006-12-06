@@ -25,28 +25,37 @@ Namespace kCura.WinEDDS.Service
 
 		Public Function RetrieveAllAsArray(ByVal caseContextArtifactID As Int32) As kCura.EDDS.WebAPI.DocumentManagerBase.Field()
 			Dim dv As New kCura.Data.DataView(RetrieveAllMappable(caseContextArtifactID))
-			Dim fields(dv.Count - 1) As kCura.EDDS.WebAPI.DocumentManagerBase.Field
+			Dim fields As New System.Collections.ArrayList
 			Dim field As kCura.EDDS.WebAPI.DocumentManagerBase.Field
+			Dim unmappableFields As New System.Collections.Specialized.StringCollection
+			unmappableFields.AddRange(New String() {"Has Annotations", "Has Images", "Has Native", "Redacted"})		' HACK: Ugly - need to make a new field category ID
 			Dim i As Int32
-			For i = 0 To fields.Length - 1
+			For i = 0 To dv.Count - 1
 				field = New kCura.EDDS.WebAPI.DocumentManagerBase.Field
-				With field
-					.ArtifactID = CType(dv(i)("ArtifactID"), Int32)
-					.ArtifactViewFieldID = CType(dv(i)("ArtifactViewFieldID"), Int32)
-					.CodeTypeID = NullableTypes.HelperFunctions.DBNullConvert.ToNullableInt32(dv(i)("CodeTypeID"))
-					.DisplayName = CType(dv(i)("DisplayName"), String)
-					.FieldCategoryID = CType(dv(i)("FieldCategoryID"), Int32)
-					.FieldType = CType(dv(i)("FieldTypeID"), kCura.EDDS.WebAPI.DocumentManagerBase.FieldType)
-					.FieldTypeID = CType(dv(i)("FieldTypeID"), kCura.EDDS.WebAPI.DocumentManagerBase.FieldType)
-					.IsEditable = CType(dv(i)("IsEditable"), Boolean)
-					.IsRequired = CType(dv(i)("IsRequired"), Boolean)
-					.MaxLength = NullableTypes.HelperFunctions.DBNullConvert.ToNullableInt32(dv(i)("MaxLength"))
-					.IsRemovable = CType(dv(i)("IsRemovable"), Boolean)
-					.IsVisible = CType(dv(i)("IsVisible"), Boolean)
-				End With
-				fields(i) = field
+				If Not ( _
+				 CType(dv(i)("FieldCategoryID"), kCura.DynamicFields.Types.FieldCategory) = DynamicFields.Types.FieldCategory.ProductionMarker _
+				 OrElse _
+				 unmappableFields.Contains(dv(i)("DisplayName").ToString) _
+				) Then
+					With field
+						.ArtifactID = CType(dv(i)("ArtifactID"), Int32)
+						.ArtifactViewFieldID = CType(dv(i)("ArtifactViewFieldID"), Int32)
+						.CodeTypeID = NullableTypes.HelperFunctions.DBNullConvert.ToNullableInt32(dv(i)("CodeTypeID"))
+						.DisplayName = CType(dv(i)("DisplayName"), String)
+						.FieldCategoryID = CType(dv(i)("FieldCategoryID"), Int32)
+						.FieldType = CType(dv(i)("FieldTypeID"), kCura.EDDS.WebAPI.DocumentManagerBase.FieldType)
+						.FieldTypeID = CType(dv(i)("FieldTypeID"), kCura.EDDS.WebAPI.DocumentManagerBase.FieldType)
+						.IsEditable = CType(dv(i)("IsEditable"), Boolean)
+						.IsRequired = CType(dv(i)("IsRequired"), Boolean)
+						.MaxLength = NullableTypes.HelperFunctions.DBNullConvert.ToNullableInt32(dv(i)("MaxLength"))
+						.IsRemovable = CType(dv(i)("IsRemovable"), Boolean)
+						.IsVisible = CType(dv(i)("IsVisible"), Boolean)
+					End With
+					fields.Add(field)
+				End If
+
 			Next
-			Return fields
+			Return DirectCast(fields.ToArray(GetType(kCura.EDDS.WebAPI.DocumentManagerBase.Field)), kCura.EDDS.WebAPI.DocumentManagerBase.Field())
 		End Function
 
 #Region " Shadow Functions "
