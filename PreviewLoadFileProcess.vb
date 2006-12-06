@@ -55,15 +55,15 @@ Namespace kCura.WinEDDS
 			System.Threading.Monitor.Enter(Me.ProcessObserver)
 			Dim totaldisplay As String
 			Dim processeddisplay As String
-			If e.TotalBytes >= 104857600 Then
-				totaldisplay = (e.TotalBytes / 1048576).ToString("N2") & "MB"
-				processeddisplay = (e.BytesRead / 1048576).ToString("N2") & "MB"
-			ElseIf e.TotalBytes < 104857600 AndAlso e.TotalBytes >= 102400 Then
-				totaldisplay = (e.TotalBytes / 1024).ToString("N") & "KB"
-				processeddisplay = (e.BytesRead / 1024).ToString("N") & "KB"
+			If e.TotalBytes >= 1048576 Then
+				totaldisplay = (e.TotalBytes / 1048576).ToString("N0") & " MB"
+				processeddisplay = (e.BytesRead / 1048576).ToString("N0") & " MB"
+			ElseIf e.TotalBytes < 1048576 AndAlso e.TotalBytes >= 102400 Then
+				totaldisplay = (e.TotalBytes / 1024).ToString("N0") & " KB"
+				processeddisplay = (e.BytesRead / 1024).ToString("N0") & " KB"
 			Else
-				totaldisplay = e.TotalBytes.ToString & "B"
-				processeddisplay = e.BytesRead.ToString & "B"
+				totaldisplay = e.TotalBytes.ToString & " B"
+				processeddisplay = e.BytesRead.ToString & " B"
 			End If
 			Select Case e.Type
 				Case LoadFilePreviewer.EventType.Begin
