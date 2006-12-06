@@ -136,6 +136,7 @@
             <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
             <s:element minOccurs="1" maxOccurs="1" name="parentArtifactID" type="s:int" />
             <s:element minOccurs="1" maxOccurs="1" name="searchSubFolders" type="s:boolean" />
+            <s:element minOccurs="1" maxOccurs="1" name="viewArtifactID" type="s:int" />
           </s:sequence>
         </s:complexType>
       </s:element>
@@ -154,6 +155,7 @@
             <s:element minOccurs="1" maxOccurs="1" name="searchSubFolders" type="s:boolean" />
             <s:element minOccurs="1" maxOccurs="1" name="start" type="s:int" />
             <s:element minOccurs="1" maxOccurs="1" name="finish" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="viewArtifactID" type="s:int" />
           </s:sequence>
         </s:complexType>
       </s:element>

@@ -146,14 +146,14 @@ Namespace kCura.EDDS.WebAPI.SearchManagerBase
         
         '<remarks/>
         <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/SearchManager/CountSearchByParentArtifactID", RequestNamespace:="http://www.kCura.com/EDDS/SearchManager", ResponseNamespace:="http://www.kCura.com/EDDS/SearchManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
-        Public Function CountSearchByParentArtifactID(ByVal caseContextArtifactID As Integer, ByVal parentArtifactID As Integer, ByVal searchSubFolders As Boolean) As Integer
-            Dim results() As Object = Me.Invoke("CountSearchByParentArtifactID", New Object() {caseContextArtifactID, parentArtifactID, searchSubFolders})
+        Public Function CountSearchByParentArtifactID(ByVal caseContextArtifactID As Integer, ByVal parentArtifactID As Integer, ByVal searchSubFolders As Boolean, ByVal viewArtifactID As Integer) As Integer
+            Dim results() As Object = Me.Invoke("CountSearchByParentArtifactID", New Object() {caseContextArtifactID, parentArtifactID, searchSubFolders, viewArtifactID})
             Return CType(results(0),Integer)
         End Function
         
         '<remarks/>
-        Public Function BeginCountSearchByParentArtifactID(ByVal caseContextArtifactID As Integer, ByVal parentArtifactID As Integer, ByVal searchSubFolders As Boolean, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
-            Return Me.BeginInvoke("CountSearchByParentArtifactID", New Object() {caseContextArtifactID, parentArtifactID, searchSubFolders}, callback, asyncState)
+        Public Function BeginCountSearchByParentArtifactID(ByVal caseContextArtifactID As Integer, ByVal parentArtifactID As Integer, ByVal searchSubFolders As Boolean, ByVal viewArtifactID As Integer, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("CountSearchByParentArtifactID", New Object() {caseContextArtifactID, parentArtifactID, searchSubFolders, viewArtifactID}, callback, asyncState)
         End Function
         
         '<remarks/>
@@ -164,14 +164,14 @@ Namespace kCura.EDDS.WebAPI.SearchManagerBase
         
         '<remarks/>
         <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/SearchManager/SearchByParentArtifactID", RequestNamespace:="http://www.kCura.com/EDDS/SearchManager", ResponseNamespace:="http://www.kCura.com/EDDS/SearchManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
-        Public Function SearchByParentArtifactID(ByVal caseContextArtifactID As Integer, ByVal parentArtifactID As Integer, ByVal searchSubFolders As Boolean, ByVal start As Integer, ByVal finish As Integer) As System.Data.DataSet
-            Dim results() As Object = Me.Invoke("SearchByParentArtifactID", New Object() {caseContextArtifactID, parentArtifactID, searchSubFolders, start, finish})
+        Public Function SearchByParentArtifactID(ByVal caseContextArtifactID As Integer, ByVal parentArtifactID As Integer, ByVal searchSubFolders As Boolean, ByVal start As Integer, ByVal finish As Integer, ByVal viewArtifactID As Integer) As System.Data.DataSet
+            Dim results() As Object = Me.Invoke("SearchByParentArtifactID", New Object() {caseContextArtifactID, parentArtifactID, searchSubFolders, start, finish, viewArtifactID})
             Return CType(results(0),System.Data.DataSet)
         End Function
         
         '<remarks/>
-        Public Function BeginSearchByParentArtifactID(ByVal caseContextArtifactID As Integer, ByVal parentArtifactID As Integer, ByVal searchSubFolders As Boolean, ByVal start As Integer, ByVal finish As Integer, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
-            Return Me.BeginInvoke("SearchByParentArtifactID", New Object() {caseContextArtifactID, parentArtifactID, searchSubFolders, start, finish}, callback, asyncState)
+        Public Function BeginSearchByParentArtifactID(ByVal caseContextArtifactID As Integer, ByVal parentArtifactID As Integer, ByVal searchSubFolders As Boolean, ByVal start As Integer, ByVal finish As Integer, ByVal viewArtifactID As Integer, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("SearchByParentArtifactID", New Object() {caseContextArtifactID, parentArtifactID, searchSubFolders, start, finish, viewArtifactID}, callback, asyncState)
         End Function
         
         '<remarks/>

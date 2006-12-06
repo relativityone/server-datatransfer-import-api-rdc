@@ -159,6 +159,24 @@ Namespace kCura.EDDS.WebAPI.FieldManagerBase
         
         '<remarks/>
         Public IsConceptualEnabled As Boolean
+        
+        '<remarks/>
+        Public DisplayValueTrue As String
+        
+        '<remarks/>
+        Public DisplayValueFalse As String
+        
+        '<remarks/>
+        Public Width As String
+        
+        '<remarks/>
+        Public Wrapping As Boolean
+        
+        '<remarks/>
+        Public PropogateValueToAllDuplicates As Boolean
+        
+        '<remarks/>
+        Public PropogateValueToEntireGroup As Boolean
     End Class
     
     '<remarks/>

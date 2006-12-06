@@ -191,6 +191,12 @@
               <s:element minOccurs="1" maxOccurs="1" name="IsGroupByEnabled" type="s:boolean" />
               <s:element minOccurs="1" maxOccurs="1" name="IsIndexEnabled" type="s:boolean" />
               <s:element minOccurs="1" maxOccurs="1" name="IsConceptualEnabled" type="s:boolean" />
+              <s:element minOccurs="0" maxOccurs="1" name="DisplayValueTrue" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="DisplayValueFalse" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Width" type="s:string" />
+              <s:element minOccurs="1" maxOccurs="1" name="Wrapping" type="s:boolean" />
+              <s:element minOccurs="1" maxOccurs="1" name="PropogateValueToAllDuplicates" type="s:boolean" />
+              <s:element minOccurs="1" maxOccurs="1" name="PropogateValueToEntireGroup" type="s:boolean" />
             </s:sequence>
           </s:extension>
         </s:complexContent>

@@ -112,9 +112,9 @@ Namespace kCura.WinEDDS
 				Case ExportFile.ExportType.ArtifactSearch
 					Me.TotalDocuments = _searchManager.CountSearchByArtifactID(Me.ExportFile.CaseArtifactID, Me.ExportFile.ArtifactID)
 				Case ExportFile.ExportType.ParentSearch
-					Me.TotalDocuments = _searchManager.CountSearchByParentArtifactID(Me.ExportFile.CaseArtifactID, Me.ExportFile.ArtifactID, False)
+					Me.TotalDocuments = _searchManager.CountSearchByParentArtifactID(Me.ExportFile.CaseArtifactID, Me.ExportFile.ArtifactID, False, ExportFile.ViewID)
 				Case ExportFile.ExportType.AncestorSearch
-					Me.TotalDocuments = _searchManager.CountSearchByParentArtifactID(Me.ExportFile.CaseArtifactID, Me.ExportFile.ArtifactID, True)
+					Me.TotalDocuments = _searchManager.CountSearchByParentArtifactID(Me.ExportFile.CaseArtifactID, Me.ExportFile.ArtifactID, True, ExportFile.ViewID)
 			End Select
 			folderTable = _folderManager.RetrieveAllByCaseID(Me.ExportFile.CaseArtifactID).Tables(0)
 			Me.FolderList = New kCura.WinEDDS.FolderList(folderTable)
@@ -144,9 +144,9 @@ Namespace kCura.WinEDDS
 					Case ExportFile.ExportType.ArtifactSearch
 						documentTable = _searchManager.SearchBySearchArtifactID(Me.ExportFile.CaseArtifactID, Me.ExportFile.ArtifactID, start, finish).Tables(0)
 					Case ExportFile.ExportType.ParentSearch
-						documentTable = _searchManager.SearchByParentArtifactID(Me.ExportFile.CaseArtifactID, Me.ExportFile.ArtifactID, False, start, finish).Tables(0)
+						documentTable = _searchManager.SearchByParentArtifactID(Me.ExportFile.CaseArtifactID, Me.ExportFile.ArtifactID, False, start, finish, ExportFile.ViewID).Tables(0)
 					Case ExportFile.ExportType.AncestorSearch
-						documentTable = _searchManager.SearchByParentArtifactID(Me.ExportFile.CaseArtifactID, Me.ExportFile.ArtifactID, True, start, finish).Tables(0)
+						documentTable = _searchManager.SearchByParentArtifactID(Me.ExportFile.CaseArtifactID, Me.ExportFile.ArtifactID, True, start, finish, ExportFile.ViewID).Tables(0)
 				End Select
 				Dim docRow As System.Data.DataRow
 				Dim artifactIDs As New ArrayList
@@ -328,7 +328,9 @@ Namespace kCura.WinEDDS
 				'	fieldValue = CType(row(CType(Me.Columns(count), String)), String)
 				'End If
 				fieldValue = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(NullableTypes.HelperFunctions.DBNullConvert.ToNullableString(row(CType(Me.Columns(count), String))))
-				fieldValue.Replace(ChrW(13), Me.ExportFile.NewlineDelimiter)
+				fieldValue = fieldValue.Replace(System.Environment.NewLine, ChrW(10).ToString)
+				fieldValue = fieldValue.Replace(ChrW(13), ChrW(10))
+				fieldValue = fieldValue.Replace(ChrW(10), Me.ExportFile.NewlineDelimiter)
 				retString.AppendFormat("{0}{1}{0}", Me.ExportFile.QuoteDelimiter, fieldValue)
 				If Not count = Me.Columns.Count - 1 Then
 					retString.Append(Me.ExportFile.RecordDelimiter)
