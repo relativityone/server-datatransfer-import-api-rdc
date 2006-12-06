@@ -501,7 +501,17 @@ Namespace kCura.WinEDDS
 						fieldDTO.Value = String.Empty
 					Else
 						If fieldDTO.Value Is Nothing Then
-							fieldDTO.Value = String.Empty
+							Select Case fieldDTO.FieldType
+								Case kCura.EDDS.WebAPI.DocumentManagerBase.FieldType.Text, kCura.EDDS.WebAPI.DocumentManagerBase.FieldType.Varchar
+									Select Case fieldDTO.FieldCategoryID
+										Case kCura.DynamicFields.Types.FieldCategory.FullText
+											fieldDTO.Value = ""
+										Case Else
+											fieldDTO.Value = encoder.GetBytes(String.Empty)
+									End Select
+								Case Else
+									fieldDTO.Value = String.Empty
+							End Select
 						End If
 					End If
 				Else
