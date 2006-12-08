@@ -524,7 +524,7 @@
                 <File
                     RelPath = "Web References\kCura.EDDS.WebAPI.DocumentManagerBase\Reference.vb"
                     DependentUpon = "Reference.map"
-                    SubType = "Code"
+                    SubType = "code"
                     BuildAction = "Compile"
                     DesignTime = "True"
                     AutoGen = "True"
@@ -686,7 +686,7 @@
                 <File
                     RelPath = "Web References\kCura.EDDS.WebAPI.MultiCodeManagerBase\Reference.vb"
                     DependentUpon = "Reference.map"
-                    SubType = "Code"
+                    SubType = "code"
                     BuildAction = "Compile"
                     DesignTime = "True"
                     AutoGen = "True"
