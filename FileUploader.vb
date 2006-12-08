@@ -26,8 +26,6 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Private Sub SetType(ByVal destinationFolderPath As String)
-			Me.UploaderType = Type.Web
-			Exit Sub
 			Try
 				System.IO.File.Create(destinationFolderPath & "123").Close()
 				System.IO.File.Delete(destinationFolderPath & "123")
@@ -72,8 +70,7 @@ Namespace kCura.WinEDDS
 
 			Friend Shared ReadOnly Property ChunkSize() As Int32
 				Get
-					'Return 1024000
-					Return 10
+					Return 1024000
 				End Get
 			End Property
 		End Class
