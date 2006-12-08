@@ -26,6 +26,8 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Private Sub SetType(ByVal destinationFolderPath As String)
+			Me.UploaderType = Type.Web
+			Exit Sub
 			Try
 				System.IO.File.Create(destinationFolderPath & "123").Close()
 				System.IO.File.Delete(destinationFolderPath & "123")
@@ -70,7 +72,8 @@ Namespace kCura.WinEDDS
 
 			Friend Shared ReadOnly Property ChunkSize() As Int32
 				Get
-					Return 1024000
+					'Return 1024000
+					Return 10
 				End Get
 			End Property
 		End Class
@@ -139,7 +142,7 @@ Namespace kCura.WinEDDS
 				End If
 				'UpdateStatus(System.IO.Path.GetFileName(filePath), 1, fileStream.Length)
 				For i = 1 To trips
-					Dim b(readLimit - 1) As Byte
+					Dim b(readLimit) As Byte
 					fileStream.Read(b, 0, readLimit)
 					If i = 1 Then
 						fileGuid = Gateway.BeginFill(_caseArtifactID, b, fileGuid)
