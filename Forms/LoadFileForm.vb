@@ -500,6 +500,7 @@ Namespace kCura.EDDS.WinForm
 			Me._extractFullTextFromNativeFile.Size = New System.Drawing.Size(180, 20)
 			Me._extractFullTextFromNativeFile.TabIndex = 23
 			Me._extractFullTextFromNativeFile.Text = "Extract full text from native files"
+			Me._extractFullTextFromNativeFile.Visible = False
 			'
 			'_nativeFilePathField
 			'
