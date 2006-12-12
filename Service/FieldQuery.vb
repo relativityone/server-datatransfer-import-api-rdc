@@ -23,12 +23,14 @@ Namespace kCura.WinEDDS.Service
 			Return wr
 		End Function
 
-		Public Function RetrieveAllAsArray(ByVal caseContextArtifactID As Int32) As kCura.EDDS.WebAPI.DocumentManagerBase.Field()
+		Public Function RetrieveAllAsArray(ByVal caseContextArtifactID As Int32, Optional ByVal includeUnmappable As Boolean = False) As kCura.EDDS.WebAPI.DocumentManagerBase.Field()
 			Dim dv As New kCura.Data.DataView(RetrieveAllMappable(caseContextArtifactID))
 			Dim fields As New System.Collections.ArrayList
 			Dim field As kCura.EDDS.WebAPI.DocumentManagerBase.Field
 			Dim unmappableFields As New System.Collections.Specialized.StringCollection
-			unmappableFields.AddRange(New String() {"Has Annotations", "Has Images", "Has Native", "Redacted"})		' HACK: Ugly - need to make a new field category ID
+			If Not includeUnmappable Then
+				unmappableFields.AddRange(New String() {"Has Annotations", "Has Images", "Has Native", "Redacted"})				' HACK: Ugly - need to make a new field category ID
+			End If
 			Dim i As Int32
 			For i = 0 To dv.Count - 1
 				field = New kCura.EDDS.WebAPI.DocumentManagerBase.Field

@@ -49,7 +49,7 @@ Namespace kCura.WinEDDS
 		Public ReadOnly Property AllDocumentFields() As kCura.EDDS.WebAPI.DocumentManagerBase.Field()
 			Get
 				If _allFields Is Nothing Then
-					_allFields = _fieldQuery.RetrieveAllAsArray(_caseArtifactID)
+					_allFields = _fieldQuery.RetrieveAllAsArray(_caseArtifactID, True)
 				End If
 				Dim field As kCura.EDDS.WebAPI.DocumentManagerBase.Field
 				For Each field In _allFields
@@ -368,7 +368,7 @@ Namespace kCura.WinEDDS
 			documentDTO.DocumentAgentFlags.IndexStatus = kCura.EDDS.Types.IndexStatus.IndexLowPriority
 			Dim now As System.DateTime = System.DateTime.Now
 			SetFieldValues(documentDTO, fieldCollection)
-
+			Dim field As kCura.EDDS.WebAPI.DocumentManagerBase.Field
 			If mdoc.UploadFile And mdoc.IndexFileInDB Then
 				Dim fileDTO As kCura.EDDS.WebAPI.DocumentManagerBase.File = CreateFileDTO(filename, fileguid)
 				documentDTO.Files = New kCura.EDDS.WebApi.DocumentManagerBase.File() {fileDTO}
