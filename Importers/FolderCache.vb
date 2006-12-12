@@ -70,7 +70,7 @@ Namespace kCura.WinEDDS
 			For Each folderRow In foldersDataSet.Tables(0).Rows
 				If TypeOf folderRow("ParentArtifactID") Is DBNull Then
 					Dim f As New FolderCacheItem("", "\", _rootFolderID)
-					_ht.Add(f.Path, f)
+					If Not _ht.ContainsKey(f.Path) Then _ht.Add(f.Path, f)
 					RecursivelyPopulate(folderRow, f)
 				End If
 			Next
@@ -87,8 +87,10 @@ Namespace kCura.WinEDDS
 					newPath = parent.Path & "\" & childDataRow("Name").ToString
 				End If
 				Dim childFolder As New FolderCacheItem(childDataRow("Name").ToString, newPath, CType(childDataRow("ArtifactID"), Int32))
-				_ht.Add(childFolder.Path, childFolder)
-				parent.AddChild(childFolder)
+				If Not _ht.ContainsKey(childFolder.Path) Then
+					_ht.Add(childFolder.Path, childFolder)
+					parent.AddChild(childFolder)
+				End If
 				RecursivelyPopulate(childDataRow, childFolder)
 			Next
 		End Sub
