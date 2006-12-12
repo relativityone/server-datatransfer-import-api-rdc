@@ -694,6 +694,8 @@ Namespace kCura.EDDS.WinForm
 						LoadFile.FolderStructureContainedInColumn = Nothing
 					End If
 				End If
+			Else
+				LoadFile.CreateFolderStructure = False
 			End If
 			Me.Cursor = System.Windows.Forms.Cursors.Default
 		End Sub
@@ -734,6 +736,7 @@ Namespace kCura.EDDS.WinForm
 					End If
 					_extractFullTextFromNativeFile.Checked = LoadFile.ExtractFullTextFromNativeFile
 				End If
+				_buildFolderStructure.Checked = LoadFile.CreateFolderStructure
 				ActionMenuEnabled = ReadyToRun
 			Else
 				_fieldMap.LeftListBoxItems.AddRange(caseFields)
@@ -745,6 +748,15 @@ Namespace kCura.EDDS.WinForm
 				_destinationFolderPath.Enabled = _buildFolderStructure.Checked
 			Else
 				_destinationFolderPath.Enabled = Not (_overwriteDropdown.SelectedItem.ToString.ToLower = "strict" OrElse _overwriteDropdown.SelectedItem.ToString.ToLower = "append") AndAlso _buildFolderStructure.Checked
+			End If
+			If loadFileObjectUpdatedFromFile AndAlso _destinationFolderPath.Enabled Then
+				Dim i As Int32
+				For i = 0 To _destinationFolderPath.Items.Count - 1
+					If DirectCast(_destinationFolderPath.Items(i), String).ToLower = Me.LoadFile.FolderStructureContainedInColumn.ToLower Then
+						_destinationFolderPath.SelectedIndex = i
+						Exit For
+					End If
+				Next
 			End If
 			If Not LoadFile.SelectedIdentifierField Is Nothing Then
 				caseFieldName = _application.GetSelectedIdentifier(LoadFile.SelectedIdentifierField)
