@@ -824,7 +824,7 @@ Namespace kCura.EDDS.WinForm
 			End Try
 			tempLoadFile.CaseInfo = Me.SelectedCaseInfo
 			tempLoadFile.Credentials = Me.Credential
-			tempLoadFile.DestinationFolderID = Me.SelectedCaseInfo.RootFolderID
+			tempLoadFile.DestinationFolderID = loadFile.DestinationFolderID
 			Return tempLoadFile
 			'If tempLoadFile.CaseInfo.ArtifactID = loadFile.CaseInfo.ArtifactID Then
 			'	tempLoadFile.Credentials = Me.Credential
