@@ -173,7 +173,7 @@ Namespace kCura.EDDS.WinForm
 			Me.Menu = Me.MainMenu
 			Me.Name = "ProductionExportForm"
 			Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
-			Me.Text = "Export Production"
+			Me.Text = "Relativity Desktop Client | Export Production"
 			Me.GroupBox3.ResumeLayout(False)
 			Me.GroupBox1.ResumeLayout(False)
 			Me.GroupBox2.ResumeLayout(False)

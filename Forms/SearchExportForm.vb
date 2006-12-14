@@ -51,6 +51,7 @@ Public Class SearchExportForm
 	Friend WithEvents _exportFullText As System.Windows.Forms.CheckBox
 	Friend WithEvents _exportNativeFiles As System.Windows.Forms.CheckBox
 	<System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
+		Dim resources As System.Resources.ResourceManager = New System.Resources.ResourceManager(GetType(SearchExportForm))
 		Me.MainMenu1 = New System.Windows.Forms.MainMenu
 		Me.ExportMenu = New System.Windows.Forms.MenuItem
 		Me.RunMenu = New System.Windows.Forms.MenuItem
@@ -256,10 +257,11 @@ Public Class SearchExportForm
 		Me.Controls.Add(Me.GroupBox23)
 		Me.Controls.Add(Me.GroupBox3)
 		Me.Controls.Add(Me._searchesBox)
+		Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
 		Me.Menu = Me.MainMenu1
 		Me.Name = "SearchExportForm"
 		Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
-		Me.Text = "SearchExportForm"
+		Me.Text = "Relativity Desktop Client | Export Search"
 		Me._searchesBox.ResumeLayout(False)
 		Me.GroupBox3.ResumeLayout(False)
 		Me.GroupBox23.ResumeLayout(False)

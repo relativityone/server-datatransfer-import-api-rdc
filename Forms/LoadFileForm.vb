@@ -590,7 +590,7 @@ Namespace kCura.EDDS.WinForm
 			'_fileColumns
 			'
 			Me._fileColumns.KeepButtonsCentered = False
-			Me._fileColumns.LeftOrderControlsVisible = True
+			Me._fileColumns.LeftOrderControlsVisible = False
 			Me._fileColumns.Location = New System.Drawing.Point(372, 132)
 			Me._fileColumns.Name = "_fileColumns"
 			Me._fileColumns.RightOrderControlVisible = False
@@ -603,7 +603,7 @@ Namespace kCura.EDDS.WinForm
 			Me._fieldMap.LeftOrderControlsVisible = False
 			Me._fieldMap.Location = New System.Drawing.Point(4, 132)
 			Me._fieldMap.Name = "_fieldMap"
-			Me._fieldMap.RightOrderControlVisible = True
+			Me._fieldMap.RightOrderControlVisible = False
 			Me._fieldMap.Size = New System.Drawing.Size(360, 276)
 			Me._fieldMap.TabIndex = 1
 			'
@@ -619,7 +619,7 @@ Namespace kCura.EDDS.WinForm
 			Me.Menu = Me.MainMenu
 			Me.Name = "LoadFileForm"
 			Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
-			Me.Text = "Import Load File"
+			Me.Text = "Relativity Desktop Client | Import Load File"
 			Me.GroupBox1.ResumeLayout(False)
 			Me.TabControl1.ResumeLayout(False)
 			Me._loadFileTab.ResumeLayout(False)

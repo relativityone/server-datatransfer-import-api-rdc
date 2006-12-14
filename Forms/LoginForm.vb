@@ -115,7 +115,7 @@ Namespace kCura.EDDS.WinForm
 			Me.Name = "LoginForm"
 			Me.ShowInTaskbar = False
 			Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
-			Me.Text = "Login"
+			Me.Text = "Relativity Desktop Client | Login"
 			Me.TopMost = True
 			Me.ResumeLayout(False)
 

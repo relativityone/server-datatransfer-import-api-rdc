@@ -206,7 +206,7 @@ Namespace kCura.EDDS.WinForm
 			Me.Menu = Me.MainMenu
 			Me.Name = "ImageLoad"
 			Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
-			Me.Text = "Import Image Load File"
+			Me.Text = "Relativity Desktop Client | Import Image Load File"
 			Me.GroupBox3.ResumeLayout(False)
 			Me.GroupBox233.ResumeLayout(False)
 			Me.GroupBox1.ResumeLayout(False)

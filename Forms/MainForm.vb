@@ -275,7 +275,7 @@ Namespace kCura.EDDS.WinForm
 			Me.Menu = Me.MainMenu
 			Me.Name = "MainForm"
 			Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
-			Me.Text = "kCura Relativity Document Review"
+			Me.Text = "Relativity Desktop Client"
 			CType(Me.AppStatusPanel, System.ComponentModel.ISupportInitialize).EndInit()
 			CType(Me.LoggedInUserPanel, System.ComponentModel.ISupportInitialize).EndInit()
 			Me.ResumeLayout(False)

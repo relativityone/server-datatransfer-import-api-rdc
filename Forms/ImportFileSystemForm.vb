@@ -305,7 +305,7 @@ Namespace kCura.EDDS.WinForm
 			Me.Menu = Me.MainMenu
 			Me.Name = "ImportFileSystemForm"
 			Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
-			Me.Text = "Import File Directory..."
+			Me.Text = "Relativity Desktop Client | Import File Directory"
 			Me.GroupBox1.ResumeLayout(False)
 			Me.GroupBox20.ResumeLayout(False)
 			Me.GroupBox2.ResumeLayout(False)

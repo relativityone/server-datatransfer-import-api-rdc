@@ -35,6 +35,7 @@ Public Class SetWebServiceURL
 	Friend WithEvents _okButton As System.Windows.Forms.Button
 	Friend WithEvents _cancelButton As System.Windows.Forms.Button
 	<System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
+		Dim resources As System.Resources.ResourceManager = New System.Resources.ResourceManager(GetType(SetWebServiceURL))
 		Me.GroupBox1 = New System.Windows.Forms.GroupBox
 		Me._WebServiceUrl = New System.Windows.Forms.TextBox
 		Me.Label1 = New System.Windows.Forms.Label
@@ -95,12 +96,13 @@ Public Class SetWebServiceURL
 		Me.Controls.Add(Me._okButton)
 		Me.Controls.Add(Me.Label1)
 		Me.Controls.Add(Me.GroupBox1)
+		Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
 		Me.MaximizeBox = False
 		Me.MinimizeBox = False
 		Me.Name = "SetWebServiceURL"
 		Me.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide
 		Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
-		Me.Text = "WebServices URL Not Found"
+		Me.Text = "Relativity Desktop Client | WebServices URL Not Found"
 		Me.TopMost = True
 		Me.GroupBox1.ResumeLayout(False)
 		Me.ResumeLayout(False)

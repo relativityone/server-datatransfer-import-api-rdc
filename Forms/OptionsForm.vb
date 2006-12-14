@@ -113,7 +113,7 @@ Namespace kCura.EDDS.WinForm
 			Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
 			Me.Name = "OptionsForm"
 			Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
-			Me.Text = " Options"
+			Me.Text = " Relativity Desktop Client | Options"
 			Me.TimeZoneGroupBox.ResumeLayout(False)
 			Me.WebServiceUrlGroupbox.ResumeLayout(False)
 			Me.ResumeLayout(False)

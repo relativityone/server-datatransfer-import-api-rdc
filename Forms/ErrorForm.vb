@@ -71,7 +71,7 @@ Namespace kCura.EDDS.WinForm
 			Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
 			Me.Name = "ErrorForm"
 			Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
-			Me.Text = "WinEDDS Error..."
+			Me.Text = "Relativity Desktop Client | Error"
 			Me.ResumeLayout(False)
 
 		End Sub
