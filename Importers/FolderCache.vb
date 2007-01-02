@@ -11,11 +11,17 @@ Namespace kCura.WinEDDS
 					Return DirectCast(_ht(folderPath), FolderCacheItem).FolderID
 				Else
 					Dim newFolder As FolderCacheItem = Me.GetNewFolder(folderPath)
-					_ht.Add(folderPath, newFolder)
+					If Not _ht.ContainsKey(folderPath) Then _ht.Add(folderPath, newFolder)
 					Return newFolder.FolderID
 				End If
 			End Get
 		End Property
+
+		Private Function AllKeys() As String()
+			Dim retval(_ht.Keys.Count - 1) As String
+			_ht.Keys.CopyTo(retval, 0)
+			Return retval
+		End Function
 
 		Private Function GetNewFolder(ByVal folderPath As String) As FolderCacheItem
 			Dim pathToDestination As New ArrayList
@@ -35,7 +41,13 @@ Namespace kCura.WinEDDS
 				Dim newFolderName As String = CType(folderNames(0), String)
 				folderNames.RemoveAt(0)
 				Dim newFolderID As Int32 = _folderManager.Create(_caseContextArtifactID, parentFolder.FolderID, newFolderName)
-				Dim newFolder As New FolderCacheItem(newFolderName, parentFolder.Path & "\" & newFolderName, newFolderID)
+				Dim parentFolderPath As String
+				If parentFolder.Path = "\" Then
+					parentFolderPath = ""
+				Else
+					parentFolderPath = parentFolder.Path
+				End If
+				Dim newFolder As New FolderCacheItem(newFolderName, parentFolderPath & "\" & newFolderName, newFolderID)
 				parentFolder.AddChild(newFolder)
 				_ht.Add(newFolder.Path, newFolder)
 				Return CreateFolders(newFolder, folderNames)
@@ -55,7 +67,7 @@ Namespace kCura.WinEDDS
 				End If
 				pathToDestination.Insert(0, pathEntry)
 				Return FindParentFolder(folderPath.Substring(0, folderPath.LastIndexOf("\")), pathToDestination)
-				End If
+			End If
 		End Function
 
 		Public Sub New(ByVal folderManager As Service.FolderManager, ByVal rootFolderID As Int32, ByVal caseContextArtifactID As Int32)
