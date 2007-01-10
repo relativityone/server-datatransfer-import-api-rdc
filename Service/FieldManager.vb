@@ -32,6 +32,8 @@ Namespace kCura.WinEDDS.Service
 			Dim retval As New DocumentField(dto.DisplayName, dto.ArtifactID, dto.FieldTypeID, dto.FieldCategoryID, dto.CodeTypeID, dto.MaxLength)
 			If retval.FieldCategoryID = kCura.DynamicFields.Types.FieldCategory.FullText Then
 				retval.Value = System.Text.ASCIIEncoding.ASCII.GetString(DirectCast(dto.Value, Byte()))
+			ElseIf retval.FieldTypeID = kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Code OrElse retval.FieldTypeID = kCura.DynamicFields.Types.FieldTypeHelper.FieldType.MultiCode Then
+				retval.Value = kCura.Utility.Array.IntArrayToCSV(DirectCast(dto.Value, Int32())).Replace(",", ";")
 			Else
 				retval.Value = dto.Value.ToString
 			End If

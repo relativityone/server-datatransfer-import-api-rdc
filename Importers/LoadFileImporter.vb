@@ -516,7 +516,7 @@ Namespace kCura.WinEDDS
 					End If
 				Else
 					Select Case fieldDTO.FieldType
-						Case kCura.EDDS.WebAPI.DocumentManagerBase.FieldType.MultiCode
+						Case kCura.EDDS.WebAPI.DocumentManagerBase.FieldType.MultiCode, EDDS.WebAPI.DocumentManagerBase.FieldType.Code
 							SetMultiCode(fieldDTO, docField)
 						Case EDDS.WebAPI.DocumentManagerBase.FieldType.Code
 							If docField.FieldCategoryID = kCura.DynamicFields.Types.FieldCategory.FullText Then
@@ -541,43 +541,22 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Public Sub SetMultiCode(ByVal fieldDTO As kCura.EDDS.WebAPI.DocumentManagerBase.Field, ByVal docField As DocumentField)
-			Dim existingValue As String
 			If fieldDTO.Value Is Nothing Then
 				fieldDTO.Value = String.Empty
 			End If
-			existingValue = CType(fieldDTO.Value, String)
-			Dim multiCodeID As Int32
-			Dim j As Int32
 			Dim valueArray As String() = docField.Value.Split(";".ToCharArray)
 			If valueArray.Length = 1 AndAlso valueArray(0) = String.Empty Then
-				If existingValue = String.Empty Then
-					fieldDTO.Value = _multicodeManager.CreateNewMultiCodeID(_caseartifactid).ToString
-				Else
-					_multiCodeManager.DeleteFromMultiCodeArtifactByMultiCodeID(_caseArtifactID, Int32.Parse(existingValue))
-				End If
-				'fieldDTO.Value = String.Empty
+				fieldDTO.Value = New Int32() {}
 			Else
-				Dim codeArtifactIDs(valueArray.Length - 1) As Int32
-				For j = 0 To codeArtifactIDs.Length - 1
+				Dim codeArtifactIDs As New System.Collections.ArrayList
+				Dim codeArtifactIdString As String
+				For Each codeArtifactIdString In valueArray
 					Try
-						codeArtifactIDs(j) = Int32.Parse(valueArray(j))
+						codeArtifactIDs.Add(Int32.Parse(codeArtifactIdString))
 					Catch ex As System.Exception
 					End Try
 				Next
-				If (existingValue = String.Empty OrElse existingValue = "0") AndAlso valueArray.Length > 0 Then
-					multiCodeID = _multiCodeManager.CreateNewMultiCodeID(_caseArtifactID)
-				Else
-					multiCodeID = Int32.Parse(existingValue)
-				End If
-				If multiCodeID > 0 Then
-					_multiCodeManager.DeleteFromMultiCodeArtifactByMultiCodeID(_caseArtifactID, multiCodeID)
-					Dim codeFieldValues As New System.Collections.ArrayList
-					codeFieldValues.AddRange(codeArtifactIDs)
-					_multiCodeManager.SetMultiCodeValues(_uploader.CaseArtifactID, multiCodeID, codeFieldValues)
-					fieldDTO.Value = multiCodeID.ToString
-				Else
-					fieldDTO.Value = String.Empty
-				End If
+				fieldDTO.Value = DirectCast(codeArtifactIDs.ToArray(GetType(Int32)), Int32())
 			End If
 		End Sub
 
