@@ -509,6 +509,8 @@ Namespace kCura.WinEDDS
 										Case Else
 											fieldDTO.Value = encoder.GetBytes(String.Empty)
 									End Select
+								Case kCura.EDDS.WebAPI.DocumentManagerBase.FieldType.MultiCode, kCura.EDDS.WebAPI.DocumentManagerBase.FieldType.Code
+									fieldDTO.Value = New Int32() {}
 								Case Else
 									fieldDTO.Value = String.Empty
 							End Select
@@ -556,7 +558,7 @@ Namespace kCura.WinEDDS
 					Catch ex As System.Exception
 					End Try
 				Next
-				fieldDTO.Value = DirectCast(codeArtifactIDs.ToArray(GetType(Int32)), Int32())
+				fieldDTO.Value = kCura.Utility.Array.IntArrayToCSV(DirectCast(codeArtifactIDs.ToArray(GetType(Int32)), Int32())).Replace(",", ";")
 			End If
 		End Sub
 
