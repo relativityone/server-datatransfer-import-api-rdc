@@ -509,8 +509,8 @@ Namespace kCura.WinEDDS
 										Case Else
 											fieldDTO.Value = encoder.GetBytes(String.Empty)
 									End Select
-								Case kCura.EDDS.WebAPI.DocumentManagerBase.FieldType.MultiCode, kCura.EDDS.WebAPI.DocumentManagerBase.FieldType.Code
-									fieldDTO.Value = New Int32() {}
+									'Case kCura.EDDS.WebAPI.DocumentManagerBase.FieldType.MultiCode, kCura.EDDS.WebAPI.DocumentManagerBase.FieldType.Code
+									'	fieldDTO.Value = New Int32() {}
 								Case Else
 									fieldDTO.Value = String.Empty
 							End Select
@@ -548,7 +548,7 @@ Namespace kCura.WinEDDS
 			End If
 			Dim valueArray As String() = docField.Value.Split(";".ToCharArray)
 			If valueArray.Length = 1 AndAlso valueArray(0) = String.Empty Then
-				fieldDTO.Value = New Int32() {}
+				fieldDTO.Value = ""
 			Else
 				Dim codeArtifactIDs As New System.Collections.ArrayList
 				Dim codeArtifactIdString As String
