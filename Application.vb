@@ -876,8 +876,10 @@ Namespace kCura.EDDS.WinForm
 				If relativityManager.ValidateSuccesfulLogin Then
 					CheckVersion(System.Net.CredentialCache.DefaultCredentials)
 					_credential = cred
+					kCura.WinEDDS.Service.Settings.WindowsAuthentication = True
 					Return True
 				Else
+					kCura.WinEDDS.Service.Settings.WindowsAuthentication = False
 					Return False
 				End If
 			Catch ex As System.Exception
