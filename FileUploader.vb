@@ -92,7 +92,7 @@ Namespace kCura.WinEDDS
 					Return newFileName
 				Catch ex As System.Exception
 					RaiseEvent UploadStatusEvent("Error Uploading File")					'TODO: Change this to a separate error-type event'
-					Throw New ApplicationException("Error Uplaoding File", ex)
+					Throw New ApplicationException("Error Uploading File", ex)
 				End Try
 			End If
 		End Function
@@ -114,7 +114,7 @@ Namespace kCura.WinEDDS
 					Return newFileName
 				Catch ex As System.Exception
 					RaiseEvent UploadStatusEvent("Error Uploading File")					'TODO: Change this to a separate error-type event'
-					Throw New ApplicationException("Error Uplaoding File", ex)
+					Throw New ApplicationException("Error Uploading File", ex)
 				End Try
 			End If
 		End Function

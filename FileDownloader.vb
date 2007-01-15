@@ -10,15 +10,19 @@ Namespace kCura.WinEDDS
 		Private _credentials As Net.NetworkCredential
 		Private _type As Type
 		Private _destinationFolderPath As String
-		Private _webClient As Net.WebClient
 		Private _downloadUrl As String
-
+		Private _cookieContainer As System.Net.CookieContainer
+		Private _requiresAuthenticationToken As Boolean
+		Private _distributedSessionCreated As Boolean
+		Private _userManager As kCura.WinEDDS.Service.UserManager
+		
 		Public Sub SetDesintationFolderName(ByVal value As String)
 			_destinationFolderPath = value
 		End Sub
 
-		Public Sub New(ByVal credentials As Net.NetworkCredential, ByVal destinationFolderPath As String, ByVal downloadHandlerUrl As String, ByVal cookieContainer As System.Net.CookieContainer)
+		Public Sub New(ByVal credentials As Net.NetworkCredential, ByVal destinationFolderPath As String, ByVal downloadHandlerUrl As String, ByVal cookieContainer As System.Net.CookieContainer, ByVal requiresAuthenticationToken As Boolean)
 			_gateway = New kCura.WinEDDS.Service.FileIO(credentials, cookieContainer)
+			_cookieContainer = cookieContainer
 			_gateway.Credentials = credentials
 			_gateway.Timeout = Int32.MaxValue
 			_credentials = credentials
@@ -26,12 +30,11 @@ Namespace kCura.WinEDDS
 				destinationFolderPath &= "\"
 			End If
 			_destinationFolderPath = destinationFolderPath
-			_webClient = New Net.WebClient
-			_webClient.Credentials = credentials
 			_downloadUrl = downloadHandlerUrl
 			'Dim documentManager As kCura.EDDS.WebAPI.DocumentManagerBase.DocumentManager
 			SetType(_destinationFolderPath)
-
+			_requiresAuthenticationToken = requiresAuthenticationToken
+			_userManager = New kCura.WinEDDS.Service.UserManager(credentials, cookieContainer)
 		End Sub
 
 		Private Sub SetType(ByVal destinationFolderPath As String)
@@ -82,10 +85,10 @@ Namespace kCura.WinEDDS
 		'	Return UploadFile(filePath, contextArtifactID, System.Guid.NewGuid.ToString)
 		'End Function
 
-		Public Function DownloadFile(ByVal localFilePath As String, ByVal remoteFileGuid As String, ByVal artifactID As Int32) As Boolean
+		Public Function DownloadFile(ByVal localFilePath As String, ByVal remoteFileGuid As String, ByVal artifactID As Int32, ByVal appID As String) As Boolean
 			If Me.UploaderType = Type.Web Then
 				Me.UploaderType = Type.Web
-				Return WebDownloadFile(localFilePath, artifactID, remoteFileGuid)
+				Return WebDownloadFile(localFilePath, artifactID, remoteFileGuid, appID)
 			Else
 				Me.UploaderType = Type.Direct
 				Dim remoteFilePath As String = _destinationFolderPath & remoteFileGuid
@@ -100,27 +103,48 @@ Namespace kCura.WinEDDS
 					Return True
 				Catch ex As System.Exception
 					RaiseEvent UploadStatusEvent("Error Uploading File")					'TODO: Change this to a separate error-type event'
-					Throw New ApplicationException("Error Uplaoding File", ex)
+					Throw New ApplicationException("Error Downloading File", ex)
 				End Try
 			End If
 		End Function
 
-		Private Function WebDownloadFile(ByVal localFilePath As String, ByVal artifactID As Int32, ByVal remoteFileGuid As String) As Boolean
+		Private Function WebDownloadFile(ByVal localFilePath As String, ByVal artifactID As Int32, ByVal remoteFileGuid As String, ByVal appID As String) As Boolean
 			Try
 				Dim remoteuri As String
-				remoteuri = String.Format("{0}Download.aspx?ArtifactID={1}&GUID={2}", _downloadUrl, artifactID, remoteFileGuid)
-				_webClient.DownloadFile(remoteuri, localFilePath)
+				remoteuri = String.Format("{0}Download.aspx?ArtifactID={1}&GUID={2}&AppID={3}", _downloadUrl, artifactID, remoteFileGuid, appID)
+				If _requiresAuthenticationToken AndAlso Not _distributedSessionCreated Then
+					Dim authenticationToken As String = _userManager.GenerateAuthenticationToken()
+					remoteuri &= String.Format("&AuthenticationToken={0}", authenticationToken)
+					_distributedSessionCreated = True
+				End If
+				Dim httpWebRequest As System.Net.HttpWebRequest = CType(System.Net.HttpWebRequest.Create(remoteuri), System.Net.HttpWebRequest)
+				httpWebRequest.Credentials = _credentials
+				httpWebRequest.CookieContainer = _cookieContainer
+				Dim webResponse As System.Net.WebResponse = httpWebRequest.GetResponse()
+				Dim localStream As System.IO.Stream
+				If Not webResponse Is Nothing Then
+					Dim responseStream As System.IO.Stream = webResponse.GetResponseStream()
+					localStream = System.IO.File.Create(localFilePath)
+					Dim buffer(1023) As Byte
+					Dim bytesRead As Int32
+					While True
+						bytesRead = responseStream.Read(buffer, 0, 1024)
+						If bytesRead <= 0 Then
+							Exit While
+						End If
+						localStream.Write(buffer, 0, bytesRead)
+					End While
+				End If
+				localStream.Close()
 				Return True
 			Catch ex As System.Exception
-				RaiseEvent UploadStatusEvent("Error Uploading File")				 'TODO: Change this to a separate error-type event'
-				Throw New ApplicationException("Error Uplaoding File", ex)
+				RaiseEvent UploadStatusEvent("Error Downloading File")				 'TODO: Change this to a separate error-type event'
+				Throw New ApplicationException("Error Downloading File", ex)
 			End Try
-
 		End Function
 
 		Public Event UploadStatusEvent(ByVal message As String)
 		Public Event UploadModeChangeEvent(ByVal mode As String)
-
 
 	End Class
 End Namespace

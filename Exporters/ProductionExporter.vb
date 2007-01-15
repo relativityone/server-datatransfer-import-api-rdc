@@ -117,16 +117,15 @@ Namespace kCura.WinEDDS
 			_processController = processController
 			_continue = True
 
+			_downloadHandler = New FileDownloader(exportFile.Credential, exportFile.CaseInfo.DocumentPath & "\EDDS" & exportFile.CaseInfo.ArtifactID, exportFile.CaseInfo.DownloadHandlerURL, exportFile.CookieContainer, Not kCura.WinEDDS.Service.Settings.WindowsAuthentication)
 			_productionManager = New kCura.WinEDDS.Service.ProductionManager(cred, cookieContainer)
 			_folderManager = New kCura.WinEDDS.Service.FolderManager(cred, cookieContainer)
 			_documentManager = New kCura.WinEDDS.Service.DocumentManager(cred, cookieContainer)
-			_downloadManager = New FileDownloader(cred, destinationFolderPath, exportFile.CaseInfo.DownloadHandlerURL, cookieContainer)
+			_downloadManager = New FileDownloader(cred, destinationFolderPath, exportFile.CaseInfo.DownloadHandlerURL, cookieContainer, Not kCura.WinEDDS.Service.Settings.WindowsAuthentication)
 			_fileManager = New kCura.WinEDDS.Service.FileManager(cred, cookieContainer)
 			_folderManager = New kCura.WinEDDS.Service.FolderManager(cred, cookieContainer)
 			_fileManager = New kCura.WinEDDS.Service.FileManager(cred, cookieContainer)
 			_fullTextDownloader = New kCura.WinEDDS.FullTextManager(cred, _sourceDirectory, cookieContainer)
-			_downloadHandler = New FileDownloader(cred, exportFile.CaseInfo.DocumentPath & "\EDDS" & exportFile.CaseInfo.ArtifactID, exportFile.CaseInfo.DownloadHandlerURL, exportFile.CookieContainer)
-
 			_processController = processController
 			_sourceDirectory = _documentManager.GetDocumentDirectoryByCaseArtifactID(Me.SelectedCaseInfo.ArtifactID)
 		End Sub
@@ -297,13 +296,13 @@ Namespace kCura.WinEDDS
 				If Me.Overwrite Then
 					System.IO.File.Delete(fileName)
 					Me.WriteStatusLine(kCura.Windows.Process.EventType.Status, String.Format("Overwriting document {0}.tif.", batesNumber))
-					_downloadManager.DownloadFile(fileName, fileGuid, artifactID)
+					_downloadManager.DownloadFile(fileName, fileGuid, artifactID, Me.ExportFile.CaseArtifactID.ToString)
 				Else
 					Me.WriteWarning(String.Format("{0}.tif already exists. Skipping file export.", batesNumber))
 				End If
 			Else
 				Me.WriteStatusLine(kCura.Windows.Process.EventType.Status, String.Format("Now exporting document {0}.tif.", batesNumber))
-				_downloadManager.DownloadFile(fileName, fileGuid, artifactID)
+				_downloadManager.DownloadFile(fileName, fileGuid, artifactID, Me.ExportFile.CaseArtifactID.ToString)
 			End If
 			Me.DocumentsExported += 1
 			Me.WriteUpdate(String.Format("Finished exporting document {0}.tif.", batesNumber))
@@ -324,14 +323,14 @@ Namespace kCura.WinEDDS
 				If Me.ExportFile.Overwrite Then
 					System.IO.File.Delete(exportFilePath)
 					Me.WriteStatusLine(kCura.Windows.Process.EventType.Status, String.Format("Overwriting file {0}.", exportFilePath))
-					_downloadHandler.DownloadFile(exportFilePath, fileGuid, documentArtifactID)
+					_downloadHandler.DownloadFile(exportFilePath, fileGuid, documentArtifactID, Me.ExportFile.CaseArtifactID.ToString)
 					documentWasExported = True
 				Else
 					Me.WriteWarning(String.Format("{0} already exists. Skipping file export.", exportFilePath))
 				End If
 			Else
 				Me.WriteStatusLine(kCura.Windows.Process.EventType.Status, String.Format("Now exporting file {0}.", exportFilePath))
-				_downloadHandler.DownloadFile(exportFilePath, fileGuid, documentArtifactID)
+				_downloadHandler.DownloadFile(exportFilePath, fileGuid, documentArtifactID, Me.ExportFile.CaseArtifactID.ToString)
 				documentWasExported = True
 			End If
 			Me.WriteUpdate(String.Format("Finished exporting file {0}.", exportFilePath))
