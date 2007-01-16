@@ -67,15 +67,15 @@ Namespace kCura.WinEDDS
 				Reader = New StreamReader(path)
 				RaiseStatusEvent(kCura.Windows.Process.EventType.Progress, "Begin Image Upload")
 
-				_csvwriter = New System.Text.StringBuilder
-				_csvwriter.Append("DocInitialization" & Microsoft.VisualBasic.ControlChars.Tab)
-				_csvwriter.Append("OW Check Delete Existing" & Microsoft.VisualBasic.ControlChars.Tab)
-				_csvwriter.Append("File Upload" & Microsoft.VisualBasic.ControlChars.Tab)
-				_csvwriter.Append("DocumentManager.Create" & Microsoft.VisualBasic.ControlChars.Tab)
-				_csvwriter.Append("FileManager.Create" & Microsoft.VisualBasic.ControlChars.Tab)
-				_csvwriter.Append("UpdateFullText" & Microsoft.VisualBasic.ControlChars.Tab)
-				_csvwriter.Append("File size" & Microsoft.VisualBasic.ControlChars.Tab)
-				_csvwriter.Append(System.Environment.NewLine)
+				'_csvwriter = New System.Text.StringBuilder
+				'_csvwriter.Append("DocInitialization" & Microsoft.VisualBasic.ControlChars.Tab)
+				'_csvwriter.Append("OW Check Delete Existing" & Microsoft.VisualBasic.ControlChars.Tab)
+				'_csvwriter.Append("File Upload" & Microsoft.VisualBasic.ControlChars.Tab)
+				'_csvwriter.Append("DocumentManager.Create" & Microsoft.VisualBasic.ControlChars.Tab)
+				'_csvwriter.Append("FileManager.Create" & Microsoft.VisualBasic.ControlChars.Tab)
+				'_csvwriter.Append("UpdateFullText" & Microsoft.VisualBasic.ControlChars.Tab)
+				'_csvwriter.Append("File size" & Microsoft.VisualBasic.ControlChars.Tab)
+				'_csvwriter.Append(System.Environment.NewLine)
 				While Continue
 					Try
 						DoFileUpload()
@@ -117,6 +117,9 @@ Namespace kCura.WinEDDS
 			Dim retval As String()
 			Dim documentIdentifier As String = String.Copy(valueArray(Columns.DocumentArtifactID))
 			Dim fileLocation As String = String.Copy(valueArray(Columns.FileLocation))
+			If fileLocation.Chars(0) = "\" AndAlso fileLocation.Chars(1) <> "\" Then
+				fileLocation = "." & fileLocation
+			End If
 			Dim multipageindicator As String = String.Copy(valueArray(Columns.MultiPageIndicator))
 
 			Dim currentDocumentArtifactID As Int32 = _docManager.GetDocumentArtifactIDFromIdentifier(_fileUploader.CaseArtifactID, documentIdentifier, _selectedIdentifierField)
@@ -156,7 +159,11 @@ Namespace kCura.WinEDDS
 			While Continue
 				valueArray = Me.GetLine
 				If valueArray(Columns.MultiPageIndicator).ToLower = "y" Then Return valueArray
-				GetImageForDocument(valueArray(Columns.FileLocation), fileDTOs, fullTextBuilder)
+				Dim fileLocation As String = valueArray(Columns.FileLocation)
+				If fileLocation.Chars(0) = "\" AndAlso fileLocation.Chars(1) <> "\" Then
+					fileLocation = "." & fileLocation
+				End If
+				GetImageForDocument(fileLocation, fileDTOs, fullTextBuilder)
 			End While
 		End Function
 
