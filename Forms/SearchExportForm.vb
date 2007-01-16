@@ -50,12 +50,14 @@ Public Class SearchExportForm
 	Friend WithEvents _searchesBox As System.Windows.Forms.GroupBox
 	Friend WithEvents _exportFullText As System.Windows.Forms.CheckBox
 	Friend WithEvents _exportNativeFiles As System.Windows.Forms.CheckBox
+	Friend WithEvents _useAbsolutePaths As System.Windows.Forms.CheckBox
 	<System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
 		Dim resources As System.Resources.ResourceManager = New System.Resources.ResourceManager(GetType(SearchExportForm))
 		Me.MainMenu1 = New System.Windows.Forms.MainMenu
 		Me.ExportMenu = New System.Windows.Forms.MenuItem
 		Me.RunMenu = New System.Windows.Forms.MenuItem
 		Me._searchesBox = New System.Windows.Forms.GroupBox
+		Me._useAbsolutePaths = New System.Windows.Forms.CheckBox
 		Me._exportNativeFiles = New System.Windows.Forms.CheckBox
 		Me._exportFullText = New System.Windows.Forms.CheckBox
 		Me._searchList = New System.Windows.Forms.ComboBox
@@ -96,6 +98,7 @@ Public Class SearchExportForm
 		'
 		'_searchesBox
 		'
+		Me._searchesBox.Controls.Add(Me._useAbsolutePaths)
 		Me._searchesBox.Controls.Add(Me._exportNativeFiles)
 		Me._searchesBox.Controls.Add(Me._exportFullText)
 		Me._searchesBox.Controls.Add(Me._searchList)
@@ -105,6 +108,14 @@ Public Class SearchExportForm
 		Me._searchesBox.TabIndex = 10
 		Me._searchesBox.TabStop = False
 		Me._searchesBox.Text = "Searches"
+		'
+		'_useAbsolutePaths
+		'
+		Me._useAbsolutePaths.Location = New System.Drawing.Point(264, 48)
+		Me._useAbsolutePaths.Name = "_useAbsolutePaths"
+		Me._useAbsolutePaths.Size = New System.Drawing.Size(124, 21)
+		Me._useAbsolutePaths.TabIndex = 4
+		Me._useAbsolutePaths.Text = "Use Absolute Paths "
 		'
 		'_exportNativeFiles
 		'
@@ -314,6 +325,7 @@ Public Class SearchExportForm
 		_exportFile.MultiRecordDelimiter = Chr(CType(_multiRecordDelimiter.SelectedValue, Int32))
 		_exportFile.NewlineDelimiter = Chr(CType(_newLineDelimiter.SelectedValue, Int32))
 		_exportFile.CookieContainer = _application.CookieContainer
+		_exportFile.UseAbsolutePaths = _useAbsolutePaths.Checked
 
 		_application.StartSearch(Me.ExportFile)
 		Me.Cursor = System.Windows.Forms.Cursors.Default
@@ -353,5 +365,13 @@ Public Class SearchExportForm
 
 	Private Sub _folderPath_TextChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles _folderPath.TextChanged
 		RunMenu.Enabled = ReadyToRun()
+	End Sub
+
+	Private Sub _exportNativeFiles_CheckedChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles _exportNativeFiles.CheckedChanged
+		If _exportNativeFiles.Checked Then
+			_useAbsolutePaths.Enabled = True
+		Else
+			_useAbsolutePaths.Enabled = False
+		End If
 	End Sub
 End Class
