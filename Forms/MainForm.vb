@@ -330,8 +330,8 @@ Namespace kCura.EDDS.WinForm
 				_application.LogOn()
 				_application.OpenCase()
 				kCura.Windows.Forms.EnhancedMenuProvider.Hook(Me)
-				Me.Cursor = System.Windows.Forms.Cursors.Default
 			End If
+			Me.Cursor = System.Windows.Forms.Cursors.Default
 		End Sub
 
 		Private Sub MainForm_Closing(ByVal sender As Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles MyBase.Closing
