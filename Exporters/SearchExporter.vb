@@ -214,15 +214,21 @@ Namespace kCura.WinEDDS
 				Dim fileName As String = String.Empty
 				Dim nativeRow As System.Data.DataRowView = GetNativeRow(natives, documentArtifactIDs(i))
 				If Me.ExportFile.ExportNative AndAlso Not nativeRow Is Nothing Then
-					fileName = String.Format("{0}{1}{2}", Me.ExportFile.FolderPath, Me.FolderList.ItemByArtifactID(CType(docRows(i)("ParentArtifactID"), Int32)).Path, CType(nativeRow("Filename"), String))
+					Dim rootFolderPath As String
+					If Me.ExportFile.UseAbsolutePaths Then
+						rootFolderPath = Me.ExportFile.FolderPath
+					Else
+						rootFolderPath = "..\"
+					End If
+					fileName = String.Format("{0}{1}{2}", rootFolderPath, Me.FolderList.ItemByArtifactID(CType(docRows(i)("ParentArtifactID"), Int32)).Path, CType(nativeRow("Filename"), String))
 					'Dim fileURI As String = String.Format("{0}Download.aspx?ArtifactID={1}&GUID={2}", Me.ExportFile.CaseInfo.DownloadHandlerURL, CType(docRows(i)("ArtifactID"), Int32), CType(nativeRow("Guid"), String))
 					Me.ExportNative(fileName, CType(nativeRow("Guid"), String), CType(docRows(i)("ArtifactID"), Int32), fileName)
 					'Me.ExportNative(fileName, fileURI, fileName)
 				End If
-				writer.Write(Me.LogFileEntry(docRows(i), fileName, fullTextFileGuid))
-				Me.DocumentsExported += 1
-				Me.WriteUpdate("Exported document " & i + 1)
-				If _halt Then Exit Sub
+					writer.Write(Me.LogFileEntry(docRows(i), fileName, fullTextFileGuid))
+					Me.DocumentsExported += 1
+					Me.WriteUpdate("Exported document " & i + 1)
+					If _halt Then Exit Sub
 			Next
 		End Sub
 

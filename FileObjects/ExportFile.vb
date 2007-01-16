@@ -17,6 +17,7 @@ Namespace kCura.WinEDDS
 		Protected _exportFullText As Boolean
 		Protected _exportNative As Boolean
 		Protected _logFileFormat As kCura.WinEDDS.LoadFileType.FileFormat
+		Protected _useAbsolutePaths As Boolean
 
 #Region "Public Properties"
 
@@ -167,6 +168,15 @@ Namespace kCura.WinEDDS
 			End Get
 			Set(ByVal value As kCura.WinEDDS.LoadFileType.FileFormat)
 				_logFileFormat = value
+			End Set
+		End Property
+
+		Public Property UseAbsolutePaths() As Boolean
+			Get
+				Return _useAbsolutePaths
+			End Get
+			Set(ByVal value As Boolean)
+				_useAbsolutePaths = value
 			End Set
 		End Property
 
