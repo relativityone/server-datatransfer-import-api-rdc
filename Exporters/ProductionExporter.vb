@@ -185,13 +185,13 @@ Namespace kCura.WinEDDS
 					currentDocumentFilesSize = Me.CurrentDocumentFilesSize(documentImagesTable, iterator, Me.ProductionArtifactID)
 					currentDocumentImagesCount = Me.CurrentDocumentImageCount(documentImagesTable, iterator)
 					currentDocumentHasNative = Me.HasNative(documentImagesTable.Rows(iterator))
-					If volumeSize + currentDocumentFilesSize > production.VolumeMaxSize * 1024 * 1024 Then
+					If volumeSize + currentDocumentFilesSize > CType(production.VolumeMaxSize, Int64) * 1024 * 1024 Then
 						If iterator > 0 Then
 							Me.CompleteVolume(currentVolumeName, production.Name, volumeLog, fullTextVolumeLog, nativesVolumeLog, fileFormat)
 						End If
 						volumeSize = 0
 						currentVolumeNumber = currentVolumeNumber + 1
-						Me.BeginVolume(currentVolumeName, production.VolumePrefix, currentVolumeNumber, production.SubdirectoryStartNumber, imagesSubdirectoryCount, nativesSubDirectoryCount, volumeLog, fullTextVolumeLog, nativesVolumeLog)
+						Me.BeginVolume(currentVolumeName, production.VolumePrefix, currentVolumeNumber, production.SubdirectoryStartNumber - 1, imagesSubdirectoryCount, nativesSubDirectoryCount, volumeLog, fullTextVolumeLog, nativesVolumeLog)
 					End If
 					If iterator > 0 Then
 						Dim createNewNativeSubdirectory As Boolean = Me.ExportFile.ExportNative AndAlso currentDocumentHasNative AndAlso currentNativesSubdirectoryFileCount + 1 > production.SubdirectoryMaxFiles OrElse volumeSize = 0
@@ -226,7 +226,9 @@ Namespace kCura.WinEDDS
 				If Not _continue Then
 					Exit For
 				End If
-				volumeSize = volumeSize + currentDocumentFilesSize
+				If isFirstDocumentImage OrElse Not currentDocumentHasImage Then
+					volumeSize = volumeSize + currentDocumentFilesSize
+				End If
 			Next
 			Me.CompleteVolume(currentVolumeName, production.Name, volumeLog, fullTextVolumeLog, nativesVolumeLog, fileFormat)
 		End Sub
