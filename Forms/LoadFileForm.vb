@@ -454,12 +454,12 @@ Namespace kCura.EDDS.WinForm
 			'
 			'_destinationFolderPath
 			'
+			Me._destinationFolderPath.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
 			Me._destinationFolderPath.Enabled = False
 			Me._destinationFolderPath.Location = New System.Drawing.Point(8, 40)
 			Me._destinationFolderPath.Name = "_destinationFolderPath"
 			Me._destinationFolderPath.Size = New System.Drawing.Size(220, 21)
 			Me._destinationFolderPath.TabIndex = 28
-			Me._destinationFolderPath.Text = "Select..."
 			'
 			'GroupBox4
 			'
@@ -504,12 +504,12 @@ Namespace kCura.EDDS.WinForm
 			'
 			'_nativeFilePathField
 			'
+			Me._nativeFilePathField.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
 			Me._nativeFilePathField.Enabled = False
 			Me._nativeFilePathField.Location = New System.Drawing.Point(8, 80)
 			Me._nativeFilePathField.Name = "_nativeFilePathField"
 			Me._nativeFilePathField.Size = New System.Drawing.Size(288, 21)
 			Me._nativeFilePathField.TabIndex = 24
-			Me._nativeFilePathField.Text = "Select..."
 			'
 			'Label5
 			'
@@ -555,19 +555,19 @@ Namespace kCura.EDDS.WinForm
 			'
 			Me.Label8.Location = New System.Drawing.Point(6, 18)
 			Me.Label8.Name = "Label8"
-			Me.Label8.Size = New System.Drawing.Size(55, 13)
+			Me.Label8.Size = New System.Drawing.Size(82, 13)
 			Me.Label8.TabIndex = 26
-			Me.Label8.Text = "Identifier"
+			Me.Label8.Text = "Group Identifier"
 			Me.Label8.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
 			'
 			'_identifiersDropDown
 			'
+			Me._identifiersDropDown.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
 			Me._identifiersDropDown.Enabled = False
 			Me._identifiersDropDown.Location = New System.Drawing.Point(8, 32)
 			Me._identifiersDropDown.Name = "_identifiersDropDown"
 			Me._identifiersDropDown.Size = New System.Drawing.Size(152, 21)
 			Me._identifiersDropDown.TabIndex = 19
-			Me._identifiersDropDown.Text = "Select..."
 			'
 			'Label7
 			'
@@ -678,7 +678,8 @@ Namespace kCura.EDDS.WinForm
 			If System.IO.File.Exists(_filePath.Text) Then
 				LoadFile.FilePath = _filePath.Text
 			End If
-			If Not _identifiersDropDown.SelectedItem Is Nothing Then LoadFile.SelectedIdentifierField = _application.GetDocumentFieldFromName(_identifiersDropDown.SelectedItem.ToString)
+			LoadFile.SelectedIdentifierField = _application.GetDocumentFieldFromName(_application.GetCaseIdentifierFields(0))
+			If Not _identifiersDropDown.SelectedItem Is Nothing Then LoadFile.GroupIdentifierColumn = _identifiersDropDown.SelectedItem.ToString
 			If _loadNativeFiles.Checked Then
 				If Not _nativeFilePathField.SelectedItem Is Nothing Then
 					LoadFile.NativeFilePathColumn = _nativeFilePathField.SelectedItem.ToString
@@ -742,7 +743,7 @@ Namespace kCura.EDDS.WinForm
 			Else
 				_fieldMap.LeftListBoxItems.AddRange(caseFields)
 			End If
-			_identifiersDropDown.Items.AddRange(_application.IdentiferFieldDropdownPopulator)
+			'_identifiersDropDown.Items.AddRange(_application.IdentiferFieldDropdownPopulator)
 			_overwriteDropdown.SelectedItem = LoadFile.OverwriteDestination
 			_identifiersDropDown.Enabled = True			'LoadFile.OverwriteDestination
 			If _overwriteDropdown.SelectedItem Is Nothing Then
@@ -759,11 +760,9 @@ Namespace kCura.EDDS.WinForm
 					End If
 				Next
 			End If
-			If Not LoadFile.SelectedIdentifierField Is Nothing Then
-				caseFieldName = _application.GetSelectedIdentifier(LoadFile.SelectedIdentifierField)
-				If caseFieldName <> String.Empty Then
-					_identifiersDropDown.SelectedItem = caseFieldName
-				End If
+			If Not Me.LoadFile.GroupIdentifierColumn Is Nothing AndAlso Me.LoadFile.GroupIdentifierColumn <> "" AndAlso _
+			_identifiersDropDown.Items.Contains(LoadFile.GroupIdentifierColumn) Then
+				_identifiersDropDown.SelectedItem = LoadFile.GroupIdentifierColumn
 			End If
 
 			'If LoadFile.OverwriteDestination AndAlso Not LoadFile.SelectedIdentifierField Is Nothing Then
@@ -806,6 +805,7 @@ Namespace kCura.EDDS.WinForm
 			_fileColumnHeaders.Items.Clear()
 			_nativeFilePathField.Items.Clear()
 			_destinationFolderPath.Items.Clear()
+			_identifiersDropDown.Items.Clear()
 			_fileColumns.ClearAll()
 			If System.IO.File.Exists(LoadFile.FilePath) Then
 				PopulateLoadFileDelimiters()
@@ -815,6 +815,7 @@ Namespace kCura.EDDS.WinForm
 				_fileColumnHeaders.Items.AddRange(columnHeaders)
 				_nativeFilePathField.Items.AddRange(columnHeaders)
 				_destinationFolderPath.Items.AddRange(columnHeaders)
+				_identifiersDropDown.Items.AddRange(columnHeaders)
 				If LoadFile.LoadNativeFiles AndAlso System.IO.File.Exists(LoadFile.FilePath) Then
 					_nativeFilePathField.SelectedItem = LoadFile.NativeFilePathColumn
 				End If
@@ -938,9 +939,12 @@ Namespace kCura.EDDS.WinForm
 				If Not _nativeFilePathField.Enabled Then Return False
 				Dim item As String
 				For Each item In _fieldMap.RightListBoxItems
-					If _application.CurrentFields.Item(item).FieldCategoryID = kCura.DynamicFields.Types.FieldCategory.DuplicateHash Then
-						Return False
-					End If
+					Try
+						If _application.CurrentFields.Item(item).FieldCategoryID = kCura.DynamicFields.Types.FieldCategory.DuplicateHash Then
+							Return False
+						End If
+					Catch
+					End Try
 				Next
 				Return True
 			End Get
@@ -1012,7 +1016,7 @@ Namespace kCura.EDDS.WinForm
 				End If
 			Next
 			For Each item In _loadFile.FieldMap
-				If Not item.DocumentField Is Nothing AndAlso columnHeaders.Length = 0 Then
+				If Not item.DocumentField Is Nothing AndAlso columnHeaders.Length = 0 AndAlso Array.IndexOf(casefields, item.DocumentField.FieldName) > -1 Then
 					selectedFieldNameList.Add(item.DocumentField.FieldName)
 				End If
 			Next

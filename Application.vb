@@ -825,15 +825,22 @@ Namespace kCura.EDDS.WinForm
 			tempLoadFile.CaseInfo = Me.SelectedCaseInfo
 			tempLoadFile.Credentials = Me.Credential
 			tempLoadFile.DestinationFolderID = loadFile.DestinationFolderID
+			tempLoadFile.SelectedIdentifierField = Me.CurrentFields(True).Item(Me.GetCaseIdentifierFields(0))
+			Dim mapItemToRemove As LoadFileFieldMap.LoadFileFieldMapItem
+			If tempLoadFile.GroupIdentifierColumn = "" AndAlso System.IO.File.Exists(tempLoadFile.FilePath) Then
+				Dim fieldMapItem As kCura.WinEDDS.LoadFileFieldMap.LoadFileFieldMapItem
+				For Each fieldMapItem In tempLoadFile.FieldMap
+					If Not fieldMapItem.DocumentField Is Nothing AndAlso _
+					 fieldMapItem.NativeFileColumnIndex >= 0 AndAlso _
+					 fieldMapItem.DocumentField.FieldCategoryID = kCura.DynamicFields.Types.FieldCategory.GroupIdentifier Then
+						tempLoadFile.GroupIdentifierColumn = Me.GetColumnHeadersFromLoadFile(tempLoadFile, tempLoadFile.FirstLineContainsHeaders)(fieldMapItem.NativeFileColumnIndex)
+						mapItemToRemove = fieldMapItem
+					End If
+				Next
+			End If
+
+			If Not mapItemToRemove Is Nothing Then tempLoadFile.FieldMap.Remove(mapItemToRemove)
 			Return tempLoadFile
-			'If tempLoadFile.CaseInfo.ArtifactID = loadFile.CaseInfo.ArtifactID Then
-			'	tempLoadFile.Credentials = Me.Credential
-			'	tempLoadFile.DestinationFolderID = Me.SelectedCaseFolderID
-			'	Return tempLoadFile
-			'Else
-			'	MsgBox("Selected load file was created" & ControlChars.NewLine & "for a different case.  Load aborted.", MsgBoxStyle.Exclamation)
-			'	Return Nothing
-			'End If
 		End Function
 
 		Public Function ReadImageLoadFile(ByVal path As String) As ImageLoadFile
