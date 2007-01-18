@@ -31,11 +31,12 @@ Namespace kCura.WinEDDS.Service
 			If Not includeUnmappable Then
 				unmappableFields.AddRange(New String() {"Has Annotations", "Has Images", "Has Native", "Redacted"})				' HACK: Ugly - need to make a new field category ID
 			End If
+			Dim unmappableFieldCategories As New System.Collections.ArrayList(New kCura.DynamicFields.Types.FieldCategory() {DynamicFields.Types.FieldCategory.GroupIdentifier, DynamicFields.Types.FieldCategory.FileInfo, DynamicFields.Types.FieldCategory.ProductionMarker})
 			Dim i As Int32
 			For i = 0 To dv.Count - 1
 				field = New kCura.EDDS.WebAPI.DocumentManagerBase.Field
 				If Not ( _
-				 CType(dv(i)("FieldCategoryID"), kCura.DynamicFields.Types.FieldCategory) = DynamicFields.Types.FieldCategory.ProductionMarker _
+				 unmappableFieldCategories.contains(CType(dv(i)("FieldCategoryID"), kCura.DynamicFields.Types.FieldCategory)) _
 				 OrElse _
 				 unmappableFields.Contains(dv(i)("DisplayName").ToString) _
 				) Then

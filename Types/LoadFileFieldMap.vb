@@ -48,6 +48,13 @@ Namespace kCura.WinEDDS
 			_al = New ArrayList
 		End Sub
 
+		Public Sub Remove(ByVal item As LoadFileFieldMapItem)
+			_al.Remove(item)
+		End Sub
+
+		Public Sub RemoveAt(ByVal index As Int32)
+			_al.RemoveAt(index)
+		End Sub
 #Region "Item"
 		<Serializable()> Public Class LoadFileFieldMapItem
 			Private _documentField As kCura.WinEDDS.DocumentField

@@ -16,6 +16,7 @@ Namespace kCura.WinEDDS
 		'Public SelectedFields() As kCura.WinEDDS.DocumentField
 		Public FieldMap As kCura.WinEDDS.LoadFileFieldMap
 		Public NativeFilePathColumn As String
+		Public GroupIdentifierColumn As String
 		Public SelectedIdentifierField As kCura.WinEDDS.DocumentField
 		Public ExtractMD5HashFromNativeFile As Boolean
 		Public CreateFolderStructure As Boolean
@@ -60,6 +61,7 @@ Namespace kCura.WinEDDS
 			info.AddValue("SelectedIdentifierField", Me.SelectedIdentifierField, GetType(kCura.WinEDDS.DocumentField))
 			info.AddValue("FolderStructureContainedInColumn", Me.FolderStructureContainedInColumn, GetType(String))
 			info.AddValue("CreateFolderStructure", Me.CreateFolderStructure, GetType(Boolean))
+			info.AddValue("GroupIdentifierColumn", Me.GroupIdentifierColumn, GetType(String))
 		End Sub
 
 		Private Sub New(ByVal info As System.Runtime.Serialization.SerializationInfo, ByVal Context As System.Runtime.Serialization.StreamingContext)
@@ -86,11 +88,18 @@ Namespace kCura.WinEDDS
 				Me.MultiRecordDelimiter = ChrW(info.GetInt32("MultiRecordDelimiter"))
 
 				Me.SelectedIdentifierField = DirectCast(info.GetValue("SelectedIdentifierField", GetType(kCura.WinEDDS.DocumentField)), kCura.WinEDDS.DocumentField)
+				Try
+					Me.GroupIdentifierColumn = DirectCast(info.GetValue("GroupIdentifierColumn", GetType(String)), String)
+				Catch
+					Me.GroupIdentifierColumn = ""
+				End Try
 				'Me.SelectedFields = DirectCast(info.GetValue("SelectedFields", GetType(kCura.WinEDDS.DocumentField())), kCura.WinEDDS.DocumentField())
 				Me.FieldMap = DirectCast(info.GetValue("FieldMap", GetType(kCura.WinEDDS.LoadFileFieldMap)), LoadFileFieldMap)
+
 				Me.FolderStructureContainedInColumn = info.GetString("FolderStructureContainedInColumn")
 				Me.CreateFolderStructure = info.GetBoolean("CreateFolderStructure")
 			End With
 		End Sub
+
 	End Class
 End Namespace
