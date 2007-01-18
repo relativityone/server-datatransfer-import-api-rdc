@@ -190,7 +190,7 @@ Namespace kCura.WinEDDS
 				fullTextBuilder.AppendPage(sr.ReadToEnd)
 				sr.Close()
 			Else
-				If Not _replaceFullText Then
+				If _replaceFullText AndAlso Not System.IO.File.Exists(extractedTextFileName) Then
 					RaiseStatusEvent(kCura.Windows.Process.EventType.Warning, String.Format("File '{0}' not found.  No text updated.", extractedTextFileName))
 				End If
 			End If
