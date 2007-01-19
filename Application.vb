@@ -54,29 +54,11 @@ Namespace kCura.EDDS.WinForm
 			End Set
 		End Property
 
-		'Public ReadOnly Property Identity() As kCura.EDDS.EDDSIdentity
-		'	Get
-		'		Return _identity
-		'	End Get
-		'End Property
-
 		Public ReadOnly Property SelectedCaseInfo() As kCura.EDDS.Types.CaseInfo
 			Get
 				Return _selectedCaseInfo
 			End Get
 		End Property
-
-		'Public ReadOnly Property SelectedCaseArtifactID() As Int32
-		'	Get
-		'		Return _selectedCaseInfo.ArtifactID
-		'	End Get
-		'End Property
-
-		'Public ReadOnly Property SelectedCaseRootArtifactID() As Int32
-		'	Get
-		'		Return _selectedCaseInfo.RootArtifactID
-		'	End Get
-		'End Property
 
 		Public ReadOnly Property SelectedCaseFolderID() As Int32
 			Get
@@ -96,7 +78,6 @@ Namespace kCura.EDDS.WinForm
 				Try
 					If _fields Is Nothing OrElse refresh Then
 						_fields = New DocumentFieldCollection
-						'Dim fieldManager As New kCura.WinEDDS.Service.FieldQuery(Credential, _cookieContainer, _identity)
 						Dim fieldManager As New kCura.WinEDDS.Service.FieldQuery(Credential, _cookieContainer)
 						Dim fields() As kCura.EDDS.WebAPI.DocumentManagerBase.Field = fieldManager.RetrieveAllAsArray(SelectedCaseInfo.ArtifactID)
 						Dim i As Int32
@@ -898,27 +879,41 @@ Namespace kCura.EDDS.WinForm
 			_loginForm.Close()
 			Dim userManager As New kCura.WinEDDS.Service.UserManager(cred, _cookieContainer)
 			Try
-				userManager.Login(cred.UserName, cred.Password)
-				_credential = cred
-				CheckVersion(System.Net.CredentialCache.DefaultCredentials)
-				If openCaseSelector Then OpenCase()
-			Catch ex As kCura.WinEDDS.Exception.InvalidLoginException
-				If MsgBox("Invalid login. Try again?", MsgBoxStyle.YesNo) = MsgBoxResult.Yes Then
+				If userManager.Login(cred.UserName, cred.Password) Then
+					_credential = cred
+					If openCaseSelector Then OpenCase()
+				Else
+					Me.ReLogin("Invalid login. Try again?")
+				End If
+			Catch ex As System.Net.WebException
+				If Not ex.Message.IndexOf("The remote name could not be resolved") = -1 AndAlso ex.Source = "System" Then
+					Me.ChangeWebServiceURL("The current web services URL could not be resolved. Try a new URL?")
+				ElseIf Not ex.Message.IndexOf("The request failed with HTTP status 401") = -1 AndAlso ex.Source = "System.Web.Services" Then
+					Me.ChangeWebServiceURL("The current web services URL was resolved but is not configured correctly. Try a new URL?")
+				End If
+			Catch ex As System.Exception
+				Me.ReLogin("Unspecified login error. Try again?")
+			End Try
+		End Sub
+
+		Private Sub ReLogin(ByVal message As String)
+			If MsgBox(message, MsgBoxStyle.YesNo) = MsgBoxResult.Yes Then
+				NewLogin()
+			Else
+				ExitApplication()
+			End If
+		End Sub
+
+		Private Sub ChangeWebServiceUrl(ByVal message As String)
+			If MsgBox(message, MsgBoxStyle.YesNo) = MsgBoxResult.Yes Then
+				Dim url As String = InputBox("Enter New URL:", DefaultResponse:=kCura.WinEDDS.Config.WebServiceURL)
+				If url <> "" Then
+					kCura.WinEDDS.Config.WebServiceURL = url
 					NewLogin()
 				Else
 					ExitApplication()
 				End If
-			Catch ex As System.Net.WebException
-				If MsgBox("Invalid URL. Try Again?", MsgBoxStyle.YesNo) = MsgBoxResult.Yes Then
-					Dim url As String = InputBox("Enter New URL:", DefaultResponse:=kCura.WinEDDS.Config.WebServiceURL)
-					If url <> "" Then
-						kCura.WinEDDS.Config.WebServiceURL = url
-						NewLogin()
-					End If
-				Else
-					ExitApplication()
-				End If
-			End Try
+			End If
 		End Sub
 
 		Private Sub CheckVersion(ByVal credential As Net.ICredentials)
