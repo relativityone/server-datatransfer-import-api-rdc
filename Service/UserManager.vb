@@ -11,23 +11,13 @@ Namespace kCura.WinEDDS.Service
 		End Sub
 
 #Region " Shadow Methods "
-		Public Shadows Function Login(ByVal emailAddress As String, ByVal password As String) As Object
-			'Public Shadows Function Login(ByVal emailAddress As String, ByVal password As String) As kCura.EDDS.EDDSIdentity
+		Public Shadows Function Login(ByVal emailAddress As String, ByVal password As String) As Boolean
 			If kCura.WinEDDS.Config.UsesWebAPI Then
-				If Not MyBase.Login(emailAddress, password) Then
-					Throw New kCura.WinEDDS.Exception.InvalidLoginException
-				End If
-				Return Nothing
-			Else
-				'Dim loginManager As New kCura.EDDS.Service.LoginManager
-
-				'Try
-				'	Dim id As kCura.EDDS.EDDSIdentity = loginManager.Login(emailAddress, password)
-				'	If id Is Nothing Then Throw New kCura.WinEDDS.Exception.InvalidLoginException
-				'	Return id
-				'Catch ex As System.Exception
-				'	Throw New kCura.WinEDDS.Exception.InvalidLoginException
-				'End Try
+				Try
+					Return MyBase.Login(emailAddress, password)
+				Catch ex As System.Exception
+					Throw
+				End Try
 			End If
 		End Function
 #End Region
