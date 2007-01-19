@@ -209,6 +209,9 @@ Namespace kCura.WinEDDS
 			Dim i As Int32 = 0
 			If Me.ExportFile.ExportNative Then natives.Table = _searchManager.RetrieveNativesForSearch(Me.ExportFile.CaseArtifactID, kCura.Utility.Array.IntArrayToCSV(documentArtifactIDs)).Tables(0)
 			If Me.ExportFile.ExportFullText Then fullTexts.Table = _searchManager.RetrieveFullTextFilesForSearch(Me.ExportFile.ArtifactID, kCura.Utility.Array.IntArrayToCSV(documentArtifactIDs)).Tables(0)
+			If Not Me.ExportFile.UseAbsolutePaths Then
+				System.IO.Directory.SetCurrentDirectory(Me.ExportFile.FolderPath & Me.FolderList.BaseFolder.Path)
+			End If
 			For i = 0 To documentArtifactIDs.Length - 1
 				Dim fullTextFileGuid As String = GetFullTextFileGuid(fullTexts.Table, documentArtifactIDs(i))
 				Dim fileName As String = String.Empty
@@ -220,15 +223,24 @@ Namespace kCura.WinEDDS
 					Else
 						rootFolderPath = "..\"
 					End If
-					fileName = String.Format("{0}{1}{2}", rootFolderPath, Me.FolderList.ItemByArtifactID(CType(docRows(i)("ParentArtifactID"), Int32)).Path, CType(nativeRow("Filename"), String))
+					Dim exportedFileName As String = CType(nativeRow("Filename"), String)
+					Dim identifierColumnName As String = kCura.DynamicFields.Types.FieldColumnNameHelper.GetSqlFriendlyName(Me.ExportFile.IdentifierColumnName)
+					If Me.ExportFile.RenameFilesToIdentifier AndAlso exportedFileName <> "" Then
+						If exportedFileName.IndexOf(".") > -1 Then
+							exportedFileName = docRows(i)(identifierColumnName).ToString & exportedFileName.Substring(exportedFileName.LastIndexOf("."))
+						Else
+							exportedFileName = docRows(i)(identifierColumnName).ToString
+						End If
+					End If
+					fileName = String.Format("{0}{1}{2}", rootFolderPath, Me.FolderList.ItemByArtifactID(CType(docRows(i)("ParentArtifactID"), Int32)).Path, exportedFileName)
 					'Dim fileURI As String = String.Format("{0}Download.aspx?ArtifactID={1}&GUID={2}", Me.ExportFile.CaseInfo.DownloadHandlerURL, CType(docRows(i)("ArtifactID"), Int32), CType(nativeRow("Guid"), String))
 					Me.ExportNative(fileName, CType(nativeRow("Guid"), String), CType(docRows(i)("ArtifactID"), Int32), fileName)
 					'Me.ExportNative(fileName, fileURI, fileName)
 				End If
-					writer.Write(Me.LogFileEntry(docRows(i), fileName, fullTextFileGuid))
-					Me.DocumentsExported += 1
-					Me.WriteUpdate("Exported document " & i + 1)
-					If _halt Then Exit Sub
+				writer.Write(Me.LogFileEntry(docRows(i), fileName, fullTextFileGuid))
+				Me.DocumentsExported += 1
+				Me.WriteUpdate("Exported document " & i + 1)
+				If _halt Then Exit Sub
 			Next
 		End Sub
 

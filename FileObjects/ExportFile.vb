@@ -18,6 +18,8 @@ Namespace kCura.WinEDDS
 		Protected _exportNative As Boolean
 		Protected _logFileFormat As kCura.WinEDDS.LoadFileType.FileFormat
 		Protected _useAbsolutePaths As Boolean
+		Protected _renameFilesToIdentifier As Boolean
+		Protected _identifierColumnName As String
 
 #Region "Public Properties"
 
@@ -177,6 +179,24 @@ Namespace kCura.WinEDDS
 			End Get
 			Set(ByVal value As Boolean)
 				_useAbsolutePaths = value
+			End Set
+		End Property
+
+		Public Property RenameFilesToIdentifier() As Boolean
+			Get
+				Return _renameFilesToIdentifier
+			End Get
+			Set(ByVal value As Boolean)
+				_renameFilesToIdentifier = value
+			End Set
+		End Property
+
+		Public Property IdentifierColumnName() As String
+			Get
+				Return _identifierColumnName
+			End Get
+			Set(ByVal value As String)
+				_identifierColumnName = value
 			End Set
 		End Property
 
