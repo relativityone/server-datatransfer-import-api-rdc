@@ -51,6 +51,7 @@ Public Class SearchExportForm
 	Friend WithEvents _exportFullText As System.Windows.Forms.CheckBox
 	Friend WithEvents _exportNativeFiles As System.Windows.Forms.CheckBox
 	Friend WithEvents _useAbsolutePaths As System.Windows.Forms.CheckBox
+	Friend WithEvents _renameFiles As System.Windows.Forms.CheckBox
 	<System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
 		Dim resources As System.Resources.ResourceManager = New System.Resources.ResourceManager(GetType(SearchExportForm))
 		Me.MainMenu1 = New System.Windows.Forms.MainMenu
@@ -75,6 +76,7 @@ Public Class SearchExportForm
 		Me.Label2 = New System.Windows.Forms.Label
 		Me._recordDelimiter = New System.Windows.Forms.ComboBox
 		Me._destinationFolderDialog = New System.Windows.Forms.FolderBrowserDialog
+		Me._renameFiles = New System.Windows.Forms.CheckBox
 		Me._searchesBox.SuspendLayout()
 		Me.GroupBox3.SuspendLayout()
 		Me.GroupBox23.SuspendLayout()
@@ -98,13 +100,14 @@ Public Class SearchExportForm
 		'
 		'_searchesBox
 		'
+		Me._searchesBox.Controls.Add(Me._renameFiles)
 		Me._searchesBox.Controls.Add(Me._useAbsolutePaths)
 		Me._searchesBox.Controls.Add(Me._exportNativeFiles)
 		Me._searchesBox.Controls.Add(Me._exportFullText)
 		Me._searchesBox.Controls.Add(Me._searchList)
 		Me._searchesBox.Location = New System.Drawing.Point(4, 4)
 		Me._searchesBox.Name = "_searchesBox"
-		Me._searchesBox.Size = New System.Drawing.Size(568, 80)
+		Me._searchesBox.Size = New System.Drawing.Size(568, 76)
 		Me._searchesBox.TabIndex = 10
 		Me._searchesBox.TabStop = False
 		Me._searchesBox.Text = "Searches"
@@ -113,7 +116,7 @@ Public Class SearchExportForm
 		'
 		Me._useAbsolutePaths.Location = New System.Drawing.Point(264, 48)
 		Me._useAbsolutePaths.Name = "_useAbsolutePaths"
-		Me._useAbsolutePaths.Size = New System.Drawing.Size(124, 21)
+		Me._useAbsolutePaths.Size = New System.Drawing.Size(124, 20)
 		Me._useAbsolutePaths.TabIndex = 4
 		Me._useAbsolutePaths.Text = "Use Absolute Paths "
 		'
@@ -148,7 +151,7 @@ Public Class SearchExportForm
 		Me.GroupBox3.Controls.Add(Me._overwriteButton)
 		Me.GroupBox3.Controls.Add(Me._browseButton)
 		Me.GroupBox3.Controls.Add(Me._folderPath)
-		Me.GroupBox3.Location = New System.Drawing.Point(4, 92)
+		Me.GroupBox3.Location = New System.Drawing.Point(4, 88)
 		Me.GroupBox3.Name = "GroupBox3"
 		Me.GroupBox3.Size = New System.Drawing.Size(568, 72)
 		Me.GroupBox3.TabIndex = 11
@@ -190,7 +193,7 @@ Public Class SearchExportForm
 		Me.GroupBox23.Controls.Add(Me._newLineDelimiter)
 		Me.GroupBox23.Controls.Add(Me.Label2)
 		Me.GroupBox23.Controls.Add(Me._recordDelimiter)
-		Me.GroupBox23.Location = New System.Drawing.Point(4, 172)
+		Me.GroupBox23.Location = New System.Drawing.Point(4, 168)
 		Me.GroupBox23.Name = "GroupBox23"
 		Me.GroupBox23.Size = New System.Drawing.Size(568, 68)
 		Me.GroupBox23.TabIndex = 12
@@ -261,10 +264,18 @@ Public Class SearchExportForm
 		Me._recordDelimiter.Size = New System.Drawing.Size(124, 21)
 		Me._recordDelimiter.TabIndex = 0
 		'
+		'_renameFiles
+		'
+		Me._renameFiles.Location = New System.Drawing.Point(400, 48)
+		Me._renameFiles.Name = "_renameFiles"
+		Me._renameFiles.Size = New System.Drawing.Size(156, 20)
+		Me._renameFiles.TabIndex = 5
+		Me._renameFiles.Text = "Rename files to identifier"
+		'
 		'SearchExportForm
 		'
 		Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
-		Me.ClientSize = New System.Drawing.Size(576, 245)
+		Me.ClientSize = New System.Drawing.Size(576, 241)
 		Me.Controls.Add(Me.GroupBox23)
 		Me.Controls.Add(Me.GroupBox3)
 		Me.Controls.Add(Me._searchesBox)
@@ -326,7 +337,8 @@ Public Class SearchExportForm
 		_exportFile.NewlineDelimiter = Chr(CType(_newLineDelimiter.SelectedValue, Int32))
 		_exportFile.CookieContainer = _application.CookieContainer
 		_exportFile.UseAbsolutePaths = _useAbsolutePaths.Checked
-
+		_exportFile.RenameFilesToIdentifier = _renameFiles.Checked
+		_exportFile.IdentifierColumnName = _application.GetCaseIdentifierFields(0)
 		_application.StartSearch(Me.ExportFile)
 		Me.Cursor = System.Windows.Forms.Cursors.Default
 	End Sub
@@ -373,5 +385,9 @@ Public Class SearchExportForm
 		Else
 			_useAbsolutePaths.Enabled = False
 		End If
+	End Sub
+
+	Private Sub _useAbsolutePaths_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _useAbsolutePaths.CheckedChanged
+
 	End Sub
 End Class
