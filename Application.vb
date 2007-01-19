@@ -900,6 +900,7 @@ Namespace kCura.EDDS.WinForm
 			Try
 				userManager.Login(cred.UserName, cred.Password)
 				_credential = cred
+				CheckVersion(System.Net.CredentialCache.DefaultCredentials)
 				If openCaseSelector Then OpenCase()
 			Catch ex As kCura.WinEDDS.Exception.InvalidLoginException
 				If MsgBox("Invalid login. Try again?", MsgBoxStyle.YesNo) = MsgBoxResult.Yes Then
