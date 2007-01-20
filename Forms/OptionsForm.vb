@@ -162,7 +162,8 @@ Namespace kCura.EDDS.WinForm
 			_timeZoneDropDown.DisplayMember = "Display"
 			_timeZoneDropDown.ValueMember = "Value"
 
-			_timeZoneDropDown.SelectedValue = _application.TimeZoneOffset
+			'_timeZoneDropDown.SelectedValue = _application.TimeZoneOffset
+			_timeZoneDropDown.SelectedValue = 0
 		End Sub
 
 		Private Sub AddDateTimeRow(ByVal dt As DataTable, ByVal display As String, ByVal value As Int32)
