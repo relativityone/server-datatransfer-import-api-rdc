@@ -395,12 +395,7 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 		Private Sub _aboutMenuItem_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles _aboutMenuItem.Click
-			Dim sb As New System.Text.StringBuilder
-			Dim nl As String = System.Environment.NewLine & System.Environment.NewLine
-			sb.Append("   WinEDDS Document Upload Tool" & nl)
-			sb.Append("         Version " & System.Reflection.Assembly.GetExecutingAssembly.FullName.Split(","c)(1).Split("="c)(1) & nl)
-			sb.Append("Copyright © " & System.DateTime.Now.Year & " kCura Corporation")
-			MsgBox(sb.ToString, MsgBoxStyle.OKOnly, "About WinEDDS")
+			_application.DoAbout()
 		End Sub
 
 		Private Sub MainForm_Closed(ByVal sender As Object, ByVal e As System.EventArgs) Handles MyBase.Closed

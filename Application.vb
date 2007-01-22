@@ -945,5 +945,19 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 #End Region
 
+		Public Sub DoAbout()
+			If Not _loginForm Is Nothing AndAlso Not _loginForm.IsDisposed Then
+				_loginForm.TopMost = False
+			End If
+			Dim sb As New System.Text.StringBuilder
+			Dim nl As String = System.Environment.NewLine & System.Environment.NewLine
+			sb.Append("   WinEDDS Document Upload Tool" & nl)
+			sb.Append("         Version " & System.Reflection.Assembly.GetExecutingAssembly.FullName.Split(","c)(1).Split("="c)(1) & nl)
+			sb.Append("Copyright © " & System.DateTime.Now.Year & " kCura Corporation")
+			MsgBox(sb.ToString, MsgBoxStyle.OKOnly, "About WinEDDS")
+			If Not _loginForm Is Nothing AndAlso Not _loginForm.IsDisposed Then
+				_loginForm.TopMost = True
+			End If
+		End Sub
 	End Class
 End Namespace

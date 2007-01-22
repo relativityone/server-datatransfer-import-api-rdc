@@ -105,8 +105,8 @@ Namespace kCura.EDDS.WinForm
 			Me.Controls.Add(Me._okButton)
 			Me.Controls.Add(Me.Label2)
 			Me.Controls.Add(Me._passwordTextBox)
-			Me.Controls.Add(Me.Label1)
 			Me.Controls.Add(Me._loginTextBox)
+			Me.Controls.Add(Me.Label1)
 			Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
 			Me.MaximizeBox = False
 			Me.MaximumSize = New System.Drawing.Size(265, 185)
