@@ -134,6 +134,7 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Private Function GetNewCodeOrderValue(ByVal codeTypeID As Int32) As Int32
+			Return 0
 			Dim row As System.Data.DataRowView
 			Dim newOrder As Int32 = 0
 			Dim oldOrder As Int32
