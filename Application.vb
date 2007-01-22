@@ -98,6 +98,20 @@ Namespace kCura.EDDS.WinForm
 			End Get
 		End Property
 
+		Public ReadOnly Property CurrentGroupIdentifierField() As DocumentField
+			Get
+				Dim fieldManager As New kCura.WinEDDS.Service.FieldQuery(Credential, _cookieContainer)
+				Dim fields() As kCura.EDDS.WebAPI.DocumentManagerBase.Field = fieldManager.RetrieveAllAsArray(SelectedCaseInfo.ArtifactID, True)
+				Dim i As Int32
+				For i = 0 To fields.Length - 1
+					With fields(i)
+						If fields(i).FieldCategoryID = kCura.DynamicFields.Types.FieldCategory.GroupIdentifier Then
+							Return New DocumentField(.DisplayName, .ArtifactID, .FieldTypeID, .FieldCategoryID, .CodeTypeID, .MaxLength)
+						End If
+					End With
+				Next
+			End Get
+		End Property
 		Friend ReadOnly Property Credential() As System.Net.NetworkCredential
 			Get
 				If _credential Is Nothing Then

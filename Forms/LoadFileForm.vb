@@ -666,6 +666,16 @@ Namespace kCura.EDDS.WinForm
 			Me.PopulateLoadFileDelimiters()
 			If Not Me.EnsureConnection() Then Exit Sub
 			Me.LoadFile.FieldMap = kCura.EDDS.WinForm.Utility.ExtractFieldMap(_fieldMap, _fileColumns, _application.CurrentFields)
+			If _identifiersDropDown.SelectedIndex > -1 Then
+				Dim columnname As String = CType(_identifiersDropDown.SelectedItem, String)
+				Dim openParenIndex As Int32 = columnname.LastIndexOf("("c) + 1
+				Dim closeParenIndex As Int32 = columnname.LastIndexOf(")"c)
+				Dim fieldColumnIndex As Int32 = Int32.Parse(columnname.Substring(openParenIndex, closeParenIndex - openParenIndex)) - 1
+				Dim groupIdentifier As DocumentField = _application.CurrentGroupIdentifierField
+				If Not groupIdentifier Is Nothing Then
+					Me.LoadFile.FieldMap.Add(New kCura.WinEDDS.LoadFileFieldMap.LoadFileFieldMapItem(groupIdentifier, fieldColumnIndex))
+				End If
+			End If
 			LoadFile.ExtractFullTextFromNativeFile = _extractFullTextFromNativeFile.Checked
 			LoadFile.LoadNativeFiles = _loadNativeFiles.Checked
 			If _overwriteDropdown.SelectedItem Is Nothing Then
