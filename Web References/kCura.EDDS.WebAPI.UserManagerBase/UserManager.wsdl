@@ -12,6 +12,16 @@
       <s:element name="UpdateImageViewerDefaultViewModeResponse">
         <s:complexType />
       </s:element>
+      <s:element name="UpdateOIXDocumentMode">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="mode" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="UpdateOIXDocumentModeResponse">
+        <s:complexType />
+      </s:element>
       <s:element name="Login">
         <s:complexType>
           <s:sequence>
@@ -59,6 +69,12 @@
   <wsdl:message name="UpdateImageViewerDefaultViewModeSoapOut">
     <wsdl:part name="parameters" element="tns:UpdateImageViewerDefaultViewModeResponse" />
   </wsdl:message>
+  <wsdl:message name="UpdateOIXDocumentModeSoapIn">
+    <wsdl:part name="parameters" element="tns:UpdateOIXDocumentMode" />
+  </wsdl:message>
+  <wsdl:message name="UpdateOIXDocumentModeSoapOut">
+    <wsdl:part name="parameters" element="tns:UpdateOIXDocumentModeResponse" />
+  </wsdl:message>
   <wsdl:message name="LoginSoapIn">
     <wsdl:part name="parameters" element="tns:Login" />
   </wsdl:message>
@@ -82,6 +98,10 @@
       <wsdl:input message="tns:UpdateImageViewerDefaultViewModeSoapIn" />
       <wsdl:output message="tns:UpdateImageViewerDefaultViewModeSoapOut" />
     </wsdl:operation>
+    <wsdl:operation name="UpdateOIXDocumentMode">
+      <wsdl:input message="tns:UpdateOIXDocumentModeSoapIn" />
+      <wsdl:output message="tns:UpdateOIXDocumentModeSoapOut" />
+    </wsdl:operation>
     <wsdl:operation name="Login">
       <wsdl:input message="tns:LoginSoapIn" />
       <wsdl:output message="tns:LoginSoapOut" />
@@ -99,6 +119,15 @@
     <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document" />
     <wsdl:operation name="UpdateImageViewerDefaultViewMode">
       <soap:operation soapAction="http://www.kCura.com/EDDS/UserManager/UpdateImageViewerDefaultViewMode" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="UpdateOIXDocumentMode">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/UserManager/UpdateOIXDocumentMode" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>

@@ -53,6 +53,22 @@ Namespace kCura.EDDS.WebAPI.UserManagerBase
         End Sub
         
         '<remarks/>
+        <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/UserManager/UpdateOIXDocumentMode", RequestNamespace:="http://www.kCura.com/EDDS/UserManager", ResponseNamespace:="http://www.kCura.com/EDDS/UserManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
+        Public Sub UpdateOIXDocumentMode(ByVal mode As Integer)
+            Me.Invoke("UpdateOIXDocumentMode", New Object() {mode})
+        End Sub
+        
+        '<remarks/>
+        Public Function BeginUpdateOIXDocumentMode(ByVal mode As Integer, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("UpdateOIXDocumentMode", New Object() {mode}, callback, asyncState)
+        End Function
+        
+        '<remarks/>
+        Public Sub EndUpdateOIXDocumentMode(ByVal asyncResult As System.IAsyncResult)
+            Me.EndInvoke(asyncResult)
+        End Sub
+        
+        '<remarks/>
         <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/UserManager/Login", RequestNamespace:="http://www.kCura.com/EDDS/UserManager", ResponseNamespace:="http://www.kCura.com/EDDS/UserManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
         Public Function Login(ByVal emailAddress As String, ByVal password As String) As Boolean
             Dim results() As Object = Me.Invoke("Login", New Object() {emailAddress, password})

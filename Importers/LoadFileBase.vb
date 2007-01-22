@@ -11,7 +11,7 @@ Namespace kCura.WinEDDS
 		Protected _codeManager As kCura.WinEDDS.Service.CodeManager
 		Protected _folderManager As kCura.WinEDDS.Service.FolderManager
 		Protected _fieldQuery As kCura.WinEDDS.Service.FieldQuery
-		Protected _multiCodeManager As kCura.WinEDDS.Service.MultiCodeManager
+		'Protected _multiCodeManager As kCura.WinEDDS.Service.MultiCodeManager
 		Protected _fileManager As kCura.WinEDDS.Service.FileManager
 
 		Protected _filePathColumn As String
@@ -69,7 +69,7 @@ Namespace kCura.WinEDDS
 			_fieldQuery = New kCura.WinEDDS.Service.FieldQuery(args.Credentials, args.CookieContainer)
 			_fileManager = New kCura.WinEDDS.Service.FileManager(args.Credentials, args.CookieContainer)
 
-			_multiCodeManager = New kCura.WinEDDS.Service.MultiCodeManager(args.Credentials, args.CookieContainer)
+			'_multiCodeManager = New kCura.WinEDDS.Service.MultiCodeManager(args.Credentials, args.CookieContainer)
 
 			_multiValueSeparator = args.MultiRecordDelimiter.ToString.ToCharArray
 			_folderID = args.DestinationFolderID

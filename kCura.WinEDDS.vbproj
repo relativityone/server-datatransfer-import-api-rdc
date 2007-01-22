@@ -384,11 +384,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Service\MultiCodeManager.vb"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "Service\ProductionManager.vb"
                     SubType = "code"
                     BuildAction = "Compile"
@@ -667,33 +662,6 @@
                 <Folder
                     RelPath = "Web References\kCura.EDDS.WebAPI.FolderManagerBase\"
                     WebReferenceUrl = "http://localhost/EDDSWebAPI/FolderManager.asmx"
-                    UrlBehavior = "Static"
-                />
-                <File
-                    RelPath = "Web References\kCura.EDDS.WebAPI.MultiCodeManagerBase\MultiCodeManager.disco"
-                    BuildAction = "None"
-                />
-                <File
-                    RelPath = "Web References\kCura.EDDS.WebAPI.MultiCodeManagerBase\MultiCodeManager.wsdl"
-                    BuildAction = "None"
-                />
-                <File
-                    RelPath = "Web References\kCura.EDDS.WebAPI.MultiCodeManagerBase\Reference.map"
-                    BuildAction = "None"
-                    Generator = "MSDiscoCodeGenerator"
-                    LastGenOutput = "Reference.vb"
-                />
-                <File
-                    RelPath = "Web References\kCura.EDDS.WebAPI.MultiCodeManagerBase\Reference.vb"
-                    DependentUpon = "Reference.map"
-                    SubType = "code"
-                    BuildAction = "Compile"
-                    DesignTime = "True"
-                    AutoGen = "True"
-                />
-                <Folder
-                    RelPath = "Web References\kCura.EDDS.WebAPI.MultiCodeManagerBase\"
-                    WebReferenceUrl = "http://localhost/EDDSWebAPI/MultiCodeManager.asmx"
                     UrlBehavior = "Static"
                 />
                 <File
