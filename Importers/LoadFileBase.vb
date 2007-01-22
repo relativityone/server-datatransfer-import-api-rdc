@@ -225,7 +225,12 @@ Namespace kCura.WinEDDS
 						field.Value = newVal
 					End If
 				Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Varchar
-					field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(GetNullableFixedString(value, column, field.FieldLength.Value))
+					Select Case field.FieldCategory
+						Case DynamicFields.Types.FieldCategory.GroupIdentifier
+							field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(Me.GetGroupIdentifierField(value, column, field.FieldLength.Value))
+						Case Else
+							field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(GetNullableFixedString(value, column, field.FieldLength.Value))
+					End Select
 				Case Else				'FieldTypeHelper.FieldType.Text
 					If value.Length > 100 AndAlso forPreview Then
 						field.Value = value.Substring(0, 100) & "...."
@@ -277,12 +282,27 @@ Namespace kCura.WinEDDS
 			Return New NullableDateTime(datevalue)
 		End Function
 
+		Public Function GetGroupIdentifierField(ByVal value As String, ByVal column As Int32, ByVal fieldLength As Int32) As NullableString
+			Dim nv As NullableString = Me.GetNullableFixedString(value, column, fieldLength)
+			If nv.IsNull Then
+				Throw New NullGroupIdentifierException(Me.CurrentLineNumber, column)
+			Else
+				Return nv
+			End If
+		End Function
 #Region "Exceptions"
 
 		Public Class MissingCodeTypeException
 			Inherits kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
 			Public Sub New(ByVal row As Int32, ByVal column As Int32)
 				MyBase.New(row, column, String.Format("Document field is marked as a code type, but it's missing a CodeType."))
+			End Sub
+		End Class
+
+		Public Class NullGroupIdentifierException
+			Inherits kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
+			Public Sub New(ByVal row As Int32, ByVal column As Int32)
+				MyBase.New(row, column, String.Format("Group Identifier fields cannot accept null or empty values."))
 			End Sub
 		End Class
 

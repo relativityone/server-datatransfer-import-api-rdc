@@ -50,6 +50,15 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
+		Public Property FieldCategory() As kCura.DynamicFields.Types.FieldCategory
+			Get
+				Return CType(_fieldCategoryID, kCura.DynamicFields.Types.FieldCategory)
+			End Get
+			Set(ByVal value As kCura.DynamicFields.Types.FieldCategory)
+				_fieldCategoryID = value
+			End Set
+		End Property
+
 		Public Property Value() As String
 			Get
 				Return _value
