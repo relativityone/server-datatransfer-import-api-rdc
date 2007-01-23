@@ -41,8 +41,6 @@ Namespace kCura.EDDS.WinForm
 		Friend WithEvents MenuItem1 As System.Windows.Forms.MenuItem
 		Friend WithEvents ImportFileMenu As System.Windows.Forms.MenuItem
 		Friend WithEvents _openFileDialog As System.Windows.Forms.OpenFileDialog
-		Friend WithEvents GroupBox1 As System.Windows.Forms.GroupBox
-		Friend WithEvents _controlKeyField As System.Windows.Forms.ComboBox
 		Friend WithEvents _importMenuSaveSettingsItem As System.Windows.Forms.MenuItem
 		Friend WithEvents MenuItem4 As System.Windows.Forms.MenuItem
 		Friend WithEvents _saveImageLoadFileDialog As System.Windows.Forms.SaveFileDialog
@@ -64,13 +62,10 @@ Namespace kCura.EDDS.WinForm
 			Me.MenuItem4 = New System.Windows.Forms.MenuItem
 			Me._importMenuSaveSettingsItem = New System.Windows.Forms.MenuItem
 			Me._importMenuLoadSettingsItem = New System.Windows.Forms.MenuItem
-			Me.GroupBox1 = New System.Windows.Forms.GroupBox
-			Me._controlKeyField = New System.Windows.Forms.ComboBox
 			Me._saveImageLoadFileDialog = New System.Windows.Forms.SaveFileDialog
 			Me._loadImageLoadFileDialog = New System.Windows.Forms.OpenFileDialog
 			Me.GroupBox3.SuspendLayout()
 			Me.GroupBox233.SuspendLayout()
-			Me.GroupBox1.SuspendLayout()
 			Me.SuspendLayout()
 			'
 			'GroupBox3
@@ -109,9 +104,9 @@ Namespace kCura.EDDS.WinForm
 			'
 			Me.GroupBox233.Controls.Add(Me._replaceFullText)
 			Me.GroupBox233.Controls.Add(Me._overWrite)
-			Me.GroupBox233.Location = New System.Drawing.Point(292, 60)
+			Me.GroupBox233.Location = New System.Drawing.Point(4, 60)
 			Me.GroupBox233.Name = "GroupBox233"
-			Me.GroupBox233.Size = New System.Drawing.Size(280, 52)
+			Me.GroupBox233.Size = New System.Drawing.Size(568, 52)
 			Me.GroupBox233.TabIndex = 8
 			Me.GroupBox233.TabStop = False
 			Me.GroupBox233.Text = "Update Behavior"
@@ -167,24 +162,6 @@ Namespace kCura.EDDS.WinForm
 			Me._importMenuLoadSettingsItem.Shortcut = System.Windows.Forms.Shortcut.CtrlO
 			Me._importMenuLoadSettingsItem.Text = "Load Settings"
 			'
-			'GroupBox1
-			'
-			Me.GroupBox1.Controls.Add(Me._controlKeyField)
-			Me.GroupBox1.Location = New System.Drawing.Point(4, 60)
-			Me.GroupBox1.Name = "GroupBox1"
-			Me.GroupBox1.Size = New System.Drawing.Size(280, 52)
-			Me.GroupBox1.TabIndex = 9
-			Me.GroupBox1.TabStop = False
-			Me.GroupBox1.Text = "Identifier Field"
-			'
-			'_controlKeyField
-			'
-			Me._controlKeyField.Location = New System.Drawing.Point(8, 16)
-			Me._controlKeyField.Name = "_controlKeyField"
-			Me._controlKeyField.Size = New System.Drawing.Size(176, 21)
-			Me._controlKeyField.TabIndex = 1
-			Me._controlKeyField.Text = "select ..."
-			'
 			'_saveImageLoadFileDialog
 			'
 			Me._saveImageLoadFileDialog.DefaultExt = "kwe"
@@ -197,8 +174,7 @@ Namespace kCura.EDDS.WinForm
 			'ImageLoad
 			'
 			Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
-			Me.ClientSize = New System.Drawing.Size(580, 145)
-			Me.Controls.Add(Me.GroupBox1)
+			Me.ClientSize = New System.Drawing.Size(580, 117)
 			Me.Controls.Add(Me.GroupBox233)
 			Me.Controls.Add(Me.GroupBox3)
 			Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
@@ -209,7 +185,6 @@ Namespace kCura.EDDS.WinForm
 			Me.Text = "Relativity Desktop Client | Import Image Load File"
 			Me.GroupBox3.ResumeLayout(False)
 			Me.GroupBox233.ResumeLayout(False)
-			Me.GroupBox1.ResumeLayout(False)
 			Me.ResumeLayout(False)
 
 		End Sub
@@ -238,22 +213,16 @@ Namespace kCura.EDDS.WinForm
 			ImageLoadFile.Overwrite = _overWrite.Checked
 			ImageLoadFile.DestinationFolderID = _imageLoadFile.DestinationFolderID
 			Me.ImageLoadFile.ReplaceFullText = _replaceFullText.Checked
-			If _controlKeyField.SelectedItem Is Nothing Then
-				ImageLoadFile.ControlKeyField = Nothing
-			Else
-				ImageLoadFile.ControlKeyField = _controlKeyField.SelectedItem.ToString
-			End If
+			ImageLoadFile.ControlKeyField = _application.GetCaseIdentifierFields(0)
 			Me.Cursor = Cursors.Default
 		End Sub
 
 		Private Sub ImageLoad_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
 			Me.Cursor = Cursors.WaitCursor
-			_controlKeyField.Items.Clear()
 			If Not Me.EnsureConnection() Then
 				Me.Cursor = Cursors.Default
 				Exit Sub
 			End If
-			_controlKeyField.Items.AddRange(_application.IdentiferFieldDropdownPopulator)
 			_overWrite.Checked = ImageLoadFile.Overwrite
 			ReadyToRun()
 			Me.Cursor = Cursors.Default
@@ -288,17 +257,8 @@ Namespace kCura.EDDS.WinForm
 			_imageLoadFile.Overwrite = _overWrite.Checked
 		End Sub
 
-		Private Sub _controlKeyField_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _controlKeyField.SelectedIndexChanged
-			_imageLoadFile.ControlKeyField = _controlKeyField.SelectedItem.ToString
-			If Not Me.EnsureConnection() Then
-				Me.Cursor = Cursors.Default
-				Exit Sub
-			End If
-			ReadyToRun()
-		End Sub
-
 		Private Sub ReadyToRun()
-			ImportFileMenu.Enabled = (Not _controlKeyField.SelectedItem Is Nothing AndAlso System.IO.File.Exists(_imageLoadFile.FileName))
+			ImportFileMenu.Enabled = (System.IO.File.Exists(_imageLoadFile.FileName))
 		End Sub
 
 		Private Sub _importMenuSaveSettingsItem_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles _importMenuSaveSettingsItem.Click
@@ -336,7 +296,6 @@ Namespace kCura.EDDS.WinForm
 			If System.IO.File.Exists(_loadImageLoadFileDialog.FileName) Then
 				Me.ImageLoadFile = _application.ReadImageLoadFile(_loadImageLoadFileDialog.FileName)
 				_overWrite.Checked = ImageLoadFile.Overwrite
-				_controlKeyField.SelectedItem = ImageLoadFile.ControlKeyField
 				_filePath.Text = ImageLoadFile.FileName
 			End If
 			Me.Cursor = System.Windows.Forms.Cursors.Default
