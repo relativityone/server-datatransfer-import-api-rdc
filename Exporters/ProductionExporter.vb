@@ -498,8 +498,8 @@ Namespace kCura.WinEDDS
 			Dim volumeFileName As String
 
 			volumeFileName = String.Format("{0}_{1}.{2}", productionName, currentVolume, format)
+			volumeFileName = System.Text.RegularExpressions.Regex.Replace(volumeFileName, "[\\\/:|*<>\?""]+", "_")
 			volumeFilePath = String.Format("{0}{1}\{2}", Me.FolderPath, currentVolume, volumeFileName)
-
 			If volumeLog.Length > 0 Then
 				If System.IO.File.Exists(volumeFilePath) Then
 					Me.WriteWarning(String.Format("Log file '{0}' already exists, overwriting file.", volumeFilePath))

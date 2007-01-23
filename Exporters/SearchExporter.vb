@@ -338,17 +338,25 @@ Namespace kCura.WinEDDS
 			Dim count As Int32
 			Dim fieldValue As String
 			Dim retString As New System.Text.StringBuilder
-
+			Dim columnName As String
 			For count = 0 To Me.Columns.Count - 1
 				'If TypeOf Me.Columns(count) Is DBNull Then
 				'	fieldValue = String.Empty
 				'Else
 				'	fieldValue = CType(row(CType(Me.Columns(count), String)), String)
 				'End If
-				fieldValue = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(NullableTypes.HelperFunctions.DBNullConvert.ToNullableString(row(CType(Me.Columns(count), String))))
+				columnName = CType(Me.Columns(count), String)
+				Dim val As Object = row(columnName)
+				If TypeOf val Is Byte() Then
+					val = System.Text.Encoding.Unicode.GetString(DirectCast(val, Byte()))
+				End If
+				fieldValue = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(NullableTypes.HelperFunctions.DBNullConvert.ToNullableString(val))
 				fieldValue = fieldValue.Replace(System.Environment.NewLine, ChrW(10).ToString)
 				fieldValue = fieldValue.Replace(ChrW(13), ChrW(10))
 				fieldValue = fieldValue.Replace(ChrW(10), Me.ExportFile.NewlineDelimiter)
+				If fieldValue.Length > 1 AndAlso fieldValue.Chars(0) = ChrW(11) AndAlso fieldValue.Chars(fieldValue.Length - 1) = ChrW(11) Then
+					fieldValue = fieldValue.Trim(New Char() {ChrW(11)}).Replace(ChrW(11), Me.ExportFile.MultiRecordDelimiter)
+				End If
 				retString.AppendFormat("{0}{1}{0}", Me.ExportFile.QuoteDelimiter, fieldValue)
 				If Not count = Me.Columns.Count - 1 Then
 					retString.Append(Me.ExportFile.RecordDelimiter)
