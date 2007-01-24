@@ -457,24 +457,24 @@ Namespace kCura.EDDS.WinForm
 			Catch ex As System.Exception
 				If ex.Message.IndexOf("Need To Re Login") <> -1 Then
 					NewLogin(False)
-					productionManager = New kCura.WinEDDS.Service.ProductionManager(Me.Credential, _cookieContainer)
+					'productionManager = New kCura.WinEDDS.Service.ProductionManager(Me.Credential, _cookieContainer)
+					Exit Sub
 				Else
 					Throw
 				End If
 			End Try
 			exportFile.CaseInfo = caseInfo
 			Dim exportFileDataSet As System.Data.DataSet
-			While exportFileDataSet Is Nothing
-				Try
-					exportFileDataSet = productionManager.RetrieveProducedByContextArtifactID(caseInfo.ArtifactID)
-				Catch ex As System.Exception
-					If ex.Message.IndexOf("Need To Re Login") <> -1 Then
-						NewLogin(False)
-					Else
-						Throw
-					End If
-				End Try
-			End While
+			Try
+				exportFileDataSet = productionManager.RetrieveProducedByContextArtifactID(caseInfo.ArtifactID)
+			Catch ex As System.Exception
+				If ex.Message.IndexOf("Need To Re Login") <> -1 Then
+					NewLogin(False)
+					Exit Sub
+				Else
+					Throw
+				End If
+			End Try
 			exportFile.DataTable = exportFileDataSet.Tables(0)
 			exportFile.Credential = Me.Credential
 			exportFile.TypeOfExport = exportFile.ExportType.Production
@@ -486,34 +486,33 @@ Namespace kCura.EDDS.WinForm
 		Public Sub NewSearchExport(ByVal rootFolderID As Int32, ByVal caseInfo As kCura.EDDS.Types.CaseInfo, ByVal typeOfExport As kCura.WinEDDS.ExportFile.ExportType)
 			Dim frm As New SearchExportForm
 			Dim exportFile As New exportFile
-			Dim searchManager As New kCura.WinEDDS.Service.SearchManager(Me.Credential, _cookieContainer)
-			exportFile.ArtifactID = rootFolderID
-			exportFile.CaseInfo = caseInfo
-			exportFile.DataTable = Me.GetSearchExportDataSource(searchManager, caseInfo.ArtifactID, typeOfExport = exportFile.ExportType.ArtifactSearch)
-			exportFile.Credential = Me.Credential
-			exportFile.TypeOfExport = typeOfExport
-			frm.Application = Me
-			frm.ExportFile = exportFile
-			frm.Show()
-		End Sub
-
-		Private Function GetSearchExportDataSource(ByVal searchManager As kCura.WinEDDS.Service.SearchManager, ByVal caseArtifactID As Int32, ByVal isArtifactSearch As Boolean) As System.Data.DataTable
-			Dim searchExportDataSet As System.Data.DataSet
 			Try
-				While searchExportDataSet Is Nothing
-					If isArtifactSearch Then
-						searchExportDataSet = searchManager.RetrieveViewsByContextArtifactID(caseArtifactID, True)
-					Else
-						searchExportDataSet = searchManager.RetrieveViewsByContextArtifactID(caseArtifactID, False)
-					End If
-				End While
+				Dim searchManager As New kCura.WinEDDS.Service.SearchManager(Me.Credential, _cookieContainer)
+				exportFile.ArtifactID = rootFolderID
+				exportFile.CaseInfo = caseInfo
+				exportFile.DataTable = Me.GetSearchExportDataSource(searchManager, caseInfo.ArtifactID, typeOfExport = exportFile.ExportType.ArtifactSearch)
+				exportFile.Credential = Me.Credential
+				exportFile.TypeOfExport = typeOfExport
+				frm.Application = Me
+				frm.ExportFile = exportFile
+				frm.Show()
 			Catch ex As System.Exception
 				If ex.Message.IndexOf("Need To Re Login") <> -1 Then
 					NewLogin(False)
+					Exit Sub
 				Else
 					Throw
 				End If
 			End Try
+		End Sub
+
+		Private Function GetSearchExportDataSource(ByVal searchManager As kCura.WinEDDS.Service.SearchManager, ByVal caseArtifactID As Int32, ByVal isArtifactSearch As Boolean) As System.Data.DataTable
+			Dim searchExportDataSet As System.Data.DataSet
+			If isArtifactSearch Then
+				searchExportDataSet = searchManager.RetrieveViewsByContextArtifactID(caseArtifactID, True)
+			Else
+				searchExportDataSet = searchManager.RetrieveViewsByContextArtifactID(caseArtifactID, False)
+			End If
 			Return searchExportDataSet.Tables(0)
 		End Function
 
@@ -537,14 +536,25 @@ Namespace kCura.EDDS.WinForm
 
 		Public Sub NewImageFile(ByVal destinationArtifactID As Int32, ByVal caseinfo As kCura.EDDS.Types.CaseInfo)
 			CursorWait()
-			Me.GetCaseFields(caseinfo.ArtifactID, True)
 			Dim frm As New ImageLoad
-			'Dim imageFile As New ImageLoadFile(Me.Identity)
-			Dim imageFile As New ImageLoadFile
-			imageFile.Credential = Me.Credential
-			imageFile.CaseInfo = caseinfo
-			imageFile.DestinationFolderID = destinationArtifactID
-			frm.ImageLoadFile = imageFile
+			Try
+				Me.GetCaseFields(caseinfo.ArtifactID, True)
+				'Dim imageFile As New ImageLoadFile(Me.Identity)
+				Dim imageFile As New ImageLoadFile
+				imageFile.Credential = Me.Credential
+				imageFile.CaseInfo = caseinfo
+				imageFile.DestinationFolderID = destinationArtifactID
+				frm.ImageLoadFile = imageFile
+			Catch ex As System.Exception
+				If ex.Message.IndexOf("Need To Re Login") <> -1 Then
+					NewLogin(False)
+					Exit Sub
+				Else
+					Throw
+				End If
+			Finally
+				CursorDefault()
+			End Try
 			frm.Show()
 			CursorDefault()
 		End Sub
