@@ -8,6 +8,7 @@ Namespace kCura.WinEDDS
 		Private _uploadFile As Boolean
 		Private _lineNumber As Int32
 		Private _parentFolderID As Int32
+		Private _md5Hash As String
 		Private _sourceLine As String()
 
 		Public Property FileGuid() As String
@@ -91,6 +92,15 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
+		Public Property Md5Hash() As String
+			Get
+				Return _md5Hash
+			End Get
+			Set(ByVal value As String)
+				_md5Hash = value
+			End Set
+		End Property
+
 		Public Sub New( _
 		 ByVal fileGuid As String, _
 		 ByVal identityValue As String, _
@@ -100,6 +110,7 @@ Namespace kCura.WinEDDS
 		 ByVal uploadFile As Boolean, _
 		 ByVal lineNumber As Int32, _
 		 ByVal parentFolderID As Int32, _
+		 ByVal md5Hash As String, _
 		 ByVal sourceLine As String() _
 		 )
 			_fileGuid = fileGuid
@@ -111,6 +122,7 @@ Namespace kCura.WinEDDS
 			_lineNumber = lineNumber
 			_parentFolderID = parentFolderID
 			_sourceLine = sourceLine
+			_md5Hash = md5Hash
 		End Sub
 	End Class
 End Namespace

@@ -215,6 +215,7 @@ Namespace kCura.WinEDDS
 			Dim documentArtifactID As Int32
 			Dim markUploadStart As DateTime = DateTime.Now
 			Dim parentFolderID As Int32
+			Dim md5hash As String = ""
 			If uploadFile Then
 				filename = values(_filePathColumnIndex)
 				fileExists = System.IO.File.Exists(filename)
@@ -222,6 +223,9 @@ Namespace kCura.WinEDDS
 				If fileExists Then
 					Dim now As DateTime = DateTime.Now
 					fileGuid = _uploader.UploadFile(filename, _caseArtifactID)
+					If _extractMd5Hash Then
+						md5hash = kCura.Utility.File.GenerateMD5HashForFile(filename)
+					End If
 					filename = filename.Substring(filename.LastIndexOf("\") + 1)
 					WriteStatusLine(Windows.Process.EventType.Status, String.Format("End upload file. ({0}ms)", DateTime.op_Subtraction(DateTime.Now, now).Milliseconds))
 				End If
@@ -240,7 +244,7 @@ Namespace kCura.WinEDDS
 			ElseIf Not _processedDocumentIdentifiers(identityValue) Is Nothing Then
 				Throw New IdentifierOverlapException(identityValue, _processedDocumentIdentifiers(identityValue))
 			End If
-			Dim metadoc As New MetaDocument(fileGuid, identityValue, fieldCollection, fileExists AndAlso uploadFile AndAlso fileGuid <> String.Empty, filename, uploadFile, CurrentLineNumber, parentFolderID, values)
+			Dim metadoc As New MetaDocument(fileGuid, identityValue, fieldCollection, fileExists AndAlso uploadFile AndAlso fileGuid <> String.Empty, filename, uploadFile, CurrentLineNumber, parentFolderID, md5hash, values)
 			_docsToProcess.Add(metadoc)
 			Return identityValue
 		End Function
@@ -369,6 +373,9 @@ Namespace kCura.WinEDDS
 			documentDTO.DocumentAgentFlags.IndexStatus = kCura.EDDS.Types.IndexStatus.IndexLowPriority
 			Dim now As System.DateTime = System.DateTime.Now
 			SetFieldValues(documentDTO, fieldCollection)
+			If mdoc.Md5Hash <> "" Then
+				Me.SetMd5HashValue(mdoc.Md5Hash, documentDTO)
+			End If
 			Dim field As kCura.EDDS.WebAPI.DocumentManagerBase.Field
 			If mdoc.UploadFile And mdoc.IndexFileInDB Then
 				Dim fileDTO As kCura.EDDS.WebAPI.DocumentManagerBase.File = CreateFileDTO(filename, fileguid)
@@ -388,10 +395,10 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Private Function UpdateDocument(ByVal docDTO As kCura.EDDS.WebAPI.DocumentManagerBase.Document, ByVal mdoc As MetaDocument, ByVal extractText As Boolean) As Int32
-			Return UpdateDocument(docDTO, mdoc.FieldCollection, mdoc.IdentityValue, mdoc.UploadFile AndAlso mdoc.FileGuid <> String.Empty, mdoc.FileGuid <> String.Empty AndAlso extractText, mdoc.Filename, mdoc.FileGuid)
+			Return UpdateDocument(docDTO, mdoc.FieldCollection, mdoc.IdentityValue, mdoc.UploadFile AndAlso mdoc.FileGuid <> String.Empty, mdoc.FileGuid <> String.Empty AndAlso extractText, mdoc.Filename, mdoc.FileGuid, mdoc)
 		End Function
 
-		Private Function UpdateDocument(ByVal docDTO As kCura.EDDS.WebAPI.DocumentManagerBase.Document, ByVal fieldCollection As DocumentFieldCollection, ByVal identityValue As String, ByVal uploadFile As Boolean, ByVal extractText As Boolean, ByVal fileName As String, ByVal fileGuid As String) As Int32
+		Private Function UpdateDocument(ByVal docDTO As kCura.EDDS.WebAPI.DocumentManagerBase.Document, ByVal fieldCollection As DocumentFieldCollection, ByVal identityValue As String, ByVal uploadFile As Boolean, ByVal extractText As Boolean, ByVal fileName As String, ByVal fileGuid As String, ByVal mdoc As MetaDocument) As Int32
 			If Not _overwrite.ToLower = "none" Then
 				WriteStatusLine(Windows.Process.EventType.Status, String.Format("Updating document '{0}' in database.", identityValue))
 				docDTO.DocumentAgentFlags.UpdateFullText = extractText
@@ -430,6 +437,9 @@ Namespace kCura.WinEDDS
 					docDTO.Files = Nothing
 				Else
 					docDTO.Files = DirectCast(fileList.ToArray(GetType(kCura.EDDS.WebAPI.DocumentManagerBase.File)), kCura.EDDS.WebAPI.DocumentManagerBase.File())
+				End If
+				If mdoc.Md5Hash <> "" Then
+					Me.SetMd5HashValue(mdoc.Md5Hash, docDTO)
 				End If
 				Try
 					_documentManager.Update(_uploader.CaseArtifactID, docDTO)
@@ -835,6 +845,17 @@ Namespace kCura.WinEDDS
 		End Sub
 
 #End Region
+
+		Private Sub SetMd5HashValue(ByVal md5Hash As String, ByVal doc As kCura.EDDS.WebAPI.DocumentManagerBase.Document)
+			Dim field As kCura.EDDS.WebAPI.DocumentManagerBase.Field
+			For Each field In doc.Fields
+				If field.FieldCategoryID = kCura.DynamicFields.Types.FieldCategory.DuplicateHash Then
+					field.Value = System.Text.Encoding.Unicode.GetBytes(md5Hash)
+					Exit Sub
+				End If
+			Next
+		End Sub
+
 
 	End Class
 End Namespace

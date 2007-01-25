@@ -30,6 +30,7 @@ Namespace kCura.WinEDDS
 		Protected _fieldMap As LoadFileFieldMap
 		Protected _createFolderStructure As Boolean
 		Protected _destinationFolder As String
+		Protected _extractMd5Hash As Boolean
 
 		Public Property AllCodes() As kCura.Data.DataView
 			Get
@@ -80,6 +81,7 @@ Namespace kCura.WinEDDS
 			_uploadFiles = args.LoadNativeFiles
 			_createFolderStructure = args.CreateFolderStructure
 			_destinationFolder = args.FolderStructureContainedInColumn
+			_extractMd5Hash = args.ExtractMD5HashFromNativeFile
 		End Sub
 
 #Region "Code Parsing"
