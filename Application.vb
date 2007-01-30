@@ -381,8 +381,29 @@ Namespace kCura.EDDS.WinForm
 			End Try
 		End Sub
 
+		Private Function EnsureConnection() As Boolean
+			If Not Me.SelectedCaseInfo Is Nothing Then
+				Dim casefields As String() = Nothing
+				Dim continue As Boolean = True
+				Try
+					casefields = Me.GetCaseFields(Me.SelectedCaseInfo.ArtifactID, True)
+					Return Not casefields Is Nothing
+				Catch ex As System.Exception
+					If ex.Message.IndexOf("Need To Re Login") <> -1 Then
+						Return False
+					Else
+						Throw
+					End If
+				End Try
+			Else
+				Return True
+			End If
+			end function
+
 		Public Sub RefreshCaseFolders()
-			RaiseEvent OnEvent(New kCura.WinEDDS.LoadCaseEvent(SelectedCaseInfo))
+			If Me.EnsureConnection Then
+				RaiseEvent OnEvent(New kCura.WinEDDS.LoadCaseEvent(SelectedCaseInfo))
+			End If
 		End Sub
 
 		Public Function CheckFieldMap(ByVal loadFile As LoadFile) As Boolean
