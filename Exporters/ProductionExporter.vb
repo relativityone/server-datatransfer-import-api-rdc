@@ -270,7 +270,12 @@ Namespace kCura.WinEDDS
 						End If
 						Try
 							fullTextGuid = _fileManager.GetFullTextGuidsByDocumentArtifactIdAndType(Me.SelectedCaseInfo.ArtifactID, CType(documentImagesTable.Rows(count)("DocumentArtifactID"), Int32), 2)
-							fullText = _fullTextDownloader.ReadFullTextFile(_sourceDirectory & "\" & fullTextGuid)
+							If fullTextGuid = "" Then
+								fullText = ""
+								Me.WriteWarning(String.Format("Could not retrieve full text for document #{0}", count + 1))
+							Else
+								fullText = _fullTextDownloader.ReadFullTextFile(_sourceDirectory & "\" & fullTextGuid)
+							End If
 							pageText = fullText.Substring(currentPageFirstByteNumber, CInt(documentImagesTable.Rows(count)("ByteRange")))
 							pageText = pageText.Replace(ChrW(10), " ")
 							pageText = pageText.Replace(",", "")
