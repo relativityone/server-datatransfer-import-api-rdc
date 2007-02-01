@@ -58,6 +58,7 @@ Namespace kCura.EDDS.WinForm
 			Me.TimeZoneGroupBox.TabIndex = 0
 			Me.TimeZoneGroupBox.TabStop = False
 			Me.TimeZoneGroupBox.Text = "Default Time Zone"
+			Me.TimeZoneGroupBox.Visible = False
 			'
 			'_timeZoneDropDown
 			'
@@ -187,7 +188,7 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 		Private Sub TimeZoneGroupBox_Enter(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles TimeZoneGroupBox.Enter
-
+			_application.TimeZoneOffset = 0
 		End Sub
 	End Class
 End Namespace

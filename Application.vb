@@ -47,6 +47,7 @@ Namespace kCura.EDDS.WinForm
 #Region "Properties"
 		Public Property TimeZoneOffset() As Int32
 			Get
+				Return 0
 				Return _timeZoneOffset
 			End Get
 			Set(ByVal value As Int32)
@@ -300,7 +301,11 @@ Namespace kCura.EDDS.WinForm
 					RaiseEvent OnEvent(New LoadCaseEvent(caseInfo))
 				End If
 			Catch ex As System.Exception
-				Me.ChangeWebServiceURL()
+				If ex.Message.IndexOf("Need To Re Login") <> -1 Then
+					NewLogin(True)
+				Else
+					Me.ChangeWebServiceURL()
+				End If
 			End Try
 		End Sub
 
