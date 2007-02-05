@@ -189,7 +189,7 @@ Namespace kCura.EDDS.WinForm
 					RecursivelyPopulate(folderRow, rootFolderNode, tag.Path)
 				End If
 			Next
-			rootFolderNode.ExpandAll()
+			'rootFolderNode.ExpandAll()
 			_treeView.SelectedNode = rootFolderNode
 
 		End Sub
