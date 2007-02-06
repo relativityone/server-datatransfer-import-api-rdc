@@ -117,11 +117,11 @@ Namespace kCura.WinEDDS
 			_processController = processController
 			_continue = True
 
-			_downloadHandler = New FileDownloader(exportFile.Credential, exportFile.CaseInfo.DocumentPath & "\EDDS" & exportFile.CaseInfo.ArtifactID, exportFile.CaseInfo.DownloadHandlerURL, exportFile.CookieContainer, Not kCura.WinEDDS.Service.Settings.WindowsAuthentication)
+			_downloadHandler = New FileDownloader(exportFile.Credential, exportFile.CaseInfo.DocumentPath & "\EDDS" & exportFile.CaseInfo.ArtifactID, exportFile.CaseInfo.DownloadHandlerURL, exportFile.CookieContainer, kCura.WinEDDS.Service.Settings.AuthenticationToken)
 			_productionManager = New kCura.WinEDDS.Service.ProductionManager(cred, cookieContainer)
 			_folderManager = New kCura.WinEDDS.Service.FolderManager(cred, cookieContainer)
 			_documentManager = New kCura.WinEDDS.Service.DocumentManager(cred, cookieContainer)
-			_downloadManager = New FileDownloader(cred, destinationFolderPath, exportFile.CaseInfo.DownloadHandlerURL, cookieContainer, Not kCura.WinEDDS.Service.Settings.WindowsAuthentication)
+			_downloadManager = New FileDownloader(cred, destinationFolderPath, exportFile.CaseInfo.DownloadHandlerURL, cookieContainer, kCura.WinEDDS.Service.Settings.AuthenticationToken)
 			_fileManager = New kCura.WinEDDS.Service.FileManager(cred, cookieContainer)
 			_folderManager = New kCura.WinEDDS.Service.FolderManager(cred, cookieContainer)
 			_fileManager = New kCura.WinEDDS.Service.FileManager(cred, cookieContainer)

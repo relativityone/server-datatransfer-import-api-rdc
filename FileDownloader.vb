@@ -12,15 +12,14 @@ Namespace kCura.WinEDDS
 		Private _destinationFolderPath As String
 		Private _downloadUrl As String
 		Private _cookieContainer As System.Net.CookieContainer
-		Private _requiresAuthenticationToken As Boolean
-		Private _distributedSessionCreated As Boolean
+		Private _authenticationToken As String
 		Private _userManager As kCura.WinEDDS.Service.UserManager
 		
 		Public Sub SetDesintationFolderName(ByVal value As String)
 			_destinationFolderPath = value
 		End Sub
 
-		Public Sub New(ByVal credentials As Net.NetworkCredential, ByVal destinationFolderPath As String, ByVal downloadHandlerUrl As String, ByVal cookieContainer As System.Net.CookieContainer, ByVal requiresAuthenticationToken As Boolean)
+		Public Sub New(ByVal credentials As Net.NetworkCredential, ByVal destinationFolderPath As String, ByVal downloadHandlerUrl As String, ByVal cookieContainer As System.Net.CookieContainer, ByVal authenticationToken As String)
 			_gateway = New kCura.WinEDDS.Service.FileIO(credentials, cookieContainer)
 			_cookieContainer = cookieContainer
 			_gateway.Credentials = credentials
@@ -33,7 +32,7 @@ Namespace kCura.WinEDDS
 			_downloadUrl = downloadHandlerUrl
 			'Dim documentManager As kCura.EDDS.WebAPI.DocumentManagerBase.DocumentManager
 			SetType(_destinationFolderPath)
-			_requiresAuthenticationToken = requiresAuthenticationToken
+			_authenticationToken = authenticationToken
 			_userManager = New kCura.WinEDDS.Service.UserManager(credentials, cookieContainer)
 		End Sub
 
@@ -112,10 +111,8 @@ Namespace kCura.WinEDDS
 			Try
 				Dim remoteuri As String
 				remoteuri = String.Format("{0}Download.aspx?ArtifactID={1}&GUID={2}&AppID={3}", _downloadUrl, artifactID, remoteFileGuid, appID)
-				If _requiresAuthenticationToken AndAlso Not _distributedSessionCreated Then
-					Dim authenticationToken As String = _userManager.GenerateAuthenticationToken()
-					remoteuri &= String.Format("&AuthenticationToken={0}", authenticationToken)
-					_distributedSessionCreated = True
+				If _authenticationToken <> String.Empty Then
+					remoteuri &= String.Format("&AuthenticationToken={0}", _authenticationToken)
 				End If
 				Dim httpWebRequest As System.Net.HttpWebRequest = CType(System.Net.HttpWebRequest.Create(remoteuri), System.Net.HttpWebRequest)
 				httpWebRequest.Credentials = _credentials

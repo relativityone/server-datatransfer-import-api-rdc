@@ -12,6 +12,6 @@ Namespace kCura.WinEDDS.Service
 		''' </history>
 		''' -----------------------------------------------------------------------------
 		Public Shared DefaultTimeOut As Int32 = 60000
-		Public Shared WindowsAuthentication As Boolean
+		Public Shared AuthenticationToken As String = String.Empty
 	End Class
 End Namespace
