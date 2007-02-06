@@ -462,7 +462,10 @@ Namespace kCura.EDDS.WinForm
 
 #Region "Form Initializers"
 		Public Sub NewLoadFile(ByVal destinationArtifactID As Int32, ByVal caseInfo As kCura.EDDS.Types.CaseInfo)
-			Me.GetCaseFields(caseInfo.ArtifactID, True)
+			If Not Me.IsConnected(caseInfo.ArtifactID) Then
+				CursorDefault()
+				Exit Sub
+			End If
 			Dim frm As New LoadFileForm
 			Dim loadFile As New loadFile
 			frm._application = Me
@@ -562,22 +565,19 @@ Namespace kCura.EDDS.WinForm
 
 		Public Sub NewImageFile(ByVal destinationArtifactID As Int32, ByVal caseinfo As kCura.EDDS.Types.CaseInfo)
 			CursorWait()
+			If Not Me.IsConnected(caseinfo.ArtifactID) Then
+				CursorDefault()
+				Exit Sub
+			End If
 			Dim frm As New ImageLoad
 			Try
-				Me.GetCaseFields(caseinfo.ArtifactID, True)
-				'Dim imageFile As New ImageLoadFile(Me.Identity)
 				Dim imageFile As New ImageLoadFile
 				imageFile.Credential = Me.Credential
 				imageFile.CaseInfo = caseinfo
 				imageFile.DestinationFolderID = destinationArtifactID
 				frm.ImageLoadFile = imageFile
 			Catch ex As System.Exception
-				If ex.Message.IndexOf("Need To Re Login") <> -1 Then
-					NewLogin(False)
-					Exit Sub
-				Else
-					Throw
-				End If
+				Throw
 			Finally
 				CursorDefault()
 			End Try
