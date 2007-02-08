@@ -914,8 +914,6 @@ Namespace kCura.EDDS.WinForm
 				If relativityManager.ValidateSuccesfulLogin Then
 					CheckVersion(System.Net.CredentialCache.DefaultCredentials)
 					_credential = cred
-					Dim userManager As New kCura.WinEDDS.Service.UserManager(cred, _cookieContainer)
-					kCura.WinEDDS.Service.Settings.AuthenticationToken = userManager.GetLatestAuthenticationToken()
 					Return True
 				Else
 					Return False
@@ -931,6 +929,7 @@ Namespace kCura.EDDS.WinForm
 			Try
 				If userManager.Login(cred.UserName, cred.Password) Then
 					_credential = cred
+					kCura.WinEDDS.Service.Settings.AuthenticationToken = userManager.GetLatestAuthenticationToken()
 					If openCaseSelector Then OpenCase()
 				Else
 					Me.ReLogin("Invalid login. Try again?")
