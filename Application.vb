@@ -842,6 +842,7 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 		Public Function ReadLoadFile(ByVal loadFile As LoadFile, ByVal path As String) As LoadFile
+			If Not Me.EnsureConnection Then Return Nothing
 			Dim sr As New System.IO.StreamReader(path)
 			Dim tempLoadFile As loadFile
 			Dim deserializer As New System.Runtime.Serialization.Formatters.Soap.SoapFormatter
