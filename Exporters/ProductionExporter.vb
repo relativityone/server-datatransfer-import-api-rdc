@@ -274,7 +274,12 @@ Namespace kCura.WinEDDS
 								fullText = ""
 								Me.WriteWarning(String.Format("Could not retrieve full text for document #{0}", count + 1))
 							Else
-								fullText = _fullTextDownloader.ReadFullTextFile(_sourceDirectory & "\" & fullTextGuid)
+								Dim tempFile As String = System.IO.Path.GetTempFileName
+								_downloadManager.DownloadFile(tempFile, fullTextGuid, CType(documentImagesTable.Rows(count)("DocumentArtifactID"), Int32), Me.SelectedCaseInfo.ArtifactID.ToString)
+								Dim sr As New System.IO.StreamReader(tempFile)
+								fullText = sr.ReadToEnd
+								sr.Close()
+								System.IO.File.Delete(tempFile)
 							End If
 							pageText = fullText.Substring(currentPageFirstByteNumber, CInt(documentImagesTable.Rows(count)("ByteRange")))
 							pageText = pageText.Replace(ChrW(10), " ")
