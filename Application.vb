@@ -478,8 +478,40 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 		Public Sub NewProductionExport(ByVal caseInfo As kCura.EDDS.Types.CaseInfo)
-			Dim frm As New ProductionExportForm
-			Dim exportFile As New exportFile
+			'Dim frm As New ProductionExportForm
+			'Dim exportFile As New exportFile
+			'Dim productionManager As kCura.WinEDDS.Service.ProductionManager
+			'Try
+			'	productionManager = New kCura.WinEDDS.Service.ProductionManager(Me.Credential, _cookieContainer)
+			'Catch ex As System.Exception
+			'	If ex.Message.IndexOf("Need To Re Login") <> -1 Then
+			'		NewLogin(False)
+			'		'productionManager = New kCura.WinEDDS.Service.ProductionManager(Me.Credential, _cookieContainer)
+			'		Exit Sub
+			'	Else
+			'		Throw
+			'	End If
+			'End Try
+			'exportFile.CaseInfo = caseInfo
+			'Dim exportFileDataSet As System.Data.DataSet
+			'Try
+			'	exportFileDataSet = productionManager.RetrieveProducedByContextArtifactID(caseInfo.ArtifactID)
+			'Catch ex As System.Exception
+			'	If ex.Message.IndexOf("Need To Re Login") <> -1 Then
+			'		NewLogin(False)
+			'		Exit Sub
+			'	Else
+			'		Throw
+			'	End If
+			'End Try
+			'exportFile.DataTable = exportFileDataSet.Tables(0)
+			'exportFile.Credential = Me.Credential
+			'exportFile.TypeOfExport = exportFile.ExportType.Production
+			'frm.Application = Me
+			'frm.ExportFile = exportFile
+			'frm.Show()
+			Dim frm As New ExportForm
+			Dim exportFile As New WinEDDS.ExportFile
 			Dim productionManager As kCura.WinEDDS.Service.ProductionManager
 			Try
 				productionManager = New kCura.WinEDDS.Service.ProductionManager(Me.Credential, _cookieContainer)
@@ -513,8 +545,8 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 		Public Sub NewSearchExport(ByVal rootFolderID As Int32, ByVal caseInfo As kCura.EDDS.Types.CaseInfo, ByVal typeOfExport As kCura.WinEDDS.ExportFile.ExportType)
-			Dim frm As New SearchExportForm
-			Dim exportFile As New exportFile
+			Dim frm As New ExportForm
+			Dim exportFile As New WinEDDS.ExportFile
 			Try
 				Dim searchManager As New kCura.WinEDDS.Service.SearchManager(Me.Credential, _cookieContainer)
 				exportFile.ArtifactID = rootFolderID
