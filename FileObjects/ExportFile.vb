@@ -20,6 +20,8 @@ Namespace kCura.WinEDDS
 		Protected _useAbsolutePaths As Boolean
 		Protected _renameFilesToIdentifier As Boolean
 		Protected _identifierColumnName As String
+		Protected _volumeInfo As kCura.WinEDDS.Exporters.VolumeInfo
+		Protected _exportImages As Boolean
 
 #Region "Public Properties"
 
@@ -197,6 +199,24 @@ Namespace kCura.WinEDDS
 			End Get
 			Set(ByVal value As String)
 				_identifierColumnName = value
+			End Set
+		End Property
+
+		Public Property VolumeInfo() As kCura.WinEDDS.Exporters.VolumeInfo
+			Get
+				Return _volumeInfo
+			End Get
+			Set(ByVal value As kCura.WinEDDS.Exporters.VolumeInfo)
+				_volumeInfo = value
+			End Set
+		End Property
+
+		Public Property ExportImages() As Boolean
+			Get
+				Return _exportImages
+			End Get
+			Set(ByVal value As Boolean)
+				_exportImages = value
 			End Set
 		End Property
 

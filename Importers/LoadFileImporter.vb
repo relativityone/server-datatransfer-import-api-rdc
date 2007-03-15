@@ -733,7 +733,7 @@ Namespace kCura.WinEDDS
 		Public Class DocumentDomainException
 			Inherits kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
 			Public Sub New(ByVal ex As System.Exception)
-				MyBase.New("Error accessing document information in domain layer: " & ex.Message.Replace("System.Web.Services.Protocols.SoapException: Server was unable to process request. ---> ", ""))
+				MyBase.New("Error accessing document information in domain layer: " & ex.Message.Replace("System.Web.Services.Protocols.SoapException: Server was unable to process request. ---> ", ""), ex)
 			End Sub
 		End Class
 

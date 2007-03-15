@@ -203,6 +203,22 @@
           </s:sequence>
         </s:complexType>
       </s:element>
+      <s:element name="GetFileNameByDocumentArtifactIDAndGuid">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="documentArtifactID" type="s:int" />
+            <s:element minOccurs="0" maxOccurs="1" name="guid" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetFileNameByDocumentArtifactIDAndGuidResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetFileNameByDocumentArtifactIDAndGuidResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
     </s:schema>
   </wsdl:types>
   <wsdl:message name="RetrieveByProductionArtifactIDForProductionSoapIn">
@@ -265,6 +281,12 @@
   <wsdl:message name="RetrieveNativesFileSizeSoapOut">
     <wsdl:part name="parameters" element="tns:RetrieveNativesFileSizeResponse" />
   </wsdl:message>
+  <wsdl:message name="GetFileNameByDocumentArtifactIDAndGuidSoapIn">
+    <wsdl:part name="parameters" element="tns:GetFileNameByDocumentArtifactIDAndGuid" />
+  </wsdl:message>
+  <wsdl:message name="GetFileNameByDocumentArtifactIDAndGuidSoapOut">
+    <wsdl:part name="parameters" element="tns:GetFileNameByDocumentArtifactIDAndGuidResponse" />
+  </wsdl:message>
   <wsdl:portType name="FileManagerSoap">
     <wsdl:operation name="RetrieveByProductionArtifactIDForProduction">
       <wsdl:input message="tns:RetrieveByProductionArtifactIDForProductionSoapIn" />
@@ -305,6 +327,10 @@
     <wsdl:operation name="RetrieveNativesFileSize">
       <wsdl:input message="tns:RetrieveNativesFileSizeSoapIn" />
       <wsdl:output message="tns:RetrieveNativesFileSizeSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetFileNameByDocumentArtifactIDAndGuid">
+      <wsdl:input message="tns:GetFileNameByDocumentArtifactIDAndGuidSoapIn" />
+      <wsdl:output message="tns:GetFileNameByDocumentArtifactIDAndGuidSoapOut" />
     </wsdl:operation>
   </wsdl:portType>
   <wsdl:binding name="FileManagerSoap" type="tns:FileManagerSoap">
@@ -392,6 +418,15 @@
     </wsdl:operation>
     <wsdl:operation name="RetrieveNativesFileSize">
       <soap:operation soapAction="http://www.kCura.com/EDDS/FileManager/RetrieveNativesFileSize" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetFileNameByDocumentArtifactIDAndGuid">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/FileManager/GetFileNameByDocumentArtifactIDAndGuid" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>

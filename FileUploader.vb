@@ -91,7 +91,7 @@ Namespace kCura.WinEDDS
 					System.IO.File.Copy(filePath, String.Format("{0}{1}", _destinationFolderPath, newFileName))
 					Return newFileName
 				Catch ex As System.Exception
-					RaiseEvent UploadStatusEvent("Error Uploading File")					'TODO: Change this to a separate error-type event'
+					RaiseEvent UploadStatusEvent("Error Uploading File: " & ex.Message & System.Environment.NewLine & ex.ToString)					'TODO: Change this to a separate error-type event'
 					Throw New ApplicationException("Error Uploading File", ex)
 				End Try
 			End If

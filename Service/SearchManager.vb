@@ -48,9 +48,33 @@ Namespace kCura.WinEDDS.Service
 			End If
 		End Function
 
+		Public Function RetrieveImagesForDocuments(ByVal caseContextArtifactID As Int32, ByVal documentArtifactIDs As Int32(), ByVal productionArtifactID As Int32) As System.Data.DataSet
+			If kCura.WinEDDS.Config.UsesWebAPI Then
+				Return RetrieveImagesForSearch(caseContextArtifactID, documentArtifactIDs)
+			Else
+				'TODO: Implement non-webservice-based calls
+			End If
+		End Function
+
+		Public Function RetrieveImagesForProductionDocuments(ByVal caseContextArtifactID As Int32, ByVal documentArtifactIDs As Int32(), ByVal productionArtifactID As Int32) As System.Data.DataSet
+			If kCura.WinEDDS.Config.UsesWebAPI Then
+				Return Me.RetrieveImagesByProductionArtifactIDForProductionByDocumentSet(caseContextArtifactID, productionArtifactID, documentArtifactIDs)
+			Else
+				'TODO: Implement non-webservice-based calls
+			End If
+		End Function
+
 		Public Shadows Function RetrieveFullTextFilesForSearch(ByVal caseContextArtifactID As Int32, ByVal documentArtifactIDs As String) As System.Data.DataSet
 			If kCura.WinEDDS.Config.UsesWebAPI Then
 				Return MyBase.RetrieveFullTextFilesForSearch(caseContextArtifactID, documentArtifactIDs)
+			Else
+				'Return kCura.EDDS.Service.FileQuery.RetrieveFullTextFilesForDocuments(_identity, artifactID, documentArtifactIDs).ToDataSet()
+			End If
+		End Function
+
+		Public Shadows Function RetrieveImagesForSearch(ByVal caseContextArtifactID As Int32, ByVal documentArtifactIDs As Int32()) As System.Data.DataSet
+			If kCura.WinEDDS.Config.UsesWebAPI Then
+				Return MyBase.RetrieveImagesForSearch(caseContextArtifactID, documentArtifactIDs)
 			Else
 				'Return kCura.EDDS.Service.FileQuery.RetrieveFullTextFilesForDocuments(_identity, artifactID, documentArtifactIDs).ToDataSet()
 			End If
@@ -72,6 +96,14 @@ Namespace kCura.WinEDDS.Service
 			End If
 		End Function
 
+		Public Shadows Function RetrieveSearchFieldsForProduction(ByVal caseContextArtifactID As Int32, ByVal productionArtifactID As Int32) As System.Data.DataSet
+			If kCura.WinEDDS.Config.UsesWebAPI Then
+				Return MyBase.RetrieveSearchFieldsForProduction(caseContextArtifactID, productionArtifactID)
+			Else
+				'TODO: BIZARRO! IMPLEMENT ME!  BIZARRO!
+			End If
+		End Function
+
 		Public Shadows Function CountSearchByParentArtifactID(ByVal caseContextArtifactID As Int32, ByVal parentArtifactID As Int32, ByVal searchSubFolders As Boolean, ByVal viewArtifactID As Int32) As Int32
 			If kCura.WinEDDS.Config.UsesWebAPI Then
 				Return MyBase.CountSearchByParentArtifactID(caseContextArtifactID, parentArtifactID, searchSubFolders, viewArtifactID)
@@ -85,6 +117,14 @@ Namespace kCura.WinEDDS.Service
 				Return MyBase.SearchByParentArtifactID(caseContextArtifactID, parentArtifactID, searchSubFolders, start, finish, viewArtifactID)
 			Else
 				'Return _searchManager.SearchByParentArtifactIDAsDataSet(_identity, parentArtifactID, searchSubFolders)
+			End If
+		End Function
+
+		Public Shadows Function SearchByProductionArtifactID(ByVal caseContextArtifactID As Int32, ByVal productionArtifactID As Int32, ByVal start As Int32, ByVal finish As Int32) As System.data.DataSet
+			If kCura.WinEDDS.Config.UsesWebAPI Then
+				Return MyBase.SearchByProductionArtifactID(caseContextArtifactID, productionArtifactID, start, finish)
+			Else
+				'Fix this
 			End If
 		End Function
 #End Region

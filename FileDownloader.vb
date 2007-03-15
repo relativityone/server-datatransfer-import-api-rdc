@@ -98,7 +98,7 @@ Namespace kCura.WinEDDS
 							System.IO.Directory.CreateDirectory(dir)
 						End If
 					End If
-					System.IO.File.Copy(remoteFilePath, localFilePath)
+					System.IO.File.Copy(remoteFilePath, localFilePath, True)
 					Return True
 				Catch ex As System.Exception
 					RaiseEvent UploadStatusEvent("Error Uploading File")					'TODO: Change this to a separate error-type event'

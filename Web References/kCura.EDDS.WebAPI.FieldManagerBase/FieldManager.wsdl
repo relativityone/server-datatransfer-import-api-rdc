@@ -20,6 +20,7 @@
               <s:element minOccurs="1" maxOccurs="1" name="FieldTypeID" type="s:int" />
               <s:element minOccurs="1" maxOccurs="1" name="FieldType" type="tns:FieldType" />
               <s:element minOccurs="1" maxOccurs="1" name="FieldCategoryID" type="s:int" />
+              <s:element minOccurs="1" maxOccurs="1" name="FieldCategory" type="tns:FieldCategory" />
               <s:element minOccurs="1" maxOccurs="1" name="ArtifactViewFieldID" type="s:int" />
               <s:element minOccurs="1" maxOccurs="1" name="CodeTypeID">
                 <s:complexType>
@@ -119,6 +120,21 @@
           <s:enumeration value="MultiCode" />
           <s:enumeration value="File" />
           <s:enumeration value="Object" />
+        </s:restriction>
+      </s:simpleType>
+      <s:simpleType name="FieldCategory">
+        <s:restriction base="s:string">
+          <s:enumeration value="Generic" />
+          <s:enumeration value="FullText" />
+          <s:enumeration value="Identifier" />
+          <s:enumeration value="Associative" />
+          <s:enumeration value="Comments" />
+          <s:enumeration value="GroupIdentifier" />
+          <s:enumeration value="ProductionMarker" />
+          <s:enumeration value="AutoCreate" />
+          <s:enumeration value="DuplicateHash" />
+          <s:enumeration value="FolderName" />
+          <s:enumeration value="FileInfo" />
         </s:restriction>
       </s:simpleType>
       <s:element name="CreateResponse">

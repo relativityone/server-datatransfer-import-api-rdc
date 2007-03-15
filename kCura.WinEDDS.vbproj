@@ -258,12 +258,37 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Exporters\DocumentExportInfo.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Exporters\Exporter.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Exporters\ImageExportInfo.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Exporters\ProductionExporter.vb"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "Exporters\SearchExporter.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Exporters\VolumeInfo.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Exporters\VolumeManager.vb"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

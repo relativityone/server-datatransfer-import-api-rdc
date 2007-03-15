@@ -27,7 +27,8 @@ Namespace kCura.EDDS.WebAPI.ProductionManagerBase
     <System.Diagnostics.DebuggerStepThroughAttribute(),  _
      System.ComponentModel.DesignerCategoryAttribute("code"),  _
      System.Web.Services.WebServiceBindingAttribute(Name:="ProductionManagerSoap", [Namespace]:="http://www.kCura.com/EDDS/ProductionManager"),  _
-     System.Xml.Serialization.XmlIncludeAttribute(GetType(Artifact))>  _
+     System.Xml.Serialization.XmlIncludeAttribute(GetType(Artifact)),  _
+     System.Xml.Serialization.XmlIncludeAttribute(GetType(System.Object()))>  _
     Public Class ProductionManager
         Inherits System.Web.Services.Protocols.SoapHttpClientProtocol
         
@@ -204,6 +205,12 @@ Namespace kCura.EDDS.WebAPI.ProductionManagerBase
         
         '<remarks/>
         Public FontSize As Integer
+        
+        '<remarks/>
+        Public ErrorFlagFieldArtifactID As Integer
+        
+        '<remarks/>
+        Public ProductionOrder() As Object
     End Class
     
     '<remarks/>

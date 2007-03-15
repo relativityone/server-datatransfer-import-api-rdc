@@ -212,6 +212,24 @@ Namespace kCura.EDDS.WebAPI.FileManagerBase
             Dim results() As Object = Me.EndInvoke(asyncResult)
             Return CType(results(0),Long)
         End Function
+        
+        '<remarks/>
+        <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/FileManager/GetFileNameByDocumentArtifactIDAndGuid", RequestNamespace:="http://www.kCura.com/EDDS/FileManager", ResponseNamespace:="http://www.kCura.com/EDDS/FileManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
+        Public Function GetFileNameByDocumentArtifactIDAndGuid(ByVal caseContextArtifactID As Integer, ByVal documentArtifactID As Integer, ByVal guid As String) As String
+            Dim results() As Object = Me.Invoke("GetFileNameByDocumentArtifactIDAndGuid", New Object() {caseContextArtifactID, documentArtifactID, guid})
+            Return CType(results(0),String)
+        End Function
+        
+        '<remarks/>
+        Public Function BeginGetFileNameByDocumentArtifactIDAndGuid(ByVal caseContextArtifactID As Integer, ByVal documentArtifactID As Integer, ByVal guid As String, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("GetFileNameByDocumentArtifactIDAndGuid", New Object() {caseContextArtifactID, documentArtifactID, guid}, callback, asyncState)
+        End Function
+        
+        '<remarks/>
+        Public Function EndGetFileNameByDocumentArtifactIDAndGuid(ByVal asyncResult As System.IAsyncResult) As String
+            Dim results() As Object = Me.EndInvoke(asyncResult)
+            Return CType(results(0),String)
+        End Function
     End Class
     
     '<remarks/>

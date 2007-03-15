@@ -86,6 +86,56 @@
           </s:sequence>
         </s:complexType>
       </s:element>
+      <s:element name="RetrieveImagesForSearch">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
+            <s:element minOccurs="0" maxOccurs="1" name="documentArtifactIDs" type="tns:ArrayOfInt" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="ArrayOfInt">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="int" type="s:int" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="RetrieveImagesForSearchResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="RetrieveImagesForSearchResult">
+              <s:complexType>
+                <s:sequence>
+                  <s:element ref="s:schema" />
+                  <s:any />
+                </s:sequence>
+              </s:complexType>
+            </s:element>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="RetrieveImagesByProductionArtifactIDForProductionByDocumentSet">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="productionArtifactID" type="s:int" />
+            <s:element minOccurs="0" maxOccurs="1" name="documentArtifactIDs" type="tns:ArrayOfInt" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="RetrieveImagesByProductionArtifactIDForProductionByDocumentSetResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="RetrieveImagesByProductionArtifactIDForProductionByDocumentSetResult">
+              <s:complexType>
+                <s:sequence>
+                  <s:element ref="s:schema" />
+                  <s:any />
+                </s:sequence>
+              </s:complexType>
+            </s:element>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
       <s:element name="RetrieveViewsByContextArtifactID">
         <s:complexType>
           <s:sequence>
@@ -120,6 +170,28 @@
         <s:complexType>
           <s:sequence>
             <s:element minOccurs="0" maxOccurs="1" name="RetrieveSearchFieldsResult">
+              <s:complexType>
+                <s:sequence>
+                  <s:element ref="s:schema" />
+                  <s:any />
+                </s:sequence>
+              </s:complexType>
+            </s:element>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="RetrieveSearchFieldsForProduction">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="productionArtifactID" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="RetrieveSearchFieldsForProductionResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="RetrieveSearchFieldsForProductionResult">
               <s:complexType>
                 <s:sequence>
                   <s:element ref="s:schema" />
@@ -173,6 +245,45 @@
           </s:sequence>
         </s:complexType>
       </s:element>
+      <s:element name="SearchByProductionArtifactID">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="productionArtifactID" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="start" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="finish" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="SearchByProductionArtifactIDResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="SearchByProductionArtifactIDResult">
+              <s:complexType>
+                <s:sequence>
+                  <s:element ref="s:schema" />
+                  <s:any />
+                </s:sequence>
+              </s:complexType>
+            </s:element>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="CountSearchByProductionArtifactID">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="productionArtifactID" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="CountSearchByProductionArtifactIDResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="CountSearchByProductionArtifactIDResult" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
     </s:schema>
   </wsdl:types>
   <wsdl:message name="CountSearchByArtifactIDSoapIn">
@@ -199,6 +310,18 @@
   <wsdl:message name="RetrieveFullTextFilesForSearchSoapOut">
     <wsdl:part name="parameters" element="tns:RetrieveFullTextFilesForSearchResponse" />
   </wsdl:message>
+  <wsdl:message name="RetrieveImagesForSearchSoapIn">
+    <wsdl:part name="parameters" element="tns:RetrieveImagesForSearch" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveImagesForSearchSoapOut">
+    <wsdl:part name="parameters" element="tns:RetrieveImagesForSearchResponse" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveImagesByProductionArtifactIDForProductionByDocumentSetSoapIn">
+    <wsdl:part name="parameters" element="tns:RetrieveImagesByProductionArtifactIDForProductionByDocumentSet" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveImagesByProductionArtifactIDForProductionByDocumentSetSoapOut">
+    <wsdl:part name="parameters" element="tns:RetrieveImagesByProductionArtifactIDForProductionByDocumentSetResponse" />
+  </wsdl:message>
   <wsdl:message name="RetrieveViewsByContextArtifactIDSoapIn">
     <wsdl:part name="parameters" element="tns:RetrieveViewsByContextArtifactID" />
   </wsdl:message>
@@ -211,6 +334,12 @@
   <wsdl:message name="RetrieveSearchFieldsSoapOut">
     <wsdl:part name="parameters" element="tns:RetrieveSearchFieldsResponse" />
   </wsdl:message>
+  <wsdl:message name="RetrieveSearchFieldsForProductionSoapIn">
+    <wsdl:part name="parameters" element="tns:RetrieveSearchFieldsForProduction" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveSearchFieldsForProductionSoapOut">
+    <wsdl:part name="parameters" element="tns:RetrieveSearchFieldsForProductionResponse" />
+  </wsdl:message>
   <wsdl:message name="CountSearchByParentArtifactIDSoapIn">
     <wsdl:part name="parameters" element="tns:CountSearchByParentArtifactID" />
   </wsdl:message>
@@ -222,6 +351,18 @@
   </wsdl:message>
   <wsdl:message name="SearchByParentArtifactIDSoapOut">
     <wsdl:part name="parameters" element="tns:SearchByParentArtifactIDResponse" />
+  </wsdl:message>
+  <wsdl:message name="SearchByProductionArtifactIDSoapIn">
+    <wsdl:part name="parameters" element="tns:SearchByProductionArtifactID" />
+  </wsdl:message>
+  <wsdl:message name="SearchByProductionArtifactIDSoapOut">
+    <wsdl:part name="parameters" element="tns:SearchByProductionArtifactIDResponse" />
+  </wsdl:message>
+  <wsdl:message name="CountSearchByProductionArtifactIDSoapIn">
+    <wsdl:part name="parameters" element="tns:CountSearchByProductionArtifactID" />
+  </wsdl:message>
+  <wsdl:message name="CountSearchByProductionArtifactIDSoapOut">
+    <wsdl:part name="parameters" element="tns:CountSearchByProductionArtifactIDResponse" />
   </wsdl:message>
   <wsdl:portType name="SearchManagerSoap">
     <wsdl:operation name="CountSearchByArtifactID">
@@ -240,6 +381,14 @@
       <wsdl:input message="tns:RetrieveFullTextFilesForSearchSoapIn" />
       <wsdl:output message="tns:RetrieveFullTextFilesForSearchSoapOut" />
     </wsdl:operation>
+    <wsdl:operation name="RetrieveImagesForSearch">
+      <wsdl:input message="tns:RetrieveImagesForSearchSoapIn" />
+      <wsdl:output message="tns:RetrieveImagesForSearchSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveImagesByProductionArtifactIDForProductionByDocumentSet">
+      <wsdl:input message="tns:RetrieveImagesByProductionArtifactIDForProductionByDocumentSetSoapIn" />
+      <wsdl:output message="tns:RetrieveImagesByProductionArtifactIDForProductionByDocumentSetSoapOut" />
+    </wsdl:operation>
     <wsdl:operation name="RetrieveViewsByContextArtifactID">
       <wsdl:input message="tns:RetrieveViewsByContextArtifactIDSoapIn" />
       <wsdl:output message="tns:RetrieveViewsByContextArtifactIDSoapOut" />
@@ -248,6 +397,10 @@
       <wsdl:input message="tns:RetrieveSearchFieldsSoapIn" />
       <wsdl:output message="tns:RetrieveSearchFieldsSoapOut" />
     </wsdl:operation>
+    <wsdl:operation name="RetrieveSearchFieldsForProduction">
+      <wsdl:input message="tns:RetrieveSearchFieldsForProductionSoapIn" />
+      <wsdl:output message="tns:RetrieveSearchFieldsForProductionSoapOut" />
+    </wsdl:operation>
     <wsdl:operation name="CountSearchByParentArtifactID">
       <wsdl:input message="tns:CountSearchByParentArtifactIDSoapIn" />
       <wsdl:output message="tns:CountSearchByParentArtifactIDSoapOut" />
@@ -255,6 +408,14 @@
     <wsdl:operation name="SearchByParentArtifactID">
       <wsdl:input message="tns:SearchByParentArtifactIDSoapIn" />
       <wsdl:output message="tns:SearchByParentArtifactIDSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="SearchByProductionArtifactID">
+      <wsdl:input message="tns:SearchByProductionArtifactIDSoapIn" />
+      <wsdl:output message="tns:SearchByProductionArtifactIDSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="CountSearchByProductionArtifactID">
+      <wsdl:input message="tns:CountSearchByProductionArtifactIDSoapIn" />
+      <wsdl:output message="tns:CountSearchByProductionArtifactIDSoapOut" />
     </wsdl:operation>
   </wsdl:portType>
   <wsdl:binding name="SearchManagerSoap" type="tns:SearchManagerSoap">
@@ -295,6 +456,24 @@
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="RetrieveImagesForSearch">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/SearchManager/RetrieveImagesForSearch" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveImagesByProductionArtifactIDForProductionByDocumentSet">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/SearchManager/RetrieveImagesByProductionArtifactIDForProductionByDocumentSet" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="RetrieveViewsByContextArtifactID">
       <soap:operation soapAction="http://www.kCura.com/EDDS/SearchManager/RetrieveViewsByContextArtifactID" style="document" />
       <wsdl:input>
@@ -313,6 +492,15 @@
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="RetrieveSearchFieldsForProduction">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/SearchManager/RetrieveSearchFieldsForProduction" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="CountSearchByParentArtifactID">
       <soap:operation soapAction="http://www.kCura.com/EDDS/SearchManager/CountSearchByParentArtifactID" style="document" />
       <wsdl:input>
@@ -324,6 +512,24 @@
     </wsdl:operation>
     <wsdl:operation name="SearchByParentArtifactID">
       <soap:operation soapAction="http://www.kCura.com/EDDS/SearchManager/SearchByParentArtifactID" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SearchByProductionArtifactID">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/SearchManager/SearchByProductionArtifactID" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CountSearchByProductionArtifactID">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/SearchManager/CountSearchByProductionArtifactID" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>

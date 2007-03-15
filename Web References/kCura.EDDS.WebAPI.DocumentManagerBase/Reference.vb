@@ -452,6 +452,9 @@ Namespace kCura.EDDS.WebAPI.DocumentManagerBase
         Public FieldCategoryID As Integer
         
         '<remarks/>
+        Public FieldCategory As FieldCategory
+        
+        '<remarks/>
         Public ArtifactViewFieldID As Integer
         
         '<remarks/>
@@ -572,6 +575,44 @@ Namespace kCura.EDDS.WebAPI.DocumentManagerBase
         
         '<remarks/>
         [Object]
+    End Enum
+    
+    '<remarks/>
+    <System.Xml.Serialization.XmlTypeAttribute([Namespace]:="http://foley.com/EDDS/DocumentManager")>  _
+    Public Enum FieldCategory
+        
+        '<remarks/>
+        Generic
+        
+        '<remarks/>
+        FullText
+        
+        '<remarks/>
+        Identifier
+        
+        '<remarks/>
+        Associative
+        
+        '<remarks/>
+        Comments
+        
+        '<remarks/>
+        GroupIdentifier
+        
+        '<remarks/>
+        ProductionMarker
+        
+        '<remarks/>
+        AutoCreate
+        
+        '<remarks/>
+        DuplicateHash
+        
+        '<remarks/>
+        FolderName
+        
+        '<remarks/>
+        FileInfo
     End Enum
     
     '<remarks/>

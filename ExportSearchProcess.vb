@@ -3,7 +3,7 @@ Namespace kCura.WinEDDS
     Inherits kCura.Windows.Process.ProcessBase
 
 		Public ExportFile As ExportFile
-		Private WithEvents _searchExporter As kCura.WinEDDS.SearchExporter
+		Private WithEvents _searchExporter As kCura.WinEDDS.Exporter
 		Private _startTime As System.DateTime
 		Private _errorCount As Int32
 		Private _warningCount As Int32
@@ -12,7 +12,7 @@ Namespace kCura.WinEDDS
 			_startTime = DateTime.Now
 			_warningCount = 0
 			_errorCount = 0
-			_searchExporter = New SearchExporter(Me.ExportFile, Me.ProcessController)
+			_searchExporter = New Exporter(Me.ExportFile, Me.ProcessController)
 			_searchExporter.ExportSearch()
 			Me.ProcessObserver.RaiseProcessCompleteEvent()
 		End Sub

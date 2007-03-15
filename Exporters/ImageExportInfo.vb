@@ -1,0 +1,55 @@
+Namespace kCura.WinEDDS.Exporters
+	Public Class ImageExportInfo
+		Private _fileName As String
+		Private _fileGuid As String
+		Private _artifactID As Int32
+		Private _batesNumber As String
+		Private _tempLocation As String
+
+		Public Property FileName() As String
+			Get
+				Return _fileName
+			End Get
+			Set(ByVal value As String)
+				_fileName = value
+			End Set
+		End Property
+
+		Public Property FileGuid() As String
+			Get
+				Return _fileGuid
+			End Get
+			Set(ByVal value As String)
+				_fileGuid = value
+			End Set
+		End Property
+
+		Public Property ArtifactID() As Int32
+			Get
+				Return _artifactID
+			End Get
+			Set(ByVal value As Int32)
+				_artifactID = value
+			End Set
+		End Property
+
+		Public Property BatesNumber() As String
+			Get
+				Return _batesNumber
+			End Get
+			Set(ByVal value As String)
+				_batesNumber = value
+			End Set
+		End Property
+
+		Public Property TempLocation() As String
+			Get
+				Return _tempLocation
+			End Get
+			Set(ByVal value As String)
+				_tempLocation = value
+			End Set
+		End Property
+
+	End Class
+End Namespace
