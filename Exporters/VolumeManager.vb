@@ -92,8 +92,15 @@ Namespace kCura.WinEDDS
 			_currentNativeSubdirectorySize = 0
 			_downloadManager = downloadHandler
 			_parent = parent
-			_nativeFileWriter = New System.IO.StreamWriter(Me.Settings.FolderPath & "\" & "export.dat", False, System.Text.Encoding.Default)
-			_imageFileWriter = New System.IO.StreamWriter(Me.Settings.FolderPath & "\" & "export.opt", False)
+			_nativeFileWriter = New System.IO.StreamWriter(Me.Settings.FolderPath & "\" & "export." & Me.Settings.LoadFileExtension, False, System.Text.Encoding.Default)
+			Dim logFileExension As String = ""
+			Select Case Me.Settings.LogFileFormat
+				Case LoadFileType.FileFormat.Concordance
+					logFileExension = ".opt"
+				Case Else
+					logFileExension = ".ldf"
+			End Select
+			_imageFileWriter = New System.IO.StreamWriter(Me.Settings.FolderPath & "\" & "export" & logFileExension, False)
 		End Sub
 
 		Public Sub Finish()

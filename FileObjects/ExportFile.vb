@@ -22,6 +22,7 @@ Namespace kCura.WinEDDS
 		Protected _identifierColumnName As String
 		Protected _volumeInfo As kCura.WinEDDS.Exporters.VolumeInfo
 		Protected _exportImages As Boolean
+		Protected _loadFileExtension As String
 
 #Region "Public Properties"
 
@@ -199,6 +200,15 @@ Namespace kCura.WinEDDS
 			End Get
 			Set(ByVal value As String)
 				_identifierColumnName = value
+			End Set
+		End Property
+
+		Public Property LoadFileExtension() As String
+			Get
+				Return _loadFileExtension
+			End Get
+			Set(ByVal value As String)
+				_loadFileExtension = value
 			End Set
 		End Property
 
