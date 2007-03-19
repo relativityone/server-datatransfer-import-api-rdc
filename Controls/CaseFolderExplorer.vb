@@ -46,120 +46,120 @@ Namespace kCura.EDDS.WinForm
 		Friend WithEvents ImportSQLDatabase As System.Windows.Forms.MenuItem
     Friend WithEvents ImportEnronData As System.Windows.Forms.MenuItem
     <System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
-      Me.components = New System.ComponentModel.Container
-      Dim resources As System.Resources.ResourceManager = New System.Resources.ResourceManager(GetType(CaseFolderExplorer))
-      Me._treeView = New System.Windows.Forms.TreeView
-      Me.ImageList = New System.Windows.Forms.ImageList(Me.components)
-      Me._folderContextMenu = New System.Windows.Forms.ContextMenu
-      Me.NewFolderMenu = New System.Windows.Forms.MenuItem
-      Me.MenuItem2 = New System.Windows.Forms.MenuItem
-      Me.Import = New System.Windows.Forms.MenuItem
-      Me.ImportImageFile = New System.Windows.Forms.MenuItem
-      Me.ImportLoadFIle = New System.Windows.Forms.MenuItem
-      Me.ImportFileDirectory = New System.Windows.Forms.MenuItem
-      Me.ImportOutlookDirectory = New System.Windows.Forms.MenuItem
-      Me.ImportSQLDatabase = New System.Windows.Forms.MenuItem
-      Me.Export = New System.Windows.Forms.MenuItem
-      Me.ExportFolder = New System.Windows.Forms.MenuItem
-      Me.ExportFolderAndSubfolders = New System.Windows.Forms.MenuItem
-      Me.ImportEnronData = New System.Windows.Forms.MenuItem
-      Me.SuspendLayout()
-      '
-      '_treeView
-      '
-      Me._treeView.Dock = System.Windows.Forms.DockStyle.Fill
-      Me._treeView.HideSelection = False
-      Me._treeView.ImageList = Me.ImageList
-      Me._treeView.Location = New System.Drawing.Point(0, 0)
-      Me._treeView.Name = "_treeView"
-      Me._treeView.Size = New System.Drawing.Size(150, 74)
-      Me._treeView.Sorted = True
-      Me._treeView.TabIndex = 0
-      '
-      'ImageList
-      '
-      Me.ImageList.ImageSize = New System.Drawing.Size(16, 16)
-      Me.ImageList.ImageStream = CType(resources.GetObject("ImageList.ImageStream"), System.Windows.Forms.ImageListStreamer)
-      Me.ImageList.TransparentColor = System.Drawing.Color.Transparent
-      '
-      '_folderContextMenu
-      '
-      Me._folderContextMenu.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.NewFolderMenu, Me.MenuItem2, Me.Import, Me.Export})
-      '
-      'NewFolderMenu
-      '
-      Me.NewFolderMenu.Index = 0
-      Me.NewFolderMenu.Text = "&New Folder..."
-      '
-      'MenuItem2
-      '
-      Me.MenuItem2.Index = 1
-      Me.MenuItem2.Text = "-"
-      '
-      'Import
-      '
-      Me.Import.Index = 2
-      Me.Import.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.ImportImageFile, Me.ImportLoadFIle, Me.ImportFileDirectory, Me.ImportOutlookDirectory, Me.ImportSQLDatabase, Me.ImportEnronData})
-      Me.Import.Text = "&Import"
-      '
-      'ImportImageFile
-      '
-      Me.ImportImageFile.Index = 0
-      Me.ImportImageFile.Text = "&Image File..."
-      '
-      'ImportLoadFIle
-      '
-      Me.ImportLoadFIle.Index = 1
-      Me.ImportLoadFIle.Text = "&Load File..."
-      '
-      'ImportFileDirectory
-      '
-      Me.ImportFileDirectory.Index = 2
+			Me.components = New System.ComponentModel.Container
+			Dim resources As System.Resources.ResourceManager = New System.Resources.ResourceManager(GetType(CaseFolderExplorer))
+			Me._treeView = New System.Windows.Forms.TreeView
+			Me.ImageList = New System.Windows.Forms.ImageList(Me.components)
+			Me._folderContextMenu = New System.Windows.Forms.ContextMenu
+			Me.NewFolderMenu = New System.Windows.Forms.MenuItem
+			Me.MenuItem2 = New System.Windows.Forms.MenuItem
+			Me.Import = New System.Windows.Forms.MenuItem
+			Me.ImportImageFile = New System.Windows.Forms.MenuItem
+			Me.ImportLoadFIle = New System.Windows.Forms.MenuItem
+			Me.ImportFileDirectory = New System.Windows.Forms.MenuItem
+			Me.ImportOutlookDirectory = New System.Windows.Forms.MenuItem
+			Me.ImportSQLDatabase = New System.Windows.Forms.MenuItem
+			Me.ImportEnronData = New System.Windows.Forms.MenuItem
+			Me.Export = New System.Windows.Forms.MenuItem
+			Me.ExportFolder = New System.Windows.Forms.MenuItem
+			Me.ExportFolderAndSubfolders = New System.Windows.Forms.MenuItem
+			Me.SuspendLayout()
+			'
+			'_treeView
+			'
+			Me._treeView.Dock = System.Windows.Forms.DockStyle.Fill
+			Me._treeView.HideSelection = False
+			Me._treeView.ImageList = Me.ImageList
+			Me._treeView.Location = New System.Drawing.Point(0, 0)
+			Me._treeView.Name = "_treeView"
+			Me._treeView.Size = New System.Drawing.Size(150, 74)
+			Me._treeView.Sorted = True
+			Me._treeView.TabIndex = 0
+			'
+			'ImageList
+			'
+			Me.ImageList.ImageSize = New System.Drawing.Size(16, 16)
+			Me.ImageList.ImageStream = CType(resources.GetObject("ImageList.ImageStream"), System.Windows.Forms.ImageListStreamer)
+			Me.ImageList.TransparentColor = System.Drawing.Color.Transparent
+			'
+			'_folderContextMenu
+			'
+			Me._folderContextMenu.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.NewFolderMenu, Me.MenuItem2, Me.Import, Me.Export})
+			'
+			'NewFolderMenu
+			'
+			Me.NewFolderMenu.Index = 0
+			Me.NewFolderMenu.Text = "&New Folder..."
+			'
+			'MenuItem2
+			'
+			Me.MenuItem2.Index = 1
+			Me.MenuItem2.Text = "-"
+			'
+			'Import
+			'
+			Me.Import.Index = 2
+			Me.Import.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.ImportImageFile, Me.ImportLoadFIle, Me.ImportFileDirectory, Me.ImportOutlookDirectory, Me.ImportSQLDatabase, Me.ImportEnronData})
+			Me.Import.Text = "&Import"
+			'
+			'ImportImageFile
+			'
+			Me.ImportImageFile.Index = 0
+			Me.ImportImageFile.Text = "&Image File..."
+			'
+			'ImportLoadFIle
+			'
+			Me.ImportLoadFIle.Index = 1
+			Me.ImportLoadFIle.Text = "&Load File..."
+			'
+			'ImportFileDirectory
+			'
+			Me.ImportFileDirectory.Index = 2
 			Me.ImportFileDirectory.Text = "&File Directory..."
 			Me.ImportFileDirectory.Visible = False
-      '
-      'ImportOutlookDirectory
-      '
-      Me.ImportOutlookDirectory.Index = 3
+			'
+			'ImportOutlookDirectory
+			'
+			Me.ImportOutlookDirectory.Index = 3
 			Me.ImportOutlookDirectory.Text = "&Outlook..."
 			Me.ImportOutlookDirectory.Visible = False
-      '
-      'ImportSQLDatabase
-      '
-      Me.ImportSQLDatabase.Index = 4
+			'
+			'ImportSQLDatabase
+			'
+			Me.ImportSQLDatabase.Index = 4
 			Me.ImportSQLDatabase.Text = "&SQL Database..."
 			Me.ImportSQLDatabase.Visible = False
-      '
-      'Export
-      '
-      Me.Export.Index = 3
-      Me.Export.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.ExportFolder, Me.ExportFolderAndSubfolders})
-      Me.Export.Text = "&Export"
-      '
-      'ExportFolder
-      '
-      Me.ExportFolder.Index = 0
-      Me.ExportFolder.Text = "&Natives..."
-      '
-      'ExportFolderAndSubfolders
-      '
-      Me.ExportFolderAndSubfolders.Index = 1
-      Me.ExportFolderAndSubfolders.Text = "&Natives And Subfolders..."
-      '
-      'ImportEnronData
-      '
-      Me.ImportEnronData.Index = 5
+			'
+			'ImportEnronData
+			'
+			Me.ImportEnronData.Index = 5
 			Me.ImportEnronData.Text = "&Enron Data..."
 			Me.ImportEnronData.Visible = False
-      '
-      'CaseFolderExplorer
-      '
-      Me.Controls.Add(Me._treeView)
-      Me.Name = "CaseFolderExplorer"
-      Me.Size = New System.Drawing.Size(150, 74)
-      Me.ResumeLayout(False)
+			'
+			'Export
+			'
+			Me.Export.Index = 3
+			Me.Export.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.ExportFolder, Me.ExportFolderAndSubfolders})
+			Me.Export.Text = "&Export"
+			'
+			'ExportFolder
+			'
+			Me.ExportFolder.Index = 0
+			Me.ExportFolder.Text = "&Natives..."
+			'
+			'ExportFolderAndSubfolders
+			'
+			Me.ExportFolderAndSubfolders.Index = 1
+			Me.ExportFolderAndSubfolders.Text = "&Natives And Subfolders..."
+			'
+			'CaseFolderExplorer
+			'
+			Me.Controls.Add(Me._treeView)
+			Me.Name = "CaseFolderExplorer"
+			Me.Size = New System.Drawing.Size(150, 74)
+			Me.ResumeLayout(False)
 
-    End Sub
+		End Sub
 
 #End Region
 
@@ -185,6 +185,7 @@ Namespace kCura.EDDS.WinForm
 					rootFolderNode.Tag = tag
 					rootFolderNode.Text = CType(folderRow("Name"), String)
 					rootFolderNode.ImageIndex = 0
+					rootFolderNode.SelectedImageIndex = 0
 					_treeView.Nodes.Add(rootFolderNode)
 					RecursivelyPopulate(folderRow, rootFolderNode, tag.Path)
 				End If

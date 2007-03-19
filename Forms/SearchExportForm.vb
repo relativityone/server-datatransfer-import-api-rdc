@@ -58,6 +58,7 @@ Public Class SearchExportForm
 		Me.ExportMenu = New System.Windows.Forms.MenuItem
 		Me.RunMenu = New System.Windows.Forms.MenuItem
 		Me._searchesBox = New System.Windows.Forms.GroupBox
+		Me._renameFiles = New System.Windows.Forms.CheckBox
 		Me._useAbsolutePaths = New System.Windows.Forms.CheckBox
 		Me._exportNativeFiles = New System.Windows.Forms.CheckBox
 		Me._exportFullText = New System.Windows.Forms.CheckBox
@@ -76,7 +77,6 @@ Public Class SearchExportForm
 		Me.Label2 = New System.Windows.Forms.Label
 		Me._recordDelimiter = New System.Windows.Forms.ComboBox
 		Me._destinationFolderDialog = New System.Windows.Forms.FolderBrowserDialog
-		Me._renameFiles = New System.Windows.Forms.CheckBox
 		Me._searchesBox.SuspendLayout()
 		Me.GroupBox3.SuspendLayout()
 		Me.GroupBox23.SuspendLayout()
@@ -111,6 +111,14 @@ Public Class SearchExportForm
 		Me._searchesBox.TabIndex = 10
 		Me._searchesBox.TabStop = False
 		Me._searchesBox.Text = "Searches"
+		'
+		'_renameFiles
+		'
+		Me._renameFiles.Location = New System.Drawing.Point(400, 48)
+		Me._renameFiles.Name = "_renameFiles"
+		Me._renameFiles.Size = New System.Drawing.Size(156, 20)
+		Me._renameFiles.TabIndex = 5
+		Me._renameFiles.Text = "Rename files to identifier"
 		'
 		'_useAbsolutePaths
 		'
@@ -263,14 +271,6 @@ Public Class SearchExportForm
 		Me._recordDelimiter.Name = "_recordDelimiter"
 		Me._recordDelimiter.Size = New System.Drawing.Size(124, 21)
 		Me._recordDelimiter.TabIndex = 0
-		'
-		'_renameFiles
-		'
-		Me._renameFiles.Location = New System.Drawing.Point(400, 48)
-		Me._renameFiles.Name = "_renameFiles"
-		Me._renameFiles.Size = New System.Drawing.Size(156, 20)
-		Me._renameFiles.TabIndex = 5
-		Me._renameFiles.Text = "Rename files to identifier"
 		'
 		'SearchExportForm
 		'

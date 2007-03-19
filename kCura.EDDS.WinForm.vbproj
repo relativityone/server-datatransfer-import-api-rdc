@@ -212,6 +212,11 @@
                     BuildAction = "EmbeddedResource"
                 />
                 <File
+                    RelPath = "Controls\CaseFolderExplorer.xsx"
+                    DependentUpon = "CaseFolderExplorer.resx"
+                    BuildAction = "None"
+                />
+                <File
                     RelPath = "Forms\CaseSelectForm.vb"
                     SubType = "Form"
                     BuildAction = "Compile"
@@ -361,6 +366,10 @@
                 />
                 <File
                     RelPath = "images\relativity.ICO"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\relativity1.ICO"
                     BuildAction = "Content"
                 />
             </Include>
