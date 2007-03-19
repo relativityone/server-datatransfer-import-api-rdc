@@ -78,12 +78,12 @@ Namespace kCura.EDDS.WinForm
 		Friend WithEvents _extractMd5Hash As System.Windows.Forms.CheckBox
 		Friend WithEvents _destinationFolderPath As System.Windows.Forms.ComboBox
 		Friend WithEvents _buildFolderStructure As System.Windows.Forms.CheckBox
-		Friend WithEvents Label8 As System.Windows.Forms.Label
 		Friend WithEvents GroupBox5 As System.Windows.Forms.GroupBox
 		Friend WithEvents MenuItem4 As System.Windows.Forms.MenuItem
 		Friend WithEvents _fileRefreshMenuItem As System.Windows.Forms.MenuItem
 		Friend WithEvents Label9 As System.Windows.Forms.Label
 		Friend WithEvents _overwriteDropdown As System.Windows.Forms.ComboBox
+		Friend WithEvents GroupBox6 As System.Windows.Forms.GroupBox
 		<System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
 			Dim resources As System.Resources.ResourceManager = New System.Resources.ResourceManager(GetType(LoadFileForm))
 			Me.OpenFileDialog = New System.Windows.Forms.OpenFileDialog
@@ -121,6 +121,9 @@ Namespace kCura.EDDS.WinForm
 			Me.Label2 = New System.Windows.Forms.Label
 			Me._recordDelimiter = New System.Windows.Forms.ComboBox
 			Me._fieldMapTab = New System.Windows.Forms.TabPage
+			Me.GroupBox6 = New System.Windows.Forms.GroupBox
+			Me._overwriteDropdown = New System.Windows.Forms.ComboBox
+			Me.Label9 = New System.Windows.Forms.Label
 			Me.GroupBox5 = New System.Windows.Forms.GroupBox
 			Me._buildFolderStructure = New System.Windows.Forms.CheckBox
 			Me._destinationFolderPath = New System.Windows.Forms.ComboBox
@@ -131,9 +134,6 @@ Namespace kCura.EDDS.WinForm
 			Me._nativeFilePathField = New System.Windows.Forms.ComboBox
 			Me.Label5 = New System.Windows.Forms.Label
 			Me.GroupBox3 = New System.Windows.Forms.GroupBox
-			Me._overwriteDropdown = New System.Windows.Forms.ComboBox
-			Me.Label9 = New System.Windows.Forms.Label
-			Me.Label8 = New System.Windows.Forms.Label
 			Me._identifiersDropDown = New System.Windows.Forms.ComboBox
 			Me.Label7 = New System.Windows.Forms.Label
 			Me.Label1 = New System.Windows.Forms.Label
@@ -147,6 +147,7 @@ Namespace kCura.EDDS.WinForm
 			Me.GroupBox2.SuspendLayout()
 			Me.GroupBox23.SuspendLayout()
 			Me._fieldMapTab.SuspendLayout()
+			Me.GroupBox6.SuspendLayout()
 			Me.GroupBox5.SuspendLayout()
 			Me.GroupBox4.SuspendLayout()
 			Me.GroupBox3.SuspendLayout()
@@ -265,7 +266,7 @@ Namespace kCura.EDDS.WinForm
 			Me.TabControl1.Location = New System.Drawing.Point(4, 48)
 			Me.TabControl1.Name = "TabControl1"
 			Me.TabControl1.SelectedIndex = 0
-			Me.TabControl1.Size = New System.Drawing.Size(740, 424)
+			Me.TabControl1.Size = New System.Drawing.Size(740, 452)
 			Me.TabControl1.TabIndex = 21
 			'
 			'_loadFileTab
@@ -276,7 +277,7 @@ Namespace kCura.EDDS.WinForm
 			Me._loadFileTab.Controls.Add(Me.GroupBox23)
 			Me._loadFileTab.Location = New System.Drawing.Point(4, 22)
 			Me._loadFileTab.Name = "_loadFileTab"
-			Me._loadFileTab.Size = New System.Drawing.Size(732, 398)
+			Me._loadFileTab.Size = New System.Drawing.Size(732, 426)
 			Me._loadFileTab.TabIndex = 0
 			Me._loadFileTab.Text = "Load File"
 			'
@@ -324,7 +325,7 @@ Namespace kCura.EDDS.WinForm
 			Me.GroupBox2.Controls.Add(Me._fileColumnHeaders)
 			Me.GroupBox2.Location = New System.Drawing.Point(168, 56)
 			Me.GroupBox2.Name = "GroupBox2"
-			Me.GroupBox2.Size = New System.Drawing.Size(436, 336)
+			Me.GroupBox2.Size = New System.Drawing.Size(436, 364)
 			Me.GroupBox2.TabIndex = 19
 			Me.GroupBox2.TabStop = False
 			Me.GroupBox2.Text = "File Column Headers"
@@ -334,7 +335,7 @@ Namespace kCura.EDDS.WinForm
 			Me._fileColumnHeaders.Location = New System.Drawing.Point(12, 24)
 			Me._fileColumnHeaders.Name = "_fileColumnHeaders"
 			Me._fileColumnHeaders.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended
-			Me._fileColumnHeaders.Size = New System.Drawing.Size(412, 303)
+			Me._fileColumnHeaders.Size = New System.Drawing.Size(412, 329)
 			Me._fileColumnHeaders.TabIndex = 17
 			'
 			'GroupBox23
@@ -420,6 +421,7 @@ Namespace kCura.EDDS.WinForm
 			'
 			'_fieldMapTab
 			'
+			Me._fieldMapTab.Controls.Add(Me.GroupBox6)
 			Me._fieldMapTab.Controls.Add(Me.GroupBox5)
 			Me._fieldMapTab.Controls.Add(Me.GroupBox4)
 			Me._fieldMapTab.Controls.Add(Me.GroupBox3)
@@ -429,15 +431,44 @@ Namespace kCura.EDDS.WinForm
 			Me._fieldMapTab.Controls.Add(Me._fieldMap)
 			Me._fieldMapTab.Location = New System.Drawing.Point(4, 22)
 			Me._fieldMapTab.Name = "_fieldMapTab"
-			Me._fieldMapTab.Size = New System.Drawing.Size(732, 398)
+			Me._fieldMapTab.Size = New System.Drawing.Size(732, 426)
 			Me._fieldMapTab.TabIndex = 1
 			Me._fieldMapTab.Text = "Field Map"
+			'
+			'GroupBox6
+			'
+			Me.GroupBox6.Controls.Add(Me._overwriteDropdown)
+			Me.GroupBox6.Controls.Add(Me.Label9)
+			Me.GroupBox6.Location = New System.Drawing.Point(552, 4)
+			Me.GroupBox6.Name = "GroupBox6"
+			Me.GroupBox6.Size = New System.Drawing.Size(172, 124)
+			Me.GroupBox6.TabIndex = 31
+			Me.GroupBox6.TabStop = False
+			Me.GroupBox6.Text = "Update Behavior"
+			'
+			'_overwriteDropdown
+			'
+			Me._overwriteDropdown.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+			Me._overwriteDropdown.Items.AddRange(New Object() {"None", "Strict", "Append"})
+			Me._overwriteDropdown.Location = New System.Drawing.Point(8, 52)
+			Me._overwriteDropdown.Name = "_overwriteDropdown"
+			Me._overwriteDropdown.Size = New System.Drawing.Size(156, 21)
+			Me._overwriteDropdown.TabIndex = 28
+			'
+			'Label9
+			'
+			Me.Label9.Location = New System.Drawing.Point(8, 36)
+			Me.Label9.Name = "Label9"
+			Me.Label9.Size = New System.Drawing.Size(56, 13)
+			Me.Label9.TabIndex = 27
+			Me.Label9.Text = "Overwrite:"
+			Me.Label9.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
 			'
 			'GroupBox5
 			'
 			Me.GroupBox5.Controls.Add(Me._buildFolderStructure)
 			Me.GroupBox5.Controls.Add(Me._destinationFolderPath)
-			Me.GroupBox5.Location = New System.Drawing.Point(492, 4)
+			Me.GroupBox5.Location = New System.Drawing.Point(4, 56)
 			Me.GroupBox5.Name = "GroupBox5"
 			Me.GroupBox5.Size = New System.Drawing.Size(236, 72)
 			Me.GroupBox5.TabIndex = 30
@@ -468,9 +499,9 @@ Namespace kCura.EDDS.WinForm
 			Me.GroupBox4.Controls.Add(Me._extractFullTextFromNativeFile)
 			Me.GroupBox4.Controls.Add(Me._nativeFilePathField)
 			Me.GroupBox4.Controls.Add(Me.Label5)
-			Me.GroupBox4.Location = New System.Drawing.Point(176, 4)
+			Me.GroupBox4.Location = New System.Drawing.Point(244, 4)
 			Me.GroupBox4.Name = "GroupBox4"
-			Me.GroupBox4.Size = New System.Drawing.Size(312, 112)
+			Me.GroupBox4.Size = New System.Drawing.Size(304, 124)
 			Me.GroupBox4.TabIndex = 26
 			Me.GroupBox4.TabStop = False
 			Me.GroupBox4.Text = "Native File Behavior"
@@ -495,7 +526,7 @@ Namespace kCura.EDDS.WinForm
 			'
 			Me._extractFullTextFromNativeFile.Enabled = False
 			Me._extractFullTextFromNativeFile.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
-			Me._extractFullTextFromNativeFile.Location = New System.Drawing.Point(124, 16)
+			Me._extractFullTextFromNativeFile.Location = New System.Drawing.Point(8, 56)
 			Me._extractFullTextFromNativeFile.Name = "_extractFullTextFromNativeFile"
 			Me._extractFullTextFromNativeFile.Size = New System.Drawing.Size(180, 20)
 			Me._extractFullTextFromNativeFile.TabIndex = 23
@@ -506,14 +537,14 @@ Namespace kCura.EDDS.WinForm
 			'
 			Me._nativeFilePathField.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
 			Me._nativeFilePathField.Enabled = False
-			Me._nativeFilePathField.Location = New System.Drawing.Point(8, 80)
+			Me._nativeFilePathField.Location = New System.Drawing.Point(8, 93)
 			Me._nativeFilePathField.Name = "_nativeFilePathField"
 			Me._nativeFilePathField.Size = New System.Drawing.Size(288, 21)
 			Me._nativeFilePathField.TabIndex = 24
 			'
 			'Label5
 			'
-			Me.Label5.Location = New System.Drawing.Point(8, 64)
+			Me.Label5.Location = New System.Drawing.Point(8, 77)
 			Me.Label5.Name = "Label5"
 			Me.Label5.Size = New System.Drawing.Size(192, 13)
 			Me.Label5.TabIndex = 25
@@ -522,57 +553,27 @@ Namespace kCura.EDDS.WinForm
 			'
 			'GroupBox3
 			'
-			Me.GroupBox3.Controls.Add(Me._overwriteDropdown)
-			Me.GroupBox3.Controls.Add(Me.Label9)
-			Me.GroupBox3.Controls.Add(Me.Label8)
 			Me.GroupBox3.Controls.Add(Me._identifiersDropDown)
 			Me.GroupBox3.Location = New System.Drawing.Point(4, 4)
 			Me.GroupBox3.Name = "GroupBox3"
-			Me.GroupBox3.Size = New System.Drawing.Size(168, 92)
+			Me.GroupBox3.Size = New System.Drawing.Size(236, 48)
 			Me.GroupBox3.TabIndex = 21
 			Me.GroupBox3.TabStop = False
-			Me.GroupBox3.Text = "Identity and Update Behavior"
-			'
-			'_overwriteDropdown
-			'
-			Me._overwriteDropdown.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
-			Me._overwriteDropdown.Items.AddRange(New Object() {"None", "Strict", "Append"})
-			Me._overwriteDropdown.Location = New System.Drawing.Point(60, 64)
-			Me._overwriteDropdown.Name = "_overwriteDropdown"
-			Me._overwriteDropdown.Size = New System.Drawing.Size(100, 21)
-			Me._overwriteDropdown.TabIndex = 28
-			'
-			'Label9
-			'
-			Me.Label9.Location = New System.Drawing.Point(7, 68)
-			Me.Label9.Name = "Label9"
-			Me.Label9.Size = New System.Drawing.Size(56, 13)
-			Me.Label9.TabIndex = 27
-			Me.Label9.Text = "Overwrite:"
-			Me.Label9.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
-			'
-			'Label8
-			'
-			Me.Label8.Location = New System.Drawing.Point(6, 18)
-			Me.Label8.Name = "Label8"
-			Me.Label8.Size = New System.Drawing.Size(82, 13)
-			Me.Label8.TabIndex = 26
-			Me.Label8.Text = "Group Identifier"
-			Me.Label8.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+			Me.GroupBox3.Text = "Group Identifier"
 			'
 			'_identifiersDropDown
 			'
 			Me._identifiersDropDown.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
 			Me._identifiersDropDown.Enabled = False
-			Me._identifiersDropDown.Location = New System.Drawing.Point(8, 32)
+			Me._identifiersDropDown.Location = New System.Drawing.Point(8, 20)
 			Me._identifiersDropDown.Name = "_identifiersDropDown"
-			Me._identifiersDropDown.Size = New System.Drawing.Size(152, 21)
+			Me._identifiersDropDown.Size = New System.Drawing.Size(220, 21)
 			Me._identifiersDropDown.TabIndex = 19
 			'
 			'Label7
 			'
 			Me.Label7.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-			Me.Label7.Location = New System.Drawing.Point(652, 112)
+			Me.Label7.Location = New System.Drawing.Point(652, 132)
 			Me.Label7.Name = "Label7"
 			Me.Label7.Size = New System.Drawing.Size(76, 16)
 			Me.Label7.TabIndex = 4
@@ -581,7 +582,7 @@ Namespace kCura.EDDS.WinForm
 			'Label1
 			'
 			Me.Label1.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-			Me.Label1.Location = New System.Drawing.Point(4, 112)
+			Me.Label1.Location = New System.Drawing.Point(4, 132)
 			Me.Label1.Name = "Label1"
 			Me.Label1.Size = New System.Drawing.Size(100, 16)
 			Me.Label1.TabIndex = 3
@@ -589,9 +590,9 @@ Namespace kCura.EDDS.WinForm
 			'
 			'_fileColumns
 			'
-			Me._fileColumns.KeepButtonsCentered = False
+			Me._fileColumns.KeepButtonsCentered = True
 			Me._fileColumns.LeftOrderControlsVisible = True
-			Me._fileColumns.Location = New System.Drawing.Point(372, 132)
+			Me._fileColumns.Location = New System.Drawing.Point(372, 148)
 			Me._fileColumns.Name = "_fileColumns"
 			Me._fileColumns.RightOrderControlVisible = False
 			Me._fileColumns.Size = New System.Drawing.Size(392, 276)
@@ -599,9 +600,9 @@ Namespace kCura.EDDS.WinForm
 			'
 			'_fieldMap
 			'
-			Me._fieldMap.KeepButtonsCentered = False
+			Me._fieldMap.KeepButtonsCentered = True
 			Me._fieldMap.LeftOrderControlsVisible = False
-			Me._fieldMap.Location = New System.Drawing.Point(4, 132)
+			Me._fieldMap.Location = New System.Drawing.Point(4, 148)
 			Me._fieldMap.Name = "_fieldMap"
 			Me._fieldMap.RightOrderControlVisible = True
 			Me._fieldMap.Size = New System.Drawing.Size(360, 276)
@@ -610,7 +611,7 @@ Namespace kCura.EDDS.WinForm
 			'LoadFileForm
 			'
 			Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
-			Me.ClientSize = New System.Drawing.Size(746, 475)
+			Me.ClientSize = New System.Drawing.Size(754, 505)
 			Me.Controls.Add(Me.TabControl1)
 			Me.Controls.Add(Me.GroupBox1)
 			Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle
@@ -627,6 +628,7 @@ Namespace kCura.EDDS.WinForm
 			Me.GroupBox2.ResumeLayout(False)
 			Me.GroupBox23.ResumeLayout(False)
 			Me._fieldMapTab.ResumeLayout(False)
+			Me.GroupBox6.ResumeLayout(False)
 			Me.GroupBox5.ResumeLayout(False)
 			Me.GroupBox4.ResumeLayout(False)
 			Me.GroupBox3.ResumeLayout(False)
