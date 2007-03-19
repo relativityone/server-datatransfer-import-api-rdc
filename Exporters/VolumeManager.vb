@@ -143,7 +143,11 @@ Namespace kCura.WinEDDS
 				If documentInfo.NativeTempLocation = "" Then
 					nativeLocation = ""
 				Else
-					nativeLocation = localFilePath
+					If Me.Settings.UseAbsolutePaths Then
+						nativeLocation = localFilePath
+					Else
+						nativeLocation = ".\" & Me.CurrentVolumeLabel & "\" & Me.CurrentNativeSubdirectoryLabel & "\" & documentInfo.NativeFileName
+					End If
 				End If
 			End If
 			If Me.Settings.ExportFullText OrElse Me.Settings.ExportNative Then
@@ -177,13 +181,17 @@ Namespace kCura.WinEDDS
 			Dim image As WinEDDS.Exporters.ImageExportInfo
 			Dim i As Int32 = 0
 			Dim localFilePath As String = Me.Settings.FolderPath
-
+			Dim subfolderPath As String = Me.CurrentVolumeLabel & "\" & Me.CurrentImageSubdirectoryLabel & "\"
 			If localFilePath.Chars(localFilePath.Length - 1) <> "\"c Then localFilePath &= "\"
-			localFilePath &= Me.CurrentVolumeLabel & "\" & Me.CurrentImageSubdirectoryLabel & "\"
+			localFilePath &= subfolderPath
 			If Not System.IO.Directory.Exists(localFilePath) Then System.IO.Directory.CreateDirectory(localFilePath)
 			For Each image In images
 				Me.ExportDocumentImage(localFilePath & image.FileName, image.FileGuid, image.ArtifactID, image.BatesNumber, image.TempLocation)
-				Me.CreateImageLogEntry(image.BatesNumber, localFilePath & image.FileName, localFilePath, i = 0)
+				If Me.Settings.UseAbsolutePaths Then
+					Me.CreateImageLogEntry(image.BatesNumber, localFilePath & image.FileName, localFilePath, i = 0)
+				Else
+					Me.CreateImageLogEntry(image.BatesNumber, ".\" & subfolderPath & image.FileName, localFilePath, i = 0)
+				End If
 				i += 1
 			Next
 		End Sub
