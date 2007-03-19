@@ -637,16 +637,32 @@ Public Class ExportForm
 		_exportFile.RecordDelimiter = Chr(CType(_recordDelimiter.SelectedValue, Int32))
 		_exportFile.MultiRecordDelimiter = Chr(CType(_multiRecordDelimiter.SelectedValue, Int32))
 		_exportFile.NewlineDelimiter = Chr(CType(_newLineDelimiter.SelectedValue, Int32))
+
 		_exportFile.CookieContainer = _application.CookieContainer
 		_exportFile.UseAbsolutePaths = _useAbsolutePaths.Checked
 		_exportFile.IdentifierColumnName = _application.GetCaseIdentifierFields(0)
 		_exportFile.RenameFilesToIdentifier = True
 		_exportFile.VolumeInfo = Me.BuildVolumeInfo
 		_exportFile.ExportImages = _exportImages.Checked
+		_exportFile.LogFileFormat = CType(_imageFileFormat.SelectedValue, kCura.WinEDDS.LoadFileType.FileFormat)
+		_exportFile.LoadFileExtension = Me.GetNativeFileFormatExtension()
 		_application.StartSearch(Me.ExportFile)
 		Me.Cursor = System.Windows.Forms.Cursors.Default
 	End Sub
 
+
+	Private Function GetNativeFileFormatExtension() As String
+		Dim selected As String = CType(_nativeFileFormat.SelectedItem, String)
+		If selected.IndexOf("(.txt)") <> -1 Then
+			Return "txt"
+		ElseIf selected.IndexOf("(.csv)") <> -1 Then
+			Return "csv"
+		ElseIf selected.IndexOf("(.dat)") <> -1 Then
+			Return "dat"
+		Else
+			Return "txt"
+		End If
+	End Function
 	Private Sub _browseButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _browseButton.Click
 		_destinationFolderDialog.ShowDialog()
 		_folderPath.Text = _destinationFolderDialog.SelectedPath()
