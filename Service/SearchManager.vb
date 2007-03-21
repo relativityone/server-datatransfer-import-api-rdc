@@ -48,7 +48,7 @@ Namespace kCura.WinEDDS.Service
 			End If
 		End Function
 
-		Public Function RetrieveImagesForDocuments(ByVal caseContextArtifactID As Int32, ByVal documentArtifactIDs As Int32(), ByVal productionArtifactID As Int32) As System.Data.DataSet
+		Public Function RetrieveImagesForDocuments(ByVal caseContextArtifactID As Int32, ByVal documentArtifactIDs As Int32()) As System.Data.DataSet
 			If kCura.WinEDDS.Config.UsesWebAPI Then
 				Return RetrieveImagesForSearch(caseContextArtifactID, documentArtifactIDs)
 			Else
@@ -75,6 +75,14 @@ Namespace kCura.WinEDDS.Service
 		Public Shadows Function RetrieveImagesForSearch(ByVal caseContextArtifactID As Int32, ByVal documentArtifactIDs As Int32()) As System.Data.DataSet
 			If kCura.WinEDDS.Config.UsesWebAPI Then
 				Return MyBase.RetrieveImagesForSearch(caseContextArtifactID, documentArtifactIDs)
+			Else
+				'Return kCura.EDDS.Service.FileQuery.RetrieveFullTextFilesForDocuments(_identity, artifactID, documentArtifactIDs).ToDataSet()
+			End If
+		End Function
+
+		Public Shadows Function RetrieveByProductionIDsAndDocumentIDs(ByVal caseContextArtifactID As Int32, ByVal productionArtifactIDs As Int32(), ByVal documentArtifactIDs As Int32()) As System.Data.DataSet
+			If kCura.WinEDDS.Config.UsesWebAPI Then
+				Return MyBase.RetrieveByProductionIDsAndDocumentIDs(caseContextArtifactID, productionArtifactIDs, documentArtifactIDs)
 			Else
 				'Return kCura.EDDS.Service.FileQuery.RetrieveFullTextFilesForDocuments(_identity, artifactID, documentArtifactIDs).ToDataSet()
 			End If

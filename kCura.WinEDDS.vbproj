@@ -158,11 +158,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "ExportProductionProcess.vb"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "ExportSearchProcess.vb"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -269,11 +264,6 @@
                 />
                 <File
                     RelPath = "Exporters\ImageExportInfo.vb"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Exporters\ProductionExporter.vb"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -470,6 +460,11 @@
                 />
                 <File
                     RelPath = "Types\LoadFileType.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Types\Pair.vb"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

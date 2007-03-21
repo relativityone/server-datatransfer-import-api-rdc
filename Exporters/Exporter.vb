@@ -138,18 +138,23 @@ Namespace kCura.WinEDDS
 			Dim natives As New System.Data.DataView
 			Dim fullTexts As New System.Data.DataView
 			Dim images As New System.Data.DataView
+			Dim productionImages As New System.Data.DataView
 			Dim i As Int32 = 0
 			Dim productionArtifactID As Int32 = 0
 			If Me.ExportFile.TypeOfExport = ExportFile.ExportType.Production Then productionArtifactID = ExportFile.ArtifactID
 			If Me.ExportFile.ExportNative Then natives.Table = _searchManager.RetrieveNativesForSearch(Me.ExportFile.CaseArtifactID, kCura.Utility.Array.IntArrayToCSV(documentArtifactIDs)).Tables(0)
 			If Me.ExportFile.ExportFullText Then fullTexts.Table = _searchManager.RetrieveFullTextFilesForSearch(Me.ExportFile.ArtifactID, kCura.Utility.Array.IntArrayToCSV(documentArtifactIDs)).Tables(0)
-			If Me.ExportFile.ExportImages Then images.Table = Me.RetrieveImagesForDocuments(documentArtifactIDs, ExportFile.ArtifactID)
+			If Me.ExportFile.ExportImages Then
+				images.Table = Me.RetrieveImagesForDocuments(documentArtifactIDs, Me.ExportFile.ImagePrecedence)
+				productionImages.Table = Me.RetrieveProductionImagesForDocuments(documentArtifactIDs, Me.ExportFile.ImagePrecedence)
+			End If
+
 			For i = 0 To documentArtifactIDs.Length - 1
 				Dim documentInfo As New Exporters.DocumentExportInfo
 				Dim nativeRow As System.Data.DataRowView = GetNativeRow(natives, documentArtifactIDs(i))
 				Dim identifierColumnName As String = kCura.DynamicFields.Types.FieldColumnNameHelper.GetSqlFriendlyName(Me.ExportFile.IdentifierColumnName)
 				documentInfo.IdentifierValue = docRows(i)(identifierColumnName).ToString
-				documentInfo.Images = Me.PrepareImages(images, documentArtifactIDs(i), documentInfo.IdentifierValue, documentInfo)
+				documentInfo.Images = Me.PrepareImages(images, productionImages, documentArtifactIDs(i), documentInfo.IdentifierValue, documentInfo, Me.ExportFile.ImagePrecedence)
 				documentInfo.FullTextFileGuid = GetFullTextFileGuid(fullTexts.Table, documentArtifactIDs(i))
 				If nativeRow Is Nothing Then
 					documentInfo.NativeFileGuid = ""
@@ -244,10 +249,44 @@ Namespace kCura.WinEDDS
 			Return retval
 		End Function
 
-		Private Function PrepareImages(ByVal imagesView As System.Data.DataView, ByVal documentArtifactID As Int32, ByVal batesBase As String, ByVal documentInfo As Exporters.DocumentExportInfo) As System.Collections.ArrayList
-			If Me.ExportFile.TypeOfExport = ExportFile.ExportType.Production Then Return Me.PrepareImagesForProduction(imagesView, documentArtifactID, batesBase, documentInfo)
+		Private Function PrepareImages(ByVal imagesView As System.Data.DataView, ByVal productionImagesView As System.Data.DataView, ByVal documentArtifactID As Int32, ByVal batesBase As String, ByVal documentInfo As Exporters.DocumentExportInfo, ByVal productionOrderList As Pair()) As System.Collections.ArrayList
 			Dim retval As New System.Collections.ArrayList
 			If Not Me.ExportFile.ExportImages Then Return retval
+			If Me.ExportFile.TypeOfExport = ExportFile.ExportType.Production Then Return Me.PrepareImagesForProduction(productionImagesView, documentArtifactID, batesBase, documentInfo)
+			Dim item As Pair
+			For Each item In productionOrderList
+				If item.Value = "-1" Then
+					Return Me.PrepareOriginalImages(imagesView, documentArtifactID, batesBase, documentInfo)
+				Else
+					productionImagesView.RowFilter = String.Format("DocumentArtifactID = {0} AND ProductionArtifactID = {1}", documentArtifactID, item.Value)
+					If productionImagesView.Count > 0 Then
+						Dim drv As System.Data.DataRowView
+						Dim i As Int32 = 0
+						For Each drv In productionImagesView
+							Dim image As New Exporters.ImageExportInfo
+							image.FileName = drv("ImageFileName").ToString
+							image.FileGuid = drv("ImageGuid").ToString
+							image.ArtifactID = documentArtifactID
+							image.BatesNumber = drv("BatesNumber").ToString
+							Dim filenameExtension As String = ""
+							If image.FileName.IndexOf(".") <> -1 Then
+								filenameExtension = "." & image.FileName.Substring(image.FileName.LastIndexOf(".") + 1)
+							End If
+							image.FileName = image.BatesNumber & filenameExtension
+							retval.Add(image)
+							i += 1
+						Next
+						Return retval
+					End If
+				End If
+			Next
+			Return retval
+		End Function
+
+		Private Function PrepareOriginalImages(ByVal imagesView As System.Data.DataView, ByVal documentArtifactID As Int32, ByVal batesBase As String, ByVal documentInfo As Exporters.DocumentExportInfo) As System.Collections.ArrayList
+			Dim retval As New System.Collections.ArrayList
+			If Not Me.ExportFile.ExportImages Then Return retval
+			Dim item As Pair
 			imagesView.RowFilter = "DocumentArtifactID = " & documentArtifactID.ToString
 			Dim i As Int32 = 0
 			If imagesView.Count > 0 Then
@@ -273,6 +312,36 @@ Namespace kCura.WinEDDS
 			End If
 			Return retval
 		End Function
+
+		'Private Function PrepareImages(ByVal imagesView As System.Data.DataView, ByVal productionImagesView As System.Data.DataView, ByVal documentArtifactID As Int32, ByVal batesBase As String, ByVal documentInfo As Exporters.DocumentExportInfo) As System.Collections.ArrayList
+		'	If Me.ExportFile.TypeOfExport = ExportFile.ExportType.Production Then Return Me.PrepareImagesForProduction(productionImagesView, documentArtifactID, batesBase, documentInfo)
+		'	Dim retval As New System.Collections.ArrayList
+		'	If Not Me.ExportFile.ExportImages Then Return retval
+		'	imagesView.RowFilter = "DocumentArtifactID = " & documentArtifactID.ToString
+		'	Dim i As Int32 = 0
+		'	If imagesView.Count > 0 Then
+		'		Dim drv As System.Data.DataRowView
+		'		For Each drv In imagesView
+		'			Dim image As New Exporters.ImageExportInfo
+		'			image.FileName = drv("Filename").ToString
+		'			image.FileGuid = drv("Guid").ToString
+		'			image.ArtifactID = documentArtifactID
+		'			If i = 0 Then
+		'				image.BatesNumber = batesBase
+		'			Else
+		'				image.BatesNumber = batesBase & "_" & i.ToString.PadLeft(imagesView.Count.ToString.Length, "0"c)
+		'			End If
+		'			Dim filenameExtension As String = ""
+		'			If image.FileName.IndexOf(".") <> -1 Then
+		'				filenameExtension = "." & image.FileName.Substring(image.FileName.LastIndexOf(".") + 1)
+		'			End If
+		'			image.FileName = image.BatesNumber & filenameExtension
+		'			retval.Add(image)
+		'			i += 1
+		'		Next
+		'	End If
+		'	Return retval
+		'End Function
 		Private Function GetFullTextFileGuid(ByVal dt As System.Data.DataTable, ByVal documentArtifactID As Int32) As String
 			Dim row As System.Data.DataRow
 			If Me.ExportFile.ExportFullText Then
@@ -425,13 +494,34 @@ Namespace kCura.WinEDDS
 		'	Me.WriteStatusLine(kCura.Windows.Process.EventType.Status, "Created search log file.")
 		'End Sub
 
-		Private Function RetrieveImagesForDocuments(ByVal documentArtifactIDs As Int32(), ByVal productionArtifactID As Int32) As System.Data.DataTable
+		Private Function RetrieveImagesForDocuments(ByVal documentArtifactIDs As Int32(), ByVal productionOrderList As Pair()) As System.Data.DataTable
 			Select Case Me.ExportFile.TypeOfExport
 				Case ExportFile.ExportType.Production
-					Return _searchManager.RetrieveImagesForProductionDocuments(Me.ExportFile.CaseArtifactID, documentArtifactIDs, productionArtifactID).Tables(0)
+					Return Nothing
 				Case Else
-					Return _searchManager.RetrieveImagesForDocuments(Me.ExportFile.CaseArtifactID, documentArtifactIDs, productionArtifactID).Tables(0)
+					Return _searchManager.RetrieveImagesForDocuments(Me.ExportFile.CaseArtifactID, documentArtifactIDs).Tables(0)
 			End Select
+		End Function
+
+		Private Function RetrieveProductionImagesForDocuments(ByVal documentArtifactIDs As Int32(), ByVal productionOrderList As Pair()) As System.Data.DataTable
+			Select Case Me.ExportFile.TypeOfExport
+				Case ExportFile.ExportType.Production
+					Return _searchManager.RetrieveImagesForProductionDocuments(Me.ExportFile.CaseArtifactID, documentArtifactIDs, Int32.Parse(productionOrderList(0).Value)).Tables(0)
+				Case Else
+					Dim productionIDs As Int32() = Me.GetProductionArtifactIDs(productionOrderList)
+					If productionIDs.Length > 0 Then Return _searchManager.RetrieveByProductionIDsAndDocumentIDs(Me.ExportFile.CaseArtifactID, productionIDs, documentArtifactIDs).Tables(0)
+			End Select
+		End Function
+
+		Private Function GetProductionArtifactIDs(ByVal productionOrderList As Pair()) As Int32()
+			Dim retval As New System.Collections.ArrayList
+			Dim item As Pair
+			For Each item In productionOrderList
+				If item.Value <> "-1" Then
+					retval.Add(Int32.Parse(item.Value))
+				End If
+			Next
+			Return DirectCast(retval.ToArray(GetType(Int32)), Int32())
 		End Function
 #End Region
 

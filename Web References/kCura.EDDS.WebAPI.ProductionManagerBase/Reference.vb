@@ -129,24 +129,6 @@ Namespace kCura.EDDS.WebAPI.ProductionManagerBase
         Public BatesStartNumber As Integer
         
         '<remarks/>
-        Public SubdirectoryPrefix As String
-        
-        '<remarks/>
-        Public SubdirectoryStartNumber As Integer
-        
-        '<remarks/>
-        Public SubdirectoryMaxFiles As Integer
-        
-        '<remarks/>
-        Public VolumePrefix As String
-        
-        '<remarks/>
-        Public VolumeStartNumber As Integer
-        
-        '<remarks/>
-        Public VolumeMaxSize As Integer
-        
-        '<remarks/>
         Public LeftHeaderTypeCodeArtifactID As NullableInt32
         
         '<remarks/>

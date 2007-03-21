@@ -23,8 +23,17 @@ Namespace kCura.WinEDDS
 		Protected _volumeInfo As kCura.WinEDDS.Exporters.VolumeInfo
 		Protected _exportImages As Boolean
 		Protected _loadFileExtension As String
+		Protected _imagePrecedence As Pair()
 
 #Region "Public Properties"
+		Public Property ImagePrecedence() As Pair()
+			Get
+				Return _imagePrecedence
+			End Get
+			Set(ByVal value As Pair())
+				_imagePrecedence = value
+			End Set
+		End Property
 
 		Public Property CaseInfo() As kCura.EDDS.Types.CaseInfo
 			Get

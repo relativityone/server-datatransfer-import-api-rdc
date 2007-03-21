@@ -67,12 +67,6 @@
               <s:element minOccurs="0" maxOccurs="1" name="BatesSuffix" type="s:string" />
               <s:element minOccurs="1" maxOccurs="1" name="BatesFormat" type="s:int" />
               <s:element minOccurs="1" maxOccurs="1" name="BatesStartNumber" type="s:int" />
-              <s:element minOccurs="0" maxOccurs="1" name="SubdirectoryPrefix" type="s:string" />
-              <s:element minOccurs="1" maxOccurs="1" name="SubdirectoryStartNumber" type="s:int" />
-              <s:element minOccurs="1" maxOccurs="1" name="SubdirectoryMaxFiles" type="s:int" />
-              <s:element minOccurs="0" maxOccurs="1" name="VolumePrefix" type="s:string" />
-              <s:element minOccurs="1" maxOccurs="1" name="VolumeStartNumber" type="s:int" />
-              <s:element minOccurs="1" maxOccurs="1" name="VolumeMaxSize" type="s:int" />
               <s:element minOccurs="1" maxOccurs="1" name="LeftHeaderTypeCodeArtifactID">
                 <s:complexType>
                   <s:sequence>
