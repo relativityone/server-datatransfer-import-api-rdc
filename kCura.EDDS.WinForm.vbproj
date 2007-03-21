@@ -317,13 +317,13 @@
                     BuildAction = "EmbeddedResource"
                 />
                 <File
-                    RelPath = "Forms\ProductionExportForm.vb"
+                    RelPath = "Forms\ProductionPrecedenceForm.vb"
                     SubType = "Form"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Forms\ProductionExportForm.resx"
-                    DependentUpon = "ProductionExportForm.vb"
+                    RelPath = "Forms\ProductionPrecedenceForm.resx"
+                    DependentUpon = "ProductionPrecedenceForm.vb"
                     BuildAction = "EmbeddedResource"
                 />
                 <File

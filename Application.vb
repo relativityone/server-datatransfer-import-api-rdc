@@ -807,23 +807,23 @@ Namespace kCura.EDDS.WinForm
 			Return _processPool.StartProcess(importer)
 		End Function
 
-		Public Function StartProduction(ByVal exportFile As ExportFile) As Guid
-			CursorWait()
-			If Not Me.IsConnected(_selectedCaseInfo.ArtifactID) Then
-				CursorDefault()
-				Exit Function
-			End If
-			Dim frm As New kCura.Windows.Process.ProgressForm
-			Dim exporter As New kCura.WinEDDS.ExportProductionProcess
+		'Public Function StartProduction(ByVal exportFile As ExportFile) As Guid
+		'	CursorWait()
+		'	If Not Me.IsConnected(_selectedCaseInfo.ArtifactID) Then
+		'		CursorDefault()
+		'		Exit Function
+		'	End If
+		'	Dim frm As New kCura.Windows.Process.ProgressForm
+		'	Dim exporter As New kCura.WinEDDS.ExportProductionProcess
 
-			exporter.ExportFile = exportFile
-			frm.ProcessObserver = exporter.ProcessObserver
-			frm.ProcessController = exporter.ProcessController
-			frm.Text = "Export Progress..."
-			frm.Show()
-			CursorDefault()
-			Return _processPool.StartProcess(exporter)
-		End Function
+		'	exporter.ExportFile = exportFile
+		'	frm.ProcessObserver = exporter.ProcessObserver
+		'	frm.ProcessController = exporter.ProcessController
+		'	frm.Text = "Export Progress..."
+		'	frm.Show()
+		'	CursorDefault()
+		'	Return _processPool.StartProcess(exporter)
+		'End Function
 
 		Public Function StartSearch(ByVal exportFile As ExportFile) As Guid
 			CursorWait()
@@ -1012,6 +1012,30 @@ Namespace kCura.EDDS.WinForm
 			'End If
 		End Sub
 #End Region
+
+		Public Function GetProductionPrecendenceList(ByVal caseInfo As kCura.EDDS.Types.CaseInfo) As System.Data.DataTable
+			Dim productionManager As kCura.WinEDDS.Service.ProductionManager
+			Try
+				productionManager = New kCura.WinEDDS.Service.ProductionManager(Me.Credential, _cookieContainer)
+			Catch ex As System.Exception
+				If ex.Message.IndexOf("Need To Re Login") <> -1 Then
+					NewLogin(False)
+					'productionManager = New kCura.WinEDDS.Service.ProductionManager(Me.Credential, _cookieContainer)
+					Exit Function
+				Else
+					Throw
+				End If
+			End Try
+			Dim dt As System.Data.DataTable = productionManager.RetrieveProducedByContextArtifactID(caseInfo.ArtifactID).Tables(0)
+			Dim retval As New System.Data.DataTable
+			retval.Columns.Add("Display")
+			retval.Columns.Add("Value")
+			Dim row As System.Data.DataRow
+			For Each row In dt.Rows
+				retval.Rows.Add(New String() {row("Name").ToString, row("ArtifactID").ToString})
+			Next
+			Return retval
+		End Function
 
 		Public Sub DoAbout()
 			If Not _loginForm Is Nothing AndAlso Not _loginForm.IsDisposed Then

@@ -73,6 +73,9 @@ Public Class ExportForm
 	Friend WithEvents Label13 As System.Windows.Forms.Label
 	Friend WithEvents _subdirectoryImagePrefix As System.Windows.Forms.TextBox
 	Friend WithEvents _subDirectoryNativePrefix As System.Windows.Forms.TextBox
+	Friend WithEvents GroupBox1 As System.Windows.Forms.GroupBox
+	Friend WithEvents _productionPrecedenceList As System.Windows.Forms.ComboBox
+	Friend WithEvents _pickPrecedenceButton As System.Windows.Forms.Button
 	<System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
 		Dim resources As System.Resources.ResourceManager = New System.Resources.ResourceManager(GetType(ExportForm))
 		Me.MainMenu1 = New System.Windows.Forms.MainMenu
@@ -119,6 +122,9 @@ Public Class ExportForm
 		Me._newLineDelimiter = New System.Windows.Forms.ComboBox
 		Me.Label2 = New System.Windows.Forms.Label
 		Me._recordDelimiter = New System.Windows.Forms.ComboBox
+		Me.GroupBox1 = New System.Windows.Forms.GroupBox
+		Me._pickPrecedenceButton = New System.Windows.Forms.Button
+		Me._productionPrecedenceList = New System.Windows.Forms.ComboBox
 		Me._filtersBox.SuspendLayout()
 		Me.GroupBox3.SuspendLayout()
 		Me.GroupBox23.SuspendLayout()
@@ -129,6 +135,7 @@ Public Class ExportForm
 		CType(Me._subDirectoryMaxSize, System.ComponentModel.ISupportInitialize).BeginInit()
 		CType(Me._subdirectoryStartNumber, System.ComponentModel.ISupportInitialize).BeginInit()
 		Me._loadFileCharacterInformation.SuspendLayout()
+		Me.GroupBox1.SuspendLayout()
 		Me.SuspendLayout()
 		'
 		'MainMenu1
@@ -541,10 +548,38 @@ Public Class ExportForm
 		Me._recordDelimiter.Size = New System.Drawing.Size(124, 21)
 		Me._recordDelimiter.TabIndex = 8
 		'
+		'GroupBox1
+		'
+		Me.GroupBox1.Controls.Add(Me._pickPrecedenceButton)
+		Me.GroupBox1.Controls.Add(Me._productionPrecedenceList)
+		Me.GroupBox1.Location = New System.Drawing.Point(4, 436)
+		Me.GroupBox1.Name = "GroupBox1"
+		Me.GroupBox1.Size = New System.Drawing.Size(572, 52)
+		Me.GroupBox1.TabIndex = 16
+		Me.GroupBox1.TabStop = False
+		Me.GroupBox1.Text = "Production Precedence"
+		'
+		'_pickPrecedenceButton
+		'
+		Me._pickPrecedenceButton.Location = New System.Drawing.Point(540, 20)
+		Me._pickPrecedenceButton.Name = "_pickPrecedenceButton"
+		Me._pickPrecedenceButton.Size = New System.Drawing.Size(24, 20)
+		Me._pickPrecedenceButton.TabIndex = 1
+		Me._pickPrecedenceButton.Text = "..."
+		'
+		'_productionPrecedenceList
+		'
+		Me._productionPrecedenceList.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+		Me._productionPrecedenceList.Location = New System.Drawing.Point(8, 20)
+		Me._productionPrecedenceList.Name = "_productionPrecedenceList"
+		Me._productionPrecedenceList.Size = New System.Drawing.Size(532, 21)
+		Me._productionPrecedenceList.TabIndex = 0
+		'
 		'ExportForm
 		'
 		Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
-		Me.ClientSize = New System.Drawing.Size(580, 433)
+		Me.ClientSize = New System.Drawing.Size(580, 493)
+		Me.Controls.Add(Me.GroupBox1)
 		Me.Controls.Add(Me._loadFileCharacterInformation)
 		Me.Controls.Add(Me._subDirectoryInformationGroupBox)
 		Me.Controls.Add(Me._volumeInformationGroupBox)
@@ -566,6 +601,7 @@ Public Class ExportForm
 		CType(Me._subDirectoryMaxSize, System.ComponentModel.ISupportInitialize).EndInit()
 		CType(Me._subdirectoryStartNumber, System.ComponentModel.ISupportInitialize).EndInit()
 		Me._loadFileCharacterInformation.ResumeLayout(False)
+		Me.GroupBox1.ResumeLayout(False)
 		Me.ResumeLayout(False)
 
 	End Sub
@@ -574,6 +610,7 @@ Public Class ExportForm
 
 	Private WithEvents _application As kCura.EDDS.WinForm.Application
 	Protected _exportFile As kCura.WinEDDS.ExportFile
+	Protected WithEvents _precedenceForm As kCura.EDDS.WinForm.ProductionPrecedenceForm
 
 	Public Property Application() As kCura.EDDS.WinForm.Application
 		Get
@@ -646,11 +683,20 @@ Public Class ExportForm
 		_exportFile.ExportImages = _exportImages.Checked
 		_exportFile.LogFileFormat = CType(_imageFileFormat.SelectedValue, kCura.WinEDDS.LoadFileType.FileFormat)
 		_exportFile.LoadFileExtension = Me.GetNativeFileFormatExtension()
+		_exportFile.ImagePrecedence = Me.GetImagePrecedence
 		_application.StartSearch(Me.ExportFile)
 		Me.Cursor = System.Windows.Forms.Cursors.Default
 	End Sub
 
 
+	Private Function GetImagePrecedence() As Pair()
+		Dim retval(_productionPrecedenceList.Items.Count - 1) As Pair
+		Dim i As Int32
+		For i = 0 To _productionPrecedenceList.Items.Count - 1
+			retval(i) = DirectCast(_productionPrecedenceList.Items(i), Pair)
+		Next
+		Return retval
+	End Function
 	Private Function GetNativeFileFormatExtension() As String
 		Dim selected As String = CType(_nativeFileFormat.SelectedItem, String)
 		If selected.IndexOf("(.txt)") <> -1 Then
@@ -714,6 +760,7 @@ Public Class ExportForm
 				Me.Text = "Production Export Form"
 		End Select
 		_nativeFileFormat.SelectedIndex = 0
+		_productionPrecedenceList.Items.Add(New Pair("-1", "Original"))
 		RunMenu.Enabled = ReadyToRun()
 	End Sub
 
@@ -789,5 +836,29 @@ Public Class ExportForm
 
 	Private Sub _imageFileFormat_SelectedIndexChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles _imageFileFormat.SelectedIndexChanged
 		RunMenu.Enabled = ReadyToRun()
+	End Sub
+
+	Private Sub _pickPrecedenceButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _pickPrecedenceButton.Click
+		_precedenceForm = New kCura.EDDS.WinForm.ProductionPrecedenceForm
+		_precedenceForm.ExportFile = Me.ExportFile
+		If _productionPrecedenceList.Items.Count > 0 Then
+			Dim item As Pair
+			Dim precedenceList(_productionPrecedenceList.Items.Count - 1) As Pair
+			Dim i As Int32 = 0
+			For i = 0 To _productionPrecedenceList.Items.Count - 1
+				precedenceList(i) = DirectCast(_productionPrecedenceList.Items(i), Pair)
+			Next
+			_precedenceForm.PrecedenceList = precedenceList
+		Else
+			Dim precedenceList(0) As Pair
+			precedenceList(0) = New Pair("-1", "Original")
+			_precedenceForm.PrecedenceList = Nothing
+		End If
+		_precedenceForm.ShowDialog()
+	End Sub
+
+	Private Sub _precedenceForm_PrecedenceOK(ByVal precedenceList() As kCura.WinEDDS.Pair) Handles _precedenceForm.PrecedenceOK
+		_productionPrecedenceList.Items.Clear()
+		_productionPrecedenceList.Items.AddRange(precedenceList)
 	End Sub
 End Class
