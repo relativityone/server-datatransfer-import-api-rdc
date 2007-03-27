@@ -789,6 +789,24 @@ Namespace kCura.EDDS.WinForm
 			End If
 		End Function
 
+		Public Sub PreviewImageFile(ByVal loadfile As ImageLoadFile)
+			CursorWait()
+			'Dim folderManager As New kCura.WinEDDS.Service.FolderManager(Credential, _cookieContainer, _identity)
+			If Not Me.IsConnected(_selectedCaseInfo.ArtifactID) Then
+				CursorDefault()
+				Exit Sub
+			End If
+			Dim frm As New kCura.Windows.Process.ProgressForm
+			Dim previewer As New kCura.WinEDDS.PreviewImageFileProcess
+			previewer.TimeZoneOffset = _timeZoneOffset
+			previewer.LoadFile = loadfile
+			frm.ProcessObserver = previewer.ProcessObserver
+			frm.ProcessController = previewer.ProcessController
+			frm.Show()
+			_processPool.StartProcess(previewer)
+			CursorDefault()
+		End Sub
+
 		Public Function ImportImageFile(ByVal ImageLoadFile As ImageLoadFile) As Guid
 			CursorWait()
 			If Not Me.IsConnected(_selectedCaseInfo.ArtifactID) Then

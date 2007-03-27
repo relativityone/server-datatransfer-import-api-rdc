@@ -47,6 +47,7 @@ Namespace kCura.EDDS.WinForm
 		Friend WithEvents _importMenuLoadSettingsItem As System.Windows.Forms.MenuItem
 		Friend WithEvents _loadImageLoadFileDialog As System.Windows.Forms.OpenFileDialog
 		Friend WithEvents _replaceFullText As System.Windows.Forms.CheckBox
+		Friend WithEvents _importMenuCheckErrorsItem As System.Windows.Forms.MenuItem
 		<System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
 			Dim resources As System.Resources.ResourceManager = New System.Resources.ResourceManager(GetType(ImageLoad))
 			Me.GroupBox3 = New System.Windows.Forms.GroupBox
@@ -64,6 +65,7 @@ Namespace kCura.EDDS.WinForm
 			Me._importMenuLoadSettingsItem = New System.Windows.Forms.MenuItem
 			Me._saveImageLoadFileDialog = New System.Windows.Forms.SaveFileDialog
 			Me._loadImageLoadFileDialog = New System.Windows.Forms.OpenFileDialog
+			Me._importMenuCheckErrorsItem = New System.Windows.Forms.MenuItem
 			Me.GroupBox3.SuspendLayout()
 			Me.GroupBox233.SuspendLayout()
 			Me.SuspendLayout()
@@ -98,7 +100,8 @@ Namespace kCura.EDDS.WinForm
 			'
 			'_openFileDialog
 			'
-			Me._openFileDialog.Filter = "Log Files (*.log)|*.log|Text Files (*.txt)|*.txt|All files (*.*)|*.*"
+			Me._openFileDialog.Filter = "Opticon Files (*.opt)|*.opt|Log Files (*.log)|*.log|Text Files (*.txt)|*.txt|All " & _
+			"files (*.*)|*.*"
 			'
 			'GroupBox233
 			'
@@ -136,7 +139,7 @@ Namespace kCura.EDDS.WinForm
 			'MenuItem1
 			'
 			Me.MenuItem1.Index = 0
-			Me.MenuItem1.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.ImportFileMenu, Me.MenuItem4, Me._importMenuSaveSettingsItem, Me._importMenuLoadSettingsItem})
+			Me.MenuItem1.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.ImportFileMenu, Me._importMenuCheckErrorsItem, Me.MenuItem4, Me._importMenuSaveSettingsItem, Me._importMenuLoadSettingsItem})
 			Me.MenuItem1.Text = "&Import"
 			'
 			'ImportFileMenu
@@ -147,18 +150,18 @@ Namespace kCura.EDDS.WinForm
 			'
 			'MenuItem4
 			'
-			Me.MenuItem4.Index = 1
+			Me.MenuItem4.Index = 2
 			Me.MenuItem4.Text = "-"
 			'
 			'_importMenuSaveSettingsItem
 			'
-			Me._importMenuSaveSettingsItem.Index = 2
+			Me._importMenuSaveSettingsItem.Index = 3
 			Me._importMenuSaveSettingsItem.Shortcut = System.Windows.Forms.Shortcut.CtrlS
 			Me._importMenuSaveSettingsItem.Text = "Save Settings"
 			'
 			'_importMenuLoadSettingsItem
 			'
-			Me._importMenuLoadSettingsItem.Index = 3
+			Me._importMenuLoadSettingsItem.Index = 4
 			Me._importMenuLoadSettingsItem.Shortcut = System.Windows.Forms.Shortcut.CtrlO
 			Me._importMenuLoadSettingsItem.Text = "Load Settings"
 			'
@@ -170,6 +173,11 @@ Namespace kCura.EDDS.WinForm
 			'_loadImageLoadFileDialog
 			'
 			Me._loadImageLoadFileDialog.Filter = "WinEDDS image load files (*.kwi)|*.kwi|All Files (*.*)|*.*"
+			'
+			'_importMenuCheckErrorsItem
+			'
+			Me._importMenuCheckErrorsItem.Index = 1
+			Me._importMenuCheckErrorsItem.Text = "Check Errors..."
 			'
 			'ImageLoad
 			'
@@ -320,5 +328,9 @@ Namespace kCura.EDDS.WinForm
 			End If
 		End Function
 
+		Private Sub _importMenuCheckErrorsItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _importMenuCheckErrorsItem.Click
+			Me.PopulateImageLoadFile()
+			_application.PreviewImageFile(Me.ImageLoadFile)
+		End Sub
 	End Class
 End Namespace

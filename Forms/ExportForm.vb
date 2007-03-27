@@ -73,9 +73,9 @@ Public Class ExportForm
 	Friend WithEvents Label13 As System.Windows.Forms.Label
 	Friend WithEvents _subdirectoryImagePrefix As System.Windows.Forms.TextBox
 	Friend WithEvents _subDirectoryNativePrefix As System.Windows.Forms.TextBox
-	Friend WithEvents GroupBox1 As System.Windows.Forms.GroupBox
 	Friend WithEvents _productionPrecedenceList As System.Windows.Forms.ComboBox
 	Friend WithEvents _pickPrecedenceButton As System.Windows.Forms.Button
+	Friend WithEvents _productionPrecedenceBox As System.Windows.Forms.GroupBox
 	<System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
 		Dim resources As System.Resources.ResourceManager = New System.Resources.ResourceManager(GetType(ExportForm))
 		Me.MainMenu1 = New System.Windows.Forms.MainMenu
@@ -122,7 +122,7 @@ Public Class ExportForm
 		Me._newLineDelimiter = New System.Windows.Forms.ComboBox
 		Me.Label2 = New System.Windows.Forms.Label
 		Me._recordDelimiter = New System.Windows.Forms.ComboBox
-		Me.GroupBox1 = New System.Windows.Forms.GroupBox
+		Me._productionPrecedenceBox = New System.Windows.Forms.GroupBox
 		Me._pickPrecedenceButton = New System.Windows.Forms.Button
 		Me._productionPrecedenceList = New System.Windows.Forms.ComboBox
 		Me._filtersBox.SuspendLayout()
@@ -135,7 +135,7 @@ Public Class ExportForm
 		CType(Me._subDirectoryMaxSize, System.ComponentModel.ISupportInitialize).BeginInit()
 		CType(Me._subdirectoryStartNumber, System.ComponentModel.ISupportInitialize).BeginInit()
 		Me._loadFileCharacterInformation.SuspendLayout()
-		Me.GroupBox1.SuspendLayout()
+		Me._productionPrecedenceBox.SuspendLayout()
 		Me.SuspendLayout()
 		'
 		'MainMenu1
@@ -548,16 +548,16 @@ Public Class ExportForm
 		Me._recordDelimiter.Size = New System.Drawing.Size(124, 21)
 		Me._recordDelimiter.TabIndex = 8
 		'
-		'GroupBox1
+		'_productionPrecedenceBox
 		'
-		Me.GroupBox1.Controls.Add(Me._pickPrecedenceButton)
-		Me.GroupBox1.Controls.Add(Me._productionPrecedenceList)
-		Me.GroupBox1.Location = New System.Drawing.Point(4, 436)
-		Me.GroupBox1.Name = "GroupBox1"
-		Me.GroupBox1.Size = New System.Drawing.Size(572, 52)
-		Me.GroupBox1.TabIndex = 16
-		Me.GroupBox1.TabStop = False
-		Me.GroupBox1.Text = "Production Precedence"
+		Me._productionPrecedenceBox.Controls.Add(Me._pickPrecedenceButton)
+		Me._productionPrecedenceBox.Controls.Add(Me._productionPrecedenceList)
+		Me._productionPrecedenceBox.Location = New System.Drawing.Point(4, 436)
+		Me._productionPrecedenceBox.Name = "_productionPrecedenceBox"
+		Me._productionPrecedenceBox.Size = New System.Drawing.Size(572, 52)
+		Me._productionPrecedenceBox.TabIndex = 16
+		Me._productionPrecedenceBox.TabStop = False
+		Me._productionPrecedenceBox.Text = "Production Precedence"
 		'
 		'_pickPrecedenceButton
 		'
@@ -579,7 +579,7 @@ Public Class ExportForm
 		'
 		Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
 		Me.ClientSize = New System.Drawing.Size(580, 493)
-		Me.Controls.Add(Me.GroupBox1)
+		Me.Controls.Add(Me._productionPrecedenceBox)
 		Me.Controls.Add(Me._loadFileCharacterInformation)
 		Me.Controls.Add(Me._subDirectoryInformationGroupBox)
 		Me.Controls.Add(Me._volumeInformationGroupBox)
@@ -601,7 +601,7 @@ Public Class ExportForm
 		CType(Me._subDirectoryMaxSize, System.ComponentModel.ISupportInitialize).EndInit()
 		CType(Me._subdirectoryStartNumber, System.ComponentModel.ISupportInitialize).EndInit()
 		Me._loadFileCharacterInformation.ResumeLayout(False)
-		Me.GroupBox1.ResumeLayout(False)
+		Me._productionPrecedenceBox.ResumeLayout(False)
 		Me.ResumeLayout(False)
 
 	End Sub
@@ -690,6 +690,9 @@ Public Class ExportForm
 
 
 	Private Function GetImagePrecedence() As Pair()
+		If Me.ExportFile.TypeOfExport = ExportFile.ExportType.Production Then
+			Return New Pair() {New Pair(Me.ExportFile.ArtifactID.ToString, _filters.SelectedText)}
+		End If
 		Dim retval(_productionPrecedenceList.Items.Count - 1) As Pair
 		Dim i As Int32
 		For i = 0 To _productionPrecedenceList.Items.Count - 1
@@ -758,6 +761,8 @@ Public Class ExportForm
 				_filtersBox.Text = "Productions"
 				_exportImages.Text = "Export Produced Images"
 				Me.Text = "Production Export Form"
+				Me.Size = New System.Drawing.Size(588, 480)
+				_productionPrecedenceBox.Visible = False
 		End Select
 		_nativeFileFormat.SelectedIndex = 0
 		_productionPrecedenceList.Items.Add(New Pair("-1", "Original"))
