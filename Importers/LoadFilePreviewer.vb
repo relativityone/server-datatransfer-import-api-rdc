@@ -96,6 +96,10 @@ Namespace kCura.WinEDDS
 			If _firstLineContainsColumnNames Then
 				_columnHeaders = GetLine
 				_filePathColumnIndex = Array.IndexOf(_columnHeaders, _filePathColumn)
+			Else
+				If _uploadFiles Then
+					_filePathColumnIndex = Int32.Parse(_filePathcolumn.Replace("Column", "").Replace("(", "").Replace(")", "").Trim) - 1
+				End If
 			End If
 			Dim i As Int32 = 0
 			While Not HasReachedEOF AndAlso _continue
@@ -127,6 +131,19 @@ Namespace kCura.WinEDDS
 					retval.Add(docfield)
 				End If
 			Next
+			If _uploadFiles Then
+				Dim filePath As String = values(_filePathColumnIndex)
+				Dim docfield As New DocumentField("Native File", -1, -1, -1, NullableInt32.Null, NullableInt32.Null)
+				If filePath = "" Then
+					docfield.Value = "No File Specified."
+				ElseIf Not System.IO.File.Exists(filePath) Then
+					docfield.Value = String.Format("File '{0}' does not exist", filePath)
+					lineContainsErrors = True
+				Else
+					docfield.Value = filePath
+				End If
+				retval.Add(docfield)
+			End If
 			If _errorsOnly Then
 				If lineContainsErrors Then
 					Return DirectCast(retval.ToArray(GetType(DocumentField)), DocumentField())

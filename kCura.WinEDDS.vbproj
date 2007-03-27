@@ -208,6 +208,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "PreviewImageFileProcess.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "PreviewLoadFileProcess.vb"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -309,6 +314,11 @@
                 />
                 <File
                     RelPath = "Importers\ImageFileImporter.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Importers\ImageFilePreviewer.vb"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

@@ -14,7 +14,7 @@ Namespace kCura.WinEDDS
 			_errorCount = 0
 			_imageFileImporter = New kCura.WinEDDS.ImageFileImporter(ImageLoadFile.DestinationFolderID, ImageLoadFile, ProcessController)
 			_imageFileImporter.ReadFile(ImageLoadFile.FileName)
-			Me.ProcessObserver.RaiseProcessCompleteEvent()
+			Me.ProcessObserver.RaiseProcessCompleteEvent(False, _imageFileImporter.ErrorLogFileName)
 		End Sub
 
     Private Sub _imageFileImporter_StatusMessage(ByVal e As kCura.Windows.Process.StatusEventArgs) Handles _imageFileImporter.StatusMessage
