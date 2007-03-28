@@ -95,7 +95,10 @@ Namespace kCura.WinEDDS
 			Dim fieldArrays As New System.Collections.ArrayList
 			If _firstLineContainsColumnNames Then
 				_columnHeaders = GetLine
-				_filePathColumnIndex = Array.IndexOf(_columnHeaders, _filePathColumn)
+				'_filePathColumnIndex = Array.IndexOf(_columnHeaders, _filePathColumn)
+				Dim openParenIndex As Int32 = _filePathColumn.LastIndexOf("("c) + 1
+				Dim closeParenIndex As Int32 = _filePathColumn.LastIndexOf(")"c)
+				_filePathColumnIndex = Int32.Parse(_filePathColumn.Substring(openParenIndex, closeParenIndex - openParenIndex)) - 1
 			Else
 				If _uploadFiles Then
 					_filePathColumnIndex = Int32.Parse(_filePathcolumn.Replace("Column", "").Replace("(", "").Replace(")", "").Trim) - 1
