@@ -54,6 +54,7 @@ Namespace kCura.WinEDDS
 				Dim field As kCura.EDDS.WebAPI.DocumentManagerBase.Field
 				For Each field In _allFields
 					field.Value = Nothing
+					field.FieldCategory = CType(field.FieldCategoryID, kCura.EDDS.WebAPI.DocumentManagerBase.FieldCategory)
 				Next
 				Return _allFields
 			End Get

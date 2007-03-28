@@ -47,6 +47,7 @@ Namespace kCura.WinEDDS.Service
 						.CodeTypeID = NullableTypes.HelperFunctions.DBNullConvert.ToNullableInt32(dv(i)("CodeTypeID"))
 						.DisplayName = CType(dv(i)("DisplayName"), String)
 						.FieldCategoryID = CType(dv(i)("FieldCategoryID"), Int32)
+						.FieldCategory = CType(dv(i)("FieldCategoryID"), kCura.EDDS.WebAPI.DocumentManagerBase.FieldCategory)
 						.FieldType = CType(dv(i)("FieldTypeID"), kCura.EDDS.WebAPI.DocumentManagerBase.FieldType)
 						.FieldTypeID = CType(dv(i)("FieldTypeID"), kCura.EDDS.WebAPI.DocumentManagerBase.FieldType)
 						.IsEditable = CType(dv(i)("IsEditable"), Boolean)
