@@ -55,6 +55,8 @@ Namespace kCura.EDDS.WinForm
 		Friend WithEvents _fileMenuRefresh As System.Windows.Forms.MenuItem
 		Friend WithEvents MenuItem4 As System.Windows.Forms.MenuItem
 		Friend WithEvents _aboutMenuItem As System.Windows.Forms.MenuItem
+		Friend WithEvents _exportFoldersMenuItem As System.Windows.Forms.MenuItem
+		Friend WithEvents _exportFoldersAndSubfoldersMenuItem As System.Windows.Forms.MenuItem
 		<System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
 			Me.components = New System.ComponentModel.Container
 			Dim resources As System.Resources.ResourceManager = New System.Resources.ResourceManager(GetType(MainForm))
@@ -83,6 +85,8 @@ Namespace kCura.EDDS.WinForm
 			Me.LoggedInUserPanel = New System.Windows.Forms.StatusBarPanel
 			Me._caseFolderExplorer = New kCura.EDDS.WinForm.CaseFolderExplorer
 			Me.EnhancedMenuProvider = New kCura.Windows.Forms.EnhancedMenuProvider(Me.components)
+			Me._exportFoldersMenuItem = New System.Windows.Forms.MenuItem
+			Me._exportFoldersAndSubfoldersMenuItem = New System.Windows.Forms.MenuItem
 			CType(Me.AppStatusPanel, System.ComponentModel.ISupportInitialize).BeginInit()
 			CType(Me.LoggedInUserPanel, System.ComponentModel.ISupportInitialize).BeginInit()
 			Me.SuspendLayout()
@@ -191,7 +195,7 @@ Namespace kCura.EDDS.WinForm
 			Me.ExportMenu.Enabled = False
 			Me.EnhancedMenuProvider.SetImageIndex(Me.ExportMenu, -1)
 			Me.ExportMenu.Index = 1
-			Me.ExportMenu.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.ToolsExportProductionMenu, Me.ToolsExportSearchMenu})
+			Me.ExportMenu.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.ToolsExportProductionMenu, Me.ToolsExportSearchMenu, Me._exportFoldersMenuItem, Me._exportFoldersAndSubfoldersMenuItem})
 			Me.ExportMenu.OwnerDraw = True
 			Me.ExportMenu.Text = "&Export"
 			'
@@ -264,6 +268,18 @@ Namespace kCura.EDDS.WinForm
 			Me._caseFolderExplorer.Name = "_caseFolderExplorer"
 			Me._caseFolderExplorer.Size = New System.Drawing.Size(332, 515)
 			Me._caseFolderExplorer.TabIndex = 6
+			'
+			'_exportFoldersMenuItem
+			'
+			Me.EnhancedMenuProvider.SetImageIndex(Me._exportFoldersMenuItem, -1)
+			Me._exportFoldersMenuItem.Index = 2
+			Me._exportFoldersMenuItem.Text = "Folders..."
+			'
+			'_exportFoldersAndSubfoldersMenuItem
+			'
+			Me.EnhancedMenuProvider.SetImageIndex(Me._exportFoldersAndSubfoldersMenuItem, -1)
+			Me._exportFoldersAndSubfoldersMenuItem.Index = 3
+			Me._exportFoldersAndSubfoldersMenuItem.Text = "Folders and Subfolders..."
 			'
 			'MainForm
 			'
@@ -400,6 +416,14 @@ Namespace kCura.EDDS.WinForm
 
 		Private Sub MainForm_Closed(ByVal sender As Object, ByVal e As System.EventArgs) Handles MyBase.Closed
 			System.Environment.Exit(0)
+		End Sub
+
+		Private Sub _exportFoldersMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _exportFoldersMenuItem.Click
+			_application.NewSearchExport(_application.SelectedCaseFolderID, _application.SelectedCaseInfo, ExportFile.ExportType.ParentSearch)
+		End Sub
+
+		Private Sub _exportFoldersAndSubfoldersMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _exportFoldersAndSubfoldersMenuItem.Click
+			_application.NewSearchExport(_application.SelectedCaseFolderID, _application.SelectedCaseInfo, ExportFile.ExportType.AncestorSearch)
 		End Sub
 	End Class
 

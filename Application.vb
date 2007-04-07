@@ -707,6 +707,11 @@ Namespace kCura.EDDS.WinForm
 			previewer.LoadFile = loadFileToPreview
 			frm.ProcessObserver = previewer.ProcessObserver
 			frm.ProcessController = previewer.ProcessController
+			If errorsOnly Then
+				frm.Text = "Preview Load File Errors Progress ..."
+			Else
+				frm.Text = "Preview Load File Progress ..."
+			End If
 			previewfrm.Show()
 			frm.Show()
 			_processPool.StartProcess(previewer)
@@ -724,6 +729,7 @@ Namespace kCura.EDDS.WinForm
 			'Dim importer As New kCura.WinEDDS.ImportFileDirectoryProcess(Credential, CookieContainer, Me.Identity)
 			importer.ImportFileDirectorySettings = importFileDirectorySettings
 			frm.ProcessObserver = importer.ProcessObserver
+			frm.Text = "Import File Directory Progress ..."
 			frm.Show()
 			CursorDefault()
 			Return _processPool.StartProcess(importer)
@@ -739,6 +745,7 @@ Namespace kCura.EDDS.WinForm
 			Dim importer As New kCura.WinEDDS.GenericImportProcess(New WinEDDSGateway)
 			importer.Settings = settings
 			frm.ProcessObserver = importer.ProcessObserver
+			frm.Text = "Import Generic Progress ..."
 			frm.Show()
 			CursorDefault()
 			Return _processPool.StartProcess(importer)
@@ -755,6 +762,7 @@ Namespace kCura.EDDS.WinForm
 			imporProcess.SQLImportSettings = sqlimportsettings
 			frm.ProcessObserver = imporProcess.ProcessObserver
 			frm.ProcessController = imporProcess.ProcessController
+			frm.Text = "Import SQL Progress ..."
 			frm.Show()
 			CursorDefault()
 			Return _processPool.StartProcess(imporProcess)
@@ -778,6 +786,7 @@ Namespace kCura.EDDS.WinForm
 					frm.ProcessObserver = importer.ProcessObserver
 					frm.ProcessController = importer.ProcessController
 					frm.StopImportButtonText = "Stop"
+					frm.Text = "Import Load File Progress ..."
 					frm.Show()
 					frm.ProcessID = _processPool.StartProcess(importer)
 					CursorDefault()
@@ -802,6 +811,7 @@ Namespace kCura.EDDS.WinForm
 			previewer.LoadFile = loadfile
 			frm.ProcessObserver = previewer.ProcessObserver
 			frm.ProcessController = previewer.ProcessController
+			frm.Text = "Preview Image File Progress ..."
 			frm.Show()
 			_processPool.StartProcess(previewer)
 			CursorDefault()
@@ -820,6 +830,7 @@ Namespace kCura.EDDS.WinForm
 			SetWorkingDirectory(ImageLoadFile.FileName)
 			frm.ProcessObserver = importer.ProcessObserver
 			frm.ProcessController = importer.ProcessController
+			frm.Text = "Import Image File Progress ..."
 			frm.Show()
 			CursorDefault()
 			Return _processPool.StartProcess(importer)
@@ -856,6 +867,16 @@ Namespace kCura.EDDS.WinForm
 			frm.ProcessObserver = exporter.ProcessObserver
 			frm.ProcessController = exporter.ProcessController
 			frm.Text = "Export Progress..."
+			Select Case exportFile.TypeOfExport
+				Case exportFile.ExportType.AncestorSearch
+					frm.Text = "Export Folders and Subfolders Progress ..."
+				Case exportFile.ExportType.ArtifactSearch
+					frm.Text = "Export Saved Search Progress ..."
+				Case exportFile.ExportType.ParentSearch
+					frm.Text = "Export Folder Progress ..."
+				Case exportFile.ExportType.Production
+					frm.Text = "Export Production Progress ..."
+			End Select
 			frm.Show()
 			CursorDefault()
 			Return _processPool.StartProcess(exporter)

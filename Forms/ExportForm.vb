@@ -751,16 +751,19 @@ Public Class ExportForm
 			Case ExportFile.ExportType.ArtifactSearch
 				_filters.Text = "Searches"
 				_filtersBox.Text = "Searches"
-				Me.Text = "Search Export Form"
+				Me.Text = "Relativity Desktop Client: Export Saved Search"
 			Case ExportFile.ExportType.ParentSearch, ExportFile.ExportType.AncestorSearch
 				_filters.Text = "Views"
 				_filtersBox.Text = "Views"
-				Me.Text = "Native Export Form"
+				Me.Text = "Relativity Desktop Client: Export Folder"
+				If Me.ExportFile.TypeOfExport = ExportFile.ExportType.AncestorSearch Then
+					Me.Text = "Relativity Desktop Client: Export Folders and Subfolders"
+				End If
 			Case ExportFile.ExportType.Production
 				_filters.Text = "Productions"
 				_filtersBox.Text = "Productions"
 				_exportImages.Text = "Export Produced Images"
-				Me.Text = "Production Export Form"
+				Me.Text = "Relativity Desktop Client: Export Production"
 				Me.Size = New System.Drawing.Size(588, 480)
 				_productionPrecedenceBox.Visible = False
 		End Select
@@ -866,4 +869,34 @@ Public Class ExportForm
 		_productionPrecedenceList.Items.Clear()
 		_productionPrecedenceList.Items.AddRange(precedenceList)
 	End Sub
+
+	Private Sub _volumePrefix_TextChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _volumePrefix.TextChanged
+		_volumePrefix.Text = Me.CleanPath(_volumePrefix.Text)
+		_volumePrefix.SelectionStart = _volumePrefix.Text.Length
+	End Sub
+
+	Private Sub _subdirectoryImagePrefix_TextChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _subdirectoryImagePrefix.TextChanged
+		_subdirectoryImagePrefix.Text = Me.CleanPath(_subdirectoryImagePrefix.Text)
+		_subdirectoryImagePrefix.SelectionStart = _subdirectoryImagePrefix.Text.Length
+	End Sub
+
+	Private Sub _subDirectoryNativePrefix_TextChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _subDirectoryNativePrefix.TextChanged
+		_subDirectoryNativePrefix.Text = Me.CleanPath(_subDirectoryNativePrefix.Text)
+		_subDirectoryNativePrefix.SelectionStart = _subDirectoryNativePrefix.Text.Length
+	End Sub
+
+	Private Function CleanPath(ByRef path As String) As String
+		Dim retval As String = path
+		retval = retval.Replace("\", "")
+		retval = retval.Replace("/", "")
+		retval = retval.Replace("*", "")
+		retval = retval.Replace(":", "")
+		retval = retval.Replace("?", "")
+		retval = retval.Replace("""", "")
+		retval = retval.Replace("<", "")
+		retval = retval.Replace(">", "")
+		retval = retval.Replace("|", "")
+		Return retval
+	End Function
+
 End Class
