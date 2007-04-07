@@ -78,7 +78,7 @@ Namespace kCura.WinEDDS
 #Region "Enumerations"
 
 		Private Enum Columns
-			DocumentArtifactID = 0
+			BatesNumber = 0
 			FileLocation = 2
 			MultiPageIndicator = 3
 		End Enum
@@ -111,7 +111,7 @@ Namespace kCura.WinEDDS
 				Dim al As New System.collections.ArrayList
 				Dim line As String()
 				Dim sectionHasErrors As Boolean = False
-				While _continue
+				While Me.Continue
 					Try
 						line = Me.GetLine
 						If (line(Columns.MultiPageIndicator).ToUpper = "Y") Then
@@ -152,7 +152,7 @@ Namespace kCura.WinEDDS
 				Dim fullTextFileGuid As String
 				Dim retval As String()
 				Dim identifierRow As String() = DirectCast(al(0), String())
-				Dim documentIdentifier As String = String.Copy(identifierRow(Columns.DocumentArtifactID))
+				Dim documentIdentifier As String = String.Copy(identifierRow(Columns.BatesNumber))
 				Dim fileLocation As String = String.Copy(identifierRow(Columns.FileLocation))
 				If fileLocation.Chars(0) = "\" AndAlso fileLocation.Chars(1) <> "\" Then
 					fileLocation = "." & fileLocation
@@ -197,11 +197,11 @@ Namespace kCura.WinEDDS
 		Public Function ProcessImageLine(ByVal values As String()) As Boolean
 			Dim retval As Boolean = True
 			'check for existence
-			If values(Columns.DocumentArtifactID).Trim = "" Then
-				Me.RaiseStatusEvent(Windows.Process.EventType.Error, String.Format("Bates number '{0}'cannot be empty.", values(Columns.DocumentArtifactID)))
+			If values(Columns.BatesNumber).Trim = "" Then
+				Me.RaiseStatusEvent(Windows.Process.EventType.Error, String.Format("Bates number '{0}'cannot be empty.", values(Columns.BatesNumber)))
 				retval = False
 			End If
-			If values(Columns.DocumentArtifactID).Trim = "" Then
+			If values(Columns.BatesNumber).Trim = "" Then
 				Me.RaiseStatusEvent(Windows.Process.EventType.Error, String.Format("No image file specified on line."))
 				retval = False
 			ElseIf Not System.IO.File.Exists(Me.GetFileLocation(values)) Then
@@ -235,17 +235,18 @@ Namespace kCura.WinEDDS
 		Private Function GetImagesForDocument(ByVal lines As ArrayList, ByVal fileDTOs As ArrayList, ByVal fullTextBuilder As kCura.EDDS.Types.FullTextBuilder) As String()
 			Dim valueArray As String()
 			For Each valueArray In lines
-				GetImageForDocument(GetFileLocation(valueArray), fileDTOs, fullTextBuilder)
+				GetImageForDocument(GetFileLocation(valueArray), valueArray(Columns.BatesNumber), fileDTOs, fullTextBuilder)
 			Next
 		End Function
 
-		Private Sub GetImageForDocument(ByVal imageFileName As String, ByVal fileDTOs As ArrayList, ByVal fullTextBuilder As kCura.EDDS.Types.FullTextBuilder)
+		Private Sub GetImageForDocument(ByVal imageFileName As String, ByVal batesNumber As String, ByVal fileDTOs As ArrayList, ByVal fullTextBuilder As kCura.EDDS.Types.FullTextBuilder)
 			Dim filename As String = imageFileName.Substring(imageFileName.LastIndexOf("\") + 1)
 			RaiseStatusEvent(kCura.Windows.Process.EventType.Progress, String.Format("Uploading File '{0}'.", filename))
 			Dim extractedTextFileName As String = imageFileName.Substring(0, imageFileName.LastIndexOf("."c) + 1) & "txt"
 			Dim file As New kCura.EDDS.WebAPI.FileManagerBase.FileInfoBase
 			file.FileGuid = _fileUploader.UploadFile(imageFileName, _folderID)
 			file.FileName = filename
+			file.Identifier = batesNumber
 			fileDTOs.Add(file)
 			If _replaceFullText AndAlso System.IO.File.Exists(extractedTextFileName) Then
 				Dim sr As New System.IO.StreamReader(extractedTextFileName, System.Text.Encoding.Default, True)

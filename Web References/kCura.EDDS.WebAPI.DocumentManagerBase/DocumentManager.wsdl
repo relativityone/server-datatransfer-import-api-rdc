@@ -45,6 +45,7 @@
           <s:element minOccurs="1" maxOccurs="1" name="DocumentArtifactID" type="s:int" />
           <s:element minOccurs="1" maxOccurs="1" name="Rotation" type="s:int" />
           <s:element minOccurs="0" maxOccurs="1" name="Redactions" type="tns:ArrayOfRedaction" />
+          <s:element minOccurs="0" maxOccurs="1" name="Identifier" type="s:string" />
         </s:sequence>
       </s:complexType>
       <s:complexType name="ArrayOfRedaction">
@@ -215,6 +216,7 @@
           <s:enumeration value="MultiCode" />
           <s:enumeration value="File" />
           <s:enumeration value="Object" />
+          <s:enumeration value="User" />
         </s:restriction>
       </s:simpleType>
       <s:simpleType name="FieldCategory">

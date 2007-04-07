@@ -218,6 +218,9 @@ Namespace kCura.EDDS.WebAPI.FieldManagerBase
         
         '<remarks/>
         [Object]
+        
+        '<remarks/>
+        User
     End Enum
     
     '<remarks/>

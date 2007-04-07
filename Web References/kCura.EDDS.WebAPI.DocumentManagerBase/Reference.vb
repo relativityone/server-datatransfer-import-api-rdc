@@ -343,6 +343,9 @@ Namespace kCura.EDDS.WebAPI.DocumentManagerBase
         
         '<remarks/>
         Public Redactions() As Redaction
+        
+        '<remarks/>
+        Public Identifier As String
     End Class
     
     '<remarks/>
@@ -575,6 +578,9 @@ Namespace kCura.EDDS.WebAPI.DocumentManagerBase
         
         '<remarks/>
         [Object]
+        
+        '<remarks/>
+        User
     End Enum
     
     '<remarks/>

@@ -120,6 +120,7 @@
           <s:enumeration value="MultiCode" />
           <s:enumeration value="File" />
           <s:enumeration value="Object" />
+          <s:enumeration value="User" />
         </s:restriction>
       </s:simpleType>
       <s:simpleType name="FieldCategory">

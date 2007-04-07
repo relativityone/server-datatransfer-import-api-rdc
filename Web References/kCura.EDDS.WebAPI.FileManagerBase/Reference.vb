@@ -256,6 +256,9 @@ Namespace kCura.EDDS.WebAPI.FileManagerBase
         
         '<remarks/>
         Public Redactions() As Redaction
+        
+        '<remarks/>
+        Public Identifier As String
     End Class
     
     '<remarks/>
@@ -293,5 +296,8 @@ Namespace kCura.EDDS.WebAPI.FileManagerBase
         
         '<remarks/>
         Public FileGuid As String
+        
+        '<remarks/>
+        Public Identifier As String
     End Class
 End Namespace
