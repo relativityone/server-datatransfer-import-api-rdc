@@ -36,7 +36,6 @@ Namespace kCura.EDDS.WinForm
 		Friend WithEvents _browseButton As System.Windows.Forms.Button
 		Friend WithEvents _filePath As System.Windows.Forms.TextBox
 		Friend WithEvents GroupBox233 As System.Windows.Forms.GroupBox
-		Friend WithEvents _overWrite As System.Windows.Forms.CheckBox
 		Friend WithEvents MainMenu As System.Windows.Forms.MainMenu
 		Friend WithEvents MenuItem1 As System.Windows.Forms.MenuItem
 		Friend WithEvents ImportFileMenu As System.Windows.Forms.MenuItem
@@ -48,6 +47,8 @@ Namespace kCura.EDDS.WinForm
 		Friend WithEvents _loadImageLoadFileDialog As System.Windows.Forms.OpenFileDialog
 		Friend WithEvents _replaceFullText As System.Windows.Forms.CheckBox
 		Friend WithEvents _importMenuCheckErrorsItem As System.Windows.Forms.MenuItem
+		Friend WithEvents _overwriteDropdown As System.Windows.Forms.ComboBox
+		Friend WithEvents ExtractedTextGroupBox As System.Windows.Forms.GroupBox
 		<System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
 			Dim resources As System.Resources.ResourceManager = New System.Resources.ResourceManager(GetType(ImageLoad))
 			Me.GroupBox3 = New System.Windows.Forms.GroupBox
@@ -56,18 +57,20 @@ Namespace kCura.EDDS.WinForm
 			Me._openFileDialog = New System.Windows.Forms.OpenFileDialog
 			Me.GroupBox233 = New System.Windows.Forms.GroupBox
 			Me._replaceFullText = New System.Windows.Forms.CheckBox
-			Me._overWrite = New System.Windows.Forms.CheckBox
 			Me.MainMenu = New System.Windows.Forms.MainMenu
 			Me.MenuItem1 = New System.Windows.Forms.MenuItem
 			Me.ImportFileMenu = New System.Windows.Forms.MenuItem
+			Me._importMenuCheckErrorsItem = New System.Windows.Forms.MenuItem
 			Me.MenuItem4 = New System.Windows.Forms.MenuItem
 			Me._importMenuSaveSettingsItem = New System.Windows.Forms.MenuItem
 			Me._importMenuLoadSettingsItem = New System.Windows.Forms.MenuItem
 			Me._saveImageLoadFileDialog = New System.Windows.Forms.SaveFileDialog
 			Me._loadImageLoadFileDialog = New System.Windows.Forms.OpenFileDialog
-			Me._importMenuCheckErrorsItem = New System.Windows.Forms.MenuItem
+			Me._overwriteDropdown = New System.Windows.Forms.ComboBox
+			Me.ExtractedTextGroupBox = New System.Windows.Forms.GroupBox
 			Me.GroupBox3.SuspendLayout()
 			Me.GroupBox233.SuspendLayout()
+			Me.ExtractedTextGroupBox.SuspendLayout()
 			Me.SuspendLayout()
 			'
 			'GroupBox3
@@ -105,32 +108,23 @@ Namespace kCura.EDDS.WinForm
 			'
 			'GroupBox233
 			'
-			Me.GroupBox233.Controls.Add(Me._replaceFullText)
-			Me.GroupBox233.Controls.Add(Me._overWrite)
+			Me.GroupBox233.Controls.Add(Me._overwriteDropdown)
 			Me.GroupBox233.Location = New System.Drawing.Point(4, 60)
 			Me.GroupBox233.Name = "GroupBox233"
-			Me.GroupBox233.Size = New System.Drawing.Size(568, 52)
+			Me.GroupBox233.Size = New System.Drawing.Size(180, 52)
 			Me.GroupBox233.TabIndex = 8
 			Me.GroupBox233.TabStop = False
-			Me.GroupBox233.Text = "Update Behavior"
+			Me.GroupBox233.Text = "Overwrite"
 			'
 			'_replaceFullText
 			'
 			Me._replaceFullText.Checked = True
 			Me._replaceFullText.CheckState = System.Windows.Forms.CheckState.Checked
-			Me._replaceFullText.Location = New System.Drawing.Point(152, 16)
+			Me._replaceFullText.Location = New System.Drawing.Point(12, 20)
 			Me._replaceFullText.Name = "_replaceFullText"
-			Me._replaceFullText.Size = New System.Drawing.Size(120, 24)
+			Me._replaceFullText.Size = New System.Drawing.Size(144, 24)
 			Me._replaceFullText.TabIndex = 3
-			Me._replaceFullText.Text = "Replace Full Text"
-			'
-			'_overWrite
-			'
-			Me._overWrite.Location = New System.Drawing.Point(8, 20)
-			Me._overWrite.Name = "_overWrite"
-			Me._overWrite.Size = New System.Drawing.Size(96, 16)
-			Me._overWrite.TabIndex = 2
-			Me._overWrite.Text = "Overwrite"
+			Me._replaceFullText.Text = "Replace Extracted Text"
 			'
 			'MainMenu
 			'
@@ -147,6 +141,11 @@ Namespace kCura.EDDS.WinForm
 			Me.ImportFileMenu.Index = 0
 			Me.ImportFileMenu.Shortcut = System.Windows.Forms.Shortcut.F5
 			Me.ImportFileMenu.Text = "&Import File..."
+			'
+			'_importMenuCheckErrorsItem
+			'
+			Me._importMenuCheckErrorsItem.Index = 1
+			Me._importMenuCheckErrorsItem.Text = "Check Errors..."
 			'
 			'MenuItem4
 			'
@@ -174,15 +173,30 @@ Namespace kCura.EDDS.WinForm
 			'
 			Me._loadImageLoadFileDialog.Filter = "WinEDDS image load files (*.kwi)|*.kwi|All Files (*.*)|*.*"
 			'
-			'_importMenuCheckErrorsItem
+			'_overwriteDropdown
 			'
-			Me._importMenuCheckErrorsItem.Index = 1
-			Me._importMenuCheckErrorsItem.Text = "Check Errors..."
+			Me._overwriteDropdown.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+			Me._overwriteDropdown.Items.AddRange(New Object() {"None", "Strict", "Append"})
+			Me._overwriteDropdown.Location = New System.Drawing.Point(12, 20)
+			Me._overwriteDropdown.Name = "_overwriteDropdown"
+			Me._overwriteDropdown.Size = New System.Drawing.Size(156, 21)
+			Me._overwriteDropdown.TabIndex = 29
+			'
+			'ExtractedTextGroupBox
+			'
+			Me.ExtractedTextGroupBox.Controls.Add(Me._replaceFullText)
+			Me.ExtractedTextGroupBox.Location = New System.Drawing.Point(188, 60)
+			Me.ExtractedTextGroupBox.Name = "ExtractedTextGroupBox"
+			Me.ExtractedTextGroupBox.Size = New System.Drawing.Size(172, 52)
+			Me.ExtractedTextGroupBox.TabIndex = 9
+			Me.ExtractedTextGroupBox.TabStop = False
+			Me.ExtractedTextGroupBox.Text = "ExtractedText"
 			'
 			'ImageLoad
 			'
 			Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
 			Me.ClientSize = New System.Drawing.Size(580, 117)
+			Me.Controls.Add(Me.ExtractedTextGroupBox)
 			Me.Controls.Add(Me.GroupBox233)
 			Me.Controls.Add(Me.GroupBox3)
 			Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
@@ -193,6 +207,7 @@ Namespace kCura.EDDS.WinForm
 			Me.Text = "Relativity Desktop Client | Import Image Load File"
 			Me.GroupBox3.ResumeLayout(False)
 			Me.GroupBox233.ResumeLayout(False)
+			Me.ExtractedTextGroupBox.ResumeLayout(False)
 			Me.ResumeLayout(False)
 
 		End Sub
@@ -218,7 +233,7 @@ Namespace kCura.EDDS.WinForm
 				Me.Cursor = Cursors.Default
 				Exit Sub
 			End If
-			ImageLoadFile.Overwrite = _overWrite.Checked
+			ImageLoadFile.Overwrite = _overwriteDropdown.SelectedItem.ToString
 			ImageLoadFile.DestinationFolderID = _imageLoadFile.DestinationFolderID
 			Me.ImageLoadFile.ReplaceFullText = _replaceFullText.Checked
 			ImageLoadFile.ControlKeyField = _application.GetCaseIdentifierFields(0)
@@ -231,7 +246,7 @@ Namespace kCura.EDDS.WinForm
 				Me.Cursor = Cursors.Default
 				Exit Sub
 			End If
-			_overWrite.Checked = ImageLoadFile.Overwrite
+			_overwriteDropdown.SelectedItem = ImageLoadFile.Overwrite
 			ReadyToRun()
 			Me.Cursor = Cursors.Default
 		End Sub
@@ -261,8 +276,8 @@ Namespace kCura.EDDS.WinForm
 			Me.Cursor = Cursors.Default
 		End Sub
 
-		Private Sub _overWrite_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _overWrite.CheckedChanged
-			_imageLoadFile.Overwrite = _overWrite.Checked
+		Private Sub _overWrite_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _overwriteDropdown.SelectedIndexChanged
+			_imageLoadFile.Overwrite = _overwriteDropdown.SelectedItem.ToString
 		End Sub
 
 		Private Sub ReadyToRun()
@@ -303,7 +318,7 @@ Namespace kCura.EDDS.WinForm
 			End If
 			If System.IO.File.Exists(_loadImageLoadFileDialog.FileName) Then
 				Me.ImageLoadFile = _application.ReadImageLoadFile(_loadImageLoadFileDialog.FileName)
-				_overWrite.Checked = ImageLoadFile.Overwrite
+				_overwriteDropdown.SelectedItem = ImageLoadFile.Overwrite
 				_filePath.Text = ImageLoadFile.FileName
 			End If
 			Me.Cursor = System.Windows.Forms.Cursors.Default
