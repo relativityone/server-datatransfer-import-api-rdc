@@ -1,43 +1,43 @@
 Namespace kCura.EDDS.WinForm
-  Public Class LoadFileForm
-    Inherits System.Windows.Forms.Form
+	Public Class LoadFileForm
+		Inherits System.Windows.Forms.Form
 
 #Region " Windows Form Designer generated code "
 
-    Public Sub New()
-      MyBase.New()
+		Public Sub New()
+			MyBase.New()
 
-      'This call is required by the Windows Form Designer.
-      InitializeComponent()
+			'This call is required by the Windows Form Designer.
+			InitializeComponent()
 
-      'Add any initialization after the InitializeComponent() call
-      _application = kCura.EDDS.WinForm.Application.Instance
-    End Sub
+			'Add any initialization after the InitializeComponent() call
+			_application = kCura.EDDS.WinForm.Application.Instance
+		End Sub
 
-    'Form overrides dispose to clean up the component list.
-    Protected Overloads Overrides Sub Dispose(ByVal disposing As Boolean)
-      If disposing Then
-        If Not (components Is Nothing) Then
-          components.Dispose()
-        End If
-      End If
-      MyBase.Dispose(disposing)
-    End Sub
+		'Form overrides dispose to clean up the component list.
+		Protected Overloads Overrides Sub Dispose(ByVal disposing As Boolean)
+			If disposing Then
+				If Not (components Is Nothing) Then
+					components.Dispose()
+				End If
+			End If
+			MyBase.Dispose(disposing)
+		End Sub
 
-    'Required by the Windows Form Designer
-    Private components As System.ComponentModel.IContainer
+		'Required by the Windows Form Designer
+		Private components As System.ComponentModel.IContainer
 
-    'NOTE: The following procedure is required by the Windows Form Designer
-    'It can be modified using the Windows Form Designer.  
-    'Do not modify it using the code editor.
+		'NOTE: The following procedure is required by the Windows Form Designer
+		'It can be modified using the Windows Form Designer.  
+		'Do not modify it using the code editor.
 		Friend WithEvents OpenFileDialog As System.Windows.Forms.OpenFileDialog
-    Friend WithEvents GroupBox1 As System.Windows.Forms.GroupBox
+		Friend WithEvents GroupBox1 As System.Windows.Forms.GroupBox
 		Friend WithEvents _importDestinationText As System.Windows.Forms.TextBox
 		Friend WithEvents MainMenu As System.Windows.Forms.MainMenu
-    Friend WithEvents MenuItem1 As System.Windows.Forms.MenuItem
-    Friend WithEvents MenuItem2 As System.Windows.Forms.MenuItem
-    Friend WithEvents PreviewMenuFile As System.Windows.Forms.MenuItem
-    Friend WithEvents ImportFileMenu As System.Windows.Forms.MenuItem
+		Friend WithEvents MenuItem1 As System.Windows.Forms.MenuItem
+		Friend WithEvents MenuItem2 As System.Windows.Forms.MenuItem
+		Friend WithEvents PreviewMenuFile As System.Windows.Forms.MenuItem
+		Friend WithEvents ImportFileMenu As System.Windows.Forms.MenuItem
 		Friend WithEvents _fileSaveFieldMapMenuItem As System.Windows.Forms.MenuItem
 		Friend WithEvents _saveFieldMapDialog As System.Windows.Forms.SaveFileDialog
 		Friend WithEvents _fileLoadFieldMapMenuItem As System.Windows.Forms.MenuItem
@@ -81,9 +81,10 @@ Namespace kCura.EDDS.WinForm
 		Friend WithEvents GroupBox5 As System.Windows.Forms.GroupBox
 		Friend WithEvents MenuItem4 As System.Windows.Forms.MenuItem
 		Friend WithEvents _fileRefreshMenuItem As System.Windows.Forms.MenuItem
-		Friend WithEvents Label9 As System.Windows.Forms.Label
 		Friend WithEvents _overwriteDropdown As System.Windows.Forms.ComboBox
 		Friend WithEvents GroupBox6 As System.Windows.Forms.GroupBox
+		Friend WithEvents GroupBox7 As System.Windows.Forms.GroupBox
+		Friend WithEvents _extractedTextValueContainsFileLocation As System.Windows.Forms.CheckBox
 		<System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
 			Dim resources As System.Resources.ResourceManager = New System.Resources.ResourceManager(GetType(LoadFileForm))
 			Me.OpenFileDialog = New System.Windows.Forms.OpenFileDialog
@@ -123,7 +124,6 @@ Namespace kCura.EDDS.WinForm
 			Me._fieldMapTab = New System.Windows.Forms.TabPage
 			Me.GroupBox6 = New System.Windows.Forms.GroupBox
 			Me._overwriteDropdown = New System.Windows.Forms.ComboBox
-			Me.Label9 = New System.Windows.Forms.Label
 			Me.GroupBox5 = New System.Windows.Forms.GroupBox
 			Me._buildFolderStructure = New System.Windows.Forms.CheckBox
 			Me._destinationFolderPath = New System.Windows.Forms.ComboBox
@@ -140,6 +140,8 @@ Namespace kCura.EDDS.WinForm
 			Me._fileColumns = New kCura.Windows.Forms.TwoListBox
 			Me._fieldMap = New kCura.Windows.Forms.TwoListBox
 			Me.HelpProvider1 = New System.Windows.Forms.HelpProvider
+			Me.GroupBox7 = New System.Windows.Forms.GroupBox
+			Me._extractedTextValueContainsFileLocation = New System.Windows.Forms.CheckBox
 			Me.GroupBox1.SuspendLayout()
 			Me.TabControl1.SuspendLayout()
 			Me._loadFileTab.SuspendLayout()
@@ -151,6 +153,7 @@ Namespace kCura.EDDS.WinForm
 			Me.GroupBox5.SuspendLayout()
 			Me.GroupBox4.SuspendLayout()
 			Me.GroupBox3.SuspendLayout()
+			Me.GroupBox7.SuspendLayout()
 			Me.SuspendLayout()
 			'
 			'OpenFileDialog
@@ -421,6 +424,7 @@ Namespace kCura.EDDS.WinForm
 			'
 			'_fieldMapTab
 			'
+			Me._fieldMapTab.Controls.Add(Me.GroupBox7)
 			Me._fieldMapTab.Controls.Add(Me.GroupBox6)
 			Me._fieldMapTab.Controls.Add(Me.GroupBox5)
 			Me._fieldMapTab.Controls.Add(Me.GroupBox4)
@@ -438,31 +442,21 @@ Namespace kCura.EDDS.WinForm
 			'GroupBox6
 			'
 			Me.GroupBox6.Controls.Add(Me._overwriteDropdown)
-			Me.GroupBox6.Controls.Add(Me.Label9)
 			Me.GroupBox6.Location = New System.Drawing.Point(552, 4)
 			Me.GroupBox6.Name = "GroupBox6"
-			Me.GroupBox6.Size = New System.Drawing.Size(172, 124)
+			Me.GroupBox6.Size = New System.Drawing.Size(172, 56)
 			Me.GroupBox6.TabIndex = 31
 			Me.GroupBox6.TabStop = False
-			Me.GroupBox6.Text = "Update Behavior"
+			Me.GroupBox6.Text = "Overwrite"
 			'
 			'_overwriteDropdown
 			'
 			Me._overwriteDropdown.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
 			Me._overwriteDropdown.Items.AddRange(New Object() {"None", "Strict", "Append"})
-			Me._overwriteDropdown.Location = New System.Drawing.Point(8, 52)
+			Me._overwriteDropdown.Location = New System.Drawing.Point(8, 24)
 			Me._overwriteDropdown.Name = "_overwriteDropdown"
 			Me._overwriteDropdown.Size = New System.Drawing.Size(156, 21)
 			Me._overwriteDropdown.TabIndex = 28
-			'
-			'Label9
-			'
-			Me.Label9.Location = New System.Drawing.Point(8, 36)
-			Me.Label9.Name = "Label9"
-			Me.Label9.Size = New System.Drawing.Size(56, 13)
-			Me.Label9.TabIndex = 27
-			Me.Label9.Text = "Overwrite:"
-			Me.Label9.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
 			'
 			'GroupBox5
 			'
@@ -608,6 +602,24 @@ Namespace kCura.EDDS.WinForm
 			Me._fieldMap.Size = New System.Drawing.Size(360, 276)
 			Me._fieldMap.TabIndex = 1
 			'
+			'GroupBox7
+			'
+			Me.GroupBox7.Controls.Add(Me._extractedTextValueContainsFileLocation)
+			Me.GroupBox7.Location = New System.Drawing.Point(552, 72)
+			Me.GroupBox7.Name = "GroupBox7"
+			Me.GroupBox7.Size = New System.Drawing.Size(172, 56)
+			Me.GroupBox7.TabIndex = 32
+			Me.GroupBox7.TabStop = False
+			Me.GroupBox7.Text = "Extracted Text"
+			'
+			'_extractedTextValueContainsFileLocation
+			'
+			Me._extractedTextValueContainsFileLocation.Location = New System.Drawing.Point(8, 24)
+			Me._extractedTextValueContainsFileLocation.Name = "_extractedTextValueContainsFileLocation"
+			Me._extractedTextValueContainsFileLocation.Size = New System.Drawing.Size(156, 21)
+			Me._extractedTextValueContainsFileLocation.TabIndex = 0
+			Me._extractedTextValueContainsFileLocation.Text = "Cell contains file location"
+			'
 			'LoadFileForm
 			'
 			Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
@@ -632,6 +644,7 @@ Namespace kCura.EDDS.WinForm
 			Me.GroupBox5.ResumeLayout(False)
 			Me.GroupBox4.ResumeLayout(False)
 			Me.GroupBox3.ResumeLayout(False)
+			Me.GroupBox7.ResumeLayout(False)
 			Me.ResumeLayout(False)
 
 		End Sub
@@ -683,6 +696,7 @@ Namespace kCura.EDDS.WinForm
 				End If
 			End If
 			LoadFile.ExtractFullTextFromNativeFile = _extractFullTextFromNativeFile.Checked
+			LoadFile.FullTextColumnContainsFileLocation = _extractedTextValueContainsFileLocation.Checked
 			LoadFile.LoadNativeFiles = _loadNativeFiles.Checked
 			If _overwriteDropdown.SelectedItem Is Nothing Then
 				LoadFile.OverwriteDestination = "None"
@@ -733,6 +747,7 @@ Namespace kCura.EDDS.WinForm
 			_destinationFolderPath.Items.Clear()
 			_identifiersDropDown.Items.Clear()
 			_loadNativeFiles.Checked = LoadFile.LoadNativeFiles
+			_extractedTextValueContainsFileLocation.Checked = LoadFile.FullTextColumnContainsFileLocation
 			RefreshNativeFilePathFieldAndFileColumnHeaders()
 			If Not Me.EnsureConnection() Then Exit Sub
 			Dim caseFields As String() = _application.GetCaseFields(LoadFile.CaseInfo.ArtifactID)
@@ -780,6 +795,8 @@ Namespace kCura.EDDS.WinForm
 			_identifiersDropDown.Items.Contains(LoadFile.GroupIdentifierColumn) Then
 				_identifiersDropDown.SelectedItem = LoadFile.GroupIdentifierColumn
 			End If
+
+			_extractedTextValueContainsFileLocation.Enabled = Me.FullTextColumnIsMapped
 
 			'If LoadFile.OverwriteDestination AndAlso Not LoadFile.SelectedIdentifierField Is Nothing Then
 			'	_overWrite.Checked = True
@@ -948,6 +965,7 @@ Namespace kCura.EDDS.WinForm
 		Private Sub _fieldMap_ItemsShifted() Handles _fieldMap.ItemsShifted
 			ActionMenuEnabled = ReadyToRun
 			_extractMd5Hash.Enabled = EnableMd5Hash
+			_extractedTextValueContainsFileLocation.Enabled = Me.FullTextColumnIsMapped
 		End Sub
 
 		Private ReadOnly Property EnableMd5Hash() As Boolean
@@ -1071,6 +1089,17 @@ Namespace kCura.EDDS.WinForm
 		Private Sub _destinationFolderPath_SelectedIndexChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles _destinationFolderPath.SelectedIndexChanged
 			ActionMenuEnabled = ReadyToRun
 		End Sub
+
+		Private Function FullTextColumnIsMapped() As Boolean
+			Dim ftfname As String = _application.CurrentFields.FullText.FieldName
+			Dim field As String
+			For Each field In _fieldMap.RightListBoxItems
+				If field.ToLower = ftfname.ToLower Then
+					Return True
+				End If
+			Next
+			Return False
+		End Function
 
 		Private Sub _fileRefreshMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _fileRefreshMenuItem.Click
 			Dim caseFields As String() = _application.GetCaseFields(LoadFile.CaseInfo.ArtifactID, True)
