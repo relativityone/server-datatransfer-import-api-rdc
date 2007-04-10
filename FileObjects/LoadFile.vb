@@ -21,6 +21,7 @@ Namespace kCura.WinEDDS
 		Public ExtractMD5HashFromNativeFile As Boolean
 		Public CreateFolderStructure As Boolean
 		Public FolderStructureContainedInColumn As String
+		Public FullTextColumnContainsFileLocation As Boolean
 		<NonSerialized()> Public Credentials As Net.NetworkCredential
 		<NonSerialized()> Public _cookieContainer As System.Net.CookieContainer
 		'<NonSerialized()> Public Identity As kCura.EDDS.EDDSIdentity
@@ -61,6 +62,7 @@ Namespace kCura.WinEDDS
 			info.AddValue("SelectedIdentifierField", Me.SelectedIdentifierField, GetType(kCura.WinEDDS.DocumentField))
 			info.AddValue("FolderStructureContainedInColumn", Me.FolderStructureContainedInColumn, GetType(String))
 			info.AddValue("CreateFolderStructure", Me.CreateFolderStructure, GetType(Boolean))
+			info.AddValue("FullTextColumnContainsFileLocation", Me.FullTextColumnContainsFileLocation, GetType(Boolean))
 			info.AddValue("GroupIdentifierColumn", Me.GroupIdentifierColumn, GetType(String))
 		End Sub
 
@@ -98,6 +100,11 @@ Namespace kCura.WinEDDS
 
 				Me.FolderStructureContainedInColumn = info.GetString("FolderStructureContainedInColumn")
 				Me.CreateFolderStructure = info.GetBoolean("CreateFolderStructure")
+				Try
+					Me.FullTextColumnContainsFileLocation = info.GetBoolean("FullTextColumnContainsFileLocation")
+				Catch ex As System.Exception
+					Me.FullTextColumnContainsFileLocation = False
+				End Try
 			End With
 		End Sub
 

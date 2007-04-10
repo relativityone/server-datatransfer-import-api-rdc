@@ -49,16 +49,26 @@ Namespace kCura.WinEDDS
 			Return Not _nameIndex.Item(fieldName) Is Nothing
 		End Function
 
+		Private Function GetFieldByCategory(ByVal type As kCura.DynamicFields.Types.FieldCategory) As DocumentField
+			Dim ind As Int32
+			Dim field As DocumentField
+			For Each ind In _idIndex.Keys
+				field = DirectCast(_idIndex(ind), DocumentField)
+				If field.FieldCategory = type Then
+					Return field
+				End If
+			Next
+		End Function
+
 		Public ReadOnly Property GroupIdentifier() As DocumentField
 			Get
-				Dim ind As Int32
-				Dim field As DocumentField
-				For Each ind In _idIndex.Keys
-					field = DirectCast(_idIndex(ind), DocumentField)
-					If field.FieldCategory = DynamicFields.Types.FieldCategory.GroupIdentifier Then
-						Return field
-					End If
-				Next
+				Return Me.GetFieldByCategory(DynamicFields.Types.FieldCategory.GroupIdentifier)
+			End Get
+		End Property
+
+		Public ReadOnly Property FullText() As DocumentField
+			Get
+				Return Me.GetFieldByCategory(DynamicFields.Types.FieldCategory.FullText)
 			End Get
 		End Property
 

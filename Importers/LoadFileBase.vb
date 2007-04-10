@@ -31,6 +31,7 @@ Namespace kCura.WinEDDS
 		Protected _createFolderStructure As Boolean
 		Protected _destinationFolder As String
 		Protected _extractMd5Hash As Boolean
+		Protected _fullTextColumnMapsToFileLocation As Boolean
 
 		Public Property AllCodes() As kCura.Data.DataView
 			Get
@@ -82,6 +83,7 @@ Namespace kCura.WinEDDS
 			_createFolderStructure = args.CreateFolderStructure
 			_destinationFolder = args.FolderStructureContainedInColumn
 			_extractMd5Hash = args.ExtractMD5HashFromNativeFile
+			_fullTextColumnMapsToFileLocation = args.FullTextColumnContainsFileLocation
 		End Sub
 
 #Region "Code Parsing"
@@ -234,10 +236,34 @@ Namespace kCura.WinEDDS
 							field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(GetNullableFixedString(value, column, field.FieldLength.Value))
 					End Select
 				Case Else				'FieldTypeHelper.FieldType.Text
-					If value.Length > 100 AndAlso forPreview Then
-						field.Value = value.Substring(0, 100) & "...."
+					If field.FieldCategory = DynamicFields.Types.FieldCategory.FullText AndAlso _fullTextColumnMapsToFileLocation Then
+						If value = "" Then
+							field.Value = ""
+						ElseIf Not System.IO.File.Exists(value) Then
+							Throw New MissingFullTextFileException(Me.CurrentLineNumber, column)
+						Else
+							If forPreview Then
+								Dim sr As New System.IO.StreamReader(value, System.Text.Encoding.Default, True)
+								Dim i As Int32 = 0
+								Dim sb As New System.Text.StringBuilder
+								While sr.Peek <> -1 AndAlso i < 100
+									sb.Append(ChrW(sr.Read))
+									i += 1
+								End While
+								If i = 100 Then sb.Append("...")
+								sr.Close()
+								sb = sb.Replace(System.Environment.NewLine, Me.NewlineProxy).Replace(ChrW(10), Me.NewlineProxy).Replace(ChrW(13), Me.NewlineProxy)
+								field.Value = sb.ToString
+							Else
+								field.Value = value
+							End If
+						End If
 					Else
-						field.Value = value
+						If value.Length > 100 AndAlso forPreview Then
+							field.Value = value.Substring(0, 100) & "...."
+						Else
+							field.Value = value
+						End If
 					End If
 			End Select
 		End Sub
@@ -305,6 +331,13 @@ Namespace kCura.WinEDDS
 			Inherits kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
 			Public Sub New(ByVal row As Int32, ByVal column As Int32)
 				MyBase.New(row, column, String.Format("Group Identifier fields cannot accept null or empty values."))
+			End Sub
+		End Class
+
+		Public Class MissingFullTextFileException
+			Inherits kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
+			Public Sub New(ByVal row As Int32, ByVal column As Int32)
+				MyBase.New(row, column, String.Format("Full text file specified does not exist."))
 			End Sub
 		End Class
 
