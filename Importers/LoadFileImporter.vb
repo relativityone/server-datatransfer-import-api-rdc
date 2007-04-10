@@ -534,6 +534,12 @@ Namespace kCura.WinEDDS
 							SetMultiCode(fieldDTO, docField)
 						Case EDDS.WebAPI.DocumentManagerBase.FieldType.Code
 							If docField.FieldCategoryID = kCura.DynamicFields.Types.FieldCategory.FullText Then
+								fieldDTO.Value = _uploader.UploadTextAsFile(docField.Value, _folderid, System.Guid.NewGuid.ToString)
+							Else
+								fieldDTO.Value = docField.Value
+							End If
+						Case EDDS.WebAPI.DocumentManagerBase.FieldType.Text, EDDS.WebAPI.DocumentManagerBase.FieldType.Varchar
+							If docField.FieldCategoryID = kCura.DynamicFields.Types.FieldCategory.FullText Then
 								If _fullTextColumnMapsToFileLocation Then
 									If docField.Value = "" Then
 										fieldDTO.Value = _uploader.UploadTextAsFile(docField.Value, _folderid, System.Guid.NewGuid.ToString)
@@ -543,12 +549,6 @@ Namespace kCura.WinEDDS
 								Else
 									fieldDTO.Value = _uploader.UploadTextAsFile(docField.Value, _folderid, System.Guid.NewGuid.ToString)
 								End If
-							Else
-								fieldDTO.Value = docField.Value
-							End If
-						Case EDDS.WebAPI.DocumentManagerBase.FieldType.Text, EDDS.WebAPI.DocumentManagerBase.FieldType.Varchar
-							If docField.FieldCategoryID = kCura.DynamicFields.Types.FieldCategory.FullText Then
-								fieldDTO.Value = _uploader.UploadTextAsFile(docField.Value, _folderid, System.Guid.NewGuid.ToString)
 							Else
 								fieldDTO.Value = encoder.GetBytes(docField.Value)
 							End If
