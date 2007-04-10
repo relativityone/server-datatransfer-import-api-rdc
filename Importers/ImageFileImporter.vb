@@ -11,7 +11,7 @@ Namespace kCura.WinEDDS
 		Private _fileUploader As kCura.WinEDDS.FileUploader
 		Private _fileManager As kCura.WinEDDS.Service.FileManager
 		Private _folderID As Int32
-		Private _overwrite As Boolean
+		Private _overwrite As String
 		Private _filePath As String
 		Private _selectedIdentifierField As String
 		Private _fileLineCount As Int32
@@ -161,7 +161,7 @@ Namespace kCura.WinEDDS
 
 				Dim currentDocumentArtifactID As Int32 = _docManager.GetDocumentArtifactIDFromIdentifier(_fileUploader.CaseArtifactID, documentIdentifier, _selectedIdentifierField)
 				If currentDocumentArtifactID > 0 Then
-					If _overwrite Then
+					If _overwrite.ToLower = "strict" OrElse _overwrite.ToLower = "append" Then
 						GetImagesForDocument(al, fileDTOs, fullTextBuilder)
 						If _replaceFullText Then fullTextFileGuid = _fileUploader.UploadTextAsFile(fullTextBuilder.FullText, _folderID, System.Guid.NewGuid.ToString)
 						_docManager.ClearImagesFromDocument(_fileUploader.CaseArtifactID, currentDocumentArtifactID)
@@ -170,10 +170,13 @@ Namespace kCura.WinEDDS
 						End If
 						'Update Document
 					Else
-						Throw New OverwriteException
+						Throw New OverwriteNoneException
 					End If
 				Else
 					'Create Document
+					If _overwrite.ToLower = "strict" Then
+						Throw New OverwriteStrictException
+					End If
 					GetImagesForDocument(al, fileDTOs, fullTextBuilder)
 					If _replaceFullText Then
 						fullTextFileGuid = _fileUploader.UploadTextAsFile(fullTextBuilder.FullText, _folderID, System.Guid.NewGuid.ToString)
@@ -309,10 +312,17 @@ Namespace kCura.WinEDDS
 			End Sub
 		End Class
 
-		Public Class OverwriteException
+		Public Class OverwriteNoneException
 			Inherits kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
 			Public Sub New()
 				MyBase.New("Document exists - upload aborted.")
+			End Sub
+		End Class
+
+		Public Class OverwriteStrictException
+			Inherits kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
+			Public Sub New()
+				MyBase.New("Document does not exist - upload aborted.")
 			End Sub
 		End Class
 

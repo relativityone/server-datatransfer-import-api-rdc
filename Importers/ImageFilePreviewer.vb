@@ -9,7 +9,7 @@ Namespace kCura.WinEDDS
 		Private _fileUploader As kCura.WinEDDS.FileUploader
 		Private _fileManager As kCura.WinEDDS.Service.FileManager
 		Private _folderID As Int32
-		Private _overwrite As Boolean
+		Private _overwrite As String
 		Private _filePath As String
 		Private _selectedIdentifierField As String
 		Private _fileLineCount As Int32

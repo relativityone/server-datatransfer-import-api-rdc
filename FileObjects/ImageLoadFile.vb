@@ -3,7 +3,7 @@ Namespace kCura.WinEDDS
 		<NonSerialized()> Public CaseInfo As kCura.EDDS.Types.CaseInfo
 		Public DestinationFolderID As Int32
 		Public FileName As String
-		Public Overwrite As Boolean
+		Public Overwrite As String
 		Public ControlKeyField As String
 		Public ReplaceFullText As Boolean
 		<NonSerialized()> Public Credential As Net.NetworkCredential
@@ -13,7 +13,7 @@ Namespace kCura.WinEDDS
 		Public Sub New()
 			'Public Sub New(ByVal identity As kCura.EDDS.EDDSIdentity)
 			MyBase.New()
-			Overwrite = True
+			Overwrite = "None"
 			'Me.Identity = identity
 		End Sub
 	End Class
