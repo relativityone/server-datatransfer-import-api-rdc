@@ -135,6 +135,11 @@
                     Project = "{6C4D3211-85B6-4A83-9356-7C7F0C319C75}"
                     Package = "{F184B08F-C81C-45F6-A57F-5ABD9991F28F}"
                 />
+                <Reference
+                    Name = "kCura.ImageValidator"
+                    Project = "{C2FD8BF7-723A-4D40-A201-CD7458678A70}"
+                    Package = "{F184B08F-C81C-45F6-A57F-5ABD9991F28F}"
+                />
             </References>
             <Imports>
                 <Import Namespace = "Microsoft.VisualBasic" />

@@ -40,13 +40,13 @@ Namespace kCura.WinEDDS
 
 		Private ReadOnly Property CurrentImageSubdirectoryLabel() As String
 			Get
-				Return _settings.VolumeInfo.SubdirectoryImagePrefix & _currentVolumeNumber.ToString.PadLeft(_subdirectoryLabelPaddingWidth, "0"c)
+				Return _settings.VolumeInfo.SubdirectoryImagePrefix & _currentSubdirectoryNumber.ToString.PadLeft(_subdirectoryLabelPaddingWidth, "0"c)
 			End Get
 		End Property
 
 		Private ReadOnly Property CurrentNativeSubdirectoryLabel() As String
 			Get
-				Return _settings.VolumeInfo.SubdirectoryNativePrefix & _currentVolumeNumber.ToString.PadLeft(_subdirectoryLabelPaddingWidth, "0"c)
+				Return _settings.VolumeInfo.SubdirectoryNativePrefix & _currentSubdirectoryNumber.ToString.PadLeft(_subdirectoryLabelPaddingWidth, "0"c)
 			End Get
 		End Property
 

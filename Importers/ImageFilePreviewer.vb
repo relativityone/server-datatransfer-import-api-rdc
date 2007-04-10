@@ -150,8 +150,14 @@ Namespace kCura.WinEDDS
 				Me.RaiseStatusEvent(Windows.Process.EventType.Error, String.Format("File '{0}' does not exist.", path))
 				Return ""
 			End If
-			'TODO: check image format
 
+			Dim validator As New kCura.ImageValidator.ImageValidator
+			Try
+				validator.ValidateImage(path)
+			Catch ex As System.Exception
+				Me.RaiseStatusEvent(Windows.Process.EventType.Error, String.Format("Error in '{0}': {1}", path, ex.Message))
+				Return ""
+			End Try
 			Return path
 		End Function
 

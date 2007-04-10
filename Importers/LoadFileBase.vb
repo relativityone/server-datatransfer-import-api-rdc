@@ -175,7 +175,11 @@ Namespace kCura.WinEDDS
 			If column = -1 Then
 				value = String.Empty
 			Else
-				value = values(column)
+				Try
+					value = values(column)
+				Catch ex As System.Exception
+					value = ""
+				End Try
 			End If
 			If field.FieldCategoryID = kCura.DynamicFields.Types.FieldCategory.FullText Then
 				value = value.Replace(NewlineProxy, Microsoft.VisualBasic.ControlChars.NewLine)

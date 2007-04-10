@@ -129,10 +129,16 @@ Namespace kCura.WinEDDS
 			Dim mapItem As LoadFileFieldMap.LoadFileFieldMapItem
 			Dim lineContainsErrors As Boolean = False
 			Dim retval As New ArrayList
+			Dim valToParse As String = ""
 			For Each mapItem In _fieldMap
 				If mapItem.NativeFileColumnIndex > -1 AndAlso Not mapItem.DocumentField Is Nothing Then
+					Try
+						valToParse = values(mapItem.NativeFileColumnIndex)
+					Catch ex As System.Exception
+						valToParse = ""
+					End Try
 					Dim docfield As New DocumentField(mapItem.DocumentField)
-					lineContainsErrors = lineContainsErrors Or SetFieldValueOrErrorMessage(docfield, values(mapItem.NativeFileColumnIndex), mapItem.NativeFileColumnIndex)
+					lineContainsErrors = lineContainsErrors Or SetFieldValueOrErrorMessage(docfield, valToParse, mapItem.NativeFileColumnIndex)
 					retval.Add(docfield)
 				End If
 			Next

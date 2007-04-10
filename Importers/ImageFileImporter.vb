@@ -201,15 +201,20 @@ Namespace kCura.WinEDDS
 			Dim retval As Boolean = True
 			'check for existence
 			If values(Columns.BatesNumber).Trim = "" Then
-				Me.RaiseStatusEvent(Windows.Process.EventType.Error, String.Format("Bates number '{0}'cannot be empty.", values(Columns.BatesNumber)))
-				retval = False
-			End If
-			If values(Columns.BatesNumber).Trim = "" Then
 				Me.RaiseStatusEvent(Windows.Process.EventType.Error, String.Format("No image file specified on line."))
 				retval = False
 			ElseIf Not System.IO.File.Exists(Me.GetFileLocation(values)) Then
 				Me.RaiseStatusEvent(Windows.Process.EventType.Error, String.Format("Image file specified ( {0} ) does not exist.", values(Columns.FileLocation)))
 				retval = False
+			Else
+				Dim validator As New kCura.ImageValidator.ImageValidator
+				Dim path As String = Me.GetFileLocation(values)
+				Try
+					validator.ValidateImage(path)
+				Catch ex As System.Exception
+					Me.RaiseStatusEvent(Windows.Process.EventType.Error, String.Format("Error in '{0}': {1}", path, ex.Message))
+					retval = False
+				End Try
 			End If
 			Return retval
 			'check to make sure image is good
