@@ -130,6 +130,8 @@ Namespace kCura.WinEDDS
 			Dim lineContainsErrors As Boolean = False
 			Dim retval As New ArrayList
 			Dim valToParse As String = ""
+			Dim identifierField As DocumentField
+			Dim groupIdentifierField As DocumentField
 			For Each mapItem In _fieldMap
 				If mapItem.NativeFileColumnIndex > -1 AndAlso Not mapItem.DocumentField Is Nothing Then
 					Try
@@ -138,10 +140,21 @@ Namespace kCura.WinEDDS
 						valToParse = ""
 					End Try
 					Dim docfield As New DocumentField(mapItem.DocumentField)
+					Select Case docfield.FieldCategoryID
+						Case kCura.DynamicFields.Types.FieldCategory.GroupIdentifier
+							groupIdentifierField = docfield
+						Case kCura.DynamicFields.Types.FieldCategory.Identifier
+							identifierField = docfield
+					End Select
 					lineContainsErrors = lineContainsErrors Or SetFieldValueOrErrorMessage(docfield, valToParse, mapItem.NativeFileColumnIndex)
 					retval.Add(docfield)
 				End If
 			Next
+			If Not identifierField Is Nothing AndAlso _
+			 Not groupIdentifierField Is Nothing AndAlso _
+			 groupIdentifierField.Value = "" Then
+				groupIdentifierField.Value = identifierField.Value
+			End If
 			If _uploadFiles Then
 				Dim filePath As String = values(_filePathColumnIndex)
 				Dim docfield As New DocumentField("Native File", -1, -1, -1, NullableInt32.Null, NullableInt32.Null)

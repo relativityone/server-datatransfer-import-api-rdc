@@ -316,11 +316,11 @@ Namespace kCura.WinEDDS
 
 		Public Function GetGroupIdentifierField(ByVal value As String, ByVal column As Int32, ByVal fieldLength As Int32) As NullableString
 			Dim nv As NullableString = Me.GetNullableFixedString(value, column, fieldLength)
-			If nv.IsNull Then
-				Throw New NullGroupIdentifierException(Me.CurrentLineNumber, column)
-			Else
-				Return nv
-			End If
+			'If nv.IsNull Then
+			'	Throw New NullGroupIdentifierException(Me.CurrentLineNumber, column)
+			'Else
+			Return nv
+			'End If
 		End Function
 #Region "Exceptions"
 

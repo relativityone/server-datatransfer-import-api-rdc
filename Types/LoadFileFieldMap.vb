@@ -55,6 +55,18 @@ Namespace kCura.WinEDDS
 		Public Sub RemoveAt(ByVal index As Int32)
 			_al.RemoveAt(index)
 		End Sub
+
+		Public ReadOnly Property Identifier() As LoadFileFieldMapItem
+			Get
+				Dim item As LoadFileFieldMapItem
+				For Each item In _al
+					If item.DocumentField.FieldCategory = DynamicFields.Types.FieldCategory.Identifier Then
+						Return item
+					End If
+				Next
+				Return Nothing
+			End Get
+		End Property
 #Region "Item"
 		<Serializable()> Public Class LoadFileFieldMapItem
 			Private _documentField As kCura.WinEDDS.DocumentField

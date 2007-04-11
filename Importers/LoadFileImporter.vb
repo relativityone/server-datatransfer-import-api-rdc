@@ -493,6 +493,9 @@ Namespace kCura.WinEDDS
 					fieldCollection.Add(docfield)
 				End If
 			Next
+			If Not fieldCollection.GroupIdentifier Is Nothing AndAlso fieldCollection.GroupIdentifier.Value = "" Then
+				fieldCollection.GroupIdentifier.Value = identityValue
+			End If
 			_firstTimeThrough = False
 			Return identityValue
 		End Function
@@ -557,9 +560,22 @@ Namespace kCura.WinEDDS
 					End Select
 				End If
 			Next
+			ManageGroupIdentifier(documentDTO)
 			fieldDTO = Nothing
 			encoder = Nothing
 			value = Nothing
+		End Sub
+
+		Private Sub ManageGroupIdentifier(ByVal document As kCura.EDDS.WebAPI.DocumentManagerBase.Document)
+			Dim id As kCura.EDDS.WebAPI.DocumentManagerBase.Field
+			Dim gid As kCura.EDDS.WebAPI.DocumentManagerBase.Field
+			Dim field As kCura.EDDS.WebAPI.DocumentManagerBase.Field
+			For Each field In document.Fields
+				If field.FieldCategory = EDDS.WebAPI.DocumentManagerBase.FieldCategory.GroupIdentifier Then gid = field
+				If field.FieldCategory = EDDS.WebAPI.DocumentManagerBase.FieldCategory.Identifier Then id = field
+			Next
+			Dim gidValue As String = System.Text.Encoding.Unicode.GetString(DirectCast(gid.Value, Byte()))
+			If gidValue = "" Then gid.Value = id.Value
 		End Sub
 
 		Public Sub SetMultiCode(ByVal fieldDTO As kCura.EDDS.WebAPI.DocumentManagerBase.Field, ByVal docField As DocumentField)
