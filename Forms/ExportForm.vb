@@ -726,7 +726,7 @@ Public Class ExportForm
 		retval.VolumeMaxSize = CType(_volumeMaxSize.Value, Int64)
 		retval.VolumePrefix = _volumePrefix.Text
 		retval.VolumeStartNumber = CType(_volumeStartNumber.Value, Int32)
-		If retval.SubdirectoryMaxSize = 0 OrElse retval.VolumeMaxSize = 0 Then
+		If retval.SubdirectoryMaxSize = 0 OrElse retval.VolumeMaxSize = 0 OrElse retval.SubdirectoryStartNumber < 0 OrElse retval.VolumeStartNumber < 0 Then
 			Return Nothing
 		Else
 			Return retval
