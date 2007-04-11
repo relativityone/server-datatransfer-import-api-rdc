@@ -899,4 +899,11 @@ Public Class ExportForm
 		Return retval
 	End Function
 
+	Private Sub _subDirectoryMaxSize_ValueChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _subDirectoryMaxSize.ValueChanged, _subDirectoryMaxSize.TextChanged
+		RunMenu.Enabled = ReadyToRun()
+	End Sub
+
+	Private Sub _volumeMaxSize_ValueChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _volumeMaxSize.ValueChanged, _volumeMaxSize.TextChanged
+		RunMenu.Enabled = ReadyToRun()
+	End Sub
 End Class
