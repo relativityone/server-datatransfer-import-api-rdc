@@ -139,6 +139,14 @@ Namespace kCura.WinEDDS
 				Me.Reader.Close()
 				RaiseStatusEvent(kCura.Windows.Process.EventType.Progress, "End Image Upload")
 			Catch ex As System.Exception
+				Try
+					_errorLogWriter.Close()
+				Catch x As System.Exception
+				End Try
+				Try
+					Me.Reader.Close()
+				Catch x As System.Exception
+				End Try
 				RaiseFatalError(ex)
 			End Try
 		End Function

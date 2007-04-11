@@ -242,7 +242,9 @@ Namespace kCura.WinEDDS
 						filenameExtension = "." & image.FileName.Substring(image.FileName.LastIndexOf(".") + 1)
 					End If
 					image.FileName = image.BatesNumber & filenameExtension
-					retval.Add(image)
+					If Not image.FileGuid = "" Then
+						retval.Add(image)
+					End If
 					i += 1
 				Next
 			End If

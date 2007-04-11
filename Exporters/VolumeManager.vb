@@ -243,7 +243,16 @@ Namespace kCura.WinEDDS
 					Else
 						log.Append(" ,")
 					End If
-					log.AppendFormat("0,{0};{1};{2}.tif;2", Me.CurrentVolumeLabel, pathToImage, batesNumber)
+					Dim pti As String = ""
+					Dim filename As String = ""
+					If copyFile.LastIndexOf("\"c) = -1 Then
+						pti = ""
+						filename = copyFile
+					Else
+						pti = copyFile.Substring(0, copyFile.LastIndexOf("\"c))
+						filename = copyFile.Substring(copyFile.LastIndexOf("\") + 1)
+					End If
+					log.AppendFormat("0,{0};{1};{2}.tif;2", Me.CurrentVolumeLabel, copyFile, filename)
 					_imageFileWriter.WriteLine(log.ToString)
 				Case LoadFileType.FileFormat.IPRO_FullText
 					'TODO: Support This
