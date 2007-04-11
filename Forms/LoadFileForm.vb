@@ -671,8 +671,8 @@ Namespace kCura.EDDS.WinForm
 				 _fieldMap.RightListBoxItems.Count > 0 AndAlso _
 				 _fileColumns.LeftListBoxItems.Count > 0 AndAlso _
 				 rtr AndAlso _
-				 System.IO.File.Exists(_filePath.Text) AndAlso _
-				_identifiersDropDown.SelectedIndex <> -1
+				 System.IO.File.Exists(_filePath.Text)		 'AndAlso _
+				'_identifiersDropDown.SelectedIndex <> -1
 			End Get
 		End Property
 
@@ -685,16 +685,17 @@ Namespace kCura.EDDS.WinForm
 				Exit Sub
 			End If
 			Me.LoadFile.FieldMap = kCura.EDDS.WinForm.Utility.ExtractFieldMap(_fieldMap, _fileColumns, currentFields)
-			If _identifiersDropDown.SelectedIndex > -1 Then
+			Dim groupIdentifier As DocumentField = _application.CurrentGroupIdentifierField
+			If _identifiersDropDown.SelectedIndex > 0 Then
 				Dim columnname As String = CType(_identifiersDropDown.SelectedItem, String)
 				Dim openParenIndex As Int32 = columnname.LastIndexOf("("c) + 1
 				Dim closeParenIndex As Int32 = columnname.LastIndexOf(")"c)
 				Dim fieldColumnIndex As Int32 = Int32.Parse(columnname.Substring(openParenIndex, closeParenIndex - openParenIndex)) - 1
-				Dim groupIdentifier As DocumentField = _application.CurrentGroupIdentifierField
 				If Not groupIdentifier Is Nothing Then
 					Me.LoadFile.FieldMap.Add(New kCura.WinEDDS.LoadFileFieldMap.LoadFileFieldMapItem(groupIdentifier, fieldColumnIndex))
 				End If
 			End If
+
 			LoadFile.ExtractFullTextFromNativeFile = _extractFullTextFromNativeFile.Checked
 			LoadFile.FullTextColumnContainsFileLocation = _extractedTextValueContainsFileLocation.Checked
 			LoadFile.LoadNativeFiles = _loadNativeFiles.Checked
@@ -709,7 +710,12 @@ Namespace kCura.EDDS.WinForm
 				LoadFile.FilePath = _filePath.Text
 			End If
 			LoadFile.SelectedIdentifierField = _application.GetDocumentFieldFromName(_application.GetCaseIdentifierFields(0))
-			If Not _identifiersDropDown.SelectedItem Is Nothing Then LoadFile.GroupIdentifierColumn = _identifiersDropDown.SelectedItem.ToString
+			If Not _identifiersDropDown.SelectedItem Is Nothing Then
+				LoadFile.GroupIdentifierColumn = _identifiersDropDown.SelectedItem.ToString
+			Else
+				LoadFile.GroupIdentifierColumn = Nothing
+			End If
+
 			If _loadNativeFiles.Checked Then
 				If Not _nativeFilePathField.SelectedItem Is Nothing Then
 					LoadFile.NativeFilePathColumn = _nativeFilePathField.SelectedItem.ToString
@@ -848,7 +854,10 @@ Namespace kCura.EDDS.WinForm
 				_fileColumnHeaders.Items.AddRange(columnHeaders)
 				_nativeFilePathField.Items.AddRange(columnHeaders)
 				_destinationFolderPath.Items.AddRange(columnHeaders)
+				Dim identifiersDropdownRange As New System.Collections.ArrayList
+				_identifiersDropDown.Items.Add("< none >")
 				_identifiersDropDown.Items.AddRange(columnHeaders)
+				_identifiersDropDown.SelectedIndex = 0
 				If LoadFile.LoadNativeFiles AndAlso System.IO.File.Exists(LoadFile.FilePath) Then
 					_nativeFilePathField.SelectedItem = LoadFile.NativeFilePathColumn
 				End If
