@@ -172,7 +172,15 @@ Namespace kCura.WinEDDS
 					If _overwrite.ToLower = "strict" OrElse _overwrite.ToLower = "append" Then
 						GetImagesForDocument(al, fileDTOs, fullTextBuilder)
 						If _replaceFullText Then fullTextFileGuid = _fileUploader.UploadTextAsFile(fullTextBuilder.FullText, _folderID, System.Guid.NewGuid.ToString)
-						_docManager.ClearImagesFromDocument(_fileUploader.CaseArtifactID, currentDocumentArtifactID)
+						Try
+							_docManager.ClearImagesFromDocument(_fileUploader.CaseArtifactID, currentDocumentArtifactID)
+						Catch ex As System.Exception
+							If ex.ToString.IndexOf("FK_ProductionDocumentFile") <> -1 Then
+								Throw New ProductionOverwriteException(DirectCast(fileDTOs(0), kCura.EDDS.WebAPI.FileManagerBase.FileInfoBase).Identifier)
+							Else
+								Throw
+							End If
+						End Try
 						If _replaceFullText Then
 							_docManager.AddFullTextToDocumentFromFile(_fileUploader.CaseArtifactID, currentDocumentArtifactID, fullTextFileGuid, fullTextBuilder)
 						End If
@@ -339,6 +347,13 @@ Namespace kCura.WinEDDS
 			End Sub
 		End Class
 
+
+		Public Class ProductionOverwriteException
+			Inherits kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
+			Public Sub New(ByVal identifier As String)
+				MyBase.New(String.Format("Document '{0}' belongs to one or more productions.  Upload aborted.", identifier))
+			End Sub
+		End Class
 #End Region
 
 	End Class
