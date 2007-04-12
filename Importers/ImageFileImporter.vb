@@ -10,7 +10,9 @@ Namespace kCura.WinEDDS
 		Private _folderManager As kCura.WinEDDS.Service.FolderManager
 		Private _fileUploader As kCura.WinEDDS.FileUploader
 		Private _fileManager As kCura.WinEDDS.Service.FileManager
+		Private _productionManager As kCura.WinEDDS.Service.ProductionManager
 		Private _folderID As Int32
+		Private _productionArtifactID As Int32
 		Private _overwrite As String
 		Private _filePath As String
 		Private _selectedIdentifierField As String
@@ -64,8 +66,10 @@ Namespace kCura.WinEDDS
 			_fieldQuery = New kCura.WinEDDS.Service.FieldQuery(args.Credential, args.CookieContainer)
 			_folderManager = New kCura.WinEDDS.Service.FolderManager(args.Credential, args.CookieContainer)
 			_fileManager = New kCura.WinEDDS.Service.FileManager(args.Credential, args.CookieContainer)
+			_productionManager = New kCura.WinEDDS.Service.ProductionManager(args.Credential, args.CookieContainer)
 			_fileUploader = New kCura.WinEDDS.FileUploader(args.Credential, args.CaseInfo.ArtifactID, _docManager.GetDocumentDirectoryByCaseArtifactID(args.CaseInfo.ArtifactID) & "\", args.CookieContainer)
 			_folderID = folderID
+			_productionArtifactID = args.ProductionArtifactID
 			_overwrite = args.Overwrite
 			_replaceFullText = args.ReplaceFullText
 			_selectedIdentifierField = args.ControlKeyField
@@ -94,12 +98,16 @@ Namespace kCura.WinEDDS
 		Private Sub ProcessList(ByVal al As System.Collections.ArrayList, ByRef sectionHasErrors As Boolean)
 			If al.Count = 0 Then Exit Sub
 			If Not sectionHasErrors Then
-				Me.ProcessDocument(al)
+				If _productionArtifactID = 0 Then
+					Me.ProcessDocument(al)
+				Else
+					Me.ProcessDocumentForProduction(al)
+				End If
 			Else
-				Me.LogErrorInFile(al)
-			End If
-			al.Clear()
-			sectionHasErrors = False
+					Me.LogErrorInFile(al)
+				End If
+				al.Clear()
+				sectionHasErrors = False
 		End Sub
 
 		Public Overloads Overrides Function ReadFile(ByVal path As String) As Object
@@ -209,6 +217,53 @@ Namespace kCura.WinEDDS
 			End Try
 		End Function
 
+		Public Sub ProcessDocumentForProduction(ByVal al As System.Collections.ArrayList)
+			Try
+				Dim identifierRow As String() = DirectCast(al(0), String())
+				Dim endRow As String() = DirectCast(al(al.Count - 1), String())
+				Dim documentIdentifier As String = String.Copy(identifierRow(Columns.BatesNumber))
+				Dim currentDocumentArtifactID As Int32 = _docManager.GetDocumentArtifactIDFromIdentifier(_fileUploader.CaseArtifactID, documentIdentifier, _selectedIdentifierField)
+				Dim imageFileGuids As String()
+
+				If currentDocumentArtifactID > 0 Then
+					If _overwrite.ToLower = "none" Then Throw New OverwriteNoneException
+					imageFileGuids = _fileManager.ReturnFileGuidsForOriginalImages(_fileUploader.CaseArtifactID, currentDocumentArtifactID)
+					If (al.Count <> imageFileGuids.Length) Then
+						Throw New ImageCountMismatchException
+					End If
+				Else
+					If _overwrite.ToLower = "strict" Then Throw New OverwriteStrictException
+					Dim fullTextFileGuid As String = _fileUploader.UploadTextAsFile(String.Empty, _folderID, System.Guid.NewGuid.ToString)
+					currentDocumentArtifactID = CreateDocument(documentIdentifier, fullTextFileGuid, New kCura.EDDS.Types.FullTextBuilder)
+					Dim imageDTOs As New ArrayList
+					GetImagesForDocument(al, imageDTOs, New kCura.EDDS.Types.FullTextBuilder)
+					_fileManager.CreateImages(_fileUploader.CaseArtifactID, DirectCast(imageDTOs.ToArray(GetType(kCura.EDDS.WebAPI.FileManagerBase.FileInfoBase)), kCura.EDDS.WebAPI.FileManagerBase.FileInfoBase()), currentDocumentArtifactID)
+					imageFileGuids = _fileManager.ReturnFileGuidsForOriginalImages(_fileUploader.CaseArtifactID, currentDocumentArtifactID)
+				End If
+				If Not _productionManager.AddDocumentToProduction(_fileUploader.CaseArtifactID, _productionArtifactID, currentDocumentArtifactID) Then
+					Throw New DocumentInProductionException
+				End If
+
+				Dim fileDTOs As New ArrayList
+				GetImagesForProductionDocument(al, fileDTOs)
+				_fileManager.CreateProductionImages(_fileUploader.CaseArtifactID, DirectCast(fileDTOs.ToArray(GetType(kCura.EDDS.WebAPI.FileManagerBase.FileInfoBase)), kCura.EDDS.WebAPI.FileManagerBase.FileInfoBase()), currentDocumentArtifactID)
+
+				Dim productionDocumentFiles As New ArrayList
+				For c As Int32 = 0 To fileDTOs.Count - 1
+					Dim productionDocumentFile As New kCura.EDDS.WebAPI.ProductionManagerBase.ProductionDocumentFileInfoBase
+					productionDocumentFile.ImageGuid = CType(fileDTOs(c), kCura.EDDS.WebAPI.FileManagerBase.FileInfoBase).FileGuid
+					productionDocumentFile.BatesNumber = DirectCast(al(c), String())(Columns.BatesNumber)
+					productionDocumentFile.ImageSize = (New System.IO.FileInfo(GetFileLocation(DirectCast(al(c), String())))).Length
+					productionDocumentFile.SourceGuid = imageFileGuids(c)
+					productionDocumentFiles.Add(productionDocumentFile)
+				Next
+				_productionManager.CreateProductionDocumentFiles(_fileUploader.CaseArtifactID, DirectCast(productionDocumentFiles.ToArray(GetType(kCura.EDDS.WebAPI.ProductionManagerBase.ProductionDocumentFileInfoBase)), kCura.EDDS.WebAPI.ProductionManagerBase.ProductionDocumentFileInfoBase()), _productionArtifactID, currentDocumentArtifactID)
+			Catch ex As System.Exception
+				Me.LogErrorInFile(al)
+				Throw
+			End Try
+		End Sub
+
 #End Region
 
 #Region "Worker Methods"
@@ -260,6 +315,13 @@ Namespace kCura.WinEDDS
 			Dim valueArray As String()
 			For Each valueArray In lines
 				GetImageForDocument(GetFileLocation(valueArray), valueArray(Columns.BatesNumber), fileDTOs, fullTextBuilder)
+			Next
+		End Function
+
+		Private Function GetImagesForProductionDocument(ByVal lines As ArrayList, ByVal fileDTOs As ArrayList) As String()
+			Dim valueArray As String()
+			For Each valueArray In lines
+				GetImageForDocument(GetFileLocation(valueArray), _productionArtifactID.ToString & "_" & valueArray(Columns.BatesNumber), fileDTOs, New kCura.EDDS.Types.FullTextBuilder)
 			Next
 		End Function
 
@@ -347,6 +409,19 @@ Namespace kCura.WinEDDS
 			End Sub
 		End Class
 
+		Public Class ImageCountMismatchException
+			Inherits kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
+			Public Sub New()
+				MyBase.New("Production and Document image counts don't match - upload aborted.")
+			End Sub
+		End Class
+
+		Public Class DocumentInProductionException
+			Inherits kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
+			Public Sub New()
+				MyBase.New("Document is already in specified production - upload aborted.")
+			End Sub
+		End Class
 
 		Public Class ProductionOverwriteException
 			Inherits kCura.Utility.DelimitedFileImporter.ImporterExceptionBase

@@ -57,6 +57,24 @@ Namespace kCura.EDDS.WebAPI.ProductionManagerBase
         End Function
         
         '<remarks/>
+        <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/ProductionManager/RetrieveStagingByContextArtifactID", RequestNamespace:="http://www.kCura.com/EDDS/ProductionManager", ResponseNamespace:="http://www.kCura.com/EDDS/ProductionManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
+        Public Function RetrieveStagingByContextArtifactID(ByVal caseContextArtifactID As Integer) As System.Data.DataSet
+            Dim results() As Object = Me.Invoke("RetrieveStagingByContextArtifactID", New Object() {caseContextArtifactID})
+            Return CType(results(0),System.Data.DataSet)
+        End Function
+        
+        '<remarks/>
+        Public Function BeginRetrieveStagingByContextArtifactID(ByVal caseContextArtifactID As Integer, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("RetrieveStagingByContextArtifactID", New Object() {caseContextArtifactID}, callback, asyncState)
+        End Function
+        
+        '<remarks/>
+        Public Function EndRetrieveStagingByContextArtifactID(ByVal asyncResult As System.IAsyncResult) As System.Data.DataSet
+            Dim results() As Object = Me.EndInvoke(asyncResult)
+            Return CType(results(0),System.Data.DataSet)
+        End Function
+        
+        '<remarks/>
         <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/ProductionManager/Read", RequestNamespace:="http://www.kCura.com/EDDS/ProductionManager", ResponseNamespace:="http://www.kCura.com/EDDS/ProductionManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
         Public Function Read(ByVal caseContextArtifactID As Integer, ByVal productionArtifactID As Integer) As Production
             Dim results() As Object = Me.Invoke("Read", New Object() {caseContextArtifactID, productionArtifactID})
@@ -91,6 +109,40 @@ Namespace kCura.EDDS.WebAPI.ProductionManagerBase
             Dim results() As Object = Me.EndInvoke(asyncResult)
             Return CType(results(0),System.Data.DataSet)
         End Function
+        
+        '<remarks/>
+        <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/ProductionManager/AddDocumentToProduction", RequestNamespace:="http://www.kCura.com/EDDS/ProductionManager", ResponseNamespace:="http://www.kCura.com/EDDS/ProductionManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
+        Public Function AddDocumentToProduction(ByVal caseContextArtifactID As Integer, ByVal productionArtifactID As Integer, ByVal documentArtifactID As Integer) As Boolean
+            Dim results() As Object = Me.Invoke("AddDocumentToProduction", New Object() {caseContextArtifactID, productionArtifactID, documentArtifactID})
+            Return CType(results(0),Boolean)
+        End Function
+        
+        '<remarks/>
+        Public Function BeginAddDocumentToProduction(ByVal caseContextArtifactID As Integer, ByVal productionArtifactID As Integer, ByVal documentArtifactID As Integer, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("AddDocumentToProduction", New Object() {caseContextArtifactID, productionArtifactID, documentArtifactID}, callback, asyncState)
+        End Function
+        
+        '<remarks/>
+        Public Function EndAddDocumentToProduction(ByVal asyncResult As System.IAsyncResult) As Boolean
+            Dim results() As Object = Me.EndInvoke(asyncResult)
+            Return CType(results(0),Boolean)
+        End Function
+        
+        '<remarks/>
+        <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/ProductionManager/CreateProductionDocumentFiles", RequestNamespace:="http://www.kCura.com/EDDS/ProductionManager", ResponseNamespace:="http://www.kCura.com/EDDS/ProductionManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
+        Public Sub CreateProductionDocumentFiles(ByVal caseContextArtifactID As Integer, ByVal productionDocumentFiles() As ProductionDocumentFileInfoBase, ByVal productionArtifactID As Integer, ByVal documentArtifactID As Integer)
+            Me.Invoke("CreateProductionDocumentFiles", New Object() {caseContextArtifactID, productionDocumentFiles, productionArtifactID, documentArtifactID})
+        End Sub
+        
+        '<remarks/>
+        Public Function BeginCreateProductionDocumentFiles(ByVal caseContextArtifactID As Integer, ByVal productionDocumentFiles() As ProductionDocumentFileInfoBase, ByVal productionArtifactID As Integer, ByVal documentArtifactID As Integer, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("CreateProductionDocumentFiles", New Object() {caseContextArtifactID, productionDocumentFiles, productionArtifactID, documentArtifactID}, callback, asyncState)
+        End Function
+        
+        '<remarks/>
+        Public Sub EndCreateProductionDocumentFiles(ByVal asyncResult As System.IAsyncResult)
+            Me.EndInvoke(asyncResult)
+        End Sub
     End Class
     
     '<remarks/>
@@ -193,6 +245,23 @@ Namespace kCura.EDDS.WebAPI.ProductionManagerBase
         
         '<remarks/>
         Public ProductionOrder() As Object
+    End Class
+    
+    '<remarks/>
+    <System.Xml.Serialization.XmlTypeAttribute([Namespace]:="http://www.kCura.com/EDDS/ProductionManager")>  _
+    Public Class ProductionDocumentFileInfoBase
+        
+        '<remarks/>
+        Public SourceGuid As String
+        
+        '<remarks/>
+        Public ImageGuid As String
+        
+        '<remarks/>
+        Public BatesNumber As String
+        
+        '<remarks/>
+        Public ImageSize As Long
     End Class
     
     '<remarks/>

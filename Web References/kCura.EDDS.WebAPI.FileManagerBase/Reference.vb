@@ -127,6 +127,22 @@ Namespace kCura.EDDS.WebAPI.FileManagerBase
         End Sub
         
         '<remarks/>
+        <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/FileManager/CreateProductionImages", RequestNamespace:="http://www.kCura.com/EDDS/FileManager", ResponseNamespace:="http://www.kCura.com/EDDS/FileManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
+        Public Sub CreateProductionImages(ByVal caseContextArtifactID As Integer, ByVal files() As FileInfoBase, ByVal documentArtifactID As Integer)
+            Me.Invoke("CreateProductionImages", New Object() {caseContextArtifactID, files, documentArtifactID})
+        End Sub
+        
+        '<remarks/>
+        Public Function BeginCreateProductionImages(ByVal caseContextArtifactID As Integer, ByVal files() As FileInfoBase, ByVal documentArtifactID As Integer, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("CreateProductionImages", New Object() {caseContextArtifactID, files, documentArtifactID}, callback, asyncState)
+        End Function
+        
+        '<remarks/>
+        Public Sub EndCreateProductionImages(ByVal asyncResult As System.IAsyncResult)
+            Me.EndInvoke(asyncResult)
+        End Sub
+        
+        '<remarks/>
         <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/FileManager/CreateNatives", RequestNamespace:="http://www.kCura.com/EDDS/FileManager", ResponseNamespace:="http://www.kCura.com/EDDS/FileManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
         Public Sub CreateNatives(ByVal caseContextArtifactID As Integer, ByVal files() As FileInfoBase, ByVal documentArtifactIDs() As Integer)
             Me.Invoke("CreateNatives", New Object() {caseContextArtifactID, files, documentArtifactIDs})

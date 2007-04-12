@@ -89,6 +89,14 @@ Namespace kCura.WinEDDS.Service
 			End If
 		End Function
 
+		Public Shadows Function RetrieveStagingByContextArtifactID(ByVal caseContextArtifactID As Int32) As System.Data.DataSet
+			If kCura.WinEDDS.Config.UsesWebAPI Then
+				Return MyBase.RetrieveStagingByContextArtifactID(caseContextArtifactID)
+			Else
+				'Return _productionManager.ExternalRetrieveProducedByContextArtifactID(contextArtifactID, _identity)
+			End If
+		End Function
+
 		Public Shadows Function Read(ByVal caseContextArtifactID As Int32, ByVal productionArtifactID As Int32) As kCura.EDDS.WebAPI.ProductionManagerBase.Production
 			If kCura.WinEDDS.Config.UsesWebAPI Then
 				Return MyBase.Read(caseContextArtifactID, productionArtifactID)
@@ -104,6 +112,22 @@ Namespace kCura.WinEDDS.Service
 				'Return _productionManager.ExternalRetrieveProducedWithSecurity(contextArtifactID, _identity)
 			End If
 		End Function
+
+		Public Shadows Function AddDocumentToProduction(ByVal caseContextArtifactID As Int32, ByVal productionArtifactID As Int32, ByVal documentArtifactID As Int32) As Boolean
+			If kCura.WinEDDS.Config.UsesWebAPI Then
+				Return MyBase.AddDocumentToProduction(caseContextArtifactID, productionArtifactID, documentArtifactID)
+			Else
+				'_productionManager.AddDocumentToProduction(caseContextArtifactID, productionArtifactID, documentArtifactID)
+			End If
+		End Function
+
+		Public Shadows Sub CreateProductionDocumentFiles(ByVal caseContextArtifactID As Int32, ByVal productionDocumentFiles As kCura.EDDS.WebAPI.ProductionManagerBase.ProductionDocumentFileInfoBase(), ByVal productionArtifactID As Int32, ByVal documentArtifactID As Int32)
+			If kCura.WinEDDS.Config.UsesWebAPI Then
+				MyBase.CreateProductionDocumentFiles(caseContextArtifactID, productionDocumentFiles, productionArtifactID, documentArtifactID)
+			Else
+				'_productionManager.AddDocumentToProduction(caseContextArtifactID, productionArtifactID, documentArtifactID)
+			End If
+		End Sub
 #End Region
 
 	End Class

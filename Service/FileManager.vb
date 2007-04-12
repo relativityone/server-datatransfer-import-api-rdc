@@ -166,6 +166,14 @@ Namespace kCura.WinEDDS.Service
 			End If
 		End Sub
 
+		Public Shadows Sub CreateProductionImages(ByVal caseContextArtifactID As Int32, ByVal files As kCura.EDDS.WebAPI.FileManagerBase.FileInfoBase(), ByVal documentArtifactID As Int32)
+			If kCura.WinEDDS.Config.UsesWebAPI Then
+				MyBase.CreateProductionImages(caseContextArtifactID, files, documentArtifactID)
+			Else
+				'_fileManager.ExternalCreateImages(WebAPIFileInfostoFileInfos(files), documentArtifactID, contextArtifactID, _identity)
+			End If
+		End Sub
+
 		Public Overloads Sub CreateNatives(ByVal caseContextArtifactID As Int32, ByVal fileDTOs As kCura.EDDS.WebAPI.FileManagerBase.File())
 			Dim documentArtifactIDs(fileDTOs.Length - 1) As Int32
 			Dim files(fileDTOs.Length - 1) As kCura.EDDS.WebAPI.FileManagerBase.FileInfoBase
