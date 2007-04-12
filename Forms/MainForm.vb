@@ -57,6 +57,7 @@ Namespace kCura.EDDS.WinForm
 		Friend WithEvents _aboutMenuItem As System.Windows.Forms.MenuItem
 		Friend WithEvents _exportFoldersMenuItem As System.Windows.Forms.MenuItem
 		Friend WithEvents _exportFoldersAndSubfoldersMenuItem As System.Windows.Forms.MenuItem
+		Friend WithEvents ToolsImportProductionFileMenu As System.Windows.Forms.MenuItem
 		<System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
 			Me.components = New System.ComponentModel.Container
 			Dim resources As System.Resources.ResourceManager = New System.Resources.ResourceManager(GetType(MainForm))
@@ -76,6 +77,8 @@ Namespace kCura.EDDS.WinForm
 			Me.ExportMenu = New System.Windows.Forms.MenuItem
 			Me.ToolsExportProductionMenu = New System.Windows.Forms.MenuItem
 			Me.ToolsExportSearchMenu = New System.Windows.Forms.MenuItem
+			Me._exportFoldersMenuItem = New System.Windows.Forms.MenuItem
+			Me._exportFoldersAndSubfoldersMenuItem = New System.Windows.Forms.MenuItem
 			Me._toolsMenu = New System.Windows.Forms.MenuItem
 			Me._toolsMenuSettingsItem = New System.Windows.Forms.MenuItem
 			Me.MenuItem4 = New System.Windows.Forms.MenuItem
@@ -85,8 +88,7 @@ Namespace kCura.EDDS.WinForm
 			Me.LoggedInUserPanel = New System.Windows.Forms.StatusBarPanel
 			Me._caseFolderExplorer = New kCura.EDDS.WinForm.CaseFolderExplorer
 			Me.EnhancedMenuProvider = New kCura.Windows.Forms.EnhancedMenuProvider(Me.components)
-			Me._exportFoldersMenuItem = New System.Windows.Forms.MenuItem
-			Me._exportFoldersAndSubfoldersMenuItem = New System.Windows.Forms.MenuItem
+			Me.ToolsImportProductionFileMenu = New System.Windows.Forms.MenuItem
 			CType(Me.AppStatusPanel, System.ComponentModel.ISupportInitialize).BeginInit()
 			CType(Me.LoggedInUserPanel, System.ComponentModel.ISupportInitialize).BeginInit()
 			Me.SuspendLayout()
@@ -146,7 +148,7 @@ Namespace kCura.EDDS.WinForm
 			Me.ImportMenu.Enabled = False
 			Me.EnhancedMenuProvider.SetImageIndex(Me.ImportMenu, -1)
 			Me.ImportMenu.Index = 0
-			Me.ImportMenu.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.ToolsImportImageFileMenu, Me.ToolsImportLoadFileMenu, Me.ToolsImportFileDirectoryMenu, Me.ToolsImportOutlookMenu, Me.ToolsImportSQLDatabaseMenu})
+			Me.ImportMenu.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.ToolsImportImageFileMenu, Me.ToolsImportLoadFileMenu, Me.ToolsImportProductionFileMenu, Me.ToolsImportFileDirectoryMenu, Me.ToolsImportOutlookMenu, Me.ToolsImportSQLDatabaseMenu})
 			Me.ImportMenu.OwnerDraw = True
 			Me.ImportMenu.Text = "&Import"
 			'
@@ -169,7 +171,7 @@ Namespace kCura.EDDS.WinForm
 			'ToolsImportFileDirectoryMenu
 			'
 			Me.EnhancedMenuProvider.SetImageIndex(Me.ToolsImportFileDirectoryMenu, -1)
-			Me.ToolsImportFileDirectoryMenu.Index = 2
+			Me.ToolsImportFileDirectoryMenu.Index = 3
 			Me.ToolsImportFileDirectoryMenu.OwnerDraw = True
 			Me.ToolsImportFileDirectoryMenu.Text = "&File Directory..."
 			Me.ToolsImportFileDirectoryMenu.Visible = False
@@ -177,7 +179,7 @@ Namespace kCura.EDDS.WinForm
 			'ToolsImportOutlookMenu
 			'
 			Me.EnhancedMenuProvider.SetImageIndex(Me.ToolsImportOutlookMenu, -1)
-			Me.ToolsImportOutlookMenu.Index = 3
+			Me.ToolsImportOutlookMenu.Index = 4
 			Me.ToolsImportOutlookMenu.OwnerDraw = True
 			Me.ToolsImportOutlookMenu.Text = "&Outlook..."
 			Me.ToolsImportOutlookMenu.Visible = False
@@ -185,7 +187,7 @@ Namespace kCura.EDDS.WinForm
 			'ToolsImportSQLDatabaseMenu
 			'
 			Me.EnhancedMenuProvider.SetImageIndex(Me.ToolsImportSQLDatabaseMenu, -1)
-			Me.ToolsImportSQLDatabaseMenu.Index = 4
+			Me.ToolsImportSQLDatabaseMenu.Index = 5
 			Me.ToolsImportSQLDatabaseMenu.OwnerDraw = True
 			Me.ToolsImportSQLDatabaseMenu.Text = "&SQL Database..."
 			Me.ToolsImportSQLDatabaseMenu.Visible = False
@@ -212,6 +214,20 @@ Namespace kCura.EDDS.WinForm
 			Me.ToolsExportSearchMenu.Index = 1
 			Me.ToolsExportSearchMenu.OwnerDraw = True
 			Me.ToolsExportSearchMenu.Text = "Search Files..."
+			'
+			'_exportFoldersMenuItem
+			'
+			Me.EnhancedMenuProvider.SetImageIndex(Me._exportFoldersMenuItem, -1)
+			Me._exportFoldersMenuItem.Index = 2
+			Me._exportFoldersMenuItem.OwnerDraw = True
+			Me._exportFoldersMenuItem.Text = "Folders..."
+			'
+			'_exportFoldersAndSubfoldersMenuItem
+			'
+			Me.EnhancedMenuProvider.SetImageIndex(Me._exportFoldersAndSubfoldersMenuItem, -1)
+			Me._exportFoldersAndSubfoldersMenuItem.Index = 3
+			Me._exportFoldersAndSubfoldersMenuItem.OwnerDraw = True
+			Me._exportFoldersAndSubfoldersMenuItem.Text = "Folders and Subfolders..."
 			'
 			'_toolsMenu
 			'
@@ -269,17 +285,11 @@ Namespace kCura.EDDS.WinForm
 			Me._caseFolderExplorer.Size = New System.Drawing.Size(332, 515)
 			Me._caseFolderExplorer.TabIndex = 6
 			'
-			'_exportFoldersMenuItem
+			'ToolsImportProductionFileMenu
 			'
-			Me.EnhancedMenuProvider.SetImageIndex(Me._exportFoldersMenuItem, -1)
-			Me._exportFoldersMenuItem.Index = 2
-			Me._exportFoldersMenuItem.Text = "Folders..."
-			'
-			'_exportFoldersAndSubfoldersMenuItem
-			'
-			Me.EnhancedMenuProvider.SetImageIndex(Me._exportFoldersAndSubfoldersMenuItem, -1)
-			Me._exportFoldersAndSubfoldersMenuItem.Index = 3
-			Me._exportFoldersAndSubfoldersMenuItem.Text = "Folders and Subfolders..."
+			Me.EnhancedMenuProvider.SetImageIndex(Me.ToolsImportProductionFileMenu, -1)
+			Me.ToolsImportProductionFileMenu.Index = 2
+			Me.ToolsImportProductionFileMenu.Text = "Production File..."
 			'
 			'MainForm
 			'
@@ -358,6 +368,12 @@ Namespace kCura.EDDS.WinForm
 		Private Sub ToolsImportImageFileMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ToolsImportImageFileMenu.Click
 			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
 			_application.NewImageFile(_application.SelectedCaseFolderID, _application.SelectedCaseInfo)
+			Me.Cursor = System.Windows.Forms.Cursors.Default
+		End Sub
+
+		Private Sub ToolsImportProductionFileMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ToolsImportProductionFileMenu.Click
+			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
+			_application.NewProductionFile(_application.SelectedCaseFolderID, _application.SelectedCaseInfo)
 			Me.Cursor = System.Windows.Forms.Cursors.Default
 		End Sub
 

@@ -49,6 +49,8 @@ Namespace kCura.EDDS.WinForm
 		Friend WithEvents _importMenuCheckErrorsItem As System.Windows.Forms.MenuItem
 		Friend WithEvents _overwriteDropdown As System.Windows.Forms.ComboBox
 		Friend WithEvents ExtractedTextGroupBox As System.Windows.Forms.GroupBox
+		Friend WithEvents GroupBox1 As System.Windows.Forms.GroupBox
+		Friend WithEvents _productionDropdown As System.Windows.Forms.ComboBox
 		<System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
 			Dim resources As System.Resources.ResourceManager = New System.Resources.ResourceManager(GetType(ImageLoad))
 			Me.GroupBox3 = New System.Windows.Forms.GroupBox
@@ -56,6 +58,7 @@ Namespace kCura.EDDS.WinForm
 			Me._filePath = New System.Windows.Forms.TextBox
 			Me._openFileDialog = New System.Windows.Forms.OpenFileDialog
 			Me.GroupBox233 = New System.Windows.Forms.GroupBox
+			Me._overwriteDropdown = New System.Windows.Forms.ComboBox
 			Me._replaceFullText = New System.Windows.Forms.CheckBox
 			Me.MainMenu = New System.Windows.Forms.MainMenu
 			Me.MenuItem1 = New System.Windows.Forms.MenuItem
@@ -66,11 +69,13 @@ Namespace kCura.EDDS.WinForm
 			Me._importMenuLoadSettingsItem = New System.Windows.Forms.MenuItem
 			Me._saveImageLoadFileDialog = New System.Windows.Forms.SaveFileDialog
 			Me._loadImageLoadFileDialog = New System.Windows.Forms.OpenFileDialog
-			Me._overwriteDropdown = New System.Windows.Forms.ComboBox
 			Me.ExtractedTextGroupBox = New System.Windows.Forms.GroupBox
+			Me.GroupBox1 = New System.Windows.Forms.GroupBox
+			Me._productionDropdown = New System.Windows.Forms.ComboBox
 			Me.GroupBox3.SuspendLayout()
 			Me.GroupBox233.SuspendLayout()
 			Me.ExtractedTextGroupBox.SuspendLayout()
+			Me.GroupBox1.SuspendLayout()
 			Me.SuspendLayout()
 			'
 			'GroupBox3
@@ -115,6 +120,15 @@ Namespace kCura.EDDS.WinForm
 			Me.GroupBox233.TabIndex = 8
 			Me.GroupBox233.TabStop = False
 			Me.GroupBox233.Text = "Overwrite"
+			'
+			'_overwriteDropdown
+			'
+			Me._overwriteDropdown.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+			Me._overwriteDropdown.Items.AddRange(New Object() {"None", "Strict", "Append"})
+			Me._overwriteDropdown.Location = New System.Drawing.Point(12, 20)
+			Me._overwriteDropdown.Name = "_overwriteDropdown"
+			Me._overwriteDropdown.Size = New System.Drawing.Size(156, 21)
+			Me._overwriteDropdown.TabIndex = 29
 			'
 			'_replaceFullText
 			'
@@ -173,15 +187,6 @@ Namespace kCura.EDDS.WinForm
 			'
 			Me._loadImageLoadFileDialog.Filter = "WinEDDS image load files (*.kwi)|*.kwi|All Files (*.*)|*.*"
 			'
-			'_overwriteDropdown
-			'
-			Me._overwriteDropdown.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
-			Me._overwriteDropdown.Items.AddRange(New Object() {"None", "Strict", "Append"})
-			Me._overwriteDropdown.Location = New System.Drawing.Point(12, 20)
-			Me._overwriteDropdown.Name = "_overwriteDropdown"
-			Me._overwriteDropdown.Size = New System.Drawing.Size(156, 21)
-			Me._overwriteDropdown.TabIndex = 29
-			'
 			'ExtractedTextGroupBox
 			'
 			Me.ExtractedTextGroupBox.Controls.Add(Me._replaceFullText)
@@ -192,10 +197,29 @@ Namespace kCura.EDDS.WinForm
 			Me.ExtractedTextGroupBox.TabStop = False
 			Me.ExtractedTextGroupBox.Text = "ExtractedText"
 			'
+			'GroupBox1
+			'
+			Me.GroupBox1.Controls.Add(Me._productionDropdown)
+			Me.GroupBox1.Location = New System.Drawing.Point(4, 120)
+			Me.GroupBox1.Name = "GroupBox1"
+			Me.GroupBox1.Size = New System.Drawing.Size(356, 52)
+			Me.GroupBox1.TabIndex = 10
+			Me.GroupBox1.TabStop = False
+			Me.GroupBox1.Text = "Production"
+			'
+			'_productionDropdown
+			'
+			Me._productionDropdown.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+			Me._productionDropdown.Location = New System.Drawing.Point(12, 20)
+			Me._productionDropdown.Name = "_productionDropdown"
+			Me._productionDropdown.Size = New System.Drawing.Size(332, 21)
+			Me._productionDropdown.TabIndex = 29
+			'
 			'ImageLoad
 			'
 			Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
-			Me.ClientSize = New System.Drawing.Size(580, 117)
+			Me.ClientSize = New System.Drawing.Size(580, 177)
+			Me.Controls.Add(Me.GroupBox1)
 			Me.Controls.Add(Me.ExtractedTextGroupBox)
 			Me.Controls.Add(Me.GroupBox233)
 			Me.Controls.Add(Me.GroupBox3)
@@ -208,6 +232,7 @@ Namespace kCura.EDDS.WinForm
 			Me.GroupBox3.ResumeLayout(False)
 			Me.GroupBox233.ResumeLayout(False)
 			Me.ExtractedTextGroupBox.ResumeLayout(False)
+			Me.GroupBox1.ResumeLayout(False)
 			Me.ResumeLayout(False)
 
 		End Sub
@@ -235,8 +260,13 @@ Namespace kCura.EDDS.WinForm
 			End If
 			ImageLoadFile.Overwrite = _overwriteDropdown.SelectedItem.ToString
 			ImageLoadFile.DestinationFolderID = _imageLoadFile.DestinationFolderID
-			Me.ImageLoadFile.ReplaceFullText = _replaceFullText.Checked
 			ImageLoadFile.ControlKeyField = _application.GetCaseIdentifierFields(0)
+			If ImageLoadFile.ForProduction Then
+				ImageLoadFile.ProductionArtifactID = CType(_productionDropdown.SelectedValue, Int32)
+				Me.ImageLoadFile.ReplaceFullText = False
+			Else
+				Me.ImageLoadFile.ReplaceFullText = _replaceFullText.Checked
+			End If
 			Me.Cursor = Cursors.Default
 		End Sub
 
@@ -245,6 +275,15 @@ Namespace kCura.EDDS.WinForm
 			If Not Me.EnsureConnection() Then
 				Me.Cursor = Cursors.Default
 				Exit Sub
+			End If
+			If Not ImageLoadFile.ForProduction Then
+				Me.Size = New System.Drawing.Size(588, 164)
+			Else
+				_replaceFullText.Checked = False
+				_replaceFullText.Enabled = False
+				_productionDropdown.DataSource = ImageLoadFile.ProductionTable
+				_productionDropdown.DisplayMember = "Name"
+				_productionDropdown.ValueMember = "ArtifactID"
 			End If
 			_overwriteDropdown.SelectedItem = ImageLoadFile.Overwrite
 			ReadyToRun()
@@ -281,7 +320,15 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 		Private Sub ReadyToRun()
-			ImportFileMenu.Enabled = (System.IO.File.Exists(_imageLoadFile.FileName))
+			If ImageLoadFile.ForProduction Then
+				If TypeOf _productionDropdown.SelectedValue Is Int32 Then
+					ImportFileMenu.Enabled = (System.IO.File.Exists(_imageLoadFile.FileName) And CType(_productionDropdown.SelectedValue, Int32) > 0)
+				Else
+					ImportFileMenu.Enabled = False
+				End If
+			Else
+				ImportFileMenu.Enabled = (System.IO.File.Exists(_imageLoadFile.FileName))
+			End If
 		End Sub
 
 		Private Sub _importMenuSaveSettingsItem_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles _importMenuSaveSettingsItem.Click
@@ -346,6 +393,10 @@ Namespace kCura.EDDS.WinForm
 		Private Sub _importMenuCheckErrorsItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _importMenuCheckErrorsItem.Click
 			Me.PopulateImageLoadFile()
 			_application.PreviewImageFile(Me.ImageLoadFile)
+		End Sub
+
+		Private Sub _productionDropdown_SelectedIndexChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles _productionDropdown.SelectedIndexChanged
+			ReadyToRun()
 		End Sub
 	End Class
 End Namespace

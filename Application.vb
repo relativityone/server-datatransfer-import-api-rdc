@@ -403,7 +403,7 @@ Namespace kCura.EDDS.WinForm
 			Else
 				Return True
 			End If
-			end function
+		End Function
 
 		Public Sub RefreshCaseFolders()
 			If Me.EnsureConnection Then
@@ -607,6 +607,32 @@ Namespace kCura.EDDS.WinForm
 				imageFile.Credential = Me.Credential
 				imageFile.CaseInfo = caseinfo
 				imageFile.DestinationFolderID = destinationArtifactID
+				imageFile.ForProduction = False
+				frm.ImageLoadFile = imageFile
+			Catch ex As System.Exception
+				Throw
+			Finally
+				CursorDefault()
+			End Try
+			frm.Show()
+			CursorDefault()
+		End Sub
+
+		Public Sub NewProductionFile(ByVal destinationArtifactID As Int32, ByVal caseinfo As kCura.EDDS.Types.CaseInfo)
+			CursorWait()
+			If Not Me.IsConnected(caseinfo.ArtifactID) Then
+				CursorDefault()
+				Exit Sub
+			End If
+			Dim frm As New ImageLoad
+			Try
+				Dim imageFile As New ImageLoadFile
+				imageFile.Credential = Me.Credential
+				imageFile.CaseInfo = caseinfo
+				imageFile.DestinationFolderID = destinationArtifactID
+				imageFile.ForProduction = True
+				Dim productionManager As New kCura.WinEDDS.Service.ProductionManager(Me.Credential, _cookieContainer)
+				imageFile.ProductionTable = productionManager.RetrieveStagingByContextArtifactID(caseinfo.ArtifactID).Tables(0)
 				frm.ImageLoadFile = imageFile
 			Catch ex As System.Exception
 				Throw
