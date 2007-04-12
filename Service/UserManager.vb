@@ -20,6 +20,15 @@ Namespace kCura.WinEDDS.Service
 				End Try
 			End If
 		End Function
+
+		Public Shadows Function RetrieveAllAssignableInCase(ByVal caseContextArtifactID As Int32) As System.Data.DataSet
+			If kCura.WinEDDS.Config.UsesWebAPI Then
+				Return MyBase.RetrieveAllAssignableInCase(caseContextArtifactID)
+			Else
+				'Return kCura.EDDS.Service.FileQuery.RetrieveFullTextFilesForDocuments(_identity, artifactID, documentArtifactIDs).ToDataSet()
+			End If
+		End Function
+
 #End Region
 
 	End Class

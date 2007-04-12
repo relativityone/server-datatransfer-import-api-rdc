@@ -139,5 +139,23 @@ Namespace kCura.EDDS.WebAPI.UserManagerBase
             Dim results() As Object = Me.EndInvoke(asyncResult)
             Return CType(results(0),String)
         End Function
+        
+        '<remarks/>
+        <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/UserManager/RetrieveAllAssignableInCase", RequestNamespace:="http://www.kCura.com/EDDS/UserManager", ResponseNamespace:="http://www.kCura.com/EDDS/UserManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
+        Public Function RetrieveAllAssignableInCase(ByVal caseContextArtifactID As Integer) As System.Data.DataSet
+            Dim results() As Object = Me.Invoke("RetrieveAllAssignableInCase", New Object() {caseContextArtifactID})
+            Return CType(results(0),System.Data.DataSet)
+        End Function
+        
+        '<remarks/>
+        Public Function BeginRetrieveAllAssignableInCase(ByVal caseContextArtifactID As Integer, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("RetrieveAllAssignableInCase", New Object() {caseContextArtifactID}, callback, asyncState)
+        End Function
+        
+        '<remarks/>
+        Public Function EndRetrieveAllAssignableInCase(ByVal asyncResult As System.IAsyncResult) As System.Data.DataSet
+            Dim results() As Object = Me.EndInvoke(asyncResult)
+            Return CType(results(0),System.Data.DataSet)
+        End Function
     End Class
 End Namespace

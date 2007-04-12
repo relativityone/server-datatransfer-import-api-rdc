@@ -13,7 +13,7 @@ Namespace kCura.WinEDDS
 		Protected _fieldQuery As kCura.WinEDDS.Service.FieldQuery
 		'Protected _multiCodeManager As kCura.WinEDDS.Service.MultiCodeManager
 		Protected _fileManager As kCura.WinEDDS.Service.FileManager
-
+		Protected _usermanager As kCura.WinEDDS.Service.UserManager
 		Protected _filePathColumn As String
 		Protected _filePathColumnIndex As Int32
 		Protected _firstLineContainsColumnNames As Boolean
@@ -32,6 +32,7 @@ Namespace kCura.WinEDDS
 		Protected _destinationFolder As String
 		Protected _extractMd5Hash As Boolean
 		Protected _fullTextColumnMapsToFileLocation As Boolean
+		Private _users As UserCollection
 
 		Public Property AllCodes() As kCura.Data.DataView
 			Get
@@ -53,6 +54,15 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
+		Public ReadOnly Property Users() As UserCollection
+			Get
+				If _users Is Nothing Then
+					_users = New UserCollection(_usermanager, _caseArtifactID)
+				End If
+				Return _users
+			End Get
+		End Property
+
 		Public Sub New(ByVal args As LoadFile, ByVal timezoneoffset As Int32)
 			Me.New(args, timezoneoffset, True)
 		End Sub
@@ -70,7 +80,7 @@ Namespace kCura.WinEDDS
 			_folderManager = New kCura.WinEDDS.Service.FolderManager(args.Credentials, args.CookieContainer)
 			_fieldQuery = New kCura.WinEDDS.Service.FieldQuery(args.Credentials, args.CookieContainer)
 			_fileManager = New kCura.WinEDDS.Service.FileManager(args.Credentials, args.CookieContainer)
-
+			_usermanager = New kCura.WinEDDS.Service.UserManager(args.Credentials, args.CookieContainer)
 			'_multiCodeManager = New kCura.WinEDDS.Service.MultiCodeManager(args.Credentials, args.CookieContainer)
 
 			_multiValueSeparator = args.MultiRecordDelimiter.ToString.ToCharArray
@@ -201,6 +211,9 @@ Namespace kCura.WinEDDS
 					field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(GetNullableDecimal(value, column))
 				Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Date
 					field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(GetNullableDateTime(value, column))
+				Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.User
+					field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(Me.GetUserArtifactID(value, column))
+					If forPreview Then field.Value = value
 				Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Code
 					Dim fieldValue As String = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(GetCode(value, column, field, forPreview))
 					If forPreview And fieldValue = "-1" Then
@@ -322,6 +335,16 @@ Namespace kCura.WinEDDS
 			Return nv
 			'End If
 		End Function
+
+		Public Function GetUserArtifactID(ByVal value As String, ByVal column As Int32) As NullableInt32
+			If value = "" Then Return NullableTypes.NullableInt32.Null
+			Dim retval As NullableInt32 = Me.Users(value)
+			If retval.IsNull Then
+				Throw New MissingUserException(Me.CurrentLineNumber, column, value)
+			Else
+				Return retval
+			End If
+		End Function
 #Region "Exceptions"
 
 		Public Class MissingCodeTypeException
@@ -345,6 +368,12 @@ Namespace kCura.WinEDDS
 			End Sub
 		End Class
 
+		Public Class MissingUserException
+			Inherits kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
+			Public Sub New(ByVal row As Int32, ByVal column As Int32, ByVal invalidEmailaddress As String)
+				MyBase.New(row, column, String.Format("User '{0}' does not exist in the system or is not available for assignment.", invalidEmailaddress))
+			End Sub
+		End Class
 
 #End Region
 

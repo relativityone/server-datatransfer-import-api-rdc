@@ -2,6 +2,7 @@
 <wsdl:definitions xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tns="http://www.kCura.com/EDDS/UserManager" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" targetNamespace="http://www.kCura.com/EDDS/UserManager" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
   <wsdl:types>
     <s:schema elementFormDefault="qualified" targetNamespace="http://www.kCura.com/EDDS/UserManager">
+      <s:import namespace="http://www.w3.org/2001/XMLSchema" />
       <s:element name="UpdateImageViewerDefaultViewMode">
         <s:complexType>
           <s:sequence>
@@ -71,6 +72,27 @@
           </s:sequence>
         </s:complexType>
       </s:element>
+      <s:element name="RetrieveAllAssignableInCase">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="RetrieveAllAssignableInCaseResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="RetrieveAllAssignableInCaseResult">
+              <s:complexType>
+                <s:sequence>
+                  <s:element ref="s:schema" />
+                  <s:any />
+                </s:sequence>
+              </s:complexType>
+            </s:element>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
     </s:schema>
   </wsdl:types>
   <wsdl:message name="UpdateImageViewerDefaultViewModeSoapIn">
@@ -109,6 +131,12 @@
   <wsdl:message name="GetLatestAuthenticationTokenSoapOut">
     <wsdl:part name="parameters" element="tns:GetLatestAuthenticationTokenResponse" />
   </wsdl:message>
+  <wsdl:message name="RetrieveAllAssignableInCaseSoapIn">
+    <wsdl:part name="parameters" element="tns:RetrieveAllAssignableInCase" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveAllAssignableInCaseSoapOut">
+    <wsdl:part name="parameters" element="tns:RetrieveAllAssignableInCaseResponse" />
+  </wsdl:message>
   <wsdl:portType name="UserManagerSoap">
     <wsdl:operation name="UpdateImageViewerDefaultViewMode">
       <wsdl:input message="tns:UpdateImageViewerDefaultViewModeSoapIn" />
@@ -133,6 +161,10 @@
     <wsdl:operation name="GetLatestAuthenticationToken">
       <wsdl:input message="tns:GetLatestAuthenticationTokenSoapIn" />
       <wsdl:output message="tns:GetLatestAuthenticationTokenSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveAllAssignableInCase">
+      <wsdl:input message="tns:RetrieveAllAssignableInCaseSoapIn" />
+      <wsdl:output message="tns:RetrieveAllAssignableInCaseSoapOut" />
     </wsdl:operation>
   </wsdl:portType>
   <wsdl:binding name="UserManagerSoap" type="tns:UserManagerSoap">
@@ -184,6 +216,15 @@
     </wsdl:operation>
     <wsdl:operation name="GetLatestAuthenticationToken">
       <soap:operation soapAction="http://www.kCura.com/EDDS/UserManager/GetLatestAuthenticationToken" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveAllAssignableInCase">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/UserManager/RetrieveAllAssignableInCase" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
