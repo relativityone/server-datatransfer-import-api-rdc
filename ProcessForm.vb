@@ -562,6 +562,12 @@ Namespace kCura.Windows.Process
 				System.IO.File.Copy(_exportErrorFileLocation, _exportErrorFileDialog.FileName)
 			End If
 		End Sub
+
+		Private Sub ProgressForm_Closing(ByVal sender As Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles MyBase.Closing
+			If Not Me.ProcessController Is Nothing Then
+				ProcessController.HaltProcess(_processId)
+			End If
+		End Sub
 	End Class
 
 
