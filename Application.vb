@@ -172,7 +172,7 @@ Namespace kCura.EDDS.WinForm
 		End Function
 
 		Public Function GetCaseIdentifierFields() As String()
-			Return CurrentFields.IdentifierFieldNames
+			Return CurrentFields().IdentifierFieldNames
 		End Function
 
 		Public Function IdentiferFieldDropdownPopulator() As String()
@@ -186,7 +186,7 @@ Namespace kCura.EDDS.WinForm
 			End If
 		End Function
 
-		Private Function IsConnected(ByVal caseID As Int32) As Boolean
+		Friend Function IsConnected(ByVal caseID As Int32) As Boolean
 			Return Not Me.GetCaseFields(caseID, True) Is Nothing
 		End Function
 
@@ -954,7 +954,7 @@ Namespace kCura.EDDS.WinForm
 			tempLoadFile.CaseInfo = Me.SelectedCaseInfo
 			tempLoadFile.Credentials = Me.Credential
 			tempLoadFile.DestinationFolderID = loadFile.DestinationFolderID
-			tempLoadFile.SelectedIdentifierField = Me.CurrentFields(True).Item(Me.GetCaseIdentifierFields(0))
+			tempLoadFile.SelectedIdentifierField = Me.CurrentFields(True).Item(Me.GetCaseIdentifierFields()(0))
 			Dim mapItemToRemove As LoadFileFieldMap.LoadFileFieldMapItem
 			If tempLoadFile.GroupIdentifierColumn = "" AndAlso System.IO.File.Exists(tempLoadFile.FilePath) Then
 				Dim fieldMapItem As kCura.WinEDDS.LoadFileFieldMap.LoadFileFieldMapItem

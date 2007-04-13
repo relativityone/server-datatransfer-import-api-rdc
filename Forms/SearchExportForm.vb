@@ -338,7 +338,7 @@ Public Class SearchExportForm
 		_exportFile.CookieContainer = _application.CookieContainer
 		_exportFile.UseAbsolutePaths = _useAbsolutePaths.Checked
 		_exportFile.RenameFilesToIdentifier = _renameFiles.Checked
-		_exportFile.IdentifierColumnName = _application.GetCaseIdentifierFields(0)
+		_exportFile.IdentifierColumnName = _application.GetCaseIdentifierFields()(0)
 		_application.StartSearch(Me.ExportFile)
 		Me.Cursor = System.Windows.Forms.Cursors.Default
 	End Sub

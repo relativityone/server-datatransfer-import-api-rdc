@@ -709,7 +709,7 @@ Namespace kCura.EDDS.WinForm
 			If System.IO.File.Exists(_filePath.Text) Then
 				LoadFile.FilePath = _filePath.Text
 			End If
-			LoadFile.SelectedIdentifierField = _application.GetDocumentFieldFromName(_application.GetCaseIdentifierFields(0))
+			LoadFile.SelectedIdentifierField = _application.GetDocumentFieldFromName(_application.GetCaseIdentifierFields()(0))
 			If Not _identifiersDropDown.SelectedItem Is Nothing Then
 				LoadFile.GroupIdentifierColumn = _identifiersDropDown.SelectedItem.ToString
 			Else

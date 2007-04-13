@@ -656,6 +656,10 @@ Public Class ExportForm
 
 	Private Sub RunMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles RunMenu.Click
 		Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
+		If Not _application.IsConnected(_exportFile.CaseArtifactID) Then
+			Me.Cursor = System.Windows.Forms.Cursors.Default
+			Exit Sub
+		End If
 		_exportFile.FolderPath = _folderPath.Text
 		Select Case Me.ExportFile.TypeOfExport
 			Case ExportFile.ExportType.AncestorSearch

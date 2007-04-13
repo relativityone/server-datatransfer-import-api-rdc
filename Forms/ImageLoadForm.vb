@@ -260,7 +260,7 @@ Namespace kCura.EDDS.WinForm
 			End If
 			ImageLoadFile.Overwrite = _overwriteDropdown.SelectedItem.ToString
 			ImageLoadFile.DestinationFolderID = _imageLoadFile.DestinationFolderID
-			ImageLoadFile.ControlKeyField = _application.GetCaseIdentifierFields(0)
+			ImageLoadFile.ControlKeyField = _application.GetCaseIdentifierFields()(0)
 			If ImageLoadFile.ForProduction Then
 				ImageLoadFile.ProductionArtifactID = CType(_productionDropdown.SelectedValue, Int32)
 				Me.ImageLoadFile.ReplaceFullText = False
