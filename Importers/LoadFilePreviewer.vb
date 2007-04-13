@@ -123,6 +123,7 @@ Namespace kCura.WinEDDS
 			Else
 				ProcessComplete(filesize, filesize, stepsize)
 			End If
+			Me.Close()
 			Return fieldArrays
 		End Function
 		Private Function CheckLine(ByVal values As String()) As DocumentField()

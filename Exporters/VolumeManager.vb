@@ -97,10 +97,13 @@ Namespace kCura.WinEDDS
 			Select Case Me.Settings.LogFileFormat
 				Case LoadFileType.FileFormat.Concordance
 					logFileExension = ".opt"
+				Case LoadFileType.FileFormat.IPRO
+					logFileExension = ".lfp"
+				Case LoadFileType.FileFormat.IPRO_FullText
+					logFileExension = "_FULLTEXT_.lfp"
 				Case Else
-					logFileExension = ".ldf"
 			End Select
-			_imageFileWriter = New System.IO.StreamWriter(Me.Settings.FolderPath & "\" & "export" & logFileExension, False)
+			_imageFileWriter = New System.IO.StreamWriter(Me.Settings.FolderPath & "\" & "export" & logFileExension, False, System.Text.Encoding.Default)
 		End Sub
 
 		Public Sub Finish()
@@ -128,9 +131,15 @@ Namespace kCura.WinEDDS
 			 documentInfo.NativeCount + _currentNativeSubdirectorySize > Me.SubDirectoryMaxSize Then
 				Me.UpdateSubdirectory()
 			End If
-
+			Dim tempLocalFullTextFilePath As String = ""
+			If Me.Settings.ExportFullText OrElse Me.Settings.LogFileFormat = LoadFileType.FileFormat.IPRO_FullText Then
+				If Not documentInfo.FullTextFileGuid Is Nothing AndAlso Not documentInfo.FullTextFileGuid = "" Then
+					tempLocalFullTextFilePath = System.IO.Path.GetTempFileName
+					_downloadManager.DownloadFile(tempLocalFullTextFilePath, documentInfo.FullTextFileGuid, documentInfo.DocumentArtifactID, _settings.CaseInfo.ArtifactID.ToString)
+				End If
+			End If
 			If Me.Settings.ExportImages Then
-				Me.ExportImages(documentInfo.Images)
+				Me.ExportImages(documentInfo.Images, tempLocalFullTextFilePath)
 			End If
 			Dim nativeLocation As String = ""
 			If Me.Settings.ExportNative Then
@@ -177,23 +186,46 @@ Namespace kCura.WinEDDS
 
 #Region "Image Export"
 
-		Public Sub ExportImages(ByVal images As System.Collections.ArrayList)
+		Public Sub ExportImages(ByVal images As System.Collections.ArrayList, ByVal localFullTextPath As String)
 			Dim image As WinEDDS.Exporters.ImageExportInfo
 			Dim i As Int32 = 0
+			Dim fullTextReader As System.IO.StreamReader = Nothing
 			Dim localFilePath As String = Me.Settings.FolderPath
 			Dim subfolderPath As String = Me.CurrentVolumeLabel & "\" & Me.CurrentImageSubdirectoryLabel & "\"
+			Dim pageOffset As Long
 			If localFilePath.Chars(localFilePath.Length - 1) <> "\"c Then localFilePath &= "\"
 			localFilePath &= subfolderPath
 			If Not System.IO.Directory.Exists(localFilePath) Then System.IO.Directory.CreateDirectory(localFilePath)
-			For Each image In images
-				Me.ExportDocumentImage(localFilePath & image.FileName, image.FileGuid, image.ArtifactID, image.BatesNumber, image.TempLocation)
-				If Me.Settings.UseAbsolutePaths Then
-					Me.CreateImageLogEntry(image.BatesNumber, localFilePath & image.FileName, localFilePath, i = 0)
-				Else
-					Me.CreateImageLogEntry(image.BatesNumber, ".\" & subfolderPath & image.FileName, localFilePath, i = 0)
+			Try
+				If Me.Settings.LogFileFormat = LoadFileType.FileFormat.IPRO_FullText Then
+					If System.IO.File.Exists(localFullTextPath) Then
+						fullTextReader = New System.IO.StreamReader(localFullTextPath, System.Text.Encoding.Default, True)
+					End If
 				End If
-				i += 1
-			Next
+				For Each image In images
+					If (i = 0 AndAlso image.PageOffset.IsNull) OrElse i = images.Count - 1 Then
+						pageOffset = Int64.MinValue
+					Else
+						Dim nextImage As Exporters.ImageExportInfo = DirectCast(images(i + 1), Exporters.ImageExportInfo)
+						If nextImage.PageOffset.IsNull Then
+							pageOffset = Int64.MinValue
+						Else
+							pageOffset = nextImage.PageOffset.Value
+						End If
+					End If
+					Me.ExportDocumentImage(localFilePath & image.FileName, image.FileGuid, image.ArtifactID, image.BatesNumber, image.TempLocation)
+					If Me.Settings.UseAbsolutePaths Then
+						Me.CreateImageLogEntry(image.BatesNumber, localFilePath & image.FileName, localFilePath, i = 0, fullTextReader, localFullTextPath <> "", pageOffset)
+					Else
+						Me.CreateImageLogEntry(image.BatesNumber, ".\" & subfolderPath & image.FileName, localFilePath, i = 0, fullTextReader, localFullTextPath <> "", pageOffset)
+					End If
+					i += 1
+				Next
+			Catch ex As System.Exception
+				If Not fullTextReader Is Nothing Then fullTextReader.Close()
+				Throw
+			End Try
+			If Not fullTextReader Is Nothing Then fullTextReader.Close()
 		End Sub
 
 		Private Function DownloadImage(ByVal image As Exporters.ImageExportInfo) As Int64
@@ -220,77 +252,104 @@ Namespace kCura.WinEDDS
 			'_parent.DocumentsExported += 1
 		End Sub
 
-		Private Sub CreateImageLogEntry(ByVal batesNumber As String, ByVal copyFile As String, ByVal pathToImage As String, ByVal firstDocument As Boolean)
+		Private Sub CreateImageLogEntry(ByVal batesNumber As String, ByVal copyFile As String, ByVal pathToImage As String, ByVal firstDocument As Boolean, ByVal fullTextReader As System.IO.StreamReader, ByVal expectingTextForPage As Boolean, ByVal pageOffset As Long)
 			Dim fullTextGuid As String
 			Dim fullText As String
-			Dim pageText As String
 			'Dim currentPage As Int32 = count
 			Select Case _settings.LogFileFormat
 				Case LoadFileType.FileFormat.Concordance
-					Dim log As New System.Text.StringBuilder
-					log.AppendFormat("{0},{1},{2},", batesNumber, Me.CurrentVolumeLabel, copyFile)
-					If firstDocument Then
-						log.Append("Y")
-					End If
-					log.Append(",,,")
-					_imageFileWriter.WriteLine(log.ToString)
+					Me.WriteOpticonLine(batesNumber, firstDocument, copyFile)
 				Case LoadFileType.FileFormat.IPRO
-					Dim log As New System.Text.StringBuilder
-
-					log.AppendFormat("IM,{0},", batesNumber)
-					If firstDocument Then
-						log.Append("D,")
-					Else
-						log.Append(" ,")
-					End If
-					Dim pti As String = ""
-					Dim filename As String = ""
-					If copyFile.LastIndexOf("\"c) = -1 Then
-						pti = ""
-						filename = copyFile
-					Else
-						pti = copyFile.Substring(0, copyFile.LastIndexOf("\"c))
-						filename = copyFile.Substring(copyFile.LastIndexOf("\") + 1)
-					End If
-					log.AppendFormat("0,{0};{1};{2};2", Me.CurrentVolumeLabel, pti, filename)
-					_imageFileWriter.WriteLine(log.ToString)
+					Me.WriteIproImageLine(batesNumber, firstDocument, copyFile)
 				Case LoadFileType.FileFormat.IPRO_FullText
-					'TODO: Support This
-					'If Me.LoadFileFormat = kCura.WinEDDS.LoadFileType.FileFormat.IPRO_FullText Then
-					'	If isFirstDocumentImage Then
-					'		currentPageFirstByteNumber = 0
+					Dim currentPageFirstByteNumber As Long
+					If fullTextReader Is Nothing Then
+						If firstDocument AndAlso expectingTextForPage Then _parent.WriteWarning(String.Format("Could not retrieve full text for document '{0}'", batesNumber))
+					Else
+						Dim pageText As New System.Text.StringBuilder
+						If firstDocument Then
+							currentPageFirstByteNumber = 0
+						Else
+							currentPageFirstByteNumber = fullTextReader.BaseStream.Position
+						End If
+						Select Case pageOffset
+							Case Int64.MinValue
+								pageText.Append(fullTextReader.ReadToEnd)
+							Case Else
+								Dim i As Int32 = 0
+								While i < pageOffset
+									pageText.Append(ChrW(fullTextReader.Read))
+									i += 1
+								End While
+						End Select
+						pageText = pageText.Replace(ChrW(10), " ")
+						pageText = pageText.Replace(",", "")
+						pageText = pageText.Replace(" ", "|0|0|0|0^")
+						_imageFileWriter.WriteLine(String.Format("FT,{0},1,1,{1}", batesNumber, pageText.ToString))
+					End If
+					Me.WriteIproImageLine(batesNumber, firstDocument, copyFile)
+
+					'Try
+					'	fullTextGuid = _fileManager.GetFullTextGuidsByDocumentArtifactIdAndType(Me.SelectedCaseInfo.ArtifactID, CType(documentImagesTable.Rows(count)("DocumentArtifactID"), Int32), 2)
+					'	If fullTextGuid = "" Then
+					'		fullText = ""
+
+					'	Else
+					'		Dim tempFile As String = System.IO.Path.GetTempFileName
+					'		_downloadManager.DownloadFile(tempFile, fullTextGuid, CType(documentImagesTable.Rows(count)("DocumentArtifactID"), Int32), Me.SelectedCaseInfo.ArtifactID.ToString)
+					'		Dim sr As New System.IO.StreamReader(tempFile)
+					'		fullText = sr.ReadToEnd
+					'		sr.Close()
+					'		System.IO.File.Delete(tempFile)
 					'	End If
-					'	Try
-					'		fullTextGuid = _fileManager.GetFullTextGuidsByDocumentArtifactIdAndType(Me.SelectedCaseInfo.ArtifactID, CType(documentImagesTable.Rows(count)("DocumentArtifactID"), Int32), 2)
-					'		If fullTextGuid = "" Then
-					'			fullText = ""
-					'			Me.WriteWarning(String.Format("Could not retrieve full text for document #{0}", count + 1))
-					'		Else
-					'			Dim tempFile As String = System.IO.Path.GetTempFileName
-					'			_downloadManager.DownloadFile(tempFile, fullTextGuid, CType(documentImagesTable.Rows(count)("DocumentArtifactID"), Int32), Me.SelectedCaseInfo.ArtifactID.ToString)
-					'			Dim sr As New System.IO.StreamReader(tempFile)
-					'			fullText = sr.ReadToEnd
-					'			sr.Close()
-					'			System.IO.File.Delete(tempFile)
-					'		End If
-					'		pageText = fullText.Substring(currentPageFirstByteNumber, CInt(documentImagesTable.Rows(count)("ByteRange")))
-					'		pageText = pageText.Replace(ChrW(10), " ")
-					'		pageText = pageText.Replace(",", "")
-					'		pageText = pageText.Replace(" ", "|0|0|0|0^")
-					'		fullTextVolumeLog.AppendFormat("FT,{0},1,1,{1}", CType(documentImagesTable.Rows(count)("BatesNumber"), String), pageText)
-					'		fullTextVolumeLog.AppendFormat("{0}", Microsoft.VisualBasic.ControlChars.NewLine)
-					'		currentPageFirstByteNumber += CInt(documentImagesTable.Rows(count)("ByteRange"))
-					'	Catch ex As System.InvalidCastException
-					'		Me.WriteWarning(String.Format("Could not retrieve full text for document #{0}", count + 1))
-					'	Catch ex As System.IO.FileNotFoundException
-					'		WriteWarning(ex.Message)
-					'	End Try
-					'End If
+					'	pageText = fullText.Substring(currentPageFirstByteNumber, CInt(documentImagesTable.Rows(count)("ByteRange")))
+					'	pageText = pageText.Replace(ChrW(10), " ")
+					'	pageText = pageText.Replace(",", "")
+					'	pageText = pageText.Replace(" ", "|0|0|0|0^")
+					'	fullTextVolumeLog.AppendFormat("FT,{0},1,1,{1}", CType(documentImagesTable.Rows(count)("BatesNumber"), String), pageText)
+					'	fullTextVolumeLog.AppendFormat("{0}", Microsoft.VisualBasic.ControlChars.NewLine)
+					'	currentPageFirstByteNumber += CInt(documentImagesTable.Rows(count)("ByteRange"))
+					'Catch ex As System.InvalidCastException
+					'	Me.WriteWarning(String.Format("Could not retrieve full text for document #{0}", count + 1))
+					'Catch ex As System.IO.FileNotFoundException
+					'	WriteWarning(ex.Message)
+					'End Try
 					'volumeLog.Append(BuildIproLog(CType(documentImagesTable.Rows(count)("BatesNumber"), String), currentVolume, currentDirectory, isFirstDocumentImage))
 			End Select
 
 		End Sub
 
+		Private Sub WriteIproImageLine(ByVal batesNumber As String, ByVal firstDocument As Boolean, ByVal copyFile As String)
+			Dim log As New System.Text.StringBuilder
+
+			log.AppendFormat("IM,{0},", batesNumber)
+			If firstDocument Then
+				log.Append("D,")
+			Else
+				log.Append(" ,")
+			End If
+			Dim pti As String = ""
+			Dim filename As String = ""
+			If copyFile.LastIndexOf("\"c) = -1 Then
+				pti = ""
+				filename = copyFile
+			Else
+				pti = copyFile.Substring(0, copyFile.LastIndexOf("\"c))
+				filename = copyFile.Substring(copyFile.LastIndexOf("\") + 1)
+			End If
+			log.AppendFormat("0,{0};{1};{2};2", Me.CurrentVolumeLabel, pti, filename)
+			_imageFileWriter.WriteLine(log.ToString)
+		End Sub
+
+		Private Sub WriteOpticonLine(ByVal batesNumber As String, ByVal firstDocument As Boolean, ByVal copyFile As String)
+			Dim log As New System.Text.StringBuilder
+			log.AppendFormat("{0},{1},{2},", batesNumber, Me.CurrentVolumeLabel, copyFile)
+			If firstDocument Then
+				log.Append("Y")
+			End If
+			log.Append(",,,")
+			_imageFileWriter.WriteLine(log.ToString)
+		End Sub
 #End Region
 
 		Private Function ExportNative(ByVal exportFileName As String, ByVal fileGuid As String, ByVal artifactID As Int32, ByVal systemFileName As String, ByVal tempLocation As String) As String

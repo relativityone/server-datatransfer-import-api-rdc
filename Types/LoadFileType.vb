@@ -13,7 +13,7 @@ Namespace kCura.WinEDDS
 			dt.Rows.Add(New Object() {"Select...", -1})
 			dt.Rows.Add(New Object() {"Concordance", 0})
 			dt.Rows.Add(New Object() {"IPRO", 1})
-			'dt.Rows.Add(New Object() {"IPRO (FullText)", 2})
+			dt.Rows.Add(New Object() {"IPRO (FullText)", 2})
 			Return dt
 		End Function
 	End Class
