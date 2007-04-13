@@ -238,7 +238,7 @@ Public Class ExportForm
 		Me._folderPath.Name = "_folderPath"
 		Me._folderPath.Size = New System.Drawing.Size(532, 20)
 		Me._folderPath.TabIndex = 5
-		Me._folderPath.Text = "Select a file ..."
+		Me._folderPath.Text = "Select a folder ..."
 		'
 		'GroupBox23
 		'
