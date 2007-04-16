@@ -45,17 +45,6 @@ Public Class ExportForm
 	Friend WithEvents _useAbsolutePaths As System.Windows.Forms.CheckBox
 	Friend WithEvents _exportImages As System.Windows.Forms.CheckBox
 	Friend WithEvents Label1 As System.Windows.Forms.Label
-	Friend WithEvents _volumePrefix As System.Windows.Forms.TextBox
-	Friend WithEvents Label5 As System.Windows.Forms.Label
-	Friend WithEvents Label7 As System.Windows.Forms.Label
-	Friend WithEvents Label8 As System.Windows.Forms.Label
-	Friend WithEvents _volumeStartNumber As System.Windows.Forms.NumericUpDown
-	Friend WithEvents _volumeMaxSize As System.Windows.Forms.NumericUpDown
-	Friend WithEvents _subDirectoryMaxSize As System.Windows.Forms.NumericUpDown
-	Friend WithEvents _subdirectoryStartNumber As System.Windows.Forms.NumericUpDown
-	Friend WithEvents Label9 As System.Windows.Forms.Label
-	Friend WithEvents Label10 As System.Windows.Forms.Label
-	Friend WithEvents Label11 As System.Windows.Forms.Label
 	Friend WithEvents Label12 As System.Windows.Forms.Label
 	Friend WithEvents _loadFileCharacterInformation As System.Windows.Forms.GroupBox
 	Friend WithEvents _multiRecordDelimiter As System.Windows.Forms.ComboBox
@@ -66,21 +55,20 @@ Public Class ExportForm
 	Friend WithEvents _newLineDelimiter As System.Windows.Forms.ComboBox
 	Friend WithEvents Label2 As System.Windows.Forms.Label
 	Friend WithEvents _recordDelimiter As System.Windows.Forms.ComboBox
-	Friend WithEvents _volumeInformationGroupBox As System.Windows.Forms.GroupBox
-	Friend WithEvents _subDirectoryInformationGroupBox As System.Windows.Forms.GroupBox
 	Friend WithEvents _nativeFileFormat As System.Windows.Forms.ComboBox
 	Friend WithEvents _imageFileFormat As System.Windows.Forms.ComboBox
-	Friend WithEvents Label13 As System.Windows.Forms.Label
-	Friend WithEvents _subdirectoryImagePrefix As System.Windows.Forms.TextBox
-	Friend WithEvents _subDirectoryNativePrefix As System.Windows.Forms.TextBox
-	Friend WithEvents _productionPrecedenceList As System.Windows.Forms.ComboBox
 	Friend WithEvents _pickPrecedenceButton As System.Windows.Forms.Button
 	Friend WithEvents _productionPrecedenceBox As System.Windows.Forms.GroupBox
+	Friend WithEvents MenuItem1 As System.Windows.Forms.MenuItem
+	Friend WithEvents _settingsMenuVolumeInfoItem As System.Windows.Forms.MenuItem
+	Friend WithEvents _productionPrecedenceList As System.Windows.Forms.ListBox
 	<System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
 		Dim resources As System.Resources.ResourceManager = New System.Resources.ResourceManager(GetType(ExportForm))
 		Me.MainMenu1 = New System.Windows.Forms.MainMenu
 		Me.ExportMenu = New System.Windows.Forms.MenuItem
 		Me.RunMenu = New System.Windows.Forms.MenuItem
+		Me.MenuItem1 = New System.Windows.Forms.MenuItem
+		Me._settingsMenuVolumeInfoItem = New System.Windows.Forms.MenuItem
 		Me._filtersBox = New System.Windows.Forms.GroupBox
 		Me._exportImages = New System.Windows.Forms.CheckBox
 		Me._exportNativeFiles = New System.Windows.Forms.CheckBox
@@ -97,22 +85,6 @@ Public Class ExportForm
 		Me._nativeFileFormat = New System.Windows.Forms.ComboBox
 		Me._useAbsolutePaths = New System.Windows.Forms.CheckBox
 		Me._destinationFolderDialog = New System.Windows.Forms.FolderBrowserDialog
-		Me._volumeInformationGroupBox = New System.Windows.Forms.GroupBox
-		Me._volumeMaxSize = New System.Windows.Forms.NumericUpDown
-		Me._volumeStartNumber = New System.Windows.Forms.NumericUpDown
-		Me.Label8 = New System.Windows.Forms.Label
-		Me.Label7 = New System.Windows.Forms.Label
-		Me.Label5 = New System.Windows.Forms.Label
-		Me._volumePrefix = New System.Windows.Forms.TextBox
-		Me._subDirectoryInformationGroupBox = New System.Windows.Forms.GroupBox
-		Me._subDirectoryNativePrefix = New System.Windows.Forms.TextBox
-		Me.Label13 = New System.Windows.Forms.Label
-		Me._subDirectoryMaxSize = New System.Windows.Forms.NumericUpDown
-		Me._subdirectoryStartNumber = New System.Windows.Forms.NumericUpDown
-		Me.Label9 = New System.Windows.Forms.Label
-		Me.Label10 = New System.Windows.Forms.Label
-		Me.Label11 = New System.Windows.Forms.Label
-		Me._subdirectoryImagePrefix = New System.Windows.Forms.TextBox
 		Me._loadFileCharacterInformation = New System.Windows.Forms.GroupBox
 		Me._multiRecordDelimiter = New System.Windows.Forms.ComboBox
 		Me.Label6 = New System.Windows.Forms.Label
@@ -124,23 +96,17 @@ Public Class ExportForm
 		Me._recordDelimiter = New System.Windows.Forms.ComboBox
 		Me._productionPrecedenceBox = New System.Windows.Forms.GroupBox
 		Me._pickPrecedenceButton = New System.Windows.Forms.Button
-		Me._productionPrecedenceList = New System.Windows.Forms.ComboBox
+		Me._productionPrecedenceList = New System.Windows.Forms.ListBox
 		Me._filtersBox.SuspendLayout()
 		Me.GroupBox3.SuspendLayout()
 		Me.GroupBox23.SuspendLayout()
-		Me._volumeInformationGroupBox.SuspendLayout()
-		CType(Me._volumeMaxSize, System.ComponentModel.ISupportInitialize).BeginInit()
-		CType(Me._volumeStartNumber, System.ComponentModel.ISupportInitialize).BeginInit()
-		Me._subDirectoryInformationGroupBox.SuspendLayout()
-		CType(Me._subDirectoryMaxSize, System.ComponentModel.ISupportInitialize).BeginInit()
-		CType(Me._subdirectoryStartNumber, System.ComponentModel.ISupportInitialize).BeginInit()
 		Me._loadFileCharacterInformation.SuspendLayout()
 		Me._productionPrecedenceBox.SuspendLayout()
 		Me.SuspendLayout()
 		'
 		'MainMenu1
 		'
-		Me.MainMenu1.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.ExportMenu})
+		Me.MainMenu1.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.ExportMenu, Me.MenuItem1})
 		'
 		'ExportMenu
 		'
@@ -153,6 +119,17 @@ Public Class ExportForm
 		Me.RunMenu.Index = 0
 		Me.RunMenu.Shortcut = System.Windows.Forms.Shortcut.F5
 		Me.RunMenu.Text = "Run..."
+		'
+		'MenuItem1
+		'
+		Me.MenuItem1.Index = 1
+		Me.MenuItem1.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me._settingsMenuVolumeInfoItem})
+		Me.MenuItem1.Text = "Settings"
+		'
+		'_settingsMenuVolumeInfoItem
+		'
+		Me._settingsMenuVolumeInfoItem.Index = 0
+		Me._settingsMenuVolumeInfoItem.Text = "Volume Info"
 		'
 		'_filtersBox
 		'
@@ -247,7 +224,7 @@ Public Class ExportForm
 		Me.GroupBox23.Controls.Add(Me.Label1)
 		Me.GroupBox23.Controls.Add(Me._nativeFileFormat)
 		Me.GroupBox23.Controls.Add(Me._useAbsolutePaths)
-		Me.GroupBox23.Location = New System.Drawing.Point(3, 308)
+		Me.GroupBox23.Location = New System.Drawing.Point(3, 168)
 		Me.GroupBox23.Name = "GroupBox23"
 		Me.GroupBox23.Size = New System.Drawing.Size(281, 120)
 		Me.GroupBox23.TabIndex = 12
@@ -298,171 +275,6 @@ Public Class ExportForm
 		Me._useAbsolutePaths.TabIndex = 8
 		Me._useAbsolutePaths.Text = "Use Absolute Paths "
 		'
-		'_volumeInformationGroupBox
-		'
-		Me._volumeInformationGroupBox.Controls.Add(Me._volumeMaxSize)
-		Me._volumeInformationGroupBox.Controls.Add(Me._volumeStartNumber)
-		Me._volumeInformationGroupBox.Controls.Add(Me.Label8)
-		Me._volumeInformationGroupBox.Controls.Add(Me.Label7)
-		Me._volumeInformationGroupBox.Controls.Add(Me.Label5)
-		Me._volumeInformationGroupBox.Controls.Add(Me._volumePrefix)
-		Me._volumeInformationGroupBox.Location = New System.Drawing.Point(4, 168)
-		Me._volumeInformationGroupBox.Name = "_volumeInformationGroupBox"
-		Me._volumeInformationGroupBox.Size = New System.Drawing.Size(280, 132)
-		Me._volumeInformationGroupBox.TabIndex = 13
-		Me._volumeInformationGroupBox.TabStop = False
-		Me._volumeInformationGroupBox.Text = "Volume Information"
-		'
-		'_volumeMaxSize
-		'
-		Me._volumeMaxSize.Location = New System.Drawing.Point(88, 76)
-		Me._volumeMaxSize.Maximum = New Decimal(New Integer() {2000000, 0, 0, 0})
-		Me._volumeMaxSize.Name = "_volumeMaxSize"
-		Me._volumeMaxSize.Size = New System.Drawing.Size(180, 20)
-		Me._volumeMaxSize.TabIndex = 11
-		Me._volumeMaxSize.Value = New Decimal(New Integer() {650, 0, 0, 0})
-		'
-		'_volumeStartNumber
-		'
-		Me._volumeStartNumber.Location = New System.Drawing.Point(88, 48)
-		Me._volumeStartNumber.Maximum = New Decimal(New Integer() {2000000, 0, 0, 0})
-		Me._volumeStartNumber.Name = "_volumeStartNumber"
-		Me._volumeStartNumber.Size = New System.Drawing.Size(180, 20)
-		Me._volumeStartNumber.TabIndex = 10
-		Me._volumeStartNumber.Value = New Decimal(New Integer() {1, 0, 0, 0})
-		'
-		'Label8
-		'
-		Me.Label8.ImageAlign = System.Drawing.ContentAlignment.MiddleRight
-		Me.Label8.Location = New System.Drawing.Point(4, 76)
-		Me.Label8.Name = "Label8"
-		Me.Label8.Size = New System.Drawing.Size(82, 16)
-		Me.Label8.TabIndex = 9
-		Me.Label8.Text = "Max Size (MB):"
-		Me.Label8.TextAlign = System.Drawing.ContentAlignment.MiddleRight
-		'
-		'Label7
-		'
-		Me.Label7.ImageAlign = System.Drawing.ContentAlignment.MiddleRight
-		Me.Label7.Location = New System.Drawing.Point(44, 48)
-		Me.Label7.Name = "Label7"
-		Me.Label7.Size = New System.Drawing.Size(44, 16)
-		Me.Label7.TabIndex = 8
-		Me.Label7.Text = "Start #:"
-		Me.Label7.TextAlign = System.Drawing.ContentAlignment.MiddleRight
-		'
-		'Label5
-		'
-		Me.Label5.ImageAlign = System.Drawing.ContentAlignment.MiddleRight
-		Me.Label5.Location = New System.Drawing.Point(48, 24)
-		Me.Label5.Name = "Label5"
-		Me.Label5.Size = New System.Drawing.Size(40, 16)
-		Me.Label5.TabIndex = 7
-		Me.Label5.Text = "Prefix: "
-		Me.Label5.TextAlign = System.Drawing.ContentAlignment.MiddleRight
-		'
-		'_volumePrefix
-		'
-		Me._volumePrefix.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-		Me._volumePrefix.Location = New System.Drawing.Point(88, 20)
-		Me._volumePrefix.Name = "_volumePrefix"
-		Me._volumePrefix.Size = New System.Drawing.Size(180, 20)
-		Me._volumePrefix.TabIndex = 6
-		Me._volumePrefix.Text = "VOL"
-		'
-		'_subDirectoryInformationGroupBox
-		'
-		Me._subDirectoryInformationGroupBox.Controls.Add(Me._subDirectoryNativePrefix)
-		Me._subDirectoryInformationGroupBox.Controls.Add(Me.Label13)
-		Me._subDirectoryInformationGroupBox.Controls.Add(Me._subDirectoryMaxSize)
-		Me._subDirectoryInformationGroupBox.Controls.Add(Me._subdirectoryStartNumber)
-		Me._subDirectoryInformationGroupBox.Controls.Add(Me.Label9)
-		Me._subDirectoryInformationGroupBox.Controls.Add(Me.Label10)
-		Me._subDirectoryInformationGroupBox.Controls.Add(Me.Label11)
-		Me._subDirectoryInformationGroupBox.Controls.Add(Me._subdirectoryImagePrefix)
-		Me._subDirectoryInformationGroupBox.Location = New System.Drawing.Point(296, 168)
-		Me._subDirectoryInformationGroupBox.Name = "_subDirectoryInformationGroupBox"
-		Me._subDirectoryInformationGroupBox.Size = New System.Drawing.Size(280, 132)
-		Me._subDirectoryInformationGroupBox.TabIndex = 14
-		Me._subDirectoryInformationGroupBox.TabStop = False
-		Me._subDirectoryInformationGroupBox.Text = "Subdirectory Information"
-		'
-		'_subDirectoryNativePrefix
-		'
-		Me._subDirectoryNativePrefix.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-		Me._subDirectoryNativePrefix.Location = New System.Drawing.Point(88, 48)
-		Me._subDirectoryNativePrefix.Name = "_subDirectoryNativePrefix"
-		Me._subDirectoryNativePrefix.Size = New System.Drawing.Size(176, 20)
-		Me._subDirectoryNativePrefix.TabIndex = 20
-		Me._subDirectoryNativePrefix.Text = "NATIVE"
-		'
-		'Label13
-		'
-		Me.Label13.ImageAlign = System.Drawing.ContentAlignment.MiddleRight
-		Me.Label13.Location = New System.Drawing.Point(16, 52)
-		Me.Label13.Name = "Label13"
-		Me.Label13.Size = New System.Drawing.Size(72, 16)
-		Me.Label13.TabIndex = 19
-		Me.Label13.Text = "Native Prefix: "
-		Me.Label13.TextAlign = System.Drawing.ContentAlignment.MiddleRight
-		'
-		'_subDirectoryMaxSize
-		'
-		Me._subDirectoryMaxSize.Location = New System.Drawing.Point(88, 104)
-		Me._subDirectoryMaxSize.Maximum = New Decimal(New Integer() {2000000, 0, 0, 0})
-		Me._subDirectoryMaxSize.Name = "_subDirectoryMaxSize"
-		Me._subDirectoryMaxSize.Size = New System.Drawing.Size(176, 20)
-		Me._subDirectoryMaxSize.TabIndex = 17
-		Me._subDirectoryMaxSize.Value = New Decimal(New Integer() {500, 0, 0, 0})
-		'
-		'_subdirectoryStartNumber
-		'
-		Me._subdirectoryStartNumber.Location = New System.Drawing.Point(88, 76)
-		Me._subdirectoryStartNumber.Maximum = New Decimal(New Integer() {2000000, 0, 0, 0})
-		Me._subdirectoryStartNumber.Name = "_subdirectoryStartNumber"
-		Me._subdirectoryStartNumber.Size = New System.Drawing.Size(176, 20)
-		Me._subdirectoryStartNumber.TabIndex = 16
-		Me._subdirectoryStartNumber.Value = New Decimal(New Integer() {1, 0, 0, 0})
-		'
-		'Label9
-		'
-		Me.Label9.ImageAlign = System.Drawing.ContentAlignment.MiddleRight
-		Me.Label9.Location = New System.Drawing.Point(28, 104)
-		Me.Label9.Name = "Label9"
-		Me.Label9.Size = New System.Drawing.Size(60, 16)
-		Me.Label9.TabIndex = 15
-		Me.Label9.Text = "Max Files:"
-		Me.Label9.TextAlign = System.Drawing.ContentAlignment.MiddleRight
-		'
-		'Label10
-		'
-		Me.Label10.ImageAlign = System.Drawing.ContentAlignment.MiddleRight
-		Me.Label10.Location = New System.Drawing.Point(42, 80)
-		Me.Label10.Name = "Label10"
-		Me.Label10.Size = New System.Drawing.Size(44, 16)
-		Me.Label10.TabIndex = 14
-		Me.Label10.Text = "Start #:"
-		Me.Label10.TextAlign = System.Drawing.ContentAlignment.MiddleRight
-		'
-		'Label11
-		'
-		Me.Label11.ImageAlign = System.Drawing.ContentAlignment.MiddleRight
-		Me.Label11.Location = New System.Drawing.Point(16, 24)
-		Me.Label11.Name = "Label11"
-		Me.Label11.Size = New System.Drawing.Size(72, 16)
-		Me.Label11.TabIndex = 13
-		Me.Label11.Text = "Image Prefix: "
-		Me.Label11.TextAlign = System.Drawing.ContentAlignment.MiddleRight
-		'
-		'_subdirectoryImagePrefix
-		'
-		Me._subdirectoryImagePrefix.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-		Me._subdirectoryImagePrefix.Location = New System.Drawing.Point(88, 20)
-		Me._subdirectoryImagePrefix.Name = "_subdirectoryImagePrefix"
-		Me._subdirectoryImagePrefix.Size = New System.Drawing.Size(176, 20)
-		Me._subdirectoryImagePrefix.TabIndex = 12
-		Me._subdirectoryImagePrefix.Text = "IMG"
-		'
 		'_loadFileCharacterInformation
 		'
 		Me._loadFileCharacterInformation.Controls.Add(Me._multiRecordDelimiter)
@@ -473,7 +285,7 @@ Public Class ExportForm
 		Me._loadFileCharacterInformation.Controls.Add(Me._newLineDelimiter)
 		Me._loadFileCharacterInformation.Controls.Add(Me.Label2)
 		Me._loadFileCharacterInformation.Controls.Add(Me._recordDelimiter)
-		Me._loadFileCharacterInformation.Location = New System.Drawing.Point(296, 308)
+		Me._loadFileCharacterInformation.Location = New System.Drawing.Point(296, 168)
 		Me._loadFileCharacterInformation.Name = "_loadFileCharacterInformation"
 		Me._loadFileCharacterInformation.Size = New System.Drawing.Size(280, 120)
 		Me._loadFileCharacterInformation.TabIndex = 15
@@ -550,18 +362,18 @@ Public Class ExportForm
 		'
 		'_productionPrecedenceBox
 		'
-		Me._productionPrecedenceBox.Controls.Add(Me._pickPrecedenceButton)
 		Me._productionPrecedenceBox.Controls.Add(Me._productionPrecedenceList)
-		Me._productionPrecedenceBox.Location = New System.Drawing.Point(4, 436)
+		Me._productionPrecedenceBox.Controls.Add(Me._pickPrecedenceButton)
+		Me._productionPrecedenceBox.Location = New System.Drawing.Point(4, 296)
 		Me._productionPrecedenceBox.Name = "_productionPrecedenceBox"
-		Me._productionPrecedenceBox.Size = New System.Drawing.Size(572, 52)
+		Me._productionPrecedenceBox.Size = New System.Drawing.Size(572, 146)
 		Me._productionPrecedenceBox.TabIndex = 16
 		Me._productionPrecedenceBox.TabStop = False
 		Me._productionPrecedenceBox.Text = "Production Precedence"
 		'
 		'_pickPrecedenceButton
 		'
-		Me._pickPrecedenceButton.Location = New System.Drawing.Point(540, 20)
+		Me._pickPrecedenceButton.Location = New System.Drawing.Point(540, 118)
 		Me._pickPrecedenceButton.Name = "_pickPrecedenceButton"
 		Me._pickPrecedenceButton.Size = New System.Drawing.Size(24, 20)
 		Me._pickPrecedenceButton.TabIndex = 1
@@ -569,37 +381,31 @@ Public Class ExportForm
 		'
 		'_productionPrecedenceList
 		'
-		Me._productionPrecedenceList.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
-		Me._productionPrecedenceList.Location = New System.Drawing.Point(8, 20)
+		Me._productionPrecedenceList.Location = New System.Drawing.Point(8, 17)
 		Me._productionPrecedenceList.Name = "_productionPrecedenceList"
-		Me._productionPrecedenceList.Size = New System.Drawing.Size(532, 21)
-		Me._productionPrecedenceList.TabIndex = 0
+		Me._productionPrecedenceList.Size = New System.Drawing.Size(528, 121)
+		Me._productionPrecedenceList.TabIndex = 2
 		'
 		'ExportForm
 		'
 		Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
-		Me.ClientSize = New System.Drawing.Size(580, 493)
+		Me.BackColor = System.Drawing.SystemColors.Control
+		Me.ClientSize = New System.Drawing.Size(580, 448)
 		Me.Controls.Add(Me._productionPrecedenceBox)
 		Me.Controls.Add(Me._loadFileCharacterInformation)
-		Me.Controls.Add(Me._subDirectoryInformationGroupBox)
-		Me.Controls.Add(Me._volumeInformationGroupBox)
 		Me.Controls.Add(Me.GroupBox23)
 		Me.Controls.Add(Me.GroupBox3)
 		Me.Controls.Add(Me._filtersBox)
 		Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
+		Me.MaximumSize = New System.Drawing.Size(588, 495)
 		Me.Menu = Me.MainMenu1
+		Me.MinimumSize = New System.Drawing.Size(588, 495)
 		Me.Name = "ExportForm"
 		Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
 		Me.Text = "Relativity Desktop Client | Export "
 		Me._filtersBox.ResumeLayout(False)
 		Me.GroupBox3.ResumeLayout(False)
 		Me.GroupBox23.ResumeLayout(False)
-		Me._volumeInformationGroupBox.ResumeLayout(False)
-		CType(Me._volumeMaxSize, System.ComponentModel.ISupportInitialize).EndInit()
-		CType(Me._volumeStartNumber, System.ComponentModel.ISupportInitialize).EndInit()
-		Me._subDirectoryInformationGroupBox.ResumeLayout(False)
-		CType(Me._subDirectoryMaxSize, System.ComponentModel.ISupportInitialize).EndInit()
-		CType(Me._subdirectoryStartNumber, System.ComponentModel.ISupportInitialize).EndInit()
 		Me._loadFileCharacterInformation.ResumeLayout(False)
 		Me._productionPrecedenceBox.ResumeLayout(False)
 		Me.ResumeLayout(False)
@@ -611,6 +417,8 @@ Public Class ExportForm
 	Private WithEvents _application As kCura.EDDS.WinForm.Application
 	Protected _exportFile As kCura.WinEDDS.ExportFile
 	Protected WithEvents _precedenceForm As kCura.EDDS.WinForm.ProductionPrecedenceForm
+	Protected WithEvents _volumeInfoForm As kCura.EDDS.WinForm.VolumeInfoForm
+	Private _volumeInfo As Exporters.VolumeInfo
 
 	Public Property Application() As kCura.EDDS.WinForm.Application
 		Get
@@ -722,19 +530,17 @@ Public Class ExportForm
 	End Sub
 
 	Private Function BuildVolumeInfo() As Exporters.VolumeInfo
-		Dim retval As New Exporters.VolumeInfo
-		retval.SubdirectoryMaxSize = CType(_subDirectoryMaxSize.Value, Int64)
-		retval.SubdirectoryImagePrefix = _subdirectoryImagePrefix.Text
-		retval.SubdirectoryNativePrefix = _subDirectoryNativePrefix.Text
-		retval.SubdirectoryStartNumber = CType(_subdirectoryStartNumber.Value, Int32)
-		retval.VolumeMaxSize = CType(_volumeMaxSize.Value, Int64)
-		retval.VolumePrefix = _volumePrefix.Text
-		retval.VolumeStartNumber = CType(_volumeStartNumber.Value, Int32)
-		If retval.SubdirectoryMaxSize = 0 OrElse retval.VolumeMaxSize = 0 OrElse retval.SubdirectoryStartNumber < 0 OrElse retval.VolumeStartNumber < 0 Then
-			Return Nothing
-		Else
-			Return retval
+		If _volumeInfo Is Nothing Then
+			_volumeInfo = New Exporters.VolumeInfo
+			_volumeInfo.SubdirectoryMaxSize = 500
+			_volumeInfo.SubdirectoryImagePrefix = "IMG"
+			_volumeInfo.SubdirectoryNativePrefix = "NATIVE"
+			_volumeInfo.SubdirectoryStartNumber = 1
+			_volumeInfo.VolumeMaxSize = 650
+			_volumeInfo.VolumePrefix = "VOL"
+			_volumeInfo.VolumeStartNumber = 1
 		End If
+		Return _volumeInfo
 	End Function
 
 	Private Sub ExportProduction_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles MyBase.Load
@@ -768,7 +574,9 @@ Public Class ExportForm
 				_filtersBox.Text = "Productions"
 				_exportImages.Text = "Export Produced Images"
 				Me.Text = "Relativity Desktop Client: Export Production"
-				Me.Size = New System.Drawing.Size(588, 480)
+				Me.Size = New System.Drawing.Size(588, 340)
+				Me.MaximumSize = New System.Drawing.Size(588, 340)
+				Me.MinimumSize = New System.Drawing.Size(588, 340)
 				_productionPrecedenceBox.Visible = False
 		End Select
 		_nativeFileFormat.SelectedIndex = 0
@@ -785,25 +593,13 @@ Public Class ExportForm
 	End Sub
 
 	Private Sub _exportImages_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _exportImages.CheckedChanged
-		Me.ToggleVolumeEnabled(Me.CreateVolume)
 		_useAbsolutePaths.Enabled = Me.CreateVolume
 		_imageFileFormat.Enabled = _exportImages.Checked
 	End Sub
 
 	Private Sub _exportNativeFiles_CheckedChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles _exportNativeFiles.CheckedChanged
-		Me.ToggleVolumeEnabled(Me.CreateVolume)
 		_useAbsolutePaths.Enabled = Me.CreateVolume
 		_nativeFileFormat.Enabled = _exportNativeFiles.Checked
-	End Sub
-
-	Private Sub ToggleVolumeEnabled(ByVal enabled As Boolean)
-		_volumeMaxSize.Enabled = enabled
-		_volumePrefix.Enabled = enabled
-		_volumeStartNumber.Enabled = enabled
-		_subDirectoryMaxSize.Enabled = enabled
-		_subdirectoryImagePrefix.Enabled = enabled
-		_subDirectoryNativePrefix.Enabled = enabled
-		_subdirectoryStartNumber.Enabled = enabled
 	End Sub
 
 	Private Sub ToggleLoadFileCharacterInformation(ByVal enabled As Boolean)
@@ -874,21 +670,6 @@ Public Class ExportForm
 		_productionPrecedenceList.Items.AddRange(precedenceList)
 	End Sub
 
-	Private Sub _volumePrefix_TextChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _volumePrefix.TextChanged
-		_volumePrefix.Text = Me.CleanPath(_volumePrefix.Text)
-		_volumePrefix.SelectionStart = _volumePrefix.Text.Length
-	End Sub
-
-	Private Sub _subdirectoryImagePrefix_TextChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _subdirectoryImagePrefix.TextChanged
-		_subdirectoryImagePrefix.Text = Me.CleanPath(_subdirectoryImagePrefix.Text)
-		_subdirectoryImagePrefix.SelectionStart = _subdirectoryImagePrefix.Text.Length
-	End Sub
-
-	Private Sub _subDirectoryNativePrefix_TextChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _subDirectoryNativePrefix.TextChanged
-		_subDirectoryNativePrefix.Text = Me.CleanPath(_subDirectoryNativePrefix.Text)
-		_subDirectoryNativePrefix.SelectionStart = _subDirectoryNativePrefix.Text.Length
-	End Sub
-
 	Private Function CleanPath(ByRef path As String) As String
 		Dim retval As String = path
 		retval = retval.Replace("\", "")
@@ -903,11 +684,20 @@ Public Class ExportForm
 		Return retval
 	End Function
 
-	Private Sub _subDirectoryMaxSize_ValueChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _subDirectoryMaxSize.ValueChanged, _subDirectoryMaxSize.TextChanged
+	Private Sub _subDirectoryMaxSize_ValueChanged(ByVal sender As System.Object, ByVal e As System.EventArgs)
 		RunMenu.Enabled = ReadyToRun()
 	End Sub
 
-	Private Sub _volumeMaxSize_ValueChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _volumeMaxSize.ValueChanged, _volumeMaxSize.TextChanged
+	Private Sub _volumeMaxSize_ValueChanged(ByVal sender As System.Object, ByVal e As System.EventArgs)
 		RunMenu.Enabled = ReadyToRun()
+	End Sub
+
+	Private Sub _settingsMenuVolumeInfoItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _settingsMenuVolumeInfoItem.Click
+		_volumeInfoForm = New kCura.EDDS.WinForm.VolumeInfoForm(Me.BuildVolumeInfo)
+		_volumeInfoForm.ShowDialog()
+	End Sub
+
+	Private Sub _volumeInfoForm_VolumeOK(ByVal e As kCura.WinEDDS.Exporters.VolumeInfo) Handles _volumeInfoForm.VolumeOK
+		_volumeInfo = e
 	End Sub
 End Class
