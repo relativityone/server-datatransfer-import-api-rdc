@@ -97,17 +97,37 @@ Namespace kCura.WinEDDS
 
 		Private Sub ProcessList(ByVal al As System.Collections.ArrayList, ByRef sectionHasErrors As Boolean)
 			If al.Count = 0 Then Exit Sub
-			If Not sectionHasErrors Then
-				If _productionArtifactID = 0 Then
-					Me.ProcessDocument(al)
+			Try
+				If Not sectionHasErrors Then
+					If _productionArtifactID = 0 Then
+						Me.ProcessDocument(al)
+					Else
+						Me.ProcessDocumentForProduction(al)
+					End If
 				Else
-					Me.ProcessDocumentForProduction(al)
-				End If
-			Else
 					Me.LogErrorInFile(al)
 				End If
-				al.Clear()
-				sectionHasErrors = False
+			Catch ex As System.Exception
+				Me.LogErrorInFile(al)
+				Dim txt As String = ex.ToString.ToLower
+				If txt.IndexOf("kcurafatalexception") <> -1 Then
+					txt = ex.Message.Replace("System.Web.Services.Protocols.SoapException: Server was unable to process request. ---> System.Exception: kCuraFatalException:", "")
+					Dim batesNumber As String = txt.Substring(0, txt.IndexOf(ChrW(10)))
+					Throw New System.Exception("Fatal Exception: the bates number '" & batesNumber & "' already exists in the system.  Upload halted.")
+				End If
+				If txt.IndexOf("ix_") <> -1 AndAlso txt.IndexOf("duplicate") <> -1 Then
+					If txt.IndexOf("eddsdbo.file") <> -1 Then
+						txt = "Error creating document - one or more image's bates numbers in the document to import already exist in the system."
+					Else
+						txt = "Error creating document - identifier field isn't being properly filled.  Please choose a different 'key' field."
+					End If
+				Else
+					txt = ex.Message
+				End If
+				RaiseStatusEvent(kCura.Windows.Process.EventType.Error, txt, 1)
+			End Try
+			al.Clear()
+			sectionHasErrors = False
 		End Sub
 
 		Public Overloads Overrides Function ReadFile(ByVal path As String) As Object
@@ -120,26 +140,16 @@ Namespace kCura.WinEDDS
 				Dim line As String()
 				Dim sectionHasErrors As Boolean = False
 				While Me.Continue
-					Try
-						line = Me.GetLine
-						If (line(Columns.MultiPageIndicator).ToUpper = "Y") Then
-							Me.ProcessList(al, sectionHasErrors)
-						End If
-						sectionHasErrors = sectionHasErrors Or Not Me.ProcessImageLine(line)
-						al.Add(line)
-						If Not Me.Continue Then
-							Me.ProcessList(al, sectionHasErrors)
-							Exit While
-						End If
-					Catch ex As System.Exception
-						Dim txt As String = ex.ToString.ToLower
-						If txt.IndexOf("ix_") <> -1 AndAlso txt.IndexOf("duplicate") <> -1 Then
-							txt = "Error creating document - identifier field isn't being properly filled.  Please choose a different 'key' field."
-						Else
-							txt = ex.Message
-						End If
-						RaiseStatusEvent(kCura.Windows.Process.EventType.Error, txt)
-					End Try
+					line = Me.GetLine
+					If (line(Columns.MultiPageIndicator).ToUpper = "Y") Then
+						Me.ProcessList(al, sectionHasErrors)
+					End If
+					sectionHasErrors = sectionHasErrors Or Not Me.ProcessImageLine(line)
+					al.Add(line)
+					If Not Me.Continue Then
+						Me.ProcessList(al, sectionHasErrors)
+						Exit While
+					End If
 				End While
 				If Not _errorLogWriter Is Nothing Then
 					_errorLogWriter.Close()
@@ -185,6 +195,8 @@ Namespace kCura.WinEDDS
 						Catch ex As System.Exception
 							If ex.ToString.IndexOf("FK_ProductionDocumentFile") <> -1 Then
 								Throw New ProductionOverwriteException(DirectCast(fileDTOs(0), kCura.EDDS.WebAPI.FileManagerBase.FileInfoBase).Identifier)
+							ElseIf ex.ToString.IndexOf("The DELETE statement conflicted with the REFERENCE constraint ""FK_Redaction_File""") <> -1 Then
+								Throw New RedactionOverwriteException(DirectCast(fileDTOs(0), kCura.EDDS.WebAPI.FileManagerBase.FileInfoBase).Identifier)
 							Else
 								Throw
 							End If
@@ -194,12 +206,12 @@ Namespace kCura.WinEDDS
 						End If
 						'Update Document
 					Else
-						Throw New OverwriteNoneException
+						Throw New OverwriteNoneException(documentIdentifier)
 					End If
 				Else
 					'Create Document
 					If _overwrite.ToLower = "strict" Then
-						Throw New OverwriteStrictException
+						Throw New OverwriteStrictException(documentIdentifier)
 					End If
 					GetImagesForDocument(al, fileDTOs, fullTextBuilder)
 					If _replaceFullText Then
@@ -226,13 +238,13 @@ Namespace kCura.WinEDDS
 				Dim imageFileGuids As String()
 
 				If currentDocumentArtifactID > 0 Then
-					If _overwrite.ToLower = "none" Then Throw New OverwriteNoneException
+					If _overwrite.ToLower = "none" Then Throw New OverwriteNoneException(documentIdentifier)
 					imageFileGuids = _fileManager.ReturnFileGuidsForOriginalImages(_fileUploader.CaseArtifactID, currentDocumentArtifactID)
 					If (al.Count <> imageFileGuids.Length) Then
 						Throw New ImageCountMismatchException
 					End If
 				Else
-					If _overwrite.ToLower = "strict" Then Throw New OverwriteStrictException
+					If _overwrite.ToLower = "strict" Then Throw New OverwriteStrictException(documentIdentifier)
 					Dim fullTextFileGuid As String = _fileUploader.UploadTextAsFile(String.Empty, _folderID, System.Guid.NewGuid.ToString)
 					currentDocumentArtifactID = CreateDocument(documentIdentifier, fullTextFileGuid, New kCura.EDDS.Types.FullTextBuilder)
 					Dim imageDTOs As New ArrayList
@@ -370,8 +382,8 @@ Namespace kCura.WinEDDS
 			RaiseEvent FatalErrorEvent("Error processing line: " + CurrentLineNumber.ToString, ex)
 		End Sub
 
-		Private Sub RaiseStatusEvent(ByVal et As kCura.Windows.Process.EventType, ByVal line As String)
-			RaiseEvent StatusMessage(New kCura.Windows.Process.StatusEventArgs(et, Me.CurrentLineNumber, _fileLineCount, line))
+		Private Sub RaiseStatusEvent(ByVal et As kCura.Windows.Process.EventType, ByVal line As String, Optional ByVal lineOffset As Int32 = 0)
+			RaiseEvent StatusMessage(New kCura.Windows.Process.StatusEventArgs(et, Me.CurrentLineNumber - lineOffset, _fileLineCount, line))
 		End Sub
 
 		Private Sub _processObserver_CancelImport(ByVal processID As System.Guid) Handles _processController.HaltProcessEvent
@@ -397,15 +409,15 @@ Namespace kCura.WinEDDS
 
 		Public Class OverwriteNoneException
 			Inherits kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
-			Public Sub New()
-				MyBase.New("Document exists - upload aborted.")
+			Public Sub New(ByVal docIdentifier As String)
+				MyBase.New(String.Format("Document '{0}' exists - upload aborted.", docIdentifier))
 			End Sub
 		End Class
 
 		Public Class OverwriteStrictException
 			Inherits kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
-			Public Sub New()
-				MyBase.New("Document does not exist - upload aborted.")
+			Public Sub New(ByVal docIdentifier As String)
+				MyBase.New(String.Format("Document '{0}' does not exist - upload aborted.", docIdentifier))
 			End Sub
 		End Class
 
@@ -426,7 +438,14 @@ Namespace kCura.WinEDDS
 		Public Class ProductionOverwriteException
 			Inherits kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
 			Public Sub New(ByVal identifier As String)
-				MyBase.New(String.Format("Document '{0}' belongs to one or more productions.  Upload aborted.", identifier))
+				MyBase.New(String.Format("Document '{0}' belongs to one or more productions.  Document skipped.", identifier))
+			End Sub
+		End Class
+
+		Public Class RedactionOverwriteException
+			Inherits kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
+			Public Sub New(ByVal identifier As String)
+				MyBase.New(String.Format("The one or more images for document '{0}' have redactions.  Document skipped.", identifier))
 			End Sub
 		End Class
 #End Region
