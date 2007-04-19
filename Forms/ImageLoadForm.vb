@@ -284,6 +284,7 @@ Namespace kCura.EDDS.WinForm
 				_productionDropdown.DataSource = ImageLoadFile.ProductionTable
 				_productionDropdown.DisplayMember = "Name"
 				_productionDropdown.ValueMember = "ArtifactID"
+				Me.Text = "Relativity Desktop Client | Import Production Load File"
 			End If
 			_overwriteDropdown.SelectedItem = ImageLoadFile.Overwrite
 			ReadyToRun()
