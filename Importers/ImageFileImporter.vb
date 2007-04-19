@@ -217,7 +217,8 @@ Namespace kCura.WinEDDS
 					If _replaceFullText Then
 						fullTextFileGuid = _fileUploader.UploadTextAsFile(fullTextBuilder.FullText, _folderID, System.Guid.NewGuid.ToString)
 					Else
-						fullTextFileGuid = _fileUploader.UploadTextAsFile(String.Empty, _folderID, System.Guid.NewGuid.ToString)
+						'fullTextFileGuid = _fileUploader.UploadTextAsFile(String.Empty, _folderID, System.Guid.NewGuid.ToString)
+						fullTextFileGuid = ""
 					End If
 					currentDocumentArtifactID = CreateDocument(documentIdentifier, fullTextFileGuid, fullTextBuilder)
 				End If
