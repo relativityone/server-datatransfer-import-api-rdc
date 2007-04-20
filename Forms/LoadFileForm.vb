@@ -754,6 +754,7 @@ Namespace kCura.EDDS.WinForm
 			_identifiersDropDown.Items.Clear()
 			_loadNativeFiles.Checked = LoadFile.LoadNativeFiles
 			_extractedTextValueContainsFileLocation.Checked = LoadFile.FullTextColumnContainsFileLocation
+			_overwriteDropdown.SelectedItem = LoadFile.OverwriteDestination
 			RefreshNativeFilePathFieldAndFileColumnHeaders()
 			If Not Me.EnsureConnection() Then Exit Sub
 			Dim caseFields As String() = _application.GetCaseFields(LoadFile.CaseInfo.ArtifactID)
@@ -849,6 +850,7 @@ Namespace kCura.EDDS.WinForm
 			If System.IO.File.Exists(LoadFile.FilePath) Then
 				PopulateLoadFileDelimiters()
 				columnHeaders = _application.GetColumnHeadersFromLoadFile(LoadFile, _firstLineContainsColumnNames.Checked)
+				System.Array.Sort(columnHeaders)
 				'_filePath.Text = LoadFile.FilePath\
 				_fileColumns.RightListBoxItems.AddRange(columnHeaders)
 				_fileColumnHeaders.Items.AddRange(columnHeaders)

@@ -473,6 +473,7 @@ Namespace kCura.EDDS.WinForm
 			loadFile.CaseInfo = caseInfo
 			loadFile.Credentials = Me.Credential
 			loadFile.CookieContainer = Me.CookieContainer
+			loadFile.OverwriteDestination = "None"
 			frm.LoadFile = loadFile
 			frm.Show()
 		End Sub
