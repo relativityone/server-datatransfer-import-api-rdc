@@ -45,7 +45,8 @@ Namespace kCura.EDDS.WinForm
     Friend WithEvents ImportOutlookDirectory As System.Windows.Forms.MenuItem
 		Friend WithEvents ImportSQLDatabase As System.Windows.Forms.MenuItem
     Friend WithEvents ImportEnronData As System.Windows.Forms.MenuItem
-    <System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
+		Friend WithEvents ImportProduction As System.Windows.Forms.MenuItem
+		<System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
 			Me.components = New System.ComponentModel.Container
 			Dim resources As System.Resources.ResourceManager = New System.Resources.ResourceManager(GetType(CaseFolderExplorer))
 			Me._treeView = New System.Windows.Forms.TreeView
@@ -63,6 +64,7 @@ Namespace kCura.EDDS.WinForm
 			Me.Export = New System.Windows.Forms.MenuItem
 			Me.ExportFolder = New System.Windows.Forms.MenuItem
 			Me.ExportFolderAndSubfolders = New System.Windows.Forms.MenuItem
+			Me.ImportProduction = New System.Windows.Forms.MenuItem
 			Me.SuspendLayout()
 			'
 			'_treeView
@@ -72,7 +74,7 @@ Namespace kCura.EDDS.WinForm
 			Me._treeView.ImageList = Me.ImageList
 			Me._treeView.Location = New System.Drawing.Point(0, 0)
 			Me._treeView.Name = "_treeView"
-			Me._treeView.Size = New System.Drawing.Size(150, 74)
+			Me._treeView.Size = New System.Drawing.Size(150, 36)
 			Me._treeView.Sorted = True
 			Me._treeView.TabIndex = 0
 			'
@@ -99,7 +101,7 @@ Namespace kCura.EDDS.WinForm
 			'Import
 			'
 			Me.Import.Index = 2
-			Me.Import.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.ImportImageFile, Me.ImportLoadFIle, Me.ImportFileDirectory, Me.ImportOutlookDirectory, Me.ImportSQLDatabase, Me.ImportEnronData})
+			Me.Import.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.ImportImageFile, Me.ImportLoadFIle, Me.ImportProduction, Me.ImportFileDirectory, Me.ImportOutlookDirectory, Me.ImportSQLDatabase, Me.ImportEnronData})
 			Me.Import.Text = "&Import"
 			'
 			'ImportImageFile
@@ -114,25 +116,25 @@ Namespace kCura.EDDS.WinForm
 			'
 			'ImportFileDirectory
 			'
-			Me.ImportFileDirectory.Index = 2
+			Me.ImportFileDirectory.Index = 3
 			Me.ImportFileDirectory.Text = "&File Directory..."
 			Me.ImportFileDirectory.Visible = False
 			'
 			'ImportOutlookDirectory
 			'
-			Me.ImportOutlookDirectory.Index = 3
+			Me.ImportOutlookDirectory.Index = 4
 			Me.ImportOutlookDirectory.Text = "&Outlook..."
 			Me.ImportOutlookDirectory.Visible = False
 			'
 			'ImportSQLDatabase
 			'
-			Me.ImportSQLDatabase.Index = 4
+			Me.ImportSQLDatabase.Index = 5
 			Me.ImportSQLDatabase.Text = "&SQL Database..."
 			Me.ImportSQLDatabase.Visible = False
 			'
 			'ImportEnronData
 			'
-			Me.ImportEnronData.Index = 5
+			Me.ImportEnronData.Index = 6
 			Me.ImportEnronData.Text = "&Enron Data..."
 			Me.ImportEnronData.Visible = False
 			'
@@ -145,18 +147,23 @@ Namespace kCura.EDDS.WinForm
 			'ExportFolder
 			'
 			Me.ExportFolder.Index = 0
-			Me.ExportFolder.Text = "&Natives..."
+			Me.ExportFolder.Text = "&Folders..."
 			'
 			'ExportFolderAndSubfolders
 			'
 			Me.ExportFolderAndSubfolders.Index = 1
-			Me.ExportFolderAndSubfolders.Text = "&Natives And Subfolders..."
+			Me.ExportFolderAndSubfolders.Text = "&Folders And Subfolders..."
+			'
+			'ImportProduction
+			'
+			Me.ImportProduction.Index = 2
+			Me.ImportProduction.Text = "Production..."
 			'
 			'CaseFolderExplorer
 			'
 			Me.Controls.Add(Me._treeView)
 			Me.Name = "CaseFolderExplorer"
-			Me.Size = New System.Drawing.Size(150, 74)
+			Me.Size = New System.Drawing.Size(150, 36)
 			Me.ResumeLayout(False)
 
 		End Sub
@@ -306,5 +313,9 @@ Namespace kCura.EDDS.WinForm
     Private Sub ImportEnronData_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ImportEnronData.Click
       _application.NewEnronImport(CType(_contextMenuTreeNode.Tag, FolderInfo).ArtifactID, _application.SelectedCaseInfo)
     End Sub
-  End Class
+
+		Private Sub ImportProduction_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ImportProduction.Click
+			_application.NewProductionFile(CType(_contextMenuTreeNode.Tag, FolderInfo).ArtifactID, _application.SelectedCaseInfo)
+		End Sub
+	End Class
 End Namespace

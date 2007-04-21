@@ -307,7 +307,7 @@ Namespace kCura.EDDS.WinForm
 				Exit Sub
 			End If
 			retval.SubdirectoryMaxSize = CType(_subDirectoryMaxSize.Value, Int64)
-			If retval.SubdirectoryMaxSize < 1 Then
+			If retval.SubdirectoryMaxSize < 1 OrElse _subDirectoryMaxSize.Text.Trim = "" Then
 				MsgBox("Subdirectory Max Size must be greater than zero.", MsgBoxStyle.Exclamation)
 				Exit Sub
 			End If
@@ -318,12 +318,12 @@ Namespace kCura.EDDS.WinForm
 				Exit Sub
 			End If
 			retval.SubdirectoryStartNumber = CType(_subdirectoryStartNumber.Value, Int32)
-			If retval.SubdirectoryStartNumber < 1 Then
+			If retval.SubdirectoryStartNumber < 1 OrElse _subdirectoryStartNumber.Text.Trim = "" Then
 				MsgBox("Subdirectory Start Number must be greater than zero.", MsgBoxStyle.Exclamation)
 				Exit Sub
 			End If
 			retval.VolumeMaxSize = CType(_volumeMaxSize.Value, Int64)
-			If retval.VolumeMaxSize < 1 Then
+			If retval.VolumeMaxSize < 1 OrElse _volumeMaxSize.Text.Trim = "" Then
 				MsgBox("Volume Max Size must be greater than zero.", MsgBoxStyle.Exclamation)
 				Exit Sub
 			End If
@@ -378,5 +378,22 @@ Namespace kCura.EDDS.WinForm
 			Me.New()
 			_volumeInfo = info
 		End Sub
+
+		Private Sub _volumeMaxSize_LostFocus(ByVal sender As Object, ByVal e As System.EventArgs) Handles _volumeMaxSize.LostFocus
+			If _volumeMaxSize.Text.Trim = "" Then _volumeMaxSize.Text = "0"
+		End Sub
+
+		Private Sub _volumeStartNumber_LostFocus(ByVal sender As Object, ByVal e As System.EventArgs) Handles _volumeStartNumber.LostFocus
+			If _volumeStartNumber.Text.Trim = "" Then _volumeStartNumber.Text = "0"
+		End Sub
+
+		Private Sub _subdirectoryMaxSize_LostFocus(ByVal sender As Object, ByVal e As System.EventArgs) Handles _subDirectoryMaxSize.LostFocus
+			If _subDirectoryMaxSize.Text.Trim = "" Then _subDirectoryMaxSize.Text = "0"
+		End Sub
+
+		Private Sub _subdirectoryStartNumber_LostFocus(ByVal sender As Object, ByVal e As System.EventArgs) Handles _subdirectoryStartNumber.LostFocus
+			If _subdirectoryStartNumber.Text.Trim = "" Then _subdirectoryStartNumber.Text = "0"
+		End Sub
+
 	End Class
 End Namespace

@@ -82,7 +82,7 @@ Namespace kCura.EDDS.WinForm
 			Me.Label1.Name = "Label1"
 			Me.Label1.Size = New System.Drawing.Size(144, 16)
 			Me.Label1.TabIndex = 3
-			Me.Label1.Text = "Do Not Want"
+			Me.Label1.Text = "Available Productions"
 			'
 			'Label2
 			'
@@ -90,7 +90,7 @@ Namespace kCura.EDDS.WinForm
 			Me.Label2.Name = "Label2"
 			Me.Label2.Size = New System.Drawing.Size(144, 16)
 			Me.Label2.TabIndex = 4
-			Me.Label2.Text = "Do Want"
+			Me.Label2.Text = "Selected Productions"
 			'
 			'_originalImages
 			'

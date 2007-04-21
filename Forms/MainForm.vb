@@ -71,6 +71,7 @@ Namespace kCura.EDDS.WinForm
 			Me.ImportMenu = New System.Windows.Forms.MenuItem
 			Me.ToolsImportImageFileMenu = New System.Windows.Forms.MenuItem
 			Me.ToolsImportLoadFileMenu = New System.Windows.Forms.MenuItem
+			Me.ToolsImportProductionFileMenu = New System.Windows.Forms.MenuItem
 			Me.ToolsImportFileDirectoryMenu = New System.Windows.Forms.MenuItem
 			Me.ToolsImportOutlookMenu = New System.Windows.Forms.MenuItem
 			Me.ToolsImportSQLDatabaseMenu = New System.Windows.Forms.MenuItem
@@ -88,7 +89,6 @@ Namespace kCura.EDDS.WinForm
 			Me.LoggedInUserPanel = New System.Windows.Forms.StatusBarPanel
 			Me._caseFolderExplorer = New kCura.EDDS.WinForm.CaseFolderExplorer
 			Me.EnhancedMenuProvider = New kCura.Windows.Forms.EnhancedMenuProvider(Me.components)
-			Me.ToolsImportProductionFileMenu = New System.Windows.Forms.MenuItem
 			CType(Me.AppStatusPanel, System.ComponentModel.ISupportInitialize).BeginInit()
 			CType(Me.LoggedInUserPanel, System.ComponentModel.ISupportInitialize).BeginInit()
 			Me.SuspendLayout()
@@ -167,6 +167,14 @@ Namespace kCura.EDDS.WinForm
 			Me.ToolsImportLoadFileMenu.OwnerDraw = True
 			Me.ToolsImportLoadFileMenu.Shortcut = System.Windows.Forms.Shortcut.CtrlL
 			Me.ToolsImportLoadFileMenu.Text = "&Load File..."
+			'
+			'ToolsImportProductionFileMenu
+			'
+			Me.EnhancedMenuProvider.SetImageIndex(Me.ToolsImportProductionFileMenu, -1)
+			Me.ToolsImportProductionFileMenu.Index = 2
+			Me.ToolsImportProductionFileMenu.OwnerDraw = True
+			Me.ToolsImportProductionFileMenu.Shortcut = System.Windows.Forms.Shortcut.CtrlP
+			Me.ToolsImportProductionFileMenu.Text = "Production File..."
 			'
 			'ToolsImportFileDirectoryMenu
 			'
@@ -284,12 +292,6 @@ Namespace kCura.EDDS.WinForm
 			Me._caseFolderExplorer.Name = "_caseFolderExplorer"
 			Me._caseFolderExplorer.Size = New System.Drawing.Size(332, 515)
 			Me._caseFolderExplorer.TabIndex = 6
-			'
-			'ToolsImportProductionFileMenu
-			'
-			Me.EnhancedMenuProvider.SetImageIndex(Me.ToolsImportProductionFileMenu, -1)
-			Me.ToolsImportProductionFileMenu.Index = 2
-			Me.ToolsImportProductionFileMenu.Text = "Production File..."
 			'
 			'MainForm
 			'

@@ -147,18 +147,19 @@ Namespace kCura.EDDS.WinForm
 			'MenuItem1
 			'
 			Me.MenuItem1.Index = 0
-			Me.MenuItem1.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.ImportFileMenu, Me._importMenuCheckErrorsItem, Me.MenuItem4, Me._importMenuSaveSettingsItem, Me._importMenuLoadSettingsItem})
+			Me.MenuItem1.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me._importMenuCheckErrorsItem, Me.ImportFileMenu, Me.MenuItem4, Me._importMenuSaveSettingsItem, Me._importMenuLoadSettingsItem})
 			Me.MenuItem1.Text = "&Import"
 			'
 			'ImportFileMenu
 			'
-			Me.ImportFileMenu.Index = 0
+			Me.ImportFileMenu.Index = 1
 			Me.ImportFileMenu.Shortcut = System.Windows.Forms.Shortcut.F5
 			Me.ImportFileMenu.Text = "&Import File..."
 			'
 			'_importMenuCheckErrorsItem
 			'
-			Me._importMenuCheckErrorsItem.Index = 1
+			Me._importMenuCheckErrorsItem.Index = 0
+			Me._importMenuCheckErrorsItem.Shortcut = System.Windows.Forms.Shortcut.F6
 			Me._importMenuCheckErrorsItem.Text = "Check Errors..."
 			'
 			'MenuItem4
