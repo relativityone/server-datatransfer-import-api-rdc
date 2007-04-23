@@ -246,7 +246,7 @@ Namespace kCura.WinEDDS
 					End If
 				Else
 					If _overwrite.ToLower = "strict" Then Throw New OverwriteStrictException(documentIdentifier)
-					Dim fullTextFileGuid As String = _fileUploader.UploadTextAsFile(String.Empty, _folderID, System.Guid.NewGuid.ToString)
+					Dim fullTextFileGuid As String = ""		 '_fileUploader.UploadTextAsFile(String.Empty, _folderID, System.Guid.NewGuid.ToString)
 					currentDocumentArtifactID = CreateDocument(documentIdentifier, fullTextFileGuid, New kCura.EDDS.Types.FullTextBuilder)
 					Dim imageDTOs As New ArrayList
 					GetImagesForDocument(al, imageDTOs, New kCura.EDDS.Types.FullTextBuilder)
