@@ -95,8 +95,8 @@ Public Class ExportForm
 		Me.Label2 = New System.Windows.Forms.Label
 		Me._recordDelimiter = New System.Windows.Forms.ComboBox
 		Me._productionPrecedenceBox = New System.Windows.Forms.GroupBox
-		Me._pickPrecedenceButton = New System.Windows.Forms.Button
 		Me._productionPrecedenceList = New System.Windows.Forms.ListBox
+		Me._pickPrecedenceButton = New System.Windows.Forms.Button
 		Me._filtersBox.SuspendLayout()
 		Me.GroupBox3.SuspendLayout()
 		Me.GroupBox23.SuspendLayout()
@@ -229,13 +229,13 @@ Public Class ExportForm
 		Me.GroupBox23.Size = New System.Drawing.Size(281, 120)
 		Me.GroupBox23.TabIndex = 12
 		Me.GroupBox23.TabStop = False
-		Me.GroupBox23.Text = "Export Load File Format"
+		Me.GroupBox23.Text = "Export File Formats"
 		'
 		'Label12
 		'
 		Me.Label12.Location = New System.Drawing.Point(8, 72)
 		Me.Label12.Name = "Label12"
-		Me.Label12.Size = New System.Drawing.Size(80, 16)
+		Me.Label12.Size = New System.Drawing.Size(144, 16)
 		Me.Label12.TabIndex = 12
 		Me.Label12.Text = "Image Format"
 		Me.Label12.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
@@ -253,9 +253,9 @@ Public Class ExportForm
 		'
 		Me.Label1.Location = New System.Drawing.Point(8, 24)
 		Me.Label1.Name = "Label1"
-		Me.Label1.Size = New System.Drawing.Size(80, 16)
+		Me.Label1.Size = New System.Drawing.Size(104, 16)
 		Me.Label1.TabIndex = 10
-		Me.Label1.Text = "Native Format"
+		Me.Label1.Text = "Load File Format"
 		Me.Label1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
 		'
 		'_nativeFileFormat
@@ -371,6 +371,13 @@ Public Class ExportForm
 		Me._productionPrecedenceBox.TabStop = False
 		Me._productionPrecedenceBox.Text = "Production Precedence"
 		'
+		'_productionPrecedenceList
+		'
+		Me._productionPrecedenceList.Location = New System.Drawing.Point(8, 17)
+		Me._productionPrecedenceList.Name = "_productionPrecedenceList"
+		Me._productionPrecedenceList.Size = New System.Drawing.Size(528, 121)
+		Me._productionPrecedenceList.TabIndex = 2
+		'
 		'_pickPrecedenceButton
 		'
 		Me._pickPrecedenceButton.Location = New System.Drawing.Point(540, 118)
@@ -379,18 +386,11 @@ Public Class ExportForm
 		Me._pickPrecedenceButton.TabIndex = 1
 		Me._pickPrecedenceButton.Text = "..."
 		'
-		'_productionPrecedenceList
-		'
-		Me._productionPrecedenceList.Location = New System.Drawing.Point(8, 17)
-		Me._productionPrecedenceList.Name = "_productionPrecedenceList"
-		Me._productionPrecedenceList.Size = New System.Drawing.Size(528, 121)
-		Me._productionPrecedenceList.TabIndex = 2
-		'
 		'ExportForm
 		'
 		Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
 		Me.BackColor = System.Drawing.SystemColors.Control
-		Me.ClientSize = New System.Drawing.Size(580, 448)
+		Me.ClientSize = New System.Drawing.Size(580, 468)
 		Me.Controls.Add(Me._productionPrecedenceBox)
 		Me.Controls.Add(Me._loadFileCharacterInformation)
 		Me.Controls.Add(Me.GroupBox23)
@@ -593,13 +593,13 @@ Public Class ExportForm
 	End Sub
 
 	Private Sub _exportImages_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _exportImages.CheckedChanged
-		_useAbsolutePaths.Enabled = Me.CreateVolume
+		_useAbsolutePaths.Enabled = True
 		_imageFileFormat.Enabled = _exportImages.Checked
 	End Sub
 
 	Private Sub _exportNativeFiles_CheckedChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles _exportNativeFiles.CheckedChanged
-		_useAbsolutePaths.Enabled = Me.CreateVolume
-		_nativeFileFormat.Enabled = _exportNativeFiles.Checked
+		_useAbsolutePaths.Enabled = True
+		_nativeFileFormat.Enabled = True
 	End Sub
 
 	Private Sub ToggleLoadFileCharacterInformation(ByVal enabled As Boolean)
