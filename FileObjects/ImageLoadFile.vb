@@ -7,6 +7,7 @@ Namespace kCura.WinEDDS
 		Public ControlKeyField As String
 		Public ReplaceFullText As Boolean
 		Public ForProduction As Boolean
+		Public AutoNumberImages As Boolean
 		Public ProductionTable As System.Data.DataTable
 		Public ProductionArtifactID As Int32
 		<NonSerialized()> Public Credential As Net.NetworkCredential

@@ -25,6 +25,7 @@ Namespace kCura.WinEDDS
 		Private _nextLine As String()
 		Private _errorLogFileName As String
 		Private _errorLogWriter As System.IO.StreamWriter
+		Private _autoNumberImages As Boolean
 
 		Private WithEvents _processController As kCura.Windows.Process.Controller
 
@@ -75,6 +76,7 @@ Namespace kCura.WinEDDS
 			_selectedIdentifierField = args.ControlKeyField
 			_processController = controller
 			_continue = True
+			_autoNumberImages = args.AutoNumberImages
 		End Sub
 
 #End Region
@@ -113,9 +115,8 @@ Namespace kCura.WinEDDS
 				If txt.IndexOf("kcurafatalexception") <> -1 Then
 					txt = ex.Message.Replace("System.Web.Services.Protocols.SoapException: Server was unable to process request. ---> System.Exception: kCuraFatalException:", "")
 					Dim batesNumber As String = txt.Substring(0, txt.IndexOf(ChrW(10)))
-					Throw New System.Exception("Fatal Exception: the bates number '" & batesNumber & "' already exists in the system.  Upload halted.")
-				End If
-				If txt.IndexOf("ix_") <> -1 AndAlso txt.IndexOf("duplicate") <> -1 Then
+					txt = "Error: the bates number '" & batesNumber & "' already exists in the system."
+				ElseIf txt.IndexOf("ix_") <> -1 AndAlso txt.IndexOf("duplicate") <> -1 Then
 					If txt.IndexOf("eddsdbo.file") <> -1 Then
 						txt = "Error creating document - one or more image's bates numbers in the document to import already exist in the system."
 					Else
@@ -225,7 +226,7 @@ Namespace kCura.WinEDDS
 				_fileManager.CreateImages(_fileUploader.CaseArtifactID, DirectCast(fileDTOs.ToArray(GetType(kCura.EDDS.WebAPI.FileManagerBase.FileInfoBase)), kCura.EDDS.WebAPI.FileManagerBase.FileInfoBase()), currentDocumentArtifactID)
 				Return retval
 			Catch ex As System.Exception
-				Me.LogErrorInFile(al)
+				'Me.LogErrorInFile(al)
 				Throw
 			End Try
 		End Function
@@ -329,6 +330,28 @@ Namespace kCura.WinEDDS
 			For Each valueArray In lines
 				GetImageForDocument(GetFileLocation(valueArray), valueArray(Columns.BatesNumber), fileDTOs, fullTextBuilder)
 			Next
+			If _autoNumberImages Then
+				Dim file As kCura.EDDS.WebAPI.FileManagerBase.FileInfoBase
+				Dim last As String
+				If fileDTOs.Count > 1 Then
+					Dim allSame As Boolean = True
+					last = DirectCast(fileDTOs(0), kCura.EDDS.WebAPI.FileManagerBase.FileInfoBase).Identifier
+					Dim i As Int32
+					For i = 0 To fileDTOs.Count - 1
+						file = DirectCast(fileDTOs(i), kCura.EDDS.WebAPI.FileManagerBase.FileInfoBase)
+						allSame = allSame AndAlso last = file.Identifier
+						If Not allSame Then Exit For
+						last = file.Identifier
+					Next
+					If allSame Then
+						Dim baseIdentifier As String = DirectCast(fileDTOs(0), kCura.EDDS.WebAPI.FileManagerBase.FileInfoBase).Identifier
+						For i = 1 To fileDTOs.Count - 1
+							file = DirectCast(fileDTOs(i), kCura.EDDS.WebAPI.FileManagerBase.FileInfoBase)
+							file.Identifier = baseIdentifier & "_" & i.ToString.PadLeft(fileDTOs.Count.ToString.Length, "0"c)
+						Next
+					End If
+				End If
+			End If
 		End Function
 
 		Private Function GetImagesForProductionDocument(ByVal lines As ArrayList, ByVal fileDTOs As ArrayList) As String()
