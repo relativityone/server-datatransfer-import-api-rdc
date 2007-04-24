@@ -51,6 +51,8 @@ Namespace kCura.EDDS.WinForm
 		Friend WithEvents ExtractedTextGroupBox As System.Windows.Forms.GroupBox
 		Friend WithEvents GroupBox1 As System.Windows.Forms.GroupBox
 		Friend WithEvents _productionDropdown As System.Windows.Forms.ComboBox
+		Friend WithEvents MenuItem2 As System.Windows.Forms.MenuItem
+		Friend WithEvents _toolsMenuSettingsItem As System.Windows.Forms.MenuItem
 		<System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
 			Dim resources As System.Resources.ResourceManager = New System.Resources.ResourceManager(GetType(ImageLoad))
 			Me.GroupBox3 = New System.Windows.Forms.GroupBox
@@ -62,8 +64,8 @@ Namespace kCura.EDDS.WinForm
 			Me._replaceFullText = New System.Windows.Forms.CheckBox
 			Me.MainMenu = New System.Windows.Forms.MainMenu
 			Me.MenuItem1 = New System.Windows.Forms.MenuItem
-			Me.ImportFileMenu = New System.Windows.Forms.MenuItem
 			Me._importMenuCheckErrorsItem = New System.Windows.Forms.MenuItem
+			Me.ImportFileMenu = New System.Windows.Forms.MenuItem
 			Me.MenuItem4 = New System.Windows.Forms.MenuItem
 			Me._importMenuSaveSettingsItem = New System.Windows.Forms.MenuItem
 			Me._importMenuLoadSettingsItem = New System.Windows.Forms.MenuItem
@@ -72,6 +74,8 @@ Namespace kCura.EDDS.WinForm
 			Me.ExtractedTextGroupBox = New System.Windows.Forms.GroupBox
 			Me.GroupBox1 = New System.Windows.Forms.GroupBox
 			Me._productionDropdown = New System.Windows.Forms.ComboBox
+			Me.MenuItem2 = New System.Windows.Forms.MenuItem
+			Me._toolsMenuSettingsItem = New System.Windows.Forms.MenuItem
 			Me.GroupBox3.SuspendLayout()
 			Me.GroupBox233.SuspendLayout()
 			Me.ExtractedTextGroupBox.SuspendLayout()
@@ -142,7 +146,7 @@ Namespace kCura.EDDS.WinForm
 			'
 			'MainMenu
 			'
-			Me.MainMenu.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.MenuItem1})
+			Me.MainMenu.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.MenuItem1, Me.MenuItem2})
 			'
 			'MenuItem1
 			'
@@ -150,17 +154,17 @@ Namespace kCura.EDDS.WinForm
 			Me.MenuItem1.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me._importMenuCheckErrorsItem, Me.ImportFileMenu, Me.MenuItem4, Me._importMenuSaveSettingsItem, Me._importMenuLoadSettingsItem})
 			Me.MenuItem1.Text = "&Import"
 			'
-			'ImportFileMenu
-			'
-			Me.ImportFileMenu.Index = 1
-			Me.ImportFileMenu.Shortcut = System.Windows.Forms.Shortcut.F5
-			Me.ImportFileMenu.Text = "&Import File..."
-			'
 			'_importMenuCheckErrorsItem
 			'
 			Me._importMenuCheckErrorsItem.Index = 0
 			Me._importMenuCheckErrorsItem.Shortcut = System.Windows.Forms.Shortcut.F6
 			Me._importMenuCheckErrorsItem.Text = "Check Errors..."
+			'
+			'ImportFileMenu
+			'
+			Me.ImportFileMenu.Index = 1
+			Me.ImportFileMenu.Shortcut = System.Windows.Forms.Shortcut.F5
+			Me.ImportFileMenu.Text = "&Import File..."
 			'
 			'MenuItem4
 			'
@@ -216,6 +220,17 @@ Namespace kCura.EDDS.WinForm
 			Me._productionDropdown.Size = New System.Drawing.Size(332, 21)
 			Me._productionDropdown.TabIndex = 29
 			'
+			'MenuItem2
+			'
+			Me.MenuItem2.Index = 1
+			Me.MenuItem2.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me._toolsMenuSettingsItem})
+			Me.MenuItem2.Text = "Tools"
+			'
+			'_toolsMenuSettingsItem
+			'
+			Me._toolsMenuSettingsItem.Index = 0
+			Me._toolsMenuSettingsItem.Text = "Settings"
+			'
 			'ImageLoad
 			'
 			Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
@@ -243,6 +258,9 @@ Namespace kCura.EDDS.WinForm
 		Private WithEvents _application As kCura.EDDS.WinForm.Application
 
 		Private _imageLoadFile As kCura.WinEDDS.ImageLoadFile
+		Private WithEvents _settingsForm As kCura.EDDS.WinForm.ImageImportSettingsForm
+
+
 
 		Friend Property ImageLoadFile() As kCura.WinEDDS.ImageLoadFile
 			Get
@@ -399,6 +417,17 @@ Namespace kCura.EDDS.WinForm
 
 		Private Sub _productionDropdown_SelectedIndexChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles _productionDropdown.SelectedIndexChanged
 			ReadyToRun()
+		End Sub
+
+		Private Sub _toolsMenuSettingsItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _toolsMenuSettingsItem.Click
+			_settingsForm = New kCura.EDDS.WinForm.ImageImportSettingsForm
+			_settingsForm._supportImageAutoNumbering.Checked = Me.ImageLoadFile.AutoNumberImages
+			_settingsForm.ShowDialog()
+		End Sub
+
+
+		Private Sub _settingsForm_ImportSettingsFormOK(ByVal args As Boolean) Handles _settingsForm.ImportSettingsFormOK
+			Me.ImageLoadFile.AutoNumberImages = args
 		End Sub
 	End Class
 End Namespace

@@ -122,6 +122,8 @@ Namespace kCura.EDDS.WinForm
 			Me.Label2 = New System.Windows.Forms.Label
 			Me._recordDelimiter = New System.Windows.Forms.ComboBox
 			Me._fieldMapTab = New System.Windows.Forms.TabPage
+			Me.GroupBox7 = New System.Windows.Forms.GroupBox
+			Me._extractedTextValueContainsFileLocation = New System.Windows.Forms.CheckBox
 			Me.GroupBox6 = New System.Windows.Forms.GroupBox
 			Me._overwriteDropdown = New System.Windows.Forms.ComboBox
 			Me.GroupBox5 = New System.Windows.Forms.GroupBox
@@ -140,8 +142,6 @@ Namespace kCura.EDDS.WinForm
 			Me._fileColumns = New kCura.Windows.Forms.TwoListBox
 			Me._fieldMap = New kCura.Windows.Forms.TwoListBox
 			Me.HelpProvider1 = New System.Windows.Forms.HelpProvider
-			Me.GroupBox7 = New System.Windows.Forms.GroupBox
-			Me._extractedTextValueContainsFileLocation = New System.Windows.Forms.CheckBox
 			Me.GroupBox1.SuspendLayout()
 			Me.TabControl1.SuspendLayout()
 			Me._loadFileTab.SuspendLayout()
@@ -149,11 +149,11 @@ Namespace kCura.EDDS.WinForm
 			Me.GroupBox2.SuspendLayout()
 			Me.GroupBox23.SuspendLayout()
 			Me._fieldMapTab.SuspendLayout()
+			Me.GroupBox7.SuspendLayout()
 			Me.GroupBox6.SuspendLayout()
 			Me.GroupBox5.SuspendLayout()
 			Me.GroupBox4.SuspendLayout()
 			Me.GroupBox3.SuspendLayout()
-			Me.GroupBox7.SuspendLayout()
 			Me.SuspendLayout()
 			'
 			'OpenFileDialog
@@ -235,12 +235,13 @@ Namespace kCura.EDDS.WinForm
 			'PreviewMenuFile
 			'
 			Me.PreviewMenuFile.Index = 0
-			Me.PreviewMenuFile.Shortcut = System.Windows.Forms.Shortcut.F6
+			Me.PreviewMenuFile.Shortcut = System.Windows.Forms.Shortcut.F7
 			Me.PreviewMenuFile.Text = "&Preview File..."
 			'
 			'_importMenuPreviewErrorsItem
 			'
 			Me._importMenuPreviewErrorsItem.Index = 1
+			Me._importMenuPreviewErrorsItem.Shortcut = System.Windows.Forms.Shortcut.F6
 			Me._importMenuPreviewErrorsItem.Text = "Preview Errors..."
 			'
 			'ImportFileMenu
@@ -439,6 +440,24 @@ Namespace kCura.EDDS.WinForm
 			Me._fieldMapTab.TabIndex = 1
 			Me._fieldMapTab.Text = "Field Map"
 			'
+			'GroupBox7
+			'
+			Me.GroupBox7.Controls.Add(Me._extractedTextValueContainsFileLocation)
+			Me.GroupBox7.Location = New System.Drawing.Point(552, 72)
+			Me.GroupBox7.Name = "GroupBox7"
+			Me.GroupBox7.Size = New System.Drawing.Size(172, 56)
+			Me.GroupBox7.TabIndex = 32
+			Me.GroupBox7.TabStop = False
+			Me.GroupBox7.Text = "Extracted Text"
+			'
+			'_extractedTextValueContainsFileLocation
+			'
+			Me._extractedTextValueContainsFileLocation.Location = New System.Drawing.Point(8, 24)
+			Me._extractedTextValueContainsFileLocation.Name = "_extractedTextValueContainsFileLocation"
+			Me._extractedTextValueContainsFileLocation.Size = New System.Drawing.Size(156, 21)
+			Me._extractedTextValueContainsFileLocation.TabIndex = 0
+			Me._extractedTextValueContainsFileLocation.Text = "Cell contains file location"
+			'
 			'GroupBox6
 			'
 			Me.GroupBox6.Controls.Add(Me._overwriteDropdown)
@@ -602,24 +621,6 @@ Namespace kCura.EDDS.WinForm
 			Me._fieldMap.Size = New System.Drawing.Size(360, 276)
 			Me._fieldMap.TabIndex = 1
 			'
-			'GroupBox7
-			'
-			Me.GroupBox7.Controls.Add(Me._extractedTextValueContainsFileLocation)
-			Me.GroupBox7.Location = New System.Drawing.Point(552, 72)
-			Me.GroupBox7.Name = "GroupBox7"
-			Me.GroupBox7.Size = New System.Drawing.Size(172, 56)
-			Me.GroupBox7.TabIndex = 32
-			Me.GroupBox7.TabStop = False
-			Me.GroupBox7.Text = "Extracted Text"
-			'
-			'_extractedTextValueContainsFileLocation
-			'
-			Me._extractedTextValueContainsFileLocation.Location = New System.Drawing.Point(8, 24)
-			Me._extractedTextValueContainsFileLocation.Name = "_extractedTextValueContainsFileLocation"
-			Me._extractedTextValueContainsFileLocation.Size = New System.Drawing.Size(156, 21)
-			Me._extractedTextValueContainsFileLocation.TabIndex = 0
-			Me._extractedTextValueContainsFileLocation.Text = "Cell contains file location"
-			'
 			'LoadFileForm
 			'
 			Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
@@ -640,11 +641,11 @@ Namespace kCura.EDDS.WinForm
 			Me.GroupBox2.ResumeLayout(False)
 			Me.GroupBox23.ResumeLayout(False)
 			Me._fieldMapTab.ResumeLayout(False)
+			Me.GroupBox7.ResumeLayout(False)
 			Me.GroupBox6.ResumeLayout(False)
 			Me.GroupBox5.ResumeLayout(False)
 			Me.GroupBox4.ResumeLayout(False)
 			Me.GroupBox3.ResumeLayout(False)
-			Me.GroupBox7.ResumeLayout(False)
 			Me.ResumeLayout(False)
 
 		End Sub

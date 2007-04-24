@@ -247,6 +247,16 @@
                     BuildAction = "EmbeddedResource"
                 />
                 <File
+                    RelPath = "Forms\ImageImportSettingsForm.vb"
+                    SubType = "Form"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Forms\ImageImportSettingsForm.resx"
+                    DependentUpon = "ImageImportSettingsForm.vb"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
                     RelPath = "Forms\ImageLoadForm.vb"
                     SubType = "Form"
                     BuildAction = "Compile"
