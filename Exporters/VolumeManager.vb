@@ -92,7 +92,11 @@ Namespace kCura.WinEDDS
 			_currentNativeSubdirectorySize = 0
 			_downloadManager = downloadHandler
 			_parent = parent
-			_nativeFileWriter = New System.IO.StreamWriter(Me.Settings.FolderPath & "\" & "export." & Me.Settings.LoadFileExtension, False, System.Text.Encoding.Default)
+			Dim loadFilePath As String = Me.Settings.FolderPath & "\" & "export." & Me.Settings.LoadFileExtension
+			If Not Me.Settings.Overwrite AndAlso System.IO.File.Exists(loadFilePath) Then
+				Throw New System.Exception(String.Format("Overwrite not selected and file '{0}' exists.", loadFilePath))
+			End If
+			_nativeFileWriter = New System.IO.StreamWriter(loadFilePath, False, System.Text.Encoding.Default)
 			Dim logFileExension As String = ""
 			Select Case Me.Settings.LogFileFormat
 				Case LoadFileType.FileFormat.Concordance
@@ -103,14 +107,24 @@ Namespace kCura.WinEDDS
 					logFileExension = "_FULLTEXT_.lfp"
 				Case Else
 			End Select
-			_imageFileWriter = New System.IO.StreamWriter(Me.Settings.FolderPath & "\" & "export" & logFileExension, False, System.Text.Encoding.Default)
+			Dim imageFilePath As String = Me.Settings.FolderPath & "\" & "export" & logFileExension
+			If Me.Settings.ExportImages Then
+				If Not Me.Settings.Overwrite AndAlso System.IO.File.Exists(imageFilePath) Then
+					Throw New System.Exception(String.Format("Overwrite not selected and file '{0}' exists.", imageFilePath))
+				End If
+				_imageFileWriter = New System.IO.StreamWriter(imageFilePath, False, System.Text.Encoding.Default)
+			End If
 		End Sub
 
 		Public Sub Finish()
-			_nativeFileWriter.Flush()
-			_nativeFileWriter.Close()
-			_imageFileWriter.Flush()
-			_imageFileWriter.Close()
+			If Not _nativeFileWriter Is Nothing Then
+				_nativeFileWriter.Flush()
+				_nativeFileWriter.Close()
+			End If
+			If Not _imageFileWriter Is Nothing Then
+				_imageFileWriter.Flush()
+				_imageFileWriter.Close()
+			End If
 		End Sub
 #End Region
 
@@ -159,13 +173,11 @@ Namespace kCura.WinEDDS
 					End If
 				End If
 			End If
-			If Me.Settings.ExportFullText OrElse Me.Settings.ExportNative Then
-				If Not _hasWrittenColumnHeaderString Then
-					_nativeFileWriter.Write(_columnHeaderString)
-					_hasWrittenColumnHeaderString = True
-				End If
-				Me.UpdateLoadFile(documentInfo.DataRow, documentInfo.FullTextFileGuid, documentInfo.DocumentArtifactID, nativeLocation)
+			If Not _hasWrittenColumnHeaderString Then
+				_nativeFileWriter.Write(_columnHeaderString)
+				_hasWrittenColumnHeaderString = True
 			End If
+			Me.UpdateLoadFile(documentInfo.DataRow, documentInfo.FullTextFileGuid, documentInfo.DocumentArtifactID, nativeLocation)
 			_parent.DocumentsExported += 1
 
 			_currentVolumeSize += totalFileSize
