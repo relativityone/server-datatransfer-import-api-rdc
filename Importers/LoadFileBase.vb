@@ -119,7 +119,7 @@ Namespace kCura.WinEDDS
 			If field.CodeTypeID.IsNull Then
 				Throw New MissingCodeTypeException(Me.CurrentLineNumber, column)
 			End If
-			If codeTableIndex <> -1 Then
+			If codeTableIndex > -1 Then
 				Return GetNullableInteger(_allCodes(codeTableIndex)("ArtifactID").ToString, column)				'HACK: Hard-coded
 			Else
 				If forPreview Then
@@ -129,6 +129,9 @@ Namespace kCura.WinEDDS
 						newCodeOrderValue = GetNewCodeOrderValue(field.CodeTypeID.Value)
 						Dim code As kCura.EDDS.WebAPI.CodeManagerBase.Code = _codeManager.CreateNewCodeDTOProxy(field.CodeTypeID.Value, value, newCodeOrderValue, _caseSystemID)
 						codeArtifactID = _codeManager.Create(_caseArtifactID, code)
+						If codeArtifactID = -200 Then
+							Throw New CodeCreationException(Me.CurrentLineNumber, column, value)
+						End If
 						Dim newRow As DataRowView = _allCodes.AddNew
 						_allCodes = Nothing
 						Return New NullableInt32(codeArtifactID)
@@ -375,6 +378,12 @@ Namespace kCura.WinEDDS
 			End Sub
 		End Class
 
+		Public Class CodeCreationException
+			Inherits kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
+			Public Sub New(ByVal row As Int32, ByVal column As Int32, ByVal newCodeValue As String)
+				MyBase.New(row, column, String.Format("The maximum number of choices available for this field has been reached.  There is no room to add '{0}' to the list.  Upload halted", newCodeValue))
+			End Sub
+		End Class
 #End Region
 
 	End Class
