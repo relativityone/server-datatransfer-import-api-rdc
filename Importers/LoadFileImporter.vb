@@ -136,6 +136,7 @@ Namespace kCura.WinEDDS
 						line = Me.GetLine
 						_processedDocumentIdentifiers.Add(ManageDocument(line), CurrentLineNumber.ToString)
 					Catch ex As LoadFileBase.CodeCreationException
+						_continue = False
 						WriteFatalError(Me.CurrentLineNumber, ex, line)
 					Catch ex As kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
 						WriteError(ex.Message, line)

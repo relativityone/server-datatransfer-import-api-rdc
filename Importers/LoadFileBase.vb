@@ -381,7 +381,7 @@ Namespace kCura.WinEDDS
 		Public Class CodeCreationException
 			Inherits kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
 			Public Sub New(ByVal row As Int32, ByVal column As Int32, ByVal newCodeValue As String)
-				MyBase.New(row, column, String.Format("The maximum number of choices available for this field has been reached.  There is no room to add '{0}' to the list.  Upload halted", newCodeValue))
+				MyBase.New(row, column, String.Format("The maximum number of choices available for this field has been reached.  There is no room to add '{0}' to the list.  Upload halted.", newCodeValue))
 			End Sub
 		End Class
 #End Region
