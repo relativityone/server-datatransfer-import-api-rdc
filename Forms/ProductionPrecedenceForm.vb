@@ -148,6 +148,7 @@ Namespace kCura.EDDS.WinForm
 
 		Friend WithEvents _application As kCura.EDDS.WinForm.Application
 		Private _precedenceList As Pair()
+		Public PrecedenceTable As System.Data.DataTable
 		Friend Property PrecedenceList() As Pair()
 			Get
 				Return _precedenceList
@@ -160,7 +161,6 @@ Namespace kCura.EDDS.WinForm
 		Public ExportFile As WinEDDS.ExportFile
 
 		Private Sub ProductionPrecedenceForm_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles MyBase.Load
-			Dim precedenceList As System.Data.DataTable = _application.GetProductionPrecendenceList(ExportFile.CaseInfo)
 			Dim row As System.Data.DataRow
 			Dim activeValues As New System.Collections.ArrayList
 			Dim item As Pair
@@ -190,7 +190,7 @@ Namespace kCura.EDDS.WinForm
 					firstTimeThrough = False
 				Next
 			End If
-			For Each row In PrecedenceList.Rows
+			For Each row In PrecedenceTable.Rows
 				If Not activeValues.Contains(row("Value").ToString) Then
 					_productions.LeftListBoxItems.Add(New Pair(row("Value").ToString, row("Display").ToString))
 				End If

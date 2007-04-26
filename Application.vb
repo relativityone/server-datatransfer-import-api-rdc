@@ -1081,8 +1081,10 @@ Namespace kCura.EDDS.WinForm
 
 		Public Function GetProductionPrecendenceList(ByVal caseInfo As kCura.EDDS.Types.CaseInfo) As System.Data.DataTable
 			Dim productionManager As kCura.WinEDDS.Service.ProductionManager
+			Dim dt As System.Data.DataTable
 			Try
 				productionManager = New kCura.WinEDDS.Service.ProductionManager(Me.Credential, _cookieContainer)
+				dt = productionManager.RetrieveProducedByContextArtifactID(caseInfo.ArtifactID).Tables(0)
 			Catch ex As System.Exception
 				If ex.Message.IndexOf("Need To Re Login") <> -1 Then
 					NewLogin(False)
@@ -1092,7 +1094,6 @@ Namespace kCura.EDDS.WinForm
 					Throw
 				End If
 			End Try
-			Dim dt As System.Data.DataTable = productionManager.RetrieveProducedByContextArtifactID(caseInfo.ArtifactID).Tables(0)
 			Dim retval As New System.Data.DataTable
 			retval.Columns.Add("Display")
 			retval.Columns.Add("Value")

@@ -647,8 +647,11 @@ Public Class ExportForm
 	End Sub
 
 	Private Sub _pickPrecedenceButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _pickPrecedenceButton.Click
+		Dim dt As System.Data.DataTable = _application.GetProductionPrecendenceList(ExportFile.CaseInfo)
+		If dt Is Nothing Then Exit Sub
 		_precedenceForm = New kCura.EDDS.WinForm.ProductionPrecedenceForm
 		_precedenceForm.ExportFile = Me.ExportFile
+		_precedenceForm.PrecedenceTable = dt
 		If _productionPrecedenceList.Items.Count > 0 Then
 			Dim item As Pair
 			Dim precedenceList(_productionPrecedenceList.Items.Count - 1) As Pair
