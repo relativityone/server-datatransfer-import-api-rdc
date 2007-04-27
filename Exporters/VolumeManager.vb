@@ -428,7 +428,7 @@ Namespace kCura.WinEDDS
 					Dim tempFile As String = System.IO.Path.GetTempFileName
 					_downloadManager.DownloadFile(tempFile, fullTextFileGuid, documentArtifactID, _settings.CaseInfo.ArtifactID.ToString)
 					Dim sr As New System.IO.StreamReader(tempFile)
-					bodyText = sr.ReadToEnd.Replace(System.Environment.NewLine, _settings.NewlineDelimiter).Replace(ChrW(13), _settings.NewlineDelimiter).Replace(ChrW(10), _settings.NewlineDelimiter)
+					bodyText = sr.ReadToEnd.Replace(System.Environment.NewLine, _settings.NewlineDelimiter).Replace(ChrW(13), _settings.NewlineDelimiter).Replace(ChrW(10), _settings.NewlineDelimiter).Replace(_settings.QuoteDelimiter, _settings.QuoteDelimiter & _settings.QuoteDelimiter)
 					sr.Close()
 					System.IO.File.Delete(tempFile)
 				End If
