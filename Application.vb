@@ -213,7 +213,7 @@ Namespace kCura.EDDS.WinForm
 				Return True
 			Else
 				Return MsgBox("The following identifier fields have not been mapped: " & ChrW(13) & unselectedIDFieldNames.ToString & _
-				"Do you wish to continue?", MsgBoxStyle.YesNo, "Warning!") = MsgBoxResult.Yes
+				 "Do you wish to continue?", MsgBoxStyle.YesNo, "Warning!") = MsgBoxResult.Yes
 			End If
 		End Function
 #End Region
@@ -438,6 +438,7 @@ Namespace kCura.EDDS.WinForm
 				For Each s In unmapped
 					sb.Append(" - " & s & nl)
 				Next
+				sb.Append("If you continue, any existing values in them will be wiped out in any records that are overwritten." & System.Environment.NewLine)
 				sb.Append("Do you wish to continue?")
 				If MsgBox(sb.ToString, MsgBoxStyle.YesNo, "Warning") = MsgBoxResult.No Then
 					Return False
