@@ -134,6 +134,9 @@ Namespace kCura.WinEDDS
 				While _continue AndAlso Not HasReachedEOF
 					Try
 						line = Me.GetLine
+						If line.Length <> _columnHeaders.Length Then
+							Throw New ColumnCountMismatchException(Me.CurrentLineNumber, _columnHeaders.Length, line.Length)
+						End If
 						_processedDocumentIdentifiers.Add(ManageDocument(line), CurrentLineNumber.ToString)
 					Catch ex As LoadFileBase.CodeCreationException
 						_continue = False
@@ -793,12 +796,6 @@ Namespace kCura.WinEDDS
 		'	End Sub
 		'End Class
 
-		Public Class IdentifierOverlapException
-			Inherits kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
-			Public Sub New(ByVal identityValue As String, ByVal previousLineNumber As String)
-				MyBase.New(String.Format("Document '({0})' has been previously processed in this file on line {1}.", identityValue, previousLineNumber))
-			End Sub
-		End Class
 #End Region
 
 #Region "Reporting"

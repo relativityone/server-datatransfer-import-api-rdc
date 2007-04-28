@@ -7,6 +7,7 @@ Namespace kCura.WinEDDS
 		Private _errorsOnly As Boolean
 		Private WithEvents _processController As kCura.Windows.Process.Controller
 		Private _continue As Boolean = True
+		Private _columnCount As Int32 = 0
 #End Region
 
 #Region "Constructors"
@@ -81,6 +82,7 @@ Namespace kCura.WinEDDS
 			RaiseEvent OnEvent(New EventArgs(type, bytes, total, [step]))
 		End Sub
 #End Region
+		Private _processedIdentifiers As New Collections.Specialized.NameValueCollection
 
 		Private Function GetPosition() As Int32
 			Return CType(Me.Reader.BaseStream.Position, Int32)
@@ -95,6 +97,7 @@ Namespace kCura.WinEDDS
 			Dim fieldArrays As New System.Collections.ArrayList
 			If _firstLineContainsColumnNames Then
 				_columnHeaders = GetLine
+				_columnCount = _columnHeaders.Length
 				If _uploadFiles Then
 					Dim openParenIndex As Int32 = _filePathColumn.LastIndexOf("("c) + 1
 					Dim closeParenIndex As Int32 = _filePathColumn.LastIndexOf(")"c)
@@ -109,7 +112,11 @@ Namespace kCura.WinEDDS
 			Dim i As Int32 = 0
 			While Not HasReachedEOF AndAlso _continue
 				If fieldArrays.Count < 1000 Then
-					Dim x As DocumentField() = CheckLine(getline)
+					Dim line As String() = Me.GetLine
+					If Not _firstLineContainsColumnNames AndAlso fieldArrays.Count = 0 Then
+						_columnCount = line.Length
+					End If
+					Dim x As DocumentField() = CheckLine(line)
 					If Not x Is Nothing Then fieldArrays.Add(x)
 					i += 1
 					If i Mod 100 = 0 Then ProcessProgress(GetPosition, filesize, stepsize)
@@ -151,6 +158,22 @@ Namespace kCura.WinEDDS
 					retval.Add(docfield)
 				End If
 			Next
+			If _columnCount <> values.Length Then
+				Dim df As DocumentField
+				For Each df In retval
+					df.Value = New ColumnCountMismatchException(Me.CurrentLineNumber, _columnCount, values.Length).Message
+				Next
+			End If
+
+			If Not identifierField Is Nothing Then
+				If _processedIdentifiers(identifierField.Value) Is Nothing Then
+					_processedIdentifiers(identifierField.Value) = Me.CurrentLineNumber.ToString
+				Else
+					'Throw New IdentifierOverlapException(identifierField.Value, _processedIdentifiers(identifierField.Value))
+					identifierField.Value = String.Format("The identifier '{0}' has been previously proccessed on line {1}.", identifierField.Value, _processedIdentifiers(identifierField.Value))
+					lineContainsErrors = True
+				End If
+			End If
 			If Not identifierField Is Nothing AndAlso _
 			 Not groupIdentifierField Is Nothing AndAlso _
 			 groupIdentifierField.Value = "" Then

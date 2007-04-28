@@ -348,7 +348,15 @@ Namespace kCura.WinEDDS
 				Return retval
 			End If
 		End Function
+
 #Region "Exceptions"
+
+		Public Class IdentifierOverlapException
+			Inherits kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
+			Public Sub New(ByVal identityValue As String, ByVal previousLineNumber As String)
+				MyBase.New(String.Format("Document '({0})' has been previously processed in this file on line {1}.", identityValue, previousLineNumber))
+			End Sub
+		End Class
 
 		Public Class MissingCodeTypeException
 			Inherits kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
@@ -382,6 +390,13 @@ Namespace kCura.WinEDDS
 			Inherits kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
 			Public Sub New(ByVal row As Int32, ByVal column As Int32, ByVal newCodeValue As String)
 				MyBase.New(row, column, String.Format("The maximum number of choices available for this field has been reached.  There is no room to add '{0}' to the list.  Upload halted.", newCodeValue))
+			End Sub
+		End Class
+
+		Public Class ColumnCountMismatchException
+			Inherits kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
+			Public Sub New(ByVal row As Int32, ByVal expecting As Int32, ByVal actual As Int32)
+				MyBase.New(row, -1, String.Format("There are an invalid number of cells in this row - expecting:{0}, actual:{1}.", expecting, actual))
 			End Sub
 		End Class
 #End Region
