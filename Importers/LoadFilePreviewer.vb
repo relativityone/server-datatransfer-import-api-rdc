@@ -159,6 +159,7 @@ Namespace kCura.WinEDDS
 				End If
 			Next
 			If _columnCount <> values.Length Then
+				lineContainsErrors = True
 				Dim df As DocumentField
 				For Each df In retval
 					df.Value = New ColumnCountMismatchException(Me.CurrentLineNumber, _columnCount, values.Length).Message
