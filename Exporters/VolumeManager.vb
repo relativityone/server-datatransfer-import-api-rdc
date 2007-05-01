@@ -92,7 +92,7 @@ Namespace kCura.WinEDDS
 			_currentNativeSubdirectorySize = 0
 			_downloadManager = downloadHandler
 			_parent = parent
-			Dim loadFilePath As String = Me.Settings.FolderPath & "\" & "export." & Me.Settings.LoadFileExtension
+			Dim loadFilePath As String = Me.Settings.FolderPath & "\" & Me.Settings.LoadFilesPrefix & "_export." & Me.Settings.LoadFileExtension
 			If Not Me.Settings.Overwrite AndAlso System.IO.File.Exists(loadFilePath) Then
 				Throw New System.Exception(String.Format("Overwrite not selected and file '{0}' exists.", loadFilePath))
 			End If
@@ -107,7 +107,7 @@ Namespace kCura.WinEDDS
 					logFileExension = "_FULLTEXT_.lfp"
 				Case Else
 			End Select
-			Dim imageFilePath As String = Me.Settings.FolderPath & "\" & "export" & logFileExension
+			Dim imageFilePath As String = Me.Settings.FolderPath & "\" & Me.Settings.LoadFilesPrefix & "_export" & logFileExension
 			If Me.Settings.ExportImages Then
 				If Not Me.Settings.Overwrite AndAlso System.IO.File.Exists(imageFilePath) Then
 					Throw New System.Exception(String.Format("Overwrite not selected and file '{0}' exists.", imageFilePath))

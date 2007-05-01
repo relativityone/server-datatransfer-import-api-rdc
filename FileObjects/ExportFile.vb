@@ -24,8 +24,19 @@ Namespace kCura.WinEDDS
 		Protected _exportImages As Boolean
 		Protected _loadFileExtension As String
 		Protected _imagePrecedence As Pair()
+		Protected _loadFilesPrefix As String
 
 #Region "Public Properties"
+
+		Public Property LoadFilesPrefix() As String
+			Get
+				Return _loadFilesPrefix
+			End Get
+			Set(ByVal value As String)
+				_loadFilesPrefix = value
+			End Set
+		End Property
+
 		Public Property ImagePrecedence() As Pair()
 			Get
 				Return _imagePrecedence
