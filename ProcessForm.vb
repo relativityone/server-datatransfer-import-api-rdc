@@ -337,7 +337,7 @@ Namespace kCura.Windows.Process
 		Private _inSafeMode As Boolean
 		Private _errorsDataSource As System.Data.DataTable
 		Private _exportErrorFileLocation As String = ""
-
+		Private _hasReceivedFatalError As Boolean = False
 
 		Public Property ProcessID() As Guid
 			Get
@@ -499,6 +499,7 @@ Namespace kCura.Windows.Process
 				Me.Close()
 			Else
 				_currentRecordLabel.Text = "All records have been processed"
+				If _hasReceivedFatalError Then _currentRecordLabel.Text = "Fatal Exception Encountered"
 				_currentMessageStatus.Text = ""
 				_stopImportButton.Text = "Close"
 				_stopImportButton.Enabled = True
@@ -514,6 +515,7 @@ Namespace kCura.Windows.Process
 			_outputTextBox.WriteLine(ex.ToString)
 			_errorsOutputTextBox.WriteLine(ex.ToString)
 			_currentRecordLabel.Text = "Fatal Exception Encountered"
+			_hasReceivedFatalError = True
 			'_stopImportButton.Text = "Stop"
 			_saveOutputButton.Enabled = True
 			_summaryOutput.ForeColor = System.Drawing.Color.Red
