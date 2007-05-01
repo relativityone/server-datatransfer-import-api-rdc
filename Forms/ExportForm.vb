@@ -472,12 +472,16 @@ Public Class ExportForm
 		Select Case Me.ExportFile.TypeOfExport
 			Case ExportFile.ExportType.AncestorSearch
 				_exportFile.ViewID = CType(_filters.SelectedValue, Int32)
+				_exportFile.LoadFilesPrefix = DirectCast(_filters.SelectedItem, System.Data.DataRowView)(_filters.DisplayMember).ToString
 			Case ExportFile.ExportType.ArtifactSearch
 				_exportFile.ArtifactID = CType(_filters.SelectedValue, Int32)
+				_exportFile.LoadFilesPrefix = DirectCast(_filters.SelectedItem, System.Data.DataRowView)(_filters.DisplayMember).ToString
 			Case ExportFile.ExportType.ParentSearch
 				_exportFile.ViewID = CType(_filters.SelectedValue, Int32)
+				_exportFile.LoadFilesPrefix = DirectCast(_filters.SelectedItem, System.Data.DataRowView)(_filters.DisplayMember).ToString
 			Case ExportFile.ExportType.Production
 				_exportFile.ArtifactID = CType(_filters.SelectedValue, Int32)
+				_exportFile.LoadFilesPrefix = DirectCast(_filters.SelectedItem, System.Data.DataRowView)(_filters.DisplayMember).ToString
 		End Select
 		_exportFile.Overwrite = _overwriteButton.Checked
 		_exportFile.ExportFullText = _exportFullText.Checked
