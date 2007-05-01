@@ -176,7 +176,7 @@ Namespace kCura.WinEDDS
 			Dim codes(codeDisplayNames.Length - 1) As NullableInt32
 			Dim i As Int32
 			For i = 0 To codeDisplayNames.Length - 1
-				codes(i) = GetCode(codeDisplayNames(i), column, field, forPreview)
+				codes(i) = GetCode(codeDisplayNames(i).Trim, column, field, forPreview)
 			Next
 			Return codes
 		End Function
@@ -207,18 +207,18 @@ Namespace kCura.WinEDDS
 		Public Sub SetFieldValue(ByVal field As DocumentField, ByVal value As String, ByVal column As Int32, ByVal forPreview As Boolean)
 			Select Case CType(field.FieldTypeID, kCura.DynamicFields.Types.FieldTypeHelper.FieldType)
 				Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Boolean
-					field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(GetNullableBoolean(value, column))
+					field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(GetNullableBoolean(value.Trim, column))
 				Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Integer
-					field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(GetNullableInteger(value, column))
+					field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(GetNullableInteger(value.Trim, column))
 				Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Currency, kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Decimal
-					field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(GetNullableDecimal(value, column))
+					field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(GetNullableDecimal(value.Trim, column))
 				Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Date
-					field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(GetNullableDateTime(value, column))
+					field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(GetNullableDateTime(value.Trim, column))
 				Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.User
-					field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(Me.GetUserArtifactID(value, column))
-					If forPreview Then field.Value = value
+					field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(Me.GetUserArtifactID(value.Trim, column))
+					If forPreview Then field.Value = value.Trim
 				Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Code
-					Dim fieldValue As String = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(GetCode(value, column, field, forPreview))
+					Dim fieldValue As String = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(GetCode(value.Trim, column, field, forPreview))
 					If forPreview And fieldValue = "-1" Then
 						fieldValue = "[new code]"
 					End If
@@ -227,7 +227,7 @@ Namespace kCura.WinEDDS
 					If value = String.Empty Then
 						field.Value = String.Empty
 					Else
-						Dim codeValues As NullableTypes.NullableInt32() = GetMultiCode(value, column, field, forPreview)
+						Dim codeValues As NullableTypes.NullableInt32() = GetMultiCode(value.Trim, column, field, forPreview)
 						Dim i As Int32
 						Dim newVal As String = String.Empty
 						Dim codeName As String
