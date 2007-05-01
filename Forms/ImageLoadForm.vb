@@ -69,13 +69,13 @@ Namespace kCura.EDDS.WinForm
 			Me.MenuItem4 = New System.Windows.Forms.MenuItem
 			Me._importMenuSaveSettingsItem = New System.Windows.Forms.MenuItem
 			Me._importMenuLoadSettingsItem = New System.Windows.Forms.MenuItem
+			Me.MenuItem2 = New System.Windows.Forms.MenuItem
+			Me._toolsMenuSettingsItem = New System.Windows.Forms.MenuItem
 			Me._saveImageLoadFileDialog = New System.Windows.Forms.SaveFileDialog
 			Me._loadImageLoadFileDialog = New System.Windows.Forms.OpenFileDialog
 			Me.ExtractedTextGroupBox = New System.Windows.Forms.GroupBox
 			Me.GroupBox1 = New System.Windows.Forms.GroupBox
 			Me._productionDropdown = New System.Windows.Forms.ComboBox
-			Me.MenuItem2 = New System.Windows.Forms.MenuItem
-			Me._toolsMenuSettingsItem = New System.Windows.Forms.MenuItem
 			Me.GroupBox3.SuspendLayout()
 			Me.GroupBox233.SuspendLayout()
 			Me.ExtractedTextGroupBox.SuspendLayout()
@@ -136,8 +136,6 @@ Namespace kCura.EDDS.WinForm
 			'
 			'_replaceFullText
 			'
-			Me._replaceFullText.Checked = True
-			Me._replaceFullText.CheckState = System.Windows.Forms.CheckState.Checked
 			Me._replaceFullText.Location = New System.Drawing.Point(12, 20)
 			Me._replaceFullText.Name = "_replaceFullText"
 			Me._replaceFullText.Size = New System.Drawing.Size(144, 24)
@@ -183,6 +181,17 @@ Namespace kCura.EDDS.WinForm
 			Me._importMenuLoadSettingsItem.Shortcut = System.Windows.Forms.Shortcut.CtrlO
 			Me._importMenuLoadSettingsItem.Text = "Load Settings"
 			'
+			'MenuItem2
+			'
+			Me.MenuItem2.Index = 1
+			Me.MenuItem2.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me._toolsMenuSettingsItem})
+			Me.MenuItem2.Text = "Tools"
+			'
+			'_toolsMenuSettingsItem
+			'
+			Me._toolsMenuSettingsItem.Index = 0
+			Me._toolsMenuSettingsItem.Text = "Settings"
+			'
 			'_saveImageLoadFileDialog
 			'
 			Me._saveImageLoadFileDialog.DefaultExt = "kwe"
@@ -219,17 +228,6 @@ Namespace kCura.EDDS.WinForm
 			Me._productionDropdown.Name = "_productionDropdown"
 			Me._productionDropdown.Size = New System.Drawing.Size(332, 21)
 			Me._productionDropdown.TabIndex = 29
-			'
-			'MenuItem2
-			'
-			Me.MenuItem2.Index = 1
-			Me.MenuItem2.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me._toolsMenuSettingsItem})
-			Me.MenuItem2.Text = "Tools"
-			'
-			'_toolsMenuSettingsItem
-			'
-			Me._toolsMenuSettingsItem.Index = 0
-			Me._toolsMenuSettingsItem.Text = "Settings"
 			'
 			'ImageLoad
 			'
