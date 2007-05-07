@@ -33,7 +33,7 @@ Namespace kCura.WinEDDS
 				Return _loadFilesPrefix
 			End Get
 			Set(ByVal value As String)
-				_loadFilesPrefix = value
+				_loadFilesPrefix = kCura.WinEDDS.Utility.GetFilesystemSafeName(value)
 			End Set
 		End Property
 
