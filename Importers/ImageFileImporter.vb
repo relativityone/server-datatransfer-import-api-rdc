@@ -319,7 +319,7 @@ Namespace kCura.WinEDDS
 
 		Public Shared Function GetFileLocation(ByVal line As String()) As String
 			Dim fileLocation As String = line(Columns.FileLocation)
-			If fileLocation.Chars(0) = "\" AndAlso fileLocation.Chars(1) <> "\" Then
+			If fileLocation <> "" AndAlso fileLocation.Chars(0) = "\" AndAlso fileLocation.Chars(1) <> "\" Then
 				fileLocation = "." & fileLocation
 			End If
 			Return fileLocation
