@@ -349,7 +349,7 @@ Public Class ExportForm
 		Me.Label2.Name = "Label2"
 		Me.Label2.Size = New System.Drawing.Size(100, 16)
 		Me.Label2.TabIndex = 9
-		Me.Label2.Text = "Record Delimiter"
+		Me.Label2.Text = "Column Delimiter"
 		'
 		'_recordDelimiter
 		'

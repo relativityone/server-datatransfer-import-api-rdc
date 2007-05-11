@@ -413,7 +413,7 @@ Namespace kCura.EDDS.WinForm
 			Me.Label2.Name = "Label2"
 			Me.Label2.Size = New System.Drawing.Size(100, 16)
 			Me.Label2.TabIndex = 1
-			Me.Label2.Text = "Record Delimiter"
+			Me.Label2.Text = "Column Delimiter"
 			'
 			'_recordDelimiter
 			'
@@ -604,7 +604,7 @@ Namespace kCura.EDDS.WinForm
 			'_fileColumns
 			'
 			Me._fileColumns.KeepButtonsCentered = True
-			Me._fileColumns.LeftOrderControlsVisible = True
+			Me._fileColumns.LeftOrderControlsVisible = False
 			Me._fileColumns.Location = New System.Drawing.Point(372, 148)
 			Me._fileColumns.Name = "_fileColumns"
 			Me._fileColumns.RightOrderControlVisible = False
@@ -617,7 +617,7 @@ Namespace kCura.EDDS.WinForm
 			Me._fieldMap.LeftOrderControlsVisible = False
 			Me._fieldMap.Location = New System.Drawing.Point(4, 148)
 			Me._fieldMap.Name = "_fieldMap"
-			Me._fieldMap.RightOrderControlVisible = True
+			Me._fieldMap.RightOrderControlVisible = False
 			Me._fieldMap.Size = New System.Drawing.Size(360, 276)
 			Me._fieldMap.TabIndex = 1
 			'
