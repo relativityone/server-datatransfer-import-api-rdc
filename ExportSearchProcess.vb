@@ -17,20 +17,24 @@ Namespace kCura.WinEDDS
 			Me.ProcessObserver.RaiseProcessCompleteEvent()
 		End Sub
 
+		Private Sub _searchExporter_FileTransferModeChangeEvent(ByVal mode As String) Handles _searchExporter.FileTransferModeChangeEvent
+			Me.ProcessObserver.RaiseStatusBarEvent("File Transfer Mode: " & mode)
+		End Sub
+
 		Private Sub _productionExporter_StatusMessage(ByVal e As ExportEventArgs) Handles _searchExporter.StatusMessage
 			Select Case e.EventType
-        Case kCura.Windows.Process.EventType.Error
-          _errorCount += 1
-          Me.ProcessObserver.RaiseErrorEvent(e.DocumentsExported.ToString, e.Message)
-        Case kCura.Windows.Process.EventType.Progress
-          Me.ProcessObserver.RaiseStatusEvent(e.DocumentsExported.ToString, e.Message)
-        Case kCura.Windows.Process.EventType.Status
-          Me.ProcessObserver.RaiseStatusEvent(e.DocumentsExported.ToString, e.Message)
-        Case kCura.Windows.Process.EventType.Warning
-          _warningCount += 1
-          Me.ProcessObserver.RaiseWarningEvent(e.DocumentsExported.ToString, e.Message)
-      End Select
-      Me.ProcessObserver.RaiseProgressEvent(e.TotalDocuments, e.DocumentsExported, _warningCount, _errorCount, _startTime, System.DateTime.Now)
+				Case kCura.Windows.Process.EventType.Error
+					_errorCount += 1
+					Me.ProcessObserver.RaiseErrorEvent(e.DocumentsExported.ToString, e.Message)
+				Case kCura.Windows.Process.EventType.Progress
+					Me.ProcessObserver.RaiseStatusEvent(e.DocumentsExported.ToString, e.Message)
+				Case kCura.Windows.Process.EventType.Status
+					Me.ProcessObserver.RaiseStatusEvent(e.DocumentsExported.ToString, e.Message)
+				Case kCura.Windows.Process.EventType.Warning
+					_warningCount += 1
+					Me.ProcessObserver.RaiseWarningEvent(e.DocumentsExported.ToString, e.Message)
+			End Select
+			Me.ProcessObserver.RaiseProgressEvent(e.TotalDocuments, e.DocumentsExported, _warningCount, _errorCount, _startTime, System.DateTime.Now)
 		End Sub
 
 		Private Sub _productionExporter_FatalErrorEvent(ByVal message As String, ByVal ex As System.Exception) Handles _searchExporter.FatalErrorEvent

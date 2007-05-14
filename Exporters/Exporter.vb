@@ -94,6 +94,7 @@ Namespace kCura.WinEDDS
 				Case ExportFile.ExportType.Production
 					Me.TotalDocuments = _searchManager.CountSearchByProductionArtifactID(Me.ExportFile.CaseArtifactID, Me.ExportFile.ArtifactID)
 			End Select
+			RaiseEvent FileTransferModeChangeEvent(_downloadHandler.UploaderType.ToString)
 			_volumeManager = New VolumeManager(Me.ExportFile, Me.ExportFile.FolderPath, Me.ExportFile.Overwrite, Me.TotalDocuments, Me, _downloadHandler)
 			folderTable = _folderManager.RetrieveAllByCaseID(Me.ExportFile.CaseArtifactID).Tables(0)
 			_sourceDirectory = _documentManager.GetDocumentDirectoryByCaseArtifactID(Me.ExportFile.CaseArtifactID) & "\"
@@ -560,6 +561,7 @@ Namespace kCura.WinEDDS
 
 		Public Event FatalErrorEvent(ByVal message As String, ByVal ex As System.Exception)
 		Public Event StatusMessage(ByVal exportArgs As ExportEventArgs)
+		Public Event FileTransferModeChangeEvent(ByVal mode As String)
 		Public Event DisableCloseButton()
 		Public Event EnableCloseButton()
 
