@@ -315,6 +315,11 @@ Namespace kCura.EDDS.WinForm
 			frm.ShowDialog()
 			Return frm.SelectedCaseInfo
 		End Function
+
+		Public Function GetConnectionStatus() As String
+			Dim x As New kCura.WinEDDS.FileUploader(Me.Credential, Me.SelectedCaseInfo.ArtifactID, Me.SelectedCaseInfo.DocumentPath, Me.CookieContainer)
+			Return x.UploaderType.ToString
+		End Function
 #End Region
 
 #Region "Utility"

@@ -326,7 +326,7 @@ Namespace kCura.EDDS.WinForm
 			Select Case appEvent.EventType
 				Case appEvent.AppEventType.LoadCase
 					_fileMenuRefresh.Enabled = True
-					UpdateStatus("Case Loaded")
+					UpdateStatus("Case Loaded - File Transfer Mode: " & _application.GetConnectionStatus)
 				Case appEvent.AppEventType.LogOn
 					UpdateUserName(_application.LoggedInUser)
 				Case appEvent.AppEventType.ExitApplication
@@ -334,7 +334,7 @@ Namespace kCura.EDDS.WinForm
 				Case appEvent.AppEventType.CaseFolderSelected
 					ImportMenu.Enabled = True
 					ExportMenu.Enabled = True
-					UpdateStatus("Case Folder Load: " + _application.SelectedCaseInfo.RootFolderID.ToString)
+					'UpdateStatus("Case Folder Load: " + _application.SelectedCaseInfo.RootFolderID.ToString)
 			End Select
 		End Sub
 
