@@ -128,7 +128,7 @@ Namespace kCura.EDDS.WinForm
 			'_overwriteDropdown
 			'
 			Me._overwriteDropdown.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
-			Me._overwriteDropdown.Items.AddRange(New Object() {"None", "Strict", "Append"})
+			Me._overwriteDropdown.Items.AddRange(New Object() {"Append Only", "Overlay Only", "Append/Overlay"})
 			Me._overwriteDropdown.Location = New System.Drawing.Point(12, 20)
 			Me._overwriteDropdown.Name = "_overwriteDropdown"
 			Me._overwriteDropdown.Size = New System.Drawing.Size(156, 21)
@@ -275,7 +275,7 @@ Namespace kCura.EDDS.WinForm
 				Me.Cursor = Cursors.Default
 				Exit Sub
 			End If
-			ImageLoadFile.Overwrite = _overwriteDropdown.SelectedItem.ToString
+			ImageLoadFile.Overwrite = Me.GetOverwrite
 			ImageLoadFile.DestinationFolderID = _imageLoadFile.DestinationFolderID
 			ImageLoadFile.ControlKeyField = _application.GetCaseIdentifierFields()(0)
 			If ImageLoadFile.ForProduction Then
@@ -286,6 +286,32 @@ Namespace kCura.EDDS.WinForm
 			End If
 			Me.Cursor = Cursors.Default
 		End Sub
+
+		Private Function GetOverwrite() As String
+			Select Case _overwriteDropdown.SelectedItem.ToString.ToLower
+				Case "append only"
+					Return "None"
+				Case "overlay only"
+					Return "Strict"
+				Case "append/overlay"
+					Return "Append"
+				Case Else
+					Throw New IndexOutOfRangeException("'" & _overwriteDropdown.SelectedItem.ToString.ToLower & "' isn't a valid option.")
+			End Select
+		End Function
+
+		Private Function GetOverwriteDropdownItem(ByVal input As String) As String
+			Select Case input.ToLower
+				Case "none"
+					Return "Append Only"
+				Case "strict"
+					Return "Overlay Only"
+				Case "append"
+					Return "Append/Overlay"
+				Case Else
+					Throw New IndexOutOfRangeException("'" & input.ToLower & "' isn't a valid option.")
+			End Select
+		End Function
 
 		Private Sub ImageLoad_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
 			Me.Cursor = Cursors.WaitCursor
@@ -303,7 +329,7 @@ Namespace kCura.EDDS.WinForm
 				_productionDropdown.ValueMember = "ArtifactID"
 				Me.Text = "Relativity Desktop Client | Import Production Load File"
 			End If
-			_overwriteDropdown.SelectedItem = ImageLoadFile.Overwrite
+			_overwriteDropdown.SelectedItem = Me.GetOverwriteDropdownItem(ImageLoadFile.Overwrite)
 			ReadyToRun()
 			Me.Cursor = Cursors.Default
 		End Sub
@@ -334,7 +360,7 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 		Private Sub _overWrite_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _overwriteDropdown.SelectedIndexChanged
-			_imageLoadFile.Overwrite = _overwriteDropdown.SelectedItem.ToString
+			_imageLoadFile.Overwrite = Me.GetOverwrite
 		End Sub
 
 		Private Sub ReadyToRun()
@@ -383,7 +409,7 @@ Namespace kCura.EDDS.WinForm
 			End If
 			If System.IO.File.Exists(_loadImageLoadFileDialog.FileName) Then
 				Me.ImageLoadFile = _application.ReadImageLoadFile(_loadImageLoadFileDialog.FileName)
-				_overwriteDropdown.SelectedItem = ImageLoadFile.Overwrite
+				_overwriteDropdown.SelectedItem = Me.GetOverwriteDropdownItem(ImageLoadFile.Overwrite)
 				_filePath.Text = ImageLoadFile.FileName
 			End If
 			Me.Cursor = System.Windows.Forms.Cursors.Default

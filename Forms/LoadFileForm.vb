@@ -471,7 +471,7 @@ Namespace kCura.EDDS.WinForm
 			'_overwriteDropdown
 			'
 			Me._overwriteDropdown.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
-			Me._overwriteDropdown.Items.AddRange(New Object() {"None", "Strict", "Append"})
+			Me._overwriteDropdown.Items.AddRange(New Object() {"Append Only", "Overlay Only", "Append/Overlay"})
 			Me._overwriteDropdown.Location = New System.Drawing.Point(8, 24)
 			Me._overwriteDropdown.Name = "_overwriteDropdown"
 			Me._overwriteDropdown.Size = New System.Drawing.Size(156, 21)
@@ -604,7 +604,7 @@ Namespace kCura.EDDS.WinForm
 			'_fileColumns
 			'
 			Me._fileColumns.KeepButtonsCentered = True
-			Me._fileColumns.LeftOrderControlsVisible = False
+			Me._fileColumns.LeftOrderControlsVisible = True
 			Me._fileColumns.Location = New System.Drawing.Point(372, 148)
 			Me._fileColumns.Name = "_fileColumns"
 			Me._fileColumns.RightOrderControlVisible = False
@@ -617,7 +617,7 @@ Namespace kCura.EDDS.WinForm
 			Me._fieldMap.LeftOrderControlsVisible = False
 			Me._fieldMap.Location = New System.Drawing.Point(4, 148)
 			Me._fieldMap.Name = "_fieldMap"
-			Me._fieldMap.RightOrderControlVisible = False
+			Me._fieldMap.RightOrderControlVisible = True
 			Me._fieldMap.Size = New System.Drawing.Size(360, 276)
 			Me._fieldMap.TabIndex = 1
 			'
@@ -677,6 +677,32 @@ Namespace kCura.EDDS.WinForm
 			End Get
 		End Property
 
+		Private Function GetOverwrite() As String
+			Select Case _overwriteDropdown.SelectedItem.ToString.ToLower
+				Case "append only"
+					Return "None"
+				Case "overlay only"
+					Return "Strict"
+				Case "append/overlay"
+					Return "Append"
+				Case Else
+					Throw New IndexOutOfRangeException("'" & _overwriteDropdown.SelectedItem.ToString.ToLower & "' isn't a valid option.")
+			End Select
+		End Function
+
+		Private Function GetOverwriteDropdownItem(ByVal input As String) As String
+			Select Case input.ToLower
+				Case "none"
+					Return "Append Only"
+				Case "strict"
+					Return "Overlay Only"
+				Case "append"
+					Return "Append/Overlay"
+				Case Else
+					Throw New IndexOutOfRangeException("'" & input.ToLower & "' isn't a valid option.")
+			End Select
+		End Function
+
 		Private Sub PopulateLoadFileObject()
 			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
 			Me.PopulateLoadFileDelimiters()
@@ -703,7 +729,7 @@ Namespace kCura.EDDS.WinForm
 			If _overwriteDropdown.SelectedItem Is Nothing Then
 				LoadFile.OverwriteDestination = "None"
 			Else
-				LoadFile.OverwriteDestination = _overwriteDropdown.SelectedItem.ToString
+				LoadFile.OverwriteDestination = Me.GetOverwrite
 			End If
 			LoadFile.ExtractMD5HashFromNativeFile = _extractMd5Hash.Enabled AndAlso _extractMd5Hash.Checked
 			LoadFile.FirstLineContainsHeaders = _firstLineContainsColumnNames.Checked
@@ -755,7 +781,7 @@ Namespace kCura.EDDS.WinForm
 			_identifiersDropDown.Items.Clear()
 			_loadNativeFiles.Checked = LoadFile.LoadNativeFiles
 			_extractedTextValueContainsFileLocation.Checked = LoadFile.FullTextColumnContainsFileLocation
-			_overwriteDropdown.SelectedItem = LoadFile.OverwriteDestination
+			_overwriteDropdown.SelectedItem = Me.GetOverwriteDropdownItem(LoadFile.OverwriteDestination)
 			RefreshNativeFilePathFieldAndFileColumnHeaders()
 			If Not Me.EnsureConnection() Then Exit Sub
 			Dim caseFields As String() = _application.GetCaseFields(LoadFile.CaseInfo.ArtifactID)
@@ -783,12 +809,12 @@ Namespace kCura.EDDS.WinForm
 				_fieldMap.LeftListBoxItems.AddRange(caseFields)
 			End If
 			'_identifiersDropDown.Items.AddRange(_application.IdentiferFieldDropdownPopulator)
-			_overwriteDropdown.SelectedItem = LoadFile.OverwriteDestination
+			_overwriteDropdown.SelectedItem = Me.GetOverwriteDropdownItem(LoadFile.OverwriteDestination)
 			_identifiersDropDown.Enabled = True			'LoadFile.OverwriteDestination
 			If _overwriteDropdown.SelectedItem Is Nothing Then
 				_destinationFolderPath.Enabled = _buildFolderStructure.Checked
 			Else
-				_destinationFolderPath.Enabled = Not (_overwriteDropdown.SelectedItem.ToString.ToLower = "strict" OrElse _overwriteDropdown.SelectedItem.ToString.ToLower = "append") AndAlso _buildFolderStructure.Checked
+				_destinationFolderPath.Enabled = Not (_overwriteDropdown.SelectedItem.ToString.ToLower = "overlay only" OrElse _overwriteDropdown.SelectedItem.ToString.ToLower = "append/overlay") AndAlso _buildFolderStructure.Checked
 			End If
 			If loadFileObjectUpdatedFromFile AndAlso _destinationFolderPath.Enabled Then
 				Dim i As Int32
@@ -922,7 +948,7 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 		Private Sub _overwriteDestination_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _overwriteDropdown.SelectedIndexChanged
-			LoadFile.OverwriteDestination = _overwriteDropdown.SelectedItem.ToString
+			LoadFile.OverwriteDestination = Me.GetOverwrite
 			Select Case LoadFile.OverwriteDestination.ToLower
 				Case "none"
 					_buildFolderStructure.Enabled = True
