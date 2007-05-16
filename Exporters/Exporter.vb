@@ -169,7 +169,7 @@ Namespace kCura.WinEDDS
 				Else
 					documentInfo.NativeExtension = ""
 				End If
-
+				documentInfo.DocumentArtifactID = documentArtifactIDs(i)
 				'documentInfo.NativeFileName = nativeRow("Filename").ToString
 				documentInfo.DataRow = docRows(i)
 				_volumeManager.ExportDocument(documentInfo)
