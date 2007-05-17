@@ -177,7 +177,7 @@ Namespace kCura.WinEDDS
 				_nativeFileWriter.Write(_columnHeaderString)
 				_hasWrittenColumnHeaderString = True
 			End If
-			Me.UpdateLoadFile(documentInfo.DataRow, documentInfo.FullTextFileGuid, documentInfo.DocumentArtifactID, nativeLocation)
+			Me.UpdateLoadFile(documentInfo.DataRow, documentInfo.FullTextFileGuid, documentInfo.DocumentArtifactID, nativeLocation, tempLocalFullTextFilePath)
 			_parent.DocumentsExported += 1
 
 			_currentVolumeSize += totalFileSize
@@ -390,7 +390,7 @@ Namespace kCura.WinEDDS
 			Return New System.IO.FileInfo(tempFile).Length
 		End Function
 
-		Public Sub UpdateLoadFile(ByVal row As System.Data.DataRow, ByVal fullTextFileGuid As String, ByVal documentArtifactID As Int32, ByVal nativeLocation As String)
+		Public Sub UpdateLoadFile(ByVal row As System.Data.DataRow, ByVal fullTextFileGuid As String, ByVal documentArtifactID As Int32, ByVal nativeLocation As String, ByVal fullTextTempFile As String)
 			Dim count As Int32
 			Dim fieldValue As String
 			Dim retString As New System.Text.StringBuilder
@@ -425,12 +425,10 @@ Namespace kCura.WinEDDS
 				If fullTextFileGuid Is Nothing Then
 					bodyText = String.Empty
 				Else
-					Dim tempFile As String = System.IO.Path.GetTempFileName
-					_downloadManager.DownloadFile(tempFile, fullTextFileGuid, documentArtifactID, _settings.CaseInfo.ArtifactID.ToString)
-					Dim sr As New System.IO.StreamReader(tempFile)
+					Dim sr As New System.IO.StreamReader(fullTextTempFile)
 					bodyText = sr.ReadToEnd.Replace(System.Environment.NewLine, _settings.NewlineDelimiter).Replace(ChrW(13), _settings.NewlineDelimiter).Replace(ChrW(10), _settings.NewlineDelimiter).Replace(_settings.QuoteDelimiter, _settings.QuoteDelimiter & _settings.QuoteDelimiter)
 					sr.Close()
-					System.IO.File.Delete(tempFile)
+					System.IO.File.Delete(fullTextTempFile)
 				End If
 				retString.AppendFormat("{2}{0}{1}{0}", _settings.QuoteDelimiter, bodyText, _settings.RecordDelimiter)
 			End If
