@@ -568,5 +568,8 @@ Namespace kCura.WinEDDS
 #End Region
 
 
+		Private Sub _processController_HaltProcessEvent(ByVal processID As System.Guid) Handles _processController.HaltProcessEvent
+			_halt = True
+		End Sub
 	End Class
 End Namespace
