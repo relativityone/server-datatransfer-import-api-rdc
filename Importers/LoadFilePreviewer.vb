@@ -133,6 +133,8 @@ Namespace kCura.WinEDDS
 			Me.Close()
 			Return fieldArrays
 		End Function
+
+
 		Private Function CheckLine(ByVal values As String()) As DocumentField()
 			Dim mapItem As LoadFileFieldMap.LoadFileFieldMapItem
 			Dim lineContainsErrors As Boolean = False
@@ -140,6 +142,7 @@ Namespace kCura.WinEDDS
 			Dim valToParse As String = ""
 			Dim identifierField As DocumentField
 			Dim groupIdentifierField As DocumentField
+			Dim duplicateHashField As DocumentField
 			For Each mapItem In _fieldMap
 				If mapItem.NativeFileColumnIndex > -1 AndAlso Not mapItem.DocumentField Is Nothing Then
 					Try
@@ -153,6 +156,8 @@ Namespace kCura.WinEDDS
 							groupIdentifierField = docfield
 						Case kCura.DynamicFields.Types.FieldCategory.Identifier
 							identifierField = docfield
+						Case kCura.DynamicFields.Types.FieldCategory.DuplicateHash
+							duplicateHashField = docfield
 					End Select
 					lineContainsErrors = lineContainsErrors Or SetFieldValueOrErrorMessage(docfield, valToParse, mapItem.NativeFileColumnIndex)
 					retval.Add(docfield)
@@ -180,6 +185,21 @@ Namespace kCura.WinEDDS
 			 groupIdentifierField.Value = "" Then
 				groupIdentifierField.Value = identifierField.Value
 			End If
+
+			If Not identifierField Is Nothing Then
+				If Not duplicateHashField Is Nothing Then
+					If duplicateHashField.Value = "" Then duplicateHashField.Value = identifierField.Value
+				Else
+					Dim docfield As New DocumentField("MD5 Hash", -1, -1, -1, NullableInt32.Null, NullableInt32.Null)
+					If _extractMd5Hash Then
+						docfield.Value = "[Extracted from native]"
+					Else
+						docField.Value = identifierField.Value & " (if not set)"
+					End If
+					retval.Add(docfield)
+				End If
+			End If
+
 			If _uploadFiles Then
 				Dim filePath As String = values(_filePathColumnIndex)
 				Dim docfield As New DocumentField("Native File", -1, -1, -1, NullableInt32.Null, NullableInt32.Null)
