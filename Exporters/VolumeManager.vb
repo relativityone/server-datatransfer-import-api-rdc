@@ -149,7 +149,11 @@ Namespace kCura.WinEDDS
 			If Me.Settings.ExportFullText OrElse Me.Settings.LogFileFormat = LoadFileType.FileFormat.IPRO_FullText Then
 				If Not documentInfo.FullTextFileGuid Is Nothing AndAlso Not documentInfo.FullTextFileGuid = "" Then
 					tempLocalFullTextFilePath = System.IO.Path.GetTempFileName
-					_downloadManager.DownloadFile(tempLocalFullTextFilePath, documentInfo.FullTextFileGuid, documentInfo.DocumentArtifactID, _settings.CaseInfo.ArtifactID.ToString)
+					Try
+						_downloadManager.DownloadFile(tempLocalFullTextFilePath, documentInfo.FullTextFileGuid, documentInfo.DocumentArtifactID, _settings.CaseInfo.ArtifactID.ToString)
+					Catch ex As System.Exception
+						_downloadManager.DownloadFile(tempLocalFullTextFilePath, documentInfo.FullTextFileGuid, documentInfo.DocumentArtifactID, _settings.CaseInfo.ArtifactID.ToString)
+					End Try
 				End If
 			End If
 			If Me.Settings.ExportImages Then
