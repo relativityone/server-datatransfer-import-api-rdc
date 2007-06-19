@@ -8,6 +8,7 @@ Namespace kCura.WinEDDS
 		Private _folderManager As kCura.WinEDDS.Service.FolderManager
 		Private _exportFile As kCura.WinEDDS.ExportFile
 		Private _columns As System.Collections.ArrayList
+		Private _columnFormats As System.Collections.ArrayList
 		Private _sourceDirectory As String
 		Private _documentManager As kCura.WinEDDS.Service.DocumentManager
 		Public DocumentsExported As Int32
@@ -39,7 +40,14 @@ Namespace kCura.WinEDDS
 				_columns = value
 			End Set
 		End Property
-
+		Public Property ColumnFormats() As System.Collections.ArrayList
+			Get
+				Return _columnFormats
+			End Get
+			Set(ByVal value As System.Collections.ArrayList)
+				_columnFormats = value
+			End Set
+		End Property
 
 #End Region
 
@@ -379,6 +387,7 @@ Namespace kCura.WinEDDS
 			Dim retString As New System.Text.StringBuilder
 
 			_columns = New System.Collections.ArrayList
+			_columnFormats = New System.Collections.ArrayList
 			Select Case Me.ExportFile.TypeOfExport
 				Case ExportFile.ExportType.AncestorSearch, ExportFile.ExportType.ParentSearch
 					table = _searchManager.RetrieveSearchFields(Me.ExportFile.CaseArtifactID, Me.ExportFile.ViewID).Tables(0)
@@ -396,6 +405,12 @@ Namespace kCura.WinEDDS
 					If count <> table.Rows.Count - 1 Then
 						retString.Append(Me.ExportFile.RecordDelimiter)
 					End If
+					If table.Rows(count)("ItemListType").ToString.ToLower = "datetime" Then
+						_columnFormats.Add(table.Rows(count)("FormatString"))
+					Else
+						_columnFormats.Add("")
+					End If
+
 				End If
 			Next
 			If Me.ExportFile.ExportNative Then retString.AppendFormat("{2}{0}{1}{0}", Me.ExportFile.QuoteDelimiter, "FILE_PATH", Me.ExportFile.RecordDelimiter)

@@ -411,6 +411,14 @@ Namespace kCura.WinEDDS
 				If TypeOf val Is Byte() Then
 					val = System.Text.Encoding.Unicode.GetString(DirectCast(val, Byte()))
 				End If
+				If _parent.ColumnFormats(count).ToString <> "" Then
+					Dim datetime As NullableString = NullableTypes.HelperFunctions.DBNullConvert.ToNullableString(val)
+					If datetime.IsNull OrElse datetime.Value = "" Then
+						val = ""
+					Else
+						val = System.DateTime.Parse(datetime.Value).ToString(_parent.ColumnFormats(count).ToString)
+					End If
+				End If
 				fieldValue = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(NullableTypes.HelperFunctions.DBNullConvert.ToNullableString(val))
 				fieldValue = fieldValue.Replace(System.Environment.NewLine, ChrW(10).ToString)
 				fieldValue = fieldValue.Replace(ChrW(13), ChrW(10))
