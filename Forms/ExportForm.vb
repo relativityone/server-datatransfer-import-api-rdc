@@ -62,6 +62,8 @@ Public Class ExportForm
 	Friend WithEvents MenuItem1 As System.Windows.Forms.MenuItem
 	Friend WithEvents _settingsMenuVolumeInfoItem As System.Windows.Forms.MenuItem
 	Friend WithEvents _productionPrecedenceList As System.Windows.Forms.ListBox
+	Friend WithEvents _nativeFileNameSourceIdentifier As System.Windows.Forms.RadioButton
+	Friend WithEvents _nativeFileNameSourceBegBates As System.Windows.Forms.RadioButton
 	<System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
 		Dim resources As System.Resources.ResourceManager = New System.Resources.ResourceManager(GetType(ExportForm))
 		Me.MainMenu1 = New System.Windows.Forms.MainMenu
@@ -97,6 +99,8 @@ Public Class ExportForm
 		Me._productionPrecedenceBox = New System.Windows.Forms.GroupBox
 		Me._productionPrecedenceList = New System.Windows.Forms.ListBox
 		Me._pickPrecedenceButton = New System.Windows.Forms.Button
+		Me._nativeFileNameSourceIdentifier = New System.Windows.Forms.RadioButton
+		Me._nativeFileNameSourceBegBates = New System.Windows.Forms.RadioButton
 		Me._filtersBox.SuspendLayout()
 		Me.GroupBox3.SuspendLayout()
 		Me.GroupBox23.SuspendLayout()
@@ -182,6 +186,8 @@ Public Class ExportForm
 		'
 		'GroupBox3
 		'
+		Me.GroupBox3.Controls.Add(Me._nativeFileNameSourceBegBates)
+		Me.GroupBox3.Controls.Add(Me._nativeFileNameSourceIdentifier)
 		Me.GroupBox3.Controls.Add(Me._overwriteButton)
 		Me.GroupBox3.Controls.Add(Me._browseButton)
 		Me.GroupBox3.Controls.Add(Me._folderPath)
@@ -196,7 +202,7 @@ Public Class ExportForm
 		'
 		Me._overwriteButton.Location = New System.Drawing.Point(8, 48)
 		Me._overwriteButton.Name = "_overwriteButton"
-		Me._overwriteButton.Size = New System.Drawing.Size(548, 16)
+		Me._overwriteButton.Size = New System.Drawing.Size(100, 16)
 		Me._overwriteButton.TabIndex = 7
 		Me._overwriteButton.Text = "Overwrite Files"
 		'
@@ -386,6 +392,26 @@ Public Class ExportForm
 		Me._pickPrecedenceButton.TabIndex = 1
 		Me._pickPrecedenceButton.Text = "..."
 		'
+		'_nativeFileNameSourceIdentifier
+		'
+		Me._nativeFileNameSourceIdentifier.Checked = True
+		Me._nativeFileNameSourceIdentifier.Location = New System.Drawing.Point(132, 48)
+		Me._nativeFileNameSourceIdentifier.Name = "_nativeFileNameSourceIdentifier"
+		Me._nativeFileNameSourceIdentifier.Size = New System.Drawing.Size(188, 16)
+		Me._nativeFileNameSourceIdentifier.TabIndex = 8
+		Me._nativeFileNameSourceIdentifier.TabStop = True
+		Me._nativeFileNameSourceIdentifier.Text = "Native files named after identifier"
+		Me._nativeFileNameSourceIdentifier.Visible = False
+		'
+		'_nativeFileNameSourceBegBates
+		'
+		Me._nativeFileNameSourceBegBates.Location = New System.Drawing.Point(320, 48)
+		Me._nativeFileNameSourceBegBates.Name = "_nativeFileNameSourceBegBates"
+		Me._nativeFileNameSourceBegBates.Size = New System.Drawing.Size(232, 16)
+		Me._nativeFileNameSourceBegBates.TabIndex = 9
+		Me._nativeFileNameSourceBegBates.Text = "Native files named after begin bates"
+		Me._nativeFileNameSourceBegBates.Visible = False
+		'
 		'ExportForm
 		'
 		Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
@@ -482,6 +508,9 @@ Public Class ExportForm
 			Case ExportFile.ExportType.Production
 				_exportFile.ArtifactID = CType(_filters.SelectedValue, Int32)
 				_exportFile.LoadFilesPrefix = DirectCast(_filters.SelectedItem, System.Data.DataRowView)(_filters.DisplayMember).ToString
+				If _nativeFileNameSourceBegBates.Checked Then
+					_exportFile.ExportNativesToFileNamedFrom = ExportNativeWithFilenameFrom.Production
+				End If
 		End Select
 		_exportFile.Overwrite = _overwriteButton.Checked
 		_exportFile.ExportFullText = _exportFullText.Checked
@@ -577,6 +606,8 @@ Public Class ExportForm
 				_filters.Text = "Productions"
 				_filtersBox.Text = "Productions"
 				_exportImages.Text = "Export Produced Images"
+				_nativeFileNameSourceBegBates.Visible = True
+				_nativeFileNameSourceIdentifier.Visible = True
 				Me.Text = "Relativity Desktop Client: Export Production"
 				Me.Size = New System.Drawing.Size(588, 340)
 				Me.MaximumSize = New System.Drawing.Size(588, 340)
