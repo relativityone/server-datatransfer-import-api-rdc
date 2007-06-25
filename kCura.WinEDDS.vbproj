@@ -454,6 +454,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Types\ExportNativeWithFilenameFrom.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Types\FileInfo.vb"
                     SubType = "Code"
                     BuildAction = "Compile"

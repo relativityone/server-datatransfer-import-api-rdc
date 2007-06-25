@@ -25,6 +25,7 @@ Namespace kCura.WinEDDS
 		Protected _loadFileExtension As String
 		Protected _imagePrecedence As Pair()
 		Protected _loadFilesPrefix As String
+		Private _exportNativesToFileNamedFrom As kCura.WinEDDS.ExportNativeWithFilenameFrom = ExportNativeWithFilenameFrom.Identifier
 
 #Region "Public Properties"
 
@@ -247,6 +248,14 @@ Namespace kCura.WinEDDS
 			End Get
 			Set(ByVal value As Boolean)
 				_exportImages = value
+			End Set
+		End Property
+		Public Property ExportNativesToFileNamedFrom() As kCura.WinEDDS.ExportNativeWithFilenameFrom
+			Get
+				Return _exportNativesToFileNamedFrom
+			End Get
+			Set(ByVal value As kCura.WinEDDS.ExportNativeWithFilenameFrom)
+				_exportNativesToFileNamedFrom = value
 			End Set
 		End Property
 

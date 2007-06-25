@@ -11,6 +11,7 @@ Namespace kCura.WinEDDS.Exporters
 		Private _nativeFileGuid As String = ""
 		Private _dataRow As System.Data.DataRow
 		Private _nativeTempLocation As String = ""
+		Private _productionBeginBates As String = ""
 
 		Public Property DataRow() As System.Data.DataRow
 			Get
@@ -121,6 +122,16 @@ Namespace kCura.WinEDDS.Exporters
 			End Get
 		End Property
 
+		Public ReadOnly Property ProductionBeginBatesFileName() As String
+			Get
+				If Not NativeExtension = "" Then
+					Return ProductionBeginBates & "." & NativeExtension
+				Else
+					Return ProductionBeginBates
+				End If
+			End Get
+		End Property
+
 		Public ReadOnly Property NativeCount() As Int64
 			Get
 				If Me.NativeFileGuid = "" Then
@@ -137,5 +148,15 @@ Namespace kCura.WinEDDS.Exporters
 				Return Me.Images.Count
 			End Get
 		End Property
+
+		Public Property ProductionBeginBates() As String
+			Get
+				Return _productionBeginBates
+			End Get
+			Set(ByVal value As String)
+				_productionBeginBates = value
+			End Set
+		End Property
+
 	End Class
 End Namespace

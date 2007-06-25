@@ -19,6 +19,8 @@ Namespace kCura.WinEDDS
 		Private _halt As Boolean
 		Private _volumeManager As VolumeManager
 		Private _productionManager As kCura.WinEDDS.Service.ProductionManager
+		Private _exportNativesToFileNamedFrom As kCura.WinEDDS.ExportNativeWithFilenameFrom
+		Private _beginBatesColumn As String = ""
 
 #End Region
 
@@ -46,6 +48,14 @@ Namespace kCura.WinEDDS
 			End Get
 			Set(ByVal value As System.Collections.ArrayList)
 				_columnFormats = value
+			End Set
+		End Property
+		Public Property ExportNativesToFileNamedFrom() As kCura.WinEDDS.ExportNativeWithFilenameFrom
+			Get
+				Return _exportNativesToFileNamedFrom
+			End Get
+			Set(ByVal value As kCura.WinEDDS.ExportNativeWithFilenameFrom)
+				_exportNativesToFileNamedFrom = value
 			End Set
 		End Property
 
@@ -161,6 +171,9 @@ Namespace kCura.WinEDDS
 			For i = 0 To documentArtifactIDs.Length - 1
 				Dim documentInfo As New Exporters.DocumentExportInfo
 				Dim nativeRow As System.Data.DataRowView = GetNativeRow(natives, documentArtifactIDs(i))
+				If Me.ExportNativesToFileNamedFrom = ExportNativeWithFilenameFrom.Production Then
+					documentInfo.ProductionBeginBates = nativeRow(_beginBatesColumn).ToString
+				End If
 				Dim identifierColumnName As String = kCura.DynamicFields.Types.FieldColumnNameHelper.GetSqlFriendlyName(Me.ExportFile.IdentifierColumnName)
 				documentInfo.IdentifierValue = docRows(i)(identifierColumnName).ToString
 				documentInfo.Images = Me.PrepareImages(images, productionImages, documentArtifactIDs(i), documentInfo.IdentifierValue, documentInfo, Me.ExportFile.ImagePrecedence)
@@ -395,6 +408,10 @@ Namespace kCura.WinEDDS
 					table = _searchManager.RetrieveSearchFields(Me.ExportFile.CaseArtifactID, Me.ExportFile.ArtifactID).Tables(0)
 				Case ExportFile.ExportType.Production
 					table = _searchManager.RetrieveSearchFieldsForProduction(Me.ExportFile.CaseArtifactID, Me.ExportFile.ArtifactID).Tables(0)
+					Dim row As System.Data.DataRow
+					For Each row In table.Rows
+						If row("ColumnType").ToString.ToLower = "beginbates" Then _beginBatesColumn = row("ColumnName").ToString
+					Next
 			End Select
 
 			For count = 0 To table.Rows.Count - 1

@@ -162,18 +162,25 @@ Namespace kCura.WinEDDS
 			Dim nativeLocation As String = ""
 			If Me.Settings.ExportNative Then
 				Dim localFilePath As String = Me.Settings.FolderPath
+				Dim nativeFileName As String
+				Select Case _parent.ExportNativesToFileNamedFrom
+					Case ExportNativeWithFilenameFrom.Identifier
+						nativeFileName = documentInfo.NativeFileName
+					Case ExportNativeWithFilenameFrom.Production
+						nativeFileName = documentInfo.ProductionBeginBatesFileName
+				End Select
 				If localFilePath.Chars(localFilePath.Length - 1) <> "\"c Then localFilePath &= "\"
 				localFilePath &= Me.CurrentVolumeLabel & "\" & Me.CurrentNativeSubdirectoryLabel & "\"
 				If Not System.IO.Directory.Exists(localFilePath) Then System.IO.Directory.CreateDirectory(localFilePath)
-				localFilePath &= documentInfo.NativeFileName
-				Me.ExportNative(localFilePath, documentInfo.NativeFileGuid, documentInfo.DocumentArtifactID, documentInfo.NativeFileName, documentInfo.NativeTempLocation)
+				localFilePath &= nativeFileName
+				Me.ExportNative(localFilePath, documentInfo.NativeFileGuid, documentInfo.DocumentArtifactID, nativeFileName, documentInfo.NativeTempLocation)
 				If documentInfo.NativeTempLocation = "" Then
 					nativeLocation = ""
 				Else
 					If Me.Settings.UseAbsolutePaths Then
 						nativeLocation = localFilePath
 					Else
-						nativeLocation = ".\" & Me.CurrentVolumeLabel & "\" & Me.CurrentNativeSubdirectoryLabel & "\" & documentInfo.NativeFileName
+						nativeLocation = ".\" & Me.CurrentVolumeLabel & "\" & Me.CurrentNativeSubdirectoryLabel & "\" & nativeFileName
 					End If
 				End If
 			End If
