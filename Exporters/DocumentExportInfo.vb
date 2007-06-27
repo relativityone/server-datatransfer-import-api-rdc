@@ -114,21 +114,25 @@ Namespace kCura.WinEDDS.Exporters
 
 		Public ReadOnly Property NativeFileName() As String
 			Get
+				Dim retval As String
 				If Not NativeExtension = "" Then
-					Return IdentifierValue & "." & NativeExtension
+					retval = IdentifierValue & "." & NativeExtension
 				Else
-					Return IdentifierValue
+					retval = IdentifierValue
 				End If
+				Return kCura.Utility.File.ConvertIllegalCharactersInFilename(retval)
 			End Get
 		End Property
 
 		Public ReadOnly Property ProductionBeginBatesFileName() As String
 			Get
+				Dim retval As String
 				If Not NativeExtension = "" Then
-					Return ProductionBeginBates & "." & NativeExtension
+					retval = ProductionBeginBates & "." & NativeExtension
 				Else
-					Return ProductionBeginBates
+					retval = ProductionBeginBates
 				End If
+				Return kCura.Utility.File.ConvertIllegalCharactersInFilename(retval)
 			End Get
 		End Property
 
