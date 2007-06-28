@@ -74,6 +74,7 @@ Namespace kCura.WinEDDS
 			Me.TotalDocuments = 1
 			Me.ExportFile = exportFile
 			Me.ExportFile.FolderPath = Me.ExportFile.FolderPath + "\"
+			Me.ExportNativesToFileNamedFrom = exportFile.ExportNativesToFileNamedFrom
 		End Sub
 
 #End Region
@@ -172,7 +173,7 @@ Namespace kCura.WinEDDS
 				Dim documentInfo As New Exporters.DocumentExportInfo
 				Dim nativeRow As System.Data.DataRowView = GetNativeRow(natives, documentArtifactIDs(i))
 				If Me.ExportNativesToFileNamedFrom = ExportNativeWithFilenameFrom.Production Then
-					documentInfo.ProductionBeginBates = nativeRow(_beginBatesColumn).ToString
+					documentInfo.ProductionBeginBates = docRows(i)(_beginBatesColumn).ToString
 				End If
 				Dim identifierColumnName As String = kCura.DynamicFields.Types.FieldColumnNameHelper.GetSqlFriendlyName(Me.ExportFile.IdentifierColumnName)
 				documentInfo.IdentifierValue = docRows(i)(identifierColumnName).ToString
