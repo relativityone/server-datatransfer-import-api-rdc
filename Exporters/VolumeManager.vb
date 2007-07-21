@@ -253,7 +253,11 @@ Namespace kCura.WinEDDS
 
 		Private Function DownloadImage(ByVal image As Exporters.ImageExportInfo) As Int64
 			Dim tempFile As String = System.IO.Path.GetTempFileName
-			_downloadManager.DownloadFile(tempFile, image.FileGuid, image.ArtifactID, _settings.CaseArtifactID.ToString)
+			Try
+				_downloadManager.DownloadFile(tempFile, image.FileGuid, image.ArtifactID, _settings.CaseArtifactID.ToString)
+			Catch ex As System.Exception
+				_downloadManager.DownloadFile(tempFile, image.FileGuid, image.ArtifactID, _settings.CaseArtifactID.ToString)
+			End Try
 			image.TempLocation = tempFile
 			Return New System.IO.FileInfo(tempFile).Length
 		End Function
@@ -396,7 +400,11 @@ Namespace kCura.WinEDDS
 		Private Function DownloadNative(ByVal docinfo As Exporters.DocumentExportInfo) As Int64
 			If docinfo.NativeFileGuid = "" Then Return 0
 			Dim tempFile As String = System.IO.Path.GetTempFileName
-			_downloadManager.DownloadFile(tempFile, docinfo.NativeFileGuid, docinfo.DocumentArtifactID, _settings.CaseArtifactID.ToString)
+			Try
+				_downloadManager.DownloadFile(tempFile, docinfo.NativeFileGuid, docinfo.DocumentArtifactID, _settings.CaseArtifactID.ToString)
+			Catch ex As System.Exception
+				_downloadManager.DownloadFile(tempFile, docinfo.NativeFileGuid, docinfo.DocumentArtifactID, _settings.CaseArtifactID.ToString)
+			End Try
 			docinfo.NativeTempLocation = tempFile
 			Return New System.IO.FileInfo(tempFile).Length
 		End Function
