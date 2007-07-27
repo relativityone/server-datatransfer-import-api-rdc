@@ -117,6 +117,7 @@ Namespace kCura.WinEDDS
 				Dim httpWebRequest As System.Net.HttpWebRequest = CType(System.Net.HttpWebRequest.Create(remoteuri), System.Net.HttpWebRequest)
 				httpWebRequest.Credentials = _credentials
 				httpWebRequest.CookieContainer = _cookieContainer
+				httpWebRequest.UnsafeAuthenticatedConnectionSharing = True
 				Dim webResponse As System.Net.WebResponse = httpWebRequest.GetResponse()
 				Dim localStream As System.IO.Stream
 				If Not webResponse Is Nothing Then
