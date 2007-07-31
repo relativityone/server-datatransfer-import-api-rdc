@@ -26,6 +26,7 @@ Namespace kCura.WinEDDS
 			_loadFileImporter = New kCura.WinEDDS.LoadFileImporter(LoadFile, ProcessController, _timeZoneOffset)
 			_newlineCounter = New kCura.Utility.File.LineCounter
 			_newlineCounter.Path = LoadFile.FilePath
+			Me.ProcessObserver.InputArgs = LoadFile.FilePath
 			If (CType(_loadFileImporter.ReadFile(LoadFile.FilePath), Boolean)) Then
 				Me.ProcessObserver.RaiseProcessCompleteEvent(False, _loadFileImporter.ErrorLogFileName)
 			Else
