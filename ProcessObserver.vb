@@ -8,6 +8,7 @@ Namespace kCura.Windows.Process
 		Private _inSafeMode As Boolean
 		Private _outputWriter As System.IO.StreamWriter
 		Private _errorsWriter As System.IO.StreamWriter
+		Private _inputArgs As Object
 
     Public Property InSafeMode() As Boolean
       Get
@@ -17,6 +18,14 @@ Namespace kCura.Windows.Process
         _inSafeMode = value
       End Set
     End Property
+		Public Property InputArgs() As Object
+			Get
+				Return _inputArgs
+			End Get
+			Set(ByVal value As Object)
+				_inputArgs = value
+			End Set
+		End Property
 
 #End Region
 
@@ -90,7 +99,11 @@ Namespace kCura.Windows.Process
 		End Sub
 
 		Public Sub ExportErrorReport(ByVal filename As String)
-			System.IO.File.Move(_errorsFileName, filename)
+			If Not _errorsWriter Is Nothing Then
+				_errorsWriter.Flush()
+				_errorsWriter.Close()
+			End If
+			System.IO.File.Copy(_errorsFileName, filename)
 		End Sub
 
 		Private Sub WriteToFile(ByVal evt As ProcessEvent)

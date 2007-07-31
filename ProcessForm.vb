@@ -53,6 +53,7 @@ Namespace kCura.Windows.Process
 		Friend WithEvents _exportErrorReportBtn As System.Windows.Forms.Button
 		Friend WithEvents _exportErrorFileButton As System.Windows.Forms.Button
 		Friend WithEvents _exportErrorFileDialog As System.Windows.Forms.SaveFileDialog
+		Friend WithEvents _exportErrorFilesTo As System.Windows.Forms.FolderBrowserDialog
 		<System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
 			Dim resources As System.Resources.ResourceManager = New System.Resources.ResourceManager(GetType(ProgressForm))
 			Me._stopImportButton = New System.Windows.Forms.Button
@@ -79,6 +80,7 @@ Namespace kCura.Windows.Process
 			Me._statusBar = New System.Windows.Forms.Label
 			Me._exportErrorsDialog = New System.Windows.Forms.SaveFileDialog
 			Me._exportErrorFileDialog = New System.Windows.Forms.SaveFileDialog
+			Me._exportErrorFilesTo = New System.Windows.Forms.FolderBrowserDialog
 			Me._Tabs.SuspendLayout()
 			Me.SummaryTab.SuspendLayout()
 			Me.ErrorsTab.SuspendLayout()
@@ -302,6 +304,9 @@ Namespace kCura.Windows.Process
 			'_exportErrorFileDialog
 			'
 			'
+			'_exportErrorFilesTo
+			'
+			'
 			'ProgressForm
 			'
 			Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
@@ -507,8 +512,45 @@ Namespace kCura.Windows.Process
 				If exportFilePath <> "" Then
 					_exportErrorFileButton.Visible = True
 					_exportErrorFileLocation = exportFilePath
+					If MsgBox("Errors have occurred in this import. Export error files?", MsgBoxStyle.OKCancel, "") = MsgBoxResult.OK Then
+						Me.ExportErrorFiles()
+					End If
 				End If
 			End If
+		End Sub
+
+		Private Sub ExportErrorFiles()
+			_exportErrorFilesTo.ShowDialog()
+			Dim folderPath As String = _exportErrorFilesTo.SelectedPath
+			If Not folderPath = "" Then
+				folderPath = folderPath.TrimEnd("\"c) & "\"
+			End If
+			Dim rootFileName As String = DirectCast(_processObserver.InputArgs, String)
+			Dim defaultExtension As String
+			If Not rootFileName.IndexOf(".") = -1 Then
+				defaultExtension = rootFileName.Substring(rootFileName.LastIndexOf("."))
+				rootFileName = rootFileName.Substring(0, rootFileName.LastIndexOf("."))
+			Else
+				defaultExtension = ".dat"
+			End If
+			rootFileName.Trim("\"c)
+			If rootFileName.IndexOf("\") <> -1 Then
+				rootFileName = rootFileName.Substring(rootFileName.LastIndexOf("\") + 1)
+			End If
+
+			Dim rootFilePath As String = folderPath & rootFileName
+			Dim datetimeNow As System.DateTime = System.DateTime.Now
+			Dim datetimenowstring As String = datetimeNow.Year & datetimeNow.Month.ToString.PadLeft(2, "0"c) & datetimeNow.Day.ToString.PadLeft(2, "0"c) & datetimeNow.Hour.ToString.PadLeft(2, "0"c) & datetimeNow.Minute.ToString.PadLeft(2, "0"c) & datetimeNow.Second.ToString.PadLeft(2, "0"c)
+
+			Dim errorFilePath As String = rootFilePath & "_ErrorLines_" & datetimenowstring & defaultExtension
+			Dim errorReportPath As String = rootFilePath & "_ErrorReport_" & datetimenowstring & ".csv"
+			Try
+				If System.IO.File.Exists(_exportErrorFileLocation) Then
+					System.IO.File.Copy(_exportErrorFileLocation, errorFilePath)
+				End If
+				_processObserver.ExportErrorReport(errorReportPath)
+			Catch ex As Exception
+			End Try
 		End Sub
 
 		Private Sub _processObserver_OnProcessFatalException(ByVal ex As System.Exception) Handles _processObserver.OnProcessFatalException
@@ -570,6 +612,7 @@ Namespace kCura.Windows.Process
 				ProcessController.HaltProcess(_processId)
 			End If
 		End Sub
+
 	End Class
 
 
