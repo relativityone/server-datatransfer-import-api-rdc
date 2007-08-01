@@ -33,6 +33,7 @@ Namespace kCura.WinEDDS
 		Protected _extractMd5Hash As Boolean
 		Protected _fullTextColumnMapsToFileLocation As Boolean
 		Private _users As UserCollection
+		Protected _sourceFileEncoding As System.Text.Encoding
 
 		Public Property AllCodes() As kCura.Data.DataView
 			Get
@@ -63,11 +64,7 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
-		Public Sub New(ByVal args As LoadFile, ByVal timezoneoffset As Int32)
-			Me.New(args, timezoneoffset, True)
-		End Sub
-
-		Public Sub New(ByVal args As LoadFile, ByVal timezoneoffset As Int32, ByVal autoDetect As Boolean)
+		Public Sub New(ByVal args As LoadFile, ByVal timezoneoffset As Int32, Optional ByVal autoDetect As Boolean = True)
 			MyBase.New(args.RecordDelimiter, args.QuoteDelimiter, args.NewlineDelimiter)
 
 			_docFields = args.FieldMap.DocumentFields
@@ -94,6 +91,7 @@ Namespace kCura.WinEDDS
 			_destinationFolder = args.FolderStructureContainedInColumn
 			_extractMd5Hash = args.ExtractMD5HashFromNativeFile
 			_fullTextColumnMapsToFileLocation = args.FullTextColumnContainsFileLocation
+			_sourceFileEncoding = args.SourceFileEncoding
 		End Sub
 
 #Region "Code Parsing"
@@ -263,7 +261,7 @@ Namespace kCura.WinEDDS
 							Throw New MissingFullTextFileException(Me.CurrentLineNumber, column)
 						Else
 							If forPreview Then
-								Dim sr As New System.IO.StreamReader(value, System.Text.Encoding.Default, True)
+								Dim sr As New System.IO.StreamReader(value, _sourceFileEncoding, True)
 								Dim i As Int32 = 0
 								Dim sb As New System.Text.StringBuilder
 								While sr.Peek <> -1 AndAlso i < 100

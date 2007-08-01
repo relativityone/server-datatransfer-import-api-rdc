@@ -90,7 +90,7 @@ Namespace kCura.WinEDDS
 
 		Public Overrides Function ReadFile(ByVal path As String) As Object
 			Dim earlyexit As Boolean = False
-			Reader = New System.IO.StreamReader(path, System.Text.Encoding.Default)
+			Reader = New System.IO.StreamReader(path, _sourceFileEncoding)
 			Dim filesize As Int64 = Reader.BaseStream.Length
 			Dim stepsize As Int64 = CType(filesize / 100, Int64)
 			ProcessStart(0, filesize, stepsize)
@@ -190,7 +190,7 @@ Namespace kCura.WinEDDS
 				If Not duplicateHashField Is Nothing Then
 					If duplicateHashField.Value = "" Then duplicateHashField.Value = identifierField.Value
 				Else
-					Dim docfield As New DocumentField("MD5 Hash", -1, -1, -1, NullableInt32.Null, NullableInt32.Null)
+					Dim docfield As New DocumentField("MD5 Hash", -1, -1, -1, NullableInt32.Null, NullableInt32.Null, False)
 					If _extractMd5Hash Then
 						docfield.Value = "[Extracted from native]"
 					Else
@@ -202,7 +202,7 @@ Namespace kCura.WinEDDS
 
 			If _uploadFiles Then
 				Dim filePath As String = values(_filePathColumnIndex)
-				Dim docfield As New DocumentField("Native File", -1, -1, -1, NullableInt32.Null, NullableInt32.Null)
+				Dim docfield As New DocumentField("Native File", -1, -1, -1, NullableInt32.Null, NullableInt32.Null, False)
 				If filePath = "" Then
 					docfield.Value = "No File Specified."
 				ElseIf Not System.IO.File.Exists(filePath) Then

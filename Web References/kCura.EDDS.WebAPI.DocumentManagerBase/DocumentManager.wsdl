@@ -199,6 +199,10 @@
               <s:element minOccurs="1" maxOccurs="1" name="Wrapping" type="s:boolean" />
               <s:element minOccurs="1" maxOccurs="1" name="PropogateValueToAllDuplicates" type="s:boolean" />
               <s:element minOccurs="1" maxOccurs="1" name="PropogateValueToEntireGroup" type="s:boolean" />
+              <s:element minOccurs="1" maxOccurs="1" name="LinkLayoutArtifactID" type="s:int" />
+              <s:element minOccurs="0" maxOccurs="1" name="NameValue" type="s:string" />
+              <s:element minOccurs="1" maxOccurs="1" name="LinkType" type="s:boolean" />
+              <s:element minOccurs="1" maxOccurs="1" name="UseUnicodeEncoding" type="s:boolean" />
             </s:sequence>
           </s:extension>
         </s:complexContent>
@@ -217,6 +221,7 @@
           <s:enumeration value="File" />
           <s:enumeration value="Object" />
           <s:enumeration value="User" />
+          <s:enumeration value="LayoutText" />
         </s:restriction>
       </s:simpleType>
       <s:simpleType name="FieldCategory">
@@ -232,6 +237,7 @@
           <s:enumeration value="DuplicateHash" />
           <s:enumeration value="FolderName" />
           <s:enumeration value="FileInfo" />
+          <s:enumeration value="ParentArtifact" />
         </s:restriction>
       </s:simpleType>
       <s:complexType name="Document">
@@ -446,6 +452,21 @@
           </s:sequence>
         </s:complexType>
       </s:element>
+      <s:element name="GetIdentifierFromDocumentArtifactID">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="artifactID" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetIdentifierFromDocumentArtifactIDResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetIdentifierFromDocumentArtifactIDResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
     </s:schema>
     <s:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="http://NullableTypes.SourceForge.Net/NullableInt32XMLSchema" id="NullableInt32">
       <xs:element name="NullableInt32" nillable="true" type="xs:int" />
@@ -554,6 +575,12 @@
   <wsdl:message name="GetPrintImageGuidsSoapOut">
     <wsdl:part name="parameters" element="tns:GetPrintImageGuidsResponse" />
   </wsdl:message>
+  <wsdl:message name="GetIdentifierFromDocumentArtifactIDSoapIn">
+    <wsdl:part name="parameters" element="tns:GetIdentifierFromDocumentArtifactID" />
+  </wsdl:message>
+  <wsdl:message name="GetIdentifierFromDocumentArtifactIDSoapOut">
+    <wsdl:part name="parameters" element="tns:GetIdentifierFromDocumentArtifactIDResponse" />
+  </wsdl:message>
   <wsdl:portType name="DocumentManagerSoap">
     <wsdl:operation name="GetAllDocumentsForCase">
       <wsdl:input message="tns:GetAllDocumentsForCaseSoapIn" />
@@ -618,6 +645,10 @@
     <wsdl:operation name="GetPrintImageGuids">
       <wsdl:input message="tns:GetPrintImageGuidsSoapIn" />
       <wsdl:output message="tns:GetPrintImageGuidsSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetIdentifierFromDocumentArtifactID">
+      <wsdl:input message="tns:GetIdentifierFromDocumentArtifactIDSoapIn" />
+      <wsdl:output message="tns:GetIdentifierFromDocumentArtifactIDSoapOut" />
     </wsdl:operation>
   </wsdl:portType>
   <wsdl:binding name="DocumentManagerSoap" type="tns:DocumentManagerSoap">
@@ -759,6 +790,15 @@
     </wsdl:operation>
     <wsdl:operation name="GetPrintImageGuids">
       <soap:operation soapAction="http://foley.com/EDDS/DocumentManager/GetPrintImageGuids" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetIdentifierFromDocumentArtifactID">
+      <soap:operation soapAction="http://foley.com/EDDS/DocumentManager/GetIdentifierFromDocumentArtifactID" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>

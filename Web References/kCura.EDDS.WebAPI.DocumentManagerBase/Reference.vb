@@ -317,6 +317,24 @@ Namespace kCura.EDDS.WebAPI.DocumentManagerBase
             Dim results() As Object = Me.EndInvoke(asyncResult)
             Return CType(results(0),System.Guid())
         End Function
+        
+        '<remarks/>
+        <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://foley.com/EDDS/DocumentManager/GetIdentifierFromDocumentArtifactID", RequestNamespace:="http://foley.com/EDDS/DocumentManager", ResponseNamespace:="http://foley.com/EDDS/DocumentManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
+        Public Function GetIdentifierFromDocumentArtifactID(ByVal caseContextArtifactID As Integer, ByVal artifactID As Integer) As String
+            Dim results() As Object = Me.Invoke("GetIdentifierFromDocumentArtifactID", New Object() {caseContextArtifactID, artifactID})
+            Return CType(results(0),String)
+        End Function
+        
+        '<remarks/>
+        Public Function BeginGetIdentifierFromDocumentArtifactID(ByVal caseContextArtifactID As Integer, ByVal artifactID As Integer, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("GetIdentifierFromDocumentArtifactID", New Object() {caseContextArtifactID, artifactID}, callback, asyncState)
+        End Function
+        
+        '<remarks/>
+        Public Function EndGetIdentifierFromDocumentArtifactID(ByVal asyncResult As System.IAsyncResult) As String
+            Dim results() As Object = Me.EndInvoke(asyncResult)
+            Return CType(results(0),String)
+        End Function
     End Class
     
     '<remarks/>
@@ -540,6 +558,18 @@ Namespace kCura.EDDS.WebAPI.DocumentManagerBase
         
         '<remarks/>
         Public PropogateValueToEntireGroup As Boolean
+        
+        '<remarks/>
+        Public LinkLayoutArtifactID As Integer
+        
+        '<remarks/>
+        Public NameValue As String
+        
+        '<remarks/>
+        Public LinkType As Boolean
+        
+        '<remarks/>
+        Public UseUnicodeEncoding As Boolean
     End Class
     
     '<remarks/>
@@ -581,6 +611,9 @@ Namespace kCura.EDDS.WebAPI.DocumentManagerBase
         
         '<remarks/>
         User
+        
+        '<remarks/>
+        LayoutText
     End Enum
     
     '<remarks/>
@@ -619,6 +652,9 @@ Namespace kCura.EDDS.WebAPI.DocumentManagerBase
         
         '<remarks/>
         FileInfo
+        
+        '<remarks/>
+        ParentArtifact
     End Enum
     
     '<remarks/>

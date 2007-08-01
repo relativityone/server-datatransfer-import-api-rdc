@@ -182,6 +182,7 @@
               <s:element minOccurs="1" maxOccurs="1" name="FontSize" type="s:int" />
               <s:element minOccurs="1" maxOccurs="1" name="ErrorFlagFieldArtifactID" type="s:int" />
               <s:element minOccurs="0" maxOccurs="1" name="ProductionOrder" type="tns:ArrayOfAnyType" />
+              <s:element minOccurs="1" maxOccurs="1" name="ProductionType" type="tns:ProductionType" />
             </s:sequence>
           </s:extension>
         </s:complexContent>
@@ -221,6 +222,13 @@
           <s:element minOccurs="0" maxOccurs="unbounded" name="anyType" nillable="true" />
         </s:sequence>
       </s:complexType>
+      <s:simpleType name="ProductionType">
+        <s:restriction base="s:string">
+          <s:enumeration value="ImagesAndNativesBoth" />
+          <s:enumeration value="ImagesOnly" />
+          <s:enumeration value="NativesOnly" />
+        </s:restriction>
+      </s:simpleType>
       <s:element name="RetrieveProducedWithSecurity">
         <s:complexType>
           <s:sequence>

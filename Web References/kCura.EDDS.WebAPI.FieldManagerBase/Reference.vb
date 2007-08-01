@@ -180,6 +180,18 @@ Namespace kCura.EDDS.WebAPI.FieldManagerBase
         
         '<remarks/>
         Public PropogateValueToEntireGroup As Boolean
+        
+        '<remarks/>
+        Public LinkLayoutArtifactID As Integer
+        
+        '<remarks/>
+        Public NameValue As String
+        
+        '<remarks/>
+        Public LinkType As Boolean
+        
+        '<remarks/>
+        Public UseUnicodeEncoding As Boolean
     End Class
     
     '<remarks/>
@@ -221,6 +233,9 @@ Namespace kCura.EDDS.WebAPI.FieldManagerBase
         
         '<remarks/>
         User
+        
+        '<remarks/>
+        LayoutText
     End Enum
     
     '<remarks/>
@@ -259,6 +274,9 @@ Namespace kCura.EDDS.WebAPI.FieldManagerBase
         
         '<remarks/>
         FileInfo
+        
+        '<remarks/>
+        ParentArtifact
     End Enum
     
     '<remarks/>

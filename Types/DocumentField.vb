@@ -11,6 +11,7 @@ Namespace kCura.WinEDDS
 		Private _codeTypeID As NullableTypes.NullableInt32
 		Private _fileColumnIndex As Int32
 		Private _fieldLength As NullableTypes.NullableInt32
+		Private _useUnicode As Boolean
 #End Region
 
 #Region "Properties"
@@ -95,6 +96,14 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
+		Public Property UseUnicode() As Boolean
+			Get
+				Return _useUnicode
+			End Get
+			Set(ByVal value As Boolean)
+				_useUnicode = value
+			End Set
+		End Property
 
 		Public Function ToDisplayString() As String
 			Return String.Format("DocumentField[{0},{1},{2},{3},'{4}']", FieldCategoryID, FieldID, FieldName, FieldTypeID, kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(CodeTypeID))
@@ -106,7 +115,7 @@ Namespace kCura.WinEDDS
 
 #Region "Constructors"
 
-		Public Sub New(ByVal fieldName As String, ByVal fieldID As Int32, ByVal fieldTypeID As Int32, ByVal fieldCategoryID As Int32, ByVal codeTypeID As NullableTypes.NullableInt32, ByVal fieldLength As NullableInt32)
+		Public Sub New(ByVal fieldName As String, ByVal fieldID As Int32, ByVal fieldTypeID As Int32, ByVal fieldCategoryID As Int32, ByVal codeTypeID As NullableTypes.NullableInt32, ByVal fieldLength As NullableInt32, ByVal useUnicode As Boolean)
 			MyBase.New()
 			_fieldName = fieldName
 			_fieldID = fieldID
@@ -114,10 +123,11 @@ Namespace kCura.WinEDDS
 			_fieldCategoryID = fieldCategoryID
 			_codeTypeID = codeTypeID
 			_fieldLength = fieldLength
+			_useUnicode = useUnicode
 		End Sub
 
 		Public Sub New(ByVal docField As DocumentField)
-			Me.New(docField.FieldName, docField.FieldID, docField.FieldTypeID, docField.FieldCategoryID, docField.CodeTypeID, docField.FieldLength)
+			Me.New(docField.FieldName, docField.FieldID, docField.FieldTypeID, docField.FieldCategoryID, docField.CodeTypeID, docField.FieldLength, docField.UseUnicode)
 		End Sub
 
 #End Region

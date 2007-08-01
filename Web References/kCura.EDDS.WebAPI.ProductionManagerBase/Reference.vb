@@ -245,6 +245,9 @@ Namespace kCura.EDDS.WebAPI.ProductionManagerBase
         
         '<remarks/>
         Public ProductionOrder() As Object
+        
+        '<remarks/>
+        Public ProductionType As ProductionType
     End Class
     
     '<remarks/>
@@ -311,4 +314,18 @@ Namespace kCura.EDDS.WebAPI.ProductionManagerBase
         '<remarks/>
         Public DeleteFlag As Boolean
     End Class
+    
+    '<remarks/>
+    <System.Xml.Serialization.XmlTypeAttribute([Namespace]:="http://www.kCura.com/EDDS/ProductionManager")>  _
+    Public Enum ProductionType
+        
+        '<remarks/>
+        ImagesAndNativesBoth
+        
+        '<remarks/>
+        ImagesOnly
+        
+        '<remarks/>
+        NativesOnly
+    End Enum
 End Namespace

@@ -246,6 +246,24 @@ Namespace kCura.EDDS.WebAPI.FileManagerBase
             Dim results() As Object = Me.EndInvoke(asyncResult)
             Return CType(results(0),String)
         End Function
+        
+        '<remarks/>
+        <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/FileManager/GetTotalImageCountByArtifactIDs", RequestNamespace:="http://www.kCura.com/EDDS/FileManager", ResponseNamespace:="http://www.kCura.com/EDDS/FileManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
+        Public Function GetTotalImageCountByArtifactIDs(ByVal caseContextArtifactID As Integer, ByVal documentArtifactIDs() As Integer) As Integer
+            Dim results() As Object = Me.Invoke("GetTotalImageCountByArtifactIDs", New Object() {caseContextArtifactID, documentArtifactIDs})
+            Return CType(results(0),Integer)
+        End Function
+        
+        '<remarks/>
+        Public Function BeginGetTotalImageCountByArtifactIDs(ByVal caseContextArtifactID As Integer, ByVal documentArtifactIDs() As Integer, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("GetTotalImageCountByArtifactIDs", New Object() {caseContextArtifactID, documentArtifactIDs}, callback, asyncState)
+        End Function
+        
+        '<remarks/>
+        Public Function EndGetTotalImageCountByArtifactIDs(ByVal asyncResult As System.IAsyncResult) As Integer
+            Dim results() As Object = Me.EndInvoke(asyncResult)
+            Return CType(results(0),Integer)
+        End Function
     End Class
     
     '<remarks/>

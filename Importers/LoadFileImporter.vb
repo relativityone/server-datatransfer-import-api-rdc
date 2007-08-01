@@ -98,7 +98,7 @@ Namespace kCura.WinEDDS
 #Region "Utility"
 
 		Public Function GetColumnNames(ByVal path As String) As String()
-			reader = New System.IO.StreamReader(path, System.Text.Encoding.Default)
+			reader = New System.IO.StreamReader(path, _sourceFileEncoding)
 			Dim columnNames As String() = GetLine
 			If Not _firstLineContainsColumnNames Then
 				Dim i As Int32
@@ -176,7 +176,7 @@ Namespace kCura.WinEDDS
 			If values Is Nothing Then Exit Sub
 			If _errorLogFileName = "" Then
 				_errorLogFileName = System.IO.Path.GetTempFileName()
-				_errorLogWriter = New System.IO.StreamWriter(_errorLogFileName, False, System.Text.Encoding.Default)
+				_errorLogWriter = New System.IO.StreamWriter(_errorLogFileName, False, _sourceFileEncoding)
 				_errorLogWriter.WriteLine(Me.ToDelimetedLine(_columnHeaders))
 			End If
 			_errorLogWriter.WriteLine(Me.ToDelimetedLine(values))
@@ -195,7 +195,7 @@ Namespace kCura.WinEDDS
 		Private Sub InitializeMembers(ByVal path As String)
 			_lineCounter = New kCura.Utility.File.LineCounter
 			_lineCounter.Path = path
-			_lineCounter.CountLines(New kCura.Utility.File.LineCounter.LineCounterArgs(Me.Bound, Me.Delimiter))
+			_lineCounter.CountLines(_sourceFileEncoding, New kCura.Utility.File.LineCounter.LineCounterArgs(Me.Bound, Me.Delimiter))
 			If _createFolderStructure Then
 				_folderCache = New FolderCache(_folderManager, _folderID, _caseArtifactID)
 				Dim openParenIndex As Int32 = _destinationFolder.LastIndexOf("("c) + 1
@@ -851,7 +851,7 @@ Namespace kCura.WinEDDS
 					Dim path As String = _lineCounter.Path
 					_columnHeaders = GetColumnNames(path)
 					_processedDocumentIdentifiers = New Collections.Specialized.NameValueCollection
-					Reader = New System.IO.StreamReader(path, System.Text.Encoding.Default)
+					Reader = New System.IO.StreamReader(path, _sourceFileEncoding)
 					_docsToAdd = New ArrayList
 					_docsToUpdate = New ArrayList
 					_docsToProcess = New ArrayList

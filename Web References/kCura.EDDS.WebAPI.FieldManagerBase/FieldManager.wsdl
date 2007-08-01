@@ -73,6 +73,10 @@
               <s:element minOccurs="1" maxOccurs="1" name="Wrapping" type="s:boolean" />
               <s:element minOccurs="1" maxOccurs="1" name="PropogateValueToAllDuplicates" type="s:boolean" />
               <s:element minOccurs="1" maxOccurs="1" name="PropogateValueToEntireGroup" type="s:boolean" />
+              <s:element minOccurs="1" maxOccurs="1" name="LinkLayoutArtifactID" type="s:int" />
+              <s:element minOccurs="0" maxOccurs="1" name="NameValue" type="s:string" />
+              <s:element minOccurs="1" maxOccurs="1" name="LinkType" type="s:boolean" />
+              <s:element minOccurs="1" maxOccurs="1" name="UseUnicodeEncoding" type="s:boolean" />
             </s:sequence>
           </s:extension>
         </s:complexContent>
@@ -121,6 +125,7 @@
           <s:enumeration value="File" />
           <s:enumeration value="Object" />
           <s:enumeration value="User" />
+          <s:enumeration value="LayoutText" />
         </s:restriction>
       </s:simpleType>
       <s:simpleType name="FieldCategory">
@@ -136,6 +141,7 @@
           <s:enumeration value="DuplicateHash" />
           <s:enumeration value="FolderName" />
           <s:enumeration value="FileInfo" />
+          <s:enumeration value="ParentArtifact" />
         </s:restriction>
       </s:simpleType>
       <s:element name="CreateResponse">
