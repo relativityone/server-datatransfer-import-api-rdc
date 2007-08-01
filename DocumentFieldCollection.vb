@@ -26,8 +26,8 @@ Namespace kCura.WinEDDS.NUnit
 			record.TestDescription = "New"
 			record.RunIntegerCompareTest(0, dfc.Count)
 			record.TestDescription = "Add - count"
-      Dim expected As New kCura.WinEDDS.DocumentField("a", 1, 1, 1, New NullableTypes.NullableInt32(1), NullableInt32.Null)
-      dfc.Add(New kCura.WinEDDS.DocumentField("a", 1, 1, 1, New NullableTypes.NullableInt32(1), NullableInt32.Null))
+			Dim expected As New kCura.WinEDDS.DocumentField("a", 1, 1, 1, New NullableTypes.NullableInt32(1), NullableInt32.Null, False)
+			dfc.Add(New kCura.WinEDDS.DocumentField("a", 1, 1, 1, New NullableTypes.NullableInt32(1), NullableInt32.Null, False))
 			record.RunIntegerCompareTest(dfc.Count, 1)
 			record.TestDescription = "Item - text index"
 			record.RunDocumentFieldCompareTest(expected, dfc.Item("a"))
@@ -74,8 +74,8 @@ Namespace kCura.WinEDDS.NUnit
 			record.TestDescription = "Identifier Fields - count"
 			record.RunIntegerCompareTest(1, dfs.Length)
 			record.TestDescription = "Identifier Fields - content"
-      record.RunDocumentFieldCompareTest(dfs(0), New kCura.WinEDDS.DocumentField("B", 2, 2, 2, NullableInt32.Null, NullableInt32.Null))
-      Dim secondDFCID As New kCura.WinEDDS.DocumentField("B1", 6, 0, 2, New NullableInt32(2), NullableInt32.Null)
+			record.RunDocumentFieldCompareTest(dfs(0), New kCura.WinEDDS.DocumentField("B", 2, 2, 2, NullableInt32.Null, NullableInt32.Null, False))
+			Dim secondDFCID As New kCura.WinEDDS.DocumentField("B1", 6, 0, 2, New NullableInt32(2), NullableInt32.Null, False)
 			dfc.Add(secondDFCID)
 			dfs = dfc.IdentifierFields
 			record.TestDescription = "Identifier Fields - count"
@@ -83,7 +83,7 @@ Namespace kCura.WinEDDS.NUnit
 			record.TestDescription = "Identifier Fields - content1"
 			record.RunDocumentFieldCompareTest(dfs(0), secondDFCID)
 			record.TestDescription = "Identifier Fields - content2"
-      record.RunDocumentFieldCompareTest(dfs(1), New kCura.WinEDDS.DocumentField("B", 2, 2, 2, NullableInt32.Null, NullableInt32.Null))
+			record.RunDocumentFieldCompareTest(dfs(1), New kCura.WinEDDS.DocumentField("B", 2, 2, 2, NullableInt32.Null, NullableInt32.Null, False))
 			Dim names As String() = dfc.IdentifierFieldNames
 			record.TestDescription = "Identifier Field Names 0"
 			record.RunTextCompareTest("B", names(0))

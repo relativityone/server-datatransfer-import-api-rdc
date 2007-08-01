@@ -6,7 +6,7 @@ Namespace kCura.WinEDDS.NUnit
 		<Test()> Public Sub Constructors()
 			Dim record As New kCura.WinEDDS.NUnit.TestMethodRecord
 
-      Dim df1 As New kCura.WinEDDS.DocumentField("Name 1", 1, 2, 3, New NullableTypes.NullableInt32(4), NullableTypes.NullableInt32.Null)
+			Dim df1 As New kCura.WinEDDS.DocumentField("Name 1", 1, 2, 3, New NullableTypes.NullableInt32(4), NullableTypes.NullableInt32.Null, False)
 			With df1
 				record.TestDescription = "New(MemberValues) - FieldName"
 				record.RunTextCompareTest("Name 1", .FieldName)
