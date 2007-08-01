@@ -68,5 +68,17 @@ Namespace kCura.EDDS.WinForm
 			Dim frm As New kCura.EDDS.WinForm.ErrorForm(ex)
 			frm.Show()
 		End Sub
+
+		Public Shared Sub InitializeEncodingDropdown(ByVal ddown As System.Windows.Forms.ComboBox)
+			ddown.Items.Clear()
+			ddown.Items.Add(New WinEDDS.EncodingListItem(System.Text.Encoding.Default, "Default"))
+			ddown.Items.Add(New WinEDDS.EncodingListItem(System.Text.Encoding.Unicode, "Unicode"))
+			ddown.Items.Add(New WinEDDS.EncodingListItem(System.Text.Encoding.ASCII, "ASCII"))
+			ddown.Items.Add(New WinEDDS.EncodingListItem(System.Text.Encoding.BigEndianUnicode, "Unicode (Big-Endian)"))
+			ddown.Items.Add(New WinEDDS.EncodingListItem(System.Text.Encoding.UTF7, "UTF-7"))
+			ddown.Items.Add(New WinEDDS.EncodingListItem(System.Text.Encoding.UTF8, "UTF-8"))
+			ddown.SelectedIndex = 0
+		End Sub
+
 	End Class
 End Namespace

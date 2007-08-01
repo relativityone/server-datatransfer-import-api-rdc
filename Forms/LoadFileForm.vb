@@ -85,6 +85,8 @@ Namespace kCura.EDDS.WinForm
 		Friend WithEvents GroupBox6 As System.Windows.Forms.GroupBox
 		Friend WithEvents GroupBox7 As System.Windows.Forms.GroupBox
 		Friend WithEvents _extractedTextValueContainsFileLocation As System.Windows.Forms.CheckBox
+		Friend WithEvents _encodingDropdown As System.Windows.Forms.ComboBox
+		Friend WithEvents Label8 As System.Windows.Forms.Label
 		<System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
 			Dim resources As System.Resources.ResourceManager = New System.Resources.ResourceManager(GetType(LoadFileForm))
 			Me.OpenFileDialog = New System.Windows.Forms.OpenFileDialog
@@ -142,6 +144,8 @@ Namespace kCura.EDDS.WinForm
 			Me._fileColumns = New kCura.Windows.Forms.TwoListBox
 			Me._fieldMap = New kCura.Windows.Forms.TwoListBox
 			Me.HelpProvider1 = New System.Windows.Forms.HelpProvider
+			Me._encodingDropdown = New System.Windows.Forms.ComboBox
+			Me.Label8 = New System.Windows.Forms.Label
 			Me.GroupBox1.SuspendLayout()
 			Me.TabControl1.SuspendLayout()
 			Me._loadFileTab.SuspendLayout()
@@ -275,6 +279,8 @@ Namespace kCura.EDDS.WinForm
 			'
 			'_loadFileTab
 			'
+			Me._loadFileTab.Controls.Add(Me.Label8)
+			Me._loadFileTab.Controls.Add(Me._encodingDropdown)
 			Me._loadFileTab.Controls.Add(Me.GroupBox20)
 			Me._loadFileTab.Controls.Add(Me._firstLineContainsColumnNames)
 			Me._loadFileTab.Controls.Add(Me.GroupBox2)
@@ -352,7 +358,7 @@ Namespace kCura.EDDS.WinForm
 			Me.GroupBox23.Controls.Add(Me._newLineDelimiter)
 			Me.GroupBox23.Controls.Add(Me.Label2)
 			Me.GroupBox23.Controls.Add(Me._recordDelimiter)
-			Me.GroupBox23.Location = New System.Drawing.Point(12, 100)
+			Me.GroupBox23.Location = New System.Drawing.Point(12, 156)
 			Me.GroupBox23.Name = "GroupBox23"
 			Me.GroupBox23.Size = New System.Drawing.Size(148, 216)
 			Me.GroupBox23.TabIndex = 6
@@ -621,6 +627,22 @@ Namespace kCura.EDDS.WinForm
 			Me._fieldMap.Size = New System.Drawing.Size(360, 276)
 			Me._fieldMap.TabIndex = 1
 			'
+			'_encodingDropdown
+			'
+			Me._encodingDropdown.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+			Me._encodingDropdown.Location = New System.Drawing.Point(12, 124)
+			Me._encodingDropdown.Name = "_encodingDropdown"
+			Me._encodingDropdown.Size = New System.Drawing.Size(148, 21)
+			Me._encodingDropdown.TabIndex = 22
+			'
+			'Label8
+			'
+			Me.Label8.Location = New System.Drawing.Point(12, 108)
+			Me.Label8.Name = "Label8"
+			Me.Label8.Size = New System.Drawing.Size(100, 16)
+			Me.Label8.TabIndex = 23
+			Me.Label8.Text = "Source Encoding"
+			'
 			'LoadFileForm
 			'
 			Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
@@ -723,6 +745,7 @@ Namespace kCura.EDDS.WinForm
 				End If
 			End If
 
+			LoadFile.SourceFileEncoding = DirectCast(_encodingDropdown.SelectedItem, EncodingListItem).Value
 			LoadFile.ExtractFullTextFromNativeFile = _extractFullTextFromNativeFile.Checked
 			LoadFile.FullTextColumnContainsFileLocation = _extractedTextValueContainsFileLocation.Checked
 			LoadFile.LoadNativeFiles = _loadNativeFiles.Checked
@@ -771,6 +794,7 @@ Namespace kCura.EDDS.WinForm
 			kCura.EDDS.WinForm.Utility.InitializeCharacterDropDown(_quoteDelimiter, _loadFile.QuoteDelimiter)
 			kCura.EDDS.WinForm.Utility.InitializeCharacterDropDown(_newLineDelimiter, _loadFile.NewlineDelimiter)
 			kCura.EDDS.WinForm.Utility.InitializeCharacterDropDown(_multiRecordDelimiter, _loadFile.MultiRecordDelimiter)
+			kCura.EDDS.WinForm.Utility.InitializeEncodingDropdown(_encodingDropdown)
 			_filePath.Text = LoadFile.FilePath
 			_importDestinationText.Text = _application.GetCaseFolderPath(LoadFile.DestinationFolderID)
 			_fieldMap.ClearAll()
@@ -1057,7 +1081,7 @@ Namespace kCura.EDDS.WinForm
 			ActionMenuEnabled = ReadyToRun
 		End Sub
 
-		Private Sub _characterDropdown_SelectedIndexChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles _recordDelimiter.SelectedIndexChanged, _quoteDelimiter.SelectedIndexChanged, _newLineDelimiter.SelectedIndexChanged, _multiRecordDelimiter.SelectedIndexChanged
+		Private Sub _characterDropdown_SelectedIndexChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles _recordDelimiter.SelectedIndexChanged, _quoteDelimiter.SelectedIndexChanged, _newLineDelimiter.SelectedIndexChanged, _multiRecordDelimiter.SelectedIndexChanged, _encodingDropdown.SelectedIndexChanged
 			'PopulateLoadFileObject()
 			RefreshNativeFilePathFieldAndFileColumnHeaders()
 		End Sub
@@ -1067,6 +1091,7 @@ Namespace kCura.EDDS.WinForm
 			LoadFile.RecordDelimiter = Chr(CType(_recordDelimiter.SelectedValue, Int32))
 			LoadFile.MultiRecordDelimiter = Chr(CType(_multiRecordDelimiter.SelectedValue, Int32))
 			LoadFile.NewlineDelimiter = Chr(CType(_newLineDelimiter.SelectedValue, Int32))
+			LoadFile.SourceFileEncoding = DirectCast(_encodingDropdown.SelectedItem, EncodingListItem).Value
 		End Sub
 
 		Private Sub BuildMappingFromLoadFile(ByVal casefields As String(), ByVal columnHeaders As String())

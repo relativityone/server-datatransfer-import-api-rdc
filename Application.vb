@@ -84,7 +84,7 @@ Namespace kCura.EDDS.WinForm
 						Dim i As Int32
 						For i = 0 To fields.Length - 1
 							With fields(i)
-								_fields.Add(New DocumentField(.DisplayName, .ArtifactID, .FieldTypeID, .FieldCategoryID, .CodeTypeID, .MaxLength))
+								_fields.Add(New DocumentField(.DisplayName, .ArtifactID, .FieldTypeID, .FieldCategoryID, .CodeTypeID, .MaxLength, .UseUnicodeEncoding))
 							End With
 						Next
 					End If
@@ -107,7 +107,7 @@ Namespace kCura.EDDS.WinForm
 				For i = 0 To fields.Length - 1
 					With fields(i)
 						If fields(i).FieldCategoryID = kCura.DynamicFields.Types.FieldCategory.GroupIdentifier Then
-							Return New DocumentField(.DisplayName, .ArtifactID, .FieldTypeID, .FieldCategoryID, .CodeTypeID, .MaxLength)
+							Return New DocumentField(.DisplayName, .ArtifactID, .FieldTypeID, .FieldCategoryID, .CodeTypeID, .MaxLength, .UseUnicodeEncoding)
 						End If
 					End With
 				Next
