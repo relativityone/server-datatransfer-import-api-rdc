@@ -22,7 +22,7 @@ Namespace kCura.WinEDDS
 		Public CreateFolderStructure As Boolean
 		Public FolderStructureContainedInColumn As String
 		Public FullTextColumnContainsFileLocation As Boolean
-		Public SourceFileEncoding As System.Text.Encoding
+		<NonSerialized()> Public SourceFileEncoding As System.Text.Encoding
 		<NonSerialized()> Public Credentials As Net.NetworkCredential
 		<NonSerialized()> Public _cookieContainer As System.Net.CookieContainer
 		'<NonSerialized()> Public Identity As kCura.EDDS.EDDSIdentity

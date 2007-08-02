@@ -11,7 +11,7 @@ Namespace kCura.WinEDDS
 		Private _codeTypeID As NullableTypes.NullableInt32
 		Private _fileColumnIndex As Int32
 		Private _fieldLength As NullableTypes.NullableInt32
-		Private _useUnicode As Boolean
+		<NonSerialized()> Private _useUnicode As Boolean
 #End Region
 
 #Region "Properties"
