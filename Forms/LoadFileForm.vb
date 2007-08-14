@@ -788,6 +788,16 @@ Namespace kCura.EDDS.WinForm
 			Me.Cursor = System.Windows.Forms.Cursors.Default
 		End Sub
 
+		Private Sub MarkIdentifierField(ByVal fieldNames As String())
+			Dim identifierFields As String() = _application.GetCaseIdentifierFields
+			Dim i As Int32
+			For i = 0 To fieldNames.Length - 1
+				If System.Array.IndexOf(identifierFields, fieldNames(i)) <> -1 Then
+					fieldNames(i) = fieldNames(i) & " [Identifier]"
+				End If
+			Next
+		End Sub
+
 		Public Sub LoadFormControls(ByVal loadFileObjectUpdatedFromFile As Boolean)
 			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
 			kCura.EDDS.WinForm.Utility.InitializeCharacterDropDown(_recordDelimiter, _loadFile.RecordDelimiter)
@@ -830,6 +840,7 @@ Namespace kCura.EDDS.WinForm
 				_buildFolderStructure.Checked = LoadFile.CreateFolderStructure
 				ActionMenuEnabled = ReadyToRun
 			Else
+				Me.MarkIdentifierField(caseFields)
 				_fieldMap.LeftListBoxItems.AddRange(caseFields)
 			End If
 			'_identifiersDropDown.Items.AddRange(_application.IdentiferFieldDropdownPopulator)
@@ -1108,7 +1119,11 @@ Namespace kCura.EDDS.WinForm
 				 Array.IndexOf(casefields, item.DocumentField.FieldName) > -1 AndAlso _
 				 item.NativeFileColumnIndex < columnHeaders.Length _
 				 Then
-					selectedFieldNameList.Add(item.DocumentField.FieldName)
+					If item.DocumentField.FieldCategoryID = kCura.DynamicFields.Types.FieldCategory.Identifier Then
+						selectedFieldNameList.Add(item.DocumentField.FieldName & " [Identifier]")
+					Else
+						selectedFieldNameList.Add(item.DocumentField.FieldName)
+					End If
 					selectedColumnNameList.Add(columnHeaders(item.NativeFileColumnIndex))
 				End If
 			Next

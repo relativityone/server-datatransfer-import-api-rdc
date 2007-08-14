@@ -40,7 +40,7 @@ Namespace kCura.EDDS.WinForm
 				If i >= selectedFields.Count Then
 					docfield = Nothing
 				Else
-					docfield = docFieldList.Item(CType(selectedFields(i), String))
+					docfield = docFieldList.Item(CType(selectedFields(i), String).Replace(" [Identifier]", ""))
 				End If
 				If i >= selectedColumns.Count Then
 					columnIndex = -1
