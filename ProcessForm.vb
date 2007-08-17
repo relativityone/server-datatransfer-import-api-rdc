@@ -520,6 +520,7 @@ Namespace kCura.Windows.Process
 		End Sub
 
 		Private Sub ExportErrorFiles()
+			_exportErrorFilesTo.SelectedPath = System.IO.Directory.GetCurrentDirectory
 			_exportErrorFilesTo.ShowDialog()
 			Dim folderPath As String = _exportErrorFilesTo.SelectedPath
 			If Not folderPath = "" Then
