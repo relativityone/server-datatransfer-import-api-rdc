@@ -3,7 +3,7 @@ Namespace kCura.Windows.Process
 
 #Region "Members"
 
-		Private _tempFileName As String
+		Private _tempFileName As String = ""
 		Private _errorsFileName As String
 		Private _inSafeMode As Boolean
 		Private _outputWriter As System.IO.StreamWriter
@@ -107,7 +107,7 @@ Namespace kCura.Windows.Process
 		End Sub
 
 		Private Sub WriteToFile(ByVal evt As ProcessEvent)
-
+			If Not Config.LogAllEvents Then Exit Sub
 			If Not Me.InSafeMode Then
 				Dim serializer As New System.xml.Serialization.XmlSerializer(evt.GetType)
 				If _outputWriter Is Nothing OrElse _outputWriter.BaseStream Is Nothing Then

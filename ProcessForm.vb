@@ -508,7 +508,7 @@ Namespace kCura.Windows.Process
 				_currentMessageStatus.Text = ""
 				_stopImportButton.Text = "Close"
 				_stopImportButton.Enabled = True
-				_saveOutputButton.Enabled = True
+				_saveOutputButton.Enabled = Config.LogAllEvents
 				If exportFilePath <> "" Then
 					_exportErrorFileButton.Visible = True
 					_exportErrorFileLocation = exportFilePath
@@ -560,7 +560,7 @@ Namespace kCura.Windows.Process
 			_currentRecordLabel.Text = "Fatal Exception Encountered"
 			_hasReceivedFatalError = True
 			'_stopImportButton.Text = "Stop"
-			_saveOutputButton.Enabled = True
+			_saveOutputButton.Enabled = Config.LogAllEvents
 			_summaryOutput.ForeColor = System.Drawing.Color.Red
 			Me.ShowDetail()
 		End Sub
