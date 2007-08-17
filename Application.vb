@@ -1031,6 +1031,7 @@ Namespace kCura.EDDS.WinForm
 		Private Sub _loginForm_OK_Click(ByVal cred As System.Net.NetworkCredential, ByVal openCaseSelector As Boolean) Handles _loginForm.OK_Click
 			_loginForm.Close()
 			Dim userManager As New kCura.WinEDDS.Service.UserManager(cred, _cookieContainer)
+			CheckVersion(cred)
 			Try
 				If userManager.Login(cred.UserName, cred.Password) Then
 					_credential = cred
@@ -1072,16 +1073,16 @@ Namespace kCura.EDDS.WinForm
 
 		Private Sub CheckVersion(ByVal credential As Net.ICredentials)
 			'TODO: Re-implement this for production [NPK 2007.01.22]
-			'Dim relativityManager As New kCura.WinEDDS.Service.RelativityManager(DirectCast(credential, System.Net.NetworkCredential), _cookieContainer)
-			'Dim winRelativityVersion As String = System.Reflection.Assembly.GetExecutingAssembly.FullName.Split(","c)(1).Split("="c)(1)
-			'Dim relativityWebVersion As String = relativityManager.RetrieveRelativityVersion()
+			Dim relativityManager As New kCura.WinEDDS.Service.RelativityManager(DirectCast(credential, System.Net.NetworkCredential), _cookieContainer)
+			Dim winRelativityVersion As String = System.Reflection.Assembly.GetExecutingAssembly.FullName.Split(","c)(1).Split("="c)(1)
+			Dim relativityWebVersion As String = relativityManager.RetrieveRelativityVersion()
 
-			'If winRelativityVersion <> relativityWebVersion Then
-			'	MsgBox(String.Format("Your version of WinRelativity is out of date. You are running version {0}, but version {1} is required.", winRelativityVersion, relativityWebVersion), MsgBoxStyle.Critical, "WinRelativity Version Mismatch")
-			'	ExitApplication()
-			'Else
-			'	Exit Sub
-			'End If
+			If winRelativityVersion <> relativityWebVersion Then
+				MsgBox(String.Format("Your version of WinRelativity is out of date. You are running version {0}, but version {1} is required.", winRelativityVersion, relativityWebVersion), MsgBoxStyle.Critical, "WinRelativity Version Mismatch")
+				ExitApplication()
+			Else
+				Exit Sub
+			End If
 		End Sub
 #End Region
 
