@@ -248,6 +248,18 @@
           </s:sequence>
         </s:complexType>
       </s:element>
+      <s:element name="SetRotationForAll">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="artifactID" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="rotation" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="SetRotationForAllResponse">
+        <s:complexType />
+      </s:element>
     </s:schema>
   </wsdl:types>
   <wsdl:message name="RetrieveByProductionArtifactIDForProductionSoapIn">
@@ -328,6 +340,12 @@
   <wsdl:message name="GetTotalImageCountByArtifactIDsSoapOut">
     <wsdl:part name="parameters" element="tns:GetTotalImageCountByArtifactIDsResponse" />
   </wsdl:message>
+  <wsdl:message name="SetRotationForAllSoapIn">
+    <wsdl:part name="parameters" element="tns:SetRotationForAll" />
+  </wsdl:message>
+  <wsdl:message name="SetRotationForAllSoapOut">
+    <wsdl:part name="parameters" element="tns:SetRotationForAllResponse" />
+  </wsdl:message>
   <wsdl:portType name="FileManagerSoap">
     <wsdl:operation name="RetrieveByProductionArtifactIDForProduction">
       <wsdl:input message="tns:RetrieveByProductionArtifactIDForProductionSoapIn" />
@@ -380,6 +398,10 @@
     <wsdl:operation name="GetTotalImageCountByArtifactIDs">
       <wsdl:input message="tns:GetTotalImageCountByArtifactIDsSoapIn" />
       <wsdl:output message="tns:GetTotalImageCountByArtifactIDsSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="SetRotationForAll">
+      <wsdl:input message="tns:SetRotationForAllSoapIn" />
+      <wsdl:output message="tns:SetRotationForAllSoapOut" />
     </wsdl:operation>
   </wsdl:portType>
   <wsdl:binding name="FileManagerSoap" type="tns:FileManagerSoap">
@@ -494,6 +516,15 @@
     </wsdl:operation>
     <wsdl:operation name="GetTotalImageCountByArtifactIDs">
       <soap:operation soapAction="http://www.kCura.com/EDDS/FileManager/GetTotalImageCountByArtifactIDs" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SetRotationForAll">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/FileManager/SetRotationForAll" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>

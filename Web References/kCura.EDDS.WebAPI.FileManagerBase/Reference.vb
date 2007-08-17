@@ -264,6 +264,22 @@ Namespace kCura.EDDS.WebAPI.FileManagerBase
             Dim results() As Object = Me.EndInvoke(asyncResult)
             Return CType(results(0),Integer)
         End Function
+        
+        '<remarks/>
+        <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/FileManager/SetRotationForAll", RequestNamespace:="http://www.kCura.com/EDDS/FileManager", ResponseNamespace:="http://www.kCura.com/EDDS/FileManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
+        Public Sub SetRotationForAll(ByVal caseContextArtifactID As Integer, ByVal artifactID As Integer, ByVal rotation As Integer)
+            Me.Invoke("SetRotationForAll", New Object() {caseContextArtifactID, artifactID, rotation})
+        End Sub
+        
+        '<remarks/>
+        Public Function BeginSetRotationForAll(ByVal caseContextArtifactID As Integer, ByVal artifactID As Integer, ByVal rotation As Integer, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("SetRotationForAll", New Object() {caseContextArtifactID, artifactID, rotation}, callback, asyncState)
+        End Function
+        
+        '<remarks/>
+        Public Sub EndSetRotationForAll(ByVal asyncResult As System.IAsyncResult)
+            Me.EndInvoke(asyncResult)
+        End Sub
     End Class
     
     '<remarks/>
