@@ -159,13 +159,13 @@ Namespace kCura.WinEDDS
 				Catch ex As System.Exception
 				End Try
 				_timeKeeper.Add("Total", DateTime.Now.Subtract(markStart).TotalMilliseconds)
-				'Dim filenameFolder As String = "C:\UploadFileMetrics\"
-				'Dim now As System.DateTime = System.DateTime.Now
-				'Dim filename As String = String.Format("{0}{1}{2}_{3}{4}{5}.csv", now.Year, now.Month.ToString.PadLeft(2, "0"c), now.Day.ToString.PadLeft(2, "0"c), now.Hour.ToString.PadLeft(2, "0"c), now.Minute.ToString.PadLeft(2, "0"c), now.Second.ToString.PadLeft(2, "0"c))
-				'Dim sw As New System.IO.StreamWriter(filenameFolder & filename)
-				'sw.Write(_timeKeeper.ToCollectionString())
-				'sw.Flush()
-				'sw.Close()
+				Dim filenameFolder As String = "C:\UploadFileMetrics\"
+				Dim now As System.DateTime = System.DateTime.Now
+				Dim filename As String = String.Format("{0}{1}{2}_{3}{4}{5}.csv", now.Year, now.Month.ToString.PadLeft(2, "0"c), now.Day.ToString.PadLeft(2, "0"c), now.Hour.ToString.PadLeft(2, "0"c), now.Minute.ToString.PadLeft(2, "0"c), now.Second.ToString.PadLeft(2, "0"c))
+				Dim sw As New System.IO.StreamWriter(filenameFolder & filename)
+				sw.Write(_timeKeeper.ToCollectionString())
+				sw.Flush()
+				sw.Close()
 				Return True
 			Catch ex As System.Exception
 				WriteFatalError(Me.CurrentLineNumber, ex, line)
@@ -827,7 +827,7 @@ Namespace kCura.WinEDDS
 				Next
 				sb.Append(nl)
 				For Each key In _hashtable.Keys
-					sb.Append((DirectCast(_hashtable(key), Double) / 1000).ToString & tab)
+					sb.Append("""" & (DirectCast(_hashtable(key), Double) / 1000).ToString & """,")
 				Next
 				sb.Append(nl)
 				Return sb.ToString
