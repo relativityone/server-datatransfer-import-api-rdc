@@ -164,5 +164,10 @@ Namespace kCura.EDDS.WinForm
 		Private Sub _cancelButton_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles _cancelButton.Click
 			_application.ExitApplication()
 		End Sub
+
+		Private Sub LoginForm_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles MyBase.Load
+			Me.Focus()
+			_loginTextBox.Focus()
+		End Sub
 	End Class
 End Namespace

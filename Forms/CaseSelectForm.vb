@@ -35,12 +35,14 @@ Namespace kCura.EDDS.WinForm
 		Friend WithEvents NameColumnHeader As System.Windows.Forms.ColumnHeader
 		Friend WithEvents OKButton As System.Windows.Forms.Button
 		Friend WithEvents CancelBtn As System.Windows.Forms.Button
+		Friend WithEvents SearchQuery As System.Windows.Forms.TextBox
 		<System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
 			Dim resources As System.Resources.ResourceManager = New System.Resources.ResourceManager(GetType(CaseSelectForm))
 			Me.OKButton = New System.Windows.Forms.Button
 			Me.CancelBtn = New System.Windows.Forms.Button
 			Me.CaseListView = New System.Windows.Forms.ListView
 			Me.NameColumnHeader = New System.Windows.Forms.ColumnHeader
+			Me.SearchQuery = New System.Windows.Forms.TextBox
 			Me.SuspendLayout()
 			'
 			'OKButton
@@ -67,10 +69,10 @@ Namespace kCura.EDDS.WinForm
 									Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me.CaseListView.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
 			Me.CaseListView.Columns.AddRange(New System.Windows.Forms.ColumnHeader() {Me.NameColumnHeader})
-			Me.CaseListView.Location = New System.Drawing.Point(4, 4)
+			Me.CaseListView.Location = New System.Drawing.Point(4, 28)
 			Me.CaseListView.MultiSelect = False
 			Me.CaseListView.Name = "CaseListView"
-			Me.CaseListView.Size = New System.Drawing.Size(280, 248)
+			Me.CaseListView.Size = New System.Drawing.Size(280, 224)
 			Me.CaseListView.Sorting = System.Windows.Forms.SortOrder.Ascending
 			Me.CaseListView.TabIndex = 6
 			Me.CaseListView.View = System.Windows.Forms.View.Details
@@ -79,10 +81,21 @@ Namespace kCura.EDDS.WinForm
 			'
 			Me.NameColumnHeader.Text = "Name"
 			'
+			'SearchQuery
+			'
+			Me.SearchQuery.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
+									Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+			Me.SearchQuery.Location = New System.Drawing.Point(4, 4)
+			Me.SearchQuery.Name = "SearchQuery"
+			Me.SearchQuery.Size = New System.Drawing.Size(280, 20)
+			Me.SearchQuery.TabIndex = 7
+			Me.SearchQuery.Text = ""
+			'
 			'CaseSelectForm
 			'
 			Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
 			Me.ClientSize = New System.Drawing.Size(288, 285)
+			Me.Controls.Add(Me.SearchQuery)
 			Me.Controls.Add(Me.CaseListView)
 			Me.Controls.Add(Me.CancelBtn)
 			Me.Controls.Add(Me.OKButton)
@@ -110,25 +123,12 @@ Namespace kCura.EDDS.WinForm
 			End Get
 		End Property
 #End Region
-
+		Private _cases As System.Data.DataSet
 		Private Sub CaseSelectForm_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
-			Me.Cursor = Cursors.WaitCursor
-			Dim cases As System.Data.DataSet = _application.GetCases
-			If cases Is Nothing Then
-				Me.Cursor = Cursors.Default
-				Me.Close()
-				Exit Sub
-			End If
-			Dim dt As DataTable = _application.GetCases.Tables(0)
-			Dim row As DataRow
-			For Each row In dt.Rows
-				Dim listItem As New System.Windows.Forms.ListViewItem
-				listItem.Text = CType(row.Item("Name"), String)
-				listItem.Tag = New kCura.EDDS.Types.CaseInfo(row)
-				CaseListView.Items.Add(listItem)
-			Next
-			NameColumnHeader.Width = CaseListView.Width - 6
-			Me.Cursor = Cursors.Default
+			_cases = _application.GetCases
+			Me.LoadCases("")
+			Me.Focus()
+			SearchQuery.Focus()
 		End Sub
 
 		Private Sub CaseListView_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles CaseListView.SelectedIndexChanged
@@ -157,5 +157,32 @@ Namespace kCura.EDDS.WinForm
 		Private Sub CaseListView_DoubleClick(ByVal sender As Object, ByVal e As System.EventArgs) Handles CaseListView.DoubleClick
 			Me.Close()
 		End Sub
+
+		Private Sub LoadCases(ByVal searchText As String)
+			Me.Cursor = Cursors.WaitCursor
+			CaseListView.Items.Clear()
+			If _cases Is Nothing Then
+				Me.Cursor = Cursors.Default
+				Me.Close()
+				Exit Sub
+			End If
+			Dim dt As DataTable = _cases.Tables(0)
+			Dim row As DataRow
+			For Each row In dt.Rows
+				If searchText.Trim = "" OrElse CType(row.Item("Name"), String).ToLower.IndexOf(searchText.Trim.ToLower) <> -1 Then
+					Dim listItem As New System.Windows.Forms.ListViewItem
+					listItem.Text = CType(row.Item("Name"), String)
+					listItem.Tag = New kCura.EDDS.Types.CaseInfo(row)
+					CaseListView.Items.Add(listItem)
+				End If
+			Next
+			NameColumnHeader.Width = CaseListView.Width - 6
+			Me.Cursor = Cursors.Default
+		End Sub
+
+		Private Sub SearchQuery_TextChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles SearchQuery.TextChanged
+			Me.LoadCases(SearchQuery.Text)
+		End Sub
+
 	End Class
 End Namespace
