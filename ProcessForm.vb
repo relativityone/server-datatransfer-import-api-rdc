@@ -434,7 +434,7 @@ Namespace kCura.Windows.Process
 		End Sub
 
 		Private Sub ImportProgressForm_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
-			Me.HideDetail()
+			'Me.HideDetail()
 		End Sub
 
 		Private Sub _saveOutputButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _saveOutputButton.Click
