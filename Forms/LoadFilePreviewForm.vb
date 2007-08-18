@@ -81,8 +81,14 @@ Namespace kCura.EDDS.WinForm
 		Public Sub SetGridDataSource(ByVal ds As DataTable)
 			Dim column As New System.Data.DataColumn
 			Dim tablestyles As New DataGridTableStyle
+			For Each column In ds.Columns
+				Dim col As New HighlightErrorColumn
+				col.MappingName = column.ColumnName
+				col.HeaderText = column.ColumnName
+				tablestyles.GridColumnStyles.Add(col)
+			Next
+			_grid.TableStyles.Add(tablestyles)
 			DataSource = ds
-			tablestyles.DataGrid = _grid
 			_grid.DataSource = ds
 		End Sub
 
@@ -91,40 +97,72 @@ Namespace kCura.EDDS.WinForm
 			Me.DataSource = _application.BuildLoadFileDataSource(DirectCast(args(0), ArrayList))
 			Me.IsError = CType(args(1), Boolean)
 			Me.Invoke(New HandleDataSourceDelegate(AddressOf HandleDataSource))
-			'HandleDataSource(value)
 		End Sub
 
 		Public Sub HandleDataSource()
 			Me.SetGridDataSource(Me.DataSource)
 			If Me.IsError Then Me.Text = "Preview Errors"
-			'Me.Show()
 		End Sub
-		'Public Sub SetGridDataSource(ByVal ds As DataTable)
-		'	Dim column As New System.Data.DataColumn
-		'	Dim tablestyles As New DataGridTableStyle
-		'	DataSource = ds
-		'	tablestyles.DataGrid = _grid
-		'	_grid.DataSource = ds
-		'End Sub
-
-		'Private Sub _thrower_OnEvent(ByVal value As Object) Handles _thrower.OnEvent
-		'	Dim args As Object() = DirectCast(value, Object())
-		'	Me.Invoke(New HandleDataSourceDelegate(AddressOf HandleDataSource))
-		'	HandleDataSource(value)
-		'End Sub
-
-		'Public Sub HandleDataSource(ByVal value As Object)
-		'	Dim args As Object() = DirectCast(value, Object())
-		'	Me.SetGridDataSource(_application.BuildLoadFileDataSource(DirectCast(args(0), ArrayList)))
-		'	If CType(args(1), Boolean) Then
-		'		Me.Text = "Preview Errors"
-		'	End If
-		'	'Me.Show()
-		'End Sub
 
 		Delegate Sub HandleDataSourceDelegate()
 
 	End Class
 
+	Public Class HighlightErrorColumn
+		Inherits DataGridColumnStyle
+
+		Protected Overrides Sub Abort(ByVal rowNum As Integer)
+
+		End Sub
+
+		Protected Overrides Function Commit(ByVal dataSource As System.Windows.Forms.CurrencyManager, ByVal rowNum As Integer) As Boolean
+			Return True
+		End Function
+
+		Protected Overloads Overrides Sub Edit(ByVal source As System.Windows.Forms.CurrencyManager, ByVal rowNum As Integer, ByVal bounds As System.Drawing.Rectangle, ByVal [readOnly] As Boolean, ByVal instantText As String, ByVal cellIsVisible As Boolean)
+
+		End Sub
+
+		Protected Overrides Function GetMinimumHeight() As Integer
+			Return 20
+		End Function
+
+		Protected Overrides Function GetPreferredHeight(ByVal g As System.Drawing.Graphics, ByVal value As Object) As Integer
+			Return 20
+		End Function
+
+		Protected Overrides Function GetPreferredSize(ByVal g As System.Drawing.Graphics, ByVal value As Object) As System.Drawing.Size
+			Return New System.Drawing.Size(100, 20)
+		End Function
+
+		Protected Overloads Overrides Sub Paint(ByVal g As System.Drawing.Graphics, ByVal bounds As System.Drawing.Rectangle, ByVal source As System.Windows.Forms.CurrencyManager, ByVal rowNum As Integer)
+			Me.Paint(g, bounds, source, rowNum, False)
+		End Sub
+
+		Protected Overloads Overrides Sub Paint(ByVal g As System.Drawing.Graphics, ByVal bounds As System.Drawing.Rectangle, ByVal source As System.Windows.Forms.CurrencyManager, ByVal rowNum As Integer, ByVal alignToRight As Boolean)
+			Dim cellcontents As String = Me.GetColumnValueAtRow(source, rowNum).ToString.ToLower
+			If cellcontents.IndexOf("error") <> -1 Then
+				Me.Paint(g, bounds, source, rowNum, Brushes.White, Brushes.Red, alignToRight)
+			Else
+				Me.Paint(g, bounds, source, rowNum, Brushes.White, Brushes.Black, alignToRight)
+			End If
+		End Sub
+
+		Protected Overloads Overrides Sub Paint(ByVal g As Graphics, ByVal bounds As Rectangle, ByVal [source] As CurrencyManager, ByVal rowNum As Integer, ByVal backBrush As Brush, ByVal foreBrush As Brush, ByVal alignToRight As Boolean)
+
+			Dim rect As Rectangle = bounds
+			g.FillRectangle(backBrush, rect)
+			rect.Offset(0, 2)
+			rect.Height -= 2
+			Dim myForeBrush As Brush = foreBrush
+			Dim cellcontents As String = Me.GetColumnValueAtRow(source, rowNum).ToString.ToLower
+			If cellcontents.IndexOf("error") <> -1 Then
+				myForeBrush = Brushes.Red
+				'Me.Paint(g, bounds, source, rowNum, Brushes.White, Brushes.Red, alignToRight)
+			Else
+			End If
+			g.DrawString(cellcontents, Me.DataGridTableStyle.DataGrid.Font, myForeBrush, RectangleF.FromLTRB(rect.X, rect.Y, rect.Right, rect.Bottom))
+		End Sub
+	End Class
 
 End Namespace
