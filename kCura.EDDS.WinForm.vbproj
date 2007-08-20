@@ -337,16 +337,6 @@
                     BuildAction = "EmbeddedResource"
                 />
                 <File
-                    RelPath = "Forms\SearchExportForm.vb"
-                    SubType = "Form"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Forms\SearchExportForm.resx"
-                    DependentUpon = "SearchExportForm.vb"
-                    BuildAction = "EmbeddedResource"
-                />
-                <File
                     RelPath = "Forms\SetWebServiceURL.vb"
                     SubType = "Form"
                     BuildAction = "Compile"

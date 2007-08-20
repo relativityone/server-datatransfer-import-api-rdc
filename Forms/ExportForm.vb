@@ -42,7 +42,6 @@ Public Class ExportForm
 	Friend WithEvents _exportNativeFiles As System.Windows.Forms.CheckBox
 	Friend WithEvents _filtersBox As System.Windows.Forms.GroupBox
 	Friend WithEvents _filters As System.Windows.Forms.ComboBox
-	Friend WithEvents _useAbsolutePaths As System.Windows.Forms.CheckBox
 	Friend WithEvents _exportImages As System.Windows.Forms.CheckBox
 	Friend WithEvents Label1 As System.Windows.Forms.Label
 	Friend WithEvents Label12 As System.Windows.Forms.Label
@@ -64,6 +63,10 @@ Public Class ExportForm
 	Friend WithEvents _productionPrecedenceList As System.Windows.Forms.ListBox
 	Friend WithEvents _nativeFileNameSourceIdentifier As System.Windows.Forms.RadioButton
 	Friend WithEvents _nativeFileNameSourceBegBates As System.Windows.Forms.RadioButton
+	Friend WithEvents _useRelativePaths As System.Windows.Forms.RadioButton
+	Friend WithEvents _useAbsolutePaths As System.Windows.Forms.RadioButton
+	Friend WithEvents _usePrefix As System.Windows.Forms.RadioButton
+	Friend WithEvents _prefixText As System.Windows.Forms.TextBox
 	<System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
 		Dim resources As System.Resources.ResourceManager = New System.Resources.ResourceManager(GetType(ExportForm))
 		Me.MainMenu1 = New System.Windows.Forms.MainMenu
@@ -77,15 +80,20 @@ Public Class ExportForm
 		Me._exportFullText = New System.Windows.Forms.CheckBox
 		Me._filters = New System.Windows.Forms.ComboBox
 		Me.GroupBox3 = New System.Windows.Forms.GroupBox
+		Me._nativeFileNameSourceBegBates = New System.Windows.Forms.RadioButton
+		Me._nativeFileNameSourceIdentifier = New System.Windows.Forms.RadioButton
 		Me._overwriteButton = New System.Windows.Forms.CheckBox
 		Me._browseButton = New System.Windows.Forms.Button
 		Me._folderPath = New System.Windows.Forms.TextBox
 		Me.GroupBox23 = New System.Windows.Forms.GroupBox
+		Me._prefixText = New System.Windows.Forms.TextBox
+		Me._usePrefix = New System.Windows.Forms.RadioButton
+		Me._useAbsolutePaths = New System.Windows.Forms.RadioButton
+		Me._useRelativePaths = New System.Windows.Forms.RadioButton
 		Me.Label12 = New System.Windows.Forms.Label
 		Me._imageFileFormat = New System.Windows.Forms.ComboBox
 		Me.Label1 = New System.Windows.Forms.Label
 		Me._nativeFileFormat = New System.Windows.Forms.ComboBox
-		Me._useAbsolutePaths = New System.Windows.Forms.CheckBox
 		Me._destinationFolderDialog = New System.Windows.Forms.FolderBrowserDialog
 		Me._loadFileCharacterInformation = New System.Windows.Forms.GroupBox
 		Me._multiRecordDelimiter = New System.Windows.Forms.ComboBox
@@ -99,8 +107,6 @@ Public Class ExportForm
 		Me._productionPrecedenceBox = New System.Windows.Forms.GroupBox
 		Me._productionPrecedenceList = New System.Windows.Forms.ListBox
 		Me._pickPrecedenceButton = New System.Windows.Forms.Button
-		Me._nativeFileNameSourceIdentifier = New System.Windows.Forms.RadioButton
-		Me._nativeFileNameSourceBegBates = New System.Windows.Forms.RadioButton
 		Me._filtersBox.SuspendLayout()
 		Me.GroupBox3.SuspendLayout()
 		Me.GroupBox23.SuspendLayout()
@@ -198,6 +204,26 @@ Public Class ExportForm
 		Me.GroupBox3.TabStop = False
 		Me.GroupBox3.Text = "Export Location"
 		'
+		'_nativeFileNameSourceBegBates
+		'
+		Me._nativeFileNameSourceBegBates.Location = New System.Drawing.Point(320, 48)
+		Me._nativeFileNameSourceBegBates.Name = "_nativeFileNameSourceBegBates"
+		Me._nativeFileNameSourceBegBates.Size = New System.Drawing.Size(232, 16)
+		Me._nativeFileNameSourceBegBates.TabIndex = 9
+		Me._nativeFileNameSourceBegBates.Text = "Native files named after begin bates"
+		Me._nativeFileNameSourceBegBates.Visible = False
+		'
+		'_nativeFileNameSourceIdentifier
+		'
+		Me._nativeFileNameSourceIdentifier.Checked = True
+		Me._nativeFileNameSourceIdentifier.Location = New System.Drawing.Point(132, 48)
+		Me._nativeFileNameSourceIdentifier.Name = "_nativeFileNameSourceIdentifier"
+		Me._nativeFileNameSourceIdentifier.Size = New System.Drawing.Size(188, 16)
+		Me._nativeFileNameSourceIdentifier.TabIndex = 8
+		Me._nativeFileNameSourceIdentifier.TabStop = True
+		Me._nativeFileNameSourceIdentifier.Text = "Native files named after identifier"
+		Me._nativeFileNameSourceIdentifier.Visible = False
+		'
 		'_overwriteButton
 		'
 		Me._overwriteButton.Location = New System.Drawing.Point(8, 48)
@@ -225,17 +251,55 @@ Public Class ExportForm
 		'
 		'GroupBox23
 		'
+		Me.GroupBox23.Controls.Add(Me._prefixText)
+		Me.GroupBox23.Controls.Add(Me._usePrefix)
+		Me.GroupBox23.Controls.Add(Me._useAbsolutePaths)
+		Me.GroupBox23.Controls.Add(Me._useRelativePaths)
 		Me.GroupBox23.Controls.Add(Me.Label12)
 		Me.GroupBox23.Controls.Add(Me._imageFileFormat)
 		Me.GroupBox23.Controls.Add(Me.Label1)
 		Me.GroupBox23.Controls.Add(Me._nativeFileFormat)
-		Me.GroupBox23.Controls.Add(Me._useAbsolutePaths)
 		Me.GroupBox23.Location = New System.Drawing.Point(3, 168)
 		Me.GroupBox23.Name = "GroupBox23"
 		Me.GroupBox23.Size = New System.Drawing.Size(281, 120)
 		Me.GroupBox23.TabIndex = 12
 		Me.GroupBox23.TabStop = False
 		Me.GroupBox23.Text = "Export File Formats"
+		'
+		'_prefixText
+		'
+		Me._prefixText.Enabled = False
+		Me._prefixText.Location = New System.Drawing.Point(168, 88)
+		Me._prefixText.Name = "_prefixText"
+		Me._prefixText.Size = New System.Drawing.Size(104, 20)
+		Me._prefixText.TabIndex = 16
+		Me._prefixText.Text = ""
+		'
+		'_usePrefix
+		'
+		Me._usePrefix.Location = New System.Drawing.Point(152, 72)
+		Me._usePrefix.Name = "_usePrefix"
+		Me._usePrefix.Size = New System.Drawing.Size(124, 16)
+		Me._usePrefix.TabIndex = 15
+		Me._usePrefix.Text = "Use Prefix"
+		'
+		'_useAbsolutePaths
+		'
+		Me._useAbsolutePaths.Location = New System.Drawing.Point(152, 52)
+		Me._useAbsolutePaths.Name = "_useAbsolutePaths"
+		Me._useAbsolutePaths.Size = New System.Drawing.Size(124, 16)
+		Me._useAbsolutePaths.TabIndex = 14
+		Me._useAbsolutePaths.Text = "Use Absolute Paths"
+		'
+		'_useRelativePaths
+		'
+		Me._useRelativePaths.Checked = True
+		Me._useRelativePaths.Location = New System.Drawing.Point(152, 32)
+		Me._useRelativePaths.Name = "_useRelativePaths"
+		Me._useRelativePaths.Size = New System.Drawing.Size(124, 16)
+		Me._useRelativePaths.TabIndex = 13
+		Me._useRelativePaths.TabStop = True
+		Me._useRelativePaths.Text = "Use Relative Paths"
 		'
 		'Label12
 		'
@@ -267,19 +331,11 @@ Public Class ExportForm
 		'_nativeFileFormat
 		'
 		Me._nativeFileFormat.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
-		Me._nativeFileFormat.Items.AddRange(New Object() {"Select...", "Comma-separated values (.csv)", "Tab-delimited (.txt)", "Concordance (.dat)", "Custom (.txt)"})
+		Me._nativeFileFormat.Items.AddRange(New Object() {"Select...", "Comma-separated (.csv)", "Tab-delimited (.txt)", "Concordance (.dat)", "Custom (.txt)"})
 		Me._nativeFileFormat.Location = New System.Drawing.Point(8, 40)
 		Me._nativeFileFormat.Name = "_nativeFileFormat"
-		Me._nativeFileFormat.Size = New System.Drawing.Size(268, 21)
+		Me._nativeFileFormat.Size = New System.Drawing.Size(140, 21)
 		Me._nativeFileFormat.TabIndex = 9
-		'
-		'_useAbsolutePaths
-		'
-		Me._useAbsolutePaths.Location = New System.Drawing.Point(152, 92)
-		Me._useAbsolutePaths.Name = "_useAbsolutePaths"
-		Me._useAbsolutePaths.Size = New System.Drawing.Size(124, 16)
-		Me._useAbsolutePaths.TabIndex = 8
-		Me._useAbsolutePaths.Text = "Use Absolute Paths "
 		'
 		'_loadFileCharacterInformation
 		'
@@ -392,26 +448,6 @@ Public Class ExportForm
 		Me._pickPrecedenceButton.TabIndex = 1
 		Me._pickPrecedenceButton.Text = "..."
 		'
-		'_nativeFileNameSourceIdentifier
-		'
-		Me._nativeFileNameSourceIdentifier.Checked = True
-		Me._nativeFileNameSourceIdentifier.Location = New System.Drawing.Point(132, 48)
-		Me._nativeFileNameSourceIdentifier.Name = "_nativeFileNameSourceIdentifier"
-		Me._nativeFileNameSourceIdentifier.Size = New System.Drawing.Size(188, 16)
-		Me._nativeFileNameSourceIdentifier.TabIndex = 8
-		Me._nativeFileNameSourceIdentifier.TabStop = True
-		Me._nativeFileNameSourceIdentifier.Text = "Native files named after identifier"
-		Me._nativeFileNameSourceIdentifier.Visible = False
-		'
-		'_nativeFileNameSourceBegBates
-		'
-		Me._nativeFileNameSourceBegBates.Location = New System.Drawing.Point(320, 48)
-		Me._nativeFileNameSourceBegBates.Name = "_nativeFileNameSourceBegBates"
-		Me._nativeFileNameSourceBegBates.Size = New System.Drawing.Size(232, 16)
-		Me._nativeFileNameSourceBegBates.TabIndex = 9
-		Me._nativeFileNameSourceBegBates.Text = "Native files named after begin bates"
-		Me._nativeFileNameSourceBegBates.Visible = False
-		'
 		'ExportForm
 		'
 		Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
@@ -521,7 +557,15 @@ Public Class ExportForm
 		_exportFile.NewlineDelimiter = Chr(CType(_newLineDelimiter.SelectedValue, Int32))
 
 		_exportFile.CookieContainer = _application.CookieContainer
-		_exportFile.UseAbsolutePaths = _useAbsolutePaths.Checked
+		_exportFile.FilePrefix = ""
+		If _useAbsolutePaths.Checked Then
+			_exportFile.TypeOfExportedFilePath = ExportFile.ExportedFilePathType.Absolute
+		ElseIf _useRelativePaths.Checked Then
+			_exportFile.TypeOfExportedFilePath = ExportFile.ExportedFilePathType.Relative
+		Else
+			_exportFile.TypeOfExportedFilePath = ExportFile.ExportedFilePathType.Prefix
+			_exportFile.FilePrefix = _prefixText.Text
+		End If
 		_exportFile.IdentifierColumnName = _application.GetCaseIdentifierFields(0)
 		_exportFile.RenameFilesToIdentifier = True
 		_exportFile.VolumeInfo = Me.BuildVolumeInfo
@@ -651,7 +695,7 @@ Public Class ExportForm
 
 	Private Sub _nativeFileFormat_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _nativeFileFormat.SelectedIndexChanged
 		Select Case _nativeFileFormat.SelectedItem.ToString
-			Case "Comma-separated values (.csv)"
+			Case "Comma-separated (.csv)"
 				Me.ToggleLoadFileCharacterInformation(False)
 				_recordDelimiter.SelectedValue = Chr(44)
 				_quoteDelimiter.SelectedValue = Chr(34)
@@ -737,5 +781,13 @@ Public Class ExportForm
 
 	Private Sub _volumeInfoForm_VolumeOK(ByVal e As kCura.WinEDDS.Exporters.VolumeInfo) Handles _volumeInfoForm.VolumeOK
 		_volumeInfo = e
+	End Sub
+
+	Private Sub _usePrefix_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _usePrefix.CheckedChanged
+		If _usePrefix.Checked Then
+			_prefixText.Enabled = True
+		Else
+			_prefixText.Enabled = False
+		End If
 	End Sub
 End Class
