@@ -238,9 +238,9 @@ Namespace kCura.WinEDDS
 					End If
 					Me.ExportDocumentImage(localFilePath & image.FileName, image.FileGuid, image.ArtifactID, image.BatesNumber, image.TempLocation)
 					If Me.Settings.UseAbsolutePaths Then
-						Me.CreateImageLogEntry(image.BatesNumber, localFilePath & image.FileName, localFilePath, i = 0, fullTextReader, localFullTextPath <> "", pageOffset)
+						Me.CreateImageLogEntry(image.BatesNumber, localFilePath & image.FileName, localFilePath, i = 0, fullTextReader, localFullTextPath <> "", pageOffset, images.Count)
 					Else
-						Me.CreateImageLogEntry(image.BatesNumber, ".\" & subfolderPath & image.FileName, localFilePath, i = 0, fullTextReader, localFullTextPath <> "", pageOffset)
+						Me.CreateImageLogEntry(image.BatesNumber, ".\" & subfolderPath & image.FileName, localFilePath, i = 0, fullTextReader, localFullTextPath <> "", pageOffset, images.Count)
 					End If
 					i += 1
 				Next
@@ -279,13 +279,13 @@ Namespace kCura.WinEDDS
 			'_parent.DocumentsExported += 1
 		End Sub
 
-		Private Sub CreateImageLogEntry(ByVal batesNumber As String, ByVal copyFile As String, ByVal pathToImage As String, ByVal firstDocument As Boolean, ByVal fullTextReader As System.IO.StreamReader, ByVal expectingTextForPage As Boolean, ByVal pageOffset As Long)
+		Private Sub CreateImageLogEntry(ByVal batesNumber As String, ByVal copyFile As String, ByVal pathToImage As String, ByVal firstDocument As Boolean, ByVal fullTextReader As System.IO.StreamReader, ByVal expectingTextForPage As Boolean, ByVal pageOffset As Long, ByVal numberOfImages As Int32)
 			Dim fullTextGuid As String
 			Dim fullText As String
 			'Dim currentPage As Int32 = count
 			Select Case _settings.LogFileFormat
 				Case LoadFileType.FileFormat.Concordance
-					Me.WriteOpticonLine(batesNumber, firstDocument, copyFile)
+					Me.WriteOpticonLine(batesNumber, firstDocument, copyFile, numberOfImages)
 				Case LoadFileType.FileFormat.IPRO
 					Me.WriteIproImageLine(batesNumber, firstDocument, copyFile)
 				Case LoadFileType.FileFormat.IPRO_FullText
@@ -368,13 +368,12 @@ Namespace kCura.WinEDDS
 			_imageFileWriter.WriteLine(log.ToString)
 		End Sub
 
-		Private Sub WriteOpticonLine(ByVal batesNumber As String, ByVal firstDocument As Boolean, ByVal copyFile As String)
+		Private Sub WriteOpticonLine(ByVal batesNumber As String, ByVal firstDocument As Boolean, ByVal copyFile As String, ByVal imageCount As Int32)
 			Dim log As New System.Text.StringBuilder
 			log.AppendFormat("{0},{1},{2},", batesNumber, Me.CurrentVolumeLabel, copyFile)
-			If firstDocument Then
-				log.Append("Y")
-			End If
+			If firstDocument Then log.Append("Y")
 			log.Append(",,,")
+			If firstDocument Then log.Append(imageCount)
 			_imageFileWriter.WriteLine(log.ToString)
 		End Sub
 #End Region
