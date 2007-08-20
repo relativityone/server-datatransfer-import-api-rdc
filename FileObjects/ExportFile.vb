@@ -17,7 +17,6 @@ Namespace kCura.WinEDDS
 		Protected _exportFullText As Boolean
 		Protected _exportNative As Boolean
 		Protected _logFileFormat As kCura.WinEDDS.LoadFileType.FileFormat
-		Protected _useAbsolutePaths As Boolean
 		Protected _renameFilesToIdentifier As Boolean
 		Protected _identifierColumnName As String
 		Protected _volumeInfo As kCura.WinEDDS.Exporters.VolumeInfo
@@ -25,6 +24,8 @@ Namespace kCura.WinEDDS
 		Protected _loadFileExtension As String
 		Protected _imagePrecedence As Pair()
 		Protected _loadFilesPrefix As String
+		Protected _filePrefix As String
+		Protected _typeOfExportedFilePath As ExportedFilePathType
 		Private _exportNativesToFileNamedFrom As kCura.WinEDDS.ExportNativeWithFilenameFrom = ExportNativeWithFilenameFrom.Identifier
 
 #Region "Public Properties"
@@ -197,15 +198,6 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
-		Public Property UseAbsolutePaths() As Boolean
-			Get
-				Return _useAbsolutePaths
-			End Get
-			Set(ByVal value As Boolean)
-				_useAbsolutePaths = value
-			End Set
-		End Property
-
 		Public Property RenameFilesToIdentifier() As Boolean
 			Get
 				Return _renameFilesToIdentifier
@@ -259,6 +251,25 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
+		Public Property FilePrefix() As String
+			Get
+				Return _filePrefix
+			End Get
+			Set(ByVal value As String)
+				_filePrefix = value
+			End Set
+		End Property
+
+		Public Property TypeOfExportedFilePath() As ExportedFilePathType
+			Get
+				Return _typeOfExportedFilePath
+			End Get
+			Set(ByVal value As ExportedFilePathType)
+				_typeOfExportedFilePath = value
+			End Set
+		End Property
+
+
 #End Region
 
 		Public Sub New()
@@ -284,5 +295,10 @@ Namespace kCura.WinEDDS
 			AncestorSearch
 		End Enum
 
+		Public Enum ExportedFilePathType
+			Relative
+			Absolute
+			Prefix
+		End Enum
 	End Class
 End Namespace

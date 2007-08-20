@@ -177,11 +177,14 @@ Namespace kCura.WinEDDS
 				If documentInfo.NativeTempLocation = "" Then
 					nativeLocation = ""
 				Else
-					If Me.Settings.UseAbsolutePaths Then
-						nativeLocation = localFilePath
-					Else
-						nativeLocation = ".\" & Me.CurrentVolumeLabel & "\" & Me.CurrentNativeSubdirectoryLabel & "\" & nativeFileName
-					End If
+					Select Case Me.Settings.TypeOfExportedFilePath
+						Case ExportFile.ExportedFilePathType.Absolute
+							nativeLocation = localFilePath
+						Case ExportFile.ExportedFilePathType.Relative
+							nativeLocation = ".\" & Me.CurrentVolumeLabel & "\" & Me.CurrentNativeSubdirectoryLabel & "\" & nativeFileName
+						Case ExportFile.ExportedFilePathType.Prefix
+							nativeLocation = Me.Settings.FilePrefix.TrimEnd("\"c) & "\" & Me.CurrentVolumeLabel & "\" & Me.CurrentNativeSubdirectoryLabel & "\" & nativeFileName
+					End Select
 				End If
 			End If
 			If Not _hasWrittenColumnHeaderString Then
@@ -237,11 +240,14 @@ Namespace kCura.WinEDDS
 						End If
 					End If
 					Me.ExportDocumentImage(localFilePath & image.FileName, image.FileGuid, image.ArtifactID, image.BatesNumber, image.TempLocation)
-					If Me.Settings.UseAbsolutePaths Then
-						Me.CreateImageLogEntry(image.BatesNumber, localFilePath & image.FileName, localFilePath, i = 0, fullTextReader, localFullTextPath <> "", pageOffset, images.Count)
-					Else
-						Me.CreateImageLogEntry(image.BatesNumber, ".\" & subfolderPath & image.FileName, localFilePath, i = 0, fullTextReader, localFullTextPath <> "", pageOffset, images.Count)
-					End If
+					Select Case Me.Settings.TypeOfExportedFilePath
+						Case ExportFile.ExportedFilePathType.Absolute
+							Me.CreateImageLogEntry(image.BatesNumber, localFilePath & image.FileName, localFilePath, i = 0, fullTextReader, localFullTextPath <> "", pageOffset, images.Count)
+						Case ExportFile.ExportedFilePathType.Relative
+							Me.CreateImageLogEntry(image.BatesNumber, ".\" & subfolderPath & image.FileName, localFilePath, i = 0, fullTextReader, localFullTextPath <> "", pageOffset, images.Count)
+						Case ExportFile.ExportedFilePathType.Prefix
+							Me.CreateImageLogEntry(image.BatesNumber, Me.Settings.FilePrefix.TrimEnd("\"c) & "\" & subfolderPath & image.FileName, localFilePath, i = 0, fullTextReader, localFullTextPath <> "", pageOffset, images.Count)
+					End Select
 					i += 1
 				Next
 			Catch ex As System.Exception
