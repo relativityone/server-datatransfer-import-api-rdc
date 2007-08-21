@@ -33,6 +33,7 @@ Namespace kCura.WinEDDS
 		Private _folderCache As FolderCache
 		Private _errorLogFileName As String = ""
 		Private _errorLogWriter As System.IO.StreamWriter
+		Private _fullTextField As kCura.EDDS.WebAPI.DocumentManagerBase.Field
 #End Region
 
 #Region "Accessors"
@@ -57,6 +58,16 @@ Namespace kCura.WinEDDS
 					field.FieldCategory = CType(field.FieldCategoryID, kCura.EDDS.WebAPI.DocumentManagerBase.FieldCategory)
 				Next
 				Return _allFields
+			End Get
+		End Property
+
+		Public ReadOnly Property FullTextField() As kCura.EDDS.WebAPI.DocumentManagerBase.Field
+			Get
+				For Each field As kCura.EDDS.WebAPI.DocumentManagerBase.Field In Me.AllDocumentFields
+					If field.FieldCategory = EDDS.WebAPI.DocumentManagerBase.FieldCategory.FullText Then
+						Return field
+					End If
+				Next
 			End Get
 		End Property
 
@@ -411,6 +422,10 @@ Namespace kCura.WinEDDS
 				WriteStatusLine(Windows.Process.EventType.Status, String.Format("Updating document '{0}' in database.", identityValue))
 				docDTO.DocumentAgentFlags.UpdateFullText = extractText
 				docDTO.DocumentAgentFlags.IndexStatus = kCura.EDDS.Types.IndexStatus.IndexLowPriority
+				Dim al As New System.Collections.ArrayList
+				al.AddRange(docDTO.Fields)
+				al.Add(Me.FullTextField)
+				docDTO.Fields = DirectCast(al.ToArray(GetType(kCura.EDDS.WebAPI.DocumentManagerBase.Field)), kCura.EDDS.WebAPI.DocumentManagerBase.Field())
 				SetFieldValues(docDTO, fieldCollection)
 				Dim fileList As New ArrayList
 				If uploadFile Then
