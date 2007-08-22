@@ -108,6 +108,8 @@ Namespace kCura.EDDS.WinForm
 			Me._loadFieldMapDialog = New System.Windows.Forms.OpenFileDialog
 			Me.TabControl1 = New System.Windows.Forms.TabControl
 			Me._loadFileTab = New System.Windows.Forms.TabPage
+			Me.Label8 = New System.Windows.Forms.Label
+			Me._encodingDropdown = New System.Windows.Forms.ComboBox
 			Me.GroupBox20 = New System.Windows.Forms.GroupBox
 			Me._browseButton = New System.Windows.Forms.Button
 			Me._filePath = New System.Windows.Forms.TextBox
@@ -144,8 +146,6 @@ Namespace kCura.EDDS.WinForm
 			Me._fileColumns = New kCura.Windows.Forms.TwoListBox
 			Me._fieldMap = New kCura.Windows.Forms.TwoListBox
 			Me.HelpProvider1 = New System.Windows.Forms.HelpProvider
-			Me._encodingDropdown = New System.Windows.Forms.ComboBox
-			Me.Label8 = New System.Windows.Forms.Label
 			Me.GroupBox1.SuspendLayout()
 			Me.TabControl1.SuspendLayout()
 			Me._loadFileTab.SuspendLayout()
@@ -162,7 +162,7 @@ Namespace kCura.EDDS.WinForm
 			'
 			'OpenFileDialog
 			'
-			Me.OpenFileDialog.Filter = "All files (*.*)|*.*|Text Files (*.txt)|*.txt|Log Files (*.log)|*.log|DAT Files|*." & _
+			Me.OpenFileDialog.Filter = "All files (*.*)|*.*|CSV Files (*.csv)|*.csv|Text Files (*.txt)|*.txt|DAT Files|*." & _
 			"dat"
 			'
 			'GroupBox1
@@ -290,6 +290,22 @@ Namespace kCura.EDDS.WinForm
 			Me._loadFileTab.Size = New System.Drawing.Size(732, 426)
 			Me._loadFileTab.TabIndex = 0
 			Me._loadFileTab.Text = "Load File"
+			'
+			'Label8
+			'
+			Me.Label8.Location = New System.Drawing.Point(12, 108)
+			Me.Label8.Name = "Label8"
+			Me.Label8.Size = New System.Drawing.Size(100, 16)
+			Me.Label8.TabIndex = 23
+			Me.Label8.Text = "Source Encoding"
+			'
+			'_encodingDropdown
+			'
+			Me._encodingDropdown.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+			Me._encodingDropdown.Location = New System.Drawing.Point(12, 124)
+			Me._encodingDropdown.Name = "_encodingDropdown"
+			Me._encodingDropdown.Size = New System.Drawing.Size(148, 21)
+			Me._encodingDropdown.TabIndex = 22
 			'
 			'GroupBox20
 			'
@@ -610,7 +626,7 @@ Namespace kCura.EDDS.WinForm
 			'_fileColumns
 			'
 			Me._fileColumns.KeepButtonsCentered = True
-			Me._fileColumns.LeftOrderControlsVisible = True
+			Me._fileColumns.LeftOrderControlsVisible = False
 			Me._fileColumns.Location = New System.Drawing.Point(372, 148)
 			Me._fileColumns.Name = "_fileColumns"
 			Me._fileColumns.RightOrderControlVisible = False
@@ -623,25 +639,9 @@ Namespace kCura.EDDS.WinForm
 			Me._fieldMap.LeftOrderControlsVisible = False
 			Me._fieldMap.Location = New System.Drawing.Point(4, 148)
 			Me._fieldMap.Name = "_fieldMap"
-			Me._fieldMap.RightOrderControlVisible = True
+			Me._fieldMap.RightOrderControlVisible = False
 			Me._fieldMap.Size = New System.Drawing.Size(360, 276)
 			Me._fieldMap.TabIndex = 1
-			'
-			'_encodingDropdown
-			'
-			Me._encodingDropdown.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
-			Me._encodingDropdown.Location = New System.Drawing.Point(12, 124)
-			Me._encodingDropdown.Name = "_encodingDropdown"
-			Me._encodingDropdown.Size = New System.Drawing.Size(148, 21)
-			Me._encodingDropdown.TabIndex = 22
-			'
-			'Label8
-			'
-			Me.Label8.Location = New System.Drawing.Point(12, 108)
-			Me.Label8.Name = "Label8"
-			Me.Label8.Size = New System.Drawing.Size(100, 16)
-			Me.Label8.TabIndex = 23
-			Me.Label8.Text = "Source Encoding"
 			'
 			'LoadFileForm
 			'
@@ -943,6 +943,23 @@ Namespace kCura.EDDS.WinForm
 				_filePath.Text = OpenFileDialog.FileName
 				PopulateLoadFileObject()
 				RefreshNativeFilePathFieldAndFileColumnHeaders()
+				Dim extension As String = _filePath.Text
+				If extension.IndexOf("\") <> -1 Then
+					extension = extension.Substring(extension.LastIndexOf("\") + 1)
+				End If
+				If extension.IndexOf(".") = -1 Then
+					extension = ""
+				Else
+					extension = extension.Substring(extension.LastIndexOf(".") + 1).ToLower
+				End If
+				Select Case extension
+					Case "csv"
+						_recordDelimiter.SelectedValue = AscW(",")
+						_quoteDelimiter.SelectedValue = AscW("""")
+					Case "dat"
+						_recordDelimiter.SelectedValue = 20
+						_quoteDelimiter.SelectedValue = 254
+				End Select
 			Catch ex As System.IO.IOException
 				MsgBox(ex.Message & Environment.NewLine & "Please close any application that might have a hold on the file before proceeding.", MsgBoxStyle.Exclamation)
 				_filePath.Text = oldfilepath
