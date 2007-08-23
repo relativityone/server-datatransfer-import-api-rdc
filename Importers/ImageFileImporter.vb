@@ -243,12 +243,19 @@ Namespace kCura.WinEDDS
 				If currentDocumentArtifactID > 0 Then
 					If _overwrite.ToLower = "none" Then Throw New OverwriteNoneException(documentIdentifier)
 					imageFileGuids = _fileManager.ReturnFileGuidsForOriginalImages(_fileUploader.CaseArtifactID, currentDocumentArtifactID)
-					If (al.Count <> imageFileGuids.Length) Then
-						Throw New ImageCountMismatchException
+					If al.Count <> imageFileGuids.Length Then
+						If imageFileGuids.Length > 0 Then
+							Throw New ImageCountMismatchException
+						Else
+							Dim imageDTOs As New ArrayList
+							GetImagesForDocument(al, imageDTOs, New kCura.EDDS.Types.FullTextBuilder)
+							_fileManager.CreateImages(_fileUploader.CaseArtifactID, DirectCast(imageDTOs.ToArray(GetType(kCura.EDDS.WebAPI.FileManagerBase.FileInfoBase)), kCura.EDDS.WebAPI.FileManagerBase.FileInfoBase()), currentDocumentArtifactID)
+							imageFileGuids = _fileManager.ReturnFileGuidsForOriginalImages(_fileUploader.CaseArtifactID, currentDocumentArtifactID)
+						End If
 					End If
 				Else
 					If _overwrite.ToLower = "strict" Then Throw New OverwriteStrictException(documentIdentifier)
-					Dim fullTextFileGuid As String = ""		 '_fileUploader.UploadTextAsFile(String.Empty, _folderID, System.Guid.NewGuid.ToString)
+					Dim fullTextFileGuid As String = ""				 '_fileUploader.UploadTextAsFile(String.Empty, _folderID, System.Guid.NewGuid.ToString)
 					currentDocumentArtifactID = CreateDocument(documentIdentifier, fullTextFileGuid, New kCura.EDDS.Types.FullTextBuilder)
 					Dim imageDTOs As New ArrayList
 					GetImagesForDocument(al, imageDTOs, New kCura.EDDS.Types.FullTextBuilder)
