@@ -302,12 +302,16 @@ Namespace kCura.WinEDDS
 			Else
 				Dim validator As New kCura.ImageValidator.ImageValidator
 				Dim path As String = Me.GetFileLocation(values)
-				Try
-					validator.ValidateImage(path)
-				Catch ex As System.Exception
-					Me.RaiseStatusEvent(Windows.Process.EventType.Error, String.Format("Error in '{0}': {1}", path, ex.Message))
-					retval = False
-				End Try
+				If New System.IO.FileInfo(path).Length = 0 Then
+					Me.RaiseStatusEvent(Windows.Process.EventType.Warning, String.Format("Image file specified ( {0} ) is empty.", values(Columns.FileLocation)))
+				Else
+					Try
+						validator.ValidateImage(path)
+					Catch ex As System.Exception
+						Me.RaiseStatusEvent(Windows.Process.EventType.Error, String.Format("Error in '{0}': {1}", path, ex.Message))
+						retval = False
+					End Try
+				End If
 			End If
 			Return retval
 			'check to make sure image is good
