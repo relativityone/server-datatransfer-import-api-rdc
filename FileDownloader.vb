@@ -118,6 +118,7 @@ Namespace kCura.WinEDDS
 				httpWebRequest.Credentials = _credentials
 				httpWebRequest.CookieContainer = _cookieContainer
 				httpWebRequest.UnsafeAuthenticatedConnectionSharing = True
+				httpWebRequest.Headers.Add("SOURCEID", "9AAC98ED-01A4-4111-B66E-D25130875E5D")		 'Verifies WinEDDS as a trusted source with the Distributed environment.
 				Dim webResponse As System.Net.WebResponse = httpWebRequest.GetResponse()
 				Dim localStream As System.IO.Stream
 				If Not webResponse Is Nothing Then
