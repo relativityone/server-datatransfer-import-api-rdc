@@ -142,6 +142,7 @@
           <s:enumeration value="FolderName" />
           <s:enumeration value="FileInfo" />
           <s:enumeration value="ParentArtifact" />
+          <s:enumeration value="MarkupSetMarker" />
         </s:restriction>
       </s:simpleType>
       <s:element name="CreateResponse">

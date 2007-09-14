@@ -183,6 +183,7 @@
               <s:element minOccurs="1" maxOccurs="1" name="ErrorFlagFieldArtifactID" type="s:int" />
               <s:element minOccurs="0" maxOccurs="1" name="ProductionOrder" type="tns:ArrayOfAnyType" />
               <s:element minOccurs="1" maxOccurs="1" name="ProductionType" type="tns:ProductionType" />
+              <s:element minOccurs="1" maxOccurs="1" name="MarkupSet" type="s:int" />
             </s:sequence>
           </s:extension>
         </s:complexContent>

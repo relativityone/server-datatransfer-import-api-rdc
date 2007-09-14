@@ -23,6 +23,16 @@
       <s:element name="UpdateOIXDocumentModeResponse">
         <s:complexType />
       </s:element>
+      <s:element name="UpdateDefaultRedactionText">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="text" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="UpdateDefaultRedactionTextResponse">
+        <s:complexType />
+      </s:element>
       <s:element name="Login">
         <s:complexType>
           <s:sequence>
@@ -107,6 +117,12 @@
   <wsdl:message name="UpdateOIXDocumentModeSoapOut">
     <wsdl:part name="parameters" element="tns:UpdateOIXDocumentModeResponse" />
   </wsdl:message>
+  <wsdl:message name="UpdateDefaultRedactionTextSoapIn">
+    <wsdl:part name="parameters" element="tns:UpdateDefaultRedactionText" />
+  </wsdl:message>
+  <wsdl:message name="UpdateDefaultRedactionTextSoapOut">
+    <wsdl:part name="parameters" element="tns:UpdateDefaultRedactionTextResponse" />
+  </wsdl:message>
   <wsdl:message name="LoginSoapIn">
     <wsdl:part name="parameters" element="tns:Login" />
   </wsdl:message>
@@ -146,6 +162,10 @@
       <wsdl:input message="tns:UpdateOIXDocumentModeSoapIn" />
       <wsdl:output message="tns:UpdateOIXDocumentModeSoapOut" />
     </wsdl:operation>
+    <wsdl:operation name="UpdateDefaultRedactionText">
+      <wsdl:input message="tns:UpdateDefaultRedactionTextSoapIn" />
+      <wsdl:output message="tns:UpdateDefaultRedactionTextSoapOut" />
+    </wsdl:operation>
     <wsdl:operation name="Login">
       <wsdl:input message="tns:LoginSoapIn" />
       <wsdl:output message="tns:LoginSoapOut" />
@@ -180,6 +200,15 @@
     </wsdl:operation>
     <wsdl:operation name="UpdateOIXDocumentMode">
       <soap:operation soapAction="http://www.kCura.com/EDDS/UserManager/UpdateOIXDocumentMode" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="UpdateDefaultRedactionText">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/UserManager/UpdateDefaultRedactionText" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
