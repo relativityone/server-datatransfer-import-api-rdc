@@ -69,6 +69,22 @@ Namespace kCura.EDDS.WebAPI.UserManagerBase
         End Sub
         
         '<remarks/>
+        <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/UserManager/UpdateSelectedMarkupSetArtifactID", RequestNamespace:="http://www.kCura.com/EDDS/UserManager", ResponseNamespace:="http://www.kCura.com/EDDS/UserManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
+        Public Sub UpdateSelectedMarkupSetArtifactID(ByVal selectedMarkupSetArtifactID As Integer)
+            Me.Invoke("UpdateSelectedMarkupSetArtifactID", New Object() {selectedMarkupSetArtifactID})
+        End Sub
+        
+        '<remarks/>
+        Public Function BeginUpdateSelectedMarkupSetArtifactID(ByVal selectedMarkupSetArtifactID As Integer, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("UpdateSelectedMarkupSetArtifactID", New Object() {selectedMarkupSetArtifactID}, callback, asyncState)
+        End Function
+        
+        '<remarks/>
+        Public Sub EndUpdateSelectedMarkupSetArtifactID(ByVal asyncResult As System.IAsyncResult)
+            Me.EndInvoke(asyncResult)
+        End Sub
+        
+        '<remarks/>
         <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/UserManager/UpdateDefaultRedactionText", RequestNamespace:="http://www.kCura.com/EDDS/UserManager", ResponseNamespace:="http://www.kCura.com/EDDS/UserManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
         Public Sub UpdateDefaultRedactionText(ByVal [text] As String)
             Me.Invoke("UpdateDefaultRedactionText", New Object() {[text]})
