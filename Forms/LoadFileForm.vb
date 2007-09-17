@@ -1146,7 +1146,11 @@ Namespace kCura.EDDS.WinForm
 			Next
 			For Each item In _loadFile.FieldMap
 				If Not item.DocumentField Is Nothing AndAlso columnHeaders.Length = 0 AndAlso Array.IndexOf(casefields, item.DocumentField.FieldName) > -1 Then
-					selectedFieldNameList.Add(item.DocumentField.FieldName)
+					If item.DocumentField.FieldCategoryID = kCura.DynamicFields.Types.FieldCategory.Identifier Then
+						selectedFieldNameList.Add(item.DocumentField.FieldName & " [Identifier]")
+					Else
+						selectedFieldNameList.Add(item.DocumentField.FieldName)
+					End If
 				End If
 			Next
 			Dim selectedFieldNames As String() = DirectCast(selectedFieldNameList.ToArray(GetType(String)), String())
@@ -1154,6 +1158,7 @@ Namespace kCura.EDDS.WinForm
 			_fieldMap.RightListBoxItems.AddRange(selectedFieldNames)
 			_fileColumns.LeftListBoxItems.AddRange(selectedColumnNames)
 			Dim name As String
+			Me.MarkIdentifierField(casefields)
 			For Each name In casefields
 				If Array.IndexOf(selectedFieldNames, name) = -1 Then
 					_fieldMap.LeftListBoxItems.Add(name)
@@ -1199,6 +1204,7 @@ Namespace kCura.EDDS.WinForm
 		Private Sub _fileRefreshMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _fileRefreshMenuItem.Click
 			Dim caseFields As String() = _application.GetCaseFields(LoadFile.CaseInfo.ArtifactID, True)
 			If caseFields Is Nothing Then Exit Sub
+			Me.MarkIdentifierField(caseFields)
 			Dim fieldName As String
 			For Each fieldName In caseFields
 				If Not _fieldMap.RightListBoxItems.Contains(fieldName) AndAlso Not _fieldMap.LeftListBoxItems.Contains(fieldName) Then

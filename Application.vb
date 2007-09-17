@@ -974,7 +974,6 @@ Namespace kCura.EDDS.WinForm
 					End If
 				Next
 			End If
-
 			If Not mapItemToRemove Is Nothing Then tempLoadFile.FieldMap.Remove(mapItemToRemove)
 			Return tempLoadFile
 		End Function
