@@ -34,7 +34,7 @@ Namespace kCura.WinEDDS
 					_warningCount += 1
 					Me.ProcessObserver.RaiseWarningEvent(e.DocumentsExported.ToString, e.Message)
 			End Select
-			Me.ProcessObserver.RaiseProgressEvent(e.TotalDocuments, e.DocumentsExported, _warningCount, _errorCount, _startTime, System.DateTime.Now)
+			Me.ProcessObserver.RaiseProgressEvent(e.TotalDocuments, e.DocumentsExported, _warningCount, _errorCount, _startTime, New DateTime)
 		End Sub
 
 		Private Sub _productionExporter_FatalErrorEvent(ByVal message As String, ByVal ex As System.Exception) Handles _searchExporter.FatalErrorEvent
