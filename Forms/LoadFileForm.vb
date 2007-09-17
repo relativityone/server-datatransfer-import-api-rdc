@@ -835,6 +835,7 @@ Namespace kCura.EDDS.WinForm
 					If LoadFile.NativeFilePathColumn <> String.Empty Then
 						_nativeFilePathField.SelectedItem = LoadFile.NativeFilePathColumn
 					End If
+					_extractMd5Hash.Checked = LoadFile.ExtractMD5HashFromNativeFile
 					_extractFullTextFromNativeFile.Checked = LoadFile.ExtractFullTextFromNativeFile
 				End If
 				_buildFolderStructure.Checked = LoadFile.CreateFolderStructure
