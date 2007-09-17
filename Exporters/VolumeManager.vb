@@ -99,7 +99,7 @@ Namespace kCura.WinEDDS
 			_nativeFileWriter = New System.IO.StreamWriter(loadFilePath, False, System.Text.Encoding.Default)
 			Dim logFileExension As String = ""
 			Select Case Me.Settings.LogFileFormat
-				Case LoadFileType.FileFormat.Concordance
+				Case LoadFileType.FileFormat.Opticon
 					logFileExension = ".opt"
 				Case LoadFileType.FileFormat.IPRO
 					logFileExension = ".lfp"
@@ -290,7 +290,7 @@ Namespace kCura.WinEDDS
 			Dim fullText As String
 			'Dim currentPage As Int32 = count
 			Select Case _settings.LogFileFormat
-				Case LoadFileType.FileFormat.Concordance
+				Case LoadFileType.FileFormat.Opticon
 					Me.WriteOpticonLine(batesNumber, firstDocument, copyFile, numberOfImages)
 				Case LoadFileType.FileFormat.IPRO
 					Me.WriteIproImageLine(batesNumber, firstDocument, copyFile)
