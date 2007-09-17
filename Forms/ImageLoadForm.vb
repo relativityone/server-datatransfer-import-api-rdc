@@ -411,6 +411,7 @@ Namespace kCura.EDDS.WinForm
 				Me.ImageLoadFile = _application.ReadImageLoadFile(_loadImageLoadFileDialog.FileName)
 				_overwriteDropdown.SelectedItem = Me.GetOverwriteDropdownItem(ImageLoadFile.Overwrite)
 				_filePath.Text = ImageLoadFile.FileName
+				_replaceFullText.Checked = ImageLoadFile.ReplaceFullText
 			End If
 			Me.ReadyToRun()
 			Me.Cursor = System.Windows.Forms.Cursors.Default
