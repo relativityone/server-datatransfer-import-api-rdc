@@ -908,7 +908,7 @@ Namespace kCura.EDDS.WinForm
 				Case exportFile.ExportType.ParentSearch
 					frm.Text = "Export Folder Progress ..."
 				Case exportFile.ExportType.Production
-					frm.Text = "Export Production Progress ..."
+					frm.Text = "Export Production Set Progress ..."
 			End Select
 			frm.Show()
 			CursorDefault()

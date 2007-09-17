@@ -57,6 +57,7 @@ Namespace kCura.EDDS.WinForm
 			Me.Import = New System.Windows.Forms.MenuItem
 			Me.ImportImageFile = New System.Windows.Forms.MenuItem
 			Me.ImportLoadFIle = New System.Windows.Forms.MenuItem
+			Me.ImportProduction = New System.Windows.Forms.MenuItem
 			Me.ImportFileDirectory = New System.Windows.Forms.MenuItem
 			Me.ImportOutlookDirectory = New System.Windows.Forms.MenuItem
 			Me.ImportSQLDatabase = New System.Windows.Forms.MenuItem
@@ -64,7 +65,6 @@ Namespace kCura.EDDS.WinForm
 			Me.Export = New System.Windows.Forms.MenuItem
 			Me.ExportFolder = New System.Windows.Forms.MenuItem
 			Me.ExportFolderAndSubfolders = New System.Windows.Forms.MenuItem
-			Me.ImportProduction = New System.Windows.Forms.MenuItem
 			Me.SuspendLayout()
 			'
 			'_treeView
@@ -74,7 +74,7 @@ Namespace kCura.EDDS.WinForm
 			Me._treeView.ImageList = Me.ImageList
 			Me._treeView.Location = New System.Drawing.Point(0, 0)
 			Me._treeView.Name = "_treeView"
-			Me._treeView.Size = New System.Drawing.Size(150, 36)
+			Me._treeView.Size = New System.Drawing.Size(150, 17)
 			Me._treeView.Sorted = True
 			Me._treeView.TabIndex = 0
 			'
@@ -114,6 +114,11 @@ Namespace kCura.EDDS.WinForm
 			Me.ImportLoadFIle.Index = 1
 			Me.ImportLoadFIle.Text = "&Load File..."
 			'
+			'ImportProduction
+			'
+			Me.ImportProduction.Index = 2
+			Me.ImportProduction.Text = "Production..."
+			'
 			'ImportFileDirectory
 			'
 			Me.ImportFileDirectory.Index = 3
@@ -147,23 +152,18 @@ Namespace kCura.EDDS.WinForm
 			'ExportFolder
 			'
 			Me.ExportFolder.Index = 0
-			Me.ExportFolder.Text = "&Folders..."
+			Me.ExportFolder.Text = "&Folder..."
 			'
 			'ExportFolderAndSubfolders
 			'
 			Me.ExportFolderAndSubfolders.Index = 1
-			Me.ExportFolderAndSubfolders.Text = "&Folders And Subfolders..."
-			'
-			'ImportProduction
-			'
-			Me.ImportProduction.Index = 2
-			Me.ImportProduction.Text = "Production..."
+			Me.ExportFolderAndSubfolders.Text = "&Folder And Subfolders..."
 			'
 			'CaseFolderExplorer
 			'
 			Me.Controls.Add(Me._treeView)
 			Me.Name = "CaseFolderExplorer"
-			Me.Size = New System.Drawing.Size(150, 36)
+			Me.Size = New System.Drawing.Size(150, 17)
 			Me.ResumeLayout(False)
 
 		End Sub

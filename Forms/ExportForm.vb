@@ -644,7 +644,7 @@ Public Class ExportForm
 				_filtersBox.Text = "Views"
 				Me.Text = "Relativity Desktop Client: Export Folder"
 				If Me.ExportFile.TypeOfExport = ExportFile.ExportType.AncestorSearch Then
-					Me.Text = "Relativity Desktop Client: Export Folders and Subfolders"
+					Me.Text = "Relativity Desktop Client: Export Folder and Subfolders"
 				End If
 			Case ExportFile.ExportType.Production
 				_filters.Text = "Productions"
@@ -652,7 +652,7 @@ Public Class ExportForm
 				_exportImages.Text = "Export Produced Images"
 				_nativeFileNameSourceBegBates.Visible = True
 				_nativeFileNameSourceIdentifier.Visible = True
-				Me.Text = "Relativity Desktop Client: Export Production"
+				Me.Text = "Relativity Desktop Client: Export Production Set"
 				Me.Size = New System.Drawing.Size(588, 340)
 				Me.MaximumSize = New System.Drawing.Size(588, 340)
 				Me.MinimumSize = New System.Drawing.Size(588, 340)

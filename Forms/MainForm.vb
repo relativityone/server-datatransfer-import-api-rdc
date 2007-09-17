@@ -214,28 +214,28 @@ Namespace kCura.EDDS.WinForm
 			Me.EnhancedMenuProvider.SetImageIndex(Me.ToolsExportProductionMenu, -1)
 			Me.ToolsExportProductionMenu.Index = 0
 			Me.ToolsExportProductionMenu.OwnerDraw = True
-			Me.ToolsExportProductionMenu.Text = "Production Files..."
+			Me.ToolsExportProductionMenu.Text = "Production Set..."
 			'
 			'ToolsExportSearchMenu
 			'
 			Me.EnhancedMenuProvider.SetImageIndex(Me.ToolsExportSearchMenu, -1)
 			Me.ToolsExportSearchMenu.Index = 1
 			Me.ToolsExportSearchMenu.OwnerDraw = True
-			Me.ToolsExportSearchMenu.Text = "Search Files..."
+			Me.ToolsExportSearchMenu.Text = "Saved Search..."
 			'
 			'_exportFoldersMenuItem
 			'
 			Me.EnhancedMenuProvider.SetImageIndex(Me._exportFoldersMenuItem, -1)
 			Me._exportFoldersMenuItem.Index = 2
 			Me._exportFoldersMenuItem.OwnerDraw = True
-			Me._exportFoldersMenuItem.Text = "Folders..."
+			Me._exportFoldersMenuItem.Text = "Folder..."
 			'
 			'_exportFoldersAndSubfoldersMenuItem
 			'
 			Me.EnhancedMenuProvider.SetImageIndex(Me._exportFoldersAndSubfoldersMenuItem, -1)
 			Me._exportFoldersAndSubfoldersMenuItem.Index = 3
 			Me._exportFoldersAndSubfoldersMenuItem.OwnerDraw = True
-			Me._exportFoldersAndSubfoldersMenuItem.Text = "Folders and Subfolders..."
+			Me._exportFoldersAndSubfoldersMenuItem.Text = "Folder and Subfolders..."
 			'
 			'_toolsMenu
 			'
