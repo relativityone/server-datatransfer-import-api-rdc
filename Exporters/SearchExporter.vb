@@ -208,7 +208,7 @@ Namespace kCura.WinEDDS
 			Dim fullTexts As New System.Data.DataView
 			Dim i As Int32 = 0
 			If Me.ExportFile.ExportNative Then natives.Table = _searchManager.RetrieveNativesForSearch(Me.ExportFile.CaseArtifactID, kCura.Utility.Array.IntArrayToCSV(documentArtifactIDs)).Tables(0)
-			If Me.ExportFile.ExportFullText Then fullTexts.Table = _searchManager.RetrieveFullTextFilesForSearch(Me.ExportFile.ArtifactID, kCura.Utility.Array.IntArrayToCSV(documentArtifactIDs)).Tables(0)
+			'If Me.ExportFile.ExportFullText Then fullTexts.Table = _searchManager.RetrieveFullTextFilesForSearch(Me.ExportFile.ArtifactID, kCura.Utility.Array.IntArrayToCSV(documentArtifactIDs)).Tables(0)
 			If Me.ExportFile.TypeOfExportedFilePath = ExportFile.ExportedFilePathType.Relative Then
 				System.IO.Directory.SetCurrentDirectory(Me.ExportFile.FolderPath & Me.FolderList.BaseFolder.Path)
 			End If

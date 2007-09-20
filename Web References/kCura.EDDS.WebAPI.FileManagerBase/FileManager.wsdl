@@ -535,6 +535,7 @@
     </wsdl:operation>
   </wsdl:binding>
   <wsdl:service name="FileManager">
+    <documentation xmlns="http://schemas.xmlsoap.org/wsdl/" />
     <wsdl:port name="FileManagerSoap" binding="tns:FileManagerSoap">
       <soap:address location="http://localhost/EDDSWebAPI/FileManager.asmx" />
     </wsdl:port>

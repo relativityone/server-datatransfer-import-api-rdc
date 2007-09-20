@@ -192,6 +192,7 @@
     </wsdl:operation>
   </wsdl:binding>
   <wsdl:service name="CaseManager">
+    <documentation xmlns="http://schemas.xmlsoap.org/wsdl/" />
     <wsdl:port name="CaseManagerSoap" binding="tns:CaseManagerSoap">
       <soap:address location="http://localhost/EDDSWebAPI/CaseManager.asmx" />
     </wsdl:port>

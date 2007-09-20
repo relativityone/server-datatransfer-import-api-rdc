@@ -204,7 +204,7 @@ Namespace kCura.WinEDDS
 							End If
 						End Try
 						If _replaceFullText Then
-							_docManager.AddFullTextToDocumentFromFile(_fileUploader.CaseArtifactID, currentDocumentArtifactID, fullTextFileGuid, fullTextBuilder)
+							_docManager.AddFullTextToDocument(_fileUploader.CaseArtifactID, currentDocumentArtifactID, fullTextBuilder)
 						End If
 						'Update Document
 					Else
@@ -216,13 +216,7 @@ Namespace kCura.WinEDDS
 						Throw New OverwriteStrictException(documentIdentifier)
 					End If
 					GetImagesForDocument(al, fileDTOs, fullTextBuilder)
-					If _replaceFullText Then
-						fullTextFileGuid = _fileUploader.UploadTextAsFile(fullTextBuilder.FullText, _folderID, System.Guid.NewGuid.ToString)
-					Else
-						'fullTextFileGuid = _fileUploader.UploadTextAsFile(String.Empty, _folderID, System.Guid.NewGuid.ToString)
-						fullTextFileGuid = ""
-					End If
-					currentDocumentArtifactID = CreateDocument(documentIdentifier, fullTextFileGuid, fullTextBuilder)
+					currentDocumentArtifactID = CreateDocument(documentIdentifier, fullTextBuilder)
 				End If
 				_fileManager.CreateImages(_fileUploader.CaseArtifactID, DirectCast(fileDTOs.ToArray(GetType(kCura.EDDS.WebAPI.FileManagerBase.FileInfoBase)), kCura.EDDS.WebAPI.FileManagerBase.FileInfoBase()), currentDocumentArtifactID)
 				Return retval
@@ -256,7 +250,7 @@ Namespace kCura.WinEDDS
 				Else
 					If _overwrite.ToLower = "strict" Then Throw New OverwriteStrictException(documentIdentifier)
 					Dim fullTextFileGuid As String = ""				 '_fileUploader.UploadTextAsFile(String.Empty, _folderID, System.Guid.NewGuid.ToString)
-					currentDocumentArtifactID = CreateDocument(documentIdentifier, fullTextFileGuid, New kCura.EDDS.Types.FullTextBuilder)
+					currentDocumentArtifactID = CreateDocument(documentIdentifier, New kCura.EDDS.Types.FullTextBuilder)
 					Dim imageDTOs As New ArrayList
 					GetImagesForDocument(al, imageDTOs, New kCura.EDDS.Types.FullTextBuilder)
 					_fileManager.CreateImages(_fileUploader.CaseArtifactID, DirectCast(imageDTOs.ToArray(GetType(kCura.EDDS.WebAPI.FileManagerBase.FileInfoBase)), kCura.EDDS.WebAPI.FileManagerBase.FileInfoBase()), currentDocumentArtifactID)
@@ -393,11 +387,11 @@ Namespace kCura.WinEDDS
 			End If
 		End Sub
 
-		Private Function CreateDocument(ByVal identifier As String, ByVal fullTextFileName As String, ByVal fullTextBuilder As kCura.EDDS.Types.FullTextBuilder) As Int32
+		Private Function CreateDocument(ByVal identifier As String, ByVal fullTextBuilder As kCura.EDDS.Types.FullTextBuilder) As Int32
 			Dim fieldID As Int32
 			Dim encoder As New System.Text.ASCIIEncoding
 			Try
-				Return _docManager.CreateEmptyDocument(_fileUploader.CaseArtifactID, _folderID, encoder.GetBytes(identifier), fullTextFileName, _selectedIdentifierField, fullTextBuilder)
+				Return _docManager.CreateEmptyDocument(_fileUploader.CaseArtifactID, _folderID, encoder.GetBytes(identifier), _selectedIdentifierField, fullTextBuilder)
 			Catch ex As System.Exception
 				If kCura.WinEDDS.Config.UsesWebAPI Then
 					Throw New CreateDocumentException(ex)

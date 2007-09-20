@@ -216,6 +216,7 @@
     </wsdl:operation>
   </wsdl:binding>
   <wsdl:service name="FieldManager">
+    <documentation xmlns="http://schemas.xmlsoap.org/wsdl/" />
     <wsdl:port name="FieldManagerSoap" binding="tns:FieldManagerSoap">
       <soap:address location="http://localhost/EDDSWebAPI/FieldManager.asmx" />
     </wsdl:port>

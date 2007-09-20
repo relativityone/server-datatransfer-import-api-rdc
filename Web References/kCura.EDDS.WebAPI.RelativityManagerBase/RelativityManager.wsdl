@@ -68,6 +68,7 @@
     </wsdl:operation>
   </wsdl:binding>
   <wsdl:service name="RelativityManager">
+    <documentation xmlns="http://schemas.xmlsoap.org/wsdl/" />
     <wsdl:port name="RelativityManagerSoap" binding="tns:RelativityManagerSoap">
       <soap:address location="http://localhost/EDDSWebAPI/RelativityManager.asmx" />
     </wsdl:port>

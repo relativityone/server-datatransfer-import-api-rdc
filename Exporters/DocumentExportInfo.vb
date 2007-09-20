@@ -5,7 +5,7 @@ Namespace kCura.WinEDDS.Exporters
 		Private _totalFileSize As Int64
 		Private _totalNumberOfFiles As Int64
 		Private _documentArtifactID As Int32
-		Private _fullTextFileGuid As String = ""
+		Private _hasFullText As Boolean
 		Private _identifierValue As String = ""
 		Private _nativeExtension As String = ""
 		Private _nativeFileGuid As String = ""
@@ -40,6 +40,15 @@ Namespace kCura.WinEDDS.Exporters
 			End Set
 		End Property
 
+		Public Property HasFullText() As Boolean
+			Get
+				Return _hasFullText
+			End Get
+			Set(ByVal value As Boolean)
+				_hasFullText = value
+			End Set
+		End Property
+
 		Public Property TotalFileSize() As Int64
 			Get
 				Return _totalFileSize
@@ -55,15 +64,6 @@ Namespace kCura.WinEDDS.Exporters
 			End Get
 			Set(ByVal value As Int64)
 				_totalNumberOfFiles = value
-			End Set
-		End Property
-
-		Public Property FullTextFileGuid() As String
-			Get
-				Return _fullTextFileGuid
-			End Get
-			Set(ByVal value As String)
-				_fullTextFileGuid = value
 			End Set
 		End Property
 

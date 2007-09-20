@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <DiscoveryClientResultsFile xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <Results>
-    <DiscoveryClientResult referenceType="System.Web.Services.Discovery.ContractReference" url="http://localhost/eddswebapi/codemanager.asmx?wsdl" filename="CodeManager.wsdl" />
-    <DiscoveryClientResult referenceType="System.Web.Services.Discovery.DiscoveryDocumentReference" url="http://localhost/eddswebapi/codemanager.asmx?disco" filename="CodeManager.disco" />
+    <DiscoveryClientResult referenceType="System.Web.Services.Discovery.ContractReference" url="http://localhost/EDDSWebAPI/CodeManager.asmx?wsdl" filename="CodeManager.wsdl" />
+    <DiscoveryClientResult referenceType="System.Web.Services.Discovery.DiscoveryDocumentReference" url="http://localhost/EDDSWebAPI/CodeManager.asmx?disco" filename="CodeManager.disco" />
   </Results>
 </DiscoveryClientResultsFile>

@@ -133,6 +133,7 @@
     </wsdl:operation>
   </wsdl:binding>
   <wsdl:service name="CodeManager">
+    <documentation xmlns="http://schemas.xmlsoap.org/wsdl/" />
     <wsdl:port name="CodeManagerSoap" binding="tns:CodeManagerSoap">
       <soap:address location="http://localhost/EDDSWebAPI/CodeManager.asmx" />
     </wsdl:port>

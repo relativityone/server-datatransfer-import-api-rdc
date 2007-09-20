@@ -125,6 +125,7 @@
     </wsdl:operation>
   </wsdl:binding>
   <wsdl:service name="FieldQuery">
+    <documentation xmlns="http://schemas.xmlsoap.org/wsdl/" />
     <wsdl:port name="FieldQuerySoap" binding="tns:FieldQuerySoap">
       <soap:address location="http://localhost/EDDSWebAPI/FieldQuery.asmx" />
     </wsdl:port>

@@ -143,6 +143,7 @@
     </wsdl:operation>
   </wsdl:binding>
   <wsdl:service name="FileIO">
+    <documentation xmlns="http://schemas.xmlsoap.org/wsdl/" />
     <wsdl:port name="FileIOSoap" binding="tns:FileIOSoap">
       <soap:address location="http://localhost/EDDSWebAPI/FileIO.asmx" />
     </wsdl:port>

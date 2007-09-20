@@ -532,58 +532,46 @@ Namespace kCura.WinEDDS
 			Dim docField As DocumentField
 			Dim encoder As New System.Text.UnicodeEncoding
 			Dim value As String
+			Dim removeFullTextField As Boolean = False
 			For Each fieldDTO In documentDTO.Fields
 				docField = selectedFields.Item(fieldDTO.ArtifactID)
 				If docField Is Nothing Then
-					If fieldDTO.FieldCategoryID = kCura.DynamicFields.Types.FieldCategory.FullText Then
-						fieldDTO.Value = String.Empty
-					Else
-						If fieldDTO.Value Is Nothing Then
-							Select Case fieldDTO.FieldType
-								Case kCura.EDDS.WebAPI.DocumentManagerBase.FieldType.Text, kCura.EDDS.WebAPI.DocumentManagerBase.FieldType.Varchar
-									Select Case fieldDTO.FieldCategoryID
-										Case kCura.DynamicFields.Types.FieldCategory.FullText
-											fieldDTO.Value = ""
-										Case Else
-											fieldDTO.Value = encoder.GetBytes(String.Empty)
-									End Select
-									'Case kCura.EDDS.WebAPI.DocumentManagerBase.FieldType.MultiCode, kCura.EDDS.WebAPI.DocumentManagerBase.FieldType.Code
-									'	fieldDTO.Value = New Int32() {}
-								Case Else
-									fieldDTO.Value = String.Empty
-							End Select
+					If fieldDTO.Value Is Nothing Then
+						If fieldDTO.FieldCategory = EDDS.WebAPI.DocumentManagerBase.FieldCategory.FullText Then
+							removeFullTextField = True
 						End If
+						Select Case fieldDTO.FieldType
+							Case kCura.EDDS.WebAPI.DocumentManagerBase.FieldType.Text, kCura.EDDS.WebAPI.DocumentManagerBase.FieldType.Varchar
+								fieldDTO.Value = encoder.GetBytes(String.Empty)
+							Case Else
+								fieldDTO.Value = String.Empty
+						End Select
 					End If
 				Else
 					Select Case fieldDTO.FieldType
 						Case kCura.EDDS.WebAPI.DocumentManagerBase.FieldType.MultiCode, EDDS.WebAPI.DocumentManagerBase.FieldType.Code
 							SetMultiCode(fieldDTO, docField)
 						Case EDDS.WebAPI.DocumentManagerBase.FieldType.Code
-							If docField.FieldCategoryID = kCura.DynamicFields.Types.FieldCategory.FullText Then
-								fieldDTO.Value = _uploader.UploadTextAsFile(docField.Value, _folderid, System.Guid.NewGuid.ToString)
-							Else
-								fieldDTO.Value = docField.Value
-							End If
+							fieldDTO.Value = docField.Value
 						Case EDDS.WebAPI.DocumentManagerBase.FieldType.Text, EDDS.WebAPI.DocumentManagerBase.FieldType.Varchar
-							If docField.FieldCategoryID = kCura.DynamicFields.Types.FieldCategory.FullText Then
-								If _fullTextColumnMapsToFileLocation Then
-									If docField.Value = "" Then
-										fieldDTO.Value = _uploader.UploadTextAsFile(docField.Value, _folderid, System.Guid.NewGuid.ToString)
-									Else
-										fieldDTO.Value = _uploader.UploadFile(docField.Value, _caseArtifactID)
-									End If
-								Else
-									fieldDTO.Value = _uploader.UploadTextAsFile(docField.Value, _folderid, System.Guid.NewGuid.ToString)
-								End If
-							Else
-								fieldDTO.Value = encoder.GetBytes(docField.Value)
-							End If
+							fieldDTO.Value = encoder.GetBytes(docField.Value)
 						Case Else
 							fieldDTO.Value = docField.Value
 					End Select
 				End If
 			Next
 			ManageRequiredField(documentDTO, EDDS.WebAPI.DocumentManagerBase.FieldCategory.GroupIdentifier)
+			If removeFullTextField Then
+				Dim al As New System.Collections.ArrayList
+				al.AddRange(documentDTO.Fields)
+				For Each field As kCura.EDDS.WebAPI.DocumentManagerBase.Field In documentDTO.Fields
+					If field.FieldCategory = EDDS.WebAPI.DocumentManagerBase.FieldCategory.FullText Then
+						al.Remove(field)
+						Exit For
+					End If
+				Next
+				documentDTO.Fields = DirectCast(al.ToArray(GetType(kCura.EDDS.WebAPI.DocumentManagerBase.Field)), kCura.EDDS.WebAPI.DocumentManagerBase.Field())
+			End If
 			fieldDTO = Nothing
 			encoder = Nothing
 			value = Nothing

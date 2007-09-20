@@ -163,7 +163,7 @@ Namespace kCura.WinEDDS
 			Dim productionArtifactID As Int32 = 0
 			If Me.ExportFile.TypeOfExport = ExportFile.ExportType.Production Then productionArtifactID = ExportFile.ArtifactID
 			If Me.ExportFile.ExportNative Then natives.Table = _searchManager.RetrieveNativesForSearch(Me.ExportFile.CaseArtifactID, kCura.Utility.Array.IntArrayToCSV(documentArtifactIDs)).Tables(0)
-			If Me.ExportFile.ExportFullText Then fullTexts.Table = _searchManager.RetrieveFullTextFilesForSearch(Me.ExportFile.ArtifactID, kCura.Utility.Array.IntArrayToCSV(documentArtifactIDs)).Tables(0)
+			If Me.ExportFile.ExportFullText Then fullTexts.Table = _searchManager.RetrieveFullTextExistenceForSearch(Me.ExportFile.CaseArtifactID, documentArtifactIDs).Tables(0)
 			If Me.ExportFile.ExportImages Then
 				images.Table = Me.RetrieveImagesForDocuments(documentArtifactIDs, Me.ExportFile.ImagePrecedence)
 				productionImages.Table = Me.RetrieveProductionImagesForDocuments(documentArtifactIDs, Me.ExportFile.ImagePrecedence)
@@ -178,7 +178,7 @@ Namespace kCura.WinEDDS
 				Dim identifierColumnName As String = kCura.DynamicFields.Types.FieldColumnNameHelper.GetSqlFriendlyName(Me.ExportFile.IdentifierColumnName)
 				documentInfo.IdentifierValue = docRows(i)(identifierColumnName).ToString
 				documentInfo.Images = Me.PrepareImages(images, productionImages, documentArtifactIDs(i), documentInfo.IdentifierValue, documentInfo, Me.ExportFile.ImagePrecedence)
-				documentInfo.FullTextFileGuid = GetFullTextFileGuid(fullTexts.Table, documentArtifactIDs(i))
+				documentInfo.HasFullText = Me.DocumentHasExtractedText(fullTexts, documentArtifactIDs(i))
 				If nativeRow Is Nothing Then
 					documentInfo.NativeFileGuid = ""
 				Else
@@ -371,17 +371,26 @@ Namespace kCura.WinEDDS
 		'	End If
 		'	Return retval
 		'End Function
-		Private Function GetFullTextFileGuid(ByVal dt As System.Data.DataTable, ByVal documentArtifactID As Int32) As String
-			Dim row As System.Data.DataRow
-			If Me.ExportFile.ExportFullText Then
-				For Each row In dt.Rows
-					If CType(row("DocumentArtifactID"), Int32) = documentArtifactID Then
-						Return CType(row("Guid"), String)
-					End If
-				Next
-			Else
-				Return String.Empty
-			End If
+		'Private Function GetFullTextFileGuid(ByVal dt As System.Data.DataTable, ByVal documentArtifactID As Int32) As String
+		'	Dim row As System.Data.DataRow
+		'	If Me.ExportFile.ExportFullText Then
+		'		For Each row In dt.Rows
+		'			If CType(row("DocumentArtifactID"), Int32) = documentArtifactID Then
+		'				Return CType(row("Guid"), String)
+		'			End If
+		'		Next
+		'	Else
+		'		Return String.Empty
+		'	End If
+		'End Function
+
+		Private Function DocumentHasExtractedText(ByVal dv As System.Data.DataView, ByVal documentArtifactID As Int32) As Boolean
+			dv.RowFilter = "ArtifactID = " & documentArtifactID
+			Try
+				Return CType(dv(0)("HasExtractedText"), Boolean)
+			Catch ex As System.Exception
+				Return False
+			End Try
 		End Function
 
 		Private Function GetNativeRow(ByVal dv As System.Data.DataView, ByVal artifactID As Int32) As System.Data.DataRowView

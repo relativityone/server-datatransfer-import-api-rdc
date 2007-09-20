@@ -84,6 +84,11 @@ Namespace kCura.WinEDDS
 		'	Return UploadFile(filePath, contextArtifactID, System.Guid.NewGuid.ToString)
 		'End Function
 
+		Public Function DownloadFullTextFile(ByVal localFilePath As String, ByVal artifactID As Int32, ByVal appID As String) As Boolean
+			Return WebDownloadFile(localFilePath, artifactID, "", appID, True)
+		End Function
+
+
 		Public Function DownloadFile(ByVal localFilePath As String, ByVal remoteFileGuid As String, ByVal artifactID As Int32, ByVal appID As String) As Boolean
 			If Me.UploaderType = Type.Web Then
 				Me.UploaderType = Type.Web
@@ -107,10 +112,14 @@ Namespace kCura.WinEDDS
 			End If
 		End Function
 
-		Private Function WebDownloadFile(ByVal localFilePath As String, ByVal artifactID As Int32, ByVal remoteFileGuid As String, ByVal appID As String) As Boolean
+		Private Function WebDownloadFile(ByVal localFilePath As String, ByVal artifactID As Int32, ByVal remoteFileGuid As String, ByVal appID As String, Optional ByVal forFullText As Boolean = False) As Boolean
 			Try
 				Dim remoteuri As String
-				remoteuri = String.Format("{0}Download.aspx?ArtifactID={1}&GUID={2}&AppID={3}", _downloadUrl, artifactID, remoteFileGuid, appID)
+				If forFullText Then
+					remoteuri = String.Format("{0}Download.aspx?ArtifactID={1}&AppID={2}&ExtractedText=True", _downloadUrl, artifactID, appID)
+				Else
+					remoteuri = String.Format("{0}Download.aspx?ArtifactID={1}&GUID={2}&AppID={3}", _downloadUrl, artifactID, remoteFileGuid, appID)
+				End If
 				If _authenticationToken <> String.Empty Then
 					remoteuri &= String.Format("&AuthenticationToken={0}", _authenticationToken)
 				End If
@@ -118,7 +127,7 @@ Namespace kCura.WinEDDS
 				httpWebRequest.Credentials = _credentials
 				httpWebRequest.CookieContainer = _cookieContainer
 				httpWebRequest.UnsafeAuthenticatedConnectionSharing = True
-				httpWebRequest.Headers.Add("SOURCEID", "9AAC98ED-01A4-4111-B66E-D25130875E5D")		 'Verifies WinEDDS as a trusted source with the Distributed environment.
+				httpWebRequest.Headers.Add("SOURCEID", "9AAC98ED-01A4-4111-B66E-D25130875E5D")				'Verifies WinEDDS as a trusted source with the Distributed environment.
 				Dim webResponse As System.Net.WebResponse = httpWebRequest.GetResponse()
 				Dim localStream As System.IO.Stream
 				If Not webResponse Is Nothing Then

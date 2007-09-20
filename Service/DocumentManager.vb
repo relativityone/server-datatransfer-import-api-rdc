@@ -125,6 +125,7 @@ Namespace kCura.WinEDDS.Service
 		Private Function GetWebAPIFullTextBuilder(ByVal eddsftb As kCura.EDDS.Types.FullTextBuilder) As kCura.edds.WebAPI.DocumentManagerBase.FullTextBuilder
 			Dim wapiftb As New kCura.EDDS.WebAPI.DocumentManagerBase.FullTextBuilder
 			wapiftb.Pages = eddsftb.Pages.ToArray
+			wapiftb.FullText = eddsftb.FullText
 			Return wapiftb
 		End Function
 #End Region
@@ -138,9 +139,9 @@ Namespace kCura.WinEDDS.Service
 			End If
 		End Function
 
-		Public Shadows Function CreateEmptyDocument(ByVal caseContextArtifactID As Int32, ByVal parentFolderID As Int32, ByVal identifierValue As Byte(), ByVal fullTextFileName As String, ByVal identifierColumn As String, ByVal fullTextBuilder As kCura.EDDS.Types.FullTextBuilder) As Int32
+		Public Shadows Function CreateEmptyDocument(ByVal caseContextArtifactID As Int32, ByVal parentFolderID As Int32, ByVal identifierValue As Byte(), ByVal identifierColumn As String, ByVal fullTextBuilder As kCura.EDDS.Types.FullTextBuilder) As Int32
 			If kCura.WinEDDS.Config.UsesWebAPI Then
-				Return MyBase.CreateEmptyDocument(caseContextArtifactID, parentFolderID, identifierValue, fullTextFileName, identifierColumn, GetWebAPIFullTextBuilder(fullTextBuilder))
+				Return MyBase.CreateEmptyDocument(caseContextArtifactID, parentFolderID, identifierValue, identifierColumn, GetWebAPIFullTextBuilder(fullTextBuilder))
 			Else
 				'Return _documentManager.CreateEmptyDocument(_identity, parentFolderID, System.Text.Encoding.ASCII.GetString(identifierValue), fullTextFileName, kCura.EDDS.FieldHelper.GetColumnName(identifierColumn), fullTextBuilder)
 			End If
@@ -219,9 +220,9 @@ Namespace kCura.WinEDDS.Service
 			End If
 		End Sub
 
-		Public Shadows Function AddFullTextToDocumentFromFile(ByVal caseContextArtifactID As Int32, ByVal documentArtifactID As Int32, ByVal fullTextFileName As String, ByVal fullTextBuilder As kCura.EDDS.Types.FullTextBuilder) As Boolean
+		Public Shadows Function AddFullTextToDocument(ByVal caseContextArtifactID As Int32, ByVal documentArtifactID As Int32, ByVal fullTextBuilder As kCura.EDDS.Types.FullTextBuilder) As Boolean
 			If kCura.WinEDDS.Config.UsesWebAPI Then
-				Return MyBase.AddFullTextToDocumentFromFile(caseContextArtifactID, documentArtifactID, fullTextFileName, GetWebAPIFullTextBuilder(fullTextBuilder))
+				Return MyBase.AddFullTextToDocument(caseContextArtifactID, documentArtifactID, GetWebAPIFullTextBuilder(fullTextBuilder))
 			Else
 				'Return _documentManager.AddFullTextToDocumentFromFile(documentArtifactID, fullTextFileName, _identity, fullTextBuilder)
 			End If

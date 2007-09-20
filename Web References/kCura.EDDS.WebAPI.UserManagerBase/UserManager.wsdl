@@ -292,6 +292,7 @@
     </wsdl:operation>
   </wsdl:binding>
   <wsdl:service name="UserManager">
+    <documentation xmlns="http://schemas.xmlsoap.org/wsdl/" />
     <wsdl:port name="UserManagerSoap" binding="tns:UserManagerSoap">
       <soap:address location="http://localhost/EDDSWebAPI/UserManager.asmx" />
     </wsdl:port>
