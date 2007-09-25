@@ -546,6 +546,8 @@ Public Class ExportForm
 				_exportFile.LoadFilesPrefix = DirectCast(_filters.SelectedItem, System.Data.DataRowView)(_filters.DisplayMember).ToString
 				If _nativeFileNameSourceBegBates.Checked Then
 					_exportFile.ExportNativesToFileNamedFrom = ExportNativeWithFilenameFrom.Production
+				Else
+					_exportFile.ExportNativesToFileNamedFrom = ExportNativeWithFilenameFrom.Identifier
 				End If
 		End Select
 		_exportFile.Overwrite = _overwriteButton.Checked
@@ -790,4 +792,5 @@ Public Class ExportForm
 			_prefixText.Enabled = False
 		End If
 	End Sub
+
 End Class
