@@ -258,13 +258,14 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Private Function DownloadImage(ByVal image As Exporters.ImageExportInfo) As Int64
-			Dim tempFile As String = System.IO.Path.GetTempFileName
-			Try
-				_downloadManager.DownloadFile(tempFile, image.FileGuid, image.ArtifactID, _settings.CaseArtifactID.ToString)
-			Catch ex As System.Exception
-				_downloadManager.DownloadFile(tempFile, image.FileGuid, image.ArtifactID, _settings.CaseArtifactID.ToString)
-			End Try
-			image.TempLocation = tempFile
+			If image.FileGuid = "" Then return 0
+				Dim tempFile As String = System.IO.Path.GetTempFileName
+				Try
+					_downloadManager.DownloadFile(tempFile, image.FileGuid, image.ArtifactID, _settings.CaseArtifactID.ToString)
+				Catch ex As System.Exception
+					_downloadManager.DownloadFile(tempFile, image.FileGuid, image.ArtifactID, _settings.CaseArtifactID.ToString)
+				End Try
+				image.TempLocation = tempFile
 			Return New System.IO.FileInfo(tempFile).Length
 		End Function
 

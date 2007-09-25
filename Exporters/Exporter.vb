@@ -292,16 +292,18 @@ Namespace kCura.WinEDDS
 							Dim image As New Exporters.ImageExportInfo
 							image.FileName = drv("ImageFileName").ToString
 							image.FileGuid = drv("ImageGuid").ToString
-							image.ArtifactID = documentArtifactID
-							image.BatesNumber = drv("BatesNumber").ToString
-							image.PageOffset = NullableTypes.HelperFunctions.DBNullConvert.ToNullableInt32(drv("ByteRange"))
-							Dim filenameExtension As String = ""
-							If image.FileName.IndexOf(".") <> -1 Then
-								filenameExtension = "." & image.FileName.Substring(image.FileName.LastIndexOf(".") + 1)
+							If image.FileGuid <> "" Then
+								image.ArtifactID = documentArtifactID
+								image.BatesNumber = drv("BatesNumber").ToString
+								image.PageOffset = NullableTypes.HelperFunctions.DBNullConvert.ToNullableInt32(drv("ByteRange"))
+								Dim filenameExtension As String = ""
+								If image.FileName.IndexOf(".") <> -1 Then
+									filenameExtension = "." & image.FileName.Substring(image.FileName.LastIndexOf(".") + 1)
+								End If
+								image.FileName = image.BatesNumber & filenameExtension
+								retval.Add(image)
+								i += 1
 							End If
-							image.FileName = image.BatesNumber & filenameExtension
-							retval.Add(image)
-							i += 1
 						Next
 						Return retval
 					End If
