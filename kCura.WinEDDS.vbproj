@@ -338,11 +338,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Importers\LoadFileImporter8247.vb"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "Importers\LoadFilePreviewer.vb"
                     SubType = "Code"
                     BuildAction = "Compile"
