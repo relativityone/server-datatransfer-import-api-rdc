@@ -72,20 +72,20 @@
             <s:element minOccurs="1" maxOccurs="1" name="parentFolderID" type="s:int" />
             <s:element minOccurs="0" maxOccurs="1" name="identifierValue" type="s:base64Binary" />
             <s:element minOccurs="0" maxOccurs="1" name="identifierColumn" type="s:string" />
-            <s:element minOccurs="0" maxOccurs="1" name="fullTextBuilder" type="tns:FullTextBuilder" />
+            <s:element minOccurs="0" maxOccurs="1" name="fullTextBuilder" type="tns:FullTextBuilderDTO" />
           </s:sequence>
         </s:complexType>
       </s:element>
-      <s:complexType name="FullTextBuilder">
+      <s:complexType name="FullTextBuilderDTO">
         <s:sequence>
-          <s:element minOccurs="0" maxOccurs="1" name="FullText" type="s:string" />
           <s:element minOccurs="0" maxOccurs="1" name="FilePointer" type="s:string" />
-          <s:element minOccurs="0" maxOccurs="1" name="Pages" type="tns:ArrayOfAnyType" />
+          <s:element minOccurs="0" maxOccurs="1" name="FullText" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Pages" type="tns:ArrayOfInt" />
         </s:sequence>
       </s:complexType>
-      <s:complexType name="ArrayOfAnyType">
+      <s:complexType name="ArrayOfInt">
         <s:sequence>
-          <s:element minOccurs="0" maxOccurs="unbounded" name="anyType" nillable="true" />
+          <s:element minOccurs="0" maxOccurs="unbounded" name="int" type="s:int" />
         </s:sequence>
       </s:complexType>
       <s:element name="CreateEmptyDocumentResponse">
@@ -103,11 +103,23 @@
           </s:sequence>
         </s:complexType>
       </s:element>
-      <s:complexType name="DocumentAgentFlags">
-        <s:sequence>
-          <s:element minOccurs="1" maxOccurs="1" name="UpdateFullText" type="s:boolean" />
-          <s:element minOccurs="1" maxOccurs="1" name="IndexStatus" type="s:int" />
-        </s:sequence>
+      <s:element name="ReadResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="ReadResult" type="tns:Document" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="Document">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:Artifact">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="Fields" type="tns:ArrayOfField" />
+              <s:element minOccurs="0" maxOccurs="1" name="Files" type="tns:ArrayOfFile" />
+              <s:element minOccurs="0" maxOccurs="1" name="DocumentAgentFlags" type="tns:DocumentAgentFlags" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
       </s:complexType>
       <s:complexType name="Artifact">
         <s:sequence>
@@ -243,17 +255,6 @@
           <s:enumeration value="MarkupSetMarker" />
         </s:restriction>
       </s:simpleType>
-      <s:complexType name="Document">
-        <s:complexContent mixed="false">
-          <s:extension base="tns:Artifact">
-            <s:sequence>
-              <s:element minOccurs="0" maxOccurs="1" name="Fields" type="tns:ArrayOfField" />
-              <s:element minOccurs="0" maxOccurs="1" name="Files" type="tns:ArrayOfFile" />
-              <s:element minOccurs="0" maxOccurs="1" name="DocumentAgentFlags" type="tns:DocumentAgentFlags" />
-            </s:sequence>
-          </s:extension>
-        </s:complexContent>
-      </s:complexType>
       <s:complexType name="ArrayOfField">
         <s:sequence>
           <s:element minOccurs="0" maxOccurs="unbounded" name="Field" nillable="true" type="tns:Field" />
@@ -264,13 +265,12 @@
           <s:element minOccurs="0" maxOccurs="unbounded" name="File" nillable="true" type="tns:File" />
         </s:sequence>
       </s:complexType>
-      <s:element name="ReadResponse">
-        <s:complexType>
-          <s:sequence>
-            <s:element minOccurs="0" maxOccurs="1" name="ReadResult" type="tns:Document" />
-          </s:sequence>
-        </s:complexType>
-      </s:element>
+      <s:complexType name="DocumentAgentFlags">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="UpdateFullText" type="s:boolean" />
+          <s:element minOccurs="1" maxOccurs="1" name="IndexStatus" type="s:int" />
+        </s:sequence>
+      </s:complexType>
       <s:element name="DeleteNative">
         <s:complexType>
           <s:sequence>
@@ -348,7 +348,7 @@
           <s:sequence>
             <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
             <s:element minOccurs="1" maxOccurs="1" name="documentArtifactID" type="s:int" />
-            <s:element minOccurs="0" maxOccurs="1" name="fullTextBuilder" type="tns:FullTextBuilder" />
+            <s:element minOccurs="0" maxOccurs="1" name="fullTextBuilder" type="tns:FullTextBuilderDTO" />
           </s:sequence>
         </s:complexType>
       </s:element>
@@ -437,11 +437,6 @@
           </s:sequence>
         </s:complexType>
       </s:element>
-      <s:complexType name="ArrayOfInt">
-        <s:sequence>
-          <s:element minOccurs="0" maxOccurs="unbounded" name="int" type="s:int" />
-        </s:sequence>
-      </s:complexType>
       <s:complexType name="ArrayOfGuid">
         <s:sequence>
           <s:element minOccurs="0" maxOccurs="unbounded" name="guid" type="s2:guid" />

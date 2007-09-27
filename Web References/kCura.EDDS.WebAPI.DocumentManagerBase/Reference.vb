@@ -27,8 +27,7 @@ Namespace kCura.EDDS.WebAPI.DocumentManagerBase
     <System.Diagnostics.DebuggerStepThroughAttribute(),  _
      System.ComponentModel.DesignerCategoryAttribute("code"),  _
      System.Web.Services.WebServiceBindingAttribute(Name:="DocumentManagerSoap", [Namespace]:="http://foley.com/EDDS/DocumentManager"),  _
-     System.Xml.Serialization.XmlIncludeAttribute(GetType(Artifact)),  _
-     System.Xml.Serialization.XmlIncludeAttribute(GetType(System.Object()))>  _
+     System.Xml.Serialization.XmlIncludeAttribute(GetType(Artifact))>  _
     Public Class DocumentManager
         Inherits System.Web.Services.Protocols.SoapHttpClientProtocol
         
@@ -76,13 +75,13 @@ Namespace kCura.EDDS.WebAPI.DocumentManagerBase
         
         '<remarks/>
         <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://foley.com/EDDS/DocumentManager/CreateEmptyDocument", RequestNamespace:="http://foley.com/EDDS/DocumentManager", ResponseNamespace:="http://foley.com/EDDS/DocumentManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
-        Public Function CreateEmptyDocument(ByVal caseContextArtifactID As Integer, ByVal parentFolderID As Integer, <System.Xml.Serialization.XmlElementAttribute(DataType:="base64Binary")> ByVal identifierValue() As Byte, ByVal identifierColumn As String, ByVal fullTextBuilder As FullTextBuilder) As Integer
+        Public Function CreateEmptyDocument(ByVal caseContextArtifactID As Integer, ByVal parentFolderID As Integer, <System.Xml.Serialization.XmlElementAttribute(DataType:="base64Binary")> ByVal identifierValue() As Byte, ByVal identifierColumn As String, ByVal fullTextBuilder As FullTextBuilderDTO) As Integer
             Dim results() As Object = Me.Invoke("CreateEmptyDocument", New Object() {caseContextArtifactID, parentFolderID, identifierValue, identifierColumn, fullTextBuilder})
             Return CType(results(0),Integer)
         End Function
         
         '<remarks/>
-        Public Function BeginCreateEmptyDocument(ByVal caseContextArtifactID As Integer, ByVal parentFolderID As Integer, ByVal identifierValue() As Byte, ByVal identifierColumn As String, ByVal fullTextBuilder As FullTextBuilder, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+        Public Function BeginCreateEmptyDocument(ByVal caseContextArtifactID As Integer, ByVal parentFolderID As Integer, ByVal identifierValue() As Byte, ByVal identifierColumn As String, ByVal fullTextBuilder As FullTextBuilderDTO, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
             Return Me.BeginInvoke("CreateEmptyDocument", New Object() {caseContextArtifactID, parentFolderID, identifierValue, identifierColumn, fullTextBuilder}, callback, asyncState)
         End Function
         
@@ -198,13 +197,13 @@ Namespace kCura.EDDS.WebAPI.DocumentManagerBase
         
         '<remarks/>
         <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://foley.com/EDDS/DocumentManager/AddFullTextToDocument", RequestNamespace:="http://foley.com/EDDS/DocumentManager", ResponseNamespace:="http://foley.com/EDDS/DocumentManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
-        Public Function AddFullTextToDocument(ByVal caseContextArtifactID As Integer, ByVal documentArtifactID As Integer, ByVal fullTextBuilder As FullTextBuilder) As Boolean
+        Public Function AddFullTextToDocument(ByVal caseContextArtifactID As Integer, ByVal documentArtifactID As Integer, ByVal fullTextBuilder As FullTextBuilderDTO) As Boolean
             Dim results() As Object = Me.Invoke("AddFullTextToDocument", New Object() {caseContextArtifactID, documentArtifactID, fullTextBuilder})
             Return CType(results(0),Boolean)
         End Function
         
         '<remarks/>
-        Public Function BeginAddFullTextToDocument(ByVal caseContextArtifactID As Integer, ByVal documentArtifactID As Integer, ByVal fullTextBuilder As FullTextBuilder, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+        Public Function BeginAddFullTextToDocument(ByVal caseContextArtifactID As Integer, ByVal documentArtifactID As Integer, ByVal fullTextBuilder As FullTextBuilderDTO, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
             Return Me.BeginInvoke("AddFullTextToDocument", New Object() {caseContextArtifactID, documentArtifactID, fullTextBuilder}, callback, asyncState)
         End Function
         
@@ -408,8 +407,8 @@ Namespace kCura.EDDS.WebAPI.DocumentManagerBase
     
     '<remarks/>
     <System.Xml.Serialization.XmlTypeAttribute([Namespace]:="http://foley.com/EDDS/DocumentManager"),  _
-     System.Xml.Serialization.XmlIncludeAttribute(GetType(Field)),  _
-     System.Xml.Serialization.XmlIncludeAttribute(GetType(Document))>  _
+     System.Xml.Serialization.XmlIncludeAttribute(GetType(Document)),  _
+     System.Xml.Serialization.XmlIncludeAttribute(GetType(Field))>  _
     Public Class Artifact
         
         '<remarks/>
@@ -453,6 +452,21 @@ Namespace kCura.EDDS.WebAPI.DocumentManagerBase
         
         '<remarks/>
         Public DeleteFlag As Boolean
+    End Class
+    
+    '<remarks/>
+    <System.Xml.Serialization.XmlTypeAttribute([Namespace]:="http://foley.com/EDDS/DocumentManager")>  _
+    Public Class Document
+        Inherits Artifact
+        
+        '<remarks/>
+        Public Fields() As Field
+        
+        '<remarks/>
+        Public Files() As File
+        
+        '<remarks/>
+        Public DocumentAgentFlags As DocumentAgentFlags
     End Class
     
     '<remarks/>
@@ -665,30 +679,15 @@ Namespace kCura.EDDS.WebAPI.DocumentManagerBase
     
     '<remarks/>
     <System.Xml.Serialization.XmlTypeAttribute([Namespace]:="http://foley.com/EDDS/DocumentManager")>  _
-    Public Class Document
-        Inherits Artifact
-        
-        '<remarks/>
-        Public Fields() As Field
-        
-        '<remarks/>
-        Public Files() As File
-        
-        '<remarks/>
-        Public DocumentAgentFlags As DocumentAgentFlags
-    End Class
-    
-    '<remarks/>
-    <System.Xml.Serialization.XmlTypeAttribute([Namespace]:="http://foley.com/EDDS/DocumentManager")>  _
-    Public Class FullTextBuilder
-        
-        '<remarks/>
-        Public FullText As String
+    Public Class FullTextBuilderDTO
         
         '<remarks/>
         Public FilePointer As String
         
         '<remarks/>
-        Public Pages() As Object
+        Public FullText As String
+        
+        '<remarks/>
+        Public Pages() As Integer
     End Class
 End Namespace
