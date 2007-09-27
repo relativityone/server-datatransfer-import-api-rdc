@@ -408,10 +408,12 @@ Namespace kCura.EDDS.WinForm
 				Exit Sub
 			End If
 			If System.IO.File.Exists(_loadImageLoadFileDialog.FileName) Then
+				Dim currentFolder As Int32 = Me.ImageLoadFile.DestinationFolderID
 				Me.ImageLoadFile = _application.ReadImageLoadFile(_loadImageLoadFileDialog.FileName)
 				_overwriteDropdown.SelectedItem = Me.GetOverwriteDropdownItem(ImageLoadFile.Overwrite)
 				_filePath.Text = ImageLoadFile.FileName
 				_replaceFullText.Checked = ImageLoadFile.ReplaceFullText
+				Me.ImageLoadFile.DestinationFolderID = currentFolder
 			End If
 			Me.ReadyToRun()
 			Me.Cursor = System.Windows.Forms.Cursors.Default
