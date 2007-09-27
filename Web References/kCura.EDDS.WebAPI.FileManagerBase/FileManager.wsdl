@@ -255,6 +255,7 @@
             <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
             <s:element minOccurs="1" maxOccurs="1" name="artifactID" type="s:int" />
             <s:element minOccurs="1" maxOccurs="1" name="rotation" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="productionArtifactID" type="s:int" />
           </s:sequence>
         </s:complexType>
       </s:element>

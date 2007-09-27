@@ -125,7 +125,8 @@ Namespace kCura.WinEDDS.Service
 		Private Function GetWebAPIFullTextBuilder(ByVal eddsftb As kCura.EDDS.Types.FullTextBuilder) As kCura.edds.WebAPI.DocumentManagerBase.FullTextBuilder
 			Dim wapiftb As New kCura.EDDS.WebAPI.DocumentManagerBase.FullTextBuilder
 			wapiftb.Pages = eddsftb.Pages.ToArray
-			wapiftb.FullText = eddsftb.FullText
+			wapiftb.FullText = eddsftb.FullTextString
+			wapiftb.FilePointer = eddsftb.FilePointer
 			Return wapiftb
 		End Function
 #End Region

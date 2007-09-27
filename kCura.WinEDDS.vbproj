@@ -1,7 +1,7 @@
 <VisualStudioProject>
     <VisualBasic
         ProjectType = "Local"
-        ProductVersion = "7.10.3077"
+        ProductVersion = "7.10.6030"
         SchemaVersion = "2.0"
         ProjectGuid = "{F16A2219-5DAC-4F2B-89B0-6BD1243CBF8F}"
     >
@@ -334,6 +334,11 @@
                 />
                 <File
                     RelPath = "Importers\LoadFileImporter.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Importers\LoadFileImporter8247.vb"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

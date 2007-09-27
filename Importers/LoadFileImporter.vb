@@ -554,7 +554,32 @@ Namespace kCura.WinEDDS
 						Case EDDS.WebAPI.DocumentManagerBase.FieldType.Code
 							fieldDTO.Value = docField.Value
 						Case EDDS.WebAPI.DocumentManagerBase.FieldType.Text, EDDS.WebAPI.DocumentManagerBase.FieldType.Varchar
-							fieldDTO.Value = encoder.GetBytes(docField.Value)
+							If fieldDTO.FieldCategory = EDDS.WebAPI.DocumentManagerBase.FieldCategory.FullText Then
+								If _fullTextColumnMapsToFileLocation Then
+									If docField.Value <> "" Then
+										Dim finfo As New System.IO.FileInfo(docField.Value)
+										Dim multiplier As Int32 = 2
+										If TypeOf _sourceFileEncoding Is System.Text.UnicodeEncoding Then multiplier = 1
+										If finfo.Length > Me.Settings.MAX_STRING_FIELD_LENGTH * multiplier Then
+											fieldDTO.Value = _uploader.UploadFile(docField.Value, _caseArtifactID)
+										Else
+											Dim sr As New System.IO.StreamReader(docField.Value, _sourceFileEncoding)
+											fieldDTO.Value = encoder.GetBytes(sr.ReadToEnd)
+											sr.Close()
+										End If
+									Else
+										fieldDTO.Value = encoder.GetBytes("")
+									End If
+								Else
+									If docField.Value.Length > Me.Settings.MAX_STRING_FIELD_LENGTH Then
+										fieldDTO.Value = _uploader.UploadTextAsFile(docField.Value, _caseArtifactID, System.Guid.NewGuid.ToString)
+									Else
+										fieldDTO.Value = encoder.GetBytes(docField.Value)
+									End If
+								End If
+							Else
+								fieldDTO.Value = encoder.GetBytes(docField.Value)
+							End If
 						Case Else
 							fieldDTO.Value = docField.Value
 					End Select
@@ -888,6 +913,9 @@ Namespace kCura.WinEDDS
 			Next
 		End Sub
 
+		Public Class Settings
+			Public Shared MAX_STRING_FIELD_LENGTH As Int32 = 1048576			'2^20 = 1 meg * 2 B/char binary = 2 meg max
+		End Class
 
 	End Class
 End Namespace

@@ -191,7 +191,7 @@ Namespace kCura.WinEDDS
 				If currentDocumentArtifactID > 0 Then
 					If _overwrite.ToLower = "strict" OrElse _overwrite.ToLower = "append" Then
 						GetImagesForDocument(al, fileDTOs, fullTextBuilder)
-						If _replaceFullText Then fullTextFileGuid = _fileUploader.UploadTextAsFile(fullTextBuilder.FullText, _folderID, System.Guid.NewGuid.ToString)
+						'If _replaceFullText Then fullTextFileGuid = _fileUploader.UploadTextAsFile(fullTextBuilder.FullText, _folderID, System.Guid.NewGuid.ToString)
 						Try
 							_docManager.ClearImagesFromDocument(_fileUploader.CaseArtifactID, currentDocumentArtifactID)
 						Catch ex As System.Exception
@@ -204,6 +204,10 @@ Namespace kCura.WinEDDS
 							End If
 						End Try
 						If _replaceFullText Then
+							If fullTextBuilder.FullTextLength > LoadFileImporter.Settings.MAX_STRING_FIELD_LENGTH Then
+								fullTextBuilder.FilePointer = _fileUploader.UploadTextAsFile(fullTextBuilder.FullTextString, _folderID, System.Guid.NewGuid.ToString)
+								fullTextBuilder.FullText = ""
+							End If
 							_docManager.AddFullTextToDocument(_fileUploader.CaseArtifactID, currentDocumentArtifactID, fullTextBuilder)
 						End If
 						'Update Document
@@ -391,6 +395,10 @@ Namespace kCura.WinEDDS
 			Dim fieldID As Int32
 			Dim encoder As New System.Text.ASCIIEncoding
 			Try
+				If fullTextBuilder.FullTextLength > LoadFileImporter.Settings.MAX_STRING_FIELD_LENGTH Then
+					fullTextBuilder.FilePointer = _fileUploader.UploadTextAsFile(fullTextBuilder.FullTextString, _folderID, System.Guid.NewGuid.ToString)
+					fullTextBuilder.FullText = ""
+				End If
 				Return _docManager.CreateEmptyDocument(_fileUploader.CaseArtifactID, _folderID, encoder.GetBytes(identifier), _selectedIdentifierField, fullTextBuilder)
 			Catch ex As System.Exception
 				If kCura.WinEDDS.Config.UsesWebAPI Then

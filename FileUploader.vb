@@ -100,13 +100,13 @@ Namespace kCura.WinEDDS
 		Public Function UploadTextAsFile(ByVal content As String, ByVal contextArtifactID As Int32, ByVal fileGuid As String) As String
 			If Me.UploaderType = Type.Web Then
 				Me.UploaderType = Type.Web
-				Return WebUploadFile(New System.IO.MemoryStream(System.Text.Encoding.UTF8.GetBytes(content)), contextArtifactID, fileGuid)
+				Return WebUploadFile(New System.IO.MemoryStream(System.Text.Encoding.Unicode.GetBytes(content)), contextArtifactID, fileGuid)
 			Else
 				Me.UploaderType = Type.Direct
 				Dim newFileName As String = System.Guid.NewGuid.ToString
 				'Dim documentManager As New kCura.EDDS.WebAPI.DocumentManagerBase.DocumentManager
 				Try
-					Dim sw As New System.IO.StreamWriter(String.Format("{0}{1}", _destinationFolderPath, newFileName))
+					Dim sw As New System.IO.StreamWriter(String.Format("{0}{1}", _destinationFolderPath, newFileName), False, System.Text.Encoding.Unicode)
 					sw.Write(content)
 					sw.Close()
 					sw = Nothing
