@@ -1071,11 +1071,14 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 		Private Sub CheckVersion(ByVal credential As Net.ICredentials)
-			'TODO: Re-implement this for production [NPK 2007.01.22]
 			Dim relativityManager As New kCura.WinEDDS.Service.RelativityManager(DirectCast(credential, System.Net.NetworkCredential), _cookieContainer)
 			Dim winRelativityVersion As String = System.Reflection.Assembly.GetExecutingAssembly.FullName.Split(","c)(1).Split("="c)(1)
 			Dim relativityWebVersion As String = relativityManager.RetrieveRelativityVersion()
 
+			'TODO: Take this out ASAP:
+			If relativityWebVersion = "3.33.4.3" Then
+				Exit Sub
+			End If
 			If winRelativityVersion <> relativityWebVersion Then
 				MsgBox(String.Format("Your version of WinRelativity is out of date. You are running version {0}, but version {1} is required.", winRelativityVersion, relativityWebVersion), MsgBoxStyle.Critical, "WinRelativity Version Mismatch")
 				ExitApplication()
