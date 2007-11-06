@@ -363,6 +363,9 @@ Namespace kCura.EDDS.WebAPI.DocumentManagerBase
         
         '<remarks/>
         Public Identifier As String
+        
+        '<remarks/>
+        Public Location As String
     End Class
     
     '<remarks/>

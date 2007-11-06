@@ -3,6 +3,8 @@ Namespace kCura.WinEDDS
 		Implements System.Runtime.Serialization.ISerializable
 
 		<NonSerialized()> Public CaseInfo As kCura.EDDS.Types.CaseInfo
+		<NonSerialized()> Public SelectedCasePath As String = ""
+		<NonSerialized()> Public CopyFilesToDocumentRepository As Boolean = True
 		Public DestinationFolderID As Integer
 		Public FilePath As String
 		Public FirstLineContainsHeaders As Boolean

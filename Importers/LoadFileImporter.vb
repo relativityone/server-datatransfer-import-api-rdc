@@ -34,6 +34,8 @@ Namespace kCura.WinEDDS
 		Private _errorLogFileName As String = ""
 		Private _errorLogWriter As System.IO.StreamWriter
 		Private _fullTextField As kCura.EDDS.WebAPI.DocumentManagerBase.Field
+		Private _defaultDestinationFolderPath As String = ""
+		Private _copyFileToRepository As Boolean
 #End Region
 
 #Region "Accessors"
@@ -93,10 +95,13 @@ Namespace kCura.WinEDDS
 		Public Sub New(ByVal args As LoadFile, ByVal processController As kCura.Windows.Process.Controller, ByVal timeZoneOffset As Int32, ByVal autoDetect As Boolean)
 			MyBase.New(args, timeZoneOffset, autoDetect)
 			_overwrite = args.OverwriteDestination
-			_uploader = New kCura.WinEDDS.FileUploader(args.Credentials, args.CaseInfo.ArtifactID, _documentManager.GetDocumentDirectoryByCaseArtifactID(args.CaseInfo.ArtifactID) & "\", args.CookieContainer)
+			If args.CopyFilesToDocumentRepository Then
+				_defaultDestinationFolderPath = args.SelectedCasePath
+			End If
+			_uploader = New kCura.WinEDDS.FileUploader(args.Credentials, args.CaseInfo.ArtifactID, _defaultDestinationFolderPath, args.CookieContainer)
 			_extractFullTextFromNative = args.ExtractFullTextFromNativeFile
 			_selectedIdentifier = args.SelectedIdentifierField
-
+			_copyFileToRepository = args.CopyFilesToDocumentRepository
 			_docFieldCollection = New DocumentFieldCollection(args.FieldMap.DocumentFields)
 			If autoDetect Then _parentFolderDTO = _foldermanager.Read(args.CaseInfo.ArtifactID, args.CaseInfo.RootFolderID)
 			_processController = processController
@@ -234,20 +239,26 @@ Namespace kCura.WinEDDS
 			Dim markUploadStart As DateTime = DateTime.Now
 			Dim parentFolderID As Int32
 			Dim md5hash As String = ""
+			Dim fullFilePath As String = ""
 			If uploadFile Then
 				filename = values(_filePathColumnIndex)
 				fileExists = System.IO.File.Exists(filename)
 				If filename <> String.Empty AndAlso Not fileExists Then Throw New InvalidFilenameException(filename)
 				If fileExists Then
 					Dim now As DateTime = DateTime.Now
-					fileGuid = _uploader.UploadFile(filename, _caseArtifactID)
+					If _copyFileToRepository Then
+						fileGuid = _uploader.UploadFile(filename, _caseArtifactID)
+					Else
+						fileGuid = System.Guid.NewGuid.ToString
+					End If
 					If _extractMd5Hash Then
 						md5hash = kCura.Utility.File.GenerateMD5HashForFile(filename)
 					End If
+					fullFilePath = filename
 					filename = filename.Substring(filename.LastIndexOf("\") + 1)
 					WriteStatusLine(Windows.Process.EventType.Status, String.Format("End upload file. ({0}ms)", DateTime.op_Subtraction(DateTime.Now, now).Milliseconds))
 				End If
-			End If
+				End If
 			If _createFolderStructure Then
 				parentFolderID = _folderCache.FolderID(Me.CleanDestinationFolderPath(values(_destinationFolderColumnIndex)))
 			Else
@@ -262,7 +273,7 @@ Namespace kCura.WinEDDS
 			ElseIf Not _processedDocumentIdentifiers(identityValue) Is Nothing Then
 				Throw New IdentifierOverlapException(identityValue, _processedDocumentIdentifiers(identityValue))
 			End If
-			Dim metadoc As New MetaDocument(fileGuid, identityValue, fieldCollection, fileExists AndAlso uploadFile AndAlso fileGuid <> String.Empty, filename, uploadFile, CurrentLineNumber, parentFolderID, md5hash, values)
+			Dim metadoc As New MetaDocument(fileGuid, identityValue, fieldCollection, fileExists AndAlso uploadFile AndAlso (fileGuid <> String.Empty OrElse Not _copyFileToRepository), filename, fullFilePath, uploadFile, CurrentLineNumber, parentFolderID, md5hash, values)
 			_docsToProcess.Add(metadoc)
 			Return identityValue
 		End Function
@@ -331,7 +342,7 @@ Namespace kCura.WinEDDS
 							ex = ex.InnerException
 						End If
 					End If
-					Throw New AmbiguousIdentifierValueException(ex)
+					Throw New DocumentReadException(ex)
 				Else
 					Throw
 				End If
@@ -397,7 +408,7 @@ Namespace kCura.WinEDDS
 			ManageRequiredField(documentDTO, EDDS.WebAPI.DocumentManagerBase.FieldCategory.DuplicateHash)
 			Dim field As kCura.EDDS.WebAPI.DocumentManagerBase.Field
 			If mdoc.UploadFile And mdoc.IndexFileInDB Then
-				Dim fileDTO As kCura.EDDS.WebAPI.DocumentManagerBase.File = CreateFileDTO(filename, fileguid)
+				Dim fileDTO As kCura.EDDS.WebAPI.DocumentManagerBase.File = CreateFileDTO(filename, fileguid, _defaultDestinationFolderPath, mdoc.FullFilePath)
 				documentDTO.Files = New kCura.EDDS.WebApi.DocumentManagerBase.File() {fileDTO}
 			End If
 
@@ -428,7 +439,7 @@ Namespace kCura.WinEDDS
 				docDTO.Fields = DirectCast(al.ToArray(GetType(kCura.EDDS.WebAPI.DocumentManagerBase.Field)), kCura.EDDS.WebAPI.DocumentManagerBase.Field())
 				SetFieldValues(docDTO, fieldCollection)
 				Dim fileList As New ArrayList
-				If uploadFile Then
+				If uploadFile OrElse mdoc.IndexFileInDB Then
 					Dim oldFile As kCura.EDDS.WebAPI.DocumentManagerBase.File
 					Dim hasOldFile As Boolean = False
 					If Not docDTO.Files Is Nothing Then
@@ -439,7 +450,7 @@ Namespace kCura.WinEDDS
 							End If
 						Next
 					End If
-					Dim fileDTO As kCura.EDDS.WebAPI.DocumentManagerBase.File = CreateFileDTO(fileName, fileGuid)
+					Dim fileDTO As kCura.EDDS.WebAPI.DocumentManagerBase.File = CreateFileDTO(fileName, fileGuid, _defaultDestinationFolderPath, mdoc.FullFilePath)
 					If Not hasOldFile Then
 						fileList.Add(fileDTO)
 					Else
@@ -480,13 +491,18 @@ Namespace kCura.WinEDDS
 			End If
 		End Function
 
-		Private Function CreateFileDTO(ByVal filename As String, ByVal fileguid As String) As kCura.EDDS.WebAPI.DocumentManagerBase.File
+		Private Function CreateFileDTO(ByVal filename As String, ByVal fileguid As String, ByVal documentDirectory As String, ByVal fullFilePath As String) As kCura.EDDS.WebAPI.DocumentManagerBase.File
 			Dim fileDTO As New kCura.EDDS.WebAPI.DocumentManagerBase.File
 			fileDTO.DocumentArtifactID = 0
 			fileDTO.Filename = filename
 			fileDTO.Guid = fileguid
 			fileDTO.Order = 0
 			fileDTO.Type = kCura.EDDS.Types.FileType.Native
+			If _copyFileToRepository Then
+				fileDTO.Location = documentDirectory & fileguid
+			Else
+				fileDTO.Location = fullFilePath
+			End If
 			Return fileDTO
 		End Function
 
@@ -798,10 +814,10 @@ Namespace kCura.WinEDDS
 			End Sub
 		End Class
 
-		Public Class AmbiguousIdentifierValueException
+		Public Class DocumentReadException
 			Inherits kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
 			Public Sub New(ByVal parentException As System.Exception)
-				MyBase.New("Identifier has more than one row associated with it: [" & parentException.Message & "]", parentException)
+				MyBase.New("Error retrieving document information from EDDS: [" & parentException.Message & "]", parentException)
 			End Sub
 		End Class
 

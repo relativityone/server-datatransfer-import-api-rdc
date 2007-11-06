@@ -89,6 +89,21 @@
           </s:sequence>
         </s:complexType>
       </s:element>
+      <s:element name="GetAllDocumentFolderPaths">
+        <s:complexType />
+      </s:element>
+      <s:element name="GetAllDocumentFolderPathsResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetAllDocumentFolderPathsResult" type="tns:ArrayOfString" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="ArrayOfString">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="string" nillable="true" type="s:string" />
+        </s:sequence>
+      </s:complexType>
     </s:schema>
   </wsdl:types>
   <wsdl:message name="RetrieveAllSoapIn">
@@ -121,6 +136,12 @@
   <wsdl:message name="RetrieveCaseDownloadURISoapOut">
     <wsdl:part name="parameters" element="tns:RetrieveCaseDownloadURIResponse" />
   </wsdl:message>
+  <wsdl:message name="GetAllDocumentFolderPathsSoapIn">
+    <wsdl:part name="parameters" element="tns:GetAllDocumentFolderPaths" />
+  </wsdl:message>
+  <wsdl:message name="GetAllDocumentFolderPathsSoapOut">
+    <wsdl:part name="parameters" element="tns:GetAllDocumentFolderPathsResponse" />
+  </wsdl:message>
   <wsdl:portType name="CaseManagerSoap">
     <wsdl:operation name="RetrieveAll">
       <wsdl:input message="tns:RetrieveAllSoapIn" />
@@ -141,6 +162,10 @@
     <wsdl:operation name="RetrieveCaseDownloadURI">
       <wsdl:input message="tns:RetrieveCaseDownloadURISoapIn" />
       <wsdl:output message="tns:RetrieveCaseDownloadURISoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetAllDocumentFolderPaths">
+      <wsdl:input message="tns:GetAllDocumentFolderPathsSoapIn" />
+      <wsdl:output message="tns:GetAllDocumentFolderPathsSoapOut" />
     </wsdl:operation>
   </wsdl:portType>
   <wsdl:binding name="CaseManagerSoap" type="tns:CaseManagerSoap">
@@ -183,6 +208,15 @@
     </wsdl:operation>
     <wsdl:operation name="RetrieveCaseDownloadURI">
       <soap:operation soapAction="http://www.kCura.com/EDDS/CaseManager/RetrieveCaseDownloadURI" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetAllDocumentFolderPaths">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/CaseManager/GetAllDocumentFolderPaths" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>

@@ -5,6 +5,7 @@ Namespace kCura.WinEDDS
 		Private _fieldCollection As DocumentFieldCollection
 		Private _indexFileInDB As Boolean
 		Private _filename As String
+		Private _fullFilePath As String
 		Private _uploadFile As Boolean
 		Private _lineNumber As Int32
 		Private _parentFolderID As Int32
@@ -101,12 +102,23 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
+		Public Property FullFilePath() As String
+			Get
+				Return _fullFilePath
+			End Get
+			Set(ByVal value As String)
+				_fullFilePath = value
+			End Set
+		End Property
+
+
 		Public Sub New( _
 		 ByVal fileGuid As String, _
 		 ByVal identityValue As String, _
 		 ByVal fieldCollection As DocumentFieldCollection, _
 		 ByVal indexFileInDB As Boolean, _
 		 ByVal filename As String, _
+		 ByVal fullFilePath As String, _
 		 ByVal uploadFile As Boolean, _
 		 ByVal lineNumber As Int32, _
 		 ByVal parentFolderID As Int32, _
@@ -118,6 +130,7 @@ Namespace kCura.WinEDDS
 			_fieldCollection = fieldCollection
 			_indexFileInDB = indexFileInDB
 			_filename = filename
+			_fullFilePath = fullFilePath
 			_uploadFile = uploadFile
 			_lineNumber = lineNumber
 			_parentFolderID = parentFolderID

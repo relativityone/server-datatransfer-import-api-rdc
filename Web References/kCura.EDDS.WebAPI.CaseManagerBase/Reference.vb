@@ -125,6 +125,24 @@ Namespace kCura.EDDS.WebAPI.CaseManagerBase
             Dim results() As Object = Me.EndInvoke(asyncResult)
             Return CType(results(0),String)
         End Function
+        
+        '<remarks/>
+        <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/CaseManager/GetAllDocumentFolderPaths", RequestNamespace:="http://www.kCura.com/EDDS/CaseManager", ResponseNamespace:="http://www.kCura.com/EDDS/CaseManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
+        Public Function GetAllDocumentFolderPaths() As String()
+            Dim results() As Object = Me.Invoke("GetAllDocumentFolderPaths", New Object(-1) {})
+            Return CType(results(0),String())
+        End Function
+        
+        '<remarks/>
+        Public Function BeginGetAllDocumentFolderPaths(ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("GetAllDocumentFolderPaths", New Object(-1) {}, callback, asyncState)
+        End Function
+        
+        '<remarks/>
+        Public Function EndGetAllDocumentFolderPaths(ByVal asyncResult As System.IAsyncResult) As String()
+            Dim results() As Object = Me.EndInvoke(asyncResult)
+            Return CType(results(0),String())
+        End Function
     End Class
     
     '<remarks/>

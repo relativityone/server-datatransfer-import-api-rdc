@@ -213,14 +213,14 @@ Namespace kCura.EDDS.WebAPI.FileManagerBase
         
         '<remarks/>
         <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/FileManager/RetrieveNativesFileSize", RequestNamespace:="http://www.kCura.com/EDDS/FileManager", ResponseNamespace:="http://www.kCura.com/EDDS/FileManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
-        Public Function RetrieveNativesFileSize(ByVal sourceDirectory As String, ByVal guid As String) As Long
-            Dim results() As Object = Me.Invoke("RetrieveNativesFileSize", New Object() {sourceDirectory, guid})
+        Public Function RetrieveNativesFileSize(ByVal caseContextArtifactID As Integer, ByVal guid As String, ByVal documentArtifactID As Integer) As Long
+            Dim results() As Object = Me.Invoke("RetrieveNativesFileSize", New Object() {caseContextArtifactID, guid, documentArtifactID})
             Return CType(results(0),Long)
         End Function
         
         '<remarks/>
-        Public Function BeginRetrieveNativesFileSize(ByVal sourceDirectory As String, ByVal guid As String, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
-            Return Me.BeginInvoke("RetrieveNativesFileSize", New Object() {sourceDirectory, guid}, callback, asyncState)
+        Public Function BeginRetrieveNativesFileSize(ByVal caseContextArtifactID As Integer, ByVal guid As String, ByVal documentArtifactID As Integer, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("RetrieveNativesFileSize", New Object() {caseContextArtifactID, guid, documentArtifactID}, callback, asyncState)
         End Function
         
         '<remarks/>
@@ -309,6 +309,9 @@ Namespace kCura.EDDS.WebAPI.FileManagerBase
         
         '<remarks/>
         Public Identifier As String
+        
+        '<remarks/>
+        Public Location As String
     End Class
     
     '<remarks/>
@@ -352,5 +355,8 @@ Namespace kCura.EDDS.WebAPI.FileManagerBase
         
         '<remarks/>
         Public Identifier As String
+        
+        '<remarks/>
+        Public Location As String
     End Class
 End Namespace
