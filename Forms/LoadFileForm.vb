@@ -87,6 +87,7 @@ Namespace kCura.EDDS.WinForm
 		Friend WithEvents _extractedTextValueContainsFileLocation As System.Windows.Forms.CheckBox
 		Friend WithEvents _encodingDropdown As System.Windows.Forms.ComboBox
 		Friend WithEvents Label8 As System.Windows.Forms.Label
+		Friend WithEvents _advancedButton As System.Windows.Forms.Button
 		<System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
 			Dim resources As System.Resources.ResourceManager = New System.Resources.ResourceManager(GetType(LoadFileForm))
 			Me.OpenFileDialog = New System.Windows.Forms.OpenFileDialog
@@ -134,6 +135,7 @@ Namespace kCura.EDDS.WinForm
 			Me._buildFolderStructure = New System.Windows.Forms.CheckBox
 			Me._destinationFolderPath = New System.Windows.Forms.ComboBox
 			Me.GroupBox4 = New System.Windows.Forms.GroupBox
+			Me._advancedButton = New System.Windows.Forms.Button
 			Me._extractMd5Hash = New System.Windows.Forms.CheckBox
 			Me._loadNativeFiles = New System.Windows.Forms.CheckBox
 			Me._extractFullTextFromNativeFile = New System.Windows.Forms.CheckBox
@@ -529,6 +531,7 @@ Namespace kCura.EDDS.WinForm
 			'
 			'GroupBox4
 			'
+			Me.GroupBox4.Controls.Add(Me._advancedButton)
 			Me.GroupBox4.Controls.Add(Me._extractMd5Hash)
 			Me.GroupBox4.Controls.Add(Me._loadNativeFiles)
 			Me.GroupBox4.Controls.Add(Me._extractFullTextFromNativeFile)
@@ -540,6 +543,13 @@ Namespace kCura.EDDS.WinForm
 			Me.GroupBox4.TabIndex = 26
 			Me.GroupBox4.TabStop = False
 			Me.GroupBox4.Text = "Native File Behavior"
+			'
+			'_advancedButton
+			'
+			Me._advancedButton.Location = New System.Drawing.Point(220, 64)
+			Me._advancedButton.Name = "_advancedButton"
+			Me._advancedButton.TabIndex = 27
+			Me._advancedButton.Text = "Advanced"
 			'
 			'_extractMd5Hash
 			'
@@ -675,7 +685,7 @@ Namespace kCura.EDDS.WinForm
 #End Region
 
 		Friend WithEvents _application As kCura.EDDS.WinForm.Application
-
+		Private WithEvents _advancedFileForm As AdvancedFileLocation
 		Private _loadFile As kCura.WinEDDS.LoadFile
 
 		Friend ReadOnly Property ReadyToRun() As Boolean
@@ -991,6 +1001,7 @@ Namespace kCura.EDDS.WinForm
 		Private Sub _loadNativeFiles_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _loadNativeFiles.CheckedChanged
 			_nativeFilePathField.Enabled = _loadNativeFiles.Checked
 			_extractFullTextFromNativeFile.Enabled = _loadNativeFiles.Checked
+			_advancedButton.Enabled = _loadNativeFiles.Checked
 			'If Not _nativeFilePathField.Items.Count = 0 Then
 			'	_nativeFilePathField.SelectedItem = _nativeFilePathField.Items(0)
 			'End If
@@ -1251,5 +1262,20 @@ Namespace kCura.EDDS.WinForm
 				Return True
 			End If
 		End Function
+
+		Private Sub _advancedButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _advancedButton.Click
+			_advancedFileForm = New AdvancedFileLocation
+			_advancedFileForm._copyFilesToRepository.Checked = Me.LoadFile.CopyFilesToDocumentRepository
+			If Not Me.LoadFile.SelectedCasePath Is Nothing AndAlso Not Me.LoadFile.SelectedCasePath = "" Then
+				_advancedFileForm.SelectPath(Me.LoadFile.SelectedCasePath)
+				_advancedFileForm.SelectDefaultPath = False
+			End If
+			_advancedFileForm.ShowDialog()
+		End Sub
+
+		Private Sub _advancedFileForm_FileLocationOK(ByVal copyFiles As Boolean, ByVal selectedRepository As String) Handles _advancedFileForm.FileLocationOK
+			Me.LoadFile.CopyFilesToDocumentRepository = copyFiles
+			Me.LoadFile.SelectedCasePath = selectedRepository
+		End Sub
 	End Class
 End Namespace

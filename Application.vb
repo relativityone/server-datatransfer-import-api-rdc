@@ -41,6 +41,8 @@ Namespace kCura.EDDS.WinForm
 		Private Shared _cache As New Hashtable
 		Private _temporaryWebServiceURL As String
 		Private _cookieContainer As System.Net.CookieContainer
+		Private _documentRepositoryList As String()
+
 		'Private _identity As kCura.EDDS.EDDSIdentity
 #End Region
 
@@ -64,6 +66,12 @@ Namespace kCura.EDDS.WinForm
 		Public ReadOnly Property SelectedCaseFolderID() As Int32
 			Get
 				Return _selectedCaseFolderID
+			End Get
+		End Property
+
+		Public ReadOnly Property DocumentRepositoryList() As String()
+			Get
+				Return _documentRepositoryList
 			End Get
 		End Property
 
@@ -268,6 +276,7 @@ Namespace kCura.EDDS.WinForm
 			_fields = Nothing
 			try
 				Dim csMgr As New kCura.WinEDDS.Service.CaseManager(Credential, _cookieContainer)
+				_documentRepositoryList = csMgr.GetAllDocumentFolderPaths()
 				Return csMgr.RetrieveAll()
 			Catch ex As System.Exception
 				If ex.Message.IndexOf("Need To Re Login") <> -1 Then
@@ -475,6 +484,7 @@ Namespace kCura.EDDS.WinForm
 			Dim frm As New LoadFileForm
 			Dim loadFile As New loadFile
 			frm._application = Me
+			loadFile.SelectedCasePath = caseInfo.DocumentPath
 			loadFile.DestinationFolderID = destinationArtifactID
 			loadFile.CaseInfo = caseInfo
 			loadFile.Credentials = Me.Credential
@@ -948,10 +958,10 @@ Namespace kCura.EDDS.WinForm
 		Public Function ReadLoadFile(ByVal loadFile As LoadFile, ByVal path As String) As LoadFile
 			If Not Me.EnsureConnection Then Return Nothing
 			Dim sr As New System.IO.StreamReader(path)
-			Dim tempLoadFile As loadFile
+			Dim tempLoadFile As WinEDDS.LoadFile
 			Dim deserializer As New System.Runtime.Serialization.Formatters.Soap.SoapFormatter
 			Try
-				tempLoadFile = DirectCast(deserializer.Deserialize(sr.BaseStream), loadFile)
+				tempLoadFile = DirectCast(deserializer.Deserialize(sr.BaseStream), WinEDDS.LoadFile)
 				sr.Close()
 			Catch ex As System.Exception
 				MsgBox("Load Failed", MsgBoxStyle.Critical)
@@ -959,6 +969,8 @@ Namespace kCura.EDDS.WinForm
 				Return Nothing
 			End Try
 			tempLoadFile.CaseInfo = Me.SelectedCaseInfo
+			tempLoadFile.CopyFilesToDocumentRepository = loadFile.CopyFilesToDocumentRepository
+			tempLoadFile.SelectedCasePath = Me.SelectedCaseInfo.DocumentPath
 			tempLoadFile.Credentials = Me.Credential
 			tempLoadFile.DestinationFolderID = loadFile.DestinationFolderID
 			tempLoadFile.SelectedIdentifierField = Me.CurrentFields(True).Item(Me.GetCaseIdentifierFields()(0))

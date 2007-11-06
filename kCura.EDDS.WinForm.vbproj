@@ -217,6 +217,16 @@
                     BuildAction = "None"
                 />
                 <File
+                    RelPath = "Forms\AdvancedFileLocation.vb"
+                    SubType = "Form"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Forms\AdvancedFileLocation.resx"
+                    DependentUpon = "AdvancedFileLocation.vb"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
                     RelPath = "Forms\CaseSelectForm.vb"
                     SubType = "Form"
                     BuildAction = "Compile"
