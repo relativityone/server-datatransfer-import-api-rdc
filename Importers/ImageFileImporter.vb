@@ -26,6 +26,8 @@ Namespace kCura.WinEDDS
 		Private _errorLogFileName As String
 		Private _errorLogWriter As System.IO.StreamWriter
 		Private _autoNumberImages As Boolean
+		Private _copyFilesToRepository As Boolean
+		Private _repositoryPath As String
 
 		Private WithEvents _processController As kCura.Windows.Process.Controller
 
@@ -75,6 +77,8 @@ Namespace kCura.WinEDDS
 			_replaceFullText = args.ReplaceFullText
 			_selectedIdentifierField = args.ControlKeyField
 			_processController = controller
+			_copyFilesToRepository = args.CopyFilesToDocumentRepository
+			_repositoryPath = args.SelectedCasePath
 			_continue = True
 			_autoNumberImages = args.AutoNumberImages
 		End Sub
@@ -376,9 +380,18 @@ Namespace kCura.WinEDDS
 			RaiseStatusEvent(kCura.Windows.Process.EventType.Progress, String.Format("Uploading File '{0}'.", filename))
 			Dim extractedTextFileName As String = imageFileName.Substring(0, imageFileName.LastIndexOf("."c) + 1) & "txt"
 			Dim file As New kCura.EDDS.WebAPI.FileManagerBase.FileInfoBase
-			file.FileGuid = _fileUploader.UploadFile(imageFileName, _folderID)
+			If _copyFilesToRepository Then
+				file.FileGuid = _fileUploader.UploadFile(imageFileName, _folderID)
+			Else
+				file.FileGuid = System.Guid.NewGuid.ToString
+			End If
 			file.FileName = filename
 			file.Identifier = batesNumber
+			If _copyFilesToRepository Then
+				file.Location = _repositoryPath & file.FileGuid
+			Else
+				file.Location = imageFileName
+			End If
 			fileDTOs.Add(file)
 			If _replaceFullText AndAlso System.IO.File.Exists(extractedTextFileName) Then
 				Dim sr As New System.IO.StreamReader(extractedTextFileName, System.Text.Encoding.Default, True)
