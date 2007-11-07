@@ -88,6 +88,9 @@ Namespace kCura.WinEDDS
 				'Dim newFileName As String = System.Guid.NewGuid.ToString
 				'Dim documentManager As New kCura.EDDS.WebAPI.DocumentManagerBase.DocumentManager
 				Try
+					If Not System.IO.Directory.Exists(_destinationFolderPath) Then
+						System.IO.Directory.CreateDirectory(_destinationFolderPath)
+					End If
 					System.IO.File.Copy(filePath, String.Format("{0}{1}", _destinationFolderPath, newFileName))
 					Return newFileName
 				Catch ex As System.Exception
@@ -142,15 +145,15 @@ Namespace kCura.WinEDDS
 					Dim b(readLimit) As Byte
 					fileStream.Read(b, 0, readLimit)
 					If i = 1 Then
-						fileGuid = Gateway.BeginFill(_caseArtifactID, b, fileGuid)
+						fileGuid = Gateway.BeginFill(_caseArtifactID, b, _destinationFolderPath, fileGuid)
 						If fileGuid = String.Empty Then
 							Return String.Empty
 						End If
 					End If
 					If i <= trips And i > 1 Then
 						RaiseEvent UploadStatusEvent("Trip " & i & " of " & trips)
-						If Not Gateway.FileFill(_caseArtifactID, fileGuid, b, contextArtifactID) Then
-							Gateway.RemoveFill(_caseArtifactID, fileGuid)
+						If Not Gateway.FileFill(_caseArtifactID, _destinationFolderPath, fileGuid, b, contextArtifactID) Then
+							Gateway.RemoveFill(_caseArtifactID, _destinationFolderPath, fileGuid)
 							Return String.Empty
 						End If
 					End If

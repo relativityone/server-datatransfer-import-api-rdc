@@ -20,25 +20,25 @@ Namespace kCura.WinEDDS.Service
 		End Function
 
 #Region " Shadow Functions "
-		Public Shadows Function BeginFill(ByVal caseContextArtifactID As Int32, ByVal b() As Byte, ByVal fileGuid As String) As String
+		Public Shadows Function BeginFill(ByVal caseContextArtifactID As Int32, ByVal b() As Byte, ByVal documentDirectory As String, ByVal fileGuid As String) As String
 			If kCura.WinEDDS.Config.UsesWebAPI Then
-				Return MyBase.BeginFill(caseContextArtifactID, b, fileGuid)
+				Return MyBase.BeginFill(caseContextArtifactID, b, documentDirectory, fileGuid)
 			Else
 				'Return _externalIOManager.ExternalBeginFill(b, contextArtifactID, fileGuid)
 			End If
 		End Function
 
-		Public Shadows Function FileFill(ByVal caseContextArtifactID As Int32, ByVal fileName As String, ByVal b() As Byte, ByVal contextArtifactID As Int32) As Boolean
+		Public Shadows Function FileFill(ByVal caseContextArtifactID As Int32, ByVal documentDirectory As String, ByVal fileName As String, ByVal b() As Byte, ByVal contextArtifactID As Int32) As Boolean
 			If kCura.WinEDDS.Config.UsesWebAPI Then
-				Return MyBase.FileFill(caseContextArtifactID, fileName, b)
+				Return MyBase.FileFill(caseContextArtifactID, documentDirectory, fileName, b)
 			Else
 				'Return _externalIOManager.ExternalFileFill(fileName, b, contextArtifactID)
 			End If
 		End Function
 
-		Public Shadows Sub RemoveFill(ByVal caseContextArtifactID As Int32, ByVal fileName As String)
+		Public Shadows Sub RemoveFill(ByVal caseContextArtifactID As Int32, ByVal documentDirectory As String, ByVal fileName As String)
 			If kCura.WinEDDS.Config.UsesWebAPI Then
-				MyBase.RemoveFill(caseContextArtifactID, fileName)
+				MyBase.RemoveFill(caseContextArtifactID, documentDirectory, fileName)
 			Else
 				'_externalIOManager.ExternalRemoveFill(fileName, contextArtifactID)
 			End If
