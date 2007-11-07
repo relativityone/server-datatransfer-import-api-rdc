@@ -53,6 +53,7 @@ Namespace kCura.EDDS.WinForm
 		Friend WithEvents _productionDropdown As System.Windows.Forms.ComboBox
 		Friend WithEvents MenuItem2 As System.Windows.Forms.MenuItem
 		Friend WithEvents _toolsMenuSettingsItem As System.Windows.Forms.MenuItem
+		Friend WithEvents _advancedButton As System.Windows.Forms.Button
 		<System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
 			Dim resources As System.Resources.ResourceManager = New System.Resources.ResourceManager(GetType(ImageLoad))
 			Me.GroupBox3 = New System.Windows.Forms.GroupBox
@@ -76,6 +77,7 @@ Namespace kCura.EDDS.WinForm
 			Me.ExtractedTextGroupBox = New System.Windows.Forms.GroupBox
 			Me.GroupBox1 = New System.Windows.Forms.GroupBox
 			Me._productionDropdown = New System.Windows.Forms.ComboBox
+			Me._advancedButton = New System.Windows.Forms.Button
 			Me.GroupBox3.SuspendLayout()
 			Me.GroupBox233.SuspendLayout()
 			Me.ExtractedTextGroupBox.SuspendLayout()
@@ -229,10 +231,18 @@ Namespace kCura.EDDS.WinForm
 			Me._productionDropdown.Size = New System.Drawing.Size(332, 21)
 			Me._productionDropdown.TabIndex = 29
 			'
+			'_advancedButton
+			'
+			Me._advancedButton.Location = New System.Drawing.Point(368, 64)
+			Me._advancedButton.Name = "_advancedButton"
+			Me._advancedButton.TabIndex = 28
+			Me._advancedButton.Text = "Advanced"
+			'
 			'ImageLoad
 			'
 			Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
 			Me.ClientSize = New System.Drawing.Size(580, 177)
+			Me.Controls.Add(Me._advancedButton)
 			Me.Controls.Add(Me.GroupBox1)
 			Me.Controls.Add(Me.ExtractedTextGroupBox)
 			Me.Controls.Add(Me.GroupBox233)
@@ -254,6 +264,7 @@ Namespace kCura.EDDS.WinForm
 #End Region
 
 		Private WithEvents _application As kCura.EDDS.WinForm.Application
+		Private WithEvents _advancedFileForm As AdvancedFileLocation
 
 		Private _imageLoadFile As kCura.WinEDDS.ImageLoadFile
 		Private WithEvents _settingsForm As kCura.EDDS.WinForm.ImageImportSettingsForm
@@ -457,5 +468,21 @@ Namespace kCura.EDDS.WinForm
 		Private Sub _settingsForm_ImportSettingsFormOK(ByVal args As Boolean) Handles _settingsForm.ImportSettingsFormOK
 			Me.ImageLoadFile.AutoNumberImages = args
 		End Sub
+
+		Private Sub _advancedButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _advancedButton.Click
+			_advancedFileForm = New AdvancedFileLocation
+			_advancedFileForm._copyFilesToRepository.Checked = Me.ImageLoadFile.CopyFilesToDocumentRepository
+			If Not Me.ImageLoadFile.SelectedCasePath Is Nothing AndAlso Not Me.ImageLoadFile.SelectedCasePath = "" Then
+				_advancedFileForm.SelectPath(Me.ImageLoadFile.SelectedCasePath)
+				_advancedFileForm.SelectDefaultPath = False
+			End If
+			_advancedFileForm.ShowDialog()
+		End Sub
+		Private Sub _advancedFileForm_FileLocationOK(ByVal copyFiles As Boolean, ByVal selectedRepository As String) Handles _advancedFileForm.FileLocationOK
+			Me.ImageLoadFile.CopyFilesToDocumentRepository = copyFiles
+			Me.ImageLoadFile.SelectedCasePath = selectedRepository
+		End Sub
+
+
 	End Class
 End Namespace

@@ -623,6 +623,7 @@ Namespace kCura.EDDS.WinForm
 				Dim imageFile As New ImageLoadFile
 				imageFile.Credential = Me.Credential
 				imageFile.CaseInfo = caseinfo
+				imageFile.SelectedCasePath = caseinfo.DocumentPath
 				imageFile.DestinationFolderID = destinationArtifactID
 				imageFile.ForProduction = False
 				frm.ImageLoadFile = imageFile
