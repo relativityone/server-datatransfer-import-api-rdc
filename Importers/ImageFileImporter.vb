@@ -70,7 +70,8 @@ Namespace kCura.WinEDDS
 			_folderManager = New kCura.WinEDDS.Service.FolderManager(args.Credential, args.CookieContainer)
 			_fileManager = New kCura.WinEDDS.Service.FileManager(args.Credential, args.CookieContainer)
 			_productionManager = New kCura.WinEDDS.Service.ProductionManager(args.Credential, args.CookieContainer)
-			_fileUploader = New kCura.WinEDDS.FileUploader(args.Credential, args.CaseInfo.ArtifactID, _docManager.GetDocumentDirectoryByCaseArtifactID(args.CaseInfo.ArtifactID) & "\", args.CookieContainer)
+			_repositoryPath = args.SelectedCasePath & "EDDS" & args.CaseInfo.ArtifactID & "\"
+			_fileUploader = New kCura.WinEDDS.FileUploader(args.Credential, args.CaseInfo.ArtifactID, _repositoryPath, args.CookieContainer)
 			_folderID = folderID
 			_productionArtifactID = args.ProductionArtifactID
 			_overwrite = args.Overwrite
@@ -78,7 +79,6 @@ Namespace kCura.WinEDDS
 			_selectedIdentifierField = args.ControlKeyField
 			_processController = controller
 			_copyFilesToRepository = args.CopyFilesToDocumentRepository
-			_repositoryPath = args.SelectedCasePath
 			_continue = True
 			_autoNumberImages = args.AutoNumberImages
 		End Sub

@@ -96,7 +96,7 @@ Namespace kCura.WinEDDS
 			MyBase.New(args, timeZoneOffset, autoDetect)
 			_overwrite = args.OverwriteDestination
 			If args.CopyFilesToDocumentRepository Then
-				_defaultDestinationFolderPath = args.SelectedCasePath
+				_defaultDestinationFolderPath = args.SelectedCasePath & "EDDS" & args.CaseInfo.ArtifactID & "\"
 			End If
 			_uploader = New kCura.WinEDDS.FileUploader(args.Credentials, args.CaseInfo.ArtifactID, _defaultDestinationFolderPath, args.CookieContainer)
 			_extractFullTextFromNative = args.ExtractFullTextFromNativeFile
