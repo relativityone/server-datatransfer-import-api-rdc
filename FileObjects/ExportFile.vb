@@ -27,6 +27,7 @@ Namespace kCura.WinEDDS
 		Protected _filePrefix As String
 		Protected _typeOfExportedFilePath As ExportedFilePathType
 		Private _exportNativesToFileNamedFrom As kCura.WinEDDS.ExportNativeWithFilenameFrom = ExportNativeWithFilenameFrom.Identifier
+		Private _appendOriginalFileName As Boolean
 
 #Region "Public Properties"
 
@@ -269,6 +270,14 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
+		Public Property AppendOriginalFileName() As Boolean
+			Get
+				Return _appendOriginalFileName
+			End Get
+			Set(ByVal value As Boolean)
+				_appendOriginalFileName = value
+			End Set
+		End Property
 
 #End Region
 

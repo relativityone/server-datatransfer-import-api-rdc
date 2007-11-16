@@ -12,6 +12,7 @@ Namespace kCura.WinEDDS.Exporters
 		Private _dataRow As System.Data.DataRow
 		Private _nativeTempLocation As String = ""
 		Private _productionBeginBates As String = ""
+		Private _originalFileName As String = ""
 
 		Public Property DataRow() As System.Data.DataRow
 			Get
@@ -112,16 +113,28 @@ Namespace kCura.WinEDDS.Exporters
 			End Set
 		End Property
 
-		Public ReadOnly Property NativeFileName() As String
-			Get
-				Dim retval As String
+		Public Function NativeFileName(ByVal appendToOriginal As Boolean) As String
+			Dim retval As String
+			If appendToOriginal Then
+				retval = IdentifierValue & "_" & OriginalFileName
+			Else
 				If Not NativeExtension = "" Then
 					retval = IdentifierValue & "." & NativeExtension
 				Else
 					retval = IdentifierValue
 				End If
-				Return kCura.Utility.File.ConvertIllegalCharactersInFilename(retval)
+			End If
+			Return kCura.Utility.File.ConvertIllegalCharactersInFilename(retval)
+		End Function
+
+
+		Public Property OriginalFileName() As String
+			Get
+				Return _originalFileName
 			End Get
+			Set(ByVal value As String)
+				_originalFileName = value
+			End Set
 		End Property
 
 		Public ReadOnly Property ProductionBeginBatesFileName() As String

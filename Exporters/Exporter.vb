@@ -181,8 +181,10 @@ Namespace kCura.WinEDDS
 				documentInfo.HasFullText = Me.DocumentHasExtractedText(fullTexts, documentArtifactIDs(i))
 				If nativeRow Is Nothing Then
 					documentInfo.NativeFileGuid = ""
+					documentInfo.OriginalFileName = ""
 				Else
 					documentInfo.NativeFileGuid = nativeRow("Guid").ToString
+					documentInfo.OriginalFileName = nativeRow("Filename").ToString
 				End If
 				If nativeRow Is Nothing Then
 					documentInfo.NativeExtension = ""

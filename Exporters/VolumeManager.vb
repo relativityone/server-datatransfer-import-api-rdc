@@ -165,7 +165,7 @@ Namespace kCura.WinEDDS
 				Dim nativeFileName As String
 				Select Case _parent.ExportNativesToFileNamedFrom
 					Case ExportNativeWithFilenameFrom.Identifier
-						nativeFileName = documentInfo.NativeFileName
+						nativeFileName = documentInfo.NativeFileName(Me.Settings.AppendOriginalFileName)
 					Case ExportNativeWithFilenameFrom.Production
 						nativeFileName = documentInfo.ProductionBeginBatesFileName
 				End Select
