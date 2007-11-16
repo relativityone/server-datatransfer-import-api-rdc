@@ -278,11 +278,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Exporters\SearchExporter.vb"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "Exporters\VolumeInfo.vb"
                     SubType = "Code"
                     BuildAction = "Compile"

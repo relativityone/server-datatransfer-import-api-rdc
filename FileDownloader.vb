@@ -90,26 +90,26 @@ Namespace kCura.WinEDDS
 
 
 		Public Function DownloadFile(ByVal localFilePath As String, ByVal remoteFileGuid As String, ByVal artifactID As Int32, ByVal appID As String) As Boolean
-			If Me.UploaderType = Type.Web Then
-				Me.UploaderType = Type.Web
-				Return WebDownloadFile(localFilePath, artifactID, remoteFileGuid, appID)
-			Else
-				Me.UploaderType = Type.Direct
-				Dim remoteFilePath As String = _destinationFolderPath & remoteFileGuid
-				Try
-					If localFilePath.IndexOf("\") <> -1 Then
-						Dim dir As String = localFilePath.Substring(0, localFilePath.LastIndexOf("\") + 1)
-						If Not System.IO.Directory.Exists(dir) Then
-							System.IO.Directory.CreateDirectory(dir)
-						End If
-					End If
-					System.IO.File.Copy(remoteFilePath, localFilePath, True)
-					Return True
-				Catch ex As System.Exception
-					RaiseEvent UploadStatusEvent("Error Uploading File")					'TODO: Change this to a separate error-type event'
-					Throw New ApplicationException("Error Downloading File", ex)
-				End Try
-			End If
+			'If Me.UploaderType = Type.Web Then
+			Me.UploaderType = Type.Web
+			Return WebDownloadFile(localFilePath, artifactID, remoteFileGuid, appID)
+			'Else
+			'	Me.UploaderType = Type.Direct
+			'	Dim remoteFilePath As String = _destinationFolderPath & remoteFileGuid
+			'	Try
+			'		If localFilePath.IndexOf("\") <> -1 Then
+			'			Dim dir As String = localFilePath.Substring(0, localFilePath.LastIndexOf("\") + 1)
+			'			If Not System.IO.Directory.Exists(dir) Then
+			'				System.IO.Directory.CreateDirectory(dir)
+			'			End If
+			'		End If
+			'		System.IO.File.Copy(remoteFilePath, localFilePath, True)
+			'		Return True
+			'	Catch ex As System.Exception
+			'		RaiseEvent UploadStatusEvent("Error Uploading File")					'TODO: Change this to a separate error-type event'
+			'		Throw New ApplicationException("Error Downloading File", ex)
+			'	End Try
+			'End If
 		End Function
 
 		Private Function WebDownloadFile(ByVal localFilePath As String, ByVal artifactID As Int32, ByVal remoteFileGuid As String, ByVal appID As String, Optional ByVal forFullText As Boolean = False) As Boolean

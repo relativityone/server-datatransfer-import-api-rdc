@@ -58,6 +58,13 @@ Namespace kCura.WinEDDS
 				_exportNativesToFileNamedFrom = value
 			End Set
 		End Property
+		Public ReadOnly Property ErrorLogFileName() As String
+			Get
+				If Not _volumeManager Is Nothing Then
+					Return _volumeManager.ErrorLogFileName
+				End If
+			End Get
+		End Property
 
 #End Region
 
@@ -79,7 +86,7 @@ Namespace kCura.WinEDDS
 
 #End Region
 
-		Public Sub ExportSearch()
+		Public Function ExportSearch() As Boolean
 			Try
 				Me.Search()
 			Catch ex As System.Exception
@@ -88,9 +95,10 @@ Namespace kCura.WinEDDS
 					_volumeManager.Close()
 				End If
 			End Try
-		End Sub
+			Return Me.ErrorLogFileName = ""
+		End Function
 
-		Private Sub Search()
+		Private Function Search() As Boolean
 			Dim fileTable As System.Data.DataTable
 			Dim folderTable As System.Data.DataTable
 			Dim fullTextFiles As System.Data.DataTable
@@ -101,6 +109,7 @@ Namespace kCura.WinEDDS
 			Dim count As Int32
 			'Dim writer As System.IO.StreamWriter
 			Dim volumeFile As String
+
 
 			Me.WriteUpdate("Retrieving export data from the server...")
 			Select Case Me.ExportFile.TypeOfExport
@@ -150,7 +159,7 @@ Namespace kCura.WinEDDS
 			Next
 			_volumeManager.Finish()
 			'Me.FolderList.DeleteEmptyFolders(Me.ExportFile.FolderPath)
-		End Sub
+		End Function
 
 #Region "Private Helper Functions"
 

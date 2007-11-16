@@ -6,6 +6,7 @@ Namespace kCura.WinEDDS
 		Private _settings As ExportFile
 		Private _imageFileWriter As System.IO.StreamWriter
 		Private _nativeFileWriter As System.IO.StreamWriter
+		Private _errorWriter As System.IO.StreamWriter
 
 		Private _currentVolumeNumber As Int32
 		Private _currentSubdirectoryNumber As Int32
@@ -22,10 +23,28 @@ Namespace kCura.WinEDDS
 		Private _parent As WinEDDS.Exporter
 		Private _columnHeaderString As String
 		Private _hasWrittenColumnHeaderString As Boolean = False
+
+		Private _errorFileLocation As String = ""
 #End Region
 
-#Region "Accessors"
+		Private Enum ExportFileType
+			Image
+			Native
+		End Enum
 
+
+
+
+#Region "Accessors"
+		Public ReadOnly Property ErrorLogFileName() As String
+			Get
+				Try
+					Return _errorFileLocation
+				Catch ex As System.Exception
+					Return ""
+				End Try
+			End Get
+		End Property
 		Public ReadOnly Property Settings() As ExportFile
 			Get
 				Return _settings
@@ -116,6 +135,16 @@ Namespace kCura.WinEDDS
 			End If
 		End Sub
 
+		Private Sub LogFileExportError(ByVal type As ExportFileType, ByVal recordIdentifier As String, ByVal fileLocation As String, ByVal errorText As String)
+			If _errorWriter Is Nothing Then
+				_errorFileLocation = System.IO.Path.GetTempFileName()
+				_errorWriter = New System.IO.StreamWriter(_errorFileLocation, False, System.Text.Encoding.Default)
+				_errorWriter.WriteLine("""File Type"",""File ID"",""File Location"",""Error Description""")
+			End If
+			_errorWriter.WriteLine(String.Format("""{0}"",""{1}"",""{2}"",""{3}""", type.ToString, recordIdentifier, fileLocation, kCura.Utility.Strings.ToCsvCellContents(errorText)))
+			_parent.WriteError(String.Format("{0} - Document [{1}] - File [{2}] - Error: {3}{4}", type.ToString, recordIdentifier, fileLocation, System.Environment.NewLine, errorText))
+		End Sub
+
 		Public Sub Finish()
 			If Not _nativeFileWriter Is Nothing Then
 				_nativeFileWriter.Flush()
@@ -125,6 +154,10 @@ Namespace kCura.WinEDDS
 				_imageFileWriter.Flush()
 				_imageFileWriter.Close()
 			End If
+			If Not _errorWriter Is Nothing Then
+				_errorWriter.Flush()
+				_errorWriter.Close()
+			End If
 		End Sub
 #End Region
 
@@ -133,11 +166,19 @@ Namespace kCura.WinEDDS
 			Dim image As Exporters.ImageExportInfo
 			If Me.Settings.ExportImages Then
 				For Each image In documentInfo.Images
-					totalFileSize += Me.DownloadImage(image)
+					Try
+						totalFileSize += Me.DownloadImage(image)
+					Catch ex As System.Exception
+						Me.LogFileExportError(ExportFileType.Image, documentInfo.IdentifierValue, image.FileGuid, ex.ToString)
+					End Try
 				Next
 			End If
 			If Me.Settings.ExportNative Then
-				totalFileSize += Me.DownloadNative(documentInfo)
+				Try
+					totalFileSize += Me.DownloadNative(documentInfo)
+				Catch ex As System.Exception
+					Me.LogFileExportError(ExportFileType.Image, documentInfo.IdentifierValue, documentInfo.NativeFileGuid, ex.ToString)
+				End Try
 			End If
 			If totalFileSize + _currentVolumeSize > Me.VolumeMaxSize Then
 				Me.UpdateVolume()
@@ -258,14 +299,18 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Private Function DownloadImage(ByVal image As Exporters.ImageExportInfo) As Int64
-			If image.FileGuid = "" Then return 0
-				Dim tempFile As String = System.IO.Path.GetTempFileName
+			If image.FileGuid = "" Then Return 0
+			Dim tempFile As String = System.IO.Path.GetTempFileName
+			Try
 				Try
 					_downloadManager.DownloadFile(tempFile, image.FileGuid, image.ArtifactID, _settings.CaseArtifactID.ToString)
 				Catch ex As System.Exception
 					_downloadManager.DownloadFile(tempFile, image.FileGuid, image.ArtifactID, _settings.CaseArtifactID.ToString)
 				End Try
-				image.TempLocation = tempFile
+			Catch ex As System.Exception
+			End Try
+
+			image.TempLocation = tempFile
 			Return New System.IO.FileInfo(tempFile).Length
 		End Function
 

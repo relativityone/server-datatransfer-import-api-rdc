@@ -13,8 +13,13 @@ Namespace kCura.WinEDDS
 			_warningCount = 0
 			_errorCount = 0
 			_searchExporter = New Exporter(Me.ExportFile, Me.ProcessController)
-			_searchExporter.ExportSearch()
-			Me.ProcessObserver.RaiseProcessCompleteEvent()
+
+
+			If Not _searchExporter.ExportSearch() Then
+				Me.ProcessObserver.RaiseProcessCompleteEvent(False, _searchExporter.ErrorLogFileName)
+			Else
+				Me.ProcessObserver.RaiseStatusEvent("", "Export completed")
+			End If
 		End Sub
 
 		Private Sub _searchExporter_FileTransferModeChangeEvent(ByVal mode As String) Handles _searchExporter.FileTransferModeChangeEvent
