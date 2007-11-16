@@ -336,7 +336,6 @@ Namespace kCura.WinEDDS.NUnit
 		Public Function GetSampleCaseInfo() As kCura.EDDS.Types.CaseInfo
 			Dim ci As New kCura.EDDS.Types.CaseInfo
 			ci.ArtifactID = CASEARTIFACTID
-			ci.EmailAddress = ""
 			ci.MatterArtifactID = CASEMATTERARTIFACTID
 			ci.Name = CASENAME
 			ci.RootArtifactID = CASEROOTARTIFACTID
