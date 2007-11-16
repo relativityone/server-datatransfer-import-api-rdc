@@ -139,7 +139,7 @@ Namespace kCura.WinEDDS
 			If _errorWriter Is Nothing Then
 				_errorFileLocation = System.IO.Path.GetTempFileName()
 				_errorWriter = New System.IO.StreamWriter(_errorFileLocation, False, System.Text.Encoding.Default)
-				_errorWriter.WriteLine("""File Type"",""File ID"",""File Location"",""Error Description""")
+				_errorWriter.WriteLine("""File Type"",""Document Identifier"",""File Guid"",""Error Description""")
 			End If
 			_errorWriter.WriteLine(String.Format("""{0}"",""{1}"",""{2}"",""{3}""", type.ToString, recordIdentifier, fileLocation, kCura.Utility.Strings.ToCsvCellContents(errorText)))
 			_parent.WriteError(String.Format("{0} - Document [{1}] - File [{2}] - Error: {3}{4}", type.ToString, recordIdentifier, fileLocation, System.Environment.NewLine, errorText))
