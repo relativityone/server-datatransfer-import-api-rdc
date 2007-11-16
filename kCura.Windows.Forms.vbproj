@@ -139,7 +139,7 @@
                 />
                 <File
                     RelPath = "RichTextBox.vb"
-                    SubType = "UserControl"
+                    SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
@@ -149,7 +149,7 @@
                 />
                 <File
                     RelPath = "Specialized\OutputRichTextBox.vb"
-                    SubType = "UserControl"
+                    SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
