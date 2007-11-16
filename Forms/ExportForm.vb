@@ -67,6 +67,7 @@ Public Class ExportForm
 	Friend WithEvents _useAbsolutePaths As System.Windows.Forms.RadioButton
 	Friend WithEvents _usePrefix As System.Windows.Forms.RadioButton
 	Friend WithEvents _prefixText As System.Windows.Forms.TextBox
+	Friend WithEvents _appendOriginalFilename As System.Windows.Forms.CheckBox
 	<System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
 		Dim resources As System.Resources.ResourceManager = New System.Resources.ResourceManager(GetType(ExportForm))
 		Me.MainMenu1 = New System.Windows.Forms.MainMenu
@@ -107,6 +108,7 @@ Public Class ExportForm
 		Me._productionPrecedenceBox = New System.Windows.Forms.GroupBox
 		Me._productionPrecedenceList = New System.Windows.Forms.ListBox
 		Me._pickPrecedenceButton = New System.Windows.Forms.Button
+		Me._appendOriginalFilename = New System.Windows.Forms.CheckBox
 		Me._filtersBox.SuspendLayout()
 		Me.GroupBox3.SuspendLayout()
 		Me.GroupBox23.SuspendLayout()
@@ -251,6 +253,7 @@ Public Class ExportForm
 		'
 		'GroupBox23
 		'
+		Me.GroupBox23.Controls.Add(Me._appendOriginalFilename)
 		Me.GroupBox23.Controls.Add(Me._prefixText)
 		Me.GroupBox23.Controls.Add(Me._usePrefix)
 		Me.GroupBox23.Controls.Add(Me._useAbsolutePaths)
@@ -261,7 +264,7 @@ Public Class ExportForm
 		Me.GroupBox23.Controls.Add(Me._nativeFileFormat)
 		Me.GroupBox23.Location = New System.Drawing.Point(3, 168)
 		Me.GroupBox23.Name = "GroupBox23"
-		Me.GroupBox23.Size = New System.Drawing.Size(281, 120)
+		Me.GroupBox23.Size = New System.Drawing.Size(293, 120)
 		Me.GroupBox23.TabIndex = 12
 		Me.GroupBox23.TabStop = False
 		Me.GroupBox23.Text = "Export File Formats"
@@ -269,7 +272,7 @@ Public Class ExportForm
 		'_prefixText
 		'
 		Me._prefixText.Enabled = False
-		Me._prefixText.Location = New System.Drawing.Point(168, 88)
+		Me._prefixText.Location = New System.Drawing.Point(176, 92)
 		Me._prefixText.Name = "_prefixText"
 		Me._prefixText.Size = New System.Drawing.Size(104, 20)
 		Me._prefixText.TabIndex = 16
@@ -277,7 +280,7 @@ Public Class ExportForm
 		'
 		'_usePrefix
 		'
-		Me._usePrefix.Location = New System.Drawing.Point(152, 72)
+		Me._usePrefix.Location = New System.Drawing.Point(160, 76)
 		Me._usePrefix.Name = "_usePrefix"
 		Me._usePrefix.Size = New System.Drawing.Size(124, 16)
 		Me._usePrefix.TabIndex = 15
@@ -285,7 +288,7 @@ Public Class ExportForm
 		'
 		'_useAbsolutePaths
 		'
-		Me._useAbsolutePaths.Location = New System.Drawing.Point(152, 52)
+		Me._useAbsolutePaths.Location = New System.Drawing.Point(160, 56)
 		Me._useAbsolutePaths.Name = "_useAbsolutePaths"
 		Me._useAbsolutePaths.Size = New System.Drawing.Size(124, 16)
 		Me._useAbsolutePaths.TabIndex = 14
@@ -294,7 +297,7 @@ Public Class ExportForm
 		'_useRelativePaths
 		'
 		Me._useRelativePaths.Checked = True
-		Me._useRelativePaths.Location = New System.Drawing.Point(152, 32)
+		Me._useRelativePaths.Location = New System.Drawing.Point(160, 36)
 		Me._useRelativePaths.Name = "_useRelativePaths"
 		Me._useRelativePaths.Size = New System.Drawing.Size(124, 16)
 		Me._useRelativePaths.TabIndex = 13
@@ -347,9 +350,9 @@ Public Class ExportForm
 		Me._loadFileCharacterInformation.Controls.Add(Me._newLineDelimiter)
 		Me._loadFileCharacterInformation.Controls.Add(Me.Label2)
 		Me._loadFileCharacterInformation.Controls.Add(Me._recordDelimiter)
-		Me._loadFileCharacterInformation.Location = New System.Drawing.Point(296, 168)
+		Me._loadFileCharacterInformation.Location = New System.Drawing.Point(300, 168)
 		Me._loadFileCharacterInformation.Name = "_loadFileCharacterInformation"
-		Me._loadFileCharacterInformation.Size = New System.Drawing.Size(280, 120)
+		Me._loadFileCharacterInformation.Size = New System.Drawing.Size(276, 120)
 		Me._loadFileCharacterInformation.TabIndex = 15
 		Me._loadFileCharacterInformation.TabStop = False
 		Me._loadFileCharacterInformation.Text = "Native Load File Custom Characters"
@@ -447,6 +450,14 @@ Public Class ExportForm
 		Me._pickPrecedenceButton.Size = New System.Drawing.Size(24, 20)
 		Me._pickPrecedenceButton.TabIndex = 1
 		Me._pickPrecedenceButton.Text = "..."
+		'
+		'_appendOriginalFilename
+		'
+		Me._appendOriginalFilename.Location = New System.Drawing.Point(136, 16)
+		Me._appendOriginalFilename.Name = "_appendOriginalFilename"
+		Me._appendOriginalFilename.Size = New System.Drawing.Size(148, 16)
+		Me._appendOriginalFilename.TabIndex = 17
+		Me._appendOriginalFilename.Text = "Append original filename"
 		'
 		'ExportForm
 		'
@@ -557,6 +568,7 @@ Public Class ExportForm
 		_exportFile.RecordDelimiter = Chr(CType(_recordDelimiter.SelectedValue, Int32))
 		_exportFile.MultiRecordDelimiter = Chr(CType(_multiRecordDelimiter.SelectedValue, Int32))
 		_exportFile.NewlineDelimiter = Chr(CType(_newLineDelimiter.SelectedValue, Int32))
+		_exportFile.AppendOriginalFileName = _appendOriginalFilename.Checked
 
 		_exportFile.CookieContainer = _application.CookieContainer
 		_exportFile.FilePrefix = ""
