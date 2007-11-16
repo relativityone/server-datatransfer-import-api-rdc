@@ -21,7 +21,6 @@ Namespace kCura.WinEDDS.Service
 			Dim c As New kCura.EDDS.Types.CaseInfo
 			With toConvert
 				c.ArtifactID = .ArtifactID
-				c.EmailAddress = .EmailAddress
 				c.MatterArtifactID = .MatterArtifactID
 				c.Name = .Name
 				c.RootArtifactID = .RootArtifactID
