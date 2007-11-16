@@ -499,7 +499,7 @@ Namespace kCura.Windows.Process
 
 		End Sub
 
-		Private Sub _processObserver_OnProcessComplete(ByVal closeForm As Boolean, ByVal exportFilePath As String) Handles _processObserver.OnProcessComplete
+		Private Sub _processObserver_OnProcessComplete(ByVal closeForm As Boolean, ByVal exportFilePath As String, ByVal exportLog As Boolean) Handles _processObserver.OnProcessComplete
 			If closeForm Then
 				Me.Close()
 			Else
@@ -512,8 +512,12 @@ Namespace kCura.Windows.Process
 				If exportFilePath <> "" Then
 					_exportErrorFileButton.Visible = True
 					_exportErrorFileLocation = exportFilePath
-					If MsgBox("Errors have occurred in this import. Export error files?", MsgBoxStyle.OKCancel, "") = MsgBoxResult.OK Then
-						Me.ExportErrorFiles()
+					If MsgBox("Errors have occurred. Export error files?", MsgBoxStyle.OKCancel, "") = MsgBoxResult.OK Then
+						If exportLog Then
+							Me.ExportErrorFiles()
+						Else
+							_exportErrorFileDialog.ShowDialog()
+						End If
 					End If
 				End If
 			End If
