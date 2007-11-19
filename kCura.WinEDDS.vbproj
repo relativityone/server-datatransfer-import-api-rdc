@@ -429,11 +429,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Service\UnsupportedFileTypeLookup.vb"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "Service\UserManager.vb"
                     SubType = "code"
                     BuildAction = "Compile"
