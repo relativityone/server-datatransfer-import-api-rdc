@@ -30,7 +30,7 @@ Namespace kCura.WinEDDS.Service
 			Dim unmappableFields As New System.Collections.Specialized.StringCollection
 			Dim unmappableFieldCategories As New System.Collections.ArrayList
 			If Not includeUnmappable Then
-				unmappableFields.AddRange(New String() {"Has Annotations", "Has Images", "Has Native", "Redacted"})				' HACK: Ugly - need to make a new field category ID
+				unmappableFields.AddRange(New String() {"Has Annotations", "Has Images", "Has Native", "Redacted", "Supported By Viewer", "Relativity Native Type"})				' HACK: Ugly - need to make a new field category ID
 				unmappableFieldCategories.AddRange(New kCura.DynamicFields.Types.FieldCategory() {DynamicFields.Types.FieldCategory.GroupIdentifier, DynamicFields.Types.FieldCategory.FileInfo, DynamicFields.Types.FieldCategory.ProductionMarker, DynamicFields.Types.FieldCategory.MarkupSetMarker})
 			End If
 			Dim i As Int32

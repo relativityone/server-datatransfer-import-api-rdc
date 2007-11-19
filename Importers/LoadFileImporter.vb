@@ -36,6 +36,9 @@ Namespace kCura.WinEDDS
 		Private _fullTextField As kCura.EDDS.WebAPI.DocumentManagerBase.Field
 		Private _defaultDestinationFolderPath As String = ""
 		Private _copyFileToRepository As Boolean
+		Private _fileIdManager As New kCura.OI.FileID.Manager
+		Private _oixFileLookup As System.Collections.Specialized.HybridDictionary
+
 #End Region
 
 #Region "Accessors"
@@ -240,12 +243,15 @@ Namespace kCura.WinEDDS
 			Dim parentFolderID As Int32
 			Dim md5hash As String = ""
 			Dim fullFilePath As String = ""
+			Dim isSupportedFileType As Boolean
+			Dim oixFileIdData As OI.FileID.FileIDData
 			If uploadFile Then
 				filename = values(_filePathColumnIndex)
 				fileExists = System.IO.File.Exists(filename)
 				If filename <> String.Empty AndAlso Not fileExists Then Throw New InvalidFilenameException(filename)
 				If fileExists Then
 					Dim now As DateTime = DateTime.Now
+					oixFileIdData = _fileIdManager.GetFileIDDataByFilePath(filename)
 					If _copyFileToRepository Then
 						fileGuid = _uploader.UploadFile(filename, _caseArtifactID)
 					Else
@@ -258,7 +264,7 @@ Namespace kCura.WinEDDS
 					filename = filename.Substring(filename.LastIndexOf("\") + 1)
 					WriteStatusLine(Windows.Process.EventType.Status, String.Format("End upload file. ({0}ms)", DateTime.op_Subtraction(DateTime.Now, now).Milliseconds))
 				End If
-				End If
+			End If
 			If _createFolderStructure Then
 				parentFolderID = _folderCache.FolderID(Me.CleanDestinationFolderPath(values(_destinationFolderColumnIndex)))
 			Else
@@ -273,7 +279,7 @@ Namespace kCura.WinEDDS
 			ElseIf Not _processedDocumentIdentifiers(identityValue) Is Nothing Then
 				Throw New IdentifierOverlapException(identityValue, _processedDocumentIdentifiers(identityValue))
 			End If
-			Dim metadoc As New MetaDocument(fileGuid, identityValue, fieldCollection, fileExists AndAlso uploadFile AndAlso (fileGuid <> String.Empty OrElse Not _copyFileToRepository), filename, fullFilePath, uploadFile, CurrentLineNumber, parentFolderID, md5hash, values)
+			Dim metadoc As New MetaDocument(fileGuid, identityValue, fieldCollection, fileExists AndAlso uploadFile AndAlso (fileGuid <> String.Empty OrElse Not _copyFileToRepository), filename, fullFilePath, uploadFile, CurrentLineNumber, parentFolderID, md5hash, values, oixFileIdData)
 			_docsToProcess.Add(metadoc)
 			Return identityValue
 		End Function
@@ -408,6 +414,7 @@ Namespace kCura.WinEDDS
 			ManageRequiredField(documentDTO, EDDS.WebAPI.DocumentManagerBase.FieldCategory.DuplicateHash)
 			Dim field As kCura.EDDS.WebAPI.DocumentManagerBase.Field
 			If mdoc.UploadFile And mdoc.IndexFileInDB Then
+				Me.SetFileIdDataFields(documentDTO, mdoc.FileIdData)
 				Dim fileDTO As kCura.EDDS.WebAPI.DocumentManagerBase.File = CreateFileDTO(filename, fileguid, _defaultDestinationFolderPath, mdoc.FullFilePath)
 				documentDTO.Files = New kCura.EDDS.WebApi.DocumentManagerBase.File() {fileDTO}
 			End If
@@ -426,6 +433,25 @@ Namespace kCura.WinEDDS
 
 		Private Function UpdateDocument(ByVal docDTO As kCura.EDDS.WebAPI.DocumentManagerBase.Document, ByVal mdoc As MetaDocument, ByVal extractText As Boolean) As Int32
 			Return UpdateDocument(docDTO, mdoc.FieldCollection, mdoc.IdentityValue, mdoc.UploadFile AndAlso mdoc.FileGuid <> String.Empty, mdoc.FileGuid <> String.Empty AndAlso extractText, mdoc.Filename, mdoc.FileGuid, mdoc)
+		End Function
+
+		Private Sub SetFileIdDataFields(ByVal document As kCura.EDDS.WebAPI.DocumentManagerBase.Document, ByVal oixFileIdData As OI.FileID.FileIDData)
+			Dim isSupported As Boolean = Me.IsSupportedRelativityFileType(oixFileIdData)
+			For Each field As kCura.EDDS.WebAPI.DocumentManagerBase.Field In document.Fields
+				If field.DisplayName = "Supported By Viewer" Then field.Value = isSupported.ToString
+				If field.DisplayName = "Relativity Native Type" Then field.Value = oixFileIdData.FileID.ToString
+			Next
+		End Sub
+
+		Private Function IsSupportedRelativityFileType(ByVal fileData As OI.FileID.FileIDData) As Boolean
+			If fileData Is Nothing Then Return False
+			If _oixFileLookup Is Nothing Then
+				_oixFileLookup = New System.Collections.Specialized.HybridDictionary
+				For Each id As Int32 In _documentManager.RetrieveAllUnsupportedOiFileIds
+					_oixFileLookup.Add(id, id)
+				Next
+			End If
+			Return _oixFileLookup.Contains(fileData.FileID)
 		End Function
 
 		Private Function UpdateDocument(ByVal docDTO As kCura.EDDS.WebAPI.DocumentManagerBase.Document, ByVal fieldCollection As DocumentFieldCollection, ByVal identityValue As String, ByVal uploadFile As Boolean, ByVal extractText As Boolean, ByVal fileName As String, ByVal fileGuid As String, ByVal mdoc As MetaDocument) As Int32
@@ -457,6 +483,7 @@ Namespace kCura.WinEDDS
 						fileList.Add(fileDTO)
 						fileList.Add(oldFile)
 					End If
+					Me.SetFileIdDataFields(docDTO, mdoc.FileIdData)
 				End If
 				Dim fullTextFileDTO As kCura.EDDS.WebAPI.DocumentManagerBase.File
 				For Each fullTextFileDTO In docDTO.Files

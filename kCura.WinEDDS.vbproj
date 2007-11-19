@@ -140,6 +140,11 @@
                     Project = "{C2FD8BF7-723A-4D40-A201-CD7458678A70}"
                     Package = "{F184B08F-C81C-45F6-A57F-5ABD9991F28F}"
                 />
+                <Reference
+                    Name = "kCura.OI.FileID"
+                    Project = "{CCEFD50F-0840-402D-AB16-C93F8E579B8B}"
+                    Package = "{F184B08F-C81C-45F6-A57F-5ABD9991F28F}"
+                />
             </References>
             <Imports>
                 <Import Namespace = "Microsoft.VisualBasic" />
@@ -421,6 +426,11 @@
                 <File
                     RelPath = "Service\SearchManager.vb"
                     SubType = "code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Service\UnsupportedFileTypeLookup.vb"
+                    SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File

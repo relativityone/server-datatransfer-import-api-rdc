@@ -465,6 +465,16 @@
           </s:sequence>
         </s:complexType>
       </s:element>
+      <s:element name="RetrieveAllUnsupportedOiFileIds">
+        <s:complexType />
+      </s:element>
+      <s:element name="RetrieveAllUnsupportedOiFileIdsResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="RetrieveAllUnsupportedOiFileIdsResult" type="tns:ArrayOfInt" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
     </s:schema>
     <s:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="http://NullableTypes.SourceForge.Net/NullableInt32XMLSchema" id="NullableInt32">
       <xs:element name="NullableInt32" nillable="true" type="xs:int" />
@@ -579,6 +589,12 @@
   <wsdl:message name="GetIdentifierFromDocumentArtifactIDSoapOut">
     <wsdl:part name="parameters" element="tns:GetIdentifierFromDocumentArtifactIDResponse" />
   </wsdl:message>
+  <wsdl:message name="RetrieveAllUnsupportedOiFileIdsSoapIn">
+    <wsdl:part name="parameters" element="tns:RetrieveAllUnsupportedOiFileIds" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveAllUnsupportedOiFileIdsSoapOut">
+    <wsdl:part name="parameters" element="tns:RetrieveAllUnsupportedOiFileIdsResponse" />
+  </wsdl:message>
   <wsdl:portType name="DocumentManagerSoap">
     <wsdl:operation name="GetAllDocumentsForCase">
       <wsdl:input message="tns:GetAllDocumentsForCaseSoapIn" />
@@ -647,6 +663,10 @@
     <wsdl:operation name="GetIdentifierFromDocumentArtifactID">
       <wsdl:input message="tns:GetIdentifierFromDocumentArtifactIDSoapIn" />
       <wsdl:output message="tns:GetIdentifierFromDocumentArtifactIDSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveAllUnsupportedOiFileIds">
+      <wsdl:input message="tns:RetrieveAllUnsupportedOiFileIdsSoapIn" />
+      <wsdl:output message="tns:RetrieveAllUnsupportedOiFileIdsSoapOut" />
     </wsdl:operation>
   </wsdl:portType>
   <wsdl:binding name="DocumentManagerSoap" type="tns:DocumentManagerSoap">
@@ -797,6 +817,15 @@
     </wsdl:operation>
     <wsdl:operation name="GetIdentifierFromDocumentArtifactID">
       <soap:operation soapAction="http://foley.com/EDDS/DocumentManager/GetIdentifierFromDocumentArtifactID" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveAllUnsupportedOiFileIds">
+      <soap:operation soapAction="http://foley.com/EDDS/DocumentManager/RetrieveAllUnsupportedOiFileIds" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>

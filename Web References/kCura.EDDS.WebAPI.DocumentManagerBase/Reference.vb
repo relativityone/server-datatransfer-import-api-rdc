@@ -334,6 +334,24 @@ Namespace kCura.EDDS.WebAPI.DocumentManagerBase
             Dim results() As Object = Me.EndInvoke(asyncResult)
             Return CType(results(0),String)
         End Function
+        
+        '<remarks/>
+        <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://foley.com/EDDS/DocumentManager/RetrieveAllUnsupportedOiFileIds", RequestNamespace:="http://foley.com/EDDS/DocumentManager", ResponseNamespace:="http://foley.com/EDDS/DocumentManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
+        Public Function RetrieveAllUnsupportedOiFileIds() As Integer()
+            Dim results() As Object = Me.Invoke("RetrieveAllUnsupportedOiFileIds", New Object(-1) {})
+            Return CType(results(0),Integer())
+        End Function
+        
+        '<remarks/>
+        Public Function BeginRetrieveAllUnsupportedOiFileIds(ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("RetrieveAllUnsupportedOiFileIds", New Object(-1) {}, callback, asyncState)
+        End Function
+        
+        '<remarks/>
+        Public Function EndRetrieveAllUnsupportedOiFileIds(ByVal asyncResult As System.IAsyncResult) As Integer()
+            Dim results() As Object = Me.EndInvoke(asyncResult)
+            Return CType(results(0),Integer())
+        End Function
     End Class
     
     '<remarks/>
