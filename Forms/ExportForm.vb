@@ -713,13 +713,13 @@ Public Class ExportForm
 				Me.ToggleLoadFileCharacterInformation(False)
 				_recordDelimiter.SelectedValue = Chr(44)
 				_quoteDelimiter.SelectedValue = Chr(34)
-				_newLineDelimiter.SelectedValue = Chr(174)
+				_newLineDelimiter.SelectedValue = Chr(10)
 				_multiRecordDelimiter.SelectedValue = Chr(59)
 			Case "Tab-delimited (.txt)"
 				Me.ToggleLoadFileCharacterInformation(False)
 				_recordDelimiter.SelectedValue = Chr(9)
 				_quoteDelimiter.SelectedValue = Chr(34)
-				_newLineDelimiter.SelectedValue = Chr(174)
+				_newLineDelimiter.SelectedValue = Chr(10)
 				_multiRecordDelimiter.SelectedValue = Chr(59)
 			Case "Concordance (.dat)"
 				Me.ToggleLoadFileCharacterInformation(False)
