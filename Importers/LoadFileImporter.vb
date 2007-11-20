@@ -439,7 +439,7 @@ Namespace kCura.WinEDDS
 			Dim isSupported As Boolean = Me.IsSupportedRelativityFileType(oixFileIdData)
 			For Each field As kCura.EDDS.WebAPI.DocumentManagerBase.Field In document.Fields
 				If field.DisplayName = "Supported By Viewer" Then field.Value = isSupported.ToString
-				If field.DisplayName = "Relativity Native Type" Then field.Value = oixFileIdData.FileID.ToString
+				If field.DisplayName = "Relativity Native Type" Then field.Value = System.Text.Encoding.Unicode.GetBytes(oixFileIdData.FileType)
 			Next
 		End Sub
 
