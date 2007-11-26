@@ -489,6 +489,7 @@ Namespace kCura.WinEDDS
 				fieldValue = fieldValue.Replace(System.Environment.NewLine, ChrW(10).ToString)
 				fieldValue = fieldValue.Replace(ChrW(13), ChrW(10))
 				fieldValue = fieldValue.Replace(ChrW(10), _settings.NewlineDelimiter)
+				fieldValue = fieldValue.Replace(_settings.QuoteDelimiter, _settings.QuoteDelimiter & _settings.QuoteDelimiter)
 				If fieldValue.Length > 1 AndAlso fieldValue.Chars(0) = ChrW(11) AndAlso fieldValue.Chars(fieldValue.Length - 1) = ChrW(11) Then
 					fieldValue = fieldValue.Trim(New Char() {ChrW(11)}).Replace(ChrW(11), _settings.MultiRecordDelimiter)
 				End If
