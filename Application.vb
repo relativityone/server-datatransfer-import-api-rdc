@@ -63,6 +63,12 @@ Namespace kCura.EDDS.WinForm
 			End Get
 		End Property
 
+		Public Sub RefreshSelectedCaseInfo()
+			Dim caseManager As New kCura.WinEDDS.Service.CaseManager(Me.Credential, _cookieContainer)
+			_selectedCaseInfo = caseManager.Read(_selectedCaseInfo.ArtifactID)
+			_documentRepositoryList = caseManager.GetAllDocumentFolderPaths
+		End Sub
+
 		Public ReadOnly Property SelectedCaseFolderID() As Int32
 			Get
 				Return _selectedCaseFolderID

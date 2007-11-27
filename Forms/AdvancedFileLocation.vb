@@ -152,12 +152,17 @@ Namespace kCura.EDDS.WinForm
 		Public Sub SelectPath(ByVal path As String)
 			If Not path Is Nothing AndAlso Not path = "" Then
 				Dim i As Int32
+				Dim foundIt As Boolean = False
 				For i = 0 To _repositories.Items.Count - 1
 					If _repositories.Items(i).ToString.ToLower = path.ToLower Then
 						_repositories.SelectedIndex = i
+						foundIt = True
 						Exit For
 					End If
-				Next
+				Next		'
+				If Not foundIt AndAlso path.ToLower <> _application.SelectedCaseInfo.DocumentPath.ToLower Then
+					Me.SelectPath(_application.SelectedCaseInfo.DocumentPath)
+				End If
 			End If
 		End Sub
 

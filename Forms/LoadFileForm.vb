@@ -1242,6 +1242,8 @@ Namespace kCura.EDDS.WinForm
 			For Each fieldName In itemsToRemove
 				_fieldMap.RightListBoxItems.Remove(fieldName)
 			Next
+			_application.RefreshSelectedCaseInfo()
+			Me.LoadFile.CaseInfo = _application.SelectedCaseInfo
 		End Sub
 
 		Private Function EnsureConnection() As Boolean
