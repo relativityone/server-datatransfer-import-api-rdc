@@ -181,7 +181,7 @@ Namespace kCura.WinEDDS
 				Try
 					totalFileSize += Me.DownloadNative(documentInfo)
 				Catch ex As System.Exception
-					Me.LogFileExportError(ExportFileType.Image, documentInfo.IdentifierValue, documentInfo.NativeFileGuid, ex.ToString)
+					Me.LogFileExportError(ExportFileType.Native, documentInfo.IdentifierValue, documentInfo.NativeFileGuid, ex.ToString)
 				End Try
 			End If
 			If totalFileSize + _currentVolumeSize > Me.VolumeMaxSize Then
