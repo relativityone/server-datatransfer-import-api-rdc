@@ -164,12 +164,16 @@ Namespace kCura.WinEDDS
 		Public Sub ExportDocument(ByVal documentInfo As Exporters.DocumentExportInfo)
 			Dim totalFileSize As Int64 = 0
 			Dim image As Exporters.ImageExportInfo
+			Dim imageSuccess As Boolean = True
+			Dim nativeSuccess As Boolean = True
 			If Me.Settings.ExportImages Then
 				For Each image In documentInfo.Images
 					Try
 						totalFileSize += Me.DownloadImage(image)
 					Catch ex As System.Exception
+						image.TempLocation = ""
 						Me.LogFileExportError(ExportFileType.Image, documentInfo.IdentifierValue, image.FileGuid, ex.ToString)
+						imageSuccess = False
 					End Try
 				Next
 			End If
@@ -308,6 +312,7 @@ Namespace kCura.WinEDDS
 					_downloadManager.DownloadFile(tempFile, image.FileGuid, image.ArtifactID, _settings.CaseArtifactID.ToString)
 				End Try
 			Catch ex As System.Exception
+				Throw
 			End Try
 
 			image.TempLocation = tempFile
@@ -315,19 +320,21 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Private Sub ExportDocumentImage(ByVal fileName As String, ByVal fileGuid As String, ByVal artifactID As Int32, ByVal batesNumber As String, ByVal tempFileLocation As String)
-			If System.IO.File.Exists(fileName) Then
-				If _settings.Overwrite Then
-					System.IO.File.Delete(fileName)
-					_parent.WriteStatusLine(kCura.Windows.Process.EventType.Status, String.Format("Overwriting document {0}.tif.", batesNumber))
-					System.IO.File.Move(tempFileLocation, fileName)
+			If Not tempFileLocation = "" Then
+				If System.IO.File.Exists(fileName) Then
+					If _settings.Overwrite Then
+						System.IO.File.Delete(fileName)
+						_parent.WriteStatusLine(kCura.Windows.Process.EventType.Status, String.Format("Overwriting document {0}.tif.", batesNumber))
+						System.IO.File.Move(tempFileLocation, fileName)
+					Else
+						_parent.WriteWarning(String.Format("{0}.tif already exists. Skipping file export.", batesNumber))
+					End If
 				Else
-					_parent.WriteWarning(String.Format("{0}.tif already exists. Skipping file export.", batesNumber))
+					_parent.WriteStatusLine(kCura.Windows.Process.EventType.Status, String.Format("Now exporting document {0}.tif.", batesNumber))
+					System.IO.File.Move(tempFileLocation, fileName)
 				End If
-			Else
-				_parent.WriteStatusLine(kCura.Windows.Process.EventType.Status, String.Format("Now exporting document {0}.tif.", batesNumber))
-				System.IO.File.Move(tempFileLocation, fileName)
+				_parent.WriteStatusLine(Windows.Process.EventType.Status, String.Format("Finished exporting document {0}.tif.", batesNumber))
 			End If
-			_parent.WriteStatusLine(Windows.Process.EventType.Status, String.Format("Finished exporting document {0}.tif.", batesNumber))
 			'_parent.DocumentsExported += 1
 		End Sub
 
