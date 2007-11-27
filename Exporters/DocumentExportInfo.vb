@@ -137,13 +137,17 @@ Namespace kCura.WinEDDS.Exporters
 			End Set
 		End Property
 
-		Public ReadOnly Property ProductionBeginBatesFileName() As String
+		Public ReadOnly Property ProductionBeginBatesFileName(ByVal appendToOriginal As Boolean) As String
 			Get
 				Dim retval As String
-				If Not NativeExtension = "" Then
-					retval = ProductionBeginBates & "." & NativeExtension
+				If appendToOriginal Then
+					retval = ProductionBeginBates & "_" & OriginalFileName
 				Else
-					retval = ProductionBeginBates
+					If Not NativeExtension = "" Then
+						retval = ProductionBeginBates & "." & NativeExtension
+					Else
+						retval = ProductionBeginBates
+					End If
 				End If
 				Return kCura.Utility.File.ConvertIllegalCharactersInFilename(retval)
 			End Get

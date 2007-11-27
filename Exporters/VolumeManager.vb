@@ -208,7 +208,7 @@ Namespace kCura.WinEDDS
 					Case ExportNativeWithFilenameFrom.Identifier
 						nativeFileName = documentInfo.NativeFileName(Me.Settings.AppendOriginalFileName)
 					Case ExportNativeWithFilenameFrom.Production
-						nativeFileName = documentInfo.ProductionBeginBatesFileName
+						nativeFileName = documentInfo.ProductionBeginBatesFileName(Me.Settings.AppendOriginalFileName)
 				End Select
 				If localFilePath.Chars(localFilePath.Length - 1) <> "\"c Then localFilePath &= "\"
 				localFilePath &= Me.CurrentVolumeLabel & "\" & Me.CurrentNativeSubdirectoryLabel & "\"
