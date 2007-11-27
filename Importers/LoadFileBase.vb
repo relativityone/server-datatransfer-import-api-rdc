@@ -320,7 +320,7 @@ Namespace kCura.WinEDDS
 			If datevalue.TimeOfDay.Ticks = 0 Then
 				datevalue = datevalue.AddHours(12 - _timeZoneOffset)
 			Else
-				datevalue = datevalue.AddHours(0 - _timeZoneOffset)
+				'datevalue = datevalue.AddHours(0 - _timeZoneOffset)
 			End If
 			If datevalue < DateTime.Parse("1/1/1753") Then
 				Throw New kCura.Utility.DelimitedFileImporter.DateException(Me.CurrentLineNumber, column)
