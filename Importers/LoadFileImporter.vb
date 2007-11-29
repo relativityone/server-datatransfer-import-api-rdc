@@ -452,7 +452,7 @@ Namespace kCura.WinEDDS
 					_oixFileLookup.Add(id, id)
 				Next
 			End If
-			Return _oixFileLookup.Contains(fileData.FileID)
+			Return Not _oixFileLookup.Contains(fileData.FileID)
 		End Function
 
 		Private Function UpdateDocument(ByVal docDTO As kCura.EDDS.WebAPI.DocumentManagerBase.Document, ByVal fieldCollection As DocumentFieldCollection, ByVal identityValue As String, ByVal uploadFile As Boolean, ByVal extractText As Boolean, ByVal fileName As String, ByVal fileGuid As String, ByVal mdoc As MetaDocument) As Int32
