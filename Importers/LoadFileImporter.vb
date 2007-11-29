@@ -3,6 +3,7 @@ Namespace kCura.WinEDDS
 
 		Inherits kCura.WinEDDS.LoadFileBase
 
+
 #Region "Members"
 		Private _overwrite As String
 		Private WithEvents _uploader As kCura.WinEDDS.FileUploader
@@ -960,5 +961,10 @@ Namespace kCura.WinEDDS
 			Public Shared MAX_STRING_FIELD_LENGTH As Int32 = 1048576			'2^20 = 1 meg * 2 B/char binary = 2 meg max
 		End Class
 
+		Protected Overrides ReadOnly Property UseTimeZoneOffset() As Boolean
+			Get
+				Return True
+			End Get
+		End Property
 	End Class
 End Namespace

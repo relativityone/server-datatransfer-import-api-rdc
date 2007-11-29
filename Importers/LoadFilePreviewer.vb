@@ -3,6 +3,7 @@ Namespace kCura.WinEDDS
 	Public Class LoadFilePreviewer
 		Inherits kCura.WinEDDS.LoadFileBase
 
+
 #Region "Members"
 		Private _errorsOnly As Boolean
 		Private WithEvents _processController As kCura.Windows.Process.Controller
@@ -269,6 +270,12 @@ Namespace kCura.WinEDDS
 		Private Sub _processController_HaltProcessEvent(ByVal processID As System.Guid) Handles _processController.HaltProcessEvent
 			_continue = False
 		End Sub
+
+		Protected Overrides ReadOnly Property UseTimeZoneOffset() As Boolean
+			Get
+				Return False
+			End Get
+		End Property
 	End Class
 End Namespace
 
