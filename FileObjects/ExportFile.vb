@@ -282,20 +282,11 @@ Namespace kCura.WinEDDS
 #End Region
 
 		Public Sub New()
-			Me.RecordDelimiter = Chr(20)
-			Me.QuoteDelimiter = Chr(254)
-			Me.NewlineDelimiter = Chr(174)
-			Me.MultiRecordDelimiter = Chr(59)
+			Me.RecordDelimiter = ChrW(20)
+			Me.QuoteDelimiter = ChrW(254)
+			Me.NewlineDelimiter = ChrW(174)
+			Me.MultiRecordDelimiter = ChrW(59)
 		End Sub
-
-		'FOR DIRECT UPLOAD ONLY
-		'Public Sub New(ByVal identity As kCura.EDDS.EDDSIdentity)
-		'	Me.RecordDelimiter = Chr(20)
-		'	Me.QuoteDelimiter = Chr(254)
-		'	Me.NewlineDelimiter = Chr(174)
-		'	Me.MultiRecordDelimiter = Chr(59)
-		'	_identity = identity
-		'End Sub
 
 		Public Enum ExportType
 			Production

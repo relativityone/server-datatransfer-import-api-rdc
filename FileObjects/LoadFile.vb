@@ -40,10 +40,10 @@ Namespace kCura.WinEDDS
 
 		Public Sub New()
 			Me.FilePath = "Select file to load..."
-			Me.RecordDelimiter = Chr(20)
-			Me.QuoteDelimiter = Chr(254)
-			Me.NewlineDelimiter = Chr(174)
-			Me.MultiRecordDelimiter = Chr(59)
+			Me.RecordDelimiter = ChrW(20)
+			Me.QuoteDelimiter = ChrW(254)
+			Me.NewlineDelimiter = ChrW(174)
+			Me.MultiRecordDelimiter = ChrW(59)
 			Me.FirstLineContainsHeaders = True
 			Me.FieldMap = New LoadFileFieldMap
 		End Sub

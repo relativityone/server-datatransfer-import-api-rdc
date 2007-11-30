@@ -11,9 +11,9 @@ Namespace kCura.WinEDDS
 			Dim rowDisplay As String
 			For i = 1 To 255
 				row = New ArrayList
-				rowDisplay = String.Format("{0} (ASCII:{1})", Chr(i), i.ToString.PadLeft(3, "0"c))
+				rowDisplay = String.Format("{0} (ASCII:{1})", ChrW(i), i.ToString.PadLeft(3, "0"c))
 				row.Add(rowDisplay)
-				rowValue = Chr(i)
+				rowValue = ChrW(i)
 				row.Add(rowValue)
 				dt.Rows.Add(row.ToArray)
 			Next
