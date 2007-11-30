@@ -1127,10 +1127,10 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 		Private Sub PopulateLoadFileDelimiters()
-			LoadFile.QuoteDelimiter = Chr(CType(_quoteDelimiter.SelectedValue, Int32))
-			LoadFile.RecordDelimiter = Chr(CType(_recordDelimiter.SelectedValue, Int32))
-			LoadFile.MultiRecordDelimiter = Chr(CType(_multiRecordDelimiter.SelectedValue, Int32))
-			LoadFile.NewlineDelimiter = Chr(CType(_newLineDelimiter.SelectedValue, Int32))
+			LoadFile.QuoteDelimiter = ChrW(CType(_quoteDelimiter.SelectedValue, Int32))
+			LoadFile.RecordDelimiter = ChrW(CType(_recordDelimiter.SelectedValue, Int32))
+			LoadFile.MultiRecordDelimiter = ChrW(CType(_multiRecordDelimiter.SelectedValue, Int32))
+			LoadFile.NewlineDelimiter = ChrW(CType(_newLineDelimiter.SelectedValue, Int32))
 			LoadFile.SourceFileEncoding = DirectCast(_encodingDropdown.SelectedItem, EncodingListItem).Value
 		End Sub
 

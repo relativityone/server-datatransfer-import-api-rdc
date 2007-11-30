@@ -564,10 +564,10 @@ Public Class ExportForm
 		_exportFile.Overwrite = _overwriteButton.Checked
 		_exportFile.ExportFullText = _exportFullText.Checked
 		_exportFile.ExportNative = _exportNativeFiles.Checked
-		_exportFile.QuoteDelimiter = Chr(CType(_quoteDelimiter.SelectedValue, Int32))
-		_exportFile.RecordDelimiter = Chr(CType(_recordDelimiter.SelectedValue, Int32))
-		_exportFile.MultiRecordDelimiter = Chr(CType(_multiRecordDelimiter.SelectedValue, Int32))
-		_exportFile.NewlineDelimiter = Chr(CType(_newLineDelimiter.SelectedValue, Int32))
+		_exportFile.QuoteDelimiter = ChrW(CType(_quoteDelimiter.SelectedValue, Int32))
+		_exportFile.RecordDelimiter = ChrW(CType(_recordDelimiter.SelectedValue, Int32))
+		_exportFile.MultiRecordDelimiter = ChrW(CType(_multiRecordDelimiter.SelectedValue, Int32))
+		_exportFile.NewlineDelimiter = ChrW(CType(_newLineDelimiter.SelectedValue, Int32))
 		_exportFile.AppendOriginalFileName = _appendOriginalFilename.Checked
 
 		_exportFile.CookieContainer = _application.CookieContainer
@@ -711,22 +711,22 @@ Public Class ExportForm
 		Select Case _nativeFileFormat.SelectedItem.ToString
 			Case "Comma-separated (.csv)"
 				Me.ToggleLoadFileCharacterInformation(False)
-				_recordDelimiter.SelectedValue = Chr(44)
-				_quoteDelimiter.SelectedValue = Chr(34)
-				_newLineDelimiter.SelectedValue = Chr(10)
-				_multiRecordDelimiter.SelectedValue = Chr(59)
+				_recordDelimiter.SelectedValue = ChrW(44)
+				_quoteDelimiter.SelectedValue = ChrW(34)
+				_newLineDelimiter.SelectedValue = ChrW(10)
+				_multiRecordDelimiter.SelectedValue = ChrW(59)
 			Case "Tab-delimited (.txt)"
 				Me.ToggleLoadFileCharacterInformation(False)
-				_recordDelimiter.SelectedValue = Chr(9)
-				_quoteDelimiter.SelectedValue = Chr(34)
-				_newLineDelimiter.SelectedValue = Chr(10)
-				_multiRecordDelimiter.SelectedValue = Chr(59)
+				_recordDelimiter.SelectedValue = ChrW(9)
+				_quoteDelimiter.SelectedValue = ChrW(34)
+				_newLineDelimiter.SelectedValue = ChrW(10)
+				_multiRecordDelimiter.SelectedValue = ChrW(59)
 			Case "Concordance (.dat)"
 				Me.ToggleLoadFileCharacterInformation(False)
-				_recordDelimiter.SelectedValue = Chr(20)
-				_quoteDelimiter.SelectedValue = Chr(254)
-				_newLineDelimiter.SelectedValue = Chr(174)
-				_multiRecordDelimiter.SelectedValue = Chr(59)
+				_recordDelimiter.SelectedValue = ChrW(20)
+				_quoteDelimiter.SelectedValue = ChrW(254)
+				_newLineDelimiter.SelectedValue = ChrW(174)
+				_multiRecordDelimiter.SelectedValue = ChrW(59)
 			Case "Custom (.txt)"
 				Me.ToggleLoadFileCharacterInformation(True)
 			Case Else
