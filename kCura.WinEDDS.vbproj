@@ -263,7 +263,7 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Exception\InvalidLoginException.vb"
+                    RelPath = "Exceptions\InvalidLoginException.vb"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

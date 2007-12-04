@@ -1,4 +1,4 @@
-Namespace kCura.WinEDDS.Exception
+Namespace kCura.WinEDDS.Exceptions
 	Public Class InvalidLoginException
 		Inherits System.Exception
 

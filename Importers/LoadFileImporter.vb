@@ -258,6 +258,7 @@ Namespace kCura.WinEDDS
 					Else
 						fileGuid = System.Guid.NewGuid.ToString
 					End If
+					If fileGuid = "" Then Throw New FileUploadFailedException
 					If _extractMd5Hash Then
 						md5hash = kCura.Utility.File.GenerateMD5HashForFile(filename)
 					End If
@@ -863,12 +864,12 @@ Namespace kCura.WinEDDS
 			End Sub
 		End Class
 
-		'Public Class FileUploadFailedException
-		'	Inherits kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
-		'	Public Sub New()
-		'		MyBase.New(String.Format("File upload failed - file not added."))
-		'	End Sub
-		'End Class
+		Public Class FileUploadFailedException
+			Inherits kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
+			Public Sub New()
+				MyBase.New(String.Format("File upload failed.  Either the access to the path is denied or there is no disk space available."))
+			End Sub
+		End Class
 
 #End Region
 
