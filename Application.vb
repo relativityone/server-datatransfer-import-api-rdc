@@ -1092,15 +1092,24 @@ Namespace kCura.EDDS.WinForm
 
 		Private Sub CheckVersion(ByVal credential As Net.ICredentials)
 			Dim relativityManager As New kCura.WinEDDS.Service.RelativityManager(DirectCast(credential, System.Net.NetworkCredential), _cookieContainer)
-			Dim winRelativityVersion As String = System.Reflection.Assembly.GetExecutingAssembly.FullName.Split(","c)(1).Split("="c)(1)
-			Dim relativityWebVersion As String = relativityManager.RetrieveRelativityVersion()
-
-			'TODO: Take this out ASAP:
-			If relativityWebVersion = "3.33.4.3" Then
-				Exit Sub
-			End If
-			If winRelativityVersion <> relativityWebVersion Then
-				MsgBox(String.Format("Your version of WinRelativity is out of date. You are running version {0}, but version {1} is required.", winRelativityVersion, relativityWebVersion), MsgBoxStyle.Critical, "WinRelativity Version Mismatch")
+			Dim winVersionString As String = System.Reflection.Assembly.GetExecutingAssembly.FullName.Split(","c)(1).Split("="c)(1)
+			Dim winRelativityVersion As String() = winVersionString.Split("."c)
+			Dim relVersionString As String = relativityManager.RetrieveRelativityVersion
+			Dim relativityWebVersion As String() = relVersionString.Split("."c)
+			Dim match As Boolean = True
+			Dim i As Int32
+			For i = 0 To System.Math.Max(winRelativityVersion.Length - 1, relativityWebVersion.Length - 1)
+				Dim winv As String = "*"
+				Dim relv As String = "*"
+				If i <= winRelativityVersion.Length - 1 Then winv = winRelativityVersion(i)
+				If i <= relativityWebVersion.Length - 1 Then relv = relativityWebVersion(i)
+				If Not (relv = "*" OrElse winv = "*" OrElse relv.ToLower = winv.ToLower) Then
+					match = False
+					Exit For
+				End If
+			Next
+			If Not match Then
+				MsgBox(String.Format("Your version of WinRelativity is out of date. You are running version {0}, but version {1} is required.", winVersionString, relVersionString), MsgBoxStyle.Critical, "WinRelativity Version Mismatch")
 				ExitApplication()
 			Else
 				Exit Sub
