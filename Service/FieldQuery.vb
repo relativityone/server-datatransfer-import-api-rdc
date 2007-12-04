@@ -55,6 +55,8 @@ Namespace kCura.WinEDDS.Service
 						.MaxLength = NullableTypes.HelperFunctions.DBNullConvert.ToNullableInt32(dv(i)("MaxLength"))
 						.IsRemovable = CType(dv(i)("IsRemovable"), Boolean)
 						.IsVisible = CType(dv(i)("IsVisible"), Boolean)
+						.UseUnicodeEncoding = CType(dv(i)("UseUnicodeEncoding"), Boolean)
+						.UseHtmlEncoding = CType(dv(i)("AllowHTML"), Boolean)
 					End With
 					fields.Add(field)
 				End If
