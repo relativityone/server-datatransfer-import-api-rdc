@@ -425,6 +425,7 @@ Namespace kCura.EDDS.WinForm
 			_application.UpdateWebServiceURL()
 			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
 			_application.RefreshCaseFolders()
+			_application.RefreshSelectedCaseInfo()
 			Me.Cursor = System.Windows.Forms.Cursors.Default
 		End Sub
 
