@@ -546,7 +546,7 @@ Namespace kCura.EDDS.WinForm
 			'
 			'_advancedButton
 			'
-			Me._advancedButton.Location = New System.Drawing.Point(220, 64)
+			Me._advancedButton.Location = New System.Drawing.Point(220, 20)
 			Me._advancedButton.Name = "_advancedButton"
 			Me._advancedButton.TabIndex = 27
 			Me._advancedButton.Text = "Advanced"
@@ -558,6 +558,7 @@ Namespace kCura.EDDS.WinForm
 			Me._extractMd5Hash.Size = New System.Drawing.Size(116, 20)
 			Me._extractMd5Hash.TabIndex = 26
 			Me._extractMd5Hash.Text = "Extract MD5 Hash"
+			Me._extractMd5Hash.Visible = False
 			'
 			'_loadNativeFiles
 			'
