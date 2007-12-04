@@ -100,8 +100,14 @@ Namespace kCura.Windows.Process
 
 		Public Sub ExportErrorReport(ByVal filename As String)
 			If Not _errorsWriter Is Nothing Then
-				_errorsWriter.Flush()
-				_errorsWriter.Close()
+				Try
+					_errorsWriter.Flush()
+				Catch
+				End Try
+				Try
+					_errorsWriter.Close()
+				Catch
+				End Try
 			End If
 			System.IO.File.Copy(_errorsFileName, filename)
 		End Sub
