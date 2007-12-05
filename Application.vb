@@ -161,13 +161,16 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 		Public Sub ExitApplication()
-			UpdateWebServiceURL()
+			UpdateWebServiceURL(False)
 			RaiseEvent OnEvent(New AppEvent(AppEvent.AppEventType.ExitApplication))
 		End Sub
 
-		Public Sub UpdateWebServiceURL()
+		Public Sub UpdateWebServiceURL(ByVal relogin As Boolean)
 			If Not Me.TemporaryWebServiceURL Is Nothing AndAlso Not Me.TemporaryWebServiceURL = "" Then
 				kCura.WinEDDS.Config.WebServiceURL = Me.TemporaryWebServiceURL
+				If relogin Then
+					Me.NewLogin(True)
+				End If
 			End If
 		End Sub
 
@@ -1050,8 +1053,8 @@ Namespace kCura.EDDS.WinForm
 		Private Sub _loginForm_OK_Click(ByVal cred As System.Net.NetworkCredential, ByVal openCaseSelector As Boolean) Handles _loginForm.OK_Click
 			_loginForm.Close()
 			Dim userManager As New kCura.WinEDDS.Service.UserManager(cred, _cookieContainer)
-			CheckVersion(cred)
 			Try
+				CheckVersion(cred)
 				If userManager.Login(cred.UserName, cred.Password) Then
 					_credential = cred
 					kCura.WinEDDS.Service.Settings.AuthenticationToken = userManager.GetLatestAuthenticationToken()

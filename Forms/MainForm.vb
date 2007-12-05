@@ -363,7 +363,7 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 		Private Sub MainForm_Closing(ByVal sender As Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles MyBase.Closing
-			_application.UpdateWebServiceURL()
+			_application.UpdateWebServiceURL(False)
 			kCura.Windows.Forms.EnhancedMenuProvider.Unhook()
 		End Sub
 
@@ -422,7 +422,7 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 		Private Sub _fileMenuRefresh_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles _fileMenuRefresh.Click
-			_application.UpdateWebServiceURL()
+			_application.UpdateWebServiceURL(False)
 			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
 			_application.RefreshCaseFolders()
 			_application.RefreshSelectedCaseInfo()

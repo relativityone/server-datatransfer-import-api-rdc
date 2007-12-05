@@ -181,6 +181,7 @@ Namespace kCura.EDDS.WinForm
 			End If
 			_application.TemporaryWebServiceURL = _WebServiceUrl.Text
 			Me.Close()
+			_application.UpdateWebServiceURL(True)
 		End Sub
 
 		Private Sub _cancelButton_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles _cancelButton.Click
