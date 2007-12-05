@@ -107,7 +107,6 @@ Namespace kCura.WinEDDS
 			Dim fullTextFileGuid As String
 			Dim documentSpot As Int32
 			Dim count As Int32
-			'Dim writer As System.IO.StreamWriter
 			Dim volumeFile As String
 
 
@@ -158,7 +157,6 @@ Namespace kCura.WinEDDS
 				If _halt Then Exit For
 			Next
 			_volumeManager.Finish()
-			'Me.FolderList.DeleteEmptyFolders(Me.ExportFile.FolderPath)
 		End Function
 
 #Region "Private Helper Functions"
@@ -203,7 +201,6 @@ Namespace kCura.WinEDDS
 					documentInfo.NativeExtension = ""
 				End If
 				documentInfo.DocumentArtifactID = documentArtifactIDs(i)
-				'documentInfo.NativeFileName = nativeRow("Filename").ToString
 				documentInfo.DataRow = docRows(i)
 				_volumeManager.ExportDocument(documentInfo)
 				Me.WriteUpdate("Exported document " & i + 1)
@@ -211,48 +208,6 @@ Namespace kCura.WinEDDS
 			Next
 		End Sub
 
-		'Private Sub ExportChunk(ByVal documentArtifactIDs As Int32(), ByVal docRows As System.Data.DataRow(), ByVal writer As System.io.StreamWriter)
-		'	Dim natives As New System.Data.DataView
-		'	Dim fullTexts As New System.Data.DataView
-		'	Dim images As New System.Data.DataView
-		'	Dim i As Int32 = 0
-		'	Dim productionArtifactID As Int32 = 0
-		'	If Me.ExportFile.TypeOfExport = ExportFile.ExportType.Production Then productionArtifactID = ExportFile.ArtifactID
-		'	If Me.ExportFile.ExportNative Then natives.Table = _searchManager.RetrieveNativesForSearch(Me.ExportFile.CaseArtifactID, kCura.Utility.Array.IntArrayToCSV(documentArtifactIDs)).Tables(0)
-		'	If Me.ExportFile.ExportFullText Then fullTexts.Table = _searchManager.RetrieveFullTextFilesForSearch(Me.ExportFile.ArtifactID, kCura.Utility.Array.IntArrayToCSV(documentArtifactIDs)).Tables(0)
-		'	If Me.ExportFile.ExportImages Then images.Table = _searchManager.RetrieveImagesForDocuments(Me.ExportFile.CaseArtifactID, documentArtifactIDs, productionArtifactID).Tables(0)
-		'	If Not Me.ExportFile.UseAbsolutePaths Then
-		'		System.IO.Directory.SetCurrentDirectory(Me.ExportFile.FolderPath & Me.FolderList.BaseFolder.Path)
-		'	End If
-		'	For i = 0 To documentArtifactIDs.Length - 1
-		'		Dim fullTextFileGuid As String = GetFullTextFileGuid(fullTexts.Table, documentArtifactIDs(i))
-		'		Dim fileName As String = String.Empty
-		'		Dim nativeRow As System.Data.DataRowView = GetNativeRow(natives, documentArtifactIDs(i))
-		'		If Me.ExportFile.ExportNative AndAlso Not nativeRow Is Nothing Then
-		'			Dim rootFolderPath As String
-		'			If Me.ExportFile.UseAbsolutePaths Then
-		'				rootFolderPath = Me.ExportFile.FolderPath
-		'			Else
-		'				rootFolderPath = "..\"
-		'			End If
-		'			Dim exportedFileName As String = CType(nativeRow("Filename"), String)
-		'			Dim identifierColumnName As String = kCura.DynamicFields.Types.FieldColumnNameHelper.GetSqlFriendlyName(Me.ExportFile.IdentifierColumnName)
-		'			If Me.ExportFile.RenameFilesToIdentifier AndAlso exportedFileName <> "" Then
-		'				If exportedFileName.IndexOf(".") > -1 Then
-		'					exportedFileName = docRows(i)(identifierColumnName).ToString & exportedFileName.Substring(exportedFileName.LastIndexOf("."))
-		'				Else
-		'					exportedFileName = docRows(i)(identifierColumnName).ToString
-		'				End If
-		'			End If
-		'			fileName = String.Format("{0}{1}{2}", rootFolderPath, Me.FolderList.ItemByArtifactID(CType(docRows(i)("ParentArtifactID"), Int32)).Path, exportedFileName)
-		'			Me.ExportNative(fileName, CType(nativeRow("Guid"), String), CType(docRows(i)("ArtifactID"), Int32), fileName)
-		'		End If
-		'		writer.Write(Me.LogFileEntry(docRows(i), fileName, fullTextFileGuid))
-		'		Me.DocumentsExported += 1
-		'		Me.WriteUpdate("Exported document " & i + 1)
-		'		If _halt Then Exit Sub
-		'	Next
-		'End Sub
 		Private Function PrepareImagesForProduction(ByVal imagesView As System.Data.DataView, ByVal documentArtifactID As Int32, ByVal batesBase As String, ByVal documentInfo As Exporters.DocumentExportInfo) As System.Collections.ArrayList
 			Dim retval As New System.Collections.ArrayList
 			If Not Me.ExportFile.ExportImages Then Return retval
@@ -266,11 +221,6 @@ Namespace kCura.WinEDDS
 					image.FileGuid = drv("ImageGuid").ToString
 					image.ArtifactID = documentArtifactID
 					image.PageOffset = NullableTypes.HelperFunctions.DBNullConvert.ToNullableInt32(drv("ByteRange"))
-					'If i = 0 Then
-					'	image.BatesNumber = batesBase
-					'Else
-					'	image.BatesNumber = batesBase & "_" & i.ToString.PadLeft(imagesView.Count.ToString.Length, "0"c)
-					'End If
 					image.BatesNumber = drv("BatesNumber").ToString
 					Dim filenameExtension As String = ""
 					If image.FileName.IndexOf(".") <> -1 Then
