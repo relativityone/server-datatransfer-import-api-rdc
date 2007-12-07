@@ -60,8 +60,9 @@ Namespace kCura.WinEDDS
     End Sub
 
     Private Sub _loadFileImporter_FatalErrorEvent(ByVal message As String, ByVal ex As System.Exception) Handles _loadFileImporter.FatalErrorEvent
-      Me.ProcessObserver.RaiseFatalExceptionEvent(ex)
-    End Sub
+			Me.ProcessObserver.RaiseFatalExceptionEvent(ex)
+			Me.ProcessObserver.RaiseProcessCompleteEvent(False, _loadFileImporter.ErrorLogFileName, True)
+		End Sub
 
 		Private Sub _loadFileImporter_UploadModeChangeEvent(ByVal mode As String) Handles _loadFileImporter.UploadModeChangeEvent
 			Me.ProcessObserver.RaiseStatusBarEvent("Upload mode: " & mode)

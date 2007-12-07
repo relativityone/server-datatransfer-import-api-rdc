@@ -15,7 +15,7 @@ Namespace kCura.WinEDDS
 		Private _recordCount As Int64 = -1
 		Private _extractFullTextFromNative As Boolean
 		Private _allFields As kCura.EDDS.WebAPI.DocumentManagerBase.Field()
-		Protected _continue As Boolean
+		Protected Shared _continue As Boolean
 		Protected _processedDocumentIdentifiers As Collections.Specialized.NameValueCollection
 		Protected WithEvents _processController As kCura.Windows.Process.Controller
 		Protected _offset As Int32 = 0
@@ -426,7 +426,11 @@ Namespace kCura.WinEDDS
 				Return _documentManager.Create(_uploader.CaseArtifactID, documentDTO)
 			Catch ex As System.Exception
 				If kCura.WinEDDS.Config.UsesWebAPI Then
-					Throw New DocumentDomainException(ex)
+					If ex.ToString.IndexOf("NeedToReLoginException") <> -1 Then
+						Throw
+					Else
+						Throw New DocumentDomainException(ex)
+					End If
 				Else
 					Throw
 				End If
@@ -509,7 +513,11 @@ Namespace kCura.WinEDDS
 					_documentManager.Update(_uploader.CaseArtifactID, docDTO)
 				Catch ex As System.Exception
 					If kCura.WinEDDS.Config.UsesWebAPI Then
-						Throw New DocumentDomainException(ex)
+						If ex.ToString.IndexOf("NeedToReLoginException") <> -1 Then
+							Throw
+						Else
+							Throw New DocumentDomainException(ex)
+						End If
 					Else
 						Throw
 					End If
@@ -696,6 +704,7 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Private Sub WriteFatalError(ByVal lineNumber As Int32, ByVal ex As System.Exception, ByVal sourceLine As String())
+			_continue = False
 			Me.LogErrorLine(sourceLine)
 			RaiseEvent FatalErrorEvent("Error processing line: " + lineNumber.ToString, ex)
 		End Sub
