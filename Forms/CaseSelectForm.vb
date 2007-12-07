@@ -49,7 +49,7 @@ Namespace kCura.EDDS.WinForm
 			'
 			Me.OKButton.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me.OKButton.Enabled = False
-			Me.OKButton.Location = New System.Drawing.Point(200, 256)
+			Me.OKButton.Location = New System.Drawing.Point(128, 256)
 			Me.OKButton.Name = "OKButton"
 			Me.OKButton.TabIndex = 3
 			Me.OKButton.Text = "OK"
@@ -57,7 +57,7 @@ Namespace kCura.EDDS.WinForm
 			'CancelBtn
 			'
 			Me.CancelBtn.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-			Me.CancelBtn.Location = New System.Drawing.Point(116, 256)
+			Me.CancelBtn.Location = New System.Drawing.Point(208, 256)
 			Me.CancelBtn.Name = "CancelBtn"
 			Me.CancelBtn.TabIndex = 4
 			Me.CancelBtn.Text = "Cancel"
