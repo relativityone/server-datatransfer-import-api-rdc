@@ -343,6 +343,7 @@ Namespace kCura.Windows.Process
 		Private _errorsDataSource As System.Data.DataTable
 		Private _exportErrorFileLocation As String = ""
 		Private _hasReceivedFatalError As Boolean = False
+		Private _hasExportedErrors As Boolean = False
 
 		Public Property ProcessID() As Guid
 			Get
@@ -524,6 +525,7 @@ Namespace kCura.Windows.Process
 		End Sub
 
 		Private Sub ExportErrorFiles()
+			_hasExportedErrors = True
 			_exportErrorFilesTo.SelectedPath = System.IO.Directory.GetCurrentDirectory
 			_exportErrorFilesTo.ShowDialog()
 			Dim folderPath As String = _exportErrorFilesTo.SelectedPath
@@ -564,6 +566,7 @@ Namespace kCura.Windows.Process
 			_currentRecordLabel.Text = "Fatal Exception Encountered"
 			_hasReceivedFatalError = True
 			'_stopImportButton.Text = "Stop"
+			_stopImportButton.Text = "Close"
 			_saveOutputButton.Enabled = Config.LogAllEvents
 			_summaryOutput.ForeColor = System.Drawing.Color.Red
 			Me.ShowDetail()
@@ -580,9 +583,9 @@ Namespace kCura.Windows.Process
 		End Sub
 
 		Private Sub _processObserver_ShowReportEvent(ByVal datasource As System.Data.DataTable, ByVal maxlengthExceeded As Boolean) Handles _processObserver.ShowReportEvent
-			If maxlengthExceeded Then
-				MsgBox("Maximum number of errors has been exceeded." & System.Environment.NewLine & "Export errors to view in entirety.", MsgBoxStyle.Exclamation)
-			End If
+			'If maxlengthExceeded AndAlso Not _hasExportedErrors Then
+			'	MsgBox("Maximum number of errors has been exceeded." & System.Environment.NewLine & "Export errors to view in entirety.", MsgBoxStyle.Exclamation)
+			'End If
 			_errorsDataSource = datasource
 			Me.Invoke(New HandleDataSourceDelegate(AddressOf HandleDataSource))
 		End Sub
