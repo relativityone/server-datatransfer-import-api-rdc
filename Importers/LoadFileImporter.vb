@@ -229,7 +229,11 @@ Namespace kCura.WinEDDS
 		Private Function ManageDocument(ByVal values As String()) As String
 			If _docsToProcess.Count > 1000 Then
 				While _docsToProcess.Count > 500
-					System.Threading.Thread.CurrentThread.Join(1000)
+					If _continue Then
+						System.Threading.Thread.CurrentThread.Join(1000)
+					Else
+						Exit Function
+					End If
 				End While
 			End If
 			Dim markStart As DateTime = DateTime.Now

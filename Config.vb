@@ -37,6 +37,12 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
+		Public Shared ReadOnly Property MaxReloginTries() As Int32
+			Get
+				Return 3
+			End Get
+		End Property
+
 		Public Shared Property WebServiceURL() As String
 			Get
 				Dim value As String = Config.GetRegistryKeyValue("WebServiceURL")

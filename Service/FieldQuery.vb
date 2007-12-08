@@ -67,27 +67,102 @@ Namespace kCura.WinEDDS.Service
 
 #Region " Shadow Functions "
 		Public Shadows Function RetrieveDisplayFieldNameByFieldCategoryID(ByVal caseContextArtifactID As Int32, ByVal fieldCategoryID As Int32) As String
-			If kCura.WinEDDS.Config.UsesWebAPI Then
-				Return MyBase.RetrieveDisplayFieldNameByFieldCategoryID(caseContextArtifactID, fieldCategoryID)
-			Else
-				'Return CType(_fieldQuery.RetrieveByFieldCategoryID(_identity, fieldCategoryID, contextArtifactID)("DisplayName"), String)
-			End If
+			Dim tries As Int32 = 0
+			While tries < Config.MaxReloginTries
+				Try
+					If kCura.WinEDDS.Config.UsesWebAPI Then
+						Return MyBase.RetrieveDisplayFieldNameByFieldCategoryID(caseContextArtifactID, fieldCategoryID)
+					Else
+						'Return CType(_fieldQuery.RetrieveByFieldCategoryID(_identity, fieldCategoryID, contextArtifactID)("DisplayName"), String)
+					End If
+				Catch ex As System.Exception
+					If TypeOf ex Is System.Web.Services.Protocols.SoapException Then
+						If ex.ToString.IndexOf("NeedToReLoginException") <> -1 Then
+							If tries < Config.MaxReloginTries Then
+								tries += 1
+								Try
+									Dim creds As System.Net.NetworkCredential = DirectCast(Me.Credentials, System.Net.NetworkCredential)
+									Dim userManager As New userManager(creds, Me.CookieContainer)
+									userManager.Login(creds.UserName, creds.Password)
+									kCura.WinEDDS.Service.Settings.AuthenticationToken = userManager.GetLatestAuthenticationToken()
+								Catch
+								End Try
+							End If
+						End If
+						If tries >= Config.MaxReloginTries Then
+							Throw
+						End If
+					Else
+						Throw
+					End If
+				End Try
+			End While
 		End Function
 
 		Public Shadows Function RetrieveAllMappable(ByVal caseContextArtifactID As Int32) As System.Data.DataSet
-			If kCura.WinEDDS.Config.UsesWebAPI Then
-				Return MyBase.RetrieveAllMappable(caseContextArtifactID)
-			Else
-				'Return _fieldQuery.RetrieveAllMappable(_identity, caseID).ToDataSet
-			End If
+			Dim tries As Int32 = 0
+			While tries < Config.MaxReloginTries
+				Try
+					If kCura.WinEDDS.Config.UsesWebAPI Then
+						Return MyBase.RetrieveAllMappable(caseContextArtifactID)
+					Else
+						'Return _fieldQuery.RetrieveAllMappable(_identity, caseID).ToDataSet
+					End If
+				Catch ex As System.Exception
+					If TypeOf ex Is System.Web.Services.Protocols.SoapException Then
+						If ex.ToString.IndexOf("NeedToReLoginException") <> -1 Then
+							If tries < Config.MaxReloginTries Then
+								tries += 1
+								Try
+									Dim creds As System.Net.NetworkCredential = DirectCast(Me.Credentials, System.Net.NetworkCredential)
+									Dim userManager As New userManager(creds, Me.CookieContainer)
+									userManager.Login(creds.UserName, creds.Password)
+									kCura.WinEDDS.Service.Settings.AuthenticationToken = userManager.GetLatestAuthenticationToken()
+								Catch
+								End Try
+							End If
+						End If
+						If tries >= Config.MaxReloginTries Then
+							Throw
+						End If
+					Else
+						Throw
+					End If
+				End Try
+			End While
 		End Function
 
 		Public Shadows Function RetrieveAll(ByVal caseContextArtifactID As Int32) As System.Data.DataSet
-			If kCura.WinEDDS.Config.UsesWebAPI Then
-				Return MyBase.RetrieveAll(caseContextArtifactID)
-			Else
-				'Return _fieldQuery.RetrieveAllWithSecurity(_identity, caseID).ToDataSet
-			End If
+			Dim tries As Int32 = 0
+			While tries < Config.MaxReloginTries
+				Try
+					If kCura.WinEDDS.Config.UsesWebAPI Then
+						Return MyBase.RetrieveAll(caseContextArtifactID)
+					Else
+						'Return _fieldQuery.RetrieveAllWithSecurity(_identity, caseID).ToDataSet
+					End If
+				Catch ex As System.Exception
+					If TypeOf ex Is System.Web.Services.Protocols.SoapException Then
+						If ex.ToString.IndexOf("NeedToReLoginException") <> -1 Then
+							If tries < Config.MaxReloginTries Then
+								tries += 1
+								Try
+									Dim creds As System.Net.NetworkCredential = DirectCast(Me.Credentials, System.Net.NetworkCredential)
+									Dim userManager As New userManager(creds, Me.CookieContainer)
+									userManager.Login(creds.UserName, creds.Password)
+									kCura.WinEDDS.Service.Settings.AuthenticationToken = userManager.GetLatestAuthenticationToken()
+								Catch
+								End Try
+							End If
+						End If
+						If tries >= Config.MaxReloginTries Then
+							Throw
+						End If
+					Else
+						Throw
+					End If
+				End Try
+			End While
 		End Function
 #End Region
 
