@@ -1081,6 +1081,15 @@ Namespace kCura.EDDS.WinForm
 			End If
 		End Sub
 
+		Private Sub Reconnect()
+			Dim userManager As New kCura.WinEDDS.Service.UserManager(_credential, _cookieContainer)
+			If userManager.Login(_credential.UserName, _credential.Password) Then
+				_credential = _credential
+				kCura.WinEDDS.Service.Settings.AuthenticationToken = userManager.GetLatestAuthenticationToken()
+			End If
+
+		End Sub
+
 		Private Sub ChangeWebServiceUrl(ByVal message As String)
 			If MsgBox(message, MsgBoxStyle.YesNo) = MsgBoxResult.Yes Then
 				Dim url As String = InputBox("Enter New URL:", DefaultResponse:=kCura.WinEDDS.Config.WebServiceURL)
