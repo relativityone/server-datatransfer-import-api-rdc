@@ -264,6 +264,7 @@ Namespace kCura.WinEDDS.Service
 				Try
 					If kCura.WinEDDS.Config.UsesWebAPI Then
 						MyBase.CreateImages(caseContextArtifactID, files, documentArtifactID)
+						Exit Sub
 					Else
 						'_fileManager.ExternalCreateImages(WebAPIFileInfostoFileInfos(files), documentArtifactID, contextArtifactID, _identity)
 					End If
@@ -297,6 +298,7 @@ Namespace kCura.WinEDDS.Service
 				Try
 					If kCura.WinEDDS.Config.UsesWebAPI Then
 						MyBase.CreateProductionImages(caseContextArtifactID, files, documentArtifactID)
+						Exit Sub
 					Else
 						'_fileManager.ExternalCreateImages(WebAPIFileInfostoFileInfos(files), documentArtifactID, contextArtifactID, _identity)
 					End If
@@ -406,6 +408,7 @@ Namespace kCura.WinEDDS.Service
 				Try
 					If kCura.WinEDDS.Config.UsesWebAPI Then
 						MyBase.SetRotation(caseContextArtifactID, artifactID, guid, rotation)
+						Exit Sub
 					Else
 						'_fileManager.ExternalSetRotation(artifactID, guid, rotation, _identity)
 					End If

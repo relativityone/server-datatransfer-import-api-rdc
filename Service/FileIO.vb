@@ -92,6 +92,7 @@ Namespace kCura.WinEDDS.Service
 				Try
 					If kCura.WinEDDS.Config.UsesWebAPI Then
 						MyBase.RemoveFill(caseContextArtifactID, documentDirectory, fileName)
+						Exit Sub
 					Else
 						'_externalIOManager.ExternalRemoveFill(fileName, contextArtifactID)
 					End If

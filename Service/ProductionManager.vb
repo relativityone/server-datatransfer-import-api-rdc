@@ -252,6 +252,7 @@ Namespace kCura.WinEDDS.Service
 				Try
 					If kCura.WinEDDS.Config.UsesWebAPI Then
 						MyBase.CreateProductionDocumentFiles(caseContextArtifactID, productionDocumentFiles, productionArtifactID, documentArtifactID)
+						Exit Sub
 					Else
 						'_productionManager.AddDocumentToProduction(caseContextArtifactID, productionArtifactID, documentArtifactID)
 					End If

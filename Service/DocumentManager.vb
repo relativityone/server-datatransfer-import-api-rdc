@@ -268,6 +268,7 @@ Namespace kCura.WinEDDS.Service
 				Try
 					If kCura.WinEDDS.Config.UsesWebAPI Then
 						MyBase.CreateRange(caseContextArtifactID, documents)
+						Exit Sub
 					Else
 						'_documentManager.ExternalCreateRange(WebAPIDocumentsToDTOs(documents), _identity)
 					End If
@@ -301,6 +302,7 @@ Namespace kCura.WinEDDS.Service
 				Try
 					If kCura.WinEDDS.Config.UsesWebAPI Then
 						MyBase.UpdateRange(caseContextArtifactID, documents)
+						Exit Sub
 					Else
 						'_documentManager.ExternalUpdateRange(WebAPIDocumentsToDTOs(documents), _identity)
 					End If
@@ -433,6 +435,7 @@ Namespace kCura.WinEDDS.Service
 				Try
 					If kCura.WinEDDS.Config.UsesWebAPI Then
 						MyBase.UpdateFullTextWithCrackedText(caseContextArtifactID, documentArtifactID, fileGuid)
+						Exit Sub
 					Else
 						'_documentManager.UpdateFullTextWithCrackedText(documentArtifactID, fileGuid, _identity)
 					End If
@@ -466,6 +469,7 @@ Namespace kCura.WinEDDS.Service
 				Try
 					If kCura.WinEDDS.Config.UsesWebAPI Then
 						MyBase.ClearImagesFromDocument(caseContextArtifactID, artifactID)
+						Exit Sub
 					Else
 						'_documentManager.ClearImagesFromDocument(artifactID, _identity)
 					End If
