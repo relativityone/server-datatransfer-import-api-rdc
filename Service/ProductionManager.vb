@@ -84,6 +84,7 @@ Namespace kCura.WinEDDS.Service
 		Public Shadows Function RetrieveProducedByContextArtifactID(ByVal caseContextArtifactID As Int32) As System.Data.DataSet
 			Dim tries As Int32 = 0
 			While tries < Config.MaxReloginTries
+				tries += 1
 				Try
 					If kCura.WinEDDS.Config.UsesWebAPI Then
 						Return MyBase.RetrieveProducedByContextArtifactID(caseContextArtifactID)
@@ -91,22 +92,8 @@ Namespace kCura.WinEDDS.Service
 						'Return _productionManager.ExternalRetrieveProducedByContextArtifactID(contextArtifactID, _identity)
 					End If
 				Catch ex As System.Exception
-					If TypeOf ex Is System.Web.Services.Protocols.SoapException Then
-						If ex.ToString.IndexOf("NeedToReLoginException") <> -1 Then
-							If tries < Config.MaxReloginTries Then
-								tries += 1
-								Try
-									Dim creds As System.Net.NetworkCredential = DirectCast(Me.Credentials, System.Net.NetworkCredential)
-									Dim userManager As New userManager(creds, Me.CookieContainer)
-									userManager.Login(creds.UserName, creds.Password)
-									kCura.WinEDDS.Service.Settings.AuthenticationToken = userManager.GetLatestAuthenticationToken()
-								Catch
-								End Try
-							End If
-						End If
-						If tries >= Config.MaxReloginTries Then
-							Throw
-						End If
+					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
+						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer)
 					Else
 						Throw
 					End If
@@ -117,6 +104,7 @@ Namespace kCura.WinEDDS.Service
 		Public Shadows Function RetrieveStagingByContextArtifactID(ByVal caseContextArtifactID As Int32) As System.Data.DataSet
 			Dim tries As Int32 = 0
 			While tries < Config.MaxReloginTries
+				tries += 1
 				Try
 					If kCura.WinEDDS.Config.UsesWebAPI Then
 						Return MyBase.RetrieveStagingByContextArtifactID(caseContextArtifactID)
@@ -124,22 +112,8 @@ Namespace kCura.WinEDDS.Service
 						'Return _productionManager.ExternalRetrieveProducedByContextArtifactID(contextArtifactID, _identity)
 					End If
 				Catch ex As System.Exception
-					If TypeOf ex Is System.Web.Services.Protocols.SoapException Then
-						If ex.ToString.IndexOf("NeedToReLoginException") <> -1 Then
-							If tries < Config.MaxReloginTries Then
-								tries += 1
-								Try
-									Dim creds As System.Net.NetworkCredential = DirectCast(Me.Credentials, System.Net.NetworkCredential)
-									Dim userManager As New userManager(creds, Me.CookieContainer)
-									userManager.Login(creds.UserName, creds.Password)
-									kCura.WinEDDS.Service.Settings.AuthenticationToken = userManager.GetLatestAuthenticationToken()
-								Catch
-								End Try
-							End If
-						End If
-						If tries >= Config.MaxReloginTries Then
-							Throw
-						End If
+					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
+						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer)
 					Else
 						Throw
 					End If
@@ -150,6 +124,7 @@ Namespace kCura.WinEDDS.Service
 		Public Shadows Function Read(ByVal caseContextArtifactID As Int32, ByVal productionArtifactID As Int32) As kCura.EDDS.WebAPI.ProductionManagerBase.Production
 			Dim tries As Int32 = 0
 			While tries < Config.MaxReloginTries
+				tries += 1
 				Try
 					If kCura.WinEDDS.Config.UsesWebAPI Then
 						Return MyBase.Read(caseContextArtifactID, productionArtifactID)
@@ -157,22 +132,8 @@ Namespace kCura.WinEDDS.Service
 						'Return Me.DTOToWebAPIProduction(_productionManager.Read(productionArtifactID, _identity))
 					End If
 				Catch ex As System.Exception
-					If TypeOf ex Is System.Web.Services.Protocols.SoapException Then
-						If ex.ToString.IndexOf("NeedToReLoginException") <> -1 Then
-							If tries < Config.MaxReloginTries Then
-								tries += 1
-								Try
-									Dim creds As System.Net.NetworkCredential = DirectCast(Me.Credentials, System.Net.NetworkCredential)
-									Dim userManager As New userManager(creds, Me.CookieContainer)
-									userManager.Login(creds.UserName, creds.Password)
-									kCura.WinEDDS.Service.Settings.AuthenticationToken = userManager.GetLatestAuthenticationToken()
-								Catch
-								End Try
-							End If
-						End If
-						If tries >= Config.MaxReloginTries Then
-							Throw
-						End If
+					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
+						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer)
 					Else
 						Throw
 					End If
@@ -183,6 +144,7 @@ Namespace kCura.WinEDDS.Service
 		Public Shadows Function RetrieveProducedWithSecurity(ByVal contextArtifactID As Int32) As System.Data.DataSet
 			Dim tries As Int32 = 0
 			While tries < Config.MaxReloginTries
+				tries += 1
 				Try
 					If kCura.WinEDDS.Config.UsesWebAPI Then
 						Return MyBase.RetrieveProducedByContextArtifactID(contextArtifactID)
@@ -190,22 +152,8 @@ Namespace kCura.WinEDDS.Service
 						'Return _productionManager.ExternalRetrieveProducedWithSecurity(contextArtifactID, _identity)
 					End If
 				Catch ex As System.Exception
-					If TypeOf ex Is System.Web.Services.Protocols.SoapException Then
-						If ex.ToString.IndexOf("NeedToReLoginException") <> -1 Then
-							If tries < Config.MaxReloginTries Then
-								tries += 1
-								Try
-									Dim creds As System.Net.NetworkCredential = DirectCast(Me.Credentials, System.Net.NetworkCredential)
-									Dim userManager As New userManager(creds, Me.CookieContainer)
-									userManager.Login(creds.UserName, creds.Password)
-									kCura.WinEDDS.Service.Settings.AuthenticationToken = userManager.GetLatestAuthenticationToken()
-								Catch
-								End Try
-							End If
-						End If
-						If tries >= Config.MaxReloginTries Then
-							Throw
-						End If
+					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
+						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer)
 					Else
 						Throw
 					End If
@@ -216,6 +164,7 @@ Namespace kCura.WinEDDS.Service
 		Public Shadows Function AddDocumentToProduction(ByVal caseContextArtifactID As Int32, ByVal productionArtifactID As Int32, ByVal documentArtifactID As Int32) As Boolean
 			Dim tries As Int32 = 0
 			While tries < Config.MaxReloginTries
+				tries += 1
 				Try
 					If kCura.WinEDDS.Config.UsesWebAPI Then
 						Return MyBase.AddDocumentToProduction(caseContextArtifactID, productionArtifactID, documentArtifactID)
@@ -223,22 +172,8 @@ Namespace kCura.WinEDDS.Service
 						'_productionManager.AddDocumentToProduction(caseContextArtifactID, productionArtifactID, documentArtifactID)
 					End If
 				Catch ex As System.Exception
-					If TypeOf ex Is System.Web.Services.Protocols.SoapException Then
-						If ex.ToString.IndexOf("NeedToReLoginException") <> -1 Then
-							If tries < Config.MaxReloginTries Then
-								tries += 1
-								Try
-									Dim creds As System.Net.NetworkCredential = DirectCast(Me.Credentials, System.Net.NetworkCredential)
-									Dim userManager As New userManager(creds, Me.CookieContainer)
-									userManager.Login(creds.UserName, creds.Password)
-									kCura.WinEDDS.Service.Settings.AuthenticationToken = userManager.GetLatestAuthenticationToken()
-								Catch
-								End Try
-							End If
-						End If
-						If tries >= Config.MaxReloginTries Then
-							Throw
-						End If
+					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
+						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer)
 					Else
 						Throw
 					End If
@@ -249,6 +184,7 @@ Namespace kCura.WinEDDS.Service
 		Public Shadows Sub CreateProductionDocumentFiles(ByVal caseContextArtifactID As Int32, ByVal productionDocumentFiles As kCura.EDDS.WebAPI.ProductionManagerBase.ProductionDocumentFileInfoBase(), ByVal productionArtifactID As Int32, ByVal documentArtifactID As Int32)
 			Dim tries As Int32 = 0
 			While tries < Config.MaxReloginTries
+				tries += 1
 				Try
 					If kCura.WinEDDS.Config.UsesWebAPI Then
 						MyBase.CreateProductionDocumentFiles(caseContextArtifactID, productionDocumentFiles, productionArtifactID, documentArtifactID)
@@ -257,22 +193,8 @@ Namespace kCura.WinEDDS.Service
 						'_productionManager.AddDocumentToProduction(caseContextArtifactID, productionArtifactID, documentArtifactID)
 					End If
 				Catch ex As System.Exception
-					If TypeOf ex Is System.Web.Services.Protocols.SoapException Then
-						If ex.ToString.IndexOf("NeedToReLoginException") <> -1 Then
-							If tries < Config.MaxReloginTries Then
-								tries += 1
-								Try
-									Dim creds As System.Net.NetworkCredential = DirectCast(Me.Credentials, System.Net.NetworkCredential)
-									Dim userManager As New userManager(creds, Me.CookieContainer)
-									userManager.Login(creds.UserName, creds.Password)
-									kCura.WinEDDS.Service.Settings.AuthenticationToken = userManager.GetLatestAuthenticationToken()
-								Catch
-								End Try
-							End If
-						End If
-						If tries >= Config.MaxReloginTries Then
-							Throw
-						End If
+					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
+						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer)
 					Else
 						Throw
 					End If

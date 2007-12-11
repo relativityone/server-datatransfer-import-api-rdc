@@ -48,6 +48,7 @@ Namespace kCura.WinEDDS.Service
 		Public Shadows Function RetrieveAllByCaseID(ByVal caseContextArtifactID As Int32) As System.Data.DataSet
 			Dim tries As Int32 = 0
 			While tries < Config.MaxReloginTries
+				tries += 1
 				Try
 					If kCura.WinEDDS.Config.UsesWebAPI Then
 						Return MyBase.RetrieveAllByCaseID(caseContextArtifactID)
@@ -55,22 +56,8 @@ Namespace kCura.WinEDDS.Service
 						'Return _folderManager.ExternalRetrieveAllByCaseID(caseID, _identity)
 					End If
 				Catch ex As System.Exception
-					If TypeOf ex Is System.Web.Services.Protocols.SoapException Then
-						If ex.ToString.IndexOf("NeedToReLoginException") <> -1 Then
-							If tries < Config.MaxReloginTries Then
-								tries += 1
-								Try
-									Dim creds As System.Net.NetworkCredential = DirectCast(Me.Credentials, System.Net.NetworkCredential)
-									Dim userManager As New userManager(creds, Me.CookieContainer)
-									userManager.Login(creds.UserName, creds.Password)
-									kCura.WinEDDS.Service.Settings.AuthenticationToken = userManager.GetLatestAuthenticationToken()
-								Catch
-								End Try
-							End If
-						End If
-						If tries >= Config.MaxReloginTries Then
-							Throw
-						End If
+					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
+						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer)
 					Else
 						Throw
 					End If
@@ -81,6 +68,7 @@ Namespace kCura.WinEDDS.Service
 		Public Shadows Function Read(ByVal caseContextArtifactID As Int32, ByVal folderArtifactID As Int32) As kCura.EDDS.WebAPI.FolderManagerBase.Folder
 			Dim tries As Int32 = 0
 			While tries < Config.MaxReloginTries
+				tries += 1
 				Try
 					If kCura.WinEDDS.Config.UsesWebAPI Then
 						Return MyBase.Read(caseContextArtifactID, folderArtifactID)
@@ -88,22 +76,8 @@ Namespace kCura.WinEDDS.Service
 						'Return Me.DTOToWebAPIFolder(_folderManager.Read(folderArtifactID, _identity))
 					End If
 				Catch ex As System.Exception
-					If TypeOf ex Is System.Web.Services.Protocols.SoapException Then
-						If ex.ToString.IndexOf("NeedToReLoginException") <> -1 Then
-							If tries < Config.MaxReloginTries Then
-								tries += 1
-								Try
-									Dim creds As System.Net.NetworkCredential = DirectCast(Me.Credentials, System.Net.NetworkCredential)
-									Dim userManager As New userManager(creds, Me.CookieContainer)
-									userManager.Login(creds.UserName, creds.Password)
-									kCura.WinEDDS.Service.Settings.AuthenticationToken = userManager.GetLatestAuthenticationToken()
-								Catch
-								End Try
-							End If
-						End If
-						If tries >= Config.MaxReloginTries Then
-							Throw
-						End If
+					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
+						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer)
 					Else
 						Throw
 					End If
@@ -114,6 +88,7 @@ Namespace kCura.WinEDDS.Service
 		Public Shadows Function Create(ByVal caseContextArtifactID As Int32, ByVal parentArtifactID As Int32, ByVal name As String) As Int32
 			Dim tries As Int32 = 0
 			While tries < Config.MaxReloginTries
+				tries += 1
 				Try
 					If kCura.WinEDDS.Config.UsesWebAPI Then
 						Return MyBase.Create(caseContextArtifactID, parentArtifactID, GetExportFriendlyFolderName(name))
@@ -121,22 +96,8 @@ Namespace kCura.WinEDDS.Service
 						'Return _folderManager.Create(parentArtifactID, name, _identity)
 					End If
 				Catch ex As System.Exception
-					If TypeOf ex Is System.Web.Services.Protocols.SoapException Then
-						If ex.ToString.IndexOf("NeedToReLoginException") <> -1 Then
-							If tries < Config.MaxReloginTries Then
-								tries += 1
-								Try
-									Dim creds As System.Net.NetworkCredential = DirectCast(Me.Credentials, System.Net.NetworkCredential)
-									Dim userManager As New userManager(creds, Me.CookieContainer)
-									userManager.Login(creds.UserName, creds.Password)
-									kCura.WinEDDS.Service.Settings.AuthenticationToken = userManager.GetLatestAuthenticationToken()
-								Catch
-								End Try
-							End If
-						End If
-						If tries >= Config.MaxReloginTries Then
-							Throw
-						End If
+					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
+						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer)
 					Else
 						Throw
 					End If
@@ -147,6 +108,7 @@ Namespace kCura.WinEDDS.Service
 		Public Shadows Function Exists(ByVal caseContextArtifactID As Int32, ByVal rootFolderID As Int32) As Boolean
 			Dim tries As Int32 = 0
 			While tries < Config.MaxReloginTries
+				tries += 1
 				Try
 					If kCura.WinEDDS.Config.UsesWebAPI Then
 						Return MyBase.Exists(caseContextArtifactID, rootFolderID)
@@ -154,22 +116,8 @@ Namespace kCura.WinEDDS.Service
 						'Return _folderManager.Exists(artifactID, _identity, rootFolderID)
 					End If
 				Catch ex As System.Exception
-					If TypeOf ex Is System.Web.Services.Protocols.SoapException Then
-						If ex.ToString.IndexOf("NeedToReLoginException") <> -1 Then
-							If tries < Config.MaxReloginTries Then
-								tries += 1
-								Try
-									Dim creds As System.Net.NetworkCredential = DirectCast(Me.Credentials, System.Net.NetworkCredential)
-									Dim userManager As New userManager(creds, Me.CookieContainer)
-									userManager.Login(creds.UserName, creds.Password)
-									kCura.WinEDDS.Service.Settings.AuthenticationToken = userManager.GetLatestAuthenticationToken()
-								Catch
-								End Try
-							End If
-						End If
-						If tries >= Config.MaxReloginTries Then
-							Throw
-						End If
+					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
+						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer)
 					Else
 						Throw
 					End If

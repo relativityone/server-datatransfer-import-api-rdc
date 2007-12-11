@@ -23,6 +23,7 @@ Namespace kCura.WinEDDS.Service
 		Public Shadows Function BeginFill(ByVal caseContextArtifactID As Int32, ByVal b() As Byte, ByVal documentDirectory As String, ByVal fileGuid As String) As String
 			Dim tries As Int32 = 0
 			While tries < Config.MaxReloginTries
+				tries += 1
 				Try
 					If kCura.WinEDDS.Config.UsesWebAPI Then
 						Return MyBase.BeginFill(caseContextArtifactID, b, documentDirectory, fileGuid)
@@ -30,22 +31,8 @@ Namespace kCura.WinEDDS.Service
 						'Return _externalIOManager.ExternalBeginFill(b, contextArtifactID, fileGuid)
 					End If
 				Catch ex As System.Exception
-					If TypeOf ex Is System.Web.Services.Protocols.SoapException Then
-						If ex.ToString.IndexOf("NeedToReLoginException") <> -1 Then
-							If tries < Config.MaxReloginTries Then
-								tries += 1
-								Try
-									Dim creds As System.Net.NetworkCredential = DirectCast(Me.Credentials, System.Net.NetworkCredential)
-									Dim userManager As New userManager(creds, Me.CookieContainer)
-									userManager.Login(creds.UserName, creds.Password)
-									kCura.WinEDDS.Service.Settings.AuthenticationToken = userManager.GetLatestAuthenticationToken()
-								Catch
-								End Try
-							End If
-						End If
-						If tries >= Config.MaxReloginTries Then
-							Throw
-						End If
+					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
+						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer)
 					Else
 						Throw
 					End If
@@ -56,6 +43,7 @@ Namespace kCura.WinEDDS.Service
 		Public Shadows Function FileFill(ByVal caseContextArtifactID As Int32, ByVal documentDirectory As String, ByVal fileName As String, ByVal b() As Byte, ByVal contextArtifactID As Int32) As Boolean
 			Dim tries As Int32 = 0
 			While tries < Config.MaxReloginTries
+				tries += 1
 				Try
 					If kCura.WinEDDS.Config.UsesWebAPI Then
 						Return MyBase.FileFill(caseContextArtifactID, documentDirectory, fileName, b)
@@ -63,22 +51,8 @@ Namespace kCura.WinEDDS.Service
 						'Return _externalIOManager.ExternalFileFill(fileName, b, contextArtifactID)
 					End If
 				Catch ex As System.Exception
-					If TypeOf ex Is System.Web.Services.Protocols.SoapException Then
-						If ex.ToString.IndexOf("NeedToReLoginException") <> -1 Then
-							If tries < Config.MaxReloginTries Then
-								tries += 1
-								Try
-									Dim creds As System.Net.NetworkCredential = DirectCast(Me.Credentials, System.Net.NetworkCredential)
-									Dim userManager As New userManager(creds, Me.CookieContainer)
-									userManager.Login(creds.UserName, creds.Password)
-									kCura.WinEDDS.Service.Settings.AuthenticationToken = userManager.GetLatestAuthenticationToken()
-								Catch
-								End Try
-							End If
-						End If
-						If tries >= Config.MaxReloginTries Then
-							Throw
-						End If
+					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
+						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer)
 					Else
 						Throw
 					End If
@@ -89,6 +63,7 @@ Namespace kCura.WinEDDS.Service
 		Public Shadows Sub RemoveFill(ByVal caseContextArtifactID As Int32, ByVal documentDirectory As String, ByVal fileName As String)
 			Dim tries As Int32 = 0
 			While tries < Config.MaxReloginTries
+				tries += 1
 				Try
 					If kCura.WinEDDS.Config.UsesWebAPI Then
 						MyBase.RemoveFill(caseContextArtifactID, documentDirectory, fileName)
@@ -97,22 +72,8 @@ Namespace kCura.WinEDDS.Service
 						'_externalIOManager.ExternalRemoveFill(fileName, contextArtifactID)
 					End If
 				Catch ex As System.Exception
-					If TypeOf ex Is System.Web.Services.Protocols.SoapException Then
-						If ex.ToString.IndexOf("NeedToReLoginException") <> -1 Then
-							If tries < Config.MaxReloginTries Then
-								tries += 1
-								Try
-									Dim creds As System.Net.NetworkCredential = DirectCast(Me.Credentials, System.Net.NetworkCredential)
-									Dim userManager As New userManager(creds, Me.CookieContainer)
-									userManager.Login(creds.UserName, creds.Password)
-									kCura.WinEDDS.Service.Settings.AuthenticationToken = userManager.GetLatestAuthenticationToken()
-								Catch
-								End Try
-							End If
-						End If
-						If tries >= Config.MaxReloginTries Then
-							Throw
-						End If
+					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
+						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer)
 					Else
 						Throw
 					End If
@@ -123,6 +84,7 @@ Namespace kCura.WinEDDS.Service
 		Public Shadows Function ReadFileAsString(ByVal path As String) As Byte()
 			Dim tries As Int32 = 0
 			While tries < Config.MaxReloginTries
+				tries += 1
 				Try
 					If kCura.WinEDDS.Config.UsesWebAPI Then
 						Return MyBase.ReadFileAsString(path)
@@ -130,22 +92,8 @@ Namespace kCura.WinEDDS.Service
 						'Return _externalIOManager.ExternalReadFileAsString(path)
 					End If
 				Catch ex As System.Exception
-					If TypeOf ex Is System.Web.Services.Protocols.SoapException Then
-						If ex.ToString.IndexOf("NeedToReLoginException") <> -1 Then
-							If tries < Config.MaxReloginTries Then
-								tries += 1
-								Try
-									Dim creds As System.Net.NetworkCredential = DirectCast(Me.Credentials, System.Net.NetworkCredential)
-									Dim userManager As New userManager(creds, Me.CookieContainer)
-									userManager.Login(creds.UserName, creds.Password)
-									kCura.WinEDDS.Service.Settings.AuthenticationToken = userManager.GetLatestAuthenticationToken()
-								Catch
-								End Try
-							End If
-						End If
-						If tries >= Config.MaxReloginTries Then
-							Throw
-						End If
+					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
+						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer)
 					Else
 						Throw
 					End If

@@ -414,6 +414,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Service\Helper.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Service\ProductionManager.vb"
                     SubType = "code"
                     BuildAction = "Compile"

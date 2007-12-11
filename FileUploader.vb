@@ -27,12 +27,16 @@ Namespace kCura.WinEDDS
 
 		Private Sub SetType(ByVal destinationFolderPath As String)
 			Try
+				If Not System.IO.Directory.Exists(destinationFolderPath) Then
+					System.IO.Directory.CreateDirectory(destinationFolderPath)
+				End If
 				System.IO.File.Create(destinationFolderPath & "123").Close()
 				System.IO.File.Delete(destinationFolderPath & "123")
 				Me.UploaderType = Type.Direct
 			Catch ex As System.Exception
 				Me.UploaderType = Type.Web
 			End Try
+			Me.UploaderType = Type.Web
 		End Sub
 
 		Public Property DestinationFolderPath() As String

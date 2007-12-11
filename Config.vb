@@ -43,6 +43,13 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
+		Public Shared ReadOnly Property WaitBeforeReconnect() As Int32	 'Millisecodns
+			Get
+				Return 2000
+			End Get
+		End Property
+
+
 		Public Shared Property WebServiceURL() As String
 			Get
 				Dim value As String = Config.GetRegistryKeyValue("WebServiceURL")
