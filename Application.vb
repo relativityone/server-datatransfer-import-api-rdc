@@ -759,6 +759,7 @@ Namespace kCura.EDDS.WinForm
 			previewer.ErrorsOnly = errorsOnly
 			previewfrm.Thrower = previewer.Thrower
 			previewer.LoadFile = loadFileToPreview
+			SetWorkingDirectory(loadFileToPreview.FilePath)
 			frm.ProcessObserver = previewer.ProcessObserver
 			frm.ProcessController = previewer.ProcessController
 			If errorsOnly Then
@@ -863,6 +864,7 @@ Namespace kCura.EDDS.WinForm
 			Dim previewer As New kCura.WinEDDS.PreviewImageFileProcess
 			previewer.TimeZoneOffset = _timeZoneOffset
 			previewer.LoadFile = loadfile
+			SetWorkingDirectory(loadfile.FileName)
 			frm.ProcessObserver = previewer.ProcessObserver
 			frm.ProcessController = previewer.ProcessController
 			frm.Text = "Preview Image File Progress ..."
