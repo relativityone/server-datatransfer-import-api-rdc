@@ -256,6 +256,7 @@ Namespace kCura.WinEDDS
 				If filename <> String.Empty AndAlso Not fileExists Then Throw New InvalidFilenameException(filename)
 				If fileExists Then
 					Dim now As DateTime = DateTime.Now
+					If New IO.FileInfo(filename).Length = 0 Then Throw New EmptyNativeFileException(filename)
 					oixFileIdData = _fileIdManager.GetFileIDDataByFilePath(filename)
 					If _copyFileToRepository Then
 						fileGuid = _uploader.UploadFile(filename, _caseArtifactID)
@@ -874,6 +875,13 @@ Namespace kCura.WinEDDS
 			Inherits kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
 			Public Sub New(ByVal filename As String)
 				MyBase.New(String.Format("File '{0}' not found.", filename))
+			End Sub
+		End Class
+
+		Public Class EmptyNativeFileException
+			Inherits kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
+			Public Sub New(ByVal filename As String)
+				MyBase.New(String.Format("File '{0}' contains 0 bytes.", filename))
 			End Sub
 		End Class
 
