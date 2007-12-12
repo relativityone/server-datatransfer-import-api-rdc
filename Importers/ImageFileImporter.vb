@@ -118,7 +118,9 @@ Namespace kCura.WinEDDS
 				Dim txt As String = ex.ToString.ToLower
 				If txt.IndexOf("kcurafatalexception") <> -1 Then
 					txt = ex.Message.Replace("System.Web.Services.Protocols.SoapException: Server was unable to process request. ---> System.Exception: kCuraFatalException:", "")
-					Dim batesNumber As String = txt.Substring(txt.LastIndexOf(":") + 1)
+					Dim sr As New System.IO.StringReader(txt)
+					Dim batesNumber As String = sr.ReadLine
+					sr.Close()
 					txt = "Error: the bates number '" & batesNumber & "' already exists in the system."
 				ElseIf txt.IndexOf("ix_") <> -1 AndAlso txt.IndexOf("duplicate") <> -1 Then
 					If txt.IndexOf("eddsdbo.file") <> -1 Then
