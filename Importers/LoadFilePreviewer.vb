@@ -9,6 +9,7 @@ Namespace kCura.WinEDDS
 		Private WithEvents _processController As kCura.Windows.Process.Controller
 		Private _continue As Boolean = True
 		Private _columnCount As Int32 = 0
+		Private _nativeFileCheckColumnName As String = ""
 #End Region
 
 #Region "Constructors"
@@ -111,6 +112,7 @@ Namespace kCura.WinEDDS
 				End If
 			End If
 			Dim i As Int32 = 0
+			i = 0
 			While Not HasReachedEOF AndAlso _continue
 				If fieldArrays.Count < 1000 Then
 					Dim line As String() = Me.GetLine
@@ -202,8 +204,9 @@ Namespace kCura.WinEDDS
 			End If
 
 			If _uploadFiles Then
+				If _nativeFileCheckColumnName = "" Then Me.SetNativeFileCheckColumnName(retval)
 				Dim filePath As String = values(_filePathColumnIndex)
-				Dim docfield As New DocumentField("Native File", -1, -1, -1, NullableInt32.Null, NullableInt32.Null, False)
+				Dim docfield As New DocumentField(_nativeFileCheckColumnName, -1, -1, -1, NullableInt32.Null, NullableInt32.Null, False)
 				If filePath = "" Then
 					docfield.Value = "No File Specified."
 				ElseIf Not System.IO.File.Exists(filePath) Then
@@ -224,6 +227,28 @@ Namespace kCura.WinEDDS
 				Return DirectCast(retval.ToArray(GetType(DocumentField)), DocumentField())
 			End If
 		End Function
+
+		Private Sub SetNativeFileCheckColumnName(ByVal fields As System.Collections.ArrayList)
+			Dim val As String = "Native File to Upload"
+			Dim field As DocumentField
+			Dim i As Int32
+			For i = 0 To 100
+				Dim isNameInUse As Boolean = False
+				For Each field In fields
+					If val = field.FieldName Then
+						isNameInUse = True
+						Exit For
+					End If
+				Next
+				If Not isNameInUse Then
+					_nativeFileCheckColumnName = val
+					Exit Sub
+				Else
+					val &= " "
+				End If
+			Next
+			_nativeFileCheckColumnName = val
+		End Sub
 
 		'Private Function CheckLine(ByVal values As String()) As DocumentField()
 		'	Dim docFields(_docFields.Length - 1) As DocumentField
