@@ -36,7 +36,6 @@ Namespace kCura.WinEDDS
 			Catch ex As System.Exception
 				Me.UploaderType = Type.Web
 			End Try
-			Me.UploaderType = Type.Web
 		End Sub
 
 		Public Property DestinationFolderPath() As String
