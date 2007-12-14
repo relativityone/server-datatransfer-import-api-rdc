@@ -37,7 +37,6 @@ Namespace kCura.WinEDDS
 		Private _fullTextField As kCura.EDDS.WebAPI.DocumentManagerBase.Field
 		Private _defaultDestinationFolderPath As String = ""
 		Private _copyFileToRepository As Boolean
-		Private _fileIdManager As New kCura.OI.FileID.Manager
 		Private _oixFileLookup As System.Collections.Specialized.HybridDictionary
 
 #End Region
@@ -257,7 +256,7 @@ Namespace kCura.WinEDDS
 				If fileExists Then
 					Dim now As DateTime = DateTime.Now
 					If New IO.FileInfo(filename).Length = 0 Then Throw New EmptyNativeFileException(filename)
-					oixFileIdData = _fileIdManager.GetFileIDDataByFilePath(filename)
+					oixFileIdData = kCura.OI.FileID.Manager.Instance.GetFileIDDataByFilePath(filename)
 					If _copyFileToRepository Then
 						fileGuid = _uploader.UploadFile(filename, _caseArtifactID)
 					Else
