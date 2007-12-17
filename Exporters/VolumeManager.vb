@@ -23,7 +23,7 @@ Namespace kCura.WinEDDS
 		Private _parent As WinEDDS.Exporter
 		Private _columnHeaderString As String
 		Private _hasWrittenColumnHeaderString As Boolean = False
-
+		Private _encoding As System.Text.Encoding
 		Private _errorFileLocation As String = ""
 #End Region
 
@@ -115,7 +115,12 @@ Namespace kCura.WinEDDS
 			If Not Me.Settings.Overwrite AndAlso System.IO.File.Exists(loadFilePath) Then
 				Throw New System.Exception(String.Format("Overwrite not selected and file '{0}' exists.", loadFilePath))
 			End If
-			_nativeFileWriter = New System.IO.StreamWriter(loadFilePath, False, System.Text.Encoding.Default)
+			If _parent.ExportAsUnicode Then
+				_encoding = System.Text.Encoding.Unicode
+			Else
+				_encoding = System.Text.Encoding.Default
+			End If
+			_nativeFileWriter = New System.IO.StreamWriter(loadFilePath, False, _encoding)
 			Dim logFileExension As String = ""
 			Select Case Me.Settings.LogFileFormat
 				Case LoadFileType.FileFormat.Opticon
@@ -131,14 +136,14 @@ Namespace kCura.WinEDDS
 				If Not Me.Settings.Overwrite AndAlso System.IO.File.Exists(imageFilePath) Then
 					Throw New System.Exception(String.Format("Overwrite not selected and file '{0}' exists.", imageFilePath))
 				End If
-				_imageFileWriter = New System.IO.StreamWriter(imageFilePath, False, System.Text.Encoding.Default)
+				_imageFileWriter = New System.IO.StreamWriter(imageFilePath, False, _encoding)
 			End If
 		End Sub
 
 		Private Sub LogFileExportError(ByVal type As ExportFileType, ByVal recordIdentifier As String, ByVal fileLocation As String, ByVal errorText As String)
 			If _errorWriter Is Nothing Then
 				_errorFileLocation = System.IO.Path.GetTempFileName()
-				_errorWriter = New System.IO.StreamWriter(_errorFileLocation, False, System.Text.Encoding.Default)
+				_errorWriter = New System.IO.StreamWriter(_errorFileLocation, False, _encoding)
 				_errorWriter.WriteLine("""File Type"",""Document Identifier"",""File Guid"",""Error Description""")
 			End If
 			_errorWriter.WriteLine(String.Format("""{0}"",""{1}"",""{2}"",""{3}""", type.ToString, recordIdentifier, fileLocation, kCura.Utility.Strings.ToCsvCellContents(errorText)))
@@ -270,7 +275,7 @@ Namespace kCura.WinEDDS
 			Try
 				If Me.Settings.LogFileFormat = LoadFileType.FileFormat.IPRO_FullText Then
 					If System.IO.File.Exists(localFullTextPath) Then
-						fullTextReader = New System.IO.StreamReader(localFullTextPath, System.Text.Encoding.Default, True)
+						fullTextReader = New System.IO.StreamReader(localFullTextPath, _encoding, True)
 					End If
 				End If
 				For Each image In images

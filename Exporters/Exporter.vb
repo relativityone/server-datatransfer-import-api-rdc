@@ -21,6 +21,7 @@ Namespace kCura.WinEDDS
 		Private _productionManager As kCura.WinEDDS.Service.ProductionManager
 		Private _exportNativesToFileNamedFrom As kCura.WinEDDS.ExportNativeWithFilenameFrom
 		Private _beginBatesColumn As String = ""
+		Private _exportAsUnicode As Boolean = False
 
 #End Region
 
@@ -63,6 +64,11 @@ Namespace kCura.WinEDDS
 				If Not _volumeManager Is Nothing Then
 					Return _volumeManager.ErrorLogFileName
 				End If
+			End Get
+		End Property
+		Public ReadOnly Property ExportAsUnicode() As Boolean
+			Get
+				Return _exportAsUnicode
 			End Get
 		End Property
 
@@ -122,12 +128,13 @@ Namespace kCura.WinEDDS
 					Me.TotalDocuments = _searchManager.CountSearchByProductionArtifactID(Me.ExportFile.CaseArtifactID, Me.ExportFile.ArtifactID)
 			End Select
 			RaiseEvent FileTransferModeChangeEvent(_downloadHandler.UploaderType.ToString)
+			Dim columnHeaderString As String = Me.LoadColumns
 			_volumeManager = New VolumeManager(Me.ExportFile, Me.ExportFile.FolderPath, Me.ExportFile.Overwrite, Me.TotalDocuments, Me, _downloadHandler)
 			folderTable = _folderManager.RetrieveAllByCaseID(Me.ExportFile.CaseArtifactID).Tables(0)
 			_sourceDirectory = _documentManager.GetDocumentDirectoryByCaseArtifactID(Me.ExportFile.CaseArtifactID) & "\"
 			_fullTextDownloader = New kCura.WinEDDS.FullTextManager(Me.ExportFile.Credential, _sourceDirectory, Me.ExportFile.CookieContainer)
 			Me.WriteStatusLine(kCura.Windows.Process.EventType.Status, "Created search log file.")
-			_volumeManager.ColumnHeaderString = Me.LoadColumns()
+			_volumeManager.ColumnHeaderString = columnHeaderString
 			Me.WriteUpdate("Data retrieved. Beginning search export...")
 
 			Dim documentTable As System.Data.DataTable
@@ -390,6 +397,7 @@ Namespace kCura.WinEDDS
 			For count = 0 To table.Rows.Count - 1
 				columnName = CType(table.Rows(count)("ColumnName"), String)
 				If ShowField(columnName) Then
+					_exportAsUnicode = _exportAsUnicode OrElse CType(table.Rows(count)("IsUnicodeEnabled"), Boolean)
 					_columns.Add(columnName)
 					retString.AppendFormat("{0}{1}{0}", Me.ExportFile.QuoteDelimiter, columnName)
 					If count <> table.Rows.Count - 1 Then
