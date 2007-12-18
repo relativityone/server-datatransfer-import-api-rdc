@@ -68,6 +68,7 @@ Public Class ExportForm
 	Friend WithEvents _usePrefix As System.Windows.Forms.RadioButton
 	Friend WithEvents _prefixText As System.Windows.Forms.TextBox
 	Friend WithEvents _appendOriginalFilename As System.Windows.Forms.CheckBox
+	Friend WithEvents Label5 As System.Windows.Forms.Label
 	<System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
 		Dim resources As System.Resources.ResourceManager = New System.Resources.ResourceManager(GetType(ExportForm))
 		Me.MainMenu1 = New System.Windows.Forms.MainMenu
@@ -87,6 +88,7 @@ Public Class ExportForm
 		Me._browseButton = New System.Windows.Forms.Button
 		Me._folderPath = New System.Windows.Forms.TextBox
 		Me.GroupBox23 = New System.Windows.Forms.GroupBox
+		Me._appendOriginalFilename = New System.Windows.Forms.CheckBox
 		Me._prefixText = New System.Windows.Forms.TextBox
 		Me._usePrefix = New System.Windows.Forms.RadioButton
 		Me._useAbsolutePaths = New System.Windows.Forms.RadioButton
@@ -108,7 +110,7 @@ Public Class ExportForm
 		Me._productionPrecedenceBox = New System.Windows.Forms.GroupBox
 		Me._productionPrecedenceList = New System.Windows.Forms.ListBox
 		Me._pickPrecedenceButton = New System.Windows.Forms.Button
-		Me._appendOriginalFilename = New System.Windows.Forms.CheckBox
+		Me.Label5 = New System.Windows.Forms.Label
 		Me._filtersBox.SuspendLayout()
 		Me.GroupBox3.SuspendLayout()
 		Me.GroupBox23.SuspendLayout()
@@ -194,11 +196,13 @@ Public Class ExportForm
 		'
 		'GroupBox3
 		'
+		Me.GroupBox3.Controls.Add(Me.Label5)
 		Me.GroupBox3.Controls.Add(Me._nativeFileNameSourceBegBates)
 		Me.GroupBox3.Controls.Add(Me._nativeFileNameSourceIdentifier)
 		Me.GroupBox3.Controls.Add(Me._overwriteButton)
 		Me.GroupBox3.Controls.Add(Me._browseButton)
 		Me.GroupBox3.Controls.Add(Me._folderPath)
+		Me.GroupBox3.Controls.Add(Me._appendOriginalFilename)
 		Me.GroupBox3.Location = New System.Drawing.Point(4, 88)
 		Me.GroupBox3.Name = "GroupBox3"
 		Me.GroupBox3.Size = New System.Drawing.Size(572, 72)
@@ -208,22 +212,22 @@ Public Class ExportForm
 		'
 		'_nativeFileNameSourceBegBates
 		'
-		Me._nativeFileNameSourceBegBates.Location = New System.Drawing.Point(320, 48)
+		Me._nativeFileNameSourceBegBates.Location = New System.Drawing.Point(300, 48)
 		Me._nativeFileNameSourceBegBates.Name = "_nativeFileNameSourceBegBates"
-		Me._nativeFileNameSourceBegBates.Size = New System.Drawing.Size(232, 16)
+		Me._nativeFileNameSourceBegBates.Size = New System.Drawing.Size(84, 16)
 		Me._nativeFileNameSourceBegBates.TabIndex = 9
-		Me._nativeFileNameSourceBegBates.Text = "Native files named after begin bates"
+		Me._nativeFileNameSourceBegBates.Text = "begin bates"
 		Me._nativeFileNameSourceBegBates.Visible = False
 		'
 		'_nativeFileNameSourceIdentifier
 		'
 		Me._nativeFileNameSourceIdentifier.Checked = True
-		Me._nativeFileNameSourceIdentifier.Location = New System.Drawing.Point(132, 48)
+		Me._nativeFileNameSourceIdentifier.Location = New System.Drawing.Point(236, 48)
 		Me._nativeFileNameSourceIdentifier.Name = "_nativeFileNameSourceIdentifier"
-		Me._nativeFileNameSourceIdentifier.Size = New System.Drawing.Size(188, 16)
+		Me._nativeFileNameSourceIdentifier.Size = New System.Drawing.Size(68, 16)
 		Me._nativeFileNameSourceIdentifier.TabIndex = 8
 		Me._nativeFileNameSourceIdentifier.TabStop = True
-		Me._nativeFileNameSourceIdentifier.Text = "Native files named after identifier"
+		Me._nativeFileNameSourceIdentifier.Text = "identifier"
 		Me._nativeFileNameSourceIdentifier.Visible = False
 		'
 		'_overwriteButton
@@ -253,7 +257,6 @@ Public Class ExportForm
 		'
 		'GroupBox23
 		'
-		Me.GroupBox23.Controls.Add(Me._appendOriginalFilename)
 		Me.GroupBox23.Controls.Add(Me._prefixText)
 		Me.GroupBox23.Controls.Add(Me._usePrefix)
 		Me.GroupBox23.Controls.Add(Me._useAbsolutePaths)
@@ -269,10 +272,18 @@ Public Class ExportForm
 		Me.GroupBox23.TabStop = False
 		Me.GroupBox23.Text = "Export File Formats"
 		'
+		'_appendOriginalFilename
+		'
+		Me._appendOriginalFilename.Location = New System.Drawing.Point(392, 48)
+		Me._appendOriginalFilename.Name = "_appendOriginalFilename"
+		Me._appendOriginalFilename.Size = New System.Drawing.Size(148, 16)
+		Me._appendOriginalFilename.TabIndex = 17
+		Me._appendOriginalFilename.Text = "Append original filename"
+		'
 		'_prefixText
 		'
 		Me._prefixText.Enabled = False
-		Me._prefixText.Location = New System.Drawing.Point(176, 92)
+		Me._prefixText.Location = New System.Drawing.Point(176, 88)
 		Me._prefixText.Name = "_prefixText"
 		Me._prefixText.Size = New System.Drawing.Size(104, 20)
 		Me._prefixText.TabIndex = 16
@@ -280,7 +291,7 @@ Public Class ExportForm
 		'
 		'_usePrefix
 		'
-		Me._usePrefix.Location = New System.Drawing.Point(160, 76)
+		Me._usePrefix.Location = New System.Drawing.Point(160, 72)
 		Me._usePrefix.Name = "_usePrefix"
 		Me._usePrefix.Size = New System.Drawing.Size(124, 16)
 		Me._usePrefix.TabIndex = 15
@@ -288,7 +299,7 @@ Public Class ExportForm
 		'
 		'_useAbsolutePaths
 		'
-		Me._useAbsolutePaths.Location = New System.Drawing.Point(160, 56)
+		Me._useAbsolutePaths.Location = New System.Drawing.Point(160, 48)
 		Me._useAbsolutePaths.Name = "_useAbsolutePaths"
 		Me._useAbsolutePaths.Size = New System.Drawing.Size(124, 16)
 		Me._useAbsolutePaths.TabIndex = 14
@@ -297,7 +308,7 @@ Public Class ExportForm
 		'_useRelativePaths
 		'
 		Me._useRelativePaths.Checked = True
-		Me._useRelativePaths.Location = New System.Drawing.Point(160, 36)
+		Me._useRelativePaths.Location = New System.Drawing.Point(160, 24)
 		Me._useRelativePaths.Name = "_useRelativePaths"
 		Me._useRelativePaths.Size = New System.Drawing.Size(124, 16)
 		Me._useRelativePaths.TabIndex = 13
@@ -451,13 +462,14 @@ Public Class ExportForm
 		Me._pickPrecedenceButton.TabIndex = 1
 		Me._pickPrecedenceButton.Text = "..."
 		'
-		'_appendOriginalFilename
+		'Label5
 		'
-		Me._appendOriginalFilename.Location = New System.Drawing.Point(136, 16)
-		Me._appendOriginalFilename.Name = "_appendOriginalFilename"
-		Me._appendOriginalFilename.Size = New System.Drawing.Size(148, 16)
-		Me._appendOriginalFilename.TabIndex = 17
-		Me._appendOriginalFilename.Text = "Append original filename"
+		Me.Label5.Location = New System.Drawing.Point(104, 48)
+		Me.Label5.Name = "Label5"
+		Me.Label5.Size = New System.Drawing.Size(128, 16)
+		Me.Label5.TabIndex = 18
+		Me.Label5.Text = "Native files named after:"
+		Me.Label5.TextAlign = System.Drawing.ContentAlignment.MiddleRight
 		'
 		'ExportForm
 		'
