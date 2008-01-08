@@ -659,12 +659,13 @@ Public Class ExportForm
 		_imageFileFormat.DataSource = kCura.WinEDDS.LoadFileType.GetLoadFileTypes
 		_imageFileFormat.DisplayMember = "DisplayName"
 		_imageFileFormat.ValueMember = "Value"
-
+		Label5.Visible = False
 		Select Case Me.ExportFile.TypeOfExport
 			Case ExportFile.ExportType.ArtifactSearch
 				_filters.Text = "Searches"
 				_filtersBox.Text = "Searches"
 				Me.Text = "Relativity Desktop Client: Export Saved Search"
+				_appendOriginalFilename.Location = New System.Drawing.Point(110, 48)
 			Case ExportFile.ExportType.ParentSearch, ExportFile.ExportType.AncestorSearch
 				_filters.Text = "Views"
 				_filtersBox.Text = "Views"
@@ -672,7 +673,9 @@ Public Class ExportForm
 				If Me.ExportFile.TypeOfExport = ExportFile.ExportType.AncestorSearch Then
 					Me.Text = "Relativity Desktop Client: Export Folder and Subfolders"
 				End If
+				_appendOriginalFilename.Location = New System.Drawing.Point(110, 48)
 			Case ExportFile.ExportType.Production
+				Label5.Visible = True
 				_filters.Text = "Productions"
 				_filtersBox.Text = "Productions"
 				_exportImages.Text = "Export Produced Images"
