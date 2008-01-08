@@ -11,7 +11,7 @@ Namespace kCura.WinEDDS.Service
 		''' 	[nkapuza]	8/31/2005	Created
 		''' </history>
 		''' -----------------------------------------------------------------------------
-		Public Shared DefaultTimeOut As Int32 = 60000
+		Public Shared DefaultTimeOut As Int32 = 600000
 		Public Shared AuthenticationToken As String = String.Empty
 	End Class
 End Namespace

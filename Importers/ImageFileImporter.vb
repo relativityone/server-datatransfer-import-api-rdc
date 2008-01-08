@@ -129,7 +129,7 @@ Namespace kCura.WinEDDS
 						txt = "Error creating document - identifier field isn't being properly filled.  Please choose a different 'key' field."
 					End If
 				Else
-					txt = ex.Message
+					txt = ex.ToString
 				End If
 				sectionHasErrors = True
 				RaiseStatusEvent(kCura.Windows.Process.EventType.Error, txt, 1)
