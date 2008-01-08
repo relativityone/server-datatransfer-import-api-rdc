@@ -109,7 +109,11 @@ Namespace kCura.Windows.Process
 				Catch
 				End Try
 			End If
-			System.IO.File.Copy(_errorsFileName, filename)
+			If _errorsFileName Is Nothing OrElse _errorsFileName = "" OrElse Not System.IO.File.Exists(_errorsFileName) Then
+				System.IO.File.Create(filename)
+			Else
+				System.IO.File.Copy(_errorsFileName, filename)
+			End If
 		End Sub
 
 		Private Sub WriteToFile(ByVal evt As ProcessEvent)
