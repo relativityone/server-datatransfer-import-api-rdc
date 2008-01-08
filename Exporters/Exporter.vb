@@ -294,17 +294,17 @@ Namespace kCura.WinEDDS
 					image.FileGuid = drv("Guid").ToString
 					image.ArtifactID = documentArtifactID
 					image.PageOffset = NullableTypes.HelperFunctions.DBNullConvert.ToNullableInt32(drv("ByteRange"))
-					'If i = 0 Then
-					'	image.BatesNumber = batesBase
-					'Else
-					'	image.BatesNumber = batesBase & "_" & i.ToString.PadLeft(imagesView.Count.ToString.Length, "0"c)
-					'End If
+					If i = 0 Then
+						image.BatesNumber = documentInfo.IdentifierValue
+					Else
+						image.BatesNumber = drv("Identifier").ToString
+					End If
 					image.BatesNumber = drv("Identifier").ToString
 					Dim filenameExtension As String = ""
 					If image.FileName.IndexOf(".") <> -1 Then
 						filenameExtension = "." & image.FileName.Substring(image.FileName.LastIndexOf(".") + 1)
 					End If
-					image.FileName = image.BatesNumber & filenameExtension
+					image.FileName = drv("Identifier").ToString & filenameExtension
 					retval.Add(image)
 					i += 1
 				Next
