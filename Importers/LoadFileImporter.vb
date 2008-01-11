@@ -226,8 +226,8 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Private Function ManageDocument(ByVal values As String()) As String
-			If _docsToProcess.Count > 1000 Then
-				While _docsToProcess.Count > 500
+			If _docsToProcess.Count > 100 Then
+				While _docsToProcess.Count > 50
 					If _continue Then
 						System.Threading.Thread.CurrentThread.Join(1000)
 					Else
@@ -317,12 +317,17 @@ Namespace kCura.WinEDDS
 			While (Not _killWorker OrElse _docsToProcess.Count > 0) AndAlso _continue
 				If Not _docsToProcess Is Nothing AndAlso _docsToProcess.Count > 0 Then
 					Dim metaDoc As MetaDocument = DirectCast(_docsToProcess(0), MetaDocument)
-					_docsToProcess.RemoveAt(0)
-					Try
-						ManageDocumentMetaData(metaDoc)
-					Catch ex As System.Exception
-						WriteFatalError(CurrentLineNumber, ex, metaDoc.SourceLine)
-					End Try
+					If Not metaDoc Is Nothing Then
+						_docsToProcess.RemoveAt(0)
+						GC.Collect(3)
+						GC.WaitForPendingFinalizers()
+						GC.Collect(3)
+						Try
+							ManageDocumentMetaData(metaDoc)
+						Catch ex As System.Exception
+							WriteFatalError(CurrentLineNumber, ex, metaDoc.SourceLine)
+						End Try
+					End If
 				Else
 					System.Threading.Thread.CurrentThread.Join(1000)
 				End If

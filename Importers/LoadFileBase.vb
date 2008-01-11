@@ -294,7 +294,7 @@ Namespace kCura.WinEDDS
 				nullableDateValue = MyBase.GetNullableDateTime(value, column)
 			Catch ex As System.Exception
 				Select Case value.Trim
-					Case "00/00/0000", "0/0/0000", "0/0/00", "00/00/00", "0/00", "0/0000", "00/00", "00/0000"
+					Case "00/00/0000", "0/0/0000", "0/0/00", "00/00/00", "0/00", "0/0000", "00/00", "00/0000", "0"
 						nullableDateValue = NullableDateTime.Null
 					Case Else
 						If System.Text.RegularExpressions.Regex.IsMatch(value.Trim, "\d\d\d\d\d\d\d\d") Then
