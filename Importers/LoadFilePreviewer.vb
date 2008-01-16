@@ -155,12 +155,15 @@ Namespace kCura.WinEDDS
 					End Try
 					Dim docfield As New DocumentField(mapItem.DocumentField)
 					Select Case docfield.FieldCategoryID
-						Case kCura.DynamicFields.Types.FieldCategory.GroupIdentifier
-							groupIdentifierField = docfield
+						Case kCura.DynamicFields.Types.FieldCategory.Relational
+							If docfield.FieldName.ToLower = "group identifier" Then
+								groupIdentifierField = docfield
+							End If
+							If docfield.FieldName.ToLower = "md5 hash" Then
+								duplicateHashField = docfield
+							End If
 						Case kCura.DynamicFields.Types.FieldCategory.Identifier
 							identifierField = docfield
-						Case kCura.DynamicFields.Types.FieldCategory.DuplicateHash
-							duplicateHashField = docfield
 					End Select
 					lineContainsErrors = lineContainsErrors Or SetFieldValueOrErrorMessage(docfield, valToParse, mapItem.NativeFileColumnIndex)
 					retval.Add(docfield)

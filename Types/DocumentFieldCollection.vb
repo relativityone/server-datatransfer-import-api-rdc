@@ -62,7 +62,7 @@ Namespace kCura.WinEDDS
 
 		Public ReadOnly Property GroupIdentifier() As DocumentField
 			Get
-				Return Me.GetFieldByCategory(DynamicFields.Types.FieldCategory.GroupIdentifier)
+				Return Me.Item("Group Identifier")
 			End Get
 		End Property
 

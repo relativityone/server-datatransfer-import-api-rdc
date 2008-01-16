@@ -250,8 +250,12 @@ Namespace kCura.WinEDDS
 					End If
 				Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Varchar
 					Select Case field.FieldCategory
-						Case DynamicFields.Types.FieldCategory.GroupIdentifier
-							field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(Me.GetGroupIdentifierField(value, column, field.FieldLength.Value))
+						Case DynamicFields.Types.FieldCategory.Relational
+							If field.FieldName.ToLower = "group identifier" Then
+								field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(Me.GetGroupIdentifierField(value, column, field.FieldLength.Value))
+							Else
+								field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(GetNullableFixedString(value, column, field.FieldLength.Value))
+							End If
 						Case Else
 							field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(GetNullableFixedString(value, column, field.FieldLength.Value))
 					End Select

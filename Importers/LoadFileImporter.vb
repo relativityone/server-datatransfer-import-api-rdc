@@ -976,7 +976,8 @@ Namespace kCura.WinEDDS
 		Private Sub SetMd5HashValue(ByVal md5Hash As String, ByVal doc As kCura.EDDS.WebAPI.DocumentManagerBase.Document)
 			Dim field As kCura.EDDS.WebAPI.DocumentManagerBase.Field
 			For Each field In doc.Fields
-				If field.FieldCategoryID = kCura.DynamicFields.Types.FieldCategory.DuplicateHash Then
+				'If field.FieldCategoryID = kCura.DynamicFields.Types.FieldCategory.DuplicateHash Then
+				If field.DisplayName.ToLower = "md5 hash" Then
 					field.Value = System.Text.Encoding.Unicode.GetBytes(md5Hash)
 					Exit Sub
 				End If
