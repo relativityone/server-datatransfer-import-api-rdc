@@ -1073,17 +1073,18 @@ Namespace kCura.EDDS.WinForm
 
 		Private ReadOnly Property EnableMd5Hash() As Boolean
 			Get
-				If Not _nativeFilePathField.Enabled Then Return False
-				Dim item As String
-				For Each item In _fieldMap.RightListBoxItems
-					Try
-						If _application.CurrentFields.Item(item).FieldCategoryID = kCura.DynamicFields.Types.FieldCategory.DuplicateHash Then
-							Return False
-						End If
-					Catch
-					End Try
-				Next
-				Return True
+				Return False
+				'If Not _nativeFilePathField.Enabled Then Return False
+				'Dim item As String
+				'For Each item In _fieldMap.RightListBoxItems
+				'	Try
+				'		If _application.CurrentFields.Item(item).FieldCategoryID = kCura.DynamicFields.Types.FieldCategory.DuplicateHash Then
+				'			Return False
+				'		End If
+				'	Catch
+				'	End Try
+				'Next
+				'Return True
 			End Get
 		End Property
 
