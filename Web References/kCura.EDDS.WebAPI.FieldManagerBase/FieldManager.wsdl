@@ -77,7 +77,16 @@
               <s:element minOccurs="0" maxOccurs="1" name="NameValue" type="s:string" />
               <s:element minOccurs="1" maxOccurs="1" name="LinkType" type="s:boolean" />
               <s:element minOccurs="1" maxOccurs="1" name="UseUnicodeEncoding" type="s:boolean" />
-              <s:element minOccurs="1" maxOccurs="1" name="UseHtmlEncoding" type="s:boolean" />
+              <s:element minOccurs="1" maxOccurs="1" name="AllowHtml" type="s:boolean" />
+              <s:element minOccurs="1" maxOccurs="1" name="IsSortable" type="s:boolean" />
+              <s:element minOccurs="0" maxOccurs="1" name="FriendlyName" type="s:string" />
+              <s:element minOccurs="1" maxOccurs="1" name="RelationalIndexViewArtifactID">
+                <s:complexType>
+                  <s:sequence>
+                    <s:any namespace="http://NullableTypes.SourceForge.Net/NullableInt32XMLSchema" />
+                  </s:sequence>
+                </s:complexType>
+              </s:element>
             </s:sequence>
           </s:extension>
         </s:complexContent>
@@ -136,10 +145,10 @@
           <s:enumeration value="Identifier" />
           <s:enumeration value="Associative" />
           <s:enumeration value="Comments" />
-          <s:enumeration value="GroupIdentifier" />
+          <s:enumeration value="Relational" />
           <s:enumeration value="ProductionMarker" />
           <s:enumeration value="AutoCreate" />
-          <s:enumeration value="DuplicateHash" />
+          <s:enumeration value="ReservedRenameToUse" />
           <s:enumeration value="FolderName" />
           <s:enumeration value="FileInfo" />
           <s:enumeration value="ParentArtifact" />

@@ -194,7 +194,16 @@ Namespace kCura.EDDS.WebAPI.FieldManagerBase
         Public UseUnicodeEncoding As Boolean
         
         '<remarks/>
-        Public UseHtmlEncoding As Boolean
+        Public AllowHtml As Boolean
+        
+        '<remarks/>
+        Public IsSortable As Boolean
+        
+        '<remarks/>
+        Public FriendlyName As String
+        
+        '<remarks/>
+        Public RelationalIndexViewArtifactID As NullableInt32
     End Class
     
     '<remarks/>
@@ -261,7 +270,7 @@ Namespace kCura.EDDS.WebAPI.FieldManagerBase
         Comments
         
         '<remarks/>
-        GroupIdentifier
+        Relational
         
         '<remarks/>
         ProductionMarker
@@ -270,7 +279,7 @@ Namespace kCura.EDDS.WebAPI.FieldManagerBase
         AutoCreate
         
         '<remarks/>
-        DuplicateHash
+        ReservedRenameToUse
         
         '<remarks/>
         FolderName

@@ -422,7 +422,7 @@ Namespace kCura.WinEDDS
 			If mdoc.Md5Hash <> "" Then
 				Me.SetMd5HashValue(mdoc.Md5Hash, documentDTO)
 			End If
-			ManageRequiredField(documentDTO, EDDS.WebAPI.DocumentManagerBase.FieldCategory.DuplicateHash)
+			ManageRelationalFields(documentDTO)
 			Dim field As kCura.EDDS.WebAPI.DocumentManagerBase.Field
 			If mdoc.UploadFile And mdoc.IndexFileInDB Then
 				Me.SetFileIdDataFields(documentDTO, mdoc.FileIdData)
@@ -517,7 +517,7 @@ Namespace kCura.WinEDDS
 				If mdoc.Md5Hash <> "" Then
 					Me.SetMd5HashValue(mdoc.Md5Hash, docDTO)
 				End If
-				ManageRequiredField(docDTO, EDDS.WebAPI.DocumentManagerBase.FieldCategory.DuplicateHash)
+				ManageRelationalFields(docDTO)
 				Try
 					_documentManager.Update(_uploader.CaseArtifactID, docDTO)
 				Catch ex As System.Exception
@@ -647,7 +647,7 @@ Namespace kCura.WinEDDS
 					End Select
 				End If
 			Next
-			ManageRequiredField(documentDTO, EDDS.WebAPI.DocumentManagerBase.FieldCategory.GroupIdentifier)
+			ManageRelationalFields(documentDTO)
 			If removeFullTextField Then
 				Dim al As New System.Collections.ArrayList
 				al.AddRange(documentDTO.Fields)
@@ -664,16 +664,19 @@ Namespace kCura.WinEDDS
 			value = Nothing
 		End Sub
 
-		Private Sub ManageRequiredField(ByVal document As kCura.EDDS.WebAPI.DocumentManagerBase.Document, ByVal type As EDDS.WebAPI.DocumentManagerBase.FieldCategory)
-			Dim id As kCura.EDDS.WebAPI.DocumentManagerBase.Field
-			Dim gid As kCura.EDDS.WebAPI.DocumentManagerBase.Field
-			Dim field As kCura.EDDS.WebAPI.DocumentManagerBase.Field
-			For Each field In document.Fields
-				If field.FieldCategory = type Then gid = field
-				If field.FieldCategory = EDDS.WebAPI.DocumentManagerBase.FieldCategory.Identifier Then id = field
+		Private Sub ManageRelationalFields(ByVal document As kCura.EDDS.WebAPI.DocumentManagerBase.Document)
+			Dim identifier As kCura.EDDS.WebAPI.DocumentManagerBase.Field
+			For Each field As kCura.EDDS.WebAPI.DocumentManagerBase.Field In document.Fields
+				If field.FieldCategory = EDDS.WebAPI.DocumentManagerBase.FieldCategory.Identifier Then
+					identifier = field
+					Exit For
+				End If
 			Next
-			Dim gidValue As String = System.Text.Encoding.Unicode.GetString(DirectCast(gid.Value, Byte()))
-			If gidValue = "" Then gid.Value = id.Value
+			For Each field As kCura.EDDS.WebAPI.DocumentManagerBase.Field In document.Fields
+				If field.FieldCategory = EDDS.WebAPI.DocumentManagerBase.FieldCategory.Relational AndAlso System.Text.Encoding.Unicode.GetString(DirectCast(field.Value, Byte())) = "" Then
+					field.Value = identifier.Value
+				End If
+			Next
 		End Sub
 
 		Public Sub SetMultiCode(ByVal fieldDTO As kCura.EDDS.WebAPI.DocumentManagerBase.Field, ByVal docField As DocumentField)
