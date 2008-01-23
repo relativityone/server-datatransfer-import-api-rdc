@@ -49,8 +49,6 @@ Namespace kCura.EDDS.WinForm
 		Friend WithEvents _fieldMap As kCura.Windows.Forms.TwoListBox
 		Friend WithEvents Label1 As System.Windows.Forms.Label
 		Friend WithEvents Label7 As System.Windows.Forms.Label
-		Friend WithEvents GroupBox3 As System.Windows.Forms.GroupBox
-		Friend WithEvents _identifiersDropDown As System.Windows.Forms.ComboBox
 		Friend WithEvents _loadNativeFiles As System.Windows.Forms.CheckBox
 		Friend WithEvents _extractFullTextFromNativeFile As System.Windows.Forms.CheckBox
 		Friend WithEvents Label5 As System.Windows.Forms.Label
@@ -141,8 +139,6 @@ Namespace kCura.EDDS.WinForm
 			Me._extractFullTextFromNativeFile = New System.Windows.Forms.CheckBox
 			Me._nativeFilePathField = New System.Windows.Forms.ComboBox
 			Me.Label5 = New System.Windows.Forms.Label
-			Me.GroupBox3 = New System.Windows.Forms.GroupBox
-			Me._identifiersDropDown = New System.Windows.Forms.ComboBox
 			Me.Label7 = New System.Windows.Forms.Label
 			Me.Label1 = New System.Windows.Forms.Label
 			Me._fileColumns = New kCura.Windows.Forms.TwoListBox
@@ -159,7 +155,6 @@ Namespace kCura.EDDS.WinForm
 			Me.GroupBox6.SuspendLayout()
 			Me.GroupBox5.SuspendLayout()
 			Me.GroupBox4.SuspendLayout()
-			Me.GroupBox3.SuspendLayout()
 			Me.SuspendLayout()
 			'
 			'OpenFileDialog
@@ -453,7 +448,6 @@ Namespace kCura.EDDS.WinForm
 			Me._fieldMapTab.Controls.Add(Me.GroupBox6)
 			Me._fieldMapTab.Controls.Add(Me.GroupBox5)
 			Me._fieldMapTab.Controls.Add(Me.GroupBox4)
-			Me._fieldMapTab.Controls.Add(Me.GroupBox3)
 			Me._fieldMapTab.Controls.Add(Me.Label7)
 			Me._fieldMapTab.Controls.Add(Me.Label1)
 			Me._fieldMapTab.Controls.Add(Me._fileColumns)
@@ -505,16 +499,16 @@ Namespace kCura.EDDS.WinForm
 			'
 			Me.GroupBox5.Controls.Add(Me._buildFolderStructure)
 			Me.GroupBox5.Controls.Add(Me._destinationFolderPath)
-			Me.GroupBox5.Location = New System.Drawing.Point(4, 56)
+			Me.GroupBox5.Location = New System.Drawing.Point(4, 4)
 			Me.GroupBox5.Name = "GroupBox5"
-			Me.GroupBox5.Size = New System.Drawing.Size(236, 72)
+			Me.GroupBox5.Size = New System.Drawing.Size(236, 124)
 			Me.GroupBox5.TabIndex = 30
 			Me.GroupBox5.TabStop = False
 			Me.GroupBox5.Text = "Folder Info"
 			'
 			'_buildFolderStructure
 			'
-			Me._buildFolderStructure.Location = New System.Drawing.Point(8, 20)
+			Me._buildFolderStructure.Location = New System.Drawing.Point(8, 40)
 			Me._buildFolderStructure.Name = "_buildFolderStructure"
 			Me._buildFolderStructure.Size = New System.Drawing.Size(220, 16)
 			Me._buildFolderStructure.TabIndex = 29
@@ -524,7 +518,7 @@ Namespace kCura.EDDS.WinForm
 			'
 			Me._destinationFolderPath.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
 			Me._destinationFolderPath.Enabled = False
-			Me._destinationFolderPath.Location = New System.Drawing.Point(8, 40)
+			Me._destinationFolderPath.Location = New System.Drawing.Point(8, 60)
 			Me._destinationFolderPath.Name = "_destinationFolderPath"
 			Me._destinationFolderPath.Size = New System.Drawing.Size(220, 21)
 			Me._destinationFolderPath.TabIndex = 28
@@ -597,25 +591,6 @@ Namespace kCura.EDDS.WinForm
 			Me.Label5.Text = "Native file paths contained in column:"
 			Me.Label5.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
 			'
-			'GroupBox3
-			'
-			Me.GroupBox3.Controls.Add(Me._identifiersDropDown)
-			Me.GroupBox3.Location = New System.Drawing.Point(4, 4)
-			Me.GroupBox3.Name = "GroupBox3"
-			Me.GroupBox3.Size = New System.Drawing.Size(236, 48)
-			Me.GroupBox3.TabIndex = 21
-			Me.GroupBox3.TabStop = False
-			Me.GroupBox3.Text = "Group Identifier"
-			'
-			'_identifiersDropDown
-			'
-			Me._identifiersDropDown.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
-			Me._identifiersDropDown.Enabled = False
-			Me._identifiersDropDown.Location = New System.Drawing.Point(8, 20)
-			Me._identifiersDropDown.Name = "_identifiersDropDown"
-			Me._identifiersDropDown.Size = New System.Drawing.Size(220, 21)
-			Me._identifiersDropDown.TabIndex = 19
-			'
 			'Label7
 			'
 			Me.Label7.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
@@ -678,7 +653,6 @@ Namespace kCura.EDDS.WinForm
 			Me.GroupBox6.ResumeLayout(False)
 			Me.GroupBox5.ResumeLayout(False)
 			Me.GroupBox4.ResumeLayout(False)
-			Me.GroupBox3.ResumeLayout(False)
 			Me.ResumeLayout(False)
 
 		End Sub
@@ -745,16 +719,16 @@ Namespace kCura.EDDS.WinForm
 				Exit Sub
 			End If
 			Me.LoadFile.FieldMap = kCura.EDDS.WinForm.Utility.ExtractFieldMap(_fieldMap, _fileColumns, currentFields)
-			Dim groupIdentifier As DocumentField = _application.CurrentGroupIdentifierField
-			If _identifiersDropDown.SelectedIndex > 0 Then
-				Dim columnname As String = CType(_identifiersDropDown.SelectedItem, String)
-				Dim openParenIndex As Int32 = columnname.LastIndexOf("("c) + 1
-				Dim closeParenIndex As Int32 = columnname.LastIndexOf(")"c)
-				Dim fieldColumnIndex As Int32 = Int32.Parse(columnname.Substring(openParenIndex, closeParenIndex - openParenIndex)) - 1
-				If Not groupIdentifier Is Nothing Then
-					Me.LoadFile.FieldMap.Add(New kCura.WinEDDS.LoadFileFieldMap.LoadFileFieldMapItem(groupIdentifier, fieldColumnIndex))
-				End If
-			End If
+			'Dim groupIdentifier As DocumentField = _application.CurrentGroupIdentifierField
+			'If _identifiersDropDown.SelectedIndex > 0 Then
+			'	Dim columnname As String = CType(_identifiersDropDown.SelectedItem, String)
+			'	Dim openParenIndex As Int32 = columnname.LastIndexOf("("c) + 1
+			'	Dim closeParenIndex As Int32 = columnname.LastIndexOf(")"c)
+			'	Dim fieldColumnIndex As Int32 = Int32.Parse(columnname.Substring(openParenIndex, closeParenIndex - openParenIndex)) - 1
+			'	If Not groupIdentifier Is Nothing Then
+			'		Me.LoadFile.FieldMap.Add(New kCura.WinEDDS.LoadFileFieldMap.LoadFileFieldMapItem(groupIdentifier, fieldColumnIndex))
+			'	End If
+			'End If
 
 			LoadFile.SourceFileEncoding = DirectCast(_encodingDropdown.SelectedItem, EncodingListItem).Value
 			LoadFile.ExtractFullTextFromNativeFile = _extractFullTextFromNativeFile.Checked
@@ -771,11 +745,11 @@ Namespace kCura.EDDS.WinForm
 				LoadFile.FilePath = _filePath.Text
 			End If
 			LoadFile.SelectedIdentifierField = _application.GetDocumentFieldFromName(_application.GetCaseIdentifierFields()(0))
-			If Not _identifiersDropDown.SelectedItem Is Nothing Then
-				LoadFile.GroupIdentifierColumn = _identifiersDropDown.SelectedItem.ToString
-			Else
-				LoadFile.GroupIdentifierColumn = Nothing
-			End If
+			'If Not _identifiersDropDown.SelectedItem Is Nothing Then
+			'	LoadFile.GroupIdentifierColumn = _identifiersDropDown.SelectedItem.ToString
+			'Else
+			'	LoadFile.GroupIdentifierColumn = Nothing
+			'End If
 
 			If _loadNativeFiles.Checked Then
 				If Not _nativeFilePathField.SelectedItem Is Nothing Then
@@ -823,7 +797,6 @@ Namespace kCura.EDDS.WinForm
 			_fileColumnHeaders.Items.Clear()
 			_nativeFilePathField.Items.Clear()
 			_destinationFolderPath.Items.Clear()
-			_identifiersDropDown.Items.Clear()
 			_loadNativeFiles.Checked = LoadFile.LoadNativeFiles
 			_extractedTextValueContainsFileLocation.Checked = LoadFile.FullTextColumnContainsFileLocation
 			_overwriteDropdown.SelectedItem = Me.GetOverwriteDropdownItem(LoadFile.OverwriteDestination)
@@ -857,7 +830,7 @@ Namespace kCura.EDDS.WinForm
 			End If
 			'_identifiersDropDown.Items.AddRange(_application.IdentiferFieldDropdownPopulator)
 			_overwriteDropdown.SelectedItem = Me.GetOverwriteDropdownItem(LoadFile.OverwriteDestination)
-			_identifiersDropDown.Enabled = True			'LoadFile.OverwriteDestination
+			'_identifiersDropDown.Enabled = True			'LoadFile.OverwriteDestination
 			If _overwriteDropdown.SelectedItem Is Nothing Then
 				_destinationFolderPath.Enabled = _buildFolderStructure.Checked
 			Else
@@ -872,10 +845,10 @@ Namespace kCura.EDDS.WinForm
 					End If
 				Next
 			End If
-			If Not Me.LoadFile.GroupIdentifierColumn Is Nothing AndAlso Me.LoadFile.GroupIdentifierColumn <> "" AndAlso _
-			_identifiersDropDown.Items.Contains(LoadFile.GroupIdentifierColumn) Then
-				_identifiersDropDown.SelectedItem = LoadFile.GroupIdentifierColumn
-			End If
+			'If Not Me.LoadFile.GroupIdentifierColumn Is Nothing AndAlso Me.LoadFile.GroupIdentifierColumn <> "" AndAlso _
+			''_identifiersDropDown.Items.Contains(LoadFile.GroupIdentifierColumn) Then
+			'	'_identifiersDropDown.SelectedItem = LoadFile.GroupIdentifierColumn
+			'End If
 
 			_extractedTextValueContainsFileLocation.Enabled = Me.FullTextColumnIsMapped
 
@@ -919,7 +892,7 @@ Namespace kCura.EDDS.WinForm
 			_fileColumnHeaders.Items.Clear()
 			_nativeFilePathField.Items.Clear()
 			_destinationFolderPath.Items.Clear()
-			_identifiersDropDown.Items.Clear()
+			'_identifiersDropDown.Items.Clear()
 			_fileColumns.ClearAll()
 			If System.IO.File.Exists(LoadFile.FilePath) Then
 				PopulateLoadFileDelimiters()
@@ -931,9 +904,9 @@ Namespace kCura.EDDS.WinForm
 				_nativeFilePathField.Items.AddRange(columnHeaders)
 				_destinationFolderPath.Items.AddRange(columnHeaders)
 				Dim identifiersDropdownRange As New System.Collections.ArrayList
-				_identifiersDropDown.Items.Add("< none >")
-				_identifiersDropDown.Items.AddRange(columnHeaders)
-				_identifiersDropDown.SelectedIndex = 0
+				'_identifiersDropDown.Items.Add("< none >")
+				'_identifiersDropDown.Items.AddRange(columnHeaders)
+				'_identifiersDropDown.SelectedIndex = 0
 				If LoadFile.LoadNativeFiles AndAlso System.IO.File.Exists(LoadFile.FilePath) Then
 					_nativeFilePathField.SelectedItem = LoadFile.NativeFilePathColumn
 				End If
@@ -1119,7 +1092,7 @@ Namespace kCura.EDDS.WinForm
 			Me.Cursor = System.Windows.Forms.Cursors.Default
 		End Sub
 
-		Private Sub _identifiersDropDown_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _identifiersDropDown.SelectedIndexChanged
+		Private Sub _identifiersDropDown_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs)
 			ActionMenuEnabled = ReadyToRun
 		End Sub
 
