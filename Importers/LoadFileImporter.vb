@@ -622,8 +622,9 @@ Namespace kCura.WinEDDS
 										Dim finfo As New System.IO.FileInfo(docField.Value)
 										Dim multiplier As Int32 = 2
 										If TypeOf _sourceFileEncoding Is System.Text.UnicodeEncoding Then multiplier = 1
+
 										If finfo.Length > Me.Settings.MAX_STRING_FIELD_LENGTH * multiplier Then
-											fieldDTO.Value = _uploader.UploadFile(docField.Value, _caseArtifactID)
+											fieldDTO.Value = _extractedTextFileEncodingName & ":" & _uploader.UploadFile(docField.Value, _caseArtifactID)
 										Else
 											Dim sr As New System.IO.StreamReader(docField.Value, _sourceFileEncoding)
 											fieldDTO.Value = encoder.GetBytes(sr.ReadToEnd)
@@ -634,7 +635,8 @@ Namespace kCura.WinEDDS
 									End If
 								Else
 									If docField.Value.Length > Me.Settings.MAX_STRING_FIELD_LENGTH Then
-										fieldDTO.Value = _uploader.UploadTextAsFile(docField.Value, _caseArtifactID, System.Guid.NewGuid.ToString)
+										fieldDTO.Value = New Object() {"unicode", _uploader.UploadTextAsFile(docField.Value, _caseArtifactID, System.Guid.NewGuid.ToString)}
+										fieldDTO.Value = "unicode" & ":" & _uploader.UploadFile(docField.Value, _caseArtifactID)
 									Else
 										fieldDTO.Value = encoder.GetBytes(docField.Value)
 									End If

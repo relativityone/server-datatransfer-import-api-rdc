@@ -288,5 +288,88 @@ Namespace kCura.EDDS.WebAPI.SearchManagerBase
             Dim results() As Object = Me.EndInvoke(asyncResult)
             Return CType(results(0),Integer)
         End Function
+        
+        '<remarks/>
+        <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/SearchManager/RetrieveSearchProviderOptions", RequestNamespace:="http://www.kCura.com/EDDS/SearchManager", ResponseNamespace:="http://www.kCura.com/EDDS/SearchManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
+        Public Function RetrieveSearchProviderOptions(ByVal caseContextArtifactID As Integer) As SearchProviderOptions()
+            Dim results() As Object = Me.Invoke("RetrieveSearchProviderOptions", New Object() {caseContextArtifactID})
+            Return CType(results(0),SearchProviderOptions())
+        End Function
+        
+        '<remarks/>
+        Public Function BeginRetrieveSearchProviderOptions(ByVal caseContextArtifactID As Integer, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("RetrieveSearchProviderOptions", New Object() {caseContextArtifactID}, callback, asyncState)
+        End Function
+        
+        '<remarks/>
+        Public Function EndRetrieveSearchProviderOptions(ByVal asyncResult As System.IAsyncResult) As SearchProviderOptions()
+            Dim results() As Object = Me.EndInvoke(asyncResult)
+            Return CType(results(0),SearchProviderOptions())
+        End Function
     End Class
+    
+    '<remarks/>
+    <System.Xml.Serialization.XmlTypeAttribute([Namespace]:="http://www.kCura.com/EDDS/SearchManager")>  _
+    Public Class SearchProviderOptions
+        
+        '<remarks/>
+        Public SearchEngineID As Integer
+        
+        '<remarks/>
+        Public Name As String
+        
+        '<remarks/>
+        Public Options() As ViewerOption
+    End Class
+    
+    '<remarks/>
+    <System.Xml.Serialization.XmlTypeAttribute([Namespace]:="http://www.kCura.com/EDDS/SearchManager")>  _
+    Public Class ViewerOption
+        
+        '<remarks/>
+        Public Data As String
+        
+        '<remarks/>
+        Public Name As String
+        
+        '<remarks/>
+        Public Availability As OptionAvailability
+        
+        '<remarks/>
+        Public Type As OptionType
+        
+        '<remarks/>
+        Public Order As Integer
+        
+        '<remarks/>
+        Public RequiresSelectedText As Boolean
+    End Class
+    
+    '<remarks/>
+    <System.Xml.Serialization.XmlTypeAttribute([Namespace]:="http://www.kCura.com/EDDS/SearchManager")>  _
+    Public Enum OptionAvailability
+        
+        '<remarks/>
+        Image
+        
+        '<remarks/>
+        Native
+        
+        '<remarks/>
+        Both
+    End Enum
+    
+    '<remarks/>
+    <System.Xml.Serialization.XmlTypeAttribute([Namespace]:="http://www.kCura.com/EDDS/SearchManager")>  _
+    Public Enum OptionType
+        
+        '<remarks/>
+        JavascriptEvent
+        
+        '<remarks/>
+        SearchEvent
+        
+        '<remarks/>
+        Browser
+    End Enum
 End Namespace

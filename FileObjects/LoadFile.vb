@@ -25,6 +25,8 @@ Namespace kCura.WinEDDS
 		Public FolderStructureContainedInColumn As String
 		Public FullTextColumnContainsFileLocation As Boolean
 		<NonSerialized()> Public SourceFileEncoding As System.Text.Encoding
+		<NonSerialized()> Public ExtractedTextFileEncoding As System.Text.Encoding
+		<NonSerialized()> Public ExtractedTextFileEncodingName As String
 		<NonSerialized()> Public Credentials As Net.NetworkCredential
 		<NonSerialized()> Public _cookieContainer As System.Net.CookieContainer
 		'<NonSerialized()> Public Identity As kCura.EDDS.EDDSIdentity

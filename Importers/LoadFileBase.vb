@@ -34,6 +34,8 @@ Namespace kCura.WinEDDS
 		Protected _fullTextColumnMapsToFileLocation As Boolean
 		Private _users As UserCollection
 		Protected _sourceFileEncoding As System.Text.Encoding
+		Protected _extractedTextFileEncoding As System.Text.Encoding
+		Protected _extractedTextFileEncodingName As String
 
 		Protected MustOverride ReadOnly Property UseTimeZoneOffset() As Boolean
 
@@ -94,6 +96,8 @@ Namespace kCura.WinEDDS
 			_extractMd5Hash = args.ExtractMD5HashFromNativeFile
 			_fullTextColumnMapsToFileLocation = args.FullTextColumnContainsFileLocation
 			_sourceFileEncoding = args.SourceFileEncoding
+			_extractedTextFileEncoding = args.ExtractedTextFileEncoding
+			_extractedTextFileEncodingName = args.ExtractedTextFileEncodingName
 		End Sub
 
 #Region "Code Parsing"
