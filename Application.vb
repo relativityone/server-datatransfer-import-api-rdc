@@ -996,7 +996,7 @@ Namespace kCura.EDDS.WinForm
 					 fieldMapItem.NativeFileColumnIndex >= 0 AndAlso _
 					 fieldMapItem.DocumentField.FieldName.ToLower = "group identifier" Then
 						tempLoadFile.GroupIdentifierColumn = Me.GetColumnHeadersFromLoadFile(tempLoadFile, tempLoadFile.FirstLineContainsHeaders)(fieldMapItem.NativeFileColumnIndex)
-						mapItemToRemove = fieldMapItem
+						'mapItemToRemove = fieldMapItem
 					End If
 				Next
 			End If
