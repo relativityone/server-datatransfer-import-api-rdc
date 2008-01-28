@@ -10,12 +10,15 @@ Namespace kCura.WinEDDS
 		Private _continue As Boolean = True
 		Private _columnCount As Int32 = 0
 		Private _nativeFileCheckColumnName As String = ""
+		Private _relationalDocumentFields As DocumentField()
+		Private _selectedCaseArtifactID As Int32
 #End Region
 
 #Region "Constructors"
 
 		Public Sub New(ByVal args As LoadFile, ByVal timeZoneOffset As Int32, ByVal errorsOnly As Boolean, Optional ByVal processController As kCura.Windows.Process.Controller = Nothing)
 			MyBase.New(args, timeZoneOffset)
+			_selectedCaseArtifactID = args.CaseInfo.ArtifactID
 			_errorsOnly = errorsOnly
 			_processController = processController
 		End Sub
@@ -92,6 +95,7 @@ Namespace kCura.WinEDDS
 
 		Public Overrides Function ReadFile(ByVal path As String) As Object
 			Dim earlyexit As Boolean = False
+			_relationalDocumentFields = _fieldQuery.RetrieveAllAsDocumentFieldCollection(_selectedCaseArtifactID).GetFieldsByCategory(DynamicFields.Types.FieldCategory.Relational)
 			Reader = New System.IO.StreamReader(path, _sourceFileEncoding)
 			Dim filesize As Int64 = Reader.BaseStream.Length
 			Dim stepsize As Int64 = CType(filesize / 100, Int64)
@@ -146,6 +150,11 @@ Namespace kCura.WinEDDS
 			Dim identifierField As DocumentField
 			Dim groupIdentifierField As DocumentField
 			Dim duplicateHashField As DocumentField
+			Dim unmappedFields As New System.Collections.Specialized.HybridDictionary
+			Dim mappedFields As New System.Collections.Specialized.HybridDictionary
+			For Each relationalField As DocumentField In _relationalDocumentFields
+				unmappedFields.Add(relationalField.FieldID, relationalField)
+			Next
 			For Each mapItem In _fieldMap
 				If mapItem.NativeFileColumnIndex > -1 AndAlso Not mapItem.DocumentField Is Nothing Then
 					Try
@@ -156,12 +165,18 @@ Namespace kCura.WinEDDS
 					Dim docfield As New DocumentField(mapItem.DocumentField)
 					Select Case docfield.FieldCategoryID
 						Case kCura.DynamicFields.Types.FieldCategory.Relational
-							If docfield.FieldName.ToLower = "group identifier" Then
-								groupIdentifierField = docfield
+							If unmappedFields.Contains(docfield.FieldID) Then
+								unmappedFields.Remove(docField.FieldID)
 							End If
-							If docfield.FieldName.ToLower = "md5 hash" Then
-								duplicateHashField = docfield
+							If Not mappedFields.Contains(docField.FieldID) Then
+								mappedFields.Add(docField.FieldID, docfield)
 							End If
+							'If docfield.FieldName.ToLower = "group identifier" Then
+							'	groupIdentifierField = docfield
+							'End If
+							'If docfield.FieldName.ToLower = "md5 hash" Then
+							'	duplicateHashField = docfield
+							'End If
 						Case kCura.DynamicFields.Types.FieldCategory.Identifier
 							identifierField = docfield
 					End Select
@@ -186,25 +201,36 @@ Namespace kCura.WinEDDS
 					lineContainsErrors = True
 				End If
 			End If
-			If Not identifierField Is Nothing AndAlso _
-			 Not groupIdentifierField Is Nothing AndAlso _
-			 groupIdentifierField.Value = "" Then
-				groupIdentifierField.Value = identifierField.Value
-			End If
 
 			If Not identifierField Is Nothing Then
-				If Not duplicateHashField Is Nothing Then
-					If duplicateHashField.Value = "" Then duplicateHashField.Value = identifierField.Value
-				Else
-					Dim docfield As New DocumentField("MD5 Hash", -1, -1, -1, NullableInt32.Null, NullableInt32.Null, False)
-					If _extractMd5Hash Then
-						docfield.Value = "[Extracted from native]"
-					Else
-						docField.Value = identifierField.Value & " (if not set)"
-					End If
-					retval.Add(docfield)
-				End If
+				For Each field As DocumentField In unmappedFields.Values
+					field.Value = identifierField.Value & " (if not set)"
+					retval.Add(field)
+				Next
+				For Each field As DocumentField In mappedFields.Values
+					If field.Value = "" Then field.Value = identifierField.Value
+				Next
 			End If
+
+			'If Not identifierField Is Nothing AndAlso _
+			' Not groupIdentifierField Is Nothing AndAlso _
+			' groupIdentifierField.Value = "" Then
+			'	groupIdentifierField.Value = identifierField.Value
+			'End If
+
+			'If Not identifierField Is Nothing Then
+			'	If Not duplicateHashField Is Nothing Then
+			'		If duplicateHashField.Value = "" Then duplicateHashField.Value = identifierField.Value
+			'	Else
+			'		Dim docfield As New DocumentField("MD5 Hash", -1, -1, -1, NullableInt32.Null, NullableInt32.Null, False)
+			'		If _extractMd5Hash Then
+			'			docfield.Value = "[Extracted from native]"
+			'		Else
+			'			docField.Value = identifierField.Value & " (if not set)"
+			'		End If
+			'		retval.Add(docfield)
+			'	End If
+			'End If
 
 			If _uploadFiles Then
 				If _nativeFileCheckColumnName = "" Then Me.SetNativeFileCheckColumnName(retval)

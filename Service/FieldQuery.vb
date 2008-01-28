@@ -65,6 +65,16 @@ Namespace kCura.WinEDDS.Service
 			Return DirectCast(fields.ToArray(GetType(kCura.EDDS.WebAPI.DocumentManagerBase.Field)), kCura.EDDS.WebAPI.DocumentManagerBase.Field())
 		End Function
 
+		Public Function RetrieveAllAsDocumentFieldCollection(ByVal caseContextArtifactID As Int32) As DocumentFieldCollection
+			Dim retval As New DocumentFieldCollection
+			For Each fieldDTO As kCura.EDDS.WebAPI.DocumentManagerBase.Field In Me.RetrieveAllAsArray(caseContextArtifactID)
+				With fieldDTO
+					retval.Add(New DocumentField(.DisplayName, .ArtifactID, .FieldTypeID, .FieldCategoryID, .CodeTypeID, .MaxLength, .UseUnicodeEncoding))
+				End With
+			Next
+			Return retval
+		End Function
+
 #Region " Shadow Functions "
 		Public Shadows Function RetrieveDisplayFieldNameByFieldCategoryID(ByVal caseContextArtifactID As Int32, ByVal fieldCategoryID As Int32) As String
 			Dim tries As Int32 = 0
