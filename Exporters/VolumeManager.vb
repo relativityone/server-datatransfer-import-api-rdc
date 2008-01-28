@@ -171,6 +171,8 @@ Namespace kCura.WinEDDS
 			Dim image As Exporters.ImageExportInfo
 			Dim imageSuccess As Boolean = True
 			Dim nativeSuccess As Boolean = True
+			Dim updateVolumeAfterExport As Boolean = False
+			Dim updateSubDirectoryAfterExport As Boolean = False
 			If Me.Settings.ExportImages Then
 				For Each image In documentInfo.Images
 					Try
@@ -190,10 +192,18 @@ Namespace kCura.WinEDDS
 				End Try
 			End If
 			If totalFileSize + _currentVolumeSize > Me.VolumeMaxSize Then
-				Me.UpdateVolume()
+				If _currentVolumeSize = 0 Then
+					updateVolumeAfterExport = True
+				Else
+					Me.UpdateVolume()
+				End If
 			ElseIf documentInfo.ImageCount + _currentImageSubdirectorySize > Me.SubDirectoryMaxSize OrElse _
 			 documentInfo.NativeCount + _currentNativeSubdirectorySize > Me.SubDirectoryMaxSize Then
-				Me.UpdateSubdirectory()
+				If _currentImageSubdirectorySize = 0 OrElse _currentNativeSubdirectorySize = 0 Then
+					updateSubDirectoryAfterExport = True
+				Else
+					Me.UpdateSubdirectory()
+				End If
 			End If
 			Dim tempLocalFullTextFilePath As String = ""
 			If Me.Settings.ExportFullText OrElse Me.Settings.LogFileFormat = LoadFileType.FileFormat.IPRO_FullText Then
@@ -247,6 +257,9 @@ Namespace kCura.WinEDDS
 			_currentVolumeSize += totalFileSize
 			_currentNativeSubdirectorySize += documentInfo.NativeCount
 			_currentImageSubdirectorySize += documentInfo.ImageCount
+			If updateSubDirectoryAfterExport Then Me.UpdateSubdirectory()
+			If updateVolumeAfterExport Then Me.UpdateVolume()
+
 		End Sub
 
 		Public Sub Close()
