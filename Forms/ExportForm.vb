@@ -30,10 +30,6 @@ Public Class ExportForm
 	'It can be modified using the Windows Form Designer.  
 	'Do not modify it using the code editor.
 	Friend WithEvents MainMenu1 As System.Windows.Forms.MainMenu
-	Friend WithEvents GroupBox3 As System.Windows.Forms.GroupBox
-	Friend WithEvents _overwriteButton As System.Windows.Forms.CheckBox
-	Friend WithEvents _browseButton As System.Windows.Forms.Button
-	Friend WithEvents _folderPath As System.Windows.Forms.TextBox
 	Friend WithEvents GroupBox23 As System.Windows.Forms.GroupBox
 	Friend WithEvents ExportMenu As System.Windows.Forms.MenuItem
 	Friend WithEvents RunMenu As System.Windows.Forms.MenuItem
@@ -61,14 +57,17 @@ Public Class ExportForm
 	Friend WithEvents MenuItem1 As System.Windows.Forms.MenuItem
 	Friend WithEvents _settingsMenuVolumeInfoItem As System.Windows.Forms.MenuItem
 	Friend WithEvents _productionPrecedenceList As System.Windows.Forms.ListBox
-	Friend WithEvents _nativeFileNameSourceIdentifier As System.Windows.Forms.RadioButton
-	Friend WithEvents _nativeFileNameSourceBegBates As System.Windows.Forms.RadioButton
 	Friend WithEvents _useRelativePaths As System.Windows.Forms.RadioButton
 	Friend WithEvents _useAbsolutePaths As System.Windows.Forms.RadioButton
 	Friend WithEvents _usePrefix As System.Windows.Forms.RadioButton
 	Friend WithEvents _prefixText As System.Windows.Forms.TextBox
-	Friend WithEvents _appendOriginalFilename As System.Windows.Forms.CheckBox
 	Friend WithEvents Label5 As System.Windows.Forms.Label
+	Friend WithEvents _overwriteButton As System.Windows.Forms.CheckBox
+	Friend WithEvents _browseButton As System.Windows.Forms.Button
+	Friend WithEvents _folderPath As System.Windows.Forms.TextBox
+	Friend WithEvents _appendOriginalFilename As System.Windows.Forms.CheckBox
+	Friend WithEvents GroupBox3 As System.Windows.Forms.GroupBox
+	Friend WithEvents _nativeFileNameSource As System.Windows.Forms.ComboBox
 	<System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
 		Dim resources As System.Resources.ResourceManager = New System.Resources.ResourceManager(GetType(ExportForm))
 		Me.MainMenu1 = New System.Windows.Forms.MainMenu
@@ -81,14 +80,7 @@ Public Class ExportForm
 		Me._exportNativeFiles = New System.Windows.Forms.CheckBox
 		Me._exportFullText = New System.Windows.Forms.CheckBox
 		Me._filters = New System.Windows.Forms.ComboBox
-		Me.GroupBox3 = New System.Windows.Forms.GroupBox
-		Me._nativeFileNameSourceBegBates = New System.Windows.Forms.RadioButton
-		Me._nativeFileNameSourceIdentifier = New System.Windows.Forms.RadioButton
-		Me._overwriteButton = New System.Windows.Forms.CheckBox
-		Me._browseButton = New System.Windows.Forms.Button
-		Me._folderPath = New System.Windows.Forms.TextBox
 		Me.GroupBox23 = New System.Windows.Forms.GroupBox
-		Me._appendOriginalFilename = New System.Windows.Forms.CheckBox
 		Me._prefixText = New System.Windows.Forms.TextBox
 		Me._usePrefix = New System.Windows.Forms.RadioButton
 		Me._useAbsolutePaths = New System.Windows.Forms.RadioButton
@@ -111,11 +103,17 @@ Public Class ExportForm
 		Me._productionPrecedenceList = New System.Windows.Forms.ListBox
 		Me._pickPrecedenceButton = New System.Windows.Forms.Button
 		Me.Label5 = New System.Windows.Forms.Label
+		Me._overwriteButton = New System.Windows.Forms.CheckBox
+		Me._browseButton = New System.Windows.Forms.Button
+		Me._folderPath = New System.Windows.Forms.TextBox
+		Me._appendOriginalFilename = New System.Windows.Forms.CheckBox
+		Me.GroupBox3 = New System.Windows.Forms.GroupBox
+		Me._nativeFileNameSource = New System.Windows.Forms.ComboBox
 		Me._filtersBox.SuspendLayout()
-		Me.GroupBox3.SuspendLayout()
 		Me.GroupBox23.SuspendLayout()
 		Me._loadFileCharacterInformation.SuspendLayout()
 		Me._productionPrecedenceBox.SuspendLayout()
+		Me.GroupBox3.SuspendLayout()
 		Me.SuspendLayout()
 		'
 		'MainMenu1
@@ -194,67 +192,6 @@ Public Class ExportForm
 		Me._filters.Size = New System.Drawing.Size(557, 21)
 		Me._filters.TabIndex = 1
 		'
-		'GroupBox3
-		'
-		Me.GroupBox3.Controls.Add(Me.Label5)
-		Me.GroupBox3.Controls.Add(Me._nativeFileNameSourceBegBates)
-		Me.GroupBox3.Controls.Add(Me._nativeFileNameSourceIdentifier)
-		Me.GroupBox3.Controls.Add(Me._overwriteButton)
-		Me.GroupBox3.Controls.Add(Me._browseButton)
-		Me.GroupBox3.Controls.Add(Me._folderPath)
-		Me.GroupBox3.Controls.Add(Me._appendOriginalFilename)
-		Me.GroupBox3.Location = New System.Drawing.Point(4, 88)
-		Me.GroupBox3.Name = "GroupBox3"
-		Me.GroupBox3.Size = New System.Drawing.Size(572, 72)
-		Me.GroupBox3.TabIndex = 11
-		Me.GroupBox3.TabStop = False
-		Me.GroupBox3.Text = "Export Location"
-		'
-		'_nativeFileNameSourceBegBates
-		'
-		Me._nativeFileNameSourceBegBates.Location = New System.Drawing.Point(300, 48)
-		Me._nativeFileNameSourceBegBates.Name = "_nativeFileNameSourceBegBates"
-		Me._nativeFileNameSourceBegBates.Size = New System.Drawing.Size(84, 16)
-		Me._nativeFileNameSourceBegBates.TabIndex = 9
-		Me._nativeFileNameSourceBegBates.Text = "begin bates"
-		Me._nativeFileNameSourceBegBates.Visible = False
-		'
-		'_nativeFileNameSourceIdentifier
-		'
-		Me._nativeFileNameSourceIdentifier.Checked = True
-		Me._nativeFileNameSourceIdentifier.Location = New System.Drawing.Point(236, 48)
-		Me._nativeFileNameSourceIdentifier.Name = "_nativeFileNameSourceIdentifier"
-		Me._nativeFileNameSourceIdentifier.Size = New System.Drawing.Size(68, 16)
-		Me._nativeFileNameSourceIdentifier.TabIndex = 8
-		Me._nativeFileNameSourceIdentifier.TabStop = True
-		Me._nativeFileNameSourceIdentifier.Text = "identifier"
-		Me._nativeFileNameSourceIdentifier.Visible = False
-		'
-		'_overwriteButton
-		'
-		Me._overwriteButton.Location = New System.Drawing.Point(8, 48)
-		Me._overwriteButton.Name = "_overwriteButton"
-		Me._overwriteButton.Size = New System.Drawing.Size(100, 16)
-		Me._overwriteButton.TabIndex = 7
-		Me._overwriteButton.Text = "Overwrite Files"
-		'
-		'_browseButton
-		'
-		Me._browseButton.Location = New System.Drawing.Point(540, 20)
-		Me._browseButton.Name = "_browseButton"
-		Me._browseButton.Size = New System.Drawing.Size(24, 20)
-		Me._browseButton.TabIndex = 6
-		Me._browseButton.Text = "..."
-		'
-		'_folderPath
-		'
-		Me._folderPath.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-		Me._folderPath.Location = New System.Drawing.Point(8, 20)
-		Me._folderPath.Name = "_folderPath"
-		Me._folderPath.Size = New System.Drawing.Size(532, 20)
-		Me._folderPath.TabIndex = 5
-		Me._folderPath.Text = "Select a folder ..."
-		'
 		'GroupBox23
 		'
 		Me.GroupBox23.Controls.Add(Me._prefixText)
@@ -271,14 +208,6 @@ Public Class ExportForm
 		Me.GroupBox23.TabIndex = 12
 		Me.GroupBox23.TabStop = False
 		Me.GroupBox23.Text = "Export File Formats"
-		'
-		'_appendOriginalFilename
-		'
-		Me._appendOriginalFilename.Location = New System.Drawing.Point(392, 48)
-		Me._appendOriginalFilename.Name = "_appendOriginalFilename"
-		Me._appendOriginalFilename.Size = New System.Drawing.Size(148, 16)
-		Me._appendOriginalFilename.TabIndex = 17
-		Me._appendOriginalFilename.Text = "Append original filename"
 		'
 		'_prefixText
 		'
@@ -471,6 +400,63 @@ Public Class ExportForm
 		Me.Label5.Text = "Native files named after:"
 		Me.Label5.TextAlign = System.Drawing.ContentAlignment.MiddleRight
 		'
+		'_overwriteButton
+		'
+		Me._overwriteButton.Location = New System.Drawing.Point(8, 48)
+		Me._overwriteButton.Name = "_overwriteButton"
+		Me._overwriteButton.Size = New System.Drawing.Size(100, 16)
+		Me._overwriteButton.TabIndex = 7
+		Me._overwriteButton.Text = "Overwrite Files"
+		'
+		'_browseButton
+		'
+		Me._browseButton.Location = New System.Drawing.Point(540, 20)
+		Me._browseButton.Name = "_browseButton"
+		Me._browseButton.Size = New System.Drawing.Size(24, 20)
+		Me._browseButton.TabIndex = 6
+		Me._browseButton.Text = "..."
+		'
+		'_folderPath
+		'
+		Me._folderPath.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+		Me._folderPath.Location = New System.Drawing.Point(8, 20)
+		Me._folderPath.Name = "_folderPath"
+		Me._folderPath.Size = New System.Drawing.Size(532, 20)
+		Me._folderPath.TabIndex = 5
+		Me._folderPath.Text = "Select a folder ..."
+		'
+		'_appendOriginalFilename
+		'
+		Me._appendOriginalFilename.Location = New System.Drawing.Point(416, 48)
+		Me._appendOriginalFilename.Name = "_appendOriginalFilename"
+		Me._appendOriginalFilename.Size = New System.Drawing.Size(148, 16)
+		Me._appendOriginalFilename.TabIndex = 17
+		Me._appendOriginalFilename.Text = "Append original filename"
+		'
+		'GroupBox3
+		'
+		Me.GroupBox3.Controls.Add(Me._nativeFileNameSource)
+		Me.GroupBox3.Controls.Add(Me.Label5)
+		Me.GroupBox3.Controls.Add(Me._overwriteButton)
+		Me.GroupBox3.Controls.Add(Me._browseButton)
+		Me.GroupBox3.Controls.Add(Me._folderPath)
+		Me.GroupBox3.Controls.Add(Me._appendOriginalFilename)
+		Me.GroupBox3.Location = New System.Drawing.Point(4, 88)
+		Me.GroupBox3.Name = "GroupBox3"
+		Me.GroupBox3.Size = New System.Drawing.Size(572, 72)
+		Me.GroupBox3.TabIndex = 11
+		Me.GroupBox3.TabStop = False
+		Me.GroupBox3.Text = "Export Location"
+		'
+		'_nativeFileNameSource
+		'
+		Me._nativeFileNameSource.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+		Me._nativeFileNameSource.Items.AddRange(New Object() {"Identifier", "Begin bates"})
+		Me._nativeFileNameSource.Location = New System.Drawing.Point(244, 44)
+		Me._nativeFileNameSource.Name = "_nativeFileNameSource"
+		Me._nativeFileNameSource.Size = New System.Drawing.Size(152, 21)
+		Me._nativeFileNameSource.TabIndex = 19
+		'
 		'ExportForm
 		'
 		Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
@@ -489,10 +475,10 @@ Public Class ExportForm
 		Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
 		Me.Text = "Relativity Desktop Client | Export "
 		Me._filtersBox.ResumeLayout(False)
-		Me.GroupBox3.ResumeLayout(False)
 		Me.GroupBox23.ResumeLayout(False)
 		Me._loadFileCharacterInformation.ResumeLayout(False)
 		Me._productionPrecedenceBox.ResumeLayout(False)
+		Me.GroupBox3.ResumeLayout(False)
 		Me.ResumeLayout(False)
 
 	End Sub
@@ -567,10 +553,10 @@ Public Class ExportForm
 			Case ExportFile.ExportType.Production
 				_exportFile.ArtifactID = CType(_filters.SelectedValue, Int32)
 				_exportFile.LoadFilesPrefix = DirectCast(_filters.SelectedItem, System.Data.DataRowView)(_filters.DisplayMember).ToString
-				If _nativeFileNameSourceBegBates.Checked Then
-					_exportFile.ExportNativesToFileNamedFrom = ExportNativeWithFilenameFrom.Production
-				Else
+				If _nativeFileNameSource.SelectedItem.ToString.ToLower = "identifier" Then
 					_exportFile.ExportNativesToFileNamedFrom = ExportNativeWithFilenameFrom.Identifier
+				Else
+					_exportFile.ExportNativesToFileNamedFrom = ExportNativeWithFilenameFrom.Production
 				End If
 		End Select
 		_exportFile.Overwrite = _overwriteButton.Checked
@@ -679,8 +665,7 @@ Public Class ExportForm
 				_filters.Text = "Productions"
 				_filtersBox.Text = "Productions"
 				_exportImages.Text = "Export Produced Images"
-				_nativeFileNameSourceBegBates.Visible = True
-				_nativeFileNameSourceIdentifier.Visible = True
+				_nativeFileNameSource.Visible = True
 				Me.Text = "Relativity Desktop Client: Export Production Set"
 				Me.Size = New System.Drawing.Size(588, 340)
 				Me.MaximumSize = New System.Drawing.Size(588, 340)
@@ -696,7 +681,7 @@ Public Class ExportForm
 		RunMenu.Enabled = ReadyToRun()
 	End Sub
 
-	Private Sub _folderPath_TextChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles _folderPath.TextChanged
+	Private Sub _folderPath_TextChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _folderPath.TextChanged
 		RunMenu.Enabled = ReadyToRun()
 	End Sub
 
@@ -820,4 +805,7 @@ Public Class ExportForm
 		End If
 	End Sub
 
+	Private Sub ComboBox1_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _nativeFileNameSource.SelectedIndexChanged
+
+	End Sub
 End Class
