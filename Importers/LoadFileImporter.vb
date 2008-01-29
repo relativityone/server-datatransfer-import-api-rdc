@@ -635,8 +635,7 @@ Namespace kCura.WinEDDS
 									End If
 								Else
 									If docField.Value.Length > Me.Settings.MAX_STRING_FIELD_LENGTH Then
-										fieldDTO.Value = New Object() {"unicode", _uploader.UploadTextAsFile(docField.Value, _caseArtifactID, System.Guid.NewGuid.ToString)}
-										fieldDTO.Value = "unicode" & ":" & _uploader.UploadFile(docField.Value, _caseArtifactID)
+										fieldDTO.Value = "unicode:" & _uploader.UploadTextAsFile(docField.Value, _caseArtifactID, System.Guid.NewGuid.ToString)
 									Else
 										fieldDTO.Value = encoder.GetBytes(docField.Value)
 									End If
