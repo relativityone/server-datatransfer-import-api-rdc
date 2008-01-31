@@ -30,7 +30,7 @@ Namespace kCura.WinEDDS
 		Private _repositoryPath As String
 
 		Private WithEvents _processController As kCura.Windows.Process.Controller
-
+		Private _productionDTO As kCura.EDDS.WebAPI.ProductionManagerBase.Production
 #End Region
 
 #Region "Accessors"
@@ -74,6 +74,9 @@ Namespace kCura.WinEDDS
 			_fileUploader = New kCura.WinEDDS.FileUploader(args.Credential, args.CaseInfo.ArtifactID, _repositoryPath, args.CookieContainer)
 			_folderID = folderID
 			_productionArtifactID = args.ProductionArtifactID
+			If _productionArtifactID <> 0 Then
+				_productionDTO = _productionManager.Read(args.CaseInfo.ArtifactID, _productionArtifactID)
+			End If
 			_overwrite = args.Overwrite
 			_replaceFullText = args.ReplaceFullText
 			_selectedIdentifierField = args.ControlKeyField
@@ -303,7 +306,13 @@ Namespace kCura.WinEDDS
 			ElseIf Not System.IO.File.Exists(Me.GetFileLocation(values)) Then
 				Me.RaiseStatusEvent(Windows.Process.EventType.Error, String.Format("Image file specified ( {0} ) does not exist.", values(Columns.FileLocation)))
 				retval = False
+				'ElseIf _productionArtifactID <> 0 AndAlso Me.IsInvalidBatesForImportedProduction() Then
+				'	'Me.RaiseStatusEvent(Windows.Process.EventType.Error, String.Format("This is your error message"))
+				'	retval = False
 			Else
+				If _productionArtifactID <> 0 Then
+					ValidateBatesFormatOfImportedProductionImage(values(Columns.BatesNumber).Trim)
+				End If
 				Dim validator As New kCura.ImageValidator.ImageValidator
 				Dim path As String = Me.GetFileLocation(values)
 				Try
@@ -315,6 +324,32 @@ Namespace kCura.WinEDDS
 			End If
 			Return retval
 			'check to make sure image is good
+		End Function
+
+		Private Sub ValidateBatesFormatOfImportedProductionImage(ByVal batesNumber As String)
+			Dim regexString As String = String.Format("(?:{0})(.*)", System.Text.RegularExpressions.Regex.Escape(_productionDTO.BatesPrefix))
+			If _productionDTO.BatesSuffix <> String.Empty Then
+				regexString += String.Format("(?={0})", System.Text.RegularExpressions.Regex.Escape(_productionDTO.BatesPrefix))
+			End If
+			Dim regex As New System.Text.RegularExpressions.Regex(regexString, Text.RegularExpressions.RegexOptions.IgnoreCase)
+			Dim matchCollection As System.Text.RegularExpressions.MatchCollection = regex.Matches(batesNumber)
+			Try
+				Dim value As String = matchCollection(0).Groups(1).Value
+				If Not (IsNumber(value) AndAlso value.Length = _productionDTO.BatesFormat) Then
+					Throw New InvalidBatesFormatException(batesNumber, _productionDTO.Name, _productionDTO.BatesPrefix, _productionDTO.BatesSuffix, _productionDTO.BatesFormat.ToString)
+				End If
+			Catch ex As Exception
+				Throw New InvalidBatesFormatException(batesNumber, _productionDTO.Name, _productionDTO.BatesPrefix, _productionDTO.BatesSuffix, _productionDTO.BatesFormat.ToString)
+			End Try
+		End Sub
+
+		Private Function IsNumber(ByVal value As String) As Boolean
+			Try
+				Dim x As Int32 = CType(value, Int32)
+			Catch ex As Exception
+				Return False
+			End Try
+			Return True
 		End Function
 
 		Private Sub LogErrorInFile(ByVal lines As System.Collections.ArrayList)
@@ -441,7 +476,7 @@ Namespace kCura.WinEDDS
 
 #End Region
 
-#Region "Exceptions"
+#Region "Exceptions - Errors"
 		Public Class FileLoadException
 			Inherits kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
 			Public Sub New()
@@ -497,7 +532,17 @@ Namespace kCura.WinEDDS
 				MyBase.New(String.Format("The one or more images for document '{0}' have redactions.  Document skipped.", identifier))
 			End Sub
 		End Class
+
+
 #End Region
 
+#Region "Exceptions - Fatal"
+		Public Class InvalidBatesFormatException
+			Inherits System.Exception
+			Public Sub New(ByVal batesNumber As String, ByVal productionName As String, ByVal batesPrefix As String, ByVal batesSuffix As String, ByVal batesFormat As String)
+				MyBase.New(String.Format("The image with bates number {0} cannot be imported into production '{1}' because the prefix and/or suffix do not match the values specified in the production. Expected prefix: '{2}'. Expected suffix: '{3}'. Expected format: '{4}'.", batesNumber, productionName, batesPrefix, batesSuffix, batesFormat))
+			End Sub
+		End Class
+#End Region
 	End Class
 End Namespace
