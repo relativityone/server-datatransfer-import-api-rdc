@@ -114,17 +114,22 @@ Namespace kCura.WinEDDS
 			Dim documentSpot As Int32
 			Dim count As Int32
 			Dim volumeFile As String
+			Dim typeOfExportDisplayString As String = ""
 
 
 			Me.WriteUpdate("Retrieving export data from the server...")
 			Select Case Me.ExportFile.TypeOfExport
 				Case ExportFile.ExportType.ArtifactSearch
+					typeOfExportDisplayString = "search"
 					Me.TotalDocuments = _searchManager.CountSearchByArtifactID(Me.ExportFile.CaseArtifactID, Me.ExportFile.ArtifactID)
 				Case ExportFile.ExportType.ParentSearch
+					typeOfExportDisplayString = "folder"
 					Me.TotalDocuments = _searchManager.CountSearchByParentArtifactID(Me.ExportFile.CaseArtifactID, Me.ExportFile.ArtifactID, False, ExportFile.ViewID)
 				Case ExportFile.ExportType.AncestorSearch
+					typeOfExportDisplayString = "folder and subfolder"
 					Me.TotalDocuments = _searchManager.CountSearchByParentArtifactID(Me.ExportFile.CaseArtifactID, Me.ExportFile.ArtifactID, True, ExportFile.ViewID)
 				Case ExportFile.ExportType.Production
+					typeOfExportDisplayString = "production"
 					Me.TotalDocuments = _searchManager.CountSearchByProductionArtifactID(Me.ExportFile.CaseArtifactID, Me.ExportFile.ArtifactID)
 			End Select
 			RaiseEvent FileTransferModeChangeEvent(_downloadHandler.UploaderType.ToString)
@@ -135,7 +140,7 @@ Namespace kCura.WinEDDS
 			_fullTextDownloader = New kCura.WinEDDS.FullTextManager(Me.ExportFile.Credential, _sourceDirectory, Me.ExportFile.CookieContainer)
 			Me.WriteStatusLine(kCura.Windows.Process.EventType.Status, "Created search log file.")
 			_volumeManager.ColumnHeaderString = columnHeaderString
-			Me.WriteUpdate("Data retrieved. Beginning search export...")
+			Me.WriteUpdate("Data retrieved. Beginning " & typeOfExportDisplayString & " export...")
 
 			Dim documentTable As System.Data.DataTable
 			Dim start, finish As Int32
