@@ -42,6 +42,21 @@
           </s:sequence>
         </s:complexType>
       </s:element>
+      <s:element name="GetSearchSQL">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="searchArtifactID" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetSearchSQLResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetSearchSQLResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
       <s:element name="RetrieveNativesForSearch">
         <s:complexType>
           <s:sequence>
@@ -88,6 +103,20 @@
                 </s:sequence>
               </s:complexType>
             </s:element>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="IsExtractedTextUnicode">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="IsExtractedTextUnicodeResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="IsExtractedTextUnicodeResult" type="s:boolean" />
           </s:sequence>
         </s:complexType>
       </s:element>
@@ -343,9 +372,11 @@
           <s:element minOccurs="0" maxOccurs="1" name="Data" type="s:string" />
           <s:element minOccurs="0" maxOccurs="1" name="Name" type="s:string" />
           <s:element minOccurs="1" maxOccurs="1" name="Availability" type="s0:OptionAvailability" />
-          <s:element minOccurs="1" maxOccurs="1" name="Type" type="s0:OptionType" />
           <s:element minOccurs="1" maxOccurs="1" name="Order" type="s:int" />
           <s:element minOccurs="1" maxOccurs="1" name="RequiresSelectedText" type="s:boolean" />
+          <s:element minOccurs="0" maxOccurs="1" name="ViewerOptions" type="s0:ArrayOfViewerOption" />
+          <s:element minOccurs="1" maxOccurs="1" name="JavascriptEncodeSelectedText" type="s:boolean" />
+          <s:element minOccurs="1" maxOccurs="1" name="SQLEncodeSelectedText" type="s:boolean" />
         </s:sequence>
       </s:complexType>
       <s:simpleType name="OptionAvailability">
@@ -353,13 +384,6 @@
           <s:enumeration value="Image" />
           <s:enumeration value="Native" />
           <s:enumeration value="Both" />
-        </s:restriction>
-      </s:simpleType>
-      <s:simpleType name="OptionType">
-        <s:restriction base="s:string">
-          <s:enumeration value="JavascriptEvent" />
-          <s:enumeration value="SearchEvent" />
-          <s:enumeration value="Browser" />
         </s:restriction>
       </s:simpleType>
     </s:schema>
@@ -376,6 +400,12 @@
   <message name="SearchBySearchArtifactIDSoapOut">
     <part name="parameters" element="s0:SearchBySearchArtifactIDResponse" />
   </message>
+  <message name="GetSearchSQLSoapIn">
+    <part name="parameters" element="s0:GetSearchSQL" />
+  </message>
+  <message name="GetSearchSQLSoapOut">
+    <part name="parameters" element="s0:GetSearchSQLResponse" />
+  </message>
   <message name="RetrieveNativesForSearchSoapIn">
     <part name="parameters" element="s0:RetrieveNativesForSearch" />
   </message>
@@ -387,6 +417,12 @@
   </message>
   <message name="RetrieveFullTextExistenceForSearchSoapOut">
     <part name="parameters" element="s0:RetrieveFullTextExistenceForSearchResponse" />
+  </message>
+  <message name="IsExtractedTextUnicodeSoapIn">
+    <part name="parameters" element="s0:IsExtractedTextUnicode" />
+  </message>
+  <message name="IsExtractedTextUnicodeSoapOut">
+    <part name="parameters" element="s0:IsExtractedTextUnicodeResponse" />
   </message>
   <message name="RetrieveImagesForSearchSoapIn">
     <part name="parameters" element="s0:RetrieveImagesForSearch" />
@@ -463,6 +499,10 @@
       <input message="s0:SearchBySearchArtifactIDSoapIn" />
       <output message="s0:SearchBySearchArtifactIDSoapOut" />
     </operation>
+    <operation name="GetSearchSQL">
+      <input message="s0:GetSearchSQLSoapIn" />
+      <output message="s0:GetSearchSQLSoapOut" />
+    </operation>
     <operation name="RetrieveNativesForSearch">
       <input message="s0:RetrieveNativesForSearchSoapIn" />
       <output message="s0:RetrieveNativesForSearchSoapOut" />
@@ -470,6 +510,10 @@
     <operation name="RetrieveFullTextExistenceForSearch">
       <input message="s0:RetrieveFullTextExistenceForSearchSoapIn" />
       <output message="s0:RetrieveFullTextExistenceForSearchSoapOut" />
+    </operation>
+    <operation name="IsExtractedTextUnicode">
+      <input message="s0:IsExtractedTextUnicodeSoapIn" />
+      <output message="s0:IsExtractedTextUnicodeSoapOut" />
     </operation>
     <operation name="RetrieveImagesForSearch">
       <input message="s0:RetrieveImagesForSearchSoapIn" />
@@ -536,6 +580,15 @@
         <soap:body use="literal" />
       </output>
     </operation>
+    <operation name="GetSearchSQL">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/SearchManager/GetSearchSQL" style="document" />
+      <input>
+        <soap:body use="literal" />
+      </input>
+      <output>
+        <soap:body use="literal" />
+      </output>
+    </operation>
     <operation name="RetrieveNativesForSearch">
       <soap:operation soapAction="http://www.kCura.com/EDDS/SearchManager/RetrieveNativesForSearch" style="document" />
       <input>
@@ -547,6 +600,15 @@
     </operation>
     <operation name="RetrieveFullTextExistenceForSearch">
       <soap:operation soapAction="http://www.kCura.com/EDDS/SearchManager/RetrieveFullTextExistenceForSearch" style="document" />
+      <input>
+        <soap:body use="literal" />
+      </input>
+      <output>
+        <soap:body use="literal" />
+      </output>
+    </operation>
+    <operation name="IsExtractedTextUnicode">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/SearchManager/IsExtractedTextUnicode" style="document" />
       <input>
         <soap:body use="literal" />
       </input>

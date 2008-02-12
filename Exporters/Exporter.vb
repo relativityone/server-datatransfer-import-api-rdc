@@ -6,6 +6,7 @@ Namespace kCura.WinEDDS
 
 		Private _searchManager As kCura.WinEDDS.Service.SearchManager
 		Private _folderManager As kCura.WinEDDS.Service.FolderManager
+		Private _fieldManager As kCura.WinEDDS.Service.FieldQuery
 		Private _exportFile As kCura.WinEDDS.ExportFile
 		Private _columns As System.Collections.ArrayList
 		Private _columnFormats As System.Collections.ArrayList
@@ -398,6 +399,10 @@ Namespace kCura.WinEDDS
 						If row("ColumnType").ToString.ToLower = "beginbates" Then _beginBatesColumn = row("ColumnName").ToString
 					Next
 			End Select
+
+			If Me.ExportFile.ExportFullText Then
+				_exportAsUnicode = _exportAsUnicode OrElse _searchManager.IsExtractedTextUnicode(Me.ExportFile.CaseArtifactID)
+			End If
 
 			For count = 0 To table.Rows.Count - 1
 				columnName = CType(table.Rows(count)("ColumnName"), String)

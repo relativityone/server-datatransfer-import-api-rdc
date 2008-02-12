@@ -73,6 +73,24 @@ Namespace kCura.EDDS.WebAPI.SearchManagerBase
         End Function
         
         '<remarks/>
+        <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/SearchManager/GetSearchSQL", RequestNamespace:="http://www.kCura.com/EDDS/SearchManager", ResponseNamespace:="http://www.kCura.com/EDDS/SearchManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
+        Public Function GetSearchSQL(ByVal caseContextArtifactID As Integer, ByVal searchArtifactID As Integer) As String
+            Dim results() As Object = Me.Invoke("GetSearchSQL", New Object() {caseContextArtifactID, searchArtifactID})
+            Return CType(results(0),String)
+        End Function
+        
+        '<remarks/>
+        Public Function BeginGetSearchSQL(ByVal caseContextArtifactID As Integer, ByVal searchArtifactID As Integer, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("GetSearchSQL", New Object() {caseContextArtifactID, searchArtifactID}, callback, asyncState)
+        End Function
+        
+        '<remarks/>
+        Public Function EndGetSearchSQL(ByVal asyncResult As System.IAsyncResult) As String
+            Dim results() As Object = Me.EndInvoke(asyncResult)
+            Return CType(results(0),String)
+        End Function
+        
+        '<remarks/>
         <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/SearchManager/RetrieveNativesForSearch", RequestNamespace:="http://www.kCura.com/EDDS/SearchManager", ResponseNamespace:="http://www.kCura.com/EDDS/SearchManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
         Public Function RetrieveNativesForSearch(ByVal caseContextArtifactID As Integer, ByVal documentArtifactIDs As String) As System.Data.DataSet
             Dim results() As Object = Me.Invoke("RetrieveNativesForSearch", New Object() {caseContextArtifactID, documentArtifactIDs})
@@ -106,6 +124,24 @@ Namespace kCura.EDDS.WebAPI.SearchManagerBase
         Public Function EndRetrieveFullTextExistenceForSearch(ByVal asyncResult As System.IAsyncResult) As System.Data.DataSet
             Dim results() As Object = Me.EndInvoke(asyncResult)
             Return CType(results(0),System.Data.DataSet)
+        End Function
+        
+        '<remarks/>
+        <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/SearchManager/IsExtractedTextUnicode", RequestNamespace:="http://www.kCura.com/EDDS/SearchManager", ResponseNamespace:="http://www.kCura.com/EDDS/SearchManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
+        Public Function IsExtractedTextUnicode(ByVal caseContextArtifactID As Integer) As Boolean
+            Dim results() As Object = Me.Invoke("IsExtractedTextUnicode", New Object() {caseContextArtifactID})
+            Return CType(results(0),Boolean)
+        End Function
+        
+        '<remarks/>
+        Public Function BeginIsExtractedTextUnicode(ByVal caseContextArtifactID As Integer, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("IsExtractedTextUnicode", New Object() {caseContextArtifactID}, callback, asyncState)
+        End Function
+        
+        '<remarks/>
+        Public Function EndIsExtractedTextUnicode(ByVal asyncResult As System.IAsyncResult) As Boolean
+            Dim results() As Object = Me.EndInvoke(asyncResult)
+            Return CType(results(0),Boolean)
         End Function
         
         '<remarks/>
@@ -336,13 +372,19 @@ Namespace kCura.EDDS.WebAPI.SearchManagerBase
         Public Availability As OptionAvailability
         
         '<remarks/>
-        Public Type As OptionType
-        
-        '<remarks/>
         Public Order As Integer
         
         '<remarks/>
         Public RequiresSelectedText As Boolean
+        
+        '<remarks/>
+        Public ViewerOptions() As ViewerOption
+        
+        '<remarks/>
+        Public JavascriptEncodeSelectedText As Boolean
+        
+        '<remarks/>
+        Public SQLEncodeSelectedText As Boolean
     End Class
     
     '<remarks/>
@@ -357,19 +399,5 @@ Namespace kCura.EDDS.WebAPI.SearchManagerBase
         
         '<remarks/>
         Both
-    End Enum
-    
-    '<remarks/>
-    <System.Xml.Serialization.XmlTypeAttribute([Namespace]:="http://www.kCura.com/EDDS/SearchManager")>  _
-    Public Enum OptionType
-        
-        '<remarks/>
-        JavascriptEvent
-        
-        '<remarks/>
-        SearchEvent
-        
-        '<remarks/>
-        Browser
     End Enum
 End Namespace
