@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<definitions xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:s0="http://www.kCura.com/EDDS/RelativityManager" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" targetNamespace="http://www.kCura.com/EDDS/RelativityManager" xmlns="http://schemas.xmlsoap.org/wsdl/">
-  <types>
+<wsdl:definitions xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tns="http://www.kCura.com/EDDS/RelativityManager" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" targetNamespace="http://www.kCura.com/EDDS/RelativityManager" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
     <s:schema elementFormDefault="qualified" targetNamespace="http://www.kCura.com/EDDS/RelativityManager">
       <s:element name="RetrieveRelativityVersion">
         <s:complexType />
@@ -23,53 +23,54 @@
         </s:complexType>
       </s:element>
     </s:schema>
-  </types>
-  <message name="RetrieveRelativityVersionSoapIn">
-    <part name="parameters" element="s0:RetrieveRelativityVersion" />
-  </message>
-  <message name="RetrieveRelativityVersionSoapOut">
-    <part name="parameters" element="s0:RetrieveRelativityVersionResponse" />
-  </message>
-  <message name="ValidateSuccessfulLoginSoapIn">
-    <part name="parameters" element="s0:ValidateSuccessfulLogin" />
-  </message>
-  <message name="ValidateSuccessfulLoginSoapOut">
-    <part name="parameters" element="s0:ValidateSuccessfulLoginResponse" />
-  </message>
-  <portType name="RelativityManagerSoap">
-    <operation name="RetrieveRelativityVersion">
-      <input message="s0:RetrieveRelativityVersionSoapIn" />
-      <output message="s0:RetrieveRelativityVersionSoapOut" />
-    </operation>
-    <operation name="ValidateSuccessfulLogin">
-      <input message="s0:ValidateSuccessfulLoginSoapIn" />
-      <output message="s0:ValidateSuccessfulLoginSoapOut" />
-    </operation>
-  </portType>
-  <binding name="RelativityManagerSoap" type="s0:RelativityManagerSoap">
+  </wsdl:types>
+  <wsdl:message name="RetrieveRelativityVersionSoapIn">
+    <wsdl:part name="parameters" element="tns:RetrieveRelativityVersion" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveRelativityVersionSoapOut">
+    <wsdl:part name="parameters" element="tns:RetrieveRelativityVersionResponse" />
+  </wsdl:message>
+  <wsdl:message name="ValidateSuccessfulLoginSoapIn">
+    <wsdl:part name="parameters" element="tns:ValidateSuccessfulLogin" />
+  </wsdl:message>
+  <wsdl:message name="ValidateSuccessfulLoginSoapOut">
+    <wsdl:part name="parameters" element="tns:ValidateSuccessfulLoginResponse" />
+  </wsdl:message>
+  <wsdl:portType name="RelativityManagerSoap">
+    <wsdl:operation name="RetrieveRelativityVersion">
+      <wsdl:input message="tns:RetrieveRelativityVersionSoapIn" />
+      <wsdl:output message="tns:RetrieveRelativityVersionSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ValidateSuccessfulLogin">
+      <wsdl:input message="tns:ValidateSuccessfulLoginSoapIn" />
+      <wsdl:output message="tns:ValidateSuccessfulLoginSoapOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="RelativityManagerSoap" type="tns:RelativityManagerSoap">
     <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document" />
-    <operation name="RetrieveRelativityVersion">
+    <wsdl:operation name="RetrieveRelativityVersion">
       <soap:operation soapAction="http://www.kCura.com/EDDS/RelativityManager/RetrieveRelativityVersion" style="document" />
-      <input>
+      <wsdl:input>
         <soap:body use="literal" />
-      </input>
-      <output>
+      </wsdl:input>
+      <wsdl:output>
         <soap:body use="literal" />
-      </output>
-    </operation>
-    <operation name="ValidateSuccessfulLogin">
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ValidateSuccessfulLogin">
       <soap:operation soapAction="http://www.kCura.com/EDDS/RelativityManager/ValidateSuccessfulLogin" style="document" />
-      <input>
+      <wsdl:input>
         <soap:body use="literal" />
-      </input>
-      <output>
+      </wsdl:input>
+      <wsdl:output>
         <soap:body use="literal" />
-      </output>
-    </operation>
-  </binding>
-  <service name="RelativityManager">
-    <port name="RelativityManagerSoap" binding="s0:RelativityManagerSoap">
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="RelativityManager">
+    <documentation xmlns="http://schemas.xmlsoap.org/wsdl/" />
+    <wsdl:port name="RelativityManagerSoap" binding="tns:RelativityManagerSoap">
       <soap:address location="http://localhost/EDDSWebAPI/RelativityManager.asmx" />
-    </port>
-  </service>
-</definitions>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>
