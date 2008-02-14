@@ -456,6 +456,7 @@ Public Class ExportForm
 		Me._nativeFileNameSource.Name = "_nativeFileNameSource"
 		Me._nativeFileNameSource.Size = New System.Drawing.Size(152, 21)
 		Me._nativeFileNameSource.TabIndex = 19
+		Me._nativeFileNameSource.Visible = False
 		'
 		'ExportForm
 		'
