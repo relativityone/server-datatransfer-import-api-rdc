@@ -451,7 +451,7 @@ Public Class ExportForm
 		'_nativeFileNameSource
 		'
 		Me._nativeFileNameSource.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
-		Me._nativeFileNameSource.Items.AddRange(New Object() {"Identifier", "Begin bates"})
+		Me._nativeFileNameSource.Items.AddRange(New Object() {"Select...", "Identifier", "Begin bates"})
 		Me._nativeFileNameSource.Location = New System.Drawing.Point(244, 44)
 		Me._nativeFileNameSource.Name = "_nativeFileNameSource"
 		Me._nativeFileNameSource.Size = New System.Drawing.Size(152, 21)
@@ -524,6 +524,11 @@ Public Class ExportForm
 			End If
 			If _exportImages.Checked Then
 				If CType(_imageFileFormat.SelectedValue, Int32) = -1 Then
+					retval = False
+				End If
+			End If
+			If Me.ExportFile.TypeOfExport = ExportFile.ExportType.Production Then
+				If CType(_nativeFileNameSource.SelectedItem, String) = "Select..." Then
 					retval = False
 				End If
 			End If
@@ -666,6 +671,7 @@ Public Class ExportForm
 				_filtersBox.Text = "Productions"
 				_exportImages.Text = "Export Produced Images"
 				_nativeFileNameSource.Visible = True
+				_nativeFileNameSource.SelectedIndex = 0
 				Me.Text = "Relativity Desktop Client: Export Production Set"
 				Me.Size = New System.Drawing.Size(588, 340)
 				Me.MaximumSize = New System.Drawing.Size(588, 340)
@@ -806,6 +812,6 @@ Public Class ExportForm
 	End Sub
 
 	Private Sub ComboBox1_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _nativeFileNameSource.SelectedIndexChanged
-
+		RunMenu.Enabled = ReadyToRun()
 	End Sub
 End Class
