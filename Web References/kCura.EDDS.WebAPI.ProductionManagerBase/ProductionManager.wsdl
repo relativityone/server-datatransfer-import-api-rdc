@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<wsdl:definitions xmlns:s1="http://NullableTypes.SourceForge.Net/NullableInt32XMLSchema" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:s2="http://NullableTypes.SourceForge.Net/NullableDateTimeXMLSchema" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tns="http://www.kCura.com/EDDS/ProductionManager" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" targetNamespace="http://www.kCura.com/EDDS/ProductionManager" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
-  <wsdl:types>
+<definitions xmlns:s1="http://NullableTypes.SourceForge.Net/NullableInt32XMLSchema" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:s0="http://www.kCura.com/EDDS/ProductionManager" xmlns:s2="http://NullableTypes.SourceForge.Net/NullableDateTimeXMLSchema" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" targetNamespace="http://www.kCura.com/EDDS/ProductionManager" xmlns="http://schemas.xmlsoap.org/wsdl/">
+  <types>
     <s:schema elementFormDefault="qualified" targetNamespace="http://www.kCura.com/EDDS/ProductionManager">
       <s:import namespace="http://www.w3.org/2001/XMLSchema" />
       <s:import namespace="http://NullableTypes.SourceForge.Net/NullableInt32XMLSchema" />
@@ -58,13 +58,13 @@
       <s:element name="ReadResponse">
         <s:complexType>
           <s:sequence>
-            <s:element minOccurs="0" maxOccurs="1" name="ReadResult" type="tns:Production" />
+            <s:element minOccurs="0" maxOccurs="1" name="ReadResult" type="s0:Production" />
           </s:sequence>
         </s:complexType>
       </s:element>
       <s:complexType name="Production">
         <s:complexContent mixed="false">
-          <s:extension base="tns:Artifact">
+          <s:extension base="s0:Artifact">
             <s:sequence>
               <s:element minOccurs="0" maxOccurs="1" name="Name" type="s:string" />
               <s:element minOccurs="1" maxOccurs="1" name="BeginBatesFieldArtifactID" type="s:int" />
@@ -181,8 +181,8 @@
               <s:element minOccurs="1" maxOccurs="1" name="BurnAnnotations" type="s:boolean" />
               <s:element minOccurs="1" maxOccurs="1" name="FontSize" type="s:int" />
               <s:element minOccurs="1" maxOccurs="1" name="ErrorFlagFieldArtifactID" type="s:int" />
-              <s:element minOccurs="0" maxOccurs="1" name="ProductionOrder" type="tns:ArrayOfAnyType" />
-              <s:element minOccurs="1" maxOccurs="1" name="ProductionType" type="tns:ProductionType" />
+              <s:element minOccurs="0" maxOccurs="1" name="ProductionOrder" type="s0:ArrayOfAnyType" />
+              <s:element minOccurs="1" maxOccurs="1" name="ProductionType" type="s0:ProductionType" />
               <s:element minOccurs="1" maxOccurs="1" name="MarkupSet" type="s:int" />
             </s:sequence>
           </s:extension>
@@ -281,7 +281,7 @@
         <s:complexType>
           <s:sequence>
             <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
-            <s:element minOccurs="0" maxOccurs="1" name="productionDocumentFiles" type="tns:ArrayOfProductionDocumentFileInfoBase" />
+            <s:element minOccurs="0" maxOccurs="1" name="productionDocumentFiles" type="s0:ArrayOfProductionDocumentFileInfoBase" />
             <s:element minOccurs="1" maxOccurs="1" name="productionArtifactID" type="s:int" />
             <s:element minOccurs="1" maxOccurs="1" name="documentArtifactID" type="s:int" />
           </s:sequence>
@@ -289,7 +289,7 @@
       </s:element>
       <s:complexType name="ArrayOfProductionDocumentFileInfoBase">
         <s:sequence>
-          <s:element minOccurs="0" maxOccurs="unbounded" name="ProductionDocumentFileInfoBase" nillable="true" type="tns:ProductionDocumentFileInfoBase" />
+          <s:element minOccurs="0" maxOccurs="unbounded" name="ProductionDocumentFileInfoBase" nillable="true" type="s0:ProductionDocumentFileInfoBase" />
         </s:sequence>
       </s:complexType>
       <s:complexType name="ProductionDocumentFileInfoBase">
@@ -310,130 +310,129 @@
     <s:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="http://NullableTypes.SourceForge.Net/NullableDateTimeXMLSchema" id="NullableDateTime">
       <xs:element name="NullableDateTime" nillable="true" type="xs:dateTime" />
     </s:schema>
-  </wsdl:types>
-  <wsdl:message name="RetrieveProducedByContextArtifactIDSoapIn">
-    <wsdl:part name="parameters" element="tns:RetrieveProducedByContextArtifactID" />
-  </wsdl:message>
-  <wsdl:message name="RetrieveProducedByContextArtifactIDSoapOut">
-    <wsdl:part name="parameters" element="tns:RetrieveProducedByContextArtifactIDResponse" />
-  </wsdl:message>
-  <wsdl:message name="RetrieveStagingByContextArtifactIDSoapIn">
-    <wsdl:part name="parameters" element="tns:RetrieveStagingByContextArtifactID" />
-  </wsdl:message>
-  <wsdl:message name="RetrieveStagingByContextArtifactIDSoapOut">
-    <wsdl:part name="parameters" element="tns:RetrieveStagingByContextArtifactIDResponse" />
-  </wsdl:message>
-  <wsdl:message name="ReadSoapIn">
-    <wsdl:part name="parameters" element="tns:Read" />
-  </wsdl:message>
-  <wsdl:message name="ReadSoapOut">
-    <wsdl:part name="parameters" element="tns:ReadResponse" />
-  </wsdl:message>
-  <wsdl:message name="RetrieveProducedWithSecuritySoapIn">
-    <wsdl:part name="parameters" element="tns:RetrieveProducedWithSecurity" />
-  </wsdl:message>
-  <wsdl:message name="RetrieveProducedWithSecuritySoapOut">
-    <wsdl:part name="parameters" element="tns:RetrieveProducedWithSecurityResponse" />
-  </wsdl:message>
-  <wsdl:message name="AddDocumentToProductionSoapIn">
-    <wsdl:part name="parameters" element="tns:AddDocumentToProduction" />
-  </wsdl:message>
-  <wsdl:message name="AddDocumentToProductionSoapOut">
-    <wsdl:part name="parameters" element="tns:AddDocumentToProductionResponse" />
-  </wsdl:message>
-  <wsdl:message name="CreateProductionDocumentFilesSoapIn">
-    <wsdl:part name="parameters" element="tns:CreateProductionDocumentFiles" />
-  </wsdl:message>
-  <wsdl:message name="CreateProductionDocumentFilesSoapOut">
-    <wsdl:part name="parameters" element="tns:CreateProductionDocumentFilesResponse" />
-  </wsdl:message>
-  <wsdl:portType name="ProductionManagerSoap">
-    <wsdl:operation name="RetrieveProducedByContextArtifactID">
-      <wsdl:input message="tns:RetrieveProducedByContextArtifactIDSoapIn" />
-      <wsdl:output message="tns:RetrieveProducedByContextArtifactIDSoapOut" />
-    </wsdl:operation>
-    <wsdl:operation name="RetrieveStagingByContextArtifactID">
-      <wsdl:input message="tns:RetrieveStagingByContextArtifactIDSoapIn" />
-      <wsdl:output message="tns:RetrieveStagingByContextArtifactIDSoapOut" />
-    </wsdl:operation>
-    <wsdl:operation name="Read">
-      <wsdl:input message="tns:ReadSoapIn" />
-      <wsdl:output message="tns:ReadSoapOut" />
-    </wsdl:operation>
-    <wsdl:operation name="RetrieveProducedWithSecurity">
-      <wsdl:input message="tns:RetrieveProducedWithSecuritySoapIn" />
-      <wsdl:output message="tns:RetrieveProducedWithSecuritySoapOut" />
-    </wsdl:operation>
-    <wsdl:operation name="AddDocumentToProduction">
-      <wsdl:input message="tns:AddDocumentToProductionSoapIn" />
-      <wsdl:output message="tns:AddDocumentToProductionSoapOut" />
-    </wsdl:operation>
-    <wsdl:operation name="CreateProductionDocumentFiles">
-      <wsdl:input message="tns:CreateProductionDocumentFilesSoapIn" />
-      <wsdl:output message="tns:CreateProductionDocumentFilesSoapOut" />
-    </wsdl:operation>
-  </wsdl:portType>
-  <wsdl:binding name="ProductionManagerSoap" type="tns:ProductionManagerSoap">
+  </types>
+  <message name="RetrieveProducedByContextArtifactIDSoapIn">
+    <part name="parameters" element="s0:RetrieveProducedByContextArtifactID" />
+  </message>
+  <message name="RetrieveProducedByContextArtifactIDSoapOut">
+    <part name="parameters" element="s0:RetrieveProducedByContextArtifactIDResponse" />
+  </message>
+  <message name="RetrieveStagingByContextArtifactIDSoapIn">
+    <part name="parameters" element="s0:RetrieveStagingByContextArtifactID" />
+  </message>
+  <message name="RetrieveStagingByContextArtifactIDSoapOut">
+    <part name="parameters" element="s0:RetrieveStagingByContextArtifactIDResponse" />
+  </message>
+  <message name="ReadSoapIn">
+    <part name="parameters" element="s0:Read" />
+  </message>
+  <message name="ReadSoapOut">
+    <part name="parameters" element="s0:ReadResponse" />
+  </message>
+  <message name="RetrieveProducedWithSecuritySoapIn">
+    <part name="parameters" element="s0:RetrieveProducedWithSecurity" />
+  </message>
+  <message name="RetrieveProducedWithSecuritySoapOut">
+    <part name="parameters" element="s0:RetrieveProducedWithSecurityResponse" />
+  </message>
+  <message name="AddDocumentToProductionSoapIn">
+    <part name="parameters" element="s0:AddDocumentToProduction" />
+  </message>
+  <message name="AddDocumentToProductionSoapOut">
+    <part name="parameters" element="s0:AddDocumentToProductionResponse" />
+  </message>
+  <message name="CreateProductionDocumentFilesSoapIn">
+    <part name="parameters" element="s0:CreateProductionDocumentFiles" />
+  </message>
+  <message name="CreateProductionDocumentFilesSoapOut">
+    <part name="parameters" element="s0:CreateProductionDocumentFilesResponse" />
+  </message>
+  <portType name="ProductionManagerSoap">
+    <operation name="RetrieveProducedByContextArtifactID">
+      <input message="s0:RetrieveProducedByContextArtifactIDSoapIn" />
+      <output message="s0:RetrieveProducedByContextArtifactIDSoapOut" />
+    </operation>
+    <operation name="RetrieveStagingByContextArtifactID">
+      <input message="s0:RetrieveStagingByContextArtifactIDSoapIn" />
+      <output message="s0:RetrieveStagingByContextArtifactIDSoapOut" />
+    </operation>
+    <operation name="Read">
+      <input message="s0:ReadSoapIn" />
+      <output message="s0:ReadSoapOut" />
+    </operation>
+    <operation name="RetrieveProducedWithSecurity">
+      <input message="s0:RetrieveProducedWithSecuritySoapIn" />
+      <output message="s0:RetrieveProducedWithSecuritySoapOut" />
+    </operation>
+    <operation name="AddDocumentToProduction">
+      <input message="s0:AddDocumentToProductionSoapIn" />
+      <output message="s0:AddDocumentToProductionSoapOut" />
+    </operation>
+    <operation name="CreateProductionDocumentFiles">
+      <input message="s0:CreateProductionDocumentFilesSoapIn" />
+      <output message="s0:CreateProductionDocumentFilesSoapOut" />
+    </operation>
+  </portType>
+  <binding name="ProductionManagerSoap" type="s0:ProductionManagerSoap">
     <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document" />
-    <wsdl:operation name="RetrieveProducedByContextArtifactID">
+    <operation name="RetrieveProducedByContextArtifactID">
       <soap:operation soapAction="http://www.kCura.com/EDDS/ProductionManager/RetrieveProducedByContextArtifactID" style="document" />
-      <wsdl:input>
+      <input>
         <soap:body use="literal" />
-      </wsdl:input>
-      <wsdl:output>
+      </input>
+      <output>
         <soap:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="RetrieveStagingByContextArtifactID">
+      </output>
+    </operation>
+    <operation name="RetrieveStagingByContextArtifactID">
       <soap:operation soapAction="http://www.kCura.com/EDDS/ProductionManager/RetrieveStagingByContextArtifactID" style="document" />
-      <wsdl:input>
+      <input>
         <soap:body use="literal" />
-      </wsdl:input>
-      <wsdl:output>
+      </input>
+      <output>
         <soap:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="Read">
+      </output>
+    </operation>
+    <operation name="Read">
       <soap:operation soapAction="http://www.kCura.com/EDDS/ProductionManager/Read" style="document" />
-      <wsdl:input>
+      <input>
         <soap:body use="literal" />
-      </wsdl:input>
-      <wsdl:output>
+      </input>
+      <output>
         <soap:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="RetrieveProducedWithSecurity">
+      </output>
+    </operation>
+    <operation name="RetrieveProducedWithSecurity">
       <soap:operation soapAction="http://www.kCura.com/EDDS/ProductionManager/RetrieveProducedWithSecurity" style="document" />
-      <wsdl:input>
+      <input>
         <soap:body use="literal" />
-      </wsdl:input>
-      <wsdl:output>
+      </input>
+      <output>
         <soap:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="AddDocumentToProduction">
+      </output>
+    </operation>
+    <operation name="AddDocumentToProduction">
       <soap:operation soapAction="http://www.kCura.com/EDDS/ProductionManager/AddDocumentToProduction" style="document" />
-      <wsdl:input>
+      <input>
         <soap:body use="literal" />
-      </wsdl:input>
-      <wsdl:output>
+      </input>
+      <output>
         <soap:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="CreateProductionDocumentFiles">
+      </output>
+    </operation>
+    <operation name="CreateProductionDocumentFiles">
       <soap:operation soapAction="http://www.kCura.com/EDDS/ProductionManager/CreateProductionDocumentFiles" style="document" />
-      <wsdl:input>
+      <input>
         <soap:body use="literal" />
-      </wsdl:input>
-      <wsdl:output>
+      </input>
+      <output>
         <soap:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
-  </wsdl:binding>
-  <wsdl:service name="ProductionManager">
-    <documentation xmlns="http://schemas.xmlsoap.org/wsdl/" />
-    <wsdl:port name="ProductionManagerSoap" binding="tns:ProductionManagerSoap">
+      </output>
+    </operation>
+  </binding>
+  <service name="ProductionManager">
+    <port name="ProductionManagerSoap" binding="s0:ProductionManagerSoap">
       <soap:address location="http://localhost/EDDSWebAPI/ProductionManager.asmx" />
-    </wsdl:port>
-  </wsdl:service>
-</wsdl:definitions>
+    </port>
+  </service>
+</definitions>

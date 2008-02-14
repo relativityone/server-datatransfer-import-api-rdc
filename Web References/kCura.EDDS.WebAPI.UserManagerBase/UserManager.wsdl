@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<wsdl:definitions xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tns="http://www.kCura.com/EDDS/UserManager" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" targetNamespace="http://www.kCura.com/EDDS/UserManager" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
-  <wsdl:types>
+<definitions xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:s0="http://www.kCura.com/EDDS/UserManager" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" targetNamespace="http://www.kCura.com/EDDS/UserManager" xmlns="http://schemas.xmlsoap.org/wsdl/">
+  <types>
     <s:schema elementFormDefault="qualified" targetNamespace="http://www.kCura.com/EDDS/UserManager">
       <s:import namespace="http://www.w3.org/2001/XMLSchema" />
       <s:element name="UpdateImageViewerDefaultViewMode">
@@ -114,187 +114,186 @@
         </s:complexType>
       </s:element>
     </s:schema>
-  </wsdl:types>
-  <wsdl:message name="UpdateImageViewerDefaultViewModeSoapIn">
-    <wsdl:part name="parameters" element="tns:UpdateImageViewerDefaultViewMode" />
-  </wsdl:message>
-  <wsdl:message name="UpdateImageViewerDefaultViewModeSoapOut">
-    <wsdl:part name="parameters" element="tns:UpdateImageViewerDefaultViewModeResponse" />
-  </wsdl:message>
-  <wsdl:message name="UpdateOIXDocumentModeSoapIn">
-    <wsdl:part name="parameters" element="tns:UpdateOIXDocumentMode" />
-  </wsdl:message>
-  <wsdl:message name="UpdateOIXDocumentModeSoapOut">
-    <wsdl:part name="parameters" element="tns:UpdateOIXDocumentModeResponse" />
-  </wsdl:message>
-  <wsdl:message name="UpdateSelectedMarkupSetArtifactIDSoapIn">
-    <wsdl:part name="parameters" element="tns:UpdateSelectedMarkupSetArtifactID" />
-  </wsdl:message>
-  <wsdl:message name="UpdateSelectedMarkupSetArtifactIDSoapOut">
-    <wsdl:part name="parameters" element="tns:UpdateSelectedMarkupSetArtifactIDResponse" />
-  </wsdl:message>
-  <wsdl:message name="UpdateDefaultRedactionTextSoapIn">
-    <wsdl:part name="parameters" element="tns:UpdateDefaultRedactionText" />
-  </wsdl:message>
-  <wsdl:message name="UpdateDefaultRedactionTextSoapOut">
-    <wsdl:part name="parameters" element="tns:UpdateDefaultRedactionTextResponse" />
-  </wsdl:message>
-  <wsdl:message name="LoginSoapIn">
-    <wsdl:part name="parameters" element="tns:Login" />
-  </wsdl:message>
-  <wsdl:message name="LoginSoapOut">
-    <wsdl:part name="parameters" element="tns:LoginResponse" />
-  </wsdl:message>
-  <wsdl:message name="LoginWithAuthenticationTokenSoapIn">
-    <wsdl:part name="parameters" element="tns:LoginWithAuthenticationToken" />
-  </wsdl:message>
-  <wsdl:message name="LoginWithAuthenticationTokenSoapOut">
-    <wsdl:part name="parameters" element="tns:LoginWithAuthenticationTokenResponse" />
-  </wsdl:message>
-  <wsdl:message name="GenerateAuthenticationTokenSoapIn">
-    <wsdl:part name="parameters" element="tns:GenerateAuthenticationToken" />
-  </wsdl:message>
-  <wsdl:message name="GenerateAuthenticationTokenSoapOut">
-    <wsdl:part name="parameters" element="tns:GenerateAuthenticationTokenResponse" />
-  </wsdl:message>
-  <wsdl:message name="GetLatestAuthenticationTokenSoapIn">
-    <wsdl:part name="parameters" element="tns:GetLatestAuthenticationToken" />
-  </wsdl:message>
-  <wsdl:message name="GetLatestAuthenticationTokenSoapOut">
-    <wsdl:part name="parameters" element="tns:GetLatestAuthenticationTokenResponse" />
-  </wsdl:message>
-  <wsdl:message name="RetrieveAllAssignableInCaseSoapIn">
-    <wsdl:part name="parameters" element="tns:RetrieveAllAssignableInCase" />
-  </wsdl:message>
-  <wsdl:message name="RetrieveAllAssignableInCaseSoapOut">
-    <wsdl:part name="parameters" element="tns:RetrieveAllAssignableInCaseResponse" />
-  </wsdl:message>
-  <wsdl:portType name="UserManagerSoap">
-    <wsdl:operation name="UpdateImageViewerDefaultViewMode">
-      <wsdl:input message="tns:UpdateImageViewerDefaultViewModeSoapIn" />
-      <wsdl:output message="tns:UpdateImageViewerDefaultViewModeSoapOut" />
-    </wsdl:operation>
-    <wsdl:operation name="UpdateOIXDocumentMode">
-      <wsdl:input message="tns:UpdateOIXDocumentModeSoapIn" />
-      <wsdl:output message="tns:UpdateOIXDocumentModeSoapOut" />
-    </wsdl:operation>
-    <wsdl:operation name="UpdateSelectedMarkupSetArtifactID">
-      <wsdl:input message="tns:UpdateSelectedMarkupSetArtifactIDSoapIn" />
-      <wsdl:output message="tns:UpdateSelectedMarkupSetArtifactIDSoapOut" />
-    </wsdl:operation>
-    <wsdl:operation name="UpdateDefaultRedactionText">
-      <wsdl:input message="tns:UpdateDefaultRedactionTextSoapIn" />
-      <wsdl:output message="tns:UpdateDefaultRedactionTextSoapOut" />
-    </wsdl:operation>
-    <wsdl:operation name="Login">
-      <wsdl:input message="tns:LoginSoapIn" />
-      <wsdl:output message="tns:LoginSoapOut" />
-    </wsdl:operation>
-    <wsdl:operation name="LoginWithAuthenticationToken">
-      <wsdl:input message="tns:LoginWithAuthenticationTokenSoapIn" />
-      <wsdl:output message="tns:LoginWithAuthenticationTokenSoapOut" />
-    </wsdl:operation>
-    <wsdl:operation name="GenerateAuthenticationToken">
-      <wsdl:input message="tns:GenerateAuthenticationTokenSoapIn" />
-      <wsdl:output message="tns:GenerateAuthenticationTokenSoapOut" />
-    </wsdl:operation>
-    <wsdl:operation name="GetLatestAuthenticationToken">
-      <wsdl:input message="tns:GetLatestAuthenticationTokenSoapIn" />
-      <wsdl:output message="tns:GetLatestAuthenticationTokenSoapOut" />
-    </wsdl:operation>
-    <wsdl:operation name="RetrieveAllAssignableInCase">
-      <wsdl:input message="tns:RetrieveAllAssignableInCaseSoapIn" />
-      <wsdl:output message="tns:RetrieveAllAssignableInCaseSoapOut" />
-    </wsdl:operation>
-  </wsdl:portType>
-  <wsdl:binding name="UserManagerSoap" type="tns:UserManagerSoap">
+  </types>
+  <message name="UpdateImageViewerDefaultViewModeSoapIn">
+    <part name="parameters" element="s0:UpdateImageViewerDefaultViewMode" />
+  </message>
+  <message name="UpdateImageViewerDefaultViewModeSoapOut">
+    <part name="parameters" element="s0:UpdateImageViewerDefaultViewModeResponse" />
+  </message>
+  <message name="UpdateOIXDocumentModeSoapIn">
+    <part name="parameters" element="s0:UpdateOIXDocumentMode" />
+  </message>
+  <message name="UpdateOIXDocumentModeSoapOut">
+    <part name="parameters" element="s0:UpdateOIXDocumentModeResponse" />
+  </message>
+  <message name="UpdateSelectedMarkupSetArtifactIDSoapIn">
+    <part name="parameters" element="s0:UpdateSelectedMarkupSetArtifactID" />
+  </message>
+  <message name="UpdateSelectedMarkupSetArtifactIDSoapOut">
+    <part name="parameters" element="s0:UpdateSelectedMarkupSetArtifactIDResponse" />
+  </message>
+  <message name="UpdateDefaultRedactionTextSoapIn">
+    <part name="parameters" element="s0:UpdateDefaultRedactionText" />
+  </message>
+  <message name="UpdateDefaultRedactionTextSoapOut">
+    <part name="parameters" element="s0:UpdateDefaultRedactionTextResponse" />
+  </message>
+  <message name="LoginSoapIn">
+    <part name="parameters" element="s0:Login" />
+  </message>
+  <message name="LoginSoapOut">
+    <part name="parameters" element="s0:LoginResponse" />
+  </message>
+  <message name="LoginWithAuthenticationTokenSoapIn">
+    <part name="parameters" element="s0:LoginWithAuthenticationToken" />
+  </message>
+  <message name="LoginWithAuthenticationTokenSoapOut">
+    <part name="parameters" element="s0:LoginWithAuthenticationTokenResponse" />
+  </message>
+  <message name="GenerateAuthenticationTokenSoapIn">
+    <part name="parameters" element="s0:GenerateAuthenticationToken" />
+  </message>
+  <message name="GenerateAuthenticationTokenSoapOut">
+    <part name="parameters" element="s0:GenerateAuthenticationTokenResponse" />
+  </message>
+  <message name="GetLatestAuthenticationTokenSoapIn">
+    <part name="parameters" element="s0:GetLatestAuthenticationToken" />
+  </message>
+  <message name="GetLatestAuthenticationTokenSoapOut">
+    <part name="parameters" element="s0:GetLatestAuthenticationTokenResponse" />
+  </message>
+  <message name="RetrieveAllAssignableInCaseSoapIn">
+    <part name="parameters" element="s0:RetrieveAllAssignableInCase" />
+  </message>
+  <message name="RetrieveAllAssignableInCaseSoapOut">
+    <part name="parameters" element="s0:RetrieveAllAssignableInCaseResponse" />
+  </message>
+  <portType name="UserManagerSoap">
+    <operation name="UpdateImageViewerDefaultViewMode">
+      <input message="s0:UpdateImageViewerDefaultViewModeSoapIn" />
+      <output message="s0:UpdateImageViewerDefaultViewModeSoapOut" />
+    </operation>
+    <operation name="UpdateOIXDocumentMode">
+      <input message="s0:UpdateOIXDocumentModeSoapIn" />
+      <output message="s0:UpdateOIXDocumentModeSoapOut" />
+    </operation>
+    <operation name="UpdateSelectedMarkupSetArtifactID">
+      <input message="s0:UpdateSelectedMarkupSetArtifactIDSoapIn" />
+      <output message="s0:UpdateSelectedMarkupSetArtifactIDSoapOut" />
+    </operation>
+    <operation name="UpdateDefaultRedactionText">
+      <input message="s0:UpdateDefaultRedactionTextSoapIn" />
+      <output message="s0:UpdateDefaultRedactionTextSoapOut" />
+    </operation>
+    <operation name="Login">
+      <input message="s0:LoginSoapIn" />
+      <output message="s0:LoginSoapOut" />
+    </operation>
+    <operation name="LoginWithAuthenticationToken">
+      <input message="s0:LoginWithAuthenticationTokenSoapIn" />
+      <output message="s0:LoginWithAuthenticationTokenSoapOut" />
+    </operation>
+    <operation name="GenerateAuthenticationToken">
+      <input message="s0:GenerateAuthenticationTokenSoapIn" />
+      <output message="s0:GenerateAuthenticationTokenSoapOut" />
+    </operation>
+    <operation name="GetLatestAuthenticationToken">
+      <input message="s0:GetLatestAuthenticationTokenSoapIn" />
+      <output message="s0:GetLatestAuthenticationTokenSoapOut" />
+    </operation>
+    <operation name="RetrieveAllAssignableInCase">
+      <input message="s0:RetrieveAllAssignableInCaseSoapIn" />
+      <output message="s0:RetrieveAllAssignableInCaseSoapOut" />
+    </operation>
+  </portType>
+  <binding name="UserManagerSoap" type="s0:UserManagerSoap">
     <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document" />
-    <wsdl:operation name="UpdateImageViewerDefaultViewMode">
+    <operation name="UpdateImageViewerDefaultViewMode">
       <soap:operation soapAction="http://www.kCura.com/EDDS/UserManager/UpdateImageViewerDefaultViewMode" style="document" />
-      <wsdl:input>
+      <input>
         <soap:body use="literal" />
-      </wsdl:input>
-      <wsdl:output>
+      </input>
+      <output>
         <soap:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="UpdateOIXDocumentMode">
+      </output>
+    </operation>
+    <operation name="UpdateOIXDocumentMode">
       <soap:operation soapAction="http://www.kCura.com/EDDS/UserManager/UpdateOIXDocumentMode" style="document" />
-      <wsdl:input>
+      <input>
         <soap:body use="literal" />
-      </wsdl:input>
-      <wsdl:output>
+      </input>
+      <output>
         <soap:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="UpdateSelectedMarkupSetArtifactID">
+      </output>
+    </operation>
+    <operation name="UpdateSelectedMarkupSetArtifactID">
       <soap:operation soapAction="http://www.kCura.com/EDDS/UserManager/UpdateSelectedMarkupSetArtifactID" style="document" />
-      <wsdl:input>
+      <input>
         <soap:body use="literal" />
-      </wsdl:input>
-      <wsdl:output>
+      </input>
+      <output>
         <soap:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="UpdateDefaultRedactionText">
+      </output>
+    </operation>
+    <operation name="UpdateDefaultRedactionText">
       <soap:operation soapAction="http://www.kCura.com/EDDS/UserManager/UpdateDefaultRedactionText" style="document" />
-      <wsdl:input>
+      <input>
         <soap:body use="literal" />
-      </wsdl:input>
-      <wsdl:output>
+      </input>
+      <output>
         <soap:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="Login">
+      </output>
+    </operation>
+    <operation name="Login">
       <soap:operation soapAction="http://www.kCura.com/EDDS/UserManager/Login" style="document" />
-      <wsdl:input>
+      <input>
         <soap:body use="literal" />
-      </wsdl:input>
-      <wsdl:output>
+      </input>
+      <output>
         <soap:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="LoginWithAuthenticationToken">
+      </output>
+    </operation>
+    <operation name="LoginWithAuthenticationToken">
       <soap:operation soapAction="http://www.kCura.com/EDDS/UserManager/LoginWithAuthenticationToken" style="document" />
-      <wsdl:input>
+      <input>
         <soap:body use="literal" />
-      </wsdl:input>
-      <wsdl:output>
+      </input>
+      <output>
         <soap:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="GenerateAuthenticationToken">
+      </output>
+    </operation>
+    <operation name="GenerateAuthenticationToken">
       <soap:operation soapAction="http://www.kCura.com/EDDS/UserManager/GenerateAuthenticationToken" style="document" />
-      <wsdl:input>
+      <input>
         <soap:body use="literal" />
-      </wsdl:input>
-      <wsdl:output>
+      </input>
+      <output>
         <soap:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="GetLatestAuthenticationToken">
+      </output>
+    </operation>
+    <operation name="GetLatestAuthenticationToken">
       <soap:operation soapAction="http://www.kCura.com/EDDS/UserManager/GetLatestAuthenticationToken" style="document" />
-      <wsdl:input>
+      <input>
         <soap:body use="literal" />
-      </wsdl:input>
-      <wsdl:output>
+      </input>
+      <output>
         <soap:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="RetrieveAllAssignableInCase">
+      </output>
+    </operation>
+    <operation name="RetrieveAllAssignableInCase">
       <soap:operation soapAction="http://www.kCura.com/EDDS/UserManager/RetrieveAllAssignableInCase" style="document" />
-      <wsdl:input>
+      <input>
         <soap:body use="literal" />
-      </wsdl:input>
-      <wsdl:output>
+      </input>
+      <output>
         <soap:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
-  </wsdl:binding>
-  <wsdl:service name="UserManager">
-    <documentation xmlns="http://schemas.xmlsoap.org/wsdl/" />
-    <wsdl:port name="UserManagerSoap" binding="tns:UserManagerSoap">
+      </output>
+    </operation>
+  </binding>
+  <service name="UserManager">
+    <port name="UserManagerSoap" binding="s0:UserManagerSoap">
       <soap:address location="http://localhost/EDDSWebAPI/UserManager.asmx" />
-    </wsdl:port>
-  </wsdl:service>
-</wsdl:definitions>
+    </port>
+  </service>
+</definitions>
