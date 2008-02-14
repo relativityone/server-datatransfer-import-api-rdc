@@ -23,7 +23,7 @@ Namespace kCura.WinEDDS
 		Private _docsToAdd As ArrayList
 		Private _docsToUpdate As ArrayList
 		Private _filesToAdd As ArrayList
-		Private _docsToProcess As ArrayList
+		Private _docsToProcess As MetaDocQueue
 		Private _timeKeeper As TimeKeeper
 		Private _killWorker As Boolean
 		Private _workerRunning As Boolean
@@ -226,8 +226,8 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Private Function ManageDocument(ByVal values As String()) As String
-			If _docsToProcess.Count > 100 Then
-				While _docsToProcess.Count > 50
+			If _docsToProcess.IsFull Then
+				While Not _docsToProcess.CanAdd
 					If _continue Then
 						System.Threading.Thread.CurrentThread.Join(1000)
 					Else
@@ -286,7 +286,7 @@ Namespace kCura.WinEDDS
 				Throw New IdentifierOverlapException(identityValue, _processedDocumentIdentifiers(identityValue))
 			End If
 			Dim metadoc As New MetaDocument(fileGuid, identityValue, fieldCollection, fileExists AndAlso uploadFile AndAlso (fileGuid <> String.Empty OrElse Not _copyFileToRepository), filename, fullFilePath, uploadFile, CurrentLineNumber, parentFolderID, md5hash, values, oixFileIdData)
-			_docsToProcess.Add(metadoc)
+			_docsToProcess.Push(metadoc)
 			Return identityValue
 		End Function
 
@@ -314,11 +314,11 @@ Namespace kCura.WinEDDS
 
 		Private Sub MassProcessWorker()
 			_workerRunning = True
-			While (Not _killWorker OrElse _docsToProcess.Count > 0) AndAlso _continue
-				If Not _docsToProcess Is Nothing AndAlso _docsToProcess.Count > 0 Then
-					Dim metaDoc As MetaDocument = DirectCast(_docsToProcess(0), MetaDocument)
+			While (Not _killWorker OrElse _docsToProcess.Length > 0) AndAlso _continue
+				If Not _docsToProcess Is Nothing AndAlso _docsToProcess.Length > 0 Then
+					Dim metaDoc As MetaDocument = _docsToProcess.Front
 					If Not metaDoc Is Nothing Then
-						_docsToProcess.RemoveAt(0)
+						metaDoc = _docsToProcess.Pop()
 						GC.Collect(3)
 						GC.WaitForPendingFinalizers()
 						GC.Collect(3)
@@ -958,7 +958,7 @@ Namespace kCura.WinEDDS
 					Reader = New System.IO.StreamReader(path, _sourceFileEncoding)
 					_docsToAdd = New ArrayList
 					_docsToUpdate = New ArrayList
-					_docsToProcess = New ArrayList
+					_docsToProcess = New MetaDocQueue
 					If _firstLineContainsColumnNames Then
 						_columnHeaders = GetLine
 						_recordCount -= 1
@@ -995,6 +995,64 @@ Namespace kCura.WinEDDS
 		Protected Overrides ReadOnly Property UseTimeZoneOffset() As Boolean
 			Get
 				Return True
+			End Get
+		End Property
+	End Class
+
+	Public Class MetaDocQueue
+		Implements IEnumerable
+		Private _list As System.Collections.ArrayList
+		Private _weight As Int64
+		Private QUEUE_LENGTH_MAX As Int32 = 100
+		Private QUEUE_WEIGHT_MAX As Int64 = 52428800
+		Public Sub New()
+			_list = New System.Collections.ArrayList
+		End Sub
+
+		Public Function GetEnumerator() As System.Collections.IEnumerator Implements System.Collections.IEnumerable.GetEnumerator
+			Return _list.GetEnumerator
+		End Function
+
+		Public ReadOnly Property Front() As MetaDocument
+			Get
+				Return DirectCast(_list(0), MetaDocument)
+			End Get
+		End Property
+
+		Public Sub Push(ByVal mdoc As MetaDocument)
+			_weight += mdoc.Size
+			_list.Add(mdoc)
+		End Sub
+
+		Public ReadOnly Property Weight() As Int64
+			Get
+				Return _weight
+			End Get
+		End Property
+
+		Public ReadOnly Property Length() As Int32
+			Get
+				Return _list.Count
+			End Get
+		End Property
+
+		Public ReadOnly Property IsFull() As Boolean
+			Get
+				Return Me.Weight > Me.QUEUE_WEIGHT_MAX OrElse Me.Length > Me.QUEUE_LENGTH_MAX
+			End Get
+		End Property
+		Public ReadOnly Property CanAdd() As Boolean
+			Get
+				Return Not (Me.Weight > Me.QUEUE_WEIGHT_MAX / 2 OrElse Me.Length > Me.QUEUE_LENGTH_MAX / 2)
+			End Get
+		End Property
+
+		Public ReadOnly Property Pop() As MetaDocument
+			Get
+				Dim retval As MetaDocument = Me.Front
+				_list.RemoveAt(0)
+				_weight -= retval.Size
+				Return retval
 			End Get
 		End Property
 	End Class

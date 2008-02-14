@@ -121,6 +121,16 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
+		Public ReadOnly Property Size() As Int64
+			Get
+				Dim retval As Int64 = 0
+				For Each cell As String In SourceLine
+					retval += CType(cell.Length, Int64)
+				Next
+				Return retval * 2
+			End Get
+		End Property
+
 		Public Sub New( _
 		 ByVal fileGuid As String, _
 		 ByVal identityValue As String, _
