@@ -115,10 +115,11 @@ Namespace kCura.WinEDDS
 		Private Function WebDownloadFile(ByVal localFilePath As String, ByVal artifactID As Int32, ByVal remoteFileGuid As String, ByVal appID As String, Optional ByVal forFullText As Boolean = False) As Boolean
 			Try
 				Dim remoteuri As String
+				Dim downloadUrl As String = _downloadUrl.TrimEnd("/"c) & "/"
 				If forFullText Then
-					remoteuri = String.Format("{0}Download.aspx?ArtifactID={1}&AppID={2}&ExtractedText=True", _downloadUrl, artifactID, appID)
+					remoteuri = String.Format("{0}Download.aspx?ArtifactID={1}&AppID={2}&ExtractedText=True", downloadUrl, artifactID, appID)
 				Else
-					remoteuri = String.Format("{0}Download.aspx?ArtifactID={1}&GUID={2}&AppID={3}", _downloadUrl, artifactID, remoteFileGuid, appID)
+					remoteuri = String.Format("{0}Download.aspx?ArtifactID={1}&GUID={2}&AppID={3}", downloadUrl, artifactID, remoteFileGuid, appID)
 				End If
 				If _authenticationToken <> String.Empty Then
 					remoteuri &= String.Format("&AuthenticationToken={0}", _authenticationToken)
