@@ -15,7 +15,7 @@ Imports System.Runtime.InteropServices
 <Assembly: AssemblyCopyright("@ kCura Corporation 2005")> 
 <Assembly: AssemblyTrademark("")> 
 <Assembly: CLSCompliant(True)> 
-<Assembly: AssemblyVersionAttribute("3.3.0.0")> 
+<Assembly: AssemblyVersionAttribute("4.10.15.1")> 
 '<Assembly: AssemblyVersionAttribute("1.2.52.1")> 
 'The following GUID is for the ID of the typelib if this project is exposed to COM
 <Assembly: Guid("25A7AED0-12AB-4419-B71C-5ED7F28B53FD")> 
