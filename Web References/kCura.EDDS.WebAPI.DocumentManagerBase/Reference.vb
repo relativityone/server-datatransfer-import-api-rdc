@@ -719,7 +719,8 @@ Namespace kCura.EDDS.WebAPI.DocumentManagerBase
         Public FilePointer As String
         
         '<remarks/>
-        Public FullText As String
+        <System.Xml.Serialization.XmlElementAttribute(DataType:="base64Binary")>  _
+        Public FullText() As Byte
         
         '<remarks/>
         Public Pages() As Integer
