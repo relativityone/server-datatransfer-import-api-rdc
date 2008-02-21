@@ -197,7 +197,7 @@ Namespace kCura.WinEDDS
 					_processedIdentifiers(identifierField.Value) = Me.CurrentLineNumber.ToString
 				Else
 					'Throw New IdentifierOverlapException(identifierField.Value, _processedIdentifiers(identifierField.Value))
-					identifierField.Value = String.Format("The identifier '{0}' has been previously proccessed on line {1}.", identifierField.Value, _processedIdentifiers(identifierField.Value))
+					identifierField.Value = String.Format("Error: The identifier '{0}' has been previously proccessed on line {1}.", identifierField.Value, _processedIdentifiers(identifierField.Value))
 					lineContainsErrors = True
 				End If
 			End If
@@ -239,7 +239,7 @@ Namespace kCura.WinEDDS
 				If filePath = "" Then
 					docfield.Value = "No File Specified."
 				ElseIf Not System.IO.File.Exists(filePath) Then
-					docfield.Value = String.Format("File '{0}' does not exist", filePath)
+					docfield.Value = String.Format("Error: file '{0}' does not exist", filePath)
 					lineContainsErrors = True
 				Else
 					docfield.Value = filePath

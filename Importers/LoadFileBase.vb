@@ -387,7 +387,7 @@ Namespace kCura.WinEDDS
 		Public Class MissingFullTextFileException
 			Inherits kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
 			Public Sub New(ByVal row As Int32, ByVal column As Int32)
-				MyBase.New(row, column, String.Format("Full text file specified does not exist."))
+				MyBase.New(row, column, String.Format("Error: full text file specified does not exist."))
 			End Sub
 		End Class
 
