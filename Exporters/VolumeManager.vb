@@ -197,8 +197,8 @@ Namespace kCura.WinEDDS
 				Else
 					Me.UpdateVolume()
 				End If
-			ElseIf documentInfo.ImageCount + _currentImageSubdirectorySize > Me.SubDirectoryMaxSize OrElse _
-			 documentInfo.NativeCount + _currentNativeSubdirectorySize > Me.SubDirectoryMaxSize Then
+			ElseIf documentInfo.ImageCount + _currentImageSubdirectorySize >= Me.SubDirectoryMaxSize OrElse _
+			 documentInfo.NativeCount + _currentNativeSubdirectorySize >= Me.SubDirectoryMaxSize Then
 				If _currentImageSubdirectorySize = 0 OrElse _currentNativeSubdirectorySize = 0 Then
 					updateSubDirectoryAfterExport = True
 				Else
