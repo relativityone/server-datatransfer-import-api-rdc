@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<definitions xmlns:s1="http://NullableTypes.SourceForge.Net/NullableInt32XMLSchema" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:s0="http://foley.com/EDDS/DocumentManager" xmlns:s2="http://microsoft.com/wsdl/types/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" targetNamespace="http://foley.com/EDDS/DocumentManager" xmlns="http://schemas.xmlsoap.org/wsdl/">
-  <types>
+<wsdl:definitions xmlns:s1="http://NullableTypes.SourceForge.Net/NullableInt32XMLSchema" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:s2="http://microsoft.com/wsdl/types/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tns="http://foley.com/EDDS/DocumentManager" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" targetNamespace="http://foley.com/EDDS/DocumentManager" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
     <s:schema elementFormDefault="qualified" targetNamespace="http://foley.com/EDDS/DocumentManager">
       <s:import namespace="http://www.w3.org/2001/XMLSchema" />
       <s:import namespace="http://NullableTypes.SourceForge.Net/NullableInt32XMLSchema" />
@@ -32,7 +32,7 @@
       <s:element name="NewFileDTOResponse">
         <s:complexType>
           <s:sequence>
-            <s:element minOccurs="0" maxOccurs="1" name="NewFileDTOResult" type="s0:File" />
+            <s:element minOccurs="0" maxOccurs="1" name="NewFileDTOResult" type="tns:File" />
           </s:sequence>
         </s:complexType>
       </s:element>
@@ -44,14 +44,14 @@
           <s:element minOccurs="0" maxOccurs="1" name="Filename" type="s:string" />
           <s:element minOccurs="1" maxOccurs="1" name="DocumentArtifactID" type="s:int" />
           <s:element minOccurs="1" maxOccurs="1" name="Rotation" type="s:int" />
-          <s:element minOccurs="0" maxOccurs="1" name="Redactions" type="s0:ArrayOfRedaction" />
+          <s:element minOccurs="0" maxOccurs="1" name="Redactions" type="tns:ArrayOfRedaction" />
           <s:element minOccurs="0" maxOccurs="1" name="Identifier" type="s:string" />
           <s:element minOccurs="0" maxOccurs="1" name="Location" type="s:string" />
         </s:sequence>
       </s:complexType>
       <s:complexType name="ArrayOfRedaction">
         <s:sequence>
-          <s:element minOccurs="0" maxOccurs="unbounded" name="Redaction" nillable="true" type="s0:Redaction" />
+          <s:element minOccurs="0" maxOccurs="unbounded" name="Redaction" nillable="true" type="tns:Redaction" />
         </s:sequence>
       </s:complexType>
       <s:complexType name="Redaction">
@@ -73,7 +73,7 @@
             <s:element minOccurs="1" maxOccurs="1" name="parentFolderID" type="s:int" />
             <s:element minOccurs="0" maxOccurs="1" name="identifierValue" type="s:base64Binary" />
             <s:element minOccurs="0" maxOccurs="1" name="identifierColumn" type="s:string" />
-            <s:element minOccurs="0" maxOccurs="1" name="fullTextBuilder" type="s0:FullTextBuilderDTO" />
+            <s:element minOccurs="0" maxOccurs="1" name="fullTextBuilder" type="tns:FullTextBuilderDTO" />
           </s:sequence>
         </s:complexType>
       </s:element>
@@ -81,7 +81,7 @@
         <s:sequence>
           <s:element minOccurs="0" maxOccurs="1" name="FilePointer" type="s:string" />
           <s:element minOccurs="0" maxOccurs="1" name="FullText" type="s:base64Binary" />
-          <s:element minOccurs="0" maxOccurs="1" name="Pages" type="s0:ArrayOfInt" />
+          <s:element minOccurs="0" maxOccurs="1" name="Pages" type="tns:ArrayOfInt" />
         </s:sequence>
       </s:complexType>
       <s:complexType name="ArrayOfInt">
@@ -107,17 +107,17 @@
       <s:element name="ReadResponse">
         <s:complexType>
           <s:sequence>
-            <s:element minOccurs="0" maxOccurs="1" name="ReadResult" type="s0:Document" />
+            <s:element minOccurs="0" maxOccurs="1" name="ReadResult" type="tns:Document" />
           </s:sequence>
         </s:complexType>
       </s:element>
       <s:complexType name="Document">
         <s:complexContent mixed="false">
-          <s:extension base="s0:Artifact">
+          <s:extension base="tns:Artifact">
             <s:sequence>
-              <s:element minOccurs="0" maxOccurs="1" name="Fields" type="s0:ArrayOfField" />
-              <s:element minOccurs="0" maxOccurs="1" name="Files" type="s0:ArrayOfFile" />
-              <s:element minOccurs="0" maxOccurs="1" name="DocumentAgentFlags" type="s0:DocumentAgentFlags" />
+              <s:element minOccurs="0" maxOccurs="1" name="Fields" type="tns:ArrayOfField" />
+              <s:element minOccurs="0" maxOccurs="1" name="Files" type="tns:ArrayOfFile" />
+              <s:element minOccurs="0" maxOccurs="1" name="DocumentAgentFlags" type="tns:DocumentAgentFlags" />
             </s:sequence>
           </s:extension>
         </s:complexContent>
@@ -154,14 +154,14 @@
       </s:complexType>
       <s:complexType name="Field">
         <s:complexContent mixed="false">
-          <s:extension base="s0:Artifact">
+          <s:extension base="tns:Artifact">
             <s:sequence>
               <s:element minOccurs="1" maxOccurs="1" name="FieldArtifactTypeID" type="s:int" />
               <s:element minOccurs="0" maxOccurs="1" name="DisplayName" type="s:string" />
               <s:element minOccurs="1" maxOccurs="1" name="FieldTypeID" type="s:int" />
-              <s:element minOccurs="1" maxOccurs="1" name="FieldType" type="s0:FieldType" />
+              <s:element minOccurs="1" maxOccurs="1" name="FieldType" type="tns:FieldType" />
               <s:element minOccurs="1" maxOccurs="1" name="FieldCategoryID" type="s:int" />
-              <s:element minOccurs="1" maxOccurs="1" name="FieldCategory" type="s0:FieldCategory" />
+              <s:element minOccurs="1" maxOccurs="1" name="FieldCategory" type="tns:FieldCategory" />
               <s:element minOccurs="1" maxOccurs="1" name="ArtifactViewFieldID" type="s:int" />
               <s:element minOccurs="1" maxOccurs="1" name="CodeTypeID">
                 <s:complexType>
@@ -268,12 +268,12 @@
       </s:simpleType>
       <s:complexType name="ArrayOfField">
         <s:sequence>
-          <s:element minOccurs="0" maxOccurs="unbounded" name="Field" nillable="true" type="s0:Field" />
+          <s:element minOccurs="0" maxOccurs="unbounded" name="Field" nillable="true" type="tns:Field" />
         </s:sequence>
       </s:complexType>
       <s:complexType name="ArrayOfFile">
         <s:sequence>
-          <s:element minOccurs="0" maxOccurs="unbounded" name="File" nillable="true" type="s0:File" />
+          <s:element minOccurs="0" maxOccurs="unbounded" name="File" nillable="true" type="tns:File" />
         </s:sequence>
       </s:complexType>
       <s:complexType name="DocumentAgentFlags">
@@ -286,7 +286,7 @@
         <s:complexType>
           <s:sequence>
             <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
-            <s:element minOccurs="0" maxOccurs="1" name="documentDTO" type="s0:Document" />
+            <s:element minOccurs="0" maxOccurs="1" name="documentDTO" type="tns:Document" />
           </s:sequence>
         </s:complexType>
       </s:element>
@@ -301,7 +301,7 @@
         <s:complexType>
           <s:sequence>
             <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
-            <s:element minOccurs="0" maxOccurs="1" name="docDTO" type="s0:Document" />
+            <s:element minOccurs="0" maxOccurs="1" name="docDTO" type="tns:Document" />
           </s:sequence>
         </s:complexType>
       </s:element>
@@ -316,7 +316,7 @@
         <s:complexType>
           <s:sequence>
             <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
-            <s:element minOccurs="0" maxOccurs="1" name="docDTO" type="s0:Document" />
+            <s:element minOccurs="0" maxOccurs="1" name="docDTO" type="tns:Document" />
           </s:sequence>
         </s:complexType>
       </s:element>
@@ -331,13 +331,13 @@
         <s:complexType>
           <s:sequence>
             <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
-            <s:element minOccurs="0" maxOccurs="1" name="docDTOs" type="s0:ArrayOfDocument" />
+            <s:element minOccurs="0" maxOccurs="1" name="docDTOs" type="tns:ArrayOfDocument" />
           </s:sequence>
         </s:complexType>
       </s:element>
       <s:complexType name="ArrayOfDocument">
         <s:sequence>
-          <s:element minOccurs="0" maxOccurs="unbounded" name="Document" nillable="true" type="s0:Document" />
+          <s:element minOccurs="0" maxOccurs="unbounded" name="Document" nillable="true" type="tns:Document" />
         </s:sequence>
       </s:complexType>
       <s:element name="CreateRangeResponse">
@@ -347,7 +347,7 @@
         <s:complexType>
           <s:sequence>
             <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
-            <s:element minOccurs="0" maxOccurs="1" name="docDTOs" type="s0:ArrayOfDocument" />
+            <s:element minOccurs="0" maxOccurs="1" name="docDTOs" type="tns:ArrayOfDocument" />
           </s:sequence>
         </s:complexType>
       </s:element>
@@ -359,7 +359,7 @@
           <s:sequence>
             <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
             <s:element minOccurs="1" maxOccurs="1" name="documentArtifactID" type="s:int" />
-            <s:element minOccurs="0" maxOccurs="1" name="fullTextBuilder" type="s0:FullTextBuilderDTO" />
+            <s:element minOccurs="0" maxOccurs="1" name="fullTextBuilder" type="tns:FullTextBuilderDTO" />
           </s:sequence>
         </s:complexType>
       </s:element>
@@ -398,7 +398,7 @@
       <s:element name="ReadFromIdentifierResponse">
         <s:complexType>
           <s:sequence>
-            <s:element minOccurs="0" maxOccurs="1" name="ReadFromIdentifierResult" type="s0:Document" />
+            <s:element minOccurs="0" maxOccurs="1" name="ReadFromIdentifierResult" type="tns:Document" />
           </s:sequence>
         </s:complexType>
       </s:element>
@@ -444,7 +444,7 @@
           <s:sequence>
             <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
             <s:element minOccurs="1" maxOccurs="1" name="artifactID" type="s:int" />
-            <s:element minOccurs="0" maxOccurs="1" name="orderedProductionIDList" type="s0:ArrayOfInt" />
+            <s:element minOccurs="0" maxOccurs="1" name="orderedProductionIDList" type="tns:ArrayOfInt" />
           </s:sequence>
         </s:complexType>
       </s:element>
@@ -456,7 +456,7 @@
       <s:element name="GetPrintImageGuidsResponse">
         <s:complexType>
           <s:sequence>
-            <s:element minOccurs="0" maxOccurs="1" name="GetPrintImageGuidsResult" type="s0:ArrayOfGuid" />
+            <s:element minOccurs="0" maxOccurs="1" name="GetPrintImageGuidsResult" type="tns:ArrayOfGuid" />
           </s:sequence>
         </s:complexType>
       </s:element>
@@ -481,7 +481,7 @@
       <s:element name="RetrieveAllUnsupportedOiFileIdsResponse">
         <s:complexType>
           <s:sequence>
-            <s:element minOccurs="0" maxOccurs="1" name="RetrieveAllUnsupportedOiFileIdsResult" type="s0:ArrayOfInt" />
+            <s:element minOccurs="0" maxOccurs="1" name="RetrieveAllUnsupportedOiFileIdsResult" type="tns:ArrayOfInt" />
           </s:sequence>
         </s:complexType>
       </s:element>
@@ -496,357 +496,358 @@
         </s:restriction>
       </s:simpleType>
     </s:schema>
-  </types>
-  <message name="GetAllDocumentsForCaseSoapIn">
-    <part name="parameters" element="s0:GetAllDocumentsForCase" />
-  </message>
-  <message name="GetAllDocumentsForCaseSoapOut">
-    <part name="parameters" element="s0:GetAllDocumentsForCaseResponse" />
-  </message>
-  <message name="NewFileDTOSoapIn">
-    <part name="parameters" element="s0:NewFileDTO" />
-  </message>
-  <message name="NewFileDTOSoapOut">
-    <part name="parameters" element="s0:NewFileDTOResponse" />
-  </message>
-  <message name="CreateEmptyDocumentSoapIn">
-    <part name="parameters" element="s0:CreateEmptyDocument" />
-  </message>
-  <message name="CreateEmptyDocumentSoapOut">
-    <part name="parameters" element="s0:CreateEmptyDocumentResponse" />
-  </message>
-  <message name="ReadSoapIn">
-    <part name="parameters" element="s0:Read" />
-  </message>
-  <message name="ReadSoapOut">
-    <part name="parameters" element="s0:ReadResponse" />
-  </message>
-  <message name="DeleteNativeSoapIn">
-    <part name="parameters" element="s0:DeleteNative" />
-  </message>
-  <message name="DeleteNativeSoapOut">
-    <part name="parameters" element="s0:DeleteNativeResponse" />
-  </message>
-  <message name="CreateSoapIn">
-    <part name="parameters" element="s0:Create" />
-  </message>
-  <message name="CreateSoapOut">
-    <part name="parameters" element="s0:CreateResponse" />
-  </message>
-  <message name="UpdateSoapIn">
-    <part name="parameters" element="s0:Update" />
-  </message>
-  <message name="UpdateSoapOut">
-    <part name="parameters" element="s0:UpdateResponse" />
-  </message>
-  <message name="CreateRangeSoapIn">
-    <part name="parameters" element="s0:CreateRange" />
-  </message>
-  <message name="CreateRangeSoapOut">
-    <part name="parameters" element="s0:CreateRangeResponse" />
-  </message>
-  <message name="UpdateRangeSoapIn">
-    <part name="parameters" element="s0:UpdateRange" />
-  </message>
-  <message name="UpdateRangeSoapOut">
-    <part name="parameters" element="s0:UpdateRangeResponse" />
-  </message>
-  <message name="AddFullTextToDocumentSoapIn">
-    <part name="parameters" element="s0:AddFullTextToDocument" />
-  </message>
-  <message name="AddFullTextToDocumentSoapOut">
-    <part name="parameters" element="s0:AddFullTextToDocumentResponse" />
-  </message>
-  <message name="GetDocumentArtifactIDFromIdentifierSoapIn">
-    <part name="parameters" element="s0:GetDocumentArtifactIDFromIdentifier" />
-  </message>
-  <message name="GetDocumentArtifactIDFromIdentifierSoapOut">
-    <part name="parameters" element="s0:GetDocumentArtifactIDFromIdentifierResponse" />
-  </message>
-  <message name="ReadFromIdentifierSoapIn">
-    <part name="parameters" element="s0:ReadFromIdentifier" />
-  </message>
-  <message name="ReadFromIdentifierSoapOut">
-    <part name="parameters" element="s0:ReadFromIdentifierResponse" />
-  </message>
-  <message name="UpdateFullTextWithCrackedTextSoapIn">
-    <part name="parameters" element="s0:UpdateFullTextWithCrackedText" />
-  </message>
-  <message name="UpdateFullTextWithCrackedTextSoapOut">
-    <part name="parameters" element="s0:UpdateFullTextWithCrackedTextResponse" />
-  </message>
-  <message name="ClearImagesFromDocumentSoapIn">
-    <part name="parameters" element="s0:ClearImagesFromDocument" />
-  </message>
-  <message name="ClearImagesFromDocumentSoapOut">
-    <part name="parameters" element="s0:ClearImagesFromDocumentResponse" />
-  </message>
-  <message name="GetDocumentDirectoryByCaseArtifactIDSoapIn">
-    <part name="parameters" element="s0:GetDocumentDirectoryByCaseArtifactID" />
-  </message>
-  <message name="GetDocumentDirectoryByCaseArtifactIDSoapOut">
-    <part name="parameters" element="s0:GetDocumentDirectoryByCaseArtifactIDResponse" />
-  </message>
-  <message name="GetPrintImageGuidsSoapIn">
-    <part name="parameters" element="s0:GetPrintImageGuids" />
-  </message>
-  <message name="GetPrintImageGuidsSoapOut">
-    <part name="parameters" element="s0:GetPrintImageGuidsResponse" />
-  </message>
-  <message name="GetIdentifierFromDocumentArtifactIDSoapIn">
-    <part name="parameters" element="s0:GetIdentifierFromDocumentArtifactID" />
-  </message>
-  <message name="GetIdentifierFromDocumentArtifactIDSoapOut">
-    <part name="parameters" element="s0:GetIdentifierFromDocumentArtifactIDResponse" />
-  </message>
-  <message name="RetrieveAllUnsupportedOiFileIdsSoapIn">
-    <part name="parameters" element="s0:RetrieveAllUnsupportedOiFileIds" />
-  </message>
-  <message name="RetrieveAllUnsupportedOiFileIdsSoapOut">
-    <part name="parameters" element="s0:RetrieveAllUnsupportedOiFileIdsResponse" />
-  </message>
-  <portType name="DocumentManagerSoap">
-    <operation name="GetAllDocumentsForCase">
-      <input message="s0:GetAllDocumentsForCaseSoapIn" />
-      <output message="s0:GetAllDocumentsForCaseSoapOut" />
-    </operation>
-    <operation name="NewFileDTO">
-      <input message="s0:NewFileDTOSoapIn" />
-      <output message="s0:NewFileDTOSoapOut" />
-    </operation>
-    <operation name="CreateEmptyDocument">
-      <input message="s0:CreateEmptyDocumentSoapIn" />
-      <output message="s0:CreateEmptyDocumentSoapOut" />
-    </operation>
-    <operation name="Read">
-      <input message="s0:ReadSoapIn" />
-      <output message="s0:ReadSoapOut" />
-    </operation>
-    <operation name="DeleteNative">
-      <input message="s0:DeleteNativeSoapIn" />
-      <output message="s0:DeleteNativeSoapOut" />
-    </operation>
-    <operation name="Create">
-      <input message="s0:CreateSoapIn" />
-      <output message="s0:CreateSoapOut" />
-    </operation>
-    <operation name="Update">
-      <input message="s0:UpdateSoapIn" />
-      <output message="s0:UpdateSoapOut" />
-    </operation>
-    <operation name="CreateRange">
-      <input message="s0:CreateRangeSoapIn" />
-      <output message="s0:CreateRangeSoapOut" />
-    </operation>
-    <operation name="UpdateRange">
-      <input message="s0:UpdateRangeSoapIn" />
-      <output message="s0:UpdateRangeSoapOut" />
-    </operation>
-    <operation name="AddFullTextToDocument">
-      <input message="s0:AddFullTextToDocumentSoapIn" />
-      <output message="s0:AddFullTextToDocumentSoapOut" />
-    </operation>
-    <operation name="GetDocumentArtifactIDFromIdentifier">
-      <input message="s0:GetDocumentArtifactIDFromIdentifierSoapIn" />
-      <output message="s0:GetDocumentArtifactIDFromIdentifierSoapOut" />
-    </operation>
-    <operation name="ReadFromIdentifier">
-      <input message="s0:ReadFromIdentifierSoapIn" />
-      <output message="s0:ReadFromIdentifierSoapOut" />
-    </operation>
-    <operation name="UpdateFullTextWithCrackedText">
-      <input message="s0:UpdateFullTextWithCrackedTextSoapIn" />
-      <output message="s0:UpdateFullTextWithCrackedTextSoapOut" />
-    </operation>
-    <operation name="ClearImagesFromDocument">
-      <input message="s0:ClearImagesFromDocumentSoapIn" />
-      <output message="s0:ClearImagesFromDocumentSoapOut" />
-    </operation>
-    <operation name="GetDocumentDirectoryByCaseArtifactID">
-      <input message="s0:GetDocumentDirectoryByCaseArtifactIDSoapIn" />
-      <output message="s0:GetDocumentDirectoryByCaseArtifactIDSoapOut" />
-    </operation>
-    <operation name="GetPrintImageGuids">
-      <input message="s0:GetPrintImageGuidsSoapIn" />
-      <output message="s0:GetPrintImageGuidsSoapOut" />
-    </operation>
-    <operation name="GetIdentifierFromDocumentArtifactID">
-      <input message="s0:GetIdentifierFromDocumentArtifactIDSoapIn" />
-      <output message="s0:GetIdentifierFromDocumentArtifactIDSoapOut" />
-    </operation>
-    <operation name="RetrieveAllUnsupportedOiFileIds">
-      <input message="s0:RetrieveAllUnsupportedOiFileIdsSoapIn" />
-      <output message="s0:RetrieveAllUnsupportedOiFileIdsSoapOut" />
-    </operation>
-  </portType>
-  <binding name="DocumentManagerSoap" type="s0:DocumentManagerSoap">
+  </wsdl:types>
+  <wsdl:message name="GetAllDocumentsForCaseSoapIn">
+    <wsdl:part name="parameters" element="tns:GetAllDocumentsForCase" />
+  </wsdl:message>
+  <wsdl:message name="GetAllDocumentsForCaseSoapOut">
+    <wsdl:part name="parameters" element="tns:GetAllDocumentsForCaseResponse" />
+  </wsdl:message>
+  <wsdl:message name="NewFileDTOSoapIn">
+    <wsdl:part name="parameters" element="tns:NewFileDTO" />
+  </wsdl:message>
+  <wsdl:message name="NewFileDTOSoapOut">
+    <wsdl:part name="parameters" element="tns:NewFileDTOResponse" />
+  </wsdl:message>
+  <wsdl:message name="CreateEmptyDocumentSoapIn">
+    <wsdl:part name="parameters" element="tns:CreateEmptyDocument" />
+  </wsdl:message>
+  <wsdl:message name="CreateEmptyDocumentSoapOut">
+    <wsdl:part name="parameters" element="tns:CreateEmptyDocumentResponse" />
+  </wsdl:message>
+  <wsdl:message name="ReadSoapIn">
+    <wsdl:part name="parameters" element="tns:Read" />
+  </wsdl:message>
+  <wsdl:message name="ReadSoapOut">
+    <wsdl:part name="parameters" element="tns:ReadResponse" />
+  </wsdl:message>
+  <wsdl:message name="DeleteNativeSoapIn">
+    <wsdl:part name="parameters" element="tns:DeleteNative" />
+  </wsdl:message>
+  <wsdl:message name="DeleteNativeSoapOut">
+    <wsdl:part name="parameters" element="tns:DeleteNativeResponse" />
+  </wsdl:message>
+  <wsdl:message name="CreateSoapIn">
+    <wsdl:part name="parameters" element="tns:Create" />
+  </wsdl:message>
+  <wsdl:message name="CreateSoapOut">
+    <wsdl:part name="parameters" element="tns:CreateResponse" />
+  </wsdl:message>
+  <wsdl:message name="UpdateSoapIn">
+    <wsdl:part name="parameters" element="tns:Update" />
+  </wsdl:message>
+  <wsdl:message name="UpdateSoapOut">
+    <wsdl:part name="parameters" element="tns:UpdateResponse" />
+  </wsdl:message>
+  <wsdl:message name="CreateRangeSoapIn">
+    <wsdl:part name="parameters" element="tns:CreateRange" />
+  </wsdl:message>
+  <wsdl:message name="CreateRangeSoapOut">
+    <wsdl:part name="parameters" element="tns:CreateRangeResponse" />
+  </wsdl:message>
+  <wsdl:message name="UpdateRangeSoapIn">
+    <wsdl:part name="parameters" element="tns:UpdateRange" />
+  </wsdl:message>
+  <wsdl:message name="UpdateRangeSoapOut">
+    <wsdl:part name="parameters" element="tns:UpdateRangeResponse" />
+  </wsdl:message>
+  <wsdl:message name="AddFullTextToDocumentSoapIn">
+    <wsdl:part name="parameters" element="tns:AddFullTextToDocument" />
+  </wsdl:message>
+  <wsdl:message name="AddFullTextToDocumentSoapOut">
+    <wsdl:part name="parameters" element="tns:AddFullTextToDocumentResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetDocumentArtifactIDFromIdentifierSoapIn">
+    <wsdl:part name="parameters" element="tns:GetDocumentArtifactIDFromIdentifier" />
+  </wsdl:message>
+  <wsdl:message name="GetDocumentArtifactIDFromIdentifierSoapOut">
+    <wsdl:part name="parameters" element="tns:GetDocumentArtifactIDFromIdentifierResponse" />
+  </wsdl:message>
+  <wsdl:message name="ReadFromIdentifierSoapIn">
+    <wsdl:part name="parameters" element="tns:ReadFromIdentifier" />
+  </wsdl:message>
+  <wsdl:message name="ReadFromIdentifierSoapOut">
+    <wsdl:part name="parameters" element="tns:ReadFromIdentifierResponse" />
+  </wsdl:message>
+  <wsdl:message name="UpdateFullTextWithCrackedTextSoapIn">
+    <wsdl:part name="parameters" element="tns:UpdateFullTextWithCrackedText" />
+  </wsdl:message>
+  <wsdl:message name="UpdateFullTextWithCrackedTextSoapOut">
+    <wsdl:part name="parameters" element="tns:UpdateFullTextWithCrackedTextResponse" />
+  </wsdl:message>
+  <wsdl:message name="ClearImagesFromDocumentSoapIn">
+    <wsdl:part name="parameters" element="tns:ClearImagesFromDocument" />
+  </wsdl:message>
+  <wsdl:message name="ClearImagesFromDocumentSoapOut">
+    <wsdl:part name="parameters" element="tns:ClearImagesFromDocumentResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetDocumentDirectoryByCaseArtifactIDSoapIn">
+    <wsdl:part name="parameters" element="tns:GetDocumentDirectoryByCaseArtifactID" />
+  </wsdl:message>
+  <wsdl:message name="GetDocumentDirectoryByCaseArtifactIDSoapOut">
+    <wsdl:part name="parameters" element="tns:GetDocumentDirectoryByCaseArtifactIDResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetPrintImageGuidsSoapIn">
+    <wsdl:part name="parameters" element="tns:GetPrintImageGuids" />
+  </wsdl:message>
+  <wsdl:message name="GetPrintImageGuidsSoapOut">
+    <wsdl:part name="parameters" element="tns:GetPrintImageGuidsResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetIdentifierFromDocumentArtifactIDSoapIn">
+    <wsdl:part name="parameters" element="tns:GetIdentifierFromDocumentArtifactID" />
+  </wsdl:message>
+  <wsdl:message name="GetIdentifierFromDocumentArtifactIDSoapOut">
+    <wsdl:part name="parameters" element="tns:GetIdentifierFromDocumentArtifactIDResponse" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveAllUnsupportedOiFileIdsSoapIn">
+    <wsdl:part name="parameters" element="tns:RetrieveAllUnsupportedOiFileIds" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveAllUnsupportedOiFileIdsSoapOut">
+    <wsdl:part name="parameters" element="tns:RetrieveAllUnsupportedOiFileIdsResponse" />
+  </wsdl:message>
+  <wsdl:portType name="DocumentManagerSoap">
+    <wsdl:operation name="GetAllDocumentsForCase">
+      <wsdl:input message="tns:GetAllDocumentsForCaseSoapIn" />
+      <wsdl:output message="tns:GetAllDocumentsForCaseSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="NewFileDTO">
+      <wsdl:input message="tns:NewFileDTOSoapIn" />
+      <wsdl:output message="tns:NewFileDTOSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="CreateEmptyDocument">
+      <wsdl:input message="tns:CreateEmptyDocumentSoapIn" />
+      <wsdl:output message="tns:CreateEmptyDocumentSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="Read">
+      <wsdl:input message="tns:ReadSoapIn" />
+      <wsdl:output message="tns:ReadSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="DeleteNative">
+      <wsdl:input message="tns:DeleteNativeSoapIn" />
+      <wsdl:output message="tns:DeleteNativeSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="Create">
+      <wsdl:input message="tns:CreateSoapIn" />
+      <wsdl:output message="tns:CreateSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="Update">
+      <wsdl:input message="tns:UpdateSoapIn" />
+      <wsdl:output message="tns:UpdateSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="CreateRange">
+      <wsdl:input message="tns:CreateRangeSoapIn" />
+      <wsdl:output message="tns:CreateRangeSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="UpdateRange">
+      <wsdl:input message="tns:UpdateRangeSoapIn" />
+      <wsdl:output message="tns:UpdateRangeSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="AddFullTextToDocument">
+      <wsdl:input message="tns:AddFullTextToDocumentSoapIn" />
+      <wsdl:output message="tns:AddFullTextToDocumentSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetDocumentArtifactIDFromIdentifier">
+      <wsdl:input message="tns:GetDocumentArtifactIDFromIdentifierSoapIn" />
+      <wsdl:output message="tns:GetDocumentArtifactIDFromIdentifierSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ReadFromIdentifier">
+      <wsdl:input message="tns:ReadFromIdentifierSoapIn" />
+      <wsdl:output message="tns:ReadFromIdentifierSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="UpdateFullTextWithCrackedText">
+      <wsdl:input message="tns:UpdateFullTextWithCrackedTextSoapIn" />
+      <wsdl:output message="tns:UpdateFullTextWithCrackedTextSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ClearImagesFromDocument">
+      <wsdl:input message="tns:ClearImagesFromDocumentSoapIn" />
+      <wsdl:output message="tns:ClearImagesFromDocumentSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetDocumentDirectoryByCaseArtifactID">
+      <wsdl:input message="tns:GetDocumentDirectoryByCaseArtifactIDSoapIn" />
+      <wsdl:output message="tns:GetDocumentDirectoryByCaseArtifactIDSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetPrintImageGuids">
+      <wsdl:input message="tns:GetPrintImageGuidsSoapIn" />
+      <wsdl:output message="tns:GetPrintImageGuidsSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetIdentifierFromDocumentArtifactID">
+      <wsdl:input message="tns:GetIdentifierFromDocumentArtifactIDSoapIn" />
+      <wsdl:output message="tns:GetIdentifierFromDocumentArtifactIDSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveAllUnsupportedOiFileIds">
+      <wsdl:input message="tns:RetrieveAllUnsupportedOiFileIdsSoapIn" />
+      <wsdl:output message="tns:RetrieveAllUnsupportedOiFileIdsSoapOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="DocumentManagerSoap" type="tns:DocumentManagerSoap">
     <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document" />
-    <operation name="GetAllDocumentsForCase">
+    <wsdl:operation name="GetAllDocumentsForCase">
       <soap:operation soapAction="http://foley.com/EDDS/DocumentManager/GetAllDocumentsForCase" style="document" />
-      <input>
+      <wsdl:input>
         <soap:body use="literal" />
-      </input>
-      <output>
+      </wsdl:input>
+      <wsdl:output>
         <soap:body use="literal" />
-      </output>
-    </operation>
-    <operation name="NewFileDTO">
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="NewFileDTO">
       <soap:operation soapAction="http://foley.com/EDDS/DocumentManager/NewFileDTO" style="document" />
-      <input>
+      <wsdl:input>
         <soap:body use="literal" />
-      </input>
-      <output>
+      </wsdl:input>
+      <wsdl:output>
         <soap:body use="literal" />
-      </output>
-    </operation>
-    <operation name="CreateEmptyDocument">
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CreateEmptyDocument">
       <soap:operation soapAction="http://foley.com/EDDS/DocumentManager/CreateEmptyDocument" style="document" />
-      <input>
+      <wsdl:input>
         <soap:body use="literal" />
-      </input>
-      <output>
+      </wsdl:input>
+      <wsdl:output>
         <soap:body use="literal" />
-      </output>
-    </operation>
-    <operation name="Read">
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Read">
       <soap:operation soapAction="http://foley.com/EDDS/DocumentManager/Read" style="document" />
-      <input>
+      <wsdl:input>
         <soap:body use="literal" />
-      </input>
-      <output>
+      </wsdl:input>
+      <wsdl:output>
         <soap:body use="literal" />
-      </output>
-    </operation>
-    <operation name="DeleteNative">
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="DeleteNative">
       <soap:operation soapAction="http://foley.com/EDDS/DocumentManager/DeleteNative" style="document" />
-      <input>
+      <wsdl:input>
         <soap:body use="literal" />
-      </input>
-      <output>
+      </wsdl:input>
+      <wsdl:output>
         <soap:body use="literal" />
-      </output>
-    </operation>
-    <operation name="Create">
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Create">
       <soap:operation soapAction="http://foley.com/EDDS/DocumentManager/Create" style="document" />
-      <input>
+      <wsdl:input>
         <soap:body use="literal" />
-      </input>
-      <output>
+      </wsdl:input>
+      <wsdl:output>
         <soap:body use="literal" />
-      </output>
-    </operation>
-    <operation name="Update">
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Update">
       <soap:operation soapAction="http://foley.com/EDDS/DocumentManager/Update" style="document" />
-      <input>
+      <wsdl:input>
         <soap:body use="literal" />
-      </input>
-      <output>
+      </wsdl:input>
+      <wsdl:output>
         <soap:body use="literal" />
-      </output>
-    </operation>
-    <operation name="CreateRange">
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CreateRange">
       <soap:operation soapAction="http://foley.com/EDDS/DocumentManager/CreateRange" style="document" />
-      <input>
+      <wsdl:input>
         <soap:body use="literal" />
-      </input>
-      <output>
+      </wsdl:input>
+      <wsdl:output>
         <soap:body use="literal" />
-      </output>
-    </operation>
-    <operation name="UpdateRange">
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="UpdateRange">
       <soap:operation soapAction="http://foley.com/EDDS/DocumentManager/UpdateRange" style="document" />
-      <input>
+      <wsdl:input>
         <soap:body use="literal" />
-      </input>
-      <output>
+      </wsdl:input>
+      <wsdl:output>
         <soap:body use="literal" />
-      </output>
-    </operation>
-    <operation name="AddFullTextToDocument">
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="AddFullTextToDocument">
       <soap:operation soapAction="http://foley.com/EDDS/DocumentManager/AddFullTextToDocument" style="document" />
-      <input>
+      <wsdl:input>
         <soap:body use="literal" />
-      </input>
-      <output>
+      </wsdl:input>
+      <wsdl:output>
         <soap:body use="literal" />
-      </output>
-    </operation>
-    <operation name="GetDocumentArtifactIDFromIdentifier">
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetDocumentArtifactIDFromIdentifier">
       <soap:operation soapAction="http://foley.com/EDDS/DocumentManager/GetDocumentArtifactIDFromIdentifier" style="document" />
-      <input>
+      <wsdl:input>
         <soap:body use="literal" />
-      </input>
-      <output>
+      </wsdl:input>
+      <wsdl:output>
         <soap:body use="literal" />
-      </output>
-    </operation>
-    <operation name="ReadFromIdentifier">
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ReadFromIdentifier">
       <soap:operation soapAction="http://foley.com/EDDS/DocumentManager/ReadFromIdentifier" style="document" />
-      <input>
+      <wsdl:input>
         <soap:body use="literal" />
-      </input>
-      <output>
+      </wsdl:input>
+      <wsdl:output>
         <soap:body use="literal" />
-      </output>
-    </operation>
-    <operation name="UpdateFullTextWithCrackedText">
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="UpdateFullTextWithCrackedText">
       <soap:operation soapAction="http://foley.com/EDDS/DocumentManager/UpdateFullTextWithCrackedText" style="document" />
-      <input>
+      <wsdl:input>
         <soap:body use="literal" />
-      </input>
-      <output>
+      </wsdl:input>
+      <wsdl:output>
         <soap:body use="literal" />
-      </output>
-    </operation>
-    <operation name="ClearImagesFromDocument">
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ClearImagesFromDocument">
       <soap:operation soapAction="http://foley.com/EDDS/DocumentManager/ClearImagesFromDocument" style="document" />
-      <input>
+      <wsdl:input>
         <soap:body use="literal" />
-      </input>
-      <output>
+      </wsdl:input>
+      <wsdl:output>
         <soap:body use="literal" />
-      </output>
-    </operation>
-    <operation name="GetDocumentDirectoryByCaseArtifactID">
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetDocumentDirectoryByCaseArtifactID">
       <soap:operation soapAction="http://foley.com/EDDS/DocumentManager/GetDocumentDirectoryByCaseArtifactID" style="document" />
-      <input>
+      <wsdl:input>
         <soap:body use="literal" />
-      </input>
-      <output>
+      </wsdl:input>
+      <wsdl:output>
         <soap:body use="literal" />
-      </output>
-    </operation>
-    <operation name="GetPrintImageGuids">
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetPrintImageGuids">
       <soap:operation soapAction="http://foley.com/EDDS/DocumentManager/GetPrintImageGuids" style="document" />
-      <input>
+      <wsdl:input>
         <soap:body use="literal" />
-      </input>
-      <output>
+      </wsdl:input>
+      <wsdl:output>
         <soap:body use="literal" />
-      </output>
-    </operation>
-    <operation name="GetIdentifierFromDocumentArtifactID">
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetIdentifierFromDocumentArtifactID">
       <soap:operation soapAction="http://foley.com/EDDS/DocumentManager/GetIdentifierFromDocumentArtifactID" style="document" />
-      <input>
+      <wsdl:input>
         <soap:body use="literal" />
-      </input>
-      <output>
+      </wsdl:input>
+      <wsdl:output>
         <soap:body use="literal" />
-      </output>
-    </operation>
-    <operation name="RetrieveAllUnsupportedOiFileIds">
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveAllUnsupportedOiFileIds">
       <soap:operation soapAction="http://foley.com/EDDS/DocumentManager/RetrieveAllUnsupportedOiFileIds" style="document" />
-      <input>
+      <wsdl:input>
         <soap:body use="literal" />
-      </input>
-      <output>
+      </wsdl:input>
+      <wsdl:output>
         <soap:body use="literal" />
-      </output>
-    </operation>
-  </binding>
-  <service name="DocumentManager">
-    <port name="DocumentManagerSoap" binding="s0:DocumentManagerSoap">
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="DocumentManager">
+    <documentation xmlns="http://schemas.xmlsoap.org/wsdl/" />
+    <wsdl:port name="DocumentManagerSoap" binding="tns:DocumentManagerSoap">
       <soap:address location="http://localhost/EDDSWebAPI/DocumentManager.asmx" />
-    </port>
-  </service>
-</definitions>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

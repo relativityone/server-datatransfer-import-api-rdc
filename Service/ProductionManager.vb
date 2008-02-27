@@ -101,15 +101,15 @@ Namespace kCura.WinEDDS.Service
 			End While
 		End Function
 
-		Public Shadows Function RetrieveStagingByContextArtifactID(ByVal caseContextArtifactID As Int32) As System.Data.DataSet
+		Public Shadows Function RetrieveImportEligibleByContextArtifactID(ByVal caseContextArtifactID As Int32) As System.Data.DataSet
 			Dim tries As Int32 = 0
 			While tries < Config.MaxReloginTries
 				tries += 1
 				Try
 					If kCura.WinEDDS.Config.UsesWebAPI Then
-						Return MyBase.RetrieveStagingByContextArtifactID(caseContextArtifactID)
+						Return MyBase.RetrieveImportEligibleByContextArtifactID(caseContextArtifactID)
 					Else
-						'Return _productionManager.ExternalRetrieveProducedByContextArtifactID(contextArtifactID, _identity)
+						'Return _productionManager.RetrieveImportEligibleByContextArtifactID(contextArtifactID, _identity)
 					End If
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
@@ -160,6 +160,28 @@ Namespace kCura.WinEDDS.Service
 				End Try
 			End While
 		End Function
+
+		Public Shadows Sub DoPostImportProcessing(ByVal contextArtifactID As Int32, ByVal productionArtifactID As Int32)
+			Dim tries As Int32 = 0
+			While tries < Config.MaxReloginTries
+				tries += 1
+				Try
+					If kCura.WinEDDS.Config.UsesWebAPI Then
+						MyBase.DoPostImportProcessing(contextArtifactID, productionArtifactID)
+					Else
+						'_productionManager.DoPostImportProcessing(contextArtifactID, productionArtifactID)
+					End If
+				Catch ex As System.Exception
+					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
+						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer)
+					Else
+						Throw
+					End If
+				End Try
+			End While
+		End Sub
+
+
 
 		Public Shadows Function AddDocumentToProduction(ByVal caseContextArtifactID As Int32, ByVal productionArtifactID As Int32, ByVal documentArtifactID As Int32) As Boolean
 			Dim tries As Int32 = 0

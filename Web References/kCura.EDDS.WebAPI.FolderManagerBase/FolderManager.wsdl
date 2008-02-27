@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<definitions xmlns:s1="http://NullableTypes.SourceForge.Net/NullableInt32XMLSchema" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:s0="http://www.kCura.com/EDDS/FolderManager" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" targetNamespace="http://www.kCura.com/EDDS/FolderManager" xmlns="http://schemas.xmlsoap.org/wsdl/">
-  <types>
+<wsdl:definitions xmlns:s1="http://NullableTypes.SourceForge.Net/NullableInt32XMLSchema" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tns="http://www.kCura.com/EDDS/FolderManager" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" targetNamespace="http://www.kCura.com/EDDS/FolderManager" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
     <s:schema elementFormDefault="qualified" targetNamespace="http://www.kCura.com/EDDS/FolderManager">
       <s:import namespace="http://www.w3.org/2001/XMLSchema" />
       <s:import namespace="http://NullableTypes.SourceForge.Net/NullableInt32XMLSchema" />
@@ -58,13 +58,13 @@
       <s:element name="ReadResponse">
         <s:complexType>
           <s:sequence>
-            <s:element minOccurs="0" maxOccurs="1" name="ReadResult" type="s0:Folder" />
+            <s:element minOccurs="0" maxOccurs="1" name="ReadResult" type="tns:Folder" />
           </s:sequence>
         </s:complexType>
       </s:element>
       <s:complexType name="Folder">
         <s:complexContent mixed="false">
-          <s:extension base="s0:Artifact">
+          <s:extension base="tns:Artifact">
             <s:sequence>
               <s:element minOccurs="0" maxOccurs="1" name="Name" type="s:string" />
             </s:sequence>
@@ -152,129 +152,130 @@
     <s:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="http://NullableTypes.SourceForge.Net/NullableInt32XMLSchema" id="NullableInt32">
       <xs:element name="NullableInt32" nillable="true" type="xs:int" />
     </s:schema>
-  </types>
-  <message name="RetrieveAllByCaseIDSoapIn">
-    <part name="parameters" element="s0:RetrieveAllByCaseID" />
-  </message>
-  <message name="RetrieveAllByCaseIDSoapOut">
-    <part name="parameters" element="s0:RetrieveAllByCaseIDResponse" />
-  </message>
-  <message name="RetrieveFolderAndDescendantsSoapIn">
-    <part name="parameters" element="s0:RetrieveFolderAndDescendants" />
-  </message>
-  <message name="RetrieveFolderAndDescendantsSoapOut">
-    <part name="parameters" element="s0:RetrieveFolderAndDescendantsResponse" />
-  </message>
-  <message name="ReadSoapIn">
-    <part name="parameters" element="s0:Read" />
-  </message>
-  <message name="ReadSoapOut">
-    <part name="parameters" element="s0:ReadResponse" />
-  </message>
-  <message name="RetrieveSoapIn">
-    <part name="parameters" element="s0:Retrieve" />
-  </message>
-  <message name="RetrieveSoapOut">
-    <part name="parameters" element="s0:RetrieveResponse" />
-  </message>
-  <message name="CreateSoapIn">
-    <part name="parameters" element="s0:Create" />
-  </message>
-  <message name="CreateSoapOut">
-    <part name="parameters" element="s0:CreateResponse" />
-  </message>
-  <message name="ExistsSoapIn">
-    <part name="parameters" element="s0:Exists" />
-  </message>
-  <message name="ExistsSoapOut">
-    <part name="parameters" element="s0:ExistsResponse" />
-  </message>
-  <portType name="FolderManagerSoap">
-    <operation name="RetrieveAllByCaseID">
-      <input message="s0:RetrieveAllByCaseIDSoapIn" />
-      <output message="s0:RetrieveAllByCaseIDSoapOut" />
-    </operation>
-    <operation name="RetrieveFolderAndDescendants">
-      <input message="s0:RetrieveFolderAndDescendantsSoapIn" />
-      <output message="s0:RetrieveFolderAndDescendantsSoapOut" />
-    </operation>
-    <operation name="Read">
-      <input message="s0:ReadSoapIn" />
-      <output message="s0:ReadSoapOut" />
-    </operation>
-    <operation name="Retrieve">
-      <input message="s0:RetrieveSoapIn" />
-      <output message="s0:RetrieveSoapOut" />
-    </operation>
-    <operation name="Create">
-      <input message="s0:CreateSoapIn" />
-      <output message="s0:CreateSoapOut" />
-    </operation>
-    <operation name="Exists">
-      <input message="s0:ExistsSoapIn" />
-      <output message="s0:ExistsSoapOut" />
-    </operation>
-  </portType>
-  <binding name="FolderManagerSoap" type="s0:FolderManagerSoap">
+  </wsdl:types>
+  <wsdl:message name="RetrieveAllByCaseIDSoapIn">
+    <wsdl:part name="parameters" element="tns:RetrieveAllByCaseID" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveAllByCaseIDSoapOut">
+    <wsdl:part name="parameters" element="tns:RetrieveAllByCaseIDResponse" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveFolderAndDescendantsSoapIn">
+    <wsdl:part name="parameters" element="tns:RetrieveFolderAndDescendants" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveFolderAndDescendantsSoapOut">
+    <wsdl:part name="parameters" element="tns:RetrieveFolderAndDescendantsResponse" />
+  </wsdl:message>
+  <wsdl:message name="ReadSoapIn">
+    <wsdl:part name="parameters" element="tns:Read" />
+  </wsdl:message>
+  <wsdl:message name="ReadSoapOut">
+    <wsdl:part name="parameters" element="tns:ReadResponse" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveSoapIn">
+    <wsdl:part name="parameters" element="tns:Retrieve" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveSoapOut">
+    <wsdl:part name="parameters" element="tns:RetrieveResponse" />
+  </wsdl:message>
+  <wsdl:message name="CreateSoapIn">
+    <wsdl:part name="parameters" element="tns:Create" />
+  </wsdl:message>
+  <wsdl:message name="CreateSoapOut">
+    <wsdl:part name="parameters" element="tns:CreateResponse" />
+  </wsdl:message>
+  <wsdl:message name="ExistsSoapIn">
+    <wsdl:part name="parameters" element="tns:Exists" />
+  </wsdl:message>
+  <wsdl:message name="ExistsSoapOut">
+    <wsdl:part name="parameters" element="tns:ExistsResponse" />
+  </wsdl:message>
+  <wsdl:portType name="FolderManagerSoap">
+    <wsdl:operation name="RetrieveAllByCaseID">
+      <wsdl:input message="tns:RetrieveAllByCaseIDSoapIn" />
+      <wsdl:output message="tns:RetrieveAllByCaseIDSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveFolderAndDescendants">
+      <wsdl:input message="tns:RetrieveFolderAndDescendantsSoapIn" />
+      <wsdl:output message="tns:RetrieveFolderAndDescendantsSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="Read">
+      <wsdl:input message="tns:ReadSoapIn" />
+      <wsdl:output message="tns:ReadSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="Retrieve">
+      <wsdl:input message="tns:RetrieveSoapIn" />
+      <wsdl:output message="tns:RetrieveSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="Create">
+      <wsdl:input message="tns:CreateSoapIn" />
+      <wsdl:output message="tns:CreateSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="Exists">
+      <wsdl:input message="tns:ExistsSoapIn" />
+      <wsdl:output message="tns:ExistsSoapOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="FolderManagerSoap" type="tns:FolderManagerSoap">
     <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document" />
-    <operation name="RetrieveAllByCaseID">
+    <wsdl:operation name="RetrieveAllByCaseID">
       <soap:operation soapAction="http://www.kCura.com/EDDS/FolderManager/RetrieveAllByCaseID" style="document" />
-      <input>
+      <wsdl:input>
         <soap:body use="literal" />
-      </input>
-      <output>
+      </wsdl:input>
+      <wsdl:output>
         <soap:body use="literal" />
-      </output>
-    </operation>
-    <operation name="RetrieveFolderAndDescendants">
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveFolderAndDescendants">
       <soap:operation soapAction="http://www.kCura.com/EDDS/FolderManager/RetrieveFolderAndDescendants" style="document" />
-      <input>
+      <wsdl:input>
         <soap:body use="literal" />
-      </input>
-      <output>
+      </wsdl:input>
+      <wsdl:output>
         <soap:body use="literal" />
-      </output>
-    </operation>
-    <operation name="Read">
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Read">
       <soap:operation soapAction="http://www.kCura.com/EDDS/FolderManager/Read" style="document" />
-      <input>
+      <wsdl:input>
         <soap:body use="literal" />
-      </input>
-      <output>
+      </wsdl:input>
+      <wsdl:output>
         <soap:body use="literal" />
-      </output>
-    </operation>
-    <operation name="Retrieve">
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Retrieve">
       <soap:operation soapAction="http://www.kCura.com/EDDS/FolderManager/Retrieve" style="document" />
-      <input>
+      <wsdl:input>
         <soap:body use="literal" />
-      </input>
-      <output>
+      </wsdl:input>
+      <wsdl:output>
         <soap:body use="literal" />
-      </output>
-    </operation>
-    <operation name="Create">
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Create">
       <soap:operation soapAction="http://www.kCura.com/EDDS/FolderManager/Create" style="document" />
-      <input>
+      <wsdl:input>
         <soap:body use="literal" />
-      </input>
-      <output>
+      </wsdl:input>
+      <wsdl:output>
         <soap:body use="literal" />
-      </output>
-    </operation>
-    <operation name="Exists">
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Exists">
       <soap:operation soapAction="http://www.kCura.com/EDDS/FolderManager/Exists" style="document" />
-      <input>
+      <wsdl:input>
         <soap:body use="literal" />
-      </input>
-      <output>
+      </wsdl:input>
+      <wsdl:output>
         <soap:body use="literal" />
-      </output>
-    </operation>
-  </binding>
-  <service name="FolderManager">
-    <port name="FolderManagerSoap" binding="s0:FolderManagerSoap">
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="FolderManager">
+    <documentation xmlns="http://schemas.xmlsoap.org/wsdl/" />
+    <wsdl:port name="FolderManagerSoap" binding="tns:FolderManagerSoap">
       <soap:address location="http://localhost/EDDSWebAPI/FolderManager.asmx" />
-    </port>
-  </service>
-</definitions>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

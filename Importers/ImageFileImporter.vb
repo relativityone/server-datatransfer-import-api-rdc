@@ -166,6 +166,7 @@ Namespace kCura.WinEDDS
 					_errorLogWriter.Close()
 				End If
 				Me.Reader.Close()
+				_productionManager.DoPostImportProcessing(_fileUploader.CaseArtifactID, _productionArtifactID)
 				RaiseStatusEvent(kCura.Windows.Process.EventType.Progress, "End Image Upload")
 			Catch ex As System.Exception
 				Try
@@ -306,13 +307,7 @@ Namespace kCura.WinEDDS
 			ElseIf Not System.IO.File.Exists(Me.GetFileLocation(values)) Then
 				Me.RaiseStatusEvent(Windows.Process.EventType.Error, String.Format("Image file specified ( {0} ) does not exist.", values(Columns.FileLocation)))
 				retval = False
-				'ElseIf _productionArtifactID <> 0 AndAlso Me.IsInvalidBatesForImportedProduction() Then
-				'	'Me.RaiseStatusEvent(Windows.Process.EventType.Error, String.Format("This is your error message"))
-				'	retval = False
 			Else
-				If _productionArtifactID <> 0 Then
-					ValidateBatesFormatOfImportedProductionImage(values(Columns.BatesNumber).Trim)
-				End If
 				Dim validator As New kCura.ImageValidator.ImageValidator
 				Dim path As String = Me.GetFileLocation(values)
 				Try
@@ -325,23 +320,6 @@ Namespace kCura.WinEDDS
 			Return retval
 			'check to make sure image is good
 		End Function
-
-		Private Sub ValidateBatesFormatOfImportedProductionImage(ByVal batesNumber As String)
-			Dim regexString As String = String.Format("(?:{0})(.*)", System.Text.RegularExpressions.Regex.Escape(_productionDTO.BatesPrefix))
-			If _productionDTO.BatesSuffix <> String.Empty Then
-				regexString += String.Format("(?={0})", System.Text.RegularExpressions.Regex.Escape(_productionDTO.BatesPrefix))
-			End If
-			Dim regex As New System.Text.RegularExpressions.Regex(regexString, Text.RegularExpressions.RegexOptions.IgnoreCase)
-			Dim matchCollection As System.Text.RegularExpressions.MatchCollection = regex.Matches(batesNumber)
-			Try
-				Dim value As String = matchCollection(0).Groups(1).Value
-				If Not (IsNumber(value) AndAlso value.Length = _productionDTO.BatesFormat) Then
-					Throw New InvalidBatesFormatException(batesNumber, _productionDTO.Name, _productionDTO.BatesPrefix, _productionDTO.BatesSuffix, _productionDTO.BatesFormat.ToString)
-				End If
-			Catch ex As Exception
-				Throw New InvalidBatesFormatException(batesNumber, _productionDTO.Name, _productionDTO.BatesPrefix, _productionDTO.BatesSuffix, _productionDTO.BatesFormat.ToString)
-			End Try
-		End Sub
 
 		Private Function IsNumber(ByVal value As String) As Boolean
 			Try
