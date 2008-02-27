@@ -661,7 +661,7 @@ Namespace kCura.EDDS.WinForm
 				imageFile.ForProduction = True
 				imageFile.SelectedCasePath = caseinfo.DocumentPath
 				Dim productionManager As New kCura.WinEDDS.Service.ProductionManager(Me.Credential, _cookieContainer)
-				imageFile.ProductionTable = productionManager.RetrieveStagingByContextArtifactID(caseinfo.ArtifactID).Tables(0)
+				imageFile.ProductionTable = productionManager.RetrieveImportEligibleByContextArtifactID(caseinfo.ArtifactID).Tables(0)
 				frm.ImageLoadFile = imageFile
 			Catch ex As System.Exception
 				Throw
