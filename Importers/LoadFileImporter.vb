@@ -117,7 +117,8 @@ Namespace kCura.WinEDDS
 #Region "Utility"
 
 		Public Function GetColumnNames(ByVal path As String) As String()
-			reader = New System.IO.StreamReader(path, _sourceFileEncoding)
+			If _sourceFileEncoding Is Nothing Then _sourceFileEncoding = System.Text.Encoding.Default
+			reader = New System.IO.StreamReader(path, _sourceFileEncoding, True)
 			Dim columnNames As String() = GetLine
 			If Not _firstLineContainsColumnNames Then
 				Dim i As Int32
