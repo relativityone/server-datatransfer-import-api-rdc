@@ -917,14 +917,39 @@ Namespace kCura.EDDS.WinForm
 			OpenFileDialog.ShowDialog()
 		End Sub
 
-		Private Function RefreshNativeFilePathFieldAndFileColumnHeaders() As String()
+		Private Function RefreshNativeFilePathFieldAndFileColumnHeaders(Optional ByVal showWarning As Boolean = False) As String()
 			Dim columnHeaders As String()
-			_fileColumnHeaders.Items.Clear()
-			_nativeFilePathField.Items.Clear()
-			_destinationFolderPath.Items.Clear()
-			'_identifiersDropDown.Items.Clear()
-			_fileColumns.ClearAll()
+			Dim listsAreSame As Boolean = True
+			Dim currentHeaders As String()
 			If System.IO.File.Exists(LoadFile.FilePath) Then
+				columnHeaders = _application.GetColumnHeadersFromLoadFile(LoadFile, _firstLineContainsColumnNames.Checked)
+				System.Array.Sort(columnHeaders)
+				Dim currentHeaderList As New System.Collections.ArrayList
+				For Each item As Object In _fileColumns.LeftListBoxItems
+					currentHeaderList.Add(item.ToString)
+				Next
+				For Each item As Object In _fileColumns.RightListBoxItems
+					currentHeaderList.Add(item.ToString)
+				Next
+				currentHeaders = DirectCast(currentHeaderList.ToArray(GetType(String)), String())
+				System.Array.Sort(currentHeaders)
+				If currentHeaders.Length <> columnHeaders.Length Then listsAreSame = False
+				If listsAreSame Then
+					For i As Int32 = 0 To currentHeaders.Length - 1
+						listsAreSame = listsAreSame And (currentHeaders(i) = columnHeaders(i))
+						If Not listsAreSame Then Exit For
+					Next
+				End If
+			End If
+			If System.IO.File.Exists(LoadFile.FilePath) AndAlso Not listsAreSame Then
+				If currentHeaders.Length > 0 AndAlso Not listsAreSame Then
+					MsgBox("Column schema changed with load file." & System.Environment.NewLine & "Column information reset.", MsgBoxStyle.Information, "Relwin Message")
+				End If
+				_fileColumnHeaders.Items.Clear()
+				_nativeFilePathField.Items.Clear()
+				_destinationFolderPath.Items.Clear()
+				'_identifiersDropDown.Items.Clear()
+				_fileColumns.ClearAll()
 				PopulateLoadFileDelimiters()
 				columnHeaders = _application.GetColumnHeadersFromLoadFile(LoadFile, _firstLineContainsColumnNames.Checked)
 				System.Array.Sort(columnHeaders)
@@ -940,12 +965,11 @@ Namespace kCura.EDDS.WinForm
 				If LoadFile.LoadNativeFiles AndAlso System.IO.File.Exists(LoadFile.FilePath) Then
 					_nativeFilePathField.SelectedItem = LoadFile.NativeFilePathColumn
 				End If
-			Else
+				_nativeFilePathField.SelectedItem = Nothing
+				_nativeFilePathField.Text = "Select ..."
+				_destinationFolderPath.SelectedItem = Nothing
+				_destinationFolderPath.Text = "Select ..."
 			End If
-			_nativeFilePathField.SelectedItem = Nothing
-			_nativeFilePathField.Text = "Select ..."
-			_destinationFolderPath.SelectedItem = Nothing
-			_destinationFolderPath.Text = "Select ..."
 			ActionMenuEnabled = ReadyToRun
 			Return columnHeaders
 		End Function
@@ -957,7 +981,7 @@ Namespace kCura.EDDS.WinForm
 				oldfilepath = _filePath.Text
 				_filePath.Text = OpenFileDialog.FileName
 				PopulateLoadFileObject()
-				RefreshNativeFilePathFieldAndFileColumnHeaders()
+				RefreshNativeFilePathFieldAndFileColumnHeaders(True)
 				Dim extension As String = _filePath.Text
 				If extension.IndexOf("\") <> -1 Then
 					extension = extension.Substring(extension.LastIndexOf("\") + 1)
