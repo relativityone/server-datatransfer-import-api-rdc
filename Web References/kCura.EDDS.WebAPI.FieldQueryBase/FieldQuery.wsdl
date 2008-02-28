@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<wsdl:definitions xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tns="http://foley.com/EDDS/FieldQuery" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" targetNamespace="http://foley.com/EDDS/FieldQuery" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
-  <wsdl:types>
+<definitions xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:s0="http://foley.com/EDDS/FieldQuery" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" targetNamespace="http://foley.com/EDDS/FieldQuery" xmlns="http://schemas.xmlsoap.org/wsdl/">
+  <types>
     <s:schema elementFormDefault="qualified" targetNamespace="http://foley.com/EDDS/FieldQuery">
       <s:import namespace="http://www.w3.org/2001/XMLSchema" />
       <s:element name="RetrieveDisplayFieldNameByFieldCategoryID">
@@ -60,74 +60,113 @@
           </s:sequence>
         </s:complexType>
       </s:element>
+      <s:element name="RetrievePotentialBeginBatesFields">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="RetrievePotentialBeginBatesFieldsResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="RetrievePotentialBeginBatesFieldsResult">
+              <s:complexType>
+                <s:sequence>
+                  <s:element ref="s:schema" />
+                  <s:any />
+                </s:sequence>
+              </s:complexType>
+            </s:element>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
     </s:schema>
-  </wsdl:types>
-  <wsdl:message name="RetrieveDisplayFieldNameByFieldCategoryIDSoapIn">
-    <wsdl:part name="parameters" element="tns:RetrieveDisplayFieldNameByFieldCategoryID" />
-  </wsdl:message>
-  <wsdl:message name="RetrieveDisplayFieldNameByFieldCategoryIDSoapOut">
-    <wsdl:part name="parameters" element="tns:RetrieveDisplayFieldNameByFieldCategoryIDResponse" />
-  </wsdl:message>
-  <wsdl:message name="RetrieveAllMappableSoapIn">
-    <wsdl:part name="parameters" element="tns:RetrieveAllMappable" />
-  </wsdl:message>
-  <wsdl:message name="RetrieveAllMappableSoapOut">
-    <wsdl:part name="parameters" element="tns:RetrieveAllMappableResponse" />
-  </wsdl:message>
-  <wsdl:message name="RetrieveAllSoapIn">
-    <wsdl:part name="parameters" element="tns:RetrieveAll" />
-  </wsdl:message>
-  <wsdl:message name="RetrieveAllSoapOut">
-    <wsdl:part name="parameters" element="tns:RetrieveAllResponse" />
-  </wsdl:message>
-  <wsdl:portType name="FieldQuerySoap">
-    <wsdl:operation name="RetrieveDisplayFieldNameByFieldCategoryID">
-      <wsdl:input message="tns:RetrieveDisplayFieldNameByFieldCategoryIDSoapIn" />
-      <wsdl:output message="tns:RetrieveDisplayFieldNameByFieldCategoryIDSoapOut" />
-    </wsdl:operation>
-    <wsdl:operation name="RetrieveAllMappable">
-      <wsdl:input message="tns:RetrieveAllMappableSoapIn" />
-      <wsdl:output message="tns:RetrieveAllMappableSoapOut" />
-    </wsdl:operation>
-    <wsdl:operation name="RetrieveAll">
-      <wsdl:input message="tns:RetrieveAllSoapIn" />
-      <wsdl:output message="tns:RetrieveAllSoapOut" />
-    </wsdl:operation>
-  </wsdl:portType>
-  <wsdl:binding name="FieldQuerySoap" type="tns:FieldQuerySoap">
+  </types>
+  <message name="RetrieveDisplayFieldNameByFieldCategoryIDSoapIn">
+    <part name="parameters" element="s0:RetrieveDisplayFieldNameByFieldCategoryID" />
+  </message>
+  <message name="RetrieveDisplayFieldNameByFieldCategoryIDSoapOut">
+    <part name="parameters" element="s0:RetrieveDisplayFieldNameByFieldCategoryIDResponse" />
+  </message>
+  <message name="RetrieveAllMappableSoapIn">
+    <part name="parameters" element="s0:RetrieveAllMappable" />
+  </message>
+  <message name="RetrieveAllMappableSoapOut">
+    <part name="parameters" element="s0:RetrieveAllMappableResponse" />
+  </message>
+  <message name="RetrieveAllSoapIn">
+    <part name="parameters" element="s0:RetrieveAll" />
+  </message>
+  <message name="RetrieveAllSoapOut">
+    <part name="parameters" element="s0:RetrieveAllResponse" />
+  </message>
+  <message name="RetrievePotentialBeginBatesFieldsSoapIn">
+    <part name="parameters" element="s0:RetrievePotentialBeginBatesFields" />
+  </message>
+  <message name="RetrievePotentialBeginBatesFieldsSoapOut">
+    <part name="parameters" element="s0:RetrievePotentialBeginBatesFieldsResponse" />
+  </message>
+  <portType name="FieldQuerySoap">
+    <operation name="RetrieveDisplayFieldNameByFieldCategoryID">
+      <input message="s0:RetrieveDisplayFieldNameByFieldCategoryIDSoapIn" />
+      <output message="s0:RetrieveDisplayFieldNameByFieldCategoryIDSoapOut" />
+    </operation>
+    <operation name="RetrieveAllMappable">
+      <input message="s0:RetrieveAllMappableSoapIn" />
+      <output message="s0:RetrieveAllMappableSoapOut" />
+    </operation>
+    <operation name="RetrieveAll">
+      <input message="s0:RetrieveAllSoapIn" />
+      <output message="s0:RetrieveAllSoapOut" />
+    </operation>
+    <operation name="RetrievePotentialBeginBatesFields">
+      <input message="s0:RetrievePotentialBeginBatesFieldsSoapIn" />
+      <output message="s0:RetrievePotentialBeginBatesFieldsSoapOut" />
+    </operation>
+  </portType>
+  <binding name="FieldQuerySoap" type="s0:FieldQuerySoap">
     <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document" />
-    <wsdl:operation name="RetrieveDisplayFieldNameByFieldCategoryID">
+    <operation name="RetrieveDisplayFieldNameByFieldCategoryID">
       <soap:operation soapAction="http://foley.com/EDDS/FieldQuery/RetrieveDisplayFieldNameByFieldCategoryID" style="document" />
-      <wsdl:input>
+      <input>
         <soap:body use="literal" />
-      </wsdl:input>
-      <wsdl:output>
+      </input>
+      <output>
         <soap:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="RetrieveAllMappable">
+      </output>
+    </operation>
+    <operation name="RetrieveAllMappable">
       <soap:operation soapAction="http://foley.com/EDDS/FieldQuery/RetrieveAllMappable" style="document" />
-      <wsdl:input>
+      <input>
         <soap:body use="literal" />
-      </wsdl:input>
-      <wsdl:output>
+      </input>
+      <output>
         <soap:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="RetrieveAll">
+      </output>
+    </operation>
+    <operation name="RetrieveAll">
       <soap:operation soapAction="http://foley.com/EDDS/FieldQuery/RetrieveAll" style="document" />
-      <wsdl:input>
+      <input>
         <soap:body use="literal" />
-      </wsdl:input>
-      <wsdl:output>
+      </input>
+      <output>
         <soap:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
-  </wsdl:binding>
-  <wsdl:service name="FieldQuery">
-    <documentation xmlns="http://schemas.xmlsoap.org/wsdl/" />
-    <wsdl:port name="FieldQuerySoap" binding="tns:FieldQuerySoap">
+      </output>
+    </operation>
+    <operation name="RetrievePotentialBeginBatesFields">
+      <soap:operation soapAction="http://foley.com/EDDS/FieldQuery/RetrievePotentialBeginBatesFields" style="document" />
+      <input>
+        <soap:body use="literal" />
+      </input>
+      <output>
+        <soap:body use="literal" />
+      </output>
+    </operation>
+  </binding>
+  <service name="FieldQuery">
+    <port name="FieldQuerySoap" binding="s0:FieldQuerySoap">
       <soap:address location="http://localhost/EDDSWebAPI/FieldQuery.asmx" />
-    </wsdl:port>
-  </wsdl:service>
-</wsdl:definitions>
+    </port>
+  </service>
+</definitions>

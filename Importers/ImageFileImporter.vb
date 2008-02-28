@@ -31,6 +31,7 @@ Namespace kCura.WinEDDS
 
 		Private WithEvents _processController As kCura.Windows.Process.Controller
 		Private _productionDTO As kCura.EDDS.WebAPI.ProductionManagerBase.Production
+		Private _keyFieldDto As kCura.EDDS.WebAPI.FieldManagerBase.Field
 #End Region
 
 #Region "Accessors"
@@ -73,9 +74,11 @@ Namespace kCura.WinEDDS
 			_repositoryPath = args.SelectedCasePath & "EDDS" & args.CaseInfo.ArtifactID & "\"
 			_fileUploader = New kCura.WinEDDS.FileUploader(args.Credential, args.CaseInfo.ArtifactID, _repositoryPath, args.CookieContainer)
 			_folderID = folderID
+
 			_productionArtifactID = args.ProductionArtifactID
 			If _productionArtifactID <> 0 Then
 				_productionDTO = _productionManager.Read(args.CaseInfo.ArtifactID, _productionArtifactID)
+				_keyFieldDto = New kCura.WinEDDS.Service.FieldManager(args.Credential, args.CookieContainer).Read(args.CaseInfo.ArtifactID, args.BeginBatesFieldArtifactID)
 			End If
 			_overwrite = args.Overwrite
 			_replaceFullText = args.ReplaceFullText
@@ -245,7 +248,7 @@ Namespace kCura.WinEDDS
 				Dim identifierRow As String() = DirectCast(al(0), String())
 				Dim endRow As String() = DirectCast(al(al.Count - 1), String())
 				Dim documentIdentifier As String = String.Copy(identifierRow(Columns.BatesNumber))
-				Dim currentDocumentArtifactID As Int32 = _docManager.GetDocumentArtifactIDFromIdentifier(_fileUploader.CaseArtifactID, documentIdentifier, _selectedIdentifierField)
+				Dim currentDocumentArtifactID As Int32 = _docManager.GetDocumentArtifactIDFromIdentifier(_fileUploader.CaseArtifactID, documentIdentifier, _keyFieldDto.DisplayName)
 				Dim imageFileGuids As String()
 
 				If currentDocumentArtifactID > 0 Then
@@ -261,14 +264,16 @@ Namespace kCura.WinEDDS
 							imageFileGuids = _fileManager.ReturnFileGuidsForOriginalImages(_fileUploader.CaseArtifactID, currentDocumentArtifactID)
 						End If
 					End If
-				Else
+				ElseIf currentDocumentArtifactID = -1 Then
 					If _overwrite.ToLower = "strict" Then Throw New OverwriteStrictException(documentIdentifier)
-					Dim fullTextFileGuid As String = ""				 '_fileUploader.UploadTextAsFile(String.Empty, _folderID, System.Guid.NewGuid.ToString)
+					Dim fullTextFileGuid As String = ""					'_fileUploader.UploadTextAsFile(String.Empty, _folderID, System.Guid.NewGuid.ToString)
 					currentDocumentArtifactID = CreateDocument(documentIdentifier, New kCura.EDDS.Types.FullTextBuilder)
 					Dim imageDTOs As New ArrayList
 					GetImagesForDocument(al, imageDTOs, New kCura.EDDS.Types.FullTextBuilder)
 					_fileManager.CreateImages(_fileUploader.CaseArtifactID, DirectCast(imageDTOs.ToArray(GetType(kCura.EDDS.WebAPI.FileManagerBase.FileInfoBase)), kCura.EDDS.WebAPI.FileManagerBase.FileInfoBase()), currentDocumentArtifactID)
 					imageFileGuids = _fileManager.ReturnFileGuidsForOriginalImages(_fileUploader.CaseArtifactID, currentDocumentArtifactID)
+				Else
+					Throw New InvalidIdentifierKeyException(documentIdentifier, _keyFieldDto.DisplayName)
 				End If
 				If Not _productionManager.AddDocumentToProduction(_fileUploader.CaseArtifactID, _productionArtifactID, currentDocumentArtifactID) Then
 					Throw New DocumentInProductionException
@@ -508,6 +513,13 @@ Namespace kCura.WinEDDS
 			Inherits kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
 			Public Sub New(ByVal identifier As String)
 				MyBase.New(String.Format("The one or more images for document '{0}' have redactions.  Document skipped.", identifier))
+			End Sub
+		End Class
+
+		Public Class InvalidIdentifierKeyException
+			Inherits kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
+			Public Sub New(ByVal identifier As String, ByVal fieldName As String)
+				MyBase.New(String.Format("More than one document contains '{0}' as its '{1}' value.  Document skipped.", identifier, fieldName))
 			End Sub
 		End Class
 

@@ -10,6 +10,7 @@ Namespace kCura.WinEDDS
 		Public AutoNumberImages As Boolean
 		Public ProductionTable As System.Data.DataTable
 		Public ProductionArtifactID As Int32
+		Public BeginBatesFieldArtifactID As Int32
 		<NonSerialized()> Public SelectedCasePath As String = ""
 		<NonSerialized()> Public CopyFilesToDocumentRepository As Boolean = True
 		<NonSerialized()> Public Credential As Net.NetworkCredential
