@@ -54,6 +54,8 @@ Namespace kCura.EDDS.WinForm
 		Friend WithEvents MenuItem2 As System.Windows.Forms.MenuItem
 		Friend WithEvents _toolsMenuSettingsItem As System.Windows.Forms.MenuItem
 		Friend WithEvents _advancedButton As System.Windows.Forms.Button
+		Friend WithEvents GroupBox2 As System.Windows.Forms.GroupBox
+		Friend WithEvents _beginBatesDropdown As System.Windows.Forms.ComboBox
 		<System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
 			Dim resources As System.Resources.ResourceManager = New System.Resources.ResourceManager(GetType(ImageLoad))
 			Me.GroupBox3 = New System.Windows.Forms.GroupBox
@@ -78,10 +80,13 @@ Namespace kCura.EDDS.WinForm
 			Me.GroupBox1 = New System.Windows.Forms.GroupBox
 			Me._productionDropdown = New System.Windows.Forms.ComboBox
 			Me._advancedButton = New System.Windows.Forms.Button
+			Me.GroupBox2 = New System.Windows.Forms.GroupBox
+			Me._beginBatesDropdown = New System.Windows.Forms.ComboBox
 			Me.GroupBox3.SuspendLayout()
 			Me.GroupBox233.SuspendLayout()
 			Me.ExtractedTextGroupBox.SuspendLayout()
 			Me.GroupBox1.SuspendLayout()
+			Me.GroupBox2.SuspendLayout()
 			Me.SuspendLayout()
 			'
 			'GroupBox3
@@ -238,10 +243,29 @@ Namespace kCura.EDDS.WinForm
 			Me._advancedButton.TabIndex = 28
 			Me._advancedButton.Text = "Advanced"
 			'
+			'GroupBox2
+			'
+			Me.GroupBox2.Controls.Add(Me._beginBatesDropdown)
+			Me.GroupBox2.Location = New System.Drawing.Point(364, 120)
+			Me.GroupBox2.Name = "GroupBox2"
+			Me.GroupBox2.Size = New System.Drawing.Size(208, 52)
+			Me.GroupBox2.TabIndex = 29
+			Me.GroupBox2.TabStop = False
+			Me.GroupBox2.Text = "Begin Bates"
+			'
+			'_beginBatesDropdown
+			'
+			Me._beginBatesDropdown.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+			Me._beginBatesDropdown.Location = New System.Drawing.Point(8, 20)
+			Me._beginBatesDropdown.Name = "_beginBatesDropdown"
+			Me._beginBatesDropdown.Size = New System.Drawing.Size(192, 21)
+			Me._beginBatesDropdown.TabIndex = 29
+			'
 			'ImageLoad
 			'
 			Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
 			Me.ClientSize = New System.Drawing.Size(580, 177)
+			Me.Controls.Add(Me.GroupBox2)
 			Me.Controls.Add(Me._advancedButton)
 			Me.Controls.Add(Me.GroupBox1)
 			Me.Controls.Add(Me.ExtractedTextGroupBox)
@@ -257,6 +281,7 @@ Namespace kCura.EDDS.WinForm
 			Me.GroupBox233.ResumeLayout(False)
 			Me.ExtractedTextGroupBox.ResumeLayout(False)
 			Me.GroupBox1.ResumeLayout(False)
+			Me.GroupBox2.ResumeLayout(False)
 			Me.ResumeLayout(False)
 
 		End Sub
@@ -268,8 +293,7 @@ Namespace kCura.EDDS.WinForm
 
 		Private _imageLoadFile As kCura.WinEDDS.ImageLoadFile
 		Private WithEvents _settingsForm As kCura.EDDS.WinForm.ImageImportSettingsForm
-
-
+		Private _identifierFieldArtifactID As Int32
 
 		Friend Property ImageLoadFile() As kCura.WinEDDS.ImageLoadFile
 			Get
@@ -292,6 +316,7 @@ Namespace kCura.EDDS.WinForm
 			If ImageLoadFile.ForProduction Then
 				ImageLoadFile.ProductionArtifactID = CType(_productionDropdown.SelectedValue, Int32)
 				Me.ImageLoadFile.ReplaceFullText = False
+				Me.ImageLoadFile.BeginBatesFieldArtifactID = CType(_beginBatesDropdown.SelectedValue, Int32)
 			Else
 				Me.ImageLoadFile.ReplaceFullText = _replaceFullText.Checked
 			End If
@@ -338,6 +363,21 @@ Namespace kCura.EDDS.WinForm
 				_productionDropdown.DataSource = ImageLoadFile.ProductionTable
 				_productionDropdown.DisplayMember = "Name"
 				_productionDropdown.ValueMember = "ArtifactID"
+				Dim dt As System.Data.DataTable = New kCura.WinEDDS.Service.FieldQuery(_application.Credential, _application.CookieContainer).RetrievePotentialBeginBatesFields(ImageLoadFile.CaseInfo.ArtifactID).Tables(0)
+				For Each identifierRow As System.Data.DataRow In dt.Rows
+					If CType(identifierRow("FieldCategoryID"), kCura.DynamicFields.Types.FieldCategory) = DynamicFields.Types.FieldCategory.Identifier Then
+						_identifierFieldArtifactID = CType(identifierRow("ArtifactID"), Int32)
+					End If
+				Next
+				Dim row As System.Data.DataRow = dt.NewRow
+				row("ArtifactID") = -1
+				row("DisplayName") = "Select..."
+				dt.Rows.InsertAt(row, 0)
+				_beginBatesDropdown.DataSource = dt
+				_beginBatesDropdown.DisplayMember = "DisplayName"
+				_beginBatesDropdown.ValueMember = "ArtifactID"
+				_overwriteDropdown.SelectedIndex = 1
+				_overwriteDropdown.Enabled = False
 				Me.Text = "Relativity Desktop Client | Import Production Load File"
 			End If
 			_overwriteDropdown.SelectedItem = Me.GetOverwriteDropdownItem(ImageLoadFile.Overwrite)
@@ -376,8 +416,8 @@ Namespace kCura.EDDS.WinForm
 
 		Private Sub ReadyToRun()
 			If ImageLoadFile.ForProduction Then
-				If TypeOf _productionDropdown.SelectedValue Is Int32 Then
-					ImportFileMenu.Enabled = (System.IO.File.Exists(_imageLoadFile.FileName) And CType(_productionDropdown.SelectedValue, Int32) > 0)
+				If TypeOf _productionDropdown.SelectedValue Is Int32 AndAlso TypeOf _beginBatesDropdown.SelectedValue Is Int32 Then
+					ImportFileMenu.Enabled = (System.IO.File.Exists(_imageLoadFile.FileName) And CType(_productionDropdown.SelectedValue, Int32) > 0 And CType(_beginBatesDropdown.SelectedValue, Int32) > 0)
 				Else
 					ImportFileMenu.Enabled = False
 				End If
@@ -456,6 +496,18 @@ Namespace kCura.EDDS.WinForm
 
 		Private Sub _productionDropdown_SelectedIndexChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles _productionDropdown.SelectedIndexChanged
 			ReadyToRun()
+		End Sub
+
+		Private Sub _beginBatesDropdown_SelectedIndexChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles _beginBatesDropdown.SelectedIndexChanged
+			ReadyToRun()
+			If TypeOf _beginBatesDropdown.SelectedValue Is Int32 Then
+				If CType(_beginBatesDropdown.SelectedValue, Int32) = _identifierFieldArtifactID Then
+					_overwriteDropdown.Enabled = True
+				Else
+					_overwriteDropdown.SelectedIndex = 1
+					_overwriteDropdown.Enabled = False
+				End If
+			End If
 		End Sub
 
 		Private Sub _toolsMenuSettingsItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _toolsMenuSettingsItem.Click
