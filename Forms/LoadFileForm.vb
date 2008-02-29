@@ -926,10 +926,10 @@ Namespace kCura.EDDS.WinForm
 				System.Array.Sort(columnHeaders)
 				Dim currentHeaderList As New System.Collections.ArrayList
 				For Each item As Object In _fileColumns.LeftListBoxItems
-					currentHeaderList.Add(item.ToString)
+					If Not currentHeaderList.Contains(item.tostring) Then currentHeaderList.Add(item.ToString)
 				Next
 				For Each item As Object In _fileColumns.RightListBoxItems
-					currentHeaderList.Add(item.ToString)
+					If Not currentHeaderList.Contains(item.tostring) Then currentHeaderList.Add(item.ToString)
 				Next
 				currentHeaders = DirectCast(currentHeaderList.ToArray(GetType(String)), String())
 				System.Array.Sort(currentHeaders)
