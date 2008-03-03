@@ -10,6 +10,7 @@ Namespace kCura.WinEDDS
 		Private _warningCount As Int32
 		Private _timeZoneOffset As Int32
 		Private WithEvents _newlineCounter As kCura.Utility.File.LineCounter
+		Private _hasRunPRocessComplete As Boolean = False
 		Public Property TimeZoneOffset() As Int32
 			Get
 				Return _timeZoneOffset
@@ -28,13 +29,13 @@ Namespace kCura.WinEDDS
 			_newlineCounter.Path = LoadFile.FilePath
 			Me.ProcessObserver.InputArgs = LoadFile.FilePath
 			If (CType(_loadFileImporter.ReadFile(LoadFile.FilePath), Boolean)) Then
-				Me.ProcessObserver.RaiseProcessCompleteEvent(False, _loadFileImporter.ErrorLogFileName, True)
+				If Not _hasRunPRocessComplete Then Me.ProcessObserver.RaiseProcessCompleteEvent(False, _loadFileImporter.ErrorLogFileName, True)
 			Else
 				Me.ProcessObserver.RaiseStatusEvent("", "Import aborted")
 			End If
 		End Sub
 
-    Private Sub _loadFileImporter_StatusMessage(ByVal e As kCura.Windows.Process.StatusEventArgs) Handles _loadFileImporter.StatusMessage
+		Private Sub _loadFileImporter_StatusMessage(ByVal e As kCura.Windows.Process.StatusEventArgs) Handles _loadFileImporter.StatusMessage
 			System.Threading.Monitor.Enter(Me.ProcessObserver)
 			Select Case e.EventType
 				Case kCura.Windows.Process.EventType.End
@@ -57,11 +58,14 @@ Namespace kCura.WinEDDS
 			End Select
 			System.Threading.Monitor.Exit(Me.ProcessObserver)
 			'Me.ProcessObserver.RaiseProgressEvent(e.TotalLines, e.CurrentRecordIndex, 0, 0, _startTime, System.DateTime.Now)
-    End Sub
+		End Sub
 
-    Private Sub _loadFileImporter_FatalErrorEvent(ByVal message As String, ByVal ex As System.Exception) Handles _loadFileImporter.FatalErrorEvent
+		Private Sub _loadFileImporter_FatalErrorEvent(ByVal message As String, ByVal ex As System.Exception) Handles _loadFileImporter.FatalErrorEvent
+			System.Threading.Monitor.Enter(Me.ProcessObserver)
 			Me.ProcessObserver.RaiseFatalExceptionEvent(ex)
 			Me.ProcessObserver.RaiseProcessCompleteEvent(False, _loadFileImporter.ErrorLogFileName, True)
+			_hasRunPRocessComplete = True
+			System.Threading.Monitor.Exit(Me.ProcessObserver)
 		End Sub
 
 		Private Sub _loadFileImporter_UploadModeChangeEvent(ByVal mode As String) Handles _loadFileImporter.UploadModeChangeEvent
