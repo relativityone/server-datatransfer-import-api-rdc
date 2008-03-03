@@ -77,6 +77,7 @@ Namespace kCura.Windows.Process
 
 		Public Sub RaiseFatalExceptionEvent(ByVal ex As Exception)
 			RaiseEvent OnProcessFatalException(ex)
+			WriteError("FATAL ERROR", ex.ToString)
 			Dim evt As New ProcessEvent(ProcessEventTypeEnum.Error, "", ex.ToString)
 			WriteToFile(evt)
 		End Sub
