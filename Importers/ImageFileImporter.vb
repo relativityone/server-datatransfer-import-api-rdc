@@ -169,7 +169,7 @@ Namespace kCura.WinEDDS
 					_errorLogWriter.Close()
 				End If
 				Me.Reader.Close()
-				_productionManager.DoPostImportProcessing(_fileUploader.CaseArtifactID, _productionArtifactID)
+				If _productionArtifactID <> 0 Then _productionManager.DoPostImportProcessing(_fileUploader.CaseArtifactID, _productionArtifactID)
 				RaiseStatusEvent(kCura.Windows.Process.EventType.Progress, "End Image Upload")
 			Catch ex As System.Exception
 				Try
