@@ -467,9 +467,9 @@ Namespace kCura.EDDS.WinForm
 			Me.GroupBox7.Controls.Add(Me._extractedTextFileEncoding)
 			Me.GroupBox7.Controls.Add(Me.Label9)
 			Me.GroupBox7.Controls.Add(Me._extractedTextValueContainsFileLocation)
-			Me.GroupBox7.Location = New System.Drawing.Point(552, 8)
+			Me.GroupBox7.Location = New System.Drawing.Point(552, 4)
 			Me.GroupBox7.Name = "GroupBox7"
-			Me.GroupBox7.Size = New System.Drawing.Size(172, 120)
+			Me.GroupBox7.Size = New System.Drawing.Size(172, 124)
 			Me.GroupBox7.TabIndex = 32
 			Me.GroupBox7.TabStop = False
 			Me.GroupBox7.Text = "Extracted Text"
@@ -477,14 +477,14 @@ Namespace kCura.EDDS.WinForm
 			'_extractedTextFileEncoding
 			'
 			Me._extractedTextFileEncoding.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
-			Me._extractedTextFileEncoding.Location = New System.Drawing.Point(12, 80)
+			Me._extractedTextFileEncoding.Location = New System.Drawing.Point(8, 93)
 			Me._extractedTextFileEncoding.Name = "_extractedTextFileEncoding"
-			Me._extractedTextFileEncoding.Size = New System.Drawing.Size(148, 21)
+			Me._extractedTextFileEncoding.Size = New System.Drawing.Size(156, 21)
 			Me._extractedTextFileEncoding.TabIndex = 30
 			'
 			'Label9
 			'
-			Me.Label9.Location = New System.Drawing.Point(8, 60)
+			Me.Label9.Location = New System.Drawing.Point(8, 72)
 			Me.Label9.Name = "Label9"
 			Me.Label9.Size = New System.Drawing.Size(100, 16)
 			Me.Label9.TabIndex = 1
@@ -492,7 +492,7 @@ Namespace kCura.EDDS.WinForm
 			'
 			'_extractedTextValueContainsFileLocation
 			'
-			Me._extractedTextValueContainsFileLocation.Location = New System.Drawing.Point(8, 24)
+			Me._extractedTextValueContainsFileLocation.Location = New System.Drawing.Point(8, 16)
 			Me._extractedTextValueContainsFileLocation.Name = "_extractedTextValueContainsFileLocation"
 			Me._extractedTextValueContainsFileLocation.Size = New System.Drawing.Size(156, 21)
 			Me._extractedTextValueContainsFileLocation.TabIndex = 0
@@ -562,7 +562,7 @@ Namespace kCura.EDDS.WinForm
 			'
 			'_advancedButton
 			'
-			Me._advancedButton.Location = New System.Drawing.Point(220, 20)
+			Me._advancedButton.Location = New System.Drawing.Point(220, 16)
 			Me._advancedButton.Name = "_advancedButton"
 			Me._advancedButton.TabIndex = 27
 			Me._advancedButton.Text = "Advanced"
@@ -599,7 +599,7 @@ Namespace kCura.EDDS.WinForm
 			'
 			Me._nativeFilePathField.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
 			Me._nativeFilePathField.Enabled = False
-			Me._nativeFilePathField.Location = New System.Drawing.Point(8, 93)
+			Me._nativeFilePathField.Location = New System.Drawing.Point(8, 94)
 			Me._nativeFilePathField.Name = "_nativeFilePathField"
 			Me._nativeFilePathField.Size = New System.Drawing.Size(288, 21)
 			Me._nativeFilePathField.TabIndex = 24
