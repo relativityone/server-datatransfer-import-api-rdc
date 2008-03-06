@@ -314,14 +314,14 @@ Namespace kCura.EDDS.WinForm
 			Me.GroupBox20.Controls.Add(Me._filePath)
 			Me.GroupBox20.Location = New System.Drawing.Point(8, 4)
 			Me.GroupBox20.Name = "GroupBox20"
-			Me.GroupBox20.Size = New System.Drawing.Size(596, 48)
+			Me.GroupBox20.Size = New System.Drawing.Size(720, 48)
 			Me.GroupBox20.TabIndex = 21
 			Me.GroupBox20.TabStop = False
 			Me.GroupBox20.Text = "Load File"
 			'
 			'_browseButton
 			'
-			Me._browseButton.Location = New System.Drawing.Point(560, 16)
+			Me._browseButton.Location = New System.Drawing.Point(688, 16)
 			Me._browseButton.Name = "_browseButton"
 			Me._browseButton.Size = New System.Drawing.Size(24, 20)
 			Me._browseButton.TabIndex = 4
@@ -330,9 +330,9 @@ Namespace kCura.EDDS.WinForm
 			'_filePath
 			'
 			Me._filePath.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-			Me._filePath.Location = New System.Drawing.Point(16, 16)
+			Me._filePath.Location = New System.Drawing.Point(8, 16)
 			Me._filePath.Name = "_filePath"
-			Me._filePath.Size = New System.Drawing.Size(544, 20)
+			Me._filePath.Size = New System.Drawing.Size(680, 20)
 			Me._filePath.TabIndex = 2
 			Me._filePath.Text = "Select a file ..."
 			'
@@ -352,7 +352,7 @@ Namespace kCura.EDDS.WinForm
 			Me.GroupBox2.Controls.Add(Me._fileColumnHeaders)
 			Me.GroupBox2.Location = New System.Drawing.Point(168, 56)
 			Me.GroupBox2.Name = "GroupBox2"
-			Me.GroupBox2.Size = New System.Drawing.Size(436, 364)
+			Me.GroupBox2.Size = New System.Drawing.Size(560, 364)
 			Me.GroupBox2.TabIndex = 19
 			Me.GroupBox2.TabStop = False
 			Me.GroupBox2.Text = "File Column Headers"
@@ -362,7 +362,7 @@ Namespace kCura.EDDS.WinForm
 			Me._fileColumnHeaders.Location = New System.Drawing.Point(12, 24)
 			Me._fileColumnHeaders.Name = "_fileColumnHeaders"
 			Me._fileColumnHeaders.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended
-			Me._fileColumnHeaders.Size = New System.Drawing.Size(412, 329)
+			Me._fileColumnHeaders.Size = New System.Drawing.Size(540, 329)
 			Me._fileColumnHeaders.TabIndex = 17
 			'
 			'GroupBox23
@@ -634,7 +634,7 @@ Namespace kCura.EDDS.WinForm
 			'_fileColumns
 			'
 			Me._fileColumns.KeepButtonsCentered = True
-			Me._fileColumns.LeftOrderControlsVisible = True
+			Me._fileColumns.LeftOrderControlsVisible = False
 			Me._fileColumns.Location = New System.Drawing.Point(372, 148)
 			Me._fileColumns.Name = "_fileColumns"
 			Me._fileColumns.RightOrderControlVisible = False
@@ -647,7 +647,7 @@ Namespace kCura.EDDS.WinForm
 			Me._fieldMap.LeftOrderControlsVisible = False
 			Me._fieldMap.Location = New System.Drawing.Point(4, 148)
 			Me._fieldMap.Name = "_fieldMap"
-			Me._fieldMap.RightOrderControlVisible = True
+			Me._fieldMap.RightOrderControlVisible = False
 			Me._fieldMap.Size = New System.Drawing.Size(360, 276)
 			Me._fieldMap.TabIndex = 1
 			'
