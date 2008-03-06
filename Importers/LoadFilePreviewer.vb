@@ -204,8 +204,13 @@ Namespace kCura.WinEDDS
 
 			If Not identifierField Is Nothing Then
 				For Each field As DocumentField In unmappedFields.Values
-					field.Value = identifierField.Value & " (if not set)"
-					retval.Add(field)
+					Dim f As New DocumentField(field)
+					If _columnCount <> values.Length Then
+						f.Value = New ColumnCountMismatchException(Me.CurrentLineNumber, _columnCount, values.Length).Message
+					Else
+						f.Value = identifierField.Value & " (if not set)"
+					End If
+					retval.Add(f)
 				Next
 				For Each field As DocumentField In mappedFields.Values
 					If field.Value = "" Then field.Value = identifierField.Value
