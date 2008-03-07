@@ -528,7 +528,7 @@ Public Class ExportForm
 					retval = False
 				End If
 			End If
-			If Me.ExportFile.TypeOfExport = ExportFile.ExportType.Production Then
+			If Me.ExportFile.TypeOfExport = ExportFile.ExportType.Production AndAlso _exportNativeFiles.Checked Then
 				If CType(_nativeFileNameSource.SelectedItem, String) = "Select..." Then
 					retval = False
 				End If
@@ -695,11 +695,13 @@ Public Class ExportForm
 	Private Sub _exportImages_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _exportImages.CheckedChanged
 		_useAbsolutePaths.Enabled = True
 		_imageFileFormat.Enabled = _exportImages.Checked
+		RunMenu.Enabled = ReadyToRun()
 	End Sub
 
 	Private Sub _exportNativeFiles_CheckedChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles _exportNativeFiles.CheckedChanged
 		_useAbsolutePaths.Enabled = True
 		_nativeFileFormat.Enabled = True
+		RunMenu.Enabled = ReadyToRun()
 	End Sub
 
 	Private Sub ToggleLoadFileCharacterInformation(ByVal enabled As Boolean)
