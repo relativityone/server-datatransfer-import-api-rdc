@@ -942,7 +942,7 @@ Namespace kCura.EDDS.WinForm
 				End If
 			End If
 			If System.IO.File.Exists(LoadFile.FilePath) AndAlso Not listsAreSame Then
-				If currentHeaders.Length > 0 AndAlso Not listsAreSame Then
+				If currentHeaders.Length > 0 AndAlso Not listsAreSame AndAlso showWarning Then
 					MsgBox("Column schema changed with load file." & System.Environment.NewLine & "Column information reset.", MsgBoxStyle.Information, "Relwin Message")
 				End If
 				_fileColumnHeaders.Items.Clear()
@@ -981,7 +981,6 @@ Namespace kCura.EDDS.WinForm
 				oldfilepath = _filePath.Text
 				_filePath.Text = OpenFileDialog.FileName
 				PopulateLoadFileObject()
-				RefreshNativeFilePathFieldAndFileColumnHeaders(True)
 				Dim extension As String = _filePath.Text
 				If extension.IndexOf("\") <> -1 Then
 					extension = extension.Substring(extension.LastIndexOf("\") + 1)
@@ -995,10 +994,15 @@ Namespace kCura.EDDS.WinForm
 					Case "csv"
 						_recordDelimiter.SelectedValue = AscW(",")
 						_quoteDelimiter.SelectedValue = AscW("""")
+						Me.LoadFile.QuoteDelimiter = """"c
+						Me.LoadFile.RecordDelimiter = ","c
 					Case "dat"
 						_recordDelimiter.SelectedValue = 20
 						_quoteDelimiter.SelectedValue = 254
+						Me.LoadFile.QuoteDelimiter = ChrW(20)
+						Me.LoadFile.RecordDelimiter = ChrW(254)
 				End Select
+				RefreshNativeFilePathFieldAndFileColumnHeaders(oldfilepath.ToLower <> "select file to load...")
 			Catch ex As System.IO.IOException
 				MsgBox(ex.Message & Environment.NewLine & "Please close any application that might have a hold on the file before proceeding.", MsgBoxStyle.Exclamation)
 				_filePath.Text = oldfilepath
