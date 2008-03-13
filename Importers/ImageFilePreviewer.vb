@@ -153,7 +153,7 @@ Namespace kCura.WinEDDS
 
 			Dim validator As New kCura.ImageValidator.ImageValidator
 			Try
-				validator.ValidateImage(path)
+				'validator.ValidateImage(path)
 			Catch ex As System.Exception
 				Me.RaiseStatusEvent(Windows.Process.EventType.Error, String.Format("Error in '{0}': {1}", path, ex.Message))
 				Return ""
