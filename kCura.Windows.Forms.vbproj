@@ -129,7 +129,7 @@
                 />
                 <File
                     RelPath = "EnhancedMenuProvider.vb"
-                    SubType = "Code"
+                    SubType = "Component"
                     BuildAction = "Compile"
                 />
                 <File
