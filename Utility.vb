@@ -1,10 +1,12 @@
 Namespace kCura.EDDS.WinForm
 	Public Class Utility
 		Public Shared Sub InitializeCharacterDropDown(ByVal ddown As System.Windows.Forms.ListControl, ByVal selectedValue As Char)
+			ddown.Tag = False
 			ddown.DataSource = WinEDDS.Utility.BuildProxyCharacterDatatable()
 			ddown.ValueMember = "CharValue"
 			ddown.DisplayMember = "Display"
 			ddown.SelectedValue = selectedValue
+			ddown.Tag = True
 		End Sub
 
 		Public Shared Function ExtractValueFromCharacterDropDown(ByVal ddown As System.Windows.Forms.ComboBox, ByRef charvalue As Char) As Char
