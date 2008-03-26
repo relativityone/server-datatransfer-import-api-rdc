@@ -1,7 +1,7 @@
 <VisualStudioProject>
     <VisualBasic
         ProjectType = "Local"
-        ProductVersion = "7.10.6030"
+        ProductVersion = "7.10.3077"
         SchemaVersion = "2.0"
         ProjectGuid = "{F16A2219-5DAC-4F2B-89B0-6BD1243CBF8F}"
     >
@@ -144,6 +144,11 @@
                     Name = "kCura.OI.FileID"
                     Project = "{CCEFD50F-0840-402D-AB16-C93F8E579B8B}"
                     Package = "{F184B08F-C81C-45F6-A57F-5ABD9991F28F}"
+                />
+                <Reference
+                    Name = "FreeImage.Net"
+                    Project = "{C194C0A6-8F74-425A-BC6F-CF9F4C8F83FE}"
+                    Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
                 />
             </References>
             <Imports>
