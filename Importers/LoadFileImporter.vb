@@ -7,6 +7,7 @@ Namespace kCura.WinEDDS
 #Region "Members"
 		Private _overwrite As String
 		Private WithEvents _uploader As kCura.WinEDDS.FileUploader
+		Private _textUploader As kCura.WinEDDS.FileUploader
 		Private _path As String
 		Private _pathIsSet As Boolean = False
 		Private _selectedIdentifier As DocumentField
@@ -36,6 +37,7 @@ Namespace kCura.WinEDDS
 		Private _errorLogWriter As System.IO.StreamWriter
 		Private _fullTextField As kCura.EDDS.WebAPI.DocumentManagerBase.Field
 		Private _defaultDestinationFolderPath As String = ""
+		Private _defaultTextFolderPath As String = ""
 		Private _copyFileToRepository As Boolean
 		Private _oixFileLookup As System.Collections.Specialized.HybridDictionary
 
@@ -101,7 +103,9 @@ Namespace kCura.WinEDDS
 			If args.CopyFilesToDocumentRepository Then
 				_defaultDestinationFolderPath = args.SelectedCasePath & "EDDS" & args.CaseInfo.ArtifactID & "\"
 			End If
+			_defaultTextFolderPath = args.CaseDefaultPath & "EDDS" & args.CaseInfo.ArtifactID & "\"
 			_uploader = New kCura.WinEDDS.FileUploader(args.Credentials, args.CaseInfo.ArtifactID, _defaultDestinationFolderPath, args.CookieContainer)
+			_textUploader = New kCura.WinEDDS.FileUploader(args.Credentials, args.CaseInfo.ArtifactID, _defaultTextFolderPath, args.CookieContainer)
 			_extractFullTextFromNative = args.ExtractFullTextFromNativeFile
 			_selectedIdentifier = args.SelectedIdentifierField
 			_copyFileToRepository = args.CopyFilesToDocumentRepository
@@ -625,7 +629,7 @@ Namespace kCura.WinEDDS
 										If TypeOf _sourceFileEncoding Is System.Text.UnicodeEncoding Then multiplier = 1
 
 										If finfo.Length > Me.Settings.MAX_STRING_FIELD_LENGTH * multiplier Then
-											fieldDTO.Value = _extractedTextFileEncodingName & ":" & _uploader.UploadFile(docField.Value, _caseArtifactID)
+											fieldDTO.Value = _extractedTextFileEncodingName & ":" & _textUploader.UploadFile(docField.Value, _caseArtifactID)
 										Else
 											Dim sr As New System.IO.StreamReader(docField.Value, _sourceFileEncoding)
 											fieldDTO.Value = encoder.GetBytes(sr.ReadToEnd)
@@ -636,7 +640,7 @@ Namespace kCura.WinEDDS
 									End If
 								Else
 									If docField.Value.Length > Me.Settings.MAX_STRING_FIELD_LENGTH Then
-										fieldDTO.Value = "unicode:" & _uploader.UploadTextAsFile(docField.Value, _caseArtifactID, System.Guid.NewGuid.ToString)
+										fieldDTO.Value = "unicode:" & _textUploader.UploadTextAsFile(docField.Value, _caseArtifactID, System.Guid.NewGuid.ToString)
 									Else
 										fieldDTO.Value = encoder.GetBytes(docField.Value)
 									End If

@@ -12,6 +12,7 @@ Namespace kCura.WinEDDS
 		Public ProductionArtifactID As Int32
 		Public BeginBatesFieldArtifactID As Int32
 		<NonSerialized()> Public SelectedCasePath As String = ""
+		<NonSerialized()> Public CaseDefaultPath As String = ""
 		<NonSerialized()> Public CopyFilesToDocumentRepository As Boolean = True
 		<NonSerialized()> Public Credential As Net.NetworkCredential
 		<NonSerialized()> Public CookieContainer As System.Net.CookieContainer

@@ -9,6 +9,7 @@ Namespace kCura.WinEDDS
 		Private _fieldQuery As kCura.WinEDDS.Service.FieldQuery
 		Private _folderManager As kCura.WinEDDS.Service.FolderManager
 		Private _fileUploader As kCura.WinEDDS.FileUploader
+		Private _textUploader As kCura.WinEDDS.FileUploader
 		Private _fileManager As kCura.WinEDDS.Service.FileManager
 		Private _productionManager As kCura.WinEDDS.Service.ProductionManager
 		Private _folderID As Int32
@@ -28,6 +29,7 @@ Namespace kCura.WinEDDS
 		Private _autoNumberImages As Boolean
 		Private _copyFilesToRepository As Boolean
 		Private _repositoryPath As String
+		Private _textRepositoryPath As String
 
 		Private WithEvents _processController As kCura.Windows.Process.Controller
 		Private _productionDTO As kCura.EDDS.WebAPI.ProductionManagerBase.Production
@@ -72,7 +74,9 @@ Namespace kCura.WinEDDS
 			_fileManager = New kCura.WinEDDS.Service.FileManager(args.Credential, args.CookieContainer)
 			_productionManager = New kCura.WinEDDS.Service.ProductionManager(args.Credential, args.CookieContainer)
 			_repositoryPath = args.SelectedCasePath & "EDDS" & args.CaseInfo.ArtifactID & "\"
+			_textRepositoryPath = args.CaseDefaultPath & "EDDS" & args.CaseInfo.ArtifactID & "\"
 			_fileUploader = New kCura.WinEDDS.FileUploader(args.Credential, args.CaseInfo.ArtifactID, _repositoryPath, args.CookieContainer)
+			_textUploader = New kCura.WinEDDS.FileUploader(args.Credential, args.CaseInfo.ArtifactID, _textRepositoryPath, args.CookieContainer)
 			_folderID = folderID
 
 			_productionArtifactID = args.ProductionArtifactID
@@ -218,7 +222,7 @@ Namespace kCura.WinEDDS
 						End Try
 						If _replaceFullText Then
 							If fullTextBuilder.FullTextLength > LoadFileImporter.Settings.MAX_STRING_FIELD_LENGTH Then
-								fullTextBuilder.FilePointer = _fileUploader.UploadTextAsFile(fullTextBuilder.FullTextString, _folderID, System.Guid.NewGuid.ToString)
+								fullTextBuilder.FilePointer = _textUploader.UploadTextAsFile(fullTextBuilder.FullTextString, _folderID, System.Guid.NewGuid.ToString)
 								fullTextBuilder.FullText = ""
 							End If
 							_docManager.AddFullTextToDocument(_fileUploader.CaseArtifactID, currentDocumentArtifactID, fullTextBuilder)
@@ -425,7 +429,7 @@ Namespace kCura.WinEDDS
 			Dim encoder As New System.Text.ASCIIEncoding
 			Try
 				If fullTextBuilder.FullTextLength > LoadFileImporter.Settings.MAX_STRING_FIELD_LENGTH Then
-					fullTextBuilder.FilePointer = _fileUploader.UploadTextAsFile(fullTextBuilder.FullTextString, _folderID, System.Guid.NewGuid.ToString)
+					fullTextBuilder.FilePointer = _textUploader.UploadTextAsFile(fullTextBuilder.FullTextString, _folderID, System.Guid.NewGuid.ToString)
 					fullTextBuilder.FullText = ""
 				End If
 				Return _docManager.CreateEmptyDocument(_fileUploader.CaseArtifactID, _folderID, encoder.GetBytes(identifier), _selectedIdentifierField, fullTextBuilder)
