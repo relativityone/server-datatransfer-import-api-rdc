@@ -320,6 +320,7 @@ Namespace kCura.EDDS.WinForm
 			Else
 				Me.ImageLoadFile.ReplaceFullText = _replaceFullText.Checked
 			End If
+			Me.ImageLoadFile.CaseDefaultPath = _application.SelectedCaseInfo.DocumentPath
 			Me.Cursor = Cursors.Default
 		End Sub
 

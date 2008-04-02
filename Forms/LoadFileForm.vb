@@ -796,6 +796,7 @@ Namespace kCura.EDDS.WinForm
 			Else
 				LoadFile.CreateFolderStructure = False
 			End If
+			Me.LoadFile.CaseDefaultPath = _application.SelectedCaseInfo.DocumentPath
 			Me.Cursor = System.Windows.Forms.Cursors.Default
 		End Sub
 
