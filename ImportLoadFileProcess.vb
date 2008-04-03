@@ -24,7 +24,7 @@ Namespace kCura.WinEDDS
 			_startTime = DateTime.Now
 			_warningCount = 0
 			_errorCount = 0
-			_loadFileImporter = New kCura.WinEDDS.LoadFileImporter(LoadFile, ProcessController, _timeZoneOffset)
+			_loadFileImporter = New kCura.WinEDDS.LoadFileImporter(LoadFile, ProcessController, _timeZoneOffset, True)
 			_newlineCounter = New kCura.Utility.File.LineCounter
 			_newlineCounter.Path = LoadFile.FilePath
 			Me.ProcessObserver.InputArgs = LoadFile.FilePath
