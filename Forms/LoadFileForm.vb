@@ -1162,6 +1162,7 @@ Namespace kCura.EDDS.WinForm
 			If TypeOf tag Is Boolean AndAlso CType(tag, Boolean) = False Then
 				'do nothing
 			Else
+				PopulateLoadFileDelimiters()
 				RefreshNativeFilePathFieldAndFileColumnHeaders()
 			End If
 		End Sub
