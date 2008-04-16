@@ -443,6 +443,7 @@ Namespace kCura.WinEDDS
 				Me.SetFileIdDataFields(documentDTO, mdoc.FileIdData)
 				Dim fileDTO As kCura.EDDS.WebAPI.DocumentManagerBase.File = CreateFileDTO(filename, fileguid, _defaultDestinationFolderPath, mdoc.FullFilePath)
 				files = New kCura.EDDS.WebApi.DocumentManagerBase.File() {fileDTO}
+				'documentDTO.HasNative = True
 			End If
 
 			Try
@@ -463,25 +464,6 @@ Namespace kCura.WinEDDS
 
 		Private Function UpdateDocument(ByVal docDTO As kCura.EDDS.WebAPI.DocumentManagerBase.Document, ByVal mdoc As MetaDocument, ByVal extractText As Boolean, ByVal files As kCura.EDDS.WebAPI.DocumentManagerBase.File()) As Int32
 			Return UpdateDocument(docDTO, mdoc.FieldCollection, mdoc.IdentityValue, mdoc.UploadFile AndAlso mdoc.FileGuid <> String.Empty, mdoc.FileGuid <> String.Empty AndAlso extractText, mdoc.Filename, mdoc.FileGuid, mdoc, files)
-		End Function
-
-		Private Sub SetFileIdDataFields(ByVal document As kCura.EDDS.WebAPI.DocumentManagerBase.Document, ByVal oixFileIdData As OI.FileID.FileIDData)
-			Dim isSupported As Boolean = Me.IsSupportedRelativityFileType(oixFileIdData)
-			For Each field As kCura.EDDS.WebAPI.DocumentManagerBase.Field In document.Fields
-				If field.DisplayName = "Supported By Viewer" Then field.Value = isSupported.ToString
-				If field.DisplayName = "Relativity Native Type" Then field.Value = System.Text.Encoding.Unicode.GetBytes(oixFileIdData.FileType)
-			Next
-		End Sub
-
-		Private Function IsSupportedRelativityFileType(ByVal fileData As OI.FileID.FileIDData) As Boolean
-			If fileData Is Nothing Then Return False
-			If _oixFileLookup Is Nothing Then
-				_oixFileLookup = New System.Collections.Specialized.HybridDictionary
-				For Each id As Int32 In _documentManager.RetrieveAllUnsupportedOiFileIds
-					_oixFileLookup.Add(id, id)
-				Next
-			End If
-			Return Not _oixFileLookup.Contains(fileData.FileID)
 		End Function
 
 		Private Function UpdateDocument(ByVal docDTO As kCura.EDDS.WebAPI.DocumentManagerBase.Document, ByVal fieldCollection As DocumentFieldCollection, ByVal identityValue As String, ByVal uploadFile As Boolean, ByVal extractText As Boolean, ByVal fileName As String, ByVal fileGuid As String, ByVal mdoc As MetaDocument, ByVal files As kCura.EDDS.WebAPI.DocumentManagerBase.File()) As Int32
@@ -516,11 +498,13 @@ Namespace kCura.WinEDDS
 					Me.SetFileIdDataFields(docDTO, mdoc.FileIdData)
 				End If
 				Dim fullTextFileDTO As kCura.EDDS.WebAPI.DocumentManagerBase.File
-				For Each fullTextFileDTO In files
-					If fullTextFileDTO.Type = 2 Then
-						Exit For
-					End If
-				Next
+				If Not files Is Nothing Then
+					For Each fullTextFileDTO In files
+						If fullTextFileDTO.Type = 2 Then
+							Exit For
+						End If
+					Next
+				End If
 				If Not fullTextFileDTO Is Nothing AndAlso fullTextFileDTO.Type = 2 AndAlso Not extractText Then
 					fileList.Add(fullTextFileDTO)
 				End If
@@ -565,6 +549,26 @@ Namespace kCura.WinEDDS
 				fileDTO.Location = fullFilePath
 			End If
 			Return fileDTO
+		End Function
+
+		Private Sub SetFileIdDataFields(ByVal document As kCura.EDDS.WebAPI.DocumentManagerBase.Document, ByVal oixFileIdData As OI.FileID.FileIDData)
+			Dim isSupported As Boolean = Me.IsSupportedRelativityFileType(oixFileIdData)
+			For Each field As kCura.EDDS.WebAPI.DocumentManagerBase.Field In document.Fields
+				If field.DisplayName = "Supported By Viewer" Then field.Value = isSupported.ToString
+				If field.DisplayName = "Relativity Native Type" Then field.Value = System.Text.Encoding.Unicode.GetBytes(oixFileIdData.FileType)
+			Next
+			document.HasNative = True
+		End Sub
+
+		Private Function IsSupportedRelativityFileType(ByVal fileData As OI.FileID.FileIDData) As Boolean
+			If fileData Is Nothing Then Return False
+			If _oixFileLookup Is Nothing Then
+				_oixFileLookup = New System.Collections.Specialized.HybridDictionary
+				For Each id As Int32 In _documentManager.RetrieveAllUnsupportedOiFileIds
+					_oixFileLookup.Add(id, id)
+				Next
+			End If
+			Return Not _oixFileLookup.Contains(fileData.FileID)
 		End Function
 
 #End Region
