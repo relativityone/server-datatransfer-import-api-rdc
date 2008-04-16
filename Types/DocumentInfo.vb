@@ -31,14 +31,14 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
-		Public Property Files() As FileInfo()
-			Get
-				Return _files
-			End Get
-			Set(ByVal value As FileInfo())
-				_files = value
-			End Set
-		End Property
+		'Public Property Files() As FileInfo()
+		'	Get
+		'		Return _files
+		'	End Get
+		'	Set(ByVal value As FileInfo())
+		'		_files = value
+		'	End Set
+		'End Property
 
 		Public Property ArtifactID() As Integer
 			Get
@@ -168,24 +168,24 @@ Namespace kCura.WinEDDS
 
 #End Region
 
-		Public Function ToDisplayString() As String
-			Dim sb As New System.Text.StringBuilder
-			sb.AppendFormat("[ArtifactID: {0}]", Me.ArtifactID)
-			Dim docField As DocumentField
-			For Each docField In Fields
-				'If Not IgnoreField(docField.FieldName) Then
-				If Not docField.FieldCategoryID = kCura.DynamicFields.Types.FieldCategory.FullText AndAlso Not IgnoreField(docField.FieldName) Then
-					sb.AppendFormat(" [{0}: {1}]", docField.FieldName, docField.Value)
-				End If
-			Next
-			Dim file As FileInfo
-			sb.Append("[Files:")
-			For Each file In Files
-				sb.Append(" " & file.Filename)
-			Next
-			sb.Append("]")
-			Return sb.ToString
-		End Function
+		'Public Function ToDisplayString() As String
+		'	Dim sb As New System.Text.StringBuilder
+		'	sb.AppendFormat("[ArtifactID: {0}]", Me.ArtifactID)
+		'	Dim docField As DocumentField
+		'	For Each docField In Fields
+		'		'If Not IgnoreField(docField.FieldName) Then
+		'		If Not docField.FieldCategoryID = kCura.DynamicFields.Types.FieldCategory.FullText AndAlso Not IgnoreField(docField.FieldName) Then
+		'			sb.AppendFormat(" [{0}: {1}]", docField.FieldName, docField.Value)
+		'		End If
+		'	Next
+		'	Dim file As FileInfo
+		'	sb.Append("[Files:")
+		'	For Each file In Files
+		'		sb.Append(" " & file.Filename)
+		'	Next
+		'	sb.Append("]")
+		'	Return sb.ToString
+		'End Function
 
 		Private Shared IGNRORED_FIELDS As String() = {"System Created On", "System Created By", "System Last Modified On", "System Last Modified By"}
 		Public Shared Function IgnoreField(ByVal fieldName As String) As Boolean

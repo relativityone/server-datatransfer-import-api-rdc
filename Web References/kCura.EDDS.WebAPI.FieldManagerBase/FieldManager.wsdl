@@ -1,26 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
-<definitions xmlns:s1="http://NullableTypes.SourceForge.Net/NullableInt32XMLSchema" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:s0="http://foley.com/EDDS/FieldManager" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" targetNamespace="http://foley.com/EDDS/FieldManager" xmlns="http://schemas.xmlsoap.org/wsdl/">
-  <types>
+<wsdl:definitions xmlns:s1="http://NullableTypes.SourceForge.Net/NullableInt32XMLSchema" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tns="http://foley.com/EDDS/FieldManager" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" targetNamespace="http://foley.com/EDDS/FieldManager" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
     <s:schema elementFormDefault="qualified" targetNamespace="http://foley.com/EDDS/FieldManager">
       <s:import namespace="http://NullableTypes.SourceForge.Net/NullableInt32XMLSchema" />
       <s:element name="Create">
         <s:complexType>
           <s:sequence>
             <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
-            <s:element minOccurs="0" maxOccurs="1" name="fieldDTO" type="s0:Field" />
+            <s:element minOccurs="0" maxOccurs="1" name="fieldDTO" type="tns:Field" />
           </s:sequence>
         </s:complexType>
       </s:element>
       <s:complexType name="Field">
         <s:complexContent mixed="false">
-          <s:extension base="s0:Artifact">
+          <s:extension base="tns:Artifact">
             <s:sequence>
               <s:element minOccurs="1" maxOccurs="1" name="FieldArtifactTypeID" type="s:int" />
               <s:element minOccurs="0" maxOccurs="1" name="DisplayName" type="s:string" />
               <s:element minOccurs="1" maxOccurs="1" name="FieldTypeID" type="s:int" />
-              <s:element minOccurs="1" maxOccurs="1" name="FieldType" type="s0:FieldType" />
+              <s:element minOccurs="1" maxOccurs="1" name="FieldType" type="tns:FieldType" />
               <s:element minOccurs="1" maxOccurs="1" name="FieldCategoryID" type="s:int" />
-              <s:element minOccurs="1" maxOccurs="1" name="FieldCategory" type="s0:FieldCategory" />
+              <s:element minOccurs="1" maxOccurs="1" name="FieldCategory" type="tns:FieldCategory" />
               <s:element minOccurs="1" maxOccurs="1" name="ArtifactViewFieldID" type="s:int" />
               <s:element minOccurs="1" maxOccurs="1" name="CodeTypeID">
                 <s:complexType>
@@ -173,7 +173,7 @@
       <s:element name="ReadResponse">
         <s:complexType>
           <s:sequence>
-            <s:element minOccurs="0" maxOccurs="1" name="ReadResult" type="s0:Field" />
+            <s:element minOccurs="0" maxOccurs="1" name="ReadResult" type="tns:Field" />
           </s:sequence>
         </s:complexType>
       </s:element>
@@ -181,53 +181,54 @@
     <s:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="http://NullableTypes.SourceForge.Net/NullableInt32XMLSchema" id="NullableInt32">
       <xs:element name="NullableInt32" nillable="true" type="xs:int" />
     </s:schema>
-  </types>
-  <message name="CreateSoapIn">
-    <part name="parameters" element="s0:Create" />
-  </message>
-  <message name="CreateSoapOut">
-    <part name="parameters" element="s0:CreateResponse" />
-  </message>
-  <message name="ReadSoapIn">
-    <part name="parameters" element="s0:Read" />
-  </message>
-  <message name="ReadSoapOut">
-    <part name="parameters" element="s0:ReadResponse" />
-  </message>
-  <portType name="FieldManagerSoap">
-    <operation name="Create">
-      <input message="s0:CreateSoapIn" />
-      <output message="s0:CreateSoapOut" />
-    </operation>
-    <operation name="Read">
-      <input message="s0:ReadSoapIn" />
-      <output message="s0:ReadSoapOut" />
-    </operation>
-  </portType>
-  <binding name="FieldManagerSoap" type="s0:FieldManagerSoap">
+  </wsdl:types>
+  <wsdl:message name="CreateSoapIn">
+    <wsdl:part name="parameters" element="tns:Create" />
+  </wsdl:message>
+  <wsdl:message name="CreateSoapOut">
+    <wsdl:part name="parameters" element="tns:CreateResponse" />
+  </wsdl:message>
+  <wsdl:message name="ReadSoapIn">
+    <wsdl:part name="parameters" element="tns:Read" />
+  </wsdl:message>
+  <wsdl:message name="ReadSoapOut">
+    <wsdl:part name="parameters" element="tns:ReadResponse" />
+  </wsdl:message>
+  <wsdl:portType name="FieldManagerSoap">
+    <wsdl:operation name="Create">
+      <wsdl:input message="tns:CreateSoapIn" />
+      <wsdl:output message="tns:CreateSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="Read">
+      <wsdl:input message="tns:ReadSoapIn" />
+      <wsdl:output message="tns:ReadSoapOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="FieldManagerSoap" type="tns:FieldManagerSoap">
     <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document" />
-    <operation name="Create">
+    <wsdl:operation name="Create">
       <soap:operation soapAction="http://foley.com/EDDS/FieldManager/Create" style="document" />
-      <input>
+      <wsdl:input>
         <soap:body use="literal" />
-      </input>
-      <output>
+      </wsdl:input>
+      <wsdl:output>
         <soap:body use="literal" />
-      </output>
-    </operation>
-    <operation name="Read">
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Read">
       <soap:operation soapAction="http://foley.com/EDDS/FieldManager/Read" style="document" />
-      <input>
+      <wsdl:input>
         <soap:body use="literal" />
-      </input>
-      <output>
+      </wsdl:input>
+      <wsdl:output>
         <soap:body use="literal" />
-      </output>
-    </operation>
-  </binding>
-  <service name="FieldManager">
-    <port name="FieldManagerSoap" binding="s0:FieldManagerSoap">
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="FieldManager">
+    <documentation xmlns="http://schemas.xmlsoap.org/wsdl/" />
+    <wsdl:port name="FieldManagerSoap" binding="tns:FieldManagerSoap">
       <soap:address location="http://localhost/EDDSWebAPI/FieldManager.asmx" />
-    </port>
-  </service>
-</definitions>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

@@ -43,7 +43,7 @@ Namespace kCura.WinEDDS.Service
 			doc.CreatedOn = dto.CreatedOn
 			doc.DeleteFlag = dto.DeleteFlag
 			doc.Fields = FieldManager.DTOsToDocumentField(dto.Fields)
-			doc.Files = FileManager.DTOsToFileInfo(dto.Files)
+			'doc.Files = FileManager.DTOsToFileInfo(dto.Files)
 			doc.Keywords = dto.Keywords
 			doc.LastModifiedBy = dto.LastModifiedBy
 			doc.LastModifiedOn = dto.LastModifiedOn
@@ -146,13 +146,13 @@ Namespace kCura.WinEDDS.Service
 			End While
 		End Function
 
-		Public Shadows Function Create(ByVal caseContextArtifactID As Int32, ByVal document As kCura.EDDS.WebAPI.DocumentManagerBase.Document) As Int32
+		Public Shadows Function Create(ByVal caseContextArtifactID As Int32, ByVal document As kCura.EDDS.WebAPI.DocumentManagerBase.Document, ByVal files As kCura.EDDS.WebAPI.DocumentManagerBase.File()) As Int32
 			Dim tries As Int32 = 0
 			While tries < Config.MaxReloginTries
 				tries += 1
 				Try
 					If kCura.WinEDDS.Config.UsesWebAPI Then
-						Return MyBase.Create(caseContextArtifactID, document)
+						Return MyBase.Create(caseContextArtifactID, document, files)
 					Else
 						'Return _documentManager.ExternalCreate(Me.WebAPIDocumentToDTO(document), _identity)
 					End If
@@ -166,13 +166,13 @@ Namespace kCura.WinEDDS.Service
 			End While
 		End Function
 
-		Public Shadows Function Update(ByVal caseContextArtifactID As Int32, ByVal document As kCura.EDDS.WebAPI.DocumentManagerBase.Document) As Int32
+		Public Shadows Function Update(ByVal caseContextArtifactID As Int32, ByVal document As kCura.EDDS.WebAPI.DocumentManagerBase.Document, ByVal files As kCura.EDDS.WebAPI.DocumentManagerBase.File()) As Int32
 			Dim tries As Int32 = 0
 			While tries < Config.MaxReloginTries
 				Try
 					tries += 1
 					If kCura.WinEDDS.Config.UsesWebAPI Then
-						Return MyBase.Update(caseContextArtifactID, document)
+						Return MyBase.Update(caseContextArtifactID, document, files)
 					Else
 						'Return _documentManager.ExternalCreate(Me.WebAPIDocumentToDTO(document), _identity)
 					End If
@@ -186,47 +186,47 @@ Namespace kCura.WinEDDS.Service
 			End While
 		End Function
 
-		Public Shadows Sub CreateRange(ByVal caseContextArtifactID As Int32, ByVal documents As kCura.EDDS.WebAPI.DocumentManagerBase.Document())
-			Dim tries As Int32 = 0
-			While tries < Config.MaxReloginTries
-				Try
-					tries += 1
-					If kCura.WinEDDS.Config.UsesWebAPI Then
-						MyBase.CreateRange(caseContextArtifactID, documents)
-						Exit Sub
-					Else
-						'_documentManager.ExternalCreateRange(WebAPIDocumentsToDTOs(documents), _identity)
-					End If
-				Catch ex As System.Exception
-					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer)
-					Else
-						Throw
-					End If
-				End Try
-			End While
-		End Sub
+		'Public Shadows Sub CreateRange(ByVal caseContextArtifactID As Int32, ByVal documents As kCura.EDDS.WebAPI.DocumentManagerBase.Document())
+		'	Dim tries As Int32 = 0
+		'	While tries < Config.MaxReloginTries
+		'		Try
+		'			tries += 1
+		'			If kCura.WinEDDS.Config.UsesWebAPI Then
+		'				MyBase.CreateRange(caseContextArtifactID, documents)
+		'				Exit Sub
+		'			Else
+		'				'_documentManager.ExternalCreateRange(WebAPIDocumentsToDTOs(documents), _identity)
+		'			End If
+		'		Catch ex As System.Exception
+		'			If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
+		'				Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer)
+		'			Else
+		'				Throw
+		'			End If
+		'		End Try
+		'	End While
+		'End Sub
 
-		Public Shadows Sub UpdateRange(ByVal caseContextArtifactID As Int32, ByVal documents As kCura.EDDS.WebAPI.DocumentManagerBase.Document())
-			Dim tries As Int32 = 0
-			While tries < Config.MaxReloginTries
-				Try
-					tries += 1
-					If kCura.WinEDDS.Config.UsesWebAPI Then
-						MyBase.UpdateRange(caseContextArtifactID, documents)
-						Exit Sub
-					Else
-						'_documentManager.ExternalUpdateRange(WebAPIDocumentsToDTOs(documents), _identity)
-					End If
-				Catch ex As System.Exception
-					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer)
-					Else
-						Throw
-					End If
-				End Try
-			End While
-		End Sub
+		'Public Shadows Sub UpdateRange(ByVal caseContextArtifactID As Int32, ByVal documents As kCura.EDDS.WebAPI.DocumentManagerBase.Document())
+		'	Dim tries As Int32 = 0
+		'	While tries < Config.MaxReloginTries
+		'		Try
+		'			tries += 1
+		'			If kCura.WinEDDS.Config.UsesWebAPI Then
+		'				MyBase.UpdateRange(caseContextArtifactID, documents)
+		'				Exit Sub
+		'			Else
+		'				'_documentManager.ExternalUpdateRange(WebAPIDocumentsToDTOs(documents), _identity)
+		'			End If
+		'		Catch ex As System.Exception
+		'			If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
+		'				Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer)
+		'			Else
+		'				Throw
+		'			End If
+		'		End Try
+		'	End While
+		'End Sub
 
 		Public Shadows Function AddFullTextToDocument(ByVal caseContextArtifactID As Int32, ByVal documentArtifactID As Int32, ByVal fullTextBuilder As kCura.EDDS.Types.FullTextBuilder) As Boolean
 			Dim tries As Int32 = 0
@@ -288,26 +288,26 @@ Namespace kCura.WinEDDS.Service
 			End While
 		End Function
 
-		Public Shadows Sub UpdateFullTextWithCrackedText(ByVal caseContextArtifactID As Int32, ByVal documentArtifactID As Int32, ByVal fileGuid As String)
-			Dim tries As Int32 = 0
-			While tries < Config.MaxReloginTries
-				Try
-					tries += 1
-					If kCura.WinEDDS.Config.UsesWebAPI Then
-						MyBase.UpdateFullTextWithCrackedText(caseContextArtifactID, documentArtifactID, fileGuid)
-						Exit Sub
-					Else
-						'_documentManager.UpdateFullTextWithCrackedText(documentArtifactID, fileGuid, _identity)
-					End If
-				Catch ex As System.Exception
-					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer)
-					Else
-						Throw
-					End If
-				End Try
-			End While
-		End Sub
+		'Public Shadows Sub UpdateFullTextWithCrackedText(ByVal caseContextArtifactID As Int32, ByVal documentArtifactID As Int32, ByVal fileGuid As String)
+		'	Dim tries As Int32 = 0
+		'	While tries < Config.MaxReloginTries
+		'		Try
+		'			tries += 1
+		'			If kCura.WinEDDS.Config.UsesWebAPI Then
+		'				MyBase.UpdateFullTextWithCrackedText(caseContextArtifactID, documentArtifactID, fileGuid)
+		'				Exit Sub
+		'			Else
+		'				'_documentManager.UpdateFullTextWithCrackedText(documentArtifactID, fileGuid, _identity)
+		'			End If
+		'		Catch ex As System.Exception
+		'			If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
+		'				Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer)
+		'			Else
+		'				Throw
+		'			End If
+		'		End Try
+		'	End While
+		'End Sub
 
 		Public Shadows Sub ClearImagesFromDocument(ByVal caseContextArtifactID As Int32, ByVal artifactID As Int32)
 			Dim tries As Int32 = 0

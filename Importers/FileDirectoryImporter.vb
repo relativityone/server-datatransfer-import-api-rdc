@@ -156,7 +156,7 @@ Namespace kCura.WinEDDS
 			Next
 
 			Me.ReportStatus(filePath, "Creating EDDS Record")
-			Dim documentArtifactID As Int32 = _documentManager.Create(_importFileDirectorySettings.CaseInfo.ArtifactID, documentDTO)
+			Dim documentArtifactID As Int32 = _documentManager.Create(_importFileDirectorySettings.CaseInfo.ArtifactID, documentDTO, Nothing)
 
 			Me.ReportStatus(filePath, "Uploading Document")
 			If _importFileDirectorySettings.AttachFiles Then

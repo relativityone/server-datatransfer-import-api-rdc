@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<definitions xmlns:s1="http://NullableTypes.SourceForge.Net/NullableInt32XMLSchema" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:s0="http://foley.com/EDDS/CodeManager" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" targetNamespace="http://foley.com/EDDS/CodeManager" xmlns="http://schemas.xmlsoap.org/wsdl/">
-  <types>
+<wsdl:definitions xmlns:s1="http://NullableTypes.SourceForge.Net/NullableInt32XMLSchema" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tns="http://foley.com/EDDS/CodeManager" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" targetNamespace="http://foley.com/EDDS/CodeManager" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
     <s:schema elementFormDefault="qualified" targetNamespace="http://foley.com/EDDS/CodeManager">
       <s:import namespace="http://www.w3.org/2001/XMLSchema" />
       <s:import namespace="http://NullableTypes.SourceForge.Net/NullableInt32XMLSchema" />
@@ -29,13 +29,13 @@
         <s:complexType>
           <s:sequence>
             <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
-            <s:element minOccurs="0" maxOccurs="1" name="codeDTO" type="s0:Code" />
+            <s:element minOccurs="0" maxOccurs="1" name="codeDTO" type="tns:Code" />
           </s:sequence>
         </s:complexType>
       </s:element>
       <s:complexType name="Code">
         <s:complexContent mixed="false">
-          <s:extension base="s0:Artifact">
+          <s:extension base="tns:Artifact">
             <s:sequence>
               <s:element minOccurs="1" maxOccurs="1" name="CodeType" type="s:int" />
               <s:element minOccurs="0" maxOccurs="1" name="Name" type="s:string" />
@@ -88,53 +88,54 @@
     <s:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="http://NullableTypes.SourceForge.Net/NullableInt32XMLSchema" id="NullableInt32">
       <xs:element name="NullableInt32" nillable="true" type="xs:int" />
     </s:schema>
-  </types>
-  <message name="RetrieveCodesAndTypesForCaseSoapIn">
-    <part name="parameters" element="s0:RetrieveCodesAndTypesForCase" />
-  </message>
-  <message name="RetrieveCodesAndTypesForCaseSoapOut">
-    <part name="parameters" element="s0:RetrieveCodesAndTypesForCaseResponse" />
-  </message>
-  <message name="CreateSoapIn">
-    <part name="parameters" element="s0:Create" />
-  </message>
-  <message name="CreateSoapOut">
-    <part name="parameters" element="s0:CreateResponse" />
-  </message>
-  <portType name="CodeManagerSoap">
-    <operation name="RetrieveCodesAndTypesForCase">
-      <input message="s0:RetrieveCodesAndTypesForCaseSoapIn" />
-      <output message="s0:RetrieveCodesAndTypesForCaseSoapOut" />
-    </operation>
-    <operation name="Create">
-      <input message="s0:CreateSoapIn" />
-      <output message="s0:CreateSoapOut" />
-    </operation>
-  </portType>
-  <binding name="CodeManagerSoap" type="s0:CodeManagerSoap">
+  </wsdl:types>
+  <wsdl:message name="RetrieveCodesAndTypesForCaseSoapIn">
+    <wsdl:part name="parameters" element="tns:RetrieveCodesAndTypesForCase" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveCodesAndTypesForCaseSoapOut">
+    <wsdl:part name="parameters" element="tns:RetrieveCodesAndTypesForCaseResponse" />
+  </wsdl:message>
+  <wsdl:message name="CreateSoapIn">
+    <wsdl:part name="parameters" element="tns:Create" />
+  </wsdl:message>
+  <wsdl:message name="CreateSoapOut">
+    <wsdl:part name="parameters" element="tns:CreateResponse" />
+  </wsdl:message>
+  <wsdl:portType name="CodeManagerSoap">
+    <wsdl:operation name="RetrieveCodesAndTypesForCase">
+      <wsdl:input message="tns:RetrieveCodesAndTypesForCaseSoapIn" />
+      <wsdl:output message="tns:RetrieveCodesAndTypesForCaseSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="Create">
+      <wsdl:input message="tns:CreateSoapIn" />
+      <wsdl:output message="tns:CreateSoapOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="CodeManagerSoap" type="tns:CodeManagerSoap">
     <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document" />
-    <operation name="RetrieveCodesAndTypesForCase">
+    <wsdl:operation name="RetrieveCodesAndTypesForCase">
       <soap:operation soapAction="http://foley.com/EDDS/CodeManager/RetrieveCodesAndTypesForCase" style="document" />
-      <input>
+      <wsdl:input>
         <soap:body use="literal" />
-      </input>
-      <output>
+      </wsdl:input>
+      <wsdl:output>
         <soap:body use="literal" />
-      </output>
-    </operation>
-    <operation name="Create">
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Create">
       <soap:operation soapAction="http://foley.com/EDDS/CodeManager/Create" style="document" />
-      <input>
+      <wsdl:input>
         <soap:body use="literal" />
-      </input>
-      <output>
+      </wsdl:input>
+      <wsdl:output>
         <soap:body use="literal" />
-      </output>
-    </operation>
-  </binding>
-  <service name="CodeManager">
-    <port name="CodeManagerSoap" binding="s0:CodeManagerSoap">
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="CodeManager">
+    <documentation xmlns="http://schemas.xmlsoap.org/wsdl/" />
+    <wsdl:port name="CodeManagerSoap" binding="tns:CodeManagerSoap">
       <soap:address location="http://localhost/EDDSWebAPI/CodeManager.asmx" />
-    </port>
-  </service>
-</definitions>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

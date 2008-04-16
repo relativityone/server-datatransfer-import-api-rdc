@@ -356,9 +356,9 @@ Namespace kCura.WinEDDS
 
 #Region "WebService Calls"
 
-		Private Function ReadDocumentInfo(ByVal identityValue As String) As kCura.EDDS.WebAPI.DocumentManagerBase.Document
+		Private Function ReadDocumentInfo(ByVal identityValue As String) As kCura.EDDS.WebAPI.DocumentManagerBase.FullDocumentInfo
 			Try
-				Return _documentManager.ReadFromIdentifier(_caseArtifactID, _selectedIdentifier.FieldName, identityValue)
+				Return _documentManager.ReadFromIdentifierWithFileList(_caseArtifactID, _selectedIdentifier.FieldName, identityValue)
 			Catch ex As System.Exception
 				If kCura.WinEDDS.Config.UsesWebAPI Then
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException Then
@@ -380,21 +380,28 @@ Namespace kCura.WinEDDS
 				Dim doc As kCura.EDDS.WebAPI.DocumentManagerBase.Document
 				Dim documentArtifactID As Int32
 				Dim markReadDoc As DateTime = DateTime.Now
+				Dim files As kCura.EDDS.WebAPI.DocumentManagerBase.File()
 				Select Case _overwrite.ToLower
 					Case "strict"
-						doc = Me.ReadDocumentInfo(metaDoc.IdentityValue)
-						If doc Is Nothing Then
-							Throw New IdentityValueNotFoundException(metaDoc.IdentityValue)
-						End If
+						With Me.ReadDocumentInfo(metaDoc.IdentityValue)
+							doc = .DocumentDTO
+							files = .FileList
+							If doc Is Nothing Then
+								Throw New IdentityValueNotFoundException(metaDoc.IdentityValue)
+							End If
+						End With
 					Case "append"
-						doc = Me.ReadDocumentInfo(metaDoc.IdentityValue)
+							With Me.ReadDocumentInfo(metaDoc.IdentityValue)
+								doc = .DocumentDTO
+								files = .FileList
+							End With
 				End Select
 				_timeKeeper.Add("ReadUpload", DateTime.Now.Subtract(markReadDoc).TotalMilliseconds)
 				markReadDoc = DateTime.Now
 				If doc Is Nothing Then
 					documentArtifactID = CreateDocument(metaDoc, _extractFullTextFromNative)
 				Else
-					documentArtifactID = UpdateDocument(doc, metaDoc, _extractFullTextFromNative)
+					documentArtifactID = UpdateDocument(doc, metaDoc, _extractFullTextFromNative, files)
 				End If
 				Dim o As New Object
 				_timeKeeper.Add("Manage", DateTime.Now.Subtract(markReadDoc).TotalMilliseconds)
@@ -424,6 +431,7 @@ Namespace kCura.WinEDDS
 			documentDTO.DocumentAgentFlags = New kCura.EDDS.WebAPI.DocumentManagerBase.DocumentAgentFlags
 			documentDTO.DocumentAgentFlags.UpdateFullText = extractText
 			documentDTO.DocumentAgentFlags.IndexStatus = kCura.EDDS.Types.IndexStatus.IndexLowPriority
+			Dim files As kCura.EDDS.WebAPI.DocumentManagerBase.File()
 			Dim now As System.DateTime = System.DateTime.Now
 			SetFieldValues(documentDTO, fieldCollection)
 			If mdoc.Md5Hash <> "" Then
@@ -434,12 +442,12 @@ Namespace kCura.WinEDDS
 			If mdoc.UploadFile And mdoc.IndexFileInDB Then
 				Me.SetFileIdDataFields(documentDTO, mdoc.FileIdData)
 				Dim fileDTO As kCura.EDDS.WebAPI.DocumentManagerBase.File = CreateFileDTO(filename, fileguid, _defaultDestinationFolderPath, mdoc.FullFilePath)
-				documentDTO.Files = New kCura.EDDS.WebApi.DocumentManagerBase.File() {fileDTO}
+				files = New kCura.EDDS.WebApi.DocumentManagerBase.File() {fileDTO}
 			End If
 
 			Try
 				WriteStatusLine(Windows.Process.EventType.Status, String.Format("Creating document '{0}' in database.", identityValue))
-				Return _documentManager.Create(_uploader.CaseArtifactID, documentDTO)
+				Return _documentManager.Create(_uploader.CaseArtifactID, documentDTO, files)
 			Catch ex As System.Exception
 				If kCura.WinEDDS.Config.UsesWebAPI Then
 					If ex.ToString.IndexOf("NeedToReLoginException") <> -1 Then
@@ -453,8 +461,8 @@ Namespace kCura.WinEDDS
 			End Try
 		End Function
 
-		Private Function UpdateDocument(ByVal docDTO As kCura.EDDS.WebAPI.DocumentManagerBase.Document, ByVal mdoc As MetaDocument, ByVal extractText As Boolean) As Int32
-			Return UpdateDocument(docDTO, mdoc.FieldCollection, mdoc.IdentityValue, mdoc.UploadFile AndAlso mdoc.FileGuid <> String.Empty, mdoc.FileGuid <> String.Empty AndAlso extractText, mdoc.Filename, mdoc.FileGuid, mdoc)
+		Private Function UpdateDocument(ByVal docDTO As kCura.EDDS.WebAPI.DocumentManagerBase.Document, ByVal mdoc As MetaDocument, ByVal extractText As Boolean, ByVal files As kCura.EDDS.WebAPI.DocumentManagerBase.File()) As Int32
+			Return UpdateDocument(docDTO, mdoc.FieldCollection, mdoc.IdentityValue, mdoc.UploadFile AndAlso mdoc.FileGuid <> String.Empty, mdoc.FileGuid <> String.Empty AndAlso extractText, mdoc.Filename, mdoc.FileGuid, mdoc, files)
 		End Function
 
 		Private Sub SetFileIdDataFields(ByVal document As kCura.EDDS.WebAPI.DocumentManagerBase.Document, ByVal oixFileIdData As OI.FileID.FileIDData)
@@ -476,7 +484,7 @@ Namespace kCura.WinEDDS
 			Return Not _oixFileLookup.Contains(fileData.FileID)
 		End Function
 
-		Private Function UpdateDocument(ByVal docDTO As kCura.EDDS.WebAPI.DocumentManagerBase.Document, ByVal fieldCollection As DocumentFieldCollection, ByVal identityValue As String, ByVal uploadFile As Boolean, ByVal extractText As Boolean, ByVal fileName As String, ByVal fileGuid As String, ByVal mdoc As MetaDocument) As Int32
+		Private Function UpdateDocument(ByVal docDTO As kCura.EDDS.WebAPI.DocumentManagerBase.Document, ByVal fieldCollection As DocumentFieldCollection, ByVal identityValue As String, ByVal uploadFile As Boolean, ByVal extractText As Boolean, ByVal fileName As String, ByVal fileGuid As String, ByVal mdoc As MetaDocument, ByVal files As kCura.EDDS.WebAPI.DocumentManagerBase.File()) As Int32
 			If Not _overwrite.ToLower = "none" Then
 				WriteStatusLine(Windows.Process.EventType.Status, String.Format("Updating document '{0}' in database.", identityValue))
 				docDTO.DocumentAgentFlags.UpdateFullText = extractText
@@ -490,8 +498,8 @@ Namespace kCura.WinEDDS
 				If uploadFile OrElse mdoc.IndexFileInDB Then
 					Dim oldFile As kCura.EDDS.WebAPI.DocumentManagerBase.File
 					Dim hasOldFile As Boolean = False
-					If Not docDTO.Files Is Nothing Then
-						For Each oldFile In docDTO.Files
+					If Not files Is Nothing Then
+						For Each oldFile In files
 							If oldFile.Type = kCura.EDDS.Types.FileType.Native Then
 								hasOldFile = True
 								Exit For
@@ -508,7 +516,7 @@ Namespace kCura.WinEDDS
 					Me.SetFileIdDataFields(docDTO, mdoc.FileIdData)
 				End If
 				Dim fullTextFileDTO As kCura.EDDS.WebAPI.DocumentManagerBase.File
-				For Each fullTextFileDTO In docDTO.Files
+				For Each fullTextFileDTO In files
 					If fullTextFileDTO.Type = 2 Then
 						Exit For
 					End If
@@ -517,16 +525,16 @@ Namespace kCura.WinEDDS
 					fileList.Add(fullTextFileDTO)
 				End If
 				If fileList.Count = 0 Then
-					docDTO.Files = Nothing
+					files = Nothing
 				Else
-					docDTO.Files = DirectCast(fileList.ToArray(GetType(kCura.EDDS.WebAPI.DocumentManagerBase.File)), kCura.EDDS.WebAPI.DocumentManagerBase.File())
+					files = DirectCast(fileList.ToArray(GetType(kCura.EDDS.WebAPI.DocumentManagerBase.File)), kCura.EDDS.WebAPI.DocumentManagerBase.File())
 				End If
 				If mdoc.Md5Hash <> "" Then
 					Me.SetMd5HashValue(mdoc.Md5Hash, docDTO)
 				End If
 				ManageRelationalFields(docDTO)
 				Try
-					_documentManager.Update(_uploader.CaseArtifactID, docDTO)
+					_documentManager.Update(_uploader.CaseArtifactID, docDTO, files)
 				Catch ex As System.Exception
 					If kCura.WinEDDS.Config.UsesWebAPI Then
 						If ex.ToString.IndexOf("NeedToReLoginException") <> -1 Then
