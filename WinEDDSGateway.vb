@@ -82,7 +82,7 @@ Namespace kCura.EDDS.WinForm
 			Next
 
 			importer.ReportStatus(recordInfo, "Finished Creating EDDS Record")
-			Dim documentArtifactID As Int32 = _documentManager.Create(_currentCaseID, documentDTO)
+			Dim documentArtifactID As Int32 = _documentManager.Create(_currentCaseID, documentDTO, Nothing)
 
 			Return documentArtifactID
 
