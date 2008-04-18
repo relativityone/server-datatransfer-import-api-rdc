@@ -126,26 +126,6 @@ Namespace kCura.WinEDDS.Service
 			End While
 		End Function
 
-		Public Shadows Function DeleteNative(ByVal caseContextArtifactID As Int32, ByVal document As kCura.EDDS.WebAPI.DocumentManagerBase.Document) As Boolean
-			Dim tries As Int32 = 0
-			While tries < Config.MaxReloginTries
-				Try
-					tries += 1
-					If kCura.WinEDDS.Config.UsesWebAPI Then
-						Return MyBase.DeleteNative(caseContextArtifactID, document)
-					Else
-						'Return _documentManager.DeleteNative(Me.WebAPIDocumentToDTO(document), _identity)
-					End If
-				Catch ex As System.Exception
-					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer)
-					Else
-						Throw
-					End If
-				End Try
-			End While
-		End Function
-
 		Public Shadows Function Create(ByVal caseContextArtifactID As Int32, ByVal document As kCura.EDDS.WebAPI.DocumentManagerBase.Document, ByVal files As kCura.EDDS.WebAPI.DocumentManagerBase.File()) As Int32
 			Dim tries As Int32 = 0
 			While tries < Config.MaxReloginTries

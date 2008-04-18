@@ -110,24 +110,6 @@ Namespace kCura.EDDS.WebAPI.DocumentManagerBase
         End Function
         
         '<remarks/>
-        <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://foley.com/EDDS/DocumentManager/DeleteNative", RequestNamespace:="http://foley.com/EDDS/DocumentManager", ResponseNamespace:="http://foley.com/EDDS/DocumentManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
-        Public Function DeleteNative(ByVal caseContextArtifactID As Integer, ByVal documentDTO As Document) As Boolean
-            Dim results() As Object = Me.Invoke("DeleteNative", New Object() {caseContextArtifactID, documentDTO})
-            Return CType(results(0),Boolean)
-        End Function
-        
-        '<remarks/>
-        Public Function BeginDeleteNative(ByVal caseContextArtifactID As Integer, ByVal documentDTO As Document, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
-            Return Me.BeginInvoke("DeleteNative", New Object() {caseContextArtifactID, documentDTO}, callback, asyncState)
-        End Function
-        
-        '<remarks/>
-        Public Function EndDeleteNative(ByVal asyncResult As System.IAsyncResult) As Boolean
-            Dim results() As Object = Me.EndInvoke(asyncResult)
-            Return CType(results(0),Boolean)
-        End Function
-        
-        '<remarks/>
         <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://foley.com/EDDS/DocumentManager/Create", RequestNamespace:="http://foley.com/EDDS/DocumentManager", ResponseNamespace:="http://foley.com/EDDS/DocumentManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
         Public Function Create(ByVal caseContextArtifactID As Integer, ByVal docDTO As Document, ByVal files() As File) As Integer
             Dim results() As Object = Me.Invoke("Create", New Object() {caseContextArtifactID, docDTO, files})

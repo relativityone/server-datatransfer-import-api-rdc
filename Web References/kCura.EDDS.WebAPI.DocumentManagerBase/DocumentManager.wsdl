@@ -280,21 +280,6 @@
           <s:element minOccurs="1" maxOccurs="1" name="IndexStatus" type="s:int" />
         </s:sequence>
       </s:complexType>
-      <s:element name="DeleteNative">
-        <s:complexType>
-          <s:sequence>
-            <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
-            <s:element minOccurs="0" maxOccurs="1" name="documentDTO" type="tns:Document" />
-          </s:sequence>
-        </s:complexType>
-      </s:element>
-      <s:element name="DeleteNativeResponse">
-        <s:complexType>
-          <s:sequence>
-            <s:element minOccurs="1" maxOccurs="1" name="DeleteNativeResult" type="s:boolean" />
-          </s:sequence>
-        </s:complexType>
-      </s:element>
       <s:element name="Create">
         <s:complexType>
           <s:sequence>
@@ -525,12 +510,6 @@
   <wsdl:message name="ReadSoapOut">
     <wsdl:part name="parameters" element="tns:ReadResponse" />
   </wsdl:message>
-  <wsdl:message name="DeleteNativeSoapIn">
-    <wsdl:part name="parameters" element="tns:DeleteNative" />
-  </wsdl:message>
-  <wsdl:message name="DeleteNativeSoapOut">
-    <wsdl:part name="parameters" element="tns:DeleteNativeResponse" />
-  </wsdl:message>
   <wsdl:message name="CreateSoapIn">
     <wsdl:part name="parameters" element="tns:Create" />
   </wsdl:message>
@@ -620,10 +599,6 @@
       <wsdl:input message="tns:ReadSoapIn" />
       <wsdl:output message="tns:ReadSoapOut" />
     </wsdl:operation>
-    <wsdl:operation name="DeleteNative">
-      <wsdl:input message="tns:DeleteNativeSoapIn" />
-      <wsdl:output message="tns:DeleteNativeSoapOut" />
-    </wsdl:operation>
     <wsdl:operation name="Create">
       <wsdl:input message="tns:CreateSoapIn" />
       <wsdl:output message="tns:CreateSoapOut" />
@@ -704,15 +679,6 @@
     </wsdl:operation>
     <wsdl:operation name="Read">
       <soap:operation soapAction="http://foley.com/EDDS/DocumentManager/Read" style="document" />
-      <wsdl:input>
-        <soap:body use="literal" />
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="DeleteNative">
-      <soap:operation soapAction="http://foley.com/EDDS/DocumentManager/DeleteNative" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
