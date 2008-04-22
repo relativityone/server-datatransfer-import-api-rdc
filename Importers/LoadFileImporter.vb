@@ -258,6 +258,10 @@ Namespace kCura.WinEDDS
 			Dim oixFileIdData As OI.FileID.FileIDData
 			If uploadFile Then
 				filename = values(_filePathColumnIndex)
+				If filename.Chars(0) = "\" AndAlso filename.Chars(1) <> "\" Then
+					filename = "." & filename
+				End If
+
 				fileExists = System.IO.File.Exists(filename)
 				If filename <> String.Empty AndAlso Not fileExists Then Throw New InvalidFilenameException(filename)
 				If fileExists Then
@@ -638,14 +642,19 @@ Namespace kCura.WinEDDS
 							If fieldDTO.FieldCategory = EDDS.WebAPI.DocumentManagerBase.FieldCategory.FullText Then
 								If _fullTextColumnMapsToFileLocation Then
 									If docField.Value <> "" Then
-										Dim finfo As New System.IO.FileInfo(docField.Value)
+										Dim fileLocation As String = docField.Value
+										If fileLocation.Length > 1 AndAlso fileLocation.Chars(0) = "\" AndAlso fileLocation.Chars(1) <> "\" Then
+											fileLocation = "." & fileLocation
+										End If
+
+										Dim finfo As New System.IO.FileInfo(fileLocation)
 										Dim multiplier As Int32 = 2
 										If TypeOf _sourceFileEncoding Is System.Text.UnicodeEncoding Then multiplier = 1
 
 										If finfo.Length > Me.Settings.MAX_STRING_FIELD_LENGTH * multiplier Then
-											fieldDTO.Value = _extractedTextFileEncodingName & ":" & _textUploader.UploadFile(docField.Value, _caseArtifactID)
+											fieldDTO.Value = _extractedTextFileEncodingName & ":" & _textUploader.UploadFile(fileLocation, _caseArtifactID)
 										Else
-											Dim sr As New System.IO.StreamReader(docField.Value, _sourceFileEncoding)
+											Dim sr As New System.IO.StreamReader(fileLocation, _sourceFileEncoding)
 											fieldDTO.Value = encoder.GetBytes(sr.ReadToEnd)
 											sr.Close()
 										End If
