@@ -217,7 +217,7 @@ Namespace kCura.WinEDDS
 				Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Currency, kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Decimal
 					field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(GetNullableDecimal(value.Trim, column))
 				Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Date
-					field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(GetNullableDateTime(value.Trim, column))
+					field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(GetNullableDateTime(value.Trim, column), True)
 				Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.User
 					field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(Me.GetUserArtifactID(value.Trim, column))
 					If forPreview Then field.Value = value.Trim
