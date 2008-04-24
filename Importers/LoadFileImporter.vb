@@ -258,7 +258,7 @@ Namespace kCura.WinEDDS
 			Dim oixFileIdData As OI.FileID.FileIDData
 			If uploadFile Then
 				filename = values(_filePathColumnIndex)
-				If filename.Chars(0) = "\" AndAlso filename.Chars(1) <> "\" Then
+				If filename.Length > 1 AndAlso filename.Chars(0) = "\" AndAlso filename.Chars(1) <> "\" Then
 					filename = "." & filename
 				End If
 
