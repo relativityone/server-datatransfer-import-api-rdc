@@ -507,7 +507,7 @@ Namespace kCura.WinEDDS
 					If datetime.IsNull OrElse datetime.Value = "" Then
 						val = ""
 					Else
-						val = System.DateTime.Parse(datetime.Value).ToString(_parent.ColumnFormats(count).ToString)
+						val = System.DateTime.Parse(datetime.Value, System.Globalization.CultureInfo.InvariantCulture).ToString(_parent.ColumnFormats(count).ToString)
 					End If
 				End If
 				fieldValue = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(NullableTypes.HelperFunctions.DBNullConvert.ToNullableString(val))
