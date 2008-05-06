@@ -447,7 +447,7 @@ Namespace kCura.WinEDDS
 				_timekeeper.MarkEnd("GetImageForDocument_GetImageFileName")
 
 				_timekeeper.MarkStart("GetImageForDocument_StatusUploadUpdate")
-				'RaiseStatusEvent(kCura.Windows.Process.EventType.Progress, String.Format("Uploading File '{0}'.", filename))
+				RaiseStatusEvent(kCura.Windows.Process.EventType.Progress, String.Format("Uploading File '{0}'.", filename))
 				_timekeeper.MarkEnd("GetImageForDocument_StatusUploadUpdate")
 
 				_timekeeper.MarkStart("GetImageForDocument_GetExtractedTextFileName")
