@@ -16,6 +16,7 @@ Namespace kCura.WinEDDS
 		Private _recordCount As Int64 = -1
 		Private _extractFullTextFromNative As Boolean
 		Private _allFields As kCura.EDDS.WebAPI.DocumentManagerBase.Field()
+		Private _fieldsForCreate As kCura.EDDS.WebAPI.DocumentManagerBase.Field()
 		Protected Shared _continue As Boolean
 		Protected _processedDocumentIdentifiers As Collections.Specialized.NameValueCollection
 		Protected WithEvents _processController As kCura.Windows.Process.Controller
@@ -40,6 +41,7 @@ Namespace kCura.WinEDDS
 		Private _defaultTextFolderPath As String = ""
 		Private _copyFileToRepository As Boolean
 		Private _oixFileLookup As System.Collections.Specialized.HybridDictionary
+		Private _fieldArtifactIds As Int32()
 
 #End Region
 
@@ -65,6 +67,29 @@ Namespace kCura.WinEDDS
 					field.FieldCategory = CType(field.FieldCategoryID, kCura.EDDS.WebAPI.DocumentManagerBase.FieldCategory)
 				Next
 				Return _allFields
+			End Get
+		End Property
+
+		Public ReadOnly Property DocumentFieldsForCreate() As kCura.EDDS.WebAPI.DocumentManagerBase.Field()
+			Get
+				If _fieldsForCreate Is Nothing Then
+					Dim fieldsForCreate As New System.Collections.ArrayList
+					For Each field As kCura.EDDS.WebAPI.DocumentManagerBase.Field In Me.AllDocumentFields
+						If System.Array.IndexOf(_fieldArtifactIds, field.ArtifactID) <> -1 Then
+							fieldsForCreate.Add(field)
+						End If
+					Next
+					_fieldsForCreate = DirectCast(fieldsForCreate.ToArray(GetType(kCura.EDDS.WebAPI.DocumentManagerBase.Field)), kCura.EDDS.WebAPI.DocumentManagerBase.Field())
+				End If
+				Return _fieldsForCreate
+			End Get
+		End Property
+
+		Public ReadOnly Property FileInfoField() As kCura.EDDS.WebAPI.DocumentManagerBase.Field
+			Get
+				For Each field As kCura.EDDS.WebAPI.DocumentManagerBase.Field In Me.AllDocumentFields
+					If field.FieldCategoryID = kCura.DynamicFields.Types.FieldCategory.FileInfo Then Return field
+				Next
 			End Get
 		End Property
 
@@ -219,17 +244,34 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Private Sub InitializeMembers(ByVal path As String)
+			Me.InitializeLineCounter(path)
+			Me.InitializeFolderManagement()
+			Me.InitializeFieldIdList()
+			RaiseEvent StatusMessage(New kCura.Windows.Process.StatusEventArgs(Windows.Process.EventType.ResetStartTime, 0, _recordCount, "Reset time for import rolling average"))
+		End Sub
+
+		Private Sub InitializeLineCounter(ByVal path As String)
 			_lineCounter = New kCura.Utility.File.LineCounter
 			_lineCounter.Path = path
 			_lineCounter.CountLines(_sourceFileEncoding, New kCura.Utility.File.LineCounter.LineCounterArgs(Me.Bound, Me.Delimiter))
+		End Sub
+
+		Private Sub InitializeFolderManagement()
 			If _createFolderStructure Then
 				_folderCache = New FolderCache(_folderManager, _folderID, _caseArtifactID)
 				Dim openParenIndex As Int32 = _destinationFolder.LastIndexOf("("c) + 1
 				Dim closeParenIndex As Int32 = _destinationFolder.LastIndexOf(")"c)
 				_destinationFolderColumnIndex = Int32.Parse(_destinationFolder.Substring(openParenIndex, closeParenIndex - openParenIndex)) - 1
 			End If
+		End Sub
 
-			RaiseEvent StatusMessage(New kCura.Windows.Process.StatusEventArgs(Windows.Process.EventType.ResetStartTime, 0, _recordCount, "Reset time for import rolling average"))
+		Private Sub InitializeFieldIdList()
+			Dim fieldIdList As New System.Collections.ArrayList
+			For Each item As LoadFileFieldMap.LoadFileFieldMapItem In _fieldMap
+				If item.DocumentField.FieldCategoryID <> kCura.DynamicFields.Types.FieldCategory.FullText Then fieldIdList.Add(item.DocumentField.FieldID)
+			Next
+			fieldIdList.Add(Me.FileInfoField.ArtifactID)
+			_fieldArtifactIds = DirectCast(fieldIdList.ToArray(GetType(Int32)), Int32())
 		End Sub
 
 		Private Function ManageDocument(ByVal values As String()) As String
@@ -362,7 +404,7 @@ Namespace kCura.WinEDDS
 
 		Private Function ReadDocumentInfo(ByVal identityValue As String) As kCura.EDDS.WebAPI.DocumentManagerBase.FullDocumentInfo
 			Try
-				Return _documentManager.ReadFromIdentifierWithFileList(_caseArtifactID, _selectedIdentifier.FieldName, identityValue)
+				Return _documentManager.ReadFromIdentifierWithFileList(_caseArtifactID, _selectedIdentifier.FieldName, identityValue, _fieldArtifactIds)
 			Catch ex As System.Exception
 				If kCura.WinEDDS.Config.UsesWebAPI Then
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException Then
@@ -395,10 +437,10 @@ Namespace kCura.WinEDDS
 							End If
 						End With
 					Case "append"
-							With Me.ReadDocumentInfo(metaDoc.IdentityValue)
-								doc = .DocumentDTO
-								files = .FileList
-							End With
+						With Me.ReadDocumentInfo(metaDoc.IdentityValue)
+							doc = .DocumentDTO
+							files = .FileList
+						End With
 				End Select
 				_timeKeeper.Add("ReadUpload", DateTime.Now.Subtract(markReadDoc).TotalMilliseconds)
 				markReadDoc = DateTime.Now
@@ -421,20 +463,25 @@ Namespace kCura.WinEDDS
 			WriteStatusLine(Windows.Process.EventType.Progress, String.Format("Document '{0}' processed.", metaDoc.IdentityValue), metaDoc.LineNumber)
 		End Sub
 
-		Private Function CreateDocument(ByVal mdoc As MetaDocument, ByVal extractText As Boolean) As Int32
-			Return CreateDocument(mdoc.FieldCollection, mdoc.IdentityValue, mdoc.FileGuid <> String.Empty AndAlso extractText, mdoc.Filename, mdoc.FileGuid, mdoc)
-		End Function
-
-		Private Function CreateDocument(ByVal fieldCollection As DocumentFieldCollection, ByVal identityValue As String, ByVal extractText As Boolean, ByVal filename As String, ByVal fileguid As String, ByVal mdoc As MetaDocument) As Int32
+		Private Function GetDocumentDtoForCreate(ByVal parentFolderId As Int32, ByVal extractText As Boolean) As kCura.EDDS.WebAPI.DocumentManagerBase.Document
 			Dim documentDTO As New kCura.EDDS.WebAPI.DocumentManagerBase.Document
-			documentDTO.Fields = AllDocumentFields
-			documentDTO.ParentArtifactID = New NullableTypes.NullableInt32(mdoc.ParentFolderID)
+			documentDTO.Fields = Me.DocumentFieldsForCreate
+			documentDTO.ParentArtifactID = New NullableTypes.NullableInt32(parentFolderId)
 			documentDTO.ContainerID = _parentFolderDTO.ContainerID
 			documentDTO.AccessControlListIsInherited = True
 			documentDTO.AccessControlListID = _parentFolderDTO.AccessControlListID
 			documentDTO.DocumentAgentFlags = New kCura.EDDS.WebAPI.DocumentManagerBase.DocumentAgentFlags
 			documentDTO.DocumentAgentFlags.UpdateFullText = extractText
 			documentDTO.DocumentAgentFlags.IndexStatus = kCura.EDDS.Types.IndexStatus.IndexLowPriority
+			Return documentDTO
+		End Function
+
+		Private Function CreateDocument(ByVal mdoc As MetaDocument, ByVal extractText As Boolean) As Int32
+			Return CreateDocument(mdoc.FieldCollection, mdoc.IdentityValue, mdoc.FileGuid <> String.Empty AndAlso extractText, mdoc.Filename, mdoc.FileGuid, mdoc)
+		End Function
+
+		Private Function CreateDocument(ByVal fieldCollection As DocumentFieldCollection, ByVal identityValue As String, ByVal extractText As Boolean, ByVal filename As String, ByVal fileguid As String, ByVal mdoc As MetaDocument) As Int32
+			Dim documentDTO As kCura.EDDS.WebAPI.DocumentManagerBase.Document = Me.GetDocumentDtoForCreate(mdoc.ParentFolderID, extractText)
 			Dim files As kCura.EDDS.WebAPI.DocumentManagerBase.File()
 			Dim now As System.DateTime = System.DateTime.Now
 			SetFieldValues(documentDTO, fieldCollection)
@@ -1027,12 +1074,14 @@ Namespace kCura.WinEDDS
 		End Property
 	End Class
 
+#Region "MetaDocQueue"
+
 	Public Class MetaDocQueue
 		Implements IEnumerable
 		Private _list As System.Collections.ArrayList
 		Private _weight As Int64
-		Private QUEUE_LENGTH_MAX As Int32 = 100
-		Private QUEUE_WEIGHT_MAX As Int64 = 52428800
+		Private Shared QUEUE_LENGTH_MAX As Int32 = 100
+		Private Shared QUEUE_WEIGHT_MAX As Int64 = 52428800
 		Public Sub New()
 			_list = New System.Collections.ArrayList
 		End Sub
@@ -1084,4 +1133,7 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 	End Class
+
+#End Region
+
 End Namespace

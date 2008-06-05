@@ -19,8 +19,8 @@ Namespace kCura.WinEDDS.Service
 			Return wr
 		End Function
 
-		Public Shadows Function ReadFromDocumentArtifactID(ByVal caseContextArtifactID As Int32, ByVal documentArtifactID As Int32) As kCura.EDDS.WebAPI.DocumentManagerBase.Document
-			Dim doc As kCura.EDDS.WebAPI.DocumentManagerBase.Document = Me.Read(caseContextArtifactID, documentArtifactID)
+		Public Shadows Function ReadFromDocumentArtifactID(ByVal caseContextArtifactID As Int32, ByVal documentArtifactID As Int32, ByVal fieldArtifactIds As Int32()) As kCura.EDDS.WebAPI.DocumentManagerBase.Document
+			Dim doc As kCura.EDDS.WebAPI.DocumentManagerBase.Document = Me.Read(caseContextArtifactID, documentArtifactID, fieldArtifactIDs)
 			Dim field As kCura.EDDS.WebAPI.DocumentManagerBase.Field
 			For Each field In doc.Fields
 				If field.FieldCategoryID = kCura.DynamicFields.Types.FieldCategory.FullText Then
@@ -105,13 +105,13 @@ Namespace kCura.WinEDDS.Service
 			End While
 		End Function
 
-		Public Shadows Function Read(ByVal caseContextArtifactID As Int32, ByVal artifactID As Int32) As kCura.EDDS.WebAPI.DocumentManagerBase.Document
+		Public Shadows Function Read(ByVal caseContextArtifactID As Int32, ByVal artifactID As Int32, ByVal fieldArtifactIds As Int32()) As kCura.EDDS.WebAPI.DocumentManagerBase.Document
 			Dim tries As Int32 = 0
 			While tries < Config.MaxReloginTries
 				Try
 					tries += 1
 					If kCura.WinEDDS.Config.UsesWebAPI Then
-						Return MyBase.Read(caseContextArtifactID, artifactID)
+						Return MyBase.Read(caseContextArtifactID, artifactID, fieldArtifactIds)
 					Else
 						'Dim docDTO As kCura.EDDS.DTO.Document = _documentManager.ExternalRead(artifactID, _identity)
 						'Return DTOToWebAPIDocument(docDTO)
@@ -248,19 +248,21 @@ Namespace kCura.WinEDDS.Service
 			End While
 		End Function
 
-		Public Shadows Function ReadFromIdentifier(ByVal caseContextArtifactID As Int32, ByVal fieldDisplayName As String, ByVal identifier As String) As kCura.EDDS.WebAPI.DocumentManagerBase.Document
+		Public Shadows Function ReadFromIdentifier(ByVal caseContextArtifactID As Int32, ByVal fieldDisplayName As String, ByVal identifier As String, ByVal fieldArtifactIds As Int32()) As kCura.EDDS.WebAPI.DocumentManagerBase.Document
 			Dim tries As Int32 = 0
 			While tries < Config.MaxReloginTries
 				Try
 					tries += 1
 					If kCura.WinEDDS.Config.UsesWebAPI Then
-						Return MyBase.ReadFromIdentifier(caseContextArtifactID, fieldDisplayName, identifier)
+						Return MyBase.ReadFromIdentifier(caseContextArtifactID, fieldDisplayName, identifier, fieldArtifactIds)
 					Else
 						'Return Me.DTOToWebAPIDocument(_documentManager.ExternalReadFromIdentifier(caseID, fieldDisplayName, identifier, _identity))
 					End If
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
 						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer)
+					ElseIf TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("ResetFieldIdCacheException") <> -1 Then
+
 					Else
 						Throw
 					End If

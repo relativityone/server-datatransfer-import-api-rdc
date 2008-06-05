@@ -93,9 +93,6 @@ Namespace kCura.EDDS.WebAPI.CodeManagerBase
         
         '<remarks/>
         Public UpdateInSearchEngine As Boolean
-        
-        '<remarks/>
-        Public BinaryIdentity As Integer
     End Class
     
     '<remarks/>

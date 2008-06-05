@@ -93,14 +93,14 @@ Namespace kCura.EDDS.WebAPI.DocumentManagerBase
         
         '<remarks/>
         <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://foley.com/EDDS/DocumentManager/Read", RequestNamespace:="http://foley.com/EDDS/DocumentManager", ResponseNamespace:="http://foley.com/EDDS/DocumentManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
-        Public Function Read(ByVal caseContextArtifactID As Integer, ByVal artifactID As Integer) As Document
-            Dim results() As Object = Me.Invoke("Read", New Object() {caseContextArtifactID, artifactID})
+        Public Function Read(ByVal caseContextArtifactID As Integer, ByVal artifactID As Integer, ByVal fieldArtifactIds() As Integer) As Document
+            Dim results() As Object = Me.Invoke("Read", New Object() {caseContextArtifactID, artifactID, fieldArtifactIds})
             Return CType(results(0),Document)
         End Function
         
         '<remarks/>
-        Public Function BeginRead(ByVal caseContextArtifactID As Integer, ByVal artifactID As Integer, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
-            Return Me.BeginInvoke("Read", New Object() {caseContextArtifactID, artifactID}, callback, asyncState)
+        Public Function BeginRead(ByVal caseContextArtifactID As Integer, ByVal artifactID As Integer, ByVal fieldArtifactIds() As Integer, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("Read", New Object() {caseContextArtifactID, artifactID, fieldArtifactIds}, callback, asyncState)
         End Function
         
         '<remarks/>
@@ -201,14 +201,14 @@ Namespace kCura.EDDS.WebAPI.DocumentManagerBase
         
         '<remarks/>
         <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://foley.com/EDDS/DocumentManager/ReadFromIdentifier", RequestNamespace:="http://foley.com/EDDS/DocumentManager", ResponseNamespace:="http://foley.com/EDDS/DocumentManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
-        Public Function ReadFromIdentifier(ByVal caseContextArtifactID As Integer, ByVal fieldDisplayName As String, ByVal identifier As String) As Document
-            Dim results() As Object = Me.Invoke("ReadFromIdentifier", New Object() {caseContextArtifactID, fieldDisplayName, identifier})
+        Public Function ReadFromIdentifier(ByVal caseContextArtifactID As Integer, ByVal fieldDisplayName As String, ByVal identifier As String, ByVal fieldArtifactIds() As Integer) As Document
+            Dim results() As Object = Me.Invoke("ReadFromIdentifier", New Object() {caseContextArtifactID, fieldDisplayName, identifier, fieldArtifactIds})
             Return CType(results(0),Document)
         End Function
         
         '<remarks/>
-        Public Function BeginReadFromIdentifier(ByVal caseContextArtifactID As Integer, ByVal fieldDisplayName As String, ByVal identifier As String, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
-            Return Me.BeginInvoke("ReadFromIdentifier", New Object() {caseContextArtifactID, fieldDisplayName, identifier}, callback, asyncState)
+        Public Function BeginReadFromIdentifier(ByVal caseContextArtifactID As Integer, ByVal fieldDisplayName As String, ByVal identifier As String, ByVal fieldArtifactIds() As Integer, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("ReadFromIdentifier", New Object() {caseContextArtifactID, fieldDisplayName, identifier, fieldArtifactIds}, callback, asyncState)
         End Function
         
         '<remarks/>
@@ -219,14 +219,14 @@ Namespace kCura.EDDS.WebAPI.DocumentManagerBase
         
         '<remarks/>
         <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://foley.com/EDDS/DocumentManager/ReadFromIdentifierWithFileList", RequestNamespace:="http://foley.com/EDDS/DocumentManager", ResponseNamespace:="http://foley.com/EDDS/DocumentManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
-        Public Function ReadFromIdentifierWithFileList(ByVal caseContextArtifactID As Integer, ByVal fieldDisplayName As String, ByVal identifier As String) As FullDocumentInfo
-            Dim results() As Object = Me.Invoke("ReadFromIdentifierWithFileList", New Object() {caseContextArtifactID, fieldDisplayName, identifier})
+        Public Function ReadFromIdentifierWithFileList(ByVal caseContextArtifactID As Integer, ByVal fieldDisplayName As String, ByVal identifier As String, ByVal fieldArtifactIds() As Integer) As FullDocumentInfo
+            Dim results() As Object = Me.Invoke("ReadFromIdentifierWithFileList", New Object() {caseContextArtifactID, fieldDisplayName, identifier, fieldArtifactIds})
             Return CType(results(0),FullDocumentInfo)
         End Function
         
         '<remarks/>
-        Public Function BeginReadFromIdentifierWithFileList(ByVal caseContextArtifactID As Integer, ByVal fieldDisplayName As String, ByVal identifier As String, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
-            Return Me.BeginInvoke("ReadFromIdentifierWithFileList", New Object() {caseContextArtifactID, fieldDisplayName, identifier}, callback, asyncState)
+        Public Function BeginReadFromIdentifierWithFileList(ByVal caseContextArtifactID As Integer, ByVal fieldDisplayName As String, ByVal identifier As String, ByVal fieldArtifactIds() As Integer, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("ReadFromIdentifierWithFileList", New Object() {caseContextArtifactID, fieldDisplayName, identifier, fieldArtifactIds}, callback, asyncState)
         End Function
         
         '<remarks/>
