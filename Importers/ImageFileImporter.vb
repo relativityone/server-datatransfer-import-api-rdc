@@ -622,5 +622,6 @@ Namespace kCura.WinEDDS
 			End Sub
 		End Class
 #End Region
+
 	End Class
 End Namespace

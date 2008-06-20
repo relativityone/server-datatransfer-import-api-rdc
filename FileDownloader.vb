@@ -112,6 +112,11 @@ Namespace kCura.WinEDDS
 			'End If
 		End Function
 
+		Public Function DownloadFile(ByVal localFilePath As String, ByVal remoteFileGuid As String, ByVal appID As String) As Boolean
+			Me.UploaderType = Type.Web
+			Return WebDownloadFile(localFilePath, -1, remoteFileGuid, appID)
+		End Function
+
 		Private Function WebDownloadFile(ByVal localFilePath As String, ByVal artifactID As Int32, ByVal remoteFileGuid As String, ByVal appID As String, Optional ByVal forFullText As Boolean = False) As Boolean
 			Try
 				Dim remoteuri As String

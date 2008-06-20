@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tns="http://www.kCura.com/EDDS/BulkImportManager" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" targetNamespace="http://www.kCura.com/EDDS/BulkImportManager" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <s:schema elementFormDefault="qualified" targetNamespace="http://www.kCura.com/EDDS/BulkImportManager">
+      <s:element name="BulkImportImage">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="appID" type="s:int" />
+            <s:element minOccurs="0" maxOccurs="1" name="bulkFileName" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="uploadFullText" type="s:boolean" />
+            <s:element minOccurs="1" maxOccurs="1" name="overwrite" type="tns:OverwriteType" />
+            <s:element minOccurs="1" maxOccurs="1" name="destinationFolderArtifactID" type="s:int" />
+            <s:element minOccurs="0" maxOccurs="1" name="repository" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="useBulk" type="s:boolean" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:simpleType name="OverwriteType">
+        <s:restriction base="s:string">
+          <s:enumeration value="Append" />
+          <s:enumeration value="Overlay" />
+          <s:enumeration value="Both" />
+        </s:restriction>
+      </s:simpleType>
+      <s:element name="BulkImportImageResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="BulkImportImageResult" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="BulkImportProductionImage">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="appID" type="s:int" />
+            <s:element minOccurs="0" maxOccurs="1" name="bulkFileName" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="uploadFullText" type="s:boolean" />
+            <s:element minOccurs="1" maxOccurs="1" name="overwrite" type="tns:OverwriteType" />
+            <s:element minOccurs="1" maxOccurs="1" name="destinationFolderArtifactID" type="s:int" />
+            <s:element minOccurs="0" maxOccurs="1" name="repository" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="productionArtifactID" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="useBulk" type="s:boolean" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="BulkImportProductionImageResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="BulkImportProductionImageResult" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GenerateErrorFiles">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="appID" type="s:int" />
+            <s:element minOccurs="0" maxOccurs="1" name="importKey" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="writeHeader" type="s:boolean" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="ErrorFileKey">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="OpticonKey" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="LogKey" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="GenerateErrorFilesResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GenerateErrorFilesResult" type="tns:ErrorFileKey" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+    </s:schema>
+  </wsdl:types>
+  <wsdl:message name="BulkImportImageSoapIn">
+    <wsdl:part name="parameters" element="tns:BulkImportImage" />
+  </wsdl:message>
+  <wsdl:message name="BulkImportImageSoapOut">
+    <wsdl:part name="parameters" element="tns:BulkImportImageResponse" />
+  </wsdl:message>
+  <wsdl:message name="BulkImportProductionImageSoapIn">
+    <wsdl:part name="parameters" element="tns:BulkImportProductionImage" />
+  </wsdl:message>
+  <wsdl:message name="BulkImportProductionImageSoapOut">
+    <wsdl:part name="parameters" element="tns:BulkImportProductionImageResponse" />
+  </wsdl:message>
+  <wsdl:message name="GenerateErrorFilesSoapIn">
+    <wsdl:part name="parameters" element="tns:GenerateErrorFiles" />
+  </wsdl:message>
+  <wsdl:message name="GenerateErrorFilesSoapOut">
+    <wsdl:part name="parameters" element="tns:GenerateErrorFilesResponse" />
+  </wsdl:message>
+  <wsdl:portType name="BulkImportManagerSoap">
+    <wsdl:operation name="BulkImportImage">
+      <wsdl:input message="tns:BulkImportImageSoapIn" />
+      <wsdl:output message="tns:BulkImportImageSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="BulkImportProductionImage">
+      <wsdl:input message="tns:BulkImportProductionImageSoapIn" />
+      <wsdl:output message="tns:BulkImportProductionImageSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GenerateErrorFiles">
+      <wsdl:input message="tns:GenerateErrorFilesSoapIn" />
+      <wsdl:output message="tns:GenerateErrorFilesSoapOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="BulkImportManagerSoap" type="tns:BulkImportManagerSoap">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document" />
+    <wsdl:operation name="BulkImportImage">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/BulkImportManager/BulkImportImage" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="BulkImportProductionImage">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/BulkImportManager/BulkImportProductionImage" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GenerateErrorFiles">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/BulkImportManager/GenerateErrorFiles" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="BulkImportManager">
+    <documentation xmlns="http://schemas.xmlsoap.org/wsdl/" />
+    <wsdl:port name="BulkImportManagerSoap" binding="tns:BulkImportManagerSoap">
+      <soap:address location="http://localhost/EDDSWebAPI/BulkImportManager.asmx" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

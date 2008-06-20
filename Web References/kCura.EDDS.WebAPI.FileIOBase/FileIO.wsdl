@@ -62,6 +62,20 @@
           </s:sequence>
         </s:complexType>
       </s:element>
+      <s:element name="GetBcpSharePath">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetBcpSharePathResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetBcpSharePathResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
     </s:schema>
   </wsdl:types>
   <wsdl:message name="BeginFillSoapIn">
@@ -88,6 +102,12 @@
   <wsdl:message name="ReadFileAsStringSoapOut">
     <wsdl:part name="parameters" element="tns:ReadFileAsStringResponse" />
   </wsdl:message>
+  <wsdl:message name="GetBcpSharePathSoapIn">
+    <wsdl:part name="parameters" element="tns:GetBcpSharePath" />
+  </wsdl:message>
+  <wsdl:message name="GetBcpSharePathSoapOut">
+    <wsdl:part name="parameters" element="tns:GetBcpSharePathResponse" />
+  </wsdl:message>
   <wsdl:portType name="FileIOSoap">
     <wsdl:operation name="BeginFill">
       <wsdl:input message="tns:BeginFillSoapIn" />
@@ -104,6 +124,10 @@
     <wsdl:operation name="ReadFileAsString">
       <wsdl:input message="tns:ReadFileAsStringSoapIn" />
       <wsdl:output message="tns:ReadFileAsStringSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetBcpSharePath">
+      <wsdl:input message="tns:GetBcpSharePathSoapIn" />
+      <wsdl:output message="tns:GetBcpSharePathSoapOut" />
     </wsdl:operation>
   </wsdl:portType>
   <wsdl:binding name="FileIOSoap" type="tns:FileIOSoap">
@@ -137,6 +161,15 @@
     </wsdl:operation>
     <wsdl:operation name="ReadFileAsString">
       <soap:operation soapAction="http://foley.com/EDDS/FileManager/ReadFileAsString" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetBcpSharePath">
+      <soap:operation soapAction="http://foley.com/EDDS/FileManager/GetBcpSharePath" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>

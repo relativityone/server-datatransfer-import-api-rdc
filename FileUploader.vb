@@ -78,6 +78,19 @@ Namespace kCura.WinEDDS
 			End Property
 		End Class
 
+		Public Function UploadBcpFile(ByVal appID As Int32, ByVal localFilePath As String) As String		'upload return args
+			Try
+				_destinationFolderPath = _gateway.GetBcpSharePath(appID)
+				Return Me.UploadFile(localFilePath, appID)
+			Catch ex As Exception
+				If ex.ToString.ToLower.IndexOf("NoBcpDirectoryException") <> -1 Then
+					Return String.Empty
+				Else
+					Throw
+				End If
+			End Try
+		End Function
+
 		Public Function UploadFile(ByVal filePath As String, ByVal contextArtifactID As Int32) As String
 			Return UploadFile(filePath, contextArtifactID, System.Guid.NewGuid.ToString)
 		End Function

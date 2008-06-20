@@ -3,7 +3,7 @@ Namespace kCura.WinEDDS
     Inherits kCura.Windows.Process.ProcessBase
 
 		Public ImageLoadFile As ImageLoadFile
-		Private WithEvents _imageFileImporter As kCura.WinEDDS.ImageFileImporter
+		Private WithEvents _imageFileImporter As kCura.WinEDDS.BulkImageFileImporter
 		Private _startTime As DateTime
 		Private _errorCount As Int32
 		Private _warningCount As Int32
@@ -14,7 +14,7 @@ Namespace kCura.WinEDDS
 			_warningCount = 0
 			_errorCount = 0
 			Me.ProcessObserver.InputArgs = ImageLoadFile.FileName
-			_imageFileImporter = New kCura.WinEDDS.ImageFileImporter(ImageLoadFile.DestinationFolderID, ImageLoadFile, ProcessController)
+			_imageFileImporter = New kCura.WinEDDS.BulkImageFileImporter(ImageLoadFile.DestinationFolderID, ImageLoadFile, ProcessController)
 			_imageFileImporter.ReadFile(ImageLoadFile.FileName)
 			If Not _hasRunPRocessComplete Then Me.ProcessObserver.RaiseProcessCompleteEvent(False, _imageFileImporter.ErrorLogFileName)
 		End Sub

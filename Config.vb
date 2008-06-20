@@ -39,7 +39,7 @@ Namespace kCura.WinEDDS
 
 		Public Shared ReadOnly Property MaxReloginTries() As Int32
 			Get
-				Return 3
+				Return 20
 			End Get
 		End Property
 

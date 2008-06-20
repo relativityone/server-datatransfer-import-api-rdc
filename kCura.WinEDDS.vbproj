@@ -313,6 +313,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Importers\BulkImageFileImporter.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Importers\FileDirectoryImporter.vb"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -375,6 +380,11 @@
                 />
                 <File
                     RelPath = "PropertyExtractor\File.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Service\BulkImportManager.vb"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -507,6 +517,33 @@
                     RelPath = "Types\UserCollection.vb"
                     SubType = "Code"
                     BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Web References\kCura.EDDS.WebAPI.BulkImportManagerBase\BulkImportManager.disco"
+                    BuildAction = "None"
+                />
+                <File
+                    RelPath = "Web References\kCura.EDDS.WebAPI.BulkImportManagerBase\BulkImportManager.wsdl"
+                    BuildAction = "None"
+                />
+                <File
+                    RelPath = "Web References\kCura.EDDS.WebAPI.BulkImportManagerBase\Reference.map"
+                    BuildAction = "None"
+                    Generator = "MSDiscoCodeGenerator"
+                    LastGenOutput = "Reference.vb"
+                />
+                <File
+                    RelPath = "Web References\kCura.EDDS.WebAPI.BulkImportManagerBase\Reference.vb"
+                    DependentUpon = "Reference.map"
+                    SubType = "code"
+                    BuildAction = "Compile"
+                    DesignTime = "True"
+                    AutoGen = "True"
+                />
+                <Folder
+                    RelPath = "Web References\kCura.EDDS.WebAPI.BulkImportManagerBase\"
+                    WebReferenceUrl = "http://localhost/EDDSWebAPI/BulkImportManager.asmx"
+                    UrlBehavior = "Static"
                 />
                 <File
                     RelPath = "Web References\kCura.EDDS.WebAPI.CaseManagerBase\CaseManager.disco"
