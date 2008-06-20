@@ -525,39 +525,40 @@ Namespace kCura.Windows.Process
 		End Sub
 
 		Private Sub ExportErrorFiles()
-			_hasExportedErrors = True
+			'_hasExportedErrors = True
 			_exportErrorFilesTo.SelectedPath = System.IO.Directory.GetCurrentDirectory
 			_exportErrorFilesTo.ShowDialog()
 			Dim folderPath As String = _exportErrorFilesTo.SelectedPath
 			If Not folderPath = "" Then
 				folderPath = folderPath.TrimEnd("\"c) & "\"
+				_controller.ExportServerErrors(folderPath)
 			End If
-			Dim rootFileName As String = DirectCast(_processObserver.InputArgs, String)
-			Dim defaultExtension As String
-			If Not rootFileName.IndexOf(".") = -1 Then
-				defaultExtension = rootFileName.Substring(rootFileName.LastIndexOf("."))
-				rootFileName = rootFileName.Substring(0, rootFileName.LastIndexOf("."))
-			Else
-				defaultExtension = ".dat"
-			End If
-			rootFileName.Trim("\"c)
-			If rootFileName.IndexOf("\") <> -1 Then
-				rootFileName = rootFileName.Substring(rootFileName.LastIndexOf("\") + 1)
-			End If
+			'Dim rootFileName As String = DirectCast(_processObserver.InputArgs, String)
+			'Dim defaultExtension As String
+			'If Not rootFileName.IndexOf(".") = -1 Then
+			'	defaultExtension = rootFileName.Substring(rootFileName.LastIndexOf("."))
+			'	rootFileName = rootFileName.Substring(0, rootFileName.LastIndexOf("."))
+			'Else
+			'	defaultExtension = ".dat"
+			'End If
+			'rootFileName.Trim("\"c)
+			'If rootFileName.IndexOf("\") <> -1 Then
+			'	rootFileName = rootFileName.Substring(rootFileName.LastIndexOf("\") + 1)
+			'End If
 
-			Dim rootFilePath As String = folderPath & rootFileName
-			Dim datetimeNow As System.DateTime = System.DateTime.Now
-			Dim datetimenowstring As String = datetimeNow.Year & datetimeNow.Month.ToString.PadLeft(2, "0"c) & datetimeNow.Day.ToString.PadLeft(2, "0"c) & datetimeNow.Hour.ToString.PadLeft(2, "0"c) & datetimeNow.Minute.ToString.PadLeft(2, "0"c) & datetimeNow.Second.ToString.PadLeft(2, "0"c)
+			'Dim rootFilePath As String = folderPath & rootFileName
+			'Dim datetimeNow As System.DateTime = System.DateTime.Now
+			'Dim datetimenowstring As String = datetimeNow.Year & datetimeNow.Month.ToString.PadLeft(2, "0"c) & datetimeNow.Day.ToString.PadLeft(2, "0"c) & datetimeNow.Hour.ToString.PadLeft(2, "0"c) & datetimeNow.Minute.ToString.PadLeft(2, "0"c) & datetimeNow.Second.ToString.PadLeft(2, "0"c)
 
-			Dim errorFilePath As String = rootFilePath & "_ErrorLines_" & datetimenowstring & defaultExtension
-			Dim errorReportPath As String = rootFilePath & "_ErrorReport_" & datetimenowstring & ".csv"
-			Try
-				If System.IO.File.Exists(_exportErrorFileLocation) Then
-					System.IO.File.Copy(_exportErrorFileLocation, errorFilePath)
-				End If
-				_processObserver.ExportErrorReport(errorReportPath)
-			Catch ex As Exception
-			End Try
+			'Dim errorFilePath As String = rootFilePath & "_ErrorLines_" & datetimenowstring & defaultExtension
+			'Dim errorReportPath As String = rootFilePath & "_ErrorReport_" & datetimenowstring & ".csv"
+			'Try
+			'	If System.IO.File.Exists(_exportErrorFileLocation) Then
+			'		System.IO.File.Copy(_exportErrorFileLocation, errorFilePath)
+			'	End If
+			'	_processObserver.ExportErrorReport(errorReportPath)
+			'Catch ex As Exception
+			'End Try
 		End Sub
 
 		Private Sub _processObserver_OnProcessFatalException(ByVal ex As System.Exception) Handles _processObserver.OnProcessFatalException
