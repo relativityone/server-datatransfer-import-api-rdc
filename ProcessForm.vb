@@ -512,7 +512,12 @@ Namespace kCura.Windows.Process
 				_saveOutputButton.Enabled = Config.LogAllEvents
 				If exportFilePath <> "" Then
 					_exportErrorFileButton.Visible = True
-					_exportErrorFileLocation = exportFilePath
+					Try
+						Dim x As New System.Guid(exportFilePath)
+						If System.IO.File.Exists(exportFilePath) Then _exportErrorFileLocation = exportFilePath
+					Catch
+						_exportErrorFileLocation = exportFilePath
+					End Try
 					If MsgBox("Errors have occurred. Export error files?", MsgBoxStyle.OKCancel, "") = MsgBoxResult.OK Then
 						If exportLog Then
 							Me.ExportErrorFiles()
