@@ -39,6 +39,7 @@ Namespace kCura.WinEDDS
 		Private _bulkLoadFileWriter As System.IO.StreamWriter
 		Private _sourceTextEncoding As System.Text.Encoding = System.Text.Encoding.Default
 		Private _uploadKey As String = ""
+		Private _runId As String = ""
 #End Region
 
 #Region "Accessors"
@@ -57,7 +58,7 @@ Namespace kCura.WinEDDS
 
 		Public ReadOnly Property HasErrors() As Boolean
 			Get
-				Return _errorLogFileName <> ""
+				Return _bulkImportManager.RunHasErrors(_caseInfo.ArtifactID, _runId)
 			End Get
 		End Property
 
@@ -135,6 +136,7 @@ Namespace kCura.WinEDDS
 				Dim documentIdentifier As String = String.Empty
 				_fileLineCount = kCura.Utility.File.CountLinesInFile(path)
 				Reader = New StreamReader(path)
+				_filePath = path
 				RaiseStatusEvent(kCura.Windows.Process.EventType.Progress, "Begin Image Upload")
 				Dim al As New System.collections.ArrayList
 				Dim line As String()
@@ -168,25 +170,19 @@ Namespace kCura.WinEDDS
 				End Select
 				If _uploadKey <> "" Then
 					If _productionArtifactID = 0 Then
-						_bulkImportManager.BulkImportImage(_caseInfo.ArtifactID, _uploadKey, _replaceFullText, overwrite, _folderID, _repositoryPath, True)
+						_runId = _bulkImportManager.BulkImportImage(_caseInfo.ArtifactID, _uploadKey, _replaceFullText, overwrite, _folderID, _repositoryPath, True).ToString
 					Else
-						_bulkImportManager.BulkImportProductionImage(_caseInfo.ArtifactID, _uploadKey, _replaceFullText, overwrite, _folderID, _repositoryPath, _productionArtifactID, True)
+						_runId = _bulkImportManager.BulkImportProductionImage(_caseInfo.ArtifactID, _uploadKey, _replaceFullText, overwrite, _folderID, _repositoryPath, _productionArtifactID, True).ToString()
 					End If
 				Else
 					_fileUploader.DestinationFolderPath = _caseInfo.DocumentPath
 					_uploadKey = _fileUploader.UploadFile(bulkLoadFilePath, _caseInfo.ArtifactID)
 					If _productionArtifactID = 0 Then
-						_bulkImportManager.BulkImportImage(_caseInfo.ArtifactID, _uploadKey, _replaceFullText, overwrite, _folderID, _caseInfo.DocumentPath, False)
+						_runId = _bulkImportManager.BulkImportImage(_caseInfo.ArtifactID, _uploadKey, _replaceFullText, overwrite, _folderID, _caseInfo.DocumentPath, False).ToString
 					Else
-						_bulkImportManager.BulkImportProductionImage(_caseInfo.ArtifactID, _uploadKey, _replaceFullText, overwrite, _folderID, _caseInfo.DocumentPath, _productionArtifactID, False)
+						_runId = _bulkImportManager.BulkImportProductionImage(_caseInfo.ArtifactID, _uploadKey, _replaceFullText, overwrite, _folderID, _caseInfo.DocumentPath, _productionArtifactID, False).ToString
 					End If
 				End If
-
-				'push file across
-				'run bulk copy
-				'run sql
-				'clean up temp table
-
 				Me.CompleteSuccess()
 			Catch ex As System.Exception
 				Me.CompleteError(ex)
@@ -471,20 +467,12 @@ Namespace kCura.WinEDDS
 #End Region
 
 		Private Sub _processController_ExportServerErrors(ByVal exportLocation As String) Handles _processController.ExportServerErrorsEvent
-			With _bulkImportManager.GenerateErrorFiles(_caseInfo.ArtifactID, _uploadKey, True)
+			With _bulkImportManager.GenerateErrorFiles(_caseInfo.ArtifactID, _runId, True)
 				Dim downloader As New FileDownloader(DirectCast(_bulkImportManager.Credentials, System.Net.NetworkCredential), _caseInfo.DocumentPath, _caseInfo.DownloadHandlerURL, _bulkImportManager.CookieContainer, kCura.WinEDDS.Service.Settings.AuthenticationToken)
 				Dim rowsLocation As String = System.IO.Path.GetTempFileName
 				Dim errorsLocation As String = System.IO.Path.GetTempFileName
 				downloader.DownloadFile(rowsLocation, .OpticonKey, _caseInfo.ArtifactID.ToString)
 				downloader.DownloadFile(errorsLocation, .LogKey, _caseInfo.ArtifactID.ToString)
-				Dim exportErrorFilesTo As New System.Windows.Forms.FolderBrowserDialog
-
-				exportErrorFilesTo.SelectedPath = System.IO.Directory.GetCurrentDirectory
-				exportErrorFilesTo.ShowDialog()
-				Dim folderPath As String = exportErrorFilesTo.SelectedPath
-				If Not folderPath = "" Then
-					folderPath = folderPath.TrimEnd("\"c) & "\"
-				End If
 				Dim rootFileName As String = _filePath
 				Dim defaultExtension As String
 				If Not rootFileName.IndexOf(".") = -1 Then
@@ -498,7 +486,7 @@ Namespace kCura.WinEDDS
 					rootFileName = rootFileName.Substring(rootFileName.LastIndexOf("\") + 1)
 				End If
 
-				Dim rootFilePath As String = folderPath & rootFileName
+				Dim rootFilePath As String = exportLocation & rootFileName
 				Dim datetimeNow As System.DateTime = System.DateTime.Now
 				Dim errorFilePath As String = rootFilePath & "_ErrorLines_" & datetimeNow.Ticks & defaultExtension
 				Dim errorReportPath As String = rootFilePath & "_ErrorReport_" & datetimeNow.Ticks & ".csv"

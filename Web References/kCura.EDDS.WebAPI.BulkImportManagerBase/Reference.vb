@@ -89,6 +89,24 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
             Dim results() As Object = Me.EndInvoke(asyncResult)
             Return CType(results(0),ErrorFileKey)
         End Function
+        
+        '<remarks/>
+        <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/BulkImportManager/RunHasErrors", RequestNamespace:="http://www.kCura.com/EDDS/BulkImportManager", ResponseNamespace:="http://www.kCura.com/EDDS/BulkImportManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
+        Public Function RunHasErrors(ByVal appID As Integer, ByVal runId As String) As Boolean
+            Dim results() As Object = Me.Invoke("RunHasErrors", New Object() {appID, runId})
+            Return CType(results(0),Boolean)
+        End Function
+        
+        '<remarks/>
+        Public Function BeginRunHasErrors(ByVal appID As Integer, ByVal runId As String, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("RunHasErrors", New Object() {appID, runId}, callback, asyncState)
+        End Function
+        
+        '<remarks/>
+        Public Function EndRunHasErrors(ByVal asyncResult As System.IAsyncResult) As Boolean
+            Dim results() As Object = Me.EndInvoke(asyncResult)
+            Return CType(results(0),Boolean)
+        End Function
     End Class
     
     '<remarks/>

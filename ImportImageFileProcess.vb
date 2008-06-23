@@ -7,7 +7,7 @@ Namespace kCura.WinEDDS
 		Private _startTime As DateTime
 		Private _errorCount As Int32
 		Private _warningCount As Int32
-		Private _hasRunPRocessComplete As Boolean = False
+		Private _hasRunProcessComplete As Boolean = False
 
 		Protected Overrides Sub Execute()
 			_startTime = DateTime.Now
@@ -16,10 +16,12 @@ Namespace kCura.WinEDDS
 			Me.ProcessObserver.InputArgs = ImageLoadFile.FileName
 			_imageFileImporter = New kCura.WinEDDS.BulkImageFileImporter(ImageLoadFile.DestinationFolderID, ImageLoadFile, ProcessController)
 			_imageFileImporter.ReadFile(ImageLoadFile.FileName)
-			If Not _hasRunPRocessComplete Then Me.ProcessObserver.RaiseProcessCompleteEvent(False, _imageFileImporter.ErrorLogFileName)
+			If _imageFileImporter.HasErrors AndAlso Not _hasRunProcessComplete Then
+				Me.ProcessObserver.RaiseProcessCompleteEvent(False, System.Guid.NewGuid.ToString, True)
+			End If
 		End Sub
 
-    Private Sub _imageFileImporter_StatusMessage(ByVal e As kCura.Windows.Process.StatusEventArgs) Handles _imageFileImporter.StatusMessage
+		Private Sub _imageFileImporter_StatusMessage(ByVal e As kCura.Windows.Process.StatusEventArgs) Handles _imageFileImporter.StatusMessage
 			System.Threading.Monitor.Enter(Me.ProcessObserver)
 			Select Case e.EventType
 				Case kCura.Windows.Process.EventType.Error
@@ -41,7 +43,7 @@ Namespace kCura.WinEDDS
 			System.Threading.Monitor.Enter(Me.ProcessObserver)
 			Me.ProcessObserver.RaiseFatalExceptionEvent(ex)
 			Me.ProcessObserver.RaiseProcessCompleteEvent(False, _imageFileImporter.ErrorLogFileName, True)
-			_hasRunPRocessComplete = True
+			_hasRunProcessComplete = True
 			System.Threading.Monitor.Exit(Me.ProcessObserver)
 		End Sub
 	End Class

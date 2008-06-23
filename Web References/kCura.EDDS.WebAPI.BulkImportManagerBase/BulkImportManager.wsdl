@@ -72,6 +72,21 @@
           </s:sequence>
         </s:complexType>
       </s:element>
+      <s:element name="RunHasErrors">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="appID" type="s:int" />
+            <s:element minOccurs="0" maxOccurs="1" name="runId" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="RunHasErrorsResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="RunHasErrorsResult" type="s:boolean" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
     </s:schema>
   </wsdl:types>
   <wsdl:message name="BulkImportImageSoapIn">
@@ -92,6 +107,12 @@
   <wsdl:message name="GenerateErrorFilesSoapOut">
     <wsdl:part name="parameters" element="tns:GenerateErrorFilesResponse" />
   </wsdl:message>
+  <wsdl:message name="RunHasErrorsSoapIn">
+    <wsdl:part name="parameters" element="tns:RunHasErrors" />
+  </wsdl:message>
+  <wsdl:message name="RunHasErrorsSoapOut">
+    <wsdl:part name="parameters" element="tns:RunHasErrorsResponse" />
+  </wsdl:message>
   <wsdl:portType name="BulkImportManagerSoap">
     <wsdl:operation name="BulkImportImage">
       <wsdl:input message="tns:BulkImportImageSoapIn" />
@@ -104,6 +125,10 @@
     <wsdl:operation name="GenerateErrorFiles">
       <wsdl:input message="tns:GenerateErrorFilesSoapIn" />
       <wsdl:output message="tns:GenerateErrorFilesSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="RunHasErrors">
+      <wsdl:input message="tns:RunHasErrorsSoapIn" />
+      <wsdl:output message="tns:RunHasErrorsSoapOut" />
     </wsdl:operation>
   </wsdl:portType>
   <wsdl:binding name="BulkImportManagerSoap" type="tns:BulkImportManagerSoap">
@@ -128,6 +153,15 @@
     </wsdl:operation>
     <wsdl:operation name="GenerateErrorFiles">
       <soap:operation soapAction="http://www.kCura.com/EDDS/BulkImportManager/GenerateErrorFiles" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RunHasErrors">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/BulkImportManager/RunHasErrors" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
