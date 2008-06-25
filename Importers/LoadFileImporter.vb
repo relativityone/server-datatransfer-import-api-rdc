@@ -75,7 +75,8 @@ Namespace kCura.WinEDDS
 				If _fieldsForCreate Is Nothing Then
 					Dim fieldsForCreate As New System.Collections.ArrayList
 					For Each field As kCura.EDDS.WebAPI.DocumentManagerBase.Field In Me.AllDocumentFields
-						If System.Array.IndexOf(_fieldArtifactIds, field.ArtifactID) <> -1 Then
+						If System.Array.IndexOf(_fieldArtifactIds, field.ArtifactID) <> -1 OrElse _
+						field.FieldCategory = EDDS.WebAPI.DocumentManagerBase.FieldCategory.Relational Then
 							fieldsForCreate.Add(field)
 						End If
 					Next
@@ -268,7 +269,8 @@ Namespace kCura.WinEDDS
 		Private Sub InitializeFieldIdList()
 			Dim fieldIdList As New System.Collections.ArrayList
 			For Each item As LoadFileFieldMap.LoadFileFieldMapItem In _fieldMap
-				If item.DocumentField.FieldCategoryID <> kCura.DynamicFields.Types.FieldCategory.FullText Then fieldIdList.Add(item.DocumentField.FieldID)
+				'If item.DocumentField.FieldCategoryID <> kCura.DynamicFields.Types.FieldCategory.FullText Then fieldIdList.Add(item.DocumentField.FieldID)
+				fieldIdList.Add(item.DocumentField.FieldID)
 			Next
 			fieldIdList.Add(Me.FileInfoField.ArtifactID)
 			_fieldArtifactIds = DirectCast(fieldIdList.ToArray(GetType(Int32)), Int32())
