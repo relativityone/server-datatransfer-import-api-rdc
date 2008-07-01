@@ -119,11 +119,12 @@ Namespace kCura.WinEDDS
 			Me.ReadFile(_filePath)
 		End Sub
 
-		Private Sub ProcessList(ByVal al As System.Collections.ArrayList, ByVal status As Int32)
+		Private Sub ProcessList(ByVal al As System.Collections.ArrayList, ByRef status As Int32)
 			Try
 				If al.Count = 0 Then Exit Sub
 				Me.ProcessDocument(al, status)
 				al.Clear()
+				status = 0
 			Catch ex As Exception
 				Throw
 			End Try
@@ -345,6 +346,9 @@ Namespace kCura.WinEDDS
 						End If
 					End If
 				End If
+				If _replaceFullText AndAlso System.IO.File.Exists(extractedTextFileName) AndAlso Not fullTextFiles Is Nothing Then
+					offset += New System.IO.FileInfo(extractedTextFileName).Length
+				End If
 				_bulkLoadFileWriter.Write(status & ",")
 				_bulkLoadFileWriter.Write("0,")
 				_bulkLoadFileWriter.Write(originalLineNumber & ",")
@@ -357,12 +361,8 @@ Namespace kCura.WinEDDS
 				_bulkLoadFileWriter.Write(fileSize & ",")
 				_bulkLoadFileWriter.Write(fileLocation & ",")
 				_bulkLoadFileWriter.Write(imageFileName & ",")
-				offset += New System.IO.FileInfo(extractedTextFileName).Length
 				If writeLineTermination Then
 					_bulkLoadFileWriter.Write(kCura.EDDS.Types.Constants.ENDLINETERMSTRING)
-				End If
-				If _replaceFullText AndAlso System.IO.File.Exists(extractedTextFileName) AndAlso Not fullTextFiles Is Nothing Then
-					offset += New System.IO.FileInfo(extractedTextFileName).Length
 				End If
 			Catch ex As Exception
 				Throw
