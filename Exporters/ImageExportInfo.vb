@@ -5,6 +5,7 @@ Namespace kCura.WinEDDS.Exporters
 		Private _artifactID As Int32
 		Private _batesNumber As String
 		Private _tempLocation As String
+		Private _sourceLocation As String
 		Private _pageOffset As NullableTypes.NullableInt32
 
 		Public Property FileName() As String
@@ -49,6 +50,15 @@ Namespace kCura.WinEDDS.Exporters
 			End Get
 			Set(ByVal value As String)
 				_tempLocation = value
+			End Set
+		End Property
+
+		Public Property SourceLocation() As String
+			Get
+				Return _sourceLocation
+			End Get
+			Set(ByVal value As String)
+				_sourceLocation = value
 			End Set
 		End Property
 

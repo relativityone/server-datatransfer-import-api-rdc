@@ -1,20 +1,21 @@
 Namespace kCura.WinEDDS
 	Public Class FileDownloader
 
-		Public Enum Type
+		Public Enum FileAccessType
 			Web
 			Direct
 		End Enum
 
 		Private _gateway As kCura.WinEDDS.Service.FileIO
 		Private _credentials As Net.NetworkCredential
-		Private _type As Type
+		Private _type As FileAccessType
 		Private _destinationFolderPath As String
 		Private _downloadUrl As String
 		Private _cookieContainer As System.Net.CookieContainer
 		Private _authenticationToken As String
 		Private _userManager As kCura.WinEDDS.Service.UserManager
-		
+		Private Shared _locationAccessMatrix As New System.Collections.Hashtable
+
 		Public Sub SetDesintationFolderName(ByVal value As String)
 			_destinationFolderPath = value
 		End Sub
@@ -34,15 +35,16 @@ Namespace kCura.WinEDDS
 			SetType(_destinationFolderPath)
 			_authenticationToken = authenticationToken
 			_userManager = New kCura.WinEDDS.Service.UserManager(credentials, cookieContainer)
+			If _locationAccessMatrix Is Nothing Then _locationAccessMatrix = New System.Collections.Hashtable
 		End Sub
 
 		Private Sub SetType(ByVal destinationFolderPath As String)
 			Try
 				System.IO.File.Create(destinationFolderPath & "123").Close()
 				System.IO.File.Delete(destinationFolderPath & "123")
-				Me.UploaderType = Type.Direct
+				Me.UploaderType = FileAccessType.Direct
 			Catch ex As System.Exception
-				Me.UploaderType = Type.Web
+				Me.UploaderType = FileAccessType.Web
 			End Try
 		End Sub
 
@@ -55,11 +57,11 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
-		Public Property UploaderType() As Type
+		Public Property UploaderType() As FileAccessType
 			Get
 				Return _type
 			End Get
-			Set(ByVal value As Type)
+			Set(ByVal value As FileAccessType)
 				_type = value
 				RaiseEvent UploadModeChangeEvent(value.ToString)
 			End Set
@@ -85,39 +87,40 @@ Namespace kCura.WinEDDS
 		'End Function
 
 		Public Function DownloadFullTextFile(ByVal localFilePath As String, ByVal artifactID As Int32, ByVal appID As String) As Boolean
-			Return WebDownloadFile(localFilePath, artifactID, "", appID, True)
+			Return WebDownloadFile(localFilePath, artifactID, "", appID, Nothing, True)
 		End Function
 
 
-		Public Function DownloadFile(ByVal localFilePath As String, ByVal remoteFileGuid As String, ByVal artifactID As Int32, ByVal appID As String) As Boolean
+		Public Function DownloadFile(ByVal localFilePath As String, ByVal remoteFileGuid As String, ByVal remoteLocation As String, ByVal artifactID As Int32, ByVal appID As String) As Boolean
 			'If Me.UploaderType = Type.Web Then
-			Me.UploaderType = Type.Web
-			Return WebDownloadFile(localFilePath, artifactID, remoteFileGuid, appID)
-			'Else
-			'	Me.UploaderType = Type.Direct
-			'	Dim remoteFilePath As String = _destinationFolderPath & remoteFileGuid
-			'	Try
-			'		If localFilePath.IndexOf("\") <> -1 Then
-			'			Dim dir As String = localFilePath.Substring(0, localFilePath.LastIndexOf("\") + 1)
-			'			If Not System.IO.Directory.Exists(dir) Then
-			'				System.IO.Directory.CreateDirectory(dir)
-			'			End If
-			'		End If
-			'		System.IO.File.Copy(remoteFilePath, localFilePath, True)
-			'		Return True
-			'	Catch ex As System.Exception
-			'		RaiseEvent UploadStatusEvent("Error Uploading File")					'TODO: Change this to a separate error-type event'
-			'		Throw New ApplicationException("Error Downloading File", ex)
-			'	End Try
-			'End If
+			Dim remoteLocationKey As String = remoteLocation.Substring(0, remoteLocation.LastIndexOf("\")).TrimEnd("\"c) & "\"
+			If _locationAccessMatrix.Contains(remoteLocationKey) Then
+				Select Case CType(_locationAccessMatrix(remoteLocationKey), FileAccessType)
+					Case FileAccessType.Direct
+						Me.UploaderType = FileAccessType.Direct
+						System.IO.File.Copy(remoteLocation, localFilePath, True)
+						Return True
+					Case FileAccessType.Web
+						Me.UploaderType = FileAccessType.Web
+						Return WebDownloadFile(localFilePath, artifactID, remoteFileGuid, appID, Nothing)
+				End Select
+			Else
+				Try
+					System.IO.File.Copy(remoteLocation, localFilePath, True)
+					_locationAccessMatrix.Add(remoteLocationKey, FileAccessType.Direct)
+					Return True
+				Catch ex As Exception
+					Return Me.WebDownloadFile(localFilePath, artifactID, remoteFileGuid, appID, remoteLocationKey)
+				End Try
+			End If
 		End Function
 
 		Public Function DownloadFile(ByVal localFilePath As String, ByVal remoteFileGuid As String, ByVal appID As String) As Boolean
-			Me.UploaderType = Type.Web
-			Return WebDownloadFile(localFilePath, -1, remoteFileGuid, appID)
+			Me.UploaderType = FileAccessType.Web
+			Return WebDownloadFile(localFilePath, -1, remoteFileGuid, appID, Nothing)
 		End Function
 
-		Private Function WebDownloadFile(ByVal localFilePath As String, ByVal artifactID As Int32, ByVal remoteFileGuid As String, ByVal appID As String, Optional ByVal forFullText As Boolean = False) As Boolean
+		Private Function WebDownloadFile(ByVal localFilePath As String, ByVal artifactID As Int32, ByVal remoteFileGuid As String, ByVal appID As String, ByVal remotelocationkey As String, Optional ByVal forFullText As Boolean = False) As Boolean
 			Try
 				Dim remoteuri As String
 				Dim downloadUrl As String = _downloadUrl.TrimEnd("/"c) & "/"
@@ -150,6 +153,7 @@ Namespace kCura.WinEDDS
 					End While
 				End If
 				localStream.Close()
+				If Not remotelocationkey Is Nothing Then _locationAccessMatrix.Add(remotelocationkey, FileAccessType.Web)
 				Return True
 			Catch ex As System.Exception
 				RaiseEvent UploadStatusEvent("Error Downloading File")				 'TODO: Change this to a separate error-type event'

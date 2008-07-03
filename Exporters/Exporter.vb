@@ -23,6 +23,9 @@ Namespace kCura.WinEDDS
 		Private _exportNativesToFileNamedFrom As kCura.WinEDDS.ExportNativeWithFilenameFrom
 		Private _beginBatesColumn As String = ""
 		Private _exportAsUnicode As Boolean = False
+		Private _timekeeper As New kCura.Utility.Timekeeper
+		Private _productionArtifactIDs As Int32()
+		Private _isEssentialCount As Int32
 
 #End Region
 
@@ -135,11 +138,12 @@ Namespace kCura.WinEDDS
 			End Select
 			RaiseEvent FileTransferModeChangeEvent(_downloadHandler.UploaderType.ToString)
 			Dim columnHeaderString As String = Me.LoadColumns
-			_volumeManager = New VolumeManager(Me.ExportFile, Me.ExportFile.FolderPath, Me.ExportFile.Overwrite, Me.TotalDocuments, Me, _downloadHandler)
+			_volumeManager = New VolumeManager(Me.ExportFile, Me.ExportFile.FolderPath, Me.ExportFile.Overwrite, Me.TotalDocuments, Me, _downloadHandler, _timekeeper)
+			_timekeeper.MarkStart("Exporter_GetFolders")
 			folderTable = _folderManager.RetrieveAllByCaseID(Me.ExportFile.CaseArtifactID).Tables(0)
-			_sourceDirectory = _documentManager.GetDocumentDirectoryByCaseArtifactID(Me.ExportFile.CaseArtifactID) & "\"
+			_timekeeper.MarkEnd("Exporter_GetFolders")
 			_fullTextDownloader = New kCura.WinEDDS.FullTextManager(Me.ExportFile.Credential, _sourceDirectory, Me.ExportFile.CookieContainer)
-			Me.WriteStatusLine(kCura.Windows.Process.EventType.Status, "Created search log file.")
+			Me.WriteStatusLine(kCura.Windows.Process.EventType.Status, "Created search log file.", True)
 			_volumeManager.ColumnHeaderString = columnHeaderString
 			Me.WriteUpdate("Data retrieved. Beginning " & typeOfExportDisplayString & " export...")
 
@@ -147,6 +151,7 @@ Namespace kCura.WinEDDS
 			Dim start, finish As Int32
 			For start = 0 To Me.TotalDocuments - 1 Step Config.SearchExportChunkSize
 				finish = Math.Min(Me.TotalDocuments - 1, start + Config.SearchExportChunkSize - 1)
+				_timekeeper.MarkStart("Exporter_GetDocumentBlock")
 				Select Case Me.ExportFile.TypeOfExport
 					Case ExportFile.ExportType.ArtifactSearch
 						documentTable = _searchManager.SearchBySearchArtifactID(Me.ExportFile.CaseArtifactID, Me.ExportFile.ArtifactID, start, finish).Tables(0)
@@ -157,6 +162,7 @@ Namespace kCura.WinEDDS
 					Case ExportFile.ExportType.Production
 						documentTable = _searchManager.SearchByProductionArtifactID(Me.ExportFile.CaseArtifactID, Me.ExportFile.ArtifactID, start, finish).Tables(0)
 				End Select
+				_timekeeper.MarkEnd("Exporter_GetDocumentBlock")
 				Dim docRow As System.Data.DataRow
 				Dim artifactIDs As New ArrayList
 				Dim docRows As New ArrayList
@@ -169,6 +175,7 @@ Namespace kCura.WinEDDS
 				docRows.Clear()
 				If _halt Then Exit For
 			Next
+			_timekeeper.GenerateCsvReportItemsAsRows()
 			_volumeManager.Finish()
 		End Function
 
@@ -185,8 +192,10 @@ Namespace kCura.WinEDDS
 			If Me.ExportFile.ExportNative Then natives.Table = _searchManager.RetrieveNativesForSearch(Me.ExportFile.CaseArtifactID, kCura.Utility.Array.IntArrayToCSV(documentArtifactIDs)).Tables(0)
 			If Me.ExportFile.ExportFullText Then fullTexts.Table = _searchManager.RetrieveFullTextExistenceForSearch(Me.ExportFile.CaseArtifactID, documentArtifactIDs).Tables(0)
 			If Me.ExportFile.ExportImages Then
+				_timekeeper.MarkStart("Exporter_GetImagesForDocumentBlock")
 				images.Table = Me.RetrieveImagesForDocuments(documentArtifactIDs, Me.ExportFile.ImagePrecedence)
 				productionImages.Table = Me.RetrieveProductionImagesForDocuments(documentArtifactIDs, Me.ExportFile.ImagePrecedence)
+				_timekeeper.MarkEnd("Exporter_GetImagesForDocumentBlock")
 			End If
 
 			For i = 0 To documentArtifactIDs.Length - 1
@@ -202,9 +211,11 @@ Namespace kCura.WinEDDS
 				If nativeRow Is Nothing Then
 					documentInfo.NativeFileGuid = ""
 					documentInfo.OriginalFileName = ""
+					documentInfo.NativeSourceLocation = ""
 				Else
 					documentInfo.NativeFileGuid = nativeRow("Guid").ToString
 					documentInfo.OriginalFileName = nativeRow("Filename").ToString
+					documentInfo.NativeSourceLocation = nativeRow("Location").ToString
 				End If
 				If nativeRow Is Nothing Then
 					documentInfo.NativeExtension = ""
@@ -216,7 +227,7 @@ Namespace kCura.WinEDDS
 				documentInfo.DocumentArtifactID = documentArtifactIDs(i)
 				documentInfo.DataRow = docRows(i)
 				_volumeManager.ExportDocument(documentInfo)
-				Me.WriteUpdate("Exported document " & i + 1)
+				Me.WriteUpdate("Exported document " & i + 1, False)
 				If _halt Then Exit Sub
 			Next
 		End Sub
@@ -235,6 +246,7 @@ Namespace kCura.WinEDDS
 					image.ArtifactID = documentArtifactID
 					image.PageOffset = NullableTypes.HelperFunctions.DBNullConvert.ToNullableInt32(drv("ByteRange"))
 					image.BatesNumber = drv("BatesNumber").ToString
+					image.SourceLocation = drv("Location").ToString
 					Dim filenameExtension As String = ""
 					If image.FileName.IndexOf(".") <> -1 Then
 						filenameExtension = "." & image.FileName.Substring(image.FileName.LastIndexOf(".") + 1)
@@ -275,6 +287,7 @@ Namespace kCura.WinEDDS
 									filenameExtension = "." & image.FileName.Substring(image.FileName.LastIndexOf(".") + 1)
 								End If
 								image.FileName = image.BatesNumber & filenameExtension
+								image.SourceLocation = drv("Location").ToString
 								retval.Add(image)
 								i += 1
 							End If
@@ -311,54 +324,13 @@ Namespace kCura.WinEDDS
 						filenameExtension = "." & image.FileName.Substring(image.FileName.LastIndexOf(".") + 1)
 					End If
 					image.FileName = drv("Identifier").ToString & filenameExtension
+					image.SourceLocation = drv("Location").ToString
 					retval.Add(image)
 					i += 1
 				Next
 			End If
 			Return retval
 		End Function
-
-		'Private Function PrepareImages(ByVal imagesView As System.Data.DataView, ByVal productionImagesView As System.Data.DataView, ByVal documentArtifactID As Int32, ByVal batesBase As String, ByVal documentInfo As Exporters.DocumentExportInfo) As System.Collections.ArrayList
-		'	If Me.ExportFile.TypeOfExport = ExportFile.ExportType.Production Then Return Me.PrepareImagesForProduction(productionImagesView, documentArtifactID, batesBase, documentInfo)
-		'	Dim retval As New System.Collections.ArrayList
-		'	If Not Me.ExportFile.ExportImages Then Return retval
-		'	imagesView.RowFilter = "DocumentArtifactID = " & documentArtifactID.ToString
-		'	Dim i As Int32 = 0
-		'	If imagesView.Count > 0 Then
-		'		Dim drv As System.Data.DataRowView
-		'		For Each drv In imagesView
-		'			Dim image As New Exporters.ImageExportInfo
-		'			image.FileName = drv("Filename").ToString
-		'			image.FileGuid = drv("Guid").ToString
-		'			image.ArtifactID = documentArtifactID
-		'			If i = 0 Then
-		'				image.BatesNumber = batesBase
-		'			Else
-		'				image.BatesNumber = batesBase & "_" & i.ToString.PadLeft(imagesView.Count.ToString.Length, "0"c)
-		'			End If
-		'			Dim filenameExtension As String = ""
-		'			If image.FileName.IndexOf(".") <> -1 Then
-		'				filenameExtension = "." & image.FileName.Substring(image.FileName.LastIndexOf(".") + 1)
-		'			End If
-		'			image.FileName = image.BatesNumber & filenameExtension
-		'			retval.Add(image)
-		'			i += 1
-		'		Next
-		'	End If
-		'	Return retval
-		'End Function
-		'Private Function GetFullTextFileGuid(ByVal dt As System.Data.DataTable, ByVal documentArtifactID As Int32) As String
-		'	Dim row As System.Data.DataRow
-		'	If Me.ExportFile.ExportFullText Then
-		'		For Each row In dt.Rows
-		'			If CType(row("DocumentArtifactID"), Int32) = documentArtifactID Then
-		'				Return CType(row("Guid"), String)
-		'			End If
-		'		Next
-		'	Else
-		'		Return String.Empty
-		'	End If
-		'End Function
 
 		Private Function DocumentHasExtractedText(ByVal dv As System.Data.DataView, ByVal documentArtifactID As Int32) As Boolean
 			dv.RowFilter = "ArtifactID = " & documentArtifactID
@@ -447,83 +419,6 @@ Namespace kCura.WinEDDS
 			Return artifactIDs.ToString
 		End Function
 
-		Private Sub ExportNative(ByVal exportFileName As String, ByVal fileGuid As String, ByVal artifactID As Int32, ByVal systemFileName As String)		'ByVal fileURI As String, ByVal systemFileName As String)
-			If Not Me.ExportFile.ExportNative Then Exit Sub
-			If System.IO.File.Exists(exportFileName) Then
-				If Me.ExportFile.Overwrite Then
-					System.IO.File.Delete(exportFileName)
-					Me.WriteStatusLine(kCura.Windows.Process.EventType.Status, String.Format("Overwriting document {0}.", systemFileName))
-					_downloadHandler.DownloadFile(exportFileName, fileGuid, artifactID, Me.ExportFile.CaseArtifactID.ToString)
-				Else
-					Me.WriteWarning(String.Format("{0} already exists. Skipping file export.", systemFileName))
-				End If
-			Else
-				Me.WriteStatusLine(kCura.Windows.Process.EventType.Status, String.Format("Now exporting document {0}.", systemFileName))
-				_downloadHandler.DownloadFile(exportFileName, fileGuid, artifactID, Me.ExportFile.CaseArtifactID.ToString)
-			End If
-			Me.WriteUpdate(String.Format("Finished exporting document {0}.", systemFileName))
-		End Sub
-
-		Private Function LogFileEntry(ByVal row As System.Data.DataRow, ByVal location As String, ByVal fullTextFileGuid As String) As String
-			Dim count As Int32
-			Dim fieldValue As String
-			Dim retString As New System.Text.StringBuilder
-			Dim columnName As String
-			For count = 0 To Me.Columns.Count - 1
-				'If TypeOf Me.Columns(count) Is DBNull Then
-				'	fieldValue = String.Empty
-				'Else
-				'	fieldValue = CType(row(CType(Me.Columns(count), String)), String)
-				'End If
-				columnName = CType(Me.Columns(count), String)
-				Dim val As Object = row(columnName)
-				If TypeOf val Is Byte() Then
-					val = System.Text.Encoding.Unicode.GetString(DirectCast(val, Byte()))
-				End If
-				fieldValue = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(NullableTypes.HelperFunctions.DBNullConvert.ToNullableString(val))
-				fieldValue = fieldValue.Replace(System.Environment.NewLine, ChrW(10).ToString)
-				fieldValue = fieldValue.Replace(ChrW(13), ChrW(10))
-				fieldValue = fieldValue.Replace(ChrW(10), Me.ExportFile.NewlineDelimiter)
-				If fieldValue.Length > 1 AndAlso fieldValue.Chars(0) = ChrW(11) AndAlso fieldValue.Chars(fieldValue.Length - 1) = ChrW(11) Then
-					fieldValue = fieldValue.Trim(New Char() {ChrW(11)}).Replace(ChrW(11), Me.ExportFile.MultiRecordDelimiter)
-				End If
-				retString.AppendFormat("{0}{1}{0}", Me.ExportFile.QuoteDelimiter, fieldValue)
-				If Not count = Me.Columns.Count - 1 Then
-					retString.Append(Me.ExportFile.RecordDelimiter)
-				End If
-			Next
-			If Me.ExportFile.ExportNative Then retString.AppendFormat("{2}{0}{1}{0}", Me.ExportFile.QuoteDelimiter, location, Me.ExportFile.RecordDelimiter)
-			If Me.ExportFile.ExportFullText Then
-				Dim bodyText As String
-				If fullTextFileGuid Is Nothing Then
-					bodyText = String.Empty
-				Else
-					bodyText = _fullTextDownloader.ReadFullTextFile(_sourceDirectory & fullTextFileGuid)
-					bodyText = bodyText.Replace(System.Environment.NewLine, ChrW(10).ToString)
-					bodyText = bodyText.Replace(ChrW(13), ChrW(10))
-					bodyText = bodyText.Replace(ChrW(10), Me.ExportFile.NewlineDelimiter)
-				End If
-				retString.AppendFormat("{2}{0}{1}{0}", Me.ExportFile.QuoteDelimiter, bodyText, Me.ExportFile.RecordDelimiter)
-			End If
-			retString.Append(System.Environment.NewLine)
-			Return retString.ToString
-		End Function
-
-		'Private Sub CreateVolumeLogFile(ByVal volumeLog As String)
-		'	Dim writer As System.IO.StreamWriter
-		'	Dim volumeFile As String
-
-		'	volumeFile = String.Format("{0}{1}\export.log", Me.ExportFile.FolderPath, Me.FolderList.BaseFolder.Path)
-		'	If System.IO.File.Exists(volumeFile) Then
-		'		Me.WriteWarning(String.Format("Search log file '{0}' already exists, overwriting file.", volumeFile))
-		'		System.IO.File.Delete(volumeFile)
-		'	End If
-		'	writer = System.IO.File.CreateText(volumeFile)
-		'	writer.Write(volumeLog)
-		'	writer.Close()
-		'	Me.WriteStatusLine(kCura.Windows.Process.EventType.Status, "Created search log file.")
-		'End Sub
-
 		Private Function RetrieveImagesForDocuments(ByVal documentArtifactIDs As Int32(), ByVal productionOrderList As Pair()) As System.Data.DataTable
 			Select Case Me.ExportFile.TypeOfExport
 				Case ExportFile.ExportType.Production
@@ -544,14 +439,17 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Private Function GetProductionArtifactIDs(ByVal productionOrderList As Pair()) As Int32()
-			Dim retval As New System.Collections.ArrayList
-			Dim item As Pair
-			For Each item In productionOrderList
-				If item.Value <> "-1" Then
-					retval.Add(Int32.Parse(item.Value))
-				End If
-			Next
-			Return DirectCast(retval.ToArray(GetType(Int32)), Int32())
+			If _productionArtifactIDs Is Nothing Then
+				Dim retval As New System.Collections.ArrayList
+				Dim item As Pair
+				For Each item In productionOrderList
+					If item.Value <> "-1" Then
+						retval.Add(Int32.Parse(item.Value))
+					End If
+				Next
+				_productionArtifactIDs = DirectCast(retval.ToArray(GetType(Int32)), Int32())
+			End If
+			Return _productionArtifactIDs
 		End Function
 #End Region
 
@@ -562,20 +460,24 @@ Namespace kCura.WinEDDS
 			RaiseEvent FatalErrorEvent(line, ex)
 		End Sub
 
-		Friend Sub WriteStatusLine(ByVal e As kCura.Windows.Process.EventType, ByVal line As String)
-			RaiseEvent StatusMessage(New ExportEventArgs(Me.DocumentsExported, Me.TotalDocuments, line, e))
+		Friend Sub WriteStatusLine(ByVal e As kCura.Windows.Process.EventType, ByVal line As String, isEssential as Boolean)
+			_isEssentialCount += 1
+			If _isEssentialCount > 30 OrElse isEssential Then
+				RaiseEvent StatusMessage(New ExportEventArgs(Me.DocumentsExported, Me.TotalDocuments, line, e))
+				_isEssentialCount = 0
+			End If
 		End Sub
 
 		Friend Sub WriteError(ByVal line As String)
-			WriteStatusLine(kCura.Windows.Process.EventType.Error, line)
+			WriteStatusLine(kCura.Windows.Process.EventType.Error, line, True)
 		End Sub
 
 		Friend Sub WriteWarning(ByVal line As String)
-			WriteStatusLine(kCura.Windows.Process.EventType.Warning, line)
+			WriteStatusLine(kCura.Windows.Process.EventType.Warning, line, True)
 		End Sub
 
-		Friend Sub WriteUpdate(ByVal line As String)
-			WriteStatusLine(kCura.Windows.Process.EventType.Progress, line)
+		Friend Sub WriteUpdate(ByVal line As String, Optional ByVal isEssential As Boolean = True)
+			WriteStatusLine(kCura.Windows.Process.EventType.Progress, line, isEssential)
 		End Sub
 
 #End Region

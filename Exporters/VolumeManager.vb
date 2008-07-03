@@ -25,6 +25,7 @@ Namespace kCura.WinEDDS
 		Private _hasWrittenColumnHeaderString As Boolean = False
 		Private _encoding As System.Text.Encoding
 		Private _errorFileLocation As String = ""
+		Private _timekeeper As kCura.Utility.Timekeeper
 #End Region
 
 		Private Enum ExportFileType
@@ -94,10 +95,11 @@ Namespace kCura.WinEDDS
 
 #Region "Constructors"
 
-		Public Sub New(ByVal settings As ExportFile, ByVal rootDirectory As String, ByVal overWriteFiles As Boolean, ByVal totalFiles As Int64, ByVal parent As WinEDDS.Exporter, ByVal downloadHandler As FileDownloader)
+		Public Sub New(ByVal settings As ExportFile, ByVal rootDirectory As String, ByVal overWriteFiles As Boolean, ByVal totalFiles As Int64, ByVal parent As WinEDDS.Exporter, ByVal downloadHandler As FileDownloader, ByVal t As kCura.Utility.Timekeeper)
 			_settings = settings
 			If Me.Settings.ExportImages Then
 			End If
+			_timekeeper = t
 			_currentVolumeNumber = _settings.VolumeInfo.VolumeStartNumber
 			_currentSubdirectoryNumber = _settings.VolumeInfo.SubdirectoryStartNumber
 			Dim volumeNumberPaddingWidth As Int32 = CType(System.Math.Floor(System.Math.Log10(CType(_currentVolumeNumber + 1, Double)) + 1), Int32)
@@ -175,6 +177,7 @@ Namespace kCura.WinEDDS
 			Dim updateSubDirectoryAfterExport As Boolean = False
 			If Me.Settings.ExportImages Then
 				For Each image In documentInfo.Images
+					_timekeeper.MarkStart("VolumeManager_DownloadImage")
 					Try
 						totalFileSize += Me.DownloadImage(image)
 					Catch ex As System.Exception
@@ -182,14 +185,17 @@ Namespace kCura.WinEDDS
 						Me.LogFileExportError(ExportFileType.Image, documentInfo.IdentifierValue, image.FileGuid, ex.ToString)
 						imageSuccess = False
 					End Try
+					_timekeeper.MarkEnd("VolumeManager_DownloadImage")
 				Next
 			End If
 			If Me.Settings.ExportNative Then
+				_timekeeper.MarkStart("VolumeManager_DownloadNative")
 				Try
 					totalFileSize += Me.DownloadNative(documentInfo)
 				Catch ex As System.Exception
 					Me.LogFileExportError(ExportFileType.Native, documentInfo.IdentifierValue, documentInfo.NativeFileGuid, ex.ToString)
 				End Try
+				_timekeeper.MarkEnd("VolumeManager_DownloadNative")
 			End If
 			If totalFileSize + _currentVolumeSize > Me.VolumeMaxSize Then
 				If _currentVolumeSize = 0 Then
@@ -217,23 +223,17 @@ Namespace kCura.WinEDDS
 				End If
 			End If
 			If Me.Settings.ExportImages Then
+				_timekeeper.MarkStart("VolumeManager_ExportImages")
 				Me.ExportImages(documentInfo.Images, tempLocalFullTextFilePath)
+				_timekeeper.MarkEnd("VolumeManager_ExportImages")
 			End If
 			Dim nativeLocation As String = ""
 			If Me.Settings.ExportNative Then
-				Dim localFilePath As String = Me.Settings.FolderPath
-				Dim nativeFileName As String
-				Select Case _parent.ExportNativesToFileNamedFrom
-					Case ExportNativeWithFilenameFrom.Identifier
-						nativeFileName = documentInfo.NativeFileName(Me.Settings.AppendOriginalFileName)
-					Case ExportNativeWithFilenameFrom.Production
-						nativeFileName = documentInfo.ProductionBeginBatesFileName(Me.Settings.AppendOriginalFileName)
-				End Select
-				If localFilePath.Chars(localFilePath.Length - 1) <> "\"c Then localFilePath &= "\"
-				localFilePath &= Me.CurrentVolumeLabel & "\" & Me.CurrentNativeSubdirectoryLabel & "\"
-				If Not System.IO.Directory.Exists(localFilePath) Then System.IO.Directory.CreateDirectory(localFilePath)
-				localFilePath &= nativeFileName
+				Dim nativeFileName As String = Me.GetNativeFileName(documentInfo)
+				Dim localFilePath As String = Me.GetLocalNativeFilePath(documentInfo, nativeFileName)
+				_timekeeper.MarkStart("VolumeManager_ExportNative")
 				Me.ExportNative(localFilePath, documentInfo.NativeFileGuid, documentInfo.DocumentArtifactID, nativeFileName, documentInfo.NativeTempLocation)
+				_timekeeper.MarkEnd("VolumeManager_ExportNative")
 				If documentInfo.NativeTempLocation = "" Then
 					nativeLocation = ""
 				Else
@@ -262,6 +262,23 @@ Namespace kCura.WinEDDS
 
 		End Sub
 
+		Private Function GetLocalNativeFilePath(ByVal doc As Exporters.DocumentExportInfo, ByVal nativeFileName As String) As String
+			Dim localFilePath As String = Me.Settings.FolderPath
+			If localFilePath.Chars(localFilePath.Length - 1) <> "\"c Then localFilePath &= "\"
+			localFilePath &= Me.CurrentVolumeLabel & "\" & Me.CurrentNativeSubdirectoryLabel & "\"
+			If Not System.IO.Directory.Exists(localFilePath) Then System.IO.Directory.CreateDirectory(localFilePath)
+			Return localFilePath & nativeFileName
+		End Function
+
+		Private Function GetNativeFileName(ByVal doc As Exporters.DocumentExportInfo) As String
+			Select Case _parent.ExportNativesToFileNamedFrom
+				Case ExportNativeWithFilenameFrom.Identifier
+					Return doc.NativeFileName(Me.Settings.AppendOriginalFileName)
+				Case ExportNativeWithFilenameFrom.Production
+					Return doc.ProductionBeginBatesFileName(Me.Settings.AppendOriginalFileName)
+			End Select
+		End Function
+
 		Public Sub Close()
 			If Not _imageFileWriter Is Nothing Then
 				_imageFileWriter.Flush()
@@ -274,6 +291,16 @@ Namespace kCura.WinEDDS
 		End Sub
 
 #Region "Image Export"
+
+		Private Function GetImageExportLocation(ByVal image As Exporters.ImageExportInfo) As String
+			Dim localFilePath As String = Me.Settings.FolderPath
+			Dim subfolderPath As String = Me.CurrentVolumeLabel & "\" & Me.CurrentImageSubdirectoryLabel & "\"
+			If localFilePath.Chars(localFilePath.Length - 1) <> "\"c Then localFilePath &= "\"
+			localFilePath &= subfolderPath
+			If Not System.IO.Directory.Exists(localFilePath) Then System.IO.Directory.CreateDirectory(localFilePath)
+			Return localFilePath & image.FileName
+		End Function
+
 
 		Public Sub ExportImages(ByVal images As System.Collections.ArrayList, ByVal localFullTextPath As String)
 			Dim image As WinEDDS.Exporters.ImageExportInfo
@@ -322,36 +349,46 @@ Namespace kCura.WinEDDS
 
 		Private Function DownloadImage(ByVal image As Exporters.ImageExportInfo) As Int64
 			If image.FileGuid = "" Then Return 0
-			Dim tempFile As String = System.IO.Path.GetTempFileName
+			Dim tempFile As String = Me.GetImageExportLocation(image)
+			If System.IO.File.Exists(tempFile) Then
+				If _settings.Overwrite Then
+					System.IO.File.Delete(tempFile)
+					_parent.WriteStatusLine(kCura.Windows.Process.EventType.Status, String.Format("Overwriting image for {0}.", image.BatesNumber), False)
+				Else
+					_parent.WriteWarning(String.Format("{0} already exists. Skipping file export.", tempFile))
+					Return 0
+				End If
+			End If
 			Try
-				Try
-					_downloadManager.DownloadFile(tempFile, image.FileGuid, image.ArtifactID, _settings.CaseArtifactID.ToString)
-				Catch ex As System.Exception
-					_downloadManager.DownloadFile(tempFile, image.FileGuid, image.ArtifactID, _settings.CaseArtifactID.ToString)
-				End Try
+				_downloadManager.DownloadFile(tempFile, image.FileGuid, image.SourceLocation, image.ArtifactID, _settings.CaseArtifactID.ToString)
 			Catch ex As System.Exception
-				Throw
+				_downloadManager.DownloadFile(tempFile, image.FileGuid, image.SourceLocation, image.ArtifactID, _settings.CaseArtifactID.ToString)
 			End Try
-
 			image.TempLocation = tempFile
 			Return New System.IO.FileInfo(tempFile).Length
 		End Function
 
 		Private Sub ExportDocumentImage(ByVal fileName As String, ByVal fileGuid As String, ByVal artifactID As Int32, ByVal batesNumber As String, ByVal tempFileLocation As String)
-			If Not tempFileLocation = "" Then
+			If Not tempFileLocation = "" AndAlso Not tempFileLocation.ToLower = fileName.ToLower Then
 				If System.IO.File.Exists(fileName) Then
 					If _settings.Overwrite Then
 						System.IO.File.Delete(fileName)
-						_parent.WriteStatusLine(kCura.Windows.Process.EventType.Status, String.Format("Overwriting document {0}.tif.", batesNumber))
+						_parent.WriteStatusLine(kCura.Windows.Process.EventType.Status, String.Format("Overwriting document {0}.tif.", batesNumber), False)
 						System.IO.File.Move(tempFileLocation, fileName)
 					Else
 						_parent.WriteWarning(String.Format("{0}.tif already exists. Skipping file export.", batesNumber))
 					End If
 				Else
-					_parent.WriteStatusLine(kCura.Windows.Process.EventType.Status, String.Format("Now exporting document {0}.tif.", batesNumber))
+					_timekeeper.MarkStart("VolumeManager_ExportDocumentImage_WriteStatus")
+					_parent.WriteStatusLine(kCura.Windows.Process.EventType.Status, String.Format("Now exporting document {0}.tif.", batesNumber), False)
+					_timekeeper.MarkEnd("VolumeManager_ExportDocumentImage_WriteStatus")
+					_timekeeper.MarkStart("VolumeManager_ExportDocumentImage_MoveFile")
 					System.IO.File.Move(tempFileLocation, fileName)
+					_timekeeper.MarkEnd("VolumeManager_ExportDocumentImage_MoveFile")
 				End If
-				_parent.WriteStatusLine(Windows.Process.EventType.Status, String.Format("Finished exporting document {0}.tif.", batesNumber))
+				_timekeeper.MarkStart("VolumeManager_ExportDocumentImage_WriteStatus")
+				_parent.WriteStatusLine(Windows.Process.EventType.Status, String.Format("Finished exporting document {0}.tif.", batesNumber), False)
+				_timekeeper.MarkEnd("VolumeManager_ExportDocumentImage_WriteStatus")
 			End If
 			'_parent.DocumentsExported += 1
 		End Sub
@@ -392,33 +429,6 @@ Namespace kCura.WinEDDS
 						_imageFileWriter.WriteLine(String.Format("FT,{0},1,1,{1}", batesNumber, pageText.ToString))
 					End If
 					Me.WriteIproImageLine(batesNumber, firstDocument, copyFile)
-
-					'Try
-					'	fullTextGuid = _fileManager.GetFullTextGuidsByDocumentArtifactIdAndType(Me.SelectedCaseInfo.ArtifactID, CType(documentImagesTable.Rows(count)("DocumentArtifactID"), Int32), 2)
-					'	If fullTextGuid = "" Then
-					'		fullText = ""
-
-					'	Else
-					'		Dim tempFile As String = System.IO.Path.GetTempFileName
-					'		_downloadManager.DownloadFile(tempFile, fullTextGuid, CType(documentImagesTable.Rows(count)("DocumentArtifactID"), Int32), Me.SelectedCaseInfo.ArtifactID.ToString)
-					'		Dim sr As New System.IO.StreamReader(tempFile)
-					'		fullText = sr.ReadToEnd
-					'		sr.Close()
-					'		System.IO.File.Delete(tempFile)
-					'	End If
-					'	pageText = fullText.Substring(currentPageFirstByteNumber, CInt(documentImagesTable.Rows(count)("ByteRange")))
-					'	pageText = pageText.Replace(ChrW(10), " ")
-					'	pageText = pageText.Replace(",", "")
-					'	pageText = pageText.Replace(" ", "|0|0|0|0^")
-					'	fullTextVolumeLog.AppendFormat("FT,{0},1,1,{1}", CType(documentImagesTable.Rows(count)("BatesNumber"), String), pageText)
-					'	fullTextVolumeLog.AppendFormat("{0}", Microsoft.VisualBasic.ControlChars.NewLine)
-					'	currentPageFirstByteNumber += CInt(documentImagesTable.Rows(count)("ByteRange"))
-					'Catch ex As System.InvalidCastException
-					'	Me.WriteWarning(String.Format("Could not retrieve full text for document #{0}", count + 1))
-					'Catch ex As System.IO.FileNotFoundException
-					'	WriteWarning(ex.Message)
-					'End Try
-					'volumeLog.Append(BuildIproLog(CType(documentImagesTable.Rows(count)("BatesNumber"), String), currentVolume, currentDirectory, isFirstDocumentImage))
 			End Select
 
 		End Sub
@@ -456,30 +466,46 @@ Namespace kCura.WinEDDS
 #End Region
 
 		Private Function ExportNative(ByVal exportFileName As String, ByVal fileGuid As String, ByVal artifactID As Int32, ByVal systemFileName As String, ByVal tempLocation As String) As String
-			If Not tempLocation = "" Then
+			If Not tempLocation = "" AndAlso Not tempLocation.ToLower = exportFileName.ToLower Then
 				If System.IO.File.Exists(exportFileName) Then
 					If _settings.Overwrite Then
 						System.IO.File.Delete(exportFileName)
-						_parent.WriteStatusLine(kCura.Windows.Process.EventType.Status, String.Format("Overwriting document {0}.", systemFileName))
+						_parent.WriteStatusLine(kCura.Windows.Process.EventType.Status, String.Format("Overwriting document {0}.", systemFileName), False)
 						System.IO.File.Move(tempLocation, exportFileName)
 					Else
 						_parent.WriteWarning(String.Format("{0} already exists. Skipping file export.", systemFileName))
 					End If
 				Else
-					_parent.WriteStatusLine(kCura.Windows.Process.EventType.Status, String.Format("Now exporting document {0}.", systemFileName))
+					_timekeeper.MarkStart("VolumeManager_ExportNative_WriteStatus")
+					_parent.WriteStatusLine(kCura.Windows.Process.EventType.Status, String.Format("Now exporting document {0}.", systemFileName), False)
+					_timekeeper.MarkEnd("VolumeManager_ExportNative_WriteStatus")
+					_timekeeper.MarkStart("VolumeManager_ExportNative_MoveFile")
 					System.IO.File.Move(tempLocation, exportFileName)
+					_timekeeper.MarkEnd("VolumeManager_ExportNative_MoveFile")
 				End If
 			End If
-			_parent.WriteUpdate(String.Format("Finished exporting document {0}.", systemFileName))
+			_timekeeper.MarkStart("VolumeManager_ExportNative_WriteStatus")
+			_parent.WriteUpdate(String.Format("Finished exporting document {0}.", systemFileName), False)
+			_timekeeper.MarkEnd("VolumeManager_ExportNative_WriteStatus")
 		End Function
 
 		Private Function DownloadNative(ByVal docinfo As Exporters.DocumentExportInfo) As Int64
 			If docinfo.NativeFileGuid = "" Then Return 0
-			Dim tempFile As String = System.IO.Path.GetTempFileName
+			Dim nativeFileName As String = Me.GetNativeFileName(docinfo)
+			Dim tempFile As String = Me.GetLocalNativeFilePath(docinfo, nativeFileName)
+			If System.IO.File.Exists(tempFile) Then
+				If Settings.Overwrite Then
+					System.IO.File.Delete(tempFile)
+					_parent.WriteStatusLine(kCura.Windows.Process.EventType.Status, String.Format("Overwriting document {0}.", nativeFileName), False)
+				Else
+					_parent.WriteWarning(String.Format("{0} already exists. Skipping file export.", tempFile))
+					Return 0
+				End If
+			End If
 			Try
-				_downloadManager.DownloadFile(tempFile, docinfo.NativeFileGuid, docinfo.DocumentArtifactID, _settings.CaseArtifactID.ToString)
+				_downloadManager.DownloadFile(tempFile, docinfo.NativeFileGuid, docinfo.NativeSourceLocation, docinfo.DocumentArtifactID, _settings.CaseArtifactID.ToString)
 			Catch ex As System.Exception
-				_downloadManager.DownloadFile(tempFile, docinfo.NativeFileGuid, docinfo.DocumentArtifactID, _settings.CaseArtifactID.ToString)
+				_downloadManager.DownloadFile(tempFile, docinfo.NativeFileGuid, docinfo.NativeSourceLocation, docinfo.DocumentArtifactID, _settings.CaseArtifactID.ToString)
 			End Try
 			docinfo.NativeTempLocation = tempFile
 			Return New System.IO.FileInfo(tempFile).Length

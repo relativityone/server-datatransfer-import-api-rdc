@@ -13,6 +13,7 @@ Namespace kCura.WinEDDS.Exporters
 		Private _nativeTempLocation As String = ""
 		Private _productionBeginBates As String = ""
 		Private _originalFileName As String = ""
+		Private _nativeSourceLocation As String = ""
 
 		Public Property DataRow() As System.Data.DataRow
 			Get
@@ -110,6 +111,15 @@ Namespace kCura.WinEDDS.Exporters
 			End Get
 			Set(ByVal value As String)
 				_nativeTempLocation = value
+			End Set
+		End Property
+
+		Public Property NativeSourceLocation() As String
+			Get
+				Return _nativeSourceLocation
+			End Get
+			Set(ByVal value As String)
+				_nativeSourceLocation = value
 			End Set
 		End Property
 
