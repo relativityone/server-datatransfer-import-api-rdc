@@ -550,19 +550,44 @@ Namespace kCura.WinEDDS
 				End If
 			Next
 			If _settings.ExportNative Then retString.AppendFormat("{2}{0}{1}{0}", _settings.QuoteDelimiter, location, _settings.RecordDelimiter)
+			_nativeFileWriter.Write(retString.ToString)
 			If _settings.ExportFullText Then
-				Dim bodyText As String
+				Dim bodyText As New System.Text.StringBuilder
 				If Not hasFullText Then
-					bodyText = String.Empty
+					bodyText = New System.Text.StringBuilder("")
+					_nativeFileWriter.Write(String.Format("{2}{0}{1}{0}" & vbNewLine, _settings.QuoteDelimiter, bodyText.ToString, _settings.RecordDelimiter))
 				Else
 					Dim sr As New System.IO.StreamReader(fullTextTempFile, System.Text.Encoding.Unicode)
-					bodyText = sr.ReadToEnd.Replace(System.Environment.NewLine, _settings.NewlineDelimiter).Replace(ChrW(13), _settings.NewlineDelimiter).Replace(ChrW(10), _settings.NewlineDelimiter).Replace(_settings.QuoteDelimiter, _settings.QuoteDelimiter & _settings.QuoteDelimiter)
+					Dim c As Int32 = sr.Read
+					_nativeFileWriter.Write(_settings.RecordDelimiter)
+					_nativeFileWriter.Write(_settings.QuoteDelimiter)
+					While Not c = -1
+						Select Case c
+							Case AscW(_settings.QuoteDelimiter)
+								_nativeFileWriter.Write(_settings.QuoteDelimiter & _settings.QuoteDelimiter)
+							Case 13, 10
+								_nativeFileWriter.Write(_settings.NewlineDelimiter)
+								If sr.Peek = 10 Then
+									sr.Read()
+								End If
+							Case Else
+								_nativeFileWriter.Write(ChrW(c))
+						End Select
+						c = sr.Read
+					End While
+					_nativeFileWriter.Write(_settings.QuoteDelimiter)
+					_nativeFileWriter.Write(vbNewLine)
 					sr.Close()
-					System.IO.File.Delete(fullTextTempFile)
+					Try
+						System.IO.File.Delete(fullTextTempFile)
+					Catch
+						Try
+							System.IO.File.Delete(fullTextTempFile)
+						Catch
+						End Try
+					End Try
 				End If
-				retString.AppendFormat("{2}{0}{1}{0}", _settings.QuoteDelimiter, bodyText, _settings.RecordDelimiter)
 			End If
-			_nativeFileWriter.WriteLine(retString.ToString)
 		End Sub
 
 		Public Sub UpdateVolume()
