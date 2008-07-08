@@ -119,7 +119,7 @@ Namespace kCura.WinEDDS
 			Dim count As Int32
 			Dim volumeFile As String
 			Dim typeOfExportDisplayString As String = ""
-
+			Dim fileCount As Int32 = 0
 
 			Me.WriteUpdate("Retrieving export data from the server...")
 			Select Case Me.ExportFile.TypeOfExport
@@ -169,10 +169,18 @@ Namespace kCura.WinEDDS
 				For Each docRow In documentTable.Rows
 					artifactIDs.Add(CType(docRow("ArtifactID"), Int32))
 					docRows.Add(docRow)
+					fileCount += CType(docRow("kCura_FileCount_Computed"), Int32)
+					If fileCount > Config.SearchExportChunkSize Then
+						ExportChunk(DirectCast(artifactIDs.ToArray(GetType(Int32)), Int32()), DirectCast(docRows.ToArray(GetType(System.Data.DataRow)), System.Data.DataRow()))
+						artifactIDs.Clear()
+						docRows.Clear()
+						fileCount = 0
+					End If
 				Next
 				ExportChunk(DirectCast(artifactIDs.ToArray(GetType(Int32)), Int32()), DirectCast(docRows.ToArray(GetType(System.Data.DataRow)), System.Data.DataRow()))
 				artifactIDs.Clear()
 				docRows.Clear()
+				fileCount = 0
 				If _halt Then Exit For
 			Next
 			_timekeeper.GenerateCsvReportItemsAsRows()
@@ -434,7 +442,7 @@ Namespace kCura.WinEDDS
 					Return _searchManager.RetrieveImagesForProductionDocuments(Me.ExportFile.CaseArtifactID, documentArtifactIDs, Int32.Parse(productionOrderList(0).Value)).Tables(0)
 				Case Else
 					Dim productionIDs As Int32() = Me.GetProductionArtifactIDs(productionOrderList)
-					If productionIDs.Length > 0 Then Return _searchManager.RetrieveByProductionIDsAndDocumentIDs(Me.ExportFile.CaseArtifactID, productionIDs, documentArtifactIDs).Tables(0)
+					If productionIDs.Length > 0 Then Return _searchManager.RetrieveImagesByProductionIDsAndDocumentIDsForExport(Me.ExportFile.CaseArtifactID, productionIDs, documentArtifactIDs).Tables(0)
 			End Select
 		End Function
 

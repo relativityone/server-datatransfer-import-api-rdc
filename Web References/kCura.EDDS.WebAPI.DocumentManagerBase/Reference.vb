@@ -27,7 +27,8 @@ Namespace kCura.EDDS.WebAPI.DocumentManagerBase
     <System.Diagnostics.DebuggerStepThroughAttribute(),  _
      System.ComponentModel.DesignerCategoryAttribute("code"),  _
      System.Web.Services.WebServiceBindingAttribute(Name:="DocumentManagerSoap", [Namespace]:="http://foley.com/EDDS/DocumentManager"),  _
-     System.Xml.Serialization.XmlIncludeAttribute(GetType(Artifact))>  _
+     System.Xml.Serialization.XmlIncludeAttribute(GetType(Artifact)),  _
+     System.Xml.Serialization.XmlIncludeAttribute(GetType(Field()))>  _
     Public Class DocumentManager
         Inherits System.Web.Services.Protocols.SoapHttpClientProtocol
         
@@ -288,6 +289,24 @@ Namespace kCura.EDDS.WebAPI.DocumentManagerBase
         End Function
         
         '<remarks/>
+        <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://foley.com/EDDS/DocumentManager/AllHaveOriginalImages", RequestNamespace:="http://foley.com/EDDS/DocumentManager", ResponseNamespace:="http://foley.com/EDDS/DocumentManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
+        Public Function AllHaveOriginalImages(ByVal caseContextArtifactID As Integer, ByVal artifactIDs() As Integer) As Boolean
+            Dim results() As Object = Me.Invoke("AllHaveOriginalImages", New Object() {caseContextArtifactID, artifactIDs})
+            Return CType(results(0),Boolean)
+        End Function
+        
+        '<remarks/>
+        Public Function BeginAllHaveOriginalImages(ByVal caseContextArtifactID As Integer, ByVal artifactIDs() As Integer, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("AllHaveOriginalImages", New Object() {caseContextArtifactID, artifactIDs}, callback, asyncState)
+        End Function
+        
+        '<remarks/>
+        Public Function EndAllHaveOriginalImages(ByVal asyncResult As System.IAsyncResult) As Boolean
+            Dim results() As Object = Me.EndInvoke(asyncResult)
+            Return CType(results(0),Boolean)
+        End Function
+        
+        '<remarks/>
         <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://foley.com/EDDS/DocumentManager/GetIdentifierFromDocumentArtifactID", RequestNamespace:="http://foley.com/EDDS/DocumentManager", ResponseNamespace:="http://foley.com/EDDS/DocumentManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
         Public Function GetIdentifierFromDocumentArtifactID(ByVal caseContextArtifactID As Integer, ByVal artifactID As Integer) As String
             Dim results() As Object = Me.Invoke("GetIdentifierFromDocumentArtifactID", New Object() {caseContextArtifactID, artifactID})
@@ -321,6 +340,25 @@ Namespace kCura.EDDS.WebAPI.DocumentManagerBase
         Public Function EndRetrieveAllUnsupportedOiFileIds(ByVal asyncResult As System.IAsyncResult) As Integer()
             Dim results() As Object = Me.EndInvoke(asyncResult)
             Return CType(results(0),Integer())
+        End Function
+        
+        '<remarks/>
+        <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://foley.com/EDDS/DocumentManager/ReadAsNameValueCollectionFromLayoutArtifact"& _ 
+"ID", RequestNamespace:="http://foley.com/EDDS/DocumentManager", ResponseNamespace:="http://foley.com/EDDS/DocumentManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
+        Public Function ReadAsNameValueCollectionFromLayoutArtifactID(ByVal caseContextArtifactID As Integer, ByVal artifactID As Integer, ByVal layoutArtifactID As Integer) As NameValuePair()
+            Dim results() As Object = Me.Invoke("ReadAsNameValueCollectionFromLayoutArtifactID", New Object() {caseContextArtifactID, artifactID, layoutArtifactID})
+            Return CType(results(0),NameValuePair())
+        End Function
+        
+        '<remarks/>
+        Public Function BeginReadAsNameValueCollectionFromLayoutArtifactID(ByVal caseContextArtifactID As Integer, ByVal artifactID As Integer, ByVal layoutArtifactID As Integer, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("ReadAsNameValueCollectionFromLayoutArtifactID", New Object() {caseContextArtifactID, artifactID, layoutArtifactID}, callback, asyncState)
+        End Function
+        
+        '<remarks/>
+        Public Function EndReadAsNameValueCollectionFromLayoutArtifactID(ByVal asyncResult As System.IAsyncResult) As NameValuePair()
+            Dim results() As Object = Me.EndInvoke(asyncResult)
+            Return CType(results(0),NameValuePair())
         End Function
     End Class
     
@@ -653,8 +691,8 @@ Namespace kCura.EDDS.WebAPI.DocumentManagerBase
     
     '<remarks/>
     <System.Xml.Serialization.XmlTypeAttribute([Namespace]:="http://foley.com/EDDS/DocumentManager"),  _
-     System.Xml.Serialization.XmlIncludeAttribute(GetType(Document)),  _
-     System.Xml.Serialization.XmlIncludeAttribute(GetType(Field))>  _
+     System.Xml.Serialization.XmlIncludeAttribute(GetType(Field)),  _
+     System.Xml.Serialization.XmlIncludeAttribute(GetType(Document))>  _
     Public Class Artifact
         
         '<remarks/>
@@ -698,6 +736,17 @@ Namespace kCura.EDDS.WebAPI.DocumentManagerBase
         
         '<remarks/>
         Public DeleteFlag As Boolean
+    End Class
+    
+    '<remarks/>
+    <System.Xml.Serialization.XmlTypeAttribute([Namespace]:="http://foley.com/EDDS/DocumentManager")>  _
+    Public Class NameValuePair
+        
+        '<remarks/>
+        Public Name As String
+        
+        '<remarks/>
+        Public Value As String
     End Class
     
     '<remarks/>

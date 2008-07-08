@@ -452,6 +452,21 @@
           </s:sequence>
         </s:complexType>
       </s:element>
+      <s:element name="AllHaveOriginalImages">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
+            <s:element minOccurs="0" maxOccurs="1" name="artifactIDs" type="tns:ArrayOfInt" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="AllHaveOriginalImagesResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="AllHaveOriginalImagesResult" type="s:boolean" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
       <s:element name="GetIdentifierFromDocumentArtifactID">
         <s:complexType>
           <s:sequence>
@@ -474,6 +489,33 @@
         <s:complexType>
           <s:sequence>
             <s:element minOccurs="0" maxOccurs="1" name="RetrieveAllUnsupportedOiFileIdsResult" type="tns:ArrayOfInt" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ReadAsNameValueCollectionFromLayoutArtifactID">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="artifactID" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="layoutArtifactID" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="NameValuePair">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="Name" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Value" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="ArrayOfNameValuePair">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="NameValuePair" nillable="true" type="tns:NameValuePair" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="ReadAsNameValueCollectionFromLayoutArtifactIDResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="ReadAsNameValueCollectionFromLayoutArtifactIDResult" type="tns:ArrayOfNameValuePair" />
           </s:sequence>
         </s:complexType>
       </s:element>
@@ -573,6 +615,12 @@
   <wsdl:message name="GetPrintImageGuidsSoapOut">
     <wsdl:part name="parameters" element="tns:GetPrintImageGuidsResponse" />
   </wsdl:message>
+  <wsdl:message name="AllHaveOriginalImagesSoapIn">
+    <wsdl:part name="parameters" element="tns:AllHaveOriginalImages" />
+  </wsdl:message>
+  <wsdl:message name="AllHaveOriginalImagesSoapOut">
+    <wsdl:part name="parameters" element="tns:AllHaveOriginalImagesResponse" />
+  </wsdl:message>
   <wsdl:message name="GetIdentifierFromDocumentArtifactIDSoapIn">
     <wsdl:part name="parameters" element="tns:GetIdentifierFromDocumentArtifactID" />
   </wsdl:message>
@@ -584,6 +632,12 @@
   </wsdl:message>
   <wsdl:message name="RetrieveAllUnsupportedOiFileIdsSoapOut">
     <wsdl:part name="parameters" element="tns:RetrieveAllUnsupportedOiFileIdsResponse" />
+  </wsdl:message>
+  <wsdl:message name="ReadAsNameValueCollectionFromLayoutArtifactIDSoapIn">
+    <wsdl:part name="parameters" element="tns:ReadAsNameValueCollectionFromLayoutArtifactID" />
+  </wsdl:message>
+  <wsdl:message name="ReadAsNameValueCollectionFromLayoutArtifactIDSoapOut">
+    <wsdl:part name="parameters" element="tns:ReadAsNameValueCollectionFromLayoutArtifactIDResponse" />
   </wsdl:message>
   <wsdl:portType name="DocumentManagerSoap">
     <wsdl:operation name="GetAllDocumentsForCase">
@@ -642,6 +696,10 @@
       <wsdl:input message="tns:GetPrintImageGuidsSoapIn" />
       <wsdl:output message="tns:GetPrintImageGuidsSoapOut" />
     </wsdl:operation>
+    <wsdl:operation name="AllHaveOriginalImages">
+      <wsdl:input message="tns:AllHaveOriginalImagesSoapIn" />
+      <wsdl:output message="tns:AllHaveOriginalImagesSoapOut" />
+    </wsdl:operation>
     <wsdl:operation name="GetIdentifierFromDocumentArtifactID">
       <wsdl:input message="tns:GetIdentifierFromDocumentArtifactIDSoapIn" />
       <wsdl:output message="tns:GetIdentifierFromDocumentArtifactIDSoapOut" />
@@ -649,6 +707,10 @@
     <wsdl:operation name="RetrieveAllUnsupportedOiFileIds">
       <wsdl:input message="tns:RetrieveAllUnsupportedOiFileIdsSoapIn" />
       <wsdl:output message="tns:RetrieveAllUnsupportedOiFileIdsSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ReadAsNameValueCollectionFromLayoutArtifactID">
+      <wsdl:input message="tns:ReadAsNameValueCollectionFromLayoutArtifactIDSoapIn" />
+      <wsdl:output message="tns:ReadAsNameValueCollectionFromLayoutArtifactIDSoapOut" />
     </wsdl:operation>
   </wsdl:portType>
   <wsdl:binding name="DocumentManagerSoap" type="tns:DocumentManagerSoap">
@@ -779,6 +841,15 @@
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="AllHaveOriginalImages">
+      <soap:operation soapAction="http://foley.com/EDDS/DocumentManager/AllHaveOriginalImages" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="GetIdentifierFromDocumentArtifactID">
       <soap:operation soapAction="http://foley.com/EDDS/DocumentManager/GetIdentifierFromDocumentArtifactID" style="document" />
       <wsdl:input>
@@ -790,6 +861,15 @@
     </wsdl:operation>
     <wsdl:operation name="RetrieveAllUnsupportedOiFileIds">
       <soap:operation soapAction="http://foley.com/EDDS/DocumentManager/RetrieveAllUnsupportedOiFileIds" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ReadAsNameValueCollectionFromLayoutArtifactID">
+      <soap:operation soapAction="http://foley.com/EDDS/DocumentManager/ReadAsNameValueCollectionFromLayoutArtifactID" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>

@@ -142,7 +142,7 @@
           </s:sequence>
         </s:complexType>
       </s:element>
-      <s:element name="RetrieveImagesByProductionArtifactIDForProductionByDocumentSet">
+      <s:element name="RetrieveImagesByProductionArtifactIDForProductionExportByDocumentSet">
         <s:complexType>
           <s:sequence>
             <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
@@ -151,10 +151,10 @@
           </s:sequence>
         </s:complexType>
       </s:element>
-      <s:element name="RetrieveImagesByProductionArtifactIDForProductionByDocumentSetResponse">
+      <s:element name="RetrieveImagesByProductionArtifactIDForProductionExportByDocumentSetResponse">
         <s:complexType>
           <s:sequence>
-            <s:element minOccurs="0" maxOccurs="1" name="RetrieveImagesByProductionArtifactIDForProductionByDocumentSetResult">
+            <s:element minOccurs="0" maxOccurs="1" name="RetrieveImagesByProductionArtifactIDForProductionExportByDocumentSetResult">
               <s:complexType>
                 <s:sequence>
                   <s:element ref="s:schema" />
@@ -165,7 +165,7 @@
           </s:sequence>
         </s:complexType>
       </s:element>
-      <s:element name="RetrieveByProductionIDsAndDocumentIDs">
+      <s:element name="RetrieveImagesByProductionIDsAndDocumentIDsForExport">
         <s:complexType>
           <s:sequence>
             <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
@@ -174,10 +174,10 @@
           </s:sequence>
         </s:complexType>
       </s:element>
-      <s:element name="RetrieveByProductionIDsAndDocumentIDsResponse">
+      <s:element name="RetrieveImagesByProductionIDsAndDocumentIDsForExportResponse">
         <s:complexType>
           <s:sequence>
-            <s:element minOccurs="0" maxOccurs="1" name="RetrieveByProductionIDsAndDocumentIDsResult">
+            <s:element minOccurs="0" maxOccurs="1" name="RetrieveImagesByProductionIDsAndDocumentIDsForExportResult">
               <s:complexType>
                 <s:sequence>
                   <s:element ref="s:schema" />
@@ -336,56 +336,6 @@
           </s:sequence>
         </s:complexType>
       </s:element>
-      <s:element name="RetrieveSearchProviderOptions">
-        <s:complexType>
-          <s:sequence>
-            <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
-          </s:sequence>
-        </s:complexType>
-      </s:element>
-      <s:element name="RetrieveSearchProviderOptionsResponse">
-        <s:complexType>
-          <s:sequence>
-            <s:element minOccurs="0" maxOccurs="1" name="RetrieveSearchProviderOptionsResult" type="tns:ArrayOfSearchProviderOptions" />
-          </s:sequence>
-        </s:complexType>
-      </s:element>
-      <s:complexType name="ArrayOfSearchProviderOptions">
-        <s:sequence>
-          <s:element minOccurs="0" maxOccurs="unbounded" name="SearchProviderOptions" nillable="true" type="tns:SearchProviderOptions" />
-        </s:sequence>
-      </s:complexType>
-      <s:complexType name="SearchProviderOptions">
-        <s:sequence>
-          <s:element minOccurs="1" maxOccurs="1" name="SearchProviderID" type="s:int" />
-          <s:element minOccurs="0" maxOccurs="1" name="Name" type="s:string" />
-          <s:element minOccurs="0" maxOccurs="1" name="Options" type="tns:ArrayOfViewerOption" />
-        </s:sequence>
-      </s:complexType>
-      <s:complexType name="ArrayOfViewerOption">
-        <s:sequence>
-          <s:element minOccurs="0" maxOccurs="unbounded" name="ViewerOption" nillable="true" type="tns:ViewerOption" />
-        </s:sequence>
-      </s:complexType>
-      <s:complexType name="ViewerOption">
-        <s:sequence>
-          <s:element minOccurs="0" maxOccurs="1" name="Data" type="s:string" />
-          <s:element minOccurs="0" maxOccurs="1" name="Name" type="s:string" />
-          <s:element minOccurs="1" maxOccurs="1" name="Availability" type="tns:OptionAvailability" />
-          <s:element minOccurs="1" maxOccurs="1" name="Order" type="s:int" />
-          <s:element minOccurs="1" maxOccurs="1" name="RequiresSelectedText" type="s:boolean" />
-          <s:element minOccurs="0" maxOccurs="1" name="ViewerOptions" type="tns:ArrayOfViewerOption" />
-          <s:element minOccurs="1" maxOccurs="1" name="JavascriptEncodeSelectedText" type="s:boolean" />
-          <s:element minOccurs="1" maxOccurs="1" name="SQLEncodeSelectedText" type="s:boolean" />
-        </s:sequence>
-      </s:complexType>
-      <s:simpleType name="OptionAvailability">
-        <s:restriction base="s:string">
-          <s:enumeration value="Image" />
-          <s:enumeration value="Native" />
-          <s:enumeration value="Both" />
-        </s:restriction>
-      </s:simpleType>
     </s:schema>
   </wsdl:types>
   <wsdl:message name="CountSearchByArtifactIDSoapIn">
@@ -430,17 +380,17 @@
   <wsdl:message name="RetrieveImagesForSearchSoapOut">
     <wsdl:part name="parameters" element="tns:RetrieveImagesForSearchResponse" />
   </wsdl:message>
-  <wsdl:message name="RetrieveImagesByProductionArtifactIDForProductionByDocumentSetSoapIn">
-    <wsdl:part name="parameters" element="tns:RetrieveImagesByProductionArtifactIDForProductionByDocumentSet" />
+  <wsdl:message name="RetrieveImagesByProductionArtifactIDForProductionExportByDocumentSetSoapIn">
+    <wsdl:part name="parameters" element="tns:RetrieveImagesByProductionArtifactIDForProductionExportByDocumentSet" />
   </wsdl:message>
-  <wsdl:message name="RetrieveImagesByProductionArtifactIDForProductionByDocumentSetSoapOut">
-    <wsdl:part name="parameters" element="tns:RetrieveImagesByProductionArtifactIDForProductionByDocumentSetResponse" />
+  <wsdl:message name="RetrieveImagesByProductionArtifactIDForProductionExportByDocumentSetSoapOut">
+    <wsdl:part name="parameters" element="tns:RetrieveImagesByProductionArtifactIDForProductionExportByDocumentSetResponse" />
   </wsdl:message>
-  <wsdl:message name="RetrieveByProductionIDsAndDocumentIDsSoapIn">
-    <wsdl:part name="parameters" element="tns:RetrieveByProductionIDsAndDocumentIDs" />
+  <wsdl:message name="RetrieveImagesByProductionIDsAndDocumentIDsForExportSoapIn">
+    <wsdl:part name="parameters" element="tns:RetrieveImagesByProductionIDsAndDocumentIDsForExport" />
   </wsdl:message>
-  <wsdl:message name="RetrieveByProductionIDsAndDocumentIDsSoapOut">
-    <wsdl:part name="parameters" element="tns:RetrieveByProductionIDsAndDocumentIDsResponse" />
+  <wsdl:message name="RetrieveImagesByProductionIDsAndDocumentIDsForExportSoapOut">
+    <wsdl:part name="parameters" element="tns:RetrieveImagesByProductionIDsAndDocumentIDsForExportResponse" />
   </wsdl:message>
   <wsdl:message name="RetrieveViewsByContextArtifactIDSoapIn">
     <wsdl:part name="parameters" element="tns:RetrieveViewsByContextArtifactID" />
@@ -484,12 +434,6 @@
   <wsdl:message name="CountSearchByProductionArtifactIDSoapOut">
     <wsdl:part name="parameters" element="tns:CountSearchByProductionArtifactIDResponse" />
   </wsdl:message>
-  <wsdl:message name="RetrieveSearchProviderOptionsSoapIn">
-    <wsdl:part name="parameters" element="tns:RetrieveSearchProviderOptions" />
-  </wsdl:message>
-  <wsdl:message name="RetrieveSearchProviderOptionsSoapOut">
-    <wsdl:part name="parameters" element="tns:RetrieveSearchProviderOptionsResponse" />
-  </wsdl:message>
   <wsdl:portType name="SearchManagerSoap">
     <wsdl:operation name="CountSearchByArtifactID">
       <wsdl:input message="tns:CountSearchByArtifactIDSoapIn" />
@@ -519,13 +463,13 @@
       <wsdl:input message="tns:RetrieveImagesForSearchSoapIn" />
       <wsdl:output message="tns:RetrieveImagesForSearchSoapOut" />
     </wsdl:operation>
-    <wsdl:operation name="RetrieveImagesByProductionArtifactIDForProductionByDocumentSet">
-      <wsdl:input message="tns:RetrieveImagesByProductionArtifactIDForProductionByDocumentSetSoapIn" />
-      <wsdl:output message="tns:RetrieveImagesByProductionArtifactIDForProductionByDocumentSetSoapOut" />
+    <wsdl:operation name="RetrieveImagesByProductionArtifactIDForProductionExportByDocumentSet">
+      <wsdl:input message="tns:RetrieveImagesByProductionArtifactIDForProductionExportByDocumentSetSoapIn" />
+      <wsdl:output message="tns:RetrieveImagesByProductionArtifactIDForProductionExportByDocumentSetSoapOut" />
     </wsdl:operation>
-    <wsdl:operation name="RetrieveByProductionIDsAndDocumentIDs">
-      <wsdl:input message="tns:RetrieveByProductionIDsAndDocumentIDsSoapIn" />
-      <wsdl:output message="tns:RetrieveByProductionIDsAndDocumentIDsSoapOut" />
+    <wsdl:operation name="RetrieveImagesByProductionIDsAndDocumentIDsForExport">
+      <wsdl:input message="tns:RetrieveImagesByProductionIDsAndDocumentIDsForExportSoapIn" />
+      <wsdl:output message="tns:RetrieveImagesByProductionIDsAndDocumentIDsForExportSoapOut" />
     </wsdl:operation>
     <wsdl:operation name="RetrieveViewsByContextArtifactID">
       <wsdl:input message="tns:RetrieveViewsByContextArtifactIDSoapIn" />
@@ -554,10 +498,6 @@
     <wsdl:operation name="CountSearchByProductionArtifactID">
       <wsdl:input message="tns:CountSearchByProductionArtifactIDSoapIn" />
       <wsdl:output message="tns:CountSearchByProductionArtifactIDSoapOut" />
-    </wsdl:operation>
-    <wsdl:operation name="RetrieveSearchProviderOptions">
-      <wsdl:input message="tns:RetrieveSearchProviderOptionsSoapIn" />
-      <wsdl:output message="tns:RetrieveSearchProviderOptionsSoapOut" />
     </wsdl:operation>
   </wsdl:portType>
   <wsdl:binding name="SearchManagerSoap" type="tns:SearchManagerSoap">
@@ -625,8 +565,8 @@
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="RetrieveImagesByProductionArtifactIDForProductionByDocumentSet">
-      <soap:operation soapAction="http://www.kCura.com/EDDS/SearchManager/RetrieveImagesByProductionArtifactIDForProductionByDocumentSet" style="document" />
+    <wsdl:operation name="RetrieveImagesByProductionArtifactIDForProductionExportByDocumentSet">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/SearchManager/RetrieveImagesByProductionArtifactIDForProductionExportByDocumentSet" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -634,8 +574,8 @@
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="RetrieveByProductionIDsAndDocumentIDs">
-      <soap:operation soapAction="http://www.kCura.com/EDDS/SearchManager/RetrieveByProductionIDsAndDocumentIDs" style="document" />
+    <wsdl:operation name="RetrieveImagesByProductionIDsAndDocumentIDsForExport">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/SearchManager/RetrieveImagesByProductionIDsAndDocumentIDsForExport" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -699,15 +639,6 @@
     </wsdl:operation>
     <wsdl:operation name="CountSearchByProductionArtifactID">
       <soap:operation soapAction="http://www.kCura.com/EDDS/SearchManager/CountSearchByProductionArtifactID" style="document" />
-      <wsdl:input>
-        <soap:body use="literal" />
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="RetrieveSearchProviderOptions">
-      <soap:operation soapAction="http://www.kCura.com/EDDS/SearchManager/RetrieveSearchProviderOptions" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>

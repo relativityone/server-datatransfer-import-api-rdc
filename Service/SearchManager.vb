@@ -110,7 +110,7 @@ Namespace kCura.WinEDDS.Service
 				tries += 1
 				Try
 					If kCura.WinEDDS.Config.UsesWebAPI Then
-						Return Me.RetrieveImagesByProductionArtifactIDForProductionByDocumentSet(caseContextArtifactID, productionArtifactID, documentArtifactIDs)
+						Return Me.RetrieveImagesByProductionArtifactIDForProductionExportByDocumentSet(caseContextArtifactID, productionArtifactID, documentArtifactIDs)
 					Else
 						'TODO: Implement non-webservice-based calls
 					End If
@@ -164,13 +164,13 @@ Namespace kCura.WinEDDS.Service
 			End While
 		End Function
 
-		Public Shadows Function RetrieveByProductionIDsAndDocumentIDs(ByVal caseContextArtifactID As Int32, ByVal productionArtifactIDs As Int32(), ByVal documentArtifactIDs As Int32()) As System.Data.DataSet
+		Public Shadows Function RetrieveImagesByProductionIDsAndDocumentIDsForExport(ByVal caseContextArtifactID As Int32, ByVal productionArtifactIDs As Int32(), ByVal documentArtifactIDs As Int32()) As System.Data.DataSet
 			Dim tries As Int32 = 0
 			While tries < Config.MaxReloginTries
 				tries += 1
 				Try
 					If kCura.WinEDDS.Config.UsesWebAPI Then
-						Return MyBase.RetrieveByProductionIDsAndDocumentIDs(caseContextArtifactID, productionArtifactIDs, documentArtifactIDs)
+						Return MyBase.RetrieveImagesByProductionIDsAndDocumentIDsForExport(caseContextArtifactID, productionArtifactIDs, documentArtifactIDs)
 					Else
 						'Return kCura.EDDS.Service.FileQuery.RetrieveFullTextFilesForDocuments(_identity, artifactID, documentArtifactIDs).ToDataSet()
 					End If
