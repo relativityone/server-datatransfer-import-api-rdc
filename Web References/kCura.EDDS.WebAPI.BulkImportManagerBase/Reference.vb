@@ -38,14 +38,14 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
         
         '<remarks/>
         <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/BulkImportManager/BulkImportImage", RequestNamespace:="http://www.kCura.com/EDDS/BulkImportManager", ResponseNamespace:="http://www.kCura.com/EDDS/BulkImportManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
-        Public Function BulkImportImage(ByVal appID As Integer, ByVal bulkFileName As String, ByVal uploadFullText As Boolean, ByVal overwrite As OverwriteType, ByVal destinationFolderArtifactID As Integer, ByVal repository As String, ByVal useBulk As Boolean) As Object
-            Dim results() As Object = Me.Invoke("BulkImportImage", New Object() {appID, bulkFileName, uploadFullText, overwrite, destinationFolderArtifactID, repository, useBulk})
+        Public Function BulkImportImage(ByVal appID As Integer, ByVal bulkFileName As String, ByVal uploadFullText As Boolean, ByVal overwrite As OverwriteType, ByVal destinationFolderArtifactID As Integer, ByVal repository As String, ByVal useBulk As Boolean, ByVal runID As String) As Object
+            Dim results() As Object = Me.Invoke("BulkImportImage", New Object() {appID, bulkFileName, uploadFullText, overwrite, destinationFolderArtifactID, repository, useBulk, runID})
             Return CType(results(0),Object)
         End Function
         
         '<remarks/>
-        Public Function BeginBulkImportImage(ByVal appID As Integer, ByVal bulkFileName As String, ByVal uploadFullText As Boolean, ByVal overwrite As OverwriteType, ByVal destinationFolderArtifactID As Integer, ByVal repository As String, ByVal useBulk As Boolean, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
-            Return Me.BeginInvoke("BulkImportImage", New Object() {appID, bulkFileName, uploadFullText, overwrite, destinationFolderArtifactID, repository, useBulk}, callback, asyncState)
+        Public Function BeginBulkImportImage(ByVal appID As Integer, ByVal bulkFileName As String, ByVal uploadFullText As Boolean, ByVal overwrite As OverwriteType, ByVal destinationFolderArtifactID As Integer, ByVal repository As String, ByVal useBulk As Boolean, ByVal runID As String, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("BulkImportImage", New Object() {appID, bulkFileName, uploadFullText, overwrite, destinationFolderArtifactID, repository, useBulk, runID}, callback, asyncState)
         End Function
         
         '<remarks/>
@@ -56,14 +56,14 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
         
         '<remarks/>
         <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/BulkImportManager/BulkImportProductionImage", RequestNamespace:="http://www.kCura.com/EDDS/BulkImportManager", ResponseNamespace:="http://www.kCura.com/EDDS/BulkImportManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
-        Public Function BulkImportProductionImage(ByVal appID As Integer, ByVal bulkFileName As String, ByVal uploadFullText As Boolean, ByVal overwrite As OverwriteType, ByVal destinationFolderArtifactID As Integer, ByVal repository As String, ByVal productionArtifactID As Integer, ByVal useBulk As Boolean) As Object
-            Dim results() As Object = Me.Invoke("BulkImportProductionImage", New Object() {appID, bulkFileName, uploadFullText, overwrite, destinationFolderArtifactID, repository, productionArtifactID, useBulk})
+        Public Function BulkImportProductionImage(ByVal appID As Integer, ByVal bulkFileName As String, ByVal uploadFullText As Boolean, ByVal overwrite As OverwriteType, ByVal destinationFolderArtifactID As Integer, ByVal repository As String, ByVal productionArtifactID As Integer, ByVal useBulk As Boolean, ByVal runID As String) As Object
+            Dim results() As Object = Me.Invoke("BulkImportProductionImage", New Object() {appID, bulkFileName, uploadFullText, overwrite, destinationFolderArtifactID, repository, productionArtifactID, useBulk, runID})
             Return CType(results(0),Object)
         End Function
         
         '<remarks/>
-        Public Function BeginBulkImportProductionImage(ByVal appID As Integer, ByVal bulkFileName As String, ByVal uploadFullText As Boolean, ByVal overwrite As OverwriteType, ByVal destinationFolderArtifactID As Integer, ByVal repository As String, ByVal productionArtifactID As Integer, ByVal useBulk As Boolean, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
-            Return Me.BeginInvoke("BulkImportProductionImage", New Object() {appID, bulkFileName, uploadFullText, overwrite, destinationFolderArtifactID, repository, productionArtifactID, useBulk}, callback, asyncState)
+        Public Function BeginBulkImportProductionImage(ByVal appID As Integer, ByVal bulkFileName As String, ByVal uploadFullText As Boolean, ByVal overwrite As OverwriteType, ByVal destinationFolderArtifactID As Integer, ByVal repository As String, ByVal productionArtifactID As Integer, ByVal useBulk As Boolean, ByVal runID As String, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("BulkImportProductionImage", New Object() {appID, bulkFileName, uploadFullText, overwrite, destinationFolderArtifactID, repository, productionArtifactID, useBulk, runID}, callback, asyncState)
         End Function
         
         '<remarks/>
@@ -73,37 +73,37 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
         End Function
         
         '<remarks/>
-        <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/BulkImportManager/GenerateErrorFiles", RequestNamespace:="http://www.kCura.com/EDDS/BulkImportManager", ResponseNamespace:="http://www.kCura.com/EDDS/BulkImportManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
-        Public Function GenerateErrorFiles(ByVal appID As Integer, ByVal importKey As String, ByVal writeHeader As Boolean) As ErrorFileKey
-            Dim results() As Object = Me.Invoke("GenerateErrorFiles", New Object() {appID, importKey, writeHeader})
+        <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/BulkImportManager/GenerateImageErrorFiles", RequestNamespace:="http://www.kCura.com/EDDS/BulkImportManager", ResponseNamespace:="http://www.kCura.com/EDDS/BulkImportManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
+        Public Function GenerateImageErrorFiles(ByVal appID As Integer, ByVal importKey As String, ByVal writeHeader As Boolean) As ErrorFileKey
+            Dim results() As Object = Me.Invoke("GenerateImageErrorFiles", New Object() {appID, importKey, writeHeader})
             Return CType(results(0),ErrorFileKey)
         End Function
         
         '<remarks/>
-        Public Function BeginGenerateErrorFiles(ByVal appID As Integer, ByVal importKey As String, ByVal writeHeader As Boolean, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
-            Return Me.BeginInvoke("GenerateErrorFiles", New Object() {appID, importKey, writeHeader}, callback, asyncState)
+        Public Function BeginGenerateImageErrorFiles(ByVal appID As Integer, ByVal importKey As String, ByVal writeHeader As Boolean, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("GenerateImageErrorFiles", New Object() {appID, importKey, writeHeader}, callback, asyncState)
         End Function
         
         '<remarks/>
-        Public Function EndGenerateErrorFiles(ByVal asyncResult As System.IAsyncResult) As ErrorFileKey
+        Public Function EndGenerateImageErrorFiles(ByVal asyncResult As System.IAsyncResult) As ErrorFileKey
             Dim results() As Object = Me.EndInvoke(asyncResult)
             Return CType(results(0),ErrorFileKey)
         End Function
         
         '<remarks/>
-        <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/BulkImportManager/RunHasErrors", RequestNamespace:="http://www.kCura.com/EDDS/BulkImportManager", ResponseNamespace:="http://www.kCura.com/EDDS/BulkImportManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
-        Public Function RunHasErrors(ByVal appID As Integer, ByVal runId As String) As Boolean
-            Dim results() As Object = Me.Invoke("RunHasErrors", New Object() {appID, runId})
+        <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/BulkImportManager/ImageRunHasErrors", RequestNamespace:="http://www.kCura.com/EDDS/BulkImportManager", ResponseNamespace:="http://www.kCura.com/EDDS/BulkImportManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
+        Public Function ImageRunHasErrors(ByVal appID As Integer, ByVal runId As String) As Boolean
+            Dim results() As Object = Me.Invoke("ImageRunHasErrors", New Object() {appID, runId})
             Return CType(results(0),Boolean)
         End Function
         
         '<remarks/>
-        Public Function BeginRunHasErrors(ByVal appID As Integer, ByVal runId As String, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
-            Return Me.BeginInvoke("RunHasErrors", New Object() {appID, runId}, callback, asyncState)
+        Public Function BeginImageRunHasErrors(ByVal appID As Integer, ByVal runId As String, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("ImageRunHasErrors", New Object() {appID, runId}, callback, asyncState)
         End Function
         
         '<remarks/>
-        Public Function EndRunHasErrors(ByVal asyncResult As System.IAsyncResult) As Boolean
+        Public Function EndImageRunHasErrors(ByVal asyncResult As System.IAsyncResult) As Boolean
             Dim results() As Object = Me.EndInvoke(asyncResult)
             Return CType(results(0),Boolean)
         End Function

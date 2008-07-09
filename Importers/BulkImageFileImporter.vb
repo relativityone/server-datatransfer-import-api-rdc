@@ -58,7 +58,7 @@ Namespace kCura.WinEDDS
 
 		Public ReadOnly Property HasErrors() As Boolean
 			Get
-				Return _bulkImportManager.RunHasErrors(_caseInfo.ArtifactID, _runId)
+				Return _bulkImportManager.ImageRunHasErrors(_caseInfo.ArtifactID, _runId)
 			End Get
 		End Property
 
@@ -119,16 +119,59 @@ Namespace kCura.WinEDDS
 			Me.ReadFile(_filePath)
 		End Sub
 
-		Private Sub ProcessList(ByVal al As System.Collections.ArrayList, ByRef status As Int32)
+		Private Sub ProcessList(ByVal al As System.Collections.ArrayList, ByRef status As Int32, ByVal bulkLoadFilePath As String)
 			Try
 				If al.Count = 0 Then Exit Sub
 				Me.ProcessDocument(al, status)
 				al.Clear()
 				status = 0
+				If _bulkLoadFileWriter.BaseStream.Length > Config.BulkImportBatchSize Then
+					PushImageBatch(bulkLoadFilePath, False)
+				End If
 			Catch ex As Exception
 				Throw
 			End Try
 		End Sub
+
+		Public Function PushImageBatch(ByVal bulkLoadFilePath As String, ByVal isFinal As Boolean) As Object
+
+			_bulkLoadFileWriter.Close()
+
+			_uploadKey = _fileUploader.UploadBcpFile(_caseInfo.ArtifactID, bulkLoadFilePath)
+			'_uploadKey = ""
+			Dim overwrite As kCura.EDDS.WebAPI.BulkImportManagerBase.OverwriteType
+			Select Case _overwrite.ToLower
+				Case "none"
+					overwrite = EDDS.WebAPI.BulkImportManagerBase.OverwriteType.Append
+				Case "strict"
+					overwrite = EDDS.WebAPI.BulkImportManagerBase.OverwriteType.Overlay
+				Case Else
+					overwrite = EDDS.WebAPI.BulkImportManagerBase.OverwriteType.Both
+			End Select
+			If _uploadKey <> "" Then
+				If _productionArtifactID = 0 Then
+					_runId = _bulkImportManager.BulkImportImage(_caseInfo.ArtifactID, _uploadKey, _replaceFullText, overwrite, _folderID, _repositoryPath, True, _runId).ToString
+				Else
+					_runId = _bulkImportManager.BulkImportProductionImage(_caseInfo.ArtifactID, _uploadKey, _replaceFullText, overwrite, _folderID, _repositoryPath, _productionArtifactID, True, _runId).ToString()
+				End If
+			Else
+				_fileUploader.DestinationFolderPath = _caseInfo.DocumentPath
+				_uploadKey = _fileUploader.UploadFile(bulkLoadFilePath, _caseInfo.ArtifactID)
+				If _productionArtifactID = 0 Then
+					_runId = _bulkImportManager.BulkImportImage(_caseInfo.ArtifactID, _uploadKey, _replaceFullText, overwrite, _folderID, _caseInfo.DocumentPath, False, _runId).ToString
+				Else
+					_runId = _bulkImportManager.BulkImportProductionImage(_caseInfo.ArtifactID, _uploadKey, _replaceFullText, overwrite, _folderID, _caseInfo.DocumentPath, _productionArtifactID, False, _runId).ToString
+				End If
+			End If
+			If Not isFinal Then
+				Try
+					_bulkLoadFileWriter = New System.IO.StreamWriter(bulkLoadFilePath, False, System.Text.Encoding.Unicode)
+				Catch
+					_bulkLoadFileWriter = New System.IO.StreamWriter(bulkLoadFilePath, False, System.Text.Encoding.Unicode)
+				End Try
+			End If
+
+		End Function
 
 		Public Overloads Overrides Function ReadFile(ByVal path As String) As Object
 			Dim bulkLoadFilePath As String = System.IO.Path.GetTempFileName
@@ -147,48 +190,23 @@ Namespace kCura.WinEDDS
 					lineList.Add(Me.CurrentLineNumber.ToString)
 					line = DirectCast(lineList.ToArray(GetType(String)), String())
 					If (line(Columns.MultiPageIndicator).ToUpper = "Y") Then
-						Me.ProcessList(al, status)
+						Me.ProcessList(al, status, bulkLoadFilePath)
 					End If
 					status = status Or Me.ProcessImageLine(line)
 					al.Add(line)
 					If Not Me.Continue Then
-						Me.ProcessList(al, status)
+						Me.ProcessList(al, status, bulkLoadFilePath)
 						Exit While
 					End If
 				End While
-				_bulkLoadFileWriter.Close()
-
-				'_uploadKey = _fileUploader.UploadBcpFile(_caseInfo.ArtifactID, bulkLoadFilePath)
-				_uploadKey = ""
-				Dim overwrite As kCura.EDDS.WebAPI.BulkImportManagerBase.OverwriteType
-				Select Case _overwrite.ToLower
-					Case "none"
-						overwrite = EDDS.WebAPI.BulkImportManagerBase.OverwriteType.Append
-					Case "strict"
-						overwrite = EDDS.WebAPI.BulkImportManagerBase.OverwriteType.Overlay
-					Case Else
-						overwrite = EDDS.WebAPI.BulkImportManagerBase.OverwriteType.Both
-				End Select
-				If _uploadKey <> "" Then
-					If _productionArtifactID = 0 Then
-						_runId = _bulkImportManager.BulkImportImage(_caseInfo.ArtifactID, _uploadKey, _replaceFullText, overwrite, _folderID, _repositoryPath, True).ToString
-					Else
-						_runId = _bulkImportManager.BulkImportProductionImage(_caseInfo.ArtifactID, _uploadKey, _replaceFullText, overwrite, _folderID, _repositoryPath, _productionArtifactID, True).ToString()
-					End If
-				Else
-					_fileUploader.DestinationFolderPath = _caseInfo.DocumentPath
-					_uploadKey = _fileUploader.UploadFile(bulkLoadFilePath, _caseInfo.ArtifactID)
-					If _productionArtifactID = 0 Then
-						_runId = _bulkImportManager.BulkImportImage(_caseInfo.ArtifactID, _uploadKey, _replaceFullText, overwrite, _folderID, _caseInfo.DocumentPath, False).ToString
-					Else
-						_runId = _bulkImportManager.BulkImportProductionImage(_caseInfo.ArtifactID, _uploadKey, _replaceFullText, overwrite, _folderID, _caseInfo.DocumentPath, _productionArtifactID, False).ToString
-					End If
-				End If
+				Me.PushImageBatch(bulkLoadFilePath, True)
 				Me.CompleteSuccess()
 			Catch ex As System.Exception
 				Me.CompleteError(ex)
 			End Try
 		End Function
+
+
 
 		Private Sub CompleteSuccess()
 			If Not _errorLogWriter Is Nothing Then
@@ -351,6 +369,7 @@ Namespace kCura.WinEDDS
 				End If
 				_bulkLoadFileWriter.Write(status & ",")
 				_bulkLoadFileWriter.Write("0,")
+				_bulkLoadFileWriter.Write("0,")
 				_bulkLoadFileWriter.Write(originalLineNumber & ",")
 				_bulkLoadFileWriter.Write(documentIdentifier & ",")
 				_bulkLoadFileWriter.Write(batesNumber & ",")
@@ -467,7 +486,7 @@ Namespace kCura.WinEDDS
 #End Region
 
 		Private Sub _processController_ExportServerErrors(ByVal exportLocation As String) Handles _processController.ExportServerErrorsEvent
-			With _bulkImportManager.GenerateErrorFiles(_caseInfo.ArtifactID, _runId, True)
+			With _bulkImportManager.GenerateImageErrorFiles(_caseInfo.ArtifactID, _runId, True)
 				Dim downloader As New FileDownloader(DirectCast(_bulkImportManager.Credentials, System.Net.NetworkCredential), _caseInfo.DocumentPath, _caseInfo.DownloadHandlerURL, _bulkImportManager.CookieContainer, kCura.WinEDDS.Service.Settings.AuthenticationToken)
 				Dim rowsLocation As String = System.IO.Path.GetTempFileName
 				Dim errorsLocation As String = System.IO.Path.GetTempFileName

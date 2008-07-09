@@ -49,6 +49,16 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
+		Public Shared ReadOnly Property BulkImportBatchSize() As Int32	 'Bytes
+			Get
+				Try
+					Return CType(ConfigSettings("BulkImportBatchSize"), Int32)
+				Catch
+					Return 16777216
+				End Try
+			End Get
+		End Property
+
 
 		Public Shared Property WebServiceURL() As String
 			Get
