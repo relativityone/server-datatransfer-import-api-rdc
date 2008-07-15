@@ -126,7 +126,7 @@ Namespace kCura.WinEDDS
 				al.Clear()
 				status = 0
 				If _bulkLoadFileWriter.BaseStream.Length > Config.BulkImportBatchSize Then
-					PushImageBatch(bulkLoadFilePath, False)
+					Me.PushImageBatch(bulkLoadFilePath, False)
 				End If
 			Catch ex As Exception
 				Throw
@@ -246,16 +246,16 @@ Namespace kCura.WinEDDS
 
 #Region "Worker Methods"
 
-		Public Function ProcessImageLine(ByVal values As String()) As kCura.EDDS.Types.MassImport.ImageStatus
+		Public Function ProcessImageLine(ByVal values As String()) As kCura.EDDS.Types.MassImport.ImportStatus
 			Try
-				Dim retval As kCura.EDDS.Types.MassImport.ImageStatus = EDDS.Types.MassImport.ImageStatus.Pending
+				Dim retval As kCura.EDDS.Types.MassImport.ImportStatus = EDDS.Types.MassImport.ImportStatus.Pending
 				'check for existence
 				If values(Columns.BatesNumber).Trim = "" Then
 					Me.RaiseStatusEvent(Windows.Process.EventType.Error, String.Format("No image file specified on line."))
-					retval = EDDS.Types.MassImport.ImageStatus.NoImageSpecifiedOnLine
+					retval = EDDS.Types.MassImport.ImportStatus.NoImageSpecifiedOnLine
 				ElseIf Not System.IO.File.Exists(Me.GetFileLocation(values)) Then
 					Me.RaiseStatusEvent(Windows.Process.EventType.Error, String.Format("Image file specified ( {0} ) does not exist.", values(Columns.FileLocation)))
-					retval = EDDS.Types.MassImport.ImageStatus.ImageSpecifiedDne
+					retval = EDDS.Types.MassImport.ImportStatus.FileSpecifiedDne
 				Else
 					Dim validator As New kCura.ImageValidator.ImageValidator
 					Dim path As String = Me.GetFileLocation(values)
@@ -263,7 +263,7 @@ Namespace kCura.WinEDDS
 						validator.ValidateImage(path)
 					Catch ex As System.Exception
 						Me.RaiseStatusEvent(Windows.Process.EventType.Error, String.Format("Error in '{0}': {1}", path, ex.Message))
-						retval = EDDS.Types.MassImport.ImageStatus.InvalidImageFormat
+						retval = EDDS.Types.MassImport.ImportStatus.InvalidImageFormat
 					End Try
 				End If
 				Return retval

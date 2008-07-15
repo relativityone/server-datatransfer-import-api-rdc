@@ -318,6 +318,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Importers\BulkLoadFileImporter.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Importers\FileDirectoryImporter.vb"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -349,6 +354,11 @@
                 />
                 <File
                     RelPath = "Importers\LoadFilePreviewer.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Importers\MetaDocQueue.vb"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

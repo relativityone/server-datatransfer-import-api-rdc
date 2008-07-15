@@ -111,6 +111,16 @@ Namespace kCura.WinEDDS
 		Public Overloads Function ToString() As String
 			Return FieldName
 		End Function
+		Public Function ToFileInfo() As kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo
+			Dim retval As New kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo
+			retval.ArtifactID = Me.FieldID
+			retval.Category = CType(Me.FieldCategoryID, kCura.EDDS.WebAPI.BulkImportManagerBase.FieldCategory)
+			If Not Me.CodeTypeID.IsNull Then retval.CodeTypeID = Me.CodeTypeID.Value
+			retval.DisplayName = Me.FieldName
+			If Not Me.FieldLength.IsNull Then retval.TextLength = Me.FieldLength.Value
+			retval.Type = CType(Me.FieldTypeID, kCura.EDDS.WebAPI.BulkImportManagerBase.FieldType)
+			Return retval
+		End Function
 #End Region
 
 #Region "Constructors"

@@ -12,6 +12,7 @@ Namespace kCura.WinEDDS
 		Private _md5Hash As String
 		Private _sourceLine As String()
 		Private _fileIdData As OI.FileID.FileIDData
+		Private _lineStatus As Int32
 
 		Public Property FileGuid() As String
 			Get
@@ -131,6 +132,15 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
+		Public Property LineStatus() As Int32
+			Get
+				Return _lineStatus
+			End Get
+			Set(ByVal value As Int32)
+				_lineStatus = value
+			End Set
+		End Property
+
 		Public Sub New( _
 		 ByVal fileGuid As String, _
 		 ByVal identityValue As String, _
@@ -143,7 +153,8 @@ Namespace kCura.WinEDDS
 		 ByVal parentFolderID As Int32, _
 		 ByVal md5Hash As String, _
 		 ByVal sourceLine As String(), _
-		 ByVal oixFileData As OI.FileID.FileIDData _
+		 ByVal oixFileData As OI.FileID.FileIDData, _
+		ByVal lineStatus As Int32 _
 		 )
 			_fileGuid = fileGuid
 			_identityValue = identityValue
@@ -157,6 +168,7 @@ Namespace kCura.WinEDDS
 			_sourceLine = sourceLine
 			_md5Hash = md5Hash
 			_fileIdData = oixFileData
+			_lineStatus = lineStatus
 		End Sub
 	End Class
 End Namespace

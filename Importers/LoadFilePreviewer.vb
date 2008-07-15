@@ -318,7 +318,7 @@ Namespace kCura.WinEDDS
 
 		Private Function SetFieldValueOrErrorMessage(ByVal field As DocumentField, ByVal value As String, ByVal column As Int32) As Boolean
 			Try
-				SetFieldValue(field, value, column, True)
+				SetFieldValue(field, value, column, True, "")
 				Return False
 			Catch ex As kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
 				field.Value = ex.Message

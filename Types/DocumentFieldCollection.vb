@@ -97,6 +97,12 @@ Namespace kCura.WinEDDS
 			Return DirectCast(al.ToArray(GetType(DocumentField)), DocumentField())
 		End Function
 
+		Public ReadOnly Property AllFields() As ICollection
+			Get
+				Return _idIndex.Values
+			End Get
+		End Property
+
 		Public Function IdentifierFieldNames() As String()
 			Dim ids As DocumentField() = IdentifierFields()
 			Dim retval(ids.Length - 1) As String

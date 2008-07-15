@@ -11,6 +11,7 @@ Namespace kCura.WinEDDS
 		Protected _codeManager As kCura.WinEDDS.Service.CodeManager
 		Protected _folderManager As kCura.WinEDDS.Service.FolderManager
 		Protected _fieldQuery As kCura.WinEDDS.Service.FieldQuery
+		Protected _bulkImportManager As kCura.WinEDDS.Service.BulkImportManager
 		'Protected _multiCodeManager As kCura.WinEDDS.Service.MultiCodeManager
 		Protected _fileManager As kCura.WinEDDS.Service.FileManager
 		Protected _usermanager As kCura.WinEDDS.Service.UserManager
@@ -82,6 +83,7 @@ Namespace kCura.WinEDDS
 			_fieldQuery = New kCura.WinEDDS.Service.FieldQuery(args.Credentials, args.CookieContainer)
 			_fileManager = New kCura.WinEDDS.Service.FileManager(args.Credentials, args.CookieContainer)
 			_usermanager = New kCura.WinEDDS.Service.UserManager(args.Credentials, args.CookieContainer)
+			_bulkImportManager = New kCura.WinEDDS.Service.BulkImportManager(args.Credentials, args.CookieContainer)
 			'_multiCodeManager = New kCura.WinEDDS.Service.MultiCodeManager(args.Credentials, args.CookieContainer)
 
 			_multiValueSeparator = args.MultiRecordDelimiter.ToString.ToCharArray
@@ -175,7 +177,7 @@ Namespace kCura.WinEDDS
 			Return newOrder
 		End Function
 
-		Public Function GetMultiCode(ByVal value As String, ByVal column As Int32, ByVal field As DocumentField, ByVal forPreview As Boolean) As NullableTypes.NullableInt32()
+		Public Overridable Function GetMultiCode(ByVal value As String, ByVal column As Int32, ByVal field As DocumentField, ByVal forPreview As Boolean) As NullableTypes.NullableInt32()
 			Dim codeDisplayNames As String() = value.Split(_multiValueSeparator)
 			Dim codes(codeDisplayNames.Length - 1) As NullableInt32
 			Dim i As Int32
@@ -187,7 +189,7 @@ Namespace kCura.WinEDDS
 
 #End Region
 
-		Public Sub SetFieldValue(ByVal field As DocumentField, ByVal values As String(), ByVal column As Int32)
+		Public Sub SetFieldValue(ByVal field As DocumentField, ByVal values As String(), ByVal column As Int32, ByVal identityValue As String)
 			Dim value As String
 			If column = -1 Then
 				value = String.Empty
@@ -201,14 +203,14 @@ Namespace kCura.WinEDDS
 			If field.FieldCategoryID = kCura.DynamicFields.Types.FieldCategory.FullText Then
 				value = value.Replace(NewlineProxy, Microsoft.VisualBasic.ControlChars.NewLine)
 			End If
-			SetFieldValue(field, value, column)
+			SetFieldValue(field, value, column, identityValue)
 		End Sub
 
-		Public Sub SetFieldValue(ByVal field As DocumentField, ByVal value As String, ByVal column As Int32)
-			SetFieldValue(field, value, column, False)
+		Public Sub SetFieldValue(ByVal field As DocumentField, ByVal value As String, ByVal column As Int32, ByVal identityValue As String)
+			SetFieldValue(field, value, column, False, identityValue)
 		End Sub
 
-		Public Sub SetFieldValue(ByVal field As DocumentField, ByVal value As String, ByVal column As Int32, ByVal forPreview As Boolean)
+		Public Sub SetFieldValue(ByVal field As DocumentField, ByVal value As String, ByVal column As Int32, ByVal forPreview As Boolean, ByVal identityValue As String)
 			Select Case CType(field.FieldTypeID, kCura.DynamicFields.Types.FieldTypeHelper.FieldType)
 				Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Boolean
 					field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(GetNullableBoolean(value.Trim, column))
@@ -222,15 +224,21 @@ Namespace kCura.WinEDDS
 					field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(Me.GetUserArtifactID(value.Trim, column))
 					If forPreview Then field.Value = value.Trim
 				Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Code
-					Dim fieldValue As String = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(GetCode(value.Trim, column, field, forPreview))
+					Dim fieldValue As String
+					Dim code As NullableInt32 = GetCode(value.Trim, column, field, forPreview)
+					fieldValue = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(code)
 					If forPreview And fieldValue = "-1" Then
 						fieldValue = "[new code]"
 					End If
 					field.Value = fieldValue
+					If TypeOf Me Is BulkLoadFileImporter Then
+						fieldValue = ChrW(11) & value.Trim & ChrW(11)
+					End If
 				Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.MultiCode
 					If value = String.Empty Then
 						field.Value = String.Empty
 					Else
+						Dim oldval As String = value.Trim
 						Dim codeValues As NullableTypes.NullableInt32() = GetMultiCode(value.Trim, column, field, forPreview)
 						Dim i As Int32
 						Dim newVal As String = String.Empty
@@ -251,6 +259,18 @@ Namespace kCura.WinEDDS
 							End If
 						End If
 						field.Value = newVal
+						If TypeOf Me Is BulkLoadFileImporter Then
+							If codeValues.Length = 0 Then
+								field.Value = ChrW(11) & ChrW(11)
+							Else
+								field.Value = ChrW(11) & oldval.Trim(_multiValueSeparator).Replace(_multiValueSeparator, ChrW(11)) & ChrW(11)
+								For Each codeValue As NullableTypes.NullableInt32 In codeValues
+									If Not codeValue.IsNull Then
+										DirectCast(Me, BulkLoadFileImporter).WriteCodeLineToTempFile(identityValue, codeValue.Value, field.CodeTypeID.Value)
+									End If
+								Next
+							End If
+						End If
 					End If
 				Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Varchar
 					Select Case field.FieldCategory

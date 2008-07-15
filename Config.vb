@@ -52,7 +52,12 @@ Namespace kCura.WinEDDS
 		Public Shared ReadOnly Property BulkImportBatchSize() As Int32	 'Bytes
 			Get
 				Try
-					Return CType(ConfigSettings("BulkImportBatchSize"), Int32)
+					Dim retval As Int32 = CType(ConfigSettings("BulkImportBatchSize"), Int32)
+					If retval = 0 Then
+						Throw New System.Exception
+					Else
+						Return retval
+					End If
 				Catch
 					Return 16777216
 				End Try

@@ -89,6 +89,113 @@
           </s:sequence>
         </s:complexType>
       </s:element>
+      <s:element name="BulkImportNative">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="appID" type="s:int" />
+            <s:element minOccurs="0" maxOccurs="1" name="settings" type="tns:NativeLoadInfo" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="NativeLoadInfo">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="MappedFields" type="tns:ArrayOfFieldInfo" />
+          <s:element minOccurs="1" maxOccurs="1" name="Overlay" type="tns:OverwriteType" />
+          <s:element minOccurs="0" maxOccurs="1" name="Repository" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="RunID" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="DataFileName" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="UseBulkDataImport" type="s:boolean" />
+          <s:element minOccurs="1" maxOccurs="1" name="UploadFiles" type="s:boolean" />
+          <s:element minOccurs="0" maxOccurs="1" name="CodeFileName" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="ArrayOfFieldInfo">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="FieldInfo" nillable="true" type="tns:FieldInfo" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="FieldInfo">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="ArtifactID" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="Category" type="tns:FieldCategory" />
+          <s:element minOccurs="1" maxOccurs="1" name="Type" type="tns:FieldType" />
+          <s:element minOccurs="0" maxOccurs="1" name="DisplayName" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="TextLength" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="CodeTypeID" type="s:int" />
+        </s:sequence>
+      </s:complexType>
+      <s:simpleType name="FieldCategory">
+        <s:restriction base="s:string">
+          <s:enumeration value="Generic" />
+          <s:enumeration value="FullText" />
+          <s:enumeration value="Identifier" />
+          <s:enumeration value="Associative" />
+          <s:enumeration value="Comments" />
+          <s:enumeration value="Relational" />
+          <s:enumeration value="ProductionMarker" />
+          <s:enumeration value="AutoCreate" />
+          <s:enumeration value="ReservedRenameToUse" />
+          <s:enumeration value="FolderName" />
+          <s:enumeration value="FileInfo" />
+          <s:enumeration value="ParentArtifact" />
+          <s:enumeration value="MarkupSetMarker" />
+        </s:restriction>
+      </s:simpleType>
+      <s:simpleType name="FieldType">
+        <s:restriction base="s:string">
+          <s:enumeration value="Varchar" />
+          <s:enumeration value="Integer" />
+          <s:enumeration value="Date" />
+          <s:enumeration value="Boolean" />
+          <s:enumeration value="Text" />
+          <s:enumeration value="Code" />
+          <s:enumeration value="Decimal" />
+          <s:enumeration value="Currency" />
+          <s:enumeration value="MultiCode" />
+          <s:enumeration value="File" />
+          <s:enumeration value="Object" />
+          <s:enumeration value="User" />
+          <s:enumeration value="LayoutText" />
+        </s:restriction>
+      </s:simpleType>
+      <s:element name="BulkImportNativeResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="BulkImportNativeResult" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GenerateNativeErrorFiles">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="appID" type="s:int" />
+            <s:element minOccurs="0" maxOccurs="1" name="runID" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="writeHeader" type="s:boolean" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GenerateNativeErrorFilesResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GenerateNativeErrorFilesResult" type="tns:ErrorFileKey" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="NativeRunHasErrors">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="appID" type="s:int" />
+            <s:element minOccurs="0" maxOccurs="1" name="runId" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="NativeRunHasErrorsResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="NativeRunHasErrorsResult" type="s:boolean" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
     </s:schema>
   </wsdl:types>
   <wsdl:message name="BulkImportImageSoapIn">
@@ -115,6 +222,24 @@
   <wsdl:message name="ImageRunHasErrorsSoapOut">
     <wsdl:part name="parameters" element="tns:ImageRunHasErrorsResponse" />
   </wsdl:message>
+  <wsdl:message name="BulkImportNativeSoapIn">
+    <wsdl:part name="parameters" element="tns:BulkImportNative" />
+  </wsdl:message>
+  <wsdl:message name="BulkImportNativeSoapOut">
+    <wsdl:part name="parameters" element="tns:BulkImportNativeResponse" />
+  </wsdl:message>
+  <wsdl:message name="GenerateNativeErrorFilesSoapIn">
+    <wsdl:part name="parameters" element="tns:GenerateNativeErrorFiles" />
+  </wsdl:message>
+  <wsdl:message name="GenerateNativeErrorFilesSoapOut">
+    <wsdl:part name="parameters" element="tns:GenerateNativeErrorFilesResponse" />
+  </wsdl:message>
+  <wsdl:message name="NativeRunHasErrorsSoapIn">
+    <wsdl:part name="parameters" element="tns:NativeRunHasErrors" />
+  </wsdl:message>
+  <wsdl:message name="NativeRunHasErrorsSoapOut">
+    <wsdl:part name="parameters" element="tns:NativeRunHasErrorsResponse" />
+  </wsdl:message>
   <wsdl:portType name="BulkImportManagerSoap">
     <wsdl:operation name="BulkImportImage">
       <wsdl:input message="tns:BulkImportImageSoapIn" />
@@ -131,6 +256,18 @@
     <wsdl:operation name="ImageRunHasErrors">
       <wsdl:input message="tns:ImageRunHasErrorsSoapIn" />
       <wsdl:output message="tns:ImageRunHasErrorsSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="BulkImportNative">
+      <wsdl:input message="tns:BulkImportNativeSoapIn" />
+      <wsdl:output message="tns:BulkImportNativeSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GenerateNativeErrorFiles">
+      <wsdl:input message="tns:GenerateNativeErrorFilesSoapIn" />
+      <wsdl:output message="tns:GenerateNativeErrorFilesSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="NativeRunHasErrors">
+      <wsdl:input message="tns:NativeRunHasErrorsSoapIn" />
+      <wsdl:output message="tns:NativeRunHasErrorsSoapOut" />
     </wsdl:operation>
   </wsdl:portType>
   <wsdl:binding name="BulkImportManagerSoap" type="tns:BulkImportManagerSoap">
@@ -164,6 +301,33 @@
     </wsdl:operation>
     <wsdl:operation name="ImageRunHasErrors">
       <soap:operation soapAction="http://www.kCura.com/EDDS/BulkImportManager/ImageRunHasErrors" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="BulkImportNative">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/BulkImportManager/BulkImportNative" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GenerateNativeErrorFiles">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/BulkImportManager/GenerateNativeErrorFiles" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="NativeRunHasErrors">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/BulkImportManager/NativeRunHasErrors" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>

@@ -4,7 +4,7 @@ Namespace kCura.WinEDDS
     Inherits kCura.Windows.Process.ProcessBase
 
 		Public LoadFile As LoadFile
-		Protected WithEvents _loadFileImporter As LoadFileImporter
+		Protected WithEvents _loadFileImporter As BulkLoadFileImporter
 		Private _startTime As System.DateTime
 		Private _errorCount As Int32
 		Private _warningCount As Int32
@@ -24,12 +24,16 @@ Namespace kCura.WinEDDS
 			_startTime = DateTime.Now
 			_warningCount = 0
 			_errorCount = 0
-			_loadFileImporter = New kCura.WinEDDS.LoadFileImporter(LoadFile, ProcessController, _timeZoneOffset, True)
+			_loadFileImporter = New kCura.WinEDDS.BulkLoadFileImporter(LoadFile, ProcessController, _timeZoneOffset, True)
 			_newlineCounter = New kCura.Utility.File.LineCounter
 			_newlineCounter.Path = LoadFile.FilePath
 			Me.ProcessObserver.InputArgs = LoadFile.FilePath
-			If (CType(_loadFileImporter.ReadFile(LoadFile.FilePath), Boolean)) Then
-				If Not _hasRunPRocessComplete Then Me.ProcessObserver.RaiseProcessCompleteEvent(False, _loadFileImporter.ErrorLogFileName, True)
+			If (CType(_loadFileImporter.ReadFile(LoadFile.FilePath), Boolean)) AndAlso Not _hasRunPRocessComplete Then
+				If _loadFileImporter.HasErrors Then
+					Me.ProcessObserver.RaiseProcessCompleteEvent(False, System.Guid.NewGuid.ToString, True)
+				Else
+					Me.ProcessObserver.RaiseProcessCompleteEvent(False, "", True)
+				End If
 			Else
 				Me.ProcessObserver.RaiseStatusEvent("", "Import aborted")
 			End If
@@ -72,7 +76,7 @@ Namespace kCura.WinEDDS
 			Me.ProcessObserver.RaiseStatusBarEvent("Upload mode: " & mode)
 		End Sub
 
-		Private Sub _loadFileImporter_FilePrepEvent(ByVal e As LoadFileImporter.FilePrepEventArgs) Handles _loadFileImporter.FilePrepEvent
+		Private Sub _loadFileImporter_FilePrepEvent(ByVal e As BulkLoadFileImporter.FilePrepEventArgs) Handles _loadFileImporter.FilePrepEvent
 			System.Threading.Monitor.Enter(Me.ProcessObserver)
 			Dim totaldisplay As String
 			Dim processeddisplay As String
@@ -87,13 +91,13 @@ Namespace kCura.WinEDDS
 				processeddisplay = e.BytesRead.ToString & " B"
 			End If
 			Select Case e.Type
-				Case LoadFileImporter.FilePrepEventArgs.FilePrepEventType.CloseFile
+				Case BulkLoadFileImporter.FilePrepEventArgs.FilePrepEventType.CloseFile
 					Me.ProcessObserver.RaiseProgressEvent(e.TotalBytes, e.TotalBytes, 0, 0, e.StartTime, System.DateTime.Now, totaldisplay, processeddisplay)
 					'Me.ProcessObserver.RaiseProcessCompleteEvent()
-				Case LoadFileImporter.FilePrepEventArgs.FilePrepEventType.OpenFile
+				Case BulkLoadFileImporter.FilePrepEventArgs.FilePrepEventType.OpenFile
 					Me.ProcessObserver.RaiseProgressEvent(e.TotalBytes, e.BytesRead, 0, 0, e.StartTime, System.DateTime.Now, totaldisplay, processeddisplay)
 					Me.ProcessObserver.RaiseStatusEvent("", "Preparing file for import")
-				Case LoadFileImporter.FilePrepEventArgs.FilePrepEventType.ReadEvent
+				Case BulkLoadFileImporter.FilePrepEventArgs.FilePrepEventType.ReadEvent
 					Me.ProcessObserver.RaiseProgressEvent(e.TotalBytes, e.BytesRead, 0, 0, e.StartTime, System.DateTime.Now, totaldisplay, processeddisplay)
 					Me.ProcessObserver.RaiseStatusEvent("", "Preparing file for import")
 			End Select
