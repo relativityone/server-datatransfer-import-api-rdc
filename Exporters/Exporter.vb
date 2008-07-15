@@ -235,7 +235,7 @@ Namespace kCura.WinEDDS
 				documentInfo.DocumentArtifactID = documentArtifactIDs(i)
 				documentInfo.DataRow = docRows(i)
 				_volumeManager.ExportDocument(documentInfo)
-				Me.WriteUpdate("Exported document " & i + 1, False)
+				Me.WriteUpdate("Exported document " & i + 1, i = documentArtifactIDs.Length - 1)
 				If _halt Then Exit Sub
 			Next
 		End Sub

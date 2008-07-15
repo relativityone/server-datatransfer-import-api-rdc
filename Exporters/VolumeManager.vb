@@ -253,7 +253,6 @@ Namespace kCura.WinEDDS
 			End If
 			Me.UpdateLoadFile(documentInfo.DataRow, documentInfo.HasFullText, documentInfo.DocumentArtifactID, nativeLocation, tempLocalFullTextFilePath)
 			_parent.DocumentsExported += 1
-
 			_currentVolumeSize += totalFileSize
 			_currentNativeSubdirectorySize += documentInfo.NativeCount
 			_currentImageSubdirectorySize += documentInfo.ImageCount
