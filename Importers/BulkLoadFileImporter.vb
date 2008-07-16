@@ -52,6 +52,7 @@ Namespace kCura.WinEDDS
 		Private _outputNativeFilePath As String = System.IO.Path.GetTempFileName
 		Private _outputCodeFilePath As String = System.IO.Path.GetTempFileName
 		Private _filePath As String
+		Private _settings As kCura.WinEDDS.LoadFile
 
 #End Region
 
@@ -154,6 +155,7 @@ Namespace kCura.WinEDDS
 			_continue = True
 			_firstTimeThrough = True
 			_caseInfo = args.CaseInfo
+			_settings = args
 		End Sub
 
 #End Region
@@ -460,7 +462,7 @@ Namespace kCura.WinEDDS
 			Select Case _overwrite.ToLower
 				Case "strict"
 					settings.Overlay = EDDS.WebAPI.BulkImportManagerBase.OverwriteType.Overlay
-				Case "append"
+				Case "none"
 					settings.Overlay = EDDS.WebAPI.BulkImportManagerBase.OverwriteType.Append
 				Case Else
 					settings.Overlay = EDDS.WebAPI.BulkImportManagerBase.OverwriteType.Both
@@ -509,8 +511,13 @@ Namespace kCura.WinEDDS
 			If mdoc.UploadFile And mdoc.IndexFileInDB Then
 				_outputNativeFileWriter.Write(fileguid & Constants.NATIVE_FIELD_DELIMITER)
 				_outputNativeFileWriter.Write(filename & Constants.NATIVE_FIELD_DELIMITER)
-				_outputNativeFileWriter.Write(_defaultDestinationFolderPath & fileguid & Constants.NATIVE_FIELD_DELIMITER)
-				_outputNativeFileWriter.Write(mdoc.FullFilePath & Constants.NATIVE_FIELD_DELIMITER)
+				If _settings.CopyFilesToDocumentRepository Then
+					_outputNativeFileWriter.Write(_defaultDestinationFolderPath & fileguid & Constants.NATIVE_FIELD_DELIMITER)
+					_outputNativeFileWriter.Write(mdoc.FullFilePath & Constants.NATIVE_FIELD_DELIMITER)
+				Else
+					_outputNativeFileWriter.Write(mdoc.FullFilePath & Constants.NATIVE_FIELD_DELIMITER)
+					_outputNativeFileWriter.Write(mdoc.FullFilePath & Constants.NATIVE_FIELD_DELIMITER)
+				End If
 			Else
 				_outputNativeFileWriter.Write(Constants.NATIVE_FIELD_DELIMITER)
 				_outputNativeFileWriter.Write(Constants.NATIVE_FIELD_DELIMITER)
