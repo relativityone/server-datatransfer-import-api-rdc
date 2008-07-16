@@ -99,7 +99,10 @@ Namespace kCura.WinEDDS
 
 		Public ReadOnly Property AllFields() As ICollection
 			Get
-				Return _idIndex.Values
+				Dim retval(_idIndex.Count - 1) As DocumentField
+				_idIndex.Values.CopyTo(retval, 0)
+				System.Array.Sort(retval, New FieldNameComparer)
+				Return retval
 			End Get
 		End Property
 
@@ -140,6 +143,15 @@ Namespace kCura.WinEDDS
 			Me.New()
 			If Not fields Is Nothing Then Me.AddRange(fields)
 		End Sub
+
+		Public Class FieldNameComparer
+			Implements IComparer
+			Public Function Compare(ByVal x As Object, ByVal y As Object) As Integer Implements System.Collections.IComparer.Compare
+				Dim lhs As DocumentField = DirectCast(x, DocumentField)
+				Dim rhs As DocumentField = DirectCast(y, DocumentField)
+				Return System.String.Compare(lhs.FieldName, rhs.FieldName)
+			End Function
+		End Class
 
 		Public Class FieldComparer
 			Implements IComparer

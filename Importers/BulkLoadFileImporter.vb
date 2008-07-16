@@ -484,6 +484,7 @@ Namespace kCura.WinEDDS
 					retval.Add(item.DocumentField.ToFileInfo)
 				End If
 			Next
+			retval.Sort(New WebServiceFieldInfoNameComparer)
 			retval.Add(Me.GetIsSupportedRelativityFileTypeField)
 			retval.Add(Me.GetRelativityFileTypeField)
 			retval.Add(Me.GetHasNativesField)
@@ -769,6 +770,36 @@ Namespace kCura.WinEDDS
 			_lineCounter.StopCounting()
 		End Sub
 
+		Private Sub _processController_ExportServerErrors(ByVal exportLocation As String) Handles _processController.ExportServerErrorsEvent
+			With _bulkImportManager.GenerateNativeErrorFiles(_caseInfo.ArtifactID, _runID, True)
+				Dim downloader As New FileDownloader(DirectCast(_bulkImportManager.Credentials, System.Net.NetworkCredential), _caseInfo.DocumentPath, _caseInfo.DownloadHandlerURL, _bulkImportManager.CookieContainer, kCura.WinEDDS.Service.Settings.AuthenticationToken)
+				Dim rowsLocation As String = System.IO.Path.GetTempFileName
+				Dim errorsLocation As String = System.IO.Path.GetTempFileName
+				downloader.DownloadFile(rowsLocation, .OpticonKey, _caseInfo.ArtifactID.ToString)
+				downloader.DownloadFile(errorsLocation, .LogKey, _caseInfo.ArtifactID.ToString)
+				Dim rootFileName As String = _filePath
+				Dim defaultExtension As String
+				If Not rootFileName.IndexOf(".") = -1 Then
+					defaultExtension = rootFileName.Substring(rootFileName.LastIndexOf("."))
+					rootFileName = rootFileName.Substring(0, rootFileName.LastIndexOf("."))
+				Else
+					defaultExtension = ".opt"
+				End If
+				rootFileName.Trim("\"c)
+				If rootFileName.IndexOf("\") <> -1 Then
+					rootFileName = rootFileName.Substring(rootFileName.LastIndexOf("\") + 1)
+				End If
+
+				Dim rootFilePath As String = exportLocation & rootFileName
+				Dim datetimeNow As System.DateTime = System.DateTime.Now
+				Dim errorFilePath As String = rootFilePath & "_ErrorLines_" & datetimeNow.Ticks & defaultExtension
+				Dim errorReportPath As String = rootFilePath & "_ErrorReport_" & datetimeNow.Ticks & ".csv"
+				System.IO.File.Move(rowsLocation, errorFilePath)
+				System.IO.File.Move(errorsLocation, errorReportPath)
+			End With
+
+		End Sub
+
 #End Region
 
 #Region "Exceptions"
@@ -866,36 +897,6 @@ Namespace kCura.WinEDDS
 		End Sub
 
 #End Region
-		Private Sub _processController_ExportServerErrors(ByVal exportLocation As String) Handles _processController.ExportServerErrorsEvent
-			With _bulkImportManager.GenerateNativeErrorFiles(_caseInfo.ArtifactID, _runID, True)
-				Dim downloader As New FileDownloader(DirectCast(_bulkImportManager.Credentials, System.Net.NetworkCredential), _caseInfo.DocumentPath, _caseInfo.DownloadHandlerURL, _bulkImportManager.CookieContainer, kCura.WinEDDS.Service.Settings.AuthenticationToken)
-				Dim rowsLocation As String = System.IO.Path.GetTempFileName
-				Dim errorsLocation As String = System.IO.Path.GetTempFileName
-				downloader.DownloadFile(rowsLocation, .OpticonKey, _caseInfo.ArtifactID.ToString)
-				downloader.DownloadFile(errorsLocation, .LogKey, _caseInfo.ArtifactID.ToString)
-				Dim rootFileName As String = _filePath
-				Dim defaultExtension As String
-				If Not rootFileName.IndexOf(".") = -1 Then
-					defaultExtension = rootFileName.Substring(rootFileName.LastIndexOf("."))
-					rootFileName = rootFileName.Substring(0, rootFileName.LastIndexOf("."))
-				Else
-					defaultExtension = ".opt"
-				End If
-				rootFileName.Trim("\"c)
-				If rootFileName.IndexOf("\") <> -1 Then
-					rootFileName = rootFileName.Substring(rootFileName.LastIndexOf("\") + 1)
-				End If
-
-				Dim rootFilePath As String = exportLocation & rootFileName
-				Dim datetimeNow As System.DateTime = System.DateTime.Now
-				Dim errorFilePath As String = rootFilePath & "_ErrorLines_" & datetimeNow.Ticks & defaultExtension
-				Dim errorReportPath As String = rootFilePath & "_ErrorReport_" & datetimeNow.Ticks & ".csv"
-				System.IO.File.Move(rowsLocation, errorFilePath)
-				System.IO.File.Move(errorsLocation, errorReportPath)
-			End With
-
-		End Sub
-
 
 
 		Public Class Settings
@@ -907,6 +908,14 @@ Namespace kCura.WinEDDS
 				Return True
 			End Get
 		End Property
+	End Class
+
+	Public Class WebServiceFieldInfoNameComparer
+		Implements IComparer
+
+		Public Function Compare(ByVal x As Object, ByVal y As Object) As Integer Implements System.Collections.IComparer.Compare
+			Return String.Compare(DirectCast(x, kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo).DisplayName, DirectCast(y, kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo).DisplayName)
+		End Function
 	End Class
 
 End Namespace
