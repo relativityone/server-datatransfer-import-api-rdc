@@ -83,7 +83,7 @@ Namespace kCura.WinEDDS
 				_destinationFolderPath = _gateway.GetBcpSharePath(appID)
 				Return Me.UploadFile(localFilePath, appID)
 			Catch ex As Exception
-				If ex.ToString.ToLower.IndexOf("NoBcpDirectoryException") <> -1 Then
+				If ex.ToString.ToLower.IndexOf("nobcpdirectoryexception") <> -1 Then
 					Return String.Empty
 				Else
 					Throw
