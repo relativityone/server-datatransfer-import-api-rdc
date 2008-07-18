@@ -452,10 +452,17 @@ Namespace kCura.WinEDDS
 		Private Function PushNativeBatch(Optional ByVal lastRun As Boolean = False) As Object
 			_outputNativeFileWriter.Close()
 			_outputCodeFileWriter.Close()
+			Dim settings As New kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo
+			settings.UseBulkDataImport = True
 			Dim nativeFileUploadKey As String = _uploader.UploadBcpFile(_caseInfo.ArtifactID, _outputNativeFilePath)
 			Dim codeFileUploadKey As String = _uploader.UploadBcpFile(_caseInfo.ArtifactID, _outputCodeFilePath)
-			Dim settings As New kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo
-			settings.RunID = _runID
+			If nativeFileUploadKey = "" Then
+				_uploader.DestinationFolderPath = _caseInfo.DocumentPath
+				nativeFileUploadKey = _uploader.UploadFile(_outputNativeFilePath, _caseInfo.ArtifactID)
+				codeFileUploadKey = _uploader.UploadFile(_outputCodeFilePath, _caseInfo.ArtifactID)
+				settings.UseBulkDataImport = False
+			End If
+			Settings.RunID = _runID
 			settings.CodeFileName = codeFileUploadKey
 			settings.DataFileName = nativeFileUploadKey
 			settings.MappedFields = Me.GetMappedFields
@@ -468,8 +475,8 @@ Namespace kCura.WinEDDS
 					settings.Overlay = EDDS.WebAPI.BulkImportManagerBase.OverwriteType.Both
 			End Select
 			settings.Repository = _defaultDestinationFolderPath
+			If settings.Repository = "" Then settings.Repository = _caseInfo.DocumentPath
 			settings.UploadFiles = _filePathColumnIndex <> -1
-			settings.UseBulkDataImport = True
 			_runID = _bulkImportManager.BulkImportNative(_caseInfo.ArtifactID, settings).ToString
 			If Not lastRun Then
 				_outputNativeFileWriter = New System.IO.StreamWriter(_outputNativeFilePath, False, System.Text.Encoding.Unicode)
