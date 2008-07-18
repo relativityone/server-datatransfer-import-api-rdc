@@ -527,8 +527,16 @@ Namespace kCura.WinEDDS
 			End If
 			_outputNativeFileWriter.Write(mdoc.ParentFolderID & Constants.NATIVE_FIELD_DELIMITER)
 			For Each docField As DocumentField In fieldCollection.AllFields
-				_outputNativeFileWriter.Write(docField.Value)
-				_outputNativeFileWriter.Write(Constants.NATIVE_FIELD_DELIMITER)
+				If docField.FieldTypeID = kCura.DynamicFields.Types.FieldTypeHelper.FieldType.MultiCode Then
+					Dim codes As String() = docField.Value.Split(ChrW(20))
+					_outputNativeFileWriter.Write(codes(0))
+					_outputNativeFileWriter.Write(Constants.NATIVE_FIELD_DELIMITER)
+					_outputNativeFileWriter.Write(codes(1))
+					_outputNativeFileWriter.Write(Constants.NATIVE_FIELD_DELIMITER)
+				Else
+					_outputNativeFileWriter.Write(docField.Value)
+					_outputNativeFileWriter.Write(Constants.NATIVE_FIELD_DELIMITER)
+				End If
 			Next
 			If _filePathColumnIndex <> -1 AndAlso mdoc.UploadFile AndAlso mdoc.IndexFileInDB Then
 				Dim boolString As String = "0"
@@ -630,7 +638,6 @@ Namespace kCura.WinEDDS
 		End Function
 
 #End Region
-
 
 #Region "Status Window"
 
