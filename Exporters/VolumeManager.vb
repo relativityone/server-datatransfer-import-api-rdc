@@ -575,7 +575,6 @@ Namespace kCura.WinEDDS
 						c = sr.Read
 					End While
 					_nativeFileWriter.Write(_settings.QuoteDelimiter)
-					_nativeFileWriter.Write(vbNewLine)
 					sr.Close()
 					Try
 						System.IO.File.Delete(fullTextTempFile)
@@ -587,6 +586,7 @@ Namespace kCura.WinEDDS
 					End Try
 				End If
 			End If
+			_nativeFileWriter.Write(vbNewLine)
 		End Sub
 
 		Public Sub UpdateVolume()
