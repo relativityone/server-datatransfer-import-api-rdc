@@ -456,13 +456,15 @@ Namespace kCura.WinEDDS
 			settings.UseBulkDataImport = True
 			Dim nativeFileUploadKey As String = _uploader.UploadBcpFile(_caseInfo.ArtifactID, _outputNativeFilePath)
 			Dim codeFileUploadKey As String = _uploader.UploadBcpFile(_caseInfo.ArtifactID, _outputCodeFilePath)
+			settings.Repository = _defaultDestinationFolderPath
+			If settings.Repository = "" Then settings.Repository = _caseInfo.DocumentPath
 			If nativeFileUploadKey = "" Then
-				_uploader.DestinationFolderPath = _caseInfo.DocumentPath
+				_uploader.DestinationFolderPath = settings.Repository
 				nativeFileUploadKey = _uploader.UploadFile(_outputNativeFilePath, _caseInfo.ArtifactID)
 				codeFileUploadKey = _uploader.UploadFile(_outputCodeFilePath, _caseInfo.ArtifactID)
 				settings.UseBulkDataImport = False
 			End If
-			Settings.RunID = _runID
+			settings.RunID = _runID
 			settings.CodeFileName = codeFileUploadKey
 			settings.DataFileName = nativeFileUploadKey
 			settings.MappedFields = Me.GetMappedFields
@@ -474,8 +476,6 @@ Namespace kCura.WinEDDS
 				Case Else
 					settings.Overlay = EDDS.WebAPI.BulkImportManagerBase.OverwriteType.Both
 			End Select
-			settings.Repository = _defaultDestinationFolderPath
-			If settings.Repository = "" Then settings.Repository = _caseInfo.DocumentPath
 			settings.UploadFiles = _filePathColumnIndex <> -1
 			_runID = _bulkImportManager.BulkImportNative(_caseInfo.ArtifactID, settings).ToString
 			If Not lastRun Then
