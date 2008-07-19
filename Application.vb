@@ -222,7 +222,7 @@ Namespace kCura.EDDS.WinForm
 			Dim unselectedIDFieldNames As New System.Text.StringBuilder
 			For Each identifierFieldName In CurrentFields.IdentifierFieldNames()
 				For Each unselectedFieldName In unselectedFieldNames
-					If identifierFieldName = unselectedFieldName Then
+					If identifierFieldName.ToLower & " [identifier]" = unselectedFieldName Then
 						unselectedIDFieldNames.AppendFormat(unselectedFieldName & ChrW(13))
 					End If
 				Next
@@ -230,9 +230,23 @@ Namespace kCura.EDDS.WinForm
 			If unselectedIDFieldNames.Length = 0 Then
 				Return True
 			Else
-				Return MsgBox("The following identifier fields have not been mapped: " & ChrW(13) & unselectedIDFieldNames.ToString & _
-				 "Do you wish to continue?", MsgBoxStyle.YesNo, "Warning!") = MsgBoxResult.Yes
+				MsgBox("The following identifier fields have not been mapped: " & ChrW(13) & unselectedIDFieldNames.ToString & _
+				 "Do you wish to continue?", MsgBoxStyle.Critical, "Warning!")
+				Return False
 			End If
+		End Function
+
+		Friend Function ReadyToLoad(ByVal loadFile As WinEDDS.LoadFile) As Boolean
+			Dim isIdentifierMapped As Boolean = False
+			For Each fieldMapItem As LoadFileFieldMap.LoadFileFieldMapItem In loadFile.FieldMap
+				If fieldMapItem.DocumentField.FieldCategory = DynamicFields.Types.FieldCategory.Identifier AndAlso fieldMapItem.NativeFileColumnIndex <> -1 Then
+					isIdentifierMapped = True
+				End If
+			Next
+			If Not isIdentifierMapped Then
+				MsgBox("The identifier field [" & Me.CurrentFields.IdentifierFieldNames(0) & "] is unmapped.  Please map it to continue", MsgBoxStyle.Critical)
+			End If
+			Return isIdentifierMapped
 		End Function
 #End Region
 

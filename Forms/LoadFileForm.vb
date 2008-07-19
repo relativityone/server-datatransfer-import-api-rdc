@@ -706,6 +706,10 @@ Namespace kCura.EDDS.WinForm
 			End Get
 		End Property
 
+		Private Function IsIdentifierMapped() As Boolean
+
+		End Function
+
 		Private Function GetOverwrite() As String
 			Select Case _overwriteDropdown.SelectedItem.ToString.ToLower
 				Case "append only"
@@ -1018,7 +1022,7 @@ Namespace kCura.EDDS.WinForm
 
 		Private Sub ImportFileMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ImportFileMenu.Click
 			PopulateLoadFileObject()
-			If _application.ReadyToLoad(Utility.ExtractFieldNames(_fieldMap.LeftListBoxItems)) Then
+			If _application.ReadyToLoad(Utility.ExtractFieldNames(_fieldMap.LeftListBoxItems)) AndAlso _application.ReadyToLoad(Me.LoadFile) Then
 				_application.ImportLoadFile(Me.LoadFile)
 			End If
 		End Sub
@@ -1064,7 +1068,7 @@ Namespace kCura.EDDS.WinForm
 		Private Sub PreviewMenuFile_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles PreviewMenuFile.Click
 			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
 			PopulateLoadFileObject()
-			_application.PreviewLoadFile(_loadFile, False)
+			If _application.ReadyToLoad(Me.LoadFile) Then _application.PreviewLoadFile(_loadFile, False)
 			Me.Cursor = System.Windows.Forms.Cursors.Default
 		End Sub
 
