@@ -541,7 +541,21 @@ Namespace kCura.WinEDDS
 					_outputNativeFileWriter.Write(codes(1))
 					_outputNativeFileWriter.Write(Constants.NATIVE_FIELD_DELIMITER)
 				Else
-					_outputNativeFileWriter.Write(docField.Value)
+					If docField.FieldCategory = DynamicFields.Types.FieldCategory.FullText AndAlso _fullTextColumnMapsToFileLocation Then
+						If docField.Value = "" Then
+							'do nothing
+						Else
+							Dim sr As New System.IO.StreamReader(docField.Value, _extractedTextFileEncoding, True)
+							Dim count As Int32 = 1
+							Do
+								Dim buff(1000000) As Char
+								count = sr.ReadBlock(buff, 0, 1000000)
+								_outputNativeFileWriter.Write(buff)
+							Loop Until count = 0
+						End If
+					Else
+						_outputCodeFileWriter.Write(docField.Value)
+					End If
 					_outputNativeFileWriter.Write(Constants.NATIVE_FIELD_DELIMITER)
 				End If
 			Next
