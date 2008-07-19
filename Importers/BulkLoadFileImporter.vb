@@ -554,7 +554,7 @@ Namespace kCura.WinEDDS
 							Loop Until count = 0
 						End If
 					Else
-						_outputCodeFileWriter.Write(docField.Value)
+						_outputNativeFileWriter.Write(docField.Value)
 					End If
 					_outputNativeFileWriter.Write(Constants.NATIVE_FIELD_DELIMITER)
 				End If
