@@ -240,10 +240,18 @@ Namespace kCura.WinEDDS
 			If _uploadFiles Then
 				If _nativeFileCheckColumnName = "" Then Me.SetNativeFileCheckColumnName(retval)
 				Dim filePath As String = values(_filePathColumnIndex)
+				Dim existsFilePath As String
+				If filePath.Length > 1 Then
+					If filePath.Chars(0) = "\"c AndAlso Not filePath.Chars(1) = "\" Then
+						existsFilePath = "." & filePath
+					Else
+						existsFilePath = filePath
+					End If
+				End If
 				Dim docfield As New DocumentField(_nativeFileCheckColumnName, -1, -1, -1, NullableInt32.Null, NullableInt32.Null, False)
 				If filePath = "" Then
 					docfield.Value = "No File Specified."
-				ElseIf Not System.IO.File.Exists(filePath) Then
+				ElseIf Not System.IO.File.Exists(existsFilePath) Then
 					docfield.Value = String.Format("Error: file '{0}' does not exist", filePath)
 					lineContainsErrors = True
 				Else
