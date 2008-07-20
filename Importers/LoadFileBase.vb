@@ -233,6 +233,10 @@ Namespace kCura.WinEDDS
 					field.Value = fieldValue
 					If TypeOf Me Is BulkLoadFileImporter Then
 						fieldValue = ChrW(11) & value.Trim & ChrW(11)
+						field.Value = fieldValue
+						If Not value.Trim = "" Then
+							DirectCast(Me, BulkLoadFileImporter).WriteCodeLineToTempFile(identityValue, Int32.Parse(fieldValue), field.CodeTypeID.Value)
+						End If
 					End If
 				Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.MultiCode
 					If value = String.Empty Then
@@ -355,22 +359,26 @@ Namespace kCura.WinEDDS
 						End If
 				End Select
 			End Try
-			If nullableDateValue.IsNull Then Return nullableDateValue
-			Dim datevalue As DateTime
-			datevalue = nullableDateValue.Value
-			Dim timeZoneOffset As Int32 = 0
-			If Me.UseTimeZoneOffset Then
-				timeZoneOffset = _timeZoneOffset
-			End If
-			If datevalue.TimeOfDay.Ticks = 0 Then
-				datevalue = datevalue.AddHours(12 - timeZoneOffset)
-			Else
-				datevalue = datevalue.AddHours(0 - timeZoneOffset)
-			End If
-			If datevalue < DateTime.Parse("1/1/1753") Then
+			Try
+				If nullableDateValue.IsNull Then Return nullableDateValue
+				Dim datevalue As DateTime
+				datevalue = nullableDateValue.Value
+				Dim timeZoneOffset As Int32 = 0
+				If Me.UseTimeZoneOffset Then
+					timeZoneOffset = _timeZoneOffset
+				End If
+				If datevalue.TimeOfDay.Ticks = 0 Then
+					datevalue = datevalue.AddHours(12 - timeZoneOffset)
+				Else
+					datevalue = datevalue.AddHours(0 - timeZoneOffset)
+				End If
+				If datevalue < DateTime.Parse("1/1/1753") Then
+					Throw New kCura.Utility.DelimitedFileImporter.DateException(Me.CurrentLineNumber, column)
+				End If
+				Return New NullableDateTime(datevalue)
+			Catch ex As Exception
 				Throw New kCura.Utility.DelimitedFileImporter.DateException(Me.CurrentLineNumber, column)
-			End If
-			Return New NullableDateTime(datevalue)
+			End Try
 		End Function
 
 		Public Function GetGroupIdentifierField(ByVal value As String, ByVal column As Int32, ByVal fieldLength As Int32) As NullableString
