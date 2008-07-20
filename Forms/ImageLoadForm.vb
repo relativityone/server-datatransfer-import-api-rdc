@@ -416,15 +416,18 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 		Private Sub ReadyToRun()
+			Dim rtr As Boolean = False
 			If ImageLoadFile.ForProduction Then
 				If TypeOf _productionDropdown.SelectedValue Is Int32 AndAlso TypeOf _beginBatesDropdown.SelectedValue Is Int32 Then
-					ImportFileMenu.Enabled = (System.IO.File.Exists(_imageLoadFile.FileName) And CType(_productionDropdown.SelectedValue, Int32) > 0 And CType(_beginBatesDropdown.SelectedValue, Int32) > 0)
+					rtr = (System.IO.File.Exists(_imageLoadFile.FileName) And CType(_productionDropdown.SelectedValue, Int32) > 0 And CType(_beginBatesDropdown.SelectedValue, Int32) > 0)
 				Else
-					ImportFileMenu.Enabled = False
+					rtr = False
 				End If
 			Else
-				ImportFileMenu.Enabled = (System.IO.File.Exists(_imageLoadFile.FileName))
+				rtr = (System.IO.File.Exists(_imageLoadFile.FileName))
 			End If
+			ImportFileMenu.Enabled = rtr
+			_importMenuCheckErrorsItem.Enabled = rtr
 		End Sub
 
 		Private Sub _importMenuSaveSettingsItem_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles _importMenuSaveSettingsItem.Click
