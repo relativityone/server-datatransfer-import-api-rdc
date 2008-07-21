@@ -345,14 +345,14 @@ Namespace kCura.EDDS.WebAPI.DocumentManagerBase
         '<remarks/>
         <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://foley.com/EDDS/DocumentManager/ReadAsNameValueCollectionFromLayoutArtifact"& _ 
 "ID", RequestNamespace:="http://foley.com/EDDS/DocumentManager", ResponseNamespace:="http://foley.com/EDDS/DocumentManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
-        Public Function ReadAsNameValueCollectionFromLayoutArtifactID(ByVal caseContextArtifactID As Integer, ByVal artifactID As Integer, ByVal layoutArtifactID As Integer) As NameValuePair()
-            Dim results() As Object = Me.Invoke("ReadAsNameValueCollectionFromLayoutArtifactID", New Object() {caseContextArtifactID, artifactID, layoutArtifactID})
+        Public Function ReadAsNameValueCollectionFromLayoutArtifactID(ByVal caseContextArtifactID As Integer, ByVal artifactID As Integer, ByVal layoutArtifactID As Integer, ByVal utcOffset As Integer, ByVal locale As String) As NameValuePair()
+            Dim results() As Object = Me.Invoke("ReadAsNameValueCollectionFromLayoutArtifactID", New Object() {caseContextArtifactID, artifactID, layoutArtifactID, utcOffset, locale})
             Return CType(results(0),NameValuePair())
         End Function
         
         '<remarks/>
-        Public Function BeginReadAsNameValueCollectionFromLayoutArtifactID(ByVal caseContextArtifactID As Integer, ByVal artifactID As Integer, ByVal layoutArtifactID As Integer, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
-            Return Me.BeginInvoke("ReadAsNameValueCollectionFromLayoutArtifactID", New Object() {caseContextArtifactID, artifactID, layoutArtifactID}, callback, asyncState)
+        Public Function BeginReadAsNameValueCollectionFromLayoutArtifactID(ByVal caseContextArtifactID As Integer, ByVal artifactID As Integer, ByVal layoutArtifactID As Integer, ByVal utcOffset As Integer, ByVal locale As String, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("ReadAsNameValueCollectionFromLayoutArtifactID", New Object() {caseContextArtifactID, artifactID, layoutArtifactID, utcOffset, locale}, callback, asyncState)
         End Function
         
         '<remarks/>
@@ -535,6 +535,9 @@ Namespace kCura.EDDS.WebAPI.DocumentManagerBase
         Public FieldDisplayTypeID As Integer
         
         '<remarks/>
+        Public Rows As Integer
+        
+        '<remarks/>
         Public IsLinked As Boolean
         
         '<remarks/>
@@ -556,9 +559,6 @@ Namespace kCura.EDDS.WebAPI.DocumentManagerBase
         Public IsIndexEnabled As Boolean
         
         '<remarks/>
-        Public IsConceptualEnabled As Boolean
-        
-        '<remarks/>
         Public DisplayValueTrue As String
         
         '<remarks/>
@@ -569,12 +569,6 @@ Namespace kCura.EDDS.WebAPI.DocumentManagerBase
         
         '<remarks/>
         Public Wrapping As Boolean
-        
-        '<remarks/>
-        Public PropogateValueToAllDuplicates As Boolean
-        
-        '<remarks/>
-        Public PropogateValueToEntireGroup As Boolean
         
         '<remarks/>
         Public LinkLayoutArtifactID As Integer

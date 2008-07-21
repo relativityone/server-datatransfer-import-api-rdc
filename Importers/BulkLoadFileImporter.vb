@@ -534,7 +534,7 @@ Namespace kCura.WinEDDS
 			End If
 			_outputNativeFileWriter.Write(mdoc.ParentFolderID & Constants.NATIVE_FIELD_DELIMITER)
 			For Each docField As DocumentField In fieldCollection.AllFields
-				If docField.FieldTypeID = kCura.DynamicFields.Types.FieldTypeHelper.FieldType.MultiCode Then
+				If docField.FieldTypeID = kCura.DynamicFields.Types.FieldTypeHelper.FieldType.MultiCode OrElse docField.FieldTypeID = kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Code Then
 					Dim codes As String() = docField.Value.Split(ChrW(20))
 					_outputNativeFileWriter.Write(codes(0))
 					_outputNativeFileWriter.Write(Constants.NATIVE_FIELD_DELIMITER)

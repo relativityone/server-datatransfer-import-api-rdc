@@ -235,7 +235,9 @@ Namespace kCura.WinEDDS
 						fieldValue = ChrW(11) & value.Trim & ChrW(11)
 						field.Value = fieldValue
 						If Not value.Trim = "" Then
-							DirectCast(Me, BulkLoadFileImporter).WriteCodeLineToTempFile(identityValue, Int32.Parse(fieldValue), field.CodeTypeID.Value)
+							DirectCast(Me, BulkLoadFileImporter).WriteCodeLineToTempFile(identityValue, Int32.Parse(kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(code)), field.CodeTypeID.Value)
+							Dim sb As New System.Text.StringBuilder
+							field.Value &= ChrW(20) & kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(code)
 						End If
 					End If
 				Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.MultiCode

@@ -140,6 +140,9 @@ Namespace kCura.EDDS.WebAPI.FieldManagerBase
         Public FieldDisplayTypeID As Integer
         
         '<remarks/>
+        Public Rows As Integer
+        
+        '<remarks/>
         Public IsLinked As Boolean
         
         '<remarks/>
@@ -161,9 +164,6 @@ Namespace kCura.EDDS.WebAPI.FieldManagerBase
         Public IsIndexEnabled As Boolean
         
         '<remarks/>
-        Public IsConceptualEnabled As Boolean
-        
-        '<remarks/>
         Public DisplayValueTrue As String
         
         '<remarks/>
@@ -174,12 +174,6 @@ Namespace kCura.EDDS.WebAPI.FieldManagerBase
         
         '<remarks/>
         Public Wrapping As Boolean
-        
-        '<remarks/>
-        Public PropogateValueToAllDuplicates As Boolean
-        
-        '<remarks/>
-        Public PropogateValueToEntireGroup As Boolean
         
         '<remarks/>
         Public LinkLayoutArtifactID As Integer
