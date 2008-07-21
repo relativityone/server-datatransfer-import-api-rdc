@@ -123,7 +123,7 @@ Namespace kCura.WinEDDS
 
 		Public ReadOnly Property HasErrors() As Boolean
 			Get
-				Return _errorLogFileName <> ""
+				Return _bulkImportManager.NativeRunHasErrors(_caseInfo.ArtifactID, _runID)
 			End Get
 		End Property
 
