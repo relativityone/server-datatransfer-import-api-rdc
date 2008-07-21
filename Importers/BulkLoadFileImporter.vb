@@ -550,7 +550,7 @@ Namespace kCura.WinEDDS
 							Do
 								Dim buff(1000000) As Char
 								count = sr.ReadBlock(buff, 0, 1000000)
-								_outputNativeFileWriter.Write(buff)
+								If count > 0 Then _outputNativeFileWriter.Write(buff, 0, count)
 							Loop Until count = 0
 						End If
 					ElseIf docField.FieldTypeID = kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Boolean Then
