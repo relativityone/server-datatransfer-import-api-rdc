@@ -553,6 +553,14 @@ Namespace kCura.WinEDDS
 								_outputNativeFileWriter.Write(buff)
 							Loop Until count = 0
 						End If
+					ElseIf docField.FieldTypeID = kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Boolean Then
+						If docField.Value <> "" Then
+							If Boolean.Parse(docField.Value) Then
+								_outputNativeFileWriter.Write("1")
+							Else
+								_outputNativeFileWriter.Write("0")
+							End If
+						End If
 					Else
 						_outputNativeFileWriter.Write(docField.Value)
 					End If
