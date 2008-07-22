@@ -342,23 +342,28 @@ Namespace kCura.WinEDDS
 					Case "00/00/0000", "0/0/0000", "0/0/00", "00/00/00", "0/00", "0/0000", "00/00", "00/0000", "0"
 						nullableDateValue = NullableDateTime.Null
 					Case Else
-						If System.Text.RegularExpressions.Regex.IsMatch(value.Trim, "\d\d\d\d\d\d\d\d") Then
-							If value.Trim = "00000000" Then
-								nullableDateValue = NullableDateTime.Null
+						Try
+
+							If System.Text.RegularExpressions.Regex.IsMatch(value.Trim, "\d\d\d\d\d\d\d\d") Then
+								If value.Trim = "00000000" Then
+									nullableDateValue = NullableDateTime.Null
+								Else
+									Dim v As String = value.Trim
+									Dim year As Int32 = Int32.Parse(v.Substring(0, 4))
+									Dim month As Int32 = Int32.Parse(v.Substring(4, 2))
+									Dim day As Int32 = Int32.Parse(v.Substring(6, 2))
+									Try
+										nullableDateValue = New NullableDateTime(New System.DateTime(year, month, day))
+									Catch dx As System.Exception
+										Throw New kCura.Utility.DelimitedFileImporter.DateException(Me.CurrentLineNumber, column)
+									End Try
+								End If
 							Else
-								Dim v As String = value.Trim
-								Dim year As Int32 = Int32.Parse(v.Substring(0, 4))
-								Dim month As Int32 = Int32.Parse(v.Substring(4, 2))
-								Dim day As Int32 = Int32.Parse(v.Substring(6, 2))
-								Try
-									nullableDateValue = New NullableDateTime(New System.DateTime(year, month, day))
-								Catch dx As System.Exception
-									Throw New kCura.Utility.DelimitedFileImporter.DateException(Me.CurrentLineNumber, column)
-								End Try
+								Throw New kCura.Utility.DelimitedFileImporter.DateException(Me.CurrentLineNumber, column)
 							End If
-						Else
+						Catch
 							Throw New kCura.Utility.DelimitedFileImporter.DateException(Me.CurrentLineNumber, column)
-						End If
+						End Try
 				End Select
 			End Try
 			Try
