@@ -7,7 +7,6 @@ Namespace kCura.EDDS.WinForm
 		Protected Sub New()
 			_processPool = New kCura.Windows.Process.ProcessPool
 			Dim currentZone As System.TimeZone = System.TimeZone.CurrentTimeZone
-			_timeZoneOffset = currentZone.GetUtcOffset(DateTime.Now).Hours
 
 			'If currentZone.IsDaylightSavingTime(DateTime.Now) Then
 			'	_timeZoneOffset -= 1
@@ -1077,6 +1076,7 @@ Namespace kCura.EDDS.WinForm
 					_credential = cred
 					kCura.WinEDDS.Service.Settings.AuthenticationToken = userManager.GetLatestAuthenticationToken()
 					If openCaseSelector Then OpenCase()
+					_timeZoneOffset = New kCura.WinEDDS.Service.RelativityManager(cred, _cookieContainer).GetServerTimezoneOffset
 				Else
 					Me.ReLogin("Invalid login. Try again?")
 				End If
