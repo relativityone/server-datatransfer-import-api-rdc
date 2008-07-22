@@ -1,7 +1,7 @@
 <VisualStudioProject>
     <VisualBasic
         ProjectType = "Local"
-        ProductVersion = "7.10.6030"
+        ProductVersion = "7.10.3077"
         SchemaVersion = "2.0"
         ProjectGuid = "{CDEB4462-2D7B-4244-8640-11BC743CD002}"
     >
@@ -215,6 +215,31 @@
                     RelPath = "Controls\CaseFolderExplorer.xsx"
                     DependentUpon = "CaseFolderExplorer.resx"
                     BuildAction = "None"
+                />
+                <File
+                    RelPath = "Controls\Constants.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Controls\EncodingForm.vb"
+                    SubType = "Form"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Controls\EncodingForm.resx"
+                    DependentUpon = "EncodingForm.vb"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "Controls\EncodingPicker.vb"
+                    SubType = "UserControl"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Controls\EncodingPicker.resx"
+                    DependentUpon = "EncodingPicker.vb"
+                    BuildAction = "EmbeddedResource"
                 />
                 <File
                     RelPath = "Forms\AdvancedFileLocation.vb"

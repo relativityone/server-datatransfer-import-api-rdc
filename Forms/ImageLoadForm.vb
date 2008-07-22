@@ -517,12 +517,14 @@ Namespace kCura.EDDS.WinForm
 		Private Sub _toolsMenuSettingsItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _toolsMenuSettingsItem.Click
 			_settingsForm = New kCura.EDDS.WinForm.ImageImportSettingsForm
 			_settingsForm._supportImageAutoNumbering.Checked = Me.ImageLoadFile.AutoNumberImages
+			_settingsForm.SelectedEncoding = Me.ImageLoadFile.FullTextEncoding
 			_settingsForm.ShowDialog()
 		End Sub
 
 
-		Private Sub _settingsForm_ImportSettingsFormOK(ByVal args As Boolean) Handles _settingsForm.ImportSettingsFormOK
-			Me.ImageLoadFile.AutoNumberImages = args
+		Private Sub _settingsForm_ImportSettingsFormOK(ByVal args As ImageImportSettingsForm.SettingsFormArgs) Handles _settingsForm.ImportSettingsFormOK
+			Me.ImageLoadFile.AutoNumberImages = args.SupportAutoNumbering
+			Me.ImageLoadFile.FullTextEncoding = args.SelectedFullTextEncoding
 		End Sub
 
 		Private Sub _advancedButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _advancedButton.Click

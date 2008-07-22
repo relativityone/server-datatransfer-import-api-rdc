@@ -650,6 +650,7 @@ Namespace kCura.EDDS.WinForm
 				imageFile.SelectedCasePath = caseinfo.DocumentPath
 				imageFile.DestinationFolderID = destinationArtifactID
 				imageFile.ForProduction = False
+				imageFile.FullTextEncoding = System.Text.Encoding.Default
 				frm.ImageLoadFile = imageFile
 			Catch ex As System.Exception
 				Throw
