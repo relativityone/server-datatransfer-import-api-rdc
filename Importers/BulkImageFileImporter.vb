@@ -40,6 +40,7 @@ Namespace kCura.WinEDDS
 		Private _sourceTextEncoding As System.Text.Encoding = System.Text.Encoding.Default
 		Private _uploadKey As String = ""
 		Private _runId As String = ""
+		Private _settings As ImageLoadFile
 #End Region
 
 #Region "Accessors"
@@ -99,6 +100,7 @@ Namespace kCura.WinEDDS
 			_continue = True
 			_autoNumberImages = args.AutoNumberImages
 			_caseInfo = args.CaseInfo
+			_settings = args
 		End Sub
 
 #End Region
@@ -315,7 +317,7 @@ Namespace kCura.WinEDDS
 					Me.GetImageForDocument(Me.GetFileLocation(valueArray), valueArray(Columns.BatesNumber), documentId, i, offset, textFileList, i < lines.Count - 1, valueArray(valueArray.Length - 1), status)
 				Next
 				For Each filename As String In textFileList
-					With New System.IO.StreamReader(filename, _sourceTextEncoding, True)
+					With New System.IO.StreamReader(filename, _settings.FullTextEncoding, True)
 						_bulkLoadFileWriter.Write(.ReadToEnd)
 						.Close()
 					End With

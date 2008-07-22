@@ -308,7 +308,7 @@ Namespace kCura.WinEDDS
 							Throw New MissingFullTextFileException(Me.CurrentLineNumber, column)
 						Else
 							If forPreview Then
-								Dim sr As New System.IO.StreamReader(value, _sourceFileEncoding, True)
+								Dim sr As New System.IO.StreamReader(value, _extractedTextFileEncoding)
 								Dim i As Int32 = 0
 								Dim sb As New System.Text.StringBuilder
 								While sr.Peek <> -1 AndAlso i < 100

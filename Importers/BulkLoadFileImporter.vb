@@ -545,7 +545,7 @@ Namespace kCura.WinEDDS
 						If docField.Value = "" Then
 							'do nothing
 						Else
-							Dim sr As New System.IO.StreamReader(docField.Value, _extractedTextFileEncoding, True)
+							Dim sr As New System.IO.StreamReader(docField.Value, _extractedTextFileEncoding)
 							Dim count As Int32 = 1
 							Do
 								Dim buff(1000000) As Char
