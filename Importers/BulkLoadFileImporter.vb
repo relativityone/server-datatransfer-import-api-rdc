@@ -211,7 +211,6 @@ Namespace kCura.WinEDDS
 							lineStatus += ImportStatus.ColumnMismatch					 'Throw New ColumnCountMismatchException(Me.CurrentLineNumber, _columnHeaders.Length, line.Length)
 						End If
 						_processedDocumentIdentifiers.Add(ManageDocument(line, lineStatus), CurrentLineNumber.ToString)
-						_batchCounter += 1
 					Catch ex As LoadFileBase.CodeCreationException
 						_continue = False
 						WriteFatalError(Me.CurrentLineNumber, ex, line)
@@ -440,6 +439,7 @@ Namespace kCura.WinEDDS
 			Dim sw As System.IO.StreamWriter
 			Try
 				ManageDocumentLine(metaDoc, _extractFullTextFromNative)
+				_batchCounter += 1
 				If _outputNativeFileWriter.BaseStream.Length > Config.BulkImportBatchSize OrElse _batchCounter > Config.SearchExportChunkSize - 1 Then
 					Me.PushNativeBatch()
 				End If
@@ -454,6 +454,7 @@ Namespace kCura.WinEDDS
 		Private Function PushNativeBatch(Optional ByVal lastRun As Boolean = False) As Object
 			_outputNativeFileWriter.Close()
 			_outputCodeFileWriter.Close()
+			If _batchCounter = 0 Then Exit Function
 			_batchCounter = 0
 			Dim settings As New kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo
 			settings.UseBulkDataImport = True
@@ -481,6 +482,16 @@ Namespace kCura.WinEDDS
 			End Select
 			settings.UploadFiles = _filePathColumnIndex <> -1
 			_runID = _bulkImportManager.BulkImportNative(_caseInfo.ArtifactID, settings).ToString
+			Try
+				If System.IO.File.Exists(_outputNativeFilePath) Then System.IO.File.Delete(_outputNativeFilePath)
+			Catch ex As Exception
+				If System.IO.File.Exists(_outputNativeFilePath) Then System.IO.File.Delete(_outputNativeFilePath)
+			End Try
+			Try
+				If System.IO.File.Exists(_outputCodeFilePath) Then System.IO.File.Delete(_outputCodeFilePath)
+			Catch ex As Exception
+				If System.IO.File.Exists(_outputCodeFilePath) Then System.IO.File.Delete(_outputCodeFilePath)
+			End Try
 			If Not lastRun Then
 				_outputNativeFileWriter = New System.IO.StreamWriter(_outputNativeFilePath, False, System.Text.Encoding.Unicode)
 				_outputCodeFileWriter = New System.IO.StreamWriter(_outputCodeFilePath, False, System.Text.Encoding.Unicode)

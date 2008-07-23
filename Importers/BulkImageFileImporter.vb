@@ -137,8 +137,10 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Public Function PushImageBatch(ByVal bulkLoadFilePath As String, ByVal isFinal As Boolean) As Object
-			_batchCount = 0
 			_bulkLoadFileWriter.Close()
+			If _batchCount = 0 Then Exit Function
+
+			_batchCount = 0
 
 			_uploadKey = _fileUploader.UploadBcpFile(_caseInfo.ArtifactID, bulkLoadFilePath)
 			'_uploadKey = ""
@@ -386,6 +388,7 @@ Namespace kCura.WinEDDS
 				If writeLineTermination Then
 					_bulkLoadFileWriter.Write(kCura.EDDS.Types.Constants.ENDLINETERMSTRING)
 				End If
+				_batchCount += 1
 			Catch ex As Exception
 				Throw
 			End Try
