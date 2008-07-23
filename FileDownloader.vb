@@ -62,8 +62,9 @@ Namespace kCura.WinEDDS
 				Return _type
 			End Get
 			Set(ByVal value As FileAccessType)
+				Dim doevent As Boolean = _type <> value
 				_type = value
-				RaiseEvent UploadModeChangeEvent(value.ToString)
+				If doevent Then RaiseEvent UploadModeChangeEvent(value.ToString)
 			End Set
 		End Property
 

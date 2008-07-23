@@ -218,6 +218,7 @@ Namespace kCura.WinEDDS
 					Try
 						_downloadManager.DownloadFullTextFile(tempLocalFullTextFilePath, documentInfo.DocumentArtifactID, _settings.CaseInfo.ArtifactID.ToString)
 					Catch ex As System.Exception
+						_parent.WriteStatusLine(Windows.Process.EventType.Progress, "Second attempt to download full text for document " & documentInfo.IdentifierValue, True)
 						_downloadManager.DownloadFullTextFile(tempLocalFullTextFilePath, documentInfo.DocumentArtifactID, _settings.CaseInfo.ArtifactID.ToString)
 					End Try
 				End If
@@ -361,6 +362,7 @@ Namespace kCura.WinEDDS
 			Try
 				_downloadManager.DownloadFile(tempFile, image.FileGuid, image.SourceLocation, image.ArtifactID, _settings.CaseArtifactID.ToString)
 			Catch ex As System.Exception
+				_parent.WriteStatusLine(Windows.Process.EventType.Progress, "Second attempt to download image " & image.BatesNumber, True)
 				_downloadManager.DownloadFile(tempFile, image.FileGuid, image.SourceLocation, image.ArtifactID, _settings.CaseArtifactID.ToString)
 			End Try
 			image.TempLocation = tempFile
@@ -504,6 +506,7 @@ Namespace kCura.WinEDDS
 			Try
 				_downloadManager.DownloadFile(tempFile, docinfo.NativeFileGuid, docinfo.NativeSourceLocation, docinfo.DocumentArtifactID, _settings.CaseArtifactID.ToString)
 			Catch ex As System.Exception
+				_parent.WriteStatusLine(Windows.Process.EventType.Progress, "Second attempt to download native for document " & docinfo.IdentifierValue, True)
 				_downloadManager.DownloadFile(tempFile, docinfo.NativeFileGuid, docinfo.NativeSourceLocation, docinfo.DocumentArtifactID, _settings.CaseArtifactID.ToString)
 			End Try
 			docinfo.NativeTempLocation = tempFile

@@ -16,7 +16,7 @@ Namespace kCura.WinEDDS
 		Public TotalDocuments As Int32
 		Private _fullTextDownloader As kCura.WinEDDS.FullTextManager
 		Private WithEvents _processController As kCura.Windows.Process.Controller
-		Private _downloadHandler As FileDownloader
+		Private WithEvents _downloadHandler As FileDownloader
 		Private _halt As Boolean
 		Private _volumeManager As VolumeManager
 		Private _productionManager As kCura.WinEDDS.Service.ProductionManager
@@ -503,6 +503,12 @@ Namespace kCura.WinEDDS
 
 		Private Sub _processController_HaltProcessEvent(ByVal processID As System.Guid) Handles _processController.HaltProcessEvent
 			_halt = True
+		End Sub
+
+		Public Event UploadModeChangeEvent(ByVal mode As String)
+
+		Private Sub _downloadHandler_UploadModeChangeEvent(ByVal mode As String) Handles _downloadHandler.UploadModeChangeEvent
+			RaiseEvent FileTransferModeChangeEvent(_downloadHandler.UploaderType.ToString)
 		End Sub
 	End Class
 End Namespace

@@ -45,5 +45,6 @@ Namespace kCura.WinEDDS
 		Private Sub _productionExporter_FatalErrorEvent(ByVal message As String, ByVal ex As System.Exception) Handles _searchExporter.FatalErrorEvent
 			Me.ProcessObserver.RaiseFatalExceptionEvent(ex)
 		End Sub
+
 	End Class
 End Namespace
