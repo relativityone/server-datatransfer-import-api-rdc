@@ -113,11 +113,11 @@ Namespace kCura.WinEDDS
 						Return newFileName
 					Catch ex As System.Exception
 						tries -= 1
-						If TypeOf ex Is System.IO.IOException AndAlso ex.Message.ToLower.IndexOf("the specified network name is no longer available") > -1 AndAlso tries > 0 Then
-							RaiseEvent UploadStatusEvent("Error connecting to network name. " & tries & " tries left.  Retrying in 30 seconds")
+						If TypeOf ex Is System.IO.IOException AndAlso tries > 0 Then
+							RaiseEvent UploadStatusEvent("Network file transfer error. Retrying in 30 seconds. " & tries & " tries left.")
 							System.Threading.Thread.CurrentThread.Join(30000)
 						Else
-							RaiseEvent UploadStatusEvent("Error Uploading File: " & ex.Message & System.Environment.NewLine & ex.ToString)						 'TODO: Change this to a separate error-type event'
+							RaiseEvent UploadStatusEvent("Error Uploading File: " & ex.Message & System.Environment.NewLine & ex.ToString)							'TODO: Change this to a separate error-type event'
 							Throw New ApplicationException("Error Uploading File", ex)
 						End If
 					End Try
