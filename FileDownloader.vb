@@ -94,6 +94,11 @@ Namespace kCura.WinEDDS
 
 		Public Function DownloadFile(ByVal localFilePath As String, ByVal remoteFileGuid As String, ByVal remoteLocation As String, ByVal artifactID As Int32, ByVal appID As String) As Boolean
 			'If Me.UploaderType = Type.Web Then
+			If remoteLocation.Length > 7 Then
+				If remoteLocation.Substring(0, 7).ToLower = "file://" Then
+					remoteLocation = remoteLocation.Substring(7)
+				End If
+			End If
 			Dim remoteLocationKey As String = remoteLocation.Substring(0, remoteLocation.LastIndexOf("\")).TrimEnd("\"c) & "\"
 			If _locationAccessMatrix.Contains(remoteLocationKey) Then
 				Select Case CType(_locationAccessMatrix(remoteLocationKey), FileAccessType)
