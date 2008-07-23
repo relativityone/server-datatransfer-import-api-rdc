@@ -41,6 +41,7 @@ Namespace kCura.WinEDDS
 		Private _uploadKey As String = ""
 		Private _runId As String = ""
 		Private _settings As ImageLoadFile
+		Private _batchCount As Int32 = 0
 #End Region
 
 #Region "Accessors"
@@ -127,7 +128,7 @@ Namespace kCura.WinEDDS
 				Me.ProcessDocument(al, status)
 				al.Clear()
 				status = 0
-				If _bulkLoadFileWriter.BaseStream.Length > Config.BulkImportBatchSize Then
+				If _bulkLoadFileWriter.BaseStream.Length > Config.BulkImportBatchSize OrElse _batchCount > Config.SearchExportChunkSize - 1 Then
 					Me.PushImageBatch(bulkLoadFilePath, False)
 				End If
 			Catch ex As Exception
@@ -136,7 +137,7 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Public Function PushImageBatch(ByVal bulkLoadFilePath As String, ByVal isFinal As Boolean) As Object
-
+			_batchCount = 0
 			_bulkLoadFileWriter.Close()
 
 			_uploadKey = _fileUploader.UploadBcpFile(_caseInfo.ArtifactID, bulkLoadFilePath)

@@ -53,6 +53,7 @@ Namespace kCura.WinEDDS
 		Private _outputCodeFilePath As String = System.IO.Path.GetTempFileName
 		Private _filePath As String
 		Private _settings As kCura.WinEDDS.LoadFile
+		Private _batchCounter As Int32 = 0
 
 #End Region
 
@@ -210,6 +211,7 @@ Namespace kCura.WinEDDS
 							lineStatus += ImportStatus.ColumnMismatch					 'Throw New ColumnCountMismatchException(Me.CurrentLineNumber, _columnHeaders.Length, line.Length)
 						End If
 						_processedDocumentIdentifiers.Add(ManageDocument(line, lineStatus), CurrentLineNumber.ToString)
+						_batchCounter += 1
 					Catch ex As LoadFileBase.CodeCreationException
 						_continue = False
 						WriteFatalError(Me.CurrentLineNumber, ex, line)
@@ -438,7 +440,7 @@ Namespace kCura.WinEDDS
 			Dim sw As System.IO.StreamWriter
 			Try
 				ManageDocumentLine(metaDoc, _extractFullTextFromNative)
-				If _outputNativeFileWriter.BaseStream.Length > Config.BulkImportBatchSize Then
+				If _outputNativeFileWriter.BaseStream.Length > Config.BulkImportBatchSize OrElse _batchCounter > Config.SearchExportChunkSize - 1 Then
 					Me.PushNativeBatch()
 				End If
 			Catch ex As kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
@@ -452,6 +454,7 @@ Namespace kCura.WinEDDS
 		Private Function PushNativeBatch(Optional ByVal lastRun As Boolean = False) As Object
 			_outputNativeFileWriter.Close()
 			_outputCodeFileWriter.Close()
+			_batchCounter = 0
 			Dim settings As New kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo
 			settings.UseBulkDataImport = True
 			Dim nativeFileUploadKey As String = _uploader.UploadBcpFile(_caseInfo.ArtifactID, _outputNativeFilePath)
