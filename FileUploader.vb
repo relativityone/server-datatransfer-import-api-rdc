@@ -101,18 +101,27 @@ Namespace kCura.WinEDDS
 				Return WebUploadFile(New System.IO.FileStream(filePath, IO.FileMode.Open, IO.FileAccess.Read), contextArtifactID, newFileName)
 			Else
 				Me.UploaderType = Type.Direct
+				Dim tries As Int32 = 20
 				'Dim newFileName As String = System.Guid.NewGuid.ToString
 				'Dim documentManager As New kCura.EDDS.WebAPI.DocumentManagerBase.DocumentManager
-				Try
-					If Not System.IO.Directory.Exists(_destinationFolderPath) Then
-						System.IO.Directory.CreateDirectory(_destinationFolderPath)
-					End If
-					System.IO.File.Copy(filePath, String.Format("{0}{1}", _destinationFolderPath, newFileName))
-					Return newFileName
-				Catch ex As System.Exception
-					RaiseEvent UploadStatusEvent("Error Uploading File: " & ex.Message & System.Environment.NewLine & ex.ToString)					'TODO: Change this to a separate error-type event'
-					Throw New ApplicationException("Error Uploading File", ex)
-				End Try
+				While tries > 0
+					Try
+						If Not System.IO.Directory.Exists(_destinationFolderPath) Then
+							System.IO.Directory.CreateDirectory(_destinationFolderPath)
+						End If
+						System.IO.File.Copy(filePath, String.Format("{0}{1}", _destinationFolderPath, newFileName))
+						Return newFileName
+					Catch ex As System.Exception
+						tries -= 1
+						If TypeOf ex Is System.IO.IOException AndAlso ex.Message.ToLower.IndexOf("the specified network name is no longer available") > -1 AndAlso tries > 0 Then
+							RaiseEvent UploadStatusEvent("Error connecting to network name. " & tries & " tries left.  Retrying in 30 seconds")
+							System.Threading.Thread.CurrentThread.Join(30000)
+						Else
+							RaiseEvent UploadStatusEvent("Error Uploading File: " & ex.Message & System.Environment.NewLine & ex.ToString)						 'TODO: Change this to a separate error-type event'
+							Throw New ApplicationException("Error Uploading File", ex)
+						End If
+					End Try
+				End While
 			End If
 		End Function
 
