@@ -177,10 +177,12 @@ Namespace kCura.WinEDDS
 						fileCount = 0
 					End If
 				Next
-				ExportChunk(DirectCast(artifactIDs.ToArray(GetType(Int32)), Int32()), DirectCast(docRows.ToArray(GetType(System.Data.DataRow)), System.Data.DataRow()))
-				artifactIDs.Clear()
-				docRows.Clear()
-				fileCount = 0
+				If docRows.Count > 0 Then
+					ExportChunk(DirectCast(artifactIDs.ToArray(GetType(Int32)), Int32()), DirectCast(docRows.ToArray(GetType(System.Data.DataRow)), System.Data.DataRow()))
+					artifactIDs.Clear()
+					docRows.Clear()
+					fileCount = 0
+				End If
 				If _halt Then Exit For
 			Next
 			_timekeeper.GenerateCsvReportItemsAsRows()
