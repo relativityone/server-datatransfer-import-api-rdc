@@ -80,8 +80,11 @@ Namespace kCura.WinEDDS
 
 		Public Function UploadBcpFile(ByVal appID As Int32, ByVal localFilePath As String) As String		'upload return args
 			Try
+				Dim oldDestinationFolderPath As String = String.Copy(_destinationFolderPath)
 				_destinationFolderPath = _gateway.GetBcpSharePath(appID)
-				Return Me.UploadFile(localFilePath, appID)
+				Dim retval As String = Me.UploadFile(localFilePath, appID)
+				_destinationFolderPath = oldDestinationFolderPath
+				Return retval
 			Catch ex As Exception
 				If ex.ToString.ToLower.IndexOf("nobcpdirectoryexception") <> -1 Then
 					Return String.Empty
@@ -109,7 +112,7 @@ Namespace kCura.WinEDDS
 						If Not System.IO.Directory.Exists(_destinationFolderPath) Then
 							System.IO.Directory.CreateDirectory(_destinationFolderPath)
 						End If
-						System.IO.File.Copy(filePath, String.Format("{0}{1}", _destinationFolderPath, newFileName))
+						System.IO.File.Copy(filePath, String.Format("{0}{1}", _destinationFolderPath, newFileName), tries < 20)
 						Return newFileName
 					Catch ex As System.Exception
 						tries -= 1
