@@ -114,7 +114,7 @@ Namespace kCura.WinEDDS
 					Catch ex As System.Exception
 						tries -= 1
 						If TypeOf ex Is System.IO.IOException AndAlso tries > 0 Then
-							RaiseEvent UploadWarningEvent("Network upload failed. Retrying in 30 seconds. " & tries & " tries left.")
+							RaiseEvent UploadWarningEvent("Network upload failed: " & ex.Message & " - Retrying in 30 seconds. " & tries & " tries left.")
 							System.Threading.Thread.CurrentThread.Join(30000)
 						Else
 							RaiseEvent UploadStatusEvent("Error Uploading File: " & ex.Message & System.Environment.NewLine & ex.ToString)							'TODO: Change this to a separate error-type event'

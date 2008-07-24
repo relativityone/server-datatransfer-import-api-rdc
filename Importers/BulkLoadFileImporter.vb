@@ -482,6 +482,7 @@ Namespace kCura.WinEDDS
 			End Select
 			settings.UploadFiles = _filePathColumnIndex <> -1
 			_runID = _bulkImportManager.BulkImportNative(_caseInfo.ArtifactID, settings).ToString
+
 			Try
 				If System.IO.File.Exists(_outputNativeFilePath) Then System.IO.File.Delete(_outputNativeFilePath)
 			Catch ex As Exception
