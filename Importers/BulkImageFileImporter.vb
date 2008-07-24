@@ -352,6 +352,7 @@ Namespace kCura.WinEDDS
 				Dim fileGuid As String = ""
 				Dim fileLocation As String = imageFileName
 				Dim fileSize As Int64 = 0
+				_batchCount += 1
 				If status = 0 Then
 					If _copyFilesToRepository Then
 						RaiseStatusEvent(kCura.Windows.Process.EventType.Progress, String.Format("Uploading File '{0}'.", filename))
@@ -388,7 +389,6 @@ Namespace kCura.WinEDDS
 				If writeLineTermination Then
 					_bulkLoadFileWriter.Write(kCura.EDDS.Types.Constants.ENDLINETERMSTRING)
 				End If
-				_batchCount += 1
 			Catch ex As Exception
 				Throw
 			End Try
