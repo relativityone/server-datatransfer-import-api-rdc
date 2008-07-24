@@ -330,8 +330,8 @@ Namespace kCura.EDDS.WinForm
 			'_filePath
 			'
 			Me._filePath.BackColor = System.Drawing.SystemColors.ControlLightLight
-			Me._filePath.Enabled = False
 			Me._filePath.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+			Me._filePath.ForeColor = System.Drawing.SystemColors.ControlDarkDark
 			Me._filePath.Location = New System.Drawing.Point(8, 16)
 			Me._filePath.Name = "_filePath"
 			Me._filePath.Size = New System.Drawing.Size(680, 20)
@@ -636,11 +636,11 @@ Namespace kCura.EDDS.WinForm
 			'_fileColumns
 			'
 			Me._fileColumns.KeepButtonsCentered = True
-			Me._fileColumns.LeftOrderControlsVisible = False
+			Me._fileColumns.LeftOrderControlsVisible = True
 			Me._fileColumns.Location = New System.Drawing.Point(372, 148)
 			Me._fileColumns.Name = "_fileColumns"
 			Me._fileColumns.RightOrderControlVisible = False
-			Me._fileColumns.Size = New System.Drawing.Size(392, 276)
+			Me._fileColumns.Size = New System.Drawing.Size(388, 276)
 			Me._fileColumns.TabIndex = 2
 			'
 			'_fieldMap
@@ -649,8 +649,8 @@ Namespace kCura.EDDS.WinForm
 			Me._fieldMap.LeftOrderControlsVisible = False
 			Me._fieldMap.Location = New System.Drawing.Point(4, 148)
 			Me._fieldMap.Name = "_fieldMap"
-			Me._fieldMap.RightOrderControlVisible = False
-			Me._fieldMap.Size = New System.Drawing.Size(360, 276)
+			Me._fieldMap.RightOrderControlVisible = True
+			Me._fieldMap.Size = New System.Drawing.Size(364, 276)
 			Me._fieldMap.TabIndex = 1
 			'
 			'LoadFileForm
