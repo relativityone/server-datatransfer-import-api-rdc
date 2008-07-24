@@ -215,12 +215,24 @@ Namespace kCura.WinEDDS
 			If Me.Settings.ExportFullText OrElse Me.Settings.LogFileFormat = LoadFileType.FileFormat.IPRO_FullText Then
 				If documentInfo.HasFullText Then
 					tempLocalFullTextFilePath = System.IO.Path.GetTempFileName
-					Try
-						_downloadManager.DownloadFullTextFile(tempLocalFullTextFilePath, documentInfo.DocumentArtifactID, _settings.CaseInfo.ArtifactID.ToString)
-					Catch ex As System.Exception
-						_parent.WriteStatusLine(Windows.Process.EventType.Progress, "Second attempt to download full text for document " & documentInfo.IdentifierValue, True)
-						_downloadManager.DownloadFullTextFile(tempLocalFullTextFilePath, documentInfo.DocumentArtifactID, _settings.CaseInfo.ArtifactID.ToString)
-					End Try
+					Dim tries As Int32 = 20
+					While tries > 0
+						tries -= 1
+						Try
+							_downloadManager.DownloadFullTextFile(tempLocalFullTextFilePath, documentInfo.DocumentArtifactID, _settings.CaseInfo.ArtifactID.ToString)
+						Catch ex As System.Exception
+							If tries = 19 Then
+								_parent.WriteStatusLine(Windows.Process.EventType.Warning, "Second attempt to download full text for document " & documentInfo.IdentifierValue, True)
+								_downloadManager.DownloadFullTextFile(tempLocalFullTextFilePath, documentInfo.DocumentArtifactID, _settings.CaseInfo.ArtifactID.ToString)
+							ElseIf tries > 0 Then
+								_parent.WriteStatusLine(Windows.Process.EventType.Warning, "Additional attempt to download full text for document " & documentInfo.IdentifierValue & " failed - retrying in 30 seconds", True)
+								System.Threading.Thread.CurrentThread.Join(30000)
+								_downloadManager.DownloadFullTextFile(tempLocalFullTextFilePath, documentInfo.DocumentArtifactID, _settings.CaseInfo.ArtifactID.ToString)
+							Else
+								Throw
+							End If
+						End Try
+					End While
 				End If
 			End If
 			If Me.Settings.ExportImages Then
@@ -359,12 +371,24 @@ Namespace kCura.WinEDDS
 					Return 0
 				End If
 			End If
-			Try
-				_downloadManager.DownloadFile(tempFile, image.FileGuid, image.SourceLocation, image.ArtifactID, _settings.CaseArtifactID.ToString)
-			Catch ex As System.Exception
-				_parent.WriteStatusLine(Windows.Process.EventType.Progress, "Second attempt to download image " & image.BatesNumber, True)
-				_downloadManager.DownloadFile(tempFile, image.FileGuid, image.SourceLocation, image.ArtifactID, _settings.CaseArtifactID.ToString)
-			End Try
+			Dim tries As Int32 = 20
+			While tries > 0
+				tries -= 1
+				Try
+					_downloadManager.DownloadFile(tempFile, image.FileGuid, image.SourceLocation, image.ArtifactID, _settings.CaseArtifactID.ToString)
+				Catch ex As System.Exception
+					If tries = 19 Then
+						_parent.WriteStatusLine(Windows.Process.EventType.Warning, "Second attempt to download image " & image.BatesNumber, True)
+						_downloadManager.DownloadFile(tempFile, image.FileGuid, image.SourceLocation, image.ArtifactID, _settings.CaseArtifactID.ToString)
+					ElseIf tries > 0 Then
+						_parent.WriteStatusLine(Windows.Process.EventType.Warning, "Additional attempt to download image " & image.BatesNumber & " failed - retrying in 30 seconds", True)
+						System.Threading.Thread.CurrentThread.Join(30000)
+						_downloadManager.DownloadFile(tempFile, image.FileGuid, image.SourceLocation, image.ArtifactID, _settings.CaseArtifactID.ToString)
+					Else
+						Throw
+					End If
+				End Try
+			End While
 			image.TempLocation = tempFile
 			Return New System.IO.FileInfo(tempFile).Length
 		End Function
@@ -503,12 +527,24 @@ Namespace kCura.WinEDDS
 					Return 0
 				End If
 			End If
-			Try
-				_downloadManager.DownloadFile(tempFile, docinfo.NativeFileGuid, docinfo.NativeSourceLocation, docinfo.DocumentArtifactID, _settings.CaseArtifactID.ToString)
-			Catch ex As System.Exception
-				_parent.WriteStatusLine(Windows.Process.EventType.Progress, "Second attempt to download native for document " & docinfo.IdentifierValue, True)
-				_downloadManager.DownloadFile(tempFile, docinfo.NativeFileGuid, docinfo.NativeSourceLocation, docinfo.DocumentArtifactID, _settings.CaseArtifactID.ToString)
-			End Try
+			Dim tries As Int32 = 20
+			While tries > 0
+				tries -= 1
+				Try
+					_downloadManager.DownloadFile(tempFile, docinfo.NativeFileGuid, docinfo.NativeSourceLocation, docinfo.DocumentArtifactID, _settings.CaseArtifactID.ToString)
+				Catch ex As System.Exception
+					If tries = 19 Then
+						_parent.WriteStatusLine(Windows.Process.EventType.Warning, "Second attempt to download native for document " & docinfo.IdentifierValue, True)
+						_downloadManager.DownloadFile(tempFile, docinfo.NativeFileGuid, docinfo.NativeSourceLocation, docinfo.DocumentArtifactID, _settings.CaseArtifactID.ToString)
+					ElseIf tries > 0 Then
+						_parent.WriteStatusLine(Windows.Process.EventType.Warning, "Additional attempt to download native for document " & docinfo.IdentifierValue & " failed - retrying in 30 seconds", True)
+						System.Threading.Thread.CurrentThread.Join(30000)
+						_downloadManager.DownloadFile(tempFile, docinfo.NativeFileGuid, docinfo.NativeSourceLocation, docinfo.DocumentArtifactID, _settings.CaseArtifactID.ToString)
+					Else
+						Throw
+					End If
+				End Try
+			End While
 			docinfo.NativeTempLocation = tempFile
 			Return New System.IO.FileInfo(tempFile).Length
 		End Function

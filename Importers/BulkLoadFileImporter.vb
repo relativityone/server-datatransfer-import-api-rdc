@@ -440,7 +440,7 @@ Namespace kCura.WinEDDS
 			Try
 				ManageDocumentLine(metaDoc, _extractFullTextFromNative)
 				_batchCounter += 1
-				If _outputNativeFileWriter.BaseStream.Length > Config.BulkImportBatchSize OrElse _batchCounter > Config.SearchExportChunkSize - 1 Then
+				If _outputNativeFileWriter.BaseStream.Length > Config.ImportBatchMaxVolume OrElse _batchCounter > Config.ImportBatchSize - 1 Then
 					Me.PushNativeBatch()
 				End If
 			Catch ex As kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
@@ -721,6 +721,10 @@ Namespace kCura.WinEDDS
 
 		Private Sub _uploader_UploadStatusEvent(ByVal s As String) Handles _uploader.UploadStatusEvent
 			WriteStatusLine(kCura.Windows.Process.EventType.Status, s)
+		End Sub
+
+		Private Sub _uploader_UploadWarningEvent(ByVal s As String) Handles _uploader.UploadWarningEvent
+			WriteStatusLine(kCura.Windows.Process.EventType.Warning, s)
 		End Sub
 
 #End Region

@@ -8,8 +8,8 @@ Namespace kCura.WinEDDS
 		Private _docManager As kCura.WinEDDS.Service.DocumentManager
 		Private _fieldQuery As kCura.WinEDDS.Service.FieldQuery
 		Private _folderManager As kCura.WinEDDS.Service.FolderManager
-		Private _fileUploader As kCura.WinEDDS.FileUploader
-		Private _textUploader As kCura.WinEDDS.FileUploader
+		Private WithEvents _fileUploader As kCura.WinEDDS.FileUploader
+		Private WithEvents _textUploader As kCura.WinEDDS.FileUploader
 		Private _fileManager As kCura.WinEDDS.Service.FileManager
 		Private _productionManager As kCura.WinEDDS.Service.ProductionManager
 		Private _bulkImportManager As kCura.WinEDDS.Service.BulkImportManager
@@ -128,7 +128,7 @@ Namespace kCura.WinEDDS
 				Me.ProcessDocument(al, status)
 				al.Clear()
 				status = 0
-				If _bulkLoadFileWriter.BaseStream.Length > Config.BulkImportBatchSize OrElse _batchCount > Config.SearchExportChunkSize - 1 Then
+				If _bulkLoadFileWriter.BaseStream.Length > Config.ImportBatchMaxVolume OrElse _batchCount > Config.ImportBatchSize - 1 Then
 					Me.PushImageBatch(bulkLoadFilePath, False)
 				End If
 			Catch ex As Exception
@@ -520,7 +520,21 @@ Namespace kCura.WinEDDS
 			End With
 
 		End Sub
+		Private Sub _fileUploader_UploadStatusEvent(ByVal s As String) Handles _fileUploader.UploadStatusEvent
+			RaiseStatusEvent(kCura.Windows.Process.EventType.Status, s)
+		End Sub
 
+		Private Sub _fileUploader_UploadWarningEvent(ByVal s As String) Handles _fileUploader.UploadWarningEvent
+			RaiseStatusEvent(kCura.Windows.Process.EventType.Warning, s)
+		End Sub
+
+		Private Sub _textUploader_UploadStatusEvent(ByVal s As String) Handles _textUploader.UploadStatusEvent
+			RaiseStatusEvent(kCura.Windows.Process.EventType.Status, s)
+		End Sub
+
+		Private Sub _textUploader_UploadWarningEvent(ByVal s As String) Handles _textUploader.UploadWarningEvent
+			RaiseStatusEvent(kCura.Windows.Process.EventType.Warning, s)
+		End Sub
 
 	End Class
 End Namespace

@@ -127,6 +127,8 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Private Function WebDownloadFile(ByVal localFilePath As String, ByVal artifactID As Int32, ByVal remoteFileGuid As String, ByVal appID As String, ByVal remotelocationkey As String, Optional ByVal forFullText As Boolean = False) As Boolean
+			Dim tryNumber As Int32 = 0
+
 			Try
 				Dim remoteuri As String
 				Dim downloadUrl As String = _downloadUrl.TrimEnd("/"c) & "/"

@@ -149,8 +149,8 @@ Namespace kCura.WinEDDS
 
 			Dim documentTable As System.Data.DataTable
 			Dim start, finish As Int32
-			For start = 0 To Me.TotalDocuments - 1 Step Config.SearchExportChunkSize
-				finish = Math.Min(Me.TotalDocuments - 1, start + Config.SearchExportChunkSize - 1)
+			For start = 0 To Me.TotalDocuments - 1 Step Config.ExportBatchSize
+				finish = Math.Min(Me.TotalDocuments - 1, start + Config.ExportBatchSize - 1)
 				_timekeeper.MarkStart("Exporter_GetDocumentBlock")
 				Select Case Me.ExportFile.TypeOfExport
 					Case ExportFile.ExportType.ArtifactSearch
@@ -170,7 +170,7 @@ Namespace kCura.WinEDDS
 					artifactIDs.Add(CType(docRow("ArtifactID"), Int32))
 					docRows.Add(docRow)
 					fileCount += CType(docRow("kCura_FileCount_Computed"), Int32)
-					If fileCount > Config.SearchExportChunkSize Then
+					If fileCount > Config.ExportBatchSize Then
 						ExportChunk(DirectCast(artifactIDs.ToArray(GetType(Int32)), Int32()), DirectCast(docRows.ToArray(GetType(System.Data.DataRow)), System.Data.DataRow()))
 						artifactIDs.Clear()
 						docRows.Clear()

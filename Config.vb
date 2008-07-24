@@ -2,40 +2,40 @@ Imports System.Configuration
 Namespace kCura.WinEDDS
 	Public Class Config
 
-		Private Shared _configDictionary As System.Collections.IDictionary
+#Region " ConfigSettings "
 
+		Private Shared _configDictionary As System.Collections.IDictionary
 		Public Shared ReadOnly Property ConfigSettings() As System.Collections.IDictionary
 			Get
 				If _configDictionary Is Nothing Then
 					_configDictionary = DirectCast(System.Configuration.ConfigurationSettings.GetConfig("kCura.WinEDDS"), System.Collections.IDictionary)
+					If Not _configDictionary.Contains("ImportBatchSize") Then _configDictionary.Add("ImportBatchSize", "1000")
+					If Not _configDictionary.Contains("ImportBatchMaxVolume") Then _configDictionary.Add("ImportBatchMaxVolume", "10485760") '10(2^20) - don't know what 10MB standard is
+					If Not _configDictionary.Contains("ExportBatchSize") Then _configDictionary.Add("ExportBatchSize", "1000")
 				End If
 				Return _configDictionary
 			End Get
 		End Property
 
+#End Region
+
+#Region " Unused or shouldn't be used "
+
 		Public Shared ReadOnly Property UsesWebAPI() As Boolean
 			Get
-				Return CType(ConfigSettings("UsesWebAPI"), Boolean)
+				Return True				'Return CType(ConfigSettings("UsesWebAPI"), Boolean)
 			End Get
 		End Property
 
 		Public Shared ReadOnly Property OutlookImporterLocation() As String
 			Get
-				Return CType(ConfigSettings("OutlookImporterLocation"), String)
+				Return ""		 'CType(ConfigSettings("OutlookImporterLocation"), String)
 			End Get
 		End Property
 
-		Public Shared ReadOnly Property SearchExportChunkSize() As Int32
-			Get
-				Return CType(ConfigSettings("SearchExportChunkSize"), Int32)
-			End Get
-		End Property
+#End Region
 
-		Public Shared ReadOnly Property AuthenticationMode() As String
-			Get
-				Return CType(ConfigSettings("AuthenticationMode"), String)
-			End Get
-		End Property
+#Region " Constants "
 
 		Public Shared ReadOnly Property MaxReloginTries() As Int32
 			Get
@@ -43,42 +43,13 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
-		Public Shared ReadOnly Property WaitBeforeReconnect() As Int32	 'Millisecodns
+		Public Shared ReadOnly Property WaitBeforeReconnect() As Int32		'Millisecodns
 			Get
 				Return 2000
 			End Get
 		End Property
 
-		Public Shared ReadOnly Property BulkImportBatchSize() As Int32	 'Bytes
-			Get
-				Try
-					Dim retval As Int32 = CType(ConfigSettings("BulkImportBatchSize"), Int32)
-					If retval = 0 Then
-						Throw New System.Exception
-					Else
-						Return retval
-					End If
-				Catch
-					Return 16777216
-				End Try
-			End Get
-		End Property
-
-
-		Public Shared Property WebServiceURL() As String
-			Get
-				Dim value As String = Config.GetRegistryKeyValue("WebServiceURL")
-				'If value = "" Then
-				'	Config.SetRegistryKeyValue("WebServiceURL", CType(ConfigSettings("WebServiceURL"), String))
-				'	value = Config.GetRegistryKeyValue("WebServiceURL")
-				'End If
-				'Return value
-				Return value
-			End Get
-			Set(ByVal Value As String)
-				Config.SetRegistryKeyValue("WebServiceURL", Value)
-			End Set
-		End Property
+#End Region
 
 #Region "Registry Helpers"
 
@@ -107,6 +78,33 @@ Namespace kCura.WinEDDS
 		End Property
 
 #End Region
+
+		Public Shared ReadOnly Property ImportBatchMaxVolume() As Int32		'Volume in bytes
+			Get
+				Return CType(ConfigSettings("ImportBatchMaxVolume"), Int32)
+			End Get
+		End Property
+
+		Public Shared ReadOnly Property ImportBatchSize() As Int32		'Number of records
+			Get
+				Return CType(ConfigSettings("ImportBatchSize"), Int32)
+			End Get
+		End Property
+
+		Public Shared ReadOnly Property ExportBatchSize() As Int32		'Number of records
+			Get
+				Return CType(ConfigSettings("ExportBatchSize"), Int32)
+			End Get
+		End Property
+
+		Public Shared Property WebServiceURL() As String
+			Get
+				Return Config.GetRegistryKeyValue("WebServiceURL")
+			End Get
+			Set(ByVal value As String)
+				Config.SetRegistryKeyValue("WebServiceURL", value)
+			End Set
+		End Property
 
 	End Class
 End Namespace

@@ -114,7 +114,7 @@ Namespace kCura.WinEDDS
 					Catch ex As System.Exception
 						tries -= 1
 						If TypeOf ex Is System.IO.IOException AndAlso tries > 0 Then
-							RaiseEvent UploadStatusEvent("Network file transfer error. Retrying in 30 seconds. " & tries & " tries left.")
+							RaiseEvent UploadWarningEvent("Network upload failed. Retrying in 30 seconds. " & tries & " tries left.")
 							System.Threading.Thread.CurrentThread.Join(30000)
 						Else
 							RaiseEvent UploadStatusEvent("Error Uploading File: " & ex.Message & System.Environment.NewLine & ex.ToString)							'TODO: Change this to a separate error-type event'
@@ -155,52 +155,63 @@ Namespace kCura.WinEDDS
 			'Dim fileStream As System.IO.FileStream
 			Dim readLimit As Int32 = Settings.ChunkSize
 			'Dim fileGuid As String
-			Try
-				'	fileStream = file.Open(filePath, IO.FileMode.Open, IO.FileAccess.Read)
-				If fileStream.Length < Settings.ChunkSize Then
-					readLimit = CType(fileStream.Length, Int32)
-				End If
-				If fileStream.Length > 0 Then
-					trips = CType(Math.Ceiling(fileStream.Length / Settings.ChunkSize), Int32)
-				Else
-					trips = 1
-				End If
-				'UpdateStatus(System.IO.Path.GetFileName(filePath), 1, fileStream.Length)
-				For i = 1 To trips
-					Dim b(readLimit) As Byte
-					fileStream.Read(b, 0, readLimit)
-					If i = 1 Then
-						fileGuid = Gateway.BeginFill(_caseArtifactID, b, _destinationFolderPath, fileGuid)
-						If fileGuid = String.Empty Then
-							Return String.Empty
-						End If
+			Dim tries As Int32 = 20
+			While tries > 0
+				tries -= 1
+				Try
+					'	fileStream = file.Open(filePath, IO.FileMode.Open, IO.FileAccess.Read)
+					If fileStream.Length < Settings.ChunkSize Then
+						readLimit = CType(fileStream.Length, Int32)
 					End If
-					If i <= trips And i > 1 Then
-						RaiseEvent UploadStatusEvent("Trip " & i & " of " & trips)
-						If Not Gateway.FileFill(_caseArtifactID, _destinationFolderPath, fileGuid, b, contextArtifactID) Then
-							Gateway.RemoveFill(_caseArtifactID, _destinationFolderPath, fileGuid)
-							Return String.Empty
-						End If
-					End If
-
-					'_totalBytesUp += b.Length
-					'UpdateStatus(System.IO.Path.GetFileName(withApostrophe(filePath)), fileStream.Position, fileStream.Length)
-					If (fileStream.Position + Settings.ChunkSize) > fileStream.Length Then
-						readLimit = CType(fileStream.Length - fileStream.Position, Int32)
+					If fileStream.Length > 0 Then
+						trips = CType(Math.Ceiling(fileStream.Length / Settings.ChunkSize), Int32)
 					Else
-						readLimit = Settings.ChunkSize
+						trips = 1
 					End If
-					b = Nothing
-				Next i
-				'file = Nothing
-				fileStream.Close()
-				Return fileGuid
-			Catch ex As System.Exception
-				Throw ex
-			End Try
+					'UpdateStatus(System.IO.Path.GetFileName(filePath), 1, fileStream.Length)
+					For i = 1 To trips
+						Dim b(readLimit) As Byte
+						fileStream.Read(b, 0, readLimit)
+						If i = 1 Then
+							fileGuid = Gateway.BeginFill(_caseArtifactID, b, _destinationFolderPath, fileGuid)
+							If fileGuid = String.Empty Then
+								Return String.Empty
+							End If
+						End If
+						If i <= trips And i > 1 Then
+							RaiseEvent UploadStatusEvent("Trip " & i & " of " & trips)
+							If Not Gateway.FileFill(_caseArtifactID, _destinationFolderPath, fileGuid, b, contextArtifactID) Then
+								Gateway.RemoveFill(_caseArtifactID, _destinationFolderPath, fileGuid)
+								Return String.Empty
+							End If
+						End If
+
+						'_totalBytesUp += b.Length
+						'UpdateStatus(System.IO.Path.GetFileName(withApostrophe(filePath)), fileStream.Position, fileStream.Length)
+						If (fileStream.Position + Settings.ChunkSize) > fileStream.Length Then
+							readLimit = CType(fileStream.Length - fileStream.Position, Int32)
+						Else
+							readLimit = Settings.ChunkSize
+						End If
+						b = Nothing
+					Next i
+					'file = Nothing
+					fileStream.Close()
+					Return fileGuid
+				Catch ex As System.Exception
+					If tries > 0 Then
+						RaiseEvent UploadWarningEvent("Web upload failed: " & ex.Message & vbNewLine & "Retrying in 30 seconds. " & tries & " tries left.")
+						System.Threading.Thread.CurrentThread.Join(30000)
+					Else
+						Throw
+					End If
+				End Try
+			End While
+
 		End Function
 
 		Public Event UploadStatusEvent(ByVal message As String)
+		Public Event UploadWarningEvent(ByVal message As String)
 		Public Event UploadModeChangeEvent(ByVal mode As String)
 
 
