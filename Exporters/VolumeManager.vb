@@ -220,6 +220,7 @@ Namespace kCura.WinEDDS
 						tries -= 1
 						Try
 							_downloadManager.DownloadFullTextFile(tempLocalFullTextFilePath, documentInfo.DocumentArtifactID, _settings.CaseInfo.ArtifactID.ToString)
+							Exit While
 						Catch ex As System.Exception
 							If tries = 19 Then
 								_parent.WriteStatusLine(Windows.Process.EventType.Warning, "Second attempt to download full text for document " & documentInfo.IdentifierValue, True)
@@ -376,6 +377,7 @@ Namespace kCura.WinEDDS
 				tries -= 1
 				Try
 					_downloadManager.DownloadFile(tempFile, image.FileGuid, image.SourceLocation, image.ArtifactID, _settings.CaseArtifactID.ToString)
+					Exit While
 				Catch ex As System.Exception
 					If tries = 19 Then
 						_parent.WriteStatusLine(Windows.Process.EventType.Warning, "Second attempt to download image " & image.BatesNumber, True)
@@ -532,6 +534,7 @@ Namespace kCura.WinEDDS
 				tries -= 1
 				Try
 					_downloadManager.DownloadFile(tempFile, docinfo.NativeFileGuid, docinfo.NativeSourceLocation, docinfo.DocumentArtifactID, _settings.CaseArtifactID.ToString)
+					Exit While
 				Catch ex As System.Exception
 					If tries = 19 Then
 						_parent.WriteStatusLine(Windows.Process.EventType.Warning, "Second attempt to download native for document " & docinfo.IdentifierValue, True)

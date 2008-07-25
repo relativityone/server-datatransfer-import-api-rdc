@@ -54,7 +54,8 @@ Namespace kCura.WinEDDS
 		Private _filePath As String
 		Private _settings As kCura.WinEDDS.LoadFile
 		Private _batchCounter As Int32 = 0
-
+		Private _errorMessageFileLocation As String = ""
+		Private _errorLinesFileLocation As String = ""
 #End Region
 
 #Region "Accessors"
@@ -844,7 +845,6 @@ Namespace kCura.WinEDDS
 				If rootFileName.IndexOf("\") <> -1 Then
 					rootFileName = rootFileName.Substring(rootFileName.LastIndexOf("\") + 1)
 				End If
-
 				Dim rootFilePath As String = exportLocation & rootFileName
 				Dim datetimeNow As System.DateTime = System.DateTime.Now
 				Dim errorFilePath As String = rootFilePath & "_ErrorLines_" & datetimeNow.Ticks & defaultExtension
@@ -953,6 +953,45 @@ Namespace kCura.WinEDDS
 
 #End Region
 
+		Private Sub ManageErrors()
+			If Not _bulkImportManager.NativeRunHasErrors(_caseInfo.ArtifactID, _runID) Then Exit Sub
+			If _errorLinesFileLocation = "" Then _errorLinesFileLocation = System.IO.Path.GetTempFileName
+			If _errorMessageFileLocation = "" Then _errorMessageFileLocation = System.IO.Path.GetTempFileName
+
+			With _bulkImportManager.GenerateNativeErrorFiles(_caseInfo.ArtifactID, _runID, True)
+				Me.WriteStatusLine(Windows.Process.EventType.Status, "Retrieving errors from server")
+				Dim downloader As New FileDownloader(DirectCast(_bulkImportManager.Credentials, System.Net.NetworkCredential), _caseInfo.DocumentPath, _caseInfo.DownloadHandlerURL, _bulkImportManager.CookieContainer, kCura.WinEDDS.Service.Settings.AuthenticationToken)
+				Dim rowsLocation As String = System.IO.Path.GetTempFileName
+				Dim errorsLocation As String = System.IO.Path.GetTempFileName
+				downloader.DownloadFile(rowsLocation, .OpticonKey, _caseInfo.ArtifactID.ToString)
+				downloader.DownloadFile(errorsLocation, .LogKey, _caseInfo.ArtifactID.ToString)
+				Dim sr As New kCura.Utility.GenericCsvReader(rowsLocation, System.Text.Encoding.Unicode)
+				Dim line As String() = sr.ReadLine
+				While Not line Is Nothing
+
+					line = sr.ReadLine
+				End While
+				'Dim rootFileName As String = _filePath
+				'Dim defaultExtension As String
+				'If Not rootFileName.IndexOf(".") = -1 Then
+				'	defaultExtension = rootFileName.Substring(rootFileName.LastIndexOf("."))
+				'	rootFileName = rootFileName.Substring(0, rootFileName.LastIndexOf("."))
+				'Else
+				'	defaultExtension = ".opt"
+				'End If
+				'rootFileName.Trim("\"c)
+				'If rootFileName.IndexOf("\") <> -1 Then
+				'	rootFileName = rootFileName.Substring(rootFileName.LastIndexOf("\") + 1)
+				'End If
+				'Dim rootFilePath As String = exportLocation & rootFileName
+				'Dim datetimeNow As System.DateTime = System.DateTime.Now
+				'Dim errorFilePath As String = rootFilePath & "_ErrorLines_" & datetimeNow.Ticks & defaultExtension
+				'Dim errorReportPath As String = rootFilePath & "_ErrorReport_" & datetimeNow.Ticks & ".csv"
+				'System.IO.File.Move(rowsLocation, errorFilePath)
+				'System.IO.File.Move(errorsLocation, errorReportPath)
+			End With
+
+		End Sub
 
 		Public Class Settings
 			Public Const MAX_STRING_FIELD_LENGTH As Int32 = 1048576			'2^20 = 1 meg * 2 B/char binary = 2 meg max
