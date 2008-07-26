@@ -597,7 +597,6 @@ Namespace kCura.Windows.Process
 		End Sub
 
 		Private Sub HandleDataSource()
-			_reportDataGrid.DataSource = _errorsDataSource
 		End Sub
 
 		Private Sub _exportErrorReportBtn_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles _exportErrorReportBtn.Click
@@ -627,6 +626,22 @@ Namespace kCura.Windows.Process
 			End If
 		End Sub
 
+		Private Sub _processObserver_ErrorReportEvent(ByVal row As System.Collections.IDictionary) Handles _processObserver.ErrorReportEvent
+			If _reportDataGrid.DataSource Is Nothing Then
+				Dim dt As New System.Data.DataTable
+				For Each key As String In row.Keys
+					dt.Columns.Add(key.ToString)
+				Next
+				_reportDataGrid.DataSource = dt
+			End If
+			Dim dataSource As System.Data.DataTable = DirectCast(_reportDataGrid.DataSource, System.Data.DataTable)
+			Dim newRow As System.Data.DataRow = dataSource.NewRow
+			For Each key As String In row.Keys
+				If Not dataSource.Columns.Contains(key) Then dataSource.Columns.Add(key)
+				newRow(key) = row(key).ToString
+			Next
+			dataSource.Rows.Add(newRow)
+		End Sub
 	End Class
 
 

@@ -37,7 +37,7 @@ Namespace kCura.Windows.Process
 		Public Event OnProcessComplete(ByVal closeForm As Boolean, ByVal exportFilePath As String, ByVal exportLogs As Boolean)
 		Public Event StatusBarEvent(ByVal message As String)
 		Public Event ShowReportEvent(ByVal datasource As System.Data.DataTable, ByVal maxlengthExceeded As Boolean)
-
+		Public Event ErrorReportEvent(ByVal row As System.Collections.IDictionary)
 #End Region
 
 #Region "Event Throwers"
@@ -84,6 +84,10 @@ Namespace kCura.Windows.Process
 
 		Public Sub RaiseStatusBarEvent(ByVal message As String)
 			RaiseEvent StatusBarEvent(message)
+		End Sub
+
+		Public Sub RaiseReportErrorEvent(ByVal row As System.Collections.IDictionary)
+			RaiseEvent ErrorReportEvent(row)
 		End Sub
 
 #End Region
