@@ -550,11 +550,13 @@ Namespace kCura.WinEDDS
 					_outputNativeFileWriter.Write(mdoc.FullFilePath & Constants.NATIVE_FIELD_DELIMITER)
 					_outputNativeFileWriter.Write(mdoc.FullFilePath & Constants.NATIVE_FIELD_DELIMITER)
 				End If
+				_outputNativeFileWriter.Write(New System.IO.FileInfo(mdoc.FullFilePath).Length & Constants.NATIVE_FIELD_DELIMITER)
 			Else
 				_outputNativeFileWriter.Write(Constants.NATIVE_FIELD_DELIMITER)
 				_outputNativeFileWriter.Write(Constants.NATIVE_FIELD_DELIMITER)
 				_outputNativeFileWriter.Write(Constants.NATIVE_FIELD_DELIMITER)
 				_outputNativeFileWriter.Write(Constants.NATIVE_FIELD_DELIMITER)
+				_outputNativeFileWriter.Write("0" & Constants.NATIVE_FIELD_DELIMITER)
 			End If
 			_outputNativeFileWriter.Write(mdoc.ParentFolderID & Constants.NATIVE_FIELD_DELIMITER)
 			For Each docField As DocumentField In fieldCollection.AllFields
