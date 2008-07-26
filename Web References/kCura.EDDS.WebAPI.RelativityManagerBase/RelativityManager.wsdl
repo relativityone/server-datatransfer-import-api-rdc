@@ -32,6 +32,16 @@
           </s:sequence>
         </s:complexType>
       </s:element>
+      <s:element name="IsAuditingEnabled">
+        <s:complexType />
+      </s:element>
+      <s:element name="IsAuditingEnabledResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="IsAuditingEnabledResult" type="s:boolean" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
     </s:schema>
   </wsdl:types>
   <wsdl:message name="RetrieveRelativityVersionSoapIn">
@@ -52,6 +62,12 @@
   <wsdl:message name="GetServerTimezoneOffsetSoapOut">
     <wsdl:part name="parameters" element="tns:GetServerTimezoneOffsetResponse" />
   </wsdl:message>
+  <wsdl:message name="IsAuditingEnabledSoapIn">
+    <wsdl:part name="parameters" element="tns:IsAuditingEnabled" />
+  </wsdl:message>
+  <wsdl:message name="IsAuditingEnabledSoapOut">
+    <wsdl:part name="parameters" element="tns:IsAuditingEnabledResponse" />
+  </wsdl:message>
   <wsdl:portType name="RelativityManagerSoap">
     <wsdl:operation name="RetrieveRelativityVersion">
       <wsdl:input message="tns:RetrieveRelativityVersionSoapIn" />
@@ -64,6 +80,10 @@
     <wsdl:operation name="GetServerTimezoneOffset">
       <wsdl:input message="tns:GetServerTimezoneOffsetSoapIn" />
       <wsdl:output message="tns:GetServerTimezoneOffsetSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="IsAuditingEnabled">
+      <wsdl:input message="tns:IsAuditingEnabledSoapIn" />
+      <wsdl:output message="tns:IsAuditingEnabledSoapOut" />
     </wsdl:operation>
   </wsdl:portType>
   <wsdl:binding name="RelativityManagerSoap" type="tns:RelativityManagerSoap">
@@ -88,6 +108,15 @@
     </wsdl:operation>
     <wsdl:operation name="GetServerTimezoneOffset">
       <soap:operation soapAction="http://www.kCura.com/EDDS/RelativityManager/GetServerTimezoneOffset" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="IsAuditingEnabled">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/RelativityManager/IsAuditingEnabled" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>

@@ -59,6 +59,7 @@ Namespace kCura.WinEDDS
 		Public Const MaxNumberOfErrorsInGrid As Int32 = 1000
 		Private _errorCount As Int32 = 0
 		Private _prePushErrorLineNumbersFileName As String = ""
+		Private _isAuditingEnabled As Boolean
 
 #End Region
 
@@ -162,6 +163,7 @@ Namespace kCura.WinEDDS
 			_firstTimeThrough = True
 			_caseInfo = args.CaseInfo
 			_settings = args
+			_isAuditingEnabled = New kCura.WinEDDS.Service.RelativityManager(args.Credentials, args.CookieContainer).IsAuditingEnabled
 		End Sub
 
 #End Region
@@ -270,6 +272,7 @@ Namespace kCura.WinEDDS
 			_outputNativeFileWriter = New System.IO.StreamWriter(_outputNativeFilePath, False, System.Text.Encoding.Unicode)
 			_outputCodeFileWriter = New System.IO.StreamWriter(_outputCodeFilePath, False, System.Text.Encoding.Unicode)
 			RaiseEvent StatusMessage(New kCura.Windows.Process.StatusEventArgs(Windows.Process.EventType.ResetStartTime, 0, _recordCount, "Reset time for import rolling average"))
+
 		End Sub
 
 		Private Sub InitializeLineCounter(ByVal path As String)

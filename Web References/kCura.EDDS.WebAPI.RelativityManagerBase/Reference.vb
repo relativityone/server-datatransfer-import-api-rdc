@@ -89,5 +89,23 @@ Namespace kCura.EDDS.WebAPI.RelativityManagerBase
             Dim results() As Object = Me.EndInvoke(asyncResult)
             Return CType(results(0),Integer)
         End Function
+        
+        '<remarks/>
+        <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/RelativityManager/IsAuditingEnabled", RequestNamespace:="http://www.kCura.com/EDDS/RelativityManager", ResponseNamespace:="http://www.kCura.com/EDDS/RelativityManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
+        Public Function IsAuditingEnabled() As Boolean
+            Dim results() As Object = Me.Invoke("IsAuditingEnabled", New Object(-1) {})
+            Return CType(results(0),Boolean)
+        End Function
+        
+        '<remarks/>
+        Public Function BeginIsAuditingEnabled(ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("IsAuditingEnabled", New Object(-1) {}, callback, asyncState)
+        End Function
+        
+        '<remarks/>
+        Public Function EndIsAuditingEnabled(ByVal asyncResult As System.IAsyncResult) As Boolean
+            Dim results() As Object = Me.EndInvoke(asyncResult)
+            Return CType(results(0),Boolean)
+        End Function
     End Class
 End Namespace
