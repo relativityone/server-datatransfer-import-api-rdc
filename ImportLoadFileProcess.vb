@@ -103,6 +103,10 @@ Namespace kCura.WinEDDS
 			End Select
 			System.Threading.Monitor.Exit(Me.ProcessObserver)
 		End Sub
+
+		Private Sub _loadFileImporter_ReportErrorEvent(ByVal row As System.Collections.IDictionary) Handles _loadFileImporter.ReportErrorEvent
+			Me.ProcessObserver.RaiseReportErrorEvent(row)
+		End Sub
 	End Class
 
 End Namespace

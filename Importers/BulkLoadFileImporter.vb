@@ -55,7 +55,11 @@ Namespace kCura.WinEDDS
 		Private _settings As kCura.WinEDDS.LoadFile
 		Private _batchCounter As Int32 = 0
 		Private _errorMessageFileLocation As String = ""
-		Private _errorLinesFileLocation As String = ""
+
+		Public Const MaxNumberOfErrorsInGrid As Int32 = 1000
+		Private _errorCount As Int32 = 0
+		Private _prePushErrorLineNumbersFileName As String = ""
+
 #End Region
 
 #Region "Accessors"
@@ -125,7 +129,7 @@ Namespace kCura.WinEDDS
 
 		Public ReadOnly Property HasErrors() As Boolean
 			Get
-				Return _bulkImportManager.NativeRunHasErrors(_caseInfo.ArtifactID, _runID)
+				Return _errorCount > 0
 			End Get
 		End Property
 
@@ -216,7 +220,7 @@ Namespace kCura.WinEDDS
 						_continue = False
 						WriteFatalError(Me.CurrentLineNumber, ex, line)
 					Catch ex As kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
-						WriteError(ex.Message, line)
+						WriteError(Me.CurrentLineNumber, ex.Message)
 					Catch ex As System.Exception
 						WriteFatalError(Me.CurrentLineNumber, ex, line)
 					End Try
@@ -445,7 +449,7 @@ Namespace kCura.WinEDDS
 					Me.PushNativeBatch()
 				End If
 			Catch ex As kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
-				WriteError(ex.Message, metaDoc.SourceLine)
+				WriteError(metaDoc.LineNumber, ex.Message)
 			Catch ex As System.Exception
 				WriteFatalError(metaDoc.LineNumber, ex, metaDoc.SourceLine)
 			End Try
@@ -498,6 +502,7 @@ Namespace kCura.WinEDDS
 				_outputNativeFileWriter = New System.IO.StreamWriter(_outputNativeFilePath, False, System.Text.Encoding.Unicode)
 				_outputCodeFileWriter = New System.IO.StreamWriter(_outputCodeFilePath, False, System.Text.Encoding.Unicode)
 			End If
+			Me.ManageErrors()
 		End Function
 
 		Private Function GetMappedFields() As kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo()
@@ -700,13 +705,35 @@ Namespace kCura.WinEDDS
 
 		Private Sub WriteFatalError(ByVal lineNumber As Int32, ByVal ex As System.Exception, ByVal sourceLine As String())
 			_continue = False
-			Me.LogErrorLine(sourceLine)
 			RaiseEvent FatalErrorEvent("Error processing line: " + lineNumber.ToString, ex)
 		End Sub
 
-		Private Sub WriteError(ByVal line As String, ByVal sourceLine As String())
-			Me.LogErrorLine(sourceLine)
+		Private Sub WriteError(ByVal currentLineNumber As Int32, ByVal line As String)
+			If _prePushErrorLineNumbersFileName = "" Then _prePushErrorLineNumbersFileName = System.IO.Path.GetTempFileName
+			Dim sw As New System.IO.StreamWriter(_prePushErrorLineNumbersFileName, True, System.Text.Encoding.Default)
+			sw.WriteLine(currentLineNumber)
+			sw.Flush()
+			sw.Close()
+			Dim ht As New System.Collections.Hashtable
+			ht.Add("Message", line)
+			ht.Add("Line Number", currentLineNumber)
+			RaiseReportError(ht, currentLineNumber, "", "client")
 			WriteStatusLine(kCura.Windows.Process.EventType.Error, line)
+		End Sub
+
+		Private Sub RaiseReportError(ByVal row As System.Collections.Hashtable, ByVal lineNumber As Int32, ByVal identifier As String, ByVal type As String)
+			_errorCount += 1
+			If _errorMessageFileLocation = "" Then _errorMessageFileLocation = System.IO.Path.GetTempFileName
+			Dim errorMessageFileWriter As New System.IO.StreamWriter(_errorMessageFileLocation, True, System.Text.Encoding.Default)
+			If _errorCount < Me.MaxNumberOfErrorsInGrid Then
+				RaiseEvent ReportErrorEvent(row)
+			ElseIf _errorCount = Me.MaxNumberOfErrorsInGrid Then
+				Dim moretobefoundMessage As New System.Collections.Hashtable
+				moretobefoundMessage.Add("Message", "Maximum number of errors for display reached.  Export errors to view full list.")
+				RaiseEvent ReportErrorEvent(moretobefoundMessage)
+			End If
+			errorMessageFileWriter.WriteLine("""" & row("Line Number").ToString & """,""" & row("Message").ToString & """,""" & identifier & """,""" & type & """")
+			errorMessageFileWriter.Close()
 		End Sub
 
 		Private Sub WriteWarning(ByVal line As String)
@@ -738,7 +765,7 @@ Namespace kCura.WinEDDS
 		Public Event EndFileImport()
 		Public Event StartFileImport()
 		Public Event UploadModeChangeEvent(ByVal mode As String)
-
+		Public Event ReportErrorEvent(ByVal row As System.Collections.IDictionary)
 #Region "File Prep Event"
 		Public Event FilePrepEvent(ByVal e As FilePrepEventArgs)
 		Public Class FilePrepEventArgs
@@ -827,32 +854,110 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Private Sub _processController_ExportServerErrors(ByVal exportLocation As String) Handles _processController.ExportServerErrorsEvent
-			With _bulkImportManager.GenerateNativeErrorFiles(_caseInfo.ArtifactID, _runID, True)
-				Dim downloader As New FileDownloader(DirectCast(_bulkImportManager.Credentials, System.Net.NetworkCredential), _caseInfo.DocumentPath, _caseInfo.DownloadHandlerURL, _bulkImportManager.CookieContainer, kCura.WinEDDS.Service.Settings.AuthenticationToken)
-				Dim rowsLocation As String = System.IO.Path.GetTempFileName
-				Dim errorsLocation As String = System.IO.Path.GetTempFileName
-				downloader.DownloadFile(rowsLocation, .OpticonKey, _caseInfo.ArtifactID.ToString)
-				downloader.DownloadFile(errorsLocation, .LogKey, _caseInfo.ArtifactID.ToString)
-				Dim rootFileName As String = _filePath
-				Dim defaultExtension As String
-				If Not rootFileName.IndexOf(".") = -1 Then
-					defaultExtension = rootFileName.Substring(rootFileName.LastIndexOf("."))
-					rootFileName = rootFileName.Substring(0, rootFileName.LastIndexOf("."))
+			RaiseEvent StatusMessage(New kCura.Windows.Process.StatusEventArgs(Windows.Process.EventType.Status, Me.CurrentLineNumber, Me.CurrentLineNumber, "GeneratingErrorLineFile"))
+			Dim allErrors As New kCura.Utility.GenericCsvReader(_errorMessageFileLocation, System.Text.Encoding.Default)
+			Dim clientErrors As System.IO.StreamReader
+			'Me.Reader.BaseStream.Seek(0, IO.SeekOrigin.Begin)
+			Me.Reader = New System.IO.StreamReader(_filePath, _sourceFileEncoding, True)
+			Me.ResetLineCounter()
+			If _prePushErrorLineNumbersFileName = "" Then
+				clientErrors = New System.IO.StreamReader(System.IO.Path.GetTempFileName, System.Text.Encoding.Default)
+			Else
+				clientErrors = New System.IO.StreamReader(_prePushErrorLineNumbersFileName, System.Text.Encoding.Default)
+			End If
+			Dim advanceClient As Boolean = True
+			Dim advanceAll As Boolean = True
+			Dim allErrorsLine As Int32
+			Dim clientErrorsLine As Int32
+			Dim outputFilePath As String = System.IO.Path.GetTempFileName
+			Dim sw As New System.IO.StreamWriter(outputFilePath, False, _sourceFileEncoding)
+			If _settings.FirstLineContainsHeaders Then
+				sw.WriteLine(Me.ToDelimetedLine(Me.GetLine))
+			End If
+			If _prePushErrorLineNumbersFileName = "" Then
+				clientErrorsLine = Int32.MaxValue
+			Else
+				clientErrorsLine = Int32.Parse(clientErrors.ReadLine)
+			End If
+			If Not allErrors.Eof Then
+				Dim e As String() = allErrors.ReadLine
+				If e(3) <> "client" Then
+					allErrorsLine = Int32.Parse(allErrors.ReadLine(0))
 				Else
-					defaultExtension = ".opt"
+					While Not e Is Nothing AndAlso e(3) = "client"
+						e = allErrors.ReadLine
+					End While
+					If e Is Nothing Then
+						allErrorsLine = Int32.MaxValue
+					Else
+						allErrorsLine = Int32.Parse(e(0))
+					End If
 				End If
-				rootFileName.Trim("\"c)
-				If rootFileName.IndexOf("\") <> -1 Then
-					rootFileName = rootFileName.Substring(rootFileName.LastIndexOf("\") + 1)
+			Else
+				allErrorsLine = Int32.MaxValue
+			End If
+			Dim line As String()
+			Dim currentLine As String()
+			Dim continue As Boolean = True And Not Me.Reader.Peek = -1
+			While continue
+				If Me.CurrentLineNumber < System.Math.Min(clientErrorsLine, allErrorsLine) Then
+					If Me.Reader.Peek = -1 Then
+						continue = False
+					Else
+						line = Me.GetLine()
+					End If
+				Else
+					sw.WriteLine(Me.ToDelimetedLine(line))
+					If Me.CurrentLineNumber = clientErrorsLine Then
+						If clientErrors.Peek = -1 Then
+							clientErrorsLine = Int32.MaxValue
+						Else
+							clientErrorsLine = Int32.Parse(clientErrors.ReadLine)
+						End If
+					End If
+					If Me.CurrentLineNumber = allErrorsLine Then
+						If allErrors.Eof Then
+							allErrorsLine = Int32.MaxValue
+						Else
+							allErrorsLine = Int32.Parse(allErrors.ReadLine(0))
+						End If
+					End If
 				End If
-				Dim rootFilePath As String = exportLocation & rootFileName
-				Dim datetimeNow As System.DateTime = System.DateTime.Now
-				Dim errorFilePath As String = rootFilePath & "_ErrorLines_" & datetimeNow.Ticks & defaultExtension
-				Dim errorReportPath As String = rootFilePath & "_ErrorReport_" & datetimeNow.Ticks & ".csv"
-				System.IO.File.Move(rowsLocation, errorFilePath)
-				System.IO.File.Move(errorsLocation, errorReportPath)
-			End With
 
+				continue = ((Not allErrors.Eof Or clientErrors.Peek <> -1) And continue)
+			End While
+			Me.Close()
+			sw.Close()
+			allErrors.Close()
+			clientErrors.Close()
+
+			Dim rootFileName As String = _filePath
+			Dim defaultExtension As String
+			If Not rootFileName.IndexOf(".") = -1 Then
+				defaultExtension = rootFileName.Substring(rootFileName.LastIndexOf("."))
+				rootFileName = rootFileName.Substring(0, rootFileName.LastIndexOf("."))
+			Else
+				defaultExtension = ".txt"
+			End If
+			rootFileName.Trim("\"c)
+			If rootFileName.IndexOf("\") <> -1 Then
+				rootFileName = rootFileName.Substring(rootFileName.LastIndexOf("\") + 1)
+			End If
+			Dim rootFilePath As String = exportLocation & rootFileName
+			Dim datetimeNow As System.DateTime = System.DateTime.Now
+			Dim errorFilePath As String = rootFilePath & "_ErrorLines_" & datetimeNow.Ticks & defaultExtension
+			Dim errorReportPath As String = rootFilePath & "_ErrorReport_" & datetimeNow.Ticks & ".csv"
+			Try
+				System.IO.File.Move(outputFilePath, errorFilePath)
+			Catch
+				System.IO.File.Move(outputFilePath, errorFilePath)
+			End Try
+			Try
+				System.IO.File.Move(_errorMessageFileLocation, errorReportPath)
+			Catch
+				System.IO.File.Move(_errorMessageFileLocation, errorReportPath)
+			End Try
+			_errorMessageFileLocation = ""
 		End Sub
 
 #End Region
@@ -955,42 +1060,32 @@ Namespace kCura.WinEDDS
 
 		Private Sub ManageErrors()
 			If Not _bulkImportManager.NativeRunHasErrors(_caseInfo.ArtifactID, _runID) Then Exit Sub
-			If _errorLinesFileLocation = "" Then _errorLinesFileLocation = System.IO.Path.GetTempFileName
-			If _errorMessageFileLocation = "" Then _errorMessageFileLocation = System.IO.Path.GetTempFileName
-
-			With _bulkImportManager.GenerateNativeErrorFiles(_caseInfo.ArtifactID, _runID, True)
-				Me.WriteStatusLine(Windows.Process.EventType.Status, "Retrieving errors from server")
-				Dim downloader As New FileDownloader(DirectCast(_bulkImportManager.Credentials, System.Net.NetworkCredential), _caseInfo.DocumentPath, _caseInfo.DownloadHandlerURL, _bulkImportManager.CookieContainer, kCura.WinEDDS.Service.Settings.AuthenticationToken)
-				Dim rowsLocation As String = System.IO.Path.GetTempFileName
-				Dim errorsLocation As String = System.IO.Path.GetTempFileName
-				downloader.DownloadFile(rowsLocation, .OpticonKey, _caseInfo.ArtifactID.ToString)
-				downloader.DownloadFile(errorsLocation, .LogKey, _caseInfo.ArtifactID.ToString)
-				Dim sr As New kCura.Utility.GenericCsvReader(rowsLocation, System.Text.Encoding.Unicode)
-				Dim line As String() = sr.ReadLine
-				While Not line Is Nothing
-
-					line = sr.ReadLine
-				End While
-				'Dim rootFileName As String = _filePath
-				'Dim defaultExtension As String
-				'If Not rootFileName.IndexOf(".") = -1 Then
-				'	defaultExtension = rootFileName.Substring(rootFileName.LastIndexOf("."))
-				'	rootFileName = rootFileName.Substring(0, rootFileName.LastIndexOf("."))
-				'Else
-				'	defaultExtension = ".opt"
-				'End If
-				'rootFileName.Trim("\"c)
-				'If rootFileName.IndexOf("\") <> -1 Then
-				'	rootFileName = rootFileName.Substring(rootFileName.LastIndexOf("\") + 1)
-				'End If
-				'Dim rootFilePath As String = exportLocation & rootFileName
-				'Dim datetimeNow As System.DateTime = System.DateTime.Now
-				'Dim errorFilePath As String = rootFilePath & "_ErrorLines_" & datetimeNow.Ticks & defaultExtension
-				'Dim errorReportPath As String = rootFilePath & "_ErrorReport_" & datetimeNow.Ticks & ".csv"
-				'System.IO.File.Move(rowsLocation, errorFilePath)
-				'System.IO.File.Move(errorsLocation, errorReportPath)
-			End With
-
+			Dim sr As kCura.Utility.GenericCsvReader
+			Try
+				With _bulkImportManager.GenerateNativeErrorFiles(_caseInfo.ArtifactID, _runID, True)
+					Me.WriteStatusLine(Windows.Process.EventType.Status, "Retrieving errors from server")
+					Dim downloader As New FileDownloader(DirectCast(_bulkImportManager.Credentials, System.Net.NetworkCredential), _caseInfo.DocumentPath, _caseInfo.DownloadHandlerURL, _bulkImportManager.CookieContainer, kCura.WinEDDS.Service.Settings.AuthenticationToken)
+					Dim errorsLocation As String = System.IO.Path.GetTempFileName
+					downloader.DownloadFile(errorsLocation, .LogKey, _caseInfo.ArtifactID.ToString)
+					sr = New kCura.Utility.GenericCsvReader(errorsLocation)
+					Dim line As String() = sr.ReadLine
+					While Not line Is Nothing
+						_errorCount += 1
+						Dim ht As New System.Collections.Hashtable
+						ht.Add("Message", line(1))
+						ht.Add("Identifier", line(2))
+						ht.Add("Line Number", line(0))
+						RaiseReportError(ht, Int32.Parse(line(0)), line(2), "server")
+						RaiseEvent StatusMessage(New kCura.Windows.Process.StatusEventArgs(Windows.Process.EventType.Error, Int32.Parse(line(0)) - 1, _recordCount, "[Line " & line(0) & "]" & line(1)))
+						line = sr.ReadLine
+					End While
+				End With
+			Catch ex As Exception
+				Try
+					sr.Close()
+				Catch
+				End Try
+			End Try
 		End Sub
 
 		Public Class Settings
