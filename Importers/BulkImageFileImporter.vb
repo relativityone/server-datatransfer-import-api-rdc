@@ -25,8 +25,6 @@ Namespace kCura.WinEDDS
 		Private _order As Int32
 		Private _csvwriter As System.Text.StringBuilder
 		Private _nextLine As String()
-		Private _errorLogFileName As String
-		Private _errorLogWriter As System.IO.StreamWriter
 		Private _autoNumberImages As Boolean
 		Private _copyFilesToRepository As Boolean
 		Private _repositoryPath As String
@@ -42,6 +40,11 @@ Namespace kCura.WinEDDS
 		Private _runId As String = ""
 		Private _settings As ImageLoadFile
 		Private _batchCount As Int32 = 0
+		Private _errorCount As Int32 = 0
+		Private _errorMessageFileLocation As String = ""
+		Private _errorRowsFileLocation As String = ""
+
+		Public Const MaxNumberOfErrorsInGrid As Int32 = 1000
 #End Region
 
 #Region "Accessors"
@@ -52,15 +55,9 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
-		Public ReadOnly Property ErrorLogFileName() As String
-			Get
-				Return _errorLogFileName
-			End Get
-		End Property
-
 		Public ReadOnly Property HasErrors() As Boolean
 			Get
-				Return _bulkImportManager.ImageRunHasErrors(_caseInfo.ArtifactID, _runId)
+				Return _errorCount > 0
 			End Get
 		End Property
 
@@ -175,7 +172,7 @@ Namespace kCura.WinEDDS
 					_bulkLoadFileWriter = New System.IO.StreamWriter(bulkLoadFilePath, False, System.Text.Encoding.Unicode)
 				End Try
 			End If
-
+			ManageErrors()
 		End Function
 
 		Public Overloads Overrides Function ReadFile(ByVal path As String) As Object
@@ -214,9 +211,6 @@ Namespace kCura.WinEDDS
 
 
 		Private Sub CompleteSuccess()
-			If Not _errorLogWriter Is Nothing Then
-				_errorLogWriter.Close()
-			End If
 			Me.Reader.Close()
 			If _productionArtifactID <> 0 Then _productionManager.DoPostImportProcessing(_fileUploader.CaseArtifactID, _productionArtifactID)
 			RaiseStatusEvent(kCura.Windows.Process.EventType.Progress, "End Image Upload")
@@ -225,10 +219,6 @@ Namespace kCura.WinEDDS
 		Private Sub CompleteError(ByVal ex As System.Exception)
 			Try
 				_bulkLoadFileWriter.Close()
-			Catch x As System.Exception
-			End Try
-			Try
-				_errorLogWriter.Close()
 			Catch x As System.Exception
 			End Try
 			Try
@@ -400,6 +390,7 @@ Namespace kCura.WinEDDS
 
 		Public Event FatalErrorEvent(ByVal message As String, ByVal ex As System.Exception)
 		Public Event StatusMessage(ByVal args As kCura.Windows.Process.StatusEventArgs)
+		Public Event ReportErrorEvent(ByVal row As System.Collections.IDictionary)
 
 		Private Sub RaiseFatalError(ByVal ex As System.Exception)
 			RaiseEvent FatalErrorEvent("Error processing line: " + CurrentLineNumber.ToString, ex)
@@ -412,6 +403,22 @@ Namespace kCura.WinEDDS
 		Private Sub _processObserver_CancelImport(ByVal processID As System.Guid) Handles _processController.HaltProcessEvent
 			_continue = False
 		End Sub
+
+		Private Sub RaiseReportError(ByVal row As System.Collections.Hashtable, ByVal lineNumber As Int32, ByVal identifier As String, ByVal type As String)
+			_errorCount += 1
+			If _errorMessageFileLocation = "" Then _errorMessageFileLocation = System.IO.Path.GetTempFileName
+			Dim errorMessageFileWriter As New System.IO.StreamWriter(_errorMessageFileLocation, True, System.Text.Encoding.Default)
+			If _errorCount < Me.MaxNumberOfErrorsInGrid Then
+				RaiseEvent ReportErrorEvent(row)
+			ElseIf _errorCount = Me.MaxNumberOfErrorsInGrid Then
+				Dim moretobefoundMessage As New System.Collections.Hashtable
+				moretobefoundMessage.Add("Message", "Maximum number of errors for display reached.  Export errors to view full list.")
+				RaiseEvent ReportErrorEvent(moretobefoundMessage)
+			End If
+			errorMessageFileWriter.WriteLine(String.Format("""{1}{0}{2}{0}{3}{0}{4}""", """,""", row("Line Number").ToString, row("DocumentID").ToString, row("FileID").ToString, row("Messages").ToString))
+			errorMessageFileWriter.Close()
+		End Sub
+
 
 #End Region
 
@@ -491,14 +498,62 @@ Namespace kCura.WinEDDS
 		End Class
 #End Region
 
+		Private Sub ManageErrors()
+			If Not _bulkImportManager.ImageRunHasErrors(_caseInfo.ArtifactID, _runId) Then Exit Sub
+			If _errorMessageFileLocation = "" Then _errorMessageFileLocation = System.IO.Path.GetTempFileName
+			If _errorRowsFileLocation = "" Then _errorRowsFileLocation = System.IO.Path.GetTempFileName
+			Dim w As System.IO.StreamWriter
+			Dim r As System.IO.StreamReader
+
+			Dim sr As kCura.Utility.GenericCsvReader
+			Try
+				With _bulkImportManager.GenerateImageErrorFiles(_caseInfo.ArtifactID, _runId, True)
+					Me.RaiseStatusEvent(Windows.Process.EventType.Status, "Retrieving errors from server")
+					Dim downloader As New FileDownloader(DirectCast(_bulkImportManager.Credentials, System.Net.NetworkCredential), _caseInfo.DocumentPath, _caseInfo.DownloadHandlerURL, _bulkImportManager.CookieContainer, kCura.WinEDDS.Service.Settings.AuthenticationToken)
+					Dim errorsLocation As String = System.IO.Path.GetTempFileName
+					downloader.DownloadFile(errorsLocation, .LogKey, _caseInfo.ArtifactID.ToString)
+					sr = New kCura.Utility.GenericCsvReader(errorsLocation)
+					Dim line As String() = sr.ReadLine
+					While Not line Is Nothing
+						_errorCount += 1
+						Dim ht As New System.Collections.Hashtable
+						ht.Add("Line Number", line(0))
+						ht.Add("DocumentID", line(1))
+						ht.Add("FileID", line(2))
+						ht.Add("Messages", line(3))
+						RaiseReportError(ht, Int32.Parse(line(0)), line(2), "server")
+						RaiseEvent StatusMessage(New kCura.Windows.Process.StatusEventArgs(Windows.Process.EventType.Error, Int32.Parse(line(0)) - 1, _fileLineCount, "[Line " & line(0) & "]" & line(3)))
+						line = sr.ReadLine
+					End While
+					sr.Close()
+					w = New System.IO.StreamWriter(_errorRowsFileLocation, True, System.Text.Encoding.Default)
+					r = New System.IO.StreamReader(.OpticonKey)
+					While Not r.Peek = -1
+						w.Write(ChrW(r.Read))
+					End While
+					w.Close()
+					r.Close()
+				End With
+			Catch ex As Exception
+				Try
+					sr.Close()
+				Catch
+				End Try
+				Try
+					w.Close()
+				Catch
+				End Try
+				Try
+					r.Close()
+				Catch
+				End Try
+			End Try
+		End Sub
+
+
+
 		Private Sub _processController_ExportServerErrors(ByVal exportLocation As String) Handles _processController.ExportServerErrorsEvent
-			With _bulkImportManager.GenerateImageErrorFiles(_caseInfo.ArtifactID, _runId, True)
-				Dim downloader As New FileDownloader(DirectCast(_bulkImportManager.Credentials, System.Net.NetworkCredential), _caseInfo.DocumentPath, _caseInfo.DownloadHandlerURL, _bulkImportManager.CookieContainer, kCura.WinEDDS.Service.Settings.AuthenticationToken)
-				Dim rowsLocation As String = System.IO.Path.GetTempFileName
-				Dim errorsLocation As String = System.IO.Path.GetTempFileName
-				downloader.DownloadFile(rowsLocation, .OpticonKey, _caseInfo.ArtifactID.ToString)
-				downloader.DownloadFile(errorsLocation, .LogKey, _caseInfo.ArtifactID.ToString)
-				Dim rootFileName As String = _filePath
+			Dim rootFileName As String = _filePath
 				Dim defaultExtension As String
 				If Not rootFileName.IndexOf(".") = -1 Then
 					defaultExtension = rootFileName.Substring(rootFileName.LastIndexOf("."))
@@ -515,10 +570,8 @@ Namespace kCura.WinEDDS
 				Dim datetimeNow As System.DateTime = System.DateTime.Now
 				Dim errorFilePath As String = rootFilePath & "_ErrorLines_" & datetimeNow.Ticks & defaultExtension
 				Dim errorReportPath As String = rootFilePath & "_ErrorReport_" & datetimeNow.Ticks & ".csv"
-				System.IO.File.Move(rowsLocation, errorFilePath)
-				System.IO.File.Move(errorsLocation, errorReportPath)
-			End With
-
+			System.IO.File.Move(_errorRowsFileLocation, errorFilePath)
+			System.IO.File.Move(_errorMessageFileLocation, errorReportPath)
 		End Sub
 		Private Sub _fileUploader_UploadStatusEvent(ByVal s As String) Handles _fileUploader.UploadStatusEvent
 			RaiseStatusEvent(kCura.Windows.Process.EventType.Status, s)

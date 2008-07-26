@@ -45,9 +45,14 @@ Namespace kCura.WinEDDS
 		Private Sub _imageFileImporter_FatalErrorEvent(ByVal message As String, ByVal ex As System.Exception) Handles _imageFileImporter.FatalErrorEvent
 			System.Threading.Monitor.Enter(Me.ProcessObserver)
 			Me.ProcessObserver.RaiseFatalExceptionEvent(ex)
-			Me.ProcessObserver.RaiseProcessCompleteEvent(False, _imageFileImporter.ErrorLogFileName, True)
+			Me.ProcessObserver.RaiseProcessCompleteEvent(False, "", True)
 			_hasRunProcessComplete = True
 			System.Threading.Monitor.Exit(Me.ProcessObserver)
 		End Sub
+
+		Private Sub _imageFileImporter_ReportErrorEvent(ByVal row As System.Collections.IDictionary) Handles _imageFileImporter.ReportErrorEvent
+			Me.ProcessObserver.RaiseReportErrorEvent(row)
+		End Sub
+
 	End Class
 End Namespace
