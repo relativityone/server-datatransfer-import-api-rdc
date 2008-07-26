@@ -327,6 +327,9 @@ Namespace kCura.WinEDDS
 						image.BatesNumber = documentInfo.IdentifierValue
 					Else
 						image.BatesNumber = drv("Identifier").ToString
+						If image.BatesNumber.IndexOf(image.FileGuid) <> -1 Then
+							image.BatesNumber = documentInfo.IdentifierValue & "_" & i.ToString.PadLeft(imagesView.Count.ToString.Length, "0"c)
+						End If
 					End If
 					image.BatesNumber = drv("Identifier").ToString
 					Dim filenameExtension As String = ""
