@@ -1,7 +1,7 @@
 <VisualStudioProject>
     <VisualBasic
         ProjectType = "Local"
-        ProductVersion = "7.10.6030"
+        ProductVersion = "7.10.3077"
         SchemaVersion = "2.0"
         ProjectGuid = "{B092D1B2-909B-4EF0-9369-A81675C3FC18}"
     >
@@ -124,6 +124,16 @@
                     RelPath = "EventType.vb"
                     SubType = "Code"
                     BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "MessageBoxForm.vb"
+                    SubType = "Form"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "MessageBoxForm.resx"
+                    DependentUpon = "MessageBoxForm.vb"
+                    BuildAction = "EmbeddedResource"
                 />
                 <File
                     RelPath = "ProcessBase.vb"

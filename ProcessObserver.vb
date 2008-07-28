@@ -35,7 +35,7 @@ Namespace kCura.Windows.Process
     Public Event OnProcessEvent(ByVal evt As ProcessEvent)
     Public Event OnProcessProgressEvent(ByVal evt As ProcessProgressEvent)
 		Public Event OnProcessComplete(ByVal closeForm As Boolean, ByVal exportFilePath As String, ByVal exportLogs As Boolean)
-		Public Event StatusBarEvent(ByVal message As String)
+		Public Event StatusBarEvent(ByVal message As String, ByVal popupText As String)
 		Public Event ShowReportEvent(ByVal datasource As System.Data.DataTable, ByVal maxlengthExceeded As Boolean)
 		Public Event ErrorReportEvent(ByVal row As System.Collections.IDictionary)
 #End Region
@@ -82,8 +82,8 @@ Namespace kCura.Windows.Process
 			WriteToFile(evt)
 		End Sub
 
-		Public Sub RaiseStatusBarEvent(ByVal message As String)
-			RaiseEvent StatusBarEvent(message)
+		Public Sub RaiseStatusBarEvent(ByVal message As String, ByVal popupText As String)
+			RaiseEvent StatusBarEvent(message, popupText)
 		End Sub
 
 		Public Sub RaiseReportErrorEvent(ByVal row As System.Collections.IDictionary)

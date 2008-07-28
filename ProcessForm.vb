@@ -142,6 +142,7 @@ Namespace kCura.Windows.Process
 			Me._saveOutputButton.Size = New System.Drawing.Size(108, 23)
 			Me._saveOutputButton.TabIndex = 10
 			Me._saveOutputButton.Text = "Save Progress Log"
+			Me._saveOutputButton.Visible = False
 			'
 			'_saveFileDialog
 			'
@@ -304,9 +305,6 @@ Namespace kCura.Windows.Process
 			'_exportErrorFileDialog
 			'
 			'
-			'_exportErrorFilesTo
-			'
-			'
 			'ProgressForm
 			'
 			Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
@@ -344,7 +342,7 @@ Namespace kCura.Windows.Process
 		Private _exportErrorFileLocation As String = ""
 		Private _hasReceivedFatalError As Boolean = False
 		Private _hasExportedErrors As Boolean = False
-
+		Private _statusBarPopupText As String = ""
 		Public Property ProcessID() As Guid
 			Get
 				Return _processId
@@ -584,8 +582,19 @@ Namespace kCura.Windows.Process
 			_summaryOutput.Text = _summaryOutput.Text + what + vbCrLf
 		End Sub
 
-		Private Sub _processObserver_StatusBarEvent(ByVal message As String) Handles _processObserver.StatusBarEvent
+		Private Sub _processObserver_StatusBarEvent(ByVal message As String, popupText as string) Handles _processObserver.StatusBarEvent
 			_statusBar.Text = message
+			_statusBarPopupText = popupText
+			If _statusBarPopupText Is Nothing Then _statusBarPopupText = ""
+			If _statusBarPopupText = "" Then
+				_statusBar.ForeColor = System.Drawing.Color.Black
+				_statusBar.Cursor = System.Windows.Forms.Cursors.Default
+				_statusBar.Font = New System.Drawing.Font(_statusBar.Font, FontStyle.Regular)
+			Else
+				_statusBar.ForeColor = System.Drawing.Color.Blue
+				_statusBar.Cursor = System.Windows.Forms.Cursors.Hand
+				_statusBar.Font = New System.Drawing.Font(_statusBar.Font, FontStyle.Underline)
+			End If
 		End Sub
 
 		Private Sub _processObserver_ShowReportEvent(ByVal datasource As System.Data.DataTable, ByVal maxlengthExceeded As Boolean) Handles _processObserver.ShowReportEvent
@@ -641,6 +650,14 @@ Namespace kCura.Windows.Process
 				newRow(key) = row(key).ToString
 			Next
 			dataSource.Rows.Add(newRow)
+		End Sub
+
+		Private Sub _statusBar_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles _statusBar.Click
+			If _statusBarPopupText <> "" Then
+				Dim frm As New MessageBoxForm
+				frm.Show()
+				frm._messageBox.Text = _statusBarPopupText
+			End If
 		End Sub
 	End Class
 
