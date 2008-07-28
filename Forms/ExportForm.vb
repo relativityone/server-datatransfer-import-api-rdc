@@ -68,6 +68,7 @@ Public Class ExportForm
 	Friend WithEvents _appendOriginalFilename As System.Windows.Forms.CheckBox
 	Friend WithEvents GroupBox3 As System.Windows.Forms.GroupBox
 	Friend WithEvents _nativeFileNameSource As System.Windows.Forms.ComboBox
+	Friend WithEvents _exportFullTextAsFile As System.Windows.Forms.CheckBox
 	<System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
 		Dim resources As System.Resources.ResourceManager = New System.Resources.ResourceManager(GetType(ExportForm))
 		Me.MainMenu1 = New System.Windows.Forms.MainMenu
@@ -76,6 +77,7 @@ Public Class ExportForm
 		Me.MenuItem1 = New System.Windows.Forms.MenuItem
 		Me._settingsMenuVolumeInfoItem = New System.Windows.Forms.MenuItem
 		Me._filtersBox = New System.Windows.Forms.GroupBox
+		Me._exportFullTextAsFile = New System.Windows.Forms.CheckBox
 		Me._exportImages = New System.Windows.Forms.CheckBox
 		Me._exportNativeFiles = New System.Windows.Forms.CheckBox
 		Me._exportFullText = New System.Windows.Forms.CheckBox
@@ -145,6 +147,7 @@ Public Class ExportForm
 		'
 		'_filtersBox
 		'
+		Me._filtersBox.Controls.Add(Me._exportFullTextAsFile)
 		Me._filtersBox.Controls.Add(Me._exportImages)
 		Me._filtersBox.Controls.Add(Me._exportNativeFiles)
 		Me._filtersBox.Controls.Add(Me._exportFullText)
@@ -156,13 +159,22 @@ Public Class ExportForm
 		Me._filtersBox.TabStop = False
 		Me._filtersBox.Text = "Export"
 		'
+		'_exportFullTextAsFile
+		'
+		Me._exportFullTextAsFile.Enabled = False
+		Me._exportFullTextAsFile.Location = New System.Drawing.Point(340, 48)
+		Me._exportFullTextAsFile.Name = "_exportFullTextAsFile"
+		Me._exportFullTextAsFile.Size = New System.Drawing.Size(152, 20)
+		Me._exportFullTextAsFile.TabIndex = 5
+		Me._exportFullTextAsFile.Text = "Export Full Text as File"
+		'
 		'_exportImages
 		'
 		Me._exportImages.Checked = True
 		Me._exportImages.CheckState = System.Windows.Forms.CheckState.Checked
 		Me._exportImages.Location = New System.Drawing.Point(244, 48)
 		Me._exportImages.Name = "_exportImages"
-		Me._exportImages.Size = New System.Drawing.Size(204, 20)
+		Me._exportImages.Size = New System.Drawing.Size(96, 20)
 		Me._exportImages.TabIndex = 4
 		Me._exportImages.Text = "Export Images"
 		'
@@ -567,6 +579,7 @@ Public Class ExportForm
 		End Select
 		_exportFile.Overwrite = _overwriteButton.Checked
 		_exportFile.ExportFullText = _exportFullText.Checked
+		_exportFile.ExportFullTextAsFile = _exportFullTextAsFile.Checked
 		_exportFile.ExportNative = _exportNativeFiles.Checked
 		_exportFile.QuoteDelimiter = ChrW(CType(_quoteDelimiter.SelectedValue, Int32))
 		_exportFile.RecordDelimiter = ChrW(CType(_recordDelimiter.SelectedValue, Int32))
@@ -630,6 +643,7 @@ Public Class ExportForm
 			_volumeInfo.SubdirectoryMaxSize = 500
 			_volumeInfo.SubdirectoryImagePrefix = "IMG"
 			_volumeInfo.SubdirectoryNativePrefix = "NATIVE"
+			_volumeInfo.SubdirectoryFullTextPrefix = "TEXT"
 			_volumeInfo.SubdirectoryStartNumber = 1
 			_volumeInfo.VolumeMaxSize = 650
 			_volumeInfo.VolumePrefix = "VOL"
@@ -816,5 +830,13 @@ Public Class ExportForm
 
 	Private Sub ComboBox1_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _nativeFileNameSource.SelectedIndexChanged
 		RunMenu.Enabled = ReadyToRun()
+	End Sub
+
+	Private Sub _exportFullText_CheckedChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles _exportFullText.CheckedChanged
+		If _exportFullText.Checked Then
+			_exportFullTextAsFile.Enabled = True
+		Else
+			_exportFullTextAsFile.Enabled = False
+		End If
 	End Sub
 End Class

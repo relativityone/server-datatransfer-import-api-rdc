@@ -48,6 +48,8 @@ Namespace kCura.EDDS.WinForm
 		Friend WithEvents _volumePrefix As System.Windows.Forms.TextBox
 		Friend WithEvents _okButton As System.Windows.Forms.Button
 		Friend WithEvents _cancelButton As System.Windows.Forms.Button
+		Friend WithEvents _subdirectoryTextPrefix As System.Windows.Forms.TextBox
+		Friend WithEvents Label1 As System.Windows.Forms.Label
 		<System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
 			Dim resources As System.Resources.ResourceManager = New System.Resources.ResourceManager(GetType(VolumeInfoForm))
 			Me._subDirectoryInformationGroupBox = New System.Windows.Forms.GroupBox
@@ -68,6 +70,8 @@ Namespace kCura.EDDS.WinForm
 			Me._volumePrefix = New System.Windows.Forms.TextBox
 			Me._okButton = New System.Windows.Forms.Button
 			Me._cancelButton = New System.Windows.Forms.Button
+			Me._subdirectoryTextPrefix = New System.Windows.Forms.TextBox
+			Me.Label1 = New System.Windows.Forms.Label
 			Me._subDirectoryInformationGroupBox.SuspendLayout()
 			CType(Me._subDirectoryMaxSize, System.ComponentModel.ISupportInitialize).BeginInit()
 			CType(Me._subdirectoryStartNumber, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -78,6 +82,8 @@ Namespace kCura.EDDS.WinForm
 			'
 			'_subDirectoryInformationGroupBox
 			'
+			Me._subDirectoryInformationGroupBox.Controls.Add(Me._subdirectoryTextPrefix)
+			Me._subDirectoryInformationGroupBox.Controls.Add(Me.Label1)
 			Me._subDirectoryInformationGroupBox.Controls.Add(Me._subDirectoryNativePrefix)
 			Me._subDirectoryInformationGroupBox.Controls.Add(Me.Label13)
 			Me._subDirectoryInformationGroupBox.Controls.Add(Me._subDirectoryMaxSize)
@@ -88,7 +94,7 @@ Namespace kCura.EDDS.WinForm
 			Me._subDirectoryInformationGroupBox.Controls.Add(Me._subdirectoryImagePrefix)
 			Me._subDirectoryInformationGroupBox.Location = New System.Drawing.Point(8, 120)
 			Me._subDirectoryInformationGroupBox.Name = "_subDirectoryInformationGroupBox"
-			Me._subDirectoryInformationGroupBox.Size = New System.Drawing.Size(280, 132)
+			Me._subDirectoryInformationGroupBox.Size = New System.Drawing.Size(280, 160)
 			Me._subDirectoryInformationGroupBox.TabIndex = 16
 			Me._subDirectoryInformationGroupBox.TabStop = False
 			Me._subDirectoryInformationGroupBox.Text = "Subdirectory Information"
@@ -114,7 +120,7 @@ Namespace kCura.EDDS.WinForm
 			'
 			'_subDirectoryMaxSize
 			'
-			Me._subDirectoryMaxSize.Location = New System.Drawing.Point(88, 104)
+			Me._subDirectoryMaxSize.Location = New System.Drawing.Point(88, 132)
 			Me._subDirectoryMaxSize.Maximum = New Decimal(New Integer() {2000000, 0, 0, 0})
 			Me._subDirectoryMaxSize.Name = "_subDirectoryMaxSize"
 			Me._subDirectoryMaxSize.Size = New System.Drawing.Size(176, 20)
@@ -123,7 +129,7 @@ Namespace kCura.EDDS.WinForm
 			'
 			'_subdirectoryStartNumber
 			'
-			Me._subdirectoryStartNumber.Location = New System.Drawing.Point(88, 76)
+			Me._subdirectoryStartNumber.Location = New System.Drawing.Point(88, 104)
 			Me._subdirectoryStartNumber.Maximum = New Decimal(New Integer() {2000000, 0, 0, 0})
 			Me._subdirectoryStartNumber.Name = "_subdirectoryStartNumber"
 			Me._subdirectoryStartNumber.Size = New System.Drawing.Size(176, 20)
@@ -133,7 +139,7 @@ Namespace kCura.EDDS.WinForm
 			'Label9
 			'
 			Me.Label9.ImageAlign = System.Drawing.ContentAlignment.MiddleRight
-			Me.Label9.Location = New System.Drawing.Point(28, 104)
+			Me.Label9.Location = New System.Drawing.Point(28, 132)
 			Me.Label9.Name = "Label9"
 			Me.Label9.Size = New System.Drawing.Size(60, 16)
 			Me.Label9.TabIndex = 15
@@ -143,7 +149,7 @@ Namespace kCura.EDDS.WinForm
 			'Label10
 			'
 			Me.Label10.ImageAlign = System.Drawing.ContentAlignment.MiddleRight
-			Me.Label10.Location = New System.Drawing.Point(42, 80)
+			Me.Label10.Location = New System.Drawing.Point(42, 112)
 			Me.Label10.Name = "Label10"
 			Me.Label10.Size = New System.Drawing.Size(44, 16)
 			Me.Label10.TabIndex = 14
@@ -243,7 +249,7 @@ Namespace kCura.EDDS.WinForm
 			'
 			'_okButton
 			'
-			Me._okButton.Location = New System.Drawing.Point(132, 260)
+			Me._okButton.Location = New System.Drawing.Point(132, 288)
 			Me._okButton.Name = "_okButton"
 			Me._okButton.TabIndex = 17
 			Me._okButton.Text = "OK"
@@ -251,17 +257,36 @@ Namespace kCura.EDDS.WinForm
 			'_cancelButton
 			'
 			Me._cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel
-			Me._cancelButton.Location = New System.Drawing.Point(212, 260)
+			Me._cancelButton.Location = New System.Drawing.Point(212, 288)
 			Me._cancelButton.Name = "_cancelButton"
 			Me._cancelButton.TabIndex = 18
 			Me._cancelButton.Text = "Cancel"
+			'
+			'_subdirectoryTextPrefix
+			'
+			Me._subdirectoryTextPrefix.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+			Me._subdirectoryTextPrefix.Location = New System.Drawing.Point(88, 76)
+			Me._subdirectoryTextPrefix.Name = "_subdirectoryTextPrefix"
+			Me._subdirectoryTextPrefix.Size = New System.Drawing.Size(176, 20)
+			Me._subdirectoryTextPrefix.TabIndex = 22
+			Me._subdirectoryTextPrefix.Text = "TEXT"
+			'
+			'Label1
+			'
+			Me.Label1.ImageAlign = System.Drawing.ContentAlignment.MiddleRight
+			Me.Label1.Location = New System.Drawing.Point(8, 80)
+			Me.Label1.Name = "Label1"
+			Me.Label1.Size = New System.Drawing.Size(80, 16)
+			Me.Label1.TabIndex = 21
+			Me.Label1.Text = "Text Prefix: "
+			Me.Label1.TextAlign = System.Drawing.ContentAlignment.MiddleRight
 			'
 			'VolumeInfoForm
 			'
 			Me.AcceptButton = Me._okButton
 			Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
 			Me.CancelButton = Me._cancelButton
-			Me.ClientSize = New System.Drawing.Size(296, 291)
+			Me.ClientSize = New System.Drawing.Size(296, 315)
 			Me.Controls.Add(Me._cancelButton)
 			Me.Controls.Add(Me._okButton)
 			Me.Controls.Add(Me._subDirectoryInformationGroupBox)
@@ -304,6 +329,12 @@ Namespace kCura.EDDS.WinForm
 				retval.SubdirectoryImagePrefix = _subdirectoryImagePrefix.Text
 			Else
 				MsgBox("Subdirectory Image Prefix cannot be blank.", MsgBoxStyle.Exclamation)
+				Exit Sub
+			End If
+			If _subdirectoryTextPrefix.Text.Trim <> "" Then
+				retval.SubdirectoryFullTextPrefix = _subdirectoryTextPrefix.Text
+			Else
+				MsgBox("Subdirectory Text Prefix cannot be blank.", MsgBoxStyle.Exclamation)
 				Exit Sub
 			End If
 			retval.SubdirectoryMaxSize = CType(_subDirectoryMaxSize.Value, Int64)
