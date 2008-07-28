@@ -5,6 +5,7 @@ Namespace kCura.WinEDDS.Exporters
 		Private _volumeMaxSize As Int64
 		Private _subdirectoryImagePrefix As String
 		Private _subdirectoryNativePrefix As String
+		Private _subdirectoryTextPrefix As String
 		Private _subdirectoryStartNumber As Int32
 		Private _subdirectoryMaxSize As Int64
 
@@ -50,6 +51,15 @@ Namespace kCura.WinEDDS.Exporters
 			End Get
 			Set(ByVal value As String)
 				_subdirectoryNativePrefix = value
+			End Set
+		End Property
+
+		Public Property SubdirectoryFullTextPrefix() As String
+			Get
+				Return _subdirectoryTextPrefix
+			End Get
+			Set(ByVal value As String)
+				_subdirectoryTextPrefix = value
 			End Set
 		End Property
 

@@ -33,9 +33,6 @@ Namespace kCura.WinEDDS
 			Native
 		End Enum
 
-
-
-
 #Region "Accessors"
 		Public ReadOnly Property ErrorLogFileName() As String
 			Get
@@ -67,6 +64,12 @@ Namespace kCura.WinEDDS
 		Private ReadOnly Property CurrentNativeSubdirectoryLabel() As String
 			Get
 				Return _settings.VolumeInfo.SubdirectoryNativePrefix & _currentSubdirectoryNumber.ToString.PadLeft(_subdirectoryLabelPaddingWidth, "0"c)
+			End Get
+		End Property
+
+		Private ReadOnly Property CurrentFullTextSubdirectoryLabel() As String
+			Get
+				Return _settings.VolumeInfo.SubdirectoryFullTextPrefix & _currentSubdirectoryNumber.ToString.PadLeft(_subdirectoryLabelPaddingWidth, "0"c)
 			End Get
 		End Property
 
@@ -197,20 +200,6 @@ Namespace kCura.WinEDDS
 				End Try
 				_timekeeper.MarkEnd("VolumeManager_DownloadNative")
 			End If
-			If totalFileSize + _currentVolumeSize > Me.VolumeMaxSize Then
-				If _currentVolumeSize = 0 Then
-					updateVolumeAfterExport = True
-				Else
-					Me.UpdateVolume()
-				End If
-			ElseIf documentInfo.ImageCount + _currentImageSubdirectorySize >= Me.SubDirectoryMaxSize OrElse _
-			 documentInfo.NativeCount + _currentNativeSubdirectorySize >= Me.SubDirectoryMaxSize Then
-				If _currentImageSubdirectorySize = 0 OrElse _currentNativeSubdirectorySize = 0 Then
-					updateSubDirectoryAfterExport = True
-				Else
-					Me.UpdateSubdirectory()
-				End If
-			End If
 			Dim tempLocalFullTextFilePath As String = ""
 			If Me.Settings.ExportFullText OrElse Me.Settings.LogFileFormat = LoadFileType.FileFormat.IPRO_FullText Then
 				If documentInfo.HasFullText Then
@@ -234,6 +223,21 @@ Namespace kCura.WinEDDS
 							End If
 						End Try
 					End While
+					If Me.Settings.ExportFullTextAsFile Then totalFileSize += New System.IO.FileInfo(tempLocalFullTextFilePath).Length
+				End If
+			End If
+			If totalFileSize + _currentVolumeSize > Me.VolumeMaxSize Then
+				If _currentVolumeSize = 0 Then
+					updateVolumeAfterExport = True
+				Else
+					Me.UpdateVolume()
+				End If
+			ElseIf documentInfo.ImageCount + _currentImageSubdirectorySize >= Me.SubDirectoryMaxSize OrElse _
+			 documentInfo.NativeCount + _currentNativeSubdirectorySize >= Me.SubDirectoryMaxSize Then
+				If _currentImageSubdirectorySize = 0 OrElse _currentNativeSubdirectorySize = 0 Then
+					updateSubDirectoryAfterExport = True
+				Else
+					Me.UpdateSubdirectory()
 				End If
 			End If
 			If Me.Settings.ExportImages Then
@@ -265,14 +269,14 @@ Namespace kCura.WinEDDS
 				_nativeFileWriter.Write(_columnHeaderString)
 				_hasWrittenColumnHeaderString = True
 			End If
-			Me.UpdateLoadFile(documentInfo.DataRow, documentInfo.HasFullText, documentInfo.DocumentArtifactID, nativeLocation, tempLocalFullTextFilePath)
+			Me.UpdateLoadFile(documentInfo.DataRow, documentInfo.HasFullText, documentInfo.DocumentArtifactID, nativeLocation, tempLocalFullTextFilePath, documentInfo)
 			_parent.DocumentsExported += 1
 			_currentVolumeSize += totalFileSize
 			_currentNativeSubdirectorySize += documentInfo.NativeCount
 			_currentImageSubdirectorySize += documentInfo.ImageCount
 			If updateSubDirectoryAfterExport Then Me.UpdateSubdirectory()
 			If updateVolumeAfterExport Then Me.UpdateVolume()
-
+			_parent.WriteUpdate("Document " & documentInfo.IdentifierValue & " exported.", False)
 		End Sub
 
 		Private Function GetLocalNativeFilePath(ByVal doc As Exporters.DocumentExportInfo, ByVal nativeFileName As String) As String
@@ -281,6 +285,14 @@ Namespace kCura.WinEDDS
 			localFilePath &= Me.CurrentVolumeLabel & "\" & Me.CurrentNativeSubdirectoryLabel & "\"
 			If Not System.IO.Directory.Exists(localFilePath) Then System.IO.Directory.CreateDirectory(localFilePath)
 			Return localFilePath & nativeFileName
+		End Function
+
+		Private Function GetLocalTextFilePath(ByVal doc As Exporters.DocumentExportInfo) As String
+			Dim localFilePath As String = Me.Settings.FolderPath
+			If localFilePath.Chars(localFilePath.Length - 1) <> "\"c Then localFilePath &= "\"
+			localFilePath &= Me.CurrentVolumeLabel & "\" & Me.CurrentFullTextSubdirectoryLabel & "\"
+			If Not System.IO.Directory.Exists(localFilePath) Then System.IO.Directory.CreateDirectory(localFilePath)
+			Return localFilePath & doc.IdentifierValue & ".txt"
 		End Function
 
 		Private Function GetNativeFileName(ByVal doc As Exporters.DocumentExportInfo) As String
@@ -512,7 +524,7 @@ Namespace kCura.WinEDDS
 				End If
 			End If
 			_timekeeper.MarkStart("VolumeManager_ExportNative_WriteStatus")
-			_parent.WriteUpdate(String.Format("Finished exporting document {0}.", systemFileName), False)
+			'_parent.WriteStatusLine(Windows.Process.EventType.Progress, String.Format("Finished exporting document {0}.", systemFileName), False)
 			_timekeeper.MarkEnd("VolumeManager_ExportNative_WriteStatus")
 		End Function
 
@@ -552,7 +564,7 @@ Namespace kCura.WinEDDS
 			Return New System.IO.FileInfo(tempFile).Length
 		End Function
 
-		Public Sub UpdateLoadFile(ByVal row As System.Data.DataRow, ByVal hasFullText As Boolean, ByVal documentArtifactID As Int32, ByVal nativeLocation As String, ByVal fullTextTempFile As String)
+		Public Sub UpdateLoadFile(ByVal row As System.Data.DataRow, ByVal hasFullText As Boolean, ByVal documentArtifactID As Int32, ByVal nativeLocation As String, ByVal fullTextTempFile As String, ByVal doc As Exporters.DocumentExportInfo)
 			Dim count As Int32
 			Dim fieldValue As String
 			Dim retString As New System.Text.StringBuilder
@@ -598,26 +610,39 @@ Namespace kCura.WinEDDS
 					bodyText = New System.Text.StringBuilder("")
 					_nativeFileWriter.Write(String.Format("{2}{0}{1}{0}" & vbNewLine, _settings.QuoteDelimiter, bodyText.ToString, _settings.RecordDelimiter))
 				Else
-					Dim sr As New System.IO.StreamReader(fullTextTempFile, System.Text.Encoding.Unicode)
-					Dim c As Int32 = sr.Read
-					_nativeFileWriter.Write(_settings.RecordDelimiter)
-					_nativeFileWriter.Write(_settings.QuoteDelimiter)
-					While Not c = -1
-						Select Case c
-							Case AscW(_settings.QuoteDelimiter)
-								_nativeFileWriter.Write(_settings.QuoteDelimiter & _settings.QuoteDelimiter)
-							Case 13, 10
-								_nativeFileWriter.Write(_settings.NewlineDelimiter)
-								If sr.Peek = 10 Then
-									sr.Read()
-								End If
-							Case Else
-								_nativeFileWriter.Write(ChrW(c))
-						End Select
-						c = sr.Read
-					End While
-					_nativeFileWriter.Write(_settings.QuoteDelimiter)
-					sr.Close()
+					Select Case Me.Settings.ExportFullTextAsFile
+						Case True
+							Dim localTextPath As String = Me.GetLocalTextFilePath(doc)
+							If _settings.Overwrite Then
+								System.IO.File.Delete(localTextPath)
+								System.IO.File.Move(fullTextTempFile, localTextPath)
+								_parent.WriteStatusLine(kCura.Windows.Process.EventType.Status, localTextPath & " overwritten", False)
+							Else
+								_parent.WriteWarning(localTextPath & " already exists. Skipping file export.")
+							End If
+							_nativeFileWriter.Write(String.Format("{2}{0}{1}{0}" & vbNewLine, _settings.QuoteDelimiter, localTextPath, _settings.RecordDelimiter))
+						Case False
+							Dim sr As New System.IO.StreamReader(fullTextTempFile, System.Text.Encoding.Unicode)
+							Dim c As Int32 = sr.Read
+							_nativeFileWriter.Write(_settings.RecordDelimiter)
+							_nativeFileWriter.Write(_settings.QuoteDelimiter)
+							While Not c = -1
+								Select Case c
+									Case AscW(_settings.QuoteDelimiter)
+										_nativeFileWriter.Write(_settings.QuoteDelimiter & _settings.QuoteDelimiter)
+									Case 13, 10
+										_nativeFileWriter.Write(_settings.NewlineDelimiter)
+										If sr.Peek = 10 Then
+											sr.Read()
+										End If
+									Case Else
+										_nativeFileWriter.Write(ChrW(c))
+								End Select
+								c = sr.Read
+							End While
+							_nativeFileWriter.Write(_settings.QuoteDelimiter)
+							sr.Close()
+					End Select
 					Try
 						System.IO.File.Delete(fullTextTempFile)
 					Catch

@@ -14,6 +14,7 @@ Namespace kCura.WinEDDS
 		Private _cookieContainer As System.Net.CookieContainer
 		Private _authenticationToken As String
 		Private _userManager As kCura.WinEDDS.Service.UserManager
+		Private _isBcpEnabled As Boolean = True
 		Private Shared _locationAccessMatrix As New System.Collections.Hashtable
 
 		Public Sub SetDesintationFolderName(ByVal value As String)

@@ -173,11 +173,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "ExportSearchProcess.vb"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "FileDownloader.vb"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -194,41 +189,6 @@
                 />
                 <File
                     RelPath = "FullTextManager.vb"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "GenericImportProcess.vb"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "ImportFileDirectoryProcess.vb"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "ImportFileDirectorySettings.vb"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "ImportImageFileProcess.vb"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "ImportLoadFileProcess.vb"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "PreviewImageFileProcess.vb"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "PreviewLoadFileProcess.vb"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -382,7 +342,46 @@
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
-                <Folder RelPath = "Process\" />
+                <File
+                    RelPath = "Process\ExportSearchProcess.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Process\GenericImportProcess.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Process\ImportFileDirectoryProcess.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Process\ImportFileDirectorySettings.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Process\ImportImageFileProcess.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Process\ImportLoadFileProcess.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Process\PreviewImageFileProcess.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Process\PreviewLoadFileProcess.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
                 <File
                     RelPath = "PropertyExtractor\EML.vb"
                     SubType = "Code"

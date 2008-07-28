@@ -828,7 +828,7 @@ Namespace kCura.WinEDDS
 		Public Event StatusMessage(ByVal args As kCura.Windows.Process.StatusEventArgs)
 		Public Event EndFileImport()
 		Public Event StartFileImport()
-		Public Event UploadModeChangeEvent(ByVal mode As String)
+		Public Event UploadModeChangeEvent(ByVal mode As String, ByVal isBulkEnabled As Boolean)
 
 #Region "File Prep Event"
 		Public Event FilePrepEvent(ByVal e As FilePrepEventArgs)
@@ -908,8 +908,8 @@ Namespace kCura.WinEDDS
 
 #Region "Event Handlers"
 
-		Private Sub _uploader_UploadModeChangeEvent(ByVal mode As String) Handles _uploader.UploadModeChangeEvent
-			RaiseEvent UploadModeChangeEvent(mode)
+		Private Sub _uploader_UploadModeChangeEvent(ByVal mode As String, ByVal isBulkEnabled As Boolean) Handles _uploader.UploadModeChangeEvent
+			RaiseEvent UploadModeChangeEvent(mode, isBulkEnabled)
 		End Sub
 
 		Private Sub _processController_HaltProcessEvent(ByVal processID As System.Guid) Handles _processController.HaltProcessEvent

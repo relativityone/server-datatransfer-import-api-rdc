@@ -10,7 +10,7 @@ Namespace kCura.WinEDDS
 		Private _type As Type
 		Private _destinationFolderPath As String
 		Private _caseArtifactID As Int32
-
+		Private _isBulkEnabled As Boolean = True
 		Public Sub SetDesintationFolderName(ByVal value As String)
 			_destinationFolderPath = value
 		End Sub
@@ -53,7 +53,7 @@ Namespace kCura.WinEDDS
 			End Get
 			Set(ByVal value As Type)
 				_type = value
-				RaiseEvent UploadModeChangeEvent(value.ToString)
+				RaiseEvent UploadModeChangeEvent(value.ToString, _isBulkEnabled)
 			End Set
 		End Property
 
@@ -87,6 +87,8 @@ Namespace kCura.WinEDDS
 				Return retval
 			Catch ex As Exception
 				If ex.ToString.ToLower.IndexOf("nobcpdirectoryexception") <> -1 Then
+					_isBulkEnabled = False
+					Me.UploaderType = _type
 					Return String.Empty
 				Else
 					Throw
@@ -215,7 +217,7 @@ Namespace kCura.WinEDDS
 
 		Public Event UploadStatusEvent(ByVal message As String)
 		Public Event UploadWarningEvent(ByVal message As String)
-		Public Event UploadModeChangeEvent(ByVal mode As String)
+		Public Event UploadModeChangeEvent(ByVal mode As String, ByVal isBulkEnabled As Boolean)
 
 
 	End Class

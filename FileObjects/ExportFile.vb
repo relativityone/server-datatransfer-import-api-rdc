@@ -15,6 +15,7 @@ Namespace kCura.WinEDDS
 		Protected _credential As Net.NetworkCredential
 		Protected _cookieContainer As System.Net.CookieContainer
 		Protected _exportFullText As Boolean
+		Protected _exportFullTextAsFile As Boolean
 		Protected _exportNative As Boolean
 		Protected _logFileFormat As kCura.WinEDDS.LoadFileType.FileFormat
 		Protected _renameFilesToIdentifier As Boolean
@@ -178,6 +179,15 @@ Namespace kCura.WinEDDS
 			End Get
 			Set(ByVal value As Boolean)
 				_exportFullText = value
+			End Set
+		End Property
+
+		Public Property ExportFullTextAsFile() As Boolean
+			Get
+				Return _exportFullTextAsFile
+			End Get
+			Set(ByVal value As Boolean)
+				_exportFullTextAsFile = value
 			End Set
 		End Property
 

@@ -11,6 +11,7 @@ Namespace kCura.WinEDDS
 		Private _timeZoneOffset As Int32
 		Private WithEvents _newlineCounter As kCura.Utility.File.LineCounter
 		Private _hasRunPRocessComplete As Boolean = False
+		Private _uploadModeText As String = Nothing
 		Public Property TimeZoneOffset() As Int32
 			Get
 				Return _timeZoneOffset
@@ -72,8 +73,27 @@ Namespace kCura.WinEDDS
 			System.Threading.Monitor.Exit(Me.ProcessObserver)
 		End Sub
 
-		Private Sub _loadFileImporter_UploadModeChangeEvent(ByVal mode As String) Handles _loadFileImporter.UploadModeChangeEvent
-			Me.ProcessObserver.RaiseStatusBarEvent("Upload mode: " & mode)
+		Private Sub _loadFileImporter_UploadModeChangeEvent(ByVal mode As String, ByVal isBulkEnabled As Boolean) Handles _loadFileImporter.UploadModeChangeEvent
+			If _uploadModeText Is Nothing Then
+				Dim sb As New System.Text.StringBuilder
+				sb.Append("FILE TRANSFER MODES:" & vbNewLine)
+				sb.Append(" • Direct - The logged-on user has rights to directly access the document repository specified in the file transfer event.  This is the fastest option and its use should be encouraged, although if the logged-on user is accessing Relativity from an outside network then the only available option is web mode.")
+				sb.Append(vbNewLine & vbNewLine)
+				sb.Append(" • Web - The document repository is accessed through the Relativity web service API.  This is the slower of the two methods, but is globally available.")
+				sb.Append(vbNewLine & vbNewLine)
+				sb.Append("SQL INSERT MODES:" & vbNewLine)
+				sb.Append(" • Bulk - The upload process has access to the SQL share on the appropriate case database.  This ensures the fastest transfer of information between the desktop client and the relativity servers.")
+				sb.Append(vbNewLine & vbNewLine)
+				sb.Append(" • Single - The upload process has NO access to the SQL share on the appropriate case database.  This is a slower method of import - if the process is using single mode, speak to an admin to see if a SQL share can be opened for the desired case.")
+				_uploadModeText = sb.ToString
+			End If
+			Dim statusBarMessage As String = "File Transfer Mode: " & mode
+			If isBulkEnabled Then
+				statusBarMessage &= " - SQL Insert Mode: " & "Bulk"
+			Else
+				statusBarMessage &= " - SQL Insert Mode: " & "Single"
+			End If
+			Me.ProcessObserver.RaiseStatusBarEvent(statusBarMessage, _uploadModeText)
 		End Sub
 
 		Private Sub _loadFileImporter_FilePrepEvent(ByVal e As BulkLoadFileImporter.FilePrepEventArgs) Handles _loadFileImporter.FilePrepEvent

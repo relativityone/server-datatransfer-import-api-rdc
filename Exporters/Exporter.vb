@@ -26,7 +26,8 @@ Namespace kCura.WinEDDS
 		Private _timekeeper As New kCura.Utility.Timekeeper
 		Private _productionArtifactIDs As Int32()
 		Private _isEssentialCount As Int32
-
+		Private _lastStatusMessageTs As Long = System.DateTime.Now.Ticks
+		Private _lastDocumentsExportedCountReported As Int32 = 0
 #End Region
 
 #Region "Accessors"
@@ -474,10 +475,12 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Friend Sub WriteStatusLine(ByVal e As kCura.Windows.Process.EventType, ByVal line As String, isEssential as Boolean)
-			_isEssentialCount += 1
-			If _isEssentialCount > 30 OrElse isEssential Then
-				RaiseEvent StatusMessage(New ExportEventArgs(Me.DocumentsExported, Me.TotalDocuments, line, e))
-				_isEssentialCount = 0
+			Dim now As Long = System.DateTime.Now.Ticks
+			If now - _lastStatusMessageTs > 10000000 OrElse isEssential Then
+				_lastStatusMessageTs = now
+				Dim appendString As String = vbTab & Me.DocumentsExported - _lastDocumentsExportedCountReported & " document(s) exported."
+				_lastDocumentsExportedCountReported = Me.DocumentsExported
+				RaiseEvent StatusMessage(New ExportEventArgs(Me.DocumentsExported, Me.TotalDocuments, line & appendString, e))
 			End If
 		End Sub
 
