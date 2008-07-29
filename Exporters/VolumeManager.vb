@@ -589,6 +589,7 @@ Namespace kCura.WinEDDS
 						val = System.DateTime.Parse(datetime.Value, System.Globalization.CultureInfo.InvariantCulture).ToString(_parent.ColumnFormats(count).ToString)
 					End If
 				End If
+				'System.Web.HttpUtility.HtmlEncode()
 				fieldValue = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(NullableTypes.HelperFunctions.DBNullConvert.ToNullableString(val))
 				fieldValue = fieldValue.Replace(System.Environment.NewLine, ChrW(10).ToString)
 				fieldValue = fieldValue.Replace(ChrW(13), ChrW(10))
