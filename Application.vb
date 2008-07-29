@@ -487,7 +487,7 @@ Namespace kCura.EDDS.WinForm
 			End If
 		End Function
 
-		Private Sub SetWorkingDirectory(ByVal filePath As String)
+		Public Sub SetWorkingDirectory(ByVal filePath As String)
 			Dim directory As String
 			If Not filePath.LastIndexOf("\") = filePath.Length - 1 Then
 				directory = filePath.Substring(0, filePath.LastIndexOf("\") + 1)
@@ -788,6 +788,9 @@ Namespace kCura.EDDS.WinForm
 			CursorDefault()
 		End Function
 
+		Public Function StartProcess(ByVal process As kCura.Windows.Process.ProcessBase) As System.Guid
+			Return _processPool.StartProcess(process)
+		End Function
 		Public Function ImportDirectory(ByVal importFileDirectorySettings As ImportFileDirectorySettings) As Guid
 			CursorWait()
 			If Not Me.IsConnected(importFileDirectorySettings.CaseInfo.ArtifactID) Then
@@ -1089,6 +1092,19 @@ Namespace kCura.EDDS.WinForm
 			Catch ex As System.Exception
 				Me.ReLogin("Unspecified login error. Try again?")
 			End Try
+		End Sub
+
+		Public Sub DoLogin(ByVal cred As System.Net.NetworkCredential, Optional ByVal openCaseSelector As Boolean = False)
+			Dim userManager As New kCura.WinEDDS.Service.UserManager(cred, _cookieContainer)
+			CheckVersion(cred)
+			If userManager.Login(cred.UserName, cred.Password) Then
+				_credential = cred
+				kCura.WinEDDS.Service.Settings.AuthenticationToken = userManager.GetLatestAuthenticationToken()
+				If openCaseSelector Then OpenCase()
+				_timeZoneOffset = New kCura.WinEDDS.Service.RelativityManager(cred, _cookieContainer).GetServerTimezoneOffset
+			Else
+				Me.ReLogin("Invalid login. Try again?")
+			End If
 		End Sub
 
 		Private Sub ReLogin(ByVal message As String)

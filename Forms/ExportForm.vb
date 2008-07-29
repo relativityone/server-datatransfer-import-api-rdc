@@ -216,7 +216,7 @@ Public Class ExportForm
 		Me.GroupBox23.Controls.Add(Me._nativeFileFormat)
 		Me.GroupBox23.Location = New System.Drawing.Point(3, 168)
 		Me.GroupBox23.Name = "GroupBox23"
-		Me.GroupBox23.Size = New System.Drawing.Size(293, 120)
+		Me.GroupBox23.Size = New System.Drawing.Size(293, 278)
 		Me.GroupBox23.TabIndex = 12
 		Me.GroupBox23.TabStop = False
 		Me.GroupBox23.Text = "Export File Formats"
@@ -381,9 +381,9 @@ Public Class ExportForm
 		'
 		Me._productionPrecedenceBox.Controls.Add(Me._productionPrecedenceList)
 		Me._productionPrecedenceBox.Controls.Add(Me._pickPrecedenceButton)
-		Me._productionPrecedenceBox.Location = New System.Drawing.Point(4, 296)
+		Me._productionPrecedenceBox.Location = New System.Drawing.Point(300, 300)
 		Me._productionPrecedenceBox.Name = "_productionPrecedenceBox"
-		Me._productionPrecedenceBox.Size = New System.Drawing.Size(572, 146)
+		Me._productionPrecedenceBox.Size = New System.Drawing.Size(272, 146)
 		Me._productionPrecedenceBox.TabIndex = 16
 		Me._productionPrecedenceBox.TabStop = False
 		Me._productionPrecedenceBox.Text = "Production Precedence"
@@ -392,12 +392,12 @@ Public Class ExportForm
 		'
 		Me._productionPrecedenceList.Location = New System.Drawing.Point(8, 17)
 		Me._productionPrecedenceList.Name = "_productionPrecedenceList"
-		Me._productionPrecedenceList.Size = New System.Drawing.Size(528, 121)
+		Me._productionPrecedenceList.Size = New System.Drawing.Size(224, 121)
 		Me._productionPrecedenceList.TabIndex = 2
 		'
 		'_pickPrecedenceButton
 		'
-		Me._pickPrecedenceButton.Location = New System.Drawing.Point(540, 118)
+		Me._pickPrecedenceButton.Location = New System.Drawing.Point(236, 118)
 		Me._pickPrecedenceButton.Name = "_pickPrecedenceButton"
 		Me._pickPrecedenceButton.Size = New System.Drawing.Size(24, 20)
 		Me._pickPrecedenceButton.TabIndex = 1

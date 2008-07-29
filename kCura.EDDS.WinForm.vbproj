@@ -16,12 +16,12 @@
                 DefaultHTMLPageLayout = "Grid"
                 DefaultTargetSchema = "IE50"
                 DelaySign = "false"
-                OutputType = "WinExe"
+                OutputType = "Exe"
                 OptionCompare = "Binary"
                 OptionExplicit = "On"
                 OptionStrict = "On"
                 RootNamespace = ""
-                StartupObject = "kCura.EDDS.WinForm.MainForm"
+                StartupObject = "kCura.EDDS.WinForm.Startup"
             >
                 <Config
                     Name = "Debug"
@@ -148,6 +148,16 @@
                     Project = "{6E14C37A-96F5-4488-9E2B-2C1A21C4D140}"
                     Package = "{F184B08F-C81C-45F6-A57F-5ABD9991F28F}"
                 />
+                <Reference
+                    Name = "kCura.CommandLine"
+                    Project = "{4E99F9A8-34DF-462D-B078-EAB253BA2CAA}"
+                    Package = "{F184B08F-C81C-45F6-A57F-5ABD9991F28F}"
+                />
+                <Reference
+                    Name = "kCura.Resources"
+                    AssemblyName = "kCura.Resources"
+                    HintPath = "..\..\Vendor\kCura\1.0.2131.20968\kCura.Resources.dll"
+                />
             </References>
             <Imports>
                 <Import Namespace = "Microsoft.VisualBasic" />
@@ -180,6 +190,21 @@
                     RelPath = "AssemblyInfo.vb"
                     SubType = "Code"
                     BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "CommandLineProcessRunner.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Startup.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "StringConstants.resx"
+                    SubType = "Code"
+                    BuildAction = "EmbeddedResource"
                 />
                 <File
                     RelPath = "ToDo.txt"
