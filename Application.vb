@@ -62,9 +62,13 @@ Namespace kCura.EDDS.WinForm
 			End Get
 		End Property
 
-		Public Sub RefreshSelectedCaseInfo()
+		Public Sub RefreshSelectedCaseInfo(Optional ByVal caseInfo As kCura.EDDS.Types.CaseInfo = Nothing)
 			Dim caseManager As New kCura.WinEDDS.Service.CaseManager(Me.Credential, _cookieContainer)
-			_selectedCaseInfo = caseManager.Read(_selectedCaseInfo.ArtifactID)
+			If caseInfo Is Nothing Then
+				_selectedCaseInfo = caseManager.Read(_selectedCaseInfo.ArtifactID)
+			Else
+				_selectedCaseInfo = caseManager.Read(caseInfo.ArtifactID)
+			End If
 			_documentRepositoryList = caseManager.GetAllDocumentFolderPaths
 		End Sub
 
@@ -986,7 +990,7 @@ Namespace kCura.EDDS.WinForm
 			End Try
 		End Sub
 
-		Public Function ReadLoadFile(ByVal loadFile As LoadFile, ByVal path As String) As LoadFile
+		Public Function ReadLoadFile(ByVal loadFile As LoadFile, ByVal path As String, ByVal isSilent As Boolean) As LoadFile
 			If Not Me.EnsureConnection Then Return Nothing
 			Dim sr As New System.IO.StreamReader(path)
 			Dim tempLoadFile As WinEDDS.LoadFile
@@ -995,7 +999,7 @@ Namespace kCura.EDDS.WinForm
 				tempLoadFile = DirectCast(deserializer.Deserialize(sr.BaseStream), WinEDDS.LoadFile)
 				sr.Close()
 			Catch ex As System.Exception
-				MsgBox("Load Failed", MsgBoxStyle.Critical)
+				If Not isSilent Then MsgBox("Load Failed", MsgBoxStyle.Critical)
 				'TODO: Log Exception
 				Return Nothing
 			End Try
@@ -1094,18 +1098,18 @@ Namespace kCura.EDDS.WinForm
 			End Try
 		End Sub
 
-		Public Sub DoLogin(ByVal cred As System.Net.NetworkCredential, Optional ByVal openCaseSelector As Boolean = False)
+		Public Function DoLogin(ByVal cred As System.Net.NetworkCredential) As Boolean
 			Dim userManager As New kCura.WinEDDS.Service.UserManager(cred, _cookieContainer)
 			CheckVersion(cred)
 			If userManager.Login(cred.UserName, cred.Password) Then
 				_credential = cred
 				kCura.WinEDDS.Service.Settings.AuthenticationToken = userManager.GetLatestAuthenticationToken()
-				If openCaseSelector Then OpenCase()
 				_timeZoneOffset = New kCura.WinEDDS.Service.RelativityManager(cred, _cookieContainer).GetServerTimezoneOffset
+				Return True
 			Else
-				Me.ReLogin("Invalid login. Try again?")
+				Return False
 			End If
-		End Sub
+		End Function
 
 		Private Sub ReLogin(ByVal message As String)
 			If MsgBox(message, MsgBoxStyle.YesNo) = MsgBoxResult.Yes Then

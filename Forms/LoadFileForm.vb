@@ -1094,7 +1094,7 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 		Private Sub _loadFieldMapDialog_FileOk(ByVal sender As Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles _loadFieldMapDialog.FileOk
-			Dim newLoadFile As LoadFile = _application.ReadLoadFile(Me.LoadFile, _loadFieldMapDialog.FileName)
+			Dim newLoadFile As LoadFile = _application.ReadLoadFile(Me.LoadFile, _loadFieldMapDialog.FileName, False)
 			If Not newLoadFile Is Nothing Then
 				_loadFile = newLoadFile
 				Me.LoadFormControls(True)

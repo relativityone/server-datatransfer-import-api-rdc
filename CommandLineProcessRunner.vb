@@ -63,8 +63,8 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 		Private Sub WriteLine(ByVal line As String)
-			WriteLine("[" & System.DateTime.Now.ToString("u").Replace("Z", "") & "]" & vbTab)
-			WriteLine(line)
+			Console.WriteLine("[" & System.DateTime.Now.ToString("u").Replace("Z", "") & "]" & vbTab)
+			Console.WriteLine(line)
 		End Sub
 
 	End Class

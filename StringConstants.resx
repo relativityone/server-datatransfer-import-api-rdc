@@ -46,6 +46,9 @@ Relativity Desktop Client Command-Line Arguments:
 -h or /h
 	Display this help page
 
+	:encoding
+	Display a list of supported text encoding types on the this machine
+
 The following arguments must be set and in the form specified;
 	[flag]:[value]
 	e.g. 
@@ -71,6 +74,22 @@ The following arguments must be set and in the form specified;
 
 [-m or /m]:[image or native or i or n]
 	Sets the import type - image or native - to be run
+
+[-e or /e]:[code page id]
+	Sets the encoding of the load file.  This defaults to windows' default encoding.  For a list of active encodings use -h:encoding.
+
+[-x or /x]:[code page id]
+	Sets the encoding of any full text files.  This defaults to windows' default encoding.  For a list of active encoding code page ids use -h:encoding.
+
+[-r or /r]:[repository path]
+	Sets the destination repository for loaded files.  This defaults the case default.
+
+[-l or /l]:[boolean value]
+	Determines if files are actually copied to a relativity repository.  Defaults to true.
+
+[-d or /d]:[folder artifact id]
+	Sets the destination folder for the upload.  Defaults to the case root folder.
+
 	</data>
 
 </root>
