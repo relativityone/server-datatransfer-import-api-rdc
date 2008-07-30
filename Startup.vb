@@ -63,6 +63,18 @@ Namespace kCura.EDDS.WinForm
 			Return ""
 		End Function
 
+		Private Function UrlIsValid(ByVal url As String) As Boolean
+			Try
+				url = url.TrimEnd("\"c).TrimEnd("/"c) & "/"
+				Dim req As System.Net.HttpWebRequest = DirectCast(System.Net.WebRequest.Create(url & "RelativityManager.asmx"), System.Net.HttpWebRequest)
+				req.Credentials = System.Net.CredentialCache.DefaultCredentials
+				Dim resp As System.Net.HttpWebResponse = DirectCast(req.GetResponse(), System.Net.HttpWebResponse)
+				Return True
+			Catch ex As Exception
+				Return False
+			End Try
+		End Function
+
 		Private Sub RunInConsoleMode()
 			Try
 				_application = kCura.EDDS.WinForm.Application.Instance
@@ -81,6 +93,15 @@ Namespace kCura.EDDS.WinForm
 						Exit Sub
 					End If
 				Next
+				If kCura.WinEDDS.Config.WebServiceURL = "" Then
+					Console.WriteLine("Web Service URL not set.  Please enter:")
+					Dim webserviceurl As String = Console.ReadLine
+					While Not UrlIsValid(webserviceurl)
+						Console.WriteLine("Invalid Web Service URL set.  Retry:")
+						webserviceurl = Console.ReadLine.Trim
+					End While
+					kCura.WinEDDS.Config.WebServiceURL = webserviceurl
+				End If
 				If Not _application.DefaultCredentialsAreGood Then
 					Dim userName As String = ""
 					Dim password As String = ""
@@ -198,8 +219,8 @@ Namespace kCura.EDDS.WinForm
 						sr.Close()
 						tempLoadFile.FilePath = _loadFilePath
 						tempLoadFile.CaseInfo = SelectedCaseInfo
-						tempLoadFile.CopyFilesToDocumentRepository = True				 'LoadFile.CopyFilesToDocumentRepository
-						tempLoadFile.SelectedCasePath = SelectedCaseInfo.DocumentPath					''''''''''
+						tempLoadFile.CopyFilesToDocumentRepository = True						'LoadFile.CopyFilesToDocumentRepository
+						tempLoadFile.SelectedCasePath = SelectedCaseInfo.DocumentPath						''''''''''
 						tempLoadFile.CaseDefaultPath = SelectedCaseInfo.DocumentPath
 						tempLoadFile.Credentials = _application.Credential
 						tempLoadFile.DestinationFolderID = 35
