@@ -2,9 +2,6 @@ Namespace kCura.WinEDDS
 	<Serializable()> Public Class LoadFile
 		Implements System.Runtime.Serialization.ISerializable
 
-		<NonSerialized()> Public CaseInfo As kCura.EDDS.Types.CaseInfo
-		<NonSerialized()> Public SelectedCasePath As String = ""
-		<NonSerialized()> Public CopyFilesToDocumentRepository As Boolean = True
 		Public DestinationFolderID As Integer
 		Public FilePath As String
 		Public FirstLineContainsHeaders As Boolean
@@ -30,6 +27,9 @@ Namespace kCura.WinEDDS
 		<NonSerialized()> Public CaseDefaultPath As String = ""
 		<NonSerialized()> Public Credentials As Net.NetworkCredential
 		<NonSerialized()> Public _cookieContainer As System.Net.CookieContainer
+		<NonSerialized()> Public CaseInfo As kCura.EDDS.Types.CaseInfo
+		<NonSerialized()> Public SelectedCasePath As String = ""
+		<NonSerialized()> Public CopyFilesToDocumentRepository As Boolean = True
 		'<NonSerialized()> Public Identity As kCura.EDDS.EDDSIdentity
 
 		Public Property CookieContainer() As System.Net.CookieContainer
