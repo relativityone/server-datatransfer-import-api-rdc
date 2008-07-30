@@ -212,6 +212,7 @@ Namespace kCura.WinEDDS
 				Dim markStart As DateTime = DateTime.Now
 				InitializeMembers(path)
 				StartMassProcessor()
+				System.Threading.Thread.CurrentThread.Join(1000)
 				While _continue AndAlso Not HasReachedEOF
 					Try
 						line = Me.GetLine
@@ -271,6 +272,8 @@ Namespace kCura.WinEDDS
 			Me.InitializeLineCounter(path)
 			Me.InitializeFolderManagement()
 			Me.InitializeFieldIdList()
+			kCura.Utility.File.Delete(_outputNativeFilePath)
+			kCura.Utility.File.Delete(_outputCodeFilePath)
 			_outputNativeFileWriter = New System.IO.StreamWriter(_outputNativeFilePath, False, System.Text.Encoding.Unicode)
 			_outputCodeFileWriter = New System.IO.StreamWriter(_outputCodeFilePath, False, System.Text.Encoding.Unicode)
 			RaiseEvent StatusMessage(New kCura.Windows.Process.StatusEventArgs(Windows.Process.EventType.ResetStartTime, 0, _recordCount, "Reset time for import rolling average"))
