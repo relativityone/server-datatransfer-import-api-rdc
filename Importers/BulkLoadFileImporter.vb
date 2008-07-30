@@ -8,6 +8,7 @@ Namespace kCura.WinEDDS
 #Region "Members"
 		Private _overwrite As String
 		Private WithEvents _uploader As kCura.WinEDDS.FileUploader
+		Private WithEvents _bcpuploader As kCura.WinEDDS.FileUploader
 		Private _textUploader As kCura.WinEDDS.FileUploader
 		Private _path As String
 		Private _pathIsSet As Boolean = False
@@ -151,6 +152,7 @@ Namespace kCura.WinEDDS
 			_defaultTextFolderPath = args.CaseDefaultPath & "EDDS" & args.CaseInfo.ArtifactID & "\"
 			If initializeUploaders Then
 				_uploader = New kCura.WinEDDS.FileUploader(args.Credentials, args.CaseInfo.ArtifactID, _defaultDestinationFolderPath, args.CookieContainer)
+				_bcpuploader = New kCura.WinEDDS.FileUploader(args.Credentials, args.CaseInfo.ArtifactID, _defaultDestinationFolderPath, args.CookieContainer)
 				_textUploader = New kCura.WinEDDS.FileUploader(args.Credentials, args.CaseInfo.ArtifactID, _defaultTextFolderPath, args.CookieContainer)
 			End If
 			_extractFullTextFromNative = args.ExtractFullTextFromNativeFile
@@ -466,14 +468,15 @@ Namespace kCura.WinEDDS
 			_batchCounter = 0
 			Dim settings As New kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo
 			settings.UseBulkDataImport = True
-			Dim nativeFileUploadKey As String = _uploader.UploadBcpFile(_caseInfo.ArtifactID, _outputNativeFilePath)
-			Dim codeFileUploadKey As String = _uploader.UploadBcpFile(_caseInfo.ArtifactID, _outputCodeFilePath)
+			Dim nativeFileUploadKey As String = _bcpuploader.UploadBcpFile(_caseInfo.ArtifactID, _outputNativeFilePath)
+			Dim codeFileUploadKey As String = _bcpuploader.UploadBcpFile(_caseInfo.ArtifactID, _outputCodeFilePath)
 			settings.Repository = _defaultDestinationFolderPath
 			If settings.Repository = "" Then settings.Repository = _caseInfo.DocumentPath
 			If nativeFileUploadKey = "" Then
 				_uploader.DestinationFolderPath = settings.Repository
-				nativeFileUploadKey = _uploader.UploadFile(_outputNativeFilePath, _caseInfo.ArtifactID)
-				codeFileUploadKey = _uploader.UploadFile(_outputCodeFilePath, _caseInfo.ArtifactID)
+				_bcpuploader.DestinationFolderPath = settings.Repository
+				nativeFileUploadKey = _bcpuploader.UploadFile(_outputNativeFilePath, _caseInfo.ArtifactID)
+				codeFileUploadKey = _bcpuploader.UploadFile(_outputCodeFilePath, _caseInfo.ArtifactID)
 				settings.UseBulkDataImport = False
 			End If
 			settings.RunID = _runID
@@ -753,11 +756,11 @@ Namespace kCura.WinEDDS
 			WriteStatusLine(kCura.Windows.Process.EventType.End, line)
 		End Sub
 
-		Private Sub _uploader_UploadStatusEvent(ByVal s As String) Handles _uploader.UploadStatusEvent
+		Private Sub _uploader_UploadStatusEvent(ByVal s As String) Handles _uploader.UploadStatusEvent, _bcpuploader.UploadStatusEvent
 			WriteStatusLine(kCura.Windows.Process.EventType.Status, s)
 		End Sub
 
-		Private Sub _uploader_UploadWarningEvent(ByVal s As String) Handles _uploader.UploadWarningEvent
+		Private Sub _uploader_UploadWarningEvent(ByVal s As String) Handles _uploader.UploadWarningEvent, _bcpuploader.UploadWarningEvent
 			WriteStatusLine(kCura.Windows.Process.EventType.Warning, s)
 		End Sub
 
@@ -849,7 +852,7 @@ Namespace kCura.WinEDDS
 
 #Region "Event Handlers"
 
-		Private Sub _uploader_UploadModeChangeEvent(ByVal mode As String, ByVal isBulkEnabled As Boolean) Handles _uploader.UploadModeChangeEvent
+		Private Sub _uploader_UploadModeChangeEvent(ByVal mode As String, ByVal isBulkEnabled As Boolean) Handles _uploader.UploadModeChangeEvent, _bcpuploader.UploadModeChangeEvent
 			RaiseEvent UploadModeChangeEvent(mode, isBulkEnabled)
 		End Sub
 
