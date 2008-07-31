@@ -614,12 +614,16 @@ Namespace kCura.WinEDDS
 					Select Case Me.Settings.ExportFullTextAsFile
 						Case True
 							Dim localTextPath As String = Me.GetLocalTextFilePath(doc)
-							If _settings.Overwrite Then
-								System.IO.File.Delete(localTextPath)
-								System.IO.File.Move(fullTextTempFile, localTextPath)
-								_parent.WriteStatusLine(kCura.Windows.Process.EventType.Status, localTextPath & " overwritten", False)
+							If System.IO.File.Exists(localTextPath) Then
+								If _settings.Overwrite Then
+									System.IO.File.Delete(localTextPath)
+									System.IO.File.Move(fullTextTempFile, localTextPath)
+									_parent.WriteStatusLine(kCura.Windows.Process.EventType.Status, localTextPath & " overwritten", False)
+								Else
+									_parent.WriteWarning(localTextPath & " already exists. Skipping file export.")
+								End If
 							Else
-								_parent.WriteWarning(localTextPath & " already exists. Skipping file export.")
+								System.IO.File.Move(fullTextTempFile, localTextPath)
 							End If
 							_nativeFileWriter.Write(String.Format("{2}{0}{1}{0}", _settings.QuoteDelimiter, localTextPath, _settings.RecordDelimiter))
 						Case False
