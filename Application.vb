@@ -242,7 +242,7 @@ Namespace kCura.EDDS.WinForm
 		Friend Function ReadyToLoad(ByVal loadFile As WinEDDS.LoadFile) As Boolean
 			Dim isIdentifierMapped As Boolean = False
 			For Each fieldMapItem As LoadFileFieldMap.LoadFileFieldMapItem In loadFile.FieldMap
-				If fieldMapItem.DocumentField.FieldCategory = DynamicFields.Types.FieldCategory.Identifier AndAlso fieldMapItem.NativeFileColumnIndex <> -1 Then
+				If Not fieldMapItem.DocumentField Is Nothing AndAlso fieldMapItem.DocumentField.FieldCategory = DynamicFields.Types.FieldCategory.Identifier AndAlso fieldMapItem.NativeFileColumnIndex <> -1 Then
 					isIdentifierMapped = True
 				End If
 			Next
