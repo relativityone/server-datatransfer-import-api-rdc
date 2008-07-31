@@ -298,8 +298,10 @@ Namespace kCura.WinEDDS
 		Private Sub InitializeFieldIdList()
 			Dim fieldIdList As New System.Collections.ArrayList
 			For Each item As LoadFileFieldMap.LoadFileFieldMapItem In _fieldMap
-				'If item.DocumentField.FieldCategoryID <> kCura.DynamicFields.Types.FieldCategory.FullText Then fieldIdList.Add(item.DocumentField.FieldID)
-				fieldIdList.Add(item.DocumentField.FieldID)
+				If Not item.DocumentField Is Nothing AndAlso Not item.NativeFileColumnIndex = -1 Then
+					'If item.DocumentField.FieldCategoryID <> kCura.DynamicFields.Types.FieldCategory.FullText Then fieldIdList.Add(item.DocumentField.FieldID)
+					fieldIdList.Add(item.DocumentField.FieldID)
+				End If
 			Next
 			fieldIdList.Add(Me.FileInfoField.ArtifactID)
 			_fieldArtifactIds = DirectCast(fieldIdList.ToArray(GetType(Int32)), Int32())
