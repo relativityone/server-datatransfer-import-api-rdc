@@ -205,7 +205,6 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 		Private Sub SetSavedMapLocation(ByVal path As String)
-			Console.ReadLine()
 			Try
 				If Not System.IO.File.Exists(path) Then Throw New SavedSettingsFilePathException(path)
 				Select Case CurrentLoadMode
