@@ -337,7 +337,7 @@ Namespace kCura.WinEDDS
 					If image.FileName.IndexOf(".") <> -1 Then
 						filenameExtension = "." & image.FileName.Substring(image.FileName.LastIndexOf(".") + 1)
 					End If
-					image.FileName = drv("Identifier").ToString & filenameExtension
+					image.FileName = image.BatesNumber.ToString & filenameExtension
 					image.SourceLocation = drv("Location").ToString
 					retval.Add(image)
 					i += 1
