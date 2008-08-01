@@ -551,28 +551,46 @@ Namespace kCura.WinEDDS
 		End Sub
 
 
-
-		Private Sub _processController_ExportServerErrors(ByVal exportLocation As String) Handles _processController.ExportServerErrorsEvent
+		Private Sub _processController_ExportServerErrorsEvent(ByVal exportLocation As String) Handles _processController.ExportServerErrorsEvent
 			Dim rootFileName As String = _filePath
-				Dim defaultExtension As String
-				If Not rootFileName.IndexOf(".") = -1 Then
-					defaultExtension = rootFileName.Substring(rootFileName.LastIndexOf("."))
-					rootFileName = rootFileName.Substring(0, rootFileName.LastIndexOf("."))
-				Else
-					defaultExtension = ".opt"
-				End If
-				rootFileName.Trim("\"c)
-				If rootFileName.IndexOf("\") <> -1 Then
-					rootFileName = rootFileName.Substring(rootFileName.LastIndexOf("\") + 1)
-				End If
+			Dim defaultExtension As String
+			If Not rootFileName.IndexOf(".") = -1 Then
+				defaultExtension = rootFileName.Substring(rootFileName.LastIndexOf("."))
+				rootFileName = rootFileName.Substring(0, rootFileName.LastIndexOf("."))
+			Else
+				defaultExtension = ".opt"
+			End If
+			rootFileName.Trim("\"c)
+			If rootFileName.IndexOf("\") <> -1 Then
+				rootFileName = rootFileName.Substring(rootFileName.LastIndexOf("\") + 1)
+			End If
 
-				Dim rootFilePath As String = exportLocation & rootFileName
-				Dim datetimeNow As System.DateTime = System.DateTime.Now
-				Dim errorFilePath As String = rootFilePath & "_ErrorLines_" & datetimeNow.Ticks & defaultExtension
-				Dim errorReportPath As String = rootFilePath & "_ErrorReport_" & datetimeNow.Ticks & ".csv"
-			System.IO.File.Move(_errorRowsFileLocation, errorFilePath)
-			System.IO.File.Move(_errorMessageFileLocation, errorReportPath)
+			Dim rootFilePath As String = exportLocation & rootFileName
+			Dim datetimeNow As System.DateTime = System.DateTime.Now
+			Dim errorFilePath As String = rootFilePath & "_ErrorLines_" & datetimeNow.Ticks & defaultExtension
+			Dim errorReportPath As String = rootFilePath & "_ErrorReport_" & datetimeNow.Ticks & ".csv"
+			System.IO.File.Copy(_errorRowsFileLocation, errorFilePath)
+			System.IO.File.Copy(_errorMessageFileLocation, errorReportPath)
 		End Sub
+
+		Private Sub _processController_ExportErrorFileEvent(ByVal exportLocation As String) Handles _processController.ExportErrorFileEvent
+			If _errorRowsFileLocation Is Nothing Then Exit Sub
+			Try
+				If System.IO.File.Exists(_errorRowsFileLocation) Then System.IO.File.Copy(_errorRowsFileLocation, exportLocation)
+			Catch ex As Exception
+				If System.IO.File.Exists(_errorRowsFileLocation) Then System.IO.File.Copy(_errorRowsFileLocation, exportLocation)
+			End Try
+		End Sub
+
+		Private Sub _processController_ExportErrorReportEvent(ByVal exportLocation As String) Handles _processController.ExportErrorReportEvent
+			If _errorMessageFileLocation Is Nothing Then Exit Sub
+			Try
+				If System.IO.File.Exists(_errorMessageFileLocation) Then System.IO.File.Copy(_errorMessageFileLocation, exportLocation)
+			Catch ex As Exception
+				If System.IO.File.Exists(_errorMessageFileLocation) Then System.IO.File.Copy(_errorMessageFileLocation, exportLocation)
+			End Try
+		End Sub
+
 		Private Sub _fileUploader_UploadStatusEvent(ByVal s As String) Handles _fileUploader.UploadStatusEvent
 			RaiseStatusEvent(kCura.Windows.Process.EventType.Status, s)
 		End Sub

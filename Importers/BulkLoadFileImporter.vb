@@ -56,6 +56,7 @@ Namespace kCura.WinEDDS
 		Private _settings As kCura.WinEDDS.LoadFile
 		Private _batchCounter As Int32 = 0
 		Private _errorMessageFileLocation As String = ""
+		Private _errorLinesFileLocation As String = ""
 
 		Public Const MaxNumberOfErrorsInGrid As Int32 = 1000
 		Private _errorCount As Int32 = 0
@@ -866,7 +867,7 @@ Namespace kCura.WinEDDS
 			_lineCounter.StopCounting()
 		End Sub
 
-		Private Sub _processController_ExportServerErrors(ByVal exportLocation As String) Handles _processController.ExportServerErrorsEvent
+		Private Sub BuildErrorLinesFile()
 			RaiseEvent StatusMessage(New kCura.Windows.Process.StatusEventArgs(Windows.Process.EventType.Status, Me.CurrentLineNumber, Me.CurrentLineNumber, "GeneratingErrorLineFile"))
 			Dim allErrors As New kCura.Utility.GenericCsvReader(_errorMessageFileLocation, System.Text.Encoding.Default)
 			Dim clientErrors As System.IO.StreamReader
@@ -882,8 +883,8 @@ Namespace kCura.WinEDDS
 			Dim advanceAll As Boolean = True
 			Dim allErrorsLine As Int32
 			Dim clientErrorsLine As Int32
-			Dim outputFilePath As String = System.IO.Path.GetTempFileName
-			Dim sw As New System.IO.StreamWriter(outputFilePath, False, _sourceFileEncoding)
+			_errorLinesFileLocation = System.IO.Path.GetTempFileName
+			Dim sw As New System.IO.StreamWriter(_errorLinesFileLocation, False, _sourceFileEncoding)
 			If _settings.FirstLineContainsHeaders Then
 				sw.WriteLine(Me.ToDelimetedLine(Me.GetLine))
 			End If
@@ -944,6 +945,11 @@ Namespace kCura.WinEDDS
 			allErrors.Close()
 			clientErrors.Close()
 
+
+		End Sub
+
+		Private Sub _processController_ExportServerErrors(ByVal exportLocation As String) Handles _processController.ExportServerErrorsEvent
+			Me.BuildErrorLinesFile()
 			Dim rootFileName As String = _filePath
 			Dim defaultExtension As String
 			If Not rootFileName.IndexOf(".") = -1 Then
@@ -961,16 +967,38 @@ Namespace kCura.WinEDDS
 			Dim errorFilePath As String = rootFilePath & "_ErrorLines_" & datetimeNow.Ticks & defaultExtension
 			Dim errorReportPath As String = rootFilePath & "_ErrorReport_" & datetimeNow.Ticks & ".csv"
 			Try
-				System.IO.File.Move(outputFilePath, errorFilePath)
+				System.IO.File.Copy(_errorLinesFileLocation, errorFilePath)
 			Catch
-				System.IO.File.Move(outputFilePath, errorFilePath)
+				System.IO.File.Copy(_errorLinesFileLocation, errorFilePath)
 			End Try
 			Try
-				System.IO.File.Move(_errorMessageFileLocation, errorReportPath)
+				System.IO.File.Copy(_errorMessageFileLocation, errorReportPath)
 			Catch
-				System.IO.File.Move(_errorMessageFileLocation, errorReportPath)
+				System.IO.File.Copy(_errorMessageFileLocation, errorReportPath)
 			End Try
 			_errorMessageFileLocation = ""
+		End Sub
+
+		Private Sub _processController_ExportErrorReportEvent(ByVal exportLocation As String) Handles _processController.ExportErrorReportEvent
+			If _errorMessageFileLocation Is Nothing OrElse _errorMessageFileLocation = "" Then Exit Sub
+			Try
+				System.IO.File.Copy(_errorMessageFileLocation, exportLocation, True)
+			Catch ex As Exception
+				System.IO.File.Copy(_errorMessageFileLocation, exportLocation, True)
+			End Try
+		End Sub
+
+		Private Sub _processController_ExportErrorFileEvent(ByVal exportLocation As String) Handles _processController.ExportErrorFileEvent
+			'_errorLinesFileLocation()
+			If _errorMessageFileLocation Is Nothing OrElse _errorMessageFileLocation = "" Then Exit Sub
+			If _errorLinesFileLocation Is Nothing OrElse _errorLinesFileLocation = "" OrElse Not System.IO.File.Exists(_errorLinesFileLocation) Then
+				Me.BuildErrorLinesFile()
+			End If
+			Try
+				System.IO.File.Copy(_errorLinesFileLocation, exportLocation, True)
+			Catch ex As Exception
+				System.IO.File.Copy(_errorLinesFileLocation, exportLocation, True)
+			End Try
 		End Sub
 
 #End Region
@@ -1110,6 +1138,7 @@ Namespace kCura.WinEDDS
 				Return True
 			End Get
 		End Property
+
 	End Class
 
 	Public Class WebServiceFieldInfoNameComparer
