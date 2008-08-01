@@ -605,29 +605,36 @@ Namespace kCura.Windows.Process
 			Me.Invoke(New HandleDataSourceDelegate(AddressOf HandleDataSource))
 		End Sub
 
+		Delegate Sub HandleDataSourceDelegate()
 		Private Sub HandleDataSource()
 		End Sub
 
 		Private Sub _exportErrorReportBtn_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles _exportErrorReportBtn.Click
+			_exportErrorsDialog.FileName = ""
 			_exportErrorsDialog.ShowDialog()
-		End Sub
-
-		Private Sub _exportErrorsDialog_FileOk(ByVal sender As Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles _exportErrorsDialog.FileOk
-			_processObserver.ExportErrorReport(_exportErrorsDialog.FileName)
-		End Sub
-
-		Delegate Sub HandleDataSourceDelegate()
-
-		Private Sub _exportErrorFileButton_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles _exportErrorFileButton.Click
-			_exportErrorFileDialog.ShowDialog()
-		End Sub
-
-
-		Private Sub _exportErrorFileDialog_FileOk(ByVal sender As Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles _exportErrorFileDialog.FileOk
-			If System.IO.File.Exists(_exportErrorFileLocation) Then
-				System.IO.File.Copy(_exportErrorFileLocation, _exportErrorFileDialog.FileName)
+			If Not _exportErrorsDialog.FileName Is Nothing AndAlso Not _exportErrorsDialog.FileName = "" Then
+				_controller.ExportErrorReport(_exportErrorsDialog.FileName)
 			End If
 		End Sub
+
+		Private Sub _exportErrorFileButton_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles _exportErrorFileButton.Click
+			_exportErrorsDialog.FileName = ""
+			_exportErrorsDialog.ShowDialog()
+			If Not _exportErrorsDialog.FileName Is Nothing AndAlso Not _exportErrorsDialog.FileName = "" Then
+				_controller.ExportErrorFile(_exportErrorsDialog.FileName)
+			End If
+		End Sub
+
+		'Private Sub _exportErrorsDialog_FileOk(ByVal sender As Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles _exportErrorsDialog.FileOk
+		'	_processObserver.ExportErrorReport(_exportErrorsDialog.FileName)
+		'End Sub
+
+
+		'Private Sub _exportErrorFileDialog_FileOk(ByVal sender As Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles _exportErrorFileDialog.FileOk
+		'	If System.IO.File.Exists(_exportErrorFileLocation) Then
+		'		System.IO.File.Copy(_exportErrorFileLocation, _exportErrorFileDialog.FileName)
+		'	End If
+		'End Sub
 
 		Private Sub ProgressForm_Closing(ByVal sender As Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles MyBase.Closing
 			If Not Me.ProcessController Is Nothing Then
