@@ -53,6 +53,8 @@ Namespace kCura.EDDS.WinForm
 		<System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
 			Dim resources As System.Resources.ResourceManager = New System.Resources.ResourceManager(GetType(VolumeInfoForm))
 			Me._subDirectoryInformationGroupBox = New System.Windows.Forms.GroupBox
+			Me._subdirectoryTextPrefix = New System.Windows.Forms.TextBox
+			Me.Label1 = New System.Windows.Forms.Label
 			Me._subDirectoryNativePrefix = New System.Windows.Forms.TextBox
 			Me.Label13 = New System.Windows.Forms.Label
 			Me._subDirectoryMaxSize = New System.Windows.Forms.NumericUpDown
@@ -70,8 +72,6 @@ Namespace kCura.EDDS.WinForm
 			Me._volumePrefix = New System.Windows.Forms.TextBox
 			Me._okButton = New System.Windows.Forms.Button
 			Me._cancelButton = New System.Windows.Forms.Button
-			Me._subdirectoryTextPrefix = New System.Windows.Forms.TextBox
-			Me.Label1 = New System.Windows.Forms.Label
 			Me._subDirectoryInformationGroupBox.SuspendLayout()
 			CType(Me._subDirectoryMaxSize, System.ComponentModel.ISupportInitialize).BeginInit()
 			CType(Me._subdirectoryStartNumber, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -98,6 +98,25 @@ Namespace kCura.EDDS.WinForm
 			Me._subDirectoryInformationGroupBox.TabIndex = 16
 			Me._subDirectoryInformationGroupBox.TabStop = False
 			Me._subDirectoryInformationGroupBox.Text = "Subdirectory Information"
+			'
+			'_subdirectoryTextPrefix
+			'
+			Me._subdirectoryTextPrefix.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+			Me._subdirectoryTextPrefix.Location = New System.Drawing.Point(88, 76)
+			Me._subdirectoryTextPrefix.Name = "_subdirectoryTextPrefix"
+			Me._subdirectoryTextPrefix.Size = New System.Drawing.Size(176, 20)
+			Me._subdirectoryTextPrefix.TabIndex = 22
+			Me._subdirectoryTextPrefix.Text = "TEXT"
+			'
+			'Label1
+			'
+			Me.Label1.ImageAlign = System.Drawing.ContentAlignment.MiddleRight
+			Me.Label1.Location = New System.Drawing.Point(8, 80)
+			Me.Label1.Name = "Label1"
+			Me.Label1.Size = New System.Drawing.Size(80, 16)
+			Me.Label1.TabIndex = 21
+			Me.Label1.Text = "Text Prefix: "
+			Me.Label1.TextAlign = System.Drawing.ContentAlignment.MiddleRight
 			'
 			'_subDirectoryNativePrefix
 			'
@@ -262,31 +281,12 @@ Namespace kCura.EDDS.WinForm
 			Me._cancelButton.TabIndex = 18
 			Me._cancelButton.Text = "Cancel"
 			'
-			'_subdirectoryTextPrefix
-			'
-			Me._subdirectoryTextPrefix.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-			Me._subdirectoryTextPrefix.Location = New System.Drawing.Point(88, 76)
-			Me._subdirectoryTextPrefix.Name = "_subdirectoryTextPrefix"
-			Me._subdirectoryTextPrefix.Size = New System.Drawing.Size(176, 20)
-			Me._subdirectoryTextPrefix.TabIndex = 22
-			Me._subdirectoryTextPrefix.Text = "TEXT"
-			'
-			'Label1
-			'
-			Me.Label1.ImageAlign = System.Drawing.ContentAlignment.MiddleRight
-			Me.Label1.Location = New System.Drawing.Point(8, 80)
-			Me.Label1.Name = "Label1"
-			Me.Label1.Size = New System.Drawing.Size(80, 16)
-			Me.Label1.TabIndex = 21
-			Me.Label1.Text = "Text Prefix: "
-			Me.Label1.TextAlign = System.Drawing.ContentAlignment.MiddleRight
-			'
 			'VolumeInfoForm
 			'
 			Me.AcceptButton = Me._okButton
 			Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
 			Me.CancelButton = Me._cancelButton
-			Me.ClientSize = New System.Drawing.Size(296, 315)
+			Me.ClientSize = New System.Drawing.Size(296, 319)
 			Me.Controls.Add(Me._cancelButton)
 			Me.Controls.Add(Me._okButton)
 			Me.Controls.Add(Me._subDirectoryInformationGroupBox)
