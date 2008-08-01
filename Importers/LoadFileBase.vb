@@ -135,9 +135,12 @@ Namespace kCura.WinEDDS
 						newCodeOrderValue = GetNewCodeOrderValue(field.CodeTypeID.Value)
 						Dim code As kCura.EDDS.WebAPI.CodeManagerBase.Code = _codeManager.CreateNewCodeDTOProxy(field.CodeTypeID.Value, value, newCodeOrderValue, _caseSystemID)
 						codeArtifactID = _codeManager.Create(_caseArtifactID, code)
-						If codeArtifactID = -200 Then
-							Throw New CodeCreationException(Me.CurrentLineNumber, column, value)
-						End If
+						Select Case codeArtifactID
+							Case -1
+								Throw New CodeCreationException(Me.CurrentLineNumber, column, value)
+							Case -200
+								Throw New System.Exception("This choice or multi-choice field is not enabled as unicode.  Upload halted")
+						End Select
 						Dim newRow As DataRowView = _allCodes.AddNew
 						_allCodes = Nothing
 						Return New NullableInt32(codeArtifactID)
