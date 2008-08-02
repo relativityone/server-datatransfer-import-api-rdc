@@ -69,6 +69,8 @@ Public Class ExportForm
 	Friend WithEvents GroupBox3 As System.Windows.Forms.GroupBox
 	Friend WithEvents _nativeFileNameSource As System.Windows.Forms.ComboBox
 	Friend WithEvents _exportFullTextAsFile As System.Windows.Forms.CheckBox
+	Friend WithEvents _imageTypeDropdown As System.Windows.Forms.ComboBox
+	Friend WithEvents Label7 As System.Windows.Forms.Label
 	<System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
 		Dim resources As System.Resources.ResourceManager = New System.Resources.ResourceManager(GetType(ExportForm))
 		Me.MainMenu1 = New System.Windows.Forms.MainMenu
@@ -83,6 +85,8 @@ Public Class ExportForm
 		Me._exportFullText = New System.Windows.Forms.CheckBox
 		Me._filters = New System.Windows.Forms.ComboBox
 		Me.GroupBox23 = New System.Windows.Forms.GroupBox
+		Me.Label7 = New System.Windows.Forms.Label
+		Me._imageTypeDropdown = New System.Windows.Forms.ComboBox
 		Me._prefixText = New System.Windows.Forms.TextBox
 		Me._usePrefix = New System.Windows.Forms.RadioButton
 		Me._useAbsolutePaths = New System.Windows.Forms.RadioButton
@@ -206,6 +210,8 @@ Public Class ExportForm
 		'
 		'GroupBox23
 		'
+		Me.GroupBox23.Controls.Add(Me.Label7)
+		Me.GroupBox23.Controls.Add(Me._imageTypeDropdown)
 		Me.GroupBox23.Controls.Add(Me._prefixText)
 		Me.GroupBox23.Controls.Add(Me._usePrefix)
 		Me.GroupBox23.Controls.Add(Me._useAbsolutePaths)
@@ -221,10 +227,29 @@ Public Class ExportForm
 		Me.GroupBox23.TabStop = False
 		Me.GroupBox23.Text = "Export File Formats"
 		'
+		'Label7
+		'
+		Me.Label7.Location = New System.Drawing.Point(8, 120)
+		Me.Label7.Name = "Label7"
+		Me.Label7.Size = New System.Drawing.Size(144, 16)
+		Me.Label7.TabIndex = 18
+		Me.Label7.Text = "Image Type"
+		Me.Label7.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+		'
+		'_imageTypeDropdown
+		'
+		Me._imageTypeDropdown.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+		Me._imageTypeDropdown.DropDownWidth = 150
+		Me._imageTypeDropdown.Items.AddRange(New Object() {"Select...", "Single-page TIF/JPG", "Multi-page TIF", "PDF"})
+		Me._imageTypeDropdown.Location = New System.Drawing.Point(8, 136)
+		Me._imageTypeDropdown.Name = "_imageTypeDropdown"
+		Me._imageTypeDropdown.Size = New System.Drawing.Size(140, 21)
+		Me._imageTypeDropdown.TabIndex = 17
+		'
 		'_prefixText
 		'
 		Me._prefixText.Enabled = False
-		Me._prefixText.Location = New System.Drawing.Point(176, 88)
+		Me._prefixText.Location = New System.Drawing.Point(176, 92)
 		Me._prefixText.Name = "_prefixText"
 		Me._prefixText.Size = New System.Drawing.Size(104, 20)
 		Me._prefixText.TabIndex = 16
@@ -232,7 +257,7 @@ Public Class ExportForm
 		'
 		'_usePrefix
 		'
-		Me._usePrefix.Location = New System.Drawing.Point(160, 72)
+		Me._usePrefix.Location = New System.Drawing.Point(160, 76)
 		Me._usePrefix.Name = "_usePrefix"
 		Me._usePrefix.Size = New System.Drawing.Size(124, 16)
 		Me._usePrefix.TabIndex = 15
@@ -240,7 +265,7 @@ Public Class ExportForm
 		'
 		'_useAbsolutePaths
 		'
-		Me._useAbsolutePaths.Location = New System.Drawing.Point(160, 48)
+		Me._useAbsolutePaths.Location = New System.Drawing.Point(160, 52)
 		Me._useAbsolutePaths.Name = "_useAbsolutePaths"
 		Me._useAbsolutePaths.Size = New System.Drawing.Size(124, 16)
 		Me._useAbsolutePaths.TabIndex = 14
@@ -249,7 +274,7 @@ Public Class ExportForm
 		'_useRelativePaths
 		'
 		Me._useRelativePaths.Checked = True
-		Me._useRelativePaths.Location = New System.Drawing.Point(160, 24)
+		Me._useRelativePaths.Location = New System.Drawing.Point(160, 28)
 		Me._useRelativePaths.Name = "_useRelativePaths"
 		Me._useRelativePaths.Size = New System.Drawing.Size(124, 16)
 		Me._useRelativePaths.TabIndex = 13
@@ -286,7 +311,7 @@ Public Class ExportForm
 		'_nativeFileFormat
 		'
 		Me._nativeFileFormat.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
-		Me._nativeFileFormat.Items.AddRange(New Object() {"Select...", "Comma-separated (.csv)", "Tab-delimited (.txt)", "Concordance (.dat)", "Custom (.txt)"})
+		Me._nativeFileFormat.Items.AddRange(New Object() {"Select...", "Comma-separated (.csv)", "Tab-delimited (.txt)", "Concordance (.dat)", "Custom (.txt)", "Hypertext (.html)"})
 		Me._nativeFileFormat.Location = New System.Drawing.Point(8, 40)
 		Me._nativeFileFormat.Name = "_nativeFileFormat"
 		Me._nativeFileFormat.Size = New System.Drawing.Size(140, 21)
@@ -529,6 +554,7 @@ Public Class ExportForm
 		If Me.CreateVolume Then
 			retval = retval AndAlso Not Me.BuildVolumeInfo Is Nothing
 		End If
+		retval = retval And (_imageTypeDropdown.SelectedIndex <> 0)
 		Try
 			If _exportNativeFiles.Checked Then
 				If CType(_nativeFileFormat.SelectedItem, String) = "Select..." Then
@@ -539,6 +565,7 @@ Public Class ExportForm
 				If CType(_imageFileFormat.SelectedValue, Int32) = -1 Then
 					retval = False
 				End If
+				If _imageTypeDropdown.SelectedIndex = 0 Then retval = False
 			End If
 			If Me.ExportFile.TypeOfExport = ExportFile.ExportType.Production AndAlso _exportNativeFiles.Checked Then
 				If CType(_nativeFileNameSource.SelectedItem, String) = "Select..." Then
@@ -602,8 +629,14 @@ Public Class ExportForm
 		_exportFile.VolumeInfo = Me.BuildVolumeInfo
 		_exportFile.ExportImages = _exportImages.Checked
 		_exportFile.LogFileFormat = CType(_imageFileFormat.SelectedValue, kCura.WinEDDS.LoadFileType.FileFormat)
-		_exportFile.LoadFileExtension = Me.GetNativeFileFormatExtension()
+		_exportFile.LoadFileIsHtml = _nativeFileFormat.SelectedIndex = 5
+		If _exportFile.LoadFileIsHtml Then
+			_exportFile.LoadFileExtension = "html"
+		Else
+			_exportFile.LoadFileExtension = Me.GetNativeFileFormatExtension()
+		End If
 		_exportFile.ImagePrecedence = Me.GetImagePrecedence
+		_exportFile.TypeOfImage = Me.GetSelectedImageType
 		_application.StartSearch(Me.ExportFile)
 		Me.Cursor = System.Windows.Forms.Cursors.Default
 	End Sub
@@ -631,6 +664,21 @@ Public Class ExportForm
 		Else
 			Return "txt"
 		End If
+	End Function
+
+	Private Function GetSelectedImageType() As ExportFile.ImageType
+		'Select...
+		'Single-page TIF/JPG
+		'Multi-page TIF
+		'PDF
+		Select Case _imageTypeDropdown.SelectedIndex
+			Case 1
+				Return ExportFile.ImageType.SinglePage
+			Case 2
+				Return ExportFile.ImageType.MultiPageTiff
+			Case 3
+				Return ExportFile.ImageType.Pdf
+		End Select
 	End Function
 	Private Sub _browseButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _browseButton.Click
 		_destinationFolderDialog.ShowDialog()
@@ -665,6 +713,7 @@ Public Class ExportForm
 		_imageFileFormat.DataSource = kCura.WinEDDS.LoadFileType.GetLoadFileTypes
 		_imageFileFormat.DisplayMember = "DisplayName"
 		_imageFileFormat.ValueMember = "Value"
+		_imageTypeDropdown.SelectedIndex = 0
 		Label5.Visible = False
 		Select Case Me.ExportFile.TypeOfExport
 			Case ExportFile.ExportType.ArtifactSearch
@@ -709,6 +758,7 @@ Public Class ExportForm
 	Private Sub _exportImages_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _exportImages.CheckedChanged
 		_useAbsolutePaths.Enabled = True
 		_imageFileFormat.Enabled = _exportImages.Checked
+		_imageTypeDropdown.Enabled = _exportImages.Checked
 		RunMenu.Enabled = ReadyToRun()
 	End Sub
 
@@ -838,5 +888,9 @@ Public Class ExportForm
 		Else
 			_exportFullTextAsFile.Enabled = False
 		End If
+	End Sub
+
+	Private Sub _imageTypeDropdown_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _imageTypeDropdown.SelectedIndexChanged
+		RunMenu.Enabled = ReadyToRun()
 	End Sub
 End Class
