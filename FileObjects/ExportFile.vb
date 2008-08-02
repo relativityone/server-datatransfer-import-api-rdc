@@ -27,8 +27,10 @@ Namespace kCura.WinEDDS
 		Protected _loadFilesPrefix As String
 		Protected _filePrefix As String
 		Protected _typeOfExportedFilePath As ExportedFilePathType
+		Protected _typeOfImage As ImageType
 		Private _exportNativesToFileNamedFrom As kCura.WinEDDS.ExportNativeWithFilenameFrom = ExportNativeWithFilenameFrom.Identifier
 		Private _appendOriginalFileName As Boolean
+		Private _loadFileIsHtml As Boolean = False
 
 #Region "Public Properties"
 
@@ -280,12 +282,30 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
+		Public Property TypeOfImage() As ImageType
+			Get
+				Return _typeOfImage
+			End Get
+			Set(ByVal value As ImageType)
+				_typeOfImage = value
+			End Set
+		End Property
+
 		Public Property AppendOriginalFileName() As Boolean
 			Get
 				Return _appendOriginalFileName
 			End Get
 			Set(ByVal value As Boolean)
 				_appendOriginalFileName = value
+			End Set
+		End Property
+
+		Public Property LoadFileIsHtml() As Boolean
+			Get
+				Return _loadFileIsHtml
+			End Get
+			Set(ByVal value As Boolean)
+				_loadFileIsHtml = value
 			End Set
 		End Property
 
@@ -310,5 +330,12 @@ Namespace kCura.WinEDDS
 			Absolute
 			Prefix
 		End Enum
+
+		Public Enum ImageType
+			SinglePage
+			MultiPageTiff
+			Pdf
+		End Enum
+
 	End Class
 End Namespace

@@ -370,7 +370,16 @@ Namespace kCura.WinEDDS
 			Dim columnName As String
 			Dim table As System.Data.DataTable
 			Dim retString As New System.Text.StringBuilder
-
+			If _exportFile.LoadFileIsHtml Then
+				retString.Append("<html><head><title>" & System.Web.HttpUtility.HtmlEncode(_exportFile.CaseInfo.Name) & "</title>")
+				retString.Append("<style type='text/css'>" & vbNewLine)
+				retString.Append("td {vertical-align: top;background-color:#EEEEEE;}" & vbNewLine)
+				retString.Append("th {color:#DDDDDD;text-align:left;}" & vbNewLine)
+				retString.Append("table {background-color:#000000;}" & vbNewLine)
+				retString.Append("</style>" & vbNewLine)
+				retString.Append("</head><body>" & vbNewLine)
+				retString.Append("<table width='100%'><tr>" & vbNewLine)
+			End If
 			_columns = New System.Collections.ArrayList
 			_columnFormats = New System.Collections.ArrayList
 			Select Case Me.ExportFile.TypeOfExport
@@ -395,8 +404,12 @@ Namespace kCura.WinEDDS
 				If ShowField(columnName) Then
 					_exportAsUnicode = _exportAsUnicode OrElse CType(table.Rows(count)("IsUnicodeEnabled"), Boolean)
 					_columns.Add(columnName)
-					retString.AppendFormat("{0}{1}{0}", Me.ExportFile.QuoteDelimiter, columnName)
-					If count <> table.Rows.Count - 1 Then
+					If _exportFile.LoadFileIsHtml Then
+						retString.AppendFormat("{0}{1}{2}", "<th>", System.Web.HttpUtility.HtmlEncode(columnName), "</th>")
+					Else
+						retString.AppendFormat("{0}{1}{0}", Me.ExportFile.QuoteDelimiter, columnName)
+					End If
+					If count <> table.Rows.Count - 1 AndAlso Not Me.ExportFile.LoadFileIsHtml Then
 						retString.Append(Me.ExportFile.RecordDelimiter)
 					End If
 					If table.Rows(count)("ItemListType").ToString.ToLower = "datetime" Then
@@ -404,11 +417,17 @@ Namespace kCura.WinEDDS
 					Else
 						_columnFormats.Add("")
 					End If
-
 				End If
 			Next
-			If Me.ExportFile.ExportNative Then retString.AppendFormat("{2}{0}{1}{0}", Me.ExportFile.QuoteDelimiter, "FILE_PATH", Me.ExportFile.RecordDelimiter)
-			If Me.ExportFile.ExportFullText Then retString.AppendFormat("{2}{0}{1}{0}", Me.ExportFile.QuoteDelimiter, "FULL_TEXT", Me.ExportFile.RecordDelimiter)
+			If _exportFile.LoadFileIsHtml Then
+				If Me.ExportFile.ExportNative Then retString.Append("<th>Image Files</th>")
+				If Me.ExportFile.ExportImages Then retString.Append("<th>Native Files</th>")
+				If Me.ExportFile.ExportFullText Then retString.Append("<th>Extracted Text</th>")
+				retString.Append(vbNewLine & "</tr>" & vbNewLine)
+			Else
+				If Me.ExportFile.ExportNative Then retString.AppendFormat("{2}{0}{1}{0}", Me.ExportFile.QuoteDelimiter, "FILE_PATH", Me.ExportFile.RecordDelimiter)
+				If Me.ExportFile.ExportFullText Then retString.AppendFormat("{2}{0}{1}{0}", Me.ExportFile.QuoteDelimiter, "FULL_TEXT", Me.ExportFile.RecordDelimiter)
+			End If
 			retString.Append(System.Environment.NewLine)
 			Return retString.ToString
 		End Function

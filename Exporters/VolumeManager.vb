@@ -191,6 +191,35 @@ Namespace kCura.WinEDDS
 					_timekeeper.MarkEnd("VolumeManager_DownloadImage")
 				Next
 			End If
+			If documentInfo.Images.Count > 0 AndAlso (Me.Settings.TypeOfImage = ExportFile.ImageType.MultiPageTiff OrElse Me.Settings.TypeOfImage = ExportFile.ImageType.Pdf) Then
+				Dim imageList(documentInfo.Images.Count - 1) As String
+				For i As Int32 = 0 To imageList.Length - 1
+					imageList(i) = DirectCast(documentInfo.Images(i), Exporters.ImageExportInfo).TempLocation
+				Next
+				Dim tempLocation As String = System.IO.Path.GetTempFileName
+				Dim converter As New kCura.Utility.Image
+				Select Case Me.Settings.TypeOfImage
+					Case ExportFile.ImageType.MultiPageTiff
+						converter.ConvertTIFFsToMultiPage(imageList, tempLocation)
+					Case ExportFile.ImageType.Pdf
+						converter.ConvertImagesToMultiPagePdf(imageList, tempLocation)
+				End Select
+				For Each imageLocation As String In imageList
+					System.IO.File.Delete(imageLocation)
+				Next
+				If Me.Settings.TypeOfImage = ExportFile.ImageType.Pdf Then
+					Dim currentTempLocation As String = DirectCast(documentInfo.Images(0), Exporters.ImageExportInfo).TempLocation
+					currentTempLocation = currentTempLocation.Substring(0, currentTempLocation.LastIndexOf("."))
+					currentTempLocation &= ".pdf"
+					DirectCast(documentInfo.Images(0), Exporters.ImageExportInfo).TempLocation = currentTempLocation
+					currentTempLocation = DirectCast(documentInfo.Images(0), Exporters.ImageExportInfo).FileName
+					currentTempLocation = currentTempLocation.Substring(0, currentTempLocation.LastIndexOf("."))
+					currentTempLocation &= ".pdf"
+					DirectCast(documentInfo.Images(0), Exporters.ImageExportInfo).FileName = currentTempLocation
+				End If
+				System.IO.File.Move(tempLocation, DirectCast(documentInfo.Images(0), Exporters.ImageExportInfo).TempLocation)
+			End If
+
 			If Me.Settings.ExportNative Then
 				_timekeeper.MarkStart("VolumeManager_DownloadNative")
 				Try
@@ -343,28 +372,48 @@ Namespace kCura.WinEDDS
 						fullTextReader = New System.IO.StreamReader(localFullTextPath, _encoding, True)
 					End If
 				End If
-				For Each image In images
-					If (i = 0 AndAlso image.PageOffset.IsNull) OrElse i = images.Count - 1 Then
-						pageOffset = Int64.MinValue
-					Else
-						Dim nextImage As Exporters.ImageExportInfo = DirectCast(images(i + 1), Exporters.ImageExportInfo)
-						If nextImage.PageOffset.IsNull Then
-							pageOffset = Int64.MinValue
-						Else
-							pageOffset = nextImage.PageOffset.Value
-						End If
-					End If
-					Me.ExportDocumentImage(localFilePath & image.FileName, image.FileGuid, image.ArtifactID, image.BatesNumber, image.TempLocation)
+				If images.Count > 0 AndAlso (Me.Settings.TypeOfImage = ExportFile.ImageType.MultiPageTiff OrElse Me.Settings.TypeOfImage = ExportFile.ImageType.Pdf) Then
+					Dim marker As Exporters.ImageExportInfo = DirectCast(images(0), Exporters.ImageExportInfo)
+					Me.ExportDocumentImage(localFilePath & marker.FileName, marker.FileGuid, marker.ArtifactID, marker.BatesNumber, marker.TempLocation)
+					Dim copyfile As String
 					Select Case Me.Settings.TypeOfExportedFilePath
 						Case ExportFile.ExportedFilePathType.Absolute
-							Me.CreateImageLogEntry(image.BatesNumber, localFilePath & image.FileName, localFilePath, i = 0, fullTextReader, localFullTextPath <> "", pageOffset, images.Count)
+							copyfile = localFilePath & marker.FileName
 						Case ExportFile.ExportedFilePathType.Relative
-							Me.CreateImageLogEntry(image.BatesNumber, ".\" & subfolderPath & image.FileName, localFilePath, i = 0, fullTextReader, localFullTextPath <> "", pageOffset, images.Count)
+							copyfile = ".\" & subfolderPath & marker.FileName
 						Case ExportFile.ExportedFilePathType.Prefix
-							Me.CreateImageLogEntry(image.BatesNumber, Me.Settings.FilePrefix.TrimEnd("\"c) & "\" & subfolderPath & image.FileName, localFilePath, i = 0, fullTextReader, localFullTextPath <> "", pageOffset, images.Count)
+							copyfile = Me.Settings.FilePrefix.TrimEnd("\"c) & "\" & subfolderPath & marker.FileName
 					End Select
-					i += 1
-				Next
+					Me.CreateImageLogEntry(marker.BatesNumber, copyfile, localFilePath, True, fullTextReader, localFullTextPath <> "", pageOffset, images.Count)
+					marker.TempLocation = copyfile
+				Else
+					For Each image In images
+						If (i = 0 AndAlso image.PageOffset.IsNull) OrElse i = images.Count - 1 Then
+							pageOffset = Int64.MinValue
+						Else
+							Dim nextImage As Exporters.ImageExportInfo = DirectCast(images(i + 1), Exporters.ImageExportInfo)
+							If nextImage.PageOffset.IsNull Then
+								pageOffset = Int64.MinValue
+							Else
+								pageOffset = nextImage.PageOffset.Value
+							End If
+						End If
+						Me.ExportDocumentImage(localFilePath & image.FileName, image.FileGuid, image.ArtifactID, image.BatesNumber, image.TempLocation)
+						Dim copyfile As String
+						Select Case Me.Settings.TypeOfExportedFilePath
+							Case ExportFile.ExportedFilePathType.Absolute
+								copyfile = localFilePath & image.FileName
+							Case ExportFile.ExportedFilePathType.Relative
+								copyfile = ".\" & subfolderPath & image.FileName
+							Case ExportFile.ExportedFilePathType.Prefix
+								copyfile = Me.Settings.FilePrefix.TrimEnd("\"c) & "\" & subfolderPath & image.FileName
+						End Select
+						Me.CreateImageLogEntry(image.BatesNumber, copyfile, localFilePath, i = 0, fullTextReader, localFullTextPath <> "", pageOffset, images.Count)
+						i += 1
+						image.TempLocation = copyfile
+					Next
+				End If
+
 			Catch ex As System.Exception
 				If Not fullTextReader Is Nothing Then fullTextReader.Close()
 				Throw
@@ -389,6 +438,7 @@ Namespace kCura.WinEDDS
 				tries -= 1
 				Try
 					_downloadManager.DownloadFile(tempFile, image.FileGuid, image.SourceLocation, image.ArtifactID, _settings.CaseArtifactID.ToString)
+					image.TempLocation = tempFile
 					Exit While
 				Catch ex As System.Exception
 					If tries = 19 Then
@@ -403,7 +453,6 @@ Namespace kCura.WinEDDS
 					End If
 				End Try
 			End While
-			image.TempLocation = tempFile
 			Return New System.IO.FileInfo(tempFile).Length
 		End Function
 
@@ -412,21 +461,21 @@ Namespace kCura.WinEDDS
 				If System.IO.File.Exists(fileName) Then
 					If _settings.Overwrite Then
 						System.IO.File.Delete(fileName)
-						_parent.WriteStatusLine(kCura.Windows.Process.EventType.Status, String.Format("Overwriting document {0}.tif.", batesNumber), False)
+						_parent.WriteStatusLine(kCura.Windows.Process.EventType.Status, String.Format("Overwriting document image {0}.", batesNumber), False)
 						System.IO.File.Move(tempFileLocation, fileName)
 					Else
 						_parent.WriteWarning(String.Format("{0}.tif already exists. Skipping file export.", batesNumber))
 					End If
 				Else
 					_timekeeper.MarkStart("VolumeManager_ExportDocumentImage_WriteStatus")
-					_parent.WriteStatusLine(kCura.Windows.Process.EventType.Status, String.Format("Now exporting document {0}.tif.", batesNumber), False)
+					_parent.WriteStatusLine(kCura.Windows.Process.EventType.Status, String.Format("Now exporting document image {0}.", batesNumber), False)
 					_timekeeper.MarkEnd("VolumeManager_ExportDocumentImage_WriteStatus")
 					_timekeeper.MarkStart("VolumeManager_ExportDocumentImage_MoveFile")
 					System.IO.File.Move(tempFileLocation, fileName)
 					_timekeeper.MarkEnd("VolumeManager_ExportDocumentImage_MoveFile")
 				End If
 				_timekeeper.MarkStart("VolumeManager_ExportDocumentImage_WriteStatus")
-				_parent.WriteStatusLine(Windows.Process.EventType.Status, String.Format("Finished exporting document {0}.tif.", batesNumber), False)
+				_parent.WriteStatusLine(Windows.Process.EventType.Status, String.Format("Finished exporting document image {0}.", batesNumber), False)
 				_timekeeper.MarkEnd("VolumeManager_ExportDocumentImage_WriteStatus")
 			End If
 			'_parent.DocumentsExported += 1
@@ -565,6 +614,10 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Public Sub UpdateLoadFile(ByVal row As System.Data.DataRow, ByVal hasFullText As Boolean, ByVal documentArtifactID As Int32, ByVal nativeLocation As String, ByVal fullTextTempFile As String, ByVal doc As Exporters.DocumentExportInfo)
+			If Me.Settings.LoadFileIsHtml Then
+				Me.UpdateHtmlLoadFile(row, hasFullText, documentArtifactID, nativeLocation, fullTextTempFile, doc)
+				Exit Sub
+			End If
 			Dim count As Int32
 			Dim fieldValue As String
 			Dim retString As New System.Text.StringBuilder
@@ -660,6 +713,99 @@ Namespace kCura.WinEDDS
 			End If
 			_nativeFileWriter.Write(vbNewLine)
 		End Sub
+
+		Public Sub UpdateHtmlLoadFile(ByVal row As System.Data.DataRow, ByVal hasFullText As Boolean, ByVal documentArtifactID As Int32, ByVal nativeLocation As String, ByVal fullTextTempFile As String, ByVal doc As Exporters.DocumentExportInfo)
+			Dim count As Int32
+			Dim fieldValue As String
+			Dim retString As New System.Text.StringBuilder
+			Dim columnName As String
+			Dim location As String = nativeLocation
+			_nativeFileWriter.Write("<tr>")
+			For count = 0 To _parent.Columns.Count - 1
+				columnName = CType(_parent.Columns(count), String)
+				Dim val As Object = row(columnName)
+				If TypeOf val Is Byte() Then
+					val = System.Text.Encoding.Unicode.GetString(DirectCast(val, Byte()))
+				End If
+				If _parent.ColumnFormats(count).ToString <> "" Then
+					Dim datetime As NullableString = NullableTypes.HelperFunctions.DBNullConvert.ToNullableString(val)
+					If datetime.IsNull OrElse datetime.Value = "" Then
+						val = ""
+					Else
+						val = System.DateTime.Parse(datetime.Value, System.Globalization.CultureInfo.InvariantCulture).ToString(_parent.ColumnFormats(count).ToString)
+					End If
+				End If
+				fieldValue = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(NullableTypes.HelperFunctions.DBNullConvert.ToNullableString(val))
+				If fieldValue.Length > 1 AndAlso fieldValue.Chars(0) = ChrW(11) AndAlso fieldValue.Chars(fieldValue.Length - 1) = ChrW(11) Then
+					fieldValue = fieldValue.Trim(New Char() {ChrW(11)}).Replace(ChrW(11), _settings.MultiRecordDelimiter)
+				End If
+				fieldValue = System.Web.HttpUtility.HtmlEncode(fieldValue)
+				retString.AppendFormat("{0}{1}{2}", "<td>", fieldValue, "</td>")
+			Next
+			If _settings.ExportImages Then retString.AppendFormat("<td>{0}</td>", Me.GetImagesHtmlString(doc))
+			If _settings.ExportNative Then retString.AppendFormat("<td>{0}</td>", Me.GetNativeHtmlString(doc, location))
+			_nativeFileWriter.Write(retString.ToString)
+			If _settings.ExportFullText Then
+				Dim bodyText As New System.Text.StringBuilder
+				If Not hasFullText Then
+					bodyText = New System.Text.StringBuilder("")
+					_nativeFileWriter.Write(String.Format("<td></td>"))
+				Else
+					Select Case Me.Settings.ExportFullTextAsFile
+						Case True
+							Dim localTextPath As String = Me.GetLocalTextFilePath(doc)
+							If System.IO.File.Exists(localTextPath) Then
+								If _settings.Overwrite Then
+									System.IO.File.Delete(localTextPath)
+									System.IO.File.Move(fullTextTempFile, localTextPath)
+									_parent.WriteStatusLine(kCura.Windows.Process.EventType.Status, localTextPath & " overwritten", False)
+								Else
+									_parent.WriteWarning(localTextPath & " already exists. Skipping file export.")
+								End If
+							Else
+								System.IO.File.Move(fullTextTempFile, localTextPath)
+							End If
+							_nativeFileWriter.Write(String.Format("<td><a style='display:block' href='{0}'>{1}</a></td>", localTextPath, "TextFile"))
+						Case False
+							Dim sr As New System.IO.StreamReader(fullTextTempFile, System.Text.Encoding.Unicode)
+							Dim c As Int32 = sr.Read
+							_nativeFileWriter.Write("<td>")
+							While Not c = -1
+								_nativeFileWriter.Write(System.Web.HttpUtility.HtmlEncode(ChrW(c)))
+								c = sr.Read
+							End While
+							_nativeFileWriter.Write("</td>")
+							sr.Close()
+					End Select
+					Try
+						System.IO.File.Delete(fullTextTempFile)
+					Catch
+						Try
+							System.IO.File.Delete(fullTextTempFile)
+						Catch
+						End Try
+					End Try
+				End If
+			End If
+			_nativeFileWriter.Write("</tr>")
+			_nativeFileWriter.Write(vbNewLine)
+		End Sub
+
+		Private Function GetImagesHtmlString(ByVal doc As Exporters.DocumentExportInfo) As String
+			If doc.Images.Count = 0 Then Return ""
+			Dim retval As New System.Text.StringBuilder
+			For Each image As Exporters.ImageExportInfo In doc.Images
+				retval.AppendFormat("<a style='display:block' href='{0}'>{1}</a>", image.TempLocation, image.FileName)
+			Next
+			Return retval.ToString
+		End Function
+
+		Private Function GetNativeHtmlString(ByVal doc As Exporters.DocumentExportInfo, ByVal location As String) As String
+			If doc.NativeCount = 0 Then Return ""
+			Dim retval As New System.Text.StringBuilder
+			retval.AppendFormat("<a style='display:block' href='{0}'>{1}</a>", location, doc.NativeFileName(Me.Settings.AppendOriginalFileName))
+			Return retval.ToString
+		End Function
 
 		Public Sub UpdateVolume()
 			_currentVolumeSize = 0
