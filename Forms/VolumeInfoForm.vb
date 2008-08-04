@@ -50,6 +50,8 @@ Namespace kCura.EDDS.WinForm
 		Friend WithEvents _cancelButton As System.Windows.Forms.Button
 		Friend WithEvents _subdirectoryTextPrefix As System.Windows.Forms.TextBox
 		Friend WithEvents Label1 As System.Windows.Forms.Label
+		Friend WithEvents GroupBox1 As System.Windows.Forms.GroupBox
+		Friend WithEvents _copyFilesFromRepository As System.Windows.Forms.CheckBox
 		<System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
 			Dim resources As System.Resources.ResourceManager = New System.Resources.ResourceManager(GetType(VolumeInfoForm))
 			Me._subDirectoryInformationGroupBox = New System.Windows.Forms.GroupBox
@@ -72,12 +74,15 @@ Namespace kCura.EDDS.WinForm
 			Me._volumePrefix = New System.Windows.Forms.TextBox
 			Me._okButton = New System.Windows.Forms.Button
 			Me._cancelButton = New System.Windows.Forms.Button
+			Me.GroupBox1 = New System.Windows.Forms.GroupBox
+			Me._copyFilesFromRepository = New System.Windows.Forms.CheckBox
 			Me._subDirectoryInformationGroupBox.SuspendLayout()
 			CType(Me._subDirectoryMaxSize, System.ComponentModel.ISupportInitialize).BeginInit()
 			CType(Me._subdirectoryStartNumber, System.ComponentModel.ISupportInitialize).BeginInit()
 			Me._volumeInformationGroupBox.SuspendLayout()
 			CType(Me._volumeMaxSize, System.ComponentModel.ISupportInitialize).BeginInit()
 			CType(Me._volumeStartNumber, System.ComponentModel.ISupportInitialize).BeginInit()
+			Me.GroupBox1.SuspendLayout()
 			Me.SuspendLayout()
 			'
 			'_subDirectoryInformationGroupBox
@@ -92,7 +97,7 @@ Namespace kCura.EDDS.WinForm
 			Me._subDirectoryInformationGroupBox.Controls.Add(Me.Label10)
 			Me._subDirectoryInformationGroupBox.Controls.Add(Me.Label11)
 			Me._subDirectoryInformationGroupBox.Controls.Add(Me._subdirectoryImagePrefix)
-			Me._subDirectoryInformationGroupBox.Location = New System.Drawing.Point(8, 120)
+			Me._subDirectoryInformationGroupBox.Location = New System.Drawing.Point(8, 168)
 			Me._subDirectoryInformationGroupBox.Name = "_subDirectoryInformationGroupBox"
 			Me._subDirectoryInformationGroupBox.Size = New System.Drawing.Size(280, 160)
 			Me._subDirectoryInformationGroupBox.TabIndex = 16
@@ -202,7 +207,7 @@ Namespace kCura.EDDS.WinForm
 			Me._volumeInformationGroupBox.Controls.Add(Me.Label7)
 			Me._volumeInformationGroupBox.Controls.Add(Me.Label5)
 			Me._volumeInformationGroupBox.Controls.Add(Me._volumePrefix)
-			Me._volumeInformationGroupBox.Location = New System.Drawing.Point(8, 8)
+			Me._volumeInformationGroupBox.Location = New System.Drawing.Point(8, 56)
 			Me._volumeInformationGroupBox.Name = "_volumeInformationGroupBox"
 			Me._volumeInformationGroupBox.Size = New System.Drawing.Size(280, 104)
 			Me._volumeInformationGroupBox.TabIndex = 15
@@ -268,7 +273,7 @@ Namespace kCura.EDDS.WinForm
 			'
 			'_okButton
 			'
-			Me._okButton.Location = New System.Drawing.Point(132, 288)
+			Me._okButton.Location = New System.Drawing.Point(132, 336)
 			Me._okButton.Name = "_okButton"
 			Me._okButton.TabIndex = 17
 			Me._okButton.Text = "OK"
@@ -276,25 +281,46 @@ Namespace kCura.EDDS.WinForm
 			'_cancelButton
 			'
 			Me._cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel
-			Me._cancelButton.Location = New System.Drawing.Point(212, 288)
+			Me._cancelButton.Location = New System.Drawing.Point(212, 336)
 			Me._cancelButton.Name = "_cancelButton"
 			Me._cancelButton.TabIndex = 18
 			Me._cancelButton.Text = "Cancel"
+			'
+			'GroupBox1
+			'
+			Me.GroupBox1.Controls.Add(Me._copyFilesFromRepository)
+			Me.GroupBox1.Location = New System.Drawing.Point(8, 4)
+			Me.GroupBox1.Name = "GroupBox1"
+			Me.GroupBox1.Size = New System.Drawing.Size(280, 48)
+			Me.GroupBox1.TabIndex = 19
+			Me.GroupBox1.TabStop = False
+			Me.GroupBox1.Text = "Export File Options"
+			'
+			'_copyFilesFromRepository
+			'
+			Me._copyFilesFromRepository.Location = New System.Drawing.Point(12, 20)
+			Me._copyFilesFromRepository.Name = "_copyFilesFromRepository"
+			Me._copyFilesFromRepository.Size = New System.Drawing.Size(216, 16)
+			Me._copyFilesFromRepository.TabIndex = 0
+			Me._copyFilesFromRepository.Text = "Copy Files From Repository"
 			'
 			'VolumeInfoForm
 			'
 			Me.AcceptButton = Me._okButton
 			Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
 			Me.CancelButton = Me._cancelButton
-			Me.ClientSize = New System.Drawing.Size(296, 319)
+			Me.ClientSize = New System.Drawing.Size(296, 367)
+			Me.Controls.Add(Me.GroupBox1)
 			Me.Controls.Add(Me._cancelButton)
 			Me.Controls.Add(Me._okButton)
 			Me.Controls.Add(Me._subDirectoryInformationGroupBox)
 			Me.Controls.Add(Me._volumeInformationGroupBox)
 			Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle
 			Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
-			Me.MaximumSize = New System.Drawing.Size(302, 316)
-			Me.MinimumSize = New System.Drawing.Size(302, 316)
+			Me.MaximizeBox = False
+			Me.MaximumSize = New System.Drawing.Size(302, 392)
+			Me.MinimizeBox = False
+			Me.MinimumSize = New System.Drawing.Size(302, 392)
 			Me.Name = "VolumeInfoForm"
 			Me.Text = "Settings"
 			Me._subDirectoryInformationGroupBox.ResumeLayout(False)
@@ -303,6 +329,7 @@ Namespace kCura.EDDS.WinForm
 			Me._volumeInformationGroupBox.ResumeLayout(False)
 			CType(Me._volumeMaxSize, System.ComponentModel.ISupportInitialize).EndInit()
 			CType(Me._volumeStartNumber, System.ComponentModel.ISupportInitialize).EndInit()
+			Me.GroupBox1.ResumeLayout(False)
 			Me.ResumeLayout(False)
 
 		End Sub
@@ -321,10 +348,13 @@ Namespace kCura.EDDS.WinForm
 			_volumeMaxSize.Value = _volumeInfo.VolumeMaxSize
 			_volumePrefix.Text = _volumeInfo.VolumePrefix
 			_volumeStartNumber.Value = _volumeInfo.VolumeStartNumber
+			_subdirectoryTextPrefix.Text = _volumeInfo.SubdirectoryFullTextPrefix
+			_copyFilesFromRepository.Checked = _volumeInfo.CopyFilesFromRepository
 		End Sub
 
 		Private Sub _okButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _okButton.Click
 			Dim retval As New Exporters.VolumeInfo
+			retval.CopyFilesFromRepository = _copyFilesFromRepository.Checked
 			If _subdirectoryImagePrefix.Text.Trim <> "" Then
 				retval.SubdirectoryImagePrefix = _subdirectoryImagePrefix.Text
 			Else
@@ -426,5 +456,7 @@ Namespace kCura.EDDS.WinForm
 			If _subdirectoryStartNumber.Text.Trim = "" Then _subdirectoryStartNumber.Text = "0"
 		End Sub
 
+		Private Sub _copyFilesFromRepository_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _copyFilesFromRepository.CheckedChanged
+		End Sub
 	End Class
 End Namespace

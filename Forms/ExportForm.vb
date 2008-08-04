@@ -868,6 +868,12 @@ Public Class ExportForm
 
 	Private Sub _volumeInfoForm_VolumeOK(ByVal e As kCura.WinEDDS.Exporters.VolumeInfo) Handles _volumeInfoForm.VolumeOK
 		_volumeInfo = e
+		If _volumeInfo.CopyFilesFromRepository Then
+			_imageTypeDropdown.Enabled = True
+		Else
+			_imageTypeDropdown.SelectedIndex = 1
+			_imageTypeDropdown.Enabled = False
+		End If
 	End Sub
 
 	Private Sub _usePrefix_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _usePrefix.CheckedChanged
