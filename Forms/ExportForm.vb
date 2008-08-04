@@ -166,17 +166,17 @@ Public Class ExportForm
 		'_exportFullTextAsFile
 		'
 		Me._exportFullTextAsFile.Enabled = False
-		Me._exportFullTextAsFile.Location = New System.Drawing.Point(340, 48)
+		Me._exportFullTextAsFile.Location = New System.Drawing.Point(108, 48)
 		Me._exportFullTextAsFile.Name = "_exportFullTextAsFile"
 		Me._exportFullTextAsFile.Size = New System.Drawing.Size(152, 20)
 		Me._exportFullTextAsFile.TabIndex = 5
-		Me._exportFullTextAsFile.Text = "Export Full Text as File"
+		Me._exportFullTextAsFile.Text = "Export Full Text as Files"
 		'
 		'_exportImages
 		'
 		Me._exportImages.Checked = True
 		Me._exportImages.CheckState = System.Windows.Forms.CheckState.Checked
-		Me._exportImages.Location = New System.Drawing.Point(244, 48)
+		Me._exportImages.Location = New System.Drawing.Point(260, 48)
 		Me._exportImages.Name = "_exportImages"
 		Me._exportImages.Size = New System.Drawing.Size(96, 20)
 		Me._exportImages.TabIndex = 4
@@ -186,7 +186,7 @@ Public Class ExportForm
 		'
 		Me._exportNativeFiles.Checked = True
 		Me._exportNativeFiles.CheckState = System.Windows.Forms.CheckState.Checked
-		Me._exportNativeFiles.Location = New System.Drawing.Point(120, 48)
+		Me._exportNativeFiles.Location = New System.Drawing.Point(356, 48)
 		Me._exportNativeFiles.Name = "_exportNativeFiles"
 		Me._exportNativeFiles.Size = New System.Drawing.Size(124, 20)
 		Me._exportNativeFiles.TabIndex = 3
@@ -311,7 +311,7 @@ Public Class ExportForm
 		'_nativeFileFormat
 		'
 		Me._nativeFileFormat.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
-		Me._nativeFileFormat.Items.AddRange(New Object() {"Select...", "Comma-separated (.csv)", "Tab-delimited (.txt)", "Concordance (.dat)", "Custom (.txt)", "Hypertext (.html)"})
+		Me._nativeFileFormat.Items.AddRange(New Object() {"Select...", "Comma-separated (.csv)", "Tab-delimited (.txt)", "Concordance (.dat)", "Custom (.txt)", "HTML (.html)"})
 		Me._nativeFileFormat.Location = New System.Drawing.Point(8, 40)
 		Me._nativeFileFormat.Name = "_nativeFileFormat"
 		Me._nativeFileFormat.Size = New System.Drawing.Size(140, 21)
@@ -737,9 +737,9 @@ Public Class ExportForm
 				_nativeFileNameSource.Visible = True
 				_nativeFileNameSource.SelectedIndex = 0
 				Me.Text = "Relativity Desktop Client: Export Production Set"
-				Me.Size = New System.Drawing.Size(588, 340)
-				Me.MaximumSize = New System.Drawing.Size(588, 340)
-				Me.MinimumSize = New System.Drawing.Size(588, 340)
+				'Me.Size = New System.Drawing.Size(588, 350)
+				'Me.MaximumSize = New System.Drawing.Size(588, 350)
+				'Me.MinimumSize = New System.Drawing.Size(588, 350)
 				_productionPrecedenceBox.Visible = False
 		End Select
 		_nativeFileFormat.SelectedIndex = 0
