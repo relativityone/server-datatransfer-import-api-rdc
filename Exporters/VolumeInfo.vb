@@ -8,6 +8,7 @@ Namespace kCura.WinEDDS.Exporters
 		Private _subdirectoryTextPrefix As String
 		Private _subdirectoryStartNumber As Int32
 		Private _subdirectoryMaxSize As Int64
+		Private _copyFilesFromRepository As Boolean = True
 
 		Public Property VolumePrefix() As String
 			Get
@@ -78,6 +79,15 @@ Namespace kCura.WinEDDS.Exporters
 			End Get
 			Set(ByVal value As Int64)
 				_subdirectoryMaxSize = value
+			End Set
+		End Property
+
+		Public Property CopyFilesFromRepository() As Boolean
+			Get
+				Return _copyFilesFromRepository
+			End Get
+			Set(ByVal value As Boolean)
+				_copyFilesFromRepository = value
 			End Set
 		End Property
 

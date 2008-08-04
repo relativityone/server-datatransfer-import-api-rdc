@@ -164,6 +164,14 @@ Namespace kCura.WinEDDS
 				localStream.Close()
 				If Not remotelocationkey Is Nothing Then _locationAccessMatrix.Add(remotelocationkey, FileAccessType.Web)
 				Return True
+			Catch ex As System.Net.WebException
+				If ex.Message.IndexOf("409") <> -1 Then
+					RaiseEvent UploadStatusEvent("Error Downloading File")					'TODO: Change this to a separate error-type event'
+					Throw New ApplicationException("Error Downloading File: the file associated with the guid " & remoteFileGuid & " cannot be found" & vbNewLine, ex)
+				Else
+					RaiseEvent UploadStatusEvent("Error Downloading File")				 'TODO: Change this to a separate error-type event'
+					Throw New ApplicationException("Error Downloading File:", ex)
+				End If
 			Catch ex As System.Exception
 				RaiseEvent UploadStatusEvent("Error Downloading File")				 'TODO: Change this to a separate error-type event'
 				Throw New ApplicationException("Error Downloading File", ex)

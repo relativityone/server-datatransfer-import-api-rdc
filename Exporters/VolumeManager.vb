@@ -182,7 +182,9 @@ Namespace kCura.WinEDDS
 				For Each image In documentInfo.Images
 					_timekeeper.MarkStart("VolumeManager_DownloadImage")
 					Try
-						totalFileSize += Me.DownloadImage(image)
+						If Me.Settings.VolumeInfo.CopyFilesFromRepository Then
+							totalFileSize += Me.DownloadImage(image)
+						End If
 					Catch ex As System.Exception
 						image.TempLocation = ""
 						Me.LogFileExportError(ExportFileType.Image, documentInfo.IdentifierValue, image.FileGuid, ex.ToString)
@@ -223,7 +225,9 @@ Namespace kCura.WinEDDS
 			If Me.Settings.ExportNative Then
 				_timekeeper.MarkStart("VolumeManager_DownloadNative")
 				Try
-					totalFileSize += Me.DownloadNative(documentInfo)
+					If Me.Settings.VolumeInfo.CopyFilesFromRepository Then
+						totalFileSize += Me.DownloadNative(documentInfo)
+					End If
 				Catch ex As System.Exception
 					Me.LogFileExportError(ExportFileType.Native, documentInfo.IdentifierValue, documentInfo.NativeFileGuid, ex.ToString)
 				End Try
@@ -275,7 +279,7 @@ Namespace kCura.WinEDDS
 				_timekeeper.MarkEnd("VolumeManager_ExportImages")
 			End If
 			Dim nativeLocation As String = ""
-			If Me.Settings.ExportNative Then
+			If Me.Settings.ExportNative AndAlso Me.Settings.VolumeInfo.CopyFilesFromRepository Then
 				Dim nativeFileName As String = Me.GetNativeFileName(documentInfo)
 				Dim localFilePath As String = Me.GetLocalNativeFilePath(documentInfo, nativeFileName)
 				_timekeeper.MarkStart("VolumeManager_ExportNative")
@@ -301,8 +305,10 @@ Namespace kCura.WinEDDS
 			Me.UpdateLoadFile(documentInfo.DataRow, documentInfo.HasFullText, documentInfo.DocumentArtifactID, nativeLocation, tempLocalFullTextFilePath, documentInfo)
 			_parent.DocumentsExported += 1
 			_currentVolumeSize += totalFileSize
-			_currentNativeSubdirectorySize += documentInfo.NativeCount
-			_currentImageSubdirectorySize += documentInfo.ImageCount
+			If Me.Settings.VolumeInfo.CopyFilesFromRepository Then
+				_currentNativeSubdirectorySize += documentInfo.NativeCount
+				_currentImageSubdirectorySize += documentInfo.ImageCount
+			End If
 			If updateSubDirectoryAfterExport Then Me.UpdateSubdirectory()
 			If updateVolumeAfterExport Then Me.UpdateVolume()
 			_parent.WriteUpdate("Document " & documentInfo.IdentifierValue & " exported.", False)
@@ -365,7 +371,7 @@ Namespace kCura.WinEDDS
 			Dim pageOffset As Long
 			If localFilePath.Chars(localFilePath.Length - 1) <> "\"c Then localFilePath &= "\"
 			localFilePath &= subfolderPath
-			If Not System.IO.Directory.Exists(localFilePath) Then System.IO.Directory.CreateDirectory(localFilePath)
+			If Not System.IO.Directory.Exists(localFilePath) AndAlso Me.Settings.VolumeInfo.CopyFilesFromRepository Then System.IO.Directory.CreateDirectory(localFilePath)
 			Try
 				If Me.Settings.LogFileFormat = LoadFileType.FileFormat.IPRO_FullText Then
 					If System.IO.File.Exists(localFullTextPath) Then
@@ -388,29 +394,33 @@ Namespace kCura.WinEDDS
 					marker.TempLocation = copyfile
 				Else
 					For Each image In images
-						If (i = 0 AndAlso image.PageOffset.IsNull) OrElse i = images.Count - 1 Then
-							pageOffset = Int64.MinValue
-						Else
-							Dim nextImage As Exporters.ImageExportInfo = DirectCast(images(i + 1), Exporters.ImageExportInfo)
-							If nextImage.PageOffset.IsNull Then
+						If Me.Settings.VolumeInfo.CopyFilesFromRepository Then
+							If (i = 0 AndAlso image.PageOffset.IsNull) OrElse i = images.Count - 1 Then
 								pageOffset = Int64.MinValue
 							Else
-								pageOffset = nextImage.PageOffset.Value
+								Dim nextImage As Exporters.ImageExportInfo = DirectCast(images(i + 1), Exporters.ImageExportInfo)
+								If nextImage.PageOffset.IsNull Then
+									pageOffset = Int64.MinValue
+								Else
+									pageOffset = nextImage.PageOffset.Value
+								End If
 							End If
+							Me.ExportDocumentImage(localFilePath & image.FileName, image.FileGuid, image.ArtifactID, image.BatesNumber, image.TempLocation)
+							Dim copyfile As String
+							Select Case Me.Settings.TypeOfExportedFilePath
+								Case ExportFile.ExportedFilePathType.Absolute
+									copyfile = localFilePath & image.FileName
+								Case ExportFile.ExportedFilePathType.Relative
+									copyfile = ".\" & subfolderPath & image.FileName
+								Case ExportFile.ExportedFilePathType.Prefix
+									copyfile = Me.Settings.FilePrefix.TrimEnd("\"c) & "\" & subfolderPath & image.FileName
+							End Select
+							Me.CreateImageLogEntry(image.BatesNumber, copyfile, localFilePath, i = 0, fullTextReader, localFullTextPath <> "", pageOffset, images.Count)
+							image.TempLocation = copyfile
+						Else
+							Me.CreateImageLogEntry(image.BatesNumber, image.SourceLocation, image.SourceLocation, i = 0, fullTextReader, localFullTextPath <> "", pageOffset, images.Count)
 						End If
-						Me.ExportDocumentImage(localFilePath & image.FileName, image.FileGuid, image.ArtifactID, image.BatesNumber, image.TempLocation)
-						Dim copyfile As String
-						Select Case Me.Settings.TypeOfExportedFilePath
-							Case ExportFile.ExportedFilePathType.Absolute
-								copyfile = localFilePath & image.FileName
-							Case ExportFile.ExportedFilePathType.Relative
-								copyfile = ".\" & subfolderPath & image.FileName
-							Case ExportFile.ExportedFilePathType.Prefix
-								copyfile = Me.Settings.FilePrefix.TrimEnd("\"c) & "\" & subfolderPath & image.FileName
-						End Select
-						Me.CreateImageLogEntry(image.BatesNumber, copyfile, localFilePath, i = 0, fullTextReader, localFullTextPath <> "", pageOffset, images.Count)
 						i += 1
-						image.TempLocation = copyfile
 					Next
 				End If
 
@@ -554,7 +564,7 @@ Namespace kCura.WinEDDS
 #End Region
 
 		Private Function ExportNative(ByVal exportFileName As String, ByVal fileGuid As String, ByVal artifactID As Int32, ByVal systemFileName As String, ByVal tempLocation As String) As String
-			If Not tempLocation = "" AndAlso Not tempLocation.ToLower = exportFileName.ToLower Then
+			If Not tempLocation = "" AndAlso Not tempLocation.ToLower = exportFileName.ToLower AndAlso Me.Settings.VolumeInfo.CopyFilesFromRepository Then
 				If System.IO.File.Exists(exportFileName) Then
 					If _settings.Overwrite Then
 						System.IO.File.Delete(exportFileName)
@@ -656,7 +666,13 @@ Namespace kCura.WinEDDS
 					retString.Append(_settings.RecordDelimiter)
 				End If
 			Next
-			If _settings.ExportNative Then retString.AppendFormat("{2}{0}{1}{0}", _settings.QuoteDelimiter, location, _settings.RecordDelimiter)
+			If _settings.ExportNative Then
+				If Me.Settings.VolumeInfo.CopyFilesFromRepository Then
+					retString.AppendFormat("{2}{0}{1}{0}", _settings.QuoteDelimiter, location, _settings.RecordDelimiter)
+				Else
+					retString.AppendFormat("{2}{0}{1}{0}", _settings.QuoteDelimiter, doc.NativeSourceLocation, _settings.RecordDelimiter)
+				End If
+			End If
 			_nativeFileWriter.Write(retString.ToString)
 			If _settings.ExportFullText Then
 				Dim bodyText As New System.Text.StringBuilder
@@ -742,8 +758,16 @@ Namespace kCura.WinEDDS
 				fieldValue = System.Web.HttpUtility.HtmlEncode(fieldValue)
 				retString.AppendFormat("{0}{1}{2}", "<td>", fieldValue, "</td>")
 			Next
-			If _settings.ExportImages Then retString.AppendFormat("<td>{0}</td>", Me.GetImagesHtmlString(doc))
-			If _settings.ExportNative Then retString.AppendFormat("<td>{0}</td>", Me.GetNativeHtmlString(doc, location))
+			If _settings.ExportImages Then
+				retString.AppendFormat("<td>{0}</td>", Me.GetImagesHtmlString(doc))
+			End If
+			If _settings.ExportNative Then
+				If Me.Settings.VolumeInfo.CopyFilesFromRepository Then
+					retString.AppendFormat("<td>{0}</td>", Me.GetNativeHtmlString(doc, location))
+				Else
+					retString.AppendFormat("<td>{0}</td>", Me.GetNativeHtmlString(doc, doc.NativeSourceLocation))
+				End If
+			End If
 			_nativeFileWriter.Write(retString.ToString)
 			If _settings.ExportFullText Then
 				Dim bodyText As New System.Text.StringBuilder
@@ -795,7 +819,11 @@ Namespace kCura.WinEDDS
 			If doc.Images.Count = 0 Then Return ""
 			Dim retval As New System.Text.StringBuilder
 			For Each image As Exporters.ImageExportInfo In doc.Images
-				retval.AppendFormat("<a style='display:block' href='{0}'>{1}</a>", image.TempLocation, image.FileName)
+				Dim loc As String = image.TempLocation
+				If Not Me.Settings.VolumeInfo.CopyFilesFromRepository Then
+					loc = image.SourceLocation
+				End If
+				retval.AppendFormat("<a style='display:block' href='{0}'>{1}</a>", loc, image.FileName)
 			Next
 			Return retval.ToString
 		End Function
