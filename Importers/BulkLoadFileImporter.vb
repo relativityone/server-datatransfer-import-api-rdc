@@ -243,6 +243,7 @@ Namespace kCura.WinEDDS
 					_errorLogWriter.Close()
 				Catch ex As System.Exception
 				End Try
+				Me.CleanupTempTables()
 				Return True
 			Catch ex As System.Exception
 				WriteFatalError(Me.CurrentLineNumber, ex, line)
@@ -1127,6 +1128,19 @@ Namespace kCura.WinEDDS
 				Catch
 				End Try
 			End Try
+		End Sub
+
+		Private Sub _processController_ParentFormClosingEvent() Handles _processController.ParentFormClosingEvent
+			CleanupTempTables()
+		End Sub
+
+		Private Sub CleanupTempTables()
+			If Not _runID Is Nothing AndAlso _runID <> "" Then
+				Try
+					_bulkImportManager.DisposeTempTables(_caseInfo.ArtifactID, _runID)
+				Catch
+				End Try
+			End If
 		End Sub
 
 		Public Class Settings

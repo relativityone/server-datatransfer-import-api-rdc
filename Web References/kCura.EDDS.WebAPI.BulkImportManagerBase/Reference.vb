@@ -161,6 +161,24 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
             Dim results() As Object = Me.EndInvoke(asyncResult)
             Return CType(results(0),Boolean)
         End Function
+        
+        '<remarks/>
+        <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/BulkImportManager/DisposeTempTables", RequestNamespace:="http://www.kCura.com/EDDS/BulkImportManager", ResponseNamespace:="http://www.kCura.com/EDDS/BulkImportManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
+        Public Function DisposeTempTables(ByVal appID As Integer, ByVal runId As String) As Object
+            Dim results() As Object = Me.Invoke("DisposeTempTables", New Object() {appID, runId})
+            Return CType(results(0),Object)
+        End Function
+        
+        '<remarks/>
+        Public Function BeginDisposeTempTables(ByVal appID As Integer, ByVal runId As String, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("DisposeTempTables", New Object() {appID, runId}, callback, asyncState)
+        End Function
+        
+        '<remarks/>
+        Public Function EndDisposeTempTables(ByVal asyncResult As System.IAsyncResult) As Object
+            Dim results() As Object = Me.EndInvoke(asyncResult)
+            Return CType(results(0),Object)
+        End Function
     End Class
     
     '<remarks/>

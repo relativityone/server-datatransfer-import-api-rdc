@@ -203,6 +203,7 @@ Namespace kCura.WinEDDS
 				End While
 				Me.PushImageBatch(bulkLoadFilePath, True)
 				Me.CompleteSuccess()
+				CleanupTempTables()
 			Catch ex As System.Exception
 				Me.CompleteError(ex)
 			End Try
@@ -605,6 +606,19 @@ Namespace kCura.WinEDDS
 
 		Private Sub _textUploader_UploadWarningEvent(ByVal s As String) Handles _textUploader.UploadWarningEvent
 			RaiseStatusEvent(kCura.Windows.Process.EventType.Warning, s)
+		End Sub
+
+		Private Sub _processController_ParentFormClosingEvent() Handles _processController.ParentFormClosingEvent
+			Me.CleanupTempTables()
+		End Sub
+
+		Private Sub CleanupTempTables()
+			If Not _runId Is Nothing AndAlso _runId <> "" Then
+				Try
+					_bulkImportManager.DisposeTempTables(_caseInfo.ArtifactID, _runId)
+				Catch
+				End Try
+			End If
 		End Sub
 
 	End Class

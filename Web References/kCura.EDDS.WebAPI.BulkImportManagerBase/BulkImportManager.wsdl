@@ -198,6 +198,21 @@
           </s:sequence>
         </s:complexType>
       </s:element>
+      <s:element name="DisposeTempTables">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="appID" type="s:int" />
+            <s:element minOccurs="0" maxOccurs="1" name="runId" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="DisposeTempTablesResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="DisposeTempTablesResult" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
     </s:schema>
   </wsdl:types>
   <wsdl:message name="BulkImportImageSoapIn">
@@ -242,6 +257,12 @@
   <wsdl:message name="NativeRunHasErrorsSoapOut">
     <wsdl:part name="parameters" element="tns:NativeRunHasErrorsResponse" />
   </wsdl:message>
+  <wsdl:message name="DisposeTempTablesSoapIn">
+    <wsdl:part name="parameters" element="tns:DisposeTempTables" />
+  </wsdl:message>
+  <wsdl:message name="DisposeTempTablesSoapOut">
+    <wsdl:part name="parameters" element="tns:DisposeTempTablesResponse" />
+  </wsdl:message>
   <wsdl:portType name="BulkImportManagerSoap">
     <wsdl:operation name="BulkImportImage">
       <wsdl:input message="tns:BulkImportImageSoapIn" />
@@ -270,6 +291,10 @@
     <wsdl:operation name="NativeRunHasErrors">
       <wsdl:input message="tns:NativeRunHasErrorsSoapIn" />
       <wsdl:output message="tns:NativeRunHasErrorsSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="DisposeTempTables">
+      <wsdl:input message="tns:DisposeTempTablesSoapIn" />
+      <wsdl:output message="tns:DisposeTempTablesSoapOut" />
     </wsdl:operation>
   </wsdl:portType>
   <wsdl:binding name="BulkImportManagerSoap" type="tns:BulkImportManagerSoap">
@@ -330,6 +355,15 @@
     </wsdl:operation>
     <wsdl:operation name="NativeRunHasErrors">
       <soap:operation soapAction="http://www.kCura.com/EDDS/BulkImportManager/NativeRunHasErrors" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="DisposeTempTables">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/BulkImportManager/DisposeTempTables" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
