@@ -258,7 +258,6 @@ Namespace kCura.Windows.Process
 			Me._exportErrorFileButton.Size = New System.Drawing.Size(114, 20)
 			Me._exportErrorFileButton.TabIndex = 3
 			Me._exportErrorFileButton.Text = "Export Error File"
-			Me._exportErrorFileButton.Visible = False
 			'
 			'_exportErrorReportBtn
 			'
@@ -302,9 +301,6 @@ Namespace kCura.Windows.Process
 			'
 			Me._exportErrorsDialog.Filter = "CSV Files|*.csv|All Files|*.*"
 			'
-			'_exportErrorFileDialog
-			'
-			'
 			'ProgressForm
 			'
 			Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
@@ -343,6 +339,16 @@ Namespace kCura.Windows.Process
 		Private _hasReceivedFatalError As Boolean = False
 		Private _hasExportedErrors As Boolean = False
 		Private _statusBarPopupText As String = ""
+		Private _errorFilesExtension As String = "CSV"
+
+		Public Property ErrorFileExtension() As String
+			Get
+				Return _errorFilesExtension
+			End Get
+			Set(ByVal value As String)
+				_errorFilesExtension = value
+			End Set
+		End Property
 		Public Property ProcessID() As Guid
 			Get
 				Return _processId
@@ -523,6 +529,7 @@ Namespace kCura.Windows.Process
 							_exportErrorFileDialog.ShowDialog()
 						End If
 					End If
+					_exportErrorFileButton.Visible = True
 				End If
 			End If
 		End Sub
@@ -582,7 +589,7 @@ Namespace kCura.Windows.Process
 			_summaryOutput.Text = _summaryOutput.Text + what + vbCrLf
 		End Sub
 
-		Private Sub _processObserver_StatusBarEvent(ByVal message As String, popupText as string) Handles _processObserver.StatusBarEvent
+		Private Sub _processObserver_StatusBarEvent(ByVal message As String, ByVal popupText As String) Handles _processObserver.StatusBarEvent
 			_statusBar.Text = message
 			_statusBarPopupText = popupText
 			If _statusBarPopupText Is Nothing Then _statusBarPopupText = ""
@@ -611,6 +618,7 @@ Namespace kCura.Windows.Process
 
 		Private Sub _exportErrorReportBtn_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles _exportErrorReportBtn.Click
 			_exportErrorsDialog.FileName = ""
+			_exportErrorsDialog.Filter = "CSV Files|*.csv|All Files|*.*"
 			_exportErrorsDialog.ShowDialog()
 			If Not _exportErrorsDialog.FileName Is Nothing AndAlso Not _exportErrorsDialog.FileName = "" Then
 				_controller.ExportErrorReport(_exportErrorsDialog.FileName)
@@ -619,6 +627,8 @@ Namespace kCura.Windows.Process
 
 		Private Sub _exportErrorFileButton_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles _exportErrorFileButton.Click
 			_exportErrorsDialog.FileName = ""
+			Dim errorFileExtension As String = _errorFilesExtension.ToLower.TrimStart("."c)
+			_exportErrorsDialog.Filter = errorFileExtension.ToUpper & " Files|*." & errorFileExtension.ToLower & "|All Files|*.*"
 			_exportErrorsDialog.ShowDialog()
 			If Not _exportErrorsDialog.FileName Is Nothing AndAlso Not _exportErrorsDialog.FileName = "" Then
 				_controller.ExportErrorFile(_exportErrorsDialog.FileName)
