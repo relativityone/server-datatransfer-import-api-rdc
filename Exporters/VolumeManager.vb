@@ -694,7 +694,16 @@ Namespace kCura.WinEDDS
 							Else
 								System.IO.File.Move(fullTextTempFile, localTextPath)
 							End If
-							_nativeFileWriter.Write(String.Format("{2}{0}{1}{0}", _settings.QuoteDelimiter, localTextPath, _settings.RecordDelimiter))
+							Dim textLocation As String
+							Select Case Me.Settings.TypeOfExportedFilePath
+								Case ExportFile.ExportedFilePathType.Absolute
+									textLocation = localTextPath
+								Case ExportFile.ExportedFilePathType.Relative
+									textLocation = ".\" & Me.CurrentVolumeLabel & "\" & Me.CurrentFullTextSubdirectoryLabel & "\" & doc.IdentifierValue & ".txt"
+								Case ExportFile.ExportedFilePathType.Prefix
+									textLocation = Me.Settings.FilePrefix.TrimEnd("\"c) & "\" & Me.CurrentVolumeLabel & "\" & Me.CurrentFullTextSubdirectoryLabel & "\" & doc.IdentifierValue & ".txt"
+							End Select
+							_nativeFileWriter.Write(String.Format("{2}{0}{1}{0}", _settings.QuoteDelimiter, textLocation, _settings.RecordDelimiter))
 						Case False
 							Dim sr As New System.IO.StreamReader(fullTextTempFile, System.Text.Encoding.Unicode)
 							Dim c As Int32 = sr.Read
@@ -717,14 +726,14 @@ Namespace kCura.WinEDDS
 							_nativeFileWriter.Write(_settings.QuoteDelimiter)
 							sr.Close()
 					End Select
-					Try
-						System.IO.File.Delete(fullTextTempFile)
-					Catch
-						Try
-							System.IO.File.Delete(fullTextTempFile)
-						Catch
-						End Try
-					End Try
+							Try
+								System.IO.File.Delete(fullTextTempFile)
+							Catch
+								Try
+									System.IO.File.Delete(fullTextTempFile)
+								Catch
+								End Try
+							End Try
 				End If
 			End If
 			_nativeFileWriter.Write(vbNewLine)
@@ -789,7 +798,16 @@ Namespace kCura.WinEDDS
 							Else
 								System.IO.File.Move(fullTextTempFile, localTextPath)
 							End If
-							_nativeFileWriter.Write(String.Format("<td><a style='display:block' href='{0}'>{1}</a></td>", localTextPath, "TextFile"))
+							Dim textLocation As String
+							Select Case Me.Settings.TypeOfExportedFilePath
+								Case ExportFile.ExportedFilePathType.Absolute
+									textLocation = localTextPath
+								Case ExportFile.ExportedFilePathType.Relative
+									textLocation = ".\" & Me.CurrentVolumeLabel & "\" & Me.CurrentFullTextSubdirectoryLabel & "\" & doc.IdentifierValue & ".txt"
+								Case ExportFile.ExportedFilePathType.Prefix
+									textLocation = Me.Settings.FilePrefix.TrimEnd("\"c) & "\" & Me.CurrentVolumeLabel & "\" & Me.CurrentFullTextSubdirectoryLabel & "\" & doc.IdentifierValue & ".txt"
+							End Select
+							_nativeFileWriter.Write(String.Format("<td><a style='display:block' href='{0}'>{1}</a></td>", textLocation, "TextFile"))
 						Case False
 							Dim sr As New System.IO.StreamReader(fullTextTempFile, System.Text.Encoding.Unicode)
 							Dim c As Int32 = sr.Read
