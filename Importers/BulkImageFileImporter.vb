@@ -392,6 +392,7 @@ Namespace kCura.WinEDDS
 		Public Event FatalErrorEvent(ByVal message As String, ByVal ex As System.Exception)
 		Public Event StatusMessage(ByVal args As kCura.Windows.Process.StatusEventArgs)
 		Public Event ReportErrorEvent(ByVal row As System.Collections.IDictionary)
+		Public Event UploadModeChangeEvent(ByVal mode As String, ByVal isBulkEnabled As Boolean)
 
 		Private Sub RaiseFatalError(ByVal ex As System.Exception)
 			RaiseEvent FatalErrorEvent("Error processing line: " + CurrentLineNumber.ToString, ex)
@@ -419,6 +420,11 @@ Namespace kCura.WinEDDS
 			errorMessageFileWriter.WriteLine(String.Format("""{1}{0}{2}{0}{3}{0}{4}""", """,""", row("Line Number").ToString, row("DocumentID").ToString, row("FileID").ToString, row("Messages").ToString))
 			errorMessageFileWriter.Close()
 		End Sub
+
+		Private Sub _uploader_UploadModeChangeEvent(ByVal mode As String, ByVal isBulkEnabled As Boolean) Handles _fileUploader.UploadModeChangeEvent
+			RaiseEvent UploadModeChangeEvent(mode, isBulkEnabled)
+		End Sub
+
 
 
 #End Region
