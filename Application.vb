@@ -864,6 +864,9 @@ Namespace kCura.EDDS.WinForm
 					frm.ProcessController = importer.ProcessController
 					frm.StopImportButtonText = "Stop"
 					frm.Text = "Import Load File Progress ..."
+					frm.ErrorFileExtension = System.IO.Path.GetExtension(loadFile.FilePath).TrimStart("."c).ToUpper
+					If frm.ErrorFileExtension Is Nothing Then frm.ErrorFileExtension = "TXT"
+					If frm.ErrorFileExtension = "" Then frm.ErrorFileExtension = "TXT"
 					frm.Show()
 					frm.ProcessID = _processPool.StartProcess(importer)
 					CursorDefault()
@@ -909,6 +912,7 @@ Namespace kCura.EDDS.WinForm
 			frm.ProcessObserver = importer.ProcessObserver
 			frm.ProcessController = importer.ProcessController
 			frm.Text = "Import Image File Progress ..."
+			frm.ErrorFileExtension = "OPT"
 			frm.Show()
 			CursorDefault()
 			Return _processPool.StartProcess(importer)
