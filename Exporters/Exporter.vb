@@ -498,7 +498,7 @@ Namespace kCura.WinEDDS
 			Dim now As Long = System.DateTime.Now.Ticks
 			If now - _lastStatusMessageTs > 10000000 OrElse isEssential Then
 				_lastStatusMessageTs = now
-				Dim appendString As String = vbTab & Me.DocumentsExported - _lastDocumentsExportedCountReported & " document(s) exported."
+				Dim appendString As String = " ... " & Me.DocumentsExported - _lastDocumentsExportedCountReported & " document(s) exported."
 				_lastDocumentsExportedCountReported = Me.DocumentsExported
 				RaiseEvent StatusMessage(New ExportEventArgs(Me.DocumentsExported, Me.TotalDocuments, line & appendString, e))
 			End If
