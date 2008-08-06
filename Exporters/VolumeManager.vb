@@ -597,7 +597,8 @@ Namespace kCura.WinEDDS
 					_parent.WriteStatusLine(kCura.Windows.Process.EventType.Status, String.Format("Overwriting document {0}.", nativeFileName), False)
 				Else
 					_parent.WriteWarning(String.Format("{0} already exists. Skipping file export.", tempFile))
-					Return 0
+					docinfo.NativeTempLocation = tempFile
+					Return New System.IO.FileInfo(tempFile).Length
 				End If
 			End If
 			Dim tries As Int32 = 20
