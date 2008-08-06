@@ -186,7 +186,7 @@ Public Class ExportForm
 		'
 		Me._exportNativeFiles.Checked = True
 		Me._exportNativeFiles.CheckState = System.Windows.Forms.CheckState.Checked
-		Me._exportNativeFiles.Location = New System.Drawing.Point(356, 48)
+		Me._exportNativeFiles.Location = New System.Drawing.Point(364, 48)
 		Me._exportNativeFiles.Name = "_exportNativeFiles"
 		Me._exportNativeFiles.Size = New System.Drawing.Size(124, 20)
 		Me._exportNativeFiles.TabIndex = 3
@@ -732,7 +732,7 @@ Public Class ExportForm
 				Label5.Visible = True
 				_filters.Text = "Productions"
 				_filtersBox.Text = "Productions"
-				_exportImages.Text = "Export Produced Images"
+				'_exportImages.Text = "Export Produced Images"
 				_nativeFileNameSource.Visible = True
 				_nativeFileNameSource.SelectedIndex = 0
 				Me.Text = "Relativity Desktop Client: Export Production Set"
