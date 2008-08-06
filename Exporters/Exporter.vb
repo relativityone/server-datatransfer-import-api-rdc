@@ -419,6 +419,7 @@ Namespace kCura.WinEDDS
 					End If
 				End If
 			Next
+			If Not Me.ExportFile.LoadFileIsHtml Then retString = New System.Text.StringBuilder(retString.ToString.TrimEnd(Me.ExportFile.RecordDelimiter))
 			If _exportFile.LoadFileIsHtml Then
 				If Me.ExportFile.ExportNative Then retString.Append("<th>Image Files</th>")
 				If Me.ExportFile.ExportImages Then retString.Append("<th>Native Files</th>")
@@ -434,7 +435,7 @@ Namespace kCura.WinEDDS
 
 		Private Function ShowField(ByVal fieldName As String) As Boolean
 			Select Case fieldName
-				Case "Edit", "FileIcon", "AccessControlListIsInherited"
+				Case "Edit", "FileIcon", "AccessControlListIsInherited", "ExtractedText"
 					Return False
 				Case Else
 					Return True
