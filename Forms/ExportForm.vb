@@ -554,7 +554,6 @@ Public Class ExportForm
 		If Me.CreateVolume Then
 			retval = retval AndAlso Not Me.BuildVolumeInfo Is Nothing
 		End If
-		retval = retval And (_imageTypeDropdown.SelectedIndex <> 0)
 		Try
 			If _exportNativeFiles.Checked Then
 				If CType(_nativeFileFormat.SelectedItem, String) = "Select..." Then
