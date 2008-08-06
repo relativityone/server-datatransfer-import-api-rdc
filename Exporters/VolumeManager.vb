@@ -204,13 +204,13 @@ Namespace kCura.WinEDDS
 					Case ExportFile.ImageType.MultiPageTiff
 						converter.ConvertTIFFsToMultiPage(imageList, tempLocation)
 					Case ExportFile.ImageType.Pdf
-						converter.ConvertImagesToMultiPagePdf(imageList, tempLocation)
+						If Not tempLocation Is Nothing AndAlso Not tempLocation = "" Then converter.ConvertImagesToMultiPagePdf(imageList, tempLocation)
 				End Select
 				For Each imageLocation As String In imageList
 					System.IO.File.Delete(imageLocation)
 				Next
 				If Me.Settings.TypeOfImage = ExportFile.ImageType.Pdf Then
-					Dim currentTempLocation As String = DirectCast(documentInfo.Images(0), Exporters.ImageExportInfo).TempLocation
+					Dim currentTempLocation As String = Me.GetImageExportLocation(image)
 					currentTempLocation = currentTempLocation.Substring(0, currentTempLocation.LastIndexOf("."))
 					currentTempLocation &= ".pdf"
 					DirectCast(documentInfo.Images(0), Exporters.ImageExportInfo).TempLocation = currentTempLocation
@@ -219,7 +219,16 @@ Namespace kCura.WinEDDS
 					currentTempLocation &= ".pdf"
 					DirectCast(documentInfo.Images(0), Exporters.ImageExportInfo).FileName = currentTempLocation
 				End If
-				System.IO.File.Move(tempLocation, DirectCast(documentInfo.Images(0), Exporters.ImageExportInfo).TempLocation)
+				If System.IO.File.Exists(DirectCast(documentInfo.Images(0), Exporters.ImageExportInfo).TempLocation) Then
+					If Me.Settings.Overwrite Then
+						kCura.Utility.File.Delete(DirectCast(documentInfo.Images(0), Exporters.ImageExportInfo).TempLocation)
+						System.IO.File.Move(tempLocation, DirectCast(documentInfo.Images(0), Exporters.ImageExportInfo).TempLocation)
+					Else
+						_parent.WriteWarning("File exists - file copy skipped: " & DirectCast(documentInfo.Images(0), Exporters.ImageExportInfo).TempLocation)
+					End If
+				Else
+					System.IO.File.Move(tempLocation, DirectCast(documentInfo.Images(0), Exporters.ImageExportInfo).TempLocation)
+				End If
 			End If
 
 			If Me.Settings.ExportNative Then
@@ -434,6 +443,10 @@ Namespace kCura.WinEDDS
 		Private Function DownloadImage(ByVal image As Exporters.ImageExportInfo) As Int64
 			If image.FileGuid = "" Then Return 0
 			Dim tempFile As String = Me.GetImageExportLocation(image)
+			If Me.Settings.TypeOfImage = ExportFile.ImageType.Pdf Then
+				tempFile = System.IO.Path.GetTempFileName
+				System.IO.File.Delete(tempFile)
+			End If
 			If System.IO.File.Exists(tempFile) Then
 				If _settings.Overwrite Then
 					System.IO.File.Delete(tempFile)
