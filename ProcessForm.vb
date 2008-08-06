@@ -465,6 +465,13 @@ Namespace kCura.Windows.Process
 			End Select
 		End Sub
 
+		Private Function GetTimeSpanString(ByVal ts As System.TimeSpan) As String
+			Dim retval As String = ts.ToString
+			If retval.IndexOf(".") <> -1 Then
+				retval = retval.Substring(0, retval.LastIndexOf("."))
+			End If
+			Return retval
+		End Function
 		Private Sub _processObserver_OnProcessProgressEvent(ByVal evt As kCura.Windows.Process.ProcessProgressEvent) Handles _processObserver.OnProcessProgressEvent
 
 			Dim stubDate As DateTime
@@ -485,12 +492,15 @@ Namespace kCura.Windows.Process
 			WriteSummaryLine("Start Time: " + evt.StartTime.ToLongTimeString)
 			If evt.EndTime <> stubDate Then
 				WriteSummaryLine("Finish Time: " + evt.EndTime.ToLongTimeString)
-				WriteSummaryLine("Duration: " + (evt.EndTime.Subtract(evt.StartTime).ToString))
+				WriteSummaryLine("Duration: " + (Me.GetTimeSpanString(evt.EndTime.Subtract(evt.StartTime))))
 			Else
 				Dim duration As TimeSpan = DateTime.Now.Subtract(evt.StartTime)
-				WriteSummaryLine("Duration: " + (duration.ToString))
+				WriteSummaryLine("Duration: " + (Me.GetTimeSpanString(duration)))
 				WriteSummaryLine("")
-				If evt.TotalRecordsProcessed > 0 Then WriteSummaryLine("Time Left to Completion: " + New TimeSpan(CType(duration.Ticks / CType(evt.TotalRecordsProcessed, Double) * CType((evt.TotalRecords - evt.TotalRecordsProcessed), Double), Long)).ToString)
+				If evt.TotalRecordsProcessed > 0 Then
+					Dim timeToCompletionString As String = Me.GetTimeSpanString(New TimeSpan(CType(duration.Ticks / CType(evt.TotalRecordsProcessed, Double) * CType((evt.TotalRecords - evt.TotalRecordsProcessed), Double), Long)))
+					WriteSummaryLine("Time Left to Completion: " + timeToCompletionString)
+				End If
 			End If
 			WriteSummaryLine("")
 			WriteSummaryLine("Total Records: " + evt.TotalRecords.ToString)
