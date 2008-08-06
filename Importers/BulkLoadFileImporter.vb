@@ -424,6 +424,9 @@ Namespace kCura.WinEDDS
 			_killWorker = False
 			Dim thread As New System.Threading.Thread(AddressOf MassProcessWorker)
 			thread.Start()
+			While Not (thread.ThreadState = Threading.ThreadState.Running OrElse thread.ThreadState = Threading.ThreadState.WaitSleepJoin)
+				System.Threading.Thread.CurrentThread.Join(40)
+			End While
 		End Sub
 
 		Private Sub StopMassProcessor()
