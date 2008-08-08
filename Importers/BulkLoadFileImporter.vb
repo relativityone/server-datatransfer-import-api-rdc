@@ -24,12 +24,6 @@ Namespace kCura.WinEDDS
 		Protected WithEvents _processController As kCura.Windows.Process.Controller
 		Protected _offset As Int32 = 0
 		Protected _firstTimeThrough As Boolean
-		Private _docsToAdd As ArrayList
-		Private _docsToUpdate As ArrayList
-		Private _filesToAdd As ArrayList
-		Private _docsToProcess As ImportHelpers.MetaDocQueue
-		Private _killWorker As Boolean
-		Private _workerRunning As Boolean
 		Private WithEvents _lineCounter As kCura.Utility.File.LineCounter
 		Private _genericTimestamp As System.DateTime
 		Private _number As Int64 = 0
@@ -212,14 +206,12 @@ Namespace kCura.WinEDDS
 				RaiseEvent StartFileImport()
 				Dim markStart As DateTime = DateTime.Now
 				InitializeMembers(path)
-				StartMassProcessor()
-				System.Threading.Thread.CurrentThread.Join(1000)
 				While _continue AndAlso Not HasReachedEOF
 					Try
 						line = Me.GetLine
 						Dim lineStatus As Int32 = 0
 						If line.Length <> _columnHeaders.Length Then
-							lineStatus += ImportStatus.ColumnMismatch					 'Throw New ColumnCountMismatchException(Me.CurrentLineNumber, _columnHeaders.Length, line.Length)
+							lineStatus += ImportStatus.ColumnMismatch							'Throw New ColumnCountMismatchException(Me.CurrentLineNumber, _columnHeaders.Length, line.Length)
 						End If
 						_processedDocumentIdentifiers.Add(ManageDocument(line, lineStatus), CurrentLineNumber.ToString)
 					Catch ex As LoadFileBase.CodeCreationException
@@ -230,10 +222,6 @@ Namespace kCura.WinEDDS
 					Catch ex As System.Exception
 						WriteFatalError(Me.CurrentLineNumber, ex, line)
 					End Try
-				End While
-				StopMassProcessor()
-				While _workerRunning
-					System.Threading.Thread.CurrentThread.Join(1000)
 				End While
 				Me.PushNativeBatch(True)
 				RaiseEvent EndFileImport()
@@ -310,15 +298,6 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Private Function ManageDocument(ByVal values As String(), ByVal lineStatus As Int32) As String
-			If _docsToProcess.IsFull Then
-				While Not _docsToProcess.CanAdd
-					If _continue Then
-						System.Threading.Thread.CurrentThread.Join(1000)
-					Else
-						Exit Function
-					End If
-				End While
-			End If
 			Dim markStart As DateTime = DateTime.Now
 			Dim filename As String
 			Dim fileGuid As String = String.Empty
@@ -371,7 +350,8 @@ Namespace kCura.WinEDDS
 				lineStatus += ImportStatus.IdentifierOverlap		 '	Throw New IdentifierOverlapException(identityValue, _processedDocumentIdentifiers(identityValue))
 			End If
 			Dim metadoc As New MetaDocument(fileGuid, identityValue, fieldCollection, fileExists AndAlso uploadFile AndAlso (fileGuid <> String.Empty OrElse Not _copyFileToRepository), filename, fullFilePath, uploadFile, CurrentLineNumber, parentFolderID, md5hash, values, oixFileIdData, lineStatus)
-			_docsToProcess.Push(metadoc)
+			'_docsToProcess.Push(metadoc)
+			ManageDocumentMetaData(metadoc)
 			Return identityValue
 		End Function
 
@@ -392,46 +372,6 @@ Namespace kCura.WinEDDS
 			If path = "" Then path = "\"
 			Return path
 		End Function
-
-#End Region
-
-#Region "Thread Management"
-
-		Private Sub MassProcessWorker()
-			_workerRunning = True
-			While (Not _killWorker OrElse _docsToProcess.Length > 0) AndAlso _continue
-				If Not _docsToProcess Is Nothing AndAlso _docsToProcess.Length > 0 Then
-					Dim metaDoc As MetaDocument = _docsToProcess.Front
-					If Not metaDoc Is Nothing Then
-						metaDoc = _docsToProcess.Pop()
-						GC.Collect(3)
-						GC.WaitForPendingFinalizers()
-						GC.Collect(3)
-						Try
-							ManageDocumentMetaData(metaDoc)
-						Catch ex As System.Exception
-							WriteFatalError(CurrentLineNumber, ex, metaDoc.SourceLine)
-						End Try
-					End If
-				Else
-					System.Threading.Thread.CurrentThread.Join(1000)
-				End If
-			End While
-			_workerRunning = False
-		End Sub
-
-		Private Sub StartMassProcessor()
-			_killWorker = False
-			Dim thread As New System.Threading.Thread(AddressOf MassProcessWorker)
-			thread.Start()
-			While Not (thread.ThreadState = Threading.ThreadState.Running OrElse thread.ThreadState = Threading.ThreadState.WaitSleepJoin)
-				System.Threading.Thread.CurrentThread.Join(40)
-			End While
-		End Sub
-
-		Private Sub StopMassProcessor()
-			_killWorker = True
-		End Sub
 
 #End Region
 
@@ -503,6 +443,7 @@ Namespace kCura.WinEDDS
 			End Select
 			settings.UploadFiles = _filePathColumnIndex <> -1
 			_runID = _bulkImportManager.BulkImportNative(_caseInfo.ArtifactID, settings).ToString
+
 
 			Try
 				If System.IO.File.Exists(_outputNativeFilePath) Then System.IO.File.Delete(_outputNativeFilePath)
@@ -672,6 +613,8 @@ Namespace kCura.WinEDDS
 #Region "Field Preparation"
 
 		Private Function PrepareFieldCollectionAndExtractIdentityValue(ByVal fieldCollection As DocumentFieldCollection, ByVal values As String()) As String
+			System.Threading.Monitor.Enter(_outputNativeFileWriter)
+			System.Threading.Monitor.Enter(_outputCodeFileWriter)
 			Dim item As LoadFileFieldMap.LoadFileFieldMapItem
 			Dim identityValue As String = String.Empty
 			Dim docfield As DocumentField
@@ -703,6 +646,8 @@ Namespace kCura.WinEDDS
 			End If
 			_firstTimeThrough = False
 			Return identityValue
+			System.Threading.Monitor.Exit(_outputNativeFileWriter)
+			System.Threading.Monitor.Exit(_outputCodeFileWriter)
 		End Function
 
 #End Region
@@ -1083,9 +1028,6 @@ Namespace kCura.WinEDDS
 					_columnHeaders = GetColumnNames(path)
 					_processedDocumentIdentifiers = New Collections.Specialized.NameValueCollection
 					Reader = New System.IO.StreamReader(path, _sourceFileEncoding)
-					_docsToAdd = New ArrayList
-					_docsToUpdate = New ArrayList
-					_docsToProcess = New ImportHelpers.MetaDocQueue
 					If _firstLineContainsColumnNames Then
 						_columnHeaders = GetLine
 						_recordCount -= 1
