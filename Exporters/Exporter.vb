@@ -201,7 +201,7 @@ Namespace kCura.WinEDDS
 			Dim productionArtifactID As Int32 = 0
 			If Me.ExportFile.TypeOfExport = ExportFile.ExportType.Production Then productionArtifactID = ExportFile.ArtifactID
 			If Me.ExportFile.ExportNative Then natives.Table = _searchManager.RetrieveNativesForSearch(Me.ExportFile.CaseArtifactID, kCura.Utility.Array.IntArrayToCSV(documentArtifactIDs)).Tables(0)
-			If Me.ExportFile.ExportFullText Then fullTexts.Table = _searchManager.RetrieveFullTextExistenceForSearch(Me.ExportFile.CaseArtifactID, documentArtifactIDs).Tables(0)
+			If Me.ExportFile.ExportFullText OrElse Me.ExportFile.LogFileFormat = LoadFileType.FileFormat.IPRO_FullText Then fullTexts.Table = _searchManager.RetrieveFullTextExistenceForSearch(Me.ExportFile.CaseArtifactID, documentArtifactIDs).Tables(0)
 			If Me.ExportFile.ExportImages Then
 				_timekeeper.MarkStart("Exporter_GetImagesForDocumentBlock")
 				images.Table = Me.RetrieveImagesForDocuments(documentArtifactIDs, Me.ExportFile.ImagePrecedence)

@@ -268,6 +268,8 @@ Namespace kCura.WinEDDS
 					If Me.Settings.ExportFullTextAsFile Then totalFileSize += New System.IO.FileInfo(tempLocalFullTextFilePath).Length
 				End If
 			End If
+			Dim nativeCount As Long = documentInfo.NativeCount
+			If Me.Settings.ExportFullTextAsFile Then nativeCount += 1
 			If totalFileSize + _currentVolumeSize > Me.VolumeMaxSize Then
 				If _currentVolumeSize = 0 Then
 					updateVolumeAfterExport = True
@@ -275,7 +277,7 @@ Namespace kCura.WinEDDS
 					Me.UpdateVolume()
 				End If
 			ElseIf documentInfo.ImageCount + _currentImageSubdirectorySize >= Me.SubDirectoryMaxSize OrElse _
-			 documentInfo.NativeCount + _currentNativeSubdirectorySize >= Me.SubDirectoryMaxSize Then
+			 nativeCount + _currentNativeSubdirectorySize >= Me.SubDirectoryMaxSize Then
 				If _currentImageSubdirectorySize = 0 OrElse _currentNativeSubdirectorySize = 0 Then
 					updateSubDirectoryAfterExport = True
 				Else
@@ -311,7 +313,7 @@ Namespace kCura.WinEDDS
 				_nativeFileWriter.Write(_columnHeaderString)
 				_hasWrittenColumnHeaderString = True
 			End If
-			Me.UpdateLoadFile(documentInfo.DataRow, documentInfo.HasFullText, documentInfo.DocumentArtifactID, nativeLocation, tempLocalFullTextFilePath, documentInfo)
+			If Me.Settings.ExportNative OrElse Me.Settings.ExportFullText Then Me.UpdateLoadFile(documentInfo.DataRow, documentInfo.HasFullText, documentInfo.DocumentArtifactID, nativeLocation, tempLocalFullTextFilePath, documentInfo)
 			_parent.DocumentsExported += 1
 			_currentVolumeSize += totalFileSize
 			If Me.Settings.VolumeInfo.CopyFilesFromRepository Then
