@@ -396,7 +396,6 @@ Namespace kCura.WinEDDS
 
 		Private Sub ManageDocumentMetaData(ByVal metaDoc As MetaDocument)
 			_number += 1
-			Dim sw As System.IO.StreamWriter
 			Try
 				ManageDocumentLine(metaDoc, _extractFullTextFromNative)
 				_batchCounter += 1
