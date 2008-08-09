@@ -4,7 +4,7 @@ Namespace kCura.EDDS.WinForm
 		Public Shared ReadOnly Property DefaultEncodings() As EncodingItem()
 			Get
 
-				If _defaultEncodingIDs Is Nothing Then _defaultEncodingIDs = New Int32() {1252, 1201, 65001, 65000, 20127}
+				If _defaultEncodingIDs Is Nothing Then _defaultEncodingIDs = New Int32() {1252, 1200, 1201, 65001, 65000, 20127}
 				Dim retval As New System.Collections.ArrayList
 				For Each item As EncodingItem In AllEncodings
 					If System.Array.IndexOf(_defaultEncodingIDs, item.CodePageId) <> -1 Then
@@ -16,7 +16,7 @@ Namespace kCura.EDDS.WinForm
 		End Property
 
 		Public Shared Sub AddDefaultEncoding(ByVal encodingItem As EncodingItem)
-			If _defaultEncodingIDs Is Nothing Then _defaultEncodingIDs = New Int32() {1252, 1201, 65001, 65000, 20127}
+			If _defaultEncodingIDs Is Nothing Then _defaultEncodingIDs = New Int32() {1252, 1200, 1201, 65001, 65000, 20127}
 			Dim al As New System.Collections.ArrayList(_defaultEncodingIDs)
 			If Not al.Contains(encodingItem.CodePageId) Then al.Add(encodingItem.CodePageId)
 			_defaultEncodingIDs = DirectCast(al.ToArray(GetType(Int32)), Int32())
