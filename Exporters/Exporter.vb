@@ -421,8 +421,8 @@ Namespace kCura.WinEDDS
 			Next
 			If Not Me.ExportFile.LoadFileIsHtml Then retString = New System.Text.StringBuilder(retString.ToString.TrimEnd(Me.ExportFile.RecordDelimiter))
 			If _exportFile.LoadFileIsHtml Then
-				If Me.ExportFile.ExportNative Then retString.Append("<th>Image Files</th>")
-				If Me.ExportFile.ExportImages Then retString.Append("<th>Native Files</th>")
+				If Me.ExportFile.ExportImages Then retString.Append("<th>Image Files</th>")
+				If Me.ExportFile.ExportNative Then retString.Append("<th>Native Files</th>")
 				If Me.ExportFile.ExportFullText Then retString.Append("<th>Extracted Text</th>")
 				retString.Append(vbNewLine & "</tr>" & vbNewLine)
 			Else
