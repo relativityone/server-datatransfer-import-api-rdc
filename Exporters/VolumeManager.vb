@@ -411,17 +411,17 @@ Namespace kCura.WinEDDS
 					marker.TempLocation = copyfile
 				Else
 					For Each image In images
-						If Me.Settings.VolumeInfo.CopyFilesFromRepository Then
-							If (i = 0 AndAlso image.PageOffset.IsNull) OrElse i = images.Count - 1 Then
+						If (i = 0 AndAlso image.PageOffset.IsNull) OrElse i = images.Count - 1 Then
+							pageOffset = Int64.MinValue
+						Else
+							Dim nextImage As Exporters.ImageExportInfo = DirectCast(images(i + 1), Exporters.ImageExportInfo)
+							If nextImage.PageOffset.IsNull Then
 								pageOffset = Int64.MinValue
 							Else
-								Dim nextImage As Exporters.ImageExportInfo = DirectCast(images(i + 1), Exporters.ImageExportInfo)
-								If nextImage.PageOffset.IsNull Then
-									pageOffset = Int64.MinValue
-								Else
-									pageOffset = nextImage.PageOffset.Value
-								End If
+								pageOffset = nextImage.PageOffset.Value
 							End If
+						End If
+						If Me.Settings.VolumeInfo.CopyFilesFromRepository Then
 							Me.ExportDocumentImage(localFilePath & image.FileName, image.FileGuid, image.ArtifactID, image.BatesNumber, image.TempLocation)
 							Dim copyfile As String
 							Select Case Me.Settings.TypeOfExportedFilePath
@@ -512,6 +512,16 @@ Namespace kCura.WinEDDS
 			'_parent.DocumentsExported += 1
 		End Sub
 
+		Private Function GetLfpFullTextTransform(ByVal c As Char) As String
+			Select Case c
+				Case ChrW(10), " "c
+					Return "|0|0|0|0^"
+				Case ","c
+					Return ""
+				Case Else
+					Return c.ToString
+			End Select
+		End Function
 		Private Sub CreateImageLogEntry(ByVal batesNumber As String, ByVal copyFile As String, ByVal pathToImage As String, ByVal firstDocument As Boolean, ByVal fullTextReader As System.IO.StreamReader, ByVal expectingTextForPage As Boolean, ByVal pageOffset As Long, ByVal numberOfImages As Int32)
 			Dim fullTextGuid As String
 			Dim fullText As String
@@ -532,20 +542,44 @@ Namespace kCura.WinEDDS
 						Else
 							currentPageFirstByteNumber = fullTextReader.BaseStream.Position
 						End If
+						_imageFileWriter.Write("FT,")
+						_imageFileWriter.Write(batesNumber)
+						_imageFileWriter.Write(",1,1,")
 						Select Case pageOffset
 							Case Int64.MinValue
-								pageText.Append(fullTextReader.ReadToEnd)
+								Dim c As Int32 = fullTextReader.Read
+								While c <> -1
+									_imageFileWriter.Write(Me.GetLfpFullTextTransform(ChrW(c)))
+									c = fullTextReader.Read
+								End While
 							Case Else
 								Dim i As Int32 = 0
 								While i < pageOffset
-									pageText.Append(ChrW(fullTextReader.Read))
+									_imageFileWriter.Write(Me.GetLfpFullTextTransform(ChrW(fullTextReader.Read)))
 									i += 1
 								End While
 						End Select
-						pageText = pageText.Replace(ChrW(10), " ")
-						pageText = pageText.Replace(",", "")
-						pageText = pageText.Replace(" ", "|0|0|0|0^")
-						_imageFileWriter.WriteLine(String.Format("FT,{0},1,1,{1}", batesNumber, pageText.ToString))
+						_imageFileWriter.Write(vbNewLine)
+						'Dim pageText As New System.Text.StringBuilder
+						'If firstDocument Then
+						'	currentPageFirstByteNumber = 0
+						'Else
+						'	currentPageFirstByteNumber = fullTextReader.BaseStream.Position
+						'End If
+						'Select Case pageOffset
+						'	Case Int64.MinValue
+						'		pageText.Append(fullTextReader.ReadToEnd)
+						'	Case Else
+						'		Dim i As Int32 = 0
+						'		While i < pageOffset
+						'			pageText.Append(ChrW(fullTextReader.Read))
+						'			i += 1
+						'		End While
+						'End Select
+						'pageText = pageText.Replace(ChrW(10), " ")
+						'pageText = pageText.Replace(",", "")
+						'pageText = pageText.Replace(" ", "|0|0|0|0^")
+						'_imageFileWriter.WriteLine(String.Format("FT,{0},1,1,{1}", batesNumber, pageText.ToString))
 					End If
 					Me.WriteIproImageLine(batesNumber, firstDocument, copyFile)
 			End Select
