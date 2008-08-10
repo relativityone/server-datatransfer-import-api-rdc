@@ -898,6 +898,7 @@ Namespace kCura.WinEDDS
 					loc = image.SourceLocation
 				End If
 				retval.AppendFormat("<a style='display:block' href='{0}'>{1}</a>", loc, image.FileName)
+				If Me.Settings.TypeOfImage = ExportFile.ImageType.MultiPageTiff OrElse Me.Settings.TypeOfImage = ExportFile.ImageType.Pdf Then Exit For
 			Next
 			Return retval.ToString
 		End Function
