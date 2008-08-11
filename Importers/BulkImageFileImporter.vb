@@ -323,14 +323,14 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Private Sub AutoNumberImages(ByVal lines As ArrayList)
-			If Not _autoNumberImages OrElse lines.Count >= 1 Then Exit Sub
+			If Not _autoNumberImages OrElse lines.Count <= 1 Then Exit Sub
 			Dim allsame As Boolean = True
 			Dim batesnumber As String = DirectCast(lines(0), String())(Columns.BatesNumber)
 			For i As Int32 = 0 To lines.Count - 1
 				allsame = allsame AndAlso batesnumber = DirectCast(lines(i), String())(Columns.BatesNumber)
 				If Not allsame Then Exit Sub
 			Next
-			For i As Int32 = 1 To lines.Count
+			For i As Int32 = 1 To lines.Count - 1
 				'TODO: configure separator "_"
 				DirectCast(lines(i), String())(Columns.BatesNumber) = batesnumber & "_" & i.ToString.PadLeft(lines.Count.ToString.Length, "0"c)
 			Next
