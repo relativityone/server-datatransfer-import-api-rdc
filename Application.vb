@@ -678,6 +678,7 @@ Namespace kCura.EDDS.WinForm
 				imageFile.DestinationFolderID = destinationArtifactID
 				imageFile.ForProduction = True
 				imageFile.SelectedCasePath = caseinfo.DocumentPath
+				imageFile.FullTextEncoding = System.Text.Encoding.Default
 				Dim productionManager As New kCura.WinEDDS.Service.ProductionManager(Me.Credential, _cookieContainer)
 				imageFile.ProductionTable = productionManager.RetrieveImportEligibleByContextArtifactID(caseinfo.ArtifactID).Tables(0)
 				frm.ImageLoadFile = imageFile
