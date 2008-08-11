@@ -757,7 +757,11 @@ Public Class ExportForm
 	Private Sub _exportImages_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _exportImages.CheckedChanged
 		_useAbsolutePaths.Enabled = True
 		_imageFileFormat.Enabled = _exportImages.Checked
-		_imageTypeDropdown.Enabled = _exportImages.Checked
+		If Not _volumeInfo Is Nothing Then
+			_imageTypeDropdown.Enabled = _exportImages.Checked And _volumeInfo.CopyFilesFromRepository
+		Else
+			_imageTypeDropdown.Enabled = _exportImages.Checked
+		End If
 		RunMenu.Enabled = ReadyToRun()
 	End Sub
 
@@ -868,7 +872,7 @@ Public Class ExportForm
 	Private Sub _volumeInfoForm_VolumeOK(ByVal e As kCura.WinEDDS.Exporters.VolumeInfo) Handles _volumeInfoForm.VolumeOK
 		_volumeInfo = e
 		If _volumeInfo.CopyFilesFromRepository Then
-			_imageTypeDropdown.Enabled = True
+			_imageTypeDropdown.Enabled = _exportImages.Checked
 		Else
 			_imageTypeDropdown.SelectedIndex = 1
 			_imageTypeDropdown.Enabled = False
