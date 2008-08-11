@@ -37,6 +37,7 @@ Namespace kCura.EDDS.WinForm
 		Friend WithEvents BroooopBox As System.Windows.Forms.GroupBox
 		Friend WithEvents _encodingPicker As kCura.EDDS.WinForm.EncodingPicker
 		<System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
+			Dim resources As System.Resources.ResourceManager = New System.Resources.ResourceManager(GetType(ImageImportSettingsForm))
 			Me._okButton = New System.Windows.Forms.Button
 			Me._cancelButton = New System.Windows.Forms.Button
 			Me.GroupBox1 = New System.Windows.Forms.GroupBox
@@ -49,7 +50,7 @@ Namespace kCura.EDDS.WinForm
 			'
 			'_okButton
 			'
-			Me._okButton.Location = New System.Drawing.Point(296, 104)
+			Me._okButton.Location = New System.Drawing.Point(296, 100)
 			Me._okButton.Name = "_okButton"
 			Me._okButton.Size = New System.Drawing.Size(75, 24)
 			Me._okButton.TabIndex = 0
@@ -58,7 +59,7 @@ Namespace kCura.EDDS.WinForm
 			'_cancelButton
 			'
 			Me._cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel
-			Me._cancelButton.Location = New System.Drawing.Point(376, 104)
+			Me._cancelButton.Location = New System.Drawing.Point(376, 100)
 			Me._cancelButton.Name = "_cancelButton"
 			Me._cancelButton.Size = New System.Drawing.Size(75, 24)
 			Me._cancelButton.TabIndex = 1
@@ -96,6 +97,7 @@ Namespace kCura.EDDS.WinForm
 			'
 			Me._encodingPicker.Location = New System.Drawing.Point(44, 28)
 			Me._encodingPicker.Name = "_encodingPicker"
+			Me._encodingPicker.SelectedEncoding = CType(resources.GetObject("_encodingPicker.SelectedEncoding"), System.Text.Encoding)
 			Me._encodingPicker.Size = New System.Drawing.Size(200, 21)
 			Me._encodingPicker.TabIndex = 0
 			'
