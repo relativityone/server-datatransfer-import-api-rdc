@@ -28,6 +28,7 @@ Namespace kCura.WinEDDS
 		Private _isEssentialCount As Int32
 		Private _lastStatusMessageTs As Long = System.DateTime.Now.Ticks
 		Private _lastDocumentsExportedCountReported As Int32 = 0
+		Private _fieldCollectionHasExtractedText As Boolean = False
 #End Region
 
 #Region "Accessors"
@@ -398,7 +399,6 @@ Namespace kCura.WinEDDS
 			If Me.ExportFile.ExportFullText Then
 				_exportAsUnicode = _exportAsUnicode OrElse _searchManager.IsExtractedTextUnicode(Me.ExportFile.CaseArtifactID)
 			End If
-
 			For count = 0 To table.Rows.Count - 1
 				columnName = CType(table.Rows(count)("ColumnName"), String)
 				If ShowField(columnName) Then
@@ -419,6 +419,12 @@ Namespace kCura.WinEDDS
 					End If
 				End If
 			Next
+			If _fieldCollectionHasExtractedText AndAlso Not Me.ExportFile.ExportFullText Then
+				_exportAsUnicode = _exportAsUnicode OrElse _searchManager.IsExtractedTextUnicode(Me.ExportFile.CaseArtifactID)
+				Me.ExportFile.ExportFullText = True
+				Me.ExportFile.ExportFullTextAsFile = False
+			End If
+
 			If Not Me.ExportFile.LoadFileIsHtml Then retString = New System.Text.StringBuilder(retString.ToString.TrimEnd(Me.ExportFile.RecordDelimiter))
 			If _exportFile.LoadFileIsHtml Then
 				If Me.ExportFile.ExportImages Then retString.Append("<th>Image Files</th>")
@@ -427,7 +433,7 @@ Namespace kCura.WinEDDS
 				retString.Append(vbNewLine & "</tr>" & vbNewLine)
 			Else
 				If Me.ExportFile.ExportNative Then retString.AppendFormat("{2}{0}{1}{0}", Me.ExportFile.QuoteDelimiter, "FILE_PATH", Me.ExportFile.RecordDelimiter)
-				If Me.ExportFile.ExportFullText Then retString.AppendFormat("{2}{0}{1}{0}", Me.ExportFile.QuoteDelimiter, "FULL_TEXT", Me.ExportFile.RecordDelimiter)
+				If Me.ExportFile.ExportFullText Then retString.AppendFormat("{2}{0}{1}{0}", Me.ExportFile.QuoteDelimiter, "Extracted Text", Me.ExportFile.RecordDelimiter)
 			End If
 			retString.Append(System.Environment.NewLine)
 			Return retString.ToString
@@ -435,7 +441,10 @@ Namespace kCura.WinEDDS
 
 		Private Function ShowField(ByVal fieldName As String) As Boolean
 			Select Case fieldName
-				Case "Edit", "FileIcon", "AccessControlListIsInherited", "ExtractedText"
+				Case "ExtractedText"
+					_fieldCollectionHasExtractedText = True
+					Return False
+				Case "Edit", "FileIcon", "AccessControlListIsInherited"
 					Return False
 				Case Else
 					Return True
