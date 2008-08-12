@@ -844,7 +844,7 @@ Namespace kCura.WinEDDS
 			If Not allErrors.Eof Then
 				Dim e As String() = allErrors.ReadLine
 				If e(3) <> "client" Then
-					allErrorsLine = Int32.Parse(allErrors.ReadLine(0))
+					allErrorsLine = Int32.Parse(e(0))
 				Else
 					While Not e Is Nothing AndAlso e(3) = "client"
 						e = allErrors.ReadLine
@@ -886,7 +886,7 @@ Namespace kCura.WinEDDS
 					End If
 				End If
 
-				continue = ((Not allErrors.Eof Or clientErrors.Peek <> -1) And continue)
+				continue = ((Not allErrors.Eof Or clientErrors.Peek <> -1 Or Me.CurrentLineNumber <= System.Math.Min(clientErrorsLine, allErrorsLine)) And continue)
 			End While
 			Me.Close()
 			sw.Close()

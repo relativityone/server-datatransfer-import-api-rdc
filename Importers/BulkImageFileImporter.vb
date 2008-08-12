@@ -533,13 +533,18 @@ Namespace kCura.WinEDDS
 						line = sr.ReadLine
 					End While
 					sr.Close()
+					Dim tmp As String = System.IO.Path.GetTempFileName
+					downloader.DownloadFile(tmp, .OpticonKey, _caseInfo.ArtifactID.ToString)
 					w = New System.IO.StreamWriter(_errorRowsFileLocation, True, System.Text.Encoding.Default)
-					r = New System.IO.StreamReader(.OpticonKey)
-					While Not r.Peek = -1
-						w.Write(ChrW(r.Read))
+					r = New System.IO.StreamReader(tmp, System.Text.Encoding.Default)
+					Dim c As Int32 = r.Read
+					While Not c = -1
+						w.Write(ChrW(c))
+						c = r.Read
 					End While
 					w.Close()
 					r.Close()
+					kCura.Utility.File.Delete(tmp)
 				End With
 			Catch ex As Exception
 				Try
@@ -554,6 +559,7 @@ Namespace kCura.WinEDDS
 					r.Close()
 				Catch
 				End Try
+				Throw
 			End Try
 		End Sub
 
@@ -583,18 +589,18 @@ Namespace kCura.WinEDDS
 		Private Sub _processController_ExportErrorFileEvent(ByVal exportLocation As String) Handles _processController.ExportErrorFileEvent
 			If _errorRowsFileLocation Is Nothing Then Exit Sub
 			Try
-				If System.IO.File.Exists(_errorRowsFileLocation) Then System.IO.File.Copy(_errorRowsFileLocation, exportLocation)
+				If System.IO.File.Exists(_errorRowsFileLocation) Then System.IO.File.Copy(_errorRowsFileLocation, exportLocation, True)
 			Catch ex As Exception
-				If System.IO.File.Exists(_errorRowsFileLocation) Then System.IO.File.Copy(_errorRowsFileLocation, exportLocation)
+				If System.IO.File.Exists(_errorRowsFileLocation) Then System.IO.File.Copy(_errorRowsFileLocation, exportLocation, True)
 			End Try
 		End Sub
 
 		Private Sub _processController_ExportErrorReportEvent(ByVal exportLocation As String) Handles _processController.ExportErrorReportEvent
 			If _errorMessageFileLocation Is Nothing Then Exit Sub
 			Try
-				If System.IO.File.Exists(_errorMessageFileLocation) Then System.IO.File.Copy(_errorMessageFileLocation, exportLocation)
+				If System.IO.File.Exists(_errorMessageFileLocation) Then System.IO.File.Copy(_errorMessageFileLocation, exportLocation, True)
 			Catch ex As Exception
-				If System.IO.File.Exists(_errorMessageFileLocation) Then System.IO.File.Copy(_errorMessageFileLocation, exportLocation)
+				If System.IO.File.Exists(_errorMessageFileLocation) Then System.IO.File.Copy(_errorMessageFileLocation, exportLocation, True)
 			End Try
 		End Sub
 
