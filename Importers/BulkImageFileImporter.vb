@@ -43,6 +43,7 @@ Namespace kCura.WinEDDS
 		Private _errorCount As Int32 = 0
 		Private _errorMessageFileLocation As String = ""
 		Private _errorRowsFileLocation As String = ""
+		Private _fileIdentifierLookup As System.Collections.Hashtable
 
 		Public Const MaxNumberOfErrorsInGrid As Int32 = 1000
 #End Region
@@ -135,6 +136,7 @@ Namespace kCura.WinEDDS
 
 		Public Function PushImageBatch(ByVal bulkLoadFilePath As String, ByVal isFinal As Boolean) As Object
 			_bulkLoadFileWriter.Close()
+			_fileIdentifierLookup.Clear()
 			If _batchCount = 0 Then Exit Function
 
 			_batchCount = 0
@@ -177,6 +179,7 @@ Namespace kCura.WinEDDS
 
 		Public Overloads Overrides Function ReadFile(ByVal path As String) As Object
 			Dim bulkLoadFilePath As String = System.IO.Path.GetTempFileName
+			_fileIdentifierLookup = New System.Collections.Hashtable
 			_bulkLoadFileWriter = New System.IO.StreamWriter(bulkLoadFilePath, False, System.Text.Encoding.Unicode)
 			Try
 				Dim documentIdentifier As String = String.Empty
@@ -302,6 +305,16 @@ Namespace kCura.WinEDDS
 		Private Function GetImagesForDocument(ByVal lines As ArrayList, ByVal status As Int32) As String()
 			Try
 				Me.AutoNumberImages(lines)
+				Dim hasFileIdentifierProblem As Boolean = False
+				For Each line As String() In lines
+					If _fileIdentifierLookup.ContainsKey(line(Columns.BatesNumber).Trim) Then
+						hasFileIdentifierProblem = True
+					Else
+						_fileIdentifierLookup.Add(line(Columns.BatesNumber).Trim, line(Columns.BatesNumber).Trim)
+					End If
+				Next
+				If hasFileIdentifierProblem Then status += kCura.EDDS.Types.MassImport.ImportStatus.IdentifierOverlap
+
 				Dim valueArray As String() = DirectCast(lines(0), String())
 				Dim textFileList As New System.Collections.ArrayList
 				Dim documentId As String = valueArray(Columns.BatesNumber)
