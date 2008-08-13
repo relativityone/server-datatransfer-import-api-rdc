@@ -123,7 +123,7 @@ Namespace kCura.EDDS.WinForm
 			Me.AcceptButton = Me._okButton
 			Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
 			Me.CancelButton = Me._cancelButton
-			Me.ClientSize = New System.Drawing.Size(456, 389)
+			Me.ClientSize = New System.Drawing.Size(456, 393)
 			Me.Controls.Add(Me._includeOriginals)
 			Me.Controls.Add(Me._producedImages)
 			Me.Controls.Add(Me._originalImages)
@@ -134,9 +134,9 @@ Namespace kCura.EDDS.WinForm
 			Me.Controls.Add(Me._okButton)
 			Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
 			Me.MaximizeBox = False
-			Me.MaximumSize = New System.Drawing.Size(464, 416)
+			Me.MaximumSize = New System.Drawing.Size(464, 420)
 			Me.MinimizeBox = False
-			Me.MinimumSize = New System.Drawing.Size(464, 416)
+			Me.MinimumSize = New System.Drawing.Size(464, 420)
 			Me.Name = "ProductionPrecedenceForm"
 			Me.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide
 			Me.Text = "Pick Production Precedence"
