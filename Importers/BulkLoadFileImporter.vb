@@ -440,7 +440,7 @@ Namespace kCura.WinEDDS
 				Case Else
 					settings.Overlay = EDDS.WebAPI.BulkImportManagerBase.OverwriteType.Both
 			End Select
-			settings.UploadFiles = _filePathColumnIndex <> -1
+			settings.UploadFiles = _filePathColumnIndex <> -1 AndAlso _settings.LoadNativeFiles
 			_runID = _bulkImportManager.BulkImportNative(_caseInfo.ArtifactID, settings).ToString
 
 
