@@ -261,7 +261,7 @@ Namespace kCura.WinEDDS
 					Try
 						validator.ValidateImage(path)
 					Catch ex As System.Exception
-						Me.RaiseStatusEvent(Windows.Process.EventType.Error, String.Format("Error in '{0}': {1}", path, ex.Message))
+						'Me.RaiseStatusEvent(Windows.Process.EventType.Error, String.Format("Error in '{0}': {1}", path, ex.Message))
 						retval = EDDS.Types.MassImport.ImportStatus.InvalidImageFormat
 					End Try
 				End If
@@ -537,7 +537,7 @@ Namespace kCura.WinEDDS
 					While Not line Is Nothing
 						_errorCount += 1
 						Dim ht As New System.Collections.Hashtable
-						ht.Add("Line Number", line(0))
+						ht.Add("Line Number", Int32.Parse(line(0)))
 						ht.Add("DocumentID", line(1))
 						ht.Add("FileID", line(2))
 						ht.Add("Messages", line(3))

@@ -1060,7 +1060,7 @@ Namespace kCura.WinEDDS
 						Dim ht As New System.Collections.Hashtable
 						ht.Add("Message", line(1))
 						ht.Add("Identifier", line(2))
-						ht.Add("Line Number", line(0))
+						ht.Add("Line Number", Int32.Parse(line(0)))
 						RaiseReportError(ht, Int32.Parse(line(0)), line(2), "server")
 						RaiseEvent StatusMessage(New kCura.Windows.Process.StatusEventArgs(Windows.Process.EventType.Error, Int32.Parse(line(0)) - 1, _recordCount, "[Line " & line(0) & "]" & line(1)))
 						line = sr.ReadLine
