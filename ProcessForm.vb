@@ -667,15 +667,15 @@ Namespace kCura.Windows.Process
 			If _reportDataGrid.DataSource Is Nothing Then
 				Dim dt As New System.Data.DataTable
 				For Each key As String In row.Keys
-					dt.Columns.Add(key.ToString)
+					dt.Columns.Add(key.ToString, row(key).GetType)
 				Next
 				_reportDataGrid.DataSource = dt
 			End If
 			Dim dataSource As System.Data.DataTable = DirectCast(_reportDataGrid.DataSource, System.Data.DataTable)
 			Dim newRow As System.Data.DataRow = dataSource.NewRow
 			For Each key As String In row.Keys
-				If Not dataSource.Columns.Contains(key) Then dataSource.Columns.Add(key)
-				newRow(key) = row(key).ToString
+				If Not dataSource.Columns.Contains(key) Then dataSource.Columns.Add(key, row(key).GetType)
+				newRow(key) = row(key)
 			Next
 			dataSource.Rows.Add(newRow)
 		End Sub
