@@ -58,21 +58,7 @@ Namespace kCura.WinEDDS
 		Private Sub _loadFileImporter_UploadModeChangeEvent(ByVal mode As String, ByVal isBulkEnabled As Boolean) Handles _imageFileImporter.UploadModeChangeEvent
 			If _uploadModeText Is Nothing Then
 				Dim sb As New System.Text.StringBuilder
-				sb.Append("FILE TRANSFER MODES:" & vbNewLine)
-				sb.Append(" • Web - The document repository is accessed through the Relativity web service API.  This is the slower of the two methods, but is globally available")
-				sb.Append(vbNewLine & vbNewLine)
-				sb.Append(" • Direct is significantly faster than Web mode.  To use Direct mode, you must:")
-				sb.Append(vbNewLine)
-				sb.Append(vbTab & " - Have Windows rights to the document repository.")
-				sb.Append(vbNewLine)
-				sb.Append(vbTab & " - Be logged into the document repository’s network.")
-				sb.Append(vbNewLine & vbNewLine & "If you meet the above criteria, Relativity will automatically load in Direct mode.  If you are loading in Web mode and think you should have Direct mode, contact your Relativity Database Administrator to establish the correct rights.")
-				sb.Append(vbNewLine & vbNewLine)
-				sb.Append("SQL INSERT MODES:" & vbNewLine)
-				sb.Append(" • Bulk - The upload process has access to the SQL share on the appropriate case database.  This ensures the fastest transfer of information between the desktop client and the relativity servers.")
-				sb.Append(vbNewLine & vbNewLine)
-				sb.Append(" • Single - The upload process has NO access to the SQL share on the appropriate case database.  This is a slower method of import - if the process is using single mode, speak to an admin to see if a SQL share can be opened for the desired case.")
-				_uploadModeText = sb.ToString
+				_uploadModeText = Config.FileTransferModeExplanationText(True)
 			End If
 			Dim statusBarMessage As String = "File Transfer Mode: " & mode
 			If isBulkEnabled Then
