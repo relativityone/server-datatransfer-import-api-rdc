@@ -340,6 +340,7 @@ Namespace kCura.Windows.Process
 		Private _hasExportedErrors As Boolean = False
 		Private _statusBarPopupText As String = ""
 		Private _errorFilesExtension As String = "CSV"
+		Private _hasClickedStop As Boolean = False
 
 		Public Property ErrorFileExtension() As String
 			Get
@@ -392,6 +393,8 @@ Namespace kCura.Windows.Process
 				If _stopImportButton.Text = "Stop" Then
 					ProcessController.HaltProcess(_processId)
 					_stopImportButton.Enabled = False
+					_currentRecordLabel.Text = "Process halting"
+					_hasClickedStop = True
 					'_application.CancelImport(_processId)
 				Else
 					'_application.deletethread(processID)
@@ -453,7 +456,7 @@ Namespace kCura.Windows.Process
 #Region " Process Observer"
 
 		Private Sub _processObserver_OnProcessEvent(ByVal evt As kCura.Windows.Process.ProcessEvent) Handles _processObserver.OnProcessEvent
-			_currentRecordLabel.Text = evt.RecordInfo
+			If Not _hasClickedStop Then _currentRecordLabel.Text = evt.RecordInfo
 			_currentMessageStatus.Text = evt.Message
 			Select Case evt.Type
 				Case kCura.Windows.Process.ProcessEventTypeEnum.Status
