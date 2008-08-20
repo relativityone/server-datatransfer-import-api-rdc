@@ -278,16 +278,38 @@ Namespace kCura.WinEDDS
 				Else
 					Me.UpdateVolume()
 				End If
-			ElseIf documentInfo.ImageCount + _currentImageSubdirectorySize >= Me.SubDirectoryMaxSize OrElse _
-			 documentInfo.NativeCount + _currentNativeSubdirectorySize >= Me.SubDirectoryMaxSize OrElse _
-			 textCount + _currentTextSubdirectorySize > Me.SubDirectoryMaxSize Then
-				If (_currentImageSubdirectorySize = 0 AndAlso Me.Settings.ExportImages) OrElse _
-				(_currentNativeSubdirectorySize = 0 AndAlso Me.Settings.ExportNative) OrElse _
-				(_currentTextSubdirectorySize = 0 AndAlso Me.Settings.ExportFullTextAsFile) Then
-					updateSubDirectoryAfterExport = True
-				Else
-					Me.UpdateSubdirectory()
-				End If
+			ElseIf documentInfo.ImageCount + _currentImageSubdirectorySize > Me.SubDirectoryMaxSize Then
+				'If _currentImageSubdirectorySize = 0 AndAlso Me.Settings.ExportImages Then
+				'	Me.UpdateSubdirectory()
+				'Else
+				'	updateSubDirectoryAfterExport = True
+				'End If
+				Me.UpdateSubdirectory()
+			ElseIf documentInfo.NativeCount + _currentNativeSubdirectorySize > Me.SubDirectoryMaxSize Then
+				'If _currentNativeSubdirectorySize = 0 AndAlso Me.Settings.ExportNative Then
+				'	Me.UpdateSubdirectory()
+				'Else
+				'	updateSubDirectoryAfterExport = True
+				'End If
+				Me.UpdateSubdirectory()
+			ElseIf textCount + _currentTextSubdirectorySize > Me.SubDirectoryMaxSize Then
+				'If _currentTextSubdirectorySize = 0 AndAlso Me.Settings.ExportFullTextAsFile Then
+				'	Me.UpdateSubdirectory()
+				'Else
+				'	updateSubDirectoryAfterExport = True
+				'End If
+				Me.UpdateSubdirectory()
+
+				'ElseIf documentInfo.ImageCount + _currentImageSubdirectorySize > Me.SubDirectoryMaxSize OrElse _
+				' documentInfo.NativeCount + _currentNativeSubdirectorySize > Me.SubDirectoryMaxSize OrElse _
+				' textCount + _currentTextSubdirectorySize >= Me.SubDirectoryMaxSize Then
+				'	If (_currentImageSubdirectorySize = 0 AndAlso Me.Settings.ExportImages) OrElse _
+				'	(_currentNativeSubdirectorySize = 0 AndAlso Me.Settings.ExportNative) OrElse _
+				'	(_currentTextSubdirectorySize = 0 AndAlso Me.Settings.ExportFullTextAsFile) Then
+				'		updateSubDirectoryAfterExport = True
+				'Else
+				'	Me.UpdateSubdirectory()
+				'End If
 			End If
 			If Me.Settings.ExportImages Then
 				_timekeeper.MarkStart("VolumeManager_ExportImages")

@@ -91,6 +91,13 @@ Namespace kCura.WinEDDS
 					Me.UploaderType = _type
 					Return String.Empty
 				Else
+					Try
+						Me.WebUploadFile(New System.IO.FileStream(localFilePath, IO.FileMode.Open, IO.FileAccess.Read), appID, System.Guid.NewGuid.ToString)
+					Catch
+						_isBulkEnabled = False
+						Me.UploaderType = _type
+						Return String.Empty
+					End Try
 					Throw
 				End If
 			End Try
