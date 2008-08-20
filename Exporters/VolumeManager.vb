@@ -272,13 +272,15 @@ Namespace kCura.WinEDDS
 			End If
 			Dim textCount As Int32 = 0
 			If Me.Settings.ExportFullTextAsFile AndAlso documentInfo.HasFullText Then textCount += 1
+			Dim imageCount As Long = documentInfo.ImageCount
+			If Me.Settings.TypeOfImage <> ExportFile.ImageType.SinglePage Then imageCount = System.Math.Min(imageCount, 1)
 			If totalFileSize + _currentVolumeSize > Me.VolumeMaxSize Then
 				If _currentVolumeSize = 0 Then
 					updateVolumeAfterExport = True
 				Else
 					Me.UpdateVolume()
 				End If
-			ElseIf documentInfo.ImageCount + _currentImageSubdirectorySize > Me.SubDirectoryMaxSize Then
+			ElseIf imageCount + _currentImageSubdirectorySize > Me.SubDirectoryMaxSize Then
 				'If _currentImageSubdirectorySize = 0 AndAlso Me.Settings.ExportImages Then
 				'	Me.UpdateSubdirectory()
 				'Else
@@ -346,7 +348,7 @@ Namespace kCura.WinEDDS
 			If Me.Settings.VolumeInfo.CopyFilesFromRepository Then
 				_currentNativeSubdirectorySize += documentInfo.NativeCount
 				If Me.Settings.ExportFullTextAsFile AndAlso documentInfo.HasFullText Then _currentTextSubdirectorySize += 1
-				_currentImageSubdirectorySize += documentInfo.ImageCount
+				_currentImageSubdirectorySize += imageCount
 			End If
 			If updateSubDirectoryAfterExport Then Me.UpdateSubdirectory()
 			If updateVolumeAfterExport Then Me.UpdateVolume()
