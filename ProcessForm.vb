@@ -409,7 +409,7 @@ Namespace kCura.Windows.Process
 			_outputTextBox.Visible = False
 			_saveOutputButton.Visible = False
 			_statusBar.Visible = False
-			Me.Height = 125
+			Me.Height = 135
 		End Sub
 
 		Private Sub ShowDetail()
