@@ -5,6 +5,8 @@ Namespace kCura.WinEDDS
 			Direct
 		End Enum
 
+		'TODO: REWRITE ALL OF THIS FOR THE LOVE OF CHRIST
+
 		Private _gateway As kCura.WinEDDS.Service.FileIO
 		Private _credentials As Net.NetworkCredential
 		Private _type As Type
@@ -82,7 +84,7 @@ Namespace kCura.WinEDDS
 			Try
 				Dim oldDestinationFolderPath As String = String.Copy(_destinationFolderPath)
 				_destinationFolderPath = _gateway.GetBcpSharePath(appID)
-				Dim retval As String = Me.UploadFile(localFilePath, appID)
+				Dim retval As String = Me.UploadFile(localFilePath, appID, True)
 				_destinationFolderPath = oldDestinationFolderPath
 				Return retval
 			Catch ex As Exception
@@ -92,7 +94,7 @@ Namespace kCura.WinEDDS
 					Return String.Empty
 				Else
 					Try
-						Me.WebUploadFile(New System.IO.FileStream(localFilePath, IO.FileMode.Open, IO.FileAccess.Read), appID, System.Guid.NewGuid.ToString)
+						Return Me.WebUploadFile(New System.IO.FileStream(localFilePath, IO.FileMode.Open, IO.FileAccess.Read), appID, System.Guid.NewGuid.ToString)
 					Catch
 						_isBulkEnabled = False
 						Me.UploaderType = _type
@@ -103,11 +105,11 @@ Namespace kCura.WinEDDS
 			End Try
 		End Function
 
-		Public Function UploadFile(ByVal filePath As String, ByVal contextArtifactID As Int32) As String
-			Return UploadFile(filePath, contextArtifactID, System.Guid.NewGuid.ToString)
+		Public Function UploadFile(ByVal filePath As String, ByVal contextArtifactID As Int32, Optional ByVal internalUse As Boolean = False) As String
+			Return UploadFile(filePath, contextArtifactID, System.Guid.NewGuid.ToString, internalUse)
 		End Function
 
-		Public Function UploadFile(ByVal filePath As String, ByVal contextArtifactID As Int32, ByVal newFileName As String) As String
+		Public Function UploadFile(ByVal filePath As String, ByVal contextArtifactID As Int32, ByVal newFileName As String, ByVal internalUse As Boolean) As String
 			If Me.UploaderType = Type.Web Then
 				Me.UploaderType = Type.Web
 				Return WebUploadFile(New System.IO.FileStream(filePath, IO.FileMode.Open, IO.FileAccess.Read), contextArtifactID, newFileName)
@@ -129,8 +131,12 @@ Namespace kCura.WinEDDS
 							RaiseEvent UploadWarningEvent("Network upload failed: " & ex.Message & " - Retrying in 30 seconds. " & tries & " tries left.")
 							System.Threading.Thread.CurrentThread.Join(30000)
 						Else
-							RaiseEvent UploadStatusEvent("Error Uploading File: " & ex.Message & System.Environment.NewLine & ex.ToString)							'TODO: Change this to a separate error-type event'
-							Throw New ApplicationException("Error Uploading File", ex)
+							If internalUse Then
+								Throw
+							Else
+								RaiseEvent UploadStatusEvent("Error Uploading File: " & ex.Message & System.Environment.NewLine & ex.ToString)								'TODO: Change this to a separate error-type event'
+								Throw New ApplicationException("Error Uploading File", ex)
+							End If
 						End If
 					End Try
 				End While
