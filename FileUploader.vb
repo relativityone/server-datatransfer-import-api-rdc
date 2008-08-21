@@ -84,6 +84,9 @@ Namespace kCura.WinEDDS
 			Try
 				Dim oldDestinationFolderPath As String = String.Copy(_destinationFolderPath)
 				_destinationFolderPath = _gateway.GetBcpSharePath(appID)
+				If Not System.IO.Directory.Exists(_destinationFolderPath) Then
+					System.IO.Directory.CreateDirectory(_destinationFolderPath)
+				End If
 				Dim retval As String = Me.UploadFile(localFilePath, appID, True)
 				_destinationFolderPath = oldDestinationFolderPath
 				Return retval
