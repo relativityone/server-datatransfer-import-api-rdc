@@ -230,6 +230,9 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
         
         '<remarks/>
         Public FormatString As String
+        
+        '<remarks/>
+        Public IsUnicodeEnabled As Boolean
     End Class
     
     '<remarks/>

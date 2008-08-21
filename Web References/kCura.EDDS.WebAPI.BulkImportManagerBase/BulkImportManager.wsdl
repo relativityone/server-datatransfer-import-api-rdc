@@ -124,6 +124,7 @@
           <s:element minOccurs="1" maxOccurs="1" name="TextLength" type="s:int" />
           <s:element minOccurs="1" maxOccurs="1" name="CodeTypeID" type="s:int" />
           <s:element minOccurs="0" maxOccurs="1" name="FormatString" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="IsUnicodeEnabled" type="s:boolean" />
         </s:sequence>
       </s:complexType>
       <s:simpleType name="FieldCategory">

@@ -272,6 +272,9 @@ Namespace kCura.EDDS.WebAPI.ProductionManagerBase
         
         '<remarks/>
         Public Imported As Boolean
+        
+        '<remarks/>
+        Public AddImagePlaceholder As Boolean
     End Class
     
     '<remarks/>

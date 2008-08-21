@@ -119,6 +119,7 @@ Namespace kCura.WinEDDS
 			retval.DisplayName = Me.FieldName
 			If Not Me.FieldLength.IsNull Then retval.TextLength = Me.FieldLength.Value
 			retval.Type = CType(Me.FieldTypeID, kCura.EDDS.WebAPI.BulkImportManagerBase.FieldType)
+			retval.IsUnicodeEnabled = Me.UseUnicode
 			Return retval
 		End Function
 #End Region

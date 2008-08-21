@@ -592,6 +592,7 @@ Namespace kCura.WinEDDS
 			If Not input.CodeTypeID.IsNull Then retval.CodeTypeID = input.CodeTypeID.Value
 			retval.DisplayName = input.DisplayName
 			If Not input.MaxLength.IsNull Then retval.TextLength = input.MaxLength.Value
+			retval.IsUnicodeEnabled = input.UseUnicodeEncoding
 			retval.Type = CType(input.FieldTypeID, kCura.EDDS.WebAPI.BulkImportManagerBase.FieldType)
 			Return retval
 		End Function
