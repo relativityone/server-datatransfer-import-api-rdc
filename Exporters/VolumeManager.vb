@@ -431,7 +431,7 @@ Namespace kCura.WinEDDS
 						Case ExportFile.ExportedFilePathType.Prefix
 							copyfile = Me.Settings.FilePrefix.TrimEnd("\"c) & "\" & subfolderPath & marker.FileName
 					End Select
-					Me.CreateImageLogEntry(marker.BatesNumber, copyfile, localFilePath, True, fullTextReader, localFullTextPath <> "", pageOffset, images.Count)
+					Me.CreateImageLogEntry(marker.BatesNumber, copyfile, localFilePath, True, fullTextReader, localFullTextPath <> "", Int64.MinValue, images.Count)
 					marker.TempLocation = copyfile
 				Else
 					For Each image In images
