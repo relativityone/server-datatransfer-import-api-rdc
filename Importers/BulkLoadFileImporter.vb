@@ -817,7 +817,7 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Private Sub BuildErrorLinesFile()
-			RaiseEvent StatusMessage(New kCura.Windows.Process.StatusEventArgs(Windows.Process.EventType.Status, Me.CurrentLineNumber, Me.CurrentLineNumber, "GeneratingErrorLineFile"))
+			RaiseEvent StatusMessage(New kCura.Windows.Process.StatusEventArgs(Windows.Process.EventType.Status, Me.CurrentLineNumber, Me.CurrentLineNumber, "Generating error line file."))
 			Dim allErrors As New kCura.Utility.GenericCsvReader(_errorMessageFileLocation, System.Text.Encoding.Default)
 			Dim clientErrors As System.IO.StreamReader
 			'Me.Reader.BaseStream.Seek(0, IO.SeekOrigin.Begin)
@@ -893,8 +893,7 @@ Namespace kCura.WinEDDS
 			sw.Close()
 			allErrors.Close()
 			clientErrors.Close()
-
-
+			RaiseEvent StatusMessage(New kCura.Windows.Process.StatusEventArgs(Windows.Process.EventType.Status, Me.CurrentLineNumber, Me.CurrentLineNumber, "Error line file generation complete."))
 		End Sub
 
 		Private Sub _processController_ExportServerErrors(ByVal exportLocation As String) Handles _processController.ExportServerErrorsEvent
