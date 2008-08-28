@@ -464,7 +464,9 @@ Namespace kCura.EDDS.WinForm
 			End If
 			If System.IO.File.Exists(_loadImageLoadFileDialog.FileName) Then
 				Dim currentFolder As Int32 = Me.ImageLoadFile.DestinationFolderID
+				Dim copyFilesToRepository As Boolean = Me.ImageLoadFile.CopyFilesToDocumentRepository
 				Me.ImageLoadFile = _application.ReadImageLoadFile(_loadImageLoadFileDialog.FileName)
+				Me.ImageLoadFile.CopyFilesToDocumentRepository = copyFilesToRepository
 				_overwriteDropdown.SelectedItem = Me.GetOverwriteDropdownItem(ImageLoadFile.Overwrite)
 				_filePath.Text = ImageLoadFile.FileName
 				_replaceFullText.Checked = ImageLoadFile.ReplaceFullText
