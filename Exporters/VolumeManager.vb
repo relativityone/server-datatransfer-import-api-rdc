@@ -368,7 +368,7 @@ Namespace kCura.WinEDDS
 			If localFilePath.Chars(localFilePath.Length - 1) <> "\"c Then localFilePath &= "\"
 			localFilePath &= Me.CurrentVolumeLabel & "\" & Me.CurrentFullTextSubdirectoryLabel & "\"
 			If Not System.IO.Directory.Exists(localFilePath) Then System.IO.Directory.CreateDirectory(localFilePath)
-			Return localFilePath & doc.IdentifierValue & ".txt"
+			Return localFilePath & doc.FullTextFileName
 		End Function
 
 		Private Function GetNativeFileName(ByVal doc As Exporters.DocumentExportInfo) As String
@@ -779,9 +779,9 @@ Namespace kCura.WinEDDS
 								Case ExportFile.ExportedFilePathType.Absolute
 									textLocation = localTextPath
 								Case ExportFile.ExportedFilePathType.Relative
-									textLocation = ".\" & Me.CurrentVolumeLabel & "\" & Me.CurrentFullTextSubdirectoryLabel & "\" & doc.IdentifierValue & ".txt"
+									textLocation = ".\" & Me.CurrentVolumeLabel & "\" & Me.CurrentFullTextSubdirectoryLabel & "\" & doc.FullTextFileName
 								Case ExportFile.ExportedFilePathType.Prefix
-									textLocation = Me.Settings.FilePrefix.TrimEnd("\"c) & "\" & Me.CurrentVolumeLabel & "\" & Me.CurrentFullTextSubdirectoryLabel & "\" & doc.IdentifierValue & ".txt"
+									textLocation = Me.Settings.FilePrefix.TrimEnd("\"c) & "\" & Me.CurrentVolumeLabel & "\" & Me.CurrentFullTextSubdirectoryLabel & "\" & doc.FullTextFileName
 							End Select
 							_nativeFileWriter.Write(String.Format("{2}{0}{1}{0}", _settings.QuoteDelimiter, textLocation, _settings.RecordDelimiter))
 						Case False
@@ -883,9 +883,9 @@ Namespace kCura.WinEDDS
 								Case ExportFile.ExportedFilePathType.Absolute
 									textLocation = localTextPath
 								Case ExportFile.ExportedFilePathType.Relative
-									textLocation = ".\" & Me.CurrentVolumeLabel & "\" & Me.CurrentFullTextSubdirectoryLabel & "\" & doc.IdentifierValue & ".txt"
+									textLocation = ".\" & Me.CurrentVolumeLabel & "\" & Me.CurrentFullTextSubdirectoryLabel & "\" & doc.FullTextFileName
 								Case ExportFile.ExportedFilePathType.Prefix
-									textLocation = Me.Settings.FilePrefix.TrimEnd("\"c) & "\" & Me.CurrentVolumeLabel & "\" & Me.CurrentFullTextSubdirectoryLabel & "\" & doc.IdentifierValue & ".txt"
+									textLocation = Me.Settings.FilePrefix.TrimEnd("\"c) & "\" & Me.CurrentVolumeLabel & "\" & Me.CurrentFullTextSubdirectoryLabel & "\" & doc.FullTextFileName
 							End Select
 							_nativeFileWriter.Write(String.Format("<td><a style='display:block' href='{0}'>{1}</a></td>", textLocation, "TextFile"))
 						Case False

@@ -367,6 +367,7 @@ Namespace kCura.WinEDDS
 						fileGuid = _fileUploader.UploadFile(imageFileName, _folderID)
 						fileLocation = _fileUploader.DestinationFolderPath.TrimEnd("\"c) & "\" & fileGuid
 					Else
+						RaiseStatusEvent(kCura.Windows.Process.EventType.Progress, String.Format("Processing image '{0}'.", batesNumber))
 						fileGuid = System.Guid.NewGuid.ToString
 					End If
 					If System.IO.File.Exists(imageFileName) Then fileSize = New System.IO.FileInfo(imageFileName).Length
