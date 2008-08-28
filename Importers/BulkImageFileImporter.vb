@@ -9,6 +9,7 @@ Namespace kCura.WinEDDS
 		Private _fieldQuery As kCura.WinEDDS.Service.FieldQuery
 		Private _folderManager As kCura.WinEDDS.Service.FolderManager
 		Private WithEvents _fileUploader As kCura.WinEDDS.FileUploader
+		Private WithEvents _bcpuploader As kCura.WinEDDS.FileUploader
 		Private WithEvents _textUploader As kCura.WinEDDS.FileUploader
 		Private _fileManager As kCura.WinEDDS.Service.FileManager
 		Private _productionManager As kCura.WinEDDS.Service.ProductionManager
@@ -83,6 +84,7 @@ Namespace kCura.WinEDDS
 			_repositoryPath = args.SelectedCasePath & "EDDS" & args.CaseInfo.ArtifactID & "\"
 			_textRepositoryPath = args.CaseDefaultPath & "EDDS" & args.CaseInfo.ArtifactID & "\"
 			_fileUploader = New kCura.WinEDDS.FileUploader(args.Credential, args.CaseInfo.ArtifactID, _repositoryPath, args.CookieContainer)
+			_bcpuploader = New kCura.WinEDDS.FileUploader(args.Credential, args.CaseInfo.ArtifactID, _repositoryPath, args.CookieContainer)
 			_textUploader = New kCura.WinEDDS.FileUploader(args.Credential, args.CaseInfo.ArtifactID, _textRepositoryPath, args.CookieContainer)
 			_folderID = folderID
 
@@ -141,7 +143,7 @@ Namespace kCura.WinEDDS
 
 			_batchCount = 0
 
-			_uploadKey = _fileUploader.UploadBcpFile(_caseInfo.ArtifactID, bulkLoadFilePath)
+			_uploadKey = _bcpuploader.UploadBcpFile(_caseInfo.ArtifactID, bulkLoadFilePath)
 			'_uploadKey = ""
 			Dim overwrite As kCura.EDDS.WebAPI.BulkImportManagerBase.OverwriteType
 			Select Case _overwrite.ToLower
@@ -159,8 +161,10 @@ Namespace kCura.WinEDDS
 					_runId = _bulkImportManager.BulkImportProductionImage(_caseInfo.ArtifactID, _uploadKey, _replaceFullText, overwrite, _folderID, _repositoryPath, _productionArtifactID, True, _runId, _keyFieldDto.ArtifactID).ToString()
 				End If
 			Else
-				_fileUploader.DestinationFolderPath = _caseInfo.DocumentPath
-				_uploadKey = _fileUploader.UploadFile(bulkLoadFilePath, _caseInfo.ArtifactID)
+				Dim oldDestinationFolderPath As String = System.String.Copy(_bcpuploader.DestinationFolderPath)
+				_bcpuploader.DestinationFolderPath = _caseInfo.DocumentPath
+				_uploadKey = _bcpuploader.UploadFile(bulkLoadFilePath, _caseInfo.ArtifactID)
+				_bcpuploader.DestinationFolderPath = oldDestinationFolderPath
 				If _productionArtifactID = 0 Then
 					_runId = _bulkImportManager.BulkImportImage(_caseInfo.ArtifactID, _uploadKey, _replaceFullText, overwrite, _folderID, _caseInfo.DocumentPath, False, _runId).ToString
 				Else
@@ -434,7 +438,7 @@ Namespace kCura.WinEDDS
 			errorMessageFileWriter.Close()
 		End Sub
 
-		Private Sub _uploader_UploadModeChangeEvent(ByVal mode As String, ByVal isBulkEnabled As Boolean) Handles _fileUploader.UploadModeChangeEvent
+		Private Sub _uploader_UploadModeChangeEvent(ByVal mode As String, ByVal isBulkEnabled As Boolean) Handles _fileUploader.UploadModeChangeEvent, _bcpuploader.UploadModeChangeEvent
 			RaiseEvent UploadModeChangeEvent(mode, isBulkEnabled)
 		End Sub
 

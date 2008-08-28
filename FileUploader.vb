@@ -81,8 +81,8 @@ Namespace kCura.WinEDDS
 		End Class
 
 		Public Function UploadBcpFile(ByVal appID As Int32, ByVal localFilePath As String) As String		'upload return args
+			Dim oldDestinationFolderPath As String = String.Copy(_destinationFolderPath)
 			Try
-				Dim oldDestinationFolderPath As String = String.Copy(_destinationFolderPath)
 				_destinationFolderPath = _gateway.GetBcpSharePath(appID)
 				If Not System.IO.Directory.Exists(_destinationFolderPath) Then
 					System.IO.Directory.CreateDirectory(_destinationFolderPath)
@@ -94,13 +94,17 @@ Namespace kCura.WinEDDS
 				If ex.ToString.ToLower.IndexOf("nobcpdirectoryexception") <> -1 Then
 					_isBulkEnabled = False
 					Me.UploaderType = _type
+					_destinationFolderPath = oldDestinationFolderPath
 					Return String.Empty
 				Else
 					Try
-						Return Me.WebUploadFile(New System.IO.FileStream(localFilePath, IO.FileMode.Open, IO.FileAccess.Read), appID, System.Guid.NewGuid.ToString)
+						Dim r As String = Me.WebUploadFile(New System.IO.FileStream(localFilePath, IO.FileMode.Open, IO.FileAccess.Read), appID, System.Guid.NewGuid.ToString)
+						_destinationFolderPath = oldDestinationFolderPath
+						Return r
 					Catch
 						_isBulkEnabled = False
 						Me.UploaderType = _type
+						_destinationFolderPath = oldDestinationFolderPath
 						Return String.Empty
 					End Try
 					Throw
