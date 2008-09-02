@@ -1052,7 +1052,7 @@ Namespace kCura.WinEDDS
 					Me.WriteStatusLine(Windows.Process.EventType.Status, "Retrieving errors from server")
 					Dim downloader As New FileDownloader(DirectCast(_bulkImportManager.Credentials, System.Net.NetworkCredential), _caseInfo.DocumentPath, _caseInfo.DownloadHandlerURL, _bulkImportManager.CookieContainer, kCura.WinEDDS.Service.Settings.AuthenticationToken)
 					Dim errorsLocation As String = System.IO.Path.GetTempFileName
-					downloader.DownloadFile(errorsLocation, .LogKey, _caseInfo.ArtifactID.ToString)
+					downloader.MoveTempFileToLocal(errorsLocation, .LogKey, _caseInfo)
 					sr = New kCura.Utility.GenericCsvReader(errorsLocation)
 					Dim line As String() = sr.ReadLine
 					While Not line Is Nothing

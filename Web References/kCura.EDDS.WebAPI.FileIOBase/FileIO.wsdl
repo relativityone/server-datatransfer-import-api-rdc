@@ -48,6 +48,17 @@
       <s:element name="RemoveFillResponse">
         <s:complexType />
       </s:element>
+      <s:element name="RemoveTempFile">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
+            <s:element minOccurs="0" maxOccurs="1" name="fileName" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="RemoveTempFileResponse">
+        <s:complexType />
+      </s:element>
       <s:element name="ReadFileAsString">
         <s:complexType>
           <s:sequence>
@@ -96,6 +107,12 @@
   <wsdl:message name="RemoveFillSoapOut">
     <wsdl:part name="parameters" element="tns:RemoveFillResponse" />
   </wsdl:message>
+  <wsdl:message name="RemoveTempFileSoapIn">
+    <wsdl:part name="parameters" element="tns:RemoveTempFile" />
+  </wsdl:message>
+  <wsdl:message name="RemoveTempFileSoapOut">
+    <wsdl:part name="parameters" element="tns:RemoveTempFileResponse" />
+  </wsdl:message>
   <wsdl:message name="ReadFileAsStringSoapIn">
     <wsdl:part name="parameters" element="tns:ReadFileAsString" />
   </wsdl:message>
@@ -120,6 +137,10 @@
     <wsdl:operation name="RemoveFill">
       <wsdl:input message="tns:RemoveFillSoapIn" />
       <wsdl:output message="tns:RemoveFillSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="RemoveTempFile">
+      <wsdl:input message="tns:RemoveTempFileSoapIn" />
+      <wsdl:output message="tns:RemoveTempFileSoapOut" />
     </wsdl:operation>
     <wsdl:operation name="ReadFileAsString">
       <wsdl:input message="tns:ReadFileAsStringSoapIn" />
@@ -152,6 +173,15 @@
     </wsdl:operation>
     <wsdl:operation name="RemoveFill">
       <soap:operation soapAction="http://foley.com/EDDS/FileManager/RemoveFill" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RemoveTempFile">
+      <soap:operation soapAction="http://foley.com/EDDS/FileManager/RemoveTempFile" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>

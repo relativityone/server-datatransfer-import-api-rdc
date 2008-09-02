@@ -127,6 +127,12 @@ Namespace kCura.WinEDDS
 			Return WebDownloadFile(localFilePath, -1, remoteFileGuid, appID, Nothing)
 		End Function
 
+		Public Function MoveTempFileToLocal(ByVal localFilePath As String, ByVal remoteFileGuid As String, ByVal caseInfo As kCura.EDDS.Types.CaseInfo) As Boolean
+			Dim retval As Boolean = Me.DownloadFile(localFilePath, remoteFileGuid, caseInfo.ArtifactID.ToString)
+			_gateway.RemoveTempFile(caseInfo.ArtifactID, remoteFileGuid)
+			Return retval
+		End Function
+
 		Private Function WebDownloadFile(ByVal localFilePath As String, ByVal artifactID As Int32, ByVal remoteFileGuid As String, ByVal appID As String, ByVal remotelocationkey As String, Optional ByVal forFullText As Boolean = False) As Boolean
 			Dim tryNumber As Int32 = 0
 
@@ -169,7 +175,7 @@ Namespace kCura.WinEDDS
 					RaiseEvent UploadStatusEvent("Error Downloading File")					'TODO: Change this to a separate error-type event'
 					Throw New ApplicationException("Error Downloading File: the file associated with the guid " & remoteFileGuid & " cannot be found" & vbNewLine, ex)
 				Else
-					RaiseEvent UploadStatusEvent("Error Downloading File")				 'TODO: Change this to a separate error-type event'
+					RaiseEvent UploadStatusEvent("Error Downloading File")					'TODO: Change this to a separate error-type event'
 					Throw New ApplicationException("Error Downloading File:", ex)
 				End If
 			Catch ex As System.Exception

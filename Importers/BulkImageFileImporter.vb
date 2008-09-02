@@ -536,7 +536,7 @@ Namespace kCura.WinEDDS
 					Me.RaiseStatusEvent(Windows.Process.EventType.Status, "Retrieving errors from server")
 					Dim downloader As New FileDownloader(DirectCast(_bulkImportManager.Credentials, System.Net.NetworkCredential), _caseInfo.DocumentPath, _caseInfo.DownloadHandlerURL, _bulkImportManager.CookieContainer, kCura.WinEDDS.Service.Settings.AuthenticationToken)
 					Dim errorsLocation As String = System.IO.Path.GetTempFileName
-					downloader.DownloadFile(errorsLocation, .LogKey, _caseInfo.ArtifactID.ToString)
+					downloader.MoveTempFileToLocal(errorsLocation, .LogKey, _caseInfo)
 					sr = New kCura.Utility.GenericCsvReader(errorsLocation)
 					Dim line As String() = sr.ReadLine
 					While Not line Is Nothing
@@ -552,7 +552,7 @@ Namespace kCura.WinEDDS
 					End While
 					sr.Close()
 					Dim tmp As String = System.IO.Path.GetTempFileName
-					downloader.DownloadFile(tmp, .OpticonKey, _caseInfo.ArtifactID.ToString)
+					downloader.MoveTempFileToLocal(tmp, .OpticonKey, _caseInfo)
 					w = New System.IO.StreamWriter(_errorRowsFileLocation, True, System.Text.Encoding.Default)
 					r = New System.IO.StreamReader(tmp, System.Text.Encoding.Default)
 					Dim c As Int32 = r.Read

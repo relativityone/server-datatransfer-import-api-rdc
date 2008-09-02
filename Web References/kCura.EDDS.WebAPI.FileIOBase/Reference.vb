@@ -89,6 +89,22 @@ Namespace kCura.EDDS.WebAPI.FileIOBase
         End Sub
         
         '<remarks/>
+        <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://foley.com/EDDS/FileManager/RemoveTempFile", RequestNamespace:="http://foley.com/EDDS/FileManager", ResponseNamespace:="http://foley.com/EDDS/FileManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
+        Public Sub RemoveTempFile(ByVal caseContextArtifactID As Integer, ByVal fileName As String)
+            Me.Invoke("RemoveTempFile", New Object() {caseContextArtifactID, fileName})
+        End Sub
+        
+        '<remarks/>
+        Public Function BeginRemoveTempFile(ByVal caseContextArtifactID As Integer, ByVal fileName As String, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("RemoveTempFile", New Object() {caseContextArtifactID, fileName}, callback, asyncState)
+        End Function
+        
+        '<remarks/>
+        Public Sub EndRemoveTempFile(ByVal asyncResult As System.IAsyncResult)
+            Me.EndInvoke(asyncResult)
+        End Sub
+        
+        '<remarks/>
         <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://foley.com/EDDS/FileManager/ReadFileAsString", RequestNamespace:="http://foley.com/EDDS/FileManager", ResponseNamespace:="http://foley.com/EDDS/FileManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
         Public Function ReadFileAsString(ByVal path As String) As <System.Xml.Serialization.XmlElementAttribute(DataType:="base64Binary")> Byte()
             Dim results() As Object = Me.Invoke("ReadFileAsString", New Object() {path})
