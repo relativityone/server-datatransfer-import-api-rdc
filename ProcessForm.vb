@@ -667,6 +667,16 @@ Namespace kCura.Windows.Process
 		End Sub
 
 		Private Sub _processObserver_ErrorReportEvent(ByVal row As System.Collections.IDictionary) Handles _processObserver.ErrorReportEvent
+			If DirectCast(_reportDataGrid, System.ComponentModel.ISynchronizeInvoke).InvokeRequired Then
+				Me.Invoke(New DoErrorReportFromThread(AddressOf DoErrorReport), New Object() {row})
+			Else
+				Me.DoErrorReport(row)
+			End If
+		End Sub
+
+		Public Delegate Sub DoErrorReportFromThread(ByVal row As System.Collections.IDictionary)
+
+		Private Sub DoErrorReport(ByVal row As System.Collections.IDictionary)
 			If _reportDataGrid.DataSource Is Nothing Then
 				Dim dt As New System.Data.DataTable
 				For Each key As String In row.Keys
