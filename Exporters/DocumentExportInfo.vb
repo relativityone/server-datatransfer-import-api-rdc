@@ -137,9 +137,13 @@ Namespace kCura.WinEDDS.Exporters
 			Return kCura.Utility.File.ConvertIllegalCharactersInFilename(retval)
 		End Function
 
-		Public Function FullTextFileName() As String
+		Public Function FullTextFileName(ByVal nameFilesAfterIdentifier As Boolean) As String
 			Dim retval As String
-			retval = IdentifierValue
+			If Not nameFilesAfterIdentifier Then
+				retval = Me.ProductionBeginBates
+			Else
+				retval = Me.IdentifierValue
+			End If
 			Return kCura.Utility.File.ConvertIllegalCharactersInFilename(retval & ".txt")
 		End Function
 
