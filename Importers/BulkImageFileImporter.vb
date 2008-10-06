@@ -264,6 +264,7 @@ Namespace kCura.WinEDDS
 					Dim path As String = Me.GetFileLocation(values)
 					Try
 						validator.ValidateImage(path)
+						Me.RaiseStatusEvent(Windows.Process.EventType.Status, String.Format("Image file ( {0} ) validated.", values(Columns.FileLocation)))
 					Catch ex As System.Exception
 						'Me.RaiseStatusEvent(Windows.Process.EventType.Error, String.Format("Error in '{0}': {1}", path, ex.Message))
 						retval = EDDS.Types.MassImport.ImportStatus.InvalidImageFormat
