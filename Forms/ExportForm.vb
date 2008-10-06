@@ -432,9 +432,9 @@ Public Class ExportForm
 		'
 		Me.Label5.Location = New System.Drawing.Point(104, 48)
 		Me.Label5.Name = "Label5"
-		Me.Label5.Size = New System.Drawing.Size(128, 16)
+		Me.Label5.Size = New System.Drawing.Size(160, 16)
 		Me.Label5.TabIndex = 18
-		Me.Label5.Text = "Native files named after:"
+		Me.Label5.Text = "Native or text files named after:"
 		Me.Label5.TextAlign = System.Drawing.ContentAlignment.MiddleRight
 		'
 		'_overwriteButton
@@ -464,7 +464,7 @@ Public Class ExportForm
 		'
 		'_appendOriginalFilename
 		'
-		Me._appendOriginalFilename.Location = New System.Drawing.Point(416, 48)
+		Me._appendOriginalFilename.Location = New System.Drawing.Point(420, 48)
 		Me._appendOriginalFilename.Name = "_appendOriginalFilename"
 		Me._appendOriginalFilename.Size = New System.Drawing.Size(148, 16)
 		Me._appendOriginalFilename.TabIndex = 17
@@ -489,7 +489,7 @@ Public Class ExportForm
 		'
 		Me._nativeFileNameSource.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
 		Me._nativeFileNameSource.Items.AddRange(New Object() {"Select...", "Identifier", "Begin bates"})
-		Me._nativeFileNameSource.Location = New System.Drawing.Point(244, 44)
+		Me._nativeFileNameSource.Location = New System.Drawing.Point(264, 44)
 		Me._nativeFileNameSource.Name = "_nativeFileNameSource"
 		Me._nativeFileNameSource.Size = New System.Drawing.Size(152, 21)
 		Me._nativeFileNameSource.TabIndex = 19
