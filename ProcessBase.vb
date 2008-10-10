@@ -3,6 +3,7 @@ Namespace kCura.Windows.Process
 
 		Private _processObserver As ProcessObserver
 		Private _processController As Controller
+		Private _processID As Guid
 
     Public Sub StartProcess()
       Try
@@ -32,6 +33,14 @@ Namespace kCura.Windows.Process
 			_processController = New kCura.Windows.Process.Controller
 		End Sub
 
+		Public Property ProcessID() As Guid
+			Get
+				Return _processID
+			End Get
+			Set(ByVal value As Guid)
+				_processID = value
+			End Set
+		End Property
 
 	End Class
 End Namespace

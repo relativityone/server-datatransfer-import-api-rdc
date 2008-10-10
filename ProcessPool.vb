@@ -7,6 +7,7 @@ Namespace kCura.Windows.Process
 		Public Function StartProcess(ByVal process As ProcessBase) As System.Guid
 			Dim key As Guid = Guid.NewGuid
 			Dim thread As System.Threading.Thread
+			process.ProcessID = key
 			thread = New System.Threading.Thread(AddressOf process.StartProcess)
 			thread.Start()
 			_threadCollection.Add(key, thread)

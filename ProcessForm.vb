@@ -662,7 +662,7 @@ Namespace kCura.Windows.Process
 		Private Sub ProgressForm_Closing(ByVal sender As Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles MyBase.Closing
 			If Not Me.ProcessController Is Nothing Then
 				ProcessController.HaltProcess(_processId)
-				ProcessController.ParentFormClosing()
+				ProcessController.ParentFormClosing(_processId)
 			End If
 		End Sub
 
