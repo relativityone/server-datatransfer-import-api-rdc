@@ -15,7 +15,7 @@ Namespace kCura.WinEDDS
 			_warningCount = 0
 			_errorCount = 0
 			Me.ProcessObserver.InputArgs = ImageLoadFile.FileName
-			_imageFileImporter = New kCura.WinEDDS.BulkImageFileImporter(ImageLoadFile.DestinationFolderID, ImageLoadFile, ProcessController)
+			_imageFileImporter = New kCura.WinEDDS.BulkImageFileImporter(ImageLoadFile.DestinationFolderID, ImageLoadFile, ProcessController, Me.ProcessID)
 			_imageFileImporter.ReadFile(ImageLoadFile.FileName)
 			If Not _hasRunProcessComplete Then
 				Dim exportFilePath As String = ""

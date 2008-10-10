@@ -19,7 +19,7 @@ Namespace kCura.WinEDDS
 		Private _extractFullTextFromNative As Boolean
 		Private _allFields As kCura.EDDS.WebAPI.DocumentManagerBase.Field()
 		Private _fieldsForCreate As kCura.EDDS.WebAPI.DocumentManagerBase.Field()
-		Protected Shared _continue As Boolean
+		Protected _continue As Boolean
 		Protected _processedDocumentIdentifiers As Collections.Specialized.NameValueCollection
 		Protected WithEvents _processController As kCura.Windows.Process.Controller
 		Protected _offset As Int32 = 0
@@ -56,6 +56,7 @@ Namespace kCura.WinEDDS
 		Private _errorCount As Int32 = 0
 		Private _prePushErrorLineNumbersFileName As String = ""
 		Private _isAuditingEnabled As Boolean
+		Private _processID As Guid
 
 #End Region
 
@@ -134,11 +135,11 @@ Namespace kCura.WinEDDS
 
 #Region "Constructors"
 
-		Public Sub New(ByVal args As LoadFile, ByVal processController As kCura.Windows.Process.Controller, ByVal timeZoneOffset As Int32, ByVal initializeUploaders As Boolean)
-			Me.New(args, processController, timeZoneOffset, True, initializeUploaders)
+		Public Sub New(ByVal args As LoadFile, ByVal processController As kCura.Windows.Process.Controller, ByVal timeZoneOffset As Int32, ByVal initializeUploaders As Boolean, ByVal processID As Guid)
+			Me.New(args, processController, timeZoneOffset, True, initializeUploaders, processID)
 		End Sub
 
-		Public Sub New(ByVal args As LoadFile, ByVal processController As kCura.Windows.Process.Controller, ByVal timeZoneOffset As Int32, ByVal autoDetect As Boolean, ByVal initializeUploaders As Boolean)
+		Public Sub New(ByVal args As LoadFile, ByVal processController As kCura.Windows.Process.Controller, ByVal timeZoneOffset As Int32, ByVal autoDetect As Boolean, ByVal initializeUploaders As Boolean, ByVal processID As Guid)
 			MyBase.New(args, timeZoneOffset, autoDetect)
 			_overwrite = args.OverwriteDestination
 			If args.CopyFilesToDocumentRepository Then
@@ -161,6 +162,7 @@ Namespace kCura.WinEDDS
 			_caseInfo = args.CaseInfo
 			_settings = args
 			_isAuditingEnabled = New kCura.WinEDDS.Service.RelativityManager(args.Credentials, args.CookieContainer).IsAuditingEnabled
+			_processID = processID
 		End Sub
 
 #End Region
@@ -812,8 +814,10 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Private Sub _processController_HaltProcessEvent(ByVal processID As System.Guid) Handles _processController.HaltProcessEvent
-			_continue = False
-			_lineCounter.StopCounting()
+			If processID.ToString = _processID.ToString Then
+				_continue = False
+				_lineCounter.StopCounting()
+			End If
 		End Sub
 
 		Private Sub BuildErrorLinesFile()
@@ -1074,8 +1078,8 @@ Namespace kCura.WinEDDS
 			End Try
 		End Sub
 
-		Private Sub _processController_ParentFormClosingEvent() Handles _processController.ParentFormClosingEvent
-			CleanupTempTables()
+		Private Sub _processController_ParentFormClosingEvent(ByVal processID As Guid) Handles _processController.ParentFormClosingEvent
+			If processID.ToString = _processID.ToString Then CleanupTempTables()
 		End Sub
 
 		Private Sub CleanupTempTables()

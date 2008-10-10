@@ -46,6 +46,8 @@ Namespace kCura.WinEDDS
 		Private _errorRowsFileLocation As String = ""
 		Private _fileIdentifierLookup As System.Collections.Hashtable
 
+		Private _processID As Guid
+
 		Public Const MaxNumberOfErrorsInGrid As Int32 = 1000
 #End Region
 
@@ -73,7 +75,7 @@ Namespace kCura.WinEDDS
 
 #Region "Constructors"
 
-		Public Sub New(ByVal folderID As Int32, ByVal args As ImageLoadFile, ByVal controller As kCura.Windows.Process.Controller)
+		Public Sub New(ByVal folderID As Int32, ByVal args As ImageLoadFile, ByVal controller As kCura.Windows.Process.Controller, ByVal processID As Guid)
 			MyBase.New(New Char() {","c})
 			_docManager = New kCura.WinEDDS.Service.DocumentManager(args.Credential, args.CookieContainer)
 			_fieldQuery = New kCura.WinEDDS.Service.FieldQuery(args.Credential, args.CookieContainer)
@@ -102,6 +104,7 @@ Namespace kCura.WinEDDS
 			_autoNumberImages = args.AutoNumberImages
 			_caseInfo = args.CaseInfo
 			_settings = args
+			_processID = processID
 		End Sub
 
 #End Region
@@ -422,7 +425,7 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Private Sub _processObserver_CancelImport(ByVal processID As System.Guid) Handles _processController.HaltProcessEvent
-			_continue = False
+			If processID.ToString = _processID.ToString Then _continue = False
 		End Sub
 
 		Private Sub RaiseReportError(ByVal row As System.Collections.Hashtable, ByVal lineNumber As Int32, ByVal identifier As String, ByVal type As String)
@@ -639,8 +642,8 @@ Namespace kCura.WinEDDS
 			RaiseStatusEvent(kCura.Windows.Process.EventType.Warning, s)
 		End Sub
 
-		Private Sub _processController_ParentFormClosingEvent() Handles _processController.ParentFormClosingEvent
-			Me.CleanupTempTables()
+		Private Sub _processController_ParentFormClosingEvent(ByVal processID As Guid) Handles _processController.ParentFormClosingEvent
+			If processID.ToString = _processID.ToString Then Me.CleanupTempTables()
 		End Sub
 
 		Private Sub CleanupTempTables()
