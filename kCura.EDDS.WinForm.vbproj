@@ -228,7 +228,7 @@
                 <Folder RelPath = "bin\" />
                 <File
                     RelPath = "Controls\CaseFolderExplorer.vb"
-                    SubType = "UserControl"
+                    SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
@@ -248,7 +248,7 @@
                 />
                 <File
                     RelPath = "Controls\EncodingForm.vb"
-                    SubType = "Form"
+                    SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
@@ -258,7 +258,7 @@
                 />
                 <File
                     RelPath = "Controls\EncodingPicker.vb"
-                    SubType = "UserControl"
+                    SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
@@ -268,7 +268,7 @@
                 />
                 <File
                     RelPath = "Forms\AdvancedFileLocation.vb"
-                    SubType = "Form"
+                    SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
@@ -278,7 +278,7 @@
                 />
                 <File
                     RelPath = "Forms\CaseSelectForm.vb"
-                    SubType = "Form"
+                    SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
@@ -288,7 +288,7 @@
                 />
                 <File
                     RelPath = "Forms\ErrorForm.vb"
-                    SubType = "Form"
+                    SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
@@ -308,7 +308,7 @@
                 />
                 <File
                     RelPath = "Forms\ImageImportSettingsForm.vb"
-                    SubType = "Form"
+                    SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
@@ -318,7 +318,7 @@
                 />
                 <File
                     RelPath = "Forms\ImageLoadForm.vb"
-                    SubType = "Form"
+                    SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
@@ -328,7 +328,7 @@
                 />
                 <File
                     RelPath = "Forms\ImportFileSystemForm.vb"
-                    SubType = "Form"
+                    SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
@@ -338,7 +338,7 @@
                 />
                 <File
                     RelPath = "Forms\LoadFileForm.vb"
-                    SubType = "Form"
+                    SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
@@ -348,7 +348,7 @@
                 />
                 <File
                     RelPath = "Forms\LoadFilePreviewForm.vb"
-                    SubType = "Component"
+                    SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
@@ -358,7 +358,7 @@
                 />
                 <File
                     RelPath = "Forms\LoginForm.vb"
-                    SubType = "Form"
+                    SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
@@ -368,7 +368,7 @@
                 />
                 <File
                     RelPath = "Forms\MainForm.vb"
-                    SubType = "Form"
+                    SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
@@ -408,7 +408,7 @@
                 />
                 <File
                     RelPath = "Forms\SQLImportForm.vb"
-                    SubType = "Form"
+                    SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
@@ -418,7 +418,7 @@
                 />
                 <File
                     RelPath = "Forms\VolumeInfoForm.vb"
-                    SubType = "Form"
+                    SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
