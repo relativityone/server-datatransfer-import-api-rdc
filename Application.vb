@@ -899,11 +899,11 @@ Namespace kCura.EDDS.WinForm
 			CursorDefault()
 		End Sub
 
-		Public Function ImportImageFile(ByVal ImageLoadFile As ImageLoadFile) As Guid
+		Public Sub ImportImageFile(ByVal ImageLoadFile As ImageLoadFile)
 			CursorWait()
 			If Not Me.IsConnected(_selectedCaseInfo.ArtifactID) Then
 				CursorDefault()
-				Exit Function
+				Exit Sub
 			End If
 			Dim frm As New kCura.Windows.Process.ProgressForm
 			Dim importer As New kCura.WinEDDS.ImportImageFileProcess
@@ -915,9 +915,9 @@ Namespace kCura.EDDS.WinForm
 			frm.Text = "Import Image File Progress ..."
 			frm.ErrorFileExtension = "OPT"
 			frm.Show()
+			frm.ProcessID = _processPool.StartProcess(importer)
 			CursorDefault()
-			Return _processPool.StartProcess(importer)
-		End Function
+		End Sub
 
 		'Public Function StartProduction(ByVal exportFile As ExportFile) As Guid
 		'	CursorWait()
