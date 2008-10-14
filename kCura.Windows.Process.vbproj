@@ -147,7 +147,7 @@
                 />
                 <File
                     RelPath = "ProcessForm.vb"
-                    SubType = "Form"
+                    SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
