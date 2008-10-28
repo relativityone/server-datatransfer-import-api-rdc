@@ -1088,7 +1088,7 @@ Namespace kCura.EDDS.WinForm
 					_credential = cred
 					kCura.WinEDDS.Service.Settings.AuthenticationToken = userManager.GetLatestAuthenticationToken()
 					If openCaseSelector Then OpenCase()
-					_timeZoneOffset = New kCura.WinEDDS.Service.RelativityManager(cred, _cookieContainer).GetServerTimezoneOffset
+					_timeZoneOffset = 0		 'New kCura.WinEDDS.Service.RelativityManager(cred, _cookieContainer).GetServerTimezoneOffset
 				Else
 					Me.ReLogin("Invalid login. Try again?")
 				End If
@@ -1109,7 +1109,7 @@ Namespace kCura.EDDS.WinForm
 			If userManager.Login(cred.UserName, cred.Password) Then
 				_credential = cred
 				kCura.WinEDDS.Service.Settings.AuthenticationToken = userManager.GetLatestAuthenticationToken()
-				_timeZoneOffset = New kCura.WinEDDS.Service.RelativityManager(cred, _cookieContainer).GetServerTimezoneOffset
+				_timeZoneOffset = 0		'New kCura.WinEDDS.Service.RelativityManager(cred, _cookieContainer).GetServerTimezoneOffset
 				Return True
 			Else
 				Return False
