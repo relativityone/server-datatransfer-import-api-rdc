@@ -376,14 +376,15 @@ Namespace kCura.WinEDDS
 				Dim datevalue As DateTime
 				datevalue = nullableDateValue.Value
 				Dim timeZoneOffset As Int32 = 0
-				If Me.UseTimeZoneOffset Then
-					timeZoneOffset = _timeZoneOffset
-				End If
-				If datevalue.TimeOfDay.Ticks = 0 Then
-					datevalue = datevalue.AddHours(12 - timeZoneOffset)
-				Else
-					datevalue = datevalue.AddHours(0 - timeZoneOffset)
-				End If
+				'If Me.UseTimeZoneOffset Then
+				'	timeZoneOffset = _timeZoneOffset
+				'End If
+				If datevalue.TimeOfDay.Ticks = 0 Then datevalue = datevalue.AddHours(12)
+				'If datevalue.TimeOfDay.Ticks = 0 Then
+				'	datevalue = datevalue.AddHours(12 - timeZoneOffset)
+				'Else
+				'	datevalue = datevalue.AddHours(0 - timeZoneOffset)
+				'End If
 				If datevalue < DateTime.Parse("1/1/1753") Then
 					Throw New kCura.Utility.DelimitedFileImporter.DateException(Me.CurrentLineNumber, column)
 				End If
