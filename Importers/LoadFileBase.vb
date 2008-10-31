@@ -379,7 +379,7 @@ Namespace kCura.WinEDDS
 				'If Me.UseTimeZoneOffset Then
 				'	timeZoneOffset = _timeZoneOffset
 				'End If
-				If datevalue.TimeOfDay.Ticks = 0 Then datevalue = datevalue.AddHours(12)
+				'If datevalue.TimeOfDay.Ticks = 0 Then datevalue = datevalue.AddHours(12)
 				'If datevalue.TimeOfDay.Ticks = 0 Then
 				'	datevalue = datevalue.AddHours(12 - timeZoneOffset)
 				'Else
