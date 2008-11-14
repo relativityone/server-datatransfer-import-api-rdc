@@ -1004,8 +1004,8 @@ Namespace kCura.EDDS.WinForm
 					Case "dat"
 						_recordDelimiter.SelectedValue = 20
 						_quoteDelimiter.SelectedValue = 254
-						Me.LoadFile.QuoteDelimiter = ChrW(20)
-						Me.LoadFile.RecordDelimiter = ChrW(254)
+						Me.LoadFile.RecordDelimiter = ChrW(20)
+						Me.LoadFile.QuoteDelimiter = ChrW(254)
 				End Select
 				RefreshNativeFilePathFieldAndFileColumnHeaders(oldfilepath.ToLower <> "select file to load...")
 			Catch ex As System.IO.IOException
