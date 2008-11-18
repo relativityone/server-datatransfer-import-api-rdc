@@ -40,7 +40,8 @@ Namespace kCura.EDDS.WinForm
 		Private Shared _cache As New Hashtable
 		Private _temporaryWebServiceURL As String
 		Private _cookieContainer As System.Net.CookieContainer
-		Private _documentRepositoryList As String()
+    Private _documentRepositoryList As String()
+    Private _currentObjectTypeID As Int32
 
 		'Private _identity As kCura.EDDS.EDDSIdentity
 #End Region
@@ -156,7 +157,17 @@ Namespace kCura.EDDS.WinForm
 			Set(ByVal value As System.Net.CookieContainer)
 				_cookieContainer = value
 			End Set
-		End Property
+    End Property
+
+    Public Property CurrentObjectTypeID() As Int32
+      Get
+        Return _currentObjectTypeID
+      End Get
+      Set(ByVal value As Int32)
+        _currentObjectTypeID = value
+      End Set
+    End Property
+
 #End Region
 
 #Region "Event Throwers"
@@ -200,57 +211,57 @@ Namespace kCura.EDDS.WinForm
 			Return CurrentFields.NamesForIdentifierDropdown
 		End Function
 
-		Public Function GetCaseFields(ByVal caseID As Int32, Optional ByVal refresh As Boolean = False) As String()
-			Dim retval As DocumentFieldCollection = CurrentFields(refresh)
-			If Not retval Is Nothing Then
-				Return CurrentFields(refresh).Names()
-			End If
-		End Function
+    Public Function GetCaseFields(ByVal caseID As Int32, Optional ByVal refresh As Boolean = False) As String()
+      Dim retval As DocumentFieldCollection = CurrentFields(refresh)
+      If Not retval Is Nothing Then
+        Return CurrentFields(refresh).Names()
+      End If
+    End Function
 
-		Friend Function IsConnected(ByVal caseID As Int32) As Boolean
-			Return Not Me.GetCaseFields(caseID, True) Is Nothing
-		End Function
+    Friend Function IsConnected(ByVal caseID As Int32) As Boolean
+      Return Not Me.GetCaseFields(caseID, True) Is Nothing
+    End Function
 
-		Public Function GetSelectedIdentifier(ByVal selectedField As DocumentField) As String
-			Try
-				Return CurrentFields.Item(selectedField.FieldName).FieldName
-			Catch ex As System.Exception
-				Return String.Empty
-			End Try
-		End Function
+    Public Function GetSelectedIdentifier(ByVal selectedField As DocumentField) As String
+      Try
+        Return CurrentFields.Item(selectedField.FieldName).FieldName
+      Catch ex As System.Exception
+        Return String.Empty
+      End Try
+    End Function
 
-		Friend Function ReadyToLoad(ByVal unselectedFieldNames As String()) As Boolean
-			Dim identifierFieldName As String
-			Dim unselectedFieldName As String
-			Dim unselectedIDFieldNames As New System.Text.StringBuilder
-			For Each identifierFieldName In CurrentFields.IdentifierFieldNames()
-				For Each unselectedFieldName In unselectedFieldNames
-					If identifierFieldName.ToLower & " [identifier]" = unselectedFieldName Then
-						unselectedIDFieldNames.AppendFormat(unselectedFieldName & ChrW(13))
-					End If
-				Next
-			Next
-			If unselectedIDFieldNames.Length = 0 Then
-				Return True
-			Else
-				MsgBox("The following identifier fields have not been mapped: " & ChrW(13) & unselectedIDFieldNames.ToString & _
-				 "Do you wish to continue?", MsgBoxStyle.Critical, "Warning!")
-				Return False
-			End If
-		End Function
+    Friend Function ReadyToLoad(ByVal unselectedFieldNames As String()) As Boolean
+      Dim identifierFieldName As String
+      Dim unselectedFieldName As String
+      Dim unselectedIDFieldNames As New System.Text.StringBuilder
+      For Each identifierFieldName In CurrentFields.IdentifierFieldNames()
+        For Each unselectedFieldName In unselectedFieldNames
+          If identifierFieldName.ToLower & " [identifier]" = unselectedFieldName Then
+            unselectedIDFieldNames.AppendFormat(unselectedFieldName & ChrW(13))
+          End If
+        Next
+      Next
+      If unselectedIDFieldNames.Length = 0 Then
+        Return True
+      Else
+        MsgBox("The following identifier fields have not been mapped: " & ChrW(13) & unselectedIDFieldNames.ToString & _
+         "Do you wish to continue?", MsgBoxStyle.Critical, "Warning!")
+        Return False
+      End If
+    End Function
 
-		Friend Function ReadyToLoad(ByVal loadFile As WinEDDS.LoadFile) As Boolean
-			Dim isIdentifierMapped As Boolean = False
-			For Each fieldMapItem As LoadFileFieldMap.LoadFileFieldMapItem In loadFile.FieldMap
-				If Not fieldMapItem.DocumentField Is Nothing AndAlso fieldMapItem.DocumentField.FieldCategory = DynamicFields.Types.FieldCategory.Identifier AndAlso fieldMapItem.NativeFileColumnIndex <> -1 Then
-					isIdentifierMapped = True
-				End If
-			Next
-			If Not isIdentifierMapped Then
-				MsgBox("The identifier field [" & Me.CurrentFields.IdentifierFieldNames(0) & "] is unmapped.  Please map it to continue", MsgBoxStyle.Critical)
-			End If
-			Return isIdentifierMapped
-		End Function
+    Friend Function ReadyToLoad(ByVal loadFile As WinEDDS.LoadFile) As Boolean
+      Dim isIdentifierMapped As Boolean = False
+      For Each fieldMapItem As LoadFileFieldMap.LoadFileFieldMapItem In loadFile.FieldMap
+        If Not fieldMapItem.DocumentField Is Nothing AndAlso fieldMapItem.DocumentField.FieldCategory = DynamicFields.Types.FieldCategory.Identifier AndAlso fieldMapItem.NativeFileColumnIndex <> -1 Then
+          isIdentifierMapped = True
+        End If
+      Next
+      If Not isIdentifierMapped Then
+        MsgBox("The identifier field [" & Me.CurrentFields.IdentifierFieldNames(0) & "] is unmapped.  Please map it to continue", MsgBoxStyle.Critical)
+      End If
+      Return isIdentifierMapped
+    End Function
 #End Region
 
 #Region "Folder Management"
@@ -510,8 +521,8 @@ Namespace kCura.EDDS.WinForm
 			End If
 			Dim frm As New LoadFileForm
 			Dim loadFile As New loadFile
-			frm._application = Me
-			loadFile.SelectedCasePath = caseInfo.DocumentPath
+      frm._application = Me
+      loadFile.SelectedCasePath = caseInfo.DocumentPath
 			loadFile.DestinationFolderID = destinationArtifactID
 			loadFile.CaseInfo = caseInfo
 			loadFile.Credentials = Me.Credential
