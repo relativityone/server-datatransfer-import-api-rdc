@@ -98,23 +98,39 @@ Namespace kCura.WinEDDS.Service
 					End If
 				End Try
 			End While
-		End Function
+    End Function
 
-		Public Shadows Function DisposeTempTables(ByVal appID As Int32, ByVal runId As String) As Object
-			Dim tries As Int32 = 0
-			While tries < Config.MaxReloginTries
-				tries += 1
-				Try
-					Return MyBase.DisposeTempTables(appID, runId)
-				Catch ex As System.Exception
-					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
-					Else
-						Throw
-					End If
-				End Try
-			End While
-		End Function
+    Public Shadows Function BulkImportObjects(ByVal appID As Int32, ByVal settings As kCura.EDDS.WebAPI.BulkImportManagerBase.ObjectLoadInfo) As Object
+      Dim tries As Int32 = 0
+      While tries < Config.MaxReloginTries
+        tries += 1
+        Try
+          Return MyBase.BulkImportObjects(appID, settings)
+        Catch ex As System.Exception
+          If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
+            Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
+          Else
+            Throw
+          End If
+        End Try
+      End While
+    End Function
+
+    Public Shadows Function DisposeTempTables(ByVal appID As Int32, ByVal runId As String) As Object
+      Dim tries As Int32 = 0
+      While tries < Config.MaxReloginTries
+        tries += 1
+        Try
+          Return MyBase.DisposeTempTables(appID, runId)
+        Catch ex As System.Exception
+          If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
+            Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
+          Else
+            Throw
+          End If
+        End Try
+      End While
+    End Function
 
 #End Region
 

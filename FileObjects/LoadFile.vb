@@ -20,7 +20,8 @@ Namespace kCura.WinEDDS
 		Public ExtractMD5HashFromNativeFile As Boolean
 		Public CreateFolderStructure As Boolean
 		Public FolderStructureContainedInColumn As String
-		Public FullTextColumnContainsFileLocation As Boolean
+    Public FullTextColumnContainsFileLocation As Boolean
+    Public ArtifactTypeID As Integer
 		<NonSerialized()> Public SourceFileEncoding As System.Text.Encoding
 		<NonSerialized()> Public ExtractedTextFileEncoding As System.Text.Encoding
 		<NonSerialized()> Public ExtractedTextFileEncodingName As String

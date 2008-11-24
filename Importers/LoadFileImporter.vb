@@ -58,15 +58,16 @@ Namespace kCura.WinEDDS
 
 		Public ReadOnly Property AllDocumentFields() As kCura.EDDS.WebAPI.DocumentManagerBase.Field()
 			Get
-				If _allFields Is Nothing Then
-					_allFields = _fieldQuery.RetrieveAllAsArray(_caseArtifactID, True)
-				End If
-				Dim field As kCura.EDDS.WebAPI.DocumentManagerBase.Field
-				For Each field In _allFields
-					field.Value = Nothing
-					field.FieldCategory = CType(field.FieldCategoryID, kCura.EDDS.WebAPI.DocumentManagerBase.FieldCategory)
-				Next
-				Return _allFields
+        If _allFields Is Nothing Then
+          'TODO: WINFLEX ArtifactTypeID
+          _allFields = _fieldQuery.RetrieveAllAsArray(_caseArtifactID, 10, True)
+        End If
+        Dim field As kCura.EDDS.WebAPI.DocumentManagerBase.Field
+        For Each field In _allFields
+          field.Value = Nothing
+          field.FieldCategory = CType(field.FieldCategoryID, kCura.EDDS.WebAPI.DocumentManagerBase.FieldCategory)
+        Next
+        Return _allFields
 			End Get
 		End Property
 

@@ -127,15 +127,33 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
         End Function
         
         '<remarks/>
+        <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/BulkImportManager/BulkImportObjects", RequestNamespace:="http://www.kCura.com/EDDS/BulkImportManager", ResponseNamespace:="http://www.kCura.com/EDDS/BulkImportManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
+        Public Function BulkImportObjects(ByVal appID As Integer, ByVal settings As ObjectLoadInfo) As Object
+            Dim results() As Object = Me.Invoke("BulkImportObjects", New Object() {appID, settings})
+            Return CType(results(0),Object)
+        End Function
+        
+        '<remarks/>
+        Public Function BeginBulkImportObjects(ByVal appID As Integer, ByVal settings As ObjectLoadInfo, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("BulkImportObjects", New Object() {appID, settings}, callback, asyncState)
+        End Function
+        
+        '<remarks/>
+        Public Function EndBulkImportObjects(ByVal asyncResult As System.IAsyncResult) As Object
+            Dim results() As Object = Me.EndInvoke(asyncResult)
+            Return CType(results(0),Object)
+        End Function
+        
+        '<remarks/>
         <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/BulkImportManager/GenerateNativeErrorFiles", RequestNamespace:="http://www.kCura.com/EDDS/BulkImportManager", ResponseNamespace:="http://www.kCura.com/EDDS/BulkImportManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
-        Public Function GenerateNativeErrorFiles(ByVal appID As Integer, ByVal runID As String, ByVal writeHeader As Boolean) As ErrorFileKey
-            Dim results() As Object = Me.Invoke("GenerateNativeErrorFiles", New Object() {appID, runID, writeHeader})
+        Public Function GenerateNativeErrorFiles(ByVal appID As Integer, ByVal runID As String, ByVal artifactTypeID As Integer, ByVal writeHeader As Boolean) As ErrorFileKey
+            Dim results() As Object = Me.Invoke("GenerateNativeErrorFiles", New Object() {appID, runID, artifactTypeID, writeHeader})
             Return CType(results(0),ErrorFileKey)
         End Function
         
         '<remarks/>
-        Public Function BeginGenerateNativeErrorFiles(ByVal appID As Integer, ByVal runID As String, ByVal writeHeader As Boolean, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
-            Return Me.BeginInvoke("GenerateNativeErrorFiles", New Object() {appID, runID, writeHeader}, callback, asyncState)
+        Public Function BeginGenerateNativeErrorFiles(ByVal appID As Integer, ByVal runID As String, ByVal artifactTypeID As Integer, ByVal writeHeader As Boolean, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("GenerateNativeErrorFiles", New Object() {appID, runID, artifactTypeID, writeHeader}, callback, asyncState)
         End Function
         
         '<remarks/>
@@ -204,6 +222,36 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
         
         '<remarks/>
         Public LogKey As String
+    End Class
+    
+    '<remarks/>
+    <System.Xml.Serialization.XmlTypeAttribute([Namespace]:="http://www.kCura.com/EDDS/BulkImportManager"),  _
+     System.Xml.Serialization.XmlIncludeAttribute(GetType(ObjectLoadInfo))>  _
+    Public Class NativeLoadInfo
+        
+        '<remarks/>
+        Public MappedFields() As FieldInfo
+        
+        '<remarks/>
+        Public Overlay As OverwriteType
+        
+        '<remarks/>
+        Public Repository As String
+        
+        '<remarks/>
+        Public RunID As String
+        
+        '<remarks/>
+        Public DataFileName As String
+        
+        '<remarks/>
+        Public UseBulkDataImport As Boolean
+        
+        '<remarks/>
+        Public UploadFiles As Boolean
+        
+        '<remarks/>
+        Public CodeFileName As String
     End Class
     
     '<remarks/>
@@ -325,30 +373,10 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
     
     '<remarks/>
     <System.Xml.Serialization.XmlTypeAttribute([Namespace]:="http://www.kCura.com/EDDS/BulkImportManager")>  _
-    Public Class NativeLoadInfo
+    Public Class ObjectLoadInfo
+        Inherits NativeLoadInfo
         
         '<remarks/>
-        Public MappedFields() As FieldInfo
-        
-        '<remarks/>
-        Public Overlay As OverwriteType
-        
-        '<remarks/>
-        Public Repository As String
-        
-        '<remarks/>
-        Public RunID As String
-        
-        '<remarks/>
-        Public DataFileName As String
-        
-        '<remarks/>
-        Public UseBulkDataImport As Boolean
-        
-        '<remarks/>
-        Public UploadFiles As Boolean
-        
-        '<remarks/>
-        Public CodeFileName As String
+        Public ArtifactTypeID As Integer
     End Class
 End Namespace

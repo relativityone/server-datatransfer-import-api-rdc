@@ -56,14 +56,14 @@ Namespace kCura.EDDS.WebAPI.FieldQueryBase
         
         '<remarks/>
         <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://foley.com/EDDS/FieldQuery/RetrieveAllMappable", RequestNamespace:="http://foley.com/EDDS/FieldQuery", ResponseNamespace:="http://foley.com/EDDS/FieldQuery", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
-        Public Function RetrieveAllMappable(ByVal caseContextArtifactID As Integer) As System.Data.DataSet
-            Dim results() As Object = Me.Invoke("RetrieveAllMappable", New Object() {caseContextArtifactID})
+        Public Function RetrieveAllMappable(ByVal caseContextArtifactID As Integer, ByVal artifactTypeID As Integer) As System.Data.DataSet
+            Dim results() As Object = Me.Invoke("RetrieveAllMappable", New Object() {caseContextArtifactID, artifactTypeID})
             Return CType(results(0),System.Data.DataSet)
         End Function
         
         '<remarks/>
-        Public Function BeginRetrieveAllMappable(ByVal caseContextArtifactID As Integer, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
-            Return Me.BeginInvoke("RetrieveAllMappable", New Object() {caseContextArtifactID}, callback, asyncState)
+        Public Function BeginRetrieveAllMappable(ByVal caseContextArtifactID As Integer, ByVal artifactTypeID As Integer, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("RetrieveAllMappable", New Object() {caseContextArtifactID, artifactTypeID}, callback, asyncState)
         End Function
         
         '<remarks/>
