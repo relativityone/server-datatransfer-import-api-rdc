@@ -623,7 +623,8 @@ Public Class ExportForm
 			_exportFile.TypeOfExportedFilePath = ExportFile.ExportedFilePathType.Prefix
 			_exportFile.FilePrefix = _prefixText.Text
 		End If
-		_exportFile.IdentifierColumnName = _application.GetCaseIdentifierFields(0)
+    'TODO: WINFLEX - ArtifactTypeID
+    _exportFile.IdentifierColumnName = _application.GetCaseIdentifierFields(_application.CurrentObjectTypeID)(0)
 		_exportFile.RenameFilesToIdentifier = True
 		_exportFile.VolumeInfo = Me.BuildVolumeInfo
 		_exportFile.ExportImages = _exportImages.Checked

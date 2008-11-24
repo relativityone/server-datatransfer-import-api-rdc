@@ -224,8 +224,9 @@ Namespace kCura.EDDS.WinForm
 						tempLoadFile.Credentials = _application.Credential
 						tempLoadFile.DestinationFolderID = 35
 						tempLoadFile.ExtractedTextFileEncoding = System.Text.Encoding.Unicode
-						tempLoadFile.SourceFileEncoding = System.Text.Encoding.Default
-						tempLoadFile.SelectedIdentifierField = _application.CurrentFields(True).IdentifierFields(0)
+            tempLoadFile.SourceFileEncoding = System.Text.Encoding.Default
+            'TODO: WINFLEX - ArtifactTypeID
+            tempLoadFile.SelectedIdentifierField = _application.CurrentFields(10, True).IdentifierFields(0)
 						Dim mapItemToRemove As LoadFileFieldMap.LoadFileFieldMapItem
 						If tempLoadFile.GroupIdentifierColumn = "" AndAlso System.IO.File.Exists(tempLoadFile.FilePath) Then
 							Dim fieldMapItem As kCura.WinEDDS.LoadFileFieldMap.LoadFileFieldMapItem

@@ -311,8 +311,9 @@ Namespace kCura.EDDS.WinForm
 				Exit Sub
 			End If
 			ImageLoadFile.Overwrite = Me.GetOverwrite
-			ImageLoadFile.DestinationFolderID = _imageLoadFile.DestinationFolderID
-			ImageLoadFile.ControlKeyField = _application.GetCaseIdentifierFields()(0)
+      ImageLoadFile.DestinationFolderID = _imageLoadFile.DestinationFolderID
+      'TODO: WINFLEX - ArtifactID
+      ImageLoadFile.ControlKeyField = _application.GetCaseIdentifierFields(_application.CurrentObjectTypeID)(0)
 			If ImageLoadFile.ForProduction Then
 				ImageLoadFile.ProductionArtifactID = CType(_productionDropdown.SelectedValue, Int32)
 				Me.ImageLoadFile.ReplaceFullText = False
@@ -481,7 +482,8 @@ Namespace kCura.EDDS.WinForm
 				Dim casefields As String() = Nothing
 				Dim continue As Boolean = True
 				Try
-					casefields = _application.GetCaseFields(_imageLoadFile.CaseInfo.ArtifactID, True)
+          'TODO: WINFLEX - ArtifactTypeID
+          casefields = _application.GetCaseFields(_imageLoadFile.CaseInfo.ArtifactID, 10, True)
 					Return Not casefields Is Nothing
 				Catch ex As System.Exception
 					If ex.Message.IndexOf("Need To Re Login") <> -1 Then

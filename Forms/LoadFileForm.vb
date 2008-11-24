@@ -494,7 +494,6 @@ Namespace kCura.EDDS.WinForm
       '
       Me._fullTextFileEncodingPicker.Location = New System.Drawing.Point(12, 92)
       Me._fullTextFileEncodingPicker.Name = "_fullTextFileEncodingPicker"
-      Me._fullTextFileEncodingPicker.SelectedEncoding = CType(resources.GetObject("_fullTextFileEncodingPicker.SelectedEncoding"), System.Text.Encoding)
       Me._fullTextFileEncodingPicker.Size = New System.Drawing.Size(200, 21)
       Me._fullTextFileEncodingPicker.TabIndex = 31
       '
@@ -650,7 +649,7 @@ Namespace kCura.EDDS.WinForm
       '_fileColumns
       '
       Me._fileColumns.KeepButtonsCentered = True
-      Me._fileColumns.LeftOrderControlsVisible = True
+      Me._fileColumns.LeftOrderControlsVisible = False
       Me._fileColumns.Location = New System.Drawing.Point(372, 148)
       Me._fileColumns.Name = "_fileColumns"
       Me._fileColumns.RightOrderControlVisible = False
@@ -663,7 +662,7 @@ Namespace kCura.EDDS.WinForm
       Me._fieldMap.LeftOrderControlsVisible = False
       Me._fieldMap.Location = New System.Drawing.Point(4, 148)
       Me._fieldMap.Name = "_fieldMap"
-      Me._fieldMap.RightOrderControlVisible = True
+      Me._fieldMap.RightOrderControlVisible = False
       Me._fieldMap.Size = New System.Drawing.Size(364, 276)
       Me._fieldMap.TabIndex = 1
       '
@@ -756,7 +755,7 @@ Namespace kCura.EDDS.WinForm
 			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
 			Me.PopulateLoadFileDelimiters()
 			If Not Me.EnsureConnection() Then Exit Sub
-			Dim currentFields As WinEDDS.DocumentFieldCollection = _application.CurrentFields
+      Dim currentFields As WinEDDS.DocumentFieldCollection = _application.CurrentFields(_application.CurrentObjectTypeID, True)
 			If currentFields Is Nothing Then
 				Exit Sub
 			End If
@@ -790,7 +789,7 @@ Namespace kCura.EDDS.WinForm
 			If System.IO.File.Exists(_filePath.Text) Then
 				LoadFile.FilePath = _filePath.Text
 			End If
-			LoadFile.SelectedIdentifierField = _application.GetDocumentFieldFromName(_application.GetCaseIdentifierFields()(0))
+      LoadFile.SelectedIdentifierField = _application.GetDocumentFieldFromName(_application.GetCaseIdentifierFields(_application.CurrentObjectTypeID)(0))
 			'If Not _identifiersDropDown.SelectedItem Is Nothing Then
 			'	LoadFile.GroupIdentifierColumn = _identifiersDropDown.SelectedItem.ToString
 			'Else
@@ -815,13 +814,17 @@ Namespace kCura.EDDS.WinForm
 				End If
 			Else
 				LoadFile.CreateFolderStructure = False
-			End If
-			Me.LoadFile.CaseDefaultPath = _application.SelectedCaseInfo.DocumentPath
-			Me.Cursor = System.Windows.Forms.Cursors.Default
+      End If
+      If LoadFile.ArtifactTypeID = 0 Then
+        LoadFile.ArtifactTypeID = _application.CurrentObjectTypeID
+      End If
+      Me.LoadFile.CaseDefaultPath = _application.SelectedCaseInfo.DocumentPath
+      Me.Cursor = System.Windows.Forms.Cursors.Default
 		End Sub
 
 		Private Sub MarkIdentifierField(ByVal fieldNames As String())
-			Dim identifierFields As String() = _application.GetCaseIdentifierFields
+      'TODO: WINFLEX - ArtifactTypeID
+      Dim identifierFields As String() = _application.GetCaseIdentifierFields(_application.CurrentObjectTypeID)
 			Dim i As Int32
 			For i = 0 To fieldNames.Length - 1
 				If System.Array.IndexOf(identifierFields, fieldNames(i)) <> -1 Then
@@ -844,13 +847,13 @@ Namespace kCura.EDDS.WinForm
 			_fileColumnHeaders.Items.Clear()
 			_nativeFilePathField.Items.Clear()
 			_destinationFolderPath.Items.Clear()
-			_loadNativeFiles.Checked = LoadFile.LoadNativeFiles
-			_extractedTextValueContainsFileLocation.Checked = LoadFile.FullTextColumnContainsFileLocation
+      _loadNativeFiles.Checked = LoadFile.LoadNativeFiles
+      _extractedTextValueContainsFileLocation.Checked = LoadFile.FullTextColumnContainsFileLocation
 			_fullTextFileEncodingPicker.Enabled = _extractedTextValueContainsFileLocation.Checked
 			_overwriteDropdown.SelectedItem = Me.GetOverwriteDropdownItem(LoadFile.OverwriteDestination)
 			RefreshNativeFilePathFieldAndFileColumnHeaders()
 			If Not Me.EnsureConnection() Then Exit Sub
-			Dim caseFields As String() = _application.GetCaseFields(LoadFile.CaseInfo.ArtifactID)
+      Dim caseFields As String() = _application.GetCaseFields(LoadFile.CaseInfo.ArtifactID, _application.CurrentObjectTypeID, True)
 			Dim caseFieldName As String
 			If loadFileObjectUpdatedFromFile Then
 				Dim columnHeaders As String()
@@ -898,19 +901,21 @@ Namespace kCura.EDDS.WinForm
 			'	'_identifiersDropDown.SelectedItem = LoadFile.GroupIdentifierColumn
 			'End If
 
-			_extractedTextValueContainsFileLocation.Enabled = Me.FullTextColumnIsMapped
-			_fullTextFileEncodingPicker.Enabled = _extractedTextValueContainsFileLocation.Enabled And _extractedTextValueContainsFileLocation.Checked
+      If _application.CurrentObjectTypeID = 10 Then
+        _extractedTextValueContainsFileLocation.Enabled = Me.FullTextColumnIsMapped
+      End If
+      _fullTextFileEncodingPicker.Enabled = _extractedTextValueContainsFileLocation.Enabled And _extractedTextValueContainsFileLocation.Checked
 
-			'If LoadFile.OverwriteDestination AndAlso Not LoadFile.SelectedIdentifierField Is Nothing Then
-			'	_overWrite.Checked = True
-			'	caseFieldName = _application.GetSelectedIdentifier(LoadFile.SelectedIdentifierField)
-			'	If caseFieldName <> String.Empty Then
-			'		_identifiersDropDown.SelectedItem = caseFieldName
-			'	End If
-			'End If
-			_extractMd5Hash.Enabled = EnableMd5Hash
-			ActionMenuEnabled = ReadyToRun
-			Me.Cursor = System.Windows.Forms.Cursors.Default
+      'If LoadFile.OverwriteDestination AndAlso Not LoadFile.SelectedIdentifierField Is Nothing Then
+      '	_overWrite.Checked = True
+      '	caseFieldName = _application.GetSelectedIdentifier(LoadFile.SelectedIdentifierField)
+      '	If caseFieldName <> String.Empty Then
+      '		_identifiersDropDown.SelectedItem = caseFieldName
+      '	End If
+      'End If
+      _extractMd5Hash.Enabled = EnableMd5Hash
+      ActionMenuEnabled = ReadyToRun
+      Me.Cursor = System.Windows.Forms.Cursors.Default
 		End Sub
 
 		Public Property LoadFile() As kCura.WinEDDS.LoadFile
@@ -1261,90 +1266,93 @@ Namespace kCura.EDDS.WinForm
 			ActionMenuEnabled = ReadyToRun
 		End Sub
 
-		Private Function FullTextColumnIsMapped() As Boolean
-			Dim ftfname As String = _application.CurrentFields.FullText.FieldName
-			Dim field As String
-			For Each field In _fieldMap.RightListBoxItems
-				If field.ToLower = ftfname.ToLower Then
-					Return True
-				End If
-			Next
-			Return False
-		End Function
+    Private Function FullTextColumnIsMapped() As Boolean
+      'TODO: WINFLEX - ArtifactTypeID
+      Dim ftfname As String = _application.CurrentFields(10).FullText.FieldName
+      Dim field As String
+      For Each field In _fieldMap.RightListBoxItems
+        If field.ToLower = ftfname.ToLower Then
+          Return True
+        End If
+      Next
+      Return False
+    End Function
 
-		Private Sub _fileRefreshMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _fileRefreshMenuItem.Click
-			Dim caseFields As String() = _application.GetCaseFields(LoadFile.CaseInfo.ArtifactID, True)
-			If caseFields Is Nothing Then Exit Sub
-			Me.MarkIdentifierField(caseFields)
-			Dim fieldName As String
-			For Each fieldName In caseFields
-				If Not _fieldMap.RightListBoxItems.Contains(fieldName) AndAlso Not _fieldMap.LeftListBoxItems.Contains(fieldName) Then
-					_fieldMap.LeftListBoxItems.Add(fieldName)
-				End If
-			Next
-			Dim itemsToRemove As New System.Collections.ArrayList
-			For Each fieldName In _fieldMap.LeftListBoxItems
-				If Array.IndexOf(caseFields, (fieldName)) = -1 Then
-					itemsToRemove.Add(fieldName)
-				End If
-			Next
-			For Each fieldName In itemsToRemove
-				_fieldMap.LeftListBoxItems.Remove(fieldName)
-			Next
+    Private Sub _fileRefreshMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _fileRefreshMenuItem.Click
+      'TODO: WINFLEX - ArtifactTypeID
+      Dim caseFields As String() = _application.GetCaseFields(LoadFile.CaseInfo.ArtifactID, 10, True)
+      If caseFields Is Nothing Then Exit Sub
+      Me.MarkIdentifierField(caseFields)
+      Dim fieldName As String
+      For Each fieldName In caseFields
+        If Not _fieldMap.RightListBoxItems.Contains(fieldName) AndAlso Not _fieldMap.LeftListBoxItems.Contains(fieldName) Then
+          _fieldMap.LeftListBoxItems.Add(fieldName)
+        End If
+      Next
+      Dim itemsToRemove As New System.Collections.ArrayList
+      For Each fieldName In _fieldMap.LeftListBoxItems
+        If Array.IndexOf(caseFields, (fieldName)) = -1 Then
+          itemsToRemove.Add(fieldName)
+        End If
+      Next
+      For Each fieldName In itemsToRemove
+        _fieldMap.LeftListBoxItems.Remove(fieldName)
+      Next
 
-			itemsToRemove = New Collections.ArrayList
-			For Each fieldName In _fieldMap.RightListBoxItems
-				If Array.IndexOf(caseFields, (fieldName)) = -1 Then
-					itemsToRemove.Add(fieldName)
-				End If
-			Next
-			For Each fieldName In itemsToRemove
-				_fieldMap.RightListBoxItems.Remove(fieldName)
-			Next
-			_application.RefreshSelectedCaseInfo()
-			Me.LoadFile.CaseInfo = _application.SelectedCaseInfo
-		End Sub
+      itemsToRemove = New Collections.ArrayList
+      For Each fieldName In _fieldMap.RightListBoxItems
+        If Array.IndexOf(caseFields, (fieldName)) = -1 Then
+          itemsToRemove.Add(fieldName)
+        End If
+      Next
+      For Each fieldName In itemsToRemove
+        _fieldMap.RightListBoxItems.Remove(fieldName)
+      Next
+      _application.RefreshSelectedCaseInfo()
+      Me.LoadFile.CaseInfo = _application.SelectedCaseInfo
+    End Sub
 
-		Private Function EnsureConnection() As Boolean
-			If Not _loadFile Is Nothing AndAlso Not _loadFile.CaseInfo Is Nothing Then
-				Dim casefields As String() = Nothing
-				Dim continue As Boolean = True
-				Try
-					casefields = _application.GetCaseFields(_loadFile.CaseInfo.ArtifactID, True)
-					Return Not casefields Is Nothing
-				Catch ex As System.Exception
-					If ex.Message.IndexOf("Need To Re Login") <> -1 Then
-						Return False
-					Else
-						Throw
-					End If
-				End Try
-			Else
-				Return True
-			End If
-		End Function
+    Private Function EnsureConnection() As Boolean
+      If Not _loadFile Is Nothing AndAlso Not _loadFile.CaseInfo Is Nothing Then
+        Dim casefields As String() = Nothing
+        Dim continue As Boolean = True
+        Try
+          'TODO: WINFLEX - ArtifactTypeID
+          casefields = _application.GetCaseFields(_loadFile.CaseInfo.ArtifactID, 10, True)
+          Return Not casefields Is Nothing
+        Catch ex As System.Exception
+          If ex.Message.IndexOf("Need To Re Login") <> -1 Then
+            Return False
+          Else
+            Throw
+          End If
+        End Try
+      Else
+        Return True
+      End If
+    End Function
 
-		Private Sub _advancedButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _advancedButton.Click
-			_advancedFileForm = New AdvancedFileLocation
-			_advancedFileForm._copyFilesToRepository.Checked = Me.LoadFile.CopyFilesToDocumentRepository
-			If Not Me.LoadFile.SelectedCasePath Is Nothing AndAlso Not Me.LoadFile.SelectedCasePath = "" Then
-				_advancedFileForm.SelectPath(Me.LoadFile.SelectedCasePath)
-				_advancedFileForm.SelectDefaultPath = False
-			End If
-			_advancedFileForm.ShowDialog()
-		End Sub
+    Private Sub _advancedButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _advancedButton.Click
+      _advancedFileForm = New AdvancedFileLocation
+      _advancedFileForm._copyFilesToRepository.Checked = Me.LoadFile.CopyFilesToDocumentRepository
+      If Not Me.LoadFile.SelectedCasePath Is Nothing AndAlso Not Me.LoadFile.SelectedCasePath = "" Then
+        _advancedFileForm.SelectPath(Me.LoadFile.SelectedCasePath)
+        _advancedFileForm.SelectDefaultPath = False
+      End If
+      _advancedFileForm.ShowDialog()
+    End Sub
 
-		Private Sub _advancedFileForm_FileLocationOK(ByVal copyFiles As Boolean, ByVal selectedRepository As String) Handles _advancedFileForm.FileLocationOK
-			Me.LoadFile.CopyFilesToDocumentRepository = copyFiles
-			Me.LoadFile.SelectedCasePath = selectedRepository
-		End Sub
+    Private Sub _advancedFileForm_FileLocationOK(ByVal copyFiles As Boolean, ByVal selectedRepository As String) Handles _advancedFileForm.FileLocationOK
+      Me.LoadFile.CopyFilesToDocumentRepository = copyFiles
+      Me.LoadFile.SelectedCasePath = selectedRepository
+    End Sub
 
-		Private Sub _extractedTextValueContainsFileLocation_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _extractedTextValueContainsFileLocation.CheckedChanged
-			_fullTextFileEncodingPicker.Enabled = _extractedTextValueContainsFileLocation.Checked
-		End Sub
+    Private Sub _extractedTextValueContainsFileLocation_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _extractedTextValueContainsFileLocation.CheckedChanged
+      _fullTextFileEncodingPicker.Enabled = _extractedTextValueContainsFileLocation.Checked
+    End Sub
 
-		Private Sub _fullTextFileEncodingPicker_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _fullTextFileEncodingPicker.Load
+    Private Sub _fullTextFileEncodingPicker_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _fullTextFileEncodingPicker.Load
 
-		End Sub
-	End Class
+    End Sub
+  End Class
 End Namespace
