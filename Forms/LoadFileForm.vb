@@ -494,6 +494,7 @@ Namespace kCura.EDDS.WinForm
       '
       Me._fullTextFileEncodingPicker.Location = New System.Drawing.Point(12, 92)
       Me._fullTextFileEncodingPicker.Name = "_fullTextFileEncodingPicker"
+      Me._fullTextFileEncodingPicker.SelectedEncoding = CType(resources.GetObject("_fullTextFileEncodingPicker.SelectedEncoding"), System.Text.Encoding)
       Me._fullTextFileEncodingPicker.Size = New System.Drawing.Size(200, 21)
       Me._fullTextFileEncodingPicker.TabIndex = 31
       '
@@ -649,7 +650,7 @@ Namespace kCura.EDDS.WinForm
       '_fileColumns
       '
       Me._fileColumns.KeepButtonsCentered = True
-      Me._fileColumns.LeftOrderControlsVisible = False
+      Me._fileColumns.LeftOrderControlsVisible = True
       Me._fileColumns.Location = New System.Drawing.Point(372, 148)
       Me._fileColumns.Name = "_fileColumns"
       Me._fileColumns.RightOrderControlVisible = False
@@ -662,7 +663,7 @@ Namespace kCura.EDDS.WinForm
       Me._fieldMap.LeftOrderControlsVisible = False
       Me._fieldMap.Location = New System.Drawing.Point(4, 148)
       Me._fieldMap.Name = "_fieldMap"
-      Me._fieldMap.RightOrderControlVisible = False
+      Me._fieldMap.RightOrderControlVisible = True
       Me._fieldMap.Size = New System.Drawing.Size(364, 276)
       Me._fieldMap.TabIndex = 1
       '

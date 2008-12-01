@@ -465,9 +465,10 @@ Namespace kCura.EDDS.WinForm
     Private Sub PopulateObjectTypeDropDown()
       Dim objectTypeManager As New kCura.WinEDDS.Service.ObjectTypeManager(_application.Credential, _application.CookieContainer)
       Dim uploadableObjectTypes As System.Data.DataRowCollection = objectTypeManager.RetrieveAllUploadable(_application.SelectedCaseInfo.ArtifactID).Tables(0).Rows
+      _objectTypeDropDown.Items.Clear()
       For Each objectType As System.Data.DataRow In uploadableObjectTypes
         Dim currentObjectType As New kCura.WinEDDS.ObjectTypeListItem(CType(objectType("DescriptorArtifactTypeID"), Int32), CType(objectType("Name"), String))
-        Me._objectTypeDropDown.Items.Add(currentObjectType)
+        _objectTypeDropDown.Items.Add(currentObjectType)
         'TODO: WINFLEX - Should reference an enum or constant instead of literal 10
         If CType(objectType("DescriptorArtifactTypeID"), Int32) = 10 Then
           Me._objectTypeDropDown.SelectedItem = currentObjectType
@@ -482,10 +483,12 @@ Namespace kCura.EDDS.WinForm
         _caseFolderExplorer.Visible = True
         ToolsImportImageFileMenu.Visible = True
         ToolsImportProductionFileMenu.Visible = True
+        ExportMenu.Visible = True
       Else
         _caseFolderExplorer.Visible = False
         ToolsImportImageFileMenu.Visible = False
         ToolsImportProductionFileMenu.Visible = False
+        ExportMenu.Visible = False
       End If
       _application.CurrentObjectTypeID = selectedItemValue
     End Sub
