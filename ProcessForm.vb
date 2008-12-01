@@ -584,17 +584,21 @@ Namespace kCura.Windows.Process
 			'End Try
 		End Sub
 
-		Private Sub _processObserver_OnProcessFatalException(ByVal ex As System.Exception) Handles _processObserver.OnProcessFatalException
-			_outputTextBox.WriteLine(ex.ToString)
-			_errorsOutputTextBox.WriteLine(ex.ToString)
-			_currentRecordLabel.Text = "Fatal Exception Encountered"
-			_hasReceivedFatalError = True
-			'_stopImportButton.Text = "Stop"
-			_stopImportButton.Text = "Close"
-			_saveOutputButton.Enabled = Config.LogAllEvents
-			_summaryOutput.ForeColor = System.Drawing.Color.Red
-			Me.ShowDetail()
-		End Sub
+    Private Sub _processObserver_OnProcessFatalException(ByVal ex As System.Exception) Handles _processObserver.OnProcessFatalException
+      Dim errorString As String = ex.ToString
+      If errorString.ToLower.IndexOf("soapexception") <> -1 Then
+        errorString = System.Web.HttpUtility.HtmlDecode(errorString)
+      End If
+      _outputTextBox.WriteLine(errorString)
+      _errorsOutputTextBox.WriteLine(errorString)
+      _currentRecordLabel.Text = "Fatal Exception Encountered"
+      _hasReceivedFatalError = True
+      '_stopImportButton.Text = "Stop"
+      _stopImportButton.Text = "Close"
+      _saveOutputButton.Enabled = Config.LogAllEvents
+      _summaryOutput.ForeColor = System.Drawing.Color.Red
+      Me.ShowDetail()
+    End Sub
 
 #End Region
 
