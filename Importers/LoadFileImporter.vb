@@ -56,11 +56,10 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
-		Public ReadOnly Property AllDocumentFields() As kCura.EDDS.WebAPI.DocumentManagerBase.Field()
-			Get
+    Public ReadOnly Property AllFields(ByVal artifactTypeID As Int32) As kCura.EDDS.WebAPI.DocumentManagerBase.Field()
+      Get
         If _allFields Is Nothing Then
-          'TODO: WINFLEX ArtifactTypeID
-          _allFields = _fieldQuery.RetrieveAllAsArray(_caseArtifactID, 10, True)
+          _allFields = _fieldQuery.RetrieveAllAsArray(_caseArtifactID, artifactTypeID, True)
         End If
         Dim field As kCura.EDDS.WebAPI.DocumentManagerBase.Field
         For Each field In _allFields
@@ -68,54 +67,54 @@ Namespace kCura.WinEDDS
           field.FieldCategory = CType(field.FieldCategoryID, kCura.EDDS.WebAPI.DocumentManagerBase.FieldCategory)
         Next
         Return _allFields
-			End Get
-		End Property
+      End Get
+    End Property
 
-		Public ReadOnly Property DocumentFieldsForCreate() As kCura.EDDS.WebAPI.DocumentManagerBase.Field()
-			Get
-				If _fieldsForCreate Is Nothing Then
-					Dim fieldsForCreate As New System.Collections.ArrayList
-					For Each field As kCura.EDDS.WebAPI.DocumentManagerBase.Field In Me.AllDocumentFields
-						If System.Array.IndexOf(_fieldArtifactIds, field.ArtifactID) <> -1 OrElse _
-						field.FieldCategory = EDDS.WebAPI.DocumentManagerBase.FieldCategory.Relational Then
-							fieldsForCreate.Add(field)
-						End If
-					Next
-					_fieldsForCreate = DirectCast(fieldsForCreate.ToArray(GetType(kCura.EDDS.WebAPI.DocumentManagerBase.Field)), kCura.EDDS.WebAPI.DocumentManagerBase.Field())
-				End If
-				Return _fieldsForCreate
-			End Get
-		End Property
+    Public ReadOnly Property DocumentFieldsForCreate() As kCura.EDDS.WebAPI.DocumentManagerBase.Field()
+      Get
+        If _fieldsForCreate Is Nothing Then
+          Dim fieldsForCreate As New System.Collections.ArrayList
+          For Each field As kCura.EDDS.WebAPI.DocumentManagerBase.Field In Me.AllFields(10)
+            If System.Array.IndexOf(_fieldArtifactIds, field.ArtifactID) <> -1 OrElse _
+            field.FieldCategory = EDDS.WebAPI.DocumentManagerBase.FieldCategory.Relational Then
+              fieldsForCreate.Add(field)
+            End If
+          Next
+          _fieldsForCreate = DirectCast(fieldsForCreate.ToArray(GetType(kCura.EDDS.WebAPI.DocumentManagerBase.Field)), kCura.EDDS.WebAPI.DocumentManagerBase.Field())
+        End If
+        Return _fieldsForCreate
+      End Get
+    End Property
 
-		Public ReadOnly Property FileInfoField() As kCura.EDDS.WebAPI.DocumentManagerBase.Field
-			Get
-				For Each field As kCura.EDDS.WebAPI.DocumentManagerBase.Field In Me.AllDocumentFields
-					If field.FieldCategoryID = kCura.DynamicFields.Types.FieldCategory.FileInfo Then Return field
-				Next
-			End Get
-		End Property
+    Public ReadOnly Property FileInfoField() As kCura.EDDS.WebAPI.DocumentManagerBase.Field
+      Get
+        For Each field As kCura.EDDS.WebAPI.DocumentManagerBase.Field In Me.AllFields(10)
+          If field.FieldCategoryID = kCura.DynamicFields.Types.FieldCategory.FileInfo Then Return field
+        Next
+      End Get
+    End Property
 
-		Public ReadOnly Property FullTextField() As kCura.EDDS.WebAPI.DocumentManagerBase.Field
-			Get
-				For Each field As kCura.EDDS.WebAPI.DocumentManagerBase.Field In Me.AllDocumentFields
-					If field.FieldCategory = EDDS.WebAPI.DocumentManagerBase.FieldCategory.FullText Then
-						Return field
-					End If
-				Next
-			End Get
-		End Property
+    Public ReadOnly Property FullTextField() As kCura.EDDS.WebAPI.DocumentManagerBase.Field
+      Get
+        For Each field As kCura.EDDS.WebAPI.DocumentManagerBase.Field In Me.AllFields(10)
+          If field.FieldCategory = EDDS.WebAPI.DocumentManagerBase.FieldCategory.FullText Then
+            Return field
+          End If
+        Next
+      End Get
+    End Property
 
-		Public ReadOnly Property ErrorLogFileName() As String
-			Get
-				Return _errorLogFileName
-			End Get
-		End Property
+    Public ReadOnly Property ErrorLogFileName() As String
+      Get
+        Return _errorLogFileName
+      End Get
+    End Property
 
-		Public ReadOnly Property HasErrors() As Boolean
-			Get
-				Return _errorLogFileName <> ""
-			End Get
-		End Property
+    Public ReadOnly Property HasErrors() As Boolean
+      Get
+        Return _errorLogFileName <> ""
+      End Get
+    End Property
 #End Region
 
 #Region "Constructors"
@@ -177,192 +176,192 @@ Namespace kCura.WinEDDS
 			ReadFile(_path)
 		End Sub
 
-		Public Overloads Overrides Function ReadFile(ByVal path As String) As Object
-			Dim line As String()
-			Try
-				RaiseEvent StartFileImport()
-				Dim markStart As DateTime = DateTime.Now
-				InitializeMembers(path)
-				StartMassProcessor()
-				While _continue AndAlso Not HasReachedEOF
-					Try
-						line = Me.GetLine
-						If line.Length <> _columnHeaders.Length Then
-							Throw New ColumnCountMismatchException(Me.CurrentLineNumber, _columnHeaders.Length, line.Length)
-						End If
-						_processedDocumentIdentifiers.Add(ManageDocument(line), CurrentLineNumber.ToString)
-					Catch ex As LoadFileBase.CodeCreationException
-						_continue = False
-						WriteFatalError(Me.CurrentLineNumber, ex, line)
-					Catch ex As kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
-						WriteError(ex.Message, line)
-					Catch ex As System.Exception
-						WriteFatalError(Me.CurrentLineNumber, ex, line)
-					End Try
-				End While
-				StopMassProcessor()
-				While _workerRunning
-					System.Threading.Thread.CurrentThread.Join(1000)
-				End While
-				RaiseEvent EndFileImport()
-				WriteEndImport("Finish")
-				Me.Close()
-				Try
-					_errorLogWriter.Close()
-				Catch ex As System.Exception
-				End Try
-				_timeKeeper.Add("Total", DateTime.Now.Subtract(markStart).TotalMilliseconds)
-				'Dim filenameFolder As String = "C:\UploadFileMetrics\"
-				'Dim now As System.DateTime = System.DateTime.Now
-				'Dim filename As String = String.Format("{0}{1}{2}_{3}{4}{5}.csv", now.Year, now.Month.ToString.PadLeft(2, "0"c), now.Day.ToString.PadLeft(2, "0"c), now.Hour.ToString.PadLeft(2, "0"c), now.Minute.ToString.PadLeft(2, "0"c), now.Second.ToString.PadLeft(2, "0"c))
-				'Dim sw As New System.IO.StreamWriter(filenameFolder & filename)
-				'sw.Write(_timeKeeper.ToCollectionString())
-				'sw.Flush()
-				'sw.Close()
-				Return True
-			Catch ex As System.Exception
-				WriteFatalError(Me.CurrentLineNumber, ex, line)
-			End Try
-		End Function
+    Public Overloads Overrides Function ReadFile(ByVal path As String) As Object
+      Dim line As String()
+      Try
+        RaiseEvent StartFileImport()
+        Dim markStart As DateTime = DateTime.Now
+        InitializeMembers(path)
+        StartMassProcessor()
+        While _continue AndAlso Not HasReachedEOF
+          Try
+            line = Me.GetLine
+            If line.Length <> _columnHeaders.Length Then
+              Throw New ColumnCountMismatchException(Me.CurrentLineNumber, _columnHeaders.Length, line.Length)
+            End If
+            _processedDocumentIdentifiers.Add(ManageDocument(line), CurrentLineNumber.ToString)
+          Catch ex As LoadFileBase.CodeCreationException
+            _continue = False
+            WriteFatalError(Me.CurrentLineNumber, ex, line)
+          Catch ex As kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
+            WriteError(ex.Message, line)
+          Catch ex As System.Exception
+            WriteFatalError(Me.CurrentLineNumber, ex, line)
+          End Try
+        End While
+        StopMassProcessor()
+        While _workerRunning
+          System.Threading.Thread.CurrentThread.Join(1000)
+        End While
+        RaiseEvent EndFileImport()
+        WriteEndImport("Finish")
+        Me.Close()
+        Try
+          _errorLogWriter.Close()
+        Catch ex As System.Exception
+        End Try
+        _timeKeeper.Add("Total", DateTime.Now.Subtract(markStart).TotalMilliseconds)
+        'Dim filenameFolder As String = "C:\UploadFileMetrics\"
+        'Dim now As System.DateTime = System.DateTime.Now
+        'Dim filename As String = String.Format("{0}{1}{2}_{3}{4}{5}.csv", now.Year, now.Month.ToString.PadLeft(2, "0"c), now.Day.ToString.PadLeft(2, "0"c), now.Hour.ToString.PadLeft(2, "0"c), now.Minute.ToString.PadLeft(2, "0"c), now.Second.ToString.PadLeft(2, "0"c))
+        'Dim sw As New System.IO.StreamWriter(filenameFolder & filename)
+        'sw.Write(_timeKeeper.ToCollectionString())
+        'sw.Flush()
+        'sw.Close()
+        Return True
+      Catch ex As System.Exception
+        WriteFatalError(Me.CurrentLineNumber, ex, line)
+      End Try
+    End Function
 
-		Private Sub LogErrorLine(ByVal values As String())
-			If values Is Nothing Then Exit Sub
-			If _errorLogFileName = "" Then
-				_errorLogFileName = System.IO.Path.GetTempFileName()
-				_errorLogWriter = New System.IO.StreamWriter(_errorLogFileName, False, _sourceFileEncoding)
-				_errorLogWriter.WriteLine(Me.ToDelimetedLine(_columnHeaders))
-			End If
-			_errorLogWriter.WriteLine(Me.ToDelimetedLine(values))
-		End Sub
+    Private Sub LogErrorLine(ByVal values As String())
+      If values Is Nothing Then Exit Sub
+      If _errorLogFileName = "" Then
+        _errorLogFileName = System.IO.Path.GetTempFileName()
+        _errorLogWriter = New System.IO.StreamWriter(_errorLogFileName, False, _sourceFileEncoding)
+        _errorLogWriter.WriteLine(Me.ToDelimetedLine(_columnHeaders))
+      End If
+      _errorLogWriter.WriteLine(Me.ToDelimetedLine(values))
+    End Sub
 
-		Private Function ToDelimetedLine(ByVal values As String()) As String
-			Dim sb As New System.Text.StringBuilder
-			Dim value As String
-			For Each value In values
-				sb.Append(Me.Bound & value & Me.Bound & Me.Delimiter)
-			Next
-			sb.Remove(sb.Length - 1, 1)
-			Return sb.ToString
-		End Function
+    Private Function ToDelimetedLine(ByVal values As String()) As String
+      Dim sb As New System.Text.StringBuilder
+      Dim value As String
+      For Each value In values
+        sb.Append(Me.Bound & value & Me.Bound & Me.Delimiter)
+      Next
+      sb.Remove(sb.Length - 1, 1)
+      Return sb.ToString
+    End Function
 
-		Private Sub InitializeMembers(ByVal path As String)
-			Me.InitializeLineCounter(path)
-			Me.InitializeFolderManagement()
-			Me.InitializeFieldIdList()
-			RaiseEvent StatusMessage(New kCura.Windows.Process.StatusEventArgs(Windows.Process.EventType.ResetStartTime, 0, _recordCount, "Reset time for import rolling average"))
-		End Sub
+    Private Sub InitializeMembers(ByVal path As String)
+      Me.InitializeLineCounter(path)
+      Me.InitializeFolderManagement()
+      Me.InitializeFieldIdList()
+      RaiseEvent StatusMessage(New kCura.Windows.Process.StatusEventArgs(Windows.Process.EventType.ResetStartTime, 0, _recordCount, "Reset time for import rolling average"))
+    End Sub
 
-		Private Sub InitializeLineCounter(ByVal path As String)
-			_lineCounter = New kCura.Utility.File.LineCounter
-			_lineCounter.Path = path
-			_lineCounter.CountLines(_sourceFileEncoding, New kCura.Utility.File.LineCounter.LineCounterArgs(Me.Bound, Me.Delimiter))
-		End Sub
+    Private Sub InitializeLineCounter(ByVal path As String)
+      _lineCounter = New kCura.Utility.File.LineCounter
+      _lineCounter.Path = path
+      _lineCounter.CountLines(_sourceFileEncoding, New kCura.Utility.File.LineCounter.LineCounterArgs(Me.Bound, Me.Delimiter))
+    End Sub
 
-		Private Sub InitializeFolderManagement()
-			If _createFolderStructure Then
-				_folderCache = New FolderCache(_folderManager, _folderID, _caseArtifactID)
-				Dim openParenIndex As Int32 = _destinationFolder.LastIndexOf("("c) + 1
-				Dim closeParenIndex As Int32 = _destinationFolder.LastIndexOf(")"c)
-				_destinationFolderColumnIndex = Int32.Parse(_destinationFolder.Substring(openParenIndex, closeParenIndex - openParenIndex)) - 1
-			End If
-		End Sub
+    Private Sub InitializeFolderManagement()
+      If _createFolderStructure Then
+        _folderCache = New FolderCache(_folderManager, _folderID, _caseArtifactID)
+        Dim openParenIndex As Int32 = _destinationFolder.LastIndexOf("("c) + 1
+        Dim closeParenIndex As Int32 = _destinationFolder.LastIndexOf(")"c)
+        _destinationFolderColumnIndex = Int32.Parse(_destinationFolder.Substring(openParenIndex, closeParenIndex - openParenIndex)) - 1
+      End If
+    End Sub
 
-		Private Sub InitializeFieldIdList()
-			Dim fieldIdList As New System.Collections.ArrayList
-			For Each item As LoadFileFieldMap.LoadFileFieldMapItem In _fieldMap
-				'If item.DocumentField.FieldCategoryID <> kCura.DynamicFields.Types.FieldCategory.FullText Then fieldIdList.Add(item.DocumentField.FieldID)
-				fieldIdList.Add(item.DocumentField.FieldID)
-			Next
-			fieldIdList.Add(Me.FileInfoField.ArtifactID)
-			_fieldArtifactIds = DirectCast(fieldIdList.ToArray(GetType(Int32)), Int32())
-		End Sub
+    Private Sub InitializeFieldIdList()
+      Dim fieldIdList As New System.Collections.ArrayList
+      For Each item As LoadFileFieldMap.LoadFileFieldMapItem In _fieldMap
+        'If item.DocumentField.FieldCategoryID <> kCura.DynamicFields.Types.FieldCategory.FullText Then fieldIdList.Add(item.DocumentField.FieldID)
+        fieldIdList.Add(item.DocumentField.FieldID)
+      Next
+      fieldIdList.Add(Me.FileInfoField().ArtifactID)
+      _fieldArtifactIds = DirectCast(fieldIdList.ToArray(GetType(Int32)), Int32())
+    End Sub
 
-		Private Function ManageDocument(ByVal values As String()) As String
-			If _docsToProcess.IsFull Then
-				While Not _docsToProcess.CanAdd
-					If _continue Then
-						System.Threading.Thread.CurrentThread.Join(1000)
-					Else
-						Exit Function
-					End If
-				End While
-			End If
-			Dim markStart As DateTime = DateTime.Now
-			Dim filename As String
-			Dim fileGuid As String = String.Empty
-			Dim uploadFile As Boolean = (_filePathColumnIndex <> -1) AndAlso _uploadFiles
-			Dim fileExists As Boolean
-			Dim fieldCollection As New DocumentFieldCollection
-			Dim identityValue As String = String.Empty
-			Dim documentArtifactID As Int32
-			Dim markUploadStart As DateTime = DateTime.Now
-			Dim parentFolderID As Int32
-			Dim md5hash As String = ""
-			Dim fullFilePath As String = ""
-			Dim isSupportedFileType As Boolean
-			Dim oixFileIdData As OI.FileID.FileIDData
-			If uploadFile Then
-				filename = values(_filePathColumnIndex)
-				If filename.Length > 1 AndAlso filename.Chars(0) = "\" AndAlso filename.Chars(1) <> "\" Then
-					filename = "." & filename
-				End If
+    Private Function ManageDocument(ByVal values As String()) As String
+      If _docsToProcess.IsFull Then
+        While Not _docsToProcess.CanAdd
+          If _continue Then
+            System.Threading.Thread.CurrentThread.Join(1000)
+          Else
+            Exit Function
+          End If
+        End While
+      End If
+      Dim markStart As DateTime = DateTime.Now
+      Dim filename As String
+      Dim fileGuid As String = String.Empty
+      Dim uploadFile As Boolean = (_filePathColumnIndex <> -1) AndAlso _uploadFiles
+      Dim fileExists As Boolean
+      Dim fieldCollection As New DocumentFieldCollection
+      Dim identityValue As String = String.Empty
+      Dim documentArtifactID As Int32
+      Dim markUploadStart As DateTime = DateTime.Now
+      Dim parentFolderID As Int32
+      Dim md5hash As String = ""
+      Dim fullFilePath As String = ""
+      Dim isSupportedFileType As Boolean
+      Dim oixFileIdData As OI.FileID.FileIDData
+      If uploadFile Then
+        filename = values(_filePathColumnIndex)
+        If filename.Length > 1 AndAlso filename.Chars(0) = "\" AndAlso filename.Chars(1) <> "\" Then
+          filename = "." & filename
+        End If
 
-				fileExists = System.IO.File.Exists(filename)
-				If filename <> String.Empty AndAlso Not fileExists Then Throw New InvalidFilenameException(filename)
-				If fileExists Then
-					Dim now As DateTime = DateTime.Now
-					If New IO.FileInfo(filename).Length = 0 Then Throw New EmptyNativeFileException(filename)
-					oixFileIdData = kCura.OI.FileID.Manager.Instance.GetFileIDDataByFilePath(filename)
-					If _copyFileToRepository Then
-						fileGuid = _uploader.UploadFile(filename, _caseArtifactID)
-					Else
-						fileGuid = System.Guid.NewGuid.ToString
-					End If
-					If fileGuid = "" Then Throw New FileUploadFailedException
-					If _extractMd5Hash Then
-						md5hash = kCura.Utility.File.GenerateMD5HashForFile(filename)
-					End If
-					fullFilePath = filename
-					filename = filename.Substring(filename.LastIndexOf("\") + 1)
-					WriteStatusLine(Windows.Process.EventType.Status, String.Format("End upload file. ({0}ms)", DateTime.op_Subtraction(DateTime.Now, now).Milliseconds))
-				End If
-			End If
-			If _createFolderStructure Then
-				parentFolderID = _folderCache.FolderID(Me.CleanDestinationFolderPath(values(_destinationFolderColumnIndex)))
-			Else
-				parentFolderID = _folderID
-			End If
-			_timeKeeper.Add("UploadFile", DateTime.Now.Subtract(markUploadStart).TotalMilliseconds)
-			Dim markPrepareFields As DateTime = DateTime.Now
-			identityValue = PrepareFieldCollectionAndExtractIdentityValue(fieldCollection, values)
-			_timeKeeper.Add("PrepareFields", DateTime.Now.Subtract(markPrepareFields).TotalMilliseconds)
-			If identityValue = String.Empty Then
-				Throw New IdentityValueNotSetException
-			ElseIf Not _processedDocumentIdentifiers(identityValue) Is Nothing Then
-				Throw New IdentifierOverlapException(identityValue, _processedDocumentIdentifiers(identityValue))
-			End If
-			Dim metadoc As New MetaDocument(fileGuid, identityValue, fieldCollection, fileExists AndAlso uploadFile AndAlso (fileGuid <> String.Empty OrElse Not _copyFileToRepository), filename, fullFilePath, uploadFile, CurrentLineNumber, parentFolderID, md5hash, values, oixFileIdData, 0)
-			_docsToProcess.Push(metadoc)
-			Return identityValue
-		End Function
+        fileExists = System.IO.File.Exists(filename)
+        If filename <> String.Empty AndAlso Not fileExists Then Throw New InvalidFilenameException(filename)
+        If fileExists Then
+          Dim now As DateTime = DateTime.Now
+          If New IO.FileInfo(filename).Length = 0 Then Throw New EmptyNativeFileException(filename)
+          oixFileIdData = kCura.OI.FileID.Manager.Instance.GetFileIDDataByFilePath(filename)
+          If _copyFileToRepository Then
+            fileGuid = _uploader.UploadFile(filename, _caseArtifactID)
+          Else
+            fileGuid = System.Guid.NewGuid.ToString
+          End If
+          If fileGuid = "" Then Throw New FileUploadFailedException
+          If _extractMd5Hash Then
+            md5hash = kCura.Utility.File.GenerateMD5HashForFile(filename)
+          End If
+          fullFilePath = filename
+          filename = filename.Substring(filename.LastIndexOf("\") + 1)
+          WriteStatusLine(Windows.Process.EventType.Status, String.Format("End upload file. ({0}ms)", DateTime.op_Subtraction(DateTime.Now, now).Milliseconds))
+        End If
+      End If
+      If _createFolderStructure Then
+        parentFolderID = _folderCache.FolderID(Me.CleanDestinationFolderPath(values(_destinationFolderColumnIndex)))
+      Else
+        parentFolderID = _folderID
+      End If
+      _timeKeeper.Add("UploadFile", DateTime.Now.Subtract(markUploadStart).TotalMilliseconds)
+      Dim markPrepareFields As DateTime = DateTime.Now
+      identityValue = PrepareFieldCollectionAndExtractIdentityValue(fieldCollection, values)
+      _timeKeeper.Add("PrepareFields", DateTime.Now.Subtract(markPrepareFields).TotalMilliseconds)
+      If identityValue = String.Empty Then
+        Throw New IdentityValueNotSetException
+      ElseIf Not _processedDocumentIdentifiers(identityValue) Is Nothing Then
+        Throw New IdentifierOverlapException(identityValue, _processedDocumentIdentifiers(identityValue))
+      End If
+      Dim metadoc As New MetaDocument(fileGuid, identityValue, fieldCollection, fileExists AndAlso uploadFile AndAlso (fileGuid <> String.Empty OrElse Not _copyFileToRepository), filename, fullFilePath, uploadFile, CurrentLineNumber, parentFolderID, md5hash, values, oixFileIdData, 0)
+      _docsToProcess.Push(metadoc)
+      Return identityValue
+    End Function
 
-		Private Function CleanDestinationFolderPath(ByVal path As String) As String
-			While path.IndexOf(".\") <> -1
-				path = path.Replace(".\", "\")
-			End While
-			While path.IndexOf("\\") <> -1
-				path = path.Replace("\\", "\")
-			End While
-			path = path.Replace(":", "_")
-			If Not path.Length = 0 Then
-				If path.Chars(0) <> "\"c Then
-					path = "\" & path
-				End If
-			End If
-			path = path.TrimEnd(New Char() {"\"c})
-			If path = "" Then path = "\"
-			Return path
-		End Function
+    Private Function CleanDestinationFolderPath(ByVal path As String) As String
+      While path.IndexOf(".\") <> -1
+        path = path.Replace(".\", "\")
+      End While
+      While path.IndexOf("\\") <> -1
+        path = path.Replace("\\", "\")
+      End While
+      path = path.Replace(":", "_")
+      If Not path.Length = 0 Then
+        If path.Chars(0) <> "\"c Then
+          path = "\" & path
+        End If
+      End If
+      path = path.TrimEnd(New Char() {"\"c})
+      If path = "" Then path = "\"
+      Return path
+    End Function
 
 #End Region
 

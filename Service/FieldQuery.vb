@@ -67,7 +67,6 @@ Namespace kCura.WinEDDS.Service
 
     Public Function RetrieveAllAsDocumentFieldCollection(ByVal caseContextArtifactID As Int32) As DocumentFieldCollection
       Dim retval As New DocumentFieldCollection
-      'TODO: WINFLEX - ArtifactTypeID
       For Each fieldDTO As kCura.EDDS.WebAPI.DocumentManagerBase.Field In Me.RetrieveAllAsArray(caseContextArtifactID, 10)
         With fieldDTO
           retval.Add(New DocumentField(.DisplayName, .ArtifactID, .FieldTypeID, .FieldCategoryID, .CodeTypeID, .MaxLength, .UseUnicodeEncoding))

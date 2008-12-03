@@ -71,11 +71,10 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
-    Public ReadOnly Property AllDocumentFields() As kCura.EDDS.WebAPI.DocumentManagerBase.Field()
+    Public ReadOnly Property AllFields(ByVal artifactTypeID As Int32) As kCura.EDDS.WebAPI.DocumentManagerBase.Field()
       Get
         If _allFields Is Nothing Then
-          'TODO: WINFLEX - ArtifactType
-          _allFields = _fieldQuery.RetrieveAllAsArray(_caseArtifactID, 10, True)
+          _allFields = _fieldQuery.RetrieveAllAsArray(_caseArtifactID, artifactTypeID, True)
         End If
         Dim field As kCura.EDDS.WebAPI.DocumentManagerBase.Field
         For Each field In _allFields
@@ -90,7 +89,7 @@ Namespace kCura.WinEDDS
       Get
         If _fieldsForCreate Is Nothing Then
           Dim fieldsForCreate As New System.Collections.ArrayList
-          For Each field As kCura.EDDS.WebAPI.DocumentManagerBase.Field In Me.AllDocumentFields
+          For Each field As kCura.EDDS.WebAPI.DocumentManagerBase.Field In Me.AllFields(10)
             If System.Array.IndexOf(_fieldArtifactIds, field.ArtifactID) <> -1 OrElse _
             field.FieldCategory = EDDS.WebAPI.DocumentManagerBase.FieldCategory.Relational Then
               fieldsForCreate.Add(field)
@@ -102,17 +101,19 @@ Namespace kCura.WinEDDS
       End Get
     End Property
 
-    Public ReadOnly Property FileInfoField() As kCura.EDDS.WebAPI.DocumentManagerBase.Field
+    Public ReadOnly Property FileInfoField(ByVal artifactTypeID As Int32) As kCura.EDDS.WebAPI.DocumentManagerBase.Field
       Get
-        For Each field As kCura.EDDS.WebAPI.DocumentManagerBase.Field In Me.AllDocumentFields
-          If field.FieldCategoryID = kCura.DynamicFields.Types.FieldCategory.FileInfo Then Return field
+        Dim retVal As New kCura.EDDS.WebAPI.DocumentManagerBase.Field
+        For Each field As kCura.EDDS.WebAPI.DocumentManagerBase.Field In Me.AllFields(artifactTypeID)
+          If field.FieldCategoryID = kCura.DynamicFields.Types.FieldCategory.FileInfo Then retVal = field
         Next
+        Return retVal
       End Get
     End Property
 
     Public ReadOnly Property FullTextField() As kCura.EDDS.WebAPI.DocumentManagerBase.Field
       Get
-        For Each field As kCura.EDDS.WebAPI.DocumentManagerBase.Field In Me.AllDocumentFields
+        For Each field As kCura.EDDS.WebAPI.DocumentManagerBase.Field In Me.AllFields(10)
           If field.FieldCategory = EDDS.WebAPI.DocumentManagerBase.FieldCategory.FullText Then
             Return field
           End If
@@ -303,7 +304,7 @@ Namespace kCura.WinEDDS
 					fieldIdList.Add(item.DocumentField.FieldID)
 				End If
 			Next
-			fieldIdList.Add(Me.FileInfoField.ArtifactID)
+      fieldIdList.Add(Me.FileInfoField(_artifactTypeID).ArtifactID)
 			_fieldArtifactIds = DirectCast(fieldIdList.ToArray(GetType(Int32)), Int32())
 		End Sub
 
@@ -479,6 +480,7 @@ Namespace kCura.WinEDDS
           Case Else
             settings.Overlay = EDDS.WebAPI.BulkImportManagerBase.OverwriteType.Both
         End Select
+        settings.UploadFiles = _filePathColumnIndex <> -1 AndAlso _settings.LoadNativeFiles
         _runID = _bulkImportManager.BulkImportObjects(_caseInfo.ArtifactID, settings).ToString
       End If
 
@@ -643,6 +645,14 @@ Namespace kCura.WinEDDS
       Next
     End Function
 
+    Private Function GetObjectFileField() As kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo
+      For Each field As kCura.EDDS.WebAPI.DocumentManagerBase.Field In _allFields
+        If field.FieldTypeID = kCura.DynamicFields.Types.FieldTypeHelper.FieldType.File Then
+          Return Me.FieldDtoToFieldInfo(field)
+        End If
+      Next
+    End Function
+
     Private Function FieldDtoToFieldInfo(ByVal input As kCura.EDDS.WebAPI.DocumentManagerBase.Field) As kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo
       Dim retval As New kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo
       retval.ArtifactID = input.ArtifactID
@@ -680,25 +690,30 @@ Namespace kCura.WinEDDS
 				If Not item.DocumentField Is Nothing AndAlso item.DocumentField.FieldCategory = DynamicFields.Types.FieldCategory.Identifier Then
 					identityValue = values(item.NativeFileColumnIndex)
 				End If
-			Next
-			For Each item In _fieldmap
-				If _firstTimeThrough Then
-					If item.DocumentField Is Nothing Then
-						WriteStatusLine(Windows.Process.EventType.Warning, String.Format("File column '{0}' will be unmapped", item.NativeFileColumnIndex + 1), 0)
-					End If
-					If item.NativeFileColumnIndex = -1 Then
-						WriteStatusLine(Windows.Process.EventType.Warning, String.Format("Field '{0}' will be unmapped", item.DocumentField.FieldName), 0)
-					End If
-				End If
-				If Not item.DocumentField Is Nothing Then
-					docfield = New DocumentField(item.DocumentField)
+      Next
+      For Each item In _fieldmap
+        If _firstTimeThrough Then
+          If item.DocumentField Is Nothing Then
+            WriteStatusLine(Windows.Process.EventType.Warning, String.Format("File column '{0}' will be unmapped", item.NativeFileColumnIndex + 1), 0)
+          End If
+          If item.NativeFileColumnIndex = -1 Then
+            WriteStatusLine(Windows.Process.EventType.Warning, String.Format("Field '{0}' will be unmapped", item.DocumentField.FieldName), 0)
+          End If
+        End If
+        If Not item.DocumentField Is Nothing Then
+          docfield = New DocumentField(item.DocumentField)
           If item.DocumentField.FieldTypeID = kCura.DynamicFields.Types.FieldTypeHelper.FieldType.File AndAlso values(item.NativeFileColumnIndex) <> "" AndAlso item.NativeFileColumnIndex <> -1 Then
             Dim localFilePath As String = values(item.NativeFileColumnIndex)
             Dim fileSize As Long
             If System.IO.File.Exists(localFilePath) Then
               fileSize = New System.IO.FileInfo(localFilePath).Length
               Dim fileName As String = System.IO.Path.GetFileName(localFilePath).Replace(ChrW(11), "_")
-              Dim location As String = _uploader.DestinationFolderPath & _uploader.UploadFile(localFilePath, _caseArtifactID)
+              Dim location As String
+              If _uploader.DestinationFolderPath = "" Then
+                location = localFilePath
+              Else
+                location = _uploader.DestinationFolderPath & _uploader.UploadFile(localFilePath, _caseArtifactID)
+              End If
               location = System.Web.HttpUtility.UrlEncode(location)
               docfield.Value = String.Format("{1}{0}{2}{0}{3}", ChrW(11), fileName, fileSize, location)
               Dim blah As String = ""
@@ -714,13 +729,13 @@ Namespace kCura.WinEDDS
           fieldCollection.Add(docfield)
         End If
       Next
-			If Not fieldCollection.GroupIdentifier Is Nothing AndAlso fieldCollection.GroupIdentifier.Value = "" Then
-				fieldCollection.GroupIdentifier.Value = identityValue
-			End If
-			_firstTimeThrough = False
-			Return identityValue
-			System.Threading.Monitor.Exit(_outputNativeFileWriter)
-			System.Threading.Monitor.Exit(_outputCodeFileWriter)
+      If Not fieldCollection.GroupIdentifier Is Nothing AndAlso fieldCollection.GroupIdentifier.Value = "" Then
+        fieldCollection.GroupIdentifier.Value = identityValue
+      End If
+      _firstTimeThrough = False
+      Return identityValue
+      System.Threading.Monitor.Exit(_outputNativeFileWriter)
+      System.Threading.Monitor.Exit(_outputCodeFileWriter)
 		End Function
 
 #End Region
