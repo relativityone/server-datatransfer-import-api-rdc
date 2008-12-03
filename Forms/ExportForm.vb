@@ -579,66 +579,66 @@ Public Class ExportForm
 
 	Private Sub RunMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles RunMenu.Click
 		Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
-		If Not _application.IsConnected(_exportFile.CaseArtifactID) Then
-			Me.Cursor = System.Windows.Forms.Cursors.Default
-			Exit Sub
-		End If
-		_exportFile.FolderPath = _folderPath.Text
-		Select Case Me.ExportFile.TypeOfExport
-			Case ExportFile.ExportType.AncestorSearch
-				_exportFile.ViewID = CType(_filters.SelectedValue, Int32)
-				_exportFile.LoadFilesPrefix = DirectCast(_filters.SelectedItem, System.Data.DataRowView)(_filters.DisplayMember).ToString
-			Case ExportFile.ExportType.ArtifactSearch
-				_exportFile.ArtifactID = CType(_filters.SelectedValue, Int32)
-				_exportFile.LoadFilesPrefix = DirectCast(_filters.SelectedItem, System.Data.DataRowView)(_filters.DisplayMember).ToString
-			Case ExportFile.ExportType.ParentSearch
-				_exportFile.ViewID = CType(_filters.SelectedValue, Int32)
-				_exportFile.LoadFilesPrefix = DirectCast(_filters.SelectedItem, System.Data.DataRowView)(_filters.DisplayMember).ToString
-			Case ExportFile.ExportType.Production
-				_exportFile.ArtifactID = CType(_filters.SelectedValue, Int32)
-				_exportFile.LoadFilesPrefix = DirectCast(_filters.SelectedItem, System.Data.DataRowView)(_filters.DisplayMember).ToString
-				If _nativeFileNameSource.SelectedItem.ToString.ToLower = "identifier" Then
-					_exportFile.ExportNativesToFileNamedFrom = ExportNativeWithFilenameFrom.Identifier
-				Else
-					_exportFile.ExportNativesToFileNamedFrom = ExportNativeWithFilenameFrom.Production
-				End If
-		End Select
-		_exportFile.Overwrite = _overwriteButton.Checked
-		_exportFile.ExportFullText = _exportFullText.Checked
-		_exportFile.ExportFullTextAsFile = _exportFullTextAsFile.Checked
-		_exportFile.ExportNative = _exportNativeFiles.Checked
-		_exportFile.QuoteDelimiter = ChrW(CType(_quoteDelimiter.SelectedValue, Int32))
-		_exportFile.RecordDelimiter = ChrW(CType(_recordDelimiter.SelectedValue, Int32))
-		_exportFile.MultiRecordDelimiter = ChrW(CType(_multiRecordDelimiter.SelectedValue, Int32))
-		_exportFile.NewlineDelimiter = ChrW(CType(_newLineDelimiter.SelectedValue, Int32))
-		_exportFile.AppendOriginalFileName = _appendOriginalFilename.Checked
+    If Not _application.IsConnected(_exportFile.CaseArtifactID, 10) Then
+      Me.Cursor = System.Windows.Forms.Cursors.Default
+      Exit Sub
+    End If
+    _exportFile.FolderPath = _folderPath.Text
+    Select Case Me.ExportFile.TypeOfExport
+      Case ExportFile.ExportType.AncestorSearch
+        _exportFile.ViewID = CType(_filters.SelectedValue, Int32)
+        _exportFile.LoadFilesPrefix = DirectCast(_filters.SelectedItem, System.Data.DataRowView)(_filters.DisplayMember).ToString
+      Case ExportFile.ExportType.ArtifactSearch
+        _exportFile.ArtifactID = CType(_filters.SelectedValue, Int32)
+        _exportFile.LoadFilesPrefix = DirectCast(_filters.SelectedItem, System.Data.DataRowView)(_filters.DisplayMember).ToString
+      Case ExportFile.ExportType.ParentSearch
+        _exportFile.ViewID = CType(_filters.SelectedValue, Int32)
+        _exportFile.LoadFilesPrefix = DirectCast(_filters.SelectedItem, System.Data.DataRowView)(_filters.DisplayMember).ToString
+      Case ExportFile.ExportType.Production
+        _exportFile.ArtifactID = CType(_filters.SelectedValue, Int32)
+        _exportFile.LoadFilesPrefix = DirectCast(_filters.SelectedItem, System.Data.DataRowView)(_filters.DisplayMember).ToString
+        If _nativeFileNameSource.SelectedItem.ToString.ToLower = "identifier" Then
+          _exportFile.ExportNativesToFileNamedFrom = ExportNativeWithFilenameFrom.Identifier
+        Else
+          _exportFile.ExportNativesToFileNamedFrom = ExportNativeWithFilenameFrom.Production
+        End If
+    End Select
+    _exportFile.Overwrite = _overwriteButton.Checked
+    _exportFile.ExportFullText = _exportFullText.Checked
+    _exportFile.ExportFullTextAsFile = _exportFullTextAsFile.Checked
+    _exportFile.ExportNative = _exportNativeFiles.Checked
+    _exportFile.QuoteDelimiter = ChrW(CType(_quoteDelimiter.SelectedValue, Int32))
+    _exportFile.RecordDelimiter = ChrW(CType(_recordDelimiter.SelectedValue, Int32))
+    _exportFile.MultiRecordDelimiter = ChrW(CType(_multiRecordDelimiter.SelectedValue, Int32))
+    _exportFile.NewlineDelimiter = ChrW(CType(_newLineDelimiter.SelectedValue, Int32))
+    _exportFile.AppendOriginalFileName = _appendOriginalFilename.Checked
 
-		_exportFile.CookieContainer = _application.CookieContainer
-		_exportFile.FilePrefix = ""
-		If _useAbsolutePaths.Checked Then
-			_exportFile.TypeOfExportedFilePath = ExportFile.ExportedFilePathType.Absolute
-		ElseIf _useRelativePaths.Checked Then
-			_exportFile.TypeOfExportedFilePath = ExportFile.ExportedFilePathType.Relative
-		Else
-			_exportFile.TypeOfExportedFilePath = ExportFile.ExportedFilePathType.Prefix
-			_exportFile.FilePrefix = _prefixText.Text
-		End If
+    _exportFile.CookieContainer = _application.CookieContainer
+    _exportFile.FilePrefix = ""
+    If _useAbsolutePaths.Checked Then
+      _exportFile.TypeOfExportedFilePath = ExportFile.ExportedFilePathType.Absolute
+    ElseIf _useRelativePaths.Checked Then
+      _exportFile.TypeOfExportedFilePath = ExportFile.ExportedFilePathType.Relative
+    Else
+      _exportFile.TypeOfExportedFilePath = ExportFile.ExportedFilePathType.Prefix
+      _exportFile.FilePrefix = _prefixText.Text
+    End If
     'TODO: WINFLEX - ArtifactTypeID
     _exportFile.IdentifierColumnName = _application.GetCaseIdentifierFields(_application.CurrentObjectTypeID)(0)
-		_exportFile.RenameFilesToIdentifier = True
-		_exportFile.VolumeInfo = Me.BuildVolumeInfo
-		_exportFile.ExportImages = _exportImages.Checked
-		_exportFile.LogFileFormat = CType(_imageFileFormat.SelectedValue, kCura.WinEDDS.LoadFileType.FileFormat)
-		_exportFile.LoadFileIsHtml = _nativeFileFormat.SelectedIndex = 5
-		If _exportFile.LoadFileIsHtml Then
-			_exportFile.LoadFileExtension = "html"
-		Else
-			_exportFile.LoadFileExtension = Me.GetNativeFileFormatExtension()
-		End If
-		_exportFile.ImagePrecedence = Me.GetImagePrecedence
-		_exportFile.TypeOfImage = Me.GetSelectedImageType
-		_application.StartSearch(Me.ExportFile)
-		Me.Cursor = System.Windows.Forms.Cursors.Default
+    _exportFile.RenameFilesToIdentifier = True
+    _exportFile.VolumeInfo = Me.BuildVolumeInfo
+    _exportFile.ExportImages = _exportImages.Checked
+    _exportFile.LogFileFormat = CType(_imageFileFormat.SelectedValue, kCura.WinEDDS.LoadFileType.FileFormat)
+    _exportFile.LoadFileIsHtml = _nativeFileFormat.SelectedIndex = 5
+    If _exportFile.LoadFileIsHtml Then
+      _exportFile.LoadFileExtension = "html"
+    Else
+      _exportFile.LoadFileExtension = Me.GetNativeFileFormatExtension()
+    End If
+    _exportFile.ImagePrecedence = Me.GetImagePrecedence
+    _exportFile.TypeOfImage = Me.GetSelectedImageType
+    _application.StartSearch(Me.ExportFile)
+    Me.Cursor = System.Windows.Forms.Cursors.Default
 	End Sub
 
 
