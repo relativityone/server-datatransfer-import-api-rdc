@@ -448,6 +448,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Service\ObjectManager.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Service\ObjectTypeManager.vb"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -783,6 +788,33 @@
                 <Folder
                     RelPath = "Web References\kCura.EDDS.WebAPI.FolderManagerBase\"
                     WebReferenceUrl = "http://localhost/EDDSWebAPI/FolderManager.asmx"
+                    UrlBehavior = "Static"
+                />
+                <File
+                    RelPath = "Web References\kCura.EDDS.WebAPI.ObjectManagerBase\ObjectManager.disco"
+                    BuildAction = "None"
+                />
+                <File
+                    RelPath = "Web References\kCura.EDDS.WebAPI.ObjectManagerBase\ObjectManager.wsdl"
+                    BuildAction = "None"
+                />
+                <File
+                    RelPath = "Web References\kCura.EDDS.WebAPI.ObjectManagerBase\Reference.map"
+                    BuildAction = "None"
+                    Generator = "MSDiscoCodeGenerator"
+                    LastGenOutput = "Reference.vb"
+                />
+                <File
+                    RelPath = "Web References\kCura.EDDS.WebAPI.ObjectManagerBase\Reference.vb"
+                    DependentUpon = "Reference.map"
+                    SubType = "code"
+                    BuildAction = "Compile"
+                    DesignTime = "True"
+                    AutoGen = "True"
+                />
+                <Folder
+                    RelPath = "Web References\kCura.EDDS.WebAPI.ObjectManagerBase\"
+                    WebReferenceUrl = "http://localhost/EDDSWebAPI/ObjectManager.asmx"
                     UrlBehavior = "Static"
                 />
                 <File

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tns="http://www.kCura.com/EDDS/ObjectManager" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" targetNamespace="http://www.kCura.com/EDDS/ObjectManager" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <s:schema elementFormDefault="qualified" targetNamespace="http://www.kCura.com/EDDS/ObjectManager">
+      <s:import namespace="http://www.w3.org/2001/XMLSchema" />
+      <s:element name="RetrieveArtifactIdOfMappedObject">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
+            <s:element minOccurs="0" maxOccurs="1" name="textIdentifier" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="artifactTypeID" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="RetrieveArtifactIdOfMappedObjectResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="RetrieveArtifactIdOfMappedObjectResult">
+              <s:complexType>
+                <s:sequence>
+                  <s:element ref="s:schema" />
+                  <s:any />
+                </s:sequence>
+              </s:complexType>
+            </s:element>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+    </s:schema>
+  </wsdl:types>
+  <wsdl:message name="RetrieveArtifactIdOfMappedObjectSoapIn">
+    <wsdl:part name="parameters" element="tns:RetrieveArtifactIdOfMappedObject" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveArtifactIdOfMappedObjectSoapOut">
+    <wsdl:part name="parameters" element="tns:RetrieveArtifactIdOfMappedObjectResponse" />
+  </wsdl:message>
+  <wsdl:portType name="ObjectManagerSoap">
+    <wsdl:operation name="RetrieveArtifactIdOfMappedObject">
+      <wsdl:input message="tns:RetrieveArtifactIdOfMappedObjectSoapIn" />
+      <wsdl:output message="tns:RetrieveArtifactIdOfMappedObjectSoapOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="ObjectManagerSoap" type="tns:ObjectManagerSoap">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document" />
+    <wsdl:operation name="RetrieveArtifactIdOfMappedObject">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/ObjectManager/RetrieveArtifactIdOfMappedObject" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="ObjectManager">
+    <documentation xmlns="http://schemas.xmlsoap.org/wsdl/" />
+    <wsdl:port name="ObjectManagerSoap" binding="tns:ObjectManagerSoap">
+      <soap:address location="http://localhost/EDDSWebAPI/ObjectManager.asmx" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

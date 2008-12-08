@@ -704,7 +704,7 @@ Namespace kCura.WinEDDS
           docfield = New DocumentField(item.DocumentField)
           If item.DocumentField.FieldTypeID = kCura.DynamicFields.Types.FieldTypeHelper.FieldType.File AndAlso values(item.NativeFileColumnIndex) <> "" AndAlso item.NativeFileColumnIndex <> -1 Then
             Dim localFilePath As String = values(item.NativeFileColumnIndex)
-            Dim fileSize As Long
+            Dim fileSize As Int64
             If System.IO.File.Exists(localFilePath) Then
               fileSize = New System.IO.FileInfo(localFilePath).Length
               Dim fileName As String = System.IO.Path.GetFileName(localFilePath).Replace(ChrW(11), "_")

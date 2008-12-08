@@ -16,6 +16,7 @@ Namespace kCura.WinEDDS
     'Protected _multiCodeManager As kCura.WinEDDS.Service.MultiCodeManager
     Protected _fileManager As kCura.WinEDDS.Service.FileManager
     Protected _usermanager As kCura.WinEDDS.Service.UserManager
+    Protected _objectManager As kCura.WinEDDS.Service.ObjectManager
     Protected _filePathColumn As String
     Protected _filePathColumnIndex As Int32
     Protected _firstLineContainsColumnNames As Boolean
@@ -92,6 +93,7 @@ Namespace kCura.WinEDDS
       _fileManager = New kCura.WinEDDS.Service.FileManager(args.Credentials, args.CookieContainer)
       _usermanager = New kCura.WinEDDS.Service.UserManager(args.Credentials, args.CookieContainer)
       _bulkImportManager = New kCura.WinEDDS.Service.BulkImportManager(args.Credentials, args.CookieContainer)
+      _objectManager = New kCura.WinEDDS.Service.ObjectManager(args.Credentials, args.CookieContainer)
       '_multiCodeManager = New kCura.WinEDDS.Service.MultiCodeManager(args.Credentials, args.CookieContainer)
 
       _multiValueSeparator = args.MultiRecordDelimiter.ToString.ToCharArray
@@ -314,6 +316,18 @@ Namespace kCura.WinEDDS
             Case Else
               field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(GetNullableFixedString(value, column, field.FieldLength.Value))
           End Select
+        Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Object
+          Dim textIdentifier As String = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(kCura.Utility.NullableTypesHelper.ToNullableString(value))
+          If textIdentifier <> "" Then
+            Dim targetObjectTable As System.Data.DataTable = _objectManager.RetrieveArtifactIdOfMappedObject(_caseArtifactID, textIdentifier, field.FieldID).Tables(0)
+            If targetObjectTable.Rows.Count > 1 Then
+              Throw New DuplicateObjectReferenceException(Me.CurrentLineNumber, column, field.FieldName)
+            ElseIf targetObjectTable.Rows.Count = 0 Then
+              Throw New NonExistentObjectReferenceException(Me.CurrentLineNumber, column, field.FieldName)
+            Else
+              field.Value = CType(targetObjectTable.Rows(0)("ArtifactID"), String)
+            End If
+          End If
         Case Else    'FieldTypeHelper.FieldType.Text
           If field.FieldCategory = DynamicFields.Types.FieldCategory.FullText AndAlso _fullTextColumnMapsToFileLocation Then
             If value = "" Then
@@ -470,6 +484,20 @@ Namespace kCura.WinEDDS
       Inherits kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
       Public Sub New(ByVal row As Int32, ByVal expecting As Int32, ByVal actual As Int32)
         MyBase.New(row, -1, String.Format("There are an invalid number of cells in this row - expecting:{0}, actual:{1}.", expecting, actual))
+      End Sub
+    End Class
+
+    Public Class DuplicateObjectReferenceException
+      Inherits kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
+      Public Sub New(ByVal row As Int32, ByVal column As Int32, ByVal fieldName As String)
+        MyBase.New(row, column, String.Format("Object identifier for field {0} references an identifier that is not unique.", fieldName))
+      End Sub
+    End Class
+
+    Public Class NonExistentObjectReferenceException
+      Inherits kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
+      Public Sub New(ByVal row As Int32, ByVal column As Int32, ByVal fieldName As String)
+        MyBase.New(row, column, String.Format("Object identifier for field {0} references an object that does not exist.", fieldName))
       End Sub
     End Class
 #End Region
