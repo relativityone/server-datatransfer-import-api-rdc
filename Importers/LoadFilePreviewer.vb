@@ -202,72 +202,72 @@ Namespace kCura.WinEDDS
 				End If
 			End If
 
-			If Not identifierField Is Nothing Then
-				For Each field As DocumentField In unmappedFields.Values
-					Dim f As New DocumentField(field)
-					If _columnCount <> values.Length Then
-						f.Value = New ColumnCountMismatchException(Me.CurrentLineNumber, _columnCount, values.Length).Message
-					Else
-						f.Value = identifierField.Value & " (if not set)"
-					End If
-					retval.Add(f)
-				Next
-				For Each field As DocumentField In mappedFields.Values
-					If field.Value = "" Then field.Value = identifierField.Value
-				Next
-			End If
+      If Not identifierField Is Nothing And _artifactTypeID = 10 Then
+        For Each field As DocumentField In unmappedFields.Values
+          Dim f As New DocumentField(field)
+          If _columnCount <> values.Length Then
+            f.Value = New ColumnCountMismatchException(Me.CurrentLineNumber, _columnCount, values.Length).Message
+          Else
+            f.Value = identifierField.Value & " (if not set)"
+          End If
+          retval.Add(f)
+        Next
+        For Each field As DocumentField In mappedFields.Values
+          If field.Value = "" Then field.Value = identifierField.Value
+        Next
+      End If
 
-			'If Not identifierField Is Nothing AndAlso _
-			' Not groupIdentifierField Is Nothing AndAlso _
-			' groupIdentifierField.Value = "" Then
-			'	groupIdentifierField.Value = identifierField.Value
-			'End If
+      'If Not identifierField Is Nothing AndAlso _
+      ' Not groupIdentifierField Is Nothing AndAlso _
+      ' groupIdentifierField.Value = "" Then
+      '	groupIdentifierField.Value = identifierField.Value
+      'End If
 
-			'If Not identifierField Is Nothing Then
-			'	If Not duplicateHashField Is Nothing Then
-			'		If duplicateHashField.Value = "" Then duplicateHashField.Value = identifierField.Value
-			'	Else
-			'		Dim docfield As New DocumentField("MD5 Hash", -1, -1, -1, NullableInt32.Null, NullableInt32.Null, False)
-			'		If _extractMd5Hash Then
-			'			docfield.Value = "[Extracted from native]"
-			'		Else
-			'			docField.Value = identifierField.Value & " (if not set)"
-			'		End If
-			'		retval.Add(docfield)
-			'	End If
-			'End If
+      'If Not identifierField Is Nothing Then
+      '	If Not duplicateHashField Is Nothing Then
+      '		If duplicateHashField.Value = "" Then duplicateHashField.Value = identifierField.Value
+      '	Else
+      '		Dim docfield As New DocumentField("MD5 Hash", -1, -1, -1, NullableInt32.Null, NullableInt32.Null, False)
+      '		If _extractMd5Hash Then
+      '			docfield.Value = "[Extracted from native]"
+      '		Else
+      '			docField.Value = identifierField.Value & " (if not set)"
+      '		End If
+      '		retval.Add(docfield)
+      '	End If
+      'End If
 
-			If _uploadFiles Then
-				If _nativeFileCheckColumnName = "" Then Me.SetNativeFileCheckColumnName(retval)
-				Dim filePath As String = values(_filePathColumnIndex)
-				Dim existsFilePath As String
-				If filePath.Length > 1 Then
-					If filePath.Chars(0) = "\"c AndAlso Not filePath.Chars(1) = "\" Then
-						existsFilePath = "." & filePath
-					Else
-						existsFilePath = filePath
-					End If
-				End If
-				Dim docfield As New DocumentField(_nativeFileCheckColumnName, -1, -1, -1, NullableInt32.Null, NullableInt32.Null, False)
-				If filePath = "" Then
-					docfield.Value = "No File Specified."
-				ElseIf Not System.IO.File.Exists(existsFilePath) Then
-					docfield.Value = String.Format("Error: file '{0}' does not exist", filePath)
-					lineContainsErrors = True
-				Else
-					docfield.Value = filePath
-				End If
-				retval.Add(docfield)
-			End If
-			If _errorsOnly Then
-				If lineContainsErrors Then
-					Return DirectCast(retval.ToArray(GetType(DocumentField)), DocumentField())
-				Else
-					Return Nothing
-				End If
-			Else
-				Return DirectCast(retval.ToArray(GetType(DocumentField)), DocumentField())
-			End If
+      If _uploadFiles Then
+        If _nativeFileCheckColumnName = "" Then Me.SetNativeFileCheckColumnName(retval)
+        Dim filePath As String = values(_filePathColumnIndex)
+        Dim existsFilePath As String
+        If filePath.Length > 1 Then
+          If filePath.Chars(0) = "\"c AndAlso Not filePath.Chars(1) = "\" Then
+            existsFilePath = "." & filePath
+          Else
+            existsFilePath = filePath
+          End If
+        End If
+        Dim docfield As New DocumentField(_nativeFileCheckColumnName, -1, -1, -1, NullableInt32.Null, NullableInt32.Null, False)
+        If filePath = "" Then
+          docfield.Value = "No File Specified."
+        ElseIf Not System.IO.File.Exists(existsFilePath) Then
+          docfield.Value = String.Format("Error: file '{0}' does not exist", filePath)
+          lineContainsErrors = True
+        Else
+          docfield.Value = filePath
+        End If
+        retval.Add(docfield)
+      End If
+      If _errorsOnly Then
+        If lineContainsErrors Then
+          Return DirectCast(retval.ToArray(GetType(DocumentField)), DocumentField())
+        Else
+          Return Nothing
+        End If
+      Else
+        Return DirectCast(retval.ToArray(GetType(DocumentField)), DocumentField())
+      End If
 		End Function
 
 		Private Sub SetNativeFileCheckColumnName(ByVal fields As System.Collections.ArrayList)
