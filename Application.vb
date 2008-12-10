@@ -438,7 +438,6 @@ Namespace kCura.EDDS.WinForm
     'Worker function for PreviewLoadFile
     Public Function BuildLoadFileDataSource(ByVal al As ArrayList) As DataTable
       Try
-        'TODO: WINFLEX - ArtifactTypeID
         Me.GetCaseFields(_selectedCaseInfo.ArtifactID, 10, True)
         'Dim previewer As New kCura.WinEDDS.LoadFilePreviewer(loadFile, _timeZoneOffset, errorsOnly)
         'Dim al As ArrayList = DirectCast(previewer.ReadFile(loadFile.FilePath), ArrayList)
