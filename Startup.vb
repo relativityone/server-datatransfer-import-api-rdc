@@ -225,7 +225,7 @@ Namespace kCura.EDDS.WinForm
 						tempLoadFile.DestinationFolderID = 35
 						tempLoadFile.ExtractedTextFileEncoding = System.Text.Encoding.Unicode
             tempLoadFile.SourceFileEncoding = System.Text.Encoding.Default
-            'TODO: WINFLEX - ArtifactTypeID
+            'TODO: Have ArtifactTypeID be passed in on command line, currently hardcoding to 10
             tempLoadFile.SelectedIdentifierField = _application.CurrentFields(10, True).IdentifierFields(0)
 						Dim mapItemToRemove As LoadFileFieldMap.LoadFileFieldMapItem
 						If tempLoadFile.GroupIdentifierColumn = "" AndAlso System.IO.File.Exists(tempLoadFile.FilePath) Then
@@ -311,11 +311,13 @@ Namespace kCura.EDDS.WinForm
 				Try
 					folderExists = folderManager.Exists(SelectedCaseInfo.ArtifactID, Int32.Parse(value))
 				Catch
-				End Try
-				If Not folderExists Then
-					Throw New FolderIdException(value)
-				End If
-			End If
+        End Try
+        If folderExists Then
+          DestinationFolderID = Int32.Parse(value)
+        Else
+          Throw New FolderIdException(value)
+        End If
+      End If
 
 		End Sub
 
