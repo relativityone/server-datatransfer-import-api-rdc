@@ -326,6 +326,7 @@ Namespace kCura.WinEDDS
               Throw New NonExistentObjectReferenceException(Me.CurrentLineNumber, column, field.FieldName)
             Else
               field.Value = CType(targetObjectTable.Rows(0)("ArtifactID"), String)
+              If forPreview Then field.Value = value.Trim
             End If
           End If
         Case Else    'FieldTypeHelper.FieldType.Text
