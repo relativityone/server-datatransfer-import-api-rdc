@@ -493,7 +493,6 @@ Namespace kCura.EDDS.WinForm
         Dim casefields As String() = Nothing
         Dim continue As Boolean = True
         Try
-          'TODO: WINFLEX - ArtifactTypeID
           casefields = Me.GetCaseFields(Me.SelectedCaseInfo.ArtifactID, 10, True)
           Return Not casefields Is Nothing
         Catch ex As System.Exception
@@ -565,7 +564,7 @@ Namespace kCura.EDDS.WinForm
 #End Region
 
 #Region "Form Initializers"
-    Public Sub NewLoadFile(ByVal destinationArtifactID As Int32, ByVal caseInfo As kCura.EDDS.Types.CaseInfo, ByVal artifactID As Int32)
+    Public Sub NewLoadFile(ByVal destinationArtifactID As Int32, ByVal caseInfo As kCura.EDDS.Types.CaseInfo)
       If Not Me.IsConnected(caseInfo.ArtifactID, Me.CurrentObjectTypeID) Then
         CursorDefault()
         Exit Sub
@@ -574,12 +573,16 @@ Namespace kCura.EDDS.WinForm
       Dim loadFile As New loadFile
       frm._application = Me
       loadFile.SelectedCasePath = caseInfo.DocumentPath
-      loadFile.DestinationFolderID = destinationArtifactID
+      If Me.CurrentObjectTypeID = 10 Then
+        loadFile.DestinationFolderID = destinationArtifactID
+      Else
+        loadFile.DestinationFolderID = 1
+      End If
       loadFile.CaseInfo = caseInfo
       loadFile.Credentials = Me.Credential
       loadFile.CookieContainer = Me.CookieContainer
       loadFile.OverwriteDestination = "None"
-      loadFile.ArtifactTypeID = artifactID
+      loadFile.ArtifactTypeID = Me.CurrentObjectTypeID
       frm.LoadFile = loadFile
       frm.Show()
     End Sub

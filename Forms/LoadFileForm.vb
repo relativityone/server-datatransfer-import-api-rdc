@@ -5,24 +5,29 @@ Namespace kCura.EDDS.WinForm
 #Region " Windows Form Designer generated code "
 
 		Public Sub New()
-			MyBase.New()
+      MyBase.New()
 
+      _application = kCura.EDDS.WinForm.Application.Instance
 			'This call is required by the Windows Form Designer.
 			InitializeComponent()
 
 			'Add any initialization after the InitializeComponent() call
-      _application = kCura.EDDS.WinForm.Application.Instance
       InitializeDocumentSpecificComponents()
 
     End Sub
 
     Private Sub InitializeDocumentSpecificComponents()
       If _application.CurrentObjectTypeID = 10 Then
-        Me.GroupBox5.Visible = True
         Me.GroupBox4.Visible = True
         Me.GroupBox7.Visible = True
       Else
         Me.GroupBox5.Visible = False
+        Dim objectTypeManager As New kCura.WinEDDS.Service.ObjectTypeManager(_application.Credential, _application.CookieContainer)
+        Dim parentDataTable As System.Data.DataTable = objectTypeManager.RetrieveParentArtifactTypeID(_application.SelectedCaseInfo.ArtifactID, _application.CurrentObjectTypeID).Tables(0)
+        If parentDataTable.Rows.Count > 0 AndAlso CType(parentDataTable.Rows(0)("ParentArtifactTypeID"), Int32) <> 8 Then
+          Me.GroupBox5.Visible = True
+          _buildFolderStructure.Checked = True
+        End If
         Me.GroupBox4.Visible = False
         If _application.HasFileField(_application.CurrentObjectTypeID, True) Then
           Me.GroupBox4.Visible = True
@@ -545,7 +550,8 @@ Namespace kCura.EDDS.WinForm
       Me.GroupBox5.Size = New System.Drawing.Size(176, 72)
       Me.GroupBox5.TabIndex = 30
       Me.GroupBox5.TabStop = False
-      Me.GroupBox5.Text = "Folder Info"
+      Me.GroupBox5.Text = "Parent Info"
+      If _application.CurrentObjectTypeID = 10 Then Me.GroupBox5.Text = "Folder Info"
       '
       '_buildFolderStructure
       '
@@ -553,7 +559,8 @@ Namespace kCura.EDDS.WinForm
       Me._buildFolderStructure.Name = "_buildFolderStructure"
       Me._buildFolderStructure.Size = New System.Drawing.Size(160, 16)
       Me._buildFolderStructure.TabIndex = 29
-      Me._buildFolderStructure.Text = "Folder information column:"
+      Me._buildFolderStructure.Text = "Parent information column:"
+      If _application.CurrentObjectTypeID = 10 Then Me._buildFolderStructure.Text = "Folder information column:"
       '
       '_destinationFolderPath
       '
@@ -700,68 +707,72 @@ Namespace kCura.EDDS.WinForm
 
 #End Region
 
-		Friend WithEvents _application As kCura.EDDS.WinForm.Application
-		Private WithEvents _advancedFileForm As AdvancedFileLocation
-		Private _loadFile As kCura.WinEDDS.LoadFile
+    Friend WithEvents _application As kCura.EDDS.WinForm.Application
+    Private WithEvents _advancedFileForm As AdvancedFileLocation
+    Private _loadFile As kCura.WinEDDS.LoadFile
 
-		Friend ReadOnly Property ReadyToRun() As Boolean
-			Get
-				If Not Me.EnsureConnection() Then Return False
-				Dim rtr As Boolean
-				If _loadNativeFiles.Checked Then
-					rtr = _nativeFilePathField.SelectedIndex <> -1
-				Else
-					rtr = True
-				End If
-				If rtr AndAlso _buildFolderStructure.Checked Then
-					rtr = _destinationFolderPath.SelectedIndex <> -1 AndAlso rtr
-				End If
-				Return _
-				 _fieldMap.RightListBoxItems.Count > 0 AndAlso _
-				 _fileColumns.LeftListBoxItems.Count > 0 AndAlso _
-				 rtr AndAlso _
-				 System.IO.File.Exists(_filePath.Text)		 'AndAlso _
-				'_identifiersDropDown.SelectedIndex <> -1
-			End Get
-		End Property
+    Friend ReadOnly Property ReadyToRun() As Boolean
+      Get
+        If Not Me.EnsureConnection() Then Return False
+        Dim rtr As Boolean
+        If _loadNativeFiles.Checked Then
+          rtr = _nativeFilePathField.SelectedIndex <> -1
+        Else
+          rtr = True
+        End If
+        If _application.CurrentObjectTypeID = 10 Then
+          If rtr AndAlso _buildFolderStructure.Checked Then
+            rtr = _destinationFolderPath.SelectedIndex <> -1 AndAlso rtr
+          End If
+        Else
+          rtr = _buildFolderStructure.Checked AndAlso _destinationFolderPath.SelectedIndex <> -1 AndAlso rtr
+        End If
+        Return _
+         _fieldMap.RightListBoxItems.Count > 0 AndAlso _
+         _fileColumns.LeftListBoxItems.Count > 0 AndAlso _
+         rtr AndAlso _
+         System.IO.File.Exists(_filePath.Text)   'AndAlso _
+        '_identifiersDropDown.SelectedIndex <> -1
+      End Get
+    End Property
 
-		Private Function IsIdentifierMapped() As Boolean
+    Private Function IsIdentifierMapped() As Boolean
 
-		End Function
+    End Function
 
-		Private Function GetOverwrite() As String
-			Select Case _overwriteDropdown.SelectedItem.ToString.ToLower
-				Case "append only"
-					Return "None"
-				Case "overlay only"
-					Return "Strict"
-				Case "append/overlay"
-					Return "Append"
-				Case Else
-					Throw New IndexOutOfRangeException("'" & _overwriteDropdown.SelectedItem.ToString.ToLower & "' isn't a valid option.")
-			End Select
-		End Function
+    Private Function GetOverwrite() As String
+      Select Case _overwriteDropdown.SelectedItem.ToString.ToLower
+        Case "append only"
+          Return "None"
+        Case "overlay only"
+          Return "Strict"
+        Case "append/overlay"
+          Return "Append"
+        Case Else
+          Throw New IndexOutOfRangeException("'" & _overwriteDropdown.SelectedItem.ToString.ToLower & "' isn't a valid option.")
+      End Select
+    End Function
 
-		Private Function GetOverwriteDropdownItem(ByVal input As String) As String
-			Select Case input.ToLower
-				Case "none"
-					Return "Append Only"
-				Case "strict"
-					Return "Overlay Only"
-				Case "append"
-					Return "Append/Overlay"
-				Case Else
-					Throw New IndexOutOfRangeException("'" & input.ToLower & "' isn't a valid option.")
-			End Select
-		End Function
+    Private Function GetOverwriteDropdownItem(ByVal input As String) As String
+      Select Case input.ToLower
+        Case "none"
+          Return "Append Only"
+        Case "strict"
+          Return "Overlay Only"
+        Case "append"
+          Return "Append/Overlay"
+        Case Else
+          Throw New IndexOutOfRangeException("'" & input.ToLower & "' isn't a valid option.")
+      End Select
+    End Function
 
-		Private Sub PopulateLoadFileObject()
-			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
-			Me.PopulateLoadFileDelimiters()
-			If Not Me.EnsureConnection() Then Exit Sub
+    Private Sub PopulateLoadFileObject()
+      Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
+      Me.PopulateLoadFileDelimiters()
+      If Not Me.EnsureConnection() Then Exit Sub
       Dim currentFields As WinEDDS.DocumentFieldCollection = _application.CurrentFields(_application.CurrentObjectTypeID, True)
-			If currentFields Is Nothing Then
-				Exit Sub
+      If currentFields Is Nothing Then
+        Exit Sub
       End If
       Me.LoadFile.FieldMap = kCura.EDDS.WinForm.Utility.ExtractFieldMap(_fieldMap, _fileColumns, currentFields, _application.CurrentObjectTypeID)
       'Dim groupIdentifier As DocumentField = _application.CurrentGroupIdentifierField
@@ -774,7 +785,7 @@ Namespace kCura.EDDS.WinForm
       '		Me.LoadFile.FieldMap.Add(New kCura.WinEDDS.LoadFileFieldMap.LoadFileFieldMapItem(groupIdentifier, fieldColumnIndex))
       '	End If
       'End If
-      
+
       LoadFile.SourceFileEncoding = _loadFileEncodingPicker.SelectedEncoding
       LoadFile.ExtractFullTextFromNativeFile = _extractFullTextFromNativeFile.Checked
       LoadFile.FullTextColumnContainsFileLocation = _extractedTextValueContainsFileLocation.Checked
@@ -836,38 +847,38 @@ Namespace kCura.EDDS.WinForm
       End If
       Me.LoadFile.CaseDefaultPath = _application.SelectedCaseInfo.DocumentPath
       Me.Cursor = System.Windows.Forms.Cursors.Default
-		End Sub
+    End Sub
 
-		Private Sub MarkIdentifierField(ByVal fieldNames As String())
+    Private Sub MarkIdentifierField(ByVal fieldNames As String())
       Dim identifierFields As String() = _application.GetCaseIdentifierFields(_application.CurrentObjectTypeID)
-			Dim i As Int32
-			For i = 0 To fieldNames.Length - 1
-				If System.Array.IndexOf(identifierFields, fieldNames(i)) <> -1 Then
-					fieldNames(i) = fieldNames(i) & " [Identifier]"
-				End If
-			Next
-		End Sub
+      Dim i As Int32
+      For i = 0 To fieldNames.Length - 1
+        If System.Array.IndexOf(identifierFields, fieldNames(i)) <> -1 Then
+          fieldNames(i) = fieldNames(i) & " [Identifier]"
+        End If
+      Next
+    End Sub
 
-		Public Sub LoadFormControls(ByVal loadFileObjectUpdatedFromFile As Boolean)
-			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
-			kCura.EDDS.WinForm.Utility.InitializeCharacterDropDown(_recordDelimiter, _loadFile.RecordDelimiter)
-			kCura.EDDS.WinForm.Utility.InitializeCharacterDropDown(_quoteDelimiter, _loadFile.QuoteDelimiter)
-			kCura.EDDS.WinForm.Utility.InitializeCharacterDropDown(_newLineDelimiter, _loadFile.NewlineDelimiter)
-			kCura.EDDS.WinForm.Utility.InitializeCharacterDropDown(_multiRecordDelimiter, _loadFile.MultiRecordDelimiter)
+    Public Sub LoadFormControls(ByVal loadFileObjectUpdatedFromFile As Boolean)
+      Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
+      kCura.EDDS.WinForm.Utility.InitializeCharacterDropDown(_recordDelimiter, _loadFile.RecordDelimiter)
+      kCura.EDDS.WinForm.Utility.InitializeCharacterDropDown(_quoteDelimiter, _loadFile.QuoteDelimiter)
+      kCura.EDDS.WinForm.Utility.InitializeCharacterDropDown(_newLineDelimiter, _loadFile.NewlineDelimiter)
+      kCura.EDDS.WinForm.Utility.InitializeCharacterDropDown(_multiRecordDelimiter, _loadFile.MultiRecordDelimiter)
 
-			_filePath.Text = LoadFile.FilePath
-			_importDestinationText.Text = _application.GetCaseFolderPath(LoadFile.DestinationFolderID)
-			_fieldMap.ClearAll()
-			_fileColumns.ClearAll()
-			_fileColumnHeaders.Items.Clear()
-			_nativeFilePathField.Items.Clear()
-			_destinationFolderPath.Items.Clear()
+      _filePath.Text = LoadFile.FilePath
+      _importDestinationText.Text = _application.GetCaseFolderPath(LoadFile.DestinationFolderID)
+      _fieldMap.ClearAll()
+      _fileColumns.ClearAll()
+      _fileColumnHeaders.Items.Clear()
+      _nativeFilePathField.Items.Clear()
+      _destinationFolderPath.Items.Clear()
       _loadNativeFiles.Checked = LoadFile.LoadNativeFiles
       _extractedTextValueContainsFileLocation.Checked = LoadFile.FullTextColumnContainsFileLocation
-			_fullTextFileEncodingPicker.Enabled = _extractedTextValueContainsFileLocation.Checked
-			_overwriteDropdown.SelectedItem = Me.GetOverwriteDropdownItem(LoadFile.OverwriteDestination)
-			RefreshNativeFilePathFieldAndFileColumnHeaders()
-			If Not Me.EnsureConnection() Then Exit Sub
+      _fullTextFileEncodingPicker.Enabled = _extractedTextValueContainsFileLocation.Checked
+      _overwriteDropdown.SelectedItem = Me.GetOverwriteDropdownItem(LoadFile.OverwriteDestination)
+      RefreshNativeFilePathFieldAndFileColumnHeaders()
+      If Not Me.EnsureConnection() Then Exit Sub
       Dim caseFields As String() = _application.GetNonFileCaseFields(LoadFile.CaseInfo.ArtifactID, _application.CurrentObjectTypeID, True)
       Dim caseFieldName As String
       If loadFileObjectUpdatedFromFile Then

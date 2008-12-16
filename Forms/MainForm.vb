@@ -398,7 +398,7 @@ Namespace kCura.EDDS.WinForm
 
     Private Sub ToolsImportLoadFileMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ToolsImportLoadFileMenu.Click
       Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
-      _application.NewLoadFile(_application.SelectedCaseFolderID, _application.SelectedCaseInfo, _application.CurrentObjectTypeID)
+      _application.NewLoadFile(_application.SelectedCaseFolderID, _application.SelectedCaseInfo)
       Me.Cursor = System.Windows.Forms.Cursors.Default
     End Sub
 
@@ -469,7 +469,6 @@ Namespace kCura.EDDS.WinForm
       For Each objectType As System.Data.DataRow In uploadableObjectTypes
         Dim currentObjectType As New kCura.WinEDDS.ObjectTypeListItem(CType(objectType("DescriptorArtifactTypeID"), Int32), CType(objectType("Name"), String))
         _objectTypeDropDown.Items.Add(currentObjectType)
-        'TODO: WINFLEX - Should reference an enum or constant instead of literal 10
         If CType(objectType("DescriptorArtifactTypeID"), Int32) = 10 Then
           Me._objectTypeDropDown.SelectedItem = currentObjectType
         End If
@@ -477,7 +476,6 @@ Namespace kCura.EDDS.WinForm
     End Sub
 
     Private Sub _objectTypeDropDown_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _objectTypeDropDown.SelectedIndexChanged
-      'TODO: WINFLEX - Should reference an enum or constant instead of literal 10
       Dim selectedItemValue As Int32 = DirectCast(_objectTypeDropDown.SelectedItem, kCura.WinEDDS.ObjectTypeListItem).Value
       If selectedItemValue = 10 Then
         _caseFolderExplorer.Visible = True
