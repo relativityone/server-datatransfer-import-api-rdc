@@ -53,5 +53,23 @@ Namespace kCura.EDDS.WebAPI.ObjectManagerBase
             Dim results() As Object = Me.EndInvoke(asyncResult)
             Return CType(results(0),System.Data.DataSet)
         End Function
+        
+        '<remarks/>
+        <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/ObjectManager/RetrieveArtifactIdOfMappedParentObject", RequestNamespace:="http://www.kCura.com/EDDS/ObjectManager", ResponseNamespace:="http://www.kCura.com/EDDS/ObjectManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
+        Public Function RetrieveArtifactIdOfMappedParentObject(ByVal caseContextArtifactID As Integer, ByVal textIdentifier As String, ByVal artifactTypeID As Integer) As System.Data.DataSet
+            Dim results() As Object = Me.Invoke("RetrieveArtifactIdOfMappedParentObject", New Object() {caseContextArtifactID, textIdentifier, artifactTypeID})
+            Return CType(results(0),System.Data.DataSet)
+        End Function
+        
+        '<remarks/>
+        Public Function BeginRetrieveArtifactIdOfMappedParentObject(ByVal caseContextArtifactID As Integer, ByVal textIdentifier As String, ByVal artifactTypeID As Integer, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("RetrieveArtifactIdOfMappedParentObject", New Object() {caseContextArtifactID, textIdentifier, artifactTypeID}, callback, asyncState)
+        End Function
+        
+        '<remarks/>
+        Public Function EndRetrieveArtifactIdOfMappedParentObject(ByVal asyncResult As System.IAsyncResult) As System.Data.DataSet
+            Dim results() As Object = Me.EndInvoke(asyncResult)
+            Return CType(results(0),System.Data.DataSet)
+        End Function
     End Class
 End Namespace

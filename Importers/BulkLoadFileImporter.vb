@@ -270,8 +270,8 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Private Sub InitializeMembers(ByVal path As String)
-			Me.InitializeLineCounter(path)
-			Me.InitializeFolderManagement()
+      Me.InitializeLineCounter(path)
+      Me.InitializeFolderManagement()
 			Me.InitializeFieldIdList()
 			kCura.Utility.File.Delete(_outputNativeFilePath)
 			kCura.Utility.File.Delete(_outputCodeFilePath)
@@ -288,12 +288,12 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Private Sub InitializeFolderManagement()
-			If _createFolderStructure Then
-				_folderCache = New FolderCache(_folderManager, _folderID, _caseArtifactID)
-				Dim openParenIndex As Int32 = _destinationFolder.LastIndexOf("("c) + 1
-				Dim closeParenIndex As Int32 = _destinationFolder.LastIndexOf(")"c)
-				_destinationFolderColumnIndex = Int32.Parse(_destinationFolder.Substring(openParenIndex, closeParenIndex - openParenIndex)) - 1
-			End If
+      If _createFolderStructure Then
+        If _artifactTypeID = 10 Then _folderCache = New FolderCache(_folderManager, _folderID, _caseArtifactID)
+        Dim openParenIndex As Int32 = _destinationFolder.LastIndexOf("("c) + 1
+        Dim closeParenIndex As Int32 = _destinationFolder.LastIndexOf(")"c)
+        _destinationFolderColumnIndex = Int32.Parse(_destinationFolder.Substring(openParenIndex, closeParenIndex - openParenIndex)) - 1
+      End If
 		End Sub
 
 		Private Sub InitializeFieldIdList()
@@ -348,10 +348,27 @@ Namespace kCura.WinEDDS
           WriteStatusLine(Windows.Process.EventType.Status, String.Format("End upload file. ({0}ms)", DateTime.op_Subtraction(DateTime.Now, now).Milliseconds))
         End If
       End If
-      If _createFolderStructure Then
-        parentFolderID = _folderCache.FolderID(Me.CleanDestinationFolderPath(values(_destinationFolderColumnIndex)))
+      If _artifactTypeID = 10 Then
+        If _createFolderStructure Then
+          parentFolderID = _folderCache.FolderID(Me.CleanDestinationFolderPath(values(_destinationFolderColumnIndex)))
+        Else
+          parentFolderID = _folderID
+        End If
       Else
-        parentFolderID = _folderID
+        Dim textIdentifier As String = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(kCura.Utility.NullableTypesHelper.ToNullableString(values(_destinationFolderColumnIndex)))
+        If textIdentifier = "" Then
+          Throw New ParentObjectReferenceRequiredException(Me.CurrentLineNumber, _destinationFolderColumnIndex)
+        Else
+          Dim parentObjectTable As System.Data.DataTable = _objectManager.RetrieveArtifactIdOfMappedParentObject(_caseArtifactID, _
+          textIdentifier, _artifactTypeID).Tables(0)
+          If parentObjectTable.Rows.Count > 1 Then
+            Throw New DuplicateObjectReferenceException(Me.CurrentLineNumber, _destinationFolderColumnIndex, "Parent Info")
+          ElseIf parentObjectTable.Rows.Count = 0 Then
+            Throw New NonExistentObjectReferenceException(Me.CurrentLineNumber, _destinationFolderColumnIndex, "Parent Info")
+          Else
+            parentFolderID = CType(parentObjectTable.Rows(0)("ArtifactID"), Int32)
+          End If
+        End If
       End If
       Dim markPrepareFields As DateTime = DateTime.Now
       identityValue = PrepareFieldCollectionAndExtractIdentityValue(fieldCollection, values)

@@ -108,37 +108,37 @@ Namespace kCura.WinEDDS
 					Dim openParenIndex As Int32 = _filePathColumn.LastIndexOf("("c) + 1
 					Dim closeParenIndex As Int32 = _filePathColumn.LastIndexOf(")"c)
 					_filePathColumnIndex = Int32.Parse(_filePathColumn.Substring(openParenIndex, closeParenIndex - openParenIndex)) - 1
-				End If
-				'_filePathColumnIndex = Array.IndexOf(_columnHeaders, _filePathColumn)
-			Else
-				If _uploadFiles Then
-					_filePathColumnIndex = Int32.Parse(_filePathcolumn.Replace("Column", "").Replace("(", "").Replace(")", "").Trim) - 1
-				End If
-			End If
-			Dim i As Int32 = 0
-			i = 0
-			While Not HasReachedEOF AndAlso _continue
-				If fieldArrays.Count < 1000 Then
-					Dim line As String() = Me.GetLine
-					If Not _firstLineContainsColumnNames AndAlso fieldArrays.Count = 0 Then
-						_columnCount = line.Length
-					End If
-					Dim x As DocumentField() = CheckLine(line)
-					If Not x Is Nothing Then fieldArrays.Add(x)
-					i += 1
-					If i Mod 100 = 0 Then ProcessProgress(GetPosition, filesize, stepsize)
-				Else
-					earlyexit = True
-					Exit While
-				End If
-			End While
-			If earlyexit Then
-				ProcessComplete(-1, filesize, -1)
-			Else
-				ProcessComplete(filesize, filesize, stepsize)
-			End If
-			Me.Close()
-			Return fieldArrays
+        End If
+        '_filePathColumnIndex = Array.IndexOf(_columnHeaders, _filePathColumn)
+      Else
+        If _uploadFiles Then
+          _filePathColumnIndex = Int32.Parse(_filePathcolumn.Replace("Column", "").Replace("(", "").Replace(")", "").Trim) - 1
+        End If
+      End If
+      Dim i As Int32 = 0
+      i = 0
+      While Not HasReachedEOF AndAlso _continue
+        If fieldArrays.Count < 1000 Then
+          Dim line As String() = Me.GetLine
+          If Not _firstLineContainsColumnNames AndAlso fieldArrays.Count = 0 Then
+            _columnCount = line.Length
+          End If
+          Dim x As DocumentField() = CheckLine(line)
+          If Not x Is Nothing Then fieldArrays.Add(x)
+          i += 1
+          If i Mod 100 = 0 Then ProcessProgress(GetPosition, filesize, stepsize)
+        Else
+          earlyexit = True
+          Exit While
+        End If
+      End While
+      If earlyexit Then
+        ProcessComplete(-1, filesize, -1)
+      Else
+        ProcessComplete(filesize, filesize, stepsize)
+      End If
+      Me.Close()
+      Return fieldArrays
 		End Function
 
 
@@ -186,24 +186,24 @@ Namespace kCura.WinEDDS
             retval.Add(docfield)
           End If
         End If
-			Next
-			If _columnCount <> values.Length Then
-				lineContainsErrors = True
-				Dim df As DocumentField
-				For Each df In retval
-					df.Value = New ColumnCountMismatchException(Me.CurrentLineNumber, _columnCount, values.Length).Message
-				Next
-			End If
+      Next
+      If _columnCount <> values.Length Then
+        lineContainsErrors = True
+        Dim df As DocumentField
+        For Each df In retval
+          df.Value = New ColumnCountMismatchException(Me.CurrentLineNumber, _columnCount, values.Length).Message
+        Next
+      End If
 
-			If Not identifierField Is Nothing Then
-				If _processedIdentifiers(identifierField.Value) Is Nothing Then
-					_processedIdentifiers(identifierField.Value) = Me.CurrentLineNumber.ToString
-				Else
-					'Throw New IdentifierOverlapException(identifierField.Value, _processedIdentifiers(identifierField.Value))
-					identifierField.Value = String.Format("Error: The identifier '{0}' has been previously proccessed on line {1}.", identifierField.Value, _processedIdentifiers(identifierField.Value))
-					lineContainsErrors = True
-				End If
-			End If
+      If Not identifierField Is Nothing Then
+        If _processedIdentifiers(identifierField.Value) Is Nothing Then
+          _processedIdentifiers(identifierField.Value) = Me.CurrentLineNumber.ToString
+        Else
+          'Throw New IdentifierOverlapException(identifierField.Value, _processedIdentifiers(identifierField.Value))
+          identifierField.Value = String.Format("Error: The identifier '{0}' has been previously proccessed on line {1}.", identifierField.Value, _processedIdentifiers(identifierField.Value))
+          lineContainsErrors = True
+        End If
+      End If
 
       If Not identifierField Is Nothing And _artifactTypeID = 10 Then
         For Each field As DocumentField In unmappedFields.Values
@@ -260,6 +260,14 @@ Namespace kCura.WinEDDS
         Else
           docfield.Value = filePath
         End If
+        retval.Add(docfield)
+      End If
+      If _createFolderStructure AndAlso _artifactTypeID <> 10 Then
+        Dim openParenIndex As Int32 = _destinationFolder.LastIndexOf("("c) + 1
+        Dim closeParenIndex As Int32 = _destinationFolder.LastIndexOf(")"c)
+        Dim parentObjectIdentifierIndex As Int32 = Int32.Parse(_destinationFolder.Substring(openParenIndex, closeParenIndex - openParenIndex)) - 1
+        Dim docfield As New DocumentField("Parent Object Identifier", -1, -1, -1, NullableInt32.Null, NullableInt32.Null, False)
+        docField.Value = values(parentObjectIdentifierIndex)
         retval.Add(docfield)
       End If
       If _errorsOnly Then

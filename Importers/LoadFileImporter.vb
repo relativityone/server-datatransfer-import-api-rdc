@@ -456,9 +456,9 @@ Namespace kCura.WinEDDS
 			Catch ex As kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
 				If ex.GetBaseException.Message.IndexOf("Cannot insert duplicate key row") > -1 Then
 					WriteError("A record with the selected identifier already exists.", metaDoc.SourceLine)
-				Else
-					WriteError(ex.Message, metaDoc.SourceLine)
-				End If
+        Else
+          WriteError(ex.Message, metaDoc.SourceLine)
+        End If
 			Catch ex As System.Exception
 				WriteFatalError(metaDoc.LineNumber, ex, metaDoc.SourceLine)
 			End Try

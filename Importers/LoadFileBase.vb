@@ -501,6 +501,13 @@ Namespace kCura.WinEDDS
         MyBase.New(row, column, String.Format("Object identifier for field {0} references an object that does not exist.", fieldName))
       End Sub
     End Class
+
+    Public Class ParentObjectReferenceRequiredException
+      Inherits kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
+      Public Sub New(ByVal row As Int32, ByVal column As Int32)
+        MyBase.New(row, column, String.Format("Null parent object identifier found, this is required for the Parent Info field."))
+      End Sub
+    End Class
 #End Region
 
   End Class
