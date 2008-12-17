@@ -348,27 +348,27 @@ Namespace kCura.WinEDDS
           WriteStatusLine(Windows.Process.EventType.Status, String.Format("End upload file. ({0}ms)", DateTime.op_Subtraction(DateTime.Now, now).Milliseconds))
         End If
       End If
-      If _artifactTypeID = 10 Then
-        If _createFolderStructure Then
+      If _createFolderStructure Then
+        If _artifactTypeID = 10 Then
           parentFolderID = _folderCache.FolderID(Me.CleanDestinationFolderPath(values(_destinationFolderColumnIndex)))
         Else
-          parentFolderID = _folderID
-        End If
-      Else
-        Dim textIdentifier As String = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(kCura.Utility.NullableTypesHelper.ToNullableString(values(_destinationFolderColumnIndex)))
-        If textIdentifier = "" Then
-          Throw New ParentObjectReferenceRequiredException(Me.CurrentLineNumber, _destinationFolderColumnIndex)
-        Else
-          Dim parentObjectTable As System.Data.DataTable = _objectManager.RetrieveArtifactIdOfMappedParentObject(_caseArtifactID, _
-          textIdentifier, _artifactTypeID).Tables(0)
-          If parentObjectTable.Rows.Count > 1 Then
-            Throw New DuplicateObjectReferenceException(Me.CurrentLineNumber, _destinationFolderColumnIndex, "Parent Info")
-          ElseIf parentObjectTable.Rows.Count = 0 Then
-            Throw New NonExistentObjectReferenceException(Me.CurrentLineNumber, _destinationFolderColumnIndex, "Parent Info")
+          Dim textIdentifier As String = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(kCura.Utility.NullableTypesHelper.ToNullableString(values(_destinationFolderColumnIndex)))
+          If textIdentifier = "" Then
+            Throw New ParentObjectReferenceRequiredException(Me.CurrentLineNumber, _destinationFolderColumnIndex)
           Else
-            parentFolderID = CType(parentObjectTable.Rows(0)("ArtifactID"), Int32)
+            Dim parentObjectTable As System.Data.DataTable = _objectManager.RetrieveArtifactIdOfMappedParentObject(_caseArtifactID, _
+            textIdentifier, _artifactTypeID).Tables(0)
+            If parentObjectTable.Rows.Count > 1 Then
+              Throw New DuplicateObjectReferenceException(Me.CurrentLineNumber, _destinationFolderColumnIndex, "Parent Info")
+            ElseIf parentObjectTable.Rows.Count = 0 Then
+              Throw New NonExistentObjectReferenceException(Me.CurrentLineNumber, _destinationFolderColumnIndex, "Parent Info")
+            Else
+              parentFolderID = CType(parentObjectTable.Rows(0)("ArtifactID"), Int32)
+            End If
           End If
         End If
+      Else
+        parentFolderID = _folderID
       End If
       Dim markPrepareFields As DateTime = DateTime.Now
       identityValue = PrepareFieldCollectionAndExtractIdentityValue(fieldCollection, values)
