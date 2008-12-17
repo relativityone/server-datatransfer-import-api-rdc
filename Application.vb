@@ -41,7 +41,8 @@ Namespace kCura.EDDS.WinForm
 		Private _temporaryWebServiceURL As String
 		Private _cookieContainer As System.Net.CookieContainer
     Private _documentRepositoryList As String()
-    Private _currentObjectTypeID As Int32
+    Private _artifactTypeID As Int32
+    Private _parentArtifactTypeID As Int32
 
 		'Private _identity As kCura.EDDS.EDDSIdentity
 #End Region
@@ -200,12 +201,21 @@ Namespace kCura.EDDS.WinForm
       End Set
     End Property
 
-    Public Property CurrentObjectTypeID() As Int32
+    Public Property ArtifactTypeID() As Int32
       Get
-        Return _currentObjectTypeID
+        Return _artifactTypeID
       End Get
       Set(ByVal value As Int32)
-        _currentObjectTypeID = value
+        _artifactTypeID = value
+      End Set
+    End Property
+
+    Public Property ParentArtifactTypeID() As Int32
+      Get
+        Return _parentArtifactTypeID
+      End Get
+      Set(ByVal value As Int32)
+        _parentArtifactTypeID = value
       End Set
     End Property
 
@@ -308,7 +318,7 @@ Namespace kCura.EDDS.WinForm
         End If
       Next
       If Not isIdentifierMapped Then
-        MsgBox("The identifier field [" & Me.CurrentFields(CurrentObjectTypeID, True).IdentifierFieldNames(0) & "] is unmapped.  Please map it to continue", MsgBoxStyle.Critical)
+        MsgBox("The identifier field [" & Me.CurrentFields(ArtifactTypeID, True).IdentifierFieldNames(0) & "] is unmapped.  Please map it to continue", MsgBoxStyle.Critical)
       End If
       Return isIdentifierMapped
     End Function
@@ -565,7 +575,7 @@ Namespace kCura.EDDS.WinForm
 
 #Region "Form Initializers"
     Public Sub NewLoadFile(ByVal destinationArtifactID As Int32, ByVal caseInfo As kCura.EDDS.Types.CaseInfo)
-      If Not Me.IsConnected(caseInfo.ArtifactID, Me.CurrentObjectTypeID) Then
+      If Not Me.IsConnected(caseInfo.ArtifactID, Me.ArtifactTypeID) Then
         CursorDefault()
         Exit Sub
       End If
@@ -573,7 +583,7 @@ Namespace kCura.EDDS.WinForm
       Dim loadFile As New loadFile
       frm._application = Me
       loadFile.SelectedCasePath = caseInfo.DocumentPath
-      If Me.CurrentObjectTypeID = 10 Then
+      If Me.ArtifactTypeID = 10 Then
         loadFile.DestinationFolderID = destinationArtifactID
       Else
         loadFile.DestinationFolderID = 1
@@ -582,7 +592,7 @@ Namespace kCura.EDDS.WinForm
       loadFile.Credentials = Me.Credential
       loadFile.CookieContainer = Me.CookieContainer
       loadFile.OverwriteDestination = "None"
-      loadFile.ArtifactTypeID = Me.CurrentObjectTypeID
+      loadFile.ArtifactTypeID = Me.ArtifactTypeID
       frm.LoadFile = loadFile
       frm.Show()
     End Sub
@@ -707,7 +717,7 @@ Namespace kCura.EDDS.WinForm
 
     Public Sub NewImageFile(ByVal destinationArtifactID As Int32, ByVal caseinfo As kCura.EDDS.Types.CaseInfo)
       CursorWait()
-      If Not Me.IsConnected(caseinfo.ArtifactID, Me.CurrentObjectTypeID) Then
+      If Not Me.IsConnected(caseinfo.ArtifactID, Me.ArtifactTypeID) Then
         CursorDefault()
         Exit Sub
       End If
@@ -732,7 +742,7 @@ Namespace kCura.EDDS.WinForm
 
     Public Sub NewProductionFile(ByVal destinationArtifactID As Int32, ByVal caseinfo As kCura.EDDS.Types.CaseInfo)
       CursorWait()
-      If Not Me.IsConnected(caseinfo.ArtifactID, Me.CurrentObjectTypeID) Then
+      If Not Me.IsConnected(caseinfo.ArtifactID, ArtifactTypeID) Then
         CursorDefault()
         Exit Sub
       End If
@@ -759,7 +769,7 @@ Namespace kCura.EDDS.WinForm
 
     Public Sub NewDirectoryImport(ByVal destinationArtifactID As Int32, ByVal caseInfo As kCura.EDDS.Types.CaseInfo)
       CursorWait()
-      If Not Me.IsConnected(caseInfo.ArtifactID, Me.CurrentObjectTypeID) Then
+      If Not Me.IsConnected(caseInfo.ArtifactID, ArtifactTypeID) Then
         CursorDefault()
         Exit Sub
       End If
@@ -774,7 +784,7 @@ Namespace kCura.EDDS.WinForm
 
     Public Sub NewEnronImport(ByVal destinationArtifactID As Int32, ByVal caseInfo As kCura.EDDS.Types.CaseInfo)
       CursorWait()
-      If Not Me.IsConnected(caseInfo.ArtifactID, Me.CurrentObjectTypeID) Then
+      If Not Me.IsConnected(caseInfo.ArtifactID, ArtifactTypeID) Then
         CursorDefault()
         Exit Sub
       End If
@@ -828,7 +838,7 @@ Namespace kCura.EDDS.WinForm
 #Region "Process Management"
     Public Function PreviewLoadFile(ByVal loadFileToPreview As LoadFile, ByVal errorsOnly As Boolean) As Guid
       CursorWait()
-      If Not Me.IsConnected(loadFileToPreview.CaseInfo.ArtifactID, Me.CurrentObjectTypeID) Then
+      If Not Me.IsConnected(loadFileToPreview.CaseInfo.ArtifactID, ArtifactTypeID) Then
         CursorDefault()
         Exit Function
       End If
@@ -864,7 +874,7 @@ Namespace kCura.EDDS.WinForm
     End Function
     Public Function ImportDirectory(ByVal importFileDirectorySettings As ImportFileDirectorySettings) As Guid
       CursorWait()
-      If Not Me.IsConnected(importFileDirectorySettings.CaseInfo.ArtifactID, Me.CurrentObjectTypeID) Then
+      If Not Me.IsConnected(importFileDirectorySettings.CaseInfo.ArtifactID, ArtifactTypeID) Then
         CursorDefault()
         Exit Function
       End If
@@ -881,7 +891,7 @@ Namespace kCura.EDDS.WinForm
 
     Public Function ImportGeneric(ByVal settings As Object) As Guid
       CursorWait()
-      If Not Me.IsConnected(_selectedCaseInfo.ArtifactID, Me.CurrentObjectTypeID) Then
+      If Not Me.IsConnected(_selectedCaseInfo.ArtifactID, ArtifactTypeID) Then
         CursorDefault()
         Exit Function
       End If
@@ -897,7 +907,7 @@ Namespace kCura.EDDS.WinForm
 
     Public Function ImportSQL(ByVal sqlimportsettings As SQLImportSettings) As Guid
       CursorWait()
-      If Not Me.IsConnected(_selectedCaseInfo.ArtifactID, Me.CurrentObjectTypeID) Then
+      If Not Me.IsConnected(_selectedCaseInfo.ArtifactID, ArtifactTypeID) Then
         CursorDefault()
         Exit Function
       End If
@@ -915,7 +925,7 @@ Namespace kCura.EDDS.WinForm
     Public Function ImportLoadFile(ByVal loadFile As LoadFile) As Guid
       CursorWait()
       'Dim folderManager As New kCura.WinEDDS.Service.FolderManager(Credential, _cookieContainer, _identity)
-      If Not Me.IsConnected(_selectedCaseInfo.ArtifactID, Me.CurrentObjectTypeID) Then
+      If Not Me.IsConnected(_selectedCaseInfo.ArtifactID, ArtifactTypeID) Then
         CursorDefault()
         Exit Function
       End If
@@ -948,7 +958,7 @@ Namespace kCura.EDDS.WinForm
     Public Sub PreviewImageFile(ByVal loadfile As ImageLoadFile)
       CursorWait()
       'Dim folderManager As New kCura.WinEDDS.Service.FolderManager(Credential, _cookieContainer, _identity)
-      If Not Me.IsConnected(_selectedCaseInfo.ArtifactID, Me.CurrentObjectTypeID) Then
+      If Not Me.IsConnected(_selectedCaseInfo.ArtifactID, ArtifactTypeID) Then
         CursorDefault()
         Exit Sub
       End If
@@ -967,7 +977,7 @@ Namespace kCura.EDDS.WinForm
 
     Public Sub ImportImageFile(ByVal ImageLoadFile As ImageLoadFile)
       CursorWait()
-      If Not Me.IsConnected(_selectedCaseInfo.ArtifactID, Me.CurrentObjectTypeID) Then
+      If Not Me.IsConnected(_selectedCaseInfo.ArtifactID, ArtifactTypeID) Then
         CursorDefault()
         Exit Sub
       End If
@@ -1005,7 +1015,7 @@ Namespace kCura.EDDS.WinForm
 
     Public Function StartSearch(ByVal exportFile As ExportFile) As Guid
       CursorWait()
-      If Not Me.IsConnected(_selectedCaseInfo.ArtifactID, Me.CurrentObjectTypeID) Then
+      If Not Me.IsConnected(_selectedCaseInfo.ArtifactID, ArtifactTypeID) Then
         CursorDefault()
         Exit Function
       End If
@@ -1080,7 +1090,7 @@ Namespace kCura.EDDS.WinForm
       tempLoadFile.Credentials = Me.Credential
       tempLoadFile.DestinationFolderID = loadFile.DestinationFolderID
       'TODO: WINFLEX - ArtifactTypeID
-      tempLoadFile.SelectedIdentifierField = Me.CurrentFields(CurrentObjectTypeID, True).Item(Me.GetCaseIdentifierFields(CurrentObjectTypeID)(0))
+      tempLoadFile.SelectedIdentifierField = Me.CurrentFields(ArtifactTypeID, True).Item(Me.GetCaseIdentifierFields(ArtifactTypeID)(0))
       Dim mapItemToRemove As LoadFileFieldMap.LoadFileFieldMapItem
       If tempLoadFile.GroupIdentifierColumn = "" AndAlso System.IO.File.Exists(tempLoadFile.FilePath) Then
         Dim fieldMapItem As kCura.WinEDDS.LoadFileFieldMap.LoadFileFieldMapItem

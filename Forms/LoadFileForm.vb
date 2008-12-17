@@ -8,7 +8,8 @@ Namespace kCura.EDDS.WinForm
       MyBase.New()
 
       _application = kCura.EDDS.WinForm.Application.Instance
-			'This call is required by the Windows Form Designer.
+
+      'This call is required by the Windows Form Designer.
 			InitializeComponent()
 
 			'Add any initialization after the InitializeComponent() call
@@ -17,19 +18,20 @@ Namespace kCura.EDDS.WinForm
     End Sub
 
     Private Sub InitializeDocumentSpecificComponents()
-      If _application.CurrentObjectTypeID = 10 Then
+      If _application.ArtifactTypeID = 10 Then
         Me.GroupBox4.Visible = True
         Me.GroupBox7.Visible = True
       Else
+        Dim parentQuery As New kCura.WinEDDS.Service.ObjectTypeManager(_application.Credential, _application.CookieContainer)
+        _application.ParentArtifactTypeID = CType(parentQuery.RetrieveParentArtifactTypeID(_application.SelectedCaseInfo.ArtifactID, _
+        _application.ArtifactTypeID).Tables(0).Rows(0)("ParentArtifactTypeID"), Int32)
         Me.GroupBox5.Visible = False
-        Dim objectTypeManager As New kCura.WinEDDS.Service.ObjectTypeManager(_application.Credential, _application.CookieContainer)
-        Dim parentDataTable As System.Data.DataTable = objectTypeManager.RetrieveParentArtifactTypeID(_application.SelectedCaseInfo.ArtifactID, _application.CurrentObjectTypeID).Tables(0)
-        If parentDataTable.Rows.Count > 0 AndAlso CType(parentDataTable.Rows(0)("ParentArtifactTypeID"), Int32) <> 8 Then
+        If _application.ParentArtifactTypeID <> 8 Then
           Me.GroupBox5.Visible = True
           _buildFolderStructure.Checked = True
         End If
         Me.GroupBox4.Visible = False
-        If _application.HasFileField(_application.CurrentObjectTypeID, True) Then
+        If _application.HasFileField(_application.ArtifactTypeID, True) Then
           Me.GroupBox4.Visible = True
         End If
         Me.GroupBox7.Visible = False
@@ -551,7 +553,7 @@ Namespace kCura.EDDS.WinForm
       Me.GroupBox5.TabIndex = 30
       Me.GroupBox5.TabStop = False
       Me.GroupBox5.Text = "Parent Info"
-      If _application.CurrentObjectTypeID = 10 Then Me.GroupBox5.Text = "Folder Info"
+      If _application.ArtifactTypeID = 10 Then Me.GroupBox5.Text = "Folder Info"
       '
       '_buildFolderStructure
       '
@@ -560,7 +562,7 @@ Namespace kCura.EDDS.WinForm
       Me._buildFolderStructure.Size = New System.Drawing.Size(160, 16)
       Me._buildFolderStructure.TabIndex = 29
       Me._buildFolderStructure.Text = "Parent information column:"
-      If _application.CurrentObjectTypeID = 10 Then Me._buildFolderStructure.Text = "Folder information column:"
+      If _application.ArtifactTypeID = 10 Then Me._buildFolderStructure.Text = "Folder information column:"
       '
       '_destinationFolderPath
       '
@@ -720,12 +722,14 @@ Namespace kCura.EDDS.WinForm
         Else
           rtr = True
         End If
-        If _application.CurrentObjectTypeID = 10 Then
+        If _application.ArtifactTypeID = 10 Then
           If rtr AndAlso _buildFolderStructure.Checked Then
             rtr = _destinationFolderPath.SelectedIndex <> -1 AndAlso rtr
           End If
         Else
-          rtr = _buildFolderStructure.Checked AndAlso _destinationFolderPath.SelectedIndex <> -1 AndAlso rtr
+          If _application.ParentArtifactTypeID <> 8 Then
+            rtr = _buildFolderStructure.Checked AndAlso _destinationFolderPath.SelectedIndex <> -1 AndAlso rtr
+          End If
         End If
         Return _
          _fieldMap.RightListBoxItems.Count > 0 AndAlso _
@@ -770,11 +774,11 @@ Namespace kCura.EDDS.WinForm
       Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
       Me.PopulateLoadFileDelimiters()
       If Not Me.EnsureConnection() Then Exit Sub
-      Dim currentFields As WinEDDS.DocumentFieldCollection = _application.CurrentFields(_application.CurrentObjectTypeID, True)
+      Dim currentFields As WinEDDS.DocumentFieldCollection = _application.CurrentFields(_application.ArtifactTypeID, True)
       If currentFields Is Nothing Then
         Exit Sub
       End If
-      Me.LoadFile.FieldMap = kCura.EDDS.WinForm.Utility.ExtractFieldMap(_fieldMap, _fileColumns, currentFields, _application.CurrentObjectTypeID)
+      Me.LoadFile.FieldMap = kCura.EDDS.WinForm.Utility.ExtractFieldMap(_fieldMap, _fileColumns, currentFields, _application.ArtifactTypeID)
       'Dim groupIdentifier As DocumentField = _application.CurrentGroupIdentifierField
       'If _identifiersDropDown.SelectedIndex > 0 Then
       '	Dim columnname As String = CType(_identifiersDropDown.SelectedItem, String)
@@ -804,7 +808,7 @@ Namespace kCura.EDDS.WinForm
       If System.IO.File.Exists(_filePath.Text) Then
         LoadFile.FilePath = _filePath.Text
       End If
-      LoadFile.SelectedIdentifierField = _application.GetDocumentFieldFromName(_application.GetCaseIdentifierFields(_application.CurrentObjectTypeID)(0))
+      LoadFile.SelectedIdentifierField = _application.GetDocumentFieldFromName(_application.GetCaseIdentifierFields(_application.ArtifactTypeID)(0))
       'If Not _identifiersDropDown.SelectedItem Is Nothing Then
       '	LoadFile.GroupIdentifierColumn = _identifiersDropDown.SelectedItem.ToString
       'Else
@@ -818,7 +822,7 @@ Namespace kCura.EDDS.WinForm
           LoadFile.NativeFilePathColumn = Nothing
         End If
         'Add the file field as a mapped field for non document object types
-        If _application.CurrentObjectTypeID <> 10 Then
+        If _application.ArtifactTypeID <> 10 Then
           Dim fileField As DocumentField
           For Each field As DocumentField In currentFields.AllFields
             If field.FieldTypeID = kCura.DynamicFields.Types.FieldTypeHelper.FieldType.File Then
@@ -843,14 +847,14 @@ Namespace kCura.EDDS.WinForm
         LoadFile.CreateFolderStructure = False
       End If
       If LoadFile.ArtifactTypeID = 0 Then
-        LoadFile.ArtifactTypeID = _application.CurrentObjectTypeID
+        LoadFile.ArtifactTypeID = _application.ArtifactTypeID
       End If
       Me.LoadFile.CaseDefaultPath = _application.SelectedCaseInfo.DocumentPath
       Me.Cursor = System.Windows.Forms.Cursors.Default
     End Sub
 
     Private Sub MarkIdentifierField(ByVal fieldNames As String())
-      Dim identifierFields As String() = _application.GetCaseIdentifierFields(_application.CurrentObjectTypeID)
+      Dim identifierFields As String() = _application.GetCaseIdentifierFields(_application.ArtifactTypeID)
       Dim i As Int32
       For i = 0 To fieldNames.Length - 1
         If System.Array.IndexOf(identifierFields, fieldNames(i)) <> -1 Then
@@ -879,7 +883,7 @@ Namespace kCura.EDDS.WinForm
       _overwriteDropdown.SelectedItem = Me.GetOverwriteDropdownItem(LoadFile.OverwriteDestination)
       RefreshNativeFilePathFieldAndFileColumnHeaders()
       If Not Me.EnsureConnection() Then Exit Sub
-      Dim caseFields As String() = _application.GetNonFileCaseFields(LoadFile.CaseInfo.ArtifactID, _application.CurrentObjectTypeID, True)
+      Dim caseFields As String() = _application.GetNonFileCaseFields(LoadFile.CaseInfo.ArtifactID, _application.ArtifactTypeID, True)
       Dim caseFieldName As String
       If loadFileObjectUpdatedFromFile Then
         Dim columnHeaders As String()
@@ -927,7 +931,7 @@ Namespace kCura.EDDS.WinForm
       '	'_identifiersDropDown.SelectedItem = LoadFile.GroupIdentifierColumn
       'End If
 
-      If _application.CurrentObjectTypeID = 10 Then
+      If _application.ArtifactTypeID = 10 Then
         _extractedTextValueContainsFileLocation.Enabled = Me.FullTextColumnIsMapped
       End If
       _fullTextFileEncodingPicker.Enabled = _extractedTextValueContainsFileLocation.Enabled And _extractedTextValueContainsFileLocation.Checked

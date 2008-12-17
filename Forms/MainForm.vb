@@ -488,7 +488,7 @@ Namespace kCura.EDDS.WinForm
         ToolsImportProductionFileMenu.Visible = False
         ExportMenu.Visible = False
       End If
-      _application.CurrentObjectTypeID = selectedItemValue
+      _application.ArtifactTypeID = selectedItemValue
     End Sub
 
   End Class
