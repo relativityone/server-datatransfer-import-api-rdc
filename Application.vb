@@ -586,7 +586,7 @@ Namespace kCura.EDDS.WinForm
       If Me.ArtifactTypeID = 10 Then
         loadFile.DestinationFolderID = destinationArtifactID
       Else
-        loadFile.DestinationFolderID = 1
+        loadFile.DestinationFolderID = caseInfo.RootArtifactID
       End If
       loadFile.CaseInfo = caseInfo
       loadFile.Credentials = Me.Credential
