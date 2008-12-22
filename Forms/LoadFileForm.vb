@@ -19,22 +19,22 @@ Namespace kCura.EDDS.WinForm
 
     Private Sub InitializeDocumentSpecificComponents()
       If _application.ArtifactTypeID = 10 Then
-        Me.GroupBox4.Visible = True
-        Me.GroupBox7.Visible = True
+        Me.GroupBox4.Enabled = True
+        Me.GroupBox7.Enabled = True
       Else
         Dim parentQuery As New kCura.WinEDDS.Service.ObjectTypeManager(_application.Credential, _application.CookieContainer)
         _application.ParentArtifactTypeID = CType(parentQuery.RetrieveParentArtifactTypeID(_application.SelectedCaseInfo.ArtifactID, _
         _application.ArtifactTypeID).Tables(0).Rows(0)("ParentArtifactTypeID"), Int32)
-        Me.GroupBox5.Visible = False
+        Me.GroupBox5.Enabled = False
         If _application.ParentArtifactTypeID <> 8 Then
-          Me.GroupBox5.Visible = True
+          Me.GroupBox5.Enabled = True
           _buildFolderStructure.Checked = True
         End If
-        Me.GroupBox4.Visible = False
+        Me.GroupBox4.Enabled = False
         If _application.HasFileField(_application.ArtifactTypeID, True) Then
-          Me.GroupBox4.Visible = True
+          Me.GroupBox4.Enabled = True
         End If
-        Me.GroupBox7.Visible = False
+        Me.GroupBox7.Enabled = False
       End If
     End Sub
 
