@@ -728,14 +728,16 @@ Namespace kCura.EDDS.WinForm
           End If
         Else
           If _application.ParentArtifactTypeID <> 8 Then
-            rtr = _buildFolderStructure.Checked AndAlso _destinationFolderPath.SelectedIndex <> -1 AndAlso rtr
+            If Not _overwriteDropdown.SelectedItem Is Nothing AndAlso _overwriteDropdown.SelectedItem.ToString.ToLower() = "append only" Then
+              rtr = _buildFolderStructure.Checked AndAlso _destinationFolderPath.SelectedIndex <> -1 AndAlso rtr
+            End If
           End If
         End If
         Return _
          _fieldMap.RightListBoxItems.Count > 0 AndAlso _
          _fileColumns.LeftListBoxItems.Count > 0 AndAlso _
          rtr AndAlso _
-         System.IO.File.Exists(_filePath.Text)   'AndAlso _
+         System.IO.File.Exists(_filePath.Text) 'AndAlso _
         '_identifiersDropDown.SelectedIndex <> -1
       End Get
     End Property
