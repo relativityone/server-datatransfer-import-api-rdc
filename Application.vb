@@ -251,7 +251,7 @@ Namespace kCura.EDDS.WinForm
 
 #Region "Document Field Collection"
 		Public Function GetDocumentFieldFromName(ByVal fieldName As String) As DocumentField
-      Return CurrentFields(10).Item(fieldName)
+      Return CurrentFields(Me.ArtifactTypeID).Item(fieldName)
 		End Function
 
     Public Function GetCaseIdentifierFields(ByVal artifactTypeID As Int32) As String()
@@ -259,7 +259,7 @@ Namespace kCura.EDDS.WinForm
     End Function
 
     Public Function IdentiferFieldDropdownPopulator() As String()
-      Return CurrentFields(10).NamesForIdentifierDropdown
+      Return CurrentFields(Me.ArtifactTypeID).NamesForIdentifierDropdown
     End Function
 
     Public Function GetCaseFields(ByVal caseID As Int32, ByVal artifactTypeID As Int32, Optional ByVal refresh As Boolean = False) As String()
@@ -282,8 +282,7 @@ Namespace kCura.EDDS.WinForm
 
     Public Function GetSelectedIdentifier(ByVal selectedField As DocumentField) As String
       Try
-        'TODO: WINFLEX - ArtifactTypeID
-        Return CurrentFields(10).Item(selectedField.FieldName).FieldName
+        Return CurrentFields(Me.ArtifactTypeID).Item(selectedField.FieldName).FieldName
       Catch ex As System.Exception
         Return String.Empty
       End Try
@@ -293,8 +292,7 @@ Namespace kCura.EDDS.WinForm
       Dim identifierFieldName As String
       Dim unselectedFieldName As String
       Dim unselectedIDFieldNames As New System.Text.StringBuilder
-      'TODO: WINFLEX - ArtifactTypeID
-      For Each identifierFieldName In CurrentFields(10).IdentifierFieldNames()
+      For Each identifierFieldName In CurrentFields(Me.ArtifactTypeID).IdentifierFieldNames()
         For Each unselectedFieldName In unselectedFieldNames
           If identifierFieldName.ToLower & " [identifier]" = unselectedFieldName Then
             unselectedIDFieldNames.AppendFormat(unselectedFieldName & ChrW(13))
@@ -448,7 +446,7 @@ Namespace kCura.EDDS.WinForm
     'Worker function for PreviewLoadFile
     Public Function BuildLoadFileDataSource(ByVal al As ArrayList) As DataTable
       Try
-        Me.GetCaseFields(_selectedCaseInfo.ArtifactID, 10, True)
+        Me.GetCaseFields(_selectedCaseInfo.ArtifactID, Me.ArtifactTypeID, True)
         'Dim previewer As New kCura.WinEDDS.LoadFilePreviewer(loadFile, _timeZoneOffset, errorsOnly)
         'Dim al As ArrayList = DirectCast(previewer.ReadFile(loadFile.FilePath), ArrayList)
         'previewer.Close()
