@@ -178,8 +178,8 @@ Namespace kCura.WinEDDS
 							'	duplicateHashField = docfield
 							'End If
 						Case kCura.DynamicFields.Types.FieldCategory.Identifier
-							identifierField = docfield
-					End Select
+              identifierField = docfield
+          End Select
           lineContainsErrors = lineContainsErrors Or SetFieldValueOrErrorMessage(docfield, valToParse, mapItem.NativeFileColumnIndex)
           'dont add field if object type is not a document and the field is a file field
           If Not (_artifactTypeID <> 10 And docfield.FieldTypeID = kCura.DynamicFields.Types.FieldTypeHelper.FieldType.File) Then
@@ -262,14 +262,31 @@ Namespace kCura.WinEDDS
         End If
         retval.Add(docfield)
       End If
+
       If _createFolderStructure AndAlso _artifactTypeID <> 10 Then
         Dim openParenIndex As Int32 = _destinationFolder.LastIndexOf("("c) + 1
         Dim closeParenIndex As Int32 = _destinationFolder.LastIndexOf(")"c)
         Dim parentObjectIdentifierIndex As Int32 = Int32.Parse(_destinationFolder.Substring(openParenIndex, closeParenIndex - openParenIndex)) - 1
         Dim docfield As New DocumentField("Parent Object Identifier", -1, -1, -1, NullableInt32.Null, NullableInt32.Null, False)
         docField.Value = values(parentObjectIdentifierIndex)
+        Dim textIdentifier As String = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(kCura.Utility.NullableTypesHelper.ToNullableString(values(parentObjectIdentifierIndex)))
+        If textIdentifier = "" Then
+          docField.Value = New ParentObjectReferenceRequiredException(Me.CurrentLineNumber, parentObjectIdentifierIndex).Message
+          lineContainsErrors = True
+        Else
+          Dim parentObjectTable As System.Data.DataTable = _objectManager.RetrieveArtifactIdOfMappedParentObject(_caseArtifactID, _
+          textIdentifier, _artifactTypeID).Tables(0)
+          If parentObjectTable.Rows.Count > 1 Then
+            docField.Value = New DuplicateObjectReferenceException(Me.CurrentLineNumber, parentObjectIdentifierIndex, "Parent Info").Message
+            lineContainsErrors = True
+          ElseIf parentObjectTable.Rows.Count = 0 Then
+            docField.Value = New NonExistentObjectReferenceException(Me.CurrentLineNumber, parentObjectIdentifierIndex, "Parent Info").Message
+            lineContainsErrors = True
+          End If
+        End If
         retval.Add(docfield)
       End If
+
       If _errorsOnly Then
         If lineContainsErrors Then
           Return DirectCast(retval.ToArray(GetType(DocumentField)), DocumentField())
