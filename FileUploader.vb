@@ -98,6 +98,7 @@ Namespace kCura.WinEDDS
 					Return String.Empty
 				Else
 					Try
+						If _destinationFolderPath = oldDestinationFolderPath Then Return String.Empty
 						Dim r As String = Me.WebUploadFile(New System.IO.FileStream(localFilePath, IO.FileMode.Open, IO.FileAccess.Read), appID, System.Guid.NewGuid.ToString)
 						_destinationFolderPath = oldDestinationFolderPath
 						Return r

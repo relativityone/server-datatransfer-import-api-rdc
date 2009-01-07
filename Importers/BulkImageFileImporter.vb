@@ -201,6 +201,9 @@ Namespace kCura.WinEDDS
 					Dim lineList As New System.Collections.ArrayList(Me.GetLine)
 					lineList.Add(Me.CurrentLineNumber.ToString)
 					line = DirectCast(lineList.ToArray(GetType(String)), String())
+					If line.Length < 4 Then
+						Throw New InvalidLineFormatException(Me.CurrentLineNumber, line.Length)
+					End If
 					If (line(Columns.MultiPageIndicator).ToUpper = "Y") Then
 						Me.ProcessList(al, status, bulkLoadFilePath)
 					End If
@@ -523,6 +526,13 @@ Namespace kCura.WinEDDS
 			Inherits System.Exception
 			Public Sub New(ByVal batesNumber As String, ByVal productionName As String, ByVal batesPrefix As String, ByVal batesSuffix As String, ByVal batesFormat As String)
 				MyBase.New(String.Format("The image with bates number {0} cannot be imported into production '{1}' because the prefix and/or suffix do not match the values specified in the production. Expected prefix: '{2}'. Expected suffix: '{3}'. Expected format: '{4}'.", batesNumber, productionName, batesPrefix, batesSuffix, batesFormat))
+			End Sub
+		End Class
+
+		Public Class InvalidLineFormatException
+			Inherits System.Exception
+			Public Sub New(ByVal lineNumber As Int32, ByVal numberOfColumns As Int32)
+				MyBase.New(String.Format("Invalid opticon file line {0}.  There must be at least 4 columns per line in an opticon file, there are {1} in the current line", lineNumber, numberOfColumns))
 			End Sub
 		End Class
 #End Region
