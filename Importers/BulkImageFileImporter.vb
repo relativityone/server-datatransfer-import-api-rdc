@@ -199,11 +199,9 @@ Namespace kCura.WinEDDS
 				Dim status As Int32 = 0
 				While Me.Continue
 					Dim lineList As New System.Collections.ArrayList(Me.GetLine)
+					If lineList.Count < 4 Then Throw New InvalidLineFormatException(Me.CurrentLineNumber, lineList.Count)
 					lineList.Add(Me.CurrentLineNumber.ToString)
 					line = DirectCast(lineList.ToArray(GetType(String)), String())
-					If line.Length < 4 Then
-						Throw New InvalidLineFormatException(Me.CurrentLineNumber, line.Length)
-					End If
 					If (line(Columns.MultiPageIndicator).ToUpper = "Y") Then
 						Me.ProcessList(al, status, bulkLoadFilePath)
 					End If
