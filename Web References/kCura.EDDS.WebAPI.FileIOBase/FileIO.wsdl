@@ -87,6 +87,16 @@
           </s:sequence>
         </s:complexType>
       </s:element>
+      <s:element name="RepositoryVolumeMax">
+        <s:complexType />
+      </s:element>
+      <s:element name="RepositoryVolumeMaxResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="RepositoryVolumeMaxResult" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
     </s:schema>
   </wsdl:types>
   <wsdl:message name="BeginFillSoapIn">
@@ -125,6 +135,12 @@
   <wsdl:message name="GetBcpSharePathSoapOut">
     <wsdl:part name="parameters" element="tns:GetBcpSharePathResponse" />
   </wsdl:message>
+  <wsdl:message name="RepositoryVolumeMaxSoapIn">
+    <wsdl:part name="parameters" element="tns:RepositoryVolumeMax" />
+  </wsdl:message>
+  <wsdl:message name="RepositoryVolumeMaxSoapOut">
+    <wsdl:part name="parameters" element="tns:RepositoryVolumeMaxResponse" />
+  </wsdl:message>
   <wsdl:portType name="FileIOSoap">
     <wsdl:operation name="BeginFill">
       <wsdl:input message="tns:BeginFillSoapIn" />
@@ -149,6 +165,10 @@
     <wsdl:operation name="GetBcpSharePath">
       <wsdl:input message="tns:GetBcpSharePathSoapIn" />
       <wsdl:output message="tns:GetBcpSharePathSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="RepositoryVolumeMax">
+      <wsdl:input message="tns:RepositoryVolumeMaxSoapIn" />
+      <wsdl:output message="tns:RepositoryVolumeMaxSoapOut" />
     </wsdl:operation>
   </wsdl:portType>
   <wsdl:binding name="FileIOSoap" type="tns:FileIOSoap">
@@ -200,6 +220,15 @@
     </wsdl:operation>
     <wsdl:operation name="GetBcpSharePath">
       <soap:operation soapAction="http://foley.com/EDDS/FileManager/GetBcpSharePath" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RepositoryVolumeMax">
+      <soap:operation soapAction="http://foley.com/EDDS/FileManager/RepositoryVolumeMax" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>

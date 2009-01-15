@@ -86,8 +86,8 @@ Namespace kCura.WinEDDS
 			_repositoryPath = args.SelectedCasePath & "EDDS" & args.CaseInfo.ArtifactID & "\"
 			_textRepositoryPath = args.CaseDefaultPath & "EDDS" & args.CaseInfo.ArtifactID & "\"
 			_fileUploader = New kCura.WinEDDS.FileUploader(args.Credential, args.CaseInfo.ArtifactID, _repositoryPath, args.CookieContainer)
-			_bcpuploader = New kCura.WinEDDS.FileUploader(args.Credential, args.CaseInfo.ArtifactID, _repositoryPath, args.CookieContainer)
-			_textUploader = New kCura.WinEDDS.FileUploader(args.Credential, args.CaseInfo.ArtifactID, _textRepositoryPath, args.CookieContainer)
+			_bcpuploader = New kCura.WinEDDS.FileUploader(args.Credential, args.CaseInfo.ArtifactID, _repositoryPath, args.CookieContainer, False)
+			_textUploader = New kCura.WinEDDS.FileUploader(args.Credential, args.CaseInfo.ArtifactID, _textRepositoryPath, args.CookieContainer, False)
 			_folderID = folderID
 
 			_productionArtifactID = args.ProductionArtifactID
@@ -370,7 +370,7 @@ Namespace kCura.WinEDDS
 					If _copyFilesToRepository Then
 						RaiseStatusEvent(kCura.Windows.Process.EventType.Progress, String.Format("Uploading File '{0}'.", filename))
 						fileGuid = _fileUploader.UploadFile(imageFileName, _folderID)
-						fileLocation = _fileUploader.DestinationFolderPath.TrimEnd("\"c) & "\" & fileGuid
+						fileLocation = _fileUploader.DestinationFolderPath.TrimEnd("\"c) & "\" & _fileUploader.CurrentDestinationDirectory & "\" & fileGuid
 					Else
 						RaiseStatusEvent(kCura.Windows.Process.EventType.Progress, String.Format("Processing image '{0}'.", batesNumber))
 						fileGuid = System.Guid.NewGuid.ToString

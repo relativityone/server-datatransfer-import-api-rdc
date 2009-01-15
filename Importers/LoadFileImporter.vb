@@ -340,7 +340,7 @@ Namespace kCura.WinEDDS
       ElseIf Not _processedDocumentIdentifiers(identityValue) Is Nothing Then
         Throw New IdentifierOverlapException(identityValue, _processedDocumentIdentifiers(identityValue))
       End If
-      Dim metadoc As New MetaDocument(fileGuid, identityValue, fieldCollection, fileExists AndAlso uploadFile AndAlso (fileGuid <> String.Empty OrElse Not _copyFileToRepository), filename, fullFilePath, uploadFile, CurrentLineNumber, parentFolderID, md5hash, values, oixFileIdData, 0)
+			Dim metadoc As New MetaDocument(fileGuid, identityValue, fieldCollection, fileExists AndAlso uploadFile AndAlso (fileGuid <> String.Empty OrElse Not _copyFileToRepository), filename, fullFilePath, uploadFile, CurrentLineNumber, parentFolderID, md5hash, values, oixFileIdData, 0, "")
       _docsToProcess.Push(metadoc)
       Return identityValue
     End Function

@@ -157,8 +157,8 @@ Namespace kCura.WinEDDS
       _defaultTextFolderPath = args.CaseDefaultPath & "EDDS" & args.CaseInfo.ArtifactID & "\"
       If initializeUploaders Then
         _uploader = New kCura.WinEDDS.FileUploader(args.Credentials, args.CaseInfo.ArtifactID, _defaultDestinationFolderPath, args.CookieContainer)
-        _bcpuploader = New kCura.WinEDDS.FileUploader(args.Credentials, args.CaseInfo.ArtifactID, _defaultDestinationFolderPath, args.CookieContainer)
-        _textUploader = New kCura.WinEDDS.FileUploader(args.Credentials, args.CaseInfo.ArtifactID, _defaultTextFolderPath, args.CookieContainer)
+        _bcpuploader = New kCura.WinEDDS.FileUploader(args.Credentials, args.CaseInfo.ArtifactID, _defaultDestinationFolderPath, args.CookieContainer, false)
+				_textUploader = New kCura.WinEDDS.FileUploader(args.Credentials, args.CaseInfo.ArtifactID, _defaultTextFolderPath, args.CookieContainer, False)
       End If
       _extractFullTextFromNative = args.ExtractFullTextFromNativeFile
       _selectedIdentifier = args.SelectedIdentifierField
@@ -323,6 +323,7 @@ Namespace kCura.WinEDDS
 			Dim fullFilePath As String = ""
 			Dim isSupportedFileType As Boolean
 			Dim oixFileIdData As OI.FileID.FileIDData
+			Dim destinationVolume As String
 			If uploadFile Then
 				filename = values(_filePathColumnIndex)
 				If filename.Length > 1 AndAlso filename.Chars(0) = "\" AndAlso filename.Chars(1) <> "\" Then
@@ -335,18 +336,19 @@ Namespace kCura.WinEDDS
           Dim now As DateTime = DateTime.Now
           If New IO.FileInfo(filename).Length = 0 Then lineStatus += kCura.EDDS.Types.MassImport.ImportStatus.EmptyFile 'Throw New EmptyNativeFileException(filename)
           oixFileIdData = kCura.OI.FileID.Manager.Instance.GetFileIDDataByFilePath(filename)
-          If _copyFileToRepository Then
-            fileGuid = _uploader.UploadFile(filename, _caseArtifactID)
-          Else
-            fileGuid = System.Guid.NewGuid.ToString
-          End If
-          If _extractMd5Hash Then
-            md5hash = kCura.Utility.File.GenerateMD5HashForFile(filename)
-          End If
-          fullFilePath = filename
-          filename = filename.Substring(filename.LastIndexOf("\") + 1)
-          WriteStatusLine(Windows.Process.EventType.Status, String.Format("End upload file. ({0}ms)", DateTime.op_Subtraction(DateTime.Now, now).Milliseconds))
-        End If
+					If _copyFileToRepository Then
+						fileGuid = _uploader.UploadFile(filename, _caseArtifactID)
+						destinationVolume = _uploader.CurrentDestinationDirectory
+					Else
+						fileGuid = System.Guid.NewGuid.ToString
+					End If
+					If _extractMd5Hash Then
+						md5hash = kCura.Utility.File.GenerateMD5HashForFile(filename)
+					End If
+					fullFilePath = filename
+					filename = filename.Substring(filename.LastIndexOf("\") + 1)
+					WriteStatusLine(Windows.Process.EventType.Status, String.Format("End upload file. ({0}ms)", DateTime.op_Subtraction(DateTime.Now, now).Milliseconds))
+				End If
       End If
       If _createFolderStructure Then
         If _artifactTypeID = 10 Then
@@ -377,7 +379,7 @@ Namespace kCura.WinEDDS
       ElseIf Not _processedDocumentIdentifiers(identityValue) Is Nothing Then
         lineStatus += ImportStatus.IdentifierOverlap   '	Throw New IdentifierOverlapException(identityValue, _processedDocumentIdentifiers(identityValue))
       End If
-      Dim metadoc As New MetaDocument(fileGuid, identityValue, fieldCollection, fileExists AndAlso uploadFile AndAlso (fileGuid <> String.Empty OrElse Not _copyFileToRepository), filename, fullFilePath, uploadFile, CurrentLineNumber, parentFolderID, md5hash, values, oixFileIdData, lineStatus)
+			Dim metadoc As New MetaDocument(fileGuid, identityValue, fieldCollection, fileExists AndAlso uploadFile AndAlso (fileGuid <> String.Empty OrElse Not _copyFileToRepository), filename, fullFilePath, uploadFile, CurrentLineNumber, parentFolderID, md5hash, values, oixFileIdData, lineStatus, destinationVolume)
       '_docsToProcess.Push(metadoc)
       ManageDocumentMetaData(metadoc)
       Return identityValue
@@ -556,7 +558,7 @@ Namespace kCura.WinEDDS
         _outputNativeFileWriter.Write(fileguid & Constants.NATIVE_FIELD_DELIMITER)
         _outputNativeFileWriter.Write(filename & Constants.NATIVE_FIELD_DELIMITER)
         If _settings.CopyFilesToDocumentRepository Then
-          _outputNativeFileWriter.Write(_defaultDestinationFolderPath & fileguid & Constants.NATIVE_FIELD_DELIMITER)
+					_outputNativeFileWriter.Write(_defaultDestinationFolderPath & mdoc.DestinationVolume & "\" & fileguid & Constants.NATIVE_FIELD_DELIMITER)
           _outputNativeFileWriter.Write(mdoc.FullFilePath & Constants.NATIVE_FIELD_DELIMITER)
         Else
           _outputNativeFileWriter.Write(mdoc.FullFilePath & Constants.NATIVE_FIELD_DELIMITER)
@@ -728,13 +730,14 @@ Namespace kCura.WinEDDS
               Dim location As String
               If _uploader.DestinationFolderPath = "" Then
                 location = localFilePath
-              Else
-                location = _uploader.DestinationFolderPath & _uploader.UploadFile(localFilePath, _caseArtifactID)
-              End If
-              location = System.Web.HttpUtility.UrlEncode(location)
-              docfield.Value = String.Format("{1}{0}{2}{0}{3}", ChrW(11), fileName, fileSize, location)
-              Dim blah As String = ""
-            Else
+							Else
+								Dim guid As String = _uploader.UploadFile(localFilePath, _caseArtifactID)
+								location = _uploader.DestinationFolderPath & _uploader.CurrentDestinationDirectory & "\" & guid
+							End If
+							location = System.Web.HttpUtility.UrlEncode(location)
+							docfield.Value = String.Format("{1}{0}{2}{0}{3}", ChrW(11), fileName, fileSize, location)
+							Dim blah As String = ""
+						Else
               Throw New System.IO.FileNotFoundException(String.Format("File '{0}' not found.", localFilePath))
             End If
           Else

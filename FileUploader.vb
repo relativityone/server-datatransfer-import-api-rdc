@@ -13,17 +13,27 @@ Namespace kCura.WinEDDS
 		Private _destinationFolderPath As String
 		Private _caseArtifactID As Int32
 		Private _isBulkEnabled As Boolean = True
+		Private _repositoryPathManager As kCura.Edds.Types.RepositoryPathManager
+		Private _sortIntoVolumes As Boolean = False
+
+		Public ReadOnly Property CurrentDestinationDirectory() As String
+			Get
+				Return _repositoryPathManager.CurrentDestinationDirectory
+			End Get
+		End Property
 		Public Sub SetDesintationFolderName(ByVal value As String)
 			_destinationFolderPath = value
 		End Sub
 
-		Public Sub New(ByVal credentials As Net.NetworkCredential, ByVal caseArtifactID As Int32, ByVal destinationFolderPath As String, ByVal cookieContainer As System.Net.CookieContainer)
+		Public Sub New(ByVal credentials As Net.NetworkCredential, ByVal caseArtifactID As Int32, ByVal destinationFolderPath As String, ByVal cookieContainer As System.Net.CookieContainer, Optional ByVal sortIntoVolumes As Boolean = True)
 			_gateway = New kCura.WinEDDS.Service.FileIO(credentials, cookieContainer)
 			_gateway.Credentials = credentials
 			_gateway.Timeout = Int32.MaxValue
 			_credentials = credentials
 			_caseArtifactID = caseArtifactID
 			_destinationFolderPath = destinationFolderPath
+			_repositoryPathManager = New kCura.EDDS.Types.RepositoryPathManager(_gateway.RepositoryVolumeMax)
+			_sortIntoVolumes = sortIntoVolumes
 			SetType(_destinationFolderPath)
 		End Sub
 
@@ -126,12 +136,12 @@ Namespace kCura.WinEDDS
 				Dim tries As Int32 = 20
 				'Dim newFileName As String = System.Guid.NewGuid.ToString
 				'Dim documentManager As New kCura.EDDS.WebAPI.DocumentManagerBase.DocumentManager
+				Dim destinationDirectory As String = _repositoryPathManager.GetNextDestinationDirectory(_destinationFolderPath)
+				If Not _sortIntoVolumes Then destinationDirectory = _destinationFolderPath
 				While tries > 0
 					Try
-						If Not System.IO.Directory.Exists(_destinationFolderPath) Then
-							System.IO.Directory.CreateDirectory(_destinationFolderPath)
-						End If
-						System.IO.File.Copy(filePath, String.Format("{0}{1}", _destinationFolderPath, newFileName), tries < 20)
+						If Not System.IO.Directory.Exists(destinationDirectory) Then System.IO.Directory.CreateDirectory(destinationDirectory)
+						System.IO.File.Copy(filePath, destinationDirectory & newFileName, tries < 20)
 						Return newFileName
 					Catch ex As System.Exception
 						tries -= 1
@@ -139,6 +149,7 @@ Namespace kCura.WinEDDS
 							RaiseEvent UploadWarningEvent("Network upload failed: " & ex.Message & " - Retrying in 30 seconds. " & tries & " tries left.")
 							System.Threading.Thread.CurrentThread.Join(30000)
 						Else
+							_repositoryPathManager.Rollback()
 							If internalUse Then
 								Throw
 							Else
@@ -182,6 +193,8 @@ Namespace kCura.WinEDDS
 			Dim readLimit As Int32 = Settings.ChunkSize
 			'Dim fileGuid As String
 			Dim tries As Int32 = 20
+			Dim destinationDirectory As String = _repositoryPathManager.GetNextDestinationDirectory(_destinationFolderPath)
+			If Not _sortIntoVolumes Then destinationDirectory = _destinationFolderPath
 			While tries > 0
 				tries -= 1
 				Try
@@ -199,15 +212,15 @@ Namespace kCura.WinEDDS
 						Dim b(readLimit) As Byte
 						fileStream.Read(b, 0, readLimit)
 						If i = 1 Then
-							fileGuid = Gateway.BeginFill(_caseArtifactID, b, _destinationFolderPath, fileGuid)
+							fileGuid = Gateway.BeginFill(_caseArtifactID, b, destinationDirectory, fileGuid)
 							If fileGuid = String.Empty Then
 								Return String.Empty
 							End If
 						End If
 						If i <= trips And i > 1 Then
 							RaiseEvent UploadStatusEvent("Trip " & i & " of " & trips)
-							If Not Gateway.FileFill(_caseArtifactID, _destinationFolderPath, fileGuid, b, contextArtifactID) Then
-								Gateway.RemoveFill(_caseArtifactID, _destinationFolderPath, fileGuid)
+							If Not Gateway.FileFill(_caseArtifactID, destinationDirectory, fileGuid, b, contextArtifactID) Then
+								Gateway.RemoveFill(_caseArtifactID, destinationDirectory, fileGuid)
 								Return String.Empty
 							End If
 						End If
@@ -229,6 +242,7 @@ Namespace kCura.WinEDDS
 						RaiseEvent UploadWarningEvent("Web upload failed: " & ex.Message & vbNewLine & "Retrying in 30 seconds. " & tries & " tries left.")
 						System.Threading.Thread.CurrentThread.Join(30000)
 					Else
+						_repositoryPathManager.Rollback()
 						Throw
 					End If
 				End Try
