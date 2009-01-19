@@ -740,14 +740,14 @@ Namespace kCura.WinEDDS
 						Else
               Throw New System.IO.FileNotFoundException(String.Format("File '{0}' not found.", localFilePath))
             End If
-          Else
-            MyBase.SetFieldValue(docfield, values, item.NativeFileColumnIndex, identityValue)
-          End If
-          If docfield.FieldName = _selectedIdentifier.FieldName Then
-            identityValue = docfield.Value
-          End If
-          fieldCollection.Add(docfield)
-        End If
+					Else
+						MyBase.SetFieldValue(docfield, values, item.NativeFileColumnIndex, identityValue)
+					End If
+					If docfield.FieldName = _selectedIdentifier.FieldName Then
+						identityValue = docfield.Value
+					End If
+					fieldCollection.Add(docfield)
+				End If
       Next
       If Not fieldCollection.GroupIdentifier Is Nothing AndAlso fieldCollection.GroupIdentifier.Value = "" Then
         fieldCollection.GroupIdentifier.Value = identityValue

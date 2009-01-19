@@ -214,10 +214,10 @@ Namespace kCura.WinEDDS
           value = ""
         End Try
       End If
-      If field.FieldCategoryID = kCura.DynamicFields.Types.FieldCategory.FullText Then
-        value = value.Replace(NewlineProxy, Microsoft.VisualBasic.ControlChars.NewLine)
-      End If
-      SetFieldValue(field, value, column, identityValue)
+			If field.FieldCategoryID = kCura.DynamicFields.Types.FieldCategory.FullText Then
+				value = value.Replace(NewlineProxy, Microsoft.VisualBasic.ControlChars.NewLine)
+			End If
+			SetFieldValue(field, value, column, identityValue)
     End Sub
 
     Public Sub SetFieldValue(ByVal field As DocumentField, ByVal value As String, ByVal column As Int32, ByVal identityValue As String)
