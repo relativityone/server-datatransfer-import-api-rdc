@@ -29,7 +29,7 @@ Namespace kCura.WinEDDS
 			System.Threading.Monitor.Enter(Me.ProcessObserver)
 			Select Case e.EventType
 				Case kCura.Windows.Process.EventType.Error
-					_errorCount += 1
+					If e.CountsTowardsTotal Then _errorCount += 1
 					Me.ProcessObserver.RaiseErrorEvent(e.CurrentRecordIndex.ToString, e.Message)
 				Case kCura.Windows.Process.EventType.Progress
 					Me.ProcessObserver.RaiseStatusEvent(e.CurrentRecordIndex.ToString, e.Message)
@@ -37,7 +37,7 @@ Namespace kCura.WinEDDS
 				Case kCura.Windows.Process.EventType.Status
 					Me.ProcessObserver.RaiseStatusEvent(e.CurrentRecordIndex.ToString, e.Message)
 				Case kCura.Windows.Process.EventType.Warning
-					_warningCount += 1
+					If e.CountsTowardsTotal Then _warningCount += 1
 					Me.ProcessObserver.RaiseWarningEvent(e.CurrentRecordIndex.ToString, e.Message)
 			End Select
 			System.Threading.Monitor.Exit(Me.ProcessObserver)
