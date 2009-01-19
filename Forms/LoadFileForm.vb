@@ -1310,7 +1310,7 @@ Namespace kCura.EDDS.WinForm
     End Function
 
     Private Sub _fileRefreshMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _fileRefreshMenuItem.Click
-      Dim caseFields As String() = _application.GetCaseFields(LoadFile.CaseInfo.ArtifactID, _application.ArtifactTypeID, True)
+			Dim caseFields As String() = _application.GetNonFileCaseFields(LoadFile.CaseInfo.ArtifactID, _application.ArtifactTypeID, True)	 '_application.GetCaseFields(LoadFile.CaseInfo.ArtifactID, _application.ArtifactTypeID, True)
       If caseFields Is Nothing Then Exit Sub
       Me.MarkIdentifierField(caseFields)
       Dim fieldName As String
@@ -1338,8 +1338,9 @@ Namespace kCura.EDDS.WinForm
       For Each fieldName In itemsToRemove
         _fieldMap.RightListBoxItems.Remove(fieldName)
       Next
-      _application.RefreshSelectedCaseInfo()
-      Me.LoadFile.CaseInfo = _application.SelectedCaseInfo
+			_application.RefreshSelectedCaseInfo()
+			Me.LoadFile.CaseInfo = _application.SelectedCaseInfo
+			InitializeDocumentSpecificComponents()
     End Sub
 
     Private Function EnsureConnection() As Boolean
