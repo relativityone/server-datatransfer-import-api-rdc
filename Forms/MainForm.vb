@@ -464,15 +464,19 @@ Namespace kCura.EDDS.WinForm
 
     Private Sub PopulateObjectTypeDropDown()
       Dim objectTypeManager As New kCura.WinEDDS.Service.ObjectTypeManager(_application.Credential, _application.CookieContainer)
-      Dim uploadableObjectTypes As System.Data.DataRowCollection = objectTypeManager.RetrieveAllUploadable(_application.SelectedCaseInfo.ArtifactID).Tables(0).Rows
-      _objectTypeDropDown.Items.Clear()
-      For Each objectType As System.Data.DataRow In uploadableObjectTypes
-        Dim currentObjectType As New kCura.WinEDDS.ObjectTypeListItem(CType(objectType("DescriptorArtifactTypeID"), Int32), CType(objectType("Name"), String))
-        _objectTypeDropDown.Items.Add(currentObjectType)
-        If CType(objectType("DescriptorArtifactTypeID"), Int32) = 10 Then
-          Me._objectTypeDropDown.SelectedItem = currentObjectType
-        End If
-      Next
+			Dim uploadableObjectTypes As System.Data.DataRowCollection = objectTypeManager.RetrieveAllUploadable(_application.SelectedCaseInfo.ArtifactID).Tables(0).Rows
+			Dim selectedObjectTypeID As Int32 = 10
+			If _objectTypeDropDown.Items.Count > 0 Then
+				selectedObjectTypeID = DirectCast(_objectTypeDropDown.SelectedItem, kCura.WinEDDS.ObjectTypeListItem).Value
+			End If
+			_objectTypeDropDown.Items.Clear()
+			For Each objectType As System.Data.DataRow In uploadableObjectTypes
+				Dim currentObjectType As New kCura.WinEDDS.ObjectTypeListItem(CType(objectType("DescriptorArtifactTypeID"), Int32), CType(objectType("Name"), String))
+				_objectTypeDropDown.Items.Add(currentObjectType)
+				If CType(objectType("DescriptorArtifactTypeID"), Int32) = selectedObjectTypeID Then
+					Me._objectTypeDropDown.SelectedItem = currentObjectType
+				End If
+			Next
     End Sub
 
     Private Sub _objectTypeDropDown_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _objectTypeDropDown.SelectedIndexChanged
