@@ -421,6 +421,11 @@ Namespace kCura.EDDS.WinForm
 			_subDirectoryNativePrefix.SelectionStart = _subDirectoryNativePrefix.Text.Length
 		End Sub
 
+		Private Sub _subDirectoryTextPrefix_TextChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _subdirectoryTextPrefix.TextChanged
+			_subdirectoryTextPrefix.Text = Me.CleanPath(_subdirectoryTextPrefix.Text)
+			_subdirectoryTextPrefix.SelectionStart = _subdirectoryTextPrefix.Text.Length
+		End Sub
+
 		Private Function CleanPath(ByRef path As String) As String
 			Dim retval As String = path
 			retval = retval.Replace("\", "")
