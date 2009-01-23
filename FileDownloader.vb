@@ -31,7 +31,7 @@ Namespace kCura.WinEDDS
 				destinationFolderPath &= "\"
 			End If
 			_destinationFolderPath = destinationFolderPath
-			_downloadUrl = downloadHandlerUrl
+			_downloadUrl = kCura.Utility.URI.GetFullyQualifiedPath(downloadHandlerUrl, New System.Uri(kCura.WinEDDS.Config.WebServiceURL))
 			'Dim documentManager As kCura.EDDS.WebAPI.DocumentManagerBase.DocumentManager
 			SetType(_destinationFolderPath)
 			_authenticationToken = authenticationToken
