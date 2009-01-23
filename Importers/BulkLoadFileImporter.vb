@@ -354,35 +354,44 @@ Namespace kCura.WinEDDS
         If _artifactTypeID = 10 Then
           parentFolderID = _folderCache.FolderID(Me.CleanDestinationFolderPath(values(_destinationFolderColumnIndex)))
         Else
-          Dim textIdentifier As String = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(kCura.Utility.NullableTypesHelper.ToNullableString(values(_destinationFolderColumnIndex)))
-          If textIdentifier = "" Then
-            Throw New ParentObjectReferenceRequiredException(Me.CurrentLineNumber, _destinationFolderColumnIndex)
-          Else
-            Dim parentObjectTable As System.Data.DataTable = _objectManager.RetrieveArtifactIdOfMappedParentObject(_caseArtifactID, _
-            textIdentifier, _artifactTypeID).Tables(0)
-            If parentObjectTable.Rows.Count > 1 Then
-              Throw New DuplicateObjectReferenceException(Me.CurrentLineNumber, _destinationFolderColumnIndex, "Parent Info")
-            ElseIf parentObjectTable.Rows.Count = 0 Then
-              Throw New NonExistentObjectReferenceException(Me.CurrentLineNumber, _destinationFolderColumnIndex, "Parent Info")
-            Else
-              parentFolderID = CType(parentObjectTable.Rows(0)("ArtifactID"), Int32)
-            End If
-          End If
+					Dim textIdentifier As String = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(kCura.Utility.NullableTypesHelper.ToNullableString(values(_destinationFolderColumnIndex)))
+
+					If textIdentifier = "" Then
+						If _overwrite.ToLower = "strict" OrElse _overwrite.ToLower = "append" Then
+							parentFolderID = -1
+						Else
+							Throw New ParentObjectReferenceRequiredException(Me.CurrentLineNumber, _destinationFolderColumnIndex)
+						End If
+					Else
+						Dim parentObjectTable As System.Data.DataTable = _objectManager.RetrieveArtifactIdOfMappedParentObject(_caseArtifactID, _
+						textIdentifier, _artifactTypeID).Tables(0)
+						If parentObjectTable.Rows.Count > 1 Then
+							Throw New DuplicateObjectReferenceException(Me.CurrentLineNumber, _destinationFolderColumnIndex, "Parent Info")
+						ElseIf parentObjectTable.Rows.Count = 0 Then
+							Throw New NonExistentObjectReferenceException(Me.CurrentLineNumber, _destinationFolderColumnIndex, "Parent Info")
+						Else
+							parentFolderID = CType(parentObjectTable.Rows(0)("ArtifactID"), Int32)
+						End If
+					End If
         End If
-      Else
-        parentFolderID = _folderID
-      End If
-      Dim markPrepareFields As DateTime = DateTime.Now
-      identityValue = PrepareFieldCollectionAndExtractIdentityValue(fieldCollection, values)
-      If identityValue = String.Empty Then
-        lineStatus += ImportStatus.EmptyIdentifier  'Throw New IdentityValueNotSetException
-      ElseIf Not _processedDocumentIdentifiers(identityValue) Is Nothing Then
-        lineStatus += ImportStatus.IdentifierOverlap   '	Throw New IdentifierOverlapException(identityValue, _processedDocumentIdentifiers(identityValue))
-      End If
+			Else
+				If _artifactTypeID = 10 Then
+					parentFolderID = _folderID
+				Else
+					parentFolderID = -1
+				End If
+			End If
+			Dim markPrepareFields As DateTime = DateTime.Now
+			identityValue = PrepareFieldCollectionAndExtractIdentityValue(fieldCollection, values)
+			If identityValue = String.Empty Then
+				lineStatus += ImportStatus.EmptyIdentifier			 'Throw New IdentityValueNotSetException
+			ElseIf Not _processedDocumentIdentifiers(identityValue) Is Nothing Then
+				lineStatus += ImportStatus.IdentifierOverlap				'	Throw New IdentifierOverlapException(identityValue, _processedDocumentIdentifiers(identityValue))
+			End If
 			Dim metadoc As New MetaDocument(fileGuid, identityValue, fieldCollection, fileExists AndAlso uploadFile AndAlso (fileGuid <> String.Empty OrElse Not _copyFileToRepository), filename, fullFilePath, uploadFile, CurrentLineNumber, parentFolderID, md5hash, values, oixFileIdData, lineStatus, destinationVolume)
-      '_docsToProcess.Push(metadoc)
-      ManageDocumentMetaData(metadoc)
-      Return identityValue
+			'_docsToProcess.Push(metadoc)
+			ManageDocumentMetaData(metadoc)
+			Return identityValue
 		End Function
 
 		Private Function CleanDestinationFolderPath(ByVal path As String) As String
@@ -571,73 +580,73 @@ Namespace kCura.WinEDDS
         _outputNativeFileWriter.Write(Constants.NATIVE_FIELD_DELIMITER)
         _outputNativeFileWriter.Write(Constants.NATIVE_FIELD_DELIMITER)
         _outputNativeFileWriter.Write("0" & Constants.NATIVE_FIELD_DELIMITER)
-      End If
-      _outputNativeFileWriter.Write(mdoc.ParentFolderID & Constants.NATIVE_FIELD_DELIMITER)
-      For Each docField As DocumentField In fieldCollection.AllFields
-        If docField.FieldTypeID = kCura.DynamicFields.Types.FieldTypeHelper.FieldType.MultiCode OrElse docField.FieldTypeID = kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Code Then
-          Dim codes As String() = docField.Value.Split(ChrW(20))
-          _outputNativeFileWriter.Write(codes(0))
-          _outputNativeFileWriter.Write(Constants.NATIVE_FIELD_DELIMITER)
-          _outputNativeFileWriter.Write(codes(1))
-          _outputNativeFileWriter.Write(Constants.NATIVE_FIELD_DELIMITER)
-        ElseIf docField.FieldTypeID = kCura.DynamicFields.Types.FieldTypeHelper.FieldType.File Then
-          Dim fileFieldValues() As String = System.Web.HttpUtility.UrlDecode(docField.Value).Split(Chr(11))
-          If fileFieldValues.Length > 1 Then
-            _outputNativeFileWriter.Write(fileFieldValues(0))
-            _outputNativeFileWriter.Write(Constants.NATIVE_FIELD_DELIMITER)
-            _outputNativeFileWriter.Write(fileFieldValues(1))
-            _outputNativeFileWriter.Write(Constants.NATIVE_FIELD_DELIMITER)
-            _outputNativeFileWriter.Write(fileFieldValues(2))
-            _outputNativeFileWriter.Write(Constants.NATIVE_FIELD_DELIMITER)
-          Else
-            _outputNativeFileWriter.Write("")
-            _outputNativeFileWriter.Write(Constants.NATIVE_FIELD_DELIMITER)
-            _outputNativeFileWriter.Write("")
-            _outputNativeFileWriter.Write(Constants.NATIVE_FIELD_DELIMITER)
-            _outputNativeFileWriter.Write("")
-            _outputNativeFileWriter.Write(Constants.NATIVE_FIELD_DELIMITER)
-          End If
-        Else
-          If docField.FieldCategory = DynamicFields.Types.FieldCategory.FullText AndAlso _fullTextColumnMapsToFileLocation Then
-            If docField.Value = "" Then
-              'do nothing
-            Else
-              Dim sr As New System.IO.StreamReader(docField.Value, _extractedTextFileEncoding)
-              Dim count As Int32 = 1
-              Do
-                Dim buff(1000000) As Char
-                count = sr.ReadBlock(buff, 0, 1000000)
-                If count > 0 Then _outputNativeFileWriter.Write(buff, 0, count)
-              Loop Until count = 0
-            End If
-          ElseIf docField.FieldTypeID = kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Boolean Then
-            If docField.Value <> "" Then
-              If Boolean.Parse(docField.Value) Then
-                _outputNativeFileWriter.Write("1")
-              Else
-                _outputNativeFileWriter.Write("0")
-              End If
-            End If
-          Else
-            _outputNativeFileWriter.Write(docField.Value)
-          End If
-          _outputNativeFileWriter.Write(Constants.NATIVE_FIELD_DELIMITER)
-        End If
-      Next
-      If _artifactTypeID = 10 Then
-        If _filePathColumnIndex <> -1 AndAlso mdoc.UploadFile AndAlso mdoc.IndexFileInDB Then
-          Dim boolString As String = "0"
-          If Me.IsSupportedRelativityFileType(mdoc.FileIdData) Then boolString = "1"
-          _outputNativeFileWriter.Write(boolString & Constants.NATIVE_FIELD_DELIMITER)
-          _outputNativeFileWriter.Write(mdoc.FileIdData.FileType & Constants.NATIVE_FIELD_DELIMITER)
-          _outputNativeFileWriter.Write("1" & Constants.NATIVE_FIELD_DELIMITER)
-        Else
-          _outputNativeFileWriter.Write("0" & Constants.NATIVE_FIELD_DELIMITER)
-          _outputNativeFileWriter.Write(Constants.NATIVE_FIELD_DELIMITER)
-          _outputNativeFileWriter.Write("0" & Constants.NATIVE_FIELD_DELIMITER)
-        End If
-      End If
-      _outputNativeFileWriter.Write(vbNewLine)
+			End If
+			_outputNativeFileWriter.Write(mdoc.ParentFolderID & Constants.NATIVE_FIELD_DELIMITER)
+			For Each docField As DocumentField In fieldCollection.AllFields
+				If docField.FieldTypeID = kCura.DynamicFields.Types.FieldTypeHelper.FieldType.MultiCode OrElse docField.FieldTypeID = kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Code Then
+					Dim codes As String() = docField.Value.Split(ChrW(20))
+					_outputNativeFileWriter.Write(codes(0))
+					_outputNativeFileWriter.Write(Constants.NATIVE_FIELD_DELIMITER)
+					_outputNativeFileWriter.Write(codes(1))
+					_outputNativeFileWriter.Write(Constants.NATIVE_FIELD_DELIMITER)
+				ElseIf docField.FieldTypeID = kCura.DynamicFields.Types.FieldTypeHelper.FieldType.File Then
+					Dim fileFieldValues() As String = System.Web.HttpUtility.UrlDecode(docField.Value).Split(Chr(11))
+					If fileFieldValues.Length > 1 Then
+						_outputNativeFileWriter.Write(fileFieldValues(0))
+						_outputNativeFileWriter.Write(Constants.NATIVE_FIELD_DELIMITER)
+						_outputNativeFileWriter.Write(fileFieldValues(1))
+						_outputNativeFileWriter.Write(Constants.NATIVE_FIELD_DELIMITER)
+						_outputNativeFileWriter.Write(fileFieldValues(2))
+						_outputNativeFileWriter.Write(Constants.NATIVE_FIELD_DELIMITER)
+					Else
+						_outputNativeFileWriter.Write("")
+						_outputNativeFileWriter.Write(Constants.NATIVE_FIELD_DELIMITER)
+						_outputNativeFileWriter.Write("")
+						_outputNativeFileWriter.Write(Constants.NATIVE_FIELD_DELIMITER)
+						_outputNativeFileWriter.Write("")
+						_outputNativeFileWriter.Write(Constants.NATIVE_FIELD_DELIMITER)
+					End If
+				Else
+					If docField.FieldCategory = DynamicFields.Types.FieldCategory.FullText AndAlso _fullTextColumnMapsToFileLocation Then
+						If docField.Value = "" Then
+							'do nothing
+						Else
+							Dim sr As New System.IO.StreamReader(docField.Value, _extractedTextFileEncoding)
+							Dim count As Int32 = 1
+							Do
+								Dim buff(1000000) As Char
+								count = sr.ReadBlock(buff, 0, 1000000)
+								If count > 0 Then _outputNativeFileWriter.Write(buff, 0, count)
+							Loop Until count = 0
+						End If
+					ElseIf docField.FieldTypeID = kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Boolean Then
+						If docField.Value <> "" Then
+							If Boolean.Parse(docField.Value) Then
+								_outputNativeFileWriter.Write("1")
+							Else
+								_outputNativeFileWriter.Write("0")
+							End If
+						End If
+					Else
+						_outputNativeFileWriter.Write(docField.Value)
+					End If
+					_outputNativeFileWriter.Write(Constants.NATIVE_FIELD_DELIMITER)
+				End If
+			Next
+			If _artifactTypeID = 10 Then
+				If _filePathColumnIndex <> -1 AndAlso mdoc.UploadFile AndAlso mdoc.IndexFileInDB Then
+					Dim boolString As String = "0"
+					If Me.IsSupportedRelativityFileType(mdoc.FileIdData) Then boolString = "1"
+					_outputNativeFileWriter.Write(boolString & Constants.NATIVE_FIELD_DELIMITER)
+					_outputNativeFileWriter.Write(mdoc.FileIdData.FileType & Constants.NATIVE_FIELD_DELIMITER)
+					_outputNativeFileWriter.Write("1" & Constants.NATIVE_FIELD_DELIMITER)
+				Else
+					_outputNativeFileWriter.Write("0" & Constants.NATIVE_FIELD_DELIMITER)
+					_outputNativeFileWriter.Write(Constants.NATIVE_FIELD_DELIMITER)
+					_outputNativeFileWriter.Write("0" & Constants.NATIVE_FIELD_DELIMITER)
+				End If
+			End If
+			_outputNativeFileWriter.Write(vbNewLine)
     End Function
 
     Private Function GetIsSupportedRelativityFileTypeField() As kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo
