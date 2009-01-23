@@ -313,7 +313,7 @@ Namespace kCura.EDDS.WinForm
 			ImageLoadFile.Overwrite = Me.GetOverwrite
       ImageLoadFile.DestinationFolderID = _imageLoadFile.DestinationFolderID
       'TODO: WINFLEX - ArtifactID
-      ImageLoadFile.ControlKeyField = _application.GetCaseIdentifierFields(_application.ArtifactTypeID)(0)
+			ImageLoadFile.ControlKeyField = _application.GetCaseIdentifierFields(10)(0)
 			If ImageLoadFile.ForProduction Then
 				ImageLoadFile.ProductionArtifactID = CType(_productionDropdown.SelectedValue, Int32)
 				Me.ImageLoadFile.ReplaceFullText = False
