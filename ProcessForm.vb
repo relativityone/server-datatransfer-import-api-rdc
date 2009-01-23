@@ -93,7 +93,7 @@ Namespace kCura.Windows.Process
 			'_stopImportButton
 			'
 			Me._stopImportButton.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-			Me._stopImportButton.Location = New System.Drawing.Point(384, 48)
+			Me._stopImportButton.Location = New System.Drawing.Point(384, 56)
 			Me._stopImportButton.Name = "_stopImportButton"
 			Me._stopImportButton.Size = New System.Drawing.Size(84, 23)
 			Me._stopImportButton.TabIndex = 0
@@ -102,7 +102,7 @@ Namespace kCura.Windows.Process
 			'_showDetailButton
 			'
 			Me._showDetailButton.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-			Me._showDetailButton.Location = New System.Drawing.Point(384, 76)
+			Me._showDetailButton.Location = New System.Drawing.Point(384, 80)
 			Me._showDetailButton.Name = "_showDetailButton"
 			Me._showDetailButton.Size = New System.Drawing.Size(84, 23)
 			Me._showDetailButton.TabIndex = 1
@@ -123,7 +123,7 @@ Namespace kCura.Windows.Process
 									Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me._currentRecordLabel.Location = New System.Drawing.Point(4, 4)
 			Me._currentRecordLabel.Name = "_currentRecordLabel"
-			Me._currentRecordLabel.Size = New System.Drawing.Size(372, 28)
+			Me._currentRecordLabel.Size = New System.Drawing.Size(460, 16)
 			Me._currentRecordLabel.TabIndex = 4
 			'
 			'_overalProgressLabel
@@ -283,9 +283,9 @@ Namespace kCura.Windows.Process
 			'
 			Me._currentMessageStatus.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
 									Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-			Me._currentMessageStatus.Location = New System.Drawing.Point(4, 36)
+			Me._currentMessageStatus.Location = New System.Drawing.Point(4, 24)
 			Me._currentMessageStatus.Name = "_currentMessageStatus"
-			Me._currentMessageStatus.Size = New System.Drawing.Size(372, 16)
+			Me._currentMessageStatus.Size = New System.Drawing.Size(460, 28)
 			Me._currentMessageStatus.TabIndex = 12
 			'
 			'_statusBar
