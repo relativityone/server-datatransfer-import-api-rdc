@@ -833,7 +833,7 @@ Namespace kCura.EDDS.WinForm
 					LoadFile.NativeFilePathColumn = Nothing
 				End If
 				'Add the file field as a mapped field for non document object types
-				If Me.LoadFile.ArtifactTypeID = 10 Then
+				If Me.LoadFile.ArtifactTypeID <> 10 Then
 					Dim fileField As DocumentField
 					For Each field As DocumentField In currentFields.AllFields
 						If field.FieldTypeID = kCura.DynamicFields.Types.FieldTypeHelper.FieldType.File Then
@@ -845,8 +845,8 @@ Namespace kCura.EDDS.WinForm
 					Next
 				End If
 			End If
+			LoadFile.CreateFolderStructure = _buildFolderStructure.Checked
 			If LoadFile.OverwriteDestination.ToLower <> "strict" AndAlso LoadFile.OverwriteDestination.ToLower <> "append" Then
-				LoadFile.CreateFolderStructure = _buildFolderStructure.Checked
 				If LoadFile.CreateFolderStructure Then
 					If Not _destinationFolderPath.SelectedItem Is Nothing Then
 						LoadFile.FolderStructureContainedInColumn = _destinationFolderPath.SelectedItem.ToString
