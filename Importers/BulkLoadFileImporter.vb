@@ -540,9 +540,13 @@ Namespace kCura.WinEDDS
       If artifactTypeID = 10 Then
         retval.Add(Me.GetIsSupportedRelativityFileTypeField)
         retval.Add(Me.GetRelativityFileTypeField)
-        retval.Add(Me.GetHasNativesField)
-      End If
-      Return DirectCast(retval.ToArray(GetType(kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo)), kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo())
+				retval.Add(Me.GetHasNativesField)
+			Else
+				'If (_filePathColumnIndex <> -1) AndAlso _uploadFiles Then
+				'	retval.Add(Me.GetObjectFileField())
+				'End If
+			End If
+			Return DirectCast(retval.ToArray(GetType(kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo)), kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo())
     End Function
 
     Private Function ManageDocumentLine(ByVal mdoc As MetaDocument, ByVal extractText As Boolean) As Int32
