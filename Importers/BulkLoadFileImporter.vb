@@ -57,6 +57,7 @@ Namespace kCura.WinEDDS
 		Private _prePushErrorLineNumbersFileName As String = ""
 		Private _isAuditingEnabled As Boolean
 		Private _processID As Guid
+		Private _parentArtifactTypeID As Int32
 
 #End Region
 
@@ -171,7 +172,9 @@ Namespace kCura.WinEDDS
       _caseInfo = args.CaseInfo
       _settings = args
       _isAuditingEnabled = New kCura.WinEDDS.Service.RelativityManager(args.Credentials, args.CookieContainer).IsAuditingEnabled
-      _processID = processID
+			_processID = processID
+			Dim parentQuery As New kCura.WinEDDS.Service.ObjectTypeManager(args.Credentials, args.CookieContainer)
+			_parentArtifactTypeID = CType(parentQuery.RetrieveParentArtifactTypeID(args.CaseInfo.ArtifactID, args.ArtifactTypeID).Tables(0).Rows(0)("ParentArtifactTypeID"), Int32)
 		End Sub
 
 #End Region
@@ -375,7 +378,7 @@ Namespace kCura.WinEDDS
 					End If
         End If
 			Else
-				If _artifactTypeID = 10 Then
+				If _artifactTypeID = 10 OrElse _parentArtifactTypeID = 8 Then
 					parentFolderID = _folderID
 				Else
 					parentFolderID = -1
