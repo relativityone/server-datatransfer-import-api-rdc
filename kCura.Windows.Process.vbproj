@@ -132,7 +132,7 @@
                 />
                 <File
                     RelPath = "MessageBoxForm.vb"
-                    SubType = "Code"
+                    SubType = "Form"
                     BuildAction = "Compile"
                 />
                 <File
@@ -152,7 +152,7 @@
                 />
                 <File
                     RelPath = "ProcessForm.vb"
-                    SubType = "Code"
+                    SubType = "Form"
                     BuildAction = "Compile"
                 />
                 <File
