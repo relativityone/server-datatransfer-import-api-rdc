@@ -591,10 +591,10 @@ Namespace kCura.WinEDDS
 			_outputNativeFileWriter.Write(mdoc.ParentFolderID & Constants.NATIVE_FIELD_DELIMITER)
 			For Each docField As DocumentField In fieldCollection.AllFields
 				If docField.FieldTypeID = kCura.DynamicFields.Types.FieldTypeHelper.FieldType.MultiCode OrElse docField.FieldTypeID = kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Code Then
-					Dim codes As String() = docField.Value.Split(ChrW(20))
-					_outputNativeFileWriter.Write(codes(0))
-					_outputNativeFileWriter.Write(Constants.NATIVE_FIELD_DELIMITER)
-					_outputNativeFileWriter.Write(codes(1))
+					'Dim codes As String() = docField.Value.Split(ChrW(20))
+					'_outputNativeFileWriter.Write(codes(0))
+					'_outputNativeFileWriter.Write(Constants.NATIVE_FIELD_DELIMITER)
+					_outputNativeFileWriter.Write(docField.Value)
 					_outputNativeFileWriter.Write(Constants.NATIVE_FIELD_DELIMITER)
 				ElseIf docField.FieldTypeID = kCura.DynamicFields.Types.FieldTypeHelper.FieldType.File Then
 					Dim fileFieldValues() As String = System.Web.HttpUtility.UrlDecode(docField.Value).Split(Chr(11))

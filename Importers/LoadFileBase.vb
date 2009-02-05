@@ -251,9 +251,9 @@ Namespace kCura.WinEDDS
             If Not value.Trim = "" Then
               DirectCast(Me, BulkLoadFileImporter).WriteCodeLineToTempFile(identityValue, Int32.Parse(kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(code)), field.CodeTypeID.Value)
               Dim sb As New System.Text.StringBuilder
-              field.Value &= ChrW(20) & kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(code)
+							field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(code)
             Else
-              field.Value = fieldValue & ChrW(20)
+							field.Value = ""
             End If
           End If
         Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.MultiCode
@@ -286,7 +286,7 @@ Namespace kCura.WinEDDS
             field.Value = newVal
             If TypeOf Me Is BulkLoadFileImporter Then
               If codeValues.Length = 0 Then
-                field.Value = ChrW(11) & ChrW(11) & ChrW(20)
+								field.Value = ""
               Else
                 field.Value = ChrW(11) & oldval.Trim(_multiValueSeparator).Replace(_multiValueSeparator, ChrW(11)) & ChrW(11)
                 For Each codeValue As NullableTypes.NullableInt32 In codeValues
@@ -301,7 +301,7 @@ Namespace kCura.WinEDDS
                     sb.Append(",")
                   End If
                 Next
-                field.Value &= ChrW(20) & sb.ToString.TrimEnd(","c)
+								field.Value = sb.ToString.TrimEnd(","c)
               End If
             End If
           End If
