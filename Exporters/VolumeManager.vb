@@ -738,7 +738,8 @@ Namespace kCura.WinEDDS
 				fieldValue = fieldValue.Replace(ChrW(13), ChrW(10))
 				fieldValue = fieldValue.Replace(ChrW(10), _settings.NewlineDelimiter)
 				fieldValue = fieldValue.Replace(_settings.QuoteDelimiter, _settings.QuoteDelimiter & _settings.QuoteDelimiter)
-				If fieldValue.Length > 1 AndAlso fieldValue.Chars(0) = ChrW(11) AndAlso fieldValue.Chars(fieldValue.Length - 1) = ChrW(11) Then
+				If fieldValue.Length > 1 AndAlso fieldValue.Chars(0) = ChrW(11) Then
+					fieldValue = System.Web.HttpUtility.HtmlDecode(fieldValue)
 					fieldValue = fieldValue.Trim(New Char() {ChrW(11)}).Replace(ChrW(11), _settings.MultiRecordDelimiter)
 				End If
 				retString.AppendFormat("{0}{1}{0}", _settings.QuoteDelimiter, fieldValue)
@@ -841,7 +842,8 @@ Namespace kCura.WinEDDS
 					End If
 				End If
 				fieldValue = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(NullableTypes.HelperFunctions.DBNullConvert.ToNullableString(val))
-				If fieldValue.Length > 1 AndAlso fieldValue.Chars(0) = ChrW(11) AndAlso fieldValue.Chars(fieldValue.Length - 1) = ChrW(11) Then
+				If fieldValue.Length > 1 AndAlso fieldValue.Chars(0) = ChrW(11) Then
+					fieldValue = System.Web.HttpUtility.HtmlDecode(fieldValue)
 					fieldValue = fieldValue.Trim(New Char() {ChrW(11)}).Replace(ChrW(11), _settings.MultiRecordDelimiter)
 				End If
 				fieldValue = System.Web.HttpUtility.HtmlEncode(fieldValue)
