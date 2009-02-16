@@ -681,6 +681,9 @@ Namespace kCura.EDDS.WebAPI.DocumentManagerBase
         
         '<remarks/>
         MarkupSetMarker
+        
+        '<remarks/>
+        GenericSystem
     End Enum
     
     '<remarks/>

@@ -275,6 +275,9 @@ Namespace kCura.EDDS.WebAPI.ProductionManagerBase
         
         '<remarks/>
         Public AddImagePlaceholder As Boolean
+        
+        '<remarks/>
+        Public ProductionFieldArtifactID As Integer
     End Class
     
     '<remarks/>
@@ -377,5 +380,8 @@ Namespace kCura.EDDS.WebAPI.ProductionManagerBase
         
         '<remarks/>
         NativesOnly
+        
+        '<remarks/>
+        NotInProduction
     End Enum
 End Namespace

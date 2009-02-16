@@ -325,6 +325,9 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
         
         '<remarks/>
         MarkupSetMarker
+        
+        '<remarks/>
+        GenericSystem
     End Enum
     
     '<remarks/>

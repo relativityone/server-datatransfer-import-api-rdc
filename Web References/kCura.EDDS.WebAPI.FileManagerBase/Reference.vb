@@ -248,6 +248,24 @@ Namespace kCura.EDDS.WebAPI.FileManagerBase
         End Function
         
         '<remarks/>
+        <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/FileManager/GetFileByDocumentArtifactIDAndGuid", RequestNamespace:="http://www.kCura.com/EDDS/FileManager", ResponseNamespace:="http://www.kCura.com/EDDS/FileManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
+        Public Function GetFileByDocumentArtifactIDAndGuid(ByVal caseContextArtifactID As Integer, ByVal documentArtifactID As Integer, ByVal guid As String) As File
+            Dim results() As Object = Me.Invoke("GetFileByDocumentArtifactIDAndGuid", New Object() {caseContextArtifactID, documentArtifactID, guid})
+            Return CType(results(0),File)
+        End Function
+        
+        '<remarks/>
+        Public Function BeginGetFileByDocumentArtifactIDAndGuid(ByVal caseContextArtifactID As Integer, ByVal documentArtifactID As Integer, ByVal guid As String, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("GetFileByDocumentArtifactIDAndGuid", New Object() {caseContextArtifactID, documentArtifactID, guid}, callback, asyncState)
+        End Function
+        
+        '<remarks/>
+        Public Function EndGetFileByDocumentArtifactIDAndGuid(ByVal asyncResult As System.IAsyncResult) As File
+            Dim results() As Object = Me.EndInvoke(asyncResult)
+            Return CType(results(0),File)
+        End Function
+        
+        '<remarks/>
         <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/FileManager/GetTotalImageCountByArtifactIDs", RequestNamespace:="http://www.kCura.com/EDDS/FileManager", ResponseNamespace:="http://www.kCura.com/EDDS/FileManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
         Public Function GetTotalImageCountByArtifactIDs(ByVal caseContextArtifactID As Integer, ByVal documentArtifactIDs() As Integer) As Integer
             Dim results() As Object = Me.Invoke("GetTotalImageCountByArtifactIDs", New Object() {caseContextArtifactID, documentArtifactIDs})

@@ -286,6 +286,9 @@ Namespace kCura.EDDS.WebAPI.FieldManagerBase
         
         '<remarks/>
         MarkupSetMarker
+        
+        '<remarks/>
+        GenericSystem
     End Enum
     
     '<remarks/>

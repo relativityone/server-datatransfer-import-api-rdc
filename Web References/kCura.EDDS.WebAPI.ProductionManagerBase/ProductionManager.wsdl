@@ -197,6 +197,7 @@
               <s:element minOccurs="1" maxOccurs="1" name="MarkupSet" type="s:int" />
               <s:element minOccurs="1" maxOccurs="1" name="Imported" type="s:boolean" />
               <s:element minOccurs="1" maxOccurs="1" name="AddImagePlaceholder" type="s:boolean" />
+              <s:element minOccurs="1" maxOccurs="1" name="ProductionFieldArtifactID" type="s:int" />
             </s:sequence>
           </s:extension>
         </s:complexContent>
@@ -241,6 +242,7 @@
           <s:enumeration value="ImagesAndNativesBoth" />
           <s:enumeration value="ImagesOnly" />
           <s:enumeration value="NativesOnly" />
+          <s:enumeration value="NotInProduction" />
         </s:restriction>
       </s:simpleType>
       <s:complexType name="ProductionOrder">

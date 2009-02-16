@@ -151,6 +151,7 @@
           <s:enumeration value="FileInfo" />
           <s:enumeration value="ParentArtifact" />
           <s:enumeration value="MarkupSetMarker" />
+          <s:enumeration value="GenericSystem" />
         </s:restriction>
       </s:simpleType>
       <s:element name="CreateResponse">
