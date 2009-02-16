@@ -481,6 +481,7 @@ Namespace kCura.EDDS.WinForm
 
     Private Sub _objectTypeDropDown_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _objectTypeDropDown.SelectedIndexChanged
       Dim selectedItemValue As Int32 = DirectCast(_objectTypeDropDown.SelectedItem, kCura.WinEDDS.ObjectTypeListItem).Value
+      ToolsImportLoadFileMenu.Text = _objectTypeDropDown.Text & " Load File"
       If selectedItemValue = 10 Then
         _caseFolderExplorer.Visible = True
         ToolsImportImageFileMenu.Visible = True
