@@ -21,7 +21,8 @@ Namespace kCura.WinEDDS
 		Public CreateFolderStructure As Boolean
 		Public FolderStructureContainedInColumn As String
     Public FullTextColumnContainsFileLocation As Boolean
-    Public ArtifactTypeID As Integer
+		Public ArtifactTypeID As Integer
+		Public HierarchicalValueDelimiter As Char
 		<NonSerialized()> Public SourceFileEncoding As System.Text.Encoding
 		<NonSerialized()> Public ExtractedTextFileEncoding As System.Text.Encoding
 		<NonSerialized()> Public ExtractedTextFileEncodingName As String
@@ -48,6 +49,7 @@ Namespace kCura.WinEDDS
 			Me.QuoteDelimiter = ChrW(254)
 			Me.NewlineDelimiter = ChrW(174)
 			Me.MultiRecordDelimiter = ChrW(59)
+			Me.HierarchicalValueDelimiter = "\"c
 			Me.FirstLineContainsHeaders = True
 			Me.FieldMap = New LoadFileFieldMap
 		End Sub
@@ -71,6 +73,7 @@ Namespace kCura.WinEDDS
 			info.AddValue("CreateFolderStructure", Me.CreateFolderStructure, GetType(Boolean))
 			info.AddValue("FullTextColumnContainsFileLocation", Me.FullTextColumnContainsFileLocation, GetType(Boolean))
 			info.AddValue("GroupIdentifierColumn", Me.GroupIdentifierColumn, GetType(String))
+			info.AddValue("HierarchicalValueDelimiter", AscW(Me.HierarchicalValueDelimiter), GetType(Integer))
 		End Sub
 
 		Private Sub New(ByVal info As System.Runtime.Serialization.SerializationInfo, ByVal Context As System.Runtime.Serialization.StreamingContext)
@@ -111,6 +114,17 @@ Namespace kCura.WinEDDS
 					Me.FullTextColumnContainsFileLocation = info.GetBoolean("FullTextColumnContainsFileLocation")
 				Catch ex As System.Exception
 					Me.FullTextColumnContainsFileLocation = False
+				End Try
+				Dim hval As Int32 = 0
+				Try
+					hval = info.GetInt32("HierarchicalValueDelimiter")
+				Catch ex As Exception
+				End Try
+				If hval = 0 Then hval = AscW("\"c)
+				Try
+					Me.HierarchicalValueDelimiter = ChrW(hval)
+				Catch ex As Exception
+					Me.HierarchicalValueDelimiter = "\"c
 				End Try
 			End With
 		End Sub

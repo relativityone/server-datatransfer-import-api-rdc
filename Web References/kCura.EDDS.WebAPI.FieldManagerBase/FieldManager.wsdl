@@ -65,6 +65,8 @@
                 </s:complexType>
               </s:element>
               <s:element minOccurs="1" maxOccurs="1" name="IsAvailableToAssociativeObjects" type="s:boolean" />
+              <s:element minOccurs="1" maxOccurs="1" name="IsAvailableInChoiceTree" type="s:boolean" />
+              <s:element minOccurs="1" maxOccurs="1" name="IsAvailableForRightClickTagging" type="s:boolean" />
               <s:element minOccurs="1" maxOccurs="1" name="IsGroupByEnabled" type="s:boolean" />
               <s:element minOccurs="1" maxOccurs="1" name="IsIndexEnabled" type="s:boolean" />
               <s:element minOccurs="0" maxOccurs="1" name="DisplayValueTrue" type="s:string" />

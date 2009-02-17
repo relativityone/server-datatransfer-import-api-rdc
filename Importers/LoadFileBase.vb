@@ -41,7 +41,7 @@ Namespace kCura.WinEDDS
     Protected _extractedTextFileEncodingName As String
     Protected _artifactTypeID As Int32
 		Protected MulticodeMatrix As System.Collections.Hashtable
-		Protected _hierarchicalMultiValueFieldDelmiter As String = "\"
+		Protected _hierarchicalMultiValueFieldDelmiter As String
     Protected MustOverride ReadOnly Property UseTimeZoneOffset() As Boolean
 
 #End Region
@@ -112,6 +112,7 @@ Namespace kCura.WinEDDS
       _extractedTextFileEncoding = args.ExtractedTextFileEncoding
       _extractedTextFileEncodingName = args.ExtractedTextFileEncodingName
 			_artifactTypeID = args.ArtifactTypeID
+			_hierarchicalMultiValueFieldDelmiter = args.HierarchicalValueDelimiter
 			MulticodeMatrix = New System.Collections.Hashtable
     End Sub
 
@@ -146,18 +147,23 @@ Namespace kCura.WinEDDS
         Else
           If _autoDetect Then
             newCodeOrderValue = GetNewCodeOrderValue(field.CodeTypeID.Value)
-            Dim code As kCura.EDDS.WebAPI.CodeManagerBase.Code = _codeManager.CreateNewCodeDTOProxy(field.CodeTypeID.Value, value, newCodeOrderValue, _caseSystemID)
-            codeArtifactID = _codeManager.Create(_caseArtifactID, code)
-            Select Case codeArtifactID
-              Case -1
-                Throw New CodeCreationException(Me.CurrentLineNumber, column, value)
-              Case -200
-                Throw New System.Exception("This choice or multi-choice field is not enabled as unicode.  Upload halted")
-            End Select
-            Dim newRow As DataRowView = _allCodes.AddNew
-            _allCodes = Nothing
-            Return New NullableInt32(codeArtifactID)
-          End If
+						Dim code As kCura.EDDS.WebAPI.CodeManagerBase.Code = _codeManager.CreateNewCodeDTOProxy(field.CodeTypeID.Value, value, newCodeOrderValue, _caseSystemID)
+						Dim o As Object = _codeManager.Create(_caseArtifactID, code)
+						If TypeOf o Is Int32 Then
+							codeArtifactID = CType(o, Int32)
+						Else
+							Throw New CodeCreationException(Me.CurrentLineNumber, column, o.ToString)
+						End If
+						Select Case codeArtifactID
+							Case -1
+								Throw New CodeCreationException(Me.CurrentLineNumber, column, value)
+							Case -200
+								Throw New System.Exception("This choice or multi-choice field is not enabled as unicode.  Upload halted")
+						End Select
+						Dim newRow As DataRowView = _allCodes.AddNew
+						_allCodes = Nothing
+						Return New NullableInt32(codeArtifactID)
+					End If
         End If
       End If
     End Function
@@ -194,33 +200,39 @@ Namespace kCura.WinEDDS
     End Function
 
     Public Overridable Function GetMultiCode(ByVal value As String, ByVal column As Int32, ByVal field As DocumentField, ByVal forPreview As Boolean) As NullableTypes.NullableInt32()
-      Dim codeDisplayNames As String() = value.Split(_multiValueSeparator)
-    	Dim i As Int32
-			Dim hierarchicCodeManager As Service.IHierarchicArtifactManager
-			If forPreview Then
-				hierarchicCodeManager = New Service.FieldSpecificCodePreviewer(_codeManager, field.CodeTypeID.Value)
-			Else
-				hierarchicCodeManager = New Service.FieldSpecificCodeManager(_codeManager, field.CodeTypeID.Value)
-			End If
-			If Not Me.MulticodeMatrix.Contains(field.CodeTypeID.Value) Then
-				Me.MulticodeMatrix.Add(field.CodeTypeID.Value, New NestedArtifactCache(hierarchicCodeManager, _caseSystemID, _caseArtifactID, _hierarchicalMultiValueFieldDelmiter))
-			End If
-			Dim artifactCache As NestedArtifactCache = DirectCast(Me.MulticodeMatrix(field.CodeTypeID.Value), NestedArtifactCache)
-			Dim c As New System.Collections.ArrayList
-			For Each codeString As String In codeDisplayNames
-				For Each id As Int32 In artifactCache.SelectedIds(_hierarchicalMultiValueFieldDelmiter & codeString.Trim(_hierarchicalMultiValueFieldDelmiter.ToCharArray))
-					If Not c.Contains(id) Then c.Add(id)
+			Try
+				Dim codeDisplayNames As String() = value.Split(_multiValueSeparator)
+				Dim i As Int32
+				Dim hierarchicCodeManager As Service.IHierarchicArtifactManager
+				If forPreview Then
+					hierarchicCodeManager = New Service.FieldSpecificCodePreviewer(_codeManager, field.CodeTypeID.Value)
+				Else
+					hierarchicCodeManager = New Service.FieldSpecificCodeManager(_codeManager, field.CodeTypeID.Value)
+				End If
+				If Not Me.MulticodeMatrix.Contains(field.CodeTypeID.Value) Then
+					Me.MulticodeMatrix.Add(field.CodeTypeID.Value, New NestedArtifactCache(hierarchicCodeManager, _caseSystemID, _caseArtifactID, _hierarchicalMultiValueFieldDelmiter))
+				End If
+				Dim artifactCache As NestedArtifactCache = DirectCast(Me.MulticodeMatrix(field.CodeTypeID.Value), NestedArtifactCache)
+				Dim c As New System.Collections.ArrayList
+				For Each codeString As String In codeDisplayNames
+					For Each id As Int32 In artifactCache.SelectedIds(_hierarchicalMultiValueFieldDelmiter & codeString.Trim(_hierarchicalMultiValueFieldDelmiter.ToCharArray))
+						If id = -200 Then Throw New System.Exception("This choice or multi-choice field is not enabled as unicode.  Upload halted")
+						If Not c.Contains(id) Then c.Add(id)
+					Next
 				Next
-			Next
-			If c.Count > 0 Then
-				Dim codes(c.Count - 1) As NullableInt32
-				For i = 0 To codes.Length - 1
-					codes(i) = New NullableTypes.NullableInt32(CType(c(i), Int32))
-				Next
-				Return codes
-			Else
-				Return New NullableTypes.NullableInt32() {}
-			End If
+				If c.Count > 0 Then
+					Dim codes(c.Count - 1) As NullableInt32
+					For i = 0 To codes.Length - 1
+						codes(i) = New NullableTypes.NullableInt32(CType(c(i), Int32))
+					Next
+					Return codes
+				Else
+					Return New NullableTypes.NullableInt32() {}
+				End If
+			Catch ex As Exceptions.CodeCreationFailedException
+				Throw New CodeCreationException(Me.CurrentLineNumber, column, ex.ToString)
+			End Try
+
 			'For i = 0 To codeDisplayNames.Length - 1
 			'	codes(i) = GetCode(codeDisplayNames(i).Trim, column, field, forPreview)
 			'Next
@@ -502,10 +514,10 @@ Namespace kCura.WinEDDS
 
     Public Class CodeCreationException
       Inherits kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
-      Public Sub New(ByVal row As Int32, ByVal column As Int32, ByVal newCodeValue As String)
-        MyBase.New(row, column, String.Format("The maximum number of choices available for this field has been reached.  There is no room to add '{0}' to the list.  Upload halted.", newCodeValue))
-      End Sub
-    End Class
+			Public Sub New(ByVal row As Int32, ByVal column As Int32, ByVal errorText As String)
+				MyBase.New(row, column, errorText)
+			End Sub
+		End Class
 
     Public Class ColumnCountMismatchException
       Inherits kCura.Utility.DelimitedFileImporter.ImporterExceptionBase

@@ -6,7 +6,7 @@ Namespace kCura.WinEDDS
 		Private _manager As Service.IHierarchicArtifactManager
 		Private _rootArtifactID As Int32
 		Private _caseContextArtifactID As Int32
-		Private _nestedItemDelimiter As String = "\"
+		Private _nestedItemDelimiter As String
 
 		Public ReadOnly Property SelectedIds(ByVal artifactPath As String) As Int32()
 			Get

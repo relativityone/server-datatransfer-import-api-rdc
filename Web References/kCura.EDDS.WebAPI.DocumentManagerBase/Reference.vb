@@ -553,6 +553,12 @@ Namespace kCura.EDDS.WebAPI.DocumentManagerBase
         Public IsAvailableToAssociativeObjects As Boolean
         
         '<remarks/>
+        Public IsAvailableInChoiceTree As Boolean
+        
+        '<remarks/>
+        Public IsAvailableForRightClickTagging As Boolean
+        
+        '<remarks/>
         Public IsGroupByEnabled As Boolean
         
         '<remarks/>

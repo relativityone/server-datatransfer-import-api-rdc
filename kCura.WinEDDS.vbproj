@@ -228,6 +228,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Exceptions\CodeCreationFailedException.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Exceptions\InvalidLoginException.vb"
                     SubType = "Code"
                     BuildAction = "Compile"

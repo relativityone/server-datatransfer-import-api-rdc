@@ -57,9 +57,9 @@ Namespace kCura.EDDS.WebAPI.CodeManagerBase
         
         '<remarks/>
         <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://foley.com/EDDS/CodeManager/Create", RequestNamespace:="http://foley.com/EDDS/CodeManager", ResponseNamespace:="http://foley.com/EDDS/CodeManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
-        Public Function Create(ByVal caseContextArtifactID As Integer, ByVal codeDTO As Code) As Integer
+        Public Function Create(ByVal caseContextArtifactID As Integer, ByVal codeDTO As Code) As Object
             Dim results() As Object = Me.Invoke("Create", New Object() {caseContextArtifactID, codeDTO})
-            Return CType(results(0),Integer)
+            Return CType(results(0),Object)
         End Function
         
         '<remarks/>
@@ -68,9 +68,9 @@ Namespace kCura.EDDS.WebAPI.CodeManagerBase
         End Function
         
         '<remarks/>
-        Public Function EndCreate(ByVal asyncResult As System.IAsyncResult) As Integer
+        Public Function EndCreate(ByVal asyncResult As System.IAsyncResult) As Object
             Dim results() As Object = Me.EndInvoke(asyncResult)
-            Return CType(results(0),Integer)
+            Return CType(results(0),Object)
         End Function
         
         '<remarks/>
