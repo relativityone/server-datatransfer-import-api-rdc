@@ -72,6 +72,24 @@ Namespace kCura.EDDS.WebAPI.CodeManagerBase
             Dim results() As Object = Me.EndInvoke(asyncResult)
             Return CType(results(0),Integer)
         End Function
+        
+        '<remarks/>
+        <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://foley.com/EDDS/CodeManager/GetAllForHierarchical", RequestNamespace:="http://foley.com/EDDS/CodeManager", ResponseNamespace:="http://foley.com/EDDS/CodeManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
+        Public Function GetAllForHierarchical(ByVal caseContextArtifactID As Integer, ByVal codeTypeID As Integer) As System.Data.DataSet
+            Dim results() As Object = Me.Invoke("GetAllForHierarchical", New Object() {caseContextArtifactID, codeTypeID})
+            Return CType(results(0),System.Data.DataSet)
+        End Function
+        
+        '<remarks/>
+        Public Function BeginGetAllForHierarchical(ByVal caseContextArtifactID As Integer, ByVal codeTypeID As Integer, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("GetAllForHierarchical", New Object() {caseContextArtifactID, codeTypeID}, callback, asyncState)
+        End Function
+        
+        '<remarks/>
+        Public Function EndGetAllForHierarchical(ByVal asyncResult As System.IAsyncResult) As System.Data.DataSet
+            Dim results() As Object = Me.EndInvoke(asyncResult)
+            Return CType(results(0),System.Data.DataSet)
+        End Function
     End Class
     
     '<remarks/>

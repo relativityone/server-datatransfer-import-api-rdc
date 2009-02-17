@@ -1,6 +1,7 @@
 Namespace kCura.WinEDDS.Service
 	Public Class FolderManager
 		Inherits kCura.EDDS.WebAPI.FolderManagerBase.FolderManager
+		Implements IHierarchicArtifactManager
 
 		Public Sub New(ByVal credentials As Net.NetworkCredential, ByVal cookieContainer As System.Net.CookieContainer)
 			MyBase.New()
@@ -21,28 +22,6 @@ Namespace kCura.WinEDDS.Service
 			Return System.Text.RegularExpressions.Regex.Replace(input, "[\*\\\/\:\?\<\>\""\|\$]+", " ").Trim
 		End Function
 
-#Region " Translations "
-		'Public Function DTOToWebAPIFolder(ByVal folderDTO As kCura.EDDS.DTO.Folder) As kCura.EDDS.WebAPI.FolderManagerBase.Folder
-		'	Dim folder As New kCura.EDDS.WebAPI.FolderManagerBase.Folder
-
-		'	folder.AccessControlListID = folderDTO.AccessControlListID
-		'	folder.AccessControlListIsInherited = folderDTO.AccessControlListIsInherited
-		'	folder.ArtifactID = folderDTO.ArtifactID
-		'	folder.ArtifactTypeID = folderDTO.ArtifactTypeID
-		'	folder.ContainerID = folderDTO.ContainerID
-		'	folder.CreatedBy = folderDTO.CreatedBy
-		'	folder.CreatedOn = folderDTO.CreatedOn
-		'	folder.DeleteFlag = folderDTO.DeleteFlag
-		'	folder.Keywords = folderDTO.Keywords
-		'	folder.LastModifiedBy = folderDTO.LastModifiedBy
-		'	folder.LastModifiedOn = folderDTO.LastModifiedOn
-		'	folder.Name = folderDTO.Name
-		'	folder.Notes = folderDTO.Notes
-		'	folder.ParentArtifactID = folderDTO.ParentArtifactID
-		'	folder.TextIdentifier = folderDTO.TextIdentifier
-		'	Return folder
-		'End Function
-#End Region
 
 #Region " Shadow Functions "
 		Public Shadows Function RetrieveAllByCaseID(ByVal caseContextArtifactID As Int32) As System.Data.DataSet
@@ -85,7 +64,7 @@ Namespace kCura.WinEDDS.Service
 			End While
 		End Function
 
-		Public Shadows Function Create(ByVal caseContextArtifactID As Int32, ByVal parentArtifactID As Int32, ByVal name As String) As Int32
+		Public Shadows Function Create(ByVal caseContextArtifactID As Int32, ByVal parentArtifactID As Int32, ByVal name As String) As Int32 Implements IHierarchicArtifactManager.Create
 			Dim tries As Int32 = 0
 			While tries < Config.MaxReloginTries
 				tries += 1
@@ -126,5 +105,8 @@ Namespace kCura.WinEDDS.Service
 		End Function
 #End Region
 
+		Public Function RetrieveArtifacts(ByVal caseContextArtifactID As Integer, ByVal rootArtifactID As Integer) As System.Data.DataSet Implements IHierarchicArtifactManager.RetrieveArtifacts
+			Return Me.RetrieveFolderAndDescendants(caseContextArtifactID, rootArtifactID)
+		End Function
 	End Class
 End Namespace

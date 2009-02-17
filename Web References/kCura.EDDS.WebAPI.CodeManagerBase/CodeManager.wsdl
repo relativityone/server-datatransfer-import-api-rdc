@@ -83,6 +83,28 @@
           </s:sequence>
         </s:complexType>
       </s:element>
+      <s:element name="GetAllForHierarchical">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="codeTypeID" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetAllForHierarchicalResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetAllForHierarchicalResult">
+              <s:complexType>
+                <s:sequence>
+                  <s:element ref="s:schema" />
+                  <s:any />
+                </s:sequence>
+              </s:complexType>
+            </s:element>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
     </s:schema>
     <s:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="http://NullableTypes.SourceForge.Net/NullableInt32XMLSchema" id="NullableInt32">
       <xs:element name="NullableInt32" nillable="true" type="xs:int" />
@@ -100,6 +122,12 @@
   <wsdl:message name="CreateSoapOut">
     <wsdl:part name="parameters" element="tns:CreateResponse" />
   </wsdl:message>
+  <wsdl:message name="GetAllForHierarchicalSoapIn">
+    <wsdl:part name="parameters" element="tns:GetAllForHierarchical" />
+  </wsdl:message>
+  <wsdl:message name="GetAllForHierarchicalSoapOut">
+    <wsdl:part name="parameters" element="tns:GetAllForHierarchicalResponse" />
+  </wsdl:message>
   <wsdl:portType name="CodeManagerSoap">
     <wsdl:operation name="RetrieveCodesAndTypesForCase">
       <wsdl:input message="tns:RetrieveCodesAndTypesForCaseSoapIn" />
@@ -108,6 +136,10 @@
     <wsdl:operation name="Create">
       <wsdl:input message="tns:CreateSoapIn" />
       <wsdl:output message="tns:CreateSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetAllForHierarchical">
+      <wsdl:input message="tns:GetAllForHierarchicalSoapIn" />
+      <wsdl:output message="tns:GetAllForHierarchicalSoapOut" />
     </wsdl:operation>
   </wsdl:portType>
   <wsdl:binding name="CodeManagerSoap" type="tns:CodeManagerSoap">
@@ -123,6 +155,15 @@
     </wsdl:operation>
     <wsdl:operation name="Create">
       <soap:operation soapAction="http://foley.com/EDDS/CodeManager/Create" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetAllForHierarchical">
+      <soap:operation soapAction="http://foley.com/EDDS/CodeManager/GetAllForHierarchical" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>

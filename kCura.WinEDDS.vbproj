@@ -188,11 +188,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "FolderList.vb"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "FullTextManager.vb"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -333,6 +328,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Importers\NestedArtifactCache.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Importers\SQL\SQLImporter.vb"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -428,6 +428,16 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Service\FieldSpecificCodeManager.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Service\FieldSpecificCodePreviewer.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Service\FileIO.vb"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -444,6 +454,11 @@
                 />
                 <File
                     RelPath = "Service\Helper.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Service\IHierarchicArtifactManager.vb"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

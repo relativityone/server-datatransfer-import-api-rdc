@@ -40,7 +40,8 @@ Namespace kCura.WinEDDS
     Protected _extractedTextFileEncoding As System.Text.Encoding
     Protected _extractedTextFileEncodingName As String
     Protected _artifactTypeID As Int32
-
+		Protected MulticodeMatrix As System.Collections.Hashtable
+		Protected _hierarchicalMultiValueFieldDelmiter As String = "\"
     Protected MustOverride ReadOnly Property UseTimeZoneOffset() As Boolean
 
 #End Region
@@ -110,7 +111,8 @@ Namespace kCura.WinEDDS
       _sourceFileEncoding = args.SourceFileEncoding
       _extractedTextFileEncoding = args.ExtractedTextFileEncoding
       _extractedTextFileEncodingName = args.ExtractedTextFileEncodingName
-      _artifactTypeID = args.ArtifactTypeID
+			_artifactTypeID = args.ArtifactTypeID
+			MulticodeMatrix = New System.Collections.Hashtable
     End Sub
 
 #Region "Code Parsing"
@@ -193,12 +195,36 @@ Namespace kCura.WinEDDS
 
     Public Overridable Function GetMultiCode(ByVal value As String, ByVal column As Int32, ByVal field As DocumentField, ByVal forPreview As Boolean) As NullableTypes.NullableInt32()
       Dim codeDisplayNames As String() = value.Split(_multiValueSeparator)
-      Dim codes(codeDisplayNames.Length - 1) As NullableInt32
-      Dim i As Int32
-      For i = 0 To codeDisplayNames.Length - 1
-        codes(i) = GetCode(codeDisplayNames(i).Trim, column, field, forPreview)
-      Next
-      Return codes
+    	Dim i As Int32
+			Dim hierarchicCodeManager As Service.IHierarchicArtifactManager
+			If forPreview Then
+				hierarchicCodeManager = New Service.FieldSpecificCodePreviewer(_codeManager, field.CodeTypeID.Value)
+			Else
+				hierarchicCodeManager = New Service.FieldSpecificCodeManager(_codeManager, field.CodeTypeID.Value)
+			End If
+			If Not Me.MulticodeMatrix.Contains(field.CodeTypeID.Value) Then
+				Me.MulticodeMatrix.Add(field.CodeTypeID.Value, New NestedArtifactCache(hierarchicCodeManager, _caseSystemID, _caseArtifactID, _hierarchicalMultiValueFieldDelmiter))
+			End If
+			Dim artifactCache As NestedArtifactCache = DirectCast(Me.MulticodeMatrix(field.CodeTypeID.Value), NestedArtifactCache)
+			Dim c As New System.Collections.ArrayList
+			For Each codeString As String In codeDisplayNames
+				For Each id As Int32 In artifactCache.SelectedIds(_hierarchicalMultiValueFieldDelmiter & codeString.Trim(_hierarchicalMultiValueFieldDelmiter.ToCharArray))
+					If Not c.Contains(id) Then c.Add(id)
+				Next
+			Next
+			If c.Count > 0 Then
+				Dim codes(c.Count - 1) As NullableInt32
+				For i = 0 To codes.Length - 1
+					codes(i) = New NullableTypes.NullableInt32(CType(c(i), Int32))
+				Next
+				Return codes
+			Else
+				Return New NullableTypes.NullableInt32() {}
+			End If
+			'For i = 0 To codeDisplayNames.Length - 1
+			'	codes(i) = GetCode(codeDisplayNames(i).Trim, column, field, forPreview)
+			'Next
+			'Return codes
     End Function
 
 #End Region
@@ -262,103 +288,103 @@ Namespace kCura.WinEDDS
             If TypeOf Me Is BulkLoadFileImporter Then
               field.Value = ChrW(11) & ChrW(11) & ChrW(20)
             End If
-          Else
-            Dim oldval As String = value.Trim
-            Dim codeValues As NullableTypes.NullableInt32() = GetMultiCode(value.Trim, column, field, forPreview)
-            Dim i As Int32
-            Dim newVal As String = String.Empty
-            Dim codeName As String
-            If codeValues.Length > 0 Then
-              newVal &= codeValues(0).ToString
-              If forPreview And newVal = "-1" Then
-                newVal = "[new code]"
-              End If
-              If codeValues.Length > 1 Then
-                For i = 1 To codeValues.Length - 1
-                  codeName = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(codeValues(i))
-                  If forPreview And codeName = "-1" Then
-                    codeName = "[new code]"
-                  End If
-                  newVal &= ";" & codeName
-                Next
-              End If
-            End If
-            field.Value = newVal
-            If TypeOf Me Is BulkLoadFileImporter Then
-              If codeValues.Length = 0 Then
-								field.Value = ""
-              Else
-                field.Value = ChrW(11) & oldval.Trim(_multiValueSeparator).Replace(_multiValueSeparator, ChrW(11)) & ChrW(11)
-                For Each codeValue As NullableTypes.NullableInt32 In codeValues
-                  If Not codeValue.IsNull Then
-                    DirectCast(Me, BulkLoadFileImporter).WriteCodeLineToTempFile(identityValue, codeValue.Value, field.CodeTypeID.Value)
-                  End If
-                Next
-                Dim sb As New System.Text.StringBuilder
-                For Each codeValue As NullableTypes.NullableInt32 In codeValues
-                  If Not codeValue.IsNull Then
-                    sb.Append(codeValue.Value)
-                    sb.Append(",")
-                  End If
-                Next
-								field.Value = sb.ToString.TrimEnd(","c)
-              End If
-            End If
-          End If
+					Else
+						Dim oldval As String = value.Trim
+							Dim codeValues As NullableTypes.NullableInt32() = GetMultiCode(value.Trim, column, field, forPreview)
+							Dim i As Int32
+							Dim newVal As String = String.Empty
+							Dim codeName As String
+							If codeValues.Length > 0 Then
+								newVal &= codeValues(0).ToString
+								If forPreview And newVal = "-1" Then
+									newVal = "[new code]"
+								End If
+								If codeValues.Length > 1 Then
+									For i = 1 To codeValues.Length - 1
+										codeName = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(codeValues(i))
+										If forPreview And codeName = "-1" Then
+											codeName = "[new code]"
+										End If
+										newVal &= ";" & codeName
+									Next
+								End If
+							End If
+							field.Value = newVal
+							If TypeOf Me Is BulkLoadFileImporter Then
+								If codeValues.Length = 0 Then
+									field.Value = ""
+								Else
+									field.Value = ChrW(11) & oldval.Trim(_multiValueSeparator).Replace(_multiValueSeparator, ChrW(11)) & ChrW(11)
+									For Each codeValue As NullableTypes.NullableInt32 In codeValues
+										If Not codeValue.IsNull Then
+											DirectCast(Me, BulkLoadFileImporter).WriteCodeLineToTempFile(identityValue, codeValue.Value, field.CodeTypeID.Value)
+										End If
+									Next
+									Dim sb As New System.Text.StringBuilder
+									For Each codeValue As NullableTypes.NullableInt32 In codeValues
+										If Not codeValue.IsNull Then
+											sb.Append(codeValue.Value)
+											sb.Append(",")
+										End If
+									Next
+									field.Value = sb.ToString.TrimEnd(","c)
+								End If
+							End If
+						End If
         Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Varchar
-          Select Case field.FieldCategory
-            Case DynamicFields.Types.FieldCategory.Relational
-              If field.FieldName.ToLower = "group identifier" Then
-                field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(Me.GetGroupIdentifierField(value, column, field.FieldLength.Value))
-              Else
-                field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(GetNullableFixedString(value, column, field.FieldLength.Value))
-              End If
-            Case Else
-              field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(GetNullableFixedString(value, column, field.FieldLength.Value))
-          End Select
+						Select Case field.FieldCategory
+							Case DynamicFields.Types.FieldCategory.Relational
+								If field.FieldName.ToLower = "group identifier" Then
+									field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(Me.GetGroupIdentifierField(value, column, field.FieldLength.Value))
+								Else
+									field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(GetNullableFixedString(value, column, field.FieldLength.Value))
+								End If
+							Case Else
+								field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(GetNullableFixedString(value, column, field.FieldLength.Value))
+						End Select
         Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Object
-          Dim textIdentifier As String = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(kCura.Utility.NullableTypesHelper.ToNullableString(value))
-          If textIdentifier <> "" Then
-            Dim targetObjectTable As System.Data.DataTable = _objectManager.RetrieveArtifactIdOfMappedObject(_caseArtifactID, textIdentifier, field.FieldID).Tables(0)
-            If targetObjectTable.Rows.Count > 1 Then
-              Throw New DuplicateObjectReferenceException(Me.CurrentLineNumber, column, field.FieldName)
-            ElseIf targetObjectTable.Rows.Count = 0 Then
-              Throw New NonExistentObjectReferenceException(Me.CurrentLineNumber, column, field.FieldName)
-            Else
-              field.Value = CType(targetObjectTable.Rows(0)("ArtifactID"), String)
-              If forPreview Then field.Value = value.Trim
-            End If
-          End If
+						Dim textIdentifier As String = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(kCura.Utility.NullableTypesHelper.ToNullableString(value))
+						If textIdentifier <> "" Then
+							Dim targetObjectTable As System.Data.DataTable = _objectManager.RetrieveArtifactIdOfMappedObject(_caseArtifactID, textIdentifier, field.FieldID).Tables(0)
+							If targetObjectTable.Rows.Count > 1 Then
+								Throw New DuplicateObjectReferenceException(Me.CurrentLineNumber, column, field.FieldName)
+							ElseIf targetObjectTable.Rows.Count = 0 Then
+								Throw New NonExistentObjectReferenceException(Me.CurrentLineNumber, column, field.FieldName)
+							Else
+								field.Value = CType(targetObjectTable.Rows(0)("ArtifactID"), String)
+								If forPreview Then field.Value = value.Trim
+							End If
+						End If
         Case Else    'FieldTypeHelper.FieldType.Text
-          If field.FieldCategory = DynamicFields.Types.FieldCategory.FullText AndAlso _fullTextColumnMapsToFileLocation Then
-            If value = "" Then
-              field.Value = ""
-            ElseIf Not System.IO.File.Exists(value) Then
-              Throw New MissingFullTextFileException(Me.CurrentLineNumber, column)
-            Else
-              If forPreview Then
-                Dim sr As New System.IO.StreamReader(value, _extractedTextFileEncoding)
-                Dim i As Int32 = 0
-                Dim sb As New System.Text.StringBuilder
-                While sr.Peek <> -1 AndAlso i < 100
-                  sb.Append(ChrW(sr.Read))
-                  i += 1
-                End While
-                If i = 100 Then sb.Append("...")
-                sr.Close()
-                sb = sb.Replace(System.Environment.NewLine, Me.NewlineProxy).Replace(ChrW(10), Me.NewlineProxy).Replace(ChrW(13), Me.NewlineProxy)
-                field.Value = sb.ToString
-              Else
-                field.Value = value
-              End If
-            End If
-          Else
-            If value.Length > 100 AndAlso forPreview Then
-              field.Value = value.Substring(0, 100) & "...."
-            Else
-              field.Value = value
-            End If
-          End If
+						If field.FieldCategory = DynamicFields.Types.FieldCategory.FullText AndAlso _fullTextColumnMapsToFileLocation Then
+							If value = "" Then
+								field.Value = ""
+							ElseIf Not System.IO.File.Exists(value) Then
+								Throw New MissingFullTextFileException(Me.CurrentLineNumber, column)
+							Else
+								If forPreview Then
+									Dim sr As New System.IO.StreamReader(value, _extractedTextFileEncoding)
+									Dim i As Int32 = 0
+									Dim sb As New System.Text.StringBuilder
+									While sr.Peek <> -1 AndAlso i < 100
+										sb.Append(ChrW(sr.Read))
+										i += 1
+									End While
+									If i = 100 Then sb.Append("...")
+									sr.Close()
+									sb = sb.Replace(System.Environment.NewLine, Me.NewlineProxy).Replace(ChrW(10), Me.NewlineProxy).Replace(ChrW(13), Me.NewlineProxy)
+									field.Value = sb.ToString
+								Else
+									field.Value = value
+								End If
+							End If
+						Else
+							If value.Length > 100 AndAlso forPreview Then
+								field.Value = value.Substring(0, 100) & "...."
+							Else
+								field.Value = value
+							End If
+						End If
       End Select
     End Sub
 
