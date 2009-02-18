@@ -327,74 +327,74 @@ Namespace kCura.WinEDDS
 			Dim isSupportedFileType As Boolean
 			Dim oixFileIdData As OI.FileID.FileIDData
 			Dim destinationVolume As String
-			If uploadFile Then
-				filename = values(_filePathColumnIndex)
-				If filename.Length > 1 AndAlso filename.Chars(0) = "\" AndAlso filename.Chars(1) <> "\" Then
-					filename = "." & filename
-				End If
+      If uploadFile AndAlso _artifactTypeID = 10 Then
+        filename = values(_filePathColumnIndex)
+        If filename.Length > 1 AndAlso filename.Chars(0) = "\" AndAlso filename.Chars(1) <> "\" Then
+          filename = "." & filename
+        End If
 
-				fileExists = System.IO.File.Exists(filename)
-				If filename <> String.Empty AndAlso Not fileExists Then lineStatus += kCura.EDDS.Types.MassImport.ImportStatus.FileSpecifiedDne 'Throw New InvalidFilenameException(filename)
-				If fileExists Then
+        fileExists = System.IO.File.Exists(filename)
+        If filename <> String.Empty AndAlso Not fileExists Then lineStatus += kCura.EDDS.Types.MassImport.ImportStatus.FileSpecifiedDne 'Throw New InvalidFilenameException(filename)
+        If fileExists Then
           Dim now As DateTime = DateTime.Now
           If New IO.FileInfo(filename).Length = 0 Then lineStatus += kCura.EDDS.Types.MassImport.ImportStatus.EmptyFile 'Throw New EmptyNativeFileException(filename)
           oixFileIdData = kCura.OI.FileID.Manager.Instance.GetFileIDDataByFilePath(filename)
-					If _copyFileToRepository Then
-						fileGuid = _uploader.UploadFile(filename, _caseArtifactID)
-						destinationVolume = _uploader.CurrentDestinationDirectory
-					Else
-						fileGuid = System.Guid.NewGuid.ToString
-					End If
-					If _extractMd5Hash Then
-						md5hash = kCura.Utility.File.GenerateMD5HashForFile(filename)
-					End If
-					fullFilePath = filename
-					filename = filename.Substring(filename.LastIndexOf("\") + 1)
-					WriteStatusLine(Windows.Process.EventType.Status, String.Format("End upload file. ({0}ms)", DateTime.op_Subtraction(DateTime.Now, now).Milliseconds))
-				End If
+          If _copyFileToRepository Then
+            fileGuid = _uploader.UploadFile(filename, _caseArtifactID)
+            destinationVolume = _uploader.CurrentDestinationDirectory
+          Else
+            fileGuid = System.Guid.NewGuid.ToString
+          End If
+          If _extractMd5Hash Then
+            md5hash = kCura.Utility.File.GenerateMD5HashForFile(filename)
+          End If
+          fullFilePath = filename
+          filename = filename.Substring(filename.LastIndexOf("\") + 1)
+          WriteStatusLine(Windows.Process.EventType.Status, String.Format("End upload file. ({0}ms)", DateTime.op_Subtraction(DateTime.Now, now).Milliseconds))
+        End If
       End If
       If _createFolderStructure Then
         If _artifactTypeID = 10 Then
           parentFolderID = _folderCache.FolderID(Me.CleanDestinationFolderPath(values(_destinationFolderColumnIndex)))
         Else
-					Dim textIdentifier As String = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(kCura.Utility.NullableTypesHelper.ToNullableString(values(_destinationFolderColumnIndex)))
+          Dim textIdentifier As String = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(kCura.Utility.NullableTypesHelper.ToNullableString(values(_destinationFolderColumnIndex)))
 
-					If textIdentifier = "" Then
-						If _overwrite.ToLower = "strict" OrElse _overwrite.ToLower = "append" Then
-							parentFolderID = -1
-						Else
-							Throw New ParentObjectReferenceRequiredException(Me.CurrentLineNumber, _destinationFolderColumnIndex)
-						End If
-					Else
-						Dim parentObjectTable As System.Data.DataTable = _objectManager.RetrieveArtifactIdOfMappedParentObject(_caseArtifactID, _
-						textIdentifier, _artifactTypeID).Tables(0)
-						If parentObjectTable.Rows.Count > 1 Then
-							Throw New DuplicateObjectReferenceException(Me.CurrentLineNumber, _destinationFolderColumnIndex, "Parent Info")
-						ElseIf parentObjectTable.Rows.Count = 0 Then
-							Throw New NonExistentObjectReferenceException(Me.CurrentLineNumber, _destinationFolderColumnIndex, "Parent Info")
-						Else
-							parentFolderID = CType(parentObjectTable.Rows(0)("ArtifactID"), Int32)
-						End If
-					End If
+          If textIdentifier = "" Then
+            If _overwrite.ToLower = "strict" OrElse _overwrite.ToLower = "append" Then
+              parentFolderID = -1
+            Else
+              Throw New ParentObjectReferenceRequiredException(Me.CurrentLineNumber, _destinationFolderColumnIndex)
+            End If
+          Else
+            Dim parentObjectTable As System.Data.DataTable = _objectManager.RetrieveArtifactIdOfMappedParentObject(_caseArtifactID, _
+            textIdentifier, _artifactTypeID).Tables(0)
+            If parentObjectTable.Rows.Count > 1 Then
+              Throw New DuplicateObjectReferenceException(Me.CurrentLineNumber, _destinationFolderColumnIndex, "Parent Info")
+            ElseIf parentObjectTable.Rows.Count = 0 Then
+              Throw New NonExistentObjectReferenceException(Me.CurrentLineNumber, _destinationFolderColumnIndex, "Parent Info")
+            Else
+              parentFolderID = CType(parentObjectTable.Rows(0)("ArtifactID"), Int32)
+            End If
+          End If
         End If
-			Else
-				If _artifactTypeID = 10 OrElse _parentArtifactTypeID = 8 Then
-					parentFolderID = _folderID
-				Else
-					parentFolderID = -1
-				End If
-			End If
-			Dim markPrepareFields As DateTime = DateTime.Now
-			identityValue = PrepareFieldCollectionAndExtractIdentityValue(fieldCollection, values)
-			If identityValue = String.Empty Then
-				lineStatus += ImportStatus.EmptyIdentifier			 'Throw New IdentityValueNotSetException
-			ElseIf Not _processedDocumentIdentifiers(identityValue) Is Nothing Then
-				lineStatus += ImportStatus.IdentifierOverlap				'	Throw New IdentifierOverlapException(identityValue, _processedDocumentIdentifiers(identityValue))
-			End If
-			Dim metadoc As New MetaDocument(fileGuid, identityValue, fieldCollection, fileExists AndAlso uploadFile AndAlso (fileGuid <> String.Empty OrElse Not _copyFileToRepository), filename, fullFilePath, uploadFile, CurrentLineNumber, parentFolderID, md5hash, values, oixFileIdData, lineStatus, destinationVolume)
-			'_docsToProcess.Push(metadoc)
-			ManageDocumentMetaData(metadoc)
-			Return identityValue
+      Else
+        If _artifactTypeID = 10 OrElse _parentArtifactTypeID = 8 Then
+          parentFolderID = _folderID
+        Else
+          parentFolderID = -1
+        End If
+      End If
+      Dim markPrepareFields As DateTime = DateTime.Now
+      identityValue = PrepareFieldCollectionAndExtractIdentityValue(fieldCollection, values)
+      If identityValue = String.Empty Then
+        lineStatus += ImportStatus.EmptyIdentifier    'Throw New IdentityValueNotSetException
+      ElseIf Not _processedDocumentIdentifiers(identityValue) Is Nothing Then
+        lineStatus += ImportStatus.IdentifierOverlap    '	Throw New IdentifierOverlapException(identityValue, _processedDocumentIdentifiers(identityValue))
+      End If
+      Dim metadoc As New MetaDocument(fileGuid, identityValue, fieldCollection, fileExists AndAlso uploadFile AndAlso (fileGuid <> String.Empty OrElse Not _copyFileToRepository), filename, fullFilePath, uploadFile, CurrentLineNumber, parentFolderID, md5hash, values, oixFileIdData, lineStatus, destinationVolume)
+      '_docsToProcess.Push(metadoc)
+      ManageDocumentMetaData(metadoc)
+      Return identityValue
 		End Function
 
 		Private Function CleanDestinationFolderPath(ByVal path As String) As String
