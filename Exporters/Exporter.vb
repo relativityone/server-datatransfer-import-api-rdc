@@ -148,7 +148,10 @@ Namespace kCura.WinEDDS
 			Me.WriteStatusLine(kCura.Windows.Process.EventType.Status, "Created search log file.", True)
 			_volumeManager.ColumnHeaderString = columnHeaderString
 			Me.WriteUpdate("Data retrieved. Beginning " & typeOfExportDisplayString & " export...")
-
+			Dim allAvfIds(_columns.Count - 1) As Int32
+			For i As Int32 = 0 To allAvfIds.Length - 1
+				allAvfIds(i) = Me.ExportFile.SelectedViewFields(i).AvfId
+			Next
 			Dim documentTable As System.Data.DataTable
 			Dim start, finish As Int32
 			For start = 0 To Me.TotalDocuments - 1 Step Config.ExportBatchSize
@@ -156,13 +159,13 @@ Namespace kCura.WinEDDS
 				_timekeeper.MarkStart("Exporter_GetDocumentBlock")
 				Select Case Me.ExportFile.TypeOfExport
 					Case ExportFile.ExportType.ArtifactSearch
-						documentTable = _searchManager.SearchBySearchArtifactID(Me.ExportFile.CaseArtifactID, Me.ExportFile.ArtifactID, start, finish).Tables(0)
+						documentTable = _searchManager.SearchBySearchArtifactID(Me.ExportFile.CaseArtifactID, Me.ExportFile.ArtifactID, start, finish, allAvfIds, True, Me.ExportFile.NestedValueDelimiter).Tables(0)
 					Case ExportFile.ExportType.ParentSearch
-						documentTable = _searchManager.SearchByParentArtifactID(Me.ExportFile.CaseArtifactID, Me.ExportFile.ArtifactID, False, start, finish, ExportFile.ViewID).Tables(0)
+						documentTable = _searchManager.SearchByParentArtifactID(Me.ExportFile.CaseArtifactID, Me.ExportFile.ArtifactID, False, start, finish, ExportFile.ViewID, allAvfIds, True, Me.ExportFile.NestedValueDelimiter).Tables(0)
 					Case ExportFile.ExportType.AncestorSearch
-						documentTable = _searchManager.SearchByParentArtifactID(Me.ExportFile.CaseArtifactID, Me.ExportFile.ArtifactID, True, start, finish, ExportFile.ViewID).Tables(0)
+						documentTable = _searchManager.SearchByParentArtifactID(Me.ExportFile.CaseArtifactID, Me.ExportFile.ArtifactID, True, start, finish, ExportFile.ViewID, allAvfIds, True, Me.ExportFile.NestedValueDelimiter).Tables(0)
 					Case ExportFile.ExportType.Production
-						documentTable = _searchManager.SearchByProductionArtifactID(Me.ExportFile.CaseArtifactID, Me.ExportFile.ArtifactID, start, finish).Tables(0)
+						documentTable = _searchManager.SearchByProductionArtifactID(Me.ExportFile.CaseArtifactID, Me.ExportFile.ArtifactID, start, finish, allAvfIds, True, Me.ExportFile.NestedValueDelimiter).Tables(0)
 				End Select
 				_timekeeper.MarkEnd("Exporter_GetDocumentBlock")
 				Dim docRow As System.Data.DataRow
@@ -368,8 +371,7 @@ Namespace kCura.WinEDDS
 
 		Private Function LoadColumns() As String
 			Dim count As Int32
-			Dim columnName As String
-			Dim table As System.Data.DataTable
+			'Dim table As System.Data.DataTable
 			Dim retString As New System.Text.StringBuilder
 			If _exportFile.LoadFileIsHtml Then
 				retString.Append("<html><head><title>" & System.Web.HttpUtility.HtmlEncode(_exportFile.CaseInfo.Name) & "</title>")
@@ -381,43 +383,58 @@ Namespace kCura.WinEDDS
 				retString.Append("</head><body>" & vbNewLine)
 				retString.Append("<table width='100%'><tr>" & vbNewLine)
 			End If
-			_columns = New System.Collections.ArrayList
+			For Each field As WinEDDS.ViewFieldInfo In Me.ExportFile.SelectedViewFields
+				Me.ExportFile.ExportFullText = Me.ExportFile.ExportFullText OrElse field.Category = DynamicFields.Types.FieldCategory.FullText
+			Next
+			_columns = New System.Collections.ArrayList(Me.ExportFile.SelectedViewFields)
 			_columnFormats = New System.Collections.ArrayList
-			Select Case Me.ExportFile.TypeOfExport
-				Case ExportFile.ExportType.AncestorSearch, ExportFile.ExportType.ParentSearch
-					table = _searchManager.RetrieveSearchFields(Me.ExportFile.CaseArtifactID, Me.ExportFile.ViewID).Tables(0)
-				Case ExportFile.ExportType.ArtifactSearch
-					table = _searchManager.RetrieveSearchFields(Me.ExportFile.CaseArtifactID, Me.ExportFile.ArtifactID).Tables(0)
-				Case ExportFile.ExportType.Production
-					table = _searchManager.RetrieveSearchFieldsForProduction(Me.ExportFile.CaseArtifactID, Me.ExportFile.ArtifactID).Tables(0)
-					Dim row As System.Data.DataRow
-					For Each row In table.Rows
-						If row("ColumnType").ToString.ToLower = "beginbates" Then _beginBatesColumn = row("ColumnName").ToString
-					Next
-			End Select
+			'Select Case Me.ExportFile.TypeOfExport
+			'	Case ExportFile.ExportType.AncestorSearch, ExportFile.ExportType.ParentSearch
+			'		table = _searchManager.RetrieveSearchFields(Me.ExportFile.CaseArtifactID, Me.ExportFile.ViewID).Tables(0)
+			'	Case ExportFile.ExportType.ArtifactSearch
+			'		table = _searchManager.RetrieveSearchFields(Me.ExportFile.CaseArtifactID, Me.ExportFile.ArtifactID).Tables(0)
+			'	Case ExportFile.ExportType.Production
+			'		table = _searchManager.RetrieveSearchFieldsForProduction(Me.ExportFile.CaseArtifactID, Me.ExportFile.ArtifactID).Tables(0)
+			'		Dim row As System.Data.DataRow
+			'		For Each row In table.Rows
+			'			If row("ColumnType").ToString.ToLower = "beginbates" Then _beginBatesColumn = row("ColumnName").ToString
+			'		Next
+			'End Select
 
-			If Me.ExportFile.ExportFullText Then
-				_exportAsUnicode = _exportAsUnicode OrElse _searchManager.IsExtractedTextUnicode(Me.ExportFile.CaseArtifactID)
-			End If
-			For count = 0 To table.Rows.Count - 1
-				columnName = CType(table.Rows(count)("ColumnName"), String)
-				If ShowField(columnName) Then
-					_exportAsUnicode = _exportAsUnicode OrElse CType(table.Rows(count)("IsUnicodeEnabled"), Boolean)
-					_columns.Add(columnName)
-					If _exportFile.LoadFileIsHtml Then
-						retString.AppendFormat("{0}{1}{2}", "<th>", System.Web.HttpUtility.HtmlEncode(columnName), "</th>")
-					Else
-						retString.AppendFormat("{0}{1}{0}", Me.ExportFile.QuoteDelimiter, columnName)
-					End If
-					If count <> table.Rows.Count - 1 AndAlso Not Me.ExportFile.LoadFileIsHtml Then
-						retString.Append(Me.ExportFile.RecordDelimiter)
-					End If
-					If table.Rows(count)("ItemListType").ToString.ToLower = "datetime" Then
-						_columnFormats.Add(table.Rows(count)("FormatString"))
-					Else
-						_columnFormats.Add("")
-					End If
+			'If Me.ExportFile.ExportFullText Then
+			'	_exportAsUnicode = _exportAsUnicode OrElse _searchManager.IsExtractedTextUnicode(Me.ExportFile.CaseArtifactID)
+			'End If
+
+			'For count = 0 To table.Rows.Count - 1
+			'	columnName = CType(table.Rows(count)("ColumnName"), String)
+			'	If ShowField(columnName) Then
+			'		_exportAsUnicode = _exportAsUnicode OrElse CType(table.Rows(count)("IsUnicodeEnabled"), Boolean)
+			'		_columns.Add(columnName)
+			'		If _exportFile.LoadFileIsHtml Then
+			'			retString.AppendFormat("{0}{1}{2}", "<th>", System.Web.HttpUtility.HtmlEncode(columnName), "</th>")
+			'		Else
+			'			retString.AppendFormat("{0}{1}{0}", Me.ExportFile.QuoteDelimiter, columnName)
+			'		End If
+			'		If count <> table.Rows.Count - 1 AndAlso Not Me.ExportFile.LoadFileIsHtml Then
+			'			retString.Append(Me.ExportFile.RecordDelimiter)
+			'		End If
+			'		If table.Rows(count)("ItemListType").ToString.ToLower = "datetime" Then
+			'			_columnFormats.Add(table.Rows(count)("FormatString"))
+			'		Else
+			'			_columnFormats.Add("")
+			'		End If
+			'	End If
+			'Next
+			For i As Int32 = 0 To _columns.Count - 1
+				Dim field As ViewFieldInfo = DirectCast(_columns(i), ViewFieldInfo)
+				_exportAsUnicode = _exportAsUnicode OrElse field.IsUnicodeEnabled
+				If _exportFile.LoadFileIsHtml Then
+					retString.AppendFormat("{0}{1}{2}", "<th>", System.Web.HttpUtility.HtmlEncode(field.DisplayName), "</th>")
+				Else
+					retString.AppendFormat("{0}{1}{0}", Me.ExportFile.QuoteDelimiter, field.DisplayName)
+					If i < _columns.Count - 1 Then retString.Append(Me.ExportFile.RecordDelimiter)
 				End If
+				_columnFormats.Add(field.FormatString)
 			Next
 			If _fieldCollectionHasExtractedText AndAlso Not Me.ExportFile.ExportFullText Then
 				_exportAsUnicode = _exportAsUnicode OrElse _searchManager.IsExtractedTextUnicode(Me.ExportFile.CaseArtifactID)
@@ -429,11 +446,11 @@ Namespace kCura.WinEDDS
 			If _exportFile.LoadFileIsHtml Then
 				If Me.ExportFile.ExportImages Then retString.Append("<th>Image Files</th>")
 				If Me.ExportFile.ExportNative Then retString.Append("<th>Native Files</th>")
-				If Me.ExportFile.ExportFullText Then retString.Append("<th>Extracted Text</th>")
+				'If Me.ExportFile.ExportFullText Then retString.Append("<th>Extracted Text</th>")
 				retString.Append(vbNewLine & "</tr>" & vbNewLine)
 			Else
 				If Me.ExportFile.ExportNative Then retString.AppendFormat("{2}{0}{1}{0}", Me.ExportFile.QuoteDelimiter, "FILE_PATH", Me.ExportFile.RecordDelimiter)
-				If Me.ExportFile.ExportFullText Then retString.AppendFormat("{2}{0}{1}{0}", Me.ExportFile.QuoteDelimiter, "Extracted Text", Me.ExportFile.RecordDelimiter)
+				'If Me.ExportFile.ExportFullText Then retString.AppendFormat("{2}{0}{1}{0}", Me.ExportFile.QuoteDelimiter, "Extracted Text", Me.ExportFile.RecordDelimiter)
 			End If
 			retString.Append(System.Environment.NewLine)
 			Return retString.ToString

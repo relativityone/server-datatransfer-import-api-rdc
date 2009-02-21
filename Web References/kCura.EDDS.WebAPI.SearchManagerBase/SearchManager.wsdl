@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<wsdl:definitions xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tns="http://www.kCura.com/EDDS/SearchManager" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" targetNamespace="http://www.kCura.com/EDDS/SearchManager" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+<wsdl:definitions xmlns:s1="http://microsoft.com/wsdl/types/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tns="http://www.kCura.com/EDDS/SearchManager" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" targetNamespace="http://www.kCura.com/EDDS/SearchManager" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
   <wsdl:types>
     <s:schema elementFormDefault="qualified" targetNamespace="http://www.kCura.com/EDDS/SearchManager">
+      <s:import namespace="http://microsoft.com/wsdl/types/" />
       <s:import namespace="http://www.w3.org/2001/XMLSchema" />
       <s:element name="CountSearchByArtifactID">
         <s:complexType>
@@ -25,9 +26,17 @@
             <s:element minOccurs="1" maxOccurs="1" name="searchArtifactID" type="s:int" />
             <s:element minOccurs="1" maxOccurs="1" name="start" type="s:int" />
             <s:element minOccurs="1" maxOccurs="1" name="finish" type="s:int" />
+            <s:element minOccurs="0" maxOccurs="1" name="avfIds" type="tns:ArrayOfInt" />
+            <s:element minOccurs="1" maxOccurs="1" name="displayMulticodesAsNested" type="s:boolean" />
+            <s:element minOccurs="1" maxOccurs="1" name="nestedValueDelimiter" type="s1:char" />
           </s:sequence>
         </s:complexType>
       </s:element>
+      <s:complexType name="ArrayOfInt">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="int" type="s:int" />
+        </s:sequence>
+      </s:complexType>
       <s:element name="SearchBySearchArtifactIDResponse">
         <s:complexType>
           <s:sequence>
@@ -87,11 +96,6 @@
           </s:sequence>
         </s:complexType>
       </s:element>
-      <s:complexType name="ArrayOfInt">
-        <s:sequence>
-          <s:element minOccurs="0" maxOccurs="unbounded" name="int" type="s:int" />
-        </s:sequence>
-      </s:complexType>
       <s:element name="RetrieveFullTextExistenceForSearchResponse">
         <s:complexType>
           <s:sequence>
@@ -280,6 +284,9 @@
             <s:element minOccurs="1" maxOccurs="1" name="start" type="s:int" />
             <s:element minOccurs="1" maxOccurs="1" name="finish" type="s:int" />
             <s:element minOccurs="1" maxOccurs="1" name="viewArtifactID" type="s:int" />
+            <s:element minOccurs="0" maxOccurs="1" name="avfIds" type="tns:ArrayOfInt" />
+            <s:element minOccurs="1" maxOccurs="1" name="displayMulticodesAsNested" type="s:boolean" />
+            <s:element minOccurs="1" maxOccurs="1" name="nestedValueDelimiter" type="s1:char" />
           </s:sequence>
         </s:complexType>
       </s:element>
@@ -304,6 +311,9 @@
             <s:element minOccurs="1" maxOccurs="1" name="productionArtifactID" type="s:int" />
             <s:element minOccurs="1" maxOccurs="1" name="start" type="s:int" />
             <s:element minOccurs="1" maxOccurs="1" name="finish" type="s:int" />
+            <s:element minOccurs="0" maxOccurs="1" name="avfids" type="tns:ArrayOfInt" />
+            <s:element minOccurs="1" maxOccurs="1" name="displayMulticodesAsNested" type="s:boolean" />
+            <s:element minOccurs="1" maxOccurs="1" name="nestedValueDelimiter" type="s1:char" />
           </s:sequence>
         </s:complexType>
       </s:element>
@@ -336,6 +346,55 @@
           </s:sequence>
         </s:complexType>
       </s:element>
+      <s:element name="RetrieveDefaultViewFieldsForIdList">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
+            <s:element minOccurs="0" maxOccurs="1" name="artifactIdList" type="tns:ArrayOfInt" />
+            <s:element minOccurs="1" maxOccurs="1" name="isProductionList" type="s:boolean" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="RetrieveDefaultViewFieldsForIdListResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="RetrieveDefaultViewFieldsForIdListResult">
+              <s:complexType>
+                <s:sequence>
+                  <s:element ref="s:schema" />
+                  <s:any />
+                </s:sequence>
+              </s:complexType>
+            </s:element>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="RetrieveAllExportableViewFields">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="RetrieveAllExportableViewFieldsResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="RetrieveAllExportableViewFieldsResult">
+              <s:complexType>
+                <s:sequence>
+                  <s:element ref="s:schema" />
+                  <s:any />
+                </s:sequence>
+              </s:complexType>
+            </s:element>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+    </s:schema>
+    <s:schema elementFormDefault="qualified" targetNamespace="http://microsoft.com/wsdl/types/">
+      <s:simpleType name="char">
+        <s:restriction base="s:unsignedShort" />
+      </s:simpleType>
     </s:schema>
   </wsdl:types>
   <wsdl:message name="CountSearchByArtifactIDSoapIn">
@@ -434,6 +493,18 @@
   <wsdl:message name="CountSearchByProductionArtifactIDSoapOut">
     <wsdl:part name="parameters" element="tns:CountSearchByProductionArtifactIDResponse" />
   </wsdl:message>
+  <wsdl:message name="RetrieveDefaultViewFieldsForIdListSoapIn">
+    <wsdl:part name="parameters" element="tns:RetrieveDefaultViewFieldsForIdList" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveDefaultViewFieldsForIdListSoapOut">
+    <wsdl:part name="parameters" element="tns:RetrieveDefaultViewFieldsForIdListResponse" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveAllExportableViewFieldsSoapIn">
+    <wsdl:part name="parameters" element="tns:RetrieveAllExportableViewFields" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveAllExportableViewFieldsSoapOut">
+    <wsdl:part name="parameters" element="tns:RetrieveAllExportableViewFieldsResponse" />
+  </wsdl:message>
   <wsdl:portType name="SearchManagerSoap">
     <wsdl:operation name="CountSearchByArtifactID">
       <wsdl:input message="tns:CountSearchByArtifactIDSoapIn" />
@@ -498,6 +569,14 @@
     <wsdl:operation name="CountSearchByProductionArtifactID">
       <wsdl:input message="tns:CountSearchByProductionArtifactIDSoapIn" />
       <wsdl:output message="tns:CountSearchByProductionArtifactIDSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveDefaultViewFieldsForIdList">
+      <wsdl:input message="tns:RetrieveDefaultViewFieldsForIdListSoapIn" />
+      <wsdl:output message="tns:RetrieveDefaultViewFieldsForIdListSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveAllExportableViewFields">
+      <wsdl:input message="tns:RetrieveAllExportableViewFieldsSoapIn" />
+      <wsdl:output message="tns:RetrieveAllExportableViewFieldsSoapOut" />
     </wsdl:operation>
   </wsdl:portType>
   <wsdl:binding name="SearchManagerSoap" type="tns:SearchManagerSoap">
@@ -639,6 +718,24 @@
     </wsdl:operation>
     <wsdl:operation name="CountSearchByProductionArtifactID">
       <soap:operation soapAction="http://www.kCura.com/EDDS/SearchManager/CountSearchByProductionArtifactID" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveDefaultViewFieldsForIdList">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/SearchManager/RetrieveDefaultViewFieldsForIdList" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveAllExportableViewFields">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/SearchManager/RetrieveAllExportableViewFields" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>

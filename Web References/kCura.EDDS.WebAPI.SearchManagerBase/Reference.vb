@@ -56,14 +56,14 @@ Namespace kCura.EDDS.WebAPI.SearchManagerBase
         
         '<remarks/>
         <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/SearchManager/SearchBySearchArtifactID", RequestNamespace:="http://www.kCura.com/EDDS/SearchManager", ResponseNamespace:="http://www.kCura.com/EDDS/SearchManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
-        Public Function SearchBySearchArtifactID(ByVal caseContextArtifactID As Integer, ByVal searchArtifactID As Integer, ByVal start As Integer, ByVal finish As Integer) As System.Data.DataSet
-            Dim results() As Object = Me.Invoke("SearchBySearchArtifactID", New Object() {caseContextArtifactID, searchArtifactID, start, finish})
+        Public Function SearchBySearchArtifactID(ByVal caseContextArtifactID As Integer, ByVal searchArtifactID As Integer, ByVal start As Integer, ByVal finish As Integer, ByVal avfIds() As Integer, ByVal displayMulticodesAsNested As Boolean, ByVal nestedValueDelimiter As Char) As System.Data.DataSet
+            Dim results() As Object = Me.Invoke("SearchBySearchArtifactID", New Object() {caseContextArtifactID, searchArtifactID, start, finish, avfIds, displayMulticodesAsNested, nestedValueDelimiter})
             Return CType(results(0),System.Data.DataSet)
         End Function
         
         '<remarks/>
-        Public Function BeginSearchBySearchArtifactID(ByVal caseContextArtifactID As Integer, ByVal searchArtifactID As Integer, ByVal start As Integer, ByVal finish As Integer, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
-            Return Me.BeginInvoke("SearchBySearchArtifactID", New Object() {caseContextArtifactID, searchArtifactID, start, finish}, callback, asyncState)
+        Public Function BeginSearchBySearchArtifactID(ByVal caseContextArtifactID As Integer, ByVal searchArtifactID As Integer, ByVal start As Integer, ByVal finish As Integer, ByVal avfIds() As Integer, ByVal displayMulticodesAsNested As Boolean, ByVal nestedValueDelimiter As Char, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("SearchBySearchArtifactID", New Object() {caseContextArtifactID, searchArtifactID, start, finish, avfIds, displayMulticodesAsNested, nestedValueDelimiter}, callback, asyncState)
         End Function
         
         '<remarks/>
@@ -274,14 +274,14 @@ Namespace kCura.EDDS.WebAPI.SearchManagerBase
         
         '<remarks/>
         <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/SearchManager/SearchByParentArtifactID", RequestNamespace:="http://www.kCura.com/EDDS/SearchManager", ResponseNamespace:="http://www.kCura.com/EDDS/SearchManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
-        Public Function SearchByParentArtifactID(ByVal caseContextArtifactID As Integer, ByVal parentArtifactID As Integer, ByVal searchSubFolders As Boolean, ByVal start As Integer, ByVal finish As Integer, ByVal viewArtifactID As Integer) As System.Data.DataSet
-            Dim results() As Object = Me.Invoke("SearchByParentArtifactID", New Object() {caseContextArtifactID, parentArtifactID, searchSubFolders, start, finish, viewArtifactID})
+        Public Function SearchByParentArtifactID(ByVal caseContextArtifactID As Integer, ByVal parentArtifactID As Integer, ByVal searchSubFolders As Boolean, ByVal start As Integer, ByVal finish As Integer, ByVal viewArtifactID As Integer, ByVal avfIds() As Integer, ByVal displayMulticodesAsNested As Boolean, ByVal nestedValueDelimiter As Char) As System.Data.DataSet
+            Dim results() As Object = Me.Invoke("SearchByParentArtifactID", New Object() {caseContextArtifactID, parentArtifactID, searchSubFolders, start, finish, viewArtifactID, avfIds, displayMulticodesAsNested, nestedValueDelimiter})
             Return CType(results(0),System.Data.DataSet)
         End Function
         
         '<remarks/>
-        Public Function BeginSearchByParentArtifactID(ByVal caseContextArtifactID As Integer, ByVal parentArtifactID As Integer, ByVal searchSubFolders As Boolean, ByVal start As Integer, ByVal finish As Integer, ByVal viewArtifactID As Integer, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
-            Return Me.BeginInvoke("SearchByParentArtifactID", New Object() {caseContextArtifactID, parentArtifactID, searchSubFolders, start, finish, viewArtifactID}, callback, asyncState)
+        Public Function BeginSearchByParentArtifactID(ByVal caseContextArtifactID As Integer, ByVal parentArtifactID As Integer, ByVal searchSubFolders As Boolean, ByVal start As Integer, ByVal finish As Integer, ByVal viewArtifactID As Integer, ByVal avfIds() As Integer, ByVal displayMulticodesAsNested As Boolean, ByVal nestedValueDelimiter As Char, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("SearchByParentArtifactID", New Object() {caseContextArtifactID, parentArtifactID, searchSubFolders, start, finish, viewArtifactID, avfIds, displayMulticodesAsNested, nestedValueDelimiter}, callback, asyncState)
         End Function
         
         '<remarks/>
@@ -292,14 +292,14 @@ Namespace kCura.EDDS.WebAPI.SearchManagerBase
         
         '<remarks/>
         <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/SearchManager/SearchByProductionArtifactID", RequestNamespace:="http://www.kCura.com/EDDS/SearchManager", ResponseNamespace:="http://www.kCura.com/EDDS/SearchManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
-        Public Function SearchByProductionArtifactID(ByVal caseContextArtifactID As Integer, ByVal productionArtifactID As Integer, ByVal start As Integer, ByVal finish As Integer) As System.Data.DataSet
-            Dim results() As Object = Me.Invoke("SearchByProductionArtifactID", New Object() {caseContextArtifactID, productionArtifactID, start, finish})
+        Public Function SearchByProductionArtifactID(ByVal caseContextArtifactID As Integer, ByVal productionArtifactID As Integer, ByVal start As Integer, ByVal finish As Integer, ByVal avfids() As Integer, ByVal displayMulticodesAsNested As Boolean, ByVal nestedValueDelimiter As Char) As System.Data.DataSet
+            Dim results() As Object = Me.Invoke("SearchByProductionArtifactID", New Object() {caseContextArtifactID, productionArtifactID, start, finish, avfids, displayMulticodesAsNested, nestedValueDelimiter})
             Return CType(results(0),System.Data.DataSet)
         End Function
         
         '<remarks/>
-        Public Function BeginSearchByProductionArtifactID(ByVal caseContextArtifactID As Integer, ByVal productionArtifactID As Integer, ByVal start As Integer, ByVal finish As Integer, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
-            Return Me.BeginInvoke("SearchByProductionArtifactID", New Object() {caseContextArtifactID, productionArtifactID, start, finish}, callback, asyncState)
+        Public Function BeginSearchByProductionArtifactID(ByVal caseContextArtifactID As Integer, ByVal productionArtifactID As Integer, ByVal start As Integer, ByVal finish As Integer, ByVal avfids() As Integer, ByVal displayMulticodesAsNested As Boolean, ByVal nestedValueDelimiter As Char, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("SearchByProductionArtifactID", New Object() {caseContextArtifactID, productionArtifactID, start, finish, avfids, displayMulticodesAsNested, nestedValueDelimiter}, callback, asyncState)
         End Function
         
         '<remarks/>
@@ -324,6 +324,42 @@ Namespace kCura.EDDS.WebAPI.SearchManagerBase
         Public Function EndCountSearchByProductionArtifactID(ByVal asyncResult As System.IAsyncResult) As Integer
             Dim results() As Object = Me.EndInvoke(asyncResult)
             Return CType(results(0),Integer)
+        End Function
+        
+        '<remarks/>
+        <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/SearchManager/RetrieveDefaultViewFieldsForIdList", RequestNamespace:="http://www.kCura.com/EDDS/SearchManager", ResponseNamespace:="http://www.kCura.com/EDDS/SearchManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
+        Public Function RetrieveDefaultViewFieldsForIdList(ByVal caseContextArtifactID As Integer, ByVal artifactIdList() As Integer, ByVal isProductionList As Boolean) As System.Data.DataSet
+            Dim results() As Object = Me.Invoke("RetrieveDefaultViewFieldsForIdList", New Object() {caseContextArtifactID, artifactIdList, isProductionList})
+            Return CType(results(0),System.Data.DataSet)
+        End Function
+        
+        '<remarks/>
+        Public Function BeginRetrieveDefaultViewFieldsForIdList(ByVal caseContextArtifactID As Integer, ByVal artifactIdList() As Integer, ByVal isProductionList As Boolean, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("RetrieveDefaultViewFieldsForIdList", New Object() {caseContextArtifactID, artifactIdList, isProductionList}, callback, asyncState)
+        End Function
+        
+        '<remarks/>
+        Public Function EndRetrieveDefaultViewFieldsForIdList(ByVal asyncResult As System.IAsyncResult) As System.Data.DataSet
+            Dim results() As Object = Me.EndInvoke(asyncResult)
+            Return CType(results(0),System.Data.DataSet)
+        End Function
+        
+        '<remarks/>
+        <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/SearchManager/RetrieveAllExportableViewFields", RequestNamespace:="http://www.kCura.com/EDDS/SearchManager", ResponseNamespace:="http://www.kCura.com/EDDS/SearchManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
+        Public Function RetrieveAllExportableViewFields(ByVal caseContextArtifactID As Integer) As System.Data.DataSet
+            Dim results() As Object = Me.Invoke("RetrieveAllExportableViewFields", New Object() {caseContextArtifactID})
+            Return CType(results(0),System.Data.DataSet)
+        End Function
+        
+        '<remarks/>
+        Public Function BeginRetrieveAllExportableViewFields(ByVal caseContextArtifactID As Integer, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("RetrieveAllExportableViewFields", New Object() {caseContextArtifactID}, callback, asyncState)
+        End Function
+        
+        '<remarks/>
+        Public Function EndRetrieveAllExportableViewFields(ByVal asyncResult As System.IAsyncResult) As System.Data.DataSet
+            Dim results() As Object = Me.EndInvoke(asyncResult)
+            Return CType(results(0),System.Data.DataSet)
         End Function
     End Class
 End Namespace

@@ -92,6 +92,9 @@ Namespace kCura.WinEDDS
 			Return WebDownloadFile(localFilePath, artifactID, "", appID, Nothing, True)
 		End Function
 
+		Public Function DownloadLongTextFile(ByVal localFilePath As String, ByVal artifactID As Int32, ByVal field As ViewFieldInfo, ByVal appId As String) As Boolean
+			Return WebDownloadFile(localFilePath, artifactID, "", appId, Nothing, False, field.FieldArtifactId)
+		End Function
 
 		Public Function DownloadFile(ByVal localFilePath As String, ByVal remoteFileGuid As String, ByVal remoteLocation As String, ByVal artifactID As Int32, ByVal appID As String) As Boolean
 			'If Me.UploaderType = Type.Web Then
@@ -133,7 +136,7 @@ Namespace kCura.WinEDDS
 			Return retval
 		End Function
 
-		Private Function WebDownloadFile(ByVal localFilePath As String, ByVal artifactID As Int32, ByVal remoteFileGuid As String, ByVal appID As String, ByVal remotelocationkey As String, Optional ByVal forFullText As Boolean = False) As Boolean
+		Private Function WebDownloadFile(ByVal localFilePath As String, ByVal artifactID As Int32, ByVal remoteFileGuid As String, ByVal appID As String, ByVal remotelocationkey As String, Optional ByVal forFullText As Boolean = False, Optional ByVal longTextFieldArtifactID As Int32 = -1) As Boolean
 			Dim tryNumber As Int32 = 0
 
 			Try
@@ -141,6 +144,8 @@ Namespace kCura.WinEDDS
 				Dim downloadUrl As String = _downloadUrl.TrimEnd("/"c) & "/"
 				If forFullText Then
 					remoteuri = String.Format("{0}Download.aspx?ArtifactID={1}&AppID={2}&ExtractedText=True", downloadUrl, artifactID, appID)
+				ElseIf longTextFieldArtifactID > 0 Then
+					remoteuri = String.Format("{0}Download.aspx?ArtifactID={1}&AppID={2}&LongTextFieldArtifactID={3}", downloadUrl, artifactID, appID, longTextFieldArtifactID)
 				Else
 					remoteuri = String.Format("{0}Download.aspx?ArtifactID={1}&GUID={2}&AppID={3}", downloadUrl, artifactID, remoteFileGuid, appID)
 				End If

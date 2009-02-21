@@ -12,6 +12,7 @@ Namespace kCura.WinEDDS
 		Protected _quoteDelimiter As Char
 		Protected _newlineDelimiter As Char
 		Protected _multiRecordDelimiter As Char
+		Protected _nestedValueDelimiter As Char
 		Protected _credential As Net.NetworkCredential
 		Protected _cookieContainer As System.Net.CookieContainer
 		Protected _exportFullText As Boolean
@@ -31,6 +32,10 @@ Namespace kCura.WinEDDS
 		Private _exportNativesToFileNamedFrom As kCura.WinEDDS.ExportNativeWithFilenameFrom = ExportNativeWithFilenameFrom.Identifier
 		Private _appendOriginalFileName As Boolean
 		Private _loadFileIsHtml As Boolean = False
+		Protected _artifactAvfLookup As Specialized.HybridDictionary
+		Protected _allExportableFields As WinEDDS.ViewFieldInfo()
+		Protected _selectedViewFields As WinEDDS.ViewFieldInfo()
+		Protected _multicodesAsNested As Boolean
 
 #Region "Public Properties"
 
@@ -73,6 +78,24 @@ Namespace kCura.WinEDDS
 			End Get
 			Set(ByVal value As System.Data.DataTable)
 				_dataTable = value
+			End Set
+		End Property
+
+		Public Property ArtifactAvfLookup() As Specialized.HybridDictionary
+			Get
+				Return _artifactAvfLookup
+			End Get
+			Set(ByVal value As Specialized.HybridDictionary)
+				_artifactAvfLookup = value
+			End Set
+		End Property
+
+		Public Property NestedValueDelimiter() As Char
+			Get
+				Return _nestedValueDelimiter
+			End Get
+			Set(ByVal value As Char)
+				_nestedValueDelimiter = value
 			End Set
 		End Property
 
@@ -309,6 +332,33 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
+		Public Property AllExportableFields() As WinEDDS.ViewFieldInfo()
+			Get
+				Return _allExportableFields
+			End Get
+			Set(ByVal value As WinEDDS.ViewFieldInfo())
+				_allExportableFields = value
+			End Set
+		End Property
+
+		Public Property SelectedViewFields() As WinEDDS.ViewFieldInfo()
+			Get
+				Return _selectedViewFields
+			End Get
+			Set(ByVal value As WinEDDS.ViewFieldInfo())
+				_selectedViewFields = value
+			End Set
+		End Property
+
+		Public Property MulticodesAsNested() As Boolean
+			Get
+				Return _multicodesAsNested
+			End Get
+			Set(ByVal value As Boolean)
+				_multicodesAsNested = value
+			End Set
+		End Property
+
 #End Region
 
 		Public Sub New()
@@ -316,6 +366,8 @@ Namespace kCura.WinEDDS
 			Me.QuoteDelimiter = ChrW(254)
 			Me.NewlineDelimiter = ChrW(174)
 			Me.MultiRecordDelimiter = ChrW(59)
+			Me.NestedValueDelimiter = "\"c
+			Me.MulticodesAsNested = True
 		End Sub
 
 		Public Enum ExportType

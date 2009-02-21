@@ -568,6 +568,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Types\ViewFieldInfo.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Web References\kCura.EDDS.WebAPI.BulkImportManagerBase\BulkImportManager.disco"
                     BuildAction = "None"
                 />

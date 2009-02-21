@@ -355,6 +355,45 @@ Namespace kCura.WinEDDS
 			_parent.WriteUpdate("Document " & documentInfo.IdentifierValue & " exported.", False)
 		End Sub
 
+		Private Function DownloadTextFieldAsFile(ByVal documentInfo As WinEDDS.Exporters.DocumentExportInfo, ByVal field As WinEDDS.ViewFieldInfo) As String
+			Dim tempLocalFullTextFilePath As String = System.IO.Path.GetTempFileName
+			Dim tries As Int32 = 20
+			While tries > 0
+				tries -= 1
+				Try
+					Select Case field.Category
+						Case DynamicFields.Types.FieldCategory.FullText
+							_downloadManager.DownloadFullTextFile(tempLocalFullTextFilePath, documentInfo.DocumentArtifactID, _settings.CaseInfo.ArtifactID.ToString)
+						Case Else
+							_downloadManager.DownloadLongTextFile(tempLocalFullTextFilePath, documentInfo.DocumentArtifactID, field, _settings.CaseInfo.ArtifactID.ToString)
+					End Select
+					Exit While
+				Catch ex As System.Exception
+					If tries = 19 Then
+						_parent.WriteStatusLine(Windows.Process.EventType.Warning, "Second attempt to download full text for document " & documentInfo.IdentifierValue, True)
+						Select Case field.Category
+							Case DynamicFields.Types.FieldCategory.FullText
+								_downloadManager.DownloadFullTextFile(tempLocalFullTextFilePath, documentInfo.DocumentArtifactID, _settings.CaseInfo.ArtifactID.ToString)
+							Case Else
+								_downloadManager.DownloadLongTextFile(tempLocalFullTextFilePath, documentInfo.DocumentArtifactID, field, _settings.CaseInfo.ArtifactID.ToString)
+						End Select
+					ElseIf tries > 0 Then
+						_parent.WriteStatusLine(Windows.Process.EventType.Warning, "Additional attempt to download full text for document " & documentInfo.IdentifierValue & " failed - retrying in 30 seconds", True)
+						System.Threading.Thread.CurrentThread.Join(30000)
+						Select Case field.Category
+							Case DynamicFields.Types.FieldCategory.FullText
+								_downloadManager.DownloadFullTextFile(tempLocalFullTextFilePath, documentInfo.DocumentArtifactID, _settings.CaseInfo.ArtifactID.ToString)
+							Case Else
+								_downloadManager.DownloadLongTextFile(tempLocalFullTextFilePath, documentInfo.DocumentArtifactID, field, _settings.CaseInfo.ArtifactID.ToString)
+						End Select
+					Else
+						Throw
+					End If
+				End Try
+			End While
+			Return tempLocalFullTextFilePath
+		End Function
+
 		Private Function GetLocalNativeFilePath(ByVal doc As Exporters.DocumentExportInfo, ByVal nativeFileName As String) As String
 			Dim localFilePath As String = Me.Settings.FolderPath
 			If localFilePath.Chars(localFilePath.Length - 1) <> "\"c Then localFilePath &= "\"
@@ -710,7 +749,6 @@ Namespace kCura.WinEDDS
 			End If
 			Dim count As Int32
 			Dim fieldValue As String
-			Dim retString As New System.Text.StringBuilder
 			Dim columnName As String
 			Dim location As String = nativeLocation
 			For count = 0 To _parent.Columns.Count - 1
@@ -719,102 +757,129 @@ Namespace kCura.WinEDDS
 				'Else
 				'	fieldValue = CType(row(CType(Me.Columns(count), String)), String)
 				'End If
-				columnName = CType(_parent.Columns(count), String)
-				Dim val As Object = row(columnName)
-				If TypeOf val Is Byte() Then
-					val = System.Text.Encoding.Unicode.GetString(DirectCast(val, Byte()))
-				End If
-				If _parent.ColumnFormats(count).ToString <> "" Then
-					Dim datetime As NullableString = NullableTypes.HelperFunctions.DBNullConvert.ToNullableString(val)
-					If datetime.IsNull OrElse datetime.Value = "" Then
-						val = ""
+				Dim field As WinEDDS.ViewFieldInfo = DirectCast(_parent.Columns(count), WinEDDS.ViewFieldInfo)
+				columnName = field.AvfColumnName
+				If field.FieldType = DynamicFields.Types.FieldTypeHelper.FieldType.Text Then
+					If field.Category = DynamicFields.Types.FieldCategory.FullText Then
+						Dim bodyText As New System.Text.StringBuilder
+						If Not hasFullText Then
+							bodyText = New System.Text.StringBuilder("")
+							_nativeFileWriter.Write(String.Format("{2}{0}{1}{0}", _settings.QuoteDelimiter, bodyText.ToString, _settings.RecordDelimiter))
+						Else
+							Select Case Me.Settings.ExportFullTextAsFile
+								Case True
+									Dim localTextPath As String = Me.GetLocalTextFilePath(doc)
+									If System.IO.File.Exists(localTextPath) Then
+										If _settings.Overwrite Then
+											System.IO.File.Delete(localTextPath)
+											System.IO.File.Move(fullTextTempFile, localTextPath)
+											_parent.WriteStatusLine(kCura.Windows.Process.EventType.Status, localTextPath & " overwritten", False)
+										Else
+											_parent.WriteWarning(localTextPath & " already exists. Skipping file export.")
+										End If
+									Else
+										System.IO.File.Move(fullTextTempFile, localTextPath)
+									End If
+									Dim textLocation As String
+									Select Case Me.Settings.TypeOfExportedFilePath
+										Case ExportFile.ExportedFilePathType.Absolute
+											textLocation = localTextPath
+										Case ExportFile.ExportedFilePathType.Relative
+											textLocation = ".\" & Me.CurrentVolumeLabel & "\" & Me.CurrentFullTextSubdirectoryLabel & "\" & doc.FullTextFileName(Me.NameTextFilesAfterIdentifier)
+										Case ExportFile.ExportedFilePathType.Prefix
+											textLocation = Me.Settings.FilePrefix.TrimEnd("\"c) & "\" & Me.CurrentVolumeLabel & "\" & Me.CurrentFullTextSubdirectoryLabel & "\" & doc.FullTextFileName(Me.NameTextFilesAfterIdentifier)
+									End Select
+									_nativeFileWriter.Write(String.Format("{2}{0}{1}{0}", _settings.QuoteDelimiter, textLocation, _settings.RecordDelimiter))
+								Case False
+									Dim sr As New System.IO.StreamReader(fullTextTempFile, System.Text.Encoding.Unicode)
+									Dim c As Int32 = sr.Read
+									_nativeFileWriter.Write(_settings.RecordDelimiter)
+									_nativeFileWriter.Write(_settings.QuoteDelimiter)
+									While Not c = -1
+										Select Case c
+											Case AscW(_settings.QuoteDelimiter)
+												_nativeFileWriter.Write(_settings.QuoteDelimiter & _settings.QuoteDelimiter)
+											Case 13, 10
+												_nativeFileWriter.Write(_settings.NewlineDelimiter)
+												If sr.Peek = 10 Then
+													sr.Read()
+												End If
+											Case Else
+												_nativeFileWriter.Write(ChrW(c))
+										End Select
+										c = sr.Read
+									End While
+									_nativeFileWriter.Write(_settings.QuoteDelimiter)
+									sr.Close()
+							End Select
+							kCura.Utility.File.Delete(fullTextTempFile)
+						End If
+
 					Else
-						val = System.DateTime.Parse(datetime.Value, System.Globalization.CultureInfo.InvariantCulture).ToString(_parent.ColumnFormats(count).ToString)
+						Dim textLocation As String = Me.DownloadTextFieldAsFile(doc, field)
+						Dim sr As New System.IO.StreamReader(fullTextTempFile, System.Text.Encoding.Unicode)
+						Dim c As Int32 = sr.Read
+						_nativeFileWriter.Write(_settings.RecordDelimiter)
+						_nativeFileWriter.Write(_settings.QuoteDelimiter)
+						While Not c = -1
+							Select Case c
+								Case AscW(_settings.QuoteDelimiter)
+									_nativeFileWriter.Write(_settings.QuoteDelimiter & _settings.QuoteDelimiter)
+								Case 13, 10
+									_nativeFileWriter.Write(_settings.NewlineDelimiter)
+									If sr.Peek = 10 Then
+										sr.Read()
+									End If
+								Case Else
+									_nativeFileWriter.Write(ChrW(c))
+							End Select
+							c = sr.Read
+						End While
+						_nativeFileWriter.Write(_settings.QuoteDelimiter)
+						sr.Close()
+						Try
+							System.IO.File.Delete(fullTextTempFile)
+						Catch
+							Try
+								System.IO.File.Delete(fullTextTempFile)
+							Catch
+							End Try
+						End Try
 					End If
+				Else		 'Handle not full text issue
+					Dim val As Object = row(columnName)
+					If TypeOf val Is Byte() Then
+						val = System.Text.Encoding.Unicode.GetString(DirectCast(val, Byte()))
+					End If
+					If _parent.ColumnFormats(count).ToString <> "" Then
+						Dim datetime As NullableString = NullableTypes.HelperFunctions.DBNullConvert.ToNullableString(val)
+						If datetime.IsNull OrElse datetime.Value = "" Then
+							val = ""
+						Else
+							val = System.DateTime.Parse(datetime.Value, System.Globalization.CultureInfo.InvariantCulture).ToString(_parent.ColumnFormats(count).ToString)
+						End If
+					End If
+					'System.Web.HttpUtility.HtmlEncode()
+					fieldValue = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(NullableTypes.HelperFunctions.DBNullConvert.ToNullableString(val))
+					fieldValue = fieldValue.Replace(System.Environment.NewLine, ChrW(10).ToString)
+					fieldValue = fieldValue.Replace(ChrW(13), ChrW(10))
+					fieldValue = fieldValue.Replace(ChrW(10), _settings.NewlineDelimiter)
+					fieldValue = fieldValue.Replace(_settings.QuoteDelimiter, _settings.QuoteDelimiter & _settings.QuoteDelimiter)
+					If field.IsCodeOrMulticodeField Then
+						fieldValue = System.Web.HttpUtility.HtmlDecode(fieldValue)
+						fieldValue = fieldValue.Trim(New Char() {ChrW(11)}).Replace(ChrW(11), _settings.MultiRecordDelimiter)
+					End If
+					_nativeFileWriter.Write(String.Format("{0}{1}{0}", _settings.QuoteDelimiter, fieldValue))
 				End If
-				'System.Web.HttpUtility.HtmlEncode()
-				fieldValue = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(NullableTypes.HelperFunctions.DBNullConvert.ToNullableString(val))
-				fieldValue = fieldValue.Replace(System.Environment.NewLine, ChrW(10).ToString)
-				fieldValue = fieldValue.Replace(ChrW(13), ChrW(10))
-				fieldValue = fieldValue.Replace(ChrW(10), _settings.NewlineDelimiter)
-				fieldValue = fieldValue.Replace(_settings.QuoteDelimiter, _settings.QuoteDelimiter & _settings.QuoteDelimiter)
-				If fieldValue.Length > 1 AndAlso fieldValue.Chars(0) = ChrW(11) Then
-					fieldValue = System.Web.HttpUtility.HtmlDecode(fieldValue)
-					fieldValue = fieldValue.Trim(New Char() {ChrW(11)}).Replace(ChrW(11), _settings.MultiRecordDelimiter)
-				End If
-				retString.AppendFormat("{0}{1}{0}", _settings.QuoteDelimiter, fieldValue)
 				If Not count = _parent.Columns.Count - 1 Then
-					retString.Append(_settings.RecordDelimiter)
+					_nativeFileWriter.Write(_settings.RecordDelimiter)
 				End If
 			Next
 			If _settings.ExportNative Then
 				If Me.Settings.VolumeInfo.CopyFilesFromRepository Then
-					retString.AppendFormat("{2}{0}{1}{0}", _settings.QuoteDelimiter, location, _settings.RecordDelimiter)
+					_nativeFileWriter.Write(String.Format("{2}{0}{1}{0}", _settings.QuoteDelimiter, location, _settings.RecordDelimiter))
 				Else
-					retString.AppendFormat("{2}{0}{1}{0}", _settings.QuoteDelimiter, doc.NativeSourceLocation, _settings.RecordDelimiter)
-				End If
-			End If
-			_nativeFileWriter.Write(retString.ToString)
-			If _settings.ExportFullText Then
-				Dim bodyText As New System.Text.StringBuilder
-				If Not hasFullText Then
-					bodyText = New System.Text.StringBuilder("")
-					_nativeFileWriter.Write(String.Format("{2}{0}{1}{0}", _settings.QuoteDelimiter, bodyText.ToString, _settings.RecordDelimiter))
-				Else
-					Select Case Me.Settings.ExportFullTextAsFile
-						Case True
-							Dim localTextPath As String = Me.GetLocalTextFilePath(doc)
-							If System.IO.File.Exists(localTextPath) Then
-								If _settings.Overwrite Then
-									System.IO.File.Delete(localTextPath)
-									System.IO.File.Move(fullTextTempFile, localTextPath)
-									_parent.WriteStatusLine(kCura.Windows.Process.EventType.Status, localTextPath & " overwritten", False)
-								Else
-									_parent.WriteWarning(localTextPath & " already exists. Skipping file export.")
-								End If
-							Else
-								System.IO.File.Move(fullTextTempFile, localTextPath)
-							End If
-							Dim textLocation As String
-							Select Case Me.Settings.TypeOfExportedFilePath
-								Case ExportFile.ExportedFilePathType.Absolute
-									textLocation = localTextPath
-								Case ExportFile.ExportedFilePathType.Relative
-									textLocation = ".\" & Me.CurrentVolumeLabel & "\" & Me.CurrentFullTextSubdirectoryLabel & "\" & doc.FullTextFileName(Me.NameTextFilesAfterIdentifier)
-								Case ExportFile.ExportedFilePathType.Prefix
-									textLocation = Me.Settings.FilePrefix.TrimEnd("\"c) & "\" & Me.CurrentVolumeLabel & "\" & Me.CurrentFullTextSubdirectoryLabel & "\" & doc.FullTextFileName(Me.NameTextFilesAfterIdentifier)
-							End Select
-							_nativeFileWriter.Write(String.Format("{2}{0}{1}{0}", _settings.QuoteDelimiter, textLocation, _settings.RecordDelimiter))
-						Case False
-							Dim sr As New System.IO.StreamReader(fullTextTempFile, System.Text.Encoding.Unicode)
-							Dim c As Int32 = sr.Read
-							_nativeFileWriter.Write(_settings.RecordDelimiter)
-							_nativeFileWriter.Write(_settings.QuoteDelimiter)
-							While Not c = -1
-								Select Case c
-									Case AscW(_settings.QuoteDelimiter)
-										_nativeFileWriter.Write(_settings.QuoteDelimiter & _settings.QuoteDelimiter)
-									Case 13, 10
-										_nativeFileWriter.Write(_settings.NewlineDelimiter)
-										If sr.Peek = 10 Then
-											sr.Read()
-										End If
-									Case Else
-										_nativeFileWriter.Write(ChrW(c))
-								End Select
-								c = sr.Read
-							End While
-							_nativeFileWriter.Write(_settings.QuoteDelimiter)
-							sr.Close()
-					End Select
-							Try
-								System.IO.File.Delete(fullTextTempFile)
-							Catch
-								Try
-									System.IO.File.Delete(fullTextTempFile)
-								Catch
-								End Try
-							End Try
+					_nativeFileWriter.Write(String.Format("{2}{0}{1}{0}", _settings.QuoteDelimiter, doc.NativeSourceLocation, _settings.RecordDelimiter))
 				End If
 			End If
 			_nativeFileWriter.Write(vbNewLine)
@@ -823,92 +888,99 @@ Namespace kCura.WinEDDS
 		Public Sub UpdateHtmlLoadFile(ByVal row As System.Data.DataRow, ByVal hasFullText As Boolean, ByVal documentArtifactID As Int32, ByVal nativeLocation As String, ByVal fullTextTempFile As String, ByVal doc As Exporters.DocumentExportInfo)
 			Dim count As Int32
 			Dim fieldValue As String
-			Dim retString As New System.Text.StringBuilder
 			Dim columnName As String
 			Dim location As String = nativeLocation
 			_nativeFileWriter.Write("<tr>")
 			For count = 0 To _parent.Columns.Count - 1
-				columnName = CType(_parent.Columns(count), String)
-				Dim val As Object = row(columnName)
-				If TypeOf val Is Byte() Then
-					val = System.Text.Encoding.Unicode.GetString(DirectCast(val, Byte()))
-				End If
-				If _parent.ColumnFormats(count).ToString <> "" Then
-					Dim datetime As NullableString = NullableTypes.HelperFunctions.DBNullConvert.ToNullableString(val)
-					If datetime.IsNull OrElse datetime.Value = "" Then
-						val = ""
+				Dim field As WinEDDS.ViewFieldInfo = DirectCast(_parent.Columns(count), WinEDDS.ViewFieldInfo)
+				columnName = field.AvfColumnName
+				If field.FieldType = DynamicFields.Types.FieldTypeHelper.FieldType.Text Then
+					If field.Category = DynamicFields.Types.FieldCategory.FullText Then
+						Dim bodyText As New System.Text.StringBuilder
+						If Not hasFullText Then
+							bodyText = New System.Text.StringBuilder("")
+							_nativeFileWriter.Write(String.Format("<td></td>"))
+						Else
+							Select Case Me.Settings.ExportFullTextAsFile
+								Case True
+									Dim localTextPath As String = Me.GetLocalTextFilePath(doc)
+									If System.IO.File.Exists(localTextPath) Then
+										If _settings.Overwrite Then
+											System.IO.File.Delete(localTextPath)
+											System.IO.File.Move(fullTextTempFile, localTextPath)
+											_parent.WriteStatusLine(kCura.Windows.Process.EventType.Status, localTextPath & " overwritten", False)
+										Else
+											_parent.WriteWarning(localTextPath & " already exists. Skipping file export.")
+										End If
+									Else
+										System.IO.File.Move(fullTextTempFile, localTextPath)
+									End If
+									Dim textLocation As String
+									Select Case Me.Settings.TypeOfExportedFilePath
+										Case ExportFile.ExportedFilePathType.Absolute
+											textLocation = localTextPath
+										Case ExportFile.ExportedFilePathType.Relative
+											textLocation = ".\" & Me.CurrentVolumeLabel & "\" & Me.CurrentFullTextSubdirectoryLabel & "\" & doc.FullTextFileName(Me.NameTextFilesAfterIdentifier)
+										Case ExportFile.ExportedFilePathType.Prefix
+											textLocation = Me.Settings.FilePrefix.TrimEnd("\"c) & "\" & Me.CurrentVolumeLabel & "\" & Me.CurrentFullTextSubdirectoryLabel & "\" & doc.FullTextFileName(Me.NameTextFilesAfterIdentifier)
+									End Select
+									_nativeFileWriter.Write(String.Format("<td><a style='display:block' href='{0}'>{1}</a></td>", textLocation, "TextFile"))
+								Case False
+									Dim sr As New System.IO.StreamReader(fullTextTempFile, System.Text.Encoding.Unicode)
+									Dim c As Int32 = sr.Read
+									_nativeFileWriter.Write("<td>")
+									While Not c = -1
+										_nativeFileWriter.Write(System.Web.HttpUtility.HtmlEncode(ChrW(c)))
+										c = sr.Read
+									End While
+									_nativeFileWriter.Write("</td>")
+									sr.Close()
+							End Select
+							kCura.Utility.File.Delete(fullTextTempFile)
+						End If
 					Else
-						val = System.DateTime.Parse(datetime.Value, System.Globalization.CultureInfo.InvariantCulture).ToString(_parent.ColumnFormats(count).ToString)
+						Dim textLocation As String = Me.DownloadTextFieldAsFile(doc, field)
+						Dim sr As New System.IO.StreamReader(textLocation, System.Text.Encoding.Unicode)
+						Dim c As Int32 = sr.Read
+						_nativeFileWriter.Write("<td>")
+						While Not c = -1
+							_nativeFileWriter.Write(System.Web.HttpUtility.HtmlEncode(ChrW(c)))
+							c = sr.Read
+						End While
+						_nativeFileWriter.Write("</td>")
+						sr.Close()
+						kCura.Utility.File.Delete(textLocation)
 					End If
+				Else
+					Dim val As Object = row(columnName)
+					If TypeOf val Is Byte() Then
+						val = System.Text.Encoding.Unicode.GetString(DirectCast(val, Byte()))
+					End If
+					If _parent.ColumnFormats(count).ToString <> "" Then
+						Dim datetime As NullableString = NullableTypes.HelperFunctions.DBNullConvert.ToNullableString(val)
+						If datetime.IsNull OrElse datetime.Value = "" Then
+							val = ""
+						Else
+							val = System.DateTime.Parse(datetime.Value, System.Globalization.CultureInfo.InvariantCulture).ToString(_parent.ColumnFormats(count).ToString)
+						End If
+					End If
+					fieldValue = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(NullableTypes.HelperFunctions.DBNullConvert.ToNullableString(val))
+					If field.IsCodeOrMulticodeField Then
+						fieldValue = System.Web.HttpUtility.HtmlDecode(fieldValue)
+						fieldValue = fieldValue.Trim(New Char() {ChrW(11)}).Replace(ChrW(11), _settings.MultiRecordDelimiter)
+					End If
+					fieldValue = System.Web.HttpUtility.HtmlEncode(fieldValue)
+					_nativeFileWriter.Write(String.Format("{0}{1}{2}", "<td>", fieldValue, "</td>"))
 				End If
-				fieldValue = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(NullableTypes.HelperFunctions.DBNullConvert.ToNullableString(val))
-				If fieldValue.Length > 1 AndAlso fieldValue.Chars(0) = ChrW(11) Then
-					fieldValue = System.Web.HttpUtility.HtmlDecode(fieldValue)
-					fieldValue = fieldValue.Trim(New Char() {ChrW(11)}).Replace(ChrW(11), _settings.MultiRecordDelimiter)
-				End If
-				fieldValue = System.Web.HttpUtility.HtmlEncode(fieldValue)
-				retString.AppendFormat("{0}{1}{2}", "<td>", fieldValue, "</td>")
 			Next
 			If _settings.ExportImages Then
-				retString.AppendFormat("<td>{0}</td>", Me.GetImagesHtmlString(doc))
+				_nativeFileWriter.Write(String.Format("<td>{0}</td>", Me.GetImagesHtmlString(doc)))
 			End If
 			If _settings.ExportNative Then
 				If Me.Settings.VolumeInfo.CopyFilesFromRepository Then
-					retString.AppendFormat("<td>{0}</td>", Me.GetNativeHtmlString(doc, location))
+					_nativeFileWriter.Write(String.Format("<td>{0}</td>", Me.GetNativeHtmlString(doc, location)))
 				Else
-					retString.AppendFormat("<td>{0}</td>", Me.GetNativeHtmlString(doc, doc.NativeSourceLocation))
-				End If
-			End If
-			_nativeFileWriter.Write(retString.ToString)
-			If _settings.ExportFullText Then
-				Dim bodyText As New System.Text.StringBuilder
-				If Not hasFullText Then
-					bodyText = New System.Text.StringBuilder("")
-					_nativeFileWriter.Write(String.Format("<td></td>"))
-				Else
-					Select Case Me.Settings.ExportFullTextAsFile
-						Case True
-							Dim localTextPath As String = Me.GetLocalTextFilePath(doc)
-							If System.IO.File.Exists(localTextPath) Then
-								If _settings.Overwrite Then
-									System.IO.File.Delete(localTextPath)
-									System.IO.File.Move(fullTextTempFile, localTextPath)
-									_parent.WriteStatusLine(kCura.Windows.Process.EventType.Status, localTextPath & " overwritten", False)
-								Else
-									_parent.WriteWarning(localTextPath & " already exists. Skipping file export.")
-								End If
-							Else
-								System.IO.File.Move(fullTextTempFile, localTextPath)
-							End If
-							Dim textLocation As String
-							Select Case Me.Settings.TypeOfExportedFilePath
-								Case ExportFile.ExportedFilePathType.Absolute
-									textLocation = localTextPath
-								Case ExportFile.ExportedFilePathType.Relative
-									textLocation = ".\" & Me.CurrentVolumeLabel & "\" & Me.CurrentFullTextSubdirectoryLabel & "\" & doc.FullTextFileName(Me.NameTextFilesAfterIdentifier)
-								Case ExportFile.ExportedFilePathType.Prefix
-									textLocation = Me.Settings.FilePrefix.TrimEnd("\"c) & "\" & Me.CurrentVolumeLabel & "\" & Me.CurrentFullTextSubdirectoryLabel & "\" & doc.FullTextFileName(Me.NameTextFilesAfterIdentifier)
-							End Select
-							_nativeFileWriter.Write(String.Format("<td><a style='display:block' href='{0}'>{1}</a></td>", textLocation, "TextFile"))
-						Case False
-							Dim sr As New System.IO.StreamReader(fullTextTempFile, System.Text.Encoding.Unicode)
-							Dim c As Int32 = sr.Read
-							_nativeFileWriter.Write("<td>")
-							While Not c = -1
-								_nativeFileWriter.Write(System.Web.HttpUtility.HtmlEncode(ChrW(c)))
-								c = sr.Read
-							End While
-							_nativeFileWriter.Write("</td>")
-							sr.Close()
-					End Select
-					Try
-						System.IO.File.Delete(fullTextTempFile)
-					Catch
-						Try
-							System.IO.File.Delete(fullTextTempFile)
-						Catch
-						End Try
-					End Try
+					_nativeFileWriter.Write(String.Format("<td>{0}</td>", Me.GetNativeHtmlString(doc, doc.NativeSourceLocation)))
 				End If
 			End If
 			_nativeFileWriter.Write("</tr>")
