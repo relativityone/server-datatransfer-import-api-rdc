@@ -436,7 +436,7 @@ Namespace kCura.EDDS.WinForm
 			Me.Label10.Name = "Label10"
 			Me.Label10.Size = New System.Drawing.Size(160, 16)
 			Me.Label10.TabIndex = 8
-			Me.Label10.Text = "Hierarchical Value Delimiter"
+			Me.Label10.Text = "Nested Value "
 			'
 			'_multiRecordDelimiter
 			'
@@ -452,7 +452,7 @@ Namespace kCura.EDDS.WinForm
 			Me.Label6.Name = "Label6"
 			Me.Label6.Size = New System.Drawing.Size(120, 16)
 			Me.Label6.TabIndex = 6
-			Me.Label6.Text = "Multi-Value Delimiter"
+			Me.Label6.Text = "Multi-Value "
 			'
 			'Label4
 			'
@@ -492,7 +492,7 @@ Namespace kCura.EDDS.WinForm
 			Me.Label2.Name = "Label2"
 			Me.Label2.Size = New System.Drawing.Size(100, 16)
 			Me.Label2.TabIndex = 1
-			Me.Label2.Text = "Column Delimiter"
+			Me.Label2.Text = "Column "
 			'
 			'_recordDelimiter
 			'

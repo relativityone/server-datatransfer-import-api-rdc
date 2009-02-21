@@ -116,46 +116,52 @@ Namespace kCura.EDDS.WinForm
           End If
         End Try
       End Get
-    End Property
+		End Property
 
-    Public ReadOnly Property CurrentNonFileFields(ByVal artifactTypeID As Int32, Optional ByVal refresh As Boolean = False) As DocumentFieldCollection
-      Get
-        Try
-          If _fields Is Nothing OrElse refresh Then
-            _fields = New DocumentFieldCollection
-            Dim fieldManager As New kCura.WinEDDS.Service.FieldQuery(Credential, _cookieContainer)
-            Dim fields() As kCura.EDDS.WebAPI.DocumentManagerBase.Field
-            fields = fieldManager.RetrieveAllAsArray(SelectedCaseInfo.ArtifactID, artifactTypeID)
-            Dim i As Int32
-            For i = 0 To fields.Length - 1
-              With fields(i)
-                If fields(i).FieldTypeID <> 9 Then
-                  _fields.Add(New DocumentField(.DisplayName, .ArtifactID, .FieldTypeID, .FieldCategoryID, .CodeTypeID, .MaxLength, .UseUnicodeEncoding))
-                End If
-              End With
-            Next
-          End If
-          Return _fields
-        Catch ex As System.Exception
-          If ex.Message.IndexOf("Need To Re Login") <> -1 Then
-            NewLogin(False)
-          Else
-            Throw
-          End If
-        End Try
-      End Get
-    End Property
+		Public ReadOnly Property ExportableFields(ByVal artifactTypeID As Int32) As kCura.EDDS.Types.ViewFieldInfo()
+			Get
 
-    Public Function HasFileField(ByVal artifactTypeID As Int32, Optional ByVal refresh As Boolean = False) As Boolean
-      Dim retval As Boolean = False
-      Dim docFieldCollection As DocumentFieldCollection = CurrentFields(artifactTypeID, refresh)
-      Dim allFields As ICollection = docFieldCollection.AllFields
-      For Each field As DocumentField In allFields
-        If field.FieldTypeID = kCura.DynamicFields.Types.FieldTypeHelper.FieldType.File Then
-          retval = True
-        End If
-      Next
-      Return retval
+			End Get
+		End Property
+
+		Public ReadOnly Property CurrentNonFileFields(ByVal artifactTypeID As Int32, Optional ByVal refresh As Boolean = False) As DocumentFieldCollection
+			Get
+				Try
+					If _fields Is Nothing OrElse refresh Then
+						_fields = New DocumentFieldCollection
+						Dim fieldManager As New kCura.WinEDDS.Service.FieldQuery(Credential, _cookieContainer)
+						Dim fields() As kCura.EDDS.WebAPI.DocumentManagerBase.Field
+						fields = fieldManager.RetrieveAllAsArray(SelectedCaseInfo.ArtifactID, artifactTypeID)
+						Dim i As Int32
+						For i = 0 To fields.Length - 1
+							With fields(i)
+								If fields(i).FieldTypeID <> 9 Then
+									_fields.Add(New DocumentField(.DisplayName, .ArtifactID, .FieldTypeID, .FieldCategoryID, .CodeTypeID, .MaxLength, .UseUnicodeEncoding))
+								End If
+							End With
+						Next
+					End If
+					Return _fields
+				Catch ex As System.Exception
+					If ex.Message.IndexOf("Need To Re Login") <> -1 Then
+						NewLogin(False)
+					Else
+						Throw
+					End If
+				End Try
+			End Get
+		End Property
+
+		Public Function HasFileField(ByVal artifactTypeID As Int32, Optional ByVal refresh As Boolean = False) As Boolean
+			Dim retval As Boolean = False
+			Dim docFieldCollection As DocumentFieldCollection = CurrentFields(artifactTypeID, refresh)
+			Dim allFields As ICollection = docFieldCollection.AllFields
+			For Each field As DocumentField In allFields
+				If field.FieldTypeID = kCura.DynamicFields.Types.FieldTypeHelper.FieldType.File Then
+					retval = True
+				End If
+			Next
+			Return retval
 		End Function
 
 		Public Function GetObjectTypeName(ByVal artifactTypeID As Int32) As String
@@ -366,6 +372,7 @@ Namespace kCura.EDDS.WinForm
 			'dsFactory.AddRow(7, 3, "Folder 3")
 			'Return dsFactory.BuildDataSet
 		End Function
+
 #End Region
 
 #Region "Case Management"
@@ -597,82 +604,14 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 		Public Sub NewProductionExport(ByVal caseInfo As kCura.EDDS.Types.CaseInfo)
-			'Dim frm As New ProductionExportForm
-			'Dim exportFile As New exportFile
-			'Dim productionManager As kCura.WinEDDS.Service.ProductionManager
-			'Try
-			'	productionManager = New kCura.WinEDDS.Service.ProductionManager(Me.Credential, _cookieContainer)
-			'Catch ex As System.Exception
-			'	If ex.Message.IndexOf("Need To Re Login") <> -1 Then
-			'		NewLogin(False)
-			'		'productionManager = New kCura.WinEDDS.Service.ProductionManager(Me.Credential, _cookieContainer)
-			'		Exit Sub
-			'	Else
-			'		Throw
-			'	End If
-			'End Try
-			'exportFile.CaseInfo = caseInfo
-			'Dim exportFileDataSet As System.Data.DataSet
-			'Try
-			'	exportFileDataSet = productionManager.RetrieveProducedByContextArtifactID(caseInfo.ArtifactID)
-			'Catch ex As System.Exception
-			'	If ex.Message.IndexOf("Need To Re Login") <> -1 Then
-			'		NewLogin(False)
-			'		Exit Sub
-			'	Else
-			'		Throw
-			'	End If
-			'End Try
-			'exportFile.DataTable = exportFileDataSet.Tables(0)
-			'exportFile.Credential = Me.Credential
-			'exportFile.TypeOfExport = exportFile.ExportType.Production
-			'frm.Application = Me
-			'frm.ExportFile = exportFile
-			'frm.Show()
-			Dim frm As New ExportForm
-			Dim exportFile As New WinEDDS.ExportFile
-			Dim productionManager As kCura.WinEDDS.Service.ProductionManager
-			Try
-				productionManager = New kCura.WinEDDS.Service.ProductionManager(Me.Credential, _cookieContainer)
-			Catch ex As System.Exception
-				If ex.Message.IndexOf("Need To Re Login") <> -1 Then
-					NewLogin(False)
-					'productionManager = New kCura.WinEDDS.Service.ProductionManager(Me.Credential, _cookieContainer)
-					Exit Sub
-				Else
-					Throw
-				End If
-			End Try
-			exportFile.CaseInfo = caseInfo
-			Dim exportFileDataSet As System.Data.DataSet
-			Try
-				exportFileDataSet = productionManager.RetrieveProducedByContextArtifactID(caseInfo.ArtifactID)
-			Catch ex As System.Exception
-				If ex.Message.IndexOf("Need To Re Login") <> -1 Then
-					NewLogin(False)
-					Exit Sub
-				Else
-					Throw
-				End If
-			End Try
-			exportFile.DataTable = exportFileDataSet.Tables(0)
-			exportFile.Credential = Me.Credential
-			exportFile.TypeOfExport = exportFile.ExportType.Production
-			frm.Application = Me
-			frm.ExportFile = exportFile
-			frm.Show()
+			Me.NewSearchExport(caseInfo.RootFolderID, caseInfo, ExportFile.ExportType.Production)
 		End Sub
 
-		Public Sub NewSearchExport(ByVal rootFolderID As Int32, ByVal caseInfo As kCura.EDDS.Types.CaseInfo, ByVal typeOfExport As kCura.WinEDDS.ExportFile.ExportType)
+		Public Sub NewSearchExport(ByVal selectedFolderId As Int32, ByVal caseInfo As kCura.EDDS.Types.CaseInfo, ByVal typeOfExport As kCura.WinEDDS.ExportFile.ExportType)
 			Dim frm As New ExportForm
-			Dim exportFile As New WinEDDS.ExportFile
+			Dim exportFile As WinEDDS.ExportFile
 			Try
-				Dim searchManager As New kCura.WinEDDS.Service.SearchManager(Me.Credential, _cookieContainer)
-				exportFile.ArtifactID = rootFolderID
-				exportFile.CaseInfo = caseInfo
-				exportFile.DataTable = Me.GetSearchExportDataSource(searchManager, caseInfo.ArtifactID, typeOfExport = exportFile.ExportType.ArtifactSearch)
-				exportFile.Credential = Me.Credential
-				exportFile.TypeOfExport = typeOfExport
+				exportFile = Me.GetNewExportFileSettingsObject(selectedFolderID, caseInfo, typeOfExport)
 				frm.Application = Me
 				frm.ExportFile = exportFile
 				frm.Show()
@@ -686,7 +625,31 @@ Namespace kCura.EDDS.WinForm
 			End Try
 		End Sub
 
-		Private Function GetSearchExportDataSource(ByVal searchManager As kCura.WinEDDS.Service.SearchManager, ByVal caseArtifactID As Int32, ByVal isArtifactSearch As Boolean) As System.Data.DataTable
+		Public Function GetNewExportFileSettingsObject(ByVal selectedFolderId As Int32, ByVal caseInfo As kCura.EDDS.Types.CaseInfo, ByVal typeOfExport As kCura.WinEDDS.ExportFile.ExportType) As WinEDDS.ExportFile
+			Dim exportFile As New WinEDDS.ExportFile
+			Dim searchManager As New kCura.WinEDDS.Service.SearchManager(Me.Credential, _cookieContainer)
+			Dim productionManager As New kCura.WinEDDS.Service.ProductionManager(Me.Credential, _cookieContainer)
+			exportFile.ArtifactID = selectedFolderId
+			exportFile.CaseInfo = caseInfo
+			exportFile.Credential = Me.Credential
+			exportFile.TypeOfExport = typeOfExport
+			Select Case typeOfExport
+				Case exportFile.ExportType.Production
+					exportFile.DataTable = productionManager.RetrieveProducedByContextArtifactID(caseInfo.ArtifactID).Tables(0)
+				Case Else
+					exportFile.DataTable = Me.GetSearchExportDataSource(searchManager, caseInfo.ArtifactID, typeOfExport = exportFile.ExportType.ArtifactSearch)
+			End Select
+			Dim ids As New System.Collections.ArrayList
+			For Each row As System.Data.DataRow In exportFile.DataTable.Rows
+				ids.Add(row("ArtifactID"))
+			Next
+			exportFile.ArtifactAvfLookup = searchManager.RetrieveDefaultViewFieldsForIdList(caseInfo.ArtifactID, DirectCast(ids.ToArray(GetType(Int32)), Int32()), typeOfExport = exportFile.ExportType.Production)
+			exportFile.AllExportableFields = searchManager.RetrieveAllExportableViewFields(caseInfo.ArtifactID)
+			Return exportFile
+		End Function
+
+
+		Friend Function GetSearchExportDataSource(ByVal searchManager As kCura.WinEDDS.Service.SearchManager, ByVal caseArtifactID As Int32, ByVal isArtifactSearch As Boolean) As System.Data.DataTable
 			Dim searchExportDataSet As System.Data.DataSet
 			If isArtifactSearch Then
 				searchExportDataSet = searchManager.RetrieveViewsByContextArtifactID(caseArtifactID, True)
@@ -1164,7 +1127,7 @@ Namespace kCura.EDDS.WinForm
 					_credential = cred
 					kCura.WinEDDS.Service.Settings.AuthenticationToken = userManager.GetLatestAuthenticationToken()
 					If openCaseSelector Then OpenCase()
-					_timeZoneOffset = 0				'New kCura.WinEDDS.Service.RelativityManager(cred, _cookieContainer).GetServerTimezoneOffset
+					_timeZoneOffset = 0				 'New kCura.WinEDDS.Service.RelativityManager(cred, _cookieContainer).GetServerTimezoneOffset
 				Else
 					Me.ReLogin("Invalid login. Try again?")
 				End If
@@ -1185,7 +1148,7 @@ Namespace kCura.EDDS.WinForm
 			If userManager.Login(cred.UserName, cred.Password) Then
 				_credential = cred
 				kCura.WinEDDS.Service.Settings.AuthenticationToken = userManager.GetLatestAuthenticationToken()
-				_timeZoneOffset = 0			'New kCura.WinEDDS.Service.RelativityManager(cred, _cookieContainer).GetServerTimezoneOffset
+				_timeZoneOffset = 0			 'New kCura.WinEDDS.Service.RelativityManager(cred, _cookieContainer).GetServerTimezoneOffset
 				Return True
 			Else
 				Return False

@@ -417,16 +417,6 @@
                     BuildAction = "EmbeddedResource"
                 />
                 <File
-                    RelPath = "Forms\VolumeInfoForm.vb"
-                    SubType = "Form"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Forms\VolumeInfoForm.resx"
-                    DependentUpon = "VolumeInfoForm.vb"
-                    BuildAction = "EmbeddedResource"
-                />
-                <File
                     RelPath = "images\folderclosed.ICO"
                     BuildAction = "Content"
                 />
