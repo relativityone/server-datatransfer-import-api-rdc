@@ -475,11 +475,11 @@ Namespace kCura.EDDS.WinForm
 							fields = DirectCast(item, DocumentField())
 							If firstTimeThrough Then
 								dt.Columns.Add("Record Number")
-								For Each field In fields
-									dt.Columns.Add(field.FieldName)
-								Next
-								firstTimeThrough = False
-							End If
+                For Each field In fields
+                  dt.Columns.Add(field.FieldName)
+                Next
+                firstTimeThrough = False
+              End If
 							AddRow(dt, row, fields, i)
 						End If
 					Next
@@ -495,88 +495,198 @@ Namespace kCura.EDDS.WinForm
 				counter += 1
 				Dim field As DocumentField
 				row.Add(counter.ToString())
-				For Each field In fields
-					row.Add(field.Value)
-				Next
-				dt.Rows.Add(row.ToArray)
-			Catch x As System.Exception
+        For Each field In fields
+          row.Add(field.Value)
+        Next
+        dt.Rows.Add(row.ToArray)
+      Catch x As System.Exception
 				Throw
 			End Try
-		End Sub
+    End Sub
 
-		Private Function EnsureConnection() As Boolean
-			If Not Me.SelectedCaseInfo Is Nothing Then
-				Dim casefields As String() = Nothing
-				Dim continue As Boolean = True
-				Try
-					casefields = Me.GetCaseFields(Me.SelectedCaseInfo.ArtifactID, 10, True)
-					Return Not casefields Is Nothing
-				Catch ex As System.Exception
-					If ex.Message.IndexOf("Need To Re Login") <> -1 Then
-						Return False
-					Else
-						Throw
-					End If
-				End Try
-			Else
-				Return True
-			End If
-		End Function
+    'Worker function for PreviewCodes
+    Public Function BuildFoldersAndCodesDataSource(ByVal al As ArrayList, ByVal multiRecordDelimiter As Char) As DataTable
+      Dim codesPerField As New System.Collections.Specialized.HybridDictionary
+      Dim totalFolders As New System.Collections.ArrayList
+      Try
+        Dim item As Object
+        Dim fields As DocumentField()
+        Dim codeFieldColumnIndexes As New arrayList
+        Dim folderColumnIndex As Int32 = -1
+        Dim dt As New DataTable
+        'get the choice field column indicies
+        If al.Count > 0 Then
+          Dim firstRow As System.Array = DirectCast(al(0), System.Array)
+          Dim currentIndex As Int32 = 0
+          For Each field As DocumentField In firstRow
+            If field.FieldTypeID = kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Code OrElse field.FieldTypeID = kCura.DynamicFields.Types.FieldTypeHelper.FieldType.MultiCode Then
+              codeFieldColumnIndexes.Add(currentIndex)
+            End If
+            If field.FieldID = -1 And field.FieldName = "Parent_Folder_Identifier" Then folderColumnIndex = currentIndex
+            currentIndex += 1
+          Next
+        End If
+        dt.Columns.Add("Field Name")
+        dt.Columns.Add("Count")
+        Dim codeValues() As String
+        Dim fieldID As String
+        Dim fieldKeyID As String
+        Dim fieldName As String
+        Dim fieldValue As String
+        Dim splitFolderValues() As String
+        For Each item In al
+          If Not item Is Nothing Then
+            fields = DirectCast(item, DocumentField())
+            'calculate folder count
+            If folderColumnIndex <> -1 Then
+              fieldValue = fields(folderColumnIndex).Value
+              If fieldValue <> "\" AndAlso fieldValue <> "" Then
+                splitFolderValues = fieldValue.Split("\"c)
+                If splitFolderValues.Length > 0 Then
+                  Dim folderValues(splitFolderValues.Length - 1) As String
+                  For i As Int32 = 1 To folderValues.Length - 1
+                    Dim folderValueStringBuilder As New System.Text.StringBuilder
+                    If i = 0 Then
+                      folderValues(i) = folderValueStringBuilder.Append("\").Append(splitFolderValues(i)).ToString
+                      If Not totalFolders.Contains(folderValues(i)) Then totalFolders.Add(folderValues(i))
+                    Else
+                      folderValues(i) = folderValueStringBuilder.Append(folderValues(i - 1)).Append("\").Append(splitFolderValues(i)).ToString
+                      If Not totalFolders.Contains(folderValues(i)) Then totalFolders.Add(folderValues(i))
+                    End If
+                  Next
+                End If
+              End If
+            End If
+            If codeFieldColumnIndexes.Count > 0 Then
+              For Each codeFieldColumnIndex As Int32 In codeFieldColumnIndexes
+                fieldValue = fields(codeFieldColumnIndex).Value
+                If fieldValue <> "" Then
+                  fieldID = fields(codeFieldColumnIndex).FieldID.ToString
+                  fieldName = fields(codeFieldColumnIndex).FieldName
+                  codeValues = fieldValue.Split(multiRecordDelimiter)
+                  For Each code As String In codeValues
+                    Dim fieldKeyStringBuilder As New System.Text.StringBuilder
+                    fieldKeyID = fieldKeyStringBuilder.Append(fieldID).Append("_").Append(fieldName).ToString
+                    If codesPerField.Contains(fieldKeyID) Then
+                      Dim codeArrayList As System.Collections.ArrayList = DirectCast(codesPerField(fieldKeyID), System.Collections.ArrayList)
+                      If Not codeArrayList.Contains(code) And code <> "[new code]" Then
+                        Dim currentCodes As arrayList = DirectCast(codesPerField(fieldKeyID), System.Collections.ArrayList)
+                        currentCodes.Add(code)
+                        codesPerField(fieldKeyID) = currentCodes
+                      End If
+                    Else
+                      Dim arrayList As New System.Collections.ArrayList
+                      If code <> "[new code]" Then arrayList.Add(code)
+                      codesPerField.Add(fieldKeyID, arrayList)
+                    End If
+                  Next
+                End If
+              Next
+            End If
+          End If
+        Next
+        Dim folderRow As New System.Collections.ArrayList
+        folderRow.Add("Folders")
+        If folderColumnIndex <> -1 Then
+          folderRow.Add(totalFolders.Count.ToString)
+        Else
+          folderRow.Add("0")
+        End If
+        dt.Rows.Add(folderRow.ToArray)
+        Dim blankRow As New System.Collections.ArrayList
+        blankRow.Add("")
+        blankRow.Add("")
+        dt.Rows.Add(blankRow.ToArray)
+        If codeFieldColumnIndexes.Count = 0 Then
+          dt.Columns.Add("     ")
+          dt.Rows.Add(New String() {"No choice fields have been mapped"})
+        Else
+          For Each key As String In codesPerField.Keys
+            Dim row As New System.Collections.ArrayList
+            row.Add(key.Split("_".ToCharArray, 2)(1))
+            row.Add(DirectCast(codesPerField(key), System.Collections.ArrayList).Count)
+            dt.Rows.Add(row.ToArray)
+          Next
+        End If
+        Return dt
+      Catch ex As Exception
+        kCura.EDDS.WinForm.Utility.ThrowExceptionToGUI(ex)
+      End Try
+    End Function
 
-		Public Sub RefreshCaseFolders()
-			If Me.EnsureConnection Then
-				RaiseEvent OnEvent(New kCura.WinEDDS.LoadCaseEvent(SelectedCaseInfo))
-			End If
-		End Sub
+    Private Function EnsureConnection() As Boolean
+      If Not Me.SelectedCaseInfo Is Nothing Then
+        Dim casefields As String() = Nothing
+        Dim continue As Boolean = True
+        Try
+          casefields = Me.GetCaseFields(Me.SelectedCaseInfo.ArtifactID, 10, True)
+          Return Not casefields Is Nothing
+        Catch ex As System.Exception
+          If ex.Message.IndexOf("Need To Re Login") <> -1 Then
+            Return False
+          Else
+            Throw
+          End If
+        End Try
+      Else
+        Return True
+      End If
+    End Function
 
-		Public Function CheckFieldMap(ByVal loadFile As LoadFile) As Boolean
-			Dim unmapped As String()
-			Dim fmi As LoadFileFieldMap.LoadFileFieldMapItem
-			Dim fieldsNotColumnsMapped As Boolean
-			Dim values As New ArrayList
-			For Each fmi In loadFile.FieldMap
-				If fmi.DocumentField Is Nothing AndAlso fmi.NativeFileColumnIndex <> -1 Then
-					values.Add("Column " & fmi.NativeFileColumnIndex + 1)
-					fieldsNotColumnsMapped = False
-				ElseIf Not fmi.DocumentField Is Nothing AndAlso fmi.NativeFileColumnIndex = -1 Then
-					values.Add(fmi.DocumentField.FieldName)
-					fieldsNotColumnsMapped = True
-				End If
-			Next
-			If values.Count > 0 Then
-				unmapped = DirectCast(values.ToArray(GetType(String)), String())
-				Dim sb As New System.Text.StringBuilder
-				Dim nl As String = System.Environment.NewLine
-				If fieldsNotColumnsMapped Then
-					sb.Append("The following fields are unmapped:" & nl)
-				Else
-					sb.Append("The following file columns are unmapped:" & nl)
-				End If
-				Dim s As String
-				For Each s In unmapped
-					sb.Append(" - " & s & nl)
-				Next
-				sb.Append("If you continue, any existing values in them will be wiped out in any records that are overwritten." & System.Environment.NewLine)
-				sb.Append("Do you wish to continue?")
-				If MsgBox(sb.ToString, MsgBoxStyle.YesNo, "Warning") = MsgBoxResult.No Then
-					Return False
-				Else
-					Return True
-				End If
-			Else
-				Return True
-			End If
-		End Function
+    Public Sub RefreshCaseFolders()
+      If Me.EnsureConnection Then
+        RaiseEvent OnEvent(New kCura.WinEDDS.LoadCaseEvent(SelectedCaseInfo))
+      End If
+    End Sub
 
-		Public Sub SetWorkingDirectory(ByVal filePath As String)
-			Dim directory As String
-			If Not filePath.LastIndexOf("\") = filePath.Length - 1 Then
-				directory = filePath.Substring(0, filePath.LastIndexOf("\") + 1)
-			Else
-				directory = String.Copy(filePath)
-			End If
-			System.IO.Directory.SetCurrentDirectory(directory)
-		End Sub
+    Public Function CheckFieldMap(ByVal loadFile As LoadFile) As Boolean
+      Dim unmapped As String()
+      Dim fmi As LoadFileFieldMap.LoadFileFieldMapItem
+      Dim fieldsNotColumnsMapped As Boolean
+      Dim values As New ArrayList
+      For Each fmi In loadFile.FieldMap
+        If fmi.DocumentField Is Nothing AndAlso fmi.NativeFileColumnIndex <> -1 Then
+          values.Add("Column " & fmi.NativeFileColumnIndex + 1)
+          fieldsNotColumnsMapped = False
+        ElseIf Not fmi.DocumentField Is Nothing AndAlso fmi.NativeFileColumnIndex = -1 Then
+          values.Add(fmi.DocumentField.FieldName)
+          fieldsNotColumnsMapped = True
+        End If
+      Next
+      If values.Count > 0 Then
+        unmapped = DirectCast(values.ToArray(GetType(String)), String())
+        Dim sb As New System.Text.StringBuilder
+        Dim nl As String = System.Environment.NewLine
+        If fieldsNotColumnsMapped Then
+          sb.Append("The following fields are unmapped:" & nl)
+        Else
+          sb.Append("The following file columns are unmapped:" & nl)
+        End If
+        Dim s As String
+        For Each s In unmapped
+          sb.Append(" - " & s & nl)
+        Next
+        sb.Append("If you continue, any existing values in them will be wiped out in any records that are overwritten." & System.Environment.NewLine)
+        sb.Append("Do you wish to continue?")
+        If MsgBox(sb.ToString, MsgBoxStyle.YesNo, "Warning") = MsgBoxResult.No Then
+          Return False
+        Else
+          Return True
+        End If
+      Else
+        Return True
+      End If
+    End Function
+
+    Public Sub SetWorkingDirectory(ByVal filePath As String)
+      Dim directory As String
+      If Not filePath.LastIndexOf("\") = filePath.Length - 1 Then
+        directory = filePath.Substring(0, filePath.LastIndexOf("\") + 1)
+      Else
+        directory = String.Copy(filePath)
+      End If
+      System.IO.Directory.SetCurrentDirectory(directory)
+    End Sub
 #End Region
 
 #Region "Form Initializers"
@@ -798,222 +908,222 @@ Namespace kCura.EDDS.WinForm
 #End Region
 
 #Region "Process Management"
-		Public Function PreviewLoadFile(ByVal loadFileToPreview As LoadFile, ByVal errorsOnly As Boolean) As Guid
-			CursorWait()
-			If Not Me.IsConnected(loadFileToPreview.CaseInfo.ArtifactID, ArtifactTypeID) Then
-				CursorDefault()
-				Exit Function
-			End If
-			If Not CheckFieldMap(loadFileToPreview) Then
-				CursorDefault()
-				Exit Function
-			End If
-			Dim frm As New kCura.Windows.Process.ProgressForm
-			Dim previewer As New kCura.WinEDDS.PreviewLoadFileProcess
-			Dim previewfrm As New LoadFilePreviewForm
-			Dim thrower As New ValueThrower
-			previewer.Thrower = thrower
-			previewer.TimeZoneOffset = _timeZoneOffset
-			previewer.ErrorsOnly = errorsOnly
-			previewfrm.Thrower = previewer.Thrower
-			previewer.LoadFile = loadFileToPreview
-			SetWorkingDirectory(loadFileToPreview.FilePath)
-			frm.ProcessObserver = previewer.ProcessObserver
-			frm.ProcessController = previewer.ProcessController
-			If errorsOnly Then
-				frm.Text = "Preview Load File Errors Progress ..."
-			Else
-				frm.Text = "Preview Load File Progress ..."
-			End If
-			previewfrm.Show()
-			frm.Show()
-			_processPool.StartProcess(previewer)
-			CursorDefault()
-		End Function
+    Public Function PreviewLoadFile(ByVal loadFileToPreview As LoadFile, ByVal errorsOnly As Boolean, ByVal formType As Int32) As Guid
+      CursorWait()
+      If Not Me.IsConnected(loadFileToPreview.CaseInfo.ArtifactID, ArtifactTypeID) Then
+        CursorDefault()
+        Exit Function
+      End If
+      If Not CheckFieldMap(loadFileToPreview) Then
+        CursorDefault()
+        Exit Function
+      End If
+      Dim frm As New kCura.Windows.Process.ProgressForm
+      Dim previewer As New kCura.WinEDDS.PreviewLoadFileProcess
+      Dim previewfrm As New LoadFilePreviewForm(formType, loadFileToPreview.MultiRecordDelimiter)
+      Dim thrower As New ValueThrower
+      previewer.Thrower = thrower
+      previewer.TimeZoneOffset = _timeZoneOffset
+      previewer.ErrorsOnly = errorsOnly
+      previewfrm.Thrower = previewer.Thrower
+      previewer.LoadFile = loadFileToPreview
+      SetWorkingDirectory(loadFileToPreview.FilePath)
+      frm.ProcessObserver = previewer.ProcessObserver
+      frm.ProcessController = previewer.ProcessController
+      If errorsOnly Then
+        frm.Text = "Preview Load File Errors Progress ..."
+      Else
+        frm.Text = "Preview Load File Progress ..."
+      End If
+      previewfrm.Show()
+      frm.Show()
+      _processPool.StartProcess(previewer)
+      CursorDefault()
+    End Function
 
-		Public Function StartProcess(ByVal process As kCura.Windows.Process.ProcessBase) As System.Guid
-			Return _processPool.StartProcess(process)
-		End Function
-		Public Function ImportDirectory(ByVal importFileDirectorySettings As ImportFileDirectorySettings) As Guid
-			CursorWait()
-			If Not Me.IsConnected(importFileDirectorySettings.CaseInfo.ArtifactID, ArtifactTypeID) Then
-				CursorDefault()
-				Exit Function
-			End If
-			Dim frm As New kCura.Windows.Process.ProgressForm
-			Dim importer As New kCura.WinEDDS.ImportFileDirectoryProcess(Credential, CookieContainer)
-			'Dim importer As New kCura.WinEDDS.ImportFileDirectoryProcess(Credential, CookieContainer, Me.Identity)
-			importer.ImportFileDirectorySettings = importFileDirectorySettings
-			frm.ProcessObserver = importer.ProcessObserver
-			frm.Text = "Import File Directory Progress ..."
-			frm.Show()
-			CursorDefault()
-			Return _processPool.StartProcess(importer)
-		End Function
+    Public Function StartProcess(ByVal process As kCura.Windows.Process.ProcessBase) As System.Guid
+      Return _processPool.StartProcess(process)
+    End Function
+    Public Function ImportDirectory(ByVal importFileDirectorySettings As ImportFileDirectorySettings) As Guid
+      CursorWait()
+      If Not Me.IsConnected(importFileDirectorySettings.CaseInfo.ArtifactID, ArtifactTypeID) Then
+        CursorDefault()
+        Exit Function
+      End If
+      Dim frm As New kCura.Windows.Process.ProgressForm
+      Dim importer As New kCura.WinEDDS.ImportFileDirectoryProcess(Credential, CookieContainer)
+      'Dim importer As New kCura.WinEDDS.ImportFileDirectoryProcess(Credential, CookieContainer, Me.Identity)
+      importer.ImportFileDirectorySettings = importFileDirectorySettings
+      frm.ProcessObserver = importer.ProcessObserver
+      frm.Text = "Import File Directory Progress ..."
+      frm.Show()
+      CursorDefault()
+      Return _processPool.StartProcess(importer)
+    End Function
 
-		Public Function ImportGeneric(ByVal settings As Object) As Guid
-			CursorWait()
-			If Not Me.IsConnected(_selectedCaseInfo.ArtifactID, ArtifactTypeID) Then
-				CursorDefault()
-				Exit Function
-			End If
-			Dim frm As New kCura.Windows.Process.ProgressForm
-			Dim importer As New kCura.WinEDDS.GenericImportProcess(New WinEDDSGateway)
-			importer.Settings = settings
-			frm.ProcessObserver = importer.ProcessObserver
-			frm.Text = "Import Generic Progress ..."
-			frm.Show()
-			CursorDefault()
-			Return _processPool.StartProcess(importer)
-		End Function
+    Public Function ImportGeneric(ByVal settings As Object) As Guid
+      CursorWait()
+      If Not Me.IsConnected(_selectedCaseInfo.ArtifactID, ArtifactTypeID) Then
+        CursorDefault()
+        Exit Function
+      End If
+      Dim frm As New kCura.Windows.Process.ProgressForm
+      Dim importer As New kCura.WinEDDS.GenericImportProcess(New WinEDDSGateway)
+      importer.Settings = settings
+      frm.ProcessObserver = importer.ProcessObserver
+      frm.Text = "Import Generic Progress ..."
+      frm.Show()
+      CursorDefault()
+      Return _processPool.StartProcess(importer)
+    End Function
 
-		Public Function ImportSQL(ByVal sqlimportsettings As SQLImportSettings) As Guid
-			CursorWait()
-			If Not Me.IsConnected(_selectedCaseInfo.ArtifactID, ArtifactTypeID) Then
-				CursorDefault()
-				Exit Function
-			End If
-			Dim frm As New kCura.Windows.Process.ProgressForm
-			Dim imporProcess As New kCura.WinEDDS.SQLImportProcess
-			imporProcess.SQLImportSettings = sqlimportsettings
-			frm.ProcessObserver = imporProcess.ProcessObserver
-			frm.ProcessController = imporProcess.ProcessController
-			frm.Text = "Import SQL Progress ..."
-			frm.Show()
-			CursorDefault()
-			Return _processPool.StartProcess(imporProcess)
-		End Function
+    Public Function ImportSQL(ByVal sqlimportsettings As SQLImportSettings) As Guid
+      CursorWait()
+      If Not Me.IsConnected(_selectedCaseInfo.ArtifactID, ArtifactTypeID) Then
+        CursorDefault()
+        Exit Function
+      End If
+      Dim frm As New kCura.Windows.Process.ProgressForm
+      Dim imporProcess As New kCura.WinEDDS.SQLImportProcess
+      imporProcess.SQLImportSettings = sqlimportsettings
+      frm.ProcessObserver = imporProcess.ProcessObserver
+      frm.ProcessController = imporProcess.ProcessController
+      frm.Text = "Import SQL Progress ..."
+      frm.Show()
+      CursorDefault()
+      Return _processPool.StartProcess(imporProcess)
+    End Function
 
-		Public Function ImportLoadFile(ByVal loadFile As LoadFile) As Guid
-			CursorWait()
-			'Dim folderManager As New kCura.WinEDDS.Service.FolderManager(Credential, _cookieContainer, _identity)
-			If Not Me.IsConnected(_selectedCaseInfo.ArtifactID, ArtifactTypeID) Then
-				CursorDefault()
-				Exit Function
-			End If
-			Dim folderManager As New kCura.WinEDDS.Service.FolderManager(Credential, _cookieContainer)
-			If folderManager.Exists(SelectedCaseInfo.ArtifactID, SelectedCaseInfo.RootFolderID) Then
-				If CheckFieldMap(loadFile) Then
-					Dim frm As New kCura.Windows.Process.ProgressForm
-					Dim importer As New kCura.WinEDDS.ImportLoadFileProcess
-					importer.LoadFile = loadFile
-					importer.TimeZoneOffset = _timeZoneOffset
-					SetWorkingDirectory(loadFile.FilePath)
-					frm.ProcessObserver = importer.ProcessObserver
-					frm.ProcessController = importer.ProcessController
-					frm.StopImportButtonText = "Stop"
-					frm.Text = "Import Load File Progress ..."
-					frm.ErrorFileExtension = System.IO.Path.GetExtension(loadFile.FilePath).TrimStart("."c).ToUpper
-					If frm.ErrorFileExtension Is Nothing Then frm.ErrorFileExtension = "TXT"
-					If frm.ErrorFileExtension = "" Then frm.ErrorFileExtension = "TXT"
-					frm.Show()
-					frm.ProcessID = _processPool.StartProcess(importer)
-					CursorDefault()
-					Return frm.ProcessID
-				End If
-			Else
-				CursorDefault()
-				MsgBox("Selected folder no longer exists.  Please reselect.")
-			End If
-		End Function
+    Public Function ImportLoadFile(ByVal loadFile As LoadFile) As Guid
+      CursorWait()
+      'Dim folderManager As New kCura.WinEDDS.Service.FolderManager(Credential, _cookieContainer, _identity)
+      If Not Me.IsConnected(_selectedCaseInfo.ArtifactID, ArtifactTypeID) Then
+        CursorDefault()
+        Exit Function
+      End If
+      Dim folderManager As New kCura.WinEDDS.Service.FolderManager(Credential, _cookieContainer)
+      If folderManager.Exists(SelectedCaseInfo.ArtifactID, SelectedCaseInfo.RootFolderID) Then
+        If CheckFieldMap(loadFile) Then
+          Dim frm As New kCura.Windows.Process.ProgressForm
+          Dim importer As New kCura.WinEDDS.ImportLoadFileProcess
+          importer.LoadFile = loadFile
+          importer.TimeZoneOffset = _timeZoneOffset
+          SetWorkingDirectory(loadFile.FilePath)
+          frm.ProcessObserver = importer.ProcessObserver
+          frm.ProcessController = importer.ProcessController
+          frm.StopImportButtonText = "Stop"
+          frm.Text = "Import Load File Progress ..."
+          frm.ErrorFileExtension = System.IO.Path.GetExtension(loadFile.FilePath).TrimStart("."c).ToUpper
+          If frm.ErrorFileExtension Is Nothing Then frm.ErrorFileExtension = "TXT"
+          If frm.ErrorFileExtension = "" Then frm.ErrorFileExtension = "TXT"
+          frm.Show()
+          frm.ProcessID = _processPool.StartProcess(importer)
+          CursorDefault()
+          Return frm.ProcessID
+        End If
+      Else
+        CursorDefault()
+        MsgBox("Selected folder no longer exists.  Please reselect.")
+      End If
+    End Function
 
-		Public Sub PreviewImageFile(ByVal loadfile As ImageLoadFile)
-			CursorWait()
-			'Dim folderManager As New kCura.WinEDDS.Service.FolderManager(Credential, _cookieContainer, _identity)
-			If Not Me.IsConnected(_selectedCaseInfo.ArtifactID, ArtifactTypeID) Then
-				CursorDefault()
-				Exit Sub
-			End If
-			Dim frm As New kCura.Windows.Process.ProgressForm
-			Dim previewer As New kCura.WinEDDS.PreviewImageFileProcess
-			previewer.TimeZoneOffset = _timeZoneOffset
-			previewer.LoadFile = loadfile
-			SetWorkingDirectory(loadfile.FileName)
-			frm.ProcessObserver = previewer.ProcessObserver
-			frm.ProcessController = previewer.ProcessController
-			frm.Text = "Preview Image File Progress ..."
-			frm.Show()
-			_processPool.StartProcess(previewer)
-			CursorDefault()
-		End Sub
+    Public Sub PreviewImageFile(ByVal loadfile As ImageLoadFile)
+      CursorWait()
+      'Dim folderManager As New kCura.WinEDDS.Service.FolderManager(Credential, _cookieContainer, _identity)
+      If Not Me.IsConnected(_selectedCaseInfo.ArtifactID, ArtifactTypeID) Then
+        CursorDefault()
+        Exit Sub
+      End If
+      Dim frm As New kCura.Windows.Process.ProgressForm
+      Dim previewer As New kCura.WinEDDS.PreviewImageFileProcess
+      previewer.TimeZoneOffset = _timeZoneOffset
+      previewer.LoadFile = loadfile
+      SetWorkingDirectory(loadfile.FileName)
+      frm.ProcessObserver = previewer.ProcessObserver
+      frm.ProcessController = previewer.ProcessController
+      frm.Text = "Preview Image File Progress ..."
+      frm.Show()
+      _processPool.StartProcess(previewer)
+      CursorDefault()
+    End Sub
 
-		Public Sub ImportImageFile(ByVal ImageLoadFile As ImageLoadFile)
-			CursorWait()
-			If Not Me.IsConnected(_selectedCaseInfo.ArtifactID, ArtifactTypeID) Then
-				CursorDefault()
-				Exit Sub
-			End If
-			Dim frm As New kCura.Windows.Process.ProgressForm
-			Dim importer As New kCura.WinEDDS.ImportImageFileProcess
-			ImageLoadFile.CookieContainer = Me.CookieContainer
-			importer.ImageLoadFile = ImageLoadFile
-			SetWorkingDirectory(ImageLoadFile.FileName)
-			frm.ProcessObserver = importer.ProcessObserver
-			frm.ProcessController = importer.ProcessController
-			frm.Text = "Import Image File Progress ..."
-			frm.ErrorFileExtension = "OPT"
-			frm.Show()
-			frm.ProcessID = _processPool.StartProcess(importer)
-			CursorDefault()
-		End Sub
+    Public Sub ImportImageFile(ByVal ImageLoadFile As ImageLoadFile)
+      CursorWait()
+      If Not Me.IsConnected(_selectedCaseInfo.ArtifactID, ArtifactTypeID) Then
+        CursorDefault()
+        Exit Sub
+      End If
+      Dim frm As New kCura.Windows.Process.ProgressForm
+      Dim importer As New kCura.WinEDDS.ImportImageFileProcess
+      ImageLoadFile.CookieContainer = Me.CookieContainer
+      importer.ImageLoadFile = ImageLoadFile
+      SetWorkingDirectory(ImageLoadFile.FileName)
+      frm.ProcessObserver = importer.ProcessObserver
+      frm.ProcessController = importer.ProcessController
+      frm.Text = "Import Image File Progress ..."
+      frm.ErrorFileExtension = "OPT"
+      frm.Show()
+      frm.ProcessID = _processPool.StartProcess(importer)
+      CursorDefault()
+    End Sub
 
-		'Public Function StartProduction(ByVal exportFile As ExportFile) As Guid
-		'	CursorWait()
-		'	If Not Me.IsConnected(_selectedCaseInfo.ArtifactID) Then
-		'		CursorDefault()
-		'		Exit Function
-		'	End If
-		'	Dim frm As New kCura.Windows.Process.ProgressForm
-		'	Dim exporter As New kCura.WinEDDS.ExportProductionProcess
+    'Public Function StartProduction(ByVal exportFile As ExportFile) As Guid
+    '	CursorWait()
+    '	If Not Me.IsConnected(_selectedCaseInfo.ArtifactID) Then
+    '		CursorDefault()
+    '		Exit Function
+    '	End If
+    '	Dim frm As New kCura.Windows.Process.ProgressForm
+    '	Dim exporter As New kCura.WinEDDS.ExportProductionProcess
 
-		'	exporter.ExportFile = exportFile
-		'	frm.ProcessObserver = exporter.ProcessObserver
-		'	frm.ProcessController = exporter.ProcessController
-		'	frm.Text = "Export Progress..."
-		'	frm.Show()
-		'	CursorDefault()
-		'	Return _processPool.StartProcess(exporter)
-		'End Function
+    '	exporter.ExportFile = exportFile
+    '	frm.ProcessObserver = exporter.ProcessObserver
+    '	frm.ProcessController = exporter.ProcessController
+    '	frm.Text = "Export Progress..."
+    '	frm.Show()
+    '	CursorDefault()
+    '	Return _processPool.StartProcess(exporter)
+    'End Function
 
-		Public Function StartSearch(ByVal exportFile As ExportFile) As Guid
-			CursorWait()
-			If Not Me.IsConnected(_selectedCaseInfo.ArtifactID, ArtifactTypeID) Then
-				CursorDefault()
-				Exit Function
-			End If
-			Dim frm As New kCura.Windows.Process.ProgressForm
-			Dim exporter As New kCura.WinEDDS.ExportSearchProcess
+    Public Function StartSearch(ByVal exportFile As ExportFile) As Guid
+      CursorWait()
+      If Not Me.IsConnected(_selectedCaseInfo.ArtifactID, ArtifactTypeID) Then
+        CursorDefault()
+        Exit Function
+      End If
+      Dim frm As New kCura.Windows.Process.ProgressForm
+      Dim exporter As New kCura.WinEDDS.ExportSearchProcess
 
-			exporter.ExportFile = exportFile
-			frm.ProcessObserver = exporter.ProcessObserver
-			frm.ProcessController = exporter.ProcessController
-			frm.Text = "Export Progress..."
-			Select Case exportFile.TypeOfExport
-				Case exportFile.ExportType.AncestorSearch
-					frm.Text = "Export Folders and Subfolders Progress ..."
-				Case exportFile.ExportType.ArtifactSearch
-					frm.Text = "Export Saved Search Progress ..."
-				Case exportFile.ExportType.ParentSearch
-					frm.Text = "Export Folder Progress ..."
-				Case exportFile.ExportType.Production
-					frm.Text = "Export Production Set Progress ..."
-			End Select
-			frm.Show()
-			CursorDefault()
-			Return _processPool.StartProcess(exporter)
-		End Function
+      exporter.ExportFile = exportFile
+      frm.ProcessObserver = exporter.ProcessObserver
+      frm.ProcessController = exporter.ProcessController
+      frm.Text = "Export Progress..."
+      Select Case exportFile.TypeOfExport
+        Case exportFile.ExportType.AncestorSearch
+          frm.Text = "Export Folders and Subfolders Progress ..."
+        Case exportFile.ExportType.ArtifactSearch
+          frm.Text = "Export Saved Search Progress ..."
+        Case exportFile.ExportType.ParentSearch
+          frm.Text = "Export Folder Progress ..."
+        Case exportFile.ExportType.Production
+          frm.Text = "Export Production Set Progress ..."
+      End Select
+      frm.Show()
+      CursorDefault()
+      Return _processPool.StartProcess(exporter)
+    End Function
 
-		Public Sub CancelImport(ByVal importProcessId As Guid)
-			CursorWait()
-			_processPool.AbortProcess(importProcessId)
-			CursorDefault()
-		End Sub
+    Public Sub CancelImport(ByVal importProcessId As Guid)
+      CursorWait()
+      _processPool.AbortProcess(importProcessId)
+      CursorDefault()
+    End Sub
 
-		Public Sub DeleteThread(ByVal processID As Guid)
-			CursorWait()
-			_processPool.RemoveProcess(processID)
-			CursorDefault()
-		End Sub
+    Public Sub DeleteThread(ByVal processID As Guid)
+      CursorWait()
+      _processPool.RemoveProcess(processID)
+      CursorDefault()
+    End Sub
 #End Region
 
 #Region "Save/Load Settings Objects"

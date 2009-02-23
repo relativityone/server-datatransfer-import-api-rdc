@@ -3,15 +3,20 @@ Namespace kCura.EDDS.WinForm
     Inherits System.Windows.Forms.Form
 
 #Region " Windows Form Designer generated code "
-		Private _application As Application
-    Public Sub New()
+    Private _application As Application
+    Private _formType As Int32
+    Private _multiRecordDelimiter As Char
+
+    Public Sub New(ByVal formType As Int32, ByVal mutliRecordDelimiter As Char)
       MyBase.New()
 
       'This call is required by the Windows Form Designer.
       InitializeComponent()
 
       'Add any initialization after the InitializeComponent() call
-			_application = Application.Instance
+      _application = Application.Instance
+      _formType = formType
+      _multiRecordDelimiter = mutliRecordDelimiter
     End Sub
 
     'Form overrides dispose to clean up the component list.
@@ -32,81 +37,92 @@ Namespace kCura.EDDS.WinForm
     'Do not modify it using the code editor.
     Friend WithEvents _grid As System.Windows.Forms.DataGrid
     <System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
-			Dim resources As System.Resources.ResourceManager = New System.Resources.ResourceManager(GetType(LoadFilePreviewForm))
-			Me._grid = New System.Windows.Forms.DataGrid
-			CType(Me._grid, System.ComponentModel.ISupportInitialize).BeginInit()
-			Me.SuspendLayout()
-			'
-			'_grid
-			'
-			Me._grid.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
-			Me._grid.CaptionVisible = False
-			Me._grid.DataMember = ""
-			Me._grid.Dock = System.Windows.Forms.DockStyle.Fill
-			Me._grid.HeaderForeColor = System.Drawing.SystemColors.ControlText
-			Me._grid.Location = New System.Drawing.Point(0, 0)
-			Me._grid.Name = "_grid"
-			Me._grid.ReadOnly = True
-			Me._grid.RowHeadersVisible = False
-			Me._grid.Size = New System.Drawing.Size(728, 533)
-			Me._grid.TabIndex = 0
-			'
-			'LoadFilePreviewForm
-			'
-			Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
-			Me.ClientSize = New System.Drawing.Size(728, 533)
-			Me.Controls.Add(Me._grid)
-			Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
-			Me.Name = "LoadFilePreviewForm"
-			Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
-			Me.Text = "Relativity Desktop Client | Preview Load File"
-			CType(Me._grid, System.ComponentModel.ISupportInitialize).EndInit()
-			Me.ResumeLayout(False)
+      Dim resources As System.Resources.ResourceManager = New System.Resources.ResourceManager(GetType(LoadFilePreviewForm))
+      Me._grid = New System.Windows.Forms.DataGrid
+      CType(Me._grid, System.ComponentModel.ISupportInitialize).BeginInit()
+      Me.SuspendLayout()
+      '
+      '_grid
+      '
+      Me._grid.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+      Me._grid.CaptionVisible = False
+      Me._grid.DataMember = ""
+      Me._grid.Dock = System.Windows.Forms.DockStyle.Fill
+      Me._grid.HeaderForeColor = System.Drawing.SystemColors.ControlText
+      Me._grid.Location = New System.Drawing.Point(0, 0)
+      Me._grid.Name = "_grid"
+      Me._grid.ReadOnly = True
+      Me._grid.RowHeadersVisible = False
+      Me._grid.Size = New System.Drawing.Size(728, 533)
+      Me._grid.TabIndex = 0
+      '
+      'LoadFilePreviewForm
+      '
+      Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
+      Me.ClientSize = New System.Drawing.Size(728, 533)
+      Me.Controls.Add(Me._grid)
+      Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
+      Me.Name = "LoadFilePreviewForm"
+      Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
+      Me.Text = "Relativity Desktop Client | Preview Load File"
+      CType(Me._grid, System.ComponentModel.ISupportInitialize).EndInit()
+      Me.ResumeLayout(False)
 
-		End Sub
+    End Sub
 
 #End Region
 		Private WithEvents _thrower As kCura.WinEDDS.ValueThrower
-		Public DataSource As DataTable
-		Public IsError As Boolean
-		Public Property Thrower() As kCura.WinEDDS.ValueThrower
-			Get
-				Return _thrower
-			End Get
-			Set(ByVal value As kCura.WinEDDS.ValueThrower)
-				_thrower = value
-			End Set
-		End Property
 
-		Public Sub SetGridDataSource(ByVal ds As DataTable)
-			Dim column As New System.Data.DataColumn
-			Dim tablestyles As New DataGridTableStyle
-			For Each column In ds.Columns
-				Dim col As New HighlightErrorColumn
-				col.MappingName = column.ColumnName
-				col.HeaderText = column.ColumnName
-				tablestyles.GridColumnStyles.Add(col)
-			Next
-			_grid.TableStyles.Add(tablestyles)
-			DataSource = ds
-			_grid.DataSource = ds
-		End Sub
+    Public DataSource As DataTable
+    Public IsError As Boolean
 
-		Private Sub _thrower_OnEvent(ByVal value As Object) Handles _thrower.OnEvent
-			Dim args As Object() = DirectCast(value, Object())
-			Me.DataSource = _application.BuildLoadFileDataSource(DirectCast(args(0), ArrayList))
-			Me.IsError = CType(args(1), Boolean)
-			Me.Invoke(New HandleDataSourceDelegate(AddressOf HandleDataSource))
-		End Sub
+    Public Enum FormType
+      LoadFile = 1
+      Codes = 2
+    End Enum
 
-		Public Sub HandleDataSource()
-			Me.SetGridDataSource(Me.DataSource)
-			If Me.IsError Then Me.Text = "Preview Errors"
-		End Sub
+    Public Property Thrower() As kCura.WinEDDS.ValueThrower
+      Get
+        Return _thrower
+      End Get
+      Set(ByVal value As kCura.WinEDDS.ValueThrower)
+        _thrower = value
+      End Set
+    End Property
 
-		Delegate Sub HandleDataSourceDelegate()
+    Public Sub SetGridDataSource(ByVal ds As DataTable)
+      Dim column As New System.Data.DataColumn
+      Dim tablestyles As New DataGridTableStyle
+      For Each column In ds.Columns
+        Dim col As New HighlightErrorColumn
+        col.MappingName = column.ColumnName
+        col.HeaderText = column.ColumnName
+        tablestyles.GridColumnStyles.Add(col)
+      Next
+      _grid.TableStyles.Add(tablestyles)
+      DataSource = ds
+      _grid.DataSource = ds
+    End Sub
 
-	End Class
+    Private Sub _thrower_OnEvent(ByVal value As Object) Handles _thrower.OnEvent
+      Dim args As Object() = DirectCast(value, Object())
+      If _formType = FormType.Codes Then
+        Me.DataSource = _application.BuildFoldersAndCodesDataSource(DirectCast(args(0), ArrayList), _multiRecordDelimiter)
+      Else
+        Me.DataSource = _application.BuildLoadFileDataSource(DirectCast(args(0), ArrayList))
+      End If
+      Me.IsError = CType(args(1), Boolean)
+      Me.Invoke(New HandleDataSourceDelegate(AddressOf HandleDataSource))
+    End Sub
+
+    Public Sub HandleDataSource()
+      Me.SetGridDataSource(Me.DataSource)
+      If Me.IsError Then Me.Text = "Preview Errors"
+    End Sub
+
+    Delegate Sub HandleDataSourceDelegate()
+
+  End Class
 
 	Public Class HighlightErrorColumn
 		Inherits DataGridColumnStyle
