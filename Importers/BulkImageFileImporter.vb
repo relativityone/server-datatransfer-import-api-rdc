@@ -47,8 +47,11 @@ Namespace kCura.WinEDDS
 		Private _fileIdentifierLookup As System.Collections.Hashtable
 
 		Private _processID As Guid
-
+		Private _validationTime1 As Long = 0
+		Private _validationTime2 As Long = 0
 		Public Const MaxNumberOfErrorsInGrid As Int32 = 1000
+		Private _totalValidated As Long
+		Private _totalProcessed As Long
 #End Region
 
 #Region "Accessors"
@@ -187,13 +190,15 @@ Namespace kCura.WinEDDS
 		Public Overloads Overrides Function ReadFile(ByVal path As String) As Object
 			Dim bulkLoadFilePath As String = System.IO.Path.GetTempFileName
 			_fileIdentifierLookup = New System.Collections.Hashtable
+			_totalProcessed = 0
+			_totalValidated = 0
 			_bulkLoadFileWriter = New System.IO.StreamWriter(bulkLoadFilePath, False, System.Text.Encoding.Unicode)
 			Try
 				Dim documentIdentifier As String = String.Empty
 				_fileLineCount = kCura.Utility.File.CountLinesInFile(path)
 				Reader = New StreamReader(path)
 				_filePath = path
-				RaiseStatusEvent(kCura.Windows.Process.EventType.Progress, "Begin Image Upload")
+				RaiseStatusEvent(kCura.Windows.Process.EventType.Progress, "Begin Image Upload", 0, 0)
 				Dim al As New System.collections.ArrayList
 				Dim line As String()
 				Dim status As Int32 = 0
@@ -225,7 +230,7 @@ Namespace kCura.WinEDDS
 		Private Sub CompleteSuccess()
 			Me.Reader.Close()
 			If _productionArtifactID <> 0 Then _productionManager.DoPostImportProcessing(_fileUploader.CaseArtifactID, _productionArtifactID)
-			RaiseStatusEvent(kCura.Windows.Process.EventType.Progress, "End Image Upload")
+			RaiseStatusEvent(kCura.Windows.Process.EventType.Progress, "End Image Upload", Me.CurrentLineNumber, Me.CurrentLineNumber)
 		End Sub
 
 		Private Sub CompleteError(ByVal ex As System.Exception)
@@ -255,20 +260,24 @@ Namespace kCura.WinEDDS
 
 		Public Function ProcessImageLine(ByVal values As String()) As kCura.EDDS.Types.MassImport.ImportStatus
 			Try
+				_totalValidated += 1
+				Dim globalStart As System.DateTime = System.DateTime.Now
 				Dim retval As kCura.EDDS.Types.MassImport.ImportStatus = EDDS.Types.MassImport.ImportStatus.Pending
 				'check for existence
 				If values(Columns.BatesNumber).Trim = "" Then
-					Me.RaiseStatusEvent(Windows.Process.EventType.Error, String.Format("No image file specified on line."))
+					Me.RaiseStatusEvent(Windows.Process.EventType.Error, String.Format("No image file specified on line."), CType((_totalValidated + _totalProcessed) / 2, Int64), Me.CurrentLineNumber)
 					retval = EDDS.Types.MassImport.ImportStatus.NoImageSpecifiedOnLine
 				ElseIf Not System.IO.File.Exists(Me.GetFileLocation(values)) Then
-					Me.RaiseStatusEvent(Windows.Process.EventType.Error, String.Format("Image file specified ( {0} ) does not exist.", values(Columns.FileLocation)))
+					Me.RaiseStatusEvent(Windows.Process.EventType.Error, String.Format("Image file specified ( {0} ) does not exist.", values(Columns.FileLocation)), CType((_totalValidated + _totalProcessed) / 2, Int64), Me.CurrentLineNumber)
 					retval = EDDS.Types.MassImport.ImportStatus.FileSpecifiedDne
 				Else
 					Dim validator As New kCura.ImageValidator.ImageValidator
 					Dim path As String = Me.GetFileLocation(values)
 					Try
+						Dim start As System.DateTime = System.DateTime.Now
 						validator.ValidateImage(path)
-						Me.RaiseStatusEvent(Windows.Process.EventType.Status, String.Format("Image file ( {0} ) validated.", values(Columns.FileLocation)))
+						Me.RaiseStatusEvent(Windows.Process.EventType.Progress, String.Format("Image file ( {0} ) validated.", values(Columns.FileLocation)), CType((_totalValidated + _totalProcessed) / 2, Int64), Me.CurrentLineNumber)
+						_validationTime1 += CType(System.DateTime.Now.Subtract(start).TotalMilliseconds, Long)
 					Catch ex As System.Exception
 						'Me.RaiseStatusEvent(Windows.Process.EventType.Error, String.Format("Error in '{0}': {1}", path, ex.Message))
 						retval = EDDS.Types.MassImport.ImportStatus.InvalidImageFormat
@@ -330,7 +339,7 @@ Namespace kCura.WinEDDS
 				Dim offset As Int64 = 0
 				For i As Int32 = 0 To lines.Count - 1
 					valueArray = DirectCast(lines(i), String())
-					Me.GetImageForDocument(Me.GetFileLocation(valueArray), valueArray(Columns.BatesNumber), documentId, i, offset, textFileList, i < lines.Count - 1, valueArray(valueArray.Length - 1), status)
+					Me.GetImageForDocument(Me.GetFileLocation(valueArray), valueArray(Columns.BatesNumber), documentId, i, offset, textFileList, i < lines.Count - 1, valueArray(valueArray.Length - 1), status, lines.Count)
 				Next
 				For Each filename As String In textFileList
 					With New System.IO.StreamReader(filename, _settings.FullTextEncoding, True)
@@ -358,8 +367,9 @@ Namespace kCura.WinEDDS
 			Next
 		End Sub
 
-		Private Sub GetImageForDocument(ByVal imageFileName As String, ByVal batesNumber As String, ByVal documentIdentifier As String, ByVal order As Int32, ByRef offset As Int64, ByVal fullTextFiles As System.Collections.ArrayList, ByVal writeLineTermination As Boolean, ByVal originalLineNumber As String, ByVal status As Int32)
+		Private Sub GetImageForDocument(ByVal imageFileName As String, ByVal batesNumber As String, ByVal documentIdentifier As String, ByVal order As Int32, ByRef offset As Int64, ByVal fullTextFiles As System.Collections.ArrayList, ByVal writeLineTermination As Boolean, ByVal originalLineNumber As String, ByVal status As Int32, ByVal totalForDocument As Int32)
 			Try
+				_totalProcessed += 1
 				Dim filename As String = imageFileName.Substring(imageFileName.LastIndexOf("\") + 1)
 				Dim extractedTextFileName As String = imageFileName.Substring(0, imageFileName.LastIndexOf("."c) + 1) & "txt"
 				Dim fileGuid As String = ""
@@ -368,11 +378,11 @@ Namespace kCura.WinEDDS
 				_batchCount += 1
 				If status = 0 Then
 					If _copyFilesToRepository Then
-						RaiseStatusEvent(kCura.Windows.Process.EventType.Progress, String.Format("Uploading File '{0}'.", filename))
+						RaiseStatusEvent(kCura.Windows.Process.EventType.Progress, String.Format("Uploading File '{0}'.", filename), CType((_totalValidated + _totalProcessed) / 2, Int64), Int64.Parse(originalLineNumber))
 						fileGuid = _fileUploader.UploadFile(imageFileName, _folderID)
 						fileLocation = _fileUploader.DestinationFolderPath.TrimEnd("\"c) & "\" & _fileUploader.CurrentDestinationDirectory & "\" & fileGuid
 					Else
-						RaiseStatusEvent(kCura.Windows.Process.EventType.Progress, String.Format("Processing image '{0}'.", batesNumber))
+						RaiseStatusEvent(kCura.Windows.Process.EventType.Progress, String.Format("Processing image '{0}'.", batesNumber), CType((_totalValidated + _totalProcessed) / 2, Int64), Int64.Parse(originalLineNumber))
 						fileGuid = System.Guid.NewGuid.ToString
 					End If
 					If System.IO.File.Exists(imageFileName) Then fileSize = New System.IO.FileInfo(imageFileName).Length
@@ -380,7 +390,7 @@ Namespace kCura.WinEDDS
 						fullTextFiles.Add(extractedTextFileName)
 					Else
 						If _replaceFullText AndAlso Not System.IO.File.Exists(extractedTextFileName) Then
-							RaiseStatusEvent(kCura.Windows.Process.EventType.Warning, String.Format("File '{0}' not found.  No text updated.", extractedTextFileName))
+							RaiseStatusEvent(kCura.Windows.Process.EventType.Warning, String.Format("File '{0}' not found.  No text updated.", extractedTextFileName), CType((_totalValidated + _totalProcessed) / 2, Int64), Int64.Parse(originalLineNumber))
 						End If
 					End If
 				End If
@@ -421,8 +431,8 @@ Namespace kCura.WinEDDS
 			RaiseEvent FatalErrorEvent("Error processing line: " + CurrentLineNumber.ToString, ex)
 		End Sub
 
-		Private Sub RaiseStatusEvent(ByVal et As kCura.Windows.Process.EventType, ByVal line As String, Optional ByVal lineOffset As Int32 = 0)
-			RaiseEvent StatusMessage(New kCura.Windows.Process.StatusEventArgs(et, Me.CurrentLineNumber - lineOffset, _fileLineCount, line & String.Format(" [line {0}]", Me.CurrentLineNumber - lineOffset), False))
+		Private Sub RaiseStatusEvent(ByVal et As kCura.Windows.Process.EventType, ByVal line As String, ByVal progressLineNumber As Int64, ByVal physicalLineNumber As Int64)
+			RaiseEvent StatusMessage(New kCura.Windows.Process.StatusEventArgs(et, progressLineNumber, _fileLineCount, line & String.Format(" [line {0}]", physicalLineNumber), False))
 		End Sub
 
 		Private Sub _processObserver_CancelImport(ByVal processID As System.Guid) Handles _processController.HaltProcessEvent
@@ -545,7 +555,7 @@ Namespace kCura.WinEDDS
 			Dim sr As kCura.Utility.GenericCsvReader
 			Try
 				With _bulkImportManager.GenerateImageErrorFiles(_caseInfo.ArtifactID, _runId, True)
-					Me.RaiseStatusEvent(Windows.Process.EventType.Status, "Retrieving errors from server")
+					Me.RaiseStatusEvent(Windows.Process.EventType.Status, "Retrieving errors from server", Me.CurrentLineNumber, Me.CurrentLineNumber)
 					Dim downloader As New FileDownloader(DirectCast(_bulkImportManager.Credentials, System.Net.NetworkCredential), _caseInfo.DocumentPath, _caseInfo.DownloadHandlerURL, _bulkImportManager.CookieContainer, kCura.WinEDDS.Service.Settings.AuthenticationToken)
 					Dim errorsLocation As String = System.IO.Path.GetTempFileName
 					downloader.MoveTempFileToLocal(errorsLocation, .LogKey, _caseInfo)
@@ -635,19 +645,19 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Private Sub _fileUploader_UploadStatusEvent(ByVal s As String) Handles _fileUploader.UploadStatusEvent
-			RaiseStatusEvent(kCura.Windows.Process.EventType.Status, s)
+			RaiseStatusEvent(kCura.Windows.Process.EventType.Status, s, 0, 0)
 		End Sub
 
 		Private Sub _fileUploader_UploadWarningEvent(ByVal s As String) Handles _fileUploader.UploadWarningEvent
-			RaiseStatusEvent(kCura.Windows.Process.EventType.Warning, s)
+			RaiseStatusEvent(kCura.Windows.Process.EventType.Warning, s, 0, 0)
 		End Sub
 
 		Private Sub _textUploader_UploadStatusEvent(ByVal s As String) Handles _textUploader.UploadStatusEvent
-			RaiseStatusEvent(kCura.Windows.Process.EventType.Status, s)
+			RaiseStatusEvent(kCura.Windows.Process.EventType.Status, s, 0, 0)
 		End Sub
 
 		Private Sub _textUploader_UploadWarningEvent(ByVal s As String) Handles _textUploader.UploadWarningEvent
-			RaiseStatusEvent(kCura.Windows.Process.EventType.Warning, s)
+			RaiseStatusEvent(kCura.Windows.Process.EventType.Warning, s, 0, 0)
 		End Sub
 
 		Private Sub _processController_ParentFormClosingEvent(ByVal processID As Guid) Handles _processController.ParentFormClosingEvent
