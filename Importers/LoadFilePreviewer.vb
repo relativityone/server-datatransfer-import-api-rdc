@@ -5,11 +5,11 @@ Namespace kCura.WinEDDS
 
 
 #Region "Members"
-		Private _errorsOnly As Boolean
-		Private WithEvents _processController As kCura.Windows.Process.Controller
-		Private _continue As Boolean = True
-		Private _columnCount As Int32 = 0
-		Private _nativeFileCheckColumnName As String = ""
+    Private _errorsOnly As Boolean
+    Private WithEvents _processController As kCura.Windows.Process.Controller
+    Private _continue As Boolean = True
+    Private _columnCount As Int32 = 0
+    Private _nativeFileCheckColumnName As String = ""
 		Private _relationalDocumentFields As DocumentField()
 		Private _selectedCaseArtifactID As Int32
 #End Region
@@ -284,6 +284,14 @@ Namespace kCura.WinEDDS
             lineContainsErrors = True
           End If
         End If
+        retval.Add(docfield)
+      End If
+      If _createFolderStructure AndAlso _artifactTypeID = 10 Then
+        Dim openParenIndex As Int32 = _destinationFolder.LastIndexOf("("c) + 1
+        Dim closeParenIndex As Int32 = _destinationFolder.LastIndexOf(")"c)
+        Dim parentObjectIdentifierIndex As Int32 = Int32.Parse(_destinationFolder.Substring(openParenIndex, closeParenIndex - openParenIndex)) - 1
+        Dim docfield As New DocumentField("Parent_Folder_Identifier", -1, -1, -1, NullableInt32.Null, NullableInt32.Null, False)
+        docField.Value = values(parentObjectIdentifierIndex)
         retval.Add(docfield)
       End If
 
