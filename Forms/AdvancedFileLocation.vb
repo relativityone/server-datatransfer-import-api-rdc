@@ -43,21 +43,23 @@ Namespace kCura.EDDS.WinForm
 		Friend WithEvents _okButton As System.Windows.Forms.Button
 		Friend WithEvents _defaultButton As System.Windows.Forms.Button
 		Friend WithEvents _repositories As System.Windows.Forms.ComboBox
-		Friend WithEvents _copyFilesToRepository As System.Windows.Forms.CheckBox
+		Friend WithEvents _copyNativeFiles As System.Windows.Forms.RadioButton
+		Friend WithEvents _keepNativeFiles As System.Windows.Forms.RadioButton
 		<System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
 			Dim resources As System.Resources.ResourceManager = New System.Resources.ResourceManager(GetType(AdvancedFileLocation))
 			Me._cancelButton = New System.Windows.Forms.Button
 			Me.Label1 = New System.Windows.Forms.Label
-			Me._copyFilesToRepository = New System.Windows.Forms.CheckBox
 			Me._repositories = New System.Windows.Forms.ComboBox
 			Me._okButton = New System.Windows.Forms.Button
 			Me._defaultButton = New System.Windows.Forms.Button
+			Me._copyNativeFiles = New System.Windows.Forms.RadioButton
+			Me._keepNativeFiles = New System.Windows.Forms.RadioButton
 			Me.SuspendLayout()
 			'
 			'_cancelButton
 			'
 			Me._cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel
-			Me._cancelButton.Location = New System.Drawing.Point(540, 112)
+			Me._cancelButton.Location = New System.Drawing.Point(500, 108)
 			Me._cancelButton.Name = "_cancelButton"
 			Me._cancelButton.TabIndex = 3
 			Me._cancelButton.Text = "Cancel"
@@ -65,55 +67,65 @@ Namespace kCura.EDDS.WinForm
 			'Label1
 			'
 			Me.Label1.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-			Me.Label1.Location = New System.Drawing.Point(40, 40)
+			Me.Label1.Location = New System.Drawing.Point(20, 60)
 			Me.Label1.Name = "Label1"
 			Me.Label1.Size = New System.Drawing.Size(132, 16)
 			Me.Label1.TabIndex = 4
 			Me.Label1.Text = "Document Repository"
 			'
-			'_copyFilesToRepository
-			'
-			Me._copyFilesToRepository.Checked = True
-			Me._copyFilesToRepository.CheckState = System.Windows.Forms.CheckState.Checked
-			Me._copyFilesToRepository.Location = New System.Drawing.Point(8, 8)
-			Me._copyFilesToRepository.Name = "_copyFilesToRepository"
-			Me._copyFilesToRepository.Size = New System.Drawing.Size(140, 24)
-			Me._copyFilesToRepository.TabIndex = 8
-			Me._copyFilesToRepository.Text = "Copy files to repository"
-			'
 			'_repositories
 			'
 			Me._repositories.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
-			Me._repositories.Location = New System.Drawing.Point(40, 60)
+			Me._repositories.Location = New System.Drawing.Point(20, 80)
 			Me._repositories.Name = "_repositories"
 			Me._repositories.Size = New System.Drawing.Size(504, 21)
 			Me._repositories.TabIndex = 9
 			'
 			'_okButton
 			'
-			Me._okButton.Location = New System.Drawing.Point(460, 112)
+			Me._okButton.Location = New System.Drawing.Point(420, 108)
 			Me._okButton.Name = "_okButton"
 			Me._okButton.TabIndex = 2
 			Me._okButton.Text = "OK"
 			'
 			'_defaultButton
 			'
-			Me._defaultButton.Location = New System.Drawing.Point(544, 60)
+			Me._defaultButton.Location = New System.Drawing.Point(524, 80)
 			Me._defaultButton.Name = "_defaultButton"
-			Me._defaultButton.Size = New System.Drawing.Size(48, 21)
+			Me._defaultButton.Size = New System.Drawing.Size(50, 21)
 			Me._defaultButton.TabIndex = 10
 			Me._defaultButton.Text = "Default"
 			Me._defaultButton.TextAlign = System.Drawing.ContentAlignment.TopLeft
+			'
+			'_copyNativeFiles
+			'
+			Me._copyNativeFiles.Checked = True
+			Me._copyNativeFiles.Location = New System.Drawing.Point(12, 4)
+			Me._copyNativeFiles.Name = "_copyNativeFiles"
+			Me._copyNativeFiles.Size = New System.Drawing.Size(384, 24)
+			Me._copyNativeFiles.TabIndex = 11
+			Me._copyNativeFiles.TabStop = True
+			Me._copyNativeFiles.Text = "Copy Native files from current location to selected document repository"
+			'
+			'_keepNativeFiles
+			'
+			Me._keepNativeFiles.Location = New System.Drawing.Point(12, 28)
+			Me._keepNativeFiles.Name = "_keepNativeFiles"
+			Me._keepNativeFiles.Size = New System.Drawing.Size(564, 24)
+			Me._keepNativeFiles.TabIndex = 12
+			Me._keepNativeFiles.Text = "Native Files already reside on the selected document repository.  Load file conta" & _
+			"ins pointers to their location."
 			'
 			'AdvancedFileLocation
 			'
 			Me.AcceptButton = Me._okButton
 			Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
 			Me.CancelButton = Me._cancelButton
-			Me.ClientSize = New System.Drawing.Size(616, 137)
+			Me.ClientSize = New System.Drawing.Size(584, 141)
+			Me.Controls.Add(Me._keepNativeFiles)
+			Me.Controls.Add(Me._copyNativeFiles)
 			Me.Controls.Add(Me._defaultButton)
 			Me.Controls.Add(Me._repositories)
-			Me.Controls.Add(Me._copyFilesToRepository)
 			Me.Controls.Add(Me.Label1)
 			Me.Controls.Add(Me._cancelButton)
 			Me.Controls.Add(Me._okButton)
@@ -131,8 +143,8 @@ Namespace kCura.EDDS.WinForm
 
 		Private WithEvents _application As kCura.EDDS.WinForm.Application
 		Friend SelectDefaultPath As Boolean = True
-		Private Sub _includeOriginals_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _copyFilesToRepository.CheckedChanged
-			_repositories.Enabled = _copyFilesToRepository.Checked
+		Private Sub _includeOriginals_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs)
+			_repositories.Enabled = _copyNativeFiles.Checked
 		End Sub
 
 		Private Sub AdvancedFileLocation_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles MyBase.Load
@@ -142,11 +154,11 @@ Namespace kCura.EDDS.WinForm
 		Public Event FileLocationOK(ByVal copyFiles As Boolean, ByVal selectedRepository As String)
 
 		Private Sub _okButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _okButton.Click
-			Dim copyFilesToRepository As Boolean = _copyFilesToRepository.Checked()
+			Dim copyFilesToRepository As Boolean = _copyNativeFiles.Checked()
 			Dim selectedRepository As String = ""
 			If copyFilesToRepository Then selectedRepository = _repositories.SelectedItem.ToString
 			Me.Close()
-			RaiseEvent FileLocationOK(_copyFilesToRepository.Checked, selectedRepository)
+			RaiseEvent FileLocationOK(_copyNativeFiles.Checked, selectedRepository)
 		End Sub
 
 		Public Sub SelectPath(ByVal path As String)
@@ -159,7 +171,7 @@ Namespace kCura.EDDS.WinForm
 						foundIt = True
 						Exit For
 					End If
-				Next		'
+				Next			'
 				If Not foundIt AndAlso path.ToLower <> _application.SelectedCaseInfo.DocumentPath.ToLower Then
 					Me.SelectPath(_application.SelectedCaseInfo.DocumentPath)
 				End If
@@ -170,6 +182,15 @@ Namespace kCura.EDDS.WinForm
 			Me.SelectPath(_application.SelectedCaseInfo.DocumentPath)
 		End Sub
 
+		Private Sub _keepNativeFiles_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _keepNativeFiles.CheckedChanged, _copyNativeFiles.CheckedChanged
+			_repositories.Enabled = _copyNativeFiles.Checked
+			If _keepNativeFiles.Checked Then
+				_copyNativeFiles.Checked = False
+			End If
+			If _copyNativeFiles.Checked Then
+				_keepNativeFiles.Checked = False
+			End If
+		End Sub
 	End Class
 
 End Namespace
