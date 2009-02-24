@@ -458,7 +458,7 @@ Namespace kCura.WinEDDS
 						fullTextReader = New System.IO.StreamReader(localFullTextPath, _encoding, True)
 					End If
 				End If
-				If images.Count > 0 AndAlso (Me.Settings.TypeOfImage = ExportFile.ImageType.MultiPageTiff OrElse Me.Settings.TypeOfImage = ExportFile.ImageType.Pdf) Then
+				If images.Count > 0 AndAlso (Me.Settings.TypeOfImage = ExportFile.ImageType.MultiPageTiff OrElse Me.Settings.TypeOfImage = ExportFile.ImageType.Pdf) AndAlso Me.Settings.LogFileFormat = LoadFileType.FileFormat.Opticon Then
 					Dim marker As Exporters.ImageExportInfo = DirectCast(images(0), Exporters.ImageExportInfo)
 					Me.ExportDocumentImage(localFilePath & marker.FileName, marker.FileGuid, marker.ArtifactID, marker.BatesNumber, marker.TempLocation)
 					Dim copyfile As String
@@ -470,7 +470,7 @@ Namespace kCura.WinEDDS
 						Case ExportFile.ExportedFilePathType.Prefix
 							copyfile = Me.Settings.FilePrefix.TrimEnd("\"c) & "\" & subfolderPath & marker.FileName
 					End Select
-					Me.CreateImageLogEntry(marker.BatesNumber, copyfile, localFilePath, True, fullTextReader, localFullTextPath <> "", Int64.MinValue, images.Count)
+					Me.CreateImageLogEntry(marker.BatesNumber, copyfile, localFilePath, 1, fullTextReader, localFullTextPath <> "", Int64.MinValue, images.Count)
 					marker.TempLocation = copyfile
 				Else
 					For Each image In images
@@ -495,10 +495,10 @@ Namespace kCura.WinEDDS
 								Case ExportFile.ExportedFilePathType.Prefix
 									copyfile = Me.Settings.FilePrefix.TrimEnd("\"c) & "\" & subfolderPath & image.FileName
 							End Select
-							Me.CreateImageLogEntry(image.BatesNumber, copyfile, localFilePath, i = 0, fullTextReader, localFullTextPath <> "", pageOffset, images.Count)
+							Me.CreateImageLogEntry(image.BatesNumber, copyfile, localFilePath, i + 1, fullTextReader, localFullTextPath <> "", pageOffset, images.Count)
 							image.TempLocation = copyfile
 						Else
-							Me.CreateImageLogEntry(image.BatesNumber, image.SourceLocation, image.SourceLocation, i = 0, fullTextReader, localFullTextPath <> "", pageOffset, images.Count)
+							Me.CreateImageLogEntry(image.BatesNumber, image.SourceLocation, image.SourceLocation, i + 1, fullTextReader, localFullTextPath <> "", pageOffset, images.Count)
 						End If
 						i += 1
 					Next
@@ -585,22 +585,22 @@ Namespace kCura.WinEDDS
 					Return c.ToString
 			End Select
 		End Function
-		Private Sub CreateImageLogEntry(ByVal batesNumber As String, ByVal copyFile As String, ByVal pathToImage As String, ByVal firstDocument As Boolean, ByVal fullTextReader As System.IO.StreamReader, ByVal expectingTextForPage As Boolean, ByVal pageOffset As Long, ByVal numberOfImages As Int32)
+		Private Sub CreateImageLogEntry(ByVal batesNumber As String, ByVal copyFile As String, ByVal pathToImage As String, ByVal pageNumber As Int32, ByVal fullTextReader As System.IO.StreamReader, ByVal expectingTextForPage As Boolean, ByVal pageOffset As Long, ByVal numberOfImages As Int32)
 			Dim fullTextGuid As String
 			Dim fullText As String
 			'Dim currentPage As Int32 = count
 			Select Case _settings.LogFileFormat
 				Case LoadFileType.FileFormat.Opticon
-					Me.WriteOpticonLine(batesNumber, firstDocument, copyFile, numberOfImages)
+					Me.WriteOpticonLine(batesNumber, pageNumber = 1, copyFile, numberOfImages)
 				Case LoadFileType.FileFormat.IPRO
-					Me.WriteIproImageLine(batesNumber, firstDocument, copyFile)
+					Me.WriteIproImageLine(batesNumber, pageNumber, copyFile)
 				Case LoadFileType.FileFormat.IPRO_FullText
 					Dim currentPageFirstByteNumber As Long
 					If fullTextReader Is Nothing Then
-						If firstDocument AndAlso expectingTextForPage Then _parent.WriteWarning(String.Format("Could not retrieve full text for document '{0}'", batesNumber))
+						If pageNumber = 1 AndAlso expectingTextForPage Then _parent.WriteWarning(String.Format("Could not retrieve full text for document '{0}'", batesNumber))
 					Else
 						Dim pageText As New System.Text.StringBuilder
-						If firstDocument Then
+						If pageNumber = 1 Then
 							currentPageFirstByteNumber = 0
 						Else
 							currentPageFirstByteNumber = fullTextReader.BaseStream.Position
@@ -644,31 +644,14 @@ Namespace kCura.WinEDDS
 						'pageText = pageText.Replace(" ", "|0|0|0|0^")
 						'_imageFileWriter.WriteLine(String.Format("FT,{0},1,1,{1}", batesNumber, pageText.ToString))
 					End If
-					Me.WriteIproImageLine(batesNumber, firstDocument, copyFile)
+					Me.WriteIproImageLine(batesNumber, pageNumber, copyFile)
 			End Select
 
 		End Sub
 
-		Private Sub WriteIproImageLine(ByVal batesNumber As String, ByVal firstDocument As Boolean, ByVal copyFile As String)
-			Dim log As New System.Text.StringBuilder
-
-			log.AppendFormat("IM,{0},", batesNumber)
-			If firstDocument Then
-				log.Append("D,")
-			Else
-				log.Append(" ,")
-			End If
-			Dim pti As String = ""
-			Dim filename As String = ""
-			If copyFile.LastIndexOf("\"c) = -1 Then
-				pti = ""
-				filename = copyFile
-			Else
-				pti = copyFile.Substring(0, copyFile.LastIndexOf("\"c))
-				filename = copyFile.Substring(copyFile.LastIndexOf("\") + 1)
-			End If
-			log.AppendFormat("0,{0};{1};{2};2", Me.CurrentVolumeLabel, pti, filename)
-			_imageFileWriter.WriteLine(log.ToString)
+		Private Sub WriteIproImageLine(ByVal batesNumber As String, ByVal pageNumber As Int32, ByVal fullFilePath As String)
+			Dim linefactory As New Exporters.LineFactory.SimpleIproImageLineFactory(batesNumber, pageNumber, fullFilePath, Me.CurrentVolumeLabel, Me.Settings.TypeOfImage)
+			linefactory.WriteLine(_imageFileWriter)
 		End Sub
 
 		Private Sub WriteOpticonLine(ByVal batesNumber As String, ByVal firstDocument As Boolean, ByVal copyFile As String, ByVal imageCount As Int32)

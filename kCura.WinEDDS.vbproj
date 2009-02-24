@@ -1,7 +1,7 @@
 <VisualStudioProject>
     <VisualBasic
         ProjectType = "Local"
-        ProductVersion = "7.10.6030"
+        ProductVersion = "7.10.3077"
         SchemaVersion = "2.0"
         ProjectGuid = "{F16A2219-5DAC-4F2B-89B0-6BD1243CBF8F}"
     >
@@ -259,6 +259,21 @@
                 />
                 <File
                     RelPath = "Exporters\VolumeManager.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Exporters\LineFactory\ImageLineFactoryBase.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Exporters\LineFactory\LineFactoryBase.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Exporters\LineFactory\SimpleIproImageLineFactory.vb"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
