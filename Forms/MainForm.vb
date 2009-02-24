@@ -330,18 +330,18 @@ Namespace kCura.EDDS.WinForm
 
     Friend WithEvents _application As kCura.EDDS.WinForm.Application
 
-		Private Sub OpenRepositoryMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles OpenRepositoryMenu.Click
-			_application.OpenCase()
-		End Sub
+    Private Sub OpenRepositoryMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles OpenRepositoryMenu.Click
+      _application.OpenCase()
+    End Sub
 
-		Private Sub ExitMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ExitMenu.Click
-			_application.ExitApplication()
-		End Sub
+    Private Sub ExitMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ExitMenu.Click
+      _application.ExitApplication()
+    End Sub
 
-		Private Sub _application_OnEvent(ByVal appEvent As AppEvent) Handles _application.OnEvent
-			Select Case appEvent.EventType
-				Case appEvent.AppEventType.LoadCase
-					_fileMenuRefresh.Enabled = True
+    Private Sub _application_OnEvent(ByVal appEvent As AppEvent) Handles _application.OnEvent
+      Select Case appEvent.EventType
+        Case appEvent.AppEventType.LoadCase
+          _fileMenuRefresh.Enabled = True
           UpdateStatus("Case Loaded - File Transfer Mode: " & _application.GetConnectionStatus)
           PopulateObjectTypeDropDown()
         Case appEvent.AppEventType.LogOn
@@ -353,29 +353,29 @@ Namespace kCura.EDDS.WinForm
           ExportMenu.Enabled = True
           'UpdateStatus("Case Folder Load: " + _application.SelectedCaseInfo.RootFolderID.ToString)
       End Select
-		End Sub
+    End Sub
 
-		Private Sub UpdateStatus(ByVal text As String)
-			AppStatusPanel.Text = text
-		End Sub
+    Private Sub UpdateStatus(ByVal text As String)
+      AppStatusPanel.Text = text
+    End Sub
 
-		Private Sub UpdateUserName(ByVal text As String)
-			LoggedInUserPanel.Text = text
-		End Sub
+    Private Sub UpdateUserName(ByVal text As String)
+      LoggedInUserPanel.Text = text
+    End Sub
 
-		Private Sub MainForm_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles MyBase.Load
-			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
-			If kCura.WinEDDS.Config.WebServiceURL = String.Empty Then
-				_application.SetWebServiceURL()
-			End If
+    Private Sub MainForm_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles MyBase.Load
+      Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
+      If kCura.WinEDDS.Config.WebServiceURL = String.Empty Then
+        _application.SetWebServiceURL()
+      End If
 
-			If Not _application.DefaultCredentialsAreGood() Then
-				_application.NewLogin()
-			Else
+      If Not _application.DefaultCredentialsAreGood() Then
+        _application.NewLogin()
+      Else
         _application.LogOn()
         _application.OpenCase()
-				kCura.Windows.Forms.EnhancedMenuProvider.Hook(Me)
-			End If
+        kCura.Windows.Forms.EnhancedMenuProvider.Hook(Me)
+      End If
       Me.Cursor = System.Windows.Forms.Cursors.Default
     End Sub
 
@@ -464,34 +464,36 @@ Namespace kCura.EDDS.WinForm
 
     Private Sub PopulateObjectTypeDropDown()
       Dim objectTypeManager As New kCura.WinEDDS.Service.ObjectTypeManager(_application.Credential, _application.CookieContainer)
-			Dim uploadableObjectTypes As System.Data.DataRowCollection = objectTypeManager.RetrieveAllUploadable(_application.SelectedCaseInfo.ArtifactID).Tables(0).Rows
-			Dim selectedObjectTypeID As Int32 = 10
-			If _objectTypeDropDown.Items.Count > 0 Then
-				selectedObjectTypeID = DirectCast(_objectTypeDropDown.SelectedItem, kCura.WinEDDS.ObjectTypeListItem).Value
-			End If
-			_objectTypeDropDown.Items.Clear()
-			For Each objectType As System.Data.DataRow In uploadableObjectTypes
-				Dim currentObjectType As New kCura.WinEDDS.ObjectTypeListItem(CType(objectType("DescriptorArtifactTypeID"), Int32), CType(objectType("Name"), String))
-				_objectTypeDropDown.Items.Add(currentObjectType)
-				If CType(objectType("DescriptorArtifactTypeID"), Int32) = selectedObjectTypeID Then
-					Me._objectTypeDropDown.SelectedItem = currentObjectType
-				End If
-			Next
+      Dim uploadableObjectTypes As System.Data.DataRowCollection = objectTypeManager.RetrieveAllUploadable(_application.SelectedCaseInfo.ArtifactID).Tables(0).Rows
+      Dim selectedObjectTypeID As Int32 = 10
+      If _objectTypeDropDown.Items.Count > 0 Then
+        selectedObjectTypeID = DirectCast(_objectTypeDropDown.SelectedItem, kCura.WinEDDS.ObjectTypeListItem).Value
+      End If
+      _objectTypeDropDown.Items.Clear()
+      For Each objectType As System.Data.DataRow In uploadableObjectTypes
+        Dim currentObjectType As New kCura.WinEDDS.ObjectTypeListItem(CType(objectType("DescriptorArtifactTypeID"), Int32), CType(objectType("Name"), String))
+        _objectTypeDropDown.Items.Add(currentObjectType)
+        If CType(objectType("DescriptorArtifactTypeID"), Int32) = selectedObjectTypeID Then
+          Me._objectTypeDropDown.SelectedItem = currentObjectType
+        End If
+      Next
     End Sub
 
     Private Sub _objectTypeDropDown_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _objectTypeDropDown.SelectedIndexChanged
       Dim selectedItemValue As Int32 = DirectCast(_objectTypeDropDown.SelectedItem, kCura.WinEDDS.ObjectTypeListItem).Value
-      ToolsImportLoadFileMenu.Text = _objectTypeDropDown.Text & " Load File"
+      ToolsImportLoadFileMenu.Text = _objectTypeDropDown.Text & " &Load File..."
       If selectedItemValue = 10 Then
         _caseFolderExplorer.Visible = True
         ToolsImportImageFileMenu.Visible = True
         ToolsImportProductionFileMenu.Visible = True
         ExportMenu.Visible = True
       Else
+        'setting ExportMenu.Visible to True then False helps to resize the ToolsImportLoadFileMenu according to the length of its text
+        ExportMenu.Visible = True
+        ExportMenu.Visible = False
         _caseFolderExplorer.Visible = False
         ToolsImportImageFileMenu.Visible = False
         ToolsImportProductionFileMenu.Visible = False
-        ExportMenu.Visible = False
       End If
       _application.ArtifactTypeID = selectedItemValue
     End Sub
