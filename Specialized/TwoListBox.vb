@@ -171,12 +171,34 @@ Namespace kCura.Windows.Forms
 #End Region
 
 		Private _buttonsCentered As Boolean
+		Private _alternateRowColors As Boolean = False
+
+		Public Property AlternateRowColors() As Boolean
+			Get
+				Return _alternateRowColors
+			End Get
+			Set(ByVal Value As Boolean)
+				_alternateRowColors = Value
+			End Set
+		End Property
 
 		Private Sub MoveAllItems(ByVal giver As System.Windows.Forms.ListBox, ByVal receiver As System.Windows.Forms.ListBox)
 			receiver.Items.AddRange(giver.Items)
 			giver.Items.Clear()
+
 			RaiseEvent ItemsShifted()
 		End Sub
+
+		Private Sub PaintRowColors(ByVal giver As System.Windows.Forms.ListBox, ByVal receiver As System.Windows.Forms.ListBox)
+			For i As Int32 = 0 To giver.Items.Count
+				If i Mod 2 = 0 Then
+					Dim x As Int32 = 0
+				Else
+
+				End If
+			Next
+		End Sub
+
 
 		Private Sub ShiftSelectedItems(ByVal giver As System.Windows.Forms.ListBox, ByVal receiver As System.Windows.Forms.ListBox)
 			If giver.SelectedItems.Count > 0 Then
@@ -356,5 +378,31 @@ Namespace kCura.Windows.Forms
 			ShiftSelectedItems(_rightListBox, _leftListBox)
 		End Sub
 
+		Private Sub _leftListBox_DrawItem(ByVal sender As Object, ByVal e As System.Windows.Forms.DrawItemEventArgs) Handles _leftListBox.DrawItem
+			Me.DrawBox(_leftListBox, e)
+		End Sub
+
+		Private Sub _rightListBox_DrawItem(ByVal sender As Object, ByVal e As System.Windows.Forms.DrawItemEventArgs) Handles _rightListBox.DrawItem
+			Me.DrawBox(_rightListBox, e)
+		End Sub
+
+		Private Sub DrawBox(ByVal listBox As System.Windows.Forms.ListBox, ByVal e As System.Windows.Forms.DrawItemEventArgs)
+			If e.Index < 0 Then Exit Sub
+			Dim x As New System.Windows.Forms.DrawItemEventArgs(e.Graphics, e.Font, e.Bounds, e.Index, e.State, e.ForeColor, System.Drawing.Color.LightGray)
+			If e.Index Mod 2 = 1 Then
+				e = x
+			End If
+			Dim brush As New System.Drawing.SolidBrush(e.ForeColor)
+			e.DrawBackground()
+			e.Graphics.DrawString(listBox.Items(e.Index).ToString, e.Font, brush, e.Bounds.X, e.Bounds.Y)
+			e.DrawFocusRectangle()
+		End Sub
+
+		Private Sub TwoListBox_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles MyBase.Load
+			If _alternateRowColors Then
+				_leftListBox.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed
+				_rightListBox.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed
+			End If
+		End Sub
 	End Class
 End Namespace
