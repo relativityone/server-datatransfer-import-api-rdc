@@ -201,7 +201,13 @@ Namespace kCura.WinEDDS
 
     Public Overridable Function GetMultiCode(ByVal value As String, ByVal column As Int32, ByVal field As DocumentField, ByVal forPreview As Boolean) As NullableTypes.NullableInt32()
 			Try
-				Dim codeDisplayNames As String() = value.Split(_multiValueSeparator)
+				Dim al As New System.Collections.ArrayList(value.Split(_multiValueSeparator))
+				Dim goodCodes As New System.Collections.ArrayList
+				For Each codeString As String In al
+					codeString = codeString.Trim
+					If codeString <> "" Then goodCodes.Add(codeString)
+				Next
+				Dim codeDisplayNames As String() = DirectCast(goodCodes.ToArray(GetType(String)), String())
 				Dim i As Int32
 				Dim hierarchicCodeManager As Service.IHierarchicArtifactManager
 				If forPreview Then

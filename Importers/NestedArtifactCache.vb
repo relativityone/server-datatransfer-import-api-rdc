@@ -11,14 +11,25 @@ Namespace kCura.WinEDDS
 		Public ReadOnly Property SelectedIds(ByVal artifactPath As String) As Int32()
 			Get
 				Dim artifactVal As Int32 = -1
-				If _ht.ContainsKey(artifactPath) Then
-					artifactVal = DirectCast(_ht(artifactPath), ArtifactCacheItem).ArtifactID
+				Dim strings As String() = artifactPath.Trim(_nestedItemDelimiter.ToCharArray).Split(_nestedItemDelimiter.ToCharArray)
+				Dim goodArtifacts As New System.Collections.ArrayList
+				For Each name As String In strings
+					If name.Trim <> "" Then goodArtifacts.Add(name.Trim)
+				Next
+				strings = DirectCast(goodArtifacts.ToArray(GetType(String)), String())
+				If strings.Length = 0 Then Return New Int32() {}
+				Dim sb As New System.Text.StringBuilder
+				For Each s As String In strings
+					sb.Append(_nestedItemDelimiter & s)
+				Next
+				Dim cleansedArtifactPath As String = sb.ToString
+				If _ht.ContainsKey(cleansedArtifactPath) Then
+					artifactVal = DirectCast(_ht(cleansedArtifactPath), ArtifactCacheItem).ArtifactID
 				Else
-					Dim newArtifact As ArtifactCacheItem = Me.GetNewArtifact(artifactPath)
-					If Not _ht.ContainsKey(artifactPath) Then _ht.Add(artifactPath, newArtifact)
+					Dim newArtifact As ArtifactCacheItem = Me.GetNewArtifact(cleansedArtifactPath)
+					If Not _ht.ContainsKey(cleansedArtifactPath) Then _ht.Add(cleansedArtifactPath, newArtifact)
 					artifactVal = newArtifact.ArtifactID
 				End If
-				Dim strings As String() = artifactPath.Trim(_nestedItemDelimiter.ToCharArray).Split(_nestedItemDelimiter.ToCharArray)
 				Dim retval As New System.Collections.ArrayList
 				If strings.Length = 1 Then Return New Int32() {artifactVal}
 				Dim keyLookup As String = ""
