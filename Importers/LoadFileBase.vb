@@ -361,48 +361,38 @@ Namespace kCura.WinEDDS
 								field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(GetNullableFixedString(value, column, field.FieldLength.Value))
 						End Select
         Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Object
-						Dim textIdentifier As String = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(kCura.Utility.NullableTypesHelper.ToNullableString(value))
-						If textIdentifier <> "" Then
-							Dim targetObjectTable As System.Data.DataTable = _objectManager.RetrieveArtifactIdOfMappedObject(_caseArtifactID, textIdentifier, field.FieldID).Tables(0)
-							If targetObjectTable.Rows.Count > 1 Then
-								Throw New DuplicateObjectReferenceException(Me.CurrentLineNumber, column, field.FieldName)
-							ElseIf targetObjectTable.Rows.Count = 0 Then
-								Throw New NonExistentObjectReferenceException(Me.CurrentLineNumber, column, field.FieldName)
-							Else
-								field.Value = CType(targetObjectTable.Rows(0)("ArtifactID"), String)
-								If forPreview Then field.Value = value.Trim
-							End If
-						End If
+          field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(GetNullableAssociatedObjectName(value, column, 255, field.FieldName))
+          If forPreview Then field.Value = value.Trim
         Case Else    'FieldTypeHelper.FieldType.Text
-						If field.FieldCategory = DynamicFields.Types.FieldCategory.FullText AndAlso _fullTextColumnMapsToFileLocation Then
-							If value = "" Then
-								field.Value = ""
-							ElseIf Not System.IO.File.Exists(value) Then
-								Throw New MissingFullTextFileException(Me.CurrentLineNumber, column)
-							Else
-								If forPreview Then
-									Dim sr As New System.IO.StreamReader(value, _extractedTextFileEncoding)
-									Dim i As Int32 = 0
-									Dim sb As New System.Text.StringBuilder
-									While sr.Peek <> -1 AndAlso i < 100
-										sb.Append(ChrW(sr.Read))
-										i += 1
-									End While
-									If i = 100 Then sb.Append("...")
-									sr.Close()
-									sb = sb.Replace(System.Environment.NewLine, Me.NewlineProxy).Replace(ChrW(10), Me.NewlineProxy).Replace(ChrW(13), Me.NewlineProxy)
-									field.Value = sb.ToString
-								Else
-									field.Value = value
-								End If
-							End If
-						Else
-							If value.Length > 100 AndAlso forPreview Then
-								field.Value = value.Substring(0, 100) & "...."
-							Else
-								field.Value = value
-							End If
-						End If
+          If field.FieldCategory = DynamicFields.Types.FieldCategory.FullText AndAlso _fullTextColumnMapsToFileLocation Then
+            If value = "" Then
+              field.Value = ""
+            ElseIf Not System.IO.File.Exists(value) Then
+              Throw New MissingFullTextFileException(Me.CurrentLineNumber, column)
+            Else
+              If forPreview Then
+                Dim sr As New System.IO.StreamReader(value, _extractedTextFileEncoding)
+                Dim i As Int32 = 0
+                Dim sb As New System.Text.StringBuilder
+                While sr.Peek <> -1 AndAlso i < 100
+                  sb.Append(ChrW(sr.Read))
+                  i += 1
+                End While
+                If i = 100 Then sb.Append("...")
+                sr.Close()
+                sb = sb.Replace(System.Environment.NewLine, Me.NewlineProxy).Replace(ChrW(10), Me.NewlineProxy).Replace(ChrW(13), Me.NewlineProxy)
+                field.Value = sb.ToString
+              Else
+                field.Value = value
+              End If
+            End If
+          Else
+            If value.Length > 100 AndAlso forPreview Then
+              field.Value = value.Substring(0, 100) & "...."
+            Else
+              field.Value = value
+            End If
+          End If
       End Select
     End Sub
 
@@ -536,13 +526,6 @@ Namespace kCura.WinEDDS
       Inherits kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
       Public Sub New(ByVal row As Int32, ByVal column As Int32, ByVal fieldName As String)
         MyBase.New(row, column, String.Format("Object identifier for field {0} references an identifier that is not unique.", fieldName))
-      End Sub
-    End Class
-
-    Public Class NonExistentObjectReferenceException
-      Inherits kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
-      Public Sub New(ByVal row As Int32, ByVal column As Int32, ByVal fieldName As String)
-        MyBase.New(row, column, String.Format("Object identifier for field {0} references an object that does not exist.", fieldName))
       End Sub
     End Class
 

@@ -370,8 +370,6 @@ Namespace kCura.WinEDDS
             textIdentifier, _artifactTypeID).Tables(0)
             If parentObjectTable.Rows.Count > 1 Then
               Throw New DuplicateObjectReferenceException(Me.CurrentLineNumber, _destinationFolderColumnIndex, "Parent Info")
-            ElseIf parentObjectTable.Rows.Count = 0 Then
-              Throw New NonExistentObjectReferenceException(Me.CurrentLineNumber, _destinationFolderColumnIndex, "Parent Info")
             Else
               parentFolderID = CType(parentObjectTable.Rows(0)("ArtifactID"), Int32)
             End If
@@ -752,11 +750,10 @@ Namespace kCura.WinEDDS
 							End If
 							location = System.Web.HttpUtility.UrlEncode(location)
 							docfield.Value = String.Format("{1}{0}{2}{0}{3}", ChrW(11), fileName, fileSize, location)
-							Dim blah As String = ""
-						Else
+            Else
               Throw New System.IO.FileNotFoundException(String.Format("File '{0}' not found.", localFilePath))
             End If
-					Else
+          Else
 						MyBase.SetFieldValue(docfield, values, item.NativeFileColumnIndex, identityValue)
 					End If
 					If docfield.FieldName = _selectedIdentifier.FieldName Then

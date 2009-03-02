@@ -279,9 +279,6 @@ Namespace kCura.WinEDDS
           If parentObjectTable.Rows.Count > 1 Then
             docField.Value = New DuplicateObjectReferenceException(Me.CurrentLineNumber, parentObjectIdentifierIndex, "Parent Info").Message
             lineContainsErrors = True
-          ElseIf parentObjectTable.Rows.Count = 0 Then
-            docField.Value = New NonExistentObjectReferenceException(Me.CurrentLineNumber, parentObjectIdentifierIndex, "Parent Info").Message
-            lineContainsErrors = True
           End If
         End If
         retval.Add(docfield)
