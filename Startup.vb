@@ -28,6 +28,12 @@ Namespace kCura.EDDS.WinForm
 		Private SelectedCasePath As String = ""
 		Private CopyFilesToDocumentRepository As Boolean = True
 		Private DestinationFolderID As Int32
+		Private RunningDirectory As String = System.IO.Directory.GetCurrentDirectory
+		Private ExportErrorReportFile As Boolean = False
+		Private ExportErrorLoadFile As Boolean = False
+		Private ErrorReportFileLocation As String = ""
+		Private ErrorLoadFileLocation As String = ""
+
 #End Region
 
 #Region " Enumerations "
@@ -127,6 +133,9 @@ Namespace kCura.EDDS.WinForm
 				SetSelectedCasePath(GetValueFromCommandListByFlag(commandList, "r"))
 				SetCopyFilesToDocumentRepository(GetValueFromCommandListByFlag(commandList, "l"))
 				SetDestinationFolderID(GetValueFromCommandListByFlag(commandList, "d"))
+				SetExportErrorReportLocation(commandList)
+				SetExportErrorFileLocation(commandList)
+				Console.ReadLine()
 				Select Case CurrentLoadMode
 					Case LoadMode.Image
 						RunImageImport()
@@ -162,8 +171,9 @@ Namespace kCura.EDDS.WinForm
 				SelectedNativeLoadFile.DestinationFolderID = DestinationFolderID
 				importer.LoadFile = SelectedNativeLoadFile
 				importer.TimeZoneOffset = _application.TimeZoneOffset
+				SelectedNativeLoadFile.ArtifactTypeID = 10
 				_application.SetWorkingDirectory(SelectedNativeLoadFile.FilePath)
-				Dim executor As New kCura.EDDS.WinForm.CommandLineProcessRunner(importer.ProcessObserver, importer.ProcessController)
+				Dim executor As New kCura.EDDS.WinForm.CommandLineProcessRunner(importer.ProcessObserver, importer.ProcessController, ErrorLoadFileLocation, ErrorReportFileLocation)
 				_application.StartProcess(importer)
 			End If
 		End Sub
@@ -178,7 +188,7 @@ Namespace kCura.EDDS.WinForm
 			SelectedImageLoadFile.FullTextEncoding = ExtractedTextFileEncoding
 			importer.ImageLoadFile = SelectedImageLoadFile
 			_application.SetWorkingDirectory(SelectedImageLoadFile.FileName)
-			Dim executor As New kCura.EDDS.WinForm.CommandLineProcessRunner(importer.ProcessObserver, importer.ProcessController)
+			Dim executor As New kCura.EDDS.WinForm.CommandLineProcessRunner(importer.ProcessObserver, importer.ProcessController, ErrorLoadFileLocation, ErrorReportFileLocation)
 			_application.StartProcess(importer)
 		End Sub
 
@@ -204,6 +214,53 @@ Namespace kCura.EDDS.WinForm
 			HasSetCaseInfo = True
 		End Sub
 
+		Private Sub SetExportErrorReportLocation(ByVal commandLine As kCura.CommandLine.CommandList)
+			For Each command As kCura.CommandLine.Command In commandLine
+				If command.Directive.ToLower.Replace("-", "").Replace("/", "") = "er" Then
+					ExportErrorReportFile = True
+					If command.Value Is Nothing OrElse command.Value = "" Then
+						ErrorReportFileLocation = RunningDirectory.TrimEnd("\".ToCharArray) & "\ErrorReport_" & System.DateTime.Now.Ticks.ToString & ".csv"
+					Else
+						ErrorReportFileLocation = String.Copy(command.Value)
+					End If
+					Try
+						If Not System.IO.Directory.Exists(System.IO.Path.GetDirectoryName(ErrorReportFileLocation)) Then System.IO.Directory.CreateDirectory(System.IO.Path.GetDirectoryName(ErrorReportFileLocation))
+						System.IO.File.Create(ErrorReportFileLocation).Close()
+						System.IO.File.Delete(ErrorReportFileLocation)
+					Catch ex As Exception
+						Throw New InvalidPathLocationException(ErrorReportFileLocation, "error report")
+					End Try
+					'Return command.Value
+				End If
+			Next
+			If Not ExportErrorReportFile Then ErrorReportFileLocation = ""
+		End Sub
+		Private Sub SetExportErrorFileLocation(ByVal commandLine As kCura.CommandLine.CommandList)
+			For Each command As kCura.CommandLine.Command In commandLine
+				If command.Directive.ToLower.Replace("-", "").Replace("/", "") = "ef" Then
+					ExportErrorLoadFile = True
+					If command.Value Is Nothing OrElse command.Value = "" Then
+						Dim extension As String = System.IO.Path.GetExtension(_loadFilePath)
+						If extension Is Nothing Then extension = "txt"
+						extension = extension.TrimStart(".".ToCharArray)
+						ErrorLoadFileLocation = RunningDirectory.TrimEnd("\".ToCharArray) & "\ErrorLines_" & System.DateTime.Now.Ticks.ToString & "." & extension
+					Else
+						ErrorLoadFileLocation = String.Copy(command.Value)
+					End If
+					Try
+						If Not System.IO.Directory.Exists(System.IO.Path.GetDirectoryName(ErrorLoadFileLocation)) Then System.IO.Directory.CreateDirectory(System.IO.Path.GetDirectoryName(ErrorLoadFileLocation))
+						System.IO.File.Create(ErrorLoadFileLocation).Close()
+						System.IO.File.Delete(ErrorLoadFileLocation)
+					Catch ex As Exception
+						Throw New InvalidPathLocationException(ErrorReportFileLocation, "error file")
+					End Try
+					'Return command.Value
+				End If
+			Next
+			If Not ExportErrorLoadFile Then ErrorLoadFileLocation = ""
+		End Sub
+
+
 		Private Sub SetSavedMapLocation(ByVal path As String)
 			Try
 				If Not System.IO.File.Exists(path) Then Throw New SavedSettingsFilePathException(path)
@@ -224,9 +281,9 @@ Namespace kCura.EDDS.WinForm
 						tempLoadFile.Credentials = _application.Credential
 						tempLoadFile.DestinationFolderID = 35
 						tempLoadFile.ExtractedTextFileEncoding = System.Text.Encoding.Unicode
-            tempLoadFile.SourceFileEncoding = System.Text.Encoding.Default
-            'TODO: Have ArtifactTypeID be passed in on command line, currently hardcoding to 10
-            tempLoadFile.SelectedIdentifierField = _application.CurrentFields(10, True).IdentifierFields(0)
+						tempLoadFile.SourceFileEncoding = System.Text.Encoding.Default
+						'TODO: Have ArtifactTypeID be passed in on command line, currently hardcoding to 10
+						tempLoadFile.SelectedIdentifierField = _application.CurrentFields(10, True).IdentifierFields(0)
 						Dim mapItemToRemove As LoadFileFieldMap.LoadFileFieldMapItem
 						If tempLoadFile.GroupIdentifierColumn = "" AndAlso System.IO.File.Exists(tempLoadFile.FilePath) Then
 							Dim fieldMapItem As kCura.WinEDDS.LoadFileFieldMap.LoadFileFieldMapItem
@@ -311,13 +368,13 @@ Namespace kCura.EDDS.WinForm
 				Try
 					folderExists = folderManager.Exists(SelectedCaseInfo.ArtifactID, Int32.Parse(value))
 				Catch
-        End Try
-        If folderExists Then
-          DestinationFolderID = Int32.Parse(value)
-        Else
-          Throw New FolderIdException(value)
-        End If
-      End If
+				End Try
+				If folderExists Then
+					DestinationFolderID = Int32.Parse(value)
+				Else
+					Throw New FolderIdException(value)
+				End If
+			End If
 
 		End Sub
 
@@ -332,6 +389,7 @@ Namespace kCura.EDDS.WinForm
 			End Select
 			If Not HasSetLoadMode Then Throw New NoLoadTypeModeSetException
 		End Sub
+
 
 #End Region
 
@@ -441,6 +499,14 @@ Namespace kCura.EDDS.WinForm
 			MyBase.New(String.Format("There is no folder in the selected case with the id '{0}'", id))
 		End Sub
 	End Class
+
+	Public Class InvalidPathLocationException
+		Inherits RdcBaseException
+		Public Sub New(ByVal path As String, ByVal type As String)
+			MyBase.New(String.Format("The {0} path {1} is invalid", type, path))
+		End Sub
+	End Class
+
 
 #End Region
 

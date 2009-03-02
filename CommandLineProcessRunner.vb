@@ -4,10 +4,19 @@ Namespace kCura.EDDS.WinForm
 		Private WithEvents _controller As kCura.Windows.Process.Controller
 		Private _lastUpdated As Long = 0
 		Private _hasReceivedFatalError As Boolean = False
-		Public Sub New(ByVal observer As kCura.Windows.Process.ProcessObserver, ByVal controller As kCura.Windows.Process.Controller)
+		Private _hasReceivedLineError As Boolean = False
+		Private _hasReceivedLineWarning As Boolean = False
+		Private _exportErrorReportLocation As String = ""
+		Private _exportErrorFileLocation As String = ""
+
+		Public Sub New(ByVal observer As kCura.Windows.Process.ProcessObserver, ByVal controller As kCura.Windows.Process.Controller, ByVal exportErrorFileLocation As String, ByVal exportErrorReportLocation As String)
 			_observer = observer
 			_controller = controller
+			If Not exportErrorFileLocation Is Nothing Then _exportErrorFileLocation = exportErrorFileLocation
+			If Not exportErrorReportLocation Is Nothing Then _exportErrorReportLocation = exportErrorReportLocation
 		End Sub
+
+
 
 		Private Sub _observer_OnProcessEvent(ByVal evt As kCura.Windows.Process.ProcessEvent) Handles _observer.OnProcessEvent
 			Select Case evt.Type
@@ -15,8 +24,10 @@ Namespace kCura.EDDS.WinForm
 					WriteLine(evt.Message + " " + evt.RecordInfo)
 				Case kCura.Windows.Process.ProcessEventTypeEnum.Error
 					WriteLine("[Line Error] " & evt.Message)
+					_hasReceivedLineError = True
 				Case kCura.Windows.Process.ProcessEventTypeEnum.Warning
 					WriteLine("[Line Warning] " & evt.Message)
+					_hasReceivedLineWarning = True
 			End Select
 		End Sub
 
@@ -31,21 +42,30 @@ Namespace kCura.EDDS.WinForm
 		Private Sub _observer_OnProcessComplete(ByVal closeForm As Boolean, ByVal exportFilePath As String, ByVal exportLog As Boolean) Handles _observer.OnProcessComplete
 			If _hasReceivedFatalError Then
 				WriteLine("Fatal Exception Encountered")
+			ElseIf Not _hasReceivedLineError AndAlso Not _hasReceivedLineWarning Then
+				WriteLine("All records have been successfully processed")
 			Else
-				WriteLine("All records have been processed")
+				Dim x As String = ""
+				If _hasReceivedLineWarning Then x &= ("Some records were processed with warnings" & vbNewLine)
+				If _hasReceivedLineError Then x &= ("Some records were not processed due to errors" & vbNewLine)
+				WriteLine(x)
 			End If
-			If exportFilePath <> "" Then
-				WriteLine("Errors have occurred. Export error files? (y/n)")
-				Dim resp As String = ChrW(Console.Read)
-				If resp.ToLower = "y" Then
-					Dim folderPath As String = System.IO.Directory.GetCurrentDirectory
-					If Not folderPath = "" Then
-						folderPath = folderPath.TrimEnd("\"c) & "\"
-						_controller.ExportServerErrors(folderPath)
-					End If
-				End If
-			Else
+			If _hasReceivedLineError Then
+				If _exportErrorFileLocation <> "" Then _controller.ExportErrorFile(_exportErrorFileLocation)
+				If _exportErrorReportLocation <> "" Then _controller.ExportErrorReport(_exportErrorReportLocation)
 			End If
+			'If exportFilePath <> "" Then
+			'	WriteLine("Errors have occurred. Export error files? (y/n)")
+			'	Dim resp As String = ChrW(Console.Read)
+			'	If resp.ToLower = "y" Then
+			'		Dim folderPath As String = System.IO.Directory.GetCurrentDirectory
+			'		If Not folderPath = "" Then
+			'			folderPath = folderPath.TrimEnd("\"c) & "\"
+			'			_controller.ExportServerErrors(folderPath)
+			'		End If
+			'	End If
+			'Else
+			'End If
 		End Sub
 
 		Private Sub _observer_OnProcessFatalException(ByVal ex As System.Exception) Handles _observer.OnProcessFatalException
