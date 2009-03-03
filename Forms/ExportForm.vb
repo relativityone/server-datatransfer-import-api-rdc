@@ -1328,7 +1328,7 @@ Public Class ExportForm
 		End Get
 	End Property
 
-	Private Sub _nativeFileFormat_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs)
+	Private Sub _nativeFileFormat_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _nativeFileFormat.SelectedIndexChanged
 		Select Case _nativeFileFormat.SelectedItem.ToString
 			Case "Comma-separated (.csv)"
 				Me.ToggleLoadFileCharacterInformation(False)
@@ -1559,4 +1559,5 @@ Public Class ExportForm
 		_imageTypeDropdown.Enabled = _exportImages.Checked And _copyFilesFromRepository.Checked
 		RunMenu.Enabled = ReadyToRun()
 	End Sub
+
 End Class
