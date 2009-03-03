@@ -463,7 +463,7 @@ Namespace kCura.WinEDDS
 						fullTextReader = New System.IO.StreamReader(localFullTextPath, _encoding, True)
 					End If
 				End If
-				If images.Count > 0 AndAlso (Me.Settings.TypeOfImage = ExportFile.ImageType.MultiPageTiff OrElse Me.Settings.TypeOfImage = ExportFile.ImageType.Pdf) AndAlso Me.Settings.LogFileFormat = LoadFileType.FileFormat.Opticon Then
+				If images.Count > 0 AndAlso (Me.Settings.TypeOfImage = ExportFile.ImageType.MultiPageTiff OrElse Me.Settings.TypeOfImage = ExportFile.ImageType.Pdf) Then
 					Dim marker As Exporters.ImageExportInfo = DirectCast(images(0), Exporters.ImageExportInfo)
 					Me.ExportDocumentImage(localFilePath & marker.FileName, marker.FileGuid, marker.ArtifactID, marker.BatesNumber, marker.TempLocation)
 					Dim copyfile As String
@@ -822,7 +822,7 @@ Namespace kCura.WinEDDS
 						End If
 					Else
 						Dim textLocation As String = Me.DownloadTextFieldAsFile(doc, field)
-						Dim sr As New System.IO.StreamReader(fullTextTempFile, System.Text.Encoding.Unicode)
+						Dim sr As New System.IO.StreamReader(textLocation, System.Text.Encoding.Unicode)
 						Dim c As Int32 = sr.Read
 						_nativeFileWriter.Write(_settings.RecordDelimiter)
 						_nativeFileWriter.Write(_settings.QuoteDelimiter)
@@ -843,10 +843,10 @@ Namespace kCura.WinEDDS
 						_nativeFileWriter.Write(_settings.QuoteDelimiter)
 						sr.Close()
 						Try
-							System.IO.File.Delete(fullTextTempFile)
+							System.IO.File.Delete(textLocation)
 						Catch
 							Try
-								System.IO.File.Delete(fullTextTempFile)
+								System.IO.File.Delete(textLocation)
 							Catch
 							End Try
 						End Try
