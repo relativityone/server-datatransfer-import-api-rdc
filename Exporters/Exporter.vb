@@ -152,13 +152,13 @@ Namespace kCura.WinEDDS
 				_timekeeper.MarkStart("Exporter_GetDocumentBlock")
 				Select Case Me.ExportFile.TypeOfExport
 					Case ExportFile.ExportType.ArtifactSearch
-						documentTable = _searchManager.SearchBySearchArtifactID(Me.ExportFile.CaseArtifactID, Me.ExportFile.ArtifactID, start, finish, allAvfIds, True, Me.ExportFile.NestedValueDelimiter).Tables(0)
+						documentTable = _searchManager.SearchBySearchArtifactID(Me.ExportFile.CaseArtifactID, Me.ExportFile.ArtifactID, start, finish, allAvfIds, Me.ExportFile.MulticodesAsNested, Me.ExportFile.NestedValueDelimiter).Tables(0)
 					Case ExportFile.ExportType.ParentSearch
-						documentTable = _searchManager.SearchByParentArtifactID(Me.ExportFile.CaseArtifactID, Me.ExportFile.ArtifactID, False, start, finish, ExportFile.ViewID, allAvfIds, True, Me.ExportFile.NestedValueDelimiter).Tables(0)
+						documentTable = _searchManager.SearchByParentArtifactID(Me.ExportFile.CaseArtifactID, Me.ExportFile.ArtifactID, False, start, finish, ExportFile.ViewID, allAvfIds, Me.ExportFile.MulticodesAsNested, Me.ExportFile.NestedValueDelimiter).Tables(0)
 					Case ExportFile.ExportType.AncestorSearch
-						documentTable = _searchManager.SearchByParentArtifactID(Me.ExportFile.CaseArtifactID, Me.ExportFile.ArtifactID, True, start, finish, ExportFile.ViewID, allAvfIds, True, Me.ExportFile.NestedValueDelimiter).Tables(0)
+						documentTable = _searchManager.SearchByParentArtifactID(Me.ExportFile.CaseArtifactID, Me.ExportFile.ArtifactID, True, start, finish, ExportFile.ViewID, allAvfIds, Me.ExportFile.MulticodesAsNested, Me.ExportFile.NestedValueDelimiter).Tables(0)
 					Case ExportFile.ExportType.Production
-						documentTable = _searchManager.SearchByProductionArtifactID(Me.ExportFile.CaseArtifactID, Me.ExportFile.ArtifactID, start, finish, allAvfIds, True, Me.ExportFile.NestedValueDelimiter).Tables(0)
+						documentTable = _searchManager.SearchByProductionArtifactID(Me.ExportFile.CaseArtifactID, Me.ExportFile.ArtifactID, start, finish, allAvfIds, Me.ExportFile.MulticodesAsNested, Me.ExportFile.NestedValueDelimiter).Tables(0)
 				End Select
 				_timekeeper.MarkEnd("Exporter_GetDocumentBlock")
 				Dim docRow As System.Data.DataRow
