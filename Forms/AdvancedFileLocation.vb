@@ -59,7 +59,7 @@ Namespace kCura.EDDS.WinForm
 			'_cancelButton
 			'
 			Me._cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel
-			Me._cancelButton.Location = New System.Drawing.Point(500, 108)
+			Me._cancelButton.Location = New System.Drawing.Point(548, 104)
 			Me._cancelButton.Name = "_cancelButton"
 			Me._cancelButton.TabIndex = 3
 			Me._cancelButton.Text = "Cancel"
@@ -67,7 +67,7 @@ Namespace kCura.EDDS.WinForm
 			'Label1
 			'
 			Me.Label1.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-			Me.Label1.Location = New System.Drawing.Point(20, 60)
+			Me.Label1.Location = New System.Drawing.Point(12, 52)
 			Me.Label1.Name = "Label1"
 			Me.Label1.Size = New System.Drawing.Size(132, 16)
 			Me.Label1.TabIndex = 4
@@ -76,21 +76,21 @@ Namespace kCura.EDDS.WinForm
 			'_repositories
 			'
 			Me._repositories.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
-			Me._repositories.Location = New System.Drawing.Point(20, 80)
+			Me._repositories.Location = New System.Drawing.Point(12, 72)
 			Me._repositories.Name = "_repositories"
-			Me._repositories.Size = New System.Drawing.Size(504, 21)
+			Me._repositories.Size = New System.Drawing.Size(560, 21)
 			Me._repositories.TabIndex = 9
 			'
 			'_okButton
 			'
-			Me._okButton.Location = New System.Drawing.Point(420, 108)
+			Me._okButton.Location = New System.Drawing.Point(468, 104)
 			Me._okButton.Name = "_okButton"
 			Me._okButton.TabIndex = 2
 			Me._okButton.Text = "OK"
 			'
 			'_defaultButton
 			'
-			Me._defaultButton.Location = New System.Drawing.Point(524, 80)
+			Me._defaultButton.Location = New System.Drawing.Point(572, 72)
 			Me._defaultButton.Name = "_defaultButton"
 			Me._defaultButton.Size = New System.Drawing.Size(50, 21)
 			Me._defaultButton.TabIndex = 10
@@ -109,19 +109,21 @@ Namespace kCura.EDDS.WinForm
 			'
 			'_keepNativeFiles
 			'
+			Me._keepNativeFiles.CheckAlign = System.Drawing.ContentAlignment.TopLeft
 			Me._keepNativeFiles.Location = New System.Drawing.Point(12, 28)
 			Me._keepNativeFiles.Name = "_keepNativeFiles"
-			Me._keepNativeFiles.Size = New System.Drawing.Size(564, 24)
+			Me._keepNativeFiles.Size = New System.Drawing.Size(612, 24)
 			Me._keepNativeFiles.TabIndex = 12
-			Me._keepNativeFiles.Text = "Files already reside on the selected document repository.  Load file contains poi" & _
-			"nters to their location."
+			Me._keepNativeFiles.Text = "Do not copy files to a Relativity Document Repository. Files already reside in a " & _
+			"valid and Relativity-accessible location"
+			Me._keepNativeFiles.TextAlign = System.Drawing.ContentAlignment.TopLeft
 			'
 			'AdvancedFileLocation
 			'
 			Me.AcceptButton = Me._okButton
 			Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
 			Me.CancelButton = Me._cancelButton
-			Me.ClientSize = New System.Drawing.Size(584, 141)
+			Me.ClientSize = New System.Drawing.Size(628, 133)
 			Me.Controls.Add(Me._keepNativeFiles)
 			Me.Controls.Add(Me._copyNativeFiles)
 			Me.Controls.Add(Me._defaultButton)
