@@ -36,6 +36,9 @@ Namespace kCura.WinEDDS
 		Protected _allExportableFields As WinEDDS.ViewFieldInfo()
 		Protected _selectedViewFields As WinEDDS.ViewFieldInfo()
 		Protected _multicodesAsNested As Boolean
+		Protected _selectedTextField As WinEDDS.ViewFieldInfo
+		Protected _loadFileEncoding As System.Text.Encoding
+		Protected _textFileEncoding As System.Text.Encoding
 
 #Region "Public Properties"
 
@@ -356,6 +359,33 @@ Namespace kCura.WinEDDS
 			End Get
 			Set(ByVal value As Boolean)
 				_multicodesAsNested = value
+			End Set
+		End Property
+
+		Public Property SelectedTextField() As WinEDDS.ViewFieldInfo
+			Get
+				Return _selectedTextField
+			End Get
+			Set(ByVal value As WinEDDS.ViewFieldInfo)
+				_selectedTextField = value
+			End Set
+		End Property
+
+		Public Property LoadFileEncoding() As System.Text.Encoding
+			Get
+				Return _loadFileEncoding
+			End Get
+			Set(ByVal value As System.Text.Encoding)
+				_loadFileEncoding = value
+			End Set
+		End Property
+
+		Public Property TextFileEncoding() As System.Text.Encoding
+			Get
+				Return _textFileEncoding
+			End Get
+			Set(ByVal value As System.Text.Encoding)
+				_textFileEncoding = value
 			End Set
 		End Property
 

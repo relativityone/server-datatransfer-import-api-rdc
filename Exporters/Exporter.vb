@@ -22,7 +22,6 @@ Namespace kCura.WinEDDS
 		Private _productionManager As kCura.WinEDDS.Service.ProductionManager
 		Private _exportNativesToFileNamedFrom As kCura.WinEDDS.ExportNativeWithFilenameFrom
 		Private _beginBatesColumn As String = ""
-		Private _exportAsUnicode As Boolean = False
 		Private _timekeeper As New kCura.Utility.Timekeeper
 		Private _productionArtifactIDs As Int32()
 		Private _isEssentialCount As Int32
@@ -72,12 +71,6 @@ Namespace kCura.WinEDDS
 				End If
 			End Get
 		End Property
-		Public ReadOnly Property ExportAsUnicode() As Boolean
-			Get
-				Return _exportAsUnicode
-			End Get
-		End Property
-
 #End Region
 
 #Region "Constructors"
@@ -427,7 +420,6 @@ Namespace kCura.WinEDDS
 			'Next
 			For i As Int32 = 0 To _columns.Count - 1
 				Dim field As ViewFieldInfo = DirectCast(_columns(i), ViewFieldInfo)
-				_exportAsUnicode = _exportAsUnicode OrElse field.IsUnicodeEnabled
 				If _exportFile.LoadFileIsHtml Then
 					retString.AppendFormat("{0}{1}{2}", "<th>", System.Web.HttpUtility.HtmlEncode(field.DisplayName), "</th>")
 				Else
@@ -437,7 +429,6 @@ Namespace kCura.WinEDDS
 				_columnFormats.Add(field.FormatString)
 			Next
 			If _fieldCollectionHasExtractedText AndAlso Not Me.ExportFile.ExportFullText Then
-				_exportAsUnicode = _exportAsUnicode OrElse _searchManager.IsExtractedTextUnicode(Me.ExportFile.CaseArtifactID)
 				Me.ExportFile.ExportFullText = True
 				Me.ExportFile.ExportFullTextAsFile = False
 			End If
@@ -520,7 +511,7 @@ Namespace kCura.WinEDDS
 			RaiseEvent FatalErrorEvent(line, ex)
 		End Sub
 
-		Friend Sub WriteStatusLine(ByVal e As kCura.Windows.Process.EventType, ByVal line As String, isEssential as Boolean)
+		Friend Sub WriteStatusLine(ByVal e As kCura.Windows.Process.EventType, ByVal line As String, ByVal isEssential As Boolean)
 			Dim now As Long = System.DateTime.Now.Ticks
 			If now - _lastStatusMessageTs > 10000000 OrElse isEssential Then
 				_lastStatusMessageTs = now

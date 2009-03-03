@@ -122,11 +122,8 @@ Namespace kCura.WinEDDS
 			If Not Me.Settings.Overwrite AndAlso System.IO.File.Exists(loadFilePath) Then
 				Throw New System.Exception(String.Format("Overwrite not selected and file '{0}' exists.", loadFilePath))
 			End If
-			If _parent.ExportAsUnicode Then
-				_encoding = System.Text.Encoding.Unicode
-			Else
-				_encoding = System.Text.Encoding.Default
-			End If
+			_encoding = Me.Settings.LoadFileEncoding
+
 			_nativeFileWriter = New System.IO.StreamWriter(loadFilePath, False, _encoding)
 			Dim logFileExension As String = ""
 			Select Case Me.Settings.LogFileFormat
@@ -245,31 +242,39 @@ Namespace kCura.WinEDDS
 				_timekeeper.MarkEnd("VolumeManager_DownloadNative")
 			End If
 			Dim tempLocalFullTextFilePath As String = ""
-			If Me.Settings.ExportFullText OrElse Me.Settings.LogFileFormat = LoadFileType.FileFormat.IPRO_FullText Then
-				If documentInfo.HasFullText Then
-					tempLocalFullTextFilePath = System.IO.Path.GetTempFileName
+			Dim tempLocalIproFullTextFilePath As String = ""
+
+			If Me.Settings.ExportFullText Then
+				tempLocalFullTextFilePath = Me.DownloadTextFieldAsFile(documentInfo, Me.Settings.SelectedTextField)
+				If Me.Settings.ExportFullTextAsFile Then totalFileSize += New System.IO.FileInfo(tempLocalFullTextFilePath).Length
+				documentInfo.HasFullText = New System.IO.FileInfo(tempLocalFullTextFilePath).Length > 0
+			End If
+
+			If Me.Settings.LogFileFormat = LoadFileType.FileFormat.IPRO_FullText Then
+				If Me.Settings.SelectedTextField Is Nothing OrElse Me.Settings.SelectedTextField.Category <> DynamicFields.Types.FieldCategory.FullText Then
+					tempLocalIproFullTextFilePath = System.IO.Path.GetTempFileName
 					Dim tries As Int32 = 20
 					While tries > 0
 						tries -= 1
 						Try
-							_downloadManager.DownloadFullTextFile(tempLocalFullTextFilePath, documentInfo.DocumentArtifactID, _settings.CaseInfo.ArtifactID.ToString)
+							_downloadManager.DownloadFullTextFile(tempLocalIproFullTextFilePath, documentInfo.DocumentArtifactID, _settings.CaseInfo.ArtifactID.ToString)
 							Exit While
 						Catch ex As System.Exception
 							If tries = 19 Then
 								_parent.WriteStatusLine(Windows.Process.EventType.Warning, "Second attempt to download full text for document " & documentInfo.IdentifierValue, True)
-								_downloadManager.DownloadFullTextFile(tempLocalFullTextFilePath, documentInfo.DocumentArtifactID, _settings.CaseInfo.ArtifactID.ToString)
+								_downloadManager.DownloadFullTextFile(tempLocalIproFullTextFilePath, documentInfo.DocumentArtifactID, _settings.CaseInfo.ArtifactID.ToString)
 							ElseIf tries > 0 Then
 								_parent.WriteStatusLine(Windows.Process.EventType.Warning, "Additional attempt to download full text for document " & documentInfo.IdentifierValue & " failed - retrying in 30 seconds", True)
 								System.Threading.Thread.CurrentThread.Join(30000)
-								_downloadManager.DownloadFullTextFile(tempLocalFullTextFilePath, documentInfo.DocumentArtifactID, _settings.CaseInfo.ArtifactID.ToString)
+								_downloadManager.DownloadFullTextFile(tempLocalIproFullTextFilePath, documentInfo.DocumentArtifactID, _settings.CaseInfo.ArtifactID.ToString)
 							Else
 								Throw
 							End If
 						End Try
 					End While
-					If Me.Settings.ExportFullTextAsFile Then totalFileSize += New System.IO.FileInfo(tempLocalFullTextFilePath).Length
 				End If
 			End If
+
 			Dim textCount As Int32 = 0
 			If Me.Settings.ExportFullTextAsFile AndAlso documentInfo.HasFullText Then textCount += 1
 			Dim imageCount As Long = documentInfo.ImageCount
@@ -315,7 +320,7 @@ Namespace kCura.WinEDDS
 			End If
 			If Me.Settings.ExportImages Then
 				_timekeeper.MarkStart("VolumeManager_ExportImages")
-				Me.ExportImages(documentInfo.Images, tempLocalFullTextFilePath)
+				Me.ExportImages(documentInfo.Images, tempLocalIproFullTextFilePath)
 				_timekeeper.MarkEnd("VolumeManager_ExportImages")
 			End If
 			Dim nativeLocation As String = ""
@@ -743,7 +748,7 @@ Namespace kCura.WinEDDS
 				Dim field As WinEDDS.ViewFieldInfo = DirectCast(_parent.Columns(count), WinEDDS.ViewFieldInfo)
 				columnName = field.AvfColumnName
 				If field.FieldType = DynamicFields.Types.FieldTypeHelper.FieldType.Text Then
-					If field.Category = DynamicFields.Types.FieldCategory.FullText Then
+					If Not Me.Settings.SelectedTextField Is Nothing AndAlso Me.Settings.SelectedTextField.AvfId = field.AvfId Then
 						Dim bodyText As New System.Text.StringBuilder
 						If Not hasFullText Then
 							bodyText = New System.Text.StringBuilder("")
@@ -755,13 +760,31 @@ Namespace kCura.WinEDDS
 									If System.IO.File.Exists(localTextPath) Then
 										If _settings.Overwrite Then
 											System.IO.File.Delete(localTextPath)
-											System.IO.File.Move(fullTextTempFile, localTextPath)
+											Dim sw As New System.IO.StreamWriter(localTextPath, False, Me.Settings.TextFileEncoding)
+											Dim sr As New System.IO.StreamReader(fullTextTempFile, System.Text.Encoding.Unicode, True)
+											Dim c As Int32 = sr.Read
+											While c <> -1
+												sw.Write(ChrW(c))
+												c = sr.Read
+											End While
+											sw.Close()
+											sr.Close()
+											kCura.Utility.File.Delete(fullTextTempFile)
 											_parent.WriteStatusLine(kCura.Windows.Process.EventType.Status, localTextPath & " overwritten", False)
 										Else
 											_parent.WriteWarning(localTextPath & " already exists. Skipping file export.")
 										End If
 									Else
-										System.IO.File.Move(fullTextTempFile, localTextPath)
+										Dim sw As New System.IO.StreamWriter(localTextPath, False, Me.Settings.TextFileEncoding)
+										Dim sr As New System.IO.StreamReader(fullTextTempFile, System.Text.Encoding.Unicode, True)
+										Dim c As Int32 = sr.Read
+										While c <> -1
+											sw.Write(ChrW(c))
+											c = sr.Read
+										End While
+										sw.Close()
+										sr.Close()
+										kCura.Utility.File.Delete(fullTextTempFile)
 									End If
 									Dim textLocation As String
 									Select Case Me.Settings.TypeOfExportedFilePath
@@ -797,7 +820,6 @@ Namespace kCura.WinEDDS
 							End Select
 							kCura.Utility.File.Delete(fullTextTempFile)
 						End If
-
 					Else
 						Dim textLocation As String = Me.DownloadTextFieldAsFile(doc, field)
 						Dim sr As New System.IO.StreamReader(fullTextTempFile, System.Text.Encoding.Unicode)
@@ -829,7 +851,7 @@ Namespace kCura.WinEDDS
 							End Try
 						End Try
 					End If
-				Else		 'Handle not full text issue
+				Else				 'Handle not full text issue
 					Dim val As Object = row(columnName)
 					If TypeOf val Is Byte() Then
 						val = System.Text.Encoding.Unicode.GetString(DirectCast(val, Byte()))
@@ -878,7 +900,7 @@ Namespace kCura.WinEDDS
 				Dim field As WinEDDS.ViewFieldInfo = DirectCast(_parent.Columns(count), WinEDDS.ViewFieldInfo)
 				columnName = field.AvfColumnName
 				If field.FieldType = DynamicFields.Types.FieldTypeHelper.FieldType.Text Then
-					If field.Category = DynamicFields.Types.FieldCategory.FullText Then
+					If Not Me.Settings.SelectedTextField Is Nothing AndAlso Me.Settings.SelectedTextField.AvfId = field.AvfId Then
 						Dim bodyText As New System.Text.StringBuilder
 						If Not hasFullText Then
 							bodyText = New System.Text.StringBuilder("")
@@ -890,13 +912,31 @@ Namespace kCura.WinEDDS
 									If System.IO.File.Exists(localTextPath) Then
 										If _settings.Overwrite Then
 											System.IO.File.Delete(localTextPath)
-											System.IO.File.Move(fullTextTempFile, localTextPath)
+											Dim sw As New System.IO.StreamWriter(localTextPath, False, Me.Settings.TextFileEncoding)
+											Dim sr As New System.IO.StreamReader(fullTextTempFile, System.Text.Encoding.Unicode, True)
+											Dim c As Int32 = sr.Read
+											While c <> -1
+												sw.Write(ChrW(c))
+												c = sr.Read
+											End While
+											sw.Close()
+											sr.Close()
+											kCura.Utility.File.Delete(fullTextTempFile)
 											_parent.WriteStatusLine(kCura.Windows.Process.EventType.Status, localTextPath & " overwritten", False)
 										Else
 											_parent.WriteWarning(localTextPath & " already exists. Skipping file export.")
 										End If
 									Else
-										System.IO.File.Move(fullTextTempFile, localTextPath)
+										Dim sw As New System.IO.StreamWriter(localTextPath, False, Me.Settings.TextFileEncoding)
+										Dim sr As New System.IO.StreamReader(fullTextTempFile, System.Text.Encoding.Unicode, True)
+										Dim c As Int32 = sr.Read
+										While c <> -1
+											sw.Write(ChrW(c))
+											c = sr.Read
+										End While
+										sw.Close()
+										sr.Close()
+										kCura.Utility.File.Delete(fullTextTempFile)
 									End If
 									Dim textLocation As String
 									Select Case Me.Settings.TypeOfExportedFilePath
