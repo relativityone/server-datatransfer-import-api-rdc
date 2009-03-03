@@ -113,6 +113,8 @@ Public Class ExportForm
 		Me.MainMenu1 = New System.Windows.Forms.MainMenu
 		Me.ExportMenu = New System.Windows.Forms.MenuItem
 		Me.RunMenu = New System.Windows.Forms.MenuItem
+		Me.MenuItem3 = New System.Windows.Forms.MenuItem
+		Me.RefreshMenu = New System.Windows.Forms.MenuItem
 		Me._destinationFolderDialog = New System.Windows.Forms.FolderBrowserDialog
 		Me._productionPrecedenceBox = New System.Windows.Forms.GroupBox
 		Me._productionPrecedenceList = New System.Windows.Forms.ListBox
@@ -187,8 +189,6 @@ Public Class ExportForm
 		Me._newLineDelimiter = New System.Windows.Forms.ComboBox
 		Me.Label2 = New System.Windows.Forms.Label
 		Me._recordDelimiter = New System.Windows.Forms.ComboBox
-		Me.RefreshMenu = New System.Windows.Forms.MenuItem
-		Me.MenuItem3 = New System.Windows.Forms.MenuItem
 		Me._productionPrecedenceBox.SuspendLayout()
 		Me.GroupBox3.SuspendLayout()
 		Me.TabControl1.SuspendLayout()
@@ -224,6 +224,17 @@ Public Class ExportForm
 		'
 		Me.RunMenu.Index = 0
 		Me.RunMenu.Text = "Run"
+		'
+		'MenuItem3
+		'
+		Me.MenuItem3.Index = 1
+		Me.MenuItem3.Text = "-"
+		'
+		'RefreshMenu
+		'
+		Me.RefreshMenu.Index = 2
+		Me.RefreshMenu.Shortcut = System.Windows.Forms.Shortcut.CtrlR
+		Me.RefreshMenu.Text = "Refresh"
 		'
 		'_productionPrecedenceBox
 		'
@@ -373,7 +384,7 @@ Public Class ExportForm
 		Me._columnSelecter.LeftOrderControlsVisible = False
 		Me._columnSelecter.Location = New System.Drawing.Point(104, 64)
 		Me._columnSelecter.Name = "_columnSelecter"
-		Me._columnSelecter.RightOrderControlVisible = True
+		Me._columnSelecter.RightOrderControlVisible = False
 		Me._columnSelecter.Size = New System.Drawing.Size(360, 280)
 		Me._columnSelecter.TabIndex = 17
 		'
@@ -955,17 +966,6 @@ Public Class ExportForm
 		Me._recordDelimiter.Name = "_recordDelimiter"
 		Me._recordDelimiter.Size = New System.Drawing.Size(116, 21)
 		Me._recordDelimiter.TabIndex = 8
-		'
-		'RefreshMenu
-		'
-		Me.RefreshMenu.Index = 2
-		Me.RefreshMenu.Shortcut = System.Windows.Forms.Shortcut.CtrlR
-		Me.RefreshMenu.Text = "Refresh"
-		'
-		'MenuItem3
-		'
-		Me.MenuItem3.Index = 1
-		Me.MenuItem3.Text = "-"
 		'
 		'ExportForm
 		'
@@ -1553,5 +1553,10 @@ Public Class ExportForm
 				_columnSelecter.RightListBoxItems.Add(item)
 			End If
 		Next
+	End Sub
+
+	Private Sub _copyFilesFromRepository_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _copyFilesFromRepository.CheckedChanged
+		_imageTypeDropdown.Enabled = _exportImages.Checked And _copyFilesFromRepository.Checked
+		RunMenu.Enabled = ReadyToRun()
 	End Sub
 End Class
