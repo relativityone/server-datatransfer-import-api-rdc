@@ -35,8 +35,6 @@ Public Class ExportForm
 	Friend WithEvents _destinationFolderDialog As System.Windows.Forms.FolderBrowserDialog
 	Friend WithEvents _pickPrecedenceButton As System.Windows.Forms.Button
 	Friend WithEvents _productionPrecedenceBox As System.Windows.Forms.GroupBox
-	Friend WithEvents MenuItem1 As System.Windows.Forms.MenuItem
-	Friend WithEvents _settingsMenuVolumeInfoItem As System.Windows.Forms.MenuItem
 	Friend WithEvents _productionPrecedenceList As System.Windows.Forms.ListBox
 	Friend WithEvents Label5 As System.Windows.Forms.Label
 	Friend WithEvents _overwriteButton As System.Windows.Forms.CheckBox
@@ -108,13 +106,13 @@ Public Class ExportForm
 	Friend WithEvents _textFileEncoding As kCura.EDDS.WinForm.EncodingPicker
 	Friend WithEvents Label21 As System.Windows.Forms.Label
 	Friend WithEvents _potentialTextFields As System.Windows.Forms.ComboBox
+	Friend WithEvents RefreshMenu As System.Windows.Forms.MenuItem
+	Friend WithEvents MenuItem3 As System.Windows.Forms.MenuItem
 	<System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
 		Dim resources As System.Resources.ResourceManager = New System.Resources.ResourceManager(GetType(ExportForm))
 		Me.MainMenu1 = New System.Windows.Forms.MainMenu
 		Me.ExportMenu = New System.Windows.Forms.MenuItem
 		Me.RunMenu = New System.Windows.Forms.MenuItem
-		Me.MenuItem1 = New System.Windows.Forms.MenuItem
-		Me._settingsMenuVolumeInfoItem = New System.Windows.Forms.MenuItem
 		Me._destinationFolderDialog = New System.Windows.Forms.FolderBrowserDialog
 		Me._productionPrecedenceBox = New System.Windows.Forms.GroupBox
 		Me._productionPrecedenceList = New System.Windows.Forms.ListBox
@@ -189,6 +187,8 @@ Public Class ExportForm
 		Me._newLineDelimiter = New System.Windows.Forms.ComboBox
 		Me.Label2 = New System.Windows.Forms.Label
 		Me._recordDelimiter = New System.Windows.Forms.ComboBox
+		Me.RefreshMenu = New System.Windows.Forms.MenuItem
+		Me.MenuItem3 = New System.Windows.Forms.MenuItem
 		Me._productionPrecedenceBox.SuspendLayout()
 		Me.GroupBox3.SuspendLayout()
 		Me.TabControl1.SuspendLayout()
@@ -212,30 +212,18 @@ Public Class ExportForm
 		'
 		'MainMenu1
 		'
-		Me.MainMenu1.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.ExportMenu, Me.MenuItem1})
+		Me.MainMenu1.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.ExportMenu})
 		'
 		'ExportMenu
 		'
 		Me.ExportMenu.Index = 0
-		Me.ExportMenu.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.RunMenu})
+		Me.ExportMenu.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.RunMenu, Me.MenuItem3, Me.RefreshMenu})
 		Me.ExportMenu.Text = "File"
 		'
 		'RunMenu
 		'
 		Me.RunMenu.Index = 0
-		Me.RunMenu.Shortcut = System.Windows.Forms.Shortcut.F5
-		Me.RunMenu.Text = "Run..."
-		'
-		'MenuItem1
-		'
-		Me.MenuItem1.Index = 1
-		Me.MenuItem1.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me._settingsMenuVolumeInfoItem})
-		Me.MenuItem1.Text = "Settings"
-		'
-		'_settingsMenuVolumeInfoItem
-		'
-		Me._settingsMenuVolumeInfoItem.Index = 0
-		Me._settingsMenuVolumeInfoItem.Text = "Volume Info"
+		Me.RunMenu.Text = "Run"
 		'
 		'_productionPrecedenceBox
 		'
@@ -459,6 +447,7 @@ Public Class ExportForm
 		'
 		Me._textFileEncoding.Location = New System.Drawing.Point(116, 100)
 		Me._textFileEncoding.Name = "_textFileEncoding"
+		Me._textFileEncoding.SelectedEncoding = CType(resources.GetObject("_textFileEncoding.SelectedEncoding"), System.Text.Encoding)
 		Me._textFileEncoding.Size = New System.Drawing.Size(200, 21)
 		Me._textFileEncoding.TabIndex = 19
 		'
@@ -484,6 +473,7 @@ Public Class ExportForm
 		'
 		Me._dataFileEncoding.Location = New System.Drawing.Point(116, 48)
 		Me._dataFileEncoding.Name = "_dataFileEncoding"
+		Me._dataFileEncoding.SelectedEncoding = CType(resources.GetObject("_dataFileEncoding.SelectedEncoding"), System.Text.Encoding)
 		Me._dataFileEncoding.Size = New System.Drawing.Size(200, 21)
 		Me._dataFileEncoding.TabIndex = 16
 		'
@@ -965,6 +955,17 @@ Public Class ExportForm
 		Me._recordDelimiter.Name = "_recordDelimiter"
 		Me._recordDelimiter.Size = New System.Drawing.Size(116, 21)
 		Me._recordDelimiter.TabIndex = 8
+		'
+		'RefreshMenu
+		'
+		Me.RefreshMenu.Index = 2
+		Me.RefreshMenu.Shortcut = System.Windows.Forms.Shortcut.CtrlR
+		Me.RefreshMenu.Text = "Refresh"
+		'
+		'MenuItem3
+		'
+		Me.MenuItem3.Index = 1
+		Me.MenuItem3.Text = "-"
 		'
 		'ExportForm
 		'
@@ -1516,4 +1517,41 @@ Public Class ExportForm
 		End If
 	End Sub
 
+	Private Sub RefreshMenu_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles RefreshMenu.Click
+		Me.RefreshRelativityInformation()
+	End Sub
+
+	Private Sub RefreshRelativityInformation()
+		Dim selectedColumns As New System.Collections.ArrayList
+		For Each field As kCura.WinEDDS.ViewFieldInfo In _columnSelecter.RightListBoxItems
+			selectedColumns.Add(New kCura.WinEDDS.ViewFieldInfo(field))
+		Next
+		Dim selectedDataSource As Int32 = _filters.SelectedIndex
+		_dataSourceIsSet = False
+		Dim newExportFile As kCura.WinEDDS.ExportFile = _application.GetNewExportFileSettingsObject(_exportFile.ArtifactID, _exportFile.CaseInfo, _exportFile.TypeOfExport)
+		_exportFile.DataTable = newExportFile.DataTable
+		_exportFile.AllExportableFields = newExportFile.AllExportableFields
+		_filters.DataSource = ExportFile.DataTable
+		_filters.DisplayMember = "Name"
+		_filters.ValueMember = "ArtifactID"
+		_dataSourceIsSet = True
+		_filters.SelectedIndex = selectedDataSource
+		_columnSelecter.LeftListBoxItems.AddRange(_columnSelecter.RightListBoxItems)
+		_columnSelecter.RightListBoxItems.Clear()
+		For Each field As ViewFieldInfo In selectedColumns
+			Dim itemToShiftIndex As Int32 = -1
+			For i As Int32 = 0 To _columnSelecter.LeftListBoxItems.Count - 1
+				Dim item As ViewFieldInfo = DirectCast(_columnSelecter.LeftListBoxItems(i), ViewFieldInfo)
+				If item.AvfId = field.AvfId Then
+					itemToShiftIndex = i
+					Exit For
+				End If
+			Next
+			If itemToShiftIndex >= 0 Then
+				Dim item As ViewFieldInfo = DirectCast(_columnSelecter.LeftListBoxItems(itemToShiftIndex), ViewFieldInfo)
+				_columnSelecter.LeftListBoxItems.Remove(item)
+				_columnSelecter.RightListBoxItems.Add(item)
+			End If
+		Next
+	End Sub
 End Class
