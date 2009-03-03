@@ -1500,6 +1500,7 @@ Namespace kCura.EDDS.WinForm
     Private Sub _advancedButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _advancedButton.Click
       _advancedFileForm = New AdvancedFileLocation
 			_advancedFileForm._copyNativeFiles.Checked = Me.LoadFile.CopyFilesToDocumentRepository
+			_advancedFileForm._keepNativeFiles.Checked = Not Me.LoadFile.CopyFilesToDocumentRepository
       If Not Me.LoadFile.SelectedCasePath Is Nothing AndAlso Not Me.LoadFile.SelectedCasePath = "" Then
         _advancedFileForm.SelectPath(Me.LoadFile.SelectedCasePath)
         _advancedFileForm.SelectDefaultPath = False
