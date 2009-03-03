@@ -278,6 +278,9 @@ Namespace kCura.EDDS.WebAPI.ProductionManagerBase
         
         '<remarks/>
         Public ProductionFieldArtifactID As Integer
+        
+        '<remarks/>
+        Public DocumentsHaveRedactions As Boolean
     End Class
     
     '<remarks/>

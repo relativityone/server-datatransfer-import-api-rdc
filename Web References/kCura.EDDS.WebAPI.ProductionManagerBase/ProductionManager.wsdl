@@ -198,6 +198,7 @@
               <s:element minOccurs="1" maxOccurs="1" name="Imported" type="s:boolean" />
               <s:element minOccurs="1" maxOccurs="1" name="AddImagePlaceholder" type="s:boolean" />
               <s:element minOccurs="1" maxOccurs="1" name="ProductionFieldArtifactID" type="s:int" />
+              <s:element minOccurs="1" maxOccurs="1" name="DocumentsHaveRedactions" type="s:boolean" />
             </s:sequence>
           </s:extension>
         </s:complexContent>
