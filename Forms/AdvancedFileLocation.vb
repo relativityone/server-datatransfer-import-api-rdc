@@ -105,7 +105,7 @@ Namespace kCura.EDDS.WinForm
 			Me._copyNativeFiles.Size = New System.Drawing.Size(384, 24)
 			Me._copyNativeFiles.TabIndex = 11
 			Me._copyNativeFiles.TabStop = True
-			Me._copyNativeFiles.Text = "Copy Native files from current location to selected document repository"
+			Me._copyNativeFiles.Text = "Copy files from current location to selected document repository"
 			'
 			'_keepNativeFiles
 			'
@@ -113,8 +113,8 @@ Namespace kCura.EDDS.WinForm
 			Me._keepNativeFiles.Name = "_keepNativeFiles"
 			Me._keepNativeFiles.Size = New System.Drawing.Size(564, 24)
 			Me._keepNativeFiles.TabIndex = 12
-			Me._keepNativeFiles.Text = "Native Files already reside on the selected document repository.  Load file conta" & _
-			"ins pointers to their location."
+			Me._keepNativeFiles.Text = "Files already reside on the selected document repository.  Load file contains poi" & _
+			"nters to their location."
 			'
 			'AdvancedFileLocation
 			'
