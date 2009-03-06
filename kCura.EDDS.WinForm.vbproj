@@ -348,7 +348,7 @@
                 />
                 <File
                     RelPath = "Forms\LoadFilePreviewForm.vb"
-                    SubType = "Component"
+                    SubType = "Form"
                     BuildAction = "Compile"
                 />
                 <File

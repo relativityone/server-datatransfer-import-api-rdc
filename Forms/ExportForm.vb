@@ -384,7 +384,7 @@ Public Class ExportForm
 		Me._columnSelecter.LeftOrderControlsVisible = False
 		Me._columnSelecter.Location = New System.Drawing.Point(104, 64)
 		Me._columnSelecter.Name = "_columnSelecter"
-		Me._columnSelecter.RightOrderControlVisible = False
+		Me._columnSelecter.RightOrderControlVisible = True
 		Me._columnSelecter.Size = New System.Drawing.Size(360, 280)
 		Me._columnSelecter.TabIndex = 17
 		'
@@ -458,7 +458,6 @@ Public Class ExportForm
 		'
 		Me._textFileEncoding.Location = New System.Drawing.Point(116, 100)
 		Me._textFileEncoding.Name = "_textFileEncoding"
-		Me._textFileEncoding.SelectedEncoding = CType(resources.GetObject("_textFileEncoding.SelectedEncoding"), System.Text.Encoding)
 		Me._textFileEncoding.Size = New System.Drawing.Size(200, 21)
 		Me._textFileEncoding.TabIndex = 19
 		'
@@ -484,7 +483,6 @@ Public Class ExportForm
 		'
 		Me._dataFileEncoding.Location = New System.Drawing.Point(116, 48)
 		Me._dataFileEncoding.Name = "_dataFileEncoding"
-		Me._dataFileEncoding.SelectedEncoding = CType(resources.GetObject("_dataFileEncoding.SelectedEncoding"), System.Text.Encoding)
 		Me._dataFileEncoding.Size = New System.Drawing.Size(200, 21)
 		Me._dataFileEncoding.TabIndex = 16
 		'
@@ -1288,14 +1286,21 @@ Public Class ExportForm
 		If Not _filters.SelectedItem Is Nothing Then defaultSelectedIds = DirectCast(Me.ExportFile.ArtifactAvfLookup(CType(_filters.SelectedValue, Int32)), ArrayList)
 		Dim leftListBoxItems As New System.Collections.ArrayList
 		For Each field As ViewFieldInfo In Me.ExportFile.AllExportableFields
-			If defaultSelectedIds.Contains(field.AvfId) Then
-				_columnSelecter.RightListBoxItems.Add(New ViewFieldInfo(field))
-			Else
+			If Not defaultSelectedIds.Contains(field.AvfId) Then
 				leftListBoxItems.Add(New ViewFieldInfo(field))
 			End If
 		Next
+		For Each defaultSelectedId As Int32 In defaultSelectedIds
+			For Each field As ViewFieldInfo In Me.ExportFile.AllExportableFields
+				If field.AvfId = defaultSelectedId Then
+					_columnSelecter.RightListBoxItems.Add(New ViewFieldInfo(field))
+					Exit For
+				End If
+			Next
+		Next
 		leftListBoxItems.Sort()
 		_columnSelecter.LeftListBoxItems.AddRange(leftListBoxItems.ToArray())
+		Me.ManagePotentialTextFields()
 	End Sub
 
 	Private Sub _folderPath_TextChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _folderPath.TextChanged
@@ -1480,6 +1485,10 @@ Public Class ExportForm
 
 	Private Sub _columnSelecter_ItemsShifted() Handles _columnSelecter.ItemsShifted
 		_metadataGroup.Enabled = _columnSelecter.RightListBoxItems.Count > 0
+		Me.ManagePotentialTextFields()
+	End Sub
+
+	Private Sub ManagePotentialTextFields()
 		Dim selectedItem As kCura.WinEDDS.ViewFieldInfo
 		If Not _potentialTextFields.SelectedIndex = -1 Then
 			selectedItem = CType(_potentialTextFields.SelectedItem, kCura.WinEDDS.ViewFieldInfo)
