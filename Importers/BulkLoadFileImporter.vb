@@ -370,6 +370,8 @@ Namespace kCura.WinEDDS
             textIdentifier, _artifactTypeID).Tables(0)
             If parentObjectTable.Rows.Count > 1 Then
               Throw New DuplicateObjectReferenceException(Me.CurrentLineNumber, _destinationFolderColumnIndex, "Parent Info")
+            ElseIf parentObjectTable.Rows.Count = 0 Then
+              Throw New NonExistentParentException(Me.CurrentLineNumber, _destinationFolderColumnIndex, "Parent Info")
             Else
               parentFolderID = CType(parentObjectTable.Rows(0)("ArtifactID"), Int32)
             End If

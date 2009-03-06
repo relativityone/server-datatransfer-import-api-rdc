@@ -529,6 +529,13 @@ Namespace kCura.WinEDDS
       End Sub
     End Class
 
+    Public Class NonExistentParentException
+      Inherits kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
+      Public Sub New(ByVal row As Int32, ByVal column As Int32, ByVal fieldName As String)
+        MyBase.New(row, column, String.Format("Object references a parent object that does not exist.", fieldName))
+      End Sub
+    End Class
+
     Public Class ParentObjectReferenceRequiredException
       Inherits kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
       Public Sub New(ByVal row As Int32, ByVal column As Int32)
