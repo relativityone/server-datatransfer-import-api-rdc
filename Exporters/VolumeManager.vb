@@ -475,7 +475,14 @@ Namespace kCura.WinEDDS
 						Case ExportFile.ExportedFilePathType.Prefix
 							copyfile = Me.Settings.FilePrefix.TrimEnd("\"c) & "\" & subfolderPath & marker.FileName
 					End Select
-					Me.CreateImageLogEntry(marker.BatesNumber, copyfile, localFilePath, 1, fullTextReader, localFullTextPath <> "", Int64.MinValue, images.Count)
+					If Me.Settings.LogFileFormat = LoadFileType.FileFormat.Opticon Then
+						Me.CreateImageLogEntry(marker.BatesNumber, copyfile, localFilePath, 1, fullTextReader, localFullTextPath <> "", Int64.MinValue, images.Count)
+					Else
+						For j As Int32 = 0 To images.Count - 1
+							image = DirectCast(images(j), WinEDDS.Exporters.ImageExportInfo)
+							Me.CreateImageLogEntry(image.BatesNumber, copyfile, localFilePath, j + 1, fullTextReader, localFullTextPath <> "", pageOffset, images.Count)
+						Next
+					End If
 					marker.TempLocation = copyfile
 				Else
 					For Each image In images
