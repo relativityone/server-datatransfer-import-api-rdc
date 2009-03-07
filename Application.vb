@@ -601,12 +601,11 @@ Namespace kCura.EDDS.WinForm
 
     Private Function AddFoldersToHashTable(ByVal folderPath As String) As String
       If folderPath <> "" AndAlso folderPath <> "\" Then
-        Dim lastBackSlashIndex As Int32 = folderPath.LastIndexOf("\"c)
-        If lastBackSlashIndex < 1 Then
+        If folderPath.LastIndexOf("\"c) < 1 Then
           If Not _totalFolders.Contains(folderPath) Then _totalFolders.Add(folderPath)
         Else
           If Not _totalFolders.Contains(folderPath) Then _totalFolders.Add(folderPath)
-          AddFoldersToHashTable(folderPath.Substring(0, lastBackSlashIndex))
+          AddFoldersToHashTable(folderPath.Substring(0, folderPath.LastIndexOf("\"c)))
         End If
       End If
     End Function
