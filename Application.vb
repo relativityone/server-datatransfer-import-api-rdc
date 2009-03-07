@@ -540,7 +540,7 @@ Namespace kCura.EDDS.WinForm
             fields = DirectCast(item, DocumentField())
             If folderColumnIndex <> -1 Then
               fieldValue = fields(folderColumnIndex).Value
-              AddFoldersToHashTable(fieldValue)
+              AddFoldersToTotalFolders(fieldValue)
             End If
           End If
           If codeFieldColumnIndexes.Count > 0 Then
@@ -599,13 +599,13 @@ Namespace kCura.EDDS.WinForm
       End Try
     End Function
 
-    Private Function AddFoldersToHashTable(ByVal folderPath As String) As String
+    Private Function AddFoldersToTotalFolders(ByVal folderPath As String) As String
       If folderPath <> "" AndAlso folderPath <> "\" Then
         If folderPath.LastIndexOf("\"c) < 1 Then
           If Not _totalFolders.Contains(folderPath) Then _totalFolders.Add(folderPath)
         Else
           If Not _totalFolders.Contains(folderPath) Then _totalFolders.Add(folderPath)
-          AddFoldersToHashTable(folderPath.Substring(0, folderPath.LastIndexOf("\"c)))
+          AddFoldersToTotalFolders(folderPath.Substring(0, folderPath.LastIndexOf("\"c)))
         End If
       End If
     End Function
