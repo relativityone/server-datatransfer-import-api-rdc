@@ -1022,7 +1022,9 @@ Namespace kCura.EDDS.WinForm
       '		_identifiersDropDown.SelectedItem = caseFieldName
       '	End If
       'End If
-      _extractMd5Hash.Enabled = EnableMd5Hash
+			_extractMd5Hash.Enabled = EnableMd5Hash
+			_fieldMap.EnsureHorizontalScrollbars()
+			_fileColumns.EnsureHorizontalScrollbars()
       ActionMenuEnabled = ReadyToRun
       Me.Cursor = System.Windows.Forms.Cursors.Default
     End Sub
