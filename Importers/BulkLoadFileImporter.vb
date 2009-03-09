@@ -232,11 +232,13 @@ Namespace kCura.WinEDDS
 						_continue = False
 						WriteFatalError(Me.CurrentLineNumber, ex, line)
 					Catch ex As kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
-						WriteError(Me.CurrentLineNumber, ex.Message)
-					Catch ex As System.Exception
-						WriteFatalError(Me.CurrentLineNumber, ex, line)
-					End Try
-				End While
+            WriteError(Me.CurrentLineNumber, ex.Message)
+          Catch ex As System.IO.FileNotFoundException
+            WriteError(Me.CurrentLineNumber, ex.Message)
+          Catch ex As System.Exception
+            WriteFatalError(Me.CurrentLineNumber, ex, line)
+          End Try
+        End While
 				Me.PushNativeBatch(True)
 				RaiseEvent EndFileImport()
 				WriteEndImport("Finish")
