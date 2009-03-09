@@ -223,7 +223,11 @@ Namespace kCura.WinEDDS
 				For Each codeString As String In codeDisplayNames
 					For Each id As Int32 In artifactCache.SelectedIds(_hierarchicalMultiValueFieldDelmiter & codeString.Trim(_hierarchicalMultiValueFieldDelmiter.ToCharArray))
 						If id = -200 Then Throw New System.Exception("This choice or multi-choice field is not enabled as unicode.  Upload halted")
-						If Not c.Contains(id) Then c.Add(id)
+						If forPreview Then
+							c.Add(id)
+						Else
+							If Not c.Contains(id) Then c.Add(id)
+						End If
 					Next
 				Next
 				If c.Count > 0 Then
