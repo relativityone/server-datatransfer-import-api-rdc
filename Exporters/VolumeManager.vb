@@ -759,7 +759,8 @@ Namespace kCura.WinEDDS
 						Dim bodyText As New System.Text.StringBuilder
 						If Not hasFullText Then
 							bodyText = New System.Text.StringBuilder("")
-							_nativeFileWriter.Write(String.Format("{2}{0}{1}{0}", _settings.QuoteDelimiter, bodyText.ToString, _settings.RecordDelimiter))
+							'_nativeFileWriter.Write(String.Format("{2}{0}{1}{0}", _settings.QuoteDelimiter, bodyText.ToString, _settings.RecordDelimiter))
+							_nativeFileWriter.Write(String.Format("{0}{1}{0}", _settings.QuoteDelimiter, bodyText.ToString))
 						Else
 							Select Case Me.Settings.ExportFullTextAsFile
 								Case True
@@ -802,11 +803,12 @@ Namespace kCura.WinEDDS
 										Case ExportFile.ExportedFilePathType.Prefix
 											textLocation = Me.Settings.FilePrefix.TrimEnd("\"c) & "\" & Me.CurrentVolumeLabel & "\" & Me.CurrentFullTextSubdirectoryLabel & "\" & doc.FullTextFileName(Me.NameTextFilesAfterIdentifier)
 									End Select
-									_nativeFileWriter.Write(String.Format("{2}{0}{1}{0}", _settings.QuoteDelimiter, textLocation, _settings.RecordDelimiter))
+									_nativeFileWriter.Write(String.Format("{0}{1}{0}", _settings.QuoteDelimiter, textLocation))
+									'_nativeFileWriter.Write(String.Format("{2}{0}{1}{0}", _settings.QuoteDelimiter, textLocation, _settings.RecordDelimiter))
 								Case False
 									Dim sr As New System.IO.StreamReader(fullTextTempFile, System.Text.Encoding.Unicode)
 									Dim c As Int32 = sr.Read
-									_nativeFileWriter.Write(_settings.RecordDelimiter)
+									'_nativeFileWriter.Write(_settings.RecordDelimiter)
 									_nativeFileWriter.Write(_settings.QuoteDelimiter)
 									While Not c = -1
 										Select Case c
@@ -831,7 +833,7 @@ Namespace kCura.WinEDDS
 						Dim textLocation As String = Me.DownloadTextFieldAsFile(doc, field)
 						Dim sr As New System.IO.StreamReader(textLocation, System.Text.Encoding.Unicode)
 						Dim c As Int32 = sr.Read
-						_nativeFileWriter.Write(_settings.RecordDelimiter)
+						'_nativeFileWriter.Write(_settings.RecordDelimiter)
 						_nativeFileWriter.Write(_settings.QuoteDelimiter)
 						While Not c = -1
 							Select Case c
