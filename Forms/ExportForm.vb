@@ -1196,6 +1196,7 @@ Public Class ExportForm
 		'Single-page TIF/JPG
 		'Multi-page TIF
 		'PDF
+		If Not _copyFilesFromRepository.Checked Then Return ExportFile.ImageType.SinglePage
 		Select Case _imageTypeDropdown.SelectedIndex
 			Case 1
 				Return ExportFile.ImageType.SinglePage
