@@ -185,18 +185,7 @@ Namespace kCura.Windows.Forms
 		Private Sub MoveAllItems(ByVal giver As System.Windows.Forms.ListBox, ByVal receiver As System.Windows.Forms.ListBox)
 			receiver.Items.AddRange(giver.Items)
 			giver.Items.Clear()
-
-			RaiseEvent ItemsShifted()
-		End Sub
-
-		Private Sub PaintRowColors(ByVal giver As System.Windows.Forms.ListBox, ByVal receiver As System.Windows.Forms.ListBox)
-			For i As Int32 = 0 To giver.Items.Count
-				If i Mod 2 = 0 Then
-					Dim x As Int32 = 0
-				Else
-
-				End If
-			Next
+			Me.RaiseItemsShifted()
 		End Sub
 
 
@@ -210,7 +199,26 @@ Namespace kCura.Windows.Forms
 					giver.Items.Remove(giver.SelectedItems.Item(0))
 				End While
 			End If
+
+			Me.RaiseItemsShifted()
+		End Sub
+
+		Private Sub RaiseItemsShifted()
+			Me.EnsureHorizontalScrollbars()
 			RaiseEvent ItemsShifted()
+		End Sub
+		Public Sub EnsureHorizontalScrollbars()
+			Me.EnsureHorizontalScrollbarForBox(_leftListBox)
+			Me.EnsureHorizontalScrollbarForBox(_rightListBox)
+		End Sub
+
+		Private Sub EnsureHorizontalScrollbarForBox(ByVal box As System.Windows.Forms.ListBox)
+			If Not _alternateRowColors Then Exit Sub
+			Dim g As System.Drawing.Graphics = Me.CreateGraphics
+			box.HorizontalExtent = 0
+			For i As Int32 = 0 To box.Items.Count - 1
+				box.HorizontalExtent = System.Math.Max(CInt(box.HorizontalExtent), CInt(g.MeasureString(box.Items(i).ToString, box.Font, box.Bounds.X).Width))
+			Next
 		End Sub
 
 		Private Sub MoveSelectedItem(ByVal box As System.Windows.Forms.ListBox, ByVal direction As MoveDirection)
@@ -235,7 +243,7 @@ Namespace kCura.Windows.Forms
 					End If
 				End If
 			End If
-			RaiseEvent ItemsShifted()
+			Me.RaiseItemsShifted()
 		End Sub
 
 		Private Sub _moveAllFieldsIn_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _moveAllFieldsRight.Click
@@ -404,5 +412,7 @@ Namespace kCura.Windows.Forms
 				_rightListBox.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed
 			End If
 		End Sub
+
+
 	End Class
 End Namespace
