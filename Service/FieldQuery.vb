@@ -31,37 +31,39 @@ Namespace kCura.WinEDDS.Service
       Dim unmappableFieldCategories As New System.Collections.ArrayList
       If Not includeUnmappable Then
         unmappableFields.AddRange(New String() {"Has Annotations", "Has Images", "Has Native", "Redacted", "Supported By Viewer", "Relativity Native Type"})    ' HACK: Ugly - need to make a new field category ID
-        unmappableFieldCategories.AddRange(New kCura.DynamicFields.Types.FieldCategory() {DynamicFields.Types.FieldCategory.FileInfo, DynamicFields.Types.FieldCategory.ProductionMarker, DynamicFields.Types.FieldCategory.MarkupSetMarker})
+				unmappableFieldCategories.AddRange(New kCura.DynamicFields.Types.FieldCategory() {DynamicFields.Types.FieldCategory.FileInfo, DynamicFields.Types.FieldCategory.FileSize, DynamicFields.Types.FieldCategory.ProductionMarker, DynamicFields.Types.FieldCategory.MarkupSetMarker})
       End If
       Dim i As Int32
       For i = 0 To dv.Count - 1
         field = New kCura.EDDS.WebAPI.DocumentManagerBase.Field
-        If Not ( _
-         unmappableFieldCategories.Contains(CType(dv(i)("FieldCategoryID"), kCura.DynamicFields.Types.FieldCategory)) _
-         OrElse _
-         unmappableFields.Contains(dv(i)("DisplayName").ToString) _
-        ) Then
-          With field
-            .ArtifactID = CType(dv(i)("ArtifactID"), Int32)
-            .ArtifactViewFieldID = CType(dv(i)("ArtifactViewFieldID"), Int32)
-            .CodeTypeID = NullableTypes.HelperFunctions.DBNullConvert.ToNullableInt32(dv(i)("CodeTypeID"))
-            .DisplayName = CType(dv(i)("DisplayName"), String)
-            .FieldCategoryID = CType(dv(i)("FieldCategoryID"), Int32)
-            .FieldCategory = CType(dv(i)("FieldCategoryID"), kCura.EDDS.WebAPI.DocumentManagerBase.FieldCategory)
-            .FieldType = CType(dv(i)("FieldTypeID"), kCura.EDDS.WebAPI.DocumentManagerBase.FieldType)
-            .FieldTypeID = CType(dv(i)("FieldTypeID"), kCura.EDDS.WebAPI.DocumentManagerBase.FieldType)
-            .IsEditable = CType(dv(i)("IsEditable"), Boolean)
-            .IsRequired = CType(dv(i)("IsRequired"), Boolean)
-            .MaxLength = NullableTypes.HelperFunctions.DBNullConvert.ToNullableInt32(dv(i)("MaxLength"))
-            .IsRemovable = CType(dv(i)("IsRemovable"), Boolean)
-            .IsVisible = CType(dv(i)("IsVisible"), Boolean)
-            .UseUnicodeEncoding = CType(dv(i)("UseUnicodeEncoding"), Boolean)
-            .AllowHtml = CType(dv(i)("AllowHTML"), Boolean)
-          End With
-          fields.Add(field)
-        End If
+				If Not ( _
+				 unmappableFieldCategories.Contains(CType(dv(i)("FieldCategoryID"), kCura.DynamicFields.Types.FieldCategory)) _
+				 OrElse _
+				 unmappableFields.Contains(dv(i)("DisplayName").ToString) _
+				) Then
+					If Not (CType(dv(i)("FieldCategoryID"), kCura.DynamicFields.Types.FieldCategory) = DynamicFields.Types.FieldCategory.FullText AndAlso artifactTypeID <> 10) Then
+						With field
+							.ArtifactID = CType(dv(i)("ArtifactID"), Int32)
+							.ArtifactViewFieldID = CType(dv(i)("ArtifactViewFieldID"), Int32)
+							.CodeTypeID = NullableTypes.HelperFunctions.DBNullConvert.ToNullableInt32(dv(i)("CodeTypeID"))
+							.DisplayName = CType(dv(i)("DisplayName"), String)
+							.FieldCategoryID = CType(dv(i)("FieldCategoryID"), Int32)
+							.FieldCategory = CType(dv(i)("FieldCategoryID"), kCura.EDDS.WebAPI.DocumentManagerBase.FieldCategory)
+							.FieldType = CType(dv(i)("FieldTypeID"), kCura.EDDS.WebAPI.DocumentManagerBase.FieldType)
+							.FieldTypeID = CType(dv(i)("FieldTypeID"), kCura.EDDS.WebAPI.DocumentManagerBase.FieldType)
+							.IsEditable = CType(dv(i)("IsEditable"), Boolean)
+							.IsRequired = CType(dv(i)("IsRequired"), Boolean)
+							.MaxLength = NullableTypes.HelperFunctions.DBNullConvert.ToNullableInt32(dv(i)("MaxLength"))
+							.IsRemovable = CType(dv(i)("IsRemovable"), Boolean)
+							.IsVisible = CType(dv(i)("IsVisible"), Boolean)
+							.UseUnicodeEncoding = CType(dv(i)("UseUnicodeEncoding"), Boolean)
+							.AllowHtml = CType(dv(i)("AllowHTML"), Boolean)
+						End With
+						fields.Add(field)
+					End If
+				End If
 
-      Next
+			Next
       Return DirectCast(fields.ToArray(GetType(kCura.EDDS.WebAPI.DocumentManagerBase.Field)), kCura.EDDS.WebAPI.DocumentManagerBase.Field())
     End Function
 
