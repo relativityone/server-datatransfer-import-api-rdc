@@ -1535,16 +1535,38 @@ Public Class ExportForm
 		For Each field As kCura.WinEDDS.ViewFieldInfo In _columnSelecter.RightListBoxItems
 			selectedColumns.Add(New kCura.WinEDDS.ViewFieldInfo(field))
 		Next
-		Dim selectedDataSource As Int32 = _filters.SelectedIndex
+		Dim selectedDataSource As Int32 = CInt(_filters.SelectedValue)
 		_dataSourceIsSet = False
 		Dim newExportFile As kCura.WinEDDS.ExportFile = _application.GetNewExportFileSettingsObject(_exportFile.ArtifactID, _exportFile.CaseInfo, _exportFile.TypeOfExport)
 		_exportFile.DataTable = newExportFile.DataTable
 		_exportFile.AllExportableFields = newExportFile.AllExportableFields
+		_exportFile.ArtifactAvfLookup = newExportFile.ArtifactAvfLookup
 		_filters.DataSource = ExportFile.DataTable
 		_filters.DisplayMember = "Name"
 		_filters.ValueMember = "ArtifactID"
+		Dim selectedindex As Int32 = -1
+		For i As Int32 = 0 To _exportFile.DataTable.Rows.Count - 1
+			If ExportFile.DataTable.Rows(i)("ArtifactID").ToString = selectedDataSource.ToString Then
+				selectedindex = i
+				Exit For
+			End If
+		Next
+		If selectedindex = -1 Then
+			selectedindex = 0
+			Dim msg As String = "Selected "
+			Select Case Me.ExportFile.TypeOfExport
+				Case ExportFile.ExportType.AncestorSearch, ExportFile.ExportType.ParentSearch
+					msg &= "view"
+				Case ExportFile.ExportType.ArtifactSearch
+					msg &= "saved search"
+				Case ExportFile.ExportType.Production
+					msg &= "production"
+			End Select
+			msg &= " is no longer available."
+			MsgBox(msg, MsgBoxStyle.Exclamation)
+		End If
 		_dataSourceIsSet = True
-		_filters.SelectedIndex = selectedDataSource
+		_filters.SelectedIndex = selectedindex
 		_columnSelecter.LeftListBoxItems.AddRange(_columnSelecter.RightListBoxItems)
 		_columnSelecter.RightListBoxItems.Clear()
 		For Each field As ViewFieldInfo In selectedColumns
