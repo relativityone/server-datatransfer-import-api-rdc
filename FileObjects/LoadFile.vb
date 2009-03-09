@@ -11,8 +11,8 @@ Namespace kCura.WinEDDS
 		Public QuoteDelimiter As Char
 		Public NewlineDelimiter As Char
 		Public MultiRecordDelimiter As Char
-		Public OverwriteDestination As String
-		'Public SelectedFields() As kCura.WinEDDS.DocumentField
+    Public OverwriteDestination As String
+    'Public SelectedFields() As kCura.WinEDDS.DocumentField
 		Public FieldMap As kCura.WinEDDS.LoadFileFieldMap
 		Public NativeFilePathColumn As String
 		Public GroupIdentifierColumn As String
@@ -22,7 +22,8 @@ Namespace kCura.WinEDDS
 		Public FolderStructureContainedInColumn As String
     Public FullTextColumnContainsFileLocation As Boolean
 		Public ArtifactTypeID As Integer
-		Public HierarchicalValueDelimiter As Char
+    Public HierarchicalValueDelimiter As Char
+    Public PreviewCodeCount As New System.Collections.Specialized.HybridDictionary
 		<NonSerialized()> Public SourceFileEncoding As System.Text.Encoding
 		<NonSerialized()> Public ExtractedTextFileEncoding As System.Text.Encoding
 		<NonSerialized()> Public ExtractedTextFileEncodingName As String

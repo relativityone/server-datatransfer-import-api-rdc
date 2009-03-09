@@ -43,6 +43,7 @@ Namespace kCura.WinEDDS
 		Protected MulticodeMatrix As System.Collections.Hashtable
 		Protected _hierarchicalMultiValueFieldDelmiter As String
     Protected MustOverride ReadOnly Property UseTimeZoneOffset() As Boolean
+    Protected _previewCodeCount As New System.Collections.Specialized.HybridDictionary
 
 #End Region
 
@@ -112,7 +113,8 @@ Namespace kCura.WinEDDS
       _extractedTextFileEncoding = args.ExtractedTextFileEncoding
       _extractedTextFileEncodingName = args.ExtractedTextFileEncodingName
 			_artifactTypeID = args.ArtifactTypeID
-			_hierarchicalMultiValueFieldDelmiter = args.HierarchicalValueDelimiter
+      _hierarchicalMultiValueFieldDelmiter = args.HierarchicalValueDelimiter
+      _previewCodeCount = args.PreviewCodeCount
 			MulticodeMatrix = New System.Collections.Hashtable
     End Sub
 
@@ -143,27 +145,28 @@ Namespace kCura.WinEDDS
         Return GetNullableInteger(_allCodes(codeTableIndex)("ArtifactID").ToString, column)    'HACK: Hard-coded
       Else
         If forPreview Then
+
           Return New NullableTypes.NullableInt32(-1)
         Else
           If _autoDetect Then
             newCodeOrderValue = GetNewCodeOrderValue(field.CodeTypeID.Value)
-						Dim code As kCura.EDDS.WebAPI.CodeManagerBase.Code = _codeManager.CreateNewCodeDTOProxy(field.CodeTypeID.Value, value, newCodeOrderValue, _caseSystemID)
-						Dim o As Object = _codeManager.Create(_caseArtifactID, code)
-						If TypeOf o Is Int32 Then
-							codeArtifactID = CType(o, Int32)
-						Else
-							Throw New CodeCreationException(Me.CurrentLineNumber, column, o.ToString)
-						End If
-						Select Case codeArtifactID
-							Case -1
-								Throw New CodeCreationException(Me.CurrentLineNumber, column, value)
-							Case -200
-								Throw New System.Exception("This choice or multi-choice field is not enabled as unicode.  Upload halted")
-						End Select
-						Dim newRow As DataRowView = _allCodes.AddNew
-						_allCodes = Nothing
-						Return New NullableInt32(codeArtifactID)
-					End If
+            Dim code As kCura.EDDS.WebAPI.CodeManagerBase.Code = _codeManager.CreateNewCodeDTOProxy(field.CodeTypeID.Value, value, newCodeOrderValue, _caseSystemID)
+            Dim o As Object = _codeManager.Create(_caseArtifactID, code)
+            If TypeOf o Is Int32 Then
+              codeArtifactID = CType(o, Int32)
+            Else
+              Throw New CodeCreationException(Me.CurrentLineNumber, column, o.ToString)
+            End If
+            Select Case codeArtifactID
+              Case -1
+                Throw New CodeCreationException(Me.CurrentLineNumber, column, value)
+              Case -200
+                Throw New System.Exception("This choice or multi-choice field is not enabled as unicode.  Upload halted")
+            End Select
+            Dim newRow As DataRowView = _allCodes.AddNew
+            _allCodes = Nothing
+            Return New NullableInt32(codeArtifactID)
+          End If
         End If
       End If
     End Function
@@ -200,53 +203,54 @@ Namespace kCura.WinEDDS
     End Function
 
     Public Overridable Function GetMultiCode(ByVal value As String, ByVal column As Int32, ByVal field As DocumentField, ByVal forPreview As Boolean) As NullableTypes.NullableInt32()
-			Try
-				Dim al As New System.Collections.ArrayList(value.Split(_multiValueSeparator))
-				Dim goodCodes As New System.Collections.ArrayList
-				For Each codeString As String In al
-					codeString = codeString.Trim
-					If codeString <> "" Then goodCodes.Add(codeString)
-				Next
-				Dim codeDisplayNames As String() = DirectCast(goodCodes.ToArray(GetType(String)), String())
-				Dim i As Int32
-				Dim hierarchicCodeManager As Service.IHierarchicArtifactManager
-				If forPreview Then
-					hierarchicCodeManager = New Service.FieldSpecificCodePreviewer(_codeManager, field.CodeTypeID.Value)
-				Else
-					hierarchicCodeManager = New Service.FieldSpecificCodeManager(_codeManager, field.CodeTypeID.Value)
-				End If
-				If Not Me.MulticodeMatrix.Contains(field.CodeTypeID.Value) Then
-					Me.MulticodeMatrix.Add(field.CodeTypeID.Value, New NestedArtifactCache(hierarchicCodeManager, _caseSystemID, _caseArtifactID, _hierarchicalMultiValueFieldDelmiter))
-				End If
-				Dim artifactCache As NestedArtifactCache = DirectCast(Me.MulticodeMatrix(field.CodeTypeID.Value), NestedArtifactCache)
-				Dim c As New System.Collections.ArrayList
-				For Each codeString As String In codeDisplayNames
-					For Each id As Int32 In artifactCache.SelectedIds(_hierarchicalMultiValueFieldDelmiter & codeString.Trim(_hierarchicalMultiValueFieldDelmiter.ToCharArray))
-						If id = -200 Then Throw New System.Exception("This choice or multi-choice field is not enabled as unicode.  Upload halted")
-						If forPreview Then
-							c.Add(id)
-						Else
-							If Not c.Contains(id) Then c.Add(id)
-						End If
-					Next
-				Next
-				If c.Count > 0 Then
-					Dim codes(c.Count - 1) As NullableInt32
-					For i = 0 To codes.Length - 1
-						codes(i) = New NullableTypes.NullableInt32(CType(c(i), Int32))
-					Next
-					Return codes
-				Else
-					Return New NullableTypes.NullableInt32() {}
-				End If
-			Catch ex As Exceptions.CodeCreationFailedException
-				Throw New CodeCreationException(Me.CurrentLineNumber, column, ex.ToString)
-			End Try
+      Try
+        Dim al As New System.Collections.ArrayList(value.Split(_multiValueSeparator))
+        Dim goodCodes As New System.Collections.ArrayList
+        For Each codeString As String In al
+          codeString = codeString.Trim
+          If codeString <> "" Then goodCodes.Add(codeString)
+        Next
+        Dim codeDisplayNames As String() = DirectCast(goodCodes.ToArray(GetType(String)), String())
+        Dim i As Int32
+        Dim hierarchicCodeManager As Service.IHierarchicArtifactManager
+        If forPreview Then
+          hierarchicCodeManager = New Service.FieldSpecificCodePreviewer(_codeManager, field.CodeTypeID.Value)
+        Else
+          hierarchicCodeManager = New Service.FieldSpecificCodeManager(_codeManager, field.CodeTypeID.Value)
+        End If
+        If Not Me.MulticodeMatrix.Contains(field.CodeTypeID.Value) Then
+          Me.MulticodeMatrix.Add(field.CodeTypeID.Value, New NestedArtifactCache(hierarchicCodeManager, _caseSystemID, _caseArtifactID, _hierarchicalMultiValueFieldDelmiter))
+        End If
+        Dim artifactCache As NestedArtifactCache = DirectCast(Me.MulticodeMatrix(field.CodeTypeID.Value), NestedArtifactCache)
+        Dim c As New System.Collections.ArrayList
+        For Each codeString As String In codeDisplayNames
+          For Each id As Object() In artifactCache.SelectedIds(_hierarchicalMultiValueFieldDelmiter & codeString.Trim(_hierarchicalMultiValueFieldDelmiter.ToCharArray))
+            If CType(id(0), Int32) = -200 Then Throw New System.Exception("This choice or multi-choice field is not enabled as unicode.  Upload halted")
+            If forPreview Then
+              c.Add(CType(id(0), Int32))
+              AddToCodeCountPreviewHashTable(field.FieldID, field.FieldName, CType(id(1), String))
+            Else
+              If Not c.Contains(CType(id(0), Int32)) Then c.Add(CType(id(0), Int32))
+            End If
+          Next
+        Next
+        If c.Count > 0 Then
+          Dim codes(c.Count - 1) As NullableInt32
+          For i = 0 To codes.Length - 1
+            codes(i) = New NullableTypes.NullableInt32(CType(c(i), Int32))
+          Next
+          Return codes
+        Else
+          Return New NullableTypes.NullableInt32() {}
+        End If
+      Catch ex As Exceptions.CodeCreationFailedException
+        Throw New CodeCreationException(Me.CurrentLineNumber, column, ex.ToString)
+      End Try
 
-			'For i = 0 To codeDisplayNames.Length - 1
-			'	codes(i) = GetCode(codeDisplayNames(i).Trim, column, field, forPreview)
-			'Next
-			'Return codes
+      'For i = 0 To codeDisplayNames.Length - 1
+      '	codes(i) = GetCode(codeDisplayNames(i).Trim, column, field, forPreview)
+      'Next
+      'Return codes
     End Function
 
 #End Region
@@ -262,10 +266,10 @@ Namespace kCura.WinEDDS
           value = ""
         End Try
       End If
-			If field.FieldCategoryID = kCura.DynamicFields.Types.FieldCategory.FullText Then
-				value = value.Replace(NewlineProxy, Microsoft.VisualBasic.ControlChars.NewLine)
-			End If
-			SetFieldValue(field, value, column, identityValue)
+      If field.FieldCategoryID = kCura.DynamicFields.Types.FieldCategory.FullText Then
+        value = value.Replace(NewlineProxy, Microsoft.VisualBasic.ControlChars.NewLine)
+      End If
+      SetFieldValue(field, value, column, identityValue)
     End Sub
 
     Public Sub SetFieldValue(ByVal field As DocumentField, ByVal value As String, ByVal column As Int32, ByVal identityValue As String)
@@ -290,6 +294,7 @@ Namespace kCura.WinEDDS
           Dim code As NullableInt32 = GetCode(value.Trim, column, field, forPreview)
           fieldValue = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(code)
           If forPreview And fieldValue = "-1" Then
+            AddToCodeCountPreviewHashTable(field.FieldID, field.FieldName, value.Trim)
             fieldValue = "[new code]"
           End If
           field.Value = fieldValue
@@ -299,9 +304,9 @@ Namespace kCura.WinEDDS
             If Not value.Trim = "" Then
               DirectCast(Me, BulkLoadFileImporter).WriteCodeLineToTempFile(identityValue, Int32.Parse(kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(code)), field.CodeTypeID.Value)
               Dim sb As New System.Text.StringBuilder
-							field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(code)
+              field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(code)
             Else
-							field.Value = ""
+              field.Value = ""
             End If
           End If
         Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.MultiCode
@@ -310,60 +315,60 @@ Namespace kCura.WinEDDS
             If TypeOf Me Is BulkLoadFileImporter Then
               field.Value = ChrW(11) & ChrW(11) & ChrW(20)
             End If
-					Else
-						Dim oldval As String = value.Trim
-							Dim codeValues As NullableTypes.NullableInt32() = GetMultiCode(value.Trim, column, field, forPreview)
-							Dim i As Int32
-							Dim newVal As String = String.Empty
-							Dim codeName As String
-							If codeValues.Length > 0 Then
-								newVal &= codeValues(0).ToString
-								If forPreview And newVal = "-1" Then
-									newVal = "[new code]"
-								End If
-								If codeValues.Length > 1 Then
-									For i = 1 To codeValues.Length - 1
-										codeName = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(codeValues(i))
-										If forPreview And codeName = "-1" Then
-											codeName = "[new code]"
-										End If
-										newVal &= ";" & codeName
-									Next
-								End If
-							End If
-							field.Value = newVal
-							If TypeOf Me Is BulkLoadFileImporter Then
-								If codeValues.Length = 0 Then
-									field.Value = ""
-								Else
-									field.Value = ChrW(11) & oldval.Trim(_multiValueSeparator).Replace(_multiValueSeparator, ChrW(11)) & ChrW(11)
-									For Each codeValue As NullableTypes.NullableInt32 In codeValues
-										If Not codeValue.IsNull Then
-											DirectCast(Me, BulkLoadFileImporter).WriteCodeLineToTempFile(identityValue, codeValue.Value, field.CodeTypeID.Value)
-										End If
-									Next
-									Dim sb As New System.Text.StringBuilder
-									For Each codeValue As NullableTypes.NullableInt32 In codeValues
-										If Not codeValue.IsNull Then
-											sb.Append(codeValue.Value)
-											sb.Append(",")
-										End If
-									Next
-									field.Value = sb.ToString.TrimEnd(","c)
-								End If
-							End If
-						End If
+          Else
+            Dim oldval As String = value.Trim
+            Dim codeValues As NullableTypes.NullableInt32() = GetMultiCode(value.Trim, column, field, forPreview)
+            Dim i As Int32
+            Dim newVal As String = String.Empty
+            Dim codeName As String
+            If codeValues.Length > 0 Then
+              newVal &= codeValues(0).ToString
+              If forPreview And newVal = "-1" Then
+                newVal = "[new code]"
+              End If
+              If codeValues.Length > 1 Then
+                For i = 1 To codeValues.Length - 1
+                  codeName = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(codeValues(i))
+                  If forPreview And codeName = "-1" Then
+                    codeName = "[new code]"
+                  End If
+                  newVal &= ";" & codeName
+                Next
+              End If
+            End If
+            field.Value = newVal
+            If TypeOf Me Is BulkLoadFileImporter Then
+              If codeValues.Length = 0 Then
+                field.Value = ""
+              Else
+                field.Value = ChrW(11) & oldval.Trim(_multiValueSeparator).Replace(_multiValueSeparator, ChrW(11)) & ChrW(11)
+                For Each codeValue As NullableTypes.NullableInt32 In codeValues
+                  If Not codeValue.IsNull Then
+                    DirectCast(Me, BulkLoadFileImporter).WriteCodeLineToTempFile(identityValue, codeValue.Value, field.CodeTypeID.Value)
+                  End If
+                Next
+                Dim sb As New System.Text.StringBuilder
+                For Each codeValue As NullableTypes.NullableInt32 In codeValues
+                  If Not codeValue.IsNull Then
+                    sb.Append(codeValue.Value)
+                    sb.Append(",")
+                  End If
+                Next
+                field.Value = sb.ToString.TrimEnd(","c)
+              End If
+            End If
+          End If
         Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Varchar
-						Select Case field.FieldCategory
-							Case DynamicFields.Types.FieldCategory.Relational
-								If field.FieldName.ToLower = "group identifier" Then
-									field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(Me.GetGroupIdentifierField(value, column, field.FieldLength.Value))
-								Else
-									field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(GetNullableFixedString(value, column, field.FieldLength.Value))
-								End If
-							Case Else
-								field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(GetNullableFixedString(value, column, field.FieldLength.Value))
-						End Select
+          Select Case field.FieldCategory
+            Case DynamicFields.Types.FieldCategory.Relational
+              If field.FieldName.ToLower = "group identifier" Then
+                field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(Me.GetGroupIdentifierField(value, column, field.FieldLength.Value))
+              Else
+                field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(GetNullableFixedString(value, column, field.FieldLength.Value))
+              End If
+            Case Else
+              field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(GetNullableFixedString(value, column, field.FieldLength.Value))
+          End Select
         Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Object
           field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(GetNullableAssociatedObjectName(value, column, 255, field.FieldName))
           If forPreview Then field.Value = value.Trim
@@ -398,6 +403,21 @@ Namespace kCura.WinEDDS
             End If
           End If
       End Select
+    End Sub
+
+    Public Sub AddToCodeCountPreviewHashTable(ByVal fieldID As Int32, ByVal fieldName As String, ByVal fieldValue As String)
+      Dim fieldKeyID As String = String.Format("{0}_{1}", fieldID, fieldName)
+      If _previewCodeCount.Contains(fieldKeyID) Then
+        Dim codesForField As System.Collections.Specialized.HybridDictionary = DirectCast(_previewCodeCount(fieldKeyID), System.Collections.Specialized.HybridDictionary)
+        If Not codesForField.Contains(fieldValue) Then
+          codesForField.Add(fieldValue, "")
+          _previewCodeCount(fieldKeyID) = codesForField
+        End If
+      Else
+        Dim newHashTable As New System.Collections.Specialized.HybridDictionary
+        newHashTable.Add(fieldValue.Trim, "")
+        _previewCodeCount.Add(fieldKeyID, newHashTable)
+      End If
     End Sub
 
     Public Overloads Function GetNullableDateTime(ByVal value As String, ByVal column As Int32) As NullableDateTime
@@ -514,10 +534,10 @@ Namespace kCura.WinEDDS
 
     Public Class CodeCreationException
       Inherits kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
-			Public Sub New(ByVal row As Int32, ByVal column As Int32, ByVal errorText As String)
-				MyBase.New(row, column, errorText)
-			End Sub
-		End Class
+      Public Sub New(ByVal row As Int32, ByVal column As Int32, ByVal errorText As String)
+        MyBase.New(row, column, errorText)
+      End Sub
+    End Class
 
     Public Class ColumnCountMismatchException
       Inherits kCura.Utility.DelimitedFileImporter.ImporterExceptionBase

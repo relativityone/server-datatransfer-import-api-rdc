@@ -1198,6 +1198,7 @@ Namespace kCura.WinEDDS
           sr.Close()
         Catch
         End Try
+        Throw
       End Try
     End Sub
 
