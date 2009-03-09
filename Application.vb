@@ -42,7 +42,7 @@ Namespace kCura.EDDS.WinForm
 		Private _cookieContainer As System.Net.CookieContainer
     Private _documentRepositoryList As String()
     Private _artifactTypeID As Int32
-    Private _totalFolders As New System.Collections.ArrayList
+    Private _totalFolders As New System.Collections.Specialized.HybridDictionary
 
     'Private _identity As kCura.EDDS.EDDSIdentity
 #End Region
@@ -506,13 +506,12 @@ Namespace kCura.EDDS.WinForm
     End Sub
 
     'Worker function for Previewing choice and folder counts
-    Public Function BuildFoldersAndCodesDataSource(ByVal al As ArrayList, ByVal multiRecordDelimiter As Char) As DataTable
+    Public Function BuildFoldersAndCodesDataSource(ByVal al As ArrayList, ByVal multiRecordDelimiter As Char, ByVal previewCodeCount As System.Collections.Specialized.HybridDictionary) As DataTable
       _totalFolders.Clear()
-      Dim codesPerField As New System.Collections.Specialized.HybridDictionary
       Try
         Dim item As Object
         Dim fields As DocumentField()
-        Dim codeFieldColumnIndexes As New arrayList
+        Dim codeFieldColumnIndexes As New ArrayList
         Dim folderColumnIndex As Int32 = -1
         Dim dt As New DataTable
         'get the choice field column indicies
@@ -529,12 +528,7 @@ Namespace kCura.EDDS.WinForm
         End If
         dt.Columns.Add("Field Name")
         dt.Columns.Add("Count")
-        Dim codeValues() As String
-        Dim fieldID As String
-        Dim fieldKeyID As String
-        Dim fieldName As String
         Dim fieldValue As String
-        Dim splitFolderValues() As String
         For Each item In al
           If Not item Is Nothing Then
             fields = DirectCast(item, DocumentField())
@@ -542,32 +536,6 @@ Namespace kCura.EDDS.WinForm
               fieldValue = fields(folderColumnIndex).Value
               AddFoldersToTotalFolders(fieldValue)
             End If
-          End If
-          If codeFieldColumnIndexes.Count > 0 Then
-            For Each codeFieldColumnIndex As Int32 In codeFieldColumnIndexes
-              fieldValue = fields(codeFieldColumnIndex).Value
-              If fieldValue <> "" Then
-                fieldID = fields(codeFieldColumnIndex).FieldID.ToString
-                fieldName = fields(codeFieldColumnIndex).FieldName
-                codeValues = fieldValue.Split(multiRecordDelimiter)
-                For Each code As String In codeValues
-                  Dim fieldKeyStringBuilder As New System.Text.StringBuilder
-                  fieldKeyID = fieldKeyStringBuilder.Append(fieldID).Append("_").Append(fieldName).ToString
-                  If codesPerField.Contains(fieldKeyID) Then
-                    Dim codeArrayList As System.Collections.ArrayList = DirectCast(codesPerField(fieldKeyID), System.Collections.ArrayList)
-                    If Not codeArrayList.Contains(code) And code <> "[new code]" Then
-                      Dim currentCodes As arrayList = DirectCast(codesPerField(fieldKeyID), System.Collections.ArrayList)
-                      currentCodes.Add(code)
-                      codesPerField(fieldKeyID) = currentCodes
-                    End If
-                  Else
-                    Dim arrayList As New System.Collections.ArrayList
-                    If code <> "[new code]" Then arrayList.Add(code)
-                    codesPerField.Add(fieldKeyID, arrayList)
-                  End If
-                Next
-              End If
-            Next
           End If
         Next
         Dim folderRow As New System.Collections.ArrayList
@@ -586,11 +554,13 @@ Namespace kCura.EDDS.WinForm
           dt.Columns.Add("     ")
           dt.Rows.Add(New String() {"No choice fields have been mapped"})
         Else
-          For Each key As String In codesPerField.Keys
+          For Each key As String In previewCodeCount.Keys
             Dim row As New System.Collections.ArrayList
             row.Add(key.Split("_".ToCharArray, 2)(1))
-            row.Add(DirectCast(codesPerField(key), System.Collections.ArrayList).Count)
+            Dim currentFieldHashTable As System.Collections.Specialized.HybridDictionary = DirectCast(previewCodeCount(key), System.Collections.Specialized.HybridDictionary)
+            row.Add(currentFieldHashTable.Count)
             dt.Rows.Add(row.ToArray)
+            currentFieldHashTable.Clear()
           Next
         End If
         Return dt
@@ -602,9 +572,9 @@ Namespace kCura.EDDS.WinForm
     Private Function AddFoldersToTotalFolders(ByVal folderPath As String) As String
       If folderPath <> "" AndAlso folderPath <> "\" Then
         If folderPath.LastIndexOf("\"c) < 1 Then
-          If Not _totalFolders.Contains(folderPath) Then _totalFolders.Add(folderPath)
+          If Not _totalFolders.Contains(folderPath) Then _totalFolders.Add(folderPath, "")
         Else
-          If Not _totalFolders.Contains(folderPath) Then _totalFolders.Add(folderPath)
+          If Not _totalFolders.Contains(folderPath) Then _totalFolders.Add(folderPath, "")
           AddFoldersToTotalFolders(folderPath.Substring(0, folderPath.LastIndexOf("\"c)))
         End If
       End If
@@ -916,12 +886,12 @@ Namespace kCura.EDDS.WinForm
       End If
       Dim frm As New kCura.Windows.Process.ProgressForm
       Dim previewer As New kCura.WinEDDS.PreviewLoadFileProcess
-      Dim previewfrm As New LoadFilePreviewForm(formType, loadFileToPreview.MultiRecordDelimiter)
+      Dim previewform As New LoadFilePreviewForm(formType, loadFileToPreview.MultiRecordDelimiter, loadFileToPreview.PreviewCodeCount)
       Dim thrower As New ValueThrower
       previewer.Thrower = thrower
       previewer.TimeZoneOffset = _timeZoneOffset
       previewer.ErrorsOnly = errorsOnly
-      previewfrm.Thrower = previewer.Thrower
+      previewform.Thrower = previewer.Thrower
       previewer.LoadFile = loadFileToPreview
       SetWorkingDirectory(loadFileToPreview.FilePath)
       frm.ProcessObserver = previewer.ProcessObserver
@@ -931,7 +901,7 @@ Namespace kCura.EDDS.WinForm
       Else
         frm.Text = "Preview Load File Progress ..."
       End If
-      previewfrm.Show()
+      previewform.Show()
       frm.Show()
       _processPool.StartProcess(previewer)
       CursorDefault()

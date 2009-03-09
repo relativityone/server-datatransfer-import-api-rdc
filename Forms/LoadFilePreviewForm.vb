@@ -6,8 +6,9 @@ Namespace kCura.EDDS.WinForm
     Private _application As Application
     Private _formType As Int32
     Private _multiRecordDelimiter As Char
+    Private _previewCodeCount As System.Collections.Specialized.HybridDictionary
 
-    Public Sub New(ByVal formType As Int32, ByVal mutliRecordDelimiter As Char)
+    Public Sub New(ByVal formType As Int32, ByVal mutliRecordDelimiter As Char, ByVal previewCodeCount As System.Collections.Specialized.HybridDictionary)
       MyBase.New()
 
       'This call is required by the Windows Form Designer.
@@ -17,6 +18,7 @@ Namespace kCura.EDDS.WinForm
       _application = Application.Instance
       _formType = formType
       _multiRecordDelimiter = mutliRecordDelimiter
+      _previewCodeCount = previewCodeCount
     End Sub
 
     'Form overrides dispose to clean up the component list.
@@ -107,7 +109,7 @@ Namespace kCura.EDDS.WinForm
     Private Sub _thrower_OnEvent(ByVal value As Object) Handles _thrower.OnEvent
       Dim args As Object() = DirectCast(value, Object())
       If _formType = FormType.Codes Then
-        Me.DataSource = _application.BuildFoldersAndCodesDataSource(DirectCast(args(0), ArrayList), _multiRecordDelimiter)
+        Me.DataSource = _application.BuildFoldersAndCodesDataSource(DirectCast(args(0), ArrayList), _multiRecordDelimiter, _previewCodeCount)
       Else
         Me.DataSource = _application.BuildLoadFileDataSource(DirectCast(args(0), ArrayList))
       End If
