@@ -78,6 +78,7 @@ Namespace kCura.EDDS.WinForm
 			End If
 			_frm.DropDownToUpdate.SelectedItem = ei
 			Constants.AddDefaultEncoding(ei)
+			RaiseEvent SelectedEncodingChanged()
 		End Sub
 
 		Private Sub EncodingPicker_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles MyBase.Load
@@ -113,6 +114,12 @@ Namespace kCura.EDDS.WinForm
 				End If
 			End Set
 		End Property
+
+		Public Event SelectedEncodingChanged()
+
+		Private Sub DropDown_SelectedIndexChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles DropDown.SelectedIndexChanged
+			RaiseEvent SelectedEncodingChanged()
+		End Sub
 	End Class
 
 

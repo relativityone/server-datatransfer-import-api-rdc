@@ -1520,8 +1520,9 @@ Namespace kCura.EDDS.WinForm
       _fullTextFileEncodingPicker.Enabled = _extractedTextValueContainsFileLocation.Checked
     End Sub
 
-    Private Sub _fullTextFileEncodingPicker_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _fullTextFileEncodingPicker.Load
-
-    End Sub
-  End Class
+		Private Sub _loadFileEncodingPicker_SelectedEncodingChanged() Handles _loadFileEncodingPicker.SelectedEncodingChanged
+			Me.LoadFile.SourceFileEncoding = _loadFileEncodingPicker.SelectedEncoding
+			Me.RefreshNativeFilePathFieldAndFileColumnHeaders()
+		End Sub
+	End Class
 End Namespace
