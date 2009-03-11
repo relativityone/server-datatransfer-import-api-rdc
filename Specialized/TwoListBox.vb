@@ -217,7 +217,7 @@ Namespace kCura.Windows.Forms
 			Dim g As System.Drawing.Graphics = Me.CreateGraphics
 			box.HorizontalExtent = 0
 			For i As Int32 = 0 To box.Items.Count - 1
-				box.HorizontalExtent = System.Math.Max(CInt(box.HorizontalExtent), CInt(g.MeasureString(box.Items(i).ToString, box.Font, box.Bounds.X).Width))
+				box.HorizontalExtent = System.Math.Max(CInt(box.HorizontalExtent), CInt(g.MeasureString(box.Items(i).ToString, box.Font, 0).Width))
 			Next
 		End Sub
 
