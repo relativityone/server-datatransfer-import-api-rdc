@@ -1105,8 +1105,9 @@ Namespace kCura.EDDS.WinForm
         _destinationFolderPath.SelectedItem = Nothing
         _destinationFolderPath.Text = "Select ..."
       End If
-      ActionMenuEnabled = ReadyToRun
-      Return columnHeaders
+			ActionMenuEnabled = ReadyToRun
+			_fileColumns.EnsureHorizontalScrollbars()
+			Return columnHeaders
     End Function
 
     Private Sub OpenFileDialog_FileOk(ByVal sender As Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles OpenFileDialog.FileOk
