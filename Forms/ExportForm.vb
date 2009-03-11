@@ -1589,6 +1589,9 @@ Public Class ExportForm
 
 	Private Sub _copyFilesFromRepository_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _copyFilesFromRepository.CheckedChanged
 		_imageTypeDropdown.Enabled = _exportImages.Checked And _copyFilesFromRepository.Checked
+		If Not _copyFilesFromRepository.Checked Then
+			_imageTypeDropdown.SelectedIndex = 1
+		End If
 		RunMenu.Enabled = ReadyToRun()
 	End Sub
 
