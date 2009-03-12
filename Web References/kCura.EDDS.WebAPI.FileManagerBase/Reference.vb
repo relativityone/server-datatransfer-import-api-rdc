@@ -160,14 +160,14 @@ Namespace kCura.EDDS.WebAPI.FileManagerBase
         
         '<remarks/>
         <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/FileManager/GetRotation", RequestNamespace:="http://www.kCura.com/EDDS/FileManager", ResponseNamespace:="http://www.kCura.com/EDDS/FileManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
-        Public Function GetRotation(ByVal caseContextArtifactID As Integer, ByVal artifactID As Integer, ByVal guid As String) As Integer
-            Dim results() As Object = Me.Invoke("GetRotation", New Object() {caseContextArtifactID, artifactID, guid})
+        Public Function GetRotation(ByVal caseContextArtifactID As Integer, ByVal guid As String) As Integer
+            Dim results() As Object = Me.Invoke("GetRotation", New Object() {caseContextArtifactID, guid})
             Return CType(results(0),Integer)
         End Function
         
         '<remarks/>
-        Public Function BeginGetRotation(ByVal caseContextArtifactID As Integer, ByVal artifactID As Integer, ByVal guid As String, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
-            Return Me.BeginInvoke("GetRotation", New Object() {caseContextArtifactID, artifactID, guid}, callback, asyncState)
+        Public Function BeginGetRotation(ByVal caseContextArtifactID As Integer, ByVal guid As String, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("GetRotation", New Object() {caseContextArtifactID, guid}, callback, asyncState)
         End Function
         
         '<remarks/>
@@ -178,13 +178,13 @@ Namespace kCura.EDDS.WebAPI.FileManagerBase
         
         '<remarks/>
         <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/FileManager/SetRotation", RequestNamespace:="http://www.kCura.com/EDDS/FileManager", ResponseNamespace:="http://www.kCura.com/EDDS/FileManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
-        Public Sub SetRotation(ByVal caseContextArtifactID As Integer, ByVal artifactID As Integer, ByVal guid As String, ByVal rotation As Integer)
-            Me.Invoke("SetRotation", New Object() {caseContextArtifactID, artifactID, guid, rotation})
+        Public Sub SetRotation(ByVal caseContextArtifactID As Integer, ByVal guid As String, ByVal rotation As Integer)
+            Me.Invoke("SetRotation", New Object() {caseContextArtifactID, guid, rotation})
         End Sub
         
         '<remarks/>
-        Public Function BeginSetRotation(ByVal caseContextArtifactID As Integer, ByVal artifactID As Integer, ByVal guid As String, ByVal rotation As Integer, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
-            Return Me.BeginInvoke("SetRotation", New Object() {caseContextArtifactID, artifactID, guid, rotation}, callback, asyncState)
+        Public Function BeginSetRotation(ByVal caseContextArtifactID As Integer, ByVal guid As String, ByVal rotation As Integer, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("SetRotation", New Object() {caseContextArtifactID, guid, rotation}, callback, asyncState)
         End Function
         
         '<remarks/>
@@ -213,14 +213,14 @@ Namespace kCura.EDDS.WebAPI.FileManagerBase
         
         '<remarks/>
         <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/FileManager/RetrieveNativesFileSize", RequestNamespace:="http://www.kCura.com/EDDS/FileManager", ResponseNamespace:="http://www.kCura.com/EDDS/FileManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
-        Public Function RetrieveNativesFileSize(ByVal caseContextArtifactID As Integer, ByVal guid As String, ByVal documentArtifactID As Integer) As Long
-            Dim results() As Object = Me.Invoke("RetrieveNativesFileSize", New Object() {caseContextArtifactID, guid, documentArtifactID})
+        Public Function RetrieveNativesFileSize(ByVal caseContextArtifactID As Integer, ByVal guid As String) As Long
+            Dim results() As Object = Me.Invoke("RetrieveNativesFileSize", New Object() {caseContextArtifactID, guid})
             Return CType(results(0),Long)
         End Function
         
         '<remarks/>
-        Public Function BeginRetrieveNativesFileSize(ByVal caseContextArtifactID As Integer, ByVal guid As String, ByVal documentArtifactID As Integer, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
-            Return Me.BeginInvoke("RetrieveNativesFileSize", New Object() {caseContextArtifactID, guid, documentArtifactID}, callback, asyncState)
+        Public Function BeginRetrieveNativesFileSize(ByVal caseContextArtifactID As Integer, ByVal guid As String, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("RetrieveNativesFileSize", New Object() {caseContextArtifactID, guid}, callback, asyncState)
         End Function
         
         '<remarks/>
@@ -230,37 +230,19 @@ Namespace kCura.EDDS.WebAPI.FileManagerBase
         End Function
         
         '<remarks/>
-        <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/FileManager/GetFileNameByDocumentArtifactIDAndGuid", RequestNamespace:="http://www.kCura.com/EDDS/FileManager", ResponseNamespace:="http://www.kCura.com/EDDS/FileManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
-        Public Function GetFileNameByDocumentArtifactIDAndGuid(ByVal caseContextArtifactID As Integer, ByVal documentArtifactID As Integer, ByVal guid As String) As String
-            Dim results() As Object = Me.Invoke("GetFileNameByDocumentArtifactIDAndGuid", New Object() {caseContextArtifactID, documentArtifactID, guid})
-            Return CType(results(0),String)
-        End Function
-        
-        '<remarks/>
-        Public Function BeginGetFileNameByDocumentArtifactIDAndGuid(ByVal caseContextArtifactID As Integer, ByVal documentArtifactID As Integer, ByVal guid As String, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
-            Return Me.BeginInvoke("GetFileNameByDocumentArtifactIDAndGuid", New Object() {caseContextArtifactID, documentArtifactID, guid}, callback, asyncState)
-        End Function
-        
-        '<remarks/>
-        Public Function EndGetFileNameByDocumentArtifactIDAndGuid(ByVal asyncResult As System.IAsyncResult) As String
-            Dim results() As Object = Me.EndInvoke(asyncResult)
-            Return CType(results(0),String)
-        End Function
-        
-        '<remarks/>
-        <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/FileManager/GetFileByDocumentArtifactIDAndGuid", RequestNamespace:="http://www.kCura.com/EDDS/FileManager", ResponseNamespace:="http://www.kCura.com/EDDS/FileManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
-        Public Function GetFileByDocumentArtifactIDAndGuid(ByVal caseContextArtifactID As Integer, ByVal documentArtifactID As Integer, ByVal guid As String) As File
-            Dim results() As Object = Me.Invoke("GetFileByDocumentArtifactIDAndGuid", New Object() {caseContextArtifactID, documentArtifactID, guid})
+        <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/FileManager/GetFileByGuid", RequestNamespace:="http://www.kCura.com/EDDS/FileManager", ResponseNamespace:="http://www.kCura.com/EDDS/FileManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
+        Public Function GetFileByGuid(ByVal caseContextArtifactID As Integer, ByVal guid As String) As File
+            Dim results() As Object = Me.Invoke("GetFileByGuid", New Object() {caseContextArtifactID, guid})
             Return CType(results(0),File)
         End Function
         
         '<remarks/>
-        Public Function BeginGetFileByDocumentArtifactIDAndGuid(ByVal caseContextArtifactID As Integer, ByVal documentArtifactID As Integer, ByVal guid As String, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
-            Return Me.BeginInvoke("GetFileByDocumentArtifactIDAndGuid", New Object() {caseContextArtifactID, documentArtifactID, guid}, callback, asyncState)
+        Public Function BeginGetFileByGuid(ByVal caseContextArtifactID As Integer, ByVal guid As String, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("GetFileByGuid", New Object() {caseContextArtifactID, guid}, callback, asyncState)
         End Function
         
         '<remarks/>
-        Public Function EndGetFileByDocumentArtifactIDAndGuid(ByVal asyncResult As System.IAsyncResult) As File
+        Public Function EndGetFileByGuid(ByVal asyncResult As System.IAsyncResult) As File
             Dim results() As Object = Me.EndInvoke(asyncResult)
             Return CType(results(0),File)
         End Function

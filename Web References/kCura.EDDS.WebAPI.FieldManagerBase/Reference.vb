@@ -279,7 +279,7 @@ Namespace kCura.EDDS.WebAPI.FieldManagerBase
         AutoCreate
         
         '<remarks/>
-        ReservedRenameToUse
+        FileSize
         
         '<remarks/>
         FolderName

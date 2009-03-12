@@ -312,7 +312,7 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
         AutoCreate
         
         '<remarks/>
-        ReservedRenameToUse
+        FileSize
         
         '<remarks/>
         FolderName

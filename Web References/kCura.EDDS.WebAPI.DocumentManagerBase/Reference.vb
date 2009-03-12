@@ -674,7 +674,7 @@ Namespace kCura.EDDS.WebAPI.DocumentManagerBase
         AutoCreate
         
         '<remarks/>
-        ReservedRenameToUse
+        FileSize
         
         '<remarks/>
         FolderName

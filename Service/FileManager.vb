@@ -278,13 +278,13 @@ Namespace kCura.WinEDDS.Service
 			End While
 		End Sub
 
-		Public Shadows Function GetRotation(ByVal caseContextArtifactID As Int32, ByVal artifactID As Int32, ByVal guid As String) As Int32
+		Public Shadows Function GetRotation(ByVal caseContextArtifactID As Int32, ByVal guid As String) As Int32
 			Dim tries As Int32 = 0
 			While tries < Config.MaxReloginTries
 				Try
 					tries += 1
 					If kCura.WinEDDS.Config.UsesWebAPI Then
-						Return MyBase.GetRotation(caseContextArtifactID, artifactID, guid)
+						Return MyBase.GetRotation(caseContextArtifactID, guid)
 					Else
 						'Return New kCura.EDDS.Service.FileManager().Read(guid, artifactID, _identity).Rotation
 					End If
@@ -298,13 +298,13 @@ Namespace kCura.WinEDDS.Service
 			End While
 		End Function
 
-		Public Shadows Sub SetRotation(ByVal caseContextArtifactID As Int32, ByVal artifactID As Int32, ByVal guid As String, ByVal rotation As Int32)
+		Public Shadows Sub SetRotation(ByVal caseContextArtifactID As Int32, ByVal guid As String, ByVal rotation As Int32)
 			Dim tries As Int32 = 0
 			While tries < Config.MaxReloginTries
 				tries += 1
 				Try
 					If kCura.WinEDDS.Config.UsesWebAPI Then
-						MyBase.SetRotation(caseContextArtifactID, artifactID, guid, rotation)
+						MyBase.SetRotation(caseContextArtifactID, guid, rotation)
 						Exit Sub
 					Else
 						'_fileManager.ExternalSetRotation(artifactID, guid, rotation, _identity)
@@ -339,13 +339,13 @@ Namespace kCura.WinEDDS.Service
 			End While
 		End Function
 
-		Public Shadows Function RetrieveNativeFileSize(ByVal caseContextArtifactID As Int32, ByVal guid As String, ByVal documentArtifactID As Int32) As Long
+		Public Shadows Function RetrieveNativeFileSize(ByVal caseContextArtifactID As Int32, ByVal guid As String) As Long
 			Dim tries As Int32 = 0
 			While tries < Config.MaxReloginTries
 				tries += 1
 				Try
 					If kCura.WinEDDS.Config.UsesWebAPI Then
-						Return MyBase.RetrieveNativesFileSize(caseContextArtifactID, guid, documentArtifactID)
+						Return MyBase.RetrieveNativesFileSize(caseContextArtifactID, guid)
 					Else
 						'Return _fileManager.ExternalRetrieveNativeFileSize(sourceDirectory, guid, _identity)
 					End If

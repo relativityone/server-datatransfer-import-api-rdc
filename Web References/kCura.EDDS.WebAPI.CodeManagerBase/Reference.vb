@@ -111,6 +111,9 @@ Namespace kCura.EDDS.WebAPI.CodeManagerBase
         
         '<remarks/>
         Public UpdateInSearchEngine As Boolean
+        
+        '<remarks/>
+        Public OIHiliteStyleID As Integer
     End Class
     
     '<remarks/>

@@ -164,7 +164,6 @@
         <s:complexType>
           <s:sequence>
             <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
-            <s:element minOccurs="1" maxOccurs="1" name="artifactID" type="s:int" />
             <s:element minOccurs="0" maxOccurs="1" name="guid" type="s:string" />
           </s:sequence>
         </s:complexType>
@@ -180,7 +179,6 @@
         <s:complexType>
           <s:sequence>
             <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
-            <s:element minOccurs="1" maxOccurs="1" name="artifactID" type="s:int" />
             <s:element minOccurs="0" maxOccurs="1" name="guid" type="s:string" />
             <s:element minOccurs="1" maxOccurs="1" name="rotation" type="s:int" />
           </s:sequence>
@@ -210,7 +208,6 @@
           <s:sequence>
             <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
             <s:element minOccurs="0" maxOccurs="1" name="guid" type="s:string" />
-            <s:element minOccurs="1" maxOccurs="1" name="documentArtifactID" type="s:int" />
           </s:sequence>
         </s:complexType>
       </s:element>
@@ -221,35 +218,18 @@
           </s:sequence>
         </s:complexType>
       </s:element>
-      <s:element name="GetFileNameByDocumentArtifactIDAndGuid">
+      <s:element name="GetFileByGuid">
         <s:complexType>
           <s:sequence>
             <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
-            <s:element minOccurs="1" maxOccurs="1" name="documentArtifactID" type="s:int" />
             <s:element minOccurs="0" maxOccurs="1" name="guid" type="s:string" />
           </s:sequence>
         </s:complexType>
       </s:element>
-      <s:element name="GetFileNameByDocumentArtifactIDAndGuidResponse">
+      <s:element name="GetFileByGuidResponse">
         <s:complexType>
           <s:sequence>
-            <s:element minOccurs="0" maxOccurs="1" name="GetFileNameByDocumentArtifactIDAndGuidResult" type="s:string" />
-          </s:sequence>
-        </s:complexType>
-      </s:element>
-      <s:element name="GetFileByDocumentArtifactIDAndGuid">
-        <s:complexType>
-          <s:sequence>
-            <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
-            <s:element minOccurs="1" maxOccurs="1" name="documentArtifactID" type="s:int" />
-            <s:element minOccurs="0" maxOccurs="1" name="guid" type="s:string" />
-          </s:sequence>
-        </s:complexType>
-      </s:element>
-      <s:element name="GetFileByDocumentArtifactIDAndGuidResponse">
-        <s:complexType>
-          <s:sequence>
-            <s:element minOccurs="0" maxOccurs="1" name="GetFileByDocumentArtifactIDAndGuidResult" type="tns:File" />
+            <s:element minOccurs="0" maxOccurs="1" name="GetFileByGuidResult" type="tns:File" />
           </s:sequence>
         </s:complexType>
       </s:element>
@@ -349,17 +329,11 @@
   <wsdl:message name="RetrieveNativesFileSizeSoapOut">
     <wsdl:part name="parameters" element="tns:RetrieveNativesFileSizeResponse" />
   </wsdl:message>
-  <wsdl:message name="GetFileNameByDocumentArtifactIDAndGuidSoapIn">
-    <wsdl:part name="parameters" element="tns:GetFileNameByDocumentArtifactIDAndGuid" />
+  <wsdl:message name="GetFileByGuidSoapIn">
+    <wsdl:part name="parameters" element="tns:GetFileByGuid" />
   </wsdl:message>
-  <wsdl:message name="GetFileNameByDocumentArtifactIDAndGuidSoapOut">
-    <wsdl:part name="parameters" element="tns:GetFileNameByDocumentArtifactIDAndGuidResponse" />
-  </wsdl:message>
-  <wsdl:message name="GetFileByDocumentArtifactIDAndGuidSoapIn">
-    <wsdl:part name="parameters" element="tns:GetFileByDocumentArtifactIDAndGuid" />
-  </wsdl:message>
-  <wsdl:message name="GetFileByDocumentArtifactIDAndGuidSoapOut">
-    <wsdl:part name="parameters" element="tns:GetFileByDocumentArtifactIDAndGuidResponse" />
+  <wsdl:message name="GetFileByGuidSoapOut">
+    <wsdl:part name="parameters" element="tns:GetFileByGuidResponse" />
   </wsdl:message>
   <wsdl:message name="GetTotalImageCountByArtifactIDsSoapIn">
     <wsdl:part name="parameters" element="tns:GetTotalImageCountByArtifactIDs" />
@@ -418,13 +392,9 @@
       <wsdl:input message="tns:RetrieveNativesFileSizeSoapIn" />
       <wsdl:output message="tns:RetrieveNativesFileSizeSoapOut" />
     </wsdl:operation>
-    <wsdl:operation name="GetFileNameByDocumentArtifactIDAndGuid">
-      <wsdl:input message="tns:GetFileNameByDocumentArtifactIDAndGuidSoapIn" />
-      <wsdl:output message="tns:GetFileNameByDocumentArtifactIDAndGuidSoapOut" />
-    </wsdl:operation>
-    <wsdl:operation name="GetFileByDocumentArtifactIDAndGuid">
-      <wsdl:input message="tns:GetFileByDocumentArtifactIDAndGuidSoapIn" />
-      <wsdl:output message="tns:GetFileByDocumentArtifactIDAndGuidSoapOut" />
+    <wsdl:operation name="GetFileByGuid">
+      <wsdl:input message="tns:GetFileByGuidSoapIn" />
+      <wsdl:output message="tns:GetFileByGuidSoapOut" />
     </wsdl:operation>
     <wsdl:operation name="GetTotalImageCountByArtifactIDs">
       <wsdl:input message="tns:GetTotalImageCountByArtifactIDsSoapIn" />
@@ -536,17 +506,8 @@
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="GetFileNameByDocumentArtifactIDAndGuid">
-      <soap:operation soapAction="http://www.kCura.com/EDDS/FileManager/GetFileNameByDocumentArtifactIDAndGuid" style="document" />
-      <wsdl:input>
-        <soap:body use="literal" />
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="GetFileByDocumentArtifactIDAndGuid">
-      <soap:operation soapAction="http://www.kCura.com/EDDS/FileManager/GetFileByDocumentArtifactIDAndGuid" style="document" />
+    <wsdl:operation name="GetFileByGuid">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/FileManager/GetFileByGuid" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>

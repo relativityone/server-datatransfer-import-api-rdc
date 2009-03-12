@@ -42,6 +42,7 @@
               <s:element minOccurs="1" maxOccurs="1" name="Order" type="s:int" />
               <s:element minOccurs="1" maxOccurs="1" name="IsActive" type="s:boolean" />
               <s:element minOccurs="1" maxOccurs="1" name="UpdateInSearchEngine" type="s:boolean" />
+              <s:element minOccurs="1" maxOccurs="1" name="OIHiliteStyleID" type="s:int" />
             </s:sequence>
           </s:extension>
         </s:complexContent>

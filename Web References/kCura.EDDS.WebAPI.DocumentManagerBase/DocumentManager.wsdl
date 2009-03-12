@@ -263,7 +263,7 @@
           <s:enumeration value="Relational" />
           <s:enumeration value="ProductionMarker" />
           <s:enumeration value="AutoCreate" />
-          <s:enumeration value="ReservedRenameToUse" />
+          <s:enumeration value="FileSize" />
           <s:enumeration value="FolderName" />
           <s:enumeration value="FileInfo" />
           <s:enumeration value="ParentArtifact" />
