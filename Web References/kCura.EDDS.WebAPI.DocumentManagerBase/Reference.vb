@@ -556,9 +556,6 @@ Namespace kCura.EDDS.WebAPI.DocumentManagerBase
         Public IsAvailableInChoiceTree As Boolean
         
         '<remarks/>
-        Public IsAvailableForRightClickTagging As Boolean
-        
-        '<remarks/>
         Public IsGroupByEnabled As Boolean
         
         '<remarks/>
@@ -643,6 +640,9 @@ Namespace kCura.EDDS.WebAPI.DocumentManagerBase
         
         '<remarks/>
         LayoutText
+        
+        '<remarks/>
+        Objects
     End Enum
     
     '<remarks/>
@@ -659,7 +659,7 @@ Namespace kCura.EDDS.WebAPI.DocumentManagerBase
         Identifier
         
         '<remarks/>
-        Associative
+        Reflected
         
         '<remarks/>
         Comments
@@ -690,6 +690,9 @@ Namespace kCura.EDDS.WebAPI.DocumentManagerBase
         
         '<remarks/>
         GenericSystem
+        
+        '<remarks/>
+        MultiReflected
     End Enum
     
     '<remarks/>

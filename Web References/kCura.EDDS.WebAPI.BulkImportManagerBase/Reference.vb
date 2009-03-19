@@ -297,7 +297,7 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
         Identifier
         
         '<remarks/>
-        Associative
+        Reflected
         
         '<remarks/>
         Comments
@@ -328,6 +328,9 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
         
         '<remarks/>
         GenericSystem
+        
+        '<remarks/>
+        MultiReflected
     End Enum
     
     '<remarks/>
@@ -372,6 +375,9 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
         
         '<remarks/>
         LayoutText
+        
+        '<remarks/>
+        Objects
     End Enum
     
     '<remarks/>

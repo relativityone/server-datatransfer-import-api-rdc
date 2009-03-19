@@ -132,7 +132,7 @@
           <s:enumeration value="Generic" />
           <s:enumeration value="FullText" />
           <s:enumeration value="Identifier" />
-          <s:enumeration value="Associative" />
+          <s:enumeration value="Reflected" />
           <s:enumeration value="Comments" />
           <s:enumeration value="Relational" />
           <s:enumeration value="ProductionMarker" />
@@ -143,6 +143,7 @@
           <s:enumeration value="ParentArtifact" />
           <s:enumeration value="MarkupSetMarker" />
           <s:enumeration value="GenericSystem" />
+          <s:enumeration value="MultiReflected" />
         </s:restriction>
       </s:simpleType>
       <s:simpleType name="FieldType">
@@ -160,6 +161,7 @@
           <s:enumeration value="Object" />
           <s:enumeration value="User" />
           <s:enumeration value="LayoutText" />
+          <s:enumeration value="Objects" />
         </s:restriction>
       </s:simpleType>
       <s:element name="BulkImportNativeResponse">

@@ -161,9 +161,6 @@ Namespace kCura.EDDS.WebAPI.FieldManagerBase
         Public IsAvailableInChoiceTree As Boolean
         
         '<remarks/>
-        Public IsAvailableForRightClickTagging As Boolean
-        
-        '<remarks/>
         Public IsGroupByEnabled As Boolean
         
         '<remarks/>
@@ -248,6 +245,9 @@ Namespace kCura.EDDS.WebAPI.FieldManagerBase
         
         '<remarks/>
         LayoutText
+        
+        '<remarks/>
+        Objects
     End Enum
     
     '<remarks/>
@@ -264,7 +264,7 @@ Namespace kCura.EDDS.WebAPI.FieldManagerBase
         Identifier
         
         '<remarks/>
-        Associative
+        Reflected
         
         '<remarks/>
         Comments
@@ -295,6 +295,9 @@ Namespace kCura.EDDS.WebAPI.FieldManagerBase
         
         '<remarks/>
         GenericSystem
+        
+        '<remarks/>
+        MultiReflected
     End Enum
     
     '<remarks/>

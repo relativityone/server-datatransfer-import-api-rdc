@@ -875,14 +875,16 @@ Namespace kCura.WinEDDS
 					End If
 					'System.Web.HttpUtility.HtmlEncode()
 					fieldValue = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(NullableTypes.HelperFunctions.DBNullConvert.ToNullableString(val))
+					If field.IsMultiValueField Then
+						fieldValue = Me.GetMultivalueString(fieldValue)
+					ElseIf field.IsCodeOrMulticodeField Then
+						fieldValue = System.Web.HttpUtility.HtmlDecode(fieldValue)
+						fieldValue = fieldValue.Trim(New Char() {ChrW(11)}).Replace(ChrW(11), _settings.MultiRecordDelimiter)
+					End If
 					fieldValue = fieldValue.Replace(System.Environment.NewLine, ChrW(10).ToString)
 					fieldValue = fieldValue.Replace(ChrW(13), ChrW(10))
 					fieldValue = fieldValue.Replace(ChrW(10), _settings.NewlineDelimiter)
 					fieldValue = fieldValue.Replace(_settings.QuoteDelimiter, _settings.QuoteDelimiter & _settings.QuoteDelimiter)
-					If field.IsCodeOrMulticodeField Then
-						fieldValue = System.Web.HttpUtility.HtmlDecode(fieldValue)
-						fieldValue = fieldValue.Trim(New Char() {ChrW(11)}).Replace(ChrW(11), _settings.MultiRecordDelimiter)
-					End If
 					_nativeFileWriter.Write(String.Format("{0}{1}{0}", _settings.QuoteDelimiter, fieldValue))
 				End If
 				If Not count = _parent.Columns.Count - 1 Then
@@ -997,7 +999,10 @@ Namespace kCura.WinEDDS
 						End If
 					End If
 					fieldValue = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(NullableTypes.HelperFunctions.DBNullConvert.ToNullableString(val))
-					If field.IsCodeOrMulticodeField Then
+
+					If field.IsMultiValueField Then
+						fieldValue = Me.GetMultivalueString(fieldValue)
+					ElseIf field.IsCodeOrMulticodeField Then
 						fieldValue = System.Web.HttpUtility.HtmlDecode(fieldValue)
 						fieldValue = fieldValue.Trim(New Char() {ChrW(11)}).Replace(ChrW(11), _settings.MultiRecordDelimiter)
 					End If
@@ -1045,6 +1050,26 @@ Namespace kCura.WinEDDS
 			Dim retval As New System.Text.StringBuilder
 			retval.AppendFormat("<a style='display:block' href='{0}'>{1}</a>", location, doc.NativeFileName(Me.Settings.AppendOriginalFileName))
 			Return retval.ToString
+		End Function
+
+		Private Function GetMultivalueString(ByVal input As String) As String
+			Dim xr As New System.Xml.XmlTextReader(New System.IO.StringReader("<objects>" & input & "</objects>"))
+			Dim firstTimeThrough As Boolean = True
+			Dim sb As New System.Text.StringBuilder
+			While xr.Read
+				If xr.Name = "object" And xr.IsStartElement Then
+					xr.Read()
+					If firstTimeThrough Then
+						firstTimeThrough = False
+					Else
+						sb.Append(Me.Settings.MultiRecordDelimiter)
+					End If
+					Dim cleanval As String = xr.Value.Trim
+					sb.Append(cleanval)
+				End If
+			End While
+			xr.Close()
+			Return sb.ToString
 		End Function
 
 		Public Sub UpdateVolume()

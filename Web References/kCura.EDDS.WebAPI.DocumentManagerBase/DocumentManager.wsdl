@@ -211,7 +211,6 @@
               </s:element>
               <s:element minOccurs="1" maxOccurs="1" name="IsAvailableToAssociativeObjects" type="s:boolean" />
               <s:element minOccurs="1" maxOccurs="1" name="IsAvailableInChoiceTree" type="s:boolean" />
-              <s:element minOccurs="1" maxOccurs="1" name="IsAvailableForRightClickTagging" type="s:boolean" />
               <s:element minOccurs="1" maxOccurs="1" name="IsGroupByEnabled" type="s:boolean" />
               <s:element minOccurs="1" maxOccurs="1" name="IsIndexEnabled" type="s:boolean" />
               <s:element minOccurs="0" maxOccurs="1" name="DisplayValueTrue" type="s:string" />
@@ -251,6 +250,7 @@
           <s:enumeration value="Object" />
           <s:enumeration value="User" />
           <s:enumeration value="LayoutText" />
+          <s:enumeration value="Objects" />
         </s:restriction>
       </s:simpleType>
       <s:simpleType name="FieldCategory">
@@ -258,7 +258,7 @@
           <s:enumeration value="Generic" />
           <s:enumeration value="FullText" />
           <s:enumeration value="Identifier" />
-          <s:enumeration value="Associative" />
+          <s:enumeration value="Reflected" />
           <s:enumeration value="Comments" />
           <s:enumeration value="Relational" />
           <s:enumeration value="ProductionMarker" />
@@ -269,6 +269,7 @@
           <s:enumeration value="ParentArtifact" />
           <s:enumeration value="MarkupSetMarker" />
           <s:enumeration value="GenericSystem" />
+          <s:enumeration value="MultiReflected" />
         </s:restriction>
       </s:simpleType>
       <s:complexType name="ArrayOfField">
