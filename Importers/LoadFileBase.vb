@@ -293,9 +293,11 @@ Namespace kCura.WinEDDS
           Dim fieldValue As String
           Dim code As NullableInt32 = GetCode(value.Trim, column, field, forPreview)
           fieldValue = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(code)
-          If forPreview And fieldValue = "-1" Then
+          If forPreview Then
+            If fieldValue = "-1" Then
+              fieldValue = "[new code]"
+            End If
             AddToCodeCountPreviewHashTable(field.FieldID, field.FieldName, value.Trim)
-            fieldValue = "[new code]"
           End If
           field.Value = fieldValue
           If TypeOf Me Is BulkLoadFileImporter Then
@@ -310,98 +312,98 @@ Namespace kCura.WinEDDS
             End If
           End If
         Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.MultiCode
-          If value = String.Empty Then
-            field.Value = String.Empty
-            If TypeOf Me Is BulkLoadFileImporter Then
-              field.Value = ChrW(11) & ChrW(11) & ChrW(20)
-            End If
-          Else
-            Dim oldval As String = value.Trim
-            Dim codeValues As NullableTypes.NullableInt32() = GetMultiCode(value.Trim, column, field, forPreview)
-            Dim i As Int32
-            Dim newVal As String = String.Empty
-            Dim codeName As String
-            If codeValues.Length > 0 Then
-              newVal &= codeValues(0).ToString
-              If forPreview And newVal = "-1" Then
-                newVal = "[new code]"
+            If value = String.Empty Then
+              field.Value = String.Empty
+              If TypeOf Me Is BulkLoadFileImporter Then
+                field.Value = ChrW(11) & ChrW(11) & ChrW(20)
               End If
-              If codeValues.Length > 1 Then
-                For i = 1 To codeValues.Length - 1
-                  codeName = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(codeValues(i))
-                  If forPreview And codeName = "-1" Then
-                    codeName = "[new code]"
-                  End If
-                  newVal &= ";" & codeName
-                Next
-              End If
-            End If
-            field.Value = newVal
-            If TypeOf Me Is BulkLoadFileImporter Then
-              If codeValues.Length = 0 Then
-                field.Value = ""
-              Else
-                field.Value = ChrW(11) & oldval.Trim(_multiValueSeparator).Replace(_multiValueSeparator, ChrW(11)) & ChrW(11)
-                For Each codeValue As NullableTypes.NullableInt32 In codeValues
-                  If Not codeValue.IsNull Then
-                    DirectCast(Me, BulkLoadFileImporter).WriteCodeLineToTempFile(identityValue, codeValue.Value, field.CodeTypeID.Value)
-                  End If
-                Next
-                Dim sb As New System.Text.StringBuilder
-                For Each codeValue As NullableTypes.NullableInt32 In codeValues
-                  If Not codeValue.IsNull Then
-                    sb.Append(codeValue.Value)
-                    sb.Append(",")
-                  End If
-                Next
-                field.Value = sb.ToString.TrimEnd(","c)
-              End If
-            End If
-          End If
-        Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Varchar
-          Select Case field.FieldCategory
-            Case DynamicFields.Types.FieldCategory.Relational
-              If field.FieldName.ToLower = "group identifier" Then
-                field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(Me.GetGroupIdentifierField(value, column, field.FieldLength.Value))
-              Else
-                field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(GetNullableFixedString(value, column, field.FieldLength.Value))
-              End If
-            Case Else
-              field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(GetNullableFixedString(value, column, field.FieldLength.Value))
-          End Select
-        Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Object
-          field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(GetNullableAssociatedObjectName(value, column, 255, field.FieldName))
-          If forPreview Then field.Value = value.Trim
-        Case Else    'FieldTypeHelper.FieldType.Text
-          If field.FieldCategory = DynamicFields.Types.FieldCategory.FullText AndAlso _fullTextColumnMapsToFileLocation Then
-            If value = "" Then
-              field.Value = ""
-            ElseIf Not System.IO.File.Exists(value) Then
-              Throw New MissingFullTextFileException(Me.CurrentLineNumber, column)
             Else
-              If forPreview Then
-                Dim sr As New System.IO.StreamReader(value, _extractedTextFileEncoding)
-                Dim i As Int32 = 0
-                Dim sb As New System.Text.StringBuilder
-                While sr.Peek <> -1 AndAlso i < 100
-                  sb.Append(ChrW(sr.Read))
-                  i += 1
-                End While
-                If i = 100 Then sb.Append("...")
-                sr.Close()
-                sb = sb.Replace(System.Environment.NewLine, Me.NewlineProxy).Replace(ChrW(10), Me.NewlineProxy).Replace(ChrW(13), Me.NewlineProxy)
-                field.Value = sb.ToString
+              Dim oldval As String = value.Trim
+              Dim codeValues As NullableTypes.NullableInt32() = GetMultiCode(value.Trim, column, field, forPreview)
+              Dim i As Int32
+              Dim newVal As String = String.Empty
+              Dim codeName As String
+              If codeValues.Length > 0 Then
+                newVal &= codeValues(0).ToString
+                If forPreview And newVal = "-1" Then
+                  newVal = "[new code]"
+                End If
+                If codeValues.Length > 1 Then
+                  For i = 1 To codeValues.Length - 1
+                    codeName = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(codeValues(i))
+                    If forPreview And codeName = "-1" Then
+                      codeName = "[new code]"
+                    End If
+                    newVal &= ";" & codeName
+                  Next
+                End If
+              End If
+              field.Value = newVal
+              If TypeOf Me Is BulkLoadFileImporter Then
+                If codeValues.Length = 0 Then
+                  field.Value = ""
+                Else
+                  field.Value = ChrW(11) & oldval.Trim(_multiValueSeparator).Replace(_multiValueSeparator, ChrW(11)) & ChrW(11)
+                  For Each codeValue As NullableTypes.NullableInt32 In codeValues
+                    If Not codeValue.IsNull Then
+                      DirectCast(Me, BulkLoadFileImporter).WriteCodeLineToTempFile(identityValue, codeValue.Value, field.CodeTypeID.Value)
+                    End If
+                  Next
+                  Dim sb As New System.Text.StringBuilder
+                  For Each codeValue As NullableTypes.NullableInt32 In codeValues
+                    If Not codeValue.IsNull Then
+                      sb.Append(codeValue.Value)
+                      sb.Append(",")
+                    End If
+                  Next
+                  field.Value = sb.ToString.TrimEnd(","c)
+                End If
+              End If
+            End If
+        Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Varchar
+            Select Case field.FieldCategory
+              Case DynamicFields.Types.FieldCategory.Relational
+                If field.FieldName.ToLower = "group identifier" Then
+                  field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(Me.GetGroupIdentifierField(value, column, field.FieldLength.Value))
+                Else
+                  field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(GetNullableFixedString(value, column, field.FieldLength.Value))
+                End If
+              Case Else
+                field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(GetNullableFixedString(value, column, field.FieldLength.Value))
+            End Select
+        Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Object
+            field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(GetNullableAssociatedObjectName(value, column, 255, field.FieldName))
+            If forPreview Then field.Value = value.Trim
+        Case Else    'FieldTypeHelper.FieldType.Text
+            If field.FieldCategory = DynamicFields.Types.FieldCategory.FullText AndAlso _fullTextColumnMapsToFileLocation Then
+              If value = "" Then
+                field.Value = ""
+              ElseIf Not System.IO.File.Exists(value) Then
+                Throw New MissingFullTextFileException(Me.CurrentLineNumber, column)
+              Else
+                If forPreview Then
+                  Dim sr As New System.IO.StreamReader(value, _extractedTextFileEncoding)
+                  Dim i As Int32 = 0
+                  Dim sb As New System.Text.StringBuilder
+                  While sr.Peek <> -1 AndAlso i < 100
+                    sb.Append(ChrW(sr.Read))
+                    i += 1
+                  End While
+                  If i = 100 Then sb.Append("...")
+                  sr.Close()
+                  sb = sb.Replace(System.Environment.NewLine, Me.NewlineProxy).Replace(ChrW(10), Me.NewlineProxy).Replace(ChrW(13), Me.NewlineProxy)
+                  field.Value = sb.ToString
+                Else
+                  field.Value = value
+                End If
+              End If
+            Else
+              If value.Length > 100 AndAlso forPreview Then
+                field.Value = value.Substring(0, 100) & "...."
               Else
                 field.Value = value
               End If
             End If
-          Else
-            If value.Length > 100 AndAlso forPreview Then
-              field.Value = value.Substring(0, 100) & "...."
-            Else
-              field.Value = value
-            End If
-          End If
       End Select
     End Sub
 
