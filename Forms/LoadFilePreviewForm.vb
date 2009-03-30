@@ -19,6 +19,10 @@ Namespace kCura.EDDS.WinForm
       _formType = formType
       _multiRecordDelimiter = mutliRecordDelimiter
       _previewCodeCount = previewCodeCount
+      Me.Text = "Relativity Desktop Client | Preview Load File"
+      If _formType = kCura.EDDS.WinForm.LoadFilePreviewForm.FormType.Codes Then
+        Me.Text = "Relativity Desktop Client | Preview Choices and Folders"
+      End If
     End Sub
 
     'Form overrides dispose to clean up the component list.
@@ -67,6 +71,9 @@ Namespace kCura.EDDS.WinForm
       Me.Name = "LoadFilePreviewForm"
       Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
       Me.Text = "Relativity Desktop Client | Preview Load File"
+      If _formType = kCura.EDDS.WinForm.LoadFilePreviewForm.FormType.Codes Then
+        Me.Text = "Relativity Desktop Client | Preview Choices and Folders"
+      End If
       CType(Me._grid, System.ComponentModel.ISupportInitialize).EndInit()
       Me.ResumeLayout(False)
 
