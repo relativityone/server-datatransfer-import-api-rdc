@@ -1156,9 +1156,9 @@ Public Class ExportForm
 			selectedViewFields.Add(field)
 		Next
 		_exportFile.SelectedViewFields = DirectCast(selectedViewFields.ToArray(GetType(ViewFieldInfo)), ViewFieldInfo())
-		_application.StartSearch(Me.ExportFile)
 		If _potentialTextFields.SelectedIndex <> -1 Then
 			_exportFile.SelectedTextField = DirectCast(_potentialTextFields.SelectedItem, ViewFieldInfo)
+			_exportFile.ExportFullText = True
 		Else
 			_exportFile.SelectedTextField = Nothing
 			_exportFile.ExportFullText = False
@@ -1166,6 +1166,7 @@ Public Class ExportForm
 		_exportFile.LoadFileEncoding = _dataFileEncoding.SelectedEncoding
 		_exportFile.TextFileEncoding = _textFileEncoding.SelectedEncoding
 
+		_application.StartSearch(Me.ExportFile)
 		Me.Cursor = System.Windows.Forms.Cursors.Default
 	End Sub
 
