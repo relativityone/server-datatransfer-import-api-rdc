@@ -865,12 +865,12 @@ Namespace kCura.WinEDDS
 					If TypeOf val Is Byte() Then
 						val = System.Text.Encoding.Unicode.GetString(DirectCast(val, Byte()))
 					End If
-					If _parent.ColumnFormats(count).ToString <> "" Then
+					If field.FieldType = DynamicFields.Types.FieldTypeHelper.FieldType.Date Then
 						Dim datetime As NullableString = NullableTypes.HelperFunctions.DBNullConvert.ToNullableString(val)
 						If datetime.IsNull OrElse datetime.Value = "" Then
 							val = ""
 						Else
-							val = System.DateTime.Parse(datetime.Value, System.Globalization.CultureInfo.InvariantCulture).ToString(_parent.ColumnFormats(count).ToString)
+							val = System.DateTime.Parse(datetime.Value, System.Globalization.CultureInfo.InvariantCulture).ToString(field.FormatString)
 						End If
 					End If
 					'System.Web.HttpUtility.HtmlEncode()
@@ -990,12 +990,12 @@ Namespace kCura.WinEDDS
 					If TypeOf val Is Byte() Then
 						val = System.Text.Encoding.Unicode.GetString(DirectCast(val, Byte()))
 					End If
-					If _parent.ColumnFormats(count).ToString <> "" Then
+					If field.FieldType = DynamicFields.Types.FieldTypeHelper.FieldType.Date Then
 						Dim datetime As NullableString = NullableTypes.HelperFunctions.DBNullConvert.ToNullableString(val)
 						If datetime.IsNull OrElse datetime.Value = "" Then
 							val = ""
 						Else
-							val = System.DateTime.Parse(datetime.Value, System.Globalization.CultureInfo.InvariantCulture).ToString(_parent.ColumnFormats(count).ToString)
+							val = System.DateTime.Parse(datetime.Value, System.Globalization.CultureInfo.InvariantCulture).ToString(field.FormatString)
 						End If
 					End If
 					fieldValue = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(NullableTypes.HelperFunctions.DBNullConvert.ToNullableString(val))
