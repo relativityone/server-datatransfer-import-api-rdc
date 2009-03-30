@@ -1161,6 +1161,7 @@ Public Class ExportForm
 			_exportFile.SelectedTextField = DirectCast(_potentialTextFields.SelectedItem, ViewFieldInfo)
 		Else
 			_exportFile.SelectedTextField = Nothing
+			_exportFile.ExportFullText = False
 		End If
 		_exportFile.LoadFileEncoding = _dataFileEncoding.SelectedEncoding
 		_exportFile.TextFileEncoding = _textFileEncoding.SelectedEncoding
