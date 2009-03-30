@@ -384,7 +384,7 @@ Public Class ExportForm
 		Me._columnSelecter.LeftOrderControlsVisible = False
 		Me._columnSelecter.Location = New System.Drawing.Point(104, 64)
 		Me._columnSelecter.Name = "_columnSelecter"
-		Me._columnSelecter.RightOrderControlVisible = False
+		Me._columnSelecter.RightOrderControlVisible = True
 		Me._columnSelecter.Size = New System.Drawing.Size(360, 280)
 		Me._columnSelecter.TabIndex = 17
 		'
@@ -520,7 +520,7 @@ Public Class ExportForm
 		Me._exportFullTextAsFile.Name = "_exportFullTextAsFile"
 		Me._exportFullTextAsFile.Size = New System.Drawing.Size(196, 20)
 		Me._exportFullTextAsFile.TabIndex = 7
-		Me._exportFullTextAsFile.Text = "Export Extracted Text as Files"
+		Me._exportFullTextAsFile.Text = "Export Text Field as Files"
 		'
 		'GroupBox4
 		'
