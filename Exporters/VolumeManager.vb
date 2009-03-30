@@ -376,21 +376,21 @@ Namespace kCura.WinEDDS
 				Catch ex As System.Exception
 					If tries = 19 Then
 						_parent.WriteStatusLine(Windows.Process.EventType.Warning, "Second attempt to download full text for document " & documentInfo.IdentifierValue, True)
-						Select Case field.Category
-							Case DynamicFields.Types.FieldCategory.FullText
-								_downloadManager.DownloadFullTextFile(tempLocalFullTextFilePath, documentInfo.DocumentArtifactID, _settings.CaseInfo.ArtifactID.ToString)
-							Case Else
-								_downloadManager.DownloadLongTextFile(tempLocalFullTextFilePath, documentInfo.DocumentArtifactID, field, _settings.CaseInfo.ArtifactID.ToString)
-						End Select
+						'Select Case field.Category
+						'	Case DynamicFields.Types.FieldCategory.FullText
+						'		_downloadManager.DownloadFullTextFile(tempLocalFullTextFilePath, documentInfo.DocumentArtifactID, _settings.CaseInfo.ArtifactID.ToString)
+						'	Case Else
+						'		_downloadManager.DownloadLongTextFile(tempLocalFullTextFilePath, documentInfo.DocumentArtifactID, field, _settings.CaseInfo.ArtifactID.ToString)
+						'End Select
 					ElseIf tries > 0 Then
 						_parent.WriteStatusLine(Windows.Process.EventType.Warning, "Additional attempt to download full text for document " & documentInfo.IdentifierValue & " failed - retrying in 30 seconds", True)
 						System.Threading.Thread.CurrentThread.Join(30000)
-						Select Case field.Category
-							Case DynamicFields.Types.FieldCategory.FullText
-								_downloadManager.DownloadFullTextFile(tempLocalFullTextFilePath, documentInfo.DocumentArtifactID, _settings.CaseInfo.ArtifactID.ToString)
-							Case Else
-								_downloadManager.DownloadLongTextFile(tempLocalFullTextFilePath, documentInfo.DocumentArtifactID, field, _settings.CaseInfo.ArtifactID.ToString)
-						End Select
+						'Select Case field.Category
+						'	Case DynamicFields.Types.FieldCategory.FullText
+						'		_downloadManager.DownloadFullTextFile(tempLocalFullTextFilePath, documentInfo.DocumentArtifactID, _settings.CaseInfo.ArtifactID.ToString)
+						'	Case Else
+						'		_downloadManager.DownloadLongTextFile(tempLocalFullTextFilePath, documentInfo.DocumentArtifactID, field, _settings.CaseInfo.ArtifactID.ToString)
+						'End Select
 					Else
 						Throw
 					End If
