@@ -191,14 +191,14 @@ Namespace kCura.WinEDDS
 
 		Private Sub ExportChunk(ByVal documentArtifactIDs As Int32(), ByVal docRows As System.Data.DataRow())
 			Dim natives As New System.Data.DataView
-			Dim fullTexts As New System.Data.DataView
+			'Dim fullTexts As New System.Data.DataView
 			Dim images As New System.Data.DataView
 			Dim productionImages As New System.Data.DataView
 			Dim i As Int32 = 0
 			Dim productionArtifactID As Int32 = 0
 			If Me.ExportFile.TypeOfExport = ExportFile.ExportType.Production Then productionArtifactID = ExportFile.ArtifactID
 			If Me.ExportFile.ExportNative Then natives.Table = _searchManager.RetrieveNativesForSearch(Me.ExportFile.CaseArtifactID, kCura.Utility.Array.IntArrayToCSV(documentArtifactIDs)).Tables(0)
-			If Me.ExportFile.ExportFullText OrElse Me.ExportFile.LogFileFormat = LoadFileType.FileFormat.IPRO_FullText Then fullTexts.Table = _searchManager.RetrieveFullTextExistenceForSearch(Me.ExportFile.CaseArtifactID, documentArtifactIDs).Tables(0)
+			'If Me.ExportFile.ExportFullText OrElse Me.ExportFile.LogFileFormat = LoadFileType.FileFormat.IPRO_FullText Then fullTexts.Table = _searchManager.RetrieveFullTextExistenceForSearch(Me.ExportFile.CaseArtifactID, documentArtifactIDs).Tables(0)
 			If Me.ExportFile.ExportImages Then
 				_timekeeper.MarkStart("Exporter_GetImagesForDocumentBlock")
 				images.Table = Me.RetrieveImagesForDocuments(documentArtifactIDs, Me.ExportFile.ImagePrecedence)
@@ -215,7 +215,7 @@ Namespace kCura.WinEDDS
 				Dim identifierColumnName As String = kCura.DynamicFields.Types.FieldColumnNameHelper.GetSqlFriendlyName(Me.ExportFile.IdentifierColumnName)
 				documentInfo.IdentifierValue = docRows(i)(identifierColumnName).ToString
 				documentInfo.Images = Me.PrepareImages(images, productionImages, documentArtifactIDs(i), documentInfo.IdentifierValue, documentInfo, Me.ExportFile.ImagePrecedence)
-				documentInfo.HasFullText = Me.DocumentHasExtractedText(fullTexts, documentArtifactIDs(i))
+				'documentInfo.HasFullText = Me.DocumentHasExtractedText(fullTexts, documentArtifactIDs(i))
 				If nativeRow Is Nothing Then
 					documentInfo.NativeFileGuid = ""
 					documentInfo.OriginalFileName = ""
