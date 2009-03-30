@@ -384,7 +384,7 @@ Public Class ExportForm
 		Me._columnSelecter.LeftOrderControlsVisible = False
 		Me._columnSelecter.Location = New System.Drawing.Point(104, 64)
 		Me._columnSelecter.Name = "_columnSelecter"
-		Me._columnSelecter.RightOrderControlVisible = True
+		Me._columnSelecter.RightOrderControlVisible = False
 		Me._columnSelecter.Size = New System.Drawing.Size(360, 280)
 		Me._columnSelecter.TabIndex = 17
 		'
@@ -458,6 +458,7 @@ Public Class ExportForm
 		'
 		Me._textFileEncoding.Location = New System.Drawing.Point(116, 100)
 		Me._textFileEncoding.Name = "_textFileEncoding"
+		Me._textFileEncoding.SelectedEncoding = CType(resources.GetObject("_textFileEncoding.SelectedEncoding"), System.Text.Encoding)
 		Me._textFileEncoding.Size = New System.Drawing.Size(200, 21)
 		Me._textFileEncoding.TabIndex = 19
 		'
@@ -483,6 +484,7 @@ Public Class ExportForm
 		'
 		Me._dataFileEncoding.Location = New System.Drawing.Point(116, 48)
 		Me._dataFileEncoding.Name = "_dataFileEncoding"
+		Me._dataFileEncoding.SelectedEncoding = CType(resources.GetObject("_dataFileEncoding.SelectedEncoding"), System.Text.Encoding)
 		Me._dataFileEncoding.Size = New System.Drawing.Size(200, 21)
 		Me._dataFileEncoding.TabIndex = 16
 		'
@@ -498,7 +500,7 @@ Public Class ExportForm
 		'_nativeFileFormat
 		'
 		Me._nativeFileFormat.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
-		Me._nativeFileFormat.Items.AddRange(New Object() {"Select...", "Comma-separated (.csv)", "Tab-delimited (.txt)", "Concordance (.dat)", "Custom (.txt)", "HTML (.html)"})
+		Me._nativeFileFormat.Items.AddRange(New Object() {"Select...", "Comma-separated (.csv)", "Concordance (.dat)", "Custom (.txt)", "HTML (.html)"})
 		Me._nativeFileFormat.Location = New System.Drawing.Point(116, 20)
 		Me._nativeFileFormat.Name = "_nativeFileFormat"
 		Me._nativeFileFormat.Size = New System.Drawing.Size(176, 21)
@@ -1141,7 +1143,7 @@ Public Class ExportForm
 		_exportFile.VolumeInfo = Me.BuildVolumeInfo
 		_exportFile.ExportImages = _exportImages.Checked
 		_exportFile.LogFileFormat = CType(_imageFileFormat.SelectedValue, kCura.WinEDDS.LoadFileType.FileFormat)
-		_exportFile.LoadFileIsHtml = _nativeFileFormat.SelectedIndex = 5
+		_exportFile.LoadFileIsHtml = _nativeFileFormat.SelectedIndex = 4
 		If _exportFile.LoadFileIsHtml Then
 			_exportFile.LoadFileExtension = "html"
 		Else
@@ -1343,13 +1345,13 @@ Public Class ExportForm
 				_newLineDelimiter.SelectedValue = ChrW(10)
 				_multiRecordDelimiter.SelectedValue = ChrW(59)
 				_nestedValueDelimiter.SelectedValue = "\"c
-			Case "Tab-delimited (.txt)"
-				Me.ToggleLoadFileCharacterInformation(False)
-				_recordDelimiter.SelectedValue = ChrW(9)
-				_quoteDelimiter.SelectedValue = ChrW(34)
-				_newLineDelimiter.SelectedValue = ChrW(10)
-				_multiRecordDelimiter.SelectedValue = ChrW(59)
-				_nestedValueDelimiter.SelectedValue = "\"c
+				'Case "Tab-delimited (.txt)"
+				'	Me.ToggleLoadFileCharacterInformation(False)
+				'	_recordDelimiter.SelectedValue = ChrW(9)
+				'	_quoteDelimiter.SelectedValue = ChrW(34)
+				'	_newLineDelimiter.SelectedValue = ChrW(10)
+				'	_multiRecordDelimiter.SelectedValue = ChrW(59)
+				'	_nestedValueDelimiter.SelectedValue = "\"c
 			Case "Concordance (.dat)"
 				Me.ToggleLoadFileCharacterInformation(False)
 				_recordDelimiter.SelectedValue = ChrW(20)
