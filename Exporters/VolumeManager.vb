@@ -656,6 +656,7 @@ Namespace kCura.WinEDDS
 						'pageText = pageText.Replace(" ", "|0|0|0|0^")
 						'_imageFileWriter.WriteLine(String.Format("FT,{0},1,1,{1}", batesNumber, pageText.ToString))
 					End If
+					_imageFileWriter.Flush()
 					Me.WriteIproImageLine(batesNumber, pageNumber, copyFile)
 			End Select
 
