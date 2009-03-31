@@ -507,66 +507,66 @@ Namespace kCura.EDDS.WinForm
 
 		'Worker function for Previewing choice and folder counts
 		Public Function BuildFoldersAndCodesDataSource(ByVal al As ArrayList, ByVal multiRecordDelimiter As Char, ByVal previewCodeCount As System.Collections.Specialized.HybridDictionary) As DataTable
-			_totalFolders.Clear()
-			Try
-				Dim item As Object
-				Dim fields As DocumentField()
-				Dim codeFieldColumnIndexes As New ArrayList
-				Dim folderColumnIndex As Int32 = -1
-				Dim dt As New DataTable
-				'get the choice field column indicies
-				If al.Count > 0 Then
-					Dim firstRow As System.Array = DirectCast(al(0), System.Array)
-					Dim currentIndex As Int32 = 0
-					For Each field As DocumentField In firstRow
-						If field.FieldTypeID = kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Code OrElse field.FieldTypeID = kCura.DynamicFields.Types.FieldTypeHelper.FieldType.MultiCode Then
-							codeFieldColumnIndexes.Add(currentIndex)
-						End If
-						If field.FieldID = -1 And field.FieldName = "Parent_Folder_Identifier" Then folderColumnIndex = currentIndex
-						currentIndex += 1
-					Next
-				End If
-				dt.Columns.Add("Field Name")
-				dt.Columns.Add("Count")
-				Dim fieldValue As String
-				For Each item In al
-					If Not item Is Nothing Then
-						fields = DirectCast(item, DocumentField())
-						If folderColumnIndex <> -1 Then
-							fieldValue = fields(folderColumnIndex).Value
-							AddFoldersToTotalFolders(fieldValue)
-						End If
-					End If
-				Next
-				Dim folderRow As New System.Collections.ArrayList
-				folderRow.Add("Folders")
-				If folderColumnIndex <> -1 Then
-					folderRow.Add(_totalFolders.Count.ToString)
-				Else
-					folderRow.Add("0")
-				End If
-				dt.Rows.Add(folderRow.ToArray)
-				Dim blankRow As New System.Collections.ArrayList
-				blankRow.Add("")
-				blankRow.Add("")
-				dt.Rows.Add(blankRow.ToArray)
-				If codeFieldColumnIndexes.Count = 0 Then
-					dt.Columns.Add("     ")
-					dt.Rows.Add(New String() {"No choice fields have been mapped"})
-				Else
-					For Each key As String In previewCodeCount.Keys
-						Dim row As New System.Collections.ArrayList
-						row.Add(key.Split("_".ToCharArray, 2)(1))
-						Dim currentFieldHashTable As System.Collections.Specialized.HybridDictionary = DirectCast(previewCodeCount(key), System.Collections.Specialized.HybridDictionary)
-						row.Add(currentFieldHashTable.Count)
-						dt.Rows.Add(row.ToArray)
-						currentFieldHashTable.Clear()
-					Next
-				End If
-				Return dt
-			Catch ex As Exception
-				kCura.EDDS.WinForm.Utility.ThrowExceptionToGUI(ex)
-			End Try
+      _totalFolders.Clear()
+      Try
+        Dim item As Object
+        Dim fields As DocumentField()
+        Dim codeFieldColumnIndexes As New ArrayList
+        Dim folderColumnIndex As Int32 = -1
+        Dim dt As New DataTable
+        'get the choice field column indicies
+        If al.Count > 0 Then
+          Dim firstRow As System.Array = DirectCast(al(0), System.Array)
+          Dim currentIndex As Int32 = 0
+          For Each field As DocumentField In firstRow
+            If field.FieldTypeID = kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Code OrElse field.FieldTypeID = kCura.DynamicFields.Types.FieldTypeHelper.FieldType.MultiCode Then
+              codeFieldColumnIndexes.Add(currentIndex)
+            End If
+            If field.FieldID = -1 And field.FieldName = "Parent_Folder_Identifier" Then folderColumnIndex = currentIndex
+            currentIndex += 1
+          Next
+        End If
+        dt.Columns.Add("Field Name")
+        dt.Columns.Add("Count")
+        Dim fieldValue As String
+        For Each item In al
+          If Not item Is Nothing Then
+            fields = DirectCast(item, DocumentField())
+            If folderColumnIndex <> -1 Then
+              fieldValue = fields(folderColumnIndex).Value
+              AddFoldersToTotalFolders(fieldValue)
+            End If
+          End If
+        Next
+        Dim folderRow As New System.Collections.ArrayList
+        folderRow.Add("Folders")
+        If folderColumnIndex <> -1 Then
+          folderRow.Add(_totalFolders.Count.ToString)
+        Else
+          folderRow.Add("0")
+        End If
+        dt.Rows.Add(folderRow.ToArray)
+        Dim blankRow As New System.Collections.ArrayList
+        blankRow.Add("")
+        blankRow.Add("")
+        dt.Rows.Add(blankRow.ToArray)
+        If codeFieldColumnIndexes.Count = 0 Then
+          dt.Columns.Add("     ")
+          dt.Rows.Add(New String() {"No choice fields have been mapped"})
+        Else
+          For Each key As String In previewCodeCount.Keys
+            Dim row As New System.Collections.ArrayList
+            row.Add(key.Split("_".ToCharArray, 2)(1))
+            Dim currentFieldHashTable As System.Collections.Specialized.HybridDictionary = DirectCast(previewCodeCount(key), System.Collections.Specialized.HybridDictionary)
+            row.Add(currentFieldHashTable.Count)
+            dt.Rows.Add(row.ToArray)
+            currentFieldHashTable.Clear()
+          Next
+        End If
+        Return dt
+      Catch ex As Exception
+        kCura.EDDS.WinForm.Utility.ThrowExceptionToGUI(ex)
+      End Try
 		End Function
 
 		Private Function AddFoldersToTotalFolders(ByVal folderPath As String) As String
@@ -886,6 +886,7 @@ Namespace kCura.EDDS.WinForm
       End If
       Dim frm As New kCura.Windows.Process.ProgressForm
       Dim previewer As New kCura.WinEDDS.PreviewLoadFileProcess
+      loadFileToPreview.PreviewCodeCount.Clear()
       Dim previewform As New LoadFilePreviewForm(formType, loadFileToPreview.MultiRecordDelimiter, loadFileToPreview.PreviewCodeCount)
       Dim thrower As New ValueThrower
       previewer.Thrower = thrower
