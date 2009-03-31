@@ -297,7 +297,9 @@ Namespace kCura.WinEDDS
             If fieldValue = "-1" Then
               fieldValue = "[new code]"
             End If
-            AddToCodeCountPreviewHashTable(field.FieldID, field.FieldName, value.Trim)
+            If fieldValue <> "" Then
+              AddToCodeCountPreviewHashTable(field.FieldID, field.FieldName, value.Trim)
+            End If
           End If
           field.Value = fieldValue
           If TypeOf Me Is BulkLoadFileImporter Then
