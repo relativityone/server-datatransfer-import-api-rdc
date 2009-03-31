@@ -6,7 +6,7 @@ Namespace kCura.WinEDDS
 
 		Private _searchManager As kCura.WinEDDS.Service.SearchManager
 		Private _folderManager As kCura.WinEDDS.Service.FolderManager
-    Private _fieldManager As kCura.WinEDDS.Service.FieldQuery
+		Private _fieldManager As kCura.WinEDDS.Service.FieldManager
     Private _exportFile As kCura.WinEDDS.ExportFile
     Private _columns As System.Collections.ArrayList
 		Private _sourceDirectory As String
@@ -76,6 +76,7 @@ Namespace kCura.WinEDDS
 			_documentManager = New kCura.WinEDDS.Service.DocumentManager(exportFile.Credential, exportFile.CookieContainer)
 			_downloadHandler = New FileDownloader(exportFile.Credential, exportFile.CaseInfo.DocumentPath & "\EDDS" & exportFile.CaseInfo.ArtifactID, exportFile.CaseInfo.DownloadHandlerURL, exportFile.CookieContainer, kCura.WinEDDS.Service.Settings.AuthenticationToken)
 			_productionManager = New kCura.WinEDDS.Service.ProductionManager(exportFile.Credential, exportFile.CookieContainer)
+			_fieldManager = New kCura.WinEDDS.Service.FieldManager(exportFile.Credential, exportFile.CookieContainer)
 			_halt = False
 			_processController = processController
 			Me.DocumentsExported = 0
@@ -154,8 +155,17 @@ Namespace kCura.WinEDDS
 					Case ExportFile.ExportType.AncestorSearch
 						documentTable = _searchManager.SearchByParentArtifactID(Me.ExportFile.CaseArtifactID, Me.ExportFile.ArtifactID, True, start, finish, ExportFile.ViewID, allAvfIds, Me.ExportFile.MulticodesAsNested, Me.ExportFile.NestedValueDelimiter).Tables(0)
 					Case ExportFile.ExportType.Production
-						documentTable = _searchManager.SearchByProductionArtifactID(Me.ExportFile.CaseArtifactID, Me.ExportFile.ArtifactID, start, finish, allAvfIds, Me.ExportFile.MulticodesAsNested, Me.ExportFile.NestedValueDelimiter).Tables(0)
 						Dim production As kCura.EDDS.WebAPI.ProductionManagerBase.Production = _productionManager.Read(Me.ExportFile.CaseArtifactID, Me.ExportFile.ArtifactID)
+						Dim avfIdsToAdd As New System.Collections.ArrayList
+						With _fieldManager.Read(Me.ExportFile.CaseArtifactID, production.BeginBatesFieldArtifactID)
+							_beginBatesColumn = kCura.DynamicFields.Types.FieldColumnNameHelper.GetSqlFriendlyName(.DisplayName)
+							If System.Array.IndexOf(allAvfIds, .ArtifactViewFieldID) = -1 Then avfIdsToAdd.Add(.ArtifactViewFieldID)
+						End With
+						If avfIdsToAdd.Count > 0 Then
+							avfIdsToAdd.AddRange(allAvfIds)
+							allAvfIds = DirectCast(avfIdsToAdd.ToArray(GetType(Int32)), Int32())
+						End If
+						documentTable = _searchManager.SearchByProductionArtifactID(Me.ExportFile.CaseArtifactID, Me.ExportFile.ArtifactID, start, finish, allAvfIds, Me.ExportFile.MulticodesAsNested, Me.ExportFile.NestedValueDelimiter).Tables(0)
 						If production.DocumentsHaveRedactions Then
 							WriteStatusLineWithoutDocCount(kCura.Windows.Process.EventType.Warning, "Please Note - Documents in this production were produced with redactions applied. Ensure that you take steps to update the extracted text to suppress this redacted text.", True)
 						End If
