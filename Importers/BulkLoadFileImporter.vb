@@ -364,9 +364,8 @@ Namespace kCura.WinEDDS
           If textIdentifier = "" Then
             If _overwrite.ToLower = "strict" OrElse _overwrite.ToLower = "append" Then
               parentFolderID = -1
-            Else
-              Throw New ParentObjectReferenceRequiredException(Me.CurrentLineNumber, _destinationFolderColumnIndex)
             End If
+            Throw New ParentObjectReferenceRequiredException(Me.CurrentLineNumber, _destinationFolderColumnIndex)
           Else
             Dim parentObjectTable As System.Data.DataTable = _objectManager.RetrieveArtifactIdOfMappedParentObject(_caseArtifactID, _
             textIdentifier, _artifactTypeID).Tables(0)
