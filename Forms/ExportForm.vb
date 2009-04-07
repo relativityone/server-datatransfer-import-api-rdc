@@ -264,11 +264,11 @@ Public Class ExportForm
 		'
 		'Label5
 		'
-		Me.Label5.Location = New System.Drawing.Point(4, 40)
+		Me.Label5.Location = New System.Drawing.Point(20, 40)
 		Me.Label5.Name = "Label5"
-		Me.Label5.Size = New System.Drawing.Size(160, 21)
+		Me.Label5.Size = New System.Drawing.Size(96, 21)
 		Me.Label5.TabIndex = 18
-		Me.Label5.Text = "Native or text files named after:"
+		Me.Label5.Text = "Named after:"
 		Me.Label5.TextAlign = System.Drawing.ContentAlignment.MiddleRight
 		'
 		'_overwriteButton
@@ -298,7 +298,7 @@ Public Class ExportForm
 		'
 		'_appendOriginalFilename
 		'
-		Me._appendOriginalFilename.Location = New System.Drawing.Point(168, 20)
+		Me._appendOriginalFilename.Location = New System.Drawing.Point(12, 20)
 		Me._appendOriginalFilename.Name = "_appendOriginalFilename"
 		Me._appendOriginalFilename.Size = New System.Drawing.Size(148, 16)
 		Me._appendOriginalFilename.TabIndex = 17
@@ -320,9 +320,9 @@ Public Class ExportForm
 		'
 		Me._nativeFileNameSource.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
 		Me._nativeFileNameSource.Items.AddRange(New Object() {"Select...", "Identifier", "Begin bates"})
-		Me._nativeFileNameSource.Location = New System.Drawing.Point(164, 40)
+		Me._nativeFileNameSource.Location = New System.Drawing.Point(116, 40)
 		Me._nativeFileNameSource.Name = "_nativeFileNameSource"
-		Me._nativeFileNameSource.Size = New System.Drawing.Size(152, 21)
+		Me._nativeFileNameSource.Size = New System.Drawing.Size(176, 21)
 		Me._nativeFileNameSource.TabIndex = 19
 		Me._nativeFileNameSource.Visible = False
 		'
@@ -333,7 +333,7 @@ Public Class ExportForm
 		Me.TabControl1.Location = New System.Drawing.Point(0, 0)
 		Me.TabControl1.Name = "TabControl1"
 		Me.TabControl1.SelectedIndex = 0
-		Me.TabControl1.Size = New System.Drawing.Size(776, 464)
+		Me.TabControl1.Size = New System.Drawing.Size(776, 452)
 		Me.TabControl1.TabIndex = 17
 		'
 		'_dataSourceTabPage
@@ -342,7 +342,7 @@ Public Class ExportForm
 		Me._dataSourceTabPage.Controls.Add(Me._productionPrecedenceBox)
 		Me._dataSourceTabPage.Location = New System.Drawing.Point(4, 22)
 		Me._dataSourceTabPage.Name = "_dataSourceTabPage"
-		Me._dataSourceTabPage.Size = New System.Drawing.Size(768, 438)
+		Me._dataSourceTabPage.Size = New System.Drawing.Size(768, 426)
 		Me._dataSourceTabPage.TabIndex = 0
 		Me._dataSourceTabPage.Text = "Data Source"
 		'
@@ -402,7 +402,7 @@ Public Class ExportForm
 		Me._destinationFileTabPage.Controls.Add(Me.GroupBox3)
 		Me._destinationFileTabPage.Location = New System.Drawing.Point(4, 22)
 		Me._destinationFileTabPage.Name = "_destinationFileTabPage"
-		Me._destinationFileTabPage.Size = New System.Drawing.Size(768, 438)
+		Me._destinationFileTabPage.Size = New System.Drawing.Size(768, 426)
 		Me._destinationFileTabPage.TabIndex = 1
 		Me._destinationFileTabPage.Text = "Destination Files"
 		'
@@ -416,7 +416,7 @@ Public Class ExportForm
 		Me.GroupBox6.Size = New System.Drawing.Size(324, 68)
 		Me.GroupBox6.TabIndex = 26
 		Me.GroupBox6.TabStop = False
-		Me.GroupBox6.Text = "Physical File Name"
+		Me.GroupBox6.Text = "Text and Native File Names"
 		'
 		'_metadataGroup
 		'
@@ -536,7 +536,7 @@ Public Class ExportForm
 		'
 		Me._exportNativeFiles.Checked = True
 		Me._exportNativeFiles.CheckState = System.Windows.Forms.CheckState.Checked
-		Me._exportNativeFiles.Location = New System.Drawing.Point(8, 20)
+		Me._exportNativeFiles.Location = New System.Drawing.Point(12, 20)
 		Me._exportNativeFiles.Name = "_exportNativeFiles"
 		Me._exportNativeFiles.Size = New System.Drawing.Size(124, 20)
 		Me._exportNativeFiles.TabIndex = 11
@@ -558,7 +558,7 @@ Public Class ExportForm
 		'
 		'Label17
 		'
-		Me.Label17.Location = New System.Drawing.Point(8, 76)
+		Me.Label17.Location = New System.Drawing.Point(24, 76)
 		Me.Label17.Name = "Label17"
 		Me.Label17.Size = New System.Drawing.Size(92, 21)
 		Me.Label17.TabIndex = 19
@@ -569,7 +569,7 @@ Public Class ExportForm
 		'
 		Me._exportImages.Checked = True
 		Me._exportImages.CheckState = System.Windows.Forms.CheckState.Checked
-		Me._exportImages.Location = New System.Drawing.Point(8, 20)
+		Me._exportImages.Location = New System.Drawing.Point(12, 20)
 		Me._exportImages.Name = "_exportImages"
 		Me._exportImages.Size = New System.Drawing.Size(96, 20)
 		Me._exportImages.TabIndex = 18
@@ -579,14 +579,14 @@ Public Class ExportForm
 		'
 		Me._imageFileFormat.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
 		Me._imageFileFormat.DropDownWidth = 150
-		Me._imageFileFormat.Location = New System.Drawing.Point(100, 48)
+		Me._imageFileFormat.Location = New System.Drawing.Point(116, 48)
 		Me._imageFileFormat.Name = "_imageFileFormat"
-		Me._imageFileFormat.Size = New System.Drawing.Size(124, 21)
+		Me._imageFileFormat.Size = New System.Drawing.Size(176, 21)
 		Me._imageFileFormat.TabIndex = 11
 		'
 		'Label12
 		'
-		Me.Label12.Location = New System.Drawing.Point(8, 48)
+		Me.Label12.Location = New System.Drawing.Point(24, 48)
 		Me.Label12.Name = "Label12"
 		Me.Label12.Size = New System.Drawing.Size(92, 21)
 		Me.Label12.TabIndex = 12
@@ -598,9 +598,9 @@ Public Class ExportForm
 		Me._imageTypeDropdown.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
 		Me._imageTypeDropdown.DropDownWidth = 150
 		Me._imageTypeDropdown.Items.AddRange(New Object() {"Select...", "Single-page TIF/JPG", "Multi-page TIF", "PDF"})
-		Me._imageTypeDropdown.Location = New System.Drawing.Point(100, 76)
+		Me._imageTypeDropdown.Location = New System.Drawing.Point(116, 76)
 		Me._imageTypeDropdown.Name = "_imageTypeDropdown"
-		Me._imageTypeDropdown.Size = New System.Drawing.Size(124, 21)
+		Me._imageTypeDropdown.Size = New System.Drawing.Size(176, 21)
 		Me._imageTypeDropdown.TabIndex = 17
 		'
 		'GroupBox1
@@ -971,7 +971,7 @@ Public Class ExportForm
 		'
 		Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
 		Me.BackColor = System.Drawing.SystemColors.Control
-		Me.ClientSize = New System.Drawing.Size(780, 465)
+		Me.ClientSize = New System.Drawing.Size(776, 453)
 		Me.Controls.Add(Me.TabControl1)
 		Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
 		Me.Menu = Me.MainMenu1
@@ -1252,7 +1252,6 @@ Public Class ExportForm
 				_filters.Text = "Searches"
 				_filtersBox.Text = "Searches"
 				Me.Text = "Relativity Desktop Client: Export Saved Search"
-				_appendOriginalFilename.Location = New System.Drawing.Point(110, 48)
 			Case ExportFile.ExportType.ParentSearch, ExportFile.ExportType.AncestorSearch
 				_filters.Text = "Views"
 				_filtersBox.Text = "Views"
@@ -1260,7 +1259,6 @@ Public Class ExportForm
 				If Me.ExportFile.TypeOfExport = ExportFile.ExportType.AncestorSearch Then
 					Me.Text = "Relativity Desktop Client: Export Folder and Subfolders"
 				End If
-				_appendOriginalFilename.Location = New System.Drawing.Point(110, 48)
 			Case ExportFile.ExportType.Production
 				Label5.Visible = True
 				_filters.Text = "Productions"
