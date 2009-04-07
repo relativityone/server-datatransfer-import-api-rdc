@@ -38,9 +38,9 @@ Namespace kCura.EDDS.WebAPI.FileIOBase
         
         '<remarks/>
         <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://foley.com/EDDS/FileManager/BeginFill", RequestNamespace:="http://foley.com/EDDS/FileManager", ResponseNamespace:="http://foley.com/EDDS/FileManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
-        Public Function BeginFill(ByVal caseContextArtifactID As Integer, <System.Xml.Serialization.XmlElementAttribute(DataType:="base64Binary")> ByVal b() As Byte, ByVal documentDirectory As String, ByVal fileGuid As String) As String
+        Public Function BeginFill(ByVal caseContextArtifactID As Integer, <System.Xml.Serialization.XmlElementAttribute(DataType:="base64Binary")> ByVal b() As Byte, ByVal documentDirectory As String, ByVal fileGuid As String) As IoResponse
             Dim results() As Object = Me.Invoke("BeginFill", New Object() {caseContextArtifactID, b, documentDirectory, fileGuid})
-            Return CType(results(0),String)
+            Return CType(results(0),IoResponse)
         End Function
         
         '<remarks/>
@@ -49,16 +49,16 @@ Namespace kCura.EDDS.WebAPI.FileIOBase
         End Function
         
         '<remarks/>
-        Public Function EndBeginFill(ByVal asyncResult As System.IAsyncResult) As String
+        Public Function EndBeginFill(ByVal asyncResult As System.IAsyncResult) As IoResponse
             Dim results() As Object = Me.EndInvoke(asyncResult)
-            Return CType(results(0),String)
+            Return CType(results(0),IoResponse)
         End Function
         
         '<remarks/>
         <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://foley.com/EDDS/FileManager/FileFill", RequestNamespace:="http://foley.com/EDDS/FileManager", ResponseNamespace:="http://foley.com/EDDS/FileManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
-        Public Function FileFill(ByVal caseContextArtifactID As Integer, ByVal documentDirectory As String, ByVal fileName As String, <System.Xml.Serialization.XmlElementAttribute(DataType:="base64Binary")> ByVal b() As Byte) As Boolean
+        Public Function FileFill(ByVal caseContextArtifactID As Integer, ByVal documentDirectory As String, ByVal fileName As String, <System.Xml.Serialization.XmlElementAttribute(DataType:="base64Binary")> ByVal b() As Byte) As IoResponse
             Dim results() As Object = Me.Invoke("FileFill", New Object() {caseContextArtifactID, documentDirectory, fileName, b})
-            Return CType(results(0),Boolean)
+            Return CType(results(0),IoResponse)
         End Function
         
         '<remarks/>
@@ -67,9 +67,9 @@ Namespace kCura.EDDS.WebAPI.FileIOBase
         End Function
         
         '<remarks/>
-        Public Function EndFileFill(ByVal asyncResult As System.IAsyncResult) As Boolean
+        Public Function EndFileFill(ByVal asyncResult As System.IAsyncResult) As IoResponse
             Dim results() As Object = Me.EndInvoke(asyncResult)
-            Return CType(results(0),Boolean)
+            Return CType(results(0),IoResponse)
         End Function
         
         '<remarks/>
@@ -157,5 +157,22 @@ Namespace kCura.EDDS.WebAPI.FileIOBase
             Dim results() As Object = Me.EndInvoke(asyncResult)
             Return CType(results(0),Integer)
         End Function
+    End Class
+    
+    '<remarks/>
+    <System.Xml.Serialization.XmlTypeAttribute([Namespace]:="http://foley.com/EDDS/FileManager")>  _
+    Public Class IoResponse
+        
+        '<remarks/>
+        Public Success As Boolean
+        
+        '<remarks/>
+        Public Filename As String
+        
+        '<remarks/>
+        Public ErrorMessage As String
+        
+        '<remarks/>
+        Public ErrorText As String
     End Class
 End Namespace

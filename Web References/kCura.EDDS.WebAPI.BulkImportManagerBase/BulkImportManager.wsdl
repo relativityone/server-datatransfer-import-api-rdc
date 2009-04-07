@@ -144,6 +144,7 @@
           <s:enumeration value="MarkupSetMarker" />
           <s:enumeration value="GenericSystem" />
           <s:enumeration value="MultiReflected" />
+          <s:enumeration value="Batch" />
         </s:restriction>
       </s:simpleType>
       <s:simpleType name="FieldType">

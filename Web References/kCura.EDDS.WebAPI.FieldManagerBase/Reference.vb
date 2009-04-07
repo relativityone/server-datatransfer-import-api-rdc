@@ -298,6 +298,9 @@ Namespace kCura.EDDS.WebAPI.FieldManagerBase
         
         '<remarks/>
         MultiReflected
+        
+        '<remarks/>
+        Batch
     End Enum
     
     '<remarks/>

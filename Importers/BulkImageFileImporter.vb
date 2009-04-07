@@ -454,9 +454,15 @@ Namespace kCura.WinEDDS
 			errorMessageFileWriter.Close()
 		End Sub
 
-		Private Sub _uploader_UploadModeChangeEvent(ByVal mode As String, ByVal isBulkEnabled As Boolean) Handles _fileUploader.UploadModeChangeEvent, _bcpuploader.UploadModeChangeEvent
-			RaiseEvent UploadModeChangeEvent(mode, isBulkEnabled)
+		Private Sub _uploader_UploadModeChangeEvent(ByVal mode As String, ByVal isBulkEnabled As Boolean) Handles _fileUploader.UploadModeChangeEvent
+			RaiseEvent UploadModeChangeEvent(mode, _bcpuploader.IsBulkEnabled)
 		End Sub
+
+		Private Sub _bcpuploader_UploadModeChangeEvent(ByVal mode As String, ByVal isBulkEnabled As Boolean) Handles _bcpuploader.UploadModeChangeEvent
+			RaiseEvent UploadModeChangeEvent(_fileUploader.UploaderType.ToString, isBulkEnabled)
+		End Sub
+
+
 
 
 

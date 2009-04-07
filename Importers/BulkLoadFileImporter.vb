@@ -931,8 +931,12 @@ Namespace kCura.WinEDDS
 
 #Region "Event Handlers"
 
-		Private Sub _uploader_UploadModeChangeEvent(ByVal mode As String, ByVal isBulkEnabled As Boolean) Handles _uploader.UploadModeChangeEvent, _bcpuploader.UploadModeChangeEvent
-			RaiseEvent UploadModeChangeEvent(mode, isBulkEnabled)
+		Private Sub _uploader_UploadModeChangeEvent(ByVal mode As String, ByVal isBulkEnabled As Boolean) Handles _uploader.UploadModeChangeEvent
+			RaiseEvent UploadModeChangeEvent(mode, _bcpuploader.IsBulkEnabled)
+		End Sub
+
+		Private Sub _bcpuploader_UploadModeChangeEvent(ByVal mode As String, ByVal isBulkEnabled As Boolean) Handles _bcpuploader.UploadModeChangeEvent
+			RaiseEvent UploadModeChangeEvent(_uploader.UploaderType.ToString, isBulkEnabled)
 		End Sub
 
 		Private Sub _processController_HaltProcessEvent(ByVal processID As System.Guid) Handles _processController.HaltProcessEvent

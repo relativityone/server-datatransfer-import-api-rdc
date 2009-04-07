@@ -20,16 +20,12 @@ Namespace kCura.WinEDDS.Service
 		End Function
 
 #Region " Shadow Functions "
-		Public Shadows Function BeginFill(ByVal caseContextArtifactID As Int32, ByVal b() As Byte, ByVal documentDirectory As String, ByVal fileGuid As String) As String
+		Public Shadows Function BeginFill(ByVal caseContextArtifactID As Int32, ByVal b() As Byte, ByVal documentDirectory As String, ByVal fileGuid As String) As kCura.EDDS.WebAPI.FileIOBase.IoResponse
 			Dim tries As Int32 = 0
 			While tries < Config.MaxReloginTries
 				tries += 1
 				Try
-					If kCura.WinEDDS.Config.UsesWebAPI Then
-						Return MyBase.BeginFill(caseContextArtifactID, b, documentDirectory, fileGuid)
-					Else
-						'Return _externalIOManager.ExternalBeginFill(b, contextArtifactID, fileGuid)
-					End If
+					Return MyBase.BeginFill(caseContextArtifactID, b, documentDirectory, fileGuid)
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
 						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
@@ -40,16 +36,12 @@ Namespace kCura.WinEDDS.Service
 			End While
 		End Function
 
-		Public Shadows Function FileFill(ByVal caseContextArtifactID As Int32, ByVal documentDirectory As String, ByVal fileName As String, ByVal b() As Byte, ByVal contextArtifactID As Int32) As Boolean
+		Public Shadows Function FileFill(ByVal caseContextArtifactID As Int32, ByVal documentDirectory As String, ByVal fileName As String, ByVal b() As Byte, ByVal contextArtifactID As Int32) As kCura.EDDS.WebAPI.FileIOBase.IoResponse
 			Dim tries As Int32 = 0
 			While tries < Config.MaxReloginTries
 				tries += 1
 				Try
-					If kCura.WinEDDS.Config.UsesWebAPI Then
-						Return MyBase.FileFill(caseContextArtifactID, documentDirectory, fileName, b)
-					Else
-						'Return _externalIOManager.ExternalFileFill(fileName, b, contextArtifactID)
-					End If
+					Return MyBase.FileFill(caseContextArtifactID, documentDirectory, fileName, b)
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
 						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)

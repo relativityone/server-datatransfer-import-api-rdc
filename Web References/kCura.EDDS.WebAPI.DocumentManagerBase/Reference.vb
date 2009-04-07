@@ -466,7 +466,13 @@ Namespace kCura.EDDS.WebAPI.DocumentManagerBase
         Public HasProducedImages As Boolean
         
         '<remarks/>
+        Public HasTranscript As Boolean
+        
+        '<remarks/>
         Public NativeGUID As String
+        
+        '<remarks/>
+        Public TranscriptGuid As String
     End Class
     
     '<remarks/>
@@ -693,6 +699,9 @@ Namespace kCura.EDDS.WebAPI.DocumentManagerBase
         
         '<remarks/>
         MultiReflected
+        
+        '<remarks/>
+        Batch
     End Enum
     
     '<remarks/>
@@ -749,10 +758,12 @@ Namespace kCura.EDDS.WebAPI.DocumentManagerBase
     Public Class NameValuePair
         
         '<remarks/>
-        Public Name As String
+        <System.Xml.Serialization.XmlElementAttribute(DataType:="base64Binary")>  _
+        Public Name() As Byte
         
         '<remarks/>
-        Public Value As String
+        <System.Xml.Serialization.XmlElementAttribute(DataType:="base64Binary")>  _
+        Public Value() As Byte
     End Class
     
     '<remarks/>

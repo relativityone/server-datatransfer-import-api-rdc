@@ -69,6 +69,12 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
+		Public ReadOnly Property IsBulkEnabled() As Boolean
+			Get
+				Return _isBulkEnabled
+			End Get
+		End Property
+
 		Public ReadOnly Property CaseArtifactID() As Int32
 			Get
 				Return _caseArtifactID
@@ -128,38 +134,39 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Public Function UploadFile(ByVal filePath As String, ByVal contextArtifactID As Int32, ByVal newFileName As String, ByVal internalUse As Boolean) As String
-			If Me.UploaderType = Type.Web Then
-				Me.UploaderType = Type.Web
-				Return WebUploadFile(New System.IO.FileStream(filePath, IO.FileMode.Open, IO.FileAccess.Read), contextArtifactID, newFileName)
-			Else
-				Me.UploaderType = Type.Direct
-				Dim tries As Int32 = 20
-				'Dim newFileName As String = System.Guid.NewGuid.ToString
-				'Dim documentManager As New kCura.EDDS.WebAPI.DocumentManagerBase.DocumentManager
-				Dim destinationDirectory As String = _repositoryPathManager.GetNextDestinationDirectory(_destinationFolderPath)
-				If Not _sortIntoVolumes Then destinationDirectory = _destinationFolderPath
-				While tries > 0
-					Try
-						If Not System.IO.Directory.Exists(destinationDirectory) Then System.IO.Directory.CreateDirectory(destinationDirectory)
-						System.IO.File.Copy(filePath, destinationDirectory & newFileName, tries < 20)
-						Return newFileName
-					Catch ex As System.Exception
-						tries -= 1
-						If TypeOf ex Is System.IO.IOException AndAlso tries > 0 Then
-							RaiseEvent UploadWarningEvent("Network upload failed: " & ex.Message & " - Retrying in 30 seconds. " & tries & " tries left.")
-							System.Threading.Thread.CurrentThread.Join(30000)
+			Dim tries As Int32 = 20
+			While tries > 0
+				Try
+					If Me.UploaderType = Type.Web Then
+						Me.UploaderType = Type.Web
+						Return WebUploadFile(New System.IO.FileStream(filePath, IO.FileMode.Open, IO.FileAccess.Read), contextArtifactID, newFileName)
+					Else
+						Return Me.DirectUploadFile(filePath, contextArtifactID, newFileName, internalUse, tries < 20)
+					End If
+				Catch ex As System.Exception
+					tries -= 1
+					If TypeOf ex Is System.IO.IOException AndAlso tries > 0 Then
+						RaiseEvent UploadWarningEvent(Me.UploaderType.ToString & " upload failed: " & ex.Message & " - Retrying in 30 seconds. " & tries & " tries left.")
+						System.Threading.Thread.CurrentThread.Join(30000)
+					Else
+						If Me.UploaderType = Type.Direct And _sortIntoVolumes Then _repositoryPathManager.Rollback()
+						If internalUse Then
+							Throw
 						Else
-							_repositoryPathManager.Rollback()
-							If internalUse Then
-								Throw
-							Else
-								RaiseEvent UploadStatusEvent("Error Uploading File: " & ex.Message & System.Environment.NewLine & ex.ToString)								'TODO: Change this to a separate error-type event'
-								Throw New ApplicationException("Error Uploading File", ex)
-							End If
+							RaiseEvent UploadStatusEvent("Error Uploading File: " & ex.Message & System.Environment.NewLine & ex.ToString)							 'TODO: Change this to a separate error-type event'
+							Throw New ApplicationException("Error Uploading File", ex)
 						End If
-					End Try
-				End While
-			End If
+					End If
+				End Try
+			End While
+		End Function
+
+		Private Function DirectUploadFile(ByVal filePath As String, ByVal contextArtifactID As Int32, ByVal newFileName As String, ByVal internalUse As Boolean, ByVal overwrite As Boolean) As String
+			Dim destinationDirectory As String = _repositoryPathManager.GetNextDestinationDirectory(_destinationFolderPath)
+			If Not _sortIntoVolumes Then destinationDirectory = _destinationFolderPath
+			If Not System.IO.Directory.Exists(destinationDirectory) Then System.IO.Directory.CreateDirectory(destinationDirectory)
+			System.IO.File.Copy(filePath, destinationDirectory & newFileName, overwrite)
+			Return newFileName
 		End Function
 
 		Public Function UploadTextAsFile(ByVal content As String, ByVal contextArtifactID As Int32, ByVal fileGuid As String) As String
@@ -169,7 +176,6 @@ Namespace kCura.WinEDDS
 			Else
 				Me.UploaderType = Type.Direct
 				Dim newFileName As String = System.Guid.NewGuid.ToString
-				'Dim documentManager As New kCura.EDDS.WebAPI.DocumentManagerBase.DocumentManager
 				Try
 					Dim sw As New System.IO.StreamWriter(String.Format("{0}{1}", _destinationFolderPath, newFileName), False, System.Text.Encoding.Unicode)
 					sw.Write(content)
@@ -188,66 +194,48 @@ Namespace kCura.WinEDDS
 			Dim i As Int32
 			Dim trips As Int32
 			Dim artifactID As Int32
-			'Dim file As System.IO.File
-			'Dim fileStream As System.IO.FileStream
 			Dim readLimit As Int32 = Settings.ChunkSize
-			'Dim fileGuid As String
-			Dim tries As Int32 = 20
 			Dim destinationDirectory As String = _repositoryPathManager.GetNextDestinationDirectory(_destinationFolderPath)
 			If Not _sortIntoVolumes Then destinationDirectory = _destinationFolderPath
-			While tries > 0
-				tries -= 1
-				Try
-					'	fileStream = file.Open(filePath, IO.FileMode.Open, IO.FileAccess.Read)
-					If fileStream.Length < Settings.ChunkSize Then
-						readLimit = CType(fileStream.Length, Int32)
-					End If
-					If fileStream.Length > 0 Then
-						trips = CType(Math.Ceiling(fileStream.Length / Settings.ChunkSize), Int32)
-					Else
-						trips = 1
-					End If
-					'UpdateStatus(System.IO.Path.GetFileName(filePath), 1, fileStream.Length)
-					For i = 1 To trips
-						Dim b(readLimit) As Byte
-						fileStream.Read(b, 0, readLimit)
-						If i = 1 Then
-							fileGuid = Gateway.BeginFill(_caseArtifactID, b, destinationDirectory, fileGuid)
-							If fileGuid = String.Empty Then
-								Return String.Empty
-							End If
-						End If
-						If i <= trips And i > 1 Then
-							RaiseEvent UploadStatusEvent("Trip " & i & " of " & trips)
-							If Not Gateway.FileFill(_caseArtifactID, destinationDirectory, fileGuid, b, contextArtifactID) Then
-								Gateway.RemoveFill(_caseArtifactID, destinationDirectory, fileGuid)
-								Return String.Empty
-							End If
-						End If
-
-						'_totalBytesUp += b.Length
-						'UpdateStatus(System.IO.Path.GetFileName(withApostrophe(filePath)), fileStream.Position, fileStream.Length)
-						If (fileStream.Position + Settings.ChunkSize) > fileStream.Length Then
-							readLimit = CType(fileStream.Length - fileStream.Position, Int32)
+			Dim response As kCura.EDDS.WebAPI.FileIOBase.IoResponse
+			If fileStream.Length < Settings.ChunkSize Then
+				readLimit = CType(fileStream.Length, Int32)
+			End If
+			If fileStream.Length > 0 Then
+				trips = CType(Math.Ceiling(fileStream.Length / Settings.ChunkSize), Int32)
+			Else
+				trips = 1
+			End If
+			For i = 1 To trips
+				Dim b(readLimit) As Byte
+				fileStream.Read(b, 0, readLimit)
+				If i = 1 Then
+					With Gateway.BeginFill(_caseArtifactID, b, destinationDirectory, fileGuid)
+						If .Success Then
+							fileGuid = .Filename
 						Else
-							readLimit = Settings.ChunkSize
+							Throw New System.IO.IOException(.ErrorMessage)
 						End If
-						b = Nothing
-					Next i
-					'file = Nothing
-					fileStream.Close()
-					Return fileGuid
-				Catch ex As System.Exception
-					If tries > 0 Then
-						RaiseEvent UploadWarningEvent("Web upload failed: " & ex.Message & vbNewLine & "Retrying in 30 seconds. " & tries & " tries left.")
-						System.Threading.Thread.CurrentThread.Join(30000)
-					Else
-						_repositoryPathManager.Rollback()
-						Throw
-					End If
-				End Try
-			End While
-
+					End With
+				End If
+				If i <= trips And i > 1 Then
+					RaiseEvent UploadStatusEvent("Trip " & i & " of " & trips)
+					With Gateway.FileFill(_caseArtifactID, destinationDirectory, fileGuid, b, contextArtifactID)
+						If Not .Success Then
+							Gateway.RemoveFill(_caseArtifactID, destinationDirectory, fileGuid)
+							Throw New System.IO.IOException(.ErrorMessage)
+						End If
+					End With
+				End If
+				If (fileStream.Position + Settings.ChunkSize) > fileStream.Length Then
+					readLimit = CType(fileStream.Length - fileStream.Position, Int32)
+				Else
+					readLimit = Settings.ChunkSize
+				End If
+				b = Nothing
+			Next i
+			fileStream.Close()
+			Return fileGuid
 		End Function
 
 		Public Event UploadStatusEvent(ByVal message As String)

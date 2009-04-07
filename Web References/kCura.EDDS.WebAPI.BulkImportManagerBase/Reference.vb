@@ -331,6 +331,9 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
         
         '<remarks/>
         MultiReflected
+        
+        '<remarks/>
+        Batch
     End Enum
     
     '<remarks/>
