@@ -1263,13 +1263,9 @@ Public Class ExportForm
 				Label5.Visible = True
 				_filters.Text = "Productions"
 				_filtersBox.Text = "Productions"
-				'_exportImages.Text = "Export Produced Images"
 				_nativeFileNameSource.Visible = True
 				_nativeFileNameSource.SelectedIndex = 0
 				Me.Text = "Relativity Desktop Client: Export Production Set"
-				'Me.Size = New System.Drawing.Size(588, 350)
-				'Me.MaximumSize = New System.Drawing.Size(588, 350)
-				'Me.MinimumSize = New System.Drawing.Size(588, 350)
 				_productionPrecedenceBox.Visible = False
 		End Select
 		_nativeFileFormat.SelectedIndex = 0
