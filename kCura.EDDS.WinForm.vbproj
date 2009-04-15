@@ -1,7 +1,7 @@
 <VisualStudioProject>
     <VisualBasic
         ProjectType = "Local"
-        ProductVersion = "7.10.3077"
+        ProductVersion = "7.10.6030"
         SchemaVersion = "2.0"
         ProjectGuid = "{CDEB4462-2D7B-4244-8640-11BC743CD002}"
     >
@@ -258,7 +258,7 @@
                 />
                 <File
                     RelPath = "Controls\EncodingPicker.vb"
-                    SubType = "UserControl"
+                    SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
@@ -348,7 +348,7 @@
                 />
                 <File
                     RelPath = "Forms\LoadFilePreviewForm.vb"
-                    SubType = "Component"
+                    SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
@@ -388,7 +388,7 @@
                 />
                 <File
                     RelPath = "Forms\ProductionPrecedenceForm.vb"
-                    SubType = "Form"
+                    SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
