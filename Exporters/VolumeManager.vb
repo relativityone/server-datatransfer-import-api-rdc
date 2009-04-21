@@ -800,7 +800,7 @@ Namespace kCura.WinEDDS
 									_nativeFileWriter.Write(String.Format("{0}{1}{0}", _settings.QuoteDelimiter, textLocation))
 									'_nativeFileWriter.Write(String.Format("{2}{0}{1}{0}", _settings.QuoteDelimiter, textLocation, _settings.RecordDelimiter))
 								Case False
-									Dim sr As New System.IO.StreamReader(fullTextTempFile, System.Text.Encoding.Unicode)
+									Dim sr As New System.IO.StreamReader(fullTextTempFile, System.Text.Encoding.Unicode, True)
 									Dim c As Int32 = sr.Read
 									'_nativeFileWriter.Write(_settings.RecordDelimiter)
 									_nativeFileWriter.Write(_settings.QuoteDelimiter)
@@ -825,7 +825,7 @@ Namespace kCura.WinEDDS
 						End If
 					Else
 						Dim textLocation As String = Me.DownloadTextFieldAsFile(doc, field)
-						Dim sr As New System.IO.StreamReader(textLocation, System.Text.Encoding.Unicode)
+						Dim sr As New System.IO.StreamReader(textLocation, System.Text.Encoding.Unicode, True)
 						Dim c As Int32 = sr.Read
 						'_nativeFileWriter.Write(_settings.RecordDelimiter)
 						_nativeFileWriter.Write(_settings.QuoteDelimiter)
@@ -954,7 +954,7 @@ Namespace kCura.WinEDDS
 									End Select
 									_nativeFileWriter.Write(String.Format("<td><a style='display:block' href='{0}'>{1}</a></td>", textLocation, "TextFile"))
 								Case False
-									Dim sr As New System.IO.StreamReader(fullTextTempFile, System.Text.Encoding.Unicode)
+									Dim sr As New System.IO.StreamReader(fullTextTempFile, System.Text.Encoding.Unicode, True)
 									Dim c As Int32 = sr.Read
 									_nativeFileWriter.Write("<td>")
 									While Not c = -1
@@ -968,7 +968,7 @@ Namespace kCura.WinEDDS
 						End If
 					Else
 						Dim textLocation As String = Me.DownloadTextFieldAsFile(doc, field)
-						Dim sr As New System.IO.StreamReader(textLocation, System.Text.Encoding.Unicode)
+						Dim sr As New System.IO.StreamReader(textLocation, System.Text.Encoding.Unicode, True)
 						Dim c As Int32 = sr.Read
 						_nativeFileWriter.Write("<td>")
 						While Not c = -1
