@@ -68,6 +68,7 @@ Namespace kCura.EDDS.WinForm
 			'
 			'_productions
 			'
+			Me._productions.AlternateRowColors = False
 			Me._productions.KeepButtonsCentered = True
 			Me._productions.LeftOrderControlsVisible = False
 			Me._productions.Location = New System.Drawing.Point(8, 104)

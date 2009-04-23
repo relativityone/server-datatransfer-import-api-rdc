@@ -185,6 +185,7 @@ Namespace kCura.EDDS.WinForm
 			'
 			'_fileFields
 			'
+			Me._fileFields.AlternateRowColors = False
 			Me._fileFields.KeepButtonsCentered = False
 			Me._fileFields.LeftOrderControlsVisible = True
 			Me._fileFields.Location = New System.Drawing.Point(372, 36)
@@ -214,6 +215,7 @@ Namespace kCura.EDDS.WinForm
 			'
 			'_caseFields
 			'
+			Me._caseFields.AlternateRowColors = False
 			Me._caseFields.KeepButtonsCentered = False
 			Me._caseFields.LeftOrderControlsVisible = False
 			Me._caseFields.Location = New System.Drawing.Point(8, 36)

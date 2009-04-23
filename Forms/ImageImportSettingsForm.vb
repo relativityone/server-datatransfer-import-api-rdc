@@ -111,6 +111,7 @@ Namespace kCura.EDDS.WinForm
 			Me.Controls.Add(Me.GroupBox1)
 			Me.Controls.Add(Me._cancelButton)
 			Me.Controls.Add(Me._okButton)
+			Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
 			Me.MaximizeBox = False
 			Me.MaximumSize = New System.Drawing.Size(464, 160)
 			Me.MinimizeBox = False

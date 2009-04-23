@@ -458,7 +458,6 @@ Public Class ExportForm
 		'
 		Me._textFileEncoding.Location = New System.Drawing.Point(116, 100)
 		Me._textFileEncoding.Name = "_textFileEncoding"
-		Me._textFileEncoding.SelectedEncoding = CType(resources.GetObject("_textFileEncoding.SelectedEncoding"), System.Text.Encoding)
 		Me._textFileEncoding.Size = New System.Drawing.Size(200, 21)
 		Me._textFileEncoding.TabIndex = 19
 		'
@@ -484,7 +483,6 @@ Public Class ExportForm
 		'
 		Me._dataFileEncoding.Location = New System.Drawing.Point(116, 48)
 		Me._dataFileEncoding.Name = "_dataFileEncoding"
-		Me._dataFileEncoding.SelectedEncoding = CType(resources.GetObject("_dataFileEncoding.SelectedEncoding"), System.Text.Encoding)
 		Me._dataFileEncoding.Size = New System.Drawing.Size(200, 21)
 		Me._dataFileEncoding.TabIndex = 16
 		'
@@ -976,7 +974,6 @@ Public Class ExportForm
 		Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
 		Me.Menu = Me.MainMenu1
 		Me.Name = "ExportForm"
-		Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
 		Me.Text = "Relativity Desktop Client | Export "
 		Me._productionPrecedenceBox.ResumeLayout(False)
 		Me.GroupBox3.ResumeLayout(False)

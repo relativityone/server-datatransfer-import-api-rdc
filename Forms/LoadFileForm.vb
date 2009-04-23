@@ -702,7 +702,7 @@ Namespace kCura.EDDS.WinForm
 			'
 			Me._fileColumns.AlternateRowColors = True
 			Me._fileColumns.KeepButtonsCentered = True
-			Me._fileColumns.LeftOrderControlsVisible = True
+			Me._fileColumns.LeftOrderControlsVisible = False
 			Me._fileColumns.Location = New System.Drawing.Point(372, 20)
 			Me._fileColumns.Name = "_fileColumns"
 			Me._fileColumns.RightOrderControlVisible = False
@@ -716,7 +716,7 @@ Namespace kCura.EDDS.WinForm
 			Me._fieldMap.LeftOrderControlsVisible = False
 			Me._fieldMap.Location = New System.Drawing.Point(4, 20)
 			Me._fieldMap.Name = "_fieldMap"
-			Me._fieldMap.RightOrderControlVisible = True
+			Me._fieldMap.RightOrderControlVisible = False
 			Me._fieldMap.Size = New System.Drawing.Size(364, 276)
 			Me._fieldMap.TabIndex = 1
 			'

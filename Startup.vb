@@ -135,7 +135,6 @@ Namespace kCura.EDDS.WinForm
 				SetDestinationFolderID(GetValueFromCommandListByFlag(commandList, "d"))
 				SetExportErrorReportLocation(commandList)
 				SetExportErrorFileLocation(commandList)
-				Console.ReadLine()
 				Select Case CurrentLoadMode
 					Case LoadMode.Image
 						RunImageImport()
