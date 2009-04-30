@@ -32,6 +32,7 @@ Namespace kCura.Windows.Process
 		'Do not modify it using the code editor.
 		Friend WithEvents _messageBox As System.Windows.Forms.TextBox
 		<System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
+			Dim resources As System.Resources.ResourceManager = New System.Resources.ResourceManager(GetType(MessageBoxForm))
 			Me._messageBox = New System.Windows.Forms.TextBox
 			Me.SuspendLayout()
 			'
@@ -53,6 +54,7 @@ Namespace kCura.Windows.Process
 			Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
 			Me.ClientSize = New System.Drawing.Size(292, 273)
 			Me.Controls.Add(Me._messageBox)
+			Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
 			Me.Name = "MessageBoxForm"
 			Me.Text = "Status Bar Help"
 			Me.ResumeLayout(False)
