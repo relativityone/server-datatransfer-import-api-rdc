@@ -47,8 +47,6 @@ Namespace kCura.WinEDDS
 		Private _fileIdentifierLookup As System.Collections.Hashtable
 
 		Private _processID As Guid
-		Private _validationTime1 As Long = 0
-		Private _validationTime2 As Long = 0
 		Public Const MaxNumberOfErrorsInGrid As Int32 = 1000
 		Private _totalValidated As Long
 		Private _totalProcessed As Long
@@ -265,19 +263,17 @@ Namespace kCura.WinEDDS
 				Dim retval As kCura.EDDS.Types.MassImport.ImportStatus = EDDS.Types.MassImport.ImportStatus.Pending
 				'check for existence
 				If values(Columns.BatesNumber).Trim = "" Then
-					Me.RaiseStatusEvent(Windows.Process.EventType.Error, String.Format("No image file specified on line."), CType((_totalValidated + _totalProcessed) / 2, Int64), Me.CurrentLineNumber)
+					Me.RaiseStatusEvent(Windows.Process.EventType.Error, String.Format("No image file or identifier specified on line."), CType((_totalValidated + _totalProcessed) / 2, Int64), Me.CurrentLineNumber)
 					retval = EDDS.Types.MassImport.ImportStatus.NoImageSpecifiedOnLine
-				ElseIf Not System.IO.File.Exists(Me.GetFileLocation(values)) Then
+				ElseIf Not Config.DisableImageLocationValidation AndAlso Not System.IO.File.Exists(Me.GetFileLocation(values)) Then
 					Me.RaiseStatusEvent(Windows.Process.EventType.Error, String.Format("Image file specified ( {0} ) does not exist.", values(Columns.FileLocation)), CType((_totalValidated + _totalProcessed) / 2, Int64), Me.CurrentLineNumber)
 					retval = EDDS.Types.MassImport.ImportStatus.FileSpecifiedDne
 				Else
 					Dim validator As New kCura.ImageValidator.ImageValidator
 					Dim path As String = Me.GetFileLocation(values)
 					Try
-						Dim start As System.DateTime = System.DateTime.Now
-						validator.ValidateImage(path)
+						If Not Config.DisableImageTypeValidation Then validator.ValidateImage(path)
 						Me.RaiseStatusEvent(Windows.Process.EventType.Progress, String.Format("Image file ( {0} ) validated.", values(Columns.FileLocation)), CType((_totalValidated + _totalProcessed) / 2, Int64), Me.CurrentLineNumber)
-						_validationTime1 += CType(System.DateTime.Now.Subtract(start).TotalMilliseconds, Long)
 					Catch ex As System.Exception
 						'Me.RaiseStatusEvent(Windows.Process.EventType.Error, String.Format("Error in '{0}': {1}", path, ex.Message))
 						retval = EDDS.Types.MassImport.ImportStatus.InvalidImageFormat

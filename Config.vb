@@ -126,6 +126,18 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
+		Public Shared ReadOnly Property DisableImageTypeValidation() As Boolean
+			Get
+				Return CType(ConfigSettings("DisableImageTypeValidation"), Boolean)
+			End Get
+		End Property
+
+		Public Shared ReadOnly Property DisableImageLocationValidation() As Boolean
+			Get
+				Return CType(ConfigSettings("DisableImageLocationValidation"), Boolean)
+			End Get
+		End Property
+
 		Public Shared Property WebServiceURL() As String
 			Get
 				Return Config.GetRegistryKeyValue("WebServiceURL")
