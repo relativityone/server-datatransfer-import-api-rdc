@@ -317,7 +317,7 @@ Namespace kCura.WinEDDS
 					If value = String.Empty Then
 						field.Value = String.Empty
 						If TypeOf Me Is BulkLoadFileImporter Then
-							field.Value = ChrW(11) & ChrW(11) & ChrW(20)
+							field.Value = ""
 						End If
 					Else
 						Dim oldval As String = value.Trim
