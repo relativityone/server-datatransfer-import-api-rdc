@@ -1563,8 +1563,11 @@ Public Class ExportForm
 		End If
 		_dataSourceIsSet = True
 		_filters.SelectedIndex = selectedindex
-		_columnSelecter.LeftListBoxItems.AddRange(_columnSelecter.RightListBoxItems)
+		_columnSelecter.LeftListBoxItems.Clear()
 		_columnSelecter.RightListBoxItems.Clear()
+		Dim al As New System.Collections.ArrayList(_exportFile.AllExportableFields)
+		al.Sort()
+		_columnSelecter.LeftListBoxItems.AddRange(al.ToArray())
 		For Each field As ViewFieldInfo In selectedColumns
 			Dim itemToShiftIndex As Int32 = -1
 			For i As Int32 = 0 To _columnSelecter.LeftListBoxItems.Count - 1
