@@ -24,8 +24,8 @@ Namespace kCura.WinEDDS
 		Public ArtifactTypeID As Integer
     Public HierarchicalValueDelimiter As Char
     Public PreviewCodeCount As New System.Collections.Specialized.HybridDictionary
-		<NonSerialized()> Public SourceFileEncoding As System.Text.Encoding
-		<NonSerialized()> Public ExtractedTextFileEncoding As System.Text.Encoding
+		Public SourceFileEncoding As System.Text.Encoding
+		Public ExtractedTextFileEncoding As System.Text.Encoding
 		<NonSerialized()> Public ExtractedTextFileEncodingName As String
 		<NonSerialized()> Public CaseDefaultPath As String = ""
 		<NonSerialized()> Public Credentials As Net.NetworkCredential
@@ -75,6 +75,8 @@ Namespace kCura.WinEDDS
 			info.AddValue("FullTextColumnContainsFileLocation", Me.FullTextColumnContainsFileLocation, GetType(Boolean))
 			info.AddValue("GroupIdentifierColumn", Me.GroupIdentifierColumn, GetType(String))
 			info.AddValue("HierarchicalValueDelimiter", AscW(Me.HierarchicalValueDelimiter), GetType(Integer))
+			info.AddValue("SourceFileEncoding", Me.SourceFileEncoding.CodePage, GetType(Int32))
+			info.AddValue("ExtractedTextFileEncoding", Me.ExtractedTextFileEncoding.CodePage, GetType(Int32))
 		End Sub
 
 		Private Sub New(ByVal info As System.Runtime.Serialization.SerializationInfo, ByVal Context As System.Runtime.Serialization.StreamingContext)
@@ -126,6 +128,16 @@ Namespace kCura.WinEDDS
 					Me.HierarchicalValueDelimiter = ChrW(hval)
 				Catch ex As Exception
 					Me.HierarchicalValueDelimiter = "\"c
+				End Try
+				Try
+					Me.SourceFileEncoding = System.Text.Encoding.GetEncoding(info.GetInt32("SourceFileEncoding"))
+				Catch
+					Me.SourceFileEncoding = System.Text.Encoding.Default
+				End Try
+				Try
+					Me.ExtractedTextFileEncoding = System.Text.Encoding.GetEncoding(info.GetInt32("ExtractedTextFileEncoding"))
+				Catch
+					Me.ExtractedTextFileEncoding = System.Text.Encoding.Default
 				End Try
 			End With
 		End Sub
