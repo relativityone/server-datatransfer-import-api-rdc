@@ -302,7 +302,6 @@ Namespace kCura.EDDS.WinForm
 			'
 			'_saveFieldMapDialog
 			'
-			Me._saveFieldMapDialog.CreatePrompt = True
 			Me._saveFieldMapDialog.DefaultExt = "kwe"
 			Me._saveFieldMapDialog.Filter = "WinEDDS native load files (*.kwe)|*.kwe|All files (*.*)|*.*"
 			Me._saveFieldMapDialog.RestoreDirectory = True
@@ -936,97 +935,100 @@ Namespace kCura.EDDS.WinForm
       _loadNativeFiles.Checked = LoadFile.LoadNativeFiles
       _extractedTextValueContainsFileLocation.Checked = LoadFile.FullTextColumnContainsFileLocation
       _fullTextFileEncodingPicker.Enabled = _extractedTextValueContainsFileLocation.Checked
-      _overwriteDropdown.SelectedItem = Me.GetOverwriteDropdownItem(LoadFile.OverwriteDestination)
-      RefreshNativeFilePathFieldAndFileColumnHeaders()
-      If Not Me.EnsureConnection() Then Exit Sub
-      Dim caseFields As String() = _application.GetNonFileCaseFields(LoadFile.CaseInfo.ArtifactID, Me.LoadFile.ArtifactTypeID, True)
-      Dim caseFieldName As String
-      If loadFileObjectUpdatedFromFile Then
-        Dim columnHeaders As String()
-        If System.IO.File.Exists(Me.LoadFile.FilePath) Then
-          columnHeaders = _application.GetColumnHeadersFromLoadFile(Me.LoadFile, _firstLineContainsColumnNames.Checked)
-        Else
-          MsgBox("The load file specified does not exist.", MsgBoxStyle.Exclamation, "WinRelativity Warning")
-          columnHeaders = New String() {}
-        End If
+			_overwriteDropdown.SelectedItem = Me.GetOverwriteDropdownItem(LoadFile.OverwriteDestination)
+			If loadFileObjectUpdatedFromFile Then		' has to get called before the loadfileobjectupdatedfromfile block
+				_loadFileEncodingPicker.SelectedEncoding = Me.LoadFile.SourceFileEncoding
+				_fullTextFileEncodingPicker.SelectedEncoding = Me.LoadFile.ExtractedTextFileEncoding
+			End If
+			RefreshNativeFilePathFieldAndFileColumnHeaders()
+			If Not Me.EnsureConnection() Then Exit Sub
+			Dim caseFields As String() = _application.GetNonFileCaseFields(LoadFile.CaseInfo.ArtifactID, Me.LoadFile.ArtifactTypeID, True)
+			Dim caseFieldName As String
+			If loadFileObjectUpdatedFromFile Then
+				Dim columnHeaders As String()
+				If System.IO.File.Exists(Me.LoadFile.FilePath) Then
+					columnHeaders = _application.GetColumnHeadersFromLoadFile(Me.LoadFile, _firstLineContainsColumnNames.Checked)
+				Else
+					MsgBox("The load file specified does not exist.", MsgBoxStyle.Exclamation, "WinRelativity Warning")
+					columnHeaders = New String() {}
+				End If
+				BuildMappingFromLoadFile(caseFields, columnHeaders)
+				If LoadFile.LoadNativeFiles Then
+					_loadNativeFiles.Checked = True
+					If LoadFile.NativeFilePathColumn <> String.Empty Then
+						_nativeFilePathField.SelectedItem = LoadFile.NativeFilePathColumn
+					End If
+					_extractMd5Hash.Checked = LoadFile.ExtractMD5HashFromNativeFile
+					_extractFullTextFromNativeFile.Checked = LoadFile.ExtractFullTextFromNativeFile
+				End If
+				_buildFolderStructure.Checked = LoadFile.CreateFolderStructure
+				ActionMenuEnabled = ReadyToRun
+			Else
+				Me.MarkIdentifierField(caseFields)
+				_fieldMap.LeftListBoxItems.AddRange(caseFields)
+			End If
+			'_identifiersDropDown.Items.AddRange(_application.IdentiferFieldDropdownPopulator)
+			_overwriteDropdown.SelectedItem = Me.GetOverwriteDropdownItem(LoadFile.OverwriteDestination)
+			'_identifiersDropDown.Enabled = True			'LoadFile.OverwriteDestination
+			If Me.LoadFile.ArtifactTypeID = 10 Then
+				If _overwriteDropdown.SelectedItem Is Nothing Then
+					_destinationFolderPath.Enabled = _buildFolderStructure.Checked
+				Else
+					_destinationFolderPath.Enabled = Not (_overwriteDropdown.SelectedItem.ToString.ToLower = "overlay only" OrElse _overwriteDropdown.SelectedItem.ToString.ToLower = "append/overlay") AndAlso _buildFolderStructure.Checked
+				End If
+			Else
+				If _overwriteDropdown.SelectedItem Is Nothing Then
+					_destinationFolderPath.Enabled = _buildFolderStructure.Checked
+				Else
+					If Me.IsChildObject Then
+						Select Case _overwriteDropdown.SelectedItem.ToString.ToLower
+							Case "append/overlay"
+								_buildFolderStructure.Checked = True
+								_buildFolderStructure.Enabled = False
+								_destinationFolderPath.Enabled = True
+							Case "overlay only"
+								_buildFolderStructure.Checked = False
+								_buildFolderStructure.Enabled = True
+								_destinationFolderPath.Enabled = _buildFolderStructure.Checked
+							Case Else							'append only
+								_buildFolderStructure.Checked = True
+								_buildFolderStructure.Enabled = False
+								_destinationFolderPath.Enabled = True
+						End Select
+					End If
+				End If
+			End If
+			If loadFileObjectUpdatedFromFile AndAlso _destinationFolderPath.Enabled Then
+				Dim i As Int32
+				For i = 0 To _destinationFolderPath.Items.Count - 1
+					If DirectCast(_destinationFolderPath.Items(i), String).ToLower = Me.LoadFile.FolderStructureContainedInColumn.ToLower Then
+						_destinationFolderPath.SelectedIndex = i
+						Exit For
+					End If
+				Next
+			End If
+			'If Not Me.LoadFile.GroupIdentifierColumn Is Nothing AndAlso Me.LoadFile.GroupIdentifierColumn <> "" AndAlso _
+			''_identifiersDropDown.Items.Contains(LoadFile.GroupIdentifierColumn) Then
+			'	'_identifiersDropDown.SelectedItem = LoadFile.GroupIdentifierColumn
+			'End If
 
-        BuildMappingFromLoadFile(caseFields, columnHeaders)
-        If LoadFile.LoadNativeFiles Then
-          _loadNativeFiles.Checked = True
-          If LoadFile.NativeFilePathColumn <> String.Empty Then
-            _nativeFilePathField.SelectedItem = LoadFile.NativeFilePathColumn
-          End If
-          _extractMd5Hash.Checked = LoadFile.ExtractMD5HashFromNativeFile
-          _extractFullTextFromNativeFile.Checked = LoadFile.ExtractFullTextFromNativeFile
-        End If
-        _buildFolderStructure.Checked = LoadFile.CreateFolderStructure
-        ActionMenuEnabled = ReadyToRun
-      Else
-        Me.MarkIdentifierField(caseFields)
-        _fieldMap.LeftListBoxItems.AddRange(caseFields)
-      End If
-      '_identifiersDropDown.Items.AddRange(_application.IdentiferFieldDropdownPopulator)
-      _overwriteDropdown.SelectedItem = Me.GetOverwriteDropdownItem(LoadFile.OverwriteDestination)
-      '_identifiersDropDown.Enabled = True			'LoadFile.OverwriteDestination
-      If Me.LoadFile.ArtifactTypeID = 10 Then
-        If _overwriteDropdown.SelectedItem Is Nothing Then
-          _destinationFolderPath.Enabled = _buildFolderStructure.Checked
-        Else
-          _destinationFolderPath.Enabled = Not (_overwriteDropdown.SelectedItem.ToString.ToLower = "overlay only" OrElse _overwriteDropdown.SelectedItem.ToString.ToLower = "append/overlay") AndAlso _buildFolderStructure.Checked
-        End If
-      Else
-        If _overwriteDropdown.SelectedItem Is Nothing Then
-          _destinationFolderPath.Enabled = _buildFolderStructure.Checked
-        Else
-          If Me.IsChildObject Then
-            Select Case _overwriteDropdown.SelectedItem.ToString.ToLower
-              Case "append/overlay"
-                _buildFolderStructure.Checked = True
-                _buildFolderStructure.Enabled = False
-                _destinationFolderPath.Enabled = True
-              Case "overlay only"
-                _buildFolderStructure.Checked = False
-                _buildFolderStructure.Enabled = True
-                _destinationFolderPath.Enabled = _buildFolderStructure.Checked
-              Case Else       'append only
-                _buildFolderStructure.Checked = True
-                _buildFolderStructure.Enabled = False
-                _destinationFolderPath.Enabled = True
-            End Select
-          End If
-        End If
-      End If
-      If loadFileObjectUpdatedFromFile AndAlso _destinationFolderPath.Enabled Then
-        Dim i As Int32
-        For i = 0 To _destinationFolderPath.Items.Count - 1
-          If DirectCast(_destinationFolderPath.Items(i), String).ToLower = Me.LoadFile.FolderStructureContainedInColumn.ToLower Then
-            _destinationFolderPath.SelectedIndex = i
-            Exit For
-          End If
-        Next
-      End If
-      'If Not Me.LoadFile.GroupIdentifierColumn Is Nothing AndAlso Me.LoadFile.GroupIdentifierColumn <> "" AndAlso _
-      ''_identifiersDropDown.Items.Contains(LoadFile.GroupIdentifierColumn) Then
-      '	'_identifiersDropDown.SelectedItem = LoadFile.GroupIdentifierColumn
-      'End If
+			If Me.LoadFile.ArtifactTypeID = 10 Then
+				_extractedTextValueContainsFileLocation.Enabled = Me.FullTextColumnIsMapped
+			End If
+			_fullTextFileEncodingPicker.Enabled = _extractedTextValueContainsFileLocation.Enabled And _extractedTextValueContainsFileLocation.Checked
 
-      If Me.LoadFile.ArtifactTypeID = 10 Then
-        _extractedTextValueContainsFileLocation.Enabled = Me.FullTextColumnIsMapped
-      End If
-      _fullTextFileEncodingPicker.Enabled = _extractedTextValueContainsFileLocation.Enabled And _extractedTextValueContainsFileLocation.Checked
-
-      'If LoadFile.OverwriteDestination AndAlso Not LoadFile.SelectedIdentifierField Is Nothing Then
-      '	_overWrite.Checked = True
-      '	caseFieldName = _application.GetSelectedIdentifier(LoadFile.SelectedIdentifierField)
-      '	If caseFieldName <> String.Empty Then
-      '		_identifiersDropDown.SelectedItem = caseFieldName
-      '	End If
-      'End If
+			'If LoadFile.OverwriteDestination AndAlso Not LoadFile.SelectedIdentifierField Is Nothing Then
+			'	_overWrite.Checked = True
+			'	caseFieldName = _application.GetSelectedIdentifier(LoadFile.SelectedIdentifierField)
+			'	If caseFieldName <> String.Empty Then
+			'		_identifiersDropDown.SelectedItem = caseFieldName
+			'	End If
+			'End If
 			_extractMd5Hash.Enabled = EnableMd5Hash
 			_fieldMap.EnsureHorizontalScrollbars()
 			_fileColumns.EnsureHorizontalScrollbars()
-      ActionMenuEnabled = ReadyToRun
-      Me.Cursor = System.Windows.Forms.Cursors.Default
+			ActionMenuEnabled = ReadyToRun
+			Me.Cursor = System.Windows.Forms.Cursors.Default
     End Sub
 
     Public Property LoadFile() As kCura.WinEDDS.LoadFile
