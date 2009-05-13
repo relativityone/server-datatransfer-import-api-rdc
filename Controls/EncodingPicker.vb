@@ -65,6 +65,7 @@ Namespace kCura.EDDS.WinForm
 
 #End Region
 		Private WithEvents _frm As EncodingForm
+		Private _hasLoaded As Boolean = False
 
 		Private Sub Button1_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Button1.Click
 			_frm = New EncodingForm
@@ -82,11 +83,18 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 		Private Sub EncodingPicker_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles MyBase.Load
-			DropDown.Items.Clear()
-			DropDown.Items.AddRange(Constants.DefaultEncodings)
-			DropDown.SelectedIndex = DropDown.Items.Count - 1
-			If TypeOf Me.ParentForm Is ImageImportSettingsForm Then
-				Me.SelectedEncoding = DirectCast(Me.ParentForm, ImageImportSettingsForm).SelectedEncoding
+			Me.InitializeDropdown()
+		End Sub
+
+		Public Sub InitializeDropdown()
+			If Not _hasLoaded Then
+				_hasLoaded = True
+				DropDown.Items.Clear()
+				DropDown.Items.AddRange(Constants.DefaultEncodings)
+				DropDown.SelectedIndex = DropDown.Items.Count - 1
+				If TypeOf Me.ParentForm Is ImageImportSettingsForm Then
+					Me.SelectedEncoding = DirectCast(Me.ParentForm, ImageImportSettingsForm).SelectedEncoding
+				End If
 			End If
 		End Sub
 

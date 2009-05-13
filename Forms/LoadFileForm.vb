@@ -1161,7 +1161,9 @@ Namespace kCura.EDDS.WinForm
     End Sub
 
     Private Sub LoadFileForm_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
-      'kCura.Windows.Forms.EnhancedMenuProvider.Hook(Me)
+			'kCura.Windows.Forms.EnhancedMenuProvider.Hook(Me)
+			_loadFileEncodingPicker.InitializeDropdown()
+			_fullTextFileEncodingPicker.InitializeDropdown()
     End Sub
 
     Private Sub LoadFileForm_Closing(ByVal sender As Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles MyBase.Closing

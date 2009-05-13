@@ -1106,8 +1106,11 @@ Namespace kCura.EDDS.WinForm
         sw.Close()
       Catch ex As System.Exception
         MsgBox("Save Falied", MsgBoxStyle.Critical)
-        'TODO: Log exception
-      End Try
+				Try
+					sw.Close()
+				Catch
+				End Try
+			End Try
     End Sub
 
     Public Function ReadLoadFile(ByVal loadFile As LoadFile, ByVal path As String, ByVal isSilent As Boolean) As LoadFile
