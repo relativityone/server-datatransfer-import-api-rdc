@@ -88,6 +88,29 @@
           </s:sequence>
         </s:complexType>
       </s:element>
+      <s:element name="RetrieveNativesForProduction">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="productionArtifactID" type="s:int" />
+            <s:element minOccurs="0" maxOccurs="1" name="documentArtifactIDs" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="RetrieveNativesForProductionResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="RetrieveNativesForProductionResult">
+              <s:complexType>
+                <s:sequence>
+                  <s:element ref="s:schema" />
+                  <s:any />
+                </s:sequence>
+              </s:complexType>
+            </s:element>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
       <s:element name="RetrieveFullTextExistenceForSearch">
         <s:complexType>
           <s:sequence>
@@ -421,6 +444,12 @@
   <wsdl:message name="RetrieveNativesForSearchSoapOut">
     <wsdl:part name="parameters" element="tns:RetrieveNativesForSearchResponse" />
   </wsdl:message>
+  <wsdl:message name="RetrieveNativesForProductionSoapIn">
+    <wsdl:part name="parameters" element="tns:RetrieveNativesForProduction" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveNativesForProductionSoapOut">
+    <wsdl:part name="parameters" element="tns:RetrieveNativesForProductionResponse" />
+  </wsdl:message>
   <wsdl:message name="RetrieveFullTextExistenceForSearchSoapIn">
     <wsdl:part name="parameters" element="tns:RetrieveFullTextExistenceForSearch" />
   </wsdl:message>
@@ -522,6 +551,10 @@
       <wsdl:input message="tns:RetrieveNativesForSearchSoapIn" />
       <wsdl:output message="tns:RetrieveNativesForSearchSoapOut" />
     </wsdl:operation>
+    <wsdl:operation name="RetrieveNativesForProduction">
+      <wsdl:input message="tns:RetrieveNativesForProductionSoapIn" />
+      <wsdl:output message="tns:RetrieveNativesForProductionSoapOut" />
+    </wsdl:operation>
     <wsdl:operation name="RetrieveFullTextExistenceForSearch">
       <wsdl:input message="tns:RetrieveFullTextExistenceForSearchSoapIn" />
       <wsdl:output message="tns:RetrieveFullTextExistenceForSearchSoapOut" />
@@ -610,6 +643,15 @@
     </wsdl:operation>
     <wsdl:operation name="RetrieveNativesForSearch">
       <soap:operation soapAction="http://www.kCura.com/EDDS/SearchManager/RetrieveNativesForSearch" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveNativesForProduction">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/SearchManager/RetrieveNativesForProduction" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>

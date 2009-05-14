@@ -109,6 +109,24 @@ Namespace kCura.EDDS.WebAPI.SearchManagerBase
         End Function
         
         '<remarks/>
+        <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/SearchManager/RetrieveNativesForProduction", RequestNamespace:="http://www.kCura.com/EDDS/SearchManager", ResponseNamespace:="http://www.kCura.com/EDDS/SearchManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
+        Public Function RetrieveNativesForProduction(ByVal caseContextArtifactID As Integer, ByVal productionArtifactID As Integer, ByVal documentArtifactIDs As String) As System.Data.DataSet
+            Dim results() As Object = Me.Invoke("RetrieveNativesForProduction", New Object() {caseContextArtifactID, productionArtifactID, documentArtifactIDs})
+            Return CType(results(0),System.Data.DataSet)
+        End Function
+        
+        '<remarks/>
+        Public Function BeginRetrieveNativesForProduction(ByVal caseContextArtifactID As Integer, ByVal productionArtifactID As Integer, ByVal documentArtifactIDs As String, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("RetrieveNativesForProduction", New Object() {caseContextArtifactID, productionArtifactID, documentArtifactIDs}, callback, asyncState)
+        End Function
+        
+        '<remarks/>
+        Public Function EndRetrieveNativesForProduction(ByVal asyncResult As System.IAsyncResult) As System.Data.DataSet
+            Dim results() As Object = Me.EndInvoke(asyncResult)
+            Return CType(results(0),System.Data.DataSet)
+        End Function
+        
+        '<remarks/>
         <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/SearchManager/RetrieveFullTextExistenceForSearch", RequestNamespace:="http://www.kCura.com/EDDS/SearchManager", ResponseNamespace:="http://www.kCura.com/EDDS/SearchManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
         Public Function RetrieveFullTextExistenceForSearch(ByVal caseContextArtifactID As Integer, ByVal documentArtifactIDs() As Integer) As System.Data.DataSet
             Dim results() As Object = Me.Invoke("RetrieveFullTextExistenceForSearch", New Object() {caseContextArtifactID, documentArtifactIDs})
