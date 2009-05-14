@@ -1283,7 +1283,7 @@ Namespace kCura.EDDS.WinForm
         End If
       Next
       If Not match Then
-        MsgBox(String.Format("Your version of WinRelativity is out of date. You are running version {0}, but version {1} is required.", winVersionString, relVersionString), MsgBoxStyle.Critical, "WinRelativity Version Mismatch")
+				MsgBox(String.Format("Your version of WinRelativity is out of date. You are running version {0}, but version {1} is required.", Me.GetDisplayAssemblyVersion(), relVersionString), MsgBoxStyle.Critical, "WinRelativity Version Mismatch")
         ExitApplication()
       Else
         Exit Sub
@@ -1291,44 +1291,57 @@ Namespace kCura.EDDS.WinForm
     End Sub
 #End Region
 
-    Public Function GetProductionPrecendenceList(ByVal caseInfo As kCura.EDDS.Types.CaseInfo) As System.Data.DataTable
-      Dim productionManager As kCura.WinEDDS.Service.ProductionManager
-      Dim dt As System.Data.DataTable
-      Try
-        productionManager = New kCura.WinEDDS.Service.ProductionManager(Me.Credential, _cookieContainer)
-        dt = productionManager.RetrieveProducedByContextArtifactID(caseInfo.ArtifactID).Tables(0)
-      Catch ex As System.Exception
-        If ex.Message.IndexOf("Need To Re Login") <> -1 Then
-          NewLogin(False)
-          'productionManager = New kCura.WinEDDS.Service.ProductionManager(Me.Credential, _cookieContainer)
-          Exit Function
-        Else
-          Throw
-        End If
-      End Try
-      Dim retval As New System.Data.DataTable
-      retval.Columns.Add("Display")
-      retval.Columns.Add("Value")
-      Dim row As System.Data.DataRow
-      For Each row In dt.Rows
-        retval.Rows.Add(New String() {row("Name").ToString, row("ArtifactID").ToString})
-      Next
-      Return retval
-    End Function
+		Public Function GetDisplayAssemblyVersion() As String
+			Dim winVersionString As String = System.Reflection.Assembly.GetExecutingAssembly.FullName.Split(","c)(1).Split("="c)(1)
+			Dim versions As String() = winVersionString.Split("."c)
+			If versions.Length < 2 Then Return winVersionString
+			For i As Int32 = 1 To versions.Length - 1
+				If versions(i).Length < 2 Then
+					versions(i) = versions(i).PadLeft(2, "0"c)
+				End If
+			Next
+			Return kCura.Utility.Strings.Implode(versions, ".")
+		End Function
 
-    Public Sub DoAbout()
-      If Not _loginForm Is Nothing AndAlso Not _loginForm.IsDisposed Then
-        _loginForm.TopMost = False
-      End If
-      Dim sb As New System.Text.StringBuilder
-      Dim nl As String = System.Environment.NewLine & System.Environment.NewLine
-      sb.Append("   WinEDDS Document Upload Tool" & nl)
-      sb.Append("         Version " & System.Reflection.Assembly.GetExecutingAssembly.FullName.Split(","c)(1).Split("="c)(1) & nl)
-      sb.Append("Copyright © " & System.DateTime.Now.Year & " kCura Corporation")
-      MsgBox(sb.ToString, MsgBoxStyle.OKOnly, "About WinEDDS")
-      If Not _loginForm Is Nothing AndAlso Not _loginForm.IsDisposed Then
-        _loginForm.TopMost = True
-      End If
-    End Sub
-  End Class
+		Public Function GetProductionPrecendenceList(ByVal caseInfo As kCura.EDDS.Types.CaseInfo) As System.Data.DataTable
+			Dim productionManager As kCura.WinEDDS.Service.ProductionManager
+			Dim dt As System.Data.DataTable
+			Try
+				productionManager = New kCura.WinEDDS.Service.ProductionManager(Me.Credential, _cookieContainer)
+				dt = productionManager.RetrieveProducedByContextArtifactID(caseInfo.ArtifactID).Tables(0)
+			Catch ex As System.Exception
+				If ex.Message.IndexOf("Need To Re Login") <> -1 Then
+					NewLogin(False)
+					'productionManager = New kCura.WinEDDS.Service.ProductionManager(Me.Credential, _cookieContainer)
+					Exit Function
+
+				Else
+					Throw
+				End If
+			End Try
+			Dim retval As New System.Data.DataTable
+			retval.Columns.Add("Display")
+			retval.Columns.Add("Value")
+			Dim row As System.Data.DataRow
+			For Each row In dt.Rows
+				retval.Rows.Add(New String() {row("Name").ToString, row("ArtifactID").ToString})
+			Next
+			Return retval
+		End Function
+
+		Public Sub DoAbout()
+			If Not _loginForm Is Nothing AndAlso Not _loginForm.IsDisposed Then
+				_loginForm.TopMost = False
+			End If
+			Dim sb As New System.Text.StringBuilder
+			Dim nl As String = System.Environment.NewLine & System.Environment.NewLine
+			sb.Append("   WinEDDS Document Upload Tool" & nl)
+			sb.Append("         Version " & Me.GetDisplayAssemblyVersion() & nl)
+			sb.Append("Copyright © " & System.DateTime.Now.Year & " kCura Corporation")
+			MsgBox(sb.ToString, MsgBoxStyle.OKOnly, "About WinEDDS")
+			If Not _loginForm Is Nothing AndAlso Not _loginForm.IsDisposed Then
+				_loginForm.TopMost = True
+			End If
+		End Sub
+	End Class
 End Namespace
