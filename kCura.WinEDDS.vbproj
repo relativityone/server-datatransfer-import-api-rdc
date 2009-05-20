@@ -155,6 +155,11 @@
                     AssemblyName = "System.Web"
                     HintPath = "..\..\..\..\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.Web.dll"
                 />
+                <Reference
+                    Name = "System.Runtime.Serialization.Formatters.Soap"
+                    AssemblyName = "System.Runtime.Serialization.Formatters.Soap"
+                    HintPath = "..\..\..\..\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.Runtime.Serialization.Formatters.Soap.dll"
+                />
             </References>
             <Imports>
                 <Import Namespace = "Microsoft.VisualBasic" />
@@ -510,6 +515,21 @@
                 <File
                     RelPath = "Service\UserManager.vb"
                     SubType = "code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "SettingsFactories\ImageSettingsFactory.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "SettingsFactories\NativeSettingsFactory.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "SettingsFactories\SettingsFactoryBase.vb"
+                    SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
