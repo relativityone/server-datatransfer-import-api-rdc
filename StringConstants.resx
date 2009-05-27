@@ -72,8 +72,8 @@ The following arguments must be set and in the form specified;
 [-k or /k]:[saved settings kwe or kwi file path]
 	Saved settings for the run to be performed
 
-[-m or /m]:[image or native or i or n]
-	Sets the import type - image or native - to be run
+[-m or /m]:[image or native or object or i or n or o]
+	Sets the import type - image, native, or object - to be run
 
 [-e or /e]:[code page id]
 	Sets the encoding of the load file.  This defaults to windows' default encoding.  For a list of active encodings use -h:encoding.
@@ -89,6 +89,9 @@ The following arguments must be set and in the form specified;
 
 [-d or /d]:[folder artifact id]
 	Sets the destination folder for the upload.  Defaults to the case root folder.
+
+[-ot or /ot]:[Object Type Indicator]
+	Sets the object type being imported.  Must be included for dynamic object import.  System checks the value first as an object type name, and if it can't be found as such, then as an artifact type ID.
 
 [-ef or /ef]:[Error line file path]
 	Specifies the file path to dump the error line file from the import.  If no path is specified, then an error line file is created in the run directory, with an extension matching that of the load file.  If this option is not selected then no error line file is created.

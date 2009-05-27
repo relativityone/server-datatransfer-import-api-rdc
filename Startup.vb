@@ -33,7 +33,7 @@ Namespace kCura.EDDS.WinForm
 		Private ExportErrorLoadFile As Boolean = False
 		Private ErrorReportFileLocation As String = ""
 		Private ErrorLoadFileLocation As String = ""
-
+		Private ArtifactTypeID As Int32 = -1
 #End Region
 
 #Region " Enumerations "
@@ -41,6 +41,7 @@ Namespace kCura.EDDS.WinForm
 		Public Enum LoadMode
 			Image
 			Native
+			DynamicObject
 		End Enum
 
 #End Region
@@ -140,6 +141,8 @@ Namespace kCura.EDDS.WinForm
 						RunImageImport()
 					Case LoadMode.Native
 						RunNativeImport()
+					Case LoadMode.DynamicObject
+						RunDynamicObjectImport(commandList)
 				End Select
 			Catch ex As RdcBaseException
 				Console.WriteLine("--------------------------")
@@ -157,6 +160,21 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 #Region " Run Import "
+
+		Private Sub RunDynamicObjectImport(ByVal commandList As kCura.CommandLine.CommandList)
+			Dim frm As New kCura.Windows.Process.ProgressForm
+			Dim importer As New kCura.WinEDDS.ImportLoadFileProcess
+			SelectedNativeLoadFile.SourceFileEncoding = SourceFileEncoding
+			SelectedNativeLoadFile.ExtractedTextFileEncoding = ExtractedTextFileEncoding
+			SelectedNativeLoadFile.SelectedCasePath = SelectedCasePath
+			SelectedNativeLoadFile.CopyFilesToDocumentRepository = CopyFilesToDocumentRepository
+			SelectedNativeLoadFile.DestinationFolderID = DestinationFolderID
+			importer.LoadFile = SelectedNativeLoadFile
+			importer.TimeZoneOffset = _application.TimeZoneOffset
+			_application.SetWorkingDirectory(SelectedNativeLoadFile.FilePath)
+			Dim executor As New kCura.EDDS.WinForm.CommandLineProcessRunner(importer.ProcessObserver, importer.ProcessController, ErrorLoadFileLocation, ErrorReportFileLocation)
+			_application.StartProcess(importer)
+		End Sub
 
 		Private Sub RunNativeImport()
 			Dim folderManager As New kCura.WinEDDS.Service.FolderManager(_application.Credential, _application.CookieContainer)
@@ -259,6 +277,26 @@ Namespace kCura.EDDS.WinForm
 			If Not ExportErrorLoadFile Then ErrorLoadFileLocation = ""
 		End Sub
 
+		Private Function GetArtifactTypeID(ByVal commandLine As kCura.CommandLine.CommandList) As Int32
+			For Each command As kCura.CommandLine.Command In commandLine
+				If command.Directive.ToLower.Replace("-", "").Replace("/", "") = "ot" Then
+					If command.Value Is Nothing Then command.Value = ""
+					If command.Value = "" Then Throw New InvalidArtifactTypeException(command.Value)
+					For Each row As System.Data.DataRow In _application.AllUploadableArtifactTypes.Rows
+						If kCura.DynamicFields.Types.FieldColumnNameHelper.GetSqlFriendlyName(row("Name").ToString).ToLower = kCura.DynamicFields.Types.FieldColumnNameHelper.GetSqlFriendlyName(command.Value).ToLower Then
+							Return CType(row("DescriptorArtifactTypeID"), Int32)
+						End If
+					Next
+					For Each row As System.Data.DataRow In _application.AllUploadableArtifactTypes.Rows
+						If row("DescriptorArtifactTypeID").ToString.ToLower = command.Value.ToLower Then
+							Return CType(row("DescriptorArtifactTypeID"), Int32)
+						End If
+					Next
+					Throw New InvalidArtifactTypeException(command.Value)
+				End If
+			Next
+		End Function
+
 
 		Private Sub SetSavedMapLocation(ByVal path As String)
 			Try
@@ -266,7 +304,7 @@ Namespace kCura.EDDS.WinForm
 				Select Case CurrentLoadMode
 					Case LoadMode.Image
 						SelectedImageLoadFile = _application.ReadImageLoadFile(path)
-					Case LoadMode.Native
+					Case LoadMode.Native, LoadMode.DynamicObject
 						Dim sr As New System.IO.StreamReader(path)
 						Dim tempLoadFile As WinEDDS.LoadFile
 						Dim deserializer As New System.Runtime.Serialization.Formatters.Soap.SoapFormatter
@@ -385,6 +423,9 @@ Namespace kCura.EDDS.WinForm
 				Case "n", "native"
 					CurrentLoadMode = LoadMode.Native
 					HasSetLoadMode = True
+				Case "o", "object"
+					CurrentLoadMode = LoadMode.DynamicObject
+					HasSetLoadMode = True
 			End Select
 			If Not HasSetLoadMode Then Throw New NoLoadTypeModeSetException
 		End Sub
@@ -481,7 +522,7 @@ Namespace kCura.EDDS.WinForm
 	Public Class NoLoadTypeModeSetException
 		Inherits RdcBaseException
 		Public Sub New()
-			MyBase.New("No load type or invalid load type set. Available options are ""image"" or ""native""")
+			MyBase.New("No load type or invalid load type set. Available options are ""image"", ""native"" or ""object""")
 		End Sub
 	End Class
 
@@ -503,6 +544,13 @@ Namespace kCura.EDDS.WinForm
 		Inherits RdcBaseException
 		Public Sub New(ByVal path As String, ByVal type As String)
 			MyBase.New(String.Format("The {0} path {1} is invalid", type, path))
+		End Sub
+	End Class
+
+	Public Class InvalidArtifactTypeException
+		Inherits RdcBaseException
+		Public Sub New(ByVal type As String)
+			MyBase.New(String.Format("'{0}' is neither the name or ID of any dynamic object type in the system", type))
 		End Sub
 	End Class
 

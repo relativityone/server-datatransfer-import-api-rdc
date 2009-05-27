@@ -174,58 +174,62 @@ Namespace kCura.EDDS.WinForm
         End With
       Next
       Return String.Empty
-    End Function
+		End Function
 
-    'Public ReadOnly Property CurrentGroupIdentifierField() As DocumentField
-    '	Get
-    '		Dim fieldManager As New kCura.WinEDDS.Service.FieldQuery(Credential, _cookieContainer)
-    '		Dim fields() As kCura.EDDS.WebAPI.DocumentManagerBase.Field = fieldManager.RetrieveAllAsArray(SelectedCaseInfo.ArtifactID, True)
-    '		Dim i As Int32
-    '		For i = 0 To fields.Length - 1
-    '			With fields(i)
-    '				If fields(i).DisplayName.ToLower = "group identifier" Then
-    '					Return New DocumentField(.DisplayName, .ArtifactID, .FieldTypeID, .FieldCategoryID, .CodeTypeID, .MaxLength, .UseUnicodeEncoding)
-    '				End If
-    '			End With
-    '		Next
-    '	End Get
-    'End Property
+		Public Function AllUploadableArtifactTypes() As System.Data.DataTable
+			Return New kCura.WinEDDS.Service.ObjectTypeManager(Me.Credential, Me.CookieContainer).RetrieveAllUploadable(Me.SelectedCaseInfo.ArtifactID).Tables(0)
+		End Function
 
-    Friend ReadOnly Property Credential() As System.Net.NetworkCredential
-      Get
-        If _credential Is Nothing Then
-          NewLogin()
-        End If
-        Return _credential
-      End Get
-    End Property
+		'Public ReadOnly Property CurrentGroupIdentifierField() As DocumentField
+		'	Get
+		'		Dim fieldManager As New kCura.WinEDDS.Service.FieldQuery(Credential, _cookieContainer)
+		'		Dim fields() As kCura.EDDS.WebAPI.DocumentManagerBase.Field = fieldManager.RetrieveAllAsArray(SelectedCaseInfo.ArtifactID, True)
+		'		Dim i As Int32
+		'		For i = 0 To fields.Length - 1
+		'			With fields(i)
+		'				If fields(i).DisplayName.ToLower = "group identifier" Then
+		'					Return New DocumentField(.DisplayName, .ArtifactID, .FieldTypeID, .FieldCategoryID, .CodeTypeID, .MaxLength, .UseUnicodeEncoding)
+		'				End If
+		'			End With
+		'		Next
+		'	End Get
+		'End Property
 
-    Public Property TemporaryWebServiceURL() As String
-      Get
-        Return _temporaryWebServiceURL
-      End Get
-      Set(ByVal value As String)
-        _temporaryWebServiceURL = value
-      End Set
-    End Property
+		Friend ReadOnly Property Credential() As System.Net.NetworkCredential
+			Get
+				If _credential Is Nothing Then
+					NewLogin()
+				End If
+				Return _credential
+			End Get
+		End Property
 
-    Public Property CookieContainer() As System.Net.CookieContainer
-      Get
-        Return _cookieContainer
-      End Get
-      Set(ByVal value As System.Net.CookieContainer)
-        _cookieContainer = value
-      End Set
-    End Property
+		Public Property TemporaryWebServiceURL() As String
+			Get
+				Return _temporaryWebServiceURL
+			End Get
+			Set(ByVal value As String)
+				_temporaryWebServiceURL = value
+			End Set
+		End Property
 
-    Public Property ArtifactTypeID() As Int32
-      Get
-        Return _artifactTypeID
-      End Get
-      Set(ByVal value As Int32)
-        _artifactTypeID = value
-      End Set
-    End Property
+		Public Property CookieContainer() As System.Net.CookieContainer
+			Get
+				Return _cookieContainer
+			End Get
+			Set(ByVal value As System.Net.CookieContainer)
+				_cookieContainer = value
+			End Set
+		End Property
+
+		Public Property ArtifactTypeID() As Int32
+			Get
+				Return _artifactTypeID
+			End Get
+			Set(ByVal value As Int32)
+				_artifactTypeID = value
+			End Set
+		End Property
 
 #End Region
 
