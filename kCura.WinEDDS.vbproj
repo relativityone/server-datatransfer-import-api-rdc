@@ -518,6 +518,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "SettingsFactories\DynamicObjectSettingsFactory.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "SettingsFactories\ImageSettingsFactory.vb"
                     SubType = "Code"
                     BuildAction = "Compile"

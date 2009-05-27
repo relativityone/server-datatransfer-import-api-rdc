@@ -76,6 +76,7 @@ Namespace kCura.WinEDDS
 			info.AddValue("GroupIdentifierColumn", Me.GroupIdentifierColumn, GetType(String))
 			info.AddValue("HierarchicalValueDelimiter", AscW(Me.HierarchicalValueDelimiter), GetType(Integer))
 			info.AddValue("SourceFileEncoding", Me.SourceFileEncoding.CodePage, GetType(Int32))
+			info.AddValue("ArtifactTypeID", Me.ArtifactTypeID, GetType(Int32))
 			If Me.FullTextColumnContainsFileLocation Then info.AddValue("ExtractedTextFileEncoding", Me.ExtractedTextFileEncoding.CodePage, GetType(Int32))
 		End Sub
 
@@ -138,6 +139,11 @@ Namespace kCura.WinEDDS
 					Me.ExtractedTextFileEncoding = System.Text.Encoding.GetEncoding(info.GetInt32("ExtractedTextFileEncoding"))
 				Catch
 					Me.ExtractedTextFileEncoding = System.Text.Encoding.Default
+				End Try
+				Try
+					Me.ArtifactTypeID = info.GetInt32("ArtifactTypeID")
+				Catch ex As Exception
+					Me.ArtifactTypeID = 10
 				End Try
 			End With
 		End Sub
