@@ -67,97 +67,97 @@ Namespace kCura.WinEDDS.Service
       Return DirectCast(fields.ToArray(GetType(kCura.EDDS.WebAPI.DocumentManagerBase.Field)), kCura.EDDS.WebAPI.DocumentManagerBase.Field())
     End Function
 
-    Public Function RetrieveAllAsDocumentFieldCollection(ByVal caseContextArtifactID As Int32) As DocumentFieldCollection
-      Dim retval As New DocumentFieldCollection
-      For Each fieldDTO As kCura.EDDS.WebAPI.DocumentManagerBase.Field In Me.RetrieveAllAsArray(caseContextArtifactID, 10)
-        With fieldDTO
-          retval.Add(New DocumentField(.DisplayName, .ArtifactID, .FieldTypeID, .FieldCategoryID, .CodeTypeID, .MaxLength, .UseUnicodeEncoding))
-        End With
-      Next
-      Return retval
-    End Function
+		Public Function RetrieveAllAsDocumentFieldCollection(ByVal caseContextArtifactID As Int32, ByVal artifactTypeID As Int32) As DocumentFieldCollection
+			Dim retval As New DocumentFieldCollection
+			For Each fieldDTO As kCura.EDDS.WebAPI.DocumentManagerBase.Field In Me.RetrieveAllAsArray(caseContextArtifactID, artifactTypeID)
+				With fieldDTO
+					retval.Add(New DocumentField(.DisplayName, .ArtifactID, .FieldTypeID, .FieldCategoryID, .CodeTypeID, .MaxLength, .UseUnicodeEncoding))
+				End With
+			Next
+			Return retval
+		End Function
 
 #Region " Shadow Functions "
-    Public Shadows Function RetrieveDisplayFieldNameByFieldCategoryID(ByVal caseContextArtifactID As Int32, ByVal fieldCategoryID As Int32) As String
-      Dim tries As Int32 = 0
-      While tries < Config.MaxReloginTries
-        tries += 1
-        Try
-          If kCura.WinEDDS.Config.UsesWebAPI Then
-            Return MyBase.RetrieveDisplayFieldNameByFieldCategoryID(caseContextArtifactID, fieldCategoryID)
-          Else
-            'Return CType(_fieldQuery.RetrieveByFieldCategoryID(_identity, fieldCategoryID, contextArtifactID)("DisplayName"), String)
-          End If
-        Catch ex As System.Exception
-          If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-            Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
-          Else
-            Throw
-          End If
-        End Try
-      End While
-    End Function
+		Public Shadows Function RetrieveDisplayFieldNameByFieldCategoryID(ByVal caseContextArtifactID As Int32, ByVal fieldCategoryID As Int32) As String
+			Dim tries As Int32 = 0
+			While tries < Config.MaxReloginTries
+				tries += 1
+				Try
+					If kCura.WinEDDS.Config.UsesWebAPI Then
+						Return MyBase.RetrieveDisplayFieldNameByFieldCategoryID(caseContextArtifactID, fieldCategoryID)
+					Else
+						'Return CType(_fieldQuery.RetrieveByFieldCategoryID(_identity, fieldCategoryID, contextArtifactID)("DisplayName"), String)
+					End If
+				Catch ex As System.Exception
+					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
+						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
+					Else
+						Throw
+					End If
+				End Try
+			End While
+		End Function
 
-    Public Shadows Function RetrieveAllMappable(ByVal caseContextArtifactID As Int32, ByVal artifactTypeID As Int32) As System.Data.DataSet
-      Dim tries As Int32 = 0
-      While tries < Config.MaxReloginTries
-        tries += 1
-        Try
-          If kCura.WinEDDS.Config.UsesWebAPI Then
-            Return MyBase.RetrieveAllMappable(caseContextArtifactID, artifactTypeID)
-          Else
-            'Return _fieldQuery.RetrieveAllMappable(_identity, caseID).ToDataSet
-          End If
-        Catch ex As System.Exception
-          If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-            Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
-          Else
-            Throw
-          End If
-        End Try
-      End While
-    End Function
+		Public Shadows Function RetrieveAllMappable(ByVal caseContextArtifactID As Int32, ByVal artifactTypeID As Int32) As System.Data.DataSet
+			Dim tries As Int32 = 0
+			While tries < Config.MaxReloginTries
+				tries += 1
+				Try
+					If kCura.WinEDDS.Config.UsesWebAPI Then
+						Return MyBase.RetrieveAllMappable(caseContextArtifactID, artifactTypeID)
+					Else
+						'Return _fieldQuery.RetrieveAllMappable(_identity, caseID).ToDataSet
+					End If
+				Catch ex As System.Exception
+					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
+						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
+					Else
+						Throw
+					End If
+				End Try
+			End While
+		End Function
 
-    Public Shadows Function RetrieveAll(ByVal caseContextArtifactID As Int32) As System.Data.DataSet
-      Dim tries As Int32 = 0
-      While tries < Config.MaxReloginTries
-        tries += 1
-        Try
-          If kCura.WinEDDS.Config.UsesWebAPI Then
-            Return MyBase.RetrieveAll(caseContextArtifactID)
-          Else
-            'Return _fieldQuery.RetrieveAllWithSecurity(_identity, caseID).ToDataSet
-          End If
-        Catch ex As System.Exception
-          If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-            Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
-          Else
-            Throw
-          End If
-        End Try
-      End While
-    End Function
+		Public Shadows Function RetrieveAll(ByVal caseContextArtifactID As Int32) As System.Data.DataSet
+			Dim tries As Int32 = 0
+			While tries < Config.MaxReloginTries
+				tries += 1
+				Try
+					If kCura.WinEDDS.Config.UsesWebAPI Then
+						Return MyBase.RetrieveAll(caseContextArtifactID)
+					Else
+						'Return _fieldQuery.RetrieveAllWithSecurity(_identity, caseID).ToDataSet
+					End If
+				Catch ex As System.Exception
+					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
+						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
+					Else
+						Throw
+					End If
+				End Try
+			End While
+		End Function
 
-    Public Shadows Function RetrievePotentialBeginBatesFields(ByVal caseContextArtifactID As Int32) As System.Data.DataSet
-      Dim tries As Int32 = 0
-      While tries < Config.MaxReloginTries
-        tries += 1
-        Try
-          If kCura.WinEDDS.Config.UsesWebAPI Then
-            Return MyBase.RetrievePotentialBeginBatesFields(caseContextArtifactID)
-          Else
-            'Return _fieldQuery.RetrieveAllWithSecurity(_identity, caseID).ToDataSet
-          End If
-        Catch ex As System.Exception
-          If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-            Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
-          Else
-            Throw
-          End If
-        End Try
-      End While
-    End Function
+		Public Shadows Function RetrievePotentialBeginBatesFields(ByVal caseContextArtifactID As Int32) As System.Data.DataSet
+			Dim tries As Int32 = 0
+			While tries < Config.MaxReloginTries
+				tries += 1
+				Try
+					If kCura.WinEDDS.Config.UsesWebAPI Then
+						Return MyBase.RetrievePotentialBeginBatesFields(caseContextArtifactID)
+					Else
+						'Return _fieldQuery.RetrieveAllWithSecurity(_identity, caseID).ToDataSet
+					End If
+				Catch ex As System.Exception
+					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
+						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
+					Else
+						Throw
+					End If
+				End Try
+			End While
+		End Function
 #End Region
 
-  End Class
+	End Class
 End Namespace

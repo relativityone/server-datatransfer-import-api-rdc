@@ -44,7 +44,7 @@ Namespace kCura.WinEDDS
 				_loadFile.CaseInfo = Me.CaseManager.Read(value)
 				_loadFile.CaseDefaultPath = _loadFile.CaseInfo.DocumentPath
 				_loadFile.DestinationFolderID = _loadFile.CaseInfo.RootFolderID
-				_docFields = Me.FieldManager.Query.RetrieveAllAsDocumentFieldCollection(value)
+				_docFields = Me.FieldManager.Query.RetrieveAllAsDocumentFieldCollection(value, _loadFile.ArtifactTypeID)
 			End Set
 		End Property
 
@@ -182,5 +182,6 @@ Namespace kCura.WinEDDS
 		End Sub
 
 	End Class
+
 End Namespace
 

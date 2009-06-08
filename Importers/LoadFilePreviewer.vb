@@ -95,7 +95,7 @@ Namespace kCura.WinEDDS
 
 		Public Overrides Function ReadFile(ByVal path As String) As Object
 			Dim earlyexit As Boolean = False
-			_relationalDocumentFields = _fieldQuery.RetrieveAllAsDocumentFieldCollection(_selectedCaseArtifactID).GetFieldsByCategory(DynamicFields.Types.FieldCategory.Relational)
+			_relationalDocumentFields = _fieldQuery.RetrieveAllAsDocumentFieldCollection(_selectedCaseArtifactID, _artifactTypeID).GetFieldsByCategory(DynamicFields.Types.FieldCategory.Relational)
 			Reader = New System.IO.StreamReader(path, _sourceFileEncoding)
 			Dim filesize As Int64 = Reader.BaseStream.Length
 			Dim stepsize As Int64 = CType(filesize / 100, Int64)
