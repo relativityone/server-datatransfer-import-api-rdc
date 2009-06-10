@@ -90,6 +90,9 @@ The following arguments must be set and in the form specified;
 [-d or /d]:[folder artifact id]
 	Sets the destination folder for the upload.  Defaults to the case root folder.
 
+[-s or /s]:[start line number]
+	Sets the starting line number of the load file for the upload.  Defaults to 0.
+
 [-ef or /ef]:[Error line file path]
 	Specifies the file path to dump the error line file from the import.  If no path is specified, then an error line file is created in the run directory, with an extension matching that of the load file.  If this option is not selected then no error line file is created.
 

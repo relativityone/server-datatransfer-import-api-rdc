@@ -125,7 +125,9 @@ Namespace kCura.EDDS.WinForm
     Friend WithEvents _loadFileEncodingPicker As kCura.EDDS.WinForm.EncodingPicker
     Friend WithEvents _fullTextFileEncodingPicker As kCura.EDDS.WinForm.EncodingPicker
     Friend WithEvents _hierarchicalValueDelimiter As System.Windows.Forms.ComboBox
-    Friend WithEvents Label10 As System.Windows.Forms.Label
+		Friend WithEvents Label10 As System.Windows.Forms.Label
+		Friend WithEvents _startLineNumberLabel As System.Windows.Forms.Label
+		Friend WithEvents _startLineNumber As System.Windows.Forms.NumericUpDown
 
 		<System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
 			Dim resources As System.Resources.ResourceManager = New System.Resources.ResourceManager(GetType(LoadFileForm))
@@ -149,6 +151,8 @@ Namespace kCura.EDDS.WinForm
 			Me._loadFieldMapDialog = New System.Windows.Forms.OpenFileDialog
 			Me.TabControl1 = New System.Windows.Forms.TabControl
 			Me._loadFileTab = New System.Windows.Forms.TabPage
+			Me._startLineNumber = New System.Windows.Forms.NumericUpDown
+			Me._startLineNumberLabel = New System.Windows.Forms.Label
 			Me._loadFileEncodingPicker = New kCura.EDDS.WinForm.EncodingPicker
 			Me.Label8 = New System.Windows.Forms.Label
 			Me.GroupBox20 = New System.Windows.Forms.GroupBox
@@ -193,6 +197,7 @@ Namespace kCura.EDDS.WinForm
 			Me.GroupBox1.SuspendLayout()
 			Me.TabControl1.SuspendLayout()
 			Me._loadFileTab.SuspendLayout()
+			CType(Me._startLineNumber, System.ComponentModel.ISupportInitialize).BeginInit()
 			Me.GroupBox20.SuspendLayout()
 			Me.GroupBox2.SuspendLayout()
 			Me.GroupBox23.SuspendLayout()
@@ -324,6 +329,8 @@ Namespace kCura.EDDS.WinForm
 			'
 			'_loadFileTab
 			'
+			Me._loadFileTab.Controls.Add(Me._startLineNumber)
+			Me._loadFileTab.Controls.Add(Me._startLineNumberLabel)
 			Me._loadFileTab.Controls.Add(Me._loadFileEncodingPicker)
 			Me._loadFileTab.Controls.Add(Me.Label8)
 			Me._loadFileTab.Controls.Add(Me.GroupBox20)
@@ -335,6 +342,23 @@ Namespace kCura.EDDS.WinForm
 			Me._loadFileTab.Size = New System.Drawing.Size(732, 426)
 			Me._loadFileTab.TabIndex = 0
 			Me._loadFileTab.Text = "Load File"
+			'
+			'_startLineNumber
+			'
+			Me._startLineNumber.Location = New System.Drawing.Point(68, 84)
+			Me._startLineNumber.Maximum = New Decimal(New Integer() {268435455, 1042612833, 542101086, 0})
+			Me._startLineNumber.Name = "_startLineNumber"
+			Me._startLineNumber.Size = New System.Drawing.Size(148, 20)
+			Me._startLineNumber.TabIndex = 27
+			'
+			'_startLineNumberLabel
+			'
+			Me._startLineNumberLabel.Location = New System.Drawing.Point(12, 84)
+			Me._startLineNumberLabel.Name = "_startLineNumberLabel"
+			Me._startLineNumberLabel.Size = New System.Drawing.Size(56, 20)
+			Me._startLineNumberLabel.TabIndex = 26
+			Me._startLineNumberLabel.Text = "Start Line"
+			Me._startLineNumberLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
 			'
 			'_loadFileEncodingPicker
 			'
@@ -389,7 +413,7 @@ Namespace kCura.EDDS.WinForm
 			Me._firstLineContainsColumnNames.CheckState = System.Windows.Forms.CheckState.Checked
 			Me._firstLineContainsColumnNames.Location = New System.Drawing.Point(12, 60)
 			Me._firstLineContainsColumnNames.Name = "_firstLineContainsColumnNames"
-			Me._firstLineContainsColumnNames.Size = New System.Drawing.Size(136, 36)
+			Me._firstLineContainsColumnNames.Size = New System.Drawing.Size(204, 20)
 			Me._firstLineContainsColumnNames.TabIndex = 20
 			Me._firstLineContainsColumnNames.Text = "First line contains column names"
 			'
@@ -542,7 +566,6 @@ Namespace kCura.EDDS.WinForm
 			'
 			Me._fullTextFileEncodingPicker.Location = New System.Drawing.Point(12, 92)
 			Me._fullTextFileEncodingPicker.Name = "_fullTextFileEncodingPicker"
-			Me._fullTextFileEncodingPicker.SelectedEncoding = CType(resources.GetObject("_fullTextFileEncodingPicker.SelectedEncoding"), System.Text.Encoding)
 			Me._fullTextFileEncodingPicker.Size = New System.Drawing.Size(200, 21)
 			Me._fullTextFileEncodingPicker.TabIndex = 31
 			'
@@ -701,7 +724,7 @@ Namespace kCura.EDDS.WinForm
 			'
 			Me._fileColumns.AlternateRowColors = True
 			Me._fileColumns.KeepButtonsCentered = True
-			Me._fileColumns.LeftOrderControlsVisible = True
+			Me._fileColumns.LeftOrderControlsVisible = False
 			Me._fileColumns.Location = New System.Drawing.Point(372, 20)
 			Me._fileColumns.Name = "_fileColumns"
 			Me._fileColumns.RightOrderControlVisible = False
@@ -715,7 +738,7 @@ Namespace kCura.EDDS.WinForm
 			Me._fieldMap.LeftOrderControlsVisible = False
 			Me._fieldMap.Location = New System.Drawing.Point(4, 20)
 			Me._fieldMap.Name = "_fieldMap"
-			Me._fieldMap.RightOrderControlVisible = True
+			Me._fieldMap.RightOrderControlVisible = False
 			Me._fieldMap.Size = New System.Drawing.Size(364, 276)
 			Me._fieldMap.TabIndex = 1
 			'
@@ -735,6 +758,7 @@ Namespace kCura.EDDS.WinForm
 			Me.GroupBox1.ResumeLayout(False)
 			Me.TabControl1.ResumeLayout(False)
 			Me._loadFileTab.ResumeLayout(False)
+			CType(Me._startLineNumber, System.ComponentModel.ISupportInitialize).EndInit()
 			Me.GroupBox20.ResumeLayout(False)
 			Me.GroupBox2.ResumeLayout(False)
 			Me.GroupBox23.ResumeLayout(False)
@@ -901,8 +925,13 @@ Namespace kCura.EDDS.WinForm
           LoadFile.CreateFolderStructure = False
         End If
       End If
-      Me.LoadFile.CaseDefaultPath = _application.SelectedCaseInfo.DocumentPath
-      Me.Cursor = System.Windows.Forms.Cursors.Default
+			Me.LoadFile.CaseDefaultPath = _application.SelectedCaseInfo.DocumentPath
+			If _startLineNumber.Text = "" Then
+				Me.LoadFile.StartLineNumber = 0
+			Else
+				Me.LoadFile.StartLineNumber = CType(_startLineNumber.Text, Int64)
+			End If
+			Me.Cursor = System.Windows.Forms.Cursors.Default
     End Sub
 
     Private Sub MarkIdentifierField(ByVal fieldNames As String())
@@ -936,7 +965,7 @@ Namespace kCura.EDDS.WinForm
       _extractedTextValueContainsFileLocation.Checked = LoadFile.FullTextColumnContainsFileLocation
       _fullTextFileEncodingPicker.Enabled = _extractedTextValueContainsFileLocation.Checked
 			_overwriteDropdown.SelectedItem = Me.GetOverwriteDropdownItem(LoadFile.OverwriteDestination)
-			If loadFileObjectUpdatedFromFile Then		' has to get called before the loadfileobjectupdatedfromfile block
+			If loadFileObjectUpdatedFromFile Then		 ' has to get called before the loadfileobjectupdatedfromfile block
 				_loadFileEncodingPicker.SelectedEncoding = Me.LoadFile.SourceFileEncoding
 				_fullTextFileEncodingPicker.SelectedEncoding = Me.LoadFile.ExtractedTextFileEncoding
 			End If
@@ -1027,6 +1056,7 @@ Namespace kCura.EDDS.WinForm
 			_extractMd5Hash.Enabled = EnableMd5Hash
 			_fieldMap.EnsureHorizontalScrollbars()
 			_fileColumns.EnsureHorizontalScrollbars()
+			_startLineNumber.Value = CType(LoadFile.StartLineNumber, Decimal)
 			ActionMenuEnabled = ReadyToRun
 			Me.Cursor = System.Windows.Forms.Cursors.Default
     End Sub
@@ -1528,5 +1558,6 @@ Namespace kCura.EDDS.WinForm
 			Me.LoadFile.SourceFileEncoding = _loadFileEncodingPicker.SelectedEncoding
 			Me.RefreshNativeFilePathFieldAndFileColumnHeaders()
 		End Sub
+
 	End Class
 End Namespace

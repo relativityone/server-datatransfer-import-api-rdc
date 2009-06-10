@@ -34,6 +34,7 @@ Namespace kCura.EDDS.WinForm
 		Private ErrorReportFileLocation As String = ""
 		Private ErrorLoadFileLocation As String = ""
 		Private ArtifactTypeID As Int32 = -1
+		Private StartLineNumber As Int64
 #End Region
 
 #Region " Enumerations "
@@ -134,6 +135,7 @@ Namespace kCura.EDDS.WinForm
 				SetSelectedCasePath(GetValueFromCommandListByFlag(commandList, "r"))
 				SetCopyFilesToDocumentRepository(GetValueFromCommandListByFlag(commandList, "l"))
 				SetDestinationFolderID(GetValueFromCommandListByFlag(commandList, "d"))
+				SetStartLineNumber(GetValueFromCommandListByFlag(commandList, "s"))
 				SetExportErrorReportLocation(commandList)
 				SetExportErrorFileLocation(commandList)
 				Select Case CurrentLoadMode
@@ -169,6 +171,7 @@ Namespace kCura.EDDS.WinForm
 			SelectedNativeLoadFile.SelectedCasePath = SelectedCasePath
 			SelectedNativeLoadFile.CopyFilesToDocumentRepository = CopyFilesToDocumentRepository
 			SelectedNativeLoadFile.DestinationFolderID = DestinationFolderID
+			SelectedNativeLoadFile.StartLineNumber = StartLineNumber
 			importer.LoadFile = SelectedNativeLoadFile
 			importer.TimeZoneOffset = _application.TimeZoneOffset
 			_application.SetWorkingDirectory(SelectedNativeLoadFile.FilePath)
@@ -186,6 +189,7 @@ Namespace kCura.EDDS.WinForm
 				SelectedNativeLoadFile.SelectedCasePath = SelectedCasePath
 				SelectedNativeLoadFile.CopyFilesToDocumentRepository = CopyFilesToDocumentRepository
 				SelectedNativeLoadFile.DestinationFolderID = DestinationFolderID
+				SelectedNativeLoadFile.StartLineNumber = StartLineNumber
 				importer.LoadFile = SelectedNativeLoadFile
 				importer.TimeZoneOffset = _application.TimeZoneOffset
 				SelectedNativeLoadFile.ArtifactTypeID = 10
@@ -203,6 +207,7 @@ Namespace kCura.EDDS.WinForm
 			SelectedImageLoadFile.CaseDefaultPath = SelectedCaseInfo.DocumentPath
 			SelectedImageLoadFile.CopyFilesToDocumentRepository = CopyFilesToDocumentRepository
 			SelectedImageLoadFile.FullTextEncoding = ExtractedTextFileEncoding
+			SelectedImageLoadFile.StartLineNumber = StartLineNumber
 			importer.ImageLoadFile = SelectedImageLoadFile
 			_application.SetWorkingDirectory(SelectedImageLoadFile.FileName)
 			Dim executor As New kCura.EDDS.WinForm.CommandLineProcessRunner(importer.ProcessObserver, importer.ProcessController, ErrorLoadFileLocation, ErrorReportFileLocation)
@@ -430,6 +435,20 @@ Namespace kCura.EDDS.WinForm
 			If Not HasSetLoadMode Then Throw New NoLoadTypeModeSetException
 		End Sub
 
+		Private Sub SetStartLineNumber(ByVal value As String)
+			If value Is Nothing OrElse value = "" Then
+				StartLineNumber = 0
+			Else
+				Try
+					StartLineNumber = Int64.Parse(value)
+					If StartLineNumber < 0 Then
+						Throw New StartLineNumberException(value)
+					End If
+				Catch
+					Throw New StartLineNumberException(value)
+				End Try
+			End If
+		End Sub
 
 #End Region
 
@@ -554,6 +573,12 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 	End Class
 
+	Public Class StartLineNumberException
+		Inherits RdcBaseException
+		Public Sub New(ByVal value As String)
+			MyBase.New(String.Format("The specified start line number is not valid: {0}.", value))
+		End Sub
+	End Class
 
 #End Region
 

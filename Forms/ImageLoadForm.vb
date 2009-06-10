@@ -56,6 +56,8 @@ Namespace kCura.EDDS.WinForm
 		Friend WithEvents _advancedButton As System.Windows.Forms.Button
 		Friend WithEvents GroupBox2 As System.Windows.Forms.GroupBox
 		Friend WithEvents _beginBatesDropdown As System.Windows.Forms.ComboBox
+		Friend WithEvents _startLineNumberLabel As System.Windows.Forms.Label
+		Friend WithEvents _startLineNumber As System.Windows.Forms.NumericUpDown
 		<System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
 			Dim resources As System.Resources.ResourceManager = New System.Resources.ResourceManager(GetType(ImageLoad))
 			Me.GroupBox3 = New System.Windows.Forms.GroupBox
@@ -82,11 +84,14 @@ Namespace kCura.EDDS.WinForm
 			Me._advancedButton = New System.Windows.Forms.Button
 			Me.GroupBox2 = New System.Windows.Forms.GroupBox
 			Me._beginBatesDropdown = New System.Windows.Forms.ComboBox
+			Me._startLineNumber = New System.Windows.Forms.NumericUpDown
+			Me._startLineNumberLabel = New System.Windows.Forms.Label
 			Me.GroupBox3.SuspendLayout()
 			Me.GroupBox233.SuspendLayout()
 			Me.ExtractedTextGroupBox.SuspendLayout()
 			Me.GroupBox1.SuspendLayout()
 			Me.GroupBox2.SuspendLayout()
+			CType(Me._startLineNumber, System.ComponentModel.ISupportInitialize).BeginInit()
 			Me.SuspendLayout()
 			'
 			'GroupBox3
@@ -261,10 +266,29 @@ Namespace kCura.EDDS.WinForm
 			Me._beginBatesDropdown.Size = New System.Drawing.Size(192, 21)
 			Me._beginBatesDropdown.TabIndex = 29
 			'
+			'_startLineNumber
+			'
+			Me._startLineNumber.Location = New System.Drawing.Point(424, 92)
+			Me._startLineNumber.Maximum = New Decimal(New Integer() {268435455, 1042612833, 542101086, 0})
+			Me._startLineNumber.Name = "_startLineNumber"
+			Me._startLineNumber.Size = New System.Drawing.Size(144, 20)
+			Me._startLineNumber.TabIndex = 30
+			'
+			'_startLineNumberLabel
+			'
+			Me._startLineNumberLabel.Location = New System.Drawing.Point(368, 92)
+			Me._startLineNumberLabel.Name = "_startLineNumberLabel"
+			Me._startLineNumberLabel.Size = New System.Drawing.Size(56, 20)
+			Me._startLineNumberLabel.TabIndex = 31
+			Me._startLineNumberLabel.Text = "Start Line"
+			Me._startLineNumberLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+			'
 			'ImageLoad
 			'
 			Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
 			Me.ClientSize = New System.Drawing.Size(580, 177)
+			Me.Controls.Add(Me._startLineNumberLabel)
+			Me.Controls.Add(Me._startLineNumber)
 			Me.Controls.Add(Me.GroupBox2)
 			Me.Controls.Add(Me._advancedButton)
 			Me.Controls.Add(Me.GroupBox1)
@@ -282,6 +306,7 @@ Namespace kCura.EDDS.WinForm
 			Me.ExtractedTextGroupBox.ResumeLayout(False)
 			Me.GroupBox1.ResumeLayout(False)
 			Me.GroupBox2.ResumeLayout(False)
+			CType(Me._startLineNumber, System.ComponentModel.ISupportInitialize).EndInit()
 			Me.ResumeLayout(False)
 
 		End Sub
@@ -312,7 +337,6 @@ Namespace kCura.EDDS.WinForm
 			End If
 			ImageLoadFile.Overwrite = Me.GetOverwrite
       ImageLoadFile.DestinationFolderID = _imageLoadFile.DestinationFolderID
-      'TODO: WINFLEX - ArtifactID
 			ImageLoadFile.ControlKeyField = _application.GetCaseIdentifierFields(10)(0)
 			If ImageLoadFile.ForProduction Then
 				ImageLoadFile.ProductionArtifactID = CType(_productionDropdown.SelectedValue, Int32)
@@ -322,6 +346,7 @@ Namespace kCura.EDDS.WinForm
 				Me.ImageLoadFile.ReplaceFullText = _replaceFullText.Checked
 			End If
 			Me.ImageLoadFile.CaseDefaultPath = _application.SelectedCaseInfo.DocumentPath
+			ImageLoadFile.StartLineNumber = CType(_startLineNumber.Value, Int64)
 			Me.Cursor = Cursors.Default
 		End Sub
 
@@ -472,6 +497,7 @@ Namespace kCura.EDDS.WinForm
 				_filePath.Text = ImageLoadFile.FileName
 				_replaceFullText.Checked = ImageLoadFile.ReplaceFullText
 				Me.ImageLoadFile.DestinationFolderID = currentFolder
+				_startLineNumber.Value = CType(ImageLoadFile.StartLineNumber, Decimal)
 			End If
 			Me.ReadyToRun()
 			Me.Cursor = System.Windows.Forms.Cursors.Default
@@ -545,7 +571,6 @@ Namespace kCura.EDDS.WinForm
 			Me.ImageLoadFile.CopyFilesToDocumentRepository = copyFiles
 			Me.ImageLoadFile.SelectedCasePath = selectedRepository
 		End Sub
-
 
 	End Class
 End Namespace
