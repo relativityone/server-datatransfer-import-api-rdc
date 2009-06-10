@@ -173,6 +173,7 @@ Namespace kCura.WinEDDS
       _settings = args
       _isAuditingEnabled = New kCura.WinEDDS.Service.RelativityManager(args.Credentials, args.CookieContainer).IsAuditingEnabled
 			_processID = processID
+			_startLineNumber = args.StartLineNumber
 			Dim parentQuery As New kCura.WinEDDS.Service.ObjectTypeManager(args.Credentials, args.CookieContainer)
 			_parentArtifactTypeID = CType(parentQuery.RetrieveParentArtifactTypeID(args.CaseInfo.ArtifactID, args.ArtifactTypeID).Tables(0).Rows(0)("ParentArtifactTypeID"), Int32)
 		End Sub
@@ -222,23 +223,27 @@ Namespace kCura.WinEDDS
 				InitializeMembers(path)
 				While _continue AndAlso Not HasReachedEOF
 					Try
-						line = Me.GetLine
-						Dim lineStatus As Int32 = 0
-						If line.Length <> _columnHeaders.Length Then
-							lineStatus += ImportStatus.ColumnMismatch							'Throw New ColumnCountMismatchException(Me.CurrentLineNumber, _columnHeaders.Length, line.Length)
+						If Me.CurrentLineNumber < _startLineNumber Then
+							Me.AdvanceLine()
+						Else
+							line = Me.GetLine
+							Dim lineStatus As Int32 = 0
+							If line.Length <> _columnHeaders.Length Then
+								lineStatus += ImportStatus.ColumnMismatch								'Throw New ColumnCountMismatchException(Me.CurrentLineNumber, _columnHeaders.Length, line.Length)
+							End If
+							_processedDocumentIdentifiers.Add(ManageDocument(line, lineStatus), CurrentLineNumber.ToString)
 						End If
-						_processedDocumentIdentifiers.Add(ManageDocument(line, lineStatus), CurrentLineNumber.ToString)
 					Catch ex As LoadFileBase.CodeCreationException
 						_continue = False
 						WriteFatalError(Me.CurrentLineNumber, ex, line)
 					Catch ex As kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
-            WriteError(Me.CurrentLineNumber, ex.Message)
-          Catch ex As System.IO.FileNotFoundException
-            WriteError(Me.CurrentLineNumber, ex.Message)
-          Catch ex As System.Exception
-            WriteFatalError(Me.CurrentLineNumber, ex, line)
-          End Try
-        End While
+						WriteError(Me.CurrentLineNumber, ex.Message)
+					Catch ex As System.IO.FileNotFoundException
+						WriteError(Me.CurrentLineNumber, ex.Message)
+					Catch ex As System.Exception
+						WriteFatalError(Me.CurrentLineNumber, ex, line)
+					End Try
+				End While
 				Me.PushNativeBatch(True)
 				RaiseEvent EndFileImport()
 				WriteEndImport("Finish")
@@ -275,8 +280,8 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Private Sub InitializeMembers(ByVal path As String)
-      Me.InitializeLineCounter(path)
-      Me.InitializeFolderManagement()
+			Me.InitializeLineCounter(path)
+			Me.InitializeFolderManagement()
 			Me.InitializeFieldIdList()
 			kCura.Utility.File.Delete(_outputNativeFilePath)
 			kCura.Utility.File.Delete(_outputCodeFilePath)
@@ -293,12 +298,12 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Private Sub InitializeFolderManagement()
-      If _createFolderStructure Then
-        If _artifactTypeID = 10 Then _folderCache = New FolderCache(_folderManager, _folderID, _caseArtifactID)
-        Dim openParenIndex As Int32 = _destinationFolder.LastIndexOf("("c) + 1
-        Dim closeParenIndex As Int32 = _destinationFolder.LastIndexOf(")"c)
-        _destinationFolderColumnIndex = Int32.Parse(_destinationFolder.Substring(openParenIndex, closeParenIndex - openParenIndex)) - 1
-      End If
+			If _createFolderStructure Then
+				If _artifactTypeID = 10 Then _folderCache = New FolderCache(_folderManager, _folderID, _caseArtifactID)
+				Dim openParenIndex As Int32 = _destinationFolder.LastIndexOf("("c) + 1
+				Dim closeParenIndex As Int32 = _destinationFolder.LastIndexOf(")"c)
+				_destinationFolderColumnIndex = Int32.Parse(_destinationFolder.Substring(openParenIndex, closeParenIndex - openParenIndex)) - 1
+			End If
 		End Sub
 
 		Private Sub InitializeFieldIdList()
@@ -309,7 +314,7 @@ Namespace kCura.WinEDDS
 					fieldIdList.Add(item.DocumentField.FieldID)
 				End If
 			Next
-      fieldIdList.Add(Me.FileInfoField(_artifactTypeID).ArtifactID)
+			fieldIdList.Add(Me.FileInfoField(_artifactTypeID).ArtifactID)
 			_fieldArtifactIds = DirectCast(fieldIdList.ToArray(GetType(Int32)), Int32())
 		End Sub
 
@@ -329,73 +334,73 @@ Namespace kCura.WinEDDS
 			Dim isSupportedFileType As Boolean
 			Dim oixFileIdData As OI.FileID.FileIDData
 			Dim destinationVolume As String
-      If uploadFile AndAlso _artifactTypeID = 10 Then
-        filename = values(_filePathColumnIndex)
-        If filename.Length > 1 AndAlso filename.Chars(0) = "\" AndAlso filename.Chars(1) <> "\" Then
-          filename = "." & filename
-        End If
+			If uploadFile AndAlso _artifactTypeID = 10 Then
+				filename = values(_filePathColumnIndex)
+				If filename.Length > 1 AndAlso filename.Chars(0) = "\" AndAlso filename.Chars(1) <> "\" Then
+					filename = "." & filename
+				End If
 
-        fileExists = System.IO.File.Exists(filename)
-        If filename <> String.Empty AndAlso Not fileExists Then lineStatus += kCura.EDDS.Types.MassImport.ImportStatus.FileSpecifiedDne 'Throw New InvalidFilenameException(filename)
-        If fileExists Then
-          Dim now As DateTime = DateTime.Now
-          If New IO.FileInfo(filename).Length = 0 Then lineStatus += kCura.EDDS.Types.MassImport.ImportStatus.EmptyFile 'Throw New EmptyNativeFileException(filename)
-          oixFileIdData = kCura.OI.FileID.Manager.Instance.GetFileIDDataByFilePath(filename)
-          If _copyFileToRepository Then
-            fileGuid = _uploader.UploadFile(filename, _caseArtifactID)
-            destinationVolume = _uploader.CurrentDestinationDirectory
-          Else
-            fileGuid = System.Guid.NewGuid.ToString
-          End If
-          If _extractMd5Hash Then
-            md5hash = kCura.Utility.File.GenerateMD5HashForFile(filename)
-          End If
-          fullFilePath = filename
-          filename = filename.Substring(filename.LastIndexOf("\") + 1)
-          WriteStatusLine(Windows.Process.EventType.Status, String.Format("End upload file. ({0}ms)", DateTime.op_Subtraction(DateTime.Now, now).Milliseconds))
-        End If
-      End If
-      If _createFolderStructure Then
-        If _artifactTypeID = 10 Then
-          parentFolderID = _folderCache.FolderID(Me.CleanDestinationFolderPath(values(_destinationFolderColumnIndex)))
-        Else
-          Dim textIdentifier As String = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(kCura.Utility.NullableTypesHelper.ToNullableString(values(_destinationFolderColumnIndex)))
+				fileExists = System.IO.File.Exists(filename)
+				If filename <> String.Empty AndAlso Not fileExists Then lineStatus += kCura.EDDS.Types.MassImport.ImportStatus.FileSpecifiedDne 'Throw New InvalidFilenameException(filename)
+				If fileExists Then
+					Dim now As DateTime = DateTime.Now
+					If New IO.FileInfo(filename).Length = 0 Then lineStatus += kCura.EDDS.Types.MassImport.ImportStatus.EmptyFile 'Throw New EmptyNativeFileException(filename)
+					oixFileIdData = kCura.OI.FileID.Manager.Instance.GetFileIDDataByFilePath(filename)
+					If _copyFileToRepository Then
+						fileGuid = _uploader.UploadFile(filename, _caseArtifactID)
+						destinationVolume = _uploader.CurrentDestinationDirectory
+					Else
+						fileGuid = System.Guid.NewGuid.ToString
+					End If
+					If _extractMd5Hash Then
+						md5hash = kCura.Utility.File.GenerateMD5HashForFile(filename)
+					End If
+					fullFilePath = filename
+					filename = filename.Substring(filename.LastIndexOf("\") + 1)
+					WriteStatusLine(Windows.Process.EventType.Status, String.Format("End upload file. ({0}ms)", DateTime.op_Subtraction(DateTime.Now, now).Milliseconds))
+				End If
+			End If
+			If _createFolderStructure Then
+				If _artifactTypeID = 10 Then
+					parentFolderID = _folderCache.FolderID(Me.CleanDestinationFolderPath(values(_destinationFolderColumnIndex)))
+				Else
+					Dim textIdentifier As String = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(kCura.Utility.NullableTypesHelper.ToNullableString(values(_destinationFolderColumnIndex)))
 
-          If textIdentifier = "" Then
-            If _overwrite.ToLower = "strict" OrElse _overwrite.ToLower = "append" Then
-              parentFolderID = -1
-            End If
-            Throw New ParentObjectReferenceRequiredException(Me.CurrentLineNumber, _destinationFolderColumnIndex)
-          Else
-            Dim parentObjectTable As System.Data.DataTable = _objectManager.RetrieveArtifactIdOfMappedParentObject(_caseArtifactID, _
-            textIdentifier, _artifactTypeID).Tables(0)
-            If parentObjectTable.Rows.Count > 1 Then
-              Throw New DuplicateObjectReferenceException(Me.CurrentLineNumber, _destinationFolderColumnIndex, "Parent Info")
-            ElseIf parentObjectTable.Rows.Count = 0 Then
-              Throw New NonExistentParentException(Me.CurrentLineNumber, _destinationFolderColumnIndex, "Parent Info")
-            Else
-              parentFolderID = CType(parentObjectTable.Rows(0)("ArtifactID"), Int32)
-            End If
-          End If
-        End If
-      Else
-        If _artifactTypeID = 10 OrElse _parentArtifactTypeID = 8 Then
-          parentFolderID = _folderID
-        Else
-          parentFolderID = -1
-        End If
-      End If
-      Dim markPrepareFields As DateTime = DateTime.Now
-      identityValue = PrepareFieldCollectionAndExtractIdentityValue(fieldCollection, values)
-      If identityValue = String.Empty Then
-        lineStatus += ImportStatus.EmptyIdentifier    'Throw New IdentityValueNotSetException
-      ElseIf Not _processedDocumentIdentifiers(identityValue) Is Nothing Then
-        lineStatus += ImportStatus.IdentifierOverlap    '	Throw New IdentifierOverlapException(identityValue, _processedDocumentIdentifiers(identityValue))
-      End If
-      Dim metadoc As New MetaDocument(fileGuid, identityValue, fieldCollection, fileExists AndAlso uploadFile AndAlso (fileGuid <> String.Empty OrElse Not _copyFileToRepository), filename, fullFilePath, uploadFile, CurrentLineNumber, parentFolderID, md5hash, values, oixFileIdData, lineStatus, destinationVolume)
-      '_docsToProcess.Push(metadoc)
-      ManageDocumentMetaData(metadoc)
-      Return identityValue
+					If textIdentifier = "" Then
+						If _overwrite.ToLower = "strict" OrElse _overwrite.ToLower = "append" Then
+							parentFolderID = -1
+						End If
+						Throw New ParentObjectReferenceRequiredException(Me.CurrentLineNumber, _destinationFolderColumnIndex)
+					Else
+						Dim parentObjectTable As System.Data.DataTable = _objectManager.RetrieveArtifactIdOfMappedParentObject(_caseArtifactID, _
+						textIdentifier, _artifactTypeID).Tables(0)
+						If parentObjectTable.Rows.Count > 1 Then
+							Throw New DuplicateObjectReferenceException(Me.CurrentLineNumber, _destinationFolderColumnIndex, "Parent Info")
+						ElseIf parentObjectTable.Rows.Count = 0 Then
+							Throw New NonExistentParentException(Me.CurrentLineNumber, _destinationFolderColumnIndex, "Parent Info")
+						Else
+							parentFolderID = CType(parentObjectTable.Rows(0)("ArtifactID"), Int32)
+						End If
+					End If
+				End If
+			Else
+				If _artifactTypeID = 10 OrElse _parentArtifactTypeID = 8 Then
+					parentFolderID = _folderID
+				Else
+					parentFolderID = -1
+				End If
+			End If
+			Dim markPrepareFields As DateTime = DateTime.Now
+			identityValue = PrepareFieldCollectionAndExtractIdentityValue(fieldCollection, values)
+			If identityValue = String.Empty Then
+				lineStatus += ImportStatus.EmptyIdentifier				'Throw New IdentityValueNotSetException
+			ElseIf Not _processedDocumentIdentifiers(identityValue) Is Nothing Then
+				lineStatus += ImportStatus.IdentifierOverlap				'	Throw New IdentifierOverlapException(identityValue, _processedDocumentIdentifiers(identityValue))
+			End If
+			Dim metadoc As New MetaDocument(fileGuid, identityValue, fieldCollection, fileExists AndAlso uploadFile AndAlso (fileGuid <> String.Empty OrElse Not _copyFileToRepository), filename, fullFilePath, uploadFile, CurrentLineNumber, parentFolderID, md5hash, values, oixFileIdData, lineStatus, destinationVolume)
+			'_docsToProcess.Push(metadoc)
+			ManageDocumentMetaData(metadoc)
+			Return identityValue
 		End Function
 
 		Private Function CleanDestinationFolderPath(ByVal path As String) As String

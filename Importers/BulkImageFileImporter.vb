@@ -50,6 +50,7 @@ Namespace kCura.WinEDDS
 		Public Const MaxNumberOfErrorsInGrid As Int32 = 1000
 		Private _totalValidated As Long
 		Private _totalProcessed As Long
+		Private _startLineNumber As Int64
 #End Region
 
 #Region "Accessors"
@@ -106,6 +107,7 @@ Namespace kCura.WinEDDS
 			_caseInfo = args.CaseInfo
 			_settings = args
 			_processID = processID
+			_startLineNumber = args.StartLineNumber
 		End Sub
 
 #End Region
@@ -201,18 +203,22 @@ Namespace kCura.WinEDDS
 				Dim line As String()
 				Dim status As Int32 = 0
 				While Me.Continue
-					Dim lineList As New System.Collections.ArrayList(Me.GetLine)
-					If lineList.Count < 4 Then Throw New InvalidLineFormatException(Me.CurrentLineNumber, lineList.Count)
-					lineList.Add(Me.CurrentLineNumber.ToString)
-					line = DirectCast(lineList.ToArray(GetType(String)), String())
-					If (line(Columns.MultiPageIndicator).ToUpper = "Y") Then
-						Me.ProcessList(al, status, bulkLoadFilePath)
-					End If
-					status = status Or Me.ProcessImageLine(line)
-					al.Add(line)
-					If Not Me.Continue Then
-						Me.ProcessList(al, status, bulkLoadFilePath)
-						Exit While
+					If Me.CurrentLineNumber < _startLineNumber Then
+						Me.AdvanceLine()
+					Else
+						Dim lineList As New System.Collections.ArrayList(Me.GetLine)
+						If lineList.Count < 4 Then Throw New InvalidLineFormatException(Me.CurrentLineNumber, lineList.Count)
+						lineList.Add(Me.CurrentLineNumber.ToString)
+						line = DirectCast(lineList.ToArray(GetType(String)), String())
+						If (line(Columns.MultiPageIndicator).ToUpper = "Y") Then
+							Me.ProcessList(al, status, bulkLoadFilePath)
+						End If
+						status = status Or Me.ProcessImageLine(line)
+						al.Add(line)
+						If Not Me.Continue Then
+							Me.ProcessList(al, status, bulkLoadFilePath)
+							Exit While
+						End If
 					End If
 				End While
 				Me.PushImageBatch(bulkLoadFilePath, True)

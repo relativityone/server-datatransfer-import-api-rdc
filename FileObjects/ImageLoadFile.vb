@@ -13,7 +13,8 @@ Namespace kCura.WinEDDS
     Public ProductionTable As System.Data.DataTable
     Public ProductionArtifactID As Int32
     Public BeginBatesFieldArtifactID As Int32
-    Public FullTextEncoding As System.Text.Encoding
+		Public FullTextEncoding As System.Text.Encoding
+		Public StartLineNumber As Int64
     <NonSerialized()> Public SelectedCasePath As String = ""
     <NonSerialized()> Public CaseDefaultPath As String = ""
     <NonSerialized()> Public CopyFilesToDocumentRepository As Boolean = True
@@ -41,7 +42,8 @@ Namespace kCura.WinEDDS
       info.AddValue("ProductionTable", Me.ProductionTable, GetType(System.Data.DataTable))
       info.AddValue("ProductionArtifactID", Me.ProductionArtifactID, GetType(Integer))
       info.AddValue("BeginBatesFieldArtifactID", Me.BeginBatesFieldArtifactID, GetType(Integer))
-      info.AddValue("FullTextEncoding", Me.FullTextEncoding, GetType(System.Text.Encoding))
+			info.AddValue("FullTextEncoding", Me.FullTextEncoding, GetType(System.Text.Encoding))
+			info.AddValue("StartLineNumber", Me.StartLineNumber, GetType(Int64))
     End Sub
 
     Private Sub New(ByVal info As System.Runtime.Serialization.SerializationInfo, ByVal Context As System.Runtime.Serialization.StreamingContext)
@@ -54,7 +56,8 @@ Namespace kCura.WinEDDS
         Me.ForProduction = info.GetBoolean("ForProduction")
         Me.AutoNumberImages = info.GetBoolean("AutoNumberImages")
         Me.ProductionTable = DirectCast(info.GetValue("ProductionTable", GetType(System.Data.DataTable)), System.Data.DataTable)
-        Me.BeginBatesFieldArtifactID = info.GetInt32("BeginBatesFieldArtifactID")
+				Me.BeginBatesFieldArtifactID = info.GetInt32("BeginBatesFieldArtifactID")
+				Me.StartLineNumber = info.GetInt64("StartLineNumber")
         Try
           Me.FullTextEncoding = DirectCast(info.GetValue("FullTextEncoding", GetType(System.Text.Encoding)), System.Text.Encoding)
         Catch ex As Exception

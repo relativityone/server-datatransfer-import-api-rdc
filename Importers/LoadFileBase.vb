@@ -44,6 +44,7 @@ Namespace kCura.WinEDDS
 		Protected _hierarchicalMultiValueFieldDelmiter As String
 		Protected MustOverride ReadOnly Property UseTimeZoneOffset() As Boolean
 		Protected _previewCodeCount As New System.Collections.Specialized.HybridDictionary
+		Protected _startLineNumber As Int64
 
 #End Region
 
@@ -115,6 +116,7 @@ Namespace kCura.WinEDDS
 			_artifactTypeID = args.ArtifactTypeID
 			_hierarchicalMultiValueFieldDelmiter = args.HierarchicalValueDelimiter
 			_previewCodeCount = args.PreviewCodeCount
+			_startLineNumber = args.StartLineNumber
 			MulticodeMatrix = New System.Collections.Hashtable
 		End Sub
 
