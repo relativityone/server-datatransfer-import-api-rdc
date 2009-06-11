@@ -1,7 +1,7 @@
 <VisualStudioProject>
     <VisualBasic
         ProjectType = "Local"
-        ProductVersion = "7.10.3077"
+        ProductVersion = "7.10.6030"
         SchemaVersion = "2.0"
         ProjectGuid = "{CDEB4462-2D7B-4244-8640-11BC743CD002}"
     >
@@ -94,11 +94,6 @@
                     AssemblyName = "System.Xml"
                 />
                 <Reference
-                    Name = "kCura.Windows.Forms"
-                    Project = "{0DABBD47-5A46-429F-9D90-C95A58611E0A}"
-                    Package = "{F184B08F-C81C-45F6-A57F-5ABD9991F28F}"
-                />
-                <Reference
                     Name = "System.Web.Services"
                     AssemblyName = "System.Web.Services"
                     HintPath = "..\..\..\..\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.Web.Services.dll"
@@ -157,6 +152,16 @@
                     Name = "kCura.Resources"
                     AssemblyName = "kCura.Resources"
                     HintPath = "..\..\Vendor\kCura\1.0.2131.20968\kCura.Resources.dll"
+                />
+                <Reference
+                    Name = "kCura.Windows.Forms"
+                    Project = "{0DABBD47-5A46-429F-9D90-C95A58611E0A}"
+                    Package = "{F184B08F-C81C-45F6-A57F-5ABD9991F28F}"
+                />
+                <Reference
+                    Name = "kCura.WinEDDS.UIControls"
+                    Project = "{C3B9ECF5-48A9-4B5A-AF9E-016AF3C097F9}"
+                    Package = "{F184B08F-C81C-45F6-A57F-5ABD9991F28F}"
                 />
             </References>
             <Imports>

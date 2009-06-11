@@ -82,10 +82,7 @@ Namespace kCura.EDDS.WinForm
     Friend WithEvents TabControl1 As System.Windows.Forms.TabControl
     Friend WithEvents _loadFileTab As System.Windows.Forms.TabPage
     Friend WithEvents _fieldMapTab As System.Windows.Forms.TabPage
-    Friend WithEvents _fieldMap As kCura.Windows.Forms.TwoListBox
-    Friend WithEvents Label1 As System.Windows.Forms.Label
-    Friend WithEvents Label7 As System.Windows.Forms.Label
-    Friend WithEvents _loadNativeFiles As System.Windows.Forms.CheckBox
+		Friend WithEvents _loadNativeFiles As System.Windows.Forms.CheckBox
     Friend WithEvents _extractFullTextFromNativeFile As System.Windows.Forms.CheckBox
     Friend WithEvents Label5 As System.Windows.Forms.Label
     Friend WithEvents _nativeFilePathField As System.Windows.Forms.ComboBox
@@ -106,8 +103,7 @@ Namespace kCura.EDDS.WinForm
     Friend WithEvents _browseButton As System.Windows.Forms.Button
     Friend WithEvents _filePath As System.Windows.Forms.TextBox
     Friend WithEvents HelpProvider1 As System.Windows.Forms.HelpProvider
-    Friend WithEvents _fileColumns As kCura.Windows.Forms.TwoListBox
-    Friend WithEvents MenuItem3 As System.Windows.Forms.MenuItem
+		Friend WithEvents MenuItem3 As System.Windows.Forms.MenuItem
     Friend WithEvents _fileMenuCloseItem As System.Windows.Forms.MenuItem
     Friend WithEvents _extractMd5Hash As System.Windows.Forms.CheckBox
     Friend WithEvents _destinationFolderPath As System.Windows.Forms.ComboBox
@@ -128,6 +124,7 @@ Namespace kCura.EDDS.WinForm
 		Friend WithEvents Label10 As System.Windows.Forms.Label
 		Friend WithEvents _startLineNumberLabel As System.Windows.Forms.Label
 		Friend WithEvents _startLineNumber As System.Windows.Forms.NumericUpDown
+		Friend WithEvents _fieldMap As kCura.WinEDDS.UIControls.FieldMap
 
 		<System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
 			Dim resources As System.Resources.ResourceManager = New System.Resources.ResourceManager(GetType(LoadFileForm))
@@ -173,6 +170,7 @@ Namespace kCura.EDDS.WinForm
 			Me.Label2 = New System.Windows.Forms.Label
 			Me._recordDelimiter = New System.Windows.Forms.ComboBox
 			Me._fieldMapTab = New System.Windows.Forms.TabPage
+			Me._fieldMap = New kCura.WinEDDS.UIControls.FieldMap
 			Me.GroupBox7 = New System.Windows.Forms.GroupBox
 			Me._fullTextFileEncodingPicker = New kCura.EDDS.WinForm.EncodingPicker
 			Me.Label9 = New System.Windows.Forms.Label
@@ -189,10 +187,6 @@ Namespace kCura.EDDS.WinForm
 			Me._extractFullTextFromNativeFile = New System.Windows.Forms.CheckBox
 			Me._nativeFilePathField = New System.Windows.Forms.ComboBox
 			Me.Label5 = New System.Windows.Forms.Label
-			Me.Label7 = New System.Windows.Forms.Label
-			Me.Label1 = New System.Windows.Forms.Label
-			Me._fileColumns = New kCura.Windows.Forms.TwoListBox
-			Me._fieldMap = New kCura.Windows.Forms.TwoListBox
 			Me.HelpProvider1 = New System.Windows.Forms.HelpProvider
 			Me.GroupBox1.SuspendLayout()
 			Me.TabControl1.SuspendLayout()
@@ -536,19 +530,23 @@ Namespace kCura.EDDS.WinForm
 			'
 			'_fieldMapTab
 			'
+			Me._fieldMapTab.Controls.Add(Me._fieldMap)
 			Me._fieldMapTab.Controls.Add(Me.GroupBox7)
 			Me._fieldMapTab.Controls.Add(Me.GroupBox6)
 			Me._fieldMapTab.Controls.Add(Me.GroupBox5)
 			Me._fieldMapTab.Controls.Add(Me.GroupBox4)
-			Me._fieldMapTab.Controls.Add(Me.Label7)
-			Me._fieldMapTab.Controls.Add(Me.Label1)
-			Me._fieldMapTab.Controls.Add(Me._fileColumns)
-			Me._fieldMapTab.Controls.Add(Me._fieldMap)
 			Me._fieldMapTab.Location = New System.Drawing.Point(4, 22)
 			Me._fieldMapTab.Name = "_fieldMapTab"
 			Me._fieldMapTab.Size = New System.Drawing.Size(732, 426)
 			Me._fieldMapTab.TabIndex = 1
 			Me._fieldMapTab.Text = "Field Map"
+			'
+			'_fieldMap
+			'
+			Me._fieldMap.Location = New System.Drawing.Point(4, -4)
+			Me._fieldMap.Name = "_fieldMap"
+			Me._fieldMap.Size = New System.Drawing.Size(732, 292)
+			Me._fieldMap.TabIndex = 0
 			'
 			'GroupBox7
 			'
@@ -701,48 +699,6 @@ Namespace kCura.EDDS.WinForm
 			Me.Label5.Text = "Native file paths contained in column:"
 			Me.Label5.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
 			'
-			'Label7
-			'
-			Me.Label7.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-			Me.Label7.Location = New System.Drawing.Point(624, 4)
-			Me.Label7.Name = "Label7"
-			Me.Label7.Size = New System.Drawing.Size(104, 16)
-			Me.Label7.TabIndex = 4
-			Me.Label7.Text = "Load File Fields"
-			Me.Label7.TextAlign = System.Drawing.ContentAlignment.MiddleRight
-			'
-			'Label1
-			'
-			Me.Label1.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-			Me.Label1.Location = New System.Drawing.Point(4, 4)
-			Me.Label1.Name = "Label1"
-			Me.Label1.Size = New System.Drawing.Size(100, 16)
-			Me.Label1.TabIndex = 3
-			Me.Label1.Text = "Case Fields"
-			Me.Label1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
-			'
-			'_fileColumns
-			'
-			Me._fileColumns.AlternateRowColors = True
-			Me._fileColumns.KeepButtonsCentered = True
-			Me._fileColumns.LeftOrderControlsVisible = True
-			Me._fileColumns.Location = New System.Drawing.Point(368, 20)
-			Me._fileColumns.Name = "_fileColumns"
-			Me._fileColumns.RightOrderControlVisible = False
-			Me._fileColumns.Size = New System.Drawing.Size(388, 276)
-			Me._fileColumns.TabIndex = 2
-			'
-			'_fieldMap
-			'
-			Me._fieldMap.AlternateRowColors = True
-			Me._fieldMap.KeepButtonsCentered = True
-			Me._fieldMap.LeftOrderControlsVisible = False
-			Me._fieldMap.Location = New System.Drawing.Point(4, 20)
-			Me._fieldMap.Name = "_fieldMap"
-			Me._fieldMap.RightOrderControlVisible = True
-			Me._fieldMap.Size = New System.Drawing.Size(364, 276)
-			Me._fieldMap.TabIndex = 1
-			'
 			'LoadFileForm
 			'
 			Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
@@ -774,158 +730,158 @@ Namespace kCura.EDDS.WinForm
 
 #End Region
 
-    Friend WithEvents _application As kCura.EDDS.WinForm.Application
-    Private WithEvents _advancedFileForm As AdvancedFileLocation
-    Private _loadFile As kCura.WinEDDS.LoadFile
+		Friend WithEvents _application As kCura.EDDS.WinForm.Application
+		Private WithEvents _advancedFileForm As AdvancedFileLocation
+		Private _loadFile As kCura.WinEDDS.LoadFile
 
-    Friend ReadOnly Property ReadyToRun() As Boolean
-      Get
-        If Not Me.EnsureConnection() Then Return False
-        Dim rtr As Boolean
-        If _loadNativeFiles.Checked Then
-          rtr = _nativeFilePathField.SelectedIndex <> -1
-        Else
-          rtr = True
-        End If
-        If Me.LoadFile.ArtifactTypeID = 10 Then
-          If rtr AndAlso _buildFolderStructure.Checked Then
-            rtr = _destinationFolderPath.SelectedIndex <> -1 AndAlso rtr
-          End If
-        Else
-          If Me.IsChildObject Then
-            If Not _overwriteDropdown.SelectedItem Is Nothing AndAlso _overwriteDropdown.SelectedItem.ToString.ToLower() = "append only" Then
-              rtr = _buildFolderStructure.Checked AndAlso _destinationFolderPath.SelectedIndex <> -1 AndAlso rtr
-            End If
-            If _buildFolderStructure.Checked AndAlso _destinationFolderPath.SelectedIndex = -1 Then
-              rtr = False
-            End If
-          End If
-        End If
-        Return _
-         _fieldMap.RightListBoxItems.Count > 0 AndAlso _
-         _fileColumns.LeftListBoxItems.Count > 0 AndAlso _
-         rtr AndAlso _
-         System.IO.File.Exists(_filePath.Text)    'AndAlso _
-        '_identifiersDropDown.SelectedIndex <> -1
-      End Get
-    End Property
+		Friend ReadOnly Property ReadyToRun() As Boolean
+			Get
+				If Not Me.EnsureConnection() Then Return False
+				Dim rtr As Boolean
+				If _loadNativeFiles.Checked Then
+					rtr = _nativeFilePathField.SelectedIndex <> -1
+				Else
+					rtr = True
+				End If
+				If Me.LoadFile.ArtifactTypeID = 10 Then
+					If rtr AndAlso _buildFolderStructure.Checked Then
+						rtr = _destinationFolderPath.SelectedIndex <> -1 AndAlso rtr
+					End If
+				Else
+					If Me.IsChildObject Then
+						If Not _overwriteDropdown.SelectedItem Is Nothing AndAlso _overwriteDropdown.SelectedItem.ToString.ToLower() = "append only" Then
+							rtr = _buildFolderStructure.Checked AndAlso _destinationFolderPath.SelectedIndex <> -1 AndAlso rtr
+						End If
+						If _buildFolderStructure.Checked AndAlso _destinationFolderPath.SelectedIndex = -1 Then
+							rtr = False
+						End If
+					End If
+				End If
+				Return _
+				 _fieldMap.FieldColumns.RightListBoxItems.Count > 0 AndAlso _
+				 _fieldMap.LoadFileColumns.LeftListBoxItems.Count > 0 AndAlso _
+				 rtr AndAlso _
+				 System.IO.File.Exists(_filePath.Text)				'AndAlso _
+				'_identifiersDropDown.SelectedIndex <> -1
+			End Get
+		End Property
 
-    Private Function GetOverwrite() As String
-      If _overwriteDropdown.SelectedItem Is Nothing Then Return "None"
-      Select Case _overwriteDropdown.SelectedItem.ToString.ToLower
-        Case "append only"
-          Return "None"
-        Case "overlay only"
-          Return "Strict"
-        Case "append/overlay"
-          Return "Append"
-        Case Else
-          Throw New IndexOutOfRangeException("'" & _overwriteDropdown.SelectedItem.ToString.ToLower & "' isn't a valid option.")
-      End Select
-    End Function
+		Private Function GetOverwrite() As String
+			If _overwriteDropdown.SelectedItem Is Nothing Then Return "None"
+			Select Case _overwriteDropdown.SelectedItem.ToString.ToLower
+				Case "append only"
+					Return "None"
+				Case "overlay only"
+					Return "Strict"
+				Case "append/overlay"
+					Return "Append"
+				Case Else
+					Throw New IndexOutOfRangeException("'" & _overwriteDropdown.SelectedItem.ToString.ToLower & "' isn't a valid option.")
+			End Select
+		End Function
 
-    Private Function GetOverwriteDropdownItem(ByVal input As String) As String
-      Select Case input.ToLower
-        Case "none"
-          Return "Append Only"
-        Case "strict"
-          Return "Overlay Only"
-        Case "append"
-          Return "Append/Overlay"
-        Case Else
-          Throw New IndexOutOfRangeException("'" & input.ToLower & "' isn't a valid option.")
-      End Select
-    End Function
+		Private Function GetOverwriteDropdownItem(ByVal input As String) As String
+			Select Case input.ToLower
+				Case "none"
+					Return "Append Only"
+				Case "strict"
+					Return "Overlay Only"
+				Case "append"
+					Return "Append/Overlay"
+				Case Else
+					Throw New IndexOutOfRangeException("'" & input.ToLower & "' isn't a valid option.")
+			End Select
+		End Function
 
-    Private Sub PopulateLoadFileObject()
-      Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
-      Me.PopulateLoadFileDelimiters()
-      If Not Me.EnsureConnection() Then Exit Sub
-      Dim currentFields As WinEDDS.DocumentFieldCollection = _application.CurrentFields(Me.LoadFile.ArtifactTypeID, True)
-      If currentFields Is Nothing Then
-        Exit Sub
-      End If
-      Me.LoadFile.FieldMap = kCura.EDDS.WinForm.Utility.ExtractFieldMap(_fieldMap, _fileColumns, currentFields, Me.LoadFile.ArtifactTypeID)
-      'Dim groupIdentifier As DocumentField = _application.CurrentGroupIdentifierField
-      'If _identifiersDropDown.SelectedIndex > 0 Then
-      '	Dim columnname As String = CType(_identifiersDropDown.SelectedItem, String)
-      '	Dim openParenIndex As Int32 = columnname.LastIndexOf("("c) + 1
-      '	Dim closeParenIndex As Int32 = columnname.LastIndexOf(")"c)
-      '	Dim fieldColumnIndex As Int32 = Int32.Parse(columnname.Substring(openParenIndex, closeParenIndex - openParenIndex)) - 1
-      '	If Not groupIdentifier Is Nothing Then
-      '		Me.LoadFile.FieldMap.Add(New kCura.WinEDDS.LoadFileFieldMap.LoadFileFieldMapItem(groupIdentifier, fieldColumnIndex))
-      '	End If
-      'End If
-      If LoadFile.ArtifactTypeID = 0 Then
-        LoadFile.ArtifactTypeID = _application.ArtifactTypeID
-      End If
+		Private Sub PopulateLoadFileObject()
+			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
+			Me.PopulateLoadFileDelimiters()
+			If Not Me.EnsureConnection() Then Exit Sub
+			Dim currentFields As WinEDDS.DocumentFieldCollection = _application.CurrentFields(Me.LoadFile.ArtifactTypeID, True)
+			If currentFields Is Nothing Then
+				Exit Sub
+			End If
+			Me.LoadFile.FieldMap = kCura.EDDS.WinForm.Utility.ExtractFieldMap(_fieldMap.FieldColumns, _fieldMap.LoadFileColumns, currentFields, Me.LoadFile.ArtifactTypeID)
+			'Dim groupIdentifier As DocumentField = _application.CurrentGroupIdentifierField
+			'If _identifiersDropDown.SelectedIndex > 0 Then
+			'	Dim columnname As String = CType(_identifiersDropDown.SelectedItem, String)
+			'	Dim openParenIndex As Int32 = columnname.LastIndexOf("("c) + 1
+			'	Dim closeParenIndex As Int32 = columnname.LastIndexOf(")"c)
+			'	Dim fieldColumnIndex As Int32 = Int32.Parse(columnname.Substring(openParenIndex, closeParenIndex - openParenIndex)) - 1
+			'	If Not groupIdentifier Is Nothing Then
+			'		Me.LoadFile.FieldMap.Add(New kCura.WinEDDS.LoadFileFieldMap.LoadFileFieldMapItem(groupIdentifier, fieldColumnIndex))
+			'	End If
+			'End If
+			If LoadFile.ArtifactTypeID = 0 Then
+				LoadFile.ArtifactTypeID = _application.ArtifactTypeID
+			End If
 
-      LoadFile.SourceFileEncoding = _loadFileEncodingPicker.SelectedEncoding
-      LoadFile.ExtractFullTextFromNativeFile = _extractFullTextFromNativeFile.Checked
-      LoadFile.FullTextColumnContainsFileLocation = _extractedTextValueContainsFileLocation.Checked
-      If _extractedTextValueContainsFileLocation.Checked Then
-        LoadFile.ExtractedTextFileEncoding = _fullTextFileEncodingPicker.SelectedEncoding
-        LoadFile.ExtractedTextFileEncodingName = kCura.DynamicFields.Types.FieldColumnNameHelper.GetSqlFriendlyName(_fullTextFileEncodingPicker.SelectedEncoding.EncodingName).ToLower
-      End If
-      LoadFile.LoadNativeFiles = _loadNativeFiles.Checked
-      If _overwriteDropdown.SelectedItem Is Nothing Then
-        LoadFile.OverwriteDestination = "None"
-      Else
-        LoadFile.OverwriteDestination = Me.GetOverwrite
-      End If
-      LoadFile.ExtractMD5HashFromNativeFile = _extractMd5Hash.Enabled AndAlso _extractMd5Hash.Checked
-      LoadFile.FirstLineContainsHeaders = _firstLineContainsColumnNames.Checked
-      If System.IO.File.Exists(_filePath.Text) Then
-        LoadFile.FilePath = _filePath.Text
-      End If
-      LoadFile.SelectedIdentifierField = _application.GetDocumentFieldFromName(_application.GetCaseIdentifierFields(Me.LoadFile.ArtifactTypeID)(0))
-      'If Not _identifiersDropDown.SelectedItem Is Nothing Then
-      '	LoadFile.GroupIdentifierColumn = _identifiersDropDown.SelectedItem.ToString
-      'Else
-      '	LoadFile.GroupIdentifierColumn = Nothing
-      'End If
+			LoadFile.SourceFileEncoding = _loadFileEncodingPicker.SelectedEncoding
+			LoadFile.ExtractFullTextFromNativeFile = _extractFullTextFromNativeFile.Checked
+			LoadFile.FullTextColumnContainsFileLocation = _extractedTextValueContainsFileLocation.Checked
+			If _extractedTextValueContainsFileLocation.Checked Then
+				LoadFile.ExtractedTextFileEncoding = _fullTextFileEncodingPicker.SelectedEncoding
+				LoadFile.ExtractedTextFileEncodingName = kCura.DynamicFields.Types.FieldColumnNameHelper.GetSqlFriendlyName(_fullTextFileEncodingPicker.SelectedEncoding.EncodingName).ToLower
+			End If
+			LoadFile.LoadNativeFiles = _loadNativeFiles.Checked
+			If _overwriteDropdown.SelectedItem Is Nothing Then
+				LoadFile.OverwriteDestination = "None"
+			Else
+				LoadFile.OverwriteDestination = Me.GetOverwrite
+			End If
+			LoadFile.ExtractMD5HashFromNativeFile = _extractMd5Hash.Enabled AndAlso _extractMd5Hash.Checked
+			LoadFile.FirstLineContainsHeaders = _firstLineContainsColumnNames.Checked
+			If System.IO.File.Exists(_filePath.Text) Then
+				LoadFile.FilePath = _filePath.Text
+			End If
+			LoadFile.SelectedIdentifierField = _application.GetDocumentFieldFromName(_application.GetCaseIdentifierFields(Me.LoadFile.ArtifactTypeID)(0))
+			'If Not _identifiersDropDown.SelectedItem Is Nothing Then
+			'	LoadFile.GroupIdentifierColumn = _identifiersDropDown.SelectedItem.ToString
+			'Else
+			'	LoadFile.GroupIdentifierColumn = Nothing
+			'End If
 
-      If _loadNativeFiles.Checked Then
-        If Not _nativeFilePathField.SelectedItem Is Nothing Then
-          LoadFile.NativeFilePathColumn = _nativeFilePathField.SelectedItem.ToString
-        Else
-          LoadFile.NativeFilePathColumn = Nothing
-        End If
-        'Add the file field as a mapped field for non document object types
-        If Me.LoadFile.ArtifactTypeID <> 10 Then
-          Dim fileField As DocumentField
-          For Each field As DocumentField In currentFields.AllFields
-            If field.FieldTypeID = kCura.DynamicFields.Types.FieldTypeHelper.FieldType.File Then
-              Dim openParenIndex As Int32 = LoadFile.NativeFilePathColumn.LastIndexOf("("c) + 1
-              Dim closeParenIndex As Int32 = LoadFile.NativeFilePathColumn.LastIndexOf(")"c)
-              Dim nativePathColumn As Int32 = Int32.Parse(LoadFile.NativeFilePathColumn.Substring(openParenIndex, closeParenIndex - openParenIndex)) - 1
-              LoadFile.FieldMap.Add(New kCura.WinEDDS.LoadFileFieldMap.LoadFileFieldMapItem(field, nativePathColumn))
-            End If
-          Next
-        End If
-      End If
-      LoadFile.CreateFolderStructure = _buildFolderStructure.Checked
-      If LoadFile.OverwriteDestination.ToLower <> "strict" AndAlso LoadFile.OverwriteDestination.ToLower <> "append" Then
-        If LoadFile.CreateFolderStructure Then
-          If Not _destinationFolderPath.SelectedItem Is Nothing Then
-            LoadFile.FolderStructureContainedInColumn = _destinationFolderPath.SelectedItem.ToString
-          Else
-            LoadFile.FolderStructureContainedInColumn = Nothing
-          End If
-        End If
-      Else
-        If Me.IsChildObject Then
-          If LoadFile.CreateFolderStructure Then
-            If Not _destinationFolderPath.SelectedItem Is Nothing Then
-              LoadFile.FolderStructureContainedInColumn = _destinationFolderPath.SelectedItem.ToString
-            Else
-              LoadFile.FolderStructureContainedInColumn = Nothing
-            End If
-          End If
-        Else
-          LoadFile.CreateFolderStructure = False
-        End If
-      End If
+			If _loadNativeFiles.Checked Then
+				If Not _nativeFilePathField.SelectedItem Is Nothing Then
+					LoadFile.NativeFilePathColumn = _nativeFilePathField.SelectedItem.ToString
+				Else
+					LoadFile.NativeFilePathColumn = Nothing
+				End If
+				'Add the file field as a mapped field for non document object types
+				If Me.LoadFile.ArtifactTypeID <> 10 Then
+					Dim fileField As DocumentField
+					For Each field As DocumentField In currentFields.AllFields
+						If field.FieldTypeID = kCura.DynamicFields.Types.FieldTypeHelper.FieldType.File Then
+							Dim openParenIndex As Int32 = LoadFile.NativeFilePathColumn.LastIndexOf("("c) + 1
+							Dim closeParenIndex As Int32 = LoadFile.NativeFilePathColumn.LastIndexOf(")"c)
+							Dim nativePathColumn As Int32 = Int32.Parse(LoadFile.NativeFilePathColumn.Substring(openParenIndex, closeParenIndex - openParenIndex)) - 1
+							LoadFile.FieldMap.Add(New kCura.WinEDDS.LoadFileFieldMap.LoadFileFieldMapItem(field, nativePathColumn))
+						End If
+					Next
+				End If
+			End If
+			LoadFile.CreateFolderStructure = _buildFolderStructure.Checked
+			If LoadFile.OverwriteDestination.ToLower <> "strict" AndAlso LoadFile.OverwriteDestination.ToLower <> "append" Then
+				If LoadFile.CreateFolderStructure Then
+					If Not _destinationFolderPath.SelectedItem Is Nothing Then
+						LoadFile.FolderStructureContainedInColumn = _destinationFolderPath.SelectedItem.ToString
+					Else
+						LoadFile.FolderStructureContainedInColumn = Nothing
+					End If
+				End If
+			Else
+				If Me.IsChildObject Then
+					If LoadFile.CreateFolderStructure Then
+						If Not _destinationFolderPath.SelectedItem Is Nothing Then
+							LoadFile.FolderStructureContainedInColumn = _destinationFolderPath.SelectedItem.ToString
+						Else
+							LoadFile.FolderStructureContainedInColumn = Nothing
+						End If
+					End If
+				Else
+					LoadFile.CreateFolderStructure = False
+				End If
+			End If
 			Me.LoadFile.CaseDefaultPath = _application.SelectedCaseInfo.DocumentPath
 			If _startLineNumber.Text = "" Then
 				Me.LoadFile.StartLineNumber = 0
@@ -933,40 +889,39 @@ Namespace kCura.EDDS.WinForm
 				Me.LoadFile.StartLineNumber = CType(_startLineNumber.Text, Int64)
 			End If
 			Me.Cursor = System.Windows.Forms.Cursors.Default
-    End Sub
+		End Sub
 
-    Private Sub MarkIdentifierField(ByVal fieldNames As String())
-      Dim identifierFields As String() = _application.GetCaseIdentifierFields(Me.LoadFile.ArtifactTypeID)
-      Dim i As Int32
-      For i = 0 To fieldNames.Length - 1
-        If System.Array.IndexOf(identifierFields, fieldNames(i)) <> -1 Then
-          fieldNames(i) = fieldNames(i) & " [Identifier]"
-        End If
-      Next
-    End Sub
+		Private Sub MarkIdentifierField(ByVal fieldNames As String())
+			Dim identifierFields As String() = _application.GetCaseIdentifierFields(Me.LoadFile.ArtifactTypeID)
+			Dim i As Int32
+			For i = 0 To fieldNames.Length - 1
+				If System.Array.IndexOf(identifierFields, fieldNames(i)) <> -1 Then
+					fieldNames(i) = fieldNames(i) & " [Identifier]"
+				End If
+			Next
+		End Sub
 
-    Public Sub LoadFormControls(ByVal loadFileObjectUpdatedFromFile As Boolean)
-      If Me.LoadFile.ArtifactTypeID = 0 Then Me.LoadFile.ArtifactTypeID = _application.ArtifactTypeID
-      Me.Text = String.Format("Relativity Desktop Client | Import {0} Load File", _application.GetObjectTypeName(Me.LoadFile.ArtifactTypeID))
-      Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
-      kCura.EDDS.WinForm.Utility.InitializeCharacterDropDown(_recordDelimiter, _loadFile.RecordDelimiter)
-      kCura.EDDS.WinForm.Utility.InitializeCharacterDropDown(_quoteDelimiter, _loadFile.QuoteDelimiter)
-      kCura.EDDS.WinForm.Utility.InitializeCharacterDropDown(_newLineDelimiter, _loadFile.NewlineDelimiter)
+		Public Sub LoadFormControls(ByVal loadFileObjectUpdatedFromFile As Boolean)
+			If Me.LoadFile.ArtifactTypeID = 0 Then Me.LoadFile.ArtifactTypeID = _application.ArtifactTypeID
+			Me.Text = String.Format("Relativity Desktop Client | Import {0} Load File", _application.GetObjectTypeName(Me.LoadFile.ArtifactTypeID))
+			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
+			kCura.EDDS.WinForm.Utility.InitializeCharacterDropDown(_recordDelimiter, _loadFile.RecordDelimiter)
+			kCura.EDDS.WinForm.Utility.InitializeCharacterDropDown(_quoteDelimiter, _loadFile.QuoteDelimiter)
+			kCura.EDDS.WinForm.Utility.InitializeCharacterDropDown(_newLineDelimiter, _loadFile.NewlineDelimiter)
 			kCura.EDDS.WinForm.Utility.InitializeCharacterDropDown(_multiRecordDelimiter, _loadFile.MultiRecordDelimiter)
 			kCura.EDDS.WinForm.Utility.InitializeCharacterDropDown(_hierarchicalValueDelimiter, _loadFile.HierarchicalValueDelimiter)
 
-      _filePath.Text = LoadFile.FilePath
-      _importDestinationText.Text = _application.GetCaseFolderPath(LoadFile.DestinationFolderID)
-      _fieldMap.ClearAll()
-      _fileColumns.ClearAll()
-      _fileColumnHeaders.Items.Clear()
-      _nativeFilePathField.Items.Clear()
-      _destinationFolderPath.Items.Clear()
-      _loadNativeFiles.Checked = LoadFile.LoadNativeFiles
-      _extractedTextValueContainsFileLocation.Checked = LoadFile.FullTextColumnContainsFileLocation
-      _fullTextFileEncodingPicker.Enabled = _extractedTextValueContainsFileLocation.Checked
+			_filePath.Text = LoadFile.FilePath
+			_importDestinationText.Text = _application.GetCaseFolderPath(LoadFile.DestinationFolderID)
+			_fieldMap.ClearAll()
+			_fileColumnHeaders.Items.Clear()
+			_nativeFilePathField.Items.Clear()
+			_destinationFolderPath.Items.Clear()
+			_loadNativeFiles.Checked = LoadFile.LoadNativeFiles
+			_extractedTextValueContainsFileLocation.Checked = LoadFile.FullTextColumnContainsFileLocation
+			_fullTextFileEncodingPicker.Enabled = _extractedTextValueContainsFileLocation.Checked
 			_overwriteDropdown.SelectedItem = Me.GetOverwriteDropdownItem(LoadFile.OverwriteDestination)
-			If loadFileObjectUpdatedFromFile Then		 ' has to get called before the loadfileobjectupdatedfromfile block
+			If loadFileObjectUpdatedFromFile Then			' has to get called before the loadfileobjectupdatedfromfile block
 				_loadFileEncodingPicker.SelectedEncoding = Me.LoadFile.SourceFileEncoding
 				_fullTextFileEncodingPicker.SelectedEncoding = Me.LoadFile.ExtractedTextFileEncoding
 			End If
@@ -995,7 +950,7 @@ Namespace kCura.EDDS.WinForm
 				ActionMenuEnabled = ReadyToRun
 			Else
 				Me.MarkIdentifierField(caseFields)
-				_fieldMap.LeftListBoxItems.AddRange(caseFields)
+				_fieldMap.FieldColumns.LeftListBoxItems.AddRange(caseFields)
 			End If
 			'_identifiersDropDown.Items.AddRange(_application.IdentiferFieldDropdownPopulator)
 			_overwriteDropdown.SelectedItem = Me.GetOverwriteDropdownItem(LoadFile.OverwriteDestination)
@@ -1055,505 +1010,490 @@ Namespace kCura.EDDS.WinForm
 			'	End If
 			'End If
 			_extractMd5Hash.Enabled = EnableMd5Hash
-			_fieldMap.EnsureHorizontalScrollbars()
-			_fileColumns.EnsureHorizontalScrollbars()
+			_fieldMap.FieldColumns.EnsureHorizontalScrollbars()
+			_fieldMap.LoadFileColumns.EnsureHorizontalScrollbars()
 			_startLineNumber.Value = CType(LoadFile.StartLineNumber, Decimal)
 			ActionMenuEnabled = ReadyToRun
 			Me.Cursor = System.Windows.Forms.Cursors.Default
-    End Sub
+		End Sub
 
-    Public Property LoadFile() As kCura.WinEDDS.LoadFile
-      Get
-        If _loadFile Is Nothing Then
-          _loadFile = New kCura.WinEDDS.LoadFile
-        End If
-        If _loadFile.CookieContainer Is Nothing Then
-          _loadFile.CookieContainer = kCura.EDDS.WinForm.Application.Instance.CookieContainer
-        End If
-        'If _loadFile.Identity Is Nothing Then
-        '	_loadFile.Identity = kCura.EDDS.WinForm.Application.Instance.Identity
-        'End If
-        Return _loadFile
-      End Get
-      Set(ByVal value As kCura.WinEDDS.LoadFile)
-        _loadFile = value
-        Me.LoadFormControls(False)
-      End Set
-    End Property
+		Public Property LoadFile() As kCura.WinEDDS.LoadFile
+			Get
+				If _loadFile Is Nothing Then
+					_loadFile = New kCura.WinEDDS.LoadFile
+				End If
+				If _loadFile.CookieContainer Is Nothing Then
+					_loadFile.CookieContainer = kCura.EDDS.WinForm.Application.Instance.CookieContainer
+				End If
+				'If _loadFile.Identity Is Nothing Then
+				'	_loadFile.Identity = kCura.EDDS.WinForm.Application.Instance.Identity
+				'End If
+				Return _loadFile
+			End Get
+			Set(ByVal value As kCura.WinEDDS.LoadFile)
+				_loadFile = value
+				Me.LoadFormControls(False)
+			End Set
+		End Property
 
-    Private Sub _browseButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _browseButton.Click
-      OpenFileDialog.ShowDialog()
-    End Sub
+		Private Sub _browseButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _browseButton.Click
+			OpenFileDialog.ShowDialog()
+		End Sub
 
-    Private Function RefreshNativeFilePathFieldAndFileColumnHeaders(Optional ByVal showWarning As Boolean = False) As String()
-      Dim columnHeaders As String()
-      Dim listsAreSame As Boolean = True
-      Dim currentHeaders As String()
-      If System.IO.File.Exists(LoadFile.FilePath) Then
-        columnHeaders = _application.GetColumnHeadersFromLoadFile(LoadFile, _firstLineContainsColumnNames.Checked)
-        System.Array.Sort(columnHeaders)
-        Dim currentHeaderList As New System.Collections.ArrayList
-        For Each item As Object In _fileColumns.LeftListBoxItems
-          If Not currentHeaderList.Contains(item.tostring) Then currentHeaderList.Add(item.ToString)
-        Next
-        For Each item As Object In _fileColumns.RightListBoxItems
-          If Not currentHeaderList.Contains(item.tostring) Then currentHeaderList.Add(item.ToString)
-        Next
-        currentHeaders = DirectCast(currentHeaderList.ToArray(GetType(String)), String())
-        System.Array.Sort(currentHeaders)
-        If currentHeaders.Length <> columnHeaders.Length Then listsAreSame = False
-        If listsAreSame Then
-          For i As Int32 = 0 To currentHeaders.Length - 1
-            listsAreSame = listsAreSame And (currentHeaders(i) = columnHeaders(i))
-            If Not listsAreSame Then Exit For
-          Next
-        End If
-      End If
-      If System.IO.File.Exists(LoadFile.FilePath) AndAlso Not listsAreSame Then
-        If currentHeaders.Length > 0 AndAlso Not listsAreSame AndAlso showWarning Then
-          MsgBox("Column schema changed with load file." & System.Environment.NewLine & "Column information reset.", MsgBoxStyle.Information, "Relwin Message")
-        End If
-        _fileColumnHeaders.Items.Clear()
-        _nativeFilePathField.Items.Clear()
-        _destinationFolderPath.Items.Clear()
-        '_identifiersDropDown.Items.Clear()
-        _fileColumns.ClearAll()
-        PopulateLoadFileDelimiters()
-        columnHeaders = _application.GetColumnHeadersFromLoadFile(LoadFile, _firstLineContainsColumnNames.Checked)
-        System.Array.Sort(columnHeaders)
-        '_filePath.Text = LoadFile.FilePath\
-        _fileColumns.RightListBoxItems.AddRange(columnHeaders)
-        _fileColumnHeaders.Items.AddRange(columnHeaders)
-        _nativeFilePathField.Items.AddRange(columnHeaders)
-        _destinationFolderPath.Items.AddRange(columnHeaders)
-        Dim identifiersDropdownRange As New System.Collections.ArrayList
-        '_identifiersDropDown.Items.Add("< none >")
-        '_identifiersDropDown.Items.AddRange(columnHeaders)
-        '_identifiersDropDown.SelectedIndex = 0
-        If LoadFile.LoadNativeFiles AndAlso System.IO.File.Exists(LoadFile.FilePath) Then
-          _nativeFilePathField.SelectedItem = LoadFile.NativeFilePathColumn
-        End If
-        _nativeFilePathField.SelectedItem = Nothing
-        _nativeFilePathField.Text = "Select ..."
-        _destinationFolderPath.SelectedItem = Nothing
-        _destinationFolderPath.Text = "Select ..."
-      End If
+		Private Function RefreshNativeFilePathFieldAndFileColumnHeaders(Optional ByVal showWarning As Boolean = False) As String()
+			Dim columnHeaders As String()
+			Dim listsAreSame As Boolean = True
+			Dim currentHeaders As String()
+			If System.IO.File.Exists(LoadFile.FilePath) Then
+				columnHeaders = _application.GetColumnHeadersFromLoadFile(LoadFile, _firstLineContainsColumnNames.Checked)
+				System.Array.Sort(columnHeaders)
+				Dim currentHeaderList As New System.Collections.ArrayList
+				For Each item As Object In _fieldMap.LoadFileColumns.LeftListBoxItems
+					If Not currentHeaderList.Contains(item.tostring) Then currentHeaderList.Add(item.ToString)
+				Next
+				For Each item As Object In _fieldMap.LoadFileColumns.RightListBoxItems
+					If Not currentHeaderList.Contains(item.tostring) Then currentHeaderList.Add(item.ToString)
+				Next
+				currentHeaders = DirectCast(currentHeaderList.ToArray(GetType(String)), String())
+				System.Array.Sort(currentHeaders)
+				If currentHeaders.Length <> columnHeaders.Length Then listsAreSame = False
+				If listsAreSame Then
+					For i As Int32 = 0 To currentHeaders.Length - 1
+						listsAreSame = listsAreSame And (currentHeaders(i) = columnHeaders(i))
+						If Not listsAreSame Then Exit For
+					Next
+				End If
+			End If
+			If System.IO.File.Exists(LoadFile.FilePath) AndAlso Not listsAreSame Then
+				If currentHeaders.Length > 0 AndAlso Not listsAreSame AndAlso showWarning Then
+					MsgBox("Column schema changed with load file." & System.Environment.NewLine & "Column information reset.", MsgBoxStyle.Information, "Relwin Message")
+				End If
+				_fileColumnHeaders.Items.Clear()
+				_nativeFilePathField.Items.Clear()
+				_destinationFolderPath.Items.Clear()
+				'_identifiersDropDown.Items.Clear()
+				_fieldMap.LoadFileColumns.ClearAll()
+				PopulateLoadFileDelimiters()
+				columnHeaders = _application.GetColumnHeadersFromLoadFile(LoadFile, _firstLineContainsColumnNames.Checked)
+				System.Array.Sort(columnHeaders)
+				'_filePath.Text = LoadFile.FilePath\
+				_fieldMap.LoadFileColumns.RightListBoxItems.AddRange(columnHeaders)
+				_fileColumnHeaders.Items.AddRange(columnHeaders)
+				_nativeFilePathField.Items.AddRange(columnHeaders)
+				_destinationFolderPath.Items.AddRange(columnHeaders)
+				Dim identifiersDropdownRange As New System.Collections.ArrayList
+				'_identifiersDropDown.Items.Add("< none >")
+				'_identifiersDropDown.Items.AddRange(columnHeaders)
+				'_identifiersDropDown.SelectedIndex = 0
+				If LoadFile.LoadNativeFiles AndAlso System.IO.File.Exists(LoadFile.FilePath) Then
+					_nativeFilePathField.SelectedItem = LoadFile.NativeFilePathColumn
+				End If
+				_nativeFilePathField.SelectedItem = Nothing
+				_nativeFilePathField.Text = "Select ..."
+				_destinationFolderPath.SelectedItem = Nothing
+				_destinationFolderPath.Text = "Select ..."
+			End If
 			ActionMenuEnabled = ReadyToRun
-			_fileColumns.EnsureHorizontalScrollbars()
+			_fieldMap.LoadFileColumns.EnsureHorizontalScrollbars()
 			Return columnHeaders
-    End Function
+		End Function
 
-    Private Sub OpenFileDialog_FileOk(ByVal sender As Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles OpenFileDialog.FileOk
-      Dim oldfilepath As String
-      Try
-        If Not Me.EnsureConnection Then Exit Sub
-        oldfilepath = _filePath.Text
-        _filePath.Text = OpenFileDialog.FileName
-        PopulateLoadFileObject()
-        Dim extension As String = _filePath.Text
-        If extension.IndexOf("\") <> -1 Then
-          extension = extension.Substring(extension.LastIndexOf("\") + 1)
-        End If
-        If extension.IndexOf(".") = -1 Then
-          extension = ""
-        Else
-          extension = extension.Substring(extension.LastIndexOf(".") + 1).ToLower
-        End If
-        Select Case extension
-          Case "csv"
-            _recordDelimiter.SelectedValue = AscW(",")
-            _quoteDelimiter.SelectedValue = AscW("""")
-            Me.LoadFile.QuoteDelimiter = """"c
-            Me.LoadFile.RecordDelimiter = ","c
-          Case "dat"
-            _recordDelimiter.SelectedValue = 20
-            _quoteDelimiter.SelectedValue = 254
-            Me.LoadFile.RecordDelimiter = ChrW(20)
-            Me.LoadFile.QuoteDelimiter = ChrW(254)
-        End Select
-        RefreshNativeFilePathFieldAndFileColumnHeaders(oldfilepath.ToLower <> "select file to load...")
-      Catch ex As System.IO.IOException
-        MsgBox(ex.Message & Environment.NewLine & "Please close any application that might have a hold on the file before proceeding.", MsgBoxStyle.Exclamation)
-        _filePath.Text = oldfilepath
-      End Try
-    End Sub
+		Private Sub OpenFileDialog_FileOk(ByVal sender As Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles OpenFileDialog.FileOk
+			Dim oldfilepath As String
+			Try
+				If Not Me.EnsureConnection Then Exit Sub
+				oldfilepath = _filePath.Text
+				_filePath.Text = OpenFileDialog.FileName
+				PopulateLoadFileObject()
+				Dim extension As String = _filePath.Text
+				If extension.IndexOf("\") <> -1 Then
+					extension = extension.Substring(extension.LastIndexOf("\") + 1)
+				End If
+				If extension.IndexOf(".") = -1 Then
+					extension = ""
+				Else
+					extension = extension.Substring(extension.LastIndexOf(".") + 1).ToLower
+				End If
+				Select Case extension
+					Case "csv"
+						_recordDelimiter.SelectedValue = AscW(",")
+						_quoteDelimiter.SelectedValue = AscW("""")
+						Me.LoadFile.QuoteDelimiter = """"c
+						Me.LoadFile.RecordDelimiter = ","c
+					Case "dat"
+						_recordDelimiter.SelectedValue = 20
+						_quoteDelimiter.SelectedValue = 254
+						Me.LoadFile.RecordDelimiter = ChrW(20)
+						Me.LoadFile.QuoteDelimiter = ChrW(254)
+				End Select
+				RefreshNativeFilePathFieldAndFileColumnHeaders(oldfilepath.ToLower <> "select file to load...")
+			Catch ex As System.IO.IOException
+				MsgBox(ex.Message & Environment.NewLine & "Please close any application that might have a hold on the file before proceeding.", MsgBoxStyle.Exclamation)
+				_filePath.Text = oldfilepath
+			End Try
+		End Sub
 
-    Private Sub _filePath_TextChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _filePath.TextChanged
-      ActionMenuEnabled = ReadyToRun
-      LoadFile.FilePath = _filePath.Text
-      'RefreshNativeFilePathFieldAndFileColumnHeaders()
-    End Sub
+		Private Sub _filePath_TextChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _filePath.TextChanged
+			ActionMenuEnabled = ReadyToRun
+			LoadFile.FilePath = _filePath.Text
+			'RefreshNativeFilePathFieldAndFileColumnHeaders()
+		End Sub
 
-    Private Sub ImportFileMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ImportFileMenu.Click
-      PopulateLoadFileObject()
-      If _application.ReadyToLoad(Utility.ExtractFieldNames(_fieldMap.LeftListBoxItems)) AndAlso _application.ReadyToLoad(Me.LoadFile) Then
-        _application.ImportLoadFile(Me.LoadFile)
-      End If
-    End Sub
+		Private Sub ImportFileMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ImportFileMenu.Click
+			PopulateLoadFileObject()
+			If _application.ReadyToLoad(Utility.ExtractFieldNames(_fieldMap.LoadFileColumns.LeftListBoxItems)) AndAlso _application.ReadyToLoad(Me.LoadFile) Then
+				_application.ImportLoadFile(Me.LoadFile)
+			End If
+		End Sub
 
-    Private Sub LoadFileForm_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
+		Private Sub LoadFileForm_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
 			'kCura.Windows.Forms.EnhancedMenuProvider.Hook(Me)
 			_loadFileEncodingPicker.InitializeDropdown()
 			_fullTextFileEncodingPicker.InitializeDropdown()
-    End Sub
+		End Sub
 
-    Private Sub LoadFileForm_Closing(ByVal sender As Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles MyBase.Closing
-      'kCura.Windows.Forms.EnhancedMenuProvider.Unhook()
-    End Sub
+		Private Sub LoadFileForm_Closing(ByVal sender As Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles MyBase.Closing
+			'kCura.Windows.Forms.EnhancedMenuProvider.Unhook()
+		End Sub
 
-    Private Sub _loadNativeFiles_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _loadNativeFiles.CheckedChanged
-      _nativeFilePathField.Enabled = _loadNativeFiles.Checked
-      _extractFullTextFromNativeFile.Enabled = _loadNativeFiles.Checked
-      _advancedButton.Enabled = _loadNativeFiles.Checked
-      'If Not _nativeFilePathField.Items.Count = 0 Then
-      '	_nativeFilePathField.SelectedItem = _nativeFilePathField.Items(0)
-      'End If
-      _nativeFilePathField.SelectedItem = Nothing
-      _nativeFilePathField.Text = "Select ..."
-      _extractMd5Hash.Enabled = EnableMd5Hash
-      ActionMenuEnabled = ReadyToRun
-    End Sub
+		Private Sub _loadNativeFiles_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _loadNativeFiles.CheckedChanged
+			_nativeFilePathField.Enabled = _loadNativeFiles.Checked
+			_extractFullTextFromNativeFile.Enabled = _loadNativeFiles.Checked
+			_advancedButton.Enabled = _loadNativeFiles.Checked
+			'If Not _nativeFilePathField.Items.Count = 0 Then
+			'	_nativeFilePathField.SelectedItem = _nativeFilePathField.Items(0)
+			'End If
+			_nativeFilePathField.SelectedItem = Nothing
+			_nativeFilePathField.Text = "Select ..."
+			_extractMd5Hash.Enabled = EnableMd5Hash
+			ActionMenuEnabled = ReadyToRun
+		End Sub
 
-    Private Sub _overwriteDestination_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _overwriteDropdown.SelectedIndexChanged
-      LoadFile.OverwriteDestination = Me.GetOverwrite
-      If Me.LoadFile.ArtifactTypeID = 10 Then
-        Select Case LoadFile.OverwriteDestination.ToLower
-          Case "none"
-            _buildFolderStructure.Enabled = True
-            _destinationFolderPath.Enabled = _buildFolderStructure.Checked
-          Case Else
-            _destinationFolderPath.Enabled = False
-            _buildFolderStructure.Checked = False
-            _buildFolderStructure.Enabled = False
-            _destinationFolderPath.SelectedItem = Nothing
-            _destinationFolderPath.Text = "Select ..."
-        End Select
-      ElseIf Me.IsChildObject Then
-        Select Case LoadFile.OverwriteDestination.ToLower
-          Case "none"
-            _destinationFolderPath.Enabled = True
-            _buildFolderStructure.Checked = True
-            _buildFolderStructure.Enabled = False
-          Case "strict"
-            _destinationFolderPath.Enabled = False
-            _buildFolderStructure.Checked = False
-            _buildFolderStructure.Enabled = True
-          Case Else
-            _destinationFolderPath.Enabled = True
-            _buildFolderStructure.Checked = True
-            _buildFolderStructure.Enabled = False
-        End Select
-      Else
-        _destinationFolderPath.Enabled = False
-        _buildFolderStructure.Enabled = False
-        _buildFolderStructure.Checked = False
-        _destinationFolderPath.SelectedItem = Nothing
-        _destinationFolderPath.Text = "Select ..."
+		Private Sub _overwriteDestination_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _overwriteDropdown.SelectedIndexChanged
+			LoadFile.OverwriteDestination = Me.GetOverwrite
+			If Me.LoadFile.ArtifactTypeID = 10 Then
+				Select Case LoadFile.OverwriteDestination.ToLower
+					Case "none"
+						_buildFolderStructure.Enabled = True
+						_destinationFolderPath.Enabled = _buildFolderStructure.Checked
+					Case Else
+						_destinationFolderPath.Enabled = False
+						_buildFolderStructure.Checked = False
+						_buildFolderStructure.Enabled = False
+						_destinationFolderPath.SelectedItem = Nothing
+						_destinationFolderPath.Text = "Select ..."
+				End Select
+			ElseIf Me.IsChildObject Then
+				Select Case LoadFile.OverwriteDestination.ToLower
+					Case "none"
+						_destinationFolderPath.Enabled = True
+						_buildFolderStructure.Checked = True
+						_buildFolderStructure.Enabled = False
+					Case "strict"
+						_destinationFolderPath.Enabled = False
+						_buildFolderStructure.Checked = False
+						_buildFolderStructure.Enabled = True
+					Case Else
+						_destinationFolderPath.Enabled = True
+						_buildFolderStructure.Checked = True
+						_buildFolderStructure.Enabled = False
+				End Select
+			Else
+				_destinationFolderPath.Enabled = False
+				_buildFolderStructure.Enabled = False
+				_buildFolderStructure.Checked = False
+				_destinationFolderPath.SelectedItem = Nothing
+				_destinationFolderPath.Text = "Select ..."
 
-      End If
-      ActionMenuEnabled = ReadyToRun
-      '_identifiersDropDown.Enabled = _overWrite.Checked
-    End Sub
+			End If
+			ActionMenuEnabled = ReadyToRun
+			'_identifiersDropDown.Enabled = _overWrite.Checked
+		End Sub
 
-    Private Sub PreviewMenuFile_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles PreviewMenuFile.Click
-      Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
-      PopulateLoadFileObject()
-      If _application.ReadyToLoad(Me.LoadFile) Then _application.PreviewLoadFile(_loadFile, False, kCura.EDDS.WinForm.LoadFilePreviewForm.FormType.LoadFile)
-      Me.Cursor = System.Windows.Forms.Cursors.Default
-    End Sub
+		Private Sub PreviewMenuFile_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles PreviewMenuFile.Click
+			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
+			PopulateLoadFileObject()
+			If _application.ReadyToLoad(Me.LoadFile) Then _application.PreviewLoadFile(_loadFile, False, kCura.EDDS.WinForm.LoadFilePreviewForm.FormType.LoadFile)
+			Me.Cursor = System.Windows.Forms.Cursors.Default
+		End Sub
 
-    Private Sub _fileSaveFieldMapMenuItem_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles _fileSaveFieldMapMenuItem.Click
-      Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
-      PopulateLoadFileObject()
-      _saveFieldMapDialog.ShowDialog()
-      Me.Cursor = System.Windows.Forms.Cursors.Default
-    End Sub
+		Private Sub _fileSaveFieldMapMenuItem_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles _fileSaveFieldMapMenuItem.Click
+			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
+			PopulateLoadFileObject()
+			_saveFieldMapDialog.ShowDialog()
+			Me.Cursor = System.Windows.Forms.Cursors.Default
+		End Sub
 
-    Private Sub _saveFieldMapDialog_FileOk(ByVal sender As Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles _saveFieldMapDialog.FileOk
-      Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
-      If Not System.IO.File.Exists(_saveFieldMapDialog.FileName) Then
-        System.IO.File.Create(_saveFieldMapDialog.FileName).Close()
-      End If
-      'PopulateLoadFileObject()
-      _application.SaveLoadFile(Me.LoadFile, _saveFieldMapDialog.FileName)
-      Me.Cursor = System.Windows.Forms.Cursors.Default
-    End Sub
+		Private Sub _saveFieldMapDialog_FileOk(ByVal sender As Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles _saveFieldMapDialog.FileOk
+			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
+			If Not System.IO.File.Exists(_saveFieldMapDialog.FileName) Then
+				System.IO.File.Create(_saveFieldMapDialog.FileName).Close()
+			End If
+			'PopulateLoadFileObject()
+			_application.SaveLoadFile(Me.LoadFile, _saveFieldMapDialog.FileName)
+			Me.Cursor = System.Windows.Forms.Cursors.Default
+		End Sub
 
-    Private Sub _fileLoadFieldMapMenuItem_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles _fileLoadFieldMapMenuItem.Click
-      _loadFieldMapDialog.ShowDialog()
-    End Sub
+		Private Sub _fileLoadFieldMapMenuItem_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles _fileLoadFieldMapMenuItem.Click
+			_loadFieldMapDialog.ShowDialog()
+		End Sub
 
-    Private Sub _loadFieldMapDialog_FileOk(ByVal sender As Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles _loadFieldMapDialog.FileOk
-      Dim newLoadFile As LoadFile = _application.ReadLoadFile(Me.LoadFile, _loadFieldMapDialog.FileName, False)
-      If Not newLoadFile Is Nothing Then
-        _loadFile = newLoadFile
-        Me.LoadFormControls(True)
-      End If
-    End Sub
+		Private Sub _loadFieldMapDialog_FileOk(ByVal sender As Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles _loadFieldMapDialog.FileOk
+			Dim newLoadFile As LoadFile = _application.ReadLoadFile(Me.LoadFile, _loadFieldMapDialog.FileName, False)
+			If Not newLoadFile Is Nothing Then
+				_loadFile = newLoadFile
+				Me.LoadFormControls(True)
+			End If
+		End Sub
 
-    Private Sub _fieldMap_ItemsShifted() Handles _fieldMap.ItemsShifted
-      ActionMenuEnabled = ReadyToRun
-      _extractMd5Hash.Enabled = EnableMd5Hash
-      _extractedTextValueContainsFileLocation.Enabled = Me.FullTextColumnIsMapped
-      _fullTextFileEncodingPicker.Enabled = _extractedTextValueContainsFileLocation.Enabled And _extractedTextValueContainsFileLocation.Checked
-    End Sub
+		Private Sub _FieldColumns_ItemsShifted() Handles _fieldMap.FieldColumnsItemsShifted
+			ActionMenuEnabled = ReadyToRun
+			_extractMd5Hash.Enabled = EnableMd5Hash
+			_extractedTextValueContainsFileLocation.Enabled = Me.FullTextColumnIsMapped
+			_fullTextFileEncodingPicker.Enabled = _extractedTextValueContainsFileLocation.Enabled And _extractedTextValueContainsFileLocation.Checked
+		End Sub
 
-    Private ReadOnly Property EnableMd5Hash() As Boolean
-      Get
-        Return False
-        'If Not _nativeFilePathField.Enabled Then Return False
-        'Dim item As String
-        'For Each item In _fieldMap.RightListBoxItems
-        '	Try
-        '		If _application.CurrentFields.Item(item).FieldCategoryID = kCura.DynamicFields.Types.FieldCategory.DuplicateHash Then
-        '			Return False
-        '		End If
-        '	Catch
-        '	End Try
-        'Next
-        'Return True
-      End Get
-    End Property
+		Private ReadOnly Property EnableMd5Hash() As Boolean
+			Get
+				Return False
+				'If Not _nativeFilePathField.Enabled Then Return False
+				'Dim item As String
+				'For Each item In _fieldMap.RightListBoxItems
+				'	Try
+				'		If _application.CurrentFields.Item(item).FieldCategoryID = kCura.DynamicFields.Types.FieldCategory.DuplicateHash Then
+				'			Return False
+				'		End If
+				'	Catch
+				'	End Try
+				'Next
+				'Return True
+			End Get
+		End Property
 
-    Private Sub _fileColumns_ItemsShifted() Handles _fileColumns.ItemsShifted
-      ActionMenuEnabled = ReadyToRun
-    End Sub
+		Private Sub _LoadFileColumns_ItemsShifted() Handles _fieldMap.LoadFileColumnsItemsShifted
+			ActionMenuEnabled = ReadyToRun
+		End Sub
 
-    Private Property ActionMenuEnabled() As Boolean
-      Get
-        Return ImportFileMenu.Enabled AndAlso _
-        PreviewMenuFile.Enabled AndAlso _
-        _importMenuPreviewErrorsItem.Enabled AndAlso _
-        ((_importMenuPreviewFoldersAndCodesItem.Enabled AndAlso Me.LoadFile.ArtifactTypeID = 10) OrElse Me.LoadFile.ArtifactTypeID <> 10)
-      End Get
-      Set(ByVal value As Boolean)
-        ImportFileMenu.Enabled = value
-        PreviewMenuFile.Enabled = value
-        _importMenuPreviewErrorsItem.Enabled = value
-        If Me.LoadFile.ArtifactTypeID = 10 Then
-          _importMenuPreviewFoldersAndCodesItem.Enabled = value
-        Else
-          _importMenuPreviewFoldersAndCodesItem.Enabled = False
-        End If
-      End Set
-    End Property
+		Private Property ActionMenuEnabled() As Boolean
+			Get
+				Return ImportFileMenu.Enabled AndAlso _
+				PreviewMenuFile.Enabled AndAlso _
+				_importMenuPreviewErrorsItem.Enabled AndAlso _
+				((_importMenuPreviewFoldersAndCodesItem.Enabled AndAlso Me.LoadFile.ArtifactTypeID = 10) OrElse Me.LoadFile.ArtifactTypeID <> 10)
+			End Get
+			Set(ByVal value As Boolean)
+				ImportFileMenu.Enabled = value
+				PreviewMenuFile.Enabled = value
+				_importMenuPreviewErrorsItem.Enabled = value
+				If Me.LoadFile.ArtifactTypeID = 10 Then
+					_importMenuPreviewFoldersAndCodesItem.Enabled = value
+				Else
+					_importMenuPreviewFoldersAndCodesItem.Enabled = False
+				End If
+			End Set
+		End Property
 
-    Private Sub _nativeFilePathField_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _nativeFilePathField.SelectedIndexChanged
-      ActionMenuEnabled = ReadyToRun
-    End Sub
+		Private Sub _nativeFilePathField_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _nativeFilePathField.SelectedIndexChanged
+			ActionMenuEnabled = ReadyToRun
+		End Sub
 
-    Private Sub _firstLineContainsColumnNames_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _firstLineContainsColumnNames.CheckedChanged
-      LoadFile.FirstLineContainsHeaders = _firstLineContainsColumnNames.Checked
-      RefreshNativeFilePathFieldAndFileColumnHeaders()
-    End Sub
+		Private Sub _firstLineContainsColumnNames_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _firstLineContainsColumnNames.CheckedChanged
+			LoadFile.FirstLineContainsHeaders = _firstLineContainsColumnNames.Checked
+			RefreshNativeFilePathFieldAndFileColumnHeaders()
+		End Sub
 
-    Private Sub _importMenuPreviewErrorsItem_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles _importMenuPreviewErrorsItem.Click
-      Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
-      PopulateLoadFileObject()
-      _application.PreviewLoadFile(_loadFile, True, kCura.EDDS.WinForm.LoadFilePreviewForm.FormType.LoadFile)
-      Me.Cursor = System.Windows.Forms.Cursors.Default
-    End Sub
+		Private Sub _importMenuPreviewErrorsItem_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles _importMenuPreviewErrorsItem.Click
+			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
+			PopulateLoadFileObject()
+			_application.PreviewLoadFile(_loadFile, True, kCura.EDDS.WinForm.LoadFilePreviewForm.FormType.LoadFile)
+			Me.Cursor = System.Windows.Forms.Cursors.Default
+		End Sub
 
-    Private Sub _importMenuPreviewFoldersAndCodesItem_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles _importMenuPreviewFoldersAndCodesItem.Click
-      Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
-      PopulateLoadFileObject()
-      _application.PreviewLoadFile(_loadFile, False, kCura.EDDS.WinForm.LoadFilePreviewForm.FormType.Codes)
-      Me.Cursor = System.Windows.Forms.Cursors.Default
-    End Sub
+		Private Sub _importMenuPreviewFoldersAndCodesItem_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles _importMenuPreviewFoldersAndCodesItem.Click
+			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
+			PopulateLoadFileObject()
+			_application.PreviewLoadFile(_loadFile, False, kCura.EDDS.WinForm.LoadFilePreviewForm.FormType.Codes)
+			Me.Cursor = System.Windows.Forms.Cursors.Default
+		End Sub
 
-    Private Sub _identifiersDropDown_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs)
-      ActionMenuEnabled = ReadyToRun
-    End Sub
+		Private Sub _identifiersDropDown_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs)
+			ActionMenuEnabled = ReadyToRun
+		End Sub
 
-    Private Sub _characterDropdown_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _recordDelimiter.SelectedIndexChanged, _quoteDelimiter.SelectedIndexChanged, _newLineDelimiter.SelectedIndexChanged, _multiRecordDelimiter.SelectedIndexChanged, _hierarchicalValueDelimiter.SelectedIndexChanged
-      'PopulateLoadFileObject()
-      Dim tag As Object = DirectCast(sender, System.Windows.Forms.ComboBox).Tag
-      If TypeOf tag Is Boolean AndAlso CType(tag, Boolean) = False Then
-        'do nothing
-      Else
-        PopulateLoadFileDelimiters()
-        RefreshNativeFilePathFieldAndFileColumnHeaders()
-      End If
-    End Sub
+		Private Sub _characterDropdown_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _recordDelimiter.SelectedIndexChanged, _quoteDelimiter.SelectedIndexChanged, _newLineDelimiter.SelectedIndexChanged, _multiRecordDelimiter.SelectedIndexChanged, _hierarchicalValueDelimiter.SelectedIndexChanged
+			'PopulateLoadFileObject()
+			Dim tag As Object = DirectCast(sender, System.Windows.Forms.ComboBox).Tag
+			If TypeOf tag Is Boolean AndAlso CType(tag, Boolean) = False Then
+				'do nothing
+			Else
+				PopulateLoadFileDelimiters()
+				RefreshNativeFilePathFieldAndFileColumnHeaders()
+			End If
+		End Sub
 
-    Private Sub PopulateLoadFileDelimiters()
-      LoadFile.QuoteDelimiter = ChrW(CType(_quoteDelimiter.SelectedValue, Int32))
-      LoadFile.RecordDelimiter = ChrW(CType(_recordDelimiter.SelectedValue, Int32))
-      LoadFile.MultiRecordDelimiter = ChrW(CType(_multiRecordDelimiter.SelectedValue, Int32))
-      LoadFile.NewlineDelimiter = ChrW(CType(_newLineDelimiter.SelectedValue, Int32))
-      LoadFile.SourceFileEncoding = _loadFileEncodingPicker.SelectedEncoding
-      LoadFile.HierarchicalValueDelimiter = ChrW(CType(_hierarchicalValueDelimiter.SelectedValue, Int32))
-    End Sub
+		Private Sub PopulateLoadFileDelimiters()
+			LoadFile.QuoteDelimiter = ChrW(CType(_quoteDelimiter.SelectedValue, Int32))
+			LoadFile.RecordDelimiter = ChrW(CType(_recordDelimiter.SelectedValue, Int32))
+			LoadFile.MultiRecordDelimiter = ChrW(CType(_multiRecordDelimiter.SelectedValue, Int32))
+			LoadFile.NewlineDelimiter = ChrW(CType(_newLineDelimiter.SelectedValue, Int32))
+			LoadFile.SourceFileEncoding = _loadFileEncodingPicker.SelectedEncoding
+			LoadFile.HierarchicalValueDelimiter = ChrW(CType(_hierarchicalValueDelimiter.SelectedValue, Int32))
+		End Sub
 
-    Private Sub BuildMappingFromLoadFile(ByVal casefields As String(), ByVal columnHeaders As String())
-      Dim caseFieldName As String
-      Dim selectedFieldNameList As New ArrayList
-      Dim selectedColumnNameList As New ArrayList
-      Dim item As LoadFileFieldMap.LoadFileFieldMapItem
-      _fieldMap.ClearAll()
-      _fileColumns.ClearAll()
-      For Each item In _loadFile.FieldMap
-        If _
-         Not item.DocumentField Is Nothing AndAlso _
-         item.NativeFileColumnIndex > -1 AndAlso _
-         Array.IndexOf(casefields, item.DocumentField.FieldName) > -1 AndAlso _
-         item.NativeFileColumnIndex < columnHeaders.Length _
-         Then
-          If item.DocumentField.FieldCategoryID = kCura.DynamicFields.Types.FieldCategory.Identifier Then
-            selectedFieldNameList.Add(item.DocumentField.FieldName & " [Identifier]")
-          Else
-            selectedFieldNameList.Add(item.DocumentField.FieldName)
-          End If
-          selectedColumnNameList.Add(columnHeaders(item.NativeFileColumnIndex))
-        End If
-      Next
-      For Each item In _loadFile.FieldMap
-        If Not item.DocumentField Is Nothing AndAlso columnHeaders.Length = 0 AndAlso Array.IndexOf(casefields, item.DocumentField.FieldName) > -1 Then
-          If item.DocumentField.FieldCategoryID = kCura.DynamicFields.Types.FieldCategory.Identifier Then
-            selectedFieldNameList.Add(item.DocumentField.FieldName & " [Identifier]")
-          Else
-            selectedFieldNameList.Add(item.DocumentField.FieldName)
-          End If
-        End If
-      Next
-      Dim selectedFieldNames As String() = DirectCast(selectedFieldNameList.ToArray(GetType(String)), String())
-      Dim selectedColumnNames As String() = DirectCast(selectedColumnNameList.ToArray(GetType(String)), String())
-      _fieldMap.RightListBoxItems.AddRange(selectedFieldNames)
-      _fileColumns.LeftListBoxItems.AddRange(selectedColumnNames)
-      Dim name As String
-      Me.MarkIdentifierField(casefields)
-      For Each name In casefields
-        If Array.IndexOf(selectedFieldNames, name) = -1 Then
-          _fieldMap.LeftListBoxItems.Add(name)
-        End If
-      Next
-      For Each name In columnHeaders
-        If Array.IndexOf(selectedColumnNames, name) = -1 Then
-          _fileColumns.RightListBoxItems.Add(name)
-        End If
-      Next
-    End Sub
+		Private Sub BuildMappingFromLoadFile(ByVal casefields As String(), ByVal columnHeaders As String())
+			Dim caseFieldName As String
+			Dim selectedFieldNameList As New ArrayList
+			Dim selectedColumnNameList As New ArrayList
+			Dim item As LoadFileFieldMap.LoadFileFieldMapItem
+			_fieldMap.ClearAll()
+			For Each item In _loadFile.FieldMap
+				If _
+				 Not item.DocumentField Is Nothing AndAlso _
+				 item.NativeFileColumnIndex > -1 AndAlso _
+				 Array.IndexOf(casefields, item.DocumentField.FieldName) > -1 AndAlso _
+				 item.NativeFileColumnIndex < columnHeaders.Length _
+				 Then
+					If item.DocumentField.FieldCategoryID = kCura.DynamicFields.Types.FieldCategory.Identifier Then
+						selectedFieldNameList.Add(item.DocumentField.FieldName & " [Identifier]")
+					Else
+						selectedFieldNameList.Add(item.DocumentField.FieldName)
+					End If
+					selectedColumnNameList.Add(columnHeaders(item.NativeFileColumnIndex))
+				End If
+			Next
+			For Each item In _loadFile.FieldMap
+				If Not item.DocumentField Is Nothing AndAlso columnHeaders.Length = 0 AndAlso Array.IndexOf(casefields, item.DocumentField.FieldName) > -1 Then
+					If item.DocumentField.FieldCategoryID = kCura.DynamicFields.Types.FieldCategory.Identifier Then
+						selectedFieldNameList.Add(item.DocumentField.FieldName & " [Identifier]")
+					Else
+						selectedFieldNameList.Add(item.DocumentField.FieldName)
+					End If
+				End If
+			Next
+			Me.MarkIdentifierField(casefields)
+			_fieldMap.MapCaseFieldsToLoadFileFields(casefields, columnHeaders, selectedFieldNameList, selectedColumnNameList)
+		End Sub
 
-    Private Sub _fileMenuCloseItem_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles _fileMenuCloseItem.Click
-      Me.Close()
-    End Sub
+		Private Sub _fileMenuCloseItem_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles _fileMenuCloseItem.Click
+			Me.Close()
+		End Sub
 
-    Private Sub _buildFolderStructure_CheckedChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles _buildFolderStructure.CheckedChanged
-      If Me.LoadFile.ArtifactTypeID = 10 Then
-        If _buildFolderStructure.Checked Then
-          _destinationFolderPath.Enabled = True
-        Else
-          _destinationFolderPath.Enabled = False
-          _destinationFolderPath.SelectedItem = Nothing
-          _destinationFolderPath.Text = "Select ..."
-        End If
-      ElseIf Me.IsChildObject Then
-        Select Case Me.GetOverwrite.ToLower
-          Case "none", "append"
-            _destinationFolderPath.Enabled = True
-            _destinationFolderPath.SelectedItem = Nothing
-            _destinationFolderPath.Text = "Select ..."
-          Case "strict"
-            If _buildFolderStructure.Checked Then
-              _destinationFolderPath.Enabled = True
-            Else
-              _destinationFolderPath.Enabled = False
-              _destinationFolderPath.SelectedItem = Nothing
-              _destinationFolderPath.Text = "Select ..."
-            End If
-        End Select
-      Else
-      End If
-      ActionMenuEnabled = ReadyToRun
-    End Sub
+		Private Sub _buildFolderStructure_CheckedChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles _buildFolderStructure.CheckedChanged
+			If Me.LoadFile.ArtifactTypeID = 10 Then
+				If _buildFolderStructure.Checked Then
+					_destinationFolderPath.Enabled = True
+				Else
+					_destinationFolderPath.Enabled = False
+					_destinationFolderPath.SelectedItem = Nothing
+					_destinationFolderPath.Text = "Select ..."
+				End If
+			ElseIf Me.IsChildObject Then
+				Select Case Me.GetOverwrite.ToLower
+					Case "none", "append"
+						_destinationFolderPath.Enabled = True
+						_destinationFolderPath.SelectedItem = Nothing
+						_destinationFolderPath.Text = "Select ..."
+					Case "strict"
+						If _buildFolderStructure.Checked Then
+							_destinationFolderPath.Enabled = True
+						Else
+							_destinationFolderPath.Enabled = False
+							_destinationFolderPath.SelectedItem = Nothing
+							_destinationFolderPath.Text = "Select ..."
+						End If
+				End Select
+			Else
+			End If
+			ActionMenuEnabled = ReadyToRun
+		End Sub
 
-    Private Sub _destinationFolderPath_SelectedIndexChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles _destinationFolderPath.SelectedIndexChanged
-      ActionMenuEnabled = ReadyToRun
-    End Sub
+		Private Sub _destinationFolderPath_SelectedIndexChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles _destinationFolderPath.SelectedIndexChanged
+			ActionMenuEnabled = ReadyToRun
+		End Sub
 
-    Private Function FullTextColumnIsMapped() As Boolean
-      Dim ftfname As String = _application.CurrentFields(10).FullText.FieldName
-      Dim field As String
-      For Each field In _fieldMap.RightListBoxItems
-        If field.ToLower = ftfname.ToLower Then
-          Return True
-        End If
-      Next
-      Return False
-    End Function
+		Private Function FullTextColumnIsMapped() As Boolean
+			Dim ftfname As String = _application.CurrentFields(10).FullText.FieldName
+			Dim field As String
+			For Each field In _fieldMap.FieldColumns.RightListBoxItems
+				If field.ToLower = ftfname.ToLower Then
+					Return True
+				End If
+			Next
+			Return False
+		End Function
 
-    Private Sub _fileRefreshMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _fileRefreshMenuItem.Click
-      Dim caseFields As String() = _application.GetNonFileCaseFields(LoadFile.CaseInfo.ArtifactID, Me.LoadFile.ArtifactTypeID, True)   '_application.GetCaseFields(LoadFile.CaseInfo.ArtifactID, _application.ArtifactTypeID, True)
-      If caseFields Is Nothing Then Exit Sub
-      Me.MarkIdentifierField(caseFields)
-      Dim fieldName As String
-      For Each fieldName In caseFields
-        If Not _fieldMap.RightListBoxItems.Contains(fieldName) AndAlso Not _fieldMap.LeftListBoxItems.Contains(fieldName) Then
-          _fieldMap.LeftListBoxItems.Add(fieldName)
-        End If
-      Next
-      Dim itemsToRemove As New System.Collections.ArrayList
-      For Each fieldName In _fieldMap.LeftListBoxItems
-        If Array.IndexOf(caseFields, (fieldName)) = -1 Then
-          itemsToRemove.Add(fieldName)
-        End If
-      Next
-      For Each fieldName In itemsToRemove
-        _fieldMap.LeftListBoxItems.Remove(fieldName)
-      Next
+		Private Sub _fileRefreshMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _fileRefreshMenuItem.Click
+			Dim caseFields As String() = _application.GetNonFileCaseFields(LoadFile.CaseInfo.ArtifactID, Me.LoadFile.ArtifactTypeID, True)			'_application.GetCaseFields(LoadFile.CaseInfo.ArtifactID, _application.ArtifactTypeID, True)
+			If caseFields Is Nothing Then Exit Sub
+			Me.MarkIdentifierField(caseFields)
+			Dim fieldName As String
+			For Each fieldName In caseFields
+				If Not _fieldMap.FieldColumns.RightListBoxItems.Contains(fieldName) AndAlso Not _fieldMap.FieldColumns.LeftListBoxItems.Contains(fieldName) Then
+					_fieldMap.FieldColumns.LeftListBoxItems.Add(fieldName)
+				End If
+			Next
+			Dim itemsToRemove As New System.Collections.ArrayList
+			For Each fieldName In _fieldMap.FieldColumns.LeftListBoxItems
+				If Array.IndexOf(caseFields, (fieldName)) = -1 Then
+					itemsToRemove.Add(fieldName)
+				End If
+			Next
+			For Each fieldName In itemsToRemove
+				_fieldMap.FieldColumns.LeftListBoxItems.Remove(fieldName)
+			Next
 
-      itemsToRemove = New Collections.ArrayList
-      For Each fieldName In _fieldMap.RightListBoxItems
-        If Array.IndexOf(caseFields, (fieldName)) = -1 Then
-          itemsToRemove.Add(fieldName)
-        End If
-      Next
-      For Each fieldName In itemsToRemove
-        _fieldMap.RightListBoxItems.Remove(fieldName)
-      Next
-      _application.RefreshSelectedCaseInfo()
-      Me.LoadFile.CaseInfo = _application.SelectedCaseInfo
-      InitializeDocumentSpecificComponents()
-    End Sub
+			itemsToRemove = New Collections.ArrayList
+			For Each fieldName In _fieldMap.FieldColumns.RightListBoxItems
+				If Array.IndexOf(caseFields, (fieldName)) = -1 Then
+					itemsToRemove.Add(fieldName)
+				End If
+			Next
+			For Each fieldName In itemsToRemove
+				_fieldMap.FieldColumns.RightListBoxItems.Remove(fieldName)
+			Next
+			_application.RefreshSelectedCaseInfo()
+			Me.LoadFile.CaseInfo = _application.SelectedCaseInfo
+			InitializeDocumentSpecificComponents()
+		End Sub
 
-    Private Function EnsureConnection() As Boolean
-      If Not _loadFile Is Nothing AndAlso Not _loadFile.CaseInfo Is Nothing Then
-        Dim casefields As String() = Nothing
-        Dim continue As Boolean = True
-        Try
-          casefields = _application.GetCaseFields(_loadFile.CaseInfo.ArtifactID, 10, True)
-          Return Not casefields Is Nothing
-        Catch ex As System.Exception
-          If ex.Message.IndexOf("Need To Re Login") <> -1 Then
-            Return False
-          Else
-            Throw
-          End If
-        End Try
-      Else
-        Return True
-      End If
-    End Function
+		Private Function EnsureConnection() As Boolean
+			If Not _loadFile Is Nothing AndAlso Not _loadFile.CaseInfo Is Nothing Then
+				Dim casefields As String() = Nothing
+				Dim continue As Boolean = True
+				Try
+					casefields = _application.GetCaseFields(_loadFile.CaseInfo.ArtifactID, 10, True)
+					Return Not casefields Is Nothing
+				Catch ex As System.Exception
+					If ex.Message.IndexOf("Need To Re Login") <> -1 Then
+						Return False
+					Else
+						Throw
+					End If
+				End Try
+			Else
+				Return True
+			End If
+		End Function
 
-    Private Sub _advancedButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _advancedButton.Click
-      _advancedFileForm = New AdvancedFileLocation
+		Private Sub _advancedButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _advancedButton.Click
+			_advancedFileForm = New AdvancedFileLocation
 			_advancedFileForm._copyNativeFiles.Checked = Me.LoadFile.CopyFilesToDocumentRepository
 			_advancedFileForm._keepNativeFiles.Checked = Not Me.LoadFile.CopyFilesToDocumentRepository
-      If Not Me.LoadFile.SelectedCasePath Is Nothing AndAlso Not Me.LoadFile.SelectedCasePath = "" Then
-        _advancedFileForm.SelectPath(Me.LoadFile.SelectedCasePath)
-        _advancedFileForm.SelectDefaultPath = False
-      End If
-      _advancedFileForm.ShowDialog()
-    End Sub
+			If Not Me.LoadFile.SelectedCasePath Is Nothing AndAlso Not Me.LoadFile.SelectedCasePath = "" Then
+				_advancedFileForm.SelectPath(Me.LoadFile.SelectedCasePath)
+				_advancedFileForm.SelectDefaultPath = False
+			End If
+			_advancedFileForm.ShowDialog()
+		End Sub
 
-    Private Sub _advancedFileForm_FileLocationOK(ByVal copyFiles As Boolean, ByVal selectedRepository As String) Handles _advancedFileForm.FileLocationOK
-      Me.LoadFile.CopyFilesToDocumentRepository = copyFiles
-      Me.LoadFile.SelectedCasePath = selectedRepository
-    End Sub
+		Private Sub _advancedFileForm_FileLocationOK(ByVal copyFiles As Boolean, ByVal selectedRepository As String) Handles _advancedFileForm.FileLocationOK
+			Me.LoadFile.CopyFilesToDocumentRepository = copyFiles
+			Me.LoadFile.SelectedCasePath = selectedRepository
+		End Sub
 
-    Private Sub _extractedTextValueContainsFileLocation_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _extractedTextValueContainsFileLocation.CheckedChanged
-      _fullTextFileEncodingPicker.Enabled = _extractedTextValueContainsFileLocation.Checked
-    End Sub
+		Private Sub _extractedTextValueContainsFileLocation_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _extractedTextValueContainsFileLocation.CheckedChanged
+			_fullTextFileEncodingPicker.Enabled = _extractedTextValueContainsFileLocation.Checked
+		End Sub
 
 		Private Sub _loadFileEncodingPicker_SelectedEncodingChanged() Handles _loadFileEncodingPicker.SelectedEncodingChanged
 			Me.LoadFile.SourceFileEncoding = _loadFileEncodingPicker.SelectedEncoding
