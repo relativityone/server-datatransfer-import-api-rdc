@@ -351,6 +351,7 @@ Namespace kCura.EDDS.WinForm
 				End If
 				Me.ImageLoadFile.ReplaceFullText = _replaceFullText.Checked
 			End If
+			If Me.ImageLoadFile.IdentityFieldId = -1 Then Me.ImageLoadFile.IdentityFieldId = _application.CurrentFields(10).IdentifierFields(0).FieldID
 			Me.ImageLoadFile.CaseDefaultPath = _application.SelectedCaseInfo.DocumentPath
 			ImageLoadFile.StartLineNumber = CType(_startLineNumber.Value, Int64)
 			Me.Cursor = Cursors.Default

@@ -903,6 +903,7 @@ Namespace kCura.EDDS.WinForm
 			Else
 				Me.LoadFile.StartLineNumber = CType(_startLineNumber.Text, Int64)
 			End If
+			If Me.LoadFile.IdentityFieldId = -1 Then Me.LoadFile.IdentityFieldId = _application.CurrentFields(Me.LoadFile.ArtifactTypeID).IdentifierFields(0).FieldID
 			Me.Cursor = System.Windows.Forms.Cursors.Default
 		End Sub
 
