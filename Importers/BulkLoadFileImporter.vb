@@ -59,6 +59,7 @@ Namespace kCura.WinEDDS
 		Private _processID As Guid
 		Private _parentArtifactTypeID As Int32
 
+		Private _timekeeper As New kCura.Utility.Timekeeper
 #End Region
 
 #Region "Accessors"
@@ -72,67 +73,67 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
-    Public ReadOnly Property AllFields(ByVal artifactTypeID As Int32) As kCura.EDDS.WebAPI.DocumentManagerBase.Field()
-      Get
-        If _allFields Is Nothing Then
-          _allFields = _fieldQuery.RetrieveAllAsArray(_caseArtifactID, artifactTypeID, True)
-        End If
-        Dim field As kCura.EDDS.WebAPI.DocumentManagerBase.Field
-        For Each field In _allFields
-          field.Value = Nothing
-          field.FieldCategory = CType(field.FieldCategoryID, kCura.EDDS.WebAPI.DocumentManagerBase.FieldCategory)
-        Next
-        Return _allFields
-      End Get
-    End Property
+		Public ReadOnly Property AllFields(ByVal artifactTypeID As Int32) As kCura.EDDS.WebAPI.DocumentManagerBase.Field()
+			Get
+				If _allFields Is Nothing Then
+					_allFields = _fieldQuery.RetrieveAllAsArray(_caseArtifactID, artifactTypeID, True)
+				End If
+				Dim field As kCura.EDDS.WebAPI.DocumentManagerBase.Field
+				For Each field In _allFields
+					field.Value = Nothing
+					field.FieldCategory = CType(field.FieldCategoryID, kCura.EDDS.WebAPI.DocumentManagerBase.FieldCategory)
+				Next
+				Return _allFields
+			End Get
+		End Property
 
-    Public ReadOnly Property DocumentFieldsForCreate() As kCura.EDDS.WebAPI.DocumentManagerBase.Field()
-      Get
-        If _fieldsForCreate Is Nothing Then
-          Dim fieldsForCreate As New System.Collections.ArrayList
-          For Each field As kCura.EDDS.WebAPI.DocumentManagerBase.Field In Me.AllFields(10)
-            If System.Array.IndexOf(_fieldArtifactIds, field.ArtifactID) <> -1 OrElse _
-            field.FieldCategory = EDDS.WebAPI.DocumentManagerBase.FieldCategory.Relational Then
-              fieldsForCreate.Add(field)
-            End If
-          Next
-          _fieldsForCreate = DirectCast(fieldsForCreate.ToArray(GetType(kCura.EDDS.WebAPI.DocumentManagerBase.Field)), kCura.EDDS.WebAPI.DocumentManagerBase.Field())
-        End If
-        Return _fieldsForCreate
-      End Get
-    End Property
+		Public ReadOnly Property DocumentFieldsForCreate() As kCura.EDDS.WebAPI.DocumentManagerBase.Field()
+			Get
+				If _fieldsForCreate Is Nothing Then
+					Dim fieldsForCreate As New System.Collections.ArrayList
+					For Each field As kCura.EDDS.WebAPI.DocumentManagerBase.Field In Me.AllFields(10)
+						If System.Array.IndexOf(_fieldArtifactIds, field.ArtifactID) <> -1 OrElse _
+						field.FieldCategory = EDDS.WebAPI.DocumentManagerBase.FieldCategory.Relational Then
+							fieldsForCreate.Add(field)
+						End If
+					Next
+					_fieldsForCreate = DirectCast(fieldsForCreate.ToArray(GetType(kCura.EDDS.WebAPI.DocumentManagerBase.Field)), kCura.EDDS.WebAPI.DocumentManagerBase.Field())
+				End If
+				Return _fieldsForCreate
+			End Get
+		End Property
 
-    Public ReadOnly Property FileInfoField(ByVal artifactTypeID As Int32) As kCura.EDDS.WebAPI.DocumentManagerBase.Field
-      Get
-        Dim retVal As New kCura.EDDS.WebAPI.DocumentManagerBase.Field
-        For Each field As kCura.EDDS.WebAPI.DocumentManagerBase.Field In Me.AllFields(artifactTypeID)
-          If field.FieldCategoryID = kCura.DynamicFields.Types.FieldCategory.FileInfo Then retVal = field
-        Next
-        Return retVal
-      End Get
-    End Property
+		Public ReadOnly Property FileInfoField(ByVal artifactTypeID As Int32) As kCura.EDDS.WebAPI.DocumentManagerBase.Field
+			Get
+				Dim retVal As New kCura.EDDS.WebAPI.DocumentManagerBase.Field
+				For Each field As kCura.EDDS.WebAPI.DocumentManagerBase.Field In Me.AllFields(artifactTypeID)
+					If field.FieldCategoryID = kCura.DynamicFields.Types.FieldCategory.FileInfo Then retVal = field
+				Next
+				Return retVal
+			End Get
+		End Property
 
-    Public ReadOnly Property FullTextField() As kCura.EDDS.WebAPI.DocumentManagerBase.Field
-      Get
-        For Each field As kCura.EDDS.WebAPI.DocumentManagerBase.Field In Me.AllFields(10)
-          If field.FieldCategory = EDDS.WebAPI.DocumentManagerBase.FieldCategory.FullText Then
-            Return field
-          End If
-        Next
-      End Get
-    End Property
+		Public ReadOnly Property FullTextField() As kCura.EDDS.WebAPI.DocumentManagerBase.Field
+			Get
+				For Each field As kCura.EDDS.WebAPI.DocumentManagerBase.Field In Me.AllFields(10)
+					If field.FieldCategory = EDDS.WebAPI.DocumentManagerBase.FieldCategory.FullText Then
+						Return field
+					End If
+				Next
+			End Get
+		End Property
 
-    Public ReadOnly Property ErrorLogFileName() As String
-      Get
-        Return _errorLogFileName
-      End Get
-    End Property
+		Public ReadOnly Property ErrorLogFileName() As String
+			Get
+				Return _errorLogFileName
+			End Get
+		End Property
 
-    Public ReadOnly Property HasErrors() As Boolean
-      Get
-        Return _errorCount > 0
-      End Get
-    End Property
+		Public ReadOnly Property HasErrors() As Boolean
+			Get
+				Return _errorCount > 0
+			End Get
+		End Property
 
 #End Region
 
@@ -146,32 +147,32 @@ Namespace kCura.WinEDDS
 			MyBase.New(args, timeZoneOffset, autoDetect)
 			_overwrite = args.OverwriteDestination
 			If args.CopyFilesToDocumentRepository Then
-        _defaultDestinationFolderPath = args.SelectedCasePath & "EDDS" & args.CaseInfo.ArtifactID & "\"
-        If args.ArtifactTypeID <> 10 Then
-          For Each item As LoadFileFieldMap.LoadFileFieldMapItem In args.FieldMap
-            If Not item.DocumentField Is Nothing AndAlso item.NativeFileColumnIndex > -1 AndAlso item.DocumentField.FieldTypeID = kCura.DynamicFields.Types.FieldTypeHelper.FieldType.File Then
-              _defaultDestinationFolderPath &= "File" & item.DocumentField.FieldID & "\"
-            End If
-          Next
-        End If
-      End If
-      _defaultTextFolderPath = args.CaseDefaultPath & "EDDS" & args.CaseInfo.ArtifactID & "\"
-      If initializeUploaders Then
-        _uploader = New kCura.WinEDDS.FileUploader(args.Credentials, args.CaseInfo.ArtifactID, _defaultDestinationFolderPath, args.CookieContainer)
-        _bcpuploader = New kCura.WinEDDS.FileUploader(args.Credentials, args.CaseInfo.ArtifactID, _defaultDestinationFolderPath, args.CookieContainer, false)
+				_defaultDestinationFolderPath = args.SelectedCasePath & "EDDS" & args.CaseInfo.ArtifactID & "\"
+				If args.ArtifactTypeID <> 10 Then
+					For Each item As LoadFileFieldMap.LoadFileFieldMapItem In args.FieldMap
+						If Not item.DocumentField Is Nothing AndAlso item.NativeFileColumnIndex > -1 AndAlso item.DocumentField.FieldTypeID = kCura.DynamicFields.Types.FieldTypeHelper.FieldType.File Then
+							_defaultDestinationFolderPath &= "File" & item.DocumentField.FieldID & "\"
+						End If
+					Next
+				End If
+			End If
+			_defaultTextFolderPath = args.CaseDefaultPath & "EDDS" & args.CaseInfo.ArtifactID & "\"
+			If initializeUploaders Then
+				_uploader = New kCura.WinEDDS.FileUploader(args.Credentials, args.CaseInfo.ArtifactID, _defaultDestinationFolderPath, args.CookieContainer)
+				_bcpuploader = New kCura.WinEDDS.FileUploader(args.Credentials, args.CaseInfo.ArtifactID, _defaultDestinationFolderPath, args.CookieContainer, False)
 				_textUploader = New kCura.WinEDDS.FileUploader(args.Credentials, args.CaseInfo.ArtifactID, _defaultTextFolderPath, args.CookieContainer, False)
-      End If
-      _extractFullTextFromNative = args.ExtractFullTextFromNativeFile
-      _selectedIdentifier = args.SelectedIdentifierField
-      _copyFileToRepository = args.CopyFilesToDocumentRepository
-      _docFieldCollection = New DocumentFieldCollection(args.FieldMap.DocumentFields)
-      If autoDetect Then _parentFolderDTO = _foldermanager.Read(args.CaseInfo.ArtifactID, args.CaseInfo.RootFolderID)
-      _processController = processController
-      _continue = True
-      _firstTimeThrough = True
-      _caseInfo = args.CaseInfo
-      _settings = args
-      _isAuditingEnabled = New kCura.WinEDDS.Service.RelativityManager(args.Credentials, args.CookieContainer).IsAuditingEnabled
+			End If
+			_extractFullTextFromNative = args.ExtractFullTextFromNativeFile
+			_selectedIdentifier = args.SelectedIdentifierField
+			_copyFileToRepository = args.CopyFilesToDocumentRepository
+			_docFieldCollection = New DocumentFieldCollection(args.FieldMap.DocumentFields)
+			If autoDetect Then _parentFolderDTO = _foldermanager.Read(args.CaseInfo.ArtifactID, args.CaseInfo.RootFolderID)
+			_processController = processController
+			_continue = True
+			_firstTimeThrough = True
+			_caseInfo = args.CaseInfo
+			_settings = args
+			_isAuditingEnabled = New kCura.WinEDDS.Service.RelativityManager(args.Credentials, args.CookieContainer).IsAuditingEnabled
 			_processID = processID
 			_startLineNumber = args.StartLineNumber
 			Dim parentQuery As New kCura.WinEDDS.Service.ObjectTypeManager(args.Credentials, args.CookieContainer)
@@ -219,7 +220,7 @@ Namespace kCura.WinEDDS
 			_filePath = path
 			Try
 				RaiseEvent StartFileImport()
-				Dim markStart As DateTime = DateTime.Now
+				_timekeeper.MarkStart("Whole sh'bang")
 				InitializeMembers(path)
 				While _continue AndAlso Not HasReachedEOF
 					Try
@@ -254,6 +255,7 @@ Namespace kCura.WinEDDS
 				End Try
 				Me.CleanupTempTables()
 				Return True
+				_timekeeper.MarkEnd("Whole sh'bang")
 			Catch ex As System.Exception
 				WriteFatalError(Me.CurrentLineNumber, ex, line)
 			End Try
@@ -335,6 +337,7 @@ Namespace kCura.WinEDDS
 			Dim oixFileIdData As OI.FileID.FileIDData
 			Dim destinationVolume As String
 			If uploadFile AndAlso _artifactTypeID = 10 Then
+				_timekeeper.MarkStart("UploadNative")
 				filename = values(_filePathColumnIndex)
 				If filename.Length > 1 AndAlso filename.Chars(0) = "\" AndAlso filename.Chars(1) <> "\" Then
 					filename = "." & filename
@@ -359,6 +362,7 @@ Namespace kCura.WinEDDS
 					filename = filename.Substring(filename.LastIndexOf("\") + 1)
 					WriteStatusLine(Windows.Process.EventType.Status, String.Format("End upload file. ({0}ms)", DateTime.op_Subtraction(DateTime.Now, now).Milliseconds))
 				End If
+				_timekeeper.MarkEnd("UploadNative")
 			End If
 			If _createFolderStructure Then
 				If _artifactTypeID = 10 Then
@@ -459,57 +463,58 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Private Function PushNativeBatch(Optional ByVal lastRun As Boolean = False) As Object
-      _outputNativeFileWriter.Close()
-      _outputCodeFileWriter.Close()
-      If _batchCounter = 0 Then Exit Function
-      _batchCounter = 0
-      If _artifactTypeID = 10 Then
-        Dim settings As New kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo
-        settings.UseBulkDataImport = True
-        Dim nativeFileUploadKey As String = _bcpuploader.UploadBcpFile(_caseInfo.ArtifactID, _outputNativeFilePath)
-        Dim codeFileUploadKey As String = _bcpuploader.UploadBcpFile(_caseInfo.ArtifactID, _outputCodeFilePath)
-        settings.Repository = _defaultDestinationFolderPath
-        If settings.Repository = "" Then settings.Repository = _caseInfo.DocumentPath
-        If nativeFileUploadKey = "" Then
-          _uploader.DestinationFolderPath = settings.Repository
-          _bcpuploader.DestinationFolderPath = settings.Repository
-          nativeFileUploadKey = _bcpuploader.UploadFile(_outputNativeFilePath, _caseInfo.ArtifactID)
-          codeFileUploadKey = _bcpuploader.UploadFile(_outputCodeFilePath, _caseInfo.ArtifactID)
-          settings.UseBulkDataImport = False
-        End If
-        settings.RunID = _runID
-        settings.CodeFileName = codeFileUploadKey
-        settings.DataFileName = nativeFileUploadKey
+			_timekeeper.MarkStart("PushNativeBatch")
+			_outputNativeFileWriter.Close()
+			_outputCodeFileWriter.Close()
+			If _batchCounter = 0 Then Exit Function
+			_batchCounter = 0
+			If _artifactTypeID = 10 Then
+				Dim settings As New kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo
+				settings.UseBulkDataImport = True
+				Dim nativeFileUploadKey As String = _bcpuploader.UploadBcpFile(_caseInfo.ArtifactID, _outputNativeFilePath)
+				Dim codeFileUploadKey As String = _bcpuploader.UploadBcpFile(_caseInfo.ArtifactID, _outputCodeFilePath)
+				settings.Repository = _defaultDestinationFolderPath
+				If settings.Repository = "" Then settings.Repository = _caseInfo.DocumentPath
+				If nativeFileUploadKey = "" Then
+					_uploader.DestinationFolderPath = settings.Repository
+					_bcpuploader.DestinationFolderPath = settings.Repository
+					nativeFileUploadKey = _bcpuploader.UploadFile(_outputNativeFilePath, _caseInfo.ArtifactID)
+					codeFileUploadKey = _bcpuploader.UploadFile(_outputCodeFilePath, _caseInfo.ArtifactID)
+					settings.UseBulkDataImport = False
+				End If
+				settings.RunID = _runID
+				settings.CodeFileName = codeFileUploadKey
+				settings.DataFileName = nativeFileUploadKey
 				settings.MappedFields = Me.GetMappedFields(_artifactTypeID)
 				settings.KeyFieldArtifactID = _keyFieldID
-        Select Case _overwrite.ToLower
-          Case "strict"
-            settings.Overlay = EDDS.WebAPI.BulkImportManagerBase.OverwriteType.Overlay
-          Case "none"
-            settings.Overlay = EDDS.WebAPI.BulkImportManagerBase.OverwriteType.Append
-          Case Else
-            settings.Overlay = EDDS.WebAPI.BulkImportManagerBase.OverwriteType.Both
-        End Select
-        settings.UploadFiles = _filePathColumnIndex <> -1 AndAlso _settings.LoadNativeFiles
-        _runID = _bulkImportManager.BulkImportNative(_caseInfo.ArtifactID, settings).ToString
-      Else
-        Dim settings As New kCura.EDDS.WebAPI.BulkImportManagerBase.ObjectLoadInfo
-        settings.UseBulkDataImport = True
-        settings.ArtifactTypeID = Me._artifactTypeID
-        Dim nativeFileUploadKey As String = _bcpuploader.UploadBcpFile(_caseInfo.ArtifactID, _outputNativeFilePath)
-        Dim codeFileUploadKey As String = _bcpuploader.UploadBcpFile(_caseInfo.ArtifactID, _outputCodeFilePath)
-        settings.Repository = _caseInfo.DocumentPath
-        If nativeFileUploadKey = "" Then
-          _uploader.DestinationFolderPath = settings.Repository
-          _bcpuploader.DestinationFolderPath = settings.Repository
-          nativeFileUploadKey = _bcpuploader.UploadFile(_outputNativeFilePath, _caseInfo.ArtifactID)
-          codeFileUploadKey = _bcpuploader.UploadFile(_outputCodeFilePath, _caseInfo.ArtifactID)
-          settings.UseBulkDataImport = False
-        End If
-        settings.RunID = _runID
-        settings.CodeFileName = codeFileUploadKey
-        settings.DataFileName = nativeFileUploadKey
-        settings.MappedFields = Me.GetMappedFields(_artifactTypeID)
+				Select Case _overwrite.ToLower
+					Case "strict"
+						settings.Overlay = EDDS.WebAPI.BulkImportManagerBase.OverwriteType.Overlay
+					Case "none"
+						settings.Overlay = EDDS.WebAPI.BulkImportManagerBase.OverwriteType.Append
+					Case Else
+						settings.Overlay = EDDS.WebAPI.BulkImportManagerBase.OverwriteType.Both
+				End Select
+				settings.UploadFiles = _filePathColumnIndex <> -1 AndAlso _settings.LoadNativeFiles
+				_runID = _bulkImportManager.BulkImportNative(_caseInfo.ArtifactID, settings).ToString
+			Else
+				Dim settings As New kCura.EDDS.WebAPI.BulkImportManagerBase.ObjectLoadInfo
+				settings.UseBulkDataImport = True
+				settings.ArtifactTypeID = Me._artifactTypeID
+				Dim nativeFileUploadKey As String = _bcpuploader.UploadBcpFile(_caseInfo.ArtifactID, _outputNativeFilePath)
+				Dim codeFileUploadKey As String = _bcpuploader.UploadBcpFile(_caseInfo.ArtifactID, _outputCodeFilePath)
+				settings.Repository = _caseInfo.DocumentPath
+				If nativeFileUploadKey = "" Then
+					_uploader.DestinationFolderPath = settings.Repository
+					_bcpuploader.DestinationFolderPath = settings.Repository
+					nativeFileUploadKey = _bcpuploader.UploadFile(_outputNativeFilePath, _caseInfo.ArtifactID)
+					codeFileUploadKey = _bcpuploader.UploadFile(_outputCodeFilePath, _caseInfo.ArtifactID)
+					settings.UseBulkDataImport = False
+				End If
+				settings.RunID = _runID
+				settings.CodeFileName = codeFileUploadKey
+				settings.DataFileName = nativeFileUploadKey
+				settings.MappedFields = Me.GetMappedFields(_artifactTypeID)
 				settings.KeyFieldArtifactID = _keyFieldID
 				Select Case _overwrite.ToLower
 					Case "strict"
@@ -521,36 +526,29 @@ Namespace kCura.WinEDDS
 				End Select
 				settings.UploadFiles = _filePathColumnIndex <> -1 AndAlso _settings.LoadNativeFiles
 				_runID = _bulkImportManager.BulkImportObjects(_caseInfo.ArtifactID, settings).ToString
-      End If
+			End If
 
-      Try
-        If System.IO.File.Exists(_outputNativeFilePath) Then System.IO.File.Delete(_outputNativeFilePath)
-      Catch ex As Exception
-        If System.IO.File.Exists(_outputNativeFilePath) Then System.IO.File.Delete(_outputNativeFilePath)
-      End Try
-      Try
-        If System.IO.File.Exists(_outputCodeFilePath) Then System.IO.File.Delete(_outputCodeFilePath)
-      Catch ex As Exception
-        If System.IO.File.Exists(_outputCodeFilePath) Then System.IO.File.Delete(_outputCodeFilePath)
-      End Try
-      If Not lastRun Then
-        _outputNativeFileWriter = New System.IO.StreamWriter(_outputNativeFilePath, False, System.Text.Encoding.Unicode)
-        _outputCodeFileWriter = New System.IO.StreamWriter(_outputCodeFilePath, False, System.Text.Encoding.Unicode)
-      End If
-      Me.ManageErrors(_artifactTypeID)
+			kCura.Utility.File.Delete(_outputNativeFilePath)
+			kCura.Utility.File.Delete(_outputCodeFilePath)
+			If Not lastRun Then
+				_outputNativeFileWriter = New System.IO.StreamWriter(_outputNativeFilePath, False, System.Text.Encoding.Unicode)
+				_outputCodeFileWriter = New System.IO.StreamWriter(_outputCodeFilePath, False, System.Text.Encoding.Unicode)
+			End If
+			Me.ManageErrors(_artifactTypeID)
+			_timekeeper.MarkEnd("PushNativeBatch")
 		End Function
 
-    Private Function GetMappedFields(ByVal artifactTypeID As Int32) As kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo()
-      Dim retval As New System.Collections.ArrayList
-      For Each item As WinEDDS.LoadFileFieldMap.LoadFileFieldMapItem In _fieldMap
-        If Not item.DocumentField Is Nothing Then
-          retval.Add(item.DocumentField.ToFileInfo)
-        End If
-      Next
-      retval.Sort(New WebServiceFieldInfoNameComparer)
-      If artifactTypeID = 10 Then
-        retval.Add(Me.GetIsSupportedRelativityFileTypeField)
-        retval.Add(Me.GetRelativityFileTypeField)
+		Private Function GetMappedFields(ByVal artifactTypeID As Int32) As kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo()
+			Dim retval As New System.Collections.ArrayList
+			For Each item As WinEDDS.LoadFileFieldMap.LoadFileFieldMapItem In _fieldMap
+				If Not item.DocumentField Is Nothing Then
+					retval.Add(item.DocumentField.ToFileInfo)
+				End If
+			Next
+			retval.Sort(New WebServiceFieldInfoNameComparer)
+			If artifactTypeID = 10 Then
+				retval.Add(Me.GetIsSupportedRelativityFileTypeField)
+				retval.Add(Me.GetRelativityFileTypeField)
 				retval.Add(Me.GetHasNativesField)
 			Else
 				'If (_filePathColumnIndex <> -1) AndAlso _uploadFiles Then
@@ -558,43 +556,43 @@ Namespace kCura.WinEDDS
 				'End If
 			End If
 			Return DirectCast(retval.ToArray(GetType(kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo)), kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo())
-    End Function
+		End Function
 
-    Private Function ManageDocumentLine(ByVal mdoc As MetaDocument, ByVal extractText As Boolean) As Int32
-      Return ManageDocumentLine(mdoc.FieldCollection, mdoc.IdentityValue, mdoc.FileGuid <> String.Empty AndAlso extractText, mdoc.Filename, mdoc.FileGuid, mdoc)
-    End Function
+		Private Function ManageDocumentLine(ByVal mdoc As MetaDocument, ByVal extractText As Boolean) As Int32
+			Return ManageDocumentLine(mdoc.FieldCollection, mdoc.IdentityValue, mdoc.FileGuid <> String.Empty AndAlso extractText, mdoc.Filename, mdoc.FileGuid, mdoc)
+		End Function
 
-    Private Function ManageDocumentLine(ByVal fieldCollection As DocumentFieldCollection, ByVal identityValue As String, ByVal extractText As Boolean, ByVal filename As String, ByVal fileguid As String, ByVal mdoc As MetaDocument) As Int32
-      '[kCura_Import_Status] INT NOT NULL,
-      '[kCura_Import_IsNew] BIT NOT NULL,
-      '[ArtifactID] INT NOT NULL,
-      '[kCura_Import_OriginalLineNumber] INT NOT NULL,
-      '[kCura_Import_FileGuid] NVARCHAR(100) NOT NULL,
-      '[kCura_Import_Filename] NVARCHAR(200) NOT NULL,
-      '[kCura_Import_Location] NVARCHAR(2000),
-      '[kCura_Import_OriginalFileLocation] NVARCHAR(2000){1}
-      '[kCura_Import_ParentFolderID] INT NOT NULL,
-      _outputNativeFileWriter.Write(mdoc.LineStatus.ToString & Constants.NATIVE_FIELD_DELIMITER)
-      _outputNativeFileWriter.Write("0" & Constants.NATIVE_FIELD_DELIMITER)
-      _outputNativeFileWriter.Write("0" & Constants.NATIVE_FIELD_DELIMITER)
-      _outputNativeFileWriter.Write(mdoc.LineNumber & Constants.NATIVE_FIELD_DELIMITER)
-      If mdoc.UploadFile And mdoc.IndexFileInDB Then
-        _outputNativeFileWriter.Write(fileguid & Constants.NATIVE_FIELD_DELIMITER)
-        _outputNativeFileWriter.Write(filename & Constants.NATIVE_FIELD_DELIMITER)
-        If _settings.CopyFilesToDocumentRepository Then
+		Private Function ManageDocumentLine(ByVal fieldCollection As DocumentFieldCollection, ByVal identityValue As String, ByVal extractText As Boolean, ByVal filename As String, ByVal fileguid As String, ByVal mdoc As MetaDocument) As Int32
+			'[kCura_Import_Status] INT NOT NULL,
+			'[kCura_Import_IsNew] BIT NOT NULL,
+			'[ArtifactID] INT NOT NULL,
+			'[kCura_Import_OriginalLineNumber] INT NOT NULL,
+			'[kCura_Import_FileGuid] NVARCHAR(100) NOT NULL,
+			'[kCura_Import_Filename] NVARCHAR(200) NOT NULL,
+			'[kCura_Import_Location] NVARCHAR(2000),
+			'[kCura_Import_OriginalFileLocation] NVARCHAR(2000){1}
+			'[kCura_Import_ParentFolderID] INT NOT NULL,
+			_outputNativeFileWriter.Write(mdoc.LineStatus.ToString & Constants.NATIVE_FIELD_DELIMITER)
+			_outputNativeFileWriter.Write("0" & Constants.NATIVE_FIELD_DELIMITER)
+			_outputNativeFileWriter.Write("0" & Constants.NATIVE_FIELD_DELIMITER)
+			_outputNativeFileWriter.Write(mdoc.LineNumber & Constants.NATIVE_FIELD_DELIMITER)
+			If mdoc.UploadFile And mdoc.IndexFileInDB Then
+				_outputNativeFileWriter.Write(fileguid & Constants.NATIVE_FIELD_DELIMITER)
+				_outputNativeFileWriter.Write(filename & Constants.NATIVE_FIELD_DELIMITER)
+				If _settings.CopyFilesToDocumentRepository Then
 					_outputNativeFileWriter.Write(_defaultDestinationFolderPath & mdoc.DestinationVolume & "\" & fileguid & Constants.NATIVE_FIELD_DELIMITER)
-          _outputNativeFileWriter.Write(mdoc.FullFilePath & Constants.NATIVE_FIELD_DELIMITER)
-        Else
-          _outputNativeFileWriter.Write(mdoc.FullFilePath & Constants.NATIVE_FIELD_DELIMITER)
-          _outputNativeFileWriter.Write(mdoc.FullFilePath & Constants.NATIVE_FIELD_DELIMITER)
-        End If
-        _outputNativeFileWriter.Write(New System.IO.FileInfo(mdoc.FullFilePath).Length & Constants.NATIVE_FIELD_DELIMITER)
-      Else
-        _outputNativeFileWriter.Write(Constants.NATIVE_FIELD_DELIMITER)
-        _outputNativeFileWriter.Write(Constants.NATIVE_FIELD_DELIMITER)
-        _outputNativeFileWriter.Write(Constants.NATIVE_FIELD_DELIMITER)
-        _outputNativeFileWriter.Write(Constants.NATIVE_FIELD_DELIMITER)
-        _outputNativeFileWriter.Write("0" & Constants.NATIVE_FIELD_DELIMITER)
+					_outputNativeFileWriter.Write(mdoc.FullFilePath & Constants.NATIVE_FIELD_DELIMITER)
+				Else
+					_outputNativeFileWriter.Write(mdoc.FullFilePath & Constants.NATIVE_FIELD_DELIMITER)
+					_outputNativeFileWriter.Write(mdoc.FullFilePath & Constants.NATIVE_FIELD_DELIMITER)
+				End If
+				_outputNativeFileWriter.Write(New System.IO.FileInfo(mdoc.FullFilePath).Length & Constants.NATIVE_FIELD_DELIMITER)
+			Else
+				_outputNativeFileWriter.Write(Constants.NATIVE_FIELD_DELIMITER)
+				_outputNativeFileWriter.Write(Constants.NATIVE_FIELD_DELIMITER)
+				_outputNativeFileWriter.Write(Constants.NATIVE_FIELD_DELIMITER)
+				_outputNativeFileWriter.Write(Constants.NATIVE_FIELD_DELIMITER)
+				_outputNativeFileWriter.Write("0" & Constants.NATIVE_FIELD_DELIMITER)
 			End If
 			_outputNativeFileWriter.Write(mdoc.ParentFolderID & Constants.NATIVE_FIELD_DELIMITER)
 			For Each docField As DocumentField In fieldCollection.AllFields
@@ -662,62 +660,62 @@ Namespace kCura.WinEDDS
 				End If
 			End If
 			_outputNativeFileWriter.Write(vbNewLine)
-    End Function
+		End Function
 
-    Private Function GetIsSupportedRelativityFileTypeField() As kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo
-      For Each field As kCura.EDDS.WebAPI.DocumentManagerBase.Field In _allFields
-        If field.DisplayName.ToLower = "supported by viewer" Then
-          Return Me.FieldDtoToFieldInfo(field)
-        End If
-      Next
-    End Function
+		Private Function GetIsSupportedRelativityFileTypeField() As kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo
+			For Each field As kCura.EDDS.WebAPI.DocumentManagerBase.Field In _allFields
+				If field.DisplayName.ToLower = "supported by viewer" Then
+					Return Me.FieldDtoToFieldInfo(field)
+				End If
+			Next
+		End Function
 
-    Private Function GetRelativityFileTypeField() As kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo
-      For Each field As kCura.EDDS.WebAPI.DocumentManagerBase.Field In _allFields
-        If field.DisplayName.ToLower = "relativity native type" Then
-          Return Me.FieldDtoToFieldInfo(field)
-        End If
-      Next
-    End Function
+		Private Function GetRelativityFileTypeField() As kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo
+			For Each field As kCura.EDDS.WebAPI.DocumentManagerBase.Field In _allFields
+				If field.DisplayName.ToLower = "relativity native type" Then
+					Return Me.FieldDtoToFieldInfo(field)
+				End If
+			Next
+		End Function
 
-    Private Function GetHasNativesField() As kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo
-      For Each field As kCura.EDDS.WebAPI.DocumentManagerBase.Field In _allFields
-        If field.DisplayName.ToLower = "has native" Then
-          Return Me.FieldDtoToFieldInfo(field)
-        End If
-      Next
-    End Function
+		Private Function GetHasNativesField() As kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo
+			For Each field As kCura.EDDS.WebAPI.DocumentManagerBase.Field In _allFields
+				If field.DisplayName.ToLower = "has native" Then
+					Return Me.FieldDtoToFieldInfo(field)
+				End If
+			Next
+		End Function
 
-    Private Function GetObjectFileField() As kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo
-      For Each field As kCura.EDDS.WebAPI.DocumentManagerBase.Field In _allFields
-        If field.FieldTypeID = kCura.DynamicFields.Types.FieldTypeHelper.FieldType.File Then
-          Return Me.FieldDtoToFieldInfo(field)
-        End If
-      Next
-    End Function
+		Private Function GetObjectFileField() As kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo
+			For Each field As kCura.EDDS.WebAPI.DocumentManagerBase.Field In _allFields
+				If field.FieldTypeID = kCura.DynamicFields.Types.FieldTypeHelper.FieldType.File Then
+					Return Me.FieldDtoToFieldInfo(field)
+				End If
+			Next
+		End Function
 
-    Private Function FieldDtoToFieldInfo(ByVal input As kCura.EDDS.WebAPI.DocumentManagerBase.Field) As kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo
-      Dim retval As New kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo
-      retval.ArtifactID = input.ArtifactID
-      retval.Category = CType(input.FieldCategoryID, kCura.EDDS.WebAPI.BulkImportManagerBase.FieldCategory)
-      If Not input.CodeTypeID.IsNull Then retval.CodeTypeID = input.CodeTypeID.Value
-      retval.DisplayName = input.DisplayName
-      If Not input.MaxLength.IsNull Then retval.TextLength = input.MaxLength.Value
-      retval.IsUnicodeEnabled = input.UseUnicodeEncoding
-      retval.Type = CType(input.FieldTypeID, kCura.EDDS.WebAPI.BulkImportManagerBase.FieldType)
-      Return retval
-    End Function
+		Private Function FieldDtoToFieldInfo(ByVal input As kCura.EDDS.WebAPI.DocumentManagerBase.Field) As kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo
+			Dim retval As New kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo
+			retval.ArtifactID = input.ArtifactID
+			retval.Category = CType(input.FieldCategoryID, kCura.EDDS.WebAPI.BulkImportManagerBase.FieldCategory)
+			If Not input.CodeTypeID.IsNull Then retval.CodeTypeID = input.CodeTypeID.Value
+			retval.DisplayName = input.DisplayName
+			If Not input.MaxLength.IsNull Then retval.TextLength = input.MaxLength.Value
+			retval.IsUnicodeEnabled = input.UseUnicodeEncoding
+			retval.Type = CType(input.FieldTypeID, kCura.EDDS.WebAPI.BulkImportManagerBase.FieldType)
+			Return retval
+		End Function
 
-    Private Function IsSupportedRelativityFileType(ByVal fileData As OI.FileID.FileIDData) As Boolean
-      If fileData Is Nothing Then Return False
-      If _oixFileLookup Is Nothing Then
-        _oixFileLookup = New System.Collections.Specialized.HybridDictionary
-        For Each id As Int32 In _documentManager.RetrieveAllUnsupportedOiFileIds
-          _oixFileLookup.Add(id, id)
-        Next
-      End If
-      Return Not _oixFileLookup.Contains(fileData.FileID)
-    End Function
+		Private Function IsSupportedRelativityFileType(ByVal fileData As OI.FileID.FileIDData) As Boolean
+			If fileData Is Nothing Then Return False
+			If _oixFileLookup Is Nothing Then
+				_oixFileLookup = New System.Collections.Specialized.HybridDictionary
+				For Each id As Int32 In _documentManager.RetrieveAllUnsupportedOiFileIds
+					_oixFileLookup.Add(id, id)
+				Next
+			End If
+			Return Not _oixFileLookup.Contains(fileData.FileID)
+		End Function
 
 #End Region
 
@@ -747,36 +745,36 @@ Namespace kCura.WinEDDS
 					End If
 				End If
 			Next
-      For Each item In _fieldmap
-        If _firstTimeThrough Then
-          If item.DocumentField Is Nothing Then
-            WriteStatusLine(Windows.Process.EventType.Warning, String.Format("File column '{0}' will be unmapped", item.NativeFileColumnIndex + 1), 0)
-          End If
-          If item.NativeFileColumnIndex = -1 Then
-            WriteStatusLine(Windows.Process.EventType.Warning, String.Format("Field '{0}' will be unmapped", item.DocumentField.FieldName), 0)
-          End If
-        End If
-        If Not item.DocumentField Is Nothing Then
-          docfield = New DocumentField(item.DocumentField)
-          If item.DocumentField.FieldTypeID = kCura.DynamicFields.Types.FieldTypeHelper.FieldType.File AndAlso values(item.NativeFileColumnIndex) <> "" AndAlso item.NativeFileColumnIndex <> -1 Then
-            Dim localFilePath As String = values(item.NativeFileColumnIndex)
-            Dim fileSize As Int64
-            If System.IO.File.Exists(localFilePath) Then
-              fileSize = New System.IO.FileInfo(localFilePath).Length
-              Dim fileName As String = System.IO.Path.GetFileName(localFilePath).Replace(ChrW(11), "_")
-              Dim location As String
-              If _uploader.DestinationFolderPath = "" Then
-                location = localFilePath
+			For Each item In _fieldmap
+				If _firstTimeThrough Then
+					If item.DocumentField Is Nothing Then
+						WriteStatusLine(Windows.Process.EventType.Warning, String.Format("File column '{0}' will be unmapped", item.NativeFileColumnIndex + 1), 0)
+					End If
+					If item.NativeFileColumnIndex = -1 Then
+						WriteStatusLine(Windows.Process.EventType.Warning, String.Format("Field '{0}' will be unmapped", item.DocumentField.FieldName), 0)
+					End If
+				End If
+				If Not item.DocumentField Is Nothing Then
+					docfield = New DocumentField(item.DocumentField)
+					If item.DocumentField.FieldTypeID = kCura.DynamicFields.Types.FieldTypeHelper.FieldType.File AndAlso values(item.NativeFileColumnIndex) <> "" AndAlso item.NativeFileColumnIndex <> -1 Then
+						Dim localFilePath As String = values(item.NativeFileColumnIndex)
+						Dim fileSize As Int64
+						If System.IO.File.Exists(localFilePath) Then
+							fileSize = New System.IO.FileInfo(localFilePath).Length
+							Dim fileName As String = System.IO.Path.GetFileName(localFilePath).Replace(ChrW(11), "_")
+							Dim location As String
+							If _uploader.DestinationFolderPath = "" Then
+								location = localFilePath
 							Else
 								Dim guid As String = _uploader.UploadFile(localFilePath, _caseArtifactID)
 								location = _uploader.DestinationFolderPath & _uploader.CurrentDestinationDirectory & "\" & guid
 							End If
 							location = System.Web.HttpUtility.UrlEncode(location)
 							docfield.Value = String.Format("{1}{0}{2}{0}{3}", ChrW(11), fileName, fileSize, location)
-            Else
-              Throw New System.IO.FileNotFoundException(String.Format("File '{0}' not found.", localFilePath))
-            End If
-          Else
+						Else
+							Throw New System.IO.FileNotFoundException(String.Format("File '{0}' not found.", localFilePath))
+						End If
+					Else
 						MyBase.SetFieldValue(docfield, values, item.NativeFileColumnIndex, identityValue)
 					End If
 					If docfield.FieldName = _selectedIdentifier.FieldName Then
@@ -784,14 +782,14 @@ Namespace kCura.WinEDDS
 					End If
 					fieldCollection.Add(docfield)
 				End If
-      Next
-      If Not fieldCollection.GroupIdentifier Is Nothing AndAlso fieldCollection.GroupIdentifier.Value = "" Then
-        fieldCollection.GroupIdentifier.Value = identityValue
-      End If
-      _firstTimeThrough = False
-      Return identityValue
-      System.Threading.Monitor.Exit(_outputNativeFileWriter)
-      System.Threading.Monitor.Exit(_outputCodeFileWriter)
+			Next
+			If Not fieldCollection.GroupIdentifier Is Nothing AndAlso fieldCollection.GroupIdentifier.Value = "" Then
+				fieldCollection.GroupIdentifier.Value = identityValue
+			End If
+			_firstTimeThrough = False
+			Return identityValue
+			System.Threading.Monitor.Exit(_outputNativeFileWriter)
+			System.Threading.Monitor.Exit(_outputCodeFileWriter)
 		End Function
 
 #End Region
@@ -1194,61 +1192,61 @@ Namespace kCura.WinEDDS
 
 #End Region
 
-    Private Sub ManageErrors(ByVal artifactTypeID As Int32)
-      If Not _bulkImportManager.NativeRunHasErrors(_caseInfo.ArtifactID, _runID) Then Exit Sub
-      Dim sr As kCura.Utility.GenericCsvReader
-      Try
-        With _bulkImportManager.GenerateNativeErrorFiles(_caseInfo.ArtifactID, _runID, artifactTypeID, True)
-          Me.WriteStatusLine(Windows.Process.EventType.Status, "Retrieving errors from server")
-          Dim downloader As New FileDownloader(DirectCast(_bulkImportManager.Credentials, System.Net.NetworkCredential), _caseInfo.DocumentPath, _caseInfo.DownloadHandlerURL, _bulkImportManager.CookieContainer, kCura.WinEDDS.Service.Settings.AuthenticationToken)
-          Dim errorsLocation As String = System.IO.Path.GetTempFileName
-          downloader.MoveTempFileToLocal(errorsLocation, .LogKey, _caseInfo)
-          sr = New kCura.Utility.GenericCsvReader(errorsLocation)
-          Dim line As String() = sr.ReadLine
-          While Not line Is Nothing
-            _errorCount += 1
-            Dim ht As New System.Collections.Hashtable
-            ht.Add("Message", line(1))
-            ht.Add("Identifier", line(2))
-            ht.Add("Line Number", Int32.Parse(line(0)))
-            RaiseReportError(ht, Int32.Parse(line(0)), line(2), "server")
-            RaiseEvent StatusMessage(New kCura.Windows.Process.StatusEventArgs(Windows.Process.EventType.Error, Int32.Parse(line(0)) - 1, _recordCount, "[Line " & line(0) & "]" & line(1)))
-            line = sr.ReadLine
-          End While
-        End With
-      Catch ex As Exception
-        Try
-          sr.Close()
-        Catch
-        End Try
-        Throw
-      End Try
-    End Sub
+		Private Sub ManageErrors(ByVal artifactTypeID As Int32)
+			If Not _bulkImportManager.NativeRunHasErrors(_caseInfo.ArtifactID, _runID) Then Exit Sub
+			Dim sr As kCura.Utility.GenericCsvReader
+			Try
+				With _bulkImportManager.GenerateNativeErrorFiles(_caseInfo.ArtifactID, _runID, artifactTypeID, True)
+					Me.WriteStatusLine(Windows.Process.EventType.Status, "Retrieving errors from server")
+					Dim downloader As New FileDownloader(DirectCast(_bulkImportManager.Credentials, System.Net.NetworkCredential), _caseInfo.DocumentPath, _caseInfo.DownloadHandlerURL, _bulkImportManager.CookieContainer, kCura.WinEDDS.Service.Settings.AuthenticationToken)
+					Dim errorsLocation As String = System.IO.Path.GetTempFileName
+					downloader.MoveTempFileToLocal(errorsLocation, .LogKey, _caseInfo)
+					sr = New kCura.Utility.GenericCsvReader(errorsLocation)
+					Dim line As String() = sr.ReadLine
+					While Not line Is Nothing
+						_errorCount += 1
+						Dim ht As New System.Collections.Hashtable
+						ht.Add("Message", line(1))
+						ht.Add("Identifier", line(2))
+						ht.Add("Line Number", Int32.Parse(line(0)))
+						RaiseReportError(ht, Int32.Parse(line(0)), line(2), "server")
+						RaiseEvent StatusMessage(New kCura.Windows.Process.StatusEventArgs(Windows.Process.EventType.Error, Int32.Parse(line(0)) - 1, _recordCount, "[Line " & line(0) & "]" & line(1)))
+						line = sr.ReadLine
+					End While
+				End With
+			Catch ex As Exception
+				Try
+					sr.Close()
+				Catch
+				End Try
+				Throw
+			End Try
+		End Sub
 
-    Private Sub _processController_ParentFormClosingEvent(ByVal processID As Guid) Handles _processController.ParentFormClosingEvent
-      If processID.ToString = _processID.ToString Then CleanupTempTables()
-    End Sub
+		Private Sub _processController_ParentFormClosingEvent(ByVal processID As Guid) Handles _processController.ParentFormClosingEvent
+			If processID.ToString = _processID.ToString Then CleanupTempTables()
+		End Sub
 
-    Private Sub CleanupTempTables()
-      If Not _runID Is Nothing AndAlso _runID <> "" Then
-        Try
-          _bulkImportManager.DisposeTempTables(_caseInfo.ArtifactID, _runID)
-        Catch
-        End Try
-      End If
-    End Sub
+		Private Sub CleanupTempTables()
+			If Not _runID Is Nothing AndAlso _runID <> "" Then
+				Try
+					_bulkImportManager.DisposeTempTables(_caseInfo.ArtifactID, _runID)
+				Catch
+				End Try
+			End If
+		End Sub
 
-    Public Class Settings
-      Public Const MAX_STRING_FIELD_LENGTH As Int32 = 1048576   '2^20 = 1 meg * 2 B/char binary = 2 meg max
-    End Class
+		Public Class Settings
+			Public Const MAX_STRING_FIELD_LENGTH As Int32 = 1048576			'2^20 = 1 meg * 2 B/char binary = 2 meg max
+		End Class
 
-    Protected Overrides ReadOnly Property UseTimeZoneOffset() As Boolean
-      Get
-        Return True
-      End Get
-    End Property
+		Protected Overrides ReadOnly Property UseTimeZoneOffset() As Boolean
+			Get
+				Return True
+			End Get
+		End Property
 
-  End Class
+	End Class
 
 	Public Class WebServiceFieldInfoNameComparer
 		Implements IComparer
