@@ -8,7 +8,6 @@ Namespace kCura.EDDS.WinForm
 		Private _hasReceivedLineWarning As Boolean = False
 		Private _exportErrorReportLocation As String = ""
 		Private _exportErrorFileLocation As String = ""
-		Private _outputType As kCura.EDDS.WinForm.OutputType
 
 		Public Enum ParsableLineType
 			Status
@@ -17,10 +16,9 @@ Namespace kCura.EDDS.WinForm
 			FatalError
 		End Enum
 
-		Public Sub New(ByVal observer As kCura.Windows.Process.ProcessObserver, ByVal controller As kCura.Windows.Process.Controller, ByVal exportErrorFileLocation As String, ByVal exportErrorReportLocation As String, ByVal OutputType As kCura.EDDS.WinForm.OutputType)
+		Public Sub New(ByVal observer As kCura.Windows.Process.ProcessObserver, ByVal controller As kCura.Windows.Process.Controller, ByVal exportErrorFileLocation As String, ByVal exportErrorReportLocation As String)
 			_observer = observer
 			_controller = controller
-			_outputType = OutputType
 			If Not exportErrorFileLocation Is Nothing Then _exportErrorFileLocation = exportErrorFileLocation
 			If Not exportErrorReportLocation Is Nothing Then _exportErrorReportLocation = exportErrorReportLocation
 		End Sub
@@ -30,18 +28,10 @@ Namespace kCura.EDDS.WinForm
 				Case kCura.Windows.Process.ProcessEventTypeEnum.Status
 					WriteLine(evt.Message + " " + evt.RecordInfo, ParsableLineType.Status)
 				Case kCura.Windows.Process.ProcessEventTypeEnum.Error
-					If _outputType = Startup.OutputType.Normal Then
-						WriteLine("[Line Error] " & evt.Message, ParsableLineType.LineError)
-					Else
-						WriteLine(evt.Message, ParsableLineType.LineError)
-					End If
+					WriteLine(evt.Message, ParsableLineType.LineError)
 					_hasReceivedLineError = True
 				Case kCura.Windows.Process.ProcessEventTypeEnum.Warning
-					If _outputType = Startup.OutputType.Normal Then
-						WriteLine("[Line Warning] " & evt.Message, ParsableLineType.Warning)
-					Else
-						WriteLine(evt.Message, ParsableLineType.Warning)
-					End If
+					WriteLine(evt.Message, ParsableLineType.Warning)
 					_hasReceivedLineWarning = True
 			End Select
 		End Sub
@@ -63,11 +53,9 @@ Namespace kCura.EDDS.WinForm
 				Dim x As String = ""
 				If _hasReceivedLineWarning Then
 					x &= "Some records were processed with warnings"
-					If _outputType = Startup.OutputType.Normal Then x &= vbNewLine
 				End If
 				If _hasReceivedLineError Then
 					x &= "Some records were not processed due to errors"
-					If _outputType = Startup.OutputType.Normal Then x &= vbNewLine
 				End If
 				WriteLine(x, ParsableLineType.Status)
 			End If
@@ -105,26 +93,20 @@ Namespace kCura.EDDS.WinForm
 
 		Private Sub WriteLine(ByVal line As String, ByVal lineType As ParsableLineType)
 			Dim stringBuilder As New System.Text.StringBuilder
-			If _outputType = Startup.OutputType.Parsable Then
-				Dim lineTypeString As String
-				If lineType = ParsableLineType.Status Then
-					lineTypeString = "[Status]"
-				ElseIf lineType = ParsableLineType.Warning Then
-					lineTypeString = "[Warning]"
-				ElseIf lineType = ParsableLineType.LineError Then
-					lineTypeString = "[Error:Line]"
-				ElseIf lineType = ParsableLineType.FatalError Then
-					lineTypeString = "[Error:Fatal]"
-				End If
-				stringBuilder.Append("""").Append("[").Append(System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff").Replace("Z", "")).Append("]").Append(""",")
-				stringBuilder.Append("""").Append(lineTypeString).Append(""",").ToString()
-				stringBuilder.Append("""").Append(line.Replace("""", """""").Replace(vbNewLine, ChrW(10))).Append("""")
-				Console.WriteLine(stringBuilder.ToString)
-			Else
-				stringBuilder.Append("[").Append(System.DateTime.Now.ToString("u").Replace("Z", "")).Append("]").Append(vbTab)
-				Console.WriteLine(stringBuilder.ToString)
-				Console.WriteLine(line)
+			Dim lineTypeString As String
+			If lineType = ParsableLineType.Status Then
+				lineTypeString = "[Status]"
+			ElseIf lineType = ParsableLineType.Warning Then
+				lineTypeString = "[Warning]"
+			ElseIf lineType = ParsableLineType.LineError Then
+				lineTypeString = "[Error:Line]"
+			ElseIf lineType = ParsableLineType.FatalError Then
+				lineTypeString = "[Error:Fatal]"
 			End If
+			stringBuilder.Append("""").Append("[").Append(System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff").Replace("Z", "")).Append("]").Append(""",")
+			stringBuilder.Append("""").Append(lineTypeString).Append(""",").ToString()
+			stringBuilder.Append("""").Append(line.Replace("""", """""").Replace(vbNewLine, ChrW(10))).Append("""")
+			Console.WriteLine(stringBuilder.ToString)
 		End Sub
 
 	End Class

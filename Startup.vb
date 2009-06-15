@@ -35,7 +35,6 @@ Namespace kCura.EDDS.WinForm
 		Private ErrorLoadFileLocation As String = ""
 		Private ArtifactTypeID As Int32 = -1
 		Private StartLineNumber As Int64
-		Private CurrentOutputType As OutputType
 #End Region
 
 #Region " Enumerations "
@@ -44,11 +43,6 @@ Namespace kCura.EDDS.WinForm
 			Image
 			Native
 			DynamicObject
-		End Enum
-
-		Public Enum OutputType
-			Normal
-			Parsable
 		End Enum
 
 #End Region
@@ -142,7 +136,6 @@ Namespace kCura.EDDS.WinForm
 				SetCopyFilesToDocumentRepository(GetValueFromCommandListByFlag(commandList, "l"))
 				SetDestinationFolderID(GetValueFromCommandListByFlag(commandList, "d"))
 				SetStartLineNumber(GetValueFromCommandListByFlag(commandList, "s"))
-				SetOutputType(GetValueFromCommandListByFlag(commandList, "o"))
 				SetExportErrorReportLocation(commandList)
 				SetExportErrorFileLocation(commandList)
 				Select Case CurrentLoadMode
@@ -182,7 +175,7 @@ Namespace kCura.EDDS.WinForm
 			importer.LoadFile = SelectedNativeLoadFile
 			importer.TimeZoneOffset = _application.TimeZoneOffset
 			_application.SetWorkingDirectory(SelectedNativeLoadFile.FilePath)
-			Dim executor As New kCura.EDDS.WinForm.CommandLineProcessRunner(importer.ProcessObserver, importer.ProcessController, ErrorLoadFileLocation, ErrorReportFileLocation, CurrentOutputType)
+			Dim executor As New kCura.EDDS.WinForm.CommandLineProcessRunner(importer.ProcessObserver, importer.ProcessController, ErrorLoadFileLocation, ErrorReportFileLocation)
 			_application.StartProcess(importer)
 		End Sub
 
@@ -201,7 +194,7 @@ Namespace kCura.EDDS.WinForm
 				importer.TimeZoneOffset = _application.TimeZoneOffset
 				SelectedNativeLoadFile.ArtifactTypeID = 10
 				_application.SetWorkingDirectory(SelectedNativeLoadFile.FilePath)
-				Dim executor As New kCura.EDDS.WinForm.CommandLineProcessRunner(importer.ProcessObserver, importer.ProcessController, ErrorLoadFileLocation, ErrorReportFileLocation, CurrentOutputType)
+				Dim executor As New kCura.EDDS.WinForm.CommandLineProcessRunner(importer.ProcessObserver, importer.ProcessController, ErrorLoadFileLocation, ErrorReportFileLocation)
 				_application.StartProcess(importer)
 			End If
 		End Sub
@@ -217,7 +210,7 @@ Namespace kCura.EDDS.WinForm
 			SelectedImageLoadFile.StartLineNumber = StartLineNumber
 			importer.ImageLoadFile = SelectedImageLoadFile
 			_application.SetWorkingDirectory(SelectedImageLoadFile.FileName)
-			Dim executor As New kCura.EDDS.WinForm.CommandLineProcessRunner(importer.ProcessObserver, importer.ProcessController, ErrorLoadFileLocation, ErrorReportFileLocation, CurrentOutputType)
+			Dim executor As New kCura.EDDS.WinForm.CommandLineProcessRunner(importer.ProcessObserver, importer.ProcessController, ErrorLoadFileLocation, ErrorReportFileLocation)
 			_application.StartProcess(importer)
 		End Sub
 
@@ -455,17 +448,6 @@ Namespace kCura.EDDS.WinForm
 					Throw New StartLineNumberException(value)
 				End Try
 			End If
-		End Sub
-
-		Private Sub SetOutputType(ByVal outputType As String)
-			Select Case outputType.ToLower.Trim
-				Case "n", "normal"
-					CurrentOutputType = kCura.EDDS.WinForm.Startup.OutputType.Normal
-				Case "p", "parsable"
-					CurrentOutputType = kCura.EDDS.WinForm.Startup.OutputType.Parsable
-				Case Else
-					CurrentOutputType = kCura.EDDS.WinForm.Startup.OutputType.Normal
-			End Select
 		End Sub
 
 #End Region

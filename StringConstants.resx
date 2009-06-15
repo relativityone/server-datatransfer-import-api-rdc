@@ -93,9 +93,6 @@ The following arguments must be set and in the form specified;
 [-s or /s]:[start line number]
 	Sets the starting line number of the load file for the upload.  Defaults to 0.
 
-[-o or /o]:[output type - normal or parsable or n or o]
-	Specifies if output is normal or parsable.  Defaults to normal.
-
 [-ef or /ef]:[Error line file path]
 	Specifies the file path to dump the error line file from the import.  If no path is specified, then an error line file is created in the run directory, with an extension matching that of the load file.  If this option is not selected then no error line file is created.
 
