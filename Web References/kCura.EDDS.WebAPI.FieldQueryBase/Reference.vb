@@ -107,5 +107,23 @@ Namespace kCura.EDDS.WebAPI.FieldQueryBase
             Dim results() As Object = Me.EndInvoke(asyncResult)
             Return CType(results(0),System.Data.DataSet)
         End Function
+        
+        '<remarks/>
+        <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://foley.com/EDDS/FieldQuery/IsFieldIndexed", RequestNamespace:="http://foley.com/EDDS/FieldQuery", ResponseNamespace:="http://foley.com/EDDS/FieldQuery", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
+        Public Function IsFieldIndexed(ByVal caseContextArtifactID As Integer, ByVal fieldArtifactID As Integer) As Boolean
+            Dim results() As Object = Me.Invoke("IsFieldIndexed", New Object() {caseContextArtifactID, fieldArtifactID})
+            Return CType(results(0),Boolean)
+        End Function
+        
+        '<remarks/>
+        Public Function BeginIsFieldIndexed(ByVal caseContextArtifactID As Integer, ByVal fieldArtifactID As Integer, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("IsFieldIndexed", New Object() {caseContextArtifactID, fieldArtifactID}, callback, asyncState)
+        End Function
+        
+        '<remarks/>
+        Public Function EndIsFieldIndexed(ByVal asyncResult As System.IAsyncResult) As Boolean
+            Dim results() As Object = Me.EndInvoke(asyncResult)
+            Return CType(results(0),Boolean)
+        End Function
     End Class
 End Namespace

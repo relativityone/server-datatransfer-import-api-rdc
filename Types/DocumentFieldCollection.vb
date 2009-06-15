@@ -1,5 +1,6 @@
 Namespace kCura.WinEDDS
 	Public Class DocumentFieldCollection
+		Implements IEnumerable
 
 		Private _idIndex As System.Collections.Hashtable
 		Private _nameIndex As System.Collections.Hashtable
@@ -160,5 +161,9 @@ Namespace kCura.WinEDDS
 				Dim rhs As DocumentField = DirectCast(y, DocumentField)
 			End Function
 		End Class
+
+		Public Function GetEnumerator() As System.Collections.IEnumerator Implements System.Collections.IEnumerable.GetEnumerator
+			Return _idIndex.Values.GetEnumerator
+		End Function
 	End Class
 End Namespace

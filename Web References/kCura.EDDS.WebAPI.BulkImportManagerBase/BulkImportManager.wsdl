@@ -13,6 +13,7 @@
             <s:element minOccurs="0" maxOccurs="1" name="repository" type="s:string" />
             <s:element minOccurs="1" maxOccurs="1" name="useBulk" type="s:boolean" />
             <s:element minOccurs="0" maxOccurs="1" name="runID" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="keyFieldID" type="s:int" />
           </s:sequence>
         </s:complexType>
       </s:element>
@@ -59,6 +60,7 @@
             <s:element minOccurs="1" maxOccurs="1" name="appID" type="s:int" />
             <s:element minOccurs="0" maxOccurs="1" name="importKey" type="s:string" />
             <s:element minOccurs="1" maxOccurs="1" name="writeHeader" type="s:boolean" />
+            <s:element minOccurs="1" maxOccurs="1" name="keyFieldID" type="s:int" />
           </s:sequence>
         </s:complexType>
       </s:element>
@@ -108,6 +110,7 @@
           <s:element minOccurs="1" maxOccurs="1" name="UseBulkDataImport" type="s:boolean" />
           <s:element minOccurs="1" maxOccurs="1" name="UploadFiles" type="s:boolean" />
           <s:element minOccurs="0" maxOccurs="1" name="CodeFileName" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="KeyFieldArtifactID" type="s:int" />
         </s:sequence>
       </s:complexType>
       <s:complexType name="ArrayOfFieldInfo">

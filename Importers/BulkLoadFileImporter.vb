@@ -480,7 +480,8 @@ Namespace kCura.WinEDDS
         settings.RunID = _runID
         settings.CodeFileName = codeFileUploadKey
         settings.DataFileName = nativeFileUploadKey
-        settings.MappedFields = Me.GetMappedFields(_artifactTypeID)
+				settings.MappedFields = Me.GetMappedFields(_artifactTypeID)
+				settings.KeyFieldArtifactID = _keyFieldID
         Select Case _overwrite.ToLower
           Case "strict"
             settings.Overlay = EDDS.WebAPI.BulkImportManagerBase.OverwriteType.Overlay
@@ -509,16 +510,17 @@ Namespace kCura.WinEDDS
         settings.CodeFileName = codeFileUploadKey
         settings.DataFileName = nativeFileUploadKey
         settings.MappedFields = Me.GetMappedFields(_artifactTypeID)
-        Select Case _overwrite.ToLower
-          Case "strict"
-            settings.Overlay = EDDS.WebAPI.BulkImportManagerBase.OverwriteType.Overlay
-          Case "none"
-            settings.Overlay = EDDS.WebAPI.BulkImportManagerBase.OverwriteType.Append
-          Case Else
-            settings.Overlay = EDDS.WebAPI.BulkImportManagerBase.OverwriteType.Both
-        End Select
-        settings.UploadFiles = _filePathColumnIndex <> -1 AndAlso _settings.LoadNativeFiles
-        _runID = _bulkImportManager.BulkImportObjects(_caseInfo.ArtifactID, settings).ToString
+				settings.KeyFieldArtifactID = _keyFieldID
+				Select Case _overwrite.ToLower
+					Case "strict"
+						settings.Overlay = EDDS.WebAPI.BulkImportManagerBase.OverwriteType.Overlay
+					Case "none"
+						settings.Overlay = EDDS.WebAPI.BulkImportManagerBase.OverwriteType.Append
+					Case Else
+						settings.Overlay = EDDS.WebAPI.BulkImportManagerBase.OverwriteType.Both
+				End Select
+				settings.UploadFiles = _filePathColumnIndex <> -1 AndAlso _settings.LoadNativeFiles
+				_runID = _bulkImportManager.BulkImportObjects(_caseInfo.ArtifactID, settings).ToString
       End If
 
       Try
@@ -731,7 +733,20 @@ Namespace kCura.WinEDDS
 				If Not item.DocumentField Is Nothing AndAlso item.DocumentField.FieldCategory = DynamicFields.Types.FieldCategory.Identifier Then
 					identityValue = values(item.NativeFileColumnIndex)
 				End If
-      Next
+				If Not item.DocumentField Is Nothing Then
+					If _keyFieldID > 0 Then
+						If item.DocumentField.FieldID = _keyFieldID Then
+							identityValue = values(item.NativeFileColumnIndex)
+							Exit For
+						End If
+					Else
+						If item.DocumentField.FieldCategory = DynamicFields.Types.FieldCategory.Identifier Then
+							identityValue = values(item.NativeFileColumnIndex)
+							Exit For
+						End If
+					End If
+				End If
+			Next
       For Each item In _fieldmap
         If _firstTimeThrough Then
           If item.DocumentField Is Nothing Then

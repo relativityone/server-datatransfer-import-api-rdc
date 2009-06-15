@@ -73,6 +73,24 @@ Namespace kCura.EDDS.WebAPI.CaseManagerBase
         End Function
         
         '<remarks/>
+        <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/CaseManager/CreateCaseArtifact", RequestNamespace:="http://www.kCura.com/EDDS/CaseManager", ResponseNamespace:="http://www.kCura.com/EDDS/CaseManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
+        Public Function CreateCaseArtifact(ByVal caseInfo As ExtendedCaseInfo) As Integer
+            Dim results() As Object = Me.Invoke("CreateCaseArtifact", New Object() {caseInfo})
+            Return CType(results(0),Integer)
+        End Function
+        
+        '<remarks/>
+        Public Function BeginCreateCaseArtifact(ByVal caseInfo As ExtendedCaseInfo, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("CreateCaseArtifact", New Object() {caseInfo}, callback, asyncState)
+        End Function
+        
+        '<remarks/>
+        Public Function EndCreateCaseArtifact(ByVal asyncResult As System.IAsyncResult) As Integer
+            Dim results() As Object = Me.EndInvoke(asyncResult)
+            Return CType(results(0),Integer)
+        End Function
+        
+        '<remarks/>
         <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/CaseManager/Delete", RequestNamespace:="http://www.kCura.com/EDDS/CaseManager", ResponseNamespace:="http://www.kCura.com/EDDS/CaseManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
         Public Function Delete(ByVal caseContextArtifactID As Integer) As Boolean
             Dim results() As Object = Me.Invoke("Delete", New Object() {caseContextArtifactID})
@@ -107,6 +125,22 @@ Namespace kCura.EDDS.WebAPI.CaseManagerBase
             Dim results() As Object = Me.EndInvoke(asyncResult)
             Return CType(results(0),CaseInfo)
         End Function
+        
+        '<remarks/>
+        <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/CaseManager/UpdatePostRestore", RequestNamespace:="http://www.kCura.com/EDDS/CaseManager", ResponseNamespace:="http://www.kCura.com/EDDS/CaseManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
+        Public Sub UpdatePostRestore(ByVal caseInfo As ExtendedCaseInfo)
+            Me.Invoke("UpdatePostRestore", New Object() {caseInfo})
+        End Sub
+        
+        '<remarks/>
+        Public Function BeginUpdatePostRestore(ByVal caseInfo As ExtendedCaseInfo, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("UpdatePostRestore", New Object() {caseInfo}, callback, asyncState)
+        End Function
+        
+        '<remarks/>
+        Public Sub EndUpdatePostRestore(ByVal asyncResult As System.IAsyncResult)
+            Me.EndInvoke(asyncResult)
+        End Sub
         
         '<remarks/>
         <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/CaseManager/RetrieveCaseDownloadURI", RequestNamespace:="http://www.kCura.com/EDDS/CaseManager", ResponseNamespace:="http://www.kCura.com/EDDS/CaseManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
@@ -172,5 +206,40 @@ Namespace kCura.EDDS.WebAPI.CaseManagerBase
         
         '<remarks/>
         Public DocumentPath As String
+    End Class
+    
+    '<remarks/>
+    <System.Xml.Serialization.XmlTypeAttribute([Namespace]:="http://www.kCura.com/EDDS/CaseManager")>  _
+    Public Class ExtendedCaseInfo
+        
+        '<remarks/>
+        Public ArtifactID As Integer
+        
+        '<remarks/>
+        Public Name As String
+        
+        '<remarks/>
+        Public MatterArtifactID As Integer
+        
+        '<remarks/>
+        Public StatusCodeArtifactID As Integer
+        
+        '<remarks/>
+        Public DownloadHandlerApplicationPath As String
+        
+        '<remarks/>
+        Public DefaultFileLocationCodeArtifactID As Integer
+        
+        '<remarks/>
+        Public SqlFullTextLcid As Integer
+        
+        '<remarks/>
+        Public DBLocation As String
+        
+        '<remarks/>
+        Public RootArtifactID As Integer
+        
+        '<remarks/>
+        Public RootFolderID As Integer
     End Class
 End Namespace

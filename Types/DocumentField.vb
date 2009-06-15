@@ -108,7 +108,7 @@ Namespace kCura.WinEDDS
 		Public Function ToDisplayString() As String
 			Return String.Format("DocumentField[{0},{1},{2},{3},'{4}']", FieldCategoryID, FieldID, FieldName, FieldTypeID, kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(CodeTypeID))
 		End Function
-		Public Overloads Function ToString() As String
+		Public Overrides Function ToString() As String
 			Return FieldName
 		End Function
 		Public Function ToFileInfo() As kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo

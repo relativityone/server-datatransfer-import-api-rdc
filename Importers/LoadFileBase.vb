@@ -45,6 +45,7 @@ Namespace kCura.WinEDDS
 		Protected MustOverride ReadOnly Property UseTimeZoneOffset() As Boolean
 		Protected _previewCodeCount As New System.Collections.Specialized.HybridDictionary
 		Protected _startLineNumber As Int64
+		Protected _keyFieldID As Int32
 
 #End Region
 
@@ -98,7 +99,7 @@ Namespace kCura.WinEDDS
 			_bulkImportManager = New kCura.WinEDDS.Service.BulkImportManager(args.Credentials, args.CookieContainer)
 			_objectManager = New kCura.WinEDDS.Service.ObjectManager(args.Credentials, args.CookieContainer)
 			'_multiCodeManager = New kCura.WinEDDS.Service.MultiCodeManager(args.Credentials, args.CookieContainer)
-
+			_keyFieldID = args.IdentityFieldId
 			_multiValueSeparator = args.MultiRecordDelimiter.ToString.ToCharArray
 			_folderID = args.DestinationFolderID
 			_caseSystemID = args.CaseInfo.RootArtifactID
@@ -117,7 +118,19 @@ Namespace kCura.WinEDDS
 			_hierarchicalMultiValueFieldDelmiter = args.HierarchicalValueDelimiter
 			_previewCodeCount = args.PreviewCodeCount
 			_startLineNumber = args.StartLineNumber
+
 			MulticodeMatrix = New System.Collections.Hashtable
+			If _keyFieldID > 0 AndAlso args.OverwriteDestination.ToLower <> "strict" Then
+				_keyFieldID = -1
+			End If
+			If _keyFieldID = -1 Then
+				For Each field As DocumentField In _docFields
+					If field.FieldCategory = DynamicFields.Types.FieldCategory.Identifier Then
+						_keyFieldID = field.FieldID
+						Exit For
+					End If
+				Next
+			End If
 		End Sub
 
 #Region "Code Parsing"

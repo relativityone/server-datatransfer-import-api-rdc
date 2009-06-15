@@ -96,6 +96,11 @@ Namespace kCura.WinEDDS
 			If _productionArtifactID <> 0 Then
 				_productionDTO = _productionManager.Read(args.CaseInfo.ArtifactID, _productionArtifactID)
 				_keyFieldDto = New kCura.WinEDDS.Service.FieldManager(args.Credential, args.CookieContainer).Read(args.CaseInfo.ArtifactID, args.BeginBatesFieldArtifactID)
+			ElseIf args.IdentityFieldId <> -1 Then
+				_keyFieldDto = New kCura.WinEDDS.Service.FieldManager(args.Credential, args.CookieContainer).Read(args.CaseInfo.ArtifactID, args.IdentityFieldId)
+			Else
+				Dim fieldID As Int32 = _fieldQuery.RetrieveAllAsDocumentFieldCollection(args.CaseInfo.ArtifactID, kCura.EDDS.Types.Constants.ArtifactType.Document).IdentifierFields(0).FieldID
+				_keyFieldDto = New kCura.WinEDDS.Service.FieldManager(args.Credential, args.CookieContainer).Read(args.CaseInfo.ArtifactID, fieldID)
 			End If
 			_overwrite = args.Overwrite
 			_replaceFullText = args.ReplaceFullText
@@ -162,7 +167,7 @@ Namespace kCura.WinEDDS
 			End Select
 			If _uploadKey <> "" Then
 				If _productionArtifactID = 0 Then
-					_runId = _bulkImportManager.BulkImportImage(_caseInfo.ArtifactID, _uploadKey, _replaceFullText, overwrite, _folderID, _repositoryPath, True, _runId).ToString
+					_runId = _bulkImportManager.BulkImportImage(_caseInfo.ArtifactID, _uploadKey, _replaceFullText, overwrite, _folderID, _repositoryPath, True, _runId, _keyFieldDto.ArtifactID).ToString
 				Else
 					_runId = _bulkImportManager.BulkImportProductionImage(_caseInfo.ArtifactID, _uploadKey, _replaceFullText, overwrite, _folderID, _repositoryPath, _productionArtifactID, True, _runId, _keyFieldDto.ArtifactID).ToString()
 				End If
@@ -172,7 +177,7 @@ Namespace kCura.WinEDDS
 				_uploadKey = _bcpuploader.UploadFile(bulkLoadFilePath, _caseInfo.ArtifactID)
 				_bcpuploader.DestinationFolderPath = oldDestinationFolderPath
 				If _productionArtifactID = 0 Then
-					_runId = _bulkImportManager.BulkImportImage(_caseInfo.ArtifactID, _uploadKey, _replaceFullText, overwrite, _folderID, _caseInfo.DocumentPath, False, _runId).ToString
+					_runId = _bulkImportManager.BulkImportImage(_caseInfo.ArtifactID, _uploadKey, _replaceFullText, overwrite, _folderID, _caseInfo.DocumentPath, False, _runId, _keyFieldDto.ArtifactID).ToString
 				Else
 					_runId = _bulkImportManager.BulkImportProductionImage(_caseInfo.ArtifactID, _uploadKey, _replaceFullText, overwrite, _folderID, _caseInfo.DocumentPath, _productionArtifactID, False, _runId, _keyFieldDto.ArtifactID).ToString
 				End If
@@ -562,7 +567,7 @@ Namespace kCura.WinEDDS
 
 			Dim sr As kCura.Utility.GenericCsvReader
 			Try
-				With _bulkImportManager.GenerateImageErrorFiles(_caseInfo.ArtifactID, _runId, True)
+				With _bulkImportManager.GenerateImageErrorFiles(_caseInfo.ArtifactID, _runId, True, _keyFieldDto.ArtifactID)
 					Me.RaiseStatusEvent(Windows.Process.EventType.Status, "Retrieving errors from server", Me.CurrentLineNumber, Me.CurrentLineNumber)
 					Dim downloader As New FileDownloader(DirectCast(_bulkImportManager.Credentials, System.Net.NetworkCredential), _caseInfo.DocumentPath, _caseInfo.DownloadHandlerURL, _bulkImportManager.CookieContainer, kCura.WinEDDS.Service.Settings.AuthenticationToken)
 					Dim errorsLocation As String = System.IO.Path.GetTempFileName

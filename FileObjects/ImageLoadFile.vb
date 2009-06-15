@@ -15,7 +15,8 @@ Namespace kCura.WinEDDS
     Public BeginBatesFieldArtifactID As Int32
 		Public FullTextEncoding As System.Text.Encoding
 		Public StartLineNumber As Int64
-    <NonSerialized()> Public SelectedCasePath As String = ""
+		Public IdentityFieldId As Int32 = -1
+		<NonSerialized()> Public SelectedCasePath As String = ""
     <NonSerialized()> Public CaseDefaultPath As String = ""
     <NonSerialized()> Public CopyFilesToDocumentRepository As Boolean = True
     <NonSerialized()> Public Credential As Net.NetworkCredential
@@ -44,27 +45,33 @@ Namespace kCura.WinEDDS
       info.AddValue("BeginBatesFieldArtifactID", Me.BeginBatesFieldArtifactID, GetType(Integer))
 			info.AddValue("FullTextEncoding", Me.FullTextEncoding, GetType(System.Text.Encoding))
 			info.AddValue("StartLineNumber", Me.StartLineNumber, GetType(Int64))
-    End Sub
+			info.AddValue("IdentityFieldId", Me.IdentityFieldId, GetType(Int32))
+		End Sub
 
-    Private Sub New(ByVal info As System.Runtime.Serialization.SerializationInfo, ByVal Context As System.Runtime.Serialization.StreamingContext)
-      With info
-        Me.DestinationFolderID = info.GetInt32("DestinationFolderID")
-        Me.FileName = info.GetString("FileName")
-        Me.Overwrite = info.GetString("Overwrite")
-        Me.ControlKeyField = info.GetString("ControlKeyField")
-        Me.ReplaceFullText = info.GetBoolean("ReplaceFullText")
-        Me.ForProduction = info.GetBoolean("ForProduction")
-        Me.AutoNumberImages = info.GetBoolean("AutoNumberImages")
-        Me.ProductionTable = DirectCast(info.GetValue("ProductionTable", GetType(System.Data.DataTable)), System.Data.DataTable)
+		Private Sub New(ByVal info As System.Runtime.Serialization.SerializationInfo, ByVal Context As System.Runtime.Serialization.StreamingContext)
+			With info
+				Me.DestinationFolderID = info.GetInt32("DestinationFolderID")
+				Me.FileName = info.GetString("FileName")
+				Me.Overwrite = info.GetString("Overwrite")
+				Me.ControlKeyField = info.GetString("ControlKeyField")
+				Me.ReplaceFullText = info.GetBoolean("ReplaceFullText")
+				Me.ForProduction = info.GetBoolean("ForProduction")
+				Me.AutoNumberImages = info.GetBoolean("AutoNumberImages")
+				Me.ProductionTable = DirectCast(info.GetValue("ProductionTable", GetType(System.Data.DataTable)), System.Data.DataTable)
 				Me.BeginBatesFieldArtifactID = info.GetInt32("BeginBatesFieldArtifactID")
 				Me.StartLineNumber = info.GetInt64("StartLineNumber")
-        Try
-          Me.FullTextEncoding = DirectCast(info.GetValue("FullTextEncoding", GetType(System.Text.Encoding)), System.Text.Encoding)
-        Catch ex As Exception
-          Me.FullTextEncoding = System.Text.Encoding.Default
-        End Try
-      End With
-    End Sub
+				Try
+					Me.FullTextEncoding = DirectCast(info.GetValue("FullTextEncoding", GetType(System.Text.Encoding)), System.Text.Encoding)
+				Catch ex As Exception
+					Me.FullTextEncoding = System.Text.Encoding.Default
+				End Try
+				Try
+					Me.IdentityFieldId = info.GetInt32("IdentityFieldId")
+				Catch
+					Me.IdentityFieldId = -1
+				End Try
+			End With
+		End Sub
 
-  End Class
+	End Class
 End Namespace

@@ -27,6 +27,7 @@ Namespace kCura.WinEDDS
 		Public SourceFileEncoding As System.Text.Encoding
 		Public ExtractedTextFileEncoding As System.Text.Encoding
 		Public StartLineNumber As Int64
+		Public IdentityFieldId As Int32 = -1
 		<NonSerialized()> Public ExtractedTextFileEncodingName As String
 		<NonSerialized()> Public CaseDefaultPath As String = ""
 		<NonSerialized()> Public Credentials As Net.NetworkCredential
@@ -79,6 +80,7 @@ Namespace kCura.WinEDDS
 			info.AddValue("SourceFileEncoding", Me.SourceFileEncoding.CodePage, GetType(Int32))
 			info.AddValue("ArtifactTypeID", Me.ArtifactTypeID, GetType(Int32))
 			info.AddValue("StartLineNumber", Me.StartLineNumber, GetType(Int64))
+			info.AddValue("IdentityFieldId", Me.IdentityFieldId, GetType(Int32))
 			If Me.FullTextColumnContainsFileLocation Then info.AddValue("ExtractedTextFileEncoding", Me.ExtractedTextFileEncoding.CodePage, GetType(Int32))
 		End Sub
 
@@ -144,13 +146,18 @@ Namespace kCura.WinEDDS
 				End Try
 				Try
 					Me.ArtifactTypeID = info.GetInt32("ArtifactTypeID")
-				Catch ex As Exception
+				Catch
 					Me.ArtifactTypeID = 10
 				End Try
 				Try
 					Me.StartLineNumber = info.GetInt64("StartLineNumber")
-				Catch ex As Exception
+				Catch
 					Me.StartLineNumber = 0
+				End Try
+				Try
+					Me.IdentityFieldId = info.GetInt32("IdentityFieldId")
+				Catch
+					Me.IdentityFieldId = -1
 				End Try
 			End With
 		End Sub

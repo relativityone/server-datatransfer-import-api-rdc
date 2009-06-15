@@ -178,14 +178,15 @@ Namespace kCura.WinEDDS
 							'	duplicateHashField = docfield
 							'End If
 						Case kCura.DynamicFields.Types.FieldCategory.Identifier
-              identifierField = docfield
-          End Select
-          lineContainsErrors = lineContainsErrors Or SetFieldValueOrErrorMessage(docfield, valToParse, mapItem.NativeFileColumnIndex)
-          'dont add field if object type is not a document and the field is a file field
-          If Not (_artifactTypeID <> 10 And docfield.FieldTypeID = kCura.DynamicFields.Types.FieldTypeHelper.FieldType.File) Then
-            retval.Add(docfield)
-          End If
-        End If
+							If Not _keyFieldID > 0 Then identifierField = docfield
+					End Select
+					If _keyFieldID > 0 AndAlso _keyFieldID = docField.FieldID Then identifierField = docfield
+					lineContainsErrors = lineContainsErrors Or SetFieldValueOrErrorMessage(docfield, valToParse, mapItem.NativeFileColumnIndex)
+					'dont add field if object type is not a document and the field is a file field
+					If Not (_artifactTypeID <> 10 And docfield.FieldTypeID = kCura.DynamicFields.Types.FieldTypeHelper.FieldType.File) Then
+						retval.Add(docfield)
+					End If
+				End If
       Next
       If _columnCount <> values.Length Then
         lineContainsErrors = True
