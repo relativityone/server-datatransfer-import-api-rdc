@@ -8,25 +8,40 @@ Namespace kCura.EDDS.WinForm
 		Private _hasReceivedLineWarning As Boolean = False
 		Private _exportErrorReportLocation As String = ""
 		Private _exportErrorFileLocation As String = ""
+		Private _outputType As kCura.EDDS.WinForm.OutputType
 
-		Public Sub New(ByVal observer As kCura.Windows.Process.ProcessObserver, ByVal controller As kCura.Windows.Process.Controller, ByVal exportErrorFileLocation As String, ByVal exportErrorReportLocation As String)
+		Public Enum ParsableLineType
+			Status
+			Warning
+			LineError
+			FatalError
+		End Enum
+
+		Public Sub New(ByVal observer As kCura.Windows.Process.ProcessObserver, ByVal controller As kCura.Windows.Process.Controller, ByVal exportErrorFileLocation As String, ByVal exportErrorReportLocation As String, ByVal OutputType As kCura.EDDS.WinForm.OutputType)
 			_observer = observer
 			_controller = controller
+			_outputType = OutputType
 			If Not exportErrorFileLocation Is Nothing Then _exportErrorFileLocation = exportErrorFileLocation
 			If Not exportErrorReportLocation Is Nothing Then _exportErrorReportLocation = exportErrorReportLocation
 		End Sub
 
-
-
 		Private Sub _observer_OnProcessEvent(ByVal evt As kCura.Windows.Process.ProcessEvent) Handles _observer.OnProcessEvent
 			Select Case evt.Type
 				Case kCura.Windows.Process.ProcessEventTypeEnum.Status
-					WriteLine(evt.Message + " " + evt.RecordInfo)
+					WriteLine(evt.Message + " " + evt.RecordInfo, ParsableLineType.Status)
 				Case kCura.Windows.Process.ProcessEventTypeEnum.Error
-					WriteLine("[Line Error] " & evt.Message)
+					If _outputType = Startup.OutputType.Normal Then
+						WriteLine("[Line Error] " & evt.Message, ParsableLineType.LineError)
+					Else
+						WriteLine(evt.Message, ParsableLineType.LineError)
+					End If
 					_hasReceivedLineError = True
 				Case kCura.Windows.Process.ProcessEventTypeEnum.Warning
-					WriteLine("[Line Warning] " & evt.Message)
+					If _outputType = Startup.OutputType.Normal Then
+						WriteLine("[Line Warning] " & evt.Message, ParsableLineType.Warning)
+					Else
+						WriteLine(evt.Message, ParsableLineType.Warning)
+					End If
 					_hasReceivedLineWarning = True
 			End Select
 		End Sub
@@ -35,20 +50,26 @@ Namespace kCura.EDDS.WinForm
 			Dim now As Long = System.DateTime.Now.Ticks
 			If now - _lastUpdated > 10000000 Then
 				_lastUpdated = now
-				WriteLine(vbTab & evt.TotalRecordsProcessedDisplay + " of " + evt.TotalRecordsDisplay + " processed")
+				WriteLine(vbTab & evt.TotalRecordsProcessedDisplay + " of " + evt.TotalRecordsDisplay + " processed", ParsableLineType.Status)
 			End If
 		End Sub
 
 		Private Sub _observer_OnProcessComplete(ByVal closeForm As Boolean, ByVal exportFilePath As String, ByVal exportLog As Boolean) Handles _observer.OnProcessComplete
 			If _hasReceivedFatalError Then
-				WriteLine("Fatal Exception Encountered")
+				WriteLine("Fatal Exception Encountered", ParsableLineType.Status)
 			ElseIf Not _hasReceivedLineError AndAlso Not _hasReceivedLineWarning Then
-				WriteLine("All records have been successfully processed")
+				WriteLine("All records have been successfully processed", ParsableLineType.Status)
 			Else
 				Dim x As String = ""
-				If _hasReceivedLineWarning Then x &= ("Some records were processed with warnings" & vbNewLine)
-				If _hasReceivedLineError Then x &= ("Some records were not processed due to errors" & vbNewLine)
-				WriteLine(x)
+				If _hasReceivedLineWarning Then
+					x &= "Some records were processed with warnings"
+					If _outputType = Startup.OutputType.Normal Then x &= vbNewLine
+				End If
+				If _hasReceivedLineError Then
+					x &= "Some records were not processed due to errors"
+					If _outputType = Startup.OutputType.Normal Then x &= vbNewLine
+				End If
+				WriteLine(x, ParsableLineType.Status)
 			End If
 			If _hasReceivedLineError Then
 				If _exportErrorFileLocation <> "" Then _controller.ExportErrorFile(_exportErrorFileLocation)
@@ -69,8 +90,8 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 		Private Sub _observer_OnProcessFatalException(ByVal ex As System.Exception) Handles _observer.OnProcessFatalException
-			WriteLine("Fatal Exception Encountered")
-			WriteLine(ex.ToString)
+			WriteLine("Fatal Exception Encountered", ParsableLineType.FatalError)
+			WriteLine(ex.ToString, ParsableLineType.FatalError)
 			_hasReceivedFatalError = True
 		End Sub
 
@@ -79,15 +100,32 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 		Private Sub _processObserver_StatusBarEvent(ByVal message As String, ByVal popupText As String) Handles _observer.StatusBarEvent
-			WriteLine(message)
+			WriteLine(message, ParsableLineType.Status)
 		End Sub
 
-		Private Sub WriteLine(ByVal line As String)
-			Console.WriteLine("[" & System.DateTime.Now.ToString("u").Replace("Z", "") & "]" & vbTab)
-			Console.WriteLine(line)
+		Private Sub WriteLine(ByVal line As String, ByVal lineType As ParsableLineType)
+			Dim stringBuilder As New System.Text.StringBuilder
+			If _outputType = Startup.OutputType.Parsable Then
+				Dim lineTypeString As String
+				If lineType = ParsableLineType.Status Then
+					lineTypeString = "[Status]"
+				ElseIf lineType = ParsableLineType.Warning Then
+					lineTypeString = "[Warning]"
+				ElseIf lineType = ParsableLineType.LineError Then
+					lineTypeString = "[Error:Line]"
+				ElseIf lineType = ParsableLineType.FatalError Then
+					lineTypeString = "[Error:Fatal]"
+				End If
+				stringBuilder.Append("""").Append("[").Append(System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff").Replace("Z", "")).Append("]").Append(""",")
+				stringBuilder.Append("""").Append(lineTypeString).Append(""",").ToString()
+				stringBuilder.Append("""").Append(line.Replace("""", """""").Replace(vbNewLine, ChrW(10))).Append("""")
+				Console.WriteLine(stringBuilder.ToString)
+			Else
+				stringBuilder.Append("[").Append(System.DateTime.Now.ToString("u").Replace("Z", "")).Append("]").Append(vbTab)
+				Console.WriteLine(stringBuilder.ToString)
+				Console.WriteLine(line)
+			End If
 		End Sub
 
 	End Class
 End Namespace
-
-
