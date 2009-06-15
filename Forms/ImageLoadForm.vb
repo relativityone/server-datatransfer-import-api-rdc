@@ -226,7 +226,7 @@ Namespace kCura.EDDS.WinForm
 			'GroupBox1
 			'
 			Me.GroupBox1.Controls.Add(Me._productionDropdown)
-			Me.GroupBox1.Location = New System.Drawing.Point(4, 120)
+			Me.GroupBox1.Location = New System.Drawing.Point(216, 112)
 			Me.GroupBox1.Name = "GroupBox1"
 			Me.GroupBox1.Size = New System.Drawing.Size(356, 52)
 			Me.GroupBox1.TabIndex = 10
@@ -251,7 +251,8 @@ Namespace kCura.EDDS.WinForm
 			'GroupBox2
 			'
 			Me.GroupBox2.Controls.Add(Me._beginBatesDropdown)
-			Me.GroupBox2.Location = New System.Drawing.Point(364, 120)
+			Me.GroupBox2.Enabled = False
+			Me.GroupBox2.Location = New System.Drawing.Point(4, 112)
 			Me.GroupBox2.Name = "GroupBox2"
 			Me.GroupBox2.Size = New System.Drawing.Size(208, 52)
 			Me.GroupBox2.TabIndex = 29
@@ -343,6 +344,11 @@ Namespace kCura.EDDS.WinForm
 				Me.ImageLoadFile.ReplaceFullText = False
 				Me.ImageLoadFile.BeginBatesFieldArtifactID = CType(_beginBatesDropdown.SelectedValue, Int32)
 			Else
+				If Me.GetOverwrite = "Strict" Then
+					Me.ImageLoadFile.IdentityFieldId = CType(_beginBatesDropdown.SelectedValue, Int32)
+				Else
+					Me.ImageLoadFile.IdentityFieldId = -1
+				End If
 				Me.ImageLoadFile.ReplaceFullText = _replaceFullText.Checked
 			End If
 			Me.ImageLoadFile.CaseDefaultPath = _application.SelectedCaseInfo.DocumentPath
@@ -382,29 +388,31 @@ Namespace kCura.EDDS.WinForm
 				Me.Cursor = Cursors.Default
 				Exit Sub
 			End If
+			Dim dt As System.Data.DataTable = New kCura.WinEDDS.Service.FieldQuery(_application.Credential, _application.CookieContainer).RetrievePotentialBeginBatesFields(ImageLoadFile.CaseInfo.ArtifactID).Tables(0)
+			For Each identifierRow As System.Data.DataRow In dt.Rows
+				If CType(identifierRow("FieldCategoryID"), kCura.DynamicFields.Types.FieldCategory) = DynamicFields.Types.FieldCategory.Identifier Then
+					_identifierFieldArtifactID = CType(identifierRow("ArtifactID"), Int32)
+				End If
+			Next
+			'Dim row As System.Data.DataRow = dt.NewRow
+			'row("ArtifactID") = -1
+			'row("DisplayName") = "Select..."
+			'dt.Rows.InsertAt(row, 0)
+			_beginBatesDropdown.DataSource = dt
+			_beginBatesDropdown.DisplayMember = "DisplayName"
+			_beginBatesDropdown.ValueMember = "ArtifactID"
+			_beginBatesDropdown.SelectedValue = _identifierFieldArtifactID
+
 			If Not ImageLoadFile.ForProduction Then
-				Me.Size = New System.Drawing.Size(588, 164)
+				Me.GroupBox2.Text = "Overlay Identifier"
+				GroupBox1.Visible = False
 			Else
 				_replaceFullText.Checked = False
 				_replaceFullText.Enabled = False
 				_productionDropdown.DataSource = ImageLoadFile.ProductionTable
 				_productionDropdown.DisplayMember = "Name"
 				_productionDropdown.ValueMember = "ArtifactID"
-				Dim dt As System.Data.DataTable = New kCura.WinEDDS.Service.FieldQuery(_application.Credential, _application.CookieContainer).RetrievePotentialBeginBatesFields(ImageLoadFile.CaseInfo.ArtifactID).Tables(0)
-				For Each identifierRow As System.Data.DataRow In dt.Rows
-					If CType(identifierRow("FieldCategoryID"), kCura.DynamicFields.Types.FieldCategory) = DynamicFields.Types.FieldCategory.Identifier Then
-						_identifierFieldArtifactID = CType(identifierRow("ArtifactID"), Int32)
-					End If
-				Next
-				Dim row As System.Data.DataRow = dt.NewRow
-				row("ArtifactID") = -1
-				row("DisplayName") = "Select..."
-				dt.Rows.InsertAt(row, 0)
-				_beginBatesDropdown.DataSource = dt
-				_beginBatesDropdown.DisplayMember = "DisplayName"
-				_beginBatesDropdown.ValueMember = "ArtifactID"
 				_overwriteDropdown.SelectedIndex = 1
-				_overwriteDropdown.Enabled = False
 				Me.Text = "Relativity Desktop Client | Import Production Load File"
 			End If
 			_overwriteDropdown.SelectedItem = Me.GetOverwriteDropdownItem(ImageLoadFile.Overwrite)
@@ -415,7 +423,7 @@ Namespace kCura.EDDS.WinForm
 		Private Sub ImportFileMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ImportFileMenu.Click
 			Me.Cursor = Cursors.WaitCursor
 			PopulateImageLoadFile()
-			_application.ImportImageFile(_imageLoadFile)
+			If _application.ReadyToLoad(Me.ImageLoadFile, False) Then _application.ImportImageFile(_imageLoadFile)
 			Me.Cursor = Cursors.Default
 		End Sub
 
@@ -439,6 +447,11 @@ Namespace kCura.EDDS.WinForm
 
 		Private Sub _overWrite_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _overwriteDropdown.SelectedIndexChanged
 			_imageLoadFile.Overwrite = Me.GetOverwrite
+			If _overwriteDropdown.SelectedIndex = 1 Then
+				GroupBox2.Enabled = True
+			Else
+				GroupBox2.Enabled = False
+			End If
 		End Sub
 
 		Private Sub ReadyToRun()
@@ -508,8 +521,8 @@ Namespace kCura.EDDS.WinForm
 				Dim casefields As String() = Nothing
 				Dim continue As Boolean = True
 				Try
-          'TODO: WINFLEX - ArtifactTypeID
-          casefields = _application.GetCaseFields(_imageLoadFile.CaseInfo.ArtifactID, 10, True)
+					'TODO: WINFLEX - ArtifactTypeID
+					casefields = _application.GetCaseFields(_imageLoadFile.CaseInfo.ArtifactID, 10, True)
 					Return Not casefields Is Nothing
 				Catch ex As System.Exception
 					If ex.Message.IndexOf("Need To Re Login") <> -1 Then
@@ -525,7 +538,7 @@ Namespace kCura.EDDS.WinForm
 
 		Private Sub _importMenuCheckErrorsItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _importMenuCheckErrorsItem.Click
 			Me.PopulateImageLoadFile()
-			_application.PreviewImageFile(Me.ImageLoadFile)
+			If _application.ReadyToLoad(Me.ImageLoadFile, True) Then _application.PreviewImageFile(Me.ImageLoadFile)
 		End Sub
 
 		Private Sub _productionDropdown_SelectedIndexChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles _productionDropdown.SelectedIndexChanged
@@ -534,14 +547,6 @@ Namespace kCura.EDDS.WinForm
 
 		Private Sub _beginBatesDropdown_SelectedIndexChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles _beginBatesDropdown.SelectedIndexChanged
 			ReadyToRun()
-			If TypeOf _beginBatesDropdown.SelectedValue Is Int32 Then
-				If CType(_beginBatesDropdown.SelectedValue, Int32) = _identifierFieldArtifactID Then
-					_overwriteDropdown.Enabled = True
-				Else
-					_overwriteDropdown.SelectedIndex = 1
-					_overwriteDropdown.Enabled = False
-				End If
-			End If
 		End Sub
 
 		Private Sub _toolsMenuSettingsItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _toolsMenuSettingsItem.Click

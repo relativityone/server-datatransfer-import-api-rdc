@@ -83,8 +83,7 @@ Namespace kCura.EDDS.WinForm
     Friend WithEvents _loadFileTab As System.Windows.Forms.TabPage
     Friend WithEvents _fieldMapTab As System.Windows.Forms.TabPage
 		Friend WithEvents _loadNativeFiles As System.Windows.Forms.CheckBox
-    Friend WithEvents _extractFullTextFromNativeFile As System.Windows.Forms.CheckBox
-    Friend WithEvents Label5 As System.Windows.Forms.Label
+		Friend WithEvents Label5 As System.Windows.Forms.Label
     Friend WithEvents _nativeFilePathField As System.Windows.Forms.ComboBox
     Friend WithEvents GroupBox4 As System.Windows.Forms.GroupBox
     Friend WithEvents GroupBox23 As System.Windows.Forms.GroupBox
@@ -105,8 +104,7 @@ Namespace kCura.EDDS.WinForm
     Friend WithEvents HelpProvider1 As System.Windows.Forms.HelpProvider
 		Friend WithEvents MenuItem3 As System.Windows.Forms.MenuItem
     Friend WithEvents _fileMenuCloseItem As System.Windows.Forms.MenuItem
-    Friend WithEvents _extractMd5Hash As System.Windows.Forms.CheckBox
-    Friend WithEvents _destinationFolderPath As System.Windows.Forms.ComboBox
+		Friend WithEvents _destinationFolderPath As System.Windows.Forms.ComboBox
     Friend WithEvents _buildFolderStructure As System.Windows.Forms.CheckBox
     Friend WithEvents GroupBox5 As System.Windows.Forms.GroupBox
     Friend WithEvents MenuItem4 As System.Windows.Forms.MenuItem
@@ -125,6 +123,8 @@ Namespace kCura.EDDS.WinForm
 		Friend WithEvents _startLineNumberLabel As System.Windows.Forms.Label
 		Friend WithEvents _startLineNumber As System.Windows.Forms.NumericUpDown
 		Friend WithEvents _fieldMap As kCura.WinEDDS.UIControls.FieldMap
+		Friend WithEvents GroupBox3 As System.Windows.Forms.GroupBox
+		Friend WithEvents _overlayIdentifier As System.Windows.Forms.ComboBox
 
 		<System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
 			Dim resources As System.Resources.ResourceManager = New System.Resources.ResourceManager(GetType(LoadFileForm))
@@ -182,12 +182,12 @@ Namespace kCura.EDDS.WinForm
 			Me._destinationFolderPath = New System.Windows.Forms.ComboBox
 			Me.GroupBox4 = New System.Windows.Forms.GroupBox
 			Me._advancedButton = New System.Windows.Forms.Button
-			Me._extractMd5Hash = New System.Windows.Forms.CheckBox
 			Me._loadNativeFiles = New System.Windows.Forms.CheckBox
-			Me._extractFullTextFromNativeFile = New System.Windows.Forms.CheckBox
 			Me._nativeFilePathField = New System.Windows.Forms.ComboBox
 			Me.Label5 = New System.Windows.Forms.Label
 			Me.HelpProvider1 = New System.Windows.Forms.HelpProvider
+			Me.GroupBox3 = New System.Windows.Forms.GroupBox
+			Me._overlayIdentifier = New System.Windows.Forms.ComboBox
 			Me.GroupBox1.SuspendLayout()
 			Me.TabControl1.SuspendLayout()
 			Me._loadFileTab.SuspendLayout()
@@ -200,6 +200,7 @@ Namespace kCura.EDDS.WinForm
 			Me.GroupBox6.SuspendLayout()
 			Me.GroupBox5.SuspendLayout()
 			Me.GroupBox4.SuspendLayout()
+			Me.GroupBox3.SuspendLayout()
 			Me.SuspendLayout()
 			'
 			'OpenFileDialog
@@ -318,7 +319,7 @@ Namespace kCura.EDDS.WinForm
 			Me.TabControl1.Location = New System.Drawing.Point(4, 48)
 			Me.TabControl1.Name = "TabControl1"
 			Me.TabControl1.SelectedIndex = 0
-			Me.TabControl1.Size = New System.Drawing.Size(740, 452)
+			Me.TabControl1.Size = New System.Drawing.Size(736, 488)
 			Me.TabControl1.TabIndex = 21
 			'
 			'_loadFileTab
@@ -530,6 +531,7 @@ Namespace kCura.EDDS.WinForm
 			'
 			'_fieldMapTab
 			'
+			Me._fieldMapTab.Controls.Add(Me.GroupBox3)
 			Me._fieldMapTab.Controls.Add(Me._fieldMap)
 			Me._fieldMapTab.Controls.Add(Me.GroupBox7)
 			Me._fieldMapTab.Controls.Add(Me.GroupBox6)
@@ -537,7 +539,7 @@ Namespace kCura.EDDS.WinForm
 			Me._fieldMapTab.Controls.Add(Me.GroupBox4)
 			Me._fieldMapTab.Location = New System.Drawing.Point(4, 22)
 			Me._fieldMapTab.Name = "_fieldMapTab"
-			Me._fieldMapTab.Size = New System.Drawing.Size(732, 426)
+			Me._fieldMapTab.Size = New System.Drawing.Size(728, 462)
 			Me._fieldMapTab.TabIndex = 1
 			Me._fieldMapTab.Text = "Field Map"
 			'
@@ -553,16 +555,16 @@ Namespace kCura.EDDS.WinForm
 			Me.GroupBox7.Controls.Add(Me._fullTextFileEncodingPicker)
 			Me.GroupBox7.Controls.Add(Me.Label9)
 			Me.GroupBox7.Controls.Add(Me._extractedTextValueContainsFileLocation)
-			Me.GroupBox7.Location = New System.Drawing.Point(500, 296)
+			Me.GroupBox7.Location = New System.Drawing.Point(484, 288)
 			Me.GroupBox7.Name = "GroupBox7"
-			Me.GroupBox7.Size = New System.Drawing.Size(224, 124)
+			Me.GroupBox7.Size = New System.Drawing.Size(234, 104)
 			Me.GroupBox7.TabIndex = 32
 			Me.GroupBox7.TabStop = False
 			Me.GroupBox7.Text = "Extracted Text"
 			'
 			'_fullTextFileEncodingPicker
 			'
-			Me._fullTextFileEncodingPicker.Location = New System.Drawing.Point(12, 92)
+			Me._fullTextFileEncodingPicker.Location = New System.Drawing.Point(12, 68)
 			Me._fullTextFileEncodingPicker.Name = "_fullTextFileEncodingPicker"
 			Me._fullTextFileEncodingPicker.SelectedEncoding = CType(resources.GetObject("_fullTextFileEncodingPicker.SelectedEncoding"), System.Text.Encoding)
 			Me._fullTextFileEncodingPicker.Size = New System.Drawing.Size(200, 21)
@@ -570,7 +572,7 @@ Namespace kCura.EDDS.WinForm
 			'
 			'Label9
 			'
-			Me.Label9.Location = New System.Drawing.Point(8, 72)
+			Me.Label9.Location = New System.Drawing.Point(8, 48)
 			Me.Label9.Name = "Label9"
 			Me.Label9.Size = New System.Drawing.Size(100, 16)
 			Me.Label9.TabIndex = 1
@@ -578,7 +580,7 @@ Namespace kCura.EDDS.WinForm
 			'
 			'_extractedTextValueContainsFileLocation
 			'
-			Me._extractedTextValueContainsFileLocation.Location = New System.Drawing.Point(12, 28)
+			Me._extractedTextValueContainsFileLocation.Location = New System.Drawing.Point(8, 16)
 			Me._extractedTextValueContainsFileLocation.Name = "_extractedTextValueContainsFileLocation"
 			Me._extractedTextValueContainsFileLocation.Size = New System.Drawing.Size(156, 21)
 			Me._extractedTextValueContainsFileLocation.TabIndex = 0
@@ -587,9 +589,9 @@ Namespace kCura.EDDS.WinForm
 			'GroupBox6
 			'
 			Me.GroupBox6.Controls.Add(Me._overwriteDropdown)
-			Me.GroupBox6.Location = New System.Drawing.Point(4, 372)
+			Me.GroupBox6.Location = New System.Drawing.Point(4, 288)
 			Me.GroupBox6.Name = "GroupBox6"
-			Me.GroupBox6.Size = New System.Drawing.Size(176, 48)
+			Me.GroupBox6.Size = New System.Drawing.Size(234, 56)
 			Me.GroupBox6.TabIndex = 31
 			Me.GroupBox6.TabStop = False
 			Me.GroupBox6.Text = "Overwrite"
@@ -598,18 +600,18 @@ Namespace kCura.EDDS.WinForm
 			'
 			Me._overwriteDropdown.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
 			Me._overwriteDropdown.Items.AddRange(New Object() {"Append Only", "Overlay Only", "Append/Overlay"})
-			Me._overwriteDropdown.Location = New System.Drawing.Point(8, 18)
+			Me._overwriteDropdown.Location = New System.Drawing.Point(8, 24)
 			Me._overwriteDropdown.Name = "_overwriteDropdown"
-			Me._overwriteDropdown.Size = New System.Drawing.Size(152, 21)
+			Me._overwriteDropdown.Size = New System.Drawing.Size(220, 21)
 			Me._overwriteDropdown.TabIndex = 28
 			'
 			'GroupBox5
 			'
 			Me.GroupBox5.Controls.Add(Me._buildFolderStructure)
 			Me.GroupBox5.Controls.Add(Me._destinationFolderPath)
-			Me.GroupBox5.Location = New System.Drawing.Point(4, 296)
+			Me.GroupBox5.Location = New System.Drawing.Point(244, 288)
 			Me.GroupBox5.Name = "GroupBox5"
-			Me.GroupBox5.Size = New System.Drawing.Size(176, 72)
+			Me.GroupBox5.Size = New System.Drawing.Size(234, 72)
 			Me.GroupBox5.TabIndex = 30
 			Me.GroupBox5.TabStop = False
 			Me.GroupBox5.Text = "Parent Info"
@@ -628,39 +630,28 @@ Namespace kCura.EDDS.WinForm
 			Me._destinationFolderPath.Enabled = False
 			Me._destinationFolderPath.Location = New System.Drawing.Point(8, 40)
 			Me._destinationFolderPath.Name = "_destinationFolderPath"
-			Me._destinationFolderPath.Size = New System.Drawing.Size(152, 21)
+			Me._destinationFolderPath.Size = New System.Drawing.Size(220, 21)
 			Me._destinationFolderPath.TabIndex = 28
 			'
 			'GroupBox4
 			'
 			Me.GroupBox4.Controls.Add(Me._advancedButton)
-			Me.GroupBox4.Controls.Add(Me._extractMd5Hash)
 			Me.GroupBox4.Controls.Add(Me._loadNativeFiles)
-			Me.GroupBox4.Controls.Add(Me._extractFullTextFromNativeFile)
 			Me.GroupBox4.Controls.Add(Me._nativeFilePathField)
 			Me.GroupBox4.Controls.Add(Me.Label5)
-			Me.GroupBox4.Location = New System.Drawing.Point(188, 296)
+			Me.GroupBox4.Location = New System.Drawing.Point(244, 364)
 			Me.GroupBox4.Name = "GroupBox4"
-			Me.GroupBox4.Size = New System.Drawing.Size(304, 124)
+			Me.GroupBox4.Size = New System.Drawing.Size(234, 92)
 			Me.GroupBox4.TabIndex = 26
 			Me.GroupBox4.TabStop = False
 			Me.GroupBox4.Text = "Native File Behavior"
 			'
 			'_advancedButton
 			'
-			Me._advancedButton.Location = New System.Drawing.Point(220, 16)
+			Me._advancedButton.Location = New System.Drawing.Point(152, 16)
 			Me._advancedButton.Name = "_advancedButton"
 			Me._advancedButton.TabIndex = 27
 			Me._advancedButton.Text = "Advanced"
-			'
-			'_extractMd5Hash
-			'
-			Me._extractMd5Hash.Location = New System.Drawing.Point(8, 36)
-			Me._extractMd5Hash.Name = "_extractMd5Hash"
-			Me._extractMd5Hash.Size = New System.Drawing.Size(116, 20)
-			Me._extractMd5Hash.TabIndex = 26
-			Me._extractMd5Hash.Text = "Extract MD5 Hash"
-			Me._extractMd5Hash.Visible = False
 			'
 			'_loadNativeFiles
 			'
@@ -670,39 +661,47 @@ Namespace kCura.EDDS.WinForm
 			Me._loadNativeFiles.TabIndex = 22
 			Me._loadNativeFiles.Text = "Load Native Files"
 			'
-			'_extractFullTextFromNativeFile
-			'
-			Me._extractFullTextFromNativeFile.Enabled = False
-			Me._extractFullTextFromNativeFile.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
-			Me._extractFullTextFromNativeFile.Location = New System.Drawing.Point(8, 56)
-			Me._extractFullTextFromNativeFile.Name = "_extractFullTextFromNativeFile"
-			Me._extractFullTextFromNativeFile.Size = New System.Drawing.Size(180, 20)
-			Me._extractFullTextFromNativeFile.TabIndex = 23
-			Me._extractFullTextFromNativeFile.Text = "Extract full text from native files"
-			Me._extractFullTextFromNativeFile.Visible = False
-			'
 			'_nativeFilePathField
 			'
 			Me._nativeFilePathField.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
 			Me._nativeFilePathField.Enabled = False
-			Me._nativeFilePathField.Location = New System.Drawing.Point(8, 94)
+			Me._nativeFilePathField.Location = New System.Drawing.Point(8, 64)
 			Me._nativeFilePathField.Name = "_nativeFilePathField"
-			Me._nativeFilePathField.Size = New System.Drawing.Size(288, 21)
+			Me._nativeFilePathField.Size = New System.Drawing.Size(220, 21)
 			Me._nativeFilePathField.TabIndex = 24
 			'
 			'Label5
 			'
-			Me.Label5.Location = New System.Drawing.Point(8, 77)
+			Me.Label5.Location = New System.Drawing.Point(8, 48)
 			Me.Label5.Name = "Label5"
 			Me.Label5.Size = New System.Drawing.Size(192, 13)
 			Me.Label5.TabIndex = 25
 			Me.Label5.Text = "Native file paths contained in column:"
 			Me.Label5.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
 			'
+			'GroupBox3
+			'
+			Me.GroupBox3.Controls.Add(Me._overlayIdentifier)
+			Me.GroupBox3.Location = New System.Drawing.Point(4, 352)
+			Me.GroupBox3.Name = "GroupBox3"
+			Me.GroupBox3.Size = New System.Drawing.Size(234, 56)
+			Me.GroupBox3.TabIndex = 33
+			Me.GroupBox3.TabStop = False
+			Me.GroupBox3.Text = "Overlay Identifier"
+			'
+			'_overlayIdentifier
+			'
+			Me._overlayIdentifier.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+			Me._overlayIdentifier.Enabled = False
+			Me._overlayIdentifier.Location = New System.Drawing.Point(8, 24)
+			Me._overlayIdentifier.Name = "_overlayIdentifier"
+			Me._overlayIdentifier.Size = New System.Drawing.Size(220, 21)
+			Me._overlayIdentifier.TabIndex = 28
+			'
 			'LoadFileForm
 			'
 			Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
-			Me.ClientSize = New System.Drawing.Size(754, 505)
+			Me.ClientSize = New System.Drawing.Size(754, 545)
 			Me.Controls.Add(Me.TabControl1)
 			Me.Controls.Add(Me.GroupBox1)
 			Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle
@@ -724,6 +723,7 @@ Namespace kCura.EDDS.WinForm
 			Me.GroupBox6.ResumeLayout(False)
 			Me.GroupBox5.ResumeLayout(False)
 			Me.GroupBox4.ResumeLayout(False)
+			Me.GroupBox3.ResumeLayout(False)
 			Me.ResumeLayout(False)
 
 		End Sub
@@ -793,6 +793,18 @@ Namespace kCura.EDDS.WinForm
 			End Select
 		End Function
 
+		Private Function GetSuitableKeyFields() As DocumentField()
+			Dim retval As New System.Collections.ArrayList
+			For Each field As DocumentField In _application.CurrentFields(Me.LoadFile.ArtifactTypeID)
+				If (field.FieldCategory = DynamicFields.Types.FieldCategory.Generic OrElse field.FieldCategory = DynamicFields.Types.FieldCategory.Identifier) AndAlso field.FieldTypeID = DynamicFields.Types.FieldTypeHelper.FieldType.Varchar Then
+					If field.FieldCategory = DynamicFields.Types.FieldCategory.Identifier Then field.FieldName &= " [Identifier]"
+					retval.Add(field)
+				End If
+			Next
+			retval.Sort(New DocumentFieldCollection.FieldNameComparer)
+			Return DirectCast(retval.ToArray(GetType(DocumentField)), DocumentField())
+		End Function
+
 		Private Sub PopulateLoadFileObject()
 			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
 			Me.PopulateLoadFileDelimiters()
@@ -817,7 +829,6 @@ Namespace kCura.EDDS.WinForm
 			End If
 
 			LoadFile.SourceFileEncoding = _loadFileEncodingPicker.SelectedEncoding
-			LoadFile.ExtractFullTextFromNativeFile = _extractFullTextFromNativeFile.Checked
 			LoadFile.FullTextColumnContainsFileLocation = _extractedTextValueContainsFileLocation.Checked
 			If _extractedTextValueContainsFileLocation.Checked Then
 				LoadFile.ExtractedTextFileEncoding = _fullTextFileEncodingPicker.SelectedEncoding
@@ -829,7 +840,11 @@ Namespace kCura.EDDS.WinForm
 			Else
 				LoadFile.OverwriteDestination = Me.GetOverwrite
 			End If
-			LoadFile.ExtractMD5HashFromNativeFile = _extractMd5Hash.Enabled AndAlso _extractMd5Hash.Checked
+			If LoadFile.OverwriteDestination = "Strict" Then
+				LoadFile.IdentityFieldId = DirectCast(_overlayIdentifier.SelectedItem, DocumentField).FieldID
+			Else
+				LoadFile.IdentityFieldId = -1
+			End If
 			LoadFile.FirstLineContainsHeaders = _firstLineContainsColumnNames.Checked
 			If System.IO.File.Exists(_filePath.Text) Then
 				LoadFile.FilePath = _filePath.Text
@@ -943,8 +958,6 @@ Namespace kCura.EDDS.WinForm
 					If LoadFile.NativeFilePathColumn <> String.Empty Then
 						_nativeFilePathField.SelectedItem = LoadFile.NativeFilePathColumn
 					End If
-					_extractMd5Hash.Checked = LoadFile.ExtractMD5HashFromNativeFile
-					_extractFullTextFromNativeFile.Checked = LoadFile.ExtractFullTextFromNativeFile
 				End If
 				_buildFolderStructure.Checked = LoadFile.CreateFolderStructure
 				ActionMenuEnabled = ReadyToRun
@@ -954,6 +967,24 @@ Namespace kCura.EDDS.WinForm
 			End If
 			'_identifiersDropDown.Items.AddRange(_application.IdentiferFieldDropdownPopulator)
 			_overwriteDropdown.SelectedItem = Me.GetOverwriteDropdownItem(LoadFile.OverwriteDestination)
+			_overlayIdentifier.Items.Clear()
+			_overlayIdentifier.Items.AddRange(Me.GetSuitableKeyFields)
+			If Not loadFileObjectUpdatedFromFile Then
+				For Each item As DocumentField In _overlayIdentifier.Items
+					If item.FieldCategory = DynamicFields.Types.FieldCategory.Identifier Then
+						_overlayIdentifier.SelectedItem = item
+						Exit For
+					End If
+				Next
+			Else
+				For Each item As DocumentField In _overlayIdentifier.Items
+					If item.FieldID = LoadFile.IdentityFieldId Then
+						_overlayIdentifier.SelectedItem = item
+						Exit For
+					End If
+				Next
+			End If
+
 			'_identifiersDropDown.Enabled = True			'LoadFile.OverwriteDestination
 			If Me.LoadFile.ArtifactTypeID = 10 Then
 				If _overwriteDropdown.SelectedItem Is Nothing Then
@@ -975,7 +1006,7 @@ Namespace kCura.EDDS.WinForm
 								_buildFolderStructure.Checked = False
 								_buildFolderStructure.Enabled = True
 								_destinationFolderPath.Enabled = _buildFolderStructure.Checked
-							Case Else							'append only
+							Case Else							 'append only
 								_buildFolderStructure.Checked = True
 								_buildFolderStructure.Enabled = False
 								_destinationFolderPath.Enabled = True
@@ -1009,7 +1040,6 @@ Namespace kCura.EDDS.WinForm
 			'		_identifiersDropDown.SelectedItem = caseFieldName
 			'	End If
 			'End If
-			_extractMd5Hash.Enabled = EnableMd5Hash
 			_fieldMap.FieldColumns.EnsureHorizontalScrollbars()
 			_fieldMap.LoadFileColumns.EnsureHorizontalScrollbars()
 			_startLineNumber.Value = CType(LoadFile.StartLineNumber, Decimal)
@@ -1141,7 +1171,7 @@ Namespace kCura.EDDS.WinForm
 
 		Private Sub ImportFileMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ImportFileMenu.Click
 			PopulateLoadFileObject()
-			If _application.ReadyToLoad(Utility.ExtractFieldNames(_fieldMap.LoadFileColumns.LeftListBoxItems)) AndAlso _application.ReadyToLoad(Me.LoadFile) Then
+			If _application.ReadyToLoad(Utility.ExtractFieldNames(_fieldMap.LoadFileColumns.LeftListBoxItems)) AndAlso _application.ReadyToLoad(Me.LoadFile, False) Then
 				_application.ImportLoadFile(Me.LoadFile)
 			End If
 		End Sub
@@ -1158,14 +1188,12 @@ Namespace kCura.EDDS.WinForm
 
 		Private Sub _loadNativeFiles_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _loadNativeFiles.CheckedChanged
 			_nativeFilePathField.Enabled = _loadNativeFiles.Checked
-			_extractFullTextFromNativeFile.Enabled = _loadNativeFiles.Checked
 			_advancedButton.Enabled = _loadNativeFiles.Checked
 			'If Not _nativeFilePathField.Items.Count = 0 Then
 			'	_nativeFilePathField.SelectedItem = _nativeFilePathField.Items(0)
 			'End If
 			_nativeFilePathField.SelectedItem = Nothing
 			_nativeFilePathField.Text = "Select ..."
-			_extractMd5Hash.Enabled = EnableMd5Hash
 			ActionMenuEnabled = ReadyToRun
 		End Sub
 
@@ -1176,12 +1204,21 @@ Namespace kCura.EDDS.WinForm
 					Case "none"
 						_buildFolderStructure.Enabled = True
 						_destinationFolderPath.Enabled = _buildFolderStructure.Checked
+						_overlayIdentifier.Enabled = False
+					Case "strict"
+						_destinationFolderPath.Enabled = False
+						_buildFolderStructure.Checked = False
+						_buildFolderStructure.Enabled = False
+						_destinationFolderPath.SelectedItem = Nothing
+						_destinationFolderPath.Text = "Select ..."
+						_overlayIdentifier.Enabled = True
 					Case Else
 						_destinationFolderPath.Enabled = False
 						_buildFolderStructure.Checked = False
 						_buildFolderStructure.Enabled = False
 						_destinationFolderPath.SelectedItem = Nothing
 						_destinationFolderPath.Text = "Select ..."
+						_overlayIdentifier.Enabled = False
 				End Select
 			ElseIf Me.IsChildObject Then
 				Select Case LoadFile.OverwriteDestination.ToLower
@@ -1189,14 +1226,17 @@ Namespace kCura.EDDS.WinForm
 						_destinationFolderPath.Enabled = True
 						_buildFolderStructure.Checked = True
 						_buildFolderStructure.Enabled = False
+						_overlayIdentifier.Enabled = False
 					Case "strict"
 						_destinationFolderPath.Enabled = False
 						_buildFolderStructure.Checked = False
 						_buildFolderStructure.Enabled = True
+						_overlayIdentifier.Enabled = True
 					Case Else
 						_destinationFolderPath.Enabled = True
 						_buildFolderStructure.Checked = True
 						_buildFolderStructure.Enabled = False
+						_overlayIdentifier.Enabled = False
 				End Select
 			Else
 				_destinationFolderPath.Enabled = False
@@ -1204,7 +1244,12 @@ Namespace kCura.EDDS.WinForm
 				_buildFolderStructure.Checked = False
 				_destinationFolderPath.SelectedItem = Nothing
 				_destinationFolderPath.Text = "Select ..."
-
+				Select Case LoadFile.OverwriteDestination.ToLower
+					Case "strict"
+						_overlayIdentifier.Enabled = True
+					Case Else
+						_overlayIdentifier.Enabled = False
+				End Select
 			End If
 			ActionMenuEnabled = ReadyToRun
 			'_identifiersDropDown.Enabled = _overWrite.Checked
@@ -1213,7 +1258,7 @@ Namespace kCura.EDDS.WinForm
 		Private Sub PreviewMenuFile_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles PreviewMenuFile.Click
 			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
 			PopulateLoadFileObject()
-			If _application.ReadyToLoad(Me.LoadFile) Then _application.PreviewLoadFile(_loadFile, False, kCura.EDDS.WinForm.LoadFilePreviewForm.FormType.LoadFile)
+			If _application.ReadyToLoad(Me.LoadFile, True) Then _application.PreviewLoadFile(_loadFile, False, kCura.EDDS.WinForm.LoadFilePreviewForm.FormType.LoadFile)
 			Me.Cursor = System.Windows.Forms.Cursors.Default
 		End Sub
 
@@ -1248,7 +1293,6 @@ Namespace kCura.EDDS.WinForm
 
 		Private Sub _FieldColumns_ItemsShifted() Handles _fieldMap.FieldColumnsItemsShifted
 			ActionMenuEnabled = ReadyToRun
-			_extractMd5Hash.Enabled = EnableMd5Hash
 			_extractedTextValueContainsFileLocation.Enabled = Me.FullTextColumnIsMapped
 			_fullTextFileEncodingPicker.Enabled = _extractedTextValueContainsFileLocation.Enabled And _extractedTextValueContainsFileLocation.Checked
 		End Sub
@@ -1453,6 +1497,23 @@ Namespace kCura.EDDS.WinForm
 			Next
 			_application.RefreshSelectedCaseInfo()
 			Me.LoadFile.CaseInfo = _application.SelectedCaseInfo
+			Dim id As Int32 = DirectCast(_overlayIdentifier.SelectedItem, DocumentField).FieldID
+			_overlayIdentifier.Items.Clear()
+			_overlayIdentifier.Items.AddRange(Me.GetSuitableKeyFields)
+			For Each field As DocumentField In Me.GetSuitableKeyFields
+				If field.FieldID = id Then
+					_overlayIdentifier.SelectedItem = field
+					Exit For
+				End If
+			Next
+			If _overlayIdentifier.SelectedItem Is Nothing Then
+				For Each field As DocumentField In _overlayIdentifier.Items
+					If field.FieldCategory = DynamicFields.Types.FieldCategory.Identifier Then
+						_overlayIdentifier.SelectedItem = field
+						Exit For
+					End If
+				Next
+			End If
 			InitializeDocumentSpecificComponents()
 		End Sub
 
