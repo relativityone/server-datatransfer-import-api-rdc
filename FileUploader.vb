@@ -96,33 +96,34 @@ Namespace kCura.WinEDDS
 			End Property
 		End Class
 
-		Public Function UploadBcpFile(ByVal appID As Int32, ByVal localFilePath As String) As String		'upload return args
+		Public Function UploadBcpFile(ByVal appID As Int32, ByVal localFilePath As String) As FileUploadReturnArgs
 			Dim oldDestinationFolderPath As String = String.Copy(_destinationFolderPath)
 			Try
+				Dim returnValue As New System.Collections.ArrayList
 				_destinationFolderPath = _gateway.GetBcpSharePath(appID)
 				If Not System.IO.Directory.Exists(_destinationFolderPath) Then
 					System.IO.Directory.CreateDirectory(_destinationFolderPath)
 				End If
 				Dim retval As String = Me.UploadFile(localFilePath, appID, True)
 				_destinationFolderPath = oldDestinationFolderPath
-				Return retval
+				Return New FileUploadReturnArgs(FileUploadReturnArgs.FileUploadReturnType.ValidUploadKey, retval)
 			Catch ex As Exception
 				If ex.ToString.ToLower.IndexOf("nobcpdirectoryexception") <> -1 Then
 					_isBulkEnabled = False
 					Me.UploaderType = _type
 					_destinationFolderPath = oldDestinationFolderPath
-					Return String.Empty
+					Return New FileUploadReturnArgs(FileUploadReturnArgs.FileUploadReturnType.UploadError, ex.Message)
 				Else
 					Try
-						If _destinationFolderPath = oldDestinationFolderPath Then Return String.Empty
+						If _destinationFolderPath = oldDestinationFolderPath Then Return New FileUploadReturnArgs(FileUploadReturnArgs.FileUploadReturnType.UploadError, "")
 						Dim r As String = Me.WebUploadFile(New System.IO.FileStream(localFilePath, IO.FileMode.Open, IO.FileAccess.Read), appID, System.Guid.NewGuid.ToString)
 						_destinationFolderPath = oldDestinationFolderPath
-						Return r
-					Catch
+						Return New FileUploadReturnArgs(FileUploadReturnArgs.FileUploadReturnType.ValidUploadKey, r)
+					Catch e As Exception
 						_isBulkEnabled = False
 						Me.UploaderType = _type
 						_destinationFolderPath = oldDestinationFolderPath
-						Return String.Empty
+						Return New FileUploadReturnArgs(FileUploadReturnArgs.FileUploadReturnType.UploadError, ex.Message)
 					End Try
 					Throw
 				End If
@@ -242,6 +243,35 @@ Namespace kCura.WinEDDS
 		Public Event UploadWarningEvent(ByVal message As String)
 		Public Event UploadModeChangeEvent(ByVal mode As String, ByVal isBulkEnabled As Boolean)
 
+	End Class
+
+	Public Class FileUploadReturnArgs
+
+		Private _value As String
+		Private _type As FileUploadReturnType
+
+		Public Enum FileUploadReturnType
+			UploadError
+			ValidUploadKey
+		End Enum
+
+		Public ReadOnly Property Value() As String
+			Get
+				Return _value
+			End Get
+		End Property
+
+		Public ReadOnly Property Type() As FileUploadReturnType
+			Get
+				Return _type
+			End Get
+		End Property
+
+		Sub New(ByVal type As kCura.WinEDDS.FileUploadReturnArgs.FileUploadReturnType, ByVal value As String)
+			_value = Value
+			_type = type
+		End Sub
 
 	End Class
+
 End Namespace

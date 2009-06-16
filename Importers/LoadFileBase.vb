@@ -585,6 +585,14 @@ Namespace kCura.WinEDDS
 				MyBase.New(row, column, String.Format("Null parent object identifier found, this is required for the Parent Info field."))
 			End Sub
 		End Class
+
+		Public Class BcpPathAccessException
+			Inherits kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
+			Public Sub New(ByVal details As String)
+				MyBase.New("Error accessing the bcp share. Please contact your system administrator with the following details: " & System.Environment.NewLine & details)
+			End Sub
+		End Class
+
 #End Region
 
 	End Class

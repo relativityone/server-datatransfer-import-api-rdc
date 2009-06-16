@@ -221,6 +221,9 @@ Namespace kCura.WinEDDS
 			Try
 				RaiseEvent StartFileImport()
 				_timekeeper.MarkStart("Whole sh'bang")
+				_lineCounter = New kCura.Utility.File.LineCounter
+				Dim validateBcp As FileUploadReturnArgs = _bcpuploader.UploadBcpFile(_caseInfo.ArtifactID, _outputNativeFilePath)
+				If validateBcp.Type = FileUploadReturnArgs.FileUploadReturnType.UploadError And Not Config.EnableSingleModeImport Then Throw New BcpPathAccessException(validateBcp.Value)
 				InitializeMembers(path)
 				While _continue AndAlso Not HasReachedEOF
 					Try
@@ -230,7 +233,7 @@ Namespace kCura.WinEDDS
 							line = Me.GetLine
 							Dim lineStatus As Int32 = 0
 							If line.Length <> _columnHeaders.Length Then
-								lineStatus += ImportStatus.ColumnMismatch								'Throw New ColumnCountMismatchException(Me.CurrentLineNumber, _columnHeaders.Length, line.Length)
+								lineStatus += ImportStatus.ColumnMismatch								 'Throw New ColumnCountMismatchException(Me.CurrentLineNumber, _columnHeaders.Length, line.Length)
 							End If
 							_processedDocumentIdentifiers.Add(ManageDocument(line, lineStatus), CurrentLineNumber.ToString)
 						End If
@@ -294,7 +297,6 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Private Sub InitializeLineCounter(ByVal path As String)
-			_lineCounter = New kCura.Utility.File.LineCounter
 			_lineCounter.Path = path
 			_lineCounter.CountLines(_sourceFileEncoding, New kCura.Utility.File.LineCounter.LineCounterArgs(Me.Bound, Me.Delimiter))
 		End Sub
@@ -471,16 +473,21 @@ Namespace kCura.WinEDDS
 			If _artifactTypeID = 10 Then
 				Dim settings As New kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo
 				settings.UseBulkDataImport = True
-				Dim nativeFileUploadKey As String = _bcpuploader.UploadBcpFile(_caseInfo.ArtifactID, _outputNativeFilePath)
-				Dim codeFileUploadKey As String = _bcpuploader.UploadBcpFile(_caseInfo.ArtifactID, _outputCodeFilePath)
+				Dim validateBcp As FileUploadReturnArgs = _bcpuploader.UploadBcpFile(_caseInfo.ArtifactID, _outputNativeFilePath)
+				Dim nativeFileUploadKey As String = validateBcp.Value
+				Dim codeFileUploadKey As String = _bcpuploader.UploadBcpFile(_caseInfo.ArtifactID, _outputCodeFilePath).Value
 				settings.Repository = _defaultDestinationFolderPath
 				If settings.Repository = "" Then settings.Repository = _caseInfo.DocumentPath
-				If nativeFileUploadKey = "" Then
-					_uploader.DestinationFolderPath = settings.Repository
-					_bcpuploader.DestinationFolderPath = settings.Repository
-					nativeFileUploadKey = _bcpuploader.UploadFile(_outputNativeFilePath, _caseInfo.ArtifactID)
-					codeFileUploadKey = _bcpuploader.UploadFile(_outputCodeFilePath, _caseInfo.ArtifactID)
-					settings.UseBulkDataImport = False
+				If validateBcp.Type = FileUploadReturnArgs.FileUploadReturnType.UploadError Then
+					If Config.EnableSingleModeImport Then
+						_uploader.DestinationFolderPath = settings.Repository
+						_bcpuploader.DestinationFolderPath = settings.Repository
+						nativeFileUploadKey = _bcpuploader.UploadFile(_outputNativeFilePath, _caseInfo.ArtifactID)
+						codeFileUploadKey = _bcpuploader.UploadFile(_outputCodeFilePath, _caseInfo.ArtifactID)
+						settings.UseBulkDataImport = False
+					Else
+						Throw New BcpPathAccessException(validateBcp.Value)
+					End If
 				End If
 				settings.RunID = _runID
 				settings.CodeFileName = codeFileUploadKey
@@ -501,15 +508,20 @@ Namespace kCura.WinEDDS
 				Dim settings As New kCura.EDDS.WebAPI.BulkImportManagerBase.ObjectLoadInfo
 				settings.UseBulkDataImport = True
 				settings.ArtifactTypeID = Me._artifactTypeID
-				Dim nativeFileUploadKey As String = _bcpuploader.UploadBcpFile(_caseInfo.ArtifactID, _outputNativeFilePath)
-				Dim codeFileUploadKey As String = _bcpuploader.UploadBcpFile(_caseInfo.ArtifactID, _outputCodeFilePath)
+				Dim validateBcp As FileUploadReturnArgs = _bcpuploader.UploadBcpFile(_caseInfo.ArtifactID, _outputNativeFilePath)
+				Dim nativeFileUploadKey As String = validateBcp.Value
+				Dim codeFileUploadKey As String = _bcpuploader.UploadBcpFile(_caseInfo.ArtifactID, _outputCodeFilePath).Value
 				settings.Repository = _caseInfo.DocumentPath
-				If nativeFileUploadKey = "" Then
-					_uploader.DestinationFolderPath = settings.Repository
-					_bcpuploader.DestinationFolderPath = settings.Repository
-					nativeFileUploadKey = _bcpuploader.UploadFile(_outputNativeFilePath, _caseInfo.ArtifactID)
-					codeFileUploadKey = _bcpuploader.UploadFile(_outputCodeFilePath, _caseInfo.ArtifactID)
-					settings.UseBulkDataImport = False
+				If validateBcp.Type = FileUploadReturnArgs.FileUploadReturnType.UploadError Then
+					If Config.EnableSingleModeImport Then
+						_uploader.DestinationFolderPath = settings.Repository
+						_bcpuploader.DestinationFolderPath = settings.Repository
+						nativeFileUploadKey = _bcpuploader.UploadFile(_outputNativeFilePath, _caseInfo.ArtifactID)
+						codeFileUploadKey = _bcpuploader.UploadFile(_outputCodeFilePath, _caseInfo.ArtifactID)
+						settings.UseBulkDataImport = False
+					Else
+						Throw New BcpPathAccessException(validateBcp.Value)
+					End If
 				End If
 				settings.RunID = _runID
 				settings.CodeFileName = codeFileUploadKey

@@ -12,6 +12,7 @@ Namespace kCura.WinEDDS
 					If Not _configDictionary.Contains("ImportBatchSize") Then _configDictionary.Add("ImportBatchSize", "1000")
 					If Not _configDictionary.Contains("ImportBatchMaxVolume") Then _configDictionary.Add("ImportBatchMaxVolume", "10485760") '10(2^20) - don't know what 10MB standard is
 					If Not _configDictionary.Contains("ExportBatchSize") Then _configDictionary.Add("ExportBatchSize", "1000")
+					If Not _configDictionary.Contains("EnableSingleModeImport") Then _configDictionary.Add("EnableSingleModeImport", "False")
 				End If
 				Return _configDictionary
 			End Get
@@ -145,6 +146,12 @@ Namespace kCura.WinEDDS
 			Set(ByVal value As String)
 				Config.SetRegistryKeyValue("WebServiceURL", value)
 			End Set
+		End Property
+
+		Public Shared ReadOnly Property EnableSingleModeImport() As Boolean
+			Get
+				Return CType(ConfigSettings("EnableSingleModeImport"), Boolean)
+			End Get
 		End Property
 
 	End Class
