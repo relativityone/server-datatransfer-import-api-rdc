@@ -210,7 +210,7 @@ Namespace kCura.WinEDDS
 				Dim al As New System.collections.ArrayList
 				Dim line As String()
 				Dim status As Int32 = 0
-				Dim validateBcp As FileUploadReturnArgs = _bcpuploader.UploadBcpFile(_caseInfo.ArtifactID, bulkLoadFilePath)
+				Dim validateBcp As FileUploadReturnArgs = _bcpuploader.ValidateBcpPath(_caseInfo.ArtifactID, bulkLoadFilePath)
 				If validateBcp.Type = FileUploadReturnArgs.FileUploadReturnType.UploadError And Not Config.EnableSingleModeImport Then
 					Throw New kCura.WinEDDS.LoadFileBase.BcpPathAccessException(validateBcp.Value)
 				End If

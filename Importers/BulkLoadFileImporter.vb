@@ -222,7 +222,7 @@ Namespace kCura.WinEDDS
 				RaiseEvent StartFileImport()
 				_timekeeper.MarkStart("Whole sh'bang")
 				_lineCounter = New kCura.Utility.File.LineCounter
-				Dim validateBcp As FileUploadReturnArgs = _bcpuploader.UploadBcpFile(_caseInfo.ArtifactID, _outputNativeFilePath)
+				Dim validateBcp As FileUploadReturnArgs = _bcpuploader.ValidateBcpPath(_caseInfo.ArtifactID, _outputNativeFilePath)
 				If validateBcp.Type = FileUploadReturnArgs.FileUploadReturnType.UploadError And Not Config.EnableSingleModeImport Then Throw New BcpPathAccessException(validateBcp.Value)
 				InitializeMembers(path)
 				While _continue AndAlso Not HasReachedEOF

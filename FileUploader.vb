@@ -97,16 +97,42 @@ Namespace kCura.WinEDDS
 		End Class
 
 		Public Function UploadBcpFile(ByVal appID As Int32, ByVal localFilePath As String) As FileUploadReturnArgs
+			Return UploadBcpFileWrapper(appID, localFilePath, True)
+		End Function
+
+		Public Function ValidateBcpPath(ByVal appID As Int32, ByVal localFilePath As String) As FileUploadReturnArgs
+			Return UploadBcpFileWrapper(appID, localFilePath, False)
+		End Function
+
+		Public Function UploadBcpFileWrapper(ByVal appID As Int32, ByVal localFilePath As String, ByVal upload As Boolean) As FileUploadReturnArgs
+			'This function catches a potential intermittent network issue, when UploadBcpFile returns an arg object of type Warning
+			Dim args As FileUploadReturnArgs
+			Dim tries As Int32 = 0
+			While tries < 20
+				tries += 1
+				Try
+					args = UploadBcpFile(appID, localFilePath, upload)
+					If args.Type <> FileUploadReturnArgs.FileUploadReturnType.Warning Then
+						Return args
+					End If
+				Catch ex As System.Exception
+					Return New FileUploadReturnArgs(FileUploadReturnArgs.FileUploadReturnType.UploadError, "Error accessing BCP Path, could be caused by network connectivity issues: " & ex.Message)
+				End Try
+			End While
+			Return New FileUploadReturnArgs(FileUploadReturnArgs.FileUploadReturnType.UploadError, "Error accessing BCP Path, could be caused by network connectivity issues.")
+		End Function
+
+		Public Function UploadBcpFile(ByVal appID As Int32, ByVal localFilePath As String, ByVal upload As Boolean) As FileUploadReturnArgs
 			Dim oldDestinationFolderPath As String = String.Copy(_destinationFolderPath)
 			Try
-				Dim returnValue As New System.Collections.ArrayList
 				_destinationFolderPath = _gateway.GetBcpSharePath(appID)
 				If Not System.IO.Directory.Exists(_destinationFolderPath) Then
 					System.IO.Directory.CreateDirectory(_destinationFolderPath)
 				End If
-				Dim retval As String = Me.UploadFile(localFilePath, appID, True)
+				Dim retVal As String = ""
+				If upload Then retVal = Me.UploadFile(localFilePath, appID, True)
 				_destinationFolderPath = oldDestinationFolderPath
-				Return New FileUploadReturnArgs(FileUploadReturnArgs.FileUploadReturnType.ValidUploadKey, retval)
+				Return New FileUploadReturnArgs(FileUploadReturnArgs.FileUploadReturnType.ValidUploadKey, retVal)
 			Catch ex As Exception
 				If ex.ToString.ToLower.IndexOf("nobcpdirectoryexception") <> -1 Then
 					_isBulkEnabled = False
@@ -115,8 +141,13 @@ Namespace kCura.WinEDDS
 					Return New FileUploadReturnArgs(FileUploadReturnArgs.FileUploadReturnType.UploadError, ex.Message)
 				Else
 					Try
-						If _destinationFolderPath = oldDestinationFolderPath Then Return New FileUploadReturnArgs(FileUploadReturnArgs.FileUploadReturnType.UploadError, "")
-						Dim r As String = Me.WebUploadFile(New System.IO.FileStream(localFilePath, IO.FileMode.Open, IO.FileAccess.Read), appID, System.Guid.NewGuid.ToString)
+						If _destinationFolderPath = oldDestinationFolderPath Then
+							_isBulkEnabled = False
+							Me.UploaderType = _type
+							Return New FileUploadReturnArgs(FileUploadReturnArgs.FileUploadReturnType.Warning, "Invalid BCP Path Specified.")
+						End If
+						Dim r As String = ""
+						If upload Then r = Me.WebUploadFile(New System.IO.FileStream(localFilePath, IO.FileMode.Open, IO.FileAccess.Read), appID, System.Guid.NewGuid.ToString)
 						_destinationFolderPath = oldDestinationFolderPath
 						Return New FileUploadReturnArgs(FileUploadReturnArgs.FileUploadReturnType.ValidUploadKey, r)
 					Catch e As Exception
@@ -253,6 +284,7 @@ Namespace kCura.WinEDDS
 		Public Enum FileUploadReturnType
 			UploadError
 			ValidUploadKey
+			Warning
 		End Enum
 
 		Public ReadOnly Property Value() As String
@@ -268,7 +300,7 @@ Namespace kCura.WinEDDS
 		End Property
 
 		Sub New(ByVal type As kCura.WinEDDS.FileUploadReturnArgs.FileUploadReturnType, ByVal value As String)
-			_value = Value
+			_value = value
 			_type = type
 		End Sub
 
