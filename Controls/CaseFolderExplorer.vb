@@ -181,8 +181,8 @@ Namespace kCura.EDDS.WinForm
 			Dim foldersDataSet As System.Data.DataSet
 			foldersDataSet = _application.GetCaseFolders(caseInfo.ArtifactID)
 			If foldersDataSet Is Nothing Then Exit Sub
-			Dim cleanser As New DataSetCleanser
-			cleanser.CleanseDataset(foldersDataSet)
+			'Dim cleanser As New DataSetCleanser
+			'cleanser.CleanseDataset(foldersDataSet)
 			foldersDataSet.Relations.Add("NodeRelation", foldersDataSet.Tables(0).Columns("ArtifactID"), foldersDataSet.Tables(0).Columns("ParentArtifactID"))
 			Dim folderRow As System.Data.DataRow
 			Dim rootFolderNode As New System.Windows.Forms.TreeNode
