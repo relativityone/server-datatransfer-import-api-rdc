@@ -218,24 +218,36 @@ Namespace kCura.WinEDDS
 		Public Overloads Overrides Function ReadFile(ByVal path As String) As Object
 			Dim line As String()
 			_filePath = path
+			_timekeeper.MarkStart("TOTAL")
 			Try
 				RaiseEvent StartFileImport()
-				_timekeeper.MarkStart("Whole sh'bang")
+				_timekeeper.MarkStart("ReadFile_InitializeMembers")
 				_lineCounter = New kCura.Utility.File.LineCounter
 				Dim validateBcp As FileUploadReturnArgs = _bcpuploader.ValidateBcpPath(_caseInfo.ArtifactID, _outputNativeFilePath)
 				If validateBcp.Type = FileUploadReturnArgs.FileUploadReturnType.UploadError And Not Config.EnableSingleModeImport Then Throw New BcpPathAccessException(validateBcp.Value)
 				InitializeMembers(path)
+				_timekeeper.MarkEnd("ReadFile_InitializeMembers")
+				_timekeeper.MarkStart("ReadFile_ProcessDocuments")
 				While _continue AndAlso Not HasReachedEOF
 					Try
 						If Me.CurrentLineNumber < _startLineNumber Then
 							Me.AdvanceLine()
 						Else
+							_timekeeper.MarkStart("ReadFile_GetLine")
 							line = Me.GetLine
+							_timekeeper.MarkEnd("ReadFile_GetLine")
 							Dim lineStatus As Int32 = 0
 							If line.Length <> _columnHeaders.Length Then
 								lineStatus += ImportStatus.ColumnMismatch								 'Throw New ColumnCountMismatchException(Me.CurrentLineNumber, _columnHeaders.Length, line.Length)
 							End If
-							_processedDocumentIdentifiers.Add(ManageDocument(line, lineStatus), CurrentLineNumber.ToString)
+
+							_timekeeper.MarkStart("ReadFile_ManageDocument")
+							Dim id As String = ManageDocument(line, lineStatus)
+							_timekeeper.MarkEnd("ReadFile_ManageDocument")
+
+							_timekeeper.MarkStart("ReadFile_IdTrack")
+							_processedDocumentIdentifiers.Add(id, CurrentLineNumber.ToString)
+							_timekeeper.MarkEnd("ReadFile_IdTrack")
 						End If
 					Catch ex As LoadFileBase.CodeCreationException
 						_continue = False
@@ -248,6 +260,8 @@ Namespace kCura.WinEDDS
 						WriteFatalError(Me.CurrentLineNumber, ex, line)
 					End Try
 				End While
+				_timekeeper.MarkEnd("ReadFile_ProcessDocuments")
+				_timekeeper.MarkStart("ReadFile_OtherFinalization")
 				Me.PushNativeBatch(True)
 				RaiseEvent EndFileImport()
 				WriteEndImport("Finish")
@@ -256,9 +270,13 @@ Namespace kCura.WinEDDS
 					_errorLogWriter.Close()
 				Catch ex As System.Exception
 				End Try
+				_timekeeper.MarkEnd("ReadFile_OtherFinalization")
+				_timekeeper.MarkStart("ReadFile_CleanupTempTables")
 				Me.CleanupTempTables()
+				_timekeeper.MarkEnd("ReadFile_CleanupTempTables")
+				_timekeeper.MarkEnd("TOTAL")
+				_timekeeper.GenerateCsvReportItemsAsRows("_winedds", "C:\")
 				Return True
-				_timekeeper.MarkEnd("Whole sh'bang")
 			Catch ex As System.Exception
 				WriteFatalError(Me.CurrentLineNumber, ex, line)
 			End Try
@@ -293,7 +311,6 @@ Namespace kCura.WinEDDS
 			_outputNativeFileWriter = New System.IO.StreamWriter(_outputNativeFilePath, False, System.Text.Encoding.Unicode)
 			_outputCodeFileWriter = New System.IO.StreamWriter(_outputCodeFilePath, False, System.Text.Encoding.Unicode)
 			RaiseEvent StatusMessage(New kCura.Windows.Process.StatusEventArgs(Windows.Process.EventType.ResetStartTime, 0, _recordCount, "Reset time for import rolling average"))
-
 		End Sub
 
 		Private Sub InitializeLineCounter(ByVal path As String)
@@ -323,7 +340,6 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Private Function ManageDocument(ByVal values As String(), ByVal lineStatus As Int32) As String
-			Dim markStart As DateTime = DateTime.Now
 			Dim filename As String
 			Dim fileGuid As String = String.Empty
 			Dim uploadFile As Boolean = (_filePathColumnIndex <> -1) AndAlso _uploadFiles
@@ -338,8 +354,8 @@ Namespace kCura.WinEDDS
 			Dim isSupportedFileType As Boolean
 			Dim oixFileIdData As OI.FileID.FileIDData
 			Dim destinationVolume As String
+			_timekeeper.MarkStart("ManageDocument_Filesystem")
 			If uploadFile AndAlso _artifactTypeID = 10 Then
-				_timekeeper.MarkStart("UploadNative")
 				filename = values(_filePathColumnIndex)
 				If filename.Length > 1 AndAlso filename.Chars(0) = "\" AndAlso filename.Chars(1) <> "\" Then
 					filename = "." & filename
@@ -364,8 +380,10 @@ Namespace kCura.WinEDDS
 					filename = filename.Substring(filename.LastIndexOf("\") + 1)
 					WriteStatusLine(Windows.Process.EventType.Status, String.Format("End upload file. ({0}ms)", DateTime.op_Subtraction(DateTime.Now, now).Milliseconds))
 				End If
-				_timekeeper.MarkEnd("UploadNative")
 			End If
+			_timekeeper.MarkEnd("ManageDocument_Filesystem")
+
+			_timekeeper.MarkStart("ManageDocument_Folder")
 			If _createFolderStructure Then
 				If _artifactTypeID = 10 Then
 					parentFolderID = _folderCache.FolderID(Me.CleanDestinationFolderPath(values(_destinationFolderColumnIndex)))
@@ -396,6 +414,7 @@ Namespace kCura.WinEDDS
 					parentFolderID = -1
 				End If
 			End If
+			_timekeeper.MarkEnd("ManageDocument_Folder")
 			Dim markPrepareFields As DateTime = DateTime.Now
 			identityValue = PrepareFieldCollectionAndExtractIdentityValue(fieldCollection, values)
 			If identityValue = String.Empty Then
@@ -405,7 +424,9 @@ Namespace kCura.WinEDDS
 			End If
 			Dim metadoc As New MetaDocument(fileGuid, identityValue, fieldCollection, fileExists AndAlso uploadFile AndAlso (fileGuid <> String.Empty OrElse Not _copyFileToRepository), filename, fullFilePath, uploadFile, CurrentLineNumber, parentFolderID, md5hash, values, oixFileIdData, lineStatus, destinationVolume)
 			'_docsToProcess.Push(metadoc)
+			_timekeeper.MarkStart("ManageDocument_ManageDocumentMetadata")
 			ManageDocumentMetaData(metadoc)
+			_timekeeper.MarkEnd("ManageDocument_ManageDocumentMetadata")
 			Return identityValue
 		End Function
 
@@ -431,41 +452,29 @@ Namespace kCura.WinEDDS
 
 #Region "WebService Calls"
 
-		Private Function ReadDocumentInfo(ByVal identityValue As String) As kCura.EDDS.WebAPI.DocumentManagerBase.FullDocumentInfo
-			Try
-				Return _documentManager.ReadFromIdentifierWithFileList(_caseArtifactID, _selectedIdentifier.FieldName, identityValue, _fieldArtifactIds)
-			Catch ex As System.Exception
-				If kCura.WinEDDS.Config.UsesWebAPI Then
-					If TypeOf ex Is System.Web.Services.Protocols.SoapException Then
-						If Not ex.InnerException Is Nothing Then
-							ex = ex.InnerException
-						End If
-					End If
-					Throw New DocumentReadException(ex)
-				Else
-					Throw
-				End If
-			End Try
-		End Function
-
 		Private Sub ManageDocumentMetaData(ByVal metaDoc As MetaDocument)
 			_number += 1
 			Try
+				_timekeeper.MarkStart("ManageDocumentMetadata_ManageDocumentLine")
 				ManageDocumentLine(metaDoc, _extractFullTextFromNative)
+				_timekeeper.MarkEnd("ManageDocumentMetadata_ManageDocumentLine")
 				_batchCounter += 1
+				_timekeeper.MarkStart("ManageDocumentMetadata_WserviceCall")
 				If _outputNativeFileWriter.BaseStream.Length > Config.ImportBatchMaxVolume OrElse _batchCounter > Config.ImportBatchSize - 1 Then
 					Me.PushNativeBatch()
 				End If
+				_timekeeper.MarkEnd("ManageDocumentMetadata_WserviceCall")
 			Catch ex As kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
 				WriteError(metaDoc.LineNumber, ex.Message)
 			Catch ex As System.Exception
 				WriteFatalError(metaDoc.LineNumber, ex, metaDoc.SourceLine)
 			End Try
+			_timekeeper.MarkStart("ManageDocumentMetadata_ProgressEvent")
 			WriteStatusLine(Windows.Process.EventType.Progress, String.Format("Document '{0}' processed.", metaDoc.IdentityValue), metaDoc.LineNumber)
+			_timekeeper.MarkEnd("ManageDocumentMetadata_ProgressEvent")
 		End Sub
 
 		Private Function PushNativeBatch(Optional ByVal lastRun As Boolean = False) As Object
-			_timekeeper.MarkStart("PushNativeBatch")
 			_outputNativeFileWriter.Close()
 			_outputCodeFileWriter.Close()
 			If _batchCounter = 0 Then Exit Function
@@ -547,7 +556,6 @@ Namespace kCura.WinEDDS
 				_outputCodeFileWriter = New System.IO.StreamWriter(_outputCodeFilePath, False, System.Text.Encoding.Unicode)
 			End If
 			Me.ManageErrors(_artifactTypeID)
-			_timekeeper.MarkEnd("PushNativeBatch")
 		End Function
 
 		Private Function GetMappedFields(ByVal artifactTypeID As Int32) As kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo()

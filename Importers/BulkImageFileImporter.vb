@@ -51,6 +51,8 @@ Namespace kCura.WinEDDS
 		Private _totalValidated As Long
 		Private _totalProcessed As Long
 		Private _startLineNumber As Int64
+
+		Private _timekeeper As New kCura.Utility.Timekeeper
 #End Region
 
 #Region "Accessors"
@@ -196,12 +198,14 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Public Overloads Overrides Function ReadFile(ByVal path As String) As Object
+			_timekeeper.MarkStart("TOTAL")
 			Dim bulkLoadFilePath As String = System.IO.Path.GetTempFileName
 			_fileIdentifierLookup = New System.Collections.Hashtable
 			_totalProcessed = 0
 			_totalValidated = 0
 			_bulkLoadFileWriter = New System.IO.StreamWriter(bulkLoadFilePath, False, System.Text.Encoding.Unicode)
 			Try
+				_timekeeper.MarkStart("ReadFile_Init")
 				Dim documentIdentifier As String = String.Empty
 				_fileLineCount = kCura.Utility.File.CountLinesInFile(path)
 				Reader = New StreamReader(path)
@@ -210,6 +214,9 @@ Namespace kCura.WinEDDS
 				Dim al As New System.collections.ArrayList
 				Dim line As String()
 				Dim status As Int32 = 0
+				_timekeeper.MarkEnd("ReadFile_Init")
+
+				_timekeeper.MarkStart("ReadFile_Main")
 				Dim validateBcp As FileUploadReturnArgs = _bcpuploader.ValidateBcpPath(_caseInfo.ArtifactID, bulkLoadFilePath)
 				If validateBcp.Type = FileUploadReturnArgs.FileUploadReturnType.UploadError And Not Config.EnableSingleModeImport Then
 					Throw New kCura.WinEDDS.LoadFileBase.BcpPathAccessException(validateBcp.Value)
@@ -233,9 +240,15 @@ Namespace kCura.WinEDDS
 						End If
 					End If
 				End While
+				_timekeeper.MarkEnd("ReadFile_Main")
+
+				_timekeeper.MarkStart("ReadFile_Cleanup")
 				Me.PushImageBatch(bulkLoadFilePath, True)
 				Me.CompleteSuccess()
 				CleanupTempTables()
+				_timekeeper.MarkEnd("ReadFile_Cleanup")
+				_timekeeper.MarkEnd("TOTAL")
+				_timekeeper.GenerateCsvReportItemsAsRows("_winedds_image", "C:\")
 			Catch ex As System.Exception
 				Me.CompleteError(ex)
 			End Try
