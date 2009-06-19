@@ -112,7 +112,8 @@ Namespace kCura.WinEDDS
 			Dim volumeFile As String
 			Dim typeOfExportDisplayString As String = ""
 			Dim fileCount As Int32 = 0
-
+			Dim errorOutputFilePath As String = _exportFile.FolderPath & "\" & _exportFile.LoadFilesPrefix & "_img_errors.txt"
+			If System.IO.File.Exists(errorOutputFilePath) AndAlso _exportFile.Overwrite Then kCura.Utility.File.Delete(errorOutputFilePath)
 			Me.WriteUpdate("Retrieving export data from the server...")
 			Select Case Me.ExportFile.TypeOfExport
 				Case ExportFile.ExportType.ArtifactSearch
@@ -510,6 +511,21 @@ Namespace kCura.WinEDDS
 
 		Friend Sub WriteError(ByVal line As String)
 			WriteStatusLine(kCura.Windows.Process.EventType.Error, line, True)
+		End Sub
+
+		Friend Sub WriteImgProgressError(ByVal documentInfo As Exporters.DocumentExportInfo, ByVal imageIndex As Int32, ByVal ex As System.Exception, Optional ByVal notes As String = "")
+			Dim sw As New System.IO.StreamWriter(_exportFile.FolderPath & "\" & _exportFile.LoadFilesPrefix & "_img_errors.txt", True, _exportFile.LoadFileEncoding)
+			sw.WriteLine(System.DateTime.Now.ToString("s"))
+			sw.WriteLine(String.Format("DOCUMENT: {0}", documentInfo.IdentifierValue))
+			If imageIndex > -1 AndAlso documentInfo.Images.Count > 0 Then
+				sw.WriteLine(String.Format("IMAGE: {0} ({1} of {2})", documentInfo.Images(imageIndex), imageIndex + 1, documentInfo.Images.Count))
+			End If
+			If Not notes = "" Then sw.WriteLine("NOTES: " & notes)
+			sw.WriteLine("ERROR: " & ex.ToString)
+			sw.WriteLine("")
+			sw.Close()
+			Dim errorLine As String = String.Format("Error processing images for document {0}: {1}. Check {2}_img_errors.txt for details", documentInfo.IdentifierValue, ex.Message.TrimEnd("."c), _exportFile.LoadFilesPrefix)
+			Me.WriteError(errorLine)
 		End Sub
 
 		Friend Sub WriteWarning(ByVal line As String)

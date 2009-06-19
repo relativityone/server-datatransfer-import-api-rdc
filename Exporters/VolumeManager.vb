@@ -192,6 +192,8 @@ Namespace kCura.WinEDDS
 					_timekeeper.MarkEnd("VolumeManager_DownloadImage")
 				Next
 			End If
+			Dim imageCount As Long = documentInfo.Images.Count
+			Dim successfulRollup As Boolean = True
 			If documentInfo.Images.Count > 0 AndAlso (Me.Settings.TypeOfImage = ExportFile.ImageType.MultiPageTiff OrElse Me.Settings.TypeOfImage = ExportFile.ImageType.Pdf) Then
 				Dim imageList(documentInfo.Images.Count - 1) As String
 				For i As Int32 = 0 To imageList.Length - 1
@@ -199,35 +201,47 @@ Namespace kCura.WinEDDS
 				Next
 				Dim tempLocation As String = System.IO.Path.GetTempFileName
 				Dim converter As New kCura.Utility.Image
-				Select Case Me.Settings.TypeOfImage
-					Case ExportFile.ImageType.MultiPageTiff
-						converter.ConvertTIFFsToMultiPage(imageList, tempLocation)
-					Case ExportFile.ImageType.Pdf
-						If Not tempLocation Is Nothing AndAlso Not tempLocation = "" Then converter.ConvertImagesToMultiPagePdf(imageList, tempLocation)
-				End Select
-				For Each imageLocation As String In imageList
-					System.IO.File.Delete(imageLocation)
-				Next
-				If Me.Settings.TypeOfImage = ExportFile.ImageType.Pdf Then
+				Try
+					Select Case Me.Settings.TypeOfImage
+						Case ExportFile.ImageType.MultiPageTiff
+							converter.ConvertTIFFsToMultiPage(imageList, tempLocation)
+						Case ExportFile.ImageType.Pdf
+							If Not tempLocation Is Nothing AndAlso Not tempLocation = "" Then converter.ConvertImagesToMultiPagePdf(imageList, tempLocation)
+					End Select
+					imageCount = 1
+					For Each imageLocation As String In imageList
+						System.IO.File.Delete(imageLocation)
+					Next
+					Dim ext As String = ""
+					Select Case Me.Settings.TypeOfImage
+						Case ExportFile.ImageType.Pdf
+							ext = ".pdf"
+						Case ExportFile.ImageType.MultiPageTiff
+							ext = ".tif"
+					End Select
 					Dim currentTempLocation As String = Me.GetImageExportLocation(image)
 					currentTempLocation = currentTempLocation.Substring(0, currentTempLocation.LastIndexOf("."))
-					currentTempLocation &= ".pdf"
+					currentTempLocation &= ext
 					DirectCast(documentInfo.Images(0), Exporters.ImageExportInfo).TempLocation = currentTempLocation
 					currentTempLocation = DirectCast(documentInfo.Images(0), Exporters.ImageExportInfo).FileName
 					currentTempLocation = currentTempLocation.Substring(0, currentTempLocation.LastIndexOf("."))
-					currentTempLocation &= ".pdf"
+					currentTempLocation &= ext
 					DirectCast(documentInfo.Images(0), Exporters.ImageExportInfo).FileName = currentTempLocation
-				End If
-				If System.IO.File.Exists(DirectCast(documentInfo.Images(0), Exporters.ImageExportInfo).TempLocation) Then
-					If Me.Settings.Overwrite Then
-						kCura.Utility.File.Delete(DirectCast(documentInfo.Images(0), Exporters.ImageExportInfo).TempLocation)
-						System.IO.File.Move(tempLocation, DirectCast(documentInfo.Images(0), Exporters.ImageExportInfo).TempLocation)
+					Dim location As String = DirectCast(documentInfo.Images(0), Exporters.ImageExportInfo).TempLocation
+					If System.IO.File.Exists(DirectCast(documentInfo.Images(0), Exporters.ImageExportInfo).TempLocation) Then
+						If Me.Settings.Overwrite Then
+							kCura.Utility.File.Delete(DirectCast(documentInfo.Images(0), Exporters.ImageExportInfo).TempLocation)
+							System.IO.File.Move(tempLocation, DirectCast(documentInfo.Images(0), Exporters.ImageExportInfo).TempLocation)
+						Else
+							_parent.WriteWarning("File exists - file copy skipped: " & DirectCast(documentInfo.Images(0), Exporters.ImageExportInfo).TempLocation)
+						End If
 					Else
-						_parent.WriteWarning("File exists - file copy skipped: " & DirectCast(documentInfo.Images(0), Exporters.ImageExportInfo).TempLocation)
+						System.IO.File.Move(tempLocation, DirectCast(documentInfo.Images(0), Exporters.ImageExportInfo).TempLocation)
 					End If
-				Else
-					System.IO.File.Move(tempLocation, DirectCast(documentInfo.Images(0), Exporters.ImageExportInfo).TempLocation)
-				End If
+				Catch ex As kCura.Utility.Image.ImageRollupException
+					successfulRollup = False
+					_parent.WriteImgProgressError(documentInfo, ex.ImageIndex, ex, "Document exported in single-page image mode.")					'TODO:
+				End Try
 			End If
 
 			If Me.Settings.ExportNative Then
@@ -279,8 +293,6 @@ Namespace kCura.WinEDDS
 
 			Dim textCount As Int32 = 0
 			If Me.Settings.ExportFullTextAsFile AndAlso documentInfo.HasFullText Then textCount += 1
-			Dim imageCount As Long = documentInfo.ImageCount
-			If Me.Settings.TypeOfImage <> ExportFile.ImageType.SinglePage Then imageCount = System.Math.Min(imageCount, 1)
 			If totalFileSize + _currentVolumeSize > Me.VolumeMaxSize Then
 				If _currentVolumeSize = 0 Then
 					updateVolumeAfterExport = True
@@ -322,7 +334,7 @@ Namespace kCura.WinEDDS
 			End If
 			If Me.Settings.ExportImages Then
 				_timekeeper.MarkStart("VolumeManager_ExportImages")
-				Me.ExportImages(documentInfo.Images, tempLocalIproFullTextFilePath)
+				Me.ExportImages(documentInfo.Images, tempLocalIproFullTextFilePath, successfulRollup)
 				_timekeeper.MarkEnd("VolumeManager_ExportImages")
 			End If
 			Dim nativeLocation As String = ""
@@ -449,7 +461,7 @@ Namespace kCura.WinEDDS
 		End Function
 
 
-		Public Sub ExportImages(ByVal images As System.Collections.ArrayList, ByVal localFullTextPath As String)
+		Public Sub ExportImages(ByVal images As System.Collections.ArrayList, ByVal localFullTextPath As String, ByVal successfulRollup As Boolean)
 			Dim image As WinEDDS.Exporters.ImageExportInfo
 			Dim i As Int32 = 0
 			Dim fullTextReader As System.IO.StreamReader = Nothing
@@ -465,7 +477,7 @@ Namespace kCura.WinEDDS
 						fullTextReader = New System.IO.StreamReader(localFullTextPath, _encoding, True)
 					End If
 				End If
-				If images.Count > 0 AndAlso (Me.Settings.TypeOfImage = ExportFile.ImageType.MultiPageTiff OrElse Me.Settings.TypeOfImage = ExportFile.ImageType.Pdf) Then
+				If images.Count > 0 AndAlso (Me.Settings.TypeOfImage = ExportFile.ImageType.MultiPageTiff OrElse Me.Settings.TypeOfImage = ExportFile.ImageType.Pdf) AndAlso successfulRollup Then
 					Dim marker As Exporters.ImageExportInfo = DirectCast(images(0), Exporters.ImageExportInfo)
 					Me.ExportDocumentImage(localFilePath & marker.FileName, marker.FileGuid, marker.ArtifactID, marker.BatesNumber, marker.TempLocation)
 					Dim copyfile As String
