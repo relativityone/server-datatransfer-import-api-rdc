@@ -1216,7 +1216,7 @@ Namespace kCura.WinEDDS
 			If Not _bulkImportManager.NativeRunHasErrors(_caseInfo.ArtifactID, _runID) Then Exit Sub
 			Dim sr As kCura.Utility.GenericCsvReader
 			Try
-				With _bulkImportManager.GenerateNativeErrorFiles(_caseInfo.ArtifactID, _runID, artifactTypeID, True)
+				With _bulkImportManager.GenerateNativeErrorFiles(_caseInfo.ArtifactID, _runID, artifactTypeID, True, _keyFieldID)
 					Me.WriteStatusLine(Windows.Process.EventType.Status, "Retrieving errors from server")
 					Dim downloader As New FileDownloader(DirectCast(_bulkImportManager.Credentials, System.Net.NetworkCredential), _caseInfo.DocumentPath, _caseInfo.DownloadHandlerURL, _bulkImportManager.CookieContainer, kCura.WinEDDS.Service.Settings.AuthenticationToken)
 					Dim errorsLocation As String = System.IO.Path.GetTempFileName

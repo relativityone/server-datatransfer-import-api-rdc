@@ -206,6 +206,7 @@
             <s:element minOccurs="0" maxOccurs="1" name="runID" type="s:string" />
             <s:element minOccurs="1" maxOccurs="1" name="artifactTypeID" type="s:int" />
             <s:element minOccurs="1" maxOccurs="1" name="writeHeader" type="s:boolean" />
+            <s:element minOccurs="1" maxOccurs="1" name="keyFieldID" type="s:int" />
           </s:sequence>
         </s:complexType>
       </s:element>

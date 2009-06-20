@@ -146,14 +146,14 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
         
         '<remarks/>
         <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/BulkImportManager/GenerateNativeErrorFiles", RequestNamespace:="http://www.kCura.com/EDDS/BulkImportManager", ResponseNamespace:="http://www.kCura.com/EDDS/BulkImportManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
-        Public Function GenerateNativeErrorFiles(ByVal appID As Integer, ByVal runID As String, ByVal artifactTypeID As Integer, ByVal writeHeader As Boolean) As ErrorFileKey
-            Dim results() As Object = Me.Invoke("GenerateNativeErrorFiles", New Object() {appID, runID, artifactTypeID, writeHeader})
+        Public Function GenerateNativeErrorFiles(ByVal appID As Integer, ByVal runID As String, ByVal artifactTypeID As Integer, ByVal writeHeader As Boolean, ByVal keyFieldID As Integer) As ErrorFileKey
+            Dim results() As Object = Me.Invoke("GenerateNativeErrorFiles", New Object() {appID, runID, artifactTypeID, writeHeader, keyFieldID})
             Return CType(results(0),ErrorFileKey)
         End Function
         
         '<remarks/>
-        Public Function BeginGenerateNativeErrorFiles(ByVal appID As Integer, ByVal runID As String, ByVal artifactTypeID As Integer, ByVal writeHeader As Boolean, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
-            Return Me.BeginInvoke("GenerateNativeErrorFiles", New Object() {appID, runID, artifactTypeID, writeHeader}, callback, asyncState)
+        Public Function BeginGenerateNativeErrorFiles(ByVal appID As Integer, ByVal runID As String, ByVal artifactTypeID As Integer, ByVal writeHeader As Boolean, ByVal keyFieldID As Integer, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("GenerateNativeErrorFiles", New Object() {appID, runID, artifactTypeID, writeHeader, keyFieldID}, callback, asyncState)
         End Function
         
         '<remarks/>
