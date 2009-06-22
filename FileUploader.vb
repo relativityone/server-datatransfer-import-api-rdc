@@ -65,7 +65,7 @@ Namespace kCura.WinEDDS
 			End Get
 			Set(ByVal value As Type)
 				_type = value
-				RaiseEvent UploadModeChangeEvent(value.ToString, _isBulkEnabled)
+				'RaiseEvent UploadModeChangeEvent(value.ToString, _isBulkEnabled)
 			End Set
 		End Property
 
