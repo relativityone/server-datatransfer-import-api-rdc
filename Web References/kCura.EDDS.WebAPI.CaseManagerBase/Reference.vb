@@ -231,10 +231,16 @@ Namespace kCura.EDDS.WebAPI.CaseManagerBase
         Public DefaultFileLocationCodeArtifactID As Integer
         
         '<remarks/>
+        Public DefaultFileLocationName As String
+        
+        '<remarks/>
         Public SqlFullTextLcid As Integer
         
         '<remarks/>
         Public DBLocation As String
+        
+        '<remarks/>
+        Public MasterDBLocation As String
         
         '<remarks/>
         Public RootArtifactID As Integer

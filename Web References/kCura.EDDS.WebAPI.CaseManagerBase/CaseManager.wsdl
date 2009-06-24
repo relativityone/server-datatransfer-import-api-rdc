@@ -61,8 +61,10 @@
           <s:element minOccurs="1" maxOccurs="1" name="StatusCodeArtifactID" type="s:int" />
           <s:element minOccurs="0" maxOccurs="1" name="DownloadHandlerApplicationPath" type="s:string" />
           <s:element minOccurs="1" maxOccurs="1" name="DefaultFileLocationCodeArtifactID" type="s:int" />
+          <s:element minOccurs="0" maxOccurs="1" name="DefaultFileLocationName" type="s:string" />
           <s:element minOccurs="1" maxOccurs="1" name="SqlFullTextLcid" type="s:int" />
           <s:element minOccurs="0" maxOccurs="1" name="DBLocation" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="MasterDBLocation" type="s:string" />
           <s:element minOccurs="1" maxOccurs="1" name="RootArtifactID" type="s:int" />
           <s:element minOccurs="1" maxOccurs="1" name="RootFolderID" type="s:int" />
         </s:sequence>
