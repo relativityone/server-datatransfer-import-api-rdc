@@ -451,6 +451,7 @@ Namespace kCura.EDDS.WinForm
 			If _overwriteDropdown.SelectedIndex = 1 Then
 				GroupBox2.Enabled = True
 			Else
+				_beginBatesDropdown.SelectedValue = _identifierFieldArtifactID
 				GroupBox2.Enabled = False
 			End If
 		End Sub

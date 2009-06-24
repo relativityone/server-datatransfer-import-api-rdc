@@ -1200,6 +1200,14 @@ Namespace kCura.EDDS.WinForm
 
 		Private Sub _overwriteDestination_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _overwriteDropdown.SelectedIndexChanged
 			LoadFile.OverwriteDestination = Me.GetOverwrite
+			If LoadFile.OverwriteDestination.ToLower <> "strict" Then
+				For Each field As DocumentField In _overlayIdentifier.Items
+					If field.FieldCategory = DynamicFields.Types.FieldCategory.Identifier Then
+						_overlayIdentifier.SelectedItem = field
+						Exit For
+					End If
+				Next
+			End If
 			If Me.LoadFile.ArtifactTypeID = 10 Then
 				Select Case LoadFile.OverwriteDestination.ToLower
 					Case "none"
