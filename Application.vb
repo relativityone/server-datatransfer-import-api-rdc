@@ -328,7 +328,10 @@ Namespace kCura.EDDS.WinForm
 				End If
 			Next
 			Dim fieldName As String = Me.CurrentFields(ArtifactTypeID, True).Item(loadFile.IdentityFieldId).FieldName
-
+			If Not forPreview AndAlso Me.IdentifierFieldIsMappedButNotKey(loadFile.FieldMap, loadFile.IdentityFieldId) Then
+				MsgBox("The field marked [identifier] cannot be part of a field map when it's not the Overlay Identifier field", MsgBoxStyle.Critical)
+				Return False
+			End If
 			If Not isIdentifierMapped Then
 				MsgBox("The key field [" & fieldName & "] is unmapped.  Please map it to continue", MsgBoxStyle.Critical)
 				Return isIdentifierMapped
@@ -337,6 +340,21 @@ Namespace kCura.EDDS.WinForm
 				Return MsgBox("There is no SQL index on the selected Overlay Identifier field.  " & vbNewLine & "Performing a load on an un-indexed SQL field will be drastically slower, " & vbNewLine & "and may negatively impact Relativity performance for all users." & vbNewLine & "Contact your SQL Administrator to have an index applied to the selected Overlay Identifier field.", MsgBoxStyle.OKCancel) = MsgBoxResult.OK
 			Else
 				Return True
+			End If
+		End Function
+
+		Private Function IdentifierFieldIsMappedButNotKey(ByVal fieldMap As WinEDDS.LoadFileFieldMap, ByVal keyFieldID As Int32) As Boolean
+			Dim idField As DocumentField
+			For Each item As LoadFileFieldMap.LoadFileFieldMapItem In fieldMap
+				If Not item.DocumentField Is Nothing AndAlso Not item.NativeFileColumnIndex = -1 And item.DocumentField.FieldCategory = DynamicFields.Types.FieldCategory.Identifier Then
+					idField = item.DocumentField
+					Exit For
+				End If
+			Next
+			If Not idField Is Nothing AndAlso idField.FieldID <> keyFieldID Then
+				Return True
+			Else
+				Return False
 			End If
 		End Function
 
