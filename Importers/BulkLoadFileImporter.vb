@@ -418,9 +418,11 @@ Namespace kCura.WinEDDS
 			Dim markPrepareFields As DateTime = DateTime.Now
 			identityValue = PrepareFieldCollectionAndExtractIdentityValue(fieldCollection, values)
 			If identityValue = String.Empty Then
-				lineStatus += ImportStatus.EmptyIdentifier				'Throw New IdentityValueNotSetException
+				'lineStatus += ImportStatus.EmptyIdentifier				'
+				Throw New IdentityValueNotSetException
 			ElseIf Not _processedDocumentIdentifiers(identityValue) Is Nothing Then
-				lineStatus += ImportStatus.IdentifierOverlap				'	Throw New IdentifierOverlapException(identityValue, _processedDocumentIdentifiers(identityValue))
+				'lineStatus += ImportStatus.IdentifierOverlap				'	
+				Throw New IdentifierOverlapException(identityValue, _processedDocumentIdentifiers(identityValue))
 			End If
 			Dim metadoc As New MetaDocument(fileGuid, identityValue, fieldCollection, fileExists AndAlso uploadFile AndAlso (fileGuid <> String.Empty OrElse Not _copyFileToRepository), filename, fullFilePath, uploadFile, CurrentLineNumber, parentFolderID, md5hash, values, oixFileIdData, lineStatus, destinationVolume)
 			'_docsToProcess.Push(metadoc)
