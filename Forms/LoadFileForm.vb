@@ -795,7 +795,7 @@ Namespace kCura.EDDS.WinForm
 
 		Private Function GetSuitableKeyFields() As DocumentField()
 			Dim retval As New System.Collections.ArrayList
-			For Each field As DocumentField In _application.CurrentFields(Me.LoadFile.ArtifactTypeID)
+			For Each field As DocumentField In _application.CurrentFields(Me.LoadFile.ArtifactTypeID, True)
 				If (field.FieldCategory = DynamicFields.Types.FieldCategory.Generic OrElse field.FieldCategory = DynamicFields.Types.FieldCategory.Identifier) AndAlso field.FieldTypeID = DynamicFields.Types.FieldTypeHelper.FieldType.Varchar Then
 					If field.FieldCategory = DynamicFields.Types.FieldCategory.Identifier Then field.FieldName &= " [Identifier]"
 					retval.Add(field)
