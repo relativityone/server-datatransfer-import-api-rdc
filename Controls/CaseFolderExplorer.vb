@@ -179,7 +179,19 @@ Namespace kCura.EDDS.WinForm
 			_treeView.Nodes.Clear()
 
 			Dim foldersDataSet As System.Data.DataSet
-			foldersDataSet = _application.GetCaseFolders(caseInfo.ArtifactID)
+			Try
+				foldersDataSet = _application.GetCaseFolders(caseInfo.ArtifactID)
+			Catch ex As System.Exception
+				Dim frm As New ErrorDialog
+				frm.Initialize(ex, "Error retrieving folder information from server.  Continue?")
+				frm.ShowDialog()
+				Select Case frm.DialogResult
+					Case DialogResult.OK
+						foldersDataSet = _application.GetCaseRootFolderForErrorState(caseInfo.ArtifactID)
+					Case DialogResult.Cancel
+						_application.ExitApplication()
+				End Select
+			End Try
 			If foldersDataSet Is Nothing Then Exit Sub
 			'Dim cleanser As New DataSetCleanser
 			'cleanser.CleanseDataset(foldersDataSet)

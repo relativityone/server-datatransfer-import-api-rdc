@@ -292,6 +292,16 @@
                     BuildAction = "EmbeddedResource"
                 />
                 <File
+                    RelPath = "Forms\ErrorDialog.vb"
+                    SubType = "Form"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Forms\ErrorDialog.resx"
+                    DependentUpon = "ErrorDialog.vb"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
                     RelPath = "Forms\ErrorForm.vb"
                     SubType = "Form"
                     BuildAction = "Compile"

@@ -391,6 +391,22 @@ Namespace kCura.EDDS.WinForm
 			End If
 		End Function
 
+		Public Function GetCaseRootFolderForErrorState(ByVal caseID As Int32) As System.Data.DataSet
+			Dim dt As New System.Data.DataTable
+			dt.Columns.Add("ArtifactID")
+			dt.Columns.Add("ParentArtifactID")
+			dt.Columns.Add("Name")
+			Dim row As System.Data.DataRow = dt.NewRow
+			row("ArtifactID") = Me.SelectedCaseInfo.RootFolderID
+			row("ParentArtifactID") = System.DBNull.Value
+			row("Name") = Me.SelectedCaseInfo.Name
+			dt.Rows.Add(row)
+			Dim retval As New System.Data.DataSet
+			retval.Tables.Add(dt)
+			Return retval
+		End Function
+
+
 		Public Function GetCaseFolders(ByVal caseID As Int32) As System.Data.DataSet
 			Try
 				Dim folderManager As New kCura.WinEDDS.Service.FolderManager(Credential, _cookieContainer)
