@@ -199,7 +199,7 @@ Namespace kCura.WinEDDS
 				For i As Int32 = 0 To imageList.Length - 1
 					imageList(i) = DirectCast(documentInfo.Images(i), Exporters.ImageExportInfo).TempLocation
 				Next
-				Dim tempLocation As String = System.IO.Path.GetTempFileName
+				Dim tempLocation As String = Me.Settings.FolderPath.TrimEnd("\"c) & "\" & System.Guid.NewGuid.ToString & ".tmp"
 				Dim converter As New kCura.Utility.Image
 				Try
 					Select Case Me.Settings.TypeOfImage
@@ -210,7 +210,7 @@ Namespace kCura.WinEDDS
 					End Select
 					imageCount = 1
 					For Each imageLocation As String In imageList
-						System.IO.File.Delete(imageLocation)
+						kCura.Utility.File.Delete(imageLocation)
 					Next
 					Dim ext As String = ""
 					Select Case Me.Settings.TypeOfImage
@@ -231,12 +231,12 @@ Namespace kCura.WinEDDS
 					If System.IO.File.Exists(DirectCast(documentInfo.Images(0), Exporters.ImageExportInfo).TempLocation) Then
 						If Me.Settings.Overwrite Then
 							kCura.Utility.File.Delete(DirectCast(documentInfo.Images(0), Exporters.ImageExportInfo).TempLocation)
-							System.IO.File.Move(tempLocation, DirectCast(documentInfo.Images(0), Exporters.ImageExportInfo).TempLocation)
+							kCura.Utility.File.Move(tempLocation, DirectCast(documentInfo.Images(0), Exporters.ImageExportInfo).TempLocation)
 						Else
 							_parent.WriteWarning("File exists - file copy skipped: " & DirectCast(documentInfo.Images(0), Exporters.ImageExportInfo).TempLocation)
 						End If
 					Else
-						System.IO.File.Move(tempLocation, DirectCast(documentInfo.Images(0), Exporters.ImageExportInfo).TempLocation)
+						kCura.Utility.File.Move(tempLocation, DirectCast(documentInfo.Images(0), Exporters.ImageExportInfo).TempLocation)
 					End If
 				Catch ex As kCura.Utility.Image.ImageRollupException
 					successfulRollup = False
@@ -260,8 +260,11 @@ Namespace kCura.WinEDDS
 
 			If Me.Settings.ExportFullText Then
 				tempLocalFullTextFilePath = Me.DownloadTextFieldAsFile(documentInfo, Me.Settings.SelectedTextField)
-				If Me.Settings.ExportFullTextAsFile Then totalFileSize += New System.IO.FileInfo(tempLocalFullTextFilePath).Length
-				documentInfo.HasFullText = New System.IO.FileInfo(tempLocalFullTextFilePath).Length > 0
+				If Me.Settings.ExportFullTextAsFile Then
+					Dim l As Int64 = kCura.Utility.File.Length(tempLocalFullTextFilePath)
+					totalFileSize += l
+					documentInfo.HasFullText = (l > 0)
+				End If
 			End If
 
 			If Me.Settings.LogFileFormat = LoadFileType.FileFormat.IPRO_FullText Then
@@ -552,11 +555,11 @@ Namespace kCura.WinEDDS
 			Dim tempFile As String = Me.GetImageExportLocation(image)
 			If Me.Settings.TypeOfImage = ExportFile.ImageType.Pdf Then
 				tempFile = System.IO.Path.GetTempFileName
-				System.IO.File.Delete(tempFile)
+				kCura.Utility.File.Delete(tempFile)
 			End If
 			If System.IO.File.Exists(tempFile) Then
 				If _settings.Overwrite Then
-					System.IO.File.Delete(tempFile)
+					kCura.Utility.File.Delete(tempFile)
 					_parent.WriteStatusLine(kCura.Windows.Process.EventType.Status, String.Format("Overwriting image for {0}.", image.BatesNumber), False)
 				Else
 					_parent.WriteWarning(String.Format("{0} already exists. Skipping file export.", tempFile))
@@ -583,16 +586,16 @@ Namespace kCura.WinEDDS
 					End If
 				End Try
 			End While
-			Return New System.IO.FileInfo(tempFile).Length
+			Return kCura.Utility.File.Length(tempFile)
 		End Function
 
 		Private Sub ExportDocumentImage(ByVal fileName As String, ByVal fileGuid As String, ByVal artifactID As Int32, ByVal batesNumber As String, ByVal tempFileLocation As String)
 			If Not tempFileLocation = "" AndAlso Not tempFileLocation.ToLower = fileName.ToLower Then
 				If System.IO.File.Exists(fileName) Then
 					If _settings.Overwrite Then
-						System.IO.File.Delete(fileName)
+						kCura.Utility.File.Delete(fileName)
 						_parent.WriteStatusLine(kCura.Windows.Process.EventType.Status, String.Format("Overwriting document image {0}.", batesNumber), False)
-						System.IO.File.Move(tempFileLocation, fileName)
+						kCura.Utility.File.Move(tempFileLocation, fileName)
 					Else
 						_parent.WriteWarning(String.Format("{0}.tif already exists. Skipping file export.", batesNumber))
 					End If
@@ -601,7 +604,7 @@ Namespace kCura.WinEDDS
 					_parent.WriteStatusLine(kCura.Windows.Process.EventType.Status, String.Format("Now exporting document image {0}.", batesNumber), False)
 					_timekeeper.MarkEnd("VolumeManager_ExportDocumentImage_WriteStatus")
 					_timekeeper.MarkStart("VolumeManager_ExportDocumentImage_MoveFile")
-					System.IO.File.Move(tempFileLocation, fileName)
+					kCura.Utility.File.Move(tempFileLocation, fileName)
 					_timekeeper.MarkEnd("VolumeManager_ExportDocumentImage_MoveFile")
 				End If
 				_timekeeper.MarkStart("VolumeManager_ExportDocumentImage_WriteStatus")
@@ -686,9 +689,9 @@ Namespace kCura.WinEDDS
 			If Not tempLocation = "" AndAlso Not tempLocation.ToLower = exportFileName.ToLower AndAlso Me.Settings.VolumeInfo.CopyFilesFromRepository Then
 				If System.IO.File.Exists(exportFileName) Then
 					If _settings.Overwrite Then
-						System.IO.File.Delete(exportFileName)
+						kCura.Utility.File.Delete(exportFileName)
 						_parent.WriteStatusLine(kCura.Windows.Process.EventType.Status, String.Format("Overwriting document {0}.", systemFileName), False)
-						System.IO.File.Move(tempLocation, exportFileName)
+						kCura.Utility.File.Move(tempLocation, exportFileName)
 					Else
 						_parent.WriteWarning(String.Format("{0} already exists. Skipping file export.", systemFileName))
 					End If
@@ -697,7 +700,7 @@ Namespace kCura.WinEDDS
 					_parent.WriteStatusLine(kCura.Windows.Process.EventType.Status, String.Format("Now exporting document {0}.", systemFileName), False)
 					_timekeeper.MarkEnd("VolumeManager_ExportNative_WriteStatus")
 					_timekeeper.MarkStart("VolumeManager_ExportNative_MoveFile")
-					System.IO.File.Move(tempLocation, exportFileName)
+					kCura.Utility.File.Move(tempLocation, exportFileName)
 					_timekeeper.MarkEnd("VolumeManager_ExportNative_MoveFile")
 				End If
 			End If
@@ -712,12 +715,12 @@ Namespace kCura.WinEDDS
 			Dim tempFile As String = Me.GetLocalNativeFilePath(docinfo, nativeFileName)
 			If System.IO.File.Exists(tempFile) Then
 				If Settings.Overwrite Then
-					System.IO.File.Delete(tempFile)
+					kCura.Utility.File.Delete(tempFile)
 					_parent.WriteStatusLine(kCura.Windows.Process.EventType.Status, String.Format("Overwriting document {0}.", nativeFileName), False)
 				Else
 					_parent.WriteWarning(String.Format("{0} already exists. Skipping file export.", tempFile))
 					docinfo.NativeTempLocation = tempFile
-					Return New System.IO.FileInfo(tempFile).Length
+					Return kCura.Utility.File.Length(tempFile)
 				End If
 			End If
 			Dim tries As Int32 = 20
@@ -740,7 +743,7 @@ Namespace kCura.WinEDDS
 				End Try
 			End While
 			docinfo.NativeTempLocation = tempFile
-			Return New System.IO.FileInfo(tempFile).Length
+			Return kCura.Utility.File.Length(tempFile)
 		End Function
 
 		Public Sub UpdateLoadFile(ByVal row As System.Data.DataRow, ByVal hasFullText As Boolean, ByVal documentArtifactID As Int32, ByVal nativeLocation As String, ByVal fullTextTempFile As String, ByVal doc As Exporters.DocumentExportInfo)
@@ -773,7 +776,7 @@ Namespace kCura.WinEDDS
 									Dim localTextPath As String = Me.GetLocalTextFilePath(doc)
 									If System.IO.File.Exists(localTextPath) Then
 										If _settings.Overwrite Then
-											System.IO.File.Delete(localTextPath)
+											kCura.Utility.File.Delete(localTextPath)
 											Dim sw As New System.IO.StreamWriter(localTextPath, False, Me.Settings.TextFileEncoding)
 											Dim sr As New System.IO.StreamReader(fullTextTempFile, System.Text.Encoding.Unicode, True)
 											Dim c As Int32 = sr.Read
@@ -857,14 +860,7 @@ Namespace kCura.WinEDDS
 						End While
 						_nativeFileWriter.Write(_settings.QuoteDelimiter)
 						sr.Close()
-						Try
-							System.IO.File.Delete(textLocation)
-						Catch
-							Try
-								System.IO.File.Delete(textLocation)
-							Catch
-							End Try
-						End Try
+						kCura.Utility.File.Delete(textLocation)
 					End If
 				Else				 'Handle not full text issue
 					Dim val As Object = row(columnName)
@@ -928,7 +924,7 @@ Namespace kCura.WinEDDS
 									Dim localTextPath As String = Me.GetLocalTextFilePath(doc)
 									If System.IO.File.Exists(localTextPath) Then
 										If _settings.Overwrite Then
-											System.IO.File.Delete(localTextPath)
+											kCura.Utility.File.Delete(localTextPath)
 											Dim sw As New System.IO.StreamWriter(localTextPath, False, Me.Settings.TextFileEncoding)
 											Dim sr As New System.IO.StreamReader(fullTextTempFile, System.Text.Encoding.Unicode, True)
 											Dim c As Int32 = sr.Read
