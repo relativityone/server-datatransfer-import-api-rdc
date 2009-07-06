@@ -373,6 +373,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Process\ConnectionDetailsProcess.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Process\ExportSearchProcess.vb"
                     SubType = "Code"
                     BuildAction = "Compile"

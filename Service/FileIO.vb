@@ -109,6 +109,54 @@ Namespace kCura.WinEDDS.Service
 			End While
 		End Function
 
+		Public Shadows Function ValidateBcpShare(ByVal appID As Int32) As Boolean
+			Dim tries As Int32 = 0
+			While tries < Config.MaxReloginTries
+				tries += 1
+				Try
+					If kCura.WinEDDS.Config.UsesWebAPI Then Return MyBase.ValidateBcpShare(appID)
+				Catch ex As System.Exception
+					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
+						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
+					Else
+						Throw
+					End If
+				End Try
+			End While
+		End Function
+
+		Public Shadows Function GetBcpShareSpaceReport(ByVal appID As Int32) As String()()
+			Dim tries As Int32 = 0
+			While tries < Config.MaxReloginTries
+				tries += 1
+				Try
+					If kCura.WinEDDS.Config.UsesWebAPI Then Return MyBase.GetBcpShareSpaceReport(appID)
+				Catch ex As System.Exception
+					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
+						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
+					Else
+						Throw
+					End If
+				End Try
+			End While
+		End Function
+
+		Public Shadows Function GetDefaultRepositorySpaceReport(ByVal appID As Int32) As String()()
+			Dim tries As Int32 = 0
+			While tries < Config.MaxReloginTries
+				tries += 1
+				Try
+					If kCura.WinEDDS.Config.UsesWebAPI Then Return MyBase.GetDefaultRepositorySpaceReport(appID)
+				Catch ex As System.Exception
+					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
+						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
+					Else
+						Throw
+					End If
+				End Try
+			End While
+		End Function
+
 		Public Shadows Function RepositoryVolumeMax() As Int32
 			Dim tries As Int32 = 0
 			While tries < Config.MaxReloginTries

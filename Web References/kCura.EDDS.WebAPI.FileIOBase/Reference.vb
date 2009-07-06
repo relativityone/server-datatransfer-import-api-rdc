@@ -141,6 +141,60 @@ Namespace kCura.EDDS.WebAPI.FileIOBase
         End Function
         
         '<remarks/>
+        <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://foley.com/EDDS/FileManager/ValidateBcpShare", RequestNamespace:="http://foley.com/EDDS/FileManager", ResponseNamespace:="http://foley.com/EDDS/FileManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
+        Public Function ValidateBcpShare(ByVal caseContextArtifactID As Integer) As Boolean
+            Dim results() As Object = Me.Invoke("ValidateBcpShare", New Object() {caseContextArtifactID})
+            Return CType(results(0),Boolean)
+        End Function
+        
+        '<remarks/>
+        Public Function BeginValidateBcpShare(ByVal caseContextArtifactID As Integer, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("ValidateBcpShare", New Object() {caseContextArtifactID}, callback, asyncState)
+        End Function
+        
+        '<remarks/>
+        Public Function EndValidateBcpShare(ByVal asyncResult As System.IAsyncResult) As Boolean
+            Dim results() As Object = Me.EndInvoke(asyncResult)
+            Return CType(results(0),Boolean)
+        End Function
+        
+        '<remarks/>
+        <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://foley.com/EDDS/FileManager/GetBcpShareSpaceReport", RequestNamespace:="http://foley.com/EDDS/FileManager", ResponseNamespace:="http://foley.com/EDDS/FileManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
+        Public Function GetBcpShareSpaceReport(ByVal caseContextArtifactID As Integer) As <System.Xml.Serialization.XmlArrayItemAttribute(NestingLevel:=1)> String()()
+            Dim results() As Object = Me.Invoke("GetBcpShareSpaceReport", New Object() {caseContextArtifactID})
+            Return CType(results(0),String()())
+        End Function
+        
+        '<remarks/>
+        Public Function BeginGetBcpShareSpaceReport(ByVal caseContextArtifactID As Integer, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("GetBcpShareSpaceReport", New Object() {caseContextArtifactID}, callback, asyncState)
+        End Function
+        
+        '<remarks/>
+        Public Function EndGetBcpShareSpaceReport(ByVal asyncResult As System.IAsyncResult) As String()()
+            Dim results() As Object = Me.EndInvoke(asyncResult)
+            Return CType(results(0),String()())
+        End Function
+        
+        '<remarks/>
+        <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://foley.com/EDDS/FileManager/GetDefaultRepositorySpaceReport", RequestNamespace:="http://foley.com/EDDS/FileManager", ResponseNamespace:="http://foley.com/EDDS/FileManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
+        Public Function GetDefaultRepositorySpaceReport(ByVal caseContextArtifactID As Integer) As <System.Xml.Serialization.XmlArrayItemAttribute(NestingLevel:=1)> String()()
+            Dim results() As Object = Me.Invoke("GetDefaultRepositorySpaceReport", New Object() {caseContextArtifactID})
+            Return CType(results(0),String()())
+        End Function
+        
+        '<remarks/>
+        Public Function BeginGetDefaultRepositorySpaceReport(ByVal caseContextArtifactID As Integer, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("GetDefaultRepositorySpaceReport", New Object() {caseContextArtifactID}, callback, asyncState)
+        End Function
+        
+        '<remarks/>
+        Public Function EndGetDefaultRepositorySpaceReport(ByVal asyncResult As System.IAsyncResult) As String()()
+            Dim results() As Object = Me.EndInvoke(asyncResult)
+            Return CType(results(0),String()())
+        End Function
+        
+        '<remarks/>
         <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://foley.com/EDDS/FileManager/RepositoryVolumeMax", RequestNamespace:="http://foley.com/EDDS/FileManager", ResponseNamespace:="http://foley.com/EDDS/FileManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
         Public Function RepositoryVolumeMax() As Integer
             Dim results() As Object = Me.Invoke("RepositoryVolumeMax", New Object(-1) {})

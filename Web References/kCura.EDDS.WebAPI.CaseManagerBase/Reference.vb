@@ -247,5 +247,11 @@ Namespace kCura.EDDS.WebAPI.CaseManagerBase
         
         '<remarks/>
         Public RootFolderID As Integer
+        
+        '<remarks/>
+        Public dtSearchIndexShare As String
+        
+        '<remarks/>
+        Public SQLServerProductVersion As String
     End Class
 End Namespace
