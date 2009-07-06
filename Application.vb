@@ -933,6 +933,22 @@ Namespace kCura.EDDS.WinForm
 #End Region
 
 #Region "Process Management"
+
+		Public Function QueryConnectivity() As Guid
+			CursorWait()
+			If Not Me.IsConnected(Me.SelectedCaseInfo.ArtifactID, 10) Then
+				CursorDefault()
+				Exit Function
+			End If
+			Dim proc As New kCura.WinEDDS.ConnectionDetailsProcess(Me.Credential, Me.CookieContainer, Me.SelectedCaseInfo)
+			Dim form As New TextDisplayForm
+			form.ProcessObserver = proc.ProcessObserver
+			form.Text = "Connectivity Tests"
+			form.Show()
+			_processPool.StartProcess(proc)
+			CursorDefault()
+		End Function
+
 		Public Function PreviewLoadFile(ByVal loadFileToPreview As LoadFile, ByVal errorsOnly As Boolean, ByVal formType As Int32) As Guid
 			CursorWait()
 			If Not Me.IsConnected(loadFileToPreview.CaseInfo.ArtifactID, ArtifactTypeID) Then

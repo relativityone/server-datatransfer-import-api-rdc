@@ -59,7 +59,8 @@ Namespace kCura.EDDS.WinForm
 		Friend WithEvents _exportFoldersAndSubfoldersMenuItem As System.Windows.Forms.MenuItem
 		Friend WithEvents ToolsImportProductionFileMenu As System.Windows.Forms.MenuItem
     Friend WithEvents _objectTypeDropDown As System.Windows.Forms.ComboBox
-    <System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
+		Friend WithEvents _optionsMenuCheckConnectivityItem As System.Windows.Forms.MenuItem
+		<System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
 			Me.components = New System.ComponentModel.Container
 			Dim resources As System.Resources.ResourceManager = New System.Resources.ResourceManager(GetType(MainForm))
 			Me.MainMenu = New System.Windows.Forms.MainMenu
@@ -91,6 +92,7 @@ Namespace kCura.EDDS.WinForm
 			Me._caseFolderExplorer = New kCura.EDDS.WinForm.CaseFolderExplorer
 			Me.EnhancedMenuProvider = New kCura.Windows.Forms.EnhancedMenuProvider(Me.components)
 			Me._objectTypeDropDown = New System.Windows.Forms.ComboBox
+			Me._optionsMenuCheckConnectivityItem = New System.Windows.Forms.MenuItem
 			CType(Me.AppStatusPanel, System.ComponentModel.ISupportInitialize).BeginInit()
 			CType(Me.LoggedInUserPanel, System.ComponentModel.ISupportInitialize).BeginInit()
 			Me.SuspendLayout()
@@ -243,7 +245,7 @@ Namespace kCura.EDDS.WinForm
 			'
 			Me.EnhancedMenuProvider.SetImageIndex(Me._toolsMenu, -1)
 			Me._toolsMenu.Index = 2
-			Me._toolsMenu.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me._toolsMenuSettingsItem})
+			Me._toolsMenu.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me._toolsMenuSettingsItem, Me._optionsMenuCheckConnectivityItem})
 			Me._toolsMenu.OwnerDraw = True
 			Me._toolsMenu.Text = "Options"
 			'
@@ -307,6 +309,12 @@ Namespace kCura.EDDS.WinForm
 			Me._objectTypeDropDown.Name = "_objectTypeDropDown"
 			Me._objectTypeDropDown.Size = New System.Drawing.Size(332, 21)
 			Me._objectTypeDropDown.TabIndex = 7
+			'
+			'_optionsMenuCheckConnectivityItem
+			'
+			Me.EnhancedMenuProvider.SetImageIndex(Me._optionsMenuCheckConnectivityItem, -1)
+			Me._optionsMenuCheckConnectivityItem.Index = 1
+			Me._optionsMenuCheckConnectivityItem.Text = "Check Connectivity"
 			'
 			'MainForm
 			'
@@ -498,6 +506,9 @@ Namespace kCura.EDDS.WinForm
       _application.ArtifactTypeID = selectedItemValue
     End Sub
 
-  End Class
+		Private Sub _optionsMenuCheckConnectivityItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _optionsMenuCheckConnectivityItem.Click
+			_application.QueryConnectivity()
+		End Sub
+	End Class
 
 End Namespace

@@ -432,6 +432,16 @@
                     BuildAction = "EmbeddedResource"
                 />
                 <File
+                    RelPath = "Forms\TextDisplayForm.vb"
+                    SubType = "Form"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Forms\TextDisplayForm.resx"
+                    DependentUpon = "TextDisplayForm.vb"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
                     RelPath = "images\folderclosed.ICO"
                     BuildAction = "Content"
                 />

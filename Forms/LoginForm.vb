@@ -67,7 +67,7 @@ Namespace kCura.EDDS.WinForm
 			'
 			Me._passwordTextBox.Location = New System.Drawing.Point(8, 72)
 			Me._passwordTextBox.Name = "_passwordTextBox"
-			Me._passwordTextBox.PasswordChar = Microsoft.VisualBasic.ChrW(42)
+			Me._passwordTextBox.PasswordChar = Microsoft.VisualBasic.ChrW(8226)
 			Me._passwordTextBox.Size = New System.Drawing.Size(240, 20)
 			Me._passwordTextBox.TabIndex = 2
 			Me._passwordTextBox.Text = ""
