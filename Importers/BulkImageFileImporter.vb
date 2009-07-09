@@ -221,6 +221,8 @@ Namespace kCura.WinEDDS
 				Dim validateBcp As FileUploadReturnArgs = _bcpuploader.ValidateBcpPath(_caseInfo.ArtifactID, bulkLoadFilePath)
 				If validateBcp.Type = FileUploadReturnArgs.FileUploadReturnType.UploadError And Not Config.EnableSingleModeImport Then
 					Throw New kCura.WinEDDS.LoadFileBase.BcpPathAccessException(validateBcp.Value)
+				Else
+					RaiseEvent UploadModeChangeEvent(_fileUploader.UploaderType.ToString, _bcpuploader.IsBulkEnabled)
 				End If
 				While Me.Continue
 					If Me.CurrentLineNumber < _startLineNumber Then
