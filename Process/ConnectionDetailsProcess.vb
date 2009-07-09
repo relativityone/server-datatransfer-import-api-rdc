@@ -207,8 +207,12 @@ Namespace kCura.WinEDDS
 				Me.WriteStatus("Selected BCP Path: " & bcpPath)
 			Catch ex As System.Exception
 				Me.WriteStatus("Error retrieving BCP share path - WebAPI error")
-				Me.WriteStatus("Loads will happen in Single mode")
-				Me.WriteStatus("Ensure that relativity service account has rights to create/delete files and subdirectories in the bcp folder")
+				Dim ensure As String = "Ensure"
+				If WinEDDS.Config.EnableSingleModeImport Then
+					Me.WriteStatus("Loads will happen in Single mode - this is less than optimal.  To upgrade,")
+					ensure = "ensure"
+				End If
+				Me.WriteStatus(ensure & " that relativity service account has rights to create/delete files and subdirectories in the bcp folder")
 				Me.WriteStatus("Exact error: " & ex.ToString)
 				Return False
 			End Try
@@ -219,10 +223,10 @@ Namespace kCura.WinEDDS
 				Dim path As String = bcpPath.TrimEnd("\"c) & "\"
 				System.IO.File.Create(path & "123").Close()
 				System.IO.File.Delete(path & "123")
-				Me.WriteStatus("Local account has direct access to bcp folder")
+				Me.WriteStatus("Your account (" & System.Security.Principal.WindowsIdentity.GetCurrent.Name & ") has direct access to BCPPath folder")
 			Catch ex As Exception
-				Me.WriteStatus("No direct access to bcp folder from direct account - using relativity service account for access (this is normal)")
-				Me.WriteStatus("Exact error: " & ex.ToString)
+				Me.WriteStatus("Valid: No direct access to bcp folder from direct account - using relativity service account and web services for access")
+				'Me.WriteStatus("Exact error: " & ex.ToString)
 			End Try
 			Try
 				Me.WriteStatus("Validating bulk insert rights")
@@ -235,7 +239,9 @@ Namespace kCura.WinEDDS
 				Me.WriteStatus("Error running bulk insert")
 				Me.WriteStatus("Ensure that EDDSDBO login has bulk admin rights on case DB")
 				Me.WriteStatus("Ensure that the security account that SQL Server is running under has rights to the selected BCP share")
-				Me.WriteStatus("Exact error: " & ex.ToString)
+				Dim text As String = ex.ToString
+				If TypeOf ex Is System.Web.Services.Protocols.SoapException Then text = System.Web.HttpUtility.HtmlDecode(text)
+				Me.WriteStatus("Exact error: " & text)
 				Return False
 			End Try
 			Try
