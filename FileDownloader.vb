@@ -138,7 +138,7 @@ Namespace kCura.WinEDDS
 
 		Private Function WebDownloadFile(ByVal localFilePath As String, ByVal artifactID As Int32, ByVal remoteFileGuid As String, ByVal appID As String, ByVal remotelocationkey As String, Optional ByVal forFullText As Boolean = False, Optional ByVal longTextFieldArtifactID As Int32 = -1) As Boolean
 			Dim tryNumber As Int32 = 0
-
+			Dim localStream As System.IO.Stream
 			Try
 				Dim remoteuri As String
 				Dim downloadUrl As String = _downloadUrl.TrimEnd("/"c) & "/"
@@ -158,14 +158,17 @@ Namespace kCura.WinEDDS
 				httpWebRequest.UnsafeAuthenticatedConnectionSharing = True
 				httpWebRequest.Headers.Add("SOURCEID", "9AAC98ED-01A4-4111-B66E-D25130875E5D")				'Verifies WinEDDS as a trusted source with the Distributed environment.
 				Dim webResponse As System.Net.WebResponse = httpWebRequest.GetResponse()
-				Dim localStream As System.IO.Stream
 				If Not webResponse Is Nothing Then
 					Dim responseStream As System.IO.Stream = webResponse.GetResponseStream()
-					localStream = System.IO.File.Create(localFilePath)
-					Dim buffer(1023) As Byte
+					Try
+						localStream = System.IO.File.Create(localFilePath)
+					Catch ex As Exception
+						localStream = System.IO.File.Create(localFilePath)
+					End Try
+					Dim buffer(Config.WebBasedFileDownloadChunkSize - 1) As Byte
 					Dim bytesRead As Int32
 					While True
-						bytesRead = responseStream.Read(buffer, 0, 1024)
+						bytesRead = responseStream.Read(buffer, 0, Config.WebBasedFileDownloadChunkSize)
 						If bytesRead <= 0 Then
 							Exit While
 						End If
@@ -176,6 +179,7 @@ Namespace kCura.WinEDDS
 				If Not remotelocationkey Is Nothing Then _locationAccessMatrix.Add(remotelocationkey, FileAccessType.Web)
 				Return True
 			Catch ex As System.Net.WebException
+				Me.CloseStream(localStream)
 				If ex.Message.IndexOf("409") <> -1 Then
 					RaiseEvent UploadStatusEvent("Error Downloading File")					'TODO: Change this to a separate error-type event'
 					Throw New ApplicationException("Error Downloading File: the file associated with the guid " & remoteFileGuid & " cannot be found" & vbNewLine, ex)
@@ -184,10 +188,19 @@ Namespace kCura.WinEDDS
 					Throw New ApplicationException("Error Downloading File:", ex)
 				End If
 			Catch ex As System.Exception
+				Me.CloseStream(localStream)
 				RaiseEvent UploadStatusEvent("Error Downloading File")				 'TODO: Change this to a separate error-type event'
 				Throw New ApplicationException("Error Downloading File", ex)
 			End Try
 		End Function
+
+		Private Sub CloseStream(ByVal stream As System.IO.Stream)
+			If stream Is Nothing Then Exit Sub
+			Try
+				stream.Close()
+			Catch
+			End Try
+		End Sub
 
 		Public Event UploadStatusEvent(ByVal message As String)
 		Public Event UploadModeChangeEvent(ByVal mode As String)

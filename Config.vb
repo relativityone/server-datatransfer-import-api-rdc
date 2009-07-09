@@ -154,5 +154,13 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
+		Public Shared ReadOnly Property WebBasedFileDownloadChunkSize() As Int32
+			Get
+				If Not ConfigSettings.Contains("WebBasedFileDownloadChunkSize") Then
+					ConfigSettings.Add("WebBasedFileDownloadChunkSize", 1048576)
+				End If
+				Return System.Math.Max(CType(ConfigSettings("WebBasedFileDownloadChunkSize"), Int32), 1024)
+			End Get
+		End Property
 	End Class
 End Namespace
