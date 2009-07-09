@@ -243,6 +243,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Exceptions\WebDownloadCorruptException.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Exporters\DocumentExportInfo.vb"
                     SubType = "Code"
                     BuildAction = "Compile"

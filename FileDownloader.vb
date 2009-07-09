@@ -158,7 +158,9 @@ Namespace kCura.WinEDDS
 				httpWebRequest.UnsafeAuthenticatedConnectionSharing = True
 				httpWebRequest.Headers.Add("SOURCEID", "9AAC98ED-01A4-4111-B66E-D25130875E5D")				'Verifies WinEDDS as a trusted source with the Distributed environment.
 				Dim webResponse As System.Net.WebResponse = httpWebRequest.GetResponse()
+				Dim length As Int64 = 0
 				If Not webResponse Is Nothing Then
+					length = webResponse.ContentLength
 					Dim responseStream As System.IO.Stream = webResponse.GetResponseStream()
 					Try
 						localStream = System.IO.File.Create(localFilePath)
@@ -176,6 +178,10 @@ Namespace kCura.WinEDDS
 					End While
 				End If
 				localStream.Close()
+				Dim actualLength As Int64 = New System.IO.FileInfo(localFilePath).Length
+				If length <> actualLength Then
+					Throw New kCura.WinEDDS.Exceptions.WebDownloadCorruptException("Error retrieving data from distributed server; expecting " & length & " bytes and received " & actualLength)
+				End If
 				If Not remotelocationkey Is Nothing Then _locationAccessMatrix.Add(remotelocationkey, FileAccessType.Web)
 				Return True
 			Catch ex As System.Net.WebException
