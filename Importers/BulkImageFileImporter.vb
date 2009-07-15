@@ -79,8 +79,8 @@ Namespace kCura.WinEDDS
 
 #Region "Constructors"
 
-		Public Sub New(ByVal folderID As Int32, ByVal args As ImageLoadFile, ByVal controller As kCura.Windows.Process.Controller, ByVal processID As Guid)
-			MyBase.New(New Char() {","c})
+		Public Sub New(ByVal folderID As Int32, ByVal args As ImageLoadFile, ByVal controller As kCura.Windows.Process.Controller, ByVal processID As Guid, ByVal doRetryLogic As Boolean)
+			MyBase.New(New Char() {","c}, doRetryLogic)
 			_docManager = New kCura.WinEDDS.Service.DocumentManager(args.Credential, args.CookieContainer)
 			_fieldQuery = New kCura.WinEDDS.Service.FieldQuery(args.Credential, args.CookieContainer)
 			_folderManager = New kCura.WinEDDS.Service.FolderManager(args.Credential, args.CookieContainer)
@@ -581,6 +581,10 @@ Namespace kCura.WinEDDS
 		End Class
 #End Region
 
+		Private Sub IoWarningHandler(ByVal e As IoWarningEventArgs)
+			MyBase.RaiseIoWarning(e)
+		End Sub
+
 		Private Sub ManageErrors()
 			If Not _bulkImportManager.ImageRunHasErrors(_caseInfo.ArtifactID, _runId) Then Exit Sub
 			If _errorMessageFileLocation = "" Then _errorMessageFileLocation = System.IO.Path.GetTempFileName
@@ -595,7 +599,8 @@ Namespace kCura.WinEDDS
 					Dim downloader As New FileDownloader(DirectCast(_bulkImportManager.Credentials, System.Net.NetworkCredential), _caseInfo.DocumentPath, _caseInfo.DownloadHandlerURL, _bulkImportManager.CookieContainer, kCura.WinEDDS.Service.Settings.AuthenticationToken)
 					Dim errorsLocation As String = System.IO.Path.GetTempFileName
 					downloader.MoveTempFileToLocal(errorsLocation, .LogKey, _caseInfo)
-					sr = New kCura.Utility.GenericCsvReader(errorsLocation)
+					sr = New kCura.Utility.GenericCsvReader(errorsLocation, True)
+					AddHandler sr.IoWarningEvent, AddressOf Me.IoWarningHandler
 					Dim line As String() = sr.ReadLine
 					While Not line Is Nothing
 						_errorCount += 1
@@ -621,10 +626,12 @@ Namespace kCura.WinEDDS
 					w.Close()
 					r.Close()
 					kCura.Utility.File.Delete(tmp)
+					RemoveHandler sr.IoWarningEvent, AddressOf Me.IoWarningHandler
 				End With
 			Catch ex As Exception
 				Try
 					sr.Close()
+					RemoveHandler sr.IoWarningEvent, AddressOf Me.IoWarningHandler
 				Catch
 				End Try
 				Try

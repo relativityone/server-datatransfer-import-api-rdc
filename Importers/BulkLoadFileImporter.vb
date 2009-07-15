@@ -139,12 +139,12 @@ Namespace kCura.WinEDDS
 
 #Region "Constructors"
 
-		Public Sub New(ByVal args As LoadFile, ByVal processController As kCura.Windows.Process.Controller, ByVal timeZoneOffset As Int32, ByVal initializeUploaders As Boolean, ByVal processID As Guid)
-			Me.New(args, processController, timeZoneOffset, True, initializeUploaders, processID)
+		Public Sub New(ByVal args As LoadFile, ByVal processController As kCura.Windows.Process.Controller, ByVal timeZoneOffset As Int32, ByVal initializeUploaders As Boolean, ByVal processID As Guid, ByVal doRetryLogic As Boolean)
+			Me.New(args, processController, timeZoneOffset, True, initializeUploaders, processID, doRetryLogic)
 		End Sub
 
-		Public Sub New(ByVal args As LoadFile, ByVal processController As kCura.Windows.Process.Controller, ByVal timeZoneOffset As Int32, ByVal autoDetect As Boolean, ByVal initializeUploaders As Boolean, ByVal processID As Guid)
-			MyBase.New(args, timeZoneOffset, autoDetect)
+		Public Sub New(ByVal args As LoadFile, ByVal processController As kCura.Windows.Process.Controller, ByVal timeZoneOffset As Int32, ByVal autoDetect As Boolean, ByVal initializeUploaders As Boolean, ByVal processID As Guid, ByVal doRetryLogic As Boolean)
+			MyBase.New(args, timeZoneOffset, doRetryLogic, autoDetect)
 			_overwrite = args.OverwriteDestination
 			If args.CopyFilesToDocumentRepository Then
 				_defaultDestinationFolderPath = args.SelectedCasePath & "EDDS" & args.CaseInfo.ArtifactID & "\"
@@ -993,7 +993,7 @@ Namespace kCura.WinEDDS
 
 		Private Sub BuildErrorLinesFile()
 			RaiseEvent StatusMessage(New kCura.Windows.Process.StatusEventArgs(Windows.Process.EventType.Status, Me.CurrentLineNumber, Me.CurrentLineNumber, "Generating error line file."))
-			Dim allErrors As New kCura.Utility.GenericCsvReader(_errorMessageFileLocation, System.Text.Encoding.Default)
+			Dim allErrors As New kCura.Utility.GenericCsvReader(_errorMessageFileLocation, System.Text.Encoding.Default, True)
 			Dim clientErrors As System.IO.StreamReader
 			'Me.Reader.BaseStream.Seek(0, IO.SeekOrigin.Begin)
 			Me.Reader = New System.IO.StreamReader(_filePath, _sourceFileEncoding, True)
@@ -1219,6 +1219,10 @@ Namespace kCura.WinEDDS
 
 #End Region
 
+		Private Sub IoWarningHandler(ByVal e As IoWarningEventArgs)
+			MyBase.RaiseIoWarning(e)
+		End Sub
+
 		Private Sub ManageErrors(ByVal artifactTypeID As Int32)
 			If Not _bulkImportManager.NativeRunHasErrors(_caseInfo.ArtifactID, _runID) Then Exit Sub
 			Dim sr As kCura.Utility.GenericCsvReader
@@ -1228,7 +1232,8 @@ Namespace kCura.WinEDDS
 					Dim downloader As New FileDownloader(DirectCast(_bulkImportManager.Credentials, System.Net.NetworkCredential), _caseInfo.DocumentPath, _caseInfo.DownloadHandlerURL, _bulkImportManager.CookieContainer, kCura.WinEDDS.Service.Settings.AuthenticationToken)
 					Dim errorsLocation As String = System.IO.Path.GetTempFileName
 					downloader.MoveTempFileToLocal(errorsLocation, .LogKey, _caseInfo)
-					sr = New kCura.Utility.GenericCsvReader(errorsLocation)
+					sr = New kCura.Utility.GenericCsvReader(errorsLocation, True)
+					AddHandler sr.IoWarningEvent, AddressOf Me.IoWarningHandler
 					Dim line As String() = sr.ReadLine
 					While Not line Is Nothing
 						_errorCount += 1
@@ -1240,10 +1245,12 @@ Namespace kCura.WinEDDS
 						RaiseEvent StatusMessage(New kCura.Windows.Process.StatusEventArgs(Windows.Process.EventType.Error, Int32.Parse(line(0)) - 1, _recordCount, "[Line " & line(0) & "]" & line(1)))
 						line = sr.ReadLine
 					End While
+					RemoveHandler sr.IoWarningEvent, AddressOf Me.IoWarningHandler
 				End With
 			Catch ex As Exception
 				Try
 					sr.Close()
+					RemoveHandler sr.IoWarningEvent, AddressOf Me.IoWarningHandler
 				Catch
 				End Try
 				Throw
@@ -1262,10 +1269,6 @@ Namespace kCura.WinEDDS
 				End Try
 			End If
 		End Sub
-
-		Public Class Settings
-			Public Const MAX_STRING_FIELD_LENGTH As Int32 = 1048576			'2^20 = 1 meg * 2 B/char binary = 2 meg max
-		End Class
 
 		Protected Overrides ReadOnly Property UseTimeZoneOffset() As Boolean
 			Get

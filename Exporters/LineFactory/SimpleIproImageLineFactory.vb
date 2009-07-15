@@ -82,7 +82,7 @@ Namespace kCura.WinEDDS.Exporters.LineFactory
 
 #Region "Virtual Method Implementation"
 
-		Public Overrides Sub WriteLine(ByVal stream As System.IO.TextWriter)
+		Public Overrides Sub WriteLine(ByVal stream As System.IO.StreamWriter)
 			stream.Write(Me.ImportCodeIdentifier)
 			stream.Write(",")
 			stream.Write(Me.ImageKey)

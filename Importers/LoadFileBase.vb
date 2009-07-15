@@ -82,8 +82,8 @@ Namespace kCura.WinEDDS
 
 #End Region
 
-		Public Sub New(ByVal args As LoadFile, ByVal timezoneoffset As Int32, Optional ByVal autoDetect As Boolean = True)
-			MyBase.New(args.RecordDelimiter, args.QuoteDelimiter, args.NewlineDelimiter)
+		Public Sub New(ByVal args As LoadFile, ByVal timezoneoffset As Int32, ByVal doRetryLogic As Boolean, ByVal autoDetect As Boolean)
+			MyBase.New(args.RecordDelimiter, args.QuoteDelimiter, args.NewlineDelimiter, doRetryLogic)
 
 			_docFields = args.FieldMap.DocumentFields
 			_filePathColumn = args.NativeFilePathColumn

@@ -45,8 +45,8 @@ Namespace kCura.WinEDDS
 
 		Public Event StatusMessage(ByVal args As kCura.Windows.Process.StatusEventArgs)
 
-		Public Sub New(ByVal args As ImageLoadFile, ByVal controller As kCura.Windows.Process.Controller)
-			MyBase.New(New Char() {","c})
+		Public Sub New(ByVal args As ImageLoadFile, ByVal controller As kCura.Windows.Process.Controller, ByVal doRetryLogic As Boolean)
+			MyBase.New(New Char() {","c}, doRetryLogic)
 			_docManager = New kCura.WinEDDS.Service.DocumentManager(args.Credential, args.CookieContainer)
 			_fieldQuery = New kCura.WinEDDS.Service.FieldQuery(args.Credential, args.CookieContainer)
 			_folderManager = New kCura.WinEDDS.Service.FolderManager(args.Credential, args.CookieContainer)
@@ -104,7 +104,7 @@ Namespace kCura.WinEDDS
 			valuearray = Me.GetLine
 			Dim filePath As String
 			While Not valuearray Is Nothing AndAlso _continue
-				filePath = ImageFileImporter.GetFileLocation(valuearray)
+				filePath = BulkImageFileImporter.GetFileLocation(valuearray)
 				If Not filePath = "" Then filePath = Me.CheckFile(filePath)
 				Dim batesNumber As String = Me.GetBatesNumber(valuearray)
 				If batesNumber = "" Then

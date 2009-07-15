@@ -1065,9 +1065,6 @@ Namespace kCura.WinEDDS
 			Next
 		End Sub
 
-		Public Class Settings
-			Public Shared MAX_STRING_FIELD_LENGTH As Int32 = 1048576			'2^20 = 1 meg * 2 B/char binary = 2 meg max
-		End Class
 
 		Protected Overrides ReadOnly Property UseTimeZoneOffset() As Boolean
 			Get

@@ -16,8 +16,8 @@ Namespace kCura.WinEDDS
 
 #Region "Constructors"
 
-		Public Sub New(ByVal args As LoadFile, ByVal timeZoneOffset As Int32, ByVal errorsOnly As Boolean, Optional ByVal processController As kCura.Windows.Process.Controller = Nothing)
-			MyBase.New(args, timeZoneOffset)
+		Public Sub New(ByVal args As LoadFile, ByVal timeZoneOffset As Int32, ByVal errorsOnly As Boolean, ByVal doRetryLogic As Boolean, Optional ByVal processController As kCura.Windows.Process.Controller = Nothing)
+			MyBase.New(args, timeZoneOffset, doRetryLogic, True)
 			_selectedCaseArtifactID = args.CaseInfo.ArtifactID
 			_errorsOnly = errorsOnly
 			_processController = processController

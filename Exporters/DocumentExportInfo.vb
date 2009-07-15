@@ -14,6 +14,9 @@ Namespace kCura.WinEDDS.Exporters
 		Private _productionBeginBates As String = ""
 		Private _originalFileName As String = ""
 		Private _nativeSourceLocation As String = ""
+		Private _hasCountedNative As Boolean = False
+		Private _hasCountedTextFile As Boolean = False
+		Private _docCount As Int32 = 1
 
 		Public Property DataRow() As System.Data.DataRow
 			Get
@@ -198,5 +201,29 @@ Namespace kCura.WinEDDS.Exporters
 			End Set
 		End Property
 
+		Public Property HasCountedNative() As Boolean
+			Get
+				Return _HasCountedNative
+			End Get
+			Set(ByVal value As Boolean)
+				_HasCountedNative = value
+			End Set
+		End Property
+		Public Property HasCountedTextFile() As Boolean
+			Get
+				Return _hasCountedTextFile
+			End Get
+			Set(ByVal value As Boolean)
+				_hasCountedTextFile = value
+			End Set
+		End Property
+
+		Public ReadOnly Property DocCount() As Int32
+			Get
+				Dim retval As Int32 = _docCount
+				If retval = 1 Then _docCount -= 1
+				Return retval
+			End Get
+		End Property
 	End Class
 End Namespace

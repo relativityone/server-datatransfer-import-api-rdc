@@ -238,6 +238,16 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Exceptions\ExportBaseException.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Exceptions\FileWriteError.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Exceptions\InvalidLoginException.vb"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -323,22 +333,12 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Importers\ImageFileImporter.vb"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "Importers\ImageFilePreviewer.vb"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "Importers\LoadFileBase.vb"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Importers\LoadFileImporter.vb"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

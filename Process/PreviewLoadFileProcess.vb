@@ -46,7 +46,7 @@ Namespace kCura.WinEDDS
 			_startTime = DateTime.Now
 			_warningCount = 0
 			_errorCount = 0
-			_loadFilePreviewer = New kCura.WinEDDS.LoadFilePreviewer(LoadFile, _timeZoneOffset, _errorsOnly, ProcessController)
+			_loadFilePreviewer = New kCura.WinEDDS.LoadFilePreviewer(LoadFile, _timeZoneOffset, _errorsOnly, True, ProcessController)
 			_valueThrower.ThrowValue(New Object() {_loadFilePreviewer.ReadFile(LoadFile.FilePath), _errorsOnly})
 			Me.ProcessObserver.RaiseProcessCompleteEvent(True)
 		End Sub

@@ -67,8 +67,8 @@ Namespace kCura.WinEDDS
 
 #Region "Constructors"
 
-		Public Sub New(ByVal folderID As Int32, ByVal args As ImageLoadFile, ByVal controller As kCura.Windows.Process.Controller)
-			MyBase.New(New Char() {","c})
+		Public Sub New(ByVal folderID As Int32, ByVal args As ImageLoadFile, ByVal controller As kCura.Windows.Process.Controller, ByVal doRetryLogic As Boolean)
+			MyBase.New(New Char() {","c}, doRetryLogic)
 			_docManager = New kCura.WinEDDS.Service.DocumentManager(args.Credential, args.CookieContainer)
 			_fieldQuery = New kCura.WinEDDS.Service.FieldQuery(args.Credential, args.CookieContainer)
 			_folderManager = New kCura.WinEDDS.Service.FolderManager(args.Credential, args.CookieContainer)
@@ -241,7 +241,7 @@ Namespace kCura.WinEDDS
 							End If
 						End Try
 						If _replaceFullText Then
-							If fullTextBuilder.FullTextLength > LoadFileImporter.Settings.MAX_STRING_FIELD_LENGTH Then
+							If fullTextBuilder.FullTextLength > kCura.WinEDDS.Service.Settings.MAX_STRING_FIELD_LENGTH Then
 								fullTextBuilder.FilePointer = _textUploader.UploadTextAsFile(fullTextBuilder.FullTextString, _folderID, System.Guid.NewGuid.ToString)
 								fullTextBuilder.FullText = ""
 							End If
@@ -506,7 +506,7 @@ Namespace kCura.WinEDDS
 				Dim fieldID As Int32
 				Dim encoder As New System.Text.ASCIIEncoding
 				Try
-					If fullTextBuilder.FullTextLength > LoadFileImporter.Settings.MAX_STRING_FIELD_LENGTH Then
+					If fullTextBuilder.FullTextLength > kCura.WinEDDS.Service.Settings.MAX_STRING_FIELD_LENGTH Then
 						fullTextBuilder.FilePointer = _textUploader.UploadTextAsFile(fullTextBuilder.FullTextString, _folderID, System.Guid.NewGuid.ToString)
 						fullTextBuilder.FullText = ""
 					End If

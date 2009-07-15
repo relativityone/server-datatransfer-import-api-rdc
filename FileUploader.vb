@@ -122,7 +122,7 @@ Namespace kCura.WinEDDS
 			Return New FileUploadReturnArgs(FileUploadReturnArgs.FileUploadReturnType.UploadError, "Error accessing BCP Path, could be caused by network connectivity issues.")
 		End Function
 
-		Public Function UploadBcpFile(ByVal appID As Int32, ByVal localFilePath As String, ByVal upload As Boolean) As FileUploadReturnArgs
+		Private Function UploadBcpFile(ByVal appID As Int32, ByVal localFilePath As String, ByVal upload As Boolean) As FileUploadReturnArgs
 			Dim oldDestinationFolderPath As String = String.Copy(_destinationFolderPath)
 			Try
 				_destinationFolderPath = _gateway.GetBcpSharePath(appID)
@@ -166,20 +166,23 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Public Function UploadFile(ByVal filePath As String, ByVal contextArtifactID As Int32, ByVal newFileName As String, ByVal internalUse As Boolean) As String
-			Dim tries As Int32 = 20
+			Dim tries As Int32 = kCura.Utility.Config.Settings.IoErrorNumberOfRetries
 			While tries > 0
 				Try
 					If Me.UploaderType = Type.Web Then
 						Me.UploaderType = Type.Web
-						Return WebUploadFile(New System.IO.FileStream(filePath, IO.FileMode.Open, IO.FileAccess.Read), contextArtifactID, newFileName)
+						Return Me.WebUploadFile(New System.IO.FileStream(filePath, IO.FileMode.Open, IO.FileAccess.Read), contextArtifactID, newFileName)
 					Else
-						Return Me.DirectUploadFile(filePath, contextArtifactID, newFileName, internalUse, tries < 20)
+						Return Me.DirectUploadFile(filePath, contextArtifactID, newFileName, internalUse, tries < kCura.Utility.Config.Settings.IoErrorNumberOfRetries)
 					End If
 				Catch ex As System.Exception
 					tries -= 1
+					Dim wait As Int32
 					If TypeOf ex Is System.IO.IOException AndAlso tries > 0 Then
-						RaiseEvent UploadWarningEvent(Me.UploaderType.ToString & " upload failed: " & ex.Message & " - Retrying in 30 seconds. " & tries & " tries left.")
-						System.Threading.Thread.CurrentThread.Join(30000)
+						'RaiseEvent UploadWarningEvent(Me.UploaderType.ToString & " upload failed: " & ex.Message & " - Retrying in 30 seconds. " & tries & " tries left.")
+
+						RaiseEvent UploadWarningEvent(String.Format("{0} upload fialed: {1} - Retrying in {2} seconds.  {3} tries left.", Me.UploaderType.ToString, ex.Message, wait, tries))
+						System.Threading.Thread.CurrentThread.Join(wait * 1000)
 					Else
 						If Me.UploaderType = Type.Direct And _sortIntoVolumes Then _repositoryPathManager.Rollback()
 						If internalUse Then

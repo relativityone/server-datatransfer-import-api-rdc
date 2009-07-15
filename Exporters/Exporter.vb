@@ -523,6 +523,7 @@ Namespace kCura.WinEDDS
 			If Not notes = "" Then sw.WriteLine("NOTES: " & notes)
 			sw.WriteLine("ERROR: " & ex.ToString)
 			sw.WriteLine("")
+			sw.Flush()
 			sw.Close()
 			Dim errorLine As String = String.Format("Error processing images for document {0}: {1}. Check {2}_img_errors.txt for details", documentInfo.IdentifierValue, ex.Message.TrimEnd("."c), _exportFile.LoadFilesPrefix)
 			Me.WriteError(errorLine)

@@ -25,7 +25,7 @@ Namespace kCura.WinEDDS
 			_startTime = DateTime.Now
 			_warningCount = 0
 			_errorCount = 0
-			_loadFileImporter = New kCura.WinEDDS.BulkLoadFileImporter(LoadFile, ProcessController, _timeZoneOffset, True, Me.ProcessID)
+			_loadFileImporter = New kCura.WinEDDS.BulkLoadFileImporter(LoadFile, ProcessController, _timeZoneOffset, True, Me.ProcessID, True)
 			_newlineCounter = New kCura.Utility.File.LineCounter
 			_newlineCounter.Path = LoadFile.FilePath
 			Me.ProcessObserver.InputArgs = LoadFile.FilePath
@@ -117,6 +117,23 @@ Namespace kCura.WinEDDS
 		Private Sub _loadFileImporter_ReportErrorEvent(ByVal row As System.Collections.IDictionary) Handles _loadFileImporter.ReportErrorEvent
 			Me.ProcessObserver.RaiseReportErrorEvent(row)
 		End Sub
+
+		Private Sub _imageFileImporter_IoErrorEvent(ByVal e As kCura.Utility.DelimitedFileImporter.IoWarningEventArgs) Handles _loadFileImporter.IoWarningEvent
+			System.Threading.Monitor.Enter(Me.ProcessObserver)
+			Dim message As New System.Text.StringBuilder
+			Select Case e.Type
+				Case kCura.Utility.DelimitedFileImporter.IoWarningEventArgs.TypeEnum.Message
+					message.Append(e.Message)
+				Case Else
+					message.Append("Error accessing load file - retrying")
+					If e.WaitTime > 0 Then message.Append(" in " & e.WaitTime & " seconds")
+					message.Append(vbNewLine)
+					message.Append("Actual error: " & e.Exception.ToString)
+			End Select
+			Me.ProcessObserver.RaiseWarningEvent((e.CurrentLineNumber + 1).ToString, message.ToString)
+			System.Threading.Monitor.Exit(Me.ProcessObserver)
+		End Sub
+
 	End Class
 
 End Namespace

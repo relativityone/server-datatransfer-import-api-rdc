@@ -8,6 +8,10 @@ Namespace kCura.WinEDDS
 		Private _nativeFileWriter As System.IO.StreamWriter
 		Private _errorWriter As System.IO.StreamWriter
 
+		Private _nativeFileWriterPosition As Int64 = 0
+		Private _imageFileWriterPosition As Int64 = 0
+		Private _errorWriterPosition As Int64 = 0
+
 		Private _currentVolumeNumber As Int32
 		Private _currentSubdirectoryNumber As Int32
 
@@ -118,24 +122,14 @@ Namespace kCura.WinEDDS
 			_currentNativeSubdirectorySize = 0
 			_downloadManager = downloadHandler
 			_parent = parent
-			Dim loadFilePath As String = Me.Settings.FolderPath & "\" & Me.Settings.LoadFilesPrefix & "_export." & Me.Settings.LoadFileExtension
+			Dim loadFilePath As String = Me.LoadFileDestinationPath
 			If Not Me.Settings.Overwrite AndAlso System.IO.File.Exists(loadFilePath) Then
 				Throw New System.Exception(String.Format("Overwrite not selected and file '{0}' exists.", loadFilePath))
 			End If
 			_encoding = Me.Settings.LoadFileEncoding
 
 			_nativeFileWriter = New System.IO.StreamWriter(loadFilePath, False, _encoding)
-			Dim logFileExension As String = ""
-			Select Case Me.Settings.LogFileFormat
-				Case LoadFileType.FileFormat.Opticon
-					logFileExension = ".opt"
-				Case LoadFileType.FileFormat.IPRO
-					logFileExension = ".lfp"
-				Case LoadFileType.FileFormat.IPRO_FullText
-					logFileExension = "_FULLTEXT_.lfp"
-				Case Else
-			End Select
-			Dim imageFilePath As String = Me.Settings.FolderPath & "\" & Me.Settings.LoadFilesPrefix & "_export" & logFileExension
+			Dim imageFilePath As String = Me.ImageFileDestinationPath
 			If Me.Settings.ExportImages Then
 				If Not Me.Settings.Overwrite AndAlso System.IO.File.Exists(imageFilePath) Then
 					Throw New System.Exception(String.Format("Overwrite not selected and file '{0}' exists.", imageFilePath))
@@ -144,13 +138,50 @@ Namespace kCura.WinEDDS
 			End If
 		End Sub
 
+
+
+
+		Public ReadOnly Property LoadFileDestinationPath() As String
+			Get
+				Return Me.Settings.FolderPath & "\" & Me.Settings.LoadFilesPrefix & "_export." & Me.Settings.LoadFileExtension
+			End Get
+		End Property
+
+		Public ReadOnly Property ImageFileDestinationPath() As String
+			Get
+				Dim logFileExension As String = ""
+				Select Case Me.Settings.LogFileFormat
+					Case LoadFileType.FileFormat.Opticon
+						logFileExension = ".opt"
+					Case LoadFileType.FileFormat.IPRO
+						logFileExension = ".lfp"
+					Case LoadFileType.FileFormat.IPRO_FullText
+						logFileExension = "_FULLTEXT_.lfp"
+					Case Else
+				End Select
+				Return Me.Settings.FolderPath & "\" & Me.Settings.LoadFilesPrefix & "_export" & logFileExension
+			End Get
+		End Property
+
+		Public ReadOnly Property ErrorDestinationPath() As String
+			Get
+				If _errorFileLocation Is Nothing OrElse _errorFileLocation = "" Then
+					_errorFileLocation = System.IO.Path.GetTempFileName()
+				End If
+				Return _errorFileLocation
+			End Get
+		End Property
+
 		Private Sub LogFileExportError(ByVal type As ExportFileType, ByVal recordIdentifier As String, ByVal fileLocation As String, ByVal errorText As String)
-			If _errorWriter Is Nothing Then
-				_errorFileLocation = System.IO.Path.GetTempFileName()
-				_errorWriter = New System.IO.StreamWriter(_errorFileLocation, False, _encoding)
-				_errorWriter.WriteLine("""File Type"",""Document Identifier"",""File Guid"",""Error Description""")
-			End If
-			_errorWriter.WriteLine(String.Format("""{0}"",""{1}"",""{2}"",""{3}""", type.ToString, recordIdentifier, fileLocation, kCura.Utility.Strings.ToCsvCellContents(errorText)))
+			Try
+				If _errorWriter Is Nothing Then
+					_errorWriter = New System.IO.StreamWriter(Me.ErrorDestinationPath, False, _encoding)
+					_errorWriter.WriteLine("""File Type"",""Document Identifier"",""File Guid"",""Error Description""")
+				End If
+				_errorWriter.WriteLine(String.Format("""{0}"",""{1}"",""{2}"",""{3}""", type.ToString, recordIdentifier, fileLocation, kCura.Utility.Strings.ToCsvCellContents(errorText)))
+			Catch ex As System.IO.IOException
+				Throw New kCura.WinEDDS.Exceptions.FileWriteException(Exceptions.FileWriteException.DestinationFile.Errors, ex)
+			End Try
 			_parent.WriteError(String.Format("{0} - Document [{1}] - File [{2}] - Error: {3}{4}", type.ToString, recordIdentifier, fileLocation, System.Environment.NewLine, errorText))
 		End Sub
 
@@ -171,6 +202,54 @@ Namespace kCura.WinEDDS
 #End Region
 
 		Public Sub ExportDocument(ByVal documentInfo As Exporters.DocumentExportInfo)
+			Dim tries As Int32 = kCura.Utility.Config.Settings.IoErrorNumberOfRetries
+			While tries > 0
+				tries -= 1
+				Try
+					Me.ExecuteExportDocument(documentInfo, tries < (kCura.Utility.Config.Settings.IoErrorNumberOfRetries - 1))
+					Exit While
+				Catch ex As kCura.WinEDDS.Exceptions.ExportBaseException
+					If tries = 0 Then Throw
+					_parent.WriteWarning(String.Format("Error writing data file(s) for document {0}", documentInfo.IdentifierValue))
+					_parent.WriteWarning(String.Format("Actual error: {0}", ex.ToString))
+					If tries <> kCura.Utility.Config.Settings.IoErrorNumberOfRetries - 1 Then
+						_parent.WriteWarning(String.Format("Waiting {0} seconds to retry", kCura.Utility.Config.Settings.IoErrorWaitTimeInSeconds))
+						System.Threading.Thread.CurrentThread.Join(kCura.Utility.Config.Settings.IoErrorWaitTimeInSeconds * 1000)
+					Else
+						_parent.WriteWarning("Retrying now")
+					End If
+				End Try
+			End While
+
+		End Sub
+
+		Private Sub ReInitializeAllStreams()
+			If Not _nativeFileWriter Is Nothing Then _nativeFileWriter = Me.ReInitializeStream(_nativeFileWriter, _nativeFileWriterPosition, Me.LoadFileDestinationPath, _encoding)
+			If Not _imageFileWriter Is Nothing Then _imageFileWriter = Me.ReInitializeStream(_imageFileWriter, _imageFileWriterPosition, Me.ImageFileDestinationPath, _encoding)
+			If Not _errorWriter Is Nothing Then _errorWriter = Me.ReInitializeStream(_errorWriter, _errorWriterPosition, Me.ErrorDestinationPath, System.Text.Encoding.Default)
+		End Sub
+
+		Private Function ReInitializeStream(ByVal brokenStream As System.IO.StreamWriter, ByVal position As Int64, ByVal filepath As String, ByVal encoding As System.Text.Encoding) As System.IO.StreamWriter
+			If brokenStream Is Nothing Then Exit Function
+			Try
+				brokenStream.Close()
+			Catch ex As Exception
+			End Try
+			Try
+				brokenStream = Nothing
+			Catch ex As Exception
+			End Try
+			Try
+				Dim retval As New System.IO.StreamWriter(filepath, True, encoding)
+				retval.BaseStream.Position = position
+				Return retval
+			Catch ex As System.IO.IOException
+				Throw New kCura.WinEDDS.Exceptions.FileWriteException(Exceptions.FileWriteException.DestinationFile.Generic, ex)
+			End Try
+		End Function
+
+		Private Sub ExecuteExportDocument(ByVal documentInfo As Exporters.DocumentExportInfo, ByVal isRetryAttempt As Boolean)
+			If isRetryAttempt Then Me.ReInitializeAllStreams()
 			Dim totalFileSize As Int64 = 0
 			Dim image As Exporters.ImageExportInfo
 			Dim imageSuccess As Boolean = True
@@ -184,6 +263,7 @@ Namespace kCura.WinEDDS
 						If Me.Settings.VolumeInfo.CopyFilesFromRepository Then
 							totalFileSize += Me.DownloadImage(image)
 						End If
+						image.HasBeenCounted = True
 					Catch ex As System.Exception
 						image.TempLocation = ""
 						Me.LogFileExportError(ExportFileType.Image, documentInfo.IdentifierValue, image.FileGuid, ex.ToString)
@@ -240,7 +320,11 @@ Namespace kCura.WinEDDS
 					End If
 				Catch ex As kCura.Utility.Image.ImageRollupException
 					successfulRollup = False
-					_parent.WriteImgProgressError(documentInfo, ex.ImageIndex, ex, "Document exported in single-page image mode.")					'TODO:
+					Try
+						_parent.WriteImgProgressError(documentInfo, ex.ImageIndex, ex, "Document exported in single-page image mode.")						'TODO:
+					Catch ioex As System.IO.IOException
+						Throw New kCura.WinEDDS.Exceptions.FileWriteException(Exceptions.FileWriteException.DestinationFile.Errors, ioex)
+					End Try
 				End Try
 			End If
 
@@ -248,8 +332,10 @@ Namespace kCura.WinEDDS
 				_timekeeper.MarkStart("VolumeManager_DownloadNative")
 				Try
 					If Me.Settings.VolumeInfo.CopyFilesFromRepository Then
-						totalFileSize += Me.DownloadNative(documentInfo)
+						Dim downloadSize As Int64 = Me.DownloadNative(documentInfo)
+						If Not documentInfo.HasCountedNative Then totalFileSize += downloadSize
 					End If
+					documentInfo.HasCountedNative = True
 				Catch ex As System.Exception
 					Me.LogFileExportError(ExportFileType.Native, documentInfo.IdentifierValue, documentInfo.NativeFileGuid, ex.ToString)
 				End Try
@@ -262,7 +348,8 @@ Namespace kCura.WinEDDS
 				tempLocalFullTextFilePath = Me.DownloadTextFieldAsFile(documentInfo, Me.Settings.SelectedTextField)
 				If Me.Settings.ExportFullTextAsFile Then
 					Dim l As Int64 = kCura.Utility.File.Length(tempLocalFullTextFilePath)
-					totalFileSize += l
+					If Not documentInfo.HasCountedTextFile Then totalFileSize += l
+					documentInfo.HasCountedTextFile = True
 					documentInfo.HasFullText = (l > 0)
 				End If
 			End If
@@ -303,37 +390,11 @@ Namespace kCura.WinEDDS
 					Me.UpdateVolume()
 				End If
 			ElseIf imageCount + _currentImageSubdirectorySize > Me.SubDirectoryMaxSize Then
-				'If _currentImageSubdirectorySize = 0 AndAlso Me.Settings.ExportImages Then
-				'	Me.UpdateSubdirectory()
-				'Else
-				'	updateSubDirectoryAfterExport = True
-				'End If
 				Me.UpdateSubdirectory()
 			ElseIf documentInfo.NativeCount + _currentNativeSubdirectorySize > Me.SubDirectoryMaxSize Then
-				'If _currentNativeSubdirectorySize = 0 AndAlso Me.Settings.ExportNative Then
-				'	Me.UpdateSubdirectory()
-				'Else
-				'	updateSubDirectoryAfterExport = True
-				'End If
 				Me.UpdateSubdirectory()
 			ElseIf textCount + _currentTextSubdirectorySize > Me.SubDirectoryMaxSize Then
-				'If _currentTextSubdirectorySize = 0 AndAlso Me.Settings.ExportFullTextAsFile Then
-				'	Me.UpdateSubdirectory()
-				'Else
-				'	updateSubDirectoryAfterExport = True
-				'End If
 				Me.UpdateSubdirectory()
-
-				'ElseIf documentInfo.ImageCount + _currentImageSubdirectorySize > Me.SubDirectoryMaxSize OrElse _
-				' documentInfo.NativeCount + _currentNativeSubdirectorySize > Me.SubDirectoryMaxSize OrElse _
-				' textCount + _currentTextSubdirectorySize >= Me.SubDirectoryMaxSize Then
-				'	If (_currentImageSubdirectorySize = 0 AndAlso Me.Settings.ExportImages) OrElse _
-				'	(_currentNativeSubdirectorySize = 0 AndAlso Me.Settings.ExportNative) OrElse _
-				'	(_currentTextSubdirectorySize = 0 AndAlso Me.Settings.ExportFullTextAsFile) Then
-				'		updateSubDirectoryAfterExport = True
-				'Else
-				'	Me.UpdateSubdirectory()
-				'End If
 			End If
 			If Me.Settings.ExportImages Then
 				_timekeeper.MarkStart("VolumeManager_ExportImages")
@@ -360,12 +421,17 @@ Namespace kCura.WinEDDS
 					End Select
 				End If
 			End If
-			If Not _hasWrittenColumnHeaderString Then
-				_nativeFileWriter.Write(_columnHeaderString)
-				_hasWrittenColumnHeaderString = True
-			End If
-			Me.UpdateLoadFile(documentInfo.DataRow, documentInfo.HasFullText, documentInfo.DocumentArtifactID, nativeLocation, tempLocalFullTextFilePath, documentInfo)
-			_parent.DocumentsExported += 1
+			Try
+				If Not _hasWrittenColumnHeaderString Then
+					_nativeFileWriter.Write(_columnHeaderString)
+					_hasWrittenColumnHeaderString = True
+				End If
+				Me.UpdateLoadFile(documentInfo.DataRow, documentInfo.HasFullText, documentInfo.DocumentArtifactID, nativeLocation, tempLocalFullTextFilePath, documentInfo)
+			Catch ex As System.IO.IOException
+				Throw New kCura.WinEDDS.Exceptions.FileWriteException(Exceptions.FileWriteException.DestinationFile.Load, ex)
+			End Try
+
+			_parent.DocumentsExported += documentInfo.DocCount
 			_currentVolumeSize += totalFileSize
 			If Me.Settings.VolumeInfo.CopyFilesFromRepository Then
 				_currentNativeSubdirectorySize += documentInfo.NativeCount
@@ -375,6 +441,25 @@ Namespace kCura.WinEDDS
 			If updateSubDirectoryAfterExport Then Me.UpdateSubdirectory()
 			If updateVolumeAfterExport Then Me.UpdateVolume()
 			_parent.WriteUpdate("Document " & documentInfo.IdentifierValue & " exported.", False)
+
+			Try
+				If Not _nativeFileWriter Is Nothing Then _nativeFileWriter.Flush()
+			Catch ex As Exception
+				Throw New Exceptions.FileWriteException(Exceptions.FileWriteException.DestinationFile.Load, ex)
+			End Try
+			Try
+				If Not _imageFileWriter Is Nothing Then _imageFileWriter.Flush()
+			Catch ex As Exception
+				Throw New Exceptions.FileWriteException(Exceptions.FileWriteException.DestinationFile.Image, ex)
+			End Try
+			Try
+				If Not _errorWriter Is Nothing Then _errorWriter.Flush()
+			Catch ex As Exception
+				Throw New Exceptions.FileWriteException(Exceptions.FileWriteException.DestinationFile.Errors, ex)
+			End Try
+			If Not _nativeFileWriter Is Nothing Then _nativeFileWriterPosition = _nativeFileWriter.BaseStream.Position
+			If Not _imageFileWriter Is Nothing Then _imageFileWriterPosition = _imageFileWriter.BaseStream.Position
+			If Not _errorWriter Is Nothing Then _errorWriterPosition = _errorWriter.BaseStream.Position
 		End Sub
 
 		Private Function DownloadTextFieldAsFile(ByVal documentInfo As WinEDDS.Exporters.DocumentExportInfo, ByVal field As WinEDDS.ViewFieldInfo) As String
@@ -393,21 +478,9 @@ Namespace kCura.WinEDDS
 				Catch ex As System.Exception
 					If tries = 19 Then
 						_parent.WriteStatusLine(Windows.Process.EventType.Warning, "Second attempt to download full text for document " & documentInfo.IdentifierValue, True)
-						'Select Case field.Category
-						'	Case DynamicFields.Types.FieldCategory.FullText
-						'		_downloadManager.DownloadFullTextFile(tempLocalFullTextFilePath, documentInfo.DocumentArtifactID, _settings.CaseInfo.ArtifactID.ToString)
-						'	Case Else
-						'		_downloadManager.DownloadLongTextFile(tempLocalFullTextFilePath, documentInfo.DocumentArtifactID, field, _settings.CaseInfo.ArtifactID.ToString)
-						'End Select
 					ElseIf tries > 0 Then
 						_parent.WriteStatusLine(Windows.Process.EventType.Warning, "Additional attempt to download full text for document " & documentInfo.IdentifierValue & " failed - retrying in 30 seconds", True)
 						System.Threading.Thread.CurrentThread.Join(30000)
-						'Select Case field.Category
-						'	Case DynamicFields.Types.FieldCategory.FullText
-						'		_downloadManager.DownloadFullTextFile(tempLocalFullTextFilePath, documentInfo.DocumentArtifactID, _settings.CaseInfo.ArtifactID.ToString)
-						'	Case Else
-						'		_downloadManager.DownloadLongTextFile(tempLocalFullTextFilePath, documentInfo.DocumentArtifactID, field, _settings.CaseInfo.ArtifactID.ToString)
-						'End Select
 					Else
 						Throw
 					End If
@@ -586,7 +659,7 @@ Namespace kCura.WinEDDS
 					End If
 				End Try
 			End While
-			Return kCura.Utility.File.Length(tempFile)
+			kCura.Utility.File.Length(tempFile)
 		End Function
 
 		Private Sub ExportDocumentImage(ByVal fileName As String, ByVal fileGuid As String, ByVal artifactID As Int32, ByVal batesNumber As String, ByVal tempFileLocation As String)
@@ -627,47 +700,50 @@ Namespace kCura.WinEDDS
 		Private Sub CreateImageLogEntry(ByVal batesNumber As String, ByVal copyFile As String, ByVal pathToImage As String, ByVal pageNumber As Int32, ByVal fullTextReader As System.IO.StreamReader, ByVal expectingTextForPage As Boolean, ByVal pageOffset As Long, ByVal numberOfImages As Int32)
 			Dim fullTextGuid As String
 			Dim fullText As String
-			Select Case _settings.LogFileFormat
-				Case LoadFileType.FileFormat.Opticon
-					Me.WriteOpticonLine(batesNumber, pageNumber = 1, copyFile, numberOfImages)
-				Case LoadFileType.FileFormat.IPRO
-					Me.WriteIproImageLine(batesNumber, pageNumber, copyFile)
-				Case LoadFileType.FileFormat.IPRO_FullText
-					Dim currentPageFirstByteNumber As Long
-					If fullTextReader Is Nothing Then
-						If pageNumber = 1 AndAlso expectingTextForPage Then _parent.WriteWarning(String.Format("Could not retrieve full text for document '{0}'", batesNumber))
-					Else
-						Dim pageText As New System.Text.StringBuilder
-						If pageNumber = 1 Then
-							currentPageFirstByteNumber = 0
+			Try
+				Select Case _settings.LogFileFormat
+					Case LoadFileType.FileFormat.Opticon
+						Me.WriteOpticonLine(batesNumber, pageNumber = 1, copyFile, numberOfImages)
+					Case LoadFileType.FileFormat.IPRO
+						Me.WriteIproImageLine(batesNumber, pageNumber, copyFile)
+					Case LoadFileType.FileFormat.IPRO_FullText
+						Dim currentPageFirstByteNumber As Long
+						If fullTextReader Is Nothing Then
+							If pageNumber = 1 AndAlso expectingTextForPage Then _parent.WriteWarning(String.Format("Could not retrieve full text for document '{0}'", batesNumber))
 						Else
-							currentPageFirstByteNumber = fullTextReader.BaseStream.Position
+							Dim pageText As New System.Text.StringBuilder
+							If pageNumber = 1 Then
+								currentPageFirstByteNumber = 0
+							Else
+								currentPageFirstByteNumber = fullTextReader.BaseStream.Position
+							End If
+							_imageFileWriter.Write("FT,")
+							_imageFileWriter.Write(batesNumber)
+							_imageFileWriter.Write(",1,1,")
+							Select Case pageOffset
+								Case Int64.MinValue
+									Dim c As Int32 = fullTextReader.Read
+									While c <> -1
+										_imageFileWriter.Write(Me.GetLfpFullTextTransform(ChrW(c)))
+										c = fullTextReader.Read
+									End While
+								Case Else
+									Dim i As Int32 = 0
+									Dim c As Int32 = fullTextReader.Read
+									While i < pageOffset AndAlso c <> -1
+										_imageFileWriter.Write(Me.GetLfpFullTextTransform(ChrW(c)))
+										c = fullTextReader.Read
+										i += 1
+									End While
+							End Select
+							_imageFileWriter.Write(vbNewLine)
 						End If
-						_imageFileWriter.Write("FT,")
-						_imageFileWriter.Write(batesNumber)
-						_imageFileWriter.Write(",1,1,")
-						Select Case pageOffset
-							Case Int64.MinValue
-								Dim c As Int32 = fullTextReader.Read
-								While c <> -1
-									_imageFileWriter.Write(Me.GetLfpFullTextTransform(ChrW(c)))
-									c = fullTextReader.Read
-								End While
-							Case Else
-								Dim i As Int32 = 0
-								Dim c As Int32 = fullTextReader.Read
-								While i < pageOffset AndAlso c <> -1
-									_imageFileWriter.Write(Me.GetLfpFullTextTransform(ChrW(c)))
-									c = fullTextReader.Read
-									i += 1
-								End While
-						End Select
-						_imageFileWriter.Write(vbNewLine)
-					End If
-					_imageFileWriter.Flush()
-					Me.WriteIproImageLine(batesNumber, pageNumber, copyFile)
-			End Select
-
+						_imageFileWriter.Flush()
+						Me.WriteIproImageLine(batesNumber, pageNumber, copyFile)
+				End Select
+			Catch ex As System.IO.IOException
+				Throw New kCura.WinEDDS.Exceptions.FileWriteException(Exceptions.FileWriteException.DestinationFile.Image, ex)
+			End Try
 		End Sub
 
 		Private Sub WriteIproImageLine(ByVal batesNumber As String, ByVal pageNumber As Int32, ByVal fullFilePath As String)
@@ -705,7 +781,6 @@ Namespace kCura.WinEDDS
 				End If
 			End If
 			_timekeeper.MarkStart("VolumeManager_ExportNative_WriteStatus")
-			'_parent.WriteStatusLine(Windows.Process.EventType.Progress, String.Format("Finished exporting document {0}.", systemFileName), False)
 			_timekeeper.MarkEnd("VolumeManager_ExportNative_WriteStatus")
 		End Function
 
@@ -756,11 +831,6 @@ Namespace kCura.WinEDDS
 			Dim columnName As String
 			Dim location As String = nativeLocation
 			For count = 0 To _parent.Columns.Count - 1
-				'If TypeOf Me.Columns(count) Is DBNull Then
-				'	fieldValue = String.Empty
-				'Else
-				'	fieldValue = CType(row(CType(Me.Columns(count), String)), String)
-				'End If
 				Dim field As WinEDDS.ViewFieldInfo = DirectCast(_parent.Columns(count), WinEDDS.ViewFieldInfo)
 				columnName = field.AvfColumnName
 				If field.FieldType = DynamicFields.Types.FieldTypeHelper.FieldType.Text Then
@@ -768,7 +838,6 @@ Namespace kCura.WinEDDS
 						Dim bodyText As New System.Text.StringBuilder
 						If Not hasFullText Then
 							bodyText = New System.Text.StringBuilder("")
-							'_nativeFileWriter.Write(String.Format("{2}{0}{1}{0}", _settings.QuoteDelimiter, bodyText.ToString, _settings.RecordDelimiter))
 							_nativeFileWriter.Write(String.Format("{0}{1}{0}", _settings.QuoteDelimiter, bodyText.ToString))
 						Else
 							Select Case Me.Settings.ExportFullTextAsFile
@@ -813,11 +882,9 @@ Namespace kCura.WinEDDS
 											textLocation = Me.Settings.FilePrefix.TrimEnd("\"c) & "\" & Me.CurrentVolumeLabel & "\" & Me.CurrentFullTextSubdirectoryLabel & "\" & doc.FullTextFileName(Me.NameTextFilesAfterIdentifier)
 									End Select
 									_nativeFileWriter.Write(String.Format("{0}{1}{0}", _settings.QuoteDelimiter, textLocation))
-									'_nativeFileWriter.Write(String.Format("{2}{0}{1}{0}", _settings.QuoteDelimiter, textLocation, _settings.RecordDelimiter))
 								Case False
 									Dim sr As New System.IO.StreamReader(fullTextTempFile, System.Text.Encoding.Unicode, True)
 									Dim c As Int32 = sr.Read
-									'_nativeFileWriter.Write(_settings.RecordDelimiter)
 									_nativeFileWriter.Write(_settings.QuoteDelimiter)
 									While Not c = -1
 										Select Case c
@@ -842,7 +909,6 @@ Namespace kCura.WinEDDS
 						Dim textLocation As String = Me.DownloadTextFieldAsFile(doc, field)
 						Dim sr As New System.IO.StreamReader(textLocation, System.Text.Encoding.Unicode, True)
 						Dim c As Int32 = sr.Read
-						'_nativeFileWriter.Write(_settings.RecordDelimiter)
 						_nativeFileWriter.Write(_settings.QuoteDelimiter)
 						While Not c = -1
 							Select Case c

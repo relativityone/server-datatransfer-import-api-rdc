@@ -13,5 +13,6 @@ Namespace kCura.WinEDDS.Service
 		''' -----------------------------------------------------------------------------
 		Public Shared DefaultTimeOut As Int32 = 600000
 		Public Shared AuthenticationToken As String = String.Empty
+		Public Const MAX_STRING_FIELD_LENGTH As Int32 = 1048576
 	End Class
 End Namespace
