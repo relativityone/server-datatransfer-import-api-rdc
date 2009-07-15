@@ -166,15 +166,16 @@ Namespace kCura.WinEDDS
 					If _autoDetect Then
 						newCodeOrderValue = GetNewCodeOrderValue(field.CodeTypeID.Value)
 						Dim code As kCura.EDDS.WebAPI.CodeManagerBase.Code = _codeManager.CreateNewCodeDTOProxy(field.CodeTypeID.Value, value, newCodeOrderValue, _caseSystemID)
+						If code.Name.Length > 200 Then Throw New CodeCreationException(Me.CurrentLineNumber, column, False, "Proposed choice name '" & code.Name & "' exceeds 200 characters, which is the maximum allowable.")
 						Dim o As Object = _codeManager.Create(_caseArtifactID, code)
 						If TypeOf o Is Int32 Then
 							codeArtifactID = CType(o, Int32)
 						Else
-							Throw New CodeCreationException(Me.CurrentLineNumber, column, o.ToString)
+							Throw New CodeCreationException(Me.CurrentLineNumber, column, True, o.ToString)
 						End If
 						Select Case codeArtifactID
 							Case -1
-								Throw New CodeCreationException(Me.CurrentLineNumber, column, value)
+								Throw New CodeCreationException(Me.CurrentLineNumber, column, True, value)
 							Case -200
 								Throw New System.Exception("This choice or multi-choice field is not enabled as unicode.  Upload halted")
 						End Select
@@ -225,6 +226,7 @@ Namespace kCura.WinEDDS
 					codeString = codeString.Trim
 					If codeString <> "" Then
 						If goodCodes.Contains(codeString) Then Throw New DuplicateMulticodeValueException(Me.CurrentLineNumber, column, codeString)
+						If codeString.Length > 200 Then Throw New CodeCreationException(Me.CurrentLineNumber, column, False, "Proposed choice name '" & codeString & "' exceeds 200 characters, which is the maximum allowable.")
 						goodCodes.Add(codeString)
 					End If
 				Next
@@ -262,7 +264,7 @@ Namespace kCura.WinEDDS
 					Return New NullableTypes.NullableInt32() {}
 				End If
 			Catch ex As Exceptions.CodeCreationFailedException
-				Throw New CodeCreationException(Me.CurrentLineNumber, column, ex.ToString)
+				Throw New CodeCreationException(Me.CurrentLineNumber, column, True, ex.ToString)
 			End Try
 
 			'For i = 0 To codeDisplayNames.Length - 1
@@ -556,8 +558,15 @@ Namespace kCura.WinEDDS
 
 		Public Class CodeCreationException
 			Inherits kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
-			Public Sub New(ByVal row As Int32, ByVal column As Int32, ByVal errorText As String)
+			Private _isFatal As Boolean
+			Public ReadOnly Property IsFatal() As Boolean
+				Get
+					Return _isFatal
+				End Get
+			End Property
+			Public Sub New(ByVal row As Int32, ByVal column As Int32, ByVal isFatal As Boolean, ByVal errorText As String)
 				MyBase.New(row, column, errorText)
+				_isFatal = isFatal
 			End Sub
 		End Class
 

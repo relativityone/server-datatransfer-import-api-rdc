@@ -254,8 +254,12 @@ Namespace kCura.WinEDDS
 							_timekeeper.MarkEnd("ReadFile_IdTrack")
 						End If
 					Catch ex As LoadFileBase.CodeCreationException
-						_continue = False
-						WriteFatalError(Me.CurrentLineNumber, ex, line)
+						If ex.IsFatal Then
+							_continue = False
+							WriteFatalError(Me.CurrentLineNumber, ex, line)
+						Else
+							WriteError(Me.CurrentLineNumber, ex.Message)
+						End If
 					Catch ex As kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
 						WriteError(Me.CurrentLineNumber, ex.Message)
 					Catch ex As System.IO.FileNotFoundException
