@@ -346,12 +346,12 @@ Namespace kCura.WinEDDS
 
 			If Me.Settings.ExportFullText Then
 				tempLocalFullTextFilePath = Me.DownloadTextFieldAsFile(documentInfo, Me.Settings.SelectedTextField)
+				Dim l As Int64 = kCura.Utility.File.Length(tempLocalFullTextFilePath)
 				If Me.Settings.ExportFullTextAsFile Then
-					Dim l As Int64 = kCura.Utility.File.Length(tempLocalFullTextFilePath)
 					If Not documentInfo.HasCountedTextFile Then totalFileSize += l
 					documentInfo.HasCountedTextFile = True
-					documentInfo.HasFullText = (l > 0)
 				End If
+				documentInfo.HasFullText = (l > 0)
 			End If
 
 			If Me.Settings.LogFileFormat = LoadFileType.FileFormat.IPRO_FullText Then
