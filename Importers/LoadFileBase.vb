@@ -223,7 +223,10 @@ Namespace kCura.WinEDDS
 				Dim goodCodes As New System.Collections.ArrayList
 				For Each codeString As String In al
 					codeString = codeString.Trim
-					If codeString <> "" Then goodCodes.Add(codeString)
+					If codeString <> "" Then
+						If goodCodes.Contains(codeString) Then Throw New DuplicateMulticodeValueException(Me.CurrentLineNumber, column, codeString)
+						goodCodes.Add(codeString)
+					End If
 				Next
 				Dim codeDisplayNames As String() = DirectCast(goodCodes.ToArray(GetType(String)), String())
 				Dim i As Int32
@@ -590,6 +593,13 @@ Namespace kCura.WinEDDS
 			Inherits kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
 			Public Sub New(ByVal details As String)
 				MyBase.New("Error accessing the bcp share. Please contact your system administrator with the following details: " & System.Environment.NewLine & details)
+			End Sub
+		End Class
+
+		Public Class DuplicateMulticodeValueException
+			Inherits kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
+			Public Sub New(ByVal row As Int32, ByVal column As Int32, ByVal codeName As String)
+				MyBase.New(String.Format("Code value '{0}' specified twice for this record", codeName))
 			End Sub
 		End Class
 
