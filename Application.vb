@@ -747,6 +747,21 @@ Namespace kCura.EDDS.WinForm
 			Dim exportFile As WinEDDS.ExportFile
 			Try
 				exportFile = Me.GetNewExportFileSettingsObject(selectedFolderId, caseInfo, typeOfExport)
+				If exportFile.DataTable.Rows.Count = 0 Then
+					Dim s As New System.Text.StringBuilder
+					s.Append("There are no exportable ")
+					Select Case exportFile.TypeOfExport
+						Case exportFile.ExportType.Production
+							s.Append("productions ")
+						Case exportFile.ExportType.ArtifactSearch
+							s.Append("saved searches ")
+						Case Else
+							s.Append("views ")
+					End Select
+					s.Append("in this case")
+					MsgBox(s.ToString, MsgBoxStyle.Critical)
+					Exit Sub
+				End If
 				frm.Application = Me
 				frm.ExportFile = exportFile
 				frm.Show()
@@ -778,8 +793,13 @@ Namespace kCura.EDDS.WinForm
 			For Each row As System.Data.DataRow In exportFile.DataTable.Rows
 				ids.Add(row("ArtifactID"))
 			Next
-			exportFile.ArtifactAvfLookup = searchManager.RetrieveDefaultViewFieldsForIdList(caseInfo.ArtifactID, DirectCast(ids.ToArray(GetType(Int32)), Int32()), typeOfExport = exportFile.ExportType.Production)
-			exportFile.AllExportableFields = searchManager.RetrieveAllExportableViewFields(caseInfo.ArtifactID)
+			If ids.Count = 0 Then
+				exportFile.ArtifactAvfLookup = New System.Collections.Specialized.HybridDictionary
+				exportFile.AllExportableFields = New WinEDDS.ViewFieldInfo() {}
+			Else
+				exportFile.ArtifactAvfLookup = searchManager.RetrieveDefaultViewFieldsForIdList(caseInfo.ArtifactID, DirectCast(ids.ToArray(GetType(Int32)), Int32()), typeOfExport = exportFile.ExportType.Production)
+				exportFile.AllExportableFields = searchManager.RetrieveAllExportableViewFields(caseInfo.ArtifactID)
+			End If
 			Return exportFile
 		End Function
 

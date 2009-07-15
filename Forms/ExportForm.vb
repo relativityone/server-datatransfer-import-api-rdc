@@ -1534,6 +1534,22 @@ Public Class ExportForm
 		Dim selectedDataSource As Int32 = CInt(_filters.SelectedValue)
 		_dataSourceIsSet = False
 		Dim newExportFile As kCura.WinEDDS.ExportFile = _application.GetNewExportFileSettingsObject(_exportFile.ArtifactID, _exportFile.CaseInfo, _exportFile.TypeOfExport)
+		If newExportFile.DataTable.Rows.Count = 0 Then
+			Dim s As New System.Text.StringBuilder
+			s.Append("There are no exportable ")
+			Select Case newExportFile.TypeOfExport
+				Case ExportFile.ExportType.Production
+					s.Append("productions ")
+				Case ExportFile.ExportType.ArtifactSearch
+					s.Append("saved searches ")
+				Case Else
+					s.Append("views ")
+			End Select
+			s.Append("in this case")
+			MsgBox(s.ToString, MsgBoxStyle.Critical)
+			Me.Close()
+			Exit Sub
+		End If
 		_exportFile.DataTable = newExportFile.DataTable
 		_exportFile.AllExportableFields = newExportFile.AllExportableFields
 		_exportFile.ArtifactAvfLookup = newExportFile.ArtifactAvfLookup
