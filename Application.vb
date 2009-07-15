@@ -169,10 +169,10 @@ Namespace kCura.EDDS.WinForm
       Dim objectTypeManager As New kCura.WinEDDS.Service.ObjectTypeManager(Me.Credential, Me.CookieContainer)
       Dim uploadableObjectTypes As System.Data.DataRowCollection = objectTypeManager.RetrieveAllUploadable(Me.SelectedCaseInfo.ArtifactID).Tables(0).Rows
       For Each objectType As System.Data.DataRow In uploadableObjectTypes
-        With New kCura.WinEDDS.ObjectTypeListItem(CType(objectType("DescriptorArtifactTypeID"), Int32), CType(objectType("Name"), String))
-          If .Value = artifactTypeID Then Return .Display
-        End With
-      Next
+				With New kCura.WinEDDS.ObjectTypeListItem(CType(objectType("DescriptorArtifactTypeID"), Int32), CType(objectType("Name"), String), CType(objectType("HasAddPermission"), Boolean))
+					If .Value = artifactTypeID Then Return .Display
+				End With
+			Next
       Return String.Empty
 		End Function
 

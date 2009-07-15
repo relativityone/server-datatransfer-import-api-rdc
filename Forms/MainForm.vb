@@ -479,7 +479,7 @@ Namespace kCura.EDDS.WinForm
       End If
       _objectTypeDropDown.Items.Clear()
       For Each objectType As System.Data.DataRow In uploadableObjectTypes
-        Dim currentObjectType As New kCura.WinEDDS.ObjectTypeListItem(CType(objectType("DescriptorArtifactTypeID"), Int32), CType(objectType("Name"), String))
+				Dim currentObjectType As New kCura.WinEDDS.ObjectTypeListItem(CType(objectType("DescriptorArtifactTypeID"), Int32), CType(objectType("Name"), String), CType(objectType("HasAddPermission"), Boolean))
         _objectTypeDropDown.Items.Add(currentObjectType)
         If CType(objectType("DescriptorArtifactTypeID"), Int32) = selectedObjectTypeID Then
           Me._objectTypeDropDown.SelectedItem = currentObjectType
@@ -487,24 +487,27 @@ Namespace kCura.EDDS.WinForm
       Next
     End Sub
 
-    Private Sub _objectTypeDropDown_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _objectTypeDropDown.SelectedIndexChanged
-      Dim selectedItemValue As Int32 = DirectCast(_objectTypeDropDown.SelectedItem, kCura.WinEDDS.ObjectTypeListItem).Value
-      ToolsImportLoadFileMenu.Text = _objectTypeDropDown.Text & " &Load File..."
-      If selectedItemValue = 10 Then
-        _caseFolderExplorer.Visible = True
-        ToolsImportImageFileMenu.Visible = True
-        ToolsImportProductionFileMenu.Visible = True
-        ExportMenu.Visible = True
-      Else
-        'setting ExportMenu.Visible to True then False helps to resize the ToolsImportLoadFileMenu according to the length of its text
-        ExportMenu.Visible = True
-        ExportMenu.Visible = False
-        _caseFolderExplorer.Visible = False
-        ToolsImportImageFileMenu.Visible = False
-        ToolsImportProductionFileMenu.Visible = False
-      End If
-      _application.ArtifactTypeID = selectedItemValue
-    End Sub
+		Private Sub _objectTypeDropDown_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _objectTypeDropDown.SelectedIndexChanged
+			Dim selectedObjectType As kCura.WinEDDS.ObjectTypeListItem = DirectCast(_objectTypeDropDown.SelectedItem, kCura.WinEDDS.ObjectTypeListItem)
+			Dim selectedItemValue As Int32 = selectedObjectType.Value
+			ToolsImportLoadFileMenu.Text = _objectTypeDropDown.Text & " &Load File..."
+			ImportMenu.Visible = selectedObjectType.UserCanAdd
+			ToolsImportLoadFileMenu.Visible = selectedObjectType.UserCanAdd
+			If selectedItemValue = 10 Then
+				_caseFolderExplorer.Visible = True
+				ToolsImportImageFileMenu.Visible = selectedObjectType.UserCanAdd
+				ToolsImportProductionFileMenu.Visible = selectedObjectType.UserCanAdd
+				ExportMenu.Visible = True
+			Else
+				'setting ExportMenu.Visible to True then False helps to resize the ToolsImportLoadFileMenu according to the length of its text
+				ExportMenu.Visible = True
+				ExportMenu.Visible = False
+				_caseFolderExplorer.Visible = False
+				ToolsImportImageFileMenu.Visible = False
+				ToolsImportProductionFileMenu.Visible = False
+			End If
+			_application.ArtifactTypeID = selectedItemValue
+		End Sub
 
 		Private Sub _optionsMenuCheckConnectivityItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _optionsMenuCheckConnectivityItem.Click
 			_application.QueryConnectivity()
