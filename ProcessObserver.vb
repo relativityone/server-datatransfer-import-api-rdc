@@ -93,7 +93,7 @@ Namespace kCura.Windows.Process
 #End Region
 
 		Private Function BuildErrorReportDatasource() As Object()
-			Dim reader As New ErrorFileReader
+			Dim reader As New ErrorFileReader(False)
 			Return DirectCast(reader.ReadFile(_errorsFileName), Object())
 		End Function
 

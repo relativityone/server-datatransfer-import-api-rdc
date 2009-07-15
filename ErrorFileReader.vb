@@ -20,8 +20,8 @@ Namespace kCura.Windows.Process
 			Return os
 		End Function
 
-		Public Sub New()
-			MyBase.New(","c, """"c, ChrW(20))
+		Public Sub New(ByVal doRetryLogic As Boolean)
+			MyBase.New(","c, """"c, ChrW(20), doRetryLogic)
 		End Sub
 	End Class
 End Namespace
