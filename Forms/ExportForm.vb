@@ -1278,7 +1278,7 @@ Public Class ExportForm
 
 	Private Sub InitializeColumnSelecter()
 		_columnSelecter.ClearAll()
-		Dim defaultSelectedIds As System.Collections.ArrayList = New ArrayList
+		Dim defaultSelectedIds As New System.Collections.ArrayList
 		If Not _filters.SelectedItem Is Nothing Then defaultSelectedIds = DirectCast(Me.ExportFile.ArtifactAvfLookup(CType(_filters.SelectedValue, Int32)), ArrayList)
 		Dim leftListBoxItems As New System.Collections.ArrayList
 		For Each field As ViewFieldInfo In Me.ExportFile.AllExportableFields
