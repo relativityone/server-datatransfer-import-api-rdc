@@ -104,7 +104,7 @@ Namespace kCura.WinEDDS
 			Return UploadBcpFileWrapper(appID, localFilePath, False)
 		End Function
 
-		Public Function UploadBcpFileWrapper(ByVal appID As Int32, ByVal localFilePath As String, ByVal upload As Boolean) As FileUploadReturnArgs
+		Private Function UploadBcpFileWrapper(ByVal appID As Int32, ByVal localFilePath As String, ByVal upload As Boolean) As FileUploadReturnArgs
 			'This function catches a potential intermittent network issue, when UploadBcpFile returns an arg object of type Warning
 			Dim args As FileUploadReturnArgs
 			Dim tries As Int32 = 0
@@ -116,7 +116,16 @@ Namespace kCura.WinEDDS
 						Return args
 					End If
 				Catch ex As System.Exception
-					Return New FileUploadReturnArgs(FileUploadReturnArgs.FileUploadReturnType.UploadError, "Error accessing BCP Path, could be caused by network connectivity issues: " & ex.Message)
+					RaiseEvent UploadWarningEvent("Error accessing BCP Path, could be caused by network connectivity issues: " & ex.ToString)
+					If Config.EnableSingleModeImport AndAlso tries < 19 Then
+						Return New FileUploadReturnArgs(FileUploadReturnArgs.FileUploadReturnType.UploadError, "Error accessing BCP Path, could be caused by network connectivity issues: " & ex.Message)
+					End If
+					If tries = 1 AndAlso Not Config.EnableSingleModeImport Then
+						RaiseEvent UploadWarningEvent("Retrying bulk upload")
+					Else
+						RaiseEvent UploadWarningEvent("Retrying bulk upload in " & kCura.Utility.Config.Settings.IoErrorWaitTimeInSeconds & " seconds")
+						System.Threading.Thread.CurrentThread.Join(1000 * kCura.Utility.Config.Settings.IoErrorWaitTimeInSeconds)
+					End If
 				End Try
 			End While
 			Return New FileUploadReturnArgs(FileUploadReturnArgs.FileUploadReturnType.UploadError, "Error accessing BCP Path, could be caused by network connectivity issues.")
