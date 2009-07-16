@@ -160,7 +160,7 @@ Namespace kCura.WinEDDS
 				Dim webResponse As System.Net.WebResponse = httpWebRequest.GetResponse()
 				Dim length As Int64 = 0
 				If Not webResponse Is Nothing Then
-					length = webResponse.ContentLength
+					length = System.Math.Max(webResponse.ContentLength, 0)
 					Dim responseStream As System.IO.Stream = webResponse.GetResponseStream()
 					Try
 						localStream = System.IO.File.Create(localFilePath)
