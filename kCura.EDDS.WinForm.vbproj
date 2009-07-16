@@ -283,7 +283,7 @@
                 />
                 <File
                     RelPath = "Forms\CaseSelectForm.vb"
-                    SubType = "Form"
+                    SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
