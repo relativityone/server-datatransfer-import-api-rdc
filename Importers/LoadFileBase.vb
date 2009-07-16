@@ -608,7 +608,7 @@ Namespace kCura.WinEDDS
 		Public Class DuplicateMulticodeValueException
 			Inherits kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
 			Public Sub New(ByVal row As Int32, ByVal column As Int32, ByVal codeName As String)
-				MyBase.New(String.Format("Code value '{0}' specified twice for this record", codeName))
+				MyBase.New(row, column, String.Format("Code value '{0}' specified twice for this record", codeName))
 			End Sub
 		End Class
 
