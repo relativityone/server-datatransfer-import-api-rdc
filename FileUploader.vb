@@ -187,7 +187,7 @@ Namespace kCura.WinEDDS
 				Catch ex As System.Exception
 					tries -= 1
 					Dim wait As Int32
-					If TypeOf ex Is System.IO.IOException AndAlso tries > 0 Then
+					If Me.IsWarningException(ex) AndAlso tries > 0 Then
 						'RaiseEvent UploadWarningEvent(Me.UploaderType.ToString & " upload failed: " & ex.Message & " - Retrying in 30 seconds. " & tries & " tries left.")
 
 						RaiseEvent UploadWarningEvent(String.Format("{0} upload fialed: {1} - Retrying in {2} seconds.  {3} tries left.", Me.UploaderType.ToString, ex.Message, wait, tries))
@@ -203,6 +203,12 @@ Namespace kCura.WinEDDS
 					End If
 				End Try
 			End While
+		End Function
+
+		Private Function IsWarningException(ByVal ex As System.Exception) As Boolean
+			If Me.UploaderType = Type.Direct And TypeOf ex Is System.IO.IOException Then Return True
+			If Me.UploaderType = Type.Web Then Return True
+			Return False
 		End Function
 
 		Private Function DirectUploadFile(ByVal filePath As String, ByVal contextArtifactID As Int32, ByVal newFileName As String, ByVal internalUse As Boolean, ByVal overwrite As Boolean) As String
@@ -235,50 +241,58 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Private Function WebUploadFile(ByVal fileStream As System.IO.Stream, ByVal contextArtifactID As Int32, ByVal fileGuid As String) As String
-			Dim i As Int32
-			Dim trips As Int32
-			Dim artifactID As Int32
-			Dim readLimit As Int32 = Settings.ChunkSize
-			Dim destinationDirectory As String = _repositoryPathManager.GetNextDestinationDirectory(_destinationFolderPath)
-			If Not _sortIntoVolumes Then destinationDirectory = _destinationFolderPath
-			Dim response As kCura.EDDS.WebAPI.FileIOBase.IoResponse
-			If fileStream.Length < Settings.ChunkSize Then
-				readLimit = CType(fileStream.Length, Int32)
-			End If
-			If fileStream.Length > 0 Then
-				trips = CType(Math.Ceiling(fileStream.Length / Settings.ChunkSize), Int32)
-			Else
-				trips = 1
-			End If
-			For i = 1 To trips
-				Dim b(readLimit) As Byte
-				fileStream.Read(b, 0, readLimit)
-				If i = 1 Then
-					With Gateway.BeginFill(_caseArtifactID, b, destinationDirectory, fileGuid)
-						If .Success Then
-							fileGuid = .Filename
-						Else
-							Throw New System.IO.IOException(.ErrorMessage)
-						End If
-					End With
+			Try
+				Dim i As Int32
+				Dim trips As Int32
+				Dim artifactID As Int32
+				Dim readLimit As Int32 = Settings.ChunkSize
+				Dim destinationDirectory As String = _repositoryPathManager.GetNextDestinationDirectory(_destinationFolderPath)
+				If Not _sortIntoVolumes Then destinationDirectory = _destinationFolderPath
+				Dim response As kCura.EDDS.WebAPI.FileIOBase.IoResponse
+				If fileStream.Length < Settings.ChunkSize Then
+					readLimit = CType(fileStream.Length, Int32)
 				End If
-				If i <= trips And i > 1 Then
-					RaiseEvent UploadStatusEvent("Trip " & i & " of " & trips)
-					With Gateway.FileFill(_caseArtifactID, destinationDirectory, fileGuid, b, contextArtifactID)
-						If Not .Success Then
-							Gateway.RemoveFill(_caseArtifactID, destinationDirectory, fileGuid)
-							Throw New System.IO.IOException(.ErrorMessage)
-						End If
-					End With
-				End If
-				If (fileStream.Position + Settings.ChunkSize) > fileStream.Length Then
-					readLimit = CType(fileStream.Length - fileStream.Position, Int32)
+				If fileStream.Length > 0 Then
+					trips = CType(Math.Ceiling(fileStream.Length / Settings.ChunkSize), Int32)
 				Else
-					readLimit = Settings.ChunkSize
+					trips = 1
 				End If
-				b = Nothing
-			Next i
-			fileStream.Close()
+				For i = 1 To trips
+					Dim b(readLimit) As Byte
+					fileStream.Read(b, 0, readLimit)
+					If i = 1 Then
+						With Gateway.BeginFill(_caseArtifactID, b, destinationDirectory, fileGuid)
+							If .Success Then
+								fileGuid = .Filename
+							Else
+								Throw New System.IO.IOException(.ErrorMessage)
+							End If
+						End With
+					End If
+					If i <= trips And i > 1 Then
+						RaiseEvent UploadStatusEvent("Trip " & i & " of " & trips)
+						With Gateway.FileFill(_caseArtifactID, destinationDirectory, fileGuid, b, contextArtifactID)
+							If Not .Success Then
+								Gateway.RemoveFill(_caseArtifactID, destinationDirectory, fileGuid)
+								Throw New System.IO.IOException(.ErrorMessage)
+							End If
+						End With
+					End If
+					If (fileStream.Position + Settings.ChunkSize) > fileStream.Length Then
+						readLimit = CType(fileStream.Length - fileStream.Position, Int32)
+					Else
+						readLimit = Settings.ChunkSize
+					End If
+					b = Nothing
+				Next i
+				fileStream.Close()
+			Catch
+				Try
+					fileStream.Close()
+				Catch
+				End Try
+				Throw
+			End Try
 			Return fileGuid
 		End Function
 
