@@ -834,6 +834,12 @@ Namespace kCura.WinEDDS
 				Dim field As WinEDDS.ViewFieldInfo = DirectCast(_parent.Columns(count), WinEDDS.ViewFieldInfo)
 				columnName = field.AvfColumnName
 				If field.FieldType = DynamicFields.Types.FieldTypeHelper.FieldType.Text Then
+					Dim sourceFieldEncoding As System.Text.Encoding
+					If field.IsUnicodeEnabled Then
+						sourceFieldEncoding = System.Text.Encoding.Unicode
+					Else
+						sourceFieldEncoding = System.Text.Encoding.Default
+					End If
 					If Not Me.Settings.SelectedTextField Is Nothing AndAlso Me.Settings.SelectedTextField.AvfId = field.AvfId Then
 						Dim bodyText As New System.Text.StringBuilder
 						If Not hasFullText Then
@@ -847,7 +853,7 @@ Namespace kCura.WinEDDS
 										If _settings.Overwrite Then
 											kCura.Utility.File.Delete(localTextPath)
 											Dim sw As New System.IO.StreamWriter(localTextPath, False, Me.Settings.TextFileEncoding)
-											Dim sr As New System.IO.StreamReader(fullTextTempFile, System.Text.Encoding.Unicode, True)
+											Dim sr As New System.IO.StreamReader(fullTextTempFile, sourceFieldEncoding, True)
 											Dim c As Int32 = sr.Read
 											While c <> -1
 												sw.Write(ChrW(c))
@@ -862,7 +868,7 @@ Namespace kCura.WinEDDS
 										End If
 									Else
 										Dim sw As New System.IO.StreamWriter(localTextPath, False, Me.Settings.TextFileEncoding)
-										Dim sr As New System.IO.StreamReader(fullTextTempFile, System.Text.Encoding.Unicode, True)
+										Dim sr As New System.IO.StreamReader(fullTextTempFile, sourceFieldEncoding, True)
 										Dim c As Int32 = sr.Read
 										While c <> -1
 											sw.Write(ChrW(c))
@@ -883,7 +889,7 @@ Namespace kCura.WinEDDS
 									End Select
 									_nativeFileWriter.Write(String.Format("{0}{1}{0}", _settings.QuoteDelimiter, textLocation))
 								Case False
-									Dim sr As New System.IO.StreamReader(fullTextTempFile, System.Text.Encoding.Unicode, True)
+									Dim sr As New System.IO.StreamReader(fullTextTempFile, sourceFieldEncoding, True)
 									Dim c As Int32 = sr.Read
 									_nativeFileWriter.Write(_settings.QuoteDelimiter)
 									While Not c = -1
@@ -907,7 +913,7 @@ Namespace kCura.WinEDDS
 						End If
 					Else
 						Dim textLocation As String = Me.DownloadTextFieldAsFile(doc, field)
-						Dim sr As New System.IO.StreamReader(textLocation, System.Text.Encoding.Unicode, True)
+						Dim sr As New System.IO.StreamReader(textLocation, sourceFieldEncoding, True)
 						Dim c As Int32 = sr.Read
 						_nativeFileWriter.Write(_settings.QuoteDelimiter)
 						While Not c = -1
