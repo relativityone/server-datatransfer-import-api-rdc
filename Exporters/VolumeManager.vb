@@ -321,6 +321,7 @@ Namespace kCura.WinEDDS
 				Catch ex As kCura.Utility.Image.ImageRollupException
 					successfulRollup = False
 					Try
+						If Not tempLocation Is Nothing AndAlso Not tempLocation = "" Then kCura.Utility.File.Delete(tempLocation)
 						_parent.WriteImgProgressError(documentInfo, ex.ImageIndex, ex, "Document exported in single-page image mode.")						'TODO:
 					Catch ioex As System.IO.IOException
 						Throw New kCura.WinEDDS.Exceptions.FileWriteException(Exceptions.FileWriteException.DestinationFile.Errors, ioex)
