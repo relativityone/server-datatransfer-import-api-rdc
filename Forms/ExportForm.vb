@@ -1025,6 +1025,7 @@ Public Class ExportForm
 	End Property
 
 	Private Function ReadyToRun() As Boolean
+		If Me.ExportFile Is Nothing Then Return False
 		Dim retval As Boolean = True
 		retval = retval AndAlso System.IO.Directory.Exists(_folderPath.Text)
 		retval = retval AndAlso Not _filters.SelectedItem Is Nothing
@@ -1032,7 +1033,7 @@ Public Class ExportForm
 			retval = retval AndAlso Not Me.BuildVolumeInfo Is Nothing
 		End If
 		Try
-			If _exportNativeFiles.Checked Then
+			If _exportNativeFiles.Checked OrElse _columnSelecter.RightListBoxItems.Count > 0 Then
 				If CType(_nativeFileFormat.SelectedItem, String) = "Select..." Then
 					retval = False
 				End If
@@ -1313,6 +1314,7 @@ Public Class ExportForm
 	Private Sub _exportNativeFiles_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _exportNativeFiles.CheckedChanged
 		_useAbsolutePaths.Enabled = True
 		_nativeFileFormat.Enabled = True
+		_metadataGroup.Enabled = _columnSelecter.RightListBoxItems.Count > 0 OrElse _exportNativeFiles.Checked
 		RunMenu.Enabled = ReadyToRun()
 	End Sub
 
@@ -1480,7 +1482,7 @@ Public Class ExportForm
 
 
 	Private Sub _columnSelecter_ItemsShifted() Handles _columnSelecter.ItemsShifted
-		_metadataGroup.Enabled = _columnSelecter.RightListBoxItems.Count > 0
+		_metadataGroup.Enabled = _columnSelecter.RightListBoxItems.Count > 0 OrElse _exportNativeFiles.Checked
 		Me.ManagePotentialTextFields()
 	End Sub
 
