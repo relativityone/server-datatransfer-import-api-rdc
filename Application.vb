@@ -1430,10 +1430,10 @@ Namespace kCura.EDDS.WinForm
 			End If
 			Dim sb As New System.Text.StringBuilder
 			Dim nl As String = System.Environment.NewLine & System.Environment.NewLine
-			sb.Append("   WinEDDS Document Upload Tool" & nl)
-			sb.Append("         Version " & Me.GetDisplayAssemblyVersion() & nl)
+			sb.Append("          Relativity Desktop Client" & nl)
+			sb.Append("              Version " & Me.GetDisplayAssemblyVersion() & nl)
 			sb.Append("Copyright © " & System.DateTime.Now.Year & " kCura Corporation")
-			MsgBox(sb.ToString, MsgBoxStyle.OKOnly, "About WinEDDS")
+			MsgBox(sb.ToString, MsgBoxStyle.OKOnly, "About Relativity Desktop Client")
 			If Not _loginForm Is Nothing AndAlso Not _loginForm.IsDisposed Then
 				_loginForm.TopMost = True
 			End If
