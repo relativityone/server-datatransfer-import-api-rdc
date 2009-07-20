@@ -128,7 +128,7 @@ Namespace kCura.WinEDDS
 			End If
 			_encoding = Me.Settings.LoadFileEncoding
 
-			_nativeFileWriter = New System.IO.StreamWriter(loadFilePath, False, _encoding)
+			If settings.ExportNative OrElse settings.SelectedViewFields.Length > 0 Then _nativeFileWriter = New System.IO.StreamWriter(loadFilePath, False, _encoding)
 			Dim imageFilePath As String = Me.ImageFileDestinationPath
 			If Me.Settings.ExportImages Then
 				If Not Me.Settings.Overwrite AndAlso System.IO.File.Exists(imageFilePath) Then
@@ -423,7 +423,7 @@ Namespace kCura.WinEDDS
 				End If
 			End If
 			Try
-				If Not _hasWrittenColumnHeaderString Then
+				If Not _hasWrittenColumnHeaderString AndAlso Not _nativeFileWriter Is Nothing Then
 					_nativeFileWriter.Write(_columnHeaderString)
 					_hasWrittenColumnHeaderString = True
 				End If
@@ -823,6 +823,7 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Public Sub UpdateLoadFile(ByVal row As System.Data.DataRow, ByVal hasFullText As Boolean, ByVal documentArtifactID As Int32, ByVal nativeLocation As String, ByVal fullTextTempFile As String, ByVal doc As Exporters.DocumentExportInfo)
+			If _nativeFileWriter Is Nothing Then Exit Sub
 			If Me.Settings.LoadFileIsHtml Then
 				Me.UpdateHtmlLoadFile(row, hasFullText, documentArtifactID, nativeLocation, fullTextTempFile, doc)
 				Exit Sub
