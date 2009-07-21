@@ -1004,7 +1004,6 @@ Namespace kCura.EDDS.WinForm
 								_buildFolderStructure.Enabled = False
 								_destinationFolderPath.Enabled = True
 							Case "overlay only"
-								_buildFolderStructure.Checked = False
 								_buildFolderStructure.Enabled = True
 								_destinationFolderPath.Enabled = _buildFolderStructure.Checked
 							Case Else							 'append only
@@ -1015,14 +1014,16 @@ Namespace kCura.EDDS.WinForm
 					End If
 				End If
 			End If
-			If loadFileObjectUpdatedFromFile AndAlso _destinationFolderPath.Enabled Then
-				Dim i As Int32
-				For i = 0 To _destinationFolderPath.Items.Count - 1
-					If DirectCast(_destinationFolderPath.Items(i), String).ToLower = Me.LoadFile.FolderStructureContainedInColumn.ToLower Then
-						_destinationFolderPath.SelectedIndex = i
-						Exit For
-					End If
-				Next
+			If Not Me.LoadFile.FolderStructureContainedInColumn Is Nothing Then
+				If loadFileObjectUpdatedFromFile AndAlso _destinationFolderPath.Enabled And Not Me.LoadFile.FolderStructureContainedInColumn.ToLower Is Nothing Then
+					Dim i As Int32
+					For i = 0 To _destinationFolderPath.Items.Count - 1
+						If DirectCast(_destinationFolderPath.Items(i), String).ToLower = Me.LoadFile.FolderStructureContainedInColumn.ToLower Then
+							_destinationFolderPath.SelectedIndex = i
+							Exit For
+						End If
+					Next
+				End If
 			End If
 			'If Not Me.LoadFile.GroupIdentifierColumn Is Nothing AndAlso Me.LoadFile.GroupIdentifierColumn <> "" AndAlso _
 			''_identifiersDropDown.Items.Contains(LoadFile.GroupIdentifierColumn) Then
