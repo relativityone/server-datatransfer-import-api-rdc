@@ -31,6 +31,7 @@ Namespace kCura.WinEDDS
 		Private _encoding As System.Text.Encoding
 		Private _errorFileLocation As String = ""
 		Private _timekeeper As kCura.Utility.Timekeeper
+		Private _halt As Boolean = False
 #End Region
 
 		Private Enum ExportFileType
@@ -48,6 +49,16 @@ Namespace kCura.WinEDDS
 				End Try
 			End Get
 		End Property
+
+		Public Property Halt() As Boolean
+			Get
+				Return _halt
+			End Get
+			Set(ByVal value As Boolean)
+				_halt = value
+			End Set
+		End Property
+
 		Public ReadOnly Property Settings() As ExportFile
 			Get
 				Return _settings
@@ -203,7 +214,7 @@ Namespace kCura.WinEDDS
 
 		Public Sub ExportDocument(ByVal documentInfo As Exporters.DocumentExportInfo)
 			Dim tries As Int32 = kCura.Utility.Config.Settings.IoErrorNumberOfRetries
-			While tries > 0
+			While tries > 0 And Not Me.Halt
 				tries -= 1
 				Try
 					Me.ExecuteExportDocument(documentInfo, tries < (kCura.Utility.Config.Settings.IoErrorNumberOfRetries - 1))
@@ -359,7 +370,7 @@ Namespace kCura.WinEDDS
 				If Me.Settings.SelectedTextField Is Nothing OrElse Me.Settings.SelectedTextField.Category <> DynamicFields.Types.FieldCategory.FullText Then
 					tempLocalIproFullTextFilePath = System.IO.Path.GetTempFileName
 					Dim tries As Int32 = 20
-					While tries > 0
+					While tries > 0 AndAlso Not Me.Halt
 						tries -= 1
 						Try
 							_downloadManager.DownloadFullTextFile(tempLocalIproFullTextFilePath, documentInfo.DocumentArtifactID, _settings.CaseInfo.ArtifactID.ToString)
@@ -466,7 +477,7 @@ Namespace kCura.WinEDDS
 		Private Function DownloadTextFieldAsFile(ByVal documentInfo As WinEDDS.Exporters.DocumentExportInfo, ByVal field As WinEDDS.ViewFieldInfo) As String
 			Dim tempLocalFullTextFilePath As String = System.IO.Path.GetTempFileName
 			Dim tries As Int32 = 20
-			While tries > 0
+			While tries > 0 AndAlso Not Me.Halt
 				tries -= 1
 				Try
 					Select Case field.Category
@@ -641,7 +652,7 @@ Namespace kCura.WinEDDS
 				End If
 			End If
 			Dim tries As Int32 = 20
-			While tries > 0
+			While tries > 0 AndAlso Not Me.Halt
 				tries -= 1
 				Try
 					_downloadManager.DownloadFile(tempFile, image.FileGuid, image.SourceLocation, image.ArtifactID, _settings.CaseArtifactID.ToString)
@@ -800,7 +811,7 @@ Namespace kCura.WinEDDS
 				End If
 			End If
 			Dim tries As Int32 = 20
-			While tries > 0
+			While tries > 0 AndAlso Not Me.Halt
 				tries -= 1
 				Try
 					_downloadManager.DownloadFile(tempFile, docinfo.NativeFileGuid, docinfo.NativeSourceLocation, docinfo.DocumentArtifactID, _settings.CaseArtifactID.ToString)

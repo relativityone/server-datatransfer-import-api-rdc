@@ -552,6 +552,7 @@ Namespace kCura.WinEDDS
 
 		Private Sub _processController_HaltProcessEvent(ByVal processID As System.Guid) Handles _processController.HaltProcessEvent
 			_halt = True
+			If Not _volumeManager Is Nothing Then _volumeManager.Halt = True
 		End Sub
 
 		Public Event UploadModeChangeEvent(ByVal mode As String)
