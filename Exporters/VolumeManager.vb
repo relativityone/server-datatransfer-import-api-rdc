@@ -638,10 +638,10 @@ Namespace kCura.WinEDDS
 		Private Function DownloadImage(ByVal image As Exporters.ImageExportInfo) As Int64
 			If image.FileGuid = "" Then Return 0
 			Dim tempFile As String = Me.GetImageExportLocation(image)
-			If Me.Settings.TypeOfImage = ExportFile.ImageType.Pdf Then
-				tempFile = System.IO.Path.GetTempFileName
-				kCura.Utility.File.Delete(tempFile)
-			End If
+			'If Me.Settings.TypeOfImage = ExportFile.ImageType.Pdf Then
+			'	tempFile = System.IO.Path.GetTempFileName
+			'	kCura.Utility.File.Delete(tempFile)
+			'End If
 			If System.IO.File.Exists(tempFile) Then
 				If _settings.Overwrite Then
 					kCura.Utility.File.Delete(tempFile)
@@ -661,17 +661,15 @@ Namespace kCura.WinEDDS
 				Catch ex As System.Exception
 					If tries = 19 Then
 						_parent.WriteStatusLine(Windows.Process.EventType.Warning, "Second attempt to download image " & image.BatesNumber & " - exact error: " & ex.ToString, True)
-						_downloadManager.DownloadFile(tempFile, image.FileGuid, image.SourceLocation, image.ArtifactID, _settings.CaseArtifactID.ToString)
 					ElseIf tries > 0 Then
 						_parent.WriteStatusLine(Windows.Process.EventType.Warning, "Additional attempt to download image " & image.BatesNumber & " failed - retrying in 30 seconds - exact error: " & ex.ToString, True)
 						System.Threading.Thread.CurrentThread.Join(30000)
-						_downloadManager.DownloadFile(tempFile, image.FileGuid, image.SourceLocation, image.ArtifactID, _settings.CaseArtifactID.ToString)
 					Else
 						Throw
 					End If
 				End Try
 			End While
-			kCura.Utility.File.Length(tempFile)
+			Return kCura.Utility.File.Length(tempFile)
 		End Function
 
 		Private Sub ExportDocumentImage(ByVal fileName As String, ByVal fileGuid As String, ByVal artifactID As Int32, ByVal batesNumber As String, ByVal tempFileLocation As String)
