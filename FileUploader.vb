@@ -190,7 +190,7 @@ Namespace kCura.WinEDDS
 					If Me.IsWarningException(ex) AndAlso tries > 0 Then
 						'RaiseEvent UploadWarningEvent(Me.UploaderType.ToString & " upload failed: " & ex.Message & " - Retrying in 30 seconds. " & tries & " tries left.")
 
-						RaiseEvent UploadWarningEvent(String.Format("{0} upload fialed: {1} - Retrying in {2} seconds.  {3} tries left.", Me.UploaderType.ToString, ex.Message, wait, tries))
+						RaiseEvent UploadWarningEvent(String.Format("{0} upload failed: {1} - Retrying in {2} seconds.  {3} tries left.", Me.UploaderType.ToString, ex.Message, wait, tries))
 						System.Threading.Thread.CurrentThread.Join(wait * 1000)
 					Else
 						If Me.UploaderType = Type.Direct And _sortIntoVolumes Then _repositoryPathManager.Rollback()
