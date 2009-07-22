@@ -51,6 +51,8 @@ Namespace kCura.WinEDDS
 		Private _totalValidated As Long
 		Private _totalProcessed As Long
 		Private _startLineNumber As Int64
+		Private _doRetry As Boolean = True
+
 
 		Private _timekeeper As New kCura.Utility.Timekeeper
 #End Region
@@ -466,7 +468,13 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Private Sub _processObserver_CancelImport(ByVal processID As System.Guid) Handles _processController.HaltProcessEvent
-			If processID.ToString = _processID.ToString Then _continue = False
+			If processID.ToString = _processID.ToString Then
+				_continue = False
+				Me.DoRetryLogic = False
+				If Not _fileUploader Is Nothing Then _fileUploader.DoRetry = False
+				If Not _bcpuploader Is Nothing Then _bcpuploader.DoRetry = False
+				If Not _textUploader Is Nothing Then _textUploader.DoRetry = False
+			End If
 		End Sub
 
 		Private Sub RaiseReportError(ByVal row As System.Collections.Hashtable, ByVal lineNumber As Int32, ByVal identifier As String, ByVal type As String)

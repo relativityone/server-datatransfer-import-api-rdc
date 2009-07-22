@@ -15,6 +15,15 @@ Namespace kCura.WinEDDS
 		Private _isBulkEnabled As Boolean = True
 		Private _repositoryPathManager As kCura.Edds.Types.RepositoryPathManager
 		Private _sortIntoVolumes As Boolean = False
+		Private _doRetry As Boolean = True
+		Public Property DoRetry() As Boolean
+			Get
+				Return _doRetry
+			End Get
+			Set(ByVal Value As Boolean)
+				_doRetry = Value
+			End Set
+		End Property
 
 		Public ReadOnly Property CurrentDestinationDirectory() As String
 			Get
@@ -108,7 +117,7 @@ Namespace kCura.WinEDDS
 			'This function catches a potential intermittent network issue, when UploadBcpFile returns an arg object of type Warning
 			Dim args As FileUploadReturnArgs
 			Dim tries As Int32 = 0
-			While tries < 20
+			While tries < 20 AndAlso _doRetry
 				tries += 1
 				Try
 					args = UploadBcpFile(appID, localFilePath, upload)
@@ -176,7 +185,7 @@ Namespace kCura.WinEDDS
 
 		Public Function UploadFile(ByVal filePath As String, ByVal contextArtifactID As Int32, ByVal newFileName As String, ByVal internalUse As Boolean) As String
 			Dim tries As Int32 = kCura.Utility.Config.Settings.IoErrorNumberOfRetries
-			While tries > 0
+			While tries > 0 And DoRetry
 				Try
 					If Me.UploaderType = Type.Web Then
 						Me.UploaderType = Type.Web

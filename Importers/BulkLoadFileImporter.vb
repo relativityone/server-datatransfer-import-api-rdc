@@ -9,7 +9,7 @@ Namespace kCura.WinEDDS
 		Private _overwrite As String
 		Private WithEvents _uploader As kCura.WinEDDS.FileUploader
 		Private WithEvents _bcpuploader As kCura.WinEDDS.FileUploader
-		Private _textUploader As kCura.WinEDDS.FileUploader
+		'Private _textUploader As kCura.WinEDDS.FileUploader
 		Private _path As String
 		Private _pathIsSet As Boolean = False
 		Private _selectedIdentifier As DocumentField
@@ -160,7 +160,7 @@ Namespace kCura.WinEDDS
 			If initializeUploaders Then
 				_uploader = New kCura.WinEDDS.FileUploader(args.Credentials, args.CaseInfo.ArtifactID, _defaultDestinationFolderPath, args.CookieContainer)
 				_bcpuploader = New kCura.WinEDDS.FileUploader(args.Credentials, args.CaseInfo.ArtifactID, _defaultDestinationFolderPath, args.CookieContainer, False)
-				_textUploader = New kCura.WinEDDS.FileUploader(args.Credentials, args.CaseInfo.ArtifactID, _defaultTextFolderPath, args.CookieContainer, False)
+				'_textUploader = New kCura.WinEDDS.FileUploader(args.Credentials, args.CaseInfo.ArtifactID, _defaultTextFolderPath, args.CookieContainer, False)
 			End If
 			_extractFullTextFromNative = args.ExtractFullTextFromNativeFile
 			_selectedIdentifier = args.SelectedIdentifierField
@@ -841,6 +841,9 @@ Namespace kCura.WinEDDS
 
 		Private Sub WriteFatalError(ByVal lineNumber As Int32, ByVal ex As System.Exception, ByVal sourceLine As String())
 			_continue = False
+			Me.DoRetryLogic = False
+			_uploader.DoRetry = False
+			_bcpuploader.DoRetry = False
 			RaiseEvent FatalErrorEvent("Error processing line: " + lineNumber.ToString, ex)
 		End Sub
 
@@ -992,6 +995,8 @@ Namespace kCura.WinEDDS
 			If processID.ToString = _processID.ToString Then
 				_continue = False
 				_lineCounter.StopCounting()
+				_uploader.DoRetry = False
+				_bcpuploader.DoRetry = False
 			End If
 		End Sub
 
