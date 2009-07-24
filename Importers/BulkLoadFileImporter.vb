@@ -493,6 +493,7 @@ Namespace kCura.WinEDDS
 			If _artifactTypeID = 10 Then
 				Dim settings As New kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo
 				settings.UseBulkDataImport = True
+				_bcpuploader.DoRetry = True
 				Dim uploadBcp As FileUploadReturnArgs = _bcpuploader.UploadBcpFile(_caseInfo.ArtifactID, _outputNativeFilePath)
 				Dim nativeFileUploadKey As String = uploadBcp.Value
 				Dim codeFileUploadKey As String = _bcpuploader.UploadBcpFile(_caseInfo.ArtifactID, _outputCodeFilePath).Value
