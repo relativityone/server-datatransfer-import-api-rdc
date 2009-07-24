@@ -399,6 +399,7 @@ Namespace kCura.WinEDDS
 			Next
 		End Sub
 
+
 		Private Sub GetImageForDocument(ByVal imageFileName As String, ByVal batesNumber As String, ByVal documentIdentifier As String, ByVal order As Int32, ByRef offset As Int64, ByVal fullTextFiles As System.Collections.ArrayList, ByVal writeLineTermination As Boolean, ByVal originalLineNumber As String, ByVal status As Int32, ByVal totalForDocument As Int32)
 			Try
 				_totalProcessed += 1
@@ -417,7 +418,7 @@ Namespace kCura.WinEDDS
 						RaiseStatusEvent(kCura.Windows.Process.EventType.Progress, String.Format("Processing image '{0}'.", batesNumber), CType((_totalValidated + _totalProcessed) / 2, Int64), Int64.Parse(originalLineNumber))
 						fileGuid = System.Guid.NewGuid.ToString
 					End If
-					If System.IO.File.Exists(imageFileName) Then fileSize = New System.IO.FileInfo(imageFileName).Length
+					If System.IO.File.Exists(imageFileName) Then fileSize = Me.GetFileLength(imageFileName)
 					If _replaceFullText AndAlso System.IO.File.Exists(extractedTextFileName) AndAlso Not fullTextFiles Is Nothing Then
 						fullTextFiles.Add(extractedTextFileName)
 					Else
@@ -427,7 +428,7 @@ Namespace kCura.WinEDDS
 					End If
 				End If
 				If _replaceFullText AndAlso System.IO.File.Exists(extractedTextFileName) AndAlso Not fullTextFiles Is Nothing Then
-					offset += New System.IO.FileInfo(extractedTextFileName).Length
+					offset += Me.GetFileLength(extractedTextFileName)
 				End If
 				_bulkLoadFileWriter.Write(status & ",")
 				_bulkLoadFileWriter.Write("0,")

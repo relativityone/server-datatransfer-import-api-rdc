@@ -373,7 +373,8 @@ Namespace kCura.WinEDDS
 				If filename <> String.Empty AndAlso Not fileExists Then lineStatus += kCura.EDDS.Types.MassImport.ImportStatus.FileSpecifiedDne 'Throw New InvalidFilenameException(filename)
 				If fileExists Then
 					Dim now As DateTime = DateTime.Now
-					If New IO.FileInfo(filename).Length = 0 Then lineStatus += kCura.EDDS.Types.MassImport.ImportStatus.EmptyFile 'Throw New EmptyNativeFileException(filename)
+					Dim tries As Int32 = kCura.Utility.Config.Settings.IoErrorNumberOfRetries
+					If Me.GetFileLength(filename) = 0 Then lineStatus += kCura.EDDS.Types.MassImport.ImportStatus.EmptyFile 'Throw New EmptyNativeFileException(filename)
 					oixFileIdData = kCura.OI.FileID.Manager.Instance.GetFileIDDataByFilePath(filename)
 					If _copyFileToRepository Then
 						fileGuid = _uploader.UploadFile(filename, _caseArtifactID)
@@ -617,7 +618,7 @@ Namespace kCura.WinEDDS
 					_outputNativeFileWriter.Write(mdoc.FullFilePath & Constants.NATIVE_FIELD_DELIMITER)
 					_outputNativeFileWriter.Write(mdoc.FullFilePath & Constants.NATIVE_FIELD_DELIMITER)
 				End If
-				_outputNativeFileWriter.Write(New System.IO.FileInfo(mdoc.FullFilePath).Length & Constants.NATIVE_FIELD_DELIMITER)
+				_outputNativeFileWriter.Write(Me.GetFileLength(mdoc.FullFilePath) & Constants.NATIVE_FIELD_DELIMITER)
 			Else
 				_outputNativeFileWriter.Write(Constants.NATIVE_FIELD_DELIMITER)
 				_outputNativeFileWriter.Write(Constants.NATIVE_FIELD_DELIMITER)
@@ -791,7 +792,7 @@ Namespace kCura.WinEDDS
 						Dim localFilePath As String = values(item.NativeFileColumnIndex)
 						Dim fileSize As Int64
 						If System.IO.File.Exists(localFilePath) Then
-							fileSize = New System.IO.FileInfo(localFilePath).Length
+							fileSize = Me.GetFileLength(localFilePath)
 							Dim fileName As String = System.IO.Path.GetFileName(localFilePath).Replace(ChrW(11), "_")
 							Dim location As String
 							If _uploader.DestinationFolderPath = "" Then
