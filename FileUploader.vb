@@ -195,7 +195,7 @@ Namespace kCura.WinEDDS
 					End If
 				Catch ex As System.Exception
 					tries -= 1
-					Dim wait As Int32
+					Dim wait As Int32 = kCura.Utility.Config.Settings.IoErrorWaitTimeInSeconds
 					If Me.IsWarningException(ex) AndAlso tries > 0 Then
 						'RaiseEvent UploadWarningEvent(Me.UploaderType.ToString & " upload failed: " & ex.Message & " - Retrying in 30 seconds. " & tries & " tries left.")
 
