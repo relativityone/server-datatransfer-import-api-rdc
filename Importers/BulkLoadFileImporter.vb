@@ -485,6 +485,40 @@ Namespace kCura.WinEDDS
 			_timekeeper.MarkEnd("ManageDocumentMetadata_ProgressEvent")
 		End Sub
 
+		Private Function BulkImportNative(ByVal settings As kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo) As String
+			Dim tries As Int32 = kCura.Utility.Config.Settings.IoErrorNumberOfRetries
+			While tries > 0
+				Try
+					Return _bulkImportManager.BulkImportNative(_caseInfo.ArtifactID, settings).ToString()
+				Catch ex As Exception
+					tries -= 1
+					If tries = 0 Then
+						Throw
+					ElseIf tries = kCura.Utility.Config.Settings.IoErrorNumberOfRetries - 1 Then
+						Me.RaiseIoWarning(New kCura.Utility.DelimitedFileImporter.IoWarningEventArgs(kCura.Utility.Config.Settings.IoErrorWaitTimeInSeconds, ex, Me.CurrentLineNumber))
+						System.Threading.Thread.CurrentThread.Join(1000 * kCura.Utility.Config.Settings.IoErrorWaitTimeInSeconds)
+					End If
+				End Try
+			End While
+		End Function
+
+		Private Function BulkImportObjects(ByVal settings As kCura.EDDS.WebAPI.BulkImportManagerBase.ObjectLoadInfo) As String
+			Dim tries As Int32 = kCura.Utility.Config.Settings.IoErrorNumberOfRetries
+			While tries > 0
+				Try
+					Return _bulkImportManager.BulkImportObjects(_caseInfo.ArtifactID, settings).ToString()
+				Catch ex As Exception
+					tries -= 1
+					If tries = 0 Then
+						Throw
+					ElseIf tries = kCura.Utility.Config.Settings.IoErrorNumberOfRetries - 1 Then
+						Me.RaiseIoWarning(New kCura.Utility.DelimitedFileImporter.IoWarningEventArgs(kCura.Utility.Config.Settings.IoErrorWaitTimeInSeconds, ex, Me.CurrentLineNumber))
+						System.Threading.Thread.CurrentThread.Join(1000 * kCura.Utility.Config.Settings.IoErrorWaitTimeInSeconds)
+					End If
+				End Try
+			End While
+		End Function
+
 		Private Function PushNativeBatch(Optional ByVal lastRun As Boolean = False) As Object
 			_outputNativeFileWriter.Close()
 			_outputCodeFileWriter.Close()
@@ -525,7 +559,7 @@ Namespace kCura.WinEDDS
 						settings.Overlay = EDDS.WebAPI.BulkImportManagerBase.OverwriteType.Both
 				End Select
 				settings.UploadFiles = _filePathColumnIndex <> -1 AndAlso _settings.LoadNativeFiles
-				_runID = _bulkImportManager.BulkImportNative(_caseInfo.ArtifactID, settings).ToString
+				_runID = Me.BulkImportNative(settings)
 			Else
 				Dim settings As New kCura.EDDS.WebAPI.BulkImportManagerBase.ObjectLoadInfo
 				settings.UseBulkDataImport = True
@@ -559,7 +593,7 @@ Namespace kCura.WinEDDS
 						settings.Overlay = EDDS.WebAPI.BulkImportManagerBase.OverwriteType.Both
 				End Select
 				settings.UploadFiles = _filePathColumnIndex <> -1 AndAlso _settings.LoadNativeFiles
-				_runID = _bulkImportManager.BulkImportObjects(_caseInfo.ArtifactID, settings).ToString
+				_runID = Me.BulkImportObjects(settings)
 			End If
 
 			kCura.Utility.File.Delete(_outputNativeFilePath)

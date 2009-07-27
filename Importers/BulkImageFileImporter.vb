@@ -151,6 +151,27 @@ Namespace kCura.WinEDDS
 			End Try
 		End Sub
 
+		Public Function RunBulkImport(ByVal overwrite As kCura.EDDS.WebAPI.BulkImportManagerBase.OverwriteType, ByVal useBulk As Boolean) As String
+			Dim tries As Int32 = kCura.Utility.Config.Settings.IoErrorNumberOfRetries
+			While tries > 0
+				Try
+					If _productionArtifactID = 0 Then
+						Return _bulkImportManager.BulkImportImage(_caseInfo.ArtifactID, _uploadKey, _replaceFullText, overwrite, _folderID, _repositoryPath, useBulk, _runId, _keyFieldDto.ArtifactID).ToString
+					Else
+						Return _bulkImportManager.BulkImportProductionImage(_caseInfo.ArtifactID, _uploadKey, _replaceFullText, overwrite, _folderID, _repositoryPath, _productionArtifactID, useBulk, _runId, _keyFieldDto.ArtifactID).ToString()
+					End If
+				Catch ex As Exception
+					tries -= 1
+					If tries = 0 Then
+						Throw
+					ElseIf tries = kCura.Utility.Config.Settings.IoErrorNumberOfRetries - 1 Then
+						Me.RaiseIoWarning(New kCura.Utility.DelimitedFileImporter.IoWarningEventArgs(kCura.Utility.Config.Settings.IoErrorWaitTimeInSeconds, ex, Me.CurrentLineNumber))
+						System.Threading.Thread.CurrentThread.Join(1000 * kCura.Utility.Config.Settings.IoErrorWaitTimeInSeconds)
+					End If
+				End Try
+			End While
+		End Function
+
 		Public Function PushImageBatch(ByVal bulkLoadFilePath As String, ByVal isFinal As Boolean) As Object
 			_bulkLoadFileWriter.Close()
 			_fileIdentifierLookup.Clear()
@@ -171,22 +192,14 @@ Namespace kCura.WinEDDS
 					overwrite = EDDS.WebAPI.BulkImportManagerBase.OverwriteType.Both
 			End Select
 			If validateBcp.Type = FileUploadReturnArgs.FileUploadReturnType.ValidUploadKey Then
-				If _productionArtifactID = 0 Then
-					_runId = _bulkImportManager.BulkImportImage(_caseInfo.ArtifactID, _uploadKey, _replaceFullText, overwrite, _folderID, _repositoryPath, True, _runId, _keyFieldDto.ArtifactID).ToString
-				Else
-					_runId = _bulkImportManager.BulkImportProductionImage(_caseInfo.ArtifactID, _uploadKey, _replaceFullText, overwrite, _folderID, _repositoryPath, _productionArtifactID, True, _runId, _keyFieldDto.ArtifactID).ToString()
-				End If
+				_runId = Me.RunBulkImport(overwrite, True)
 			ElseIf Config.EnableSingleModeImport Then
 				RaiseEvent UploadModeChangeEvent(_fileUploader.UploaderType.ToString, _bcpuploader.IsBulkEnabled)
 				Dim oldDestinationFolderPath As String = System.String.Copy(_bcpuploader.DestinationFolderPath)
 				_bcpuploader.DestinationFolderPath = _caseInfo.DocumentPath
 				_uploadKey = _bcpuploader.UploadFile(bulkLoadFilePath, _caseInfo.ArtifactID)
 				_bcpuploader.DestinationFolderPath = oldDestinationFolderPath
-				If _productionArtifactID = 0 Then
-					_runId = _bulkImportManager.BulkImportImage(_caseInfo.ArtifactID, _uploadKey, _replaceFullText, overwrite, _folderID, _caseInfo.DocumentPath, False, _runId, _keyFieldDto.ArtifactID).ToString
-				Else
-					_runId = _bulkImportManager.BulkImportProductionImage(_caseInfo.ArtifactID, _uploadKey, _replaceFullText, overwrite, _folderID, _caseInfo.DocumentPath, _productionArtifactID, False, _runId, _keyFieldDto.ArtifactID).ToString
-				End If
+				_runId = Me.RunBulkImport(overwrite, False)
 			Else
 				Throw New kCura.WinEDDS.LoadFileBase.BcpPathAccessException(validateBcp.Value)
 			End If

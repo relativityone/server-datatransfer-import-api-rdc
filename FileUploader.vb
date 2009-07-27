@@ -121,8 +121,10 @@ Namespace kCura.WinEDDS
 				tries += 1
 				Try
 					args = UploadBcpFile(appID, localFilePath, upload)
-					If args.Type <> FileUploadReturnArgs.FileUploadReturnType.Warning Then
+					If args.Type = FileUploadReturnArgs.FileUploadReturnType.ValidUploadKey Then
 						Return args
+					Else
+						Throw New System.Exception(args.Value)
 					End If
 				Catch ex As System.Exception
 					RaiseEvent UploadWarningEvent("Error accessing BCP Path, could be caused by network connectivity issues: " & ex.ToString)
