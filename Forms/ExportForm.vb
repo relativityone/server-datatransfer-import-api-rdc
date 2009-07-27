@@ -1209,17 +1209,17 @@ Public Class ExportForm
 		End Select
 	End Function
 
-
 	Private Function GetDatasourceToolTip() As String
 		Select Case ExportFile.TypeOfExport
 			Case ExportFile.ExportType.ArtifactSearch
-				Return "This is a list of all saved searches in the system which are accessible by you"
+				Return "This is a list of all accessible saved searches in the system"
 			Case ExportFile.ExportType.AncestorSearch, ExportFile.ExportType.ParentSearch
-				Return "This is a list of all views in the system which are accessible by you"
+				Return "This is a list of all accessible views in the system"
 			Case ExportFile.ExportType.Production
-				Return "This is a list of all Productions marked as ""Produced"", which are not currently in the process of being populated or processed, which are accessible by you"
+				Return "This is a list of all accessible productions marked as ""Produced"", which are not currently in the process of being populated or processed"
 		End Select
 	End Function
+
 	Private Sub _browseButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _browseButton.Click
 		_destinationFolderDialog.ShowDialog()
 		_folderPath.Text = _destinationFolderDialog.SelectedPath()
