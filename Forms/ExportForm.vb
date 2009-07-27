@@ -1208,6 +1208,18 @@ Public Class ExportForm
 				Return ExportFile.ImageType.Pdf
 		End Select
 	End Function
+
+
+	Private Function GetDatasourceToolTip() As String
+		Select Case ExportFile.TypeOfExport
+			Case ExportFile.ExportType.ArtifactSearch
+				Return "This is a list of all saved searches in the system which are accessible by you"
+			Case ExportFile.ExportType.AncestorSearch, ExportFile.ExportType.ParentSearch
+				Return "This is a list of all views in the system which are accessible by you"
+			Case ExportFile.ExportType.Production
+				Return "This is a list of all Productions marked as ""Produced"", which are not currently in the process of being populated or processed, which are accessible by you"
+		End Select
+	End Function
 	Private Sub _browseButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _browseButton.Click
 		_destinationFolderDialog.ShowDialog()
 		_folderPath.Text = _destinationFolderDialog.SelectedPath()
@@ -1266,6 +1278,12 @@ Public Class ExportForm
 				Me.Text = "Relativity Desktop Client: Export Production Set"
 				_productionPrecedenceBox.Visible = False
 		End Select
+		Dim filtersToolTip As New ToolTip
+		filtersToolTip.AutoPopDelay = 5000
+		filtersToolTip.InitialDelay = 1000
+		filtersToolTip.ReshowDelay = 500
+		filtersToolTip.ShowAlways = True
+		filtersToolTip.SetToolTip(_filters, Me.GetDatasourceToolTip)
 		_nativeFileFormat.SelectedIndex = 0
 		_productionPrecedenceList.Items.Add(New Pair("-1", "Original"))
 		Me.InitializeColumnSelecter()
