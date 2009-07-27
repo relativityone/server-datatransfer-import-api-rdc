@@ -297,15 +297,31 @@ Namespace kCura.WinEDDS
 					b = Nothing
 				Next i
 				fileStream.Close()
-			Catch
+			Catch ex As System.Exception
 				Try
 					fileStream.Close()
 				Catch
 				End Try
-				Throw
+				Select Case Me.GetStatusCode(ex)
+					Case 503
+						Throw New System.InvalidOperationException("Web API server unavailable; if problem persists, contact your system administrator", ex)
+					Case Else
+						Throw
+				End Select
 			End Try
 			Return fileGuid
 		End Function
+
+		Private Function GetStatusCode(ByVal ex As System.Exception) As Int32
+			If Not TypeOf ex Is System.Net.WebException Then Return -1
+			Dim webex As System.Net.WebException = DirectCast(ex, System.Net.WebException)
+			Try
+				Return DirectCast(webex.Response, System.Net.HttpWebResponse).StatusCode
+			Catch
+				Return -1
+			End Try
+		End Function
+
 
 		Public Event UploadStatusEvent(ByVal message As String)
 		Public Event UploadWarningEvent(ByVal message As String)
