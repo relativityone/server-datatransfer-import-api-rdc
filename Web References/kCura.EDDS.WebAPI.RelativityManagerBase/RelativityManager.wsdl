@@ -2,6 +2,7 @@
 <wsdl:definitions xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tns="http://www.kCura.com/EDDS/RelativityManager" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" targetNamespace="http://www.kCura.com/EDDS/RelativityManager" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
   <wsdl:types>
     <s:schema elementFormDefault="qualified" targetNamespace="http://www.kCura.com/EDDS/RelativityManager">
+      <s:import namespace="http://www.w3.org/2001/XMLSchema" />
       <s:element name="RetrieveRelativityVersion">
         <s:complexType />
       </s:element>
@@ -42,6 +43,23 @@
           </s:sequence>
         </s:complexType>
       </s:element>
+      <s:element name="RetrieveRdcConfiguration">
+        <s:complexType />
+      </s:element>
+      <s:element name="RetrieveRdcConfigurationResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="RetrieveRdcConfigurationResult">
+              <s:complexType>
+                <s:sequence>
+                  <s:element ref="s:schema" />
+                  <s:any />
+                </s:sequence>
+              </s:complexType>
+            </s:element>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
     </s:schema>
   </wsdl:types>
   <wsdl:message name="RetrieveRelativityVersionSoapIn">
@@ -68,6 +86,12 @@
   <wsdl:message name="IsAuditingEnabledSoapOut">
     <wsdl:part name="parameters" element="tns:IsAuditingEnabledResponse" />
   </wsdl:message>
+  <wsdl:message name="RetrieveRdcConfigurationSoapIn">
+    <wsdl:part name="parameters" element="tns:RetrieveRdcConfiguration" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveRdcConfigurationSoapOut">
+    <wsdl:part name="parameters" element="tns:RetrieveRdcConfigurationResponse" />
+  </wsdl:message>
   <wsdl:portType name="RelativityManagerSoap">
     <wsdl:operation name="RetrieveRelativityVersion">
       <wsdl:input message="tns:RetrieveRelativityVersionSoapIn" />
@@ -84,6 +108,10 @@
     <wsdl:operation name="IsAuditingEnabled">
       <wsdl:input message="tns:IsAuditingEnabledSoapIn" />
       <wsdl:output message="tns:IsAuditingEnabledSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveRdcConfiguration">
+      <wsdl:input message="tns:RetrieveRdcConfigurationSoapIn" />
+      <wsdl:output message="tns:RetrieveRdcConfigurationSoapOut" />
     </wsdl:operation>
   </wsdl:portType>
   <wsdl:binding name="RelativityManagerSoap" type="tns:RelativityManagerSoap">
@@ -117,6 +145,15 @@
     </wsdl:operation>
     <wsdl:operation name="IsAuditingEnabled">
       <soap:operation soapAction="http://www.kCura.com/EDDS/RelativityManager/IsAuditingEnabled" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveRdcConfiguration">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/RelativityManager/RetrieveRdcConfiguration" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>

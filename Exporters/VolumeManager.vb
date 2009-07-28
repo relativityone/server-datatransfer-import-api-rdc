@@ -127,6 +127,19 @@ Namespace kCura.WinEDDS
 			_volumeLabelPaddingWidth = System.Math.Max(totalFilesNumberPaddingWidth, volumeNumberPaddingWidth)
 			totalFilesNumberPaddingWidth = CType(System.Math.Floor(System.Math.Log10(CType(totalFiles + _currentSubdirectoryNumber, Double)) + 1), Int32)
 			_subdirectoryLabelPaddingWidth = System.Math.Max(totalFilesNumberPaddingWidth, subdirectoryNumberPaddingWidth)
+			If Not (_volumeLabelPaddingWidth <= settings.VolumeDigitPadding AndAlso _subdirectoryLabelPaddingWidth <= settings.SubdirectoryDigitPadding) Then
+				Dim message As New System.Text.StringBuilder
+				If _volumeLabelPaddingWidth > settings.VolumeDigitPadding Then message.AppendFormat("The selected volume padding of {0} is less than the recommended volume padding {1} for this export" & vbNewLine, settings.VolumeDigitPadding, _volumeLabelPaddingWidth)
+				If _subdirectoryLabelPaddingWidth > settings.SubdirectoryDigitPadding Then message.AppendFormat("The selected subdirectory padding of {0} is less than the recommended subdirectory padding {1} for this export" & vbNewLine, settings.SubdirectoryDigitPadding, _subdirectoryLabelPaddingWidth)
+				message.Append("Continue with this selection?")
+				Select Case MsgBox(message.ToString, MsgBoxStyle.OKCancel)
+					Case MsgBoxResult.Cancel
+						parent.Shutdown()
+						Exit Sub
+				End Select
+			End If
+			_subdirectoryLabelPaddingWidth = settings.SubdirectoryDigitPadding
+			_volumeLabelPaddingWidth = settings.VolumeDigitPadding
 			_currentVolumeSize = 0
 			_currentImageSubdirectorySize = 0
 			_currentTextSubdirectorySize = 0
@@ -135,7 +148,9 @@ Namespace kCura.WinEDDS
 			_parent = parent
 			Dim loadFilePath As String = Me.LoadFileDestinationPath
 			If Not Me.Settings.Overwrite AndAlso System.IO.File.Exists(loadFilePath) Then
-				Throw New System.Exception(String.Format("Overwrite not selected and file '{0}' exists.", loadFilePath))
+				MsgBox(String.Format("Overwrite not selected and file '{0}' exists.", loadFilePath))
+				_parent.Shutdown()
+				Exit Sub
 			End If
 			_encoding = Me.Settings.LoadFileEncoding
 

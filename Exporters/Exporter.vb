@@ -68,6 +68,11 @@ Namespace kCura.WinEDDS
 
 #End Region
 
+		Public Event ShutdownEvent()
+		Public Sub Shutdown()
+			RaiseEvent ShutdownEvent()
+		End Sub
+
 #Region "Constructors"
 
 		Public Sub New(ByVal exportFile As kCura.WinEDDS.ExportFile, ByVal processController As kCura.Windows.Process.Controller)
@@ -548,7 +553,6 @@ Namespace kCura.WinEDDS
 		Public Event EnableCloseButton()
 
 #End Region
-
 
 		Private Sub _processController_HaltProcessEvent(ByVal processID As System.Guid) Handles _processController.HaltProcessEvent
 			_halt = True

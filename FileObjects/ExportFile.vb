@@ -39,6 +39,8 @@ Namespace kCura.WinEDDS
 		Protected _selectedTextField As WinEDDS.ViewFieldInfo
 		Protected _loadFileEncoding As System.Text.Encoding
 		Protected _textFileEncoding As System.Text.Encoding
+		Protected _volumeDigitPadding As Int32
+		Protected _subdirectoryDigitPadding As Int32
 
 #Region "Public Properties"
 
@@ -386,6 +388,24 @@ Namespace kCura.WinEDDS
 			End Get
 			Set(ByVal value As System.Text.Encoding)
 				_textFileEncoding = value
+			End Set
+		End Property
+
+		Public Property VolumeDigitPadding() As Int32
+			Get
+				Return _volumeDigitPadding
+			End Get
+			Set(ByVal value As Int32)
+				_volumeDigitPadding = value
+			End Set
+		End Property
+
+		Public Property SubdirectoryDigitPadding() As Int32
+			Get
+				Return _subdirectoryDigitPadding
+			End Get
+			Set(ByVal value As Int32)
+				_subdirectoryDigitPadding = value
 			End Set
 		End Property
 

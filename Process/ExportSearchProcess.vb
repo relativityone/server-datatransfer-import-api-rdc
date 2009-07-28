@@ -15,7 +15,6 @@ Namespace kCura.WinEDDS
 			_errorCount = 0
 			_searchExporter = New Exporter(Me.ExportFile, Me.ProcessController)
 
-
 			If Not _searchExporter.ExportSearch() Then
 				Me.ProcessObserver.RaiseProcessCompleteEvent(False, _searchExporter.ErrorLogFileName)
 			Else
@@ -50,5 +49,8 @@ Namespace kCura.WinEDDS
 			Me.ProcessObserver.RaiseFatalExceptionEvent(ex)
 		End Sub
 
+		Private Sub _searchExporter_ShutdownEvent() Handles _searchExporter.ShutdownEvent
+			Me.ProcessObserver.Shutdown()
+		End Sub
 	End Class
 End Namespace

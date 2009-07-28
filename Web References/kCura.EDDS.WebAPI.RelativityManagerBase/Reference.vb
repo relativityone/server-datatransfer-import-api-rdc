@@ -107,5 +107,23 @@ Namespace kCura.EDDS.WebAPI.RelativityManagerBase
             Dim results() As Object = Me.EndInvoke(asyncResult)
             Return CType(results(0),Boolean)
         End Function
+        
+        '<remarks/>
+        <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/RelativityManager/RetrieveRdcConfiguration", RequestNamespace:="http://www.kCura.com/EDDS/RelativityManager", ResponseNamespace:="http://www.kCura.com/EDDS/RelativityManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
+        Public Function RetrieveRdcConfiguration() As System.Data.DataSet
+            Dim results() As Object = Me.Invoke("RetrieveRdcConfiguration", New Object(-1) {})
+            Return CType(results(0),System.Data.DataSet)
+        End Function
+        
+        '<remarks/>
+        Public Function BeginRetrieveRdcConfiguration(ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("RetrieveRdcConfiguration", New Object(-1) {}, callback, asyncState)
+        End Function
+        
+        '<remarks/>
+        Public Function EndRetrieveRdcConfiguration(ByVal asyncResult As System.IAsyncResult) As System.Data.DataSet
+            Dim results() As Object = Me.EndInvoke(asyncResult)
+            Return CType(results(0),System.Data.DataSet)
+        End Function
     End Class
 End Namespace
