@@ -729,6 +729,7 @@ Namespace kCura.EDDS.WinForm
 			Else
 				loadFile.DestinationFolderID = caseInfo.RootArtifactID
 			End If
+			loadFile.CopyFilesToDocumentRepository = Config.CopyFilesToRepository
 			loadFile.CaseInfo = caseInfo
 			loadFile.Credentials = Me.Credential
 			loadFile.CookieContainer = Me.CookieContainer
@@ -847,6 +848,7 @@ Namespace kCura.EDDS.WinForm
 				imageFile.DestinationFolderID = destinationArtifactID
 				imageFile.ForProduction = False
 				imageFile.FullTextEncoding = System.Text.Encoding.Default
+				imageFile.CopyFilesToDocumentRepository = Config.CopyFilesToRepository
 				frm.ImageLoadFile = imageFile
 			Catch ex As System.Exception
 				Throw

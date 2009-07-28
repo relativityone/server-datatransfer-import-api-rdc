@@ -35,5 +35,11 @@ Namespace kCura.EDDS.WinForm
 			End Get
 		End Property
 
+		Public Shared ReadOnly Property CopyFilesToRepository() As Boolean
+			Get
+				Return CType(ConfigSettings("CopyFilesToRepository"), Boolean)
+			End Get
+		End Property
+
 	End Class
 End Namespace
