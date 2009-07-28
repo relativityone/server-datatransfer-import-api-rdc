@@ -38,28 +38,33 @@ Namespace kCura.Windows.Process
 		Public Event StatusBarEvent(ByVal message As String, ByVal popupText As String)
 		Public Event ShowReportEvent(ByVal datasource As System.Data.DataTable, ByVal maxlengthExceeded As Boolean)
 		Public Event ErrorReportEvent(ByVal row As System.Collections.IDictionary)
+		Public Event ShutdownEvent()
 #End Region
 
 #Region "Event Throwers"
 
-    Public Sub RaiseStatusEvent(ByVal recordInfo As String, ByVal message As String)
-      Dim evt As New ProcessEvent(ProcessEventTypeEnum.Status, recordInfo, message)
-      RaiseEvent OnProcessEvent(evt)
-      WriteToFile(evt)
-    End Sub
+		Public Sub Shutdown()
+			RaiseEvent ShutdownEvent()
+		End Sub
 
-    Public Sub RaiseWarningEvent(ByVal recordInfo As String, ByVal message As String)
-      Dim evt As New ProcessEvent(ProcessEventTypeEnum.Warning, recordInfo, message)
-      RaiseEvent OnProcessEvent(evt)
-      WriteToFile(evt)
-    End Sub
+		Public Sub RaiseStatusEvent(ByVal recordInfo As String, ByVal message As String)
+			Dim evt As New ProcessEvent(ProcessEventTypeEnum.Status, recordInfo, message)
+			RaiseEvent OnProcessEvent(evt)
+			WriteToFile(evt)
+		End Sub
 
-    Public Sub RaiseErrorEvent(ByVal recordInfo As String, ByVal message As String)
-      Dim evt As New ProcessEvent(ProcessEventTypeEnum.Error, recordInfo, message)
-      RaiseEvent OnProcessEvent(evt)
+		Public Sub RaiseWarningEvent(ByVal recordInfo As String, ByVal message As String)
+			Dim evt As New ProcessEvent(ProcessEventTypeEnum.Warning, recordInfo, message)
+			RaiseEvent OnProcessEvent(evt)
+			WriteToFile(evt)
+		End Sub
+
+		Public Sub RaiseErrorEvent(ByVal recordInfo As String, ByVal message As String)
+			Dim evt As New ProcessEvent(ProcessEventTypeEnum.Error, recordInfo, message)
+			RaiseEvent OnProcessEvent(evt)
 			WriteToFile(evt)
 			WriteError(recordInfo, message)
-    End Sub
+		End Sub
 
 		Public Sub RaiseProgressEvent(ByVal totalRecords As Int64, ByVal totalRecordsProcessed As Int64, ByVal totalRecordsProccessedWithWarnings As Int64, ByVal totalRecordsProcessedWithErrors As Int64, ByVal startTime As DateTime, ByVal endTime As DateTime, Optional ByVal totalRecordsDisplay As String = Nothing, Optional ByVal totalRecordsProcessedDisplay As String = Nothing)
 			RaiseEvent OnProcessProgressEvent(New ProcessProgressEvent(totalRecords, totalRecordsProcessed, totalRecordsProccessedWithWarnings, totalRecordsProcessedWithErrors, startTime, endTime, totalRecordsDisplay, totalRecordsProcessedDisplay))

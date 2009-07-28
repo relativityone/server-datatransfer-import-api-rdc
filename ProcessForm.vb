@@ -704,6 +704,10 @@ Namespace kCura.Windows.Process
 				frm._messageBox.Text = _statusBarPopupText
 			End If
 		End Sub
+
+		Private Sub _observer_ShutdownEvent() Handles _processObserver.ShutdownEvent
+			Me.Close()
+		End Sub
 	End Class
 
 
