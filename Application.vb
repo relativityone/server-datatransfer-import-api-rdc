@@ -1386,6 +1386,8 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 #End Region
 
+#Region " System Configuration "
+
 		Public Function GetDisplayAssemblyVersion() As String
 			Dim winVersionString As String = System.Reflection.Assembly.GetExecutingAssembly.FullName.Split(","c)(1).Split("="c)(1)
 			Dim versions As String() = winVersionString.Split("."c)
@@ -1397,6 +1399,13 @@ Namespace kCura.EDDS.WinForm
 			Next
 			Return kCura.Utility.Strings.Implode(versions, ".")
 		End Function
+
+		Public Function GetSystemConfiguration() As System.Data.DataTable
+			Return New kCura.WinEDDS.Service.RelativityManager(Me.Credential, Me.CookieContainer).RetrieveRdcConfiguration().Tables(0)
+		End Function
+
+#End Region
+
 
 		Public Function GetProductionPrecendenceList(ByVal caseInfo As kCura.EDDS.Types.CaseInfo) As System.Data.DataTable
 			Dim productionManager As kCura.WinEDDS.Service.ProductionManager
