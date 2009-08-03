@@ -736,33 +736,34 @@ Namespace kCura.EDDS.WinForm
 
 		Friend ReadOnly Property ReadyToRun() As Boolean
 			Get
-				If Not Me.EnsureConnection() Then Return False
-				Dim rtr As Boolean
-				If _loadNativeFiles.Checked Then
-					rtr = _nativeFilePathField.SelectedIndex <> -1
-				Else
-					rtr = True
-				End If
-				If Me.LoadFile.ArtifactTypeID = 10 Then
-					If rtr AndAlso _buildFolderStructure.Checked Then
-						rtr = _destinationFolderPath.SelectedIndex <> -1 AndAlso rtr
-					End If
-				Else
-					If Me.IsChildObject Then
-						If Not _overwriteDropdown.SelectedItem Is Nothing AndAlso _overwriteDropdown.SelectedItem.ToString.ToLower() = "append only" Then
-							rtr = _buildFolderStructure.Checked AndAlso _destinationFolderPath.SelectedIndex <> -1 AndAlso rtr
-						End If
-						If _buildFolderStructure.Checked AndAlso _destinationFolderPath.SelectedIndex = -1 Then
-							rtr = False
-						End If
-					End If
-				End If
-				Return _
-				 _fieldMap.FieldColumns.RightListBoxItems.Count > 0 AndAlso _
-				 _fieldMap.LoadFileColumns.LeftListBoxItems.Count > 0 AndAlso _
-				 rtr AndAlso _
-				 System.IO.File.Exists(_filePath.Text)				'AndAlso _
-				'_identifiersDropDown.SelectedIndex <> -1
+				Return True
+				'If Not Me.EnsureConnection() Then Return False
+				'Dim rtr As Boolean
+				'If _loadNativeFiles.Checked Then
+				'	rtr = _nativeFilePathField.SelectedIndex <> -1
+				'Else
+				'	rtr = True
+				'End If
+				'If Me.LoadFile.ArtifactTypeID = 10 Then
+				'	If rtr AndAlso _buildFolderStructure.Checked Then
+				'		rtr = _destinationFolderPath.SelectedIndex <> -1 AndAlso rtr
+				'	End If
+				'Else
+				'	If Me.IsChildObject Then
+				'		If Not _overwriteDropdown.SelectedItem Is Nothing AndAlso _overwriteDropdown.SelectedItem.ToString.ToLower() = "append only" Then
+				'			rtr = _buildFolderStructure.Checked AndAlso _destinationFolderPath.SelectedIndex <> -1 AndAlso rtr
+				'		End If
+				'		If _buildFolderStructure.Checked AndAlso _destinationFolderPath.SelectedIndex = -1 Then
+				'			rtr = False
+				'		End If
+				'	End If
+				'End If
+				'Return _
+				' _fieldMap.FieldColumns.RightListBoxItems.Count > 0 AndAlso _
+				' _fieldMap.LoadFileColumns.LeftListBoxItems.Count > 0 AndAlso _
+				' rtr AndAlso _
+				' System.IO.File.Exists(_filePath.Text)				'AndAlso _
+				''_identifiersDropDown.SelectedIndex <> -1
 			End Get
 		End Property
 
@@ -805,13 +806,52 @@ Namespace kCura.EDDS.WinForm
 			Return DirectCast(retval.ToArray(GetType(DocumentField)), DocumentField())
 		End Function
 
-		Private Sub PopulateLoadFileObject()
+		Private Sub AppendErrorMessage(ByVal msg As System.Text.StringBuilder, ByVal errorText As String)
+			msg.Append(" - ").Append(errorText).Append(vbNewLine)
+		End Sub
+
+		Private Function PopulateLoadFileObject(ByVal doFormValidation As Boolean) As Boolean
 			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
+			If doFormValidation Then
+				Dim msg As New System.Text.StringBuilder
+
+				If Not Me.EnsureConnection() Then Return False
+				Dim rtr As Boolean
+				If _loadNativeFiles.Checked AndAlso _nativeFilePathField.SelectedIndex = -1 Then Me.AppendErrorMessage(msg, "Native file field unselected")
+				If Me.LoadFile.ArtifactTypeID = 10 Then
+					If _buildFolderStructure.Checked AndAlso _destinationFolderPath.SelectedIndex = -1 Then Me.AppendErrorMessage(msg, "Folder information unselected")
+				Else
+					If Me.IsChildObject Then
+						If Not _overwriteDropdown.SelectedItem Is Nothing AndAlso _overwriteDropdown.SelectedItem.ToString.ToLower() = "append only" Then
+							If _buildFolderStructure.Checked AndAlso _destinationFolderPath.SelectedIndex = -1 Then Me.AppendErrorMessage(msg, "Parent information unselected")
+						ElseIf _buildFolderStructure.Checked AndAlso _destinationFolderPath.SelectedIndex = -1 Then
+							Me.AppendErrorMessage(msg, "Parent information unselected")
+						End If
+					End If
+				End If
+				If _fieldMap.FieldColumns.RightListBoxItems.Count = 0 Then
+					Me.AppendErrorMessage(msg, "No file columns mapped")
+				End If
+				If _fieldMap.FieldColumns.LeftListBoxItems.Count = 0 Then
+					Me.AppendErrorMessage(msg, "No fields mapped")
+				End If
+				Try
+					If Not System.IO.File.Exists(_filePath.Text) Then Me.AppendErrorMessage(msg, "Selected load file does not exist")
+				Catch
+					Me.AppendErrorMessage(msg, "Access is restricted to selected load file")
+				End Try
+				If msg.ToString.Trim <> String.Empty Then
+					msg.Insert(0, "The following issues need to be addressed before continuing:" & vbNewLine & vbNewLine)
+					MsgBox(msg.ToString, MsgBoxStyle.Exclamation, "Warning")
+					Return False
+				End If
+			End If
 			Me.PopulateLoadFileDelimiters()
-			If Not Me.EnsureConnection() Then Exit Sub
+			If Not Me.EnsureConnection() Then Exit Function
 			Dim currentFields As WinEDDS.DocumentFieldCollection = _application.CurrentFields(Me.LoadFile.ArtifactTypeID, True)
 			If currentFields Is Nothing Then
-				Exit Sub
+				Me.Cursor = System.Windows.Forms.Cursors.Default
+				Return False
 			End If
 			Me.LoadFile.FieldMap = kCura.EDDS.WinForm.Utility.ExtractFieldMap(_fieldMap.FieldColumns, _fieldMap.LoadFileColumns, currentFields, Me.LoadFile.ArtifactTypeID)
 			'Dim groupIdentifier As DocumentField = _application.CurrentGroupIdentifierField
@@ -905,7 +945,8 @@ Namespace kCura.EDDS.WinForm
 			End If
 			If Me.LoadFile.IdentityFieldId = -1 Then Me.LoadFile.IdentityFieldId = _application.CurrentFields(Me.LoadFile.ArtifactTypeID).IdentifierFields(0).FieldID
 			Me.Cursor = System.Windows.Forms.Cursors.Default
-		End Sub
+			Return True
+		End Function
 
 		Private Sub MarkIdentifierField(ByVal fieldNames As String())
 			Dim identifierFields As String() = _application.GetCaseIdentifierFields(Me.LoadFile.ArtifactTypeID)
@@ -1136,7 +1177,7 @@ Namespace kCura.EDDS.WinForm
 				If Not Me.EnsureConnection Then Exit Sub
 				oldfilepath = _filePath.Text
 				_filePath.Text = OpenFileDialog.FileName
-				PopulateLoadFileObject()
+				PopulateLoadFileObject(False)
 				Dim extension As String = _filePath.Text
 				If extension.IndexOf("\") <> -1 Then
 					extension = extension.Substring(extension.LastIndexOf("\") + 1)
@@ -1172,8 +1213,7 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 		Private Sub ImportFileMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ImportFileMenu.Click
-			PopulateLoadFileObject()
-			If _application.ReadyToLoad(Utility.ExtractFieldNames(_fieldMap.LoadFileColumns.LeftListBoxItems)) AndAlso _application.ReadyToLoad(Me.LoadFile, False) Then
+			If PopulateLoadFileObject(True) AndAlso _application.ReadyToLoad(Utility.ExtractFieldNames(_fieldMap.LoadFileColumns.LeftListBoxItems)) AndAlso _application.ReadyToLoad(Me.LoadFile, False) Then
 				_application.ImportLoadFile(Me.LoadFile)
 			End If
 		End Sub
@@ -1267,14 +1307,14 @@ Namespace kCura.EDDS.WinForm
 
 		Private Sub PreviewMenuFile_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles PreviewMenuFile.Click
 			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
-			PopulateLoadFileObject()
-			If _application.ReadyToLoad(Me.LoadFile, True) Then _application.PreviewLoadFile(_loadFile, False, kCura.EDDS.WinForm.LoadFilePreviewForm.FormType.LoadFile)
+
+			If PopulateLoadFileObject(True) AndAlso _application.ReadyToLoad(Me.LoadFile, True) Then _application.PreviewLoadFile(_loadFile, False, kCura.EDDS.WinForm.LoadFilePreviewForm.FormType.LoadFile)
 			Me.Cursor = System.Windows.Forms.Cursors.Default
 		End Sub
 
 		Private Sub _fileSaveFieldMapMenuItem_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles _fileSaveFieldMapMenuItem.Click
 			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
-			PopulateLoadFileObject()
+			PopulateLoadFileObject(False)
 			_saveFieldMapDialog.ShowDialog()
 			Me.Cursor = System.Windows.Forms.Cursors.Default
 		End Sub
@@ -1358,15 +1398,13 @@ Namespace kCura.EDDS.WinForm
 
 		Private Sub _importMenuPreviewErrorsItem_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles _importMenuPreviewErrorsItem.Click
 			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
-			PopulateLoadFileObject()
-			_application.PreviewLoadFile(_loadFile, True, kCura.EDDS.WinForm.LoadFilePreviewForm.FormType.LoadFile)
+			If PopulateLoadFileObject(True) Then _application.PreviewLoadFile(_loadFile, True, kCura.EDDS.WinForm.LoadFilePreviewForm.FormType.LoadFile)
 			Me.Cursor = System.Windows.Forms.Cursors.Default
 		End Sub
 
 		Private Sub _importMenuPreviewFoldersAndCodesItem_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles _importMenuPreviewFoldersAndCodesItem.Click
 			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
-			PopulateLoadFileObject()
-			_application.PreviewLoadFile(_loadFile, False, kCura.EDDS.WinForm.LoadFilePreviewForm.FormType.Codes)
+			If PopulateLoadFileObject(True) Then _application.PreviewLoadFile(_loadFile, False, kCura.EDDS.WinForm.LoadFilePreviewForm.FormType.Codes)
 			Me.Cursor = System.Windows.Forms.Cursors.Default
 		End Sub
 

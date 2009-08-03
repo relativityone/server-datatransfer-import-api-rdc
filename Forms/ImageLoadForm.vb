@@ -330,14 +330,31 @@ Namespace kCura.EDDS.WinForm
 			End Set
 		End Property
 
-		Private Sub PopulateImageLoadFile()
+		Private Function PopulateImageLoadFile(ByVal doFormValidation As Boolean) As Boolean
 			Me.Cursor = Cursors.WaitCursor
 			If Not Me.EnsureConnection() Then
 				Me.Cursor = Cursors.Default
-				Exit Sub
+				Return False
+			End If
+			Dim rtr As Boolean = False
+			If doFormValidation Then
+				Dim msg As New System.Text.StringBuilder
+				If Not (System.IO.File.Exists(_imageLoadFile.FileName)) Then
+					msg.Append(" - Selected opticon file does not exist").Append(vbNewLine)
+				End If
+				If ImageLoadFile.ForProduction Then
+					If CType(_productionDropdown.SelectedValue, Int32) = 0 Then msg.Append(" - No destination production selected").Append(vbNewLine)
+					If CType(_beginBatesDropdown.SelectedValue, Int32) = 0 Then msg.Append(" - No import key field selected").Append(vbNewLine)
+				End If
+				If msg.ToString.Trim <> String.Empty Then
+					msg.Insert(0, "The following issues need to be addressed before continuing:" & vbNewLine & vbNewLine)
+					MsgBox(msg.ToString, MsgBoxStyle.Exclamation, "Warning")
+					Me.Cursor = Cursors.Default
+					Return False
+				End If
 			End If
 			ImageLoadFile.Overwrite = Me.GetOverwrite
-      ImageLoadFile.DestinationFolderID = _imageLoadFile.DestinationFolderID
+			ImageLoadFile.DestinationFolderID = _imageLoadFile.DestinationFolderID
 			ImageLoadFile.ControlKeyField = _application.GetCaseIdentifierFields(10)(0)
 			If ImageLoadFile.ForProduction Then
 				ImageLoadFile.ProductionArtifactID = CType(_productionDropdown.SelectedValue, Int32)
@@ -355,7 +372,8 @@ Namespace kCura.EDDS.WinForm
 			Me.ImageLoadFile.CaseDefaultPath = _application.SelectedCaseInfo.DocumentPath
 			ImageLoadFile.StartLineNumber = CType(_startLineNumber.Value, Int64)
 			Me.Cursor = Cursors.Default
-		End Sub
+			Return True
+		End Function
 
 		Private Function GetOverwrite() As String
 			Select Case _overwriteDropdown.SelectedItem.ToString.ToLower
@@ -417,14 +435,14 @@ Namespace kCura.EDDS.WinForm
 				Me.Text = "Relativity Desktop Client | Import Production Load File"
 			End If
 			_overwriteDropdown.SelectedItem = Me.GetOverwriteDropdownItem(ImageLoadFile.Overwrite)
-			ReadyToRun()
 			Me.Cursor = Cursors.Default
 		End Sub
 
 		Private Sub ImportFileMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ImportFileMenu.Click
 			Me.Cursor = Cursors.WaitCursor
-			PopulateImageLoadFile()
-			If _application.ReadyToLoad(Me.ImageLoadFile, False) Then _application.ImportImageFile(_imageLoadFile)
+			If PopulateImageLoadFile(True) Then
+				If _application.ReadyToLoad(Me.ImageLoadFile, False) Then _application.ImportImageFile(_imageLoadFile)
+			End If
 			Me.Cursor = Cursors.Default
 		End Sub
 
@@ -442,7 +460,6 @@ Namespace kCura.EDDS.WinForm
 			End If
 			_imageLoadFile.FileName = _openFileDialog.FileName
 			_filePath.Text = _openFileDialog.FileName
-			ReadyToRun()
 			Me.Cursor = Cursors.Default
 		End Sub
 
@@ -456,27 +473,12 @@ Namespace kCura.EDDS.WinForm
 			End If
 		End Sub
 
-		Private Sub ReadyToRun()
-			Dim rtr As Boolean = False
-			If ImageLoadFile.ForProduction Then
-				If TypeOf _productionDropdown.SelectedValue Is Int32 AndAlso TypeOf _beginBatesDropdown.SelectedValue Is Int32 Then
-					rtr = (System.IO.File.Exists(_imageLoadFile.FileName) And CType(_productionDropdown.SelectedValue, Int32) > 0 And CType(_beginBatesDropdown.SelectedValue, Int32) > 0)
-				Else
-					rtr = False
-				End If
-			Else
-				rtr = (System.IO.File.Exists(_imageLoadFile.FileName))
-			End If
-			ImportFileMenu.Enabled = rtr
-			_importMenuCheckErrorsItem.Enabled = rtr
-		End Sub
-
 		Private Sub _importMenuSaveSettingsItem_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles _importMenuSaveSettingsItem.Click
 			If Not Me.EnsureConnection() Then
 				Me.Cursor = Cursors.Default
 				Exit Sub
 			End If
-			PopulateImageLoadFile()
+			PopulateImageLoadFile(False)
 			_saveImageLoadFileDialog.ShowDialog()
 		End Sub
 
@@ -514,7 +516,6 @@ Namespace kCura.EDDS.WinForm
 				Me.ImageLoadFile.DestinationFolderID = currentFolder
 				_startLineNumber.Value = CType(ImageLoadFile.StartLineNumber, Decimal)
 			End If
-			Me.ReadyToRun()
 			Me.Cursor = System.Windows.Forms.Cursors.Default
 		End Sub
 
@@ -539,16 +540,7 @@ Namespace kCura.EDDS.WinForm
 		End Function
 
 		Private Sub _importMenuCheckErrorsItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _importMenuCheckErrorsItem.Click
-			Me.PopulateImageLoadFile()
-			If _application.ReadyToLoad(Me.ImageLoadFile, True) Then _application.PreviewImageFile(Me.ImageLoadFile)
-		End Sub
-
-		Private Sub _productionDropdown_SelectedIndexChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles _productionDropdown.SelectedIndexChanged
-			ReadyToRun()
-		End Sub
-
-		Private Sub _beginBatesDropdown_SelectedIndexChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles _beginBatesDropdown.SelectedIndexChanged
-			ReadyToRun()
+			If Me.PopulateImageLoadFile(True) Then If _application.ReadyToLoad(Me.ImageLoadFile, True) Then _application.PreviewImageFile(Me.ImageLoadFile)
 		End Sub
 
 		Private Sub _toolsMenuSettingsItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _toolsMenuSettingsItem.Click

@@ -394,7 +394,7 @@ Public Class ExportForm
 		Me._columnSelecter.LeftOrderControlsVisible = False
 		Me._columnSelecter.Location = New System.Drawing.Point(104, 64)
 		Me._columnSelecter.Name = "_columnSelecter"
-		Me._columnSelecter.RightOrderControlVisible = False
+		Me._columnSelecter.RightOrderControlVisible = True
 		Me._columnSelecter.Size = New System.Drawing.Size(360, 280)
 		Me._columnSelecter.TabIndex = 17
 		'
@@ -468,7 +468,6 @@ Public Class ExportForm
 		'
 		Me._textFileEncoding.Location = New System.Drawing.Point(116, 100)
 		Me._textFileEncoding.Name = "_textFileEncoding"
-		Me._textFileEncoding.SelectedEncoding = CType(resources.GetObject("_textFileEncoding.SelectedEncoding"), System.Text.Encoding)
 		Me._textFileEncoding.Size = New System.Drawing.Size(200, 21)
 		Me._textFileEncoding.TabIndex = 19
 		'
@@ -494,7 +493,6 @@ Public Class ExportForm
 		'
 		Me._dataFileEncoding.Location = New System.Drawing.Point(116, 48)
 		Me._dataFileEncoding.Name = "_dataFileEncoding"
-		Me._dataFileEncoding.SelectedEncoding = CType(resources.GetObject("_dataFileEncoding.SelectedEncoding"), System.Text.Encoding)
 		Me._dataFileEncoding.Size = New System.Drawing.Size(200, 21)
 		Me._dataFileEncoding.TabIndex = 16
 		'
@@ -1082,68 +1080,62 @@ Public Class ExportForm
 		End Set
 	End Property
 
-	Private Function ReadyToRun() As Boolean
-		If Me.ExportFile Is Nothing Then Return False
-		Dim retval As Boolean = True
-		retval = retval AndAlso System.IO.Directory.Exists(_folderPath.Text)
-		retval = retval AndAlso Not _filters.SelectedItem Is Nothing
-		If Me.CreateVolume Then
-			retval = retval AndAlso Not Me.BuildVolumeInfo Is Nothing
-		End If
-		Try
-			If _exportNativeFiles.Checked OrElse _columnSelecter.RightListBoxItems.Count > 0 Then
-				If CType(_nativeFileFormat.SelectedItem, String) = "Select..." Then
-					retval = False
-				End If
-			End If
-			If _exportImages.Checked Then
-				If CType(_imageFileFormat.SelectedValue, Int32) = -1 Then
-					retval = False
-				End If
-				If _imageTypeDropdown.SelectedIndex = 0 Then retval = False
-			End If
-			If Me.ExportFile.TypeOfExport = ExportFile.ExportType.Production AndAlso _exportNativeFiles.Checked Then
-				If CType(_nativeFileNameSource.SelectedItem, String) = "Select..." Then
-					retval = False
-				End If
-			End If
-		Catch ex As System.Exception
-			retval = False
-		End Try
-		Return retval
-	End Function
+	Private Sub AppendErrorMessage(ByVal msg As System.Text.StringBuilder, ByVal errorText As String)
+		msg.Append(" - ").Append(errorText).Append(vbNewLine)
+	End Sub
 
 	Private Sub RunMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles RunMenu.Click
-		If Not _subdirectoryImagePrefix.Text.Trim <> "" Then
-			MsgBox("Subdirectory Image Prefix cannot be blank.", MsgBoxStyle.Exclamation)
-			Exit Sub
+		Dim msg As New System.Text.StringBuilder
+		If Not System.IO.Directory.Exists(_folderPath.Text) OrElse _folderPath.Text.Trim = String.Empty Then
+			If _folderPath.Text.Trim = String.Empty Then
+				AppendErrorMessage(msg, "Export destination folder empty")
+			Else
+				AppendErrorMessage(msg, "Export destination folder does not exist")
+			End If
 		End If
-		If Not _subdirectoryTextPrefix.Text.Trim <> "" Then
-			MsgBox("Subdirectory Text Prefix cannot be blank.", MsgBoxStyle.Exclamation)
-			Exit Sub
+		If _filters.SelectedItem Is Nothing Then
+			Dim filterType As String
+			Select Case Me.ExportFile.TypeOfExport
+				Case ExportFile.ExportType.Production
+					filterType = "production"
+				Case ExportFile.ExportType.ArtifactSearch
+					filterType = "saved search"
+				Case Else
+					filterType = "view"
+			End Select
+			msg.AppendFormat("No {0} selected", filterType)
 		End If
-		If CType(_subDirectoryMaxSize.Value, Int64) < 1 OrElse _subDirectoryMaxSize.Text.Trim = "" Then
-			MsgBox("Subdirectory Max Size must be greater than zero.", MsgBoxStyle.Exclamation)
-			Exit Sub
+		If _exportNativeFiles.Checked OrElse _columnSelecter.RightListBoxItems.Count > 0 Then
+			If CType(_nativeFileFormat.SelectedItem, String) = "Select..." Then
+				AppendErrorMessage(msg, "No load file format selected")
+			End If
 		End If
-		If Not _subDirectoryNativePrefix.Text.Trim <> "" Then
-			MsgBox("Subdirectory Native Prefix cannot be blank.", MsgBoxStyle.Exclamation)
-			Exit Sub
+		If _exportImages.Checked Then
+			If CType(_imageFileFormat.SelectedValue, Int32) = -1 Then
+				AppendErrorMessage(msg, "No image data file format selected")
+			End If
+			If _imageTypeDropdown.SelectedIndex = 0 Then
+				AppendErrorMessage(msg, "No image file type selected")
+			End If
 		End If
-		If CType(_subdirectoryStartNumber.Value, Int32) < 1 OrElse _subdirectoryStartNumber.Text.Trim = "" Then
-			MsgBox("Subdirectory Start Number must be greater than zero.", MsgBoxStyle.Exclamation)
-			Exit Sub
+		If Me.ExportFile.TypeOfExport = ExportFile.ExportType.Production AndAlso _exportNativeFiles.Checked Then
+			If CType(_nativeFileNameSource.SelectedItem, String) = "Select..." Then
+				AppendErrorMessage(msg, "No file name source selected")
+			End If
 		End If
-		If CType(_volumeMaxSize.Value, Int64) < 1 OrElse _volumeMaxSize.Text.Trim = "" Then
-			MsgBox("Volume Max Size must be greater than zero.", MsgBoxStyle.Exclamation)
-			Exit Sub
+		If Me.CreateVolume Then
+			If Not _subdirectoryImagePrefix.Text.Trim <> "" Then AppendErrorMessage(msg, "Subdirectory Image Prefix cannot be blank.")
+			If Not _subdirectoryTextPrefix.Text.Trim <> "" Then AppendErrorMessage(msg, "Subdirectory Text Prefix cannot be blank.")
+			If CType(_subDirectoryMaxSize.Value, Int64) < 1 OrElse _subDirectoryMaxSize.Text.Trim = "" Then AppendErrorMessage(msg, "Subdirectory Max Size must be greater than zero.")
+			If Not _subDirectoryNativePrefix.Text.Trim <> "" Then AppendErrorMessage(msg, "Subdirectory Native Prefix cannot be blank.")
+			If CType(_subdirectoryStartNumber.Value, Int32) < 1 OrElse _subdirectoryStartNumber.Text.Trim = "" Then AppendErrorMessage(msg, "Subdirectory Start Number must be greater than zero.")
+			If CType(_volumeMaxSize.Value, Int64) < 1 OrElse _volumeMaxSize.Text.Trim = "" Then AppendErrorMessage(msg, "Volume Max Size must be greater than zero.")
+			If Not _volumePrefix.Text.Trim <> "" Then AppendErrorMessage(msg, "Volume Prefix cannot be blank.")
+			If CType(_volumeStartNumber.Value, Int32) < 1 Then AppendErrorMessage(msg, "Volume Start Number must be greater than zero.")
 		End If
-		If Not _volumePrefix.Text.Trim <> "" Then
-			MsgBox("Volume Prefix cannot be blank.", MsgBoxStyle.Exclamation)
-			Exit Sub
-		End If
-		If CType(_volumeStartNumber.Value, Int32) < 1 Then
-			MsgBox("Volume Start Number must be greater than zero.", MsgBoxStyle.Exclamation)
+		If msg.ToString.Trim <> String.Empty Then
+			msg.Insert(0, "The following issues need to be addressed before continuing:" & vbNewLine & vbNewLine)
+			MsgBox(msg.ToString, MsgBoxStyle.Exclamation, "Warning")
 			Exit Sub
 		End If
 		Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
@@ -1348,12 +1340,10 @@ Public Class ExportForm
 		_nativeFileFormat.SelectedIndex = 0
 		_productionPrecedenceList.Items.Add(New Pair("-1", "Original"))
 		Me.InitializeColumnSelecter()
-		RunMenu.Enabled = ReadyToRun()
 	End Sub
 
 	Private Sub _searchList_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _filters.SelectedIndexChanged
 		If _dataSourceIsSet AndAlso Not _filters.SelectedItem Is Nothing Then Me.InitializeColumnSelecter()
-		RunMenu.Enabled = ReadyToRun()
 	End Sub
 
 	Private Sub InitializeColumnSelecter()
@@ -1379,22 +1369,16 @@ Public Class ExportForm
 		Me.ManagePotentialTextFields()
 	End Sub
 
-	Private Sub _folderPath_TextChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _folderPath.TextChanged
-		RunMenu.Enabled = ReadyToRun()
-	End Sub
-
 	Private Sub _exportImages_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _exportImages.CheckedChanged
 		_useAbsolutePaths.Enabled = True
 		_imageFileFormat.Enabled = _exportImages.Checked
 		_imageTypeDropdown.Enabled = _exportImages.Checked And _copyFilesFromRepository.Checked
-		RunMenu.Enabled = ReadyToRun()
 	End Sub
 
 	Private Sub _exportNativeFiles_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _exportNativeFiles.CheckedChanged
 		_useAbsolutePaths.Enabled = True
 		_nativeFileFormat.Enabled = True
 		_metadataGroup.Enabled = _columnSelecter.RightListBoxItems.Count > 0 OrElse _exportNativeFiles.Checked
-		RunMenu.Enabled = ReadyToRun()
 	End Sub
 
 	Private Sub ToggleLoadFileCharacterInformation(ByVal enabled As Boolean)
@@ -1438,11 +1422,6 @@ Public Class ExportForm
 			Case Else
 				Me.ToggleLoadFileCharacterInformation(False)
 		End Select
-		RunMenu.Enabled = ReadyToRun()
-	End Sub
-
-	Private Sub _imageFileFormat_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _imageFileFormat.SelectedIndexChanged
-		RunMenu.Enabled = ReadyToRun()
 	End Sub
 
 	Private Sub _pickPrecedenceButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _pickPrecedenceButton.Click
@@ -1472,14 +1451,6 @@ Public Class ExportForm
 		_productionPrecedenceList.Items.AddRange(precedenceList)
 	End Sub
 
-	Private Sub _subDirectoryMaxSize_ValueChanged(ByVal sender As System.Object, ByVal e As System.EventArgs)
-		RunMenu.Enabled = ReadyToRun()
-	End Sub
-
-	Private Sub _volumeMaxSize_ValueChanged(ByVal sender As System.Object, ByVal e As System.EventArgs)
-		RunMenu.Enabled = ReadyToRun()
-	End Sub
-
 	Private Sub _usePrefix_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _usePrefix.CheckedChanged
 		If _usePrefix.Checked Then
 			_prefixText.Enabled = True
@@ -1488,20 +1459,12 @@ Public Class ExportForm
 		End If
 	End Sub
 
-	Private Sub ComboBox1_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _nativeFileNameSource.SelectedIndexChanged
-		RunMenu.Enabled = ReadyToRun()
-	End Sub
-
 	Private Sub _exportFullText_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs)
 		'If _exportFullText.Checked Then
 		_exportFullTextAsFile.Enabled = True
 		'Else
 		'	_exportFullTextAsFile.Enabled = False
 		'End If
-	End Sub
-
-	Private Sub _imageTypeDropdown_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _imageTypeDropdown.SelectedIndexChanged
-		RunMenu.Enabled = ReadyToRun()
 	End Sub
 
 	Private Sub _folderPath_Enter(ByVal sender As Object, ByVal e As System.EventArgs) Handles _folderPath.Enter
@@ -1687,7 +1650,6 @@ Public Class ExportForm
 		If Not _copyFilesFromRepository.Checked Then
 			_imageTypeDropdown.SelectedIndex = 1
 		End If
-		RunMenu.Enabled = ReadyToRun()
 	End Sub
 
 End Class
