@@ -75,10 +75,13 @@ Namespace kCura.WinEDDS
 		End Property
 
 		Public Function ToFileSizeSpecification(ByVal value As Double) As String
-			Dim log As Double = System.Math.Ceiling(System.Math.Log10(value))
 			Dim prefix As String
-			Dim k As Int32 = CType(System.Math.Floor(log / 3), Int32)
-			k = CType(System.Math.Floor(System.Math.Log(value, 1000)), Int32)
+			Dim k As Int32
+			If value <= 0 Then
+				k = 0
+			Else
+				k = CType(System.Math.Floor(System.Math.Log(value, 1000)), Int32)
+			End If
 			Select Case k
 				Case 0
 					prefix = ""
@@ -102,7 +105,7 @@ Namespace kCura.WinEDDS
 			Return (value / Math.Pow(1000, k)).ToString("N2") & " " & prefix & "B"
 		End Function
 
-		Public Function ToDictionary() As IDictionary
+		Public Overridable Function ToDictionary() As IDictionary
 			Dim retval As New System.Collections.Specialized.HybridDictionary
 			If Not Me.FileTime = 0 Then retval.Add("Average file transfer rate", ToFileSizeSpecification(Me.FileBytes / (Me.FileTime / 10000000)) & "/sec")
 			If Not Me.MetadataTime = 0 Then retval.Add("Average metadata transfer rate", ToFileSizeSpecification(Me.MetadataBytes / (Me.MetadataTime / 10000000)) & "/sec")

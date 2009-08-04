@@ -26,7 +26,8 @@ Namespace kCura.WinEDDS
     Private _isEssentialCount As Int32
     Private _lastStatusMessageTs As Long = System.DateTime.Now.Ticks
     Private _lastDocumentsExportedCountReported As Int32 = 0
-    Private _fieldCollectionHasExtractedText As Boolean = False
+		Private _fieldCollectionHasExtractedText As Boolean = False
+		Private _statistics As New kCura.WinEDDS.ExportStatistics
 #End Region
 
 #Region "Accessors"
@@ -107,7 +108,6 @@ Namespace kCura.WinEDDS
 
 		Private Function Search() As Boolean
 			Dim fileTable As System.Data.DataTable
-			Dim folderTable As System.Data.DataTable
 			Dim fullTextFiles As System.Data.DataTable
 			Dim fileURI As String
 			Dim fileName As String
@@ -120,6 +120,7 @@ Namespace kCura.WinEDDS
 			Dim errorOutputFilePath As String = _exportFile.FolderPath & "\" & _exportFile.LoadFilesPrefix & "_img_errors.txt"
 			If System.IO.File.Exists(errorOutputFilePath) AndAlso _exportFile.Overwrite Then kCura.Utility.File.Delete(errorOutputFilePath)
 			Me.WriteUpdate("Retrieving export data from the server...")
+			Dim startTicks As Int64 = System.DateTime.Now.Ticks
 			Select Case Me.ExportFile.TypeOfExport
 				Case ExportFile.ExportType.ArtifactSearch
 					typeOfExportDisplayString = "search"
@@ -134,12 +135,11 @@ Namespace kCura.WinEDDS
 					typeOfExportDisplayString = "production"
 					Me.TotalDocuments = _searchManager.CountSearchByProductionArtifactID(Me.ExportFile.CaseArtifactID, Me.ExportFile.ArtifactID)
 			End Select
+			_statistics.MetadataTime += System.Math.Max(System.DateTime.Now.Ticks - startTicks, 1)
 			RaiseEvent FileTransferModeChangeEvent(_downloadHandler.UploaderType.ToString)
 			Dim columnHeaderString As String = Me.LoadColumns
-			_volumeManager = New VolumeManager(Me.ExportFile, Me.ExportFile.FolderPath, Me.ExportFile.Overwrite, Me.TotalDocuments, Me, _downloadHandler, _timekeeper)
-			_timekeeper.MarkStart("Exporter_GetFolders")
-			folderTable = _folderManager.RetrieveAllByCaseID(Me.ExportFile.CaseArtifactID).Tables(0)
-			_timekeeper.MarkEnd("Exporter_GetFolders")
+			_volumeManager = New VolumeManager(Me.ExportFile, Me.ExportFile.FolderPath, Me.ExportFile.Overwrite, Me.TotalDocuments, Me, _downloadHandler, _timekeeper, _statistics)
+			'folderTable = _folderManager.RetrieveAllByCaseID(Me.ExportFile.CaseArtifactID).Tables(0)
 			_fullTextDownloader = New kCura.WinEDDS.FullTextManager(Me.ExportFile.Credential, _sourceDirectory, Me.ExportFile.CookieContainer)
 			Me.WriteStatusLine(kCura.Windows.Process.EventType.Status, "Created search log file.", True)
 			_volumeManager.ColumnHeaderString = columnHeaderString
@@ -153,6 +153,7 @@ Namespace kCura.WinEDDS
 			For start = 0 To Me.TotalDocuments - 1 Step Config.ExportBatchSize
 				finish = Math.Min(Me.TotalDocuments - 1, start + Config.ExportBatchSize - 1)
 				_timekeeper.MarkStart("Exporter_GetDocumentBlock")
+				startTicks = System.DateTime.Now.Ticks
 				Select Case Me.ExportFile.TypeOfExport
 					Case ExportFile.ExportType.ArtifactSearch
 						documentTable = _searchManager.SearchBySearchArtifactID(Me.ExportFile.CaseArtifactID, Me.ExportFile.ArtifactID, start, finish, allAvfIds, Me.ExportFile.MulticodesAsNested, Me.ExportFile.NestedValueDelimiter).Tables(0)
@@ -176,6 +177,7 @@ Namespace kCura.WinEDDS
 							WriteStatusLineWithoutDocCount(kCura.Windows.Process.EventType.Warning, "Please Note - Documents in this production were produced with redactions applied. Ensure that you take steps to update the extracted text to suppress this redacted text.", True)
 						End If
 				End Select
+				_statistics.MetadataTime += System.Math.Max(System.DateTime.Now.Ticks - startTicks, 1)
 				_timekeeper.MarkEnd("Exporter_GetDocumentBlock")
 				Dim docRow As System.Data.DataRow
 				Dim artifactIDs As New ArrayList
@@ -212,20 +214,25 @@ Namespace kCura.WinEDDS
 			Dim productionImages As New System.Data.DataView
 			Dim i As Int32 = 0
 			Dim productionArtifactID As Int32 = 0
+			Dim start As Int64
 			If Me.ExportFile.TypeOfExport = ExportFile.ExportType.Production Then productionArtifactID = ExportFile.ArtifactID
 			If Me.ExportFile.ExportNative Then
+				start = System.DateTime.Now.Ticks
 				If Me.ExportFile.TypeOfExport = ExportFile.ExportType.Production Then
 					natives.Table = _searchManager.RetrieveNativesForProduction(Me.ExportFile.CaseArtifactID, productionArtifactID, kCura.Utility.Array.IntArrayToCSV(documentArtifactIDs)).Tables(0)
 				Else
 					natives.Table = _searchManager.RetrieveNativesForSearch(Me.ExportFile.CaseArtifactID, kCura.Utility.Array.IntArrayToCSV(documentArtifactIDs)).Tables(0)
 				End If
+				_statistics.MetadataTime += System.Math.Max(System.DateTime.Now.Ticks - start, 1)
 			End If
 
 			'If Me.ExportFile.ExportFullText OrElse Me.ExportFile.LogFileFormat = LoadFileType.FileFormat.IPRO_FullText Then fullTexts.Table = _searchManager.RetrieveFullTextExistenceForSearch(Me.ExportFile.CaseArtifactID, documentArtifactIDs).Tables(0)
 			If Me.ExportFile.ExportImages Then
 				_timekeeper.MarkStart("Exporter_GetImagesForDocumentBlock")
+				start = System.DateTime.Now.Ticks
 				images.Table = Me.RetrieveImagesForDocuments(documentArtifactIDs, Me.ExportFile.ImagePrecedence)
 				productionImages.Table = Me.RetrieveProductionImagesForDocuments(documentArtifactIDs, Me.ExportFile.ImagePrecedence)
+				_statistics.MetadataTime += System.Math.Max(System.DateTime.Now.Ticks - start, 1)
 				_timekeeper.MarkEnd("Exporter_GetImagesForDocumentBlock")
 			End If
 
@@ -501,7 +508,7 @@ Namespace kCura.WinEDDS
 				_lastStatusMessageTs = now
 				Dim appendString As String = " ... " & Me.DocumentsExported - _lastDocumentsExportedCountReported & " document(s) exported."
 				_lastDocumentsExportedCountReported = Me.DocumentsExported
-				RaiseEvent StatusMessage(New ExportEventArgs(Me.DocumentsExported, Me.TotalDocuments, line & appendString, e))
+				RaiseEvent StatusMessage(New ExportEventArgs(Me.DocumentsExported, Me.TotalDocuments, line & appendString, e, _statistics.ToDictionary))
 			End If
 		End Sub
 
@@ -510,7 +517,7 @@ Namespace kCura.WinEDDS
 			If now - _lastStatusMessageTs > 10000000 OrElse isEssential Then
 				_lastStatusMessageTs = now
 				_lastDocumentsExportedCountReported = Me.DocumentsExported
-				RaiseEvent StatusMessage(New ExportEventArgs(Me.DocumentsExported, Me.TotalDocuments, line, e))
+				RaiseEvent StatusMessage(New ExportEventArgs(Me.DocumentsExported, Me.TotalDocuments, line, e, _statistics.ToDictionary))
 			End If
 		End Sub
 

@@ -4,6 +4,7 @@ Namespace kCura.WinEDDS
 		Protected _totalDocuments As Int32
     Protected _eventType As kCura.Windows.Process.EventType
 		Protected _message As String
+		Protected _additionalInfo As Object
 
 #Region "Public Properties"
 		Public Property DocumentsExported() As Int32
@@ -40,19 +41,27 @@ Namespace kCura.WinEDDS
       Set(ByVal value As String)
         _message = value
       End Set
-    End Property
+		End Property
+
+		Public ReadOnly Property AdditionalInfo() As Object
+			Get
+				Return _additionalInfo
+			End Get
+		End Property
 #End Region
 
-		Public Sub New(ByVal documentsExported As Int32, ByVal totalDocuments As Int32)
+		Public Sub New(ByVal documentsExported As Int32, ByVal totalDocuments As Int32, ByVal additionalInfo As Object)
 			_documentsExported = documentsExported
 			_totalDocuments = totalDocuments
+			_additionalInfo = additionalInfo
 		End Sub
 
-    Public Sub New(ByVal documentsExported As Int32, ByVal totalDocuments As Int32, ByVal message As String, ByVal eventType As kCura.Windows.Process.EventType)
-      _documentsExported = documentsExported
-      _totalDocuments = totalDocuments
-      _message = message
-      _eventType = eventType
-    End Sub
-  End Class
+		Public Sub New(ByVal documentsExported As Int32, ByVal totalDocuments As Int32, ByVal message As String, ByVal eventType As kCura.Windows.Process.EventType, ByVal additionalInfo As Object)
+			_documentsExported = documentsExported
+			_totalDocuments = totalDocuments
+			_message = message
+			_eventType = eventType
+			_additionalInfo = additionalInfo
+		End Sub
+	End Class
 End Namespace

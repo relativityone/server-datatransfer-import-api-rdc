@@ -31,6 +31,7 @@ Namespace kCura.WinEDDS
 		Private _encoding As System.Text.Encoding
 		Private _errorFileLocation As String = ""
 		Private _timekeeper As kCura.Utility.Timekeeper
+		Private _statistics As kCura.WinEDDS.Statistics
 		Private _halt As Boolean = False
 #End Region
 
@@ -114,8 +115,9 @@ Namespace kCura.WinEDDS
 
 #Region "Constructors"
 
-		Public Sub New(ByVal settings As ExportFile, ByVal rootDirectory As String, ByVal overWriteFiles As Boolean, ByVal totalFiles As Int64, ByVal parent As WinEDDS.Exporter, ByVal downloadHandler As FileDownloader, ByVal t As kCura.Utility.Timekeeper)
+		Public Sub New(ByVal settings As ExportFile, ByVal rootDirectory As String, ByVal overWriteFiles As Boolean, ByVal totalFiles As Int64, ByVal parent As WinEDDS.Exporter, ByVal downloadHandler As FileDownloader, ByVal t As kCura.Utility.Timekeeper, ByVal statistics As kCura.WinEDDS.ExportStatistics)
 			_settings = settings
+			_statistics = statistics
 			If Me.Settings.ExportImages Then
 			End If
 			_timekeeper = t
@@ -277,6 +279,7 @@ Namespace kCura.WinEDDS
 		Private Sub ExecuteExportDocument(ByVal documentInfo As Exporters.DocumentExportInfo, ByVal isRetryAttempt As Boolean)
 			If isRetryAttempt Then Me.ReInitializeAllStreams()
 			Dim totalFileSize As Int64 = 0
+			Dim metadataBytes As Int64 = 0
 			Dim image As Exporters.ImageExportInfo
 			Dim imageSuccess As Boolean = True
 			Dim nativeSuccess As Boolean = True
@@ -373,18 +376,22 @@ Namespace kCura.WinEDDS
 
 			If Me.Settings.ExportFullText Then
 				tempLocalFullTextFilePath = Me.DownloadTextFieldAsFile(documentInfo, Me.Settings.SelectedTextField)
-				Dim l As Int64 = kCura.Utility.File.Length(tempLocalFullTextFilePath)
+				Dim len As Int64 = kCura.Utility.File.Length(tempLocalFullTextFilePath)
 				If Me.Settings.ExportFullTextAsFile Then
-					If Not documentInfo.HasCountedTextFile Then totalFileSize += l
+					If Not documentInfo.HasCountedTextFile Then
+						totalFileSize += len
+						metadataBytes += len
+					End If
 					documentInfo.HasCountedTextFile = True
 				End If
-				documentInfo.HasFullText = (l > 0)
+				documentInfo.HasFullText = (len > 0)
 			End If
 
 			If Me.Settings.LogFileFormat = LoadFileType.FileFormat.IPRO_FullText Then
 				If Me.Settings.SelectedTextField Is Nothing OrElse Me.Settings.SelectedTextField.Category <> DynamicFields.Types.FieldCategory.FullText Then
 					tempLocalIproFullTextFilePath = System.IO.Path.GetTempFileName
 					Dim tries As Int32 = 20
+					Dim start As Int64 = System.DateTime.Now.Ticks
 					While tries > 0 AndAlso Not Me.Halt
 						tries -= 1
 						Try
@@ -393,16 +400,15 @@ Namespace kCura.WinEDDS
 						Catch ex As System.Exception
 							If tries = 19 Then
 								_parent.WriteStatusLine(Windows.Process.EventType.Warning, "Second attempt to download full text for document " & documentInfo.IdentifierValue, True)
-								_downloadManager.DownloadFullTextFile(tempLocalIproFullTextFilePath, documentInfo.DocumentArtifactID, _settings.CaseInfo.ArtifactID.ToString)
 							ElseIf tries > 0 Then
 								_parent.WriteStatusLine(Windows.Process.EventType.Warning, "Additional attempt to download full text for document " & documentInfo.IdentifierValue & " failed - retrying in 30 seconds", True)
 								System.Threading.Thread.CurrentThread.Join(30000)
-								_downloadManager.DownloadFullTextFile(tempLocalIproFullTextFilePath, documentInfo.DocumentArtifactID, _settings.CaseInfo.ArtifactID.ToString)
 							Else
 								Throw
 							End If
 						End Try
 					End While
+					_statistics.MetadataTime += System.Math.Max(System.DateTime.Now.Ticks - start, 1)
 				ElseIf Me.Settings.SelectedTextField.Category = DynamicFields.Types.FieldCategory.FullText Then
 					tempLocalIproFullTextFilePath = String.Copy(tempLocalFullTextFilePath)
 				End If
@@ -484,14 +490,23 @@ Namespace kCura.WinEDDS
 			Catch ex As Exception
 				Throw New Exceptions.FileWriteException(Exceptions.FileWriteException.DestinationFile.Errors, ex)
 			End Try
-			If Not _nativeFileWriter Is Nothing Then _nativeFileWriterPosition = _nativeFileWriter.BaseStream.Position
-			If Not _imageFileWriter Is Nothing Then _imageFileWriterPosition = _imageFileWriter.BaseStream.Position
+			If Not _nativeFileWriter Is Nothing Then
+				_nativeFileWriterPosition = _nativeFileWriter.BaseStream.Position
+				metadataBytes += _nativeFileWriter.BaseStream.Length
+			End If
+			If Not _imageFileWriter Is Nothing Then
+				_imageFileWriterPosition = _imageFileWriter.BaseStream.Position
+				metadataBytes += _imageFileWriter.BaseStream.Length
+			End If
+			_statistics.MetadataBytes = metadataBytes
+			_statistics.FileBytes += totalFileSize
 			If Not _errorWriter Is Nothing Then _errorWriterPosition = _errorWriter.BaseStream.Position
 		End Sub
 
 		Private Function DownloadTextFieldAsFile(ByVal documentInfo As WinEDDS.Exporters.DocumentExportInfo, ByVal field As WinEDDS.ViewFieldInfo) As String
 			Dim tempLocalFullTextFilePath As String = System.IO.Path.GetTempFileName
 			Dim tries As Int32 = 20
+			Dim start As Int64 = System.DateTime.Now.Ticks
 			While tries > 0 AndAlso Not Me.Halt
 				tries -= 1
 				Try
@@ -513,6 +528,7 @@ Namespace kCura.WinEDDS
 					End If
 				End Try
 			End While
+			_statistics.MetadataTime += System.Math.Max(System.DateTime.Now.Ticks - start, 1)
 			Return tempLocalFullTextFilePath
 		End Function
 
@@ -652,6 +668,7 @@ Namespace kCura.WinEDDS
 
 		Private Function DownloadImage(ByVal image As Exporters.ImageExportInfo) As Int64
 			If image.FileGuid = "" Then Return 0
+			Dim start As Int64 = System.DateTime.Now.Ticks
 			Dim tempFile As String = Me.GetImageExportLocation(image)
 			'If Me.Settings.TypeOfImage = ExportFile.ImageType.Pdf Then
 			'	tempFile = System.IO.Path.GetTempFileName
@@ -684,6 +701,7 @@ Namespace kCura.WinEDDS
 					End If
 				End Try
 			End While
+			_statistics.FileTime += System.Math.Max(System.DateTime.Now.Ticks - start, 1)
 			Return kCura.Utility.File.Length(tempFile)
 		End Function
 
@@ -813,6 +831,7 @@ Namespace kCura.WinEDDS
 			If docinfo.NativeFileGuid = "" Then Return 0
 			Dim nativeFileName As String = Me.GetNativeFileName(docinfo)
 			Dim tempFile As String = Me.GetLocalNativeFilePath(docinfo, nativeFileName)
+			Dim start As Int64 = System.DateTime.Now.Ticks
 			If System.IO.File.Exists(tempFile) Then
 				If Settings.Overwrite Then
 					kCura.Utility.File.Delete(tempFile)
@@ -843,6 +862,7 @@ Namespace kCura.WinEDDS
 				End Try
 			End While
 			docinfo.NativeTempLocation = tempFile
+			_statistics.FileTime += System.Math.Max(System.DateTime.Now.Ticks - start, 1)
 			Return kCura.Utility.File.Length(tempFile)
 		End Function
 

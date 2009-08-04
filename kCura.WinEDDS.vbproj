@@ -388,6 +388,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Process\ExportStatistics.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Process\GenericImportProcess.vb"
                     SubType = "Code"
                     BuildAction = "Compile"
