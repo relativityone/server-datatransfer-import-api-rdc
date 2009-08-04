@@ -28,6 +28,7 @@ Namespace kCura.WinEDDS
     Private _lastDocumentsExportedCountReported As Int32 = 0
 		Private _fieldCollectionHasExtractedText As Boolean = False
 		Private _statistics As New kCura.WinEDDS.ExportStatistics
+		Private _lastStatisticsSnapshot As IDictionary
 #End Region
 
 #Region "Accessors"
@@ -265,6 +266,7 @@ Namespace kCura.WinEDDS
 				documentInfo.DocumentArtifactID = documentArtifactIDs(i)
 				documentInfo.DataRow = docRows(i)
 				_volumeManager.ExportDocument(documentInfo)
+				_lastStatisticsSnapshot = _statistics.ToDictionary
 				Me.WriteUpdate("Exported document " & i + 1, i = documentArtifactIDs.Length - 1)
 				If _halt Then Exit Sub
 			Next
@@ -508,7 +510,7 @@ Namespace kCura.WinEDDS
 				_lastStatusMessageTs = now
 				Dim appendString As String = " ... " & Me.DocumentsExported - _lastDocumentsExportedCountReported & " document(s) exported."
 				_lastDocumentsExportedCountReported = Me.DocumentsExported
-				RaiseEvent StatusMessage(New ExportEventArgs(Me.DocumentsExported, Me.TotalDocuments, line & appendString, e, _statistics.ToDictionary))
+				RaiseEvent StatusMessage(New ExportEventArgs(Me.DocumentsExported, Me.TotalDocuments, line & appendString, e, _lastStatisticsSnapshot))
 			End If
 		End Sub
 
@@ -517,7 +519,7 @@ Namespace kCura.WinEDDS
 			If now - _lastStatusMessageTs > 10000000 OrElse isEssential Then
 				_lastStatusMessageTs = now
 				_lastDocumentsExportedCountReported = Me.DocumentsExported
-				RaiseEvent StatusMessage(New ExportEventArgs(Me.DocumentsExported, Me.TotalDocuments, line, e, _statistics.ToDictionary))
+				RaiseEvent StatusMessage(New ExportEventArgs(Me.DocumentsExported, Me.TotalDocuments, line, e, _lastStatisticsSnapshot))
 			End If
 		End Sub
 
