@@ -84,6 +84,7 @@ Namespace kCura.EDDS.WinForm
 			Me._exportFoldersAndSubfoldersMenuItem = New System.Windows.Forms.MenuItem
 			Me._toolsMenu = New System.Windows.Forms.MenuItem
 			Me._toolsMenuSettingsItem = New System.Windows.Forms.MenuItem
+			Me._optionsMenuCheckConnectivityItem = New System.Windows.Forms.MenuItem
 			Me.MenuItem4 = New System.Windows.Forms.MenuItem
 			Me._aboutMenuItem = New System.Windows.Forms.MenuItem
 			Me.StatusBar = New System.Windows.Forms.StatusBar
@@ -92,7 +93,6 @@ Namespace kCura.EDDS.WinForm
 			Me._caseFolderExplorer = New kCura.EDDS.WinForm.CaseFolderExplorer
 			Me.EnhancedMenuProvider = New kCura.Windows.Forms.EnhancedMenuProvider(Me.components)
 			Me._objectTypeDropDown = New System.Windows.Forms.ComboBox
-			Me._optionsMenuCheckConnectivityItem = New System.Windows.Forms.MenuItem
 			CType(Me.AppStatusPanel, System.ComponentModel.ISupportInitialize).BeginInit()
 			CType(Me.LoggedInUserPanel, System.ComponentModel.ISupportInitialize).BeginInit()
 			Me.SuspendLayout()
@@ -256,6 +256,14 @@ Namespace kCura.EDDS.WinForm
 			Me._toolsMenuSettingsItem.OwnerDraw = True
 			Me._toolsMenuSettingsItem.Text = "Settings"
 			'
+			'_optionsMenuCheckConnectivityItem
+			'
+			Me.EnhancedMenuProvider.SetImageIndex(Me._optionsMenuCheckConnectivityItem, -1)
+			Me._optionsMenuCheckConnectivityItem.Index = 1
+			Me._optionsMenuCheckConnectivityItem.OwnerDraw = True
+			Me._optionsMenuCheckConnectivityItem.Text = "Check Connectivity"
+			Me._optionsMenuCheckConnectivityItem.Visible = False
+			'
 			'MenuItem4
 			'
 			Me.EnhancedMenuProvider.SetImageIndex(Me.MenuItem4, -1)
@@ -310,12 +318,6 @@ Namespace kCura.EDDS.WinForm
 			Me._objectTypeDropDown.Size = New System.Drawing.Size(332, 21)
 			Me._objectTypeDropDown.TabIndex = 7
 			'
-			'_optionsMenuCheckConnectivityItem
-			'
-			Me.EnhancedMenuProvider.SetImageIndex(Me._optionsMenuCheckConnectivityItem, -1)
-			Me._optionsMenuCheckConnectivityItem.Index = 1
-			Me._optionsMenuCheckConnectivityItem.Text = "Check Connectivity"
-			'
 			'MainForm
 			'
 			Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
@@ -351,7 +353,8 @@ Namespace kCura.EDDS.WinForm
         Case appEvent.AppEventType.LoadCase
           _fileMenuRefresh.Enabled = True
           UpdateStatus("Case Loaded - File Transfer Mode: " & _application.GetConnectionStatus)
-          PopulateObjectTypeDropDown()
+					PopulateObjectTypeDropDown()
+					_optionsMenuCheckConnectivityItem.Visible = True
         Case appEvent.AppEventType.LogOn
           UpdateUserName(_application.LoggedInUser)
         Case appEvent.AppEventType.ExitApplication
