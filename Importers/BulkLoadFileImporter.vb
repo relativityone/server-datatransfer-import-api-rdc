@@ -58,8 +58,10 @@ Namespace kCura.WinEDDS
 		Private _isAuditingEnabled As Boolean
 		Private _processID As Guid
 		Private _parentArtifactTypeID As Int32
-
+		Private _statistics As New kCura.WinEDDS.Statistics
 		Private _timekeeper As New kCura.Utility.Timekeeper
+		Private _currentStatisticsSnapshot As IDictionary
+		Private _statisticsLastUpdated As System.DateTime = System.DateTime.Now
 #End Region
 
 #Region "Accessors"
@@ -238,6 +240,7 @@ Namespace kCura.WinEDDS
 							Me.AdvanceLine()
 						Else
 							_timekeeper.MarkStart("ReadFile_GetLine")
+							_statistics.DocCount += 1
 							line = Me.GetLine
 							_timekeeper.MarkEnd("ReadFile_GetLine")
 							Dim lineStatus As Int32 = 0
@@ -318,7 +321,7 @@ Namespace kCura.WinEDDS
 			kCura.Utility.File.Delete(_outputCodeFilePath)
 			_outputNativeFileWriter = New System.IO.StreamWriter(_outputNativeFilePath, False, System.Text.Encoding.Unicode)
 			_outputCodeFileWriter = New System.IO.StreamWriter(_outputCodeFilePath, False, System.Text.Encoding.Unicode)
-			RaiseEvent StatusMessage(New kCura.Windows.Process.StatusEventArgs(Windows.Process.EventType.ResetStartTime, 0, _recordCount, "Reset time for import rolling average"))
+			RaiseEvent StatusMessage(New kCura.Windows.Process.StatusEventArgs(Windows.Process.EventType.ResetStartTime, 0, _recordCount, "Reset time for import rolling average", Nothing))
 		End Sub
 
 		Private Sub InitializeLineCounter(ByVal path As String)
@@ -377,8 +380,16 @@ Namespace kCura.WinEDDS
 					If Me.GetFileLength(filename) = 0 Then lineStatus += kCura.EDDS.Types.MassImport.ImportStatus.EmptyFile 'Throw New EmptyNativeFileException(filename)
 					oixFileIdData = kCura.OI.FileID.Manager.Instance.GetFileIDDataByFilePath(filename)
 					If _copyFileToRepository Then
+						Dim start As Int64 = System.DateTime.Now.Ticks
+						Dim updateCurrentStats As Boolean = (start - _statisticsLastUpdated.Ticks) > 10000000
+						_statistics.FileBytes += Me.GetFileLength(filename)
 						fileGuid = _uploader.UploadFile(filename, _caseArtifactID)
+						_statistics.FileTime += System.DateTime.Now.Ticks - start
 						destinationVolume = _uploader.CurrentDestinationDirectory
+						If updateCurrentStats Then
+							_currentStatisticsSnapshot = _statistics.ToDictionary
+							_statisticsLastUpdated = New System.DateTime(start)
+						End If
 					Else
 						fileGuid = System.Guid.NewGuid.ToString
 					End If
@@ -485,11 +496,15 @@ Namespace kCura.WinEDDS
 			_timekeeper.MarkEnd("ManageDocumentMetadata_ProgressEvent")
 		End Sub
 
-		Private Function BulkImportNative(ByVal settings As kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo) As String
+		Private Function BulkImport(ByVal settings As kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo) As String
 			Dim tries As Int32 = kCura.Utility.Config.Settings.IoErrorNumberOfRetries
 			While tries > 0
 				Try
-					Return _bulkImportManager.BulkImportNative(_caseInfo.ArtifactID, settings).ToString()
+					If TypeOf settings Is kCura.EDDS.WebAPI.BulkImportManagerBase.ObjectLoadInfo Then
+						Return _bulkImportManager.BulkImportObjects(_caseInfo.ArtifactID, DirectCast(settings, kCura.EDDS.WebAPI.BulkImportManagerBase.ObjectLoadInfo)).ToString()
+					Else
+						Return _bulkImportManager.BulkImportNative(_caseInfo.ArtifactID, settings).ToString()
+					End If
 				Catch ex As Exception
 					tries -= 1
 					If tries = 0 Then
@@ -502,102 +517,70 @@ Namespace kCura.WinEDDS
 			End While
 		End Function
 
-		Private Function BulkImportObjects(ByVal settings As kCura.EDDS.WebAPI.BulkImportManagerBase.ObjectLoadInfo) As String
-			Dim tries As Int32 = kCura.Utility.Config.Settings.IoErrorNumberOfRetries
-			While tries > 0
-				Try
-					Return _bulkImportManager.BulkImportObjects(_caseInfo.ArtifactID, settings).ToString()
-				Catch ex As Exception
-					tries -= 1
-					If tries = 0 Then
-						Throw
-					ElseIf tries = kCura.Utility.Config.Settings.IoErrorNumberOfRetries - 1 Then
-						Me.RaiseIoWarning(New kCura.Utility.DelimitedFileImporter.IoWarningEventArgs(kCura.Utility.Config.Settings.IoErrorWaitTimeInSeconds, ex, Me.CurrentLineNumber))
-						System.Threading.Thread.CurrentThread.Join(1000 * kCura.Utility.Config.Settings.IoErrorWaitTimeInSeconds)
-					End If
-				End Try
-			End While
+		Private Function GetSettingsObject() As kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo
+			If _artifactTypeID = 10 Then
+				Return New kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo
+			Else
+				Dim settings As New kCura.EDDS.WebAPI.BulkImportManagerBase.ObjectLoadInfo
+				settings.ArtifactTypeID = _artifactTypeID
+				Return settings
+			End If
 		End Function
 
 		Private Function PushNativeBatch(Optional ByVal lastRun As Boolean = False) As Object
 			_outputNativeFileWriter.Close()
 			_outputCodeFileWriter.Close()
-			If _batchCounter = 0 Then Exit Function
+			If _batchCounter = 0 Then Return Nothing
 			_batchCounter = 0
+			Dim settings As kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo = Me.GetSettingsObject
+			settings.UseBulkDataImport = True
+			_bcpuploader.DoRetry = True
+			Dim uploadBcp As FileUploadReturnArgs = _bcpuploader.UploadBcpFile(_caseInfo.ArtifactID, _outputNativeFilePath)
+			Dim nativeFileUploadKey As String = uploadBcp.Value
+			Dim codeFileUploadKey As String = _bcpuploader.UploadBcpFile(_caseInfo.ArtifactID, _outputCodeFilePath).Value
 			If _artifactTypeID = 10 Then
-				Dim settings As New kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo
-				settings.UseBulkDataImport = True
-				_bcpuploader.DoRetry = True
-				Dim uploadBcp As FileUploadReturnArgs = _bcpuploader.UploadBcpFile(_caseInfo.ArtifactID, _outputNativeFilePath)
-				Dim nativeFileUploadKey As String = uploadBcp.Value
-				Dim codeFileUploadKey As String = _bcpuploader.UploadBcpFile(_caseInfo.ArtifactID, _outputCodeFilePath).Value
 				settings.Repository = _defaultDestinationFolderPath
 				If settings.Repository = "" Then settings.Repository = _caseInfo.DocumentPath
-				If uploadBcp.Type = FileUploadReturnArgs.FileUploadReturnType.UploadError Then
-					If Config.EnableSingleModeImport Then
-						RaiseEvent UploadModeChangeEvent(_uploader.UploaderType.ToString, _bcpuploader.IsBulkEnabled)
-						_uploader.DestinationFolderPath = settings.Repository
-						_bcpuploader.DestinationFolderPath = settings.Repository
-						nativeFileUploadKey = _bcpuploader.UploadFile(_outputNativeFilePath, _caseInfo.ArtifactID)
-						codeFileUploadKey = _bcpuploader.UploadFile(_outputCodeFilePath, _caseInfo.ArtifactID)
-						settings.UseBulkDataImport = False
-					Else
-						Throw New BcpPathAccessException(uploadBcp.Value)
-					End If
-				End If
-				settings.RunID = _runID
-				settings.CodeFileName = codeFileUploadKey
-				settings.DataFileName = nativeFileUploadKey
-				settings.MappedFields = Me.GetMappedFields(_artifactTypeID)
-				settings.KeyFieldArtifactID = _keyFieldID
-				Select Case _overwrite.ToLower
-					Case "strict"
-						settings.Overlay = EDDS.WebAPI.BulkImportManagerBase.OverwriteType.Overlay
-					Case "none"
-						settings.Overlay = EDDS.WebAPI.BulkImportManagerBase.OverwriteType.Append
-					Case Else
-						settings.Overlay = EDDS.WebAPI.BulkImportManagerBase.OverwriteType.Both
-				End Select
-				settings.UploadFiles = _filePathColumnIndex <> -1 AndAlso _settings.LoadNativeFiles
-				_runID = Me.BulkImportNative(settings)
 			Else
-				Dim settings As New kCura.EDDS.WebAPI.BulkImportManagerBase.ObjectLoadInfo
-				settings.UseBulkDataImport = True
-				settings.ArtifactTypeID = Me._artifactTypeID
-				Dim validateBcp As FileUploadReturnArgs = _bcpuploader.UploadBcpFile(_caseInfo.ArtifactID, _outputNativeFilePath)
-				Dim nativeFileUploadKey As String = validateBcp.Value
-				Dim codeFileUploadKey As String = _bcpuploader.UploadBcpFile(_caseInfo.ArtifactID, _outputCodeFilePath).Value
 				settings.Repository = _caseInfo.DocumentPath
-				If validateBcp.Type = FileUploadReturnArgs.FileUploadReturnType.UploadError Then
-					If Config.EnableSingleModeImport Then
-						_uploader.DestinationFolderPath = settings.Repository
-						_bcpuploader.DestinationFolderPath = settings.Repository
-						nativeFileUploadKey = _bcpuploader.UploadFile(_outputNativeFilePath, _caseInfo.ArtifactID)
-						codeFileUploadKey = _bcpuploader.UploadFile(_outputCodeFilePath, _caseInfo.ArtifactID)
-						settings.UseBulkDataImport = False
-					Else
-						Throw New BcpPathAccessException(validateBcp.Value)
-					End If
-				End If
-				settings.RunID = _runID
-				settings.CodeFileName = codeFileUploadKey
-				settings.DataFileName = nativeFileUploadKey
-				settings.MappedFields = Me.GetMappedFields(_artifactTypeID)
-				settings.KeyFieldArtifactID = _keyFieldID
-				Select Case _overwrite.ToLower
-					Case "strict"
-						settings.Overlay = EDDS.WebAPI.BulkImportManagerBase.OverwriteType.Overlay
-					Case "none"
-						settings.Overlay = EDDS.WebAPI.BulkImportManagerBase.OverwriteType.Append
-					Case Else
-						settings.Overlay = EDDS.WebAPI.BulkImportManagerBase.OverwriteType.Both
-				End Select
-				settings.UploadFiles = _filePathColumnIndex <> -1 AndAlso _settings.LoadNativeFiles
-				_runID = Me.BulkImportObjects(settings)
 			End If
+			Dim start As Int64 = System.DateTime.Now.Ticks
+			If uploadBcp.Type = FileUploadReturnArgs.FileUploadReturnType.UploadError Then
+				If Config.EnableSingleModeImport Then
+					RaiseEvent UploadModeChangeEvent(_uploader.UploaderType.ToString, _bcpuploader.IsBulkEnabled)
+					_uploader.DestinationFolderPath = settings.Repository
+					_bcpuploader.DestinationFolderPath = settings.Repository
+					nativeFileUploadKey = _bcpuploader.UploadFile(_outputNativeFilePath, _caseInfo.ArtifactID)
+					codeFileUploadKey = _bcpuploader.UploadFile(_outputCodeFilePath, _caseInfo.ArtifactID)
+					settings.UseBulkDataImport = False
+				Else
+					Throw New BcpPathAccessException(uploadBcp.Value)
+				End If
+			End If
+			_statistics.MetadataTime += System.Math.Max((System.DateTime.Now.Ticks - start), 1)
+			_statistics.MetadataBytes += (Me.GetFileLength(_outputCodeFilePath) + Me.GetFileLength(_outputNativeFilePath))
+			settings.RunID = _runID
+			settings.CodeFileName = codeFileUploadKey
+			settings.DataFileName = nativeFileUploadKey
+			settings.MappedFields = Me.GetMappedFields(_artifactTypeID)
+			settings.KeyFieldArtifactID = _keyFieldID
+			Select Case _overwrite.ToLower
+				Case "strict"
+					settings.Overlay = EDDS.WebAPI.BulkImportManagerBase.OverwriteType.Overlay
+				Case "none"
+					settings.Overlay = EDDS.WebAPI.BulkImportManagerBase.OverwriteType.Append
+				Case Else
+					settings.Overlay = EDDS.WebAPI.BulkImportManagerBase.OverwriteType.Both
+			End Select
+			start = System.DateTime.Now.Ticks
+			settings.UploadFiles = _filePathColumnIndex <> -1 AndAlso _settings.LoadNativeFiles
+			_runID = Me.BulkImport(settings)
+			_statistics.SqlTime += (System.DateTime.Now.Ticks - start)
 
 			kCura.Utility.File.Delete(_outputNativeFilePath)
 			kCura.Utility.File.Delete(_outputCodeFilePath)
+			_currentStatisticsSnapshot = _statistics.ToDictionary
+			_statisticsLastUpdated = System.DateTime.Now
 			If Not lastRun Then
 				_outputNativeFileWriter = New System.IO.StreamWriter(_outputNativeFilePath, False, System.Text.Encoding.Unicode)
 				_outputCodeFileWriter = New System.IO.StreamWriter(_outputCodeFilePath, False, System.Text.Encoding.Unicode)
@@ -630,15 +613,6 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Private Function ManageDocumentLine(ByVal fieldCollection As DocumentFieldCollection, ByVal identityValue As String, ByVal extractText As Boolean, ByVal filename As String, ByVal fileguid As String, ByVal mdoc As MetaDocument) As Int32
-			'[kCura_Import_Status] INT NOT NULL,
-			'[kCura_Import_IsNew] BIT NOT NULL,
-			'[ArtifactID] INT NOT NULL,
-			'[kCura_Import_OriginalLineNumber] INT NOT NULL,
-			'[kCura_Import_FileGuid] NVARCHAR(100) NOT NULL,
-			'[kCura_Import_Filename] NVARCHAR(200) NOT NULL,
-			'[kCura_Import_Location] NVARCHAR(2000),
-			'[kCura_Import_OriginalFileLocation] NVARCHAR(2000){1}
-			'[kCura_Import_ParentFolderID] INT NOT NULL,
 			_outputNativeFileWriter.Write(mdoc.LineStatus.ToString & Constants.NATIVE_FIELD_DELIMITER)
 			_outputNativeFileWriter.Write("0" & Constants.NATIVE_FIELD_DELIMITER)
 			_outputNativeFileWriter.Write("0" & Constants.NATIVE_FIELD_DELIMITER)
@@ -664,9 +638,6 @@ Namespace kCura.WinEDDS
 			_outputNativeFileWriter.Write(mdoc.ParentFolderID & Constants.NATIVE_FIELD_DELIMITER)
 			For Each docField As DocumentField In fieldCollection.AllFields
 				If docField.FieldTypeID = kCura.DynamicFields.Types.FieldTypeHelper.FieldType.MultiCode OrElse docField.FieldTypeID = kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Code Then
-					'Dim codes As String() = docField.Value.Split(ChrW(20))
-					'_outputNativeFileWriter.Write(codes(0))
-					'_outputNativeFileWriter.Write(Constants.NATIVE_FIELD_DELIMITER)
 					_outputNativeFileWriter.Write(docField.Value)
 					_outputNativeFileWriter.Write(Constants.NATIVE_FIELD_DELIMITER)
 				ElseIf docField.FieldTypeID = kCura.DynamicFields.Types.FieldTypeHelper.FieldType.File Then
@@ -688,9 +659,7 @@ Namespace kCura.WinEDDS
 					End If
 				Else
 					If docField.FieldCategory = DynamicFields.Types.FieldCategory.FullText AndAlso _fullTextColumnMapsToFileLocation Then
-						If docField.Value = "" Then
-							'do nothing
-						Else
+						If Not docField.Value = String.Empty Then
 							Dim sr As New System.IO.StreamReader(docField.Value, _extractedTextFileEncoding)
 							Dim count As Int32 = 1
 							Do
@@ -868,7 +837,7 @@ Namespace kCura.WinEDDS
 			'If Not _status Is Nothing AndAlso Not _status.IsDisposed Then
 			'	_status.UpdateStatusWindow(line)
 			'End If
-			RaiseEvent StatusMessage(New kCura.Windows.Process.StatusEventArgs(et, lineNumber + _offset, _recordCount, line))
+			RaiseEvent StatusMessage(New kCura.Windows.Process.StatusEventArgs(et, lineNumber + _offset, _recordCount, line, _currentStatisticsSnapshot))
 		End Sub
 
 		Private Sub WriteStatusLine(ByVal et As kCura.Windows.Process.EventType, ByVal line As String)
@@ -1037,7 +1006,7 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Private Sub BuildErrorLinesFile()
-			RaiseEvent StatusMessage(New kCura.Windows.Process.StatusEventArgs(Windows.Process.EventType.Status, Me.CurrentLineNumber, Me.CurrentLineNumber, "Generating error line file."))
+			RaiseEvent StatusMessage(New kCura.Windows.Process.StatusEventArgs(Windows.Process.EventType.Status, Me.CurrentLineNumber, Me.CurrentLineNumber, "Generating error line file.", _currentStatisticsSnapshot))
 			Dim allErrors As New kCura.Utility.GenericCsvReader(_errorMessageFileLocation, System.Text.Encoding.Default, True)
 			Dim clientErrors As System.IO.StreamReader
 			'Me.Reader.BaseStream.Seek(0, IO.SeekOrigin.Begin)
@@ -1113,7 +1082,7 @@ Namespace kCura.WinEDDS
 			sw.Close()
 			allErrors.Close()
 			clientErrors.Close()
-			RaiseEvent StatusMessage(New kCura.Windows.Process.StatusEventArgs(Windows.Process.EventType.Status, Me.CurrentLineNumber, Me.CurrentLineNumber, "Error line file generation complete."))
+			RaiseEvent StatusMessage(New kCura.Windows.Process.StatusEventArgs(Windows.Process.EventType.Status, Me.CurrentLineNumber, Me.CurrentLineNumber, "Error line file generation complete.", _currentStatisticsSnapshot))
 		End Sub
 
 		Private Sub _processController_ExportServerErrors(ByVal exportLocation As String) Handles _processController.ExportServerErrorsEvent
@@ -1287,7 +1256,7 @@ Namespace kCura.WinEDDS
 						ht.Add("Identifier", line(2))
 						ht.Add("Line Number", Int32.Parse(line(0)))
 						RaiseReportError(ht, Int32.Parse(line(0)), line(2), "server")
-						RaiseEvent StatusMessage(New kCura.Windows.Process.StatusEventArgs(Windows.Process.EventType.Error, Int32.Parse(line(0)) - 1, _recordCount, "[Line " & line(0) & "]" & line(1)))
+						RaiseEvent StatusMessage(New kCura.Windows.Process.StatusEventArgs(Windows.Process.EventType.Error, Int32.Parse(line(0)) - 1, _recordCount, "[Line " & line(0) & "]" & line(1), _currentStatisticsSnapshot))
 						line = sr.ReadLine
 					End While
 					RemoveHandler sr.IoWarningEvent, AddressOf Me.IoWarningHandler

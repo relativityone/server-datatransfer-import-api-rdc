@@ -423,6 +423,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Process\Statistics.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "PropertyExtractor\EML.vb"
                     SubType = "Code"
                     BuildAction = "Compile"

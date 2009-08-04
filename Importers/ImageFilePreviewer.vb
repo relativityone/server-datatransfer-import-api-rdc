@@ -170,7 +170,8 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Private Sub RaiseStatusEvent(ByVal et As kCura.Windows.Process.EventType, ByVal line As String)
-			RaiseEvent StatusMessage(New kCura.Windows.Process.StatusEventArgs(et, Me.CurrentLineNumber, _fileLineCount, line))
+			'TODO: track stats
+			RaiseEvent StatusMessage(New kCura.Windows.Process.StatusEventArgs(et, Me.CurrentLineNumber, _fileLineCount, line, Nothing))
 		End Sub
 
 #End Region

@@ -53,7 +53,9 @@ Namespace kCura.WinEDDS
 		Private _startLineNumber As Int64
 		Private _doRetry As Boolean = True
 
-
+		Private _statistics As New kCura.WinEDDS.Statistics
+		Private _currentStatisticsSnapshot As IDictionary
+		Private _snapshotLastModifiedOn As System.DateTime = System.DateTime.Now
 		Private _timekeeper As New kCura.Utility.Timekeeper
 #End Region
 
@@ -175,13 +177,13 @@ Namespace kCura.WinEDDS
 		Public Function PushImageBatch(ByVal bulkLoadFilePath As String, ByVal isFinal As Boolean) As Object
 			_bulkLoadFileWriter.Close()
 			_fileIdentifierLookup.Clear()
-			If _batchCount = 0 Then Exit Function
-
+			If _batchCount = 0 Then Return Nothing
 			_batchCount = 0
-
+			_statistics.MetadataBytes += Me.GetFileLength(bulkLoadFilePath)
+			Dim start As Int64 = System.DateTime.Now.Ticks
 			Dim validateBcp As FileUploadReturnArgs = _bcpuploader.UploadBcpFile(_caseInfo.ArtifactID, bulkLoadFilePath)
+			_statistics.MetadataTime += System.Math.Max((System.DateTime.Now.Ticks - start), 1)
 			_uploadKey = validateBcp.Value
-			'_uploadKey = ""
 			Dim overwrite As kCura.EDDS.WebAPI.BulkImportManagerBase.OverwriteType
 			Select Case _overwrite.ToLower
 				Case "none"
@@ -192,14 +194,20 @@ Namespace kCura.WinEDDS
 					overwrite = EDDS.WebAPI.BulkImportManagerBase.OverwriteType.Both
 			End Select
 			If validateBcp.Type = FileUploadReturnArgs.FileUploadReturnType.ValidUploadKey Then
+				start = System.DateTime.Now.Ticks
 				_runId = Me.RunBulkImport(overwrite, True)
+				_statistics.SqlTime += System.Math.Max(System.DateTime.Now.Ticks - start, 1)
 			ElseIf Config.EnableSingleModeImport Then
 				RaiseEvent UploadModeChangeEvent(_fileUploader.UploaderType.ToString, _bcpuploader.IsBulkEnabled)
+				start = System.DateTime.Now.Ticks
 				Dim oldDestinationFolderPath As String = System.String.Copy(_bcpuploader.DestinationFolderPath)
 				_bcpuploader.DestinationFolderPath = _caseInfo.DocumentPath
 				_uploadKey = _bcpuploader.UploadFile(bulkLoadFilePath, _caseInfo.ArtifactID)
+				_statistics.MetadataTime += System.Math.Max(System.DateTime.Now.Ticks - start, 1)
 				_bcpuploader.DestinationFolderPath = oldDestinationFolderPath
+				start = System.DateTime.Now.Ticks
 				_runId = Me.RunBulkImport(overwrite, False)
+				_statistics.SqlTime += System.Math.Max(System.DateTime.Now.Ticks - start, 1)
 			Else
 				Throw New kCura.WinEDDS.LoadFileBase.BcpPathAccessException(validateBcp.Value)
 			End If
@@ -210,6 +218,8 @@ Namespace kCura.WinEDDS
 					_bulkLoadFileWriter = New System.IO.StreamWriter(bulkLoadFilePath, False, System.Text.Encoding.Unicode)
 				End Try
 			End If
+			_currentStatisticsSnapshot = _statistics.ToDictionary
+			_snapshotLastModifiedOn = System.DateTime.Now
 			ManageErrors()
 		End Function
 
@@ -295,6 +305,7 @@ Namespace kCura.WinEDDS
 		Public Sub ProcessDocument(ByVal al As System.Collections.ArrayList, ByVal status As Int32)
 			Try
 				GetImagesForDocument(al, status)
+				_statistics.DocCount += 1
 			Catch ex As System.Exception
 				'Me.LogErrorInFile(al)
 				Throw
@@ -425,8 +436,16 @@ Namespace kCura.WinEDDS
 				If status = 0 Then
 					If _copyFilesToRepository Then
 						RaiseStatusEvent(kCura.Windows.Process.EventType.Progress, String.Format("Uploading File '{0}'.", filename), CType((_totalValidated + _totalProcessed) / 2, Int64), Int64.Parse(originalLineNumber))
+						_statistics.FileBytes += Me.GetFileLength(imageFileName)
+						Dim start As Int64 = System.DateTime.Now.Ticks
 						fileGuid = _fileUploader.UploadFile(imageFileName, _folderID)
+						Dim now As Int64 = System.DateTime.Now.Ticks
+						_statistics.FileTime += System.Math.Max(now - start, 1)
 						fileLocation = _fileUploader.DestinationFolderPath.TrimEnd("\"c) & "\" & _fileUploader.CurrentDestinationDirectory & "\" & fileGuid
+						If now - _snapshotLastModifiedOn.Ticks > 10000000 Then
+							_currentStatisticsSnapshot = _statistics.ToDictionary
+							_snapshotLastModifiedOn = New System.DateTime(now)
+						End If
 					Else
 						RaiseStatusEvent(kCura.Windows.Process.EventType.Progress, String.Format("Processing image '{0}'.", batesNumber), CType((_totalValidated + _totalProcessed) / 2, Int64), Int64.Parse(originalLineNumber))
 						fileGuid = System.Guid.NewGuid.ToString
@@ -478,7 +497,7 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Private Sub RaiseStatusEvent(ByVal et As kCura.Windows.Process.EventType, ByVal line As String, ByVal progressLineNumber As Int64, ByVal physicalLineNumber As Int64)
-			RaiseEvent StatusMessage(New kCura.Windows.Process.StatusEventArgs(et, progressLineNumber, _fileLineCount, line & String.Format(" [line {0}]", physicalLineNumber), et = Windows.Process.EventType.Warning))
+			RaiseEvent StatusMessage(New kCura.Windows.Process.StatusEventArgs(et, progressLineNumber, _fileLineCount, line & String.Format(" [line {0}]", physicalLineNumber), et = Windows.Process.EventType.Warning, _currentStatisticsSnapshot))
 		End Sub
 
 		Private Sub _processObserver_CancelImport(ByVal processID As System.Guid) Handles _processController.HaltProcessEvent
@@ -632,7 +651,8 @@ Namespace kCura.WinEDDS
 						ht.Add("FileID", line(2))
 						ht.Add("Messages", line(3))
 						RaiseReportError(ht, Int32.Parse(line(0)), line(2), "server")
-						RaiseEvent StatusMessage(New kCura.Windows.Process.StatusEventArgs(Windows.Process.EventType.Error, Int32.Parse(line(0)) - 1, _fileLineCount, "[Line " & line(0) & "]" & line(3)))
+						'TODO: track stats
+						RaiseEvent StatusMessage(New kCura.Windows.Process.StatusEventArgs(Windows.Process.EventType.Error, Int32.Parse(line(0)) - 1, _fileLineCount, "[Line " & line(0) & "]" & line(3), Nothing))
 						line = sr.ReadLine
 					End While
 					sr.Close()
