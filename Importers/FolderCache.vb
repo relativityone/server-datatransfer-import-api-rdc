@@ -7,6 +7,14 @@ Namespace kCura.WinEDDS
 		Private _caseContextArtifactID As Int32
 		Default Public ReadOnly Property FolderID(ByVal folderPath As String) As Int32
 			Get
+				Dim newFolderPath As New System.Text.StringBuilder
+				For Each folder As String In folderPath.Split("\"c)
+					If Not folder.Trim = "" Then
+						newFolderPath.Append("\" & folder.Trim)
+					End If
+				Next
+				folderPath = newFolderPath.ToString
+				If folderPath = "" Then folderPath = "\"
 				If _ht.ContainsKey(folderPath) Then
 					Return DirectCast(_ht(folderPath), FolderCacheItem).FolderID
 				Else
@@ -94,13 +102,13 @@ Namespace kCura.WinEDDS
 			Dim newPath As String
 			For Each childDataRow In dataRow.GetChildRows("NodeRelation")
 				If parent.Path = "\" Then
-					newPath = "\" & childDataRow("Name").ToString
+					newPath = "\" & childDataRow("Name").ToString.Trim
 				Else
-					newPath = parent.Path & "\" & childDataRow("Name").ToString
+					newPath = parent.Path & "\" & childDataRow("Name").ToString.Trim
 				End If
-				Dim childFolder As New FolderCacheItem(childDataRow("Name").ToString, newPath, CType(childDataRow("ArtifactID"), Int32))
-				If Not _ht.ContainsKey(childFolder.Path) Then
-					_ht.Add(childFolder.Path, childFolder)
+				Dim childFolder As New FolderCacheItem(childDataRow("Name").ToString.Trim, newPath.Trim, CType(childDataRow("ArtifactID"), Int32))
+				If Not _ht.ContainsKey(childFolder.Path.Trim) Then
+					_ht.Add(childFolder.Path.Trim, childFolder)
 					parent.AddChild(childFolder)
 				End If
 				RecursivelyPopulate(childDataRow, childFolder)
