@@ -182,6 +182,7 @@ Namespace kCura.WinEDDS
 			_statistics.MetadataBytes += Me.GetFileLength(bulkLoadFilePath)
 			Dim start As Int64 = System.DateTime.Now.Ticks
 			Dim validateBcp As FileUploadReturnArgs = _bcpuploader.UploadBcpFile(_caseInfo.ArtifactID, bulkLoadFilePath)
+			If validateBcp Is Nothing Then Return Nothing
 			_statistics.MetadataTime += System.Math.Max((System.DateTime.Now.Ticks - start), 1)
 			_uploadKey = validateBcp.Value
 			Dim overwrite As kCura.EDDS.WebAPI.BulkImportManagerBase.OverwriteType
