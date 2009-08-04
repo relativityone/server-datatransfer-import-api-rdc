@@ -10,6 +10,7 @@ Namespace kCura.Windows.Process
 		Private _totalRecordsProcessedWithErrors As Int64
 		Private _totalRecordsDisplay As String
 		Private _totalRecordsProcessedDisplay As String
+		Private _statusSuffixEntries As IDictionary
 #End Region
 
 #Region "Accessors"
@@ -85,9 +86,15 @@ Namespace kCura.Windows.Process
 			End Set
 		End Property
 
+		Public ReadOnly Property StatusSuffixEntries() As IDictionary
+			Get
+				Return _statusSuffixEntries
+			End Get
+		End Property
+
 #End Region
 
-		Public Sub New(ByVal totRecs As Int64, ByVal totRecsProc As Int64, ByVal totRecsProcWarn As Int64, ByVal totRecsProcErr As Int64, ByVal sTime As DateTime, ByVal eTime As DateTime, ByVal totRecsDisplay As String, ByVal totRecsProcDisplay As String)
+		Public Sub New(ByVal totRecs As Int64, ByVal totRecsProc As Int64, ByVal totRecsProcWarn As Int64, ByVal totRecsProcErr As Int64, ByVal sTime As DateTime, ByVal eTime As DateTime, ByVal totRecsDisplay As String, ByVal totRecsProcDisplay As String, ByVal statusSuffixEntries As IDictionary)
 			Me.TotalRecords = totRecs
 			Me.TotalRecordsProcessed = totRecsProc
 			If Not totRecsDisplay Is Nothing Then
@@ -104,6 +111,11 @@ Namespace kCura.Windows.Process
 			Me.TotalRecordsProcessedWithErrors = totRecsProcErr
 			Me.StartTime = sTime
 			Me.EndTime = eTime
+			_statusSuffixEntries = statusSuffixEntries
+		End Sub
+
+		Public Sub New(ByVal totRecs As Int64, ByVal totRecsProc As Int64, ByVal totRecsProcWarn As Int64, ByVal totRecsProcErr As Int64, ByVal sTime As DateTime, ByVal eTime As DateTime, ByVal totRecsDisplay As String, ByVal totRecsProcDisplay As String)
+			Me.New(totRecs, totRecsProc, totRecsProcWarn, totRecsProcErr, sTime, eTime, totRecsDisplay, totRecsProcDisplay, Nothing)
 		End Sub
 
 	End Class

@@ -513,6 +513,12 @@ Namespace kCura.Windows.Process
 				_summaryOutput.ForeColor = System.Drawing.Color.Red
 			End If
 			WriteSummaryLine("Total Processed w/Errors: " + evt.TotalRecordsProcessedWithErrors.ToString)
+			If Not evt.StatusSuffixEntries Is Nothing Then
+				WriteSummaryLine("")
+				For Each title As String In evt.StatusSuffixEntries.Keys
+					WriteSummaryLine(String.Format("{0}: {1}", title, evt.StatusSuffixEntries(title).ToString))
+				Next
+			End If
 			_summaryOutput.Refresh()
 
 		End Sub

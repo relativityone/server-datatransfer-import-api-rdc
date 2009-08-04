@@ -5,6 +5,7 @@ Namespace kCura.Windows.Process
     Private _message As String
 		Private _eventType As EventType
 		Private _countsTowardsTotal As Boolean
+		Private _additionalInfo As Object
 
 		Public ReadOnly Property CurrentRecordIndex() As Int64
 			Get
@@ -36,16 +37,23 @@ Namespace kCura.Windows.Process
 			End Get
 		End Property
 
-		Public Sub New(ByVal et As EventType, ByVal recordNumber As Int64, ByVal totalRecords As Int64, ByVal message As String, ByVal countsTowardsTotal As Boolean)
+		Public ReadOnly Property AdditionalInfo() As Object
+			Get
+				Return _additionalInfo
+			End Get
+		End Property
+
+		Public Sub New(ByVal et As EventType, ByVal recordNumber As Int64, ByVal totalRecords As Int64, ByVal message As String, ByVal countsTowardsTotal As Boolean, ByVal additionalInfo As Object)
 			_eventType = et
 			_currentRecordIndex = recordNumber
 			_totalRecords = totalRecords
 			_message = message
 			_countsTowardsTotal = countsTowardsTotal
+			_additionalInfo = additionalInfo
 		End Sub
 
-		Public Sub New(ByVal et As EventType, ByVal recordNumber As Int64, ByVal totalRecords As Int64, ByVal message As String)
-			Me.New(et, recordNumber, totalRecords, message, True)
+		Public Sub New(ByVal et As EventType, ByVal recordNumber As Int64, ByVal totalRecords As Int64, ByVal message As String, ByVal additionalInfo As Object)
+			Me.New(et, recordNumber, totalRecords, message, True, additionalInfo)
 		End Sub
 	End Class
 End Namespace
