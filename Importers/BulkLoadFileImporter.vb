@@ -536,8 +536,11 @@ Namespace kCura.WinEDDS
 			settings.UseBulkDataImport = True
 			_bcpuploader.DoRetry = True
 			Dim uploadBcp As FileUploadReturnArgs = _bcpuploader.UploadBcpFile(_caseInfo.ArtifactID, _outputNativeFilePath)
+			If uploadBcp Is Nothing Then Return Nothing
 			Dim nativeFileUploadKey As String = uploadBcp.Value
-			Dim codeFileUploadKey As String = _bcpuploader.UploadBcpFile(_caseInfo.ArtifactID, _outputCodeFilePath).Value
+			Dim codebcp As FileUploadReturnArgs = _bcpuploader.UploadBcpFile(_caseInfo.ArtifactID, _outputCodeFilePath)
+			If codebcp Is Nothing Then Return Nothing
+			Dim codeFileUploadKey As String = codebcp.Value
 			If _artifactTypeID = 10 Then
 				settings.Repository = _defaultDestinationFolderPath
 				If settings.Repository = "" Then settings.Repository = _caseInfo.DocumentPath
