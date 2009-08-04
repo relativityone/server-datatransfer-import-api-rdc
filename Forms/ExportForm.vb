@@ -1107,7 +1107,7 @@ Public Class ExportForm
 		End If
 		If _exportNativeFiles.Checked OrElse _columnSelecter.RightListBoxItems.Count > 0 Then
 			If CType(_nativeFileFormat.SelectedItem, String) = "Select..." Then
-				AppendErrorMessage(msg, "No load file format selected")
+				AppendErrorMessage(msg, "No metadata data file format selected")
 			End If
 		End If
 		If _exportImages.Checked Then
