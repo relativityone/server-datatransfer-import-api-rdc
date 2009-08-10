@@ -4,10 +4,11 @@ Namespace kCura.WinEDDS
 		Inherits kCura.Utility.DelimitedFileImporter
 
 #Region "Members"
-
+		Dim _start As System.DateTime
 		Private _docManager As kCura.WinEDDS.Service.DocumentManager
 		Private _fieldQuery As kCura.WinEDDS.Service.FieldQuery
 		Private _folderManager As kCura.WinEDDS.Service.FolderManager
+		Private _auditManager As kCura.WinEDDS.Service.AuditManager
 		Private WithEvents _fileUploader As kCura.WinEDDS.FileUploader
 		Private WithEvents _bcpuploader As kCura.WinEDDS.FileUploader
 		Private WithEvents _textUploader As kCura.WinEDDS.FileUploader
@@ -88,6 +89,7 @@ Namespace kCura.WinEDDS
 			_docManager = New kCura.WinEDDS.Service.DocumentManager(args.Credential, args.CookieContainer)
 			_fieldQuery = New kCura.WinEDDS.Service.FieldQuery(args.Credential, args.CookieContainer)
 			_folderManager = New kCura.WinEDDS.Service.FolderManager(args.Credential, args.CookieContainer)
+			_auditManager = New kCura.WinEDDS.Service.AuditManager(args.Credential, args.CookieContainer)
 			_fileManager = New kCura.WinEDDS.Service.FileManager(args.Credential, args.CookieContainer)
 			_productionManager = New kCura.WinEDDS.Service.ProductionManager(args.Credential, args.CookieContainer)
 			_bulkImportManager = New kCura.WinEDDS.Service.BulkImportManager(args.Credential, args.CookieContainer)
@@ -224,8 +226,48 @@ Namespace kCura.WinEDDS
 			ManageErrors()
 		End Function
 
+		Private Function GetStats() As kCura.EDDS.WebAPI.AuditManagerBase.ImageImportStatistics
+			Dim retval As New kCura.EDDS.WebAPI.AuditManagerBase.ImageImportStatistics
+			retval.DestinationFolderArtifactID = _settings.DestinationFolderID
+			If _settings.ProductionArtifactID > 0 Then retval.DestinationProductionArtifactID = _settings.ProductionArtifactID
+			retval.ExtractedTextReplaced = _settings.ReplaceFullText
+			If _settings.CopyFilesToDocumentRepository Then
+				retval.FilesCopiedToRepository = _settings.SelectedCasePath
+			Else
+				retval.FilesCopiedToRepository = String.Empty
+			End If
+			retval.LoadFileName = System.IO.Path.GetFileName(_settings.FileName)
+			retval.NumberOfDocumentsCreated = 0		 'TODO: Implement
+			retval.NumberOfDocumentsUpdated = 0		 'TODO: Implement
+			retval.NumberOfErrors = 0		 'TODO: Implement
+			retval.NumberOfFilesLoaded = 0			'TODO: Implement
+			retval.NumberOfWarnings = 0			'TODO: Implement
+			retval.OverlayIdentifierFieldArtifactID = _settings.IdentityFieldId
+			Select Case _settings.Overwrite.ToLower
+				Case "none"
+					retval.Overwrite = EDDS.WebAPI.AuditManagerBase.OverwriteType.Append
+				Case "strict"
+					retval.Overwrite = EDDS.WebAPI.AuditManagerBase.OverwriteType.Overlay
+				Case Else
+					retval.Overwrite = EDDS.WebAPI.AuditManagerBase.OverwriteType.Both
+			End Select
+			Select Case _fileUploader.UploaderType
+				Case FileUploader.Type.Web
+					retval.RepositoryConnection = EDDS.WebAPI.AuditManagerBase.RepositoryConnectionType.Web
+				Case FileUploader.Type.Direct
+					retval.RepositoryConnection = EDDS.WebAPI.AuditManagerBase.RepositoryConnectionType.Direct
+			End Select
+			retval.RunTimeInMilliseconds = CType(System.DateTime.Now.Subtract(_start).TotalMilliseconds, Int32)
+			retval.SupportImageAutoNumbering = _settings.AutoNumberImages
+			retval.StartLine = CType(System.Math.Min(_settings.StartLineNumber, Int32.MaxValue), Int32)
+			retval.TotalFileSize = _statistics.FileBytes
+			retval.TotalMetadataBytes = _statistics.MetadataBytes
+			Return retval
+		End Function
+
 		Public Overloads Overrides Function ReadFile(ByVal path As String) As Object
 			_timekeeper.MarkStart("TOTAL")
+			_start = System.DateTime.Now
 			Dim bulkLoadFilePath As String = System.IO.Path.GetTempFileName
 			_fileIdentifierLookup = New System.Collections.Hashtable
 			_totalProcessed = 0
@@ -288,6 +330,12 @@ Namespace kCura.WinEDDS
 		Private Sub CompleteSuccess()
 			Me.Reader.Close()
 			If _productionArtifactID <> 0 Then _productionManager.DoPostImportProcessing(_fileUploader.CaseArtifactID, _productionArtifactID)
+
+			Try
+				_auditManager.AuditImageImport(_caseInfo.ArtifactID, _runId, False, Me.GetStats)
+			Catch
+				Throw
+			End Try
 			RaiseStatusEvent(kCura.Windows.Process.EventType.Progress, "End Image Upload", Me.CurrentLineNumber, Me.CurrentLineNumber)
 		End Sub
 
@@ -299,6 +347,10 @@ Namespace kCura.WinEDDS
 			Try
 				Me.Reader.Close()
 			Catch x As System.Exception
+			End Try
+			Try
+				_auditManager.AuditImageImport(_caseInfo.ArtifactID, _runId, True, Me.GetStats)
+			Catch
 			End Try
 			RaiseFatalError(ex)
 		End Sub
@@ -419,7 +471,6 @@ Namespace kCura.WinEDDS
 				If Not allsame Then Exit Sub
 			Next
 			For i As Int32 = 1 To lines.Count - 1
-				'TODO: configure separator "_"
 				DirectCast(lines(i), String())(Columns.BatesNumber) = batesnumber & "_" & i.ToString.PadLeft(lines.Count.ToString.Length, "0"c)
 			Next
 		End Sub

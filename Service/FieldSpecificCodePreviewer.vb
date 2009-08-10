@@ -15,6 +15,12 @@ Namespace kCura.WinEDDS.Service
 		Public Function RetrieveArtifacts(ByVal caseContextArtifactID As Integer, ByVal rootArtifactID As Integer) As System.Data.DataSet Implements IHierarchicArtifactManager.RetrieveArtifacts
 			Return _codeManager.GetAllForHierarchical(caseContextArtifactID, _codeTypeID)
 		End Function
+
+		Public ReadOnly Property CreationCount() As Integer Implements IHierarchicArtifactManager.CreationCount
+			Get
+				Return 0
+			End Get
+		End Property
 	End Class
 End Namespace
 

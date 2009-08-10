@@ -443,6 +443,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Service\AuditManager.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Service\BulkImportManager.vb"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -631,6 +636,33 @@
                     RelPath = "Types\ViewFieldInfo.vb"
                     SubType = "Code"
                     BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Web References\kCura.EDDS.WebAPI.AuditManagerBase\AuditManager.disco"
+                    BuildAction = "None"
+                />
+                <File
+                    RelPath = "Web References\kCura.EDDS.WebAPI.AuditManagerBase\AuditManager.wsdl"
+                    BuildAction = "None"
+                />
+                <File
+                    RelPath = "Web References\kCura.EDDS.WebAPI.AuditManagerBase\Reference.map"
+                    BuildAction = "None"
+                    Generator = "MSDiscoCodeGenerator"
+                    LastGenOutput = "Reference.vb"
+                />
+                <File
+                    RelPath = "Web References\kCura.EDDS.WebAPI.AuditManagerBase\Reference.vb"
+                    DependentUpon = "Reference.map"
+                    SubType = "code"
+                    BuildAction = "Compile"
+                    DesignTime = "True"
+                    AutoGen = "True"
+                />
+                <Folder
+                    RelPath = "Web References\kCura.EDDS.WebAPI.AuditManagerBase\"
+                    WebReferenceUrl = "http://localhost/EDDSWebAPI/AuditManager.asmx"
+                    UrlBehavior = "Static"
                 />
                 <File
                     RelPath = "Web References\kCura.EDDS.WebAPI.BulkImportManagerBase\BulkImportManager.disco"

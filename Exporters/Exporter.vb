@@ -7,7 +7,8 @@ Namespace kCura.WinEDDS
 		Private _searchManager As kCura.WinEDDS.Service.SearchManager
 		Private _folderManager As kCura.WinEDDS.Service.FolderManager
 		Private _fieldManager As kCura.WinEDDS.Service.FieldManager
-    Private _exportFile As kCura.WinEDDS.ExportFile
+		Private _auditManager As kCura.WinEDDS.Service.AuditManager
+		Private _exportFile As kCura.WinEDDS.ExportFile
     Private _columns As System.Collections.ArrayList
 		Private _sourceDirectory As String
     Private _documentManager As kCura.WinEDDS.Service.DocumentManager
@@ -29,6 +30,7 @@ Namespace kCura.WinEDDS
 		Private _fieldCollectionHasExtractedText As Boolean = False
 		Private _statistics As New kCura.WinEDDS.ExportStatistics
 		Private _lastStatisticsSnapshot As IDictionary
+		Private _start As System.DateTime
 #End Region
 
 #Region "Accessors"
@@ -83,6 +85,7 @@ Namespace kCura.WinEDDS
 			_documentManager = New kCura.WinEDDS.Service.DocumentManager(exportFile.Credential, exportFile.CookieContainer)
 			_downloadHandler = New FileDownloader(exportFile.Credential, exportFile.CaseInfo.DocumentPath & "\EDDS" & exportFile.CaseInfo.ArtifactID, exportFile.CaseInfo.DownloadHandlerURL, exportFile.CookieContainer, kCura.WinEDDS.Service.Settings.AuthenticationToken)
 			_productionManager = New kCura.WinEDDS.Service.ProductionManager(exportFile.Credential, exportFile.CookieContainer)
+			_auditManager = New kCura.WinEDDS.Service.AuditManager(exportFile.Credential, exportFile.CookieContainer)
 			_fieldManager = New kCura.WinEDDS.Service.FieldManager(exportFile.Credential, exportFile.CookieContainer)
 			_halt = False
 			_processController = processController
@@ -97,6 +100,7 @@ Namespace kCura.WinEDDS
 
 		Public Function ExportSearch() As Boolean
 			Try
+				_start = System.DateTime.Now
 				Me.Search()
 			Catch ex As System.Exception
 				Me.WriteFatalError(String.Format("A fatal error occurred on document #{0}", Me.DocumentsExported), ex)
@@ -204,6 +208,7 @@ Namespace kCura.WinEDDS
 			Next
 			_timekeeper.GenerateCsvReportItemsAsRows()
 			_volumeManager.Finish()
+			Me.AuditRun(True)
 		End Function
 
 #Region "Private Helper Functions"
@@ -500,7 +505,139 @@ Namespace kCura.WinEDDS
 
 #Region "Messaging"
 
+		Private Sub AuditRun(ByVal success As Boolean)
+			Dim args As New kCura.EDDS.WebAPI.AuditManagerBase.ExportStatistics
+			args.AppendOriginalFilenames = Me.ExportFile.AppendOriginalFileName
+			args.Bound = Me.ExportFile.QuoteDelimiter
+			Select Case Me.ExportFile.TypeOfExport
+				Case ExportFile.ExportType.AncestorSearch
+					args.DataSourceArtifactID = Me.ExportFile.ViewID
+				Case ExportFile.ExportType.ArtifactSearch
+					args.DataSourceArtifactID = Me.ExportFile.ArtifactID
+				Case ExportFile.ExportType.ParentSearch
+					args.DataSourceArtifactID = Me.ExportFile.ViewID
+				Case ExportFile.ExportType.Production
+					args.DataSourceArtifactID = Me.ExportFile.ArtifactID
+			End Select
+			args.Delimiter = Me.ExportFile.RecordDelimiter
+			args.DestinationFilesystemFolder = Me.ExportFile.FolderPath
+			args.DocumentExportCount = Me.DocumentsExported
+			args.ErrorCount = 0			'TODO:Implement
+			args.ExportedTextFieldID = Me.ExportFile.SelectedTextField.FieldArtifactId
+			If Me.ExportFile.ExportFullTextAsFile Then
+				args.ExportedTextFileEncodingCodePage = Me.ExportFile.TextFileEncoding.CodePage
+				args.ExportTextFieldAsFiles = True
+			Else
+				args.ExportTextFieldAsFiles = False
+			End If
+			Dim fields As New System.Collections.ArrayList
+			For Each field As ViewFieldInfo In Me.ExportFile.SelectedViewFields
+				If Not fields.Contains(field.FieldArtifactId) Then fields.Add(field.FieldArtifactId)
+			Next
+			args.Fields = DirectCast(fields.ToArray(GetType(Int32)), Int32())
+			If args.Fields.Length > 0 OrElse Me.ExportFile.ExportNative Then
+				args.MetadataLoadFileEncodingCodePage = Me.ExportFile.LoadFileEncoding.CodePage
+				Select Case Me.ExportFile.LoadFileExtension.ToLower
+					Case "txt"
+						args.MetadataLoadFileFormat = EDDS.WebAPI.AuditManagerBase.LoadFileFormat.Custom
+					Case "csv"
+						args.MetadataLoadFileFormat = EDDS.WebAPI.AuditManagerBase.LoadFileFormat.Csv
+					Case "dat"
+						args.MetadataLoadFileFormat = EDDS.WebAPI.AuditManagerBase.LoadFileFormat.Dat
+					Case "html"
+						args.MetadataLoadFileFormat = EDDS.WebAPI.AuditManagerBase.LoadFileFormat.Html
+				End Select
+				args.MultiValueDelimiter = Me.ExportFile.MultiRecordDelimiter
+				args.NestedValueDelimiter = Me.ExportFile.NestedValueDelimiter
+				args.NewlineProxy = Me.ExportFile.NewlineDelimiter
+			End If
+			args.FileExportCount = 0			'TODO:Implement
+			Select Case Me.ExportFile.TypeOfExportedFilePath
+				Case ExportFile.ExportedFilePathType.Absolute
+					args.FilePathSettings = "Use Absolute Paths"
+				Case ExportFile.ExportedFilePathType.Prefix
+					args.FilePathSettings = "Use Prefix: " & Me.ExportFile.FilePrefix
+				Case ExportFile.ExportedFilePathType.Relative
+					args.FilePathSettings = "Use Relative Paths"
+			End Select
+			If Me.ExportFile.ExportImages Then
+				args.ExportImages = True
+				Select Case Me.ExportFile.TypeOfImage
+					Case ExportFile.ImageType.MultiPageTiff
+						args.ImageFileType = EDDS.WebAPI.AuditManagerBase.ImageFileExportType.MultiPageTiff
+					Case ExportFile.ImageType.Pdf
+						args.ImageFileType = EDDS.WebAPI.AuditManagerBase.ImageFileExportType.PDF
+					Case ExportFile.ImageType.SinglePage
+						args.ImageFileType = EDDS.WebAPI.AuditManagerBase.ImageFileExportType.SinglePage
+				End Select
+				Select Case Me.ExportFile.LogFileFormat
+					Case LoadFileType.FileFormat.IPRO
+						args.ImageLoadFileFormat = EDDS.WebAPI.AuditManagerBase.ImageLoadFileFormatType.Ipro
+					Case LoadFileType.FileFormat.IPRO_FullText
+						args.ImageLoadFileFormat = EDDS.WebAPI.AuditManagerBase.ImageLoadFileFormatType.IproFullText
+					Case LoadFileType.FileFormat.Opticon
+						args.ImageLoadFileFormat = EDDS.WebAPI.AuditManagerBase.ImageLoadFileFormatType.Opticon
+				End Select
+				'Select Case Me.ExportFile.ImageType
+				'	args.ImagesToExport
+				'End Select
+			Else
+				args.ExportImages = False
+			End If
+			args.OverwriteFiles = Me.ExportFile.Overwrite
+			Dim preclist As New System.Collections.ArrayList
+			For Each pair As WinEDDS.Pair In Me.ExportFile.ImagePrecedence
+				preclist.Add(Int32.Parse(pair.Value))
+			Next
+			args.ProductionPrecedence = DirectCast(preclist.ToArray(GetType(Int32)), Int32())
+			args.RunTimeInMilliseconds = CType(System.Math.Min(System.DateTime.Now.Subtract(_start).TotalMilliseconds, Int32.MaxValue), Int32)
+			If Me.ExportFile.TypeOfExport = ExportFile.ExportType.AncestorSearch OrElse Me.ExportFile.TypeOfExport = ExportFile.ExportType.ParentSearch Then
+				args.SourceRootFolderID = Me.ExportFile.ArtifactID
+			End If
+			args.SubdirectoryImagePrefix = Me.ExportFile.VolumeInfo.SubdirectoryImagePrefix
+			args.SubdirectoryMaxFileCount = Me.ExportFile.VolumeInfo.SubdirectoryMaxSize
+			args.SubdirectoryNativePrefix = Me.ExportFile.VolumeInfo.SubdirectoryNativePrefix
+			args.SubdirectoryStartNumber = Me.ExportFile.VolumeInfo.SubdirectoryStartNumber
+			args.SubdirectoryTextPrefix = Me.ExportFile.VolumeInfo.SubdirectoryFullTextPrefix
+			'args.TextAndNativeFilesNamedAfterFieldID = Me.ExportNativesToFileNamedFrom
+			If Me.ExportNativesToFileNamedFrom = ExportNativeWithFilenameFrom.Identifier Then
+				For Each field As ViewFieldInfo In Me.ExportFile.AllExportableFields
+					If field.Category = DynamicFields.Types.FieldCategory.Identifier Then
+						args.TextAndNativeFilesNamedAfterFieldID = field.FieldArtifactId
+						Exit For
+					End If
+				Next
+			Else
+				For Each field As ViewFieldInfo In Me.ExportFile.AllExportableFields
+					If field.AvfColumnName.ToLower = _beginBatesColumn.ToLower Then
+						args.TextAndNativeFilesNamedAfterFieldID = field.FieldArtifactId
+						Exit For
+					End If
+				Next
+			End If
+			args.TotalFileBytesExported = _statistics.FileBytes
+			args.TotalMetadataBytesExported = _statistics.MetadataBytes
+			Select Case Me.ExportFile.TypeOfExport
+				Case ExportFile.ExportType.AncestorSearch
+					args.Type = "Folder and Subfolders"
+				Case ExportFile.ExportType.ArtifactSearch
+					args.Type = "Saved Search"
+				Case ExportFile.ExportType.ParentSearch
+					args.Type = "Folder"
+				Case ExportFile.ExportType.Production
+					args.Type = "Production Set"
+			End Select
+			args.VolumeMaxSize = Me.ExportFile.VolumeInfo.VolumeMaxSize
+			args.VolumePrefix = Me.ExportFile.VolumeInfo.VolumePrefix
+			args.WarningCount = 0			'TODO:Implement
+			Try
+				_auditManager.AuditExport(Me.ExportFile.CaseInfo.ArtifactID, Not success, args)
+			Catch
+			End Try
+		End Sub
+
 		Friend Sub WriteFatalError(ByVal line As String, ByVal ex As System.Exception)
+			Me.AuditRun(False)
 			RaiseEvent FatalErrorEvent(line, ex)
 		End Sub
 

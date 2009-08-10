@@ -3,6 +3,7 @@ Namespace kCura.WinEDDS.Service
 		Inherits kCura.EDDS.WebAPI.FolderManagerBase.FolderManager
 		Implements IHierarchicArtifactManager
 
+		Private _folderCreationCount As Int32 = 0
 		Public Sub New(ByVal credentials As Net.NetworkCredential, ByVal cookieContainer As System.Net.CookieContainer)
 			MyBase.New()
 			Me.Credentials = credentials
@@ -69,11 +70,9 @@ Namespace kCura.WinEDDS.Service
 			While tries < Config.MaxReloginTries
 				tries += 1
 				Try
-					If kCura.WinEDDS.Config.UsesWebAPI Then
-						Return MyBase.Create(caseContextArtifactID, parentArtifactID, GetExportFriendlyFolderName(name))
-					Else
-						'Return _folderManager.Create(parentArtifactID, name, _identity)
-					End If
+					Dim retval As Int32 = MyBase.Create(caseContextArtifactID, parentArtifactID, GetExportFriendlyFolderName(name))
+					_folderCreationCount += 1
+					Return retval
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
 						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
@@ -108,5 +107,11 @@ Namespace kCura.WinEDDS.Service
 		Public Function RetrieveArtifacts(ByVal caseContextArtifactID As Integer, ByVal rootArtifactID As Integer) As System.Data.DataSet Implements IHierarchicArtifactManager.RetrieveArtifacts
 			Return Me.RetrieveFolderAndDescendants(caseContextArtifactID, rootArtifactID)
 		End Function
+
+		Public ReadOnly Property CreationCount() As Integer Implements IHierarchicArtifactManager.CreationCount
+			Get
+				Return _folderCreationCount
+			End Get
+		End Property
 	End Class
 End Namespace

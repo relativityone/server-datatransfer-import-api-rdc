@@ -46,6 +46,7 @@ Namespace kCura.WinEDDS
 		Protected _previewCodeCount As New System.Collections.Specialized.HybridDictionary
 		Protected _startLineNumber As Int64
 		Protected _keyFieldID As Int32
+		Private _codesCreated As Int32 = 0
 
 #End Region
 
@@ -77,6 +78,12 @@ Namespace kCura.WinEDDS
 					_users = New UserCollection(_usermanager, _caseArtifactID)
 				End If
 				Return _users
+			End Get
+		End Property
+
+		Public ReadOnly Property CodeCreatedCount() As Int32
+			Get
+				Return _codesCreated
 			End Get
 		End Property
 
@@ -139,8 +146,8 @@ Namespace kCura.WinEDDS
 			If _autoDetect Then
 				If _allCodes Is Nothing Then
 					Dim ds As DataSet = _codeManager.RetrieveCodesAndTypesForCase(_caseArtifactID)
-					_allCodes = New kCura.Data.DataView(ds.Tables("AllCodes"))					'HACK: Hard-coded
-					_allCodeTypes = New kCura.Data.DataView(ds.Tables("AllCodeTypes"))					'HACK: Hard-coded
+					_allCodes = New kCura.Data.DataView(ds.Tables("AllCodes"))
+					_allCodeTypes = New kCura.Data.DataView(ds.Tables("AllCodeTypes"))
 				End If
 			End If
 		End Sub
@@ -157,7 +164,7 @@ Namespace kCura.WinEDDS
 				Throw New MissingCodeTypeException(Me.CurrentLineNumber, column)
 			End If
 			If codeTableIndex > -1 Then
-				Return GetNullableInteger(_allCodes(codeTableIndex)("ArtifactID").ToString, column)				'HACK: Hard-coded
+				Return GetNullableInteger(_allCodes(codeTableIndex)("ArtifactID").ToString, column)
 			Else
 				If forPreview Then
 
@@ -181,6 +188,7 @@ Namespace kCura.WinEDDS
 						End Select
 						Dim newRow As DataRowView = _allCodes.AddNew
 						_allCodes = Nothing
+						_codesCreated += 1
 						Return New NullableInt32(codeArtifactID)
 					End If
 				End If
@@ -259,6 +267,7 @@ Namespace kCura.WinEDDS
 					For i = 0 To codes.Length - 1
 						codes(i) = New NullableTypes.NullableInt32(CType(c(i), Int32))
 					Next
+					_codesCreated += DirectCast(hierarchicCodeManager, Service.FieldSpecificCodeManager).CreationCount
 					Return codes
 				Else
 					Return New NullableTypes.NullableInt32() {}
