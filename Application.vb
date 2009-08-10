@@ -1228,7 +1228,6 @@ Namespace kCura.EDDS.WinForm
 			tempLoadFile.SelectedCasePath = Me.SelectedCaseInfo.DocumentPath
 			tempLoadFile.Credentials = Me.Credential
 			tempLoadFile.DestinationFolderID = loadFile.DestinationFolderID
-			'TODO: WINFLEX - ArtifactTypeID
 			tempLoadFile.SelectedIdentifierField = Me.CurrentFields(ArtifactTypeID, True).Item(Me.GetCaseIdentifierFields(ArtifactTypeID)(0))
 			Dim mapItemToRemove As LoadFileFieldMap.LoadFileFieldMapItem
 			If tempLoadFile.GroupIdentifierColumn = "" AndAlso System.IO.File.Exists(tempLoadFile.FilePath) Then
