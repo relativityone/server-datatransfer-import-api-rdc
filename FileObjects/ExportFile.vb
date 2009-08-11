@@ -41,6 +41,7 @@ Namespace kCura.WinEDDS
 		Protected _textFileEncoding As System.Text.Encoding
 		Protected _volumeDigitPadding As Int32
 		Protected _subdirectoryDigitPadding As Int32
+		Protected _startAtDocument As Int32 = 0
 
 #Region "Public Properties"
 
@@ -406,6 +407,15 @@ Namespace kCura.WinEDDS
 			End Get
 			Set(ByVal value As Int32)
 				_subdirectoryDigitPadding = value
+			End Set
+		End Property
+
+		Public Property StartAtDocumentNumber() As Int32
+			Get
+				Return _startAtDocument
+			End Get
+			Set(ByVal value As Int32)
+				_startAtDocument = value
 			End Set
 		End Property
 

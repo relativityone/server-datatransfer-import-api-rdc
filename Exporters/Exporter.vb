@@ -143,6 +143,14 @@ Namespace kCura.WinEDDS
 					typeOfExportDisplayString = "production"
 					Me.TotalDocuments = _searchManager.CountSearchByProductionArtifactID(Me.ExportFile.CaseArtifactID, Me.ExportFile.ArtifactID)
 			End Select
+			If Me.TotalDocuments - 1 < Me.ExportFile.StartAtDocumentNumber Then
+				Dim msg As String = String.Format("The chosen start document number ({0}) exceeds the number of {2}documents in the export ({1}).  Export halted.", Me.ExportFile.StartAtDocumentNumber + 1, Me.TotalDocuments, vbNewLine)
+				MsgBox(msg, MsgBoxStyle.Critical, "Error")
+				Me.Shutdown()
+				Return False
+			Else
+				Me.TotalDocuments -= Me.ExportFile.StartAtDocumentNumber
+			End If
 			_statistics.MetadataTime += System.Math.Max(System.DateTime.Now.Ticks - startTicks, 1)
 			RaiseEvent FileTransferModeChangeEvent(_downloadHandler.UploaderType.ToString)
 			Dim columnHeaderString As String = Me.LoadColumns
@@ -157,18 +165,19 @@ Namespace kCura.WinEDDS
 				allAvfIds(i) = Me.ExportFile.SelectedViewFields(i).AvfId
 			Next
 			Dim documentTable As System.Data.DataTable
-			Dim start, finish As Int32
+			Dim start, finish, realStart As Int32
 			For start = 0 To Me.TotalDocuments - 1 Step Config.ExportBatchSize
-				finish = Math.Min(Me.TotalDocuments - 1, start + Config.ExportBatchSize - 1)
+				realStart = start + Me.ExportFile.StartAtDocumentNumber
+				finish = Math.Min(Me.TotalDocuments - 1 + Me.ExportFile.StartAtDocumentNumber, realStart + Config.ExportBatchSize - 1)
 				_timekeeper.MarkStart("Exporter_GetDocumentBlock")
 				startTicks = System.DateTime.Now.Ticks
 				Select Case Me.ExportFile.TypeOfExport
 					Case ExportFile.ExportType.ArtifactSearch
-						documentTable = _searchManager.SearchBySearchArtifactID(Me.ExportFile.CaseArtifactID, Me.ExportFile.ArtifactID, start, finish, allAvfIds, Me.ExportFile.MulticodesAsNested, Me.ExportFile.NestedValueDelimiter).Tables(0)
+						documentTable = _searchManager.SearchBySearchArtifactID(Me.ExportFile.CaseArtifactID, Me.ExportFile.ArtifactID, realStart, finish, allAvfIds, Me.ExportFile.MulticodesAsNested, Me.ExportFile.NestedValueDelimiter).Tables(0)
 					Case ExportFile.ExportType.ParentSearch
-						documentTable = _searchManager.SearchByParentArtifactID(Me.ExportFile.CaseArtifactID, Me.ExportFile.ArtifactID, False, start, finish, ExportFile.ViewID, allAvfIds, Me.ExportFile.MulticodesAsNested, Me.ExportFile.NestedValueDelimiter).Tables(0)
+						documentTable = _searchManager.SearchByParentArtifactID(Me.ExportFile.CaseArtifactID, Me.ExportFile.ArtifactID, False, realStart, finish, ExportFile.ViewID, allAvfIds, Me.ExportFile.MulticodesAsNested, Me.ExportFile.NestedValueDelimiter).Tables(0)
 					Case ExportFile.ExportType.AncestorSearch
-						documentTable = _searchManager.SearchByParentArtifactID(Me.ExportFile.CaseArtifactID, Me.ExportFile.ArtifactID, True, start, finish, ExportFile.ViewID, allAvfIds, Me.ExportFile.MulticodesAsNested, Me.ExportFile.NestedValueDelimiter).Tables(0)
+						documentTable = _searchManager.SearchByParentArtifactID(Me.ExportFile.CaseArtifactID, Me.ExportFile.ArtifactID, True, realStart, finish, ExportFile.ViewID, allAvfIds, Me.ExportFile.MulticodesAsNested, Me.ExportFile.NestedValueDelimiter).Tables(0)
 					Case ExportFile.ExportType.Production
 						Dim production As kCura.EDDS.WebAPI.ProductionManagerBase.Production = _productionManager.Read(Me.ExportFile.CaseArtifactID, Me.ExportFile.ArtifactID)
 						Dim avfIdsToAdd As New System.Collections.ArrayList
@@ -180,7 +189,7 @@ Namespace kCura.WinEDDS
 							avfIdsToAdd.AddRange(allAvfIds)
 							allAvfIds = DirectCast(avfIdsToAdd.ToArray(GetType(Int32)), Int32())
 						End If
-						documentTable = _searchManager.SearchByProductionArtifactID(Me.ExportFile.CaseArtifactID, Me.ExportFile.ArtifactID, start, finish, allAvfIds, Me.ExportFile.MulticodesAsNested, Me.ExportFile.NestedValueDelimiter).Tables(0)
+						documentTable = _searchManager.SearchByProductionArtifactID(Me.ExportFile.CaseArtifactID, Me.ExportFile.ArtifactID, realStart, finish, allAvfIds, Me.ExportFile.MulticodesAsNested, Me.ExportFile.NestedValueDelimiter).Tables(0)
 						If production.DocumentsHaveRedactions Then
 							WriteStatusLineWithoutDocCount(kCura.Windows.Process.EventType.Warning, "Please Note - Documents in this production were produced with redactions applied. Ensure that you take steps to update the extracted text to suppress this redacted text.", True)
 						End If
