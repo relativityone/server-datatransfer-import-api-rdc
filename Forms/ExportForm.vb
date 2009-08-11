@@ -112,6 +112,8 @@ Public Class ExportForm
 	Friend WithEvents Label22 As System.Windows.Forms.Label
 	Friend WithEvents _subdirectoryDigitPadding As System.Windows.Forms.NumericUpDown
 	Friend WithEvents Label23 As System.Windows.Forms.Label
+	Friend WithEvents Label24 As System.Windows.Forms.Label
+	Friend WithEvents _startExportAtDocumentNumber As System.Windows.Forms.NumericUpDown
 	<System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
 		Dim resources As System.Resources.ResourceManager = New System.Resources.ResourceManager(GetType(ExportForm))
 		Me.MainMenu1 = New System.Windows.Forms.MainMenu
@@ -197,6 +199,8 @@ Public Class ExportForm
 		Me._newLineDelimiter = New System.Windows.Forms.ComboBox
 		Me.Label2 = New System.Windows.Forms.Label
 		Me._recordDelimiter = New System.Windows.Forms.ComboBox
+		Me.Label24 = New System.Windows.Forms.Label
+		Me._startExportAtDocumentNumber = New System.Windows.Forms.NumericUpDown
 		Me._productionPrecedenceBox.SuspendLayout()
 		Me.GroupBox3.SuspendLayout()
 		Me.TabControl1.SuspendLayout()
@@ -218,6 +222,7 @@ Public Class ExportForm
 		CType(Me._volumeStartNumber, System.ComponentModel.ISupportInitialize).BeginInit()
 		Me.GroupBox23.SuspendLayout()
 		Me._loadFileCharacterInformation.SuspendLayout()
+		CType(Me._startExportAtDocumentNumber, System.ComponentModel.ISupportInitialize).BeginInit()
 		Me.SuspendLayout()
 		'
 		'MainMenu1
@@ -358,6 +363,8 @@ Public Class ExportForm
 		'
 		'_filtersBox
 		'
+		Me._filtersBox.Controls.Add(Me._startExportAtDocumentNumber)
+		Me._filtersBox.Controls.Add(Me.Label24)
 		Me._filtersBox.Controls.Add(Me.Label18)
 		Me._filtersBox.Controls.Add(Me._filters)
 		Me._filtersBox.Controls.Add(Me._columnSelecter)
@@ -371,7 +378,7 @@ Public Class ExportForm
 		'Label18
 		'
 		Me.Label18.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-		Me.Label18.Location = New System.Drawing.Point(272, 48)
+		Me.Label18.Location = New System.Drawing.Point(180, 48)
 		Me.Label18.Name = "Label18"
 		Me.Label18.Size = New System.Drawing.Size(160, 16)
 		Me.Label18.TabIndex = 19
@@ -392,7 +399,7 @@ Public Class ExportForm
 		Me._columnSelecter.AlternateRowColors = False
 		Me._columnSelecter.KeepButtonsCentered = False
 		Me._columnSelecter.LeftOrderControlsVisible = False
-		Me._columnSelecter.Location = New System.Drawing.Point(104, 64)
+		Me._columnSelecter.Location = New System.Drawing.Point(12, 64)
 		Me._columnSelecter.Name = "_columnSelecter"
 		Me._columnSelecter.RightOrderControlVisible = True
 		Me._columnSelecter.Size = New System.Drawing.Size(360, 280)
@@ -1019,6 +1026,26 @@ Public Class ExportForm
 		Me._recordDelimiter.Size = New System.Drawing.Size(116, 21)
 		Me._recordDelimiter.TabIndex = 8
 		'
+		'Label24
+		'
+		Me.Label24.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+		Me.Label24.Location = New System.Drawing.Point(392, 48)
+		Me.Label24.Name = "Label24"
+		Me.Label24.Size = New System.Drawing.Size(160, 16)
+		Me.Label24.TabIndex = 20
+		Me.Label24.Text = "Start Export at Document #"
+		Me.Label24.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+		'
+		'_startExportAtDocumentNumber
+		'
+		Me._startExportAtDocumentNumber.Location = New System.Drawing.Point(404, 68)
+		Me._startExportAtDocumentNumber.Maximum = New Decimal(New Integer() {10000000, 0, 0, 0})
+		Me._startExportAtDocumentNumber.Minimum = New Decimal(New Integer() {1, 0, 0, 0})
+		Me._startExportAtDocumentNumber.Name = "_startExportAtDocumentNumber"
+		Me._startExportAtDocumentNumber.Size = New System.Drawing.Size(148, 20)
+		Me._startExportAtDocumentNumber.TabIndex = 21
+		Me._startExportAtDocumentNumber.Value = New Decimal(New Integer() {1, 0, 0, 0})
+		'
 		'ExportForm
 		'
 		Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
@@ -1050,6 +1077,7 @@ Public Class ExportForm
 		CType(Me._volumeStartNumber, System.ComponentModel.ISupportInitialize).EndInit()
 		Me.GroupBox23.ResumeLayout(False)
 		Me._loadFileCharacterInformation.ResumeLayout(False)
+		CType(Me._startExportAtDocumentNumber, System.ComponentModel.ISupportInitialize).EndInit()
 		Me.ResumeLayout(False)
 
 	End Sub
@@ -1215,6 +1243,7 @@ Public Class ExportForm
 		_exportFile.TextFileEncoding = _textFileEncoding.SelectedEncoding
 		_exportFile.VolumeDigitPadding = CType(_volumeDigitPadding.Value, Int32)
 		_exportFile.SubdirectoryDigitPadding = CType(_subdirectoryDigitPadding.Value, Int32)
+		_exportFile.StartAtDocumentNumber = CType(_startExportAtDocumentNumber.Value, Int32) - 1
 		_application.StartSearch(Me.ExportFile)
 		Me.Cursor = System.Windows.Forms.Cursors.Default
 	End Sub
