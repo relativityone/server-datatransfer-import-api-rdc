@@ -140,6 +140,24 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
+		Public ReadOnly Property UploadConnection() As kCura.WinEDDS.FileUploader.Type
+			Get
+				Return _uploader.UploaderType
+			End Get
+		End Property
+
+		Public ReadOnly Property Statistics() As kCura.WinEDDS.Statistics
+			Get
+				Return _statistics
+			End Get
+		End Property
+
+		Public ReadOnly Property FoldersCreated() As Int32
+			Get
+				Return _folderManager.CreationCount
+			End Get
+		End Property
+
 #End Region
 
 #Region "Constructors"
@@ -281,7 +299,7 @@ Namespace kCura.WinEDDS
 				_timekeeper.MarkEnd("ReadFile_ProcessDocuments")
 				_timekeeper.MarkStart("ReadFile_OtherFinalization")
 				Me.PushNativeBatch(True)
-				RaiseEvent EndFileImport()
+				RaiseEvent EndFileImport(_runID)
 				WriteEndImport("Finish")
 				Me.Close()
 				Try
@@ -294,7 +312,6 @@ Namespace kCura.WinEDDS
 				_timekeeper.MarkEnd("ReadFile_CleanupTempTables")
 				_timekeeper.MarkEnd("TOTAL")
 				_timekeeper.GenerateCsvReportItemsAsRows("_winedds", "C:\")
-				_auditManager.AuditObjectImport(_caseInfo.ArtifactID, _runID, False, Me.GetRunStats)
 				Return True
 			Catch ex As System.Exception
 				WriteFatalError(Me.CurrentLineNumber, ex, line)
@@ -861,70 +878,8 @@ Namespace kCura.WinEDDS
 			_uploader.DoRetry = False
 			_bcpuploader.DoRetry = False
 
-			_auditManager.AuditObjectImport(_caseInfo.ArtifactID, _runID, True, Me.GetRunStats)
-			RaiseEvent FatalErrorEvent("Error processing line: " + lineNumber.ToString, ex)
+			RaiseEvent FatalErrorEvent("Error processing line: " + lineNumber.ToString, ex, _runID)
 		End Sub
-
-		Private Function GetRunStats() As kCura.EDDS.WebAPI.AuditManagerBase.ObjectImportStatistics
-			Dim retval As New kCura.EDDS.WebAPI.AuditManagerBase.ObjectImportStatistics
-			retval.ArtifactTypeID = _artifactTypeID
-			retval.Bound = _settings.QuoteDelimiter
-			retval.Delimiter = _settings.RecordDelimiter
-			retval.DestinationFolderArtifactID = _folderID
-			retval.ExtractedTextPointsToFile = _settings.FullTextColumnContainsFileLocation
-			Dim fieldMap As New System.Collections.ArrayList
-			For Each item As WinEDDS.LoadFileFieldMap.LoadFileFieldMapItem In _settings.FieldMap
-				If Not item.DocumentField Is Nothing AndAlso item.NativeFileColumnIndex > -1 Then
-					fieldMap.Add(New Int32() {item.NativeFileColumnIndex, item.DocumentField.FieldID})
-				End If
-			Next
-			If _settings.CopyFilesToDocumentRepository Then
-				retval.FilesCopiedToRepository = _settings.SelectedCasePath
-			Else
-				retval.FilesCopiedToRepository = String.Empty
-			End If
-			retval.FieldsMapped = DirectCast(fieldMap.ToArray(GetType(Int32())), Int32()())
-			If _settings.LoadNativeFiles Then
-				retval.FileFieldColumnName = _settings.NativeFilePathColumn
-			Else
-				retval.FileFieldColumnName = String.Empty
-			End If
-			retval.FolderColumnName = _settings.FolderStructureContainedInColumn
-			If retval.FolderColumnName Is Nothing Then retval.FolderColumnName = String.Empty
-			retval.LoadFileEncodingCodePageID = _settings.SourceFileEncoding.CodePage
-			retval.LoadFileName = System.IO.Path.GetFileName(_settings.FilePath)
-			retval.MultiValueDelimiter = _settings.MultiRecordDelimiter
-			retval.NewlineProxy = _settings.NewlineDelimiter
-			retval.NumberOfChoicesCreated = Me.CodeCreatedCount
-			retval.NumberOfDocumentsCreated = 0			 'TODO: Implement
-			retval.NumberOfDocumentsUpdated = 0			 'TODO: Implement
-			retval.NumberOfErrors = _errorCount
-			retval.NumberOfFilesLoaded = 0			 'TODO: Implement
-			retval.NumberOfFoldersCreated = _folderManager.CreationCount
-			retval.NumberOfWarnings = 0			 'TODO: Implement
-			retval.OverlayIdentifierFieldArtifactID = _settings.IdentityFieldId
-			Select Case _overwrite.ToLower
-				Case "strict"
-					retval.Overwrite = EDDS.WebAPI.AuditManagerBase.OverwriteType.Overlay
-				Case "none"
-					retval.Overwrite = EDDS.WebAPI.AuditManagerBase.OverwriteType.Append
-				Case Else
-					retval.Overwrite = EDDS.WebAPI.AuditManagerBase.OverwriteType.Both
-			End Select
-			If _settings.CopyFilesToDocumentRepository Then
-				Select Case _uploader.UploaderType
-					Case FileUploader.Type.Direct
-						retval.RepositoryConnection = EDDS.WebAPI.AuditManagerBase.RepositoryConnectionType.Direct
-					Case FileUploader.Type.Web
-						retval.RepositoryConnection = EDDS.WebAPI.AuditManagerBase.RepositoryConnectionType.Web
-				End Select
-				retval.TotalFileSize = _statistics.FileBytes
-			End If
-			retval.RunTimeInMilliseconds = CType(System.DateTime.Now.Subtract(_start).TotalMilliseconds, Int32)
-			retval.StartLine = CType(System.Math.Min(_settings.StartLineNumber, Int32.MaxValue), Int32)
-			retval.TotalMetadataBytes = _statistics.MetadataBytes
-			Return retval
-		End Function
 
 		Private Sub WriteError(ByVal currentLineNumber As Int32, ByVal line As String)
 			If _prePushErrorLineNumbersFileName = "" Then _prePushErrorLineNumbersFileName = System.IO.Path.GetTempFileName
@@ -978,9 +933,9 @@ Namespace kCura.WinEDDS
 
 #Region "Public Events"
 
-		Public Event FatalErrorEvent(ByVal message As String, ByVal ex As System.Exception)
+		Public Event FatalErrorEvent(ByVal message As String, ByVal ex As System.Exception, ByVal runID As String)
 		Public Event StatusMessage(ByVal args As kCura.Windows.Process.StatusEventArgs)
-		Public Event EndFileImport()
+		Public Event EndFileImport(ByVal runID As String)
 		Public Event StartFileImport()
 		Public Event UploadModeChangeEvent(ByVal mode As String, ByVal isBulkEnabled As Boolean)
 		Public Event ReportErrorEvent(ByVal row As System.Collections.IDictionary)

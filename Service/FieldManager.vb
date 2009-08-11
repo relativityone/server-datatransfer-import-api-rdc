@@ -4,7 +4,6 @@ Namespace kCura.WinEDDS.Service
 
 		Private _query As kCura.WinEDDS.Service.FieldQuery
 
-		'TODO: FIX THIS SHIZZITY!
 		Public ReadOnly Property Query() As kCura.WinEDDS.Service.FieldQuery
 			Get
 				Return _query

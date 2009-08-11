@@ -40,6 +40,71 @@ Namespace kCura.WinEDDS
 			End If
 		End Sub
 
+		Private Sub AuditRun(ByVal success As Boolean, ByVal runID As String)
+			Try
+				Dim retval As New kCura.EDDS.WebAPI.AuditManagerBase.ObjectImportStatistics
+				retval.ArtifactTypeID = LoadFile.ArtifactTypeID
+				retval.Bound = LoadFile.QuoteDelimiter
+				retval.Delimiter = LoadFile.RecordDelimiter
+				retval.DestinationFolderArtifactID = LoadFile.DestinationFolderID
+				retval.ExtractedTextPointsToFile = LoadFile.FullTextColumnContainsFileLocation
+				Dim fieldMap As New System.Collections.ArrayList
+				For Each item As WinEDDS.LoadFileFieldMap.LoadFileFieldMapItem In LoadFile.FieldMap
+					If Not item.DocumentField Is Nothing AndAlso item.NativeFileColumnIndex > -1 Then
+						fieldMap.Add(New Int32() {item.NativeFileColumnIndex, item.DocumentField.FieldID})
+					End If
+				Next
+				If LoadFile.CopyFilesToDocumentRepository Then
+					retval.FilesCopiedToRepository = LoadFile.SelectedCasePath
+				Else
+					retval.FilesCopiedToRepository = String.Empty
+				End If
+				retval.FieldsMapped = DirectCast(fieldMap.ToArray(GetType(Int32())), Int32()())
+				If LoadFile.LoadNativeFiles Then
+					retval.FileFieldColumnName = LoadFile.NativeFilePathColumn
+				Else
+					retval.FileFieldColumnName = String.Empty
+				End If
+				retval.FolderColumnName = LoadFile.FolderStructureContainedInColumn
+				If retval.FolderColumnName Is Nothing Then retval.FolderColumnName = String.Empty
+				retval.LoadFileEncodingCodePageID = LoadFile.SourceFileEncoding.CodePage
+				retval.LoadFileName = System.IO.Path.GetFileName(LoadFile.FilePath)
+				retval.MultiValueDelimiter = LoadFile.MultiRecordDelimiter
+				retval.NewlineProxy = LoadFile.NewlineDelimiter
+				retval.NumberOfChoicesCreated = _loadFileImporter.CodeCreatedCount
+				retval.NumberOfDocumentsCreated = 0				'TODO: Implement
+				retval.NumberOfDocumentsUpdated = 0				'TODO: Implement
+				retval.NumberOfErrors = _errorCount
+				retval.NumberOfFilesLoaded = 0				'TODO: Implement
+				retval.NumberOfFoldersCreated = _loadFileImporter.FoldersCreated
+				retval.NumberOfWarnings = _warningCount
+				retval.OverlayIdentifierFieldArtifactID = LoadFile.IdentityFieldId
+				Select Case LoadFile.OverwriteDestination.ToLower
+					Case "strict"
+						retval.Overwrite = EDDS.WebAPI.AuditManagerBase.OverwriteType.Overlay
+					Case "none"
+						retval.Overwrite = EDDS.WebAPI.AuditManagerBase.OverwriteType.Append
+					Case Else
+						retval.Overwrite = EDDS.WebAPI.AuditManagerBase.OverwriteType.Both
+				End Select
+				If LoadFile.CopyFilesToDocumentRepository Then
+					Select Case _loadFileImporter.UploadConnection
+						Case FileUploader.Type.Direct
+							retval.RepositoryConnection = EDDS.WebAPI.AuditManagerBase.RepositoryConnectionType.Direct
+						Case FileUploader.Type.Web
+							retval.RepositoryConnection = EDDS.WebAPI.AuditManagerBase.RepositoryConnectionType.Web
+					End Select
+					retval.TotalFileSize = _loadFileImporter.Statistics.FileBytes
+				End If
+				retval.RunTimeInMilliseconds = CType(System.DateTime.Now.Subtract(_startTime).TotalMilliseconds, Int32)
+				retval.StartLine = CType(System.Math.Min(LoadFile.StartLineNumber, Int32.MaxValue), Int32)
+				retval.TotalMetadataBytes = _loadFileImporter.Statistics.MetadataBytes
+				Dim auditManager As New kCura.WinEDDS.Service.AuditManager(LoadFile.Credentials, LoadFile.CookieContainer)
+				auditManager.AuditObjectImport(LoadFile.CaseInfo.ArtifactID, runID, Not success, retval)
+			Catch
+			End Try
+		End Sub
+
 		Private Sub _loadFileImporter_StatusMessage(ByVal e As kCura.Windows.Process.StatusEventArgs) Handles _loadFileImporter.StatusMessage
 			System.Threading.Monitor.Enter(Me.ProcessObserver)
 			Dim statisticsDictionary As IDictionary
@@ -67,12 +132,13 @@ Namespace kCura.WinEDDS
 			'Me.ProcessObserver.RaiseProgressEvent(e.TotalLines, e.CurrentRecordIndex, 0, 0, _startTime, System.DateTime.Now)
 		End Sub
 
-		Private Sub _loadFileImporter_FatalErrorEvent(ByVal message As String, ByVal ex As System.Exception) Handles _loadFileImporter.FatalErrorEvent
+		Private Sub _loadFileImporter_FatalErrorEvent(ByVal message As String, ByVal ex As System.Exception, ByVal runID As String) Handles _loadFileImporter.FatalErrorEvent
 			System.Threading.Monitor.Enter(Me.ProcessObserver)
 			Me.ProcessObserver.RaiseFatalExceptionEvent(ex)
 			Me.ProcessObserver.RaiseProcessCompleteEvent(False, _loadFileImporter.ErrorLogFileName, True)
 			_hasRunPRocessComplete = True
 			System.Threading.Monitor.Exit(Me.ProcessObserver)
+			Me.AuditRun(False, runID)
 		End Sub
 
 		Private Sub _loadFileImporter_UploadModeChangeEvent(ByVal mode As String, ByVal isBulkEnabled As Boolean) Handles _loadFileImporter.UploadModeChangeEvent
@@ -136,6 +202,9 @@ Namespace kCura.WinEDDS
 			System.Threading.Monitor.Exit(Me.ProcessObserver)
 		End Sub
 
+		Private Sub _loadFileImporter_EndFileImport(ByVal runID As String) Handles _loadFileImporter.EndFileImport
+			Me.AuditRun(True, runID)
+		End Sub
 	End Class
 
 End Namespace

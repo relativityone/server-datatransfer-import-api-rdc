@@ -31,6 +31,9 @@ Namespace kCura.WinEDDS
 		Private _statistics As New kCura.WinEDDS.ExportStatistics
 		Private _lastStatisticsSnapshot As IDictionary
 		Private _start As System.DateTime
+		Private _warningCount As Int32 = 0
+		Private _errorCount As Int32 = 0
+		Private _fileCount As Int64 = 0
 #End Region
 
 #Region "Accessors"
@@ -270,7 +273,7 @@ Namespace kCura.WinEDDS
 				End If
 				documentInfo.DocumentArtifactID = documentArtifactIDs(i)
 				documentInfo.DataRow = docRows(i)
-				_volumeManager.ExportDocument(documentInfo)
+				_fileCount += _volumeManager.ExportDocument(documentInfo)
 				_lastStatisticsSnapshot = _statistics.ToDictionary
 				Me.WriteUpdate("Exported document " & i + 1, i = documentArtifactIDs.Length - 1)
 				If _halt Then Exit Sub
@@ -522,7 +525,7 @@ Namespace kCura.WinEDDS
 			args.Delimiter = Me.ExportFile.RecordDelimiter
 			args.DestinationFilesystemFolder = Me.ExportFile.FolderPath
 			args.DocumentExportCount = Me.DocumentsExported
-			args.ErrorCount = 0			'TODO:Implement
+			args.ErrorCount = _errorCount
 			args.ExportedTextFieldID = Me.ExportFile.SelectedTextField.FieldArtifactId
 			If Me.ExportFile.ExportFullTextAsFile Then
 				args.ExportedTextFileEncodingCodePage = Me.ExportFile.TextFileEncoding.CodePage
@@ -551,7 +554,10 @@ Namespace kCura.WinEDDS
 				args.NestedValueDelimiter = Me.ExportFile.NestedValueDelimiter
 				args.NewlineProxy = Me.ExportFile.NewlineDelimiter
 			End If
-			args.FileExportCount = 0			'TODO:Implement
+			Try
+				args.FileExportCount = CType(_fileCount, Int32)
+			Catch
+			End Try
 			Select Case Me.ExportFile.TypeOfExportedFilePath
 				Case ExportFile.ExportedFilePathType.Absolute
 					args.FilePathSettings = "Use Absolute Paths"
@@ -629,7 +635,7 @@ Namespace kCura.WinEDDS
 			End Select
 			args.VolumeMaxSize = Me.ExportFile.VolumeInfo.VolumeMaxSize
 			args.VolumePrefix = Me.ExportFile.VolumeInfo.VolumePrefix
-			args.WarningCount = 0			'TODO:Implement
+			args.WarningCount = _warningCount
 			Try
 				_auditManager.AuditExport(Me.ExportFile.CaseInfo.ArtifactID, Not success, args)
 			Catch
@@ -661,6 +667,7 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Friend Sub WriteError(ByVal line As String)
+			_errorCount += 1
 			WriteStatusLine(kCura.Windows.Process.EventType.Error, line, True)
 		End Sub
 
@@ -681,6 +688,7 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Friend Sub WriteWarning(ByVal line As String)
+			_warningCount += 1
 			WriteStatusLine(kCura.Windows.Process.EventType.Warning, line, True)
 		End Sub
 

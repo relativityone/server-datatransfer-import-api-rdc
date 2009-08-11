@@ -229,12 +229,12 @@ Namespace kCura.WinEDDS
 		End Sub
 #End Region
 
-		Public Sub ExportDocument(ByVal documentInfo As Exporters.DocumentExportInfo)
+		Public Function ExportDocument(ByVal documentInfo As Exporters.DocumentExportInfo) As Int64
 			Dim tries As Int32 = kCura.Utility.Config.Settings.IoErrorNumberOfRetries
 			While tries > 0 And Not Me.Halt
 				tries -= 1
 				Try
-					Me.ExecuteExportDocument(documentInfo, tries < (kCura.Utility.Config.Settings.IoErrorNumberOfRetries - 1))
+					Return Me.ExecuteExportDocument(documentInfo, tries < (kCura.Utility.Config.Settings.IoErrorNumberOfRetries - 1))
 					Exit While
 				Catch ex As kCura.WinEDDS.Exceptions.ExportBaseException
 					If tries = 0 Then Throw
@@ -249,7 +249,7 @@ Namespace kCura.WinEDDS
 				End Try
 			End While
 
-		End Sub
+		End Function
 
 		Private Sub ReInitializeAllStreams()
 			If Not _nativeFileWriter Is Nothing Then _nativeFileWriter = Me.ReInitializeStream(_nativeFileWriter, _nativeFileWriterPosition, Me.LoadFileDestinationPath, _encoding)
@@ -276,7 +276,7 @@ Namespace kCura.WinEDDS
 			End Try
 		End Function
 
-		Private Sub ExecuteExportDocument(ByVal documentInfo As Exporters.DocumentExportInfo, ByVal isRetryAttempt As Boolean)
+		Private Function ExecuteExportDocument(ByVal documentInfo As Exporters.DocumentExportInfo, ByVal isRetryAttempt As Boolean) As Int64
 			If isRetryAttempt Then Me.ReInitializeAllStreams()
 			Dim totalFileSize As Int64 = 0
 			Dim metadataBytes As Int64 = 0
@@ -351,7 +351,7 @@ Namespace kCura.WinEDDS
 					successfulRollup = False
 					Try
 						If Not tempLocation Is Nothing AndAlso Not tempLocation = "" Then kCura.Utility.File.Delete(tempLocation)
-						_parent.WriteImgProgressError(documentInfo, ex.ImageIndex, ex, "Document exported in single-page image mode.")						'TODO:
+						_parent.WriteImgProgressError(documentInfo, ex.ImageIndex, ex, "Document exported in single-page image mode.")
 					Catch ioex As System.IO.IOException
 						Throw New kCura.WinEDDS.Exceptions.FileWriteException(Exceptions.FileWriteException.DestinationFile.Errors, ioex)
 					End Try
@@ -434,12 +434,14 @@ Namespace kCura.WinEDDS
 				Me.ExportImages(documentInfo.Images, tempLocalIproFullTextFilePath, successfulRollup)
 				_timekeeper.MarkEnd("VolumeManager_ExportImages")
 			End If
+			Dim nativeCount As Int32 = 0
 			Dim nativeLocation As String = ""
 			If Me.Settings.ExportNative AndAlso Me.Settings.VolumeInfo.CopyFilesFromRepository Then
 				Dim nativeFileName As String = Me.GetNativeFileName(documentInfo)
 				Dim localFilePath As String = Me.GetLocalNativeFilePath(documentInfo, nativeFileName)
 				_timekeeper.MarkStart("VolumeManager_ExportNative")
 				Me.ExportNative(localFilePath, documentInfo.NativeFileGuid, documentInfo.DocumentArtifactID, nativeFileName, documentInfo.NativeTempLocation)
+				nativeCount = 1
 				_timekeeper.MarkEnd("VolumeManager_ExportNative")
 				If documentInfo.NativeTempLocation = "" Then
 					nativeLocation = ""
@@ -501,7 +503,8 @@ Namespace kCura.WinEDDS
 			_statistics.MetadataBytes = metadataBytes
 			_statistics.FileBytes += totalFileSize
 			If Not _errorWriter Is Nothing Then _errorWriterPosition = _errorWriter.BaseStream.Position
-		End Sub
+			Return imageCount + nativeCount + textCount
+		End Function
 
 		Private Function DownloadTextFieldAsFile(ByVal documentInfo As WinEDDS.Exporters.DocumentExportInfo, ByVal field As WinEDDS.ViewFieldInfo) As String
 			Dim tempLocalFullTextFilePath As String = System.IO.Path.GetTempFileName

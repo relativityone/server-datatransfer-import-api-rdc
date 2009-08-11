@@ -39,7 +39,7 @@ Namespace kCura.WinEDDS.Exporters.LineFactory
 				Select Case Me.ImageType
 					Case ExportFile.ImageType.MultiPageTiff
 						Return Me.PageNumber.ToString
-					Case ExportFile.ImageType.Pdf					'TODO:Find out the expected behaviour for this; working on the assumption that multi-page is multi-page
+					Case ExportFile.ImageType.Pdf
 						Return Me.PageNumber.ToString
 					Case ExportFile.ImageType.SinglePage
 						Return 0.ToString

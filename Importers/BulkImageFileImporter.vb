@@ -80,6 +80,18 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
+		Public ReadOnly Property Statistics() As kCura.WinEDDS.Statistics
+			Get
+				Return _statistics
+			End Get
+		End Property
+
+		Public ReadOnly Property UploadConnection() As FileUploader.Type
+			Get
+				Return _fileUploader.UploaderType
+			End Get
+		End Property
+
 #End Region
 
 #Region "Constructors"
@@ -226,45 +238,6 @@ Namespace kCura.WinEDDS
 			ManageErrors()
 		End Function
 
-		Private Function GetStats() As kCura.EDDS.WebAPI.AuditManagerBase.ImageImportStatistics
-			Dim retval As New kCura.EDDS.WebAPI.AuditManagerBase.ImageImportStatistics
-			retval.DestinationFolderArtifactID = _settings.DestinationFolderID
-			If _settings.ProductionArtifactID > 0 Then retval.DestinationProductionArtifactID = _settings.ProductionArtifactID
-			retval.ExtractedTextReplaced = _settings.ReplaceFullText
-			If _settings.CopyFilesToDocumentRepository Then
-				retval.FilesCopiedToRepository = _settings.SelectedCasePath
-			Else
-				retval.FilesCopiedToRepository = String.Empty
-			End If
-			retval.LoadFileName = System.IO.Path.GetFileName(_settings.FileName)
-			retval.NumberOfDocumentsCreated = 0		 'TODO: Implement
-			retval.NumberOfDocumentsUpdated = 0		 'TODO: Implement
-			retval.NumberOfErrors = 0		 'TODO: Implement
-			retval.NumberOfFilesLoaded = 0			'TODO: Implement
-			retval.NumberOfWarnings = 0			'TODO: Implement
-			retval.OverlayIdentifierFieldArtifactID = _settings.IdentityFieldId
-			Select Case _settings.Overwrite.ToLower
-				Case "none"
-					retval.Overwrite = EDDS.WebAPI.AuditManagerBase.OverwriteType.Append
-				Case "strict"
-					retval.Overwrite = EDDS.WebAPI.AuditManagerBase.OverwriteType.Overlay
-				Case Else
-					retval.Overwrite = EDDS.WebAPI.AuditManagerBase.OverwriteType.Both
-			End Select
-			Select Case _fileUploader.UploaderType
-				Case FileUploader.Type.Web
-					retval.RepositoryConnection = EDDS.WebAPI.AuditManagerBase.RepositoryConnectionType.Web
-				Case FileUploader.Type.Direct
-					retval.RepositoryConnection = EDDS.WebAPI.AuditManagerBase.RepositoryConnectionType.Direct
-			End Select
-			retval.RunTimeInMilliseconds = CType(System.DateTime.Now.Subtract(_start).TotalMilliseconds, Int32)
-			retval.SupportImageAutoNumbering = _settings.AutoNumberImages
-			retval.StartLine = CType(System.Math.Min(_settings.StartLineNumber, Int32.MaxValue), Int32)
-			retval.TotalFileSize = _statistics.FileBytes
-			retval.TotalMetadataBytes = _statistics.MetadataBytes
-			Return retval
-		End Function
-
 		Public Overloads Overrides Function ReadFile(ByVal path As String) As Object
 			_timekeeper.MarkStart("TOTAL")
 			_start = System.DateTime.Now
@@ -325,16 +298,14 @@ Namespace kCura.WinEDDS
 			End Try
 		End Function
 
-
+		Public Event EndRun(ByVal success As Boolean, ByVal runID As String)
 
 		Private Sub CompleteSuccess()
 			Me.Reader.Close()
 			If _productionArtifactID <> 0 Then _productionManager.DoPostImportProcessing(_fileUploader.CaseArtifactID, _productionArtifactID)
-
 			Try
-				_auditManager.AuditImageImport(_caseInfo.ArtifactID, _runId, False, Me.GetStats)
+				RaiseEvent EndRun(True, _runId)
 			Catch
-				Throw
 			End Try
 			RaiseStatusEvent(kCura.Windows.Process.EventType.Progress, "End Image Upload", Me.CurrentLineNumber, Me.CurrentLineNumber)
 		End Sub
@@ -349,7 +320,7 @@ Namespace kCura.WinEDDS
 			Catch x As System.Exception
 			End Try
 			Try
-				_auditManager.AuditImageImport(_caseInfo.ArtifactID, _runId, True, Me.GetStats)
+				RaiseEvent EndRun(False, _runId)
 			Catch
 			End Try
 			RaiseFatalError(ex)

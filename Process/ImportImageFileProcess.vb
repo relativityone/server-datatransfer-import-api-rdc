@@ -22,7 +22,49 @@ Namespace kCura.WinEDDS
 				If _imageFileImporter.HasErrors Then exportFilePath = System.Guid.NewGuid.ToString
 				Me.ProcessObserver.RaiseProcessCompleteEvent(False, exportFilePath, True)
 			End If
+		End Sub
 
+		Private Sub AuditRun(ByVal success As Boolean, ByVal runID As String)
+			Try
+				Dim retval As New kCura.EDDS.WebAPI.AuditManagerBase.ImageImportStatistics
+				retval.DestinationFolderArtifactID = ImageLoadFile.DestinationFolderID
+				If ImageLoadFile.ProductionArtifactID > 0 Then retval.DestinationProductionArtifactID = ImageLoadFile.ProductionArtifactID
+				retval.ExtractedTextReplaced = ImageLoadFile.ReplaceFullText
+				If ImageLoadFile.CopyFilesToDocumentRepository Then
+					retval.FilesCopiedToRepository = ImageLoadFile.SelectedCasePath
+				Else
+					retval.FilesCopiedToRepository = String.Empty
+				End If
+				retval.LoadFileName = System.IO.Path.GetFileName(ImageLoadFile.FileName)
+				retval.NumberOfDocumentsCreated = 0			 'TODO: Implement
+				retval.NumberOfDocumentsUpdated = 0			 'TODO: Implement
+				retval.NumberOfErrors = _errorCount
+				retval.NumberOfFilesLoaded = 0			 'TODO: Implement
+				retval.NumberOfWarnings = _warningCount
+				retval.OverlayIdentifierFieldArtifactID = ImageLoadFile.IdentityFieldId
+				Select Case ImageLoadFile.Overwrite.ToLower
+					Case "none"
+						retval.Overwrite = EDDS.WebAPI.AuditManagerBase.OverwriteType.Append
+					Case "strict"
+						retval.Overwrite = EDDS.WebAPI.AuditManagerBase.OverwriteType.Overlay
+					Case Else
+						retval.Overwrite = EDDS.WebAPI.AuditManagerBase.OverwriteType.Both
+				End Select
+				Select Case _imageFileImporter.UploadConnection
+					Case FileUploader.Type.Web
+						retval.RepositoryConnection = EDDS.WebAPI.AuditManagerBase.RepositoryConnectionType.Web
+					Case FileUploader.Type.Direct
+						retval.RepositoryConnection = EDDS.WebAPI.AuditManagerBase.RepositoryConnectionType.Direct
+				End Select
+				retval.RunTimeInMilliseconds = CType(System.DateTime.Now.Subtract(_startTime).TotalMilliseconds, Int32)
+				retval.SupportImageAutoNumbering = ImageLoadFile.AutoNumberImages
+				retval.StartLine = CType(System.Math.Min(ImageLoadFile.StartLineNumber, Int32.MaxValue), Int32)
+				retval.TotalFileSize = _imageFileImporter.Statistics.FileBytes
+				retval.TotalMetadataBytes = _imageFileImporter.Statistics.MetadataBytes
+				Dim auditmanager As New kCura.WinEDDS.Service.AuditManager(ImageLoadFile.Credential, ImageLoadFile.CookieContainer)
+				auditmanager.AuditImageImport(ImageLoadFile.CaseInfo.ArtifactID, runID, Not success, retval)
+			Catch
+			End Try
 		End Sub
 
 		Private Sub _imageFileImporter_StatusMessage(ByVal e As kCura.Windows.Process.StatusEventArgs) Handles _imageFileImporter.StatusMessage
@@ -85,6 +127,10 @@ Namespace kCura.WinEDDS
 			End Select
 			Me.ProcessObserver.RaiseWarningEvent((e.CurrentLineNumber + 1).ToString, message.ToString)
 			System.Threading.Monitor.Exit(Me.ProcessObserver)
+		End Sub
+
+		Private Sub _imageFileImporter_EndRun(ByVal success As Boolean, ByVal runID As String) Handles _imageFileImporter.EndRun
+			Me.AuditRun(success, runID)
 		End Sub
 	End Class
 End Namespace
