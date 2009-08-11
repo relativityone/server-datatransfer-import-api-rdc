@@ -524,7 +524,6 @@ Namespace kCura.EDDS.WinForm
 				Dim casefields As String() = Nothing
 				Dim continue As Boolean = True
 				Try
-					'TODO: WINFLEX - ArtifactTypeID
 					casefields = _application.GetCaseFields(_imageLoadFile.CaseInfo.ArtifactID, 10, True)
 					Return Not casefields Is Nothing
 				Catch ex As System.Exception

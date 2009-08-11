@@ -449,15 +449,6 @@ Namespace kCura.EDDS.WinForm
 					Throw
 				End If
 			End Try
-
-			'Dim dsFactory As New kCura.Utility.DataSetFactory
-			'dsFactory.AddColumn("CaseID", kCura.Utility.DataSetFactory.DataType.Integer)
-			'dsFactory.AddColumn("Name", kCura.Utility.DataSetFactory.DataType.String)
-			'dsFactory.AddRow(1, "Repository 2")
-			'dsFactory.AddRow(2, "Repository 1")
-			'dsFactory.AddRow(3, "Repository 3")
-			'dsFactory.AddRow(4, "Repository 4")
-			'Return dsFactory.BuildDataSet
 		End Function
 
 		Public Sub SelectCaseFolder(ByVal folderInfo As FolderInfo)
@@ -482,7 +473,6 @@ Namespace kCura.EDDS.WinForm
 			End Try
 		End Sub
 
-		'TODO : consider renaming this to something more GUI specific
 		Public Function GetCase() As kCura.EDDS.Types.CaseInfo
 			Dim frm As New CaseSelectForm
 			frm.ShowDialog()

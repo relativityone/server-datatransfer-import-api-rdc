@@ -15,8 +15,7 @@ Namespace kCura.EDDS.WinForm
     Private _application As kCura.EDDS.WinForm.Application
 
     Public Overrides Function GetCaseFields(ByVal caseRootArtifactID As Int32) As String()
-      'TODO: WINFLEX - ArtifactTypeID
-      Return _application.GetCaseFields(caseRootArtifactID, 10)
+			Return _application.GetCaseFields(caseRootArtifactID, 10)
     End Function
 
     Public Overrides Function GetCaseFolderPath(ByVal folderId As Int32) As String
@@ -40,7 +39,7 @@ Namespace kCura.EDDS.WinForm
 				Dim fieldManager As New kCura.WinEDDS.Service.FieldQuery(_application.Credential, _application.CookieContainer)
         'TODO: WINFLEX - ArtifactTypeID
         'TODO: WINFLEX - Should reference an enum or constant instead of literal 10
-        _currentDocumentCaseFields = fieldManager.RetrieveAllAsArray(caseID, 10)
+				_currentDocumentCaseFields = fieldManager.RetrieveAllAsArray(caseID, 10)
 			End If
 			Return _currentDocumentCaseFields
 		End Function
