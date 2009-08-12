@@ -1219,6 +1219,20 @@ Namespace kCura.EDDS.WinForm
 			tempLoadFile.Credentials = Me.Credential
 			tempLoadFile.DestinationFolderID = loadFile.DestinationFolderID
 			tempLoadFile.SelectedIdentifierField = Me.CurrentFields(ArtifactTypeID, True).Item(Me.GetCaseIdentifierFields(ArtifactTypeID)(0))
+			Dim x As New System.Windows.Forms.OpenFileDialog
+			If Not loadFile.FilePath = "" AndAlso System.IO.File.Exists(loadFile.FilePath) Then
+				x.FileName = loadFile.FilePath
+			ElseIf Not tempLoadFile.FilePath = "" AndAlso System.IO.File.Exists(tempLoadFile.FilePath) Then
+				x.FileName = tempLoadFile.FilePath
+			End If
+			MsgBox("Please Choose a Load File", MsgBoxStyle.OKOnly)
+			x.Title = "Choose Load File"
+			x.Filter = "All files (*.*)|*.*|CSV Files (*.csv)|*.csv|Text Files (*.txt)|*.txt|DAT Files|*.dat"
+			Select Case x.ShowDialog()
+				Case DialogResult.Cancel
+					Return Nothing
+			End Select
+			tempLoadFile.FilePath = x.FileName
 			Dim mapItemToRemove As LoadFileFieldMap.LoadFileFieldMapItem
 			If tempLoadFile.GroupIdentifierColumn = "" AndAlso System.IO.File.Exists(tempLoadFile.FilePath) Then
 				Dim fieldMapItem As kCura.WinEDDS.LoadFileFieldMap.LoadFileFieldMapItem
