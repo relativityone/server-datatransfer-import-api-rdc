@@ -15,12 +15,14 @@ Namespace kCura.WinEDDS.Service
 #End Region
 
 #Region " Shadow Methods "
-		Public Shadows Function BulkImportImage(ByVal appID As Int32, ByVal bulkFileName As String, ByVal uploadFullText As Boolean, ByVal overwrite As kCura.EDDS.WebAPI.BulkImportManagerBase.OverwriteType, ByVal destinationFolderArtifactID As Int32, ByVal repository As String, ByVal useBulk As Boolean, ByVal runID As String, ByVal keyFieldID As Int32) As Object
+		Public Shadows Function BulkImportImage(ByVal appID As Int32, ByVal bulkFileName As String, ByVal uploadFullText As Boolean, ByVal overwrite As kCura.EDDS.WebAPI.BulkImportManagerBase.OverwriteType, ByVal destinationFolderArtifactID As Int32, ByVal repository As String, ByVal useBulk As Boolean, ByVal runID As String, ByVal keyFieldID As Int32) As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults
 			Dim tries As Int32 = 0
 			While tries < Config.MaxReloginTries
 				tries += 1
 				Try
-					Return MyBase.BulkImportImage(appID, bulkFileName, uploadFullText, overwrite, destinationFolderArtifactID, repository, useBulk, runID, keyFieldID)
+					Dim retval As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults = MyBase.BulkImportImage(appID, bulkFileName, uploadFullText, overwrite, destinationFolderArtifactID, repository, useBulk, runID, keyFieldID)
+					If retval.ErrorText <> "" Then Throw New BulkImportSqlException(retval.ErrorText)
+					Return retval
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
 						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
@@ -31,12 +33,14 @@ Namespace kCura.WinEDDS.Service
 			End While
 		End Function
 
-		Public Shadows Function BulkImportProductionImage(ByVal appID As Int32, ByVal bulkFileName As String, ByVal uploadFullText As Boolean, ByVal overwrite As kCura.EDDS.WebAPI.BulkImportManagerBase.OverwriteType, ByVal destinationFolderArtifactID As Int32, ByVal repository As String, ByVal productionArtifactID As Int32, ByVal useBulk As Boolean, ByVal runID As String, ByVal productionKeyFieldArtifactID As Int32) As Object
+		Public Shadows Function BulkImportProductionImage(ByVal appID As Int32, ByVal bulkFileName As String, ByVal uploadFullText As Boolean, ByVal overwrite As kCura.EDDS.WebAPI.BulkImportManagerBase.OverwriteType, ByVal destinationFolderArtifactID As Int32, ByVal repository As String, ByVal productionArtifactID As Int32, ByVal useBulk As Boolean, ByVal runID As String, ByVal productionKeyFieldArtifactID As Int32) As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults
 			Dim tries As Int32 = 0
 			While tries < Config.MaxReloginTries
 				tries += 1
 				Try
-					Return MyBase.BulkImportProductionImage(appID, bulkFileName, uploadFullText, overwrite, destinationFolderArtifactID, repository, productionArtifactID, useBulk, runID, productionKeyFieldArtifactID)
+					Dim retval As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults = MyBase.BulkImportProductionImage(appID, bulkFileName, uploadFullText, overwrite, destinationFolderArtifactID, repository, productionArtifactID, useBulk, runID, productionKeyFieldArtifactID)
+					If retval.ErrorText <> "" Then Throw New BulkImportSqlException(retval.ErrorText)
+					Return retval
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
 						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
@@ -84,12 +88,14 @@ Namespace kCura.WinEDDS.Service
 			End While
 		End Function
 
-		Public Shadows Function BulkImportNative(ByVal appID As Int32, ByVal settings As kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo) As Object
+		Public Shadows Function BulkImportNative(ByVal appID As Int32, ByVal settings As kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo) As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults
 			Dim tries As Int32 = 0
 			While tries < Config.MaxReloginTries
 				tries += 1
 				Try
-					Return MyBase.BulkImportNative(appID, settings)
+					Dim retval As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults = MyBase.BulkImportNative(appID, settings)
+					If retval.ErrorText <> "" Then Throw New BulkImportSqlException(retval.ErrorText)
+					Return retval
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
 						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
@@ -100,12 +106,14 @@ Namespace kCura.WinEDDS.Service
 			End While
 		End Function
 
-		Public Shadows Function BulkImportObjects(ByVal appID As Int32, ByVal settings As kCura.EDDS.WebAPI.BulkImportManagerBase.ObjectLoadInfo) As Object
+		Public Shadows Function BulkImportObjects(ByVal appID As Int32, ByVal settings As kCura.EDDS.WebAPI.BulkImportManagerBase.ObjectLoadInfo) As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults
 			Dim tries As Int32 = 0
 			While tries < Config.MaxReloginTries
 				tries += 1
 				Try
-					Return MyBase.BulkImportObjects(appID, settings)
+					Dim retval As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults = MyBase.BulkImportObjects(appID, settings)
+					If retval.ErrorText <> "" Then Throw New BulkImportSqlException(retval.ErrorText)
+					Return retval
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
 						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
@@ -134,6 +142,11 @@ Namespace kCura.WinEDDS.Service
 
 #End Region
 
-
+		Public Class BulkImportSqlException
+			Inherits System.Exception
+			Public Sub New(ByVal errorText As String)
+				MyBase.New(errorText)
+			End Sub
+		End Class
 	End Class
 End Namespace

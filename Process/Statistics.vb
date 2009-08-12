@@ -7,6 +7,9 @@ Namespace kCura.WinEDDS
 		Private _sqlTime As Int64 = 0
 		Private _docCount As Int64 = 0
 		Private _lastAccessed As System.DateTime
+		Private _documentsCreated As Int32 = 0
+		Private _documentsUpdated As Int32 = 0
+		Private _filesProcessed As Int32 = 0
 
 		Public Property MetadataBytes() As Int64
 			Get
@@ -104,6 +107,31 @@ Namespace kCura.WinEDDS
 			End Select
 			Return (value / Math.Pow(1000, k)).ToString("N2") & " " & prefix & "B"
 		End Function
+
+		Public ReadOnly Property DocumentsCreated() As Int32
+			Get
+				Return _documentsCreated
+			End Get
+		End Property
+
+		Public ReadOnly Property DocumentsUpdated() As Int32
+			Get
+				Return _documentsUpdated
+			End Get
+		End Property
+
+		Public ReadOnly Property FilesProcessed() As Int32
+			Get
+				Return _filesProcessed
+			End Get
+		End Property
+
+		Public Sub ProcessRunResults(ByVal results As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults)
+			_documentsCreated += results.ArtifactsCreated
+			_documentsUpdated += results.ArtifactsUpdated
+			_filesProcessed += results.FilesProcessed
+		End Sub
+
 
 		Public Overridable Function ToDictionary() As IDictionary
 			Dim retval As New System.Collections.Specialized.HybridDictionary

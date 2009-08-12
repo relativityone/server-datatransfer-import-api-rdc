@@ -36,10 +36,10 @@ Namespace kCura.WinEDDS
 					retval.FilesCopiedToRepository = String.Empty
 				End If
 				retval.LoadFileName = System.IO.Path.GetFileName(ImageLoadFile.FileName)
-				retval.NumberOfDocumentsCreated = 0			 'TODO: Implement
-				retval.NumberOfDocumentsUpdated = 0			 'TODO: Implement
+				retval.NumberOfDocumentsCreated = _imageFileImporter.Statistics.DocumentsCreated
+				retval.NumberOfDocumentsUpdated = _imageFileImporter.Statistics.DocumentsUpdated
 				retval.NumberOfErrors = _errorCount
-				retval.NumberOfFilesLoaded = 0			 'TODO: Implement
+				retval.NumberOfFilesLoaded = _imageFileImporter.Statistics.FilesProcessed
 				retval.NumberOfWarnings = _warningCount
 				retval.OverlayIdentifierFieldArtifactID = ImageLoadFile.IdentityFieldId
 				Select Case ImageLoadFile.Overwrite.ToLower
@@ -90,7 +90,7 @@ Namespace kCura.WinEDDS
 		Private Sub _imageFileImporter_FatalErrorEvent(ByVal message As String, ByVal ex As System.Exception) Handles _imageFileImporter.FatalErrorEvent
 			System.Threading.Monitor.Enter(Me.ProcessObserver)
 			Me.ProcessObserver.RaiseFatalExceptionEvent(ex)
-			Me.ProcessObserver.RaiseProcessCompleteEvent(False, "", True)
+			Me.ProcessObserver.RaiseProcessCompleteEvent(False, _imageFileImporter.ErrorLogFileName, True)
 			_hasRunProcessComplete = True
 			System.Threading.Monitor.Exit(Me.ProcessObserver)
 		End Sub

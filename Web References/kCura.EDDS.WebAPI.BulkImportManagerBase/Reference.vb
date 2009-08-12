@@ -38,9 +38,9 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
         
         '<remarks/>
         <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/BulkImportManager/BulkImportImage", RequestNamespace:="http://www.kCura.com/EDDS/BulkImportManager", ResponseNamespace:="http://www.kCura.com/EDDS/BulkImportManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
-        Public Function BulkImportImage(ByVal appID As Integer, ByVal bulkFileName As String, ByVal uploadFullText As Boolean, ByVal overwrite As OverwriteType, ByVal destinationFolderArtifactID As Integer, ByVal repository As String, ByVal useBulk As Boolean, ByVal runID As String, ByVal keyFieldID As Integer) As Object
+        Public Function BulkImportImage(ByVal appID As Integer, ByVal bulkFileName As String, ByVal uploadFullText As Boolean, ByVal overwrite As OverwriteType, ByVal destinationFolderArtifactID As Integer, ByVal repository As String, ByVal useBulk As Boolean, ByVal runID As String, ByVal keyFieldID As Integer) As MassImportResults
             Dim results() As Object = Me.Invoke("BulkImportImage", New Object() {appID, bulkFileName, uploadFullText, overwrite, destinationFolderArtifactID, repository, useBulk, runID, keyFieldID})
-            Return CType(results(0),Object)
+            Return CType(results(0),MassImportResults)
         End Function
         
         '<remarks/>
@@ -49,16 +49,16 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
         End Function
         
         '<remarks/>
-        Public Function EndBulkImportImage(ByVal asyncResult As System.IAsyncResult) As Object
+        Public Function EndBulkImportImage(ByVal asyncResult As System.IAsyncResult) As MassImportResults
             Dim results() As Object = Me.EndInvoke(asyncResult)
-            Return CType(results(0),Object)
+            Return CType(results(0),MassImportResults)
         End Function
         
         '<remarks/>
         <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/BulkImportManager/BulkImportProductionImage", RequestNamespace:="http://www.kCura.com/EDDS/BulkImportManager", ResponseNamespace:="http://www.kCura.com/EDDS/BulkImportManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
-        Public Function BulkImportProductionImage(ByVal appID As Integer, ByVal bulkFileName As String, ByVal uploadFullText As Boolean, ByVal overwrite As OverwriteType, ByVal destinationFolderArtifactID As Integer, ByVal repository As String, ByVal productionArtifactID As Integer, ByVal useBulk As Boolean, ByVal runID As String, ByVal productionKeyFieldArtifactID As Integer) As Object
+        Public Function BulkImportProductionImage(ByVal appID As Integer, ByVal bulkFileName As String, ByVal uploadFullText As Boolean, ByVal overwrite As OverwriteType, ByVal destinationFolderArtifactID As Integer, ByVal repository As String, ByVal productionArtifactID As Integer, ByVal useBulk As Boolean, ByVal runID As String, ByVal productionKeyFieldArtifactID As Integer) As MassImportResults
             Dim results() As Object = Me.Invoke("BulkImportProductionImage", New Object() {appID, bulkFileName, uploadFullText, overwrite, destinationFolderArtifactID, repository, productionArtifactID, useBulk, runID, productionKeyFieldArtifactID})
-            Return CType(results(0),Object)
+            Return CType(results(0),MassImportResults)
         End Function
         
         '<remarks/>
@@ -67,9 +67,9 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
         End Function
         
         '<remarks/>
-        Public Function EndBulkImportProductionImage(ByVal asyncResult As System.IAsyncResult) As Object
+        Public Function EndBulkImportProductionImage(ByVal asyncResult As System.IAsyncResult) As MassImportResults
             Dim results() As Object = Me.EndInvoke(asyncResult)
-            Return CType(results(0),Object)
+            Return CType(results(0),MassImportResults)
         End Function
         
         '<remarks/>
@@ -110,9 +110,9 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
         
         '<remarks/>
         <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/BulkImportManager/BulkImportNative", RequestNamespace:="http://www.kCura.com/EDDS/BulkImportManager", ResponseNamespace:="http://www.kCura.com/EDDS/BulkImportManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
-        Public Function BulkImportNative(ByVal appID As Integer, ByVal settings As NativeLoadInfo) As Object
+        Public Function BulkImportNative(ByVal appID As Integer, ByVal settings As NativeLoadInfo) As MassImportResults
             Dim results() As Object = Me.Invoke("BulkImportNative", New Object() {appID, settings})
-            Return CType(results(0),Object)
+            Return CType(results(0),MassImportResults)
         End Function
         
         '<remarks/>
@@ -121,16 +121,16 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
         End Function
         
         '<remarks/>
-        Public Function EndBulkImportNative(ByVal asyncResult As System.IAsyncResult) As Object
+        Public Function EndBulkImportNative(ByVal asyncResult As System.IAsyncResult) As MassImportResults
             Dim results() As Object = Me.EndInvoke(asyncResult)
-            Return CType(results(0),Object)
+            Return CType(results(0),MassImportResults)
         End Function
         
         '<remarks/>
         <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/BulkImportManager/BulkImportObjects", RequestNamespace:="http://www.kCura.com/EDDS/BulkImportManager", ResponseNamespace:="http://www.kCura.com/EDDS/BulkImportManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
-        Public Function BulkImportObjects(ByVal appID As Integer, ByVal settings As ObjectLoadInfo) As Object
+        Public Function BulkImportObjects(ByVal appID As Integer, ByVal settings As ObjectLoadInfo) As MassImportResults
             Dim results() As Object = Me.Invoke("BulkImportObjects", New Object() {appID, settings})
-            Return CType(results(0),Object)
+            Return CType(results(0),MassImportResults)
         End Function
         
         '<remarks/>
@@ -139,9 +139,9 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
         End Function
         
         '<remarks/>
-        Public Function EndBulkImportObjects(ByVal asyncResult As System.IAsyncResult) As Object
+        Public Function EndBulkImportObjects(ByVal asyncResult As System.IAsyncResult) As MassImportResults
             Dim results() As Object = Me.EndInvoke(asyncResult)
-            Return CType(results(0),Object)
+            Return CType(results(0),MassImportResults)
         End Function
         
         '<remarks/>
@@ -215,46 +215,22 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
     
     '<remarks/>
     <System.Xml.Serialization.XmlTypeAttribute([Namespace]:="http://www.kCura.com/EDDS/BulkImportManager")>  _
-    Public Class ErrorFileKey
+    Public Class MassImportResults
         
         '<remarks/>
-        Public OpticonKey As String
+        Public FilesProcessed As Integer
         
         '<remarks/>
-        Public LogKey As String
-    End Class
-    
-    '<remarks/>
-    <System.Xml.Serialization.XmlTypeAttribute([Namespace]:="http://www.kCura.com/EDDS/BulkImportManager"),  _
-     System.Xml.Serialization.XmlIncludeAttribute(GetType(ObjectLoadInfo))>  _
-    Public Class NativeLoadInfo
+        Public ArtifactsCreated As Integer
         
         '<remarks/>
-        Public MappedFields() As FieldInfo
+        Public ArtifactsUpdated As Integer
         
         '<remarks/>
-        Public Overlay As OverwriteType
-        
-        '<remarks/>
-        Public Repository As String
+        Public ErrorText As String
         
         '<remarks/>
         Public RunID As String
-        
-        '<remarks/>
-        Public DataFileName As String
-        
-        '<remarks/>
-        Public UseBulkDataImport As Boolean
-        
-        '<remarks/>
-        Public UploadFiles As Boolean
-        
-        '<remarks/>
-        Public CodeFileName As String
-        
-        '<remarks/>
-        Public KeyFieldArtifactID As Integer
     End Class
     
     '<remarks/>
@@ -387,11 +363,55 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
     End Enum
     
     '<remarks/>
+    <System.Xml.Serialization.XmlTypeAttribute([Namespace]:="http://www.kCura.com/EDDS/BulkImportManager"),  _
+     System.Xml.Serialization.XmlIncludeAttribute(GetType(ObjectLoadInfo))>  _
+    Public Class NativeLoadInfo
+        
+        '<remarks/>
+        Public MappedFields() As FieldInfo
+        
+        '<remarks/>
+        Public Overlay As OverwriteType
+        
+        '<remarks/>
+        Public Repository As String
+        
+        '<remarks/>
+        Public RunID As String
+        
+        '<remarks/>
+        Public DataFileName As String
+        
+        '<remarks/>
+        Public UseBulkDataImport As Boolean
+        
+        '<remarks/>
+        Public UploadFiles As Boolean
+        
+        '<remarks/>
+        Public CodeFileName As String
+        
+        '<remarks/>
+        Public KeyFieldArtifactID As Integer
+    End Class
+    
+    '<remarks/>
     <System.Xml.Serialization.XmlTypeAttribute([Namespace]:="http://www.kCura.com/EDDS/BulkImportManager")>  _
     Public Class ObjectLoadInfo
         Inherits NativeLoadInfo
         
         '<remarks/>
         Public ArtifactTypeID As Integer
+    End Class
+    
+    '<remarks/>
+    <System.Xml.Serialization.XmlTypeAttribute([Namespace]:="http://www.kCura.com/EDDS/BulkImportManager")>  _
+    Public Class ErrorFileKey
+        
+        '<remarks/>
+        Public OpticonKey As String
+        
+        '<remarks/>
+        Public LogKey As String
     End Class
 End Namespace

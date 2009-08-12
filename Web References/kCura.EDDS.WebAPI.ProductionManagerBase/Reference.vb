@@ -93,6 +93,22 @@ Namespace kCura.EDDS.WebAPI.ProductionManagerBase
         End Sub
         
         '<remarks/>
+        <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/ProductionManager/DoPreImportProcessing", RequestNamespace:="http://www.kCura.com/EDDS/ProductionManager", ResponseNamespace:="http://www.kCura.com/EDDS/ProductionManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
+        Public Sub DoPreImportProcessing(ByVal caseContextArtifactID As Integer, ByVal productionArtifactID As Integer)
+            Me.Invoke("DoPreImportProcessing", New Object() {caseContextArtifactID, productionArtifactID})
+        End Sub
+        
+        '<remarks/>
+        Public Function BeginDoPreImportProcessing(ByVal caseContextArtifactID As Integer, ByVal productionArtifactID As Integer, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("DoPreImportProcessing", New Object() {caseContextArtifactID, productionArtifactID}, callback, asyncState)
+        End Function
+        
+        '<remarks/>
+        Public Sub EndDoPreImportProcessing(ByVal asyncResult As System.IAsyncResult)
+            Me.EndInvoke(asyncResult)
+        End Sub
+        
+        '<remarks/>
         <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/ProductionManager/Read", RequestNamespace:="http://www.kCura.com/EDDS/ProductionManager", ResponseNamespace:="http://www.kCura.com/EDDS/ProductionManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
         Public Function Read(ByVal caseContextArtifactID As Integer, ByVal productionArtifactID As Integer) As Production
             Dim results() As Object = Me.Invoke("Read", New Object() {caseContextArtifactID, productionArtifactID})

@@ -58,6 +58,17 @@
       <s:element name="DoPostImportProcessingResponse">
         <s:complexType />
       </s:element>
+      <s:element name="DoPreImportProcessing">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="productionArtifactID" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="DoPreImportProcessingResponse">
+        <s:complexType />
+      </s:element>
       <s:element name="Read">
         <s:complexType>
           <s:sequence>
@@ -336,6 +347,12 @@
   <wsdl:message name="DoPostImportProcessingSoapOut">
     <wsdl:part name="parameters" element="tns:DoPostImportProcessingResponse" />
   </wsdl:message>
+  <wsdl:message name="DoPreImportProcessingSoapIn">
+    <wsdl:part name="parameters" element="tns:DoPreImportProcessing" />
+  </wsdl:message>
+  <wsdl:message name="DoPreImportProcessingSoapOut">
+    <wsdl:part name="parameters" element="tns:DoPreImportProcessingResponse" />
+  </wsdl:message>
   <wsdl:message name="ReadSoapIn">
     <wsdl:part name="parameters" element="tns:Read" />
   </wsdl:message>
@@ -372,6 +389,10 @@
     <wsdl:operation name="DoPostImportProcessing">
       <wsdl:input message="tns:DoPostImportProcessingSoapIn" />
       <wsdl:output message="tns:DoPostImportProcessingSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="DoPreImportProcessing">
+      <wsdl:input message="tns:DoPreImportProcessingSoapIn" />
+      <wsdl:output message="tns:DoPreImportProcessingSoapOut" />
     </wsdl:operation>
     <wsdl:operation name="Read">
       <wsdl:input message="tns:ReadSoapIn" />
@@ -412,6 +433,15 @@
     </wsdl:operation>
     <wsdl:operation name="DoPostImportProcessing">
       <soap:operation soapAction="http://www.kCura.com/EDDS/ProductionManager/DoPostImportProcessing" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="DoPreImportProcessing">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/ProductionManager/DoPreImportProcessing" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>

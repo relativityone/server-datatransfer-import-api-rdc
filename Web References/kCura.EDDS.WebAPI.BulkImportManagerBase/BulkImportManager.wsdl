@@ -27,10 +27,19 @@
       <s:element name="BulkImportImageResponse">
         <s:complexType>
           <s:sequence>
-            <s:element minOccurs="0" maxOccurs="1" name="BulkImportImageResult" />
+            <s:element minOccurs="0" maxOccurs="1" name="BulkImportImageResult" type="tns:MassImportResults" />
           </s:sequence>
         </s:complexType>
       </s:element>
+      <s:complexType name="MassImportResults">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="FilesProcessed" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="ArtifactsCreated" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="ArtifactsUpdated" type="s:int" />
+          <s:element minOccurs="0" maxOccurs="1" name="ErrorText" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="RunID" type="s:string" />
+        </s:sequence>
+      </s:complexType>
       <s:element name="BulkImportProductionImage">
         <s:complexType>
           <s:sequence>
@@ -50,7 +59,7 @@
       <s:element name="BulkImportProductionImageResponse">
         <s:complexType>
           <s:sequence>
-            <s:element minOccurs="0" maxOccurs="1" name="BulkImportProductionImageResult" />
+            <s:element minOccurs="0" maxOccurs="1" name="BulkImportProductionImageResult" type="tns:MassImportResults" />
           </s:sequence>
         </s:complexType>
       </s:element>
@@ -64,12 +73,6 @@
           </s:sequence>
         </s:complexType>
       </s:element>
-      <s:complexType name="ErrorFileKey">
-        <s:sequence>
-          <s:element minOccurs="0" maxOccurs="1" name="OpticonKey" type="s:string" />
-          <s:element minOccurs="0" maxOccurs="1" name="LogKey" type="s:string" />
-        </s:sequence>
-      </s:complexType>
       <s:element name="GenerateImageErrorFilesResponse">
         <s:complexType>
           <s:sequence>
@@ -77,6 +80,12 @@
           </s:sequence>
         </s:complexType>
       </s:element>
+      <s:complexType name="ErrorFileKey">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="OpticonKey" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="LogKey" type="s:string" />
+        </s:sequence>
+      </s:complexType>
       <s:element name="ImageRunHasErrors">
         <s:complexType>
           <s:sequence>
@@ -171,7 +180,7 @@
       <s:element name="BulkImportNativeResponse">
         <s:complexType>
           <s:sequence>
-            <s:element minOccurs="0" maxOccurs="1" name="BulkImportNativeResult" />
+            <s:element minOccurs="0" maxOccurs="1" name="BulkImportNativeResult" type="tns:MassImportResults" />
           </s:sequence>
         </s:complexType>
       </s:element>
@@ -195,7 +204,7 @@
       <s:element name="BulkImportObjectsResponse">
         <s:complexType>
           <s:sequence>
-            <s:element minOccurs="0" maxOccurs="1" name="BulkImportObjectsResult" />
+            <s:element minOccurs="0" maxOccurs="1" name="BulkImportObjectsResult" type="tns:MassImportResults" />
           </s:sequence>
         </s:complexType>
       </s:element>

@@ -72,10 +72,10 @@ Namespace kCura.WinEDDS
 				retval.MultiValueDelimiter = LoadFile.MultiRecordDelimiter
 				retval.NewlineProxy = LoadFile.NewlineDelimiter
 				retval.NumberOfChoicesCreated = _loadFileImporter.CodeCreatedCount
-				retval.NumberOfDocumentsCreated = 0				'TODO: Implement
-				retval.NumberOfDocumentsUpdated = 0				'TODO: Implement
+				retval.NumberOfDocumentsCreated = _loadFileImporter.Statistics.DocumentsCreated
+				retval.NumberOfDocumentsUpdated = _loadFileImporter.Statistics.DocumentsUpdated
 				retval.NumberOfErrors = _errorCount
-				retval.NumberOfFilesLoaded = 0				'TODO: Implement
+				retval.NumberOfFilesLoaded = _loadFileImporter.Statistics.FilesProcessed
 				retval.NumberOfFoldersCreated = _loadFileImporter.FoldersCreated
 				retval.NumberOfWarnings = _warningCount
 				retval.OverlayIdentifierFieldArtifactID = LoadFile.IdentityFieldId

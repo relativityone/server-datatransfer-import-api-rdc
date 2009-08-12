@@ -521,14 +521,15 @@ Namespace kCura.WinEDDS
 			_timekeeper.MarkEnd("ManageDocumentMetadata_ProgressEvent")
 		End Sub
 
-		Private Function BulkImport(ByVal settings As kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo) As String
+		Private Function BulkImport(ByVal settings As kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo) As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults
 			Dim tries As Int32 = kCura.Utility.Config.Settings.IoErrorNumberOfRetries
 			While tries > 0
 				Try
+					Dim retval As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults
 					If TypeOf settings Is kCura.EDDS.WebAPI.BulkImportManagerBase.ObjectLoadInfo Then
-						Return _bulkImportManager.BulkImportObjects(_caseInfo.ArtifactID, DirectCast(settings, kCura.EDDS.WebAPI.BulkImportManagerBase.ObjectLoadInfo)).ToString()
+						Return _bulkImportManager.BulkImportObjects(_caseInfo.ArtifactID, DirectCast(settings, kCura.EDDS.WebAPI.BulkImportManagerBase.ObjectLoadInfo))
 					Else
-						Return _bulkImportManager.BulkImportNative(_caseInfo.ArtifactID, settings).ToString()
+						Return _bulkImportManager.BulkImportNative(_caseInfo.ArtifactID, settings)
 					End If
 				Catch ex As Exception
 					tries -= 1
@@ -602,7 +603,9 @@ Namespace kCura.WinEDDS
 			End Select
 			start = System.DateTime.Now.Ticks
 			settings.UploadFiles = _filePathColumnIndex <> -1 AndAlso _settings.LoadNativeFiles
-			_runID = Me.BulkImport(settings)
+			Dim runResults As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults = Me.BulkImport(settings)
+			_statistics.ProcessRunResults(runResults)
+			_runID = runResults.RunID
 			_statistics.SqlTime += (System.DateTime.Now.Ticks - start)
 
 			kCura.Utility.File.Delete(_outputNativeFilePath)

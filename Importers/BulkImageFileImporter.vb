@@ -92,6 +92,14 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
+		Public ReadOnly Property ErrorLogFileName() As String
+			Get
+				Return _errorMessageFileLocation
+			End Get
+		End Property
+
+
+
 #End Region
 
 #Region "Constructors"
@@ -167,14 +175,14 @@ Namespace kCura.WinEDDS
 			End Try
 		End Sub
 
-		Public Function RunBulkImport(ByVal overwrite As kCura.EDDS.WebAPI.BulkImportManagerBase.OverwriteType, ByVal useBulk As Boolean) As String
+		Public Function RunBulkImport(ByVal overwrite As kCura.EDDS.WebAPI.BulkImportManagerBase.OverwriteType, ByVal useBulk As Boolean) As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults
 			Dim tries As Int32 = kCura.Utility.Config.Settings.IoErrorNumberOfRetries
 			While tries > 0
 				Try
 					If _productionArtifactID = 0 Then
-						Return _bulkImportManager.BulkImportImage(_caseInfo.ArtifactID, _uploadKey, _replaceFullText, overwrite, _folderID, _repositoryPath, useBulk, _runId, _keyFieldDto.ArtifactID).ToString
+						Return _bulkImportManager.BulkImportImage(_caseInfo.ArtifactID, _uploadKey, _replaceFullText, overwrite, _folderID, _repositoryPath, useBulk, _runId, _keyFieldDto.ArtifactID)
 					Else
-						Return _bulkImportManager.BulkImportProductionImage(_caseInfo.ArtifactID, _uploadKey, _replaceFullText, overwrite, _folderID, _repositoryPath, _productionArtifactID, useBulk, _runId, _keyFieldDto.ArtifactID).ToString()
+						Return _bulkImportManager.BulkImportProductionImage(_caseInfo.ArtifactID, _uploadKey, _replaceFullText, overwrite, _folderID, _repositoryPath, _productionArtifactID, useBulk, _runId, _keyFieldDto.ArtifactID)
 					End If
 				Catch ex As Exception
 					tries -= 1
@@ -210,7 +218,9 @@ Namespace kCura.WinEDDS
 			End Select
 			If validateBcp.Type = FileUploadReturnArgs.FileUploadReturnType.ValidUploadKey Then
 				start = System.DateTime.Now.Ticks
-				_runId = Me.RunBulkImport(overwrite, True)
+				Dim runResults As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults = Me.RunBulkImport(overwrite, True)
+				_statistics.ProcessRunResults(runResults)
+				_runId = runResults.RunID
 				_statistics.SqlTime += System.Math.Max(System.DateTime.Now.Ticks - start, 1)
 			ElseIf Config.EnableSingleModeImport Then
 				RaiseEvent UploadModeChangeEvent(_fileUploader.UploaderType.ToString, _bcpuploader.IsBulkEnabled)
@@ -221,7 +231,9 @@ Namespace kCura.WinEDDS
 				_statistics.MetadataTime += System.Math.Max(System.DateTime.Now.Ticks - start, 1)
 				_bcpuploader.DestinationFolderPath = oldDestinationFolderPath
 				start = System.DateTime.Now.Ticks
-				_runId = Me.RunBulkImport(overwrite, False)
+				Dim runResults As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults = Me.RunBulkImport(overwrite, False)
+				_statistics.ProcessRunResults(runResults)
+				_runId = runResults.RunID
 				_statistics.SqlTime += System.Math.Max(System.DateTime.Now.Ticks - start, 1)
 			Else
 				Throw New kCura.WinEDDS.LoadFileBase.BcpPathAccessException(validateBcp.Value)
@@ -266,6 +278,7 @@ Namespace kCura.WinEDDS
 					RaiseEvent UploadModeChangeEvent(_fileUploader.UploaderType.ToString, _bcpuploader.IsBulkEnabled)
 				End If
 				While Me.Continue
+					If _productionArtifactID <> 0 Then _productionManager.DoPreImportProcessing(_caseInfo.ArtifactID, _productionArtifactID)
 					If Me.CurrentLineNumber < _startLineNumber Then
 						Me.AdvanceLine()
 					Else
@@ -302,7 +315,7 @@ Namespace kCura.WinEDDS
 
 		Private Sub CompleteSuccess()
 			Me.Reader.Close()
-			If _productionArtifactID <> 0 Then _productionManager.DoPostImportProcessing(_fileUploader.CaseArtifactID, _productionArtifactID)
+			If _productionArtifactID <> 0 AndAlso _errorCount = 0 Then _productionManager.DoPostImportProcessing(_fileUploader.CaseArtifactID, _productionArtifactID)
 			Try
 				RaiseEvent EndRun(True, _runId)
 			Catch
@@ -318,6 +331,10 @@ Namespace kCura.WinEDDS
 			Try
 				Me.Reader.Close()
 			Catch x As System.Exception
+			End Try
+			Try
+				Me.ManageErrors()
+			Catch
 			End Try
 			Try
 				RaiseEvent EndRun(False, _runId)
