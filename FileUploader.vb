@@ -117,8 +117,8 @@ Namespace kCura.WinEDDS
 			'This function catches a potential intermittent network issue, when UploadBcpFile returns an arg object of type Warning
 			Dim args As FileUploadReturnArgs
 			Dim tries As Int32 = 0
-			If Not _doRetry Then Return Nothing
-			While tries < 20 AndAlso _doRetry
+			'If Not _doRetry Then Return Nothing
+			While tries < 20 AndAlso (_doRetry OrElse tries = 0)
 				tries += 1
 				Try
 					args = UploadBcpFile(appID, localFilePath, upload)
