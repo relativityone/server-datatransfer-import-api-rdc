@@ -154,6 +154,11 @@ Namespace kCura.WinEDDS
 				_parent.Shutdown()
 				Exit Sub
 			End If
+			If Me.Settings.ExportImages AndAlso Not Me.Settings.Overwrite AndAlso System.IO.File.Exists(Me.ImageFileDestinationPath) Then
+				MsgBox(String.Format("Overwrite not selected and file '{0}' exists.", Me.ImageFileDestinationPath))
+				_parent.Shutdown()
+				Exit Sub
+			End If
 			_encoding = Me.Settings.LoadFileEncoding
 
 			If settings.ExportNative OrElse settings.SelectedViewFields.Length > 0 Then _nativeFileWriter = New System.IO.StreamWriter(loadFilePath, False, _encoding)
@@ -171,7 +176,7 @@ Namespace kCura.WinEDDS
 
 		Public ReadOnly Property LoadFileDestinationPath() As String
 			Get
-				Return Me.Settings.FolderPath & "\" & Me.Settings.LoadFilesPrefix & "_export." & Me.Settings.LoadFileExtension
+				Return Me.Settings.FolderPath.TrimEnd("\"c) & "\" & Me.Settings.LoadFilesPrefix & "_export." & Me.Settings.LoadFileExtension
 			End Get
 		End Property
 
@@ -187,7 +192,7 @@ Namespace kCura.WinEDDS
 						logFileExension = "_FULLTEXT_.lfp"
 					Case Else
 				End Select
-				Return Me.Settings.FolderPath & "\" & Me.Settings.LoadFilesPrefix & "_export" & logFileExension
+				Return Me.Settings.FolderPath.TrimEnd("\"c) & "\" & Me.Settings.LoadFilesPrefix & "_export" & logFileExension
 			End Get
 		End Property
 
