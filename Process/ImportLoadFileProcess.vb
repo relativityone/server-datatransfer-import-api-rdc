@@ -49,13 +49,15 @@ Namespace kCura.WinEDDS
 				retval.NestedValueDelimiter = LoadFile.HierarchicalValueDelimiter
 				retval.DestinationFolderArtifactID = LoadFile.DestinationFolderID
 				If LoadFile.ArtifactTypeID <> 10 Then retval.DestinationFolderArtifactID = -1
-				retval.ExtractedTextPointsToFile = LoadFile.FullTextColumnContainsFileLocation
 				Dim fieldMap As New System.Collections.ArrayList
+				Dim mappedExtractedText As Boolean = False
 				For Each item As WinEDDS.LoadFileFieldMap.LoadFileFieldMapItem In LoadFile.FieldMap
 					If Not item.DocumentField Is Nothing AndAlso item.NativeFileColumnIndex > -1 Then
 						fieldMap.Add(New Int32() {item.NativeFileColumnIndex, item.DocumentField.FieldID})
+						If item.DocumentField.FieldCategory = DynamicFields.Types.FieldCategory.FullText Then mappedExtractedText = True
 					End If
 				Next
+				retval.ExtractedTextPointsToFile = LoadFile.FullTextColumnContainsFileLocation AndAlso mappedExtractedText
 				If LoadFile.CopyFilesToDocumentRepository Then
 					retval.FilesCopiedToRepository = LoadFile.SelectedCasePath
 				Else
@@ -67,7 +69,11 @@ Namespace kCura.WinEDDS
 				Else
 					retval.FileFieldColumnName = String.Empty
 				End If
-				retval.FolderColumnName = LoadFile.FolderStructureContainedInColumn
+				If LoadFile.CreateFolderStructure Then
+					retval.FolderColumnName = LoadFile.FolderStructureContainedInColumn
+				Else
+					retval.FolderColumnName = ""
+				End If
 				If retval.FolderColumnName Is Nothing Then retval.FolderColumnName = String.Empty
 				retval.LoadFileEncodingCodePageID = LoadFile.SourceFileEncoding.CodePage
 				retval.LoadFileName = System.IO.Path.GetFileName(LoadFile.FilePath)
