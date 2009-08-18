@@ -207,6 +207,7 @@
         <s:restriction base="s:string">
           <s:enumeration value="Original" />
           <s:enumeration value="Produced" />
+          <s:enumeration value="Both" />
         </s:restriction>
       </s:simpleType>
       <s:element name="AuditExportResponse">

@@ -381,6 +381,9 @@ Namespace kCura.EDDS.WebAPI.AuditManagerBase
         
         '<remarks/>
         Produced
+        
+        '<remarks/>
+        Both
     End Enum
     
     '<remarks/>
