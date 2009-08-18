@@ -46,6 +46,7 @@ Namespace kCura.WinEDDS
 				retval.ArtifactTypeID = LoadFile.ArtifactTypeID
 				retval.Bound = LoadFile.QuoteDelimiter
 				retval.Delimiter = LoadFile.RecordDelimiter
+				retval.NestedValueDelimiter = LoadFile.HierarchicalValueDelimiter
 				retval.DestinationFolderArtifactID = LoadFile.DestinationFolderID
 				If LoadFile.ArtifactTypeID <> 10 Then retval.DestinationFolderArtifactID = -1
 				retval.ExtractedTextPointsToFile = LoadFile.FullTextColumnContainsFileLocation
@@ -80,6 +81,9 @@ Namespace kCura.WinEDDS
 				retval.NumberOfFoldersCreated = _loadFileImporter.FoldersCreated
 				retval.NumberOfWarnings = _warningCount
 				retval.OverlayIdentifierFieldArtifactID = LoadFile.IdentityFieldId
+				If Not LoadFile.ExtractedTextFileEncoding Is Nothing Then
+					retval.ExtractedTextFileEncodingCodePageID = LoadFile.ExtractedTextFileEncoding.CodePage
+				End If
 				Select Case LoadFile.OverwriteDestination.ToLower
 					Case "strict"
 						retval.Overwrite = EDDS.WebAPI.AuditManagerBase.OverwriteType.Overlay

@@ -60,6 +60,30 @@
           </s:sequence>
         </s:complexType>
       </s:element>
+      <s:element name="Ping">
+        <s:complexType />
+      </s:element>
+      <s:element name="PingResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="PingResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ReceiveText">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="text" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ReceiveTextResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="ReceiveTextResult" type="s:boolean" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
     </s:schema>
   </wsdl:types>
   <wsdl:message name="RetrieveRelativityVersionSoapIn">
@@ -92,6 +116,18 @@
   <wsdl:message name="RetrieveRdcConfigurationSoapOut">
     <wsdl:part name="parameters" element="tns:RetrieveRdcConfigurationResponse" />
   </wsdl:message>
+  <wsdl:message name="PingSoapIn">
+    <wsdl:part name="parameters" element="tns:Ping" />
+  </wsdl:message>
+  <wsdl:message name="PingSoapOut">
+    <wsdl:part name="parameters" element="tns:PingResponse" />
+  </wsdl:message>
+  <wsdl:message name="ReceiveTextSoapIn">
+    <wsdl:part name="parameters" element="tns:ReceiveText" />
+  </wsdl:message>
+  <wsdl:message name="ReceiveTextSoapOut">
+    <wsdl:part name="parameters" element="tns:ReceiveTextResponse" />
+  </wsdl:message>
   <wsdl:portType name="RelativityManagerSoap">
     <wsdl:operation name="RetrieveRelativityVersion">
       <wsdl:input message="tns:RetrieveRelativityVersionSoapIn" />
@@ -112,6 +148,14 @@
     <wsdl:operation name="RetrieveRdcConfiguration">
       <wsdl:input message="tns:RetrieveRdcConfigurationSoapIn" />
       <wsdl:output message="tns:RetrieveRdcConfigurationSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="Ping">
+      <wsdl:input message="tns:PingSoapIn" />
+      <wsdl:output message="tns:PingSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ReceiveText">
+      <wsdl:input message="tns:ReceiveTextSoapIn" />
+      <wsdl:output message="tns:ReceiveTextSoapOut" />
     </wsdl:operation>
   </wsdl:portType>
   <wsdl:binding name="RelativityManagerSoap" type="tns:RelativityManagerSoap">
@@ -154,6 +198,24 @@
     </wsdl:operation>
     <wsdl:operation name="RetrieveRdcConfiguration">
       <soap:operation soapAction="http://www.kCura.com/EDDS/RelativityManager/RetrieveRdcConfiguration" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Ping">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/RelativityManager/Ping" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ReceiveText">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/RelativityManager/ReceiveText" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>

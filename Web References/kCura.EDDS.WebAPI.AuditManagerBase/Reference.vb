@@ -419,6 +419,9 @@ Namespace kCura.EDDS.WebAPI.AuditManagerBase
         Public LoadFileEncodingCodePageID As Integer
         
         '<remarks/>
+        Public ExtractedTextFileEncodingCodePageID As Integer
+        
+        '<remarks/>
         Public FolderColumnName As String
         
         '<remarks/>
@@ -436,5 +439,8 @@ Namespace kCura.EDDS.WebAPI.AuditManagerBase
         '<remarks/>
         <System.Xml.Serialization.XmlArrayItemAttribute(IsNullable:=false, NestingLevel:=1)>  _
         Public FieldsMapped()() As Integer
+        
+        '<remarks/>
+        Public NestedValueDelimiter As Char
     End Class
 End Namespace

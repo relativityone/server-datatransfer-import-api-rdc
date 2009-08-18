@@ -101,12 +101,14 @@
               <s:element minOccurs="1" maxOccurs="1" name="NewlineProxy" type="s1:char" />
               <s:element minOccurs="1" maxOccurs="1" name="MultiValueDelimiter" type="s1:char" />
               <s:element minOccurs="1" maxOccurs="1" name="LoadFileEncodingCodePageID" type="s:int" />
+              <s:element minOccurs="1" maxOccurs="1" name="ExtractedTextFileEncodingCodePageID" type="s:int" />
               <s:element minOccurs="0" maxOccurs="1" name="FolderColumnName" type="s:string" />
               <s:element minOccurs="0" maxOccurs="1" name="FileFieldColumnName" type="s:string" />
               <s:element minOccurs="1" maxOccurs="1" name="ExtractedTextPointsToFile" type="s:boolean" />
               <s:element minOccurs="1" maxOccurs="1" name="NumberOfChoicesCreated" type="s:int" />
               <s:element minOccurs="1" maxOccurs="1" name="NumberOfFoldersCreated" type="s:int" />
               <s:element minOccurs="0" maxOccurs="1" name="FieldsMapped" type="tns:ArrayOfArrayOfInt" />
+              <s:element minOccurs="1" maxOccurs="1" name="NestedValueDelimiter" type="s1:char" />
             </s:sequence>
           </s:extension>
         </s:complexContent>

@@ -237,7 +237,7 @@ Namespace kCura.EDDS.WebAPI.CaseManagerBase
         Public SqlFullTextLcid As Integer
         
         '<remarks/>
-        Public DBLocation As String
+        Public ServerID As Integer
         
         '<remarks/>
         Public MasterDBLocation As String
