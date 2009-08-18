@@ -844,8 +844,17 @@ Namespace kCura.WinEDDS
 							If _uploader.DestinationFolderPath = "" Then
 								location = localFilePath
 							Else
+								Dim start As Int64 = System.DateTime.Now.Ticks
+								_statistics.FileBytes += Me.GetFileLength(localFilePath)
 								Dim guid As String = _uploader.UploadFile(localFilePath, _caseArtifactID)
 								location = _uploader.DestinationFolderPath & _uploader.CurrentDestinationDirectory & "\" & guid
+								Dim updateCurrentStats As Boolean = (start - _statisticsLastUpdated.Ticks) > 10000000
+								_statistics.FileTime += System.DateTime.Now.Ticks - start
+								If updateCurrentStats Then
+									_currentStatisticsSnapshot = _statistics.ToDictionary
+									_statisticsLastUpdated = New System.DateTime(start)
+								End If
+
 							End If
 							location = System.Web.HttpUtility.UrlEncode(location)
 							docfield.Value = String.Format("{1}{0}{2}{0}{3}", ChrW(11), fileName, fileSize, location)
