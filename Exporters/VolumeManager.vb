@@ -446,11 +446,11 @@ Namespace kCura.WinEDDS
 				Dim localFilePath As String = Me.GetLocalNativeFilePath(documentInfo, nativeFileName)
 				_timekeeper.MarkStart("VolumeManager_ExportNative")
 				Me.ExportNative(localFilePath, documentInfo.NativeFileGuid, documentInfo.DocumentArtifactID, nativeFileName, documentInfo.NativeTempLocation)
-				nativeCount = 1
 				_timekeeper.MarkEnd("VolumeManager_ExportNative")
 				If documentInfo.NativeTempLocation = "" Then
 					nativeLocation = ""
 				Else
+					nativeCount = 1
 					Select Case Me.Settings.TypeOfExportedFilePath
 						Case ExportFile.ExportedFilePathType.Absolute
 							nativeLocation = localFilePath
