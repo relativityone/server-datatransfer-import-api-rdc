@@ -379,11 +379,13 @@ Namespace kCura.WinEDDS
 			Dim tempLocalFullTextFilePath As String = ""
 			Dim tempLocalIproFullTextFilePath As String = ""
 
+			Dim extractedTextFileLength As Long = 0
 			If Me.Settings.ExportFullText Then
 				tempLocalFullTextFilePath = Me.DownloadTextFieldAsFile(documentInfo, Me.Settings.SelectedTextField)
 				Dim len As Int64 = kCura.Utility.File.Length(tempLocalFullTextFilePath)
 				If Me.Settings.ExportFullTextAsFile Then
 					If Not documentInfo.HasCountedTextFile Then
+						extractedTextFileLength += len
 						totalFileSize += len
 						metadataBytes += len
 					End If
@@ -506,9 +508,13 @@ Namespace kCura.WinEDDS
 				metadataBytes += _imageFileWriter.BaseStream.Length
 			End If
 			_statistics.MetadataBytes = metadataBytes
-			_statistics.FileBytes += totalFileSize
+			_statistics.FileBytes += totalFileSize - extractedTextFileLength
 			If Not _errorWriter Is Nothing Then _errorWriterPosition = _errorWriter.BaseStream.Position
-			Return imageCount + nativeCount + textCount
+			If Not Me.Settings.VolumeInfo.CopyFilesFromRepository Then
+				Return 0
+			Else
+				Return imageCount + nativeCount
+			End If
 		End Function
 
 		Private Function DownloadTextFieldAsFile(ByVal documentInfo As WinEDDS.Exporters.DocumentExportInfo, ByVal field As WinEDDS.ViewFieldInfo) As String
