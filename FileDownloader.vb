@@ -179,7 +179,7 @@ Namespace kCura.WinEDDS
 				End If
 				localStream.Close()
 				Dim actualLength As Int64 = New System.IO.FileInfo(localFilePath).Length
-				If length <> actualLength Then
+				If length <> actualLength AndAlso length > 0 Then
 					Throw New kCura.WinEDDS.Exceptions.WebDownloadCorruptException("Error retrieving data from distributed server; expecting " & length & " bytes and received " & actualLength)
 				End If
 				If Not remotelocationkey Is Nothing Then _locationAccessMatrix.Add(remotelocationkey, FileAccessType.Web)

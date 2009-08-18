@@ -72,7 +72,7 @@ Namespace kCura.WinEDDS
 				retval.LoadFileName = System.IO.Path.GetFileName(LoadFile.FilePath)
 				retval.MultiValueDelimiter = LoadFile.MultiRecordDelimiter
 				retval.NewlineProxy = LoadFile.NewlineDelimiter
-				retval.NumberOfChoicesCreated = _loadFileImporter.CodeCreatedCount
+				retval.NumberOfChoicesCreated = _loadFileImporter.CodesCreated
 				retval.NumberOfDocumentsCreated = _loadFileImporter.Statistics.DocumentsCreated
 				retval.NumberOfDocumentsUpdated = _loadFileImporter.Statistics.DocumentsUpdated
 				retval.NumberOfErrors = _errorCount

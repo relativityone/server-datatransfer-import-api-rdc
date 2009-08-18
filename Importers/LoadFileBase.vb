@@ -81,11 +81,6 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
-		Public ReadOnly Property CodeCreatedCount() As Int32
-			Get
-				Return _codesCreated
-			End Get
-		End Property
 
 #End Region
 
@@ -267,7 +262,6 @@ Namespace kCura.WinEDDS
 					For i = 0 To codes.Length - 1
 						codes(i) = New NullableTypes.NullableInt32(CType(c(i), Int32))
 					Next
-					If Not forPreview Then _codesCreated += DirectCast(hierarchicCodeManager, Service.FieldSpecificCodeManager).CreationCount
 					Return codes
 				Else
 					Return New NullableTypes.NullableInt32() {}

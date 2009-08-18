@@ -16,11 +16,6 @@ Namespace kCura.WinEDDS.Service
 			Return _codeManager.GetAllForHierarchical(caseContextArtifactID, _codeTypeID)
 		End Function
 
-		Public ReadOnly Property CreationCount() As Integer Implements IHierarchicArtifactManager.CreationCount
-			Get
-				Return 0
-			End Get
-		End Property
 	End Class
 End Namespace
 

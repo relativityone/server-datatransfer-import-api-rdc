@@ -158,6 +158,17 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
+		Public ReadOnly Property CodesCreated() As Int32
+			Get
+				Dim retval As Int32
+				If Me.MulticodeMatrix Is Nothing Then Return 0
+				For Each cache As NestedArtifactCache In Me.MulticodeMatrix.Values
+					retval += cache.CreationCount
+				Next
+				Return retval
+			End Get
+		End Property
+
 #End Region
 
 #Region "Constructors"

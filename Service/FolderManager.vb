@@ -71,7 +71,7 @@ Namespace kCura.WinEDDS.Service
 				tries += 1
 				Try
 					Dim retval As Int32 = MyBase.Create(caseContextArtifactID, parentArtifactID, GetExportFriendlyFolderName(name))
-					_folderCreationCount += 1
+					If retval > 0 Then _folderCreationCount += 1
 					Return retval
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
@@ -108,7 +108,7 @@ Namespace kCura.WinEDDS.Service
 			Return Me.RetrieveFolderAndDescendants(caseContextArtifactID, rootArtifactID)
 		End Function
 
-		Public ReadOnly Property CreationCount() As Integer Implements IHierarchicArtifactManager.CreationCount
+		Public ReadOnly Property CreationCount() As Integer
 			Get
 				Return _folderCreationCount
 			End Get
