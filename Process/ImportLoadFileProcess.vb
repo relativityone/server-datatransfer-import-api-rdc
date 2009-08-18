@@ -47,6 +47,7 @@ Namespace kCura.WinEDDS
 				retval.Bound = LoadFile.QuoteDelimiter
 				retval.Delimiter = LoadFile.RecordDelimiter
 				retval.DestinationFolderArtifactID = LoadFile.DestinationFolderID
+				If LoadFile.ArtifactTypeID <> 10 Then retval.DestinationFolderArtifactID = -1
 				retval.ExtractedTextPointsToFile = LoadFile.FullTextColumnContainsFileLocation
 				Dim fieldMap As New System.Collections.ArrayList
 				For Each item As WinEDDS.LoadFileFieldMap.LoadFileFieldMapItem In LoadFile.FieldMap
