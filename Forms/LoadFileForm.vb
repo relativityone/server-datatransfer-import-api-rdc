@@ -832,7 +832,7 @@ Namespace kCura.EDDS.WinForm
 				If _fieldMap.FieldColumns.RightListBoxItems.Count = 0 Then
 					Me.AppendErrorMessage(msg, "No file columns mapped")
 				End If
-				If _fieldMap.FieldColumns.LeftListBoxItems.Count = 0 Then
+				If _fieldMap.LoadFileColumns.LeftListBoxItems.Count = 0 Then
 					Me.AppendErrorMessage(msg, "No fields mapped")
 				End If
 				Try
