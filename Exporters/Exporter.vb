@@ -659,6 +659,9 @@ Namespace kCura.WinEDDS
 			End Select
 			args.VolumeMaxSize = Me.ExportFile.VolumeInfo.VolumeMaxSize
 			args.VolumePrefix = Me.ExportFile.VolumeInfo.VolumePrefix
+			args.VolumeStartNumber = Me.ExportFile.VolumeInfo.VolumeStartNumber
+			args.StartExportAtDocumentNumber = Me.ExportFile.StartAtDocumentNumber + 1
+			args.CopyFilesFromRepository = Me.ExportFile.VolumeInfo.CopyFilesFromRepository
 			args.WarningCount = _warningCount
 			Try
 				_auditManager.AuditExport(Me.ExportFile.CaseInfo.ArtifactID, Not success, args)

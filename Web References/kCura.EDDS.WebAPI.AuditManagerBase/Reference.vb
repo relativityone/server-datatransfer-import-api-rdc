@@ -325,6 +325,15 @@ Namespace kCura.EDDS.WebAPI.AuditManagerBase
         
         '<remarks/>
         Public RunTimeInMilliseconds As Integer
+        
+        '<remarks/>
+        Public CopyFilesFromRepository As Boolean
+        
+        '<remarks/>
+        Public StartExportAtDocumentNumber As Integer
+        
+        '<remarks/>
+        Public VolumeStartNumber As Integer
     End Class
     
     '<remarks/>
