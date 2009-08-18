@@ -1504,14 +1504,18 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 		Private Function FullTextColumnIsMapped() As Boolean
-			Dim ftfname As String = _application.CurrentFields(10).FullText.FieldName
-			Dim field As String
-			For Each field In _fieldMap.FieldColumns.RightListBoxItems
-				If field.ToLower = ftfname.ToLower Then
-					Return True
-				End If
-			Next
-			Return False
+			Try
+				Dim ftfname As String = _application.CurrentFields(10).FullText.FieldName
+				Dim field As String
+				For Each field In _fieldMap.FieldColumns.RightListBoxItems
+					If field.ToLower = ftfname.ToLower Then
+						Return True
+					End If
+				Next
+				Return False
+			Catch
+				Return False
+			End Try
 		End Function
 
 		Private Sub _fileRefreshMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _fileRefreshMenuItem.Click
