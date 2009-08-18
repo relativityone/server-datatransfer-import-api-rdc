@@ -596,7 +596,7 @@ Namespace kCura.WinEDDS
 						args.ImageLoadFileFormat = EDDS.WebAPI.AuditManagerBase.ImageLoadFileFormatType.Opticon
 				End Select
 				Dim hasOriginal As Boolean = False
-				Dim hasProduction As Boolean = True
+				Dim hasProduction As Boolean = False
 				For Each pair As WinEDDS.Pair In Me.ExportFile.ImagePrecedence
 					If pair.Value <> "-1" Then
 						hasProduction = True
