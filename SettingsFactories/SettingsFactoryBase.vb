@@ -63,15 +63,26 @@ Namespace kCura.WinEDDS
 		End Property
 
 		Public Sub New(ByVal login As String, ByVal password As String)
-			_credential = New Net.NetworkCredential(login, password)
+			Me.New(New System.Net.NetworkCredential(login, password))
+		End Sub
+
+		Public Sub New(ByVal credential As System.Net.NetworkCredential)
+			_credential = credential
 			System.Net.ServicePointManager.CertificatePolicy = New TrustAllCertificatePolicy
 			_cookieContainer = New System.Net.CookieContainer
-			Dim userManager As New kCura.WinEDDS.Service.UserManager(_credential, _cookieContainer)
-			If userManager.Login(_credential.UserName, _credential.Password) Then
-				kCura.WinEDDS.Service.Settings.AuthenticationToken = userManager.GetLatestAuthenticationToken()
+			Dim relativityManager As New kCura.WinEDDS.Service.RelativityManager(_credential, _cookieContainer)
+			If Not relativityManager.ValidateSuccesfulLogin Then
+				If Not _credential.Password = "" Then
+					Dim userManager As New kCura.WinEDDS.Service.UserManager(_credential, _cookieContainer)
+					If userManager.Login(_credential.UserName, _credential.Password) Then
+						kCura.WinEDDS.Service.Settings.AuthenticationToken = userManager.GetLatestAuthenticationToken()
+						Exit Sub
+					End If
+				End If
 			Else
-				Throw New System.Exception("Invalid login/password")
+				Exit Sub
 			End If
+			Throw New InvalidCredentialsException
 		End Sub
 
 		Protected Sub SaveObject(ByVal location As String, ByVal settings As Object)
@@ -87,6 +98,9 @@ Namespace kCura.WinEDDS
 
 		Public MustOverride Sub Save(ByVal location As String)
 
+		Public Class InvalidCredentialsException
+			Inherits System.Exception
+		End Class
 
 	End Class
 End Namespace

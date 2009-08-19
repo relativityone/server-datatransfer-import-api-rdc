@@ -6,8 +6,16 @@ Namespace kCura.WinEDDS
 		Private _docFields As DocumentFieldCollection
 
 
+		Public Sub New(ByVal credential As System.Net.NetworkCredential, ByVal caseArtifactID As Int32)
+			MyBase.New(credential)
+			Me.InitloadFile(caseArtifactID)
+		End Sub
 		Public Sub New(ByVal login As String, ByVal password As String, ByVal caseArtifactID As Int32)
 			MyBase.New(login, password)
+			Me.InitloadFile(caseArtifactID)
+		End Sub
+
+		Private Sub InitloadFile(ByVal caseArtifactID As Int32)
 			_loadFile = New LoadFile
 			_loadFile.ArtifactTypeID = 10
 			_loadFile.CookieContainer = Me.CookieContainer

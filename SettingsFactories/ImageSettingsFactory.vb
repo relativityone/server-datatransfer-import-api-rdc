@@ -7,6 +7,15 @@ Namespace kCura.WinEDDS
 
 		Public Sub New(ByVal login As String, ByVal password As String, ByVal caseArtifactID As Int32)
 			MyBase.New(login, password)
+			Me.InitLoadFile(caseArtifactID)
+		End Sub
+
+		Public Sub New(ByVal credential As System.Net.NetworkCredential, ByVal caseArtifactID As Int32)
+			MyBase.New(credential)
+			Me.InitLoadFile(caseArtifactID)
+		End Sub
+
+		Private Sub InitLoadFile(ByVal caseArtifactID As Int32)
 			_loadFile = New ImageLoadFile
 			_loadFile.AutoNumberImages = False
 			_loadFile.CookieContainer = Me.CookieContainer
