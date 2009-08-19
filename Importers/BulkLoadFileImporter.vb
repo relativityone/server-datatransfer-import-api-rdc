@@ -823,6 +823,8 @@ Namespace kCura.WinEDDS
 					End If
 				End If
 			Next
+			If identityValue Is Nothing OrElse identityValue = String.Empty Then Throw New IdentityValueNotSetException
+			If Not _processedDocumentIdentifiers(identityValue) Is Nothing Then Throw New IdentifierOverlapException(identityValue, _processedDocumentIdentifiers(identityValue))
 			For Each item In _fieldmap
 				If _firstTimeThrough Then
 					If item.DocumentField Is Nothing Then
