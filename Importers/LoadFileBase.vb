@@ -72,6 +72,12 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
+		Public ReadOnly Property SingleCodesCreated() As Int32
+			Get
+				Return _codesCreated
+			End Get
+		End Property
+
 		Public ReadOnly Property Users() As UserCollection
 			Get
 				If _users Is Nothing Then
@@ -80,7 +86,6 @@ Namespace kCura.WinEDDS
 				Return _users
 			End Get
 		End Property
-
 
 #End Region
 
@@ -162,7 +167,6 @@ Namespace kCura.WinEDDS
 				Return GetNullableInteger(_allCodes(codeTableIndex)("ArtifactID").ToString, column)
 			Else
 				If forPreview Then
-
 					Return New NullableTypes.NullableInt32(-1)
 				Else
 					If _autoDetect Then
