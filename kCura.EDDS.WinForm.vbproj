@@ -248,7 +248,7 @@
                 <Folder RelPath = "bin\" />
                 <File
                     RelPath = "Controls\CaseFolderExplorer.vb"
-                    SubType = "UserControl"
+                    SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
@@ -268,7 +268,7 @@
                 />
                 <File
                     RelPath = "Controls\EncodingForm.vb"
-                    SubType = "Form"
+                    SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
@@ -318,7 +318,7 @@
                 />
                 <File
                     RelPath = "Forms\ErrorForm.vb"
-                    SubType = "Form"
+                    SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
@@ -378,7 +378,7 @@
                 />
                 <File
                     RelPath = "Forms\LoadFilePreviewForm.vb"
-                    SubType = "Form"
+                    SubType = "Component"
                     BuildAction = "Compile"
                 />
                 <File
