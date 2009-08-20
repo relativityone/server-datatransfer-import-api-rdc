@@ -339,7 +339,6 @@ Namespace kCura.EDDS.WinForm
 			Dim rtr As Boolean = False
 			If doFormValidation Then
 				Dim msg As New System.Text.StringBuilder
-				'_filePath.Text.Trim = "" OrElse _filePath.Text.Trim.ToLower = "select a file ..."
 				If _imageLoadFile.FileName.Trim = "" OrElse _imageLoadFile.FileName.Trim.ToLower = "select a file ..." Then
 					msg.Append(" - No opticon file selected").Append(vbNewLine)
 				ElseIf Not (System.IO.File.Exists(_imageLoadFile.FileName)) Then
