@@ -836,7 +836,11 @@ Namespace kCura.EDDS.WinForm
 					Me.AppendErrorMessage(msg, "No fields mapped")
 				End If
 				Try
-					If Not System.IO.File.Exists(_filePath.Text) Then Me.AppendErrorMessage(msg, "Selected load file does not exist")
+					If _filePath.Text.Trim = "" OrElse _filePath.Text.Trim.ToLower = "select a file ..." Then
+						Me.AppendErrorMessage(msg, "No load file selected")
+					ElseIf Not System.IO.File.Exists(_filePath.Text) Then
+						Me.AppendErrorMessage(msg, "Selected load file does not exist")
+					End If
 				Catch
 					Me.AppendErrorMessage(msg, "Access is restricted to selected load file")
 				End Try
