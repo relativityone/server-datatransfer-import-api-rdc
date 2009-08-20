@@ -224,7 +224,7 @@ Namespace kCura.WinEDDS
 				RaiseEvent UploadModeChangeEvent(_fileUploader.UploaderType.ToString, _bcpuploader.IsBulkEnabled)
 				start = System.DateTime.Now.Ticks
 				Dim oldDestinationFolderPath As String = System.String.Copy(_bcpuploader.DestinationFolderPath)
-				_bcpuploader.DestinationFolderPath = _caseInfo.DocumentPath
+				_bcpuploader.DestinationFolderPath = _caseInfo.DocumentPath.TrimEnd("\"c) & "\" & "EDDS" & _caseInfo.ArtifactID & "\"
 				_uploadKey = _bcpuploader.UploadFile(bulkLoadFilePath, _caseInfo.ArtifactID)
 				_statistics.MetadataTime += System.Math.Max(System.DateTime.Now.Ticks - start, 1)
 				_bcpuploader.DestinationFolderPath = oldDestinationFolderPath
