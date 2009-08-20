@@ -544,9 +544,9 @@ Namespace kCura.WinEDDS
 					End If
 				Catch ex As Exception
 					tries -= 1
-					If tries = 0 Then
+					If tries = 0 OrElse TypeOf ex Is kCura.WinEDDS.Service.BulkImportManager.BulkImportSqlException OrElse _continue = False Then
 						Throw
-					ElseIf tries = kCura.Utility.Config.Settings.IoErrorNumberOfRetries - 1 Then
+					ElseIf tries < kCura.Utility.Config.Settings.IoErrorNumberOfRetries Then
 						Me.RaiseIoWarning(New kCura.Utility.DelimitedFileImporter.IoWarningEventArgs(kCura.Utility.Config.Settings.IoErrorWaitTimeInSeconds, ex, Me.CurrentLineNumber))
 						System.Threading.Thread.CurrentThread.Join(1000 * kCura.Utility.Config.Settings.IoErrorWaitTimeInSeconds)
 					End If
