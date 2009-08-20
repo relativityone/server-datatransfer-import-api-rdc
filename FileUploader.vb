@@ -188,7 +188,7 @@ Namespace kCura.WinEDDS
 
 		Public Function UploadFile(ByVal filePath As String, ByVal contextArtifactID As Int32, ByVal newFileName As String, ByVal internalUse As Boolean) As String
 			Dim tries As Int32 = kCura.Utility.Config.Settings.IoErrorNumberOfRetries
-			While tries > 0 And DoRetry
+			While tries > 0 And (DoRetry OrElse tries = kCura.Utility.Config.Settings.IoErrorNumberOfRetries)
 				Try
 					If Me.UploaderType = Type.Web Then
 						Me.UploaderType = Type.Web

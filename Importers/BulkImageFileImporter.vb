@@ -11,7 +11,6 @@ Namespace kCura.WinEDDS
 		Private _auditManager As kCura.WinEDDS.Service.AuditManager
 		Private WithEvents _fileUploader As kCura.WinEDDS.FileUploader
 		Private WithEvents _bcpuploader As kCura.WinEDDS.FileUploader
-		Private WithEvents _textUploader As kCura.WinEDDS.FileUploader
 		Private _fileManager As kCura.WinEDDS.Service.FileManager
 		Private _productionManager As kCura.WinEDDS.Service.ProductionManager
 		Private _bulkImportManager As kCura.WinEDDS.Service.BulkImportManager
@@ -117,7 +116,6 @@ Namespace kCura.WinEDDS
 			_textRepositoryPath = args.CaseDefaultPath & "EDDS" & args.CaseInfo.ArtifactID & "\"
 			_fileUploader = New kCura.WinEDDS.FileUploader(args.Credential, args.CaseInfo.ArtifactID, _repositoryPath, args.CookieContainer)
 			_bcpuploader = New kCura.WinEDDS.FileUploader(args.Credential, args.CaseInfo.ArtifactID, _repositoryPath, args.CookieContainer, False)
-			_textUploader = New kCura.WinEDDS.FileUploader(args.Credential, args.CaseInfo.ArtifactID, _textRepositoryPath, args.CookieContainer, False)
 			_folderID = folderID
 
 			_productionArtifactID = args.ProductionArtifactID
@@ -546,7 +544,6 @@ Namespace kCura.WinEDDS
 				Me.DoRetryLogic = False
 				If Not _fileUploader Is Nothing Then _fileUploader.DoRetry = False
 				If Not _bcpuploader Is Nothing Then _bcpuploader.DoRetry = False
-				If Not _textUploader Is Nothing Then _textUploader.DoRetry = False
 			End If
 		End Sub
 
@@ -774,14 +771,6 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Private Sub _fileUploader_UploadWarningEvent(ByVal s As String) Handles _fileUploader.UploadWarningEvent
-			RaiseStatusEvent(kCura.Windows.Process.EventType.Warning, s, 0, 0)
-		End Sub
-
-		Private Sub _textUploader_UploadStatusEvent(ByVal s As String) Handles _textUploader.UploadStatusEvent
-			RaiseStatusEvent(kCura.Windows.Process.EventType.Status, s, 0, 0)
-		End Sub
-
-		Private Sub _textUploader_UploadWarningEvent(ByVal s As String) Handles _textUploader.UploadWarningEvent
 			RaiseStatusEvent(kCura.Windows.Process.EventType.Warning, s, 0, 0)
 		End Sub
 
