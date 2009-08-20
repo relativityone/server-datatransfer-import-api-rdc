@@ -843,6 +843,7 @@ Namespace kCura.EDDS.WinForm
 				If msg.ToString.Trim <> String.Empty Then
 					msg.Insert(0, "The following issues need to be addressed before continuing:" & vbNewLine & vbNewLine)
 					MsgBox(msg.ToString, MsgBoxStyle.Exclamation, "Warning")
+					Me.Cursor = System.Windows.Forms.Cursors.Default
 					Return False
 				End If
 			End If
