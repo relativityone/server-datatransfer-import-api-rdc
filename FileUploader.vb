@@ -131,6 +131,8 @@ Namespace kCura.WinEDDS
 					RaiseEvent UploadWarningEvent("Error accessing BCP Path, could be caused by network connectivity issues: " & ex.ToString)
 					If Config.EnableSingleModeImport AndAlso tries < 19 Then
 						Return New FileUploadReturnArgs(FileUploadReturnArgs.FileUploadReturnType.UploadError, "Error accessing BCP Path, could be caused by network connectivity issues: " & ex.Message)
+					ElseIf Not Config.EnableSingleModeImport AndAlso tries = 3 AndAlso Not upload Then
+						Return New FileUploadReturnArgs(FileUploadReturnArgs.FileUploadReturnType.UploadError, "Error accessing BCP Path, could be caused by network connectivity issues: " & ex.Message)
 					End If
 					If tries = 1 AndAlso Not Config.EnableSingleModeImport Then
 						RaiseEvent UploadWarningEvent("Retrying bulk upload")

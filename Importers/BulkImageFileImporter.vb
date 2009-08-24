@@ -574,6 +574,7 @@ Namespace kCura.WinEDDS
 
 
 
+
 #End Region
 
 #Region "Exceptions - Errors"
@@ -787,5 +788,8 @@ Namespace kCura.WinEDDS
 			End If
 		End Sub
 
+		Private Sub _bcpuploader_UploadWarningEvent(ByVal message As String) Handles _bcpuploader.UploadWarningEvent
+			Me.RaiseStatusEvent(Windows.Process.EventType.Warning, message, CType((_totalValidated + _totalProcessed) / 2, Int64), Me.CurrentLineNumber)
+		End Sub
 	End Class
 End Namespace
