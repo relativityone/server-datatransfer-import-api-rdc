@@ -32,6 +32,7 @@ Namespace kCura.WinEDDS
 		Private _errorFileLocation As String = ""
 		Private _timekeeper As kCura.Utility.Timekeeper
 		Private _statistics As kCura.WinEDDS.Statistics
+		Private _totalExtractedTextFileLength As Int64 = 0
 		Private _halt As Boolean = False
 #End Region
 
@@ -507,7 +508,8 @@ Namespace kCura.WinEDDS
 				_imageFileWriterPosition = _imageFileWriter.BaseStream.Position
 				metadataBytes += _imageFileWriter.BaseStream.Length
 			End If
-			_statistics.MetadataBytes += metadataBytes
+			_totalExtractedTextFileLength += extractedTextFileLength
+			_statistics.MetadataBytes = metadataBytes + _totalExtractedTextFileLength
 			_statistics.FileBytes += totalFileSize - extractedTextFileLength
 			If Not _errorWriter Is Nothing Then _errorWriterPosition = _errorWriter.BaseStream.Position
 			If Not Me.Settings.VolumeInfo.CopyFilesFromRepository Then
