@@ -286,6 +286,7 @@ Namespace kCura.WinEDDS
 			If isRetryAttempt Then Me.ReInitializeAllStreams()
 			Dim totalFileSize As Int64 = 0
 			Dim loadFileBytes As Int64 = 0
+			Dim extracteTextFileSizeForVolume As Int64 = 0
 			Dim image As Exporters.ImageExportInfo
 			Dim imageSuccess As Boolean = True
 			Dim nativeSuccess As Boolean = True
@@ -386,8 +387,8 @@ Namespace kCura.WinEDDS
 				Dim len As Int64 = kCura.Utility.File.Length(tempLocalFullTextFilePath)
 				If Me.Settings.ExportFullTextAsFile Then
 					If Not documentInfo.HasCountedTextFile Then
-						extractedTextFileLength += len
 						totalFileSize += len
+						extracteTextFileSizeForVolume += len
 					End If
 					documentInfo.HasCountedTextFile = True
 				End If
@@ -468,7 +469,7 @@ Namespace kCura.WinEDDS
 					_nativeFileWriter.Write(_columnHeaderString)
 					_hasWrittenColumnHeaderString = True
 				End If
-				Me.UpdateLoadFile(documentInfo.DataRow, documentInfo.HasFullText, documentInfo.DocumentArtifactID, nativeLocation, tempLocalFullTextFilePath, documentInfo)
+				Me.UpdateLoadFile(documentInfo.DataRow, documentInfo.HasFullText, documentInfo.DocumentArtifactID, nativeLocation, tempLocalFullTextFilePath, documentInfo, extractedTextFileLength)
 			Catch ex As System.IO.IOException
 				Throw New kCura.WinEDDS.Exceptions.FileWriteException(Exceptions.FileWriteException.DestinationFile.Load, ex)
 			End Try
@@ -509,7 +510,7 @@ Namespace kCura.WinEDDS
 			End If
 			_totalExtractedTextFileLength += extractedTextFileLength
 			_statistics.MetadataBytes = loadFileBytes + _totalExtractedTextFileLength
-			_statistics.FileBytes += totalFileSize - extractedTextFileLength
+			_statistics.FileBytes += totalFileSize - extracteTextFileSizeForVolume
 			If Not _errorWriter Is Nothing Then _errorWriterPosition = _errorWriter.BaseStream.Position
 			If Not Me.Settings.VolumeInfo.CopyFilesFromRepository Then
 				Return 0
@@ -881,7 +882,7 @@ Namespace kCura.WinEDDS
 			Return kCura.Utility.File.Length(tempFile)
 		End Function
 
-		Public Sub UpdateLoadFile(ByVal row As System.Data.DataRow, ByVal hasFullText As Boolean, ByVal documentArtifactID As Int32, ByVal nativeLocation As String, ByVal fullTextTempFile As String, ByVal doc As Exporters.DocumentExportInfo)
+		Public Sub UpdateLoadFile(ByVal row As System.Data.DataRow, ByVal hasFullText As Boolean, ByVal documentArtifactID As Int32, ByVal nativeLocation As String, ByVal fullTextTempFile As String, ByVal doc As Exporters.DocumentExportInfo, ByRef extractedTextByteCount As Int64)
 			If _nativeFileWriter Is Nothing Then Exit Sub
 			If Me.Settings.LoadFileIsHtml Then
 				Me.UpdateHtmlLoadFile(row, hasFullText, documentArtifactID, nativeLocation, fullTextTempFile, doc)
@@ -940,6 +941,7 @@ Namespace kCura.WinEDDS
 										kCura.Utility.File.Delete(fullTextTempFile)
 									End If
 									Dim textLocation As String
+									extractedTextByteCount += kCura.Utility.File.GetFileSize(localTextPath)
 									Select Case Me.Settings.TypeOfExportedFilePath
 										Case ExportFile.ExportedFilePathType.Absolute
 											textLocation = localTextPath
