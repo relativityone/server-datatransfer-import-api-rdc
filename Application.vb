@@ -119,61 +119,55 @@ Namespace kCura.EDDS.WinForm
       End Get
     End Property
 
-    Public ReadOnly Property ExportableFields(ByVal artifactTypeID As Int32) As kCura.EDDS.Types.ViewFieldInfo()
-      Get
+		Public ReadOnly Property CurrentNonFileFields(ByVal artifactTypeID As Int32, Optional ByVal refresh As Boolean = False) As DocumentFieldCollection
+			Get
+				Try
+					If _fields Is Nothing OrElse refresh Then
+						_fields = New DocumentFieldCollection
+						Dim fieldManager As New kCura.WinEDDS.Service.FieldQuery(Credential, _cookieContainer)
+						Dim fields() As kCura.EDDS.WebAPI.DocumentManagerBase.Field
+						fields = fieldManager.RetrieveAllAsArray(SelectedCaseInfo.ArtifactID, artifactTypeID)
+						Dim i As Int32
+						For i = 0 To fields.Length - 1
+							With fields(i)
+								If fields(i).FieldTypeID <> 9 Then
+									_fields.Add(New DocumentField(.DisplayName, .ArtifactID, .FieldTypeID, .FieldCategoryID, .CodeTypeID, .MaxLength, .UseUnicodeEncoding))
+								End If
+							End With
+						Next
+					End If
+					Return _fields
+				Catch ex As System.Exception
+					If ex.Message.IndexOf("Need To Re Login") <> -1 Then
+						NewLogin(False)
+					Else
+						Throw
+					End If
+				End Try
+			End Get
+		End Property
 
-      End Get
-    End Property
+		Public Function HasFileField(ByVal artifactTypeID As Int32, Optional ByVal refresh As Boolean = False) As Boolean
+			Dim retval As Boolean = False
+			Dim docFieldCollection As DocumentFieldCollection = CurrentFields(artifactTypeID, refresh)
+			Dim allFields As ICollection = docFieldCollection.AllFields
+			For Each field As DocumentField In allFields
+				If field.FieldTypeID = kCura.DynamicFields.Types.FieldTypeHelper.FieldType.File Then
+					retval = True
+				End If
+			Next
+			Return retval
+		End Function
 
-    Public ReadOnly Property CurrentNonFileFields(ByVal artifactTypeID As Int32, Optional ByVal refresh As Boolean = False) As DocumentFieldCollection
-      Get
-        Try
-          If _fields Is Nothing OrElse refresh Then
-            _fields = New DocumentFieldCollection
-            Dim fieldManager As New kCura.WinEDDS.Service.FieldQuery(Credential, _cookieContainer)
-            Dim fields() As kCura.EDDS.WebAPI.DocumentManagerBase.Field
-            fields = fieldManager.RetrieveAllAsArray(SelectedCaseInfo.ArtifactID, artifactTypeID)
-            Dim i As Int32
-            For i = 0 To fields.Length - 1
-              With fields(i)
-                If fields(i).FieldTypeID <> 9 Then
-                  _fields.Add(New DocumentField(.DisplayName, .ArtifactID, .FieldTypeID, .FieldCategoryID, .CodeTypeID, .MaxLength, .UseUnicodeEncoding))
-                End If
-              End With
-            Next
-          End If
-          Return _fields
-        Catch ex As System.Exception
-          If ex.Message.IndexOf("Need To Re Login") <> -1 Then
-            NewLogin(False)
-          Else
-            Throw
-          End If
-        End Try
-      End Get
-    End Property
-
-    Public Function HasFileField(ByVal artifactTypeID As Int32, Optional ByVal refresh As Boolean = False) As Boolean
-      Dim retval As Boolean = False
-      Dim docFieldCollection As DocumentFieldCollection = CurrentFields(artifactTypeID, refresh)
-      Dim allFields As ICollection = docFieldCollection.AllFields
-      For Each field As DocumentField In allFields
-        If field.FieldTypeID = kCura.DynamicFields.Types.FieldTypeHelper.FieldType.File Then
-          retval = True
-        End If
-      Next
-      Return retval
-    End Function
-
-    Public Function GetObjectTypeName(ByVal artifactTypeID As Int32) As String
-      Dim objectTypeManager As New kCura.WinEDDS.Service.ObjectTypeManager(Me.Credential, Me.CookieContainer)
-      Dim uploadableObjectTypes As System.Data.DataRowCollection = objectTypeManager.RetrieveAllUploadable(Me.SelectedCaseInfo.ArtifactID).Tables(0).Rows
-      For Each objectType As System.Data.DataRow In uploadableObjectTypes
+		Public Function GetObjectTypeName(ByVal artifactTypeID As Int32) As String
+			Dim objectTypeManager As New kCura.WinEDDS.Service.ObjectTypeManager(Me.Credential, Me.CookieContainer)
+			Dim uploadableObjectTypes As System.Data.DataRowCollection = objectTypeManager.RetrieveAllUploadable(Me.SelectedCaseInfo.ArtifactID).Tables(0).Rows
+			For Each objectType As System.Data.DataRow In uploadableObjectTypes
 				With New kCura.WinEDDS.ObjectTypeListItem(CType(objectType("DescriptorArtifactTypeID"), Int32), CType(objectType("Name"), String), CType(objectType("HasAddPermission"), Boolean))
 					If .Value = artifactTypeID Then Return .Display
 				End With
 			Next
-      Return String.Empty
+			Return String.Empty
 		End Function
 
 		Public Function AllUploadableArtifactTypes() As System.Data.DataTable
