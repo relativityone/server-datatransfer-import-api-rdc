@@ -285,7 +285,7 @@ Namespace kCura.WinEDDS
 		Private Function ExecuteExportDocument(ByVal documentInfo As Exporters.DocumentExportInfo, ByVal isRetryAttempt As Boolean) As Int64
 			If isRetryAttempt Then Me.ReInitializeAllStreams()
 			Dim totalFileSize As Int64 = 0
-			Dim metadataBytes As Int64 = 0
+			Dim loadFileBytes As Int64 = 0
 			Dim image As Exporters.ImageExportInfo
 			Dim imageSuccess As Boolean = True
 			Dim nativeSuccess As Boolean = True
@@ -388,7 +388,6 @@ Namespace kCura.WinEDDS
 					If Not documentInfo.HasCountedTextFile Then
 						extractedTextFileLength += len
 						totalFileSize += len
-						metadataBytes += len
 					End If
 					documentInfo.HasCountedTextFile = True
 				End If
@@ -502,14 +501,14 @@ Namespace kCura.WinEDDS
 			End Try
 			If Not _nativeFileWriter Is Nothing Then
 				_nativeFileWriterPosition = _nativeFileWriter.BaseStream.Position
-				metadataBytes += _nativeFileWriter.BaseStream.Length
+				loadFileBytes += kCura.Utility.File.GetFileSize(DirectCast(_nativeFileWriter.BaseStream, System.IO.FileStream).Name)
 			End If
 			If Not _imageFileWriter Is Nothing Then
 				_imageFileWriterPosition = _imageFileWriter.BaseStream.Position
-				metadataBytes += _imageFileWriter.BaseStream.Length
+				loadFileBytes += kCura.Utility.File.GetFileSize(DirectCast(_imageFileWriter.BaseStream, System.IO.FileStream).Name)
 			End If
 			_totalExtractedTextFileLength += extractedTextFileLength
-			_statistics.MetadataBytes = metadataBytes + _totalExtractedTextFileLength
+			_statistics.MetadataBytes = loadFileBytes + _totalExtractedTextFileLength
 			_statistics.FileBytes += totalFileSize - extractedTextFileLength
 			If Not _errorWriter Is Nothing Then _errorWriterPosition = _errorWriter.BaseStream.Position
 			If Not Me.Settings.VolumeInfo.CopyFilesFromRepository Then
