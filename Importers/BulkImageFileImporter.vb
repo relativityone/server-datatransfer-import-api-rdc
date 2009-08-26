@@ -112,12 +112,16 @@ Namespace kCura.WinEDDS
 			_fileManager = New kCura.WinEDDS.Service.FileManager(args.Credential, args.CookieContainer)
 			_productionManager = New kCura.WinEDDS.Service.ProductionManager(args.Credential, args.CookieContainer)
 			_bulkImportManager = New kCura.WinEDDS.Service.BulkImportManager(args.Credential, args.CookieContainer)
-			_repositoryPath = args.SelectedCasePath & "EDDS" & args.CaseInfo.ArtifactID & "\"
+			Dim suffix As String = "\EDDS" & args.CaseInfo.ArtifactID & "\"
+			If args.SelectedCasePath = "" Then
+				_repositoryPath = args.CaseDefaultPath.TrimEnd("\"c) & suffix
+			Else
+				_repositoryPath = args.SelectedCasePath.TrimEnd("\"c) & suffix
+			End If
 			_textRepositoryPath = args.CaseDefaultPath & "EDDS" & args.CaseInfo.ArtifactID & "\"
 			_fileUploader = New kCura.WinEDDS.FileUploader(args.Credential, args.CaseInfo.ArtifactID, _repositoryPath, args.CookieContainer)
 			_bcpuploader = New kCura.WinEDDS.FileUploader(args.Credential, args.CaseInfo.ArtifactID, _repositoryPath, args.CookieContainer, False)
 			_folderID = folderID
-
 			_productionArtifactID = args.ProductionArtifactID
 			If _productionArtifactID <> 0 Then
 				_productionDTO = _productionManager.Read(args.CaseInfo.ArtifactID, _productionArtifactID)
