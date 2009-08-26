@@ -885,7 +885,7 @@ Namespace kCura.WinEDDS
 		Public Sub UpdateLoadFile(ByVal row As System.Data.DataRow, ByVal hasFullText As Boolean, ByVal documentArtifactID As Int32, ByVal nativeLocation As String, ByVal fullTextTempFile As String, ByVal doc As Exporters.DocumentExportInfo, ByRef extractedTextByteCount As Int64)
 			If _nativeFileWriter Is Nothing Then Exit Sub
 			If Me.Settings.LoadFileIsHtml Then
-				Me.UpdateHtmlLoadFile(row, hasFullText, documentArtifactID, nativeLocation, fullTextTempFile, doc)
+				Me.UpdateHtmlLoadFile(row, hasFullText, documentArtifactID, nativeLocation, fullTextTempFile, doc, extractedTextByteCount)
 				Exit Sub
 			End If
 			Dim count As Int32
@@ -1038,7 +1038,7 @@ Namespace kCura.WinEDDS
 			_nativeFileWriter.Write(vbNewLine)
 		End Sub
 
-		Public Sub UpdateHtmlLoadFile(ByVal row As System.Data.DataRow, ByVal hasFullText As Boolean, ByVal documentArtifactID As Int32, ByVal nativeLocation As String, ByVal fullTextTempFile As String, ByVal doc As Exporters.DocumentExportInfo)
+		Public Sub UpdateHtmlLoadFile(ByVal row As System.Data.DataRow, ByVal hasFullText As Boolean, ByVal documentArtifactID As Int32, ByVal nativeLocation As String, ByVal fullTextTempFile As String, ByVal doc As Exporters.DocumentExportInfo, ByRef extractedTextByteCount As Int64)
 			Dim count As Int32
 			Dim fieldValue As String
 			Dim columnName As String
@@ -1091,6 +1091,7 @@ Namespace kCura.WinEDDS
 										kCura.Utility.File.Delete(fullTextTempFile)
 									End If
 									Dim textLocation As String
+									extractedTextByteCount += kCura.Utility.File.GetFileSize(localTextPath)
 									Select Case Me.Settings.TypeOfExportedFilePath
 										Case ExportFile.ExportedFilePathType.Absolute
 											textLocation = localTextPath
