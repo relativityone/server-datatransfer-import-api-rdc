@@ -223,7 +223,9 @@ Namespace kCura.EDDS.WinForm
 		Private Sub RecursivelyPopulate(ByVal dataRow As System.Data.DataRow, ByVal node As System.Windows.Forms.TreeNode, ByVal currentPath As String)
 			Dim childDataRow As System.Data.DataRow
 			Dim childNode As System.Windows.Forms.TreeNode
-			For Each childDataRow In dataRow.GetChildRows("NodeRelation")
+			Dim childRows As System.Data.DataRow() = dataRow.GetChildRows("NodeRelation")
+			System.Array.Sort(childRows, New FolderRowComparer)
+			For Each childDataRow In childRows
 				Dim tag As New FolderInfo(CType(childDataRow("ArtifactID"), Int32), "Folder")
 				childNode = New System.Windows.Forms.TreeNode
 				tag.Path = currentPath & CType(childDataRow("Name"), String) & "\"
@@ -358,6 +360,13 @@ Namespace kCura.EDDS.WinForm
 					If Not row("ParentArtifactID") Is System.DBNull.Value AndAlso Not allArtifactIds.Contains(row("ParentArtifactID")) Then retval.Add(row)
 				Next
 				Return retval
+			End Function
+		End Class
+
+		Private Class FolderRowComparer
+			Implements IComparer
+			Public Function Compare(ByVal x As Object, ByVal y As Object) As Integer Implements System.Collections.IComparer.Compare
+				Return String.Compare(DirectCast(x, System.Data.DataRow)("Name").ToString.ToLower.Trim, DirectCast(y, System.Data.DataRow)("Name").ToString.ToLower.Trim)
 			End Function
 		End Class
 	End Class

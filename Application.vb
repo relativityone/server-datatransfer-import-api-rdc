@@ -404,7 +404,18 @@ Namespace kCura.EDDS.WinForm
 		Public Function GetCaseFolders(ByVal caseID As Int32) As System.Data.DataSet
 			Try
 				Dim folderManager As New kCura.WinEDDS.Service.FolderManager(Credential, _cookieContainer)
-				Return folderManager.RetrieveAllByCaseID(caseID)
+				Dim retval As System.Data.DataSet = folderManager.RetrieveIntitialChunk(caseID)
+				Dim dt As System.Data.DataTable = retval.tables(0)
+				Dim addOn As System.Data.DataTable
+				Dim lastId As Int32
+				Do
+					If Not dt Is Nothing AndAlso dt.Rows.Count > 0 Then lastId = CType(dt.Rows(dt.Rows.Count - 1)("ArtifactID"), Int32)
+					addOn = folderManager.RetrieveNextChunk(caseID, lastId).Tables(0)
+					For Each row As System.Data.DataRow In addOn.Rows
+						dt.Rows.Add(row.ItemArray)
+					Next
+				Loop Until addOn Is Nothing OrElse addOn.Rows.Count = 0
+				Return retval
 			Catch ex As System.Exception
 				If ex.Message.IndexOf("Need To Re Login") <> -1 Then
 					NewLogin(False)
