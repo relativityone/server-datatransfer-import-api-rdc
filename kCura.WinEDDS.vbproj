@@ -363,6 +363,26 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Importers\CodeValidator\Base.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Importers\CodeValidator\CodeCreationException.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Importers\CodeValidator\SingleImporter.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Importers\CodeValidator\SinglePreviewer.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Importers\SQL\SQLImporter.vb"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -624,6 +644,11 @@
                 />
                 <File
                     RelPath = "Types\Pair.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Types\SingleChoiceCollection.vb"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

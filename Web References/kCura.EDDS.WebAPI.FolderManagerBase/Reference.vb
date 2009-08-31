@@ -92,6 +92,24 @@ Namespace kCura.EDDS.WebAPI.FolderManagerBase
         End Function
         
         '<remarks/>
+        <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/FolderManager/ReadID", RequestNamespace:="http://www.kCura.com/EDDS/FolderManager", ResponseNamespace:="http://www.kCura.com/EDDS/FolderManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
+        Public Function ReadID(ByVal caseContextArtifactID As Integer, ByVal parentArtifactID As Integer, ByVal name As String) As Integer
+            Dim results() As Object = Me.Invoke("ReadID", New Object() {caseContextArtifactID, parentArtifactID, name})
+            Return CType(results(0),Integer)
+        End Function
+        
+        '<remarks/>
+        Public Function BeginReadID(ByVal caseContextArtifactID As Integer, ByVal parentArtifactID As Integer, ByVal name As String, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("ReadID", New Object() {caseContextArtifactID, parentArtifactID, name}, callback, asyncState)
+        End Function
+        
+        '<remarks/>
+        Public Function EndReadID(ByVal asyncResult As System.IAsyncResult) As Integer
+            Dim results() As Object = Me.EndInvoke(asyncResult)
+            Return CType(results(0),Integer)
+        End Function
+        
+        '<remarks/>
         <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/FolderManager/Retrieve", RequestNamespace:="http://www.kCura.com/EDDS/FolderManager", ResponseNamespace:="http://www.kCura.com/EDDS/FolderManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
         Public Function Retrieve(ByVal caseContextArtifactID As Integer, ByVal parentArtifactID As Integer, ByVal folderName As String) As Integer
             Dim results() As Object = Me.Invoke("Retrieve", New Object() {caseContextArtifactID, parentArtifactID, folderName})
@@ -143,6 +161,42 @@ Namespace kCura.EDDS.WebAPI.FolderManagerBase
         Public Function EndExists(ByVal asyncResult As System.IAsyncResult) As Boolean
             Dim results() As Object = Me.EndInvoke(asyncResult)
             Return CType(results(0),Boolean)
+        End Function
+        
+        '<remarks/>
+        <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/FolderManager/RetrieveIntitialChunk", RequestNamespace:="http://www.kCura.com/EDDS/FolderManager", ResponseNamespace:="http://www.kCura.com/EDDS/FolderManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
+        Public Function RetrieveIntitialChunk(ByVal caseContextArtifactID As Integer) As System.Data.DataSet
+            Dim results() As Object = Me.Invoke("RetrieveIntitialChunk", New Object() {caseContextArtifactID})
+            Return CType(results(0),System.Data.DataSet)
+        End Function
+        
+        '<remarks/>
+        Public Function BeginRetrieveIntitialChunk(ByVal caseContextArtifactID As Integer, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("RetrieveIntitialChunk", New Object() {caseContextArtifactID}, callback, asyncState)
+        End Function
+        
+        '<remarks/>
+        Public Function EndRetrieveIntitialChunk(ByVal asyncResult As System.IAsyncResult) As System.Data.DataSet
+            Dim results() As Object = Me.EndInvoke(asyncResult)
+            Return CType(results(0),System.Data.DataSet)
+        End Function
+        
+        '<remarks/>
+        <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/FolderManager/RetrieveNextChunk", RequestNamespace:="http://www.kCura.com/EDDS/FolderManager", ResponseNamespace:="http://www.kCura.com/EDDS/FolderManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
+        Public Function RetrieveNextChunk(ByVal caseContextArtifactID As Integer, ByVal lastFolderID As Integer) As System.Data.DataSet
+            Dim results() As Object = Me.Invoke("RetrieveNextChunk", New Object() {caseContextArtifactID, lastFolderID})
+            Return CType(results(0),System.Data.DataSet)
+        End Function
+        
+        '<remarks/>
+        Public Function BeginRetrieveNextChunk(ByVal caseContextArtifactID As Integer, ByVal lastFolderID As Integer, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("RetrieveNextChunk", New Object() {caseContextArtifactID, lastFolderID}, callback, asyncState)
+        End Function
+        
+        '<remarks/>
+        Public Function EndRetrieveNextChunk(ByVal asyncResult As System.IAsyncResult) As System.Data.DataSet
+            Dim results() As Object = Me.EndInvoke(asyncResult)
+            Return CType(results(0),System.Data.DataSet)
         End Function
     End Class
     

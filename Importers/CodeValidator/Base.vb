@@ -1,0 +1,66 @@
+Namespace kCura.WinEDDS.CodeValidator
+	Public MustInherit Class Base
+		Private _codeManager As kCura.WinEDDS.Service.CodeManager
+		Private _lookup As New System.Collections.Hashtable
+		Private _caseInfo As kCura.EDDS.Types.CaseInfo
+
+		Protected ReadOnly Property CodeManager() As kCura.WinEDDS.Service.CodeManager
+			Get
+				Return _codeManager
+			End Get
+		End Property
+
+		Protected ReadOnly Property CaseInfo() As kCura.EDDS.Types.CaseInfo
+			Get
+				Return _caseInfo
+			End Get
+		End Property
+
+		Public Sub New(ByVal caseInfo As kCura.EDDS.Types.CaseInfo, ByVal codeManager As kCura.WinEDDS.Service.CodeManager)
+			_codeManager = codeManager
+			_caseInfo = caseInfo
+		End Sub
+
+		Public Function ValidateSingleCode(ByVal field As DocumentField, ByVal codeName As String) As NullableInt32
+			If codeName.Trim = String.Empty Then Return NullableTypes.NullableInt32.Null
+			'TODO: Is this ever actually hit? ------ 'If field.CodeTypeID.IsNull Then Throw New kCura.WinEDDS.LoadFileBase.MissingCodeTypeException(Me.CurrentLineNumber, column)
+			If Not _lookup.Contains(field.CodeTypeID.Value) Then Me.InitializeLookupForCodeType(field.CodeTypeID.Value)
+			Dim typeLookup As kCura.WinEDDS.Types.SingleChoiceCollection = DirectCast(_lookup(field.CodeTypeID.Value), kCura.WinEDDS.Types.SingleChoiceCollection)
+			Dim choice As kCura.EDDS.Types.ChoiceInfo = typeLookup(codeName)
+			If Not choice Is Nothing Then Return New NullableInt32(choice.ArtifactID)
+			If Me.DoRealtimeDatabaseLookup Then choice = Me.CodeManager.RetrieveCodeByNameAndTypeID(Me.CaseInfo.ArtifactID, field.CodeTypeID.Value, codeName.Trim)
+			If choice Is Nothing Then
+				Return Me.GetNewSingleCodeId(field, codeName)
+			Else
+				typeLookup.Add(choice)
+				Return New NullableInt32(choice.ArtifactID)
+			End If
+		End Function
+
+		Protected ReadOnly Property Lookup(ByVal codeTypeID As Int32) As Object
+			Get
+				Return _lookup(codeTypeID)
+			End Get
+		End Property
+
+		Private Sub InitializeLookupForCodeType(ByVal codeTypeID As Int32)
+			Dim subLookup As New kCura.WinEDDS.Types.SingleChoiceCollection
+			_lookup.Add(codeTypeID, subLookup)
+			Try
+				For Each choice As kCura.EDDS.Types.ChoiceInfo In Me.CodeManager.RetrieveAllCodesOfType(Me.CaseInfo.ArtifactID, codeTypeID)
+					subLookup.Add(choice)
+				Next
+			Catch
+				'Do nothing; we can populate with individual reads
+			End Try
+
+		End Sub
+
+
+		Public MustOverride Function GetNewSingleCodeId(ByVal field As DocumentField, ByVal codeName As String) As NullableTypes.NullableInt32
+		Protected MustOverride ReadOnly Property DoRealtimeDatabaseLookup() As Boolean
+		Public MustOverride ReadOnly Property CreatedCodeCount() As Int32
+
+	End Class
+End Namespace
+

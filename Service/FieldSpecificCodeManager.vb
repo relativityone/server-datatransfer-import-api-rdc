@@ -23,6 +23,9 @@ Namespace kCura.WinEDDS.Service
 			Return _codeManager.GetAllForHierarchical(caseContextArtifactID, _codeTypeID)
 		End Function
 
+		Public Function Read(ByVal caseContextArtifactID As Integer, ByVal parentArtifactID As Integer, ByVal name As String) As Integer Implements IHierarchicArtifactManager.Read
+			Return _codeManager.ReadID(caseContextArtifactID, parentArtifactID, name)
+		End Function
 	End Class
 End Namespace
 

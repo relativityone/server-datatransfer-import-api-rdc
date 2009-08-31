@@ -101,6 +101,22 @@
           <s:element minOccurs="1" maxOccurs="1" name="DeleteFlag" type="s:boolean" />
         </s:sequence>
       </s:complexType>
+      <s:element name="ReadID">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="parentArtifactID" type="s:int" />
+            <s:element minOccurs="0" maxOccurs="1" name="name" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ReadIDResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="ReadIDResult" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
       <s:element name="Retrieve">
         <s:complexType>
           <s:sequence>
@@ -148,6 +164,49 @@
           </s:sequence>
         </s:complexType>
       </s:element>
+      <s:element name="RetrieveIntitialChunk">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="RetrieveIntitialChunkResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="RetrieveIntitialChunkResult">
+              <s:complexType>
+                <s:sequence>
+                  <s:element ref="s:schema" />
+                  <s:any />
+                </s:sequence>
+              </s:complexType>
+            </s:element>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="RetrieveNextChunk">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="lastFolderID" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="RetrieveNextChunkResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="RetrieveNextChunkResult">
+              <s:complexType>
+                <s:sequence>
+                  <s:element ref="s:schema" />
+                  <s:any />
+                </s:sequence>
+              </s:complexType>
+            </s:element>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
     </s:schema>
     <s:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="http://NullableTypes.SourceForge.Net/NullableInt32XMLSchema" id="NullableInt32">
       <xs:element name="NullableInt32" nillable="true" type="xs:int" />
@@ -171,6 +230,12 @@
   <wsdl:message name="ReadSoapOut">
     <wsdl:part name="parameters" element="tns:ReadResponse" />
   </wsdl:message>
+  <wsdl:message name="ReadIDSoapIn">
+    <wsdl:part name="parameters" element="tns:ReadID" />
+  </wsdl:message>
+  <wsdl:message name="ReadIDSoapOut">
+    <wsdl:part name="parameters" element="tns:ReadIDResponse" />
+  </wsdl:message>
   <wsdl:message name="RetrieveSoapIn">
     <wsdl:part name="parameters" element="tns:Retrieve" />
   </wsdl:message>
@@ -189,6 +254,18 @@
   <wsdl:message name="ExistsSoapOut">
     <wsdl:part name="parameters" element="tns:ExistsResponse" />
   </wsdl:message>
+  <wsdl:message name="RetrieveIntitialChunkSoapIn">
+    <wsdl:part name="parameters" element="tns:RetrieveIntitialChunk" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveIntitialChunkSoapOut">
+    <wsdl:part name="parameters" element="tns:RetrieveIntitialChunkResponse" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveNextChunkSoapIn">
+    <wsdl:part name="parameters" element="tns:RetrieveNextChunk" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveNextChunkSoapOut">
+    <wsdl:part name="parameters" element="tns:RetrieveNextChunkResponse" />
+  </wsdl:message>
   <wsdl:portType name="FolderManagerSoap">
     <wsdl:operation name="RetrieveAllByCaseID">
       <wsdl:input message="tns:RetrieveAllByCaseIDSoapIn" />
@@ -202,6 +279,10 @@
       <wsdl:input message="tns:ReadSoapIn" />
       <wsdl:output message="tns:ReadSoapOut" />
     </wsdl:operation>
+    <wsdl:operation name="ReadID">
+      <wsdl:input message="tns:ReadIDSoapIn" />
+      <wsdl:output message="tns:ReadIDSoapOut" />
+    </wsdl:operation>
     <wsdl:operation name="Retrieve">
       <wsdl:input message="tns:RetrieveSoapIn" />
       <wsdl:output message="tns:RetrieveSoapOut" />
@@ -213,6 +294,14 @@
     <wsdl:operation name="Exists">
       <wsdl:input message="tns:ExistsSoapIn" />
       <wsdl:output message="tns:ExistsSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveIntitialChunk">
+      <wsdl:input message="tns:RetrieveIntitialChunkSoapIn" />
+      <wsdl:output message="tns:RetrieveIntitialChunkSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveNextChunk">
+      <wsdl:input message="tns:RetrieveNextChunkSoapIn" />
+      <wsdl:output message="tns:RetrieveNextChunkSoapOut" />
     </wsdl:operation>
   </wsdl:portType>
   <wsdl:binding name="FolderManagerSoap" type="tns:FolderManagerSoap">
@@ -244,6 +333,15 @@
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="ReadID">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/FolderManager/ReadID" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="Retrieve">
       <soap:operation soapAction="http://www.kCura.com/EDDS/FolderManager/Retrieve" style="document" />
       <wsdl:input>
@@ -264,6 +362,24 @@
     </wsdl:operation>
     <wsdl:operation name="Exists">
       <soap:operation soapAction="http://www.kCura.com/EDDS/FolderManager/Exists" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveIntitialChunk">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/FolderManager/RetrieveIntitialChunk" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveNextChunk">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/FolderManager/RetrieveNextChunk" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>

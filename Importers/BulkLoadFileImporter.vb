@@ -49,7 +49,6 @@ Namespace kCura.WinEDDS
 		Private _outputNativeFilePath As String = System.IO.Path.GetTempFileName
 		Private _outputCodeFilePath As String = System.IO.Path.GetTempFileName
 		Private _filePath As String
-		Private _settings As kCura.WinEDDS.LoadFile
 		Private _batchCounter As Int32 = 0
 		Private _errorMessageFileLocation As String = ""
 		Private _errorLinesFileLocation As String = ""
@@ -1344,6 +1343,9 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
+		Protected Overrides Function GetSingleCodeValidator() As CodeValidator.Base
+			Return New CodeValidator.SingleImporter(_settings.CaseInfo, _codeManager)
+		End Function
 	End Class
 
 	Public Class WebServiceFieldInfoNameComparer

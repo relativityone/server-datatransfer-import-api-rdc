@@ -90,6 +90,78 @@ Namespace kCura.EDDS.WebAPI.CodeManagerBase
             Dim results() As Object = Me.EndInvoke(asyncResult)
             Return CType(results(0),System.Data.DataSet)
         End Function
+        
+        '<remarks/>
+        <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://foley.com/EDDS/CodeManager/GetInitialChunk", RequestNamespace:="http://foley.com/EDDS/CodeManager", ResponseNamespace:="http://foley.com/EDDS/CodeManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
+        Public Function GetInitialChunk(ByVal caseContextArtifactID As Integer, ByVal codeTypeID As Integer) As System.Data.DataSet
+            Dim results() As Object = Me.Invoke("GetInitialChunk", New Object() {caseContextArtifactID, codeTypeID})
+            Return CType(results(0),System.Data.DataSet)
+        End Function
+        
+        '<remarks/>
+        Public Function BeginGetInitialChunk(ByVal caseContextArtifactID As Integer, ByVal codeTypeID As Integer, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("GetInitialChunk", New Object() {caseContextArtifactID, codeTypeID}, callback, asyncState)
+        End Function
+        
+        '<remarks/>
+        Public Function EndGetInitialChunk(ByVal asyncResult As System.IAsyncResult) As System.Data.DataSet
+            Dim results() As Object = Me.EndInvoke(asyncResult)
+            Return CType(results(0),System.Data.DataSet)
+        End Function
+        
+        '<remarks/>
+        <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://foley.com/EDDS/CodeManager/GetLastChunk", RequestNamespace:="http://foley.com/EDDS/CodeManager", ResponseNamespace:="http://foley.com/EDDS/CodeManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
+        Public Function GetLastChunk(ByVal caseContextArtifactID As Integer, ByVal codeTypeID As Integer, ByVal lastCodeID As Integer) As System.Data.DataSet
+            Dim results() As Object = Me.Invoke("GetLastChunk", New Object() {caseContextArtifactID, codeTypeID, lastCodeID})
+            Return CType(results(0),System.Data.DataSet)
+        End Function
+        
+        '<remarks/>
+        Public Function BeginGetLastChunk(ByVal caseContextArtifactID As Integer, ByVal codeTypeID As Integer, ByVal lastCodeID As Integer, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("GetLastChunk", New Object() {caseContextArtifactID, codeTypeID, lastCodeID}, callback, asyncState)
+        End Function
+        
+        '<remarks/>
+        Public Function EndGetLastChunk(ByVal asyncResult As System.IAsyncResult) As System.Data.DataSet
+            Dim results() As Object = Me.EndInvoke(asyncResult)
+            Return CType(results(0),System.Data.DataSet)
+        End Function
+        
+        '<remarks/>
+        <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://foley.com/EDDS/CodeManager/RetrieveCodeByNameAndTypeID", RequestNamespace:="http://foley.com/EDDS/CodeManager", ResponseNamespace:="http://foley.com/EDDS/CodeManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
+        Public Function RetrieveCodeByNameAndTypeID(ByVal caseContextArtifactID As Integer, ByVal codeTypeID As Integer, ByVal name As String) As ChoiceInfo
+            Dim results() As Object = Me.Invoke("RetrieveCodeByNameAndTypeID", New Object() {caseContextArtifactID, codeTypeID, name})
+            Return CType(results(0),ChoiceInfo)
+        End Function
+        
+        '<remarks/>
+        Public Function BeginRetrieveCodeByNameAndTypeID(ByVal caseContextArtifactID As Integer, ByVal codeTypeID As Integer, ByVal name As String, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("RetrieveCodeByNameAndTypeID", New Object() {caseContextArtifactID, codeTypeID, name}, callback, asyncState)
+        End Function
+        
+        '<remarks/>
+        Public Function EndRetrieveCodeByNameAndTypeID(ByVal asyncResult As System.IAsyncResult) As ChoiceInfo
+            Dim results() As Object = Me.EndInvoke(asyncResult)
+            Return CType(results(0),ChoiceInfo)
+        End Function
+        
+        '<remarks/>
+        <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://foley.com/EDDS/CodeManager/ReadID", RequestNamespace:="http://foley.com/EDDS/CodeManager", ResponseNamespace:="http://foley.com/EDDS/CodeManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
+        Public Function ReadID(ByVal caseContextArtifactID As Integer, ByVal parentArtifactID As Integer, ByVal name As String) As Integer
+            Dim results() As Object = Me.Invoke("ReadID", New Object() {caseContextArtifactID, parentArtifactID, name})
+            Return CType(results(0),Integer)
+        End Function
+        
+        '<remarks/>
+        Public Function BeginReadID(ByVal caseContextArtifactID As Integer, ByVal parentArtifactID As Integer, ByVal name As String, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("ReadID", New Object() {caseContextArtifactID, parentArtifactID, name}, callback, asyncState)
+        End Function
+        
+        '<remarks/>
+        Public Function EndReadID(ByVal asyncResult As System.IAsyncResult) As Integer
+            Dim results() As Object = Me.EndInvoke(asyncResult)
+            Return CType(results(0),Integer)
+        End Function
     End Class
     
     '<remarks/>
@@ -162,5 +234,25 @@ Namespace kCura.EDDS.WebAPI.CodeManagerBase
         
         '<remarks/>
         Public DeleteFlag As Boolean
+    End Class
+    
+    '<remarks/>
+    <System.Xml.Serialization.XmlTypeAttribute([Namespace]:="http://foley.com/EDDS/CodeManager")>  _
+    Public Class ChoiceInfo
+        
+        '<remarks/>
+        Public Order As Integer
+        
+        '<remarks/>
+        Public CodeTypeID As Integer
+        
+        '<remarks/>
+        Public Name As String
+        
+        '<remarks/>
+        Public ArtifactID As Integer
+        
+        '<remarks/>
+        Public ParentArtifactID As Integer
     End Class
 End Namespace

@@ -46,6 +46,8 @@ Namespace kCura.WinEDDS
 		Protected _previewCodeCount As New System.Collections.Specialized.HybridDictionary
 		Protected _startLineNumber As Int64
 		Protected _keyFieldID As Int32
+		Protected _settings As kCura.WinEDDS.LoadFile
+		Private _codeValidator As CodeValidator.Base
 		Private _codesCreated As Int32 = 0
 
 #End Region
@@ -74,7 +76,7 @@ Namespace kCura.WinEDDS
 
 		Public ReadOnly Property SingleCodesCreated() As Int32
 			Get
-				Return _codesCreated
+				Return _codeValidator.CreatedCodeCount
 			End Get
 		End Property
 
@@ -89,9 +91,16 @@ Namespace kCura.WinEDDS
 
 #End Region
 
+#Region " Virtual Members "
+
+		Protected MustOverride Function GetSingleCodeValidator() As CodeValidator.Base
+
+
+#End Region
+
 		Public Sub New(ByVal args As LoadFile, ByVal timezoneoffset As Int32, ByVal doRetryLogic As Boolean, ByVal autoDetect As Boolean)
 			MyBase.New(args.RecordDelimiter, args.QuoteDelimiter, args.NewlineDelimiter, doRetryLogic)
-
+			_settings = args
 			_docFields = args.FieldMap.DocumentFields
 			_filePathColumn = args.NativeFilePathColumn
 			_firstLineContainsColumnNames = args.FirstLineContainsHeaders
@@ -125,7 +134,7 @@ Namespace kCura.WinEDDS
 			_hierarchicalMultiValueFieldDelmiter = args.HierarchicalValueDelimiter
 			_previewCodeCount = args.PreviewCodeCount
 			_startLineNumber = args.StartLineNumber
-
+			_codeValidator = Me.GetSingleCodeValidator
 			MulticodeMatrix = New System.Collections.Hashtable
 			If _keyFieldID > 0 AndAlso args.OverwriteDestination.ToLower <> "strict" Then
 				_keyFieldID = -1
@@ -153,46 +162,53 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Public Function GetCode(ByVal value As String, ByVal column As Int32, ByVal field As DocumentField, ByVal forPreview As Boolean) As NullableTypes.NullableInt32
-			InitializeCodeTables()
-			Dim codeArtifactID As Int32
-			Dim newCodeOrderValue As Int32
-			If value = String.Empty Then
-				Return NullableTypes.NullableInt32.Null
-			End If
-			Dim codeTableIndex As Int32 = FindCodeByDisplayValue(value, field.CodeTypeID.Value)
-			If field.CodeTypeID.IsNull Then
-				Throw New MissingCodeTypeException(Me.CurrentLineNumber, column)
-			End If
-			If codeTableIndex > -1 Then
-				Return GetNullableInteger(_allCodes(codeTableIndex)("ArtifactID").ToString, column)
-			Else
-				If forPreview Then
-					Return New NullableTypes.NullableInt32(-1)
-				Else
-					If _autoDetect Then
-						newCodeOrderValue = GetNewCodeOrderValue(field.CodeTypeID.Value)
-						Dim code As kCura.EDDS.WebAPI.CodeManagerBase.Code = _codeManager.CreateNewCodeDTOProxy(field.CodeTypeID.Value, value, newCodeOrderValue, _caseSystemID)
-						If code.Name.Length > 200 Then Throw New CodeCreationException(Me.CurrentLineNumber, column, False, "Proposed choice name '" & code.Name & "' exceeds 200 characters, which is the maximum allowable.")
-						Dim o As Object = _codeManager.Create(_caseArtifactID, code)
-						If TypeOf o Is Int32 Then
-							codeArtifactID = CType(o, Int32)
-						Else
-							Throw New CodeCreationException(Me.CurrentLineNumber, column, True, o.ToString)
-						End If
-						Select Case codeArtifactID
-							Case -1
-								Throw New CodeCreationException(Me.CurrentLineNumber, column, True, value)
-							Case -200
-								Throw New System.Exception("This choice or multi-choice field is not enabled as unicode.  Upload halted")
-						End Select
-						Dim newRow As DataRowView = _allCodes.AddNew
-						_allCodes = Nothing
-						_codesCreated += 1
-						Return New NullableInt32(codeArtifactID)
-					End If
-				End If
-			End If
+			Try
+				Return _codeValidator.ValidateSingleCode(field, value)
+			Catch ex As CodeValidator.CodeCreationException
+				Throw New CodeCreationException(Me.CurrentLineNumber, column, ex.IsFatal, ex.Message)
+			End Try
 		End Function
+		'Public Function GetCode(ByVal value As String, ByVal column As Int32, ByVal field As DocumentField, ByVal forPreview As Boolean) As NullableTypes.NullableInt32
+		'	InitializeCodeTables()
+		'	Dim codeArtifactID As Int32
+		'	Dim newCodeOrderValue As Int32
+		'	If value = String.Empty Then
+		'		Return NullableTypes.NullableInt32.Null
+		'	End If
+		'	Dim codeTableIndex As Int32 = FindCodeByDisplayValue(value, field.CodeTypeID.Value)
+		'	If field.CodeTypeID.IsNull Then
+		'		Throw New MissingCodeTypeException(Me.CurrentLineNumber, column)
+		'	End If
+		'	If codeTableIndex > -1 Then
+		'		Return GetNullableInteger(_allCodes(codeTableIndex)("ArtifactID").ToString, column)
+		'	Else
+		'		If forPreview Then
+		'			Return New NullableTypes.NullableInt32(-1)
+		'		Else
+		'			If _autoDetect Then
+		'				newCodeOrderValue = GetNewCodeOrderValue(field.CodeTypeID.Value)
+		'				Dim code As kCura.EDDS.WebAPI.CodeManagerBase.Code = _codeManager.CreateNewCodeDTOProxy(field.CodeTypeID.Value, value, newCodeOrderValue, _caseSystemID)
+		'				If code.Name.Length > 200 Then Throw New CodeCreationException(Me.CurrentLineNumber, column, False, "Proposed choice name '" & code.Name & "' exceeds 200 characters, which is the maximum allowable.")
+		'				Dim o As Object = _codeManager.Create(_caseArtifactID, code)
+		'				If TypeOf o Is Int32 Then
+		'					codeArtifactID = CType(o, Int32)
+		'				Else
+		'					Throw New CodeCreationException(Me.CurrentLineNumber, column, True, o.ToString)
+		'				End If
+		'				Select Case codeArtifactID
+		'					Case -1
+		'						Throw New CodeCreationException(Me.CurrentLineNumber, column, True, value)
+		'					Case -200
+		'						Throw New System.Exception("This choice or multi-choice field is not enabled as unicode.  Upload halted")
+		'				End Select
+		'				Dim newRow As DataRowView = _allCodes.AddNew
+		'				_allCodes = Nothing
+		'				_codesCreated += 1
+		'				Return New NullableInt32(codeArtifactID)
+		'			End If
+		'		End If
+		'	End If
+		'End Function
 
 		Private Function FindCodeByDisplayValue(ByVal value As String, ByVal codeTypeID As Int32) As Int32
 			Dim i As Int32

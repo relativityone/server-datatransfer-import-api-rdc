@@ -50,11 +50,23 @@ Namespace kCura.WinEDDS.Service
 			While tries < Config.MaxReloginTries
 				tries += 1
 				Try
-					If kCura.WinEDDS.Config.UsesWebAPI Then
-						Return MyBase.Read(caseContextArtifactID, folderArtifactID)
+					Return MyBase.Read(caseContextArtifactID, folderArtifactID)
+				Catch ex As System.Exception
+					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
+						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
 					Else
-						'Return Me.DTOToWebAPIFolder(_folderManager.Read(folderArtifactID, _identity))
+						Throw
 					End If
+				End Try
+			End While
+		End Function
+
+		Public Shadows Function ReadID(ByVal caseContextArtifactID As Integer, ByVal parentArtifactID As Integer, ByVal name As String) As Integer Implements IHierarchicArtifactManager.Read
+			Dim tries As Int32 = 0
+			While tries < Config.MaxReloginTries
+				tries += 1
+				Try
+					Return MyBase.ReadID(caseContextArtifactID, parentArtifactID, name)
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
 						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
@@ -102,6 +114,40 @@ Namespace kCura.WinEDDS.Service
 				End Try
 			End While
 		End Function
+
+		Public Shadows Function RetrieveIntitialChunk(ByVal caseContextArtifactID As Int32) As System.Data.DataSet
+			Dim tries As Int32 = 0
+			While tries < Config.MaxReloginTries
+				tries += 1
+				Try
+					Return MyBase.RetrieveIntitialChunk(caseContextArtifactID)
+				Catch ex As System.Exception
+					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
+						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
+					Else
+						Throw
+					End If
+				End Try
+			End While
+		End Function
+
+		Public Shadows Function RetrieveNextChunk(ByVal caseContextArtifactID As Int32, ByVal lastFolderID As Int32) As System.Data.DataSet
+			Dim tries As Int32 = 0
+			While tries < Config.MaxReloginTries
+				tries += 1
+				Try
+					Return MyBase.RetrieveNextChunk(caseContextArtifactID, lastFolderID)
+				Catch ex As System.Exception
+					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
+						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
+					Else
+						Throw
+					End If
+				End Try
+			End While
+		End Function
+
+
 #End Region
 
 		Public Function RetrieveArtifacts(ByVal caseContextArtifactID As Integer, ByVal rootArtifactID As Integer) As System.Data.DataSet Implements IHierarchicArtifactManager.RetrieveArtifacts
@@ -113,5 +159,6 @@ Namespace kCura.WinEDDS.Service
 				Return _folderCreationCount
 			End Get
 		End Property
+
 	End Class
 End Namespace

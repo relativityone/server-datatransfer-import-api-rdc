@@ -67,8 +67,11 @@ Namespace kCura.WinEDDS
 			If artifactNames.Count > 0 Then
 				Dim newArtifactName As String = CType(artifactNames(0), String)
 				artifactNames.RemoveAt(0)
-				Dim newArtifactID As Int32 = _manager.Create(_caseContextArtifactID, parentArtifact.ArtifactID, newArtifactName)
-				If newArtifactID > 0 Then _createCount += 1
+				Dim newArtifactID As Int32 = _manager.Read(_caseContextArtifactID, parentArtifact.ArtifactID, newArtifactName)
+				If newArtifactID < 1 Then
+					newArtifactID = _manager.Create(_caseContextArtifactID, parentArtifact.ArtifactID, newArtifactName)
+					If newArtifactID > 0 Then _createCount += 1
+				End If
 				Dim parentArtifactPath As String
 				If parentArtifact.Path = _nestedItemDelimiter Then
 					parentArtifactPath = ""

@@ -4,12 +4,13 @@ Namespace kCura.WinEDDS
 		Inherits kCura.WinEDDS.LoadFileBase
 
 
+
 #Region "Members"
-    Private _errorsOnly As Boolean
-    Private WithEvents _processController As kCura.Windows.Process.Controller
-    Private _continue As Boolean = True
-    Private _columnCount As Int32 = 0
-    Private _nativeFileCheckColumnName As String = ""
+		Private _errorsOnly As Boolean
+		Private WithEvents _processController As kCura.Windows.Process.Controller
+		Private _continue As Boolean = True
+		Private _columnCount As Int32 = 0
+		Private _nativeFileCheckColumnName As String = ""
 		Private _relationalDocumentFields As DocumentField()
 		Private _selectedCaseArtifactID As Int32
 #End Region
@@ -108,37 +109,37 @@ Namespace kCura.WinEDDS
 					Dim openParenIndex As Int32 = _filePathColumn.LastIndexOf("("c) + 1
 					Dim closeParenIndex As Int32 = _filePathColumn.LastIndexOf(")"c)
 					_filePathColumnIndex = Int32.Parse(_filePathColumn.Substring(openParenIndex, closeParenIndex - openParenIndex)) - 1
-        End If
-        '_filePathColumnIndex = Array.IndexOf(_columnHeaders, _filePathColumn)
-      Else
-        If _uploadFiles Then
-          _filePathColumnIndex = Int32.Parse(_filePathcolumn.Replace("Column", "").Replace("(", "").Replace(")", "").Trim) - 1
-        End If
-      End If
-      Dim i As Int32 = 0
-      i = 0
-      While Not HasReachedEOF AndAlso _continue
-        If fieldArrays.Count < 1000 Then
-          Dim line As String() = Me.GetLine
-          If Not _firstLineContainsColumnNames AndAlso fieldArrays.Count = 0 Then
-            _columnCount = line.Length
-          End If
-          Dim x As DocumentField() = CheckLine(line)
-          If Not x Is Nothing Then fieldArrays.Add(x)
-          i += 1
-          If i Mod 100 = 0 Then ProcessProgress(GetPosition, filesize, stepsize)
-        Else
-          earlyexit = True
-          Exit While
-        End If
-      End While
-      If earlyexit Then
-        ProcessComplete(-1, filesize, -1)
-      Else
-        ProcessComplete(filesize, filesize, stepsize)
-      End If
-      Me.Close()
-      Return fieldArrays
+				End If
+				'_filePathColumnIndex = Array.IndexOf(_columnHeaders, _filePathColumn)
+			Else
+				If _uploadFiles Then
+					_filePathColumnIndex = Int32.Parse(_filePathcolumn.Replace("Column", "").Replace("(", "").Replace(")", "").Trim) - 1
+				End If
+			End If
+			Dim i As Int32 = 0
+			i = 0
+			While Not HasReachedEOF AndAlso _continue
+				If fieldArrays.Count < 1000 Then
+					Dim line As String() = Me.GetLine
+					If Not _firstLineContainsColumnNames AndAlso fieldArrays.Count = 0 Then
+						_columnCount = line.Length
+					End If
+					Dim x As DocumentField() = CheckLine(line)
+					If Not x Is Nothing Then fieldArrays.Add(x)
+					i += 1
+					If i Mod 100 = 0 Then ProcessProgress(GetPosition, filesize, stepsize)
+				Else
+					earlyexit = True
+					Exit While
+				End If
+			End While
+			If earlyexit Then
+				ProcessComplete(-1, filesize, -1)
+			Else
+				ProcessComplete(filesize, filesize, stepsize)
+			End If
+			Me.Close()
+			Return fieldArrays
 		End Function
 
 
@@ -187,121 +188,121 @@ Namespace kCura.WinEDDS
 						retval.Add(docfield)
 					End If
 				End If
-      Next
-      If _columnCount <> values.Length Then
-        lineContainsErrors = True
-        Dim df As DocumentField
-        For Each df In retval
-          df.Value = New ColumnCountMismatchException(Me.CurrentLineNumber, _columnCount, values.Length).Message
-        Next
-      End If
+			Next
+			If _columnCount <> values.Length Then
+				lineContainsErrors = True
+				Dim df As DocumentField
+				For Each df In retval
+					df.Value = New ColumnCountMismatchException(Me.CurrentLineNumber, _columnCount, values.Length).Message
+				Next
+			End If
 
-      If Not identifierField Is Nothing Then
-        If _processedIdentifiers(identifierField.Value) Is Nothing Then
-          _processedIdentifiers(identifierField.Value) = Me.CurrentLineNumber.ToString
-        Else
-          'Throw New IdentifierOverlapException(identifierField.Value, _processedIdentifiers(identifierField.Value))
-          identifierField.Value = String.Format("Error: The identifier '{0}' has been previously proccessed on line {1}.", identifierField.Value, _processedIdentifiers(identifierField.Value))
-          lineContainsErrors = True
-        End If
-      End If
+			If Not identifierField Is Nothing Then
+				If _processedIdentifiers(identifierField.Value) Is Nothing Then
+					_processedIdentifiers(identifierField.Value) = Me.CurrentLineNumber.ToString
+				Else
+					'Throw New IdentifierOverlapException(identifierField.Value, _processedIdentifiers(identifierField.Value))
+					identifierField.Value = String.Format("Error: The identifier '{0}' has been previously proccessed on line {1}.", identifierField.Value, _processedIdentifiers(identifierField.Value))
+					lineContainsErrors = True
+				End If
+			End If
 
-      If Not identifierField Is Nothing And _artifactTypeID = 10 Then
-        For Each field As DocumentField In unmappedFields.Values
-          Dim f As New DocumentField(field)
-          If _columnCount <> values.Length Then
-            f.Value = New ColumnCountMismatchException(Me.CurrentLineNumber, _columnCount, values.Length).Message
-          Else
-            f.Value = identifierField.Value & " (if not set)"
-          End If
-          retval.Add(f)
-        Next
-        For Each field As DocumentField In mappedFields.Values
-          If field.Value = "" Then field.Value = identifierField.Value
-        Next
-      End If
+			If Not identifierField Is Nothing And _artifactTypeID = 10 Then
+				For Each field As DocumentField In unmappedFields.Values
+					Dim f As New DocumentField(field)
+					If _columnCount <> values.Length Then
+						f.Value = New ColumnCountMismatchException(Me.CurrentLineNumber, _columnCount, values.Length).Message
+					Else
+						f.Value = identifierField.Value & " (if not set)"
+					End If
+					retval.Add(f)
+				Next
+				For Each field As DocumentField In mappedFields.Values
+					If field.Value = "" Then field.Value = identifierField.Value
+				Next
+			End If
 
-      'If Not identifierField Is Nothing AndAlso _
-      ' Not groupIdentifierField Is Nothing AndAlso _
-      ' groupIdentifierField.Value = "" Then
-      '	groupIdentifierField.Value = identifierField.Value
-      'End If
+			'If Not identifierField Is Nothing AndAlso _
+			' Not groupIdentifierField Is Nothing AndAlso _
+			' groupIdentifierField.Value = "" Then
+			'	groupIdentifierField.Value = identifierField.Value
+			'End If
 
-      'If Not identifierField Is Nothing Then
-      '	If Not duplicateHashField Is Nothing Then
-      '		If duplicateHashField.Value = "" Then duplicateHashField.Value = identifierField.Value
-      '	Else
-      '		Dim docfield As New DocumentField("MD5 Hash", -1, -1, -1, NullableInt32.Null, NullableInt32.Null, False)
-      '		If _extractMd5Hash Then
-      '			docfield.Value = "[Extracted from native]"
-      '		Else
-      '			docField.Value = identifierField.Value & " (if not set)"
-      '		End If
-      '		retval.Add(docfield)
-      '	End If
-      'End If
+			'If Not identifierField Is Nothing Then
+			'	If Not duplicateHashField Is Nothing Then
+			'		If duplicateHashField.Value = "" Then duplicateHashField.Value = identifierField.Value
+			'	Else
+			'		Dim docfield As New DocumentField("MD5 Hash", -1, -1, -1, NullableInt32.Null, NullableInt32.Null, False)
+			'		If _extractMd5Hash Then
+			'			docfield.Value = "[Extracted from native]"
+			'		Else
+			'			docField.Value = identifierField.Value & " (if not set)"
+			'		End If
+			'		retval.Add(docfield)
+			'	End If
+			'End If
 
-      If _uploadFiles Then
-        If _nativeFileCheckColumnName = "" Then Me.SetNativeFileCheckColumnName(retval)
-        Dim filePath As String = values(_filePathColumnIndex)
-        Dim existsFilePath As String
-        If filePath.Length > 1 Then
-          If filePath.Chars(0) = "\"c AndAlso Not filePath.Chars(1) = "\" Then
-            existsFilePath = "." & filePath
-          Else
-            existsFilePath = filePath
-          End If
-        End If
-        Dim docfield As New DocumentField(_nativeFileCheckColumnName, -1, -1, -1, NullableInt32.Null, NullableInt32.Null, False)
-        If filePath = "" Then
-          docfield.Value = "No File Specified."
-        ElseIf Not System.IO.File.Exists(existsFilePath) Then
-          docfield.Value = String.Format("Error: file '{0}' does not exist", filePath)
-          lineContainsErrors = True
-        Else
-          docfield.Value = filePath
-        End If
-        retval.Add(docfield)
-      End If
+			If _uploadFiles Then
+				If _nativeFileCheckColumnName = "" Then Me.SetNativeFileCheckColumnName(retval)
+				Dim filePath As String = values(_filePathColumnIndex)
+				Dim existsFilePath As String
+				If filePath.Length > 1 Then
+					If filePath.Chars(0) = "\"c AndAlso Not filePath.Chars(1) = "\" Then
+						existsFilePath = "." & filePath
+					Else
+						existsFilePath = filePath
+					End If
+				End If
+				Dim docfield As New DocumentField(_nativeFileCheckColumnName, -1, -1, -1, NullableInt32.Null, NullableInt32.Null, False)
+				If filePath = "" Then
+					docfield.Value = "No File Specified."
+				ElseIf Not System.IO.File.Exists(existsFilePath) Then
+					docfield.Value = String.Format("Error: file '{0}' does not exist", filePath)
+					lineContainsErrors = True
+				Else
+					docfield.Value = filePath
+				End If
+				retval.Add(docfield)
+			End If
 
-      If _createFolderStructure AndAlso _artifactTypeID <> 10 Then
-        Dim openParenIndex As Int32 = _destinationFolder.LastIndexOf("("c) + 1
-        Dim closeParenIndex As Int32 = _destinationFolder.LastIndexOf(")"c)
-        Dim parentObjectIdentifierIndex As Int32 = Int32.Parse(_destinationFolder.Substring(openParenIndex, closeParenIndex - openParenIndex)) - 1
-        Dim docfield As New DocumentField("Parent Object Identifier", -1, -1, -1, NullableInt32.Null, NullableInt32.Null, False)
-        docField.Value = values(parentObjectIdentifierIndex)
-        Dim textIdentifier As String = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(kCura.Utility.NullableTypesHelper.ToNullableString(values(parentObjectIdentifierIndex)))
-        If textIdentifier = "" Then
-          docField.Value = New ParentObjectReferenceRequiredException(Me.CurrentLineNumber, parentObjectIdentifierIndex).Message
-          lineContainsErrors = True
-        Else
-          Dim parentObjectTable As System.Data.DataTable = _objectManager.RetrieveArtifactIdOfMappedParentObject(_caseArtifactID, _
-          textIdentifier, _artifactTypeID).Tables(0)
-          If parentObjectTable.Rows.Count > 1 Then
-            docField.Value = New DuplicateObjectReferenceException(Me.CurrentLineNumber, parentObjectIdentifierIndex, "Parent Info").Message
-            lineContainsErrors = True
-          End If
-        End If
-        retval.Add(docfield)
-      End If
-      If _createFolderStructure AndAlso _artifactTypeID = 10 Then
-        Dim openParenIndex As Int32 = _destinationFolder.LastIndexOf("("c) + 1
-        Dim closeParenIndex As Int32 = _destinationFolder.LastIndexOf(")"c)
-        Dim parentObjectIdentifierIndex As Int32 = Int32.Parse(_destinationFolder.Substring(openParenIndex, closeParenIndex - openParenIndex)) - 1
-        Dim docfield As New DocumentField("Parent_Folder_Identifier", -1, -1, -1, NullableInt32.Null, NullableInt32.Null, False)
-        docField.Value = values(parentObjectIdentifierIndex)
-        retval.Add(docfield)
-      End If
+			If _createFolderStructure AndAlso _artifactTypeID <> 10 Then
+				Dim openParenIndex As Int32 = _destinationFolder.LastIndexOf("("c) + 1
+				Dim closeParenIndex As Int32 = _destinationFolder.LastIndexOf(")"c)
+				Dim parentObjectIdentifierIndex As Int32 = Int32.Parse(_destinationFolder.Substring(openParenIndex, closeParenIndex - openParenIndex)) - 1
+				Dim docfield As New DocumentField("Parent Object Identifier", -1, -1, -1, NullableInt32.Null, NullableInt32.Null, False)
+				docField.Value = values(parentObjectIdentifierIndex)
+				Dim textIdentifier As String = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(kCura.Utility.NullableTypesHelper.ToNullableString(values(parentObjectIdentifierIndex)))
+				If textIdentifier = "" Then
+					docField.Value = New ParentObjectReferenceRequiredException(Me.CurrentLineNumber, parentObjectIdentifierIndex).Message
+					lineContainsErrors = True
+				Else
+					Dim parentObjectTable As System.Data.DataTable = _objectManager.RetrieveArtifactIdOfMappedParentObject(_caseArtifactID, _
+					textIdentifier, _artifactTypeID).Tables(0)
+					If parentObjectTable.Rows.Count > 1 Then
+						docField.Value = New DuplicateObjectReferenceException(Me.CurrentLineNumber, parentObjectIdentifierIndex, "Parent Info").Message
+						lineContainsErrors = True
+					End If
+				End If
+				retval.Add(docfield)
+			End If
+			If _createFolderStructure AndAlso _artifactTypeID = 10 Then
+				Dim openParenIndex As Int32 = _destinationFolder.LastIndexOf("("c) + 1
+				Dim closeParenIndex As Int32 = _destinationFolder.LastIndexOf(")"c)
+				Dim parentObjectIdentifierIndex As Int32 = Int32.Parse(_destinationFolder.Substring(openParenIndex, closeParenIndex - openParenIndex)) - 1
+				Dim docfield As New DocumentField("Parent_Folder_Identifier", -1, -1, -1, NullableInt32.Null, NullableInt32.Null, False)
+				docField.Value = values(parentObjectIdentifierIndex)
+				retval.Add(docfield)
+			End If
 
-      If _errorsOnly Then
-        If lineContainsErrors Then
-          Return DirectCast(retval.ToArray(GetType(DocumentField)), DocumentField())
-        Else
-          Return Nothing
-        End If
-      Else
-        Return DirectCast(retval.ToArray(GetType(DocumentField)), DocumentField())
-      End If
+			If _errorsOnly Then
+				If lineContainsErrors Then
+					Return DirectCast(retval.ToArray(GetType(DocumentField)), DocumentField())
+				Else
+					Return Nothing
+				End If
+			Else
+				Return DirectCast(retval.ToArray(GetType(DocumentField)), DocumentField())
+			End If
 		End Function
 
 		Private Sub SetNativeFileCheckColumnName(ByVal fields As System.Collections.ArrayList)
@@ -377,6 +378,10 @@ Namespace kCura.WinEDDS
 				Return False
 			End Get
 		End Property
+
+		Protected Overrides Function GetSingleCodeValidator() As CodeValidator.Base
+			Return New CodeValidator.SinglePreviewer(_settings.CaseInfo, _codeManager)
+		End Function
 	End Class
 End Namespace
 

@@ -66,7 +66,102 @@ Namespace kCura.WinEDDS.Service
 				End Try
 			End While
 		End Function
+
+		Public Shadows Function ReadID(ByVal caseContextArtifactID As Int32, ByVal parentArtifactID As Int32, ByVal name As String) As Int32
+			Dim tries As Int32 = 0
+			While tries < Config.MaxReloginTries
+				tries += 1
+				Try
+					Return MyBase.ReadID(caseContextArtifactID, parentArtifactID, name)
+				Catch ex As System.Exception
+					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
+						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
+					Else
+						Throw
+					End If
+				End Try
+			End While
+		End Function
+
 #End Region
+
+		Public Shadows Function GetInitialChunk(ByVal caseContextArtifactID As Integer, ByVal codeTypeID As Integer) As System.Data.DataSet
+			Dim tries As Int32 = 0
+			While tries < Config.MaxReloginTries
+				tries += 1
+				Try
+					Return MyBase.GetInitialChunk(caseContextArtifactID, codeTypeID)
+				Catch ex As System.Exception
+					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
+						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
+					Else
+						Throw
+					End If
+				End Try
+			End While
+		End Function
+
+		Public Shadows Function GetLastChunk(ByVal caseContextArtifactID As Integer, ByVal codeTypeID As Integer, ByVal lastCodeID As Integer) As System.Data.DataSet
+			Dim tries As Int32 = 0
+			While tries < Config.MaxReloginTries
+				tries += 1
+				Try
+					Return MyBase.GetLastChunk(caseContextArtifactID, codeTypeID, lastCodeID)
+				Catch ex As System.Exception
+					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
+						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
+					Else
+						Throw
+					End If
+				End Try
+			End While
+		End Function
+
+		Public Function RetrieveAllCodesOfType(ByVal caseContextArtifactID As Int32, ByVal codeTypeID As Int32) As kCura.EDDS.Types.ChoiceInfo()
+			Dim dt As System.Data.DataTable
+			Dim retval As New System.collections.ArrayList
+			Dim lastcodeId As Int32 = -1
+			Do
+				If lastcodeId = -1 Then
+					dt = Me.GetInitialChunk(caseContextArtifactID, codeTypeID).Tables(0)
+				Else
+					dt = Me.GetLastChunk(caseContextArtifactID, codeTypeID, lastcodeId).Tables(0)
+				End If
+				For Each row As System.Data.DataRow In dt.Rows
+					retval.Add(New kCura.EDDS.Types.ChoiceInfo(row))
+				Next
+				If retval.Count > 0 Then lastcodeId = DirectCast(retval(retval.Count - 1), kCura.EDDS.Types.ChoiceInfo).ArtifactID
+			Loop Until dt Is Nothing OrElse dt.Rows.Count = 0
+			Return DirectCast(retval.ToArray(GetType(kCura.EDDS.Types.ChoiceInfo)), kCura.EDDS.Types.ChoiceInfo())
+		End Function
+
+		Public Shadows Function RetrieveCodeByNameAndTypeID(ByVal caseContextArtifactID As Int32, ByVal codeTypeID As Int32, ByVal name As String) As kCura.EDDS.Types.ChoiceInfo
+			Dim tries As Int32 = 0
+			While tries < Config.MaxReloginTries
+				tries += 1
+				Try
+					Return Me.Convert(MyBase.RetrieveCodeByNameAndTypeID(caseContextArtifactID, codeTypeID, name))
+				Catch ex As System.Exception
+					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
+						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
+					Else
+						Throw
+					End If
+				End Try
+			End While
+
+		End Function
+
+		Public Shared Function Convert(ByVal webserviceChoiceInfo As kCura.EDDS.WebAPI.CodeManagerBase.ChoiceInfo) As kCura.EDDS.Types.ChoiceInfo
+			If webserviceChoiceInfo Is Nothing Then Return Nothing
+			Dim retval As New kCura.EDDS.Types.ChoiceInfo
+			retval.ArtifactID = webserviceChoiceInfo.ArtifactID
+			retval.CodeTypeID = webserviceChoiceInfo.CodeTypeID
+			retval.Name = webserviceChoiceInfo.Name
+			retval.Order = webserviceChoiceInfo.Order
+			retval.ParentArtifactID = webserviceChoiceInfo.ParentArtifactID
+			Return retval
+		End Function
 
 	End Class
 End Namespace
