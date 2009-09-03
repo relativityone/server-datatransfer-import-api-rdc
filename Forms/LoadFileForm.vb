@@ -26,27 +26,27 @@ Namespace kCura.EDDS.WinForm
 
     Private Sub InitializeDocumentSpecificComponents()
       If Me.LoadFile.ArtifactTypeID = 0 Then Me.LoadFile.ArtifactTypeID = _application.ArtifactTypeID
-      If Me.LoadFile.ArtifactTypeID = 10 Then
-        Me.GroupBox4.Enabled = True
-        Me.GroupBox7.Enabled = True
-        Me.GroupBox5.Text = "Folder Info"
-        Me._buildFolderStructure.Text = "Folder Information Column"
-        ParentArtifactTypeID = 8
-      Else
-        Dim parentQuery As New kCura.WinEDDS.Service.ObjectTypeManager(_application.Credential, _application.CookieContainer)
-        ParentArtifactTypeID = CType(parentQuery.RetrieveParentArtifactTypeID(_application.SelectedCaseInfo.ArtifactID, _
-       Me.LoadFile.ArtifactTypeID).Tables(0).Rows(0)("ParentArtifactTypeID"), Int32)
-        Me.GroupBox5.Enabled = False
-        If Me.IsChildObject Then
-          Me.GroupBox5.Enabled = True
-          _buildFolderStructure.Checked = True
-        End If
-        Me.GroupBox4.Enabled = False
-        If _application.HasFileField(Me.LoadFile.ArtifactTypeID, True) Then
-          Me.GroupBox4.Enabled = True
-        End If
-        Me.GroupBox7.Enabled = False
-      End If
+			If Me.LoadFile.ArtifactTypeID = kCura.EDDS.Types.ArtifactType.Document Then
+				Me.GroupBox4.Enabled = True
+				Me.GroupBox7.Enabled = True
+				Me.GroupBox5.Text = "Folder Info"
+				Me._buildFolderStructure.Text = "Folder Information Column"
+				ParentArtifactTypeID = 8
+			Else
+				Dim parentQuery As New kCura.WinEDDS.Service.ObjectTypeManager(_application.Credential, _application.CookieContainer)
+				ParentArtifactTypeID = CType(parentQuery.RetrieveParentArtifactTypeID(_application.SelectedCaseInfo.ArtifactID, _
+			 Me.LoadFile.ArtifactTypeID).Tables(0).Rows(0)("ParentArtifactTypeID"), Int32)
+				Me.GroupBox5.Enabled = False
+				If Me.IsChildObject Then
+					Me.GroupBox5.Enabled = True
+					_buildFolderStructure.Checked = True
+				End If
+				Me.GroupBox4.Enabled = False
+				If _application.HasFileField(Me.LoadFile.ArtifactTypeID, True) Then
+					Me.GroupBox4.Enabled = True
+				End If
+				Me.GroupBox7.Enabled = False
+			End If
     End Sub
 
     'Form overrides dispose to clean up the component list.
@@ -737,33 +737,6 @@ Namespace kCura.EDDS.WinForm
 		Friend ReadOnly Property ReadyToRun() As Boolean
 			Get
 				Return True
-				'If Not Me.EnsureConnection() Then Return False
-				'Dim rtr As Boolean
-				'If _loadNativeFiles.Checked Then
-				'	rtr = _nativeFilePathField.SelectedIndex <> -1
-				'Else
-				'	rtr = True
-				'End If
-				'If Me.LoadFile.ArtifactTypeID = 10 Then
-				'	If rtr AndAlso _buildFolderStructure.Checked Then
-				'		rtr = _destinationFolderPath.SelectedIndex <> -1 AndAlso rtr
-				'	End If
-				'Else
-				'	If Me.IsChildObject Then
-				'		If Not _overwriteDropdown.SelectedItem Is Nothing AndAlso _overwriteDropdown.SelectedItem.ToString.ToLower() = "append only" Then
-				'			rtr = _buildFolderStructure.Checked AndAlso _destinationFolderPath.SelectedIndex <> -1 AndAlso rtr
-				'		End If
-				'		If _buildFolderStructure.Checked AndAlso _destinationFolderPath.SelectedIndex = -1 Then
-				'			rtr = False
-				'		End If
-				'	End If
-				'End If
-				'Return _
-				' _fieldMap.FieldColumns.RightListBoxItems.Count > 0 AndAlso _
-				' _fieldMap.LoadFileColumns.LeftListBoxItems.Count > 0 AndAlso _
-				' rtr AndAlso _
-				' System.IO.File.Exists(_filePath.Text)				'AndAlso _
-				''_identifiersDropDown.SelectedIndex <> -1
 			End Get
 		End Property
 
@@ -818,7 +791,7 @@ Namespace kCura.EDDS.WinForm
 				If Not Me.EnsureConnection() Then Return False
 				Dim rtr As Boolean
 				If _loadNativeFiles.Checked AndAlso _nativeFilePathField.SelectedIndex = -1 Then Me.AppendErrorMessage(msg, "Native file field unselected")
-				If Me.LoadFile.ArtifactTypeID = 10 Then
+				If Me.LoadFile.ArtifactTypeID = kCura.EDDS.Types.ArtifactType.Document Then
 					If _buildFolderStructure.Checked AndAlso _destinationFolderPath.SelectedIndex = -1 Then Me.AppendErrorMessage(msg, "Folder information unselected")
 				Else
 					If Me.IsChildObject Then
@@ -908,7 +881,7 @@ Namespace kCura.EDDS.WinForm
 					LoadFile.NativeFilePathColumn = Nothing
 				End If
 				'Add the file field as a mapped field for non document object types
-				If Me.LoadFile.ArtifactTypeID <> 10 Then
+				If Me.LoadFile.ArtifactTypeID <> kCura.EDDS.Types.ArtifactType.Document Then
 					Dim fileField As DocumentField
 					For Each field As DocumentField In currentFields.AllFields
 						If field.FieldTypeID = kCura.DynamicFields.Types.FieldTypeHelper.FieldType.File Then
@@ -1032,8 +1005,7 @@ Namespace kCura.EDDS.WinForm
 				Next
 			End If
 
-			'_identifiersDropDown.Enabled = True			'LoadFile.OverwriteDestination
-			If Me.LoadFile.ArtifactTypeID = 10 Then
+			If Me.LoadFile.ArtifactTypeID = kCura.EDDS.Types.ArtifactType.Document Then
 				If _overwriteDropdown.SelectedItem Is Nothing Then
 					_destinationFolderPath.Enabled = _buildFolderStructure.Checked
 				Else
@@ -1076,7 +1048,7 @@ Namespace kCura.EDDS.WinForm
 			'	'_identifiersDropDown.SelectedItem = LoadFile.GroupIdentifierColumn
 			'End If
 
-			If Me.LoadFile.ArtifactTypeID = 10 Then
+			If Me.LoadFile.ArtifactTypeID = kCura.EDDS.Types.ArtifactType.Document Then
 				_extractedTextValueContainsFileLocation.Enabled = Me.FullTextColumnIsMapped
 			End If
 			_fullTextFileEncodingPicker.Enabled = _extractedTextValueContainsFileLocation.Enabled And _extractedTextValueContainsFileLocation.Checked
@@ -1254,7 +1226,7 @@ Namespace kCura.EDDS.WinForm
 					End If
 				Next
 			End If
-			If Me.LoadFile.ArtifactTypeID = 10 Then
+			If Me.LoadFile.ArtifactTypeID = kCura.EDDS.Types.ArtifactType.Document Then
 				Select Case LoadFile.OverwriteDestination.ToLower
 					Case "none"
 						_buildFolderStructure.Enabled = True
@@ -1378,13 +1350,13 @@ Namespace kCura.EDDS.WinForm
 				Return ImportFileMenu.Enabled AndAlso _
 				PreviewMenuFile.Enabled AndAlso _
 				_importMenuPreviewErrorsItem.Enabled AndAlso _
-				((_importMenuPreviewFoldersAndCodesItem.Enabled AndAlso Me.LoadFile.ArtifactTypeID = 10) OrElse Me.LoadFile.ArtifactTypeID <> 10)
+				((_importMenuPreviewFoldersAndCodesItem.Enabled AndAlso Me.LoadFile.ArtifactTypeID = kCura.EDDS.Types.ArtifactType.Document) OrElse Me.LoadFile.ArtifactTypeID <> kCura.EDDS.Types.ArtifactType.Document)
 			End Get
 			Set(ByVal value As Boolean)
 				ImportFileMenu.Enabled = value
 				PreviewMenuFile.Enabled = value
 				_importMenuPreviewErrorsItem.Enabled = value
-				If Me.LoadFile.ArtifactTypeID = 10 Then
+				If Me.LoadFile.ArtifactTypeID = kCura.EDDS.Types.ArtifactType.Document Then
 					_importMenuPreviewFoldersAndCodesItem.Enabled = value
 				Else
 					_importMenuPreviewFoldersAndCodesItem.Enabled = False
@@ -1476,7 +1448,7 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 		Private Sub _buildFolderStructure_CheckedChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles _buildFolderStructure.CheckedChanged
-			If Me.LoadFile.ArtifactTypeID = 10 Then
+			If Me.LoadFile.ArtifactTypeID = kCura.EDDS.Types.ArtifactType.Document Then
 				If _buildFolderStructure.Checked Then
 					_destinationFolderPath.Enabled = True
 				Else

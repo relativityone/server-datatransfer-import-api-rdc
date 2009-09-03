@@ -192,7 +192,7 @@ Namespace kCura.EDDS.WinForm
 				SelectedNativeLoadFile.StartLineNumber = StartLineNumber
 				importer.LoadFile = SelectedNativeLoadFile
 				importer.TimeZoneOffset = _application.TimeZoneOffset
-				SelectedNativeLoadFile.ArtifactTypeID = 10
+				SelectedNativeLoadFile.ArtifactTypeID = kCura.EDDS.Types.ArtifactType.Document
 				_application.SetWorkingDirectory(SelectedNativeLoadFile.FilePath)
 				Dim executor As New kCura.EDDS.WinForm.CommandLineProcessRunner(importer.ProcessObserver, importer.ProcessController, ErrorLoadFileLocation, ErrorReportFileLocation)
 				_application.StartProcess(importer)

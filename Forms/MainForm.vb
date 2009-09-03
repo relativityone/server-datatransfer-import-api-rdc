@@ -60,6 +60,7 @@ Namespace kCura.EDDS.WinForm
 		Friend WithEvents ToolsImportProductionFileMenu As System.Windows.Forms.MenuItem
     Friend WithEvents _objectTypeDropDown As System.Windows.Forms.ComboBox
 		Friend WithEvents _optionsMenuCheckConnectivityItem As System.Windows.Forms.MenuItem
+		Friend WithEvents _exportObjectsMenuItem As System.Windows.Forms.MenuItem
 		<System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
 			Me.components = New System.ComponentModel.Container
 			Dim resources As System.Resources.ResourceManager = New System.Resources.ResourceManager(GetType(MainForm))
@@ -82,6 +83,7 @@ Namespace kCura.EDDS.WinForm
 			Me.ToolsExportSearchMenu = New System.Windows.Forms.MenuItem
 			Me._exportFoldersMenuItem = New System.Windows.Forms.MenuItem
 			Me._exportFoldersAndSubfoldersMenuItem = New System.Windows.Forms.MenuItem
+			Me._exportObjectsMenuItem = New System.Windows.Forms.MenuItem
 			Me._toolsMenu = New System.Windows.Forms.MenuItem
 			Me._toolsMenuSettingsItem = New System.Windows.Forms.MenuItem
 			Me._optionsMenuCheckConnectivityItem = New System.Windows.Forms.MenuItem
@@ -209,7 +211,7 @@ Namespace kCura.EDDS.WinForm
 			Me.ExportMenu.Enabled = False
 			Me.EnhancedMenuProvider.SetImageIndex(Me.ExportMenu, -1)
 			Me.ExportMenu.Index = 1
-			Me.ExportMenu.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.ToolsExportProductionMenu, Me.ToolsExportSearchMenu, Me._exportFoldersMenuItem, Me._exportFoldersAndSubfoldersMenuItem})
+			Me.ExportMenu.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.ToolsExportProductionMenu, Me.ToolsExportSearchMenu, Me._exportFoldersMenuItem, Me._exportFoldersAndSubfoldersMenuItem, Me._exportObjectsMenuItem})
 			Me.ExportMenu.OwnerDraw = True
 			Me.ExportMenu.Text = "&Export"
 			'
@@ -240,6 +242,14 @@ Namespace kCura.EDDS.WinForm
 			Me._exportFoldersAndSubfoldersMenuItem.Index = 3
 			Me._exportFoldersAndSubfoldersMenuItem.OwnerDraw = True
 			Me._exportFoldersAndSubfoldersMenuItem.Text = "Folder and Subfolders..."
+			'
+			'_exportObjectsMenuItem
+			'
+			Me.EnhancedMenuProvider.SetImageIndex(Me._exportObjectsMenuItem, -1)
+			Me._exportObjectsMenuItem.Index = 4
+			Me._exportObjectsMenuItem.OwnerDraw = True
+			Me._exportObjectsMenuItem.Text = "Objects"
+			Me._exportObjectsMenuItem.Visible = False
 			'
 			'_toolsMenu
 			'
@@ -437,58 +447,64 @@ Namespace kCura.EDDS.WinForm
       Me.Cursor = System.Windows.Forms.Cursors.Default
     End Sub
 
-    Private Sub ToolsImportSQLDatabaseMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ToolsImportSQLDatabaseMenu.Click
-      Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
-      _application.NewSQLImport(_application.SelectedCaseFolderID, _application.SelectedCaseInfo)
-      Me.Cursor = System.Windows.Forms.Cursors.Default
-    End Sub
+		Private Sub _exportObjectsMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _exportObjectsMenuItem.Click
+			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
+			_application.NewSearchExport(_application.SelectedCaseInfo.RootFolderID, _application.SelectedCaseInfo, kCura.WinEDDS.ExportFile.ExportType.AncestorSearch)
+			Me.Cursor = System.Windows.Forms.Cursors.Default
+		End Sub
 
-    Private Sub _toolsMenuSettingsItem_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles _toolsMenuSettingsItem.Click
-      Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
-      _application.NewOptions()
-      Me.Cursor = System.Windows.Forms.Cursors.Default
-    End Sub
+		Private Sub ToolsImportSQLDatabaseMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ToolsImportSQLDatabaseMenu.Click
+			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
+			_application.NewSQLImport(_application.SelectedCaseFolderID, _application.SelectedCaseInfo)
+			Me.Cursor = System.Windows.Forms.Cursors.Default
+		End Sub
 
-    Private Sub _fileMenuRefresh_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles _fileMenuRefresh.Click
-      _application.UpdateWebServiceURL(False)
-      Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
-      _application.RefreshCaseFolders()
-      _application.RefreshSelectedCaseInfo()
-      Me.Cursor = System.Windows.Forms.Cursors.Default
-    End Sub
+		Private Sub _toolsMenuSettingsItem_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles _toolsMenuSettingsItem.Click
+			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
+			_application.NewOptions()
+			Me.Cursor = System.Windows.Forms.Cursors.Default
+		End Sub
 
-    Private Sub _aboutMenuItem_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles _aboutMenuItem.Click
-      _application.DoAbout()
-    End Sub
+		Private Sub _fileMenuRefresh_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles _fileMenuRefresh.Click
+			_application.UpdateWebServiceURL(False)
+			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
+			_application.RefreshCaseFolders()
+			_application.RefreshSelectedCaseInfo()
+			Me.Cursor = System.Windows.Forms.Cursors.Default
+		End Sub
 
-    Private Sub MainForm_Closed(ByVal sender As Object, ByVal e As System.EventArgs) Handles MyBase.Closed
-      System.Environment.Exit(0)
-    End Sub
+		Private Sub _aboutMenuItem_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles _aboutMenuItem.Click
+			_application.DoAbout()
+		End Sub
 
-    Private Sub _exportFoldersMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _exportFoldersMenuItem.Click
-      _application.NewSearchExport(_application.SelectedCaseFolderID, _application.SelectedCaseInfo, ExportFile.ExportType.ParentSearch)
-    End Sub
+		Private Sub MainForm_Closed(ByVal sender As Object, ByVal e As System.EventArgs) Handles MyBase.Closed
+			System.Environment.Exit(0)
+		End Sub
 
-    Private Sub _exportFoldersAndSubfoldersMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _exportFoldersAndSubfoldersMenuItem.Click
-      _application.NewSearchExport(_application.SelectedCaseFolderID, _application.SelectedCaseInfo, ExportFile.ExportType.AncestorSearch)
-    End Sub
+		Private Sub _exportFoldersMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _exportFoldersMenuItem.Click
+			_application.NewSearchExport(_application.SelectedCaseFolderID, _application.SelectedCaseInfo, ExportFile.ExportType.ParentSearch)
+		End Sub
 
-    Private Sub PopulateObjectTypeDropDown()
-      Dim objectTypeManager As New kCura.WinEDDS.Service.ObjectTypeManager(_application.Credential, _application.CookieContainer)
-      Dim uploadableObjectTypes As System.Data.DataRowCollection = objectTypeManager.RetrieveAllUploadable(_application.SelectedCaseInfo.ArtifactID).Tables(0).Rows
-      Dim selectedObjectTypeID As Int32 = 10
-      If _objectTypeDropDown.Items.Count > 0 Then
-        selectedObjectTypeID = DirectCast(_objectTypeDropDown.SelectedItem, kCura.WinEDDS.ObjectTypeListItem).Value
-      End If
-      _objectTypeDropDown.Items.Clear()
-      For Each objectType As System.Data.DataRow In uploadableObjectTypes
+		Private Sub _exportFoldersAndSubfoldersMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _exportFoldersAndSubfoldersMenuItem.Click
+			_application.NewSearchExport(_application.SelectedCaseFolderID, _application.SelectedCaseInfo, ExportFile.ExportType.AncestorSearch)
+		End Sub
+
+		Private Sub PopulateObjectTypeDropDown()
+			Dim objectTypeManager As New kCura.WinEDDS.Service.ObjectTypeManager(_application.Credential, _application.CookieContainer)
+			Dim uploadableObjectTypes As System.Data.DataRowCollection = objectTypeManager.RetrieveAllUploadable(_application.SelectedCaseInfo.ArtifactID).Tables(0).Rows
+			Dim selectedObjectTypeID As Int32 = kCura.EDDS.Types.ArtifactType.Document
+			If _objectTypeDropDown.Items.Count > 0 Then
+				selectedObjectTypeID = DirectCast(_objectTypeDropDown.SelectedItem, kCura.WinEDDS.ObjectTypeListItem).Value
+			End If
+			_objectTypeDropDown.Items.Clear()
+			For Each objectType As System.Data.DataRow In uploadableObjectTypes
 				Dim currentObjectType As New kCura.WinEDDS.ObjectTypeListItem(CType(objectType("DescriptorArtifactTypeID"), Int32), CType(objectType("Name"), String), CType(objectType("HasAddPermission"), Boolean))
-        _objectTypeDropDown.Items.Add(currentObjectType)
-        If CType(objectType("DescriptorArtifactTypeID"), Int32) = selectedObjectTypeID Then
-          Me._objectTypeDropDown.SelectedItem = currentObjectType
-        End If
-      Next
-    End Sub
+				_objectTypeDropDown.Items.Add(currentObjectType)
+				If CType(objectType("DescriptorArtifactTypeID"), Int32) = selectedObjectTypeID Then
+					Me._objectTypeDropDown.SelectedItem = currentObjectType
+				End If
+			Next
+		End Sub
 
 		Private Sub _objectTypeDropDown_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _objectTypeDropDown.SelectedIndexChanged
 			Dim selectedObjectType As kCura.WinEDDS.ObjectTypeListItem = DirectCast(_objectTypeDropDown.SelectedItem, kCura.WinEDDS.ObjectTypeListItem)
@@ -496,15 +512,25 @@ Namespace kCura.EDDS.WinForm
 			ToolsImportLoadFileMenu.Text = _objectTypeDropDown.Text & " &Load File..."
 			ImportMenu.Visible = selectedObjectType.UserCanAdd
 			ToolsImportLoadFileMenu.Visible = selectedObjectType.UserCanAdd
-			If selectedItemValue = 10 Then
+			ExportMenu.Visible = True
+			If selectedItemValue = kCura.EDDS.Types.ArtifactType.Document Then
 				_caseFolderExplorer.Visible = True
 				ToolsImportImageFileMenu.Visible = selectedObjectType.UserCanAdd
 				ToolsImportProductionFileMenu.Visible = selectedObjectType.UserCanAdd
-				ExportMenu.Visible = True
+				ToolsExportProductionMenu.Visible = True
+				ToolsExportSearchMenu.Visible = True
+				_exportFoldersMenuItem.Visible = True
+				_exportFoldersAndSubfoldersMenuItem.Visible = True
+				_exportObjectsMenuItem.Visible = False
 			Else
 				'setting ExportMenu.Visible to True then False helps to resize the ToolsImportLoadFileMenu according to the length of its text
-				ExportMenu.Visible = True
-				ExportMenu.Visible = False
+				'ExportMenu.Visible = True
+				'ExportMenu.Visible = False
+				ToolsExportProductionMenu.Visible = False
+				ToolsExportSearchMenu.Visible = False
+				_exportFoldersMenuItem.Visible = False
+				_exportFoldersAndSubfoldersMenuItem.Visible = False
+				_exportObjectsMenuItem.Visible = True
 				_caseFolderExplorer.Visible = False
 				ToolsImportImageFileMenu.Visible = False
 				ToolsImportProductionFileMenu.Visible = False
@@ -515,6 +541,7 @@ Namespace kCura.EDDS.WinForm
 		Private Sub _optionsMenuCheckConnectivityItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _optionsMenuCheckConnectivityItem.Click
 			_application.QueryConnectivity()
 		End Sub
+
 	End Class
 
 End Namespace

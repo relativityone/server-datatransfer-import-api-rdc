@@ -135,6 +135,8 @@ Public Class ExportForm
 		Me.TabControl1 = New System.Windows.Forms.TabControl
 		Me._dataSourceTabPage = New System.Windows.Forms.TabPage
 		Me._filtersBox = New System.Windows.Forms.GroupBox
+		Me._startExportAtDocumentNumber = New System.Windows.Forms.NumericUpDown
+		Me.Label24 = New System.Windows.Forms.Label
 		Me.Label18 = New System.Windows.Forms.Label
 		Me._filters = New System.Windows.Forms.ComboBox
 		Me._columnSelecter = New kCura.Windows.Forms.TwoListBox
@@ -199,13 +201,12 @@ Public Class ExportForm
 		Me._newLineDelimiter = New System.Windows.Forms.ComboBox
 		Me.Label2 = New System.Windows.Forms.Label
 		Me._recordDelimiter = New System.Windows.Forms.ComboBox
-		Me.Label24 = New System.Windows.Forms.Label
-		Me._startExportAtDocumentNumber = New System.Windows.Forms.NumericUpDown
 		Me._productionPrecedenceBox.SuspendLayout()
 		Me.GroupBox3.SuspendLayout()
 		Me.TabControl1.SuspendLayout()
 		Me._dataSourceTabPage.SuspendLayout()
 		Me._filtersBox.SuspendLayout()
+		CType(Me._startExportAtDocumentNumber, System.ComponentModel.ISupportInitialize).BeginInit()
 		Me._destinationFileTabPage.SuspendLayout()
 		Me.GroupBox6.SuspendLayout()
 		Me._metadataGroup.SuspendLayout()
@@ -222,7 +223,6 @@ Public Class ExportForm
 		CType(Me._volumeStartNumber, System.ComponentModel.ISupportInitialize).BeginInit()
 		Me.GroupBox23.SuspendLayout()
 		Me._loadFileCharacterInformation.SuspendLayout()
-		CType(Me._startExportAtDocumentNumber, System.ComponentModel.ISupportInitialize).BeginInit()
 		Me.SuspendLayout()
 		'
 		'MainMenu1
@@ -375,6 +375,26 @@ Public Class ExportForm
 		Me._filtersBox.TabStop = False
 		Me._filtersBox.Text = "Export"
 		'
+		'_startExportAtDocumentNumber
+		'
+		Me._startExportAtDocumentNumber.Location = New System.Drawing.Point(404, 68)
+		Me._startExportAtDocumentNumber.Maximum = New Decimal(New Integer() {10000000, 0, 0, 0})
+		Me._startExportAtDocumentNumber.Minimum = New Decimal(New Integer() {1, 0, 0, 0})
+		Me._startExportAtDocumentNumber.Name = "_startExportAtDocumentNumber"
+		Me._startExportAtDocumentNumber.Size = New System.Drawing.Size(148, 20)
+		Me._startExportAtDocumentNumber.TabIndex = 21
+		Me._startExportAtDocumentNumber.Value = New Decimal(New Integer() {1, 0, 0, 0})
+		'
+		'Label24
+		'
+		Me.Label24.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+		Me.Label24.Location = New System.Drawing.Point(392, 48)
+		Me.Label24.Name = "Label24"
+		Me.Label24.Size = New System.Drawing.Size(160, 16)
+		Me.Label24.TabIndex = 20
+		Me.Label24.Text = "Start Export at Document #"
+		Me.Label24.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+		'
 		'Label18
 		'
 		Me.Label18.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
@@ -401,7 +421,7 @@ Public Class ExportForm
 		Me._columnSelecter.LeftOrderControlsVisible = False
 		Me._columnSelecter.Location = New System.Drawing.Point(12, 64)
 		Me._columnSelecter.Name = "_columnSelecter"
-		Me._columnSelecter.RightOrderControlVisible = True
+		Me._columnSelecter.RightOrderControlVisible = False
 		Me._columnSelecter.Size = New System.Drawing.Size(360, 280)
 		Me._columnSelecter.TabIndex = 17
 		'
@@ -475,6 +495,7 @@ Public Class ExportForm
 		'
 		Me._textFileEncoding.Location = New System.Drawing.Point(116, 100)
 		Me._textFileEncoding.Name = "_textFileEncoding"
+		Me._textFileEncoding.SelectedEncoding = CType(resources.GetObject("_textFileEncoding.SelectedEncoding"), System.Text.Encoding)
 		Me._textFileEncoding.Size = New System.Drawing.Size(200, 21)
 		Me._textFileEncoding.TabIndex = 19
 		'
@@ -500,6 +521,7 @@ Public Class ExportForm
 		'
 		Me._dataFileEncoding.Location = New System.Drawing.Point(116, 48)
 		Me._dataFileEncoding.Name = "_dataFileEncoding"
+		Me._dataFileEncoding.SelectedEncoding = CType(resources.GetObject("_dataFileEncoding.SelectedEncoding"), System.Text.Encoding)
 		Me._dataFileEncoding.Size = New System.Drawing.Size(200, 21)
 		Me._dataFileEncoding.TabIndex = 16
 		'
@@ -553,7 +575,7 @@ Public Class ExportForm
 		Me._exportNativeFiles.CheckState = System.Windows.Forms.CheckState.Checked
 		Me._exportNativeFiles.Location = New System.Drawing.Point(12, 20)
 		Me._exportNativeFiles.Name = "_exportNativeFiles"
-		Me._exportNativeFiles.Size = New System.Drawing.Size(124, 20)
+		Me._exportNativeFiles.Size = New System.Drawing.Size(300, 20)
 		Me._exportNativeFiles.TabIndex = 11
 		Me._exportNativeFiles.Text = "Export Native Files"
 		'
@@ -1026,26 +1048,6 @@ Public Class ExportForm
 		Me._recordDelimiter.Size = New System.Drawing.Size(116, 21)
 		Me._recordDelimiter.TabIndex = 8
 		'
-		'Label24
-		'
-		Me.Label24.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-		Me.Label24.Location = New System.Drawing.Point(392, 48)
-		Me.Label24.Name = "Label24"
-		Me.Label24.Size = New System.Drawing.Size(160, 16)
-		Me.Label24.TabIndex = 20
-		Me.Label24.Text = "Start Export at Document #"
-		Me.Label24.TextAlign = System.Drawing.ContentAlignment.MiddleRight
-		'
-		'_startExportAtDocumentNumber
-		'
-		Me._startExportAtDocumentNumber.Location = New System.Drawing.Point(404, 68)
-		Me._startExportAtDocumentNumber.Maximum = New Decimal(New Integer() {10000000, 0, 0, 0})
-		Me._startExportAtDocumentNumber.Minimum = New Decimal(New Integer() {1, 0, 0, 0})
-		Me._startExportAtDocumentNumber.Name = "_startExportAtDocumentNumber"
-		Me._startExportAtDocumentNumber.Size = New System.Drawing.Size(148, 20)
-		Me._startExportAtDocumentNumber.TabIndex = 21
-		Me._startExportAtDocumentNumber.Value = New Decimal(New Integer() {1, 0, 0, 0})
-		'
 		'ExportForm
 		'
 		Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
@@ -1061,6 +1063,7 @@ Public Class ExportForm
 		Me.TabControl1.ResumeLayout(False)
 		Me._dataSourceTabPage.ResumeLayout(False)
 		Me._filtersBox.ResumeLayout(False)
+		CType(Me._startExportAtDocumentNumber, System.ComponentModel.ISupportInitialize).EndInit()
 		Me._destinationFileTabPage.ResumeLayout(False)
 		Me.GroupBox6.ResumeLayout(False)
 		Me._metadataGroup.ResumeLayout(False)
@@ -1077,7 +1080,6 @@ Public Class ExportForm
 		CType(Me._volumeStartNumber, System.ComponentModel.ISupportInitialize).EndInit()
 		Me.GroupBox23.ResumeLayout(False)
 		Me._loadFileCharacterInformation.ResumeLayout(False)
-		CType(Me._startExportAtDocumentNumber, System.ComponentModel.ISupportInitialize).EndInit()
 		Me.ResumeLayout(False)
 
 	End Sub
@@ -1114,6 +1116,7 @@ Public Class ExportForm
 
 	Private Sub RunMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles RunMenu.Click
 		Dim msg As New System.Text.StringBuilder
+		Dim d As DocumentFieldCollection = _application.CurrentFields(_application.ArtifactTypeID, True)
 		If Not System.IO.Directory.Exists(_folderPath.Text) OrElse _folderPath.Text.Trim = String.Empty Then
 			If _folderPath.Text.Trim = String.Empty Then
 				AppendErrorMessage(msg, "Export destination folder empty")
@@ -1214,7 +1217,7 @@ Public Class ExportForm
 			_exportFile.FilePrefix = _prefixText.Text
 		End If
 		'TODO: WINFLEX - ArtifactTypeID
-		_exportFile.IdentifierColumnName = _application.GetCaseIdentifierFields(10)(0)
+		_exportFile.IdentifierColumnName = d.IdentifierFieldNames(0)
 		_exportFile.RenameFilesToIdentifier = True
 		_exportFile.VolumeInfo = Me.BuildVolumeInfo
 		_exportFile.ExportImages = _exportImages.Checked
@@ -1369,10 +1372,26 @@ Public Class ExportForm
 		_nativeFileFormat.SelectedIndex = 0
 		_productionPrecedenceList.Items.Add(New Pair("-1", "Original"))
 		Me.InitializeColumnSelecter()
+		Me.InitializeFileControls()
 	End Sub
 
 	Private Sub _searchList_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _filters.SelectedIndexChanged
 		If _dataSourceIsSet AndAlso Not _filters.SelectedItem Is Nothing Then Me.InitializeColumnSelecter()
+	End Sub
+
+	Private Sub InitializeFileControls()
+		If Me.ExportFile.ArtifactTypeID = kCura.EDDS.Types.ArtifactType.Document Then Exit Sub
+		_exportImages.Checked = False
+		_exportImages.Enabled = False
+		GroupBox2.Visible = False
+		If Me.ExportFile.HasFileField Then
+			GroupBox4.Text = Me.ExportFile.FileField.FieldName
+			_exportNativeFiles.Text = "Export " & Me.ExportFile.FileField.FieldName & " Files"
+		Else
+			_exportNativeFiles.Checked = False
+			_exportNativeFiles.Enabled = False
+			GroupBox4.Visible = False
+		End If
 	End Sub
 
 	Private Sub InitializeColumnSelecter()
@@ -1382,14 +1401,23 @@ Public Class ExportForm
 		Dim leftListBoxItems As New System.Collections.ArrayList
 		For Each field As ViewFieldInfo In Me.ExportFile.AllExportableFields
 			If Not defaultSelectedIds.Contains(field.AvfId) Then
-				leftListBoxItems.Add(New ViewFieldInfo(field))
+				If Me.ExportFile.ArtifactTypeID = kCura.EDDS.Types.ArtifactType.Document Then
+					leftListBoxItems.Add(New ViewFieldInfo(field))
+				ElseIf field.FieldType <> kCura.DynamicFields.Types.FieldTypeHelper.FieldType.File Then
+					leftListBoxItems.Add(New ViewFieldInfo(field))
+				End If
 			End If
 		Next
 		For Each defaultSelectedId As Int32 In defaultSelectedIds
 			For Each field As ViewFieldInfo In Me.ExportFile.AllExportableFields
 				If field.AvfId = defaultSelectedId Then
-					_columnSelecter.RightListBoxItems.Add(New ViewFieldInfo(field))
-					Exit For
+					If Me.ExportFile.ArtifactTypeID = kCura.EDDS.Types.ArtifactType.Document Then
+						_columnSelecter.RightListBoxItems.Add(New ViewFieldInfo(field))
+						Exit For
+					ElseIf field.FieldType <> kCura.DynamicFields.Types.FieldTypeHelper.FieldType.File Then
+						_columnSelecter.RightListBoxItems.Add(New ViewFieldInfo(field))
+						Exit For
+					End If
 				End If
 			Next
 		Next
