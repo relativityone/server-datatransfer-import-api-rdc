@@ -91,33 +91,39 @@ Namespace kCura.EDDS.WinForm
         Dim winIdent As System.Security.Principal.WindowsIdentity = System.Security.Principal.WindowsIdentity.GetCurrent
         Return winIdent.Name
       End Get
-    End Property
+		End Property
 
-    Public ReadOnly Property CurrentFields(ByVal artifactTypeID As Int32, Optional ByVal refresh As Boolean = False) As DocumentFieldCollection
-      Get
-        Try
-          If _fields Is Nothing OrElse refresh Then
-            _fields = New DocumentFieldCollection
-            Dim fieldManager As New kCura.WinEDDS.Service.FieldQuery(Credential, _cookieContainer)
-            Dim fields() As kCura.EDDS.WebAPI.DocumentManagerBase.Field
-            fields = fieldManager.RetrieveAllAsArray(SelectedCaseInfo.ArtifactID, artifactTypeID)
-            Dim i As Int32
-            For i = 0 To fields.Length - 1
-              With fields(i)
-                _fields.Add(New DocumentField(.DisplayName, .ArtifactID, .FieldTypeID, .FieldCategoryID, .CodeTypeID, .MaxLength, .UseUnicodeEncoding))
-              End With
-            Next
-          End If
-          Return _fields
-        Catch ex As System.Exception
-          If ex.Message.IndexOf("Need To Re Login") <> -1 Then
-            NewLogin(False)
-          Else
-            Throw
-          End If
-        End Try
-      End Get
-    End Property
+		Public ReadOnly Property SendLoadNotificationEmailEnabled() As Boolean
+			Get
+				Return New kCura.WinEDDS.Service.RelativityManager(Me.Credential, Me.CookieContainer).IsImportEmailNotificationEnabled
+			End Get
+		End Property
+
+		Public ReadOnly Property CurrentFields(ByVal artifactTypeID As Int32, Optional ByVal refresh As Boolean = False) As DocumentFieldCollection
+			Get
+				Try
+					If _fields Is Nothing OrElse refresh Then
+						_fields = New DocumentFieldCollection
+						Dim fieldManager As New kCura.WinEDDS.Service.FieldQuery(Credential, _cookieContainer)
+						Dim fields() As kCura.EDDS.WebAPI.DocumentManagerBase.Field
+						fields = fieldManager.RetrieveAllAsArray(SelectedCaseInfo.ArtifactID, artifactTypeID)
+						Dim i As Int32
+						For i = 0 To fields.Length - 1
+							With fields(i)
+								_fields.Add(New DocumentField(.DisplayName, .ArtifactID, .FieldTypeID, .FieldCategoryID, .CodeTypeID, .MaxLength, .UseUnicodeEncoding))
+							End With
+						Next
+					End If
+					Return _fields
+				Catch ex As System.Exception
+					If ex.Message.IndexOf("Need To Re Login") <> -1 Then
+						NewLogin(False)
+					Else
+						Throw
+					End If
+				End Try
+			End Get
+		End Property
 
 		Public ReadOnly Property CurrentNonFileFields(ByVal artifactTypeID As Int32, Optional ByVal refresh As Boolean = False) As DocumentFieldCollection
 			Get
@@ -725,6 +731,7 @@ Namespace kCura.EDDS.WinForm
 			Else
 				loadFile.DestinationFolderID = caseInfo.RootArtifactID
 			End If
+			loadFile.SendEmailOnLoadCompletion = Config.SendNotificationOnImportCompletionByDefault
 			loadFile.CopyFilesToDocumentRepository = Config.CopyFilesToRepository
 			loadFile.CaseInfo = caseInfo
 			loadFile.Credentials = Me.Credential
@@ -851,6 +858,7 @@ Namespace kCura.EDDS.WinForm
 				imageFile.ForProduction = False
 				imageFile.FullTextEncoding = System.Text.Encoding.Default
 				imageFile.CopyFilesToDocumentRepository = Config.CopyFilesToRepository
+				imageFile.SendEmailOnLoadCompletion = Config.SendNotificationOnImportCompletionByDefault
 				frm.ImageLoadFile = imageFile
 			Catch ex As System.Exception
 				Throw
@@ -879,6 +887,7 @@ Namespace kCura.EDDS.WinForm
 				imageFile.CopyFilesToDocumentRepository = Config.CopyFilesToRepository
 				Dim productionManager As New kCura.WinEDDS.Service.ProductionManager(Me.Credential, _cookieContainer)
 				imageFile.ProductionTable = productionManager.RetrieveImportEligibleByContextArtifactID(caseinfo.ArtifactID).Tables(0)
+				imageFile.SendEmailOnLoadCompletion = Config.SendNotificationOnImportCompletionByDefault
 				frm.ImageLoadFile = imageFile
 			Catch ex As System.Exception
 				Throw
@@ -1214,6 +1223,7 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 		Public Function ReadLoadFile(ByVal loadFile As LoadFile, ByVal path As String, ByVal isSilent As Boolean) As LoadFile
+			kCura.WinEDDS.Service.Settings.SendEmailOnLoadCompletion = Config.SendNotificationOnImportCompletionByDefault
 			If Not Me.EnsureConnection Then Return Nothing
 			Dim sr As New System.IO.StreamReader(path)
 			Dim tempLoadFile As WinEDDS.LoadFile
@@ -1263,6 +1273,7 @@ Namespace kCura.EDDS.WinForm
 		End Function
 
 		Public Function ReadImageLoadFile(ByVal path As String) As ImageLoadFile
+			kCura.WinEDDS.Service.Settings.SendEmailOnLoadCompletion = Config.SendNotificationOnImportCompletionByDefault
 			Dim sr As New System.IO.StreamReader(path)
 			Dim retval As ImageLoadFile
 			Dim deserializer As New System.Runtime.Serialization.Formatters.Soap.SoapFormatter
@@ -1436,7 +1447,6 @@ Namespace kCura.EDDS.WinForm
 					NewLogin(False)
 					'productionManager = New kCura.WinEDDS.Service.ProductionManager(Me.Credential, _cookieContainer)
 					Exit Function
-
 				Else
 					Throw
 				End If

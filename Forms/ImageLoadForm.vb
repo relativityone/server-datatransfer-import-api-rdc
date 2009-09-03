@@ -41,7 +41,6 @@ Namespace kCura.EDDS.WinForm
 		Friend WithEvents ImportFileMenu As System.Windows.Forms.MenuItem
 		Friend WithEvents _openFileDialog As System.Windows.Forms.OpenFileDialog
 		Friend WithEvents _importMenuSaveSettingsItem As System.Windows.Forms.MenuItem
-		Friend WithEvents MenuItem4 As System.Windows.Forms.MenuItem
 		Friend WithEvents _saveImageLoadFileDialog As System.Windows.Forms.SaveFileDialog
 		Friend WithEvents _importMenuLoadSettingsItem As System.Windows.Forms.MenuItem
 		Friend WithEvents _loadImageLoadFileDialog As System.Windows.Forms.OpenFileDialog
@@ -58,6 +57,9 @@ Namespace kCura.EDDS.WinForm
 		Friend WithEvents _beginBatesDropdown As System.Windows.Forms.ComboBox
 		Friend WithEvents _startLineNumberLabel As System.Windows.Forms.Label
 		Friend WithEvents _startLineNumber As System.Windows.Forms.NumericUpDown
+		Friend WithEvents I As System.Windows.Forms.MenuItem
+		Friend WithEvents MenuItem3 As System.Windows.Forms.MenuItem
+		Friend WithEvents _importMenuSendEmailNotificationItem As System.Windows.Forms.MenuItem
 		<System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
 			Dim resources As System.Resources.ResourceManager = New System.Resources.ResourceManager(GetType(ImageLoad))
 			Me.GroupBox3 = New System.Windows.Forms.GroupBox
@@ -71,7 +73,7 @@ Namespace kCura.EDDS.WinForm
 			Me.MenuItem1 = New System.Windows.Forms.MenuItem
 			Me._importMenuCheckErrorsItem = New System.Windows.Forms.MenuItem
 			Me.ImportFileMenu = New System.Windows.Forms.MenuItem
-			Me.MenuItem4 = New System.Windows.Forms.MenuItem
+			Me.I = New System.Windows.Forms.MenuItem
 			Me._importMenuSaveSettingsItem = New System.Windows.Forms.MenuItem
 			Me._importMenuLoadSettingsItem = New System.Windows.Forms.MenuItem
 			Me.MenuItem2 = New System.Windows.Forms.MenuItem
@@ -86,6 +88,8 @@ Namespace kCura.EDDS.WinForm
 			Me._beginBatesDropdown = New System.Windows.Forms.ComboBox
 			Me._startLineNumber = New System.Windows.Forms.NumericUpDown
 			Me._startLineNumberLabel = New System.Windows.Forms.Label
+			Me.MenuItem3 = New System.Windows.Forms.MenuItem
+			Me._importMenuSendEmailNotificationItem = New System.Windows.Forms.MenuItem
 			Me.GroupBox3.SuspendLayout()
 			Me.GroupBox233.SuspendLayout()
 			Me.ExtractedTextGroupBox.SuspendLayout()
@@ -161,7 +165,7 @@ Namespace kCura.EDDS.WinForm
 			'MenuItem1
 			'
 			Me.MenuItem1.Index = 0
-			Me.MenuItem1.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me._importMenuCheckErrorsItem, Me.ImportFileMenu, Me.MenuItem4, Me._importMenuSaveSettingsItem, Me._importMenuLoadSettingsItem})
+			Me.MenuItem1.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me._importMenuCheckErrorsItem, Me.ImportFileMenu, Me.MenuItem3, Me._importMenuSendEmailNotificationItem, Me.I, Me._importMenuSaveSettingsItem, Me._importMenuLoadSettingsItem})
 			Me.MenuItem1.Text = "&Import"
 			'
 			'_importMenuCheckErrorsItem
@@ -176,20 +180,20 @@ Namespace kCura.EDDS.WinForm
 			Me.ImportFileMenu.Shortcut = System.Windows.Forms.Shortcut.F5
 			Me.ImportFileMenu.Text = "&Import File..."
 			'
-			'MenuItem4
+			'I
 			'
-			Me.MenuItem4.Index = 2
-			Me.MenuItem4.Text = "-"
+			Me.I.Index = 4
+			Me.I.Text = "-"
 			'
 			'_importMenuSaveSettingsItem
 			'
-			Me._importMenuSaveSettingsItem.Index = 3
+			Me._importMenuSaveSettingsItem.Index = 5
 			Me._importMenuSaveSettingsItem.Shortcut = System.Windows.Forms.Shortcut.CtrlS
 			Me._importMenuSaveSettingsItem.Text = "Save Settings"
 			'
 			'_importMenuLoadSettingsItem
 			'
-			Me._importMenuLoadSettingsItem.Index = 4
+			Me._importMenuLoadSettingsItem.Index = 6
 			Me._importMenuLoadSettingsItem.Shortcut = System.Windows.Forms.Shortcut.CtrlO
 			Me._importMenuLoadSettingsItem.Text = "Load Settings"
 			'
@@ -284,6 +288,16 @@ Namespace kCura.EDDS.WinForm
 			Me._startLineNumberLabel.Text = "Start Line"
 			Me._startLineNumberLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
 			'
+			'MenuItem3
+			'
+			Me.MenuItem3.Index = 2
+			Me.MenuItem3.Text = "-"
+			'
+			'_importMenuSendEmailNotificationItem
+			'
+			Me._importMenuSendEmailNotificationItem.Index = 3
+			Me._importMenuSendEmailNotificationItem.Text = "Send email notification on completion"
+			'
 			'ImageLoad
 			'
 			Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
@@ -373,6 +387,7 @@ Namespace kCura.EDDS.WinForm
 			End If
 			If Me.ImageLoadFile.IdentityFieldId = -1 Then Me.ImageLoadFile.IdentityFieldId = _application.CurrentFields(10).IdentifierFields(0).FieldID
 			Me.ImageLoadFile.CaseDefaultPath = _application.SelectedCaseInfo.DocumentPath
+			Me.ImageLoadFile.SendEmailOnLoadCompletion = _importMenuSendEmailNotificationItem.Checked
 			ImageLoadFile.StartLineNumber = CType(_startLineNumber.Value, Int64)
 			Me.Cursor = Cursors.Default
 			Return True
@@ -436,6 +451,12 @@ Namespace kCura.EDDS.WinForm
 				_productionDropdown.ValueMember = "ArtifactID"
 				_overwriteDropdown.SelectedIndex = 1
 				Me.Text = "Relativity Desktop Client | Import Production Load File"
+			End If
+			If Not _application.SendLoadNotificationEmailEnabled Then
+				_importMenuSendEmailNotificationItem.Visible = False
+				_MenuItem3.Visible = False
+			Else
+				_importMenuCheckErrorsItem.Checked = ImageLoadFile.SendEmailOnLoadCompletion
 			End If
 			_overwriteDropdown.SelectedItem = Me.GetOverwriteDropdownItem(ImageLoadFile.Overwrite)
 			Me.Cursor = Cursors.Default
@@ -516,6 +537,7 @@ Namespace kCura.EDDS.WinForm
 				_overwriteDropdown.SelectedItem = Me.GetOverwriteDropdownItem(ImageLoadFile.Overwrite)
 				_filePath.Text = ImageLoadFile.FileName
 				_replaceFullText.Checked = ImageLoadFile.ReplaceFullText
+				_importMenuSendEmailNotificationItem.Checked = Me.ImageLoadFile.SendEmailOnLoadCompletion
 				Me.ImageLoadFile.DestinationFolderID = currentFolder
 				_startLineNumber.Value = CType(ImageLoadFile.StartLineNumber, Decimal)
 			End If

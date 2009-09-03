@@ -125,6 +125,8 @@ Namespace kCura.EDDS.WinForm
 		Friend WithEvents _fieldMap As kCura.WinEDDS.UIControls.FieldMap
 		Friend WithEvents GroupBox3 As System.Windows.Forms.GroupBox
 		Friend WithEvents _overlayIdentifier As System.Windows.Forms.ComboBox
+		Friend WithEvents MenuItem5 As System.Windows.Forms.MenuItem
+		Friend WithEvents _importMenuSendEmailNotificationItem As System.Windows.Forms.MenuItem
 
 		<System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
 			Dim resources As System.Resources.ResourceManager = New System.Resources.ResourceManager(GetType(LoadFileForm))
@@ -170,6 +172,8 @@ Namespace kCura.EDDS.WinForm
 			Me.Label2 = New System.Windows.Forms.Label
 			Me._recordDelimiter = New System.Windows.Forms.ComboBox
 			Me._fieldMapTab = New System.Windows.Forms.TabPage
+			Me.GroupBox3 = New System.Windows.Forms.GroupBox
+			Me._overlayIdentifier = New System.Windows.Forms.ComboBox
 			Me._fieldMap = New kCura.WinEDDS.UIControls.FieldMap
 			Me.GroupBox7 = New System.Windows.Forms.GroupBox
 			Me._fullTextFileEncodingPicker = New kCura.EDDS.WinForm.EncodingPicker
@@ -186,8 +190,8 @@ Namespace kCura.EDDS.WinForm
 			Me._nativeFilePathField = New System.Windows.Forms.ComboBox
 			Me.Label5 = New System.Windows.Forms.Label
 			Me.HelpProvider1 = New System.Windows.Forms.HelpProvider
-			Me.GroupBox3 = New System.Windows.Forms.GroupBox
-			Me._overlayIdentifier = New System.Windows.Forms.ComboBox
+			Me.MenuItem5 = New System.Windows.Forms.MenuItem
+			Me._importMenuSendEmailNotificationItem = New System.Windows.Forms.MenuItem
 			Me.GroupBox1.SuspendLayout()
 			Me.TabControl1.SuspendLayout()
 			Me._loadFileTab.SuspendLayout()
@@ -196,11 +200,11 @@ Namespace kCura.EDDS.WinForm
 			Me.GroupBox2.SuspendLayout()
 			Me.GroupBox23.SuspendLayout()
 			Me._fieldMapTab.SuspendLayout()
+			Me.GroupBox3.SuspendLayout()
 			Me.GroupBox7.SuspendLayout()
 			Me.GroupBox6.SuspendLayout()
 			Me.GroupBox5.SuspendLayout()
 			Me.GroupBox4.SuspendLayout()
-			Me.GroupBox3.SuspendLayout()
 			Me.SuspendLayout()
 			'
 			'OpenFileDialog
@@ -276,7 +280,7 @@ Namespace kCura.EDDS.WinForm
 			'MenuItem2
 			'
 			Me.MenuItem2.Index = 1
-			Me.MenuItem2.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.PreviewMenuFile, Me._importMenuPreviewErrorsItem, Me._importMenuPreviewFoldersAndCodesItem, Me.ImportFileMenu})
+			Me.MenuItem2.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.PreviewMenuFile, Me._importMenuPreviewErrorsItem, Me._importMenuPreviewFoldersAndCodesItem, Me.ImportFileMenu, Me.MenuItem5, Me._importMenuSendEmailNotificationItem})
 			Me.MenuItem2.Text = "&Import"
 			'
 			'PreviewMenuFile
@@ -334,7 +338,7 @@ Namespace kCura.EDDS.WinForm
 			Me._loadFileTab.Controls.Add(Me.GroupBox23)
 			Me._loadFileTab.Location = New System.Drawing.Point(4, 22)
 			Me._loadFileTab.Name = "_loadFileTab"
-			Me._loadFileTab.Size = New System.Drawing.Size(732, 426)
+			Me._loadFileTab.Size = New System.Drawing.Size(728, 462)
 			Me._loadFileTab.TabIndex = 0
 			Me._loadFileTab.Text = "Load File"
 			'
@@ -543,6 +547,25 @@ Namespace kCura.EDDS.WinForm
 			Me._fieldMapTab.TabIndex = 1
 			Me._fieldMapTab.Text = "Field Map"
 			'
+			'GroupBox3
+			'
+			Me.GroupBox3.Controls.Add(Me._overlayIdentifier)
+			Me.GroupBox3.Location = New System.Drawing.Point(4, 352)
+			Me.GroupBox3.Name = "GroupBox3"
+			Me.GroupBox3.Size = New System.Drawing.Size(234, 56)
+			Me.GroupBox3.TabIndex = 33
+			Me.GroupBox3.TabStop = False
+			Me.GroupBox3.Text = "Overlay Identifier"
+			'
+			'_overlayIdentifier
+			'
+			Me._overlayIdentifier.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+			Me._overlayIdentifier.Enabled = False
+			Me._overlayIdentifier.Location = New System.Drawing.Point(8, 24)
+			Me._overlayIdentifier.Name = "_overlayIdentifier"
+			Me._overlayIdentifier.Size = New System.Drawing.Size(220, 21)
+			Me._overlayIdentifier.TabIndex = 28
+			'
 			'_fieldMap
 			'
 			Me._fieldMap.Location = New System.Drawing.Point(4, -4)
@@ -566,7 +589,6 @@ Namespace kCura.EDDS.WinForm
 			'
 			Me._fullTextFileEncodingPicker.Location = New System.Drawing.Point(12, 68)
 			Me._fullTextFileEncodingPicker.Name = "_fullTextFileEncodingPicker"
-			Me._fullTextFileEncodingPicker.SelectedEncoding = CType(resources.GetObject("_fullTextFileEncodingPicker.SelectedEncoding"), System.Text.Encoding)
 			Me._fullTextFileEncodingPicker.Size = New System.Drawing.Size(200, 21)
 			Me._fullTextFileEncodingPicker.TabIndex = 31
 			'
@@ -679,24 +701,15 @@ Namespace kCura.EDDS.WinForm
 			Me.Label5.Text = "Native file paths contained in column:"
 			Me.Label5.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
 			'
-			'GroupBox3
+			'MenuItem5
 			'
-			Me.GroupBox3.Controls.Add(Me._overlayIdentifier)
-			Me.GroupBox3.Location = New System.Drawing.Point(4, 352)
-			Me.GroupBox3.Name = "GroupBox3"
-			Me.GroupBox3.Size = New System.Drawing.Size(234, 56)
-			Me.GroupBox3.TabIndex = 33
-			Me.GroupBox3.TabStop = False
-			Me.GroupBox3.Text = "Overlay Identifier"
+			Me.MenuItem5.Index = 4
+			Me.MenuItem5.Text = "-"
 			'
-			'_overlayIdentifier
+			'_importMenuSendEmailNotificationItem
 			'
-			Me._overlayIdentifier.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
-			Me._overlayIdentifier.Enabled = False
-			Me._overlayIdentifier.Location = New System.Drawing.Point(8, 24)
-			Me._overlayIdentifier.Name = "_overlayIdentifier"
-			Me._overlayIdentifier.Size = New System.Drawing.Size(220, 21)
-			Me._overlayIdentifier.TabIndex = 28
+			Me._importMenuSendEmailNotificationItem.Index = 5
+			Me._importMenuSendEmailNotificationItem.Text = "Send email notification on completion"
 			'
 			'LoadFileForm
 			'
@@ -719,11 +732,11 @@ Namespace kCura.EDDS.WinForm
 			Me.GroupBox2.ResumeLayout(False)
 			Me.GroupBox23.ResumeLayout(False)
 			Me._fieldMapTab.ResumeLayout(False)
+			Me.GroupBox3.ResumeLayout(False)
 			Me.GroupBox7.ResumeLayout(False)
 			Me.GroupBox6.ResumeLayout(False)
 			Me.GroupBox5.ResumeLayout(False)
 			Me.GroupBox4.ResumeLayout(False)
-			Me.GroupBox3.ResumeLayout(False)
 			Me.ResumeLayout(False)
 
 		End Sub
@@ -922,6 +935,7 @@ Namespace kCura.EDDS.WinForm
 				Me.LoadFile.StartLineNumber = CType(_startLineNumber.Text, Int64)
 			End If
 			If Me.LoadFile.IdentityFieldId = -1 Then Me.LoadFile.IdentityFieldId = _application.CurrentFields(Me.LoadFile.ArtifactTypeID).IdentifierFields(0).FieldID
+			Me.LoadFile.SendEmailOnLoadCompletion = _importMenuSendEmailNotificationItem.Checked
 			Me.Cursor = System.Windows.Forms.Cursors.Default
 			Return True
 		End Function
@@ -945,7 +959,7 @@ Namespace kCura.EDDS.WinForm
 			kCura.EDDS.WinForm.Utility.InitializeCharacterDropDown(_newLineDelimiter, _loadFile.NewlineDelimiter)
 			kCura.EDDS.WinForm.Utility.InitializeCharacterDropDown(_multiRecordDelimiter, _loadFile.MultiRecordDelimiter)
 			kCura.EDDS.WinForm.Utility.InitializeCharacterDropDown(_hierarchicalValueDelimiter, _loadFile.HierarchicalValueDelimiter)
-
+			_importMenuSendEmailNotificationItem.Visible = _application.SendLoadNotificationEmailEnabled
 			_filePath.Text = LoadFile.FilePath
 			_importDestinationText.Text = _application.GetCaseFolderPath(LoadFile.DestinationFolderID)
 			_fieldMap.ClearAll()
@@ -989,6 +1003,7 @@ Namespace kCura.EDDS.WinForm
 			_overwriteDropdown.SelectedItem = Me.GetOverwriteDropdownItem(LoadFile.OverwriteDestination)
 			_overlayIdentifier.Items.Clear()
 			_overlayIdentifier.Items.AddRange(Me.GetSuitableKeyFields)
+			_importMenuSendEmailNotificationItem.Checked = Me.LoadFile.SendEmailOnLoadCompletion
 			If Not loadFileObjectUpdatedFromFile Then
 				For Each item As DocumentField In _overlayIdentifier.Items
 					If item.FieldCategory = DynamicFields.Types.FieldCategory.Identifier Then
