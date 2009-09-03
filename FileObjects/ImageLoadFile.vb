@@ -16,6 +16,7 @@ Namespace kCura.WinEDDS
 		Public FullTextEncoding As System.Text.Encoding
 		Public StartLineNumber As Int64
 		Public IdentityFieldId As Int32 = -1
+		Public SendEmailOnLoadCompletion As Boolean
 		<NonSerialized()> Public SelectedCasePath As String = ""
     <NonSerialized()> Public CaseDefaultPath As String = ""
     <NonSerialized()> Public CopyFilesToDocumentRepository As Boolean = True
@@ -69,6 +70,11 @@ Namespace kCura.WinEDDS
 					Me.IdentityFieldId = info.GetInt32("IdentityFieldId")
 				Catch
 					Me.IdentityFieldId = -1
+				End Try
+				Try
+					Me.SendEmailOnLoadCompletion = info.GetBoolean("SendEmailOnLoadCompletion")
+				Catch
+					Me.SendEmailOnLoadCompletion = kCura.WinEDDS.Service.Settings.SendEmailOnLoadCompletion
 				End Try
 			End With
 		End Sub

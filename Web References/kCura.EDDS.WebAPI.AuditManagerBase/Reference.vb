@@ -175,6 +175,9 @@ Namespace kCura.EDDS.WebAPI.AuditManagerBase
         
         '<remarks/>
         Public RunTimeInMilliseconds As Integer
+        
+        '<remarks/>
+        Public SendNotification As Boolean
     End Class
     
     '<remarks/>

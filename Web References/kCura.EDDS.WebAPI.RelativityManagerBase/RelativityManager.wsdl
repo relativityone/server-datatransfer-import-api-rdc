@@ -43,6 +43,16 @@
           </s:sequence>
         </s:complexType>
       </s:element>
+      <s:element name="IsImportEmailNotificationEnabled">
+        <s:complexType />
+      </s:element>
+      <s:element name="IsImportEmailNotificationEnabledResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="IsImportEmailNotificationEnabledResult" type="s:boolean" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
       <s:element name="RetrieveRdcConfiguration">
         <s:complexType />
       </s:element>
@@ -110,6 +120,12 @@
   <wsdl:message name="IsAuditingEnabledSoapOut">
     <wsdl:part name="parameters" element="tns:IsAuditingEnabledResponse" />
   </wsdl:message>
+  <wsdl:message name="IsImportEmailNotificationEnabledSoapIn">
+    <wsdl:part name="parameters" element="tns:IsImportEmailNotificationEnabled" />
+  </wsdl:message>
+  <wsdl:message name="IsImportEmailNotificationEnabledSoapOut">
+    <wsdl:part name="parameters" element="tns:IsImportEmailNotificationEnabledResponse" />
+  </wsdl:message>
   <wsdl:message name="RetrieveRdcConfigurationSoapIn">
     <wsdl:part name="parameters" element="tns:RetrieveRdcConfiguration" />
   </wsdl:message>
@@ -144,6 +160,10 @@
     <wsdl:operation name="IsAuditingEnabled">
       <wsdl:input message="tns:IsAuditingEnabledSoapIn" />
       <wsdl:output message="tns:IsAuditingEnabledSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="IsImportEmailNotificationEnabled">
+      <wsdl:input message="tns:IsImportEmailNotificationEnabledSoapIn" />
+      <wsdl:output message="tns:IsImportEmailNotificationEnabledSoapOut" />
     </wsdl:operation>
     <wsdl:operation name="RetrieveRdcConfiguration">
       <wsdl:input message="tns:RetrieveRdcConfigurationSoapIn" />
@@ -189,6 +209,15 @@
     </wsdl:operation>
     <wsdl:operation name="IsAuditingEnabled">
       <soap:operation soapAction="http://www.kCura.com/EDDS/RelativityManager/IsAuditingEnabled" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="IsImportEmailNotificationEnabled">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/RelativityManager/IsImportEmailNotificationEnabled" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>

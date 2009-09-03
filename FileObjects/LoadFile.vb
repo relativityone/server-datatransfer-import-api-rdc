@@ -28,6 +28,7 @@ Namespace kCura.WinEDDS
 		Public ExtractedTextFileEncoding As System.Text.Encoding
 		Public StartLineNumber As Int64
 		Public IdentityFieldId As Int32 = -1
+		Public SendEmailOnLoadCompletion As Boolean
 		<NonSerialized()> Public ExtractedTextFileEncodingName As String
 		<NonSerialized()> Public CaseDefaultPath As String = ""
 		<NonSerialized()> Public Credentials As Net.NetworkCredential
@@ -81,6 +82,7 @@ Namespace kCura.WinEDDS
 			info.AddValue("ArtifactTypeID", Me.ArtifactTypeID, GetType(Int32))
 			info.AddValue("StartLineNumber", Me.StartLineNumber, GetType(Int64))
 			info.AddValue("IdentityFieldId", Me.IdentityFieldId, GetType(Int32))
+			info.AddValue("SendEmailOnLoadCompletion", Me.SendEmailOnLoadCompletion, GetType(Boolean))
 			If Me.FullTextColumnContainsFileLocation Then info.AddValue("ExtractedTextFileEncoding", Me.ExtractedTextFileEncoding.CodePage, GetType(Int32))
 		End Sub
 
@@ -158,6 +160,11 @@ Namespace kCura.WinEDDS
 					Me.IdentityFieldId = info.GetInt32("IdentityFieldId")
 				Catch
 					Me.IdentityFieldId = -1
+				End Try
+				Try
+					Me.SendEmailOnLoadCompletion = info.GetBoolean("SendEmailOnLoadCompletion")
+				Catch
+					Me.SendEmailOnLoadCompletion = kCura.WinEDDS.Service.Settings.SendEmailOnLoadCompletion
 				End Try
 			End With
 		End Sub

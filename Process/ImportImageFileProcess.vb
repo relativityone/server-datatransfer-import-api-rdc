@@ -61,6 +61,7 @@ Namespace kCura.WinEDDS
 				retval.StartLine = CType(System.Math.Min(ImageLoadFile.StartLineNumber, Int32.MaxValue), Int32)
 				retval.TotalFileSize = _imageFileImporter.Statistics.FileBytes
 				retval.TotalMetadataBytes = _imageFileImporter.Statistics.MetadataBytes
+				retval.SendNotification = ImageLoadFile.SendEmailOnLoadCompletion
 				Dim auditmanager As New kCura.WinEDDS.Service.AuditManager(ImageLoadFile.Credential, ImageLoadFile.CookieContainer)
 				auditmanager.AuditImageImport(ImageLoadFile.CaseInfo.ArtifactID, runID, Not success, retval)
 			Catch

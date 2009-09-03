@@ -109,6 +109,24 @@ Namespace kCura.EDDS.WebAPI.RelativityManagerBase
         End Function
         
         '<remarks/>
+        <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/RelativityManager/IsImportEmailNotificationEnabled", RequestNamespace:="http://www.kCura.com/EDDS/RelativityManager", ResponseNamespace:="http://www.kCura.com/EDDS/RelativityManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
+        Public Function IsImportEmailNotificationEnabled() As Boolean
+            Dim results() As Object = Me.Invoke("IsImportEmailNotificationEnabled", New Object(-1) {})
+            Return CType(results(0),Boolean)
+        End Function
+        
+        '<remarks/>
+        Public Function BeginIsImportEmailNotificationEnabled(ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("IsImportEmailNotificationEnabled", New Object(-1) {}, callback, asyncState)
+        End Function
+        
+        '<remarks/>
+        Public Function EndIsImportEmailNotificationEnabled(ByVal asyncResult As System.IAsyncResult) As Boolean
+            Dim results() As Object = Me.EndInvoke(asyncResult)
+            Return CType(results(0),Boolean)
+        End Function
+        
+        '<remarks/>
         <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/RelativityManager/RetrieveRdcConfiguration", RequestNamespace:="http://www.kCura.com/EDDS/RelativityManager", ResponseNamespace:="http://www.kCura.com/EDDS/RelativityManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
         Public Function RetrieveRdcConfiguration() As System.Data.DataSet
             Dim results() As Object = Me.Invoke("RetrieveRdcConfiguration", New Object(-1) {})

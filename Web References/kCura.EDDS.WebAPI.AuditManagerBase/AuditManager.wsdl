@@ -59,6 +59,7 @@
           <s:element minOccurs="1" maxOccurs="1" name="NumberOfErrors" type="s:long" />
           <s:element minOccurs="1" maxOccurs="1" name="NumberOfWarnings" type="s:long" />
           <s:element minOccurs="1" maxOccurs="1" name="RunTimeInMilliseconds" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="SendNotification" type="s:boolean" />
         </s:sequence>
       </s:complexType>
       <s:simpleType name="RepositoryConnectionType">
