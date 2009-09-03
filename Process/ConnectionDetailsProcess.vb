@@ -149,7 +149,7 @@ Namespace kCura.WinEDDS
 				Return False
 			End Try
 			Try
-				downloader.DownloadFile(path, dest, _caseInfo.ArtifactID.ToString)
+				downloader.DownloadTempFile(path, dest, _caseInfo.ArtifactID.ToString)
 				Me.WriteStatus("Temporary file successfully downloaded")
 			Catch ex As Exception
 				Me.WriteStatus("Error downloading file from repository through Distributed")

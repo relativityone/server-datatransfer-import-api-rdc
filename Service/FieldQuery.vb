@@ -41,7 +41,7 @@ Namespace kCura.WinEDDS.Service
 				 OrElse _
 				 unmappableFields.Contains(dv(i)("DisplayName").ToString) _
 				) Then
-					If Not (CType(dv(i)("FieldCategoryID"), kCura.DynamicFields.Types.FieldCategory) = DynamicFields.Types.FieldCategory.FullText AndAlso artifactTypeID <> 10) Then
+					If Not (CType(dv(i)("FieldCategoryID"), kCura.DynamicFields.Types.FieldCategory) = DynamicFields.Types.FieldCategory.FullText AndAlso artifactTypeID <> kCura.EDDS.Types.ArtifactType.Document) Then
 						With field
 							.ArtifactID = CType(dv(i)("ArtifactID"), Int32)
 							.ArtifactViewFieldID = CType(dv(i)("ArtifactViewFieldID"), Int32)

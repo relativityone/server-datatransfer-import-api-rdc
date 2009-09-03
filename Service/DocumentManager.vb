@@ -32,26 +32,6 @@ Namespace kCura.WinEDDS.Service
 		End Function
 
 #Region " Translations "
-		Public Shared Function DTOtoDocumentInfo(ByVal dto As kCura.EDDS.WebAPI.DocumentManagerBase.Document) As DocumentInfo
-			Dim doc As New DocumentInfo
-			doc.AccessControlListID = dto.AccessControlListID
-			doc.AccessControlListIsInherited = dto.AccessControlListIsInherited
-			doc.ArtifactID = dto.ArtifactID
-			doc.ArtifactTypeID = dto.ArtifactTypeID
-			doc.ContainerID = dto.ContainerID
-			doc.CreatedBy = dto.CreatedBy
-			doc.CreatedOn = dto.CreatedOn
-			doc.DeleteFlag = dto.DeleteFlag
-			doc.Fields = FieldManager.DTOsToDocumentField(dto.Fields)
-			'doc.Files = FileManager.DTOsToFileInfo(dto.Files)
-			doc.Keywords = dto.Keywords
-			doc.LastModifiedBy = dto.LastModifiedBy
-			doc.LastModifiedOn = dto.LastModifiedOn
-			doc.Notes = dto.Notes
-			doc.ParentArtifactID = dto.ParentArtifactID
-			doc.TextIdentifier = dto.TextIdentifier
-			Return doc
-		End Function
 
 		Private Function GetWebAPIFullTextBuilder(ByVal eddsftb As kCura.EDDS.Types.FullTextBuilder) As kCura.EDDS.WebAPI.DocumentManagerBase.FullTextBuilderDTO
 			Dim wapiftb As New kCura.EDDS.WebAPI.DocumentManagerBase.FullTextBuilderDTO
@@ -60,6 +40,7 @@ Namespace kCura.WinEDDS.Service
 			wapiftb.FilePointer = eddsftb.FilePointer
 			Return wapiftb
 		End Function
+
 #End Region
 
 #Region " Shadow Functions "

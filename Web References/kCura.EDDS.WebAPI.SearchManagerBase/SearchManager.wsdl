@@ -88,6 +88,29 @@
           </s:sequence>
         </s:complexType>
       </s:element>
+      <s:element name="RetrieveFilesForDynamicObjects">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="fileFieldArtifactID" type="s:int" />
+            <s:element minOccurs="0" maxOccurs="1" name="objectIds" type="tns:ArrayOfInt" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="RetrieveFilesForDynamicObjectsResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="RetrieveFilesForDynamicObjectsResult">
+              <s:complexType>
+                <s:sequence>
+                  <s:element ref="s:schema" />
+                  <s:any />
+                </s:sequence>
+              </s:complexType>
+            </s:element>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
       <s:element name="RetrieveNativesForProduction">
         <s:complexType>
           <s:sequence>
@@ -219,6 +242,7 @@
         <s:complexType>
           <s:sequence>
             <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="artifactTypeID" type="s:int" />
             <s:element minOccurs="1" maxOccurs="1" name="isSearch" type="s:boolean" />
           </s:sequence>
         </s:complexType>
@@ -373,6 +397,7 @@
         <s:complexType>
           <s:sequence>
             <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="artifactTypeID" type="s:int" />
             <s:element minOccurs="0" maxOccurs="1" name="artifactIdList" type="tns:ArrayOfInt" />
             <s:element minOccurs="1" maxOccurs="1" name="isProductionList" type="s:boolean" />
           </s:sequence>
@@ -396,6 +421,7 @@
         <s:complexType>
           <s:sequence>
             <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="artifactTypeID" type="s:int" />
           </s:sequence>
         </s:complexType>
       </s:element>
@@ -443,6 +469,12 @@
   </wsdl:message>
   <wsdl:message name="RetrieveNativesForSearchSoapOut">
     <wsdl:part name="parameters" element="tns:RetrieveNativesForSearchResponse" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveFilesForDynamicObjectsSoapIn">
+    <wsdl:part name="parameters" element="tns:RetrieveFilesForDynamicObjects" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveFilesForDynamicObjectsSoapOut">
+    <wsdl:part name="parameters" element="tns:RetrieveFilesForDynamicObjectsResponse" />
   </wsdl:message>
   <wsdl:message name="RetrieveNativesForProductionSoapIn">
     <wsdl:part name="parameters" element="tns:RetrieveNativesForProduction" />
@@ -551,6 +583,10 @@
       <wsdl:input message="tns:RetrieveNativesForSearchSoapIn" />
       <wsdl:output message="tns:RetrieveNativesForSearchSoapOut" />
     </wsdl:operation>
+    <wsdl:operation name="RetrieveFilesForDynamicObjects">
+      <wsdl:input message="tns:RetrieveFilesForDynamicObjectsSoapIn" />
+      <wsdl:output message="tns:RetrieveFilesForDynamicObjectsSoapOut" />
+    </wsdl:operation>
     <wsdl:operation name="RetrieveNativesForProduction">
       <wsdl:input message="tns:RetrieveNativesForProductionSoapIn" />
       <wsdl:output message="tns:RetrieveNativesForProductionSoapOut" />
@@ -643,6 +679,15 @@
     </wsdl:operation>
     <wsdl:operation name="RetrieveNativesForSearch">
       <soap:operation soapAction="http://www.kCura.com/EDDS/SearchManager/RetrieveNativesForSearch" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveFilesForDynamicObjects">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/SearchManager/RetrieveFilesForDynamicObjects" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>

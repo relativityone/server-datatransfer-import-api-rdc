@@ -184,7 +184,7 @@ Namespace kCura.WinEDDS
 					If _keyFieldID > 0 AndAlso _keyFieldID = docField.FieldID Then identifierField = docfield
 					lineContainsErrors = lineContainsErrors Or SetFieldValueOrErrorMessage(docfield, valToParse, mapItem.NativeFileColumnIndex)
 					'dont add field if object type is not a document and the field is a file field
-					If Not (_artifactTypeID <> 10 And docfield.FieldTypeID = kCura.DynamicFields.Types.FieldTypeHelper.FieldType.File) Then
+					If Not (_artifactTypeID <> kCura.EDDS.Types.ArtifactType.Document And docfield.FieldTypeID = kCura.DynamicFields.Types.FieldTypeHelper.FieldType.File) Then
 						retval.Add(docfield)
 					End If
 				End If
@@ -207,7 +207,7 @@ Namespace kCura.WinEDDS
 				End If
 			End If
 
-			If Not identifierField Is Nothing And _artifactTypeID = 10 Then
+			If Not identifierField Is Nothing And _artifactTypeID = kCura.EDDS.Types.ArtifactType.Document Then
 				For Each field As DocumentField In unmappedFields.Values
 					Dim f As New DocumentField(field)
 					If _columnCount <> values.Length Then
@@ -265,7 +265,7 @@ Namespace kCura.WinEDDS
 				retval.Add(docfield)
 			End If
 
-			If _createFolderStructure AndAlso _artifactTypeID <> 10 Then
+			If _createFolderStructure AndAlso _artifactTypeID <> kCura.EDDS.Types.ArtifactType.Document Then
 				Dim openParenIndex As Int32 = _destinationFolder.LastIndexOf("("c) + 1
 				Dim closeParenIndex As Int32 = _destinationFolder.LastIndexOf(")"c)
 				Dim parentObjectIdentifierIndex As Int32 = Int32.Parse(_destinationFolder.Substring(openParenIndex, closeParenIndex - openParenIndex)) - 1
@@ -285,7 +285,7 @@ Namespace kCura.WinEDDS
 				End If
 				retval.Add(docfield)
 			End If
-			If _createFolderStructure AndAlso _artifactTypeID = 10 Then
+			If _createFolderStructure AndAlso _artifactTypeID = kCura.EDDS.Types.ArtifactType.Document Then
 				Dim openParenIndex As Int32 = _destinationFolder.LastIndexOf("("c) + 1
 				Dim closeParenIndex As Int32 = _destinationFolder.LastIndexOf(")"c)
 				Dim parentObjectIdentifierIndex As Int32 = Int32.Parse(_destinationFolder.Substring(openParenIndex, closeParenIndex - openParenIndex)) - 1

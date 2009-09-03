@@ -17,7 +17,7 @@ Namespace kCura.WinEDDS
 
 		Private Sub InitloadFile(ByVal caseArtifactID As Int32)
 			_loadFile = New LoadFile
-			_loadFile.ArtifactTypeID = 10
+			_loadFile.ArtifactTypeID = kCura.EDDS.Types.ArtifactType.Document
 			_loadFile.CookieContainer = Me.CookieContainer
 			_loadFile.CopyFilesToDocumentRepository = True
 			_loadFile.CreateFolderStructure = False
@@ -52,7 +52,7 @@ Namespace kCura.WinEDDS
 				_loadFile.CaseInfo = Me.CaseManager.Read(value)
 				_loadFile.CaseDefaultPath = _loadFile.CaseInfo.DocumentPath
 				_loadFile.DestinationFolderID = _loadFile.CaseInfo.RootFolderID
-				_docFields = Me.FieldManager.Query.RetrieveAllAsDocumentFieldCollection(value, kCura.EDDS.Types.Constants.ArtifactType.Document)
+				_docFields = Me.FieldManager.Query.RetrieveAllAsDocumentFieldCollection(value, kCura.EDDS.Types.ArtifactType.Document)
 			End Set
 		End Property
 

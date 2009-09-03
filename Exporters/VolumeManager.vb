@@ -235,16 +235,16 @@ Namespace kCura.WinEDDS
 		End Sub
 #End Region
 
-		Public Function ExportDocument(ByVal documentInfo As Exporters.DocumentExportInfo) As Int64
+		Public Function ExportArtifact(ByVal artifact As Exporters.ObjectExportInfo) As Int64
 			Dim tries As Int32 = kCura.Utility.Config.Settings.IoErrorNumberOfRetries
 			While tries > 0 And Not Me.Halt
 				tries -= 1
 				Try
-					Return Me.ExecuteExportDocument(documentInfo, tries < (kCura.Utility.Config.Settings.IoErrorNumberOfRetries - 1))
+					Return Me.ExportArtifact(artifact, tries < (kCura.Utility.Config.Settings.IoErrorNumberOfRetries - 1))
 					Exit While
 				Catch ex As kCura.WinEDDS.Exceptions.ExportBaseException
 					If tries = 0 Then Throw
-					_parent.WriteWarning(String.Format("Error writing data file(s) for document {0}", documentInfo.IdentifierValue))
+					_parent.WriteWarning(String.Format("Error writing data file(s) for document {0}", artifact.IdentifierValue))
 					_parent.WriteWarning(String.Format("Actual error: {0}", ex.ToString))
 					If tries <> kCura.Utility.Config.Settings.IoErrorNumberOfRetries - 1 Then
 						_parent.WriteWarning(String.Format("Waiting {0} seconds to retry", kCura.Utility.Config.Settings.IoErrorWaitTimeInSeconds))
@@ -282,7 +282,7 @@ Namespace kCura.WinEDDS
 			End Try
 		End Function
 
-		Private Function ExecuteExportDocument(ByVal documentInfo As Exporters.DocumentExportInfo, ByVal isRetryAttempt As Boolean) As Int64
+		Private Function ExportArtifact(ByVal artifact As Exporters.ObjectExportInfo, ByVal isRetryAttempt As Boolean) As Int64
 			If isRetryAttempt Then Me.ReInitializeAllStreams()
 			Dim totalFileSize As Int64 = 0
 			Dim loadFileBytes As Int64 = 0
@@ -293,7 +293,7 @@ Namespace kCura.WinEDDS
 			Dim updateVolumeAfterExport As Boolean = False
 			Dim updateSubDirectoryAfterExport As Boolean = False
 			If Me.Settings.ExportImages Then
-				For Each image In documentInfo.Images
+				For Each image In artifact.Images
 					_timekeeper.MarkStart("VolumeManager_DownloadImage")
 					Try
 						If Me.Settings.VolumeInfo.CopyFilesFromRepository Then
@@ -302,18 +302,18 @@ Namespace kCura.WinEDDS
 						image.HasBeenCounted = True
 					Catch ex As System.Exception
 						image.TempLocation = ""
-						Me.LogFileExportError(ExportFileType.Image, documentInfo.IdentifierValue, image.FileGuid, ex.ToString)
+						Me.LogFileExportError(ExportFileType.Image, artifact.IdentifierValue, image.FileGuid, ex.ToString)
 						imageSuccess = False
 					End Try
 					_timekeeper.MarkEnd("VolumeManager_DownloadImage")
 				Next
 			End If
-			Dim imageCount As Long = documentInfo.Images.Count
+			Dim imageCount As Long = artifact.Images.Count
 			Dim successfulRollup As Boolean = True
-			If documentInfo.Images.Count > 0 AndAlso (Me.Settings.TypeOfImage = ExportFile.ImageType.MultiPageTiff OrElse Me.Settings.TypeOfImage = ExportFile.ImageType.Pdf) Then
-				Dim imageList(documentInfo.Images.Count - 1) As String
+			If artifact.Images.Count > 0 AndAlso (Me.Settings.TypeOfImage = ExportFile.ImageType.MultiPageTiff OrElse Me.Settings.TypeOfImage = ExportFile.ImageType.Pdf) Then
+				Dim imageList(artifact.Images.Count - 1) As String
 				For i As Int32 = 0 To imageList.Length - 1
-					imageList(i) = DirectCast(documentInfo.Images(i), Exporters.ImageExportInfo).TempLocation
+					imageList(i) = DirectCast(artifact.Images(i), Exporters.ImageExportInfo).TempLocation
 				Next
 				Dim tempLocation As String = Me.Settings.FolderPath.TrimEnd("\"c) & "\" & System.Guid.NewGuid.ToString & ".tmp"
 				Dim converter As New kCura.Utility.Image
@@ -338,27 +338,27 @@ Namespace kCura.WinEDDS
 					Dim currentTempLocation As String = Me.GetImageExportLocation(image)
 					currentTempLocation = currentTempLocation.Substring(0, currentTempLocation.LastIndexOf("."))
 					currentTempLocation &= ext
-					DirectCast(documentInfo.Images(0), Exporters.ImageExportInfo).TempLocation = currentTempLocation
-					currentTempLocation = DirectCast(documentInfo.Images(0), Exporters.ImageExportInfo).FileName
+					DirectCast(artifact.Images(0), Exporters.ImageExportInfo).TempLocation = currentTempLocation
+					currentTempLocation = DirectCast(artifact.Images(0), Exporters.ImageExportInfo).FileName
 					currentTempLocation = currentTempLocation.Substring(0, currentTempLocation.LastIndexOf("."))
 					currentTempLocation &= ext
-					DirectCast(documentInfo.Images(0), Exporters.ImageExportInfo).FileName = currentTempLocation
-					Dim location As String = DirectCast(documentInfo.Images(0), Exporters.ImageExportInfo).TempLocation
-					If System.IO.File.Exists(DirectCast(documentInfo.Images(0), Exporters.ImageExportInfo).TempLocation) Then
+					DirectCast(artifact.Images(0), Exporters.ImageExportInfo).FileName = currentTempLocation
+					Dim location As String = DirectCast(artifact.Images(0), Exporters.ImageExportInfo).TempLocation
+					If System.IO.File.Exists(DirectCast(artifact.Images(0), Exporters.ImageExportInfo).TempLocation) Then
 						If Me.Settings.Overwrite Then
-							kCura.Utility.File.Delete(DirectCast(documentInfo.Images(0), Exporters.ImageExportInfo).TempLocation)
-							kCura.Utility.File.Move(tempLocation, DirectCast(documentInfo.Images(0), Exporters.ImageExportInfo).TempLocation)
+							kCura.Utility.File.Delete(DirectCast(artifact.Images(0), Exporters.ImageExportInfo).TempLocation)
+							kCura.Utility.File.Move(tempLocation, DirectCast(artifact.Images(0), Exporters.ImageExportInfo).TempLocation)
 						Else
-							_parent.WriteWarning("File exists - file copy skipped: " & DirectCast(documentInfo.Images(0), Exporters.ImageExportInfo).TempLocation)
+							_parent.WriteWarning("File exists - file copy skipped: " & DirectCast(artifact.Images(0), Exporters.ImageExportInfo).TempLocation)
 						End If
 					Else
-						kCura.Utility.File.Move(tempLocation, DirectCast(documentInfo.Images(0), Exporters.ImageExportInfo).TempLocation)
+						kCura.Utility.File.Move(tempLocation, DirectCast(artifact.Images(0), Exporters.ImageExportInfo).TempLocation)
 					End If
 				Catch ex As kCura.Utility.Image.ImageRollupException
 					successfulRollup = False
 					Try
 						If Not tempLocation Is Nothing AndAlso Not tempLocation = "" Then kCura.Utility.File.Delete(tempLocation)
-						_parent.WriteImgProgressError(documentInfo, ex.ImageIndex, ex, "Document exported in single-page image mode.")
+						_parent.WriteImgProgressError(artifact, ex.ImageIndex, ex, "Document exported in single-page image mode.")
 					Catch ioex As System.IO.IOException
 						Throw New kCura.WinEDDS.Exceptions.FileWriteException(Exceptions.FileWriteException.DestinationFile.Errors, ioex)
 					End Try
@@ -369,12 +369,12 @@ Namespace kCura.WinEDDS
 				_timekeeper.MarkStart("VolumeManager_DownloadNative")
 				Try
 					If Me.Settings.VolumeInfo.CopyFilesFromRepository Then
-						Dim downloadSize As Int64 = Me.DownloadNative(documentInfo)
-						If Not documentInfo.HasCountedNative Then totalFileSize += downloadSize
+						Dim downloadSize As Int64 = Me.DownloadNative(artifact)
+						If Not artifact.HasCountedNative Then totalFileSize += downloadSize
 					End If
-					documentInfo.HasCountedNative = True
+					artifact.HasCountedNative = True
 				Catch ex As System.Exception
-					Me.LogFileExportError(ExportFileType.Native, documentInfo.IdentifierValue, documentInfo.NativeFileGuid, ex.ToString)
+					Me.LogFileExportError(ExportFileType.Native, artifact.IdentifierValue, artifact.NativeFileGuid, ex.ToString)
 				End Try
 				_timekeeper.MarkEnd("VolumeManager_DownloadNative")
 			End If
@@ -383,16 +383,16 @@ Namespace kCura.WinEDDS
 
 			Dim extractedTextFileLength As Long = 0
 			If Me.Settings.ExportFullText Then
-				tempLocalFullTextFilePath = Me.DownloadTextFieldAsFile(documentInfo, Me.Settings.SelectedTextField)
+				tempLocalFullTextFilePath = Me.DownloadTextFieldAsFile(artifact, Me.Settings.SelectedTextField)
 				Dim len As Int64 = kCura.Utility.File.Length(tempLocalFullTextFilePath)
 				If Me.Settings.ExportFullTextAsFile Then
-					If Not documentInfo.HasCountedTextFile Then
+					If Not artifact.HasCountedTextFile Then
 						totalFileSize += len
 						extracteTextFileSizeForVolume += len
 					End If
-					documentInfo.HasCountedTextFile = True
+					artifact.HasCountedTextFile = True
 				End If
-				documentInfo.HasFullText = (len > 0)
+				artifact.HasFullText = (len > 0)
 			End If
 
 			If Me.Settings.LogFileFormat = LoadFileType.FileFormat.IPRO_FullText Then
@@ -403,13 +403,13 @@ Namespace kCura.WinEDDS
 					While tries > 0 AndAlso Not Me.Halt
 						tries -= 1
 						Try
-							_downloadManager.DownloadFullTextFile(tempLocalIproFullTextFilePath, documentInfo.DocumentArtifactID, _settings.CaseInfo.ArtifactID.ToString)
+							_downloadManager.DownloadFullTextFile(tempLocalIproFullTextFilePath, artifact.ArtifactID, _settings.CaseInfo.ArtifactID.ToString)
 							Exit While
 						Catch ex As System.Exception
 							If tries = 19 Then
-								_parent.WriteStatusLine(Windows.Process.EventType.Warning, "Second attempt to download full text for document " & documentInfo.IdentifierValue, True)
+								_parent.WriteStatusLine(Windows.Process.EventType.Warning, "Second attempt to download full text for document " & artifact.IdentifierValue, True)
 							ElseIf tries > 0 Then
-								_parent.WriteStatusLine(Windows.Process.EventType.Warning, "Additional attempt to download full text for document " & documentInfo.IdentifierValue & " failed - retrying in 30 seconds", True)
+								_parent.WriteStatusLine(Windows.Process.EventType.Warning, "Additional attempt to download full text for document " & artifact.IdentifierValue & " failed - retrying in 30 seconds", True)
 								System.Threading.Thread.CurrentThread.Join(30000)
 							Else
 								Throw
@@ -423,7 +423,7 @@ Namespace kCura.WinEDDS
 			End If
 
 			Dim textCount As Int32 = 0
-			If Me.Settings.ExportFullTextAsFile AndAlso documentInfo.HasFullText Then textCount += 1
+			If Me.Settings.ExportFullTextAsFile AndAlso artifact.HasFullText Then textCount += 1
 			If totalFileSize + _currentVolumeSize > Me.VolumeMaxSize Then
 				If _currentVolumeSize = 0 Then
 					updateVolumeAfterExport = True
@@ -432,25 +432,25 @@ Namespace kCura.WinEDDS
 				End If
 			ElseIf imageCount + _currentImageSubdirectorySize > Me.SubDirectoryMaxSize Then
 				Me.UpdateSubdirectory()
-			ElseIf documentInfo.NativeCount + _currentNativeSubdirectorySize > Me.SubDirectoryMaxSize Then
+			ElseIf artifact.NativeCount + _currentNativeSubdirectorySize > Me.SubDirectoryMaxSize Then
 				Me.UpdateSubdirectory()
 			ElseIf textCount + _currentTextSubdirectorySize > Me.SubDirectoryMaxSize Then
 				Me.UpdateSubdirectory()
 			End If
 			If Me.Settings.ExportImages Then
 				_timekeeper.MarkStart("VolumeManager_ExportImages")
-				Me.ExportImages(documentInfo.Images, tempLocalIproFullTextFilePath, successfulRollup)
+				Me.ExportImages(artifact.Images, tempLocalIproFullTextFilePath, successfulRollup)
 				_timekeeper.MarkEnd("VolumeManager_ExportImages")
 			End If
 			Dim nativeCount As Int32 = 0
 			Dim nativeLocation As String = ""
 			If Me.Settings.ExportNative AndAlso Me.Settings.VolumeInfo.CopyFilesFromRepository Then
-				Dim nativeFileName As String = Me.GetNativeFileName(documentInfo)
-				Dim localFilePath As String = Me.GetLocalNativeFilePath(documentInfo, nativeFileName)
+				Dim nativeFileName As String = Me.GetNativeFileName(artifact)
+				Dim localFilePath As String = Me.GetLocalNativeFilePath(artifact, nativeFileName)
 				_timekeeper.MarkStart("VolumeManager_ExportNative")
-				Me.ExportNative(localFilePath, documentInfo.NativeFileGuid, documentInfo.DocumentArtifactID, nativeFileName, documentInfo.NativeTempLocation)
+				Me.ExportNative(localFilePath, artifact.NativeFileGuid, artifact.ArtifactID, nativeFileName, artifact.NativeTempLocation)
 				_timekeeper.MarkEnd("VolumeManager_ExportNative")
-				If documentInfo.NativeTempLocation = "" Then
+				If artifact.NativeTempLocation = "" Then
 					nativeLocation = ""
 				Else
 					nativeCount = 1
@@ -469,21 +469,21 @@ Namespace kCura.WinEDDS
 					_nativeFileWriter.Write(_columnHeaderString)
 					_hasWrittenColumnHeaderString = True
 				End If
-				Me.UpdateLoadFile(documentInfo.DataRow, documentInfo.HasFullText, documentInfo.DocumentArtifactID, nativeLocation, tempLocalFullTextFilePath, documentInfo, extractedTextFileLength)
+				Me.UpdateLoadFile(artifact.DataRow, artifact.HasFullText, artifact.ArtifactID, nativeLocation, tempLocalFullTextFilePath, artifact, extractedTextFileLength)
 			Catch ex As System.IO.IOException
 				Throw New kCura.WinEDDS.Exceptions.FileWriteException(Exceptions.FileWriteException.DestinationFile.Load, ex)
 			End Try
 
-			_parent.DocumentsExported += documentInfo.DocCount
+			_parent.DocumentsExported += artifact.DocCount
 			_currentVolumeSize += totalFileSize
 			If Me.Settings.VolumeInfo.CopyFilesFromRepository Then
-				_currentNativeSubdirectorySize += documentInfo.NativeCount
-				If Me.Settings.ExportFullTextAsFile AndAlso documentInfo.HasFullText Then _currentTextSubdirectorySize += 1
+				_currentNativeSubdirectorySize += artifact.NativeCount
+				If Me.Settings.ExportFullTextAsFile AndAlso artifact.HasFullText Then _currentTextSubdirectorySize += 1
 				_currentImageSubdirectorySize += imageCount
 			End If
 			If updateSubDirectoryAfterExport Then Me.UpdateSubdirectory()
 			If updateVolumeAfterExport Then Me.UpdateVolume()
-			_parent.WriteUpdate("Document " & documentInfo.IdentifierValue & " exported.", False)
+			_parent.WriteUpdate("Document " & artifact.IdentifierValue & " exported.", False)
 
 			Try
 				If Not _nativeFileWriter Is Nothing Then _nativeFileWriter.Flush()
@@ -519,25 +519,24 @@ Namespace kCura.WinEDDS
 			End If
 		End Function
 
-		Private Function DownloadTextFieldAsFile(ByVal documentInfo As WinEDDS.Exporters.DocumentExportInfo, ByVal field As WinEDDS.ViewFieldInfo) As String
+		Private Function DownloadTextFieldAsFile(ByVal artifact As WinEDDS.Exporters.ObjectExportInfo, ByVal field As WinEDDS.ViewFieldInfo) As String
 			Dim tempLocalFullTextFilePath As String = System.IO.Path.GetTempFileName
 			Dim tries As Int32 = 20
 			Dim start As Int64 = System.DateTime.Now.Ticks
 			While tries > 0 AndAlso Not Me.Halt
 				tries -= 1
 				Try
-					Select Case field.Category
-						Case DynamicFields.Types.FieldCategory.FullText
-							_downloadManager.DownloadFullTextFile(tempLocalFullTextFilePath, documentInfo.DocumentArtifactID, _settings.CaseInfo.ArtifactID.ToString)
-						Case Else
-							_downloadManager.DownloadLongTextFile(tempLocalFullTextFilePath, documentInfo.DocumentArtifactID, field, _settings.CaseInfo.ArtifactID.ToString)
-					End Select
+					If Me.Settings.ArtifactTypeID = kCura.EDDS.Types.ArtifactType.Document AndAlso field.Category = DynamicFields.Types.FieldCategory.FullText Then
+						_downloadManager.DownloadFullTextFile(tempLocalFullTextFilePath, artifact.ArtifactID, _settings.CaseInfo.ArtifactID.ToString)
+					Else
+						_downloadManager.DownloadLongTextFile(tempLocalFullTextFilePath, artifact.ArtifactID, field, _settings.CaseInfo.ArtifactID.ToString)
+					End If
 					Exit While
 				Catch ex As System.Exception
 					If tries = 19 Then
-						_parent.WriteStatusLine(Windows.Process.EventType.Warning, "Second attempt to download full text for document " & documentInfo.IdentifierValue, True)
+						_parent.WriteStatusLine(Windows.Process.EventType.Warning, "Second attempt to download full text for document " & artifact.IdentifierValue, True)
 					ElseIf tries > 0 Then
-						_parent.WriteStatusLine(Windows.Process.EventType.Warning, "Additional attempt to download full text for document " & documentInfo.IdentifierValue & " failed - retrying in 30 seconds", True)
+						_parent.WriteStatusLine(Windows.Process.EventType.Warning, "Additional attempt to download full text for document " & artifact.IdentifierValue & " failed - retrying in 30 seconds", True)
 						System.Threading.Thread.CurrentThread.Join(30000)
 					Else
 						Throw
@@ -548,7 +547,7 @@ Namespace kCura.WinEDDS
 			Return tempLocalFullTextFilePath
 		End Function
 
-		Private Function GetLocalNativeFilePath(ByVal doc As Exporters.DocumentExportInfo, ByVal nativeFileName As String) As String
+		Private Function GetLocalNativeFilePath(ByVal doc As Exporters.ObjectExportInfo, ByVal nativeFileName As String) As String
 			Dim localFilePath As String = Me.Settings.FolderPath
 			If localFilePath.Chars(localFilePath.Length - 1) <> "\"c Then localFilePath &= "\"
 			localFilePath &= Me.CurrentVolumeLabel & "\" & Me.CurrentNativeSubdirectoryLabel & "\"
@@ -556,7 +555,7 @@ Namespace kCura.WinEDDS
 			Return localFilePath & nativeFileName
 		End Function
 
-		Private Function GetLocalTextFilePath(ByVal doc As Exporters.DocumentExportInfo) As String
+		Private Function GetLocalTextFilePath(ByVal doc As Exporters.ObjectExportInfo) As String
 			Dim localFilePath As String = Me.Settings.FolderPath
 			If localFilePath.Chars(localFilePath.Length - 1) <> "\"c Then localFilePath &= "\"
 			localFilePath &= Me.CurrentVolumeLabel & "\" & Me.CurrentFullTextSubdirectoryLabel & "\"
@@ -564,7 +563,7 @@ Namespace kCura.WinEDDS
 			Return localFilePath & doc.FullTextFileName(Me.NameTextFilesAfterIdentifier)
 		End Function
 
-		Private Function GetNativeFileName(ByVal doc As Exporters.DocumentExportInfo) As String
+		Private Function GetNativeFileName(ByVal doc As Exporters.ObjectExportInfo) As String
 			Select Case _parent.ExportNativesToFileNamedFrom
 				Case ExportNativeWithFilenameFrom.Identifier
 					Return doc.NativeFileName(Me.Settings.AppendOriginalFileName)
@@ -703,7 +702,7 @@ Namespace kCura.WinEDDS
 			While tries > 0 AndAlso Not Me.Halt
 				tries -= 1
 				Try
-					_downloadManager.DownloadFile(tempFile, image.FileGuid, image.SourceLocation, image.ArtifactID, _settings.CaseArtifactID.ToString)
+					_downloadManager.DownloadFileForDocument(tempFile, image.FileGuid, image.SourceLocation, image.ArtifactID, _settings.CaseArtifactID.ToString)
 					image.TempLocation = tempFile
 					Exit While
 				Catch ex As System.Exception
@@ -843,10 +842,11 @@ Namespace kCura.WinEDDS
 			_timekeeper.MarkEnd("VolumeManager_ExportNative_WriteStatus")
 		End Function
 
-		Private Function DownloadNative(ByVal docinfo As Exporters.DocumentExportInfo) As Int64
-			If docinfo.NativeFileGuid = "" Then Return 0
-			Dim nativeFileName As String = Me.GetNativeFileName(docinfo)
-			Dim tempFile As String = Me.GetLocalNativeFilePath(docinfo, nativeFileName)
+		Private Function DownloadNative(ByVal artifact As Exporters.ObjectExportInfo) As Int64
+			If Me.Settings.ArtifactTypeID = kCura.EDDS.Types.ArtifactType.Document AndAlso artifact.NativeFileGuid = "" Then Return 0
+			If Not artifact.FileID > 0 Then Return 0
+			Dim nativeFileName As String = Me.GetNativeFileName(artifact)
+			Dim tempFile As String = Me.GetLocalNativeFilePath(artifact, nativeFileName)
 			Dim start As Int64 = System.DateTime.Now.Ticks
 			If System.IO.File.Exists(tempFile) Then
 				If Settings.Overwrite Then
@@ -854,7 +854,7 @@ Namespace kCura.WinEDDS
 					_parent.WriteStatusLine(kCura.Windows.Process.EventType.Status, String.Format("Overwriting document {0}.", nativeFileName), False)
 				Else
 					_parent.WriteWarning(String.Format("{0} already exists. Skipping file export.", tempFile))
-					docinfo.NativeTempLocation = tempFile
+					artifact.NativeTempLocation = tempFile
 					Return kCura.Utility.File.Length(tempFile)
 				End If
 			End If
@@ -862,27 +862,29 @@ Namespace kCura.WinEDDS
 			While tries > 0 AndAlso Not Me.Halt
 				tries -= 1
 				Try
-					_downloadManager.DownloadFile(tempFile, docinfo.NativeFileGuid, docinfo.NativeSourceLocation, docinfo.DocumentArtifactID, _settings.CaseArtifactID.ToString)
+					If Me.Settings.ArtifactTypeID = kCura.EDDS.Types.ArtifactType.Document Then
+						_downloadManager.DownloadFileForDocument(tempFile, artifact.NativeFileGuid, artifact.NativeSourceLocation, artifact.ArtifactID, _settings.CaseArtifactID.ToString)
+					Else
+						_downloadManager.DownloadFileForDynamicObject(tempFile, artifact.NativeSourceLocation, artifact.ArtifactID, _settings.CaseArtifactID.ToString, artifact.FileID, Me.Settings.FileField.FieldID)
+					End If
 					Exit While
 				Catch ex As System.Exception
 					If tries = 19 Then
-						_parent.WriteStatusLine(Windows.Process.EventType.Warning, "Second attempt to download native for document " & docinfo.IdentifierValue, True)
-						_downloadManager.DownloadFile(tempFile, docinfo.NativeFileGuid, docinfo.NativeSourceLocation, docinfo.DocumentArtifactID, _settings.CaseArtifactID.ToString)
+						_parent.WriteStatusLine(Windows.Process.EventType.Warning, "Second attempt to download native for document " & artifact.IdentifierValue, True)
 					ElseIf tries > 0 Then
-						_parent.WriteStatusLine(Windows.Process.EventType.Warning, "Additional attempt to download native for document " & docinfo.IdentifierValue & " failed - retrying in 30 seconds", True)
+						_parent.WriteStatusLine(Windows.Process.EventType.Warning, "Additional attempt to download native for document " & artifact.IdentifierValue & " failed - retrying in 30 seconds", True)
 						System.Threading.Thread.CurrentThread.Join(30000)
-						_downloadManager.DownloadFile(tempFile, docinfo.NativeFileGuid, docinfo.NativeSourceLocation, docinfo.DocumentArtifactID, _settings.CaseArtifactID.ToString)
 					Else
 						Throw
 					End If
 				End Try
 			End While
-			docinfo.NativeTempLocation = tempFile
+			artifact.NativeTempLocation = tempFile
 			_statistics.FileTime += System.Math.Max(System.DateTime.Now.Ticks - start, 1)
 			Return kCura.Utility.File.Length(tempFile)
 		End Function
 
-		Public Sub UpdateLoadFile(ByVal row As System.Data.DataRow, ByVal hasFullText As Boolean, ByVal documentArtifactID As Int32, ByVal nativeLocation As String, ByVal fullTextTempFile As String, ByVal doc As Exporters.DocumentExportInfo, ByRef extractedTextByteCount As Int64)
+		Public Sub UpdateLoadFile(ByVal row As System.Data.DataRow, ByVal hasFullText As Boolean, ByVal documentArtifactID As Int32, ByVal nativeLocation As String, ByVal fullTextTempFile As String, ByVal doc As Exporters.ObjectExportInfo, ByRef extractedTextByteCount As Int64)
 			If _nativeFileWriter Is Nothing Then Exit Sub
 			If Me.Settings.LoadFileIsHtml Then
 				Me.UpdateHtmlLoadFile(row, hasFullText, documentArtifactID, nativeLocation, fullTextTempFile, doc, extractedTextByteCount)
@@ -1038,7 +1040,7 @@ Namespace kCura.WinEDDS
 			_nativeFileWriter.Write(vbNewLine)
 		End Sub
 
-		Public Sub UpdateHtmlLoadFile(ByVal row As System.Data.DataRow, ByVal hasFullText As Boolean, ByVal documentArtifactID As Int32, ByVal nativeLocation As String, ByVal fullTextTempFile As String, ByVal doc As Exporters.DocumentExportInfo, ByRef extractedTextByteCount As Int64)
+		Public Sub UpdateHtmlLoadFile(ByVal row As System.Data.DataRow, ByVal hasFullText As Boolean, ByVal documentArtifactID As Int32, ByVal nativeLocation As String, ByVal fullTextTempFile As String, ByVal doc As Exporters.ObjectExportInfo, ByRef extractedTextByteCount As Int64)
 			Dim count As Int32
 			Dim fieldValue As String
 			Dim columnName As String
@@ -1173,7 +1175,7 @@ Namespace kCura.WinEDDS
 				Return True
 			End If
 		End Function
-		Private Function GetImagesHtmlString(ByVal doc As Exporters.DocumentExportInfo) As String
+		Private Function GetImagesHtmlString(ByVal doc As Exporters.ObjectExportInfo) As String
 			If doc.Images.Count = 0 Then Return ""
 			Dim retval As New System.Text.StringBuilder
 			For Each image As Exporters.ImageExportInfo In doc.Images
@@ -1187,7 +1189,7 @@ Namespace kCura.WinEDDS
 			Return retval.ToString
 		End Function
 
-		Private Function GetNativeHtmlString(ByVal doc As Exporters.DocumentExportInfo, ByVal location As String) As String
+		Private Function GetNativeHtmlString(ByVal doc As Exporters.ObjectExportInfo, ByVal location As String) As String
 			If doc.NativeCount = 0 Then Return ""
 			Dim retval As New System.Text.StringBuilder
 			retval.AppendFormat("<a style='display:block' href='{0}'>{1}</a>", location, doc.NativeFileName(Me.Settings.AppendOriginalFileName))

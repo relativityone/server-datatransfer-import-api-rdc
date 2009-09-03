@@ -182,7 +182,7 @@ Namespace kCura.WinEDDS
 			_auditManager = New kCura.WinEDDS.Service.AuditManager(args.Credentials, args.CookieContainer)
 			If args.CopyFilesToDocumentRepository Then
 				_defaultDestinationFolderPath = args.SelectedCasePath & "EDDS" & args.CaseInfo.ArtifactID & "\"
-				If args.ArtifactTypeID <> 10 Then
+				If args.ArtifactTypeID <> kCura.EDDS.Types.ArtifactType.Document Then
 					For Each item As LoadFileFieldMap.LoadFileFieldMapItem In args.FieldMap
 						If Not item.DocumentField Is Nothing AndAlso item.NativeFileColumnIndex > -1 AndAlso item.DocumentField.FieldTypeID = kCura.DynamicFields.Types.FieldTypeHelper.FieldType.File Then
 							_defaultDestinationFolderPath &= "File" & item.DocumentField.FieldID & "\"
@@ -401,7 +401,7 @@ Namespace kCura.WinEDDS
 			Dim oixFileIdData As OI.FileID.FileIDData
 			Dim destinationVolume As String
 			_timekeeper.MarkStart("ManageDocument_Filesystem")
-			If uploadFile AndAlso _artifactTypeID = 10 Then
+			If uploadFile AndAlso _artifactTypeID = kCura.EDDS.Types.ArtifactType.Document Then
 				filename = values(_filePathColumnIndex)
 				If filename.Length > 1 AndAlso filename.Chars(0) = "\" AndAlso filename.Chars(1) <> "\" Then
 					filename = "." & filename
@@ -440,7 +440,7 @@ Namespace kCura.WinEDDS
 
 			_timekeeper.MarkStart("ManageDocument_Folder")
 			If _createFolderStructure Then
-				If _artifactTypeID = 10 Then
+				If _artifactTypeID = kCura.EDDS.Types.ArtifactType.Document Then
 					parentFolderID = _folderCache.FolderID(Me.CleanDestinationFolderPath(values(_destinationFolderColumnIndex)))
 				Else
 					Dim textIdentifier As String = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(kCura.Utility.NullableTypesHelper.ToNullableString(values(_destinationFolderColumnIndex)))
@@ -463,7 +463,7 @@ Namespace kCura.WinEDDS
 					End If
 				End If
 			Else
-				If _artifactTypeID = 10 OrElse _parentArtifactTypeID = 8 Then
+				If _artifactTypeID = kCura.EDDS.Types.ArtifactType.Document OrElse _parentArtifactTypeID = kCura.EDDS.Types.ArtifactType.Case Then
 					parentFolderID = _folderID
 				Else
 					parentFolderID = -1
@@ -554,7 +554,7 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Private Function GetSettingsObject() As kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo
-			If _artifactTypeID = 10 Then
+			If _artifactTypeID = kCura.EDDS.Types.ArtifactType.Document Then
 				Return New kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo
 			Else
 				Dim settings As New kCura.EDDS.WebAPI.BulkImportManagerBase.ObjectLoadInfo
@@ -577,7 +577,7 @@ Namespace kCura.WinEDDS
 			Dim codebcp As FileUploadReturnArgs = _bcpuploader.UploadBcpFile(_caseInfo.ArtifactID, _outputCodeFilePath)
 			If codebcp Is Nothing Then Return Nothing
 			Dim codeFileUploadKey As String = codebcp.Value
-			If _artifactTypeID = 10 Then
+			If _artifactTypeID = kCura.EDDS.Types.ArtifactType.Document Then
 				settings.Repository = _defaultDestinationFolderPath
 				If settings.Repository = "" Then settings.Repository = _caseInfo.DocumentPath
 			Else
@@ -637,7 +637,7 @@ Namespace kCura.WinEDDS
 				End If
 			Next
 			retval.Sort(New WebServiceFieldInfoNameComparer)
-			If artifactTypeID = 10 Then
+			If artifactTypeID = kCura.EDDS.Types.ArtifactType.Document Then
 				retval.Add(Me.GetIsSupportedRelativityFileTypeField)
 				retval.Add(Me.GetRelativityFileTypeField)
 				retval.Add(Me.GetHasNativesField)
@@ -723,7 +723,7 @@ Namespace kCura.WinEDDS
 					_outputNativeFileWriter.Write(Constants.NATIVE_FIELD_DELIMITER)
 				End If
 			Next
-			If _artifactTypeID = 10 Then
+			If _artifactTypeID = kCura.EDDS.Types.ArtifactType.Document Then
 				If _filePathColumnIndex <> -1 AndAlso mdoc.UploadFile AndAlso mdoc.IndexFileInDB Then
 					Dim boolString As String = "0"
 					If Me.IsSupportedRelativityFileType(mdoc.FileIdData) Then boolString = "1"

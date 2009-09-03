@@ -147,7 +147,7 @@ Namespace kCura.WinEDDS
 				Try
 					Me.ArtifactTypeID = info.GetInt32("ArtifactTypeID")
 				Catch
-					Me.ArtifactTypeID = 10
+					Me.ArtifactTypeID = kCura.EDDS.Types.ArtifactType.Document
 				End Try
 				Try
 					Me.StartLineNumber = info.GetInt64("StartLineNumber")

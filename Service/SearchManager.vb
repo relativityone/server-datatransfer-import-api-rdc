@@ -85,11 +85,23 @@ Namespace kCura.WinEDDS.Service
 			While tries < Config.MaxReloginTries
 				tries += 1
 				Try
-					If kCura.WinEDDS.Config.UsesWebAPI Then
-						Return MyBase.RetrieveNativesForSearch(caseContextArtifactID, documentArtifactIDs)
+					Return MyBase.RetrieveNativesForSearch(caseContextArtifactID, documentArtifactIDs)
+				Catch ex As System.Exception
+					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
+						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
 					Else
-						'Return kCura.EDDS.Service.FileQuery.RetrieveNativesForDocuments(_identity, artifactID, documentArtifactIDs).ToDataSet()
+						Throw
 					End If
+				End Try
+			End While
+		End Function
+
+		Public Shadows Function RetrieveFilesForDynamicObjects(ByVal caseContextArtifactID As Int32, ByVal fileFieldArtifactID As Int32, ByVal objectIds As Int32()) As System.Data.DataSet
+			Dim tries As Int32 = 0
+			While tries < Config.MaxReloginTries
+				tries += 1
+				Try
+					Return MyBase.RetrieveFilesForDynamicObjects(caseContextArtifactID, fileFieldArtifactID, objectIds)
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
 						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
@@ -180,12 +192,12 @@ Namespace kCura.WinEDDS.Service
 			End While
 		End Function
 
-		Public Shadows Function RetrieveViewsByContextArtifactID(ByVal caseContextArtifactID As Int32, ByVal isSearch As Boolean) As System.Data.DataSet
+		Public Shadows Function RetrieveViewsByContextArtifactID(ByVal caseContextArtifactID As Int32, ByVal artifactTypeID As Int32, ByVal isSearch As Boolean) As System.Data.DataSet
 			Dim tries As Int32 = 0
 			While tries < Config.MaxReloginTries
 				tries += 1
 				Try
-					Return MyBase.RetrieveViewsByContextArtifactID(caseContextArtifactID, isSearch)
+					Return MyBase.RetrieveViewsByContextArtifactID(caseContextArtifactID, artifactTypeID, isSearch)
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
 						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
@@ -292,12 +304,12 @@ Namespace kCura.WinEDDS.Service
 			End While
 		End Function
 
-		Public Shadows Function RetrieveDefaultViewFieldsForIdList(ByVal caseContextArtifactID As Int32, ByVal artifactIdList As Int32(), ByVal isProductionList As Boolean) As System.Collections.Specialized.HybridDictionary
+		Public Shadows Function RetrieveDefaultViewFieldsForIdList(ByVal caseContextArtifactID As Int32, ByVal artifactTypeID As Int32, ByVal artifactIdList As Int32(), ByVal isProductionList As Boolean) As System.Collections.Specialized.HybridDictionary
 			Dim tries As Int32 = 0
 			While tries < Config.MaxReloginTries
 				tries += 1
 				Try
-					Dim dt As System.Data.DataTable = MyBase.RetrieveDefaultViewFieldsForIdList(caseContextArtifactID, artifactIdList, isProductionList).Tables(0)
+					Dim dt As System.Data.DataTable = MyBase.RetrieveDefaultViewFieldsForIdList(caseContextArtifactID, artifactTypeID, artifactIdList, isProductionList).Tables(0)
 					Dim retval As New System.Collections.Specialized.HybridDictionary
 					For Each row As System.Data.DataRow In dt.Rows
 						If Not retval.Contains(row("ArtifactID")) Then
@@ -316,12 +328,12 @@ Namespace kCura.WinEDDS.Service
 			End While
 		End Function
 
-		Public Shadows Function RetrieveAllExportableViewFields(ByVal caseContextArtifactID As Int32) As WinEDDS.ViewFieldInfo()
+		Public Shadows Function RetrieveAllExportableViewFields(ByVal caseContextArtifactID As Int32, ByVal artifactTypeID As Int32) As WinEDDS.ViewFieldInfo()
 			Dim tries As Int32 = 0
 			While tries < Config.MaxReloginTries
 				tries += 1
 				Try
-					Dim dt As System.Data.DataTable = MyBase.RetrieveAllExportableViewFields(caseContextArtifactID).Tables(0)
+					Dim dt As System.Data.DataTable = MyBase.RetrieveAllExportableViewFields(caseContextArtifactID, artifactTypeID).Tables(0)
 					Dim retval As New System.Collections.ArrayList
 					For Each row As System.Data.DataRow In dt.Rows
 						retval.Add(New WinEDDS.ViewFieldInfo(row))

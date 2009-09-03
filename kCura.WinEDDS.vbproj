@@ -593,11 +593,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Types\DocumentInfo.vb"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "Types\EncodingListItem.vb"
                     SubType = "Code"
                     BuildAction = "Compile"

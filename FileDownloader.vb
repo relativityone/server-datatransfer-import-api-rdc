@@ -89,14 +89,14 @@ Namespace kCura.WinEDDS
 		'End Function
 
 		Public Function DownloadFullTextFile(ByVal localFilePath As String, ByVal artifactID As Int32, ByVal appID As String) As Boolean
-			Return WebDownloadFile(localFilePath, artifactID, "", appID, Nothing, True)
+			Return WebDownloadFile(localFilePath, artifactID, "", appID, Nothing, True, -1, -1, -1)
 		End Function
 
 		Public Function DownloadLongTextFile(ByVal localFilePath As String, ByVal artifactID As Int32, ByVal field As ViewFieldInfo, ByVal appId As String) As Boolean
-			Return WebDownloadFile(localFilePath, artifactID, "", appId, Nothing, False, field.FieldArtifactId)
+			Return WebDownloadFile(localFilePath, artifactID, "", appId, Nothing, False, field.FieldArtifactId, -1, -1)
 		End Function
 
-		Public Function DownloadFile(ByVal localFilePath As String, ByVal remoteFileGuid As String, ByVal remoteLocation As String, ByVal artifactID As Int32, ByVal appID As String) As Boolean
+		Private Function DownloadFile(ByVal localFilePath As String, ByVal remoteFileGuid As String, ByVal remoteLocation As String, ByVal artifactID As Int32, ByVal appID As String, ByVal fileFieldArtifactID As Int32, ByVal fileID As Int32) As Boolean
 			'If Me.UploaderType = Type.Web Then
 			If remoteLocation.Length > 7 Then
 				If remoteLocation.Substring(0, 7).ToLower = "file://" Then
@@ -112,7 +112,7 @@ Namespace kCura.WinEDDS
 						Return True
 					Case FileAccessType.Web
 						Me.UploaderType = FileAccessType.Web
-						Return WebDownloadFile(localFilePath, artifactID, remoteFileGuid, appID, Nothing)
+						Return WebDownloadFile(localFilePath, artifactID, remoteFileGuid, appID, Nothing, False, -1, fileID, fileFieldArtifactID)
 				End Select
 			Else
 				Try
@@ -120,23 +120,31 @@ Namespace kCura.WinEDDS
 					_locationAccessMatrix.Add(remoteLocationKey, FileAccessType.Direct)
 					Return True
 				Catch ex As Exception
-					Return Me.WebDownloadFile(localFilePath, artifactID, remoteFileGuid, appID, remoteLocationKey)
+					Return Me.WebDownloadFile(localFilePath, artifactID, remoteFileGuid, appID, remoteLocationKey, False, -1, fileID, fileFieldArtifactID)
 				End Try
 			End If
 		End Function
 
-		Public Function DownloadFile(ByVal localFilePath As String, ByVal remoteFileGuid As String, ByVal appID As String) As Boolean
+		Public Function DownloadFileForDocument(ByVal localFilePath As String, ByVal remoteFileGuid As String, ByVal remoteLocation As String, ByVal artifactID As Int32, ByVal appID As String) As Boolean
+			Return Me.DownloadFile(localFilePath, remoteFileGuid, remoteLocation, artifactID, appID, -1, -1)
+		End Function
+
+		Public Function DownloadFileForDynamicObject(ByVal localFilePath As String, ByVal remoteLocation As String, ByVal artifactID As Int32, ByVal appID As String, ByVal fileID As Int32, ByVal fileFieldArtifactID As Int32) As Boolean
+			Return Me.DownloadFile(localFilePath, Nothing, remoteLocation, artifactID, appID, fileFieldArtifactID, fileID)
+		End Function
+
+		Public Function DownloadTempFile(ByVal localFilePath As String, ByVal remoteFileGuid As String, ByVal appID As String) As Boolean
 			Me.UploaderType = FileAccessType.Web
-			Return WebDownloadFile(localFilePath, -1, remoteFileGuid, appID, Nothing)
+			Return WebDownloadFile(localFilePath, -1, remoteFileGuid, appID, Nothing, False, -1, -1, -1)
 		End Function
 
 		Public Function MoveTempFileToLocal(ByVal localFilePath As String, ByVal remoteFileGuid As String, ByVal caseInfo As kCura.EDDS.Types.CaseInfo) As Boolean
-			Dim retval As Boolean = Me.DownloadFile(localFilePath, remoteFileGuid, caseInfo.ArtifactID.ToString)
+			Dim retval As Boolean = Me.DownloadTempFile(localFilePath, remoteFileGuid, caseInfo.ArtifactID.ToString)
 			_gateway.RemoveTempFile(caseInfo.ArtifactID, remoteFileGuid)
 			Return retval
 		End Function
 
-		Private Function WebDownloadFile(ByVal localFilePath As String, ByVal artifactID As Int32, ByVal remoteFileGuid As String, ByVal appID As String, ByVal remotelocationkey As String, Optional ByVal forFullText As Boolean = False, Optional ByVal longTextFieldArtifactID As Int32 = -1) As Boolean
+		Private Function WebDownloadFile(ByVal localFilePath As String, ByVal artifactID As Int32, ByVal remoteFileGuid As String, ByVal appID As String, ByVal remotelocationkey As String, ByVal forFullText As Boolean, ByVal longTextFieldArtifactID As Int32, ByVal fileID As Int32, ByVal fileFieldArtifactID As Int32) As Boolean
 			Dim tryNumber As Int32 = 0
 			Dim localStream As System.IO.Stream
 			Try
@@ -146,6 +154,8 @@ Namespace kCura.WinEDDS
 					remoteuri = String.Format("{0}Download.aspx?ArtifactID={1}&AppID={2}&ExtractedText=True", downloadUrl, artifactID, appID)
 				ElseIf longTextFieldArtifactID > 0 Then
 					remoteuri = String.Format("{0}Download.aspx?ArtifactID={1}&AppID={2}&LongTextFieldArtifactID={3}", downloadUrl, artifactID, appID, longTextFieldArtifactID)
+				ElseIf fileFieldArtifactID > 0 Then
+					remoteuri = String.Format("{0}Download.aspx?ObjectArtifactID={1}&FileID={2}&AppID={3}&FileFieldArtifactID={4}", downloadUrl, artifactID, fileID, appID, fileFieldArtifactID)
 				Else
 					remoteuri = String.Format("{0}Download.aspx?ArtifactID={1}&GUID={2}&AppID={3}", downloadUrl, artifactID, remoteFileGuid, appID)
 				End If

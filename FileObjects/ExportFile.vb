@@ -42,8 +42,15 @@ Namespace kCura.WinEDDS
 		Protected _volumeDigitPadding As Int32
 		Protected _subdirectoryDigitPadding As Int32
 		Protected _startAtDocument As Int32 = 0
+		Private _artifactTypeID As Int32
+		Private _fileField As DocumentField
 
 #Region "Public Properties"
+		Public ReadOnly Property ArtifactTypeID() As Int32
+			Get
+				Return _artifactTypeID
+			End Get
+		End Property
 
 		Public Property LoadFilesPrefix() As String
 			Get
@@ -419,9 +426,24 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
+		Public Property FileField() As DocumentField
+			Get
+				Return _fileField
+			End Get
+			Set(ByVal value As DocumentField)
+				_fileField = value
+			End Set
+		End Property
+
+		Public ReadOnly Property HasFileField() As Boolean
+			Get
+				Return Not _fileField Is Nothing
+			End Get
+		End Property
+
 #End Region
 
-		Public Sub New()
+		Public Sub New(ByVal artifactTypeID As Int32)
 			Me.RecordDelimiter = ChrW(20)
 			Me.QuoteDelimiter = ChrW(254)
 			Me.NewlineDelimiter = ChrW(174)

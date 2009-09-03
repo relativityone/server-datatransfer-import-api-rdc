@@ -1,10 +1,10 @@
 Namespace kCura.WinEDDS.Exporters
-	Public Class DocumentExportInfo
+	Public Class ObjectExportInfo
 		Private _images As System.Collections.ArrayList
 		Private _native As Object
 		Private _totalFileSize As Int64
 		Private _totalNumberOfFiles As Int64
-		Private _documentArtifactID As Int32
+		Private _artifactID As Int32
 		Private _hasFullText As Boolean
 		Private _identifierValue As String = ""
 		Private _nativeExtension As String = ""
@@ -17,6 +17,7 @@ Namespace kCura.WinEDDS.Exporters
 		Private _hasCountedNative As Boolean = False
 		Private _hasCountedTextFile As Boolean = False
 		Private _docCount As Int32 = 1
+		Private _fileID As Int32 = 0
 
 		Public Property DataRow() As System.Data.DataRow
 			Get
@@ -81,12 +82,12 @@ Namespace kCura.WinEDDS.Exporters
 			End Set
 		End Property
 
-		Public Property DocumentArtifactID() As Int32
+		Public Property ArtifactID() As Int32
 			Get
-				Return _documentArtifactID
+				Return _artifactID
 			End Get
 			Set(ByVal value As Int32)
-				_documentArtifactID = value
+				_artifactID = value
 			End Set
 		End Property
 
@@ -203,10 +204,10 @@ Namespace kCura.WinEDDS.Exporters
 
 		Public Property HasCountedNative() As Boolean
 			Get
-				Return _HasCountedNative
+				Return _hasCountedNative
 			End Get
 			Set(ByVal value As Boolean)
-				_HasCountedNative = value
+				_hasCountedNative = value
 			End Set
 		End Property
 		Public Property HasCountedTextFile() As Boolean
@@ -217,6 +218,16 @@ Namespace kCura.WinEDDS.Exporters
 				_hasCountedTextFile = value
 			End Set
 		End Property
+
+		Public Property FileID() As Int32
+			Get
+				Return _fileID
+			End Get
+			Set(ByVal value As Int32)
+				_fileID = value
+			End Set
+		End Property
+
 
 		Public ReadOnly Property DocCount() As Int32
 			Get

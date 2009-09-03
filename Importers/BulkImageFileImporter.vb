@@ -129,7 +129,7 @@ Namespace kCura.WinEDDS
 			ElseIf args.IdentityFieldId <> -1 Then
 				_keyFieldDto = New kCura.WinEDDS.Service.FieldManager(args.Credential, args.CookieContainer).Read(args.CaseInfo.ArtifactID, args.IdentityFieldId)
 			Else
-				Dim fieldID As Int32 = _fieldQuery.RetrieveAllAsDocumentFieldCollection(args.CaseInfo.ArtifactID, kCura.EDDS.Types.Constants.ArtifactType.Document).IdentifierFields(0).FieldID
+				Dim fieldID As Int32 = _fieldQuery.RetrieveAllAsDocumentFieldCollection(args.CaseInfo.ArtifactID, kCura.EDDS.Types.ArtifactType.Document).IdentifierFields(0).FieldID
 				_keyFieldDto = New kCura.WinEDDS.Service.FieldManager(args.Credential, args.CookieContainer).Read(args.CaseInfo.ArtifactID, fieldID)
 			End If
 			_overwrite = args.Overwrite

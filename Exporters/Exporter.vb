@@ -202,7 +202,7 @@ Namespace kCura.WinEDDS
 				For Each docRow In documentTable.Rows
 					artifactIDs.Add(CType(docRow("ArtifactID"), Int32))
 					docRows.Add(docRow)
-					fileCount += CType(docRow("kCura_FileCount_Computed"), Int32)
+					If Me.ExportFile.ArtifactTypeID = kCura.EDDS.Types.ArtifactType.Document Then fileCount += CType(docRow("kCura_FileCount_Computed"), Int32)
 					If fileCount > Config.ExportBatchSize Then
 						ExportChunk(DirectCast(artifactIDs.ToArray(GetType(Int32)), Int32()), DirectCast(docRows.ToArray(GetType(System.Data.DataRow)), System.Data.DataRow()))
 						artifactIDs.Clear()
@@ -227,7 +227,6 @@ Namespace kCura.WinEDDS
 
 		Private Sub ExportChunk(ByVal documentArtifactIDs As Int32(), ByVal docRows As System.Data.DataRow())
 			Dim natives As New System.Data.DataView
-			'Dim fullTexts As New System.Data.DataView
 			Dim images As New System.Data.DataView
 			Dim productionImages As New System.Data.DataView
 			Dim i As Int32 = 0
@@ -238,13 +237,18 @@ Namespace kCura.WinEDDS
 				start = System.DateTime.Now.Ticks
 				If Me.ExportFile.TypeOfExport = ExportFile.ExportType.Production Then
 					natives.Table = _searchManager.RetrieveNativesForProduction(Me.ExportFile.CaseArtifactID, productionArtifactID, kCura.Utility.Array.IntArrayToCSV(documentArtifactIDs)).Tables(0)
-				Else
+				ElseIf Me.ExportFile.ArtifactTypeID = kCura.EDDS.Types.ArtifactType.Document Then
 					natives.Table = _searchManager.RetrieveNativesForSearch(Me.ExportFile.CaseArtifactID, kCura.Utility.Array.IntArrayToCSV(documentArtifactIDs)).Tables(0)
+				Else
+					Dim dt As System.Data.DataTable = _searchManager.RetrieveFilesForDynamicObjects(Me.ExportFile.CaseArtifactID, Me.ExportFile.FileField.FieldID, documentArtifactIDs).Tables(0)
+					If dt Is Nothing Then
+						natives = Nothing
+					Else
+						natives.Table = dt
+					End If
 				End If
 				_statistics.MetadataTime += System.Math.Max(System.DateTime.Now.Ticks - start, 1)
 			End If
-
-			'If Me.ExportFile.ExportFullText OrElse Me.ExportFile.LogFileFormat = LoadFileType.FileFormat.IPRO_FullText Then fullTexts.Table = _searchManager.RetrieveFullTextExistenceForSearch(Me.ExportFile.CaseArtifactID, documentArtifactIDs).Tables(0)
 			If Me.ExportFile.ExportImages Then
 				_timekeeper.MarkStart("Exporter_GetImagesForDocumentBlock")
 				start = System.DateTime.Now.Ticks
@@ -255,41 +259,44 @@ Namespace kCura.WinEDDS
 			End If
 
 			For i = 0 To documentArtifactIDs.Length - 1
-				Dim documentInfo As New Exporters.DocumentExportInfo
+				Dim artifact As New Exporters.ObjectExportInfo
 				Dim nativeRow As System.Data.DataRowView = GetNativeRow(natives, documentArtifactIDs(i))
 				If Me.ExportNativesToFileNamedFrom = ExportNativeWithFilenameFrom.Production Then
-					documentInfo.ProductionBeginBates = docRows(i)(_beginBatesColumn).ToString
+					artifact.ProductionBeginBates = docRows(i)(_beginBatesColumn).ToString
 				End If
 				Dim identifierColumnName As String = kCura.DynamicFields.Types.FieldColumnNameHelper.GetSqlFriendlyName(Me.ExportFile.IdentifierColumnName)
-				documentInfo.IdentifierValue = docRows(i)(identifierColumnName).ToString
-				documentInfo.Images = Me.PrepareImages(images, productionImages, documentArtifactIDs(i), documentInfo.IdentifierValue, documentInfo, Me.ExportFile.ImagePrecedence)
-				'documentInfo.HasFullText = Me.DocumentHasExtractedText(fullTexts, documentArtifactIDs(i))
+				artifact.IdentifierValue = docRows(i)(identifierColumnName).ToString
+				artifact.Images = Me.PrepareImages(images, productionImages, documentArtifactIDs(i), artifact.IdentifierValue, artifact, Me.ExportFile.ImagePrecedence)
 				If nativeRow Is Nothing Then
-					documentInfo.NativeFileGuid = ""
-					documentInfo.OriginalFileName = ""
-					documentInfo.NativeSourceLocation = ""
+					artifact.NativeFileGuid = ""
+					artifact.OriginalFileName = ""
+					artifact.NativeSourceLocation = ""
 				Else
-					documentInfo.NativeFileGuid = nativeRow("Guid").ToString
-					documentInfo.OriginalFileName = nativeRow("Filename").ToString
-					documentInfo.NativeSourceLocation = nativeRow("Location").ToString
+					artifact.OriginalFileName = nativeRow("Filename").ToString
+					artifact.NativeSourceLocation = nativeRow("Location").ToString
+					If Me.ExportFile.ArtifactTypeID = kCura.EDDS.Types.ArtifactType.Document Then
+						artifact.NativeFileGuid = nativeRow("Guid").ToString
+					Else
+						artifact.FileID = CType(nativeRow("FileID"), Int32)
+					End If
 				End If
 				If nativeRow Is Nothing Then
-					documentInfo.NativeExtension = ""
+					artifact.NativeExtension = ""
 				ElseIf nativeRow("Filename").ToString.IndexOf(".") <> -1 Then
-					documentInfo.NativeExtension = nativeRow("Filename").ToString.Substring(nativeRow("Filename").ToString.LastIndexOf(".") + 1)
+					artifact.NativeExtension = nativeRow("Filename").ToString.Substring(nativeRow("Filename").ToString.LastIndexOf(".") + 1)
 				Else
-					documentInfo.NativeExtension = ""
+					artifact.NativeExtension = ""
 				End If
-				documentInfo.DocumentArtifactID = documentArtifactIDs(i)
-				documentInfo.DataRow = docRows(i)
-				_fileCount += _volumeManager.ExportDocument(documentInfo)
+				artifact.ArtifactID = documentArtifactIDs(i)
+				artifact.DataRow = docRows(i)
+				_fileCount += _volumeManager.ExportArtifact(artifact)
 				_lastStatisticsSnapshot = _statistics.ToDictionary
 				Me.WriteUpdate("Exported document " & i + 1, i = documentArtifactIDs.Length - 1)
 				If _halt Then Exit Sub
 			Next
 		End Sub
 
-		Private Function PrepareImagesForProduction(ByVal imagesView As System.Data.DataView, ByVal documentArtifactID As Int32, ByVal batesBase As String, ByVal documentInfo As Exporters.DocumentExportInfo) As System.Collections.ArrayList
+		Private Function PrepareImagesForProduction(ByVal imagesView As System.Data.DataView, ByVal documentArtifactID As Int32, ByVal batesBase As String, ByVal artifact As Exporters.ObjectExportInfo) As System.Collections.ArrayList
 			Dim retval As New System.Collections.ArrayList
 			If Not Me.ExportFile.ExportImages Then Return retval
 			imagesView.RowFilter = "DocumentArtifactID = " & documentArtifactID.ToString
@@ -318,14 +325,14 @@ Namespace kCura.WinEDDS
 			Return retval
 		End Function
 
-		Private Function PrepareImages(ByVal imagesView As System.Data.DataView, ByVal productionImagesView As System.Data.DataView, ByVal documentArtifactID As Int32, ByVal batesBase As String, ByVal documentInfo As Exporters.DocumentExportInfo, ByVal productionOrderList As Pair()) As System.Collections.ArrayList
+		Private Function PrepareImages(ByVal imagesView As System.Data.DataView, ByVal productionImagesView As System.Data.DataView, ByVal documentArtifactID As Int32, ByVal batesBase As String, ByVal artifact As Exporters.ObjectExportInfo, ByVal productionOrderList As Pair()) As System.Collections.ArrayList
 			Dim retval As New System.Collections.ArrayList
 			If Not Me.ExportFile.ExportImages Then Return retval
-			If Me.ExportFile.TypeOfExport = ExportFile.ExportType.Production Then Return Me.PrepareImagesForProduction(productionImagesView, documentArtifactID, batesBase, documentInfo)
+			If Me.ExportFile.TypeOfExport = ExportFile.ExportType.Production Then Return Me.PrepareImagesForProduction(productionImagesView, documentArtifactID, batesBase, artifact)
 			Dim item As Pair
 			For Each item In productionOrderList
 				If item.Value = "-1" Then
-					Return Me.PrepareOriginalImages(imagesView, documentArtifactID, batesBase, documentInfo)
+					Return Me.PrepareOriginalImages(imagesView, documentArtifactID, batesBase, artifact)
 				Else
 					productionImagesView.RowFilter = String.Format("DocumentArtifactID = {0} AND ProductionArtifactID = {1}", documentArtifactID, item.Value)
 					If productionImagesView.Count > 0 Then
@@ -356,7 +363,7 @@ Namespace kCura.WinEDDS
 			Return retval
 		End Function
 
-		Private Function PrepareOriginalImages(ByVal imagesView As System.Data.DataView, ByVal documentArtifactID As Int32, ByVal batesBase As String, ByVal documentInfo As Exporters.DocumentExportInfo) As System.Collections.ArrayList
+		Private Function PrepareOriginalImages(ByVal imagesView As System.Data.DataView, ByVal documentArtifactID As Int32, ByVal batesBase As String, ByVal artifact As Exporters.ObjectExportInfo) As System.Collections.ArrayList
 			Dim retval As New System.Collections.ArrayList
 			If Not Me.ExportFile.ExportImages Then Return retval
 			Dim item As Pair
@@ -371,11 +378,11 @@ Namespace kCura.WinEDDS
 					image.ArtifactID = documentArtifactID
 					image.PageOffset = NullableTypes.HelperFunctions.DBNullConvert.ToNullableInt32(drv("ByteRange"))
 					If i = 0 Then
-						image.BatesNumber = documentInfo.IdentifierValue
+						image.BatesNumber = artifact.IdentifierValue
 					Else
 						image.BatesNumber = drv("Identifier").ToString
 						If image.BatesNumber.IndexOf(image.FileGuid) <> -1 Then
-							image.BatesNumber = documentInfo.IdentifierValue & "_" & i.ToString.PadLeft(imagesView.Count.ToString.Length + 1, "0"c)
+							image.BatesNumber = artifact.IdentifierValue & "_" & i.ToString.PadLeft(imagesView.Count.ToString.Length + 1, "0"c)
 						End If
 					End If
 					'image.BatesNumber = drv("Identifier").ToString
@@ -403,7 +410,11 @@ Namespace kCura.WinEDDS
 
 		Private Function GetNativeRow(ByVal dv As System.Data.DataView, ByVal artifactID As Int32) As System.Data.DataRowView
 			If Not Me.ExportFile.ExportNative Then Return Nothing
-			dv.RowFilter = "DocumentArtifactID = " & artifactID.ToString
+			If Me.ExportFile.ArtifactTypeID = 10 Then
+				dv.RowFilter = "DocumentArtifactID = " & artifactID.ToString
+			Else
+				dv.RowFilter = "ObjectArtifactID = " & artifactID.ToString
+			End If
 			If dv.Count > 0 Then
 				Return dv(0)
 			Else
@@ -698,19 +709,19 @@ Namespace kCura.WinEDDS
 			WriteStatusLine(kCura.Windows.Process.EventType.Error, line, True)
 		End Sub
 
-		Friend Sub WriteImgProgressError(ByVal documentInfo As Exporters.DocumentExportInfo, ByVal imageIndex As Int32, ByVal ex As System.Exception, Optional ByVal notes As String = "")
+		Friend Sub WriteImgProgressError(ByVal artifact As Exporters.ObjectExportInfo, ByVal imageIndex As Int32, ByVal ex As System.Exception, Optional ByVal notes As String = "")
 			Dim sw As New System.IO.StreamWriter(_exportFile.FolderPath & "\" & _exportFile.LoadFilesPrefix & "_img_errors.txt", True, _exportFile.LoadFileEncoding)
 			sw.WriteLine(System.DateTime.Now.ToString("s"))
-			sw.WriteLine(String.Format("DOCUMENT: {0}", documentInfo.IdentifierValue))
-			If imageIndex > -1 AndAlso documentInfo.Images.Count > 0 Then
-				sw.WriteLine(String.Format("IMAGE: {0} ({1} of {2})", documentInfo.Images(imageIndex), imageIndex + 1, documentInfo.Images.Count))
+			sw.WriteLine(String.Format("DOCUMENT: {0}", artifact.IdentifierValue))
+			If imageIndex > -1 AndAlso artifact.Images.Count > 0 Then
+				sw.WriteLine(String.Format("IMAGE: {0} ({1} of {2})", artifact.Images(imageIndex), imageIndex + 1, artifact.Images.Count))
 			End If
 			If Not notes = "" Then sw.WriteLine("NOTES: " & notes)
 			sw.WriteLine("ERROR: " & ex.ToString)
 			sw.WriteLine("")
 			sw.Flush()
 			sw.Close()
-			Dim errorLine As String = String.Format("Error processing images for document {0}: {1}. Check {2}_img_errors.txt for details", documentInfo.IdentifierValue, ex.Message.TrimEnd("."c), _exportFile.LoadFilesPrefix)
+			Dim errorLine As String = String.Format("Error processing images for document {0}: {1}. Check {2}_img_errors.txt for details", artifact.IdentifierValue, ex.Message.TrimEnd("."c), _exportFile.LoadFilesPrefix)
 			Me.WriteError(errorLine)
 		End Sub
 

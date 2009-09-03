@@ -109,6 +109,24 @@ Namespace kCura.EDDS.WebAPI.SearchManagerBase
         End Function
         
         '<remarks/>
+        <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/SearchManager/RetrieveFilesForDynamicObjects", RequestNamespace:="http://www.kCura.com/EDDS/SearchManager", ResponseNamespace:="http://www.kCura.com/EDDS/SearchManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
+        Public Function RetrieveFilesForDynamicObjects(ByVal caseContextArtifactID As Integer, ByVal fileFieldArtifactID As Integer, ByVal objectIds() As Integer) As System.Data.DataSet
+            Dim results() As Object = Me.Invoke("RetrieveFilesForDynamicObjects", New Object() {caseContextArtifactID, fileFieldArtifactID, objectIds})
+            Return CType(results(0),System.Data.DataSet)
+        End Function
+        
+        '<remarks/>
+        Public Function BeginRetrieveFilesForDynamicObjects(ByVal caseContextArtifactID As Integer, ByVal fileFieldArtifactID As Integer, ByVal objectIds() As Integer, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("RetrieveFilesForDynamicObjects", New Object() {caseContextArtifactID, fileFieldArtifactID, objectIds}, callback, asyncState)
+        End Function
+        
+        '<remarks/>
+        Public Function EndRetrieveFilesForDynamicObjects(ByVal asyncResult As System.IAsyncResult) As System.Data.DataSet
+            Dim results() As Object = Me.EndInvoke(asyncResult)
+            Return CType(results(0),System.Data.DataSet)
+        End Function
+        
+        '<remarks/>
         <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/SearchManager/RetrieveNativesForProduction", RequestNamespace:="http://www.kCura.com/EDDS/SearchManager", ResponseNamespace:="http://www.kCura.com/EDDS/SearchManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
         Public Function RetrieveNativesForProduction(ByVal caseContextArtifactID As Integer, ByVal productionArtifactID As Integer, ByVal documentArtifactIDs As String) As System.Data.DataSet
             Dim results() As Object = Me.Invoke("RetrieveNativesForProduction", New Object() {caseContextArtifactID, productionArtifactID, documentArtifactIDs})
@@ -220,14 +238,14 @@ Namespace kCura.EDDS.WebAPI.SearchManagerBase
         
         '<remarks/>
         <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/SearchManager/RetrieveViewsByContextArtifactID", RequestNamespace:="http://www.kCura.com/EDDS/SearchManager", ResponseNamespace:="http://www.kCura.com/EDDS/SearchManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
-        Public Function RetrieveViewsByContextArtifactID(ByVal caseContextArtifactID As Integer, ByVal isSearch As Boolean) As System.Data.DataSet
-            Dim results() As Object = Me.Invoke("RetrieveViewsByContextArtifactID", New Object() {caseContextArtifactID, isSearch})
+        Public Function RetrieveViewsByContextArtifactID(ByVal caseContextArtifactID As Integer, ByVal artifactTypeID As Integer, ByVal isSearch As Boolean) As System.Data.DataSet
+            Dim results() As Object = Me.Invoke("RetrieveViewsByContextArtifactID", New Object() {caseContextArtifactID, artifactTypeID, isSearch})
             Return CType(results(0),System.Data.DataSet)
         End Function
         
         '<remarks/>
-        Public Function BeginRetrieveViewsByContextArtifactID(ByVal caseContextArtifactID As Integer, ByVal isSearch As Boolean, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
-            Return Me.BeginInvoke("RetrieveViewsByContextArtifactID", New Object() {caseContextArtifactID, isSearch}, callback, asyncState)
+        Public Function BeginRetrieveViewsByContextArtifactID(ByVal caseContextArtifactID As Integer, ByVal artifactTypeID As Integer, ByVal isSearch As Boolean, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("RetrieveViewsByContextArtifactID", New Object() {caseContextArtifactID, artifactTypeID, isSearch}, callback, asyncState)
         End Function
         
         '<remarks/>
@@ -346,14 +364,14 @@ Namespace kCura.EDDS.WebAPI.SearchManagerBase
         
         '<remarks/>
         <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/SearchManager/RetrieveDefaultViewFieldsForIdList", RequestNamespace:="http://www.kCura.com/EDDS/SearchManager", ResponseNamespace:="http://www.kCura.com/EDDS/SearchManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
-        Public Function RetrieveDefaultViewFieldsForIdList(ByVal caseContextArtifactID As Integer, ByVal artifactIdList() As Integer, ByVal isProductionList As Boolean) As System.Data.DataSet
-            Dim results() As Object = Me.Invoke("RetrieveDefaultViewFieldsForIdList", New Object() {caseContextArtifactID, artifactIdList, isProductionList})
+        Public Function RetrieveDefaultViewFieldsForIdList(ByVal caseContextArtifactID As Integer, ByVal artifactTypeID As Integer, ByVal artifactIdList() As Integer, ByVal isProductionList As Boolean) As System.Data.DataSet
+            Dim results() As Object = Me.Invoke("RetrieveDefaultViewFieldsForIdList", New Object() {caseContextArtifactID, artifactTypeID, artifactIdList, isProductionList})
             Return CType(results(0),System.Data.DataSet)
         End Function
         
         '<remarks/>
-        Public Function BeginRetrieveDefaultViewFieldsForIdList(ByVal caseContextArtifactID As Integer, ByVal artifactIdList() As Integer, ByVal isProductionList As Boolean, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
-            Return Me.BeginInvoke("RetrieveDefaultViewFieldsForIdList", New Object() {caseContextArtifactID, artifactIdList, isProductionList}, callback, asyncState)
+        Public Function BeginRetrieveDefaultViewFieldsForIdList(ByVal caseContextArtifactID As Integer, ByVal artifactTypeID As Integer, ByVal artifactIdList() As Integer, ByVal isProductionList As Boolean, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("RetrieveDefaultViewFieldsForIdList", New Object() {caseContextArtifactID, artifactTypeID, artifactIdList, isProductionList}, callback, asyncState)
         End Function
         
         '<remarks/>
@@ -364,14 +382,14 @@ Namespace kCura.EDDS.WebAPI.SearchManagerBase
         
         '<remarks/>
         <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/SearchManager/RetrieveAllExportableViewFields", RequestNamespace:="http://www.kCura.com/EDDS/SearchManager", ResponseNamespace:="http://www.kCura.com/EDDS/SearchManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
-        Public Function RetrieveAllExportableViewFields(ByVal caseContextArtifactID As Integer) As System.Data.DataSet
-            Dim results() As Object = Me.Invoke("RetrieveAllExportableViewFields", New Object() {caseContextArtifactID})
+        Public Function RetrieveAllExportableViewFields(ByVal caseContextArtifactID As Integer, ByVal artifactTypeID As Integer) As System.Data.DataSet
+            Dim results() As Object = Me.Invoke("RetrieveAllExportableViewFields", New Object() {caseContextArtifactID, artifactTypeID})
             Return CType(results(0),System.Data.DataSet)
         End Function
         
         '<remarks/>
-        Public Function BeginRetrieveAllExportableViewFields(ByVal caseContextArtifactID As Integer, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
-            Return Me.BeginInvoke("RetrieveAllExportableViewFields", New Object() {caseContextArtifactID}, callback, asyncState)
+        Public Function BeginRetrieveAllExportableViewFields(ByVal caseContextArtifactID As Integer, ByVal artifactTypeID As Integer, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("RetrieveAllExportableViewFields", New Object() {caseContextArtifactID, artifactTypeID}, callback, asyncState)
         End Function
         
         '<remarks/>
