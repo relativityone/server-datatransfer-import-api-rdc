@@ -146,6 +146,8 @@ Namespace kCura.EDDS.WinForm
 			Me._importMenuPreviewErrorsItem = New System.Windows.Forms.MenuItem
 			Me._importMenuPreviewFoldersAndCodesItem = New System.Windows.Forms.MenuItem
 			Me.ImportFileMenu = New System.Windows.Forms.MenuItem
+			Me.MenuItem5 = New System.Windows.Forms.MenuItem
+			Me._importMenuSendEmailNotificationItem = New System.Windows.Forms.MenuItem
 			Me._saveFieldMapDialog = New System.Windows.Forms.SaveFileDialog
 			Me._loadFieldMapDialog = New System.Windows.Forms.OpenFileDialog
 			Me.TabControl1 = New System.Windows.Forms.TabControl
@@ -190,8 +192,6 @@ Namespace kCura.EDDS.WinForm
 			Me._nativeFilePathField = New System.Windows.Forms.ComboBox
 			Me.Label5 = New System.Windows.Forms.Label
 			Me.HelpProvider1 = New System.Windows.Forms.HelpProvider
-			Me.MenuItem5 = New System.Windows.Forms.MenuItem
-			Me._importMenuSendEmailNotificationItem = New System.Windows.Forms.MenuItem
 			Me.GroupBox1.SuspendLayout()
 			Me.TabControl1.SuspendLayout()
 			Me._loadFileTab.SuspendLayout()
@@ -303,6 +303,16 @@ Namespace kCura.EDDS.WinForm
 			'
 			Me.ImportFileMenu.Index = 3
 			Me.ImportFileMenu.Text = "&Import File..."
+			'
+			'MenuItem5
+			'
+			Me.MenuItem5.Index = 4
+			Me.MenuItem5.Text = "-"
+			'
+			'_importMenuSendEmailNotificationItem
+			'
+			Me._importMenuSendEmailNotificationItem.Index = 5
+			Me._importMenuSendEmailNotificationItem.Text = "Send email notification on completion"
 			'
 			'_saveFieldMapDialog
 			'
@@ -589,6 +599,7 @@ Namespace kCura.EDDS.WinForm
 			'
 			Me._fullTextFileEncodingPicker.Location = New System.Drawing.Point(12, 68)
 			Me._fullTextFileEncodingPicker.Name = "_fullTextFileEncodingPicker"
+			Me._fullTextFileEncodingPicker.SelectedEncoding = CType(resources.GetObject("_fullTextFileEncodingPicker.SelectedEncoding"), System.Text.Encoding)
 			Me._fullTextFileEncodingPicker.Size = New System.Drawing.Size(200, 21)
 			Me._fullTextFileEncodingPicker.TabIndex = 31
 			'
@@ -700,16 +711,6 @@ Namespace kCura.EDDS.WinForm
 			Me.Label5.TabIndex = 25
 			Me.Label5.Text = "Native file paths contained in column:"
 			Me.Label5.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
-			'
-			'MenuItem5
-			'
-			Me.MenuItem5.Index = 4
-			Me.MenuItem5.Text = "-"
-			'
-			'_importMenuSendEmailNotificationItem
-			'
-			Me._importMenuSendEmailNotificationItem.Index = 5
-			Me._importMenuSendEmailNotificationItem.Text = "Send email notification on completion"
 			'
 			'LoadFileForm
 			'
@@ -1605,5 +1606,8 @@ Namespace kCura.EDDS.WinForm
 			Me.RefreshNativeFilePathFieldAndFileColumnHeaders()
 		End Sub
 
+		Private Sub _importMenuSendEmailNotificationItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _importMenuSendEmailNotificationItem.Click
+			_importMenuSendEmailNotificationItem.Checked = Not _importMenuSendEmailNotificationItem.Checked
+		End Sub
 	End Class
 End Namespace

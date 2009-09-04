@@ -594,6 +594,9 @@ Namespace kCura.EDDS.WinForm
 			Me.ImageLoadFile.CopyFilesToDocumentRepository = copyFiles
 			Me.ImageLoadFile.SelectedCasePath = selectedRepository
 		End Sub
+		Private Sub _importMenuSendEmailNotificationItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _importMenuSendEmailNotificationItem.Click
+			_importMenuSendEmailNotificationItem.Checked = Not _importMenuSendEmailNotificationItem.Checked
+		End Sub
 
 	End Class
 End Namespace

@@ -43,7 +43,7 @@ Namespace kCura.EDDS.WinForm
 
 		Public Shared ReadOnly Property SendNotificationOnImportCompletionByDefault() As Boolean
 			Get
-				Dim retval As Boolean = CType(ConfigSettings("SendNotificationOnImportCompletionByDefault"), Boolean)
+				Return CType(ConfigSettings("SendNotificationOnImportCompletionByDefault"), Boolean)
 			End Get
 		End Property
 
