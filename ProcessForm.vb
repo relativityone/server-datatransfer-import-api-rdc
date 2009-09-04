@@ -341,6 +341,7 @@ Namespace kCura.Windows.Process
 		Private _statusBarPopupText As String = ""
 		Private _errorFilesExtension As String = "CSV"
 		Private _hasClickedStop As Boolean = False
+		Private _summaryString As System.Text.StringBuilder
 
 		Public Property ErrorFileExtension() As String
 			Get
@@ -386,6 +387,15 @@ Namespace kCura.Windows.Process
 				_outputTextBox.InSafeMode = Me.InSafeMode
 				_processObserver.InSafeMode = Me.InSafeMode
 			End Set
+		End Property
+
+		Private ReadOnly Property SummaryString() As System.Text.StringBuilder
+			Get
+				If _summaryString Is Nothing Then
+					_summaryString = New System.Text.StringBuilder
+				End If
+				Return _summaryString
+			End Get
 		End Property
 
 		Private Sub _stopImportButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _stopImportButton.Click
@@ -491,7 +501,7 @@ Namespace kCura.Windows.Process
 			_progressBar.Value = totalRecordsProcessed
 			_overalProgressLabel.Text = evt.TotalRecordsProcessedDisplay + " of " + evt.TotalRecordsDisplay + " processed"
 
-			_summaryOutput.Text = ""
+			'_summaryOutput.Text = ""
 			WriteSummaryLine("Start Time: " + evt.StartTime.ToLongTimeString)
 			If evt.EndTime <> stubDate Then
 				WriteSummaryLine("Finish Time: " + evt.EndTime.ToLongTimeString)
@@ -519,7 +529,8 @@ Namespace kCura.Windows.Process
 					WriteSummaryLine(String.Format("{0}: {1}", title, evt.StatusSuffixEntries(title).ToString))
 				Next
 			End If
-			_summaryOutput.Refresh()
+			UpdateSummaryText()
+			'_summaryOutput.Refresh()
 
 		End Sub
 
@@ -590,26 +601,31 @@ Namespace kCura.Windows.Process
 			'End Try
 		End Sub
 
-    Private Sub _processObserver_OnProcessFatalException(ByVal ex As System.Exception) Handles _processObserver.OnProcessFatalException
-      Dim errorString As String = ex.ToString
-      If errorString.ToLower.IndexOf("soapexception") <> -1 Then
-        errorString = System.Web.HttpUtility.HtmlDecode(errorString)
-      End If
-      _outputTextBox.WriteLine(errorString)
-      _errorsOutputTextBox.WriteLine(errorString)
-      _currentRecordLabel.Text = "Fatal Exception Encountered"
-      _hasReceivedFatalError = True
-      '_stopImportButton.Text = "Stop"
-      _stopImportButton.Text = "Close"
-      _saveOutputButton.Enabled = Config.LogAllEvents
-      _summaryOutput.ForeColor = System.Drawing.Color.Red
-      Me.ShowDetail()
-    End Sub
+		Private Sub _processObserver_OnProcessFatalException(ByVal ex As System.Exception) Handles _processObserver.OnProcessFatalException
+			Dim errorString As String = ex.ToString
+			If errorString.ToLower.IndexOf("soapexception") <> -1 Then
+				errorString = System.Web.HttpUtility.HtmlDecode(errorString)
+			End If
+			_outputTextBox.WriteLine(errorString)
+			_errorsOutputTextBox.WriteLine(errorString)
+			_currentRecordLabel.Text = "Fatal Exception Encountered"
+			_hasReceivedFatalError = True
+			'_stopImportButton.Text = "Stop"
+			_stopImportButton.Text = "Close"
+			_saveOutputButton.Enabled = Config.LogAllEvents
+			_summaryOutput.ForeColor = System.Drawing.Color.Red
+			Me.ShowDetail()
+		End Sub
 
 #End Region
 
 		Private Sub WriteSummaryLine(ByVal what As String)
-			_summaryOutput.Text = _summaryOutput.Text + what + vbCrLf
+			SummaryString.Append(what + vbCrLf)
+		End Sub
+
+		Private Sub UpdateSummaryText()
+			_summaryOutput.Text = _summaryString.ToString
+			SummaryString.Remove(0, _summaryString.Length)
 		End Sub
 
 		Private Sub _processObserver_StatusBarEvent(ByVal message As String, ByVal popupText As String) Handles _processObserver.StatusBarEvent
