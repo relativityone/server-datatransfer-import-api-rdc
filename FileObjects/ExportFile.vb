@@ -450,6 +450,7 @@ Namespace kCura.WinEDDS
 			Me.MultiRecordDelimiter = ChrW(59)
 			Me.NestedValueDelimiter = "\"c
 			Me.MulticodesAsNested = True
+			_artifactTypeID = artifactTypeID
 		End Sub
 
 		Public Enum ExportType
