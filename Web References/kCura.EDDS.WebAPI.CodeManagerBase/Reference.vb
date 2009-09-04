@@ -147,14 +147,14 @@ Namespace kCura.EDDS.WebAPI.CodeManagerBase
         
         '<remarks/>
         <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://foley.com/EDDS/CodeManager/ReadID", RequestNamespace:="http://foley.com/EDDS/CodeManager", ResponseNamespace:="http://foley.com/EDDS/CodeManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
-        Public Function ReadID(ByVal caseContextArtifactID As Integer, ByVal parentArtifactID As Integer, ByVal name As String) As Integer
-            Dim results() As Object = Me.Invoke("ReadID", New Object() {caseContextArtifactID, parentArtifactID, name})
+        Public Function ReadID(ByVal caseContextArtifactID As Integer, ByVal parentArtifactID As Integer, ByVal codeTypeID As Integer, ByVal name As String) As Integer
+            Dim results() As Object = Me.Invoke("ReadID", New Object() {caseContextArtifactID, parentArtifactID, codeTypeID, name})
             Return CType(results(0),Integer)
         End Function
         
         '<remarks/>
-        Public Function BeginReadID(ByVal caseContextArtifactID As Integer, ByVal parentArtifactID As Integer, ByVal name As String, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
-            Return Me.BeginInvoke("ReadID", New Object() {caseContextArtifactID, parentArtifactID, name}, callback, asyncState)
+        Public Function BeginReadID(ByVal caseContextArtifactID As Integer, ByVal parentArtifactID As Integer, ByVal codeTypeID As Integer, ByVal name As String, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("ReadID", New Object() {caseContextArtifactID, parentArtifactID, codeTypeID, name}, callback, asyncState)
         End Function
         
         '<remarks/>
