@@ -14,7 +14,8 @@ Namespace kCura.WinEDDS.CodeValidator
 
 		Public Overloads Overrides Function GetNewSingleCodeId(ByVal field As DocumentField, ByVal codeName As String) As NullableTypes.NullableInt32
 			Dim lookup As kCura.WinEDDS.Types.SingleChoiceCollection = DirectCast(Me.Lookup(field.CodeTypeID.Value), kCura.WinEDDS.Types.SingleChoiceCollection)
-			Dim newCodeOrderValue As Int32 = System.Math.Min(lookup.MaxOrder, Int32.MaxValue - 1) + 1
+			'TODO: 'Dim newCodeOrderValue As Int32 = System.Math.Min(lookup.MaxOrder, Int32.MaxValue - 1) + 1
+			Dim newCodeOrderValue As Int32 = 0
 			Dim code As kCura.EDDS.WebAPI.CodeManagerBase.Code = Me.CodeManager.CreateNewCodeDTOProxy(field.CodeTypeID.Value, codeName, newCodeOrderValue, Me.CaseInfo.RootArtifactID)
 			If code.Name.Length > 200 Then Throw New CodeCreationException(False, "Proposed choice name '" & code.Name & "' exceeds 200 characters, which is the maximum allowable.")
 			Dim o As Object = Me.CodeManager.Create(Me.CaseInfo.ArtifactID, code)
