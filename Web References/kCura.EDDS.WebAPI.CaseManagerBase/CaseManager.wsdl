@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<wsdl:definitions xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tns="http://www.kCura.com/EDDS/CaseManager" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" targetNamespace="http://www.kCura.com/EDDS/CaseManager" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
-  <wsdl:types>
+<definitions xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:s0="http://www.kCura.com/EDDS/CaseManager" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" targetNamespace="http://www.kCura.com/EDDS/CaseManager" xmlns="http://schemas.xmlsoap.org/wsdl/">
+  <types>
     <s:schema elementFormDefault="qualified" targetNamespace="http://www.kCura.com/EDDS/CaseManager">
       <s:import namespace="http://www.w3.org/2001/XMLSchema" />
       <s:element name="RetrieveAll">
@@ -23,7 +23,7 @@
       <s:element name="Create">
         <s:complexType>
           <s:sequence>
-            <s:element minOccurs="0" maxOccurs="1" name="caseInfo" type="tns:CaseInfo" />
+            <s:element minOccurs="0" maxOccurs="1" name="caseInfo" type="s0:CaseInfo" />
           </s:sequence>
         </s:complexType>
       </s:element>
@@ -49,7 +49,7 @@
       <s:element name="CreateCaseArtifact">
         <s:complexType>
           <s:sequence>
-            <s:element minOccurs="0" maxOccurs="1" name="caseInfo" type="tns:ExtendedCaseInfo" />
+            <s:element minOccurs="0" maxOccurs="1" name="caseInfo" type="s0:ExtendedCaseInfo" />
           </s:sequence>
         </s:complexType>
       </s:element>
@@ -102,14 +102,14 @@
       <s:element name="ReadResponse">
         <s:complexType>
           <s:sequence>
-            <s:element minOccurs="0" maxOccurs="1" name="ReadResult" type="tns:CaseInfo" />
+            <s:element minOccurs="0" maxOccurs="1" name="ReadResult" type="s0:CaseInfo" />
           </s:sequence>
         </s:complexType>
       </s:element>
       <s:element name="UpdatePostRestore">
         <s:complexType>
           <s:sequence>
-            <s:element minOccurs="0" maxOccurs="1" name="caseInfo" type="tns:ExtendedCaseInfo" />
+            <s:element minOccurs="0" maxOccurs="1" name="caseInfo" type="s0:ExtendedCaseInfo" />
           </s:sequence>
         </s:complexType>
       </s:element>
@@ -136,7 +136,7 @@
       <s:element name="GetAllDocumentFolderPathsResponse">
         <s:complexType>
           <s:sequence>
-            <s:element minOccurs="0" maxOccurs="1" name="GetAllDocumentFolderPathsResult" type="tns:ArrayOfString" />
+            <s:element minOccurs="0" maxOccurs="1" name="GetAllDocumentFolderPathsResult" type="s0:ArrayOfString" />
           </s:sequence>
         </s:complexType>
       </s:element>
@@ -146,168 +146,167 @@
         </s:sequence>
       </s:complexType>
     </s:schema>
-  </wsdl:types>
-  <wsdl:message name="RetrieveAllSoapIn">
-    <wsdl:part name="parameters" element="tns:RetrieveAll" />
-  </wsdl:message>
-  <wsdl:message name="RetrieveAllSoapOut">
-    <wsdl:part name="parameters" element="tns:RetrieveAllResponse" />
-  </wsdl:message>
-  <wsdl:message name="CreateSoapIn">
-    <wsdl:part name="parameters" element="tns:Create" />
-  </wsdl:message>
-  <wsdl:message name="CreateSoapOut">
-    <wsdl:part name="parameters" element="tns:CreateResponse" />
-  </wsdl:message>
-  <wsdl:message name="CreateCaseArtifactSoapIn">
-    <wsdl:part name="parameters" element="tns:CreateCaseArtifact" />
-  </wsdl:message>
-  <wsdl:message name="CreateCaseArtifactSoapOut">
-    <wsdl:part name="parameters" element="tns:CreateCaseArtifactResponse" />
-  </wsdl:message>
-  <wsdl:message name="DeleteSoapIn">
-    <wsdl:part name="parameters" element="tns:Delete" />
-  </wsdl:message>
-  <wsdl:message name="DeleteSoapOut">
-    <wsdl:part name="parameters" element="tns:DeleteResponse" />
-  </wsdl:message>
-  <wsdl:message name="ReadSoapIn">
-    <wsdl:part name="parameters" element="tns:Read" />
-  </wsdl:message>
-  <wsdl:message name="ReadSoapOut">
-    <wsdl:part name="parameters" element="tns:ReadResponse" />
-  </wsdl:message>
-  <wsdl:message name="UpdatePostRestoreSoapIn">
-    <wsdl:part name="parameters" element="tns:UpdatePostRestore" />
-  </wsdl:message>
-  <wsdl:message name="UpdatePostRestoreSoapOut">
-    <wsdl:part name="parameters" element="tns:UpdatePostRestoreResponse" />
-  </wsdl:message>
-  <wsdl:message name="RetrieveCaseDownloadURISoapIn">
-    <wsdl:part name="parameters" element="tns:RetrieveCaseDownloadURI" />
-  </wsdl:message>
-  <wsdl:message name="RetrieveCaseDownloadURISoapOut">
-    <wsdl:part name="parameters" element="tns:RetrieveCaseDownloadURIResponse" />
-  </wsdl:message>
-  <wsdl:message name="GetAllDocumentFolderPathsSoapIn">
-    <wsdl:part name="parameters" element="tns:GetAllDocumentFolderPaths" />
-  </wsdl:message>
-  <wsdl:message name="GetAllDocumentFolderPathsSoapOut">
-    <wsdl:part name="parameters" element="tns:GetAllDocumentFolderPathsResponse" />
-  </wsdl:message>
-  <wsdl:portType name="CaseManagerSoap">
-    <wsdl:operation name="RetrieveAll">
-      <wsdl:input message="tns:RetrieveAllSoapIn" />
-      <wsdl:output message="tns:RetrieveAllSoapOut" />
-    </wsdl:operation>
-    <wsdl:operation name="Create">
-      <wsdl:input message="tns:CreateSoapIn" />
-      <wsdl:output message="tns:CreateSoapOut" />
-    </wsdl:operation>
-    <wsdl:operation name="CreateCaseArtifact">
-      <wsdl:input message="tns:CreateCaseArtifactSoapIn" />
-      <wsdl:output message="tns:CreateCaseArtifactSoapOut" />
-    </wsdl:operation>
-    <wsdl:operation name="Delete">
-      <wsdl:input message="tns:DeleteSoapIn" />
-      <wsdl:output message="tns:DeleteSoapOut" />
-    </wsdl:operation>
-    <wsdl:operation name="Read">
-      <wsdl:input message="tns:ReadSoapIn" />
-      <wsdl:output message="tns:ReadSoapOut" />
-    </wsdl:operation>
-    <wsdl:operation name="UpdatePostRestore">
-      <wsdl:input message="tns:UpdatePostRestoreSoapIn" />
-      <wsdl:output message="tns:UpdatePostRestoreSoapOut" />
-    </wsdl:operation>
-    <wsdl:operation name="RetrieveCaseDownloadURI">
-      <wsdl:input message="tns:RetrieveCaseDownloadURISoapIn" />
-      <wsdl:output message="tns:RetrieveCaseDownloadURISoapOut" />
-    </wsdl:operation>
-    <wsdl:operation name="GetAllDocumentFolderPaths">
-      <wsdl:input message="tns:GetAllDocumentFolderPathsSoapIn" />
-      <wsdl:output message="tns:GetAllDocumentFolderPathsSoapOut" />
-    </wsdl:operation>
-  </wsdl:portType>
-  <wsdl:binding name="CaseManagerSoap" type="tns:CaseManagerSoap">
+  </types>
+  <message name="RetrieveAllSoapIn">
+    <part name="parameters" element="s0:RetrieveAll" />
+  </message>
+  <message name="RetrieveAllSoapOut">
+    <part name="parameters" element="s0:RetrieveAllResponse" />
+  </message>
+  <message name="CreateSoapIn">
+    <part name="parameters" element="s0:Create" />
+  </message>
+  <message name="CreateSoapOut">
+    <part name="parameters" element="s0:CreateResponse" />
+  </message>
+  <message name="CreateCaseArtifactSoapIn">
+    <part name="parameters" element="s0:CreateCaseArtifact" />
+  </message>
+  <message name="CreateCaseArtifactSoapOut">
+    <part name="parameters" element="s0:CreateCaseArtifactResponse" />
+  </message>
+  <message name="DeleteSoapIn">
+    <part name="parameters" element="s0:Delete" />
+  </message>
+  <message name="DeleteSoapOut">
+    <part name="parameters" element="s0:DeleteResponse" />
+  </message>
+  <message name="ReadSoapIn">
+    <part name="parameters" element="s0:Read" />
+  </message>
+  <message name="ReadSoapOut">
+    <part name="parameters" element="s0:ReadResponse" />
+  </message>
+  <message name="UpdatePostRestoreSoapIn">
+    <part name="parameters" element="s0:UpdatePostRestore" />
+  </message>
+  <message name="UpdatePostRestoreSoapOut">
+    <part name="parameters" element="s0:UpdatePostRestoreResponse" />
+  </message>
+  <message name="RetrieveCaseDownloadURISoapIn">
+    <part name="parameters" element="s0:RetrieveCaseDownloadURI" />
+  </message>
+  <message name="RetrieveCaseDownloadURISoapOut">
+    <part name="parameters" element="s0:RetrieveCaseDownloadURIResponse" />
+  </message>
+  <message name="GetAllDocumentFolderPathsSoapIn">
+    <part name="parameters" element="s0:GetAllDocumentFolderPaths" />
+  </message>
+  <message name="GetAllDocumentFolderPathsSoapOut">
+    <part name="parameters" element="s0:GetAllDocumentFolderPathsResponse" />
+  </message>
+  <portType name="CaseManagerSoap">
+    <operation name="RetrieveAll">
+      <input message="s0:RetrieveAllSoapIn" />
+      <output message="s0:RetrieveAllSoapOut" />
+    </operation>
+    <operation name="Create">
+      <input message="s0:CreateSoapIn" />
+      <output message="s0:CreateSoapOut" />
+    </operation>
+    <operation name="CreateCaseArtifact">
+      <input message="s0:CreateCaseArtifactSoapIn" />
+      <output message="s0:CreateCaseArtifactSoapOut" />
+    </operation>
+    <operation name="Delete">
+      <input message="s0:DeleteSoapIn" />
+      <output message="s0:DeleteSoapOut" />
+    </operation>
+    <operation name="Read">
+      <input message="s0:ReadSoapIn" />
+      <output message="s0:ReadSoapOut" />
+    </operation>
+    <operation name="UpdatePostRestore">
+      <input message="s0:UpdatePostRestoreSoapIn" />
+      <output message="s0:UpdatePostRestoreSoapOut" />
+    </operation>
+    <operation name="RetrieveCaseDownloadURI">
+      <input message="s0:RetrieveCaseDownloadURISoapIn" />
+      <output message="s0:RetrieveCaseDownloadURISoapOut" />
+    </operation>
+    <operation name="GetAllDocumentFolderPaths">
+      <input message="s0:GetAllDocumentFolderPathsSoapIn" />
+      <output message="s0:GetAllDocumentFolderPathsSoapOut" />
+    </operation>
+  </portType>
+  <binding name="CaseManagerSoap" type="s0:CaseManagerSoap">
     <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document" />
-    <wsdl:operation name="RetrieveAll">
+    <operation name="RetrieveAll">
       <soap:operation soapAction="http://www.kCura.com/EDDS/CaseManager/RetrieveAll" style="document" />
-      <wsdl:input>
+      <input>
         <soap:body use="literal" />
-      </wsdl:input>
-      <wsdl:output>
+      </input>
+      <output>
         <soap:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="Create">
+      </output>
+    </operation>
+    <operation name="Create">
       <soap:operation soapAction="http://www.kCura.com/EDDS/CaseManager/Create" style="document" />
-      <wsdl:input>
+      <input>
         <soap:body use="literal" />
-      </wsdl:input>
-      <wsdl:output>
+      </input>
+      <output>
         <soap:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="CreateCaseArtifact">
+      </output>
+    </operation>
+    <operation name="CreateCaseArtifact">
       <soap:operation soapAction="http://www.kCura.com/EDDS/CaseManager/CreateCaseArtifact" style="document" />
-      <wsdl:input>
+      <input>
         <soap:body use="literal" />
-      </wsdl:input>
-      <wsdl:output>
+      </input>
+      <output>
         <soap:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="Delete">
+      </output>
+    </operation>
+    <operation name="Delete">
       <soap:operation soapAction="http://www.kCura.com/EDDS/CaseManager/Delete" style="document" />
-      <wsdl:input>
+      <input>
         <soap:body use="literal" />
-      </wsdl:input>
-      <wsdl:output>
+      </input>
+      <output>
         <soap:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="Read">
+      </output>
+    </operation>
+    <operation name="Read">
       <soap:operation soapAction="http://www.kCura.com/EDDS/CaseManager/Read" style="document" />
-      <wsdl:input>
+      <input>
         <soap:body use="literal" />
-      </wsdl:input>
-      <wsdl:output>
+      </input>
+      <output>
         <soap:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="UpdatePostRestore">
+      </output>
+    </operation>
+    <operation name="UpdatePostRestore">
       <soap:operation soapAction="http://www.kCura.com/EDDS/CaseManager/UpdatePostRestore" style="document" />
-      <wsdl:input>
+      <input>
         <soap:body use="literal" />
-      </wsdl:input>
-      <wsdl:output>
+      </input>
+      <output>
         <soap:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="RetrieveCaseDownloadURI">
+      </output>
+    </operation>
+    <operation name="RetrieveCaseDownloadURI">
       <soap:operation soapAction="http://www.kCura.com/EDDS/CaseManager/RetrieveCaseDownloadURI" style="document" />
-      <wsdl:input>
+      <input>
         <soap:body use="literal" />
-      </wsdl:input>
-      <wsdl:output>
+      </input>
+      <output>
         <soap:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="GetAllDocumentFolderPaths">
+      </output>
+    </operation>
+    <operation name="GetAllDocumentFolderPaths">
       <soap:operation soapAction="http://www.kCura.com/EDDS/CaseManager/GetAllDocumentFolderPaths" style="document" />
-      <wsdl:input>
+      <input>
         <soap:body use="literal" />
-      </wsdl:input>
-      <wsdl:output>
+      </input>
+      <output>
         <soap:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
-  </wsdl:binding>
-  <wsdl:service name="CaseManager">
-    <documentation xmlns="http://schemas.xmlsoap.org/wsdl/" />
-    <wsdl:port name="CaseManagerSoap" binding="tns:CaseManagerSoap">
+      </output>
+    </operation>
+  </binding>
+  <service name="CaseManager">
+    <port name="CaseManagerSoap" binding="s0:CaseManagerSoap">
       <soap:address location="http://localhost/EDDSWebAPI/CaseManager.asmx" />
-    </wsdl:port>
-  </wsdl:service>
-</wsdl:definitions>
+    </port>
+  </service>
+</definitions>

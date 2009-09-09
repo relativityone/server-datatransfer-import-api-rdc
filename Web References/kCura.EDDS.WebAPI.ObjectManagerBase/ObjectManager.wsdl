@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<wsdl:definitions xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tns="http://www.kCura.com/EDDS/ObjectManager" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" targetNamespace="http://www.kCura.com/EDDS/ObjectManager" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
-  <wsdl:types>
+<definitions xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:s0="http://www.kCura.com/EDDS/ObjectManager" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" targetNamespace="http://www.kCura.com/EDDS/ObjectManager" xmlns="http://schemas.xmlsoap.org/wsdl/">
+  <types>
     <s:schema elementFormDefault="qualified" targetNamespace="http://www.kCura.com/EDDS/ObjectManager">
       <s:import namespace="http://www.w3.org/2001/XMLSchema" />
       <s:element name="RetrieveArtifactIdOfMappedObject">
@@ -50,54 +50,53 @@
         </s:complexType>
       </s:element>
     </s:schema>
-  </wsdl:types>
-  <wsdl:message name="RetrieveArtifactIdOfMappedObjectSoapIn">
-    <wsdl:part name="parameters" element="tns:RetrieveArtifactIdOfMappedObject" />
-  </wsdl:message>
-  <wsdl:message name="RetrieveArtifactIdOfMappedObjectSoapOut">
-    <wsdl:part name="parameters" element="tns:RetrieveArtifactIdOfMappedObjectResponse" />
-  </wsdl:message>
-  <wsdl:message name="RetrieveArtifactIdOfMappedParentObjectSoapIn">
-    <wsdl:part name="parameters" element="tns:RetrieveArtifactIdOfMappedParentObject" />
-  </wsdl:message>
-  <wsdl:message name="RetrieveArtifactIdOfMappedParentObjectSoapOut">
-    <wsdl:part name="parameters" element="tns:RetrieveArtifactIdOfMappedParentObjectResponse" />
-  </wsdl:message>
-  <wsdl:portType name="ObjectManagerSoap">
-    <wsdl:operation name="RetrieveArtifactIdOfMappedObject">
-      <wsdl:input message="tns:RetrieveArtifactIdOfMappedObjectSoapIn" />
-      <wsdl:output message="tns:RetrieveArtifactIdOfMappedObjectSoapOut" />
-    </wsdl:operation>
-    <wsdl:operation name="RetrieveArtifactIdOfMappedParentObject">
-      <wsdl:input message="tns:RetrieveArtifactIdOfMappedParentObjectSoapIn" />
-      <wsdl:output message="tns:RetrieveArtifactIdOfMappedParentObjectSoapOut" />
-    </wsdl:operation>
-  </wsdl:portType>
-  <wsdl:binding name="ObjectManagerSoap" type="tns:ObjectManagerSoap">
+  </types>
+  <message name="RetrieveArtifactIdOfMappedObjectSoapIn">
+    <part name="parameters" element="s0:RetrieveArtifactIdOfMappedObject" />
+  </message>
+  <message name="RetrieveArtifactIdOfMappedObjectSoapOut">
+    <part name="parameters" element="s0:RetrieveArtifactIdOfMappedObjectResponse" />
+  </message>
+  <message name="RetrieveArtifactIdOfMappedParentObjectSoapIn">
+    <part name="parameters" element="s0:RetrieveArtifactIdOfMappedParentObject" />
+  </message>
+  <message name="RetrieveArtifactIdOfMappedParentObjectSoapOut">
+    <part name="parameters" element="s0:RetrieveArtifactIdOfMappedParentObjectResponse" />
+  </message>
+  <portType name="ObjectManagerSoap">
+    <operation name="RetrieveArtifactIdOfMappedObject">
+      <input message="s0:RetrieveArtifactIdOfMappedObjectSoapIn" />
+      <output message="s0:RetrieveArtifactIdOfMappedObjectSoapOut" />
+    </operation>
+    <operation name="RetrieveArtifactIdOfMappedParentObject">
+      <input message="s0:RetrieveArtifactIdOfMappedParentObjectSoapIn" />
+      <output message="s0:RetrieveArtifactIdOfMappedParentObjectSoapOut" />
+    </operation>
+  </portType>
+  <binding name="ObjectManagerSoap" type="s0:ObjectManagerSoap">
     <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document" />
-    <wsdl:operation name="RetrieveArtifactIdOfMappedObject">
+    <operation name="RetrieveArtifactIdOfMappedObject">
       <soap:operation soapAction="http://www.kCura.com/EDDS/ObjectManager/RetrieveArtifactIdOfMappedObject" style="document" />
-      <wsdl:input>
+      <input>
         <soap:body use="literal" />
-      </wsdl:input>
-      <wsdl:output>
+      </input>
+      <output>
         <soap:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="RetrieveArtifactIdOfMappedParentObject">
+      </output>
+    </operation>
+    <operation name="RetrieveArtifactIdOfMappedParentObject">
       <soap:operation soapAction="http://www.kCura.com/EDDS/ObjectManager/RetrieveArtifactIdOfMappedParentObject" style="document" />
-      <wsdl:input>
+      <input>
         <soap:body use="literal" />
-      </wsdl:input>
-      <wsdl:output>
+      </input>
+      <output>
         <soap:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
-  </wsdl:binding>
-  <wsdl:service name="ObjectManager">
-    <documentation xmlns="http://schemas.xmlsoap.org/wsdl/" />
-    <wsdl:port name="ObjectManagerSoap" binding="tns:ObjectManagerSoap">
+      </output>
+    </operation>
+  </binding>
+  <service name="ObjectManager">
+    <port name="ObjectManagerSoap" binding="s0:ObjectManagerSoap">
       <soap:address location="http://localhost/EDDSWebAPI/ObjectManager.asmx" />
-    </wsdl:port>
-  </wsdl:service>
-</wsdl:definitions>
+    </port>
+  </service>
+</definitions>
