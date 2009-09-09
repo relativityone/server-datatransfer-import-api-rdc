@@ -413,6 +413,7 @@ Namespace kCura.WinEDDS
 							Else
 								field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(GetNullableFixedString(value, column, field.FieldLength.Value))
 							End If
+							If field.Value = String.Empty Then field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(GetNullableFixedString(identityValue, column, field.FieldLength.Value))
 						Case Else
 							field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(GetNullableFixedString(value, column, field.FieldLength.Value))
 					End Select

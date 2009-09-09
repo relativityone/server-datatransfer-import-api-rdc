@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<definitions xmlns:s1="http://microsoft.com/wsdl/types/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:s0="http://www.kCura.com/EDDS/SearchManager" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" targetNamespace="http://www.kCura.com/EDDS/SearchManager" xmlns="http://schemas.xmlsoap.org/wsdl/">
-  <types>
+<wsdl:definitions xmlns:s1="http://microsoft.com/wsdl/types/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tns="http://www.kCura.com/EDDS/SearchManager" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" targetNamespace="http://www.kCura.com/EDDS/SearchManager" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
     <s:schema elementFormDefault="qualified" targetNamespace="http://www.kCura.com/EDDS/SearchManager">
       <s:import namespace="http://microsoft.com/wsdl/types/" />
       <s:import namespace="http://www.w3.org/2001/XMLSchema" />
@@ -26,7 +26,7 @@
             <s:element minOccurs="1" maxOccurs="1" name="searchArtifactID" type="s:int" />
             <s:element minOccurs="1" maxOccurs="1" name="start" type="s:int" />
             <s:element minOccurs="1" maxOccurs="1" name="finish" type="s:int" />
-            <s:element minOccurs="0" maxOccurs="1" name="avfIds" type="s0:ArrayOfInt" />
+            <s:element minOccurs="0" maxOccurs="1" name="avfIds" type="tns:ArrayOfInt" />
             <s:element minOccurs="1" maxOccurs="1" name="displayMulticodesAsNested" type="s:boolean" />
             <s:element minOccurs="1" maxOccurs="1" name="nestedValueDelimiter" type="s1:char" />
           </s:sequence>
@@ -93,7 +93,7 @@
           <s:sequence>
             <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
             <s:element minOccurs="1" maxOccurs="1" name="fileFieldArtifactID" type="s:int" />
-            <s:element minOccurs="0" maxOccurs="1" name="objectIds" type="s0:ArrayOfInt" />
+            <s:element minOccurs="0" maxOccurs="1" name="objectIds" type="tns:ArrayOfInt" />
           </s:sequence>
         </s:complexType>
       </s:element>
@@ -138,7 +138,7 @@
         <s:complexType>
           <s:sequence>
             <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
-            <s:element minOccurs="0" maxOccurs="1" name="documentArtifactIDs" type="s0:ArrayOfInt" />
+            <s:element minOccurs="0" maxOccurs="1" name="documentArtifactIDs" type="tns:ArrayOfInt" />
           </s:sequence>
         </s:complexType>
       </s:element>
@@ -174,7 +174,7 @@
         <s:complexType>
           <s:sequence>
             <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
-            <s:element minOccurs="0" maxOccurs="1" name="documentArtifactIDs" type="s0:ArrayOfInt" />
+            <s:element minOccurs="0" maxOccurs="1" name="documentArtifactIDs" type="tns:ArrayOfInt" />
           </s:sequence>
         </s:complexType>
       </s:element>
@@ -197,7 +197,7 @@
           <s:sequence>
             <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
             <s:element minOccurs="1" maxOccurs="1" name="productionArtifactID" type="s:int" />
-            <s:element minOccurs="0" maxOccurs="1" name="documentArtifactIDs" type="s0:ArrayOfInt" />
+            <s:element minOccurs="0" maxOccurs="1" name="documentArtifactIDs" type="tns:ArrayOfInt" />
           </s:sequence>
         </s:complexType>
       </s:element>
@@ -219,8 +219,8 @@
         <s:complexType>
           <s:sequence>
             <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
-            <s:element minOccurs="0" maxOccurs="1" name="productionArtifactIDs" type="s0:ArrayOfInt" />
-            <s:element minOccurs="0" maxOccurs="1" name="documentArtifactIDs" type="s0:ArrayOfInt" />
+            <s:element minOccurs="0" maxOccurs="1" name="productionArtifactIDs" type="tns:ArrayOfInt" />
+            <s:element minOccurs="0" maxOccurs="1" name="documentArtifactIDs" type="tns:ArrayOfInt" />
           </s:sequence>
         </s:complexType>
       </s:element>
@@ -331,7 +331,7 @@
             <s:element minOccurs="1" maxOccurs="1" name="start" type="s:int" />
             <s:element minOccurs="1" maxOccurs="1" name="finish" type="s:int" />
             <s:element minOccurs="1" maxOccurs="1" name="viewArtifactID" type="s:int" />
-            <s:element minOccurs="0" maxOccurs="1" name="avfIds" type="s0:ArrayOfInt" />
+            <s:element minOccurs="0" maxOccurs="1" name="avfIds" type="tns:ArrayOfInt" />
             <s:element minOccurs="1" maxOccurs="1" name="displayMulticodesAsNested" type="s:boolean" />
             <s:element minOccurs="1" maxOccurs="1" name="nestedValueDelimiter" type="s1:char" />
           </s:sequence>
@@ -358,7 +358,7 @@
             <s:element minOccurs="1" maxOccurs="1" name="productionArtifactID" type="s:int" />
             <s:element minOccurs="1" maxOccurs="1" name="start" type="s:int" />
             <s:element minOccurs="1" maxOccurs="1" name="finish" type="s:int" />
-            <s:element minOccurs="0" maxOccurs="1" name="avfids" type="s0:ArrayOfInt" />
+            <s:element minOccurs="0" maxOccurs="1" name="avfids" type="tns:ArrayOfInt" />
             <s:element minOccurs="1" maxOccurs="1" name="displayMulticodesAsNested" type="s:boolean" />
             <s:element minOccurs="1" maxOccurs="1" name="nestedValueDelimiter" type="s1:char" />
           </s:sequence>
@@ -398,7 +398,7 @@
           <s:sequence>
             <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
             <s:element minOccurs="1" maxOccurs="1" name="artifactTypeID" type="s:int" />
-            <s:element minOccurs="0" maxOccurs="1" name="artifactIdList" type="s0:ArrayOfInt" />
+            <s:element minOccurs="0" maxOccurs="1" name="artifactIdList" type="tns:ArrayOfInt" />
             <s:element minOccurs="1" maxOccurs="1" name="isProductionList" type="s:boolean" />
           </s:sequence>
         </s:complexType>
@@ -445,395 +445,396 @@
         <s:restriction base="s:unsignedShort" />
       </s:simpleType>
     </s:schema>
-  </types>
-  <message name="CountSearchByArtifactIDSoapIn">
-    <part name="parameters" element="s0:CountSearchByArtifactID" />
-  </message>
-  <message name="CountSearchByArtifactIDSoapOut">
-    <part name="parameters" element="s0:CountSearchByArtifactIDResponse" />
-  </message>
-  <message name="SearchBySearchArtifactIDSoapIn">
-    <part name="parameters" element="s0:SearchBySearchArtifactID" />
-  </message>
-  <message name="SearchBySearchArtifactIDSoapOut">
-    <part name="parameters" element="s0:SearchBySearchArtifactIDResponse" />
-  </message>
-  <message name="GetSearchSQLSoapIn">
-    <part name="parameters" element="s0:GetSearchSQL" />
-  </message>
-  <message name="GetSearchSQLSoapOut">
-    <part name="parameters" element="s0:GetSearchSQLResponse" />
-  </message>
-  <message name="RetrieveNativesForSearchSoapIn">
-    <part name="parameters" element="s0:RetrieveNativesForSearch" />
-  </message>
-  <message name="RetrieveNativesForSearchSoapOut">
-    <part name="parameters" element="s0:RetrieveNativesForSearchResponse" />
-  </message>
-  <message name="RetrieveFilesForDynamicObjectsSoapIn">
-    <part name="parameters" element="s0:RetrieveFilesForDynamicObjects" />
-  </message>
-  <message name="RetrieveFilesForDynamicObjectsSoapOut">
-    <part name="parameters" element="s0:RetrieveFilesForDynamicObjectsResponse" />
-  </message>
-  <message name="RetrieveNativesForProductionSoapIn">
-    <part name="parameters" element="s0:RetrieveNativesForProduction" />
-  </message>
-  <message name="RetrieveNativesForProductionSoapOut">
-    <part name="parameters" element="s0:RetrieveNativesForProductionResponse" />
-  </message>
-  <message name="RetrieveFullTextExistenceForSearchSoapIn">
-    <part name="parameters" element="s0:RetrieveFullTextExistenceForSearch" />
-  </message>
-  <message name="RetrieveFullTextExistenceForSearchSoapOut">
-    <part name="parameters" element="s0:RetrieveFullTextExistenceForSearchResponse" />
-  </message>
-  <message name="IsExtractedTextUnicodeSoapIn">
-    <part name="parameters" element="s0:IsExtractedTextUnicode" />
-  </message>
-  <message name="IsExtractedTextUnicodeSoapOut">
-    <part name="parameters" element="s0:IsExtractedTextUnicodeResponse" />
-  </message>
-  <message name="RetrieveImagesForSearchSoapIn">
-    <part name="parameters" element="s0:RetrieveImagesForSearch" />
-  </message>
-  <message name="RetrieveImagesForSearchSoapOut">
-    <part name="parameters" element="s0:RetrieveImagesForSearchResponse" />
-  </message>
-  <message name="RetrieveImagesByProductionArtifactIDForProductionExportByDocumentSetSoapIn">
-    <part name="parameters" element="s0:RetrieveImagesByProductionArtifactIDForProductionExportByDocumentSet" />
-  </message>
-  <message name="RetrieveImagesByProductionArtifactIDForProductionExportByDocumentSetSoapOut">
-    <part name="parameters" element="s0:RetrieveImagesByProductionArtifactIDForProductionExportByDocumentSetResponse" />
-  </message>
-  <message name="RetrieveImagesByProductionIDsAndDocumentIDsForExportSoapIn">
-    <part name="parameters" element="s0:RetrieveImagesByProductionIDsAndDocumentIDsForExport" />
-  </message>
-  <message name="RetrieveImagesByProductionIDsAndDocumentIDsForExportSoapOut">
-    <part name="parameters" element="s0:RetrieveImagesByProductionIDsAndDocumentIDsForExportResponse" />
-  </message>
-  <message name="RetrieveViewsByContextArtifactIDSoapIn">
-    <part name="parameters" element="s0:RetrieveViewsByContextArtifactID" />
-  </message>
-  <message name="RetrieveViewsByContextArtifactIDSoapOut">
-    <part name="parameters" element="s0:RetrieveViewsByContextArtifactIDResponse" />
-  </message>
-  <message name="RetrieveSearchFieldsSoapIn">
-    <part name="parameters" element="s0:RetrieveSearchFields" />
-  </message>
-  <message name="RetrieveSearchFieldsSoapOut">
-    <part name="parameters" element="s0:RetrieveSearchFieldsResponse" />
-  </message>
-  <message name="RetrieveSearchFieldsForProductionSoapIn">
-    <part name="parameters" element="s0:RetrieveSearchFieldsForProduction" />
-  </message>
-  <message name="RetrieveSearchFieldsForProductionSoapOut">
-    <part name="parameters" element="s0:RetrieveSearchFieldsForProductionResponse" />
-  </message>
-  <message name="CountSearchByParentArtifactIDSoapIn">
-    <part name="parameters" element="s0:CountSearchByParentArtifactID" />
-  </message>
-  <message name="CountSearchByParentArtifactIDSoapOut">
-    <part name="parameters" element="s0:CountSearchByParentArtifactIDResponse" />
-  </message>
-  <message name="SearchByParentArtifactIDSoapIn">
-    <part name="parameters" element="s0:SearchByParentArtifactID" />
-  </message>
-  <message name="SearchByParentArtifactIDSoapOut">
-    <part name="parameters" element="s0:SearchByParentArtifactIDResponse" />
-  </message>
-  <message name="SearchByProductionArtifactIDSoapIn">
-    <part name="parameters" element="s0:SearchByProductionArtifactID" />
-  </message>
-  <message name="SearchByProductionArtifactIDSoapOut">
-    <part name="parameters" element="s0:SearchByProductionArtifactIDResponse" />
-  </message>
-  <message name="CountSearchByProductionArtifactIDSoapIn">
-    <part name="parameters" element="s0:CountSearchByProductionArtifactID" />
-  </message>
-  <message name="CountSearchByProductionArtifactIDSoapOut">
-    <part name="parameters" element="s0:CountSearchByProductionArtifactIDResponse" />
-  </message>
-  <message name="RetrieveDefaultViewFieldsForIdListSoapIn">
-    <part name="parameters" element="s0:RetrieveDefaultViewFieldsForIdList" />
-  </message>
-  <message name="RetrieveDefaultViewFieldsForIdListSoapOut">
-    <part name="parameters" element="s0:RetrieveDefaultViewFieldsForIdListResponse" />
-  </message>
-  <message name="RetrieveAllExportableViewFieldsSoapIn">
-    <part name="parameters" element="s0:RetrieveAllExportableViewFields" />
-  </message>
-  <message name="RetrieveAllExportableViewFieldsSoapOut">
-    <part name="parameters" element="s0:RetrieveAllExportableViewFieldsResponse" />
-  </message>
-  <portType name="SearchManagerSoap">
-    <operation name="CountSearchByArtifactID">
-      <input message="s0:CountSearchByArtifactIDSoapIn" />
-      <output message="s0:CountSearchByArtifactIDSoapOut" />
-    </operation>
-    <operation name="SearchBySearchArtifactID">
-      <input message="s0:SearchBySearchArtifactIDSoapIn" />
-      <output message="s0:SearchBySearchArtifactIDSoapOut" />
-    </operation>
-    <operation name="GetSearchSQL">
-      <input message="s0:GetSearchSQLSoapIn" />
-      <output message="s0:GetSearchSQLSoapOut" />
-    </operation>
-    <operation name="RetrieveNativesForSearch">
-      <input message="s0:RetrieveNativesForSearchSoapIn" />
-      <output message="s0:RetrieveNativesForSearchSoapOut" />
-    </operation>
-    <operation name="RetrieveFilesForDynamicObjects">
-      <input message="s0:RetrieveFilesForDynamicObjectsSoapIn" />
-      <output message="s0:RetrieveFilesForDynamicObjectsSoapOut" />
-    </operation>
-    <operation name="RetrieveNativesForProduction">
-      <input message="s0:RetrieveNativesForProductionSoapIn" />
-      <output message="s0:RetrieveNativesForProductionSoapOut" />
-    </operation>
-    <operation name="RetrieveFullTextExistenceForSearch">
-      <input message="s0:RetrieveFullTextExistenceForSearchSoapIn" />
-      <output message="s0:RetrieveFullTextExistenceForSearchSoapOut" />
-    </operation>
-    <operation name="IsExtractedTextUnicode">
-      <input message="s0:IsExtractedTextUnicodeSoapIn" />
-      <output message="s0:IsExtractedTextUnicodeSoapOut" />
-    </operation>
-    <operation name="RetrieveImagesForSearch">
-      <input message="s0:RetrieveImagesForSearchSoapIn" />
-      <output message="s0:RetrieveImagesForSearchSoapOut" />
-    </operation>
-    <operation name="RetrieveImagesByProductionArtifactIDForProductionExportByDocumentSet">
-      <input message="s0:RetrieveImagesByProductionArtifactIDForProductionExportByDocumentSetSoapIn" />
-      <output message="s0:RetrieveImagesByProductionArtifactIDForProductionExportByDocumentSetSoapOut" />
-    </operation>
-    <operation name="RetrieveImagesByProductionIDsAndDocumentIDsForExport">
-      <input message="s0:RetrieveImagesByProductionIDsAndDocumentIDsForExportSoapIn" />
-      <output message="s0:RetrieveImagesByProductionIDsAndDocumentIDsForExportSoapOut" />
-    </operation>
-    <operation name="RetrieveViewsByContextArtifactID">
-      <input message="s0:RetrieveViewsByContextArtifactIDSoapIn" />
-      <output message="s0:RetrieveViewsByContextArtifactIDSoapOut" />
-    </operation>
-    <operation name="RetrieveSearchFields">
-      <input message="s0:RetrieveSearchFieldsSoapIn" />
-      <output message="s0:RetrieveSearchFieldsSoapOut" />
-    </operation>
-    <operation name="RetrieveSearchFieldsForProduction">
-      <input message="s0:RetrieveSearchFieldsForProductionSoapIn" />
-      <output message="s0:RetrieveSearchFieldsForProductionSoapOut" />
-    </operation>
-    <operation name="CountSearchByParentArtifactID">
-      <input message="s0:CountSearchByParentArtifactIDSoapIn" />
-      <output message="s0:CountSearchByParentArtifactIDSoapOut" />
-    </operation>
-    <operation name="SearchByParentArtifactID">
-      <input message="s0:SearchByParentArtifactIDSoapIn" />
-      <output message="s0:SearchByParentArtifactIDSoapOut" />
-    </operation>
-    <operation name="SearchByProductionArtifactID">
-      <input message="s0:SearchByProductionArtifactIDSoapIn" />
-      <output message="s0:SearchByProductionArtifactIDSoapOut" />
-    </operation>
-    <operation name="CountSearchByProductionArtifactID">
-      <input message="s0:CountSearchByProductionArtifactIDSoapIn" />
-      <output message="s0:CountSearchByProductionArtifactIDSoapOut" />
-    </operation>
-    <operation name="RetrieveDefaultViewFieldsForIdList">
-      <input message="s0:RetrieveDefaultViewFieldsForIdListSoapIn" />
-      <output message="s0:RetrieveDefaultViewFieldsForIdListSoapOut" />
-    </operation>
-    <operation name="RetrieveAllExportableViewFields">
-      <input message="s0:RetrieveAllExportableViewFieldsSoapIn" />
-      <output message="s0:RetrieveAllExportableViewFieldsSoapOut" />
-    </operation>
-  </portType>
-  <binding name="SearchManagerSoap" type="s0:SearchManagerSoap">
+  </wsdl:types>
+  <wsdl:message name="CountSearchByArtifactIDSoapIn">
+    <wsdl:part name="parameters" element="tns:CountSearchByArtifactID" />
+  </wsdl:message>
+  <wsdl:message name="CountSearchByArtifactIDSoapOut">
+    <wsdl:part name="parameters" element="tns:CountSearchByArtifactIDResponse" />
+  </wsdl:message>
+  <wsdl:message name="SearchBySearchArtifactIDSoapIn">
+    <wsdl:part name="parameters" element="tns:SearchBySearchArtifactID" />
+  </wsdl:message>
+  <wsdl:message name="SearchBySearchArtifactIDSoapOut">
+    <wsdl:part name="parameters" element="tns:SearchBySearchArtifactIDResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetSearchSQLSoapIn">
+    <wsdl:part name="parameters" element="tns:GetSearchSQL" />
+  </wsdl:message>
+  <wsdl:message name="GetSearchSQLSoapOut">
+    <wsdl:part name="parameters" element="tns:GetSearchSQLResponse" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveNativesForSearchSoapIn">
+    <wsdl:part name="parameters" element="tns:RetrieveNativesForSearch" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveNativesForSearchSoapOut">
+    <wsdl:part name="parameters" element="tns:RetrieveNativesForSearchResponse" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveFilesForDynamicObjectsSoapIn">
+    <wsdl:part name="parameters" element="tns:RetrieveFilesForDynamicObjects" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveFilesForDynamicObjectsSoapOut">
+    <wsdl:part name="parameters" element="tns:RetrieveFilesForDynamicObjectsResponse" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveNativesForProductionSoapIn">
+    <wsdl:part name="parameters" element="tns:RetrieveNativesForProduction" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveNativesForProductionSoapOut">
+    <wsdl:part name="parameters" element="tns:RetrieveNativesForProductionResponse" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveFullTextExistenceForSearchSoapIn">
+    <wsdl:part name="parameters" element="tns:RetrieveFullTextExistenceForSearch" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveFullTextExistenceForSearchSoapOut">
+    <wsdl:part name="parameters" element="tns:RetrieveFullTextExistenceForSearchResponse" />
+  </wsdl:message>
+  <wsdl:message name="IsExtractedTextUnicodeSoapIn">
+    <wsdl:part name="parameters" element="tns:IsExtractedTextUnicode" />
+  </wsdl:message>
+  <wsdl:message name="IsExtractedTextUnicodeSoapOut">
+    <wsdl:part name="parameters" element="tns:IsExtractedTextUnicodeResponse" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveImagesForSearchSoapIn">
+    <wsdl:part name="parameters" element="tns:RetrieveImagesForSearch" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveImagesForSearchSoapOut">
+    <wsdl:part name="parameters" element="tns:RetrieveImagesForSearchResponse" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveImagesByProductionArtifactIDForProductionExportByDocumentSetSoapIn">
+    <wsdl:part name="parameters" element="tns:RetrieveImagesByProductionArtifactIDForProductionExportByDocumentSet" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveImagesByProductionArtifactIDForProductionExportByDocumentSetSoapOut">
+    <wsdl:part name="parameters" element="tns:RetrieveImagesByProductionArtifactIDForProductionExportByDocumentSetResponse" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveImagesByProductionIDsAndDocumentIDsForExportSoapIn">
+    <wsdl:part name="parameters" element="tns:RetrieveImagesByProductionIDsAndDocumentIDsForExport" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveImagesByProductionIDsAndDocumentIDsForExportSoapOut">
+    <wsdl:part name="parameters" element="tns:RetrieveImagesByProductionIDsAndDocumentIDsForExportResponse" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveViewsByContextArtifactIDSoapIn">
+    <wsdl:part name="parameters" element="tns:RetrieveViewsByContextArtifactID" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveViewsByContextArtifactIDSoapOut">
+    <wsdl:part name="parameters" element="tns:RetrieveViewsByContextArtifactIDResponse" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveSearchFieldsSoapIn">
+    <wsdl:part name="parameters" element="tns:RetrieveSearchFields" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveSearchFieldsSoapOut">
+    <wsdl:part name="parameters" element="tns:RetrieveSearchFieldsResponse" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveSearchFieldsForProductionSoapIn">
+    <wsdl:part name="parameters" element="tns:RetrieveSearchFieldsForProduction" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveSearchFieldsForProductionSoapOut">
+    <wsdl:part name="parameters" element="tns:RetrieveSearchFieldsForProductionResponse" />
+  </wsdl:message>
+  <wsdl:message name="CountSearchByParentArtifactIDSoapIn">
+    <wsdl:part name="parameters" element="tns:CountSearchByParentArtifactID" />
+  </wsdl:message>
+  <wsdl:message name="CountSearchByParentArtifactIDSoapOut">
+    <wsdl:part name="parameters" element="tns:CountSearchByParentArtifactIDResponse" />
+  </wsdl:message>
+  <wsdl:message name="SearchByParentArtifactIDSoapIn">
+    <wsdl:part name="parameters" element="tns:SearchByParentArtifactID" />
+  </wsdl:message>
+  <wsdl:message name="SearchByParentArtifactIDSoapOut">
+    <wsdl:part name="parameters" element="tns:SearchByParentArtifactIDResponse" />
+  </wsdl:message>
+  <wsdl:message name="SearchByProductionArtifactIDSoapIn">
+    <wsdl:part name="parameters" element="tns:SearchByProductionArtifactID" />
+  </wsdl:message>
+  <wsdl:message name="SearchByProductionArtifactIDSoapOut">
+    <wsdl:part name="parameters" element="tns:SearchByProductionArtifactIDResponse" />
+  </wsdl:message>
+  <wsdl:message name="CountSearchByProductionArtifactIDSoapIn">
+    <wsdl:part name="parameters" element="tns:CountSearchByProductionArtifactID" />
+  </wsdl:message>
+  <wsdl:message name="CountSearchByProductionArtifactIDSoapOut">
+    <wsdl:part name="parameters" element="tns:CountSearchByProductionArtifactIDResponse" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveDefaultViewFieldsForIdListSoapIn">
+    <wsdl:part name="parameters" element="tns:RetrieveDefaultViewFieldsForIdList" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveDefaultViewFieldsForIdListSoapOut">
+    <wsdl:part name="parameters" element="tns:RetrieveDefaultViewFieldsForIdListResponse" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveAllExportableViewFieldsSoapIn">
+    <wsdl:part name="parameters" element="tns:RetrieveAllExportableViewFields" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveAllExportableViewFieldsSoapOut">
+    <wsdl:part name="parameters" element="tns:RetrieveAllExportableViewFieldsResponse" />
+  </wsdl:message>
+  <wsdl:portType name="SearchManagerSoap">
+    <wsdl:operation name="CountSearchByArtifactID">
+      <wsdl:input message="tns:CountSearchByArtifactIDSoapIn" />
+      <wsdl:output message="tns:CountSearchByArtifactIDSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="SearchBySearchArtifactID">
+      <wsdl:input message="tns:SearchBySearchArtifactIDSoapIn" />
+      <wsdl:output message="tns:SearchBySearchArtifactIDSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetSearchSQL">
+      <wsdl:input message="tns:GetSearchSQLSoapIn" />
+      <wsdl:output message="tns:GetSearchSQLSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveNativesForSearch">
+      <wsdl:input message="tns:RetrieveNativesForSearchSoapIn" />
+      <wsdl:output message="tns:RetrieveNativesForSearchSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveFilesForDynamicObjects">
+      <wsdl:input message="tns:RetrieveFilesForDynamicObjectsSoapIn" />
+      <wsdl:output message="tns:RetrieveFilesForDynamicObjectsSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveNativesForProduction">
+      <wsdl:input message="tns:RetrieveNativesForProductionSoapIn" />
+      <wsdl:output message="tns:RetrieveNativesForProductionSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveFullTextExistenceForSearch">
+      <wsdl:input message="tns:RetrieveFullTextExistenceForSearchSoapIn" />
+      <wsdl:output message="tns:RetrieveFullTextExistenceForSearchSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="IsExtractedTextUnicode">
+      <wsdl:input message="tns:IsExtractedTextUnicodeSoapIn" />
+      <wsdl:output message="tns:IsExtractedTextUnicodeSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveImagesForSearch">
+      <wsdl:input message="tns:RetrieveImagesForSearchSoapIn" />
+      <wsdl:output message="tns:RetrieveImagesForSearchSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveImagesByProductionArtifactIDForProductionExportByDocumentSet">
+      <wsdl:input message="tns:RetrieveImagesByProductionArtifactIDForProductionExportByDocumentSetSoapIn" />
+      <wsdl:output message="tns:RetrieveImagesByProductionArtifactIDForProductionExportByDocumentSetSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveImagesByProductionIDsAndDocumentIDsForExport">
+      <wsdl:input message="tns:RetrieveImagesByProductionIDsAndDocumentIDsForExportSoapIn" />
+      <wsdl:output message="tns:RetrieveImagesByProductionIDsAndDocumentIDsForExportSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveViewsByContextArtifactID">
+      <wsdl:input message="tns:RetrieveViewsByContextArtifactIDSoapIn" />
+      <wsdl:output message="tns:RetrieveViewsByContextArtifactIDSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveSearchFields">
+      <wsdl:input message="tns:RetrieveSearchFieldsSoapIn" />
+      <wsdl:output message="tns:RetrieveSearchFieldsSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveSearchFieldsForProduction">
+      <wsdl:input message="tns:RetrieveSearchFieldsForProductionSoapIn" />
+      <wsdl:output message="tns:RetrieveSearchFieldsForProductionSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="CountSearchByParentArtifactID">
+      <wsdl:input message="tns:CountSearchByParentArtifactIDSoapIn" />
+      <wsdl:output message="tns:CountSearchByParentArtifactIDSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="SearchByParentArtifactID">
+      <wsdl:input message="tns:SearchByParentArtifactIDSoapIn" />
+      <wsdl:output message="tns:SearchByParentArtifactIDSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="SearchByProductionArtifactID">
+      <wsdl:input message="tns:SearchByProductionArtifactIDSoapIn" />
+      <wsdl:output message="tns:SearchByProductionArtifactIDSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="CountSearchByProductionArtifactID">
+      <wsdl:input message="tns:CountSearchByProductionArtifactIDSoapIn" />
+      <wsdl:output message="tns:CountSearchByProductionArtifactIDSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveDefaultViewFieldsForIdList">
+      <wsdl:input message="tns:RetrieveDefaultViewFieldsForIdListSoapIn" />
+      <wsdl:output message="tns:RetrieveDefaultViewFieldsForIdListSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveAllExportableViewFields">
+      <wsdl:input message="tns:RetrieveAllExportableViewFieldsSoapIn" />
+      <wsdl:output message="tns:RetrieveAllExportableViewFieldsSoapOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="SearchManagerSoap" type="tns:SearchManagerSoap">
     <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document" />
-    <operation name="CountSearchByArtifactID">
+    <wsdl:operation name="CountSearchByArtifactID">
       <soap:operation soapAction="http://www.kCura.com/EDDS/SearchManager/CountSearchByArtifactID" style="document" />
-      <input>
+      <wsdl:input>
         <soap:body use="literal" />
-      </input>
-      <output>
+      </wsdl:input>
+      <wsdl:output>
         <soap:body use="literal" />
-      </output>
-    </operation>
-    <operation name="SearchBySearchArtifactID">
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SearchBySearchArtifactID">
       <soap:operation soapAction="http://www.kCura.com/EDDS/SearchManager/SearchBySearchArtifactID" style="document" />
-      <input>
+      <wsdl:input>
         <soap:body use="literal" />
-      </input>
-      <output>
+      </wsdl:input>
+      <wsdl:output>
         <soap:body use="literal" />
-      </output>
-    </operation>
-    <operation name="GetSearchSQL">
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetSearchSQL">
       <soap:operation soapAction="http://www.kCura.com/EDDS/SearchManager/GetSearchSQL" style="document" />
-      <input>
+      <wsdl:input>
         <soap:body use="literal" />
-      </input>
-      <output>
+      </wsdl:input>
+      <wsdl:output>
         <soap:body use="literal" />
-      </output>
-    </operation>
-    <operation name="RetrieveNativesForSearch">
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveNativesForSearch">
       <soap:operation soapAction="http://www.kCura.com/EDDS/SearchManager/RetrieveNativesForSearch" style="document" />
-      <input>
+      <wsdl:input>
         <soap:body use="literal" />
-      </input>
-      <output>
+      </wsdl:input>
+      <wsdl:output>
         <soap:body use="literal" />
-      </output>
-    </operation>
-    <operation name="RetrieveFilesForDynamicObjects">
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveFilesForDynamicObjects">
       <soap:operation soapAction="http://www.kCura.com/EDDS/SearchManager/RetrieveFilesForDynamicObjects" style="document" />
-      <input>
+      <wsdl:input>
         <soap:body use="literal" />
-      </input>
-      <output>
+      </wsdl:input>
+      <wsdl:output>
         <soap:body use="literal" />
-      </output>
-    </operation>
-    <operation name="RetrieveNativesForProduction">
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveNativesForProduction">
       <soap:operation soapAction="http://www.kCura.com/EDDS/SearchManager/RetrieveNativesForProduction" style="document" />
-      <input>
+      <wsdl:input>
         <soap:body use="literal" />
-      </input>
-      <output>
+      </wsdl:input>
+      <wsdl:output>
         <soap:body use="literal" />
-      </output>
-    </operation>
-    <operation name="RetrieveFullTextExistenceForSearch">
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveFullTextExistenceForSearch">
       <soap:operation soapAction="http://www.kCura.com/EDDS/SearchManager/RetrieveFullTextExistenceForSearch" style="document" />
-      <input>
+      <wsdl:input>
         <soap:body use="literal" />
-      </input>
-      <output>
+      </wsdl:input>
+      <wsdl:output>
         <soap:body use="literal" />
-      </output>
-    </operation>
-    <operation name="IsExtractedTextUnicode">
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="IsExtractedTextUnicode">
       <soap:operation soapAction="http://www.kCura.com/EDDS/SearchManager/IsExtractedTextUnicode" style="document" />
-      <input>
+      <wsdl:input>
         <soap:body use="literal" />
-      </input>
-      <output>
+      </wsdl:input>
+      <wsdl:output>
         <soap:body use="literal" />
-      </output>
-    </operation>
-    <operation name="RetrieveImagesForSearch">
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveImagesForSearch">
       <soap:operation soapAction="http://www.kCura.com/EDDS/SearchManager/RetrieveImagesForSearch" style="document" />
-      <input>
+      <wsdl:input>
         <soap:body use="literal" />
-      </input>
-      <output>
+      </wsdl:input>
+      <wsdl:output>
         <soap:body use="literal" />
-      </output>
-    </operation>
-    <operation name="RetrieveImagesByProductionArtifactIDForProductionExportByDocumentSet">
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveImagesByProductionArtifactIDForProductionExportByDocumentSet">
       <soap:operation soapAction="http://www.kCura.com/EDDS/SearchManager/RetrieveImagesByProductionArtifactIDForProductionExportByDocumentSet" style="document" />
-      <input>
+      <wsdl:input>
         <soap:body use="literal" />
-      </input>
-      <output>
+      </wsdl:input>
+      <wsdl:output>
         <soap:body use="literal" />
-      </output>
-    </operation>
-    <operation name="RetrieveImagesByProductionIDsAndDocumentIDsForExport">
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveImagesByProductionIDsAndDocumentIDsForExport">
       <soap:operation soapAction="http://www.kCura.com/EDDS/SearchManager/RetrieveImagesByProductionIDsAndDocumentIDsForExport" style="document" />
-      <input>
+      <wsdl:input>
         <soap:body use="literal" />
-      </input>
-      <output>
+      </wsdl:input>
+      <wsdl:output>
         <soap:body use="literal" />
-      </output>
-    </operation>
-    <operation name="RetrieveViewsByContextArtifactID">
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveViewsByContextArtifactID">
       <soap:operation soapAction="http://www.kCura.com/EDDS/SearchManager/RetrieveViewsByContextArtifactID" style="document" />
-      <input>
+      <wsdl:input>
         <soap:body use="literal" />
-      </input>
-      <output>
+      </wsdl:input>
+      <wsdl:output>
         <soap:body use="literal" />
-      </output>
-    </operation>
-    <operation name="RetrieveSearchFields">
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveSearchFields">
       <soap:operation soapAction="http://www.kCura.com/EDDS/SearchManager/RetrieveSearchFields" style="document" />
-      <input>
+      <wsdl:input>
         <soap:body use="literal" />
-      </input>
-      <output>
+      </wsdl:input>
+      <wsdl:output>
         <soap:body use="literal" />
-      </output>
-    </operation>
-    <operation name="RetrieveSearchFieldsForProduction">
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveSearchFieldsForProduction">
       <soap:operation soapAction="http://www.kCura.com/EDDS/SearchManager/RetrieveSearchFieldsForProduction" style="document" />
-      <input>
+      <wsdl:input>
         <soap:body use="literal" />
-      </input>
-      <output>
+      </wsdl:input>
+      <wsdl:output>
         <soap:body use="literal" />
-      </output>
-    </operation>
-    <operation name="CountSearchByParentArtifactID">
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CountSearchByParentArtifactID">
       <soap:operation soapAction="http://www.kCura.com/EDDS/SearchManager/CountSearchByParentArtifactID" style="document" />
-      <input>
+      <wsdl:input>
         <soap:body use="literal" />
-      </input>
-      <output>
+      </wsdl:input>
+      <wsdl:output>
         <soap:body use="literal" />
-      </output>
-    </operation>
-    <operation name="SearchByParentArtifactID">
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SearchByParentArtifactID">
       <soap:operation soapAction="http://www.kCura.com/EDDS/SearchManager/SearchByParentArtifactID" style="document" />
-      <input>
+      <wsdl:input>
         <soap:body use="literal" />
-      </input>
-      <output>
+      </wsdl:input>
+      <wsdl:output>
         <soap:body use="literal" />
-      </output>
-    </operation>
-    <operation name="SearchByProductionArtifactID">
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SearchByProductionArtifactID">
       <soap:operation soapAction="http://www.kCura.com/EDDS/SearchManager/SearchByProductionArtifactID" style="document" />
-      <input>
+      <wsdl:input>
         <soap:body use="literal" />
-      </input>
-      <output>
+      </wsdl:input>
+      <wsdl:output>
         <soap:body use="literal" />
-      </output>
-    </operation>
-    <operation name="CountSearchByProductionArtifactID">
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CountSearchByProductionArtifactID">
       <soap:operation soapAction="http://www.kCura.com/EDDS/SearchManager/CountSearchByProductionArtifactID" style="document" />
-      <input>
+      <wsdl:input>
         <soap:body use="literal" />
-      </input>
-      <output>
+      </wsdl:input>
+      <wsdl:output>
         <soap:body use="literal" />
-      </output>
-    </operation>
-    <operation name="RetrieveDefaultViewFieldsForIdList">
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveDefaultViewFieldsForIdList">
       <soap:operation soapAction="http://www.kCura.com/EDDS/SearchManager/RetrieveDefaultViewFieldsForIdList" style="document" />
-      <input>
+      <wsdl:input>
         <soap:body use="literal" />
-      </input>
-      <output>
+      </wsdl:input>
+      <wsdl:output>
         <soap:body use="literal" />
-      </output>
-    </operation>
-    <operation name="RetrieveAllExportableViewFields">
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveAllExportableViewFields">
       <soap:operation soapAction="http://www.kCura.com/EDDS/SearchManager/RetrieveAllExportableViewFields" style="document" />
-      <input>
+      <wsdl:input>
         <soap:body use="literal" />
-      </input>
-      <output>
+      </wsdl:input>
+      <wsdl:output>
         <soap:body use="literal" />
-      </output>
-    </operation>
-  </binding>
-  <service name="SearchManager">
-    <port name="SearchManagerSoap" binding="s0:SearchManagerSoap">
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="SearchManager">
+    <documentation xmlns="http://schemas.xmlsoap.org/wsdl/" />
+    <wsdl:port name="SearchManagerSoap" binding="tns:SearchManagerSoap">
       <soap:address location="http://localhost/EDDSWebAPI/SearchManager.asmx" />
-    </port>
-  </service>
-</definitions>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

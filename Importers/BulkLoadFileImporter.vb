@@ -64,6 +64,8 @@ Namespace kCura.WinEDDS
 		Private _currentStatisticsSnapshot As IDictionary
 		Private _statisticsLastUpdated As System.DateTime = System.DateTime.Now
 		Private _start As System.DateTime
+		Private _unmappedRelationalFields As System.Collections.ArrayList
+
 #End Region
 
 #Region "Accessors"
@@ -165,6 +167,26 @@ Namespace kCura.WinEDDS
 					retval += cache.CreationCount
 				Next
 				Return retval
+			End Get
+		End Property
+
+		Public ReadOnly Property UnmappedRelationalFields() As System.Collections.ArrayList
+			Get
+				If _unmappedRelationalFields Is Nothing Then
+					Dim mappedRelationalFieldIds As New System.Collections.ArrayList
+					For Each item As LoadFileFieldMap.LoadFileFieldMapItem In _fieldMap
+						If Not item.DocumentField Is Nothing AndAlso item.DocumentField.FieldCategory = DynamicFields.Types.FieldCategory.Relational Then
+							mappedRelationalFieldIds.Add(item.DocumentField.FieldID)
+						End If
+					Next
+					_unmappedRelationalFields = New System.Collections.ArrayList
+					For Each field As kCura.EDDS.WebAPI.DocumentManagerBase.Field In Me.AllFields(_artifactTypeID)
+						If field.FieldCategory = EDDS.WebAPI.DocumentManagerBase.FieldCategory.Relational And Not mappedRelationalFieldIds.Contains(field.ArtifactID) Then
+							_unmappedRelationalFields.Add(field)
+						End If
+					Next
+				End If
+				Return _unmappedRelationalFields
 			End Get
 		End Property
 
@@ -804,19 +826,23 @@ Namespace kCura.WinEDDS
 			Dim item As LoadFileFieldMap.LoadFileFieldMapItem
 			Dim identityValue As String = String.Empty
 			Dim docfield As DocumentField
+			Dim identityFileColumnIndex As Int32
 			For Each item In _fieldMap
 				If Not item.DocumentField Is Nothing AndAlso item.DocumentField.FieldCategory = DynamicFields.Types.FieldCategory.Identifier Then
 					identityValue = values(item.NativeFileColumnIndex)
+					identityFileColumnIndex = item.NativeFileColumnIndex
 				End If
 				If Not item.DocumentField Is Nothing Then
 					If _keyFieldID > 0 Then
 						If item.DocumentField.FieldID = _keyFieldID Then
 							identityValue = values(item.NativeFileColumnIndex)
+							identityFileColumnIndex = item.NativeFileColumnIndex
 							Exit For
 						End If
 					Else
 						If item.DocumentField.FieldCategory = DynamicFields.Types.FieldCategory.Identifier Then
 							identityValue = values(item.NativeFileColumnIndex)
+							identityFileColumnIndex = item.NativeFileColumnIndex
 							Exit For
 						End If
 					End If
@@ -836,37 +862,13 @@ Namespace kCura.WinEDDS
 				If Not item.DocumentField Is Nothing Then
 					docfield = New DocumentField(item.DocumentField)
 					If item.DocumentField.FieldTypeID = kCura.DynamicFields.Types.FieldTypeHelper.FieldType.File AndAlso values(item.NativeFileColumnIndex) <> "" AndAlso item.NativeFileColumnIndex <> -1 Then
-						Dim localFilePath As String = values(item.NativeFileColumnIndex)
-						Dim fileSize As Int64
-						If System.IO.File.Exists(localFilePath) Then
-							fileSize = Me.GetFileLength(localFilePath)
-							Dim fileName As String = System.IO.Path.GetFileName(localFilePath).Replace(ChrW(11), "_")
-							Dim location As String
-							If _uploader.DestinationFolderPath = "" Then
-								location = localFilePath
-							Else
-								Dim start As Int64 = System.DateTime.Now.Ticks
-								_statistics.FileBytes += Me.GetFileLength(localFilePath)
-								Dim guid As String = _uploader.UploadFile(localFilePath, _caseArtifactID)
-								location = _uploader.DestinationFolderPath & _uploader.CurrentDestinationDirectory & "\" & guid
-								Dim updateCurrentStats As Boolean = (start - _statisticsLastUpdated.Ticks) > 10000000
-								_statistics.FileTime += System.DateTime.Now.Ticks - start
-								If updateCurrentStats Then
-									_currentStatisticsSnapshot = _statistics.ToDictionary
-									_statisticsLastUpdated = New System.DateTime(start)
-								End If
-
-							End If
-							location = System.Web.HttpUtility.UrlEncode(location)
-							docfield.Value = String.Format("{1}{0}{2}{0}{3}", ChrW(11), fileName, fileSize, location)
-						Else
-							Throw New System.IO.FileNotFoundException(String.Format("File '{0}' not found.", localFilePath))
-						End If
+						Me.ManageFileField(values, item, docfield)
 					Else
 						MyBase.SetFieldValue(docfield, values, item.NativeFileColumnIndex, identityValue)
 					End If
 					If docfield.FieldName = _selectedIdentifier.FieldName Then
 						identityValue = docfield.Value
+						identityFileColumnIndex = item.NativeFileColumnIndex
 					End If
 					fieldCollection.Add(docfield)
 				End If
@@ -874,13 +876,48 @@ Namespace kCura.WinEDDS
 			If Not fieldCollection.GroupIdentifier Is Nothing AndAlso fieldCollection.GroupIdentifier.Value = "" Then
 				fieldCollection.GroupIdentifier.Value = identityValue
 			End If
+			For Each fieldDTO As kCura.EDDS.WebAPI.DocumentManagerBase.Field In Me.UnmappedRelationalFields
+				Dim field As New DocumentField(fieldDTO.DisplayName, fieldDTO.ArtifactID, fieldDTO.FieldTypeID, fieldDTO.FieldCategoryID, fieldDTO.CodeTypeID, fieldDTO.MaxLength, fieldDTO.UseUnicodeEncoding)
+				Me.SetFieldValue(field, values, identityFileColumnIndex, identityValue)
+			Next
 			_firstTimeThrough = False
 			Return identityValue
 			System.Threading.Monitor.Exit(_outputNativeFileWriter)
 			System.Threading.Monitor.Exit(_outputCodeFileWriter)
 		End Function
 
+		Private Sub ManageFileField(ByVal values As String(), ByVal item As LoadFileFieldMap.LoadFileFieldMapItem, ByVal docField As WinEDDS.DocumentField)
+			Dim localFilePath As String = values(item.NativeFileColumnIndex)
+			Dim fileSize As Int64
+			If System.IO.File.Exists(localFilePath) Then
+				fileSize = Me.GetFileLength(localFilePath)
+				Dim fileName As String = System.IO.Path.GetFileName(localFilePath).Replace(ChrW(11), "_")
+				Dim location As String
+				If _uploader.DestinationFolderPath = "" Then
+					location = localFilePath
+				Else
+					Dim start As Int64 = System.DateTime.Now.Ticks
+					_statistics.FileBytes += Me.GetFileLength(localFilePath)
+					Dim guid As String = _uploader.UploadFile(localFilePath, _caseArtifactID)
+					location = _uploader.DestinationFolderPath & _uploader.CurrentDestinationDirectory & "\" & guid
+					Dim updateCurrentStats As Boolean = (start - _statisticsLastUpdated.Ticks) > 10000000
+					_statistics.FileTime += System.DateTime.Now.Ticks - start
+					If updateCurrentStats Then
+						_currentStatisticsSnapshot = _statistics.ToDictionary
+						_statisticsLastUpdated = New System.DateTime(start)
+					End If
+
+				End If
+				location = System.Web.HttpUtility.UrlEncode(location)
+				docField.Value = String.Format("{1}{0}{2}{0}{3}", ChrW(11), fileName, fileSize, location)
+			Else
+				Throw New System.IO.FileNotFoundException(String.Format("File '{0}' not found.", localFilePath))
+			End If
+
+		End Sub
+
 #End Region
+
 
 #Region "Status Window"
 

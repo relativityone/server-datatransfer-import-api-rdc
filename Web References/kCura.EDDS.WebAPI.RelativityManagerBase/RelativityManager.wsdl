@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<definitions xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:s0="http://www.kCura.com/EDDS/RelativityManager" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" targetNamespace="http://www.kCura.com/EDDS/RelativityManager" xmlns="http://schemas.xmlsoap.org/wsdl/">
-  <types>
+<wsdl:definitions xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tns="http://www.kCura.com/EDDS/RelativityManager" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" targetNamespace="http://www.kCura.com/EDDS/RelativityManager" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
     <s:schema elementFormDefault="qualified" targetNamespace="http://www.kCura.com/EDDS/RelativityManager">
       <s:import namespace="http://www.w3.org/2001/XMLSchema" />
       <s:element name="RetrieveRelativityVersion">
@@ -95,167 +95,168 @@
         </s:complexType>
       </s:element>
     </s:schema>
-  </types>
-  <message name="RetrieveRelativityVersionSoapIn">
-    <part name="parameters" element="s0:RetrieveRelativityVersion" />
-  </message>
-  <message name="RetrieveRelativityVersionSoapOut">
-    <part name="parameters" element="s0:RetrieveRelativityVersionResponse" />
-  </message>
-  <message name="ValidateSuccessfulLoginSoapIn">
-    <part name="parameters" element="s0:ValidateSuccessfulLogin" />
-  </message>
-  <message name="ValidateSuccessfulLoginSoapOut">
-    <part name="parameters" element="s0:ValidateSuccessfulLoginResponse" />
-  </message>
-  <message name="GetServerTimezoneOffsetSoapIn">
-    <part name="parameters" element="s0:GetServerTimezoneOffset" />
-  </message>
-  <message name="GetServerTimezoneOffsetSoapOut">
-    <part name="parameters" element="s0:GetServerTimezoneOffsetResponse" />
-  </message>
-  <message name="IsAuditingEnabledSoapIn">
-    <part name="parameters" element="s0:IsAuditingEnabled" />
-  </message>
-  <message name="IsAuditingEnabledSoapOut">
-    <part name="parameters" element="s0:IsAuditingEnabledResponse" />
-  </message>
-  <message name="IsImportEmailNotificationEnabledSoapIn">
-    <part name="parameters" element="s0:IsImportEmailNotificationEnabled" />
-  </message>
-  <message name="IsImportEmailNotificationEnabledSoapOut">
-    <part name="parameters" element="s0:IsImportEmailNotificationEnabledResponse" />
-  </message>
-  <message name="RetrieveRdcConfigurationSoapIn">
-    <part name="parameters" element="s0:RetrieveRdcConfiguration" />
-  </message>
-  <message name="RetrieveRdcConfigurationSoapOut">
-    <part name="parameters" element="s0:RetrieveRdcConfigurationResponse" />
-  </message>
-  <message name="PingSoapIn">
-    <part name="parameters" element="s0:Ping" />
-  </message>
-  <message name="PingSoapOut">
-    <part name="parameters" element="s0:PingResponse" />
-  </message>
-  <message name="ReceiveTextSoapIn">
-    <part name="parameters" element="s0:ReceiveText" />
-  </message>
-  <message name="ReceiveTextSoapOut">
-    <part name="parameters" element="s0:ReceiveTextResponse" />
-  </message>
-  <portType name="RelativityManagerSoap">
-    <operation name="RetrieveRelativityVersion">
-      <input message="s0:RetrieveRelativityVersionSoapIn" />
-      <output message="s0:RetrieveRelativityVersionSoapOut" />
-    </operation>
-    <operation name="ValidateSuccessfulLogin">
-      <input message="s0:ValidateSuccessfulLoginSoapIn" />
-      <output message="s0:ValidateSuccessfulLoginSoapOut" />
-    </operation>
-    <operation name="GetServerTimezoneOffset">
-      <input message="s0:GetServerTimezoneOffsetSoapIn" />
-      <output message="s0:GetServerTimezoneOffsetSoapOut" />
-    </operation>
-    <operation name="IsAuditingEnabled">
-      <input message="s0:IsAuditingEnabledSoapIn" />
-      <output message="s0:IsAuditingEnabledSoapOut" />
-    </operation>
-    <operation name="IsImportEmailNotificationEnabled">
-      <input message="s0:IsImportEmailNotificationEnabledSoapIn" />
-      <output message="s0:IsImportEmailNotificationEnabledSoapOut" />
-    </operation>
-    <operation name="RetrieveRdcConfiguration">
-      <input message="s0:RetrieveRdcConfigurationSoapIn" />
-      <output message="s0:RetrieveRdcConfigurationSoapOut" />
-    </operation>
-    <operation name="Ping">
-      <input message="s0:PingSoapIn" />
-      <output message="s0:PingSoapOut" />
-    </operation>
-    <operation name="ReceiveText">
-      <input message="s0:ReceiveTextSoapIn" />
-      <output message="s0:ReceiveTextSoapOut" />
-    </operation>
-  </portType>
-  <binding name="RelativityManagerSoap" type="s0:RelativityManagerSoap">
+  </wsdl:types>
+  <wsdl:message name="RetrieveRelativityVersionSoapIn">
+    <wsdl:part name="parameters" element="tns:RetrieveRelativityVersion" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveRelativityVersionSoapOut">
+    <wsdl:part name="parameters" element="tns:RetrieveRelativityVersionResponse" />
+  </wsdl:message>
+  <wsdl:message name="ValidateSuccessfulLoginSoapIn">
+    <wsdl:part name="parameters" element="tns:ValidateSuccessfulLogin" />
+  </wsdl:message>
+  <wsdl:message name="ValidateSuccessfulLoginSoapOut">
+    <wsdl:part name="parameters" element="tns:ValidateSuccessfulLoginResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetServerTimezoneOffsetSoapIn">
+    <wsdl:part name="parameters" element="tns:GetServerTimezoneOffset" />
+  </wsdl:message>
+  <wsdl:message name="GetServerTimezoneOffsetSoapOut">
+    <wsdl:part name="parameters" element="tns:GetServerTimezoneOffsetResponse" />
+  </wsdl:message>
+  <wsdl:message name="IsAuditingEnabledSoapIn">
+    <wsdl:part name="parameters" element="tns:IsAuditingEnabled" />
+  </wsdl:message>
+  <wsdl:message name="IsAuditingEnabledSoapOut">
+    <wsdl:part name="parameters" element="tns:IsAuditingEnabledResponse" />
+  </wsdl:message>
+  <wsdl:message name="IsImportEmailNotificationEnabledSoapIn">
+    <wsdl:part name="parameters" element="tns:IsImportEmailNotificationEnabled" />
+  </wsdl:message>
+  <wsdl:message name="IsImportEmailNotificationEnabledSoapOut">
+    <wsdl:part name="parameters" element="tns:IsImportEmailNotificationEnabledResponse" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveRdcConfigurationSoapIn">
+    <wsdl:part name="parameters" element="tns:RetrieveRdcConfiguration" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveRdcConfigurationSoapOut">
+    <wsdl:part name="parameters" element="tns:RetrieveRdcConfigurationResponse" />
+  </wsdl:message>
+  <wsdl:message name="PingSoapIn">
+    <wsdl:part name="parameters" element="tns:Ping" />
+  </wsdl:message>
+  <wsdl:message name="PingSoapOut">
+    <wsdl:part name="parameters" element="tns:PingResponse" />
+  </wsdl:message>
+  <wsdl:message name="ReceiveTextSoapIn">
+    <wsdl:part name="parameters" element="tns:ReceiveText" />
+  </wsdl:message>
+  <wsdl:message name="ReceiveTextSoapOut">
+    <wsdl:part name="parameters" element="tns:ReceiveTextResponse" />
+  </wsdl:message>
+  <wsdl:portType name="RelativityManagerSoap">
+    <wsdl:operation name="RetrieveRelativityVersion">
+      <wsdl:input message="tns:RetrieveRelativityVersionSoapIn" />
+      <wsdl:output message="tns:RetrieveRelativityVersionSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ValidateSuccessfulLogin">
+      <wsdl:input message="tns:ValidateSuccessfulLoginSoapIn" />
+      <wsdl:output message="tns:ValidateSuccessfulLoginSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetServerTimezoneOffset">
+      <wsdl:input message="tns:GetServerTimezoneOffsetSoapIn" />
+      <wsdl:output message="tns:GetServerTimezoneOffsetSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="IsAuditingEnabled">
+      <wsdl:input message="tns:IsAuditingEnabledSoapIn" />
+      <wsdl:output message="tns:IsAuditingEnabledSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="IsImportEmailNotificationEnabled">
+      <wsdl:input message="tns:IsImportEmailNotificationEnabledSoapIn" />
+      <wsdl:output message="tns:IsImportEmailNotificationEnabledSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveRdcConfiguration">
+      <wsdl:input message="tns:RetrieveRdcConfigurationSoapIn" />
+      <wsdl:output message="tns:RetrieveRdcConfigurationSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="Ping">
+      <wsdl:input message="tns:PingSoapIn" />
+      <wsdl:output message="tns:PingSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ReceiveText">
+      <wsdl:input message="tns:ReceiveTextSoapIn" />
+      <wsdl:output message="tns:ReceiveTextSoapOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="RelativityManagerSoap" type="tns:RelativityManagerSoap">
     <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document" />
-    <operation name="RetrieveRelativityVersion">
+    <wsdl:operation name="RetrieveRelativityVersion">
       <soap:operation soapAction="http://www.kCura.com/EDDS/RelativityManager/RetrieveRelativityVersion" style="document" />
-      <input>
+      <wsdl:input>
         <soap:body use="literal" />
-      </input>
-      <output>
+      </wsdl:input>
+      <wsdl:output>
         <soap:body use="literal" />
-      </output>
-    </operation>
-    <operation name="ValidateSuccessfulLogin">
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ValidateSuccessfulLogin">
       <soap:operation soapAction="http://www.kCura.com/EDDS/RelativityManager/ValidateSuccessfulLogin" style="document" />
-      <input>
+      <wsdl:input>
         <soap:body use="literal" />
-      </input>
-      <output>
+      </wsdl:input>
+      <wsdl:output>
         <soap:body use="literal" />
-      </output>
-    </operation>
-    <operation name="GetServerTimezoneOffset">
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetServerTimezoneOffset">
       <soap:operation soapAction="http://www.kCura.com/EDDS/RelativityManager/GetServerTimezoneOffset" style="document" />
-      <input>
+      <wsdl:input>
         <soap:body use="literal" />
-      </input>
-      <output>
+      </wsdl:input>
+      <wsdl:output>
         <soap:body use="literal" />
-      </output>
-    </operation>
-    <operation name="IsAuditingEnabled">
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="IsAuditingEnabled">
       <soap:operation soapAction="http://www.kCura.com/EDDS/RelativityManager/IsAuditingEnabled" style="document" />
-      <input>
+      <wsdl:input>
         <soap:body use="literal" />
-      </input>
-      <output>
+      </wsdl:input>
+      <wsdl:output>
         <soap:body use="literal" />
-      </output>
-    </operation>
-    <operation name="IsImportEmailNotificationEnabled">
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="IsImportEmailNotificationEnabled">
       <soap:operation soapAction="http://www.kCura.com/EDDS/RelativityManager/IsImportEmailNotificationEnabled" style="document" />
-      <input>
+      <wsdl:input>
         <soap:body use="literal" />
-      </input>
-      <output>
+      </wsdl:input>
+      <wsdl:output>
         <soap:body use="literal" />
-      </output>
-    </operation>
-    <operation name="RetrieveRdcConfiguration">
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveRdcConfiguration">
       <soap:operation soapAction="http://www.kCura.com/EDDS/RelativityManager/RetrieveRdcConfiguration" style="document" />
-      <input>
+      <wsdl:input>
         <soap:body use="literal" />
-      </input>
-      <output>
+      </wsdl:input>
+      <wsdl:output>
         <soap:body use="literal" />
-      </output>
-    </operation>
-    <operation name="Ping">
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Ping">
       <soap:operation soapAction="http://www.kCura.com/EDDS/RelativityManager/Ping" style="document" />
-      <input>
+      <wsdl:input>
         <soap:body use="literal" />
-      </input>
-      <output>
+      </wsdl:input>
+      <wsdl:output>
         <soap:body use="literal" />
-      </output>
-    </operation>
-    <operation name="ReceiveText">
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ReceiveText">
       <soap:operation soapAction="http://www.kCura.com/EDDS/RelativityManager/ReceiveText" style="document" />
-      <input>
+      <wsdl:input>
         <soap:body use="literal" />
-      </input>
-      <output>
+      </wsdl:input>
+      <wsdl:output>
         <soap:body use="literal" />
-      </output>
-    </operation>
-  </binding>
-  <service name="RelativityManager">
-    <port name="RelativityManagerSoap" binding="s0:RelativityManagerSoap">
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="RelativityManager">
+    <documentation xmlns="http://schemas.xmlsoap.org/wsdl/" />
+    <wsdl:port name="RelativityManagerSoap" binding="tns:RelativityManagerSoap">
       <soap:address location="http://localhost/EDDSWebAPI/RelativityManager.asmx" />
-    </port>
-  </service>
-</definitions>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>
