@@ -392,7 +392,7 @@ Public Class ExportForm
 		Me.Label24.Name = "Label24"
 		Me.Label24.Size = New System.Drawing.Size(160, 16)
 		Me.Label24.TabIndex = 20
-		Me.Label24.Text = "Start Export at Document #"
+		Me.Label24.Text = "Start Export at Record #"
 		Me.Label24.TextAlign = System.Drawing.ContentAlignment.MiddleRight
 		'
 		'Label18
@@ -421,7 +421,7 @@ Public Class ExportForm
 		Me._columnSelecter.LeftOrderControlsVisible = False
 		Me._columnSelecter.Location = New System.Drawing.Point(12, 64)
 		Me._columnSelecter.Name = "_columnSelecter"
-		Me._columnSelecter.RightOrderControlVisible = False
+		Me._columnSelecter.RightOrderControlVisible = True
 		Me._columnSelecter.Size = New System.Drawing.Size(360, 280)
 		Me._columnSelecter.TabIndex = 17
 		'
@@ -495,7 +495,6 @@ Public Class ExportForm
 		'
 		Me._textFileEncoding.Location = New System.Drawing.Point(116, 100)
 		Me._textFileEncoding.Name = "_textFileEncoding"
-		Me._textFileEncoding.SelectedEncoding = CType(resources.GetObject("_textFileEncoding.SelectedEncoding"), System.Text.Encoding)
 		Me._textFileEncoding.Size = New System.Drawing.Size(200, 21)
 		Me._textFileEncoding.TabIndex = 19
 		'
@@ -521,7 +520,6 @@ Public Class ExportForm
 		'
 		Me._dataFileEncoding.Location = New System.Drawing.Point(116, 48)
 		Me._dataFileEncoding.Name = "_dataFileEncoding"
-		Me._dataFileEncoding.SelectedEncoding = CType(resources.GetObject("_dataFileEncoding.SelectedEncoding"), System.Text.Encoding)
 		Me._dataFileEncoding.Size = New System.Drawing.Size(200, 21)
 		Me._dataFileEncoding.TabIndex = 16
 		'
@@ -955,7 +953,7 @@ Public Class ExportForm
 		Me._loadFileCharacterInformation.Size = New System.Drawing.Size(208, 208)
 		Me._loadFileCharacterInformation.TabIndex = 15
 		Me._loadFileCharacterInformation.TabStop = False
-		Me._loadFileCharacterInformation.Text = "Native Load File Characters"
+		Me._loadFileCharacterInformation.Text = "Load File Characters"
 		'
 		'Label7
 		'
@@ -1380,7 +1378,14 @@ Public Class ExportForm
 				Me.Text = "Relativity Desktop Client: Export Production Set"
 				_productionPrecedenceBox.Visible = False
 		End Select
-		If Not Me.ExportFile.ArtifactTypeID = kCura.EDDS.Types.ArtifactType.Document Then _productionPrecedenceBox.Visible = False
+		If Not Me.ExportFile.ArtifactTypeID = kCura.EDDS.Types.ArtifactType.Document Then
+			_productionPrecedenceBox.Visible = False
+			Label13.Text = "File Prefix"
+			GroupBox6.Text = "Text and File Names"
+			Label11.Visible = False
+			_subdirectoryImagePrefix.Visible = False
+		End If
+
 		Dim filtersToolTip As New ToolTip
 		filtersToolTip.AutoPopDelay = 5000
 		filtersToolTip.InitialDelay = 1000
