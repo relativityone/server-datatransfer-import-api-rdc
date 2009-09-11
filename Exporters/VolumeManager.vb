@@ -844,7 +844,7 @@ Namespace kCura.WinEDDS
 
 		Private Function DownloadNative(ByVal artifact As Exporters.ObjectExportInfo) As Int64
 			If Me.Settings.ArtifactTypeID = kCura.EDDS.Types.ArtifactType.Document AndAlso artifact.NativeFileGuid = "" Then Return 0
-			If Not artifact.FileID > 0 Then Return 0
+			If Not Me.Settings.ArtifactTypeID = kCura.EDDS.Types.ArtifactType.Document AndAlso Not artifact.FileID > 0 Then Return 0
 			Dim nativeFileName As String = Me.GetNativeFileName(artifact)
 			Dim tempFile As String = Me.GetLocalNativeFilePath(artifact, nativeFileName)
 			Dim start As Int64 = System.DateTime.Now.Ticks
