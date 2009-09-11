@@ -588,6 +588,7 @@ Namespace kCura.WinEDDS
 		Private Function PushNativeBatch(Optional ByVal lastRun As Boolean = False) As Object
 			_outputNativeFileWriter.Close()
 			_outputCodeFileWriter.Close()
+			Dim start As Int64 = System.DateTime.Now.Ticks
 			If _batchCounter = 0 Then Return Nothing
 			_batchCounter = 0
 			Dim settings As kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo = Me.GetSettingsObject
@@ -605,7 +606,6 @@ Namespace kCura.WinEDDS
 			Else
 				settings.Repository = _caseInfo.DocumentPath
 			End If
-			Dim start As Int64 = System.DateTime.Now.Ticks
 			If uploadBcp.Type = FileUploadReturnArgs.FileUploadReturnType.UploadError Then
 				If Config.EnableSingleModeImport Then
 					RaiseEvent UploadModeChangeEvent(_uploader.UploaderType.ToString, _bcpuploader.IsBulkEnabled)
