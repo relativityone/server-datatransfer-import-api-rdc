@@ -1380,6 +1380,7 @@ Public Class ExportForm
 				Me.Text = "Relativity Desktop Client: Export Production Set"
 				_productionPrecedenceBox.Visible = False
 		End Select
+		If Not Me.ExportFile.ArtifactTypeID = kCura.EDDS.Types.ArtifactType.Document Then _productionPrecedenceBox.Visible = False
 		Dim filtersToolTip As New ToolTip
 		filtersToolTip.AutoPopDelay = 5000
 		filtersToolTip.InitialDelay = 1000
