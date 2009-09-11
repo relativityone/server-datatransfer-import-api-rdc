@@ -1091,7 +1091,7 @@ Public Class ExportForm
 	Protected WithEvents _precedenceForm As kCura.EDDS.WinForm.ProductionPrecedenceForm
 	Private _allExportableFields As kCura.EDDS.Types.ViewFieldInfo
 	Private _dataSourceIsSet As Boolean = False
-
+	Private _objectTypeName As String = ""
 	Public Property Application() As kCura.EDDS.WinForm.Application
 		Get
 			Return _application
@@ -1108,6 +1108,19 @@ Public Class ExportForm
 		Set(ByVal value As kCura.WinEDDS.ExportFile)
 			_exportFile = value
 		End Set
+	End Property
+
+	Public ReadOnly Property ObjectTypeName() As String
+		Get
+			If _objectTypeName = "" Then
+				For Each row As System.Data.DataRow In New kCura.WinEDDS.Service.ObjectTypeManager(_application.Credential, _application.CookieContainer).RetrieveAllUploadable(_application.SelectedCaseInfo.ArtifactID).Tables(0).Rows
+					If CType(row("DescriptorArtifactTypeID"), Int32) = Me.ExportFile.ArtifactTypeID Then
+						_objectTypeName = row("Name").ToString
+					End If
+				Next
+			End If
+			Return _objectTypeName
+		End Get
 	End Property
 
 	Private Sub AppendErrorMessage(ByVal msg As System.Text.StringBuilder, ByVal errorText As String)
@@ -1350,9 +1363,13 @@ Public Class ExportForm
 			Case ExportFile.ExportType.ParentSearch, ExportFile.ExportType.AncestorSearch
 				_filters.Text = "Views"
 				_filtersBox.Text = "Views"
-				Me.Text = "Relativity Desktop Client: Export Folder"
-				If Me.ExportFile.TypeOfExport = ExportFile.ExportType.AncestorSearch Then
-					Me.Text = "Relativity Desktop Client: Export Folder and Subfolders"
+				If Me.ExportFile.ArtifactTypeID = kCura.EDDS.Types.ArtifactType.Document Then
+					Me.Text = "Relativity Desktop Client: Export Folder"
+					If Me.ExportFile.TypeOfExport = ExportFile.ExportType.AncestorSearch Then
+						Me.Text = "Relativity Desktop Client: Export Folder and Subfolders"
+					End If
+				Else
+					Me.Text = String.Format("Relativity Desktop Client: Export {0} Objects", Me.ObjectTypeName)
 				End If
 			Case ExportFile.ExportType.Production
 				Label5.Visible = True
