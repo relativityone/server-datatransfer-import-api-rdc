@@ -337,6 +337,9 @@ Namespace kCura.EDDS.WebAPI.AuditManagerBase
         
         '<remarks/>
         Public VolumeStartNumber As Integer
+        
+        '<remarks/>
+        Public ArtifactTypeID As Integer
     End Class
     
     '<remarks/>

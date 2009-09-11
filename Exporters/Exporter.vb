@@ -532,6 +532,7 @@ Namespace kCura.WinEDDS
 			Dim args As New kCura.EDDS.WebAPI.AuditManagerBase.ExportStatistics
 			args.AppendOriginalFilenames = Me.ExportFile.AppendOriginalFileName
 			args.Bound = Me.ExportFile.QuoteDelimiter
+			args.ArtifactTypeID = Me.ExportFile.ArtifactTypeID
 			Select Case Me.ExportFile.TypeOfExport
 				Case ExportFile.ExportType.AncestorSearch
 					args.DataSourceArtifactID = Me.ExportFile.ViewID

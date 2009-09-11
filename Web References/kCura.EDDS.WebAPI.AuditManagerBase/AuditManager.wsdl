@@ -185,6 +185,7 @@
           <s:element minOccurs="1" maxOccurs="1" name="CopyFilesFromRepository" type="s:boolean" />
           <s:element minOccurs="1" maxOccurs="1" name="StartExportAtDocumentNumber" type="s:int" />
           <s:element minOccurs="1" maxOccurs="1" name="VolumeStartNumber" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="ArtifactTypeID" type="s:int" />
         </s:sequence>
       </s:complexType>
       <s:simpleType name="ImageLoadFileFormatType">
