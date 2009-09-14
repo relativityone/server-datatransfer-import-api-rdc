@@ -153,6 +153,8 @@ Namespace kCura.WinEDDS
 			Dim duplicateHashField As DocumentField
 			Dim unmappedFields As New System.Collections.Specialized.HybridDictionary
 			Dim mappedFields As New System.Collections.Specialized.HybridDictionary
+			Dim idFieldColumnIndex As Int32
+			Dim idFieldOriginalValue As String
 			For Each relationalField As DocumentField In _relationalDocumentFields
 				unmappedFields.Add(relationalField.FieldID, relationalField)
 			Next
@@ -181,7 +183,12 @@ Namespace kCura.WinEDDS
 						Case kCura.DynamicFields.Types.FieldCategory.Identifier
 							If Not _keyFieldID > 0 Then identifierField = docfield
 					End Select
-					If _keyFieldID > 0 AndAlso _keyFieldID = docField.FieldID Then identifierField = docfield
+					If _keyFieldID > 0 AndAlso _keyFieldID = docField.FieldID Then
+						identifierField = docfield
+						idFieldColumnIndex = mapItem.NativeFileColumnIndex
+						idFieldOriginalValue = valToParse
+					End If
+
 					lineContainsErrors = lineContainsErrors Or SetFieldValueOrErrorMessage(docfield, valToParse, mapItem.NativeFileColumnIndex)
 					'dont add field if object type is not a document and the field is a file field
 					If Not (_artifactTypeID <> kCura.EDDS.Types.ArtifactType.Document And docfield.FieldTypeID = kCura.DynamicFields.Types.FieldTypeHelper.FieldType.File) Then
@@ -213,7 +220,8 @@ Namespace kCura.WinEDDS
 					If _columnCount <> values.Length Then
 						f.Value = New ColumnCountMismatchException(Me.CurrentLineNumber, _columnCount, values.Length).Message
 					Else
-						f.Value = identifierField.Value & " (if not set)"
+						lineContainsErrors = lineContainsErrors Or SetFieldValueOrErrorMessage(f, idFieldOriginalValue, idFieldColumnIndex)
+						'f.Value = identifierField.Value & " (if not set)"
 					End If
 					retval.Add(f)
 				Next
