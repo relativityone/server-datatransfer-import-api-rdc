@@ -1190,7 +1190,8 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Private Function GetNativeHtmlString(ByVal doc As Exporters.ObjectExportInfo, ByVal location As String) As String
-			If doc.NativeCount = 0 Then Return ""
+			If Me.Settings.ArtifactTypeID = kCura.EDDS.Types.ArtifactType.Document AndAlso doc.NativeCount = 0 Then Return ""
+			If Not Me.Settings.ArtifactTypeID = kCura.EDDS.Types.ArtifactType.Document AndAlso Not doc.FileID > 0 Then Return ""
 			Dim retval As New System.Text.StringBuilder
 			retval.AppendFormat("<a style='display:block' href='{0}'>{1}</a>", location, doc.NativeFileName(Me.Settings.AppendOriginalFileName))
 			Return retval.ToString
