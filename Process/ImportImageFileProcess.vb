@@ -42,6 +42,7 @@ Namespace kCura.WinEDDS
 				retval.NumberOfFilesLoaded = _imageFileImporter.Statistics.FilesProcessed
 				retval.NumberOfWarnings = _warningCount
 				retval.OverlayIdentifierFieldArtifactID = ImageLoadFile.IdentityFieldId
+				If ImageLoadFile.ProductionArtifactID > 0 Then retval.OverlayIdentifierFieldArtifactID = ImageLoadFile.BeginBatesFieldArtifactID
 				Select Case ImageLoadFile.Overwrite.ToLower
 					Case "none"
 						retval.Overwrite = EDDS.WebAPI.AuditManagerBase.OverwriteType.Append
