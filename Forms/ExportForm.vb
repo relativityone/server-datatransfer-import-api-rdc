@@ -1127,7 +1127,7 @@ Public Class ExportForm
 
 	Private Sub RunMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles RunMenu.Click
 		Dim msg As New System.Text.StringBuilder
-		Dim d As DocumentFieldCollection = _application.CurrentFields(_application.ArtifactTypeID, True)
+		Dim d As DocumentFieldCollection = _application.CurrentFields(_exportFile.ArtifactTypeID, True)
 		If Not System.IO.Directory.Exists(_folderPath.Text) OrElse _folderPath.Text.Trim = String.Empty Then
 			If _folderPath.Text.Trim = String.Empty Then
 				AppendErrorMessage(msg, "Export destination folder empty")
@@ -1657,7 +1657,7 @@ Public Class ExportForm
 		Next
 		Dim selectedDataSource As Int32 = CInt(_filters.SelectedValue)
 		_dataSourceIsSet = False
-		Dim newExportFile As kCura.WinEDDS.ExportFile = _application.GetNewExportFileSettingsObject(_exportFile.ArtifactID, _exportFile.CaseInfo, _exportFile.TypeOfExport)
+		Dim newExportFile As kCura.WinEDDS.ExportFile = _application.GetNewExportFileSettingsObject(_exportFile.ArtifactID, _exportFile.CaseInfo, _exportFile.TypeOfExport, _exportFile.ArtifactTypeID)
 		If newExportFile.DataTable.Rows.Count = 0 Then
 			Dim s As New System.Text.StringBuilder
 			s.Append("There are no exportable ")

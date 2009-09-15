@@ -750,7 +750,7 @@ Namespace kCura.EDDS.WinForm
 			Dim frm As New ExportForm
 			Dim exportFile As WinEDDS.ExportFile
 			Try
-				exportFile = Me.GetNewExportFileSettingsObject(selectedFolderId, caseInfo, typeOfExport)
+				exportFile = Me.GetNewExportFileSettingsObject(selectedFolderId, caseInfo, typeOfExport, Me.ArtifactTypeID)
 				If exportFile.DataTable.Rows.Count = 0 Then
 					Dim s As New System.Text.StringBuilder
 					s.Append("There are no exportable ")
@@ -779,8 +779,8 @@ Namespace kCura.EDDS.WinForm
 			End Try
 		End Sub
 
-		Public Function GetNewExportFileSettingsObject(ByVal selectedFolderId As Int32, ByVal caseInfo As kCura.EDDS.Types.CaseInfo, ByVal typeOfExport As kCura.WinEDDS.ExportFile.ExportType) As WinEDDS.ExportFile
-			Dim exportFile As New WinEDDS.ExportFile(Me.ArtifactTypeID)
+		Public Function GetNewExportFileSettingsObject(ByVal selectedFolderId As Int32, ByVal caseInfo As kCura.EDDS.Types.CaseInfo, ByVal typeOfExport As kCura.WinEDDS.ExportFile.ExportType, ByVal artifactTypeID As Int32) As WinEDDS.ExportFile
+			Dim exportFile As New WinEDDS.ExportFile(artifactTypeID)
 			Dim searchManager As New kCura.WinEDDS.Service.SearchManager(Me.Credential, _cookieContainer)
 			Dim productionManager As New kCura.WinEDDS.Service.ProductionManager(Me.Credential, _cookieContainer)
 			exportFile.ArtifactID = selectedFolderId
@@ -791,13 +791,13 @@ Namespace kCura.EDDS.WinForm
 				Case exportFile.ExportType.Production
 					exportFile.DataTable = productionManager.RetrieveProducedByContextArtifactID(caseInfo.ArtifactID).Tables(0)
 				Case Else
-					exportFile.DataTable = Me.GetSearchExportDataSource(searchManager, caseInfo.ArtifactID, typeOfExport = exportFile.ExportType.ArtifactSearch)
+					exportFile.DataTable = Me.GetSearchExportDataSource(searchManager, caseInfo.ArtifactID, typeOfExport = exportFile.ExportType.ArtifactSearch, exportFile.ArtifactTypeID)
 			End Select
 			Dim ids As New System.Collections.ArrayList
 			For Each row As System.Data.DataRow In exportFile.DataTable.Rows
 				ids.Add(row("ArtifactID"))
 			Next
-			For Each field As DocumentField In Me.CurrentFields(Me.ArtifactTypeID, True)
+			For Each field As DocumentField In Me.CurrentFields(exportFile.ArtifactTypeID, True)
 				If field.FieldTypeID = kCura.DynamicFields.Types.FieldTypeHelper.FieldType.File Then
 					exportFile.FileField = field
 					Exit For
@@ -807,19 +807,19 @@ Namespace kCura.EDDS.WinForm
 				exportFile.ArtifactAvfLookup = New System.Collections.Specialized.HybridDictionary
 				exportFile.AllExportableFields = New WinEDDS.ViewFieldInfo() {}
 			Else
-				exportFile.ArtifactAvfLookup = searchManager.RetrieveDefaultViewFieldsForIdList(caseInfo.ArtifactID, Me.ArtifactTypeID, DirectCast(ids.ToArray(GetType(Int32)), Int32()), typeOfExport = exportFile.ExportType.Production)
-				exportFile.AllExportableFields = searchManager.RetrieveAllExportableViewFields(caseInfo.ArtifactID, Me.ArtifactTypeID)
+				exportFile.ArtifactAvfLookup = searchManager.RetrieveDefaultViewFieldsForIdList(caseInfo.ArtifactID, exportFile.ArtifactTypeID, DirectCast(ids.ToArray(GetType(Int32)), Int32()), typeOfExport = exportFile.ExportType.Production)
+				exportFile.AllExportableFields = searchManager.RetrieveAllExportableViewFields(caseInfo.ArtifactID, exportFile.ArtifactTypeID)
 			End If
 			Return exportFile
 		End Function
 
 
-		Friend Function GetSearchExportDataSource(ByVal searchManager As kCura.WinEDDS.Service.SearchManager, ByVal caseArtifactID As Int32, ByVal isArtifactSearch As Boolean) As System.Data.DataTable
+		Friend Function GetSearchExportDataSource(ByVal searchManager As kCura.WinEDDS.Service.SearchManager, ByVal caseArtifactID As Int32, ByVal isArtifactSearch As Boolean, ByVal artifactType As Int32) As System.Data.DataTable
 			Dim searchExportDataSet As System.Data.DataSet
 			If isArtifactSearch Then
-				searchExportDataSet = searchManager.RetrieveViewsByContextArtifactID(caseArtifactID, Me.ArtifactTypeID, True)
+				searchExportDataSet = searchManager.RetrieveViewsByContextArtifactID(caseArtifactID, artifactType, True)
 			Else
-				searchExportDataSet = searchManager.RetrieveViewsByContextArtifactID(caseArtifactID, Me.ArtifactTypeID, False)
+				searchExportDataSet = searchManager.RetrieveViewsByContextArtifactID(caseArtifactID, artifactType, False)
 			End If
 			Return searchExportDataSet.Tables(0)
 		End Function
