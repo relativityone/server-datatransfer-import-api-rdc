@@ -456,7 +456,7 @@ Namespace kCura.EDDS.WinForm
 				_importMenuSendEmailNotificationItem.Visible = False
 				_MenuItem3.Visible = False
 			Else
-				_importMenuCheckErrorsItem.Checked = ImageLoadFile.SendEmailOnLoadCompletion
+				_importMenuSendEmailNotificationItem.Checked = ImageLoadFile.SendEmailOnLoadCompletion
 			End If
 			_overwriteDropdown.SelectedItem = Me.GetOverwriteDropdownItem(ImageLoadFile.Overwrite)
 			Me.Cursor = Cursors.Default
