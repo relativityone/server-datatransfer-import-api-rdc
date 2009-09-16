@@ -11,6 +11,7 @@ Namespace kCura.WinEDDS.Service
 
 		Public Function Create(ByVal caseContextArtifactID As Integer, ByVal parentArtifactID As Integer, ByVal name As String) As Integer Implements IHierarchicArtifactManager.Create
 			Dim code As kCura.EDDS.WebAPI.CodeManagerBase.Code = _codeManager.CreateNewCodeDTOProxy(_codeTypeID, name, 1, parentArtifactID)
+
 			Dim o As Object = _codeManager.Create(caseContextArtifactID, code)
 			If TypeOf o Is Int32 Then
 				Return CType(o, Int32)
