@@ -1325,9 +1325,15 @@ Namespace kCura.EDDS.WinForm
 		Private Sub _loginForm_OK_Click(ByVal cred As System.Net.NetworkCredential, ByVal openCaseSelector As Boolean) Handles _loginForm.OK_Click
 			_loginForm.Close()
 			Dim userManager As New kCura.WinEDDS.Service.UserManager(cred, _cookieContainer)
+			Dim relativityManager As New kCura.WinEDDS.Service.RelativityManager(cred, _cookieContainer)
 			Try
 				CheckVersion(cred)
 				If userManager.Login(cred.UserName, cred.Password) Then
+
+					Dim locale As System.Globalization.CultureInfo = System.Globalization.CultureInfo.CurrentCulture
+					locale.NumberFormat.CurrencySymbol = relativityManager.RetrieveCurrencySymbol
+					System.Threading.Thread.CurrentThread.CurrentCulture = locale
+
 					_credential = cred
 					kCura.WinEDDS.Service.Settings.AuthenticationToken = userManager.GetLatestAuthenticationToken()
 					If openCaseSelector Then OpenCase()
