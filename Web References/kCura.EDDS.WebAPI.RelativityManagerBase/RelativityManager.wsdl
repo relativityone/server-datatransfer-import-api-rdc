@@ -3,6 +3,16 @@
   <types>
     <s:schema elementFormDefault="qualified" targetNamespace="http://www.kCura.com/EDDS/RelativityManager">
       <s:import namespace="http://www.w3.org/2001/XMLSchema" />
+      <s:element name="RetrieveCurrencySymbol">
+        <s:complexType />
+      </s:element>
+      <s:element name="RetrieveCurrencySymbolResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="RetrieveCurrencySymbolResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
       <s:element name="RetrieveRelativityVersion">
         <s:complexType />
       </s:element>
@@ -96,6 +106,12 @@
       </s:element>
     </s:schema>
   </types>
+  <message name="RetrieveCurrencySymbolSoapIn">
+    <part name="parameters" element="s0:RetrieveCurrencySymbol" />
+  </message>
+  <message name="RetrieveCurrencySymbolSoapOut">
+    <part name="parameters" element="s0:RetrieveCurrencySymbolResponse" />
+  </message>
   <message name="RetrieveRelativityVersionSoapIn">
     <part name="parameters" element="s0:RetrieveRelativityVersion" />
   </message>
@@ -145,6 +161,10 @@
     <part name="parameters" element="s0:ReceiveTextResponse" />
   </message>
   <portType name="RelativityManagerSoap">
+    <operation name="RetrieveCurrencySymbol">
+      <input message="s0:RetrieveCurrencySymbolSoapIn" />
+      <output message="s0:RetrieveCurrencySymbolSoapOut" />
+    </operation>
     <operation name="RetrieveRelativityVersion">
       <input message="s0:RetrieveRelativityVersionSoapIn" />
       <output message="s0:RetrieveRelativityVersionSoapOut" />
@@ -180,6 +200,15 @@
   </portType>
   <binding name="RelativityManagerSoap" type="s0:RelativityManagerSoap">
     <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document" />
+    <operation name="RetrieveCurrencySymbol">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/RelativityManager/RetrieveCurrencySymbol" style="document" />
+      <input>
+        <soap:body use="literal" />
+      </input>
+      <output>
+        <soap:body use="literal" />
+      </output>
+    </operation>
     <operation name="RetrieveRelativityVersion">
       <soap:operation soapAction="http://www.kCura.com/EDDS/RelativityManager/RetrieveRelativityVersion" style="document" />
       <input>
