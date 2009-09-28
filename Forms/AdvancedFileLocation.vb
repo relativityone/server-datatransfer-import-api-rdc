@@ -168,7 +168,11 @@ Namespace kCura.EDDS.WinForm
 				Dim i As Int32
 				Dim foundIt As Boolean = False
 				For i = 0 To _repositories.Items.Count - 1
-					If _repositories.Items(i).ToString.ToLower = path.ToLower Then
+					Dim repoStr As String = _repositories.Items(i).ToString
+					Dim pathStr As String = path
+					If Not repoStr.EndsWith("\") Then repoStr &= "\"
+					If Not pathStr.EndsWith("\") Then pathStr &= "\"
+					If repoStr.ToLower = pathStr.ToLower Then
 						_repositories.SelectedIndex = i
 						foundIt = True
 						Exit For
