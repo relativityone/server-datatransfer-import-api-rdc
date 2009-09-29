@@ -1330,7 +1330,7 @@ Namespace kCura.EDDS.WinForm
 				CheckVersion(cred)
 				If userManager.Login(cred.UserName, cred.Password) Then
 
-					Dim locale As System.Globalization.CultureInfo = System.Globalization.CultureInfo.CurrentCulture
+					Dim locale As New System.Globalization.CultureInfo(System.Globalization.CultureInfo.CurrentCulture.LCID, True)
 					locale.NumberFormat.CurrencySymbol = relativityManager.RetrieveCurrencySymbol
 					System.Threading.Thread.CurrentThread.CurrentCulture = locale
 
