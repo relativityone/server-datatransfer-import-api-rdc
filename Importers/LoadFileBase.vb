@@ -309,7 +309,7 @@ Namespace kCura.WinEDDS
 					value = ""
 				End Try
 			End If
-			If field.FieldCategoryID = kCura.DynamicFields.Types.FieldCategory.FullText Then
+			If (field.FieldCategoryID = kCura.DynamicFields.Types.FieldCategory.FullText AndAlso Not _fullTextColumnMapsToFileLocation) OrElse (field.FieldTypeID = kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Text AndAlso Not field.FieldCategoryID = kCura.DynamicFields.Types.FieldCategory.FullText) Then
 				value = value.Replace(NewlineProxy, Microsoft.VisualBasic.ControlChars.NewLine)
 			End If
 			SetFieldValue(field, value, column, identityValue)
