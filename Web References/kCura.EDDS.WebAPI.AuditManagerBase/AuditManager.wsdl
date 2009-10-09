@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<definitions xmlns:s1="http://microsoft.com/wsdl/types/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:s0="http://www.kCura.com/EDDS/AuditManager" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" targetNamespace="http://www.kCura.com/EDDS/AuditManager" xmlns="http://schemas.xmlsoap.org/wsdl/">
-  <types>
+<wsdl:definitions xmlns:s1="http://microsoft.com/wsdl/types/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tns="http://www.kCura.com/EDDS/AuditManager" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" targetNamespace="http://www.kCura.com/EDDS/AuditManager" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
     <s:schema elementFormDefault="qualified" targetNamespace="http://www.kCura.com/EDDS/AuditManager">
       <s:import namespace="http://microsoft.com/wsdl/types/" />
       <s:element name="CreateAuditRecord">
@@ -27,13 +27,13 @@
             <s:element minOccurs="1" maxOccurs="1" name="appID" type="s:int" />
             <s:element minOccurs="0" maxOccurs="1" name="runId" type="s:string" />
             <s:element minOccurs="1" maxOccurs="1" name="isFatalError" type="s:boolean" />
-            <s:element minOccurs="0" maxOccurs="1" name="importStats" type="s0:ImageImportStatistics" />
+            <s:element minOccurs="0" maxOccurs="1" name="importStats" type="tns:ImageImportStatistics" />
           </s:sequence>
         </s:complexType>
       </s:element>
       <s:complexType name="ImageImportStatistics">
         <s:complexContent mixed="false">
-          <s:extension base="s0:ImportStatistics">
+          <s:extension base="tns:ImportStatistics">
             <s:sequence>
               <s:element minOccurs="1" maxOccurs="1" name="ExtractedTextReplaced" type="s:boolean" />
               <s:element minOccurs="1" maxOccurs="1" name="SupportImageAutoNumbering" type="s:boolean" />
@@ -44,8 +44,8 @@
       </s:complexType>
       <s:complexType name="ImportStatistics" abstract="true">
         <s:sequence>
-          <s:element minOccurs="1" maxOccurs="1" name="RepositoryConnection" type="s0:RepositoryConnectionType" />
-          <s:element minOccurs="1" maxOccurs="1" name="Overwrite" type="s0:OverwriteType" />
+          <s:element minOccurs="1" maxOccurs="1" name="RepositoryConnection" type="tns:RepositoryConnectionType" />
+          <s:element minOccurs="1" maxOccurs="1" name="Overwrite" type="tns:OverwriteType" />
           <s:element minOccurs="1" maxOccurs="1" name="OverlayIdentifierFieldArtifactID" type="s:int" />
           <s:element minOccurs="1" maxOccurs="1" name="DestinationFolderArtifactID" type="s:int" />
           <s:element minOccurs="0" maxOccurs="1" name="LoadFileName" type="s:string" />
@@ -88,13 +88,13 @@
             <s:element minOccurs="1" maxOccurs="1" name="appID" type="s:int" />
             <s:element minOccurs="0" maxOccurs="1" name="runId" type="s:string" />
             <s:element minOccurs="1" maxOccurs="1" name="isFatalError" type="s:boolean" />
-            <s:element minOccurs="0" maxOccurs="1" name="importStats" type="s0:ObjectImportStatistics" />
+            <s:element minOccurs="0" maxOccurs="1" name="importStats" type="tns:ObjectImportStatistics" />
           </s:sequence>
         </s:complexType>
       </s:element>
       <s:complexType name="ObjectImportStatistics">
         <s:complexContent mixed="false">
-          <s:extension base="s0:ImportStatistics">
+          <s:extension base="tns:ImportStatistics">
             <s:sequence>
               <s:element minOccurs="1" maxOccurs="1" name="ArtifactTypeID" type="s:int" />
               <s:element minOccurs="1" maxOccurs="1" name="Delimiter" type="s1:char" />
@@ -108,7 +108,7 @@
               <s:element minOccurs="1" maxOccurs="1" name="ExtractedTextPointsToFile" type="s:boolean" />
               <s:element minOccurs="1" maxOccurs="1" name="NumberOfChoicesCreated" type="s:int" />
               <s:element minOccurs="1" maxOccurs="1" name="NumberOfFoldersCreated" type="s:int" />
-              <s:element minOccurs="0" maxOccurs="1" name="FieldsMapped" type="s0:ArrayOfArrayOfInt" />
+              <s:element minOccurs="0" maxOccurs="1" name="FieldsMapped" type="tns:ArrayOfArrayOfInt" />
               <s:element minOccurs="1" maxOccurs="1" name="NestedValueDelimiter" type="s1:char" />
             </s:sequence>
           </s:extension>
@@ -116,7 +116,7 @@
       </s:complexType>
       <s:complexType name="ArrayOfArrayOfInt">
         <s:sequence>
-          <s:element minOccurs="0" maxOccurs="unbounded" name="ArrayOfInt" nillable="true" type="s0:ArrayOfInt" />
+          <s:element minOccurs="0" maxOccurs="unbounded" name="ArrayOfInt" nillable="true" type="tns:ArrayOfInt" />
         </s:sequence>
       </s:complexType>
       <s:complexType name="ArrayOfInt">
@@ -136,14 +136,14 @@
           <s:sequence>
             <s:element minOccurs="1" maxOccurs="1" name="appID" type="s:int" />
             <s:element minOccurs="1" maxOccurs="1" name="isFatalError" type="s:boolean" />
-            <s:element minOccurs="0" maxOccurs="1" name="exportStats" type="s0:ExportStatistics" />
+            <s:element minOccurs="0" maxOccurs="1" name="exportStats" type="tns:ExportStatistics" />
           </s:sequence>
         </s:complexType>
       </s:element>
       <s:complexType name="ExportStatistics">
         <s:sequence>
           <s:element minOccurs="0" maxOccurs="1" name="Type" type="s:string" />
-          <s:element minOccurs="0" maxOccurs="1" name="Fields" type="s0:ArrayOfInt" />
+          <s:element minOccurs="0" maxOccurs="1" name="Fields" type="tns:ArrayOfInt" />
           <s:element minOccurs="0" maxOccurs="1" name="DestinationFilesystemFolder" type="s:string" />
           <s:element minOccurs="1" maxOccurs="1" name="OverwriteFiles" type="s:boolean" />
           <s:element minOccurs="0" maxOccurs="1" name="VolumePrefix" type="s:string" />
@@ -162,10 +162,10 @@
           <s:element minOccurs="1" maxOccurs="1" name="TextAndNativeFilesNamedAfterFieldID" type="s:int" />
           <s:element minOccurs="1" maxOccurs="1" name="AppendOriginalFilenames" type="s:boolean" />
           <s:element minOccurs="1" maxOccurs="1" name="ExportImages" type="s:boolean" />
-          <s:element minOccurs="1" maxOccurs="1" name="ImageLoadFileFormat" type="s0:ImageLoadFileFormatType" />
-          <s:element minOccurs="1" maxOccurs="1" name="ImageFileType" type="s0:ImageFileExportType" />
+          <s:element minOccurs="1" maxOccurs="1" name="ImageLoadFileFormat" type="tns:ImageLoadFileFormatType" />
+          <s:element minOccurs="1" maxOccurs="1" name="ImageFileType" type="tns:ImageFileExportType" />
           <s:element minOccurs="1" maxOccurs="1" name="ExportNativeFiles" type="s:boolean" />
-          <s:element minOccurs="1" maxOccurs="1" name="MetadataLoadFileFormat" type="s0:LoadFileFormat" />
+          <s:element minOccurs="1" maxOccurs="1" name="MetadataLoadFileFormat" type="tns:LoadFileFormat" />
           <s:element minOccurs="1" maxOccurs="1" name="MetadataLoadFileEncodingCodePage" type="s:int" />
           <s:element minOccurs="1" maxOccurs="1" name="ExportTextFieldAsFiles" type="s:boolean" />
           <s:element minOccurs="1" maxOccurs="1" name="ExportedTextFileEncodingCodePage" type="s:int" />
@@ -177,8 +177,8 @@
           <s:element minOccurs="1" maxOccurs="1" name="WarningCount" type="s:int" />
           <s:element minOccurs="1" maxOccurs="1" name="DocumentExportCount" type="s:int" />
           <s:element minOccurs="1" maxOccurs="1" name="FileExportCount" type="s:int" />
-          <s:element minOccurs="1" maxOccurs="1" name="ImagesToExport" type="s0:ImagesToExportType" />
-          <s:element minOccurs="0" maxOccurs="1" name="ProductionPrecedence" type="s0:ArrayOfInt" />
+          <s:element minOccurs="1" maxOccurs="1" name="ImagesToExport" type="tns:ImagesToExportType" />
+          <s:element minOccurs="0" maxOccurs="1" name="ProductionPrecedence" type="tns:ArrayOfInt" />
           <s:element minOccurs="1" maxOccurs="1" name="DataSourceArtifactID" type="s:int" />
           <s:element minOccurs="1" maxOccurs="1" name="SourceRootFolderID" type="s:int" />
           <s:element minOccurs="1" maxOccurs="1" name="RunTimeInMilliseconds" type="s:int" />
@@ -230,91 +230,92 @@
         <s:restriction base="s:unsignedShort" />
       </s:simpleType>
     </s:schema>
-  </types>
-  <message name="CreateAuditRecordSoapIn">
-    <part name="parameters" element="s0:CreateAuditRecord" />
-  </message>
-  <message name="CreateAuditRecordSoapOut">
-    <part name="parameters" element="s0:CreateAuditRecordResponse" />
-  </message>
-  <message name="AuditImageImportSoapIn">
-    <part name="parameters" element="s0:AuditImageImport" />
-  </message>
-  <message name="AuditImageImportSoapOut">
-    <part name="parameters" element="s0:AuditImageImportResponse" />
-  </message>
-  <message name="AuditObjectImportSoapIn">
-    <part name="parameters" element="s0:AuditObjectImport" />
-  </message>
-  <message name="AuditObjectImportSoapOut">
-    <part name="parameters" element="s0:AuditObjectImportResponse" />
-  </message>
-  <message name="AuditExportSoapIn">
-    <part name="parameters" element="s0:AuditExport" />
-  </message>
-  <message name="AuditExportSoapOut">
-    <part name="parameters" element="s0:AuditExportResponse" />
-  </message>
-  <portType name="AuditManagerSoap">
-    <operation name="CreateAuditRecord">
-      <input message="s0:CreateAuditRecordSoapIn" />
-      <output message="s0:CreateAuditRecordSoapOut" />
-    </operation>
-    <operation name="AuditImageImport">
-      <input message="s0:AuditImageImportSoapIn" />
-      <output message="s0:AuditImageImportSoapOut" />
-    </operation>
-    <operation name="AuditObjectImport">
-      <input message="s0:AuditObjectImportSoapIn" />
-      <output message="s0:AuditObjectImportSoapOut" />
-    </operation>
-    <operation name="AuditExport">
-      <input message="s0:AuditExportSoapIn" />
-      <output message="s0:AuditExportSoapOut" />
-    </operation>
-  </portType>
-  <binding name="AuditManagerSoap" type="s0:AuditManagerSoap">
+  </wsdl:types>
+  <wsdl:message name="CreateAuditRecordSoapIn">
+    <wsdl:part name="parameters" element="tns:CreateAuditRecord" />
+  </wsdl:message>
+  <wsdl:message name="CreateAuditRecordSoapOut">
+    <wsdl:part name="parameters" element="tns:CreateAuditRecordResponse" />
+  </wsdl:message>
+  <wsdl:message name="AuditImageImportSoapIn">
+    <wsdl:part name="parameters" element="tns:AuditImageImport" />
+  </wsdl:message>
+  <wsdl:message name="AuditImageImportSoapOut">
+    <wsdl:part name="parameters" element="tns:AuditImageImportResponse" />
+  </wsdl:message>
+  <wsdl:message name="AuditObjectImportSoapIn">
+    <wsdl:part name="parameters" element="tns:AuditObjectImport" />
+  </wsdl:message>
+  <wsdl:message name="AuditObjectImportSoapOut">
+    <wsdl:part name="parameters" element="tns:AuditObjectImportResponse" />
+  </wsdl:message>
+  <wsdl:message name="AuditExportSoapIn">
+    <wsdl:part name="parameters" element="tns:AuditExport" />
+  </wsdl:message>
+  <wsdl:message name="AuditExportSoapOut">
+    <wsdl:part name="parameters" element="tns:AuditExportResponse" />
+  </wsdl:message>
+  <wsdl:portType name="AuditManagerSoap">
+    <wsdl:operation name="CreateAuditRecord">
+      <wsdl:input message="tns:CreateAuditRecordSoapIn" />
+      <wsdl:output message="tns:CreateAuditRecordSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="AuditImageImport">
+      <wsdl:input message="tns:AuditImageImportSoapIn" />
+      <wsdl:output message="tns:AuditImageImportSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="AuditObjectImport">
+      <wsdl:input message="tns:AuditObjectImportSoapIn" />
+      <wsdl:output message="tns:AuditObjectImportSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="AuditExport">
+      <wsdl:input message="tns:AuditExportSoapIn" />
+      <wsdl:output message="tns:AuditExportSoapOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="AuditManagerSoap" type="tns:AuditManagerSoap">
     <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document" />
-    <operation name="CreateAuditRecord">
+    <wsdl:operation name="CreateAuditRecord">
       <soap:operation soapAction="http://www.kCura.com/EDDS/AuditManager/CreateAuditRecord" style="document" />
-      <input>
+      <wsdl:input>
         <soap:body use="literal" />
-      </input>
-      <output>
+      </wsdl:input>
+      <wsdl:output>
         <soap:body use="literal" />
-      </output>
-    </operation>
-    <operation name="AuditImageImport">
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="AuditImageImport">
       <soap:operation soapAction="http://www.kCura.com/EDDS/AuditManager/AuditImageImport" style="document" />
-      <input>
+      <wsdl:input>
         <soap:body use="literal" />
-      </input>
-      <output>
+      </wsdl:input>
+      <wsdl:output>
         <soap:body use="literal" />
-      </output>
-    </operation>
-    <operation name="AuditObjectImport">
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="AuditObjectImport">
       <soap:operation soapAction="http://www.kCura.com/EDDS/AuditManager/AuditObjectImport" style="document" />
-      <input>
+      <wsdl:input>
         <soap:body use="literal" />
-      </input>
-      <output>
+      </wsdl:input>
+      <wsdl:output>
         <soap:body use="literal" />
-      </output>
-    </operation>
-    <operation name="AuditExport">
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="AuditExport">
       <soap:operation soapAction="http://www.kCura.com/EDDS/AuditManager/AuditExport" style="document" />
-      <input>
+      <wsdl:input>
         <soap:body use="literal" />
-      </input>
-      <output>
+      </wsdl:input>
+      <wsdl:output>
         <soap:body use="literal" />
-      </output>
-    </operation>
-  </binding>
-  <service name="AuditManager">
-    <port name="AuditManagerSoap" binding="s0:AuditManagerSoap">
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="AuditManager">
+    <documentation xmlns="http://schemas.xmlsoap.org/wsdl/" />
+    <wsdl:port name="AuditManagerSoap" binding="tns:AuditManagerSoap">
       <soap:address location="http://localhost/EDDSWebAPI/AuditManager.asmx" />
-    </port>
-  </service>
-</definitions>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>
