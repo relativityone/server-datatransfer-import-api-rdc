@@ -826,6 +826,20 @@ Namespace kCura.EDDS.WinForm
 			Return exportFile
 		End Function
 
+		Public Sub NewApplicationFile(ByVal caseInfo As kCura.EDDS.Types.CaseInfo)
+			CursorWait()
+			If Not Me.IsConnected(caseInfo.ArtifactID, Me.ArtifactTypeID) Then
+				CursorDefault()
+				Exit Sub
+			End If
+			Dim applicationForm As New ApplicationFileForm
+			applicationForm.Application = Me
+			applicationForm.CaseInfo = caseInfo
+			applicationForm.CookieContainer = Me.CookieContainer
+			applicationForm.Credentials = Me.Credential
+			applicationForm.Show()
+			CursorDefault()
+		End Sub
 
 		Friend Function GetSearchExportDataSource(ByVal searchManager As kCura.WinEDDS.Service.SearchManager, ByVal caseArtifactID As Int32, ByVal isArtifactSearch As Boolean, ByVal artifactType As Int32) As System.Data.DataTable
 			Dim searchExportDataSet As System.Data.DataSet

@@ -297,6 +297,16 @@
                     BuildAction = "EmbeddedResource"
                 />
                 <File
+                    RelPath = "Forms\ApplicationFileForm.vb"
+                    SubType = "Form"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Forms\ApplicationFileForm.resx"
+                    DependentUpon = "ApplicationFileForm.vb"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
                     RelPath = "Forms\CaseSelectForm.vb"
                     SubType = "Form"
                     BuildAction = "Compile"
@@ -378,7 +388,7 @@
                 />
                 <File
                     RelPath = "Forms\LoadFilePreviewForm.vb"
-                    SubType = "Component"
+                    SubType = "Form"
                     BuildAction = "Compile"
                 />
                 <File

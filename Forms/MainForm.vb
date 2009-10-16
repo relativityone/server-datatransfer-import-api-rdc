@@ -61,6 +61,7 @@ Namespace kCura.EDDS.WinForm
     Friend WithEvents _objectTypeDropDown As System.Windows.Forms.ComboBox
 		Friend WithEvents _optionsMenuCheckConnectivityItem As System.Windows.Forms.MenuItem
 		Friend WithEvents _exportObjectsMenuItem As System.Windows.Forms.MenuItem
+		Friend WithEvents ToolsImportApplicationFileMenu As System.Windows.Forms.MenuItem
 		<System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
 			Me.components = New System.ComponentModel.Container
 			Dim resources As System.Resources.ResourceManager = New System.Resources.ResourceManager(GetType(MainForm))
@@ -75,6 +76,7 @@ Namespace kCura.EDDS.WinForm
 			Me.ToolsImportImageFileMenu = New System.Windows.Forms.MenuItem
 			Me.ToolsImportLoadFileMenu = New System.Windows.Forms.MenuItem
 			Me.ToolsImportProductionFileMenu = New System.Windows.Forms.MenuItem
+			Me.ToolsImportApplicationFileMenu = New System.Windows.Forms.MenuItem
 			Me.ToolsImportFileDirectoryMenu = New System.Windows.Forms.MenuItem
 			Me.ToolsImportOutlookMenu = New System.Windows.Forms.MenuItem
 			Me.ToolsImportSQLDatabaseMenu = New System.Windows.Forms.MenuItem
@@ -154,7 +156,7 @@ Namespace kCura.EDDS.WinForm
 			Me.ImportMenu.Enabled = False
 			Me.EnhancedMenuProvider.SetImageIndex(Me.ImportMenu, -1)
 			Me.ImportMenu.Index = 0
-			Me.ImportMenu.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.ToolsImportImageFileMenu, Me.ToolsImportLoadFileMenu, Me.ToolsImportProductionFileMenu, Me.ToolsImportFileDirectoryMenu, Me.ToolsImportOutlookMenu, Me.ToolsImportSQLDatabaseMenu})
+			Me.ImportMenu.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.ToolsImportImageFileMenu, Me.ToolsImportLoadFileMenu, Me.ToolsImportProductionFileMenu, Me.ToolsImportApplicationFileMenu, Me.ToolsImportFileDirectoryMenu, Me.ToolsImportOutlookMenu, Me.ToolsImportSQLDatabaseMenu})
 			Me.ImportMenu.OwnerDraw = True
 			Me.ImportMenu.Text = "&Import"
 			'
@@ -182,10 +184,18 @@ Namespace kCura.EDDS.WinForm
 			Me.ToolsImportProductionFileMenu.Shortcut = System.Windows.Forms.Shortcut.CtrlP
 			Me.ToolsImportProductionFileMenu.Text = "Production File..."
 			'
+			'ToolsImportApplicationFileMenu
+			'
+			Me.EnhancedMenuProvider.SetImageIndex(Me.ToolsImportApplicationFileMenu, -1)
+			Me.ToolsImportApplicationFileMenu.Index = 3
+			Me.ToolsImportApplicationFileMenu.OwnerDraw = True
+			Me.ToolsImportApplicationFileMenu.Shortcut = System.Windows.Forms.Shortcut.CtrlA
+			Me.ToolsImportApplicationFileMenu.Text = "&Application File"
+			'
 			'ToolsImportFileDirectoryMenu
 			'
 			Me.EnhancedMenuProvider.SetImageIndex(Me.ToolsImportFileDirectoryMenu, -1)
-			Me.ToolsImportFileDirectoryMenu.Index = 3
+			Me.ToolsImportFileDirectoryMenu.Index = 4
 			Me.ToolsImportFileDirectoryMenu.OwnerDraw = True
 			Me.ToolsImportFileDirectoryMenu.Text = "&File Directory..."
 			Me.ToolsImportFileDirectoryMenu.Visible = False
@@ -193,7 +203,7 @@ Namespace kCura.EDDS.WinForm
 			'ToolsImportOutlookMenu
 			'
 			Me.EnhancedMenuProvider.SetImageIndex(Me.ToolsImportOutlookMenu, -1)
-			Me.ToolsImportOutlookMenu.Index = 4
+			Me.ToolsImportOutlookMenu.Index = 5
 			Me.ToolsImportOutlookMenu.OwnerDraw = True
 			Me.ToolsImportOutlookMenu.Text = "&Outlook..."
 			Me.ToolsImportOutlookMenu.Visible = False
@@ -201,7 +211,7 @@ Namespace kCura.EDDS.WinForm
 			'ToolsImportSQLDatabaseMenu
 			'
 			Me.EnhancedMenuProvider.SetImageIndex(Me.ToolsImportSQLDatabaseMenu, -1)
-			Me.ToolsImportSQLDatabaseMenu.Index = 5
+			Me.ToolsImportSQLDatabaseMenu.Index = 6
 			Me.ToolsImportSQLDatabaseMenu.OwnerDraw = True
 			Me.ToolsImportSQLDatabaseMenu.Text = "&SQL Database..."
 			Me.ToolsImportSQLDatabaseMenu.Visible = False
@@ -433,19 +443,19 @@ Namespace kCura.EDDS.WinForm
       Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
       _application.NewOutlookImport(_application.SelectedCaseFolderID, _application.SelectedCaseInfo)
       Me.Cursor = System.Windows.Forms.Cursors.Default
-    End Sub
+		End Sub
 
-    Private Sub ToolsExportProductionMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ToolsExportProductionMenu.Click
-      Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
-      _application.NewProductionExport(_application.SelectedCaseInfo)
-      Me.Cursor = System.Windows.Forms.Cursors.Default
-    End Sub
+		Private Sub ToolsExportProductionMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ToolsExportProductionMenu.Click
+			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
+			_application.NewProductionExport(_application.SelectedCaseInfo)
+			Me.Cursor = System.Windows.Forms.Cursors.Default
+		End Sub
 
-    Private Sub ToolsExportSearchMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ToolsExportSearchMenu.Click
-      Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
-      _application.NewSearchExport(_application.SelectedCaseInfo.RootFolderID, _application.SelectedCaseInfo, kCura.WinEDDS.ExportFile.ExportType.ArtifactSearch)
-      Me.Cursor = System.Windows.Forms.Cursors.Default
-    End Sub
+		Private Sub ToolsExportSearchMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ToolsExportSearchMenu.Click
+			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
+			_application.NewSearchExport(_application.SelectedCaseInfo.RootFolderID, _application.SelectedCaseInfo, kCura.WinEDDS.ExportFile.ExportType.ArtifactSearch)
+			Me.Cursor = System.Windows.Forms.Cursors.Default
+		End Sub
 
 		Private Sub _exportObjectsMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _exportObjectsMenuItem.Click
 			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
@@ -540,6 +550,12 @@ Namespace kCura.EDDS.WinForm
 
 		Private Sub _optionsMenuCheckConnectivityItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _optionsMenuCheckConnectivityItem.Click
 			_application.QueryConnectivity()
+		End Sub
+
+		Private Sub ToolsImportApplicationFileMenu_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles ToolsImportApplicationFileMenu.Click
+			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
+			_application.NewApplicationFile(_application.SelectedCaseInfo)
+			Me.Cursor = System.Windows.Forms.Cursors.Default
 		End Sub
 
 	End Class
