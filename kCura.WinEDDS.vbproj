@@ -558,6 +558,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Service\TemplateManager.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Service\UserManager.vb"
                     SubType = "code"
                     BuildAction = "Compile"
@@ -1060,6 +1065,33 @@
                 <Folder
                     RelPath = "Web References\kCura.EDDS.WebAPI.SearchManagerBase\"
                     WebReferenceUrl = "http://localhost/EDDSWebAPI/SearchManager.asmx"
+                    UrlBehavior = "Static"
+                />
+                <File
+                    RelPath = "Web References\kCura.EDDS.WebAPI.TemplateManagerBase\Reference.map"
+                    BuildAction = "None"
+                    Generator = "MSDiscoCodeGenerator"
+                    LastGenOutput = "Reference.vb"
+                />
+                <File
+                    RelPath = "Web References\kCura.EDDS.WebAPI.TemplateManagerBase\Reference.vb"
+                    DependentUpon = "Reference.map"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                    DesignTime = "True"
+                    AutoGen = "True"
+                />
+                <File
+                    RelPath = "Web References\kCura.EDDS.WebAPI.TemplateManagerBase\TemplateManager.disco"
+                    BuildAction = "None"
+                />
+                <File
+                    RelPath = "Web References\kCura.EDDS.WebAPI.TemplateManagerBase\TemplateManager.wsdl"
+                    BuildAction = "None"
+                />
+                <Folder
+                    RelPath = "Web References\kCura.EDDS.WebAPI.TemplateManagerBase\"
+                    WebReferenceUrl = "http://localhost/EDDSWebAPI/TemplateManager.asmx"
                     UrlBehavior = "Static"
                 />
                 <File
