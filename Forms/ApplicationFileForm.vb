@@ -155,9 +155,9 @@ Namespace kCura.EDDS.WinForm
 			'
 			Me.ApplicationName.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
 									Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-			Me.ApplicationName.Enabled = False
 			Me.ApplicationName.Location = New System.Drawing.Point(72, 24)
 			Me.ApplicationName.Name = "ApplicationName"
+			Me.ApplicationName.ReadOnly = True
 			Me.ApplicationName.Size = New System.Drawing.Size(624, 20)
 			Me.ApplicationName.TabIndex = 3
 			Me.ApplicationName.Text = ""
@@ -166,9 +166,9 @@ Namespace kCura.EDDS.WinForm
 			'
 			Me.ApplicationVersion.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
 									Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-			Me.ApplicationVersion.Enabled = False
 			Me.ApplicationVersion.Location = New System.Drawing.Point(72, 56)
 			Me.ApplicationVersion.Name = "ApplicationVersion"
+			Me.ApplicationVersion.ReadOnly = True
 			Me.ApplicationVersion.Size = New System.Drawing.Size(624, 20)
 			Me.ApplicationVersion.TabIndex = 2
 			Me.ApplicationVersion.Text = ""
@@ -277,7 +277,25 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 		Private Sub MenuImport_ImportApplication_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles MenuImport_ImportApplication.Click
-			MsgBox("Write this.")
+			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
+
+			Dim installationParameters As New kCura.EDDS.WebAPI.TemplateManagerBase.ApplicationInstallationParameters
+			installationParameters.CaseId = Me.CaseInfo.ArtifactID
+
+			Dim applicationDeploymentSystem As New WinEDDS.Service.TemplateManager(Me.Credentials, Me.CookieContainer)
+			Dim installationResult As kCura.EDDS.WebAPI.TemplateManagerBase.ApplicationInstallationResult = applicationDeploymentSystem.InstallTemplate(_document, installationParameters)
+
+			If installationResult.Success Then
+				Dim installedArtifacts As New System.Text.StringBuilder
+				For Each applicationArtifact As kCura.EDDS.WebAPI.TemplateManagerBase.ApplicationArtifact In installationResult.ApplicationArtifacts
+					installedArtifacts.AppendFormat(System.Globalization.CultureInfo.CurrentCulture, "Created {0}: {1} (ID = {2}){3}", applicationArtifact.Type, applicationArtifact.Name, applicationArtifact.ArtifactId, System.Environment.NewLine)
+				Next
+				MsgBox(String.Format(System.Globalization.CultureInfo.CurrentCulture, "Installation successful.{0}{0}{1}", System.Environment.NewLine, installedArtifacts))
+			Else
+				MsgBox(String.Format(System.Globalization.CultureInfo.CurrentCulture, "Error installing Application: {0}", installationResult.ExceptionMessage))
+			End If
+
+			Me.Cursor = System.Windows.Forms.Cursors.Default
 		End Sub
 
 		Private Sub OpenFileDialog_FileOk(ByVal sender As Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles OpenFileDialog.FileOk
@@ -316,6 +334,7 @@ Namespace kCura.EDDS.WinForm
 
 			If fileIsValid Then
 				FilePath.Text = OpenFileDialog.FileName
+				_document = document
 			Else
 				MsgBox(String.Format(System.Globalization.CultureInfo.CurrentCulture, "Invalid File: {0}", errorMessage))
 			End If
@@ -369,6 +388,7 @@ Namespace kCura.EDDS.WinForm
 		Private _caseInfo As kCura.EDDS.Types.CaseInfo
 		Private _cookieContainer As System.Net.CookieContainer
 		Private _credentials As System.Net.NetworkCredential
+		Private _document As Xml.XmlDocument
 
 #End Region
 
