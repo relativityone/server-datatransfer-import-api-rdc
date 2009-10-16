@@ -281,26 +281,44 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 		Private Sub OpenFileDialog_FileOk(ByVal sender As Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles OpenFileDialog.FileOk
-			'load up the values for the app name, app version, app objects and app tabs
 			Dim document As New Xml.XmlDocument
-			document.Load(OpenFileDialog.FileName)
-			ApplicationName.Text = document.SelectSingleNode("/Application/Name").InnerText
-			ApplicationVersion.Text = document.SelectSingleNode("/Application/Version").InnerText
+			Dim fileIsValid As Boolean
+			Dim errorMessage As String = String.Empty
 
-			Dim nodes As Xml.XmlNodeList
-			ObjectList.Items.Clear()
-			nodes = document.SelectNodes("/Application/Objects/Object/Name")
-			For Each node As Xml.XmlNode In nodes
-				ObjectList.Items.Add(node.InnerText)
-			Next
+			fileIsValid = LoadFileIntoXML(document, OpenFileDialog.FileName)
 
-			TabList.Items.Clear()
-			nodes = document.SelectNodes("/Application/ExternalTabs/ExternalTab/Name")
-			For Each node As Xml.XmlNode In nodes
-				TabList.Items.Add(node.InnerText)
-			Next
+			If fileIsValid Then
+				'check the name
+				fileIsValid = LoadApplicationNameFromNode(document.SelectSingleNode("/Application/Name"))
+			Else
+				errorMessage = "Invalid file type.  Files must be xml files."
+			End If
 
-			FilePath.Text = OpenFileDialog.FileName
+			If fileIsValid Then
+				'check the version
+				fileIsValid = LoadApplicationVersionFromNode(document.SelectSingleNode("/Application/Version"))
+			ElseIf errorMessage = String.Empty Then
+				errorMessage = "Invalid application file.  'Name' property is missing."
+			End If
+
+			If fileIsValid Then
+				'check the objects
+				fileIsValid = LoadApplicationObjectsFromNodes(document.SelectNodes("/Application/Objects/Object/Name"))
+			ElseIf errorMessage = String.Empty Then
+				errorMessage = "Invalid application file.  'Version' property is missing."
+			End If
+
+			If fileIsValid Then
+				fileIsValid = LoadApplicationTabsFromNodes(document.SelectNodes("/Application/ExternalTabs/ExternalTab/Name"))
+			ElseIf errorMessage = String.Empty Then
+				errorMessage = "Invalid applicagtion file.  There are no Object Types to install."
+			End If
+
+			If fileIsValid Then
+				FilePath.Text = OpenFileDialog.FileName
+			Else
+				MsgBox(String.Format(System.Globalization.CultureInfo.CurrentCulture, "Invalid File: {0}", errorMessage))
+			End If
 		End Sub
 
 #End Region
@@ -351,6 +369,71 @@ Namespace kCura.EDDS.WinForm
 		Private _caseInfo As kCura.EDDS.Types.CaseInfo
 		Private _cookieContainer As System.Net.CookieContainer
 		Private _credentials As System.Net.NetworkCredential
+
+#End Region
+
+#Region " Private Methods "
+
+		Private Function LoadApplicationNameFromNode(ByVal node As Xml.XmlNode) As Boolean
+			Dim result As Boolean
+			If node Is Nothing Then
+				result = False
+			Else
+				ApplicationName.Text = node.InnerText
+				result = True
+			End If
+			Return result
+		End Function
+
+		Private Function LoadApplicationObjectsFromNodes(ByVal nodes As Xml.XmlNodeList) As Boolean
+			Dim result As Boolean
+			If nodes.Count > 0 Then
+				ObjectList.Items.Clear()
+				For Each node As Xml.XmlNode In nodes
+					ObjectList.Items.Add(node.InnerText)
+				Next
+				result = True
+			Else
+				result = False
+			End If
+			Return result
+		End Function
+
+		Private Function LoadApplicationTabsFromNodes(ByVal nodes As Xml.XmlNodeList) As Boolean
+			Dim result As Boolean
+			TabList.Items.Clear()
+			For Each node As Xml.XmlNode In nodes
+				TabList.Items.Add(node.InnerText)
+			Next
+			result = True
+			Return result
+		End Function
+
+		Private Function LoadApplicationVersionFromNode(ByVal node As Xml.XmlNode) As Boolean
+			Dim result As Boolean
+			If node Is Nothing Then
+				result = False
+			Else
+				ApplicationVersion.Text = node.InnerText
+				result = True
+			End If
+			Return result
+		End Function
+
+		Private Function LoadFileIntoXML(ByVal document As Xml.XmlDocument, ByVal filePath As String) As Boolean
+			Dim result As Boolean
+			If Not OpenFileDialog.FileName.EndsWith(".xml") Then
+				result = False
+			Else
+				Try
+					document.Load(OpenFileDialog.FileName)
+					result = True
+				Catch ex As Exception
+					result = False
+				End Try
+			End If
+			Return result
+		End Function
 
 #End Region
 
