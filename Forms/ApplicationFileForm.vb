@@ -30,52 +30,54 @@ Namespace kCura.EDDS.WinForm
 		'NOTE: The following procedure is required by the Windows Form Designer
 		'It can be modified using the Windows Form Designer.  
 		'Do not modify it using the code editor.
-		Friend WithEvents MainMenu1 As System.Windows.Forms.MainMenu
-		Friend WithEvents GroupBox20 As System.Windows.Forms.GroupBox
-		Friend WithEvents _browseButton As System.Windows.Forms.Button
-		Friend WithEvents _filePath As System.Windows.Forms.TextBox
 		Friend WithEvents MenuFile As System.Windows.Forms.MenuItem
 		Friend WithEvents MenuImport As System.Windows.Forms.MenuItem
 		Friend WithEvents MenuFile_Close As System.Windows.Forms.MenuItem
 		Friend WithEvents MenuImport_ImportApplication As System.Windows.Forms.MenuItem
-		Friend WithEvents GroupBox1 As System.Windows.Forms.GroupBox
-		Friend WithEvents Label1 As System.Windows.Forms.Label
-		Friend WithEvents Label2 As System.Windows.Forms.Label
 		Friend WithEvents ApplicationName As System.Windows.Forms.TextBox
 		Friend WithEvents ApplicationVersion As System.Windows.Forms.TextBox
-		Friend WithEvents GroupBox2 As System.Windows.Forms.GroupBox
-		Friend WithEvents TextBox1 As System.Windows.Forms.TextBox
-		Friend WithEvents Label3 As System.Windows.Forms.Label
-		Friend WithEvents Label4 As System.Windows.Forms.Label
-		Friend WithEvents TextBox2 As System.Windows.Forms.TextBox
+		Friend WithEvents OpenFileDialog As System.Windows.Forms.OpenFileDialog
+		Friend WithEvents ObjectList As System.Windows.Forms.ListBox
+		Friend WithEvents TabList As System.Windows.Forms.ListBox
+		Friend WithEvents ApplicationFileGroupBox As System.Windows.Forms.GroupBox
+		Friend WithEvents ApplicationInformationGroupBox As System.Windows.Forms.GroupBox
+		Friend WithEvents ApplicationArtifactsGroupBox As System.Windows.Forms.GroupBox
+		Friend WithEvents MainMenu As System.Windows.Forms.MainMenu
+		Friend WithEvents NameLabel As System.Windows.Forms.Label
+		Friend WithEvents VersionLabel As System.Windows.Forms.Label
+		Friend WithEvents ObjectsLabel As System.Windows.Forms.Label
+		Friend WithEvents TabsLabel As System.Windows.Forms.Label
+		Friend WithEvents FilePath As System.Windows.Forms.TextBox
+		Friend WithEvents BrowseButton As System.Windows.Forms.Button
 		<System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
 			Dim resources As System.Resources.ResourceManager = New System.Resources.ResourceManager(GetType(ApplicationFileForm))
-			Me.MainMenu1 = New System.Windows.Forms.MainMenu
+			Me.MainMenu = New System.Windows.Forms.MainMenu
 			Me.MenuFile = New System.Windows.Forms.MenuItem
 			Me.MenuFile_Close = New System.Windows.Forms.MenuItem
 			Me.MenuImport = New System.Windows.Forms.MenuItem
 			Me.MenuImport_ImportApplication = New System.Windows.Forms.MenuItem
-			Me.GroupBox20 = New System.Windows.Forms.GroupBox
-			Me._browseButton = New System.Windows.Forms.Button
-			Me._filePath = New System.Windows.Forms.TextBox
-			Me.GroupBox1 = New System.Windows.Forms.GroupBox
+			Me.ApplicationFileGroupBox = New System.Windows.Forms.GroupBox
+			Me.BrowseButton = New System.Windows.Forms.Button
+			Me.FilePath = New System.Windows.Forms.TextBox
+			Me.ApplicationInformationGroupBox = New System.Windows.Forms.GroupBox
 			Me.ApplicationName = New System.Windows.Forms.TextBox
 			Me.ApplicationVersion = New System.Windows.Forms.TextBox
-			Me.Label2 = New System.Windows.Forms.Label
-			Me.Label1 = New System.Windows.Forms.Label
-			Me.GroupBox2 = New System.Windows.Forms.GroupBox
-			Me.TextBox2 = New System.Windows.Forms.TextBox
-			Me.Label4 = New System.Windows.Forms.Label
-			Me.Label3 = New System.Windows.Forms.Label
-			Me.TextBox1 = New System.Windows.Forms.TextBox
-			Me.GroupBox20.SuspendLayout()
-			Me.GroupBox1.SuspendLayout()
-			Me.GroupBox2.SuspendLayout()
+			Me.VersionLabel = New System.Windows.Forms.Label
+			Me.NameLabel = New System.Windows.Forms.Label
+			Me.ApplicationArtifactsGroupBox = New System.Windows.Forms.GroupBox
+			Me.TabList = New System.Windows.Forms.ListBox
+			Me.ObjectList = New System.Windows.Forms.ListBox
+			Me.TabsLabel = New System.Windows.Forms.Label
+			Me.ObjectsLabel = New System.Windows.Forms.Label
+			Me.OpenFileDialog = New System.Windows.Forms.OpenFileDialog
+			Me.ApplicationFileGroupBox.SuspendLayout()
+			Me.ApplicationInformationGroupBox.SuspendLayout()
+			Me.ApplicationArtifactsGroupBox.SuspendLayout()
 			Me.SuspendLayout()
 			'
-			'MainMenu1
+			'MainMenu
 			'
-			Me.MainMenu1.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.MenuFile, Me.MenuImport})
+			Me.MainMenu.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.MenuFile, Me.MenuImport})
 			'
 			'MenuFile
 			'
@@ -99,55 +101,55 @@ Namespace kCura.EDDS.WinForm
 			Me.MenuImport_ImportApplication.Index = 0
 			Me.MenuImport_ImportApplication.Text = "Import &Application"
 			'
-			'GroupBox20
+			'ApplicationFileGroupBox
 			'
-			Me.GroupBox20.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
+			Me.ApplicationFileGroupBox.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
 									Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-			Me.GroupBox20.Controls.Add(Me._browseButton)
-			Me.GroupBox20.Controls.Add(Me._filePath)
-			Me.GroupBox20.Location = New System.Drawing.Point(16, 24)
-			Me.GroupBox20.Name = "GroupBox20"
-			Me.GroupBox20.Size = New System.Drawing.Size(720, 48)
-			Me.GroupBox20.TabIndex = 22
-			Me.GroupBox20.TabStop = False
-			Me.GroupBox20.Text = "Application File"
+			Me.ApplicationFileGroupBox.Controls.Add(Me.BrowseButton)
+			Me.ApplicationFileGroupBox.Controls.Add(Me.FilePath)
+			Me.ApplicationFileGroupBox.Location = New System.Drawing.Point(16, 24)
+			Me.ApplicationFileGroupBox.Name = "ApplicationFileGroupBox"
+			Me.ApplicationFileGroupBox.Size = New System.Drawing.Size(720, 48)
+			Me.ApplicationFileGroupBox.TabIndex = 22
+			Me.ApplicationFileGroupBox.TabStop = False
+			Me.ApplicationFileGroupBox.Text = "Application File"
 			'
-			'_browseButton
+			'BrowseButton
 			'
-			Me._browseButton.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-			Me._browseButton.Location = New System.Drawing.Point(688, 16)
-			Me._browseButton.Name = "_browseButton"
-			Me._browseButton.Size = New System.Drawing.Size(24, 20)
-			Me._browseButton.TabIndex = 4
-			Me._browseButton.Text = "..."
+			Me.BrowseButton.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+			Me.BrowseButton.Location = New System.Drawing.Point(688, 16)
+			Me.BrowseButton.Name = "BrowseButton"
+			Me.BrowseButton.Size = New System.Drawing.Size(24, 20)
+			Me.BrowseButton.TabIndex = 4
+			Me.BrowseButton.Text = "..."
 			'
-			'_filePath
+			'FilePath
 			'
-			Me._filePath.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
+			Me.FilePath.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
 									Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-			Me._filePath.BackColor = System.Drawing.SystemColors.ControlLightLight
-			Me._filePath.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-			Me._filePath.ForeColor = System.Drawing.SystemColors.ControlDarkDark
-			Me._filePath.Location = New System.Drawing.Point(8, 16)
-			Me._filePath.Name = "_filePath"
-			Me._filePath.Size = New System.Drawing.Size(680, 20)
-			Me._filePath.TabIndex = 2
-			Me._filePath.Text = "Select a file ..."
+			Me.FilePath.BackColor = System.Drawing.SystemColors.ControlLightLight
+			Me.FilePath.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+			Me.FilePath.ForeColor = System.Drawing.SystemColors.ControlDarkDark
+			Me.FilePath.Location = New System.Drawing.Point(8, 16)
+			Me.FilePath.Name = "FilePath"
+			Me.FilePath.Size = New System.Drawing.Size(680, 20)
+			Me.FilePath.TabIndex = 2
+			Me.FilePath.Text = "Select a file ..."
 			'
-			'GroupBox1
+			'ApplicationInformationGroupBox
 			'
-			Me.GroupBox1.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
+			Me.ApplicationInformationGroupBox.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
 									Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-			Me.GroupBox1.Controls.Add(Me.ApplicationName)
-			Me.GroupBox1.Controls.Add(Me.ApplicationVersion)
-			Me.GroupBox1.Controls.Add(Me.Label2)
-			Me.GroupBox1.Controls.Add(Me.Label1)
-			Me.GroupBox1.Location = New System.Drawing.Point(16, 88)
-			Me.GroupBox1.Name = "GroupBox1"
-			Me.GroupBox1.Size = New System.Drawing.Size(720, 88)
-			Me.GroupBox1.TabIndex = 23
-			Me.GroupBox1.TabStop = False
-			Me.GroupBox1.Text = "Application Information"
+			Me.ApplicationInformationGroupBox.Controls.Add(Me.ApplicationName)
+			Me.ApplicationInformationGroupBox.Controls.Add(Me.ApplicationVersion)
+			Me.ApplicationInformationGroupBox.Controls.Add(Me.VersionLabel)
+			Me.ApplicationInformationGroupBox.Controls.Add(Me.NameLabel)
+			Me.ApplicationInformationGroupBox.Location = New System.Drawing.Point(16, 88)
+			Me.ApplicationInformationGroupBox.Name = "ApplicationInformationGroupBox"
+			Me.ApplicationInformationGroupBox.Size = New System.Drawing.Size(720, 88)
+			Me.ApplicationInformationGroupBox.TabIndex = 23
+			Me.ApplicationInformationGroupBox.TabStop = False
+			Me.ApplicationInformationGroupBox.Text = "Application Information"
 			'
 			'ApplicationName
 			'
@@ -171,97 +173,93 @@ Namespace kCura.EDDS.WinForm
 			Me.ApplicationVersion.TabIndex = 2
 			Me.ApplicationVersion.Text = ""
 			'
-			'Label2
+			'VersionLabel
 			'
-			Me.Label2.Location = New System.Drawing.Point(16, 56)
-			Me.Label2.Name = "Label2"
-			Me.Label2.Size = New System.Drawing.Size(48, 23)
-			Me.Label2.TabIndex = 1
-			Me.Label2.Text = "Version"
+			Me.VersionLabel.Location = New System.Drawing.Point(16, 56)
+			Me.VersionLabel.Name = "VersionLabel"
+			Me.VersionLabel.Size = New System.Drawing.Size(48, 23)
+			Me.VersionLabel.TabIndex = 1
+			Me.VersionLabel.Text = "Version"
 			'
-			'Label1
+			'NameLabel
 			'
-			Me.Label1.Location = New System.Drawing.Point(16, 24)
-			Me.Label1.Name = "Label1"
-			Me.Label1.Size = New System.Drawing.Size(48, 23)
-			Me.Label1.TabIndex = 0
-			Me.Label1.Text = "Name:"
+			Me.NameLabel.Location = New System.Drawing.Point(16, 24)
+			Me.NameLabel.Name = "NameLabel"
+			Me.NameLabel.Size = New System.Drawing.Size(48, 23)
+			Me.NameLabel.TabIndex = 0
+			Me.NameLabel.Text = "Name:"
 			'
-			'GroupBox2
+			'ApplicationArtifactsGroupBox
 			'
-			Me.GroupBox2.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
+			Me.ApplicationArtifactsGroupBox.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
 									Or System.Windows.Forms.AnchorStyles.Left) _
 									Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-			Me.GroupBox2.Controls.Add(Me.TextBox2)
-			Me.GroupBox2.Controls.Add(Me.Label4)
-			Me.GroupBox2.Controls.Add(Me.Label3)
-			Me.GroupBox2.Controls.Add(Me.TextBox1)
-			Me.GroupBox2.Location = New System.Drawing.Point(16, 192)
-			Me.GroupBox2.Name = "GroupBox2"
-			Me.GroupBox2.Size = New System.Drawing.Size(720, 360)
-			Me.GroupBox2.TabIndex = 24
-			Me.GroupBox2.TabStop = False
-			Me.GroupBox2.Text = "Application Artifacts"
+			Me.ApplicationArtifactsGroupBox.Controls.Add(Me.TabList)
+			Me.ApplicationArtifactsGroupBox.Controls.Add(Me.ObjectList)
+			Me.ApplicationArtifactsGroupBox.Controls.Add(Me.TabsLabel)
+			Me.ApplicationArtifactsGroupBox.Controls.Add(Me.ObjectsLabel)
+			Me.ApplicationArtifactsGroupBox.Location = New System.Drawing.Point(16, 192)
+			Me.ApplicationArtifactsGroupBox.Name = "ApplicationArtifactsGroupBox"
+			Me.ApplicationArtifactsGroupBox.Size = New System.Drawing.Size(720, 360)
+			Me.ApplicationArtifactsGroupBox.TabIndex = 24
+			Me.ApplicationArtifactsGroupBox.TabStop = False
+			Me.ApplicationArtifactsGroupBox.Text = "Application Artifacts"
 			'
-			'TextBox2
+			'TabList
 			'
-			Me.TextBox2.Anchor = CType(((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left) _
+			Me.TabList.Anchor = CType(((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left) _
 									Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-			Me.TextBox2.Enabled = False
-			Me.TextBox2.Location = New System.Drawing.Point(72, 232)
-			Me.TextBox2.Multiline = True
-			Me.TextBox2.Name = "TextBox2"
-			Me.TextBox2.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
-			Me.TextBox2.Size = New System.Drawing.Size(624, 104)
-			Me.TextBox2.TabIndex = 3
-			Me.TextBox2.Text = ""
+			Me.TabList.Location = New System.Drawing.Point(72, 232)
+			Me.TabList.Name = "TabList"
+			Me.TabList.Size = New System.Drawing.Size(624, 108)
+			Me.TabList.TabIndex = 5
 			'
-			'Label4
+			'ObjectList
 			'
-			Me.Label4.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
-			Me.Label4.Location = New System.Drawing.Point(16, 232)
-			Me.Label4.Name = "Label4"
-			Me.Label4.Size = New System.Drawing.Size(48, 23)
-			Me.Label4.TabIndex = 2
-			Me.Label4.Text = "Tabs:"
-			'
-			'Label3
-			'
-			Me.Label3.Location = New System.Drawing.Point(16, 32)
-			Me.Label3.Name = "Label3"
-			Me.Label3.Size = New System.Drawing.Size(48, 23)
-			Me.Label3.TabIndex = 1
-			Me.Label3.Text = "Objects:"
-			'
-			'TextBox1
-			'
-			Me.TextBox1.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
+			Me.ObjectList.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
 									Or System.Windows.Forms.AnchorStyles.Left) _
 									Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-			Me.TextBox1.Enabled = False
-			Me.TextBox1.Location = New System.Drawing.Point(72, 32)
-			Me.TextBox1.Multiline = True
-			Me.TextBox1.Name = "TextBox1"
-			Me.TextBox1.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
-			Me.TextBox1.Size = New System.Drawing.Size(624, 176)
-			Me.TextBox1.TabIndex = 0
-			Me.TextBox1.Text = ""
+			Me.ObjectList.Location = New System.Drawing.Point(72, 32)
+			Me.ObjectList.Name = "ObjectList"
+			Me.ObjectList.Size = New System.Drawing.Size(624, 173)
+			Me.ObjectList.TabIndex = 4
+			'
+			'TabsLabel
+			'
+			Me.TabsLabel.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
+			Me.TabsLabel.Location = New System.Drawing.Point(16, 232)
+			Me.TabsLabel.Name = "TabsLabel"
+			Me.TabsLabel.Size = New System.Drawing.Size(48, 23)
+			Me.TabsLabel.TabIndex = 2
+			Me.TabsLabel.Text = "Tabs:"
+			'
+			'ObjectsLabel
+			'
+			Me.ObjectsLabel.Location = New System.Drawing.Point(16, 32)
+			Me.ObjectsLabel.Name = "ObjectsLabel"
+			Me.ObjectsLabel.Size = New System.Drawing.Size(48, 23)
+			Me.ObjectsLabel.TabIndex = 1
+			Me.ObjectsLabel.Text = "Objects:"
+			'
+			'OpenFileDialog
+			'
+			Me.OpenFileDialog.Filter = "XML Files (*.xml)|*.xml"
 			'
 			'ApplicationFileForm
 			'
 			Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
 			Me.ClientSize = New System.Drawing.Size(752, 566)
-			Me.Controls.Add(Me.GroupBox2)
-			Me.Controls.Add(Me.GroupBox1)
-			Me.Controls.Add(Me.GroupBox20)
+			Me.Controls.Add(Me.ApplicationArtifactsGroupBox)
+			Me.Controls.Add(Me.ApplicationInformationGroupBox)
+			Me.Controls.Add(Me.ApplicationFileGroupBox)
 			Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
-			Me.Menu = Me.MainMenu1
+			Me.Menu = Me.MainMenu
 			Me.MinimumSize = New System.Drawing.Size(760, 621)
 			Me.Name = "ApplicationFileForm"
 			Me.Text = "Relativity Desktop Client | Import Applicatioin File"
-			Me.GroupBox20.ResumeLayout(False)
-			Me.GroupBox1.ResumeLayout(False)
-			Me.GroupBox2.ResumeLayout(False)
+			Me.ApplicationFileGroupBox.ResumeLayout(False)
+			Me.ApplicationInformationGroupBox.ResumeLayout(False)
+			Me.ApplicationArtifactsGroupBox.ResumeLayout(False)
 			Me.ResumeLayout(False)
 
 		End Sub
@@ -270,12 +268,39 @@ Namespace kCura.EDDS.WinForm
 
 #Region " Event Handlers "
 
+		Private Sub BrowseButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles BrowseButton.Click
+			OpenFileDialog.ShowDialog()
+		End Sub
+
 		Private Sub MenuFile_Close_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles MenuFile_Close.Click
 			Me.Close()
 		End Sub
 
 		Private Sub MenuImport_ImportApplication_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles MenuImport_ImportApplication.Click
 			MsgBox("Write this.")
+		End Sub
+
+		Private Sub OpenFileDialog_FileOk(ByVal sender As Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles OpenFileDialog.FileOk
+			'load up the values for the app name, app version, app objects and app tabs
+			Dim document As New Xml.XmlDocument
+			document.Load(OpenFileDialog.FileName)
+			ApplicationName.Text = document.SelectSingleNode("/Application/Name").InnerText
+			ApplicationVersion.Text = document.SelectSingleNode("/Application/Version").InnerText
+
+			Dim nodes As Xml.XmlNodeList
+			ObjectList.Items.Clear()
+			nodes = document.SelectNodes("/Application/Objects/Object/Name")
+			For Each node As Xml.XmlNode In nodes
+				ObjectList.Items.Add(node.InnerText)
+			Next
+
+			TabList.Items.Clear()
+			nodes = document.SelectNodes("/Application/ExternalTabs/ExternalTab/Name")
+			For Each node As Xml.XmlNode In nodes
+				TabList.Items.Add(node.InnerText)
+			Next
+
+			FilePath.Text = OpenFileDialog.FileName
 		End Sub
 
 #End Region
