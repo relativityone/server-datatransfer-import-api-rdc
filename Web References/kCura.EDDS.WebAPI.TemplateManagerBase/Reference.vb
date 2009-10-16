@@ -61,12 +61,6 @@ Namespace kCura.EDDS.WebAPI.TemplateManagerBase
         
         '<remarks/>
         Public CaseId As Integer
-        
-        '<remarks/>
-        Public Password As String
-        
-        '<remarks/>
-        Public UserName As String
     End Class
     
     '<remarks/>

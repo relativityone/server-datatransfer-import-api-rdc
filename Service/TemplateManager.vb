@@ -34,5 +34,16 @@ Namespace kCura.WinEDDS.Service
 
 #End Region
 
+#Region " Overrides Methods "
+
+		Protected Overrides Function GetWebRequest(ByVal uri As System.Uri) As System.Net.WebRequest
+			Dim wr As System.Net.HttpWebRequest = DirectCast(MyBase.GetWebRequest(uri), System.Net.HttpWebRequest)
+			wr.UnsafeAuthenticatedConnectionSharing = True
+			wr.Credentials = Me.Credentials
+			Return wr
+		End Function
+
+#End Region
+
 	End Class
 End Namespace
