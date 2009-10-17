@@ -278,23 +278,7 @@ Namespace kCura.EDDS.WinForm
 
 		Private Sub MenuImport_ImportApplication_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles MenuImport_ImportApplication.Click
 			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
-
-			Dim installationParameters As New kCura.EDDS.WebAPI.TemplateManagerBase.ApplicationInstallationParameters
-			installationParameters.CaseId = Me.CaseInfo.ArtifactID
-
-			Dim applicationDeploymentSystem As New WinEDDS.Service.TemplateManager(Me.Credentials, Me.CookieContainer)
-			Dim installationResult As kCura.EDDS.WebAPI.TemplateManagerBase.ApplicationInstallationResult = applicationDeploymentSystem.InstallTemplate(_document, installationParameters)
-
-			If installationResult.Success Then
-				Dim installedArtifacts As New System.Text.StringBuilder
-				For Each applicationArtifact As kCura.EDDS.WebAPI.TemplateManagerBase.ApplicationArtifact In installationResult.ApplicationArtifacts
-					installedArtifacts.AppendFormat(System.Globalization.CultureInfo.CurrentCulture, "Created {0}: {1} (ID = {2}){3}", applicationArtifact.Type, applicationArtifact.Name, applicationArtifact.ArtifactId, System.Environment.NewLine)
-				Next
-				MsgBox(String.Format(System.Globalization.CultureInfo.CurrentCulture, "Installation successful.{0}{0}{1}", System.Environment.NewLine, installedArtifacts))
-			Else
-				MsgBox(String.Format(System.Globalization.CultureInfo.CurrentCulture, "Error installing Application: {0}", installationResult.ExceptionMessage))
-			End If
-
+			_application.ImportApplicationFile(_document)
 			Me.Cursor = System.Windows.Forms.Cursors.Default
 		End Sub
 

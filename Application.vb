@@ -1227,6 +1227,22 @@ Namespace kCura.EDDS.WinForm
 			_processPool.RemoveProcess(processID)
 			CursorDefault()
 		End Sub
+
+		Public Sub ImportApplicationFile(ByVal application As Xml.XmlDocument)
+			CursorWait()
+			If Not Me.IsConnected(Me.SelectedCaseInfo.ArtifactID, 10) Then
+				CursorDefault()
+				Exit Sub
+			End If
+			Dim applicationDeploymentProcess As New kCura.WinEDDS.ApplicationDeploymentProcess(application, Me.Credential, Me.CookieContainer, Me.SelectedCaseInfo)
+			Dim form As New TextDisplayForm
+			form.ProcessObserver = applicationDeploymentProcess.ProcessObserver
+			form.Text = "Application Deployment System"
+			form.Show()
+			_processPool.StartProcess(applicationDeploymentProcess)
+			CursorDefault()
+		End Sub
+
 #End Region
 
 #Region "Save/Load Settings Objects"
