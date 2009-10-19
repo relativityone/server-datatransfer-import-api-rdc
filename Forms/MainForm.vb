@@ -190,7 +190,7 @@ Namespace kCura.EDDS.WinForm
 			Me.ToolsImportApplicationFileMenu.Index = 3
 			Me.ToolsImportApplicationFileMenu.OwnerDraw = True
 			Me.ToolsImportApplicationFileMenu.Shortcut = System.Windows.Forms.Shortcut.CtrlA
-			Me.ToolsImportApplicationFileMenu.Text = "&Application File"
+			Me.ToolsImportApplicationFileMenu.Text = "&Application"
 			'
 			'ToolsImportFileDirectoryMenu
 			'
