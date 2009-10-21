@@ -503,7 +503,7 @@ Namespace kCura.EDDS.WinForm
 			Dim isSearchProviderValid As Boolean = values(0) And values(1)
 			Dim message As New System.Text.StringBuilder
 			If Not values(0) Then message.Append("You do not have the rights to view the search provider associated with this selected search" & vbNewLine)
-			If Not values(1) Then message.Append("The search provider associated with this selected search is not active" & vbNewLine)
+			If Not values(1) AndAlso values(0) Then message.Append("The search provider associated with this selected search is not active" & vbNewLine)
 			If Not isSearchProviderValid Then MsgBox(message.ToString & "Search Export Halted", MsgBoxStyle.Exclamation, "Search Provider Error")
 			Return isSearchProviderValid
 		End Function
