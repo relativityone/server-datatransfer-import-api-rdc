@@ -1193,7 +1193,7 @@ Public Class ExportForm
 			Case ExportFile.ExportType.ArtifactSearch
 				_exportFile.ArtifactID = CType(_filters.SelectedValue, Int32)
 				If Not _application.IsAssociatedSearchProviderAccessible(_exportFile.CaseArtifactID, _exportFile.ArtifactID) Then
-					_application.CursorDefault()
+					Me.Cursor = System.Windows.Forms.Cursors.Default
 					Exit Sub
 				End If
 				_exportFile.LoadFilesPrefix = DirectCast(_filters.SelectedItem, System.Data.DataRowView)(_filters.DisplayMember).ToString
