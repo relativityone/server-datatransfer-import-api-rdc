@@ -17,21 +17,25 @@ Namespace kCura.WinEDDS
 #Region " Protected Methods "
 
 		Protected Overrides Sub Execute()
-			Dim installationParameters As New kCura.EDDS.WebAPI.TemplateManagerBase.ApplicationInstallationParameters
-			installationParameters.CaseId = _caseInfo.ArtifactID
+			Try
+				Dim installationParameters As New kCura.EDDS.WebAPI.TemplateManagerBase.ApplicationInstallationParameters
+				installationParameters.CaseId = _caseInfo.ArtifactID
 
-			Dim applicationDeploymentSystem As New WinEDDS.Service.TemplateManager(_credential, Me._cookieContainer)
-			Dim installationResult As kCura.EDDS.WebAPI.TemplateManagerBase.ApplicationInstallationResult = applicationDeploymentSystem.InstallTemplate(_application, installationParameters)
+				Dim applicationDeploymentSystem As New WinEDDS.Service.TemplateManager(_credential, Me._cookieContainer)
+				Dim installationResult As kCura.EDDS.WebAPI.TemplateManagerBase.ApplicationInstallationResult = applicationDeploymentSystem.InstallTemplate(_application, installationParameters)
 
-			If installationResult.Success Then
-				Dim installedArtifacts As New System.Text.StringBuilder
-				For Each applicationArtifact As kCura.EDDS.WebAPI.TemplateManagerBase.ApplicationArtifact In installationResult.ApplicationArtifacts
-					installedArtifacts.AppendFormat(System.Globalization.CultureInfo.CurrentCulture, "Created {0}: {1} (ID = {2}){3}", applicationArtifact.Type, applicationArtifact.Name, applicationArtifact.ArtifactId, System.Environment.NewLine)
-				Next
-				WriteStatus(String.Format(System.Globalization.CultureInfo.CurrentCulture, "Installation successful.{0}{0}{1}", System.Environment.NewLine, installedArtifacts))
-			Else
-				WriteStatus(String.Format(System.Globalization.CultureInfo.CurrentCulture, "Error installing Application: {0}", installationResult.ExceptionMessage))
-			End If
+				If installationResult.Success Then
+					Dim installedArtifacts As New System.Text.StringBuilder
+					For Each applicationArtifact As kCura.EDDS.WebAPI.TemplateManagerBase.ApplicationArtifact In installationResult.ApplicationArtifacts
+						installedArtifacts.AppendFormat(System.Globalization.CultureInfo.CurrentCulture, "Created {0}: {1} (ID = {2}){3}", applicationArtifact.Type, applicationArtifact.Name, applicationArtifact.ArtifactId, System.Environment.NewLine)
+					Next
+					WriteStatus(String.Format(System.Globalization.CultureInfo.CurrentCulture, "Installation successful.{0}{0}{1}", System.Environment.NewLine, installedArtifacts))
+				Else
+					WriteStatus(String.Format(System.Globalization.CultureInfo.CurrentCulture, "Error installing Application: {0}", installationResult.ExceptionMessage))
+				End If
+			Catch ex As Exception
+				WriteStatus(String.Format("Application Installation Error: {0}", ex.Message))
+			End Try
 		End Sub
 
 #End Region
