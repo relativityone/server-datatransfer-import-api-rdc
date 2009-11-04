@@ -53,11 +53,11 @@ Namespace kCura.WinEDDS
 				Me.WriteStatus("No direct access to repository - proceeding in Web Mode")
 				Me.WriteStatus("Actual error: " & ex.ToString)
 			End Try
-			Dim id As String = System.Guid.NewGuid.ToString
+			Dim id As String = _caseInfo.DocumentPath.TrimEnd("\"c) & "\" & System.Guid.NewGuid.ToString("N")
 			If isDirect Then
 				Try
 					System.IO.File.Create(id).Close()
-					Me.WriteStatus("Temporary file created - proceeding in Direct Mode")
+					Me.WriteStatus("Temporary file created: " & id & " - proceeding in Direct Mode")
 				Catch ex As Exception
 					Me.WriteStatus("Cannot create file in repository - proceeding in Web Mode")
 					Me.WriteStatus("Actual error: " & ex.ToString)
@@ -67,19 +67,19 @@ Namespace kCura.WinEDDS
 			If isDirect Then
 				Try
 					System.IO.File.Delete(id)
-					Me.WriteStatus("Temporary file deleted - proceeding in Direct Mode")
+					Me.WriteStatus("Temporary file deleted: " & id & " - proceeding in Direct Mode")
 				Catch ex As Exception
 					Me.WriteStatus("Cannot delete file in repository - proceeding in Web Mode")
 					Me.WriteStatus("Actual error: " & ex.ToString)
 					isDirect = False
 				End Try
 			End If
+			id = id.TrimEnd("\"c) & "\"
 			If isDirect Then
 				Try
-					System.IO.Directory.CreateDirectory(id)
-					Me.WriteStatus("Subdirectory created - proceeding in Direct Mode")
+					Me.WriteStatus("Subdirectory created: " & System.IO.Directory.CreateDirectory(id).FullName & " - proceeding in Direct Mode")
 				Catch ex As Exception
-					Me.WriteStatus("Cannot create file in repository - proceeding in Web Mode")
+					Me.WriteStatus("Cannot create directory in repository - proceeding in Web Mode")
 					Me.WriteStatus("Actual error: " & ex.ToString)
 					isDirect = False
 				End Try
@@ -87,7 +87,7 @@ Namespace kCura.WinEDDS
 			If isDirect Then
 				Try
 					System.IO.Directory.Delete(id)
-					Me.WriteStatus("Subdirectory deleted - proceeding in Direct Mode")
+					Me.WriteStatus("Subdirectory deleted: " & id & " - proceeding in Direct Mode")
 				Catch ex As Exception
 					Me.WriteStatus("Cannot delete directory - proceeding in Web Mode")
 					Me.WriteStatus("Actual error: " & ex.ToString)
