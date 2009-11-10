@@ -260,7 +260,7 @@ Namespace kCura.WinEDDS
 		Private Sub ReInitializeAllStreams()
 			If Not _nativeFileWriter Is Nothing Then _nativeFileWriter = Me.ReInitializeStream(_nativeFileWriter, _nativeFileWriterPosition, Me.LoadFileDestinationPath, _encoding)
 			If Not _imageFileWriter Is Nothing Then _imageFileWriter = Me.ReInitializeStream(_imageFileWriter, _imageFileWriterPosition, Me.ImageFileDestinationPath, _encoding)
-			If Not _errorWriter Is Nothing Then _errorWriter = Me.ReInitializeStream(_errorWriter, _errorWriterPosition, Me.ErrorDestinationPath, System.Text.Encoding.Default)
+			'If Not _errorWriter Is Nothing Then _errorWriter = Me.ReInitializeStream(_errorWriter, _errorWriterPosition, Me.ErrorDestinationPath, System.Text.Encoding.Default)
 		End Sub
 
 		Private Function ReInitializeStream(ByVal brokenStream As System.IO.StreamWriter, ByVal position As Int64, ByVal filepath As String, ByVal encoding As System.Text.Encoding) As System.IO.StreamWriter
