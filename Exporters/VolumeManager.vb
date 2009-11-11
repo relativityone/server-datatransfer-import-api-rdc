@@ -1015,10 +1015,9 @@ Namespace kCura.WinEDDS
 					'System.Web.HttpUtility.HtmlEncode()
 					fieldValue = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(NullableTypes.HelperFunctions.DBNullConvert.ToNullableString(val))
 					If field.IsMultiValueField Then
-						fieldValue = Me.GetMultivalueString(fieldValue)
+						fieldValue = Me.GetMultivalueString(fieldValue, field.IsCodeOrMulticodeField)
 					ElseIf field.IsCodeOrMulticodeField Then
-						fieldValue = System.Web.HttpUtility.HtmlDecode(fieldValue)
-						fieldValue = fieldValue.Trim(New Char() {ChrW(11)}).Replace(ChrW(11), _settings.MultiRecordDelimiter)
+						fieldValue = Me.GetCodeValueString(fieldValue)
 					End If
 					fieldValue = fieldValue.Replace(System.Environment.NewLine, ChrW(10).ToString)
 					fieldValue = fieldValue.Replace(ChrW(13), ChrW(10))
@@ -1145,10 +1144,9 @@ Namespace kCura.WinEDDS
 					fieldValue = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(NullableTypes.HelperFunctions.DBNullConvert.ToNullableString(val))
 
 					If field.IsMultiValueField Then
-						fieldValue = Me.GetMultivalueString(fieldValue)
+						fieldValue = Me.GetMultivalueString(fieldValue, field.IsCodeOrMulticodeField)
 					ElseIf field.IsCodeOrMulticodeField Then
-						fieldValue = System.Web.HttpUtility.HtmlDecode(fieldValue)
-						fieldValue = fieldValue.Trim(New Char() {ChrW(11)}).Replace(ChrW(11), _settings.MultiRecordDelimiter)
+						fieldValue = Me.GetCodeValueString(fieldValue)
 					End If
 					fieldValue = System.Web.HttpUtility.HtmlEncode(fieldValue)
 					_nativeFileWriter.Write(String.Format("{0}{1}{2}", "<td>", fieldValue, "</td>"))
@@ -1167,6 +1165,12 @@ Namespace kCura.WinEDDS
 			_nativeFileWriter.Write("</tr>")
 			_nativeFileWriter.Write(vbNewLine)
 		End Sub
+
+		Private Function GetCodeValueString(ByVal input As String) As String
+			input = System.Web.HttpUtility.HtmlDecode(input)
+			input = input.Trim(New Char() {ChrW(11)}).Replace(ChrW(11), _settings.MultiRecordDelimiter)
+			Return input
+		End Function
 
 		Private Function NameTextFilesAfterIdentifier() As Boolean
 			If Me.Settings.TypeOfExport = ExportFile.ExportType.Production Then
@@ -1197,7 +1201,7 @@ Namespace kCura.WinEDDS
 			Return retval.ToString
 		End Function
 
-		Private Function GetMultivalueString(ByVal input As String) As String
+		Private Function GetMultivalueString(ByVal input As String, ByVal isCodeOrMulticodeField As Boolean) As String
 			Dim xr As New System.Xml.XmlTextReader(New System.IO.StringReader("<objects>" & input & "</objects>"))
 			Dim firstTimeThrough As Boolean = True
 			Dim sb As New System.Text.StringBuilder
@@ -1210,6 +1214,7 @@ Namespace kCura.WinEDDS
 						sb.Append(Me.Settings.MultiRecordDelimiter)
 					End If
 					Dim cleanval As String = xr.Value.Trim
+					If isCodeOrMulticodeField Then cleanval = Me.GetCodeValueString(cleanval)
 					sb.Append(cleanval)
 				End If
 			End While
