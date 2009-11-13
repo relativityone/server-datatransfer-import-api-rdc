@@ -71,6 +71,9 @@ Namespace kCura.EDDS.WebAPI.TemplateManagerBase
         Public ArtifactId As Integer
         
         '<remarks/>
+        Public Guid As System.Guid
+        
+        '<remarks/>
         Public Name As String
         
         '<remarks/>
@@ -114,12 +117,15 @@ Namespace kCura.EDDS.WebAPI.TemplateManagerBase
     Public Class ApplicationInstallationResult
         
         '<remarks/>
-        Public ApplicationArtifacts() As ApplicationArtifact
-        
-        '<remarks/>
         Public ExceptionMessage As String
         
         '<remarks/>
+        Public NewApplicationArtifacts() As ApplicationArtifact
+        
+        '<remarks/>
         Public Success As Boolean
+        
+        '<remarks/>
+        Public UpdatedApplicationArtifacts() As ApplicationArtifact
     End Class
 End Namespace
