@@ -11,10 +11,20 @@ Namespace kCura.WinEDDS
 		Private _codeTypeID As NullableTypes.NullableInt32
 		Private _fileColumnIndex As Int32
 		Private _fieldLength As NullableTypes.NullableInt32
+		Private _associatedObjectTypeID As NullableTypes.NullableInt32
 		<NonSerialized()> Private _useUnicode As Boolean
 #End Region
 
 #Region "Properties"
+		Public Property AssociatedObjectTypeID() As NullableInt32
+			Get
+				Return _associatedObjectTypeID
+			End Get
+			Set(ByVal Value As NullableInt32)
+				_associatedObjectTypeID = Value
+			End Set
+		End Property
+
 		Public Property FieldName() As String
 			Get
 				Return _fieldName
@@ -126,7 +136,7 @@ Namespace kCura.WinEDDS
 
 #Region "Constructors"
 
-		Public Sub New(ByVal fieldName As String, ByVal fieldID As Int32, ByVal fieldTypeID As Int32, ByVal fieldCategoryID As Int32, ByVal codeTypeID As NullableTypes.NullableInt32, ByVal fieldLength As NullableInt32, ByVal useUnicode As Boolean)
+		Public Sub New(ByVal fieldName As String, ByVal fieldID As Int32, ByVal fieldTypeID As Int32, ByVal fieldCategoryID As Int32, ByVal codeTypeID As NullableTypes.NullableInt32, ByVal fieldLength As NullableInt32, ByVal associatedObjectTypeID As NullableInt32, ByVal useUnicode As Boolean)
 			MyBase.New()
 			_fieldName = fieldName
 			_fieldID = fieldID
@@ -134,11 +144,12 @@ Namespace kCura.WinEDDS
 			_fieldCategoryID = fieldCategoryID
 			_codeTypeID = codeTypeID
 			_fieldLength = fieldLength
-			_useUnicode = useUnicode
+			_associatedObjectTypeID = associatedObjectTypeID
+			_useUnicode = UseUnicode
 		End Sub
 
 		Public Sub New(ByVal docField As DocumentField)
-			Me.New(docField.FieldName, docField.FieldID, docField.FieldTypeID, docField.FieldCategoryID, docField.CodeTypeID, docField.FieldLength, docField.UseUnicode)
+			Me.New(docField.FieldName, docField.FieldID, docField.FieldTypeID, docField.FieldCategoryID, docField.CodeTypeID, docField.FieldLength, docField.AssociatedObjectTypeID, docField.UseUnicode)
 		End Sub
 
 #End Region

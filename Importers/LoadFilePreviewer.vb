@@ -261,7 +261,7 @@ Namespace kCura.WinEDDS
 						existsFilePath = filePath
 					End If
 				End If
-				Dim docfield As New DocumentField(_nativeFileCheckColumnName, -1, -1, -1, NullableInt32.Null, NullableInt32.Null, False)
+				Dim docfield As New DocumentField(_nativeFileCheckColumnName, -1, -1, -1, NullableInt32.Null, NullableInt32.Null, NullableInt32.Null, False)
 				If filePath = "" Then
 					docfield.Value = "No File Specified."
 				ElseIf Not System.IO.File.Exists(existsFilePath) Then
@@ -277,7 +277,7 @@ Namespace kCura.WinEDDS
 				Dim openParenIndex As Int32 = _destinationFolder.LastIndexOf("("c) + 1
 				Dim closeParenIndex As Int32 = _destinationFolder.LastIndexOf(")"c)
 				Dim parentObjectIdentifierIndex As Int32 = Int32.Parse(_destinationFolder.Substring(openParenIndex, closeParenIndex - openParenIndex)) - 1
-				Dim docfield As New DocumentField("Parent Object Identifier", -1, -1, -1, NullableInt32.Null, NullableInt32.Null, False)
+				Dim docfield As New DocumentField("Parent Object Identifier", -1, -1, -1, NullableInt32.Null, NullableInt32.Null, NullableInt32.Null, False)
 				docField.Value = values(parentObjectIdentifierIndex)
 				Dim textIdentifier As String = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(kCura.Utility.NullableTypesHelper.ToNullableString(values(parentObjectIdentifierIndex)))
 				If textIdentifier = "" Then
@@ -297,7 +297,7 @@ Namespace kCura.WinEDDS
 				Dim openParenIndex As Int32 = _destinationFolder.LastIndexOf("("c) + 1
 				Dim closeParenIndex As Int32 = _destinationFolder.LastIndexOf(")"c)
 				Dim parentObjectIdentifierIndex As Int32 = Int32.Parse(_destinationFolder.Substring(openParenIndex, closeParenIndex - openParenIndex)) - 1
-				Dim docfield As New DocumentField("Parent_Folder_Identifier", -1, -1, -1, NullableInt32.Null, NullableInt32.Null, False)
+				Dim docfield As New DocumentField("Parent_Folder_Identifier", -1, -1, -1, NullableInt32.Null, NullableInt32.Null, NullableInt32.Null, False)
 				docField.Value = values(parentObjectIdentifierIndex)
 				retval.Add(docfield)
 			End If

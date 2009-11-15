@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<wsdl:definitions xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tns="http://www.kCura.com/EDDS/BulkImportManager" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" targetNamespace="http://www.kCura.com/EDDS/BulkImportManager" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
-  <wsdl:types>
+<definitions xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:s0="http://www.kCura.com/EDDS/BulkImportManager" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" targetNamespace="http://www.kCura.com/EDDS/BulkImportManager" xmlns="http://schemas.xmlsoap.org/wsdl/">
+  <types>
     <s:schema elementFormDefault="qualified" targetNamespace="http://www.kCura.com/EDDS/BulkImportManager">
       <s:element name="BulkImportImage">
         <s:complexType>
@@ -8,7 +8,7 @@
             <s:element minOccurs="1" maxOccurs="1" name="appID" type="s:int" />
             <s:element minOccurs="0" maxOccurs="1" name="bulkFileName" type="s:string" />
             <s:element minOccurs="1" maxOccurs="1" name="uploadFullText" type="s:boolean" />
-            <s:element minOccurs="1" maxOccurs="1" name="overwrite" type="tns:OverwriteType" />
+            <s:element minOccurs="1" maxOccurs="1" name="overwrite" type="s0:OverwriteType" />
             <s:element minOccurs="1" maxOccurs="1" name="destinationFolderArtifactID" type="s:int" />
             <s:element minOccurs="0" maxOccurs="1" name="repository" type="s:string" />
             <s:element minOccurs="1" maxOccurs="1" name="useBulk" type="s:boolean" />
@@ -27,7 +27,7 @@
       <s:element name="BulkImportImageResponse">
         <s:complexType>
           <s:sequence>
-            <s:element minOccurs="0" maxOccurs="1" name="BulkImportImageResult" type="tns:MassImportResults" />
+            <s:element minOccurs="0" maxOccurs="1" name="BulkImportImageResult" type="s0:MassImportResults" />
           </s:sequence>
         </s:complexType>
       </s:element>
@@ -46,7 +46,7 @@
             <s:element minOccurs="1" maxOccurs="1" name="appID" type="s:int" />
             <s:element minOccurs="0" maxOccurs="1" name="bulkFileName" type="s:string" />
             <s:element minOccurs="1" maxOccurs="1" name="uploadFullText" type="s:boolean" />
-            <s:element minOccurs="1" maxOccurs="1" name="overwrite" type="tns:OverwriteType" />
+            <s:element minOccurs="1" maxOccurs="1" name="overwrite" type="s0:OverwriteType" />
             <s:element minOccurs="1" maxOccurs="1" name="destinationFolderArtifactID" type="s:int" />
             <s:element minOccurs="0" maxOccurs="1" name="repository" type="s:string" />
             <s:element minOccurs="1" maxOccurs="1" name="productionArtifactID" type="s:int" />
@@ -59,7 +59,7 @@
       <s:element name="BulkImportProductionImageResponse">
         <s:complexType>
           <s:sequence>
-            <s:element minOccurs="0" maxOccurs="1" name="BulkImportProductionImageResult" type="tns:MassImportResults" />
+            <s:element minOccurs="0" maxOccurs="1" name="BulkImportProductionImageResult" type="s0:MassImportResults" />
           </s:sequence>
         </s:complexType>
       </s:element>
@@ -76,7 +76,7 @@
       <s:element name="GenerateImageErrorFilesResponse">
         <s:complexType>
           <s:sequence>
-            <s:element minOccurs="0" maxOccurs="1" name="GenerateImageErrorFilesResult" type="tns:ErrorFileKey" />
+            <s:element minOccurs="0" maxOccurs="1" name="GenerateImageErrorFilesResult" type="s0:ErrorFileKey" />
           </s:sequence>
         </s:complexType>
       </s:element>
@@ -105,33 +105,34 @@
         <s:complexType>
           <s:sequence>
             <s:element minOccurs="1" maxOccurs="1" name="appID" type="s:int" />
-            <s:element minOccurs="0" maxOccurs="1" name="settings" type="tns:NativeLoadInfo" />
+            <s:element minOccurs="0" maxOccurs="1" name="settings" type="s0:NativeLoadInfo" />
           </s:sequence>
         </s:complexType>
       </s:element>
       <s:complexType name="NativeLoadInfo">
         <s:sequence>
-          <s:element minOccurs="0" maxOccurs="1" name="MappedFields" type="tns:ArrayOfFieldInfo" />
-          <s:element minOccurs="1" maxOccurs="1" name="Overlay" type="tns:OverwriteType" />
+          <s:element minOccurs="0" maxOccurs="1" name="MappedFields" type="s0:ArrayOfFieldInfo" />
+          <s:element minOccurs="1" maxOccurs="1" name="Overlay" type="s0:OverwriteType" />
           <s:element minOccurs="0" maxOccurs="1" name="Repository" type="s:string" />
           <s:element minOccurs="0" maxOccurs="1" name="RunID" type="s:string" />
           <s:element minOccurs="0" maxOccurs="1" name="DataFileName" type="s:string" />
           <s:element minOccurs="1" maxOccurs="1" name="UseBulkDataImport" type="s:boolean" />
           <s:element minOccurs="1" maxOccurs="1" name="UploadFiles" type="s:boolean" />
           <s:element minOccurs="0" maxOccurs="1" name="CodeFileName" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="ObjectFileName" type="s:string" />
           <s:element minOccurs="1" maxOccurs="1" name="KeyFieldArtifactID" type="s:int" />
         </s:sequence>
       </s:complexType>
       <s:complexType name="ArrayOfFieldInfo">
         <s:sequence>
-          <s:element minOccurs="0" maxOccurs="unbounded" name="FieldInfo" nillable="true" type="tns:FieldInfo" />
+          <s:element minOccurs="0" maxOccurs="unbounded" name="FieldInfo" nillable="true" type="s0:FieldInfo" />
         </s:sequence>
       </s:complexType>
       <s:complexType name="FieldInfo">
         <s:sequence>
           <s:element minOccurs="1" maxOccurs="1" name="ArtifactID" type="s:int" />
-          <s:element minOccurs="1" maxOccurs="1" name="Category" type="tns:FieldCategory" />
-          <s:element minOccurs="1" maxOccurs="1" name="Type" type="tns:FieldType" />
+          <s:element minOccurs="1" maxOccurs="1" name="Category" type="s0:FieldCategory" />
+          <s:element minOccurs="1" maxOccurs="1" name="Type" type="s0:FieldType" />
           <s:element minOccurs="0" maxOccurs="1" name="DisplayName" type="s:string" />
           <s:element minOccurs="1" maxOccurs="1" name="TextLength" type="s:int" />
           <s:element minOccurs="1" maxOccurs="1" name="CodeTypeID" type="s:int" />
@@ -180,7 +181,7 @@
       <s:element name="BulkImportNativeResponse">
         <s:complexType>
           <s:sequence>
-            <s:element minOccurs="0" maxOccurs="1" name="BulkImportNativeResult" type="tns:MassImportResults" />
+            <s:element minOccurs="0" maxOccurs="1" name="BulkImportNativeResult" type="s0:MassImportResults" />
           </s:sequence>
         </s:complexType>
       </s:element>
@@ -188,13 +189,13 @@
         <s:complexType>
           <s:sequence>
             <s:element minOccurs="1" maxOccurs="1" name="appID" type="s:int" />
-            <s:element minOccurs="0" maxOccurs="1" name="settings" type="tns:ObjectLoadInfo" />
+            <s:element minOccurs="0" maxOccurs="1" name="settings" type="s0:ObjectLoadInfo" />
           </s:sequence>
         </s:complexType>
       </s:element>
       <s:complexType name="ObjectLoadInfo">
         <s:complexContent mixed="false">
-          <s:extension base="tns:NativeLoadInfo">
+          <s:extension base="s0:NativeLoadInfo">
             <s:sequence>
               <s:element minOccurs="1" maxOccurs="1" name="ArtifactTypeID" type="s:int" />
             </s:sequence>
@@ -204,7 +205,7 @@
       <s:element name="BulkImportObjectsResponse">
         <s:complexType>
           <s:sequence>
-            <s:element minOccurs="0" maxOccurs="1" name="BulkImportObjectsResult" type="tns:MassImportResults" />
+            <s:element minOccurs="0" maxOccurs="1" name="BulkImportObjectsResult" type="s0:MassImportResults" />
           </s:sequence>
         </s:complexType>
       </s:element>
@@ -222,7 +223,7 @@
       <s:element name="GenerateNativeErrorFilesResponse">
         <s:complexType>
           <s:sequence>
-            <s:element minOccurs="0" maxOccurs="1" name="GenerateNativeErrorFilesResult" type="tns:ErrorFileKey" />
+            <s:element minOccurs="0" maxOccurs="1" name="GenerateNativeErrorFilesResult" type="s0:ErrorFileKey" />
           </s:sequence>
         </s:complexType>
       </s:element>
@@ -257,187 +258,186 @@
         </s:complexType>
       </s:element>
     </s:schema>
-  </wsdl:types>
-  <wsdl:message name="BulkImportImageSoapIn">
-    <wsdl:part name="parameters" element="tns:BulkImportImage" />
-  </wsdl:message>
-  <wsdl:message name="BulkImportImageSoapOut">
-    <wsdl:part name="parameters" element="tns:BulkImportImageResponse" />
-  </wsdl:message>
-  <wsdl:message name="BulkImportProductionImageSoapIn">
-    <wsdl:part name="parameters" element="tns:BulkImportProductionImage" />
-  </wsdl:message>
-  <wsdl:message name="BulkImportProductionImageSoapOut">
-    <wsdl:part name="parameters" element="tns:BulkImportProductionImageResponse" />
-  </wsdl:message>
-  <wsdl:message name="GenerateImageErrorFilesSoapIn">
-    <wsdl:part name="parameters" element="tns:GenerateImageErrorFiles" />
-  </wsdl:message>
-  <wsdl:message name="GenerateImageErrorFilesSoapOut">
-    <wsdl:part name="parameters" element="tns:GenerateImageErrorFilesResponse" />
-  </wsdl:message>
-  <wsdl:message name="ImageRunHasErrorsSoapIn">
-    <wsdl:part name="parameters" element="tns:ImageRunHasErrors" />
-  </wsdl:message>
-  <wsdl:message name="ImageRunHasErrorsSoapOut">
-    <wsdl:part name="parameters" element="tns:ImageRunHasErrorsResponse" />
-  </wsdl:message>
-  <wsdl:message name="BulkImportNativeSoapIn">
-    <wsdl:part name="parameters" element="tns:BulkImportNative" />
-  </wsdl:message>
-  <wsdl:message name="BulkImportNativeSoapOut">
-    <wsdl:part name="parameters" element="tns:BulkImportNativeResponse" />
-  </wsdl:message>
-  <wsdl:message name="BulkImportObjectsSoapIn">
-    <wsdl:part name="parameters" element="tns:BulkImportObjects" />
-  </wsdl:message>
-  <wsdl:message name="BulkImportObjectsSoapOut">
-    <wsdl:part name="parameters" element="tns:BulkImportObjectsResponse" />
-  </wsdl:message>
-  <wsdl:message name="GenerateNativeErrorFilesSoapIn">
-    <wsdl:part name="parameters" element="tns:GenerateNativeErrorFiles" />
-  </wsdl:message>
-  <wsdl:message name="GenerateNativeErrorFilesSoapOut">
-    <wsdl:part name="parameters" element="tns:GenerateNativeErrorFilesResponse" />
-  </wsdl:message>
-  <wsdl:message name="NativeRunHasErrorsSoapIn">
-    <wsdl:part name="parameters" element="tns:NativeRunHasErrors" />
-  </wsdl:message>
-  <wsdl:message name="NativeRunHasErrorsSoapOut">
-    <wsdl:part name="parameters" element="tns:NativeRunHasErrorsResponse" />
-  </wsdl:message>
-  <wsdl:message name="DisposeTempTablesSoapIn">
-    <wsdl:part name="parameters" element="tns:DisposeTempTables" />
-  </wsdl:message>
-  <wsdl:message name="DisposeTempTablesSoapOut">
-    <wsdl:part name="parameters" element="tns:DisposeTempTablesResponse" />
-  </wsdl:message>
-  <wsdl:portType name="BulkImportManagerSoap">
-    <wsdl:operation name="BulkImportImage">
-      <wsdl:input message="tns:BulkImportImageSoapIn" />
-      <wsdl:output message="tns:BulkImportImageSoapOut" />
-    </wsdl:operation>
-    <wsdl:operation name="BulkImportProductionImage">
-      <wsdl:input message="tns:BulkImportProductionImageSoapIn" />
-      <wsdl:output message="tns:BulkImportProductionImageSoapOut" />
-    </wsdl:operation>
-    <wsdl:operation name="GenerateImageErrorFiles">
-      <wsdl:input message="tns:GenerateImageErrorFilesSoapIn" />
-      <wsdl:output message="tns:GenerateImageErrorFilesSoapOut" />
-    </wsdl:operation>
-    <wsdl:operation name="ImageRunHasErrors">
-      <wsdl:input message="tns:ImageRunHasErrorsSoapIn" />
-      <wsdl:output message="tns:ImageRunHasErrorsSoapOut" />
-    </wsdl:operation>
-    <wsdl:operation name="BulkImportNative">
-      <wsdl:input message="tns:BulkImportNativeSoapIn" />
-      <wsdl:output message="tns:BulkImportNativeSoapOut" />
-    </wsdl:operation>
-    <wsdl:operation name="BulkImportObjects">
-      <wsdl:input message="tns:BulkImportObjectsSoapIn" />
-      <wsdl:output message="tns:BulkImportObjectsSoapOut" />
-    </wsdl:operation>
-    <wsdl:operation name="GenerateNativeErrorFiles">
-      <wsdl:input message="tns:GenerateNativeErrorFilesSoapIn" />
-      <wsdl:output message="tns:GenerateNativeErrorFilesSoapOut" />
-    </wsdl:operation>
-    <wsdl:operation name="NativeRunHasErrors">
-      <wsdl:input message="tns:NativeRunHasErrorsSoapIn" />
-      <wsdl:output message="tns:NativeRunHasErrorsSoapOut" />
-    </wsdl:operation>
-    <wsdl:operation name="DisposeTempTables">
-      <wsdl:input message="tns:DisposeTempTablesSoapIn" />
-      <wsdl:output message="tns:DisposeTempTablesSoapOut" />
-    </wsdl:operation>
-  </wsdl:portType>
-  <wsdl:binding name="BulkImportManagerSoap" type="tns:BulkImportManagerSoap">
+  </types>
+  <message name="BulkImportImageSoapIn">
+    <part name="parameters" element="s0:BulkImportImage" />
+  </message>
+  <message name="BulkImportImageSoapOut">
+    <part name="parameters" element="s0:BulkImportImageResponse" />
+  </message>
+  <message name="BulkImportProductionImageSoapIn">
+    <part name="parameters" element="s0:BulkImportProductionImage" />
+  </message>
+  <message name="BulkImportProductionImageSoapOut">
+    <part name="parameters" element="s0:BulkImportProductionImageResponse" />
+  </message>
+  <message name="GenerateImageErrorFilesSoapIn">
+    <part name="parameters" element="s0:GenerateImageErrorFiles" />
+  </message>
+  <message name="GenerateImageErrorFilesSoapOut">
+    <part name="parameters" element="s0:GenerateImageErrorFilesResponse" />
+  </message>
+  <message name="ImageRunHasErrorsSoapIn">
+    <part name="parameters" element="s0:ImageRunHasErrors" />
+  </message>
+  <message name="ImageRunHasErrorsSoapOut">
+    <part name="parameters" element="s0:ImageRunHasErrorsResponse" />
+  </message>
+  <message name="BulkImportNativeSoapIn">
+    <part name="parameters" element="s0:BulkImportNative" />
+  </message>
+  <message name="BulkImportNativeSoapOut">
+    <part name="parameters" element="s0:BulkImportNativeResponse" />
+  </message>
+  <message name="BulkImportObjectsSoapIn">
+    <part name="parameters" element="s0:BulkImportObjects" />
+  </message>
+  <message name="BulkImportObjectsSoapOut">
+    <part name="parameters" element="s0:BulkImportObjectsResponse" />
+  </message>
+  <message name="GenerateNativeErrorFilesSoapIn">
+    <part name="parameters" element="s0:GenerateNativeErrorFiles" />
+  </message>
+  <message name="GenerateNativeErrorFilesSoapOut">
+    <part name="parameters" element="s0:GenerateNativeErrorFilesResponse" />
+  </message>
+  <message name="NativeRunHasErrorsSoapIn">
+    <part name="parameters" element="s0:NativeRunHasErrors" />
+  </message>
+  <message name="NativeRunHasErrorsSoapOut">
+    <part name="parameters" element="s0:NativeRunHasErrorsResponse" />
+  </message>
+  <message name="DisposeTempTablesSoapIn">
+    <part name="parameters" element="s0:DisposeTempTables" />
+  </message>
+  <message name="DisposeTempTablesSoapOut">
+    <part name="parameters" element="s0:DisposeTempTablesResponse" />
+  </message>
+  <portType name="BulkImportManagerSoap">
+    <operation name="BulkImportImage">
+      <input message="s0:BulkImportImageSoapIn" />
+      <output message="s0:BulkImportImageSoapOut" />
+    </operation>
+    <operation name="BulkImportProductionImage">
+      <input message="s0:BulkImportProductionImageSoapIn" />
+      <output message="s0:BulkImportProductionImageSoapOut" />
+    </operation>
+    <operation name="GenerateImageErrorFiles">
+      <input message="s0:GenerateImageErrorFilesSoapIn" />
+      <output message="s0:GenerateImageErrorFilesSoapOut" />
+    </operation>
+    <operation name="ImageRunHasErrors">
+      <input message="s0:ImageRunHasErrorsSoapIn" />
+      <output message="s0:ImageRunHasErrorsSoapOut" />
+    </operation>
+    <operation name="BulkImportNative">
+      <input message="s0:BulkImportNativeSoapIn" />
+      <output message="s0:BulkImportNativeSoapOut" />
+    </operation>
+    <operation name="BulkImportObjects">
+      <input message="s0:BulkImportObjectsSoapIn" />
+      <output message="s0:BulkImportObjectsSoapOut" />
+    </operation>
+    <operation name="GenerateNativeErrorFiles">
+      <input message="s0:GenerateNativeErrorFilesSoapIn" />
+      <output message="s0:GenerateNativeErrorFilesSoapOut" />
+    </operation>
+    <operation name="NativeRunHasErrors">
+      <input message="s0:NativeRunHasErrorsSoapIn" />
+      <output message="s0:NativeRunHasErrorsSoapOut" />
+    </operation>
+    <operation name="DisposeTempTables">
+      <input message="s0:DisposeTempTablesSoapIn" />
+      <output message="s0:DisposeTempTablesSoapOut" />
+    </operation>
+  </portType>
+  <binding name="BulkImportManagerSoap" type="s0:BulkImportManagerSoap">
     <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document" />
-    <wsdl:operation name="BulkImportImage">
+    <operation name="BulkImportImage">
       <soap:operation soapAction="http://www.kCura.com/EDDS/BulkImportManager/BulkImportImage" style="document" />
-      <wsdl:input>
+      <input>
         <soap:body use="literal" />
-      </wsdl:input>
-      <wsdl:output>
+      </input>
+      <output>
         <soap:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="BulkImportProductionImage">
+      </output>
+    </operation>
+    <operation name="BulkImportProductionImage">
       <soap:operation soapAction="http://www.kCura.com/EDDS/BulkImportManager/BulkImportProductionImage" style="document" />
-      <wsdl:input>
+      <input>
         <soap:body use="literal" />
-      </wsdl:input>
-      <wsdl:output>
+      </input>
+      <output>
         <soap:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="GenerateImageErrorFiles">
+      </output>
+    </operation>
+    <operation name="GenerateImageErrorFiles">
       <soap:operation soapAction="http://www.kCura.com/EDDS/BulkImportManager/GenerateImageErrorFiles" style="document" />
-      <wsdl:input>
+      <input>
         <soap:body use="literal" />
-      </wsdl:input>
-      <wsdl:output>
+      </input>
+      <output>
         <soap:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="ImageRunHasErrors">
+      </output>
+    </operation>
+    <operation name="ImageRunHasErrors">
       <soap:operation soapAction="http://www.kCura.com/EDDS/BulkImportManager/ImageRunHasErrors" style="document" />
-      <wsdl:input>
+      <input>
         <soap:body use="literal" />
-      </wsdl:input>
-      <wsdl:output>
+      </input>
+      <output>
         <soap:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="BulkImportNative">
+      </output>
+    </operation>
+    <operation name="BulkImportNative">
       <soap:operation soapAction="http://www.kCura.com/EDDS/BulkImportManager/BulkImportNative" style="document" />
-      <wsdl:input>
+      <input>
         <soap:body use="literal" />
-      </wsdl:input>
-      <wsdl:output>
+      </input>
+      <output>
         <soap:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="BulkImportObjects">
+      </output>
+    </operation>
+    <operation name="BulkImportObjects">
       <soap:operation soapAction="http://www.kCura.com/EDDS/BulkImportManager/BulkImportObjects" style="document" />
-      <wsdl:input>
+      <input>
         <soap:body use="literal" />
-      </wsdl:input>
-      <wsdl:output>
+      </input>
+      <output>
         <soap:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="GenerateNativeErrorFiles">
+      </output>
+    </operation>
+    <operation name="GenerateNativeErrorFiles">
       <soap:operation soapAction="http://www.kCura.com/EDDS/BulkImportManager/GenerateNativeErrorFiles" style="document" />
-      <wsdl:input>
+      <input>
         <soap:body use="literal" />
-      </wsdl:input>
-      <wsdl:output>
+      </input>
+      <output>
         <soap:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="NativeRunHasErrors">
+      </output>
+    </operation>
+    <operation name="NativeRunHasErrors">
       <soap:operation soapAction="http://www.kCura.com/EDDS/BulkImportManager/NativeRunHasErrors" style="document" />
-      <wsdl:input>
+      <input>
         <soap:body use="literal" />
-      </wsdl:input>
-      <wsdl:output>
+      </input>
+      <output>
         <soap:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="DisposeTempTables">
+      </output>
+    </operation>
+    <operation name="DisposeTempTables">
       <soap:operation soapAction="http://www.kCura.com/EDDS/BulkImportManager/DisposeTempTables" style="document" />
-      <wsdl:input>
+      <input>
         <soap:body use="literal" />
-      </wsdl:input>
-      <wsdl:output>
+      </input>
+      <output>
         <soap:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
-  </wsdl:binding>
-  <wsdl:service name="BulkImportManager">
-    <documentation xmlns="http://schemas.xmlsoap.org/wsdl/" />
-    <wsdl:port name="BulkImportManagerSoap" binding="tns:BulkImportManagerSoap">
+      </output>
+    </operation>
+  </binding>
+  <service name="BulkImportManager">
+    <port name="BulkImportManagerSoap" binding="s0:BulkImportManagerSoap">
       <soap:address location="http://localhost/EDDSWebAPI/BulkImportManager.asmx" />
-    </wsdl:port>
-  </wsdl:service>
-</wsdl:definitions>
+    </port>
+  </service>
+</definitions>

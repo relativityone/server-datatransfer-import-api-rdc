@@ -7,6 +7,7 @@ Namespace kCura.WinEDDS
 
 		Protected _columnsAreInitialized As Boolean
 		Protected _columnHeaders As String()
+
 		Protected _documentManager As kCura.WinEDDS.Service.DocumentManager
 		Protected _uploadManager As kCura.WinEDDS.Service.FileIO
 		Protected _codeManager As kCura.WinEDDS.Service.CodeManager
@@ -17,6 +18,7 @@ Namespace kCura.WinEDDS
 		Protected _fileManager As kCura.WinEDDS.Service.FileManager
 		Protected _usermanager As kCura.WinEDDS.Service.UserManager
 		Protected _objectManager As kCura.WinEDDS.Service.ObjectManager
+
 		Protected _filePathColumn As String
 		Protected _filePathColumnIndex As Int32
 		Protected _firstLineContainsColumnNames As Boolean
@@ -296,6 +298,34 @@ Namespace kCura.WinEDDS
 			'Return codes
 		End Function
 
+		'returning identifier/artifactID pairs for objects. -1 for new artifactIDs
+		Public Overridable Function GetObjects(ByVal value As String, ByVal column As Int32, ByVal field As DocumentField, ByVal associatedObjectTypeID As Int32) As System.Collections.Hashtable
+			Dim al As New System.Collections.ArrayList(value.Split(_multiValueSeparator))
+			Dim goodObjects As New System.Collections.ArrayList
+			For Each objectString As String In al
+				objectString = objectString.Trim
+				If objectString <> String.Empty Then
+					'################################################ EXCEPTION TYPE #####################################
+					If goodObjects.Contains(objectString) Then Throw New DuplicateObjectReferenceException(Me.CurrentLineNumber, column, objectString)
+					'Not checking the length of the object because object names have no limit.
+					goodObjects.Add(objectString)
+				End If
+			Next
+
+			Dim objectDisplayNames As String() = DirectCast(goodObjects.ToArray(GetType(String)), String())
+			Dim nameIDPairs As New System.Collections.Hashtable
+			For Each objectName As String In objectDisplayNames
+				Dim artifactID As System.Data.DataSet = _objectManager.RetrieveArtifactIdOfMappedObject(_caseArtifactID, objectName, associatedObjectTypeID)
+				If artifactID.Tables(0).Rows.Count > 0 Then
+					nameIDPairs(objectName) = CType(artifactID.Tables(0).Rows(0)(0), Int32)
+					' .... the heck
+				Else
+					nameIDPairs(objectName) = -1
+				End If
+			Next
+			Return nameIDPairs
+		End Function
+
 #End Region
 
 		Public Sub SetFieldValue(ByVal field As DocumentField, ByVal values As String(), ByVal column As Int32, ByVal identityValue As String)
@@ -420,36 +450,77 @@ Namespace kCura.WinEDDS
 				Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Object
 					field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(GetNullableAssociatedObjectName(value, column, 255, field.FieldName))
 					If forPreview Then field.Value = value.Trim
-				Case Else				'FieldTypeHelper.FieldType.Text
-					If field.FieldCategory = DynamicFields.Types.FieldCategory.FullText AndAlso _fullTextColumnMapsToFileLocation Then
-						If value = "" Then
-							field.Value = ""
-						ElseIf Not System.IO.File.Exists(value) Then
-							Throw New MissingFullTextFileException(Me.CurrentLineNumber, column)
-						Else
-							If forPreview Then
-								Dim sr As New System.IO.StreamReader(value, _extractedTextFileEncoding)
-								Dim i As Int32 = 0
+				Case DynamicFields.Types.FieldTypeHelper.FieldType.Objects
+					If value = String.Empty Then
+						field.Value = String.Empty
+					Else
+						Dim oldval As String = value.Trim
+
+						Dim fieldManager As New kCura.EDDS.WebAPI.FieldManagerBase.FieldManager
+						fieldManager.Credentials = _fileManager.Credentials
+						fieldManager.CookieContainer = _fileManager.CookieContainer
+						Dim fieldDTO As kCura.EDDS.WebAPI.FieldManagerBase.Field = fieldManager.Read(_caseArtifactID, field.FieldID)
+						field.AssociatedObjectTypeID = fieldDTO.AssociativeArtifactTypeID
+						'TODO: Move this to wherever "field" is created.
+
+						Dim objectValues As System.Collections.Hashtable = GetObjects(value.Trim, column, field, field.AssociatedObjectTypeID.Value)
+						Dim newVal As String = String.Empty
+						Dim objName As String
+						If objectValues.Count > 0 Then
+							For Each objName In objectValues.Keys
+								If forPreview And DirectCast(objectValues(objName), Int32) = -1 Then
+									objectValues(objName) = "[new object]"
+								End If
+								newVal &= ";" & objName
+							Next
+						End If
+						newval = newval.TrimStart(";"c)
+						field.Value = newVal
+						If TypeOf Me Is BulkLoadFileImporter Then
+							If objectValues.Count = 0 Then
+								field.Value = ""
+							Else
+								field.Value = ChrW(11) & oldval.Trim(_multiValueSeparator).Replace(_multiValueSeparator, ChrW(11)) & ChrW(11)
 								Dim sb As New System.Text.StringBuilder
-								While sr.Peek <> -1 AndAlso i < 100
-									sb.Append(ChrW(sr.Read))
-									i += 1
-								End While
-								If i = 100 Then sb.Append("...")
-								sr.Close()
-								sb = sb.Replace(System.Environment.NewLine, Me.NewlineProxy).Replace(ChrW(10), Me.NewlineProxy).Replace(ChrW(13), Me.NewlineProxy)
-								field.Value = sb.ToString
+								For Each objectValue As String In objectValues.Keys
+									DirectCast(Me, BulkLoadFileImporter).WriteObjectLineToTempFile(identityValue, objectValue, CType(objectValues(objectValue), Int32), field.AssociatedObjectTypeID.Value)
+									sb.Append("'" & objectValue & "'")
+									sb.Append(",")
+								Next
+								field.Value = sb.ToString.TrimEnd(","c)
+							End If
+						End If
+					End If
+				Case Else				'FieldTypeHelper.FieldType.Text
+						If field.FieldCategory = DynamicFields.Types.FieldCategory.FullText AndAlso _fullTextColumnMapsToFileLocation Then
+							If value = "" Then
+								field.Value = ""
+							ElseIf Not System.IO.File.Exists(value) Then
+								Throw New MissingFullTextFileException(Me.CurrentLineNumber, column)
+							Else
+								If forPreview Then
+									Dim sr As New System.IO.StreamReader(value, _extractedTextFileEncoding)
+									Dim i As Int32 = 0
+									Dim sb As New System.Text.StringBuilder
+									While sr.Peek <> -1 AndAlso i < 100
+										sb.Append(ChrW(sr.Read))
+										i += 1
+									End While
+									If i = 100 Then sb.Append("...")
+									sr.Close()
+									sb = sb.Replace(System.Environment.NewLine, Me.NewlineProxy).Replace(ChrW(10), Me.NewlineProxy).Replace(ChrW(13), Me.NewlineProxy)
+									field.Value = sb.ToString
+								Else
+									field.Value = value
+								End If
+							End If
+						Else
+							If value.Length > 100 AndAlso forPreview Then
+								field.Value = value.Substring(0, 100) & "...."
 							Else
 								field.Value = value
 							End If
 						End If
-					Else
-						If value.Length > 100 AndAlso forPreview Then
-							field.Value = value.Substring(0, 100) & "...."
-						Else
-							field.Value = value
-						End If
-					End If
 			End Select
 		End Sub
 

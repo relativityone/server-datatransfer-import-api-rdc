@@ -41,6 +41,7 @@ Namespace kCura.WinEDDS
 		Private _fieldArtifactIds As Int32()
 		Private _outputNativeFileWriter As System.IO.StreamWriter
 		Private _outputCodeFileWriter As System.IO.StreamWriter
+		Private _outputObjectFileWriter As System.IO.StreamWriter
 		Private _caseInfo As kCura.EDDS.Types.CaseInfo
 
 		Private _runID As String = ""
@@ -48,6 +49,7 @@ Namespace kCura.WinEDDS
 
 		Private _outputNativeFilePath As String = System.IO.Path.GetTempFileName
 		Private _outputCodeFilePath As String = System.IO.Path.GetTempFileName
+		Private _outputObjectFilePath As String = System.IO.Path.GetTempFileName
 		Private _filePath As String
 		Private _batchCounter As Int32 = 0
 		Private _errorMessageFileLocation As String = ""
@@ -263,6 +265,10 @@ Namespace kCura.WinEDDS
 			_outputCodeFileWriter.WriteLine(String.Format("{1}{0}{2}{0}{3}{0}", Constants.NATIVE_FIELD_DELIMITER, documentIdentifier, codeArtifactID, codeTypeID))
 		End Sub
 
+		Public Sub WriteObjectLineToTempFile(ByVal ownerIdentifier As String, ByVal objectName As String, ByVal artifactID As Int32, ByVal objectTypeArtifactID As Int32)
+			_outputObjectFileWriter.WriteLine(String.Format("{1}{0}{2}{0}{3}{0}{4}{0}", Constants.NATIVE_FIELD_DELIMITER, ownerIdentifier, objectName, artifactID, objectTypeArtifactID))
+		End Sub
+
 #End Region
 
 #Region "Main"
@@ -376,8 +382,10 @@ Namespace kCura.WinEDDS
 			Me.InitializeFieldIdList()
 			kCura.Utility.File.Delete(_outputNativeFilePath)
 			kCura.Utility.File.Delete(_outputCodeFilePath)
+			kCura.Utility.File.Delete(_outputObjectFilePath)
 			_outputNativeFileWriter = New System.IO.StreamWriter(_outputNativeFilePath, False, System.Text.Encoding.Unicode)
 			_outputCodeFileWriter = New System.IO.StreamWriter(_outputCodeFilePath, False, System.Text.Encoding.Unicode)
+			_outputObjectFileWriter = New System.IO.StreamWriter(_outputObjectFilePath, False, System.Text.Encoding.Unicode)
 			RaiseEvent StatusMessage(New kCura.Windows.Process.StatusEventArgs(Windows.Process.EventType.ResetStartTime, 0, _recordCount, "Reset time for import rolling average", Nothing))
 		End Sub
 
@@ -588,6 +596,7 @@ Namespace kCura.WinEDDS
 		Private Function PushNativeBatch(Optional ByVal lastRun As Boolean = False) As Object
 			_outputNativeFileWriter.Close()
 			_outputCodeFileWriter.Close()
+			_outputObjectFileWriter.Close()
 			Dim start As Int64 = System.DateTime.Now.Ticks
 			If _batchCounter = 0 Then Return Nothing
 			_batchCounter = 0
@@ -597,9 +606,15 @@ Namespace kCura.WinEDDS
 			Dim uploadBcp As FileUploadReturnArgs = _bcpuploader.UploadBcpFile(_caseInfo.ArtifactID, _outputNativeFilePath)
 			If uploadBcp Is Nothing Then Return Nothing
 			Dim nativeFileUploadKey As String = uploadBcp.Value
+
 			Dim codebcp As FileUploadReturnArgs = _bcpuploader.UploadBcpFile(_caseInfo.ArtifactID, _outputCodeFilePath)
 			If codebcp Is Nothing Then Return Nothing
 			Dim codeFileUploadKey As String = codebcp.Value
+
+			Dim objectbcp As FileUploadReturnArgs = _bcpuploader.UploadBcpFile(_caseInfo.ArtifactID, _outputObjectFilePath)
+			If objectbcp Is Nothing Then Return Nothing
+			Dim objectFileUploadKey As String = objectbcp.Value
+
 			If _artifactTypeID = kCura.EDDS.Types.ArtifactType.Document Then
 				settings.Repository = _defaultDestinationFolderPath
 				If settings.Repository = "" Then settings.Repository = _caseInfo.DocumentPath
@@ -613,16 +628,18 @@ Namespace kCura.WinEDDS
 					_bcpuploader.DestinationFolderPath = settings.Repository
 					nativeFileUploadKey = _bcpuploader.UploadFile(_outputNativeFilePath, _caseInfo.ArtifactID)
 					codeFileUploadKey = _bcpuploader.UploadFile(_outputCodeFilePath, _caseInfo.ArtifactID)
+					objectFileUploadKey = _bcpuploader.UploadFile(_outputObjectFilePath, _caseInfo.ArtifactID)
 					settings.UseBulkDataImport = False
 				Else
 					Throw New BcpPathAccessException(uploadBcp.Value)
 				End If
 			End If
 			_statistics.MetadataTime += System.Math.Max((System.DateTime.Now.Ticks - start), 1)
-			_statistics.MetadataBytes += (Me.GetFileLength(_outputCodeFilePath) + Me.GetFileLength(_outputNativeFilePath))
+			_statistics.MetadataBytes += (Me.GetFileLength(_outputCodeFilePath) + Me.GetFileLength(_outputNativeFilePath) + Me.GetFileLength(_outputObjectFilePath))
 			settings.RunID = _runID
 			settings.CodeFileName = codeFileUploadKey
 			settings.DataFileName = nativeFileUploadKey
+			settings.ObjectFileName = objectFileUploadKey
 			settings.MappedFields = Me.GetMappedFields(_artifactTypeID)
 			settings.KeyFieldArtifactID = _keyFieldID
 			Select Case _overwrite.ToLower
@@ -642,11 +659,13 @@ Namespace kCura.WinEDDS
 
 			kCura.Utility.File.Delete(_outputNativeFilePath)
 			kCura.Utility.File.Delete(_outputCodeFilePath)
+			kCura.Utility.File.Delete(_outputObjectFilePath)
 			_currentStatisticsSnapshot = _statistics.ToDictionary
 			_statisticsLastUpdated = System.DateTime.Now
 			If Not lastRun Then
 				_outputNativeFileWriter = New System.IO.StreamWriter(_outputNativeFilePath, False, System.Text.Encoding.Unicode)
 				_outputCodeFileWriter = New System.IO.StreamWriter(_outputCodeFilePath, False, System.Text.Encoding.Unicode)
+				_outputObjectFileWriter = New System.IO.StreamWriter(_outputObjectFilePath, False, System.Text.Encoding.Unicode)
 			End If
 			Me.ManageErrors(_artifactTypeID)
 		End Function
@@ -823,6 +842,7 @@ Namespace kCura.WinEDDS
 		Private Function PrepareFieldCollectionAndExtractIdentityValue(ByVal fieldCollection As DocumentFieldCollection, ByVal values As String()) As String
 			System.Threading.Monitor.Enter(_outputNativeFileWriter)
 			System.Threading.Monitor.Enter(_outputCodeFileWriter)
+			System.Threading.Monitor.Enter(_outputObjectFileWriter)
 			Dim item As LoadFileFieldMap.LoadFileFieldMapItem
 			Dim identityValue As String = String.Empty
 			Dim docfield As DocumentField
@@ -877,13 +897,14 @@ Namespace kCura.WinEDDS
 				fieldCollection.GroupIdentifier.Value = identityValue
 			End If
 			For Each fieldDTO As kCura.EDDS.WebAPI.DocumentManagerBase.Field In Me.UnmappedRelationalFields
-				Dim field As New DocumentField(fieldDTO.DisplayName, fieldDTO.ArtifactID, fieldDTO.FieldTypeID, fieldDTO.FieldCategoryID, fieldDTO.CodeTypeID, fieldDTO.MaxLength, fieldDTO.UseUnicodeEncoding)
+				Dim field As New DocumentField(fieldDTO.DisplayName, fieldDTO.ArtifactID, fieldDTO.FieldTypeID, fieldDTO.FieldCategoryID, fieldDTO.CodeTypeID, fieldDTO.MaxLength, fieldDTO.AssociativeArtifactTypeID, fieldDTO.UseUnicodeEncoding)
 				Me.SetFieldValue(field, values, identityFileColumnIndex, identityValue)
 			Next
 			_firstTimeThrough = False
 			Return identityValue
 			System.Threading.Monitor.Exit(_outputNativeFileWriter)
 			System.Threading.Monitor.Exit(_outputCodeFileWriter)
+			System.Threading.Monitor.Exit(_outputObjectFileWriter)
 		End Function
 
 		Private Sub ManageFileField(ByVal values As String(), ByVal item As LoadFileFieldMap.LoadFileFieldMapItem, ByVal docField As WinEDDS.DocumentField)
