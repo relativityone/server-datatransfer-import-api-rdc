@@ -483,7 +483,7 @@ Namespace kCura.WinEDDS
 								field.Value = ChrW(11) & oldval.Trim(_multiValueSeparator).Replace(_multiValueSeparator, ChrW(11)) & ChrW(11)
 								Dim sb As New System.Text.StringBuilder
 								For Each objectValue As String In objectValues.Keys
-									DirectCast(Me, BulkLoadFileImporter).WriteObjectLineToTempFile(identityValue, objectValue, CType(objectValues(objectValue), Int32), field.AssociatedObjectTypeID.Value)
+									DirectCast(Me, BulkLoadFileImporter).WriteObjectLineToTempFile(identityValue, objectValue, CType(objectValues(objectValue), Int32), field.AssociatedObjectTypeID.Value, field.FieldID)
 									sb.Append("'" & objectValue & "'")
 									sb.Append(",")
 								Next
