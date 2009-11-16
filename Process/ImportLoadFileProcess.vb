@@ -147,7 +147,8 @@ Namespace kCura.WinEDDS
 		Private Sub _loadFileImporter_FatalErrorEvent(ByVal message As String, ByVal ex As System.Exception, ByVal runID As String) Handles _loadFileImporter.FatalErrorEvent
 			System.Threading.Monitor.Enter(Me.ProcessObserver)
 			Me.ProcessObserver.RaiseFatalExceptionEvent(ex)
-			Me.ProcessObserver.RaiseProcessCompleteEvent(False, _loadFileImporter.ErrorLogFileName, True)
+			'TODO: _loadFileImporter.ErrorLogFileName
+			Me.ProcessObserver.RaiseProcessCompleteEvent(False, "", True)
 			_hasRunPRocessComplete = True
 			System.Threading.Monitor.Exit(Me.ProcessObserver)
 			Me.AuditRun(False, runID)
@@ -166,7 +167,7 @@ Namespace kCura.WinEDDS
 			Me.ProcessObserver.RaiseStatusBarEvent(statusBarMessage, _uploadModeText)
 		End Sub
 
-		Private Sub _loadFileImporter_FilePrepEvent(ByVal e As BulkLoadFileImporter.FilePrepEventArgs) Handles _loadFileImporter.FilePrepEvent
+		Private Sub _loadFileImporter_DataSourcePrepEvent(ByVal e As Api.DataSourcePrepEventArgs) Handles _loadFileImporter.DataSourcePrepEvent
 			System.Threading.Monitor.Enter(Me.ProcessObserver)
 			Dim totaldisplay As String
 			Dim processeddisplay As String
@@ -181,13 +182,12 @@ Namespace kCura.WinEDDS
 				processeddisplay = e.BytesRead.ToString & " B"
 			End If
 			Select Case e.Type
-				Case BulkLoadFileImporter.FilePrepEventArgs.FilePrepEventType.CloseFile
+				Case Api.DataSourcePrepEventArgs.EventType.Close
 					Me.ProcessObserver.RaiseProgressEvent(e.TotalBytes, e.TotalBytes, 0, 0, e.StartTime, System.DateTime.Now, totaldisplay, processeddisplay)
-					'Me.ProcessObserver.RaiseProcessCompleteEvent()
-				Case BulkLoadFileImporter.FilePrepEventArgs.FilePrepEventType.OpenFile
+				Case Api.DataSourcePrepEventArgs.EventType.Open
 					Me.ProcessObserver.RaiseProgressEvent(e.TotalBytes, e.BytesRead, 0, 0, e.StartTime, System.DateTime.Now, totaldisplay, processeddisplay)
 					Me.ProcessObserver.RaiseStatusEvent("", "Preparing file for import")
-				Case BulkLoadFileImporter.FilePrepEventArgs.FilePrepEventType.ReadEvent
+				Case Api.DataSourcePrepEventArgs.EventType.ReadEvent
 					Me.ProcessObserver.RaiseProgressEvent(e.TotalBytes, e.BytesRead, 0, 0, e.StartTime, System.DateTime.Now, totaldisplay, processeddisplay)
 					Me.ProcessObserver.RaiseStatusEvent("", "Preparing file for import")
 			End Select

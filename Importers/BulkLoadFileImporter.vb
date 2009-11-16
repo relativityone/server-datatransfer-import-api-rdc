@@ -1,9 +1,7 @@
 Imports kCura.EDDS.Types.MassImport
 Namespace kCura.WinEDDS
 	Public Class BulkLoadFileImporter
-
 		Inherits kCura.WinEDDS.LoadFileBase
-
 
 #Region "Members"
 		Private _overwrite As String
@@ -26,13 +24,10 @@ Namespace kCura.WinEDDS
 		Protected WithEvents _processController As kCura.Windows.Process.Controller
 		Protected _offset As Int32 = 0
 		Protected _firstTimeThrough As Boolean
-		Private WithEvents _lineCounter As kCura.Utility.File.LineCounter
 		Private _genericTimestamp As System.DateTime
 		Private _number As Int64 = 0
 		Private _destinationFolderColumnIndex As Int32 = -1
 		Private _folderCache As FolderCache
-		Private _errorLogFileName As String = ""
-		Private _errorLogWriter As System.IO.StreamWriter
 		Private _fullTextField As kCura.EDDS.WebAPI.DocumentManagerBase.Field
 		Private _defaultDestinationFolderPath As String = ""
 		Private _defaultTextFolderPath As String = ""
@@ -128,12 +123,6 @@ Namespace kCura.WinEDDS
 						Return field
 					End If
 				Next
-			End Get
-		End Property
-
-		Public ReadOnly Property ErrorLogFileName() As String
-			Get
-				Return _errorLogFileName
 			End Get
 		End Property
 
@@ -241,10 +230,8 @@ Namespace kCura.WinEDDS
 
 #Region "Utility"
 
-		Public Function GetColumnNames(ByVal path As String) As String()
-			If _sourceFileEncoding Is Nothing Then _sourceFileEncoding = System.Text.Encoding.Default
-			reader = New System.IO.StreamReader(path, _sourceFileEncoding, True)
-			Dim columnNames As String() = GetLine
+		Public Function GetColumnNames(ByVal args As Object) As String()
+			Dim columnNames As String() = _artifactReader.GetColumnNames(args)
 			If Not _firstLineContainsColumnNames Then
 				Dim i As Int32
 				For i = 0 To columnNames.Length - 1
@@ -256,8 +243,6 @@ Namespace kCura.WinEDDS
 					columnNames(i) &= String.Format(" ({0})", i + 1)
 				Next
 			End If
-			reader.Close()
-			Me.ResetLineCounter()
 			Return columnNames
 		End Function
 
@@ -273,19 +258,15 @@ Namespace kCura.WinEDDS
 
 #Region "Main"
 
-		Public Overloads Sub ReadFile()
-			ReadFile(_path)
-		End Sub
-
-		Public Overloads Overrides Function ReadFile(ByVal path As String) As Object
-			Dim line As String()
+		Public Function ReadFile(ByVal path As String) As Object
+			Dim line As Api.ArtifactFieldCollection
+			'Dim path As String = _path
 			_filePath = path
 			_start = System.DateTime.Now
 			_timekeeper.MarkStart("TOTAL")
 			Try
 				RaiseEvent StartFileImport()
 				_timekeeper.MarkStart("ReadFile_InitializeMembers")
-				_lineCounter = New kCura.Utility.File.LineCounter
 				Dim validateBcp As FileUploadReturnArgs = _bcpuploader.ValidateBcpPath(_caseInfo.ArtifactID, _outputNativeFilePath)
 				If validateBcp.Type = FileUploadReturnArgs.FileUploadReturnType.UploadError And Not Config.EnableSingleModeImport Then
 					Throw New BcpPathAccessException(validateBcp.Value)
@@ -293,22 +274,25 @@ Namespace kCura.WinEDDS
 					RaiseEvent UploadModeChangeEvent(_uploader.UploaderType.ToString, _bcpuploader.IsBulkEnabled)
 				End If
 				InitializeMembers(path)
+				_processedDocumentIdentifiers = New Collections.Specialized.NameValueCollection
 				_timekeeper.MarkEnd("ReadFile_InitializeMembers")
 				_timekeeper.MarkStart("ReadFile_ProcessDocuments")
+				_columnHeaders = _artifactReader.GetColumnNames(_settings)
+				If _firstLineContainsColumnNames Then _offset = -1
 				Dim isError As Boolean = False
-				While _continue AndAlso Not HasReachedEOF
+				While _continue AndAlso _artifactReader.HasMoreRecords
 					Try
 						If Me.CurrentLineNumber < _startLineNumber Then
 							Me.AdvanceLine()
 						Else
 							_timekeeper.MarkStart("ReadFile_GetLine")
 							_statistics.DocCount += 1
-							line = Me.GetLine
+							line = _artifactReader.ReadArtifact
 							_timekeeper.MarkEnd("ReadFile_GetLine")
 							Dim lineStatus As Int32 = 0
-							If line.Length <> _columnHeaders.Length Then
-								lineStatus += ImportStatus.ColumnMismatch								 'Throw New ColumnCountMismatchException(Me.CurrentLineNumber, _columnHeaders.Length, line.Length)
-							End If
+							'If line.Count <> _columnHeaders.Length Then
+							'	lineStatus += ImportStatus.ColumnMismatch								 'Throw New ColumnCountMismatchException(Me.CurrentLineNumber, _columnHeaders.Length, line.Length)
+							'End If
 
 							_timekeeper.MarkStart("ReadFile_ManageDocument")
 							Dim id As String = ManageDocument(line, lineStatus)
@@ -322,7 +306,7 @@ Namespace kCura.WinEDDS
 						If ex.IsFatal Then
 							_continue = False
 							isError = True
-							WriteFatalError(Me.CurrentLineNumber, ex, line)
+							WriteFatalError(Me.CurrentLineNumber, ex)
 						Else
 							WriteError(Me.CurrentLineNumber, ex.Message)
 						End If
@@ -331,7 +315,7 @@ Namespace kCura.WinEDDS
 					Catch ex As System.IO.FileNotFoundException
 						WriteError(Me.CurrentLineNumber, ex.Message)
 					Catch ex As System.Exception
-						WriteFatalError(Me.CurrentLineNumber, ex, line)
+						WriteFatalError(Me.CurrentLineNumber, ex)
 					End Try
 				End While
 				_timekeeper.MarkEnd("ReadFile_ProcessDocuments")
@@ -339,11 +323,7 @@ Namespace kCura.WinEDDS
 				Me.PushNativeBatch(True)
 				RaiseEvent EndFileImport(_runID)
 				WriteEndImport("Finish")
-				Me.Close()
-				Try
-					_errorLogWriter.Close()
-				Catch ex As System.Exception
-				End Try
+				_artifactReader.Close()
 				_timekeeper.MarkEnd("ReadFile_OtherFinalization")
 				_timekeeper.MarkStart("ReadFile_CleanupTempTables")
 				Me.CleanupTempTables()
@@ -352,32 +332,12 @@ Namespace kCura.WinEDDS
 				_timekeeper.GenerateCsvReportItemsAsRows("_winedds", "C:\")
 				Return True
 			Catch ex As System.Exception
-				WriteFatalError(Me.CurrentLineNumber, ex, line)
+				WriteFatalError(Me.CurrentLineNumber, ex)
 			End Try
 		End Function
 
-		Private Sub LogErrorLine(ByVal values As String())
-			If values Is Nothing Then Exit Sub
-			If _errorLogFileName = "" Then
-				_errorLogFileName = System.IO.Path.GetTempFileName()
-				_errorLogWriter = New System.IO.StreamWriter(_errorLogFileName, False, _sourceFileEncoding)
-				_errorLogWriter.WriteLine(Me.ToDelimetedLine(_columnHeaders))
-			End If
-			_errorLogWriter.WriteLine(Me.ToDelimetedLine(values))
-		End Sub
-
-		Private Function ToDelimetedLine(ByVal values As String()) As String
-			Dim sb As New System.Text.StringBuilder
-			Dim value As String
-			For Each value In values
-				sb.Append(Me.Bound & value & Me.Bound & Me.Delimiter)
-			Next
-			sb.Remove(sb.Length - 1, 1)
-			Return sb.ToString
-		End Function
-
 		Private Sub InitializeMembers(ByVal path As String)
-			Me.InitializeLineCounter(path)
+			_recordCount = _artifactReader.CountRecords
 			Me.InitializeFolderManagement()
 			Me.InitializeFieldIdList()
 			kCura.Utility.File.Delete(_outputNativeFilePath)
@@ -387,11 +347,6 @@ Namespace kCura.WinEDDS
 			_outputCodeFileWriter = New System.IO.StreamWriter(_outputCodeFilePath, False, System.Text.Encoding.Unicode)
 			_outputObjectFileWriter = New System.IO.StreamWriter(_outputObjectFilePath, False, System.Text.Encoding.Unicode)
 			RaiseEvent StatusMessage(New kCura.Windows.Process.StatusEventArgs(Windows.Process.EventType.ResetStartTime, 0, _recordCount, "Reset time for import rolling average", Nothing))
-		End Sub
-
-		Private Sub InitializeLineCounter(ByVal path As String)
-			_lineCounter.Path = path
-			_lineCounter.CountLines(_sourceFileEncoding, New kCura.Utility.File.LineCounter.LineCounterArgs(Me.Bound, Me.Delimiter))
 		End Sub
 
 		Private Sub InitializeFolderManagement()
@@ -415,10 +370,10 @@ Namespace kCura.WinEDDS
 			_fieldArtifactIds = DirectCast(fieldIdList.ToArray(GetType(Int32)), Int32())
 		End Sub
 
-		Private Function ManageDocument(ByVal values As String(), ByVal lineStatus As Int32) As String
+		Private Function ManageDocument(ByVal record As Api.ArtifactFieldCollection, ByVal lineStatus As Int32) As String
 			Dim filename As String
 			Dim fileGuid As String = String.Empty
-			Dim uploadFile As Boolean = (_filePathColumnIndex <> -1) AndAlso _uploadFiles
+			Dim uploadFile As Boolean = record.FieldList(DynamicFields.Types.FieldTypeHelper.FieldType.File).Length > 0 AndAlso Not record.FieldList(DynamicFields.Types.FieldTypeHelper.FieldType.File)(0).Value Is Nothing
 			Dim fileExists As Boolean
 			Dim fieldCollection As New DocumentFieldCollection
 			Dim identityValue As String = String.Empty
@@ -432,7 +387,7 @@ Namespace kCura.WinEDDS
 			Dim destinationVolume As String
 			_timekeeper.MarkStart("ManageDocument_Filesystem")
 			If uploadFile AndAlso _artifactTypeID = kCura.EDDS.Types.ArtifactType.Document Then
-				filename = values(_filePathColumnIndex)
+				filename = record.FieldList(DynamicFields.Types.FieldTypeHelper.FieldType.File)(0).Value.ToString
 				If filename.Length > 1 AndAlso filename.Chars(0) = "\" AndAlso filename.Chars(1) <> "\" Then
 					filename = "." & filename
 				End If
@@ -471,10 +426,9 @@ Namespace kCura.WinEDDS
 			_timekeeper.MarkStart("ManageDocument_Folder")
 			If _createFolderStructure Then
 				If _artifactTypeID = kCura.EDDS.Types.ArtifactType.Document Then
-					parentFolderID = _folderCache.FolderID(Me.CleanDestinationFolderPath(values(_destinationFolderColumnIndex)))
+					parentFolderID = _folderCache.FolderID(Me.CleanDestinationFolderPath(record.FieldList(DynamicFields.Types.FieldCategory.ParentArtifact)(0).Value.ToString))
 				Else
-					Dim textIdentifier As String = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(kCura.Utility.NullableTypesHelper.ToNullableString(values(_destinationFolderColumnIndex)))
-
+					Dim textIdentifier As String = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(kCura.Utility.NullableTypesHelper.ToNullableString(record.FieldList(DynamicFields.Types.FieldCategory.ParentArtifact)(0).Value.ToString))
 					If textIdentifier = "" Then
 						If _overwrite.ToLower = "strict" OrElse _overwrite.ToLower = "append" Then
 							parentFolderID = -1
@@ -501,7 +455,7 @@ Namespace kCura.WinEDDS
 			End If
 			_timekeeper.MarkEnd("ManageDocument_Folder")
 			Dim markPrepareFields As DateTime = DateTime.Now
-			identityValue = PrepareFieldCollectionAndExtractIdentityValue(fieldCollection, values)
+			identityValue = PrepareFieldCollectionAndExtractIdentityValue(record)
 			If identityValue = String.Empty Then
 				'lineStatus += ImportStatus.EmptyIdentifier				'
 				Throw New IdentityValueNotSetException
@@ -509,7 +463,7 @@ Namespace kCura.WinEDDS
 				'lineStatus += ImportStatus.IdentifierOverlap				'	
 				Throw New IdentifierOverlapException(identityValue, _processedDocumentIdentifiers(identityValue))
 			End If
-			Dim metadoc As New MetaDocument(fileGuid, identityValue, fieldCollection, fileExists AndAlso uploadFile AndAlso (fileGuid <> String.Empty OrElse Not _copyFileToRepository), filename, fullFilePath, uploadFile, CurrentLineNumber, parentFolderID, md5hash, values, oixFileIdData, lineStatus, destinationVolume)
+			Dim metadoc As New MetaDocument(fileGuid, identityValue, fileExists AndAlso uploadFile AndAlso (fileGuid <> String.Empty OrElse Not _copyFileToRepository), filename, fullFilePath, uploadFile, CurrentLineNumber, parentFolderID, md5hash, record, oixFileIdData, lineStatus, destinationVolume)
 			'_docsToProcess.Push(metadoc)
 			_timekeeper.MarkStart("ManageDocument_ManageDocumentMetadata")
 			ManageDocumentMetaData(metadoc)
@@ -554,7 +508,7 @@ Namespace kCura.WinEDDS
 			Catch ex As kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
 				WriteError(metaDoc.LineNumber, ex.Message)
 			Catch ex As System.Exception
-				WriteFatalError(metaDoc.LineNumber, ex, metaDoc.SourceLine)
+				WriteFatalError(metaDoc.LineNumber, ex)
 			End Try
 			_timekeeper.MarkStart("ManageDocumentMetadata_ProgressEvent")
 			WriteStatusLine(Windows.Process.EventType.Progress, String.Format("Document '{0}' processed.", metaDoc.IdentityValue), metaDoc.LineNumber)
@@ -691,10 +645,10 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Private Function ManageDocumentLine(ByVal mdoc As MetaDocument, ByVal extractText As Boolean) As Int32
-			Return ManageDocumentLine(mdoc.FieldCollection, mdoc.IdentityValue, mdoc.FileGuid <> String.Empty AndAlso extractText, mdoc.Filename, mdoc.FileGuid, mdoc)
+			Return ManageDocumentLine(mdoc.IdentityValue, mdoc.FileGuid <> String.Empty AndAlso extractText, mdoc.Filename, mdoc.FileGuid, mdoc)
 		End Function
 
-		Private Function ManageDocumentLine(ByVal fieldCollection As DocumentFieldCollection, ByVal identityValue As String, ByVal extractText As Boolean, ByVal filename As String, ByVal fileguid As String, ByVal mdoc As MetaDocument) As Int32
+		Private Function ManageDocumentLine(ByVal identityValue As String, ByVal extractText As Boolean, ByVal filename As String, ByVal fileguid As String, ByVal mdoc As MetaDocument) As Int32
 			_outputNativeFileWriter.Write(mdoc.LineStatus.ToString & Constants.NATIVE_FIELD_DELIMITER)
 			_outputNativeFileWriter.Write("0" & Constants.NATIVE_FIELD_DELIMITER)
 			_outputNativeFileWriter.Write("0" & Constants.NATIVE_FIELD_DELIMITER)
@@ -718,12 +672,12 @@ Namespace kCura.WinEDDS
 				_outputNativeFileWriter.Write("0" & Constants.NATIVE_FIELD_DELIMITER)
 			End If
 			_outputNativeFileWriter.Write(mdoc.ParentFolderID & Constants.NATIVE_FIELD_DELIMITER)
-			For Each docField As DocumentField In fieldCollection.AllFields
-				If docField.FieldTypeID = kCura.DynamicFields.Types.FieldTypeHelper.FieldType.MultiCode OrElse docField.FieldTypeID = kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Code Then
-					_outputNativeFileWriter.Write(docField.Value)
+			For Each field As Api.ArtifactField In mdoc.Record
+				If field.Type = kCura.DynamicFields.Types.FieldTypeHelper.FieldType.MultiCode OrElse field.Type = kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Code Then
+					_outputNativeFileWriter.Write(field.Value)
 					_outputNativeFileWriter.Write(Constants.NATIVE_FIELD_DELIMITER)
-				ElseIf docField.FieldTypeID = kCura.DynamicFields.Types.FieldTypeHelper.FieldType.File Then
-					Dim fileFieldValues() As String = System.Web.HttpUtility.UrlDecode(docField.Value).Split(Chr(11))
+				ElseIf field.Type = kCura.DynamicFields.Types.FieldTypeHelper.FieldType.File AndAlso _artifactTypeid <> kCura.EDDS.Types.ArtifactType.Document Then
+					Dim fileFieldValues() As String = System.Web.HttpUtility.UrlDecode(field.ValueAsString).Split(Chr(11))
 					If fileFieldValues.Length > 1 Then
 						_outputNativeFileWriter.Write(fileFieldValues(0))
 						_outputNativeFileWriter.Write(Constants.NATIVE_FIELD_DELIMITER)
@@ -739,10 +693,14 @@ Namespace kCura.WinEDDS
 						_outputNativeFileWriter.Write("")
 						_outputNativeFileWriter.Write(Constants.NATIVE_FIELD_DELIMITER)
 					End If
+				ElseIf field.Type = kCura.DynamicFields.Types.FieldTypeHelper.FieldType.File AndAlso _artifactTypeid = kCura.EDDS.Types.ArtifactType.Document Then
+					'do nothing
+				ElseIf field.Category = DynamicFields.Types.FieldCategory.ParentArtifact Then
+					'do nothing
 				Else
-					If docField.FieldCategory = DynamicFields.Types.FieldCategory.FullText AndAlso _fullTextColumnMapsToFileLocation Then
-						If Not docField.Value = String.Empty Then
-							Dim sr As New System.IO.StreamReader(docField.Value, _extractedTextFileEncoding)
+					If field.Category = DynamicFields.Types.FieldCategory.FullText AndAlso _fullTextColumnMapsToFileLocation Then
+						If Not field.ValueAsString = String.Empty Then
+							Dim sr As New System.IO.StreamReader(field.ValueAsString, _extractedTextFileEncoding)
 							Dim count As Int32 = 1
 							Do
 								Dim buff(1000000) As Char
@@ -750,16 +708,16 @@ Namespace kCura.WinEDDS
 								If count > 0 Then _outputNativeFileWriter.Write(buff, 0, count)
 							Loop Until count = 0
 						End If
-					ElseIf docField.FieldTypeID = kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Boolean Then
-						If docField.Value <> "" Then
-							If Boolean.Parse(docField.Value) Then
+					ElseIf field.Type = kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Boolean Then
+						If field.ValueAsString <> "" Then
+							If Boolean.Parse(field.ValueAsString) Then
 								_outputNativeFileWriter.Write("1")
 							Else
 								_outputNativeFileWriter.Write("0")
 							End If
 						End If
 					Else
-						_outputNativeFileWriter.Write(docField.Value)
+						_outputNativeFileWriter.Write(field.Value)
 					End If
 					_outputNativeFileWriter.Write(Constants.NATIVE_FIELD_DELIMITER)
 				End If
@@ -839,35 +797,20 @@ Namespace kCura.WinEDDS
 
 #Region "Field Preparation"
 
-		Private Function PrepareFieldCollectionAndExtractIdentityValue(ByVal fieldCollection As DocumentFieldCollection, ByVal values As String()) As String
+		Private Function PrepareFieldCollectionAndExtractIdentityValue(ByVal record As Api.ArtifactFieldCollection) As String
 			System.Threading.Monitor.Enter(_outputNativeFileWriter)
 			System.Threading.Monitor.Enter(_outputCodeFileWriter)
 			System.Threading.Monitor.Enter(_outputObjectFileWriter)
 			Dim item As LoadFileFieldMap.LoadFileFieldMapItem
 			Dim identityValue As String = String.Empty
 			Dim docfield As DocumentField
-			Dim identityFileColumnIndex As Int32
-			For Each item In _fieldMap
-				If Not item.DocumentField Is Nothing AndAlso item.DocumentField.FieldCategory = DynamicFields.Types.FieldCategory.Identifier Then
-					identityValue = values(item.NativeFileColumnIndex)
-					identityFileColumnIndex = item.NativeFileColumnIndex
-				End If
-				If Not item.DocumentField Is Nothing Then
-					If _keyFieldID > 0 Then
-						If item.DocumentField.FieldID = _keyFieldID Then
-							identityValue = values(item.NativeFileColumnIndex)
-							identityFileColumnIndex = item.NativeFileColumnIndex
-							Exit For
-						End If
-					Else
-						If item.DocumentField.FieldCategory = DynamicFields.Types.FieldCategory.Identifier Then
-							identityValue = values(item.NativeFileColumnIndex)
-							identityFileColumnIndex = item.NativeFileColumnIndex
-							Exit For
-						End If
-					End If
-				End If
-			Next
+			Dim keyField As Api.ArtifactField
+			If _keyFieldID > 0 Then
+				keyField = record(_keyFieldID)
+			Else
+				keyField = record.IdentifierField
+			End If
+			If Not keyField Is Nothing AndAlso Not keyField.Value Is Nothing Then identityValue = keyField.Value.ToString
 			If identityValue Is Nothing OrElse identityValue = String.Empty Then Throw New IdentityValueNotSetException
 			If Not _processedDocumentIdentifiers(identityValue) Is Nothing Then Throw New IdentifierOverlapException(identityValue, _processedDocumentIdentifiers(identityValue))
 			For Each item In _fieldmap
@@ -880,35 +823,29 @@ Namespace kCura.WinEDDS
 					End If
 				End If
 				If Not item.DocumentField Is Nothing Then
-					docfield = New DocumentField(item.DocumentField)
-					If item.DocumentField.FieldTypeID = kCura.DynamicFields.Types.FieldTypeHelper.FieldType.File AndAlso values(item.NativeFileColumnIndex) <> "" AndAlso item.NativeFileColumnIndex <> -1 Then
-						Me.ManageFileField(values, item, docfield)
+					If item.DocumentField.FieldTypeID = kCura.DynamicFields.Types.FieldTypeHelper.FieldType.File Then
+						Me.ManageFileField(record(item.DocumentField.FieldID))
 					Else
-						MyBase.SetFieldValue(docfield, values, item.NativeFileColumnIndex, identityValue)
+						MyBase.SetFieldValue(record(item.DocumentField.FieldID), item.NativeFileColumnIndex, False, identityValue)
 					End If
-					If docfield.FieldName = _selectedIdentifier.FieldName Then
-						identityValue = docfield.Value
-						identityFileColumnIndex = item.NativeFileColumnIndex
-					End If
-					fieldCollection.Add(docfield)
 				End If
 			Next
-			If Not fieldCollection.GroupIdentifier Is Nothing AndAlso fieldCollection.GroupIdentifier.Value = "" Then
-				fieldCollection.GroupIdentifier.Value = identityValue
-			End If
 			For Each fieldDTO As kCura.EDDS.WebAPI.DocumentManagerBase.Field In Me.UnmappedRelationalFields
-				Dim field As New DocumentField(fieldDTO.DisplayName, fieldDTO.ArtifactID, fieldDTO.FieldTypeID, fieldDTO.FieldCategoryID, fieldDTO.CodeTypeID, fieldDTO.MaxLength, fieldDTO.AssociativeArtifactTypeID, fieldDTO.UseUnicodeEncoding)
-				Me.SetFieldValue(field, values, identityFileColumnIndex, identityValue)
+				Dim field As New Api.ArtifactField(fieldDTO)
+				field.Value = identityValue
+				Me.SetFieldValue(field, -1, False, identityValue)
 			Next
 			_firstTimeThrough = False
-			Return identityValue
 			System.Threading.Monitor.Exit(_outputNativeFileWriter)
 			System.Threading.Monitor.Exit(_outputCodeFileWriter)
-			System.Threading.Monitor.Exit(_outputObjectFileWriter)
+			Return identityValue
 		End Function
 
-		Private Sub ManageFileField(ByVal values As String(), ByVal item As LoadFileFieldMap.LoadFileFieldMapItem, ByVal docField As WinEDDS.DocumentField)
-			Dim localFilePath As String = values(item.NativeFileColumnIndex)
+		Private Sub ManageFileField(ByVal fileField As Api.ArtifactField)
+			If fileField Is Nothing Then Exit Sub
+			If fileField.Value Is Nothing Then Exit Sub
+			If fileField.Value.ToString = String.Empty Then Exit Sub
+			Dim localFilePath As String = fileField.Value.ToString
 			Dim fileSize As Int64
 			If System.IO.File.Exists(localFilePath) Then
 				fileSize = Me.GetFileLength(localFilePath)
@@ -930,11 +867,10 @@ Namespace kCura.WinEDDS
 
 				End If
 				location = System.Web.HttpUtility.UrlEncode(location)
-				docField.Value = String.Format("{1}{0}{2}{0}{3}", ChrW(11), fileName, fileSize, location)
+				fileField.Value = String.Format("{1}{0}{2}{0}{3}", ChrW(11), fileName, fileSize, location)
 			Else
 				Throw New System.IO.FileNotFoundException(String.Format("File '{0}' not found.", localFilePath))
 			End If
-
 		End Sub
 
 #End Region
@@ -944,9 +880,6 @@ Namespace kCura.WinEDDS
 
 		Private Sub WriteStatusLine(ByVal et As kCura.Windows.Process.EventType, ByVal line As String, ByVal lineNumber As Int32)
 			line = line & String.Format(" [line {0}]", lineNumber)
-			'If Not _status Is Nothing AndAlso Not _status.IsDisposed Then
-			'	_status.UpdateStatusWindow(line)
-			'End If
 			RaiseEvent StatusMessage(New kCura.Windows.Process.StatusEventArgs(et, lineNumber + _offset, _recordCount, line, _currentStatisticsSnapshot))
 		End Sub
 
@@ -954,9 +887,9 @@ Namespace kCura.WinEDDS
 			WriteStatusLine(et, line, Me.CurrentLineNumber)
 		End Sub
 
-		Private Sub WriteFatalError(ByVal lineNumber As Int32, ByVal ex As System.Exception, ByVal sourceLine As String())
+		Private Sub WriteFatalError(ByVal lineNumber As Int32, ByVal ex As System.Exception)
 			_continue = False
-			Me.DoRetryLogic = False
+			_artifactReader.OnFatalErrorState()
 			_uploader.DoRetry = False
 			_bcpuploader.DoRetry = False
 
@@ -1020,80 +953,9 @@ Namespace kCura.WinEDDS
 		Public Event EndFileImport(ByVal runID As String)
 		Public Event StartFileImport()
 		Public Event UploadModeChangeEvent(ByVal mode As String, ByVal isBulkEnabled As Boolean)
+
 		Public Event ReportErrorEvent(ByVal row As System.Collections.IDictionary)
-#Region "File Prep Event"
-		Public Event FilePrepEvent(ByVal e As FilePrepEventArgs)
-		Public Class FilePrepEventArgs
-			Public Enum FilePrepEventType
-				OpenFile
-				CloseFile
-				ReadEvent
-			End Enum
-			Private _type As FilePrepEventType
-			Private _newlinesRead As Int64
-			Private _bytesRead As Int64
-			Private _totalBytes As Int64
-			Private _stepSize As Int64
-			Private _startTime As System.DateTime
-			Private _endTime As System.DateTime
-
-#Region "Accessors"
-
-			Public ReadOnly Property Type() As FilePrepEventType
-				Get
-					Return _type
-				End Get
-			End Property
-
-			Public ReadOnly Property NewlinesRead() As Int64
-				Get
-					Return _newlinesRead
-				End Get
-			End Property
-
-			Public ReadOnly Property BytesRead() As Int64
-				Get
-					Return _bytesRead
-				End Get
-			End Property
-
-			Public ReadOnly Property TotalBytes() As Int64
-				Get
-					Return _totalBytes
-				End Get
-			End Property
-
-			Public ReadOnly Property StepSize() As Int64
-				Get
-					Return _stepSize
-				End Get
-			End Property
-
-			Public ReadOnly Property StartTime() As System.DateTime
-				Get
-					Return _startTime
-				End Get
-			End Property
-
-			Public ReadOnly Property EndTime() As System.DateTime
-				Get
-					Return _endTime
-				End Get
-			End Property
-
-#End Region
-
-			Public Sub New(ByVal eventType As FilePrepEventType, ByVal newlines As Int64, ByVal bytes As Int64, ByVal total As Int64, ByVal [step] As Int64, ByVal start As System.DateTime, ByVal [end] As System.DateTime)
-				_type = eventType
-				_newlinesRead = newlines
-				_bytesRead = bytes
-				_totalBytes = total
-				_stepSize = [step]
-				_startTime = start
-				_endTime = [end]
-			End Sub
-		End Class
-#End Region
+		Public Event DataSourcePrepEvent(ByVal e As Api.DataSourcePrepEventArgs)
 
 #End Region
 
@@ -1110,94 +972,14 @@ Namespace kCura.WinEDDS
 		Private Sub _processController_HaltProcessEvent(ByVal processID As System.Guid) Handles _processController.HaltProcessEvent
 			If processID.ToString = _processID.ToString Then
 				_continue = False
-				_lineCounter.StopCounting()
+				_artifactReader.Halt()
 				_uploader.DoRetry = False
 				_bcpuploader.DoRetry = False
 			End If
 		End Sub
 
-		Private Sub BuildErrorLinesFile()
-			RaiseEvent StatusMessage(New kCura.Windows.Process.StatusEventArgs(Windows.Process.EventType.Status, Me.CurrentLineNumber, Me.CurrentLineNumber, "Generating error line file.", _currentStatisticsSnapshot))
-			Dim allErrors As New kCura.Utility.GenericCsvReader(_errorMessageFileLocation, System.Text.Encoding.Default, True)
-			Dim clientErrors As System.IO.StreamReader
-			'Me.Reader.BaseStream.Seek(0, IO.SeekOrigin.Begin)
-			Me.Reader = New System.IO.StreamReader(_filePath, _sourceFileEncoding, True)
-			Me.ResetLineCounter()
-			If _prePushErrorLineNumbersFileName = "" Then
-				clientErrors = New System.IO.StreamReader(System.IO.Path.GetTempFileName, System.Text.Encoding.Default)
-			Else
-				clientErrors = New System.IO.StreamReader(_prePushErrorLineNumbersFileName, System.Text.Encoding.Default)
-			End If
-			Dim advanceClient As Boolean = True
-			Dim advanceAll As Boolean = True
-			Dim allErrorsLine As Int32
-			Dim clientErrorsLine As Int32
-			_errorLinesFileLocation = System.IO.Path.GetTempFileName
-			Dim sw As New System.IO.StreamWriter(_errorLinesFileLocation, False, _sourceFileEncoding)
-			If _settings.FirstLineContainsHeaders Then
-				sw.WriteLine(Me.ToDelimetedLine(Me.GetLine))
-			End If
-			If _prePushErrorLineNumbersFileName = "" Then
-				clientErrorsLine = Int32.MaxValue
-			Else
-				clientErrorsLine = Int32.Parse(clientErrors.ReadLine)
-			End If
-			If Not allErrors.Eof Then
-				Dim e As String() = allErrors.ReadLine
-				If e(3) <> "client" Then
-					allErrorsLine = Int32.Parse(e(0))
-				Else
-					While Not e Is Nothing AndAlso e(3) = "client"
-						e = allErrors.ReadLine
-					End While
-					If e Is Nothing Then
-						allErrorsLine = Int32.MaxValue
-					Else
-						allErrorsLine = Int32.Parse(e(0))
-					End If
-				End If
-			Else
-				allErrorsLine = Int32.MaxValue
-			End If
-			Dim line As String()
-			Dim currentLine As String()
-			Dim continue As Boolean = True And Not Me.Reader.Peek = -1
-			While continue
-				If Me.CurrentLineNumber < System.Math.Min(clientErrorsLine, allErrorsLine) Then
-					If Me.Reader.Peek = -1 Then
-						continue = False
-					Else
-						line = Me.GetLine()
-					End If
-				Else
-					sw.WriteLine(Me.ToDelimetedLine(line))
-					If Me.CurrentLineNumber = clientErrorsLine Then
-						If clientErrors.Peek = -1 Then
-							clientErrorsLine = Int32.MaxValue
-						Else
-							clientErrorsLine = Int32.Parse(clientErrors.ReadLine)
-						End If
-					End If
-					If Me.CurrentLineNumber = allErrorsLine Then
-						If allErrors.Eof Then
-							allErrorsLine = Int32.MaxValue
-						Else
-							allErrorsLine = Int32.Parse(allErrors.ReadLine(0))
-						End If
-					End If
-				End If
-
-				continue = ((Not allErrors.Eof Or clientErrors.Peek <> -1 Or Me.CurrentLineNumber <= System.Math.Min(clientErrorsLine, allErrorsLine)) And continue)
-			End While
-			Me.Close()
-			sw.Close()
-			allErrors.Close()
-			clientErrors.Close()
-			RaiseEvent StatusMessage(New kCura.Windows.Process.StatusEventArgs(Windows.Process.EventType.Status, Me.CurrentLineNumber, Me.CurrentLineNumber, "Error line file generation complete.", _currentStatisticsSnapshot))
-		End Sub
-
 		Private Sub _processController_ExportServerErrors(ByVal exportLocation As String) Handles _processController.ExportServerErrorsEvent
-			Me.BuildErrorLinesFile()
+			_errorLinesFileLocation = _artifactReader.ManageErrorRecords(_errorMessageFileLocation, _prePushErrorLineNumbersFileName)
 			Dim rootFileName As String = _filePath
 			Dim defaultExtension As String
 			If Not rootFileName.IndexOf(".") = -1 Then
@@ -1214,11 +996,13 @@ Namespace kCura.WinEDDS
 			Dim datetimeNow As System.DateTime = System.DateTime.Now
 			Dim errorFilePath As String = rootFilePath & "_ErrorLines_" & datetimeNow.Ticks & defaultExtension
 			Dim errorReportPath As String = rootFilePath & "_ErrorReport_" & datetimeNow.Ticks & ".csv"
-			Try
-				System.IO.File.Copy(_errorLinesFileLocation, errorFilePath)
-			Catch
-				System.IO.File.Copy(_errorLinesFileLocation, errorFilePath)
-			End Try
+			If Not _errorLinesFileLocation Is Nothing AndAlso Not _errorLinesFileLocation = String.Empty AndAlso System.IO.File.Exists(_errorLinesFileLocation) Then
+				Try
+					System.IO.File.Copy(_errorLinesFileLocation, errorFilePath)
+				Catch
+					System.IO.File.Copy(_errorLinesFileLocation, errorFilePath)
+				End Try
+			End If
 			Try
 				System.IO.File.Copy(_errorMessageFileLocation, errorReportPath)
 			Catch
@@ -1240,7 +1024,7 @@ Namespace kCura.WinEDDS
 			'_errorLinesFileLocation()
 			If _errorMessageFileLocation Is Nothing OrElse _errorMessageFileLocation = "" Then Exit Sub
 			If _errorLinesFileLocation Is Nothing OrElse _errorLinesFileLocation = "" OrElse Not System.IO.File.Exists(_errorLinesFileLocation) Then
-				Me.BuildErrorLinesFile()
+				_errorLinesFileLocation = _artifactReader.ManageErrorRecords(_errorMessageFileLocation, _prePushErrorLineNumbersFileName)
 			End If
 			Try
 				System.IO.File.Copy(_errorLinesFileLocation, exportLocation, True)
@@ -1313,36 +1097,15 @@ Namespace kCura.WinEDDS
 
 #Region "Preprocessing"
 
-		Private Sub _lineCounter_OnEvent(ByVal e As kCura.Utility.File.LineCounter.EventArgs) Handles _lineCounter.OnEvent
-			Select Case e.Type
-				Case kCura.Utility.File.LineCounter.EventType.Begin
-					_genericTimestamp = System.DateTime.Now
-					RaiseEvent FilePrepEvent(New FilePrepEventArgs(FilePrepEventArgs.FilePrepEventType.OpenFile, 0, 0, e.TotalBytes, e.StepSize, _genericTimestamp, System.DateTime.Now))
-				Case kCura.Utility.File.LineCounter.EventType.Progress
-					RaiseEvent FilePrepEvent(New FilePrepEventArgs(FilePrepEventArgs.FilePrepEventType.ReadEvent, e.NewlinesRead, e.BytesRead, e.TotalBytes, e.StepSize, _genericTimestamp, System.DateTime.Now))
-				Case kCura.Utility.File.LineCounter.EventType.Complete
-					_recordCount = e.NewlinesRead
-					RaiseEvent FilePrepEvent(New FilePrepEventArgs(FilePrepEventArgs.FilePrepEventType.ReadEvent, e.NewlinesRead, e.TotalBytes, e.TotalBytes, e.StepSize, _genericTimestamp, System.DateTime.Now))
-					Dim path As String = _lineCounter.Path
-					_columnHeaders = GetColumnNames(path)
-					_processedDocumentIdentifiers = New Collections.Specialized.NameValueCollection
-					Reader = New System.IO.StreamReader(path, _sourceFileEncoding)
-					If _firstLineContainsColumnNames Then
-						_columnHeaders = GetLine
-						_recordCount -= 1
-						_offset = -1
-					End If
-					If Not _filePathColumn Is Nothing Then
-						Dim openParenIndex As Int32 = _filePathColumn.LastIndexOf("("c) + 1
-						Dim closeParenIndex As Int32 = _filePathColumn.LastIndexOf(")"c)
-						_filePathColumnIndex = Int32.Parse(_filePathColumn.Substring(openParenIndex, closeParenIndex - openParenIndex)) - 1
-					Else
-						_filePathColumnIndex = -1
-					End If
-			End Select
+#End Region
+
+		Private Sub _artifactReader_DataSourcePrep(ByVal e As Api.DataSourcePrepEventArgs) Handles _artifactReader.DataSourcePrep
+			RaiseEvent DataSourcePrepEvent(e)
 		End Sub
 
-#End Region
+		Private Sub _artifactReader_StatusMessage(ByVal message As String) Handles _artifactReader.StatusMessage
+			RaiseEvent StatusMessage(New kCura.Windows.Process.StatusEventArgs(Windows.Process.EventType.Status, _artifactReader.CurrentLineNumber, _recordCount, message, False, _currentStatisticsSnapshot))
+		End Sub
 
 		Private Sub IoWarningHandler(ByVal e As IoWarningEventArgs)
 			MyBase.RaiseIoWarning(e)
@@ -1404,6 +1167,12 @@ Namespace kCura.WinEDDS
 		Protected Overrides Function GetSingleCodeValidator() As CodeValidator.Base
 			Return New CodeValidator.SingleImporter(_settings.CaseInfo, _codeManager)
 		End Function
+		Protected Overrides Function GetArtifactReader() As Api.IArtifactReader
+			Return New kCura.WinEDDS.LoadFileReader(_settings)
+		End Function
+
+
+
 	End Class
 
 	Public Class WebServiceFieldInfoNameComparer

@@ -21,14 +21,14 @@ Namespace kCura.WinEDDS.CodeValidator
 			_caseInfo = caseInfo
 		End Sub
 
-		Public Function ValidateSingleCode(ByVal field As DocumentField, ByVal codeName As String) As NullableInt32
+		Public Function ValidateSingleCode(ByVal field As Api.ArtifactField, ByVal codeName As String) As NullableInt32
 			If codeName.Trim = String.Empty Then Return NullableTypes.NullableInt32.Null
 			'TODO: Is this ever actually hit? ------ 'If field.CodeTypeID.IsNull Then Throw New kCura.WinEDDS.LoadFileBase.MissingCodeTypeException(Me.CurrentLineNumber, column)
-			If Not _lookup.Contains(field.CodeTypeID.Value) Then Me.InitializeLookupForCodeType(field.CodeTypeID.Value)
-			Dim typeLookup As kCura.WinEDDS.Types.SingleChoiceCollection = DirectCast(_lookup(field.CodeTypeID.Value), kCura.WinEDDS.Types.SingleChoiceCollection)
+			If Not _lookup.Contains(field.CodeTypeID) Then Me.InitializeLookupForCodeType(field.CodeTypeID)
+			Dim typeLookup As kCura.WinEDDS.Types.SingleChoiceCollection = DirectCast(_lookup(field.CodeTypeID), kCura.WinEDDS.Types.SingleChoiceCollection)
 			Dim choice As kCura.EDDS.Types.ChoiceInfo = typeLookup(codeName)
 			If Not choice Is Nothing Then Return New NullableInt32(choice.ArtifactID)
-			If Me.DoRealtimeDatabaseLookup Then choice = Me.CodeManager.RetrieveCodeByNameAndTypeID(Me.CaseInfo.ArtifactID, field.CodeTypeID.Value, codeName.Trim)
+			If Me.DoRealtimeDatabaseLookup Then choice = Me.CodeManager.RetrieveCodeByNameAndTypeID(Me.CaseInfo.ArtifactID, field.CodeTypeID, codeName.Trim)
 			If choice Is Nothing Then
 				Return Me.GetNewSingleCodeId(field, codeName)
 			Else
@@ -57,7 +57,7 @@ Namespace kCura.WinEDDS.CodeValidator
 		End Sub
 
 
-		Public MustOverride Function GetNewSingleCodeId(ByVal field As DocumentField, ByVal codeName As String) As NullableTypes.NullableInt32
+		Public MustOverride Function GetNewSingleCodeId(ByVal field As Api.ArtifactField, ByVal codeName As String) As NullableTypes.NullableInt32
 		Protected MustOverride ReadOnly Property DoRealtimeDatabaseLookup() As Boolean
 		Public MustOverride ReadOnly Property CreatedCodeCount() As Int32
 

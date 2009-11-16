@@ -2,7 +2,6 @@ Namespace kCura.WinEDDS
 	Public Class MetaDocument
 		Private _fileGuid As String
 		Private _identityValue As String
-		Private _fieldCollection As DocumentFieldCollection
 		Private _indexFileInDB As Boolean
 		Private _filename As String
 		Private _fullFilePath As String
@@ -10,7 +9,7 @@ Namespace kCura.WinEDDS
 		Private _lineNumber As Int32
 		Private _parentFolderID As Int32
 		Private _md5Hash As String
-		Private _sourceLine As String()
+		Private _record As Api.ArtifactFieldCollection
 		Private _fileIdData As OI.FileID.FileIDData
 		Private _lineStatus As Int32
 		Private _destinationVolume As String
@@ -39,15 +38,6 @@ Namespace kCura.WinEDDS
 			End Get
 			Set(ByVal value As String)
 				_identityValue = value
-			End Set
-		End Property
-
-		Public Property FieldCollection() As DocumentFieldCollection
-			Get
-				Return _fieldCollection
-			End Get
-			Set(ByVal value As DocumentFieldCollection)
-				_fieldCollection = value
 			End Set
 		End Property
 
@@ -96,12 +86,12 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
-		Public Property SourceLine() As String()
+		Public Property Record() As Api.ArtifactFieldCollection
 			Get
-				Return _sourceLine
+				Return _record
 			End Get
-			Set(ByVal value As String())
-				_sourceLine = value
+			Set(ByVal value As Api.ArtifactFieldCollection)
+				_record = value
 			End Set
 		End Property
 
@@ -132,16 +122,6 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
-		Public ReadOnly Property Size() As Int64
-			Get
-				Dim retval As Int64 = 0
-				For Each cell As String In SourceLine
-					retval += CType(cell.Length, Int64)
-				Next
-				Return retval * 2
-			End Get
-		End Property
-
 		Public Property LineStatus() As Int32
 			Get
 				Return _lineStatus
@@ -154,7 +134,6 @@ Namespace kCura.WinEDDS
 		Public Sub New( _
 		 ByVal fileGuid As String, _
 		 ByVal identityValue As String, _
-		 ByVal fieldCollection As DocumentFieldCollection, _
 		 ByVal indexFileInDB As Boolean, _
 		 ByVal filename As String, _
 		 ByVal fullFilePath As String, _
@@ -162,21 +141,20 @@ Namespace kCura.WinEDDS
 		 ByVal lineNumber As Int32, _
 		 ByVal parentFolderID As Int32, _
 		 ByVal md5Hash As String, _
-		 ByVal sourceLine As String(), _
+		 ByVal record As Api.ArtifactFieldCollection, _
 		 ByVal oixFileData As OI.FileID.FileIDData, _
 		 ByVal lineStatus As Int32, _
 		 ByVal destinationVolume As String _
 		 )
 			_fileGuid = fileGuid
 			_identityValue = identityValue
-			_fieldCollection = fieldCollection
 			_indexFileInDB = indexFileInDB
 			_filename = filename
 			_fullFilePath = fullFilePath
 			_uploadFile = uploadFile
 			_lineNumber = lineNumber
 			_parentFolderID = parentFolderID
-			_sourceLine = sourceLine
+			_record = record
 			_md5Hash = md5Hash
 			_fileIdData = oixFileData
 			_lineStatus = lineStatus

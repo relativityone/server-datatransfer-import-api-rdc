@@ -53,11 +53,12 @@ Namespace kCura.WinEDDS.Service
 							.FieldTypeID = CType(dv(i)("FieldTypeID"), kCura.EDDS.WebAPI.DocumentManagerBase.FieldType)
 							.IsEditable = CType(dv(i)("IsEditable"), Boolean)
 							.IsRequired = CType(dv(i)("IsRequired"), Boolean)
-							.MaxLength = NullableTypes.HelperFunctions.DBNullConvert.ToNullableInt32(dv(i)("MaxLength"))
+							.MaxLength = NullableTypes.HelperFunctions.DBNullConvert.ToNullableInt32(dv(i)("FieldLength"))
 							.IsRemovable = CType(dv(i)("IsRemovable"), Boolean)
 							.IsVisible = CType(dv(i)("IsVisible"), Boolean)
 							.UseUnicodeEncoding = CType(dv(i)("UseUnicodeEncoding"), Boolean)
 							.AllowHtml = CType(dv(i)("AllowHTML"), Boolean)
+							.AssociativeArtifactTypeID = NullableTypes.HelperFunctions.DBNullConvert.ToNullableInt32(dv(i)("AssociativeArtifactTypeID"))
 						End With
 						fields.Add(field)
 					End If

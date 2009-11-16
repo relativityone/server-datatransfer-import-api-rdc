@@ -218,6 +218,31 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "API\ArtifactField.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "API\ArtifactFieldCollection.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "API\DataSourcePrepEventArgs.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "API\IArtifactReader.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "API\IoWarningEventArgs.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Event\AppEvent.vb"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -348,7 +373,7 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Importers\MetaDocQueue.vb"
+                    RelPath = "Importers\LoadFileReader.vb"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
