@@ -513,7 +513,7 @@ Namespace kCura.EDDS.WinForm
 		Public Function GetColumnHeadersFromLoadFile(ByVal loadfile As kCura.WinEDDS.LoadFile, ByVal firstLineContainsColumnHeaders As Boolean) As String()
 			loadfile.CookieContainer = Me.CookieContainer
 			Dim parser As New kCura.WinEDDS.BulkLoadFileImporter(loadfile, Nothing, _timeZoneOffset, False, Nothing, False)
-			Return parser.GetColumnNames(loadfile.FilePath)
+			Return parser.GetColumnNames(loadfile)
 			'Dim retValue(3) As String
 			'retValue(0) = "Filed 0"
 			'retValue(1) = "Field 1"
@@ -534,8 +534,8 @@ Namespace kCura.EDDS.WinForm
 				'Dim al As ArrayList = DirectCast(previewer.ReadFile(loadFile.FilePath), ArrayList)
 				'previewer.Close()
 				Dim item As Object
-				Dim field As DocumentField
-				Dim fields As DocumentField()
+				Dim field As Api.ArtifactField
+				Dim fields As Api.ArtifactField()
 				Dim firstTimeThrough As Boolean = True
 				Dim row As ArrayList
 				Dim dt As New DataTable
@@ -547,11 +547,11 @@ Namespace kCura.EDDS.WinForm
 					For Each item In al
 						If Not item Is Nothing Then
 							row = New ArrayList
-							fields = DirectCast(item, DocumentField())
+							fields = DirectCast(item, Api.ArtifactField())
 							If firstTimeThrough Then
 								dt.Columns.Add("Record Number")
 								For Each field In fields
-									dt.Columns.Add(field.FieldName)
+									dt.Columns.Add(field.DisplayName)
 								Next
 								firstTimeThrough = False
 							End If
@@ -565,13 +565,13 @@ Namespace kCura.EDDS.WinForm
 			End Try
 		End Function
 
-		Private Sub AddRow(ByVal dt As DataTable, ByVal row As System.collections.ArrayList, ByVal fields As DocumentField(), ByRef counter As Int32)
+		Private Sub AddRow(ByVal dt As DataTable, ByVal row As System.collections.ArrayList, ByVal fields As Api.ArtifactField(), ByRef counter As Int32)
 			Try
 				counter += 1
-				Dim field As DocumentField
+				Dim field As Api.ArtifactField
 				row.Add(counter.ToString())
 				For Each field In fields
-					row.Add(field.Value)
+					row.Add(field.ValueAsString)
 				Next
 				dt.Rows.Add(row.ToArray)
 			Catch x As System.Exception
