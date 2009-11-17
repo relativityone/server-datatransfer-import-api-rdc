@@ -408,15 +408,6 @@ Namespace kCura.WinEDDS
 					If value.Length = 0 Then
 						field.Value = String.Empty
 					Else
-						'Dim oldval As String = value.Trim
-
-						'Dim fieldManager As New kCura.EDDS.WebAPI.FieldManagerBase.FieldManager
-						'fieldManager.Credentials = _fileManager.Credentials
-						'fieldManager.CookieContainer = _fileManager.CookieContainer
-						'Dim fieldDTO As kCura.EDDS.WebAPI.FieldManagerBase.Field = fieldManager.Read(_caseArtifactID, field.FieldID)
-						'field.AssociatedObjectTypeID = fieldDTO.AssociativeArtifactTypeID
-						'TODO: Move this to wherever "field" is created.
-
 						Dim objectValues As System.Collections.Hashtable = GetObjects(value, columnIndex, field, field.AssociatedObjectTypeID)
 						Dim newVal As String = String.Empty
 						Dim objName As String
