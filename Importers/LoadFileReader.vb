@@ -246,7 +246,7 @@ Namespace kCura.WinEDDS
 					collection.Add(field)
 				End If
 			Next
-			If Not _settings.NativeFilePathColumn Is Nothing AndAlso Not _settings.NativeFilePathColumn = String.Empty Then
+			If Not _settings.NativeFilePathColumn Is Nothing AndAlso Not _settings.NativeFilePathColumn = String.Empty AndAlso collection.FileField Is Nothing Then
 				Dim nativeFileIndex As Int32 = Int32.Parse(_settings.NativeFilePathColumn.Substring(_settings.NativeFilePathColumn.LastIndexOf("(")).Trim("()".ToCharArray))
 				Dim field As New Api.ArtifactField(New DocumentField("File", -1, kCura.DynamicFields.Types.FieldTypeHelper.FieldType.File, kCura.DynamicFields.Types.FieldCategory.FileInfo, NullableInt32.Null, NullableInt32.Null, NullableInt32.Null, True))
 				field.Value = line(nativeFileIndex - 1)
