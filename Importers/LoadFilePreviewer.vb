@@ -116,17 +116,21 @@ Namespace kCura.WinEDDS
 			i = 0
 			While _artifactReader.HasMoreRecords AndAlso _continue
 				If fieldArrays.Count < 1000 Then
-					Dim record As Api.ArtifactFieldCollection = _artifactReader.ReadArtifact
-					If Not _firstLineContainsColumnNames AndAlso fieldArrays.Count = 0 Then
-						_columnCount = record.Count
-					End If
-					Dim x As Api.ArtifactField() = CheckLine(record)
-					If Not x Is Nothing Then fieldArrays.Add(x)
+					Try
+						Dim record As Api.ArtifactFieldCollection = _artifactReader.ReadArtifact
+						If Not _firstLineContainsColumnNames AndAlso fieldArrays.Count = 0 Then
+							_columnCount = record.Count
+						End If
+						Dim x As Api.ArtifactField() = CheckLine(record)
+						If Not x Is Nothing AndAlso Not (_firstLineContainsColumnNames AndAlso i = 0) Then fieldArrays.Add(x)
+					Catch ex As kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
+						fieldArrays.Add(ex)
+					End Try
 					i += 1
 					If i Mod 100 = 0 Then ProcessProgress(_artifactReader.BytesProcessed, filesize, stepsize)
 				Else
-					earlyexit = True
-					Exit While
+						earlyexit = True
+						Exit While
 				End If
 			End While
 			If earlyexit Then
