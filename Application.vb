@@ -527,6 +527,19 @@ Namespace kCura.EDDS.WinForm
 		End Function
 
 		'Worker function for PreviewLoadFile
+		Private Sub ManageRowWideError(ByVal dt As System.Data.DataTable, ByVal err As System.Exception, ByRef rowcount As Int32)
+			Dim errorRow As System.Data.DataRow = dt.NewRow
+			rowcount += 1
+			For Each column As System.Data.DataColumn In dt.Columns
+				If column.ColumnName = "Record Number" Then
+					errorRow(column.ColumnName) = rowcount.ToString
+				Else
+					errorRow(column.ColumnName) = "Row-wide error: " & err.Message
+				End If
+			Next
+			dt.Rows.Add(errorRow)
+		End Sub
+
 		Public Function BuildLoadFileDataSource(ByVal al As ArrayList) As DataTable
 			Try
 				Me.GetCaseFields(_selectedCaseInfo.ArtifactID, Me.ArtifactTypeID, True)
@@ -539,6 +552,7 @@ Namespace kCura.EDDS.WinForm
 				Dim firstTimeThrough As Boolean = True
 				Dim row As ArrayList
 				Dim dt As New DataTable
+				Dim errorQueue As New System.Collections.ArrayList
 				Dim i As Int32 = 0
 				If al.Count = 0 Then
 					dt.Columns.Add("  ")
@@ -546,18 +560,36 @@ Namespace kCura.EDDS.WinForm
 				Else
 					For Each item In al
 						If Not item Is Nothing Then
-							row = New ArrayList
-							fields = DirectCast(item, Api.ArtifactField())
-							If firstTimeThrough Then
-								dt.Columns.Add("Record Number")
-								For Each field In fields
-									dt.Columns.Add(field.DisplayName)
-								Next
-								firstTimeThrough = False
+							If TypeOf item Is System.Exception Then
+								If dt.Columns.Count = 0 Then
+									errorQueue.Add(item)
+								Else
+									Me.ManageRowWideError(dt, DirectCast(item, System.Exception), i)
+								End If
+							Else
+								row = New ArrayList
+								fields = DirectCast(item, Api.ArtifactField())
+								If firstTimeThrough Then
+									dt.Columns.Add("Record Number")
+									For Each field In fields
+										dt.Columns.Add(field.DisplayName)
+									Next
+									firstTimeThrough = False
+									For Each err As System.Exception In errorQueue
+										Me.ManageRowWideError(dt, err, i)
+									Next
+									errorQueue.Clear()
+								End If
+								AddRow(dt, row, fields, i)
 							End If
-							AddRow(dt, row, fields, i)
 						End If
 					Next
+					If errorQueue.Count > 0 Then
+						dt.Columns.Add(" ")
+						For Each err As System.Exception In errorQueue
+							Me.ManageRowWideError(dt, err, i)
+						Next
+					End If
 				End If
 				Return dt
 			Catch ex As System.Exception
