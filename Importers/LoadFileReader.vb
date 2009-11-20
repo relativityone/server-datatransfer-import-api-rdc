@@ -112,7 +112,7 @@ Namespace kCura.WinEDDS
 			End If
 
 			Me.InitializeLineCounter(args.FilePath)
-			Reader = New System.IO.StreamReader(args.FilePath, args.SourceFileEncoding)
+			'Reader = New System.IO.StreamReader(args.FilePath, args.SourceFileEncoding)
 		End Sub
 
 		Private Sub SetFieldValue(ByVal field As ArtifactField, ByVal value As String, ByVal column As Int32)
@@ -204,10 +204,12 @@ Namespace kCura.WinEDDS
 			If _columnHeaders Is Nothing Then
 				Dim path As String = DirectCast(args, kCura.WinEDDS.LoadFile).FilePath
 				If _sourceFileEncoding Is Nothing Then _sourceFileEncoding = System.Text.Encoding.Default
-				Reader = New System.IO.StreamReader(path, _sourceFileEncoding, True)
+				Me.Reader = New System.IO.StreamReader(path, _sourceFileEncoding, True)
 				Dim columnNames As String() = GetLine
 				Me.Reader.BaseStream.Seek(0, IO.SeekOrigin.Begin)
 				Me.ResetLineCounter()
+				Me.Reader.Close()
+				Me.Reader = Nothing
 				_columnHeaders = columnNames
 			End If
 			Return _columnHeaders
@@ -233,6 +235,10 @@ Namespace kCura.WinEDDS
 
 		Public Function ReadArtifact() As Api.ArtifactFieldCollection Implements Api.IArtifactReader.ReadArtifact
 			Dim collection As New Api.ArtifactFieldCollection
+			If Me.Reader Is Nothing Then
+				If _sourceFileEncoding Is Nothing Then _sourceFileEncoding = System.Text.Encoding.Default
+				Me.Reader = New System.IO.StreamReader(_settings.FilePath, _sourceFileEncoding, True)
+			End If
 			Dim line As String() = Me.GetLine
 			If line.Length <> _columnHeaders.Length Then Throw New BulkLoadFileImporter.ColumnCountMismatchException(Me.CurrentLineNumber, _columnHeaders.Length, line.Length)
 			For Each mapItem As kCura.WinEDDS.LoadFileFieldMap.LoadFileFieldMapItem In _settings.FieldMap
