@@ -1004,18 +1004,19 @@ Namespace kCura.WinEDDS
 					If TypeOf val Is Byte() Then
 						val = System.Text.Encoding.Unicode.GetString(DirectCast(val, Byte()))
 					End If
-					If field.FieldType = DynamicFields.Types.FieldTypeHelper.FieldType.Date Then
-						Dim datetime As NullableString = NullableTypes.HelperFunctions.DBNullConvert.ToNullableString(val)
-						If datetime.IsNull OrElse datetime.Value = "" Then
-							val = ""
-						Else
-							val = System.DateTime.Parse(datetime.Value, System.Globalization.CultureInfo.InvariantCulture).ToString(field.FormatString)
-						End If
+					If field.FieldType = DynamicFields.Types.FieldTypeHelper.FieldType.Date AndAlso field.Category <> DynamicFields.Types.FieldCategory.MultiReflected Then
+						'Dim datetime As NullableString = NullableTypes.HelperFunctions.DBNullConvert.ToNullableString(val)
+						'If datetime.IsNull OrElse datetime.Value = "" Then
+						'	val = ""
+						'Else
+						'	val = System.DateTime.Parse(datetime.Value, System.Globalization.CultureInfo.InvariantCulture).ToString(field.FormatString)
+						'End If
+						val = Me.ToExportableDateString(val, field.FormatString)
 					End If
 					'System.Web.HttpUtility.HtmlEncode()
 					fieldValue = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(NullableTypes.HelperFunctions.DBNullConvert.ToNullableString(val))
 					If field.IsMultiValueField Then
-						fieldValue = Me.GetMultivalueString(fieldValue, field.IsCodeOrMulticodeField)
+						fieldValue = Me.GetMultivalueString(fieldValue, field)
 					ElseIf field.IsCodeOrMulticodeField Then
 						fieldValue = Me.GetCodeValueString(fieldValue)
 					End If
@@ -1038,6 +1039,17 @@ Namespace kCura.WinEDDS
 			End If
 			_nativeFileWriter.Write(vbNewLine)
 		End Sub
+
+		Private Function ToExportableDateString(ByVal val As Object, ByVal formatString As String) As String
+			Dim datetime As NullableString = NullableTypes.HelperFunctions.DBNullConvert.ToNullableString(val)
+			Dim retval As String
+			If datetime.IsNull OrElse datetime.Value.Trim = "" Then
+				retval = ""
+			Else
+				retval = System.DateTime.Parse(datetime.Value, System.Globalization.CultureInfo.InvariantCulture).ToString(formatString)
+			End If
+			Return retval
+		End Function
 
 		Public Sub UpdateHtmlLoadFile(ByVal row As System.Data.DataRow, ByVal hasFullText As Boolean, ByVal documentArtifactID As Int32, ByVal nativeLocation As String, ByVal fullTextTempFile As String, ByVal doc As Exporters.ObjectExportInfo, ByRef extractedTextByteCount As Int64)
 			Dim count As Int32
@@ -1133,7 +1145,7 @@ Namespace kCura.WinEDDS
 					If TypeOf val Is Byte() Then
 						val = System.Text.Encoding.Unicode.GetString(DirectCast(val, Byte()))
 					End If
-					If field.FieldType = DynamicFields.Types.FieldTypeHelper.FieldType.Date Then
+					If field.FieldType = DynamicFields.Types.FieldTypeHelper.FieldType.Date AndAlso Not field.Category = DynamicFields.Types.FieldCategory.MultiReflected Then
 						Dim datetime As NullableString = NullableTypes.HelperFunctions.DBNullConvert.ToNullableString(val)
 						If datetime.IsNull OrElse datetime.Value = "" Then
 							val = ""
@@ -1144,7 +1156,7 @@ Namespace kCura.WinEDDS
 					fieldValue = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(NullableTypes.HelperFunctions.DBNullConvert.ToNullableString(val))
 
 					If field.IsMultiValueField Then
-						fieldValue = Me.GetMultivalueString(fieldValue, field.IsCodeOrMulticodeField)
+						fieldValue = Me.GetMultivalueString(fieldValue, field)
 					ElseIf field.IsCodeOrMulticodeField Then
 						fieldValue = Me.GetCodeValueString(fieldValue)
 					End If
@@ -1201,7 +1213,7 @@ Namespace kCura.WinEDDS
 			Return retval.ToString
 		End Function
 
-		Private Function GetMultivalueString(ByVal input As String, ByVal isCodeOrMulticodeField As Boolean) As String
+		Private Function GetMultivalueString(ByVal input As String, ByVal field As ViewFieldInfo) As String
 			Dim xr As New System.Xml.XmlTextReader(New System.IO.StringReader("<objects>" & input & "</objects>"))
 			Dim firstTimeThrough As Boolean = True
 			Dim sb As New System.Text.StringBuilder
@@ -1214,7 +1226,13 @@ Namespace kCura.WinEDDS
 						sb.Append(Me.Settings.MultiRecordDelimiter)
 					End If
 					Dim cleanval As String = xr.Value.Trim
-					If isCodeOrMulticodeField Then cleanval = Me.GetCodeValueString(cleanval)
+					Select Case field.FieldType
+						Case DynamicFields.Types.FieldTypeHelper.FieldType.Code, DynamicFields.Types.FieldTypeHelper.FieldType.MultiCode
+							cleanval = Me.GetCodeValueString(cleanval)
+						Case DynamicFields.Types.FieldTypeHelper.FieldType.Date
+							cleanval = Me.ToExportableDateString(cleanval, field.FormatString)
+					End Select
+					'If isCodeOrMulticodeField Then cleanval = Me.GetCodeValueString(cleanval)
 					sb.Append(cleanval)
 				End If
 			End While

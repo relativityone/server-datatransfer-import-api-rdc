@@ -451,7 +451,7 @@ Namespace kCura.WinEDDS
 			End If
 			If _settings.CreateFolderStructure AndAlso Not _settings.FolderStructureContainedInColumn Is Nothing AndAlso Not _settings.FolderStructureContainedInColumn = String.Empty Then
 				Dim parentIndex As Int32 = Int32.Parse(_settings.FolderStructureContainedInColumn.Substring(_settings.FolderStructureContainedInColumn.LastIndexOf("(")).Trim("()".ToCharArray))
-				Dim field As New Api.ArtifactField(New DocumentField("Parent", -1, kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Object, kCura.DynamicFields.Types.FieldCategory.ParentArtifact, NullableInt32.Null, NullableInt32.Null, NullableInt32.Null, True))
+				Dim field As New Api.ArtifactField(New DocumentField("Parent", -2, kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Object, kCura.DynamicFields.Types.FieldCategory.ParentArtifact, NullableInt32.Null, NullableInt32.Null, NullableInt32.Null, True))
 				field.Value = line(parentIndex - 1)
 				collection.Add(field)
 			End If
