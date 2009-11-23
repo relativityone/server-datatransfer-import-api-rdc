@@ -616,7 +616,7 @@ Namespace kCura.EDDS.WinForm
 			_totalFolders.Clear()
 			Try
 				Dim item As Object
-				Dim fields As DocumentField()
+				Dim fields As Api.ArtifactField()
 				Dim codeFieldColumnIndexes As New ArrayList
 				Dim folderColumnIndex As Int32 = -1
 				Dim dt As New DataTable
@@ -624,11 +624,11 @@ Namespace kCura.EDDS.WinForm
 				If al.Count > 0 Then
 					Dim firstRow As System.Array = DirectCast(al(0), System.Array)
 					Dim currentIndex As Int32 = 0
-					For Each field As DocumentField In firstRow
-						If field.FieldTypeID = kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Code OrElse field.FieldTypeID = kCura.DynamicFields.Types.FieldTypeHelper.FieldType.MultiCode Then
+					For Each field As Api.ArtifactField In firstRow
+						If field.Type = kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Code OrElse field.Type = kCura.DynamicFields.Types.FieldTypeHelper.FieldType.MultiCode Then
 							codeFieldColumnIndexes.Add(currentIndex)
 						End If
-						If field.FieldID = -1 And field.FieldName = "Parent_Folder_Identifier" Then folderColumnIndex = currentIndex
+						If field.ArtifactID = -2 And field.DisplayName = "Parent Folder Identifier" Then folderColumnIndex = currentIndex
 						currentIndex += 1
 					Next
 				End If
@@ -637,9 +637,9 @@ Namespace kCura.EDDS.WinForm
 				Dim fieldValue As String
 				For Each item In al
 					If Not item Is Nothing Then
-						fields = DirectCast(item, DocumentField())
+						fields = DirectCast(item, Api.ArtifactField())
 						If folderColumnIndex <> -1 Then
-							fieldValue = fields(folderColumnIndex).Value
+							fieldValue = fields(folderColumnIndex).ValueAsString
 							AddFoldersToTotalFolders(fieldValue)
 						End If
 					End If
