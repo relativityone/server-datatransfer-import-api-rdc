@@ -1168,7 +1168,7 @@ Namespace kCura.WinEDDS
 			Return New CodeValidator.SingleImporter(_settings.CaseInfo, _codeManager)
 		End Function
 		Protected Overrides Function GetArtifactReader() As Api.IArtifactReader
-			Return New kCura.WinEDDS.LoadFileReader(_settings)
+			Return New kCura.WinEDDS.LoadFileReader(_settings, False)
 		End Function
 
 

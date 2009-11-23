@@ -55,15 +55,16 @@ Namespace kCura.WinEDDS
 		Private WithEvents _lineCounter As kCura.Utility.File.LineCounter
 		Private _recordCount As Int64 = -1
 		Private _genericTimestamp As System.DateTime
-
+		Private _trackErrorsInFieldValues As Boolean
 #End Region
 
 #Region " Constructors "
 
-		Public Sub New(ByVal args As LoadFile)
+		Public Sub New(ByVal args As LoadFile, ByVal trackErrorsAsFieldValues As Boolean)
 			MyBase.New(args.RecordDelimiter, args.QuoteDelimiter, args.NewlineDelimiter, True)
 			_settings = args
 			_settings = args
+			_trackErrorsInFieldValues = trackErrorsAsFieldValues
 			_docFields = args.FieldMap.DocumentFields
 			_filePathColumn = args.NativeFilePathColumn
 			_firstLineContainsColumnNames = args.FirstLineContainsHeaders
@@ -132,31 +133,40 @@ Namespace kCura.WinEDDS
 #Region " Field Value Management "
 
 		Private Sub SetFieldValue(ByVal field As ArtifactField, ByVal value As String, ByVal column As Int32)
-			Select Case field.Type
-				Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Boolean
-					field.Value = Me.GetNullableBoolean(value.Trim, column)
-				Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Integer
-					field.Value = Me.GetNullableInteger(value.Trim, column)
-				Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Currency, kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Decimal
-					field.Value = Me.GetNullableDecimal(value.Trim, column)
-				Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Date
-					field.Value = Me.GetNullableDateTime(value.Trim, column)
-				Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Code, DynamicFields.Types.FieldTypeHelper.FieldType.Object, DynamicFields.Types.FieldTypeHelper.FieldType.User, DynamicFields.Types.FieldTypeHelper.FieldType.File
-					field.Value = value.Trim
-					If field.Value.ToString = String.Empty Then field.Value = Nothing
-				Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.MultiCode, DynamicFields.Types.FieldTypeHelper.FieldType.Objects
-					Dim al As New System.Collections.ArrayList
-					For Each item As String In value.Split(_settings.MultiRecordDelimiter)
-						If Not item.Trim = String.Empty Then al.Add(item.Trim)
-					Next
-					field.Value = DirectCast(al.ToArray(GetType(String)), String())
-				Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Varchar
-					field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(Me.GetNullableFixedString(value, column, field.TextLength))
-				Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Text
-					field.Value = value
-				Case Else
-					Throw New System.Exception("Unsupported field type '" & field.Type.ToString & "'")
-			End Select
+			Try
+				Select Case field.Type
+					Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Boolean
+						field.Value = Me.GetNullableBoolean(value.Trim, column)
+					Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Integer
+						field.Value = Me.GetNullableInteger(value.Trim, column)
+					Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Currency, kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Decimal
+						field.Value = Me.GetNullableDecimal(value.Trim, column)
+					Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Date
+						field.Value = Me.GetNullableDateTime(value.Trim, column)
+					Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Code, DynamicFields.Types.FieldTypeHelper.FieldType.Object, DynamicFields.Types.FieldTypeHelper.FieldType.User, DynamicFields.Types.FieldTypeHelper.FieldType.File
+						field.Value = value.Trim
+						If field.Value.ToString = String.Empty Then field.Value = Nothing
+					Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.MultiCode, DynamicFields.Types.FieldTypeHelper.FieldType.Objects
+						Dim al As New System.Collections.ArrayList
+						For Each item As String In value.Split(_settings.MultiRecordDelimiter)
+							If Not item.Trim = String.Empty Then al.Add(item.Trim)
+						Next
+						field.Value = DirectCast(al.ToArray(GetType(String)), String())
+					Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Varchar
+						field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(Me.GetNullableFixedString(value, column, field.TextLength))
+					Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Text
+						field.Value = value
+					Case Else
+						Throw New System.Exception("Unsupported field type '" & field.Type.ToString & "'")
+				End Select
+			Catch ex As ImporterExceptionBase
+				If _trackErrorsInFieldValues Then
+					field.Value = ex
+				Else
+					Throw
+				End If
+
+			End Try
 		End Sub
 
 		Public Overloads Function GetNullableDateTime(ByVal value As String, ByVal column As Int32) As NullableDateTime

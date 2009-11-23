@@ -292,6 +292,9 @@ Namespace kCura.WinEDDS
 #End Region
 
 		Public Sub SetFieldValue(ByVal field As Api.ArtifactField, ByVal columnIndex As Int32, ByVal forPreview As Boolean, ByVal identityValue As String)
+			If TypeOf field.Value Is System.Exception Then
+				Throw DirectCast(field.Value, System.Exception)
+			End If
 			Select Case field.Type
 				Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Boolean
 					field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(CType(field.Value, NullableBoolean))

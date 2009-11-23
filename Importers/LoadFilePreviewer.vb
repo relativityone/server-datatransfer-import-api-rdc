@@ -98,15 +98,16 @@ Namespace kCura.WinEDDS
 			Dim stepsize As Int64 = CType(filesize / 100, Int64)
 			ProcessStart(0, filesize, stepsize)
 			Dim fieldArrays As New System.Collections.ArrayList
+			_columnHeaders = _artifactReader.GetColumnNames(_settings)
+			_columnCount = _columnHeaders.Length
 			If _firstLineContainsColumnNames Then
-				_columnHeaders = _artifactReader.GetColumnNames(_settings)
-				_columnCount = _columnHeaders.Length
 				If _uploadFiles Then
 					Dim openParenIndex As Int32 = _filePathColumn.LastIndexOf("("c) + 1
 					Dim closeParenIndex As Int32 = _filePathColumn.LastIndexOf(")"c)
 					_filePathColumnIndex = Int32.Parse(_filePathColumn.Substring(openParenIndex, closeParenIndex - openParenIndex)) - 1
 				End If
 				'_filePathColumnIndex = Array.IndexOf(_columnHeaders, _filePathColumn)
+				If _artifactreader.HasMoreRecords Then _artifactReader.AdvanceRecord()
 			Else
 				If _uploadFiles Then
 					_filePathColumnIndex = Int32.Parse(_filePathcolumn.Replace("Column", "").Replace("(", "").Replace(")", "").Trim) - 1
@@ -122,15 +123,16 @@ Namespace kCura.WinEDDS
 							_columnCount = record.Count
 						End If
 						Dim x As Api.ArtifactField() = CheckLine(record)
-						If Not x Is Nothing AndAlso Not (_firstLineContainsColumnNames AndAlso i = 0) Then fieldArrays.Add(x)
+						'If Not x Is Nothing AndAlso Not (_firstLineContainsColumnNames AndAlso i = 0) Then fieldArrays.Add(x)
+						If Not x Is Nothing Then fieldArrays.Add(x)
 					Catch ex As kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
 						fieldArrays.Add(ex)
 					End Try
 					i += 1
 					If i Mod 100 = 0 Then ProcessProgress(_artifactReader.BytesProcessed, filesize, stepsize)
 				Else
-						earlyexit = True
-						Exit While
+					earlyexit = True
+					Exit While
 				End If
 			End While
 			If earlyexit Then
@@ -305,7 +307,7 @@ Namespace kCura.WinEDDS
 		Private Function SetFieldValueOrErrorMessage(ByVal field As Api.ArtifactField, ByVal column As Int32) As Boolean
 			Try
 				SetFieldValue(field, column, True, "")
-				Return False
+				Return TypeOf field.Value Is System.Exception
 			Catch ex As kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
 				field.Value = ex.Message
 				Return True
@@ -327,7 +329,7 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Protected Overrides Function GetArtifactReader() As Api.IArtifactReader
-			Return New LoadFileReader(_settings)
+			Return New LoadFileReader(_settings, True)
 		End Function
 	End Class
 End Namespace
