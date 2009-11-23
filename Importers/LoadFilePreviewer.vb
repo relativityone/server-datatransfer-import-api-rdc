@@ -161,20 +161,20 @@ Namespace kCura.WinEDDS
 			For Each mapItem In _fieldMap
 				If mapItem.NativeFileColumnIndex > -1 AndAlso Not mapItem.DocumentField Is Nothing Then
 					Dim field As Api.ArtifactField = record(mapItem.DocumentField.FieldID)
-					Select Case field.Category
-						Case kCura.DynamicFields.Types.FieldCategory.Relational
-							If unmappedFields.Contains(field.ArtifactID) Then
-								unmappedFields.Remove(field.ArtifactID)
-							End If
-							If Not mappedFields.Contains(field.ArtifactID) Then
-								mappedFields.Add(field.ArtifactID, field)
-							End If
-						Case kCura.DynamicFields.Types.FieldCategory.Identifier
-							If Not _keyFieldID > 0 Then identifierField = field
-					End Select
-					lineContainsErrors = lineContainsErrors Or SetFieldValueOrErrorMessage(field, mapItem.NativeFileColumnIndex)
-					'dont add field if object type is not a document and the field is a file field
 					If Not (_artifactTypeID <> kCura.EDDS.Types.ArtifactType.Document And field.Type = kCura.DynamicFields.Types.FieldTypeHelper.FieldType.File) Then
+						Select Case field.Category
+							Case kCura.DynamicFields.Types.FieldCategory.Relational
+								If unmappedFields.Contains(field.ArtifactID) Then
+									unmappedFields.Remove(field.ArtifactID)
+								End If
+								If Not mappedFields.Contains(field.ArtifactID) Then
+									mappedFields.Add(field.ArtifactID, field)
+								End If
+							Case kCura.DynamicFields.Types.FieldCategory.Identifier
+								If Not _keyFieldID > 0 Then identifierField = field
+						End Select
+						lineContainsErrors = lineContainsErrors Or SetFieldValueOrErrorMessage(field, mapItem.NativeFileColumnIndex)
+						'dont add field if object type is not a document and the field is a file field
 						retval.Add(field)
 					End If
 				End If
