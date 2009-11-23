@@ -413,10 +413,15 @@ Namespace kCura.WinEDDS
 						Dim objName As String
 						If objectValues.Count > 0 Then
 							For Each objName In objectValues.Keys
+								'If forPreview And DirectCast(objectValues(objName), Int32) = -1 Then
+								'	objectValues(objName) = "[new object]"
+								'End If
+								'newVal &= ";" & objName
 								If forPreview And DirectCast(objectValues(objName), Int32) = -1 Then
-									objectValues(objName) = "[new object]"
+									newVal &= ";" & "[new object]"
+								Else
+									newVal &= ";" & objName
 								End If
-								newVal &= ";" & objName
 							Next
 						End If
 						newval = newval.TrimStart(";"c)
