@@ -155,7 +155,11 @@ Namespace kCura.WinEDDS
 					Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Varchar
 						field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(Me.GetNullableFixedString(value, column, field.TextLength))
 					Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Text
-						field.Value = value
+						If _settings.FullTextColumnContainsFileLocation Then
+							field.Value = value
+						Else
+							field.Value = value.Replace(Me.NewlineProxy, vbNewLine)
+						End If
 					Case Else
 						Throw New System.Exception("Unsupported field type '" & field.Type.ToString & "'")
 				End Select
