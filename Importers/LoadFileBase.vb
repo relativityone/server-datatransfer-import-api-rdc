@@ -395,6 +395,7 @@ Namespace kCura.WinEDDS
 					End If
 				Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Varchar
 					If field.Value Is Nothing Then field.Value = String.Empty
+					field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(Me.GetNullableFixedString(field.ValueAsString, columnIndex, field.TextLength))
 					Select Case field.Category
 						Case DynamicFields.Types.FieldCategory.Relational
 							If field.Value.ToString = String.Empty Then field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(Me.GetNullableFixedString(identityValue, columnIndex, field.TextLength))

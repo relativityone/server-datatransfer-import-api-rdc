@@ -156,8 +156,13 @@ Namespace kCura.WinEDDS
 			Dim idFieldColumnIndex As Int32
 			Dim idFieldOriginalValue As String
 			For Each relationalField As DocumentField In _relationalDocumentFields
-				unmappedFields.Add(relationalField.FieldID, relationalField)
+				unmappedFields.Add(relationalField.FieldID, New Api.ArtifactField(relationalField))
 			Next
+			If _keyFieldID > 0 Then
+				identifierField = record(_keyFieldID)
+			Else
+				identifierField = record.IdentifierField
+			End If
 			For Each mapItem In _fieldMap
 				If mapItem.NativeFileColumnIndex > -1 AndAlso Not mapItem.DocumentField Is Nothing Then
 					Dim field As Api.ArtifactField = record(mapItem.DocumentField.FieldID)
@@ -173,7 +178,7 @@ Namespace kCura.WinEDDS
 							Case kCura.DynamicFields.Types.FieldCategory.Identifier
 								If Not _keyFieldID > 0 Then identifierField = field
 						End Select
-						lineContainsErrors = lineContainsErrors Or SetFieldValueOrErrorMessage(field, mapItem.NativeFileColumnIndex)
+						lineContainsErrors = lineContainsErrors Or SetFieldValueOrErrorMessage(field, mapItem.NativeFileColumnIndex, identifierField.ValueAsString)
 						'dont add field if object type is not a document and the field is a file field
 						retval.Add(field)
 					End If
@@ -192,8 +197,9 @@ Namespace kCura.WinEDDS
 
 			If Not identifierField Is Nothing And _artifactTypeID = kCura.EDDS.Types.ArtifactType.Document Then
 				For Each field As Api.ArtifactField In unmappedFields.Values
-					field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(Me.GetNullableFixedString(record.IdentifierField.ValueAsString, -1, field.TextLength))
-					lineContainsErrors = lineContainsErrors Or SetFieldValueOrErrorMessage(field, -1)
+					field.Value = identifierField.ValueAsString
+					'field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(Me.GetNullableFixedString(record.IdentifierField.ValueAsString, -1, field.TextLength))
+					lineContainsErrors = lineContainsErrors Or SetFieldValueOrErrorMessage(field, -1, identifierField.ValueAsString)
 					retval.Add(field)
 				Next
 				For Each field As Api.ArtifactField In mappedFields.Values
@@ -304,9 +310,9 @@ Namespace kCura.WinEDDS
 			_nativeFileCheckColumnName = val
 		End Sub
 
-		Private Function SetFieldValueOrErrorMessage(ByVal field As Api.ArtifactField, ByVal column As Int32) As Boolean
+		Private Function SetFieldValueOrErrorMessage(ByVal field As Api.ArtifactField, ByVal column As Int32, ByVal identityValue As String) As Boolean
 			Try
-				SetFieldValue(field, column, True, "")
+				SetFieldValue(field, column, True, identityValue)
 				Return TypeOf field.Value Is System.Exception
 			Catch ex As kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
 				field.Value = ex.Message
