@@ -39,6 +39,10 @@ Namespace kCura.WinEDDS.Api
 			If Not associatedObjectTypeID.IsNull Then Me.AssociatedObjectTypeID = associatedObjectTypeID.Value
 		End Sub
 
+		Public Function Copy() As Api.ArtifactField
+			Dim textl As NullableInt32 = NullableInt32.Null
+			Return New Api.ArtifactField(Me.DisplayName, Me.ArtifactID, Me.Type, Me.Category, New NullableInt32(Me.CodeTypeID), New NullableInt32(Me.TextLength), New NullableInt32(Me.AssociatedObjectTypeID))
+		End Function
 
 		Friend Sub New(ByVal field As DocumentField)
 			Me.ArtifactID = field.FieldID
