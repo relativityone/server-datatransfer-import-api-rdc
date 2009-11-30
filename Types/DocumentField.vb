@@ -1,7 +1,6 @@
 Imports System.Runtime.Serialization
 Namespace kCura.WinEDDS
 	<Serializable()> Public Class DocumentField
-
 #Region "Members"
 		Private _fieldName As String
 		Private _fieldID As Int32
@@ -11,7 +10,7 @@ Namespace kCura.WinEDDS
 		Private _codeTypeID As NullableTypes.NullableInt32
 		Private _fileColumnIndex As Int32
 		Private _fieldLength As NullableTypes.NullableInt32
-		Private _associatedObjectTypeID As NullableTypes.NullableInt32
+		<NonSerialized()> Private _associatedObjectTypeID As NullableTypes.NullableInt32
 		<NonSerialized()> Private _useUnicode As Boolean
 #End Region
 
@@ -175,6 +174,7 @@ Namespace kCura.WinEDDS
 			areEqual = areEqual And df1.Value = df2.Value
 			Return areEqual
 		End Function
+
 	End Class
 
 End Namespace
