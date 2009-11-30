@@ -1341,6 +1341,14 @@ Namespace kCura.EDDS.WinForm
 						tempLoadFile.GroupIdentifierColumn = Me.GetColumnHeadersFromLoadFile(tempLoadFile, tempLoadFile.FirstLineContainsHeaders)(fieldMapItem.NativeFileColumnIndex)
 						'mapItemToRemove = fieldMapItem
 					End If
+					If Not fieldMapItem.DocumentField Is Nothing Then
+						Try
+							Dim thisField As DocumentField = Me.CurrentFields(tempLoadFile.ArtifactTypeID).Item(fieldMapItem.DocumentField.FieldID)
+							fieldMapItem.DocumentField.AssociatedObjectTypeID = thisField.AssociatedObjectTypeID
+							fieldMapItem.DocumentField.UseUnicode = thisField.UseUnicode
+						Catch
+						End Try
+					End If
 				Next
 			End If
 			If Not mapItemToRemove Is Nothing Then tempLoadFile.FieldMap.Remove(mapItemToRemove)
