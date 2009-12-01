@@ -1,0 +1,152 @@
+<VisualStudioProject>
+    <VisualBasic
+        ProjectType = "Local"
+        ProductVersion = "7.10.3077"
+        SchemaVersion = "2.0"
+        ProjectGuid = "{86550F4B-BEF4-4458-9536-7B5C6F68B0E2}"
+    >
+        <Build>
+            <Settings
+                ApplicationIcon = ""
+                AssemblyKeyContainerName = ""
+                AssemblyName = "kCura.WinEDDS.ImportExtension"
+                AssemblyOriginatorKeyFile = ""
+                AssemblyOriginatorKeyMode = "None"
+                DefaultClientScript = "JScript"
+                DefaultHTMLPageLayout = "Grid"
+                DefaultTargetSchema = "IE50"
+                DelaySign = "false"
+                OutputType = "Library"
+                OptionCompare = "Binary"
+                OptionExplicit = "On"
+                OptionStrict = "On"
+                RootNamespace = ""
+                StartupObject = ""
+            >
+                <Config
+                    Name = "Debug"
+                    BaseAddress = "285212672"
+                    ConfigurationOverrideFile = ""
+                    DefineConstants = ""
+                    DefineDebug = "true"
+                    DefineTrace = "true"
+                    DebugSymbols = "true"
+                    IncrementalBuild = "true"
+                    Optimize = "false"
+                    OutputPath = "bin\"
+                    RegisterForComInterop = "false"
+                    RemoveIntegerChecks = "false"
+                    TreatWarningsAsErrors = "false"
+                    WarningLevel = "1"
+                />
+                <Config
+                    Name = "Release"
+                    BaseAddress = "285212672"
+                    ConfigurationOverrideFile = ""
+                    DefineConstants = ""
+                    DefineDebug = "false"
+                    DefineTrace = "true"
+                    DebugSymbols = "false"
+                    IncrementalBuild = "false"
+                    Optimize = "true"
+                    OutputPath = "bin\"
+                    RegisterForComInterop = "false"
+                    RemoveIntegerChecks = "false"
+                    TreatWarningsAsErrors = "false"
+                    WarningLevel = "1"
+                />
+            </Settings>
+            <References>
+                <Reference
+                    Name = "System"
+                    AssemblyName = "System"
+                />
+                <Reference
+                    Name = "System.Data"
+                    AssemblyName = "System.Data"
+                />
+                <Reference
+                    Name = "System.XML"
+                    AssemblyName = "System.Xml"
+                />
+                <Reference
+                    Name = "NullableTypes"
+                    AssemblyName = "NullableTypes"
+                    HintPath = "..\kCura.EDDS.WinForm\bin\NullableTypes.dll"
+                />
+                <Reference
+                    Name = "kCura.WinEDDS"
+                    AssemblyName = "kCura.WinEDDS"
+                    HintPath = "..\kCura.EDDS.WinForm\bin\kCura.WinEDDS.dll"
+                />
+                <Reference
+                    Name = "kCura.Utility"
+                    AssemblyName = "kCura.Utility"
+                    HintPath = "..\kCura.EDDS.WinForm\bin\kCura.Utility.dll"
+                />
+                <Reference
+                    Name = "kCura.DynamicFields.Types"
+                    AssemblyName = "kCura.DynamicFields.Types"
+                    HintPath = "..\kCura.EDDS.WinForm\bin\kCura.DynamicFields.Types.dll"
+                />
+                <Reference
+                    Name = "kCura.EDDS.Types"
+                    AssemblyName = "kCura.EDDS.Types"
+                    HintPath = "..\kCura.EDDS.WinForm\bin\kCura.EDDS.Types.dll"
+                />
+                <Reference
+                    Name = "kCura.Windows.Process"
+                    AssemblyName = "kCura.Windows.Process"
+                    HintPath = "..\kCura.EDDS.WinForm\bin\kCura.Windows.Process.dll"
+                />
+                <Reference
+                    Name = "System.Web.Services"
+                    AssemblyName = "System.Web.Services"
+                    HintPath = "..\..\..\..\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.Web.Services.dll"
+                />
+                <Reference
+                    Name = "kCura.Data.RowDataGateway"
+                    AssemblyName = "kCura.Data.RowDataGateway"
+                    HintPath = "..\..\kCura\kCura.Data.RowDataGateway\bin\kCura.Data.RowDataGateway.dll"
+                />
+            </References>
+            <Imports>
+                <Import Namespace = "Microsoft.VisualBasic" />
+                <Import Namespace = "System" />
+                <Import Namespace = "System.Collections" />
+                <Import Namespace = "System.Data" />
+                <Import Namespace = "System.Diagnostics" />
+            </Imports>
+        </Build>
+        <Files>
+            <Include>
+                <File
+                    RelPath = "AssemblyInfo.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "QueryImporter.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "QueryImporterProcess.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "QueryReader.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "QueryReaderInitializationArgs.vb"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+            </Include>
+        </Files>
+    </VisualBasic>
+</VisualStudioProject>
+

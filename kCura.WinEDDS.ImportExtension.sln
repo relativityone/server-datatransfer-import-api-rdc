@@ -1,0 +1,29 @@
+Microsoft Visual Studio Solution File, Format Version 8.00
+Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "kCura.WinEDDS.ImportExtension", "kCura.WinEDDS.ImportExtension.vbproj", "{86550F4B-BEF4-4458-9536-7B5C6F68B0E2}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "kCura.WinEDDS.ImportExtension.Console", "..\kCura.WinEDDS.ImportExtension.Console\kCura.WinEDDS.ImportExtension.Console.vbproj", "{A4464810-B565-4F1B-BF9F-3F2ED4D5C3DB}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfiguration) = preSolution
+		Debug = Debug
+		Release = Release
+	EndGlobalSection
+	GlobalSection(ProjectConfiguration) = postSolution
+		{86550F4B-BEF4-4458-9536-7B5C6F68B0E2}.Debug.ActiveCfg = Debug|.NET
+		{86550F4B-BEF4-4458-9536-7B5C6F68B0E2}.Debug.Build.0 = Debug|.NET
+		{86550F4B-BEF4-4458-9536-7B5C6F68B0E2}.Release.ActiveCfg = Release|.NET
+		{86550F4B-BEF4-4458-9536-7B5C6F68B0E2}.Release.Build.0 = Release|.NET
+		{A4464810-B565-4F1B-BF9F-3F2ED4D5C3DB}.Debug.ActiveCfg = Debug|.NET
+		{A4464810-B565-4F1B-BF9F-3F2ED4D5C3DB}.Debug.Build.0 = Debug|.NET
+		{A4464810-B565-4F1B-BF9F-3F2ED4D5C3DB}.Release.ActiveCfg = Release|.NET
+		{A4464810-B565-4F1B-BF9F-3F2ED4D5C3DB}.Release.Build.0 = Release|.NET
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+	EndGlobalSection
+	GlobalSection(ExtensibilityAddIns) = postSolution
+	EndGlobalSection
+EndGlobal
