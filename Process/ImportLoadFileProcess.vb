@@ -21,13 +21,15 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
+		Public Overridable Function GetLoadFileImporter() As BulkLoadFileImporter
+			Return New kCura.WinEDDS.BulkLoadFileImporter(LoadFile, ProcessController, _timeZoneOffset, True, Me.ProcessID, True)
+		End Function
+
 		Protected Overrides Sub Execute()
 			_startTime = DateTime.Now
 			_warningCount = 0
 			_errorCount = 0
-			_loadFileImporter = New kCura.WinEDDS.BulkLoadFileImporter(LoadFile, ProcessController, _timeZoneOffset, True, Me.ProcessID, True)
-			_newlineCounter = New kCura.Utility.File.LineCounter
-			_newlineCounter.Path = LoadFile.FilePath
+			_loadFileImporter = Me.GetLoadFileImporter
 			Me.ProcessObserver.InputArgs = LoadFile.FilePath
 			If (CType(_loadFileImporter.ReadFile(LoadFile.FilePath), Boolean)) AndAlso Not _hasRunPRocessComplete Then
 				If _loadFileImporter.HasErrors Then

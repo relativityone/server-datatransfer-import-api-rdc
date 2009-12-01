@@ -53,7 +53,7 @@ Namespace kCura.WinEDDS.Api
 			If Not field.AssociatedObjectTypeID.IsNull Then Me.AssociatedObjectTypeID = field.AssociatedObjectTypeID.Value
 			Me.Type = CType(field.FieldTypeID, kCura.DynamicFields.Types.FieldTypeHelper.FieldType)
 		End Sub
-		Friend Sub New(ByVal field As kCura.EDDS.WebAPI.DocumentManagerBase.Field)
+		Public Sub New(ByVal field As kCura.EDDS.WebAPI.DocumentManagerBase.Field)
 			Me.ArtifactID = field.ArtifactID
 			Me.Category = CType(field.FieldCategoryID, kCura.DynamicFields.Types.FieldCategory)
 			If Not field.CodeTypeID.IsNull Then Me.CodeTypeID = field.CodeTypeID.Value

@@ -202,6 +202,10 @@ Namespace kCura.WinEDDS
 			MyBase.SaveObject(location, _loadFile)
 		End Sub
 
+		Public Function ToLoadFile() As LoadFile
+			Return _loadFile
+		End Function
+
 	End Class
 End Namespace
 

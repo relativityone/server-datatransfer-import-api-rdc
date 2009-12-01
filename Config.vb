@@ -111,13 +111,21 @@ Namespace kCura.WinEDDS
 
 		Public Shared ReadOnly Property ImportBatchMaxVolume() As Int32		'Volume in bytes
 			Get
-				Return CType(ConfigSettings("ImportBatchMaxVolume"), Int32)
+				Try
+					Return CType(ConfigSettings("ImportBatchMaxVolume"), Int32)
+				Catch
+					Return 1000000
+				End Try
 			End Get
 		End Property
 
 		Public Shared ReadOnly Property ImportBatchSize() As Int32		'Number of records
 			Get
-				Return CType(ConfigSettings("ImportBatchSize"), Int32)
+				Try
+					Return CType(ConfigSettings("ImportBatchSize"), Int32)
+				Catch ex As Exception
+					Return 500
+				End Try
 			End Get
 		End Property
 
@@ -150,7 +158,11 @@ Namespace kCura.WinEDDS
 
 		Public Shared ReadOnly Property EnableSingleModeImport() As Boolean
 			Get
-				Return CType(ConfigSettings("EnableSingleModeImport"), Boolean)
+				Try
+					Return CType(ConfigSettings("EnableSingleModeImport"), Boolean)
+				Catch ex As Exception
+					Return False
+				End Try
 			End Get
 		End Property
 
