@@ -452,6 +452,7 @@ Namespace kCura.Windows.Process
 		End Sub
 
 		Private Sub ImportProgressForm_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
+			CheckForIllegalCrossThreadCalls = False
 			'Me.HideDetail()
 		End Sub
 
