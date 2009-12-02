@@ -37,7 +37,7 @@ Namespace kCura.WinEDDS
 			Me.ReadFile(_filePath)
 		End Sub
 
-		Protected ReadOnly Property Continue() As Boolean
+		Protected ReadOnly Property [Continue]() As Boolean
 			Get
 				Return Not MyBase.HasReachedEOF AndAlso _continue
 			End Get
@@ -75,7 +75,7 @@ Namespace kCura.WinEDDS
 				'_csvwriter.Append("UpdateFullText" & Microsoft.VisualBasic.ControlChars.Tab)
 				'_csvwriter.Append("File size" & Microsoft.VisualBasic.ControlChars.Tab)
 				'_csvwriter.Append(System.Environment.NewLine)
-				While Continue
+				While [Continue]
 					Try
 						DoFileUpload()
 					Catch ex As System.Exception

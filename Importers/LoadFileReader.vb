@@ -408,11 +408,11 @@ Namespace kCura.WinEDDS
 			End If
 			Dim line As String()
 			Dim currentLine As String()
-			Dim continue As Boolean = True And Not Me.Reader.Peek = -1
-			While continue
+			Dim [continue] As Boolean = True And Not Me.Reader.Peek = -1
+			While [continue]
 				If Me.CurrentLineNumber < System.Math.Min(clientErrorsLine, allErrorsLine) Then
 					If Me.Reader.Peek = -1 Then
-						continue = False
+						[continue] = False
 					Else
 						line = Me.GetLine()
 					End If
@@ -433,7 +433,7 @@ Namespace kCura.WinEDDS
 						End If
 					End If
 				End If
-				continue = ((Not allErrors.Eof Or clientErrors.Peek <> -1 Or Me.CurrentLineNumber <= System.Math.Min(clientErrorsLine, allErrorsLine)) And continue)
+				[continue] = ((Not allErrors.Eof Or clientErrors.Peek <> -1 Or Me.CurrentLineNumber <= System.Math.Min(clientErrorsLine, allErrorsLine)) And [continue])
 			End While
 			sw.Close()
 			allErrors.Close()

@@ -73,7 +73,7 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
-		Protected ReadOnly Property Continue() As Boolean
+		Protected ReadOnly Property [Continue]() As Boolean
 			Get
 				Return Not MyBase.HasReachedEOF AndAlso _continue
 			End Get
@@ -279,7 +279,7 @@ Namespace kCura.WinEDDS
 				Else
 					RaiseEvent UploadModeChangeEvent(_fileUploader.UploaderType.ToString, _bcpuploader.IsBulkEnabled)
 				End If
-				While Me.Continue
+				While Me.[Continue]
 					If _productionArtifactID <> 0 Then _productionManager.DoPreImportProcessing(_caseInfo.ArtifactID, _productionArtifactID)
 					If Me.CurrentLineNumber < _startLineNumber Then
 						Me.AdvanceLine()
@@ -293,7 +293,7 @@ Namespace kCura.WinEDDS
 						End If
 						status = status Or Me.ProcessImageLine(line)
 						al.Add(line)
-						If Not Me.Continue Then
+						If Not Me.[Continue] Then
 							Me.ProcessList(al, status, bulkLoadFilePath)
 							Exit While
 						End If
