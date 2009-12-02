@@ -689,7 +689,7 @@ Namespace kCura.EDDS.WinForm
 		Private Function EnsureConnection() As Boolean
 			If Not Me.SelectedCaseInfo Is Nothing Then
 				Dim casefields As String() = Nothing
-				Dim continue As Boolean = True
+				Dim [continue] As Boolean = True
 				Try
 					casefields = Me.GetCaseFields(Me.SelectedCaseInfo.ArtifactID, 10, True)
 					Return Not casefields Is Nothing

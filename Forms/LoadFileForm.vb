@@ -1565,7 +1565,7 @@ Namespace kCura.EDDS.WinForm
 		Private Function EnsureConnection() As Boolean
 			If Not _loadFile Is Nothing AndAlso Not _loadFile.CaseInfo Is Nothing Then
 				Dim casefields As String() = Nothing
-				Dim continue As Boolean = True
+				Dim [continue] As Boolean = True
 				Try
 					casefields = _application.GetCaseFields(_loadFile.CaseInfo.ArtifactID, 10, True)
 					Return Not casefields Is Nothing
