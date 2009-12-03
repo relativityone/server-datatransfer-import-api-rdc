@@ -14,7 +14,7 @@ Imports System.Runtime.InteropServices
 <Assembly: AssemblyProduct("Relativity Online Review")> 
 <Assembly: AssemblyCopyright("© kCura Corporation 2005")> 
 <Assembly: AssemblyTrademark("")> 
-<Assembly: CLSCompliant(True)> 
+<Assembly: CLSCompliant(False)> 
 <Assembly: AssemblyVersionAttribute("5.06.409.1")> 
 '<Assembly: AssemblyVersionAttribute("1.2.52.1")> 
 'The following GUID is for the ID of the typelib if this project is exposed to COM
