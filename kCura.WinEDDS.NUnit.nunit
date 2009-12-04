@@ -1,6 +1,0 @@
-<NUnitProject>
-  <Settings activeconfig="Integrate" />
-  <Config name="Integrate" binpathtype="Auto">
-    <assembly path="bin\kCura.WinEDDS.NUnit.dll" />
-  </Config>
-</NUnitProject>
