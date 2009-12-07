@@ -24,7 +24,7 @@ Namespace kCura.WinEDDS.Service
 			Dim field As kCura.EDDS.WebAPI.DocumentManagerBase.Field
 			For Each field In doc.Fields
 				If field.FieldCategoryID = kCura.DynamicFields.Types.FieldCategory.FullText Then
-					field.Value = New NullableTypes.NullableString(System.Text.Encoding.Default.GetString(DirectCast(field.Value, Byte())))
+					field.Value = System.Text.Encoding.Default.GetString(DirectCast(field.Value, Byte()))
 					Exit For
 				End If
 			Next

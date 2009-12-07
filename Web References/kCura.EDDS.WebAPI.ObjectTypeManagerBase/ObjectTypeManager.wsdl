@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<wsdl:definitions xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tns="http://www.kCura.com/EDDS/ObjectTypeManager" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" targetNamespace="http://www.kCura.com/EDDS/ObjectTypeManager" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+<wsdl:definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://www.kCura.com/EDDS/ObjectTypeManager" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" targetNamespace="http://www.kCura.com/EDDS/ObjectTypeManager" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
   <wsdl:types>
     <s:schema elementFormDefault="qualified" targetNamespace="http://www.kCura.com/EDDS/ObjectTypeManager">
-      <s:import namespace="http://www.w3.org/2001/XMLSchema" />
       <s:element name="RetrieveAllUploadable">
         <s:complexType>
           <s:sequence>
@@ -71,7 +70,7 @@
     </wsdl:operation>
   </wsdl:portType>
   <wsdl:binding name="ObjectTypeManagerSoap" type="tns:ObjectTypeManagerSoap">
-    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document" />
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
     <wsdl:operation name="RetrieveAllUploadable">
       <soap:operation soapAction="http://www.kCura.com/EDDS/ObjectTypeManager/RetrieveAllUploadable" style="document" />
       <wsdl:input>
@@ -91,10 +90,33 @@
       </wsdl:output>
     </wsdl:operation>
   </wsdl:binding>
+  <wsdl:binding name="ObjectTypeManagerSoap12" type="tns:ObjectTypeManagerSoap">
+    <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="RetrieveAllUploadable">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/ObjectTypeManager/RetrieveAllUploadable" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveParentArtifactTypeID">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/ObjectTypeManager/RetrieveParentArtifactTypeID" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
   <wsdl:service name="ObjectTypeManager">
-    <documentation xmlns="http://schemas.xmlsoap.org/wsdl/" />
     <wsdl:port name="ObjectTypeManagerSoap" binding="tns:ObjectTypeManagerSoap">
       <soap:address location="http://localhost/EDDSWebAPI/ObjectTypeManager.asmx" />
+    </wsdl:port>
+    <wsdl:port name="ObjectTypeManagerSoap12" binding="tns:ObjectTypeManagerSoap12">
+      <soap12:address location="http://localhost/EDDSWebAPI/ObjectTypeManager.asmx" />
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>

@@ -172,7 +172,7 @@ Namespace kCura.WinEDDS
 			End If
 		End Sub
 
-		Public Function GetCode(ByVal value As String, ByVal column As Int32, ByVal field As Api.ArtifactField, ByVal forPreview As Boolean) As NullableTypes.NullableInt32
+		Public Function GetCode(ByVal value As String, ByVal column As Int32, ByVal field As Api.ArtifactField, ByVal forPreview As Boolean) As Nullable(Of Int32)
 			Try
 				Return _codeValidator.ValidateSingleCode(field, value)
 			Catch ex As CodeValidator.CodeCreationException
@@ -211,7 +211,7 @@ Namespace kCura.WinEDDS
 			Return newOrder
 		End Function
 
-		Public Overridable Function GetMultiCode(ByVal value As String(), ByVal column As Int32, ByVal field As Api.ArtifactField, ByVal forPreview As Boolean) As NullableTypes.NullableInt32()
+		Public Overridable Function GetMultiCode(ByVal value As String(), ByVal column As Int32, ByVal field As Api.ArtifactField, ByVal forPreview As Boolean) As Nullable(Of Int32)()
 			Try
 				Dim al As New System.Collections.ArrayList(value)
 				Dim goodCodes As New System.Collections.ArrayList
@@ -248,13 +248,13 @@ Namespace kCura.WinEDDS
 					Next
 				Next
 				If c.Count > 0 Then
-					Dim codes(c.Count - 1) As NullableInt32
+					Dim codes(c.Count - 1) As Nullable(Of Int32)
 					For i = 0 To codes.Length - 1
-						codes(i) = New NullableTypes.NullableInt32(CType(c(i), Int32))
+						codes(i) = New Nullable(Of Int32)(CType(c(i), Int32))
 					Next
 					Return codes
 				Else
-					Return New NullableTypes.NullableInt32() {}
+					Return New Nullable(Of Int32)() {}
 				End If
 			Catch ex As Exceptions.CodeCreationFailedException
 				Throw New CodeCreationException(Me.CurrentLineNumber, column, True, ex.ToString)
@@ -297,13 +297,13 @@ Namespace kCura.WinEDDS
 			End If
 			Select Case field.Type
 				Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Boolean
-					field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(CType(field.Value, NullableBoolean))
+					field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(CType(field.Value, Nullable(Of Boolean)))
 				Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Integer
-					field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(CType(field.Value, NullableInt32))
+					field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(CType(field.Value, Nullable(Of Int32)))
 				Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Currency, kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Decimal
-					field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(CType(field.Value, NullableDecimal))
+					field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(CType(field.Value, Nullable(Of Decimal)))
 				Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Date
-					field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(CType(field.Value, NullableDateTime), True)
+					field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(CType(field.Value, Nullable(Of DateTime)), True)
 				Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.User
 					If field.Value Is Nothing Then
 						field.Value = String.Empty
@@ -319,7 +319,7 @@ Namespace kCura.WinEDDS
 						fieldValue = field.Value.ToString.Trim
 					End If
 					Dim fieldDisplayValue As String = String.Copy(fieldValue)
-					Dim code As NullableInt32 = GetCode(fieldValue, columnIndex, field, forPreview)
+					Dim code As Nullable(Of Int32) = GetCode(fieldValue, columnIndex, field, forPreview)
 					fieldValue = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(code)
 					If forPreview Then
 						If fieldValue = "-1" Then
@@ -351,7 +351,7 @@ Namespace kCura.WinEDDS
 							field.Value = ""
 						End If
 					Else
-						Dim codeValues As NullableTypes.NullableInt32() = GetMultiCode(value, columnIndex, field, forPreview)
+						Dim codeValues As Nullable(Of Int32)() = GetMultiCode(value, columnIndex, field, forPreview)
 						Dim i As Int32
 						Dim newVal As String = String.Empty
 						Dim codeName As String
@@ -377,14 +377,14 @@ Namespace kCura.WinEDDS
 							Else
 								'field.Value = ChrW(11) & oldval.Trim(_multiValueSeparator).Replace(_multiValueSeparator, ChrW(11)) & ChrW(11)
 								field.Value = ChrW(11) & kCura.Utility.ArrayList.ArrayListToDelimitedString(New System.Collections.ArrayList(value), ChrW(11)) & ChrW(11)
-								For Each codeValue As NullableTypes.NullableInt32 In codeValues
-									If Not codeValue.IsNull Then
+								For Each codeValue As Nullable(Of Int32) In codeValues
+									If Not codeValue Is Nothing Then
 										DirectCast(Me, BulkLoadFileImporter).WriteCodeLineToTempFile(identityValue, codeValue.Value, field.CodeTypeID)
 									End If
 								Next
 								Dim sb As New System.Text.StringBuilder
-								For Each codeValue As NullableTypes.NullableInt32 In codeValues
-									If Not codeValue.IsNull Then
+								For Each codeValue As Nullable(Of Int32) In codeValues
+									If Not codeValue Is Nothing Then
 										sb.Append(codeValue.Value)
 										sb.Append(",")
 									End If
@@ -490,29 +490,29 @@ Namespace kCura.WinEDDS
 			End If
 		End Sub
 
-		Public Function GetUserArtifactID(ByVal value As String, ByVal column As Int32) As NullableInt32
-			If value = "" Then Return NullableTypes.NullableInt32.Null
-			Dim retval As NullableInt32 = Me.Users(value)
-			If retval.IsNull Then
+		Public Function GetUserArtifactID(ByVal value As String, ByVal column As Int32) As Nullable(Of Int32)
+			If value = "" Then Return Nothing
+			Dim retval As Nullable(Of Int32) = Me.Users(value)
+			If retval Is Nothing Then
 				Throw New MissingUserException(Me.CurrentLineNumber, column, value)
 			Else
 				Return retval
 			End If
 		End Function
 
-		Public Function GetNullableFixedString(ByVal value As String, ByVal column As Int32, ByVal fieldLength As Int32) As NullableTypes.NullableString
+		Public Function GetNullableFixedString(ByVal value As String, ByVal column As Int32, ByVal fieldLength As Int32) As String
 			If value.Length > fieldLength Then
 				Throw New kCura.Utility.DelimitedFileImporter.InputStringExceedsFixedLengthException(CurrentLineNumber, column, fieldLength)
 			Else
-				Return kCura.Utility.NullableTypesHelper.ToNullableString(value)
+				Return kCura.Utility.NullableTypesHelper.DBNullString(value)
 			End If
 		End Function
 
-		Public Function GetNullableAssociatedObjectName(ByVal value As String, ByVal column As Int32, ByVal fieldLength As Int32, ByVal fieldName As String) As NullableTypes.NullableString
+		Public Function GetNullableAssociatedObjectName(ByVal value As String, ByVal column As Int32, ByVal fieldLength As Int32, ByVal fieldName As String) As String
 			If value.Length > fieldLength Then
 				Throw New kCura.Utility.DelimitedFileImporter.InputObjectNameExceedsFixedLengthException(CurrentLineNumber, column, fieldLength, fieldName)
 			Else
-				Return kCura.Utility.NullableTypesHelper.ToNullableString(value)
+				Return kCura.Utility.NullableTypesHelper.DBNullString(value)
 			End If
 		End Function
 

@@ -428,7 +428,7 @@ Namespace kCura.WinEDDS
 				If _artifactTypeID = kCura.EDDS.Types.ArtifactType.Document Then
 					parentFolderID = _folderCache.FolderID(Me.CleanDestinationFolderPath(record.FieldList(DynamicFields.Types.FieldCategory.ParentArtifact)(0).Value.ToString))
 				Else
-					Dim textIdentifier As String = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(kCura.Utility.NullableTypesHelper.ToNullableString(record.FieldList(DynamicFields.Types.FieldCategory.ParentArtifact)(0).Value.ToString))
+					Dim textIdentifier As String = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(kCura.Utility.NullableTypesHelper.DBNullString(record.FieldList(DynamicFields.Types.FieldCategory.ParentArtifact)(0).Value.ToString))
 					If textIdentifier = "" Then
 						If _overwrite.ToLower = "strict" OrElse _overwrite.ToLower = "append" Then
 							parentFolderID = -1
@@ -774,9 +774,9 @@ Namespace kCura.WinEDDS
 			Dim retval As New kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo
 			retval.ArtifactID = input.ArtifactID
 			retval.Category = CType(input.FieldCategoryID, kCura.EDDS.WebAPI.BulkImportManagerBase.FieldCategory)
-			If Not input.CodeTypeID.IsNull Then retval.CodeTypeID = input.CodeTypeID.Value
+			If Not input.CodeTypeID Is Nothing Then retval.CodeTypeID = input.CodeTypeID.Value
 			retval.DisplayName = input.DisplayName
-			If Not input.MaxLength.IsNull Then retval.TextLength = input.MaxLength.Value
+			If Not input.MaxLength Is Nothing Then retval.TextLength = input.MaxLength.Value
 			retval.IsUnicodeEnabled = input.UseUnicodeEncoding
 			retval.Type = CType(input.FieldTypeID, kCura.EDDS.WebAPI.BulkImportManagerBase.FieldType)
 			Return retval

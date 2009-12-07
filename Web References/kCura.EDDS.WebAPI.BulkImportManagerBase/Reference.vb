@@ -27,7 +27,8 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
     <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "2.0.50727.4927"),  _
      System.Diagnostics.DebuggerStepThroughAttribute(),  _
      System.ComponentModel.DesignerCategoryAttribute("code"),  _
-     System.Web.Services.WebServiceBindingAttribute(Name:="BulkImportManagerSoap", [Namespace]:="http://www.kCura.com/EDDS/BulkImportManager")>  _
+     System.Web.Services.WebServiceBindingAttribute(Name:="BulkImportManagerSoap", [Namespace]:="http://www.kCura.com/EDDS/BulkImportManager"),  _
+     System.Xml.Serialization.XmlIncludeAttribute(GetType(FieldInfoBase))>  _
     Partial Public Class BulkImportManager
         Inherits System.Web.Services.Protocols.SoapHttpClientProtocol
         
@@ -561,12 +562,13 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
     End Class
     
     '''<remarks/>
-    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "2.0.50727.4927"),  _
+    <System.Xml.Serialization.XmlIncludeAttribute(GetType(FieldInfo)),  _
+     System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "2.0.50727.4927"),  _
      System.SerializableAttribute(),  _
      System.Diagnostics.DebuggerStepThroughAttribute(),  _
      System.ComponentModel.DesignerCategoryAttribute("code"),  _
      System.Xml.Serialization.XmlTypeAttribute([Namespace]:="http://www.kCura.com/EDDS/BulkImportManager")>  _
-    Partial Public Class FieldInfo
+    Partial Public Class FieldInfoBase
         
         Private artifactIDField As Integer
         
@@ -579,10 +581,6 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
         Private textLengthField As Integer
         
         Private codeTypeIDField As Integer
-        
-        Private formatStringField As String
-        
-        Private isUnicodeEnabledField As Boolean
         
         '''<remarks/>
         Public Property ArtifactID() As Integer
@@ -641,26 +639,6 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
             End Get
             Set
                 Me.codeTypeIDField = value
-            End Set
-        End Property
-        
-        '''<remarks/>
-        Public Property FormatString() As String
-            Get
-                Return Me.formatStringField
-            End Get
-            Set
-                Me.formatStringField = value
-            End Set
-        End Property
-        
-        '''<remarks/>
-        Public Property IsUnicodeEnabled() As Boolean
-            Get
-                Return Me.isUnicodeEnabledField
-            End Get
-            Set
-                Me.isUnicodeEnabledField = value
             End Set
         End Property
     End Class
@@ -768,6 +746,40 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
         '''<remarks/>
         Objects
     End Enum
+    
+    '''<remarks/>
+    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "2.0.50727.4927"),  _
+     System.SerializableAttribute(),  _
+     System.Diagnostics.DebuggerStepThroughAttribute(),  _
+     System.ComponentModel.DesignerCategoryAttribute("code"),  _
+     System.Xml.Serialization.XmlTypeAttribute([Namespace]:="http://www.kCura.com/EDDS/BulkImportManager")>  _
+    Partial Public Class FieldInfo
+        Inherits FieldInfoBase
+        
+        Private formatStringField As String
+        
+        Private isUnicodeEnabledField As Boolean
+        
+        '''<remarks/>
+        Public Property FormatString() As String
+            Get
+                Return Me.formatStringField
+            End Get
+            Set
+                Me.formatStringField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property IsUnicodeEnabled() As Boolean
+            Get
+                Return Me.isUnicodeEnabledField
+            End Get
+            Set
+                Me.isUnicodeEnabledField = value
+            End Set
+        End Property
+    End Class
     
     '''<remarks/>
     <System.Xml.Serialization.XmlIncludeAttribute(GetType(ObjectLoadInfo)),  _

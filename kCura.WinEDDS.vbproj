@@ -128,10 +128,6 @@
     <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="NullableTypes">
-      <Name>NullableTypes</Name>
-      <HintPath>..\..\Vendor\kCura\1.0.2131.20968\NullableTypes.dll</HintPath>
-    </Reference>
     <Reference Include="System">
       <Name>System</Name>
     </Reference>
@@ -187,6 +183,10 @@
       <Project>{B092D1B2-909B-4EF0-9369-A81675C3FC18}</Project>
       <Package>{F184B08F-C81C-45F6-A57F-5ABD9991F28F}</Package>
     </ProjectReference>
+    <ProjectReference Include="..\..\Vendor\FreeImage\3.130\FreeImage\Wrapper\FreeImage.NET\cs\Library\FreeImage.Net.csproj">
+      <Project>{6598A7CD-8F27-4D3F-A675-5AE63113A7C3}</Project>
+      <Name>FreeImage.Net</Name>
+    </ProjectReference>
     <ProjectReference Include="..\kCura.EDDS.Import\kCura.EDDS.Import.vbproj">
       <Name>kCura.EDDS.Import</Name>
       <Project>{94940707-AFFE-47EB-BD70-5ADE8F7C8A36}</Project>
@@ -200,7 +200,6 @@
   </ItemGroup>
   <ItemGroup>
     <Import Include="Microsoft.VisualBasic" />
-    <Import Include="NullableTypes" />
     <Import Include="System" />
     <Import Include="System.Collections" />
     <Import Include="System.Data" />

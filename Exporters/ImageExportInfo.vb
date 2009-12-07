@@ -6,7 +6,7 @@ Namespace kCura.WinEDDS.Exporters
 		Private _batesNumber As String
 		Private _tempLocation As String
 		Private _sourceLocation As String
-		Private _pageOffset As NullableTypes.NullableInt32
+		Private _pageOffset As Nullable(Of Int32)
 		Private _hasBeenDownloaded As Boolean = False
 
 		Public Property FileName() As String
@@ -63,11 +63,11 @@ Namespace kCura.WinEDDS.Exporters
 			End Set
 		End Property
 
-		Public Property PageOffset() As NullableTypes.NullableInt32
+		Public Property PageOffset() As Nullable(Of Int32)
 			Get
 				Return _pageOffset
 			End Get
-			Set(ByVal value As NullableTypes.NullableInt32)
+			Set(ByVal value As Nullable(Of Int32))
 				_pageOffset = value
 			End Set
 		End Property

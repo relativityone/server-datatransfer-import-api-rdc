@@ -117,8 +117,8 @@ Namespace kCura.WinEDDS
 			documentDTO.DocumentAgentFlags = New kCura.EDDS.WebAPI.DocumentManagerBase.DocumentAgentFlags
 			documentDTO.DocumentAgentFlags.UpdateFullText = _importFileDirectorySettings.ExtractFullTextFromFile
 			documentDTO.Fields = _caseFields
-			documentDTO.ParentArtifactID = New NullableTypes.NullableInt32(parentFolderID)
-			documentDTO.ContainerID = New NullableTypes.NullableInt32(_importFileDirectorySettings.CaseInfo.ArtifactID)
+			documentDTO.ParentArtifactID = New Nullable(Of Int32)(parentFolderID)
+			documentDTO.ContainerID = New Nullable(Of Int32)(_importFileDirectorySettings.CaseInfo.ArtifactID)
 			documentDTO.AccessControlListIsInherited = True
 			documentDTO.AccessControlListID = _rootFolderACLID
 

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<wsdl:definitions xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tns="http://foley.com/EDDS/FileManager" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" targetNamespace="http://foley.com/EDDS/FileManager" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+<wsdl:definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://foley.com/EDDS/FileManager" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" targetNamespace="http://foley.com/EDDS/FileManager" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
   <wsdl:types>
     <s:schema elementFormDefault="qualified" targetNamespace="http://foley.com/EDDS/FileManager">
       <s:element name="BeginFill">
@@ -262,7 +262,7 @@
     </wsdl:operation>
   </wsdl:portType>
   <wsdl:binding name="FileIOSoap" type="tns:FileIOSoap">
-    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document" />
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
     <wsdl:operation name="BeginFill">
       <soap:operation soapAction="http://foley.com/EDDS/FileManager/BeginFill" style="document" />
       <wsdl:input>
@@ -354,10 +354,105 @@
       </wsdl:output>
     </wsdl:operation>
   </wsdl:binding>
+  <wsdl:binding name="FileIOSoap12" type="tns:FileIOSoap">
+    <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="BeginFill">
+      <soap12:operation soapAction="http://foley.com/EDDS/FileManager/BeginFill" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="FileFill">
+      <soap12:operation soapAction="http://foley.com/EDDS/FileManager/FileFill" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RemoveFill">
+      <soap12:operation soapAction="http://foley.com/EDDS/FileManager/RemoveFill" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RemoveTempFile">
+      <soap12:operation soapAction="http://foley.com/EDDS/FileManager/RemoveTempFile" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ReadFileAsString">
+      <soap12:operation soapAction="http://foley.com/EDDS/FileManager/ReadFileAsString" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetBcpSharePath">
+      <soap12:operation soapAction="http://foley.com/EDDS/FileManager/GetBcpSharePath" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ValidateBcpShare">
+      <soap12:operation soapAction="http://foley.com/EDDS/FileManager/ValidateBcpShare" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetBcpShareSpaceReport">
+      <soap12:operation soapAction="http://foley.com/EDDS/FileManager/GetBcpShareSpaceReport" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetDefaultRepositorySpaceReport">
+      <soap12:operation soapAction="http://foley.com/EDDS/FileManager/GetDefaultRepositorySpaceReport" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RepositoryVolumeMax">
+      <soap12:operation soapAction="http://foley.com/EDDS/FileManager/RepositoryVolumeMax" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
   <wsdl:service name="FileIO">
-    <documentation xmlns="http://schemas.xmlsoap.org/wsdl/" />
     <wsdl:port name="FileIOSoap" binding="tns:FileIOSoap">
       <soap:address location="http://localhost/EDDSWebAPI/FileIO.asmx" />
+    </wsdl:port>
+    <wsdl:port name="FileIOSoap12" binding="tns:FileIOSoap12">
+      <soap12:address location="http://localhost/EDDSWebAPI/FileIO.asmx" />
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>

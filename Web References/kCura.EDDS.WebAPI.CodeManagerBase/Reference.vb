@@ -410,7 +410,7 @@ Namespace kCura.EDDS.WebAPI.CodeManagerBase
         
         Private updateInSearchEngineField As Boolean
         
-        Private oIHiliteStyleIDField As System.Xml.XmlElement
+        Private oIHiliteStyleIDField As System.Nullable(Of Integer)
         
         '''<remarks/>
         Public Property CodeType() As Integer
@@ -463,7 +463,8 @@ Namespace kCura.EDDS.WebAPI.CodeManagerBase
         End Property
         
         '''<remarks/>
-        Public Property OIHiliteStyleID() As System.Xml.XmlElement
+        <System.Xml.Serialization.XmlElementAttribute(IsNullable:=true)>  _
+        Public Property OIHiliteStyleID() As System.Nullable(Of Integer)
             Get
                 Return Me.oIHiliteStyleIDField
             End Get
@@ -486,9 +487,9 @@ Namespace kCura.EDDS.WebAPI.CodeManagerBase
         
         Private artifactTypeIDField As Integer
         
-        Private parentArtifactIDField As System.Xml.XmlElement
+        Private parentArtifactIDField As System.Nullable(Of Integer)
         
-        Private containerIDField As System.Xml.XmlElement
+        Private containerIDField As System.Nullable(Of Integer)
         
         Private accessControlListIDField As Integer
         
@@ -531,7 +532,8 @@ Namespace kCura.EDDS.WebAPI.CodeManagerBase
         End Property
         
         '''<remarks/>
-        Public Property ParentArtifactID() As System.Xml.XmlElement
+        <System.Xml.Serialization.XmlElementAttribute(IsNullable:=true)>  _
+        Public Property ParentArtifactID() As System.Nullable(Of Integer)
             Get
                 Return Me.parentArtifactIDField
             End Get
@@ -541,7 +543,8 @@ Namespace kCura.EDDS.WebAPI.CodeManagerBase
         End Property
         
         '''<remarks/>
-        Public Property ContainerID() As System.Xml.XmlElement
+        <System.Xml.Serialization.XmlElementAttribute(IsNullable:=true)>  _
+        Public Property ContainerID() As System.Nullable(Of Integer)
             Get
                 Return Me.containerIDField
             End Get

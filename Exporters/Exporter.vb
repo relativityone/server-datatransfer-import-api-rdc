@@ -308,7 +308,7 @@ Namespace kCura.WinEDDS
 					image.FileName = drv("ImageFileName").ToString
 					image.FileGuid = drv("ImageGuid").ToString
 					image.ArtifactID = documentArtifactID
-					image.PageOffset = NullableTypes.HelperFunctions.DBNullConvert.ToNullableInt32(drv("ByteRange"))
+					image.PageOffset = kCura.Utility.NullableTypesHelper.DBNullConvertToNullable(Of Int32)(drv("ByteRange"))
 					image.BatesNumber = drv("BatesNumber").ToString
 					image.SourceLocation = drv("Location").ToString
 					Dim filenameExtension As String = ""
@@ -345,7 +345,7 @@ Namespace kCura.WinEDDS
 							If image.FileGuid <> "" Then
 								image.ArtifactID = documentArtifactID
 								image.BatesNumber = drv("BatesNumber").ToString
-								image.PageOffset = NullableTypes.HelperFunctions.DBNullConvert.ToNullableInt32(drv("ByteRange"))
+								image.PageOffset = kCura.Utility.NullableTypesHelper.DBNullConvertToNullable(Of Int32)(drv("ByteRange"))
 								Dim filenameExtension As String = ""
 								If image.FileName.IndexOf(".") <> -1 Then
 									filenameExtension = "." & image.FileName.Substring(image.FileName.LastIndexOf(".") + 1)
@@ -376,7 +376,7 @@ Namespace kCura.WinEDDS
 					image.FileName = drv("Filename").ToString
 					image.FileGuid = drv("Guid").ToString
 					image.ArtifactID = documentArtifactID
-					image.PageOffset = NullableTypes.HelperFunctions.DBNullConvert.ToNullableInt32(drv("ByteRange"))
+					image.PageOffset = kCura.Utility.NullableTypesHelper.DBNullConvertToNullable(Of Int32)(drv("ByteRange"))
 					If i = 0 Then
 						image.BatesNumber = artifact.IdentifierValue
 					Else

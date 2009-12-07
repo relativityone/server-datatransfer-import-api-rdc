@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<wsdl:definitions xmlns:s1="http://NullableTypes.SourceForge.Net/NullableInt32XMLSchema" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tns="http://www.kCura.com/EDDS/FolderManager" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" targetNamespace="http://www.kCura.com/EDDS/FolderManager" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+<wsdl:definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://www.kCura.com/EDDS/FolderManager" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" targetNamespace="http://www.kCura.com/EDDS/FolderManager" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
   <wsdl:types>
     <s:schema elementFormDefault="qualified" targetNamespace="http://www.kCura.com/EDDS/FolderManager">
-      <s:import namespace="http://www.w3.org/2001/XMLSchema" />
-      <s:import namespace="http://NullableTypes.SourceForge.Net/NullableInt32XMLSchema" />
       <s:element name="RetrieveAllByCaseID">
         <s:complexType>
           <s:sequence>
@@ -75,20 +73,8 @@
         <s:sequence>
           <s:element minOccurs="1" maxOccurs="1" name="ArtifactID" type="s:int" />
           <s:element minOccurs="1" maxOccurs="1" name="ArtifactTypeID" type="s:int" />
-          <s:element minOccurs="1" maxOccurs="1" name="ParentArtifactID">
-            <s:complexType>
-              <s:sequence>
-                <s:any namespace="http://NullableTypes.SourceForge.Net/NullableInt32XMLSchema" />
-              </s:sequence>
-            </s:complexType>
-          </s:element>
-          <s:element minOccurs="1" maxOccurs="1" name="ContainerID">
-            <s:complexType>
-              <s:sequence>
-                <s:any namespace="http://NullableTypes.SourceForge.Net/NullableInt32XMLSchema" />
-              </s:sequence>
-            </s:complexType>
-          </s:element>
+          <s:element minOccurs="1" maxOccurs="1" name="ParentArtifactID" nillable="true" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="ContainerID" nillable="true" type="s:int" />
           <s:element minOccurs="1" maxOccurs="1" name="AccessControlListID" type="s:int" />
           <s:element minOccurs="1" maxOccurs="1" name="AccessControlListIsInherited" type="s:boolean" />
           <s:element minOccurs="0" maxOccurs="1" name="Keywords" type="s:string" />
@@ -208,9 +194,6 @@
         </s:complexType>
       </s:element>
     </s:schema>
-    <s:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="http://NullableTypes.SourceForge.Net/NullableInt32XMLSchema" id="NullableInt32">
-      <xs:element name="NullableInt32" nillable="true" type="xs:int" />
-    </s:schema>
   </wsdl:types>
   <wsdl:message name="RetrieveAllByCaseIDSoapIn">
     <wsdl:part name="parameters" element="tns:RetrieveAllByCaseID" />
@@ -305,7 +288,7 @@
     </wsdl:operation>
   </wsdl:portType>
   <wsdl:binding name="FolderManagerSoap" type="tns:FolderManagerSoap">
-    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document" />
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
     <wsdl:operation name="RetrieveAllByCaseID">
       <soap:operation soapAction="http://www.kCura.com/EDDS/FolderManager/RetrieveAllByCaseID" style="document" />
       <wsdl:input>
@@ -388,10 +371,96 @@
       </wsdl:output>
     </wsdl:operation>
   </wsdl:binding>
+  <wsdl:binding name="FolderManagerSoap12" type="tns:FolderManagerSoap">
+    <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="RetrieveAllByCaseID">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/FolderManager/RetrieveAllByCaseID" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveFolderAndDescendants">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/FolderManager/RetrieveFolderAndDescendants" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Read">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/FolderManager/Read" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ReadID">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/FolderManager/ReadID" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Retrieve">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/FolderManager/Retrieve" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Create">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/FolderManager/Create" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Exists">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/FolderManager/Exists" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveIntitialChunk">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/FolderManager/RetrieveIntitialChunk" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveNextChunk">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/FolderManager/RetrieveNextChunk" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
   <wsdl:service name="FolderManager">
-    <documentation xmlns="http://schemas.xmlsoap.org/wsdl/" />
     <wsdl:port name="FolderManagerSoap" binding="tns:FolderManagerSoap">
       <soap:address location="http://localhost/EDDSWebAPI/FolderManager.asmx" />
+    </wsdl:port>
+    <wsdl:port name="FolderManagerSoap12" binding="tns:FolderManagerSoap12">
+      <soap12:address location="http://localhost/EDDSWebAPI/FolderManager.asmx" />
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>

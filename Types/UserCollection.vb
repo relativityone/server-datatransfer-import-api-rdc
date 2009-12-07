@@ -2,12 +2,12 @@ Namespace kCura.WinEDDS
 	Public Class UserCollection
 		Private _ht As System.Collections.Hashtable
 
-		Default Public ReadOnly Property Item(ByVal emailAddress As String) As NullableTypes.NullableInt32
+		Default Public ReadOnly Property Item(ByVal emailAddress As String) As Nullable(Of Int32)
 			Get
 				If _ht.ContainsKey(emailAddress.ToLower) Then
-					Return New NullableTypes.NullableInt32(CType(_ht(emailAddress.ToLower), Int32))
+					Return New Nullable(Of Int32)(CType(_ht(emailAddress.ToLower), Int32))
 				Else
-					Return NullableTypes.NullableInt32.Null
+					Return Nothing
 				End If
 			End Get
 		End Property

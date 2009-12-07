@@ -12,7 +12,7 @@ Namespace kCura.WinEDDS.CodeValidator
 			End Get
 		End Property
 
-		Public Overloads Overrides Function GetNewSingleCodeId(ByVal field As Api.ArtifactField, ByVal codeName As String) As NullableTypes.NullableInt32
+		Public Overloads Overrides Function GetNewSingleCodeId(ByVal field As Api.ArtifactField, ByVal codeName As String) As Nullable(Of Int32)
 			Dim lookup As kCura.WinEDDS.Types.SingleChoiceCollection = DirectCast(Me.Lookup(field.CodeTypeID), kCura.WinEDDS.Types.SingleChoiceCollection)
 			'TODO: 'Dim newCodeOrderValue As Int32 = System.Math.Min(lookup.MaxOrder, Int32.MaxValue - 1) + 1
 			Dim newCodeOrderValue As Int32 = 0
@@ -39,7 +39,7 @@ Namespace kCura.WinEDDS.CodeValidator
 			codeInfo.ParentArtifactID = code.ParentArtifactID.Value
 			lookup.Add(codeInfo)
 			_createdCodeCount += 1
-			Return New NullableInt32(codeArtifactID)
+			Return New Nullable(Of Int32)(codeArtifactID)
 		End Function
 
 		Public Overrides ReadOnly Property CreatedCodeCount() As Integer

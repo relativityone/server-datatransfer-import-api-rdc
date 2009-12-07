@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<wsdl:definitions xmlns:s1="http://microsoft.com/wsdl/types/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tns="http://www.kCura.com/EDDS/SearchManager" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" targetNamespace="http://www.kCura.com/EDDS/SearchManager" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+<wsdl:definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://www.kCura.com/EDDS/SearchManager" xmlns:s1="http://microsoft.com/wsdl/types/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" targetNamespace="http://www.kCura.com/EDDS/SearchManager" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
   <wsdl:types>
     <s:schema elementFormDefault="qualified" targetNamespace="http://www.kCura.com/EDDS/SearchManager">
       <s:import namespace="http://microsoft.com/wsdl/types/" />
-      <s:import namespace="http://www.w3.org/2001/XMLSchema" />
       <s:element name="IsAssociatedSearchProviderAccessible">
         <s:complexType>
           <s:sequence>
@@ -679,7 +678,7 @@
     </wsdl:operation>
   </wsdl:portType>
   <wsdl:binding name="SearchManagerSoap" type="tns:SearchManagerSoap">
-    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document" />
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
     <wsdl:operation name="IsAssociatedSearchProviderAccessible">
       <soap:operation soapAction="http://www.kCura.com/EDDS/SearchManager/IsAssociatedSearchProviderAccessible" style="document" />
       <wsdl:input>
@@ -870,10 +869,204 @@
       </wsdl:output>
     </wsdl:operation>
   </wsdl:binding>
+  <wsdl:binding name="SearchManagerSoap12" type="tns:SearchManagerSoap">
+    <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="IsAssociatedSearchProviderAccessible">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/SearchManager/IsAssociatedSearchProviderAccessible" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CountSearchByArtifactID">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/SearchManager/CountSearchByArtifactID" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SearchBySearchArtifactID">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/SearchManager/SearchBySearchArtifactID" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetSearchSQL">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/SearchManager/GetSearchSQL" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveNativesForSearch">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/SearchManager/RetrieveNativesForSearch" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveFilesForDynamicObjects">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/SearchManager/RetrieveFilesForDynamicObjects" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveNativesForProduction">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/SearchManager/RetrieveNativesForProduction" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveFullTextExistenceForSearch">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/SearchManager/RetrieveFullTextExistenceForSearch" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="IsExtractedTextUnicode">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/SearchManager/IsExtractedTextUnicode" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveImagesForSearch">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/SearchManager/RetrieveImagesForSearch" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveImagesByProductionArtifactIDForProductionExportByDocumentSet">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/SearchManager/RetrieveImagesByProductionArtifactIDForProductionExportByDocumentSet" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveImagesByProductionIDsAndDocumentIDsForExport">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/SearchManager/RetrieveImagesByProductionIDsAndDocumentIDsForExport" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveViewsByContextArtifactID">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/SearchManager/RetrieveViewsByContextArtifactID" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveSearchFields">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/SearchManager/RetrieveSearchFields" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveSearchFieldsForProduction">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/SearchManager/RetrieveSearchFieldsForProduction" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CountSearchByParentArtifactID">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/SearchManager/CountSearchByParentArtifactID" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SearchByParentArtifactID">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/SearchManager/SearchByParentArtifactID" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SearchByProductionArtifactID">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/SearchManager/SearchByProductionArtifactID" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CountSearchByProductionArtifactID">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/SearchManager/CountSearchByProductionArtifactID" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveDefaultViewFieldsForIdList">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/SearchManager/RetrieveDefaultViewFieldsForIdList" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveAllExportableViewFields">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/SearchManager/RetrieveAllExportableViewFields" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
   <wsdl:service name="SearchManager">
-    <documentation xmlns="http://schemas.xmlsoap.org/wsdl/" />
     <wsdl:port name="SearchManagerSoap" binding="tns:SearchManagerSoap">
       <soap:address location="http://localhost/EDDSWebAPI/SearchManager.asmx" />
+    </wsdl:port>
+    <wsdl:port name="SearchManagerSoap12" binding="tns:SearchManagerSoap12">
+      <soap12:address location="http://localhost/EDDSWebAPI/SearchManager.asmx" />
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>

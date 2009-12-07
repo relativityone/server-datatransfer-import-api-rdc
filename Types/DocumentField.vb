@@ -7,19 +7,19 @@ Namespace kCura.WinEDDS
 		Private _fieldTypeID As Int32
 		Private _value As String
 		Private _fieldCategoryID As Int32
-		Private _codeTypeID As NullableTypes.NullableInt32
+		Private _codeTypeID As Nullable(Of Int32)
 		Private _fileColumnIndex As Int32
-		Private _fieldLength As NullableTypes.NullableInt32
-		<NonSerialized()> Private _associatedObjectTypeID As NullableTypes.NullableInt32
+		Private _fieldLength As Nullable(Of Int32)
+		<NonSerialized()> Private _associatedObjectTypeID As Nullable(Of Int32)
 		<NonSerialized()> Private _useUnicode As Boolean
 #End Region
 
 #Region "Properties"
-		Public Property AssociatedObjectTypeID() As NullableInt32
+		Public Property AssociatedObjectTypeID() As Nullable(Of Int32)
 			Get
 				Return _associatedObjectTypeID
 			End Get
-			Set(ByVal Value As NullableInt32)
+			Set(ByVal Value As Nullable(Of Int32))
 				_associatedObjectTypeID = Value
 			End Set
 		End Property
@@ -78,11 +78,11 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
-		Public Property CodeTypeID() As NullableTypes.NullableInt32
+		Public Property CodeTypeID() As Nullable(Of Int32)
 			Get
 				Return _codeTypeID
 			End Get
-			Set(ByVal value As NullableTypes.NullableInt32)
+			Set(ByVal value As Nullable(Of Int32))
 				_codeTypeID = value
 			End Set
 		End Property
@@ -96,11 +96,11 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
-		Public Property FieldLength() As NullableTypes.NullableInt32
+		Public Property FieldLength() As Nullable(Of Int32)
 			Get
 				Return _fieldLength
 			End Get
-			Set(ByVal value As NullableTypes.NullableInt32)
+			Set(ByVal value As Nullable(Of Int32))
 				_fieldLength = value
 			End Set
 		End Property
@@ -124,9 +124,9 @@ Namespace kCura.WinEDDS
 			Dim retval As New kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo
 			retval.ArtifactID = Me.FieldID
 			retval.Category = CType(Me.FieldCategoryID, kCura.EDDS.WebAPI.BulkImportManagerBase.FieldCategory)
-			If Not Me.CodeTypeID.IsNull Then retval.CodeTypeID = Me.CodeTypeID.Value
+			If Not Me.CodeTypeID Is Nothing Then retval.CodeTypeID = Me.CodeTypeID.Value
 			retval.DisplayName = Me.FieldName
-			If Not Me.FieldLength.IsNull Then retval.TextLength = Me.FieldLength.Value
+			If Not Me.FieldLength Is Nothing Then retval.TextLength = Me.FieldLength.Value
 			retval.Type = CType(Me.FieldTypeID, kCura.EDDS.WebAPI.BulkImportManagerBase.FieldType)
 			retval.IsUnicodeEnabled = Me.UseUnicode
 			Return retval
@@ -135,7 +135,7 @@ Namespace kCura.WinEDDS
 
 #Region "Constructors"
 
-		Public Sub New(ByVal fieldName As String, ByVal fieldID As Int32, ByVal fieldTypeID As Int32, ByVal fieldCategoryID As Int32, ByVal codeTypeID As NullableTypes.NullableInt32, ByVal fieldLength As NullableInt32, ByVal associatedObjectTypeID As NullableInt32, ByVal useUnicode As Boolean)
+		Public Sub New(ByVal fieldName As String, ByVal fieldID As Int32, ByVal fieldTypeID As Int32, ByVal fieldCategoryID As Int32, ByVal codeTypeID As Nullable(Of Int32), ByVal fieldLength As Nullable(Of Int32), ByVal associatedObjectTypeID As Nullable(Of Int32), ByVal useUnicode As Boolean)
 			MyBase.New()
 			_fieldName = fieldName
 			_fieldID = fieldID
@@ -155,14 +155,14 @@ Namespace kCura.WinEDDS
 
 		Public Shared Function op_Equality(ByVal df1 As DocumentField, ByVal df2 As DocumentField) As Boolean
 			Dim areEqual As Boolean
-			If df1.CodeTypeID.IsNull Then
-				If df2.CodeTypeID.IsNull Then
+			If df1.CodeTypeID Is Nothing Then
+				If df2.CodeTypeID Is Nothing Then
 					areEqual = True
 				Else
 					areEqual = False
 				End If
 			Else
-				If df2.CodeTypeID.IsNull Then
+				If df2.CodeTypeID Is Nothing Then
 					areEqual = True
 				Else
 					areEqual = df1.CodeTypeID.Value = df2.CodeTypeID.Value

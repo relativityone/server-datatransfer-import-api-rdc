@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<wsdl:definitions xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tns="http://www.kCura.com/EDDS/FileManager" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" targetNamespace="http://www.kCura.com/EDDS/FileManager" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+<wsdl:definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://www.kCura.com/EDDS/FileManager" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" targetNamespace="http://www.kCura.com/EDDS/FileManager" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
   <wsdl:types>
     <s:schema elementFormDefault="qualified" targetNamespace="http://www.kCura.com/EDDS/FileManager">
-      <s:import namespace="http://www.w3.org/2001/XMLSchema" />
       <s:element name="RetrieveByProductionArtifactIDForProduction">
         <s:complexType>
           <s:sequence>
@@ -406,7 +405,7 @@
     </wsdl:operation>
   </wsdl:portType>
   <wsdl:binding name="FileManagerSoap" type="tns:FileManagerSoap">
-    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document" />
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
     <wsdl:operation name="RetrieveByProductionArtifactIDForProduction">
       <soap:operation soapAction="http://www.kCura.com/EDDS/FileManager/RetrieveByProductionArtifactIDForProduction" style="document" />
       <wsdl:input>
@@ -534,10 +533,141 @@
       </wsdl:output>
     </wsdl:operation>
   </wsdl:binding>
+  <wsdl:binding name="FileManagerSoap12" type="tns:FileManagerSoap">
+    <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="RetrieveByProductionArtifactIDForProduction">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/FileManager/RetrieveByProductionArtifactIDForProduction" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveFileGuidsByDocumentArtifactIDAndProductionArtifactID">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/FileManager/RetrieveFileGuidsByDocumentArtifactIDAndProductionArtifactID" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ReturnFileGuidsForOriginalImages">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/FileManager/ReturnFileGuidsForOriginalImages" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Create">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/FileManager/Create" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CreateImages">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/FileManager/CreateImages" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CreateProductionImages">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/FileManager/CreateProductionImages" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CreateNatives">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/FileManager/CreateNatives" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetRotation">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/FileManager/GetRotation" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SetRotation">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/FileManager/SetRotation" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetFullTextGuidsByDocumentArtifactIdAndType">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/FileManager/GetFullTextGuidsByDocumentArtifactIdAndType" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveNativesFileSize">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/FileManager/RetrieveNativesFileSize" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetFileByGuid">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/FileManager/GetFileByGuid" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetTotalImageCountByArtifactIDs">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/FileManager/GetTotalImageCountByArtifactIDs" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SetRotationForAll">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/FileManager/SetRotationForAll" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
   <wsdl:service name="FileManager">
-    <documentation xmlns="http://schemas.xmlsoap.org/wsdl/" />
     <wsdl:port name="FileManagerSoap" binding="tns:FileManagerSoap">
       <soap:address location="http://localhost/EDDSWebAPI/FileManager.asmx" />
+    </wsdl:port>
+    <wsdl:port name="FileManagerSoap12" binding="tns:FileManagerSoap12">
+      <soap12:address location="http://localhost/EDDSWebAPI/FileManager.asmx" />
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>

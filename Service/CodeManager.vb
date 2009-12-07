@@ -25,8 +25,8 @@ Namespace kCura.WinEDDS.Service
 			code.Order = order
 			code.Keywords = String.Empty
 			code.Notes = String.Empty
-			code.ParentArtifactID = New NullableTypes.NullableInt32(caseSystemID)
-			code.ContainerID = New NullableTypes.NullableInt32(caseSystemID)
+			code.ParentArtifactID = New Nullable(Of Int32)(caseSystemID)
+			code.ContainerID = New Nullable(Of Int32)(caseSystemID)
 			Return code
 		End Function
 

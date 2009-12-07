@@ -45,7 +45,7 @@ Namespace kCura.WinEDDS.Service
 						With field
 							.ArtifactID = CType(dv(i)("ArtifactID"), Int32)
 							.ArtifactViewFieldID = CType(dv(i)("ArtifactViewFieldID"), Int32)
-							.CodeTypeID = NullableTypes.HelperFunctions.DBNullConvert.ToNullableInt32(dv(i)("CodeTypeID"))
+							.CodeTypeID = kCura.Utility.NullableTypesHelper.DBNullConvertToNullable(Of Int32)(dv(i)("CodeTypeID"))
 							.DisplayName = CType(dv(i)("DisplayName"), String)
 							.FieldCategoryID = CType(dv(i)("FieldCategoryID"), Int32)
 							.FieldCategory = CType(dv(i)("FieldCategoryID"), kCura.EDDS.WebAPI.DocumentManagerBase.FieldCategory)
@@ -53,12 +53,12 @@ Namespace kCura.WinEDDS.Service
 							.FieldTypeID = CType(dv(i)("FieldTypeID"), kCura.EDDS.WebAPI.DocumentManagerBase.FieldType)
 							.IsEditable = CType(dv(i)("IsEditable"), Boolean)
 							.IsRequired = CType(dv(i)("IsRequired"), Boolean)
-							.MaxLength = NullableTypes.HelperFunctions.DBNullConvert.ToNullableInt32(dv(i)("FieldLength"))
+							.MaxLength = kCura.Utility.NullableTypesHelper.DBNullConvertToNullable(Of Int32)(dv(i)("FieldLength"))
 							.IsRemovable = CType(dv(i)("IsRemovable"), Boolean)
 							.IsVisible = CType(dv(i)("IsVisible"), Boolean)
 							.UseUnicodeEncoding = CType(dv(i)("UseUnicodeEncoding"), Boolean)
 							.AllowHtml = CType(dv(i)("AllowHTML"), Boolean)
-							.AssociativeArtifactTypeID = NullableTypes.HelperFunctions.DBNullConvert.ToNullableInt32(dv(i)("AssociativeArtifactTypeID"))
+							.AssociativeArtifactTypeID = kCura.Utility.NullableTypesHelper.DBNullConvertToNullable(Of Int32)(dv(i)("AssociativeArtifactTypeID"))
 						End With
 						fields.Add(field)
 					End If

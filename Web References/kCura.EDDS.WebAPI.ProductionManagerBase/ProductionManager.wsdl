@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<wsdl:definitions xmlns:s1="http://NullableTypes.SourceForge.Net/NullableInt32XMLSchema" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:s2="http://NullableTypes.SourceForge.Net/NullableDateTimeXMLSchema" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tns="http://www.kCura.com/EDDS/ProductionManager" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" targetNamespace="http://www.kCura.com/EDDS/ProductionManager" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+<wsdl:definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://www.kCura.com/EDDS/ProductionManager" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" targetNamespace="http://www.kCura.com/EDDS/ProductionManager" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
   <wsdl:types>
     <s:schema elementFormDefault="qualified" targetNamespace="http://www.kCura.com/EDDS/ProductionManager">
-      <s:import namespace="http://www.w3.org/2001/XMLSchema" />
-      <s:import namespace="http://NullableTypes.SourceForge.Net/NullableInt32XMLSchema" />
-      <s:import namespace="http://NullableTypes.SourceForge.Net/NullableDateTimeXMLSchema" />
       <s:element name="RetrieveProducedByContextArtifactID">
         <s:complexType>
           <s:sequence>
@@ -92,113 +89,29 @@
               <s:element minOccurs="1" maxOccurs="1" name="BeginBatesFieldArtifactID" type="s:int" />
               <s:element minOccurs="1" maxOccurs="1" name="EndBatesFieldArtifactID" type="s:int" />
               <s:element minOccurs="1" maxOccurs="1" name="ImageShrinkPercent" type="s:int" />
-              <s:element minOccurs="1" maxOccurs="1" name="DateProduced">
-                <s:complexType>
-                  <s:sequence>
-                    <s:any namespace="http://NullableTypes.SourceForge.Net/NullableDateTimeXMLSchema" />
-                  </s:sequence>
-                </s:complexType>
-              </s:element>
-              <s:element minOccurs="1" maxOccurs="1" name="StatusCodeArtifactID">
-                <s:complexType>
-                  <s:sequence>
-                    <s:any namespace="http://NullableTypes.SourceForge.Net/NullableInt32XMLSchema" />
-                  </s:sequence>
-                </s:complexType>
-              </s:element>
+              <s:element minOccurs="1" maxOccurs="1" name="DateProduced" nillable="true" type="s:dateTime" />
+              <s:element minOccurs="1" maxOccurs="1" name="StatusCodeArtifactID" nillable="true" type="s:int" />
               <s:element minOccurs="0" maxOccurs="1" name="BatesPrefix" type="s:string" />
               <s:element minOccurs="0" maxOccurs="1" name="BatesSuffix" type="s:string" />
               <s:element minOccurs="1" maxOccurs="1" name="BatesFormat" type="s:int" />
               <s:element minOccurs="1" maxOccurs="1" name="BatesStartNumber" type="s:int" />
-              <s:element minOccurs="1" maxOccurs="1" name="LeftHeaderTypeCodeArtifactID">
-                <s:complexType>
-                  <s:sequence>
-                    <s:any namespace="http://NullableTypes.SourceForge.Net/NullableInt32XMLSchema" />
-                  </s:sequence>
-                </s:complexType>
-              </s:element>
-              <s:element minOccurs="1" maxOccurs="1" name="LeftHeaderFieldArtifactID">
-                <s:complexType>
-                  <s:sequence>
-                    <s:any namespace="http://NullableTypes.SourceForge.Net/NullableInt32XMLSchema" />
-                  </s:sequence>
-                </s:complexType>
-              </s:element>
+              <s:element minOccurs="1" maxOccurs="1" name="LeftHeaderTypeCodeArtifactID" nillable="true" type="s:int" />
+              <s:element minOccurs="1" maxOccurs="1" name="LeftHeaderFieldArtifactID" nillable="true" type="s:int" />
               <s:element minOccurs="0" maxOccurs="1" name="LeftHeaderFreeText" type="s:string" />
-              <s:element minOccurs="1" maxOccurs="1" name="CenterHeaderTypeCodeArtifactID">
-                <s:complexType>
-                  <s:sequence>
-                    <s:any namespace="http://NullableTypes.SourceForge.Net/NullableInt32XMLSchema" />
-                  </s:sequence>
-                </s:complexType>
-              </s:element>
-              <s:element minOccurs="1" maxOccurs="1" name="CenterHeaderFieldArtifactID">
-                <s:complexType>
-                  <s:sequence>
-                    <s:any namespace="http://NullableTypes.SourceForge.Net/NullableInt32XMLSchema" />
-                  </s:sequence>
-                </s:complexType>
-              </s:element>
+              <s:element minOccurs="1" maxOccurs="1" name="CenterHeaderTypeCodeArtifactID" nillable="true" type="s:int" />
+              <s:element minOccurs="1" maxOccurs="1" name="CenterHeaderFieldArtifactID" nillable="true" type="s:int" />
               <s:element minOccurs="0" maxOccurs="1" name="CenterHeaderFreeText" type="s:string" />
-              <s:element minOccurs="1" maxOccurs="1" name="RightHeaderTypeCodeArtifactID">
-                <s:complexType>
-                  <s:sequence>
-                    <s:any namespace="http://NullableTypes.SourceForge.Net/NullableInt32XMLSchema" />
-                  </s:sequence>
-                </s:complexType>
-              </s:element>
-              <s:element minOccurs="1" maxOccurs="1" name="RightHeaderFieldArtifactID">
-                <s:complexType>
-                  <s:sequence>
-                    <s:any namespace="http://NullableTypes.SourceForge.Net/NullableInt32XMLSchema" />
-                  </s:sequence>
-                </s:complexType>
-              </s:element>
+              <s:element minOccurs="1" maxOccurs="1" name="RightHeaderTypeCodeArtifactID" nillable="true" type="s:int" />
+              <s:element minOccurs="1" maxOccurs="1" name="RightHeaderFieldArtifactID" nillable="true" type="s:int" />
               <s:element minOccurs="0" maxOccurs="1" name="RightHeaderFreeText" type="s:string" />
-              <s:element minOccurs="1" maxOccurs="1" name="LeftFooterTypeCodeArtifactID">
-                <s:complexType>
-                  <s:sequence>
-                    <s:any namespace="http://NullableTypes.SourceForge.Net/NullableInt32XMLSchema" />
-                  </s:sequence>
-                </s:complexType>
-              </s:element>
-              <s:element minOccurs="1" maxOccurs="1" name="LeftFooterFieldArtifactID">
-                <s:complexType>
-                  <s:sequence>
-                    <s:any namespace="http://NullableTypes.SourceForge.Net/NullableInt32XMLSchema" />
-                  </s:sequence>
-                </s:complexType>
-              </s:element>
+              <s:element minOccurs="1" maxOccurs="1" name="LeftFooterTypeCodeArtifactID" nillable="true" type="s:int" />
+              <s:element minOccurs="1" maxOccurs="1" name="LeftFooterFieldArtifactID" nillable="true" type="s:int" />
               <s:element minOccurs="0" maxOccurs="1" name="LeftFooterFreeText" type="s:string" />
-              <s:element minOccurs="1" maxOccurs="1" name="CenterFooterTypeCodeArtifactID">
-                <s:complexType>
-                  <s:sequence>
-                    <s:any namespace="http://NullableTypes.SourceForge.Net/NullableInt32XMLSchema" />
-                  </s:sequence>
-                </s:complexType>
-              </s:element>
-              <s:element minOccurs="1" maxOccurs="1" name="CenterFooterFieldArtifactID">
-                <s:complexType>
-                  <s:sequence>
-                    <s:any namespace="http://NullableTypes.SourceForge.Net/NullableInt32XMLSchema" />
-                  </s:sequence>
-                </s:complexType>
-              </s:element>
+              <s:element minOccurs="1" maxOccurs="1" name="CenterFooterTypeCodeArtifactID" nillable="true" type="s:int" />
+              <s:element minOccurs="1" maxOccurs="1" name="CenterFooterFieldArtifactID" nillable="true" type="s:int" />
               <s:element minOccurs="0" maxOccurs="1" name="CenterFooterFreeText" type="s:string" />
-              <s:element minOccurs="1" maxOccurs="1" name="RightFooterTypeCodeArtifactID">
-                <s:complexType>
-                  <s:sequence>
-                    <s:any namespace="http://NullableTypes.SourceForge.Net/NullableInt32XMLSchema" />
-                  </s:sequence>
-                </s:complexType>
-              </s:element>
-              <s:element minOccurs="1" maxOccurs="1" name="RightFooterFieldArtifactID">
-                <s:complexType>
-                  <s:sequence>
-                    <s:any namespace="http://NullableTypes.SourceForge.Net/NullableInt32XMLSchema" />
-                  </s:sequence>
-                </s:complexType>
-              </s:element>
+              <s:element minOccurs="1" maxOccurs="1" name="RightFooterTypeCodeArtifactID" nillable="true" type="s:int" />
+              <s:element minOccurs="1" maxOccurs="1" name="RightFooterFieldArtifactID" nillable="true" type="s:int" />
               <s:element minOccurs="0" maxOccurs="1" name="RightFooterFreeText" type="s:string" />
               <s:element minOccurs="1" maxOccurs="1" name="BurnAnnotations" type="s:boolean" />
               <s:element minOccurs="1" maxOccurs="1" name="FontSize" type="s:int" />
@@ -218,20 +131,8 @@
         <s:sequence>
           <s:element minOccurs="1" maxOccurs="1" name="ArtifactID" type="s:int" />
           <s:element minOccurs="1" maxOccurs="1" name="ArtifactTypeID" type="s:int" />
-          <s:element minOccurs="1" maxOccurs="1" name="ParentArtifactID">
-            <s:complexType>
-              <s:sequence>
-                <s:any namespace="http://NullableTypes.SourceForge.Net/NullableInt32XMLSchema" />
-              </s:sequence>
-            </s:complexType>
-          </s:element>
-          <s:element minOccurs="1" maxOccurs="1" name="ContainerID">
-            <s:complexType>
-              <s:sequence>
-                <s:any namespace="http://NullableTypes.SourceForge.Net/NullableInt32XMLSchema" />
-              </s:sequence>
-            </s:complexType>
-          </s:element>
+          <s:element minOccurs="1" maxOccurs="1" name="ParentArtifactID" nillable="true" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="ContainerID" nillable="true" type="s:int" />
           <s:element minOccurs="1" maxOccurs="1" name="AccessControlListID" type="s:int" />
           <s:element minOccurs="1" maxOccurs="1" name="AccessControlListIsInherited" type="s:boolean" />
           <s:element minOccurs="0" maxOccurs="1" name="Keywords" type="s:string" />
@@ -323,12 +224,6 @@
         <s:complexType />
       </s:element>
     </s:schema>
-    <s:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="http://NullableTypes.SourceForge.Net/NullableInt32XMLSchema" id="NullableInt32">
-      <xs:element name="NullableInt32" nillable="true" type="xs:int" />
-    </s:schema>
-    <s:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="http://NullableTypes.SourceForge.Net/NullableDateTimeXMLSchema" id="NullableDateTime">
-      <xs:element name="NullableDateTime" nillable="true" type="xs:dateTime" />
-    </s:schema>
   </wsdl:types>
   <wsdl:message name="RetrieveProducedByContextArtifactIDSoapIn">
     <wsdl:part name="parameters" element="tns:RetrieveProducedByContextArtifactID" />
@@ -413,7 +308,7 @@
     </wsdl:operation>
   </wsdl:portType>
   <wsdl:binding name="ProductionManagerSoap" type="tns:ProductionManagerSoap">
-    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document" />
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
     <wsdl:operation name="RetrieveProducedByContextArtifactID">
       <soap:operation soapAction="http://www.kCura.com/EDDS/ProductionManager/RetrieveProducedByContextArtifactID" style="document" />
       <wsdl:input>
@@ -487,10 +382,87 @@
       </wsdl:output>
     </wsdl:operation>
   </wsdl:binding>
+  <wsdl:binding name="ProductionManagerSoap12" type="tns:ProductionManagerSoap">
+    <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="RetrieveProducedByContextArtifactID">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/ProductionManager/RetrieveProducedByContextArtifactID" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveImportEligibleByContextArtifactID">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/ProductionManager/RetrieveImportEligibleByContextArtifactID" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="DoPostImportProcessing">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/ProductionManager/DoPostImportProcessing" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="DoPreImportProcessing">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/ProductionManager/DoPreImportProcessing" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Read">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/ProductionManager/Read" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveProducedWithSecurity">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/ProductionManager/RetrieveProducedWithSecurity" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="AddDocumentToProduction">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/ProductionManager/AddDocumentToProduction" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CreateProductionDocumentFiles">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/ProductionManager/CreateProductionDocumentFiles" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
   <wsdl:service name="ProductionManager">
-    <documentation xmlns="http://schemas.xmlsoap.org/wsdl/" />
     <wsdl:port name="ProductionManagerSoap" binding="tns:ProductionManagerSoap">
       <soap:address location="http://localhost/EDDSWebAPI/ProductionManager.asmx" />
+    </wsdl:port>
+    <wsdl:port name="ProductionManagerSoap12" binding="tns:ProductionManagerSoap12">
+      <soap12:address location="http://localhost/EDDSWebAPI/ProductionManager.asmx" />
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>

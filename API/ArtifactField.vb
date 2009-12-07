@@ -28,38 +28,38 @@ Namespace kCura.WinEDDS.Api
 				Return _value.ToString
 			End Get
 		End Property
-		Public Sub New(ByVal displayName As String, ByVal artifactID As Int32, ByVal fieldTypeID As FieldTypeHelper.FieldType, ByVal fieldCategoryID As FieldCategory, ByVal codeTypeID As NullableTypes.NullableInt32, ByVal textLength As NullableInt32, ByVal associatedObjectTypeID As NullableInt32)
+		Public Sub New(ByVal displayName As String, ByVal artifactID As Int32, ByVal fieldTypeID As FieldTypeHelper.FieldType, ByVal fieldCategoryID As FieldCategory, ByVal codeTypeID As Nullable(Of Int32), ByVal textLength As Nullable(Of Int32), ByVal associatedObjectTypeID As Nullable(Of Int32))
 			MyBase.New()
 			Me.DisplayName = displayName
 			Me.ArtifactID = artifactID
 			Me.Type = fieldTypeID
 			Me.Category = fieldCategoryID
-			If Not codeTypeID.IsNull Then Me.CodeTypeID = codeTypeID.Value
-			If Not textLength.IsNull Then Me.TextLength = textLength.Value
-			If Not associatedObjectTypeID.IsNull Then Me.AssociatedObjectTypeID = associatedObjectTypeID.Value
+			If Not codeTypeID Is Nothing Then Me.CodeTypeID = codeTypeID.Value
+			If Not textLength Is Nothing Then Me.TextLength = textLength.Value
+			If Not associatedObjectTypeID Is Nothing Then Me.AssociatedObjectTypeID = associatedObjectTypeID.Value
 		End Sub
 
 		Public Function Copy() As Api.ArtifactField
-			Dim textl As NullableInt32 = NullableInt32.Null
-			Return New Api.ArtifactField(Me.DisplayName, Me.ArtifactID, Me.Type, Me.Category, New NullableInt32(Me.CodeTypeID), New NullableInt32(Me.TextLength), New NullableInt32(Me.AssociatedObjectTypeID))
+			Dim textl As Nullable(Of Int32) = Nothing
+			Return New Api.ArtifactField(Me.DisplayName, Me.ArtifactID, Me.Type, Me.Category, New Nullable(Of Int32)(Me.CodeTypeID), New Nullable(Of Int32)(Me.TextLength), New Nullable(Of Int32)(Me.AssociatedObjectTypeID))
 		End Function
 
 		Friend Sub New(ByVal field As DocumentField)
 			Me.ArtifactID = field.FieldID
 			Me.Category = CType(field.FieldCategoryID, kCura.DynamicFields.Types.FieldCategory)
-			If Not field.CodeTypeID.IsNull Then Me.CodeTypeID = field.CodeTypeID.Value
+			If Not field.CodeTypeID Is Nothing Then Me.CodeTypeID = field.CodeTypeID.Value
 			Me.DisplayName = field.FieldName
-			If Not field.FieldLength.IsNull Then Me.TextLength = field.FieldLength.Value
-			If Not field.AssociatedObjectTypeID.IsNull Then Me.AssociatedObjectTypeID = field.AssociatedObjectTypeID.Value
+			If Not field.FieldLength Is Nothing Then Me.TextLength = field.FieldLength.Value
+			If Not field.AssociatedObjectTypeID Is Nothing Then Me.AssociatedObjectTypeID = field.AssociatedObjectTypeID.Value
 			Me.Type = CType(field.FieldTypeID, kCura.DynamicFields.Types.FieldTypeHelper.FieldType)
 		End Sub
 		Public Sub New(ByVal field As kCura.EDDS.WebAPI.DocumentManagerBase.Field)
 			Me.ArtifactID = field.ArtifactID
 			Me.Category = CType(field.FieldCategoryID, kCura.DynamicFields.Types.FieldCategory)
-			If Not field.CodeTypeID.IsNull Then Me.CodeTypeID = field.CodeTypeID.Value
+			If Not field.CodeTypeID Is Nothing Then Me.CodeTypeID = field.CodeTypeID.Value
 			Me.DisplayName = field.DisplayName
-			If Not field.MaxLength.IsNull Then Me.TextLength = field.MaxLength.Value
-			If Not field.AssociativeArtifactTypeID.IsNull Then Me.AssociatedObjectTypeID = field.AssociativeArtifactTypeID.Value
+			If Not field.MaxLength Is Nothing Then Me.TextLength = field.MaxLength.Value
+			If Not field.AssociativeArtifactTypeID Is Nothing Then Me.AssociatedObjectTypeID = field.AssociativeArtifactTypeID.Value
 			Me.Type = CType(field.FieldTypeID, kCura.DynamicFields.Types.FieldTypeHelper.FieldType)
 		End Sub
 	End Class

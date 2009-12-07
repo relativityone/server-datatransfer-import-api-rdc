@@ -627,11 +627,11 @@ Namespace kCura.WinEDDS
 						Me.CreateImageLogEntry(marker.BatesNumber, copyfile, localFilePath, 1, fullTextReader, localFullTextPath <> "", Int64.MinValue, images.Count)
 					Else
 						For j As Int32 = 0 To images.Count - 1
-							If (j = 0 AndAlso DirectCast(images(j), Exporters.ImageExportInfo).PageOffset.IsNull) OrElse j = images.Count - 1 Then
+							If (j = 0 AndAlso DirectCast(images(j), Exporters.ImageExportInfo).PageOffset Is Nothing) OrElse j = images.Count - 1 Then
 								pageOffset = Int64.MinValue
 							Else
 								Dim nextImage As Exporters.ImageExportInfo = DirectCast(images(j + 1), Exporters.ImageExportInfo)
-								If nextImage.PageOffset.IsNull Then
+								If nextImage.PageOffset Is Nothing Then
 									pageOffset = Int64.MinValue
 								Else
 									pageOffset = nextImage.PageOffset.Value
@@ -644,11 +644,11 @@ Namespace kCura.WinEDDS
 					marker.TempLocation = copyfile
 				Else
 					For Each image In images
-						If (i = 0 AndAlso image.PageOffset.IsNull) OrElse i = images.Count - 1 Then
+						If (i = 0 AndAlso image.PageOffset Is Nothing) OrElse i = images.Count - 1 Then
 							pageOffset = Int64.MinValue
 						Else
 							Dim nextImage As Exporters.ImageExportInfo = DirectCast(images(i + 1), Exporters.ImageExportInfo)
-							If nextImage.PageOffset.IsNull Then
+							If nextImage.PageOffset Is Nothing Then
 								pageOffset = Int64.MinValue
 							Else
 								pageOffset = nextImage.PageOffset.Value
@@ -1014,7 +1014,7 @@ Namespace kCura.WinEDDS
 						val = Me.ToExportableDateString(val, field.FormatString)
 					End If
 					'System.Web.HttpUtility.HtmlEncode()
-					fieldValue = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(NullableTypes.HelperFunctions.DBNullConvert.ToNullableString(val))
+					fieldValue = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(kCura.Utility.NullableTypesHelper.DBNullString(val))
 					If field.IsMultiValueField Then
 						fieldValue = Me.GetMultivalueString(fieldValue, field)
 					ElseIf field.IsCodeOrMulticodeField Then
@@ -1041,12 +1041,12 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Private Function ToExportableDateString(ByVal val As Object, ByVal formatString As String) As String
-			Dim datetime As NullableString = NullableTypes.HelperFunctions.DBNullConvert.ToNullableString(val)
+			Dim datetime As String = kCura.Utility.NullableTypesHelper.DBNullString(val)
 			Dim retval As String
-			If datetime.IsNull OrElse datetime.Value.Trim = "" Then
+			If datetime Is Nothing OrElse datetime.Trim = "" Then
 				retval = ""
 			Else
-				retval = System.DateTime.Parse(datetime.Value, System.Globalization.CultureInfo.InvariantCulture).ToString(formatString)
+				retval = System.DateTime.Parse(datetime, System.Globalization.CultureInfo.InvariantCulture).ToString(formatString)
 			End If
 			Return retval
 		End Function
@@ -1146,14 +1146,14 @@ Namespace kCura.WinEDDS
 						val = System.Text.Encoding.Unicode.GetString(DirectCast(val, Byte()))
 					End If
 					If field.FieldType = DynamicFields.Types.FieldTypeHelper.FieldType.Date AndAlso Not field.Category = DynamicFields.Types.FieldCategory.MultiReflected Then
-						Dim datetime As NullableString = NullableTypes.HelperFunctions.DBNullConvert.ToNullableString(val)
-						If datetime.IsNull OrElse datetime.Value = "" Then
+						Dim datetime As String = kCura.Utility.NullableTypesHelper.DBNullString(val)
+						If datetime Is Nothing OrElse datetime = "" Then
 							val = ""
 						Else
-							val = System.DateTime.Parse(datetime.Value, System.Globalization.CultureInfo.InvariantCulture).ToString(field.FormatString)
+							val = System.DateTime.Parse(datetime, System.Globalization.CultureInfo.InvariantCulture).ToString(field.FormatString)
 						End If
 					End If
-					fieldValue = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(NullableTypes.HelperFunctions.DBNullConvert.ToNullableString(val))
+					fieldValue = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(kCura.Utility.NullableTypesHelper.DBNullString(val))
 
 					If field.IsMultiValueField Then
 						fieldValue = Me.GetMultivalueString(fieldValue, field)

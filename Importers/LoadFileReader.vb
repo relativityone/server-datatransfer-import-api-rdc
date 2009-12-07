@@ -173,27 +173,27 @@ Namespace kCura.WinEDDS
 			End Try
 		End Sub
 
-		Public Overloads Function GetNullableDateTime(ByVal value As String, ByVal column As Int32) As NullableDateTime
-			Dim nullableDateValue As NullableDateTime
+		Public Overloads Function GetNullableDateTime(ByVal value As String, ByVal column As Int32) As Nullable(Of DateTime)
+			Dim nullableDateValue As Nullable(Of DateTime)
 			Try
 				nullableDateValue = MyBase.GetNullableDateTime(value, column)
 			Catch ex As System.Exception
 				Select Case value.Trim
 					Case "00/00/0000", "0/0/0000", "0/0/00", "00/00/00", "0/00", "0/0000", "00/00", "00/0000", "0"
-						nullableDateValue = NullableDateTime.Null
+						nullableDateValue = Nothing
 					Case Else
 						Try
 
 							If System.Text.RegularExpressions.Regex.IsMatch(value.Trim, "\d\d\d\d\d\d\d\d") Then
 								If value.Trim = "00000000" Then
-									nullableDateValue = NullableDateTime.Null
+									nullableDateValue = Nothing
 								Else
 									Dim v As String = value.Trim
 									Dim year As Int32 = Int32.Parse(v.Substring(0, 4))
 									Dim month As Int32 = Int32.Parse(v.Substring(4, 2))
 									Dim day As Int32 = Int32.Parse(v.Substring(6, 2))
 									Try
-										nullableDateValue = New NullableDateTime(New System.DateTime(year, month, day))
+										nullableDateValue = New Nullable(Of DateTime)(New System.DateTime(year, month, day))
 									Catch dx As System.Exception
 										Throw New kCura.Utility.DelimitedFileImporter.DateException(Me.CurrentLineNumber, column)
 									End Try
@@ -207,14 +207,14 @@ Namespace kCura.WinEDDS
 				End Select
 			End Try
 			Try
-				If nullableDateValue.IsNull Then Return nullableDateValue
+				If nullableDateValue Is Nothing Then Return nullableDateValue
 				Dim datevalue As DateTime
 				datevalue = nullableDateValue.Value
 				Dim timeZoneOffset As Int32 = 0
 				If datevalue < DateTime.Parse("1/1/1753") Then
 					Throw New kCura.Utility.DelimitedFileImporter.DateException(Me.CurrentLineNumber, column)
 				End If
-				Return New NullableDateTime(datevalue)
+				Return New Nullable(Of DateTime)(datevalue)
 			Catch ex As Exception
 				Throw New kCura.Utility.DelimitedFileImporter.DateException(Me.CurrentLineNumber, column)
 			End Try
@@ -459,13 +459,13 @@ Namespace kCura.WinEDDS
 			Next
 			If _settings.LoadNativeFiles AndAlso Not _settings.NativeFilePathColumn Is Nothing AndAlso Not _settings.NativeFilePathColumn = String.Empty AndAlso collection.FileField Is Nothing Then
 				Dim nativeFileIndex As Int32 = Int32.Parse(_settings.NativeFilePathColumn.Substring(_settings.NativeFilePathColumn.LastIndexOf("(")).Trim("()".ToCharArray))
-				Dim field As New Api.ArtifactField(New DocumentField("File", -1, kCura.DynamicFields.Types.FieldTypeHelper.FieldType.File, kCura.DynamicFields.Types.FieldCategory.FileInfo, NullableInt32.Null, NullableInt32.Null, NullableInt32.Null, True))
+				Dim field As New Api.ArtifactField(New DocumentField("File", -1, kCura.DynamicFields.Types.FieldTypeHelper.FieldType.File, kCura.DynamicFields.Types.FieldCategory.FileInfo, Nothing, Nothing, Nothing, True))
 				field.Value = line(nativeFileIndex - 1)
 				collection.Add(field)
 			End If
 			If _settings.CreateFolderStructure AndAlso Not _settings.FolderStructureContainedInColumn Is Nothing AndAlso Not _settings.FolderStructureContainedInColumn = String.Empty Then
 				Dim parentIndex As Int32 = Int32.Parse(_settings.FolderStructureContainedInColumn.Substring(_settings.FolderStructureContainedInColumn.LastIndexOf("(")).Trim("()".ToCharArray))
-				Dim field As New Api.ArtifactField(New DocumentField("Parent", -2, kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Object, kCura.DynamicFields.Types.FieldCategory.ParentArtifact, NullableInt32.Null, NullableInt32.Null, NullableInt32.Null, True))
+				Dim field As New Api.ArtifactField(New DocumentField("Parent", -2, kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Object, kCura.DynamicFields.Types.FieldCategory.ParentArtifact, Nothing, Nothing, Nothing, True))
 				field.Value = line(parentIndex - 1)
 				collection.Add(field)
 			End If

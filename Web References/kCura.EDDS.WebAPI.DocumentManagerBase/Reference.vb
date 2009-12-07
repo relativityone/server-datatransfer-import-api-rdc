@@ -1283,9 +1283,9 @@ Namespace kCura.EDDS.WebAPI.DocumentManagerBase
         
         Private artifactViewFieldIDField As Integer
         
-        Private codeTypeIDField As System.Xml.XmlElement
+        Private codeTypeIDField As System.Nullable(Of Integer)
         
-        Private maxLengthField As System.Xml.XmlElement
+        Private maxLengthField As System.Nullable(Of Integer)
         
         Private isRequiredField As Boolean
         
@@ -1315,9 +1315,9 @@ Namespace kCura.EDDS.WebAPI.DocumentManagerBase
         
         Private formatStringField As String
         
-        Private repeatColumnField As System.Xml.XmlElement
+        Private repeatColumnField As System.Nullable(Of Integer)
         
-        Private associativeArtifactTypeIDField As System.Xml.XmlElement
+        Private associativeArtifactTypeIDField As System.Nullable(Of Integer)
         
         Private isAvailableToAssociativeObjectsField As Boolean
         
@@ -1349,7 +1349,9 @@ Namespace kCura.EDDS.WebAPI.DocumentManagerBase
         
         Private friendlyNameField As String
         
-        Private relationalIndexViewArtifactIDField As System.Xml.XmlElement
+        Private relationalIndexViewArtifactIDField As System.Nullable(Of Integer)
+        
+        Private objectsFieldArgsField As ObjectsFieldParameters
         
         '''<remarks/>
         Public Property FieldArtifactTypeID() As Integer
@@ -1422,7 +1424,8 @@ Namespace kCura.EDDS.WebAPI.DocumentManagerBase
         End Property
         
         '''<remarks/>
-        Public Property CodeTypeID() As System.Xml.XmlElement
+        <System.Xml.Serialization.XmlElementAttribute(IsNullable:=true)>  _
+        Public Property CodeTypeID() As System.Nullable(Of Integer)
             Get
                 Return Me.codeTypeIDField
             End Get
@@ -1432,7 +1435,8 @@ Namespace kCura.EDDS.WebAPI.DocumentManagerBase
         End Property
         
         '''<remarks/>
-        Public Property MaxLength() As System.Xml.XmlElement
+        <System.Xml.Serialization.XmlElementAttribute(IsNullable:=true)>  _
+        Public Property MaxLength() As System.Nullable(Of Integer)
             Get
                 Return Me.maxLengthField
             End Get
@@ -1582,7 +1586,8 @@ Namespace kCura.EDDS.WebAPI.DocumentManagerBase
         End Property
         
         '''<remarks/>
-        Public Property RepeatColumn() As System.Xml.XmlElement
+        <System.Xml.Serialization.XmlElementAttribute(IsNullable:=true)>  _
+        Public Property RepeatColumn() As System.Nullable(Of Integer)
             Get
                 Return Me.repeatColumnField
             End Get
@@ -1592,7 +1597,8 @@ Namespace kCura.EDDS.WebAPI.DocumentManagerBase
         End Property
         
         '''<remarks/>
-        Public Property AssociativeArtifactTypeID() As System.Xml.XmlElement
+        <System.Xml.Serialization.XmlElementAttribute(IsNullable:=true)>  _
+        Public Property AssociativeArtifactTypeID() As System.Nullable(Of Integer)
             Get
                 Return Me.associativeArtifactTypeIDField
             End Get
@@ -1752,12 +1758,23 @@ Namespace kCura.EDDS.WebAPI.DocumentManagerBase
         End Property
         
         '''<remarks/>
-        Public Property RelationalIndexViewArtifactID() As System.Xml.XmlElement
+        <System.Xml.Serialization.XmlElementAttribute(IsNullable:=true)>  _
+        Public Property RelationalIndexViewArtifactID() As System.Nullable(Of Integer)
             Get
                 Return Me.relationalIndexViewArtifactIDField
             End Get
             Set
                 Me.relationalIndexViewArtifactIDField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property ObjectsFieldArgs() As ObjectsFieldParameters
+            Get
+                Return Me.objectsFieldArgsField
+            End Get
+            Set
+                Me.objectsFieldArgsField = value
             End Set
         End Property
     End Class
@@ -1867,6 +1884,63 @@ Namespace kCura.EDDS.WebAPI.DocumentManagerBase
     End Enum
     
     '''<remarks/>
+    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "2.0.50727.4927"),  _
+     System.SerializableAttribute(),  _
+     System.Diagnostics.DebuggerStepThroughAttribute(),  _
+     System.ComponentModel.DesignerCategoryAttribute("code"),  _
+     System.Xml.Serialization.XmlTypeAttribute([Namespace]:="http://foley.com/EDDS/DocumentManager")>  _
+    Partial Public Class ObjectsFieldParameters
+        
+        Private siblingFieldNameField As String
+        
+        Private fieldSchemaColumnNameField As String
+        
+        Private siblingFieldSchemaColumnNameField As String
+        
+        Private relationalTableSchemaNameField As String
+        
+        '''<remarks/>
+        Public Property SiblingFieldName() As String
+            Get
+                Return Me.siblingFieldNameField
+            End Get
+            Set
+                Me.siblingFieldNameField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property FieldSchemaColumnName() As String
+            Get
+                Return Me.fieldSchemaColumnNameField
+            End Get
+            Set
+                Me.fieldSchemaColumnNameField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property SiblingFieldSchemaColumnName() As String
+            Get
+                Return Me.siblingFieldSchemaColumnNameField
+            End Get
+            Set
+                Me.siblingFieldSchemaColumnNameField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property RelationalTableSchemaName() As String
+            Get
+                Return Me.relationalTableSchemaNameField
+            End Get
+            Set
+                Me.relationalTableSchemaNameField = value
+            End Set
+        End Property
+    End Class
+    
+    '''<remarks/>
     <System.Xml.Serialization.XmlIncludeAttribute(GetType(Field)),  _
      System.Xml.Serialization.XmlIncludeAttribute(GetType(Document)),  _
      System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "2.0.50727.4927"),  _
@@ -1880,9 +1954,9 @@ Namespace kCura.EDDS.WebAPI.DocumentManagerBase
         
         Private artifactTypeIDField As Integer
         
-        Private parentArtifactIDField As System.Xml.XmlElement
+        Private parentArtifactIDField As System.Nullable(Of Integer)
         
-        Private containerIDField As System.Xml.XmlElement
+        Private containerIDField As System.Nullable(Of Integer)
         
         Private accessControlListIDField As Integer
         
@@ -1925,7 +1999,8 @@ Namespace kCura.EDDS.WebAPI.DocumentManagerBase
         End Property
         
         '''<remarks/>
-        Public Property ParentArtifactID() As System.Xml.XmlElement
+        <System.Xml.Serialization.XmlElementAttribute(IsNullable:=true)>  _
+        Public Property ParentArtifactID() As System.Nullable(Of Integer)
             Get
                 Return Me.parentArtifactIDField
             End Get
@@ -1935,7 +2010,8 @@ Namespace kCura.EDDS.WebAPI.DocumentManagerBase
         End Property
         
         '''<remarks/>
-        Public Property ContainerID() As System.Xml.XmlElement
+        <System.Xml.Serialization.XmlElementAttribute(IsNullable:=true)>  _
+        Public Property ContainerID() As System.Nullable(Of Integer)
             Get
                 Return Me.containerIDField
             End Get

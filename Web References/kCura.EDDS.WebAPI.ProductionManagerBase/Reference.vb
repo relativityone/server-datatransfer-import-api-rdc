@@ -448,9 +448,9 @@ Namespace kCura.EDDS.WebAPI.ProductionManagerBase
         
         Private imageShrinkPercentField As Integer
         
-        Private dateProducedField As System.Xml.XmlElement
+        Private dateProducedField As System.Nullable(Of Date)
         
-        Private statusCodeArtifactIDField As System.Xml.XmlElement
+        Private statusCodeArtifactIDField As System.Nullable(Of Integer)
         
         Private batesPrefixField As String
         
@@ -460,39 +460,39 @@ Namespace kCura.EDDS.WebAPI.ProductionManagerBase
         
         Private batesStartNumberField As Integer
         
-        Private leftHeaderTypeCodeArtifactIDField As System.Xml.XmlElement
+        Private leftHeaderTypeCodeArtifactIDField As System.Nullable(Of Integer)
         
-        Private leftHeaderFieldArtifactIDField As System.Xml.XmlElement
+        Private leftHeaderFieldArtifactIDField As System.Nullable(Of Integer)
         
         Private leftHeaderFreeTextField As String
         
-        Private centerHeaderTypeCodeArtifactIDField As System.Xml.XmlElement
+        Private centerHeaderTypeCodeArtifactIDField As System.Nullable(Of Integer)
         
-        Private centerHeaderFieldArtifactIDField As System.Xml.XmlElement
+        Private centerHeaderFieldArtifactIDField As System.Nullable(Of Integer)
         
         Private centerHeaderFreeTextField As String
         
-        Private rightHeaderTypeCodeArtifactIDField As System.Xml.XmlElement
+        Private rightHeaderTypeCodeArtifactIDField As System.Nullable(Of Integer)
         
-        Private rightHeaderFieldArtifactIDField As System.Xml.XmlElement
+        Private rightHeaderFieldArtifactIDField As System.Nullable(Of Integer)
         
         Private rightHeaderFreeTextField As String
         
-        Private leftFooterTypeCodeArtifactIDField As System.Xml.XmlElement
+        Private leftFooterTypeCodeArtifactIDField As System.Nullable(Of Integer)
         
-        Private leftFooterFieldArtifactIDField As System.Xml.XmlElement
+        Private leftFooterFieldArtifactIDField As System.Nullable(Of Integer)
         
         Private leftFooterFreeTextField As String
         
-        Private centerFooterTypeCodeArtifactIDField As System.Xml.XmlElement
+        Private centerFooterTypeCodeArtifactIDField As System.Nullable(Of Integer)
         
-        Private centerFooterFieldArtifactIDField As System.Xml.XmlElement
+        Private centerFooterFieldArtifactIDField As System.Nullable(Of Integer)
         
         Private centerFooterFreeTextField As String
         
-        Private rightFooterTypeCodeArtifactIDField As System.Xml.XmlElement
+        Private rightFooterTypeCodeArtifactIDField As System.Nullable(Of Integer)
         
-        Private rightFooterFieldArtifactIDField As System.Xml.XmlElement
+        Private rightFooterFieldArtifactIDField As System.Nullable(Of Integer)
         
         Private rightFooterFreeTextField As String
         
@@ -557,7 +557,8 @@ Namespace kCura.EDDS.WebAPI.ProductionManagerBase
         End Property
         
         '''<remarks/>
-        Public Property DateProduced() As System.Xml.XmlElement
+        <System.Xml.Serialization.XmlElementAttribute(IsNullable:=true)>  _
+        Public Property DateProduced() As System.Nullable(Of Date)
             Get
                 Return Me.dateProducedField
             End Get
@@ -567,7 +568,8 @@ Namespace kCura.EDDS.WebAPI.ProductionManagerBase
         End Property
         
         '''<remarks/>
-        Public Property StatusCodeArtifactID() As System.Xml.XmlElement
+        <System.Xml.Serialization.XmlElementAttribute(IsNullable:=true)>  _
+        Public Property StatusCodeArtifactID() As System.Nullable(Of Integer)
             Get
                 Return Me.statusCodeArtifactIDField
             End Get
@@ -617,7 +619,8 @@ Namespace kCura.EDDS.WebAPI.ProductionManagerBase
         End Property
         
         '''<remarks/>
-        Public Property LeftHeaderTypeCodeArtifactID() As System.Xml.XmlElement
+        <System.Xml.Serialization.XmlElementAttribute(IsNullable:=true)>  _
+        Public Property LeftHeaderTypeCodeArtifactID() As System.Nullable(Of Integer)
             Get
                 Return Me.leftHeaderTypeCodeArtifactIDField
             End Get
@@ -627,7 +630,8 @@ Namespace kCura.EDDS.WebAPI.ProductionManagerBase
         End Property
         
         '''<remarks/>
-        Public Property LeftHeaderFieldArtifactID() As System.Xml.XmlElement
+        <System.Xml.Serialization.XmlElementAttribute(IsNullable:=true)>  _
+        Public Property LeftHeaderFieldArtifactID() As System.Nullable(Of Integer)
             Get
                 Return Me.leftHeaderFieldArtifactIDField
             End Get
@@ -647,7 +651,8 @@ Namespace kCura.EDDS.WebAPI.ProductionManagerBase
         End Property
         
         '''<remarks/>
-        Public Property CenterHeaderTypeCodeArtifactID() As System.Xml.XmlElement
+        <System.Xml.Serialization.XmlElementAttribute(IsNullable:=true)>  _
+        Public Property CenterHeaderTypeCodeArtifactID() As System.Nullable(Of Integer)
             Get
                 Return Me.centerHeaderTypeCodeArtifactIDField
             End Get
@@ -657,7 +662,8 @@ Namespace kCura.EDDS.WebAPI.ProductionManagerBase
         End Property
         
         '''<remarks/>
-        Public Property CenterHeaderFieldArtifactID() As System.Xml.XmlElement
+        <System.Xml.Serialization.XmlElementAttribute(IsNullable:=true)>  _
+        Public Property CenterHeaderFieldArtifactID() As System.Nullable(Of Integer)
             Get
                 Return Me.centerHeaderFieldArtifactIDField
             End Get
@@ -677,7 +683,8 @@ Namespace kCura.EDDS.WebAPI.ProductionManagerBase
         End Property
         
         '''<remarks/>
-        Public Property RightHeaderTypeCodeArtifactID() As System.Xml.XmlElement
+        <System.Xml.Serialization.XmlElementAttribute(IsNullable:=true)>  _
+        Public Property RightHeaderTypeCodeArtifactID() As System.Nullable(Of Integer)
             Get
                 Return Me.rightHeaderTypeCodeArtifactIDField
             End Get
@@ -687,7 +694,8 @@ Namespace kCura.EDDS.WebAPI.ProductionManagerBase
         End Property
         
         '''<remarks/>
-        Public Property RightHeaderFieldArtifactID() As System.Xml.XmlElement
+        <System.Xml.Serialization.XmlElementAttribute(IsNullable:=true)>  _
+        Public Property RightHeaderFieldArtifactID() As System.Nullable(Of Integer)
             Get
                 Return Me.rightHeaderFieldArtifactIDField
             End Get
@@ -707,7 +715,8 @@ Namespace kCura.EDDS.WebAPI.ProductionManagerBase
         End Property
         
         '''<remarks/>
-        Public Property LeftFooterTypeCodeArtifactID() As System.Xml.XmlElement
+        <System.Xml.Serialization.XmlElementAttribute(IsNullable:=true)>  _
+        Public Property LeftFooterTypeCodeArtifactID() As System.Nullable(Of Integer)
             Get
                 Return Me.leftFooterTypeCodeArtifactIDField
             End Get
@@ -717,7 +726,8 @@ Namespace kCura.EDDS.WebAPI.ProductionManagerBase
         End Property
         
         '''<remarks/>
-        Public Property LeftFooterFieldArtifactID() As System.Xml.XmlElement
+        <System.Xml.Serialization.XmlElementAttribute(IsNullable:=true)>  _
+        Public Property LeftFooterFieldArtifactID() As System.Nullable(Of Integer)
             Get
                 Return Me.leftFooterFieldArtifactIDField
             End Get
@@ -737,7 +747,8 @@ Namespace kCura.EDDS.WebAPI.ProductionManagerBase
         End Property
         
         '''<remarks/>
-        Public Property CenterFooterTypeCodeArtifactID() As System.Xml.XmlElement
+        <System.Xml.Serialization.XmlElementAttribute(IsNullable:=true)>  _
+        Public Property CenterFooterTypeCodeArtifactID() As System.Nullable(Of Integer)
             Get
                 Return Me.centerFooterTypeCodeArtifactIDField
             End Get
@@ -747,7 +758,8 @@ Namespace kCura.EDDS.WebAPI.ProductionManagerBase
         End Property
         
         '''<remarks/>
-        Public Property CenterFooterFieldArtifactID() As System.Xml.XmlElement
+        <System.Xml.Serialization.XmlElementAttribute(IsNullable:=true)>  _
+        Public Property CenterFooterFieldArtifactID() As System.Nullable(Of Integer)
             Get
                 Return Me.centerFooterFieldArtifactIDField
             End Get
@@ -767,7 +779,8 @@ Namespace kCura.EDDS.WebAPI.ProductionManagerBase
         End Property
         
         '''<remarks/>
-        Public Property RightFooterTypeCodeArtifactID() As System.Xml.XmlElement
+        <System.Xml.Serialization.XmlElementAttribute(IsNullable:=true)>  _
+        Public Property RightFooterTypeCodeArtifactID() As System.Nullable(Of Integer)
             Get
                 Return Me.rightFooterTypeCodeArtifactIDField
             End Get
@@ -777,7 +790,8 @@ Namespace kCura.EDDS.WebAPI.ProductionManagerBase
         End Property
         
         '''<remarks/>
-        Public Property RightFooterFieldArtifactID() As System.Xml.XmlElement
+        <System.Xml.Serialization.XmlElementAttribute(IsNullable:=true)>  _
+        Public Property RightFooterFieldArtifactID() As System.Nullable(Of Integer)
             Get
                 Return Me.rightFooterFieldArtifactIDField
             End Get
@@ -1048,9 +1062,9 @@ Namespace kCura.EDDS.WebAPI.ProductionManagerBase
         
         Private artifactTypeIDField As Integer
         
-        Private parentArtifactIDField As System.Xml.XmlElement
+        Private parentArtifactIDField As System.Nullable(Of Integer)
         
-        Private containerIDField As System.Xml.XmlElement
+        Private containerIDField As System.Nullable(Of Integer)
         
         Private accessControlListIDField As Integer
         
@@ -1093,7 +1107,8 @@ Namespace kCura.EDDS.WebAPI.ProductionManagerBase
         End Property
         
         '''<remarks/>
-        Public Property ParentArtifactID() As System.Xml.XmlElement
+        <System.Xml.Serialization.XmlElementAttribute(IsNullable:=true)>  _
+        Public Property ParentArtifactID() As System.Nullable(Of Integer)
             Get
                 Return Me.parentArtifactIDField
             End Get
@@ -1103,7 +1118,8 @@ Namespace kCura.EDDS.WebAPI.ProductionManagerBase
         End Property
         
         '''<remarks/>
-        Public Property ContainerID() As System.Xml.XmlElement
+        <System.Xml.Serialization.XmlElementAttribute(IsNullable:=true)>  _
+        Public Property ContainerID() As System.Nullable(Of Integer)
             Get
                 Return Me.containerIDField
             End Get

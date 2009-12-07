@@ -18,8 +18,8 @@ Namespace kCura.WinEDDS.CodeValidator
 			End Get
 		End Property
 
-		Public Overrides Function GetNewSingleCodeId(ByVal field As Api.ArtifactField, ByVal codeName As String) As NullableTypes.NullableInt32
-			Return New NullableInt32(-1)
+		Public Overrides Function GetNewSingleCodeId(ByVal field As Api.ArtifactField, ByVal codeName As String) As Nullable(Of Int32)
+			Return New Nullable(Of Int32)(-1)
 		End Function
 
 	End Class

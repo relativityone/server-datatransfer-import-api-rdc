@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<wsdl:definitions xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tns="http://www.kCura.com/EDDS/RelativityManager" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" targetNamespace="http://www.kCura.com/EDDS/RelativityManager" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+<wsdl:definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://www.kCura.com/EDDS/RelativityManager" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" targetNamespace="http://www.kCura.com/EDDS/RelativityManager" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
   <wsdl:types>
     <s:schema elementFormDefault="qualified" targetNamespace="http://www.kCura.com/EDDS/RelativityManager">
-      <s:import namespace="http://www.w3.org/2001/XMLSchema" />
       <s:element name="RetrieveCurrencySymbol">
         <s:complexType />
       </s:element>
@@ -199,7 +198,7 @@
     </wsdl:operation>
   </wsdl:portType>
   <wsdl:binding name="RelativityManagerSoap" type="tns:RelativityManagerSoap">
-    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document" />
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
     <wsdl:operation name="RetrieveCurrencySymbol">
       <soap:operation soapAction="http://www.kCura.com/EDDS/RelativityManager/RetrieveCurrencySymbol" style="document" />
       <wsdl:input>
@@ -282,10 +281,96 @@
       </wsdl:output>
     </wsdl:operation>
   </wsdl:binding>
+  <wsdl:binding name="RelativityManagerSoap12" type="tns:RelativityManagerSoap">
+    <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="RetrieveCurrencySymbol">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/RelativityManager/RetrieveCurrencySymbol" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveRelativityVersion">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/RelativityManager/RetrieveRelativityVersion" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ValidateSuccessfulLogin">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/RelativityManager/ValidateSuccessfulLogin" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetServerTimezoneOffset">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/RelativityManager/GetServerTimezoneOffset" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="IsAuditingEnabled">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/RelativityManager/IsAuditingEnabled" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="IsImportEmailNotificationEnabled">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/RelativityManager/IsImportEmailNotificationEnabled" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveRdcConfiguration">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/RelativityManager/RetrieveRdcConfiguration" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Ping">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/RelativityManager/Ping" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ReceiveText">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/RelativityManager/ReceiveText" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
   <wsdl:service name="RelativityManager">
-    <documentation xmlns="http://schemas.xmlsoap.org/wsdl/" />
     <wsdl:port name="RelativityManagerSoap" binding="tns:RelativityManagerSoap">
       <soap:address location="http://localhost/EDDSWebAPI/RelativityManager.asmx" />
+    </wsdl:port>
+    <wsdl:port name="RelativityManagerSoap12" binding="tns:RelativityManagerSoap12">
+      <soap12:address location="http://localhost/EDDSWebAPI/RelativityManager.asmx" />
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>
