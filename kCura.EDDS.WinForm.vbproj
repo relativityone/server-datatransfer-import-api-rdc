@@ -146,10 +146,6 @@
     <Reference Include="Microsoft.VisualBasic">
       <Name>Microsoft.VisualBasic</Name>
     </Reference>
-    <Reference Include="NullableTypes">
-      <Name>NullableTypes</Name>
-      <HintPath>..\..\Vendor\kCura\1.0.2131.20968\NullableTypes.dll</HintPath>
-    </Reference>
     <Reference Include="System">
       <Name>System</Name>
     </Reference>
@@ -225,7 +221,6 @@
   <ItemGroup>
     <Import Include="kCura.WinEDDS" />
     <Import Include="Microsoft.VisualBasic" />
-    <Import Include="NullableTypes" />
     <Import Include="System" />
     <Import Include="System.Collections" />
     <Import Include="System.Data" />
