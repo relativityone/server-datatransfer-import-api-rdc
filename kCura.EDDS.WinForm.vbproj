@@ -142,7 +142,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DefineDebug>true</DefineDebug>
     <DefineTrace>true</DefineTrace>
-    <OutputPath>bin\x64\Debug\</OutputPath>
+    <OutputPath>bin\</OutputPath>
     <BaseAddress>285212672</BaseAddress>
     <DocumentationFile>kCura.EDDS.WinForm.xml</DocumentationFile>
     <WarningLevel>1</WarningLevel>
