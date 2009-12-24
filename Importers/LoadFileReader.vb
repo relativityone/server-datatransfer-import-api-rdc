@@ -364,83 +364,91 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Public Function ManageErrorRecords(ByVal errorMessageFileLocation As String, ByVal prePushErrorLineNumbersFileName As String) As String Implements IArtifactReader.ManageErrorRecords
-			RaiseEvent StatusMessage("Generating error line file.")
-			Dim allErrors As New kCura.Utility.GenericCsvReader(errorMessageFileLocation, System.Text.Encoding.Default, True)
-			Dim clientErrors As System.IO.StreamReader
-			'Me.Reader.BaseStream.Seek(0, IO.SeekOrigin.Begin)
-			Me.Reader = New System.IO.StreamReader(_settings.FilePath, _sourceFileEncoding, True)
-			Me.ResetLineCounter()
-			If prePushErrorLineNumbersFileName = "" Then
-				clientErrors = New System.IO.StreamReader(System.IO.Path.GetTempFileName, System.Text.Encoding.Default)
-			Else
-				clientErrors = New System.IO.StreamReader(prePushErrorLineNumbersFileName, System.Text.Encoding.Default)
-			End If
-			Dim advanceClient As Boolean = True
-			Dim advanceAll As Boolean = True
-			Dim allErrorsLine As Int32
-			Dim clientErrorsLine As Int32
-			Dim errorLinesFileLocation As String = System.IO.Path.GetTempFileName
-			Dim sw As New System.IO.StreamWriter(errorLinesFileLocation, False, _sourceFileEncoding)
-			If _settings.FirstLineContainsHeaders Then
-				sw.WriteLine(Me.ToDelimetedLine(Me.GetLine))
-			End If
-			If prePushErrorLineNumbersFileName = "" Then
-				clientErrorsLine = Int32.MaxValue
-			Else
-				clientErrorsLine = Int32.Parse(clientErrors.ReadLine)
-			End If
-			If Not allErrors.Eof Then
-				Dim e As String() = allErrors.ReadLine
-				If e(3) <> "client" Then
-					allErrorsLine = Int32.Parse(e(0))
-				Else
-					While Not e Is Nothing AndAlso e(3) = "client"
-						e = allErrors.ReadLine
-					End While
-					If e Is Nothing Then
-						allErrorsLine = Int32.MaxValue
-					Else
-						allErrorsLine = Int32.Parse(e(0))
-					End If
-				End If
-			Else
-				allErrorsLine = Int32.MaxValue
-			End If
-			Dim line As String()
-			Dim currentLine As String()
-			Dim [continue] As Boolean = True And Not Me.Reader.Peek = -1
-			While [continue]
-				If Me.CurrentLineNumber < System.Math.Min(clientErrorsLine, allErrorsLine) Then
-					If Me.Reader.Peek = -1 Then
-						[continue] = False
-					Else
-						line = Me.GetLine()
-					End If
-				Else
-					sw.WriteLine(Me.ToDelimetedLine(line))
-					If Me.CurrentLineNumber = clientErrorsLine Then
-						If clientErrors.Peek = -1 Then
-							clientErrorsLine = Int32.MaxValue
-						Else
-							clientErrorsLine = Int32.Parse(clientErrors.ReadLine)
-						End If
-					End If
-					If Me.CurrentLineNumber = allErrorsLine Then
-						If allErrors.Eof Then
-							allErrorsLine = Int32.MaxValue
-						Else
-							allErrorsLine = Int32.Parse(allErrors.ReadLine(0))
-						End If
-					End If
-				End If
-				[continue] = ((Not allErrors.Eof Or clientErrors.Peek <> -1 Or Me.CurrentLineNumber <= System.Math.Min(clientErrorsLine, allErrorsLine)) And [continue])
-			End While
-			sw.Close()
-			allErrors.Close()
-			clientErrors.Close()
-			RaiseEvent StatusMessage("Error line file generation complete.")
-			Return errorLinesFileLocation
-		End Function
+            RaiseEvent StatusMessage("Generating error line file.")
+            Dim allErrors As New kCura.Utility.GenericCsvReader(errorMessageFileLocation, System.Text.Encoding.Default, True)
+            Dim clientErrors As System.IO.StreamReader
+            'Me.Reader.BaseStream.Seek(0, IO.SeekOrigin.Begin)
+            Me.Reader = New System.IO.StreamReader(_settings.FilePath, _sourceFileEncoding, True)
+            Me.ResetLineCounter()
+            If prePushErrorLineNumbersFileName = "" Then
+                clientErrors = New System.IO.StreamReader(System.IO.Path.GetTempFileName, System.Text.Encoding.Default)
+            Else
+                clientErrors = New System.IO.StreamReader(prePushErrorLineNumbersFileName, System.Text.Encoding.Default)
+            End If
+            Dim advanceClient As Boolean = True
+            Dim advanceAll As Boolean = True
+            Dim allErrorsLine As Int32
+            Dim clientErrorsLine As Int32
+            Dim errorLinesFileLocation As String = System.IO.Path.GetTempFileName
+            Dim sw As New System.IO.StreamWriter(errorLinesFileLocation, False, _sourceFileEncoding)
+            If _settings.FirstLineContainsHeaders Then
+                sw.WriteLine(Me.ToDelimetedLine(Me.GetLine))
+            End If
+            If prePushErrorLineNumbersFileName = "" Then
+                clientErrorsLine = Int32.MaxValue
+            Else
+                clientErrorsLine = Int32.Parse(clientErrors.ReadLine)
+            End If
+            If Not allErrors.Eof Then
+                Dim e As String() = allErrors.ReadLine
+                If e(3) <> "client" Then
+                    allErrorsLine = Int32.Parse(e(0))
+                Else
+                    While Not e Is Nothing AndAlso e(3) = "client"
+                        e = allErrors.ReadLine
+                    End While
+                    If e Is Nothing Then
+                        allErrorsLine = Int32.MaxValue
+                    Else
+                        allErrorsLine = Int32.Parse(e(0))
+                    End If
+                End If
+            Else
+                allErrorsLine = Int32.MaxValue
+            End If
+            Dim line As String()
+            Dim currentLine As String()
+            Dim cont As Boolean = True And Not Me.Reader.Peek = -1
+            While cont
+                If Me.CurrentLineNumber < System.Math.Min(clientErrorsLine, allErrorsLine) Then
+                    If Me.Reader.Peek = -1 Then
+                        cont = False
+                    Else
+                        line = Me.GetLine()
+                    End If
+                Else
+                    sw.WriteLine(Me.ToDelimetedLine(line))
+                    If Me.CurrentLineNumber = clientErrorsLine Then
+                        If clientErrors.Peek = -1 Then
+                            clientErrorsLine = Int32.MaxValue
+                        Else
+                            clientErrorsLine = Int32.Parse(clientErrors.ReadLine)
+                        End If
+                    End If
+                    If Me.CurrentLineNumber = allErrorsLine Then
+                        If allErrors.Eof Then
+                            allErrorsLine = Int32.MaxValue
+                        Else
+                            Dim e As String() = allErrors.ReadLine
+                            While Not e Is Nothing AndAlso e(3) = "client"
+                                e = allErrors.ReadLine
+                            End While
+                            If e Is Nothing Then
+                                allErrorsLine = Int32.MaxValue
+                            Else
+                                allErrorsLine = Int32.Parse(e(0))
+                            End If
+                        End If
+                    End If
+                End If
+                cont = ((Not allErrors.Eof Or clientErrors.Peek <> -1 Or Me.CurrentLineNumber <= System.Math.Min(clientErrorsLine, allErrorsLine)) And cont)
+            End While
+            sw.Close()
+            allErrors.Close()
+            clientErrors.Close()
+            RaiseEvent StatusMessage("Error line file generation complete.")
+            Return errorLinesFileLocation
+        End Function
 
 		Public Function ReadArtifact() As Api.ArtifactFieldCollection Implements Api.IArtifactReader.ReadArtifact
 			Dim collection As New Api.ArtifactFieldCollection
