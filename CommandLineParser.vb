@@ -4,7 +4,6 @@ Namespace kCura.CommandLine
 		Public Shared Function Parse() As kCura.CommandLine.CommandList
 			Dim commandList As New kCura.CommandLine.CommandList
 			Dim commandArgs() As String = System.Environment.GetCommandLineArgs()
-			Dim commandString As String
 			Dim x As Int32
 			For x = 1 To commandArgs.Length - 1
 				Dim command As New kCura.CommandLine.Command
