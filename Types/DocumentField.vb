@@ -1,6 +1,7 @@
 Imports System.Runtime.Serialization
 Namespace kCura.WinEDDS
 	<Serializable()> Public Class DocumentField
+		Implements ISerializable
 #Region "Members"
 		Private _fieldName As String
 		Private _fieldID As Int32
@@ -13,6 +14,24 @@ Namespace kCura.WinEDDS
 		<NonSerialized()> Private _associatedObjectTypeID As Nullable(Of Int32)
 		<NonSerialized()> Private _useUnicode As Boolean
 #End Region
+
+		Public Sub GetObjectData(ByVal info As System.Runtime.Serialization.SerializationInfo, ByVal context As System.Runtime.Serialization.StreamingContext) Implements System.Runtime.Serialization.ISerializable.GetObjectData
+			info.AddValue("_fieldName", Me.FieldName, GetType(String))
+			info.AddValue("_fieldID", Me.FieldID, GetType(Int32))
+			info.AddValue("_fieldTypeID", Me.FieldTypeID, GetType(Int32))
+			info.AddValue("_value", Me.Value, GetType(String))
+			info.AddValue("_fieldCategoryID", Me.FieldCategoryID, GetType(Int32))
+			info.AddValue("_fileColumnIndex", Me.FileColumnIndex, GetType(Int32))
+		End Sub
+
+		Private Sub New(ByVal info As System.Runtime.Serialization.SerializationInfo, ByVal Context As System.Runtime.Serialization.StreamingContext)
+			Me.FieldName = info.GetString("_fieldName")
+			Me.FieldID = info.GetInt32("_fieldID")
+			Me.FieldTypeID = info.GetInt32("_fieldTypeID")
+			Me.Value = info.GetString("_value")
+			Me.FieldCategoryID = info.GetInt32("_fieldCategoryID")
+			Me.FileColumnIndex = info.GetInt32("_fileColumnIndex")
+		End Sub
 
 #Region "Properties"
 		Public Property AssociatedObjectTypeID() As Nullable(Of Int32)
@@ -144,7 +163,7 @@ Namespace kCura.WinEDDS
 			_codeTypeID = codeTypeID
 			_fieldLength = fieldLength
 			_associatedObjectTypeID = associatedObjectTypeID
-			_useUnicode = UseUnicode
+			_useUnicode = useUnicode
 		End Sub
 
 		Public Sub New(ByVal docField As DocumentField)
