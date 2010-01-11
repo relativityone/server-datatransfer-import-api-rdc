@@ -1296,15 +1296,38 @@ Namespace kCura.EDDS.WinForm
 				End Try
 			End Try
 		End Sub
+		Private Function CleanLoadFile(ByVal doc As System.Xml.XmlDocument) As String
+			For Each node As System.Xml.XmlNode In doc.ChildNodes(0).ChildNodes(0)
+				If node.Name = "a1:DocumentField" Then
+					Dim nodesToRemove As New System.Collections.ArrayList
+					For Each dfNode As System.Xml.XmlNode In node.ChildNodes
+						If dfNode.Name = "_codeTypeID" Then nodesToRemove.Add(dfNode)
+						If dfNode.Name = "_fieldLength" Then nodesToRemove.Add(dfNode)
+					Next
+					For Each nodeToRemove As System.Xml.XmlNode In nodesToRemove
+						node.RemoveChild(nodeToRemove)
+					Next
+				End If
+			Next
+			Return doc.OuterXml
+		End Function
 
 		Public Function ReadLoadFile(ByVal loadFile As LoadFile, ByVal path As String, ByVal isSilent As Boolean) As LoadFile
 			kCura.WinEDDS.Service.Settings.SendEmailOnLoadCompletion = Config.SendNotificationOnImportCompletionByDefault
 			If Not Me.EnsureConnection Then Return Nothing
 			Dim sr As New System.IO.StreamReader(path)
+			Dim doc As String = sr.ReadToEnd
+			sr.Close()
+			Dim xmlDoc As New System.Xml.XmlDocument
+			xmlDoc.LoadXml(doc)
+
+			sr = New System.IO.StreamReader(path)
+			Dim stringr As New System.IO.MemoryStream(System.Text.Encoding.UTF8.GetBytes(Me.CleanLoadFile(xmlDoc)))
 			Dim tempLoadFile As WinEDDS.LoadFile
 			Dim deserializer As New System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+
 			Try
-				tempLoadFile = DirectCast(deserializer.Deserialize(sr.BaseStream), WinEDDS.LoadFile)
+				tempLoadFile = DirectCast(deserializer.Deserialize(stringr), WinEDDS.LoadFile)
 				sr.Close()
 			Catch ex As System.Exception
 				If Not isSilent Then MsgBox("Load Failed", MsgBoxStyle.Critical)
@@ -1331,7 +1354,7 @@ Namespace kCura.EDDS.WinForm
 					Return Nothing
 			End Select
 			tempLoadFile.FilePath = x.FileName
-			Dim mapItemToRemove As LoadFileFieldMap.LoadFileFieldMapItem
+			Dim mapItemToRemove As LoadFileFieldMap.LoadFileFieldMapItem = Nothing
 			If tempLoadFile.GroupIdentifierColumn = "" AndAlso System.IO.File.Exists(tempLoadFile.FilePath) Then
 				Dim fieldMapItem As kCura.WinEDDS.LoadFileFieldMap.LoadFileFieldMapItem
 				For Each fieldMapItem In tempLoadFile.FieldMap
@@ -1346,6 +1369,8 @@ Namespace kCura.EDDS.WinForm
 							Dim thisField As DocumentField = Me.CurrentFields(tempLoadFile.ArtifactTypeID).Item(fieldMapItem.DocumentField.FieldID)
 							fieldMapItem.DocumentField.AssociatedObjectTypeID = thisField.AssociatedObjectTypeID
 							fieldMapItem.DocumentField.UseUnicode = thisField.UseUnicode
+							fieldMapItem.DocumentField.AssociatedObjectTypeID = thisField.CodeTypeID
+							fieldMapItem.DocumentField.FieldLength = thisField.FieldLength
 						Catch
 						End Try
 					End If
