@@ -1706,7 +1706,26 @@ Public Class ExportForm
 			MsgBox(msg, MsgBoxStyle.Exclamation)
 		End If
 		_dataSourceIsSet = True
+
+		'the _filters.SelectedIndex clears out the fields (which should happen on an index change, but it should not clear out the Text Field value on a refresh
+
+
+		Dim temporaryPotentialTextFields As New ArrayList
+		Dim temporaryPotentialTextFieldsSelectedIndex As Int32
+		If _potentialTextFields.Items.Count > 0 Then
+			For Each test As Object In _potentialTextFields.Items
+				temporaryPotentialTextFields.Add(test)
+			Next
+			temporaryPotentialTextFieldsSelectedIndex = _potentialTextFields.SelectedIndex
+		End If
+
 		_filters.SelectedIndex = selectedindex
+
+		If temporaryPotentialTextFields.Count > 0 Then
+			_potentialTextFields.Items.AddRange(temporaryPotentialTextFields.ToArray)
+			_potentialTextFields.SelectedIndex = temporaryPotentialTextFieldsSelectedIndex
+		End If
+
 		_columnSelecter.LeftListBoxItems.Clear()
 		_columnSelecter.RightListBoxItems.Clear()
 		Dim al As New System.Collections.ArrayList(_exportFile.AllExportableFields)
