@@ -68,8 +68,19 @@ Public Class TextDisplayForm
 
 	Private Sub ProcessObserver_OnProcessEvent(ByVal evt As kCura.Windows.Process.ProcessEvent) Handles ProcessObserver.OnProcessEvent
 		_application.CursorWait()
-		TextBox1.Text &= (evt.Message & vbNewLine)
+		Me.AppendText(evt.Message & vbNewLine)
 		_application.CursorDefault()
+	End Sub
+
+	Delegate Sub AppendTextCallback(ByVal [text] As String)
+
+	Private Sub AppendText(ByVal t As String)
+		If TextBox1.InvokeRequired Then
+			Dim d As New AppendTextCallback(AddressOf AppendText)
+			Me.Invoke(d, New Object() {t})
+		Else
+			TextBox1.Text &= t
+		End If
 	End Sub
 
 	Private Sub TextDisplayForm_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
