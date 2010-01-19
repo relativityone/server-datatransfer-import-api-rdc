@@ -1113,11 +1113,13 @@ Namespace kCura.WinEDDS
 
 		Private Sub ManageErrors(ByVal artifactTypeID As Int32)
 			If Not _bulkImportManager.NativeRunHasErrors(_caseInfo.ArtifactID, _runID) Then Exit Sub
-			Dim sr As kCura.Utility.GenericCsvReader
+			Dim sr As kCura.Utility.GenericCsvReader = Nothing
+			Dim downloader As FileDownloader = Nothing
 			Try
 				With _bulkImportManager.GenerateNativeErrorFiles(_caseInfo.ArtifactID, _runID, artifactTypeID, True, _keyFieldID)
 					Me.WriteStatusLine(Windows.Process.EventType.Status, "Retrieving errors from server")
-					Dim downloader As New FileDownloader(DirectCast(_bulkImportManager.Credentials, System.Net.NetworkCredential), _caseInfo.DocumentPath, _caseInfo.DownloadHandlerURL, _bulkImportManager.CookieContainer, kCura.WinEDDS.Service.Settings.AuthenticationToken)
+					downloader = New FileDownloader(DirectCast(_bulkImportManager.Credentials, System.Net.NetworkCredential), _caseInfo.DocumentPath, _caseInfo.DownloadHandlerURL, _bulkImportManager.CookieContainer, kCura.WinEDDS.Service.Settings.AuthenticationToken)
+					AddHandler downloader.UploadStatusEvent, AddressOf _uploader_UploadStatusEvent
 					Dim errorsLocation As String = System.IO.Path.GetTempFileName
 					downloader.MoveTempFileToLocal(errorsLocation, .LogKey, _caseInfo)
 					sr = New kCura.Utility.GenericCsvReader(errorsLocation, True)
@@ -1134,9 +1136,11 @@ Namespace kCura.WinEDDS
 						line = sr.ReadLine
 					End While
 					RemoveHandler sr.IoWarningEvent, AddressOf Me.IoWarningHandler
+					RemoveHandler downloader.UploadStatusEvent, AddressOf _uploader_UploadStatusEvent
 				End With
 			Catch ex As Exception
 				Try
+					If downloader IsNot Nothing Then RemoveHandler downloader.UploadStatusEvent, AddressOf _uploader_UploadStatusEvent
 					sr.Close()
 					RemoveHandler sr.IoWarningEvent, AddressOf Me.IoWarningHandler
 				Catch

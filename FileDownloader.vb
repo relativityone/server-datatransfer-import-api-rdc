@@ -145,6 +145,22 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Private Function WebDownloadFile(ByVal localFilePath As String, ByVal artifactID As Int32, ByVal remoteFileGuid As String, ByVal appID As String, ByVal remotelocationkey As String, ByVal forFullText As Boolean, ByVal longTextFieldArtifactID As Int32, ByVal fileID As Int32, ByVal fileFieldArtifactID As Int32) As Boolean
+			Dim tries As Int32 = 0
+			While tries < Config.MaxReloginTries
+				Try
+					Return DoWebDownloadFile(localFilePath, artifactID, remoteFileGuid, appID, remotelocationkey, forFullText, longTextFieldArtifactID, fileID, fileFieldArtifactID)
+				Catch ex As DistributedReLoginException
+					tries += 1
+					RaiseEvent UploadStatusEvent(String.Format("Download Manager credentials failed.  Attempting to re-login ({0} of {1})", tries, Config.MaxReloginTries))
+					_userManager.AttemptReLogin()
+				End Try
+			End While
+			RaiseEvent UploadStatusEvent("Error Downloading File")
+			Throw New ApplicationException("Error Downloading File: Unable to authenticate against Distributed server" & vbNewLine, New DistributedReLoginException)
+			Return False
+		End Function
+
+		Private Function DoWebDownloadFile(ByVal localFilePath As String, ByVal artifactID As Int32, ByVal remoteFileGuid As String, ByVal appID As String, ByVal remotelocationkey As String, ByVal forFullText As Boolean, ByVal longTextFieldArtifactID As Int32, ByVal fileID As Int32, ByVal fileFieldArtifactID As Int32) As Boolean
 			Dim tryNumber As Int32 = 0
 			Dim localStream As System.IO.Stream
 			Try
@@ -166,8 +182,9 @@ Namespace kCura.WinEDDS
 				httpWebRequest.Credentials = _credentials
 				httpWebRequest.CookieContainer = _cookieContainer
 				httpWebRequest.UnsafeAuthenticatedConnectionSharing = True
-				httpWebRequest.Headers.Add("SOURCEID", "9AAC98ED-01A4-4111-B66E-D25130875E5D")				'Verifies WinEDDS as a trusted source with the Distributed environment.
-				Dim webResponse As System.Net.WebResponse = httpWebRequest.GetResponse()
+				'TODO: remove entirely in 6.0
+				'httpWebRequest.Headers.Add("SOURCEID", "9AAC98ED-01A4-4111-B66E-D25130875E5D")				'Verifies WinEDDS as a trusted source with the Distributed environment.
+				Dim webResponse As System.Net.HttpWebResponse = DirectCast(httpWebRequest.GetResponse(), System.Net.HttpWebResponse)
 				Dim length As Int64 = 0
 				If Not webResponse Is Nothing Then
 					length = System.Math.Max(webResponse.ContentLength, 0)
@@ -194,8 +211,17 @@ Namespace kCura.WinEDDS
 				End If
 				If Not remotelocationkey Is Nothing Then _locationAccessMatrix.Add(remotelocationkey, FileAccessType.Web)
 				Return True
+			Catch ex As DistributedReLoginException
+				Me.CloseStream(localStream)
+				Throw
 			Catch ex As System.Net.WebException
 				Me.CloseStream(localStream)
+				If TypeOf ex.Response Is System.Net.HttpWebResponse Then
+					Dim r As System.Net.HttpWebResponse = DirectCast(ex.Response, System.Net.HttpWebResponse)
+					If r.StatusCode = Net.HttpStatusCode.Forbidden AndAlso r.StatusDescription.ToLower = "kcuraaccessdeniedmarker" Then
+						Throw New DistributedReLoginException
+					End If
+				End If
 				If ex.Message.IndexOf("409") <> -1 Then
 					RaiseEvent UploadStatusEvent("Error Downloading File")					'TODO: Change this to a separate error-type event'
 					Throw New ApplicationException("Error Downloading File: the file associated with the guid " & remoteFileGuid & " cannot be found" & vbNewLine, ex)
@@ -209,6 +235,10 @@ Namespace kCura.WinEDDS
 				Throw New ApplicationException("Error Downloading File", ex)
 			End Try
 		End Function
+
+		Public Class DistributedReLoginException
+			Inherits System.Exception
+		End Class
 
 		Private Sub CloseStream(ByVal stream As System.IO.Stream)
 			If stream Is Nothing Then Exit Sub

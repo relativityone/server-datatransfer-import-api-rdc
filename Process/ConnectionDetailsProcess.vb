@@ -183,7 +183,7 @@ Namespace kCura.WinEDDS
 			Return True
 		End Function
 
-		Private Function CheckDownloadHandlerURL() As String
+		Private Sub CheckDownloadHandlerURL()
 			Me.WriteStatus("Validate Download URL:")
 			Dim downloadUrl As String = kCura.Utility.URI.GetFullyQualifiedPath(_caseInfo.DownloadHandlerURL, New System.Uri(kCura.WinEDDS.Config.WebServiceURL))
 			Dim token As String = kCura.WinEDDS.Service.Settings.AuthenticationToken
@@ -192,11 +192,20 @@ Namespace kCura.WinEDDS
 			Try
 				myReq.GetResponse()
 				Me.WriteStatus("URL validated")
+			Catch ex As System.Net.WebException
+				With DirectCast(ex.Response, System.Net.HttpWebResponse)
+					If .StatusCode = Net.HttpStatusCode.Forbidden AndAlso .StatusDescription = "kcuraaccessdeniedmarker" Then
+						Me.WriteStatus("URL validated")
+					Else
+						Me.WriteStatus("Cannot find URL")
+						Me.WriteStatus(ex.ToString)
+					End If
+				End With
 			Catch ex As System.Exception
 				Me.WriteStatus("Cannot find URL")
 				Me.WriteStatus(ex.ToString)
 			End Try
-		End Function
+		End Sub
 
 		Private Function CheckBcp() As Boolean
 			Me.WriteStatus("Checking Bulk Share Configuration")
