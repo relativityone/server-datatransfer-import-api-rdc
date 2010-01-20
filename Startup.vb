@@ -43,6 +43,7 @@ Namespace kCura.EDDS.WinForm
 			Image
 			Native
 			DynamicObject
+			Application
 		End Enum
 
 #End Region
@@ -145,6 +146,8 @@ Namespace kCura.EDDS.WinForm
 						RunNativeImport()
 					Case LoadMode.DynamicObject
 						RunDynamicObjectImport(commandList)
+					Case LoadMode.Application
+						RunApplicationImport()
 				End Select
 			Catch ex As RdcBaseException
 				Console.WriteLine("--------------------------")
@@ -162,6 +165,17 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 #Region " Run Import "
+
+		Private Sub RunApplicationImport()
+			Dim template As New Xml.XmlDocument
+			Dim stream As System.IO.FileStream = System.IO.File.Open(_loadFilePath, System.IO.FileMode.Open, System.IO.FileAccess.Read)
+			template.Load(stream)
+			stream.Close()
+
+			Dim importer As New kCura.WinEDDS.ApplicationDeploymentProcess(template, _application.Credential, _application.CookieContainer, SelectedCaseInfo)
+			Dim executor As New kCura.EDDS.WinForm.CommandLineProcessRunner(importer.ProcessObserver, importer.ProcessController, ErrorLoadFileLocation, ErrorReportFileLocation)
+			_application.StartProcess(importer)
+		End Sub
 
 		Private Sub RunDynamicObjectImport(ByVal commandList As kCura.CommandLine.CommandList)
 			Dim frm As New kCura.Windows.Process.ProgressForm
@@ -229,7 +243,7 @@ Namespace kCura.EDDS.WinForm
 				Dim caseManager As New kCura.WinEDDS.Service.CaseManager(_application.Credential, _application.CookieContainer)
 				SelectedCaseInfo = caseManager.Read(Int32.Parse(caseID))
 			Catch ex As Exception
-				Throw New CaseArtifactIdException(caseID)
+				Throw New CaseArtifactIdException(caseID, ex)
 			End Try
 			If SelectedCaseInfo Is Nothing Then Throw New CaseArtifactIdException(caseID)
 			_application.RefreshSelectedCaseInfo(SelectedCaseInfo)
@@ -250,7 +264,7 @@ Namespace kCura.EDDS.WinForm
 						System.IO.File.Create(ErrorReportFileLocation).Close()
 						System.IO.File.Delete(ErrorReportFileLocation)
 					Catch ex As Exception
-						Throw New InvalidPathLocationException(ErrorReportFileLocation, "error report")
+						Throw New InvalidPathLocationException(ErrorReportFileLocation, "error report", ex)
 					End Try
 					'Return command.Value
 				End If
@@ -274,7 +288,7 @@ Namespace kCura.EDDS.WinForm
 						System.IO.File.Create(ErrorLoadFileLocation).Close()
 						System.IO.File.Delete(ErrorLoadFileLocation)
 					Catch ex As Exception
-						Throw New InvalidPathLocationException(ErrorReportFileLocation, "error file")
+						Throw New InvalidPathLocationException(ErrorReportFileLocation, "error file", ex)
 					End Try
 					'Return command.Value
 				End If
@@ -305,11 +319,12 @@ Namespace kCura.EDDS.WinForm
 
 		Private Sub SetSavedMapLocation(ByVal path As String)
 			Try
-				If Not System.IO.File.Exists(path) Then Throw New SavedSettingsFilePathException(path)
 				Select Case CurrentLoadMode
 					Case LoadMode.Image
+						If Not System.IO.File.Exists(path) Then Throw New SavedSettingsFilePathException(path)
 						SelectedImageLoadFile = _application.ReadImageLoadFile(path)
 					Case LoadMode.Native, LoadMode.DynamicObject
+						If Not System.IO.File.Exists(path) Then Throw New SavedSettingsFilePathException(path)
 						Dim sr As New System.IO.StreamReader(path)
 						Dim tempLoadFile As WinEDDS.LoadFile
 						Dim deserializer As New System.Runtime.Serialization.Formatters.Soap.SoapFormatter
@@ -343,9 +358,11 @@ Namespace kCura.EDDS.WinForm
 						SelectedNativeLoadFile.SelectedCasePath = SelectedCaseInfo.DocumentPath
 						SelectedNativeLoadFile.Credentials = _application.Credential
 						SelectedNativeLoadFile.CookieContainer = _application.CookieContainer
+					Case LoadMode.Application
+						If System.IO.File.Exists(path) Then Throw New InvalidOperationException("Load file is not supported for application imports")
 				End Select
 			Catch ex As Exception
-				Throw New SavedSettingsRehydrationException(path)
+				Throw New SavedSettingsRehydrationException(path, ex)
 			End Try
 		End Sub
 
@@ -355,8 +372,8 @@ Namespace kCura.EDDS.WinForm
 			Else
 				Try
 					SourceFileEncoding = System.Text.Encoding.GetEncoding(Int32.Parse(value))
-				Catch
-					Throw New EncodingException(value, "source file")
+				Catch ex As Exception
+					Throw New EncodingException(value, "source file", ex)
 				End Try
 			End If
 		End Sub
@@ -366,8 +383,8 @@ Namespace kCura.EDDS.WinForm
 			Else
 				Try
 					ExtractedTextFileEncoding = System.Text.Encoding.GetEncoding(Int32.Parse(value))
-				Catch
-					Throw New EncodingException(value, "extracted text files")
+				Catch ex As Exception
+					Throw New EncodingException(value, "extracted text files", ex)
 				End Try
 			End If
 		End Sub
@@ -431,6 +448,9 @@ Namespace kCura.EDDS.WinForm
 				Case "o", "object"
 					CurrentLoadMode = LoadMode.DynamicObject
 					HasSetLoadMode = True
+				Case "a", "application"
+					CurrentLoadMode = LoadMode.Application
+					HasSetLoadMode = True
 			End Select
 			If Not HasSetLoadMode Then Throw New NoLoadTypeModeSetException
 		End Sub
@@ -444,8 +464,8 @@ Namespace kCura.EDDS.WinForm
 					If StartLineNumber < 0 Then
 						Throw New StartLineNumberException(value)
 					End If
-				Catch
-					Throw New StartLineNumberException(value)
+				Catch ex As Exception
+					Throw New StartLineNumberException(value, ex)
 				End Try
 			End If
 		End Sub
@@ -478,7 +498,11 @@ Namespace kCura.EDDS.WinForm
 	Public MustInherit Class RdcBaseException
 		Inherits System.Exception
 		Public Sub New(ByVal message As String)
-			MyBase.New(message)
+			Me.New(message, Nothing)
+		End Sub
+
+		Public Sub New(ByVal message As String, ByVal innerException As System.Exception)
+			MyBase.New(message, innerException)
 		End Sub
 	End Class
 
@@ -506,7 +530,11 @@ Namespace kCura.EDDS.WinForm
 	Public Class CaseArtifactIdException
 		Inherits RdcBaseException
 		Public Sub New(ByVal caseArtifactID As String)
-			MyBase.New(String.Format("The case specified by the following ID does not exist: " & caseArtifactID))
+			Me.New(caseArtifactID, Nothing)
+		End Sub
+
+		Public Sub New(ByVal caseArtifactID As String, ByVal innerException As System.Exception)
+			MyBase.New(String.Format("The case specified by the following ID does not exist: " & caseArtifactID), innerException)
 		End Sub
 	End Class
 
@@ -534,7 +562,11 @@ Namespace kCura.EDDS.WinForm
 	Public Class SavedSettingsRehydrationException
 		Inherits RdcBaseException
 		Public Sub New(ByVal path As String)
-			MyBase.New("The saved settings file specified is in an invalid format: " & path)
+			Me.New(path, Nothing)
+		End Sub
+
+		Public Sub New(ByVal path As String, ByVal innerException As System.Exception)
+			MyBase.New("The saved settings file specified is in an invalid format: " & path, innerException)
 		End Sub
 	End Class
 
@@ -548,7 +580,11 @@ Namespace kCura.EDDS.WinForm
 	Public Class EncodingException
 		Inherits RdcBaseException
 		Public Sub New(ByVal id As String, ByVal destination As String)
-			MyBase.New(String.Format("Invalid encoding set for {1}.  Encoding id '{0}' not supported.  Use -h:encoding for a list of supported encoding ids", id, destination))
+			Me.New(id, destination, Nothing)
+		End Sub
+
+		Public Sub New(ByVal id As String, ByVal destination As String, ByVal innerException As System.Exception)
+			MyBase.New(String.Format("Invalid encoding set for {1}.  Encoding id '{0}' not supported.  Use -h:encoding for a list of supported encoding ids", id, destination), innerException)
 		End Sub
 	End Class
 
@@ -562,7 +598,11 @@ Namespace kCura.EDDS.WinForm
 	Public Class InvalidPathLocationException
 		Inherits RdcBaseException
 		Public Sub New(ByVal path As String, ByVal type As String)
-			MyBase.New(String.Format("The {0} path {1} is invalid", type, path))
+			Me.New(path, type, Nothing)
+		End Sub
+
+		Public Sub New(ByVal path As String, ByVal type As String, ByVal innerException As System.Exception)
+			MyBase.New(String.Format("The {0} path {1} is invalid", type, path), innerException)
 		End Sub
 	End Class
 
@@ -576,7 +616,11 @@ Namespace kCura.EDDS.WinForm
 	Public Class StartLineNumberException
 		Inherits RdcBaseException
 		Public Sub New(ByVal value As String)
-			MyBase.New(String.Format("The specified start line number is not valid: {0}.", value))
+			Me.New(value, Nothing)
+		End Sub
+
+		Public Sub New(ByVal value As String, ByVal innerException As System.Exception)
+			MyBase.New(String.Format("The specified start line number is not valid: {0}.", value), innerException)
 		End Sub
 	End Class
 
