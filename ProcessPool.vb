@@ -9,6 +9,7 @@ Namespace kCura.Windows.Process
 			Dim thread As System.Threading.Thread
 			process.ProcessID = key
 			thread = New System.Threading.Thread(AddressOf process.StartProcess)
+			thread.SetApartmentState(Threading.ApartmentState.STA)
 			thread.Start()
 			_threadCollection.Add(key, thread)
 			Return key
