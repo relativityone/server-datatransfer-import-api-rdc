@@ -81,6 +81,16 @@
           </s:sequence>
         </s:complexType>
       </s:element>
+      <s:element name="GenerateDistributedAuthenticationToken">
+        <s:complexType />
+      </s:element>
+      <s:element name="GenerateDistributedAuthenticationTokenResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GenerateDistributedAuthenticationTokenResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
       <s:element name="GetLatestAuthenticationToken">
         <s:complexType />
       </s:element>
@@ -156,6 +166,12 @@
   <wsdl:message name="GenerateAuthenticationTokenSoapOut">
     <wsdl:part name="parameters" element="tns:GenerateAuthenticationTokenResponse" />
   </wsdl:message>
+  <wsdl:message name="GenerateDistributedAuthenticationTokenSoapIn">
+    <wsdl:part name="parameters" element="tns:GenerateDistributedAuthenticationToken" />
+  </wsdl:message>
+  <wsdl:message name="GenerateDistributedAuthenticationTokenSoapOut">
+    <wsdl:part name="parameters" element="tns:GenerateDistributedAuthenticationTokenResponse" />
+  </wsdl:message>
   <wsdl:message name="GetLatestAuthenticationTokenSoapIn">
     <wsdl:part name="parameters" element="tns:GetLatestAuthenticationToken" />
   </wsdl:message>
@@ -196,6 +212,10 @@
     <wsdl:operation name="GenerateAuthenticationToken">
       <wsdl:input message="tns:GenerateAuthenticationTokenSoapIn" />
       <wsdl:output message="tns:GenerateAuthenticationTokenSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GenerateDistributedAuthenticationToken">
+      <wsdl:input message="tns:GenerateDistributedAuthenticationTokenSoapIn" />
+      <wsdl:output message="tns:GenerateDistributedAuthenticationTokenSoapOut" />
     </wsdl:operation>
     <wsdl:operation name="GetLatestAuthenticationToken">
       <wsdl:input message="tns:GetLatestAuthenticationTokenSoapIn" />
@@ -264,6 +284,15 @@
     </wsdl:operation>
     <wsdl:operation name="GenerateAuthenticationToken">
       <soap:operation soapAction="http://www.kCura.com/EDDS/UserManager/GenerateAuthenticationToken" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GenerateDistributedAuthenticationToken">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/UserManager/GenerateDistributedAuthenticationToken" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -348,6 +377,15 @@
     </wsdl:operation>
     <wsdl:operation name="GenerateAuthenticationToken">
       <soap12:operation soapAction="http://www.kCura.com/EDDS/UserManager/GenerateAuthenticationToken" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GenerateDistributedAuthenticationToken">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/UserManager/GenerateDistributedAuthenticationToken" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>

@@ -175,8 +175,8 @@ Namespace kCura.WinEDDS
 				Else
 					remoteuri = String.Format("{0}Download.aspx?ArtifactID={1}&GUID={2}&AppID={3}", downloadUrl, artifactID, remoteFileGuid, appID)
 				End If
-				If _authenticationToken <> String.Empty Then
-					remoteuri &= String.Format("&AuthenticationToken={0}", _authenticationToken)
+				If kCura.WinEDDS.Service.Settings.AuthenticationToken <> String.Empty Then
+					remoteuri &= String.Format("&AuthenticationToken={0}", kCura.WinEDDS.Service.Settings.AuthenticationToken)
 				End If
 				Dim httpWebRequest As System.Net.HttpWebRequest = CType(System.Net.HttpWebRequest.Create(remoteuri), System.Net.HttpWebRequest)
 				httpWebRequest.Credentials = _credentials

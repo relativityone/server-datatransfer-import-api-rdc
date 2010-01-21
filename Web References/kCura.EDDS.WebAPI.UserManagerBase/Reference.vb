@@ -46,6 +46,8 @@ Namespace kCura.EDDS.WebAPI.UserManagerBase
         
         Private GenerateAuthenticationTokenOperationCompleted As System.Threading.SendOrPostCallback
         
+        Private GenerateDistributedAuthenticationTokenOperationCompleted As System.Threading.SendOrPostCallback
+        
         Private GetLatestAuthenticationTokenOperationCompleted As System.Threading.SendOrPostCallback
         
         Private RetrieveAllAssignableInCaseOperationCompleted As System.Threading.SendOrPostCallback
@@ -108,6 +110,9 @@ Namespace kCura.EDDS.WebAPI.UserManagerBase
         
         '''<remarks/>
         Public Event GenerateAuthenticationTokenCompleted As GenerateAuthenticationTokenCompletedEventHandler
+        
+        '''<remarks/>
+        Public Event GenerateDistributedAuthenticationTokenCompleted As GenerateDistributedAuthenticationTokenCompletedEventHandler
         
         '''<remarks/>
         Public Event GetLatestAuthenticationTokenCompleted As GetLatestAuthenticationTokenCompletedEventHandler
@@ -374,6 +379,44 @@ Namespace kCura.EDDS.WebAPI.UserManagerBase
         End Sub
         
         '''<remarks/>
+        <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/UserManager/GenerateDistributedAuthenticationToken", RequestNamespace:="http://www.kCura.com/EDDS/UserManager", ResponseNamespace:="http://www.kCura.com/EDDS/UserManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
+        Public Function GenerateDistributedAuthenticationToken() As String
+            Dim results() As Object = Me.Invoke("GenerateDistributedAuthenticationToken", New Object(-1) {})
+            Return CType(results(0),String)
+        End Function
+        
+        '''<remarks/>
+        Public Function BeginGenerateDistributedAuthenticationToken(ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("GenerateDistributedAuthenticationToken", New Object(-1) {}, callback, asyncState)
+        End Function
+        
+        '''<remarks/>
+        Public Function EndGenerateDistributedAuthenticationToken(ByVal asyncResult As System.IAsyncResult) As String
+            Dim results() As Object = Me.EndInvoke(asyncResult)
+            Return CType(results(0),String)
+        End Function
+        
+        '''<remarks/>
+        Public Overloads Sub GenerateDistributedAuthenticationTokenAsync()
+            Me.GenerateDistributedAuthenticationTokenAsync(Nothing)
+        End Sub
+        
+        '''<remarks/>
+        Public Overloads Sub GenerateDistributedAuthenticationTokenAsync(ByVal userState As Object)
+            If (Me.GenerateDistributedAuthenticationTokenOperationCompleted Is Nothing) Then
+                Me.GenerateDistributedAuthenticationTokenOperationCompleted = AddressOf Me.OnGenerateDistributedAuthenticationTokenOperationCompleted
+            End If
+            Me.InvokeAsync("GenerateDistributedAuthenticationToken", New Object(-1) {}, Me.GenerateDistributedAuthenticationTokenOperationCompleted, userState)
+        End Sub
+        
+        Private Sub OnGenerateDistributedAuthenticationTokenOperationCompleted(ByVal arg As Object)
+            If (Not (Me.GenerateDistributedAuthenticationTokenCompletedEvent) Is Nothing) Then
+                Dim invokeArgs As System.Web.Services.Protocols.InvokeCompletedEventArgs = CType(arg,System.Web.Services.Protocols.InvokeCompletedEventArgs)
+                RaiseEvent GenerateDistributedAuthenticationTokenCompleted(Me, New GenerateDistributedAuthenticationTokenCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState))
+            End If
+        End Sub
+        
+        '''<remarks/>
         <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/UserManager/GetLatestAuthenticationToken", RequestNamespace:="http://www.kCura.com/EDDS/UserManager", ResponseNamespace:="http://www.kCura.com/EDDS/UserManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
         Public Function GetLatestAuthenticationToken() As String
             Dim results() As Object = Me.Invoke("GetLatestAuthenticationToken", New Object(-1) {})
@@ -547,6 +590,33 @@ Namespace kCura.EDDS.WebAPI.UserManagerBase
      System.Diagnostics.DebuggerStepThroughAttribute(),  _
      System.ComponentModel.DesignerCategoryAttribute("code")>  _
     Partial Public Class GenerateAuthenticationTokenCompletedEventArgs
+        Inherits System.ComponentModel.AsyncCompletedEventArgs
+        
+        Private results() As Object
+        
+        Friend Sub New(ByVal results() As Object, ByVal exception As System.Exception, ByVal cancelled As Boolean, ByVal userState As Object)
+            MyBase.New(exception, cancelled, userState)
+            Me.results = results
+        End Sub
+        
+        '''<remarks/>
+        Public ReadOnly Property Result() As String
+            Get
+                Me.RaiseExceptionIfNecessary
+                Return CType(Me.results(0),String)
+            End Get
+        End Property
+    End Class
+    
+    '''<remarks/>
+    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "2.0.50727.4927")>  _
+    Public Delegate Sub GenerateDistributedAuthenticationTokenCompletedEventHandler(ByVal sender As Object, ByVal e As GenerateDistributedAuthenticationTokenCompletedEventArgs)
+    
+    '''<remarks/>
+    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "2.0.50727.4927"),  _
+     System.Diagnostics.DebuggerStepThroughAttribute(),  _
+     System.ComponentModel.DesignerCategoryAttribute("code")>  _
+    Partial Public Class GenerateDistributedAuthenticationTokenCompletedEventArgs
         Inherits System.ComponentModel.AsyncCompletedEventArgs
         
         Private results() As Object

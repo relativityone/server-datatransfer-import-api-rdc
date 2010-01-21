@@ -48,7 +48,7 @@ Namespace kCura.WinEDDS.Service
 				System.Threading.Thread.CurrentThread.Join(Config.WaitBeforeReconnect)
 				Dim cred As System.Net.NetworkCredential = DirectCast(Me.Credentials, System.Net.NetworkCredential)
 				Me.Login(cred.UserName, cred.Password)
-				kCura.WinEDDS.Service.Settings.AuthenticationToken = Me.GenerateAuthenticationToken()
+				kCura.WinEDDS.Service.Settings.AuthenticationToken = Me.GenerateDistributedAuthenticationToken()
 				Return True
 			Catch ex As System.Exception
 				Return False
