@@ -1443,7 +1443,7 @@ Namespace kCura.EDDS.WinForm
 					System.Threading.Thread.CurrentThread.CurrentCulture = locale
 
 					_credential = cred
-					kCura.WinEDDS.Service.Settings.AuthenticationToken = userManager.GenerateAuthenticationToken()
+					kCura.WinEDDS.Service.Settings.AuthenticationToken = userManager.GenerateDistributedAuthenticationToken()
 					If openCaseSelector Then OpenCase()
 					_timeZoneOffset = 0					'New kCura.WinEDDS.Service.RelativityManager(cred, _cookieContainer).GetServerTimezoneOffset
 				Else
@@ -1465,7 +1465,7 @@ Namespace kCura.EDDS.WinForm
 			CheckVersion(cred)
 			If userManager.Login(cred.UserName, cred.Password) Then
 				_credential = cred
-				kCura.WinEDDS.Service.Settings.AuthenticationToken = userManager.GenerateAuthenticationToken
+				kCura.WinEDDS.Service.Settings.AuthenticationToken = userManager.GenerateDistributedAuthenticationToken()
 				_timeZoneOffset = 0				'New kCura.WinEDDS.Service.RelativityManager(cred, _cookieContainer).GetServerTimezoneOffset
 				Return True
 			Else
@@ -1485,7 +1485,7 @@ Namespace kCura.EDDS.WinForm
 			Dim userManager As New kCura.WinEDDS.Service.UserManager(_credential, _cookieContainer)
 			If userManager.Login(_credential.UserName, _credential.Password) Then
 				_credential = _credential
-				kCura.WinEDDS.Service.Settings.AuthenticationToken = userManager.GenerateAuthenticationToken()
+				kCura.WinEDDS.Service.Settings.AuthenticationToken = userManager.GenerateDistributedAuthenticationToken()
 			End If
 
 		End Sub
