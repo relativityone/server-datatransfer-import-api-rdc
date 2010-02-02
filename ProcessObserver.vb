@@ -1,5 +1,5 @@
 Namespace kCura.Windows.Process
-  Public Class ProcessObserver
+	Public Class ProcessObserver
 
 #Region "Members"
 
@@ -10,14 +10,14 @@ Namespace kCura.Windows.Process
 		Private _errorsWriter As System.IO.StreamWriter
 		Private _inputArgs As Object
 
-    Public Property InSafeMode() As Boolean
-      Get
-        Return _inSafeMode
-      End Get
-      Set(ByVal value As Boolean)
-        _inSafeMode = value
-      End Set
-    End Property
+		Public Property InSafeMode() As Boolean
+			Get
+				Return _inSafeMode
+			End Get
+			Set(ByVal value As Boolean)
+				_inSafeMode = value
+			End Set
+		End Property
 		Public Property InputArgs() As Object
 			Get
 				Return _inputArgs
@@ -31,9 +31,9 @@ Namespace kCura.Windows.Process
 
 #Region "Events"
 
-    Public Event OnProcessFatalException(ByVal ex As Exception)
-    Public Event OnProcessEvent(ByVal evt As ProcessEvent)
-    Public Event OnProcessProgressEvent(ByVal evt As ProcessProgressEvent)
+		Public Event OnProcessFatalException(ByVal ex As Exception)
+		Public Event OnProcessEvent(ByVal evt As ProcessEvent)
+		Public Event OnProcessProgressEvent(ByVal evt As ProcessProgressEvent)
 		Public Event OnProcessComplete(ByVal closeForm As Boolean, ByVal exportFilePath As String, ByVal exportLogs As Boolean)
 		Public Event StatusBarEvent(ByVal message As String, ByVal popupText As String)
 		Public Event ShowReportEvent(ByVal datasource As System.Data.DataTable, ByVal maxlengthExceeded As Boolean)
@@ -129,7 +129,7 @@ Namespace kCura.Windows.Process
 		Private Sub WriteToFile(ByVal evt As ProcessEvent)
 			If Not Config.LogAllEvents Then Exit Sub
 			If Not Me.InSafeMode Then
-				Dim serializer As New System.xml.Serialization.XmlSerializer(evt.GetType)
+				Dim serializer As New System.Xml.Serialization.XmlSerializer(evt.GetType)
 				If _outputWriter Is Nothing OrElse _outputWriter.BaseStream Is Nothing Then
 					Me.OpenFile()
 				End If

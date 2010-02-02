@@ -1,10 +1,10 @@
 Namespace kCura.Windows.Process
-  Public Enum EventType
-    Status
-    Progress
-    [End]
-    Warning
+	Public Enum EventType
+		Status
+		Progress
+		[End]
+		Warning
 		[Error]
 		ResetStartTime
-  End Enum
+	End Enum
 End Namespace

@@ -1,25 +1,25 @@
 Namespace kCura.Windows.Process
-  Public MustInherit Class ProcessBase
+	Public MustInherit Class ProcessBase
 
 		Private _processObserver As ProcessObserver
 		Private _processController As Controller
 		Private _processID As Guid
 
-    Public Sub StartProcess()
-      Try
-        Me.Execute()
-        _processObserver.RaiseProcessCompleteEvent()
-      Catch ex As Exception
-        _processObserver.RaiseFatalExceptionEvent(ex)
-      End Try
-    End Sub
+		Public Sub StartProcess()
+			Try
+				Me.Execute()
+				_processObserver.RaiseProcessCompleteEvent()
+			Catch ex As Exception
+				_processObserver.RaiseFatalExceptionEvent(ex)
+			End Try
+		End Sub
 
-    Protected MustOverride Sub Execute()
+		Protected MustOverride Sub Execute()
 
-    Public ReadOnly Property ProcessObserver() As kCura.Windows.Process.ProcessObserver
-      Get
-        Return _processObserver
-      End Get
+		Public ReadOnly Property ProcessObserver() As kCura.Windows.Process.ProcessObserver
+			Get
+				Return _processObserver
+			End Get
 		End Property
 
 		Public ReadOnly Property ProcessController() As kCura.Windows.Process.Controller

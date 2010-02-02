@@ -1,8 +1,8 @@
 Namespace kCura.Windows.Process
-  Public Class StatusEventArgs
+	Public Class StatusEventArgs
 		Private _currentRecordIndex As Int64
 		Private _totalRecords As Int64
-    Private _message As String
+		Private _message As String
 		Private _eventType As EventType
 		Private _countsTowardsTotal As Boolean
 		Private _additionalInfo As Object
