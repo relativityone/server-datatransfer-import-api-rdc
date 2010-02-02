@@ -213,7 +213,7 @@ Namespace kCura.WinEDDS
 			_selectedIdentifier = args.SelectedIdentifierField
 			_copyFileToRepository = args.CopyFilesToDocumentRepository
 			_docFieldCollection = New DocumentFieldCollection(args.FieldMap.DocumentFields)
-			If autoDetect Then _parentFolderDTO = _foldermanager.Read(args.CaseInfo.ArtifactID, args.CaseInfo.RootFolderID)
+			If autoDetect Then _parentFolderDTO = _folderManager.Read(args.CaseInfo.ArtifactID, args.CaseInfo.RootFolderID)
 			_processController = processController
 			_continue = True
 			_firstTimeThrough = True
@@ -676,7 +676,7 @@ Namespace kCura.WinEDDS
 				If field.Type = kCura.DynamicFields.Types.FieldTypeHelper.FieldType.MultiCode OrElse field.Type = kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Code Then
 					_outputNativeFileWriter.Write(field.Value)
 					_outputNativeFileWriter.Write(Constants.NATIVE_FIELD_DELIMITER)
-				ElseIf field.Type = kCura.DynamicFields.Types.FieldTypeHelper.FieldType.File AndAlso _artifactTypeid <> kCura.EDDS.Types.ArtifactType.Document Then
+				ElseIf field.Type = kCura.DynamicFields.Types.FieldTypeHelper.FieldType.File AndAlso _artifactTypeID <> kCura.EDDS.Types.ArtifactType.Document Then
 					Dim fileFieldValues() As String = System.Web.HttpUtility.UrlDecode(field.ValueAsString).Split(Chr(11))
 					If fileFieldValues.Length > 1 Then
 						_outputNativeFileWriter.Write(fileFieldValues(0))
@@ -693,7 +693,7 @@ Namespace kCura.WinEDDS
 						_outputNativeFileWriter.Write("")
 						_outputNativeFileWriter.Write(Constants.NATIVE_FIELD_DELIMITER)
 					End If
-				ElseIf field.Type = kCura.DynamicFields.Types.FieldTypeHelper.FieldType.File AndAlso _artifactTypeid = kCura.EDDS.Types.ArtifactType.Document Then
+				ElseIf field.Type = kCura.DynamicFields.Types.FieldTypeHelper.FieldType.File AndAlso _artifactTypeID = kCura.EDDS.Types.ArtifactType.Document Then
 					'do nothing
 				ElseIf field.Category = DynamicFields.Types.FieldCategory.ParentArtifact Then
 					'do nothing
@@ -813,7 +813,7 @@ Namespace kCura.WinEDDS
 			If Not keyField Is Nothing AndAlso Not keyField.Value Is Nothing Then identityValue = keyField.Value.ToString
 			If identityValue Is Nothing OrElse identityValue = String.Empty Then Throw New IdentityValueNotSetException
 			If Not _processedDocumentIdentifiers(identityValue) Is Nothing Then Throw New IdentifierOverlapException(identityValue, _processedDocumentIdentifiers(identityValue))
-			For Each item In _fieldmap
+			For Each item In _fieldMap
 				If _firstTimeThrough Then
 					If item.DocumentField Is Nothing Then
 						WriteStatusLine(Windows.Process.EventType.Warning, String.Format("File column '{0}' will be unmapped", item.NativeFileColumnIndex + 1), 0)

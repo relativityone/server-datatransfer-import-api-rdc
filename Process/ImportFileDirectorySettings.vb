@@ -6,10 +6,10 @@ Namespace kCura.WinEDDS
 		Public DestinationFolderID As Int32
 		Public FilePath As String
 		Public FieldMappings() As FieldMap
-    Public AttachFiles As Boolean
-    Public ExtractFullTextFromFile As Boolean
-    Public EnronImport As Boolean
-    Public FileExtentionsToImport As String
+		Public AttachFiles As Boolean
+		Public ExtractFullTextFromFile As Boolean
+		Public EnronImport As Boolean
+		Public FileExtentionsToImport As String
 
 		Public Class FieldMap
 			Public FileField As String

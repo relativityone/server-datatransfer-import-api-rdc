@@ -1,6 +1,6 @@
 Namespace kCura.WinEDDS
 	Public Class SQLImportProcess
-    Inherits kCura.Windows.Process.ProcessBase
+		Inherits kCura.Windows.Process.ProcessBase
 		Protected WithEvents _sqlImporter As SQLImporter
 		Public SQLImportSettings As SQLImportSettings
 

@@ -272,7 +272,7 @@ Namespace kCura.WinEDDS.Service
 			End While
 		End Function
 
-		Public Shadows Function SearchByProductionArtifactID(ByVal caseContextArtifactID As Int32, ByVal productionArtifactID As Int32, ByVal start As Int32, ByVal finish As Int32, ByVal avfids As Int32(), ByVal displayMulticodesAsNested As Boolean, ByVal nestedValueDelimiter As Char) As System.data.DataSet
+		Public Shadows Function SearchByProductionArtifactID(ByVal caseContextArtifactID As Int32, ByVal productionArtifactID As Int32, ByVal start As Int32, ByVal finish As Int32, ByVal avfids As Int32(), ByVal displayMulticodesAsNested As Boolean, ByVal nestedValueDelimiter As Char) As System.Data.DataSet
 			Dim tries As Int32 = 0
 			While tries < Config.MaxReloginTries
 				tries += 1

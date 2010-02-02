@@ -1,6 +1,6 @@
 Namespace kCura.WinEDDS
 	Public Class ExportSearchProcess
-    Inherits kCura.Windows.Process.ProcessBase
+		Inherits kCura.Windows.Process.ProcessBase
 
 		Public ExportFile As ExportFile
 		Private WithEvents _searchExporter As kCura.WinEDDS.Exporter

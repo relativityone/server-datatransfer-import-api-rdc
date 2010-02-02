@@ -23,19 +23,19 @@ Namespace kCura.WinEDDS.Service
 			Return wr
 		End Function
 
-    Public Function RetrieveAllAsArray(ByVal caseContextArtifactID As Int32, ByVal artifactTypeID As Int32, Optional ByVal includeUnmappable As Boolean = False) As kCura.EDDS.WebAPI.DocumentManagerBase.Field()
-      Dim dv As New kCura.Data.DataView(RetrieveAllMappable(caseContextArtifactID, artifactTypeID))
-      Dim fields As New System.Collections.ArrayList
-      Dim field As kCura.EDDS.WebAPI.DocumentManagerBase.Field
-      Dim unmappableFields As New System.Collections.Specialized.StringCollection
-      Dim unmappableFieldCategories As New System.Collections.ArrayList
-      If Not includeUnmappable Then
+		Public Function RetrieveAllAsArray(ByVal caseContextArtifactID As Int32, ByVal artifactTypeID As Int32, Optional ByVal includeUnmappable As Boolean = False) As kCura.EDDS.WebAPI.DocumentManagerBase.Field()
+			Dim dv As New kCura.Data.DataView(RetrieveAllMappable(caseContextArtifactID, artifactTypeID))
+			Dim fields As New System.Collections.ArrayList
+			Dim field As kCura.EDDS.WebAPI.DocumentManagerBase.Field
+			Dim unmappableFields As New System.Collections.Specialized.StringCollection
+			Dim unmappableFieldCategories As New System.Collections.ArrayList
+			If Not includeUnmappable Then
 				unmappableFields.AddRange(New String() {"Batch"})				' HACK: Ugly - need to make a new field category ID
 				unmappableFieldCategories.AddRange(New kCura.DynamicFields.Types.FieldCategory() {DynamicFields.Types.FieldCategory.Reflected, DynamicFields.Types.FieldCategory.MultiReflected, DynamicFields.Types.FieldCategory.FileInfo, DynamicFields.Types.FieldCategory.AutoCreate, DynamicFields.Types.FieldCategory.FileSize, DynamicFields.Types.FieldCategory.ProductionMarker, DynamicFields.Types.FieldCategory.MarkupSetMarker})
-      End If
-      Dim i As Int32
-      For i = 0 To dv.Count - 1
-        field = New kCura.EDDS.WebAPI.DocumentManagerBase.Field
+			End If
+			Dim i As Int32
+			For i = 0 To dv.Count - 1
+				field = New kCura.EDDS.WebAPI.DocumentManagerBase.Field
 				If Not ( _
 				 unmappableFieldCategories.Contains(CType(dv(i)("FieldCategoryID"), kCura.DynamicFields.Types.FieldCategory)) _
 				 OrElse _
@@ -65,8 +65,8 @@ Namespace kCura.WinEDDS.Service
 				End If
 
 			Next
-      Return DirectCast(fields.ToArray(GetType(kCura.EDDS.WebAPI.DocumentManagerBase.Field)), kCura.EDDS.WebAPI.DocumentManagerBase.Field())
-    End Function
+			Return DirectCast(fields.ToArray(GetType(kCura.EDDS.WebAPI.DocumentManagerBase.Field)), kCura.EDDS.WebAPI.DocumentManagerBase.Field())
+		End Function
 
 		Public Function RetrieveAllAsDocumentFieldCollection(ByVal caseContextArtifactID As Int32, ByVal artifactTypeID As Int32) As DocumentFieldCollection
 			Dim retval As New DocumentFieldCollection

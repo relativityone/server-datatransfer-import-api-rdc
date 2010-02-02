@@ -7,8 +7,8 @@ Namespace kCura.WinEDDS
 		Private _folders As New System.Collections.Hashtable
 		Protected WithEvents _recursiveFileProcessor As New kCura.Utility.RecursiveFileProcessor
 
-    Private _emailExtractor As New kCura.WinEDDS.PropertyExtractor.EML
-    Private _fileExtractor As New kCura.WinEDDS.PropertyExtractor.File
+		Private _emailExtractor As New kCura.WinEDDS.PropertyExtractor.EML
+		Private _fileExtractor As New kCura.WinEDDS.PropertyExtractor.File
 
 		Private _rootFolderACLID As Int32
 		Private _caseFields() As kCura.EDDS.WebAPI.DocumentManagerBase.Field
@@ -19,46 +19,46 @@ Namespace kCura.WinEDDS
 		Private _fileManager As kCura.WinEDDS.Service.FileManager
 		Private _credential As Net.NetworkCredential
 		Private _cookieContainer As System.Net.CookieContainer
-    Private _currentBatesNumber As Integer
-    Private _fileExtentionsToImport As System.Collections.ArrayList
+		Private _currentBatesNumber As Integer
+		Private _fileExtentionsToImport As System.Collections.ArrayList
 
 		Public Overrides Sub Import()
 
-      ' create webservice proxies
+			' create webservice proxies
 			_documentManager = New kCura.WinEDDS.Service.DocumentManager(_credential, _cookieContainer)
 			_folderManager = New kCura.WinEDDS.Service.FolderManager(_credential, _cookieContainer)
 			_fileManager = New kCura.WinEDDS.Service.FileManager(_credential, _cookieContainer)
 			_uploader = New kCura.WinEDDS.FileUploader(_credential, _importFileDirectorySettings.CaseInfo.ArtifactID, _documentManager.GetDocumentDirectoryByCaseArtifactID(_importFileDirectorySettings.CaseInfo.ArtifactID) & "\", _cookieContainer)
 
 			' get case fields
-      Dim fieldManager As New kCura.WinEDDS.Service.FieldQuery(_credential, _cookieContainer)
-      'TODO: WINFLEX ArtifactTypeID
-      _caseFields = fieldManager.RetrieveAllAsArray(_importFileDirectorySettings.CaseInfo.ArtifactID, 10)
+			Dim fieldManager As New kCura.WinEDDS.Service.FieldQuery(_credential, _cookieContainer)
+			'TODO: WINFLEX ArtifactTypeID
+			_caseFields = fieldManager.RetrieveAllAsArray(_importFileDirectorySettings.CaseInfo.ArtifactID, 10)
 
-      ' get valid extentiosn
-      _fileExtentionsToImport = New System.Collections.ArrayList(_importFileDirectorySettings.FileExtentionsToImport.ToUpper.Split(CType(";", Char)))
+			' get valid extentiosn
+			_fileExtentionsToImport = New System.Collections.ArrayList(_importFileDirectorySettings.FileExtentionsToImport.ToUpper.Split(CType(";", Char)))
 
 			' identify the rootfolder ACL and add it to the fodler hash map
 			_rootFolderACLID = _folderManager.Read(_importFileDirectorySettings.CaseInfo.ArtifactID, _importFileDirectorySettings.DestinationFolderID).AccessControlListID
 			' extract parent folder
-      Dim dirInfo As New System.IO.DirectoryInfo(_importFileDirectorySettings.FilePath)
-      If Not dirInfo.Parent Is Nothing Then
-        _folders.Add(dirInfo.Parent.FullName, New Folder(_importFileDirectorySettings.DestinationFolderID, dirInfo.Parent.FullName))
-      Else
-        _folders.Add("", New Folder(_importFileDirectorySettings.DestinationFolderID, ""))
-      End If
+			Dim dirInfo As New System.IO.DirectoryInfo(_importFileDirectorySettings.FilePath)
+			If Not dirInfo.Parent Is Nothing Then
+				_folders.Add(dirInfo.Parent.FullName, New Folder(_importFileDirectorySettings.DestinationFolderID, dirInfo.Parent.FullName))
+			Else
+				_folders.Add("", New Folder(_importFileDirectorySettings.DestinationFolderID, ""))
+			End If
 
-      ' determine the number of records to process
-      Me.ReportStatus("", "Counting number of files to import...")
-      Me.TotalRecords = kCura.Utility.File.CountFilesInDirectory(_importFileDirectorySettings.FilePath, True) + 1
+			' determine the number of records to process
+			Me.ReportStatus("", "Counting number of files to import...")
+			Me.TotalRecords = kCura.Utility.File.CountFilesInDirectory(_importFileDirectorySettings.FilePath, True) + 1
 
-      ' set the batesnumber seed
-      _currentBatesNumber = _importFileDirectorySettings.BatesNumberSeed
+			' set the batesnumber seed
+			_currentBatesNumber = _importFileDirectorySettings.BatesNumberSeed
 
-      ' begin the import
-      Me.StartTime = DateTime.Now
-      Me.ReportProgress()
-      _recursiveFileProcessor.ProcessDirectory(_importFileDirectorySettings.FilePath)
+			' begin the import
+			Me.StartTime = DateTime.Now
+			Me.ReportProgress()
+			_recursiveFileProcessor.ProcessDirectory(_importFileDirectorySettings.FilePath)
 
 		End Sub
 
@@ -70,8 +70,8 @@ Namespace kCura.WinEDDS
 
 		Private Sub _recursiveFileProcessor_OnProcessFile(ByVal evt As kCura.Utility.OnProcessFileEvent) Handles _recursiveFileProcessor.OnProcessFile
 			Me.TotalRecordsProcessed = Me.TotalRecordsProcessed + 1
-      Me.ReportStatus(evt.FileName, "Begin Import")
-      CreateDocumentRecord(evt.FileName)
+			Me.ReportStatus(evt.FileName, "Begin Import")
+			CreateDocumentRecord(evt.FileName)
 			Me.ReportStatus(evt.FileName, "End Import")
 			Me.ReportProgress()
 		End Sub
@@ -80,16 +80,16 @@ Namespace kCura.WinEDDS
 
 		Private Sub CreateFolder(ByVal filePath As String)
 
-      Dim dir As New System.IO.DirectoryInfo(filePath)
-      Dim parent As String
-      If dir.Parent Is Nothing Then
-        parent = ""
-      Else
-        parent = dir.Parent.FullName
-      End If
-      Dim parentFolderID As Int32 = CType(_folders.Item(parent), Folder).FolderID
+			Dim dir As New System.IO.DirectoryInfo(filePath)
+			Dim parent As String
+			If dir.Parent Is Nothing Then
+				parent = ""
+			Else
+				parent = dir.Parent.FullName
+			End If
+			Dim parentFolderID As Int32 = CType(_folders.Item(parent), Folder).FolderID
 			Dim folderId As Int32 = _folderManager.Create(_importFileDirectorySettings.CaseInfo.ArtifactID, parentFolderID, dir.Name)
-      _folders.Add(filePath, New Folder(folderId, filePath))
+			_folders.Add(filePath, New Folder(folderId, filePath))
 
 		End Sub
 
@@ -97,14 +97,14 @@ Namespace kCura.WinEDDS
 
 			Me.ReportStatus(filePath, "Extracting Properties")
 
-      Dim fileProperties As System.Collections.Hashtable
-      If _importFileDirectorySettings.EnronImport Then
-        fileProperties = _emailExtractor.Extract(filePath)
-      Else
-        fileProperties = _fileExtractor.Extract(filePath)
-      End If
+			Dim fileProperties As System.Collections.Hashtable
+			If _importFileDirectorySettings.EnronImport Then
+				fileProperties = _emailExtractor.Extract(filePath)
+			Else
+				fileProperties = _fileExtractor.Extract(filePath)
+			End If
 
-      Dim fileInfo As New System.IO.FileInfo(filePath)
+			Dim fileInfo As New System.IO.FileInfo(filePath)
 			Dim extension As String = fileInfo.Extension.ToUpper.Substring(1)
 			If Not _fileExtentionsToImport.Contains(extension) Then
 				Me.ReportWarning(filePath, "File Skipped")

@@ -135,7 +135,7 @@ Namespace kCura.WinEDDS
 				If _volumeLabelPaddingWidth > settings.VolumeDigitPadding Then message.AppendFormat("The selected volume padding of {0} is less than the recommended volume padding {1} for this export" & vbNewLine, settings.VolumeDigitPadding, _volumeLabelPaddingWidth)
 				If _subdirectoryLabelPaddingWidth > settings.SubdirectoryDigitPadding Then message.AppendFormat("The selected subdirectory padding of {0} is less than the recommended subdirectory padding {1} for this export" & vbNewLine, settings.SubdirectoryDigitPadding, _subdirectoryLabelPaddingWidth)
 				message.Append("Continue with this selection?")
-				Select Case MsgBox(message.ToString, MsgBoxStyle.OKCancel)
+				Select Case MsgBox(message.ToString, MsgBoxStyle.OkCancel)
 					Case MsgBoxResult.Cancel
 						parent.Shutdown()
 						Exit Sub

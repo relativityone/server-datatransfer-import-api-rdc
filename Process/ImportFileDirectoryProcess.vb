@@ -1,7 +1,7 @@
 Namespace kCura.WinEDDS
 
 	Public Class ImportFileDirectoryProcess
-    Inherits kCura.Windows.Process.ProcessBase
+		Inherits kCura.Windows.Process.ProcessBase
 
 		Protected WithEvents _fileDirectoryImporter As FileDirectoryImporter
 

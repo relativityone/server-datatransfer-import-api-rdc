@@ -1,7 +1,7 @@
 Namespace kCura.WinEDDS
 
 	Public Class ImportLoadFileProcess
-    Inherits kCura.Windows.Process.ProcessBase
+		Inherits kCura.Windows.Process.ProcessBase
 
 		Public LoadFile As LoadFile
 		Protected WithEvents _loadFileImporter As BulkLoadFileImporter

@@ -30,7 +30,7 @@ Namespace kCura.WinEDDS
 						installedArtifacts.AppendFormat(System.Globalization.CultureInfo.CurrentCulture, "Created {0}: {1} (ID = {2}){3}", applicationArtifact.Type, applicationArtifact.Name, applicationArtifact.ArtifactId, System.Environment.NewLine)
 					Next
 					For Each applicationArtifact As kCura.EDDS.WebAPI.TemplateManagerBase.ApplicationArtifact In installationResult.UpdatedApplicationArtifacts
-						installedArtifacts.AppendFormat(System.Globalization.CultureInfo.CurrentCulture, "Updated {0}: {1} (ID = {2}){3}", applicationartifact.Type, applicationartifact.Name, applicationartifact.ArtifactId, System.Environment.NewLine)
+						installedArtifacts.AppendFormat(System.Globalization.CultureInfo.CurrentCulture, "Updated {0}: {1} (ID = {2}){3}", applicationArtifact.Type, applicationArtifact.Name, applicationArtifact.ArtifactId, System.Environment.NewLine)
 					Next
 					WriteStatus(String.Format(System.Globalization.CultureInfo.CurrentCulture, "Installation successful.{0}{0}{1}", System.Environment.NewLine, installedArtifacts))
 				Else

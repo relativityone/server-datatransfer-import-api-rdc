@@ -6,7 +6,7 @@ Namespace kCura.WinEDDS
 		Private _manager As Service.IHierarchicArtifactManager
 		Private _rootArtifactID As Int32
 		Private _caseContextArtifactID As Int32
-    Private _nestedItemDelimiter As String
+		Private _nestedItemDelimiter As String
 		Private _nestedCountCodes As New ArrayList
 		Private _createCount As Int32 = 0
 

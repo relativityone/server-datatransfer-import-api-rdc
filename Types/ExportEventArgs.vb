@@ -2,7 +2,7 @@ Namespace kCura.WinEDDS
 	Public Class ExportEventArgs
 		Protected _documentsExported As Int32
 		Protected _totalDocuments As Int32
-    Protected _eventType As kCura.Windows.Process.EventType
+		Protected _eventType As kCura.Windows.Process.EventType
 		Protected _message As String
 		Protected _additionalInfo As Object
 
@@ -25,22 +25,22 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
-    Public Property EventType() As kCura.Windows.Process.EventType
-      Get
-        Return _eventType
-      End Get
-      Set(ByVal value As kCura.Windows.Process.EventType)
-        _eventType = value
-      End Set
-    End Property
+		Public Property EventType() As kCura.Windows.Process.EventType
+			Get
+				Return _eventType
+			End Get
+			Set(ByVal value As kCura.Windows.Process.EventType)
+				_eventType = value
+			End Set
+		End Property
 
-    Public Property Message() As String
-      Get
-        Return _message
-      End Get
-      Set(ByVal value As String)
-        _message = value
-      End Set
+		Public Property Message() As String
+			Get
+				Return _message
+			End Get
+			Set(ByVal value As String)
+				_message = value
+			End Set
 		End Property
 
 		Public ReadOnly Property AdditionalInfo() As Object

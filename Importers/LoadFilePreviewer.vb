@@ -107,10 +107,10 @@ Namespace kCura.WinEDDS
 					_filePathColumnIndex = Int32.Parse(_filePathColumn.Substring(openParenIndex, closeParenIndex - openParenIndex)) - 1
 				End If
 				'_filePathColumnIndex = Array.IndexOf(_columnHeaders, _filePathColumn)
-				If _artifactreader.HasMoreRecords Then _artifactReader.AdvanceRecord()
+				If _artifactReader.HasMoreRecords Then _artifactReader.AdvanceRecord()
 			Else
 				If _uploadFiles Then
-					_filePathColumnIndex = Int32.Parse(_filePathcolumn.Replace("Column", "").Replace("(", "").Replace(")", "").Trim) - 1
+					_filePathColumnIndex = Int32.Parse(_filePathColumn.Replace("Column", "").Replace("(", "").Replace(")", "").Trim) - 1
 				End If
 			End If
 			Dim i As Int32 = 0

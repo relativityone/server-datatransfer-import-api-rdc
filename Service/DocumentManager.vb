@@ -20,7 +20,7 @@ Namespace kCura.WinEDDS.Service
 		End Function
 
 		Public Shadows Function ReadFromDocumentArtifactID(ByVal caseContextArtifactID As Int32, ByVal documentArtifactID As Int32, ByVal fieldArtifactIds As Int32()) As kCura.EDDS.WebAPI.DocumentManagerBase.Document
-			Dim doc As kCura.EDDS.WebAPI.DocumentManagerBase.Document = Me.Read(caseContextArtifactID, documentArtifactID, fieldArtifactIDs)
+			Dim doc As kCura.EDDS.WebAPI.DocumentManagerBase.Document = Me.Read(caseContextArtifactID, documentArtifactID, fieldArtifactIds)
 			Dim field As kCura.EDDS.WebAPI.DocumentManagerBase.Field
 			For Each field In doc.Fields
 				If field.FieldCategoryID = kCura.DynamicFields.Types.FieldCategory.FullText Then

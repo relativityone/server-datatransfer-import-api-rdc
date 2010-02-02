@@ -1,6 +1,6 @@
 Namespace kCura.WinEDDS
 	Public Class ImportImageFileProcess
-    Inherits kCura.Windows.Process.ProcessBase
+		Inherits kCura.Windows.Process.ProcessBase
 
 		Public ImageLoadFile As ImageLoadFile
 		Private WithEvents _imageFileImporter As kCura.WinEDDS.BulkImageFileImporter

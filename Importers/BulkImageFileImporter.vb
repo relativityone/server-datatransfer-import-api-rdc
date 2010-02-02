@@ -267,7 +267,7 @@ Namespace kCura.WinEDDS
 				Reader = New StreamReader(path)
 				_filePath = path
 				RaiseStatusEvent(kCura.Windows.Process.EventType.Progress, "Begin Image Upload", 0, 0)
-				Dim al As New System.collections.ArrayList
+				Dim al As New System.Collections.ArrayList
 				Dim line As String()
 				Dim status As Int32 = 0
 				_timekeeper.MarkEnd("ReadFile_Init")

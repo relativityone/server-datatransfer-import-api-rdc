@@ -119,7 +119,7 @@ Namespace kCura.WinEDDS.Service
 
 		Public Function RetrieveAllCodesOfType(ByVal caseContextArtifactID As Int32, ByVal codeTypeID As Int32) As kCura.EDDS.Types.ChoiceInfo()
 			Dim dt As System.Data.DataTable
-			Dim retval As New System.collections.ArrayList
+			Dim retval As New System.Collections.ArrayList
 			Dim lastcodeId As Int32 = -1
 			Do
 				If lastcodeId = -1 Then

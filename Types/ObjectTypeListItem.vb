@@ -1,5 +1,5 @@
 Namespace kCura.WinEDDS
-  Public Class ObjectTypeListItem
+	Public Class ObjectTypeListItem
 
 		Private _value As Int32
 		Private _userCanAdd As Boolean

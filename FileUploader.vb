@@ -13,7 +13,7 @@ Namespace kCura.WinEDDS
 		Private _destinationFolderPath As String
 		Private _caseArtifactID As Int32
 		Private _isBulkEnabled As Boolean = True
-		Private _repositoryPathManager As kCura.Edds.Types.RepositoryPathManager
+		Private _repositoryPathManager As kCura.EDDS.Types.RepositoryPathManager
 		Private _sortIntoVolumes As Boolean = False
 		Private _doRetry As Boolean = True
 		Public Property DoRetry() As Boolean
