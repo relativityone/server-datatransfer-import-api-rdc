@@ -1,60 +1,60 @@
 Namespace kCura.EDDS.WinForm
-  Public Class ImportFileSystemForm
-    Inherits System.Windows.Forms.Form
+	Public Class ImportFileSystemForm
+		Inherits System.Windows.Forms.Form
 
 #Region " Windows Form Designer generated code "
 
-    Public Sub New()
-      MyBase.New()
+		Public Sub New()
+			MyBase.New()
 
-      'This call is required by the Windows Form Designer.
-      InitializeComponent()
+			'This call is required by the Windows Form Designer.
+			InitializeComponent()
 
-      'Add any initialization after the InitializeComponent() call
-      _application = kCura.EDDS.WinForm.Application.Instance()
+			'Add any initialization after the InitializeComponent() call
+			_application = kCura.EDDS.WinForm.Application.Instance()
 
-    End Sub
+		End Sub
 
-    'Form overrides dispose to clean up the component list.
-    Protected Overloads Overrides Sub Dispose(ByVal disposing As Boolean)
-      If disposing Then
-        If Not (components Is Nothing) Then
-          components.Dispose()
-        End If
-      End If
-      MyBase.Dispose(disposing)
-    End Sub
+		'Form overrides dispose to clean up the component list.
+		Protected Overloads Overrides Sub Dispose(ByVal disposing As Boolean)
+			If disposing Then
+				If Not (components Is Nothing) Then
+					components.Dispose()
+				End If
+			End If
+			MyBase.Dispose(disposing)
+		End Sub
 
-    'Required by the Windows Form Designer
-    Private components As System.ComponentModel.IContainer
+		'Required by the Windows Form Designer
+		Private components As System.ComponentModel.IContainer
 
-    'NOTE: The following procedure is required by the Windows Form Designer
-    'It can be modified using the Windows Form Designer.  
-    'Do not modify it using the code editor.
-    Friend WithEvents GroupBox1 As System.Windows.Forms.GroupBox
-    Friend WithEvents _importDestinationText As System.Windows.Forms.TextBox
-    Friend WithEvents GroupBox20 As System.Windows.Forms.GroupBox
-    Friend WithEvents _browseButton As System.Windows.Forms.Button
-    Friend WithEvents _filePath As System.Windows.Forms.TextBox
-    Friend WithEvents MainMenu As System.Windows.Forms.MainMenu
-    Friend WithEvents MenuItem1 As System.Windows.Forms.MenuItem
-    Friend WithEvents _importDirectoryMenu As System.Windows.Forms.MenuItem
-    Friend WithEvents FolderBrowserDialog As System.Windows.Forms.FolderBrowserDialog
-    Friend WithEvents GroupBox2 As System.Windows.Forms.GroupBox
-    Friend WithEvents Label1 As System.Windows.Forms.Label
-    Friend WithEvents Label2 As System.Windows.Forms.Label
-    Friend WithEvents _caseFields As kCura.Windows.Forms.TwoListBox
-    Friend WithEvents _fileFields As kCura.Windows.Forms.TwoListBox
-    Friend WithEvents GroupBox3 As System.Windows.Forms.GroupBox
-    Friend WithEvents Label3 As System.Windows.Forms.Label
-    Friend WithEvents Label4 As System.Windows.Forms.Label
-    Friend WithEvents _batesNumberPrefix As System.Windows.Forms.TextBox
-    Friend WithEvents _batesNumberSeed As System.Windows.Forms.TextBox
-    Friend WithEvents _attachFiles As System.Windows.Forms.CheckBox
-    Friend WithEvents _extractFullTextFromFile As System.Windows.Forms.CheckBox
-    Friend WithEvents Label5 As System.Windows.Forms.Label
-    Friend WithEvents FileExtentionTextBox As System.Windows.Forms.TextBox
-    <System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
+		'NOTE: The following procedure is required by the Windows Form Designer
+		'It can be modified using the Windows Form Designer.  
+		'Do not modify it using the code editor.
+		Friend WithEvents GroupBox1 As System.Windows.Forms.GroupBox
+		Friend WithEvents _importDestinationText As System.Windows.Forms.TextBox
+		Friend WithEvents GroupBox20 As System.Windows.Forms.GroupBox
+		Friend WithEvents _browseButton As System.Windows.Forms.Button
+		Friend WithEvents _filePath As System.Windows.Forms.TextBox
+		Friend WithEvents MainMenu As System.Windows.Forms.MainMenu
+		Friend WithEvents MenuItem1 As System.Windows.Forms.MenuItem
+		Friend WithEvents _importDirectoryMenu As System.Windows.Forms.MenuItem
+		Friend WithEvents FolderBrowserDialog As System.Windows.Forms.FolderBrowserDialog
+		Friend WithEvents GroupBox2 As System.Windows.Forms.GroupBox
+		Friend WithEvents Label1 As System.Windows.Forms.Label
+		Friend WithEvents Label2 As System.Windows.Forms.Label
+		Friend WithEvents _caseFields As kCura.Windows.Forms.TwoListBox
+		Friend WithEvents _fileFields As kCura.Windows.Forms.TwoListBox
+		Friend WithEvents GroupBox3 As System.Windows.Forms.GroupBox
+		Friend WithEvents Label3 As System.Windows.Forms.Label
+		Friend WithEvents Label4 As System.Windows.Forms.Label
+		Friend WithEvents _batesNumberPrefix As System.Windows.Forms.TextBox
+		Friend WithEvents _batesNumberSeed As System.Windows.Forms.TextBox
+		Friend WithEvents _attachFiles As System.Windows.Forms.CheckBox
+		Friend WithEvents _extractFullTextFromFile As System.Windows.Forms.CheckBox
+		Friend WithEvents Label5 As System.Windows.Forms.Label
+		Friend WithEvents FileExtentionTextBox As System.Windows.Forms.TextBox
+		<System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
 			Dim resources As System.Resources.ResourceManager = New System.Resources.ResourceManager(GetType(ImportFileSystemForm))
 			Me.GroupBox1 = New System.Windows.Forms.GroupBox
 			Me._importDestinationText = New System.Windows.Forms.TextBox
@@ -341,9 +341,9 @@ Namespace kCura.EDDS.WinForm
 			ImportFileDirectorySettings.BatesNumberPrefix = _batesNumberPrefix.Text
 			ImportFileDirectorySettings.BatesNumberSeed = CType(_batesNumberSeed.Text, Int32)
 			ImportFileDirectorySettings.FieldMappings = fieldMappings
-      ImportFileDirectorySettings.AttachFiles = _attachFiles.Checked
-      ImportFileDirectorySettings.ExtractFullTextFromFile = _extractFullTextFromFile.Checked
-      ImportFileDirectorySettings.FileExtentionsToImport = FileExtentionTextBox.Text
+			ImportFileDirectorySettings.AttachFiles = _attachFiles.Checked
+			ImportFileDirectorySettings.ExtractFullTextFromFile = _extractFullTextFromFile.Checked
+			ImportFileDirectorySettings.FileExtentionsToImport = FileExtentionTextBox.Text
 			_application.ImportDirectory(Me.ImportFileDirectorySettings)
 			Me.Cursor = Cursors.Default
 
@@ -356,45 +356,45 @@ Namespace kCura.EDDS.WinForm
 
 			_caseFields.LeftListBoxItems.Clear()
 			Dim caseField As String
-      'TODO: WINFLEX - ArtifactTypeID
-      For Each caseField In _application.GetCaseFields(_importFileDirectorySettings.CaseInfo.ArtifactID, 10)
-        _caseFields.LeftListBoxItems.Add(caseField)
-      Next
+			'TODO: WINFLEX - ArtifactTypeID
+			For Each caseField In _application.GetCaseFields(_importFileDirectorySettings.CaseInfo.ArtifactID, 10)
+				_caseFields.LeftListBoxItems.Add(caseField)
+			Next
 
-      If _importFileDirectorySettings.EnronImport Then
-        _fileFields.RightListBoxItems.Clear()
-        _fileFields.RightListBoxItems.Add("AutoGenerated Bates Number")
-        _fileFields.RightListBoxItems.Add("File Type")
-        _fileFields.RightListBoxItems.Add("Message-ID")
-        _fileFields.RightListBoxItems.Add("Date")
-        _fileFields.RightListBoxItems.Add("From")
-        _fileFields.RightListBoxItems.Add("To")
-        _fileFields.RightListBoxItems.Add("Subject")
-        _fileFields.RightListBoxItems.Add("Body")
-        _fileFields.RightListBoxItems.Add("Mime-Version")
-        _fileFields.RightListBoxItems.Add("Content-Type")
-        _fileFields.RightListBoxItems.Add("Content-Transfer-Encoding")
-        _fileFields.RightListBoxItems.Add("X-From")
-        _fileFields.RightListBoxItems.Add("X-To")
-        _fileFields.RightListBoxItems.Add("X-CC")
-        _fileFields.RightListBoxItems.Add("X-BCC")
-        _fileFields.RightListBoxItems.Add("X-Folder")
-        _fileFields.RightListBoxItems.Add("X-Origin")
-        _fileFields.RightListBoxItems.Add("X-FileName")
-        _fileFields.RightListBoxItems.Add("MD5Hash")
-      Else
-        _fileFields.RightListBoxItems.Add("AutoGenerated Bates Number")
-        _fileFields.RightListBoxItems.Add("CreationTime")
-        _fileFields.RightListBoxItems.Add("LastModifiedTime")
-        _fileFields.RightListBoxItems.Add("DirectoryName")
-        _fileFields.RightListBoxItems.Add("Extention")
-        _fileFields.RightListBoxItems.Add("FullName")
-        _fileFields.RightListBoxItems.Add("Size")
-        _fileFields.RightListBoxItems.Add("Name")
-        _fileFields.RightListBoxItems.Add("MD5Hash")
-      End If
+			If _importFileDirectorySettings.EnronImport Then
+				_fileFields.RightListBoxItems.Clear()
+				_fileFields.RightListBoxItems.Add("AutoGenerated Bates Number")
+				_fileFields.RightListBoxItems.Add("File Type")
+				_fileFields.RightListBoxItems.Add("Message-ID")
+				_fileFields.RightListBoxItems.Add("Date")
+				_fileFields.RightListBoxItems.Add("From")
+				_fileFields.RightListBoxItems.Add("To")
+				_fileFields.RightListBoxItems.Add("Subject")
+				_fileFields.RightListBoxItems.Add("Body")
+				_fileFields.RightListBoxItems.Add("Mime-Version")
+				_fileFields.RightListBoxItems.Add("Content-Type")
+				_fileFields.RightListBoxItems.Add("Content-Transfer-Encoding")
+				_fileFields.RightListBoxItems.Add("X-From")
+				_fileFields.RightListBoxItems.Add("X-To")
+				_fileFields.RightListBoxItems.Add("X-CC")
+				_fileFields.RightListBoxItems.Add("X-BCC")
+				_fileFields.RightListBoxItems.Add("X-Folder")
+				_fileFields.RightListBoxItems.Add("X-Origin")
+				_fileFields.RightListBoxItems.Add("X-FileName")
+				_fileFields.RightListBoxItems.Add("MD5Hash")
+			Else
+				_fileFields.RightListBoxItems.Add("AutoGenerated Bates Number")
+				_fileFields.RightListBoxItems.Add("CreationTime")
+				_fileFields.RightListBoxItems.Add("LastModifiedTime")
+				_fileFields.RightListBoxItems.Add("DirectoryName")
+				_fileFields.RightListBoxItems.Add("Extention")
+				_fileFields.RightListBoxItems.Add("FullName")
+				_fileFields.RightListBoxItems.Add("Size")
+				_fileFields.RightListBoxItems.Add("Name")
+				_fileFields.RightListBoxItems.Add("MD5Hash")
+			End If
 
-      Me.Cursor = Cursors.Default
+			Me.Cursor = Cursors.Default
 		End Sub
 
 		Public Property ImportFileDirectorySettings() As kCura.WinEDDS.ImportFileDirectorySettings
@@ -416,13 +416,13 @@ Namespace kCura.EDDS.WinForm
 			_filePath.Text = _importFileDirectorySettings.FilePath
 		End Sub
 
-    Private Sub ImportFileSystemForm_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
-      If _importFileDirectorySettings.EnronImport = True Then
-        Me.Text = "Enron Data Importer..."
-        _extractFullTextFromFile.Checked = False
-        _extractFullTextFromFile.Visible = False
-      End If
-    End Sub
+		Private Sub ImportFileSystemForm_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
+			If _importFileDirectorySettings.EnronImport = True Then
+				Me.Text = "Enron Data Importer..."
+				_extractFullTextFromFile.Checked = False
+				_extractFullTextFromFile.Visible = False
+			End If
+		End Sub
 
-  End Class
+	End Class
 End Namespace

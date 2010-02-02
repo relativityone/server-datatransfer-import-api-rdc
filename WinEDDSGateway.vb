@@ -1,44 +1,44 @@
 Namespace kCura.EDDS.WinForm
-  Public Class WinEDDSGateway
-    Inherits kCura.EDDS.Import.HostGatewayBase
+	Public Class WinEDDSGateway
+		Inherits kCura.EDDS.Import.HostGatewayBase
 
-    Private _documentManager As kCura.WinEDDS.Service.DocumentManager
-    Private _folderManager As kCura.WinEDDS.Service.FolderManager
-    Private _uploader As kCura.WinEDDS.FileUploader
-    Private _fileManager As kCura.WinEDDS.Service.FileManager
+		Private _documentManager As kCura.WinEDDS.Service.DocumentManager
+		Private _folderManager As kCura.WinEDDS.Service.FolderManager
+		Private _uploader As kCura.WinEDDS.FileUploader
+		Private _fileManager As kCura.WinEDDS.Service.FileManager
 
-    Private _currentCaseID As Int32
-    Private _currentDocumentCaseFields As kCura.EDDS.WebAPI.DocumentManagerBase.Field()
+		Private _currentCaseID As Int32
+		Private _currentDocumentCaseFields As kCura.EDDS.WebAPI.DocumentManagerBase.Field()
 
-    Private _rootFolderACLID As Int32
+		Private _rootFolderACLID As Int32
 
-    Private _application As kCura.EDDS.WinForm.Application
+		Private _application As kCura.EDDS.WinForm.Application
 
-    Public Overrides Function GetCaseFields(ByVal caseRootArtifactID As Int32) As String()
+		Public Overrides Function GetCaseFields(ByVal caseRootArtifactID As Int32) As String()
 			Return _application.GetCaseFields(caseRootArtifactID, 10)
-    End Function
+		End Function
 
-    Public Overrides Function GetCaseFolderPath(ByVal folderId As Int32) As String
-      Return _application.GetCaseFolderPath(folderId)
-    End Function
+		Public Overrides Function GetCaseFolderPath(ByVal folderId As Int32) As String
+			Return _application.GetCaseFolderPath(folderId)
+		End Function
 
-    Public Overrides Sub InvokeImport(ByVal settings As Object)
-      _application.ImportGeneric(settings)
-    End Sub
+		Public Overrides Sub InvokeImport(ByVal settings As Object)
+			_application.ImportGeneric(settings)
+		End Sub
 
-    Private Function GetRootFolderACLID(ByVal destinationFolderID As Int32) As Int32
-      If _rootFolderACLID = 0 Then
+		Private Function GetRootFolderACLID(ByVal destinationFolderID As Int32) As Int32
+			If _rootFolderACLID = 0 Then
 				_rootFolderACLID = _folderManager.Read(_currentCaseID, destinationFolderID).AccessControlListID
-      End If
-      Return _rootFolderACLID
-    End Function
+			End If
+			Return _rootFolderACLID
+		End Function
 
 		Private Function GetDocumentFields(ByVal caseID As Int32) As kCura.EDDS.WebAPI.DocumentManagerBase.Field()
 			If _currentCaseID <> caseID Then
 				'Dim fieldManager As New kCura.WinEDDS.Service.FieldQuery(_application.Credential, _application.CookieContainer, _application.Identity)
 				Dim fieldManager As New kCura.WinEDDS.Service.FieldQuery(_application.Credential, _application.CookieContainer)
-        'TODO: WINFLEX - ArtifactTypeID
-        'TODO: WINFLEX - Should reference an enum or constant instead of literal 10
+				'TODO: WINFLEX - ArtifactTypeID
+				'TODO: WINFLEX - Should reference an enum or constant instead of literal 10
 				_currentDocumentCaseFields = fieldManager.RetrieveAllAsArray(caseID, 10)
 			End If
 			Return _currentDocumentCaseFields

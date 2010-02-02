@@ -40,57 +40,57 @@ Namespace kCura.EDDS.WinForm
 		Private Shared _cache As New Hashtable
 		Private _temporaryWebServiceURL As String
 		Private _cookieContainer As System.Net.CookieContainer
-    Private _documentRepositoryList As String()
-    Private _artifactTypeID As Int32
-    Private _totalFolders As New System.Collections.Specialized.HybridDictionary
+		Private _documentRepositoryList As String()
+		Private _artifactTypeID As Int32
+		Private _totalFolders As New System.Collections.Specialized.HybridDictionary
 
-    'Private _identity As kCura.EDDS.EDDSIdentity
+		'Private _identity As kCura.EDDS.EDDSIdentity
 #End Region
 
 #Region "Properties"
-    Public Property TimeZoneOffset() As Int32
-      Get
-        Return 0
-        Return _timeZoneOffset
-      End Get
-      Set(ByVal value As Int32)
-        _timeZoneOffset = value
-      End Set
-    End Property
+		Public Property TimeZoneOffset() As Int32
+			Get
+				Return 0
+				Return _timeZoneOffset
+			End Get
+			Set(ByVal value As Int32)
+				_timeZoneOffset = value
+			End Set
+		End Property
 
-    Public ReadOnly Property SelectedCaseInfo() As kCura.EDDS.Types.CaseInfo
-      Get
-        Return _selectedCaseInfo
-      End Get
-    End Property
+		Public ReadOnly Property SelectedCaseInfo() As kCura.EDDS.Types.CaseInfo
+			Get
+				Return _selectedCaseInfo
+			End Get
+		End Property
 
-    Public Sub RefreshSelectedCaseInfo(Optional ByVal caseInfo As kCura.EDDS.Types.CaseInfo = Nothing)
-      Dim caseManager As New kCura.WinEDDS.Service.CaseManager(Me.Credential, _cookieContainer)
-      If caseInfo Is Nothing Then
-        _selectedCaseInfo = caseManager.Read(_selectedCaseInfo.ArtifactID)
-      Else
-        _selectedCaseInfo = caseManager.Read(caseInfo.ArtifactID)
-      End If
-      _documentRepositoryList = caseManager.GetAllDocumentFolderPaths
-    End Sub
+		Public Sub RefreshSelectedCaseInfo(Optional ByVal caseInfo As kCura.EDDS.Types.CaseInfo = Nothing)
+			Dim caseManager As New kCura.WinEDDS.Service.CaseManager(Me.Credential, _cookieContainer)
+			If caseInfo Is Nothing Then
+				_selectedCaseInfo = caseManager.Read(_selectedCaseInfo.ArtifactID)
+			Else
+				_selectedCaseInfo = caseManager.Read(caseInfo.ArtifactID)
+			End If
+			_documentRepositoryList = caseManager.GetAllDocumentFolderPaths
+		End Sub
 
-    Public ReadOnly Property SelectedCaseFolderID() As Int32
-      Get
-        Return _selectedCaseFolderID
-      End Get
-    End Property
+		Public ReadOnly Property SelectedCaseFolderID() As Int32
+			Get
+				Return _selectedCaseFolderID
+			End Get
+		End Property
 
-    Public ReadOnly Property DocumentRepositoryList() As String()
-      Get
-        Return _documentRepositoryList
-      End Get
-    End Property
+		Public ReadOnly Property DocumentRepositoryList() As String()
+			Get
+				Return _documentRepositoryList
+			End Get
+		End Property
 
-    Public ReadOnly Property LoggedInUser() As String
-      Get
-        Dim winIdent As System.Security.Principal.WindowsIdentity = System.Security.Principal.WindowsIdentity.GetCurrent
-        Return winIdent.Name
-      End Get
+		Public ReadOnly Property LoggedInUser() As String
+			Get
+				Dim winIdent As System.Security.Principal.WindowsIdentity = System.Security.Principal.WindowsIdentity.GetCurrent
+				Return winIdent.Name
+			End Get
 		End Property
 
 		Public ReadOnly Property SendLoadNotificationEmailEnabled() As Boolean
@@ -234,62 +234,62 @@ Namespace kCura.EDDS.WinForm
 #End Region
 
 #Region "Event Throwers"
-    Public Sub LogOn()
-      RaiseEvent OnEvent(New AppEvent(AppEvent.AppEventType.LogOn))
-    End Sub
+		Public Sub LogOn()
+			RaiseEvent OnEvent(New AppEvent(AppEvent.AppEventType.LogOn))
+		End Sub
 
-    Public Sub ExitApplication()
-      UpdateWebServiceURL(False)
-      RaiseEvent OnEvent(New AppEvent(AppEvent.AppEventType.ExitApplication))
-    End Sub
+		Public Sub ExitApplication()
+			UpdateWebServiceURL(False)
+			RaiseEvent OnEvent(New AppEvent(AppEvent.AppEventType.ExitApplication))
+		End Sub
 
-    Public Sub UpdateWebServiceURL(ByVal relogin As Boolean)
-      If Not Me.TemporaryWebServiceURL Is Nothing AndAlso Not Me.TemporaryWebServiceURL = "" Then
-        kCura.WinEDDS.Config.WebServiceURL = Me.TemporaryWebServiceURL
-        If relogin Then
-          Me.NewLogin(True)
-        End If
-      End If
-    End Sub
+		Public Sub UpdateWebServiceURL(ByVal relogin As Boolean)
+			If Not Me.TemporaryWebServiceURL Is Nothing AndAlso Not Me.TemporaryWebServiceURL = "" Then
+				kCura.WinEDDS.Config.WebServiceURL = Me.TemporaryWebServiceURL
+				If relogin Then
+					Me.NewLogin(True)
+				End If
+			End If
+		End Sub
 
-    Public Sub CursorDefault()
-      RaiseEvent ChangeCursor(System.Windows.Forms.Cursors.Default)
-    End Sub
+		Public Sub CursorDefault()
+			RaiseEvent ChangeCursor(System.Windows.Forms.Cursors.Default)
+		End Sub
 
-    Public Sub CursorWait()
-      RaiseEvent ChangeCursor(System.Windows.Forms.Cursors.WaitCursor)
-    End Sub
+		Public Sub CursorWait()
+			RaiseEvent ChangeCursor(System.Windows.Forms.Cursors.WaitCursor)
+		End Sub
 #End Region
 
 #Region "Document Field Collection"
-    Public Function GetDocumentFieldFromName(ByVal fieldName As String) As DocumentField
-      Return CurrentFields(Me.ArtifactTypeID).Item(fieldName)
-    End Function
+		Public Function GetDocumentFieldFromName(ByVal fieldName As String) As DocumentField
+			Return CurrentFields(Me.ArtifactTypeID).Item(fieldName)
+		End Function
 
-    Public Function GetCaseIdentifierFields(ByVal artifactTypeID As Int32) As String()
-      Return CurrentFields(artifactTypeID).IdentifierFieldNames
-    End Function
+		Public Function GetCaseIdentifierFields(ByVal artifactTypeID As Int32) As String()
+			Return CurrentFields(artifactTypeID).IdentifierFieldNames
+		End Function
 
-    Public Function IdentiferFieldDropdownPopulator() As String()
-      Return CurrentFields(Me.ArtifactTypeID).NamesForIdentifierDropdown
-    End Function
+		Public Function IdentiferFieldDropdownPopulator() As String()
+			Return CurrentFields(Me.ArtifactTypeID).NamesForIdentifierDropdown
+		End Function
 
-    Public Function GetCaseFields(ByVal caseID As Int32, ByVal artifactTypeID As Int32, Optional ByVal refresh As Boolean = False) As String()
-      Dim retval As DocumentFieldCollection = CurrentFields(artifactTypeID, refresh)
-      If Not retval Is Nothing Then
-        Return CurrentFields(artifactTypeID, refresh).Names()
-      End If
-    End Function
+		Public Function GetCaseFields(ByVal caseID As Int32, ByVal artifactTypeID As Int32, Optional ByVal refresh As Boolean = False) As String()
+			Dim retval As DocumentFieldCollection = CurrentFields(artifactTypeID, refresh)
+			If Not retval Is Nothing Then
+				Return CurrentFields(artifactTypeID, refresh).Names()
+			End If
+		End Function
 
-    Public Function GetNonFileCaseFields(ByVal caseID As Int32, ByVal artifactTypeID As Int32, Optional ByVal refresh As Boolean = False) As String()
-      Dim retval As DocumentFieldCollection = CurrentNonFileFields(artifactTypeID, refresh)
-      If Not retval Is Nothing Then
-        Return CurrentNonFileFields(artifactTypeID, refresh).Names()
-      End If
-    End Function
+		Public Function GetNonFileCaseFields(ByVal caseID As Int32, ByVal artifactTypeID As Int32, Optional ByVal refresh As Boolean = False) As String()
+			Dim retval As DocumentFieldCollection = CurrentNonFileFields(artifactTypeID, refresh)
+			If Not retval Is Nothing Then
+				Return CurrentNonFileFields(artifactTypeID, refresh).Names()
+			End If
+		End Function
 
-    Friend Function IsConnected(ByVal caseID As Int32, ByVal artifactTypeID As Int32) As Boolean
-      Return Not Me.GetCaseFields(caseID, artifactTypeID, True) Is Nothing
+		Friend Function IsConnected(ByVal caseID As Int32, ByVal artifactTypeID As Int32) As Boolean
+			Return Not Me.GetCaseFields(caseID, artifactTypeID, True) Is Nothing
 		End Function
 
 		Public Function GetSelectedIdentifier(ByVal selectedField As DocumentField) As String
@@ -337,7 +337,7 @@ Namespace kCura.EDDS.WinForm
 				Return isIdentifierMapped
 			End If
 			If Not forPreview AndAlso Not New kCura.WinEDDS.Service.FieldQuery(Credential, _cookieContainer).IsFieldIndexed(Me.SelectedCaseInfo.ArtifactID, loadFile.IdentityFieldId) Then
-				Return MsgBox("There is no SQL index on the selected Overlay Identifier field.  " & vbNewLine & "Performing a load on an un-indexed SQL field will be drastically slower, " & vbNewLine & "and may negatively impact Relativity performance for all users." & vbNewLine & "Contact your SQL Administrator to have an index applied to the selected Overlay Identifier field.", MsgBoxStyle.OKCancel) = MsgBoxResult.OK
+				Return MsgBox("There is no SQL index on the selected Overlay Identifier field.  " & vbNewLine & "Performing a load on an un-indexed SQL field will be drastically slower, " & vbNewLine & "and may negatively impact Relativity performance for all users." & vbNewLine & "Contact your SQL Administrator to have an index applied to the selected Overlay Identifier field.", MsgBoxStyle.OkCancel) = MsgBoxResult.Ok
 			Else
 				Return True
 			End If
@@ -366,7 +366,7 @@ Namespace kCura.EDDS.WinForm
 				id = imageArgs.IdentityFieldId
 			End If
 			If Not forPreview AndAlso Not New kCura.WinEDDS.Service.FieldQuery(Credential, _cookieContainer).IsFieldIndexed(Me.SelectedCaseInfo.ArtifactID, id) Then
-				Return MsgBox("There is no SQL index on the selected Overlay Identifier field.  " & vbNewLine & "Performing a load on an un-indexed SQL field will be drastically slower, " & vbNewLine & "and may negatively impact Relativity performance for all users." & vbNewLine & "Contact your SQL Administrator to have an index applied to the selected Overlay Identifier field.", MsgBoxStyle.OKCancel) = MsgBoxResult.OK
+				Return MsgBox("There is no SQL index on the selected Overlay Identifier field.  " & vbNewLine & "Performing a load on an un-indexed SQL field will be drastically slower, " & vbNewLine & "and may negatively impact Relativity performance for all users." & vbNewLine & "Contact your SQL Administrator to have an index applied to the selected Overlay Identifier field.", MsgBoxStyle.OkCancel) = MsgBoxResult.Ok
 			Else
 				Return True
 			End If
@@ -411,7 +411,7 @@ Namespace kCura.EDDS.WinForm
 			Try
 				Dim folderManager As New kCura.WinEDDS.Service.FolderManager(Credential, _cookieContainer)
 				Dim retval As System.Data.DataSet = folderManager.RetrieveIntitialChunk(caseID)
-				Dim dt As System.Data.DataTable = retval.tables(0)
+				Dim dt As System.Data.DataTable = retval.Tables(0)
 				Dim addOn As System.Data.DataTable
 				Dim lastId As Int32
 				Do
@@ -597,7 +597,7 @@ Namespace kCura.EDDS.WinForm
 			End Try
 		End Function
 
-		Private Sub AddRow(ByVal dt As DataTable, ByVal row As System.collections.ArrayList, ByVal fields As Api.ArtifactField(), ByRef counter As Int32)
+		Private Sub AddRow(ByVal dt As DataTable, ByVal row As System.Collections.ArrayList, ByVal fields As Api.ArtifactField(), ByRef counter As Int32)
 			Try
 				counter += 1
 				Dim field As Api.ArtifactField
@@ -768,7 +768,7 @@ Namespace kCura.EDDS.WinForm
 				Exit Sub
 			End If
 			Dim frm As New LoadFileForm
-			Dim loadFile As New loadFile
+			Dim loadFile As New LoadFile
 			frm._application = Me
 			loadFile.SelectedCasePath = caseInfo.DocumentPath
 			If Me.ArtifactTypeID = kCura.EDDS.Types.ArtifactType.Document Then
@@ -894,7 +894,7 @@ Namespace kCura.EDDS.WinForm
 
 		Public Sub NewSQLImport(ByVal destinationArtifactID As Int32, ByVal caseInfo As kCura.EDDS.Types.CaseInfo)
 			Dim frm As New SQLImportForm
-			Dim sQLImportSettings As New sQLImportSettings
+			Dim sQLImportSettings As New SQLImportSettings
 			sQLImportSettings.DestinationFolderID = destinationArtifactID
 			sQLImportSettings.CaseInfo = caseInfo
 			frm.SQLImportSettings = sQLImportSettings
@@ -964,7 +964,7 @@ Namespace kCura.EDDS.WinForm
 				Exit Sub
 			End If
 			Dim frm As New ImportFileSystemForm
-			Dim importFileDirectorySettings As New importFileDirectorySettings
+			Dim importFileDirectorySettings As New ImportFileDirectorySettings
 			importFileDirectorySettings.DestinationFolderID = destinationArtifactID
 			importFileDirectorySettings.CaseInfo = caseInfo
 			frm.ImportFileDirectorySettings = importFileDirectorySettings
@@ -979,7 +979,7 @@ Namespace kCura.EDDS.WinForm
 				Exit Sub
 			End If
 			Dim frm As New ImportFileSystemForm
-			Dim importFileDirectorySettings As New importFileDirectorySettings
+			Dim importFileDirectorySettings As New ImportFileDirectorySettings
 			importFileDirectorySettings.EnronImport = True
 			importFileDirectorySettings.DestinationFolderID = destinationArtifactID
 			importFileDirectorySettings.CaseInfo = caseInfo
@@ -1346,7 +1346,7 @@ Namespace kCura.EDDS.WinForm
 			ElseIf Not tempLoadFile.FilePath = "" AndAlso System.IO.File.Exists(tempLoadFile.FilePath) Then
 				x.FileName = tempLoadFile.FilePath
 			End If
-			MsgBox("Please Choose a Load File", MsgBoxStyle.OKOnly)
+			MsgBox("Please Choose a Load File", MsgBoxStyle.OkOnly)
 			x.Title = "Choose Load File"
 			x.Filter = "All files (*.*)|*.*|CSV Files (*.csv)|*.csv|Text Files (*.txt)|*.txt|DAT Files|*.dat"
 			Select Case x.ShowDialog()
@@ -1584,7 +1584,7 @@ Namespace kCura.EDDS.WinForm
 			sb.Append("          Relativity Desktop Client" & nl)
 			sb.Append("              Version " & Me.GetDisplayAssemblyVersion() & nl)
 			sb.Append("Copyright © " & System.DateTime.Now.Year & " kCura Corporation")
-			MsgBox(sb.ToString, MsgBoxStyle.OKOnly, "About Relativity Desktop Client")
+			MsgBox(sb.ToString, MsgBoxStyle.OkOnly, "About Relativity Desktop Client")
 			If Not _loginForm Is Nothing AndAlso Not _loginForm.IsDisposed Then
 				_loginForm.TopMost = True
 			End If

@@ -38,91 +38,91 @@ Namespace kCura.EDDS.WinForm
 		Friend WithEvents _loginTextBox As System.Windows.Forms.TextBox
 		Friend WithEvents _passwordTextBox As System.Windows.Forms.TextBox
 		<System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
-      Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(LoginForm))
-      Me._loginTextBox = New System.Windows.Forms.TextBox
-      Me.Label1 = New System.Windows.Forms.Label
-      Me._passwordTextBox = New System.Windows.Forms.TextBox
-      Me.Label2 = New System.Windows.Forms.Label
-      Me._okButton = New System.Windows.Forms.Button
-      Me._cancelButton = New System.Windows.Forms.Button
-      Me.SuspendLayout()
-      '
-      '_loginTextBox
-      '
-      Me._loginTextBox.Location = New System.Drawing.Point(8, 24)
-      Me._loginTextBox.Name = "_loginTextBox"
-      Me._loginTextBox.Size = New System.Drawing.Size(240, 20)
-      Me._loginTextBox.TabIndex = 0
+			Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(LoginForm))
+			Me._loginTextBox = New System.Windows.Forms.TextBox
+			Me.Label1 = New System.Windows.Forms.Label
+			Me._passwordTextBox = New System.Windows.Forms.TextBox
+			Me.Label2 = New System.Windows.Forms.Label
+			Me._okButton = New System.Windows.Forms.Button
+			Me._cancelButton = New System.Windows.Forms.Button
+			Me.SuspendLayout()
+			'
+			'_loginTextBox
+			'
+			Me._loginTextBox.Location = New System.Drawing.Point(8, 24)
+			Me._loginTextBox.Name = "_loginTextBox"
+			Me._loginTextBox.Size = New System.Drawing.Size(240, 20)
+			Me._loginTextBox.TabIndex = 0
 
-      '
-      'Label1
-      '
-      Me.Label1.Location = New System.Drawing.Point(8, 8)
-      Me.Label1.Name = "Label1"
-      Me.Label1.Size = New System.Drawing.Size(100, 16)
-      Me.Label1.TabIndex = 1
-      Me.Label1.Text = "Login"
-      '
-      '_passwordTextBox
-      '
-      Me._passwordTextBox.Location = New System.Drawing.Point(8, 72)
-      Me._passwordTextBox.Name = "_passwordTextBox"
-      Me._passwordTextBox.PasswordChar = Global.Microsoft.VisualBasic.ChrW(8226)
-      Me._passwordTextBox.Size = New System.Drawing.Size(240, 20)
-      Me._passwordTextBox.TabIndex = 2
+			'
+			'Label1
+			'
+			Me.Label1.Location = New System.Drawing.Point(8, 8)
+			Me.Label1.Name = "Label1"
+			Me.Label1.Size = New System.Drawing.Size(100, 16)
+			Me.Label1.TabIndex = 1
+			Me.Label1.Text = "Login"
+			'
+			'_passwordTextBox
+			'
+			Me._passwordTextBox.Location = New System.Drawing.Point(8, 72)
+			Me._passwordTextBox.Name = "_passwordTextBox"
+			Me._passwordTextBox.PasswordChar = Global.Microsoft.VisualBasic.ChrW(8226)
+			Me._passwordTextBox.Size = New System.Drawing.Size(240, 20)
+			Me._passwordTextBox.TabIndex = 2
 
-      '
-      'Label2
-      '
-      Me.Label2.Location = New System.Drawing.Point(8, 56)
-      Me.Label2.Name = "Label2"
-      Me.Label2.Size = New System.Drawing.Size(100, 16)
-      Me.Label2.TabIndex = 3
-      Me.Label2.Text = "Password"
-      '
-      '_okButton
-      '
-      Me._okButton.Location = New System.Drawing.Point(88, 120)
-      Me._okButton.Name = "_okButton"
-      Me._okButton.Size = New System.Drawing.Size(75, 23)
-      Me._okButton.TabIndex = 4
-      Me._okButton.Text = "OK"
-      '
-      '_cancelButton
-      '
-      Me._cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel
-      Me._cancelButton.Location = New System.Drawing.Point(168, 120)
-      Me._cancelButton.Name = "_cancelButton"
-      Me._cancelButton.Size = New System.Drawing.Size(75, 23)
-      Me._cancelButton.TabIndex = 5
-      Me._cancelButton.Text = "Cancel"
-      '
-      'LoginForm
-      '
-      Me.AcceptButton = Me._okButton
-      Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
-      Me.CancelButton = Me._cancelButton
-      Me.ClientSize = New System.Drawing.Size(257, 158)
-      Me.Controls.Add(Me._cancelButton)
-      Me.Controls.Add(Me._okButton)
-      Me.Controls.Add(Me.Label2)
-      Me.Controls.Add(Me._passwordTextBox)
-      Me.Controls.Add(Me._loginTextBox)
-      Me.Controls.Add(Me.Label1)
-      Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
-      Me.MaximizeBox = False
-      Me.MaximumSize = New System.Drawing.Size(265, 185)
-      Me.MinimizeBox = False
-      Me.MinimumSize = New System.Drawing.Size(265, 185)
-      Me.Name = "LoginForm"
-      Me.ShowInTaskbar = False
-      Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
-      Me.Text = "Relativity Desktop Client | Login"
-      Me.TopMost = True
-      Me.ResumeLayout(False)
-      Me.PerformLayout()
+			'
+			'Label2
+			'
+			Me.Label2.Location = New System.Drawing.Point(8, 56)
+			Me.Label2.Name = "Label2"
+			Me.Label2.Size = New System.Drawing.Size(100, 16)
+			Me.Label2.TabIndex = 3
+			Me.Label2.Text = "Password"
+			'
+			'_okButton
+			'
+			Me._okButton.Location = New System.Drawing.Point(88, 120)
+			Me._okButton.Name = "_okButton"
+			Me._okButton.Size = New System.Drawing.Size(75, 23)
+			Me._okButton.TabIndex = 4
+			Me._okButton.Text = "OK"
+			'
+			'_cancelButton
+			'
+			Me._cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel
+			Me._cancelButton.Location = New System.Drawing.Point(168, 120)
+			Me._cancelButton.Name = "_cancelButton"
+			Me._cancelButton.Size = New System.Drawing.Size(75, 23)
+			Me._cancelButton.TabIndex = 5
+			Me._cancelButton.Text = "Cancel"
+			'
+			'LoginForm
+			'
+			Me.AcceptButton = Me._okButton
+			Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
+			Me.CancelButton = Me._cancelButton
+			Me.ClientSize = New System.Drawing.Size(257, 158)
+			Me.Controls.Add(Me._cancelButton)
+			Me.Controls.Add(Me._okButton)
+			Me.Controls.Add(Me.Label2)
+			Me.Controls.Add(Me._passwordTextBox)
+			Me.Controls.Add(Me._loginTextBox)
+			Me.Controls.Add(Me.Label1)
+			Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
+			Me.MaximizeBox = False
+			Me.MaximumSize = New System.Drawing.Size(265, 185)
+			Me.MinimizeBox = False
+			Me.MinimumSize = New System.Drawing.Size(265, 185)
+			Me.Name = "LoginForm"
+			Me.ShowInTaskbar = False
+			Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
+			Me.Text = "Relativity Desktop Client | Login"
+			Me.TopMost = True
+			Me.ResumeLayout(False)
+			Me.PerformLayout()
 
-    End Sub
+		End Sub
 
 #End Region
 		Friend WithEvents _application As kCura.EDDS.WinForm.Application
@@ -173,8 +173,8 @@ Namespace kCura.EDDS.WinForm
 			_loginTextBox.Focus()
 		End Sub
 
-    Private Sub _loginTextBox_TextChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _loginTextBox.TextChanged
+		Private Sub _loginTextBox_TextChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _loginTextBox.TextChanged
 
-    End Sub
-  End Class
+		End Sub
+	End Class
 End Namespace

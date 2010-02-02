@@ -1,16 +1,16 @@
 Namespace kCura.EDDS.WinForm
-  Public Class MainForm
-    Inherits System.Windows.Forms.Form
+	Public Class MainForm
+		Inherits System.Windows.Forms.Form
 
 #Region " Windows Form Designer generated code "
 
-    Public Sub New()
-      MyBase.New()
+		Public Sub New()
+			MyBase.New()
 
-      'This call is required by the Windows Form Designer.
-      InitializeComponent()
+			'This call is required by the Windows Form Designer.
+			InitializeComponent()
 
-      'Add any initialization after the InitializeComponent() call
+			'Add any initialization after the InitializeComponent() call
 			_application = kCura.EDDS.WinForm.Application.Instance
 		End Sub
 
@@ -58,7 +58,7 @@ Namespace kCura.EDDS.WinForm
 		Friend WithEvents _exportFoldersMenuItem As System.Windows.Forms.MenuItem
 		Friend WithEvents _exportFoldersAndSubfoldersMenuItem As System.Windows.Forms.MenuItem
 		Friend WithEvents ToolsImportProductionFileMenu As System.Windows.Forms.MenuItem
-    Friend WithEvents _objectTypeDropDown As System.Windows.Forms.ComboBox
+		Friend WithEvents _objectTypeDropDown As System.Windows.Forms.ComboBox
 		Friend WithEvents _optionsMenuCheckConnectivityItem As System.Windows.Forms.MenuItem
 		Friend WithEvents _exportObjectsMenuItem As System.Windows.Forms.MenuItem
 		Friend WithEvents ToolsImportApplicationFileMenu As System.Windows.Forms.MenuItem
@@ -320,8 +320,8 @@ Namespace kCura.EDDS.WinForm
 			'_caseFolderExplorer
 			'
 			Me._caseFolderExplorer.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-									Or System.Windows.Forms.AnchorStyles.Left) _
-									Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+					Or System.Windows.Forms.AnchorStyles.Left) _
+					Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me._caseFolderExplorer.Location = New System.Drawing.Point(0, 25)
 			Me._caseFolderExplorer.Name = "_caseFolderExplorer"
 			Me._caseFolderExplorer.Size = New System.Drawing.Size(332, 490)
@@ -330,8 +330,8 @@ Namespace kCura.EDDS.WinForm
 			'_objectTypeDropDown
 			'
 			Me._objectTypeDropDown.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-									Or System.Windows.Forms.AnchorStyles.Left) _
-									Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+					Or System.Windows.Forms.AnchorStyles.Left) _
+					Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me._objectTypeDropDown.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
 			Me._objectTypeDropDown.Location = New System.Drawing.Point(0, 4)
 			Me._objectTypeDropDown.Name = "_objectTypeDropDown"
@@ -358,91 +358,91 @@ Namespace kCura.EDDS.WinForm
 
 #End Region
 
-    Friend WithEvents _application As kCura.EDDS.WinForm.Application
+		Friend WithEvents _application As kCura.EDDS.WinForm.Application
 
-    Private Sub OpenRepositoryMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles OpenRepositoryMenu.Click
-      _application.OpenCase()
-    End Sub
+		Private Sub OpenRepositoryMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles OpenRepositoryMenu.Click
+			_application.OpenCase()
+		End Sub
 
-    Private Sub ExitMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ExitMenu.Click
-      _application.ExitApplication()
-    End Sub
+		Private Sub ExitMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ExitMenu.Click
+			_application.ExitApplication()
+		End Sub
 
-    Private Sub _application_OnEvent(ByVal appEvent As AppEvent) Handles _application.OnEvent
-      Select Case appEvent.EventType
-        Case appEvent.AppEventType.LoadCase
-          _fileMenuRefresh.Enabled = True
-          UpdateStatus("Case Loaded - File Transfer Mode: " & _application.GetConnectionStatus)
+		Private Sub _application_OnEvent(ByVal appEvent As AppEvent) Handles _application.OnEvent
+			Select Case appEvent.EventType
+				Case appEvent.AppEventType.LoadCase
+					_fileMenuRefresh.Enabled = True
+					UpdateStatus("Case Loaded - File Transfer Mode: " & _application.GetConnectionStatus)
 					PopulateObjectTypeDropDown()
 					_optionsMenuCheckConnectivityItem.Visible = True
-        Case appEvent.AppEventType.LogOn
-          UpdateUserName(_application.LoggedInUser)
-        Case appEvent.AppEventType.ExitApplication
-          Me.Close()
-        Case appEvent.AppEventType.CaseFolderSelected
-          ImportMenu.Enabled = True
-          ExportMenu.Enabled = True
-          'UpdateStatus("Case Folder Load: " + _application.SelectedCaseInfo.RootFolderID.ToString)
-      End Select
-    End Sub
+				Case appEvent.AppEventType.LogOn
+					UpdateUserName(_application.LoggedInUser)
+				Case appEvent.AppEventType.ExitApplication
+					Me.Close()
+				Case appEvent.AppEventType.CaseFolderSelected
+					ImportMenu.Enabled = True
+					ExportMenu.Enabled = True
+					'UpdateStatus("Case Folder Load: " + _application.SelectedCaseInfo.RootFolderID.ToString)
+			End Select
+		End Sub
 
-    Private Sub UpdateStatus(ByVal text As String)
-      AppStatusPanel.Text = text
-    End Sub
+		Private Sub UpdateStatus(ByVal text As String)
+			AppStatusPanel.Text = text
+		End Sub
 
-    Private Sub UpdateUserName(ByVal text As String)
-      LoggedInUserPanel.Text = text
-    End Sub
+		Private Sub UpdateUserName(ByVal text As String)
+			LoggedInUserPanel.Text = text
+		End Sub
 
-    Private Sub MainForm_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles MyBase.Load
-      Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
-      If kCura.WinEDDS.Config.WebServiceURL = String.Empty Then
-        _application.SetWebServiceURL()
-      End If
+		Private Sub MainForm_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles MyBase.Load
+			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
+			If kCura.WinEDDS.Config.WebServiceURL = String.Empty Then
+				_application.SetWebServiceURL()
+			End If
 
-      If Not _application.DefaultCredentialsAreGood() Then
-        _application.NewLogin()
-      Else
-        _application.LogOn()
-        _application.OpenCase()
-        kCura.Windows.Forms.EnhancedMenuProvider.Hook(Me)
-      End If
-      Me.Cursor = System.Windows.Forms.Cursors.Default
-    End Sub
+			If Not _application.DefaultCredentialsAreGood() Then
+				_application.NewLogin()
+			Else
+				_application.LogOn()
+				_application.OpenCase()
+				kCura.Windows.Forms.EnhancedMenuProvider.Hook(Me)
+			End If
+			Me.Cursor = System.Windows.Forms.Cursors.Default
+		End Sub
 
-    Private Sub MainForm_Closing(ByVal sender As Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles MyBase.Closing
-      _application.UpdateWebServiceURL(False)
-      kCura.Windows.Forms.EnhancedMenuProvider.Unhook()
-    End Sub
+		Private Sub MainForm_Closing(ByVal sender As Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles MyBase.Closing
+			_application.UpdateWebServiceURL(False)
+			kCura.Windows.Forms.EnhancedMenuProvider.Unhook()
+		End Sub
 
-    Private Sub ToolsImportImageFileMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ToolsImportImageFileMenu.Click
-      Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
-      _application.NewImageFile(_application.SelectedCaseFolderID, _application.SelectedCaseInfo)
-      Me.Cursor = System.Windows.Forms.Cursors.Default
-    End Sub
+		Private Sub ToolsImportImageFileMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ToolsImportImageFileMenu.Click
+			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
+			_application.NewImageFile(_application.SelectedCaseFolderID, _application.SelectedCaseInfo)
+			Me.Cursor = System.Windows.Forms.Cursors.Default
+		End Sub
 
-    Private Sub ToolsImportProductionFileMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ToolsImportProductionFileMenu.Click
-      Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
-      _application.NewProductionFile(_application.SelectedCaseFolderID, _application.SelectedCaseInfo)
-      Me.Cursor = System.Windows.Forms.Cursors.Default
-    End Sub
+		Private Sub ToolsImportProductionFileMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ToolsImportProductionFileMenu.Click
+			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
+			_application.NewProductionFile(_application.SelectedCaseFolderID, _application.SelectedCaseInfo)
+			Me.Cursor = System.Windows.Forms.Cursors.Default
+		End Sub
 
-    Private Sub ToolsImportLoadFileMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ToolsImportLoadFileMenu.Click
-      Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
-      _application.NewLoadFile(_application.SelectedCaseFolderID, _application.SelectedCaseInfo)
-      Me.Cursor = System.Windows.Forms.Cursors.Default
-    End Sub
+		Private Sub ToolsImportLoadFileMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ToolsImportLoadFileMenu.Click
+			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
+			_application.NewLoadFile(_application.SelectedCaseFolderID, _application.SelectedCaseInfo)
+			Me.Cursor = System.Windows.Forms.Cursors.Default
+		End Sub
 
-    Private Sub ToolsImportFileDirectoryMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ToolsImportFileDirectoryMenu.Click
-      Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
-      _application.NewDirectoryImport(_application.SelectedCaseFolderID, _application.SelectedCaseInfo)
-      Me.Cursor = System.Windows.Forms.Cursors.Default
-    End Sub
+		Private Sub ToolsImportFileDirectoryMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ToolsImportFileDirectoryMenu.Click
+			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
+			_application.NewDirectoryImport(_application.SelectedCaseFolderID, _application.SelectedCaseInfo)
+			Me.Cursor = System.Windows.Forms.Cursors.Default
+		End Sub
 
-    Private Sub ToolsImportOutlookMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ToolsImportOutlookMenu.Click
-      Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
-      _application.NewOutlookImport(_application.SelectedCaseFolderID, _application.SelectedCaseInfo)
-      Me.Cursor = System.Windows.Forms.Cursors.Default
+		Private Sub ToolsImportOutlookMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ToolsImportOutlookMenu.Click
+			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
+			_application.NewOutlookImport(_application.SelectedCaseFolderID, _application.SelectedCaseInfo)
+			Me.Cursor = System.Windows.Forms.Cursors.Default
 		End Sub
 
 		Private Sub ToolsExportProductionMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ToolsExportProductionMenu.Click

@@ -1,17 +1,17 @@
 Namespace kCura.EDDS.WinForm
-  Public Class ImageLoad
-    Inherits System.Windows.Forms.Form
+	Public Class ImageLoad
+		Inherits System.Windows.Forms.Form
 
 #Region " Windows Form Designer generated code "
 
-    Public Sub New()
-      MyBase.New()
+		Public Sub New()
+			MyBase.New()
 
-      'This call is required by the Windows Form Designer.
-      InitializeComponent()
+			'This call is required by the Windows Form Designer.
+			InitializeComponent()
 
-      'Add any initialization after the InitializeComponent() call
-      _application = kCura.EDDS.WinForm.Application.Instance
+			'Add any initialization after the InitializeComponent() call
+			_application = kCura.EDDS.WinForm.Application.Instance
 			'_imageLoadFile = New kCura.WinEDDS.ImageLoadFile(kCura.EDDS.WinForm.Application.Instance.Identity)
 			_imageLoadFile = New kCura.WinEDDS.ImageLoadFile
 		End Sub

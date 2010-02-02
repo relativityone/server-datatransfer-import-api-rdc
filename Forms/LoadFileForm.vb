@@ -1,31 +1,31 @@
 Namespace kCura.EDDS.WinForm
-  Public Class LoadFileForm
-    Inherits System.Windows.Forms.Form
+	Public Class LoadFileForm
+		Inherits System.Windows.Forms.Form
 
 #Region " Windows Form Designer generated code "
 
-    Public Sub New()
-      MyBase.New()
+		Public Sub New()
+			MyBase.New()
 
-      _application = kCura.EDDS.WinForm.Application.Instance
+			_application = kCura.EDDS.WinForm.Application.Instance
 
-      'This call is required by the Windows Form Designer.
-      InitializeComponent()
+			'This call is required by the Windows Form Designer.
+			InitializeComponent()
 
-      'Add any initialization after the InitializeComponent() call
-      InitializeDocumentSpecificComponents()
+			'Add any initialization after the InitializeComponent() call
+			InitializeDocumentSpecificComponents()
 
-    End Sub
+		End Sub
 
-    Private ParentArtifactTypeID As Int32
-    Private ReadOnly Property IsChildObject() As Boolean
-      Get
-        Return ParentArtifactTypeID <> 8
-      End Get
-    End Property
+		Private ParentArtifactTypeID As Int32
+		Private ReadOnly Property IsChildObject() As Boolean
+			Get
+				Return ParentArtifactTypeID <> 8
+			End Get
+		End Property
 
-    Private Sub InitializeDocumentSpecificComponents()
-      If Me.LoadFile.ArtifactTypeID = 0 Then Me.LoadFile.ArtifactTypeID = _application.ArtifactTypeID
+		Private Sub InitializeDocumentSpecificComponents()
+			If Me.LoadFile.ArtifactTypeID = 0 Then Me.LoadFile.ArtifactTypeID = _application.ArtifactTypeID
 			If Me.LoadFile.ArtifactTypeID = kCura.EDDS.Types.ArtifactType.Document Then
 				Me.GroupBox4.Enabled = True
 				Me.GroupBox7.Enabled = True
@@ -35,7 +35,7 @@ Namespace kCura.EDDS.WinForm
 			Else
 				Dim parentQuery As New kCura.WinEDDS.Service.ObjectTypeManager(_application.Credential, _application.CookieContainer)
 				ParentArtifactTypeID = CType(parentQuery.RetrieveParentArtifactTypeID(_application.SelectedCaseInfo.ArtifactID, _
-			 Me.LoadFile.ArtifactTypeID).Tables(0).Rows(0)("ParentArtifactTypeID"), Int32)
+				Me.LoadFile.ArtifactTypeID).Tables(0).Rows(0)("ParentArtifactTypeID"), Int32)
 				Me.GroupBox5.Enabled = False
 				If Me.IsChildObject Then
 					Me.GroupBox5.Enabled = True
@@ -47,78 +47,78 @@ Namespace kCura.EDDS.WinForm
 				End If
 				Me.GroupBox7.Enabled = False
 			End If
-    End Sub
+		End Sub
 
-    'Form overrides dispose to clean up the component list.
-    Protected Overloads Overrides Sub Dispose(ByVal disposing As Boolean)
-      If disposing Then
-        If Not (components Is Nothing) Then
-          components.Dispose()
-        End If
-      End If
-      MyBase.Dispose(disposing)
-    End Sub
+		'Form overrides dispose to clean up the component list.
+		Protected Overloads Overrides Sub Dispose(ByVal disposing As Boolean)
+			If disposing Then
+				If Not (components Is Nothing) Then
+					components.Dispose()
+				End If
+			End If
+			MyBase.Dispose(disposing)
+		End Sub
 
-    'Required by the Windows Form Designer
-    Private components As System.ComponentModel.IContainer
+		'Required by the Windows Form Designer
+		Private components As System.ComponentModel.IContainer
 
-    'NOTE: The following procedure is required by the Windows Form Designer
-    'It can be modified using the Windows Form Designer.  
-    'Do not modify it using the code editor.
-    Friend WithEvents OpenFileDialog As System.Windows.Forms.OpenFileDialog
-    Friend WithEvents GroupBox1 As System.Windows.Forms.GroupBox
-    Friend WithEvents _importDestinationText As System.Windows.Forms.TextBox
-    Friend WithEvents MainMenu As System.Windows.Forms.MainMenu
-    Friend WithEvents MenuItem1 As System.Windows.Forms.MenuItem
-    Friend WithEvents MenuItem2 As System.Windows.Forms.MenuItem
-    Friend WithEvents PreviewMenuFile As System.Windows.Forms.MenuItem
-    Friend WithEvents ImportFileMenu As System.Windows.Forms.MenuItem
-    Friend WithEvents _fileSaveFieldMapMenuItem As System.Windows.Forms.MenuItem
-    Friend WithEvents _saveFieldMapDialog As System.Windows.Forms.SaveFileDialog
-    Friend WithEvents _fileLoadFieldMapMenuItem As System.Windows.Forms.MenuItem
-    Friend WithEvents _loadFieldMapDialog As System.Windows.Forms.OpenFileDialog
-    Friend WithEvents _importMenuPreviewErrorsItem As System.Windows.Forms.MenuItem
-    Friend WithEvents _importMenuPreviewFoldersAndCodesItem As System.Windows.Forms.MenuItem
-    Friend WithEvents TabControl1 As System.Windows.Forms.TabControl
-    Friend WithEvents _loadFileTab As System.Windows.Forms.TabPage
-    Friend WithEvents _fieldMapTab As System.Windows.Forms.TabPage
+		'NOTE: The following procedure is required by the Windows Form Designer
+		'It can be modified using the Windows Form Designer.  
+		'Do not modify it using the code editor.
+		Friend WithEvents OpenFileDialog As System.Windows.Forms.OpenFileDialog
+		Friend WithEvents GroupBox1 As System.Windows.Forms.GroupBox
+		Friend WithEvents _importDestinationText As System.Windows.Forms.TextBox
+		Friend WithEvents MainMenu As System.Windows.Forms.MainMenu
+		Friend WithEvents MenuItem1 As System.Windows.Forms.MenuItem
+		Friend WithEvents MenuItem2 As System.Windows.Forms.MenuItem
+		Friend WithEvents PreviewMenuFile As System.Windows.Forms.MenuItem
+		Friend WithEvents ImportFileMenu As System.Windows.Forms.MenuItem
+		Friend WithEvents _fileSaveFieldMapMenuItem As System.Windows.Forms.MenuItem
+		Friend WithEvents _saveFieldMapDialog As System.Windows.Forms.SaveFileDialog
+		Friend WithEvents _fileLoadFieldMapMenuItem As System.Windows.Forms.MenuItem
+		Friend WithEvents _loadFieldMapDialog As System.Windows.Forms.OpenFileDialog
+		Friend WithEvents _importMenuPreviewErrorsItem As System.Windows.Forms.MenuItem
+		Friend WithEvents _importMenuPreviewFoldersAndCodesItem As System.Windows.Forms.MenuItem
+		Friend WithEvents TabControl1 As System.Windows.Forms.TabControl
+		Friend WithEvents _loadFileTab As System.Windows.Forms.TabPage
+		Friend WithEvents _fieldMapTab As System.Windows.Forms.TabPage
 		Friend WithEvents _loadNativeFiles As System.Windows.Forms.CheckBox
 		Friend WithEvents Label5 As System.Windows.Forms.Label
-    Friend WithEvents _nativeFilePathField As System.Windows.Forms.ComboBox
-    Friend WithEvents GroupBox4 As System.Windows.Forms.GroupBox
-    Friend WithEvents GroupBox23 As System.Windows.Forms.GroupBox
-    Friend WithEvents _multiRecordDelimiter As System.Windows.Forms.ComboBox
-    Friend WithEvents Label6 As System.Windows.Forms.Label
-    Friend WithEvents Label4 As System.Windows.Forms.Label
-    Friend WithEvents _quoteDelimiter As System.Windows.Forms.ComboBox
-    Friend WithEvents Label3 As System.Windows.Forms.Label
-    Friend WithEvents _newLineDelimiter As System.Windows.Forms.ComboBox
-    Friend WithEvents Label2 As System.Windows.Forms.Label
-    Friend WithEvents _recordDelimiter As System.Windows.Forms.ComboBox
-    Friend WithEvents GroupBox2 As System.Windows.Forms.GroupBox
-    Friend WithEvents _fileColumnHeaders As System.Windows.Forms.ListBox
-    Friend WithEvents _firstLineContainsColumnNames As System.Windows.Forms.CheckBox
-    Friend WithEvents GroupBox20 As System.Windows.Forms.GroupBox
-    Friend WithEvents _browseButton As System.Windows.Forms.Button
-    Friend WithEvents _filePath As System.Windows.Forms.TextBox
-    Friend WithEvents HelpProvider1 As System.Windows.Forms.HelpProvider
+		Friend WithEvents _nativeFilePathField As System.Windows.Forms.ComboBox
+		Friend WithEvents GroupBox4 As System.Windows.Forms.GroupBox
+		Friend WithEvents GroupBox23 As System.Windows.Forms.GroupBox
+		Friend WithEvents _multiRecordDelimiter As System.Windows.Forms.ComboBox
+		Friend WithEvents Label6 As System.Windows.Forms.Label
+		Friend WithEvents Label4 As System.Windows.Forms.Label
+		Friend WithEvents _quoteDelimiter As System.Windows.Forms.ComboBox
+		Friend WithEvents Label3 As System.Windows.Forms.Label
+		Friend WithEvents _newLineDelimiter As System.Windows.Forms.ComboBox
+		Friend WithEvents Label2 As System.Windows.Forms.Label
+		Friend WithEvents _recordDelimiter As System.Windows.Forms.ComboBox
+		Friend WithEvents GroupBox2 As System.Windows.Forms.GroupBox
+		Friend WithEvents _fileColumnHeaders As System.Windows.Forms.ListBox
+		Friend WithEvents _firstLineContainsColumnNames As System.Windows.Forms.CheckBox
+		Friend WithEvents GroupBox20 As System.Windows.Forms.GroupBox
+		Friend WithEvents _browseButton As System.Windows.Forms.Button
+		Friend WithEvents _filePath As System.Windows.Forms.TextBox
+		Friend WithEvents HelpProvider1 As System.Windows.Forms.HelpProvider
 		Friend WithEvents MenuItem3 As System.Windows.Forms.MenuItem
-    Friend WithEvents _fileMenuCloseItem As System.Windows.Forms.MenuItem
+		Friend WithEvents _fileMenuCloseItem As System.Windows.Forms.MenuItem
 		Friend WithEvents _destinationFolderPath As System.Windows.Forms.ComboBox
-    Friend WithEvents _buildFolderStructure As System.Windows.Forms.CheckBox
-    Friend WithEvents GroupBox5 As System.Windows.Forms.GroupBox
-    Friend WithEvents MenuItem4 As System.Windows.Forms.MenuItem
-    Friend WithEvents _fileRefreshMenuItem As System.Windows.Forms.MenuItem
-    Friend WithEvents _overwriteDropdown As System.Windows.Forms.ComboBox
-    Friend WithEvents GroupBox6 As System.Windows.Forms.GroupBox
-    Friend WithEvents GroupBox7 As System.Windows.Forms.GroupBox
-    Friend WithEvents _extractedTextValueContainsFileLocation As System.Windows.Forms.CheckBox
-    Friend WithEvents Label8 As System.Windows.Forms.Label
-    Friend WithEvents _advancedButton As System.Windows.Forms.Button
-    Friend WithEvents Label9 As System.Windows.Forms.Label
-    Friend WithEvents _loadFileEncodingPicker As kCura.EDDS.WinForm.EncodingPicker
-    Friend WithEvents _fullTextFileEncodingPicker As kCura.EDDS.WinForm.EncodingPicker
-    Friend WithEvents _hierarchicalValueDelimiter As System.Windows.Forms.ComboBox
+		Friend WithEvents _buildFolderStructure As System.Windows.Forms.CheckBox
+		Friend WithEvents GroupBox5 As System.Windows.Forms.GroupBox
+		Friend WithEvents MenuItem4 As System.Windows.Forms.MenuItem
+		Friend WithEvents _fileRefreshMenuItem As System.Windows.Forms.MenuItem
+		Friend WithEvents _overwriteDropdown As System.Windows.Forms.ComboBox
+		Friend WithEvents GroupBox6 As System.Windows.Forms.GroupBox
+		Friend WithEvents GroupBox7 As System.Windows.Forms.GroupBox
+		Friend WithEvents _extractedTextValueContainsFileLocation As System.Windows.Forms.CheckBox
+		Friend WithEvents Label8 As System.Windows.Forms.Label
+		Friend WithEvents _advancedButton As System.Windows.Forms.Button
+		Friend WithEvents Label9 As System.Windows.Forms.Label
+		Friend WithEvents _loadFileEncodingPicker As kCura.EDDS.WinForm.EncodingPicker
+		Friend WithEvents _fullTextFileEncodingPicker As kCura.EDDS.WinForm.EncodingPicker
+		Friend WithEvents _hierarchicalValueDelimiter As System.Windows.Forms.ComboBox
 		Friend WithEvents Label10 As System.Windows.Forms.Label
 		Friend WithEvents _startLineNumberLabel As System.Windows.Forms.Label
 		Friend WithEvents _startLineNumber As System.Windows.Forms.NumericUpDown
@@ -1115,10 +1115,10 @@ Namespace kCura.EDDS.WinForm
 				System.Array.Sort(columnHeaders)
 				Dim currentHeaderList As New System.Collections.ArrayList
 				For Each item As Object In _fieldMap.LoadFileColumns.LeftListBoxItems
-					If Not currentHeaderList.Contains(item.tostring) Then currentHeaderList.Add(item.ToString)
+					If Not currentHeaderList.Contains(item.ToString) Then currentHeaderList.Add(item.ToString)
 				Next
 				For Each item As Object In _fieldMap.LoadFileColumns.RightListBoxItems
-					If Not currentHeaderList.Contains(item.tostring) Then currentHeaderList.Add(item.ToString)
+					If Not currentHeaderList.Contains(item.ToString) Then currentHeaderList.Add(item.ToString)
 				Next
 				currentHeaders = DirectCast(currentHeaderList.ToArray(GetType(String)), String())
 				System.Array.Sort(currentHeaders)

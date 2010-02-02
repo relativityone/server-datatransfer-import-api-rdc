@@ -1,48 +1,48 @@
 Namespace kCura.EDDS.WinForm
-  Public Class LoadFilePreviewForm
-    Inherits System.Windows.Forms.Form
+	Public Class LoadFilePreviewForm
+		Inherits System.Windows.Forms.Form
 
 #Region " Windows Form Designer generated code "
-    Private _application As Application
-    Private _formType As Int32
-    Private _multiRecordDelimiter As Char
-    Private _previewCodeCount As System.Collections.Specialized.HybridDictionary
+		Private _application As Application
+		Private _formType As Int32
+		Private _multiRecordDelimiter As Char
+		Private _previewCodeCount As System.Collections.Specialized.HybridDictionary
 
-    Public Sub New(ByVal formType As Int32, ByVal mutliRecordDelimiter As Char, ByVal previewCodeCount As System.Collections.Specialized.HybridDictionary)
-      MyBase.New()
+		Public Sub New(ByVal formType As Int32, ByVal mutliRecordDelimiter As Char, ByVal previewCodeCount As System.Collections.Specialized.HybridDictionary)
+			MyBase.New()
 
-      'This call is required by the Windows Form Designer.
-      InitializeComponent()
+			'This call is required by the Windows Form Designer.
+			InitializeComponent()
 
-      'Add any initialization after the InitializeComponent() call
-      _application = Application.Instance
-      _formType = formType
-      _multiRecordDelimiter = mutliRecordDelimiter
-      _previewCodeCount = previewCodeCount
-      Me.Text = "Relativity Desktop Client | Preview Load File"
-      If _formType = kCura.EDDS.WinForm.LoadFilePreviewForm.FormType.Codes Then
-        Me.Text = "Relativity Desktop Client | Preview Choices and Folders"
-      End If
-    End Sub
+			'Add any initialization after the InitializeComponent() call
+			_application = Application.Instance
+			_formType = formType
+			_multiRecordDelimiter = mutliRecordDelimiter
+			_previewCodeCount = previewCodeCount
+			Me.Text = "Relativity Desktop Client | Preview Load File"
+			If _formType = kCura.EDDS.WinForm.LoadFilePreviewForm.FormType.Codes Then
+				Me.Text = "Relativity Desktop Client | Preview Choices and Folders"
+			End If
+		End Sub
 
-    'Form overrides dispose to clean up the component list.
-    Protected Overloads Overrides Sub Dispose(ByVal disposing As Boolean)
-      If disposing Then
-        If Not (components Is Nothing) Then
-          components.Dispose()
-        End If
-      End If
-      MyBase.Dispose(disposing)
-    End Sub
+		'Form overrides dispose to clean up the component list.
+		Protected Overloads Overrides Sub Dispose(ByVal disposing As Boolean)
+			If disposing Then
+				If Not (components Is Nothing) Then
+					components.Dispose()
+				End If
+			End If
+			MyBase.Dispose(disposing)
+		End Sub
 
-    'Required by the Windows Form Designer
-    Private components As System.ComponentModel.IContainer
+		'Required by the Windows Form Designer
+		Private components As System.ComponentModel.IContainer
 
-    'NOTE: The following procedure is required by the Windows Form Designer
-    'It can be modified using the Windows Form Designer.  
-    'Do not modify it using the code editor.
-    Friend WithEvents _grid As System.Windows.Forms.DataGrid
-    <System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
+		'NOTE: The following procedure is required by the Windows Form Designer
+		'It can be modified using the Windows Form Designer.  
+		'Do not modify it using the code editor.
+		Friend WithEvents _grid As System.Windows.Forms.DataGrid
+		<System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
 			Dim resources As System.Resources.ResourceManager = New System.Resources.ResourceManager(GetType(LoadFilePreviewForm))
 			Me._grid = New System.Windows.Forms.DataGrid
 			CType(Me._grid, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -79,56 +79,56 @@ Namespace kCura.EDDS.WinForm
 #End Region
 		Private WithEvents _thrower As kCura.WinEDDS.ValueThrower
 
-    Public DataSource As DataTable
-    Public IsError As Boolean
+		Public DataSource As DataTable
+		Public IsError As Boolean
 
-    Public Enum FormType
-      LoadFile = 1
-      Codes = 2
-    End Enum
+		Public Enum FormType
+			LoadFile = 1
+			Codes = 2
+		End Enum
 
-    Public Property Thrower() As kCura.WinEDDS.ValueThrower
-      Get
-        Return _thrower
-      End Get
-      Set(ByVal value As kCura.WinEDDS.ValueThrower)
-        _thrower = value
-      End Set
-    End Property
+		Public Property Thrower() As kCura.WinEDDS.ValueThrower
+			Get
+				Return _thrower
+			End Get
+			Set(ByVal value As kCura.WinEDDS.ValueThrower)
+				_thrower = value
+			End Set
+		End Property
 
-    Public Sub SetGridDataSource(ByVal ds As DataTable)
-      Dim column As New System.Data.DataColumn
-      Dim tablestyles As New DataGridTableStyle
-      For Each column In ds.Columns
-        Dim col As New HighlightErrorColumn
-        col.MappingName = column.ColumnName
-        col.HeaderText = column.ColumnName
-        tablestyles.GridColumnStyles.Add(col)
-      Next
-      _grid.TableStyles.Add(tablestyles)
-      DataSource = ds
-      _grid.DataSource = ds
-    End Sub
+		Public Sub SetGridDataSource(ByVal ds As DataTable)
+			Dim column As New System.Data.DataColumn
+			Dim tablestyles As New DataGridTableStyle
+			For Each column In ds.Columns
+				Dim col As New HighlightErrorColumn
+				col.MappingName = column.ColumnName
+				col.HeaderText = column.ColumnName
+				tablestyles.GridColumnStyles.Add(col)
+			Next
+			_grid.TableStyles.Add(tablestyles)
+			DataSource = ds
+			_grid.DataSource = ds
+		End Sub
 
-    Private Sub _thrower_OnEvent(ByVal value As Object) Handles _thrower.OnEvent
-      Dim args As Object() = DirectCast(value, Object())
-      If _formType = FormType.Codes Then
-        Me.DataSource = _application.BuildFoldersAndCodesDataSource(DirectCast(args(0), ArrayList), _multiRecordDelimiter, _previewCodeCount)
-      Else
-        Me.DataSource = _application.BuildLoadFileDataSource(DirectCast(args(0), ArrayList))
-      End If
-      Me.IsError = CType(args(1), Boolean)
-      Me.Invoke(New HandleDataSourceDelegate(AddressOf HandleDataSource))
-    End Sub
+		Private Sub _thrower_OnEvent(ByVal value As Object) Handles _thrower.OnEvent
+			Dim args As Object() = DirectCast(value, Object())
+			If _formType = FormType.Codes Then
+				Me.DataSource = _application.BuildFoldersAndCodesDataSource(DirectCast(args(0), ArrayList), _multiRecordDelimiter, _previewCodeCount)
+			Else
+				Me.DataSource = _application.BuildLoadFileDataSource(DirectCast(args(0), ArrayList))
+			End If
+			Me.IsError = CType(args(1), Boolean)
+			Me.Invoke(New HandleDataSourceDelegate(AddressOf HandleDataSource))
+		End Sub
 
-    Public Sub HandleDataSource()
-      Me.SetGridDataSource(Me.DataSource)
-      If Me.IsError Then Me.Text = "Preview Errors"
-    End Sub
+		Public Sub HandleDataSource()
+			Me.SetGridDataSource(Me.DataSource)
+			If Me.IsError Then Me.Text = "Preview Errors"
+		End Sub
 
-    Delegate Sub HandleDataSourceDelegate()
+		Delegate Sub HandleDataSourceDelegate()
 
-  End Class
+	End Class
 
 	Public Class HighlightErrorColumn
 		Inherits DataGridColumnStyle

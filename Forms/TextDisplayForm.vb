@@ -1,5 +1,5 @@
 Public Class TextDisplayForm
-    Inherits System.Windows.Forms.Form
+	Inherits System.Windows.Forms.Form
 
 #Region " Windows Form Designer generated code "
 	Private _application As kCura.EDDS.WinForm.Application
@@ -38,8 +38,8 @@ Public Class TextDisplayForm
 		'TextBox1
 		'
 		Me.TextBox1.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-								Or System.Windows.Forms.AnchorStyles.Left) _
-								Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+				Or System.Windows.Forms.AnchorStyles.Left) _
+				Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 		Me.TextBox1.Location = New System.Drawing.Point(4, 4)
 		Me.TextBox1.Multiline = True
 		Me.TextBox1.Name = "TextBox1"

@@ -65,8 +65,8 @@ Namespace kCura.EDDS.WinForm
 			'CaseListView
 			'
 			Me.CaseListView.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-									Or System.Windows.Forms.AnchorStyles.Left) _
-									Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+					Or System.Windows.Forms.AnchorStyles.Left) _
+					Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me.CaseListView.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
 			Me.CaseListView.Columns.AddRange(New System.Windows.Forms.ColumnHeader() {Me.NameColumnHeader})
 			Me.CaseListView.Location = New System.Drawing.Point(4, 28)
@@ -84,7 +84,7 @@ Namespace kCura.EDDS.WinForm
 			'SearchQuery
 			'
 			Me.SearchQuery.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-									Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+					Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me.SearchQuery.Location = New System.Drawing.Point(4, 4)
 			Me.SearchQuery.Name = "SearchQuery"
 			Me.SearchQuery.Size = New System.Drawing.Size(280, 20)
