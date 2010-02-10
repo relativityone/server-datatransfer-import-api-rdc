@@ -377,12 +377,10 @@ Namespace kCura.WinEDDS
 			Dim fileExists As Boolean
 			Dim fieldCollection As New DocumentFieldCollection
 			Dim identityValue As String = String.Empty
-			Dim documentArtifactID As Int32
 			Dim markUploadStart As DateTime = DateTime.Now
 			Dim parentFolderID As Int32
 			Dim md5hash As String = ""
 			Dim fullFilePath As String = ""
-			Dim isSupportedFileType As Boolean
 			Dim oixFileIdData As OI.FileID.FileIDData
 			Dim destinationVolume As String
 			_timekeeper.MarkStart("ManageDocument_Filesystem")
