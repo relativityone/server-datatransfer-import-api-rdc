@@ -32,41 +32,41 @@ Namespace kCura.Windows.Forms
       Public bReserved1 As Byte
     End Structure
 
-    Private Const LF_FACESIZE = 32
-    Private Const CFM_BACKCOLOR = &H4000000
-    Private Const CFE_AUTOBACKCOLOR = CFM_BACKCOLOR
-    Private Const WM_USER = &H400
-    Private Const EM_SETCHARFORMAT = (WM_USER + 68)
-    Private Const EM_SETBKGNDCOLOR = (WM_USER + 67)
-    Private Const EM_GETCHARFORMAT = (WM_USER + 58)
-    Private Const WM_SETTEXT = &HC
-    Private Const SCF_SELECTION = &H1&
+		Private Const LF_FACESIZE As Int32 = 32
+		Private Const CFM_BACKCOLOR As Int32 = &H4000000
+		Private Const CFE_AUTOBACKCOLOR As Int32 = CFM_BACKCOLOR
+		Private Const WM_USER As Int32 = &H400
+		Private Const EM_SETCHARFORMAT As Int32 = (WM_USER + 68)
+		Private Const EM_SETBKGNDCOLOR As Int32 = (WM_USER + 67)
+		Private Const EM_GETCHARFORMAT As Int32 = (WM_USER + 58)
+		Private Const WM_SETTEXT As Int32 = &HC
+		Private Const SCF_SELECTION As Int32 = &H1&
 
     Private Overloads Declare Auto Function SendMessage Lib "user32" Alias "SendMessageA" (ByVal hWnd As IntPtr, ByVal Msg As Integer, ByVal wParam As Integer, ByRef lParam As CharFormat2) As Boolean
 
     ' Here we do the magic...
-    Public Property SelectionBackColor() As Color
-      Get
-        ' We need to ask the RTB for the backcolor of the current selection.
-        ' This is done using SendMessage with a format structure which the RTB will fill in for us.
-        Dim HWND As IntPtr = Me.Handle ' Force the creation of the window handle...
-        Dim Format As New CharFormat2
-        Format.dwMask = CFM_BACKCOLOR
-        Format.cbSize = Marshal.SizeOf(Format)
-        SendMessage(Me.Handle, EM_GETCHARFORMAT, SCF_SELECTION, Format)
-        Return ColorTranslator.FromOle(Format.crBackColor)
-      End Get
-      Set(ByVal Value As Color)
-        ' Here we do relatively the same thing as in Get, but we are telling the RTB to set
-        ' the color this time instead of returning it to us.
-        Dim HWND As IntPtr = Me.Handle ' Force the creation of the window handle...
-        Dim Format As New CharFormat2
-        Format.crBackColor = ColorTranslator.ToOle(Value)
-        Format.dwMask = CFM_BACKCOLOR
-        Format.cbSize = Marshal.SizeOf(Format)
-        SendMessage(Me.Handle, EM_SETCHARFORMAT, SCF_SELECTION, Format)
-      End Set
-    End Property
+		Public Overloads Property SelectionBackColor() As Color
+			Get
+				' We need to ask the RTB for the backcolor of the current selection.
+				' This is done using SendMessage with a format structure which the RTB will fill in for us.
+				Dim HWND As IntPtr = Me.Handle ' Force the creation of the window handle...
+				Dim Format As New CharFormat2
+				Format.dwMask = CFM_BACKCOLOR
+				Format.cbSize = Marshal.SizeOf(Format)
+				SendMessage(Me.Handle, EM_GETCHARFORMAT, SCF_SELECTION, Format)
+				Return ColorTranslator.FromOle(Format.crBackColor)
+			End Get
+			Set(ByVal Value As Color)
+				' Here we do relatively the same thing as in Get, but we are telling the RTB to set
+				' the color this time instead of returning it to us.
+				Dim HWND As IntPtr = Me.Handle ' Force the creation of the window handle...
+				Dim Format As New CharFormat2
+				Format.crBackColor = ColorTranslator.ToOle(Value)
+				Format.dwMask = CFM_BACKCOLOR
+				Format.cbSize = Marshal.SizeOf(Format)
+				SendMessage(Me.Handle, EM_SETCHARFORMAT, SCF_SELECTION, Format)
+			End Set
+		End Property
 #End Region
 
 #Region " Proc: ClearBackColor"
@@ -107,7 +107,7 @@ Namespace kCura.Windows.Forms
       Format.dwMask = CFM_BACKCOLOR
       Format.dwEffects = CFE_AUTOBACKCOLOR  ' Clears the backcolor
       Format.cbSize = Marshal.SizeOf(Format)
-      SendMessage(Me.Handle, EM_SETCHARFORMAT, SCF_SELECTION, Format)
+			SendMessage(Me.Handle, EM_SETCHARFORMAT, SCF_SELECTION, Format)
 
       ' Return the previous values...
       Me.SelectionStart = SelStart
