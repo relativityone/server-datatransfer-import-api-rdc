@@ -1515,7 +1515,6 @@ Public Class ExportForm
 		_precedenceForm.ExportFile = Me.ExportFile
 		_precedenceForm.PrecedenceTable = dt
 		If _productionPrecedenceList.Items.Count > 0 Then
-			Dim item As Pair
 			Dim precedenceList(_productionPrecedenceList.Items.Count - 1) As Pair
 			Dim i As Int32 = 0
 			For i = 0 To _productionPrecedenceList.Items.Count - 1

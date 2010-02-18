@@ -896,7 +896,6 @@ Namespace kCura.EDDS.WinForm
 				End If
 				'Add the file field as a mapped field for non document object types
 				If Me.LoadFile.ArtifactTypeID <> kCura.EDDS.Types.ArtifactType.Document Then
-					Dim fileField As DocumentField
 					For Each field As DocumentField In currentFields.AllFields
 						If field.FieldTypeID = kCura.DynamicFields.Types.FieldTypeHelper.FieldType.File Then
 							Dim openParenIndex As Int32 = LoadFile.NativeFilePathColumn.LastIndexOf("("c) + 1
@@ -978,7 +977,6 @@ Namespace kCura.EDDS.WinForm
 			RefreshNativeFilePathFieldAndFileColumnHeaders()
 			If Not Me.EnsureConnection() Then Exit Sub
 			Dim caseFields As String() = _application.GetNonFileCaseFields(LoadFile.CaseInfo.ArtifactID, Me.LoadFile.ArtifactTypeID, True)
-			Dim caseFieldName As String
 			If loadFileObjectUpdatedFromFile Then
 				Dim columnHeaders As String()
 				If System.IO.File.Exists(Me.LoadFile.FilePath) Then
@@ -1107,9 +1105,9 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 		Private Function RefreshNativeFilePathFieldAndFileColumnHeaders(Optional ByVal showWarning As Boolean = False) As String()
-			Dim columnHeaders As String()
+			Dim columnHeaders As String() = Nothing
 			Dim listsAreSame As Boolean = True
-			Dim currentHeaders As String()
+			Dim currentHeaders As String() = Nothing
 			If System.IO.File.Exists(LoadFile.FilePath) Then
 				columnHeaders = _application.GetColumnHeadersFromLoadFile(LoadFile, _firstLineContainsColumnNames.Checked)
 				System.Array.Sort(columnHeaders)
@@ -1426,7 +1424,6 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 		Private Sub BuildMappingFromLoadFile(ByVal casefields As String(), ByVal columnHeaders As String())
-			Dim caseFieldName As String
 			Dim selectedFieldNameList As New ArrayList
 			Dim selectedColumnNameList As New ArrayList
 			Dim item As LoadFileFieldMap.LoadFileFieldMapItem

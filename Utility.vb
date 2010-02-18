@@ -20,7 +20,6 @@ Namespace kCura.EDDS.WinForm
 
 		Public Shared Function ExtractFieldMap(ByVal tLSelect As kCura.Windows.Forms.TwoListBox, ByVal docFieldList As DocumentFieldCollection) As DocumentField()
 			Dim i As Int32
-			Dim docfieldname As String
 			Dim docfields(tLSelect.RightListBoxItems.Count - 1) As DocumentField
 			Dim docfield As DocumentField
 			For i = 0 To docfields.Length - 1
