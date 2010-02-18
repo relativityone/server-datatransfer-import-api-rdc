@@ -10,7 +10,7 @@ Namespace kCura.Windows.Process
 		End Sub
 
 		Public Sub New(ByVal typeValue As ProcessEventTypeEnum, ByVal recordInfoValue As String, ByVal messageValue As String)
-			Me.DateTime = DateTime.Now
+			Me.DateTime = System.DateTime.Now
 			Me.Type = typeValue
 			Me.RecordInfo = recordInfoValue
 			Me.Message = messageValue
