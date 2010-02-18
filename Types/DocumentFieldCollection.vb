@@ -121,7 +121,6 @@ Namespace kCura.WinEDDS
 		Public Function NamesForIdentifierDropdown() As String()
 			Dim al As New ArrayList
 			Dim field As DocumentField
-			Dim fieldname As String
 			For Each field In _idIndex.Values
 				If ( _
 				 field.FieldCategoryID <> 8 AndAlso _

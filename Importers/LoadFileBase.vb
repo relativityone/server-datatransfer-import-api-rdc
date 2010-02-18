@@ -191,23 +191,6 @@ Namespace kCura.WinEDDS
 
 		Private Function GetNewCodeOrderValue(ByVal codeTypeID As Int32) As Int32
 			Return 0
-			Dim row As System.Data.DataRowView
-			Dim newOrder As Int32 = 0
-			Dim oldOrder As Int32
-			If _allCodes.Count > 0 Then
-				For Each row In _allCodes
-					If CType(row("CodeTypeID"), Int32) = codeTypeID Then
-						oldOrder = CType(row("Order"), Int32)
-						If oldOrder > newOrder Then
-							newOrder = oldOrder
-						End If
-					End If
-				Next
-				newOrder += 1
-			Else
-				newOrder = 1
-			End If
-			Return newOrder
 		End Function
 
 		Public Overridable Function GetMultiCode(ByVal value As String(), ByVal column As Int32, ByVal field As Api.ArtifactField, ByVal forPreview As Boolean) As Nullable(Of Int32)()

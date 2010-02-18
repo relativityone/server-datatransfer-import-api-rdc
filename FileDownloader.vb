@@ -144,6 +144,8 @@ Namespace kCura.WinEDDS
 			Return retval
 		End Function
 
+		Public Shared TotalWebTime As Long = 0
+
 		Private Function WebDownloadFile(ByVal localFilePath As String, ByVal artifactID As Int32, ByVal remoteFileGuid As String, ByVal appID As String, ByVal remotelocationkey As String, ByVal forFullText As Boolean, ByVal longTextFieldArtifactID As Int32, ByVal fileID As Int32, ByVal fileFieldArtifactID As Int32) As Boolean
 			Dim tries As Int32 = 0
 			While tries < Config.MaxReloginTries
@@ -161,6 +163,7 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Private Function DoWebDownloadFile(ByVal localFilePath As String, ByVal artifactID As Int32, ByVal remoteFileGuid As String, ByVal appID As String, ByVal remotelocationkey As String, ByVal forFullText As Boolean, ByVal longTextFieldArtifactID As Int32, ByVal fileID As Int32, ByVal fileFieldArtifactID As Int32) As Boolean
+			Dim now As Long = System.DateTime.Now.Ticks
 			Dim tryNumber As Int32 = 0
 			Dim localStream As System.IO.Stream
 			Try
@@ -210,6 +213,7 @@ Namespace kCura.WinEDDS
 					Throw New kCura.WinEDDS.Exceptions.WebDownloadCorruptException("Error retrieving data from distributed server; expecting " & length & " bytes and received " & actualLength)
 				End If
 				If Not remotelocationkey Is Nothing Then _locationAccessMatrix.Add(remotelocationkey, FileAccessType.Web)
+				TotalWebTime += System.DateTime.Now.Ticks - Now
 				Return True
 			Catch ex As DistributedReLoginException
 				Me.CloseStream(localStream)

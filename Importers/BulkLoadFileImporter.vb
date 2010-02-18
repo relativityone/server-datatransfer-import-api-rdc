@@ -801,7 +801,6 @@ Namespace kCura.WinEDDS
 			System.Threading.Monitor.Enter(_outputObjectFileWriter)
 			Dim item As LoadFileFieldMap.LoadFileFieldMapItem
 			Dim identityValue As String = String.Empty
-			Dim docfield As DocumentField
 			Dim keyField As Api.ArtifactField
 			If _keyFieldID > 0 Then
 				keyField = record(_keyFieldID)

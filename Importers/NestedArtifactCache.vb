@@ -122,7 +122,6 @@ Namespace kCura.WinEDDS
 
 		Private Sub RecursivelyPopulate(ByVal dataRow As System.Data.DataRow, ByVal parent As ArtifactCacheItem)
 			Dim childDataRow As System.Data.DataRow
-			Dim childNode As System.Windows.Forms.TreeNode
 			Dim newPath As String
 			For Each childDataRow In dataRow.GetChildRows("NodeRelation")
 				If parent.Path = _nestedItemDelimiter Then

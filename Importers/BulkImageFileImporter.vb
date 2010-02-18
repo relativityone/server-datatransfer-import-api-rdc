@@ -368,12 +368,12 @@ Namespace kCura.WinEDDS
 				If values(Columns.BatesNumber).Trim = "" Then
 					Me.RaiseStatusEvent(Windows.Process.EventType.Error, String.Format("No image file or identifier specified on line."), CType((_totalValidated + _totalProcessed) / 2, Int64), Me.CurrentLineNumber)
 					retval = EDDS.Types.MassImport.ImportStatus.NoImageSpecifiedOnLine
-				ElseIf Not Config.DisableImageLocationValidation AndAlso Not System.IO.File.Exists(Me.GetFileLocation(values)) Then
+				ElseIf Not Config.DisableImageLocationValidation AndAlso Not System.IO.File.Exists(BulkImageFileImporter.GetFileLocation(values)) Then
 					Me.RaiseStatusEvent(Windows.Process.EventType.Error, String.Format("Image file specified ( {0} ) does not exist.", values(Columns.FileLocation)), CType((_totalValidated + _totalProcessed) / 2, Int64), Me.CurrentLineNumber)
 					retval = EDDS.Types.MassImport.ImportStatus.FileSpecifiedDne
 				Else
 					Dim validator As New kCura.ImageValidator.ImageValidator
-					Dim path As String = Me.GetFileLocation(values)
+					Dim path As String = BulkImageFileImporter.GetFileLocation(values)
 					Try
 						If Not Config.DisableImageTypeValidation Then validator.ValidateImage(path)
 						Me.RaiseStatusEvent(Windows.Process.EventType.Progress, String.Format("Image file ( {0} ) validated.", values(Columns.FileLocation)), CType((_totalValidated + _totalProcessed) / 2, Int64), Me.CurrentLineNumber)
@@ -438,7 +438,7 @@ Namespace kCura.WinEDDS
 				Dim offset As Int64 = 0
 				For i As Int32 = 0 To lines.Count - 1
 					valueArray = DirectCast(lines(i), String())
-					Me.GetImageForDocument(Me.GetFileLocation(valueArray), valueArray(Columns.BatesNumber), documentId, i, offset, textFileList, i < lines.Count - 1, valueArray(valueArray.Length - 1), status, lines.Count)
+					Me.GetImageForDocument(BulkImageFileImporter.GetFileLocation(valueArray), valueArray(Columns.BatesNumber), documentId, i, offset, textFileList, i < lines.Count - 1, valueArray(valueArray.Length - 1), status, lines.Count)
 				Next
 				For Each filename As String In textFileList
 					With New System.IO.StreamReader(filename, _settings.FullTextEncoding, True)

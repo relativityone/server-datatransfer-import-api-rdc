@@ -286,7 +286,12 @@
     <Compile Include="Exceptions\WebDownloadCorruptException.vb">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Exporters\DocumentExportInfo.vb">
+    <Compile Include="Exporters\LoadFileCellFormatters\DelimitedCellFormatter.vb" />
+    <Compile Include="Exporters\LoadFileCellFormatters\HtmlCellFormatter.vb" />
+    <Compile Include="Exporters\LoadFileCellFormatters\ILoadFileCellFormatter.vb" />
+    <Compile Include="Exporters\ILongTextStreamFormatter.vb" />
+    <Compile Include="Exporters\LineFactory\ObjectLineFactoryBase.vb" />
+    <Compile Include="Exporters\ObjectExportInfo.vb">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Exporters\Exporter.vb">
@@ -304,6 +309,8 @@
     <Compile Include="Exporters\LineFactory\SimpleIproImageLineFactory.vb">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Exporters\Old\Exporter.vb" />
+    <Compile Include="Exporters\Old\VolumeManager.vb" />
     <Compile Include="Exporters\VolumeInfo.vb">
       <SubType>Code</SubType>
     </Compile>
@@ -379,6 +386,11 @@
     <Compile Include="Importers\SQL\SQLImportSettings.vb">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="My Project\Settings.Designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
     <Compile Include="Process\ApplicationDeploymentProcess.vb">
       <SubType>Code</SubType>
     </Compile>
@@ -436,6 +448,7 @@
     <Compile Include="Service\DocumentManager.vb">
       <SubType>code</SubType>
     </Compile>
+    <Compile Include="Service\ExportManager.vb" />
     <Compile Include="Service\FieldManager.vb">
       <SubType>Code</SubType>
     </Compile>
@@ -582,6 +595,11 @@
       <SubType>code</SubType>
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Include="Web References\kCura.EDDS.WebAPI.ExportManagerBase\Reference.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.map</DependentUpon>
     </Compile>
     <Compile Include="Web References\kCura.EDDS.WebAPI.FieldManagerBase\Reference.vb">
       <DependentUpon>Reference.map</DependentUpon>
@@ -819,6 +837,17 @@
       <RelPath>Web References\kCura.EDDS.WebAPI.DocumentManagerBase\</RelPath>
       <UrlBehavior>Static</UrlBehavior>
     </WebReferenceUrl>
+    <WebReferenceUrl Include="http://localhost/EDDSWebAPI/ExportManager.asmx">
+      <UrlBehavior>Dynamic</UrlBehavior>
+      <RelPath>Web References\kCura.EDDS.WebAPI.ExportManagerBase\</RelPath>
+      <UpdateFromURL>http://localhost/EDDSWebAPI/ExportManager.asmx</UpdateFromURL>
+      <ServiceLocationURL>
+      </ServiceLocationURL>
+      <CachedDynamicPropName>
+      </CachedDynamicPropName>
+      <CachedAppSettingsObjectName>MySettings</CachedAppSettingsObjectName>
+      <CachedSettingsPropName>kCura_WinEDDS_kCura_EDDS_WebAPI_ExportManagerBase_ExportManager</CachedSettingsPropName>
+    </WebReferenceUrl>
     <WebReferenceUrl Include="http://localhost/EDDSWebAPI/FieldManager.asmx">
       <RelPath>Web References\kCura.EDDS.WebAPI.FieldManagerBase\</RelPath>
       <UrlBehavior>Static</UrlBehavior>
@@ -870,7 +899,23 @@
     <WebReferences Include="Web References\" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="My Project\" />
+    <None Include="app.config" />
+    <None Include="My Project\Settings.settings">
+      <CustomToolNamespace>My</CustomToolNamespace>
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.vb</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Web References\kCura.EDDS.WebAPI.ExportManagerBase\ExportManager.disco" />
+    <None Include="Web References\kCura.EDDS.WebAPI.ExportManagerBase\ExportManager.wsdl" />
+    <None Include="Web References\kCura.EDDS.WebAPI.ExportManagerBase\InitializationResults.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\kCura.EDDS.WebAPI.ExportManagerBase\Reference.map">
+      <Generator>MSDiscoCodeGenerator</Generator>
+      <LastGenOutput>Reference.vb</LastGenOutput>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.VisualBasic.targets" />
   <PropertyGroup>

@@ -258,11 +258,9 @@ Namespace kCura.WinEDDS
 			Try
 				Dim i As Int32
 				Dim trips As Int32
-				Dim artifactID As Int32
 				Dim readLimit As Int32 = Settings.ChunkSize
 				Dim destinationDirectory As String = _repositoryPathManager.GetNextDestinationDirectory(_destinationFolderPath)
 				If Not _sortIntoVolumes Then destinationDirectory = _destinationFolderPath
-				Dim response As kCura.EDDS.WebAPI.FileIOBase.IoResponse
 				If fileStream.Length < Settings.ChunkSize Then
 					readLimit = CType(fileStream.Length, Int32)
 				End If

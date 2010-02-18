@@ -149,12 +149,9 @@ Namespace kCura.WinEDDS
 			Dim mapItem As LoadFileFieldMap.LoadFileFieldMapItem
 			Dim lineContainsErrors As Boolean = False
 			Dim retval As New ArrayList
-			Dim artifactfield As Api.ArtifactField
 			Dim identifierField As Api.ArtifactField
 			Dim unmappedFields As New System.Collections.Specialized.HybridDictionary
 			Dim mappedFields As New System.Collections.Specialized.HybridDictionary
-			Dim idFieldColumnIndex As Int32
-			Dim idFieldOriginalValue As String
 			For Each relationalField As DocumentField In _relationalDocumentFields
 				unmappedFields.Add(relationalField.FieldID, New Api.ArtifactField(relationalField))
 			Next
