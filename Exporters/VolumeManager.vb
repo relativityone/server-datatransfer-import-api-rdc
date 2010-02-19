@@ -431,7 +431,7 @@ Namespace kCura.WinEDDS
 				artifact.HasFullText = (len > 0)
 			End If
 
-			If Me.Settings.LogFileFormat = LoadFileType.FileFormat.IPRO_FullText Then
+			If Me.Settings.LogFileFormat = LoadFileType.FileFormat.IPRO_FullText AndAlso Me.Settings.ExportImages Then
 				If Me.Settings.SelectedTextField Is Nothing OrElse Me.Settings.SelectedTextField.Category <> DynamicFields.Types.FieldCategory.FullText Then
 					tempLocalIproFullTextFilePath = System.IO.Path.GetTempFileName
 					Dim tries As Int32 = 20
@@ -465,7 +465,7 @@ Namespace kCura.WinEDDS
 						tempLocalIproFullTextFilePath = String.Copy(tempLocalFullTextFilePath)
 					Else
 						tempLocalIproFullTextFilePath = System.IO.Path.GetTempFileName
-						Dim sw As New System.IO.StreamWriter(tempLocalFullTextFilePath, False, System.Text.Encoding.Unicode)
+						Dim sw As New System.IO.StreamWriter(tempLocalIproFullTextFilePath, False, System.Text.Encoding.Unicode)
 						Dim val As String = artifact.Metadata(Me.OrdinalLookup("ExtractedText")).ToString
 						sw.Write(val)
 						sw.Close()
