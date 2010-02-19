@@ -978,7 +978,7 @@ Namespace kCura.WinEDDS
 			Dim destinationPathExists As Boolean
 			Dim destinationFilePath As String = String.Empty
 			Dim formatter As Exporters.ILongTextStreamFormatter
-			If Me.Settings.ExportFullTextAsFile AndAlso Me.Settings.SelectedTextField.AvfId <> textField.AvfId Then
+			If Me.Settings.ExportFullTextAsFile AndAlso Me.Settings.SelectedTextField.AvfId = textField.AvfId Then
 				destinationFilePath = Me.GetLocalTextFilePath(artifact)
 				destinationPathExists = System.IO.File.Exists(destinationFilePath)
 				If destinationPathExists AndAlso Not _settings.Overwrite Then
@@ -987,10 +987,10 @@ Namespace kCura.WinEDDS
 					If destinationPathExists Then _parent.WriteStatusLine(kCura.Windows.Process.EventType.Status, "Overwriting: " & destinationFilePath, False)
 					destination = New System.IO.StreamWriter(destinationFilePath, False, Me.Settings.TextFileEncoding)
 				End If
-				formatter = New kCura.WinEDDS.Exporters.DelimitedFileLongTextStreamFormatter(_settings, source)
-			Else
-				destination = _nativeFileWriter
 				formatter = New kCura.WinEDDS.Exporters.NonTransformFormatter
+			Else
+				formatter = New kCura.WinEDDS.Exporters.DelimitedFileLongTextStreamFormatter(_settings, source)
+				destination = _nativeFileWriter
 			End If
 			If Not destination Is Nothing Then
 				Me.WriteLongText(source, destination, formatter)

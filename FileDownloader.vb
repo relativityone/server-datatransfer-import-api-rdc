@@ -155,6 +155,7 @@ Namespace kCura.WinEDDS
 					tries += 1
 					RaiseEvent UploadStatusEvent(String.Format("Download Manager credentials failed.  Attempting to re-login ({0} of {1})", tries, Config.MaxReloginTries))
 					_userManager.AttemptReLogin()
+					_authenticationToken = kCura.WinEDDS.Service.Settings.AuthenticationToken
 				End Try
 			End While
 			RaiseEvent UploadStatusEvent("Error Downloading File")
