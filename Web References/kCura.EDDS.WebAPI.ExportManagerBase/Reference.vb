@@ -206,14 +206,14 @@ Namespace kCura.EDDS.WebAPI.ExportManagerBase
         
         '''<remarks/>
         <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/ExportManager/RetrieveResultsBlock", RequestNamespace:="http://www.kCura.com/EDDS/ExportManager", ResponseNamespace:="http://www.kCura.com/EDDS/ExportManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
-        Public Function RetrieveResultsBlock(ByVal appID As Integer, ByVal runId As System.Guid, ByVal artifactTypeID As Integer, ByVal avfIds() As Integer, ByVal chunkSize As Integer) As Object()
-            Dim results() As Object = Me.Invoke("RetrieveResultsBlock", New Object() {appID, runId, artifactTypeID, avfIds, chunkSize})
+        Public Function RetrieveResultsBlock(ByVal appID As Integer, ByVal runId As System.Guid, ByVal artifactTypeID As Integer, ByVal avfIds() As Integer, ByVal chunkSize As Integer, ByVal displayMulticodesAsNested As Boolean, ByVal multiValueDelimiter As Char, ByVal nestedValueDelimiter As Char) As Object()
+            Dim results() As Object = Me.Invoke("RetrieveResultsBlock", New Object() {appID, runId, artifactTypeID, avfIds, chunkSize, displayMulticodesAsNested, multiValueDelimiter, nestedValueDelimiter})
             Return CType(results(0),Object())
         End Function
         
         '''<remarks/>
-        Public Function BeginRetrieveResultsBlock(ByVal appID As Integer, ByVal runId As System.Guid, ByVal artifactTypeID As Integer, ByVal avfIds() As Integer, ByVal chunkSize As Integer, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
-            Return Me.BeginInvoke("RetrieveResultsBlock", New Object() {appID, runId, artifactTypeID, avfIds, chunkSize}, callback, asyncState)
+        Public Function BeginRetrieveResultsBlock(ByVal appID As Integer, ByVal runId As System.Guid, ByVal artifactTypeID As Integer, ByVal avfIds() As Integer, ByVal chunkSize As Integer, ByVal displayMulticodesAsNested As Boolean, ByVal multiValueDelimiter As Char, ByVal nestedValueDelimiter As Char, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("RetrieveResultsBlock", New Object() {appID, runId, artifactTypeID, avfIds, chunkSize, displayMulticodesAsNested, multiValueDelimiter, nestedValueDelimiter}, callback, asyncState)
         End Function
         
         '''<remarks/>
@@ -223,16 +223,16 @@ Namespace kCura.EDDS.WebAPI.ExportManagerBase
         End Function
         
         '''<remarks/>
-        Public Overloads Sub RetrieveResultsBlockAsync(ByVal appID As Integer, ByVal runId As System.Guid, ByVal artifactTypeID As Integer, ByVal avfIds() As Integer, ByVal chunkSize As Integer)
-            Me.RetrieveResultsBlockAsync(appID, runId, artifactTypeID, avfIds, chunkSize, Nothing)
+        Public Overloads Sub RetrieveResultsBlockAsync(ByVal appID As Integer, ByVal runId As System.Guid, ByVal artifactTypeID As Integer, ByVal avfIds() As Integer, ByVal chunkSize As Integer, ByVal displayMulticodesAsNested As Boolean, ByVal multiValueDelimiter As Char, ByVal nestedValueDelimiter As Char)
+            Me.RetrieveResultsBlockAsync(appID, runId, artifactTypeID, avfIds, chunkSize, displayMulticodesAsNested, multiValueDelimiter, nestedValueDelimiter, Nothing)
         End Sub
         
         '''<remarks/>
-        Public Overloads Sub RetrieveResultsBlockAsync(ByVal appID As Integer, ByVal runId As System.Guid, ByVal artifactTypeID As Integer, ByVal avfIds() As Integer, ByVal chunkSize As Integer, ByVal userState As Object)
+        Public Overloads Sub RetrieveResultsBlockAsync(ByVal appID As Integer, ByVal runId As System.Guid, ByVal artifactTypeID As Integer, ByVal avfIds() As Integer, ByVal chunkSize As Integer, ByVal displayMulticodesAsNested As Boolean, ByVal multiValueDelimiter As Char, ByVal nestedValueDelimiter As Char, ByVal userState As Object)
             If (Me.RetrieveResultsBlockOperationCompleted Is Nothing) Then
                 Me.RetrieveResultsBlockOperationCompleted = AddressOf Me.OnRetrieveResultsBlockOperationCompleted
             End If
-            Me.InvokeAsync("RetrieveResultsBlock", New Object() {appID, runId, artifactTypeID, avfIds, chunkSize}, Me.RetrieveResultsBlockOperationCompleted, userState)
+            Me.InvokeAsync("RetrieveResultsBlock", New Object() {appID, runId, artifactTypeID, avfIds, chunkSize, displayMulticodesAsNested, multiValueDelimiter, nestedValueDelimiter}, Me.RetrieveResultsBlockOperationCompleted, userState)
         End Sub
         
         Private Sub OnRetrieveResultsBlockOperationCompleted(ByVal arg As Object)

@@ -205,7 +205,7 @@ Namespace kCura.WinEDDS
 				finish = Math.Min(Me.TotalExportArtifactCount - 1 + Me.Settings.StartAtDocumentNumber, realStart + Config.ExportBatchSize - 1)
 				_timekeeper.MarkStart("Exporter_GetDocumentBlock")
 				startTicks = System.DateTime.Now.Ticks
-				records = Me.ExportManager.RetrieveResultsBlock(Me.Settings.CaseInfo.ArtifactID, exportInitializationArgs.RunId, Me.Settings.ArtifactTypeID, allAvfIds.ToArray, Config.ExportBatchSize)
+				records = Me.ExportManager.RetrieveResultsBlock(Me.Settings.CaseInfo.ArtifactID, exportInitializationArgs.RunId, Me.Settings.ArtifactTypeID, allAvfIds.ToArray, Config.ExportBatchSize, Me.Settings.MulticodesAsNested, Me.Settings.MultiRecordDelimiter, Me.Settings.NestedValueDelimiter)
 				If Me.Settings.TypeOfExport = ExportFile.ExportType.Production AndAlso production IsNot Nothing AndAlso production.DocumentsHaveRedactions Then
 					WriteStatusLineWithoutDocCount(kCura.Windows.Process.EventType.Warning, "Please Note - Documents in this production were produced with redactions applied. Ensure that you take steps to update the extracted text to suppress this redacted text.", True)
 				End If

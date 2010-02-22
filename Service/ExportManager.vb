@@ -67,12 +67,12 @@
 			Return Nothing
 		End Function
 
-		Public Shadows Function RetrieveResultsBlock(ByVal appID As Int32, ByVal runId As Guid, ByVal artifactTypeID As Int32, ByVal avfIds As Int32(), ByVal chunkSize As Int32) As Object()
+		Public Shadows Function RetrieveResultsBlock(ByVal appID As Int32, ByVal runId As Guid, ByVal artifactTypeID As Int32, ByVal avfIds As Int32(), ByVal chunkSize As Int32, ByVal displayMulticodesAsNested As Boolean, ByVal multiValueDelimiter As Char, ByVal nestedValueDelimiter As Char) As Object()
 			Dim tries As Int32 = 0
 			While tries < Config.MaxReloginTries
 				tries += 1
 				Try
-					Dim retval As Object() = MyBase.RetrieveResultsBlock(appID, runId, artifactTypeID, avfIds, chunkSize)
+					Dim retval As Object() = MyBase.RetrieveResultsBlock(appID, runId, artifactTypeID, avfIds, chunkSize, displayMulticodesAsNested, multiValueDelimiter, nestedValueDelimiter)
 					If Not retval Is Nothing Then
 						For Each row As Object() In retval
 							For i As Int32 = 0 To row.Length - 1

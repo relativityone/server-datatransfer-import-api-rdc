@@ -81,6 +81,9 @@
             <s:element minOccurs="1" maxOccurs="1" name="artifactTypeID" type="s:int" />
             <s:element minOccurs="0" maxOccurs="1" name="avfIds" type="tns:ArrayOfInt" />
             <s:element minOccurs="1" maxOccurs="1" name="chunkSize" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="displayMulticodesAsNested" type="s:boolean" />
+            <s:element minOccurs="1" maxOccurs="1" name="multiValueDelimiter" type="s1:char" />
+            <s:element minOccurs="1" maxOccurs="1" name="nestedValueDelimiter" type="s1:char" />
           </s:sequence>
         </s:complexType>
       </s:element>
@@ -102,6 +105,9 @@
         <s:restriction base="s:string">
           <s:pattern value="[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}" />
         </s:restriction>
+      </s:simpleType>
+      <s:simpleType name="char">
+        <s:restriction base="s:unsignedShort" />
       </s:simpleType>
     </s:schema>
   </wsdl:types>
