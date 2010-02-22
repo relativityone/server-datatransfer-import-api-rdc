@@ -428,7 +428,7 @@ Namespace kCura.WinEDDS
 					End If
 					artifact.HasCountedTextFile = True
 				End If
-				artifact.HasFullText = (len > 0)
+				artifact.HasFullText = True
 			End If
 
 			If Me.Settings.LogFileFormat = LoadFileType.FileFormat.IPRO_FullText AndAlso Me.Settings.ExportImages Then
