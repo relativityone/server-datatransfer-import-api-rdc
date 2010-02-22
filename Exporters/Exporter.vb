@@ -170,11 +170,11 @@ Namespace kCura.WinEDDS
 
 				Case ExportFile.ExportType.ParentSearch
 					typeOfExportDisplayString = "folder"
-					exportInitializationArgs = Me.ExportManager.InitializeFolderExport(Me.Settings.CaseArtifactID, Me.Settings.ViewID, Me.Settings.ArtifactID, False, allAvfIds.ToArray, Me.Settings.StartAtDocumentNumber + 1)
+					exportInitializationArgs = Me.ExportManager.InitializeFolderExport(Me.Settings.CaseArtifactID, Me.Settings.ViewID, Me.Settings.ArtifactID, False, allAvfIds.ToArray, Me.Settings.StartAtDocumentNumber + 1, Me.Settings.ArtifactTypeID)
 
 				Case ExportFile.ExportType.AncestorSearch
 					typeOfExportDisplayString = "folder and subfolder"
-					exportInitializationArgs = Me.ExportManager.InitializeFolderExport(Me.Settings.CaseArtifactID, Me.Settings.ViewID, Me.Settings.ArtifactID, True, allAvfIds.ToArray, Me.Settings.StartAtDocumentNumber + 1)
+					exportInitializationArgs = Me.ExportManager.InitializeFolderExport(Me.Settings.CaseArtifactID, Me.Settings.ViewID, Me.Settings.ArtifactID, True, allAvfIds.ToArray, Me.Settings.StartAtDocumentNumber + 1, Me.Settings.ArtifactTypeID)
 
 				Case ExportFile.ExportType.Production
 					typeOfExportDisplayString = "production"

@@ -130,14 +130,14 @@ Namespace kCura.EDDS.WebAPI.ExportManagerBase
         
         '''<remarks/>
         <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/ExportManager/InitializeFolderExport", RequestNamespace:="http://www.kCura.com/EDDS/ExportManager", ResponseNamespace:="http://www.kCura.com/EDDS/ExportManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
-        Public Function InitializeFolderExport(ByVal appID As Integer, ByVal viewArtifactID As Integer, ByVal parentArtifactID As Integer, ByVal includeSubFolders As Boolean, ByVal avfIds() As Integer, ByVal startAtRecord As Integer) As InitializationResults
-            Dim results() As Object = Me.Invoke("InitializeFolderExport", New Object() {appID, viewArtifactID, parentArtifactID, includeSubFolders, avfIds, startAtRecord})
+        Public Function InitializeFolderExport(ByVal appID As Integer, ByVal viewArtifactID As Integer, ByVal parentArtifactID As Integer, ByVal includeSubFolders As Boolean, ByVal avfIds() As Integer, ByVal startAtRecord As Integer, ByVal artifactTypeID As Integer) As InitializationResults
+            Dim results() As Object = Me.Invoke("InitializeFolderExport", New Object() {appID, viewArtifactID, parentArtifactID, includeSubFolders, avfIds, startAtRecord, artifactTypeID})
             Return CType(results(0),InitializationResults)
         End Function
         
         '''<remarks/>
-        Public Function BeginInitializeFolderExport(ByVal appID As Integer, ByVal viewArtifactID As Integer, ByVal parentArtifactID As Integer, ByVal includeSubFolders As Boolean, ByVal avfIds() As Integer, ByVal startAtRecord As Integer, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
-            Return Me.BeginInvoke("InitializeFolderExport", New Object() {appID, viewArtifactID, parentArtifactID, includeSubFolders, avfIds, startAtRecord}, callback, asyncState)
+        Public Function BeginInitializeFolderExport(ByVal appID As Integer, ByVal viewArtifactID As Integer, ByVal parentArtifactID As Integer, ByVal includeSubFolders As Boolean, ByVal avfIds() As Integer, ByVal startAtRecord As Integer, ByVal artifactTypeID As Integer, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("InitializeFolderExport", New Object() {appID, viewArtifactID, parentArtifactID, includeSubFolders, avfIds, startAtRecord, artifactTypeID}, callback, asyncState)
         End Function
         
         '''<remarks/>
@@ -147,16 +147,16 @@ Namespace kCura.EDDS.WebAPI.ExportManagerBase
         End Function
         
         '''<remarks/>
-        Public Overloads Sub InitializeFolderExportAsync(ByVal appID As Integer, ByVal viewArtifactID As Integer, ByVal parentArtifactID As Integer, ByVal includeSubFolders As Boolean, ByVal avfIds() As Integer, ByVal startAtRecord As Integer)
-            Me.InitializeFolderExportAsync(appID, viewArtifactID, parentArtifactID, includeSubFolders, avfIds, startAtRecord, Nothing)
+        Public Overloads Sub InitializeFolderExportAsync(ByVal appID As Integer, ByVal viewArtifactID As Integer, ByVal parentArtifactID As Integer, ByVal includeSubFolders As Boolean, ByVal avfIds() As Integer, ByVal startAtRecord As Integer, ByVal artifactTypeID As Integer)
+            Me.InitializeFolderExportAsync(appID, viewArtifactID, parentArtifactID, includeSubFolders, avfIds, startAtRecord, artifactTypeID, Nothing)
         End Sub
         
         '''<remarks/>
-        Public Overloads Sub InitializeFolderExportAsync(ByVal appID As Integer, ByVal viewArtifactID As Integer, ByVal parentArtifactID As Integer, ByVal includeSubFolders As Boolean, ByVal avfIds() As Integer, ByVal startAtRecord As Integer, ByVal userState As Object)
+        Public Overloads Sub InitializeFolderExportAsync(ByVal appID As Integer, ByVal viewArtifactID As Integer, ByVal parentArtifactID As Integer, ByVal includeSubFolders As Boolean, ByVal avfIds() As Integer, ByVal startAtRecord As Integer, ByVal artifactTypeID As Integer, ByVal userState As Object)
             If (Me.InitializeFolderExportOperationCompleted Is Nothing) Then
                 Me.InitializeFolderExportOperationCompleted = AddressOf Me.OnInitializeFolderExportOperationCompleted
             End If
-            Me.InvokeAsync("InitializeFolderExport", New Object() {appID, viewArtifactID, parentArtifactID, includeSubFolders, avfIds, startAtRecord}, Me.InitializeFolderExportOperationCompleted, userState)
+            Me.InvokeAsync("InitializeFolderExport", New Object() {appID, viewArtifactID, parentArtifactID, includeSubFolders, avfIds, startAtRecord, artifactTypeID}, Me.InitializeFolderExportOperationCompleted, userState)
         End Sub
         
         Private Sub OnInitializeFolderExportOperationCompleted(ByVal arg As Object)

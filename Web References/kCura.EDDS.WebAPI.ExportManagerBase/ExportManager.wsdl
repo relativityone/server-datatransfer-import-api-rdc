@@ -46,6 +46,7 @@
             <s:element minOccurs="1" maxOccurs="1" name="includeSubFolders" type="s:boolean" />
             <s:element minOccurs="0" maxOccurs="1" name="avfIds" type="tns:ArrayOfInt" />
             <s:element minOccurs="1" maxOccurs="1" name="startAtRecord" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="artifactTypeID" type="s:int" />
           </s:sequence>
         </s:complexType>
       </s:element>
