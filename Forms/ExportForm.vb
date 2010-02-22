@@ -1612,7 +1612,7 @@ Public Class ExportForm
 	End Sub
 
 	Private Sub ManagePotentialTextFields()
-		Dim selectedItem As kCura.WinEDDS.ViewFieldInfo
+		Dim selectedItem As kCura.WinEDDS.ViewFieldInfo = Nothing
 		If Not _potentialTextFields.SelectedIndex = -1 Then
 			selectedItem = CType(_potentialTextFields.SelectedItem, kCura.WinEDDS.ViewFieldInfo)
 		End If
@@ -1715,6 +1715,7 @@ Public Class ExportForm
 		End If
 		_filters.SelectedIndex = selectedindex
 		If temporaryPotentialTextFields.Count > 0 Then
+			_potentialTextFields.Items.Clear()
 			_potentialTextFields.Items.AddRange(temporaryPotentialTextFields.ToArray)
 			_potentialTextFields.SelectedIndex = temporaryPotentialTextFieldsSelectedIndex
 		End If
