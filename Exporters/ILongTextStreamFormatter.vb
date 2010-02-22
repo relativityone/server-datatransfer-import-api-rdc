@@ -8,6 +8,29 @@
 			outputStream.Write(ChrW(character))
 		End Sub
 	End Class
+	Public Class HtmlFileLongTextStreamFormatter
+		Implements ILongTextStreamFormatter
+
+		Private _source As System.IO.TextReader
+
+		Public Sub New(ByVal settings As kCura.WinEDDS.ExportFile, ByVal source As System.IO.TextReader)
+			_source = source
+		End Sub
+
+		Public Sub TransformAndWriteCharacter(ByVal character As Integer, ByVal outputStream As System.IO.TextWriter) Implements ILongTextStreamFormatter.TransformAndWriteCharacter
+			Select Case character
+				Case 13
+					outputStream.Write("<br/>")
+					If _source.Peek = 10 Then _source.Read()
+				Case 10
+					outputStream.Write("<br/>")
+				Case Else
+					outputStream.Write(System.Web.HttpUtility.HtmlEncode(ChrW(character)))
+			End Select
+		End Sub
+
+	End Class
+
 	Public Class DelimitedFileLongTextStreamFormatter
 		Implements ILongTextStreamFormatter
 		Private _quoteDelimiter As Char
@@ -33,6 +56,7 @@
 					outputStream.Write(ChrW(character))
 			End Select
 		End Sub
+
 	End Class
 
 

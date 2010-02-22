@@ -989,7 +989,11 @@ Namespace kCura.WinEDDS
 				End If
 				formatter = New kCura.WinEDDS.Exporters.NonTransformFormatter
 			Else
-				formatter = New kCura.WinEDDS.Exporters.DelimitedFileLongTextStreamFormatter(_settings, source)
+				If Me.Settings.LoadFileIsHtml Then
+					formatter = New kCura.WinEDDS.Exporters.HtmlFileLongTextStreamFormatter(_settings, source)
+				Else
+					formatter = New kCura.WinEDDS.Exporters.DelimitedFileLongTextStreamFormatter(_settings, source)
+				End If
 				destination = _nativeFileWriter
 			End If
 			If Not destination Is Nothing Then
@@ -1007,7 +1011,13 @@ Namespace kCura.WinEDDS
 					Case ExportFile.ExportedFilePathType.Prefix
 						textLocation = Me.Settings.FilePrefix.TrimEnd("\"c) & "\" & Me.CurrentVolumeLabel & "\" & Me.CurrentFullTextSubdirectoryLabel & "\" & artifact.FullTextFileName(Me.NameTextFilesAfterIdentifier)
 				End Select
-				_nativeFileWriter.Write(textLocation)
+				If Settings.LoadFileIsHtml Then
+					_nativeFileWriter.Write("<a href='" & textLocation & "' target='_textwindow'>" & textLocation & "</a>")
+				Else
+					_nativeFileWriter.Write(formatter.GetTextLocationString(textLocation))
+				End If
+
+
 			End If
 			_nativeFileWriter.Write(endBound)
 			Return retval
@@ -1040,7 +1050,11 @@ Namespace kCura.WinEDDS
 				columnName = field.AvfColumnName
 				Dim val As Object = record(_ordinalLookup(columnName))
 				If field.FieldType = DynamicFields.Types.FieldTypeHelper.FieldType.Text Then
-					extractedTextByteCount += Me.ManageLongText(val, field, fullTextTempFile, doc, _settings.QuoteDelimiter, _settings.QuoteDelimiter)
+					If Me.Settings.LoadFileIsHtml Then
+						extractedTextByteCount += Me.ManageLongText(val, field, fullTextTempFile, doc, "<td>", "</td>")
+					Else
+						extractedTextByteCount += Me.ManageLongText(val, field, fullTextTempFile, doc, _settings.QuoteDelimiter, _settings.QuoteDelimiter)
+					End If
 				Else
 					If TypeOf val Is Byte() Then val = System.Text.Encoding.Unicode.GetString(DirectCast(val, Byte()))
 					If field.FieldType = DynamicFields.Types.FieldTypeHelper.FieldType.Date AndAlso field.Category <> DynamicFields.Types.FieldCategory.MultiReflected Then
