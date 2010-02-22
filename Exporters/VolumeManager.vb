@@ -437,7 +437,7 @@ Namespace kCura.WinEDDS
 					Dim tries As Int32 = 20
 					Dim start As Int64 = System.DateTime.Now.Ticks
 					Dim val As String = artifact.Metadata(Me.OrdinalLookup("ExtractedText")).ToString
-					If val = kCura.DynamicFields.Types.Constants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN Then
+					If val <> kCura.DynamicFields.Types.Constants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN Then
 						Dim sw As New System.IO.StreamWriter(tempLocalFullTextFilePath, False, System.Text.Encoding.Unicode)
 						sw.Write(val)
 						sw.Close()
