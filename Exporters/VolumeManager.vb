@@ -1014,7 +1014,7 @@ Namespace kCura.WinEDDS
 				If Settings.LoadFileIsHtml Then
 					_nativeFileWriter.Write("<a href='" & textLocation & "' target='_textwindow'>" & textLocation & "</a>")
 				Else
-					_nativeFileWriter.Write(formatter.GetTextLocationString(textLocation))
+					_nativeFileWriter.Write(textLocation)
 				End If
 
 
