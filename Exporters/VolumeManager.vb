@@ -324,11 +324,11 @@ Namespace kCura.WinEDDS
 						ext = ".tif"
 				End Select
 				Dim currentTempLocation As String = Me.GetImageExportLocation(image)
-				currentTempLocation = currentTempLocation.Substring(0, currentTempLocation.LastIndexOf("."))
+				If currentTempLocation.IndexOf("."c) <> -1 Then currentTempLocation = currentTempLocation.Substring(0, currentTempLocation.LastIndexOf("."))
 				currentTempLocation &= ext
 				DirectCast(artifact.Images(0), Exporters.ImageExportInfo).TempLocation = currentTempLocation
 				currentTempLocation = DirectCast(artifact.Images(0), Exporters.ImageExportInfo).FileName
-				currentTempLocation = currentTempLocation.Substring(0, currentTempLocation.LastIndexOf("."))
+				If currentTempLocation.IndexOf("."c) <> -1 Then currentTempLocation = currentTempLocation.Substring(0, currentTempLocation.LastIndexOf("."))
 				currentTempLocation &= ext
 				DirectCast(artifact.Images(0), Exporters.ImageExportInfo).FileName = currentTempLocation
 				Dim location As String = DirectCast(artifact.Images(0), Exporters.ImageExportInfo).TempLocation

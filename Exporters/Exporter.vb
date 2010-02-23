@@ -472,7 +472,7 @@ Namespace kCura.WinEDDS
 
 			If Not Me.Settings.LoadFileIsHtml Then retString = New System.Text.StringBuilder(retString.ToString.TrimEnd(Me.Settings.RecordDelimiter))
 			If _exportFile.LoadFileIsHtml Then
-				If Me.Settings.ExportImages Then retString.Append("<th>Image Files</th>")
+				If Me.Settings.ExportImages AndAlso Me.Settings.ArtifactTypeID = kCura.EDDS.Types.ArtifactType.Document Then retString.Append("<th>Image Files</th>")
 				If Me.Settings.ExportNative Then retString.Append("<th>Native Files</th>")
 				'If Me.Settings.ExportFullText Then retString.Append("<th>Extracted Text</th>")
 				retString.Append(vbNewLine & "</tr>" & vbNewLine)
