@@ -49,6 +49,7 @@
 		End Function
 
 		Public Function CreateImageCell(ByVal artifact As Exporters.ObjectExportInfo) As String Implements ILoadFileCellFormatter.CreateImageCell
+			If Not _settings.ExportImages OrElse _settings.ArtifactTypeID = kCura.EDDS.Types.ArtifactType.Document Then Return String.Empty
 			Return String.Format("<td>{0}</td>", Me.GetImagesHtmlString(artifact))
 		End Function
 
