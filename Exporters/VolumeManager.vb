@@ -966,8 +966,9 @@ Namespace kCura.WinEDDS
 			Dim textValue As String = sourceValue.ToString
 			Dim source As System.IO.TextReader
 			Dim destination As System.IO.TextWriter
+			Dim downloadedFileExists As Boolean = Not String.IsNullOrEmpty(downloadedTextFilePath) AndAlso System.IO.File.Exists(downloadedTextFilePath)
 			If textValue = kCura.DynamicFields.Types.Constants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN Then
-				If Me.Settings.SelectedTextField.AvfId = textField.AvfId Then
+				If Me.Settings.SelectedTextField.AvfId = textField.AvfId AndAlso downloadedFileExists Then
 					source = Me.GetLongTextStream(downloadedTextFilePath, textField)
 				Else
 					source = Me.GetLongTextStream(artifact, textField)
