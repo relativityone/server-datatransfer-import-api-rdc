@@ -15,6 +15,9 @@ Namespace kCura.WinEDDS
 			Me.InitLoadFile(caseArtifactID, artifactTypeID)
 		End Sub
 
+		Public Function ToLoadFile() As kCura.WinEDDS.LoadFile
+			Return _loadFile
+		End Function
 
 		Private Sub InitLoadFile(ByVal caseArtifactID As Int32, ByVal artifactTypeID As Int32)
 			_loadFile = New LoadFile
@@ -45,6 +48,8 @@ Namespace kCura.WinEDDS
 			_loadFile.SelectedCasePath = _loadFile.CaseInfo.DocumentPath
 			_loadFile.SelectedIdentifierField = _docFields.IdentifierFields(0)
 		End Sub
+
+
 
 #Region " Required "
 
@@ -186,13 +191,28 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
+		Public WriteOnly Property ExtractedTextFileEncoding() As System.Text.Encoding
+			Set(ByVal Value As System.Text.Encoding)
+				_loadFile.ExtractedTextFileEncoding = Value
+			End Set
+		End Property
+
+		Public WriteOnly Property FullTextColumnContainsFileLocation() As Boolean
+			Set(ByVal Value As Boolean)
+				_loadFile.FullTextColumnContainsFileLocation = Value
+			End Set
+		End Property
+
+		Public WriteOnly Property NativeFilePathColumn() As String
+			Set(ByVal Value As String)
+				_loadFile.NativeFilePathColumn = Value
+			End Set
+		End Property
+
+
 		Public Overrides Sub Save(ByVal location As String)
 			MyBase.SaveObject(location, _loadFile)
 		End Sub
-
-		Public Function ToLoadFile() As LoadFile
-			Return _loadFile
-		End Function
 
 	End Class
 
