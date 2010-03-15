@@ -1,7 +1,7 @@
 ﻿<Project DefaultTargets="Build" ToolsVersion="3.5" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectType>Local</ProjectType>
-    <ProductVersion>8.0.30729</ProductVersion>
+    <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{86550F4B-BEF4-4458-9536-7B5C6F68B0E2}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -21,7 +21,7 @@
     <OutputType>Library</OutputType>
     <OptionCompare>Binary</OptionCompare>
     <OptionExplicit>On</OptionExplicit>
-    <OptionStrict>On</OptionStrict>
+    <OptionStrict>Off</OptionStrict>
     <RootNamespace>
     </RootNamespace>
     <StartupObject>
@@ -72,34 +72,6 @@
     <DebugType>none</DebugType>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="kCura.Data.RowDataGateway">
-      <Name>kCura.Data.RowDataGateway</Name>
-      <HintPath>..\..\kCura\kCura.Data.RowDataGateway\bin\kCura.Data.RowDataGateway.dll</HintPath>
-    </Reference>
-    <Reference Include="kCura.DynamicFields.Types">
-      <Name>kCura.DynamicFields.Types</Name>
-      <HintPath>..\kCura.EDDS.WinForm\bin\kCura.DynamicFields.Types.dll</HintPath>
-    </Reference>
-    <Reference Include="kCura.EDDS.Types">
-      <Name>kCura.EDDS.Types</Name>
-      <HintPath>..\kCura.EDDS.WinForm\bin\kCura.EDDS.Types.dll</HintPath>
-    </Reference>
-    <Reference Include="kCura.Utility">
-      <Name>kCura.Utility</Name>
-      <HintPath>..\kCura.EDDS.WinForm\bin\kCura.Utility.dll</HintPath>
-    </Reference>
-    <Reference Include="kCura.Windows.Process">
-      <Name>kCura.Windows.Process</Name>
-      <HintPath>..\kCura.EDDS.WinForm\bin\kCura.Windows.Process.dll</HintPath>
-    </Reference>
-    <Reference Include="kCura.WinEDDS">
-      <Name>kCura.WinEDDS</Name>
-      <HintPath>..\kCura.EDDS.WinForm\bin\kCura.WinEDDS.dll</HintPath>
-    </Reference>
-    <Reference Include="NullableTypes">
-      <Name>NullableTypes</Name>
-      <HintPath>..\kCura.EDDS.WinForm\bin\NullableTypes.dll</HintPath>
-    </Reference>
     <Reference Include="System">
       <Name>System</Name>
     </Reference>
@@ -112,6 +84,36 @@
     <Reference Include="System.Xml">
       <Name>System.XML</Name>
     </Reference>
+    <ProjectReference Include="..\..\kCura\kCura.Data.RowDataGateway\kCura.Data.RowDataGateway.vbproj">
+      <Name>kCura.Data.RowDataGateway</Name>
+      <Project>{DF390E60-B113-442C-9985-6D3E7ECB451D}</Project>
+      <Package>{F184B08F-C81C-45F6-A57F-5ABD9991F28F}</Package>
+    </ProjectReference>
+    <ProjectReference Include="..\..\kCura\kCura.DynamicFields.Types\kCura.DynamicFields.Types.vbproj">
+      <Name>kCura.DynamicFields.Types</Name>
+      <Project>{E8C68A03-7FC4-40AD-BB0B-5F22A3E6447E}</Project>
+      <Package>{F184B08F-C81C-45F6-A57F-5ABD9991F28F}</Package>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.EDDS.Types\kCura.EDDS.Types.vbproj">
+      <Name>kCura.EDDS.Types</Name>
+      <Project>{6E14C37A-96F5-4488-9E2B-2C1A21C4D140}</Project>
+      <Package>{F184B08F-C81C-45F6-A57F-5ABD9991F28F}</Package>
+    </ProjectReference>
+    <ProjectReference Include="..\..\kCura\kCura.Utility\kCura.Utility.vbproj">
+      <Name>kCura.Utility</Name>
+      <Project>{E3450350-56E3-4FE9-A47A-4D24960BCBDB}</Project>
+      <Package>{F184B08F-C81C-45F6-A57F-5ABD9991F28F}</Package>
+    </ProjectReference>
+    <ProjectReference Include="..\..\kCura\kCura.Windows.Process\kCura.Windows.Process.vbproj">
+      <Name>kCura.Windows.Process</Name>
+      <Project>{B092D1B2-909B-4EF0-9369-A81675C3FC18}</Project>
+      <Package>{F184B08F-C81C-45F6-A57F-5ABD9991F28F}</Package>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.WinEDDS\kCura.WinEDDS.vbproj">
+      <Name>kCura.WinEDDS</Name>
+      <Project>{F16A2219-5DAC-4F2B-89B0-6BD1243CBF8F}</Project>
+      <Package>{F184B08F-C81C-45F6-A57F-5ABD9991F28F}</Package>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Import Include="Microsoft.VisualBasic" />
@@ -124,16 +126,19 @@
     <Compile Include="AssemblyInfo.vb">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="QueryImporter.vb">
+    <Compile Include="IDataReaderImporter.vb">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="QueryImporterProcess.vb">
+    <Compile Include="IDataReaderImporterProcess.vb">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="QueryReader.vb">
+    <Compile Include="IDataReaderLoadFile.vb">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="QueryReaderInitializationArgs.vb">
+    <Compile Include="IDataReaderReader.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="IDataReaderReaderInitializationArgs.vb">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
