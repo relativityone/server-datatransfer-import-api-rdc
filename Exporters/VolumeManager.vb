@@ -1059,16 +1059,24 @@ Namespace kCura.WinEDDS
 				Else
 					If TypeOf val Is Byte() Then val = System.Text.Encoding.Unicode.GetString(DirectCast(val, Byte()))
 					If field.FieldType = DynamicFields.Types.FieldTypeHelper.FieldType.Date AndAlso field.Category <> DynamicFields.Types.FieldCategory.MultiReflected Then
-						If Me.Settings.LoadFileIsHtml Then
-							Dim datetime As String = kCura.Utility.NullableTypesHelper.DBNullString(val)
-							If datetime Is Nothing OrElse datetime = "" Then
-								val = ""
-							Else
-								val = System.DateTime.Parse(datetime, System.Globalization.CultureInfo.InvariantCulture).ToString(field.FormatString)
-							End If
-						Else
-							val = Me.ToExportableDateString(val, field.FormatString)
+						If val Is System.DBNull.Value Then
+							val = String.Empty
+						ElseIf TypeOf val Is System.DateTime Then
+							val = DirectCast(val, System.DateTime).ToString(field.FormatString)
 						End If
+						'If TypeOf val Is System.datete Then
+
+						'End If
+						'If Me.Settings.LoadFileIsHtml Then
+						'	Dim datetime As String = kCura.Utility.NullableTypesHelper.DBNullString(val)
+						'	If datetime Is Nothing OrElse datetime = "" Then
+						'		val = ""
+						'	Else
+						'		val = System.DateTime.Parse(datetime, System.Globalization.CultureInfo.InvariantCulture).ToString(field.FormatString)
+						'	End If
+						'Else
+						'	val = Me.ToExportableDateString(val, field.FormatString)
+						'End If
 					End If
 					fieldValue = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(kCura.Utility.NullableTypesHelper.DBNullString(val))
 					If field.IsMultiValueField Then
