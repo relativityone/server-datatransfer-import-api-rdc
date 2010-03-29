@@ -195,44 +195,36 @@
       <Name>System.XML</Name>
     </Reference>
     <ProjectReference Include="..\..\kCura\kCura.Data\kCura.Data.vbproj">
-      <Name>kCura.Data</Name>
       <Project>{6C4D3211-85B6-4A83-9356-7C7F0C319C75}</Project>
-      <Package>{F184B08F-C81C-45F6-A57F-5ABD9991F28F}</Package>
+      <Name>kCura.Data</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\kCura\kCura.DynamicFields.Types\kCura.DynamicFields.Types.vbproj">
-      <Name>kCura.DynamicFields.Types</Name>
       <Project>{E8C68A03-7FC4-40AD-BB0B-5F22A3E6447E}</Project>
-      <Package>{F184B08F-C81C-45F6-A57F-5ABD9991F28F}</Package>
+      <Name>kCura.DynamicFields.Types</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\kCura\kCura.ImageValidator\kCura.ImageValidator.vbproj">
-      <Name>kCura.ImageValidator</Name>
       <Project>{C2FD8BF7-723A-4D40-A201-CD7458678A70}</Project>
-      <Package>{F184B08F-C81C-45F6-A57F-5ABD9991F28F}</Package>
+      <Name>kCura.ImageValidator</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\kCura\kCura.OI.FileID\kCura.OI.FileID.vbproj">
-      <Name>kCura.OI.FileID</Name>
       <Project>{CCEFD50F-0840-402D-AB16-C93F8E579B8B}</Project>
-      <Package>{F184B08F-C81C-45F6-A57F-5ABD9991F28F}</Package>
+      <Name>kCura.OI.FileID</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\kCura\kCura.Utility\kCura.Utility.vbproj">
-      <Name>kCura.Utility</Name>
       <Project>{E3450350-56E3-4FE9-A47A-4D24960BCBDB}</Project>
-      <Package>{F184B08F-C81C-45F6-A57F-5ABD9991F28F}</Package>
+      <Name>kCura.Utility</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\kCura\kCura.Windows.Process\kCura.Windows.Process.vbproj">
-      <Name>kCura.Windows.Process</Name>
       <Project>{B092D1B2-909B-4EF0-9369-A81675C3FC18}</Project>
-      <Package>{F184B08F-C81C-45F6-A57F-5ABD9991F28F}</Package>
+      <Name>kCura.Windows.Process</Name>
     </ProjectReference>
     <ProjectReference Include="..\kCura.EDDS.Import\kCura.EDDS.Import.vbproj">
-      <Name>kCura.EDDS.Import</Name>
       <Project>{94940707-AFFE-47EB-BD70-5ADE8F7C8A36}</Project>
-      <Package>{F184B08F-C81C-45F6-A57F-5ABD9991F28F}</Package>
+      <Name>kCura.EDDS.Import</Name>
     </ProjectReference>
     <ProjectReference Include="..\kCura.EDDS.Types\kCura.EDDS.Types.vbproj">
-      <Name>kCura.EDDS.Types</Name>
       <Project>{6E14C37A-96F5-4488-9E2B-2C1A21C4D140}</Project>
-      <Package>{F184B08F-C81C-45F6-A57F-5ABD9991F28F}</Package>
+      <Name>kCura.EDDS.Types</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
