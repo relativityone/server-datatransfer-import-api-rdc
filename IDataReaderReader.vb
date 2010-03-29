@@ -219,34 +219,34 @@ Namespace kCura.WinEDDS.ImportExtension
 		End Sub
 
 		Private Sub SetFieldValue(ByVal field As Api.ArtifactField, ByVal value As Object)
+			RaiseEvent StatusMessage("Field ArtifactID = " & field.ArtifactID)
 			Select Case field.Type
 				Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Boolean
-					field.Value = kCura.Utility.NullableTypesHelper.ToNullableBoolean(value)
-					' I updated this with the above...delete later if there are no issues. Obi 3/15/10
-					'field.Value = DBNullConvert.ToNullableBoolean(value) 
-				Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Code, kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Object, kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Text, kCura.DynamicFields.Types.FieldTypeHelper.FieldType.User, kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Varchar
-					If value Is Nothing Then value = ""
-					field.Value = value.ToString
+					field.Value = kCura.Utility.NullableTypesHelper.DBNullConvertToNullable(Of Boolean)(value)
+				Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Code
+					field.Value = kCura.Utility.NullableTypesHelper.DBNullString(value)
+				Case DynamicFields.Types.FieldTypeHelper.FieldType.Text
+					field.Value = kCura.Utility.NullableTypesHelper.DBNullString(value)
+				Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.User
+					field.Value = kCura.Utility.NullableTypesHelper.DBNullString(value)
+				Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Varchar
+					field.Value = kCura.Utility.NullableTypesHelper.DBNullString(value)
+				Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Object
+					field.Value = kCura.Utility.NullableTypesHelper.DBNullString(value)
 				Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Currency, kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Decimal
-					field.Value = kCura.Utility.NullableTypesHelper.ToNullableDecimal(value)
-					' I updated this with the above...delete later if there are no issues. Obi 3/15/10
-					'field.Value = DBNullConvert.ToNullableDecimal(value)
+					field.Value = kCura.Utility.NullableTypesHelper.DBNullConvertToNullable(Of Decimal)(value)
 				Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Date
-					field.Value = kCura.Utility.NullableTypesHelper.ToNullableDateTime(value)
-					' I updated this with the above...delete later if there are no issues. Obi 3/15/10
-					'field.Value = DBNullConvert.ToNullableDateTime(value)
+					field.Value = kCura.Utility.NullableTypesHelper.DBNullConvertToNullable(Of System.DateTime)(value)
 				Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.File
-					field.Value = value.ToString
+					field.Value = kCura.Utility.NullableTypesHelper.DBNullString(value)
+					'field.Value = value.ToString
 				Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Integer
-					field.Value = kCura.Utility.NullableTypesHelper.ToNullableInt32(value)
-					' I updated this with the above...delete later if there are no issues. Obi 3/15/10
-					'field.Value = DBNullConvert.ToNullableInt32(value)
+					field.Value = kCura.Utility.NullableTypesHelper.DBNullConvertToNullable(Of Int32)(value)
+					'field.Value = kCura.Utility.NullableTypesHelper.ToNullableInt32(value)
 				Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.MultiCode, kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Objects
-					If value Is Nothing Then value = String.Empty
+					field.Value = kCura.Utility.NullableTypesHelper.DBNullString(value)
 					Dim xml As String = value.ToString
-					If xml = String.Empty Then
-						field.Value = Nothing
-					Else
+					If Not xml = String.Empty Then
 						xml = FormatMultiCodeValueToXml(xml)
 						Dim nodes As New System.Collections.ArrayList
 						Dim doc As New System.Xml.XmlDocument
@@ -255,6 +255,8 @@ Namespace kCura.WinEDDS.ImportExtension
 							nodes.Add(node.InnerText)
 						Next
 						field.Value = DirectCast(nodes.ToArray(GetType(String)), String())
+					Else
+						field.Value = New String() {}
 					End If
 				Case Else
 					Throw New System.ArgumentException("Unsupported field type '" & field.Type.ToString & "'")
