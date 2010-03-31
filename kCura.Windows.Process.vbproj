@@ -134,16 +134,6 @@
     <Reference Include="System.Xml">
       <Name>System.XML</Name>
     </Reference>
-    <ProjectReference Include="..\kCura.Utility\kCura.Utility.vbproj">
-      <Name>kCura.Utility</Name>
-      <Project>{E3450350-56E3-4FE9-A47A-4D24960BCBDB}</Project>
-      <Package>{F184B08F-C81C-45F6-A57F-5ABD9991F28F}</Package>
-    </ProjectReference>
-    <ProjectReference Include="..\kCura.Windows.Forms\kCura.Windows.Forms.vbproj">
-      <Name>kCura.Windows.Forms</Name>
-      <Project>{0DABBD47-5A46-429F-9D90-C95A58611E0A}</Project>
-      <Package>{F184B08F-C81C-45F6-A57F-5ABD9991F28F}</Package>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Import Include="Microsoft.VisualBasic" />
@@ -200,6 +190,16 @@
     <EmbeddedResource Include="ProcessForm.resx">
       <DependentUpon>ProcessForm.vb</DependentUpon>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\kCura.Utility\kCura.Utility.vbproj">
+      <Project>{E3450350-56E3-4FE9-A47A-4D24960BCBDB}</Project>
+      <Name>kCura.Utility</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.Windows.Forms\kCura.Windows.Forms.vbproj">
+      <Project>{0DABBD47-5A46-429F-9D90-C95A58611E0A}</Project>
+      <Name>kCura.Windows.Forms</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="My Project\" />
