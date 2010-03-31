@@ -1,5 +1,5 @@
 Namespace kCura.WinEDDS.ImportExtension
-	Public Class IDataReaderReaderInitializationArgs
+	Public Class DataReaderReaderInitializationArgs
 
 		Private _allFields As kCura.WinEDDS.Api.ArtifactFieldCollection
 		Private _artifactTypeID As Int32

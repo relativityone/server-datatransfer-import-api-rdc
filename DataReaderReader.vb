@@ -2,7 +2,7 @@ Imports kCura.WinEDDS
 'Imports NullableTypes
 Imports NullableTypes.HelperFunctions
 Namespace kCura.WinEDDS.ImportExtension
-	Public Class IDataReaderReader
+	Public Class DataReaderReader
 		Implements kCura.WinEDDS.Api.IArtifactReader
 
 		Private Const _KCURAMARKERFILENAME As String = "kcuramarkerfilename"
@@ -15,7 +15,7 @@ Namespace kCura.WinEDDS.ImportExtension
 		Private _allFields As Api.ArtifactFieldCollection
 		Private _tempLocalDirectory As String
 
-		Public Sub New(ByVal args As IDataReaderReaderInitializationArgs, ByVal fieldMap As kCura.WinEDDS.LoadFile, ByVal reader As System.Data.IDataReader)
+		Public Sub New(ByVal args As DataReaderReaderInitializationArgs, ByVal fieldMap As kCura.WinEDDS.LoadFile, ByVal reader As System.Data.IDataReader)
 			_reader = reader
 			If _reader Is Nothing Then Throw New NullReferenceException("The reader being passed into this IDataReaderReader is null")
 			If _reader.IsClosed = True OrElse _reader.FieldCount = 0 Then Throw New ArgumentException("The reader being passed into this IDataReaderReader is empty")

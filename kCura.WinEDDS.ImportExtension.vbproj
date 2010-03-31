@@ -144,10 +144,6 @@
     <Reference Include="System.Xml">
       <Name>System.XML</Name>
     </Reference>
-    <ProjectReference Include="..\..\kCura\kCura.Data.RowDataGateway\kCura.Data.RowDataGateway.vbproj">
-      <Project>{DF390E60-B113-442C-9985-6D3E7ECB451D}</Project>
-      <Name>kCura.Data.RowDataGateway</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\kCura\kCura.DynamicFields.Types\kCura.DynamicFields.Types.vbproj">
       <Project>{E8C68A03-7FC4-40AD-BB0B-5F22A3E6447E}</Project>
       <Name>kCura.DynamicFields.Types</Name>
@@ -181,19 +177,19 @@
     <Compile Include="AssemblyInfo.vb">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="IDataReaderImporter.vb">
+    <Compile Include="DataReaderImporter.vb">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="IDataReaderImporterProcess.vb">
+    <Compile Include="DataReaderImporterProcess.vb">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="IDataReaderLoadFile.vb">
+    <Compile Include="DataReaderLoadFile.vb">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="IDataReaderReader.vb">
+    <Compile Include="DataReaderReader.vb">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="IDataReaderReaderInitializationArgs.vb">
+    <Compile Include="DataReaderReaderInitializationArgs.vb">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>

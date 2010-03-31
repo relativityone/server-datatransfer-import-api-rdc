@@ -1,16 +1,16 @@
 Namespace kCura.WinEDDS.ImportExtension
-	Public Class IDataReaderImporter
+	Public Class DataReaderImporter
 		Inherits kCura.WinEDDS.BulkLoadFileImporter
 
 		Private _sourceReader As System.Data.IDataReader
 
-		Public Sub New(ByVal loadFile As kCura.WinEDDS.ImportExtension.IDataReaderLoadFile)
+		Public Sub New(ByVal loadFile As kCura.WinEDDS.ImportExtension.DataReaderLoadFile)
 			MyBase.New(loadFile, Nothing, 0, True, System.Guid.NewGuid, True)
 		End Sub
 
 		Protected Overrides Function GetArtifactReader() As kCura.WinEDDS.Api.IArtifactReader
 			Dim collection As New kCura.WinEDDS.Api.ArtifactFieldCollection
-			Dim thisSettings As kCura.WinEDDS.ImportExtension.IDataReaderLoadFile = DirectCast(_settings, kCura.WinEDDS.ImportExtension.IDataReaderLoadFile)
+			Dim thisSettings As kCura.WinEDDS.ImportExtension.DataReaderLoadFile = DirectCast(_settings, kCura.WinEDDS.ImportExtension.DataReaderLoadFile)
 			_sourceReader = thisSettings.DataReader
 			Dim s As New kCura.WinEDDS.Service.FieldQuery(_settings.Credentials, _settings.CookieContainer)
 
@@ -47,10 +47,10 @@ Namespace kCura.WinEDDS.ImportExtension
 						End If
 					End If
 				Catch ex As IndexOutOfRangeException
-					'field.Displayname is not in the IDataReader, forget about it and continue
+					'field.Displayname is not in the DataReader, forget about it and continue
 				End Try
 			Next
-			Dim retval As New IDataReaderReader(New IDataReaderReaderInitializationArgs(collection, _settings.ArtifactTypeID), _settings, _sourceReader)
+			Dim retval As New DataReaderReader(New DataReaderReaderInitializationArgs(collection, _settings.ArtifactTypeID), _settings, _sourceReader)
 			Return retval
 		End Function
 
