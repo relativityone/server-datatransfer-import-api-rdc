@@ -59,13 +59,14 @@ Namespace kCura.WinEDDS.Service
 							.AllowHtml = CType(dv(i)("AllowHTML"), Boolean)
 							.AssociativeArtifactTypeID = kCura.Utility.NullableTypesHelper.DBNullConvertToNullable(Of Int32)(dv(i)("AssociativeArtifactTypeID"))
 						End With
-						fields.Add(field)
+						If field.AssociativeArtifactTypeID.HasValue AndAlso kCura.EDDS.Types.ArtifactTypeHelper.IsDynamic(field.AssociativeArtifactTypeID.Value) Then fields.Add(field)
 					End If
 				End If
 
 			Next
 			Return DirectCast(fields.ToArray(GetType(kCura.EDDS.WebAPI.DocumentManagerBase.Field)), kCura.EDDS.WebAPI.DocumentManagerBase.Field())
 		End Function
+
 
 		Public Function RetrieveAllAsDocumentFieldCollection(ByVal caseContextArtifactID As Int32, ByVal artifactTypeID As Int32) As DocumentFieldCollection
 			Dim retval As New DocumentFieldCollection
