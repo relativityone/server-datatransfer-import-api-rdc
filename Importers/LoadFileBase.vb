@@ -326,7 +326,7 @@ Namespace kCura.WinEDDS
 						End If
 					End If
 				Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.MultiCode
-					Dim value As String()
+					Dim value As String() = Nothing
 					If Not field.Value Is Nothing Then value = DirectCast(field.Value, String())
 					If field.Value Is Nothing Then value = New System.String() {}
 					If value.Length = 0 Then

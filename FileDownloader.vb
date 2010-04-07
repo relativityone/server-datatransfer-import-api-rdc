@@ -166,7 +166,7 @@ Namespace kCura.WinEDDS
 		Private Function DoWebDownloadFile(ByVal localFilePath As String, ByVal artifactID As Int32, ByVal remoteFileGuid As String, ByVal appID As String, ByVal remotelocationkey As String, ByVal forFullText As Boolean, ByVal longTextFieldArtifactID As Int32, ByVal fileID As Int32, ByVal fileFieldArtifactID As Int32) As Boolean
 			Dim now As Long = System.DateTime.Now.Ticks
 			Dim tryNumber As Int32 = 0
-			Dim localStream As System.IO.Stream
+			Dim localStream As System.IO.Stream = Nothing
 			Try
 				Dim remoteuri As String
 				Dim downloadUrl As String = _downloadUrl.TrimEnd("/"c) & "/"

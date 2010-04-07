@@ -196,6 +196,7 @@ Namespace kCura.WinEDDS
 					End If
 				End Try
 			End While
+			Return Nothing
 		End Function
 
 		Public Function PushImageBatch(ByVal bulkLoadFilePath As String, ByVal isFinal As Boolean) As Object
@@ -250,6 +251,7 @@ Namespace kCura.WinEDDS
 			_currentStatisticsSnapshot = _statistics.ToDictionary
 			_snapshotLastModifiedOn = System.DateTime.Now
 			ManageErrors()
+			Return Nothing
 		End Function
 
 		Public Overloads Overrides Function ReadFile(ByVal path As String) As Object
@@ -311,6 +313,7 @@ Namespace kCura.WinEDDS
 			Catch ex As System.Exception
 				Me.CompleteError(ex)
 			End Try
+			Return Nothing
 		End Function
 
 		Public Event EndRun(ByVal success As Boolean, ByVal runID As String)
@@ -450,6 +453,7 @@ Namespace kCura.WinEDDS
 			Catch ex As Exception
 				Throw
 			End Try
+			Return Nothing
 		End Function
 
 		Private Sub AutoNumberImages(ByVal lines As ArrayList)
@@ -555,9 +559,9 @@ Namespace kCura.WinEDDS
 			_errorCount += 1
 			If _errorMessageFileLocation = "" Then _errorMessageFileLocation = System.IO.Path.GetTempFileName
 			Dim errorMessageFileWriter As New System.IO.StreamWriter(_errorMessageFileLocation, True, System.Text.Encoding.Default)
-			If _errorCount < Me.MaxNumberOfErrorsInGrid Then
+			If _errorCount < MaxNumberOfErrorsInGrid Then
 				RaiseEvent ReportErrorEvent(row)
-			ElseIf _errorCount = Me.MaxNumberOfErrorsInGrid Then
+			ElseIf _errorCount = MaxNumberOfErrorsInGrid Then
 				Dim moretobefoundMessage As New System.Collections.Hashtable
 				moretobefoundMessage.Add("Message", "Maximum number of errors for display reached.  Export errors to view full list.")
 				RaiseEvent ReportErrorEvent(moretobefoundMessage)
@@ -672,10 +676,10 @@ Namespace kCura.WinEDDS
 			If Not _bulkImportManager.ImageRunHasErrors(_caseInfo.ArtifactID, _runId) Then Exit Sub
 			If _errorMessageFileLocation = "" Then _errorMessageFileLocation = System.IO.Path.GetTempFileName
 			If _errorRowsFileLocation = "" Then _errorRowsFileLocation = System.IO.Path.GetTempFileName
-			Dim w As System.IO.StreamWriter
-			Dim r As System.IO.StreamReader
+			Dim w As System.IO.StreamWriter = Nothing
+			Dim r As System.IO.StreamReader = Nothing
 
-			Dim sr As kCura.Utility.GenericCsvReader
+			Dim sr As kCura.Utility.GenericCsvReader = Nothing
 			Try
 				With _bulkImportManager.GenerateImageErrorFiles(_caseInfo.ArtifactID, _runId, True, _keyFieldDto.ArtifactID)
 					Me.RaiseStatusEvent(Windows.Process.EventType.Status, "Retrieving errors from server", Me.CurrentLineNumber, Me.CurrentLineNumber)

@@ -70,6 +70,8 @@ Namespace kCura.WinEDDS
 			Get
 				If Not _volumeManager Is Nothing Then
 					Return _volumeManager.ErrorLogFileName
+				Else
+					Return Nothing
 				End If
 			End Get
 		End Property
@@ -88,7 +90,7 @@ Namespace kCura.WinEDDS
 			_folderManager = New kCura.WinEDDS.Service.FolderManager(exportFile.Credential, exportFile.CookieContainer)
 			_documentManager = New kCura.WinEDDS.Service.DocumentManager(exportFile.Credential, exportFile.CookieContainer)
 			_downloadHandler = New FileDownloader(exportFile.Credential, exportFile.CaseInfo.DocumentPath & "\EDDS" & exportFile.CaseInfo.ArtifactID, exportFile.CaseInfo.DownloadHandlerURL, exportFile.CookieContainer, kCura.WinEDDS.Service.Settings.AuthenticationToken)
-			_downloadHandler.TotalWebTime = 0
+			FileDownloader.TotalWebTime = 0
 			_productionManager = New kCura.WinEDDS.Service.ProductionManager(exportFile.Credential, exportFile.CookieContainer)
 			_auditManager = New kCura.WinEDDS.Service.AuditManager(exportFile.Credential, exportFile.CookieContainer)
 			_fieldManager = New kCura.WinEDDS.Service.FieldManager(exportFile.Credential, exportFile.CookieContainer)
@@ -130,21 +132,13 @@ Namespace kCura.WinEDDS
 			Throw New System.Exception("Full text field somehow not in all fields")
 		End Function
 		Private Function Search() As Boolean
-			Dim fileTable As System.Data.DataTable
-			Dim fullTextFiles As System.Data.DataTable
-			Dim fileURI As String
-			Dim fileName As String
-			Dim fullTextFileGuid As String
-			Dim documentSpot As Int32
-			Dim count As Int32
-			Dim volumeFile As String
 			Dim typeOfExportDisplayString As String = ""
 			Dim fileCount As Int32 = 0
 			Dim errorOutputFilePath As String = _exportFile.FolderPath & "\" & _exportFile.LoadFilesPrefix & "_img_errors.txt"
 			If System.IO.File.Exists(errorOutputFilePath) AndAlso _exportFile.Overwrite Then kCura.Utility.File.Delete(errorOutputFilePath)
 			Me.WriteUpdate("Retrieving export data from the server...")
 			Dim startTicks As Int64 = System.DateTime.Now.Ticks
-			Dim exportInitializationArgs As kCura.EDDS.WebAPI.ExportManagerBase.InitializationResults
+			Dim exportInitializationArgs As kCura.EDDS.WebAPI.ExportManagerBase.InitializationResults = Nothing
 			Dim columnHeaderString As String = Me.LoadColumns
 			Dim allAvfIds As New System.Collections.Generic.List(Of Int32)
 			For i As Int32 = 0 To _columns.Count - 1
@@ -382,7 +376,6 @@ Namespace kCura.WinEDDS
 		Private Function PrepareOriginalImages(ByVal imagesView As System.Data.DataView, ByVal documentArtifactID As Int32, ByVal batesBase As String, ByVal artifact As Exporters.ObjectExportInfo) As System.Collections.ArrayList
 			Dim retval As New System.Collections.ArrayList
 			If Not Me.Settings.ExportImages Then Return retval
-			Dim item As Pair
 			imagesView.RowFilter = "DocumentArtifactID = " & documentArtifactID.ToString
 			Dim i As Int32 = 0
 			If imagesView.Count > 0 Then
@@ -439,7 +432,6 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Private Function LoadColumns() As String
-			Dim count As Int32
 			'Dim table As System.Data.DataTable
 			Dim retString As New System.Text.StringBuilder
 			If _exportFile.LoadFileIsHtml Then

@@ -110,7 +110,6 @@ Namespace kCura.WinEDDS
 			Dim artifactRow As System.Data.DataRow
 			Dim artifactsDataSet As System.Data.DataSet = _manager.RetrieveArtifacts(_caseContextArtifactID, rootArtifactID)
 			artifactsDataSet.Relations.Add("NodeRelation", artifactsDataSet.Tables(0).Columns("ArtifactID"), artifactsDataSet.Tables(0).Columns("ParentArtifactID"))
-			Dim path As String
 			For Each artifactRow In artifactsDataSet.Tables(0).Rows
 				If TypeOf artifactRow("ParentArtifactID") Is DBNull Then
 					Dim f As New ArtifactCacheItem("", _nestedItemDelimiter, _rootArtifactID)
