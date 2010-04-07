@@ -1435,6 +1435,7 @@ Namespace kCura.EDDS.WinForm
 			Dim userManager As New kCura.WinEDDS.Service.UserManager(cred, _cookieContainer)
 			Dim relativityManager As New kCura.WinEDDS.Service.RelativityManager(cred, _cookieContainer)
 			Try
+				Throw New System.Exception("balls")
 				CheckVersion(cred)
 				If userManager.Login(cred.UserName, cred.Password) Then
 
@@ -1456,7 +1457,14 @@ Namespace kCura.EDDS.WinForm
 					Me.ChangeWebServiceURL("The current web services URL was resolved but is not configured correctly. Try a new URL?")
 				End If
 			Catch ex As System.Exception
-				Me.ReLogin("Unspecified login error. Try again?")
+				Dim x As New ErrorDialog
+				x.Text = "Unrecognized login error.  Try again?"
+				x.Initialize(ex, x.Text)
+				If x.ShowDialog = DialogResult.OK Then
+					NewLogin()
+				Else
+					ExitApplication()
+				End If
 			End Try
 		End Sub
 

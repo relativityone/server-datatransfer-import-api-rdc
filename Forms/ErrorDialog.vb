@@ -35,7 +35,7 @@ Public Class ErrorDialog
 	Friend WithEvents _errorText As System.Windows.Forms.TextBox
 	Friend WithEvents LinkLabel1 As System.Windows.Forms.LinkLabel
 	<System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
-		Dim resources As System.Resources.ResourceManager = New System.Resources.ResourceManager(GetType(ErrorDialog))
+		Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(ErrorDialog))
 		Me.Label1 = New System.Windows.Forms.Label
 		Me._okButton = New System.Windows.Forms.Button
 		Me._cancelButton = New System.Windows.Forms.Button
@@ -76,14 +76,13 @@ Public Class ErrorDialog
 		Me._errorText.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
 		Me._errorText.Size = New System.Drawing.Size(288, 192)
 		Me._errorText.TabIndex = 3
-		Me._errorText.Text = ""
 		Me._errorText.Visible = False
 		'
 		'LinkLabel1
 		'
 		Me.LinkLabel1.Location = New System.Drawing.Point(4, 60)
 		Me.LinkLabel1.Name = "LinkLabel1"
-		Me.LinkLabel1.Size = New System.Drawing.Size(88, 16)
+		Me.LinkLabel1.Size = New System.Drawing.Size(126, 16)
 		Me.LinkLabel1.TabIndex = 4
 		Me.LinkLabel1.TabStop = True
 		Me.LinkLabel1.Text = "Show Error Text"
@@ -107,6 +106,7 @@ Public Class ErrorDialog
 		Me.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide
 		Me.Text = "Error"
 		Me.ResumeLayout(False)
+		Me.PerformLayout()
 
 	End Sub
 
