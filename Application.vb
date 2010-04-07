@@ -1435,7 +1435,6 @@ Namespace kCura.EDDS.WinForm
 			Dim userManager As New kCura.WinEDDS.Service.UserManager(cred, _cookieContainer)
 			Dim relativityManager As New kCura.WinEDDS.Service.RelativityManager(cred, _cookieContainer)
 			Try
-				Throw New System.Exception("balls")
 				CheckVersion(cred)
 				If userManager.Login(cred.UserName, cred.Password) Then
 
