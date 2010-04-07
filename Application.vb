@@ -122,6 +122,7 @@ Namespace kCura.EDDS.WinForm
 						Throw
 					End If
 				End Try
+				Return Nothing
 			End Get
 		End Property
 
@@ -150,6 +151,7 @@ Namespace kCura.EDDS.WinForm
 						Throw
 					End If
 				End Try
+				Return Nothing
 			End Get
 		End Property
 
@@ -278,6 +280,8 @@ Namespace kCura.EDDS.WinForm
 			Dim retval As DocumentFieldCollection = CurrentFields(artifactTypeID, refresh)
 			If Not retval Is Nothing Then
 				Return CurrentFields(artifactTypeID, refresh).Names()
+			Else
+				Return Nothing
 			End If
 		End Function
 
@@ -285,6 +289,8 @@ Namespace kCura.EDDS.WinForm
 			Dim retval As DocumentFieldCollection = CurrentNonFileFields(artifactTypeID, refresh)
 			If Not retval Is Nothing Then
 				Return CurrentNonFileFields(artifactTypeID, refresh).Names()
+			Else
+				Return Nothing
 			End If
 		End Function
 
@@ -344,7 +350,7 @@ Namespace kCura.EDDS.WinForm
 		End Function
 
 		Private Function IdentifierFieldIsMappedButNotKey(ByVal fieldMap As WinEDDS.LoadFileFieldMap, ByVal keyFieldID As Int32) As Boolean
-			Dim idField As DocumentField
+			Dim idField As DocumentField = Nothing
 			For Each item As LoadFileFieldMap.LoadFileFieldMapItem In fieldMap
 				If Not item.DocumentField Is Nothing AndAlso Not item.NativeFileColumnIndex = -1 And item.DocumentField.FieldCategory = DynamicFields.Types.FieldCategory.Identifier Then
 					idField = item.DocumentField
@@ -429,7 +435,7 @@ Namespace kCura.EDDS.WinForm
 					Throw
 				End If
 			End Try
-
+			Return Nothing
 			'Dim dsFactory As New kCura.Utility.DataSetFactory
 			'dsFactory.AddColumn("ArtifactID", kCura.Utility.DataSetFactory.DataType.Integer)
 			'dsFactory.AddColumn("ParentArtifactID", kCura.Utility.DataSetFactory.DataType.Integer)
@@ -460,6 +466,7 @@ Namespace kCura.EDDS.WinForm
 					Throw
 				End If
 			End Try
+			Return Nothing
 		End Function
 
 		Public Sub SelectCaseFolder(ByVal folderInfo As FolderInfo)
@@ -595,6 +602,7 @@ Namespace kCura.EDDS.WinForm
 			Catch ex As System.Exception
 				kCura.EDDS.WinForm.Utility.ThrowExceptionToGUI(ex)
 			End Try
+			Return Nothing
 		End Function
 
 		Private Sub AddRow(ByVal dt As DataTable, ByVal row As System.Collections.ArrayList, ByVal fields As Api.ArtifactField(), ByRef counter As Int32)
@@ -673,9 +681,10 @@ Namespace kCura.EDDS.WinForm
 			Catch ex As Exception
 				kCura.EDDS.WinForm.Utility.ThrowExceptionToGUI(ex)
 			End Try
+			Return Nothing
 		End Function
 
-		Private Function AddFoldersToTotalFolders(ByVal folderPath As String) As String
+		Private Sub AddFoldersToTotalFolders(ByVal folderPath As String)
 			If folderPath <> "" AndAlso folderPath <> "\" Then
 				If folderPath.LastIndexOf("\"c) < 1 Then
 					If Not _totalFolders.Contains(folderPath) Then _totalFolders.Add(folderPath, "")
@@ -684,7 +693,7 @@ Namespace kCura.EDDS.WinForm
 					AddFoldersToTotalFolders(folderPath.Substring(0, folderPath.LastIndexOf("\"c)))
 				End If
 			End If
-		End Function
+		End Sub
 
 		Private Function EnsureConnection() As Boolean
 			If Not Me.SelectedCaseInfo Is Nothing Then
@@ -1567,7 +1576,7 @@ Namespace kCura.EDDS.WinForm
 				If ex.Message.IndexOf("Need To Re Login") <> -1 Then
 					NewLogin(False)
 					'productionManager = New kCura.WinEDDS.Service.ProductionManager(Me.Credential, _cookieContainer)
-					Exit Function
+					Return Nothing
 				Else
 					Throw
 				End If

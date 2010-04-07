@@ -803,7 +803,6 @@ Namespace kCura.EDDS.WinForm
 				Dim msg As New System.Text.StringBuilder
 
 				If Not Me.EnsureConnection() Then Return False
-				Dim rtr As Boolean
 				If _loadNativeFiles.Checked AndAlso _nativeFilePathField.SelectedIndex = -1 Then Me.AppendErrorMessage(msg, "Native file field unselected")
 				If Me.LoadFile.ArtifactTypeID = kCura.EDDS.Types.ArtifactType.Document Then
 					If _buildFolderStructure.Checked AndAlso _destinationFolderPath.SelectedIndex = -1 Then Me.AppendErrorMessage(msg, "Folder information unselected")
