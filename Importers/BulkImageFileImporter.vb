@@ -378,7 +378,7 @@ Namespace kCura.WinEDDS
 					Dim validator As New kCura.ImageValidator.ImageValidator
 					Dim path As String = BulkImageFileImporter.GetFileLocation(values)
 					Try
-						'If Not Config.DisableImageTypeValidation Then validator.ValidateImage(path)
+						If Not Config.DisableImageTypeValidation Then validator.ValidateImage(path)
 						Me.RaiseStatusEvent(Windows.Process.EventType.Progress, String.Format("Image file ( {0} ) validated.", values(Columns.FileLocation)), CType((_totalValidated + _totalProcessed) / 2, Int64), Me.CurrentLineNumber)
 					Catch ex As System.Exception
 						'Me.RaiseStatusEvent(Windows.Process.EventType.Error, String.Format("Error in '{0}': {1}", path, ex.Message))
