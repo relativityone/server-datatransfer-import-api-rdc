@@ -293,6 +293,22 @@ Namespace kCura.WinEDDS.Service
 			End While
 		End Sub
 
+		Public Shadows Function RetrieveAllUnsupportedOiFileIds() As Int32()
+			Dim tries As Int32 = 0
+			While tries < Config.MaxReloginTries
+				Try
+					tries += 1
+					Return MyBase.RetrieveAllUnsupportedOiFileIds()
+				Catch ex As System.Exception
+					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
+						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
+					Else
+						Throw
+					End If
+				End Try
+			End While
+		End Function
+
 		Public Shadows Function GetDocumentDirectoryByCaseArtifactID(ByVal caseArtifactID As Int32) As String
 			Dim tries As Int32 = 0
 			While tries < Config.MaxReloginTries
@@ -312,6 +328,7 @@ Namespace kCura.WinEDDS.Service
 				End Try
 			End While
 		End Function
+
 
 		Public Shadows Function GetPrintImageGuids(ByVal caseContextArtifactID As Int32, ByVal artifactID As Int32, ByVal orderedProductionIDList As Int32()) As Guid()
 			Dim tries As Int32 = 0

@@ -92,7 +92,12 @@ Namespace kCura.WinEDDS.Service
 			While tries < Config.MaxReloginTries
 				tries += 1
 				Try
-					If kCura.WinEDDS.Config.UsesWebAPI Then Return MyBase.GetBcpSharePath(appID)
+					Dim retval As String = MyBase.GetBcpSharePath(appID)
+					If String.IsNullOrEmpty(retval) Then 
+						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
+					Else
+						Return retval
+					End If
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
 						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
@@ -101,6 +106,7 @@ Namespace kCura.WinEDDS.Service
 					End If
 				End Try
 			End While
+			Throw New System.Exception("Unable to retrieve BCP share path from the server")
 			Return Nothing
 		End Function
 
