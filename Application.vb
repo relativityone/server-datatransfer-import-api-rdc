@@ -1548,15 +1548,7 @@ Namespace kCura.EDDS.WinForm
 #Region " System Configuration "
 
 		Public Function GetDisplayAssemblyVersion() As String
-			Dim winVersionString As String = System.Reflection.Assembly.GetExecutingAssembly.FullName.Split(","c)(1).Split("="c)(1)
-			Dim versions As String() = winVersionString.Split("."c)
-			If versions.Length < 2 Then Return winVersionString
-			For i As Int32 = 1 To versions.Length - 1
-				If versions(i).Length < 2 Then
-					versions(i) = versions(i).PadLeft(2, "0"c)
-				End If
-			Next
-			Return kCura.Utility.Strings.Implode(versions, ".")
+			Return System.Reflection.Assembly.GetExecutingAssembly.GetName.Version.ToString
 		End Function
 
 		Public Function GetSystemConfiguration() As System.Data.DataTable
