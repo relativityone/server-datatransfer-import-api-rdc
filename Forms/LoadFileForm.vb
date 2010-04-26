@@ -509,7 +509,7 @@ Namespace kCura.EDDS.WinForm
 			Me._quoteDelimiter.Location = New System.Drawing.Point(16, 88)
 			Me._quoteDelimiter.Name = "_quoteDelimiter"
 			Me._quoteDelimiter.Size = New System.Drawing.Size(168, 21)
-			Me._quoteDelimiter.TabIndex = 4
+			Me._quoteDelimiter.TabIndex = 2
 			'
 			'Label3
 			'
@@ -525,7 +525,7 @@ Namespace kCura.EDDS.WinForm
 			Me._newLineDelimiter.Location = New System.Drawing.Point(16, 132)
 			Me._newLineDelimiter.Name = "_newLineDelimiter"
 			Me._newLineDelimiter.Size = New System.Drawing.Size(168, 21)
-			Me._newLineDelimiter.TabIndex = 2
+			Me._newLineDelimiter.TabIndex = 4
 			'
 			'Label2
 			'
