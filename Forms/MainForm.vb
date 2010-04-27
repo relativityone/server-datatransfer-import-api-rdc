@@ -372,7 +372,7 @@ Namespace kCura.EDDS.WinForm
 			Select Case appEvent.EventType
 				Case appEvent.AppEventType.LoadCase
 					_fileMenuRefresh.Enabled = True
-					UpdateStatus("Case Loaded - File Transfer Mode: " & _application.GetConnectionStatus)
+					UpdateStatus("Workspace Loaded - File Transfer Mode: " & _application.GetConnectionStatus)
 					PopulateObjectTypeDropDown()
 					_optionsMenuCheckConnectivityItem.Visible = True
 				Case appEvent.AppEventType.LogOn

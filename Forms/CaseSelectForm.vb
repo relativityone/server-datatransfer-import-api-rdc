@@ -105,7 +105,7 @@ Namespace kCura.EDDS.WinForm
 			Me.Name = "CaseSelectForm"
 			Me.ShowInTaskbar = False
 			Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
-			Me.Text = "Relativity Desktop Client | Select Case"
+			Me.Text = "Relativity Desktop Client | Select Workspace"
 			Me.TopMost = True
 			Me.ResumeLayout(False)
 
