@@ -49,7 +49,7 @@ Namespace kCura.WinEDDS.UIControls
 			Me._fieldColumnsLabel.Name = "_fieldColumnsLabel"
 			Me._fieldColumnsLabel.Size = New System.Drawing.Size(100, 16)
 			Me._fieldColumnsLabel.TabIndex = 4
-			Me._fieldColumnsLabel.Text = "Case Fields"
+			Me._fieldColumnsLabel.Text = "Workspace Fields"
 			Me._fieldColumnsLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
 			'
 			'_loadFileColumnsLabel
