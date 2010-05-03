@@ -131,6 +131,7 @@ Namespace kCura.EDDS.WinForm
 				SetCaseInfo(GetValueFromCommandListByFlag(commandList, "c"))
 				SetFileLocation(GetValueFromCommandListByFlag(commandList, "f"))
 				SetSavedMapLocation(GetValueFromCommandListByFlag(commandList, "k"))
+				EnsureLoadFileLocation()
 				SetSourceFileEncoding(GetValueFromCommandListByFlag(commandList, "e"))
 				SetFullTextFileEncoding(GetValueFromCommandListByFlag(commandList, "x"))
 				SetSelectedCasePath(GetValueFromCommandListByFlag(commandList, "r"))
@@ -163,6 +164,7 @@ Namespace kCura.EDDS.WinForm
 			End Try
 
 		End Sub
+
 
 #Region " Run Import "
 
@@ -231,11 +233,14 @@ Namespace kCura.EDDS.WinForm
 #End Region
 
 #Region " Input Validation "
+		Private Sub EnsureLoadFileLocation()
+			If String.IsNullOrEmpty(_loadFilePath) Then Throw New LoadFilePathException
+			If Not System.IO.File.Exists(_loadFilePath) Then Throw New LoadFilePathException(_loadFilePath)
+		End Sub
 
 		Private Sub SetFileLocation(ByVal path As String)
-			If Not System.IO.File.Exists(path) Then Throw New LoadFilePathException(path)
 			_loadFilePath = path
-			HasSetLoadFileLocation = True
+			HasSetLoadFileLocation = Not String.IsNullOrEmpty(_loadFilePath)
 		End Sub
 
 		Private Sub SetCaseInfo(ByVal caseID As String)
@@ -323,6 +328,7 @@ Namespace kCura.EDDS.WinForm
 					Case LoadMode.Image
 						If Not System.IO.File.Exists(path) Then Throw New SavedSettingsFilePathException(path)
 						SelectedImageLoadFile = _application.ReadImageLoadFile(path)
+						If HasSetLoadFileLocation Then SelectedImageLoadFile.FileName = _loadFilePath
 					Case LoadMode.Native, LoadMode.DynamicObject
 						If Not System.IO.File.Exists(path) Then Throw New SavedSettingsFilePathException(path)
 						Dim sr As New System.IO.StreamReader(path)
@@ -330,7 +336,11 @@ Namespace kCura.EDDS.WinForm
 						Dim deserializer As New System.Runtime.Serialization.Formatters.Soap.SoapFormatter
 						tempLoadFile = DirectCast(deserializer.Deserialize(sr.BaseStream), WinEDDS.LoadFile)
 						sr.Close()
-						tempLoadFile.FilePath = _loadFilePath
+						If Not String.IsNullOrEmpty(_loadFilePath) Then
+							tempLoadFile.FilePath = _loadFilePath
+						Else
+							_loadFilePath = tempLoadFile.FilePath
+						End If
 						tempLoadFile.CaseInfo = SelectedCaseInfo
 						tempLoadFile.CopyFilesToDocumentRepository = True						'LoadFile.CopyFilesToDocumentRepository
 						tempLoadFile.SelectedCasePath = SelectedCaseInfo.DocumentPath						''''''''''
@@ -340,8 +350,14 @@ Namespace kCura.EDDS.WinForm
 						tempLoadFile.ExtractedTextFileEncoding = System.Text.Encoding.Unicode
 						tempLoadFile.SourceFileEncoding = System.Text.Encoding.Default
 						'TODO: Have ArtifactTypeID be passed in on command line, currently hardcoding to 10
-						tempLoadFile.SelectedIdentifierField = _application.CurrentFields(10, True).IdentifierFields(0)
-						Dim mapItemToRemove As LoadFileFieldMap.LoadFileFieldMapItem
+						Dim artifactTypeID As Int32
+						If CurrentLoadMode = LoadMode.Native Then
+							artifactTypeID = kCura.EDDS.Types.ArtifactType.Document
+						Else
+							artifactTypeID = tempLoadFile.ArtifactTypeID
+						End If
+						tempLoadFile.SelectedIdentifierField = _application.CurrentFields(artifactTypeID, True).IdentifierFields(0)
+						Dim mapItemToRemove As LoadFileFieldMap.LoadFileFieldMapItem = Nothing
 						If tempLoadFile.GroupIdentifierColumn = "" AndAlso System.IO.File.Exists(tempLoadFile.FilePath) Then
 							Dim fieldMapItem As kCura.WinEDDS.LoadFileFieldMap.LoadFileFieldMapItem
 							For Each fieldMapItem In tempLoadFile.FieldMap
@@ -354,6 +370,18 @@ Namespace kCura.EDDS.WinForm
 							Next
 						End If
 						If Not mapItemToRemove Is Nothing Then tempLoadFile.FieldMap.Remove(mapItemToRemove)
+						For Each fieldMapItem As kCura.WinEDDS.LoadFileFieldMap.LoadFileFieldMapItem In tempLoadFile.FieldMap
+							If Not fieldMapItem.DocumentField Is Nothing Then
+								Try
+									Dim thisField As DocumentField = _application.CurrentFields(tempLoadFile.ArtifactTypeID).Item(fieldMapItem.DocumentField.FieldID)
+									fieldMapItem.DocumentField.AssociatedObjectTypeID = thisField.AssociatedObjectTypeID
+									fieldMapItem.DocumentField.UseUnicode = thisField.UseUnicode
+									fieldMapItem.DocumentField.AssociatedObjectTypeID = thisField.CodeTypeID
+									fieldMapItem.DocumentField.FieldLength = thisField.FieldLength
+								Catch
+								End Try
+							End If
+						Next
 						SelectedNativeLoadFile = tempLoadFile
 						SelectedNativeLoadFile.SelectedCasePath = SelectedCaseInfo.DocumentPath
 						SelectedNativeLoadFile.Credentials = _application.Credential
@@ -515,6 +543,10 @@ Namespace kCura.EDDS.WinForm
 
 	Public Class LoadFilePathException
 		Inherits RdcBaseException
+		Public Sub New()
+			MyBase.New("No load file specified")
+		End Sub
+
 		Public Sub New(ByVal loadFilePath As String)
 			MyBase.New(String.Format("The load file specified does not exist: " & loadFilePath))
 		End Sub
