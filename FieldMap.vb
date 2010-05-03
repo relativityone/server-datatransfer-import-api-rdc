@@ -47,7 +47,7 @@ Namespace kCura.WinEDDS.UIControls
 			Me._fieldColumnsLabel.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
 			Me._fieldColumnsLabel.Location = New System.Drawing.Point(0, 8)
 			Me._fieldColumnsLabel.Name = "_fieldColumnsLabel"
-			Me._fieldColumnsLabel.Size = New System.Drawing.Size(100, 16)
+			Me._fieldColumnsLabel.Size = New System.Drawing.Size(145, 16)
 			Me._fieldColumnsLabel.TabIndex = 4
 			Me._fieldColumnsLabel.Text = "Workspace Fields"
 			Me._fieldColumnsLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
@@ -55,9 +55,9 @@ Namespace kCura.WinEDDS.UIControls
 			'_loadFileColumnsLabel
 			'
 			Me._loadFileColumnsLabel.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-			Me._loadFileColumnsLabel.Location = New System.Drawing.Point(608, 8)
+			Me._loadFileColumnsLabel.Location = New System.Drawing.Point(572, 8)
 			Me._loadFileColumnsLabel.Name = "_loadFileColumnsLabel"
-			Me._loadFileColumnsLabel.Size = New System.Drawing.Size(104, 16)
+			Me._loadFileColumnsLabel.Size = New System.Drawing.Size(140, 16)
 			Me._loadFileColumnsLabel.TabIndex = 7
 			Me._loadFileColumnsLabel.Text = "Load File Fields"
 			Me._loadFileColumnsLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight
