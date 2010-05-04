@@ -1378,7 +1378,7 @@ Namespace kCura.EDDS.WinForm
 							Dim thisField As DocumentField = Me.CurrentFields(tempLoadFile.ArtifactTypeID).Item(fieldMapItem.DocumentField.FieldID)
 							fieldMapItem.DocumentField.AssociatedObjectTypeID = thisField.AssociatedObjectTypeID
 							fieldMapItem.DocumentField.UseUnicode = thisField.UseUnicode
-							fieldMapItem.DocumentField.AssociatedObjectTypeID = thisField.CodeTypeID
+							fieldMapItem.DocumentField.CodeTypeID = thisField.CodeTypeID
 							fieldMapItem.DocumentField.FieldLength = thisField.FieldLength
 						Catch
 						End Try
