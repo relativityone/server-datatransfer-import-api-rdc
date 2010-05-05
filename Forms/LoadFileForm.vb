@@ -1137,7 +1137,7 @@ Namespace kCura.EDDS.WinForm
 				'_identifiersDropDown.Items.Clear()
 				_fieldMap.LoadFileColumns.ClearAll()
 				PopulateLoadFileDelimiters()
-				columnHeaders = _application.GetColumnHeadersFromLoadFile(LoadFile, _firstLineContainsColumnNames.Checked)
+				'columnHeaders = _application.GetColumnHeadersFromLoadFile(LoadFile, _firstLineContainsColumnNames.Checked)
 				System.Array.Sort(columnHeaders)
 				'_filePath.Text = LoadFile.FilePath\
 				_fieldMap.LoadFileColumns.RightListBoxItems.AddRange(columnHeaders)
