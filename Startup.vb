@@ -332,9 +332,16 @@ Namespace kCura.EDDS.WinForm
 					Case LoadMode.Native, LoadMode.DynamicObject
 						If Not System.IO.File.Exists(path) Then Throw New SavedSettingsFilePathException(path)
 						Dim sr As New System.IO.StreamReader(path)
+						Dim doc As String = sr.ReadToEnd
+						sr.Close()
+						Dim xmlDoc As New System.Xml.XmlDocument
+						xmlDoc.LoadXml(doc)
+
+						sr = New System.IO.StreamReader(path)
+						Dim stringr As New System.IO.MemoryStream(System.Text.Encoding.UTF8.GetBytes(_application.CleanLoadFile(xmlDoc)))
 						Dim tempLoadFile As WinEDDS.LoadFile
 						Dim deserializer As New System.Runtime.Serialization.Formatters.Soap.SoapFormatter
-						tempLoadFile = DirectCast(deserializer.Deserialize(sr.BaseStream), WinEDDS.LoadFile)
+						tempLoadFile = DirectCast(deserializer.Deserialize(stringr), WinEDDS.LoadFile)
 						sr.Close()
 						If Not String.IsNullOrEmpty(_loadFilePath) Then
 							tempLoadFile.FilePath = _loadFilePath

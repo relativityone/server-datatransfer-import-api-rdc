@@ -1305,7 +1305,7 @@ Namespace kCura.EDDS.WinForm
 				End Try
 			End Try
 		End Sub
-		Private Function CleanLoadFile(ByVal doc As System.Xml.XmlDocument) As String
+		Public Function CleanLoadFile(ByVal doc As System.Xml.XmlDocument) As String
 			For Each node As System.Xml.XmlNode In doc.ChildNodes(0).ChildNodes(0)
 				If node.Name = "a1:DocumentField" Then
 					Dim nodesToRemove As New System.Collections.ArrayList
