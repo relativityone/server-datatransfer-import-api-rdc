@@ -5,6 +5,7 @@ Namespace kCura.WinEDDS
 
 		Inherits kCura.Utility.DelimitedFileImporter
 		Implements IArtifactReader
+		Public Const MAXIMUM_COLUMN_NAME_LENGTH As Int32 = 500
 
 #Region "Members"
 
@@ -308,7 +309,7 @@ Namespace kCura.WinEDDS
 			If _columnHeaders Is Nothing Then
 				Dim path As String = DirectCast(args, kCura.WinEDDS.LoadFile).FilePath
 				Me.EnsureReader()
-				Dim columnNames As String() = GetLine()
+				Dim columnNames As String() = GetLine(MAXIMUM_COLUMN_NAME_LENGTH)
 				Me.Reader.BaseStream.Seek(0, IO.SeekOrigin.Begin)
 				Me.ResetLineCounter()
 				Me.Reader.Close()
