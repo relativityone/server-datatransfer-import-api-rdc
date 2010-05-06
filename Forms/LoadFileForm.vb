@@ -1541,7 +1541,7 @@ Namespace kCura.EDDS.WinForm
 			Dim id As Int32 = DirectCast(_overlayIdentifier.SelectedItem, DocumentField).FieldID
 			_overlayIdentifier.Items.Clear()
 			_overlayIdentifier.Items.AddRange(Me.GetSuitableKeyFields)
-			For Each field As DocumentField In Me.GetSuitableKeyFields
+			For Each field As DocumentField In _overlayIdentifier.Items
 				If field.FieldID = id Then
 					_overlayIdentifier.SelectedItem = field
 					Exit For
