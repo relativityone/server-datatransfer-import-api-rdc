@@ -519,9 +519,9 @@ Namespace kCura.WinEDDS
 				Try
 					Dim retval As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults
 					If TypeOf settings Is kCura.EDDS.WebAPI.BulkImportManagerBase.ObjectLoadInfo Then
-						Return _bulkImportManager.BulkImportObjects(_caseInfo.ArtifactID, DirectCast(settings, kCura.EDDS.WebAPI.BulkImportManagerBase.ObjectLoadInfo))
+						Return _bulkImportManager.BulkImportObjects(_caseInfo.ArtifactID, DirectCast(settings, kCura.EDDS.WebAPI.BulkImportManagerBase.ObjectLoadInfo), _copyFileToRepository)
 					Else
-						Return _bulkImportManager.BulkImportNative(_caseInfo.ArtifactID, settings)
+						Return _bulkImportManager.BulkImportNative(_caseInfo.ArtifactID, settings, _copyFileToRepository)
 					End If
 				Catch ex As Exception
 					tries -= 1

@@ -182,9 +182,9 @@ Namespace kCura.WinEDDS
 			While tries > 0
 				Try
 					If _productionArtifactID = 0 Then
-						Return _bulkImportManager.BulkImportImage(_caseInfo.ArtifactID, _uploadKey, _replaceFullText, overwrite, _folderID, _repositoryPath, useBulk, _runId, _keyFieldDto.ArtifactID)
+						Return _bulkImportManager.BulkImportImage(_caseInfo.ArtifactID, _uploadKey, _replaceFullText, overwrite, _folderID, _repositoryPath, useBulk, _runId, _keyFieldDto.ArtifactID, _copyFilesToRepository)
 					Else
-						Return _bulkImportManager.BulkImportProductionImage(_caseInfo.ArtifactID, _uploadKey, _replaceFullText, overwrite, _folderID, _repositoryPath, _productionArtifactID, useBulk, _runId, _keyFieldDto.ArtifactID)
+						Return _bulkImportManager.BulkImportProductionImage(_caseInfo.ArtifactID, _uploadKey, _replaceFullText, overwrite, _folderID, _repositoryPath, _productionArtifactID, useBulk, _runId, _keyFieldDto.ArtifactID, _copyFilesToRepository)
 					End If
 				Catch ex As Exception
 					tries -= 1

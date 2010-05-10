@@ -15,12 +15,12 @@ Namespace kCura.WinEDDS.Service
 #End Region
 
 #Region " Shadow Methods "
-		Public Shadows Function BulkImportImage(ByVal appID As Int32, ByVal bulkFileName As String, ByVal uploadFullText As Boolean, ByVal overwrite As kCura.EDDS.WebAPI.BulkImportManagerBase.OverwriteType, ByVal destinationFolderArtifactID As Int32, ByVal repository As String, ByVal useBulk As Boolean, ByVal runID As String, ByVal keyFieldID As Int32) As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults
+		Public Shadows Function BulkImportImage(ByVal appID As Int32, ByVal bulkFileName As String, ByVal uploadFullText As Boolean, ByVal overwrite As kCura.EDDS.WebAPI.BulkImportManagerBase.OverwriteType, ByVal destinationFolderArtifactID As Int32, ByVal repository As String, ByVal useBulk As Boolean, ByVal runID As String, ByVal keyFieldID As Int32, ByVal inRepository As Boolean) As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults
 			Dim tries As Int32 = 0
 			While tries < Config.MaxReloginTries
 				tries += 1
 				Try
-					Dim retval As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults = MyBase.BulkImportImage(appID, bulkFileName, uploadFullText, overwrite, destinationFolderArtifactID, repository, useBulk, runID, keyFieldID)
+					Dim retval As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults = MyBase.BulkImportImage(appID, bulkFileName, uploadFullText, overwrite, destinationFolderArtifactID, repository, useBulk, runID, keyFieldID, inRepository)
 					If retval.ErrorText <> "" Then Throw New BulkImportSqlException(retval.ErrorText)
 					Return retval
 				Catch ex As System.Exception
@@ -34,12 +34,12 @@ Namespace kCura.WinEDDS.Service
 			Return Nothing
 		End Function
 
-		Public Shadows Function BulkImportProductionImage(ByVal appID As Int32, ByVal bulkFileName As String, ByVal uploadFullText As Boolean, ByVal overwrite As kCura.EDDS.WebAPI.BulkImportManagerBase.OverwriteType, ByVal destinationFolderArtifactID As Int32, ByVal repository As String, ByVal productionArtifactID As Int32, ByVal useBulk As Boolean, ByVal runID As String, ByVal productionKeyFieldArtifactID As Int32) As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults
+		Public Shadows Function BulkImportProductionImage(ByVal appID As Int32, ByVal bulkFileName As String, ByVal uploadFullText As Boolean, ByVal overwrite As kCura.EDDS.WebAPI.BulkImportManagerBase.OverwriteType, ByVal destinationFolderArtifactID As Int32, ByVal repository As String, ByVal productionArtifactID As Int32, ByVal useBulk As Boolean, ByVal runID As String, ByVal productionKeyFieldArtifactID As Int32, ByVal inRepository As Boolean) As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults
 			Dim tries As Int32 = 0
 			While tries < Config.MaxReloginTries
 				tries += 1
 				Try
-					Dim retval As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults = MyBase.BulkImportProductionImage(appID, bulkFileName, uploadFullText, overwrite, destinationFolderArtifactID, repository, productionArtifactID, useBulk, runID, productionKeyFieldArtifactID)
+					Dim retval As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults = MyBase.BulkImportProductionImage(appID, bulkFileName, uploadFullText, overwrite, destinationFolderArtifactID, repository, productionArtifactID, useBulk, runID, productionKeyFieldArtifactID, inRepository)
 					If retval.ErrorText <> "" Then Throw New BulkImportSqlException(retval.ErrorText)
 					Return retval
 				Catch ex As System.Exception
@@ -91,12 +91,12 @@ Namespace kCura.WinEDDS.Service
 			End While
 		End Function
 
-		Public Shadows Function BulkImportNative(ByVal appID As Int32, ByVal settings As kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo) As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults
+		Public Shadows Function BulkImportNative(ByVal appID As Int32, ByVal settings As kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo, ByVal inRepository As Boolean) As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults
 			Dim tries As Int32 = 0
 			While tries < Config.MaxReloginTries
 				tries += 1
 				Try
-					Dim retval As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults = MyBase.BulkImportNative(appID, settings)
+					Dim retval As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults = MyBase.BulkImportNative(appID, settings, inRepository)
 					If retval.ErrorText <> "" Then Throw New BulkImportSqlException(retval.ErrorText)
 					Return retval
 				Catch ex As System.Exception
@@ -110,12 +110,12 @@ Namespace kCura.WinEDDS.Service
 			Return Nothing
 		End Function
 
-		Public Shadows Function BulkImportObjects(ByVal appID As Int32, ByVal settings As kCura.EDDS.WebAPI.BulkImportManagerBase.ObjectLoadInfo) As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults
+		Public Shadows Function BulkImportObjects(ByVal appID As Int32, ByVal settings As kCura.EDDS.WebAPI.BulkImportManagerBase.ObjectLoadInfo, ByVal inRepository As Boolean) As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults
 			Dim tries As Int32 = 0
 			While tries < Config.MaxReloginTries
 				tries += 1
 				Try
-					Dim retval As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults = MyBase.BulkImportObjects(appID, settings)
+					Dim retval As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults = MyBase.BulkImportObjects(appID, settings, inRepository)
 					If retval.ErrorText <> "" Then Throw New BulkImportSqlException(retval.ErrorText)
 					Return retval
 				Catch ex As System.Exception
