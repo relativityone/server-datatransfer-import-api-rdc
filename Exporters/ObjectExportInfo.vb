@@ -188,7 +188,11 @@ Namespace kCura.WinEDDS.Exporters
 		Public ReadOnly Property NativeCount() As Int64
 			Get
 				If Me.NativeFileGuid = "" Then
-					Return 0
+					If Not Me.FileID = Nothing Or Me.FileID <> 0 Then
+						Return 1
+					Else
+						Return 0
+					End If
 				Else
 					Return 1
 				End If
