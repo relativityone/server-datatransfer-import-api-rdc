@@ -1,6 +1,4 @@
 Imports kCura.WinEDDS
-'Imports NullableTypes
-Imports NullableTypes.HelperFunctions
 Namespace kCura.WinEDDS.ImportExtension
 	Public Class DataReaderReader
 		Implements kCura.WinEDDS.Api.IArtifactReader
@@ -122,7 +120,7 @@ Namespace kCura.WinEDDS.ImportExtension
 			For i As Integer = 0 To _reader.FieldCount - 1
 				Dim field As Api.ArtifactField = _allFields(_reader.GetName(i).ToLower)
 				If Not field Is Nothing Then
-					If Not field.displayName = folderStructureContainedInColumnWithoutIndex Then
+					If Not field.DisplayName = folderStructureContainedInColumnWithoutIndex Then
 						Dim thisCell As Api.ArtifactField = field.Copy
 						Me.SetFieldValue(thisCell, _reader.Item(i))
 						retval.Add(thisCell)
@@ -163,7 +161,7 @@ Namespace kCura.WinEDDS.ImportExtension
 									kCura.Utility.File.Delete(newLocation)
 								End If
 								System.IO.File.Copy(field.ValueAsString, newLocation)
-								field.value = newLocation
+								field.Value = newLocation
 								'Only one file field is allowed
 								Exit For
 							End If
@@ -219,7 +217,7 @@ Namespace kCura.WinEDDS.ImportExtension
 		End Sub
 
 		Private Sub SetFieldValue(ByVal field As Api.ArtifactField, ByVal value As Object)
-			RaiseEvent StatusMessage("Field ArtifactID = " & field.ArtifactID)
+			'RaiseEvent StatusMessage("Field ArtifactID = " & field.ArtifactID)
 			Select Case field.Type
 				Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Boolean
 					field.Value = kCura.Utility.NullableTypesHelper.DBNullConvertToNullable(Of Boolean)(value)
