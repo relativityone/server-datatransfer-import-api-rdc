@@ -213,9 +213,7 @@ Namespace kCura.WinEDDS
 
 		Public ReadOnly Property ErrorDestinationPath() As String
 			Get
-				If _errorFileLocation Is Nothing OrElse _errorFileLocation = "" Then
-					_errorFileLocation = System.IO.Path.GetTempFileName()
-				End If
+				If String.IsNullOrEmpty(_errorFileLocation) Then _errorFileLocation = System.IO.Path.GetTempFileName()
 				Return _errorFileLocation
 			End Get
 		End Property
@@ -268,17 +266,15 @@ Namespace kCura.WinEDDS
 					End If
 				End Try
 			End While
-
 		End Function
 
 		Private Sub ReInitializeAllStreams()
 			If Not _nativeFileWriter Is Nothing Then _nativeFileWriter = Me.ReInitializeStream(_nativeFileWriter, _nativeFileWriterPosition, Me.LoadFileDestinationPath, _encoding)
 			If Not _imageFileWriter Is Nothing Then _imageFileWriter = Me.ReInitializeStream(_imageFileWriter, _imageFileWriterPosition, Me.ImageFileDestinationPath, _encoding)
-			'If Not _errorWriter Is Nothing Then _errorWriter = Me.ReInitializeStream(_errorWriter, _errorWriterPosition, Me.ErrorDestinationPath, System.Text.Encoding.Default)
 		End Sub
 
 		Private Function ReInitializeStream(ByVal brokenStream As System.IO.StreamWriter, ByVal position As Int64, ByVal filepath As String, ByVal encoding As System.Text.Encoding) As System.IO.StreamWriter
-			If brokenStream Is Nothing Then Exit Function
+			If brokenStream Is Nothing Then Return Nothing
 			Try
 				brokenStream.Close()
 			Catch ex As Exception
@@ -374,7 +370,7 @@ Namespace kCura.WinEDDS
 			Dim totalFileSize As Int64 = 0
 			Dim loadFileBytes As Int64 = 0
 			Dim extracteTextFileSizeForVolume As Int64 = 0
-			Dim image As Exporters.ImageExportInfo
+			Dim image As Exporters.ImageExportInfo = Nothing
 			Dim imageSuccess As Boolean = True
 			Dim nativeSuccess As Boolean = True
 			Dim updateVolumeAfterExport As Boolean = False
@@ -563,6 +559,9 @@ Namespace kCura.WinEDDS
 			_statistics.MetadataBytes = loadFileBytes + _totalExtractedTextFileLength
 			_statistics.FileBytes += totalFileSize - extracteTextFileSizeForVolume
 			If Not _errorWriter Is Nothing Then _errorWriterPosition = _errorWriter.BaseStream.Position
+			Dim deletor As New TempTextFileDeletor(New String() {tempLocalIproFullTextFilePath, tempLocalFullTextFilePath})
+			Dim t As New System.Threading.Thread(AddressOf deletor.DeleteFiles)
+			t.Start()
 			If Not Me.Settings.VolumeInfo.CopyFilesFromRepository Then
 				Return 0
 			Else
@@ -959,13 +958,13 @@ Namespace kCura.WinEDDS
 			End Try
 		End Sub
 
-		Private Function ManageLongText(ByVal sourceValue As Object, ByVal textField As ViewFieldInfo, ByVal downloadedTextFilePath As String, ByVal artifact As Exporters.ObjectExportInfo, ByVal startBound As String, ByVal endBound As String) As Long
+		Private Function ManageLongText(ByVal sourceValue As Object, ByVal textField As ViewFieldInfo, ByRef downloadedTextFilePath As String, ByVal artifact As Exporters.ObjectExportInfo, ByVal startBound As String, ByVal endBound As String) As Long
 			_nativeFileWriter.Write(startBound)
 			If TypeOf sourceValue Is Byte() Then sourceValue = System.Text.Encoding.Unicode.GetString(DirectCast(sourceValue, Byte()))
 			If sourceValue Is Nothing Then sourceValue = String.Empty
 			Dim textValue As String = sourceValue.ToString
 			Dim source As System.IO.TextReader
-			Dim destination As System.IO.TextWriter
+			Dim destination As System.IO.TextWriter = Nothing
 			Dim downloadedFileExists As Boolean = Not String.IsNullOrEmpty(downloadedTextFilePath) AndAlso System.IO.File.Exists(downloadedTextFilePath)
 			If textValue = kCura.DynamicFields.Types.Constants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN Then
 				If Me.Settings.SelectedTextField.AvfId = textField.AvfId AndAlso downloadedFileExists Then
@@ -997,13 +996,16 @@ Namespace kCura.WinEDDS
 				End If
 				destination = _nativeFileWriter
 			End If
+			If String.IsNullOrEmpty(downloadedTextFilePath) AndAlso Not source Is Nothing AndAlso TypeOf source Is System.IO.StreamReader AndAlso TypeOf DirectCast(source, System.IO.StreamReader).BaseStream Is System.IO.FileStream Then
+				downloadedTextFilePath = DirectCast(DirectCast(source, System.IO.StreamReader).BaseStream, System.IO.FileStream).Name
+			End If
 			If Not destination Is Nothing Then
 				Me.WriteLongText(source, destination, formatter)
 			End If
 			Dim retval As Long = 0
 			If destinationFilePath <> String.Empty Then
 				retval = kCura.Utility.File.GetFileSize(destinationFilePath)
-				Dim textLocation As String
+				Dim textLocation As String = String.Empty
 				Select Case Me.Settings.TypeOfExportedFilePath
 					Case ExportFile.ExportedFilePathType.Absolute
 						textLocation = destinationFilePath
@@ -1017,8 +1019,6 @@ Namespace kCura.WinEDDS
 				Else
 					_nativeFileWriter.Write(textLocation)
 				End If
-
-
 			End If
 			_nativeFileWriter.Write(endBound)
 			Return retval
@@ -1038,7 +1038,7 @@ Namespace kCura.WinEDDS
 		End Function
 
 
-		Public Sub UpdateLoadFile(ByVal record As Object(), ByVal hasFullText As Boolean, ByVal documentArtifactID As Int32, ByVal nativeLocation As String, ByVal fullTextTempFile As String, ByVal doc As Exporters.ObjectExportInfo, ByRef extractedTextByteCount As Int64)
+		Public Sub UpdateLoadFile(ByVal record As Object(), ByVal hasFullText As Boolean, ByVal documentArtifactID As Int32, ByVal nativeLocation As String, ByRef fullTextTempFile As String, ByVal doc As Exporters.ObjectExportInfo, ByRef extractedTextByteCount As Int64)
 			If _nativeFileWriter Is Nothing Then Exit Sub
 			Dim count As Int32
 			Dim fieldValue As String

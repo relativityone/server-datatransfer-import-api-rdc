@@ -517,7 +517,6 @@ Namespace kCura.WinEDDS
 			Dim tries As Int32 = kCura.Utility.Config.Settings.IoErrorNumberOfRetries
 			While tries > 0
 				Try
-					Dim retval As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults
 					If TypeOf settings Is kCura.EDDS.WebAPI.BulkImportManagerBase.ObjectLoadInfo Then
 						Return _bulkImportManager.BulkImportObjects(_caseInfo.ArtifactID, DirectCast(settings, kCura.EDDS.WebAPI.BulkImportManagerBase.ObjectLoadInfo), _copyFileToRepository)
 					Else
@@ -533,6 +532,7 @@ Namespace kCura.WinEDDS
 					End If
 				End Try
 			End While
+			Return Nothing
 		End Function
 
 		Private Function GetSettingsObject() As kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo

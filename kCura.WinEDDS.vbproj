@@ -280,6 +280,7 @@
     <Compile Include="Exceptions\WebDownloadCorruptException.vb">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Exporters\TempTextFileDeletor.vb" />
     <Compile Include="Exporters\LoadFileCellFormatters\DelimitedCellFormatter.vb" />
     <Compile Include="Exporters\LoadFileCellFormatters\HtmlCellFormatter.vb" />
     <Compile Include="Exporters\LoadFileCellFormatters\ILoadFileCellFormatter.vb" />
@@ -303,8 +304,6 @@
     <Compile Include="Exporters\LineFactory\SimpleIproImageLineFactory.vb">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Exporters\Old\Exporter.vb" />
-    <Compile Include="Exporters\Old\VolumeManager.vb" />
     <Compile Include="Exporters\VolumeInfo.vb">
       <SubType>Code</SubType>
     </Compile>

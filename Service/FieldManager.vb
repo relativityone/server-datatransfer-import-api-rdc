@@ -48,87 +48,6 @@ Namespace kCura.WinEDDS.Service
 			Return documentFields
 		End Function
 
-		'Public Shared Function DTOtoDocumentWebAPIField(ByVal dto As kCura.EDDS.DynamicFields.DTO.Field) As kCura.EDDS.WebAPI.DocumentManagerBase.Field
-		'	Dim retVal As New kCura.EDDS.WebAPI.DocumentManagerBase.Field
-
-		'	retVal.DisplayName = dto.DisplayName
-		'	retVal.ArtifactID = dto.ArtifactID
-		'	retVal.FieldTypeID = dto.FieldTypeID
-		'	retVal.FieldCategoryID = dto.FieldCategoryID
-		'	retVal.CodeTypeID = dto.CodeTypeID
-		'	retVal.MaxLength = dto.MaxLength
-		'	retVal.IsArtifactBaseField = dto.IsArtifactBaseField
-		'	If retVal.FieldCategoryID = kCura.EDDS.Types.FieldCategory.FullText Then
-		'		retVal.Value = System.Text.ASCIIEncoding.ASCII.GetString(DirectCast(dto.Value, Byte()))
-		'	Else
-		'		retVal.Value = dto.Value.ToString
-		'	End If
-		'	Return retVal
-		'End Function
-
-		'Public Shared Function DTOtoFieldWebAPIField(ByVal dto As kCura.EDDS.DynamicFields.DTO.Field) As kCura.EDDS.WebAPI.FieldManagerBase.Field
-		'	Dim retVal As New kCura.EDDS.WebAPI.FieldManagerBase.Field
-
-		'	retVal.DisplayName = dto.DisplayName
-		'	retVal.ArtifactID = dto.ArtifactID
-		'	retVal.FieldTypeID = dto.FieldTypeID
-		'	retVal.FieldCategoryID = dto.FieldCategoryID
-		'	retVal.CodeTypeID = dto.CodeTypeID
-		'	retVal.MaxLength = dto.MaxLength
-		'	retVal.IsArtifactBaseField = dto.IsArtifactBaseField
-		'	If retVal.FieldCategoryID = kCura.EDDS.Types.FieldCategory.FullText Then
-		'		retVal.Value = System.Text.ASCIIEncoding.ASCII.GetString(DirectCast(dto.Value, Byte()))
-		'	Else
-		'		retVal.Value = dto.Value.ToString
-		'	End If
-		'	Return retVal
-		'End Function
-
-		'Public Shared Function DTOsToWebAPIFields(ByVal dtos As kCura.EDDS.DynamicFields.DTO.Field()) As kCura.EDDS.WebAPI.DocumentManagerBase.Field()
-		'	Dim documentFields(dtos.Length - 1) As kCura.EDDS.WebAPI.DocumentManagerBase.Field
-		'	Dim i As Int32
-		'	For i = 0 To documentFields.Length - 1
-		'		documentFields(i) = DTOtoDocumentWebAPIField(dtos(i))
-		'	Next
-		'	Return documentFields
-		'End Function
-
-		'Public Shared Function WebAPIFieldtoDTO(ByVal field As kCura.EDDS.WebAPI.DocumentManagerBase.Field) As kCura.EDDS.DynamicFields.DTO.Field
-		'	Dim retVal As New kCura.EDDS.DynamicFields.DTO.Field
-
-		'	retVal.DisplayName = field.DisplayName
-		'	retVal.ArtifactID = field.ArtifactID
-		'	retVal.FieldTypeID = field.FieldTypeID
-		'	retVal.FieldCategoryID = field.FieldCategoryID
-		'	retVal.CodeTypeID = field.CodeTypeID
-		'	retVal.MaxLength = field.MaxLength
-		'	retVal.IsArtifactBaseField = field.IsArtifactBaseField
-		'	retVal.Value = field.Value.ToString
-		'	Return retVal
-		'End Function
-
-		'Public Shared Function WebAPIFieldtoDTO(ByVal field As kCura.EDDS.WebAPI.FieldManagerBase.Field) As kCura.EDDS.DynamicFields.DTO.Field
-		'	Dim retVal As New kCura.EDDS.DynamicFields.DTO.Field
-
-		'	retVal.DisplayName = field.DisplayName
-		'	retVal.ArtifactID = field.ArtifactID
-		'	retVal.FieldTypeID = field.FieldTypeID
-		'	retVal.FieldCategoryID = field.FieldCategoryID
-		'	retVal.CodeTypeID = field.CodeTypeID
-		'	retVal.MaxLength = field.MaxLength
-		'	retVal.IsArtifactBaseField = field.IsArtifactBaseField
-		'	retVal.Value = field.Value.ToString
-		'	Return retVal
-		'End Function
-
-		'Public Shared Function WebAPIFieldsToDTOs(ByVal fields As kCura.EDDS.WebAPI.DocumentManagerBase.Field()) As kCura.EDDS.DynamicFields.DTO.Field()
-		'	Dim dtos(fields.Length - 1) As kCura.EDDS.DynamicFields.DTO.Field
-		'	Dim i As Int32
-		'	For i = 0 To dtos.Length - 1
-		'		dtos(i) = WebAPIFieldtoDTO(fields(i))
-		'	Next
-		'	Return dtos
-		'End Function
 #End Region
 
 #Region " Shadow Functions "
@@ -150,6 +69,7 @@ Namespace kCura.WinEDDS.Service
 					End If
 				End Try
 			End While
+			Return Nothing
 		End Function
 
 		Public Shadows Function Read(ByVal caseContextArtifactID As Int32, ByVal fieldArtifactID As Int32) As kCura.EDDS.WebAPI.FieldManagerBase.Field
@@ -170,6 +90,7 @@ Namespace kCura.WinEDDS.Service
 					End If
 				End Try
 			End While
+			Return Nothing
 		End Function
 #End Region
 
