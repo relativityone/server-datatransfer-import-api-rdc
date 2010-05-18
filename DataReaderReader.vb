@@ -12,6 +12,7 @@ Namespace kCura.WinEDDS.ImportExtension
 		Private _columnNames As String()
 		Private _allFields As Api.ArtifactFieldCollection
 		Private _tempLocalDirectory As String
+		Private _markerNameIsMapped As Nullable(Of Boolean)
 
 		Public Sub New(ByVal args As DataReaderReaderInitializationArgs, ByVal fieldMap As kCura.WinEDDS.LoadFile, ByVal reader As System.Data.IDataReader)
 			_reader = reader
@@ -90,12 +91,15 @@ Namespace kCura.WinEDDS.ImportExtension
 		End Function
 
 		Private Function DoesFilenameMarkerFieldExistInIDataReader() As Boolean
-			Try
-				Dim isValidItemName As Integer = _reader.GetOrdinal(_KCURAMARKERFILENAME)
-				Return True
-			Catch ex As IndexOutOfRangeException
-				Return False
-			End Try
+			If Not _markerNameIsMapped.HasValue Then
+				Try
+					Dim isValidItemName As Integer = _reader.GetOrdinal(_KCURAMARKERFILENAME)
+					_markerNameIsMapped = True
+				Catch ex As IndexOutOfRangeException
+					_markerNameIsMapped = False
+				End Try
+			End If
+			Return _markerNameIsMapped.Value
 		End Function
 
 		Private Function nameWithoutIndex(ByVal nameWithIndex As String) As String
