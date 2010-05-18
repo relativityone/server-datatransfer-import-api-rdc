@@ -20,7 +20,11 @@ Namespace kCura.Windows.Process
 		Public Shared ReadOnly Property LogAllEvents() As Boolean
 			Get
 				Try
-					Return CType(ConfigSettings("LogAllEvents"), Boolean)
+					If ConfigSettings IsNot Nothing AndAlso ConfigSettings.Contains("LogAllEvents") AndAlso Type.GetTypeCode(ConfigSettings("LogAllEvents").GetType()).Equals(System.TypeCode.Boolean) Then
+						Return CType(ConfigSettings("LogAllEvents"), Boolean)
+					Else
+						Return False
+					End If
 				Catch ex As Exception
 					Return False
 				End Try
