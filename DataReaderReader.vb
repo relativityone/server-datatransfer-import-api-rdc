@@ -20,7 +20,7 @@ Namespace kCura.WinEDDS.ImportExtension
 			If _reader.IsClosed = True OrElse _reader.FieldCount = 0 Then Throw New ArgumentException("The reader being passed into this IDataReaderReader is empty")
 			_loadFileSettings = fieldMap
 			_allFields = args.AllFields
-			_tempLocalDirectory = System.IO.Path.GetTempPath & "FlexMigrationFiles\"
+			_tempLocalDirectory = System.IO.Path.GetTempPath + "FlexMigrationFiles\"
 		End Sub
 
 #Region " Artifact Reader Implementation "
@@ -152,22 +152,28 @@ Namespace kCura.WinEDDS.ImportExtension
 					' we also don't do this if kCuraMarkerFilename field is not present because we can copy from the current location 
 					For Each field As Api.ArtifactField In retval
 						If field.Type = DynamicFields.Types.FieldTypeHelper.FieldType.File Then
-							If field.ValueAsString <> String.Empty AndAlso System.IO.File.Exists(field.ValueAsString) Then
-								Dim newLocation As String
-								Try
-									'If _KCURAMARKERFILENAME is a column in the table, use it for the filename.  If not, use original filename.
-									Dim tempString As String = _reader.Item(_KCURAMARKERFILENAME).ToString
-									newLocation = _tempLocalDirectory & _reader.Item(_KCURAMARKERFILENAME).ToString
-								Catch ex As Exception
-									newLocation = _tempLocalDirectory & System.IO.Path.GetFileName(field.ValueAsString)
-								End Try
-								If System.IO.File.Exists(newLocation) Then
-									kCura.Utility.File.Delete(newLocation)
+							If field.ValueAsString <> String.Empty Then
+								If System.IO.File.Exists(field.ValueAsString) Then
+
+									Dim newLocation As String
+									Try
+										'If _KCURAMARKERFILENAME is a column in the table, use it for the filename.  If not, use original filename.
+										Dim tempString As String = _reader.Item(_KCURAMARKERFILENAME).ToString
+										newLocation = _tempLocalDirectory & _reader.Item(_KCURAMARKERFILENAME).ToString
+									Catch ex As Exception
+										newLocation = _tempLocalDirectory & System.IO.Path.GetFileName(field.ValueAsString)
+									End Try
+									If System.IO.File.Exists(newLocation) Then
+										kCura.Utility.File.Delete(newLocation)
+									End If
+									System.IO.File.Copy(field.ValueAsString, newLocation)
+									field.Value = newLocation
+									'Only one file field is allowed
+									Exit For
+								Else
+									Throw New Exception("File" + field.ValueAsString + " does not exist or you don't have sufficient privilidges to access it")
 								End If
-								System.IO.File.Copy(field.ValueAsString, newLocation)
-								field.Value = newLocation
-								'Only one file field is allowed
-								Exit For
+
 							End If
 						End If
 					Next
