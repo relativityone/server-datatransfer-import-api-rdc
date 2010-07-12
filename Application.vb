@@ -1430,6 +1430,7 @@ Namespace kCura.EDDS.WinForm
 				If relativityManager.ValidateSuccesfulLogin Then
 					CheckVersion(System.Net.CredentialCache.DefaultCredentials)
 					_credential = cred
+					kCura.WinEDDS.Service.Settings.AuthenticationToken = New kCura.WinEDDS.Service.UserManager(cred, _cookieContainer).GenerateDistributedAuthenticationToken()
 					Return True
 				Else
 					Return False
