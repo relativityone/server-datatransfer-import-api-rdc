@@ -536,7 +536,7 @@ Namespace kCura.EDDS.WinForm
 			Me.New(message, Nothing)
 		End Sub
 
-		Public Sub New(ByVal message As String, ByVal innerException As System.Exception)
+		Protected Sub New(ByVal message As String, ByVal innerException As System.Exception)
 			MyBase.New(message, innerException)
 		End Sub
 	End Class
