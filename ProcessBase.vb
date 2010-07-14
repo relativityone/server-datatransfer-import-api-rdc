@@ -28,7 +28,7 @@ Namespace kCura.Windows.Process
 			End Get
 		End Property
 
-		Public Sub New()
+		Protected Sub New()
 			_processObserver = New kCura.Windows.Process.ProcessObserver
 			_processController = New kCura.Windows.Process.Controller
 		End Sub
