@@ -62,11 +62,11 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
-		Public Sub New(ByVal login As String, ByVal password As String)
+		Protected Sub New(ByVal login As String, ByVal password As String)
 			Me.New(New System.Net.NetworkCredential(login, password))
 		End Sub
 
-		Public Sub New(ByVal credential As System.Net.NetworkCredential)
+		Protected Sub New(ByVal credential As System.Net.NetworkCredential)
 			_credential = credential
 			System.Net.ServicePointManager.CertificatePolicy = New TrustAllCertificatePolicy
 			_cookieContainer = New System.Net.CookieContainer

@@ -16,7 +16,7 @@ Namespace kCura.WinEDDS.CodeValidator
 			End Get
 		End Property
 
-		Public Sub New(ByVal caseInfo As kCura.EDDS.Types.CaseInfo, ByVal codeManager As kCura.WinEDDS.Service.CodeManager)
+		Protected Sub New(ByVal caseInfo As kCura.EDDS.Types.CaseInfo, ByVal codeManager As kCura.WinEDDS.Service.CodeManager)
 			_codeManager = codeManager
 			_caseInfo = caseInfo
 		End Sub
