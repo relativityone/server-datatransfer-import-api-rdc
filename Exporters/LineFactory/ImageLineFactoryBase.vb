@@ -8,7 +8,7 @@ Namespace kCura.WinEDDS.Exporters.LineFactory
 		Private _fullFilePath As String
 
 
-		Public Sub New(ByVal batesNumber As String, ByVal pageNumber As Int32, ByVal fullFilePath As String, ByVal volumeName As String, ByVal imageType As ExportFile.ImageType)
+		Protected Sub New(ByVal batesNumber As String, ByVal pageNumber As Int32, ByVal fullFilePath As String, ByVal volumeName As String, ByVal imageType As ExportFile.ImageType)
 			_batesNumber = batesNumber
 			_pageNumber = pageNumber
 			_imageType = imageType

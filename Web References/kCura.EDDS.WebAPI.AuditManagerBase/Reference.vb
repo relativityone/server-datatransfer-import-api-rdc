@@ -508,6 +508,10 @@ Namespace kCura.EDDS.WebAPI.AuditManagerBase
 				Me.sendNotificationField = Value
 			End Set
 		End Property
+
+		Protected Sub New()
+			'Satifies Rule: Abstract types should not have constructors
+		End Sub
 	End Class
 
 	'''<remarks/>
