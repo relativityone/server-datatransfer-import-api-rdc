@@ -1590,8 +1590,9 @@ Namespace kCura.EDDS.WinForm
 			End If
 			Dim sb As New System.Text.StringBuilder
 			Dim nl As String = System.Environment.NewLine & System.Environment.NewLine
-			sb.Append("          Relativity Desktop Client" & nl)
-			sb.Append("              Version " & Me.GetDisplayAssemblyVersion() & nl)
+			sb.Append("Relativity Desktop Client" & nl)
+			sb.Append("Version " & Me.GetDisplayAssemblyVersion() & nl)
+			sb.Append(kCura.EDDS.Types.Constants.LICENSE_AGREEMENT_TEXT & nl)
 			sb.Append("Copyright © " & System.DateTime.Now.Year & " kCura Corporation")
 			MsgBox(sb.ToString, MsgBoxStyle.OkOnly, "About Relativity Desktop Client")
 			If Not _loginForm Is Nothing AndAlso Not _loginForm.IsDisposed Then
