@@ -93,7 +93,7 @@ Namespace kCura.EDDS.WinForm
 
 		Private Sub WriteLine(ByVal line As String, ByVal lineType As ParsableLineType)
 			Dim stringBuilder As New System.Text.StringBuilder
-			Dim lineTypeString As String
+			Dim lineTypeString As String = Nothing
 			If lineType = ParsableLineType.Status Then
 				lineTypeString = "[Status]"
 			ElseIf lineType = ParsableLineType.Warning Then

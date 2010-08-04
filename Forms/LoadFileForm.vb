@@ -1162,7 +1162,7 @@ Namespace kCura.EDDS.WinForm
 		End Function
 
 		Private Sub OpenFileDialog_FileOk(ByVal sender As Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles OpenFileDialog.FileOk
-			Dim oldfilepath As String
+			Dim oldfilepath As String = Nothing
 			Try
 				If Not Me.EnsureConnection Then Exit Sub
 				oldfilepath = _filePath.Text

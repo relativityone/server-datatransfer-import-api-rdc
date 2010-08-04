@@ -178,7 +178,7 @@ Namespace kCura.EDDS.WinForm
 
 			_treeView.Nodes.Clear()
 
-			Dim foldersDataSet As System.Data.DataSet
+			Dim foldersDataSet As System.Data.DataSet = Nothing
 			Try
 				foldersDataSet = _application.GetCaseFolders(caseInfo.ArtifactID)
 			Catch ex As System.Exception
