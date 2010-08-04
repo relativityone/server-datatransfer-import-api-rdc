@@ -9,7 +9,6 @@ Namespace kCura.Windows.Process
 			retval.Columns.Add("Status")
 			retval.Columns.Add("Description")
 			retval.Columns.Add("Timestamp")
-			Dim tmp As String()
 			Dim i As Int32 = 0
 			While Not Me.HasReachedEOF AndAlso i < 1000
 				retval.Rows.Add(Me.GetLine)

@@ -8,7 +8,7 @@ Namespace kCura.Windows.Process
 			Get
 				Try
 					If _configDictionary Is Nothing Then
-						_configDictionary = DirectCast(System.Configuration.ConfigurationSettings.GetConfig("kCura.Windows.Process"), System.Collections.IDictionary)
+						_configDictionary = DirectCast(System.Configuration.ConfigurationManager.GetSection("kCura.Windows.Process"), System.Collections.IDictionary)
 					End If
 					Return _configDictionary
 				Catch ex As System.Exception
