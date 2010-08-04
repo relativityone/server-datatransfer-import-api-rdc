@@ -424,7 +424,7 @@ Namespace kCura.Windows.Forms
               Dim sngWidth As Single = g.MeasureString(strShortcut, SystemInformation.MenuFont, recText.Size, sf).Width + 15.0F
               g.DrawString(strShortcut, SystemInformation.MenuFont, brush, New RectangleF(recText.Right - sngWidth, recText.Y, sngWidth, recText.Height), sf)
             End If
-            Dim img As Image
+						Dim img As Image = Nothing
             If Not mimgList Is Nothing Then
               Dim intImgIndex As Integer = DirectCast(mcolProps(sender), Integer)
               If intImgIndex > -1 AndAlso intImgIndex < mimgList.Images.Count Then img = mimgList.Images(intImgIndex)
