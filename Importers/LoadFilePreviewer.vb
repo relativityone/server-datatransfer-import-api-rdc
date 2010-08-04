@@ -207,7 +207,7 @@ Namespace kCura.WinEDDS
 			If _uploadFiles Then
 				If _nativeFileCheckColumnName = "" Then Me.SetNativeFileCheckColumnName(retval)
 				Dim filePath As String = record.FileField.ValueAsString
-				Dim existsFilePath As String
+				Dim existsFilePath As String = Nothing
 				If filePath.Length > 1 Then
 					If filePath.Chars(0) = "\"c AndAlso Not filePath.Chars(1) = "\" Then
 						existsFilePath = "." & filePath

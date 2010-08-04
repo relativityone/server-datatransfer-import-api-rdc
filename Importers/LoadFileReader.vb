@@ -407,7 +407,7 @@ Namespace kCura.WinEDDS
 			Else
 				allErrorsLine = Int32.MaxValue
 			End If
-			Dim line As String()
+			Dim line As String() = Nothing
 			Dim cont As Boolean = True And Not Me.Reader.Peek = -1
 			While cont
 				If Me.CurrentLineNumber < System.Math.Min(clientErrorsLine, allErrorsLine) Then

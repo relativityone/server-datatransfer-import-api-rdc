@@ -42,7 +42,7 @@ Namespace kCura.WinEDDS
 					_warningCount += 1
 					Me.ProcessObserver.RaiseWarningEvent(e.DocumentsExported.ToString, e.Message)
 			End Select
-			Dim statDict As IDictionary
+			Dim statDict As IDictionary = Nothing
 			If Not e.AdditionalInfo Is Nothing AndAlso TypeOf e.AdditionalInfo Is IDictionary Then
 				statDict = DirectCast(e.AdditionalInfo, IDictionary)
 			End If

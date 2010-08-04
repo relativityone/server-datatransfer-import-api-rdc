@@ -389,7 +389,7 @@ Namespace kCura.WinEDDS
 					field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(GetNullableAssociatedObjectName(field.Value.ToString, columnIndex, field.TextLength, field.DisplayName))
 					If forPreview Then field.Value = field.Value.ToString.Trim
 				Case DynamicFields.Types.FieldTypeHelper.FieldType.Objects
-					Dim value As String()
+					Dim value As String() = Nothing
 					If Not field.Value Is Nothing Then value = DirectCast(field.Value, String())
 					If field.Value Is Nothing Then value = New System.String() {}
 

@@ -123,7 +123,7 @@ Namespace kCura.WinEDDS
 
 		Private Sub _loadFileImporter_StatusMessage(ByVal e As kCura.Windows.Process.StatusEventArgs) Handles _loadFileImporter.StatusMessage
 			System.Threading.Monitor.Enter(Me.ProcessObserver)
-			Dim statisticsDictionary As IDictionary
+			Dim statisticsDictionary As IDictionary = Nothing
 			If Not e.AdditionalInfo Is Nothing Then statisticsDictionary = DirectCast(e.AdditionalInfo, IDictionary)
 			Select Case e.EventType
 				Case kCura.Windows.Process.EventType.End

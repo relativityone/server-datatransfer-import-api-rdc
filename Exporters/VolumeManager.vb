@@ -664,7 +664,7 @@ Namespace kCura.WinEDDS
 				If images.Count > 0 AndAlso (Me.Settings.TypeOfImage = ExportFile.ImageType.MultiPageTiff OrElse Me.Settings.TypeOfImage = ExportFile.ImageType.Pdf) AndAlso successfulRollup Then
 					Dim marker As Exporters.ImageExportInfo = DirectCast(images(0), Exporters.ImageExportInfo)
 					Me.ExportDocumentImage(localFilePath & marker.FileName, marker.FileGuid, marker.ArtifactID, marker.BatesNumber, marker.TempLocation)
-					Dim copyfile As String
+					Dim copyfile As String = Nothing
 					Select Case Me.Settings.TypeOfExportedFilePath
 						Case ExportFile.ExportedFilePathType.Absolute
 							copyfile = localFilePath & marker.FileName
@@ -706,7 +706,7 @@ Namespace kCura.WinEDDS
 						End If
 						If Me.Settings.VolumeInfo.CopyFilesFromRepository Then
 							Me.ExportDocumentImage(localFilePath & image.FileName, image.FileGuid, image.ArtifactID, image.BatesNumber, image.TempLocation)
-							Dim copyfile As String
+							Dim copyfile As String = Nothing
 							Select Case Me.Settings.TypeOfExportedFilePath
 								Case ExportFile.ExportedFilePathType.Absolute
 									copyfile = localFilePath & image.FileName
@@ -806,8 +806,6 @@ Namespace kCura.WinEDDS
 			End Select
 		End Function
 		Private Sub CreateImageLogEntry(ByVal batesNumber As String, ByVal copyFile As String, ByVal pathToImage As String, ByVal pageNumber As Int32, ByVal fullTextReader As System.IO.StreamReader, ByVal expectingTextForPage As Boolean, ByVal pageOffset As Long, ByVal numberOfImages As Int32)
-			Dim fullTextGuid As String
-			Dim fullText As String
 			Try
 				Select Case _settings.LogFileFormat
 					Case LoadFileType.FileFormat.Opticon

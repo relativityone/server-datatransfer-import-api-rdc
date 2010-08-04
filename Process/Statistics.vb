@@ -78,7 +78,7 @@ Namespace kCura.WinEDDS
 		End Property
 
 		Public Function ToFileSizeSpecification(ByVal value As Double) As String
-			Dim prefix As String
+			Dim prefix As String = Nothing
 			Dim k As Int32
 			If value <= 0 Then
 				k = 0

@@ -5,8 +5,8 @@ Namespace kCura.WinEDDS.PropertyExtractor
 
 			Dim sr As New System.IO.StreamReader(fileName)
 			Dim lineBuffer As String
-			Dim header As String
-			Dim headerValue As String
+			Dim header As String = Nothing
+			Dim headerValue As String = Nothing
 
 			Dim body As New System.Text.StringBuilder
 			Dim inBody As Boolean

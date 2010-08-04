@@ -371,7 +371,7 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Private Function ManageDocument(ByVal record As Api.ArtifactFieldCollection, ByVal lineStatus As Int32) As String
-			Dim filename As String
+			Dim filename As String = Nothing
 			Dim fileGuid As String = String.Empty
 			Dim uploadFile As Boolean = record.FieldList(DynamicFields.Types.FieldTypeHelper.FieldType.File).Length > 0 AndAlso Not record.FieldList(DynamicFields.Types.FieldTypeHelper.FieldType.File)(0).Value Is Nothing
 			Dim fileExists As Boolean
@@ -381,8 +381,8 @@ Namespace kCura.WinEDDS
 			Dim parentFolderID As Int32
 			Dim md5hash As String = ""
 			Dim fullFilePath As String = ""
-			Dim oixFileIdData As OI.FileID.FileIDData
-			Dim destinationVolume As String
+			Dim oixFileIdData As OI.FileID.FileIDData = Nothing
+			Dim destinationVolume As String = Nothing
 			_timekeeper.MarkStart("ManageDocument_Filesystem")
 			If uploadFile AndAlso _artifactTypeID = kCura.EDDS.Types.ArtifactType.Document Then
 				filename = record.FieldList(DynamicFields.Types.FieldTypeHelper.FieldType.File)(0).Value.ToString
@@ -910,9 +910,9 @@ Namespace kCura.WinEDDS
 			_errorCount += 1
 			If _errorMessageFileLocation = "" Then _errorMessageFileLocation = System.IO.Path.GetTempFileName
 			Dim errorMessageFileWriter As New System.IO.StreamWriter(_errorMessageFileLocation, True, System.Text.Encoding.Default)
-			If _errorCount < Me.MaxNumberOfErrorsInGrid Then
+			If _errorCount < BulkLoadFileImporter.MaxNumberOfErrorsInGrid Then
 				RaiseEvent ReportErrorEvent(row)
-			ElseIf _errorCount = Me.MaxNumberOfErrorsInGrid Then
+			ElseIf _errorCount = BulkLoadFileImporter.MaxNumberOfErrorsInGrid Then
 				Dim moretobefoundMessage As New System.Collections.Hashtable
 				moretobefoundMessage.Add("Message", "Maximum number of errors for display reached.  Export errors to view full list.")
 				RaiseEvent ReportErrorEvent(moretobefoundMessage)

@@ -86,7 +86,7 @@ Namespace kCura.WinEDDS
 			Dim folderRow As System.Data.DataRow
 			Dim foldersDataSet As System.Data.DataSet = _folderManager.RetrieveFolderAndDescendants(_caseContextArtifactID, rootFolderID)
 			foldersDataSet.Relations.Add("NodeRelation", foldersDataSet.Tables(0).Columns("ArtifactID"), foldersDataSet.Tables(0).Columns("ParentArtifactID"))
-			Dim path As String
+
 			For Each folderRow In foldersDataSet.Tables(0).Rows
 				If TypeOf folderRow("ParentArtifactID") Is DBNull Then
 					Dim f As New FolderCacheItem("", "\", _rootFolderID)

@@ -71,7 +71,7 @@ Namespace kCura.WinEDDS
 
 		Private Sub _imageFileImporter_StatusMessage(ByVal e As kCura.Windows.Process.StatusEventArgs) Handles _imageFileImporter.StatusMessage
 			System.Threading.Monitor.Enter(Me.ProcessObserver)
-			Dim additionalInfo As IDictionary
+			Dim additionalInfo As IDictionary = Nothing
 			If Not e.AdditionalInfo Is Nothing Then additionalInfo = DirectCast(e.AdditionalInfo, IDictionary)
 			Select Case e.EventType
 				Case kCura.Windows.Process.EventType.Error

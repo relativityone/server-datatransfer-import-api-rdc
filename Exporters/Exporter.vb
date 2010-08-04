@@ -144,7 +144,7 @@ Namespace kCura.WinEDDS
 			For i As Int32 = 0 To _columns.Count - 1
 				allAvfIds.Add(Me.Settings.SelectedViewFields(i).AvfId)
 			Next
-			Dim production As kCura.EDDS.WebAPI.ProductionManagerBase.Production
+			Dim production As kCura.EDDS.WebAPI.ProductionManagerBase.Production = Nothing
 			If Me.Settings.TypeOfExport = ExportFile.ExportType.Production Then
 				production = _productionManager.Read(Me.Settings.CaseArtifactID, Me.Settings.ArtifactID)
 				With _fieldManager.Read(Me.Settings.CaseArtifactID, production.BeginBatesFieldArtifactID)
@@ -222,7 +222,7 @@ Namespace kCura.WinEDDS
 			For start = 0 To Me.TotalExportArtifactCount - 1 Step Config.ExportBatchSize
 
 			Next
-			Me.WriteStatusLine(Windows.Process.EventType.Status, _downloadHandler.TotalWebTime.ToString, True)
+			Me.WriteStatusLine(Windows.Process.EventType.Status, kCura.WinEDDS.FileDownloader.TotalWebTime.ToString, True)
 			_timekeeper.GenerateCsvReportItemsAsRows()
 			_volumeManager.Finish()
 			Me.AuditRun(True)
