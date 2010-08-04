@@ -1,11 +1,11 @@
-﻿<Project DefaultTargets="Build" ToolsVersion="3.5" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets='Build' ToolsVersion='3.5' xmlns='http://schemas.microsoft.com/developer/msbuild/2003'>
   <PropertyGroup>
     <ProjectType>Local</ProjectType>
     <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{86550F4B-BEF4-4458-9536-7B5C6F68B0E2}</ProjectGuid>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <Configuration Condition=' &apos;$(Configuration)&apos; == &apos;&apos; '>Debug</Configuration>
+    <Platform Condition=' &apos;$(Platform)&apos; == &apos;&apos; '>AnyCPU</Platform>
     <ApplicationIcon>
     </ApplicationIcon>
     <AssemblyKeyContainerName>
@@ -34,7 +34,7 @@
     </UpgradeBackupLocation>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+  <PropertyGroup Condition=' &apos;$(Configuration)|$(Platform)&apos; == &apos;Debug|AnyCPU&apos; '>
     <OutputPath>bin\</OutputPath>
     <DocumentationFile>kCura.WinEDDS.ImportExtension.xml</DocumentationFile>
     <BaseAddress>285212672</BaseAddress>
@@ -54,7 +54,7 @@
     <DebugType>full</DebugType>
     <WarningsAsErrors>41999,42016,42017,42018,42019,42020,42021,42022,42032,42036</WarningsAsErrors>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+  <PropertyGroup Condition=' &apos;$(Configuration)|$(Platform)&apos; == &apos;Release|AnyCPU&apos; '>
     <OutputPath>bin\</OutputPath>
     <DocumentationFile>kCura.WinEDDS.ImportExtension.xml</DocumentationFile>
     <BaseAddress>285212672</BaseAddress>
@@ -74,7 +74,7 @@
     <DebugType>none</DebugType>
     <WarningsAsErrors>41999,42016,42017,42018,42019,42020,42021,42022,42032,42036</WarningsAsErrors>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
+  <PropertyGroup Condition=' &apos;$(Configuration)|$(Platform)&apos; == &apos;Debug|x64&apos; '>
     <DebugSymbols>true</DebugSymbols>
     <DefineDebug>true</DefineDebug>
     <DefineTrace>true</DefineTrace>
@@ -87,7 +87,7 @@
     <PlatformTarget>x64</PlatformTarget>
     <WarningsAsErrors>41999,42016,42017,42018,42019,42020,42021,42022,42032,42036</WarningsAsErrors>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
+  <PropertyGroup Condition=' &apos;$(Configuration)|$(Platform)&apos; == &apos;Release|x64&apos; '>
     <DefineTrace>true</DefineTrace>
     <OutputPath>bin\x64\Release\</OutputPath>
     <BaseAddress>285212672</BaseAddress>
@@ -99,7 +99,7 @@
     <PlatformTarget>x64</PlatformTarget>
     <WarningsAsErrors>41999,42016,42017,42018,42019,42020,42021,42022,42032,42036</WarningsAsErrors>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+  <PropertyGroup Condition=' &apos;$(Configuration)|$(Platform)&apos; == &apos;Debug|x86&apos; '>
     <DebugSymbols>true</DebugSymbols>
     <DefineDebug>true</DefineDebug>
     <DefineTrace>true</DefineTrace>
@@ -112,7 +112,7 @@
     <PlatformTarget>x86</PlatformTarget>
     <WarningsAsErrors>41999,42016,42017,42018,42019,42020,42021,42022,42032,42036</WarningsAsErrors>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+  <PropertyGroup Condition=' &apos;$(Configuration)|$(Platform)&apos; == &apos;Release|x86&apos; '>
     <DefineTrace>true</DefineTrace>
     <OutputPath>bin\x86\Release\</OutputPath>
     <BaseAddress>285212672</BaseAddress>
@@ -124,74 +124,74 @@
     <WarningsAsErrors>41999,42016,42017,42018,42019,42020,42021,42022,42032,42036</WarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System">
+    <Reference Include='System'>
       <Name>System</Name>
     </Reference>
-    <Reference Include="System.Core">
+    <Reference Include='System.Core'>
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
-    <Reference Include="System.Data">
+    <Reference Include='System.Data'>
       <Name>System.Data</Name>
     </Reference>
-    <Reference Include="System.Web.Services">
+    <Reference Include='System.Web.Services'>
       <Name>System.Web.Services</Name>
     </Reference>
-    <Reference Include="System.Xml">
+    <Reference Include='System.Xml'>
       <Name>System.XML</Name>
     </Reference>
-    <ProjectReference Include="..\..\kCura\kCura.DynamicFields.Types\kCura.DynamicFields.Types.vbproj">
+    <ProjectReference Include='..\..\kCura\kCura.DynamicFields.Types\kCura.DynamicFields.Types.vbproj'>
       <Project>{E8C68A03-7FC4-40AD-BB0B-5F22A3E6447E}</Project>
       <Name>kCura.DynamicFields.Types</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\kCura\kCura.Utility\kCura.Utility.vbproj">
+    <ProjectReference Include='..\..\kCura\kCura.Utility\kCura.Utility.vbproj'>
       <Project>{E3450350-56E3-4FE9-A47A-4D24960BCBDB}</Project>
       <Name>kCura.Utility</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\kCura\kCura.Windows.Process\kCura.Windows.Process.vbproj">
+    <ProjectReference Include='..\..\kCura\kCura.Windows.Process\kCura.Windows.Process.vbproj'>
       <Project>{B092D1B2-909B-4EF0-9369-A81675C3FC18}</Project>
       <Name>kCura.Windows.Process</Name>
     </ProjectReference>
-    <ProjectReference Include="..\kCura.EDDS.Types\kCura.EDDS.Types.vbproj">
+    <ProjectReference Include='..\kCura.EDDS.Types\kCura.EDDS.Types.vbproj'>
       <Project>{6E14C37A-96F5-4488-9E2B-2C1A21C4D140}</Project>
       <Name>kCura.EDDS.Types</Name>
     </ProjectReference>
-    <ProjectReference Include="..\kCura.WinEDDS\kCura.WinEDDS.vbproj">
+    <ProjectReference Include='..\kCura.WinEDDS\kCura.WinEDDS.vbproj'>
       <Project>{F16A2219-5DAC-4F2B-89B0-6BD1243CBF8F}</Project>
       <Name>kCura.WinEDDS</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Import Include="Microsoft.VisualBasic" />
-    <Import Include="System" />
-    <Import Include="System.Collections" />
-    <Import Include="System.Data" />
-    <Import Include="System.Diagnostics" />
-    <Import Include="System.Linq" />
+    <Import Include='Microsoft.VisualBasic'/>
+    <Import Include='System'/>
+    <Import Include='System.Collections'/>
+    <Import Include='System.Data'/>
+    <Import Include='System.Diagnostics'/>
+    <Import Include='System.Linq'/>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AssemblyInfo.vb">
+    <Compile Include='AssemblyInfo.vb'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="DataReaderImporter.vb">
+    <Compile Include='DataReaderImporter.vb'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="DataReaderImporterProcess.vb">
+    <Compile Include='DataReaderImporterProcess.vb'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="DataReaderLoadFile.vb">
+    <Compile Include='DataReaderLoadFile.vb'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="DataReaderReader.vb">
+    <Compile Include='DataReaderReader.vb'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="DataReaderReaderInitializationArgs.vb">
+    <Compile Include='DataReaderReaderInitializationArgs.vb'>
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="My Project\" />
+    <Folder Include='My Project\'/>
   </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.VisualBasic.targets" />
+  <Import Project='$(MSBuildBinPath)\Microsoft.VisualBasic.targets'/>
   <PropertyGroup>
     <PreBuildEvent>
     </PreBuildEvent>
