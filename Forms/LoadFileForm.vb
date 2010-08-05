@@ -830,6 +830,12 @@ Namespace kCura.EDDS.WinForm
 				Catch
 					Me.AppendErrorMessage(msg, "Access is restricted to selected load file")
 				End Try
+				If _loadFileEncodingPicker.SelectedEncoding Is Nothing Then
+					Me.AppendErrorMessage(msg, "No source encoding selected")
+				End If
+				If _extractedTextValueContainsFileLocation.Checked AndAlso _fullTextFileEncodingPicker.SelectedEncoding Is Nothing Then
+					Me.AppendErrorMessage(msg, "No text file encoding selected for extracted text")
+				End If
 				If msg.ToString.Trim <> String.Empty Then
 					msg.Insert(0, "The following issues need to be addressed before continuing:" & vbNewLine & vbNewLine)
 					MsgBox(msg.ToString, MsgBoxStyle.Exclamation, "Warning")
@@ -861,61 +867,52 @@ Namespace kCura.EDDS.WinForm
 
 			LoadFile.SourceFileEncoding = _loadFileEncodingPicker.SelectedEncoding
 			LoadFile.FullTextColumnContainsFileLocation = _extractedTextValueContainsFileLocation.Checked
-			If _extractedTextValueContainsFileLocation.Checked Then
+			If _extractedTextValueContainsFileLocation.Checked AndAlso _fullTextFileEncodingPicker.SelectedEncoding IsNot Nothing Then
 				LoadFile.ExtractedTextFileEncoding = _fullTextFileEncodingPicker.SelectedEncoding
 				LoadFile.ExtractedTextFileEncodingName = kCura.DynamicFields.Types.FieldColumnNameHelper.GetSqlFriendlyName(_fullTextFileEncodingPicker.SelectedEncoding.EncodingName).ToLower
 			End If
-			LoadFile.LoadNativeFiles = _loadNativeFiles.Checked
-			If _overwriteDropdown.SelectedItem Is Nothing Then
-				LoadFile.OverwriteDestination = "None"
-			Else
-				LoadFile.OverwriteDestination = Me.GetOverwrite
-			End If
-			If LoadFile.OverwriteDestination = "Strict" Then
-				LoadFile.IdentityFieldId = DirectCast(_overlayIdentifier.SelectedItem, DocumentField).FieldID
-			Else
-				LoadFile.IdentityFieldId = -1
-			End If
-			LoadFile.FirstLineContainsHeaders = _firstLineContainsColumnNames.Checked
-			If System.IO.File.Exists(_filePath.Text) Then
-				LoadFile.FilePath = _filePath.Text
-			End If
-			LoadFile.SelectedIdentifierField = _application.GetDocumentFieldFromName(_application.GetCaseIdentifierFields(Me.LoadFile.ArtifactTypeID)(0))
-			'If Not _identifiersDropDown.SelectedItem Is Nothing Then
-			'	LoadFile.GroupIdentifierColumn = _identifiersDropDown.SelectedItem.ToString
-			'Else
-			'	LoadFile.GroupIdentifierColumn = Nothing
-			'End If
-
-			If _loadNativeFiles.Checked Then
-				If Not _nativeFilePathField.SelectedItem Is Nothing Then
-					LoadFile.NativeFilePathColumn = _nativeFilePathField.SelectedItem.ToString
+				LoadFile.LoadNativeFiles = _loadNativeFiles.Checked
+				If _overwriteDropdown.SelectedItem Is Nothing Then
+					LoadFile.OverwriteDestination = "None"
 				Else
-					LoadFile.NativeFilePathColumn = Nothing
+					LoadFile.OverwriteDestination = Me.GetOverwrite
 				End If
-				'Add the file field as a mapped field for non document object types
-				If Me.LoadFile.ArtifactTypeID <> kCura.EDDS.Types.ArtifactType.Document Then
-					For Each field As DocumentField In currentFields.AllFields
-						If field.FieldTypeID = kCura.DynamicFields.Types.FieldTypeHelper.FieldType.File Then
-							Dim openParenIndex As Int32 = LoadFile.NativeFilePathColumn.LastIndexOf("("c) + 1
-							Dim closeParenIndex As Int32 = LoadFile.NativeFilePathColumn.LastIndexOf(")"c)
-							Dim nativePathColumn As Int32 = Int32.Parse(LoadFile.NativeFilePathColumn.Substring(openParenIndex, closeParenIndex - openParenIndex)) - 1
-							LoadFile.FieldMap.Add(New kCura.WinEDDS.LoadFileFieldMap.LoadFileFieldMapItem(field, nativePathColumn))
-						End If
-					Next
+				If LoadFile.OverwriteDestination = "Strict" Then
+					LoadFile.IdentityFieldId = DirectCast(_overlayIdentifier.SelectedItem, DocumentField).FieldID
+				Else
+					LoadFile.IdentityFieldId = -1
 				End If
-			End If
-			LoadFile.CreateFolderStructure = _buildFolderStructure.Checked
-			If LoadFile.OverwriteDestination.ToLower <> "strict" AndAlso LoadFile.OverwriteDestination.ToLower <> "append" Then
-				If LoadFile.CreateFolderStructure Then
-					If Not _destinationFolderPath.SelectedItem Is Nothing Then
-						LoadFile.FolderStructureContainedInColumn = _destinationFolderPath.SelectedItem.ToString
+				LoadFile.FirstLineContainsHeaders = _firstLineContainsColumnNames.Checked
+				If System.IO.File.Exists(_filePath.Text) Then
+					LoadFile.FilePath = _filePath.Text
+				End If
+				LoadFile.SelectedIdentifierField = _application.GetDocumentFieldFromName(_application.GetCaseIdentifierFields(Me.LoadFile.ArtifactTypeID)(0))
+				'If Not _identifiersDropDown.SelectedItem Is Nothing Then
+				'	LoadFile.GroupIdentifierColumn = _identifiersDropDown.SelectedItem.ToString
+				'Else
+				'	LoadFile.GroupIdentifierColumn = Nothing
+				'End If
+
+				If _loadNativeFiles.Checked Then
+					If Not _nativeFilePathField.SelectedItem Is Nothing Then
+						LoadFile.NativeFilePathColumn = _nativeFilePathField.SelectedItem.ToString
 					Else
-						LoadFile.FolderStructureContainedInColumn = Nothing
+						LoadFile.NativeFilePathColumn = Nothing
+					End If
+					'Add the file field as a mapped field for non document object types
+					If Me.LoadFile.ArtifactTypeID <> kCura.EDDS.Types.ArtifactType.Document Then
+						For Each field As DocumentField In currentFields.AllFields
+							If field.FieldTypeID = kCura.DynamicFields.Types.FieldTypeHelper.FieldType.File Then
+								Dim openParenIndex As Int32 = LoadFile.NativeFilePathColumn.LastIndexOf("("c) + 1
+								Dim closeParenIndex As Int32 = LoadFile.NativeFilePathColumn.LastIndexOf(")"c)
+								Dim nativePathColumn As Int32 = Int32.Parse(LoadFile.NativeFilePathColumn.Substring(openParenIndex, closeParenIndex - openParenIndex)) - 1
+								LoadFile.FieldMap.Add(New kCura.WinEDDS.LoadFileFieldMap.LoadFileFieldMapItem(field, nativePathColumn))
+							End If
+						Next
 					End If
 				End If
-			Else
-				If Me.IsChildObject Then
+				LoadFile.CreateFolderStructure = _buildFolderStructure.Checked
+				If LoadFile.OverwriteDestination.ToLower <> "strict" AndAlso LoadFile.OverwriteDestination.ToLower <> "append" Then
 					If LoadFile.CreateFolderStructure Then
 						If Not _destinationFolderPath.SelectedItem Is Nothing Then
 							LoadFile.FolderStructureContainedInColumn = _destinationFolderPath.SelectedItem.ToString
@@ -924,19 +921,28 @@ Namespace kCura.EDDS.WinForm
 						End If
 					End If
 				Else
-					LoadFile.CreateFolderStructure = False
+					If Me.IsChildObject Then
+						If LoadFile.CreateFolderStructure Then
+							If Not _destinationFolderPath.SelectedItem Is Nothing Then
+								LoadFile.FolderStructureContainedInColumn = _destinationFolderPath.SelectedItem.ToString
+							Else
+								LoadFile.FolderStructureContainedInColumn = Nothing
+							End If
+						End If
+					Else
+						LoadFile.CreateFolderStructure = False
+					End If
 				End If
-			End If
-			Me.LoadFile.CaseDefaultPath = _application.SelectedCaseInfo.DocumentPath
-			If _startLineNumber.Text = "" Then
-				Me.LoadFile.StartLineNumber = 0
-			Else
-				Me.LoadFile.StartLineNumber = CType(_startLineNumber.Text, Int64)
-			End If
-			If Me.LoadFile.IdentityFieldId = -1 Then Me.LoadFile.IdentityFieldId = _application.CurrentFields(Me.LoadFile.ArtifactTypeID).IdentifierFields(0).FieldID
-			Me.LoadFile.SendEmailOnLoadCompletion = _importMenuSendEmailNotificationItem.Checked
-			Me.Cursor = System.Windows.Forms.Cursors.Default
-			Return True
+				Me.LoadFile.CaseDefaultPath = _application.SelectedCaseInfo.DocumentPath
+				If _startLineNumber.Text = "" Then
+					Me.LoadFile.StartLineNumber = 0
+				Else
+					Me.LoadFile.StartLineNumber = CType(_startLineNumber.Text, Int64)
+				End If
+				If Me.LoadFile.IdentityFieldId = -1 Then Me.LoadFile.IdentityFieldId = _application.CurrentFields(Me.LoadFile.ArtifactTypeID).IdentifierFields(0).FieldID
+				Me.LoadFile.SendEmailOnLoadCompletion = _importMenuSendEmailNotificationItem.Checked
+				Me.Cursor = System.Windows.Forms.Cursors.Default
+				Return True
 		End Function
 
 		Private Sub MarkIdentifierField(ByVal fieldNames As String())
