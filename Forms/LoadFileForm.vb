@@ -375,7 +375,7 @@ Namespace kCura.EDDS.WinForm
 			'
 			Me._loadFileEncodingPicker.Location = New System.Drawing.Point(12, 128)
 			Me._loadFileEncodingPicker.Name = "_loadFileEncodingPicker"
-			Me._loadFileEncodingPicker.SelectedEncoding = CType(resources.GetObject("_loadFileEncodingPicker.SelectedEncoding"), System.Text.Encoding)
+			Me._loadFileEncodingPicker.SelectedEncoding = Nothing
 			Me._loadFileEncodingPicker.Size = New System.Drawing.Size(200, 21)
 			Me._loadFileEncodingPicker.TabIndex = 24
 			'
@@ -383,7 +383,7 @@ Namespace kCura.EDDS.WinForm
 			'
 			Me.Label8.Location = New System.Drawing.Point(12, 108)
 			Me.Label8.Name = "Label8"
-			Me.Label8.Size = New System.Drawing.Size(100, 16)
+			Me.Label8.Size = New System.Drawing.Size(200, 16)
 			Me.Label8.TabIndex = 23
 			Me.Label8.Text = "Source Encoding"
 			'
@@ -601,7 +601,7 @@ Namespace kCura.EDDS.WinForm
 			'
 			Me._fullTextFileEncodingPicker.Location = New System.Drawing.Point(12, 68)
 			Me._fullTextFileEncodingPicker.Name = "_fullTextFileEncodingPicker"
-			Me._fullTextFileEncodingPicker.SelectedEncoding = CType(resources.GetObject("_fullTextFileEncodingPicker.SelectedEncoding"), System.Text.Encoding)
+			Me._fullTextFileEncodingPicker.SelectedEncoding = Nothing
 			Me._fullTextFileEncodingPicker.Size = New System.Drawing.Size(200, 21)
 			Me._fullTextFileEncodingPicker.TabIndex = 31
 			'
@@ -840,6 +840,12 @@ Namespace kCura.EDDS.WinForm
 				Catch
 					Me.AppendErrorMessage(msg, "Access is restricted to selected load file")
 				End Try
+				If _loadFileEncodingPicker.SelectedEncoding Is Nothing Then
+					Me.AppendErrorMessage(msg, "No source encoding selected")
+				End If
+				If _extractedTextValueContainsFileLocation.Checked AndAlso _fullTextFileEncodingPicker.SelectedEncoding Is Nothing Then
+					Me.AppendErrorMessage(msg, "No text file encoding selected for extracted text")
+				End If
 				If msg.ToString.Trim <> String.Empty Then
 					msg.Insert(0, "The following issues need to be addressed before continuing:" & vbNewLine & vbNewLine)
 					MsgBox(msg.ToString, MsgBoxStyle.Exclamation, "Warning")
@@ -871,8 +877,9 @@ Namespace kCura.EDDS.WinForm
 
 			LoadFile.SourceFileEncoding = _loadFileEncodingPicker.SelectedEncoding
 			LoadFile.FullTextColumnContainsFileLocation = _extractedTextValueContainsFileLocation.Checked
-			If _extractedTextValueContainsFileLocation.Checked Then
-				LoadFile.ExtractedTextFileEncoding = _fullTextFileEncodingPicker.SelectedEncoding
+
+			LoadFile.ExtractedTextFileEncoding = _fullTextFileEncodingPicker.SelectedEncoding
+			If _extractedTextValueContainsFileLocation.Checked AndAlso _fullTextFileEncodingPicker.SelectedEncoding IsNot Nothing Then
 				LoadFile.ExtractedTextFileEncodingName = kCura.DynamicFields.Types.FieldColumnNameHelper.GetSqlFriendlyName(_fullTextFileEncodingPicker.SelectedEncoding.EncodingName).ToLower
 			End If
 			LoadFile.LoadNativeFiles = _loadNativeFiles.Checked
@@ -1113,12 +1120,32 @@ Namespace kCura.EDDS.WinForm
 			OpenFileDialog.ShowDialog()
 		End Sub
 
-		Private Function RefreshNativeFilePathFieldAndFileColumnHeaders(Optional ByVal showWarning As Boolean = False) As String()
+		Private Function RefreshNativeFilePathFieldAndFileColumnHeaders(Optional ByVal showWarning As Boolean = False, Optional ByVal comingFromEmptyEncoding As Boolean = True) As String()
 			Dim columnHeaders As String() = Nothing
 			Dim listsAreSame As Boolean = True
 			Dim currentHeaders As String() = Nothing
+			Dim determinedEncoding As System.Text.Encoding = Nothing
 			If System.IO.File.Exists(LoadFile.FilePath) Then
+				_loadFileEncodingPicker.Enabled = True
+				Label8.Text = "Source Encoding"
+				determinedEncoding = DetectEncoding(LoadFile.FilePath)
 				columnHeaders = _application.GetColumnHeadersFromLoadFile(LoadFile, _firstLineContainsColumnNames.Checked)
+				If determinedEncoding IsNot Nothing Then
+					'Check for what user selected
+					If _loadFileEncodingPicker.SelectedEncoding IsNot Nothing AndAlso Not _loadFileEncodingPicker.SelectedEncoding.Equals(determinedEncoding) Then
+						MsgBox("Determined Encdoing is not the same as selected")
+					End If
+
+					_loadFileEncodingPicker.SelectedEncoding = determinedEncoding
+					_loadFileEncodingPicker.Enabled = False
+					Label8.Text = "Source Encoding - Auto Detected"
+				ElseIf _loadFileEncodingPicker.SelectedEncoding Is Nothing Then
+					_fileColumnHeaders.Items.Clear()
+					_fileColumnHeaders.Items.Add("Please, select the encoding")
+					Exit Function
+				End If
+
+
 				System.Array.Sort(columnHeaders)
 				Dim currentHeaderList As New System.Collections.ArrayList
 				For Each item As Object In _fieldMap.LoadFileColumns.LeftListBoxItems
@@ -1137,7 +1164,7 @@ Namespace kCura.EDDS.WinForm
 					Next
 				End If
 			End If
-			If System.IO.File.Exists(LoadFile.FilePath) AndAlso Not listsAreSame Then
+			If System.IO.File.Exists(LoadFile.FilePath) AndAlso (Not listsAreSame Or comingFromEmptyEncoding) Then
 				If currentHeaders.Length > 0 AndAlso Not listsAreSame AndAlso showWarning Then
 					MsgBox("Column schema changed with load file." & System.Environment.NewLine & "Column information reset.", MsgBoxStyle.Information, "Relwin Message")
 				End If
@@ -1169,6 +1196,43 @@ Namespace kCura.EDDS.WinForm
 			ActionMenuEnabled = ReadyToRun
 			_fieldMap.LoadFileColumns.EnsureHorizontalScrollbars()
 			Return columnHeaders
+		End Function
+
+		Private Function DetectEncoding(ByVal filename As String) As System.Text.Encoding
+			Dim enc As System.Text.Encoding = Nothing
+			If System.IO.File.Exists(filename) Then
+				Dim filein As New System.IO.FileStream(filename, IO.FileMode.Open, IO.FileAccess.Read)
+				If (filein.CanSeek) Then
+					Dim bom(4) As Byte
+					filein.Read(bom, 0, 4)
+					'EF BB BF       = Unicode (UTF-8)
+					'FF FE          = ucs-2le, ucs-4le, and ucs-16le OR Unicode
+					'FE FF          = utf-16 and ucs-2 OR Unicode (Big-Endian)
+					'00 00 FE FF    = ucs-4 OR Unicode (UTF-32 Big-Endian)
+					'FF FE 00 00		= Unicode (UTF-32)
+					If (((bom(0) = &HEF) And (bom(1) = &HBB) And (bom(2) = &HBF))) Then
+						enc = System.Text.Encoding.UTF8
+					End If
+					If ((bom(0) = &HFF) And (bom(1) = &HFE)) Then
+						enc = System.Text.Encoding.Unicode
+					End If
+					If ((bom(0) = &HFE) And (bom(1) = &HFF)) Then
+						enc = System.Text.Encoding.BigEndianUnicode
+					End If
+					If (bom(0) = &H0 And bom(1) = &H0 And bom(2) = &HFE And bom(3) = &HFF) Then
+						enc = System.Text.Encoding.GetEncoding(12001)	' Unicode (UTF-32 Big-Endian)
+					End If
+					If (bom(0) = &HFF And bom(1) = &HFE And bom(2) = &H0 And bom(3) = &H0) Then
+						enc = System.Text.Encoding.GetEncoding(12000)	'Unicode (UTF-32)
+					End If
+
+					'Position the file cursor back to the start of the file
+					filein.Seek(0, System.IO.SeekOrigin.Begin)
+				End If
+				filein.Close()
+			End If
+			Return enc
+
 		End Function
 
 		Private Sub OpenFileDialog_FileOk(ByVal sender As Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles OpenFileDialog.FileOk
@@ -1609,7 +1673,7 @@ Namespace kCura.EDDS.WinForm
 
 		Private Sub _loadFileEncodingPicker_SelectedEncodingChanged() Handles _loadFileEncodingPicker.SelectedEncodingChanged
 			Me.LoadFile.SourceFileEncoding = _loadFileEncodingPicker.SelectedEncoding
-			Me.RefreshNativeFilePathFieldAndFileColumnHeaders()
+			Me.RefreshNativeFilePathFieldAndFileColumnHeaders(_loadFileEncodingPicker.SelectedEncoding Is Nothing)
 		End Sub
 
 		Private Sub _importMenuSendEmailNotificationItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _importMenuSendEmailNotificationItem.Click

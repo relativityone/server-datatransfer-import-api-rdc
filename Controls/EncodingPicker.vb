@@ -1,3 +1,4 @@
+Imports System.Collections.Generic
 Namespace kCura.EDDS.WinForm
 	Public Class EncodingPicker
 		Inherits System.Windows.Forms.UserControl
@@ -66,6 +67,7 @@ Namespace kCura.EDDS.WinForm
 #End Region
 		Private WithEvents _frm As EncodingForm
 		Private _hasLoaded As Boolean = False
+		Public Shared firstItemValue As String = "Select..."
 
 		Private Sub Button1_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Button1.Click
 			_frm = New EncodingForm
@@ -90,21 +92,33 @@ Namespace kCura.EDDS.WinForm
 			If Not _hasLoaded Then
 				_hasLoaded = True
 				DropDown.Items.Clear()
+				DropDown.Items.Add(firstItemValue)
 				DropDown.Items.AddRange(Constants.DefaultEncodings)
-				DropDown.SelectedIndex = DropDown.Items.Count - 1
-				If TypeOf Me.ParentForm Is ImageImportSettingsForm Then
-					Me.SelectedEncoding = DirectCast(Me.ParentForm, ImageImportSettingsForm).SelectedEncoding
-				End If
+				DropDown.SelectedIndex = 0
+				'If TypeOf Me.ParentForm Is ImageImportSettingsForm Then
+				'	Me.SelectedEncoding = DirectCast(Me.ParentForm, ImageImportSettingsForm).SelectedEncoding
+				'End If
 			End If
 		End Sub
 
 		Public Property SelectedEncoding() As System.Text.Encoding
 			Get
+				If Not TypeOf DropDown.SelectedItem Is EncodingItem Then
+					Return Nothing
+				End If
 				Return DirectCast(DropDown.SelectedItem, EncodingItem).Encoding
 			End Get
 			Set(ByVal value As System.Text.Encoding)
 				Dim success As Boolean = False
-				For Each ei As EncodingItem In DropDown.Items
+				If value Is Nothing Then
+					DropDown.SelectedItem = firstItemValue
+					Exit Property
+				End If
+				For Each eiObject As Object In DropDown.Items
+					If Not TypeOf eiObject Is EncodingItem Then
+						Continue For
+					End If
+					Dim ei As EncodingItem = DirectCast(eiObject, EncodingItem)
 					If value.CodePage = ei.CodePageId Then
 						DropDown.SelectedItem = ei
 						success = True
