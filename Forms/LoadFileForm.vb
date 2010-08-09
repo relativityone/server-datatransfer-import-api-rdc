@@ -129,11 +129,12 @@ Namespace kCura.EDDS.WinForm
 		Friend WithEvents _importMenuSendEmailNotificationItem As System.Windows.Forms.MenuItem
 
 		<System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
-			Dim resources As System.Resources.ResourceManager = New System.Resources.ResourceManager(GetType(LoadFileForm))
+			Me.components = New System.ComponentModel.Container
+			Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(LoadFileForm))
 			Me.OpenFileDialog = New System.Windows.Forms.OpenFileDialog
 			Me.GroupBox1 = New System.Windows.Forms.GroupBox
 			Me._importDestinationText = New System.Windows.Forms.TextBox
-			Me.MainMenu = New System.Windows.Forms.MainMenu
+			Me.MainMenu = New System.Windows.Forms.MainMenu(Me.components)
 			Me.MenuItem1 = New System.Windows.Forms.MenuItem
 			Me._fileLoadFieldMapMenuItem = New System.Windows.Forms.MenuItem
 			Me._fileSaveFieldMapMenuItem = New System.Windows.Forms.MenuItem
@@ -210,7 +211,7 @@ Namespace kCura.EDDS.WinForm
 			'OpenFileDialog
 			'
 			Me.OpenFileDialog.Filter = "All files (*.*)|*.*|CSV Files (*.csv)|*.csv|Text Files (*.txt)|*.txt|DAT Files|*." & _
-			"dat"
+					"dat"
 			'
 			'GroupBox1
 			'
@@ -231,7 +232,6 @@ Namespace kCura.EDDS.WinForm
 			Me._importDestinationText.ReadOnly = True
 			Me._importDestinationText.Size = New System.Drawing.Size(716, 13)
 			Me._importDestinationText.TabIndex = 5
-			Me._importDestinationText.Text = ""
 			'
 			'MainMenu
 			'
@@ -373,7 +373,7 @@ Namespace kCura.EDDS.WinForm
 			'
 			Me._loadFileEncodingPicker.Location = New System.Drawing.Point(12, 128)
 			Me._loadFileEncodingPicker.Name = "_loadFileEncodingPicker"
-			Me._loadFileEncodingPicker.SelectedEncoding = CType(resources.GetObject("_loadFileEncodingPicker.SelectedEncoding"), System.Text.Encoding)
+			Me._loadFileEncodingPicker.SelectedEncoding = Nothing
 			Me._loadFileEncodingPicker.Size = New System.Drawing.Size(200, 21)
 			Me._loadFileEncodingPicker.TabIndex = 24
 			'
@@ -381,7 +381,7 @@ Namespace kCura.EDDS.WinForm
 			'
 			Me.Label8.Location = New System.Drawing.Point(12, 108)
 			Me.Label8.Name = "Label8"
-			Me.Label8.Size = New System.Drawing.Size(100, 16)
+			Me.Label8.Size = New System.Drawing.Size(200, 16)
 			Me.Label8.TabIndex = 23
 			Me.Label8.Text = "Source Encoding"
 			'
@@ -599,7 +599,7 @@ Namespace kCura.EDDS.WinForm
 			'
 			Me._fullTextFileEncodingPicker.Location = New System.Drawing.Point(12, 68)
 			Me._fullTextFileEncodingPicker.Name = "_fullTextFileEncodingPicker"
-			Me._fullTextFileEncodingPicker.SelectedEncoding = CType(resources.GetObject("_fullTextFileEncodingPicker.SelectedEncoding"), System.Text.Encoding)
+			Me._fullTextFileEncodingPicker.SelectedEncoding = Nothing
 			Me._fullTextFileEncodingPicker.Size = New System.Drawing.Size(200, 21)
 			Me._fullTextFileEncodingPicker.TabIndex = 31
 			'
@@ -683,6 +683,7 @@ Namespace kCura.EDDS.WinForm
 			'
 			Me._advancedButton.Location = New System.Drawing.Point(152, 16)
 			Me._advancedButton.Name = "_advancedButton"
+			Me._advancedButton.Size = New System.Drawing.Size(75, 23)
 			Me._advancedButton.TabIndex = 27
 			Me._advancedButton.Text = "Advanced"
 			'
@@ -726,10 +727,12 @@ Namespace kCura.EDDS.WinForm
 			Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
 			Me.Text = "Relativity Desktop Client | Import Load File"
 			Me.GroupBox1.ResumeLayout(False)
+			Me.GroupBox1.PerformLayout()
 			Me.TabControl1.ResumeLayout(False)
 			Me._loadFileTab.ResumeLayout(False)
 			CType(Me._startLineNumber, System.ComponentModel.ISupportInitialize).EndInit()
 			Me.GroupBox20.ResumeLayout(False)
+			Me.GroupBox20.PerformLayout()
 			Me.GroupBox2.ResumeLayout(False)
 			Me.GroupBox23.ResumeLayout(False)
 			Me._fieldMapTab.ResumeLayout(False)
@@ -867,52 +870,62 @@ Namespace kCura.EDDS.WinForm
 
 			LoadFile.SourceFileEncoding = _loadFileEncodingPicker.SelectedEncoding
 			LoadFile.FullTextColumnContainsFileLocation = _extractedTextValueContainsFileLocation.Checked
+
+			LoadFile.ExtractedTextFileEncoding = _fullTextFileEncodingPicker.SelectedEncoding
 			If _extractedTextValueContainsFileLocation.Checked AndAlso _fullTextFileEncodingPicker.SelectedEncoding IsNot Nothing Then
-				LoadFile.ExtractedTextFileEncoding = _fullTextFileEncodingPicker.SelectedEncoding
 				LoadFile.ExtractedTextFileEncodingName = kCura.DynamicFields.Types.FieldColumnNameHelper.GetSqlFriendlyName(_fullTextFileEncodingPicker.SelectedEncoding.EncodingName).ToLower
 			End If
-				LoadFile.LoadNativeFiles = _loadNativeFiles.Checked
-				If _overwriteDropdown.SelectedItem Is Nothing Then
-					LoadFile.OverwriteDestination = "None"
-				Else
-					LoadFile.OverwriteDestination = Me.GetOverwrite
-				End If
-				If LoadFile.OverwriteDestination = "Strict" Then
-					LoadFile.IdentityFieldId = DirectCast(_overlayIdentifier.SelectedItem, DocumentField).FieldID
-				Else
-					LoadFile.IdentityFieldId = -1
-				End If
-				LoadFile.FirstLineContainsHeaders = _firstLineContainsColumnNames.Checked
-				If System.IO.File.Exists(_filePath.Text) Then
-					LoadFile.FilePath = _filePath.Text
-				End If
-				LoadFile.SelectedIdentifierField = _application.GetDocumentFieldFromName(_application.GetCaseIdentifierFields(Me.LoadFile.ArtifactTypeID)(0))
-				'If Not _identifiersDropDown.SelectedItem Is Nothing Then
-				'	LoadFile.GroupIdentifierColumn = _identifiersDropDown.SelectedItem.ToString
-				'Else
-				'	LoadFile.GroupIdentifierColumn = Nothing
-				'End If
+			LoadFile.LoadNativeFiles = _loadNativeFiles.Checked
+			If _overwriteDropdown.SelectedItem Is Nothing Then
+				LoadFile.OverwriteDestination = "None"
+			Else
+				LoadFile.OverwriteDestination = Me.GetOverwrite
+			End If
+			If LoadFile.OverwriteDestination = "Strict" Then
+				LoadFile.IdentityFieldId = DirectCast(_overlayIdentifier.SelectedItem, DocumentField).FieldID
+			Else
+				LoadFile.IdentityFieldId = -1
+			End If
+			LoadFile.FirstLineContainsHeaders = _firstLineContainsColumnNames.Checked
+			If System.IO.File.Exists(_filePath.Text) Then
+				LoadFile.FilePath = _filePath.Text
+			End If
+			LoadFile.SelectedIdentifierField = _application.GetDocumentFieldFromName(_application.GetCaseIdentifierFields(Me.LoadFile.ArtifactTypeID)(0))
+			'If Not _identifiersDropDown.SelectedItem Is Nothing Then
+			'	LoadFile.GroupIdentifierColumn = _identifiersDropDown.SelectedItem.ToString
+			'Else
+			'	LoadFile.GroupIdentifierColumn = Nothing
+			'End If
 
-				If _loadNativeFiles.Checked Then
-					If Not _nativeFilePathField.SelectedItem Is Nothing Then
-						LoadFile.NativeFilePathColumn = _nativeFilePathField.SelectedItem.ToString
+			If _loadNativeFiles.Checked Then
+				If Not _nativeFilePathField.SelectedItem Is Nothing Then
+					LoadFile.NativeFilePathColumn = _nativeFilePathField.SelectedItem.ToString
+				Else
+					LoadFile.NativeFilePathColumn = Nothing
+				End If
+				'Add the file field as a mapped field for non document object types
+				If Me.LoadFile.ArtifactTypeID <> kCura.EDDS.Types.ArtifactType.Document Then
+					For Each field As DocumentField In currentFields.AllFields
+						If field.FieldTypeID = kCura.DynamicFields.Types.FieldTypeHelper.FieldType.File Then
+							Dim openParenIndex As Int32 = LoadFile.NativeFilePathColumn.LastIndexOf("("c) + 1
+							Dim closeParenIndex As Int32 = LoadFile.NativeFilePathColumn.LastIndexOf(")"c)
+							Dim nativePathColumn As Int32 = Int32.Parse(LoadFile.NativeFilePathColumn.Substring(openParenIndex, closeParenIndex - openParenIndex)) - 1
+							LoadFile.FieldMap.Add(New kCura.WinEDDS.LoadFileFieldMap.LoadFileFieldMapItem(field, nativePathColumn))
+						End If
+					Next
+				End If
+			End If
+			LoadFile.CreateFolderStructure = _buildFolderStructure.Checked
+			If LoadFile.OverwriteDestination.ToLower <> "strict" AndAlso LoadFile.OverwriteDestination.ToLower <> "append" Then
+				If LoadFile.CreateFolderStructure Then
+					If Not _destinationFolderPath.SelectedItem Is Nothing Then
+						LoadFile.FolderStructureContainedInColumn = _destinationFolderPath.SelectedItem.ToString
 					Else
-						LoadFile.NativeFilePathColumn = Nothing
-					End If
-					'Add the file field as a mapped field for non document object types
-					If Me.LoadFile.ArtifactTypeID <> kCura.EDDS.Types.ArtifactType.Document Then
-						For Each field As DocumentField In currentFields.AllFields
-							If field.FieldTypeID = kCura.DynamicFields.Types.FieldTypeHelper.FieldType.File Then
-								Dim openParenIndex As Int32 = LoadFile.NativeFilePathColumn.LastIndexOf("("c) + 1
-								Dim closeParenIndex As Int32 = LoadFile.NativeFilePathColumn.LastIndexOf(")"c)
-								Dim nativePathColumn As Int32 = Int32.Parse(LoadFile.NativeFilePathColumn.Substring(openParenIndex, closeParenIndex - openParenIndex)) - 1
-								LoadFile.FieldMap.Add(New kCura.WinEDDS.LoadFileFieldMap.LoadFileFieldMapItem(field, nativePathColumn))
-							End If
-						Next
+						LoadFile.FolderStructureContainedInColumn = Nothing
 					End If
 				End If
-				LoadFile.CreateFolderStructure = _buildFolderStructure.Checked
-				If LoadFile.OverwriteDestination.ToLower <> "strict" AndAlso LoadFile.OverwriteDestination.ToLower <> "append" Then
+			Else
+				If Me.IsChildObject Then
 					If LoadFile.CreateFolderStructure Then
 						If Not _destinationFolderPath.SelectedItem Is Nothing Then
 							LoadFile.FolderStructureContainedInColumn = _destinationFolderPath.SelectedItem.ToString
@@ -921,28 +934,19 @@ Namespace kCura.EDDS.WinForm
 						End If
 					End If
 				Else
-					If Me.IsChildObject Then
-						If LoadFile.CreateFolderStructure Then
-							If Not _destinationFolderPath.SelectedItem Is Nothing Then
-								LoadFile.FolderStructureContainedInColumn = _destinationFolderPath.SelectedItem.ToString
-							Else
-								LoadFile.FolderStructureContainedInColumn = Nothing
-							End If
-						End If
-					Else
-						LoadFile.CreateFolderStructure = False
-					End If
+					LoadFile.CreateFolderStructure = False
 				End If
-				Me.LoadFile.CaseDefaultPath = _application.SelectedCaseInfo.DocumentPath
-				If _startLineNumber.Text = "" Then
-					Me.LoadFile.StartLineNumber = 0
-				Else
-					Me.LoadFile.StartLineNumber = CType(_startLineNumber.Text, Int64)
-				End If
-				If Me.LoadFile.IdentityFieldId = -1 Then Me.LoadFile.IdentityFieldId = _application.CurrentFields(Me.LoadFile.ArtifactTypeID).IdentifierFields(0).FieldID
-				Me.LoadFile.SendEmailOnLoadCompletion = _importMenuSendEmailNotificationItem.Checked
-				Me.Cursor = System.Windows.Forms.Cursors.Default
-				Return True
+			End If
+			Me.LoadFile.CaseDefaultPath = _application.SelectedCaseInfo.DocumentPath
+			If _startLineNumber.Text = "" Then
+				Me.LoadFile.StartLineNumber = 0
+			Else
+				Me.LoadFile.StartLineNumber = CType(_startLineNumber.Text, Int64)
+			End If
+			If Me.LoadFile.IdentityFieldId = -1 Then Me.LoadFile.IdentityFieldId = _application.CurrentFields(Me.LoadFile.ArtifactTypeID).IdentifierFields(0).FieldID
+			Me.LoadFile.SendEmailOnLoadCompletion = _importMenuSendEmailNotificationItem.Checked
+			Me.Cursor = System.Windows.Forms.Cursors.Default
+			Return True
 		End Function
 
 		Private Sub MarkIdentifierField(ByVal fieldNames As String())
@@ -1109,12 +1113,32 @@ Namespace kCura.EDDS.WinForm
 			OpenFileDialog.ShowDialog()
 		End Sub
 
-		Private Function RefreshNativeFilePathFieldAndFileColumnHeaders(Optional ByVal showWarning As Boolean = False) As String()
+		Private Function RefreshNativeFilePathFieldAndFileColumnHeaders(Optional ByVal showWarning As Boolean = False, Optional ByVal comingFromEmptyEncoding As Boolean = True) As String()
 			Dim columnHeaders As String() = Nothing
 			Dim listsAreSame As Boolean = True
 			Dim currentHeaders As String() = Nothing
+			Dim determinedEncoding As System.Text.Encoding = Nothing
 			If System.IO.File.Exists(LoadFile.FilePath) Then
+				_loadFileEncodingPicker.Enabled = True
+				Label8.Text = "Source Encoding"
+				determinedEncoding = DetectEncoding(LoadFile.FilePath)
 				columnHeaders = _application.GetColumnHeadersFromLoadFile(LoadFile, _firstLineContainsColumnNames.Checked)
+				If determinedEncoding IsNot Nothing Then
+					'Check for what user selected
+					If _loadFileEncodingPicker.SelectedEncoding IsNot Nothing AndAlso Not _loadFileEncodingPicker.SelectedEncoding.Equals(determinedEncoding) Then
+						MsgBox("Determined Encdoing is not the same as selected")
+					End If
+
+					_loadFileEncodingPicker.SelectedEncoding = determinedEncoding
+					_loadFileEncodingPicker.Enabled = False
+					Label8.Text = "Source Encoding - Auto Detected"
+				ElseIf _loadFileEncodingPicker.SelectedEncoding Is Nothing Then
+					_fileColumnHeaders.Items.Clear()
+					_fileColumnHeaders.Items.Add("Please, select the encoding")
+					Exit Function
+				End If
+
+
 				System.Array.Sort(columnHeaders)
 				Dim currentHeaderList As New System.Collections.ArrayList
 				For Each item As Object In _fieldMap.LoadFileColumns.LeftListBoxItems
@@ -1133,7 +1157,7 @@ Namespace kCura.EDDS.WinForm
 					Next
 				End If
 			End If
-			If System.IO.File.Exists(LoadFile.FilePath) AndAlso Not listsAreSame Then
+			If System.IO.File.Exists(LoadFile.FilePath) AndAlso (Not listsAreSame Or comingFromEmptyEncoding) Then
 				If currentHeaders.Length > 0 AndAlso Not listsAreSame AndAlso showWarning Then
 					MsgBox("Column schema changed with load file." & System.Environment.NewLine & "Column information reset.", MsgBoxStyle.Information, "Relwin Message")
 				End If
@@ -1165,6 +1189,43 @@ Namespace kCura.EDDS.WinForm
 			ActionMenuEnabled = ReadyToRun
 			_fieldMap.LoadFileColumns.EnsureHorizontalScrollbars()
 			Return columnHeaders
+		End Function
+
+		Private Function DetectEncoding(ByVal filename As String) As System.Text.Encoding
+			Dim enc As System.Text.Encoding = Nothing
+			If System.IO.File.Exists(filename) Then
+				Dim filein As New System.IO.FileStream(filename, IO.FileMode.Open, IO.FileAccess.Read)
+				If (filein.CanSeek) Then
+					Dim bom(4) As Byte
+					filein.Read(bom, 0, 4)
+					'EF BB BF       = Unicode (UTF-8)
+					'FF FE          = ucs-2le, ucs-4le, and ucs-16le OR Unicode
+					'FE FF          = utf-16 and ucs-2 OR Unicode (Big-Endian)
+					'00 00 FE FF    = ucs-4 OR Unicode (UTF-32 Big-Endian)
+					'FF FE 00 00		= Unicode (UTF-32)
+					If (((bom(0) = &HEF) And (bom(1) = &HBB) And (bom(2) = &HBF))) Then
+						enc = System.Text.Encoding.UTF8
+					End If
+					If ((bom(0) = &HFF) And (bom(1) = &HFE)) Then
+						enc = System.Text.Encoding.Unicode
+					End If
+					If ((bom(0) = &HFE) And (bom(1) = &HFF)) Then
+						enc = System.Text.Encoding.BigEndianUnicode
+					End If
+					If (bom(0) = &H0 And bom(1) = &H0 And bom(2) = &HFE And bom(3) = &HFF) Then
+						enc = System.Text.Encoding.GetEncoding(12001)	' Unicode (UTF-32 Big-Endian)
+					End If
+					If (bom(0) = &HFF And bom(1) = &HFE And bom(2) = &H0 And bom(3) = &H0) Then
+						enc = System.Text.Encoding.GetEncoding(12000)	'Unicode (UTF-32)
+					End If
+
+					'Position the file cursor back to the start of the file
+					filein.Seek(0, System.IO.SeekOrigin.Begin)
+				End If
+				filein.Close()
+			End If
+			Return enc
+
 		End Function
 
 		Private Sub OpenFileDialog_FileOk(ByVal sender As Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles OpenFileDialog.FileOk
@@ -1605,7 +1666,7 @@ Namespace kCura.EDDS.WinForm
 
 		Private Sub _loadFileEncodingPicker_SelectedEncodingChanged() Handles _loadFileEncodingPicker.SelectedEncodingChanged
 			Me.LoadFile.SourceFileEncoding = _loadFileEncodingPicker.SelectedEncoding
-			Me.RefreshNativeFilePathFieldAndFileColumnHeaders()
+			Me.RefreshNativeFilePathFieldAndFileColumnHeaders(_loadFileEncodingPicker.SelectedEncoding Is Nothing)
 		End Sub
 
 		Private Sub _importMenuSendEmailNotificationItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _importMenuSendEmailNotificationItem.Click

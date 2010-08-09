@@ -95,9 +95,9 @@ Namespace kCura.EDDS.WinForm
 				DropDown.Items.Add(firstItemValue)
 				DropDown.Items.AddRange(Constants.DefaultEncodings)
 				DropDown.SelectedIndex = 0
-				If TypeOf Me.ParentForm Is ImageImportSettingsForm Then
-					Me.SelectedEncoding = DirectCast(Me.ParentForm, ImageImportSettingsForm).SelectedEncoding
-				End If
+				'If TypeOf Me.ParentForm Is ImageImportSettingsForm Then
+				'	Me.SelectedEncoding = DirectCast(Me.ParentForm, ImageImportSettingsForm).SelectedEncoding
+				'End If
 			End If
 		End Sub
 
@@ -110,6 +110,10 @@ Namespace kCura.EDDS.WinForm
 			End Get
 			Set(ByVal value As System.Text.Encoding)
 				Dim success As Boolean = False
+				If value Is Nothing Then
+					DropDown.SelectedItem = firstItemValue
+					Exit Property
+				End If
 				For Each eiObject As Object In DropDown.Items
 					If Not TypeOf eiObject Is EncodingItem Then
 						Continue For
