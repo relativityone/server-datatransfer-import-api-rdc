@@ -113,7 +113,7 @@ Namespace kCura.EDDS.WinForm
 		Private Sub _thrower_OnEvent(ByVal value As Object) Handles _thrower.OnEvent
 			Dim args As Object() = DirectCast(value, Object())
 			If _formType = FormType.Codes Then
-				Me.DataSource = _application.BuildFoldersAndCodesDataSource(DirectCast(args(0), ArrayList), _multiRecordDelimiter, _previewCodeCount)
+				Me.DataSource = _application.BuildFoldersAndCodesDataSource(DirectCast(args(0), ArrayList), _previewCodeCount)
 			Else
 				Me.DataSource = _application.BuildLoadFileDataSource(DirectCast(args(0), ArrayList))
 			End If
