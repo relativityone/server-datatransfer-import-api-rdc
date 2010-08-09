@@ -16,6 +16,7 @@ Namespace kCura.EDDS.WinForm
 			InitializeDocumentSpecificComponents()
 
 		End Sub
+		Friend WithEvents _importMenuForceFolderPreviewItem As System.Windows.Forms.MenuItem
 
 		Private ParentArtifactTypeID As Int32
 		Private ReadOnly Property IsChildObject() As Boolean
@@ -129,11 +130,12 @@ Namespace kCura.EDDS.WinForm
 		Friend WithEvents _importMenuSendEmailNotificationItem As System.Windows.Forms.MenuItem
 
 		<System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
-			Dim resources As System.Resources.ResourceManager = New System.Resources.ResourceManager(GetType(LoadFileForm))
+			Me.components = New System.ComponentModel.Container
+			Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(LoadFileForm))
 			Me.OpenFileDialog = New System.Windows.Forms.OpenFileDialog
 			Me.GroupBox1 = New System.Windows.Forms.GroupBox
 			Me._importDestinationText = New System.Windows.Forms.TextBox
-			Me.MainMenu = New System.Windows.Forms.MainMenu
+			Me.MainMenu = New System.Windows.Forms.MainMenu(Me.components)
 			Me.MenuItem1 = New System.Windows.Forms.MenuItem
 			Me._fileLoadFieldMapMenuItem = New System.Windows.Forms.MenuItem
 			Me._fileSaveFieldMapMenuItem = New System.Windows.Forms.MenuItem
@@ -192,6 +194,7 @@ Namespace kCura.EDDS.WinForm
 			Me._nativeFilePathField = New System.Windows.Forms.ComboBox
 			Me.Label5 = New System.Windows.Forms.Label
 			Me.HelpProvider1 = New System.Windows.Forms.HelpProvider
+			Me._importMenuForceFolderPreviewItem = New System.Windows.Forms.MenuItem
 			Me.GroupBox1.SuspendLayout()
 			Me.TabControl1.SuspendLayout()
 			Me._loadFileTab.SuspendLayout()
@@ -210,7 +213,7 @@ Namespace kCura.EDDS.WinForm
 			'OpenFileDialog
 			'
 			Me.OpenFileDialog.Filter = "All files (*.*)|*.*|CSV Files (*.csv)|*.csv|Text Files (*.txt)|*.txt|DAT Files|*." & _
-			"dat"
+					"dat"
 			'
 			'GroupBox1
 			'
@@ -231,7 +234,6 @@ Namespace kCura.EDDS.WinForm
 			Me._importDestinationText.ReadOnly = True
 			Me._importDestinationText.Size = New System.Drawing.Size(716, 13)
 			Me._importDestinationText.TabIndex = 5
-			Me._importDestinationText.Text = ""
 			'
 			'MainMenu
 			'
@@ -280,7 +282,7 @@ Namespace kCura.EDDS.WinForm
 			'MenuItem2
 			'
 			Me.MenuItem2.Index = 1
-			Me.MenuItem2.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.PreviewMenuFile, Me._importMenuPreviewErrorsItem, Me._importMenuPreviewFoldersAndCodesItem, Me.ImportFileMenu, Me.MenuItem5, Me._importMenuSendEmailNotificationItem})
+			Me.MenuItem2.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.PreviewMenuFile, Me._importMenuPreviewErrorsItem, Me._importMenuPreviewFoldersAndCodesItem, Me.ImportFileMenu, Me.MenuItem5, Me._importMenuSendEmailNotificationItem, Me._importMenuForceFolderPreviewItem})
 			Me.MenuItem2.Text = "&Import"
 			'
 			'PreviewMenuFile
@@ -683,6 +685,7 @@ Namespace kCura.EDDS.WinForm
 			'
 			Me._advancedButton.Location = New System.Drawing.Point(152, 16)
 			Me._advancedButton.Name = "_advancedButton"
+			Me._advancedButton.Size = New System.Drawing.Size(75, 23)
 			Me._advancedButton.TabIndex = 27
 			Me._advancedButton.Text = "Advanced"
 			'
@@ -712,6 +715,11 @@ Namespace kCura.EDDS.WinForm
 			Me.Label5.Text = "Native file paths contained in column:"
 			Me.Label5.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
 			'
+			'_importMenuForceFolderPreviewItem
+			'
+			Me._importMenuForceFolderPreviewItem.Index = 6
+			Me._importMenuForceFolderPreviewItem.Text = "Force folder preview"
+			'
 			'LoadFileForm
 			'
 			Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
@@ -726,10 +734,12 @@ Namespace kCura.EDDS.WinForm
 			Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
 			Me.Text = "Relativity Desktop Client | Import Load File"
 			Me.GroupBox1.ResumeLayout(False)
+			Me.GroupBox1.PerformLayout()
 			Me.TabControl1.ResumeLayout(False)
 			Me._loadFileTab.ResumeLayout(False)
 			CType(Me._startLineNumber, System.ComponentModel.ISupportInitialize).EndInit()
 			Me.GroupBox20.ResumeLayout(False)
+			Me.GroupBox20.PerformLayout()
 			Me.GroupBox2.ResumeLayout(False)
 			Me.GroupBox23.ResumeLayout(False)
 			Me._fieldMapTab.ResumeLayout(False)
