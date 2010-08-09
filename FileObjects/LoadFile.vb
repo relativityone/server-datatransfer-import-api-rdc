@@ -78,12 +78,22 @@ Namespace kCura.WinEDDS
 			info.AddValue("FullTextColumnContainsFileLocation", Me.FullTextColumnContainsFileLocation, GetType(Boolean))
 			info.AddValue("GroupIdentifierColumn", Me.GroupIdentifierColumn, GetType(String))
 			info.AddValue("HierarchicalValueDelimiter", AscW(Me.HierarchicalValueDelimiter), GetType(Integer))
-			info.AddValue("SourceFileEncoding", Me.SourceFileEncoding.CodePage, GetType(Int32))
+			If Me.SourceFileEncoding Is Nothing Then
+				info.AddValue("SourceFileEncoding", -1, GetType(Int32))
+			Else
+				info.AddValue("SourceFileEncoding", Me.SourceFileEncoding.CodePage, GetType(Int32))
+			End If
 			info.AddValue("ArtifactTypeID", Me.ArtifactTypeID, GetType(Int32))
 			info.AddValue("StartLineNumber", Me.StartLineNumber, GetType(Int64))
 			info.AddValue("IdentityFieldId", Me.IdentityFieldId, GetType(Int32))
 			info.AddValue("SendEmailOnLoadCompletion", Me.SendEmailOnLoadCompletion, GetType(Boolean))
-			If Me.FullTextColumnContainsFileLocation Then info.AddValue("ExtractedTextFileEncoding", Me.ExtractedTextFileEncoding.CodePage, GetType(Int32))
+			If Me.FullTextColumnContainsFileLocation Then
+				If Me.ExtractedTextFileEncoding Is Nothing Then
+					info.AddValue("ExtractedTextFileEncoding", -1, GetType(Int32))
+				Else
+					info.AddValue("ExtractedTextFileEncoding", Me.ExtractedTextFileEncoding.CodePage, GetType(Int32))
+				End If
+			End If
 		End Sub
 
 		Private Sub New(ByVal info As System.Runtime.Serialization.SerializationInfo, ByVal Context As System.Runtime.Serialization.StreamingContext)
@@ -137,14 +147,24 @@ Namespace kCura.WinEDDS
 					Me.HierarchicalValueDelimiter = "\"c
 				End Try
 				Try
-					Me.SourceFileEncoding = System.Text.Encoding.GetEncoding(info.GetInt32("SourceFileEncoding"))
+					Dim codePageID As Int32 = info.GetInt32("SourceFileEncoding")
+					If codePageID = -1 Then
+						Me.SourceFileEncoding = Nothing
+					Else
+						Me.SourceFileEncoding = System.Text.Encoding.GetEncoding(codePageID)
+					End If
 				Catch
 					Me.SourceFileEncoding = System.Text.Encoding.Default
 				End Try
 				Try
-					Me.ExtractedTextFileEncoding = System.Text.Encoding.GetEncoding(info.GetInt32("ExtractedTextFileEncoding"))
+					Dim codePageID As Int32 = info.GetInt32("ExtractedTextFileEncoding")
+					If codePageID = -1 Then
+						Me.SourceFileEncoding = Nothing
+					Else
+						Me.SourceFileEncoding = System.Text.Encoding.GetEncoding(codePageID)
+					End If
 				Catch
-					Me.ExtractedTextFileEncoding = System.Text.Encoding.Default
+					Me.ExtractedTextFileEncoding = Nothing
 				End Try
 				Try
 					Me.ArtifactTypeID = info.GetInt32("ArtifactTypeID")

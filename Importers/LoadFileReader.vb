@@ -124,7 +124,7 @@ Namespace kCura.WinEDDS
 
 		Private Sub EnsureReader()
 			If Me.Reader Is Nothing Then
-				If _sourceFileEncoding Is Nothing Then _sourceFileEncoding = System.Text.Encoding.Default
+				If _sourceFileEncoding Is Nothing Then _sourceFileEncoding = System.Text.Encoding.Default 'DetectEncoding(_settings.FilePath)
 				Me.Reader = New System.IO.StreamReader(_settings.FilePath, _sourceFileEncoding, True)
 			End If
 		End Sub
@@ -487,6 +487,10 @@ Namespace kCura.WinEDDS
 		Public Overrides Function ReadFile(ByVal path As String) As Object
 			Throw New System.Exception("Not Implemented")
 		End Function
+
+#End Region
+
+#Region "Helpers"
 
 #End Region
 

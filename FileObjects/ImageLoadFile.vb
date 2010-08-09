@@ -44,7 +44,11 @@ Namespace kCura.WinEDDS
 			info.AddValue("ProductionTable", Me.ProductionTable, GetType(System.Data.DataTable))
 			info.AddValue("ProductionArtifactID", Me.ProductionArtifactID, GetType(Integer))
 			info.AddValue("BeginBatesFieldArtifactID", Me.BeginBatesFieldArtifactID, GetType(Integer))
-			info.AddValue("FullTextEncoding", Me.FullTextEncoding, GetType(System.Text.Encoding))
+			If Me.FullTextEncoding Is Nothing Then
+				info.AddValue("FullTextEncoding", Nothing, GetType(System.Text.Encoding))
+			Else
+				info.AddValue("FullTextEncoding", Me.FullTextEncoding, GetType(System.Text.Encoding))
+			End If
 			info.AddValue("StartLineNumber", Me.StartLineNumber, GetType(Int64))
 			info.AddValue("IdentityFieldId", Me.IdentityFieldId, GetType(Int32))
 		End Sub
@@ -64,7 +68,7 @@ Namespace kCura.WinEDDS
 				Try
 					Me.FullTextEncoding = DirectCast(info.GetValue("FullTextEncoding", GetType(System.Text.Encoding)), System.Text.Encoding)
 				Catch ex As Exception
-					Me.FullTextEncoding = System.Text.Encoding.Default
+					Me.FullTextEncoding = Nothing
 				End Try
 				Try
 					Me.IdentityFieldId = info.GetInt32("IdentityFieldId")
