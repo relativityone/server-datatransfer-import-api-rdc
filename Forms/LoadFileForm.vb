@@ -952,6 +952,7 @@ Namespace kCura.EDDS.WinForm
 			End If
 			If Me.LoadFile.IdentityFieldId = -1 Then Me.LoadFile.IdentityFieldId = _application.CurrentFields(Me.LoadFile.ArtifactTypeID).IdentifierFields(0).FieldID
 			Me.LoadFile.SendEmailOnLoadCompletion = _importMenuSendEmailNotificationItem.Checked
+			Me.LoadFile.ForceFolderPreview = _importMenuForceFolderPreviewItem.Checked
 			Me.Cursor = System.Windows.Forms.Cursors.Default
 			Return True
 		End Function
@@ -1019,6 +1020,7 @@ Namespace kCura.EDDS.WinForm
 			_overlayIdentifier.Items.Clear()
 			_overlayIdentifier.Items.AddRange(Me.GetSuitableKeyFields)
 			_importMenuSendEmailNotificationItem.Checked = Me.LoadFile.SendEmailOnLoadCompletion
+			_importMenuForceFolderPreviewItem.Checked = Me.LoadFile.ForceFolderPreview
 			If Not loadFileObjectUpdatedFromFile Then
 				For Each item As DocumentField In _overlayIdentifier.Items
 					If item.FieldCategory = DynamicFields.Types.FieldCategory.Identifier Then
@@ -1286,6 +1288,7 @@ Namespace kCura.EDDS.WinForm
 			'kCura.Windows.Forms.EnhancedMenuProvider.Hook(Me)
 			_loadFileEncodingPicker.InitializeDropdown()
 			_fullTextFileEncodingPicker.InitializeDropdown()
+			_importMenuForceFolderPreviewItem.Checked = _application.TemporaryForceFolderPreview
 		End Sub
 
 		Private Sub LoadFileForm_Closing(ByVal sender As Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles MyBase.Closing
@@ -1678,6 +1681,10 @@ Namespace kCura.EDDS.WinForm
 
 		Private Sub _importMenuSendEmailNotificationItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _importMenuSendEmailNotificationItem.Click
 			_importMenuSendEmailNotificationItem.Checked = Not _importMenuSendEmailNotificationItem.Checked
+		End Sub
+
+		Private Sub _importMenuForceFolderPreviewItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _importMenuForceFolderPreviewItem.Click
+			_importMenuForceFolderPreviewItem.Checked = Not _importMenuForceFolderPreviewItem.Checked
 		End Sub
 	End Class
 End Namespace

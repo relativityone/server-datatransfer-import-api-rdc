@@ -39,6 +39,7 @@ Namespace kCura.EDDS.WinForm
 		Private WithEvents _loginForm As LoginForm
 		Private Shared _cache As New Hashtable
 		Private _temporaryWebServiceURL As String
+		Private _temporaryForceFolderPreview As Boolean
 		Private _cookieContainer As System.Net.CookieContainer
 		Private _documentRepositoryList As String()
 		Private _artifactTypeID As Int32
@@ -215,6 +216,15 @@ Namespace kCura.EDDS.WinForm
 			End Set
 		End Property
 
+		Public Property TemporaryForceFolderPreview() As Boolean
+			Get
+				Return _temporaryForceFolderPreview
+			End Get
+			Set(ByVal value As Boolean)
+				_temporaryForceFolderPreview = value
+			End Set
+		End Property
+
 		Public Property CookieContainer() As System.Net.CookieContainer
 			Get
 				Return _cookieContainer
@@ -242,11 +252,16 @@ Namespace kCura.EDDS.WinForm
 
 		Public Sub ExitApplication()
 			UpdateWebServiceURL(False)
+			UpdateForceFolderPreview()
 			RaiseEvent OnEvent(New AppEvent(AppEvent.AppEventType.ExitApplication))
 		End Sub
 
+		Public Sub UpdateForceFolderPreview()
+			kCura.WinEDDS.Config.ForceFolderPreview = Me.TemporaryForceFolderPreview
+		End Sub
+
 		Public Sub UpdateWebServiceURL(ByVal relogin As Boolean)
-			If Not Me.TemporaryWebServiceURL Is Nothing AndAlso Not Me.TemporaryWebServiceURL = "" Then
+			If Not Me.TemporaryWebServiceURL Is Nothing AndAlso Not Me.TemporaryWebServiceURL = "" AndAlso Not Me.TemporaryWebServiceURL.Equals(kCura.WinEDDS.Config.WebServiceURL) Then
 				kCura.WinEDDS.Config.WebServiceURL = Me.TemporaryWebServiceURL
 				If relogin Then
 					Me.NewLogin(True)

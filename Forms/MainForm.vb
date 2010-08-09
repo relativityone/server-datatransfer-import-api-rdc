@@ -64,8 +64,8 @@ Namespace kCura.EDDS.WinForm
 		Friend WithEvents ToolsImportApplicationFileMenu As System.Windows.Forms.MenuItem
 		<System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
 			Me.components = New System.ComponentModel.Container
-			Dim resources As System.Resources.ResourceManager = New System.Resources.ResourceManager(GetType(MainForm))
-			Me.MainMenu = New System.Windows.Forms.MainMenu
+			Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(MainForm))
+			Me.MainMenu = New System.Windows.Forms.MainMenu(Me.components)
 			Me.MenuItem1 = New System.Windows.Forms.MenuItem
 			Me.OpenRepositoryMenu = New System.Windows.Forms.MenuItem
 			Me.MenuItem3 = New System.Windows.Forms.MenuItem
@@ -94,9 +94,9 @@ Namespace kCura.EDDS.WinForm
 			Me.StatusBar = New System.Windows.Forms.StatusBar
 			Me.AppStatusPanel = New System.Windows.Forms.StatusBarPanel
 			Me.LoggedInUserPanel = New System.Windows.Forms.StatusBarPanel
-			Me._caseFolderExplorer = New kCura.EDDS.WinForm.CaseFolderExplorer
-			Me.EnhancedMenuProvider = New kCura.Windows.Forms.EnhancedMenuProvider(Me.components)
 			Me._objectTypeDropDown = New System.Windows.Forms.ComboBox
+			Me.EnhancedMenuProvider = New kCura.Windows.Forms.EnhancedMenuProvider(Me.components)
+			Me._caseFolderExplorer = New kCura.EDDS.WinForm.CaseFolderExplorer
 			CType(Me.AppStatusPanel, System.ComponentModel.ISupportInitialize).BeginInit()
 			CType(Me.LoggedInUserPanel, System.ComponentModel.ISupportInitialize).BeginInit()
 			Me.SuspendLayout()
@@ -301,7 +301,7 @@ Namespace kCura.EDDS.WinForm
 			'
 			'StatusBar
 			'
-			Me.StatusBar.Location = New System.Drawing.Point(0, 515)
+			Me.StatusBar.Location = New System.Drawing.Point(0, 335)
 			Me.StatusBar.Name = "StatusBar"
 			Me.StatusBar.Panels.AddRange(New System.Windows.Forms.StatusBarPanel() {Me.AppStatusPanel, Me.LoggedInUserPanel})
 			Me.StatusBar.ShowPanels = True
@@ -311,37 +311,39 @@ Namespace kCura.EDDS.WinForm
 			'AppStatusPanel
 			'
 			Me.AppStatusPanel.AutoSize = System.Windows.Forms.StatusBarPanelAutoSize.Spring
+			Me.AppStatusPanel.Name = "AppStatusPanel"
 			Me.AppStatusPanel.Width = 216
 			'
 			'LoggedInUserPanel
 			'
 			Me.LoggedInUserPanel.Alignment = System.Windows.Forms.HorizontalAlignment.Right
-			'
-			'_caseFolderExplorer
-			'
-			Me._caseFolderExplorer.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-					Or System.Windows.Forms.AnchorStyles.Left) _
-					Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-			Me._caseFolderExplorer.Location = New System.Drawing.Point(0, 25)
-			Me._caseFolderExplorer.Name = "_caseFolderExplorer"
-			Me._caseFolderExplorer.Size = New System.Drawing.Size(332, 490)
-			Me._caseFolderExplorer.TabIndex = 6
+			Me.LoggedInUserPanel.Name = "LoggedInUserPanel"
 			'
 			'_objectTypeDropDown
 			'
 			Me._objectTypeDropDown.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-					Or System.Windows.Forms.AnchorStyles.Left) _
-					Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+									Or System.Windows.Forms.AnchorStyles.Left) _
+									Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me._objectTypeDropDown.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
 			Me._objectTypeDropDown.Location = New System.Drawing.Point(0, 4)
 			Me._objectTypeDropDown.Name = "_objectTypeDropDown"
 			Me._objectTypeDropDown.Size = New System.Drawing.Size(332, 21)
 			Me._objectTypeDropDown.TabIndex = 7
 			'
+			'_caseFolderExplorer
+			'
+			Me._caseFolderExplorer.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
+									Or System.Windows.Forms.AnchorStyles.Left) _
+									Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+			Me._caseFolderExplorer.Location = New System.Drawing.Point(0, 25)
+			Me._caseFolderExplorer.Name = "_caseFolderExplorer"
+			Me._caseFolderExplorer.Size = New System.Drawing.Size(332, 310)
+			Me._caseFolderExplorer.TabIndex = 6
+			'
 			'MainForm
 			'
 			Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
-			Me.ClientSize = New System.Drawing.Size(332, 537)
+			Me.ClientSize = New System.Drawing.Size(332, 357)
 			Me.Controls.Add(Me._objectTypeDropDown)
 			Me.Controls.Add(Me._caseFolderExplorer)
 			Me.Controls.Add(Me.StatusBar)
@@ -411,6 +413,7 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 		Private Sub MainForm_Closing(ByVal sender As Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles MyBase.Closing
+			_application.UpdateForceFolderPreview()
 			_application.UpdateWebServiceURL(False)
 			kCura.Windows.Forms.EnhancedMenuProvider.Unhook()
 		End Sub
