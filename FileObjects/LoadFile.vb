@@ -29,6 +29,7 @@ Namespace kCura.WinEDDS
 		Public StartLineNumber As Int64
 		Public IdentityFieldId As Int32 = -1
 		Public SendEmailOnLoadCompletion As Boolean
+		Public ForceFolderPreview As Boolean
 		<NonSerialized()> Public ExtractedTextFileEncodingName As String
 		<NonSerialized()> Public CaseDefaultPath As String = ""
 		<NonSerialized()> Public Credentials As Net.NetworkCredential
@@ -87,6 +88,7 @@ Namespace kCura.WinEDDS
 			info.AddValue("StartLineNumber", Me.StartLineNumber, GetType(Int64))
 			info.AddValue("IdentityFieldId", Me.IdentityFieldId, GetType(Int32))
 			info.AddValue("SendEmailOnLoadCompletion", Me.SendEmailOnLoadCompletion, GetType(Boolean))
+			info.AddValue("ForceFolderPreview", Me.ForceFolderPreview, GetType(Boolean))
 			If Me.FullTextColumnContainsFileLocation Then
 				If Me.ExtractedTextFileEncoding Is Nothing Then
 					info.AddValue("ExtractedTextFileEncoding", -1, GetType(Int32))
@@ -185,6 +187,11 @@ Namespace kCura.WinEDDS
 					Me.SendEmailOnLoadCompletion = info.GetBoolean("SendEmailOnLoadCompletion")
 				Catch
 					Me.SendEmailOnLoadCompletion = kCura.WinEDDS.Service.Settings.SendEmailOnLoadCompletion
+				End Try
+				Try
+					Me.ForceFolderPreview = info.GetBoolean("ForceFolderPreview")
+				Catch
+					Me.ForceFolderPreview = kCura.WinEDDS.Config.ForceFolderPreview
 				End Try
 			End With
 		End Sub

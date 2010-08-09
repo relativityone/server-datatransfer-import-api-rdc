@@ -147,6 +147,22 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
+		Public Shared Property ForceFolderPreview() As Boolean
+			Get
+				Dim registryValue As String = Config.GetRegistryKeyValue("ForceFolderPreview")
+				If String.IsNullOrEmpty(registryValue) Then
+					Config.SetRegistryKeyValue("ForceFolderPreview", "true")
+					Return True
+				End If
+				Return registryValue.ToLower.Equals("true")
+			End Get
+			Set(ByVal value As Boolean)
+				Dim registryValue As String = "false"
+				If value Then registryValue = "true"
+				Config.SetRegistryKeyValue("ForceFolderPreview", registryValue)
+			End Set
+		End Property
+
 		Public Shared Property WebServiceURL() As String
 			Get
 				Return Config.GetRegistryKeyValue("WebServiceURL")
