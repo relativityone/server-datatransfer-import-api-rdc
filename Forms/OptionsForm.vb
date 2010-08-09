@@ -37,7 +37,7 @@ Namespace kCura.EDDS.WinForm
 		Friend WithEvents _cancelButton As System.Windows.Forms.Button
 		Friend WithEvents WebServiceUrlGroupbox As System.Windows.Forms.GroupBox
 		Friend WithEvents ForceFolderPreviewGroupBox As System.Windows.Forms.GroupBox
-		Friend WithEvents _ForceFolderPreviewCheckBox As System.Windows.Forms.CheckBox
+		Friend WithEvents _ForceFolderPreviewBox As System.Windows.Forms.ComboBox
 		Friend WithEvents _WebServiceUrl As System.Windows.Forms.TextBox
 		<System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
 			Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(OptionsForm))
@@ -48,7 +48,7 @@ Namespace kCura.EDDS.WinForm
 			Me.WebServiceUrlGroupbox = New System.Windows.Forms.GroupBox
 			Me._WebServiceUrl = New System.Windows.Forms.TextBox
 			Me.ForceFolderPreviewGroupBox = New System.Windows.Forms.GroupBox
-			Me._ForceFolderPreviewCheckBox = New System.Windows.Forms.CheckBox
+			Me._ForceFolderPreviewBox = New System.Windows.Forms.ComboBox
 			Me.TimeZoneGroupBox.SuspendLayout()
 			Me.WebServiceUrlGroupbox.SuspendLayout()
 			Me.ForceFolderPreviewGroupBox.SuspendLayout()
@@ -59,7 +59,7 @@ Namespace kCura.EDDS.WinForm
 			Me.TimeZoneGroupBox.Controls.Add(Me._timeZoneDropDown)
 			Me.TimeZoneGroupBox.Location = New System.Drawing.Point(8, 121)
 			Me.TimeZoneGroupBox.Name = "TimeZoneGroupBox"
-			Me.TimeZoneGroupBox.Size = New System.Drawing.Size(536, 56)
+			Me.TimeZoneGroupBox.Size = New System.Drawing.Size(540, 56)
 			Me.TimeZoneGroupBox.TabIndex = 0
 			Me.TimeZoneGroupBox.TabStop = False
 			Me.TimeZoneGroupBox.Text = "Default Time Zone"
@@ -75,7 +75,8 @@ Namespace kCura.EDDS.WinForm
 			'
 			'_okButton
 			'
-			Me._okButton.Location = New System.Drawing.Point(384, 192)
+			Me._okButton.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+			Me._okButton.Location = New System.Drawing.Point(385, 183)
 			Me._okButton.Name = "_okButton"
 			Me._okButton.Size = New System.Drawing.Size(75, 23)
 			Me._okButton.TabIndex = 1
@@ -83,8 +84,9 @@ Namespace kCura.EDDS.WinForm
 			'
 			'_cancelButton
 			'
+			Me._cancelButton.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me._cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel
-			Me._cancelButton.Location = New System.Drawing.Point(472, 192)
+			Me._cancelButton.Location = New System.Drawing.Point(473, 183)
 			Me._cancelButton.Name = "_cancelButton"
 			Me._cancelButton.Size = New System.Drawing.Size(75, 23)
 			Me._cancelButton.TabIndex = 2
@@ -95,7 +97,7 @@ Namespace kCura.EDDS.WinForm
 			Me.WebServiceUrlGroupbox.Controls.Add(Me._WebServiceUrl)
 			Me.WebServiceUrlGroupbox.Location = New System.Drawing.Point(8, 64)
 			Me.WebServiceUrlGroupbox.Name = "WebServiceUrlGroupbox"
-			Me.WebServiceUrlGroupbox.Size = New System.Drawing.Size(536, 48)
+			Me.WebServiceUrlGroupbox.Size = New System.Drawing.Size(540, 48)
 			Me.WebServiceUrlGroupbox.TabIndex = 3
 			Me.WebServiceUrlGroupbox.TabStop = False
 			Me.WebServiceUrlGroupbox.Text = "WebService URL"
@@ -109,30 +111,29 @@ Namespace kCura.EDDS.WinForm
 			'
 			'ForceFolderPreviewGroupBox
 			'
-			Me.ForceFolderPreviewGroupBox.Controls.Add(Me._ForceFolderPreviewCheckBox)
+			Me.ForceFolderPreviewGroupBox.Controls.Add(Me._ForceFolderPreviewBox)
 			Me.ForceFolderPreviewGroupBox.Location = New System.Drawing.Point(8, 8)
 			Me.ForceFolderPreviewGroupBox.Name = "ForceFolderPreviewGroupBox"
-			Me.ForceFolderPreviewGroupBox.Size = New System.Drawing.Size(536, 48)
+			Me.ForceFolderPreviewGroupBox.Size = New System.Drawing.Size(540, 48)
 			Me.ForceFolderPreviewGroupBox.TabIndex = 4
 			Me.ForceFolderPreviewGroupBox.TabStop = False
-			Me.ForceFolderPreviewGroupBox.Text = "Force Folder Preview"
+			Me.ForceFolderPreviewGroupBox.Text = "Force Folder Preview Default"
 			'
-			'_ForceFolderPreviewCheckBox
+			'_ForceFolderPreviewBox
 			'
-			Me._ForceFolderPreviewCheckBox.AutoSize = True
-			Me._ForceFolderPreviewCheckBox.Location = New System.Drawing.Point(8, 20)
-			Me._ForceFolderPreviewCheckBox.Name = "_ForceFolderPreviewCheckBox"
-			Me._ForceFolderPreviewCheckBox.Size = New System.Drawing.Size(122, 17)
-			Me._ForceFolderPreviewCheckBox.TabIndex = 0
-			Me._ForceFolderPreviewCheckBox.Text = "Force folder preview"
-			Me._ForceFolderPreviewCheckBox.UseVisualStyleBackColor = True
+			Me._ForceFolderPreviewBox.FormattingEnabled = True
+			Me._ForceFolderPreviewBox.Items.AddRange(New Object() {"Enabled", "Disabled"})
+			Me._ForceFolderPreviewBox.Location = New System.Drawing.Point(8, 20)
+			Me._ForceFolderPreviewBox.Name = "_ForceFolderPreviewBox"
+			Me._ForceFolderPreviewBox.Size = New System.Drawing.Size(105, 21)
+			Me._ForceFolderPreviewBox.TabIndex = 0
 			'
 			'OptionsForm
 			'
 			Me.AcceptButton = Me._okButton
 			Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
 			Me.CancelButton = Me._cancelButton
-			Me.ClientSize = New System.Drawing.Size(552, 229)
+			Me.ClientSize = New System.Drawing.Size(552, 210)
 			Me.Controls.Add(Me.ForceFolderPreviewGroupBox)
 			Me.Controls.Add(Me.WebServiceUrlGroupbox)
 			Me.Controls.Add(Me._cancelButton)
@@ -141,12 +142,11 @@ Namespace kCura.EDDS.WinForm
 			Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
 			Me.Name = "OptionsForm"
 			Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
-			Me.Text = " Relativity Desktop Client | Options"
+			Me.Text = " Relativity Desktop Client | Settings"
 			Me.TimeZoneGroupBox.ResumeLayout(False)
 			Me.WebServiceUrlGroupbox.ResumeLayout(False)
 			Me.WebServiceUrlGroupbox.PerformLayout()
 			Me.ForceFolderPreviewGroupBox.ResumeLayout(False)
-			Me.ForceFolderPreviewGroupBox.PerformLayout()
 			Me.ResumeLayout(False)
 
 		End Sub
@@ -155,10 +155,23 @@ Namespace kCura.EDDS.WinForm
 
 		Friend WithEvents _application As kCura.EDDS.WinForm.Application
 
+		Private Enum Indices
+			Enabled = 0
+			Disabled = 1
+		End Enum
+
+
 		Protected Overrides Sub OnLoad(ByVal e As System.EventArgs)
-			_ForceFolderPreviewCheckBox.Checked = kCura.WinEDDS.Config.ForceFolderPreview
+			If kCura.WinEDDS.Config.ForceFolderPreview Then
+				_ForceFolderPreviewBox.SelectedIndex = Indices.Enabled
+			Else
+				_ForceFolderPreviewBox.SelectedIndex = Indices.Disabled
+			End If
 			_WebServiceUrl.Text = kCura.WinEDDS.Config.WebServiceURL
 			InitializeTimeZoneDropDown()
+			If Not Me.TimeZoneGroupBox.Visible Then
+				Me.Height -= Me.TimeZoneGroupBox.Height
+			End If
 		End Sub
 
 		Public Sub InitializeTimeZoneDropDown()
@@ -210,7 +223,12 @@ Namespace kCura.EDDS.WinForm
 			If Not _WebServiceUrl.Text.Chars(_WebServiceUrl.Text.Length - 1) = "/" Then
 				_WebServiceUrl.Text &= "/"
 			End If
-			_application.TemporaryForceFolderPreview = _ForceFolderPreviewCheckBox.Checked
+
+			If _ForceFolderPreviewBox.SelectedIndex = Indices.Enabled Then
+				_application.TemporaryForceFolderPreview = True
+			Else
+				_application.TemporaryForceFolderPreview = False
+			End If
 			_application.TemporaryWebServiceURL = _WebServiceUrl.Text
 			Me.Close()
 			_application.UpdateForceFolderPreview()
