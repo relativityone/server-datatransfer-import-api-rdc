@@ -581,7 +581,7 @@ Namespace kCura.EDDS.WinForm
 									For Each field In fields
 										dt.Columns.Add(field.DisplayName)
 										If field.DisplayName.ToLower.Contains("extracted text") Then
-											dt.Columns.Add("Extracted Text Encoding")
+											'dt.Columns.Add("Extracted Text Encoding")
 										End If
 									Next
 									firstTimeThrough = False
@@ -616,7 +616,7 @@ Namespace kCura.EDDS.WinForm
 				For Each field In fields
 					row.Add(field.ValueAsString)
 					If field.DisplayName.ToLower.Contains("extracted text") Then
-						row.Add("...Encoding will go here...")
+						'row.Add("...Encoding will go here...")
 					End If
 				Next
 				dt.Rows.Add(row.ToArray)
@@ -1068,7 +1068,7 @@ Namespace kCura.EDDS.WinForm
 				Exit Function
 			End If
 			Dim frm As New kCura.Windows.Process.ProgressForm
-			Dim previewer As New kCura.WinEDDS.PreviewLoadFileProcess
+			Dim previewer As New kCura.WinEDDS.PreviewLoadFileProcess(formType)
 			loadFileToPreview.PreviewCodeCount.Clear()
 			Dim previewform As New LoadFilePreviewForm(formType, loadFileToPreview.MultiRecordDelimiter, loadFileToPreview.PreviewCodeCount)
 			Dim thrower As New ValueThrower

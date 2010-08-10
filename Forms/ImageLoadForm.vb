@@ -57,10 +57,10 @@ Namespace kCura.EDDS.WinForm
 		Friend WithEvents _startLineNumber As System.Windows.Forms.NumericUpDown
 		Friend WithEvents I As System.Windows.Forms.MenuItem
 		Friend WithEvents MenuItem3 As System.Windows.Forms.MenuItem
-		Friend WithEvents BroooopBox As System.Windows.Forms.GroupBox
 		Friend WithEvents _encodingPicker As kCura.EDDS.WinForm.EncodingPicker
 		Friend WithEvents GroupBox4 As System.Windows.Forms.GroupBox
 		Friend WithEvents _supportImageAutoNumbering As System.Windows.Forms.CheckBox
+		Friend WithEvents BroooopBox As System.Windows.Forms.GroupBox
 		Friend WithEvents _importMenuSendEmailNotificationItem As System.Windows.Forms.MenuItem
 		<System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
 			Me.components = New System.ComponentModel.Container
@@ -68,6 +68,8 @@ Namespace kCura.EDDS.WinForm
 			Me.GroupBox3 = New System.Windows.Forms.GroupBox
 			Me._browseButton = New System.Windows.Forms.Button
 			Me._filePath = New System.Windows.Forms.TextBox
+			Me._startLineNumberLabel = New System.Windows.Forms.Label
+			Me._startLineNumber = New System.Windows.Forms.NumericUpDown
 			Me._openFileDialog = New System.Windows.Forms.OpenFileDialog
 			Me.GroupBox233 = New System.Windows.Forms.GroupBox
 			Me._overwriteDropdown = New System.Windows.Forms.ComboBox
@@ -89,20 +91,18 @@ Namespace kCura.EDDS.WinForm
 			Me._advancedButton = New System.Windows.Forms.Button
 			Me.GroupBox2 = New System.Windows.Forms.GroupBox
 			Me._beginBatesDropdown = New System.Windows.Forms.ComboBox
-			Me._startLineNumber = New System.Windows.Forms.NumericUpDown
-			Me._startLineNumberLabel = New System.Windows.Forms.Label
-			Me.BroooopBox = New System.Windows.Forms.GroupBox
 			Me.GroupBox4 = New System.Windows.Forms.GroupBox
 			Me._supportImageAutoNumbering = New System.Windows.Forms.CheckBox
 			Me._encodingPicker = New kCura.EDDS.WinForm.EncodingPicker
+			Me.BroooopBox = New System.Windows.Forms.GroupBox
 			Me.GroupBox3.SuspendLayout()
+			CType(Me._startLineNumber, System.ComponentModel.ISupportInitialize).BeginInit()
 			Me.GroupBox233.SuspendLayout()
 			Me.ExtractedTextGroupBox.SuspendLayout()
 			Me.GroupBox1.SuspendLayout()
 			Me.GroupBox2.SuspendLayout()
-			CType(Me._startLineNumber, System.ComponentModel.ISupportInitialize).BeginInit()
-			Me.BroooopBox.SuspendLayout()
 			Me.GroupBox4.SuspendLayout()
+			Me.BroooopBox.SuspendLayout()
 			Me.SuspendLayout()
 			'
 			'GroupBox3
@@ -135,6 +135,23 @@ Namespace kCura.EDDS.WinForm
 			Me._filePath.TabIndex = 5
 			Me._filePath.Text = "Select a file ..."
 			'
+			'_startLineNumberLabel
+			'
+			Me._startLineNumberLabel.Location = New System.Drawing.Point(6, 51)
+			Me._startLineNumberLabel.Name = "_startLineNumberLabel"
+			Me._startLineNumberLabel.Size = New System.Drawing.Size(56, 20)
+			Me._startLineNumberLabel.TabIndex = 31
+			Me._startLineNumberLabel.Text = "Start Line"
+			Me._startLineNumberLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+			'
+			'_startLineNumber
+			'
+			Me._startLineNumber.Location = New System.Drawing.Point(62, 51)
+			Me._startLineNumber.Maximum = New Decimal(New Integer() {268435455, 1042612833, 542101086, 0})
+			Me._startLineNumber.Name = "_startLineNumber"
+			Me._startLineNumber.Size = New System.Drawing.Size(144, 20)
+			Me._startLineNumber.TabIndex = 30
+			'
 			'_openFileDialog
 			'
 			Me._openFileDialog.Filter = "Opticon Files (*.opt)|*.opt|Log Files (*.log)|*.log|Text Files (*.txt)|*.txt|All " & _
@@ -156,7 +173,7 @@ Namespace kCura.EDDS.WinForm
 			Me._overwriteDropdown.Items.AddRange(New Object() {"Append Only", "Overlay Only", "Append/Overlay"})
 			Me._overwriteDropdown.Location = New System.Drawing.Point(12, 20)
 			Me._overwriteDropdown.Name = "_overwriteDropdown"
-			Me._overwriteDropdown.Size = New System.Drawing.Size(156, 21)
+			Me._overwriteDropdown.Size = New System.Drawing.Size(188, 21)
 			Me._overwriteDropdown.TabIndex = 29
 			'
 			'_replaceFullText
@@ -228,7 +245,7 @@ Namespace kCura.EDDS.WinForm
 			'ExtractedTextGroupBox
 			'
 			Me.ExtractedTextGroupBox.Controls.Add(Me._replaceFullText)
-			Me.ExtractedTextGroupBox.Location = New System.Drawing.Point(4, 170)
+			Me.ExtractedTextGroupBox.Location = New System.Drawing.Point(4, 234)
 			Me.ExtractedTextGroupBox.Name = "ExtractedTextGroupBox"
 			Me.ExtractedTextGroupBox.Size = New System.Drawing.Size(217, 62)
 			Me.ExtractedTextGroupBox.TabIndex = 9
@@ -238,9 +255,9 @@ Namespace kCura.EDDS.WinForm
 			'GroupBox1
 			'
 			Me.GroupBox1.Controls.Add(Me._productionDropdown)
-			Me.GroupBox1.Location = New System.Drawing.Point(212, 252)
+			Me.GroupBox1.Location = New System.Drawing.Point(227, 160)
 			Me.GroupBox1.Name = "GroupBox1"
-			Me.GroupBox1.Size = New System.Drawing.Size(348, 52)
+			Me.GroupBox1.Size = New System.Drawing.Size(333, 52)
 			Me.GroupBox1.TabIndex = 10
 			Me.GroupBox1.TabStop = False
 			Me.GroupBox1.Text = "Production"
@@ -250,12 +267,12 @@ Namespace kCura.EDDS.WinForm
 			Me._productionDropdown.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
 			Me._productionDropdown.Location = New System.Drawing.Point(12, 20)
 			Me._productionDropdown.Name = "_productionDropdown"
-			Me._productionDropdown.Size = New System.Drawing.Size(332, 21)
+			Me._productionDropdown.Size = New System.Drawing.Size(310, 21)
 			Me._productionDropdown.TabIndex = 29
 			'
 			'_advancedButton
 			'
-			Me._advancedButton.Location = New System.Drawing.Point(4, 320)
+			Me._advancedButton.Location = New System.Drawing.Point(4, 315)
 			Me._advancedButton.Name = "_advancedButton"
 			Me._advancedButton.Size = New System.Drawing.Size(75, 23)
 			Me._advancedButton.TabIndex = 28
@@ -265,9 +282,9 @@ Namespace kCura.EDDS.WinForm
 			'
 			Me.GroupBox2.Controls.Add(Me._beginBatesDropdown)
 			Me.GroupBox2.Enabled = False
-			Me.GroupBox2.Location = New System.Drawing.Point(4, 252)
+			Me.GroupBox2.Location = New System.Drawing.Point(4, 160)
 			Me.GroupBox2.Name = "GroupBox2"
-			Me.GroupBox2.Size = New System.Drawing.Size(204, 52)
+			Me.GroupBox2.Size = New System.Drawing.Size(217, 52)
 			Me.GroupBox2.TabIndex = 29
 			Me.GroupBox2.TabStop = False
 			Me.GroupBox2.Text = "Begin Bates"
@@ -280,39 +297,12 @@ Namespace kCura.EDDS.WinForm
 			Me._beginBatesDropdown.Size = New System.Drawing.Size(192, 21)
 			Me._beginBatesDropdown.TabIndex = 29
 			'
-			'_startLineNumber
-			'
-			Me._startLineNumber.Location = New System.Drawing.Point(62, 51)
-			Me._startLineNumber.Maximum = New Decimal(New Integer() {268435455, 1042612833, 542101086, 0})
-			Me._startLineNumber.Name = "_startLineNumber"
-			Me._startLineNumber.Size = New System.Drawing.Size(144, 20)
-			Me._startLineNumber.TabIndex = 30
-			'
-			'_startLineNumberLabel
-			'
-			Me._startLineNumberLabel.Location = New System.Drawing.Point(6, 51)
-			Me._startLineNumberLabel.Name = "_startLineNumberLabel"
-			Me._startLineNumberLabel.Size = New System.Drawing.Size(56, 20)
-			Me._startLineNumberLabel.TabIndex = 31
-			Me._startLineNumberLabel.Text = "Start Line"
-			Me._startLineNumberLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
-			'
-			'BroooopBox
-			'
-			Me.BroooopBox.Controls.Add(Me._encodingPicker)
-			Me.BroooopBox.Location = New System.Drawing.Point(278, 170)
-			Me.BroooopBox.Name = "BroooopBox"
-			Me.BroooopBox.Size = New System.Drawing.Size(282, 62)
-			Me.BroooopBox.TabIndex = 33
-			Me.BroooopBox.TabStop = False
-			Me.BroooopBox.Text = "Full Text Options"
-			'
 			'GroupBox4
 			'
 			Me.GroupBox4.Controls.Add(Me._supportImageAutoNumbering)
-			Me.GroupBox4.Location = New System.Drawing.Point(278, 102)
+			Me.GroupBox4.Location = New System.Drawing.Point(227, 102)
 			Me.GroupBox4.Name = "GroupBox4"
-			Me.GroupBox4.Size = New System.Drawing.Size(282, 52)
+			Me.GroupBox4.Size = New System.Drawing.Size(333, 52)
 			Me.GroupBox4.TabIndex = 34
 			Me.GroupBox4.TabStop = False
 			Me.GroupBox4.Text = "General"
@@ -328,16 +318,26 @@ Namespace kCura.EDDS.WinForm
 			'_encodingPicker
 			'
 			Me._encodingPicker.Enabled = False
-			Me._encodingPicker.Location = New System.Drawing.Point(44, 28)
+			Me._encodingPicker.Location = New System.Drawing.Point(12, 23)
 			Me._encodingPicker.Name = "_encodingPicker"
 			Me._encodingPicker.SelectedEncoding = Nothing
 			Me._encodingPicker.Size = New System.Drawing.Size(200, 21)
 			Me._encodingPicker.TabIndex = 0
 			'
+			'BroooopBox
+			'
+			Me.BroooopBox.Controls.Add(Me._encodingPicker)
+			Me.BroooopBox.Location = New System.Drawing.Point(227, 234)
+			Me.BroooopBox.Name = "BroooopBox"
+			Me.BroooopBox.Size = New System.Drawing.Size(333, 62)
+			Me.BroooopBox.TabIndex = 33
+			Me.BroooopBox.TabStop = False
+			Me.BroooopBox.Text = "Full Text Options"
+			'
 			'ImageLoad
 			'
 			Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
-			Me.ClientSize = New System.Drawing.Size(580, 353)
+			Me.ClientSize = New System.Drawing.Size(580, 420)
 			Me.Controls.Add(Me.GroupBox4)
 			Me.Controls.Add(Me.BroooopBox)
 			Me.Controls.Add(Me.GroupBox2)
@@ -354,13 +354,13 @@ Namespace kCura.EDDS.WinForm
 			Me.Text = "Relativity Desktop Client | Import Image Load File"
 			Me.GroupBox3.ResumeLayout(False)
 			Me.GroupBox3.PerformLayout()
+			CType(Me._startLineNumber, System.ComponentModel.ISupportInitialize).EndInit()
 			Me.GroupBox233.ResumeLayout(False)
 			Me.ExtractedTextGroupBox.ResumeLayout(False)
 			Me.GroupBox1.ResumeLayout(False)
 			Me.GroupBox2.ResumeLayout(False)
-			CType(Me._startLineNumber, System.ComponentModel.ISupportInitialize).EndInit()
-			Me.BroooopBox.ResumeLayout(False)
 			Me.GroupBox4.ResumeLayout(False)
+			Me.BroooopBox.ResumeLayout(False)
 			Me.ResumeLayout(False)
 
 		End Sub
