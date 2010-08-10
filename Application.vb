@@ -727,6 +727,7 @@ Namespace kCura.EDDS.WinForm
 			Return codeFieldColumnIndexes
 		End Function
 
+#Region "go away"
 		''Worker function for Previewing choice and folder counts
 		'Public Function BuildFoldersAndCodesDataSource2(ByVal al As ArrayList, ByVal previewCodeCount As System.Collections.Specialized.HybridDictionary) As DataTable
 		'	_totalFolders.Clear()
@@ -791,6 +792,7 @@ Namespace kCura.EDDS.WinForm
 		'	End Try
 		'	Return Nothing
 		'End Function
+#End Region
 
 		Private Sub AddFoldersToTotalFolders(ByVal folderPath As String)
 			If folderPath <> "" AndAlso folderPath <> "\" Then
