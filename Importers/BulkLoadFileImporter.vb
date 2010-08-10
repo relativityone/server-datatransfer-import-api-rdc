@@ -699,7 +699,15 @@ Namespace kCura.WinEDDS
 				Else
 					If field.Category = DynamicFields.Types.FieldCategory.FullText AndAlso _fullTextColumnMapsToFileLocation Then
 						If Not field.ValueAsString = String.Empty Then
-							Dim sr As New System.IO.StreamReader(field.ValueAsString, _extractedTextFileEncoding)
+							Dim determinedEncodingStream As DeterminedEncodingStream = kCura.WinEDDS.Utility.DetectEncoding(field.ValueAsString, False)
+							Dim detectedEncoding As System.Text.Encoding = determinedEncodingStream._determinedEncoding
+							Dim chosenEncoding As System.Text.Encoding
+							If detectedEncoding IsNot Nothing Then
+								chosenEncoding = detectedEncoding
+							Else
+								chosenEncoding = _extractedTextFileEncoding
+							End If
+							Dim sr As New System.IO.StreamReader(determinedEncodingStream._fileStream, chosenEncoding)
 							Dim count As Int32 = 1
 							Do
 								Dim buff(1000000) As Char
@@ -824,14 +832,14 @@ Namespace kCura.WinEDDS
 					If item.DocumentField.FieldTypeID = kCura.DynamicFields.Types.FieldTypeHelper.FieldType.File Then
 						Me.ManageFileField(record(item.DocumentField.FieldID))
 					Else
-						MyBase.SetFieldValue(record(item.DocumentField.FieldID), item.NativeFileColumnIndex, False, identityValue)
+						MyBase.SetFieldValue(record(item.DocumentField.FieldID), item.NativeFileColumnIndex, False, identityValue, 0)
 					End If
 				End If
 			Next
 			For Each fieldDTO As kCura.EDDS.WebAPI.DocumentManagerBase.Field In Me.UnmappedRelationalFields
 				Dim field As New Api.ArtifactField(fieldDTO)
 				field.Value = identityValue
-				Me.SetFieldValue(field, -1, False, identityValue)
+				Me.SetFieldValue(field, -1, False, identityValue, 0)
 			Next
 			_firstTimeThrough = False
 			System.Threading.Monitor.Exit(_outputNativeFileWriter)

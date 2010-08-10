@@ -273,7 +273,7 @@ Namespace kCura.WinEDDS
 
 #End Region
 
-		Public Sub SetFieldValue(ByVal field As Api.ArtifactField, ByVal columnIndex As Int32, ByVal forPreview As Boolean, ByVal identityValue As String)
+		Public Sub SetFieldValue(ByVal field As Api.ArtifactField, ByVal columnIndex As Int32, ByVal forPreview As Boolean, ByVal identityValue As String, ByRef extractedTextFileCodePageId As Int32)
 			If TypeOf field.Value Is System.Exception Then
 				Throw DirectCast(field.Value, System.Exception)
 			End If
@@ -438,7 +438,16 @@ Namespace kCura.WinEDDS
 							Throw New MissingFullTextFileException(Me.CurrentLineNumber, columnIndex)
 						Else
 							If forPreview Then
-								Dim sr As New System.IO.StreamReader(value, _extractedTextFileEncoding)
+								' Determine Encoding Here
+								Dim determinedEncodingStream As DeterminedEncodingStream = kCura.WinEDDS.Utility.DetectEncoding(value, False)
+								Dim detectedEncoding As System.Text.Encoding = determinedEncodingStream._determinedEncoding
+								Dim chosenEncoding As System.Text.Encoding
+								If detectedEncoding IsNot Nothing Then
+									chosenEncoding = detectedEncoding
+								Else
+									chosenEncoding = _extractedTextFileEncoding
+								End If
+								Dim sr As New System.IO.StreamReader(determinedEncodingStream._fileStream, chosenEncoding)
 								Dim i As Int32 = 0
 								Dim sb As New System.Text.StringBuilder
 								While sr.Peek <> -1 AndAlso i < 100
@@ -446,13 +455,15 @@ Namespace kCura.WinEDDS
 									i += 1
 								End While
 								If i = 100 Then sb.Append("...")
+								extractedTextFileCodePageId = chosenEncoding.CodePage
 								sr.Close()
+								determinedEncodingStream._fileStream.Close()
 								'sb = sb.Replace(System.Environment.NewLine, Me.NewlineProxy).Replace(ChrW(10), Me.NewlineProxy).Replace(ChrW(13), Me.NewlineProxy)
 								field.Value = sb.ToString
 							Else
 								field.Value = value
 							End If
-						End If
+							End If
 					End If
 				Case Else
 					Throw New System.Exception("Unsupported Field Type '" & field.Type.ToString & "'")

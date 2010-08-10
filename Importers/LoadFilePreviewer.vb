@@ -14,6 +14,7 @@ Namespace kCura.WinEDDS
 		Private _nativeFileCheckColumnName As String = ""
 		Private _relationalDocumentFields As DocumentField()
 		Private _selectedCaseArtifactID As Int32
+		Public Shared extractedTextEncodingFieldName As String = "Extracted Text Encoding"
 #End Region
 
 #Region "Constructors"
@@ -91,7 +92,7 @@ Namespace kCura.WinEDDS
 #End Region
 		Private _processedIdentifiers As New Collections.Specialized.NameValueCollection
 
-		Public Function ReadFile(ByVal path As String) As Object
+		Public Function ReadFile(ByVal path As String, ByVal formType As Int32) As Object
 			Dim earlyexit As Boolean = False
 			_relationalDocumentFields = _fieldQuery.RetrieveAllAsDocumentFieldCollection(_selectedCaseArtifactID, _artifactTypeID).GetFieldsByCategory(DynamicFields.Types.FieldCategory.Relational)
 			Dim filesize As Int64 = _artifactReader.SizeInBytes
@@ -122,7 +123,7 @@ Namespace kCura.WinEDDS
 						If Not _firstLineContainsColumnNames AndAlso fieldArrays.Count = 0 Then
 							_columnCount = record.Count
 						End If
-						Dim x As Api.ArtifactField() = CheckLine(record)
+						Dim x As Api.ArtifactField() = CheckLine(record, formType)
 						'If Not x Is Nothing AndAlso Not (_firstLineContainsColumnNames AndAlso i = 0) Then fieldArrays.Add(x)
 						If Not x Is Nothing Then fieldArrays.Add(x)
 					Catch ex As kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
@@ -145,7 +146,7 @@ Namespace kCura.WinEDDS
 		End Function
 
 
-		Private Function CheckLine(ByVal record As Api.ArtifactFieldCollection) As Api.ArtifactField()
+		Private Function CheckLine(ByVal record As Api.ArtifactFieldCollection, ByVal formType As Int32) As Api.ArtifactField()
 			Dim mapItem As LoadFileFieldMap.LoadFileFieldMapItem
 			Dim lineContainsErrors As Boolean = False
 			Dim retval As New ArrayList
@@ -160,6 +161,7 @@ Namespace kCura.WinEDDS
 			Else
 				identifierField = record.IdentifierField
 			End If
+			Dim codePageId As Int32 = -1
 			For Each mapItem In _fieldMap
 				If mapItem.NativeFileColumnIndex > -1 AndAlso Not mapItem.DocumentField Is Nothing Then
 					Dim field As Api.ArtifactField = record(mapItem.DocumentField.FieldID)
@@ -175,7 +177,7 @@ Namespace kCura.WinEDDS
 							Case kCura.DynamicFields.Types.FieldCategory.Identifier
 								If Not _keyFieldID > 0 Then identifierField = field
 						End Select
-						lineContainsErrors = lineContainsErrors Or SetFieldValueOrErrorMessage(field, mapItem.NativeFileColumnIndex, identifierField.ValueAsString)
+						lineContainsErrors = lineContainsErrors Or SetFieldValueOrErrorMessage(field, mapItem.NativeFileColumnIndex, identifierField.ValueAsString, codePageId)
 						'dont add field if object type is not a document and the field is a file field
 						retval.Add(field)
 					End If
@@ -196,7 +198,7 @@ Namespace kCura.WinEDDS
 				For Each field As Api.ArtifactField In unmappedFields.Values
 					field.Value = identifierField.ValueAsString
 					'field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(Me.GetNullableFixedString(record.IdentifierField.ValueAsString, -1, field.TextLength))
-					lineContainsErrors = lineContainsErrors Or SetFieldValueOrErrorMessage(field, -1, identifierField.ValueAsString)
+					lineContainsErrors = lineContainsErrors Or SetFieldValueOrErrorMessage(field, -1, identifierField.ValueAsString, -1)
 					retval.Add(field)
 				Next
 				For Each field As Api.ArtifactField In mappedFields.Values
@@ -245,34 +247,15 @@ Namespace kCura.WinEDDS
 				End If
 				retval.Add(field)
 			End If
-
-			'If _createFolderStructure AndAlso _artifactTypeID <> kCura.EDDS.Types.ArtifactType.Document Then
-			'	Dim openParenIndex As Int32 = _destinationFolder.LastIndexOf("("c) + 1
-			'	Dim closeParenIndex As Int32 = _destinationFolder.LastIndexOf(")"c)
-			'	Dim parentObjectIdentifierIndex As Int32 = Int32.Parse(_destinationFolder.Substring(openParenIndex, closeParenIndex - openParenIndex)) - 1
-			'	Dim docfield As New DocumentField("Parent Object Identifier", -1, -1, -1, NullableInt32.Null, NullableInt32.Null, False)
-			'	docField.Value = values(parentObjectIdentifierIndex)
-			'	Dim textIdentifier As String = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(kCura.Utility.NullableTypesHelper.ToNullableString(values(parentObjectIdentifierIndex)))
-			'	If textIdentifier = "" Then
-			'		docField.Value = New ParentObjectReferenceRequiredException(Me.CurrentLineNumber, parentObjectIdentifierIndex).Message
-			'		lineContainsErrors = True
-			'	Else
-			'		Dim parentObjectTable As System.Data.DataTable = _objectManager.RetrieveArtifactIdOfMappedParentObject(_caseArtifactID, _
-			'		textIdentifier, _artifactTypeID).Tables(0)
-			'		If parentObjectTable.Rows.Count > 1 Then
-			'			docField.Value = New DuplicateObjectReferenceException(Me.CurrentLineNumber, parentObjectIdentifierIndex, "Parent Info").Message
-			'			lineContainsErrors = True
-			'		End If
-			'	End If
-			'	retval.Add(docfield)
-			'ElseIf _createFolderStructure AndAlso _artifactTypeID = kCura.EDDS.Types.ArtifactType.Document Then
-			'	Dim openParenIndex As Int32 = _destinationFolder.LastIndexOf("("c) + 1
-			'	Dim closeParenIndex As Int32 = _destinationFolder.LastIndexOf(")"c)
-			'	Dim parentObjectIdentifierIndex As Int32 = Int32.Parse(_destinationFolder.Substring(openParenIndex, closeParenIndex - openParenIndex)) - 1
-			'	Dim docfield As New DocumentField("Parent_Folder_Identifier", -1, -1, -1, NullableInt32.Null, NullableInt32.Null, False)
-			'	docField.Value = values(parentObjectIdentifierIndex)
-			'	retval.Add(docfield)
-			'End If
+			If _settings.FullTextColumnContainsFileLocation AndAlso formType = 1 Then
+				Dim field As New Api.ArtifactField(extractedTextEncodingFieldName, -500, 0, 0, Nothing, Nothing, Nothing)
+				If codePageId > 0 Then
+					field.Value = System.Text.Encoding.GetEncoding(codePageId).EncodingName
+				Else
+					field.Value = String.Empty
+				End If
+				retval.Add(field)
+			End If
 
 			If _errorsOnly Then
 				If lineContainsErrors Then
@@ -307,9 +290,9 @@ Namespace kCura.WinEDDS
 			_nativeFileCheckColumnName = val
 		End Sub
 
-		Private Function SetFieldValueOrErrorMessage(ByVal field As Api.ArtifactField, ByVal column As Int32, ByVal identityValue As String) As Boolean
+		Private Function SetFieldValueOrErrorMessage(ByVal field As Api.ArtifactField, ByVal column As Int32, ByVal identityValue As String, ByRef extractedTextCodePageId As Int32) As Boolean
 			Try
-				SetFieldValue(field, column, True, identityValue)
+				SetFieldValue(field, column, True, identityValue, extractedTextCodePageId)
 				Return TypeOf field.Value Is System.Exception
 			Catch ex As kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
 				field.Value = ex.Message
