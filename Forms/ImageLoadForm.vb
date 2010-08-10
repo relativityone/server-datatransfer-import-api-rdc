@@ -50,8 +50,6 @@ Namespace kCura.EDDS.WinForm
 		Friend WithEvents ExtractedTextGroupBox As System.Windows.Forms.GroupBox
 		Friend WithEvents GroupBox1 As System.Windows.Forms.GroupBox
 		Friend WithEvents _productionDropdown As System.Windows.Forms.ComboBox
-		Friend WithEvents MenuItem2 As System.Windows.Forms.MenuItem
-		Friend WithEvents _toolsMenuSettingsItem As System.Windows.Forms.MenuItem
 		Friend WithEvents _advancedButton As System.Windows.Forms.Button
 		Friend WithEvents GroupBox2 As System.Windows.Forms.GroupBox
 		Friend WithEvents _beginBatesDropdown As System.Windows.Forms.ComboBox
@@ -59,25 +57,32 @@ Namespace kCura.EDDS.WinForm
 		Friend WithEvents _startLineNumber As System.Windows.Forms.NumericUpDown
 		Friend WithEvents I As System.Windows.Forms.MenuItem
 		Friend WithEvents MenuItem3 As System.Windows.Forms.MenuItem
+		Friend WithEvents _encodingPicker As kCura.EDDS.WinForm.EncodingPicker
+		Friend WithEvents GroupBox4 As System.Windows.Forms.GroupBox
+		Friend WithEvents _supportImageAutoNumbering As System.Windows.Forms.CheckBox
+		Friend WithEvents BroooopBox As System.Windows.Forms.GroupBox
 		Friend WithEvents _importMenuSendEmailNotificationItem As System.Windows.Forms.MenuItem
 		<System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
-			Dim resources As System.Resources.ResourceManager = New System.Resources.ResourceManager(GetType(ImageLoad))
+			Me.components = New System.ComponentModel.Container
+			Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(ImageLoad))
 			Me.GroupBox3 = New System.Windows.Forms.GroupBox
 			Me._browseButton = New System.Windows.Forms.Button
 			Me._filePath = New System.Windows.Forms.TextBox
+			Me._startLineNumberLabel = New System.Windows.Forms.Label
+			Me._startLineNumber = New System.Windows.Forms.NumericUpDown
 			Me._openFileDialog = New System.Windows.Forms.OpenFileDialog
 			Me.GroupBox233 = New System.Windows.Forms.GroupBox
 			Me._overwriteDropdown = New System.Windows.Forms.ComboBox
 			Me._replaceFullText = New System.Windows.Forms.CheckBox
-			Me.MainMenu = New System.Windows.Forms.MainMenu
+			Me.MainMenu = New System.Windows.Forms.MainMenu(Me.components)
 			Me.MenuItem1 = New System.Windows.Forms.MenuItem
 			Me._importMenuCheckErrorsItem = New System.Windows.Forms.MenuItem
 			Me.ImportFileMenu = New System.Windows.Forms.MenuItem
+			Me.MenuItem3 = New System.Windows.Forms.MenuItem
+			Me._importMenuSendEmailNotificationItem = New System.Windows.Forms.MenuItem
 			Me.I = New System.Windows.Forms.MenuItem
 			Me._importMenuSaveSettingsItem = New System.Windows.Forms.MenuItem
 			Me._importMenuLoadSettingsItem = New System.Windows.Forms.MenuItem
-			Me.MenuItem2 = New System.Windows.Forms.MenuItem
-			Me._toolsMenuSettingsItem = New System.Windows.Forms.MenuItem
 			Me._saveImageLoadFileDialog = New System.Windows.Forms.SaveFileDialog
 			Me._loadImageLoadFileDialog = New System.Windows.Forms.OpenFileDialog
 			Me.ExtractedTextGroupBox = New System.Windows.Forms.GroupBox
@@ -86,32 +91,36 @@ Namespace kCura.EDDS.WinForm
 			Me._advancedButton = New System.Windows.Forms.Button
 			Me.GroupBox2 = New System.Windows.Forms.GroupBox
 			Me._beginBatesDropdown = New System.Windows.Forms.ComboBox
-			Me._startLineNumber = New System.Windows.Forms.NumericUpDown
-			Me._startLineNumberLabel = New System.Windows.Forms.Label
-			Me.MenuItem3 = New System.Windows.Forms.MenuItem
-			Me._importMenuSendEmailNotificationItem = New System.Windows.Forms.MenuItem
+			Me.GroupBox4 = New System.Windows.Forms.GroupBox
+			Me._supportImageAutoNumbering = New System.Windows.Forms.CheckBox
+			Me._encodingPicker = New kCura.EDDS.WinForm.EncodingPicker
+			Me.BroooopBox = New System.Windows.Forms.GroupBox
 			Me.GroupBox3.SuspendLayout()
+			CType(Me._startLineNumber, System.ComponentModel.ISupportInitialize).BeginInit()
 			Me.GroupBox233.SuspendLayout()
 			Me.ExtractedTextGroupBox.SuspendLayout()
 			Me.GroupBox1.SuspendLayout()
 			Me.GroupBox2.SuspendLayout()
-			CType(Me._startLineNumber, System.ComponentModel.ISupportInitialize).BeginInit()
+			Me.GroupBox4.SuspendLayout()
+			Me.BroooopBox.SuspendLayout()
 			Me.SuspendLayout()
 			'
 			'GroupBox3
 			'
 			Me.GroupBox3.Controls.Add(Me._browseButton)
 			Me.GroupBox3.Controls.Add(Me._filePath)
+			Me.GroupBox3.Controls.Add(Me._startLineNumberLabel)
+			Me.GroupBox3.Controls.Add(Me._startLineNumber)
 			Me.GroupBox3.Location = New System.Drawing.Point(4, 4)
 			Me.GroupBox3.Name = "GroupBox3"
-			Me.GroupBox3.Size = New System.Drawing.Size(568, 48)
+			Me.GroupBox3.Size = New System.Drawing.Size(556, 82)
 			Me.GroupBox3.TabIndex = 7
 			Me.GroupBox3.TabStop = False
 			Me.GroupBox3.Text = "Load File"
 			'
 			'_browseButton
 			'
-			Me._browseButton.Location = New System.Drawing.Point(536, 20)
+			Me._browseButton.Location = New System.Drawing.Point(521, 19)
 			Me._browseButton.Name = "_browseButton"
 			Me._browseButton.Size = New System.Drawing.Size(24, 20)
 			Me._browseButton.TabIndex = 6
@@ -122,21 +131,38 @@ Namespace kCura.EDDS.WinForm
 			Me._filePath.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
 			Me._filePath.Location = New System.Drawing.Point(8, 20)
 			Me._filePath.Name = "_filePath"
-			Me._filePath.Size = New System.Drawing.Size(524, 20)
+			Me._filePath.Size = New System.Drawing.Size(507, 20)
 			Me._filePath.TabIndex = 5
 			Me._filePath.Text = "Select a file ..."
+			'
+			'_startLineNumberLabel
+			'
+			Me._startLineNumberLabel.Location = New System.Drawing.Point(6, 51)
+			Me._startLineNumberLabel.Name = "_startLineNumberLabel"
+			Me._startLineNumberLabel.Size = New System.Drawing.Size(56, 20)
+			Me._startLineNumberLabel.TabIndex = 31
+			Me._startLineNumberLabel.Text = "Start Line"
+			Me._startLineNumberLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+			'
+			'_startLineNumber
+			'
+			Me._startLineNumber.Location = New System.Drawing.Point(62, 51)
+			Me._startLineNumber.Maximum = New Decimal(New Integer() {268435455, 1042612833, 542101086, 0})
+			Me._startLineNumber.Name = "_startLineNumber"
+			Me._startLineNumber.Size = New System.Drawing.Size(144, 20)
+			Me._startLineNumber.TabIndex = 30
 			'
 			'_openFileDialog
 			'
 			Me._openFileDialog.Filter = "Opticon Files (*.opt)|*.opt|Log Files (*.log)|*.log|Text Files (*.txt)|*.txt|All " & _
-			"files (*.*)|*.*"
+					"files (*.*)|*.*"
 			'
 			'GroupBox233
 			'
 			Me.GroupBox233.Controls.Add(Me._overwriteDropdown)
-			Me.GroupBox233.Location = New System.Drawing.Point(4, 60)
+			Me.GroupBox233.Location = New System.Drawing.Point(4, 102)
 			Me.GroupBox233.Name = "GroupBox233"
-			Me.GroupBox233.Size = New System.Drawing.Size(180, 52)
+			Me.GroupBox233.Size = New System.Drawing.Size(217, 52)
 			Me.GroupBox233.TabIndex = 8
 			Me.GroupBox233.TabStop = False
 			Me.GroupBox233.Text = "Overwrite"
@@ -147,7 +173,7 @@ Namespace kCura.EDDS.WinForm
 			Me._overwriteDropdown.Items.AddRange(New Object() {"Append Only", "Overlay Only", "Append/Overlay"})
 			Me._overwriteDropdown.Location = New System.Drawing.Point(12, 20)
 			Me._overwriteDropdown.Name = "_overwriteDropdown"
-			Me._overwriteDropdown.Size = New System.Drawing.Size(156, 21)
+			Me._overwriteDropdown.Size = New System.Drawing.Size(188, 21)
 			Me._overwriteDropdown.TabIndex = 29
 			'
 			'_replaceFullText
@@ -156,11 +182,11 @@ Namespace kCura.EDDS.WinForm
 			Me._replaceFullText.Name = "_replaceFullText"
 			Me._replaceFullText.Size = New System.Drawing.Size(144, 24)
 			Me._replaceFullText.TabIndex = 3
-			Me._replaceFullText.Text = "Replace Extracted Text"
+			Me._replaceFullText.Text = "Load Extracted Text"
 			'
 			'MainMenu
 			'
-			Me.MainMenu.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.MenuItem1, Me.MenuItem2})
+			Me.MainMenu.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.MenuItem1})
 			'
 			'MenuItem1
 			'
@@ -180,6 +206,16 @@ Namespace kCura.EDDS.WinForm
 			Me.ImportFileMenu.Shortcut = System.Windows.Forms.Shortcut.F5
 			Me.ImportFileMenu.Text = "&Import File..."
 			'
+			'MenuItem3
+			'
+			Me.MenuItem3.Index = 2
+			Me.MenuItem3.Text = "-"
+			'
+			'_importMenuSendEmailNotificationItem
+			'
+			Me._importMenuSendEmailNotificationItem.Index = 3
+			Me._importMenuSendEmailNotificationItem.Text = "Send email notification on completion"
+			'
 			'I
 			'
 			Me.I.Index = 4
@@ -197,17 +233,6 @@ Namespace kCura.EDDS.WinForm
 			Me._importMenuLoadSettingsItem.Shortcut = System.Windows.Forms.Shortcut.CtrlO
 			Me._importMenuLoadSettingsItem.Text = "Load Settings"
 			'
-			'MenuItem2
-			'
-			Me.MenuItem2.Index = 1
-			Me.MenuItem2.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me._toolsMenuSettingsItem})
-			Me.MenuItem2.Text = "Tools"
-			'
-			'_toolsMenuSettingsItem
-			'
-			Me._toolsMenuSettingsItem.Index = 0
-			Me._toolsMenuSettingsItem.Text = "Settings"
-			'
 			'_saveImageLoadFileDialog
 			'
 			Me._saveImageLoadFileDialog.DefaultExt = "kwe"
@@ -220,9 +245,9 @@ Namespace kCura.EDDS.WinForm
 			'ExtractedTextGroupBox
 			'
 			Me.ExtractedTextGroupBox.Controls.Add(Me._replaceFullText)
-			Me.ExtractedTextGroupBox.Location = New System.Drawing.Point(188, 60)
+			Me.ExtractedTextGroupBox.Location = New System.Drawing.Point(4, 234)
 			Me.ExtractedTextGroupBox.Name = "ExtractedTextGroupBox"
-			Me.ExtractedTextGroupBox.Size = New System.Drawing.Size(172, 52)
+			Me.ExtractedTextGroupBox.Size = New System.Drawing.Size(217, 62)
 			Me.ExtractedTextGroupBox.TabIndex = 9
 			Me.ExtractedTextGroupBox.TabStop = False
 			Me.ExtractedTextGroupBox.Text = "ExtractedText"
@@ -230,9 +255,9 @@ Namespace kCura.EDDS.WinForm
 			'GroupBox1
 			'
 			Me.GroupBox1.Controls.Add(Me._productionDropdown)
-			Me.GroupBox1.Location = New System.Drawing.Point(216, 112)
+			Me.GroupBox1.Location = New System.Drawing.Point(227, 160)
 			Me.GroupBox1.Name = "GroupBox1"
-			Me.GroupBox1.Size = New System.Drawing.Size(356, 52)
+			Me.GroupBox1.Size = New System.Drawing.Size(333, 52)
 			Me.GroupBox1.TabIndex = 10
 			Me.GroupBox1.TabStop = False
 			Me.GroupBox1.Text = "Production"
@@ -242,13 +267,14 @@ Namespace kCura.EDDS.WinForm
 			Me._productionDropdown.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
 			Me._productionDropdown.Location = New System.Drawing.Point(12, 20)
 			Me._productionDropdown.Name = "_productionDropdown"
-			Me._productionDropdown.Size = New System.Drawing.Size(332, 21)
+			Me._productionDropdown.Size = New System.Drawing.Size(310, 21)
 			Me._productionDropdown.TabIndex = 29
 			'
 			'_advancedButton
 			'
-			Me._advancedButton.Location = New System.Drawing.Point(368, 64)
+			Me._advancedButton.Location = New System.Drawing.Point(4, 315)
 			Me._advancedButton.Name = "_advancedButton"
+			Me._advancedButton.Size = New System.Drawing.Size(75, 23)
 			Me._advancedButton.TabIndex = 28
 			Me._advancedButton.Text = "Advanced"
 			'
@@ -256,9 +282,9 @@ Namespace kCura.EDDS.WinForm
 			'
 			Me.GroupBox2.Controls.Add(Me._beginBatesDropdown)
 			Me.GroupBox2.Enabled = False
-			Me.GroupBox2.Location = New System.Drawing.Point(4, 112)
+			Me.GroupBox2.Location = New System.Drawing.Point(4, 160)
 			Me.GroupBox2.Name = "GroupBox2"
-			Me.GroupBox2.Size = New System.Drawing.Size(208, 52)
+			Me.GroupBox2.Size = New System.Drawing.Size(217, 52)
 			Me.GroupBox2.TabIndex = 29
 			Me.GroupBox2.TabStop = False
 			Me.GroupBox2.Text = "Begin Bates"
@@ -271,39 +297,49 @@ Namespace kCura.EDDS.WinForm
 			Me._beginBatesDropdown.Size = New System.Drawing.Size(192, 21)
 			Me._beginBatesDropdown.TabIndex = 29
 			'
-			'_startLineNumber
+			'GroupBox4
 			'
-			Me._startLineNumber.Location = New System.Drawing.Point(424, 92)
-			Me._startLineNumber.Maximum = New Decimal(New Integer() {268435455, 1042612833, 542101086, 0})
-			Me._startLineNumber.Name = "_startLineNumber"
-			Me._startLineNumber.Size = New System.Drawing.Size(144, 20)
-			Me._startLineNumber.TabIndex = 30
+			Me.GroupBox4.Controls.Add(Me._supportImageAutoNumbering)
+			Me.GroupBox4.Location = New System.Drawing.Point(227, 102)
+			Me.GroupBox4.Name = "GroupBox4"
+			Me.GroupBox4.Size = New System.Drawing.Size(333, 52)
+			Me.GroupBox4.TabIndex = 34
+			Me.GroupBox4.TabStop = False
+			Me.GroupBox4.Text = "General"
 			'
-			'_startLineNumberLabel
+			'_supportImageAutoNumbering
 			'
-			Me._startLineNumberLabel.Location = New System.Drawing.Point(368, 92)
-			Me._startLineNumberLabel.Name = "_startLineNumberLabel"
-			Me._startLineNumberLabel.Size = New System.Drawing.Size(56, 20)
-			Me._startLineNumberLabel.TabIndex = 31
-			Me._startLineNumberLabel.Text = "Start Line"
-			Me._startLineNumberLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+			Me._supportImageAutoNumbering.Location = New System.Drawing.Point(8, 16)
+			Me._supportImageAutoNumbering.Name = "_supportImageAutoNumbering"
+			Me._supportImageAutoNumbering.Size = New System.Drawing.Size(184, 16)
+			Me._supportImageAutoNumbering.TabIndex = 0
+			Me._supportImageAutoNumbering.Text = "Support Image Auto-Numbering"
 			'
-			'MenuItem3
+			'_encodingPicker
 			'
-			Me.MenuItem3.Index = 2
-			Me.MenuItem3.Text = "-"
+			Me._encodingPicker.Enabled = False
+			Me._encodingPicker.Location = New System.Drawing.Point(12, 23)
+			Me._encodingPicker.Name = "_encodingPicker"
+			Me._encodingPicker.SelectedEncoding = Nothing
+			Me._encodingPicker.Size = New System.Drawing.Size(200, 21)
+			Me._encodingPicker.TabIndex = 0
 			'
-			'_importMenuSendEmailNotificationItem
+			'BroooopBox
 			'
-			Me._importMenuSendEmailNotificationItem.Index = 3
-			Me._importMenuSendEmailNotificationItem.Text = "Send email notification on completion"
+			Me.BroooopBox.Controls.Add(Me._encodingPicker)
+			Me.BroooopBox.Location = New System.Drawing.Point(227, 234)
+			Me.BroooopBox.Name = "BroooopBox"
+			Me.BroooopBox.Size = New System.Drawing.Size(333, 62)
+			Me.BroooopBox.TabIndex = 33
+			Me.BroooopBox.TabStop = False
+			Me.BroooopBox.Text = "Full Text Options"
 			'
 			'ImageLoad
 			'
 			Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
-			Me.ClientSize = New System.Drawing.Size(580, 177)
-			Me.Controls.Add(Me._startLineNumberLabel)
-			Me.Controls.Add(Me._startLineNumber)
+			Me.ClientSize = New System.Drawing.Size(580, 420)
+			Me.Controls.Add(Me.GroupBox4)
+			Me.Controls.Add(Me.BroooopBox)
 			Me.Controls.Add(Me.GroupBox2)
 			Me.Controls.Add(Me._advancedButton)
 			Me.Controls.Add(Me.GroupBox1)
@@ -317,11 +353,14 @@ Namespace kCura.EDDS.WinForm
 			Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
 			Me.Text = "Relativity Desktop Client | Import Image Load File"
 			Me.GroupBox3.ResumeLayout(False)
+			Me.GroupBox3.PerformLayout()
+			CType(Me._startLineNumber, System.ComponentModel.ISupportInitialize).EndInit()
 			Me.GroupBox233.ResumeLayout(False)
 			Me.ExtractedTextGroupBox.ResumeLayout(False)
 			Me.GroupBox1.ResumeLayout(False)
 			Me.GroupBox2.ResumeLayout(False)
-			CType(Me._startLineNumber, System.ComponentModel.ISupportInitialize).EndInit()
+			Me.GroupBox4.ResumeLayout(False)
+			Me.BroooopBox.ResumeLayout(False)
 			Me.ResumeLayout(False)
 
 		End Sub
@@ -332,7 +371,6 @@ Namespace kCura.EDDS.WinForm
 		Private WithEvents _advancedFileForm As AdvancedFileLocation
 
 		Private _imageLoadFile As kCura.WinEDDS.ImageLoadFile
-		Private WithEvents _settingsForm As kCura.EDDS.WinForm.ImageImportSettingsForm
 		Private _identifierFieldArtifactID As Int32
 
 		Friend Property ImageLoadFile() As kCura.WinEDDS.ImageLoadFile
@@ -359,6 +397,12 @@ Namespace kCura.EDDS.WinForm
 				ElseIf Not (System.IO.File.Exists(_imageLoadFile.FileName)) Then
 					msg.Append(" - Selected opticon file does not exist").Append(vbNewLine)
 				End If
+				If _encodingPicker.Enabled Then
+					Me.ImageLoadFile.FullTextEncoding = _encodingPicker.SelectedEncoding
+					If Me.ImageLoadFile.FullTextEncoding Is Nothing Then
+						msg.Append(" - No Encoding selected")
+					End If
+				End If
 				If ImageLoadFile.ForProduction Then
 					If CType(_productionDropdown.SelectedValue, Int32) = 0 Then msg.Append(" - No destination production selected").Append(vbNewLine)
 					If CType(_beginBatesDropdown.SelectedValue, Int32) = 0 Then msg.Append(" - No import key field selected").Append(vbNewLine)
@@ -370,9 +414,11 @@ Namespace kCura.EDDS.WinForm
 					Return False
 				End If
 			End If
+			ImageLoadFile.FullTextEncoding = _encodingPicker.SelectedEncoding
 			ImageLoadFile.Overwrite = Me.GetOverwrite
 			ImageLoadFile.DestinationFolderID = _imageLoadFile.DestinationFolderID
 			ImageLoadFile.ControlKeyField = _application.GetCaseIdentifierFields(10)(0)
+			ImageLoadFile.AutoNumberImages = _supportImageAutoNumbering.Checked
 			If ImageLoadFile.ForProduction Then
 				ImageLoadFile.ProductionArtifactID = CType(_productionDropdown.SelectedValue, Int32)
 				Me.ImageLoadFile.ReplaceFullText = False
@@ -534,6 +580,7 @@ Namespace kCura.EDDS.WinForm
 				Dim copyFilesToRepository As Boolean = Me.ImageLoadFile.CopyFilesToDocumentRepository
 				Me.ImageLoadFile = _application.ReadImageLoadFile(_loadImageLoadFileDialog.FileName)
 				Me.ImageLoadFile.CopyFilesToDocumentRepository = copyFilesToRepository
+				_encodingPicker.SelectedEncoding = Me.ImageLoadFile.FullTextEncoding
 				_overwriteDropdown.SelectedItem = Me.GetOverwriteDropdownItem(ImageLoadFile.Overwrite)
 				_filePath.Text = ImageLoadFile.FileName
 				_replaceFullText.Checked = ImageLoadFile.ReplaceFullText
@@ -567,19 +614,6 @@ Namespace kCura.EDDS.WinForm
 			If Me.PopulateImageLoadFile(True) Then If _application.ReadyToLoad(Me.ImageLoadFile, True) Then _application.PreviewImageFile(Me.ImageLoadFile)
 		End Sub
 
-		Private Sub _toolsMenuSettingsItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _toolsMenuSettingsItem.Click
-			_settingsForm = New kCura.EDDS.WinForm.ImageImportSettingsForm
-			_settingsForm._supportImageAutoNumbering.Checked = Me.ImageLoadFile.AutoNumberImages
-			_settingsForm.SelectedEncoding = Me.ImageLoadFile.FullTextEncoding
-			_settingsForm.ShowDialog()
-		End Sub
-
-
-		Private Sub _settingsForm_ImportSettingsFormOK(ByVal args As ImageImportSettingsForm.SettingsFormArgs) Handles _settingsForm.ImportSettingsFormOK
-			Me.ImageLoadFile.AutoNumberImages = args.SupportAutoNumbering
-			Me.ImageLoadFile.FullTextEncoding = args.SelectedFullTextEncoding
-		End Sub
-
 		Private Sub _advancedButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _advancedButton.Click
 			_advancedFileForm = New AdvancedFileLocation
 			_advancedFileForm._copyNativeFiles.Checked = Me.ImageLoadFile.CopyFilesToDocumentRepository
@@ -598,5 +632,9 @@ Namespace kCura.EDDS.WinForm
 			_importMenuSendEmailNotificationItem.Checked = Not _importMenuSendEmailNotificationItem.Checked
 		End Sub
 
+		Private Sub _replaceFullText_CheckedChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles _replaceFullText.CheckedChanged
+			Dim replaceFullText As CheckBox = DirectCast(sender, CheckBox)
+			_encodingPicker.Enabled = replaceFullText.Checked
+		End Sub
 	End Class
 End Namespace

@@ -595,6 +595,9 @@ Namespace kCura.EDDS.WinForm
 									dt.Columns.Add("Record Number")
 									For Each field In fields
 										dt.Columns.Add(field.DisplayName)
+										If field.DisplayName.ToLower.Contains("extracted text") Then
+											'dt.Columns.Add("Extracted Text Encoding")
+										End If
 									Next
 									firstTimeThrough = False
 									For Each err As System.Exception In errorQueue
@@ -627,6 +630,9 @@ Namespace kCura.EDDS.WinForm
 				row.Add(counter.ToString())
 				For Each field In fields
 					row.Add(field.ValueAsString)
+					If field.DisplayName.ToLower.Contains("extracted text") Then
+						'row.Add("...Encoding will go here...")
+					End If
 				Next
 				dt.Rows.Add(row.ToArray)
 			Catch x As System.Exception
@@ -1034,7 +1040,7 @@ Namespace kCura.EDDS.WinForm
 				imageFile.SelectedCasePath = caseinfo.DocumentPath
 				imageFile.DestinationFolderID = destinationArtifactID
 				imageFile.ForProduction = False
-				imageFile.FullTextEncoding = System.Text.Encoding.Default
+				imageFile.FullTextEncoding = Nothing
 				imageFile.CopyFilesToDocumentRepository = Config.CopyFilesToRepository
 				imageFile.SendEmailOnLoadCompletion = Config.SendNotificationOnImportCompletionByDefault
 				frm.ImageLoadFile = imageFile
@@ -1172,7 +1178,7 @@ Namespace kCura.EDDS.WinForm
 				Exit Function
 			End If
 			Dim frm As New kCura.Windows.Process.ProgressForm
-			Dim previewer As New kCura.WinEDDS.PreviewLoadFileProcess
+			Dim previewer As New kCura.WinEDDS.PreviewLoadFileProcess(formType)
 			loadFileToPreview.PreviewCodeCount.Clear()
 			Dim previewform As New LoadFilePreviewForm(formType, loadFileToPreview.MultiRecordDelimiter, loadFileToPreview.PreviewCodeCount)
 			Dim thrower As New ValueThrower
