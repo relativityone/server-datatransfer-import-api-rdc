@@ -580,6 +580,9 @@ Namespace kCura.EDDS.WinForm
 									dt.Columns.Add("Record Number")
 									For Each field In fields
 										dt.Columns.Add(field.DisplayName)
+										If field.DisplayName.ToLower.Contains("extracted text") Then
+											dt.Columns.Add("Extracted Text Encoding")
+										End If
 									Next
 									firstTimeThrough = False
 									For Each err As System.Exception In errorQueue
@@ -612,6 +615,9 @@ Namespace kCura.EDDS.WinForm
 				row.Add(counter.ToString())
 				For Each field In fields
 					row.Add(field.ValueAsString)
+					If field.DisplayName.ToLower.Contains("extracted text") Then
+						row.Add("...Encoding will go here...")
+					End If
 				Next
 				dt.Rows.Add(row.ToArray)
 			Catch x As System.Exception
@@ -924,7 +930,7 @@ Namespace kCura.EDDS.WinForm
 				imageFile.SelectedCasePath = caseinfo.DocumentPath
 				imageFile.DestinationFolderID = destinationArtifactID
 				imageFile.ForProduction = False
-				imageFile.FullTextEncoding = System.Text.Encoding.Default
+				imageFile.FullTextEncoding = Nothing
 				imageFile.CopyFilesToDocumentRepository = Config.CopyFilesToRepository
 				imageFile.SendEmailOnLoadCompletion = Config.SendNotificationOnImportCompletionByDefault
 				frm.ImageLoadFile = imageFile

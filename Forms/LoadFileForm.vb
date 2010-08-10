@@ -1126,7 +1126,7 @@ Namespace kCura.EDDS.WinForm
 				If determinedEncoding IsNot Nothing Then
 					'Check for what user selected
 					If _loadFileEncodingPicker.SelectedEncoding IsNot Nothing AndAlso Not _loadFileEncodingPicker.SelectedEncoding.Equals(determinedEncoding) Then
-						MsgBox("Determined Encdoing is not the same as selected")
+						MsgBox(String.Format("Determined Encdoing is not the same as selected. Will be changed from {0} to {1}", _loadFileEncodingPicker.SelectedEncoding.EncodingName, determinedEncoding.EncodingName))
 					End If
 
 					_loadFileEncodingPicker.SelectedEncoding = determinedEncoding
@@ -1134,7 +1134,7 @@ Namespace kCura.EDDS.WinForm
 					Label8.Text = "Source Encoding - Auto Detected"
 				ElseIf _loadFileEncodingPicker.SelectedEncoding Is Nothing Then
 					_fileColumnHeaders.Items.Clear()
-					_fileColumnHeaders.Items.Add("Please, select the encoding")
+					_fileColumnHeaders.Items.Add("The encoding of the selected load file could not be detected.  Please select the load file's encoding.")
 					Exit Function
 				End If
 
