@@ -698,7 +698,15 @@ Namespace kCura.WinEDDS
 				Else
 					If field.Category = DynamicFields.Types.FieldCategory.FullText AndAlso _fullTextColumnMapsToFileLocation Then
 						If Not field.ValueAsString = String.Empty Then
-							Dim sr As New System.IO.StreamReader(field.ValueAsString, _extractedTextFileEncoding)
+							Dim determinedEncodingStream As DeterminedEncodingStream = kCura.WinEDDS.Utility.DetectEncoding(field.ValueAsString, False)
+							Dim detectedEncoding As System.Text.Encoding = determinedEncodingStream._determinedEncoding
+							Dim chosenEncoding As System.Text.Encoding
+							If detectedEncoding IsNot Nothing Then
+								chosenEncoding = detectedEncoding
+							Else
+								chosenEncoding = _extractedTextFileEncoding
+							End If
+							Dim sr As New System.IO.StreamReader(determinedEncodingStream._fileStream, chosenEncoding)
 							Dim count As Int32 = 1
 							Do
 								Dim buff(1000000) As Char

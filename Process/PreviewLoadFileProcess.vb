@@ -10,11 +10,15 @@ Namespace kCura.WinEDDS
 		Private _errorsOnly As Boolean
 		Private _warningCount As Int32
 		Private _timeZoneOffset As Int32
+		Private _formType As Int32
 		Private StartTime As System.DateTime
 		Private WithEvents _valueThrower As ValueThrower
 		Public ReturnValueCollection As Hashtable
 		Public ReturnValueKey As Guid
 
+		Public Sub New(ByVal formType As Int32)
+			_formType = formType
+		End Sub
 		Public Property TimeZoneOffset() As Int32
 			Get
 				Return _timeZoneOffset
@@ -47,7 +51,7 @@ Namespace kCura.WinEDDS
 			_warningCount = 0
 			_errorCount = 0
 			_loadFilePreviewer = New kCura.WinEDDS.LoadFilePreviewer(LoadFile, _timeZoneOffset, _errorsOnly, True, ProcessController)
-			_valueThrower.ThrowValue(New Object() {_loadFilePreviewer.ReadFile(LoadFile.FilePath), _errorsOnly})
+			_valueThrower.ThrowValue(New Object() {_loadFilePreviewer.ReadFile(LoadFile.FilePath, _formType), _errorsOnly})
 			Me.ProcessObserver.RaiseProcessCompleteEvent(True)
 		End Sub
 

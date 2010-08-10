@@ -159,9 +159,9 @@ Namespace kCura.WinEDDS
 				Try
 					Dim codePageID As Int32 = info.GetInt32("ExtractedTextFileEncoding")
 					If codePageID = -1 Then
-						Me.SourceFileEncoding = Nothing
+						Me.ExtractedTextFileEncoding = Nothing
 					Else
-						Me.SourceFileEncoding = System.Text.Encoding.GetEncoding(codePageID)
+						Me.ExtractedTextFileEncoding = System.Text.Encoding.GetEncoding(codePageID)
 					End If
 				Catch
 					Me.ExtractedTextFileEncoding = Nothing

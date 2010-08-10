@@ -14,6 +14,7 @@ Namespace kCura.WinEDDS
 		Private _nativeFileCheckColumnName As String = ""
 		Private _relationalDocumentFields As DocumentField()
 		Private _selectedCaseArtifactID As Int32
+		Public Shared extractedTextEncodingFieldName As String = "Extracted Text Encoding"
 #End Region
 
 #Region "Constructors"
@@ -91,7 +92,7 @@ Namespace kCura.WinEDDS
 #End Region
 		Private _processedIdentifiers As New Collections.Specialized.NameValueCollection
 
-		Public Function ReadFile(ByVal path As String) As Object
+		Public Function ReadFile(ByVal path As String, ByVal formType As Int32) As Object
 			Dim earlyexit As Boolean = False
 			_relationalDocumentFields = _fieldQuery.RetrieveAllAsDocumentFieldCollection(_selectedCaseArtifactID, _artifactTypeID).GetFieldsByCategory(DynamicFields.Types.FieldCategory.Relational)
 			Dim filesize As Int64 = _artifactReader.SizeInBytes
@@ -122,7 +123,7 @@ Namespace kCura.WinEDDS
 						If Not _firstLineContainsColumnNames AndAlso fieldArrays.Count = 0 Then
 							_columnCount = record.Count
 						End If
-						Dim x As Api.ArtifactField() = CheckLine(record)
+						Dim x As Api.ArtifactField() = CheckLine(record, formType)
 						'If Not x Is Nothing AndAlso Not (_firstLineContainsColumnNames AndAlso i = 0) Then fieldArrays.Add(x)
 						If Not x Is Nothing Then fieldArrays.Add(x)
 					Catch ex As kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
@@ -145,7 +146,7 @@ Namespace kCura.WinEDDS
 		End Function
 
 
-		Private Function CheckLine(ByVal record As Api.ArtifactFieldCollection) As Api.ArtifactField()
+		Private Function CheckLine(ByVal record As Api.ArtifactFieldCollection, ByVal formType As Int32) As Api.ArtifactField()
 			Dim mapItem As LoadFileFieldMap.LoadFileFieldMapItem
 			Dim lineContainsErrors As Boolean = False
 			Dim retval As New ArrayList
@@ -246,8 +247,8 @@ Namespace kCura.WinEDDS
 				End If
 				retval.Add(field)
 			End If
-			If _settings.FullTextColumnContainsFileLocation Then
-				Dim field As New Api.ArtifactField("Extracted Text Encoding", -500, 0, 0, Nothing, Nothing, Nothing)
+			If _settings.FullTextColumnContainsFileLocation AndAlso formType = 1 Then
+				Dim field As New Api.ArtifactField(extractedTextEncodingFieldName, -500, 0, 0, Nothing, Nothing, Nothing)
 				If codePageId > 0 Then
 					field.Value = System.Text.Encoding.GetEncoding(codePageId).EncodingName
 				Else

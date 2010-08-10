@@ -42,5 +42,63 @@ Namespace kCura.WinEDDS
 			output = output.Replace("""", " ")
 			Return output
 		End Function
+
+		Public Shared Function DetectEncoding(ByVal filename As String, ByVal returnEncodingOnly As Boolean) As DeterminedEncodingStream
+			Dim enc As System.Text.Encoding = Nothing
+			Dim filein As System.IO.FileStream
+			If System.IO.File.Exists(filename) Then
+				filein = New System.IO.FileStream(filename, IO.FileMode.Open, IO.FileAccess.Read)
+				If (filein.CanSeek) Then
+					Dim bom(4) As Byte
+					filein.Read(bom, 0, 4)
+					'EF BB BF       = Unicode (UTF-8)
+					'FF FE          = ucs-2le, ucs-4le, and ucs-16le OR Unicode
+					'FE FF          = utf-16 and ucs-2 OR Unicode (Big-Endian)
+					'00 00 FE FF    = ucs-4 OR Unicode (UTF-32 Big-Endian)
+					'FF FE 00 00		= Unicode (UTF-32)
+					If (((bom(0) = &HEF) And (bom(1) = &HBB) And (bom(2) = &HBF))) Then
+						enc = System.Text.Encoding.UTF8
+					End If
+					If ((bom(0) = &HFF) And (bom(1) = &HFE)) Then
+						enc = System.Text.Encoding.Unicode
+					End If
+					If ((bom(0) = &HFE) And (bom(1) = &HFF)) Then
+						enc = System.Text.Encoding.BigEndianUnicode
+					End If
+					If (bom(0) = &H0 And bom(1) = &H0 And bom(2) = &HFE And bom(3) = &HFF) Then
+						enc = System.Text.Encoding.GetEncoding(12001)	' Unicode (UTF-32 Big-Endian)
+					End If
+					If (bom(0) = &HFF And bom(1) = &HFE And bom(2) = &H0 And bom(3) = &H0) Then
+						enc = System.Text.Encoding.GetEncoding(12000)	'Unicode (UTF-32)
+					End If
+
+					'Position the file cursor back to the start of the file
+					filein.Seek(0, System.IO.SeekOrigin.Begin)
+				End If
+				If returnEncodingOnly Then
+					filein.Close()
+				End If
+			End If
+			If returnEncodingOnly Then
+				Return New DeterminedEncodingStream(enc)
+			Else
+				Return New DeterminedEncodingStream(filein, enc)
+			End If
+		End Function
+	End Class
+
+	Public Class DeterminedEncodingStream
+		Public _fileStream As System.IO.FileStream
+		Public _determinedEncoding As System.Text.Encoding
+
+		Public Sub New(ByVal fileStream As System.IO.FileStream, ByVal determinedEncoding As System.Text.Encoding)
+			_fileStream = fileStream
+			_determinedEncoding = determinedEncoding
+		End Sub
+
+		Public Sub New(ByVal determinedEncoding As System.Text.Encoding)
+			_determinedEncoding = determinedEncoding
+		End Sub
+
 	End Class
 End Namespace
