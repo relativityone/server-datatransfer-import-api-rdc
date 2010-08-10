@@ -337,6 +337,7 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Private Sub InitializeMembers(ByVal path As String)
+
 			_recordCount = _artifactReader.CountRecords
 			Me.InitializeFolderManagement()
 			Me.InitializeFieldIdList()
