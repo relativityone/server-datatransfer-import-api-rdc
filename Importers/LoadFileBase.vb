@@ -273,7 +273,7 @@ Namespace kCura.WinEDDS
 
 #End Region
 
-		Public Sub SetFieldValue(ByVal field As Api.ArtifactField, ByVal columnIndex As Int32, ByVal forPreview As Boolean, ByVal identityValue As String)
+		Public Sub SetFieldValue(ByVal field As Api.ArtifactField, ByVal columnIndex As Int32, ByVal forPreview As Boolean, ByVal identityValue As String, ByRef extractedTextFileCodePageId As Int32)
 			If TypeOf field.Value Is System.Exception Then
 				Throw DirectCast(field.Value, System.Exception)
 			End If
@@ -438,6 +438,11 @@ Namespace kCura.WinEDDS
 							Throw New MissingFullTextFileException(Me.CurrentLineNumber, columnIndex)
 						Else
 							If forPreview Then
+								' Determine Encoding Here
+								Dim detectedEncoding As System.Text.Encoding = DetectEncoding(value)
+								If detectedEncoding IsNot Nothing Then
+									_extractedTextFileEncoding = detectedEncoding
+								End If
 								Dim sr As New System.IO.StreamReader(value, _extractedTextFileEncoding)
 								Dim i As Int32 = 0
 								Dim sb As New System.Text.StringBuilder
@@ -446,18 +451,57 @@ Namespace kCura.WinEDDS
 									i += 1
 								End While
 								If i = 100 Then sb.Append("...")
+								extractedTextFileCodePageId = _extractedTextFileEncoding.CodePage
 								sr.Close()
 								'sb = sb.Replace(System.Environment.NewLine, Me.NewlineProxy).Replace(ChrW(10), Me.NewlineProxy).Replace(ChrW(13), Me.NewlineProxy)
 								field.Value = sb.ToString
 							Else
 								field.Value = value
 							End If
-						End If
+							End If
 					End If
 				Case Else
 					Throw New System.Exception("Unsupported Field Type '" & field.Type.ToString & "'")
 			End Select
 		End Sub
+
+		Private Function DetectEncoding(ByVal filename As String) As System.Text.Encoding
+			Dim enc As System.Text.Encoding = Nothing
+			If System.IO.File.Exists(filename) Then
+				Dim filein As New System.IO.FileStream(filename, IO.FileMode.Open, IO.FileAccess.Read)
+				If (filein.CanSeek) Then
+					Dim bom(4) As Byte
+					filein.Read(bom, 0, 4)
+					'EF BB BF       = Unicode (UTF-8)
+					'FF FE          = ucs-2le, ucs-4le, and ucs-16le OR Unicode
+					'FE FF          = utf-16 and ucs-2 OR Unicode (Big-Endian)
+					'00 00 FE FF    = ucs-4 OR Unicode (UTF-32 Big-Endian)
+					'FF FE 00 00		= Unicode (UTF-32)
+					If (((bom(0) = &HEF) And (bom(1) = &HBB) And (bom(2) = &HBF))) Then
+						enc = System.Text.Encoding.UTF8
+					End If
+					If ((bom(0) = &HFF) And (bom(1) = &HFE)) Then
+						enc = System.Text.Encoding.Unicode
+					End If
+					If ((bom(0) = &HFE) And (bom(1) = &HFF)) Then
+						enc = System.Text.Encoding.BigEndianUnicode
+					End If
+					If (bom(0) = &H0 And bom(1) = &H0 And bom(2) = &HFE And bom(3) = &HFF) Then
+						enc = System.Text.Encoding.GetEncoding(12001)	' Unicode (UTF-32 Big-Endian)
+					End If
+					If (bom(0) = &HFF And bom(1) = &HFE And bom(2) = &H0 And bom(3) = &H0) Then
+						enc = System.Text.Encoding.GetEncoding(12000)	'Unicode (UTF-32)
+					End If
+
+					'Position the file cursor back to the start of the file
+					filein.Seek(0, System.IO.SeekOrigin.Begin)
+				End If
+				filein.Close()
+			End If
+			Return enc
+
+		End Function
+
 
 		Public Sub AddToCodeCountPreviewHashTable(ByVal fieldID As Int32, ByVal fieldName As String, ByVal fieldValue As String)
 			Dim fieldKeyID As String = String.Format("{0}_{1}", fieldID, fieldName)

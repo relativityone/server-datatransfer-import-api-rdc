@@ -823,14 +823,14 @@ Namespace kCura.WinEDDS
 					If item.DocumentField.FieldTypeID = kCura.DynamicFields.Types.FieldTypeHelper.FieldType.File Then
 						Me.ManageFileField(record(item.DocumentField.FieldID))
 					Else
-						MyBase.SetFieldValue(record(item.DocumentField.FieldID), item.NativeFileColumnIndex, False, identityValue)
+						MyBase.SetFieldValue(record(item.DocumentField.FieldID), item.NativeFileColumnIndex, False, identityValue, 0)
 					End If
 				End If
 			Next
 			For Each fieldDTO As kCura.EDDS.WebAPI.DocumentManagerBase.Field In Me.UnmappedRelationalFields
 				Dim field As New Api.ArtifactField(fieldDTO)
 				field.Value = identityValue
-				Me.SetFieldValue(field, -1, False, identityValue)
+				Me.SetFieldValue(field, -1, False, identityValue, 0)
 			Next
 			_firstTimeThrough = False
 			System.Threading.Monitor.Exit(_outputNativeFileWriter)
