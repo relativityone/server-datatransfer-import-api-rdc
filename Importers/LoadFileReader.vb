@@ -53,7 +53,8 @@ Namespace kCura.WinEDDS
 		Private _codesCreated As Int32 = 0
 		Private _errorLogFileName As String = ""
 		Private _errorLogWriter As System.IO.StreamWriter
-		Private WithEvents _lineCounter As kCura.WinEDDS.LineCounter
+		'Private WithEvents _loadFilePreProcessor As kCura.WinEDDS.LoadFilePreProcessor
+		Private WithEvents _lineCounter As kCura.Utility.File.LineCounter
 		Private _recordCount As Int64 = -1
 		Private _genericTimestamp As System.DateTime
 		Private _trackErrorsInFieldValues As Boolean
@@ -63,7 +64,6 @@ Namespace kCura.WinEDDS
 
 		Public Sub New(ByVal args As LoadFile, ByVal trackErrorsAsFieldValues As Boolean)
 			MyBase.New(args.RecordDelimiter, args.QuoteDelimiter, args.NewlineDelimiter, True)
-			_settings = args
 			_settings = args
 			_trackErrorsInFieldValues = trackErrorsAsFieldValues
 			_docFields = args.FieldMap.DocumentFields
@@ -118,7 +118,7 @@ Namespace kCura.WinEDDS
 #Region " Initialization "
 
 		Private Sub InitializeLineCounter(ByVal path As String)
-			_lineCounter = New kCura.WinEDDS.LineCounter
+			_lineCounter = New kCura.Utility.File.LineCounter
 			_lineCounter.Path = path
 		End Sub
 
@@ -360,8 +360,10 @@ Namespace kCura.WinEDDS
 
 		Public Function CountRecords() As Int64 Implements Api.IArtifactReader.CountRecords
 			Me.InitializeLineCounter(_settings.FilePath)
-			'
 			_lineCounter.CountLines(_sourceFileEncoding, New kCura.Utility.File.LineCounter.LineCounterArgs(Me.Bound, Me.Delimiter))
+
+			'_loadFilePreProcessor = New kCura.WinEDDS.LoadFilePreProcessor(_settings, _trackErrorsInFieldValues)
+			'_loadFilePreProcessor.CountLines()
 			Return _recordCount
 		End Function
 

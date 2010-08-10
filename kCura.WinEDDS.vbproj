@@ -360,6 +360,7 @@
     <Compile Include="Importers\LoadFileBase.vb">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Importers\LoadFilePreProcessor.vb" />
     <Compile Include="Importers\LoadFilePreviewer.vb">
       <SubType>Code</SubType>
     </Compile>
@@ -381,7 +382,6 @@
     <Compile Include="Importers\SQL\SQLImportSettings.vb">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="LineCounter.vb" />
     <Compile Include="My Project\Settings.Designer.vb">
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
