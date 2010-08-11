@@ -122,7 +122,7 @@ Namespace kCura.WinEDDS
 		'	_lineCounter.Path = path
 		'End Sub
 
-		Private Sub EnsureReader()
+		Protected Sub EnsureReader()
 			If Me.Reader Is Nothing Then
 				If _sourceFileEncoding Is Nothing Then _sourceFileEncoding = System.Text.Encoding.Default 'DetectEncoding(_settings.FilePath)
 				Me.Reader = New System.IO.StreamReader(_settings.FilePath, _sourceFileEncoding, True)
@@ -255,17 +255,17 @@ Namespace kCura.WinEDDS
 
 #Region " Status Communication "
 
-		Private Sub _loadFilePreProcessor_OnEvent(ByVal e As kCura.Utility.File.LineCounter.EventArgs) Handles _loadFilePreProcessor.OnEvent
+		Private Sub _loadFilePreProcessor_OnEvent(ByVal e As kCura.WinEDDS.LoadFilePreProcessor.EventArgs) Handles _loadFilePreProcessor.OnEvent
 			Select Case e.Type
-				Case kCura.Utility.File.LineCounter.EventType.Begin
+				Case kCura.WinEDDS.LoadFilePreProcessor.EventType.Begin
 					_genericTimestamp = System.DateTime.Now
 					RaiseEvent DataSourcePrep(New DataSourcePrepEventArgs(DataSourcePrepEventArgs.EventType.Open, 0, 0, e.TotalBytes, _genericTimestamp, System.DateTime.Now))
-				Case kCura.Utility.File.LineCounter.EventType.Progress
+				Case kCura.WinEDDS.LoadFilePreProcessor.EventType.Progress
 					RaiseEvent DataSourcePrep(New DataSourcePrepEventArgs(DataSourcePrepEventArgs.EventType.ReadEvent, e.BytesRead, e.TotalBytes, e.StepSize, _genericTimestamp, System.DateTime.Now))
-				Case kCura.Utility.File.LineCounter.EventType.Complete
+				Case kCura.WinEDDS.LoadFilePreProcessor.EventType.Complete
 					_recordCount = e.NewlinesRead
 					RaiseEvent DataSourcePrep(New DataSourcePrepEventArgs(DataSourcePrepEventArgs.EventType.ReadEvent, e.TotalBytes, e.TotalBytes, e.StepSize, _genericTimestamp, System.DateTime.Now))
-					Dim path As String = _settings.FilePath '_lineCounter.Path
+					Dim path As String = _settings.FilePath	'_lineCounter.Path
 					_columnHeaders = GetColumnNames(_settings)
 					Reader = New System.IO.StreamReader(path, _sourceFileEncoding)
 					If _firstLineContainsColumnNames Then
@@ -279,6 +279,10 @@ Namespace kCura.WinEDDS
 					Else
 						_filePathColumnIndex = -1
 					End If
+				Case kCura.WinEDDS.LoadFilePreProcessor.EventType.Cancel
+					'make import process stop
+
+
 			End Select
 		End Sub
 
