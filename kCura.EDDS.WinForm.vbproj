@@ -173,9 +173,9 @@
     <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="kCura.Resources">
-      <Name>kCura.Resources</Name>
-      <HintPath>..\..\Vendor\kCura\1.0.2131.20968\kCura.Resources.dll</HintPath>
+    <Reference Include="kCura.Resources, Version=1.0.3635.26400, Culture=neutral, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Vendor\kCura\1.0.2131.20968\x86\kCura.Resources.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualBasic">
       <Name>Microsoft.VisualBasic</Name>
