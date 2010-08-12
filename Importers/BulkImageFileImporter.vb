@@ -443,12 +443,32 @@ Namespace kCura.WinEDDS
 					valueArray = DirectCast(lines(i), String())
 					Me.GetImageForDocument(BulkImageFileImporter.GetFileLocation(valueArray), valueArray(Columns.BatesNumber), documentId, i, offset, textFileList, i < lines.Count - 1, valueArray(valueArray.Length - 1), status, lines.Count)
 				Next
+
+
+				If textFileList.Count = 0 AndAlso _replaceFullText Then
+					_bulkLoadFileWriter.Write(String.Format("{0},", -1))
+				End If
+				Dim gotEncodingForTheFirstFile As Boolean = False
 				For Each filename As String In textFileList
-					With New System.IO.StreamReader(filename, _settings.FullTextEncoding, True)
+					Dim chosenEncoding As System.Text.Encoding
+					Dim determinedEncodingStream As DeterminedEncodingStream = kCura.WinEDDS.Utility.DetectEncoding(filename, False)
+					Dim detectedEncoding As System.Text.Encoding = determinedEncodingStream._determinedEncoding
+					If detectedEncoding IsNot Nothing Then
+						chosenEncoding = detectedEncoding
+					Else
+						chosenEncoding = _settings.FullTextEncoding
+					End If
+					If _replaceFullText AndAlso Not gotEncodingForTheFirstFile Then
+						_bulkLoadFileWriter.Write(String.Format("{0},", chosenEncoding.CodePage))
+					End If
+					gotEncodingForTheFirstFile = True
+					With New System.IO.StreamReader(determinedEncodingStream._fileStream, chosenEncoding, True)
 						_bulkLoadFileWriter.Write(.ReadToEnd)
 						.Close()
+						determinedEncodingStream._fileStream.Close()
 					End With
 				Next
+
 				_bulkLoadFileWriter.Write(kCura.EDDS.Types.Constants.ENDLINETERMSTRING)
 			Catch ex As Exception
 				Throw
@@ -521,6 +541,9 @@ Namespace kCura.WinEDDS
 				_bulkLoadFileWriter.Write(fileSize & ",")
 				_bulkLoadFileWriter.Write(fileLocation & ",")
 				_bulkLoadFileWriter.Write(imageFileName & ",")
+				If _replaceFullText AndAlso writeLineTermination Then
+					_bulkLoadFileWriter.Write("-1,")
+				End If
 				If writeLineTermination Then
 					_bulkLoadFileWriter.Write(kCura.EDDS.Types.Constants.ENDLINETERMSTRING)
 				End If
