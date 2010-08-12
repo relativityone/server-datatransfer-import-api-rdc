@@ -54,7 +54,6 @@ Namespace kCura.WinEDDS
 		Private _errorLogFileName As String = ""
 		Private _errorLogWriter As System.IO.StreamWriter
 		Private WithEvents _loadFilePreProcessor As kCura.WinEDDS.LoadFilePreProcessor
-		'Private WithEvents _lineCounter As kCura.Utility.File.LineCounter
 		Private _recordCount As Int64 = -1
 		Private _genericTimestamp As System.DateTime
 		Private _trackErrorsInFieldValues As Boolean
@@ -109,18 +108,12 @@ Namespace kCura.WinEDDS
 				Next
 			End If
 
-			'Me.InitializeLineCounter(args.FilePath)
 			'Reader = New System.IO.StreamReader(args.FilePath, args.SourceFileEncoding)
 		End Sub
 
 #End Region
 
 #Region " Initialization "
-
-		'Private Sub InitializeLineCounter(ByVal path As String)
-		'	_lineCounter = New kCura.Utility.File.LineCounter
-		'	_lineCounter.Path = path
-		'End Sub
 
 		Protected Sub EnsureReader()
 			If Me.Reader Is Nothing Then
@@ -265,7 +258,7 @@ Namespace kCura.WinEDDS
 				Case kCura.WinEDDS.LoadFilePreProcessor.EventType.Complete
 					_recordCount = e.NewlinesRead
 					RaiseEvent DataSourcePrep(New DataSourcePrepEventArgs(DataSourcePrepEventArgs.EventType.ReadEvent, e.TotalBytes, e.TotalBytes, e.StepSize, _genericTimestamp, System.DateTime.Now))
-					Dim path As String = _settings.FilePath	'_lineCounter.Path
+					Dim path As String = _settings.FilePath
 					_columnHeaders = GetColumnNames(_settings)
 					Reader = New System.IO.StreamReader(path, _sourceFileEncoding)
 					If _firstLineContainsColumnNames Then
@@ -280,7 +273,7 @@ Namespace kCura.WinEDDS
 						_filePathColumnIndex = -1
 					End If
 				Case kCura.WinEDDS.LoadFilePreProcessor.EventType.Cancel
-					'make import process stop
+					'TODO: not going with this approach since it means changing the API
 
 
 			End Select
@@ -342,7 +335,6 @@ Namespace kCura.WinEDDS
 		End Property
 
 		Public Sub Halt() Implements Api.IArtifactReader.Halt
-			'_lineCounter.StopCounting()
 			_loadFilePreProcessor.StopCounting()
 		End Sub
 
@@ -364,9 +356,6 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Public Function CountRecords() As Int64 Implements Api.IArtifactReader.CountRecords
-			'Me.InitializeLineCounter(_settings.FilePath)
-			'_lineCounter.CountLines(_sourceFileEncoding, New kCura.Utility.File.LineCounter.LineCounterArgs(Me.Bound, Me.Delimiter))
-
 			_loadFilePreProcessor = New kCura.WinEDDS.LoadFilePreProcessor(_settings, _trackErrorsInFieldValues)
 			_loadFilePreProcessor.CountLines()
 			Return _recordCount

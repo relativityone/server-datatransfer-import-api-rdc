@@ -1,5 +1,4 @@
-﻿'Imports kCura.Utility.File.LineCounter
-Namespace kCura.WinEDDS
+﻿Namespace kCura.WinEDDS
 	Public Class LoadFilePreProcessor
 		Inherits LoadFileReader
 
@@ -113,7 +112,7 @@ Namespace kCura.WinEDDS
 			Dim currentRun As Int64 = System.DateTime.Now.Ticks
 			Dim lastRun As Int64 = currentRun
 
-			Me.ProcessStart(Me.CurrentLineNumber, 0, filesize, stepsize)
+			Me.ProcessStart(Me.CurrentLineNumber, 0, fileSize, stepSize)
 
 			While Not Me.HasReachedEOF And _continue
 				currentRun = System.DateTime.Now.Ticks
@@ -131,8 +130,6 @@ Namespace kCura.WinEDDS
 			Me.EnsureReader()
 			Dim fileSize As Int64 = Me.Reader.BaseStream.Length
 			Dim stepSize As Int64 = GetStepSize(fileSize)
-			'Dim bound As Char = Me.Bound
-			'Dim delimeter As Char = Me.Delimiter
 			Dim folderColumnIndex As Int32 = Me.GetColumnIndexFromString(_settings.FolderStructureContainedInColumn)
 			Dim currentRun As Int64 = System.DateTime.Now.Ticks
 			Dim lastRun As Int64 = currentRun
@@ -171,7 +168,7 @@ Namespace kCura.WinEDDS
 				Else
 					Me.ProcessComplete(Me.CurrentLineNumber, Me.Reader.BaseStream.Position, fileSize, stepSize)
 				End If
-				
+
 			End If
 
 			Return Nothing
