@@ -196,22 +196,26 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 		Private Sub RunNativeImport()
-			Dim folderManager As New kCura.WinEDDS.Service.FolderManager(_application.Credential, _application.CookieContainer)
-			If folderManager.Exists(SelectedCaseInfo.ArtifactID, SelectedCaseInfo.RootFolderID) AndAlso EnsureEncoding Then
-				Dim frm As New kCura.Windows.Process.ProgressForm
-				Dim importer As New kCura.WinEDDS.ImportLoadFileProcess
-				SelectedNativeLoadFile.SourceFileEncoding = SourceFileEncoding
-				SelectedNativeLoadFile.ExtractedTextFileEncoding = ExtractedTextFileEncoding
-				SelectedNativeLoadFile.SelectedCasePath = SelectedCasePath
-				SelectedNativeLoadFile.CopyFilesToDocumentRepository = CopyFilesToDocumentRepository
-				SelectedNativeLoadFile.DestinationFolderID = DestinationFolderID
-				SelectedNativeLoadFile.StartLineNumber = StartLineNumber
-				importer.LoadFile = SelectedNativeLoadFile
-				importer.TimeZoneOffset = _application.TimeZoneOffset
-				SelectedNativeLoadFile.ArtifactTypeID = kCura.EDDS.Types.ArtifactType.Document
-				_application.SetWorkingDirectory(SelectedNativeLoadFile.FilePath)
-				Dim executor As New kCura.EDDS.WinForm.CommandLineProcessRunner(importer.ProcessObserver, importer.ProcessController, ErrorLoadFileLocation, ErrorReportFileLocation)
-				_application.StartProcess(importer)
+			If EnsureEncoding() Then
+				Dim folderManager As New kCura.WinEDDS.Service.FolderManager(_application.Credential, _application.CookieContainer)
+				If folderManager.Exists(SelectedCaseInfo.ArtifactID, SelectedCaseInfo.RootFolderID) Then
+					Dim frm As New kCura.Windows.Process.ProgressForm
+					Dim importer As New kCura.WinEDDS.ImportLoadFileProcess
+					SelectedNativeLoadFile.SourceFileEncoding = SourceFileEncoding
+					SelectedNativeLoadFile.ExtractedTextFileEncoding = ExtractedTextFileEncoding
+					SelectedNativeLoadFile.SelectedCasePath = SelectedCasePath
+					SelectedNativeLoadFile.CopyFilesToDocumentRepository = CopyFilesToDocumentRepository
+					SelectedNativeLoadFile.DestinationFolderID = DestinationFolderID
+					SelectedNativeLoadFile.StartLineNumber = StartLineNumber
+					importer.LoadFile = SelectedNativeLoadFile
+					importer.TimeZoneOffset = _application.TimeZoneOffset
+					SelectedNativeLoadFile.ArtifactTypeID = kCura.EDDS.Types.ArtifactType.Document
+					_application.SetWorkingDirectory(SelectedNativeLoadFile.FilePath)
+					Dim executor As New kCura.EDDS.WinForm.CommandLineProcessRunner(importer.ProcessObserver, importer.ProcessController, ErrorLoadFileLocation, ErrorReportFileLocation)
+					_application.StartProcess(importer)
+				End If
+			Else
+				Throw New EncodingMisMatchException(SourceFileEncoding.ToString, "source file")
 			End If
 		End Sub
 
@@ -229,6 +233,8 @@ Namespace kCura.EDDS.WinForm
 				_application.SetWorkingDirectory(SelectedImageLoadFile.FileName)
 				Dim executor As New kCura.EDDS.WinForm.CommandLineProcessRunner(importer.ProcessObserver, importer.ProcessController, ErrorLoadFileLocation, ErrorReportFileLocation)
 				_application.StartProcess(importer)
+			Else
+				Throw New EncodingMisMatchException(SourceFileEncoding.ToString, "source file")
 			End If
 		End Sub
 
@@ -621,6 +627,17 @@ Namespace kCura.EDDS.WinForm
 		Inherits RdcBaseException
 		Public Sub New()
 			MyBase.New("No load type or invalid load type set. Available options are ""image"", ""native"" or ""object""")
+		End Sub
+	End Class
+
+	Public Class EncodingMisMatchException
+		Inherits RdcBaseException
+		Public Sub New(ByVal id As String, ByVal destination As String)
+			Me.New(id, destination, Nothing)
+		End Sub
+
+		Public Sub New(ByVal id As String, ByVal destination As String, ByVal innerException As System.Exception)
+			MyBase.New(String.Format("Encoding parameter '{0}' does not match auto-detected encoding in {1}", id, destination), innerException)
 		End Sub
 	End Class
 
