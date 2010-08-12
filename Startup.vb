@@ -87,6 +87,7 @@ Namespace kCura.EDDS.WinForm
 		Private Sub RunInConsoleMode()
 			Try
 				_application = kCura.EDDS.WinForm.Application.Instance
+
 				Dim commandList As kCura.CommandLine.CommandList = kCura.CommandLine.CommandLineParser.Parse
 				For Each command As kCura.CommandLine.Command In commandList
 					If command.Directive.ToLower.Replace("-", "").Replace("/", "") = "h" Then
@@ -362,6 +363,7 @@ Namespace kCura.EDDS.WinForm
 						Else
 							_loadFilePath = tempLoadFile.FilePath
 						End If
+						tempLoadFile.ForceFolderPreview = False
 						tempLoadFile.CaseInfo = SelectedCaseInfo
 						tempLoadFile.CopyFilesToDocumentRepository = True						'LoadFile.CopyFilesToDocumentRepository
 						tempLoadFile.SelectedCasePath = SelectedCaseInfo.DocumentPath						''''''''''
