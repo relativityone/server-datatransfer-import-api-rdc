@@ -197,7 +197,7 @@ Namespace kCura.EDDS.WinForm
 
 		Private Sub RunNativeImport()
 			Dim folderManager As New kCura.WinEDDS.Service.FolderManager(_application.Credential, _application.CookieContainer)
-			If folderManager.Exists(SelectedCaseInfo.ArtifactID, SelectedCaseInfo.RootFolderID) Then
+			If folderManager.Exists(SelectedCaseInfo.ArtifactID, SelectedCaseInfo.RootFolderID) AndAlso EnsureEncoding Then
 				Dim frm As New kCura.Windows.Process.ProgressForm
 				Dim importer As New kCura.WinEDDS.ImportLoadFileProcess
 				SelectedNativeLoadFile.SourceFileEncoding = SourceFileEncoding
@@ -216,18 +216,20 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 		Private Sub RunImageImport()
-			Dim importer As New kCura.WinEDDS.ImportImageFileProcess
-			SelectedImageLoadFile.CookieContainer = _application.CookieContainer
-			SelectedImageLoadFile.Credential = _application.Credential
-			SelectedImageLoadFile.SelectedCasePath = SelectedCasePath
-			SelectedImageLoadFile.CaseDefaultPath = SelectedCaseInfo.DocumentPath
-			SelectedImageLoadFile.CopyFilesToDocumentRepository = CopyFilesToDocumentRepository
-			SelectedImageLoadFile.FullTextEncoding = ExtractedTextFileEncoding
-			SelectedImageLoadFile.StartLineNumber = StartLineNumber
-			importer.ImageLoadFile = SelectedImageLoadFile
-			_application.SetWorkingDirectory(SelectedImageLoadFile.FileName)
-			Dim executor As New kCura.EDDS.WinForm.CommandLineProcessRunner(importer.ProcessObserver, importer.ProcessController, ErrorLoadFileLocation, ErrorReportFileLocation)
-			_application.StartProcess(importer)
+			If EnsureEncoding() Then
+				Dim importer As New kCura.WinEDDS.ImportImageFileProcess
+				SelectedImageLoadFile.CookieContainer = _application.CookieContainer
+				SelectedImageLoadFile.Credential = _application.Credential
+				SelectedImageLoadFile.SelectedCasePath = SelectedCasePath
+				SelectedImageLoadFile.CaseDefaultPath = SelectedCaseInfo.DocumentPath
+				SelectedImageLoadFile.CopyFilesToDocumentRepository = CopyFilesToDocumentRepository
+				SelectedImageLoadFile.FullTextEncoding = ExtractedTextFileEncoding
+				SelectedImageLoadFile.StartLineNumber = StartLineNumber
+				importer.ImageLoadFile = SelectedImageLoadFile
+				_application.SetWorkingDirectory(SelectedImageLoadFile.FileName)
+				Dim executor As New kCura.EDDS.WinForm.CommandLineProcessRunner(importer.ProcessObserver, importer.ProcessController, ErrorLoadFileLocation, ErrorReportFileLocation)
+				_application.StartProcess(importer)
+			End If
 		End Sub
 
 #End Region
@@ -237,6 +239,12 @@ Namespace kCura.EDDS.WinForm
 			If String.IsNullOrEmpty(_loadFilePath) Then Throw New LoadFilePathException
 			If Not System.IO.File.Exists(_loadFilePath) Then Throw New LoadFilePathException(_loadFilePath)
 		End Sub
+
+		Private Function EnsureEncoding() As Boolean
+			Dim determinedEncoding As System.Text.Encoding = kCura.WinEDDS.Utility.DetectEncoding(_loadFilePath, True)._determinedEncoding
+			If determinedEncoding Is Nothing Then Return True
+			Return (determinedEncoding.Equals(SourceFileEncoding))
+		End Function
 
 		Private Sub SetFileLocation(ByVal path As String)
 			_loadFilePath = path
@@ -515,9 +523,9 @@ Namespace kCura.EDDS.WinForm
 			CloseWindow(ActiveWindowHandle)
 		End Sub
 
-		Private Function GetHelpPage() As String
+		Private Sub GetHelpPage()
 			Console.WriteLine(kCura.Resources.Helper.RetrieveDataFromResource("StringConstants", "HelpPage"))
-		End Function
+		End Sub
 
 		Private Sub GetEncodingList()
 			For Each encodingItem As kCura.EDDS.WinForm.EncodingItem In kCura.EDDS.WinForm.Constants.AllEncodings
