@@ -342,6 +342,7 @@ Namespace kCura.Windows.Process
 		Private _errorFilesExtension As String = "CSV"
 		Private _hasClickedStop As Boolean = False
 		Private _summaryString As System.Text.StringBuilder
+		Private _cancelled As Boolean = False
 
 		Public Property ErrorFileExtension() As String
 			Get
@@ -472,6 +473,7 @@ Namespace kCura.Windows.Process
 			Select Case evt.Type
 				Case kCura.Windows.Process.ProcessEventTypeEnum.Status
 					_outputTextBox.WriteLine(evt.Message + " " + evt.RecordInfo)
+					If evt.Message.ToLower = "cancel import" Then _cancelled = True
 				Case kCura.Windows.Process.ProcessEventTypeEnum.Error
 					_errorsOutputTextBox.WriteLine(evt.Message)
 				Case kCura.Windows.Process.ProcessEventTypeEnum.Warning
@@ -539,6 +541,7 @@ Namespace kCura.Windows.Process
 			If closeForm Then
 				Me.Close()
 			Else
+				If _cancelled Then Me.Close()
 				_currentRecordLabel.Text = "All records have been processed"
 				If _hasReceivedFatalError Then _currentRecordLabel.Text = "Fatal Exception Encountered"
 				_currentMessageStatus.Text = ""
