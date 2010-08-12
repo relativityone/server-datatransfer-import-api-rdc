@@ -99,7 +99,7 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Public Sub CountLines()
-			If _settings.ForceFolderPreview AndAlso Not _settings.FolderStructureContainedInColumn Is Nothing AndAlso _artifactTypeID = kCura.EDDS.Types.ArtifactType.Document Then
+			If _settings.ForceFolderPreview AndAlso _settings.CreateFolderStructure AndAlso Not _settings.FolderStructureContainedInColumn Is Nothing AndAlso _artifactTypeID = kCura.EDDS.Types.ArtifactType.Document AndAlso _settings.OverwriteDestination = "None" Then
 				Me.ReadFile(_settings.FilePath)
 			Else
 				Me.ReadFileSimple(_settings.FilePath)
