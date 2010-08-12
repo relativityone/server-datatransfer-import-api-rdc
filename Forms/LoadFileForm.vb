@@ -150,13 +150,13 @@ Namespace kCura.EDDS.WinForm
 			Me.ImportFileMenu = New System.Windows.Forms.MenuItem
 			Me.MenuItem5 = New System.Windows.Forms.MenuItem
 			Me._importMenuSendEmailNotificationItem = New System.Windows.Forms.MenuItem
+			Me._importMenuForceFolderPreviewItem = New System.Windows.Forms.MenuItem
 			Me._saveFieldMapDialog = New System.Windows.Forms.SaveFileDialog
 			Me._loadFieldMapDialog = New System.Windows.Forms.OpenFileDialog
 			Me.TabControl1 = New System.Windows.Forms.TabControl
 			Me._loadFileTab = New System.Windows.Forms.TabPage
 			Me._startLineNumber = New System.Windows.Forms.NumericUpDown
 			Me._startLineNumberLabel = New System.Windows.Forms.Label
-			Me._loadFileEncodingPicker = New kCura.EDDS.WinForm.EncodingPicker
 			Me.Label8 = New System.Windows.Forms.Label
 			Me.GroupBox20 = New System.Windows.Forms.GroupBox
 			Me._browseButton = New System.Windows.Forms.Button
@@ -180,7 +180,6 @@ Namespace kCura.EDDS.WinForm
 			Me._overlayIdentifier = New System.Windows.Forms.ComboBox
 			Me._fieldMap = New kCura.WinEDDS.UIControls.FieldMap
 			Me.GroupBox7 = New System.Windows.Forms.GroupBox
-			Me._fullTextFileEncodingPicker = New kCura.EDDS.WinForm.EncodingPicker
 			Me.Label9 = New System.Windows.Forms.Label
 			Me._extractedTextValueContainsFileLocation = New System.Windows.Forms.CheckBox
 			Me.GroupBox6 = New System.Windows.Forms.GroupBox
@@ -194,7 +193,8 @@ Namespace kCura.EDDS.WinForm
 			Me._nativeFilePathField = New System.Windows.Forms.ComboBox
 			Me.Label5 = New System.Windows.Forms.Label
 			Me.HelpProvider1 = New System.Windows.Forms.HelpProvider
-			Me._importMenuForceFolderPreviewItem = New System.Windows.Forms.MenuItem
+			Me._loadFileEncodingPicker = New kCura.EDDS.WinForm.EncodingPicker
+			Me._fullTextFileEncodingPicker = New kCura.EDDS.WinForm.EncodingPicker
 			Me.GroupBox1.SuspendLayout()
 			Me.TabControl1.SuspendLayout()
 			Me._loadFileTab.SuspendLayout()
@@ -316,6 +316,11 @@ Namespace kCura.EDDS.WinForm
 			Me._importMenuSendEmailNotificationItem.Index = 5
 			Me._importMenuSendEmailNotificationItem.Text = "Send email notification on completion"
 			'
+			'_importMenuForceFolderPreviewItem
+			'
+			Me._importMenuForceFolderPreviewItem.Index = 6
+			Me._importMenuForceFolderPreviewItem.Text = "Force folder preview"
+			'
 			'_saveFieldMapDialog
 			'
 			Me._saveFieldMapDialog.DefaultExt = "kwe"
@@ -371,21 +376,13 @@ Namespace kCura.EDDS.WinForm
 			Me._startLineNumberLabel.Text = "Start Line"
 			Me._startLineNumberLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
 			'
-			'_loadFileEncodingPicker
-			'
-			Me._loadFileEncodingPicker.Location = New System.Drawing.Point(12, 128)
-			Me._loadFileEncodingPicker.Name = "_loadFileEncodingPicker"
-			Me._loadFileEncodingPicker.SelectedEncoding = Nothing
-			Me._loadFileEncodingPicker.Size = New System.Drawing.Size(200, 21)
-			Me._loadFileEncodingPicker.TabIndex = 24
-			'
 			'Label8
 			'
 			Me.Label8.Location = New System.Drawing.Point(12, 108)
 			Me.Label8.Name = "Label8"
 			Me.Label8.Size = New System.Drawing.Size(200, 16)
 			Me.Label8.TabIndex = 23
-			Me.Label8.Text = "Source Encoding"
+			Me.Label8.Text = "File Encoding"
 			'
 			'GroupBox20
 			'
@@ -597,21 +594,13 @@ Namespace kCura.EDDS.WinForm
 			Me.GroupBox7.TabStop = False
 			Me.GroupBox7.Text = "Extracted Text"
 			'
-			'_fullTextFileEncodingPicker
-			'
-			Me._fullTextFileEncodingPicker.Location = New System.Drawing.Point(12, 68)
-			Me._fullTextFileEncodingPicker.Name = "_fullTextFileEncodingPicker"
-			Me._fullTextFileEncodingPicker.SelectedEncoding = Nothing
-			Me._fullTextFileEncodingPicker.Size = New System.Drawing.Size(200, 21)
-			Me._fullTextFileEncodingPicker.TabIndex = 31
-			'
 			'Label9
 			'
 			Me.Label9.Location = New System.Drawing.Point(8, 48)
 			Me.Label9.Name = "Label9"
-			Me.Label9.Size = New System.Drawing.Size(100, 16)
+			Me.Label9.Size = New System.Drawing.Size(204, 16)
 			Me.Label9.TabIndex = 1
-			Me.Label9.Text = "Text File Encoding"
+			Me.Label9.Text = "Encoding for undetectable files"
 			'
 			'_extractedTextValueContainsFileLocation
 			'
@@ -715,15 +704,26 @@ Namespace kCura.EDDS.WinForm
 			Me.Label5.Text = "Native file paths contained in column:"
 			Me.Label5.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
 			'
-			'_importMenuForceFolderPreviewItem
+			'_loadFileEncodingPicker
 			'
-			Me._importMenuForceFolderPreviewItem.Index = 6
-			Me._importMenuForceFolderPreviewItem.Text = "Force folder preview"
+			Me._loadFileEncodingPicker.Location = New System.Drawing.Point(12, 128)
+			Me._loadFileEncodingPicker.Name = "_loadFileEncodingPicker"
+			Me._loadFileEncodingPicker.SelectedEncoding = Nothing
+			Me._loadFileEncodingPicker.Size = New System.Drawing.Size(200, 21)
+			Me._loadFileEncodingPicker.TabIndex = 24
+			'
+			'_fullTextFileEncodingPicker
+			'
+			Me._fullTextFileEncodingPicker.Location = New System.Drawing.Point(12, 68)
+			Me._fullTextFileEncodingPicker.Name = "_fullTextFileEncodingPicker"
+			Me._fullTextFileEncodingPicker.SelectedEncoding = Nothing
+			Me._fullTextFileEncodingPicker.Size = New System.Drawing.Size(200, 21)
+			Me._fullTextFileEncodingPicker.TabIndex = 31
 			'
 			'LoadFileForm
 			'
 			Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
-			Me.ClientSize = New System.Drawing.Size(754, 545)
+			Me.ClientSize = New System.Drawing.Size(754, 525)
 			Me.Controls.Add(Me.TabControl1)
 			Me.Controls.Add(Me.GroupBox1)
 			Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle

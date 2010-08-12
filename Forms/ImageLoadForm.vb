@@ -93,8 +93,8 @@ Namespace kCura.EDDS.WinForm
 			Me._beginBatesDropdown = New System.Windows.Forms.ComboBox
 			Me.GroupBox4 = New System.Windows.Forms.GroupBox
 			Me._supportImageAutoNumbering = New System.Windows.Forms.CheckBox
-			Me._encodingPicker = New kCura.EDDS.WinForm.EncodingPicker
 			Me.BroooopBox = New System.Windows.Forms.GroupBox
+			Me._encodingPicker = New kCura.EDDS.WinForm.EncodingPicker
 			Me.GroupBox3.SuspendLayout()
 			CType(Me._startLineNumber, System.ComponentModel.ISupportInitialize).BeginInit()
 			Me.GroupBox233.SuspendLayout()
@@ -315,6 +315,16 @@ Namespace kCura.EDDS.WinForm
 			Me._supportImageAutoNumbering.TabIndex = 0
 			Me._supportImageAutoNumbering.Text = "Support Image Auto-Numbering"
 			'
+			'BroooopBox
+			'
+			Me.BroooopBox.Controls.Add(Me._encodingPicker)
+			Me.BroooopBox.Location = New System.Drawing.Point(227, 234)
+			Me.BroooopBox.Name = "BroooopBox"
+			Me.BroooopBox.Size = New System.Drawing.Size(333, 62)
+			Me.BroooopBox.TabIndex = 33
+			Me.BroooopBox.TabStop = False
+			Me.BroooopBox.Text = "Encoding for undetactable files"
+			'
 			'_encodingPicker
 			'
 			Me._encodingPicker.Enabled = False
@@ -324,20 +334,10 @@ Namespace kCura.EDDS.WinForm
 			Me._encodingPicker.Size = New System.Drawing.Size(200, 21)
 			Me._encodingPicker.TabIndex = 0
 			'
-			'BroooopBox
-			'
-			Me.BroooopBox.Controls.Add(Me._encodingPicker)
-			Me.BroooopBox.Location = New System.Drawing.Point(227, 234)
-			Me.BroooopBox.Name = "BroooopBox"
-			Me.BroooopBox.Size = New System.Drawing.Size(333, 62)
-			Me.BroooopBox.TabIndex = 33
-			Me.BroooopBox.TabStop = False
-			Me.BroooopBox.Text = "Full Text Options"
-			'
 			'ImageLoad
 			'
 			Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
-			Me.ClientSize = New System.Drawing.Size(580, 420)
+			Me.ClientSize = New System.Drawing.Size(580, 345)
 			Me.Controls.Add(Me.GroupBox4)
 			Me.Controls.Add(Me.BroooopBox)
 			Me.Controls.Add(Me.GroupBox2)
