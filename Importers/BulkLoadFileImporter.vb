@@ -521,14 +521,14 @@ Namespace kCura.WinEDDS
 			_timekeeper.MarkEnd("ManageDocumentMetadata_ProgressEvent")
 		End Sub
 
-		Private Function BulkImport(ByVal settings As kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo) As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults
+		Private Function BulkImport(ByVal settings As kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo, ByVal includeExtractedTextEncoding As Boolean) As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults
 			Dim tries As Int32 = kCura.Utility.Config.Settings.IoErrorNumberOfRetries
 			While tries > 0
 				Try
 					If TypeOf settings Is kCura.EDDS.WebAPI.BulkImportManagerBase.ObjectLoadInfo Then
 						Return _bulkImportManager.BulkImportObjects(_caseInfo.ArtifactID, DirectCast(settings, kCura.EDDS.WebAPI.BulkImportManagerBase.ObjectLoadInfo), _copyFileToRepository)
 					Else
-						Return _bulkImportManager.BulkImportNative(_caseInfo.ArtifactID, settings, _copyFileToRepository)
+						Return _bulkImportManager.BulkImportNative(_caseInfo.ArtifactID, settings, _copyFileToRepository, includeExtractedTextEncoding)
 					End If
 				Catch ex As Exception
 					tries -= 1
@@ -612,7 +612,7 @@ Namespace kCura.WinEDDS
 			End Select
 			start = System.DateTime.Now.Ticks
 			settings.UploadFiles = _filePathColumnIndex <> -1 AndAlso _settings.LoadNativeFiles
-			Dim runResults As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults = Me.BulkImport(settings)
+			Dim runResults As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults = Me.BulkImport(settings, _fullTextColumnMapsToFileLocation)
 			_statistics.ProcessRunResults(runResults)
 			_runID = runResults.RunID
 			_statistics.SqlTime += (System.DateTime.Now.Ticks - start)
@@ -655,6 +655,7 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Private Function ManageDocumentLine(ByVal identityValue As String, ByVal extractText As Boolean, ByVal filename As String, ByVal fileguid As String, ByVal mdoc As MetaDocument) As Int32
+			Dim chosenEncoding As System.Text.Encoding
 			_outputNativeFileWriter.Write(mdoc.LineStatus.ToString & Constants.NATIVE_FIELD_DELIMITER)
 			_outputNativeFileWriter.Write("0" & Constants.NATIVE_FIELD_DELIMITER)
 			_outputNativeFileWriter.Write("0" & Constants.NATIVE_FIELD_DELIMITER)
@@ -708,7 +709,6 @@ Namespace kCura.WinEDDS
 						If Not field.ValueAsString = String.Empty Then
 							Dim determinedEncodingStream As DeterminedEncodingStream = kCura.WinEDDS.Utility.DetectEncoding(field.ValueAsString, False)
 							Dim detectedEncoding As System.Text.Encoding = determinedEncodingStream._determinedEncoding
-							Dim chosenEncoding As System.Text.Encoding
 							If detectedEncoding IsNot Nothing Then
 								chosenEncoding = detectedEncoding
 							Else
@@ -748,6 +748,13 @@ Namespace kCura.WinEDDS
 					_outputNativeFileWriter.Write(Constants.NATIVE_FIELD_DELIMITER)
 					_outputNativeFileWriter.Write("0" & Constants.NATIVE_FIELD_DELIMITER)
 				End If
+			End If
+			If chosenEncoding IsNot Nothing Then
+				_outputNativeFileWriter.Write(String.Format("{0}", chosenEncoding.CodePage))
+				_outputNativeFileWriter.Write(Constants.NATIVE_FIELD_DELIMITER)
+			ElseIf _fullTextColumnMapsToFileLocation Then
+				_outputNativeFileWriter.Write(String.Format("{0}", ""))
+				_outputNativeFileWriter.Write(Constants.NATIVE_FIELD_DELIMITER)
 			End If
 			_outputNativeFileWriter.Write(vbNewLine)
 		End Function

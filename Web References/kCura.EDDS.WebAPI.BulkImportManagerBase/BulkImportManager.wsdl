@@ -109,6 +109,7 @@
             <s:element minOccurs="1" maxOccurs="1" name="appID" type="s:int" />
             <s:element minOccurs="0" maxOccurs="1" name="settings" type="tns:NativeLoadInfo" />
             <s:element minOccurs="1" maxOccurs="1" name="inRepository" type="s:boolean" />
+            <s:element minOccurs="1" maxOccurs="1" name="includeExtractedTextEncoding" type="s:boolean" />
           </s:sequence>
         </s:complexType>
       </s:element>

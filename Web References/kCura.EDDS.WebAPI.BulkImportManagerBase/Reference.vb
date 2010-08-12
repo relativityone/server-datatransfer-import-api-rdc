@@ -269,14 +269,14 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
         
         '''<remarks/>
         <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/BulkImportManager/BulkImportNative", RequestNamespace:="http://www.kCura.com/EDDS/BulkImportManager", ResponseNamespace:="http://www.kCura.com/EDDS/BulkImportManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
-        Public Function BulkImportNative(ByVal appID As Integer, ByVal settings As NativeLoadInfo, ByVal inRepository As Boolean) As MassImportResults
-            Dim results() As Object = Me.Invoke("BulkImportNative", New Object() {appID, settings, inRepository})
+        Public Function BulkImportNative(ByVal appID As Integer, ByVal settings As NativeLoadInfo, ByVal inRepository As Boolean, ByVal includeExtractedTextEncoding As Boolean) As MassImportResults
+            Dim results() As Object = Me.Invoke("BulkImportNative", New Object() {appID, settings, inRepository, includeExtractedTextEncoding})
             Return CType(results(0),MassImportResults)
         End Function
         
         '''<remarks/>
-        Public Function BeginBulkImportNative(ByVal appID As Integer, ByVal settings As NativeLoadInfo, ByVal inRepository As Boolean, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
-            Return Me.BeginInvoke("BulkImportNative", New Object() {appID, settings, inRepository}, callback, asyncState)
+        Public Function BeginBulkImportNative(ByVal appID As Integer, ByVal settings As NativeLoadInfo, ByVal inRepository As Boolean, ByVal includeExtractedTextEncoding As Boolean, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("BulkImportNative", New Object() {appID, settings, inRepository, includeExtractedTextEncoding}, callback, asyncState)
         End Function
         
         '''<remarks/>
@@ -286,16 +286,16 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
         End Function
         
         '''<remarks/>
-        Public Overloads Sub BulkImportNativeAsync(ByVal appID As Integer, ByVal settings As NativeLoadInfo, ByVal inRepository As Boolean)
-            Me.BulkImportNativeAsync(appID, settings, inRepository, Nothing)
+        Public Overloads Sub BulkImportNativeAsync(ByVal appID As Integer, ByVal settings As NativeLoadInfo, ByVal inRepository As Boolean, ByVal includeExtractedTextEncoding As Boolean)
+            Me.BulkImportNativeAsync(appID, settings, inRepository, includeExtractedTextEncoding, Nothing)
         End Sub
         
         '''<remarks/>
-        Public Overloads Sub BulkImportNativeAsync(ByVal appID As Integer, ByVal settings As NativeLoadInfo, ByVal inRepository As Boolean, ByVal userState As Object)
+        Public Overloads Sub BulkImportNativeAsync(ByVal appID As Integer, ByVal settings As NativeLoadInfo, ByVal inRepository As Boolean, ByVal includeExtractedTextEncoding As Boolean, ByVal userState As Object)
             If (Me.BulkImportNativeOperationCompleted Is Nothing) Then
                 Me.BulkImportNativeOperationCompleted = AddressOf Me.OnBulkImportNativeOperationCompleted
             End If
-            Me.InvokeAsync("BulkImportNative", New Object() {appID, settings, inRepository}, Me.BulkImportNativeOperationCompleted, userState)
+            Me.InvokeAsync("BulkImportNative", New Object() {appID, settings, inRepository, includeExtractedTextEncoding}, Me.BulkImportNativeOperationCompleted, userState)
         End Sub
         
         Private Sub OnBulkImportNativeOperationCompleted(ByVal arg As Object)
