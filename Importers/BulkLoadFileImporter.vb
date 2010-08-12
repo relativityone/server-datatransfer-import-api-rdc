@@ -273,7 +273,9 @@ Namespace kCura.WinEDDS
 				Else
 					RaiseEvent UploadModeChangeEvent(_uploader.UploaderType.ToString, _bcpuploader.IsBulkEnabled)
 				End If
-				InitializeMembers(path)
+				If Not InitializeMembers(path) Then
+					Return False
+				End If
 				_processedDocumentIdentifiers = New Collections.Specialized.NameValueCollection
 				_timekeeper.MarkEnd("ReadFile_InitializeMembers")
 				_timekeeper.MarkStart("ReadFile_ProcessDocuments")
@@ -336,8 +338,13 @@ Namespace kCura.WinEDDS
 			End Try
 		End Function
 
-		Private Sub InitializeMembers(ByVal path As String)
+		Private Function InitializeMembers(ByVal path As String) As Boolean
 			_recordCount = _artifactReader.CountRecords
+			If _recordCount = -1 Then
+				RaiseEvent StatusMessage(New kCura.Windows.Process.StatusEventArgs(Windows.Process.EventType.Progress, CurrentLineNumber, CurrentLineNumber, "cancel import", _currentStatisticsSnapshot))
+				Return False
+			End If
+
 			Me.InitializeFolderManagement()
 			Me.InitializeFieldIdList()
 			kCura.Utility.File.Delete(_outputNativeFilePath)
@@ -347,7 +354,8 @@ Namespace kCura.WinEDDS
 			_outputCodeFileWriter = New System.IO.StreamWriter(_outputCodeFilePath, False, System.Text.Encoding.Unicode)
 			_outputObjectFileWriter = New System.IO.StreamWriter(_outputObjectFilePath, False, System.Text.Encoding.Unicode)
 			RaiseEvent StatusMessage(New kCura.Windows.Process.StatusEventArgs(Windows.Process.EventType.ResetStartTime, 0, _recordCount, "Reset time for import rolling average", Nothing))
-		End Sub
+			Return True
+		End Function
 
 		Private Sub InitializeFolderManagement()
 			If _createFolderStructure Then
