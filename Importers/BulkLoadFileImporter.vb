@@ -713,6 +713,8 @@ Namespace kCura.WinEDDS
 								count = sr.ReadBlock(buff, 0, 1000000)
 								If count > 0 Then _outputNativeFileWriter.Write(buff, 0, count)
 							Loop Until count = 0
+							sr.Close()
+							determinedEncodingStream._fileStream.Close()
 						End If
 					ElseIf field.Type = kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Boolean Then
 						If field.ValueAsString <> "" Then
