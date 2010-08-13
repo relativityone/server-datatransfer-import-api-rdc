@@ -216,7 +216,7 @@ Namespace kCura.EDDS.WinForm
 					_application.StartProcess(importer)
 				End If
 			Else
-				Throw New EncodingMisMatchException(SourceFileEncoding.ToString, "source file")
+				Throw New EncodingMisMatchException(SourceFileEncoding.CodePage, kCura.WinEDDS.Utility.DetectEncoding(_loadFilePath, True)._determinedEncoding.CodePage)
 			End If
 		End Sub
 
@@ -235,7 +235,7 @@ Namespace kCura.EDDS.WinForm
 				Dim executor As New kCura.EDDS.WinForm.CommandLineProcessRunner(importer.ProcessObserver, importer.ProcessController, ErrorLoadFileLocation, ErrorReportFileLocation)
 				_application.StartProcess(importer)
 			Else
-				Throw New EncodingMisMatchException(SourceFileEncoding.ToString, "source file")
+				Throw New EncodingMisMatchException(SourceFileEncoding.CodePage, kCura.WinEDDS.Utility.DetectEncoding(_loadFilePath, True)._determinedEncoding.CodePage)
 			End If
 		End Sub
 
@@ -634,12 +634,12 @@ Namespace kCura.EDDS.WinForm
 
 	Public Class EncodingMisMatchException
 		Inherits RdcBaseException
-		Public Sub New(ByVal id As String, ByVal destination As String)
-			Me.New(id, destination, Nothing)
+		Public Sub New(ByVal encoding As Int32, ByVal detectedEncoding As Int32)
+			Me.New(encoding, detectedEncoding, Nothing)
 		End Sub
 
-		Public Sub New(ByVal id As String, ByVal destination As String, ByVal innerException As System.Exception)
-			MyBase.New(String.Format("Encoding parameter '{0}' does not match auto-detected encoding in {1}", id, destination), innerException)
+		Public Sub New(ByVal encoding As Int32, ByVal detectedEncoding As Int32, ByVal innerException As System.Exception)
+			MyBase.New(String.Format("The Encoding id - {0} - selected for your load file does not match the detected Encoding - {1}.  Please select the correct Encoding for your load file.", encoding, detectedEncoding, innerException))
 		End Sub
 	End Class
 
