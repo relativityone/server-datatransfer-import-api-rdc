@@ -1135,7 +1135,7 @@ Namespace kCura.EDDS.WinForm
 				If determinedEncoding IsNot Nothing Then
 					'Check for what user selected
 					If _loadFileEncodingPicker.SelectedEncoding IsNot Nothing AndAlso Not _loadFileEncodingPicker.SelectedEncoding.Equals(determinedEncoding) Then
-						MsgBox(String.Format("Determined Encdoing is not the same as selected. Will be changed from {0} to {1}", _loadFileEncodingPicker.SelectedEncoding.EncodingName, determinedEncoding.EncodingName))
+						MsgBox(String.Format("The encoding selected in the Relativity Desktop Client is different than the encoding detected in your load file. The encoding selection has been updated to match the detected encoding of your load file. It will be changed from {0} to {1}", _loadFileEncodingPicker.SelectedEncoding.EncodingName, determinedEncoding.EncodingName))
 					End If
 
 					_loadFileEncodingPicker.SelectedEncoding = determinedEncoding
