@@ -723,7 +723,7 @@ Namespace kCura.EDDS.WinForm
 			'LoadFileForm
 			'
 			Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
-			Me.ClientSize = New System.Drawing.Size(754, 505)
+			Me.ClientSize = New System.Drawing.Size(754, 547)
 			Me.Controls.Add(Me.TabControl1)
 			Me.Controls.Add(Me.GroupBox1)
 			Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle
