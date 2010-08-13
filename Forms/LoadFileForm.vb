@@ -1339,7 +1339,6 @@ Namespace kCura.EDDS.WinForm
 
 		Private Sub PreviewMenuFile_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles PreviewMenuFile.Click
 			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
-
 			If PopulateLoadFileObject(True) AndAlso _application.ReadyToLoad(Me.LoadFile, True) Then _application.PreviewLoadFile(_loadFile, False, kCura.EDDS.WinForm.LoadFilePreviewForm.FormType.LoadFile)
 			Me.Cursor = System.Windows.Forms.Cursors.Default
 		End Sub
