@@ -27,6 +27,9 @@ Namespace kCura.EDDS.WinForm
 				If _allEncodings Is Nothing Then
 					Dim al As New System.Collections.ArrayList
 					For Each e As System.Text.EncodingInfo In System.Text.Encoding.GetEncodings
+						If e.CodePage = 12001 OrElse e.CodePage = 12000 Then	'NOT SUPPORTING UTF-32/UTF-32 BIG ENDIAN
+							Continue For
+						End If
 						al.Add(EncodingItem.GetEncodingItemFromCodePageId(e.CodePage))
 					Next
 

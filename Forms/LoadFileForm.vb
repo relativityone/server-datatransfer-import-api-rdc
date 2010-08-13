@@ -157,6 +157,7 @@ Namespace kCura.EDDS.WinForm
 			Me._loadFileTab = New System.Windows.Forms.TabPage
 			Me._startLineNumber = New System.Windows.Forms.NumericUpDown
 			Me._startLineNumberLabel = New System.Windows.Forms.Label
+			Me._loadFileEncodingPicker = New kCura.EDDS.WinForm.EncodingPicker
 			Me.Label8 = New System.Windows.Forms.Label
 			Me.GroupBox20 = New System.Windows.Forms.GroupBox
 			Me._browseButton = New System.Windows.Forms.Button
@@ -180,6 +181,7 @@ Namespace kCura.EDDS.WinForm
 			Me._overlayIdentifier = New System.Windows.Forms.ComboBox
 			Me._fieldMap = New kCura.WinEDDS.UIControls.FieldMap
 			Me.GroupBox7 = New System.Windows.Forms.GroupBox
+			Me._fullTextFileEncodingPicker = New kCura.EDDS.WinForm.EncodingPicker
 			Me.Label9 = New System.Windows.Forms.Label
 			Me._extractedTextValueContainsFileLocation = New System.Windows.Forms.CheckBox
 			Me.GroupBox6 = New System.Windows.Forms.GroupBox
@@ -193,8 +195,6 @@ Namespace kCura.EDDS.WinForm
 			Me._nativeFilePathField = New System.Windows.Forms.ComboBox
 			Me.Label5 = New System.Windows.Forms.Label
 			Me.HelpProvider1 = New System.Windows.Forms.HelpProvider
-			Me._loadFileEncodingPicker = New kCura.EDDS.WinForm.EncodingPicker
-			Me._fullTextFileEncodingPicker = New kCura.EDDS.WinForm.EncodingPicker
 			Me.GroupBox1.SuspendLayout()
 			Me.TabControl1.SuspendLayout()
 			Me._loadFileTab.SuspendLayout()
@@ -375,6 +375,14 @@ Namespace kCura.EDDS.WinForm
 			Me._startLineNumberLabel.TabIndex = 26
 			Me._startLineNumberLabel.Text = "Start Line"
 			Me._startLineNumberLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+			'
+			'_loadFileEncodingPicker
+			'
+			Me._loadFileEncodingPicker.Location = New System.Drawing.Point(12, 127)
+			Me._loadFileEncodingPicker.Name = "_loadFileEncodingPicker"
+			Me._loadFileEncodingPicker.SelectedEncoding = Nothing
+			Me._loadFileEncodingPicker.Size = New System.Drawing.Size(200, 21)
+			Me._loadFileEncodingPicker.TabIndex = 24
 			'
 			'Label8
 			'
@@ -594,6 +602,14 @@ Namespace kCura.EDDS.WinForm
 			Me.GroupBox7.TabStop = False
 			Me.GroupBox7.Text = "Extracted Text"
 			'
+			'_fullTextFileEncodingPicker
+			'
+			Me._fullTextFileEncodingPicker.Location = New System.Drawing.Point(12, 68)
+			Me._fullTextFileEncodingPicker.Name = "_fullTextFileEncodingPicker"
+			Me._fullTextFileEncodingPicker.SelectedEncoding = Nothing
+			Me._fullTextFileEncodingPicker.Size = New System.Drawing.Size(200, 21)
+			Me._fullTextFileEncodingPicker.TabIndex = 31
+			'
 			'Label9
 			'
 			Me.Label9.Location = New System.Drawing.Point(8, 48)
@@ -704,26 +720,10 @@ Namespace kCura.EDDS.WinForm
 			Me.Label5.Text = "Native file paths contained in column:"
 			Me.Label5.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
 			'
-			'_loadFileEncodingPicker
-			'
-			Me._loadFileEncodingPicker.Location = New System.Drawing.Point(12, 128)
-			Me._loadFileEncodingPicker.Name = "_loadFileEncodingPicker"
-			Me._loadFileEncodingPicker.SelectedEncoding = Nothing
-			Me._loadFileEncodingPicker.Size = New System.Drawing.Size(200, 21)
-			Me._loadFileEncodingPicker.TabIndex = 24
-			'
-			'_fullTextFileEncodingPicker
-			'
-			Me._fullTextFileEncodingPicker.Location = New System.Drawing.Point(12, 68)
-			Me._fullTextFileEncodingPicker.Name = "_fullTextFileEncodingPicker"
-			Me._fullTextFileEncodingPicker.SelectedEncoding = Nothing
-			Me._fullTextFileEncodingPicker.Size = New System.Drawing.Size(200, 21)
-			Me._fullTextFileEncodingPicker.TabIndex = 31
-			'
 			'LoadFileForm
 			'
 			Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
-			Me.ClientSize = New System.Drawing.Size(754, 525)
+			Me.ClientSize = New System.Drawing.Size(754, 505)
 			Me.Controls.Add(Me.TabControl1)
 			Me.Controls.Add(Me.GroupBox1)
 			Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle
@@ -841,7 +841,7 @@ Namespace kCura.EDDS.WinForm
 					Me.AppendErrorMessage(msg, "Access is restricted to selected load file")
 				End Try
 				If _loadFileEncodingPicker.SelectedEncoding Is Nothing Then
-					Me.AppendErrorMessage(msg, "No source encoding selected")
+					Me.AppendErrorMessage(msg, "No file encoding selected")
 				End If
 				If _extractedTextValueContainsFileLocation.Checked AndAlso _fullTextFileEncodingPicker.SelectedEncoding Is Nothing Then
 					Me.AppendErrorMessage(msg, "No text file encoding selected for extracted text")
@@ -1129,7 +1129,7 @@ Namespace kCura.EDDS.WinForm
 			Dim determinedEncoding As System.Text.Encoding = Nothing
 			If System.IO.File.Exists(LoadFile.FilePath) Then
 				_loadFileEncodingPicker.Enabled = True
-				Label8.Text = "Source Encoding"
+				Label8.Text = "File Encoding"
 				determinedEncoding = kCura.WinEDDS.Utility.DetectEncoding(LoadFile.FilePath, True)._determinedEncoding
 				columnHeaders = _application.GetColumnHeadersFromLoadFile(LoadFile, _firstLineContainsColumnNames.Checked)
 				If determinedEncoding IsNot Nothing Then
@@ -1140,7 +1140,7 @@ Namespace kCura.EDDS.WinForm
 
 					_loadFileEncodingPicker.SelectedEncoding = determinedEncoding
 					_loadFileEncodingPicker.Enabled = False
-					Label8.Text = "Source Encoding - Auto Detected"
+					Label8.Text = "File Encoding - Auto Detected"
 				ElseIf _loadFileEncodingPicker.SelectedEncoding Is Nothing Then
 					_fileColumnHeaders.Items.Clear()
 					_fileColumnHeaders.Items.Add("The encoding of the selected load file could not be detected.  Please select the load file's encoding.")

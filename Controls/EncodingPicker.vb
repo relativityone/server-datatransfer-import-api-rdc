@@ -32,10 +32,12 @@ Namespace kCura.EDDS.WinForm
 		'It can be modified using the Windows Form Designer.  
 		'Do not modify it using the code editor.
 		Friend WithEvents Button1 As System.Windows.Forms.Button
+		Friend WithEvents Button2 As System.Windows.Forms.Button
 		Friend WithEvents DropDown As System.Windows.Forms.ComboBox
 		<System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
 			Me.DropDown = New System.Windows.Forms.ComboBox
 			Me.Button1 = New System.Windows.Forms.Button
+			Me.Button2 = New System.Windows.Forms.Button
 			Me.SuspendLayout()
 			'
 			'DropDown
@@ -43,23 +45,35 @@ Namespace kCura.EDDS.WinForm
 			Me.DropDown.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
 			Me.DropDown.Location = New System.Drawing.Point(0, 0)
 			Me.DropDown.Name = "DropDown"
-			Me.DropDown.Size = New System.Drawing.Size(176, 21)
+			Me.DropDown.Size = New System.Drawing.Size(147, 21)
 			Me.DropDown.TabIndex = 0
 			'
 			'Button1
 			'
-			Me.Button1.Location = New System.Drawing.Point(176, 0)
+			Me.Button1.Location = New System.Drawing.Point(151, 0)
 			Me.Button1.Name = "Button1"
 			Me.Button1.Size = New System.Drawing.Size(24, 21)
 			Me.Button1.TabIndex = 1
 			Me.Button1.Text = "..."
 			'
+			'Button2
+			'
+			Me.Button2.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(102, Byte), Integer), CType(CType(153, Byte), Integer))
+			Me.Button2.ForeColor = System.Drawing.SystemColors.ActiveCaptionText
+			Me.Button2.Location = New System.Drawing.Point(179, 0)
+			Me.Button2.Name = "Button2"
+			Me.Button2.Size = New System.Drawing.Size(17, 21)
+			Me.Button2.TabIndex = 2
+			Me.Button2.Text = "?"
+			Me.Button2.UseVisualStyleBackColor = False
+			'
 			'EncodingPicker
 			'
+			Me.Controls.Add(Me.Button2)
 			Me.Controls.Add(Me.Button1)
 			Me.Controls.Add(Me.DropDown)
 			Me.Name = "EncodingPicker"
-			Me.Size = New System.Drawing.Size(200, 21)
+			Me.Size = New System.Drawing.Size(201, 21)
 			Me.ResumeLayout(False)
 
 		End Sub
@@ -141,6 +155,10 @@ Namespace kCura.EDDS.WinForm
 
 		Private Sub DropDown_SelectedIndexChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles DropDown.SelectedIndexChanged
 			RaiseEvent SelectedEncodingChanged()
+		End Sub
+
+		Private Sub Button2_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Button2.Click
+			System.Diagnostics.Process.Start("http://www.unicode.org/faq/")
 		End Sub
 	End Class
 
