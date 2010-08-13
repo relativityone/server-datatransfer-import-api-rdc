@@ -167,6 +167,7 @@ Namespace kCura.EDDS.WinForm
 			Else
 				_ForceFolderPreviewBox.SelectedIndex = Indices.Disabled
 			End If
+			_application.TemporaryForceFolderPreview = kCura.WinEDDS.Config.ForceFolderPreview
 			_WebServiceUrl.Text = kCura.WinEDDS.Config.WebServiceURL
 			InitializeTimeZoneDropDown()
 			If Not Me.TimeZoneGroupBox.Visible Then
