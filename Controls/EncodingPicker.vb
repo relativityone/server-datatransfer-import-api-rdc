@@ -58,8 +58,8 @@ Namespace kCura.EDDS.WinForm
 			'
 			'Button2
 			'
-			Me.Button2.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(102, Byte), Integer), CType(CType(153, Byte), Integer))
-			Me.Button2.ForeColor = System.Drawing.SystemColors.ActiveCaptionText
+			Me.Button2.BackColor = System.Drawing.SystemColors.ActiveBorder
+			Me.Button2.ForeColor = System.Drawing.SystemColors.ControlText
 			Me.Button2.Location = New System.Drawing.Point(179, 0)
 			Me.Button2.Name = "Button2"
 			Me.Button2.Size = New System.Drawing.Size(17, 21)
