@@ -54,8 +54,8 @@ Namespace kCura.WinEDDS
 					'EF BB BF       = Unicode (UTF-8)
 					'FF FE          = ucs-2le, ucs-4le, and ucs-16le OR Unicode
 					'FE FF          = utf-16 and ucs-2 OR Unicode (Big-Endian)
-					'00 00 FE FF    = ucs-4 OR Unicode (UTF-32 Big-Endian)
-					'FF FE 00 00		= Unicode (UTF-32)
+					'00 00 FE FF    = ucs-4 OR Unicode (UTF-32 Big-Endian)  NOT SUPPORTING THIS
+					'FF FE 00 00		= Unicode (UTF-32) NOT SUPPORTING THIS
 					If (((bom(0) = &HEF) And (bom(1) = &HBB) And (bom(2) = &HBF))) Then
 						enc = System.Text.Encoding.UTF8
 					End If
@@ -66,10 +66,10 @@ Namespace kCura.WinEDDS
 						enc = System.Text.Encoding.BigEndianUnicode
 					End If
 					If (bom(0) = &H0 And bom(1) = &H0 And bom(2) = &HFE And bom(3) = &HFF) Then
-						enc = System.Text.Encoding.GetEncoding(12001)	' Unicode (UTF-32 Big-Endian)
+						'enc = System.Text.Encoding.GetEncoding(12001)	' Unicode (UTF-32 Big-Endian)
 					End If
 					If (bom(0) = &HFF And bom(1) = &HFE And bom(2) = &H0 And bom(3) = &H0) Then
-						enc = System.Text.Encoding.GetEncoding(12000)	'Unicode (UTF-32)
+						'enc = System.Text.Encoding.GetEncoding(12000)	'Unicode (UTF-32)
 					End If
 
 					'Position the file cursor back to the start of the file
