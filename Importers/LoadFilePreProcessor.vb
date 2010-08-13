@@ -145,10 +145,10 @@
 					lastRun = currentRun
 					Me.ProcessProgress(Me.CurrentLineNumber, Me.Reader.BaseStream.Position, fileSize, stepSize)
 				End If
-				If Me.CurrentLineNumber < 1000 Then	'TODO: make this a fucking constant :(
+				If Me.GetActualLineCount < 1000 Then	'TODO: make this a fucking constant :(
 					lineToParse = Me.GetLine()
 					Me.AddFolder(lineToParse.GetValue(folderColumnIndex).ToString)
-					If Me.CurrentLineNumber = 1000 AndAlso Not _settings.FolderStructureContainedInColumn Is Nothing Then
+					If Me.GetActualLineCount = 1000 AndAlso Not _settings.FolderStructureContainedInColumn Is Nothing Then
 						showedPopup = True
 						Dim msg As String = String.Format("The first {0} records of this load file will create {1} folders.  Would you like to continue?", Me.GetActualLineCount, Me.GetActualFolderCount)
 						popupRetVal = MsgBox(msg, (MsgBoxStyle.OkCancel Or MsgBoxStyle.ApplicationModal))
