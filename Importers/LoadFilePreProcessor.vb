@@ -152,7 +152,10 @@
 						showedPopup = True
 						Dim msg As String = String.Format("The first {0} records of this load file will create {1} folders.  Would you like to continue?", Me.GetActualLineCount, Me.GetActualFolderCount)
 						popupRetVal = MsgBox(msg, (MsgBoxStyle.OkCancel Or MsgBoxStyle.ApplicationModal))
-						If Not popupRetVal = 1 Then Me.ProcessCancel(Me.CurrentLineNumber, Me.Reader.BaseStream.Position, fileSize, stepSize)
+						If Not popupRetVal = 1 Then
+							Me.ProcessCancel(Me.CurrentLineNumber, Me.Reader.BaseStream.Position, fileSize, stepSize)
+							Return Nothing
+						End If
 					End If
 				Else
 					Me.AdvanceLine()
@@ -168,7 +171,8 @@
 				Else
 					Me.ProcessComplete(Me.CurrentLineNumber, Me.Reader.BaseStream.Position, fileSize, stepSize)
 				End If
-
+			Else
+				Me.ProcessComplete(Me.CurrentLineNumber, Me.Reader.BaseStream.Position, fileSize, stepSize)
 			End If
 
 			Return Nothing
