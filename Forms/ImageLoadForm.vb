@@ -323,7 +323,7 @@ Namespace kCura.EDDS.WinForm
 			Me.BroooopBox.Size = New System.Drawing.Size(333, 62)
 			Me.BroooopBox.TabIndex = 33
 			Me.BroooopBox.TabStop = False
-			Me.BroooopBox.Text = "Encoding for undetactable files"
+			Me.BroooopBox.Text = "Encoding for undetectable files"
 			'
 			'_encodingPicker
 			'
