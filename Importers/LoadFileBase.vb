@@ -440,14 +440,14 @@ Namespace kCura.WinEDDS
 							If forPreview Then
 								' Determine Encoding Here
 								Dim determinedEncodingStream As DeterminedEncodingStream = kCura.WinEDDS.Utility.DetectEncoding(value, False)
-								Dim detectedEncoding As System.Text.Encoding = determinedEncodingStream._determinedEncoding
+								Dim detectedEncoding As System.Text.Encoding = determinedEncodingStream.DeterminedEncoding
 								Dim chosenEncoding As System.Text.Encoding
 								If detectedEncoding IsNot Nothing Then
 									chosenEncoding = detectedEncoding
 								Else
 									chosenEncoding = _extractedTextFileEncoding
 								End If
-								Dim sr As New System.IO.StreamReader(determinedEncodingStream._fileStream, chosenEncoding)
+								Dim sr As New System.IO.StreamReader(determinedEncodingStream.UnderlyingStream, chosenEncoding)
 								Dim i As Int32 = 0
 								Dim sb As New System.Text.StringBuilder
 								While sr.Peek <> -1 AndAlso i < 100
@@ -457,7 +457,7 @@ Namespace kCura.WinEDDS
 								If i = 100 Then sb.Append("...")
 								extractedTextFileCodePageId = chosenEncoding.CodePage
 								sr.Close()
-								determinedEncodingStream._fileStream.Close()
+								determinedEncodingStream.Close()
 								'sb = sb.Replace(System.Environment.NewLine, Me.NewlineProxy).Replace(ChrW(10), Me.NewlineProxy).Replace(ChrW(13), Me.NewlineProxy)
 								field.Value = sb.ToString
 							Else

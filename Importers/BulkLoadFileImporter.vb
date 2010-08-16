@@ -708,13 +708,13 @@ Namespace kCura.WinEDDS
 					If field.Category = DynamicFields.Types.FieldCategory.FullText AndAlso _fullTextColumnMapsToFileLocation Then
 						If Not field.ValueAsString = String.Empty Then
 							Dim determinedEncodingStream As DeterminedEncodingStream = kCura.WinEDDS.Utility.DetectEncoding(field.ValueAsString, False)
-							Dim detectedEncoding As System.Text.Encoding = determinedEncodingStream._determinedEncoding
+							Dim detectedEncoding As System.Text.Encoding = determinedEncodingStream.DeterminedEncoding
 							If detectedEncoding IsNot Nothing Then
 								chosenEncoding = detectedEncoding
 							Else
 								chosenEncoding = _extractedTextFileEncoding
 							End If
-							Dim sr As New System.IO.StreamReader(determinedEncodingStream._fileStream, chosenEncoding)
+							Dim sr As New System.IO.StreamReader(determinedEncodingStream.UnderlyingStream, chosenEncoding)
 							Dim count As Int32 = 1
 							Do
 								Dim buff(1000000) As Char
@@ -722,7 +722,7 @@ Namespace kCura.WinEDDS
 								If count > 0 Then _outputNativeFileWriter.Write(buff, 0, count)
 							Loop Until count = 0
 							sr.Close()
-							determinedEncodingStream._fileStream.Close()
+							determinedEncodingStream.Close()
 						End If
 					ElseIf field.Type = kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Boolean Then
 						If field.ValueAsString <> "" Then

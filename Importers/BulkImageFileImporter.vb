@@ -464,27 +464,39 @@ Namespace kCura.WinEDDS
 				Next
 
 
+				Dim encodingsStringBuilder As New System.Text.StringBuilder()
 				If textFileList.Count = 0 AndAlso _replaceFullText Then
 					_bulkLoadFileWriter.Write(String.Format("{0},", -1))
 				End If
-				Dim gotEncodingForTheFirstFile As Boolean = False
+				Dim encodingList As New Generic.List(Of Int32)
 				For Each filename As String In textFileList
 					Dim chosenEncoding As System.Text.Encoding
 					Dim determinedEncodingStream As DeterminedEncodingStream = kCura.WinEDDS.Utility.DetectEncoding(filename, False)
-					Dim detectedEncoding As System.Text.Encoding = determinedEncodingStream._determinedEncoding
+					Dim detectedEncoding As System.Text.Encoding = determinedEncodingStream.DeterminedEncoding
 					If detectedEncoding IsNot Nothing Then
 						chosenEncoding = detectedEncoding
 					Else
 						chosenEncoding = _settings.FullTextEncoding
 					End If
-					If _replaceFullText AndAlso Not gotEncodingForTheFirstFile Then
-						_bulkLoadFileWriter.Write(String.Format("{0},", chosenEncoding.CodePage))
+					If _replaceFullText Then
+						If Not encodingList.Contains(chosenEncoding.CodePage) Then encodingList.Add(chosenEncoding.CodePage)
 					End If
-					gotEncodingForTheFirstFile = True
-					With New System.IO.StreamReader(determinedEncodingStream._fileStream, chosenEncoding, True)
+				Next
+				If _replaceFullText Then _bulkLoadFileWriter.Write("{0},", kCura.Utility.List.ToDelimitedString(encodingList, "|"))
+				For Each filename As String In textFileList
+					Dim chosenEncoding As System.Text.Encoding
+					Dim determinedEncodingStream As DeterminedEncodingStream = kCura.WinEDDS.Utility.DetectEncoding(filename, False)
+					Dim detectedEncoding As System.Text.Encoding = determinedEncodingStream.DeterminedEncoding
+					If detectedEncoding IsNot Nothing Then
+						chosenEncoding = detectedEncoding
+					Else
+						chosenEncoding = _settings.FullTextEncoding
+					End If
+
+					With New System.IO.StreamReader(determinedEncodingStream.UnderlyingStream, chosenEncoding, True)
 						_bulkLoadFileWriter.Write(.ReadToEnd)
 						.Close()
-						determinedEncodingStream._fileStream.Close()
+						determinedEncodingStream.Close()
 					End With
 				Next
 

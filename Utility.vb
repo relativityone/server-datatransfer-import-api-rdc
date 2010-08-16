@@ -45,7 +45,7 @@ Namespace kCura.WinEDDS
 
 		Public Shared Function DetectEncoding(ByVal filename As String, ByVal returnEncodingOnly As Boolean) As DeterminedEncodingStream
 			Dim enc As System.Text.Encoding = Nothing
-			Dim filein As System.IO.FileStream
+			Dim filein As System.IO.FileStream = Nothing
 			If System.IO.File.Exists(filename) Then
 				filein = New System.IO.FileStream(filename, IO.FileMode.Open, IO.FileAccess.Read)
 				If (filein.CanSeek) Then
@@ -88,8 +88,20 @@ Namespace kCura.WinEDDS
 	End Class
 
 	Public Class DeterminedEncodingStream
-		Public _fileStream As System.IO.FileStream
-		Public _determinedEncoding As System.Text.Encoding
+		Private _fileStream As System.IO.FileStream
+		Private _determinedEncoding As System.Text.Encoding
+
+		Public ReadOnly Property UnderlyingStream() As System.IO.Stream
+			Get
+				Return _fileStream
+			End Get
+		End Property
+
+		Public ReadOnly Property DeterminedEncoding() As System.Text.Encoding
+			Get
+				Return _determinedEncoding
+			End Get
+		End Property
 
 		Public Sub New(ByVal fileStream As System.IO.FileStream, ByVal determinedEncoding As System.Text.Encoding)
 			_fileStream = fileStream
@@ -98,6 +110,13 @@ Namespace kCura.WinEDDS
 
 		Public Sub New(ByVal determinedEncoding As System.Text.Encoding)
 			_determinedEncoding = determinedEncoding
+		End Sub
+
+		Public Sub Close()
+			Try
+				If Not _fileStream Is Nothing Then _fileStream.Close()
+			Catch
+			End Try
 		End Sub
 
 	End Class
