@@ -1,10 +1,11 @@
 Imports System.IO
 Namespace kCura.WinEDDS
 	Public Class BulkImageFileImporter
-		Inherits kCura.Utility.DelimitedFileImporter
+		Inherits kCura.Utility.RobustIoReporter
 
 #Region "Members"
 		Dim _start As System.DateTime
+		Private _imageReader As kCura.WinEDDS.Api.IImageReader
 		Private _docManager As kCura.WinEDDS.Service.DocumentManager
 		Private _fieldQuery As kCura.WinEDDS.Service.FieldQuery
 		Private _folderManager As kCura.WinEDDS.Service.FolderManager
@@ -19,7 +20,7 @@ Namespace kCura.WinEDDS
 		Private _overwrite As String
 		Private _filePath As String
 		Private _selectedIdentifierField As String
-		Private _fileLineCount As Int32
+		Private _fileLineCount As Int64
 		Private _continue As Boolean
 		Private _overwriteOK As Boolean
 		Private _replaceFullText As Boolean
@@ -57,6 +58,7 @@ Namespace kCura.WinEDDS
 		Private _currentStatisticsSnapshot As IDictionary
 		Private _snapshotLastModifiedOn As System.DateTime = System.DateTime.Now
 		Private _timekeeper As New kCura.Utility.Timekeeper
+		Private _doRetryLogic As Boolean
 #End Region
 
 #Region "Accessors"
@@ -75,7 +77,7 @@ Namespace kCura.WinEDDS
 
 		Protected ReadOnly Property [Continue]() As Boolean
 			Get
-				Return Not MyBase.HasReachedEOF AndAlso _continue
+				Return _imageReader.HasMoreRecords AndAlso _continue
 			End Get
 		End Property
 
@@ -97,6 +99,12 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
+		Protected Overrides ReadOnly Property CurrentLineNumber() As Integer
+			Get
+				Return _imageReader.CurrentRecordNumber
+			End Get
+		End Property
+
 
 
 #End Region
@@ -104,7 +112,8 @@ Namespace kCura.WinEDDS
 #Region "Constructors"
 
 		Public Sub New(ByVal folderID As Int32, ByVal args As ImageLoadFile, ByVal controller As kCura.Windows.Process.Controller, ByVal processID As Guid, ByVal doRetryLogic As Boolean)
-			MyBase.New(New Char() {","c}, doRetryLogic)
+			MyBase.New()
+			_doRetryLogic = doRetryLogic
 			_docManager = New kCura.WinEDDS.Service.DocumentManager(args.Credential, args.CookieContainer)
 			_fieldQuery = New kCura.WinEDDS.Service.FieldQuery(args.Credential, args.CookieContainer)
 			_folderManager = New kCura.WinEDDS.Service.FolderManager(args.Credential, args.CookieContainer)
@@ -159,11 +168,11 @@ Namespace kCura.WinEDDS
 
 #Region "Main"
 
-		Public Overloads Sub ReadFile()
+		Public Sub ReadFile()
 			Me.ReadFile(_filePath)
 		End Sub
 
-		Private Sub ProcessList(ByVal al As System.Collections.ArrayList, ByRef status As Int32, ByVal bulkLoadFilePath As String)
+		Private Sub ProcessList(ByVal al As System.Collections.Generic.List(Of Api.ImageRecord), ByRef status As Int32, ByVal bulkLoadFilePath As String)
 			Try
 				If al.Count = 0 Then Exit Sub
 				Me.ProcessDocument(al, status)
@@ -197,6 +206,10 @@ Namespace kCura.WinEDDS
 				End Try
 			End While
 			Return Nothing
+		End Function
+
+		Protected Function GetImageRecord() As Api.ImageRecord
+			Return _imageReader.GetImageRecord
 		End Function
 
 		Public Function PushImageBatch(ByVal bulkLoadFilePath As String, ByVal isFinal As Boolean) As Object
@@ -254,7 +267,15 @@ Namespace kCura.WinEDDS
 			Return Nothing
 		End Function
 
-		Public Overloads Overrides Function ReadFile(ByVal path As String) As Object
+		Public Overridable Function GetImageReader() As kCura.WinEDDS.Api.IImageReader
+			Return New OpticonFileReader(_folderID, _settings, Nothing, Nothing, _doRetryLogic)
+		End Function
+
+		Public Sub AdvanceRecord()
+			_imageReader.AdvanceRecord()
+		End Sub
+
+		Public Function ReadFile(ByVal path As String) As Object
 			_timekeeper.MarkStart("TOTAL")
 			_start = System.DateTime.Now
 			Dim bulkLoadFilePath As String = System.IO.Path.GetTempFileName
@@ -265,12 +286,12 @@ Namespace kCura.WinEDDS
 			Try
 				_timekeeper.MarkStart("ReadFile_Init")
 				Dim documentIdentifier As String = String.Empty
-				_fileLineCount = kCura.Utility.File.CountLinesInFile(path)
-				Reader = New StreamReader(path)
 				_filePath = path
+				_imageReader = Me.GetImageReader
+				_imageReader.Initialize()
+				_fileLineCount = _imageReader.CountRecords
 				RaiseStatusEvent(kCura.Windows.Process.EventType.Progress, "Begin Image Upload", 0, 0)
-				Dim al As New System.Collections.ArrayList
-				Dim line As String()
+				Dim al As New System.Collections.Generic.List(Of Api.ImageRecord)
 				Dim status As Int32 = 0
 				_timekeeper.MarkEnd("ReadFile_Init")
 
@@ -284,17 +305,15 @@ Namespace kCura.WinEDDS
 				While Me.[Continue]
 					If _productionArtifactID <> 0 Then _productionManager.DoPreImportProcessing(_caseInfo.ArtifactID, _productionArtifactID)
 					If Me.CurrentLineNumber < _startLineNumber Then
-						Me.AdvanceLine()
+						Me.AdvanceRecord()
 					Else
-						Dim lineList As New System.Collections.ArrayList(Me.GetLine)
-						If lineList.Count < 4 Then Throw New InvalidLineFormatException(Me.CurrentLineNumber, lineList.Count)
-						lineList.Add(Me.CurrentLineNumber.ToString)
-						line = DirectCast(lineList.ToArray(GetType(String)), String())
-						If (line(Columns.MultiPageIndicator).ToUpper = "Y") Then
+						Dim record As Api.ImageRecord = _imageReader.GetImageRecord
+						record.OriginalIndex = _imageReader.CurrentRecordNumber
+						If (record.IsNewDoc) Then
 							Me.ProcessList(al, status, bulkLoadFilePath)
 						End If
-						status = status Or Me.ProcessImageLine(line)
-						al.Add(line)
+						status = status Or Me.ProcessImageLine(record)
+						al.Add(record)
 						If Not Me.[Continue] Then
 							Me.ProcessList(al, status, bulkLoadFilePath)
 							Exit While
@@ -319,7 +338,7 @@ Namespace kCura.WinEDDS
 		Public Event EndRun(ByVal success As Boolean, ByVal runID As String)
 
 		Private Sub CompleteSuccess()
-			Me.Reader.Close()
+			If Not _imageReader Is Nothing Then _imageReader.Close()
 			If _productionArtifactID <> 0 AndAlso _errorCount = 0 Then _productionManager.DoPostImportProcessing(_fileUploader.CaseArtifactID, _productionArtifactID)
 			Try
 				RaiseEvent EndRun(True, _runId)
@@ -334,7 +353,7 @@ Namespace kCura.WinEDDS
 			Catch x As System.Exception
 			End Try
 			Try
-				Me.Reader.Close()
+				If Not _imageReader Is Nothing Then _imageReader.Close()
 			Catch x As System.Exception
 			End Try
 			Try
@@ -348,7 +367,7 @@ Namespace kCura.WinEDDS
 			RaiseFatalError(ex)
 		End Sub
 
-		Public Sub ProcessDocument(ByVal al As System.Collections.ArrayList, ByVal status As Int32)
+		Public Sub ProcessDocument(ByVal al As System.Collections.Generic.List(Of Api.ImageRecord), ByVal status As Int32)
 			Try
 				GetImagesForDocument(al, status)
 				_statistics.DocCount += 1
@@ -362,24 +381,24 @@ Namespace kCura.WinEDDS
 
 #Region "Worker Methods"
 
-		Public Function ProcessImageLine(ByVal values As String()) As kCura.EDDS.Types.MassImport.ImportStatus
+		Public Function ProcessImageLine(ByVal imageRecord As Api.ImageRecord) As kCura.EDDS.Types.MassImport.ImportStatus
 			Try
 				_totalValidated += 1
 				Dim globalStart As System.DateTime = System.DateTime.Now
 				Dim retval As kCura.EDDS.Types.MassImport.ImportStatus = EDDS.Types.MassImport.ImportStatus.Pending
 				'check for existence
-				If values(Columns.BatesNumber).Trim = "" Then
+				If imageRecord.BatesNumber.Trim = "" Then
 					Me.RaiseStatusEvent(Windows.Process.EventType.Error, String.Format("No image file or identifier specified on line."), CType((_totalValidated + _totalProcessed) / 2, Int64), Me.CurrentLineNumber)
 					retval = EDDS.Types.MassImport.ImportStatus.NoImageSpecifiedOnLine
-				ElseIf Not Config.DisableImageLocationValidation AndAlso Not System.IO.File.Exists(BulkImageFileImporter.GetFileLocation(values)) Then
-					Me.RaiseStatusEvent(Windows.Process.EventType.Error, String.Format("Image file specified ( {0} ) does not exist.", values(Columns.FileLocation)), CType((_totalValidated + _totalProcessed) / 2, Int64), Me.CurrentLineNumber)
+				ElseIf Not Config.DisableImageLocationValidation AndAlso Not System.IO.File.Exists(BulkImageFileImporter.GetFileLocation(imageRecord)) Then
+					Me.RaiseStatusEvent(Windows.Process.EventType.Error, String.Format("Image file specified ( {0} ) does not exist.", imageRecord.FileLocation), CType((_totalValidated + _totalProcessed) / 2, Int64), Me.CurrentLineNumber)
 					retval = EDDS.Types.MassImport.ImportStatus.FileSpecifiedDne
 				Else
 					Dim validator As New kCura.ImageValidator.ImageValidator
-					Dim path As String = BulkImageFileImporter.GetFileLocation(values)
+					Dim path As String = BulkImageFileImporter.GetFileLocation(imageRecord)
 					Try
 						If Not Config.DisableImageTypeValidation Then validator.ValidateImage(path)
-						Me.RaiseStatusEvent(Windows.Process.EventType.Progress, String.Format("Image file ( {0} ) validated.", values(Columns.FileLocation)), CType((_totalValidated + _totalProcessed) / 2, Int64), Me.CurrentLineNumber)
+						Me.RaiseStatusEvent(Windows.Process.EventType.Progress, String.Format("Image file ( {0} ) validated.", imageRecord.FileLocation), CType((_totalValidated + _totalProcessed) / 2, Int64), Me.CurrentLineNumber)
 					Catch ex As System.Exception
 						'Me.RaiseStatusEvent(Windows.Process.EventType.Error, String.Format("Error in '{0}': {1}", path, ex.Message))
 						retval = EDDS.Types.MassImport.ImportStatus.InvalidImageFormat
@@ -413,8 +432,8 @@ Namespace kCura.WinEDDS
 		'	Next
 		'End Sub
 
-		Public Shared Function GetFileLocation(ByVal line As String()) As String
-			Dim fileLocation As String = line(Columns.FileLocation)
+		Public Shared Function GetFileLocation(ByVal record As Api.ImageRecord) As String
+			Dim fileLocation As String = record.FileLocation
 			If fileLocation <> "" AndAlso fileLocation.Chars(0) = "\" AndAlso fileLocation.Chars(1) <> "\" Then
 				fileLocation = "." & fileLocation
 			End If
@@ -422,26 +441,26 @@ Namespace kCura.WinEDDS
 		End Function
 
 
-		Private Function GetImagesForDocument(ByVal lines As ArrayList, ByVal status As Int32) As String()
+		Private Function GetImagesForDocument(ByVal lines As System.Collections.Generic.List(Of Api.ImageRecord), ByVal status As Int32) As String()
 			Try
 				Me.AutoNumberImages(lines)
 				Dim hasFileIdentifierProblem As Boolean = False
-				For Each line As String() In lines
-					If _fileIdentifierLookup.ContainsKey(line(Columns.BatesNumber).Trim) Then
+				For Each line As Api.ImageRecord In lines
+					If _fileIdentifierLookup.ContainsKey(line.BatesNumber.Trim) Then
 						hasFileIdentifierProblem = True
 					Else
-						_fileIdentifierLookup.Add(line(Columns.BatesNumber).Trim, line(Columns.BatesNumber).Trim)
+						_fileIdentifierLookup.Add(line.BatesNumber.Trim, line.BatesNumber.Trim)
 					End If
 				Next
 				If hasFileIdentifierProblem Then status += kCura.EDDS.Types.MassImport.ImportStatus.IdentifierOverlap
 
-				Dim valueArray As String() = DirectCast(lines(0), String())
+				Dim record As api.ImageRecord = lines(0)
 				Dim textFileList As New System.Collections.ArrayList
-				Dim documentId As String = valueArray(Columns.BatesNumber)
+				Dim documentId As String = record.BatesNumber
 				Dim offset As Int64 = 0
 				For i As Int32 = 0 To lines.Count - 1
-					valueArray = DirectCast(lines(i), String())
-					Me.GetImageForDocument(BulkImageFileImporter.GetFileLocation(valueArray), valueArray(Columns.BatesNumber), documentId, i, offset, textFileList, i < lines.Count - 1, valueArray(valueArray.Length - 1), status, lines.Count)
+					record = lines(i)
+					Me.GetImageForDocument(BulkImageFileImporter.GetFileLocation(record), record.BatesNumber, documentId, i, offset, textFileList, i < lines.Count - 1, record.OriginalIndex.ToString, status, lines.Count)
 				Next
 
 
@@ -476,16 +495,16 @@ Namespace kCura.WinEDDS
 			Return Nothing
 		End Function
 
-		Private Sub AutoNumberImages(ByVal lines As ArrayList)
+		Private Sub AutoNumberImages(ByVal lines As System.Collections.Generic.List(Of Api.ImageRecord))
 			If Not _autoNumberImages OrElse lines.Count <= 1 Then Exit Sub
 			Dim allsame As Boolean = True
-			Dim batesnumber As String = DirectCast(lines(0), String())(Columns.BatesNumber)
+			Dim batesnumber As String = lines(0).BatesNumber
 			For i As Int32 = 0 To lines.Count - 1
-				allsame = allsame AndAlso batesnumber = DirectCast(lines(i), String())(Columns.BatesNumber)
+				allsame = allsame AndAlso batesnumber = lines(i).BatesNumber
 				If Not allsame Then Exit Sub
 			Next
 			For i As Int32 = 1 To lines.Count - 1
-				DirectCast(lines(i), String())(Columns.BatesNumber) = batesnumber & "_" & i.ToString.PadLeft(lines.Count.ToString.Length, "0"c)
+				lines(i).BatesNumber = batesnumber & "_" & i.ToString.PadLeft(lines.Count.ToString.Length, "0"c)
 			Next
 		End Sub
 
@@ -572,7 +591,7 @@ Namespace kCura.WinEDDS
 		Private Sub _processObserver_CancelImport(ByVal processID As System.Guid) Handles _processController.HaltProcessEvent
 			If processID.ToString = _processID.ToString Then
 				_continue = False
-				Me.DoRetryLogic = False
+				If Not _imageReader Is Nothing Then _imageReader.Cancel()
 				If Not _fileUploader Is Nothing Then _fileUploader.DoRetry = False
 				If Not _bcpuploader Is Nothing Then _bcpuploader.DoRetry = False
 			End If
@@ -683,12 +702,6 @@ Namespace kCura.WinEDDS
 			End Sub
 		End Class
 
-		Public Class InvalidLineFormatException
-			Inherits System.Exception
-			Public Sub New(ByVal lineNumber As Int32, ByVal numberOfColumns As Int32)
-				MyBase.New(String.Format("Invalid opticon file line {0}.  There must be at least 4 columns per line in an opticon file, there are {1} in the current line", lineNumber, numberOfColumns))
-			End Sub
-		End Class
 #End Region
 
 		Private Sub IoWarningHandler(ByVal e As IoWarningEventArgs)

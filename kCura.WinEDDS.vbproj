@@ -248,9 +248,12 @@
     <Compile Include="API\IArtifactReader.vb">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="API\IImageReader.vb" />
+    <Compile Include="API\ImageRecord.vb" />
     <Compile Include="API\IoWarningEventArgs.vb">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="API\LoginHelper.vb" />
     <Compile Include="AssemblyInfo.vb">
       <SubType>Code</SubType>
     </Compile>
@@ -278,6 +281,7 @@
     <Compile Include="Exceptions\InvalidLoginException.vb">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Exceptions\RelativityVersionMismatchException.vb" />
     <Compile Include="Exceptions\WebDownloadCorruptException.vb">
       <SubType>Code</SubType>
     </Compile>
@@ -372,6 +376,7 @@
     <Compile Include="Importers\NestedArtifactCache.vb">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Importers\OpticonFileReader.vb" />
     <Compile Include="Importers\SQL\SQLImporter.vb">
       <SubType>Code</SubType>
     </Compile>

@@ -15,7 +15,7 @@ Namespace kCura.WinEDDS
 			_warningCount = 0
 			_errorCount = 0
 			Me.ProcessObserver.InputArgs = ImageLoadFile.FileName
-			_imageFileImporter = New kCura.WinEDDS.BulkImageFileImporter(ImageLoadFile.DestinationFolderID, ImageLoadFile, ProcessController, Me.ProcessID, True)
+			_imageFileImporter = Me.GetImageFileImporter
 			_imageFileImporter.ReadFile(ImageLoadFile.FileName)
 			If Not _hasRunProcessComplete Then
 				Dim exportFilePath As String = ""
@@ -23,6 +23,10 @@ Namespace kCura.WinEDDS
 				Me.ProcessObserver.RaiseProcessCompleteEvent(False, exportFilePath, True)
 			End If
 		End Sub
+
+		Protected Overridable Function GetImageFileImporter() As kCura.WinEDDS.BulkImageFileImporter
+			Return New kCura.WinEDDS.BulkImageFileImporter(ImageLoadFile.DestinationFolderID, ImageLoadFile, ProcessController, Me.ProcessID, True)
+		End Function
 
 		Private Sub AuditRun(ByVal success As Boolean, ByVal runID As String)
 			Try

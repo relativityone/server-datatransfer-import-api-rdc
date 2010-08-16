@@ -104,15 +104,18 @@ Namespace kCura.WinEDDS
 			valuearray = Me.GetLine
 			Dim filePath As String
 			While Not valuearray Is Nothing AndAlso _continue
-				filePath = BulkImageFileImporter.GetFileLocation(valuearray)
+				Dim record As New Api.ImageRecord
+				record.OriginalIndex = Me.CurrentLineNumber
+				record.IsNewDoc = valuearray(Columns.MultiPageIndicator).ToLower = "Y"
+				filePath = BulkImageFileImporter.GetFileLocation(record)
 				If Not filePath = "" Then filePath = Me.CheckFile(filePath)
-				Dim batesNumber As String = Me.GetBatesNumber(valuearray)
-				If batesNumber = "" Then
+				record.BatesNumber = Me.GetBatesNumber(valuearray)
+				If record.BatesNumber = "" Then
 					Me.RaiseStatusEvent(Windows.Process.EventType.Progress, "Line improperly formatted.")
 				ElseIf filePath = "" Then
-					Me.RaiseStatusEvent(Windows.Process.EventType.Progress, String.Format("Record '{0}' processed - file info error.", batesNumber))
+					Me.RaiseStatusEvent(Windows.Process.EventType.Progress, String.Format("Record '{0}' processed - file info error.", record.BatesNumber))
 				Else
-					Me.RaiseStatusEvent(Windows.Process.EventType.Progress, String.Format("Record '{0}' processed.", batesNumber))
+					Me.RaiseStatusEvent(Windows.Process.EventType.Progress, String.Format("Record '{0}' processed.", record.BatesNumber))
 				End If
 				If MyBase.HasReachedEOF Then
 					valuearray = Nothing

@@ -516,6 +516,7 @@ Namespace kCura.WinEDDS
 					Dim productionIDs As Int32() = Me.GetProductionArtifactIDs(productionOrderList)
 					If productionIDs.Length > 0 Then Return _searchManager.RetrieveImagesByProductionIDsAndDocumentIDsForExport(Me.Settings.CaseArtifactID, productionIDs, documentArtifactIDs).Tables(0)
 			End Select
+			Return Nothing
 		End Function
 
 		Private Function GetProductionArtifactIDs(ByVal productionOrderList As Pair()) As Int32()

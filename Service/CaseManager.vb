@@ -2,7 +2,7 @@ Namespace kCura.WinEDDS.Service
 	Public Class CaseManager
 		Inherits kCura.EDDS.WebAPI.CaseManagerBase.CaseManager
 
-		Public Sub New(ByVal credentials As Net.NetworkCredential, ByVal cookieContainer As System.Net.CookieContainer)
+		Public Sub New(ByVal credentials As Net.ICredentials, ByVal cookieContainer As System.Net.CookieContainer)
 			MyBase.New()
 			Me.Credentials = credentials
 			Me.CookieContainer = cookieContainer
