@@ -1130,7 +1130,7 @@ Namespace kCura.EDDS.WinForm
 			If System.IO.File.Exists(LoadFile.FilePath) Then
 				_loadFileEncodingPicker.Enabled = True
 				Label8.Text = "File Encoding"
-				determinedEncoding = kCura.WinEDDS.Utility.DetectEncoding(LoadFile.FilePath, True)._determinedEncoding
+				determinedEncoding = kCura.WinEDDS.Utility.DetectEncoding(LoadFile.FilePath, True).DeterminedEncoding
 				columnHeaders = _application.GetColumnHeadersFromLoadFile(LoadFile, _firstLineContainsColumnNames.Checked)
 				If determinedEncoding IsNot Nothing Then
 					'Check for what user selected
@@ -1144,7 +1144,7 @@ Namespace kCura.EDDS.WinForm
 				ElseIf _loadFileEncodingPicker.SelectedEncoding Is Nothing Then
 					_fileColumnHeaders.Items.Clear()
 					_fileColumnHeaders.Items.Add("The encoding of the selected load file could not be detected.  Please select the load file's encoding.")
-					Exit Function
+					Return Nothing
 				End If
 
 

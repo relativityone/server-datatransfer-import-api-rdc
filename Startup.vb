@@ -216,7 +216,7 @@ Namespace kCura.EDDS.WinForm
 					_application.StartProcess(importer)
 				End If
 			Else
-				Throw New EncodingMisMatchException(SourceFileEncoding.CodePage, kCura.WinEDDS.Utility.DetectEncoding(_loadFilePath, True)._determinedEncoding.CodePage)
+				Throw New EncodingMisMatchException(SourceFileEncoding.CodePage, kCura.WinEDDS.Utility.DetectEncoding(_loadFilePath, True).DeterminedEncoding.CodePage)
 			End If
 		End Sub
 
@@ -235,7 +235,7 @@ Namespace kCura.EDDS.WinForm
 				Dim executor As New kCura.EDDS.WinForm.CommandLineProcessRunner(importer.ProcessObserver, importer.ProcessController, ErrorLoadFileLocation, ErrorReportFileLocation)
 				_application.StartProcess(importer)
 			Else
-				Throw New EncodingMisMatchException(SourceFileEncoding.CodePage, kCura.WinEDDS.Utility.DetectEncoding(_loadFilePath, True)._determinedEncoding.CodePage)
+				Throw New EncodingMisMatchException(SourceFileEncoding.CodePage, kCura.WinEDDS.Utility.DetectEncoding(_loadFilePath, True).DeterminedEncoding.CodePage)
 			End If
 		End Sub
 
@@ -248,7 +248,7 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 		Private Function EnsureEncoding() As Boolean
-			Dim determinedEncoding As System.Text.Encoding = kCura.WinEDDS.Utility.DetectEncoding(_loadFilePath, True)._determinedEncoding
+			Dim determinedEncoding As System.Text.Encoding = kCura.WinEDDS.Utility.DetectEncoding(_loadFilePath, True).DeterminedEncoding
 			If determinedEncoding Is Nothing Then Return True
 			Return (determinedEncoding.Equals(SourceFileEncoding))
 		End Function
