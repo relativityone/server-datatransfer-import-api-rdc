@@ -117,7 +117,7 @@ Namespace kCura.WinEDDS
 			Dim i As Int32 = 0
 			i = 0
 			While _artifactReader.HasMoreRecords AndAlso _continue
-				If fieldArrays.Count < 1000 Then
+				If fieldArrays.Count < kCura.WinEDDS.Config.PREVIEW_THRESHOLD Then
 					Try
 						Dim record As Api.ArtifactFieldCollection = _artifactReader.ReadArtifact
 						If Not _firstLineContainsColumnNames AndAlso fieldArrays.Count = 0 Then

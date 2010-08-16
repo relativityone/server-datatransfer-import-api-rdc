@@ -145,14 +145,13 @@
 					lastRun = currentRun
 					Me.ProcessProgress(Me.CurrentLineNumber, Me.Reader.BaseStream.Position, fileSize, stepSize)
 				End If
-				If Me.GetActualLineCount < 1000 Then	'TODO: make this a fucking constant :(
+				If Me.GetActualLineCount < kCura.WinEDDS.Config.PREVIEW_THRESHOLD Then	'TODO: make this a fucking constant :(
 					lineToParse = Me.GetLine()
 					Me.AddFolder(lineToParse.GetValue(folderColumnIndex).ToString)
-					If Me.GetActualLineCount = 1000 AndAlso Not _settings.FolderStructureContainedInColumn Is Nothing Then
+					If Me.GetActualLineCount = kCura.WinEDDS.Config.PREVIEW_THRESHOLD AndAlso Not _settings.FolderStructureContainedInColumn Is Nothing Then
 						showedPopup = True
-						Dim msg As String = String.Format("The first {0} records of this load file will create {1} folders.  Would you like to continue?", Me.GetActualLineCount, Me.GetActualFolderCount)
-						popupRetVal = MsgBox(msg, (MsgBoxStyle.OkCancel Or MsgBoxStyle.ApplicationModal))
-						If Not popupRetVal = 1 Then
+						popupRetVal = MsgBox(GetPopupMessage(), (MsgBoxStyle.OkCancel Or MsgBoxStyle.ApplicationModal))
+						If Not popupRetVal = MsgBoxResult.Ok Then
 							Me.ProcessCancel(Me.CurrentLineNumber, Me.Reader.BaseStream.Position, fileSize, stepSize)
 							Return Nothing
 						End If
@@ -163,10 +162,9 @@
 			End While
 
 			If Not showedPopup Then
-				Dim msg As String = String.Format("The first {0} records of this load file will create {1} folders.  Would you like to continue?", Me.GetActualLineCount, Me.GetActualFolderCount)
-				popupRetVal = MsgBox(msg, (MsgBoxStyle.OkCancel Or MsgBoxStyle.ApplicationModal))
+				popupRetVal = MsgBox(GetPopupMessage(), (MsgBoxStyle.OkCancel Or MsgBoxStyle.ApplicationModal))
 
-				If Not popupRetVal = 1 Then
+				If Not popupRetVal = MsgBoxResult.Ok Then
 					Me.ProcessCancel(Me.CurrentLineNumber, Me.Reader.BaseStream.Position, fileSize, stepSize)
 				Else
 					Me.ProcessComplete(Me.CurrentLineNumber, Me.Reader.BaseStream.Position, fileSize, stepSize)
@@ -176,6 +174,10 @@
 			End If
 
 			Return Nothing
+		End Function
+
+		Private Function GetPopupMessage() As String
+			Return String.Format("The first {0} records of this load file will create {1} folders.  Would you like to continue?", Me.GetActualLineCount, Me.GetActualFolderCount)
 		End Function
 
 		Private Function GetActualLineCount() As Int32

@@ -50,6 +50,7 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
+		Public Const PREVIEW_THRESHOLD As Int32 = 1000
 
 		Public Shared ReadOnly Property FileTransferModeExplanationText(ByVal includeBulk As Boolean) As String
 			Get

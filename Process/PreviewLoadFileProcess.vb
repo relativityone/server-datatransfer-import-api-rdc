@@ -74,7 +74,7 @@ Namespace kCura.WinEDDS
 					Me.StartTime = System.DateTime.Now
 				Case LoadFilePreviewer.EventType.Complete
 					If e.TotalBytes = -1 Then
-						Me.ProcessObserver.RaiseProgressEvent(e.TotalBytes, e.TotalBytes, 0, 0, Me.StartTime, System.DateTime.Now, "First 1000 records", totaldisplay)
+						Me.ProcessObserver.RaiseProgressEvent(e.TotalBytes, e.TotalBytes, 0, 0, Me.StartTime, System.DateTime.Now, "First " & kCura.WinEDDS.Config.PREVIEW_THRESHOLD & " records", totaldisplay)
 					Else
 						Me.ProcessObserver.RaiseProgressEvent(e.TotalBytes, e.TotalBytes, 0, 0, Me.StartTime, System.DateTime.Now, totaldisplay, processeddisplay)
 					End If
