@@ -34,6 +34,8 @@ Namespace kCura.WinEDDS
 				retval.DestinationFolderArtifactID = ImageLoadFile.DestinationFolderID
 				If ImageLoadFile.ProductionArtifactID > 0 Then retval.DestinationProductionArtifactID = ImageLoadFile.ProductionArtifactID
 				retval.ExtractedTextReplaced = ImageLoadFile.ReplaceFullText
+				retval.ExtractedTextDefaultEncodingCodePageID = 0
+				If retval.ExtractedTextReplaced Then retval.ExtractedTextDefaultEncodingCodePageID = ImageLoadFile.FullTextEncoding.CodePage
 				If ImageLoadFile.CopyFilesToDocumentRepository Then
 					retval.FilesCopiedToRepository = ImageLoadFile.SelectedCasePath
 				Else
