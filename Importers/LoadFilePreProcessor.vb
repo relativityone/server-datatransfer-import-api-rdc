@@ -150,8 +150,8 @@
 					Me.AddFolder(lineToParse.GetValue(folderColumnIndex).ToString)
 					If Me.GetActualLineCount = kCura.WinEDDS.Config.PREVIEW_THRESHOLD AndAlso Not _settings.FolderStructureContainedInColumn Is Nothing Then
 						showedPopup = True
-						popupRetVal = MsgBox(GetPopupMessage(), (MsgBoxStyle.OkCancel Or MsgBoxStyle.ApplicationModal))
-						If Not popupRetVal = MsgBoxResult.Ok Then
+						popupRetVal = MsgBox(GetPopupMessage(), (MsgBoxStyle.YesNo Or MsgBoxStyle.ApplicationModal), "Relativity Desktop Client")
+						If Not popupRetVal = MsgBoxResult.Yes Then
 							Me.ProcessCancel(Me.CurrentLineNumber, Me.Reader.BaseStream.Position, fileSize, stepSize)
 							Return Nothing
 						End If
@@ -162,9 +162,9 @@
 			End While
 
 			If Not showedPopup Then
-				popupRetVal = MsgBox(GetPopupMessage(), (MsgBoxStyle.OkCancel Or MsgBoxStyle.ApplicationModal))
+				popupRetVal = MsgBox(GetPopupMessage(), (MsgBoxStyle.YesNo Or MsgBoxStyle.ApplicationModal), "Relativity Desktop Client")
 
-				If Not popupRetVal = MsgBoxResult.Ok Then
+				If Not popupRetVal = MsgBoxResult.Yes Then
 					Me.ProcessCancel(Me.CurrentLineNumber, Me.Reader.BaseStream.Position, fileSize, stepSize)
 				Else
 					Me.ProcessComplete(Me.CurrentLineNumber, Me.Reader.BaseStream.Position, fileSize, stepSize)
