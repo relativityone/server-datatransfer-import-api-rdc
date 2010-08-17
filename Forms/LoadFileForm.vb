@@ -1254,6 +1254,10 @@ Namespace kCura.EDDS.WinForm
 			_loadFileEncodingPicker.InitializeDropdown()
 			_fullTextFileEncodingPicker.InitializeDropdown()
 			_importMenuForceFolderPreviewItem.Checked = _application.TemporaryForceFolderPreview
+			If LoadFile.ArtifactTypeID <> kCura.EDDS.Types.ArtifactType.Document Then
+				_importMenuForceFolderPreviewItem.Checked = False
+				_importMenuForceFolderPreviewItem.Enabled = False
+			End If
 		End Sub
 
 		Private Sub LoadFileForm_Closing(ByVal sender As Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles MyBase.Closing
