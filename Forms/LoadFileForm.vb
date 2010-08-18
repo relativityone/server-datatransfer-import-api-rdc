@@ -1371,6 +1371,9 @@ Namespace kCura.EDDS.WinForm
 		Private Sub _loadFieldMapDialog_FileOk(ByVal sender As Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles _loadFieldMapDialog.FileOk
 			Dim newLoadFile As LoadFile = _application.ReadLoadFile(Me.LoadFile, _loadFieldMapDialog.FileName, False)
 			If Not newLoadFile Is Nothing Then
+				If newLoadFile.ArtifactTypeID <> kCura.EDDS.Types.ArtifactType.Document Then
+					newLoadFile.ForceFolderPreview = False
+				End If
 				_loadFile = newLoadFile
 				Me.LoadFormControls(True)
 			End If
