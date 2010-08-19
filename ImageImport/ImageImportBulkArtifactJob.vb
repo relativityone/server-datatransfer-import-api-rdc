@@ -6,6 +6,7 @@ Namespace kCura.Relativity.DataReaderClient
 		Public Event OnMessage(ByVal status As Status)
 		Public Settings As ImageSettings
 		Public SourceData As ImageSourceIDataReader
+		Private _caseManager As kCura.WinEDDS.Service.CaseManager
 
 #End Region
 
@@ -47,32 +48,33 @@ Namespace kCura.Relativity.DataReaderClient
 #Region " Private Methods "
 
 		Private Function CreateLoadFile(ByVal sqlClientSettings As ImageSettings) As kCura.WinEDDS.ImportExtension.DataReaderImageFile
+			Dim credential As System.Net.NetworkCredential = DirectCast(GetCredentials(Settings), Net.NetworkCredential)
+			Dim casemanager As kCura.WinEDDS.Service.CaseManager = GetCaseManager(credential)
 			Dim tempLoadFile As New kCura.WinEDDS.ImportExtension.DataReaderImageFile
 			tempLoadFile.DataReader = SourceData.SourceData
 
-			'These are ALL of the load file settings
+			'These are ALL of the image file settings
 			tempLoadFile.AutoNumberImages = sqlClientSettings.AutoNumberImages
-			tempLoadFile.CaseInfo = New kCura.EDDS.Types.CaseInfo
-			tempLoadFile.CaseInfo.ArtifactID = sqlClientSettings.CaseArtifactId	'1015022
-			tempLoadFile.CaseInfo.DocumentPath = "\\localhost\fileRepo\"
-			tempLoadFile.CaseInfo.DownloadHandlerURL = "EDDS.Distributed"
-			tempLoadFile.CaseInfo.MatterArtifactID = 1000002 '1015021
-			tempLoadFile.CaseInfo.Name = "_MAIN"
-			tempLoadFile.CaseInfo.RootArtifactID = 1003663
-			tempLoadFile.CaseInfo.RootFolderID = 1003697
+			tempLoadFile.CaseInfo = casemanager.Read(sqlClientSettings.CaseArtifactId)
 			tempLoadFile.ControlKeyField = "Identifier"
-			tempLoadFile.Credential = DirectCast(GetCredentials(Settings, cookieMonster), Net.NetworkCredential)
-			tempLoadFile.CookieContainer = cookiemonster
+			tempLoadFile.Credential = credential
+			tempLoadFile.CookieContainer = cookieMonster
 			tempLoadFile.CopyFilesToDocumentRepository = True
 			tempLoadFile.DestinationFolderID = tempLoadFile.CaseInfo.RootFolderID
-			tempLoadFile.FileName = "Dicks"
 			tempLoadFile.ForProduction = False
 			tempLoadFile.FullTextEncoding = Nothing
-			tempLoadFile.IdentityFieldId = 1003667 'e.x COntrol Number
-			tempLoadFile.Overwrite = "Append"
-			'tempLoadFile.ProductionArtifactID = 1038014
-			tempLoadFile.ProductionArtifactID = 0
-			tempLoadFile.ProductionTable = Nothing
+			tempLoadFile.Overwrite = sqlClientSettings.OverwriteMode.ToString
+			If tempLoadFile.Overwrite = OverwriteModeEnum.Overlay.ToString Then
+				tempLoadFile.IdentityFieldId = GetDefaultIdentifierFieldID(credential, sqlClientSettings.CaseArtifactId)
+			Else
+				tempLoadFile.IdentityFieldId = 1003667 'e.x Control Number we need to autodetermine this
+			End If
+
+			If sqlClientSettings.ProductionArtifactID = 0 Then
+				tempLoadFile.ProductionArtifactID = 0
+				tempLoadFile.ProductionTable = Nothing	'Don't know what this should be
+			End If
+
 			tempLoadFile.SelectedCasePath = tempLoadFile.CaseInfo.DocumentPath
 			tempLoadFile.SendEmailOnLoadCompletion = False
 			tempLoadFile.StartLineNumber = 0
@@ -82,7 +84,22 @@ Namespace kCura.Relativity.DataReaderClient
 
 		End Function
 
-		Private Function GetCredentials(ByVal settings As ImageSettings, ByVal cookieMonster As Net.CookieContainer) As System.Net.ICredentials
+		Private Function GetDefaultIdentifierFieldID(ByVal credential As System.Net.NetworkCredential, ByVal caseArtifactID As Int32) As Int32
+			Dim retval As Int32
+			Dim dt As System.Data.DataTable = New kCura.WinEDDS.Service.FieldQuery(credential, cookieMonster).RetrievePotentialBeginBatesFields(caseArtifactID).Tables(0)
+			For Each identifierRow As System.Data.DataRow In dt.Rows
+				If CType(identifierRow("FieldCategoryID"), kCura.DynamicFields.Types.FieldCategory) = DynamicFields.Types.FieldCategory.Identifier Then
+					retval = CType(identifierRow("ArtifactID"), Int32)
+				End If
+			Next
+			Return retval
+		End Function
+
+		Private Function GetCaseManager(ByVal credentials As Net.ICredentials) As kCura.WinEDDS.Service.CaseManager
+			Return New kCura.WinEDDS.Service.CaseManager(credentials, cookieMonster)
+		End Function
+
+		Private Function GetCredentials(ByVal settings As ImageSettings) As System.Net.ICredentials
 			Dim credential As System.Net.ICredentials
 			If credential Is Nothing Then
 				credential = kCura.WinEDDS.Api.LoginHelper.LoginWindowsAuth(cookieMonster)

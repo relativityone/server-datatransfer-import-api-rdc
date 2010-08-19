@@ -140,6 +140,10 @@
     <Reference Include="System.Xml">
       <Name>System.XML</Name>
     </Reference>
+    <ProjectReference Include="..\..\kCura\kCura.DynamicFields.Types\kCura.DynamicFields.Types.vbproj">
+      <Project>{E8C68A03-7FC4-40AD-BB0B-5F22A3E6447E}</Project>
+      <Name>kCura.DynamicFields.Types</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\kCura\kCura.Windows.Process\kCura.Windows.Process.vbproj">
       <Project>{B092D1B2-909B-4EF0-9369-A81675C3FC18}</Project>
       <Name>kCura.Windows.Process</Name>

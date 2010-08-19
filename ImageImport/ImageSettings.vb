@@ -28,6 +28,7 @@ Namespace kCura.Relativity.DataReaderClient
 		Private _ExtractedTextFieldContainsFilePath As Boolean
 		Private _ExtractedTextEncoding As System.Text.Encoding
 		Private _autoNumberImages As Boolean
+		Private _productionartifactid As Int32
 
 #End Region
 
@@ -229,6 +230,18 @@ Namespace kCura.Relativity.DataReaderClient
 			End Get
 			Set(ByVal Value As Boolean)
 				_autoNumberImages = Value
+			End Set
+		End Property
+
+		''' <summary>
+		''' If this is set than images will load into selected production
+		''' </summary>
+		Public Property ProductionArtifactID() As Int32
+			Get
+				Return _productionartifactid
+			End Get
+			Set(ByVal Value As Int32)
+				_productionartifactid = Value
 			End Set
 		End Property
 
