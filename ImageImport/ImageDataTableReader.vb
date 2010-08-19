@@ -40,10 +40,9 @@
 			If _currentRecordNumber = 0 Then
 				retval.IsNewDoc = True
 			Else
-				_currentRecordNumber += 1
 				retval.IsNewDoc = Not (row("DocumentIdentifier").ToString = _source.Rows(_currentRecordNumber - 1)("DocumentIdentifier").ToString)
 			End If
-
+			_currentRecordNumber = _currentRecordNumber + 1
 			Return retval
 		End Function
 

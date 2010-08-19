@@ -13,7 +13,7 @@ Namespace kCura.WinEDDS.ImportExtension
 
 		Public Overrides Function GetImageReader() As kCura.WinEDDS.Api.IImageReader
 			'Return New Datasource
-			Return New ImageDataTableReader(DirectCast(SourceData, System.Data.IDataReader))
+			Return New ImageDataTableReader(SourceData)
 		End Function
 
 		Public ReadOnly Property SourceData() As System.Data.IDataReader
