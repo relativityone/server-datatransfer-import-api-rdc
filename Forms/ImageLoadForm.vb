@@ -35,7 +35,6 @@ Namespace kCura.EDDS.WinForm
 		Friend WithEvents GroupBox3 As System.Windows.Forms.GroupBox
 		Friend WithEvents _browseButton As System.Windows.Forms.Button
 		Friend WithEvents _filePath As System.Windows.Forms.TextBox
-		Friend WithEvents GroupBox233 As System.Windows.Forms.GroupBox
 		Friend WithEvents MainMenu As System.Windows.Forms.MainMenu
 		Friend WithEvents MenuItem1 As System.Windows.Forms.MenuItem
 		Friend WithEvents ImportFileMenu As System.Windows.Forms.MenuItem
@@ -48,19 +47,21 @@ Namespace kCura.EDDS.WinForm
 		Friend WithEvents _importMenuCheckErrorsItem As System.Windows.Forms.MenuItem
 		Friend WithEvents _overwriteDropdown As System.Windows.Forms.ComboBox
 		Friend WithEvents ExtractedTextGroupBox As System.Windows.Forms.GroupBox
-		Friend WithEvents GroupBox1 As System.Windows.Forms.GroupBox
 		Friend WithEvents _productionDropdown As System.Windows.Forms.ComboBox
 		Friend WithEvents _advancedButton As System.Windows.Forms.Button
-		Friend WithEvents GroupBox2 As System.Windows.Forms.GroupBox
 		Friend WithEvents _beginBatesDropdown As System.Windows.Forms.ComboBox
 		Friend WithEvents _startLineNumberLabel As System.Windows.Forms.Label
 		Friend WithEvents _startLineNumber As System.Windows.Forms.NumericUpDown
 		Friend WithEvents I As System.Windows.Forms.MenuItem
 		Friend WithEvents MenuItem3 As System.Windows.Forms.MenuItem
 		Friend WithEvents _encodingPicker As kCura.EDDS.WinForm.EncodingPicker
-		Friend WithEvents GroupBox4 As System.Windows.Forms.GroupBox
-		Friend WithEvents _supportImageAutoNumbering As System.Windows.Forms.CheckBox
-		Friend WithEvents BroooopBox As System.Windows.Forms.GroupBox
+		Friend WithEvents GroupBox5 As System.Windows.Forms.GroupBox
+		Friend WithEvents _autoNumberingOn As System.Windows.Forms.RadioButton
+		Friend WithEvents _autoNumberingOff As System.Windows.Forms.RadioButton
+		Friend WithEvents GroupBox6 As System.Windows.Forms.GroupBox
+		Friend WithEvents Label2 As System.Windows.Forms.Label
+		Friend WithEvents Label1 As System.Windows.Forms.Label
+		Friend WithEvents _productionLabel As System.Windows.Forms.Label
 		Friend WithEvents _importMenuSendEmailNotificationItem As System.Windows.Forms.MenuItem
 		<System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
 			Me.components = New System.ComponentModel.Container
@@ -71,7 +72,6 @@ Namespace kCura.EDDS.WinForm
 			Me._startLineNumberLabel = New System.Windows.Forms.Label
 			Me._startLineNumber = New System.Windows.Forms.NumericUpDown
 			Me._openFileDialog = New System.Windows.Forms.OpenFileDialog
-			Me.GroupBox233 = New System.Windows.Forms.GroupBox
 			Me._overwriteDropdown = New System.Windows.Forms.ComboBox
 			Me._replaceFullText = New System.Windows.Forms.CheckBox
 			Me.MainMenu = New System.Windows.Forms.MainMenu(Me.components)
@@ -86,23 +86,22 @@ Namespace kCura.EDDS.WinForm
 			Me._saveImageLoadFileDialog = New System.Windows.Forms.SaveFileDialog
 			Me._loadImageLoadFileDialog = New System.Windows.Forms.OpenFileDialog
 			Me.ExtractedTextGroupBox = New System.Windows.Forms.GroupBox
-			Me.GroupBox1 = New System.Windows.Forms.GroupBox
+			Me._encodingPicker = New kCura.EDDS.WinForm.EncodingPicker
 			Me._productionDropdown = New System.Windows.Forms.ComboBox
 			Me._advancedButton = New System.Windows.Forms.Button
-			Me.GroupBox2 = New System.Windows.Forms.GroupBox
 			Me._beginBatesDropdown = New System.Windows.Forms.ComboBox
-			Me.GroupBox4 = New System.Windows.Forms.GroupBox
-			Me._supportImageAutoNumbering = New System.Windows.Forms.CheckBox
-			Me.BroooopBox = New System.Windows.Forms.GroupBox
-			Me._encodingPicker = New kCura.EDDS.WinForm.EncodingPicker
+			Me.GroupBox5 = New System.Windows.Forms.GroupBox
+			Me._autoNumberingOn = New System.Windows.Forms.RadioButton
+			Me._autoNumberingOff = New System.Windows.Forms.RadioButton
+			Me.GroupBox6 = New System.Windows.Forms.GroupBox
+			Me._productionLabel = New System.Windows.Forms.Label
+			Me.Label2 = New System.Windows.Forms.Label
+			Me.Label1 = New System.Windows.Forms.Label
 			Me.GroupBox3.SuspendLayout()
 			CType(Me._startLineNumber, System.ComponentModel.ISupportInitialize).BeginInit()
-			Me.GroupBox233.SuspendLayout()
 			Me.ExtractedTextGroupBox.SuspendLayout()
-			Me.GroupBox1.SuspendLayout()
-			Me.GroupBox2.SuspendLayout()
-			Me.GroupBox4.SuspendLayout()
-			Me.BroooopBox.SuspendLayout()
+			Me.GroupBox5.SuspendLayout()
+			Me.GroupBox6.SuspendLayout()
 			Me.SuspendLayout()
 			'
 			'GroupBox3
@@ -111,7 +110,7 @@ Namespace kCura.EDDS.WinForm
 			Me.GroupBox3.Controls.Add(Me._filePath)
 			Me.GroupBox3.Controls.Add(Me._startLineNumberLabel)
 			Me.GroupBox3.Controls.Add(Me._startLineNumber)
-			Me.GroupBox3.Location = New System.Drawing.Point(4, 4)
+			Me.GroupBox3.Location = New System.Drawing.Point(7, 4)
 			Me.GroupBox3.Name = "GroupBox3"
 			Me.GroupBox3.Size = New System.Drawing.Size(556, 82)
 			Me.GroupBox3.TabIndex = 7
@@ -157,23 +156,13 @@ Namespace kCura.EDDS.WinForm
 			Me._openFileDialog.Filter = "Opticon Files (*.opt)|*.opt|Log Files (*.log)|*.log|Text Files (*.txt)|*.txt|All " & _
 					"files (*.*)|*.*"
 			'
-			'GroupBox233
-			'
-			Me.GroupBox233.Controls.Add(Me._overwriteDropdown)
-			Me.GroupBox233.Location = New System.Drawing.Point(4, 102)
-			Me.GroupBox233.Name = "GroupBox233"
-			Me.GroupBox233.Size = New System.Drawing.Size(217, 52)
-			Me.GroupBox233.TabIndex = 8
-			Me.GroupBox233.TabStop = False
-			Me.GroupBox233.Text = "Overwrite"
-			'
 			'_overwriteDropdown
 			'
 			Me._overwriteDropdown.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
 			Me._overwriteDropdown.Items.AddRange(New Object() {"Append Only", "Overlay Only", "Append/Overlay"})
-			Me._overwriteDropdown.Location = New System.Drawing.Point(12, 20)
+			Me._overwriteDropdown.Location = New System.Drawing.Point(9, 42)
 			Me._overwriteDropdown.Name = "_overwriteDropdown"
-			Me._overwriteDropdown.Size = New System.Drawing.Size(188, 21)
+			Me._overwriteDropdown.Size = New System.Drawing.Size(252, 21)
 			Me._overwriteDropdown.TabIndex = 29
 			'
 			'_replaceFullText
@@ -244,107 +233,131 @@ Namespace kCura.EDDS.WinForm
 			'
 			'ExtractedTextGroupBox
 			'
+			Me.ExtractedTextGroupBox.Controls.Add(Me._encodingPicker)
 			Me.ExtractedTextGroupBox.Controls.Add(Me._replaceFullText)
-			Me.ExtractedTextGroupBox.Location = New System.Drawing.Point(4, 234)
+			Me.ExtractedTextGroupBox.Location = New System.Drawing.Point(7, 300)
 			Me.ExtractedTextGroupBox.Name = "ExtractedTextGroupBox"
-			Me.ExtractedTextGroupBox.Size = New System.Drawing.Size(217, 62)
+			Me.ExtractedTextGroupBox.Size = New System.Drawing.Size(556, 62)
 			Me.ExtractedTextGroupBox.TabIndex = 9
 			Me.ExtractedTextGroupBox.TabStop = False
 			Me.ExtractedTextGroupBox.Text = "ExtractedText"
 			'
-			'GroupBox1
+			'_encodingPicker
 			'
-			Me.GroupBox1.Controls.Add(Me._productionDropdown)
-			Me.GroupBox1.Location = New System.Drawing.Point(227, 160)
-			Me.GroupBox1.Name = "GroupBox1"
-			Me.GroupBox1.Size = New System.Drawing.Size(333, 52)
-			Me.GroupBox1.TabIndex = 10
-			Me.GroupBox1.TabStop = False
-			Me.GroupBox1.Text = "Production"
+			Me._encodingPicker.Enabled = False
+			Me._encodingPicker.Location = New System.Drawing.Point(293, 23)
+			Me._encodingPicker.Name = "_encodingPicker"
+			Me._encodingPicker.SelectedEncoding = Nothing
+			Me._encodingPicker.Size = New System.Drawing.Size(252, 21)
+			Me._encodingPicker.TabIndex = 0
 			'
 			'_productionDropdown
 			'
 			Me._productionDropdown.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
-			Me._productionDropdown.Location = New System.Drawing.Point(12, 20)
+			Me._productionDropdown.Location = New System.Drawing.Point(9, 87)
 			Me._productionDropdown.Name = "_productionDropdown"
-			Me._productionDropdown.Size = New System.Drawing.Size(310, 21)
+			Me._productionDropdown.Size = New System.Drawing.Size(252, 21)
 			Me._productionDropdown.TabIndex = 29
 			'
 			'_advancedButton
 			'
-			Me._advancedButton.Location = New System.Drawing.Point(4, 315)
+			Me._advancedButton.Location = New System.Drawing.Point(293, 87)
 			Me._advancedButton.Name = "_advancedButton"
-			Me._advancedButton.Size = New System.Drawing.Size(75, 23)
+			Me._advancedButton.Size = New System.Drawing.Size(75, 21)
 			Me._advancedButton.TabIndex = 28
-			Me._advancedButton.Text = "Advanced"
-			'
-			'GroupBox2
-			'
-			Me.GroupBox2.Controls.Add(Me._beginBatesDropdown)
-			Me.GroupBox2.Enabled = False
-			Me.GroupBox2.Location = New System.Drawing.Point(4, 160)
-			Me.GroupBox2.Name = "GroupBox2"
-			Me.GroupBox2.Size = New System.Drawing.Size(217, 52)
-			Me.GroupBox2.TabIndex = 29
-			Me.GroupBox2.TabStop = False
-			Me.GroupBox2.Text = "Begin Bates"
+			Me._advancedButton.Text = "Repository"
 			'
 			'_beginBatesDropdown
 			'
 			Me._beginBatesDropdown.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
-			Me._beginBatesDropdown.Location = New System.Drawing.Point(8, 20)
+			Me._beginBatesDropdown.Location = New System.Drawing.Point(293, 42)
 			Me._beginBatesDropdown.Name = "_beginBatesDropdown"
-			Me._beginBatesDropdown.Size = New System.Drawing.Size(192, 21)
+			Me._beginBatesDropdown.Size = New System.Drawing.Size(252, 21)
 			Me._beginBatesDropdown.TabIndex = 29
 			'
-			'GroupBox4
+			'GroupBox5
 			'
-			Me.GroupBox4.Controls.Add(Me._supportImageAutoNumbering)
-			Me.GroupBox4.Location = New System.Drawing.Point(227, 102)
-			Me.GroupBox4.Name = "GroupBox4"
-			Me.GroupBox4.Size = New System.Drawing.Size(333, 52)
-			Me.GroupBox4.TabIndex = 34
-			Me.GroupBox4.TabStop = False
-			Me.GroupBox4.Text = "General"
+			Me.GroupBox5.Controls.Add(Me._autoNumberingOn)
+			Me.GroupBox5.Controls.Add(Me._autoNumberingOff)
+			Me.GroupBox5.Location = New System.Drawing.Point(7, 92)
+			Me.GroupBox5.Name = "GroupBox5"
+			Me.GroupBox5.Size = New System.Drawing.Size(556, 73)
+			Me.GroupBox5.TabIndex = 35
+			Me.GroupBox5.TabStop = False
+			Me.GroupBox5.Text = "Numbering"
 			'
-			'_supportImageAutoNumbering
+			'_autoNumberingOn
 			'
-			Me._supportImageAutoNumbering.Location = New System.Drawing.Point(8, 16)
-			Me._supportImageAutoNumbering.Name = "_supportImageAutoNumbering"
-			Me._supportImageAutoNumbering.Size = New System.Drawing.Size(184, 16)
-			Me._supportImageAutoNumbering.TabIndex = 0
-			Me._supportImageAutoNumbering.Text = "Support Image Auto-Numbering"
+			Me._autoNumberingOn.AutoSize = True
+			Me._autoNumberingOn.Location = New System.Drawing.Point(12, 43)
+			Me._autoNumberingOn.Name = "_autoNumberingOn"
+			Me._autoNumberingOn.Size = New System.Drawing.Size(117, 17)
+			Me._autoNumberingOn.TabIndex = 1
+			Me._autoNumberingOn.Text = "Auto-number pages"
+			Me._autoNumberingOn.UseVisualStyleBackColor = True
 			'
-			'BroooopBox
+			'_autoNumberingOff
 			'
-			Me.BroooopBox.Controls.Add(Me._encodingPicker)
-			Me.BroooopBox.Location = New System.Drawing.Point(227, 234)
-			Me.BroooopBox.Name = "BroooopBox"
-			Me.BroooopBox.Size = New System.Drawing.Size(333, 62)
-			Me.BroooopBox.TabIndex = 33
-			Me.BroooopBox.TabStop = False
-			Me.BroooopBox.Text = "Encoding for undetectable files"
+			Me._autoNumberingOff.AutoSize = True
+			Me._autoNumberingOff.Checked = True
+			Me._autoNumberingOff.Location = New System.Drawing.Point(12, 20)
+			Me._autoNumberingOff.Name = "_autoNumberingOff"
+			Me._autoNumberingOff.Size = New System.Drawing.Size(129, 17)
+			Me._autoNumberingOff.TabIndex = 0
+			Me._autoNumberingOff.TabStop = True
+			Me._autoNumberingOff.Text = "Use load file page IDs"
+			Me._autoNumberingOff.UseVisualStyleBackColor = True
 			'
-			'_encodingPicker
+			'GroupBox6
 			'
-			Me._encodingPicker.Enabled = False
-			Me._encodingPicker.Location = New System.Drawing.Point(12, 23)
-			Me._encodingPicker.Name = "_encodingPicker"
-			Me._encodingPicker.SelectedEncoding = Nothing
-			Me._encodingPicker.Size = New System.Drawing.Size(200, 21)
-			Me._encodingPicker.TabIndex = 0
+			Me.GroupBox6.Controls.Add(Me._productionLabel)
+			Me.GroupBox6.Controls.Add(Me._productionDropdown)
+			Me.GroupBox6.Controls.Add(Me.Label2)
+			Me.GroupBox6.Controls.Add(Me.Label1)
+			Me.GroupBox6.Controls.Add(Me._beginBatesDropdown)
+			Me.GroupBox6.Controls.Add(Me._advancedButton)
+			Me.GroupBox6.Controls.Add(Me._overwriteDropdown)
+			Me.GroupBox6.Location = New System.Drawing.Point(7, 171)
+			Me.GroupBox6.Name = "GroupBox6"
+			Me.GroupBox6.Size = New System.Drawing.Size(556, 123)
+			Me.GroupBox6.TabIndex = 36
+			Me.GroupBox6.TabStop = False
+			Me.GroupBox6.Text = "Import Mode"
+			'
+			'_productionLabel
+			'
+			Me._productionLabel.AutoSize = True
+			Me._productionLabel.Location = New System.Drawing.Point(5, 70)
+			Me._productionLabel.Name = "_productionLabel"
+			Me._productionLabel.Size = New System.Drawing.Size(58, 13)
+			Me._productionLabel.TabIndex = 32
+			Me._productionLabel.Text = "Production"
+			'
+			'Label2
+			'
+			Me.Label2.AutoSize = True
+			Me.Label2.Location = New System.Drawing.Point(290, 23)
+			Me.Label2.Name = "Label2"
+			Me.Label2.Size = New System.Drawing.Size(86, 13)
+			Me.Label2.TabIndex = 31
+			Me.Label2.Text = "Overlay Identifier"
+			'
+			'Label1
+			'
+			Me.Label1.AutoSize = True
+			Me.Label1.Location = New System.Drawing.Point(5, 23)
+			Me.Label1.Name = "Label1"
+			Me.Label1.Size = New System.Drawing.Size(67, 13)
+			Me.Label1.TabIndex = 30
+			Me.Label1.Text = "Select Mode"
 			'
 			'ImageLoad
 			'
 			Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
-			Me.ClientSize = New System.Drawing.Size(580, 345)
-			Me.Controls.Add(Me.GroupBox4)
-			Me.Controls.Add(Me.BroooopBox)
-			Me.Controls.Add(Me.GroupBox2)
-			Me.Controls.Add(Me._advancedButton)
-			Me.Controls.Add(Me.GroupBox1)
+			Me.ClientSize = New System.Drawing.Size(571, 385)
+			Me.Controls.Add(Me.GroupBox6)
+			Me.Controls.Add(Me.GroupBox5)
 			Me.Controls.Add(Me.ExtractedTextGroupBox)
-			Me.Controls.Add(Me.GroupBox233)
 			Me.Controls.Add(Me.GroupBox3)
 			Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
 			Me.MaximizeBox = False
@@ -355,12 +368,11 @@ Namespace kCura.EDDS.WinForm
 			Me.GroupBox3.ResumeLayout(False)
 			Me.GroupBox3.PerformLayout()
 			CType(Me._startLineNumber, System.ComponentModel.ISupportInitialize).EndInit()
-			Me.GroupBox233.ResumeLayout(False)
 			Me.ExtractedTextGroupBox.ResumeLayout(False)
-			Me.GroupBox1.ResumeLayout(False)
-			Me.GroupBox2.ResumeLayout(False)
-			Me.GroupBox4.ResumeLayout(False)
-			Me.BroooopBox.ResumeLayout(False)
+			Me.GroupBox5.ResumeLayout(False)
+			Me.GroupBox5.PerformLayout()
+			Me.GroupBox6.ResumeLayout(False)
+			Me.GroupBox6.PerformLayout()
 			Me.ResumeLayout(False)
 
 		End Sub
@@ -418,7 +430,7 @@ Namespace kCura.EDDS.WinForm
 			ImageLoadFile.Overwrite = Me.GetOverwrite
 			ImageLoadFile.DestinationFolderID = _imageLoadFile.DestinationFolderID
 			ImageLoadFile.ControlKeyField = _application.GetCaseIdentifierFields(10)(0)
-			ImageLoadFile.AutoNumberImages = _supportImageAutoNumbering.Checked
+			ImageLoadFile.AutoNumberImages = _autoNumberingOn.Checked
 			If ImageLoadFile.ForProduction Then
 				ImageLoadFile.ProductionArtifactID = CType(_productionDropdown.SelectedValue, Int32)
 				Me.ImageLoadFile.ReplaceFullText = False
@@ -487,8 +499,8 @@ Namespace kCura.EDDS.WinForm
 			_beginBatesDropdown.SelectedValue = _identifierFieldArtifactID
 
 			If Not ImageLoadFile.ForProduction Then
-				Me.GroupBox2.Text = "Overlay Identifier"
-				GroupBox1.Visible = False
+				_productionDropdown.Visible = False
+				_productionLabel.Visible = False
 			Else
 				_replaceFullText.Checked = False
 				_replaceFullText.Enabled = False
@@ -536,10 +548,10 @@ Namespace kCura.EDDS.WinForm
 		Private Sub _overWrite_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _overwriteDropdown.SelectedIndexChanged
 			_imageLoadFile.Overwrite = Me.GetOverwrite
 			If _overwriteDropdown.SelectedIndex = 1 Then
-				GroupBox2.Enabled = True
+				_beginBatesDropdown.Enabled = True
 			Else
 				_beginBatesDropdown.SelectedValue = _identifierFieldArtifactID
-				GroupBox2.Enabled = False
+				_beginBatesDropdown.Enabled = False
 			End If
 		End Sub
 
@@ -584,6 +596,8 @@ Namespace kCura.EDDS.WinForm
 				_overwriteDropdown.SelectedItem = Me.GetOverwriteDropdownItem(ImageLoadFile.Overwrite)
 				_filePath.Text = ImageLoadFile.FileName
 				_replaceFullText.Checked = ImageLoadFile.ReplaceFullText
+				_autoNumberingOn.Checked = ImageLoadFile.AutoNumberImages
+				_autoNumberingOff.Checked = Not _autoNumberingOn.Checked
 				_importMenuSendEmailNotificationItem.Checked = Me.ImageLoadFile.SendEmailOnLoadCompletion
 				Me.ImageLoadFile.DestinationFolderID = currentFolder
 				_startLineNumber.Value = CType(ImageLoadFile.StartLineNumber, Decimal)
@@ -635,6 +649,14 @@ Namespace kCura.EDDS.WinForm
 		Private Sub _replaceFullText_CheckedChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles _replaceFullText.CheckedChanged
 			Dim replaceFullText As CheckBox = DirectCast(sender, CheckBox)
 			_encodingPicker.Enabled = replaceFullText.Checked
+		End Sub
+
+		Private Sub _autoNumberingOn_CheckedChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles _autoNumberingOn.CheckedChanged
+			_autoNumberingOff.Checked = Not _autoNumberingOn.Checked
+		End Sub
+
+		Private Sub _autoNumberingOff_CheckedChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles _autoNumberingOff.CheckedChanged
+			_autoNumberingOn.Checked = Not _autoNumberingOff.Checked
 		End Sub
 	End Class
 End Namespace

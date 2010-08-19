@@ -42,15 +42,18 @@ Namespace kCura.EDDS.WinForm
 			'
 			'DropDown
 			'
+			Me.DropDown.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
+									Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me.DropDown.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
 			Me.DropDown.Location = New System.Drawing.Point(0, 0)
 			Me.DropDown.Name = "DropDown"
-			Me.DropDown.Size = New System.Drawing.Size(147, 21)
+			Me.DropDown.Size = New System.Drawing.Size(158, 21)
 			Me.DropDown.TabIndex = 0
 			'
 			'Button1
 			'
-			Me.Button1.Location = New System.Drawing.Point(151, 0)
+			Me.Button1.Anchor = System.Windows.Forms.AnchorStyles.Right
+			Me.Button1.Location = New System.Drawing.Point(158, 0)
 			Me.Button1.Name = "Button1"
 			Me.Button1.Size = New System.Drawing.Size(24, 21)
 			Me.Button1.TabIndex = 1
@@ -58,9 +61,10 @@ Namespace kCura.EDDS.WinForm
 			'
 			'Button2
 			'
+			Me.Button2.Anchor = System.Windows.Forms.AnchorStyles.Right
 			Me.Button2.BackColor = System.Drawing.SystemColors.Control
 			Me.Button2.ForeColor = System.Drawing.SystemColors.ControlText
-			Me.Button2.Location = New System.Drawing.Point(179, 0)
+			Me.Button2.Location = New System.Drawing.Point(183, 0)
 			Me.Button2.Name = "Button2"
 			Me.Button2.Size = New System.Drawing.Size(17, 21)
 			Me.Button2.TabIndex = 2
