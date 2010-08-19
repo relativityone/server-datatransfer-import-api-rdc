@@ -5,7 +5,7 @@ Namespace kCura.Relativity.DataReaderClient
 
 		Public Event OnMessage(ByVal status As Status)
 		Public Settings As ImageSettings
-		Public SourceData As SourceIDataReader
+		Public SourceData As ImageSourceIDataReader
 
 #End Region
 
@@ -18,7 +18,7 @@ Namespace kCura.Relativity.DataReaderClient
 
 		Public Sub New()
 			Me.Settings = New ImageSettings
-			Me.SourceData = New SourceIDataReader
+			Me.SourceData = New ImageSourceIDataReader
 		End Sub
 
 		Public Sub Execute()
@@ -38,7 +38,7 @@ Namespace kCura.Relativity.DataReaderClient
 					RaiseEvent OnMessage(New Status(String.Format("Exception: {0}", ex.ToString)))
 				End Try
 			Else
-				RaiseEvent OnMessage(New Status("There was an error in your settings.  Im	port aborted."))
+				RaiseEvent OnMessage(New Status("There was an error in your settings.  Import aborted."))
 			End If
 		End Sub
 
@@ -51,9 +51,9 @@ Namespace kCura.Relativity.DataReaderClient
 			tempLoadFile.DataReader = SourceData.SourceData
 
 			'These are ALL of the load file settings
-			tempLoadFile.AutoNumberImages = False	' NOT IN GENERAL SETTINGS
+			tempLoadFile.AutoNumberImages = sqlClientSettings.AutoNumberImages
 			tempLoadFile.CaseInfo = New kCura.EDDS.Types.CaseInfo
-			tempLoadFile.CaseInfo.ArtifactID = 1028042 '1015022
+			tempLoadFile.CaseInfo.ArtifactID = sqlClientSettings.CaseArtifactId	'1015022
 			tempLoadFile.CaseInfo.DocumentPath = "\\localhost\fileRepo\"
 			tempLoadFile.CaseInfo.DownloadHandlerURL = "EDDS.Distributed"
 			tempLoadFile.CaseInfo.MatterArtifactID = 1000002 '1015021
@@ -91,7 +91,6 @@ Namespace kCura.Relativity.DataReaderClient
 				credential = kCura.WinEDDS.Api.LoginHelper.LoginUsernamePassword(settings.RelativityUsername, settings.RelativityPassword, cookieMonster)
 				Exit While
 			End While
-
 			Return credential
 		End Function
 

@@ -173,6 +173,7 @@
     </Compile>
     <Compile Include="ImageImport\ImageImportBulkArtifactJob.vb" />
     <Compile Include="ImageImport\ImageSettings.vb" />
+    <Compile Include="ImageImport\ImageSourceIDataReader.vb" />
     <Compile Include="ImportLoadFileJob.vb">
       <SubType>Code</SubType>
     </Compile>
