@@ -1165,6 +1165,14 @@ Public Class ExportForm
 				AppendErrorMessage(msg, "No file name source selected")
 			End If
 		End If
+		If _dataFileEncoding.SelectedEncoding Is Nothing Then
+			AppendErrorMessage(msg, "No encoding selected for metadata file.")
+		End If
+		If _exportFullTextAsFile.Checked Then
+			If _textFileEncoding.SelectedEncoding Is Nothing Then
+				AppendErrorMessage(msg, "No encoding selected for text field files.")
+			End If
+		End If
 		If Me.CreateVolume Then
 			If Not _subdirectoryImagePrefix.Text.Trim <> "" Then AppendErrorMessage(msg, "Subdirectory Image Prefix cannot be blank.")
 			If Not _subdirectoryTextPrefix.Text.Trim <> "" Then AppendErrorMessage(msg, "Subdirectory Text Prefix cannot be blank.")
