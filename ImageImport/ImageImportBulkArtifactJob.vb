@@ -30,7 +30,7 @@ Namespace kCura.Relativity.DataReaderClient
 				_observer = process.ProcessObserver
 
 				RaiseEvent OnMessage(New Status("Updating settings"))
-				process.ImageLoadFile = Me.CreateLoadFile(Settings)
+				process.ImageLoadFile = Me.CreateLoadFile()
 
 				RaiseEvent OnMessage(New Status("Executing"))
 				Try
@@ -47,32 +47,34 @@ Namespace kCura.Relativity.DataReaderClient
 
 #Region " Private Methods "
 
-		Private Function CreateLoadFile(ByVal sqlClientSettings As ImageSettings) As kCura.WinEDDS.ImportExtension.DataReaderImageFile
+		Private Function CreateLoadFile() As kCura.WinEDDS.ImportExtension.DataReaderImageFile
 			Dim credential As System.Net.NetworkCredential = DirectCast(GetCredentials(Settings), Net.NetworkCredential)
 			Dim casemanager As kCura.WinEDDS.Service.CaseManager = GetCaseManager(credential)
 			Dim tempLoadFile As New kCura.WinEDDS.ImportExtension.DataReaderImageFile
 			tempLoadFile.DataReader = SourceData.SourceData
 
 			'These are ALL of the image file settings
-			tempLoadFile.AutoNumberImages = sqlClientSettings.AutoNumberImages
-			tempLoadFile.CaseInfo = casemanager.Read(sqlClientSettings.CaseArtifactId)
-			tempLoadFile.ControlKeyField = "Identifier"
+			tempLoadFile.AutoNumberImages = Settings.AutoNumberImages
+			tempLoadFile.CaseInfo = casemanager.Read(Settings.CaseArtifactId)
+			'tempLoadFile.ControlKeyField = "Identifier"
 			tempLoadFile.Credential = credential
 			tempLoadFile.CookieContainer = cookieMonster
-			tempLoadFile.CopyFilesToDocumentRepository = True
+			tempLoadFile.CopyFilesToDocumentRepository = Settings.CopyFilesToDocumentRepository
 			tempLoadFile.DestinationFolderID = tempLoadFile.CaseInfo.RootFolderID
-			tempLoadFile.ForProduction = False
-			tempLoadFile.FullTextEncoding = Nothing
-			tempLoadFile.Overwrite = sqlClientSettings.OverwriteMode.ToString
+			tempLoadFile.ForProduction = Settings.ForProduction
+			tempLoadFile.FullTextEncoding = Settings.ExtractedTextEncoding
+			tempLoadFile.Overwrite = Settings.OverwriteMode.ToString
 			If tempLoadFile.Overwrite = OverwriteModeEnum.Overlay.ToString Then
-				tempLoadFile.IdentityFieldId = GetDefaultIdentifierFieldID(credential, sqlClientSettings.CaseArtifactId)
+				tempLoadFile.IdentityFieldId = GetDefaultIdentifierFieldID(credential, Settings.CaseArtifactId)
 			Else
-				tempLoadFile.IdentityFieldId = 1003667 'e.x Control Number we need to autodetermine this
+				tempLoadFile.IdentityFieldId = Settings.IdentityFieldId	'e.x Control Number
 			End If
 
-			If sqlClientSettings.ProductionArtifactID = 0 Then
+			If Settings.ProductionArtifactID = 0 Then
 				tempLoadFile.ProductionArtifactID = 0
-				tempLoadFile.ProductionTable = Nothing	'Don't know what this should be
+				'tempLoadFile.ProductionTable = Nothing	'Don't know what this should be
+			Else
+				tempLoadFile.ProductionArtifactID = Settings.ProductionArtifactID
 			End If
 
 			tempLoadFile.SelectedCasePath = tempLoadFile.CaseInfo.DocumentPath

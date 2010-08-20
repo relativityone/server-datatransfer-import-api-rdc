@@ -29,6 +29,9 @@ Namespace kCura.Relativity.DataReaderClient
 		Private _ExtractedTextEncoding As System.Text.Encoding
 		Private _autoNumberImages As Boolean
 		Private _productionartifactid As Int32
+		Private _copyfilestodocumentrepository As Boolean
+		Private _forProduction As Boolean
+		Private _identityFieldId As Int32
 
 #End Region
 
@@ -244,6 +247,41 @@ Namespace kCura.Relativity.DataReaderClient
 				_productionartifactid = Value
 			End Set
 		End Property
+
+		''' <summary>
+		''' Copy file or create links
+		''' </summary>
+		Public Property CopyFilesToDocumentRepository() As Boolean
+			Get
+				Return _copyfilestodocumentrepository
+			End Get
+			Set(ByVal value As Boolean)
+				_copyfilestodocumentrepository = value
+			End Set
+		End Property
+
+
+		Public Property ForProduction() As Boolean
+			Get
+				Return _forProduction
+			End Get
+			Set(ByVal value As Boolean)
+				_forProduction = value
+			End Set
+		End Property
+
+
+		Public Property IdentityFieldId() As Int32
+			Get
+				Return _identityFieldId
+			End Get
+			Set(ByVal value As Int32)
+				_identityFieldId = value
+			End Set
+		End Property
+
+
+
 
 #End Region
 
