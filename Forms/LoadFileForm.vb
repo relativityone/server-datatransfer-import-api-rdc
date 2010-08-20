@@ -692,7 +692,7 @@ Namespace kCura.EDDS.WinForm
 			Me._advancedButton.Name = "_advancedButton"
 			Me._advancedButton.Size = New System.Drawing.Size(75, 23)
 			Me._advancedButton.TabIndex = 27
-			Me._advancedButton.Text = "Advanced"
+			Me._advancedButton.Text = "Repository"
 			'
 			'_loadNativeFiles
 			'
