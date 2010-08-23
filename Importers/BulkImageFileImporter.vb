@@ -482,7 +482,7 @@ Namespace kCura.WinEDDS
 						If Not encodingList.Contains(chosenEncoding.CodePage) Then encodingList.Add(chosenEncoding.CodePage)
 					End If
 				Next
-				If _replaceFullText Then _bulkLoadFileWriter.Write("{0},", kCura.Utility.List.ToDelimitedString(encodingList, "|"))
+				If _replaceFullText AndAlso textFileList.Count > 0 Then _bulkLoadFileWriter.Write("{0},", kCura.Utility.List.ToDelimitedString(encodingList, "|"))
 				For Each filename As String In textFileList
 					Dim chosenEncoding As System.Text.Encoding
 					Dim determinedEncodingStream As DeterminedEncodingStream = kCura.WinEDDS.Utility.DetectEncoding(filename, False)
