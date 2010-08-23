@@ -62,6 +62,7 @@ Namespace kCura.EDDS.WinForm
 		Friend WithEvents Label2 As System.Windows.Forms.Label
 		Friend WithEvents Label1 As System.Windows.Forms.Label
 		Friend WithEvents _productionLabel As System.Windows.Forms.Label
+		Friend WithEvents Label9 As System.Windows.Forms.Label
 		Friend WithEvents _importMenuSendEmailNotificationItem As System.Windows.Forms.MenuItem
 		<System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
 			Me.components = New System.ComponentModel.Container
@@ -97,6 +98,7 @@ Namespace kCura.EDDS.WinForm
 			Me._productionLabel = New System.Windows.Forms.Label
 			Me.Label2 = New System.Windows.Forms.Label
 			Me.Label1 = New System.Windows.Forms.Label
+			Me.Label9 = New System.Windows.Forms.Label
 			Me.GroupBox3.SuspendLayout()
 			CType(Me._startLineNumber, System.ComponentModel.ISupportInitialize).BeginInit()
 			Me.ExtractedTextGroupBox.SuspendLayout()
@@ -233,11 +235,12 @@ Namespace kCura.EDDS.WinForm
 			'
 			'ExtractedTextGroupBox
 			'
+			Me.ExtractedTextGroupBox.Controls.Add(Me.Label9)
 			Me.ExtractedTextGroupBox.Controls.Add(Me._encodingPicker)
 			Me.ExtractedTextGroupBox.Controls.Add(Me._replaceFullText)
 			Me.ExtractedTextGroupBox.Location = New System.Drawing.Point(7, 300)
 			Me.ExtractedTextGroupBox.Name = "ExtractedTextGroupBox"
-			Me.ExtractedTextGroupBox.Size = New System.Drawing.Size(556, 62)
+			Me.ExtractedTextGroupBox.Size = New System.Drawing.Size(556, 78)
 			Me.ExtractedTextGroupBox.TabIndex = 9
 			Me.ExtractedTextGroupBox.TabStop = False
 			Me.ExtractedTextGroupBox.Text = "ExtractedText"
@@ -245,7 +248,7 @@ Namespace kCura.EDDS.WinForm
 			'_encodingPicker
 			'
 			Me._encodingPicker.Enabled = False
-			Me._encodingPicker.Location = New System.Drawing.Point(293, 23)
+			Me._encodingPicker.Location = New System.Drawing.Point(293, 39)
 			Me._encodingPicker.Name = "_encodingPicker"
 			Me._encodingPicker.SelectedEncoding = Nothing
 			Me._encodingPicker.Size = New System.Drawing.Size(252, 21)
@@ -351,10 +354,18 @@ Namespace kCura.EDDS.WinForm
 			Me.Label1.TabIndex = 30
 			Me.Label1.Text = "Select Mode"
 			'
+			'Label9
+			'
+			Me.Label9.Location = New System.Drawing.Point(290, 20)
+			Me.Label9.Name = "Label9"
+			Me.Label9.Size = New System.Drawing.Size(204, 16)
+			Me.Label9.TabIndex = 4
+			Me.Label9.Text = "Encoding for undetectable files"
+			'
 			'ImageLoad
 			'
 			Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
-			Me.ClientSize = New System.Drawing.Size(571, 385)
+			Me.ClientSize = New System.Drawing.Size(571, 405)
 			Me.Controls.Add(Me.GroupBox6)
 			Me.Controls.Add(Me.GroupBox5)
 			Me.Controls.Add(Me.ExtractedTextGroupBox)
