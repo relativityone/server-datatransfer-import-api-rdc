@@ -1704,9 +1704,19 @@ Namespace kCura.EDDS.WinForm
 			If Not _loginForm Is Nothing AndAlso Not _loginForm.IsDisposed Then
 				_loginForm.TopMost = False
 			End If
+
 			Dim sb As New System.Text.StringBuilder
 			Dim nl As String = System.Environment.NewLine & System.Environment.NewLine
-			sb.Append("Relativity Desktop Client" & nl)
+			Dim bitness As String = String.Empty
+
+			' Determine build bitness
+			If IntPtr.Size = 8 Then
+				bitness = "64-bit"
+			ElseIf IntPtr.Size = 4 Then
+				bitness = "32-bit"
+			End If
+
+			sb.Append(String.Format("Relativity Desktop Client {0} {1}", bitness, nl))
 			sb.Append("Version " & Me.GetDisplayAssemblyVersion() & nl)
 			sb.Append(kCura.EDDS.Types.Constants.LICENSE_AGREEMENT_TEXT & nl)
 			sb.Append("Copyright © " & System.DateTime.Now.Year & " kCura Corporation")
