@@ -114,7 +114,6 @@ Namespace kCura.Relativity.DataReaderClient
 			End Set
 		End Property
 
-
 		''' <summary>
 		''' Delimiter to separate nested values such as choices and child choices on a multi-choice field
 		''' </summary>
@@ -175,9 +174,8 @@ Namespace kCura.Relativity.DataReaderClient
 			End Set
 		End Property
 
-
 		''' <summary>
-		''' Field name that contains a full path and filename to native files
+		''' Field name that contains a full path and filename to image files
 		''' </summary>
 		Public Property ImageFilePathSourceFieldName() As String
 			Get
@@ -237,7 +235,7 @@ Namespace kCura.Relativity.DataReaderClient
 		End Property
 
 		''' <summary>
-		''' If this is set than images will load into selected production
+		''' If this is set then images will load into selected production
 		''' </summary>
 		Public Property ProductionArtifactID() As Int32
 			Get
@@ -260,7 +258,9 @@ Namespace kCura.Relativity.DataReaderClient
 			End Set
 		End Property
 
-
+		''' <summary>
+		''' Set to true if you want the import to go into a production
+		''' </summary>
 		Public Property ForProduction() As Boolean
 			Get
 				Return _forProduction
@@ -270,7 +270,9 @@ Namespace kCura.Relativity.DataReaderClient
 			End Set
 		End Property
 
-
+		''' <summary>
+		''' The key field that can only be set on Overwrite only
+		''' </summary>
 		Public Property IdentityFieldId() As Int32
 			Get
 				Return _identityFieldId
@@ -279,9 +281,6 @@ Namespace kCura.Relativity.DataReaderClient
 				_identityFieldId = value
 			End Set
 		End Property
-
-
-
 
 #End Region
 
