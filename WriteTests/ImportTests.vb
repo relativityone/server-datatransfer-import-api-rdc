@@ -45,7 +45,7 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 			ImportAPI.Settings.RelativityUsername = Helpers.CommonDefaults.API_USER_ADMIN
 			ImportAPI.Settings.RelativityPassword = Helpers.CommonDefaults.API_USER_ADMIN_PASSWORD
 			ImportAPI.Settings.CaseArtifactId = Helpers.CommonDefaults.CASE_ID_CRUD
-			ImportAPI.Settings.ArtifactTypeId = 10
+			ImportAPI.Settings.ArtifactTypeId = Helpers.CommonDefaults.DOCTYPEID
 			ImportAPI.Settings.OverwriteMode = OverwriteModeEnum.Overlay
 			ImportAPI.Settings.OverlayIdentifierSourceFieldName = "Control Number"
 			Dim dataReader As IDataReader = ExecuteSQLStatementAsDataTableAsDataReader("select Identifier As [BatesNumber], Location As [FileLocation], DocumentArtifactID as [DocumentIdentifier]  from [File] Order By [BatesNumber]")
@@ -53,6 +53,18 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 			ImportAPI.Execute()
 
 		End Sub
+
+		'<Test(), _
+		'Category("HighPriority"), _
+		'Description("Successful import with extracted text - Append")> _
+		'Public Sub ImportTest2()
+		'	ImportAPI.Settings.RelativityUsername = Helpers.CommonDefaults.API_USER_ADMIN
+		'	ImportAPI.Settings.RelativityPassword = Helpers.CommonDefaults.API_USER_ADMIN_PASSWORD
+		'	ImportAPI.Settings.CaseArtifactId = Helpers.CommonDefaults.CASE_ID_CRUD
+		'	ImportAPI.Settings.ArtifactTypeId = Helpers.CommonDefaults.DOCTYPEID
+
+		'End Sub
+
 
 #End Region
 

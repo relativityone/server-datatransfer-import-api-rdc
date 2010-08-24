@@ -7,7 +7,8 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{CCB5EB08-0DF3-433D-887B-47DF3D312736}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>kCura.Relativity.DataReaderClient.NUnit</RootNamespace>
+    <RootNamespace>
+    </RootNamespace>
     <AssemblyName>kCura.Relativity.DataReaderClient.NUnit</AssemblyName>
     <FileAlignment>512</FileAlignment>
     <MyType>Windows</MyType>
