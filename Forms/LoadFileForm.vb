@@ -1230,7 +1230,7 @@ Namespace kCura.EDDS.WinForm
 						Me.LoadFile.RecordDelimiter = ChrW(20)
 						Me.LoadFile.QuoteDelimiter = ChrW(254)
 				End Select
-				RefreshNativeFilePathFieldAndFileColumnHeaders(oldfilepath.ToLower <> "select file to load...")
+				RefreshNativeFilePathFieldAndFileColumnHeaders(oldfilepath.ToLower <> "select file to load...", Me.LoadFile.SourceFileEncoding Is Nothing)
 			Catch ex As System.IO.IOException
 				MsgBox(ex.Message & Environment.NewLine & "Please close any application that might have a hold on the file before proceeding.", MsgBoxStyle.Exclamation)
 				_filePath.Text = oldfilepath
