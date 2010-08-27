@@ -55,7 +55,30 @@
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DefineDebug>true</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DocumentationFile>kCura.Relativity.DataReaderClient.NUnit.xml</DocumentationFile>
+    <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <DefineTrace>true</DefineTrace>
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DocumentationFile>kCura.Relativity.DataReaderClient.NUnit.xml</DocumentationFile>
+    <Optimize>true</Optimize>
+    <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
   <ItemGroup>
+    <Reference Include="FreeImageNET, Version=3.13.0.1, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Vendor\FreeImage\3.130\FreeImage\Wrapper\FreeImage.NET\cs\Deploy\x64\FreeImageNET.dll</HintPath>
+    </Reference>
     <Reference Include="kCura.Utility, Version=1.0.3884.25770, Culture=neutral, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\kCura\kCura.Utility\bin\kCura.Utility.dll</HintPath>
@@ -90,6 +113,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Exceptions\DatabaseManagementException.vb" />
+    <Compile Include="Exceptions\ProcuroException.vb" />
     <Compile Include="HelpersTests\SetupHelperTests.vb" />
     <Compile Include="Helpers\CommonDefaults.vb" />
     <Compile Include="Helpers\FileHelper.vb" />
@@ -110,6 +134,8 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Compile Include="WriteTests\CaseWriteTests.vb" />
+    <Compile Include="WriteTests\FixtureSetupTeardown.vb" />
     <Compile Include="WriteTests\ImportTests.vb" />
     <Compile Include="WriteTests\WriteTestsBase.vb" />
   </ItemGroup>
@@ -134,9 +160,49 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\kCura\kCura.Data\kCura.Data.vbproj">
+      <Project>{6C4D3211-85B6-4A83-9356-7C7F0C319C75}</Project>
+      <Name>kCura.Data</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\kCura\kCura.DynamicFields.Types\kCura.DynamicFields.Types.vbproj">
+      <Project>{E8C68A03-7FC4-40AD-BB0B-5F22A3E6447E}</Project>
+      <Name>kCura.DynamicFields.Types</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\kCura\kCura.ImageValidator\kCura.ImageValidator.vbproj">
+      <Project>{C2FD8BF7-723A-4D40-A201-CD7458678A70}</Project>
+      <Name>kCura.ImageValidator</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\kCura\kCura.OI.FileID\kCura.OI.FileID.vbproj">
+      <Project>{CCEFD50F-0840-402D-AB16-C93F8E579B8B}</Project>
+      <Name>kCura.OI.FileID</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\kCura\kCura.Windows.Forms\kCura.Windows.Forms.vbproj">
+      <Project>{0DABBD47-5A46-429F-9D90-C95A58611E0A}</Project>
+      <Name>kCura.Windows.Forms</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\kCura\kCura.Windows.Process\kCura.Windows.Process.vbproj">
+      <Project>{B092D1B2-909B-4EF0-9369-A81675C3FC18}</Project>
+      <Name>kCura.Windows.Process</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.EDDS.Import\kCura.EDDS.Import.vbproj">
+      <Project>{94940707-AFFE-47EB-BD70-5ADE8F7C8A36}</Project>
+      <Name>kCura.EDDS.Import</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.EDDS.Types\kCura.EDDS.Types.vbproj">
+      <Project>{6E14C37A-96F5-4488-9E2B-2C1A21C4D140}</Project>
+      <Name>kCura.EDDS.Types</Name>
+    </ProjectReference>
     <ProjectReference Include="..\kCura.Relativity.DataReader\kCura.Relativity.DataReaderClient.vbproj">
       <Project>{94BD2810-9FD8-4EEE-AA2B-590E4BCD4CC0}</Project>
       <Name>kCura.Relativity.DataReaderClient</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.WinEDDS.ImportExtension\kCura.WinEDDS.ImportExtension.vbproj">
+      <Project>{86550F4B-BEF4-4458-9536-7B5C6F68B0E2}</Project>
+      <Name>kCura.WinEDDS.ImportExtension</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.WinEDDS\kCura.WinEDDS.vbproj">
+      <Project>{F16A2219-5DAC-4F2B-89B0-6BD1243CBF8F}</Project>
+      <Name>kCura.WinEDDS</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />

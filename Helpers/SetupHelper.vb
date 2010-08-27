@@ -36,6 +36,8 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.Helpers
 #Region "Constants - Artifact IDs"
 		Public Const _CASE_ID_CRUD As Int32 = 1016204
 		Public Const _CASE_ID_QUERY_BATCH_SCRIPT As Int32 = 1016506
+		Public Const _CASE_ID_ImportAPI_Source As Int32 = 1016564
+		Public Const _CASE_ID_ImportAPI_Destination As Int32 = 1016565
 		Public Const _DOCUMENT_ID As Int32 = 1035472
 		Public Const _DOCUMENT_ID2 As Int32 = 1035604
 		Public Const _DOCUMENT_ID3 As Int32 = 1035605
@@ -50,7 +52,7 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.Helpers
 		Private Const _FILEREPO_BACKUP_DIRECTORY_NAME As String = "Backups\FileRepoBackup"
 		Private Const _DBBACKUP_DIRECTORY_NAME As String = "Backups\DatabaseBackup"
 		Private Const _LOG_DIRECTORY_NAME As String = "C:\AutomatedTests\Logs"
-		Private ReadOnly _DBBACKUP_DIRECTORY_FULL_PATH As String = Path.Combine(ParentDirectoryName, _DBBACKUP_DIRECTORY_NAME)
+		Private ReadOnly _DBBACKUP_DIRECTORY_FULL_PATH As String = "C:\SourceCode\Mainline\EDDS\kCura.Relativity.Client.NUnit\Backups\DatabaseBackup"
 		Private ReadOnly _TEMPDBBACKUP_DIRECTORY_FULL_PATH As String = "C:\AutomatedTests\TempDatabaseBackups"
 		Private ReadOnly _CAINDEX_BACKUP_FULL_PATH As String = Path.Combine(ParentDirectoryName, _CAINDEX_BACKUP_DIRECTORY_NAME)
 		Private ReadOnly _DTSEARCHINDEX_BACKUP_FULL_PATH As String = Path.Combine(ParentDirectoryName, _DTSEARCHINDEX_BACKUP_DIRECTORY_NAME)
@@ -59,8 +61,15 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.Helpers
 #Region "Other Members"
 		Private Shared ReadOnly _CASEDBNAME_CRUD As String = "EDDS" + _CASE_ID_CRUD.ToString()
 		Private Shared ReadOnly _CASEDBNAME_QUERY_BATCH_SCRIPT As String = "EDDS" + _CASE_ID_QUERY_BATCH_SCRIPT.ToString()
-		Public Shared ReadOnly _DBLIST() As String = {_CASEDBNAME_CRUD, _CASEDBNAME_QUERY_BATCH_SCRIPT, "EDDS", "EDDSResource"}
-		Public ReadOnly _DBLIST_FOR_TEMP_BACKUP() As String = {_CASEDBNAME_CRUD + "_AFTERPROCURO", _CASEDBNAME_QUERY_BATCH_SCRIPT + "_AFTERPROCURO", "EDDS_AFTERPROCURO", "EDDSResource_AFTERPROCURO"}
+
+		Private Shared ReadOnly _CASEDBNAME_ImportAPI_Source As String = "EDDS" + _CASE_ID_ImportAPI_Source.ToString()
+		Private Shared ReadOnly _CASEDBNAME_ImportAPI_Destination As String = "EDDS" + _CASE_ID_ImportAPI_Destination.ToString()
+
+		Public Shared ReadOnly _DBLIST() As String = {_CASEDBNAME_CRUD, _CASEDBNAME_QUERY_BATCH_SCRIPT, _CASEDBNAME_ImportAPI_Source, _CASEDBNAME_ImportAPI_Destination, "EDDS", "EDDSResource"}
+		Public ReadOnly _DBLIST_FOR_TEMP_BACKUP() As String = {_CASEDBNAME_CRUD + "_AFTERPROCURO", _CASEDBNAME_QUERY_BATCH_SCRIPT + "_AFTERPROCURO", _CASEDBNAME_ImportAPI_Source + "_AFTERPROCURO", _CASEDBNAME_ImportAPI_Destination + "_AFTERPROCURO", "EDDS_AFTERPROCURO", "EDDSResource_AFTERPROCURO"}
+		'Public Shared ReadOnly _DBLIST() As String = {_CASEDBNAME_CRUD, _CASEDBNAME_QUERY_BATCH_SCRIPT, "EDDS", "EDDSResource"}
+		'Public ReadOnly _DBLIST_FOR_TEMP_BACKUP() As String = {_CASEDBNAME_CRUD + "_AFTERPROCURO", _CASEDBNAME_QUERY_BATCH_SCRIPT + "_AFTERPROCURO", "EDDS_AFTERPROCURO", "EDDSResource_AFTERPROCURO"}
+
 		Private Shared _connStrForSetup As String = String.Empty
 		Public _restoreSucceeded As Boolean = False
 		Public WithEvents conn As SqlConnection
