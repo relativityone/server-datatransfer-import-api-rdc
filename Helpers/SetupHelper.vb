@@ -13,6 +13,7 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.Helpers
 		Public Sub SetupTestWithRestore()
 			Dim restoreFromBackupAfterProcuro As Boolean = True
 			If RestoreDatabases(restoreFromBackupAfterProcuro) Then
+				'System.Data.SqlClient.SqlConnection.ClearAllPools()
 			Else
 				Throw New Exceptions.DatabaseManagementException("Database restore failed.")
 			End If
@@ -36,8 +37,8 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.Helpers
 #Region "Constants - Artifact IDs"
 		Public Const _CASE_ID_CRUD As Int32 = 1016204
 		Public Const _CASE_ID_QUERY_BATCH_SCRIPT As Int32 = 1016506
-		Public Const _CASE_ID_ImportAPI_Source As Int32 = 1016564
-		Public Const _CASE_ID_ImportAPI_Destination As Int32 = 1016565
+		Public Const _CASE_ID_IMPORT_API_SOURCE As Int32 = 1016564
+		Public Const _CASE_ID_IMPORT_API_DESTINATION As Int32 = 1016565
 		Public Const _DOCUMENT_ID As Int32 = 1035472
 		Public Const _DOCUMENT_ID2 As Int32 = 1035604
 		Public Const _DOCUMENT_ID3 As Int32 = 1035605
@@ -62,8 +63,8 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.Helpers
 		Private Shared ReadOnly _CASEDBNAME_CRUD As String = "EDDS" + _CASE_ID_CRUD.ToString()
 		Private Shared ReadOnly _CASEDBNAME_QUERY_BATCH_SCRIPT As String = "EDDS" + _CASE_ID_QUERY_BATCH_SCRIPT.ToString()
 
-		Private Shared ReadOnly _CASEDBNAME_ImportAPI_Source As String = "EDDS" + _CASE_ID_ImportAPI_Source.ToString()
-		Private Shared ReadOnly _CASEDBNAME_ImportAPI_Destination As String = "EDDS" + _CASE_ID_ImportAPI_Destination.ToString()
+		Private Shared ReadOnly _CASEDBNAME_ImportAPI_Source As String = "EDDS" + _CASE_ID_IMPORT_API_SOURCE.ToString()
+		Private Shared ReadOnly _CASEDBNAME_ImportAPI_Destination As String = "EDDS" + _CASE_ID_IMPORT_API_DESTINATION.ToString()
 
 		Public Shared ReadOnly _DBLIST() As String = {_CASEDBNAME_CRUD, _CASEDBNAME_QUERY_BATCH_SCRIPT, _CASEDBNAME_ImportAPI_Source, _CASEDBNAME_ImportAPI_Destination, "EDDS", "EDDSResource"}
 		Public ReadOnly _DBLIST_FOR_TEMP_BACKUP() As String = {_CASEDBNAME_CRUD + "_AFTERPROCURO", _CASEDBNAME_QUERY_BATCH_SCRIPT + "_AFTERPROCURO", _CASEDBNAME_ImportAPI_Source + "_AFTERPROCURO", _CASEDBNAME_ImportAPI_Destination + "_AFTERPROCURO", "EDDS_AFTERPROCURO", "EDDSResource_AFTERPROCURO"}
@@ -304,7 +305,7 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.Helpers
 			backupSql.AppendLine(String.Format("BACKUP DATABASE [{0}] TO DISK = N'{1}'", dbName, fileName))
 			backupSql.AppendLine(String.Format(" WITH NOFORMAT, INIT, NAME = N'{0}',", dbName))
 			backupSql.AppendLine(String.Format(" SKIP, NOREWIND, NOUNLOAD, STATS = 10"))
-			backupSql.AppendLine(String.Format("DECLARE @backupSetId AS INT"))
+			backupSql.AppendLine(String.Format(" DECLARE @backupSetId AS INT"))
 			backupSql.AppendLine(String.Format(" SELECT @backupSetId = position FROM msdb..backupset WHERE  database_name = N'{0}' AND", dbName))
 			backupSql.AppendLine(String.Format(" backup_set_id=(SELECT MAX(backup_set_id) FROM msdb..backupset WHERE database_name=N'{0}' )", dbName))
 			backupSql.AppendLine(String.Format(" IF @backupSetId IS NULL"))
