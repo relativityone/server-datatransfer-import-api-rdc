@@ -64,6 +64,7 @@ Namespace kCura.Relativity.DataReaderClient
 			tempLoadFile.ForProduction = Settings.ForProduction
 			tempLoadFile.FullTextEncoding = Settings.ExtractedTextEncoding
 			tempLoadFile.Overwrite = Settings.OverwriteMode.ToString
+			tempLoadFile.ReplaceFullText = Settings.ExtractedTextFieldContainsFilePath
 			If tempLoadFile.Overwrite = OverwriteModeEnum.Overlay.ToString Then
 				tempLoadFile.IdentityFieldId = GetDefaultIdentifierFieldID(credential, Settings.CaseArtifactId)
 			Else
@@ -123,7 +124,7 @@ Namespace kCura.Relativity.DataReaderClient
 				ValidateRelativitySettings()
 				ValidateDelimiterSettings()
 				'ValidateOverwriteModeSettings()
-				ValidateExtractedTextSettings()
+				'ValidateExtractedTextSettings()
 			Catch ex As Exception
 				RaiseEvent OnMessage(New Status(ex.Message))
 				Return False
