@@ -131,6 +131,18 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 			Assert.AreEqual(2, dataTable.Rows.Count, "documents are not correctly imported")
 		End Sub
 
+		'<Test(), _
+		'Category("HighPriority"), _
+		'Description("Successful import with extracted text - Append")> _
+		'Public Sub ImportTest2()
+		'	ImportAPI.Settings.RelativityUsername = Helpers.CommonDefaults.API_USER_ADMIN
+		'	ImportAPI.Settings.RelativityPassword = Helpers.CommonDefaults.API_USER_ADMIN_PASSWORD
+		'	ImportAPI.Settings.CaseArtifactId = Helpers.CommonDefaults.CASE_ID_CRUD
+		'	ImportAPI.Settings.ArtifactTypeId = Helpers.CommonDefaults.DOCTYPEID
+
+		'End Sub
+
+
 		'''<summary>
 		''' ImportImage AppendOverlay
 		''' </summary>
