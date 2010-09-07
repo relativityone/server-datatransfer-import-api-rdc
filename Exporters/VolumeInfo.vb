@@ -39,7 +39,7 @@ Namespace kCura.WinEDDS.Exporters
 
 		Public Property SubdirectoryImagePrefix() As String
 			Get
-				Return _subdirectoryImagePrefix
+				Return "IMAGES\" + _subdirectoryImagePrefix
 			End Get
 			Set(ByVal value As String)
 				_subdirectoryImagePrefix = value
@@ -48,7 +48,7 @@ Namespace kCura.WinEDDS.Exporters
 
 		Public Property SubdirectoryNativePrefix() As String
 			Get
-				Return _subdirectoryNativePrefix
+				Return "NATIVES\" + _subdirectoryNativePrefix
 			End Get
 			Set(ByVal value As String)
 				_subdirectoryNativePrefix = value
@@ -57,7 +57,7 @@ Namespace kCura.WinEDDS.Exporters
 
 		Public Property SubdirectoryFullTextPrefix() As String
 			Get
-				Return _subdirectoryTextPrefix
+				Return "TEXT\" + _subdirectoryTextPrefix
 			End Get
 			Set(ByVal value As String)
 				_subdirectoryTextPrefix = value
