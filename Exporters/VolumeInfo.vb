@@ -37,27 +37,39 @@ Namespace kCura.WinEDDS.Exporters
 			End Set
 		End Property
 
-		Public Property SubdirectoryImagePrefix() As String
+		Public Property SubdirectoryImagePrefix(Optional ByVal includeTopFolder As Boolean = True) As String
 			Get
-				Return "IMAGES\" + _subdirectoryImagePrefix
+				Dim result As String = _subdirectoryImagePrefix
+				If includeTopFolder Then
+					result = "IMAGES\" + result
+				End If
+				Return result
 			End Get
 			Set(ByVal value As String)
 				_subdirectoryImagePrefix = value
 			End Set
 		End Property
 
-		Public Property SubdirectoryNativePrefix() As String
+		Public Property SubdirectoryNativePrefix(Optional ByVal includeTopFolder As Boolean = True) As String
 			Get
-				Return "NATIVES\" + _subdirectoryNativePrefix
+				Dim result As String = _subdirectoryNativePrefix
+				If includeTopFolder Then
+					result = "NATIVES\" + result
+				End If
+				Return result
 			End Get
 			Set(ByVal value As String)
 				_subdirectoryNativePrefix = value
 			End Set
 		End Property
 
-		Public Property SubdirectoryFullTextPrefix() As String
+		Public Property SubdirectoryFullTextPrefix(Optional ByVal includeTopFolder As Boolean = True) As String
 			Get
-				Return "TEXT\" + _subdirectoryTextPrefix
+				Dim result As String = _subdirectoryTextPrefix
+				If includeTopFolder Then
+					result = "TEXT\" + result
+				End If
+				Return result
 			End Get
 			Set(ByVal value As String)
 				_subdirectoryTextPrefix = value
