@@ -225,9 +225,9 @@ Namespace kCura.WinEDDS
 			_uploadKey = validateBcp.Value
 			Dim overwrite As kCura.EDDS.WebAPI.BulkImportManagerBase.OverwriteType
 			Select Case _overwrite.ToLower
-				Case "none", "append"
+				Case "none"
 					overwrite = EDDS.WebAPI.BulkImportManagerBase.OverwriteType.Append
-				Case "strict", "overlay"
+				Case "strict"
 					overwrite = EDDS.WebAPI.BulkImportManagerBase.OverwriteType.Overlay
 				Case Else
 					overwrite = EDDS.WebAPI.BulkImportManagerBase.OverwriteType.Both
