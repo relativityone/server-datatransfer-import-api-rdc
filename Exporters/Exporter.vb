@@ -645,11 +645,11 @@ Namespace kCura.WinEDDS
 			If Me.Settings.TypeOfExport = ExportFile.ExportType.AncestorSearch OrElse Me.Settings.TypeOfExport = ExportFile.ExportType.ParentSearch Then
 				args.SourceRootFolderID = Me.Settings.ArtifactID
 			End If
-			args.SubdirectoryImagePrefix = Me.Settings.VolumeInfo.SubdirectoryImagePrefix
+			args.SubdirectoryImagePrefix = Me.Settings.VolumeInfo.SubdirectoryImagePrefix(False)
 			args.SubdirectoryMaxFileCount = Me.Settings.VolumeInfo.SubdirectoryMaxSize
-			args.SubdirectoryNativePrefix = Me.Settings.VolumeInfo.SubdirectoryNativePrefix
+			args.SubdirectoryNativePrefix = Me.Settings.VolumeInfo.SubdirectoryNativePrefix(False)
 			args.SubdirectoryStartNumber = Me.Settings.VolumeInfo.SubdirectoryStartNumber
-			args.SubdirectoryTextPrefix = Me.Settings.VolumeInfo.SubdirectoryFullTextPrefix
+			args.SubdirectoryTextPrefix = Me.Settings.VolumeInfo.SubdirectoryFullTextPrefix(False)
 			'args.TextAndNativeFilesNamedAfterFieldID = Me.ExportNativesToFileNamedFrom
 			If Me.ExportNativesToFileNamedFrom = ExportNativeWithFilenameFrom.Identifier Then
 				For Each field As ViewFieldInfo In Me.Settings.AllExportableFields
