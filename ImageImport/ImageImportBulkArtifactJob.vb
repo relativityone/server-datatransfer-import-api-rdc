@@ -64,6 +64,7 @@ Namespace kCura.Relativity.DataReaderClient
 			tempLoadFile.ForProduction = Settings.ForProduction
 			tempLoadFile.FullTextEncoding = Settings.ExtractedTextEncoding
 			tempLoadFile.Overwrite = Settings.OverwriteMode.ToString
+			tempLoadFile.ReplaceFullText = Settings.ExtractedTextFieldContainsFilePath
 			If tempLoadFile.Overwrite = OverwriteModeEnum.Overlay.ToString Then
 				tempLoadFile.IdentityFieldId = GetDefaultIdentifierFieldID(credential, Settings.CaseArtifactId)
 			Else
@@ -122,8 +123,8 @@ Namespace kCura.Relativity.DataReaderClient
 				'	ValidateSqlCommandSettings()
 				ValidateRelativitySettings()
 				ValidateDelimiterSettings()
-				ValidateOverwriteModeSettings()
-				ValidateExtractedTextSettings()
+				'ValidateOverwriteModeSettings()
+				'ValidateExtractedTextSettings()
 			Catch ex As Exception
 				RaiseEvent OnMessage(New Status(ex.Message))
 				Return False
@@ -212,6 +213,18 @@ Namespace kCura.Relativity.DataReaderClient
 #End Region
 
 #Region " Event Handling "
+
+		Private Sub _observer_ErrorReportEvent(ByVal row As System.Collections.IDictionary) Handles _observer.ErrorReportEvent
+			Dim retval As New System.Text.StringBuilder
+			retval.AppendFormat("[error] ")
+			For Each key As String In row.Keys
+				retval.Append(key)
+				retval.Append(": ")
+				retval.Append(row(key))
+				retval.Append(vbNewLine)
+			Next
+			RaiseEvent OnMessage(New Status(retval.ToString))
+		End Sub
 
 		Private Sub _observer_OnProcessComplete(ByVal closeForm As Boolean, ByVal exportFilePath As String, ByVal exportLogs As Boolean) Handles _observer.OnProcessComplete
 			RaiseEvent OnMessage(New Status(String.Format("Completed!")))
