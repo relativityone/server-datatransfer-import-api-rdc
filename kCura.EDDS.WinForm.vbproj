@@ -185,9 +185,9 @@
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="kCura.Resources, Version=1.0.3635.26400, Culture=neutral, processorArchitecture=x86">
+    <Reference Include="kCura.Resources, Version=1.0.3635.26400, Culture=neutral, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Vendor\kCura\1.0.2131.20968\x86\kCura.Resources.dll</HintPath>
+      <HintPath>..\..\Vendor\kCura\1.0.2131.20968\x64\kCura.Resources.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualBasic">
       <Name>Microsoft.VisualBasic</Name>
