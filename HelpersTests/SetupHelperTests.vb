@@ -30,7 +30,7 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.HelperTests
 			Dim dir As String = helper.ParentDirectoryName()
 
 			' Assert
-			Assert.That(dir.ToLower(), [Is].EqualTo("C:\SourceCode\trunk\EDDS\kCura.Relativity.Client.NUnit".ToLower()))
+			Assert.That(dir.ToLower(), [Is].EqualTo("C:\SourceCode\trunk\EDDS\kCura.Relativity.DataReaderClient.NUnit".ToLower()))
 		End Sub
 	End Class
 End Namespace

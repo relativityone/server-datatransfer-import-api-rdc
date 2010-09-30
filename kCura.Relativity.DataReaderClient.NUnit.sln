@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual Studio 2008
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
 Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "kCura.Relativity.DataReaderClient.NUnit", "kCura.Relativity.DataReaderClient.NUnit.vbproj", "{CCB5EB08-0DF3-433D-887B-47DF3D312736}"
 EndProject
 Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "kCura.Data", "..\..\kCura\kCura.Data\kCura.Data.vbproj", "{6C4D3211-85B6-4A83-9356-7C7F0C319C75}"
