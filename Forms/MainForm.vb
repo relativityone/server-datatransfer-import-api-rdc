@@ -361,6 +361,7 @@ Namespace kCura.EDDS.WinForm
 #End Region
 
 		Friend WithEvents _application As kCura.EDDS.WinForm.Application
+		Public Const MAX_LENGTH_OF_OBJECT_NAME_BEFORE_TRUNCATION As Int32 = 25
 
 		Private Sub OpenRepositoryMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles OpenRepositoryMenu.Click
 			_application.OpenCase()
@@ -520,10 +521,18 @@ Namespace kCura.EDDS.WinForm
 			Next
 		End Sub
 
+		Private Function TruncateTextWithEllipses(ByVal text As String, ByVal maxLength As Integer) As String
+			If (text.Length > maxLength) Then
+				text = text.Substring(0, maxLength - 3).TrimEnd()
+				text += "..."
+			End If
+			Return text
+		End Function
+
 		Private Sub _objectTypeDropDown_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _objectTypeDropDown.SelectedIndexChanged
 			Dim selectedObjectType As kCura.WinEDDS.ObjectTypeListItem = DirectCast(_objectTypeDropDown.SelectedItem, kCura.WinEDDS.ObjectTypeListItem)
 			Dim selectedItemValue As Int32 = selectedObjectType.Value
-			ToolsImportLoadFileMenu.Text = _objectTypeDropDown.Text & " &Load File..."
+			ToolsImportLoadFileMenu.Text = TruncateTextWithEllipses(_objectTypeDropDown.Text, MAX_LENGTH_OF_OBJECT_NAME_BEFORE_TRUNCATION) & " &Load File..."
 			ImportMenu.Visible = selectedObjectType.UserCanAdd
 			ToolsImportLoadFileMenu.Visible = selectedObjectType.UserCanAdd
 			ExportMenu.Visible = True
