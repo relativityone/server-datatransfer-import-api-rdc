@@ -161,7 +161,7 @@ Namespace kCura.EDDS.WinForm
 			Dim docFieldCollection As DocumentFieldCollection = CurrentFields(artifactTypeID, refresh)
 			Dim allFields As ICollection = docFieldCollection.AllFields
 			For Each field As DocumentField In allFields
-				If field.FieldTypeID = kCura.DynamicFields.Types.FieldTypeHelper.FieldType.File Then
+				If field.FieldTypeID = Relativity.FieldTypeHelper.FieldType.File Then
 					retval = True
 				End If
 			Next
@@ -367,7 +367,7 @@ Namespace kCura.EDDS.WinForm
 		Private Function IdentifierFieldIsMappedButNotKey(ByVal fieldMap As WinEDDS.LoadFileFieldMap, ByVal keyFieldID As Int32) As Boolean
 			Dim idField As DocumentField = Nothing
 			For Each item As LoadFileFieldMap.LoadFileFieldMapItem In fieldMap
-				If Not item.DocumentField Is Nothing AndAlso Not item.NativeFileColumnIndex = -1 And item.DocumentField.FieldCategory = DynamicFields.Types.FieldCategory.Identifier Then
+				If Not item.DocumentField Is Nothing AndAlso Not item.NativeFileColumnIndex = -1 And item.DocumentField.FieldCategory = Relativity.FieldCategory.Identifier Then
 					idField = item.DocumentField
 					Exit For
 				End If
@@ -725,7 +725,7 @@ Namespace kCura.EDDS.WinForm
 			Dim codeFieldColumnIndexes As New ArrayList
 			Dim currentIndex As Int32 = 0
 			For Each field As Api.ArtifactField In firstRow
-				If field.Type = kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Code OrElse field.Type = kCura.DynamicFields.Types.FieldTypeHelper.FieldType.MultiCode Then
+				If field.Type = Relativity.FieldTypeHelper.FieldType.Code OrElse field.Type = Relativity.FieldTypeHelper.FieldType.MultiCode Then
 					codeFieldColumnIndexes.Add(currentIndex)
 				End If
 				currentIndex += 1
@@ -748,7 +748,7 @@ Namespace kCura.EDDS.WinForm
 		'			Dim firstRow As System.Array = DirectCast(al(0), System.Array)
 		'			Dim currentIndex As Int32 = 0
 		'			For Each field As Api.ArtifactField In firstRow
-		'				If field.Type = kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Code OrElse field.Type = kCura.DynamicFields.Types.FieldTypeHelper.FieldType.MultiCode Then
+		'				If field.Type = Relativity.FieldTypeHelper.FieldType.Code OrElse field.Type = Relativity.FieldTypeHelper.FieldType.MultiCode Then
 		'					codeFieldColumnIndexes.Add(currentIndex)
 		'				End If
 		'				If field.ArtifactID = -2 And field.DisplayName = "Parent Folder Identifier" Then folderColumnIndex = currentIndex
@@ -968,7 +968,7 @@ Namespace kCura.EDDS.WinForm
 				ids.Add(row("ArtifactID"))
 			Next
 			For Each field As DocumentField In Me.CurrentFields(exportFile.ArtifactTypeID, True)
-				If field.FieldTypeID = kCura.DynamicFields.Types.FieldTypeHelper.FieldType.File Then
+				If field.FieldTypeID = Relativity.FieldTypeHelper.FieldType.File Then
 					exportFile.FileField = field
 					Exit For
 				End If

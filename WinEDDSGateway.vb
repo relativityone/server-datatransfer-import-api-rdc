@@ -72,8 +72,8 @@ Namespace kCura.EDDS.WinForm
 				'End Select
 				For Each fieldValue In fieldValues
 					If field.DisplayName = fieldValue.Name Then
-						Select Case CType(field.FieldCategoryID, kCura.DynamicFields.Types.FieldCategory)
-							Case kCura.DynamicFields.Types.FieldCategory.FullText
+						Select Case CType(field.FieldCategoryID, Relativity.FieldCategory)
+							Case Relativity.FieldCategory.FullText
 								field.Value = _uploader.UploadTextAsFile(fieldValue.Value, _currentCaseID, System.Guid.NewGuid.ToString)
 								'field.Value = (New System.Text.ASCIIEncoding).GetBytes(fieldValue.Value)
 							Case Else

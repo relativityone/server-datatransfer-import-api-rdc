@@ -1438,7 +1438,7 @@ Public Class ExportForm
 			If Not defaultSelectedIds.Contains(field.AvfId) Then
 				If Me.ExportFile.ArtifactTypeID = kCura.EDDS.Types.ArtifactType.Document Then
 					leftListBoxItems.Add(New ViewFieldInfo(field))
-				ElseIf field.FieldType <> kCura.DynamicFields.Types.FieldTypeHelper.FieldType.File Then
+				ElseIf field.FieldType <> Relativity.FieldTypeHelper.FieldType.File Then
 					leftListBoxItems.Add(New ViewFieldInfo(field))
 				End If
 			End If
@@ -1449,7 +1449,7 @@ Public Class ExportForm
 					If Me.ExportFile.ArtifactTypeID = kCura.EDDS.Types.ArtifactType.Document Then
 						_columnSelecter.RightListBoxItems.Add(New ViewFieldInfo(field))
 						Exit For
-					ElseIf field.FieldType <> kCura.DynamicFields.Types.FieldTypeHelper.FieldType.File Then
+					ElseIf field.FieldType <> Relativity.FieldTypeHelper.FieldType.File Then
 						_columnSelecter.RightListBoxItems.Add(New ViewFieldInfo(field))
 						Exit For
 					End If
@@ -1627,7 +1627,7 @@ Public Class ExportForm
 		_potentialTextFields.Items.Clear()
 		Dim textFields As New System.Collections.ArrayList
 		For Each field As kCura.WinEDDS.ViewFieldInfo In _columnSelecter.RightListBoxItems
-			If field.FieldType = kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Text Then
+			If field.FieldType = Relativity.FieldTypeHelper.FieldType.Text Then
 				textFields.Add(New kCura.WinEDDS.ViewFieldInfo(field))
 			End If
 		Next
@@ -1645,7 +1645,7 @@ Public Class ExportForm
 		End If
 		If Not isSelectedItemSet AndAlso _potentialTextFields.Items.Count > 0 Then
 			For i As Int32 = 0 To _potentialTextFields.Items.Count - 1
-				If DirectCast(_potentialTextFields.Items(i), ViewFieldInfo).Category = kCura.DynamicFields.Types.FieldCategory.FullText Then
+				If DirectCast(_potentialTextFields.Items(i), ViewFieldInfo).Category = Relativity.FieldCategory.FullText Then
 					_potentialTextFields.SelectedIndex = i
 					isSelectedItemSet = True
 					Exit For

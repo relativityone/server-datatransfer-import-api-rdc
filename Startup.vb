@@ -322,7 +322,7 @@ Namespace kCura.EDDS.WinForm
 					If command.Value Is Nothing Then command.Value = ""
 					If command.Value = "" Then Throw New InvalidArtifactTypeException(command.Value)
 					For Each row As System.Data.DataRow In _application.AllUploadableArtifactTypes.Rows
-						If kCura.DynamicFields.Types.FieldColumnNameHelper.GetSqlFriendlyName(row("Name").ToString).ToLower = kCura.DynamicFields.Types.FieldColumnNameHelper.GetSqlFriendlyName(command.Value).ToLower Then
+						If Relativity.SqlNameHelper.GetSqlFriendlyName(row("Name").ToString).ToLower = Relativity.SqlNameHelper.GetSqlFriendlyName(command.Value).ToLower Then
 							Return CType(row("DescriptorArtifactTypeID"), Int32)
 						End If
 					Next

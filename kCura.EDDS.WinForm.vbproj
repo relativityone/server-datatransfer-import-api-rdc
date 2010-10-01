@@ -185,6 +185,10 @@
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Relativity\Relativity.vbproj">
+      <Project>{044A6424-BC90-46CE-8805-0053A44AFCAB}</Project>
+      <Name>Relativity</Name>
+    </ProjectReference>
     <Reference Include="kCura.Resources, Version=1.0.3635.26400, Culture=neutral, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Vendor\kCura\1.0.2131.20968\x64\kCura.Resources.dll</HintPath>
@@ -225,11 +229,6 @@
     <ProjectReference Include="..\..\kCura\kCura.Data\kCura.Data.vbproj">
       <Project>{6C4D3211-85B6-4A83-9356-7C7F0C319C75}</Project>
       <Name>kCura.Data</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\kCura\kCura.DynamicFields.Types\kCura.DynamicFields.Types.vbproj">
-      <Name>kCura.DynamicFields.Types</Name>
-      <Project>{E8C68A03-7FC4-40AD-BB0B-5F22A3E6447E}</Project>
-      <Package>{F184B08F-C81C-45F6-A57F-5ABD9991F28F}</Package>
     </ProjectReference>
     <ProjectReference Include="..\..\kCura\kCura.Utility\kCura.Utility.vbproj">
       <Project>{E3450350-56E3-4FE9-A47A-4D24960BCBDB}</Project>

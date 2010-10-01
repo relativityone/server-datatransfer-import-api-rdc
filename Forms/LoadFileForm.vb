@@ -794,8 +794,8 @@ Namespace kCura.EDDS.WinForm
 		Private Function GetSuitableKeyFields() As DocumentField()
 			Dim retval As New System.Collections.ArrayList
 			For Each field As DocumentField In _application.CurrentFields(Me.LoadFile.ArtifactTypeID, True)
-				If (field.FieldCategory = DynamicFields.Types.FieldCategory.Generic OrElse field.FieldCategory = DynamicFields.Types.FieldCategory.Identifier) AndAlso field.FieldTypeID = DynamicFields.Types.FieldTypeHelper.FieldType.Varchar Then
-					If field.FieldCategory = DynamicFields.Types.FieldCategory.Identifier Then field.FieldName &= " [Identifier]"
+				If (field.FieldCategory = Relativity.FieldCategory.Generic OrElse field.FieldCategory = Relativity.FieldCategory.Identifier) AndAlso field.FieldTypeID = Relativity.FieldTypeHelper.FieldType.Varchar Then
+					If field.FieldCategory = Relativity.FieldCategory.Identifier Then field.FieldName &= " [Identifier]"
 					retval.Add(field)
 				End If
 			Next
@@ -880,7 +880,7 @@ Namespace kCura.EDDS.WinForm
 
 			LoadFile.ExtractedTextFileEncoding = _fullTextFileEncodingPicker.SelectedEncoding
 			If _extractedTextValueContainsFileLocation.Checked AndAlso _fullTextFileEncodingPicker.SelectedEncoding IsNot Nothing Then
-				LoadFile.ExtractedTextFileEncodingName = kCura.DynamicFields.Types.FieldColumnNameHelper.GetSqlFriendlyName(_fullTextFileEncodingPicker.SelectedEncoding.EncodingName).ToLower
+				LoadFile.ExtractedTextFileEncodingName = Relativity.SqlNameHelper.GetSqlFriendlyName(_fullTextFileEncodingPicker.SelectedEncoding.EncodingName).ToLower
 			End If
 			LoadFile.LoadNativeFiles = _loadNativeFiles.Checked
 			If _overwriteDropdown.SelectedItem Is Nothing Then
@@ -913,7 +913,7 @@ Namespace kCura.EDDS.WinForm
 				'Add the file field as a mapped field for non document object types
 				If Me.LoadFile.ArtifactTypeID <> kCura.EDDS.Types.ArtifactType.Document Then
 					For Each field As DocumentField In currentFields.AllFields
-						If field.FieldTypeID = kCura.DynamicFields.Types.FieldTypeHelper.FieldType.File Then
+						If field.FieldTypeID = Relativity.FieldTypeHelper.FieldType.File Then
 							Dim openParenIndex As Int32 = LoadFile.NativeFilePathColumn.LastIndexOf("("c) + 1
 							Dim closeParenIndex As Int32 = LoadFile.NativeFilePathColumn.LastIndexOf(")"c)
 							Dim nativePathColumn As Int32 = Int32.Parse(LoadFile.NativeFilePathColumn.Substring(openParenIndex, closeParenIndex - openParenIndex)) - 1
@@ -1023,7 +1023,7 @@ Namespace kCura.EDDS.WinForm
 			_importMenuForceFolderPreviewItem.Checked = Me.LoadFile.ForceFolderPreview
 			If Not loadFileObjectUpdatedFromFile Then
 				For Each item As DocumentField In _overlayIdentifier.Items
-					If item.FieldCategory = DynamicFields.Types.FieldCategory.Identifier Then
+					If item.FieldCategory = Relativity.FieldCategory.Identifier Then
 						_overlayIdentifier.SelectedItem = item
 						Exit For
 					End If
@@ -1200,7 +1200,7 @@ Namespace kCura.EDDS.WinForm
 			Return columnHeaders
 		End Function
 
-		
+
 
 		Private Sub OpenFileDialog_FileOk(ByVal sender As Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles OpenFileDialog.FileOk
 			Dim oldfilepath As String = Nothing
@@ -1279,7 +1279,7 @@ Namespace kCura.EDDS.WinForm
 			LoadFile.OverwriteDestination = Me.GetOverwrite
 			If LoadFile.OverwriteDestination.ToLower <> "strict" Then
 				For Each field As DocumentField In _overlayIdentifier.Items
-					If field.FieldCategory = DynamicFields.Types.FieldCategory.Identifier Then
+					If field.FieldCategory = Relativity.FieldCategory.Identifier Then
 						_overlayIdentifier.SelectedItem = field
 						Exit For
 					End If
@@ -1392,7 +1392,7 @@ Namespace kCura.EDDS.WinForm
 				'Dim item As String
 				'For Each item In _fieldMap.RightListBoxItems
 				'	Try
-				'		If _application.CurrentFields.Item(item).FieldCategoryID = kCura.DynamicFields.Types.FieldCategory.DuplicateHash Then
+				'		If _application.CurrentFields.Item(item).FieldCategoryID = Relativity.FieldCategory.DuplicateHash Then
 				'			Return False
 				'		End If
 				'	Catch
@@ -1482,7 +1482,7 @@ Namespace kCura.EDDS.WinForm
 				 Array.IndexOf(casefields, item.DocumentField.FieldName) > -1 AndAlso _
 				 item.NativeFileColumnIndex < columnHeaders.Length _
 				 Then
-					If item.DocumentField.FieldCategoryID = kCura.DynamicFields.Types.FieldCategory.Identifier Then
+					If item.DocumentField.FieldCategoryID = Relativity.FieldCategory.Identifier Then
 						selectedFieldNameList.Add(item.DocumentField.FieldName & " [Identifier]")
 					Else
 						selectedFieldNameList.Add(item.DocumentField.FieldName)
@@ -1492,7 +1492,7 @@ Namespace kCura.EDDS.WinForm
 			Next
 			For Each item In _loadFile.FieldMap
 				If Not item.DocumentField Is Nothing AndAlso columnHeaders.Length = 0 AndAlso Array.IndexOf(casefields, item.DocumentField.FieldName) > -1 Then
-					If item.DocumentField.FieldCategoryID = kCura.DynamicFields.Types.FieldCategory.Identifier Then
+					If item.DocumentField.FieldCategoryID = Relativity.FieldCategory.Identifier Then
 						selectedFieldNameList.Add(item.DocumentField.FieldName & " [Identifier]")
 					Else
 						selectedFieldNameList.Add(item.DocumentField.FieldName)
@@ -1597,7 +1597,7 @@ Namespace kCura.EDDS.WinForm
 			Next
 			If _overlayIdentifier.SelectedItem Is Nothing Then
 				For Each field As DocumentField In _overlayIdentifier.Items
-					If field.FieldCategory = DynamicFields.Types.FieldCategory.Identifier Then
+					If field.FieldCategory = Relativity.FieldCategory.Identifier Then
 						_overlayIdentifier.SelectedItem = field
 						Exit For
 					End If
