@@ -185,6 +185,10 @@
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\kCura\kCura.DynamicFields.Types\kCura.DynamicFields.Types.vbproj">
+      <Project>{E8C68A03-7FC4-40AD-BB0B-5F22A3E6447E}</Project>
+      <Name>kCura.DynamicFields.Types</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Relativity\Relativity.vbproj">
       <Project>{044A6424-BC90-46CE-8805-0053A44AFCAB}</Project>
       <Name>Relativity</Name>
