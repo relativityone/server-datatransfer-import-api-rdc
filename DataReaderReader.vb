@@ -137,7 +137,7 @@ Namespace kCura.WinEDDS.ImportExtension
 				If _loadFileSettings.LoadNativeFiles AndAlso Not _loadFileSettings.NativeFilePathColumn Is Nothing AndAlso Not _loadFileSettings.NativeFilePathColumn = String.Empty Then
 					Dim nativeFileIndex As Int32 = Int32.Parse(_loadFileSettings.NativeFilePathColumn.Substring(_loadFileSettings.NativeFilePathColumn.LastIndexOf("(")).Trim("()".ToCharArray))
 					Dim displayName As String = _reader.GetName(nativeFileIndex - 1)
-					Dim field As New Api.ArtifactField(New DocumentField(displayName, -1, kCura.DynamicFields.Types.FieldTypeHelper.FieldType.File, kCura.DynamicFields.Types.FieldCategory.FileInfo, New Nullable(Of Int32)(Nothing), New Nullable(Of Int32)(Nothing), New Nullable(Of Int32)(Nothing), True))
+					Dim field As New Api.ArtifactField(New DocumentField(displayName, -1, Relativity.FieldTypeHelper.FieldType.File, Relativity.FieldCategory.FileInfo, New Nullable(Of Int32)(Nothing), New Nullable(Of Int32)(Nothing), New Nullable(Of Int32)(Nothing), True))
 					Me.SetFieldValue(field, _reader.Item(nativeFileIndex - 1))
 					retval.Add(field)
 				End If
@@ -151,7 +151,7 @@ Namespace kCura.WinEDDS.ImportExtension
 					' we do not do this when we are pointing to files using links.
 					' we also don't do this if kCuraMarkerFilename field is not present because we can copy from the current location 
 					For Each field As Api.ArtifactField In retval
-						If field.Type = DynamicFields.Types.FieldTypeHelper.FieldType.File Then
+						If field.Type = Relativity.FieldTypeHelper.FieldType.File Then
 							If field.ValueAsString <> String.Empty Then
 								If System.IO.File.Exists(field.ValueAsString) Then
 
@@ -184,7 +184,7 @@ Namespace kCura.WinEDDS.ImportExtension
 			If _loadFileSettings.CreateFolderStructure AndAlso Not _loadFileSettings.FolderStructureContainedInColumn Is Nothing AndAlso Not _loadFileSettings.FolderStructureContainedInColumn = String.Empty Then
 				Dim parentIndex As Int32 = Int32.Parse(_loadFileSettings.FolderStructureContainedInColumn.Substring(_loadFileSettings.FolderStructureContainedInColumn.LastIndexOf("(")).Trim("()".ToCharArray))
 				Dim displayName As String = _reader.GetName(parentIndex - 1)
-				Dim field As New Api.ArtifactField(displayName, -2, kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Object, kCura.DynamicFields.Types.FieldCategory.ParentArtifact, New Nullable(Of Int32)(Nothing), New Nullable(Of Int32)(255), New Nullable(Of Int32)(Nothing))
+				Dim field As New Api.ArtifactField(displayName, -2, Relativity.FieldTypeHelper.FieldType.Object, Relativity.FieldCategory.ParentArtifact, New Nullable(Of Int32)(Nothing), New Nullable(Of Int32)(255), New Nullable(Of Int32)(Nothing))
 				Me.SetFieldValue(field, _reader.Item(parentIndex - 1))
 				retval.Add(field)
 			End If
@@ -229,29 +229,29 @@ Namespace kCura.WinEDDS.ImportExtension
 		Private Sub SetFieldValue(ByVal field As Api.ArtifactField, ByVal value As Object)
 			'RaiseEvent StatusMessage("Field ArtifactID = " & field.ArtifactID)
 			Select Case field.Type
-				Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Boolean
+				Case Relativity.FieldTypeHelper.FieldType.Boolean
 					field.Value = kCura.Utility.NullableTypesHelper.DBNullConvertToNullable(Of Boolean)(value)
-				Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Code
+				Case Relativity.FieldTypeHelper.FieldType.Code
 					field.Value = kCura.Utility.NullableTypesHelper.DBNullString(value)
-				Case DynamicFields.Types.FieldTypeHelper.FieldType.Text
+				Case Relativity.FieldTypeHelper.FieldType.Text
 					field.Value = kCura.Utility.NullableTypesHelper.DBNullString(value)
-				Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.User
+				Case Relativity.FieldTypeHelper.FieldType.User
 					field.Value = kCura.Utility.NullableTypesHelper.DBNullString(value)
-				Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Varchar
+				Case Relativity.FieldTypeHelper.FieldType.Varchar
 					field.Value = kCura.Utility.NullableTypesHelper.DBNullString(value)
-				Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Object
+				Case Relativity.FieldTypeHelper.FieldType.Object
 					field.Value = kCura.Utility.NullableTypesHelper.DBNullString(value)
-				Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Currency, kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Decimal
+				Case Relativity.FieldTypeHelper.FieldType.Currency, Relativity.FieldTypeHelper.FieldType.Decimal
 					field.Value = kCura.Utility.NullableTypesHelper.DBNullConvertToNullable(Of Decimal)(value)
-				Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Date
+				Case Relativity.FieldTypeHelper.FieldType.Date
 					field.Value = kCura.Utility.NullableTypesHelper.DBNullConvertToNullable(Of System.DateTime)(value)
-				Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.File
+				Case Relativity.FieldTypeHelper.FieldType.File
 					field.Value = kCura.Utility.NullableTypesHelper.DBNullString(value)
 					'field.Value = value.ToString
-				Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Integer
+				Case Relativity.FieldTypeHelper.FieldType.Integer
 					field.Value = kCura.Utility.NullableTypesHelper.DBNullConvertToNullable(Of Int32)(value)
 					'field.Value = kCura.Utility.NullableTypesHelper.ToNullableInt32(value)
-				Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.MultiCode, kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Objects
+				Case Relativity.FieldTypeHelper.FieldType.MultiCode, Relativity.FieldTypeHelper.FieldType.Objects
 					field.Value = kCura.Utility.NullableTypesHelper.DBNullString(value)
 					Dim xml As String = value.ToString
 					If Not xml = String.Empty Then
