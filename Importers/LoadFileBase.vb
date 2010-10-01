@@ -151,7 +151,7 @@ Namespace kCura.WinEDDS
 			End If
 			If _keyFieldID = -1 Then
 				For Each field As DocumentField In _docFields
-					If field.FieldCategory = DynamicFields.Types.FieldCategory.Identifier Then
+					If field.FieldCategory = Relativity.FieldCategory.Identifier Then
 						_keyFieldID = field.FieldID
 						Exit For
 					End If
@@ -278,15 +278,15 @@ Namespace kCura.WinEDDS
 				Throw DirectCast(field.Value, System.Exception)
 			End If
 			Select Case field.Type
-				Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Boolean
+				Case Relativity.FieldTypeHelper.FieldType.Boolean
 					field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(CType(field.Value, Nullable(Of Boolean)))
-				Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Integer
+				Case Relativity.FieldTypeHelper.FieldType.Integer
 					field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(CType(field.Value, Nullable(Of Int32)))
-				Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Currency, kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Decimal
+				Case Relativity.FieldTypeHelper.FieldType.Currency, Relativity.FieldTypeHelper.FieldType.Decimal
 					field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(CType(field.Value, Nullable(Of Decimal)))
-				Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Date
+				Case Relativity.FieldTypeHelper.FieldType.Date
 					field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(CType(field.Value, Nullable(Of DateTime)), True)
-				Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.User
+				Case Relativity.FieldTypeHelper.FieldType.User
 					Dim previewValue As String = ""
 					If field.Value Is Nothing Then
 						field.Value = String.Empty
@@ -295,7 +295,7 @@ Namespace kCura.WinEDDS
 						field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(Me.GetUserArtifactID(field.Value.ToString, columnIndex))
 					End If
 					If forPreview Then field.Value = previewValue
-				Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Code
+				Case Relativity.FieldTypeHelper.FieldType.Code
 					Dim fieldValue As String
 					If field.Value Is Nothing Then
 						fieldValue = ""
@@ -325,7 +325,7 @@ Namespace kCura.WinEDDS
 							field.Value = ""
 						End If
 					End If
-				Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.MultiCode
+				Case Relativity.FieldTypeHelper.FieldType.MultiCode
 					Dim value As String() = Nothing
 					If Not field.Value Is Nothing Then value = DirectCast(field.Value, String())
 					If field.Value Is Nothing Then value = New System.String() {}
@@ -377,18 +377,18 @@ Namespace kCura.WinEDDS
 							End If
 						End If
 					End If
-				Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Varchar
+				Case Relativity.FieldTypeHelper.FieldType.Varchar
 					If field.Value Is Nothing Then field.Value = String.Empty
 					field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(Me.GetNullableFixedString(field.ValueAsString, columnIndex, field.TextLength))
 					Select Case field.Category
-						Case DynamicFields.Types.FieldCategory.Relational
+						Case Relativity.FieldCategory.Relational
 							If field.Value.ToString = String.Empty Then field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(Me.GetNullableFixedString(identityValue, columnIndex, field.TextLength))
 					End Select
-				Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Object
+				Case Relativity.FieldTypeHelper.FieldType.Object
 					If field.Value Is Nothing Then field.Value = String.Empty
 					field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(GetNullableAssociatedObjectName(field.Value.ToString, columnIndex, field.TextLength, field.DisplayName))
 					If forPreview Then field.Value = field.Value.ToString.Trim
-				Case DynamicFields.Types.FieldTypeHelper.FieldType.Objects
+				Case Relativity.FieldTypeHelper.FieldType.Objects
 					Dim value As String() = Nothing
 					If Not field.Value Is Nothing Then value = DirectCast(field.Value, String())
 					If field.Value Is Nothing Then value = New System.String() {}
@@ -429,8 +429,8 @@ Namespace kCura.WinEDDS
 							End If
 						End If
 					End If
-				Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Text
-					If field.Category = DynamicFields.Types.FieldCategory.FullText AndAlso _fullTextColumnMapsToFileLocation Then
+				Case Relativity.FieldTypeHelper.FieldType.Text
+					If field.Category = Relativity.FieldCategory.FullText AndAlso _fullTextColumnMapsToFileLocation Then
 						Dim value As String = field.ValueAsString
 						If value = "" Then
 							field.Value = ""

@@ -27,7 +27,7 @@ Namespace kCura.WinEDDS
 			_loadFile.CreateFolderStructure = False
 			_loadFile.Credentials = Me.Credential
 			_loadFile.ExtractedTextFileEncoding = System.Text.Encoding.Default
-			_loadFile.ExtractedTextFileEncodingName = kCura.DynamicFields.Types.FieldColumnNameHelper.GetSqlFriendlyName(_loadFile.ExtractedTextFileEncoding.EncodingName).ToLower
+			_loadFile.ExtractedTextFileEncodingName = Relativity.SqlNameHelper.GetSqlFriendlyName(_loadFile.ExtractedTextFileEncoding.EncodingName).ToLower
 			_loadFile.ExtractFullTextFromNativeFile = False
 			_loadFile.ExtractMD5HashFromNativeFile = False
 			_loadFile.FieldMap = New kCura.WinEDDS.LoadFileFieldMap

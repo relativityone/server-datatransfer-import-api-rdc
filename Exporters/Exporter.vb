@@ -121,13 +121,13 @@ Namespace kCura.WinEDDS
 
 		Private Function IsExtractedTextSelected() As Boolean
 			For Each vfi As ViewFieldInfo In Me.Settings.SelectedViewFields
-				If vfi.Category = DynamicFields.Types.FieldCategory.FullText Then Return True
+				If vfi.Category = Relativity.FieldCategory.FullText Then Return True
 			Next
 			Return False
 		End Function
 		Private Function ExtractedTextField() As ViewFieldInfo
 			For Each v As ViewFieldInfo In Me.Settings.AllExportableFields
-				If v.Category = DynamicFields.Types.FieldCategory.FullText Then Return v
+				If v.Category = Relativity.FieldCategory.FullText Then Return v
 			Next
 			Throw New System.Exception("Full text field somehow not in all fields")
 		End Function
@@ -148,7 +148,7 @@ Namespace kCura.WinEDDS
 			If Me.Settings.TypeOfExport = ExportFile.ExportType.Production Then
 				production = _productionManager.Read(Me.Settings.CaseArtifactID, Me.Settings.ArtifactID)
 				With _fieldManager.Read(Me.Settings.CaseArtifactID, production.BeginBatesFieldArtifactID)
-					_beginBatesColumn = kCura.DynamicFields.Types.FieldColumnNameHelper.GetSqlFriendlyName(.DisplayName)
+					_beginBatesColumn = Relativity.SqlNameHelper.GetSqlFriendlyName(.DisplayName)
 					If Not allAvfIds.Contains(.ArtifactViewFieldID) Then allAvfIds.Add(.ArtifactViewFieldID)
 				End With
 			End If
@@ -266,7 +266,7 @@ Namespace kCura.WinEDDS
 			If Me.ExportNativesToFileNamedFrom = ExportNativeWithFilenameFrom.Production Then
 				beginBatesColumnIndex = _volumeManager.OrdinalLookup(_beginBatesColumn)
 			End If
-			Dim identifierColumnName As String = kCura.DynamicFields.Types.FieldColumnNameHelper.GetSqlFriendlyName(Me.Settings.IdentifierColumnName)
+			Dim identifierColumnName As String = Relativity.SqlNameHelper.GetSqlFriendlyName(Me.Settings.IdentifierColumnName)
 			Dim identifierColumnIndex As Int32 = _volumeManager.OrdinalLookup(identifierColumnName)
 			For i = 0 To documentArtifactIDs.Length - 1
 				Dim artifact As New Exporters.ObjectExportInfo
@@ -445,7 +445,7 @@ Namespace kCura.WinEDDS
 				retString.Append("<table width='100%'><tr>" & vbNewLine)
 			End If
 			For Each field As WinEDDS.ViewFieldInfo In Me.Settings.SelectedViewFields
-				Me.Settings.ExportFullText = Me.Settings.ExportFullText OrElse field.Category = DynamicFields.Types.FieldCategory.FullText
+				Me.Settings.ExportFullText = Me.Settings.ExportFullText OrElse field.Category = Relativity.FieldCategory.FullText
 			Next
 			_columns = New System.Collections.ArrayList(Me.Settings.SelectedViewFields)
 			For i As Int32 = 0 To _columns.Count - 1
@@ -653,7 +653,7 @@ Namespace kCura.WinEDDS
 			'args.TextAndNativeFilesNamedAfterFieldID = Me.ExportNativesToFileNamedFrom
 			If Me.ExportNativesToFileNamedFrom = ExportNativeWithFilenameFrom.Identifier Then
 				For Each field As ViewFieldInfo In Me.Settings.AllExportableFields
-					If field.Category = DynamicFields.Types.FieldCategory.Identifier Then
+					If field.Category = Relativity.FieldCategory.Identifier Then
 						args.TextAndNativeFilesNamedAfterFieldID = field.FieldArtifactId
 						Exit For
 					End If

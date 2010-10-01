@@ -1,4 +1,4 @@
-Imports kCura.DynamicFields.Types
+Imports Relativity
 Namespace kCura.WinEDDS.Api
 	Public Class ArtifactField
 		Inherits kCura.EDDS.Types.FieldInfoBase
@@ -43,25 +43,25 @@ Namespace kCura.WinEDDS.Api
 			Return New Api.ArtifactField(Me.DisplayName, Me.ArtifactID, Me.Type, Me.Category, New Nullable(Of Int32)(Me.CodeTypeID), New Nullable(Of Int32)(Me.TextLength), New Nullable(Of Int32)(Me.AssociatedObjectTypeID))
 		End Function
 
-        Public Sub New(ByVal field As DocumentField)
-            Me.ArtifactID = field.FieldID
-			Me.Category = CType(field.FieldCategoryID, kCura.DynamicFields.Types.FieldCategory)
+		Public Sub New(ByVal field As DocumentField)
+			Me.ArtifactID = field.FieldID
+			Me.Category = CType(field.FieldCategoryID, Relativity.FieldCategory)
 			If Not field.CodeTypeID Is Nothing Then Me.CodeTypeID = field.CodeTypeID.Value
-            Me.DisplayName = field.FieldName
+			Me.DisplayName = field.FieldName
 			If Not field.FieldLength Is Nothing Then Me.TextLength = field.FieldLength.Value
 			If Not field.AssociatedObjectTypeID Is Nothing Then Me.AssociatedObjectTypeID = field.AssociatedObjectTypeID.Value
-            Me.Type = CType(field.FieldTypeID, kCura.DynamicFields.Types.FieldTypeHelper.FieldType)
-        End Sub
+			Me.Type = CType(field.FieldTypeID, Relativity.FieldTypeHelper.FieldType)
+		End Sub
 
-        Public Sub New(ByVal field As kCura.EDDS.WebAPI.DocumentManagerBase.Field)
-            Me.ArtifactID = field.ArtifactID
-            Me.Category = CType(field.FieldCategoryID, kCura.DynamicFields.Types.FieldCategory)
+		Public Sub New(ByVal field As kCura.EDDS.WebAPI.DocumentManagerBase.Field)
+			Me.ArtifactID = field.ArtifactID
+			Me.Category = CType(field.FieldCategoryID, Relativity.FieldCategory)
 			If Not field.CodeTypeID Is Nothing Then Me.CodeTypeID = field.CodeTypeID.Value
-            Me.DisplayName = field.DisplayName
+			Me.DisplayName = field.DisplayName
 			If Not field.MaxLength Is Nothing Then Me.TextLength = field.MaxLength.Value
 			If Not field.AssociativeArtifactTypeID Is Nothing Then Me.AssociatedObjectTypeID = field.AssociativeArtifactTypeID.Value
-            Me.Type = CType(field.FieldTypeID, kCura.DynamicFields.Types.FieldTypeHelper.FieldType)
-        End Sub
-    End Class
+			Me.Type = CType(field.FieldTypeID, Relativity.FieldTypeHelper.FieldType)
+		End Sub
+	End Class
 End Namespace
 

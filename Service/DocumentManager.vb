@@ -23,7 +23,7 @@ Namespace kCura.WinEDDS.Service
 			Dim doc As kCura.EDDS.WebAPI.DocumentManagerBase.Document = Me.Read(caseContextArtifactID, documentArtifactID, fieldArtifactIds)
 			Dim field As kCura.EDDS.WebAPI.DocumentManagerBase.Field
 			For Each field In doc.Fields
-				If field.FieldCategoryID = kCura.DynamicFields.Types.FieldCategory.FullText Then
+				If field.FieldCategoryID = Relativity.FieldCategory.FullText Then
 					field.Value = System.Text.Encoding.Default.GetString(DirectCast(field.Value, Byte()))
 					Exit For
 				End If

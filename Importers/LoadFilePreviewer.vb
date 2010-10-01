@@ -94,7 +94,7 @@ Namespace kCura.WinEDDS
 
 		Public Function ReadFile(ByVal path As String, ByVal formType As Int32) As Object
 			Dim earlyexit As Boolean = False
-			_relationalDocumentFields = _fieldQuery.RetrieveAllAsDocumentFieldCollection(_selectedCaseArtifactID, _artifactTypeID).GetFieldsByCategory(DynamicFields.Types.FieldCategory.Relational)
+			_relationalDocumentFields = _fieldQuery.RetrieveAllAsDocumentFieldCollection(_selectedCaseArtifactID, _artifactTypeID).GetFieldsByCategory(Relativity.FieldCategory.Relational)
 			Dim filesize As Int64 = _artifactReader.SizeInBytes
 			Dim stepsize As Int64 = CType(filesize / 100, Int64)
 			ProcessStart(0, filesize, stepsize)
@@ -165,16 +165,16 @@ Namespace kCura.WinEDDS
 			For Each mapItem In _fieldMap
 				If mapItem.NativeFileColumnIndex > -1 AndAlso Not mapItem.DocumentField Is Nothing Then
 					Dim field As Api.ArtifactField = record(mapItem.DocumentField.FieldID)
-					If Not (_artifactTypeID <> kCura.EDDS.Types.ArtifactType.Document And field.Type = kCura.DynamicFields.Types.FieldTypeHelper.FieldType.File) Then
+					If Not (_artifactTypeID <> kCura.EDDS.Types.ArtifactType.Document And field.Type = Relativity.FieldTypeHelper.FieldType.File) Then
 						Select Case field.Category
-							Case kCura.DynamicFields.Types.FieldCategory.Relational
+							Case Relativity.FieldCategory.Relational
 								If unmappedFields.Contains(field.ArtifactID) Then
 									unmappedFields.Remove(field.ArtifactID)
 								End If
 								If Not mappedFields.Contains(field.ArtifactID) Then
 									mappedFields.Add(field.ArtifactID, field)
 								End If
-							Case kCura.DynamicFields.Types.FieldCategory.Identifier
+							Case Relativity.FieldCategory.Identifier
 								If Not _keyFieldID > 0 Then identifierField = field
 						End Select
 						lineContainsErrors = lineContainsErrors Or SetFieldValueOrErrorMessage(field, mapItem.NativeFileColumnIndex, identifierField.ValueAsString, codePageId)
@@ -229,7 +229,7 @@ Namespace kCura.WinEDDS
 			End If
 
 			If _createFolderStructure Then
-				Dim field As Api.ArtifactField = record.FieldList(DynamicFields.Types.FieldCategory.ParentArtifact)(0)
+				Dim field As Api.ArtifactField = record.FieldList(Relativity.FieldCategory.ParentArtifact)(0)
 				If _artifactTypeID <> kCura.EDDS.Types.ArtifactType.Document Then
 					If field.ValueAsString = String.Empty Then
 						field.Value = New ParentObjectReferenceRequiredException(Me.CurrentLineNumber, -1).Message

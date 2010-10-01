@@ -110,7 +110,7 @@ Namespace kCura.WinEDDS
 			Get
 				Dim retVal As New kCura.EDDS.WebAPI.DocumentManagerBase.Field
 				For Each field As kCura.EDDS.WebAPI.DocumentManagerBase.Field In Me.AllFields(artifactTypeID)
-					If field.FieldCategoryID = kCura.DynamicFields.Types.FieldCategory.FileInfo Then retVal = field
+					If field.FieldCategoryID = Relativity.FieldCategory.FileInfo Then retVal = field
 				Next
 				Return retVal
 			End Get
@@ -166,7 +166,7 @@ Namespace kCura.WinEDDS
 				If _unmappedRelationalFields Is Nothing Then
 					Dim mappedRelationalFieldIds As New System.Collections.ArrayList
 					For Each item As LoadFileFieldMap.LoadFileFieldMapItem In _fieldMap
-						If Not item.DocumentField Is Nothing AndAlso item.DocumentField.FieldCategory = DynamicFields.Types.FieldCategory.Relational Then
+						If Not item.DocumentField Is Nothing AndAlso item.DocumentField.FieldCategory = Relativity.FieldCategory.Relational Then
 							mappedRelationalFieldIds.Add(item.DocumentField.FieldID)
 						End If
 					Next
@@ -197,7 +197,7 @@ Namespace kCura.WinEDDS
 				_defaultDestinationFolderPath = args.SelectedCasePath & "EDDS" & args.CaseInfo.ArtifactID & "\"
 				If args.ArtifactTypeID <> kCura.EDDS.Types.ArtifactType.Document Then
 					For Each item As LoadFileFieldMap.LoadFileFieldMapItem In args.FieldMap
-						If Not item.DocumentField Is Nothing AndAlso item.NativeFileColumnIndex > -1 AndAlso item.DocumentField.FieldTypeID = kCura.DynamicFields.Types.FieldTypeHelper.FieldType.File Then
+						If Not item.DocumentField Is Nothing AndAlso item.NativeFileColumnIndex > -1 AndAlso item.DocumentField.FieldTypeID = Relativity.FieldTypeHelper.FieldType.File Then
 							_defaultDestinationFolderPath &= "File" & item.DocumentField.FieldID & "\"
 						End If
 					Next
@@ -370,7 +370,7 @@ Namespace kCura.WinEDDS
 			Dim fieldIdList As New System.Collections.ArrayList
 			For Each item As LoadFileFieldMap.LoadFileFieldMapItem In _fieldMap
 				If Not item.DocumentField Is Nothing AndAlso Not item.NativeFileColumnIndex = -1 Then
-					'If item.DocumentField.FieldCategoryID <> kCura.DynamicFields.Types.FieldCategory.FullText Then fieldIdList.Add(item.DocumentField.FieldID)
+					'If item.DocumentField.FieldCategoryID <> Relativity.FieldCategory.FullText Then fieldIdList.Add(item.DocumentField.FieldID)
 					fieldIdList.Add(item.DocumentField.FieldID)
 				End If
 			Next
@@ -381,7 +381,7 @@ Namespace kCura.WinEDDS
 		Private Function ManageDocument(ByVal record As Api.ArtifactFieldCollection, ByVal lineStatus As Int32) As String
 			Dim filename As String = Nothing
 			Dim fileGuid As String = String.Empty
-			Dim uploadFile As Boolean = record.FieldList(DynamicFields.Types.FieldTypeHelper.FieldType.File).Length > 0 AndAlso Not record.FieldList(DynamicFields.Types.FieldTypeHelper.FieldType.File)(0).Value Is Nothing
+			Dim uploadFile As Boolean = record.FieldList(Relativity.FieldTypeHelper.FieldType.File).Length > 0 AndAlso Not record.FieldList(Relativity.FieldTypeHelper.FieldType.File)(0).Value Is Nothing
 			Dim fileExists As Boolean
 			Dim fieldCollection As New DocumentFieldCollection
 			Dim identityValue As String = String.Empty
@@ -393,7 +393,7 @@ Namespace kCura.WinEDDS
 			Dim destinationVolume As String = Nothing
 			_timekeeper.MarkStart("ManageDocument_Filesystem")
 			If uploadFile AndAlso _artifactTypeID = kCura.EDDS.Types.ArtifactType.Document Then
-				filename = record.FieldList(DynamicFields.Types.FieldTypeHelper.FieldType.File)(0).Value.ToString
+				filename = record.FieldList(Relativity.FieldTypeHelper.FieldType.File)(0).Value.ToString
 				If filename.Length > 1 AndAlso filename.Chars(0) = "\" AndAlso filename.Chars(1) <> "\" Then
 					filename = "." & filename
 				End If
@@ -432,9 +432,9 @@ Namespace kCura.WinEDDS
 			_timekeeper.MarkStart("ManageDocument_Folder")
 			If _createFolderStructure Then
 				If _artifactTypeID = kCura.EDDS.Types.ArtifactType.Document Then
-					parentFolderID = _folderCache.FolderID(Me.CleanDestinationFolderPath(record.FieldList(DynamicFields.Types.FieldCategory.ParentArtifact)(0).Value.ToString))
+					parentFolderID = _folderCache.FolderID(Me.CleanDestinationFolderPath(record.FieldList(Relativity.FieldCategory.ParentArtifact)(0).Value.ToString))
 				Else
-					Dim textIdentifier As String = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(kCura.Utility.NullableTypesHelper.DBNullString(record.FieldList(DynamicFields.Types.FieldCategory.ParentArtifact)(0).Value.ToString))
+					Dim textIdentifier As String = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(kCura.Utility.NullableTypesHelper.DBNullString(record.FieldList(Relativity.FieldCategory.ParentArtifact)(0).Value.ToString))
 					If textIdentifier = "" Then
 						If _overwrite.ToLower = "strict" OrElse _overwrite.ToLower = "append" Then
 							parentFolderID = -1
@@ -680,10 +680,10 @@ Namespace kCura.WinEDDS
 			End If
 			_outputNativeFileWriter.Write(mdoc.ParentFolderID & Constants.NATIVE_FIELD_DELIMITER)
 			For Each field As Api.ArtifactField In mdoc.Record
-				If field.Type = kCura.DynamicFields.Types.FieldTypeHelper.FieldType.MultiCode OrElse field.Type = kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Code Then
+				If field.Type = Relativity.FieldTypeHelper.FieldType.MultiCode OrElse field.Type = Relativity.FieldTypeHelper.FieldType.Code Then
 					_outputNativeFileWriter.Write(field.Value)
 					_outputNativeFileWriter.Write(Constants.NATIVE_FIELD_DELIMITER)
-				ElseIf field.Type = kCura.DynamicFields.Types.FieldTypeHelper.FieldType.File AndAlso _artifactTypeID <> kCura.EDDS.Types.ArtifactType.Document Then
+				ElseIf field.Type = Relativity.FieldTypeHelper.FieldType.File AndAlso _artifactTypeID <> kCura.EDDS.Types.ArtifactType.Document Then
 					Dim fileFieldValues() As String = System.Web.HttpUtility.UrlDecode(field.ValueAsString).Split(Chr(11))
 					If fileFieldValues.Length > 1 Then
 						_outputNativeFileWriter.Write(fileFieldValues(0))
@@ -700,12 +700,12 @@ Namespace kCura.WinEDDS
 						_outputNativeFileWriter.Write("")
 						_outputNativeFileWriter.Write(Constants.NATIVE_FIELD_DELIMITER)
 					End If
-				ElseIf field.Type = kCura.DynamicFields.Types.FieldTypeHelper.FieldType.File AndAlso _artifactTypeID = kCura.EDDS.Types.ArtifactType.Document Then
+				ElseIf field.Type = Relativity.FieldTypeHelper.FieldType.File AndAlso _artifactTypeID = kCura.EDDS.Types.ArtifactType.Document Then
 					'do nothing
-				ElseIf field.Category = DynamicFields.Types.FieldCategory.ParentArtifact Then
+				ElseIf field.Category = Relativity.FieldCategory.ParentArtifact Then
 					'do nothing
 				Else
-					If field.Category = DynamicFields.Types.FieldCategory.FullText AndAlso _fullTextColumnMapsToFileLocation Then
+					If field.Category = Relativity.FieldCategory.FullText AndAlso _fullTextColumnMapsToFileLocation Then
 						If Not field.ValueAsString = String.Empty Then
 							Dim determinedEncodingStream As DeterminedEncodingStream = kCura.WinEDDS.Utility.DetectEncoding(field.ValueAsString, False)
 							Dim detectedEncoding As System.Text.Encoding = determinedEncodingStream.DeterminedEncoding
@@ -724,7 +724,7 @@ Namespace kCura.WinEDDS
 							sr.Close()
 							determinedEncodingStream.Close()
 						End If
-					ElseIf field.Type = kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Boolean Then
+					ElseIf field.Type = Relativity.FieldTypeHelper.FieldType.Boolean Then
 						If field.ValueAsString <> "" Then
 							If Boolean.Parse(field.ValueAsString) Then
 								_outputNativeFileWriter.Write("1")
@@ -787,7 +787,7 @@ Namespace kCura.WinEDDS
 
 		Private Function GetObjectFileField() As kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo
 			For Each field As kCura.EDDS.WebAPI.DocumentManagerBase.Field In _allFields
-				If field.FieldTypeID = kCura.DynamicFields.Types.FieldTypeHelper.FieldType.File Then
+				If field.FieldTypeID = Relativity.FieldTypeHelper.FieldType.File Then
 					Return Me.FieldDtoToFieldInfo(field)
 				End If
 			Next
@@ -845,7 +845,7 @@ Namespace kCura.WinEDDS
 					End If
 				End If
 				If Not item.DocumentField Is Nothing Then
-					If item.DocumentField.FieldTypeID = kCura.DynamicFields.Types.FieldTypeHelper.FieldType.File Then
+					If item.DocumentField.FieldTypeID = Relativity.FieldTypeHelper.FieldType.File Then
 						Me.ManageFileField(record(item.DocumentField.FieldID))
 					Else
 						MyBase.SetFieldValue(record(item.DocumentField.FieldID), item.NativeFileColumnIndex, False, identityValue, 0)

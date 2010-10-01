@@ -191,6 +191,10 @@
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Relativity\Relativity.vbproj">
+      <Project>{044A6424-BC90-46CE-8805-0053A44AFCAB}</Project>
+      <Name>Relativity</Name>
+    </ProjectReference>
     <Reference Include="FreeImageNET, Version=3.13.0.1, Culture=neutral, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Vendor\FreeImage\3.130\FreeImage\Wrapper\FreeImage.NET\cs\Deploy\x64\FreeImageNET.dll</HintPath>
@@ -228,10 +232,6 @@
     <ProjectReference Include="..\..\kCura\kCura.Data\kCura.Data.vbproj">
       <Project>{6C4D3211-85B6-4A83-9356-7C7F0C319C75}</Project>
       <Name>kCura.Data</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\kCura\kCura.DynamicFields.Types\kCura.DynamicFields.Types.vbproj">
-      <Project>{E8C68A03-7FC4-40AD-BB0B-5F22A3E6447E}</Project>
-      <Name>kCura.DynamicFields.Types</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\kCura\kCura.ImageValidator\kCura.ImageValidator.vbproj">
       <Project>{C2FD8BF7-723A-4D40-A201-CD7458678A70}</Project>

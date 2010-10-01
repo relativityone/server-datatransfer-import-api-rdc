@@ -355,7 +355,7 @@ Namespace kCura.WinEDDS
 			Dim text As Object = artifact.Metadata(Me.OrdinalLookup(Me.Settings.SelectedTextField.AvfColumnName))
 			If text Is Nothing Then text = String.Empty
 			Dim longText As String = text.ToString
-			If longText = kCura.DynamicFields.Types.Constants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN Then
+			If longText = Relativity.Constants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN Then
 				Dim filePath As String = Me.DownloadTextFieldAsFile(artifact, Me.Settings.SelectedTextField)
 				len += New System.IO.FileInfo(filePath).Length
 				Return filePath
@@ -428,12 +428,12 @@ Namespace kCura.WinEDDS
 			End If
 
 			If Me.Settings.LogFileFormat = LoadFileType.FileFormat.IPRO_FullText AndAlso Me.Settings.ExportImages Then
-				If Me.Settings.SelectedTextField Is Nothing OrElse Me.Settings.SelectedTextField.Category <> DynamicFields.Types.FieldCategory.FullText Then
+				If Me.Settings.SelectedTextField Is Nothing OrElse Me.Settings.SelectedTextField.Category <> Relativity.FieldCategory.FullText Then
 					tempLocalIproFullTextFilePath = System.IO.Path.GetTempFileName
 					Dim tries As Int32 = 20
 					Dim start As Int64 = System.DateTime.Now.Ticks
 					Dim val As String = artifact.Metadata(Me.OrdinalLookup("ExtractedText")).ToString
-					If val <> kCura.DynamicFields.Types.Constants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN Then
+					If val <> Relativity.Constants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN Then
 						Dim sw As New System.IO.StreamWriter(tempLocalIproFullTextFilePath, False, System.Text.Encoding.Unicode)
 						sw.Write(val)
 						sw.Close()
@@ -456,7 +456,7 @@ Namespace kCura.WinEDDS
 						End While
 					End If
 					_statistics.MetadataTime += System.Math.Max(System.DateTime.Now.Ticks - start, 1)
-				ElseIf Me.Settings.SelectedTextField.Category = DynamicFields.Types.FieldCategory.FullText Then
+				ElseIf Me.Settings.SelectedTextField.Category = Relativity.FieldCategory.FullText Then
 					If tempLocalFullTextFilePath <> String.Empty Then
 						tempLocalIproFullTextFilePath = String.Copy(tempLocalFullTextFilePath)
 					Else
@@ -576,7 +576,7 @@ Namespace kCura.WinEDDS
 			While tries > 0 AndAlso Not Me.Halt
 				tries -= 1
 				Try
-					If Me.Settings.ArtifactTypeID = kCura.EDDS.Types.ArtifactType.Document AndAlso field.Category = DynamicFields.Types.FieldCategory.FullText Then
+					If Me.Settings.ArtifactTypeID = kCura.EDDS.Types.ArtifactType.Document AndAlso field.Category = Relativity.FieldCategory.FullText Then
 						_downloadManager.DownloadFullTextFile(tempLocalFullTextFilePath, artifact.ArtifactID, _settings.CaseInfo.ArtifactID.ToString)
 					Else
 						_downloadManager.DownloadLongTextFile(tempLocalFullTextFilePath, artifact.ArtifactID, field, _settings.CaseInfo.ArtifactID.ToString)
@@ -964,7 +964,7 @@ Namespace kCura.WinEDDS
 			Dim source As System.IO.TextReader
 			Dim destination As System.IO.TextWriter = Nothing
 			Dim downloadedFileExists As Boolean = Not String.IsNullOrEmpty(downloadedTextFilePath) AndAlso System.IO.File.Exists(downloadedTextFilePath)
-			If textValue = kCura.DynamicFields.Types.Constants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN Then
+			If textValue = Relativity.Constants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN Then
 				If Me.Settings.SelectedTextField.AvfId = textField.AvfId AndAlso downloadedFileExists Then
 					source = Me.GetLongTextStream(downloadedTextFilePath, textField)
 				Else
@@ -1048,7 +1048,7 @@ Namespace kCura.WinEDDS
 				Dim field As WinEDDS.ViewFieldInfo = DirectCast(_parent.Columns(count), WinEDDS.ViewFieldInfo)
 				columnName = field.AvfColumnName
 				Dim val As Object = record(_ordinalLookup(columnName))
-				If field.FieldType = DynamicFields.Types.FieldTypeHelper.FieldType.Text Then
+				If field.FieldType = Relativity.FieldTypeHelper.FieldType.Text Then
 					If Me.Settings.LoadFileIsHtml Then
 						extractedTextByteCount += Me.ManageLongText(val, field, fullTextTempFile, doc, "<td>", "</td>")
 					Else
@@ -1056,7 +1056,7 @@ Namespace kCura.WinEDDS
 					End If
 				Else
 					If TypeOf val Is Byte() Then val = System.Text.Encoding.Unicode.GetString(DirectCast(val, Byte()))
-					If field.FieldType = DynamicFields.Types.FieldTypeHelper.FieldType.Date AndAlso field.Category <> DynamicFields.Types.FieldCategory.MultiReflected Then
+					If field.FieldType = Relativity.FieldTypeHelper.FieldType.Date AndAlso field.Category <> Relativity.FieldCategory.MultiReflected Then
 						If val Is System.DBNull.Value Then
 							val = String.Empty
 						ElseIf TypeOf val Is System.DateTime Then
@@ -1140,9 +1140,9 @@ Namespace kCura.WinEDDS
 					End If
 					Dim cleanval As String = xr.Value.Trim
 					Select Case field.FieldType
-						Case DynamicFields.Types.FieldTypeHelper.FieldType.Code, DynamicFields.Types.FieldTypeHelper.FieldType.MultiCode
+						Case Relativity.FieldTypeHelper.FieldType.Code, Relativity.FieldTypeHelper.FieldType.MultiCode
 							cleanval = Me.GetCodeValueString(cleanval)
-						Case DynamicFields.Types.FieldTypeHelper.FieldType.Date
+						Case Relativity.FieldTypeHelper.FieldType.Date
 							cleanval = Me.ToExportableDateString(cleanval, field.FormatString)
 					End Select
 					'If isCodeOrMulticodeField Then cleanval = Me.GetCodeValueString(cleanval)

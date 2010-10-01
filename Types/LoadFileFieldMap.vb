@@ -60,7 +60,7 @@ Namespace kCura.WinEDDS
 			Get
 				Dim item As LoadFileFieldMapItem
 				For Each item In _al
-					If item.DocumentField.FieldCategory = DynamicFields.Types.FieldCategory.Identifier Then
+					If item.DocumentField.FieldCategory = Relativity.FieldCategory.Identifier Then
 						Return item
 					End If
 				Next

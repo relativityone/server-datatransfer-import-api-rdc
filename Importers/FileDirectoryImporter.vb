@@ -127,7 +127,7 @@ Namespace kCura.WinEDDS
 			' set the control field
 			Dim field As kCura.EDDS.WebAPI.DocumentManagerBase.Field
 			For Each field In documentDTO.Fields
-				If field.FieldCategoryID = kCura.DynamicFields.Types.FieldCategory.FullText Then
+				If field.FieldCategoryID = Relativity.FieldCategory.FullText Then
 					'field.Value = (New System.Text.ASCIIEncoding).GetBytes("")
 					field.Value = String.Empty
 					Dim fieldMap As kCura.WinEDDS.ImportFileDirectorySettings.FieldMap

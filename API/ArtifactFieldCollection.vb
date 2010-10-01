@@ -69,14 +69,14 @@ Namespace kCura.WinEDDS.Api
 			End Get
 		End Property
 
-		Public ReadOnly Property FieldList(ByVal type As kCura.DynamicFields.Types.FieldTypeHelper.FieldType) As ArtifactField()
+		Public ReadOnly Property FieldList(ByVal type As Relativity.FieldTypeHelper.FieldType) As ArtifactField()
 			Get
 				If Not _typeLookup.Contains(type) Then Return New ArtifactField() {}
 				Return DirectCast(DirectCast(_typeLookup(type), ArrayList).ToArray(GetType(ArtifactField)), ArtifactField())
 			End Get
 		End Property
 
-		Public ReadOnly Property FieldList(ByVal category As kCura.DynamicFields.Types.FieldCategory) As ArtifactField()
+		Public ReadOnly Property FieldList(ByVal category As Relativity.FieldCategory) As ArtifactField()
 			Get
 				If Not _categoryLookup.Contains(category) Then Return New ArtifactField() {}
 				Return DirectCast(DirectCast(_categoryLookup(category), ArrayList).ToArray(GetType(ArtifactField)), ArtifactField())
@@ -91,8 +91,8 @@ Namespace kCura.WinEDDS.Api
 			_orderedList.Add(field)
 			_idLookup.Add(field.ArtifactID, field)
 			_nameLookup.Add(field.DisplayName, field)
-			If field.Category = DynamicFields.Types.FieldCategory.Identifier Then _identifierField = field
-			If field.Type = DynamicFields.Types.FieldTypeHelper.FieldType.File Then _fileField = field
+			If field.Category = Relativity.FieldCategory.Identifier Then _identifierField = field
+			If field.Type = Relativity.FieldTypeHelper.FieldType.File Then _fileField = field
 			If Not _categoryLookup.ContainsKey(field.Category) Then _categoryLookup.Add(field.Category, New System.Collections.ArrayList)
 			DirectCast(_categoryLookup(field.Category), System.Collections.ArrayList).Add(field)
 			If Not _typeLookup.ContainsKey(field.Type) Then _typeLookup.Add(field.Type, New System.Collections.ArrayList)

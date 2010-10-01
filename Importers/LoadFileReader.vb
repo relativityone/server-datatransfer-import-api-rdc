@@ -101,7 +101,7 @@ Namespace kCura.WinEDDS
 			End If
 			If _keyFieldID = -1 Then
 				For Each field As DocumentField In _docFields
-					If field.FieldCategory = DynamicFields.Types.FieldCategory.Identifier Then
+					If field.FieldCategory = Relativity.FieldCategory.Identifier Then
 						_keyFieldID = field.FieldID
 						Exit For
 					End If
@@ -129,26 +129,26 @@ Namespace kCura.WinEDDS
 		Private Sub SetFieldValue(ByVal field As ArtifactField, ByVal value As String, ByVal column As Int32)
 			Try
 				Select Case field.Type
-					Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Boolean
+					Case Relativity.FieldTypeHelper.FieldType.Boolean
 						field.Value = Me.GetNullableBoolean(value.Trim, column)
-					Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Integer
+					Case Relativity.FieldTypeHelper.FieldType.Integer
 						field.Value = Me.GetNullableInteger(value.Trim, column)
-					Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Currency, kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Decimal
+					Case Relativity.FieldTypeHelper.FieldType.Currency, Relativity.FieldTypeHelper.FieldType.Decimal
 						field.Value = Me.GetNullableDecimal(value.Trim, column)
-					Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Date
+					Case Relativity.FieldTypeHelper.FieldType.Date
 						field.Value = Me.GetNullableDateTime(value.Trim, column)
-					Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Code, DynamicFields.Types.FieldTypeHelper.FieldType.Object, DynamicFields.Types.FieldTypeHelper.FieldType.User, DynamicFields.Types.FieldTypeHelper.FieldType.File
+					Case Relativity.FieldTypeHelper.FieldType.Code, Relativity.FieldTypeHelper.FieldType.Object, Relativity.FieldTypeHelper.FieldType.User, Relativity.FieldTypeHelper.FieldType.File
 						field.Value = value.Trim
 						If field.Value.ToString = String.Empty Then field.Value = Nothing
-					Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.MultiCode, DynamicFields.Types.FieldTypeHelper.FieldType.Objects
+					Case Relativity.FieldTypeHelper.FieldType.MultiCode, Relativity.FieldTypeHelper.FieldType.Objects
 						Dim al As New System.Collections.ArrayList
 						For Each item As String In value.Split(_settings.MultiRecordDelimiter)
 							If Not item.Trim = String.Empty Then al.Add(item.Trim)
 						Next
 						field.Value = DirectCast(al.ToArray(GetType(String)), String())
-					Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Varchar
+					Case Relativity.FieldTypeHelper.FieldType.Varchar
 						field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(Me.GetNullableFixedString(value, column, field.TextLength))
-					Case kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Text
+					Case Relativity.FieldTypeHelper.FieldType.Text
 						If _settings.FullTextColumnContainsFileLocation Then
 							field.Value = value
 						Else
@@ -464,13 +464,13 @@ Namespace kCura.WinEDDS
 			Next
 			If _settings.LoadNativeFiles AndAlso Not _settings.NativeFilePathColumn Is Nothing AndAlso Not _settings.NativeFilePathColumn = String.Empty AndAlso collection.FileField Is Nothing Then
 				Dim nativeFileIndex As Int32 = Int32.Parse(_settings.NativeFilePathColumn.Substring(_settings.NativeFilePathColumn.LastIndexOf("(")).Trim("()".ToCharArray))
-				Dim field As New Api.ArtifactField(New DocumentField("File", -1, kCura.DynamicFields.Types.FieldTypeHelper.FieldType.File, kCura.DynamicFields.Types.FieldCategory.FileInfo, Nothing, Nothing, Nothing, True))
+				Dim field As New Api.ArtifactField(New DocumentField("File", -1, Relativity.FieldTypeHelper.FieldType.File, Relativity.FieldCategory.FileInfo, Nothing, Nothing, Nothing, True))
 				field.Value = line(nativeFileIndex - 1)
 				collection.Add(field)
 			End If
 			If _settings.CreateFolderStructure AndAlso Not _settings.FolderStructureContainedInColumn Is Nothing AndAlso Not _settings.FolderStructureContainedInColumn = String.Empty Then
 				Dim parentIndex As Int32 = Int32.Parse(_settings.FolderStructureContainedInColumn.Substring(_settings.FolderStructureContainedInColumn.LastIndexOf("(")).Trim("()".ToCharArray))
-				Dim field As New Api.ArtifactField(New DocumentField("Parent", -2, kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Object, kCura.DynamicFields.Types.FieldCategory.ParentArtifact, Nothing, Nothing, Nothing, True))
+				Dim field As New Api.ArtifactField(New DocumentField("Parent", -2, Relativity.FieldTypeHelper.FieldType.Object, Relativity.FieldCategory.ParentArtifact, Nothing, Nothing, Nothing, True))
 				field.Value = line(parentIndex - 1)
 				collection.Add(field)
 			End If

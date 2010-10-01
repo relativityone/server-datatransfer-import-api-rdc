@@ -79,11 +79,11 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
-		Public Property FieldCategory() As kCura.DynamicFields.Types.FieldCategory
+		Public Property FieldCategory() As Relativity.FieldCategory
 			Get
-				Return CType(_fieldCategoryID, kCura.DynamicFields.Types.FieldCategory)
+				Return CType(_fieldCategoryID, Relativity.FieldCategory)
 			End Get
-			Set(ByVal value As kCura.DynamicFields.Types.FieldCategory)
+			Set(ByVal value As Relativity.FieldCategory)
 				_fieldCategoryID = value
 			End Set
 		End Property

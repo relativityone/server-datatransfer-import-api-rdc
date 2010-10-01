@@ -50,7 +50,7 @@ Namespace kCura.WinEDDS
 			Return Not _nameIndex.Item(fieldName) Is Nothing
 		End Function
 
-		Private Function GetFieldByCategory(ByVal type As kCura.DynamicFields.Types.FieldCategory) As DocumentField
+		Private Function GetFieldByCategory(ByVal type As Relativity.FieldCategory) As DocumentField
 			Dim ind As Int32
 			Dim field As DocumentField
 			For Each ind In _idIndex.Keys
@@ -61,7 +61,7 @@ Namespace kCura.WinEDDS
 			Next
 		End Function
 
-		Public Function GetFieldsByCategory(ByVal type As kCura.DynamicFields.Types.FieldCategory) As DocumentField()
+		Public Function GetFieldsByCategory(ByVal type As Relativity.FieldCategory) As DocumentField()
 			Dim ind As Int32
 			Dim retval As New System.Collections.ArrayList
 			Dim field As DocumentField
@@ -83,7 +83,7 @@ Namespace kCura.WinEDDS
 
 		Public ReadOnly Property FullText() As DocumentField
 			Get
-				Return Me.GetFieldByCategory(DynamicFields.Types.FieldCategory.FullText)
+				Return Me.GetFieldByCategory(Relativity.FieldCategory.FullText)
 			End Get
 		End Property
 
@@ -91,7 +91,7 @@ Namespace kCura.WinEDDS
 			Dim df As DocumentField
 			Dim al As New ArrayList
 			For Each df In _idIndex.Values
-				If df.FieldCategoryID = kCura.DynamicFields.Types.FieldCategory.Identifier Then
+				If df.FieldCategoryID = Relativity.FieldCategory.Identifier Then
 					al.Add(df)
 				End If
 			Next
@@ -125,7 +125,7 @@ Namespace kCura.WinEDDS
 				If ( _
 				 field.FieldCategoryID <> 8 AndAlso _
 				 field.FieldCategoryID <> 5 AndAlso _
-				 field.FieldTypeID = kCura.DynamicFields.Types.FieldTypeHelper.FieldType.Varchar _
+				 field.FieldTypeID = Relativity.FieldTypeHelper.FieldType.Varchar _
 				) Then
 					al.Add(field.FieldName)
 				End If

@@ -30,17 +30,17 @@ Namespace kCura.WinEDDS.Service
 			Dim unmappableFields As New System.Collections.Specialized.StringCollection
 			Dim unmappableFieldCategories As New System.Collections.ArrayList
 			If Not includeUnmappable Then
-				unmappableFieldCategories.AddRange(New kCura.DynamicFields.Types.FieldCategory() {DynamicFields.Types.FieldCategory.Reflected, DynamicFields.Types.FieldCategory.Batch, DynamicFields.Types.FieldCategory.MultiReflected, DynamicFields.Types.FieldCategory.FileInfo, DynamicFields.Types.FieldCategory.AutoCreate, DynamicFields.Types.FieldCategory.FileSize, DynamicFields.Types.FieldCategory.ProductionMarker, DynamicFields.Types.FieldCategory.MarkupSetMarker})
+				unmappableFieldCategories.AddRange(New Relativity.FieldCategory() {Relativity.FieldCategory.Reflected, Relativity.FieldCategory.Batch, Relativity.FieldCategory.MultiReflected, Relativity.FieldCategory.FileInfo, Relativity.FieldCategory.AutoCreate, Relativity.FieldCategory.FileSize, Relativity.FieldCategory.ProductionMarker, Relativity.FieldCategory.MarkupSetMarker})
 			End If
 			Dim i As Int32
 			For i = 0 To dv.Count - 1
 				field = New kCura.EDDS.WebAPI.DocumentManagerBase.Field
 				If Not ( _
-				 unmappableFieldCategories.Contains(CType(dv(i)("FieldCategoryID"), kCura.DynamicFields.Types.FieldCategory)) _
+				 unmappableFieldCategories.Contains(CType(dv(i)("FieldCategoryID"), Relativity.FieldCategory)) _
 				 OrElse _
 				 unmappableFields.Contains(dv(i)("DisplayName").ToString) _
 				) Then
-					If Not (CType(dv(i)("FieldCategoryID"), kCura.DynamicFields.Types.FieldCategory) = DynamicFields.Types.FieldCategory.FullText AndAlso artifactTypeID <> kCura.EDDS.Types.ArtifactType.Document) Then
+					If Not (CType(dv(i)("FieldCategoryID"), Relativity.FieldCategory) = Relativity.FieldCategory.FullText AndAlso artifactTypeID <> kCura.EDDS.Types.ArtifactType.Document) Then
 						With field
 							.ArtifactID = CType(dv(i)("ArtifactID"), Int32)
 							.ArtifactViewFieldID = CType(dv(i)("ArtifactViewFieldID"), Int32)
