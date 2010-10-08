@@ -117,7 +117,7 @@ Namespace kCura.WinEDDS.Service
 			End While
 		End Function
 
-		Public Function RetrieveAllCodesOfType(ByVal caseContextArtifactID As Int32, ByVal codeTypeID As Int32) As kCura.EDDS.Types.ChoiceInfo()
+		Public Function RetrieveAllCodesOfType(ByVal caseContextArtifactID As Int32, ByVal codeTypeID As Int32) As Relativity.ChoiceInfo()
 			Dim dt As System.Data.DataTable
 			Dim retval As New System.Collections.ArrayList
 			Dim lastcodeId As Int32 = -1
@@ -128,14 +128,14 @@ Namespace kCura.WinEDDS.Service
 					dt = Me.GetLastChunk(caseContextArtifactID, codeTypeID, lastcodeId).Tables(0)
 				End If
 				For Each row As System.Data.DataRow In dt.Rows
-					retval.Add(New kCura.EDDS.Types.ChoiceInfo(row))
+					retval.Add(New Relativity.ChoiceInfo(row))
 				Next
-				If retval.Count > 0 Then lastcodeId = DirectCast(retval(retval.Count - 1), kCura.EDDS.Types.ChoiceInfo).ArtifactID
+				If retval.Count > 0 Then lastcodeId = DirectCast(retval(retval.Count - 1), Relativity.ChoiceInfo).ArtifactID
 			Loop Until dt Is Nothing OrElse dt.Rows.Count = 0
-			Return DirectCast(retval.ToArray(GetType(kCura.EDDS.Types.ChoiceInfo)), kCura.EDDS.Types.ChoiceInfo())
+			Return DirectCast(retval.ToArray(GetType(Relativity.ChoiceInfo)), Relativity.ChoiceInfo())
 		End Function
 
-		Public Shadows Function RetrieveCodeByNameAndTypeID(ByVal caseContextArtifactID As Int32, ByVal codeTypeID As Int32, ByVal name As String) As kCura.EDDS.Types.ChoiceInfo
+		Public Shadows Function RetrieveCodeByNameAndTypeID(ByVal caseContextArtifactID As Int32, ByVal codeTypeID As Int32, ByVal name As String) As Relativity.ChoiceInfo
 			Dim tries As Int32 = 0
 			While tries < Config.MaxReloginTries
 				tries += 1
@@ -152,9 +152,9 @@ Namespace kCura.WinEDDS.Service
 
 		End Function
 
-		Public Shared Function Convert(ByVal webserviceChoiceInfo As kCura.EDDS.WebAPI.CodeManagerBase.ChoiceInfo) As kCura.EDDS.Types.ChoiceInfo
+		Public Shared Function Convert(ByVal webserviceChoiceInfo As kCura.EDDS.WebAPI.CodeManagerBase.ChoiceInfo) As Relativity.ChoiceInfo
 			If webserviceChoiceInfo Is Nothing Then Return Nothing
-			Dim retval As New kCura.EDDS.Types.ChoiceInfo
+			Dim retval As New Relativity.ChoiceInfo
 			retval.ArtifactID = webserviceChoiceInfo.ArtifactID
 			retval.CodeTypeID = webserviceChoiceInfo.CodeTypeID
 			retval.Name = webserviceChoiceInfo.Name

@@ -576,7 +576,7 @@ Namespace kCura.WinEDDS
 			While tries > 0 AndAlso Not Me.Halt
 				tries -= 1
 				Try
-					If Me.Settings.ArtifactTypeID = kCura.EDDS.Types.ArtifactType.Document AndAlso field.Category = Relativity.FieldCategory.FullText Then
+					If Me.Settings.ArtifactTypeID = Relativity.ArtifactType.Document AndAlso field.Category = Relativity.FieldCategory.FullText Then
 						_downloadManager.DownloadFullTextFile(tempLocalFullTextFilePath, artifact.ArtifactID, _settings.CaseInfo.ArtifactID.ToString)
 					Else
 						_downloadManager.DownloadLongTextFile(tempLocalFullTextFilePath, artifact.ArtifactID, field, _settings.CaseInfo.ArtifactID.ToString)
@@ -891,8 +891,8 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Private Function DownloadNative(ByVal artifact As Exporters.ObjectExportInfo) As Int64
-			If Me.Settings.ArtifactTypeID = kCura.EDDS.Types.ArtifactType.Document AndAlso artifact.NativeFileGuid = "" Then Return 0
-			If Not Me.Settings.ArtifactTypeID = kCura.EDDS.Types.ArtifactType.Document AndAlso (Not artifact.FileID > 0 OrElse artifact.NativeSourceLocation.Trim = String.Empty) Then Return 0
+			If Me.Settings.ArtifactTypeID = Relativity.ArtifactType.Document AndAlso artifact.NativeFileGuid = "" Then Return 0
+			If Not Me.Settings.ArtifactTypeID = Relativity.ArtifactType.Document AndAlso (Not artifact.FileID > 0 OrElse artifact.NativeSourceLocation.Trim = String.Empty) Then Return 0
 			Dim nativeFileName As String = Me.GetNativeFileName(artifact)
 			Dim tempFile As String = Me.GetLocalNativeFilePath(artifact, nativeFileName)
 			Dim start As Int64 = System.DateTime.Now.Ticks
@@ -910,7 +910,7 @@ Namespace kCura.WinEDDS
 			While tries > 0 AndAlso Not Me.Halt
 				tries -= 1
 				Try
-					If Me.Settings.ArtifactTypeID = kCura.EDDS.Types.ArtifactType.Document Then
+					If Me.Settings.ArtifactTypeID = Relativity.ArtifactType.Document Then
 						_downloadManager.DownloadFileForDocument(tempFile, artifact.NativeFileGuid, artifact.NativeSourceLocation, artifact.ArtifactID, _settings.CaseArtifactID.ToString)
 					Else
 						_downloadManager.DownloadFileForDynamicObject(tempFile, artifact.NativeSourceLocation, artifact.ArtifactID, _settings.CaseArtifactID.ToString, artifact.FileID, Me.Settings.FileField.FieldID)

@@ -106,16 +106,16 @@ Namespace kCura.WinEDDS.Service
 		'	Return dtos
 		'End Function
 
-		Public Shared Function WebAPIFileInfotoFileInfo(ByVal file As kCura.EDDS.WebAPI.FileManagerBase.FileInfoBase) As kCura.EDDS.Types.FileInfoBase
-			Dim fileInfo As New kCura.EDDS.Types.FileInfoBase
+		Public Shared Function WebAPIFileInfotoFileInfo(ByVal file As kCura.EDDS.WebAPI.FileManagerBase.FileInfoBase) As Relativity.FileInfoBase
+			Dim fileInfo As New Relativity.FileInfoBase
 
 			fileInfo.FileName = file.FileName
 			fileInfo.FileGuid = file.FileGuid
 			Return fileInfo
 		End Function
 
-		Public Shared Function WebAPIFileInfostoFileInfos(ByVal files As kCura.EDDS.WebAPI.FileManagerBase.FileInfoBase()) As kCura.EDDS.Types.FileInfoBase()
-			Dim fileInfos(files.Length - 1) As kCura.EDDS.Types.FileInfoBase
+		Public Shared Function WebAPIFileInfostoFileInfos(ByVal files As kCura.EDDS.WebAPI.FileManagerBase.FileInfoBase()) As Relativity.FileInfoBase()
+			Dim fileInfos(files.Length - 1) As Relativity.FileInfoBase
 
 			Dim i As Int32
 			For i = 0 To fileInfos.Length - 1

@@ -13,7 +13,7 @@ Namespace kCura.WinEDDS
 		Private _destinationFolderPath As String
 		Private _caseArtifactID As Int32
 		Private _isBulkEnabled As Boolean = True
-		Private _repositoryPathManager As kCura.EDDS.Types.RepositoryPathManager
+		Private _repositoryPathManager As Relativity.RepositoryPathManager
 		Private _sortIntoVolumes As Boolean = False
 		Private _doRetry As Boolean = True
 		Public Property DoRetry() As Boolean
@@ -41,7 +41,7 @@ Namespace kCura.WinEDDS
 			_credentials = credentials
 			_caseArtifactID = caseArtifactID
 			_destinationFolderPath = destinationFolderPath
-			_repositoryPathManager = New kCura.EDDS.Types.RepositoryPathManager(_gateway.RepositoryVolumeMax)
+			_repositoryPathManager = New Relativity.RepositoryPathManager(_gateway.RepositoryVolumeMax)
 			_sortIntoVolumes = sortIntoVolumes
 			SetType(_destinationFolderPath)
 		End Sub

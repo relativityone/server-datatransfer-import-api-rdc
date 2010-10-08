@@ -53,12 +53,12 @@ Namespace kCura.WinEDDS.Service
 			Return Nothing
 		End Function
 
-		Public Shadows Function GenerateImageErrorFiles(ByVal appID As Int32, ByVal importKey As String, ByVal writeHeader As Boolean, ByVal keyFieldId As Int32) As kCura.EDDS.Types.MassImport.ErrorFileKey
+		Public Shadows Function GenerateImageErrorFiles(ByVal appID As Int32, ByVal importKey As String, ByVal writeHeader As Boolean, ByVal keyFieldId As Int32) As Relativity.MassImport.ErrorFileKey
 			Dim tries As Int32 = 0
 			While tries < Config.MaxReloginTries
 				tries += 1
 				Try
-					Dim retval As New kCura.EDDS.Types.MassImport.ErrorFileKey
+					Dim retval As New Relativity.MassImport.ErrorFileKey
 					With MyBase.GenerateImageErrorFiles(appID, importKey, writeHeader, keyFieldId)
 						retval.LogKey = .LogKey
 						retval.OpticonKey = .OpticonKey

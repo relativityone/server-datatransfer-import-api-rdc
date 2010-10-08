@@ -1,7 +1,7 @@
 Namespace kCura.WinEDDS
 	Public Class ExportFile
 		'Protected _identity As kCura.EDDS.EDDSIdentity
-		Protected _caseInfo As kCura.EDDS.Types.CaseInfo
+		Protected _caseInfo As Relativity.CaseInfo
 		Protected _dataTable As System.Data.DataTable
 		Protected _typeOfExport As ExportType
 		Protected _folderPath As String
@@ -70,11 +70,11 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
-		Public Property CaseInfo() As kCura.EDDS.Types.CaseInfo
+		Public Property CaseInfo() As Relativity.CaseInfo
 			Get
 				Return _caseInfo
 			End Get
-			Set(ByVal value As kCura.EDDS.Types.CaseInfo)
+			Set(ByVal value As Relativity.CaseInfo)
 				_caseInfo = value
 			End Set
 		End Property

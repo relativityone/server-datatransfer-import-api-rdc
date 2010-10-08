@@ -1,7 +1,7 @@
 Imports Relativity
 Namespace kCura.WinEDDS.Api
 	Public Class ArtifactField
-		Inherits kCura.EDDS.Types.FieldInfoBase
+		Inherits Relativity.FieldInfoBase
 		Private _value As Object
 		Private _associatedObjectTypeID As Int32
 		Public Property Value() As Object

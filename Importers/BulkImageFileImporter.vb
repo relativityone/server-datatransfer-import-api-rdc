@@ -31,7 +31,7 @@ Namespace kCura.WinEDDS
 		Private _copyFilesToRepository As Boolean
 		Private _repositoryPath As String
 		Private _textRepositoryPath As String
-		Private _caseInfo As kCura.EDDS.Types.CaseInfo
+		Private _caseInfo As Relativity.CaseInfo
 
 		Private WithEvents _processController As kCura.Windows.Process.Controller
 		Private _productionDTO As kCura.EDDS.WebAPI.ProductionManagerBase.Production
@@ -138,7 +138,7 @@ Namespace kCura.WinEDDS
 			ElseIf args.IdentityFieldId <> -1 Then
 				_keyFieldDto = New kCura.WinEDDS.Service.FieldManager(args.Credential, args.CookieContainer).Read(args.CaseInfo.ArtifactID, args.IdentityFieldId)
 			Else
-				Dim fieldID As Int32 = _fieldQuery.RetrieveAllAsDocumentFieldCollection(args.CaseInfo.ArtifactID, kCura.EDDS.Types.ArtifactType.Document).IdentifierFields(0).FieldID
+				Dim fieldID As Int32 = _fieldQuery.RetrieveAllAsDocumentFieldCollection(args.CaseInfo.ArtifactID, Relativity.ArtifactType.Document).IdentifierFields(0).FieldID
 				_keyFieldDto = New kCura.WinEDDS.Service.FieldManager(args.Credential, args.CookieContainer).Read(args.CaseInfo.ArtifactID, fieldID)
 			End If
 			_overwrite = args.Overwrite
@@ -381,18 +381,18 @@ Namespace kCura.WinEDDS
 
 #Region "Worker Methods"
 
-		Public Function ProcessImageLine(ByVal imageRecord As Api.ImageRecord) As kCura.EDDS.Types.MassImport.ImportStatus
+		Public Function ProcessImageLine(ByVal imageRecord As Api.ImageRecord) As Relativity.MassImport.ImportStatus
 			Try
 				_totalValidated += 1
 				Dim globalStart As System.DateTime = System.DateTime.Now
-				Dim retval As kCura.EDDS.Types.MassImport.ImportStatus = EDDS.Types.MassImport.ImportStatus.Pending
+				Dim retval As Relativity.MassImport.ImportStatus = Relativity.MassImport.ImportStatus.Pending
 				'check for existence
 				If imageRecord.BatesNumber.Trim = "" Then
 					Me.RaiseStatusEvent(Windows.Process.EventType.Error, String.Format("No image file or identifier specified on line."), CType((_totalValidated + _totalProcessed) / 2, Int64), Me.CurrentLineNumber)
-					retval = EDDS.Types.MassImport.ImportStatus.NoImageSpecifiedOnLine
+					retval = Relativity.MassImport.ImportStatus.NoImageSpecifiedOnLine
 				ElseIf Not Config.DisableImageLocationValidation AndAlso Not System.IO.File.Exists(BulkImageFileImporter.GetFileLocation(imageRecord)) Then
 					Me.RaiseStatusEvent(Windows.Process.EventType.Error, String.Format("Image file specified ( {0} ) does not exist.", imageRecord.FileLocation), CType((_totalValidated + _totalProcessed) / 2, Int64), Me.CurrentLineNumber)
-					retval = EDDS.Types.MassImport.ImportStatus.FileSpecifiedDne
+					retval = Relativity.MassImport.ImportStatus.FileSpecifiedDne
 				Else
 					Dim validator As New kCura.ImageValidator.ImageValidator
 					Dim path As String = BulkImageFileImporter.GetFileLocation(imageRecord)
@@ -401,7 +401,7 @@ Namespace kCura.WinEDDS
 						Me.RaiseStatusEvent(Windows.Process.EventType.Progress, String.Format("Image file ( {0} ) validated.", imageRecord.FileLocation), CType((_totalValidated + _totalProcessed) / 2, Int64), Me.CurrentLineNumber)
 					Catch ex As System.Exception
 						'Me.RaiseStatusEvent(Windows.Process.EventType.Error, String.Format("Error in '{0}': {1}", path, ex.Message))
-						retval = EDDS.Types.MassImport.ImportStatus.InvalidImageFormat
+						retval = Relativity.MassImport.ImportStatus.InvalidImageFormat
 					End Try
 				End If
 				Return retval
@@ -452,7 +452,7 @@ Namespace kCura.WinEDDS
 						_fileIdentifierLookup.Add(line.BatesNumber.Trim, line.BatesNumber.Trim)
 					End If
 				Next
-				If hasFileIdentifierProblem Then status += kCura.EDDS.Types.MassImport.ImportStatus.IdentifierOverlap
+				If hasFileIdentifierProblem Then status += Relativity.MassImport.ImportStatus.IdentifierOverlap
 
 				Dim record As api.ImageRecord = lines(0)
 				Dim textFileList As New System.Collections.ArrayList
@@ -500,7 +500,7 @@ Namespace kCura.WinEDDS
 					End With
 				Next
 
-				_bulkLoadFileWriter.Write(kCura.EDDS.Types.Constants.ENDLINETERMSTRING)
+				_bulkLoadFileWriter.Write(Relativity.Constants.ENDLINETERMSTRING)
 			Catch ex As Exception
 				Throw
 			End Try
@@ -576,7 +576,7 @@ Namespace kCura.WinEDDS
 					_bulkLoadFileWriter.Write("-1,")
 				End If
 				If writeLineTermination Then
-					_bulkLoadFileWriter.Write(kCura.EDDS.Types.Constants.ENDLINETERMSTRING)
+					_bulkLoadFileWriter.Write(Relativity.Constants.ENDLINETERMSTRING)
 				End If
 			Catch ex As Exception
 				Throw

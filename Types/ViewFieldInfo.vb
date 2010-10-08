@@ -1,11 +1,11 @@
 Namespace kCura.WinEDDS
 	Public Class ViewFieldInfo
-		Inherits kCura.EDDS.Types.ViewFieldInfo
+		Inherits Relativity.ViewFieldInfo
 		Implements IComparable
 		Public Sub New(ByVal row As System.Data.DataRow)
 			MyBase.New(row)
 		End Sub
-		Public Sub New(ByVal vfi As kCura.EDDS.Types.ViewFieldInfo)
+		Public Sub New(ByVal vfi As Relativity.ViewFieldInfo)
 			MyBase.New(vfi)
 		End Sub
 

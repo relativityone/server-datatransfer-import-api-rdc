@@ -1,4 +1,4 @@
-Imports kCura.EDDS.Types.MassImport
+Imports Relativity.MassImport
 Imports kCura.WinEDDS.Api
 Namespace kCura.WinEDDS
 	Public Class LoadFileReader

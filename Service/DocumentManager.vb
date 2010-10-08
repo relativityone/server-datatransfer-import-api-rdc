@@ -33,7 +33,7 @@ Namespace kCura.WinEDDS.Service
 
 #Region " Translations "
 
-		Private Function GetWebAPIFullTextBuilder(ByVal eddsftb As kCura.EDDS.Types.FullTextBuilder) As kCura.EDDS.WebAPI.DocumentManagerBase.FullTextBuilderDTO
+		Private Function GetWebAPIFullTextBuilder(ByVal eddsftb As Relativity.FullTextBuilder) As kCura.EDDS.WebAPI.DocumentManagerBase.FullTextBuilderDTO
 			Dim wapiftb As New kCura.EDDS.WebAPI.DocumentManagerBase.FullTextBuilderDTO
 			wapiftb.Pages = DirectCast(eddsftb.Pages.ToArray(GetType(Int32)), Int32())
 			wapiftb.FullText = System.Text.Encoding.Unicode.GetBytes(eddsftb.FullTextString)
@@ -63,7 +63,7 @@ Namespace kCura.WinEDDS.Service
 			Return Nothing
 		End Function
 
-		Public Shadows Function CreateEmptyDocument(ByVal caseContextArtifactID As Int32, ByVal parentFolderID As Int32, ByVal identifierValue As Byte(), ByVal identifierColumn As String, ByVal fullTextBuilder As kCura.EDDS.Types.FullTextBuilder) As Int32
+		Public Shadows Function CreateEmptyDocument(ByVal caseContextArtifactID As Int32, ByVal parentFolderID As Int32, ByVal identifierValue As Byte(), ByVal identifierColumn As String, ByVal fullTextBuilder As Relativity.FullTextBuilder) As Int32
 			Dim tries As Int32 = 0
 			While tries < Config.MaxReloginTries
 				Try
@@ -131,7 +131,7 @@ Namespace kCura.WinEDDS.Service
 			Return Nothing
 		End Function
 
-		Public Shadows Function AddFullTextToDocument(ByVal caseContextArtifactID As Int32, ByVal documentArtifactID As Int32, ByVal fullTextBuilder As kCura.EDDS.Types.FullTextBuilder) As Boolean
+		Public Shadows Function AddFullTextToDocument(ByVal caseContextArtifactID As Int32, ByVal documentArtifactID As Int32, ByVal fullTextBuilder As Relativity.FullTextBuilder) As Boolean
 			Dim tries As Int32 = 0
 			While tries < Config.MaxReloginTries
 				tries += 1
