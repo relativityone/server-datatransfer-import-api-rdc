@@ -133,7 +133,7 @@ Namespace kCura.WinEDDS.ImportExtension
 			Next
 
 			'NativeFilePathColumn is in the format  displayname(index).  _reader only has name.  I need to get the index, get _reader.name, and add a field with the data.
-			If _loadFileSettings.ArtifactTypeID = kCura.EDDS.Types.ArtifactType.Document Then
+			If _loadFileSettings.ArtifactTypeID = Relativity.ArtifactType.Document Then
 				If _loadFileSettings.LoadNativeFiles AndAlso Not _loadFileSettings.NativeFilePathColumn Is Nothing AndAlso Not _loadFileSettings.NativeFilePathColumn = String.Empty Then
 					Dim nativeFileIndex As Int32 = Int32.Parse(_loadFileSettings.NativeFilePathColumn.Substring(_loadFileSettings.NativeFilePathColumn.LastIndexOf("(")).Trim("()".ToCharArray))
 					Dim displayName As String = _reader.GetName(nativeFileIndex - 1)
