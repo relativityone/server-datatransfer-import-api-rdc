@@ -49,7 +49,7 @@
 			Dim winRelativityVersion As String() = winVersionString.Split("."c)
 			Dim relVersionString As String = relativityManager.RetrieveRelativityVersion
 			Dim relativityWebVersion As String() = relVersionString.Split("."c)
-            Dim match As Boolean = Truel
+            Dim match As Boolean = True
 			Dim i As Int32
 			For i = 0 To System.Math.Max(winRelativityVersion.Length - 1, relativityWebVersion.Length - 1)
 				Dim winv As String = "*"
