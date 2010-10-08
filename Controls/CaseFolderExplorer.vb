@@ -174,7 +174,7 @@ Namespace kCura.EDDS.WinForm
 
     Private _contextMenuTreeNode As System.Windows.Forms.TreeNode
 
-		Private Sub LoadCase(ByVal caseInfo As kCura.EDDS.Types.CaseInfo)
+		Private Sub LoadCase(ByVal caseInfo As Relativity.CaseInfo)
 
 			_treeView.Nodes.Clear()
 

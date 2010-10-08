@@ -1087,7 +1087,7 @@ Public Class ExportForm
 	Private WithEvents _application As kCura.EDDS.WinForm.Application
 	Protected _exportFile As kCura.WinEDDS.ExportFile
 	Protected WithEvents _precedenceForm As kCura.EDDS.WinForm.ProductionPrecedenceForm
-	Private _allExportableFields As kCura.EDDS.Types.ViewFieldInfo
+	Private _allExportableFields As Relativity.ViewFieldInfo
 	Private _dataSourceIsSet As Boolean = False
 	Private _objectTypeName As String = ""
 	Public Property Application() As kCura.EDDS.WinForm.Application
@@ -1373,7 +1373,7 @@ Public Class ExportForm
 			Case ExportFile.ExportType.ParentSearch, ExportFile.ExportType.AncestorSearch
 				_filters.Text = "Views"
 				_filtersBox.Text = "Views"
-				If Me.ExportFile.ArtifactTypeID = kCura.EDDS.Types.ArtifactType.Document Then
+				If Me.ExportFile.ArtifactTypeID = Relativity.ArtifactType.Document Then
 					Me.Text = "Relativity Desktop Client: Export Folder"
 					If Me.ExportFile.TypeOfExport = ExportFile.ExportType.AncestorSearch Then
 						Me.Text = "Relativity Desktop Client: Export Folder and Subfolders"
@@ -1390,7 +1390,7 @@ Public Class ExportForm
 				Me.Text = "Relativity Desktop Client: Export Production Set"
 				_productionPrecedenceBox.Visible = False
 		End Select
-		If Not Me.ExportFile.ArtifactTypeID = kCura.EDDS.Types.ArtifactType.Document Then
+		If Not Me.ExportFile.ArtifactTypeID = Relativity.ArtifactType.Document Then
 			_productionPrecedenceBox.Visible = False
 			Label13.Text = "File Prefix"
 			GroupBox6.Text = "Text and File Names"
@@ -1415,7 +1415,7 @@ Public Class ExportForm
 	End Sub
 
 	Private Sub InitializeFileControls()
-		If Me.ExportFile.ArtifactTypeID = kCura.EDDS.Types.ArtifactType.Document Then Exit Sub
+		If Me.ExportFile.ArtifactTypeID = Relativity.ArtifactType.Document Then Exit Sub
 		_exportImages.Checked = False
 		_exportImages.Enabled = False
 		GroupBox2.Visible = False
@@ -1436,7 +1436,7 @@ Public Class ExportForm
 		Dim leftListBoxItems As New System.Collections.ArrayList
 		For Each field As ViewFieldInfo In Me.ExportFile.AllExportableFields
 			If Not defaultSelectedIds.Contains(field.AvfId) Then
-				If Me.ExportFile.ArtifactTypeID = kCura.EDDS.Types.ArtifactType.Document Then
+				If Me.ExportFile.ArtifactTypeID = Relativity.ArtifactType.Document Then
 					leftListBoxItems.Add(New ViewFieldInfo(field))
 				ElseIf field.FieldType <> Relativity.FieldTypeHelper.FieldType.File Then
 					leftListBoxItems.Add(New ViewFieldInfo(field))
@@ -1446,7 +1446,7 @@ Public Class ExportForm
 		For Each defaultSelectedId As Int32 In defaultSelectedIds
 			For Each field As ViewFieldInfo In Me.ExportFile.AllExportableFields
 				If field.AvfId = defaultSelectedId Then
-					If Me.ExportFile.ArtifactTypeID = kCura.EDDS.Types.ArtifactType.Document Then
+					If Me.ExportFile.ArtifactTypeID = Relativity.ArtifactType.Document Then
 						_columnSelecter.RightListBoxItems.Add(New ViewFieldInfo(field))
 						Exit For
 					ElseIf field.FieldType <> Relativity.FieldTypeHelper.FieldType.File Then

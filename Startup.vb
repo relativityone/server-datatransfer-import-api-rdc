@@ -13,7 +13,7 @@ Namespace kCura.EDDS.WinForm
 
 		Private _application As kCura.EDDS.WinForm.Application
 		Private _loadFilePath As String
-		Private SelectedCaseInfo As kCura.EDDS.Types.CaseInfo
+		Private SelectedCaseInfo As Relativity.CaseInfo
 		Private SelectedNativeLoadFile As New kCura.WinEDDS.LoadFile
 		Private SelectedImageLoadFile As kCura.WinEDDS.ImageLoadFile
 		Private CurrentLoadMode As LoadMode
@@ -210,7 +210,7 @@ Namespace kCura.EDDS.WinForm
 					SelectedNativeLoadFile.StartLineNumber = StartLineNumber
 					importer.LoadFile = SelectedNativeLoadFile
 					importer.TimeZoneOffset = _application.TimeZoneOffset
-					SelectedNativeLoadFile.ArtifactTypeID = kCura.EDDS.Types.ArtifactType.Document
+					SelectedNativeLoadFile.ArtifactTypeID = Relativity.ArtifactType.Document
 					_application.SetWorkingDirectory(SelectedNativeLoadFile.FilePath)
 					Dim executor As New kCura.EDDS.WinForm.CommandLineProcessRunner(importer.ProcessObserver, importer.ProcessController, ErrorLoadFileLocation, ErrorReportFileLocation)
 					_application.StartProcess(importer)
@@ -375,7 +375,7 @@ Namespace kCura.EDDS.WinForm
 						'TODO: Have ArtifactTypeID be passed in on command line, currently hardcoding to 10
 						Dim artifactTypeID As Int32
 						If CurrentLoadMode = LoadMode.Native Then
-							artifactTypeID = kCura.EDDS.Types.ArtifactType.Document
+							artifactTypeID = Relativity.ArtifactType.Document
 						Else
 							artifactTypeID = tempLoadFile.ArtifactTypeID
 						End If

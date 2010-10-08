@@ -337,11 +337,11 @@ Namespace kCura.EDDS.WinForm
 			End Set
 		End Property
 
-		Friend Property CaseInfo() As kCura.EDDS.Types.CaseInfo
+		Friend Property CaseInfo() As Relativity.CaseInfo
 			Get
 				Return _caseInfo
 			End Get
-			Set(ByVal Value As kCura.EDDS.Types.CaseInfo)
+			Set(ByVal Value As Relativity.CaseInfo)
 				_caseInfo = Value
 			End Set
 		End Property
@@ -369,7 +369,7 @@ Namespace kCura.EDDS.WinForm
 #Region " Private Fields "
 
 		Private WithEvents _application As kCura.EDDS.WinForm.Application
-		Private _caseInfo As kCura.EDDS.Types.CaseInfo
+		Private _caseInfo As Relativity.CaseInfo
 		Private _cookieContainer As System.Net.CookieContainer
 		Private _credentials As System.Net.NetworkCredential
 		Private _document As Xml.XmlDocument

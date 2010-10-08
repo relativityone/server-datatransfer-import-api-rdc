@@ -115,9 +115,9 @@ Namespace kCura.EDDS.WinForm
 
 #Region " Declarations & Properties "
 		Private WithEvents _application As kCura.EDDS.WinForm.Application
-		Private _selectedCaseInfo As kCura.EDDS.Types.CaseInfo
+		Private _selectedCaseInfo As Relativity.CaseInfo
 
-		Public ReadOnly Property SelectedCaseInfo() As kCura.EDDS.Types.CaseInfo
+		Public ReadOnly Property SelectedCaseInfo() As Relativity.CaseInfo
 			Get
 				Return _selectedCaseInfo
 			End Get
@@ -134,7 +134,7 @@ Namespace kCura.EDDS.WinForm
 		Private Sub CaseListView_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles CaseListView.SelectedIndexChanged
 			Dim caseManager As New kCura.EDDS.WebAPI.CaseManagerBase.CaseManager
 			If CaseListView.SelectedItems.Count <> 0 Then
-				_selectedCaseInfo = DirectCast(CaseListView.SelectedItems.Item(0).Tag, kCura.EDDS.Types.CaseInfo)
+				_selectedCaseInfo = DirectCast(CaseListView.SelectedItems.Item(0).Tag, Relativity.CaseInfo)
 				_OKButton.Enabled = True
 			Else
 				_selectedCaseInfo = Nothing
@@ -172,7 +172,7 @@ Namespace kCura.EDDS.WinForm
 				If searchText.Trim = "" OrElse CType(row.Item("Name"), String).ToLower.IndexOf(searchText.Trim.ToLower) <> -1 Then
 					Dim listItem As New System.Windows.Forms.ListViewItem
 					listItem.Text = CType(row.Item("Name"), String)
-					listItem.Tag = New kCura.EDDS.Types.CaseInfo(row)
+					listItem.Tag = New Relativity.CaseInfo(row)
 					CaseListView.Items.Add(listItem)
 				End If
 			Next

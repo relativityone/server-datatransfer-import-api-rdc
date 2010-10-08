@@ -27,7 +27,7 @@ Namespace kCura.EDDS.WinForm
 
 		Private Sub InitializeDocumentSpecificComponents()
 			If Me.LoadFile.ArtifactTypeID = 0 Then Me.LoadFile.ArtifactTypeID = _application.ArtifactTypeID
-			If Me.LoadFile.ArtifactTypeID = kCura.EDDS.Types.ArtifactType.Document Then
+			If Me.LoadFile.ArtifactTypeID = Relativity.ArtifactType.Document Then
 				Me.GroupBox4.Enabled = True
 				Me.GroupBox7.Enabled = True
 				Me.GroupBox5.Text = "Folder Info"
@@ -213,7 +213,7 @@ Namespace kCura.EDDS.WinForm
 			'OpenFileDialog
 			'
 			Me.OpenFileDialog.Filter = "All files (*.*)|*.*|CSV Files (*.csv)|*.csv|Text Files (*.txt)|*.txt|DAT Files|*." & _
-					"dat"
+				"dat"
 			'
 			'GroupBox1
 			'
@@ -814,7 +814,7 @@ Namespace kCura.EDDS.WinForm
 
 				If Not Me.EnsureConnection() Then Return False
 				If _loadNativeFiles.Checked AndAlso _nativeFilePathField.SelectedIndex = -1 Then Me.AppendErrorMessage(msg, "Native file field unselected")
-				If Me.LoadFile.ArtifactTypeID = kCura.EDDS.Types.ArtifactType.Document Then
+				If Me.LoadFile.ArtifactTypeID = Relativity.ArtifactType.Document Then
 					If _buildFolderStructure.Checked AndAlso _destinationFolderPath.SelectedIndex = -1 Then Me.AppendErrorMessage(msg, "Folder information unselected")
 				Else
 					If Me.IsChildObject Then
@@ -911,7 +911,7 @@ Namespace kCura.EDDS.WinForm
 					LoadFile.NativeFilePathColumn = Nothing
 				End If
 				'Add the file field as a mapped field for non document object types
-				If Me.LoadFile.ArtifactTypeID <> kCura.EDDS.Types.ArtifactType.Document Then
+				If Me.LoadFile.ArtifactTypeID <> Relativity.ArtifactType.Document Then
 					For Each field As DocumentField In currentFields.AllFields
 						If field.FieldTypeID = Relativity.FieldTypeHelper.FieldType.File Then
 							Dim openParenIndex As Int32 = LoadFile.NativeFilePathColumn.LastIndexOf("("c) + 1
@@ -1037,7 +1037,7 @@ Namespace kCura.EDDS.WinForm
 				Next
 			End If
 
-			If Me.LoadFile.ArtifactTypeID = kCura.EDDS.Types.ArtifactType.Document Then
+			If Me.LoadFile.ArtifactTypeID = Relativity.ArtifactType.Document Then
 				If _overwriteDropdown.SelectedItem Is Nothing Then
 					_destinationFolderPath.Enabled = _buildFolderStructure.Checked
 				Else
@@ -1080,7 +1080,7 @@ Namespace kCura.EDDS.WinForm
 			'	'_identifiersDropDown.SelectedItem = LoadFile.GroupIdentifierColumn
 			'End If
 
-			If Me.LoadFile.ArtifactTypeID = kCura.EDDS.Types.ArtifactType.Document Then
+			If Me.LoadFile.ArtifactTypeID = Relativity.ArtifactType.Document Then
 				_extractedTextValueContainsFileLocation.Enabled = Me.FullTextColumnIsMapped
 			End If
 			_fullTextFileEncodingPicker.Enabled = _extractedTextValueContainsFileLocation.Enabled And _extractedTextValueContainsFileLocation.Checked
@@ -1254,7 +1254,7 @@ Namespace kCura.EDDS.WinForm
 			_loadFileEncodingPicker.InitializeDropdown()
 			_fullTextFileEncodingPicker.InitializeDropdown()
 			_importMenuForceFolderPreviewItem.Checked = _application.TemporaryForceFolderPreview
-			If LoadFile.ArtifactTypeID <> kCura.EDDS.Types.ArtifactType.Document Then
+			If LoadFile.ArtifactTypeID <> Relativity.ArtifactType.Document Then
 				_importMenuForceFolderPreviewItem.Checked = False
 				_importMenuForceFolderPreviewItem.Enabled = False
 			End If
@@ -1285,7 +1285,7 @@ Namespace kCura.EDDS.WinForm
 					End If
 				Next
 			End If
-			If Me.LoadFile.ArtifactTypeID = kCura.EDDS.Types.ArtifactType.Document Then
+			If Me.LoadFile.ArtifactTypeID = Relativity.ArtifactType.Document Then
 				Select Case LoadFile.OverwriteDestination.ToLower
 					Case "none"
 						_buildFolderStructure.Enabled = True
@@ -1371,7 +1371,7 @@ Namespace kCura.EDDS.WinForm
 		Private Sub _loadFieldMapDialog_FileOk(ByVal sender As Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles _loadFieldMapDialog.FileOk
 			Dim newLoadFile As LoadFile = _application.ReadLoadFile(Me.LoadFile, _loadFieldMapDialog.FileName, False)
 			If Not newLoadFile Is Nothing Then
-				If newLoadFile.ArtifactTypeID <> kCura.EDDS.Types.ArtifactType.Document Then
+				If newLoadFile.ArtifactTypeID <> Relativity.ArtifactType.Document Then
 					newLoadFile.ForceFolderPreview = False
 				End If
 				_loadFile = newLoadFile
@@ -1411,13 +1411,13 @@ Namespace kCura.EDDS.WinForm
 				Return ImportFileMenu.Enabled AndAlso _
 				PreviewMenuFile.Enabled AndAlso _
 				_importMenuPreviewErrorsItem.Enabled AndAlso _
-				((_importMenuPreviewFoldersAndCodesItem.Enabled AndAlso Me.LoadFile.ArtifactTypeID = kCura.EDDS.Types.ArtifactType.Document) OrElse Me.LoadFile.ArtifactTypeID <> kCura.EDDS.Types.ArtifactType.Document)
+				((_importMenuPreviewFoldersAndCodesItem.Enabled AndAlso Me.LoadFile.ArtifactTypeID = Relativity.ArtifactType.Document) OrElse Me.LoadFile.ArtifactTypeID <> Relativity.ArtifactType.Document)
 			End Get
 			Set(ByVal value As Boolean)
 				ImportFileMenu.Enabled = value
 				PreviewMenuFile.Enabled = value
 				_importMenuPreviewErrorsItem.Enabled = value
-				If Me.LoadFile.ArtifactTypeID = kCura.EDDS.Types.ArtifactType.Document Then
+				If Me.LoadFile.ArtifactTypeID = Relativity.ArtifactType.Document Then
 					_importMenuPreviewFoldersAndCodesItem.Enabled = value
 				Else
 					_importMenuPreviewFoldersAndCodesItem.Enabled = False
@@ -1508,7 +1508,7 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 		Private Sub _buildFolderStructure_CheckedChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles _buildFolderStructure.CheckedChanged
-			If Me.LoadFile.ArtifactTypeID = kCura.EDDS.Types.ArtifactType.Document Then
+			If Me.LoadFile.ArtifactTypeID = Relativity.ArtifactType.Document Then
 				If _buildFolderStructure.Checked Then
 					_destinationFolderPath.Enabled = True
 				Else

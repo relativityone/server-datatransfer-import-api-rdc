@@ -64,7 +64,7 @@ Namespace kCura.EDDS.WinForm
 			For Each field In documentDTO.Fields
 				' determin if field is part of fieldMap
 				Dim fieldValue As kCura.EDDS.Import.FieldValue
-				'Select Case CType(field.FieldCategoryID, kCura.EDDS.Types.FieldCategory)
+				'Select Case CType(field.FieldCategoryID, Relativity.FieldCategory)
 				'  Case Types.FieldCategory.FullText
 				'    field.Value = New Byte() {}
 				'  Case Else
@@ -98,7 +98,7 @@ Namespace kCura.EDDS.WinForm
 				_uploader.UploaderType = FileUploader.Type.Web
 				fileIdentifier = _uploader.UploadFile(fileName, documentArtifactID)
 				If fileIdentifier <> String.Empty Then
-					_fileManager.CreateFile(_currentCaseID, documentArtifactID, fileInfo.Name, fileIdentifier, 0, kCura.EDDS.Types.FileType.Native)
+					_fileManager.CreateFile(_currentCaseID, documentArtifactID, fileInfo.Name, fileIdentifier, 0, Relativity.FileType.Native)
 				End If
 				importer.ReportStatus(recordInfo, "Finished Uploading Document")
 			Catch ex As System.Exception
