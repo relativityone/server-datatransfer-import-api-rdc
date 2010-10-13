@@ -157,10 +157,6 @@
       <Project>{B092D1B2-909B-4EF0-9369-A81675C3FC18}</Project>
       <Name>kCura.Windows.Process</Name>
     </ProjectReference>
-    <ProjectReference Include="..\kCura.EDDS.Types\kCura.EDDS.Types.vbproj">
-      <Project>{6E14C37A-96F5-4488-9E2B-2C1A21C4D140}</Project>
-      <Name>kCura.EDDS.Types</Name>
-    </ProjectReference>
     <ProjectReference Include="..\kCura.WinEDDS.ImportExtension\kCura.WinEDDS.ImportExtension.vbproj">
       <Project>{86550F4B-BEF4-4458-9536-7B5C6F68B0E2}</Project>
       <Name>kCura.WinEDDS.ImportExtension</Name>
