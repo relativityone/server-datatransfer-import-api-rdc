@@ -61,7 +61,7 @@ Namespace kCura.WinEDDS
 		Private _currentStatisticsSnapshot As IDictionary
 		Private _statisticsLastUpdated As System.DateTime = System.DateTime.Now
 		Private _start As System.DateTime
-		Private _unmappedRelationalFields As System.Collections.ArrayList
+		'Private _unmappedRelationalFields As System.Collections.ArrayList
 
 #End Region
 
@@ -161,25 +161,25 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
-		Public ReadOnly Property UnmappedRelationalFields() As System.Collections.ArrayList
-			Get
-				If _unmappedRelationalFields Is Nothing Then
-					Dim mappedRelationalFieldIds As New System.Collections.ArrayList
-					For Each item As LoadFileFieldMap.LoadFileFieldMapItem In _fieldMap
-						If Not item.DocumentField Is Nothing AndAlso item.DocumentField.FieldCategory = Relativity.FieldCategory.Relational Then
-							mappedRelationalFieldIds.Add(item.DocumentField.FieldID)
-						End If
-					Next
-					_unmappedRelationalFields = New System.Collections.ArrayList
-					For Each field As kCura.EDDS.WebAPI.DocumentManagerBase.Field In Me.AllFields(_artifactTypeID)
-						If field.FieldCategory = EDDS.WebAPI.DocumentManagerBase.FieldCategory.Relational And Not mappedRelationalFieldIds.Contains(field.ArtifactID) Then
-							_unmappedRelationalFields.Add(field)
-						End If
-					Next
-				End If
-				Return _unmappedRelationalFields
-			End Get
-		End Property
+		'Public ReadOnly Property UnmappedRelationalFields() As System.Collections.ArrayList
+		'	Get
+		'		If _unmappedRelationalFields Is Nothing Then
+		'			Dim mappedRelationalFieldIds As New System.Collections.ArrayList
+		'			For Each item As LoadFileFieldMap.LoadFileFieldMapItem In _fieldMap
+		'				If Not item.DocumentField Is Nothing AndAlso item.DocumentField.FieldCategory = Relativity.FieldCategory.Relational Then
+		'					mappedRelationalFieldIds.Add(item.DocumentField.FieldID)
+		'				End If
+		'			Next
+		'			_unmappedRelationalFields = New System.Collections.ArrayList
+		'			For Each field As kCura.EDDS.WebAPI.DocumentManagerBase.Field In Me.AllFields(_artifactTypeID)
+		'				If field.FieldCategory = EDDS.WebAPI.DocumentManagerBase.FieldCategory.Relational And Not mappedRelationalFieldIds.Contains(field.ArtifactID) Then
+		'					_unmappedRelationalFields.Add(field)
+		'				End If
+		'			Next
+		'		End If
+		'		Return _unmappedRelationalFields
+		'	End Get
+		'End Property
 
 #End Region
 
@@ -852,11 +852,11 @@ Namespace kCura.WinEDDS
 					End If
 				End If
 			Next
-			For Each fieldDTO As kCura.EDDS.WebAPI.DocumentManagerBase.Field In Me.UnmappedRelationalFields
-				Dim field As New Api.ArtifactField(fieldDTO)
-				field.Value = identityValue
-				Me.SetFieldValue(field, -1, False, identityValue, 0)
-			Next
+			'For Each fieldDTO As kCura.EDDS.WebAPI.DocumentManagerBase.Field In Me.UnmappedRelationalFields
+			'	Dim field As New Api.ArtifactField(fieldDTO)
+			'	field.Value = identityValue
+			'	Me.SetFieldValue(field, -1, False, identityValue, 0)
+			'Next
 			_firstTimeThrough = False
 			System.Threading.Monitor.Exit(_outputNativeFileWriter)
 			System.Threading.Monitor.Exit(_outputCodeFileWriter)
