@@ -277,7 +277,9 @@
     <Import Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="App.Prod.config" />
     <None Include="Controls\CaseFolderExplorer.xsx">
       <DependentUpon>CaseFolderExplorer.resx</DependentUpon>

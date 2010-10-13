@@ -30,7 +30,7 @@ Namespace kCura.EDDS.WinForm
 		Public Event ChangeCursor(ByVal cursorStyle As System.Windows.Forms.Cursor)
 
 		Private _processPool As kCura.Windows.Process.ProcessPool
-		Private _selectedCaseInfo As kCura.EDDS.Types.CaseInfo
+		Private _selectedCaseInfo As Relativity.CaseInfo
 		Private _selectedCaseFolderID As Int32
 		Private _credential As System.Net.NetworkCredential
 		Private _fields As kCura.WinEDDS.DocumentFieldCollection
@@ -59,13 +59,13 @@ Namespace kCura.EDDS.WinForm
 			End Set
 		End Property
 
-		Public ReadOnly Property SelectedCaseInfo() As kCura.EDDS.Types.CaseInfo
+		Public ReadOnly Property SelectedCaseInfo() As Relativity.CaseInfo
 			Get
 				Return _selectedCaseInfo
 			End Get
 		End Property
 
-		Public Sub RefreshSelectedCaseInfo(Optional ByVal caseInfo As kCura.EDDS.Types.CaseInfo = Nothing)
+		Public Sub RefreshSelectedCaseInfo(Optional ByVal caseInfo As Relativity.CaseInfo = Nothing)
 			Dim caseManager As New kCura.WinEDDS.Service.CaseManager(Me.Credential, _cookieContainer)
 			If caseInfo Is Nothing Then
 				_selectedCaseInfo = caseManager.Read(_selectedCaseInfo.ArtifactID)
@@ -492,7 +492,7 @@ Namespace kCura.EDDS.WinForm
 
 		Public Sub OpenCase()
 			Try
-				Dim caseInfo As kCura.EDDS.Types.CaseInfo = Me.GetCase
+				Dim caseInfo As Relativity.CaseInfo = Me.GetCase
 				If Not caseInfo Is Nothing Then
 					_selectedCaseInfo = caseInfo
 					RaiseEvent OnEvent(New LoadCaseEvent(caseInfo))
@@ -506,7 +506,7 @@ Namespace kCura.EDDS.WinForm
 			End Try
 		End Sub
 
-		Public Function GetCase() As kCura.EDDS.Types.CaseInfo
+		Public Function GetCase() As Relativity.CaseInfo
 			Dim frm As New CaseSelectForm
 			frm.ShowDialog()
 			Return frm.SelectedCaseInfo
@@ -887,7 +887,7 @@ Namespace kCura.EDDS.WinForm
 #End Region
 
 #Region "Form Initializers"
-		Public Sub NewLoadFile(ByVal destinationArtifactID As Int32, ByVal caseInfo As kCura.EDDS.Types.CaseInfo)
+		Public Sub NewLoadFile(ByVal destinationArtifactID As Int32, ByVal caseInfo As Relativity.CaseInfo)
 			If Not Me.IsConnected(caseInfo.ArtifactID, Me.ArtifactTypeID) Then
 				CursorDefault()
 				Exit Sub
@@ -896,7 +896,7 @@ Namespace kCura.EDDS.WinForm
 			Dim loadFile As New LoadFile
 			frm._application = Me
 			loadFile.SelectedCasePath = caseInfo.DocumentPath
-			If Me.ArtifactTypeID = kCura.EDDS.Types.ArtifactType.Document Then
+			If Me.ArtifactTypeID = Relativity.ArtifactType.Document Then
 				loadFile.DestinationFolderID = destinationArtifactID
 			Else
 				loadFile.DestinationFolderID = caseInfo.RootArtifactID
@@ -912,11 +912,11 @@ Namespace kCura.EDDS.WinForm
 			frm.Show()
 		End Sub
 
-		Public Sub NewProductionExport(ByVal caseInfo As kCura.EDDS.Types.CaseInfo)
+		Public Sub NewProductionExport(ByVal caseInfo As Relativity.CaseInfo)
 			Me.NewSearchExport(caseInfo.RootFolderID, caseInfo, ExportFile.ExportType.Production)
 		End Sub
 
-		Public Sub NewSearchExport(ByVal selectedFolderId As Int32, ByVal caseInfo As kCura.EDDS.Types.CaseInfo, ByVal typeOfExport As kCura.WinEDDS.ExportFile.ExportType)
+		Public Sub NewSearchExport(ByVal selectedFolderId As Int32, ByVal caseInfo As Relativity.CaseInfo, ByVal typeOfExport As kCura.WinEDDS.ExportFile.ExportType)
 			Dim frm As New ExportForm
 			Dim exportFile As WinEDDS.ExportFile
 			Try
@@ -949,7 +949,7 @@ Namespace kCura.EDDS.WinForm
 			End Try
 		End Sub
 
-		Public Function GetNewExportFileSettingsObject(ByVal selectedFolderId As Int32, ByVal caseInfo As kCura.EDDS.Types.CaseInfo, ByVal typeOfExport As kCura.WinEDDS.ExportFile.ExportType, ByVal artifactTypeID As Int32) As WinEDDS.ExportFile
+		Public Function GetNewExportFileSettingsObject(ByVal selectedFolderId As Int32, ByVal caseInfo As Relativity.CaseInfo, ByVal typeOfExport As kCura.WinEDDS.ExportFile.ExportType, ByVal artifactTypeID As Int32) As WinEDDS.ExportFile
 			Dim exportFile As New WinEDDS.ExportFile(artifactTypeID)
 			Dim searchManager As New kCura.WinEDDS.Service.SearchManager(Me.Credential, _cookieContainer)
 			Dim productionManager As New kCura.WinEDDS.Service.ProductionManager(Me.Credential, _cookieContainer)
@@ -983,7 +983,7 @@ Namespace kCura.EDDS.WinForm
 			Return exportFile
 		End Function
 
-		Public Sub NewApplicationFile(ByVal caseInfo As kCura.EDDS.Types.CaseInfo)
+		Public Sub NewApplicationFile(ByVal caseInfo As Relativity.CaseInfo)
 			CursorWait()
 			If Not Me.IsConnected(caseInfo.ArtifactID, Me.ArtifactTypeID) Then
 				CursorDefault()
@@ -1008,7 +1008,7 @@ Namespace kCura.EDDS.WinForm
 			Return searchExportDataSet.Tables(0)
 		End Function
 
-		Public Sub NewOutlookImport(ByVal destinationArtifactID As Int32, ByVal caseInfo As kCura.EDDS.Types.CaseInfo)
+		Public Sub NewOutlookImport(ByVal destinationArtifactID As Int32, ByVal caseInfo As Relativity.CaseInfo)
 			Dim importerAssembly As System.Reflection.Assembly
 			importerAssembly = System.Reflection.Assembly.LoadFrom(kCura.WinEDDS.Config.OutlookImporterLocation)
 			Dim hostImporterGateway As kCura.EDDS.Import.ImporterGatewayBase
@@ -1017,7 +1017,7 @@ Namespace kCura.EDDS.WinForm
 			frm.Show()
 		End Sub
 
-		Public Sub NewSQLImport(ByVal destinationArtifactID As Int32, ByVal caseInfo As kCura.EDDS.Types.CaseInfo)
+		Public Sub NewSQLImport(ByVal destinationArtifactID As Int32, ByVal caseInfo As Relativity.CaseInfo)
 			Dim frm As New SQLImportForm
 			Dim sQLImportSettings As New SQLImportSettings
 			sQLImportSettings.DestinationFolderID = destinationArtifactID
@@ -1026,7 +1026,7 @@ Namespace kCura.EDDS.WinForm
 			frm.Show()
 		End Sub
 
-		Public Sub NewImageFile(ByVal destinationArtifactID As Int32, ByVal caseinfo As kCura.EDDS.Types.CaseInfo)
+		Public Sub NewImageFile(ByVal destinationArtifactID As Int32, ByVal caseinfo As Relativity.CaseInfo)
 			CursorWait()
 			If Not Me.IsConnected(caseinfo.ArtifactID, Me.ArtifactTypeID) Then
 				CursorDefault()
@@ -1053,7 +1053,7 @@ Namespace kCura.EDDS.WinForm
 			CursorDefault()
 		End Sub
 
-		Public Sub NewProductionFile(ByVal destinationArtifactID As Int32, ByVal caseinfo As kCura.EDDS.Types.CaseInfo)
+		Public Sub NewProductionFile(ByVal destinationArtifactID As Int32, ByVal caseinfo As Relativity.CaseInfo)
 			CursorWait()
 			If Not Me.IsConnected(caseinfo.ArtifactID, ArtifactTypeID) Then
 				CursorDefault()
@@ -1082,7 +1082,7 @@ Namespace kCura.EDDS.WinForm
 			CursorDefault()
 		End Sub
 
-		Public Sub NewDirectoryImport(ByVal destinationArtifactID As Int32, ByVal caseInfo As kCura.EDDS.Types.CaseInfo)
+		Public Sub NewDirectoryImport(ByVal destinationArtifactID As Int32, ByVal caseInfo As Relativity.CaseInfo)
 			CursorWait()
 			If Not Me.IsConnected(caseInfo.ArtifactID, ArtifactTypeID) Then
 				CursorDefault()
@@ -1097,7 +1097,7 @@ Namespace kCura.EDDS.WinForm
 			CursorDefault()
 		End Sub
 
-		Public Sub NewEnronImport(ByVal destinationArtifactID As Int32, ByVal caseInfo As kCura.EDDS.Types.CaseInfo)
+		Public Sub NewEnronImport(ByVal destinationArtifactID As Int32, ByVal caseInfo As Relativity.CaseInfo)
 			CursorWait()
 			If Not Me.IsConnected(caseInfo.ArtifactID, ArtifactTypeID) Then
 				CursorDefault()
@@ -1675,7 +1675,7 @@ Namespace kCura.EDDS.WinForm
 #End Region
 
 
-		Public Function GetProductionPrecendenceList(ByVal caseInfo As kCura.EDDS.Types.CaseInfo) As System.Data.DataTable
+		Public Function GetProductionPrecendenceList(ByVal caseInfo As Relativity.CaseInfo) As System.Data.DataTable
 			Dim productionManager As kCura.WinEDDS.Service.ProductionManager
 			Dim dt As System.Data.DataTable
 			Try
@@ -1718,7 +1718,7 @@ Namespace kCura.EDDS.WinForm
 
 			sb.Append(String.Format("Relativity Desktop Client {0} {1}", bitness, nl))
 			sb.Append("Version " & Me.GetDisplayAssemblyVersion() & nl)
-			sb.Append(kCura.EDDS.Types.Constants.LICENSE_AGREEMENT_TEXT & nl)
+			sb.Append(Relativity.Constants.LICENSE_AGREEMENT_TEXT & nl)
 			sb.Append("Copyright © " & System.DateTime.Now.Year & " kCura Corporation")
 			MsgBox(sb.ToString, MsgBoxStyle.OkOnly, "About Relativity Desktop Client")
 			If Not _loginForm Is Nothing AndAlso Not _loginForm.IsDisposed Then

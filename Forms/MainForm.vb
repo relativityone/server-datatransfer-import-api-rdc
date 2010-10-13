@@ -507,7 +507,7 @@ Namespace kCura.EDDS.WinForm
 		Private Sub PopulateObjectTypeDropDown()
 			Dim objectTypeManager As New kCura.WinEDDS.Service.ObjectTypeManager(_application.Credential, _application.CookieContainer)
 			Dim uploadableObjectTypes As System.Data.DataRowCollection = objectTypeManager.RetrieveAllUploadable(_application.SelectedCaseInfo.ArtifactID).Tables(0).Rows
-			Dim selectedObjectTypeID As Int32 = kCura.EDDS.Types.ArtifactType.Document
+			Dim selectedObjectTypeID As Int32 = Relativity.ArtifactType.Document
 			If _objectTypeDropDown.Items.Count > 0 Then
 				selectedObjectTypeID = DirectCast(_objectTypeDropDown.SelectedItem, kCura.WinEDDS.ObjectTypeListItem).Value
 			End If
@@ -536,7 +536,7 @@ Namespace kCura.EDDS.WinForm
 			ImportMenu.Visible = selectedObjectType.UserCanAdd
 			ToolsImportLoadFileMenu.Visible = selectedObjectType.UserCanAdd
 			ExportMenu.Visible = True
-			If selectedItemValue = kCura.EDDS.Types.ArtifactType.Document Then
+			If selectedItemValue = Relativity.ArtifactType.Document Then
 				_caseFolderExplorer.Visible = True
 				ToolsImportImageFileMenu.Visible = selectedObjectType.UserCanAdd
 				ToolsImportProductionFileMenu.Visible = selectedObjectType.UserCanAdd
