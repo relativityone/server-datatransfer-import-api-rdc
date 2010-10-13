@@ -1,3 +1,7 @@
+Imports System
+Imports System.Xml
+Imports System.Web.Services.Protocols
+
 Public Class ErrorDialog
 	Inherits System.Windows.Forms.Form
 
@@ -116,6 +120,16 @@ Public Class ErrorDialog
 		Initialize(ex, ex.Message)
 	End Sub
 	Public Sub Initialize(ByVal ex As System.Exception, ByVal errorMessage As String)
+		If TypeOf ex Is SoapException Then
+			Try
+				Dim MrSoapy As SoapException = CType(ex, SoapException)
+				Label1.Text = MrSoapy.Detail("ExceptionMessage").InnerText
+				_errorText.Text = MrSoapy.Detail("ExceptionType").InnerText & Environment.NewLine & MrSoapy.Detail("ExceptionTrace").InnerText
+				Return
+			Catch ex2 As System.Exception	'MrSoapy not soapified :(
+				'cascade to a default rendering
+			End Try
+		End If
 		Label1.Text = errorMessage
 		_errorText.Text = errorMessage & vbNewLine & "-----" & vbNewLine & ex.ToString
 	End Sub
