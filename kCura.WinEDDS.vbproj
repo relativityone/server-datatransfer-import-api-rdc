@@ -253,10 +253,6 @@
       <Project>{94940707-AFFE-47EB-BD70-5ADE8F7C8A36}</Project>
       <Name>kCura.EDDS.Import</Name>
     </ProjectReference>
-    <ProjectReference Include="..\kCura.EDDS.Types\kCura.EDDS.Types.vbproj">
-      <Project>{6E14C37A-96F5-4488-9E2B-2C1A21C4D140}</Project>
-      <Name>kCura.EDDS.Types</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Import Include="Microsoft.VisualBasic" />
