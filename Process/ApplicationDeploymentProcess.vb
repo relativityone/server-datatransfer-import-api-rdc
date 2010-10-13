@@ -4,7 +4,7 @@ Namespace kCura.WinEDDS
 
 #Region " Constructors "
 
-		Public Sub New(ByVal application As Xml.XmlDocument, ByVal credential As Net.NetworkCredential, ByVal cookieContainer As Net.CookieContainer, ByVal caseInfo As kCura.EDDS.Types.CaseInfo)
+		Public Sub New(ByVal application As Xml.XmlDocument, ByVal credential As Net.NetworkCredential, ByVal cookieContainer As Net.CookieContainer, ByVal caseInfo As Relativity.CaseInfo)
 			MyBase.New()
 			_application = application
 			_credential = credential
@@ -46,7 +46,7 @@ Namespace kCura.WinEDDS
 #Region " Private Fields "
 
 		Private _application As Xml.XmlDocument
-		Private _caseInfo As kCura.EDDS.Types.CaseInfo
+		Private _caseInfo As Relativity.CaseInfo
 		Private _cookieContainer As Net.CookieContainer
 		Private _credential As Net.NetworkCredential
 

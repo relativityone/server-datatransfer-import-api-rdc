@@ -40,7 +40,7 @@ Namespace kCura.WinEDDS.Service
 				 OrElse _
 				 unmappableFields.Contains(dv(i)("DisplayName").ToString) _
 				) Then
-					If Not (CType(dv(i)("FieldCategoryID"), Relativity.FieldCategory) = Relativity.FieldCategory.FullText AndAlso artifactTypeID <> kCura.EDDS.Types.ArtifactType.Document) Then
+					If Not (CType(dv(i)("FieldCategoryID"), Relativity.FieldCategory) = Relativity.FieldCategory.FullText AndAlso artifactTypeID <> Relativity.ArtifactType.Document) Then
 						With field
 							.ArtifactID = CType(dv(i)("ArtifactID"), Int32)
 							.ArtifactViewFieldID = CType(dv(i)("ArtifactViewFieldID"), Int32)
@@ -60,7 +60,7 @@ Namespace kCura.WinEDDS.Service
 							.AssociativeArtifactTypeID = kCura.Utility.NullableTypesHelper.DBNullConvertToNullable(Of Int32)(dv(i)("AssociativeArtifactTypeID"))
 						End With
 						If field.FieldType = EDDS.WebAPI.DocumentManagerBase.FieldType.Object OrElse field.FieldType = EDDS.WebAPI.DocumentManagerBase.FieldType.Objects OrElse field.FieldCategory = EDDS.WebAPI.DocumentManagerBase.FieldCategory.MultiReflected OrElse field.FieldCategory = EDDS.WebAPI.DocumentManagerBase.FieldCategory.Reflected Then
-							If field.AssociativeArtifactTypeID.HasValue AndAlso kCura.EDDS.Types.ArtifactTypeHelper.IsDynamic(field.AssociativeArtifactTypeID.Value) Then fields.Add(field)
+							If field.AssociativeArtifactTypeID.HasValue AndAlso Relativity.ArtifactTypeHelper.IsDynamic(field.AssociativeArtifactTypeID.Value) Then fields.Add(field)
 						Else
 							fields.Add(field)
 						End If

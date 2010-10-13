@@ -165,7 +165,7 @@ Namespace kCura.WinEDDS
 					Dim fileIdentifier As String
 					fileIdentifier = _uploader.UploadFile(filePath, documentArtifactID)
 					If fileIdentifier <> String.Empty Then
-						_fileManager.CreateFile(_importFileDirectorySettings.CaseInfo.ArtifactID, documentArtifactID, fileInfo.Name, fileIdentifier, 0, kCura.EDDS.Types.FileType.Native)
+						_fileManager.CreateFile(_importFileDirectorySettings.CaseInfo.ArtifactID, documentArtifactID, fileInfo.Name, fileIdentifier, 0, Relativity.FileType.Native)
 						Me.ReportStatus(filePath, "Extracting Full Text")
 						'_documentManager.UpdateFullTextWithCrackedText(documentArtifactID, fileIdentifier)
 					End If

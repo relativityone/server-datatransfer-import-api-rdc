@@ -10,9 +10,9 @@ Namespace kCura.WinEDDS
 		Private _defaultDestinationDirectory As String
 		Private _credential As Net.NetworkCredential
 		Private _cookieContainer As Net.CookieContainer
-		Private _caseInfo As kCura.EDDS.Types.CaseInfo
+		Private _caseInfo As Relativity.CaseInfo
 
-		Public Sub New(ByVal credential As Net.NetworkCredential, ByVal cookieContainer As Net.CookieContainer, ByVal caseInfo As kCura.EDDS.Types.CaseInfo)
+		Public Sub New(ByVal credential As Net.NetworkCredential, ByVal cookieContainer As Net.CookieContainer, ByVal caseInfo As Relativity.CaseInfo)
 			MyBase.New()
 			_credential = credential
 			_cookieContainer = cookieContainer

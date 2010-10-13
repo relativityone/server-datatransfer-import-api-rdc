@@ -242,7 +242,7 @@ Namespace kCura.WinEDDS
 				start = System.DateTime.Now.Ticks
 				If Me.Settings.TypeOfExport = ExportFile.ExportType.Production Then
 					natives.Table = _searchManager.RetrieveNativesForProduction(Me.Settings.CaseArtifactID, productionArtifactID, kCura.Utility.Array.IntArrayToCSV(documentArtifactIDs)).Tables(0)
-				ElseIf Me.Settings.ArtifactTypeID = kCura.EDDS.Types.ArtifactType.Document Then
+				ElseIf Me.Settings.ArtifactTypeID = Relativity.ArtifactType.Document Then
 					natives.Table = _searchManager.RetrieveNativesForSearch(Me.Settings.CaseArtifactID, kCura.Utility.Array.IntArrayToCSV(documentArtifactIDs)).Tables(0)
 				Else
 					Dim dt As System.Data.DataTable = _searchManager.RetrieveFilesForDynamicObjects(Me.Settings.CaseArtifactID, Me.Settings.FileField.FieldID, documentArtifactIDs).Tables(0)
@@ -284,7 +284,7 @@ Namespace kCura.WinEDDS
 				Else
 					artifact.OriginalFileName = nativeRow("Filename").ToString
 					artifact.NativeSourceLocation = nativeRow("Location").ToString
-					If Me.Settings.ArtifactTypeID = kCura.EDDS.Types.ArtifactType.Document Then
+					If Me.Settings.ArtifactTypeID = Relativity.ArtifactType.Document Then
 						artifact.NativeFileGuid = nativeRow("Guid").ToString
 					Else
 						artifact.FileID = CType(nativeRow("FileID"), Int32)
@@ -464,7 +464,7 @@ Namespace kCura.WinEDDS
 
 			If Not Me.Settings.LoadFileIsHtml Then retString = New System.Text.StringBuilder(retString.ToString.TrimEnd(Me.Settings.RecordDelimiter))
 			If _exportFile.LoadFileIsHtml Then
-				If Me.Settings.ExportImages AndAlso Me.Settings.ArtifactTypeID = kCura.EDDS.Types.ArtifactType.Document Then retString.Append("<th>Image Files</th>")
+				If Me.Settings.ExportImages AndAlso Me.Settings.ArtifactTypeID = Relativity.ArtifactType.Document Then retString.Append("<th>Image Files</th>")
 				If Me.Settings.ExportNative Then retString.Append("<th>Native Files</th>")
 				'If Me.Settings.ExportFullText Then retString.Append("<th>Extracted Text</th>")
 				retString.Append(vbNewLine & "</tr>" & vbNewLine)

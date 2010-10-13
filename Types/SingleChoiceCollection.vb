@@ -10,15 +10,15 @@ Namespace kCura.WinEDDS.Types
 			End Get
 		End Property
 
-		Default Public ReadOnly Property Item(ByVal name As String) As kCura.EDDS.Types.ChoiceInfo
+		Default Public ReadOnly Property Item(ByVal name As String) As Relativity.ChoiceInfo
 			Get
 				Dim retval As Object = _ht(name.ToLower.Trim)
 				If retval Is Nothing Then Return Nothing
-				Return DirectCast(retval, kCura.EDDS.Types.ChoiceInfo)
+				Return DirectCast(retval, Relativity.ChoiceInfo)
 			End Get
 		End Property
 
-		Public Sub Add(ByVal value As kCura.EDDS.Types.ChoiceInfo)
+		Public Sub Add(ByVal value As Relativity.ChoiceInfo)
 			Dim key As String = value.Name.ToLower.Trim
 			If Not _ht.ContainsKey(key) Then _ht.Add(key, value)
 			_maxOrder = System.Math.Max(value.Order, _maxOrder)

@@ -165,7 +165,7 @@ Namespace kCura.WinEDDS
 			For Each mapItem In _fieldMap
 				If mapItem.NativeFileColumnIndex > -1 AndAlso Not mapItem.DocumentField Is Nothing Then
 					Dim field As Api.ArtifactField = record(mapItem.DocumentField.FieldID)
-					If Not (_artifactTypeID <> kCura.EDDS.Types.ArtifactType.Document And field.Type = Relativity.FieldTypeHelper.FieldType.File) Then
+					If Not (_artifactTypeID <> Relativity.ArtifactType.Document And field.Type = Relativity.FieldTypeHelper.FieldType.File) Then
 						Select Case field.Category
 							Case Relativity.FieldCategory.Relational
 								If unmappedFields.Contains(field.ArtifactID) Then
@@ -194,7 +194,7 @@ Namespace kCura.WinEDDS
 				End If
 			End If
 
-			If Not identifierField Is Nothing And _artifactTypeID = kCura.EDDS.Types.ArtifactType.Document Then
+			If Not identifierField Is Nothing And _artifactTypeID = Relativity.ArtifactType.Document Then
 				For Each field As Api.ArtifactField In unmappedFields.Values
 					field.Value = identifierField.ValueAsString
 					'field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(Me.GetNullableFixedString(record.IdentifierField.ValueAsString, -1, field.TextLength))
@@ -230,7 +230,7 @@ Namespace kCura.WinEDDS
 
 			If _createFolderStructure Then
 				Dim field As Api.ArtifactField = record.FieldList(Relativity.FieldCategory.ParentArtifact)(0)
-				If _artifactTypeID <> kCura.EDDS.Types.ArtifactType.Document Then
+				If _artifactTypeID <> Relativity.ArtifactType.Document Then
 					If field.ValueAsString = String.Empty Then
 						field.Value = New ParentObjectReferenceRequiredException(Me.CurrentLineNumber, -1).Message
 						lineContainsErrors = True

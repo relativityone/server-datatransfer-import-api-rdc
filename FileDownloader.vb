@@ -138,7 +138,7 @@ Namespace kCura.WinEDDS
 			Return WebDownloadFile(localFilePath, -1, remoteFileGuid, appID, Nothing, False, -1, -1, -1)
 		End Function
 
-		Public Function MoveTempFileToLocal(ByVal localFilePath As String, ByVal remoteFileGuid As String, ByVal caseInfo As kCura.EDDS.Types.CaseInfo) As Boolean
+		Public Function MoveTempFileToLocal(ByVal localFilePath As String, ByVal remoteFileGuid As String, ByVal caseInfo As Relativity.CaseInfo) As Boolean
 			Dim retval As Boolean = Me.DownloadTempFile(localFilePath, remoteFileGuid, caseInfo.ArtifactID.ToString)
 			_gateway.RemoveTempFile(caseInfo.ArtifactID, remoteFileGuid)
 			Return retval

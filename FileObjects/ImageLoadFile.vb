@@ -2,7 +2,7 @@ Namespace kCura.WinEDDS
 	<Serializable()> Public Class ImageLoadFile
 		Implements System.Runtime.Serialization.ISerializable
 
-		<NonSerialized()> Public CaseInfo As kCura.EDDS.Types.CaseInfo
+		<NonSerialized()> Public CaseInfo As Relativity.CaseInfo
 		Public DestinationFolderID As Int32
 		Public FileName As String
 		Public Overwrite As String

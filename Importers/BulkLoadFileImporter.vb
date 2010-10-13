@@ -1,4 +1,4 @@
-Imports kCura.EDDS.Types.MassImport
+Imports Relativity.MassImport
 Namespace kCura.WinEDDS
 	Public Class BulkLoadFileImporter
 		Inherits kCura.WinEDDS.LoadFileBase
@@ -37,7 +37,7 @@ Namespace kCura.WinEDDS
 		Private _outputNativeFileWriter As System.IO.StreamWriter
 		Private _outputCodeFileWriter As System.IO.StreamWriter
 		Private _outputObjectFileWriter As System.IO.StreamWriter
-		Private _caseInfo As kCura.EDDS.Types.CaseInfo
+		Private _caseInfo As Relativity.CaseInfo
 
 		Private _runID As String = ""
 		Private _uploadKey As String
@@ -195,7 +195,7 @@ Namespace kCura.WinEDDS
 			_auditManager = New kCura.WinEDDS.Service.AuditManager(args.Credentials, args.CookieContainer)
 			If args.CopyFilesToDocumentRepository Then
 				_defaultDestinationFolderPath = args.SelectedCasePath & "EDDS" & args.CaseInfo.ArtifactID & "\"
-				If args.ArtifactTypeID <> kCura.EDDS.Types.ArtifactType.Document Then
+				If args.ArtifactTypeID <> Relativity.ArtifactType.Document Then
 					For Each item As LoadFileFieldMap.LoadFileFieldMapItem In args.FieldMap
 						If Not item.DocumentField Is Nothing AndAlso item.NativeFileColumnIndex > -1 AndAlso item.DocumentField.FieldTypeID = Relativity.FieldTypeHelper.FieldType.File Then
 							_defaultDestinationFolderPath &= "File" & item.DocumentField.FieldID & "\"
@@ -392,18 +392,18 @@ Namespace kCura.WinEDDS
 			Dim oixFileIdData As OI.FileID.FileIDData = Nothing
 			Dim destinationVolume As String = Nothing
 			_timekeeper.MarkStart("ManageDocument_Filesystem")
-			If uploadFile AndAlso _artifactTypeID = kCura.EDDS.Types.ArtifactType.Document Then
+			If uploadFile AndAlso _artifactTypeID = Relativity.ArtifactType.Document Then
 				filename = record.FieldList(Relativity.FieldTypeHelper.FieldType.File)(0).Value.ToString
 				If filename.Length > 1 AndAlso filename.Chars(0) = "\" AndAlso filename.Chars(1) <> "\" Then
 					filename = "." & filename
 				End If
 
 				fileExists = System.IO.File.Exists(filename)
-				If filename <> String.Empty AndAlso Not fileExists Then lineStatus += kCura.EDDS.Types.MassImport.ImportStatus.FileSpecifiedDne 'Throw New InvalidFilenameException(filename)
+				If filename <> String.Empty AndAlso Not fileExists Then lineStatus += Relativity.MassImport.ImportStatus.FileSpecifiedDne 'Throw New InvalidFilenameException(filename)
 				If fileExists Then
 					Dim now As DateTime = DateTime.Now
 					Dim tries As Int32 = kCura.Utility.Config.Settings.IoErrorNumberOfRetries
-					If Me.GetFileLength(filename) = 0 Then lineStatus += kCura.EDDS.Types.MassImport.ImportStatus.EmptyFile 'Throw New EmptyNativeFileException(filename)
+					If Me.GetFileLength(filename) = 0 Then lineStatus += Relativity.MassImport.ImportStatus.EmptyFile 'Throw New EmptyNativeFileException(filename)
 					oixFileIdData = kCura.OI.FileID.Manager.Instance.GetFileIDDataByFilePath(filename)
 					If _copyFileToRepository Then
 						Dim start As Int64 = System.DateTime.Now.Ticks
@@ -431,7 +431,7 @@ Namespace kCura.WinEDDS
 
 			_timekeeper.MarkStart("ManageDocument_Folder")
 			If _createFolderStructure Then
-				If _artifactTypeID = kCura.EDDS.Types.ArtifactType.Document Then
+				If _artifactTypeID = Relativity.ArtifactType.Document Then
 					parentFolderID = _folderCache.FolderID(Me.CleanDestinationFolderPath(record.FieldList(Relativity.FieldCategory.ParentArtifact)(0).Value.ToString))
 				Else
 					Dim textIdentifier As String = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(kCura.Utility.NullableTypesHelper.DBNullString(record.FieldList(Relativity.FieldCategory.ParentArtifact)(0).Value.ToString))
@@ -453,7 +453,7 @@ Namespace kCura.WinEDDS
 					End If
 				End If
 			Else
-				If _artifactTypeID = kCura.EDDS.Types.ArtifactType.Document OrElse _parentArtifactTypeID = kCura.EDDS.Types.ArtifactType.Case Then
+				If _artifactTypeID = Relativity.ArtifactType.Document OrElse _parentArtifactTypeID = Relativity.ArtifactType.Case Then
 					parentFolderID = _folderID
 				Else
 					parentFolderID = -1
@@ -544,7 +544,7 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Private Function GetSettingsObject() As kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo
-			If _artifactTypeID = kCura.EDDS.Types.ArtifactType.Document Then
+			If _artifactTypeID = Relativity.ArtifactType.Document Then
 				Return New kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo
 			Else
 				Dim settings As New kCura.EDDS.WebAPI.BulkImportManagerBase.ObjectLoadInfo
@@ -575,7 +575,7 @@ Namespace kCura.WinEDDS
 			If objectbcp Is Nothing Then Return Nothing
 			Dim objectFileUploadKey As String = objectbcp.Value
 
-			If _artifactTypeID = kCura.EDDS.Types.ArtifactType.Document Then
+			If _artifactTypeID = Relativity.ArtifactType.Document Then
 				settings.Repository = _defaultDestinationFolderPath
 				If settings.Repository = "" Then settings.Repository = _caseInfo.DocumentPath
 			Else
@@ -638,7 +638,7 @@ Namespace kCura.WinEDDS
 				End If
 			Next
 			retval.Sort(New WebServiceFieldInfoNameComparer)
-			If artifactTypeID = kCura.EDDS.Types.ArtifactType.Document Then
+			If artifactTypeID = Relativity.ArtifactType.Document Then
 				retval.Add(Me.GetIsSupportedRelativityFileTypeField)
 				retval.Add(Me.GetRelativityFileTypeField)
 				retval.Add(Me.GetHasNativesField)
@@ -683,7 +683,7 @@ Namespace kCura.WinEDDS
 				If field.Type = Relativity.FieldTypeHelper.FieldType.MultiCode OrElse field.Type = Relativity.FieldTypeHelper.FieldType.Code Then
 					_outputNativeFileWriter.Write(field.Value)
 					_outputNativeFileWriter.Write(Constants.NATIVE_FIELD_DELIMITER)
-				ElseIf field.Type = Relativity.FieldTypeHelper.FieldType.File AndAlso _artifactTypeID <> kCura.EDDS.Types.ArtifactType.Document Then
+				ElseIf field.Type = Relativity.FieldTypeHelper.FieldType.File AndAlso _artifactTypeID <> Relativity.ArtifactType.Document Then
 					Dim fileFieldValues() As String = System.Web.HttpUtility.UrlDecode(field.ValueAsString).Split(Chr(11))
 					If fileFieldValues.Length > 1 Then
 						_outputNativeFileWriter.Write(fileFieldValues(0))
@@ -700,7 +700,7 @@ Namespace kCura.WinEDDS
 						_outputNativeFileWriter.Write("")
 						_outputNativeFileWriter.Write(Constants.NATIVE_FIELD_DELIMITER)
 					End If
-				ElseIf field.Type = Relativity.FieldTypeHelper.FieldType.File AndAlso _artifactTypeID = kCura.EDDS.Types.ArtifactType.Document Then
+				ElseIf field.Type = Relativity.FieldTypeHelper.FieldType.File AndAlso _artifactTypeID = Relativity.ArtifactType.Document Then
 					'do nothing
 				ElseIf field.Category = Relativity.FieldCategory.ParentArtifact Then
 					'do nothing
@@ -738,7 +738,7 @@ Namespace kCura.WinEDDS
 					_outputNativeFileWriter.Write(Constants.NATIVE_FIELD_DELIMITER)
 				End If
 			Next
-			If _artifactTypeID = kCura.EDDS.Types.ArtifactType.Document Then
+			If _artifactTypeID = Relativity.ArtifactType.Document Then
 				If _filePathColumnIndex <> -1 AndAlso mdoc.UploadFile AndAlso mdoc.IndexFileInDB Then
 					Dim boolString As String = "0"
 					If Me.IsSupportedRelativityFileType(mdoc.FileIdData) Then boolString = "1"

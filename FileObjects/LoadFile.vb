@@ -34,7 +34,7 @@ Namespace kCura.WinEDDS
 		<NonSerialized()> Public CaseDefaultPath As String = ""
 		<NonSerialized()> Public Credentials As Net.NetworkCredential
 		<NonSerialized()> Public _cookieContainer As System.Net.CookieContainer
-		<NonSerialized()> Public CaseInfo As kCura.EDDS.Types.CaseInfo
+		<NonSerialized()> Public CaseInfo As Relativity.CaseInfo
 		<NonSerialized()> Public SelectedCasePath As String = ""
 		<NonSerialized()> Public CopyFilesToDocumentRepository As Boolean = True
 		'<NonSerialized()> Public Identity As kCura.EDDS.EDDSIdentity
@@ -100,7 +100,7 @@ Namespace kCura.WinEDDS
 
 		Private Sub New(ByVal info As System.Runtime.Serialization.SerializationInfo, ByVal Context As System.Runtime.Serialization.StreamingContext)
 			With info
-				'Me.CaseInfo = DirectCast(info.GetValue("CaseInfo", GetType(kCura.EDDS.Types.CaseInfo)), kCura.EDDS.Types.CaseInfo)
+				'Me.CaseInfo = DirectCast(info.GetValue("CaseInfo", GetType(Relativity.CaseInfo)), Relativity.CaseInfo)
 				Me.FilePath = info.GetString("FilePath")
 				Try
 					If Not System.IO.File.Exists(Me.FilePath) Then
@@ -171,7 +171,7 @@ Namespace kCura.WinEDDS
 				Try
 					Me.ArtifactTypeID = info.GetInt32("ArtifactTypeID")
 				Catch
-					Me.ArtifactTypeID = kCura.EDDS.Types.ArtifactType.Document
+					Me.ArtifactTypeID = Relativity.ArtifactType.Document
 				End Try
 				Try
 					Me.StartLineNumber = info.GetInt64("StartLineNumber")

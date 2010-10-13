@@ -2,7 +2,7 @@ Namespace kCura.WinEDDS
 	Public Class ImportFileDirectorySettings
 		Public BatesNumberPrefix As String
 		Public BatesNumberSeed As Int32
-		Public CaseInfo As kCura.EDDS.Types.CaseInfo
+		Public CaseInfo As Relativity.CaseInfo
 		Public DestinationFolderID As Int32
 		Public FilePath As String
 		Public FieldMappings() As FieldMap

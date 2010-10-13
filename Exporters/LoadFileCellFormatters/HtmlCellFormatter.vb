@@ -15,8 +15,8 @@
 		End Function
 
 		Private Function GetNativeHtmlString(ByVal artifact As Exporters.ObjectExportInfo, ByVal location As String) As String
-			If _settings.ArtifactTypeID = kCura.EDDS.Types.ArtifactType.Document AndAlso artifact.NativeCount = 0 Then Return ""
-			If Not _settings.ArtifactTypeID = kCura.EDDS.Types.ArtifactType.Document AndAlso Not artifact.FileID > 0 Then Return ""
+			If _settings.ArtifactTypeID = Relativity.ArtifactType.Document AndAlso artifact.NativeCount = 0 Then Return ""
+			If Not _settings.ArtifactTypeID = Relativity.ArtifactType.Document AndAlso Not artifact.FileID > 0 Then Return ""
 			Dim retval As New System.Text.StringBuilder
 			retval.AppendFormat("<a style='display:block' href='{0}'>{1}</a>", location, artifact.NativeFileName(_settings.AppendOriginalFileName))
 			Return retval.ToString
@@ -49,7 +49,7 @@
 		End Function
 
 		Public Function CreateImageCell(ByVal artifact As Exporters.ObjectExportInfo) As String Implements ILoadFileCellFormatter.CreateImageCell
-			If Not _settings.ExportImages OrElse _settings.ArtifactTypeID <> kCura.EDDS.Types.ArtifactType.Document Then Return String.Empty
+			If Not _settings.ExportImages OrElse _settings.ArtifactTypeID <> Relativity.ArtifactType.Document Then Return String.Empty
 			Return String.Format("<td>{0}</td>", Me.GetImagesHtmlString(artifact))
 		End Function
 
