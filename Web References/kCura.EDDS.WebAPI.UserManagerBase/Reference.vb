@@ -40,6 +40,8 @@ Namespace kCura.EDDS.WebAPI.UserManagerBase
         
         Private UpdateDefaultRedactionTextOperationCompleted As System.Threading.SendOrPostCallback
         
+        Private LogoutOperationCompleted As System.Threading.SendOrPostCallback
+        
         Private LoginOperationCompleted As System.Threading.SendOrPostCallback
         
         Private LoginWithAuthenticationTokenOperationCompleted As System.Threading.SendOrPostCallback
@@ -101,6 +103,9 @@ Namespace kCura.EDDS.WebAPI.UserManagerBase
         
         '''<remarks/>
         Public Event UpdateDefaultRedactionTextCompleted As UpdateDefaultRedactionTextCompletedEventHandler
+        
+        '''<remarks/>
+        Public Event LogoutCompleted As LogoutCompletedEventHandler
         
         '''<remarks/>
         Public Event LoginCompleted As LoginCompletedEventHandler
@@ -261,6 +266,42 @@ Namespace kCura.EDDS.WebAPI.UserManagerBase
             If (Not (Me.UpdateDefaultRedactionTextCompletedEvent) Is Nothing) Then
                 Dim invokeArgs As System.Web.Services.Protocols.InvokeCompletedEventArgs = CType(arg,System.Web.Services.Protocols.InvokeCompletedEventArgs)
                 RaiseEvent UpdateDefaultRedactionTextCompleted(Me, New System.ComponentModel.AsyncCompletedEventArgs(invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState))
+            End If
+        End Sub
+        
+        '''<remarks/>
+        <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/UserManager/Logout", RequestNamespace:="http://www.kCura.com/EDDS/UserManager", ResponseNamespace:="http://www.kCura.com/EDDS/UserManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
+        Public Sub Logout()
+            Me.Invoke("Logout", New Object(-1) {})
+        End Sub
+        
+        '''<remarks/>
+        Public Function BeginLogout(ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("Logout", New Object(-1) {}, callback, asyncState)
+        End Function
+        
+        '''<remarks/>
+        Public Sub EndLogout(ByVal asyncResult As System.IAsyncResult)
+            Me.EndInvoke(asyncResult)
+        End Sub
+        
+        '''<remarks/>
+        Public Overloads Sub LogoutAsync()
+            Me.LogoutAsync(Nothing)
+        End Sub
+        
+        '''<remarks/>
+        Public Overloads Sub LogoutAsync(ByVal userState As Object)
+            If (Me.LogoutOperationCompleted Is Nothing) Then
+                Me.LogoutOperationCompleted = AddressOf Me.OnLogoutOperationCompleted
+            End If
+            Me.InvokeAsync("Logout", New Object(-1) {}, Me.LogoutOperationCompleted, userState)
+        End Sub
+        
+        Private Sub OnLogoutOperationCompleted(ByVal arg As Object)
+            If (Not (Me.LogoutCompletedEvent) Is Nothing) Then
+                Dim invokeArgs As System.Web.Services.Protocols.InvokeCompletedEventArgs = CType(arg,System.Web.Services.Protocols.InvokeCompletedEventArgs)
+                RaiseEvent LogoutCompleted(Me, New System.ComponentModel.AsyncCompletedEventArgs(invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState))
             End If
         End Sub
         
@@ -526,6 +567,10 @@ Namespace kCura.EDDS.WebAPI.UserManagerBase
     '''<remarks/>
     <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.0.30319.1")>  _
     Public Delegate Sub UpdateDefaultRedactionTextCompletedEventHandler(ByVal sender As Object, ByVal e As System.ComponentModel.AsyncCompletedEventArgs)
+    
+    '''<remarks/>
+    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.0.30319.1")>  _
+    Public Delegate Sub LogoutCompletedEventHandler(ByVal sender As Object, ByVal e As System.ComponentModel.AsyncCompletedEventArgs)
     
     '''<remarks/>
     <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.0.30319.1")>  _

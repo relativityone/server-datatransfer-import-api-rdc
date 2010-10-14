@@ -550,6 +550,8 @@ Namespace kCura.EDDS.WebAPI.CaseManagerBase
         
         Private matterArtifactIDField As Integer
         
+        Private resourceGroupArtifactIDField As Integer
+        
         Private statusCodeArtifactIDField As Integer
         
         Private downloadHandlerApplicationPathField As String
@@ -599,6 +601,16 @@ Namespace kCura.EDDS.WebAPI.CaseManagerBase
             End Get
             Set
                 Me.matterArtifactIDField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property ResourceGroupArtifactID() As Integer
+            Get
+                Return Me.resourceGroupArtifactIDField
+            End Get
+            Set
+                Me.resourceGroupArtifactIDField = value
             End Set
         End Property
         

@@ -890,6 +890,10 @@ Namespace kCura.EDDS.WebAPI.DocumentManagerBase
         
         Private locationField As String
         
+        Private inRepositoryField As Boolean
+        
+        Private sizeField As System.Nullable(Of Long)
+        
         '''<remarks/>
         Public Property Guid() As String
             Get
@@ -977,6 +981,27 @@ Namespace kCura.EDDS.WebAPI.DocumentManagerBase
             End Get
             Set
                 Me.locationField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property InRepository() As Boolean
+            Get
+                Return Me.inRepositoryField
+            End Get
+            Set
+                Me.inRepositoryField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        <System.Xml.Serialization.XmlElementAttribute(IsNullable:=true)>  _
+        Public Property Size() As System.Nullable(Of Long)
+            Get
+                Return Me.sizeField
+            End Get
+            Set
+                Me.sizeField = value
             End Set
         End Property
     End Class
@@ -1352,6 +1377,16 @@ Namespace kCura.EDDS.WebAPI.DocumentManagerBase
         Private relationalIndexViewArtifactIDField As System.Nullable(Of Integer)
         
         Private objectsFieldArgsField As ObjectsFieldParameters
+        
+        Private allowGroupByField As Boolean
+        
+        Private allowPivotField As Boolean
+        
+        Private popupPickerViewField As System.Nullable(Of Integer)
+        
+        Private fieldTreeViewField As System.Nullable(Of Integer)
+        
+        Private keyboardShortcutField As KeyboardShortcut
         
         '''<remarks/>
         Public Property FieldArtifactTypeID() As Integer
@@ -1777,6 +1812,58 @@ Namespace kCura.EDDS.WebAPI.DocumentManagerBase
                 Me.objectsFieldArgsField = value
             End Set
         End Property
+        
+        '''<remarks/>
+        Public Property AllowGroupBy() As Boolean
+            Get
+                Return Me.allowGroupByField
+            End Get
+            Set
+                Me.allowGroupByField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property AllowPivot() As Boolean
+            Get
+                Return Me.allowPivotField
+            End Get
+            Set
+                Me.allowPivotField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        <System.Xml.Serialization.XmlElementAttribute(IsNullable:=true)>  _
+        Public Property PopupPickerView() As System.Nullable(Of Integer)
+            Get
+                Return Me.popupPickerViewField
+            End Get
+            Set
+                Me.popupPickerViewField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        <System.Xml.Serialization.XmlElementAttribute(IsNullable:=true)>  _
+        Public Property FieldTreeView() As System.Nullable(Of Integer)
+            Get
+                Return Me.fieldTreeViewField
+            End Get
+            Set
+                Me.fieldTreeViewField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property KeyboardShortcut() As KeyboardShortcut
+            Get
+                Return Me.keyboardShortcutField
+            End Get
+            Set
+                Me.keyboardShortcutField = value
+            End Set
+        End Property
     End Class
     
     '''<remarks/>
@@ -1936,6 +2023,75 @@ Namespace kCura.EDDS.WebAPI.DocumentManagerBase
             End Get
             Set
                 Me.relationalTableSchemaNameField = value
+            End Set
+        End Property
+    End Class
+    
+    '''<remarks/>
+    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.1"),  _
+     System.SerializableAttribute(),  _
+     System.Diagnostics.DebuggerStepThroughAttribute(),  _
+     System.ComponentModel.DesignerCategoryAttribute("code"),  _
+     System.Xml.Serialization.XmlTypeAttribute([Namespace]:="http://foley.com/EDDS/DocumentManager")>  _
+    Partial Public Class KeyboardShortcut
+        
+        Private idField As Integer
+        
+        Private shiftField As Boolean
+        
+        Private ctrlField As Boolean
+        
+        Private altField As Boolean
+        
+        Private keyField As Integer
+        
+        '''<remarks/>
+        Public Property Id() As Integer
+            Get
+                Return Me.idField
+            End Get
+            Set
+                Me.idField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property Shift() As Boolean
+            Get
+                Return Me.shiftField
+            End Get
+            Set
+                Me.shiftField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property Ctrl() As Boolean
+            Get
+                Return Me.ctrlField
+            End Get
+            Set
+                Me.ctrlField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property Alt() As Boolean
+            Get
+                Return Me.altField
+            End Get
+            Set
+                Me.altField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property Key() As Integer
+            Get
+                Return Me.keyField
+            End Get
+            Set
+                Me.keyField = value
             End Set
         End Property
     End Class

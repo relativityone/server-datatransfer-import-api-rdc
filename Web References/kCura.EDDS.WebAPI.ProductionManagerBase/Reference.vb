@@ -446,11 +446,19 @@ Namespace kCura.EDDS.WebAPI.ProductionManagerBase
         
         Private endBatesFieldArtifactIDField As Integer
         
+        Private attachmentIdentifierFieldArtifactIDField As System.Nullable(Of Integer)
+        
+        Private beginAttachmentFieldArtifactIDField As System.Nullable(Of Integer)
+        
+        Private endAttachmentFieldArtifactIDField As System.Nullable(Of Integer)
+        
         Private imageShrinkPercentField As Integer
         
         Private dateProducedField As System.Nullable(Of Date)
         
         Private statusCodeArtifactIDField As System.Nullable(Of Integer)
+        
+        Private batesNumberingField As Boolean
         
         Private batesPrefixField As String
         
@@ -516,6 +524,10 @@ Namespace kCura.EDDS.WebAPI.ProductionManagerBase
         
         Private emailIdField As String
         
+        Private restrictionOverrideByField As System.Nullable(Of Integer)
+        
+        Private restrictionOverrideOnField As System.Nullable(Of Date)
+        
         '''<remarks/>
         Public Property Name() As String
             Get
@@ -543,6 +555,39 @@ Namespace kCura.EDDS.WebAPI.ProductionManagerBase
             End Get
             Set
                 Me.endBatesFieldArtifactIDField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        <System.Xml.Serialization.XmlElementAttribute(IsNullable:=true)>  _
+        Public Property AttachmentIdentifierFieldArtifactID() As System.Nullable(Of Integer)
+            Get
+                Return Me.attachmentIdentifierFieldArtifactIDField
+            End Get
+            Set
+                Me.attachmentIdentifierFieldArtifactIDField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        <System.Xml.Serialization.XmlElementAttribute(IsNullable:=true)>  _
+        Public Property BeginAttachmentFieldArtifactID() As System.Nullable(Of Integer)
+            Get
+                Return Me.beginAttachmentFieldArtifactIDField
+            End Get
+            Set
+                Me.beginAttachmentFieldArtifactIDField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        <System.Xml.Serialization.XmlElementAttribute(IsNullable:=true)>  _
+        Public Property EndAttachmentFieldArtifactID() As System.Nullable(Of Integer)
+            Get
+                Return Me.endAttachmentFieldArtifactIDField
+            End Get
+            Set
+                Me.endAttachmentFieldArtifactIDField = value
             End Set
         End Property
         
@@ -575,6 +620,16 @@ Namespace kCura.EDDS.WebAPI.ProductionManagerBase
             End Get
             Set
                 Me.statusCodeArtifactIDField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property BatesNumbering() As Boolean
+            Get
+                Return Me.batesNumberingField
+            End Get
+            Set
+                Me.batesNumberingField = value
             End Set
         End Property
         
@@ -907,6 +962,28 @@ Namespace kCura.EDDS.WebAPI.ProductionManagerBase
             End Get
             Set
                 Me.emailIdField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        <System.Xml.Serialization.XmlElementAttribute(IsNullable:=true)>  _
+        Public Property RestrictionOverrideBy() As System.Nullable(Of Integer)
+            Get
+                Return Me.restrictionOverrideByField
+            End Get
+            Set
+                Me.restrictionOverrideByField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        <System.Xml.Serialization.XmlElementAttribute(IsNullable:=true)>  _
+        Public Property RestrictionOverrideOn() As System.Nullable(Of Date)
+            Get
+                Return Me.restrictionOverrideOnField
+            End Get
+            Set
+                Me.restrictionOverrideOnField = value
             End Set
         End Property
     End Class

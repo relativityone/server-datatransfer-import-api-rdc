@@ -710,6 +710,10 @@ Namespace kCura.EDDS.WebAPI.FileManagerBase
         
         Private locationField As String
         
+        Private inRepositoryField As Boolean
+        
+        Private sizeField As System.Nullable(Of Long)
+        
         '''<remarks/>
         Public Property Guid() As String
             Get
@@ -797,6 +801,27 @@ Namespace kCura.EDDS.WebAPI.FileManagerBase
             End Get
             Set
                 Me.locationField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property InRepository() As Boolean
+            Get
+                Return Me.inRepositoryField
+            End Get
+            Set
+                Me.inRepositoryField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        <System.Xml.Serialization.XmlElementAttribute(IsNullable:=true)>  _
+        Public Property Size() As System.Nullable(Of Long)
+            Get
+                Return Me.sizeField
+            End Get
+            Set
+                Me.sizeField = value
             End Set
         End Property
     End Class

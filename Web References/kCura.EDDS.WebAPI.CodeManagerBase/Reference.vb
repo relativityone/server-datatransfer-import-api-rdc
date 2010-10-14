@@ -412,6 +412,8 @@ Namespace kCura.EDDS.WebAPI.CodeManagerBase
         
         Private oIHiliteStyleIDField As System.Nullable(Of Integer)
         
+        Private keyboardShortcutField As KeyboardShortcut
+        
         '''<remarks/>
         Public Property CodeType() As Integer
             Get
@@ -470,6 +472,154 @@ Namespace kCura.EDDS.WebAPI.CodeManagerBase
             End Get
             Set
                 Me.oIHiliteStyleIDField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property KeyboardShortcut() As KeyboardShortcut
+            Get
+                Return Me.keyboardShortcutField
+            End Get
+            Set
+                Me.keyboardShortcutField = value
+            End Set
+        End Property
+    End Class
+    
+    '''<remarks/>
+    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.1"),  _
+     System.SerializableAttribute(),  _
+     System.Diagnostics.DebuggerStepThroughAttribute(),  _
+     System.ComponentModel.DesignerCategoryAttribute("code"),  _
+     System.Xml.Serialization.XmlTypeAttribute([Namespace]:="http://foley.com/EDDS/CodeManager")>  _
+    Partial Public Class KeyboardShortcut
+        
+        Private idField As Integer
+        
+        Private shiftField As Boolean
+        
+        Private ctrlField As Boolean
+        
+        Private altField As Boolean
+        
+        Private keyField As Integer
+        
+        '''<remarks/>
+        Public Property Id() As Integer
+            Get
+                Return Me.idField
+            End Get
+            Set
+                Me.idField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property Shift() As Boolean
+            Get
+                Return Me.shiftField
+            End Get
+            Set
+                Me.shiftField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property Ctrl() As Boolean
+            Get
+                Return Me.ctrlField
+            End Get
+            Set
+                Me.ctrlField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property Alt() As Boolean
+            Get
+                Return Me.altField
+            End Get
+            Set
+                Me.altField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property Key() As Integer
+            Get
+                Return Me.keyField
+            End Get
+            Set
+                Me.keyField = value
+            End Set
+        End Property
+    End Class
+    
+    '''<remarks/>
+    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.1"),  _
+     System.SerializableAttribute(),  _
+     System.Diagnostics.DebuggerStepThroughAttribute(),  _
+     System.ComponentModel.DesignerCategoryAttribute("code"),  _
+     System.Xml.Serialization.XmlTypeAttribute([Namespace]:="http://foley.com/EDDS/CodeManager")>  _
+    Partial Public Class ChoiceInfo
+        
+        Private orderField As Integer
+        
+        Private codeTypeIDField As Integer
+        
+        Private nameField As String
+        
+        Private artifactIDField As Integer
+        
+        Private parentArtifactIDField As Integer
+        
+        '''<remarks/>
+        Public Property Order() As Integer
+            Get
+                Return Me.orderField
+            End Get
+            Set
+                Me.orderField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property CodeTypeID() As Integer
+            Get
+                Return Me.codeTypeIDField
+            End Get
+            Set
+                Me.codeTypeIDField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property Name() As String
+            Get
+                Return Me.nameField
+            End Get
+            Set
+                Me.nameField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property ArtifactID() As Integer
+            Get
+                Return Me.artifactIDField
+            End Get
+            Set
+                Me.artifactIDField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property ParentArtifactID() As Integer
+            Get
+                Return Me.parentArtifactIDField
+            End Get
+            Set
+                Me.parentArtifactIDField = value
             End Set
         End Property
     End Class
@@ -650,75 +800,6 @@ Namespace kCura.EDDS.WebAPI.CodeManagerBase
             End Get
             Set
                 Me.deleteFlagField = value
-            End Set
-        End Property
-    End Class
-    
-    '''<remarks/>
-    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.1"),  _
-     System.SerializableAttribute(),  _
-     System.Diagnostics.DebuggerStepThroughAttribute(),  _
-     System.ComponentModel.DesignerCategoryAttribute("code"),  _
-     System.Xml.Serialization.XmlTypeAttribute([Namespace]:="http://foley.com/EDDS/CodeManager")>  _
-    Partial Public Class ChoiceInfo
-        
-        Private orderField As Integer
-        
-        Private codeTypeIDField As Integer
-        
-        Private nameField As String
-        
-        Private artifactIDField As Integer
-        
-        Private parentArtifactIDField As Integer
-        
-        '''<remarks/>
-        Public Property Order() As Integer
-            Get
-                Return Me.orderField
-            End Get
-            Set
-                Me.orderField = value
-            End Set
-        End Property
-        
-        '''<remarks/>
-        Public Property CodeTypeID() As Integer
-            Get
-                Return Me.codeTypeIDField
-            End Get
-            Set
-                Me.codeTypeIDField = value
-            End Set
-        End Property
-        
-        '''<remarks/>
-        Public Property Name() As String
-            Get
-                Return Me.nameField
-            End Get
-            Set
-                Me.nameField = value
-            End Set
-        End Property
-        
-        '''<remarks/>
-        Public Property ArtifactID() As Integer
-            Get
-                Return Me.artifactIDField
-            End Get
-            Set
-                Me.artifactIDField = value
-            End Set
-        End Property
-        
-        '''<remarks/>
-        Public Property ParentArtifactID() As Integer
-            Get
-                Return Me.parentArtifactIDField
-            End Get
-            Set
-                Me.parentArtifactIDField = value
             End Set
         End Property
     End Class

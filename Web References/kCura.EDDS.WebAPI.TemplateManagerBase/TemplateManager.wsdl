@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<wsdl:definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://www.kCura.com/EDDS/TemplateManager" xmlns:s1="http://microsoft.com/wsdl/types/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" targetNamespace="http://www.kCura.com/EDDS/TemplateManager" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+<wsdl:definitions xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://www.kCura.com/EDDS/TemplateManager" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:s1="http://microsoft.com/wsdl/types/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://www.kCura.com/EDDS/TemplateManager" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
   <wsdl:types>
     <s:schema elementFormDefault="qualified" targetNamespace="http://www.kCura.com/EDDS/TemplateManager">
       <s:import namespace="http://microsoft.com/wsdl/types/" />
@@ -61,8 +61,62 @@
           <s:enumeration value="Sync" />
           <s:enumeration value="Tab" />
           <s:enumeration value="View" />
+          <s:enumeration value="Script" />
         </s:restriction>
       </s:simpleType>
+      <s:element name="ExtractApplication">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="extractParameters" type="tns:ApplicationExtractionParameters" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="ApplicationExtractionParameters">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="ApplicationVersion" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="ApplicationName" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="ApplicationID" type="s:int" />
+          <s:element minOccurs="0" maxOccurs="1" name="ApplicationGuid" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="CaseArtifactId" type="s:int" />
+          <s:element minOccurs="0" maxOccurs="1" name="CaseName" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="DisplayHelp" type="s:boolean" />
+          <s:element minOccurs="0" maxOccurs="1" name="FileName" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Version" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="ContextRequestOrigination" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="ContextApplicationArtifactID" type="s:int" />
+          <s:element minOccurs="0" maxOccurs="1" name="ObjectIds" type="tns:ArrayOfInt" />
+          <s:element minOccurs="0" maxOccurs="1" name="Password" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="UserName" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="UserID" type="s:int" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="ArrayOfInt">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="int" type="s:int" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="ExtractApplicationResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="ExtractApplicationResult" type="tns:ApplicationExtractionResult" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="ApplicationExtractionResult">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="ResultLog" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="ExceptionMessage" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="Success" type="s:boolean" />
+          <s:element minOccurs="0" maxOccurs="1" name="Template">
+            <s:complexType mixed="true">
+              <s:sequence>
+                <s:any />
+              </s:sequence>
+            </s:complexType>
+          </s:element>
+          <s:element minOccurs="0" maxOccurs="1" name="HTMLVisualisation" type="s:string" />
+        </s:sequence>
+      </s:complexType>
     </s:schema>
     <s:schema elementFormDefault="qualified" targetNamespace="http://microsoft.com/wsdl/types/">
       <s:simpleType name="guid">
@@ -78,10 +132,20 @@
   <wsdl:message name="InstallTemplateSoapOut">
     <wsdl:part name="parameters" element="tns:InstallTemplateResponse" />
   </wsdl:message>
+  <wsdl:message name="ExtractApplicationSoapIn">
+    <wsdl:part name="parameters" element="tns:ExtractApplication" />
+  </wsdl:message>
+  <wsdl:message name="ExtractApplicationSoapOut">
+    <wsdl:part name="parameters" element="tns:ExtractApplicationResponse" />
+  </wsdl:message>
   <wsdl:portType name="TemplateManagerSoap">
     <wsdl:operation name="InstallTemplate">
       <wsdl:input message="tns:InstallTemplateSoapIn" />
       <wsdl:output message="tns:InstallTemplateSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ExtractApplication">
+      <wsdl:input message="tns:ExtractApplicationSoapIn" />
+      <wsdl:output message="tns:ExtractApplicationSoapOut" />
     </wsdl:operation>
   </wsdl:portType>
   <wsdl:binding name="TemplateManagerSoap" type="tns:TemplateManagerSoap">
@@ -95,11 +159,29 @@
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="ExtractApplication">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/TemplateManager/ExtractApplication" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
   </wsdl:binding>
   <wsdl:binding name="TemplateManagerSoap12" type="tns:TemplateManagerSoap">
     <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
     <wsdl:operation name="InstallTemplate">
       <soap12:operation soapAction="http://www.kCura.com/EDDS/TemplateManager/InstallTemplate" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ExtractApplication">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/TemplateManager/ExtractApplication" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
