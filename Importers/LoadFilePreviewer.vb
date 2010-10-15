@@ -12,7 +12,6 @@ Namespace kCura.WinEDDS
 		Private _continue As Boolean = True
 		Private _columnCount As Int32 = 0
 		Private _nativeFileCheckColumnName As String = ""
-		Private _relationalDocumentFields As DocumentField()
 		Private _selectedCaseArtifactID As Int32
 		Public Shared extractedTextEncodingFieldName As String = "Extracted Text Encoding"
 #End Region
@@ -94,7 +93,7 @@ Namespace kCura.WinEDDS
 
 		Public Function ReadFile(ByVal path As String, ByVal formType As Int32) As Object
 			Dim earlyexit As Boolean = False
-			_relationalDocumentFields = _fieldQuery.RetrieveAllAsDocumentFieldCollection(_selectedCaseArtifactID, _artifactTypeID).GetFieldsByCategory(Relativity.FieldCategory.Relational)
+			'_relationalDocumentFields = _fieldQuery.RetrieveAllAsDocumentFieldCollection(_selectedCaseArtifactID, _artifactTypeID).GetFieldsByCategory(Relativity.FieldCategory.Relational)
 			Dim filesize As Int64 = _artifactReader.SizeInBytes
 			Dim stepsize As Int64 = CType(filesize / 100, Int64)
 			ProcessStart(0, filesize, stepsize)
@@ -153,9 +152,9 @@ Namespace kCura.WinEDDS
 			Dim identifierField As Api.ArtifactField
 			Dim unmappedFields As New System.Collections.Specialized.HybridDictionary
 			Dim mappedFields As New System.Collections.Specialized.HybridDictionary
-			For Each relationalField As DocumentField In _relationalDocumentFields
-				unmappedFields.Add(relationalField.FieldID, New Api.ArtifactField(relationalField))
-			Next
+			'For Each relationalField As DocumentField In _relationalDocumentFields
+			'	unmappedFields.Add(relationalField.FieldID, New Api.ArtifactField(relationalField))
+			'Next
 			If _keyFieldID > 0 Then
 				identifierField = record(_keyFieldID)
 			Else

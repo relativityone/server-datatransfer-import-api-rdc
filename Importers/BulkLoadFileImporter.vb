@@ -61,7 +61,6 @@ Namespace kCura.WinEDDS
 		Private _currentStatisticsSnapshot As IDictionary
 		Private _statisticsLastUpdated As System.DateTime = System.DateTime.Now
 		Private _start As System.DateTime
-		'Private _unmappedRelationalFields As System.Collections.ArrayList
 
 #End Region
 
