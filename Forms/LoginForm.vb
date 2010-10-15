@@ -54,7 +54,7 @@ Namespace kCura.EDDS.WinForm
 			Me._loginTextBox.Size = New System.Drawing.Size(240, 20)
 			Me._loginTextBox.TabIndex = 0
 
-			Me._loginTextBox.Text = "relativity.admin@kcura.com"
+
 			'
 			'Label1
 			'
@@ -71,7 +71,7 @@ Namespace kCura.EDDS.WinForm
 			Me._passwordTextBox.PasswordChar = Global.Microsoft.VisualBasic.ChrW(8226)
 			Me._passwordTextBox.Size = New System.Drawing.Size(240, 20)
 			Me._passwordTextBox.TabIndex = 2
-			Me._passwordTextBox.Text = "Test1234!"
+
 			'
 			'Label2
 			'
