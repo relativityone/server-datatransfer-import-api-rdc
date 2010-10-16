@@ -380,10 +380,10 @@ Namespace kCura.WinEDDS
 				Case Relativity.FieldTypeHelper.FieldType.Varchar
 					If field.Value Is Nothing Then field.Value = String.Empty
 					field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(Me.GetNullableFixedString(field.ValueAsString, columnIndex, field.TextLength))
-					Select Case field.Category
-						Case Relativity.FieldCategory.Relational
-							If field.Value.ToString = String.Empty Then field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(Me.GetNullableFixedString(identityValue, columnIndex, field.TextLength))
-					End Select
+					'Select Case field.Category
+					'	Case Relativity.FieldCategory.Relational
+					'		If field.Value.ToString = String.Empty Then field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(Me.GetNullableFixedString(identityValue, columnIndex, field.TextLength))
+					'End Select
 				Case Relativity.FieldTypeHelper.FieldType.Object
 					If field.Value Is Nothing Then field.Value = String.Empty
 					field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(GetNullableAssociatedObjectName(field.Value.ToString, columnIndex, field.TextLength, field.DisplayName))
@@ -463,7 +463,7 @@ Namespace kCura.WinEDDS
 							Else
 								field.Value = value
 							End If
-							End If
+						End If
 					End If
 				Case Else
 					Throw New System.Exception("Unsupported Field Type '" & field.Type.ToString & "'")

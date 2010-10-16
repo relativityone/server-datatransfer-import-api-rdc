@@ -166,13 +166,13 @@ Namespace kCura.WinEDDS
 					Dim field As Api.ArtifactField = record(mapItem.DocumentField.FieldID)
 					If Not (_artifactTypeID <> Relativity.ArtifactType.Document And field.Type = Relativity.FieldTypeHelper.FieldType.File) Then
 						Select Case field.Category
-							Case Relativity.FieldCategory.Relational
-								If unmappedFields.Contains(field.ArtifactID) Then
-									unmappedFields.Remove(field.ArtifactID)
-								End If
-								If Not mappedFields.Contains(field.ArtifactID) Then
-									mappedFields.Add(field.ArtifactID, field)
-								End If
+							'Case Relativity.FieldCategory.Relational
+							'	If unmappedFields.Contains(field.ArtifactID) Then
+							'		unmappedFields.Remove(field.ArtifactID)
+							'	End If
+							'	If Not mappedFields.Contains(field.ArtifactID) Then
+							'		mappedFields.Add(field.ArtifactID, field)
+							'	End If
 							Case Relativity.FieldCategory.Identifier
 								If Not _keyFieldID > 0 Then identifierField = field
 						End Select

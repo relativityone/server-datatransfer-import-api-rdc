@@ -94,8 +94,7 @@ Namespace kCura.WinEDDS
 				If _fieldsForCreate Is Nothing Then
 					Dim fieldsForCreate As New System.Collections.ArrayList
 					For Each field As kCura.EDDS.WebAPI.DocumentManagerBase.Field In Me.AllFields(10)
-						If System.Array.IndexOf(_fieldArtifactIds, field.ArtifactID) <> -1 OrElse _
-						field.FieldCategory = EDDS.WebAPI.DocumentManagerBase.FieldCategory.Relational Then
+						If System.Array.IndexOf(_fieldArtifactIds, field.ArtifactID) <> -1 Then
 							fieldsForCreate.Add(field)
 						End If
 					Next
