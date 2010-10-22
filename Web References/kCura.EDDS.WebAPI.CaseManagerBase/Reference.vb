@@ -46,6 +46,8 @@ Namespace kCura.EDDS.WebAPI.CaseManagerBase
         
         Private RetrieveCaseDownloadURIOperationCompleted As System.Threading.SendOrPostCallback
         
+        Private GetAllDocumentFolderPathsForCaseOperationCompleted As System.Threading.SendOrPostCallback
+        
         Private GetAllDocumentFolderPathsOperationCompleted As System.Threading.SendOrPostCallback
         
         Private useDefaultCredentialsSetExplicitly As Boolean
@@ -106,6 +108,9 @@ Namespace kCura.EDDS.WebAPI.CaseManagerBase
         
         '''<remarks/>
         Public Event RetrieveCaseDownloadURICompleted As RetrieveCaseDownloadURICompletedEventHandler
+        
+        '''<remarks/>
+        Public Event GetAllDocumentFolderPathsForCaseCompleted As GetAllDocumentFolderPathsForCaseCompletedEventHandler
         
         '''<remarks/>
         Public Event GetAllDocumentFolderPathsCompleted As GetAllDocumentFolderPathsCompletedEventHandler
@@ -375,6 +380,44 @@ Namespace kCura.EDDS.WebAPI.CaseManagerBase
         End Sub
         
         '''<remarks/>
+        <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/CaseManager/GetAllDocumentFolderPathsForCase", RequestNamespace:="http://www.kCura.com/EDDS/CaseManager", ResponseNamespace:="http://www.kCura.com/EDDS/CaseManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
+        Public Function GetAllDocumentFolderPathsForCase(ByVal caseArtifactID As Integer) As String()
+            Dim results() As Object = Me.Invoke("GetAllDocumentFolderPathsForCase", New Object() {caseArtifactID})
+            Return CType(results(0),String())
+        End Function
+        
+        '''<remarks/>
+        Public Function BeginGetAllDocumentFolderPathsForCase(ByVal caseArtifactID As Integer, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("GetAllDocumentFolderPathsForCase", New Object() {caseArtifactID}, callback, asyncState)
+        End Function
+        
+        '''<remarks/>
+        Public Function EndGetAllDocumentFolderPathsForCase(ByVal asyncResult As System.IAsyncResult) As String()
+            Dim results() As Object = Me.EndInvoke(asyncResult)
+            Return CType(results(0),String())
+        End Function
+        
+        '''<remarks/>
+        Public Overloads Sub GetAllDocumentFolderPathsForCaseAsync(ByVal caseArtifactID As Integer)
+            Me.GetAllDocumentFolderPathsForCaseAsync(caseArtifactID, Nothing)
+        End Sub
+        
+        '''<remarks/>
+        Public Overloads Sub GetAllDocumentFolderPathsForCaseAsync(ByVal caseArtifactID As Integer, ByVal userState As Object)
+            If (Me.GetAllDocumentFolderPathsForCaseOperationCompleted Is Nothing) Then
+                Me.GetAllDocumentFolderPathsForCaseOperationCompleted = AddressOf Me.OnGetAllDocumentFolderPathsForCaseOperationCompleted
+            End If
+            Me.InvokeAsync("GetAllDocumentFolderPathsForCase", New Object() {caseArtifactID}, Me.GetAllDocumentFolderPathsForCaseOperationCompleted, userState)
+        End Sub
+        
+        Private Sub OnGetAllDocumentFolderPathsForCaseOperationCompleted(ByVal arg As Object)
+            If (Not (Me.GetAllDocumentFolderPathsForCaseCompletedEvent) Is Nothing) Then
+                Dim invokeArgs As System.Web.Services.Protocols.InvokeCompletedEventArgs = CType(arg,System.Web.Services.Protocols.InvokeCompletedEventArgs)
+                RaiseEvent GetAllDocumentFolderPathsForCaseCompleted(Me, New GetAllDocumentFolderPathsForCaseCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState))
+            End If
+        End Sub
+        
+        '''<remarks/>
         <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/CaseManager/GetAllDocumentFolderPaths", RequestNamespace:="http://www.kCura.com/EDDS/CaseManager", ResponseNamespace:="http://www.kCura.com/EDDS/CaseManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
         Public Function GetAllDocumentFolderPaths() As String()
             Dim results() As Object = Me.Invoke("GetAllDocumentFolderPaths", New Object(-1) {})
@@ -574,6 +617,8 @@ Namespace kCura.EDDS.WebAPI.CaseManagerBase
         
         Private sQLServerProductVersionField As String
         
+        Private versionField As String
+        
         '''<remarks/>
         Public Property ArtifactID() As Integer
             Get
@@ -721,6 +766,16 @@ Namespace kCura.EDDS.WebAPI.CaseManagerBase
             End Get
             Set
                 Me.sQLServerProductVersionField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property Version() As String
+            Get
+                Return Me.versionField
+            End Get
+            Set
+                Me.versionField = value
             End Set
         End Property
     End Class
@@ -887,6 +942,33 @@ Namespace kCura.EDDS.WebAPI.CaseManagerBase
             Get
                 Me.RaiseExceptionIfNecessary
                 Return CType(Me.results(0),String)
+            End Get
+        End Property
+    End Class
+    
+    '''<remarks/>
+    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.0.30319.1")>  _
+    Public Delegate Sub GetAllDocumentFolderPathsForCaseCompletedEventHandler(ByVal sender As Object, ByVal e As GetAllDocumentFolderPathsForCaseCompletedEventArgs)
+    
+    '''<remarks/>
+    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.0.30319.1"),  _
+     System.Diagnostics.DebuggerStepThroughAttribute(),  _
+     System.ComponentModel.DesignerCategoryAttribute("code")>  _
+    Partial Public Class GetAllDocumentFolderPathsForCaseCompletedEventArgs
+        Inherits System.ComponentModel.AsyncCompletedEventArgs
+        
+        Private results() As Object
+        
+        Friend Sub New(ByVal results() As Object, ByVal exception As System.Exception, ByVal cancelled As Boolean, ByVal userState As Object)
+            MyBase.New(exception, cancelled, userState)
+            Me.results = results
+        End Sub
+        
+        '''<remarks/>
+        Public ReadOnly Property Result() As String()
+            Get
+                Me.RaiseExceptionIfNecessary
+                Return CType(Me.results(0),String())
             End Get
         End Property
     End Class
