@@ -72,7 +72,7 @@ Namespace kCura.EDDS.WinForm
 			Else
 				_selectedCaseInfo = caseManager.Read(caseInfo.ArtifactID)
 			End If
-			_documentRepositoryList = caseManager.GetAllDocumentFolderPaths
+			_documentRepositoryList = caseManager.GetAllDocumentFolderPathsForCase(_selectedCaseInfo.ArtifactID)
 		End Sub
 
 		Public ReadOnly Property SelectedCaseFolderID() As Int32
@@ -495,6 +495,7 @@ Namespace kCura.EDDS.WinForm
 				Dim caseInfo As Relativity.CaseInfo = Me.GetCase
 				If Not caseInfo Is Nothing Then
 					_selectedCaseInfo = caseInfo
+					Me.RefreshSelectedCaseInfo()
 					RaiseEvent OnEvent(New LoadCaseEvent(caseInfo))
 				End If
 			Catch ex As System.Exception
