@@ -68,7 +68,7 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 			ImportAPI.Execute()
 			' Assert
 			Dim dataTable As DataTable = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION)
-			Assert.AreNotEqual(0, _errors.Count, "Import was not successful. There are errors")
+			Assert.AreNotEqual(0, _errors.Count, "Import in Append mode was not successful. There are errors")
 			Assert.AreNotEqual(1, dataTable.Rows.Count, "Documents are not correctly imported")
 		End Sub
 
@@ -94,7 +94,7 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 			ImportAPI.Execute()
 			' Assert
 			Dim dataTable As DataTable = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION)
-			Assert.AreEqual(0, _errors.Count, "Import was not successful. There are errors")
+			Assert.AreEqual(0, _errors.Count, "Import in Append mode was not successful. There are errors")
 			Assert.AreEqual(1, dataTable.Rows.Count, "Documents are not correctly imported")
 		End Sub
 
@@ -121,7 +121,7 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 			ImportAPI.Execute()
 			' Assert
 			Dim dataTable As DataTable = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION)
-			Assert.AreEqual(0, _errors.Count, "Import was not successful. There are errors")
+			Assert.AreEqual(0, _errors.Count, "Import in Append mode was not successful. There are errors")
 			Assert.AreEqual(1, dataTable.Rows.Count, "Documents are not correctly imported")
 		End Sub
 
@@ -147,7 +147,7 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 			ImportAPI.Execute()
 			' Assert
 			Dim dataTable As DataTable = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION)
-			Assert.AreNotEqual(0, _errors.Count, "Import was not successful. There are errors")
+			Assert.AreNotEqual(0, _errors.Count, "Import in Append mode was not successful. There are errors")
 			Assert.AreNotEqual(2, dataTable.Rows.Count, "Documents are not correctly imported")
 		End Sub
 
@@ -175,7 +175,7 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 			ImportAPI.Execute()
 			' Assert
 			Dim dataTable As DataTable = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION)
-			Assert.AreNotEqual(0, _errors.Count, "Import was not successful. There are errors")
+			Assert.AreNotEqual(0, _errors.Count, "Import in AppendOverlay mode was not successful. There are errors")
 			Assert.AreEqual(0, dataTable.Rows.Count, "documents are not correctly imported")
 		End Sub
 
@@ -199,7 +199,7 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 			ImportAPI.Execute()
 			' Assert
 			Dim dataTable As DataTable = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION)
-			Assert.AreEqual(0, _errors.Count, "Import was not successful. There are errors")
+			Assert.AreEqual(0, _errors.Count, "Import in AppendOverlay mode was not successful. There are errors")
 			Assert.AreEqual(1, dataTable.Rows.Count, "documents are not correctly imported")
 		End Sub
 
@@ -223,7 +223,7 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 			ImportAPI.Execute()
 			' Assert
 			Dim dataTable As DataTable = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION)
-			Assert.AreEqual(0, _errors.Count, "Import was not successful. There are errors")
+			Assert.AreEqual(0, _errors.Count, "Import in AppendOverlay mode was not successful. There are errors")
 			Assert.AreEqual(1, dataTable.Rows.Count, "documents are not correctly imported")
 		End Sub
 
@@ -247,7 +247,7 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 			ImportAPI.Execute()
 			' Assert
 			Dim dataTable As DataTable = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION)
-			Assert.AreNotEqual(0, _errors.Count, "Import was not successful. There are errors")
+			Assert.AreNotEqual(0, _errors.Count, "Import in AppendOverlay mode was not successful. There are errors")
 			Assert.AreNotEqual(1, dataTable.Rows.Count, "documents are not correctly imported")
 		End Sub
 
@@ -274,7 +274,7 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 			ImportAPI.Execute()
 			' Assert
 			Dim dataTable As DataTable = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION)
-			Assert.AreNotEqual(0, _errors.Count, "Import was not successful. There are errors")
+			Assert.AreNotEqual(0, _errors.Count, "Import in Overlay mode was not successful. There are errors")
 			Assert.AreNotEqual(1, dataTable.Rows.Count, "documents are not correctly imported")
 		End Sub
 
@@ -298,7 +298,7 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 			ImportAPI.Execute()
 			' Assert
 			Dim dataTable As DataTable = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION)
-			Assert.AreEqual(0, _errors.Count, "Import was not successful. There are errors")
+			Assert.AreEqual(0, _errors.Count, "Import in Overlay mode was not successful. There are errors")
 			Assert.AreEqual(1, dataTable.Rows.Count, "documents are not correctly imported")
 		End Sub
 
@@ -323,7 +323,7 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 			ImportAPI.Execute()
 			' Assert
 			Dim dataTable As DataTable = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION)
-			Assert.AreEqual(0, _errors.Count, "Import was not successful. There are errors")
+			Assert.AreEqual(0, _errors.Count, "Import in Overlay mode was not successful. There are errors")
 			Assert.AreNotEqual(1, dataTable.Rows.Count, "documents are not correctly imported")
 		End Sub
 
@@ -347,7 +347,7 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 			ImportAPI.Execute()
 			' Assert
 			Dim dataTable As DataTable = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION)
-			Assert.AreNotEqual(0, _errors.Count, "Import was not successful. There are errors")
+			Assert.AreNotEqual(0, _errors.Count, "Import in Overlay mode was not successful. There are errors")
 			Assert.AreNotEqual(1, dataTable.Rows.Count, "documents are not correctly imported")
 		End Sub
 #End Region

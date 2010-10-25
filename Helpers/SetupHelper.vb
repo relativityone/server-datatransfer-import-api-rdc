@@ -555,8 +555,8 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.Helpers
 			Dim allText() As String = File.ReadAllLines(resultsFileLocation)
 			Console.WriteLine(allText.ToString())
 
-			Dim topElement As XElement = XElement.Load(resultsFileLocation)
-			Dim resultsGood As String = topElement.Attribute("success").Value
+			Dim upgradeResultsElement As XElement = XElement.Load(resultsFileLocation).Element("UpgradeResults")
+			Dim resultsGood As String = upgradeResultsElement.Attribute("success").Value
 			If resultsGood.ToLower().Equals("true") Then
 				Return True
 			Else
