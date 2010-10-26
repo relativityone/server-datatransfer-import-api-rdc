@@ -1578,9 +1578,9 @@ Namespace kCura.EDDS.WinForm
 				End If
 			Catch ex As System.Net.WebException
 				If Not ex.Message.IndexOf("The remote name could not be resolved") = -1 AndAlso ex.Source = "System" Then
-					Me.ChangeWebServiceURL("The current web services URL could not be resolved. Try a new URL?")
+					Me.ChangeWebServiceURL("The current Web Service URL could not be resolved. Try a new URL?")
 				ElseIf Not ex.Message.IndexOf("The request failed with HTTP status 401") = -1 AndAlso ex.Source = "System.Web.Services" Then
-					Me.ChangeWebServiceURL("The current web services URL was resolved but is not configured correctly. Try a new URL?")
+					Me.ChangeWebServiceURL("The current Web Service URL was resolved but is not configured correctly. Try a new URL?")
 				End If
 			Catch ex As System.Exception
 				Dim x As New ErrorDialog

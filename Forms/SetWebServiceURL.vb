@@ -68,7 +68,7 @@ Public Class SetWebServiceURL
 		Me.Label1.Name = "Label1"
 		Me.Label1.Size = New System.Drawing.Size(424, 16)
 		Me.Label1.TabIndex = 0
-		Me.Label1.Text = "The current WebServices URL could not be found. Please enter another"
+		Me.Label1.Text = "The current Web Service URL could not be found. Please enter another URL."
 		Me.Label1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
 		'
 		'_okButton
