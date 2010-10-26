@@ -213,15 +213,15 @@ Namespace kCura.WinEDDS
 			Dim bcpPath As String
 			Try
 				bcpPath = gateway.GetBcpSharePath(_caseInfo.ArtifactID)
-				Me.WriteStatus("Selected BCP Path: " & bcpPath)
+				Me.WriteStatus("Selected BCP folder: " & bcpPath)
 			Catch ex As System.Exception
-				Me.WriteStatus("Error retrieving BCP share path - WebAPI error")
+				Me.WriteStatus("Error retrieving BCP folder - WebAPI error")
 				Dim ensure As String = "Ensure"
 				If WinEDDS.Config.EnableSingleModeImport Then
 					Me.WriteStatus("Loads will happen in Single mode - this is less than optimal.  To upgrade,")
 					ensure = "ensure"
 				End If
-				Me.WriteStatus(ensure & " that relativity service account has rights to create/delete files and subdirectories in the bcp folder")
+				Me.WriteStatus(ensure & " that relativity service account has rights to create/delete files and subdirectories in the BCP folder")
 				Me.WriteStatus("Exact error: " & ex.ToString)
 				Return False
 			End Try
@@ -232,9 +232,9 @@ Namespace kCura.WinEDDS
 				Dim path As String = bcpPath.TrimEnd("\"c) & "\"
 				System.IO.File.Create(path & "123").Close()
 				System.IO.File.Delete(path & "123")
-				Me.WriteStatus("Your account (" & System.Security.Principal.WindowsIdentity.GetCurrent.Name & ") has direct access to BCPPath folder")
+				Me.WriteStatus("Your account (" & System.Security.Principal.WindowsIdentity.GetCurrent.Name & ") has direct access to BCP folder")
 			Catch ex As Exception
-				Me.WriteStatus("Valid: No direct access to bcp folder from direct account - using relativity service account and web services for access")
+				Me.WriteStatus("Valid: No direct access to BCP folder from direct account - using Relativity service account and Web Service for access")
 				'Me.WriteStatus("Exact error: " & ex.ToString)
 			End Try
 			Try
@@ -247,7 +247,7 @@ Namespace kCura.WinEDDS
 			Catch ex As Exception
 				Me.WriteStatus("Error running bulk insert")
 				Me.WriteStatus("Ensure that EDDSDBO login has bulk admin rights on case DB")
-				Me.WriteStatus("Ensure that the security account that SQL Server is running under has rights to the selected BCP share")
+				Me.WriteStatus("Ensure that the security account that SQL Server is running under has rights to the selected BCP folder")
 				Dim text As String = ex.ToString
 				If TypeOf ex Is System.Web.Services.Protocols.SoapException Then text = System.Web.HttpUtility.HtmlDecode(text)
 				Me.WriteStatus("Exact error: " & text)

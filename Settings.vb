@@ -2,7 +2,7 @@ Namespace kCura.WinEDDS.Service
 	Public Class Settings
 		''' -----------------------------------------------------------------------------
 		''' <summary>
-		'''		Default timeout wait time for Web Services in Milliseconds.
+		'''		Default timeout wait time for Web Service in Milliseconds.
 		'''		Set to 1 minute (2005-08-31).
 		''' </summary>
 		''' <remarks>
