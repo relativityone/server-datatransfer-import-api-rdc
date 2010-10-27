@@ -14,6 +14,9 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 		Private _errors As System.Collections.Generic.List(Of String)
 		Private WithEvents ImportAPI As New Global.kCura.Relativity.DataReaderClient.ImageImportBulkArtifactJob
 		Private WithEvents DocImportAPI As New Global.kCura.Relativity.DataReaderClient.ImportBulkArtifactJob
+		Private sql As String
+		Private dataReader As IDataReader
+		Private dataTable As DataTable
 #End Region
 
 #Region "Setup/Tear down"
@@ -22,6 +25,7 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 		''' </summary>
 		<SetUp()> _
 		Public Sub SetUp()
+
 			Dim helper As New Helpers.SetupHelper()
 			_errors = New System.Collections.Generic.List(Of String)
 			helper.SetupTestWithRestore()
@@ -30,6 +34,16 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 			Catch
 				ImportTestsHelper.ExecuteSQLStatementAsDataTable("select top 1 artifactid from artifact", -1)
 			End Try
+			ImportAPI.Settings.RelativityUsername = Helpers.CommonDefaults.API_USER_ADMIN
+			ImportAPI.Settings.RelativityPassword = Helpers.CommonDefaults.API_USER_ADMIN_PASSWORD
+			ImportAPI.Settings.CaseArtifactId = Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION
+			ImportAPI.Settings.ArtifactTypeId = Helpers.CommonDefaults.DOCTYPEID
+			ImportAPI.Settings.CopyFilesToDocumentRepository = True
+			ImportAPI.Settings.ForProduction = False
+			ImportAPI.Settings.IdentityFieldId = Helpers.CommonDefaults.IDENTITY_FIELD_ID
+			ImportAPI.Settings.OverlayIdentifierSourceFieldName = "Control Number"
+			ImportAPI.Settings.ExtractedTextFieldContainsFilePath = True
+			ImportAPI.Settings.ExtractedTextEncoding = System.Text.Encoding.UTF8
 		End Sub
 
 		''' <summary>
@@ -37,6 +51,8 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 		''' </summary>
 		<TearDown()> _
 		Public Sub TearDown()
+			dataReader.Close()
+			dataReader.Dispose()
 			Dim helper As New Helpers.SetupHelper()
 			helper.TearDownTest()
 		End Sub
@@ -50,23 +66,11 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 		Category("HighPriority")> _
 		Public Sub ImportImageWithExtractedText_Append_BadImageFile()
 			'Arrange
-			ImportAPI.Settings.RelativityUsername = Helpers.CommonDefaults.API_USER_ADMIN
-			ImportAPI.Settings.RelativityPassword = Helpers.CommonDefaults.API_USER_ADMIN_PASSWORD
-			ImportAPI.Settings.CaseArtifactId = Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION
-			ImportAPI.Settings.ArtifactTypeId = Helpers.CommonDefaults.DOCTYPEID
 			ImportAPI.Settings.OverwriteMode = ImportTestsHelper.OverwriteModeEnum.none
-			ImportAPI.Settings.CopyFilesToDocumentRepository = True
-			ImportAPI.Settings.ForProduction = False
-			ImportAPI.Settings.IdentityFieldId = Helpers.CommonDefaults.IDENTITY_FIELD_ID
-			ImportAPI.Settings.OverlayIdentifierSourceFieldName = "Control Number"
-			ImportAPI.Settings.ExtractedTextFieldContainsFilePath = True
-			ImportAPI.Settings.ExtractedTextEncoding = System.Text.Encoding.UTF8
-			Dim sql As String = "select Identifier As [BatesNumber], Location As [FileLocation], DocumentArtifactID as [DocumentIdentifier]  from [File] WHERE [Identifier] IN ('Image_001')"
-			Dim dataReader As IDataReader = ImportTestsHelper.ExecuteSQLStatementAsDataTableAsDataReader(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
+			Sql = "select Identifier As [BatesNumber], Location As [FileLocation], DocumentArtifactID as [DocumentIdentifier]  from [File] WHERE [Identifier] IN ('Image_001')"
+			dataReader = ImportTestsHelper.ExecuteSQLStatementAsDataTableAsDataReader(Sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
 			ImportAPI.SourceData.SourceData = dataReader
 			ImportAPI.Execute()
-			dataReader.Close()
-			dataReader.Dispose()
 			' Assert
 			Dim dataTable As DataTable = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION)
 			Assert.AreNotEqual(0, _errors.Count, "Import Image With Extracted Text in Append Mode was not successful. There are errors")
@@ -77,25 +81,15 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 		<Test(), _
 		 Category("HighPriority")> _
 		Public Sub ImportImageWithExtractedText_Append_FileExistsInDestination()
-			'Arrange
-			ImportAPI.Settings.RelativityUsername = Helpers.CommonDefaults.API_USER_ADMIN
-			ImportAPI.Settings.RelativityPassword = Helpers.CommonDefaults.API_USER_ADMIN_PASSWORD
-			ImportAPI.Settings.CaseArtifactId = Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION
-			ImportAPI.Settings.ArtifactTypeId = Helpers.CommonDefaults.DOCTYPEID
+			'Arrange		
 			ImportAPI.Settings.OverwriteMode = ImportTestsHelper.OverwriteModeEnum.none
-			ImportAPI.Settings.CopyFilesToDocumentRepository = True
-			ImportAPI.Settings.ForProduction = False
-			ImportAPI.Settings.IdentityFieldId = Helpers.CommonDefaults.IDENTITY_FIELD_ID
-			ImportAPI.Settings.OverlayIdentifierSourceFieldName = "Control Number"
-			ImportAPI.Settings.ExtractedTextFieldContainsFilePath = True
-			ImportAPI.Settings.ExtractedTextEncoding = System.Text.Encoding.UTF8
-			Dim sql As String = "select Identifier As [BatesNumber], Location As [FileLocation], DocumentArtifactID as [DocumentIdentifier]  from [File] WHERE [Identifier] IN ('Image_002')"
-			Dim dataReader As IDataReader = ImportTestsHelper.ExecuteSQLStatementAsDataTableAsDataReader(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
+			Sql = "select Identifier As [BatesNumber], Location As [FileLocation], DocumentArtifactID as [DocumentIdentifier]  from [File] WHERE [Identifier] IN ('Image_002')"
+			dataReader = ImportTestsHelper.ExecuteSQLStatementAsDataTableAsDataReader(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
 			ImportAPI.SourceData.SourceData = dataReader
 			ImportAPI.Execute()
-			dataReader.Close()
-			dataReader.Dispose()
 			' Assert
+			sql = "SELECT [File].[Identifier] AS [BatesNumber], [File].[Location] AS [FileLocation], [File].[DocumentArtifactID] AS [DocumentIdentifier], [Document].[ExtractedText] FROM [File] " + _
+		 " INNER JOIN [Document] on [File].[Identifier] =  [Document].[ControlNumber] WHERE [Identifier] IN ('Image_002') AND [Document].[ExtractedText] IS NOT NULL"
 			Dim dataTable As DataTable = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION)
 			Assert.AreNotEqual(0, _errors.Count, "Import was not successful. There are errors")
 			Assert.AreEqual(1, dataTable.Rows.Count, "Documents are not correctly imported")
@@ -106,24 +100,12 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 		<Test(), _
 		 Category("HighPriority")> _
 		Public Sub ImportImageWithExtractedText_Append_FileExistsInDestination_Negate()
-			'Arrange
-			ImportAPI.Settings.RelativityUsername = Helpers.CommonDefaults.API_USER_ADMIN
-			ImportAPI.Settings.RelativityPassword = Helpers.CommonDefaults.API_USER_ADMIN_PASSWORD
-			ImportAPI.Settings.CaseArtifactId = Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION
-			ImportAPI.Settings.ArtifactTypeId = Helpers.CommonDefaults.DOCTYPEID
+			'Arrange			
 			ImportAPI.Settings.OverwriteMode = ImportTestsHelper.OverwriteModeEnum.none
-			ImportAPI.Settings.CopyFilesToDocumentRepository = True
-			ImportAPI.Settings.ForProduction = False
-			ImportAPI.Settings.IdentityFieldId = Helpers.CommonDefaults.IDENTITY_FIELD_ID
-			ImportAPI.Settings.OverlayIdentifierSourceFieldName = "Control Number"
-			ImportAPI.Settings.ExtractedTextFieldContainsFilePath = True
-			ImportAPI.Settings.ExtractedTextEncoding = System.Text.Encoding.UTF8
-			Dim sql As String = "select Identifier As [BatesNumber], Location As [FileLocation], DocumentArtifactID as [DocumentIdentifier]  from [File] WHERE [Identifier] IN ('Image_003')"
-			Dim dataReader As IDataReader = ImportTestsHelper.ExecuteSQLStatementAsDataTableAsDataReader(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
+			Sql = "select Identifier As [BatesNumber], Location As [FileLocation], DocumentArtifactID as [DocumentIdentifier]  from [File] WHERE [Identifier] IN ('Image_003')"
+			dataReader = ImportTestsHelper.ExecuteSQLStatementAsDataTableAsDataReader(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
 			ImportAPI.SourceData.SourceData = dataReader
 			ImportAPI.Execute()
-			dataReader.Close()
-			dataReader.Dispose()
 			' Assert
 			Dim dataTable As DataTable = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION)
 			Assert.AreEqual(0, _errors.Count, "Import was not successful. There are errors")
@@ -134,24 +116,12 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 		<Test(), _
 		 Category("HighPriority")> _
 		Public Sub ImportImageWithExtractedText_Append_NoImageFile()
-			'Arrange
-			ImportAPI.Settings.RelativityUsername = Helpers.CommonDefaults.API_USER_ADMIN
-			ImportAPI.Settings.RelativityPassword = Helpers.CommonDefaults.API_USER_ADMIN_PASSWORD
-			ImportAPI.Settings.CaseArtifactId = Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION
-			ImportAPI.Settings.ArtifactTypeId = Helpers.CommonDefaults.DOCTYPEID
+			'Arrange			
 			ImportAPI.Settings.OverwriteMode = ImportTestsHelper.OverwriteModeEnum.none
-			ImportAPI.Settings.CopyFilesToDocumentRepository = True
-			ImportAPI.Settings.ForProduction = False
-			ImportAPI.Settings.IdentityFieldId = Helpers.CommonDefaults.IDENTITY_FIELD_ID
-			ImportAPI.Settings.OverlayIdentifierSourceFieldName = "Control Number"
-			ImportAPI.Settings.ExtractedTextFieldContainsFilePath = True
-			ImportAPI.Settings.ExtractedTextEncoding = System.Text.Encoding.UTF8
-			Dim sql As String = "select Identifier As [BatesNumber], Location As [FileLocation], DocumentArtifactID as [DocumentIdentifier]  from [File] WHERE [Identifier] IN ('Image_004')"
-			Dim dataReader As IDataReader = ImportTestsHelper.ExecuteSQLStatementAsDataTableAsDataReader(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
+			Sql = "select Identifier As [BatesNumber], Location As [FileLocation], DocumentArtifactID as [DocumentIdentifier]  from [File] WHERE [Identifier] IN ('Image_004')"
+			dataReader = ImportTestsHelper.ExecuteSQLStatementAsDataTableAsDataReader(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
 			ImportAPI.SourceData.SourceData = dataReader
 			ImportAPI.Execute()
-			dataReader.Close()
-			dataReader.Dispose()
 			' Assert
 			Dim dataTable As DataTable = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION)
 			Assert.AreNotEqual(0, _errors.Count, "Import was not successful. There are errors")
@@ -165,23 +135,11 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 		<Test(), Category("HighPriority")> _
 		Public Sub ImportImageWithExtractedText_AppendOverlay_BadImageFile()
 			'Arrange
-			ImportAPI.Settings.RelativityUsername = Helpers.CommonDefaults.API_USER_ADMIN
-			ImportAPI.Settings.RelativityPassword = Helpers.CommonDefaults.API_USER_ADMIN_PASSWORD
-			ImportAPI.Settings.CaseArtifactId = Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION
-			ImportAPI.Settings.ArtifactTypeId = Helpers.CommonDefaults.DOCTYPEID
 			ImportAPI.Settings.OverwriteMode = ImportTestsHelper.OverwriteModeEnum.both
-			ImportAPI.Settings.CopyFilesToDocumentRepository = True
-			ImportAPI.Settings.ForProduction = False
-			ImportAPI.Settings.IdentityFieldId = Helpers.CommonDefaults.IDENTITY_FIELD_ID
-			ImportAPI.Settings.OverlayIdentifierSourceFieldName = "Control Number"
-			ImportAPI.Settings.ExtractedTextFieldContainsFilePath = True
-			ImportAPI.Settings.ExtractedTextEncoding = System.Text.Encoding.UTF8
-			Dim sql As String = "select Identifier As [BatesNumber], Location As [FileLocation], DocumentArtifactID as [DocumentIdentifier]  from [File] WHERE [Identifier] IN ('Image_001')"
-			Dim dataReader As IDataReader = ImportTestsHelper.ExecuteSQLStatementAsDataTableAsDataReader(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
+			Sql = "select Identifier As [BatesNumber], Location As [FileLocation], DocumentArtifactID as [DocumentIdentifier]  from [File] WHERE [Identifier] IN ('Image_001')"
+			dataReader = ImportTestsHelper.ExecuteSQLStatementAsDataTableAsDataReader(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
 			ImportAPI.SourceData.SourceData = dataReader
 			ImportAPI.Execute()
-			dataReader.Close()
-			dataReader.Dispose()
 			' Assert
 			Dim dataTable As DataTable = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION)
 			Assert.AreNotEqual(0, _errors.Count, "Import was not successful. There are errors")
@@ -191,23 +149,11 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 		<Test(), Category("HighPriority")> _
 		Public Sub ImportImageWithExtractedText_AppendOverlay_FileExistsInDestination()
 			'Arrange
-			ImportAPI.Settings.RelativityUsername = Helpers.CommonDefaults.API_USER_ADMIN
-			ImportAPI.Settings.RelativityPassword = Helpers.CommonDefaults.API_USER_ADMIN_PASSWORD
-			ImportAPI.Settings.CaseArtifactId = Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION
-			ImportAPI.Settings.ArtifactTypeId = Helpers.CommonDefaults.DOCTYPEID
 			ImportAPI.Settings.OverwriteMode = ImportTestsHelper.OverwriteModeEnum.both
-			ImportAPI.Settings.CopyFilesToDocumentRepository = True
-			ImportAPI.Settings.ForProduction = False
-			ImportAPI.Settings.IdentityFieldId = Helpers.CommonDefaults.IDENTITY_FIELD_ID
-			ImportAPI.Settings.OverlayIdentifierSourceFieldName = "Control Number"
-			ImportAPI.Settings.ExtractedTextFieldContainsFilePath = True
-			ImportAPI.Settings.ExtractedTextEncoding = System.Text.Encoding.UTF8
-			Dim sql As String = "select Identifier As [BatesNumber], Location As [FileLocation], DocumentArtifactID as [DocumentIdentifier]  from [File] WHERE [Identifier] IN ('Image_002')"
-			Dim dataReader As IDataReader = ImportTestsHelper.ExecuteSQLStatementAsDataTableAsDataReader(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
+			Sql = "select Identifier As [BatesNumber], Location As [FileLocation], DocumentArtifactID as [DocumentIdentifier]  from [File] WHERE [Identifier] IN ('Image_002')"
+			dataReader = ImportTestsHelper.ExecuteSQLStatementAsDataTableAsDataReader(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
 			ImportAPI.SourceData.SourceData = dataReader
 			ImportAPI.Execute()
-			dataReader.Close()
-			dataReader.Dispose()
 			' Assert
 			Dim dataTable As DataTable = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION)
 			Assert.AreEqual(0, _errors.Count, "Import was not successful. There are errors")
@@ -217,23 +163,11 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 		<Test(), Category("HighPriority")> _
 		Public Sub ImportImageWithExtractedText_AppendOverlay_FileExistsInDestination_Negate()
 			'Arrange
-			ImportAPI.Settings.RelativityUsername = Helpers.CommonDefaults.API_USER_ADMIN
-			ImportAPI.Settings.RelativityPassword = Helpers.CommonDefaults.API_USER_ADMIN_PASSWORD
-			ImportAPI.Settings.CaseArtifactId = Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION
-			ImportAPI.Settings.ArtifactTypeId = Helpers.CommonDefaults.DOCTYPEID
 			ImportAPI.Settings.OverwriteMode = ImportTestsHelper.OverwriteModeEnum.both
-			ImportAPI.Settings.CopyFilesToDocumentRepository = True
-			ImportAPI.Settings.ForProduction = False
-			ImportAPI.Settings.IdentityFieldId = Helpers.CommonDefaults.IDENTITY_FIELD_ID
-			ImportAPI.Settings.OverlayIdentifierSourceFieldName = "Control Number"
-			ImportAPI.Settings.ExtractedTextFieldContainsFilePath = True
-			ImportAPI.Settings.ExtractedTextEncoding = System.Text.Encoding.UTF8
-			Dim sql As String = "select Identifier As [BatesNumber], Location As [FileLocation], DocumentArtifactID as [DocumentIdentifier]  from [File] WHERE [Identifier] IN ('Image_003')"
-			Dim dataReader As IDataReader = ImportTestsHelper.ExecuteSQLStatementAsDataTableAsDataReader(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
+			Sql = "select Identifier As [BatesNumber], Location As [FileLocation], DocumentArtifactID as [DocumentIdentifier]  from [File] WHERE [Identifier] IN ('Image_003')"
+			dataReader = ImportTestsHelper.ExecuteSQLStatementAsDataTableAsDataReader(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
 			ImportAPI.SourceData.SourceData = dataReader
 			ImportAPI.Execute()
-			dataReader.Close()
-			dataReader.Dispose()
 			' Assert
 			Dim dataTable As DataTable = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION)
 			Assert.AreEqual(0, _errors.Count, "Import was not successful. There are errors")
@@ -243,19 +177,9 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 		<Test(), Category("HighPriority")> _
 		Public Sub ImportImageWithExtractedText_AppendOverlay_NoImageFile()
 			'Arrange
-			ImportAPI.Settings.RelativityUsername = Helpers.CommonDefaults.API_USER_ADMIN
-			ImportAPI.Settings.RelativityPassword = Helpers.CommonDefaults.API_USER_ADMIN_PASSWORD
-			ImportAPI.Settings.CaseArtifactId = Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION
-			ImportAPI.Settings.ArtifactTypeId = Helpers.CommonDefaults.DOCTYPEID
 			ImportAPI.Settings.OverwriteMode = ImportTestsHelper.OverwriteModeEnum.both
-			ImportAPI.Settings.CopyFilesToDocumentRepository = True
-			ImportAPI.Settings.ForProduction = False
-			ImportAPI.Settings.IdentityFieldId = Helpers.CommonDefaults.IDENTITY_FIELD_ID
-			ImportAPI.Settings.OverlayIdentifierSourceFieldName = "Control Number"
-			ImportAPI.Settings.ExtractedTextFieldContainsFilePath = True
-			ImportAPI.Settings.ExtractedTextEncoding = System.Text.Encoding.UTF8
-			Dim sql As String = "select Identifier As [BatesNumber], Location As [FileLocation], DocumentArtifactID as [DocumentIdentifier]  from [File] WHERE [Identifier] IN ('Image_004')"
-			Dim dataReader As IDataReader = ImportTestsHelper.ExecuteSQLStatementAsDataTableAsDataReader(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
+			Sql = "select Identifier As [BatesNumber], Location As [FileLocation], DocumentArtifactID as [DocumentIdentifier]  from [File] WHERE [Identifier] IN ('Image_004')"
+			dataReader = ImportTestsHelper.ExecuteSQLStatementAsDataTableAsDataReader(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
 			ImportAPI.SourceData.SourceData = dataReader
 			ImportAPI.Execute()
 			dataReader.Close()
@@ -272,23 +196,11 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 		<Test(), Category("HighPriority")> _
 		Public Sub ImportImageWithExtractedText_Overlay_BadImageFile()
 			'Arrange
-			ImportAPI.Settings.RelativityUsername = Helpers.CommonDefaults.API_USER_ADMIN
-			ImportAPI.Settings.RelativityPassword = Helpers.CommonDefaults.API_USER_ADMIN_PASSWORD
-			ImportAPI.Settings.CaseArtifactId = Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION
-			ImportAPI.Settings.ArtifactTypeId = Helpers.CommonDefaults.DOCTYPEID
 			ImportAPI.Settings.OverwriteMode = ImportTestsHelper.OverwriteModeEnum.strict
-			ImportAPI.Settings.CopyFilesToDocumentRepository = True
-			ImportAPI.Settings.ForProduction = False
-			ImportAPI.Settings.IdentityFieldId = Helpers.CommonDefaults.IDENTITY_FIELD_ID
-			ImportAPI.Settings.OverlayIdentifierSourceFieldName = "Control Number"
-			ImportAPI.Settings.ExtractedTextFieldContainsFilePath = True
-			ImportAPI.Settings.ExtractedTextEncoding = System.Text.Encoding.UTF8
-			Dim sql As String = "select Identifier As [BatesNumber], Location As [FileLocation], DocumentArtifactID as [DocumentIdentifier]  from [File] WHERE [Identifier] IN ('Image_001')"
-			Dim dataReader As IDataReader = ImportTestsHelper.ExecuteSQLStatementAsDataTableAsDataReader(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
+			Sql = "select Identifier As [BatesNumber], Location As [FileLocation], DocumentArtifactID as [DocumentIdentifier]  from [File] WHERE [Identifier] IN ('Image_001')"
+			dataReader = ImportTestsHelper.ExecuteSQLStatementAsDataTableAsDataReader(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
 			ImportAPI.SourceData.SourceData = dataReader
 			ImportAPI.Execute()
-			dataReader.Close()
-			dataReader.Dispose()
 			' Assert
 			Dim dataTable As DataTable = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION)
 			Assert.AreNotEqual(0, _errors.Count, "Import was not successful. There are errors")
@@ -298,23 +210,11 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 		<Test(), Category("HighPriority")> _
 		Public Sub ImportImageWithExtractedText_Overlay_FileExistsInDestination()
 			'Arrange
-			ImportAPI.Settings.RelativityUsername = Helpers.CommonDefaults.API_USER_ADMIN
-			ImportAPI.Settings.RelativityPassword = Helpers.CommonDefaults.API_USER_ADMIN_PASSWORD
-			ImportAPI.Settings.CaseArtifactId = Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION
-			ImportAPI.Settings.ArtifactTypeId = Helpers.CommonDefaults.DOCTYPEID
 			ImportAPI.Settings.OverwriteMode = ImportTestsHelper.OverwriteModeEnum.strict
-			ImportAPI.Settings.CopyFilesToDocumentRepository = True
-			ImportAPI.Settings.ForProduction = False
-			ImportAPI.Settings.IdentityFieldId = Helpers.CommonDefaults.IDENTITY_FIELD_ID
-			ImportAPI.Settings.OverlayIdentifierSourceFieldName = "Control Number"
-			ImportAPI.Settings.ExtractedTextFieldContainsFilePath = True
-			ImportAPI.Settings.ExtractedTextEncoding = System.Text.Encoding.UTF8
-			Dim sql As String = "select Identifier As [BatesNumber], Location As [FileLocation], DocumentArtifactID as [DocumentIdentifier]  from [File] WHERE [Identifier] IN ('Image_002')"
-			Dim dataReader As IDataReader = ImportTestsHelper.ExecuteSQLStatementAsDataTableAsDataReader(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
+			Sql = "select Identifier As [BatesNumber], Location As [FileLocation], DocumentArtifactID as [DocumentIdentifier]  from [File] WHERE [Identifier] IN ('Image_002')"
+			dataReader = ImportTestsHelper.ExecuteSQLStatementAsDataTableAsDataReader(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
 			ImportAPI.SourceData.SourceData = dataReader
 			ImportAPI.Execute()
-			dataReader.Close()
-			dataReader.Dispose()
 			' Assert
 			Dim dataTable As DataTable = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION)
 			Assert.AreEqual(0, _errors.Count, "Import was not successful. There are errors")
@@ -325,23 +225,11 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 		<Test(), Category("HighPriority")> _
 		Public Sub ImportImageWithExtractedText_Overlay_FileExistsInDestination_Negate()
 			'Arrange
-			ImportAPI.Settings.RelativityUsername = Helpers.CommonDefaults.API_USER_ADMIN
-			ImportAPI.Settings.RelativityPassword = Helpers.CommonDefaults.API_USER_ADMIN_PASSWORD
-			ImportAPI.Settings.CaseArtifactId = Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION
-			ImportAPI.Settings.ArtifactTypeId = Helpers.CommonDefaults.DOCTYPEID
 			ImportAPI.Settings.OverwriteMode = ImportTestsHelper.OverwriteModeEnum.strict
-			ImportAPI.Settings.CopyFilesToDocumentRepository = True
-			ImportAPI.Settings.ForProduction = False
-			ImportAPI.Settings.IdentityFieldId = Helpers.CommonDefaults.IDENTITY_FIELD_ID
-			ImportAPI.Settings.OverlayIdentifierSourceFieldName = "Control Number"
-			ImportAPI.Settings.ExtractedTextFieldContainsFilePath = True
-			ImportAPI.Settings.ExtractedTextEncoding = System.Text.Encoding.UTF8
-			Dim sql As String = "select Identifier As [BatesNumber], Location As [FileLocation], DocumentArtifactID as [DocumentIdentifier]  from [File] WHERE [Identifier] IN ('Image_003')"
-			Dim dataReader As IDataReader = ImportTestsHelper.ExecuteSQLStatementAsDataTableAsDataReader(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
+			Sql = "select Identifier As [BatesNumber], Location As [FileLocation], DocumentArtifactID as [DocumentIdentifier]  from [File] WHERE [Identifier] IN ('Image_003')"
+			dataReader = ImportTestsHelper.ExecuteSQLStatementAsDataTableAsDataReader(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
 			ImportAPI.SourceData.SourceData = dataReader
 			ImportAPI.Execute()
-			dataReader.Close()
-			dataReader.Dispose()
 			' Assert
 			Dim dataTable As DataTable = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION)
 			Assert.AreNotEqual(0, _errors.Count, "Import was not successful. There are errors")
@@ -351,23 +239,11 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 		<Test(), Category("HighPriority")> _
 		Public Sub ImportImageWithExtractedText_Overlay_NoImageFile()
 			'Arrange
-			ImportAPI.Settings.RelativityUsername = Helpers.CommonDefaults.API_USER_ADMIN
-			ImportAPI.Settings.RelativityPassword = Helpers.CommonDefaults.API_USER_ADMIN_PASSWORD
-			ImportAPI.Settings.CaseArtifactId = Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION
-			ImportAPI.Settings.ArtifactTypeId = Helpers.CommonDefaults.DOCTYPEID
 			ImportAPI.Settings.OverwriteMode = ImportTestsHelper.OverwriteModeEnum.strict
-			ImportAPI.Settings.CopyFilesToDocumentRepository = True
-			ImportAPI.Settings.ForProduction = False
-			ImportAPI.Settings.IdentityFieldId = Helpers.CommonDefaults.IDENTITY_FIELD_ID
-			ImportAPI.Settings.OverlayIdentifierSourceFieldName = "Control Number"
-			ImportAPI.Settings.ExtractedTextFieldContainsFilePath = True
-			ImportAPI.Settings.ExtractedTextEncoding = System.Text.Encoding.UTF8
-			Dim sql As String = "select Identifier As [BatesNumber], Location As [FileLocation], DocumentArtifactID as [DocumentIdentifier]  from [File] WHERE [Identifier] IN ('Image_004')"
-			Dim dataReader As IDataReader = ImportTestsHelper.ExecuteSQLStatementAsDataTableAsDataReader(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
+			Sql = "select Identifier As [BatesNumber], Location As [FileLocation], DocumentArtifactID as [DocumentIdentifier]  from [File] WHERE [Identifier] IN ('Image_004')"
+			dataReader = ImportTestsHelper.ExecuteSQLStatementAsDataTableAsDataReader(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
 			ImportAPI.SourceData.SourceData = dataReader
 			ImportAPI.Execute()
-			dataReader.Close()
-			dataReader.Dispose()
 			' Assert
 			Dim dataTable As DataTable = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION)
 			Assert.AreNotEqual(0, _errors.Count, "Import was not successful. There are errors")
