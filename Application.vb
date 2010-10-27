@@ -1,3 +1,5 @@
+Imports System.Web.Services.Protocols
+
 Namespace kCura.EDDS.WinForm
 	Public Class Application
 
@@ -498,12 +500,21 @@ Namespace kCura.EDDS.WinForm
 					Me.RefreshSelectedCaseInfo()
 					RaiseEvent OnEvent(New LoadCaseEvent(caseInfo))
 				End If
+			Catch MrSoapy As SoapException
+				Select Case MrSoapy.Detail("ExceptionType").InnerText
+					Case "Relativity.Core.Exception.WorkspaceVersion"
+						Dim x As New ErrorDialog With {.Text = "Relativity Desktop Client Error"}
+						x.Initialize(MrSoapy)
+						If x.ShowDialog() <> DialogResult.OK Then
+							Environment.Exit(1)
+						End If
+					Case "kCura.EDDS.WebAPI.ServiceBase.NeedToReLoginException"
+						NewLogin(True)
+					Case Else
+						Me.ChangeWebServiceURL()
+				End Select
 			Catch ex As System.Exception
-				If ex.Message.IndexOf("Need To Re Login") <> -1 Then
-					NewLogin(True)
-				Else
-					Me.ChangeWebServiceURL()
-				End If
+				Throw
 			End Try
 		End Sub
 
