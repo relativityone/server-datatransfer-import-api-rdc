@@ -26,14 +26,14 @@ Namespace kCura.WinEDDS.ImportExtension
 
 		Protected Overrides Function GetImageFileImporter() As kCura.WinEDDS.BulkImageFileImporter
 
-			'Select Case ImageLoadFile.Overwrite.ToLower
-			'	Case "append"
-			'		ImageLoadFile.Overwrite = "none"
-			'	Case "overlay"
-			'		ImageLoadFile.Overwrite = "strict"
-			'	Case Else
-			'		ImageLoadFile.Overwrite = "both"
-			'End Select
+			Select Case ImageLoadFile.Overwrite.ToLower
+				Case "append"
+					ImageLoadFile.Overwrite = "none"
+				Case "overlay"
+					ImageLoadFile.Overwrite = "strict"
+				Case Else
+					ImageLoadFile.Overwrite = "both"
+			End Select
 
 			Return New DataReaderImageImporter(1003697, ImageLoadFile, New kCura.Windows.Process.Controller, System.Guid.NewGuid, _sourceData)
 			'Dim temp As DataReaderImporter = New DataReaderImporter(DirectCast(Me.LoadFile, kCura.WinEDDS.ImportExtension.DataReaderLoadFile))
