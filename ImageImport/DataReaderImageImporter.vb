@@ -4,11 +4,11 @@ Namespace kCura.WinEDDS.ImportExtension
 	Public Class DataReaderImageImporter
 		Inherits kCura.WinEDDS.BulkImageFileImporter
 
-		Private _sourceReader As System.Data.IDataReader
+		Private _sourceTable As System.Data.DataTable
 
-		Public Sub New(ByVal folderId As Int32, ByVal imageLoadFile As kCura.WinEDDS.ImageLoadFile, ByVal controller As kCura.Windows.Process.Controller, ByVal processID As System.Guid, ByVal sourceDataReader As System.Data.IDataReader)
+		Public Sub New(ByVal folderId As Int32, ByVal imageLoadFile As kCura.WinEDDS.ImageLoadFile, ByVal controller As kCura.Windows.Process.Controller, ByVal processID As System.Guid, ByVal sourceDataReader As System.Data.DataTable)
 			MyBase.New(folderId, imageLoadFile, controller, processID, False)
-			_sourceReader = sourceDataReader
+			_sourceTable = sourceDataReader
 		End Sub
 
 		Public Overrides Function GetImageReader() As kCura.WinEDDS.Api.IImageReader
@@ -16,9 +16,9 @@ Namespace kCura.WinEDDS.ImportExtension
 			Return New ImageDataTableReader(SourceData)
 		End Function
 
-		Public ReadOnly Property SourceData() As System.Data.IDataReader
+		Public ReadOnly Property SourceData() As System.Data.DataTable
 			Get
-				Return _sourceReader
+				Return _sourceTable
 			End Get
 		End Property
 	End Class
