@@ -7,10 +7,8 @@
 			_currentRecordNumber += 1
 		End Sub
 
-		Public Sub New(ByVal dataSource As System.Data.IDataReader)
-			Dim dt As New DataTable
-			dt.Load(dataSource)
-			_source = dt
+		Public Sub New(ByVal dataSource As System.Data.DataTable)
+			_source = dataSource
 			_source.DefaultView.Sort = "DocumentIdentifier ASC"
 		End Sub
 
