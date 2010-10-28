@@ -53,7 +53,7 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.Helpers
 		Private Const _FILEREPO_BACKUP_DIRECTORY_NAME As String = "Backups\FileRepoBackup"
 		Private Const _DBBACKUP_DIRECTORY_NAME As String = "Backups\DatabaseBackup"
 		Private Const _LOG_DIRECTORY_NAME As String = "C:\AutomatedTests\ImportAPI\Logs"
-		Private ReadOnly _DBBACKUP_DIRECTORY_FULL_PATH As String = "C:\SourceCode\Mainline\EDDS\kCura.Relativity.DataReaderClient.NUnit\Backups\DatabaseBackup"
+		Private ReadOnly _DBBACKUP_DIRECTORY_FULL_PATH As String = kCura.Utility.URI.ParentDirectoryName + "\Backups\DatabaseBackup"
 		'"C:\SourceCode\Mainline\EDDS\kCura.Relativity.Client.NUnit\Backups\DatabaseBackup"
 
 		Private ReadOnly _TEMPDBBACKUP_DIRECTORY_FULL_PATH As String = "C:\AutomatedTests\ImportAPI\TempDatabaseBackups"
