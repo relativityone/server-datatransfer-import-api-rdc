@@ -51,7 +51,7 @@ Namespace kCura.Relativity.DataReaderClient
 			Dim credential As System.Net.NetworkCredential = DirectCast(GetCredentials(Settings), Net.NetworkCredential)
 			Dim casemanager As kCura.WinEDDS.Service.CaseManager = GetCaseManager(credential)
 			Dim tempLoadFile As New kCura.WinEDDS.ImportExtension.DataReaderImageFile
-			tempLoadFile.DataReader = SourceData.SourceData
+			tempLoadFile.DataTable = SourceData.SourceData
 
 			'These are ALL of the image file settings
 			tempLoadFile.AutoNumberImages = Settings.AutoNumberImages
