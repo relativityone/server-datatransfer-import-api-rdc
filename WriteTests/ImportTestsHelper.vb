@@ -1,6 +1,7 @@
 ﻿Imports NUnit.Framework
 Imports kCura.Relativity.DataReaderClient.NUnit
 Imports System.Configuration
+Imports System.IO
 Imports System.Data.SqlClient
 Imports kCura.Relativity.DataReaderClient
 
@@ -51,6 +52,32 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 			command.ExecuteNonQuery()
 			command.Connection.Close()
 		End Sub
+
+		Public Shared Function ExecuteSQLStatementAsString(ByVal sqlStatement As String, ByVal caseArtifactID As Int32) As String
+			Dim result As String
+			Dim command As New SqlCommand
+			command.CommandText = sqlStatement
+			Dim initialCatalog As String = "EDDS"
+			If caseArtifactID > 0 Then initialCatalog &= caseArtifactID
+			Dim connectionString = String.Format("data source=localhost\integratedtests;initial catalog={0};persist security info=False;user id=EDDSdbo;password=edds; workstation id=localhost;packet size=4096;pooling=false", initialCatalog)
+			command.Connection = New SqlConnection(connectionString)
+			command.Connection.Open()
+			result = DirectCast(command.ExecuteScalar, String)
+			command.Connection.Close()
+			Return result
+		End Function
+
+		Public Shared Function DetermineIfFileExists(ByVal fileName As String) As Boolean
+			Dim FileInformain As New FileInfo(fileName)
+			If FileInformain.Exists Then Return True
+			Return False
+		End Function
+
+		Public Shared Function GetFileSize(ByVal fileName As String) As Int32
+			Dim FileInformain As New FileInfo(fileName)
+			If FileInformain.Exists Then Return CType(FileInformain.Length, Int32)
+			Return 0
+		End Function
 
 		Public Enum OverwriteModeEnum
 			none
