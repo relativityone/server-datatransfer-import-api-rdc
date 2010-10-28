@@ -16,28 +16,31 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 		Private WithEvents ImportAPI As New Global.kCura.Relativity.DataReaderClient.ImageImportBulkArtifactJob
 		Private WithEvents DocImportAPI As New Global.kCura.Relativity.DataReaderClient.ImportBulkArtifactJob
 		Private sql As String
-		Private dataReader As IDataReader
-		Private dataTable As DataTable
+		Private dataTableSrc As DataTable
+		Private dataTableDest As DataTable
 		Private destinationFileExists As Boolean
 		Private sourceFileSize As Int32
 		Private destinationFileSize As Int32
 #End Region
 
 
-		#Region "Setup/Tear down"
-				''' <summary>
-				''' Set up Artifact Test Cases
-				''' </summary>
-				<SetUp()> _
-				Public Sub SetUp()
-					Dim helper As New Helpers.SetupHelper()
-					_errors = New System.Collections.Generic.List(Of String)
-					helper.SetupTestWithRestore()
-					Try
+#Region "Setup/Tear down"
+		''' <summary>
+		''' Set up Artifact Test Cases
+		''' </summary>
+		<SetUp()> _
+		Public Sub SetUp()
+			Dim helper As New Helpers.SetupHelper()
+			_errors = New System.Collections.Generic.List(Of String)
+			helper.SetupTestWithRestore()
+			Try
 				ImportTestsHelper.ExecuteSQLStatementAsDataTable("select top 1 artifactid from artifact", -1)
-					Catch
+			Catch
 				ImportTestsHelper.ExecuteSQLStatementAsDataTable("select top 1 artifactid from artifact", -1)
 			End Try
+			sourceFileSize = 0
+			destinationFileSize = 0
+			destinationFileExists = False
 			ImportAPI.Settings.RelativityUsername = Helpers.CommonDefaults.API_USER_ADMIN
 			ImportAPI.Settings.RelativityPassword = Helpers.CommonDefaults.API_USER_ADMIN_PASSWORD
 			ImportAPI.Settings.CaseArtifactId = Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION
@@ -48,20 +51,20 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 			ImportAPI.Settings.OverlayIdentifierSourceFieldName = "Control Number"
 			ImportAPI.Settings.ExtractedTextFieldContainsFilePath = True
 			ImportAPI.Settings.ExtractedTextEncoding = System.Text.Encoding.UTF8
-				End Sub
+		End Sub
 
-				''' <summary>
-				''' Tear down the test case
-				''' </summary>
-				''' <remarks></remarks>
+		''' <summary>
+		''' Tear down the test case
+		''' </summary>
+		''' <remarks></remarks>
 		<TearDown()> _
 		Public Sub TearDown()
-			dataReader.Close()
-			dataReader.Dispose()
+			'dataTableSrc.Close()
+			dataTableSrc.Dispose()
 			Dim helper As New Helpers.SetupHelper()
 			helper.TearDownTest()
 		End Sub
-		#End Region
+#End Region
 
 #Region "Test Import Image in Append Mode"
 
@@ -71,73 +74,75 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 			'Arrange
 			ImportAPI.Settings.OverwriteMode = ImportTestsHelper.OverwriteModeEnum.none
 			sql = "select Identifier As [BatesNumber], Location As [FileLocation], DocumentArtifactID as [DocumentIdentifier]  from [File] WHERE [Identifier] IN ('FED000041') "
-			dataReader = ImportTestsHelper.ExecuteSQLStatementAsDataTableAsDataReader(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
-			ImportAPI.SourceData.SourceData = dataReader
+			dataTableSrc = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
+			ImportAPI.SourceData.SourceData = dataTableSrc
 			ImportAPI.Execute()
 
-			sourceFileSize = ImportTestsHelper.GetFileSize(CType(dataReader.Item(0)("Location"), String))
+			sourceFileSize = ImportTestsHelper.GetFileSize(CType(dataTableSrc.Rows(0)("FileLocation"), String))
 			' Assert
-			dataTable = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION)
-			If Not (dataTable.Rows(0)) Is Nothing Then destinationFileExists = ImportTestsHelper.DetermineIfFileExists(CType(dataTable.Rows(0)("Location"), String))
-			destinationFileSize = ImportTestsHelper.GetFileSize(CType(dataTable.Rows(0)("Location"), String))
-			Assert.AreNotEqual(0, _errors.Count, "Import in Append mode was not successful. There are errors")
-			Assert.AreNotEqual(1, dataTable.Rows.Count, "Documents are not correctly imported")
-			Assert.False("File was not copied ")
-			Assert.AreNotEqual(sourceFileSize, destinationFileSize, "Fikl")
+			dataTableDest = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION)
+			If dataTableDest.Rows.Count > 0 Then
+				destinationFileExists = ImportTestsHelper.DetermineIfFileExists(CType(dataTableDest.Rows(0)("FileLocation"), String))
+				destinationFileSize = ImportTestsHelper.GetFileSize(CType(dataTableDest.Rows(0)("FileLocation"), String))
+			End If
+			Assert.AreNotEqual(0, _errors.Count, "Import failed.")
+			Assert.AreNotEqual(1, dataTableDest.Rows.Count, "Documents were imported (incorrect).")
+			Assert.False(destinationFileExists, "File exists in destination repository (incorrect).")
+			Assert.AreNotEqual(sourceFileSize, destinationFileSize, "Source and destination files are the same size (incorrect).")
 		End Sub
 
-		
+
 		<Test(), _
 		 Category("HighPriority")> _
 		Public Sub ImportImage_Append_FileExistsInDestination()
 			'Arrange
 			ImportAPI.Settings.OverwriteMode = ImportTestsHelper.OverwriteModeEnum.none
 			sql = "select Identifier As [BatesNumber], Location As [FileLocation], DocumentArtifactID as [DocumentIdentifier]  from [File] WHERE [Identifier] IN ('FED000042') "
-			dataReader = ImportTestsHelper.ExecuteSQLStatementAsDataTableAsDataReader(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
-			ImportAPI.SourceData.SourceData = dataReader
+			dataTableSrc = ImportTestsHelper.ExecuteSQLStatementAsDataTableAsDataReader(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
+			ImportAPI.SourceData.SourceData = dataTableSrc
 			ImportAPI.Execute()
 			' Assert
-			dataTable = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION)
-			If Not String.IsNullOrEmpty(dataTable.Rows(0)("Location")) Then destinationFileExists = ImportTestsHelper.DetermineIfFileExists(dataTable.Rows(0)("Location"))
+			dataTableDest = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION)
+			If Not String.IsNullOrEmpty(dataTableDest.Rows(0)("Location")) Then destinationFileExists = ImportTestsHelper.DetermineIfFileExists(dataTableDest.Rows(0)("Location"))
 			Assert.AreNotEqual(0, _errors.Count, "Import in Append mode was not successful. There are errors")
-			Assert.AreEqual(1, dataTable.Rows.Count, "Documents are not correctly imported")
+			Assert.AreEqual(1, dataTableDest.Rows.Count, "Documents are not correctly imported")
 			Assert.True("File was not copied ")
 		End Sub
 
 
-		
+
 		<Test(), _
 		 Category("HighPriority")> _
 		Public Sub ImportImage_Append_FileExistsInDestination_Negate()
 			'Arrange
 			ImportAPI.Settings.OverwriteMode = ImportTestsHelper.OverwriteModeEnum.none
 			sql = "select Identifier As [BatesNumber], Location As [FileLocation], DocumentArtifactID as [DocumentIdentifier]  from [File] WHERE [Identifier] IN ('FED000043') "
-			dataReader = ImportTestsHelper.ExecuteSQLStatementAsDataTableAsDataReader(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
-			ImportAPI.SourceData.SourceData = dataReader
+			dataTableSrc = ImportTestsHelper.ExecuteSQLStatementAsDataTableAsDataReader(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
+			ImportAPI.SourceData.SourceData = dataTableSrc
 			ImportAPI.Execute()
 			' Assert
-			dataTable = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION)
-			If Not String.IsNullOrEmpty(dataTable.Rows(0)("Location")) Then destinationFileExists = ImportTestsHelper.DetermineIfFileExists(dataTable.Rows(0)("Location"))
+			dataTableDest = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION)
+			If Not String.IsNullOrEmpty(dataTableDest.Rows(0)("Location")) Then destinationFileExists = ImportTestsHelper.DetermineIfFileExists(dataTableDest.Rows(0)("Location"))
 			Assert.AreEqual(0, _errors.Count, "Import in Append mode was not successful. There are errors")
-			Assert.AreEqual(1, dataTable.Rows.Count, "Documents are not correctly imported")
+			Assert.AreEqual(1, dataTableDest.Rows.Count, "Documents are not correctly imported")
 			Assert.True("File was not copied ")
 		End Sub
 
-		
+
 		<Test(), _
 		 Category("HighPriority")> _
 		Public Sub ImportImage_Append_NoImageFile()
 			'Arrange
 			ImportAPI.Settings.OverwriteMode = ImportTestsHelper.OverwriteModeEnum.none
 			sql = "select Identifier As [BatesNumber], Location As [FileLocation], DocumentArtifactID as [DocumentIdentifier]  from [File] WHERE [Identifier] IN ('FED000044') "
-			dataReader = ImportTestsHelper.ExecuteSQLStatementAsDataTableAsDataReader(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
-			ImportAPI.SourceData.SourceData = dataReader
+			dataTableSrc = ImportTestsHelper.ExecuteSQLStatementAsDataTableAsDataReader(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
+			ImportAPI.SourceData.SourceData = dataTableSrc
 			ImportAPI.Execute()
 			' Assert
-			dataTable = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION)
-			If Not String.IsNullOrEmpty(dataTable.Rows(0)("Location")) Then destinationFileExists = ImportTestsHelper.DetermineIfFileExists(dataTable.Rows(0)("Location"))
+			dataTableDest = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION)
+			If Not String.IsNullOrEmpty(dataTableDest.Rows(0)("Location")) Then destinationFileExists = ImportTestsHelper.DetermineIfFileExists(dataTableDest.Rows(0)("Location"))
 			Assert.AreNotEqual(0, _errors.Count, "Import in Append mode was not successful. There are errors")
-			Assert.AreNotEqual(2, dataTable.Rows.Count, "Documents are not correctly imported")
+			Assert.AreNotEqual(2, dataTableDest.Rows.Count, "Documents are not correctly imported")
 		End Sub
 
 #End Region
@@ -149,14 +154,14 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 			'Arrange
 			ImportAPI.Settings.OverwriteMode = ImportTestsHelper.OverwriteModeEnum.both
 			sql = "select Identifier As [BatesNumber], Location As [FileLocation], DocumentArtifactID as [DocumentIdentifier]  from [File] WHERE [Identifier] IN ('FED000045') "
-			dataReader = ImportTestsHelper.ExecuteSQLStatementAsDataTableAsDataReader(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
-			ImportAPI.SourceData.SourceData = dataReader
+			dataTableSrc = ImportTestsHelper.ExecuteSQLStatementAsDataTableAsDataReader(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
+			ImportAPI.SourceData.SourceData = dataTableSrc
 			ImportAPI.Execute()
 			' Assert
-			dataTable = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION)
-			If Not String.IsNullOrEmpty(dataTable.Rows(0)("Location")) Then destinationFileExists = ImportTestsHelper.DetermineIfFileExists(dataTable.Rows(0)("Location"))
+			dataTableDest = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION)
+			If Not String.IsNullOrEmpty(dataTableDest.Rows(0)("Location")) Then destinationFileExists = ImportTestsHelper.DetermineIfFileExists(dataTableDest.Rows(0)("Location"))
 			Assert.AreNotEqual(0, _errors.Count, "Import in AppendOverlay mode was not successful. There are errors")
-			Assert.AreEqual(0, dataTable.Rows.Count, "documents are not correctly imported")
+			Assert.AreEqual(0, dataTableDest.Rows.Count, "documents are not correctly imported")
 		End Sub
 
 		<Test(), Category("HighPriority")> _
@@ -164,14 +169,14 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 			'Arrange
 			ImportAPI.Settings.OverwriteMode = ImportTestsHelper.OverwriteModeEnum.both
 			sql = "select Identifier As [BatesNumber], Location As [FileLocation], DocumentArtifactID as [DocumentIdentifier]  from [File] WHERE [Identifier] IN ('FED000046') "
-			dataReader = ImportTestsHelper.ExecuteSQLStatementAsDataTableAsDataReader(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
-			ImportAPI.SourceData.SourceData = dataReader
+			dataTableSrc = ImportTestsHelper.ExecuteSQLStatementAsDataTableAsDataReader(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
+			ImportAPI.SourceData.SourceData = dataTableSrc
 			ImportAPI.Execute()
 			' Assert
-			dataTable = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION)
-			If Not String.IsNullOrEmpty(dataTable.Rows(0)("Location")) Then destinationFileExists = ImportTestsHelper.DetermineIfFileExists(dataTable.Rows(0)("Location"))
+			dataTableDest = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION)
+			If Not String.IsNullOrEmpty(dataTableDest.Rows(0)("Location")) Then destinationFileExists = ImportTestsHelper.DetermineIfFileExists(dataTableDest.Rows(0)("Location"))
 			Assert.AreEqual(0, _errors.Count, "Import in AppendOverlay mode was not successful. There are errors")
-			Assert.AreEqual(1, dataTable.Rows.Count, "documents are not correctly imported")
+			Assert.AreEqual(1, dataTableDest.Rows.Count, "documents are not correctly imported")
 		End Sub
 
 		<Test(), Category("HighPriority")> _
@@ -179,14 +184,14 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 			'Arrange
 			ImportAPI.Settings.OverwriteMode = ImportTestsHelper.OverwriteModeEnum.both
 			sql = "select Identifier As [BatesNumber], Location As [FileLocation], DocumentArtifactID as [DocumentIdentifier]  from [File] WHERE [Identifier] IN ('FED000047') "
-			dataReader = ImportTestsHelper.ExecuteSQLStatementAsDataTableAsDataReader(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
-			ImportAPI.SourceData.SourceData = dataReader
+			dataTableSrc = ImportTestsHelper.ExecuteSQLStatementAsDataTableAsDataReader(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
+			ImportAPI.SourceData.SourceData = dataTableSrc
 			ImportAPI.Execute()
 			' Assert
-			dataTable = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION)
-			If Not String.IsNullOrEmpty(dataTable.Rows(0)("Location")) Then destinationFileExists = ImportTestsHelper.DetermineIfFileExists(dataTable.Rows(0)("Location"))
+			dataTableDest = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION)
+			If Not String.IsNullOrEmpty(dataTableDest.Rows(0)("Location")) Then destinationFileExists = ImportTestsHelper.DetermineIfFileExists(dataTableDest.Rows(0)("Location"))
 			Assert.AreEqual(0, _errors.Count, "Import in AppendOverlay mode was not successful. There are errors")
-			Assert.AreEqual(1, dataTable.Rows.Count, "documents are not correctly imported")
+			Assert.AreEqual(1, dataTableDest.Rows.Count, "documents are not correctly imported")
 		End Sub
 
 		<Test(), Category("HighPriority")> _
@@ -194,14 +199,14 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 			'Arrange
 			ImportAPI.Settings.OverwriteMode = ImportTestsHelper.OverwriteModeEnum.both
 			sql = "select Identifier As [BatesNumber], Location As [FileLocation], DocumentArtifactID as [DocumentIdentifier]  from [File] WHERE [Identifier] IN ('FED000048') "
-			dataReader = ImportTestsHelper.ExecuteSQLStatementAsDataTableAsDataReader(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
-			ImportAPI.SourceData.SourceData = dataReader
+			dataTableSrc = ImportTestsHelper.ExecuteSQLStatementAsDataTableAsDataReader(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
+			ImportAPI.SourceData.SourceData = dataTableSrc
 			ImportAPI.Execute()
 			' Assert
-			dataTable = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION)
-			If Not String.IsNullOrEmpty(dataTable.Rows(0)("Location")) Then destinationFileExists = ImportTestsHelper.DetermineIfFileExists(dataTable.Rows(0)("Location"))
+			dataTableDest = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION)
+			If Not String.IsNullOrEmpty(dataTableDest.Rows(0)("Location")) Then destinationFileExists = ImportTestsHelper.DetermineIfFileExists(dataTableDest.Rows(0)("Location"))
 			Assert.AreNotEqual(0, _errors.Count, "Import in AppendOverlay mode was not successful. There are errors")
-			Assert.AreNotEqual(1, dataTable.Rows.Count, "documents are not correctly imported")
+			Assert.AreNotEqual(1, dataTableDest.Rows.Count, "documents are not correctly imported")
 		End Sub
 
 #End Region
@@ -212,14 +217,14 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 			'Arrange
 			ImportAPI.Settings.OverwriteMode = ImportTestsHelper.OverwriteModeEnum.strict
 			sql = "select Identifier As [BatesNumber], Location As [FileLocation], DocumentArtifactID as [DocumentIdentifier]  from [File] WHERE [Identifier] IN ('FED000049') "
-			dataReader = ImportTestsHelper.ExecuteSQLStatementAsDataTableAsDataReader(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
-			ImportAPI.SourceData.SourceData = dataReader
+			dataTableSrc = ImportTestsHelper.ExecuteSQLStatementAsDataTableAsDataReader(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
+			ImportAPI.SourceData.SourceData = dataTableSrc
 			ImportAPI.Execute()
 			' Assert
-			dataTable = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION)
-			If Not String.IsNullOrEmpty(dataTable.Rows(0)("Location")) Then destinationFileExists = ImportTestsHelper.DetermineIfFileExists(dataTable.Rows(0)("Location"))
+			dataTableDest = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION)
+			If Not String.IsNullOrEmpty(dataTableDest.Rows(0)("Location")) Then destinationFileExists = ImportTestsHelper.DetermineIfFileExists(dataTableDest.Rows(0)("Location"))
 			Assert.AreNotEqual(0, _errors.Count, "Import in Overlay mode was not successful. There are errors")
-			Assert.AreNotEqual(1, dataTable.Rows.Count, "documents are not correctly imported")
+			Assert.AreNotEqual(1, dataTableDest.Rows.Count, "documents are not correctly imported")
 		End Sub
 
 		<Test(), Category("HighPriority")> _
@@ -227,14 +232,14 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 			'Arrange
 			ImportAPI.Settings.OverwriteMode = ImportTestsHelper.OverwriteModeEnum.strict
 			sql = "select Identifier As [BatesNumber], Location As [FileLocation], DocumentArtifactID as [DocumentIdentifier]  from [File] WHERE [Identifier] IN ('FED000050') "
-			dataReader = ImportTestsHelper.ExecuteSQLStatementAsDataTableAsDataReader(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
-			ImportAPI.SourceData.SourceData = dataReader
+			dataTableSrc = ImportTestsHelper.ExecuteSQLStatementAsDataTableAsDataReader(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
+			ImportAPI.SourceData.SourceData = dataTableSrc
 			ImportAPI.Execute()
 			' Assert
-			dataTable = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION)
-			If Not String.IsNullOrEmpty(dataTable.Rows(0)("Location")) Then destinationFileExists = ImportTestsHelper.DetermineIfFileExists(dataTable.Rows(0)("Location"))
+			dataTableDest = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION)
+			If Not String.IsNullOrEmpty(dataTableDest.Rows(0)("Location")) Then destinationFileExists = ImportTestsHelper.DetermineIfFileExists(dataTableDest.Rows(0)("Location"))
 			Assert.AreEqual(0, _errors.Count, "Import in Overlay mode was not successful. There are errors")
-			Assert.AreEqual(1, dataTable.Rows.Count, "documents are not correctly imported")
+			Assert.AreEqual(1, dataTableDest.Rows.Count, "documents are not correctly imported")
 		End Sub
 
 
@@ -243,14 +248,14 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 			'Arrange
 			ImportAPI.Settings.OverwriteMode = ImportTestsHelper.OverwriteModeEnum.strict
 			sql = "select Identifier As [BatesNumber], Location As [FileLocation], DocumentArtifactID as [DocumentIdentifier]  from [File] WHERE [Identifier] IN ('FED000051') "
-			dataReader = ImportTestsHelper.ExecuteSQLStatementAsDataTableAsDataReader(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
-			ImportAPI.SourceData.SourceData = dataReader
+			dataTableSrc = ImportTestsHelper.ExecuteSQLStatementAsDataTableAsDataReader(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
+			ImportAPI.SourceData.SourceData = dataTableSrc
 			ImportAPI.Execute()
 			' Assert
-			dataTable = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION)
-			If Not String.IsNullOrEmpty(dataTable.Rows(0)("Location")) Then destinationFileExists = ImportTestsHelper.DetermineIfFileExists(dataTable.Rows(0)("Location"))
+			dataTableDest = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION)
+			If Not String.IsNullOrEmpty(dataTableDest.Rows(0)("Location")) Then destinationFileExists = ImportTestsHelper.DetermineIfFileExists(dataTableDest.Rows(0)("Location"))
 			Assert.AreNotEqual(0, _errors.Count, "Import in Overlay mode was not successful. There are errors")
-			Assert.AreNotEqual(1, dataTable.Rows.Count, "documents are not correctly imported")
+			Assert.AreNotEqual(1, dataTableDest.Rows.Count, "documents are not correctly imported")
 		End Sub
 
 		<Test(), Category("HighPriority")> _
@@ -258,14 +263,14 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 			'Arrange
 			ImportAPI.Settings.OverwriteMode = ImportTestsHelper.OverwriteModeEnum.strict
 			sql = "select Identifier As [BatesNumber], Location As [FileLocation], DocumentArtifactID as [DocumentIdentifier]  from [File] WHERE [Identifier] IN ('FED000052') "
-			dataReader = ImportTestsHelper.ExecuteSQLStatementAsDataTableAsDataReader(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
-			ImportAPI.SourceData.SourceData = dataReader
+			dataTableSrc = ImportTestsHelper.ExecuteSQLStatementAsDataTableAsDataReader(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
+			ImportAPI.SourceData.SourceData = dataTableSrc
 			ImportAPI.Execute()
 			' Assert
-			dataTable = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION)
-			If Not String.IsNullOrEmpty(dataTable.Rows(0)("Location")) Then destinationFileExists = ImportTestsHelper.DetermineIfFileExists(dataTable.Rows(0)("Location"))
+			dataTableDest = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION)
+			If Not String.IsNullOrEmpty(dataTableDest.Rows(0)("Location")) Then destinationFileExists = ImportTestsHelper.DetermineIfFileExists(dataTableDest.Rows(0)("Location"))
 			Assert.AreNotEqual(0, _errors.Count, "Import in Overlay mode was not successful. There are errors")
-			Assert.AreNotEqual(1, dataTable.Rows.Count, "documents are not correctly imported")
+			Assert.AreNotEqual(1, dataTableDest.Rows.Count, "documents are not correctly imported")
 		End Sub
 #End Region
 
