@@ -17,6 +17,7 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 		Private sql As String
 		Private dataReader As IDataReader
 		Private dataTable As DataTable
+		Private fileExists As Boolean
 #End Region
 
 #Region "Setup/Tear down"
@@ -67,14 +68,18 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 		Public Sub ImportImageWithExtractedText_Append_BadImageFile()
 			'Arrange
 			ImportAPI.Settings.OverwriteMode = ImportTestsHelper.OverwriteModeEnum.none
-			Sql = "select Identifier As [BatesNumber], Location As [FileLocation], DocumentArtifactID as [DocumentIdentifier]  from [File] WHERE [Identifier] IN ('Image_001')"
+			sql = "SELECT Identifier AS [BatesNumber], Location AS [FileLocation], DocumentArtifactID AS [DocumentIdentifier]  FROM [File] INNER JOIN [Document] ON [File].[Identifier] =  [Document].[ControlNumber] " + _
+ " WHERE [Identifier] IN ('Image_001') AND [Document].[ExtractedText] IS NOT NULL"
 			dataReader = ImportTestsHelper.ExecuteSQLStatementAsDataTableAsDataReader(Sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
 			ImportAPI.SourceData.SourceData = dataReader
 			ImportAPI.Execute()
 			' Assert
-			Dim dataTable As DataTable = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION)
-			Assert.AreNotEqual(0, _errors.Count, "Import Image With Extracted Text in Append Mode was not successful. There are errors")
-			Assert.AreEqual(0, dataTable.Rows.Count, "Documents are not correctly imported using Import Image With Extracted Text in Append Mode")
+			dataTable = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION)
+			If Not String.IsNullOrEmpty(dataTable.Rows(0)("Location")) Then fileExists = ImportTestsHelper.DetermineIfFileExists(dataTable.Rows(0)("Location"))
+			Assert.AreNotEqual(0, _errors.Count, "There were error while importing Bad Image With Extracted Text in Append Mode")
+			Assert.AreEqual(0, dataTable.Rows.Count, "Documents were not imported correctly using Import Image with Extracted Text in Append Mode")
+			Assert.AreEqual(0, dataTable.Rows.Count, "Documents were not imported correctly using Import Image with Extracted Text in Append Mode")
+			Assert.False(fileExists, "File was not copied ")
 		End Sub
 
 
@@ -83,16 +88,19 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 		Public Sub ImportImageWithExtractedText_Append_FileExistsInDestination()
 			'Arrange		
 			ImportAPI.Settings.OverwriteMode = ImportTestsHelper.OverwriteModeEnum.none
-			Sql = "select Identifier As [BatesNumber], Location As [FileLocation], DocumentArtifactID as [DocumentIdentifier]  from [File] WHERE [Identifier] IN ('Image_002')"
+			sql = "SELECT Identifier AS [BatesNumber], Location AS [FileLocation], DocumentArtifactID AS [DocumentIdentifier]  FROM [File] INNER JOIN [Document] ON [File].[Identifier] =  [Document].[ControlNumber] " + _
+	" WHERE [Identifier] IN ('Image_002') AND [Document].[ExtractedText] IS NOT NULL"
 			dataReader = ImportTestsHelper.ExecuteSQLStatementAsDataTableAsDataReader(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
 			ImportAPI.SourceData.SourceData = dataReader
 			ImportAPI.Execute()
 			' Assert
 			sql = "SELECT [File].[Identifier] AS [BatesNumber], [File].[Location] AS [FileLocation], [File].[DocumentArtifactID] AS [DocumentIdentifier], [Document].[ExtractedText] FROM [File] " + _
 		 " INNER JOIN [Document] on [File].[Identifier] =  [Document].[ControlNumber] WHERE [Identifier] IN ('Image_002') AND [Document].[ExtractedText] IS NOT NULL"
-			Dim dataTable As DataTable = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION)
+			dataTable = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION)
+			If Not String.IsNullOrEmpty(dataTable.Rows(0)("Location")) Then fileExists = ImportTestsHelper.DetermineIfFileExists(dataTable.Rows(0)("Location"))
 			Assert.AreNotEqual(0, _errors.Count, "Import was not successful. There are errors")
 			Assert.AreEqual(1, dataTable.Rows.Count, "Documents are not correctly imported")
+			Assert.True(fileExists, "File was not copied ")
 		End Sub
 
 
@@ -102,14 +110,17 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 		Public Sub ImportImageWithExtractedText_Append_FileExistsInDestination_Negate()
 			'Arrange			
 			ImportAPI.Settings.OverwriteMode = ImportTestsHelper.OverwriteModeEnum.none
-			Sql = "select Identifier As [BatesNumber], Location As [FileLocation], DocumentArtifactID as [DocumentIdentifier]  from [File] WHERE [Identifier] IN ('Image_003')"
+			sql = "SELECT Identifier AS [BatesNumber], Location AS [FileLocation], DocumentArtifactID AS [DocumentIdentifier]  FROM [File] INNER JOIN [Document] ON [File].[Identifier] =  [Document].[ControlNumber] " + _
+	" WHERE [Identifier] IN ('Image_003') AND [Document].[ExtractedText] IS NOT NULL"
 			dataReader = ImportTestsHelper.ExecuteSQLStatementAsDataTableAsDataReader(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
 			ImportAPI.SourceData.SourceData = dataReader
 			ImportAPI.Execute()
 			' Assert
-			Dim dataTable As DataTable = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION)
+			dataTable = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION)
+			If Not String.IsNullOrEmpty(dataTable.Rows(0)("Location")) Then fileExists = ImportTestsHelper.DetermineIfFileExists(dataTable.Rows(0)("Location"))
 			Assert.AreEqual(0, _errors.Count, "Import was not successful. There are errors")
 			Assert.AreEqual(1, dataTable.Rows.Count, "Documents are not correctly imported")
+			Assert.True(fileExists, "File was not copied ")
 		End Sub
 
 
@@ -118,14 +129,17 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 		Public Sub ImportImageWithExtractedText_Append_NoImageFile()
 			'Arrange			
 			ImportAPI.Settings.OverwriteMode = ImportTestsHelper.OverwriteModeEnum.none
-			Sql = "select Identifier As [BatesNumber], Location As [FileLocation], DocumentArtifactID as [DocumentIdentifier]  from [File] WHERE [Identifier] IN ('Image_004')"
+			sql = "SELECT Identifier AS [BatesNumber], Location AS [FileLocation], DocumentArtifactID AS [DocumentIdentifier]  FROM [File] INNER JOIN [Document] ON [File].[Identifier] =  [Document].[ControlNumber] " + _
+	" WHERE [Identifier] IN ('Image_004') AND [Document].[ExtractedText] IS NOT NULL"
 			dataReader = ImportTestsHelper.ExecuteSQLStatementAsDataTableAsDataReader(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
 			ImportAPI.SourceData.SourceData = dataReader
 			ImportAPI.Execute()
 			' Assert
-			Dim dataTable As DataTable = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION)
+			dataTable = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION)
+			If Not String.IsNullOrEmpty(dataTable.Rows(0)("Location")) Then fileExists = ImportTestsHelper.DetermineIfFileExists(dataTable.Rows(0)("Location"))
 			Assert.AreNotEqual(0, _errors.Count, "Import was not successful. There are errors")
 			Assert.AreNotEqual(2, dataTable.Rows.Count, "Documents are not correctly imported")
+			Assert.False(fileExists, "File was not copied ")
 		End Sub
 
 #End Region
@@ -136,58 +150,70 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 		Public Sub ImportImageWithExtractedText_AppendOverlay_BadImageFile()
 			'Arrange
 			ImportAPI.Settings.OverwriteMode = ImportTestsHelper.OverwriteModeEnum.both
-			Sql = "select Identifier As [BatesNumber], Location As [FileLocation], DocumentArtifactID as [DocumentIdentifier]  from [File] WHERE [Identifier] IN ('Image_001')"
+			sql = "SELECT Identifier AS [BatesNumber], Location AS [FileLocation], DocumentArtifactID AS [DocumentIdentifier]  FROM [File] INNER JOIN [Document] ON [File].[Identifier] =  [Document].[ControlNumber] " + _
+	" WHERE [Identifier] IN ('Image_001') AND [Document].[ExtractedText] IS NOT NULL"
 			dataReader = ImportTestsHelper.ExecuteSQLStatementAsDataTableAsDataReader(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
 			ImportAPI.SourceData.SourceData = dataReader
 			ImportAPI.Execute()
 			' Assert
-			Dim dataTable As DataTable = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION)
+			dataTable = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION)
+			If Not String.IsNullOrEmpty(dataTable.Rows(0)("Location")) Then fileExists = ImportTestsHelper.DetermineIfFileExists(dataTable.Rows(0)("Location"))
 			Assert.AreNotEqual(0, _errors.Count, "Import was not successful. There are errors")
 			Assert.AreEqual(0, dataTable.Rows.Count, "documents are not correctly imported")
+			Assert.False(fileExists, "File was not copied ")
 		End Sub
 
 		<Test(), Category("HighPriority")> _
 		Public Sub ImportImageWithExtractedText_AppendOverlay_FileExistsInDestination()
 			'Arrange
 			ImportAPI.Settings.OverwriteMode = ImportTestsHelper.OverwriteModeEnum.both
-			Sql = "select Identifier As [BatesNumber], Location As [FileLocation], DocumentArtifactID as [DocumentIdentifier]  from [File] WHERE [Identifier] IN ('Image_002')"
+			sql = "SELECT Identifier AS [BatesNumber], Location AS [FileLocation], DocumentArtifactID AS [DocumentIdentifier]  FROM [File] INNER JOIN [Document] ON [File].[Identifier] =  [Document].[ControlNumber] " + _
+	" WHERE [Identifier] IN ('Image_002') AND [Document].[ExtractedText] IS NOT NULL"
 			dataReader = ImportTestsHelper.ExecuteSQLStatementAsDataTableAsDataReader(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
 			ImportAPI.SourceData.SourceData = dataReader
 			ImportAPI.Execute()
 			' Assert
-			Dim dataTable As DataTable = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION)
+			dataTable = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION)
+			If Not String.IsNullOrEmpty(dataTable.Rows(0)("Location")) Then fileExists = ImportTestsHelper.DetermineIfFileExists(dataTable.Rows(0)("Location"))
 			Assert.AreEqual(0, _errors.Count, "Import was not successful. There are errors")
 			Assert.AreEqual(1, dataTable.Rows.Count, "documents are not correctly imported")
+			Assert.True(fileExists, "File was not copied ")
 		End Sub
 
 		<Test(), Category("HighPriority")> _
 		Public Sub ImportImageWithExtractedText_AppendOverlay_FileExistsInDestination_Negate()
 			'Arrange
 			ImportAPI.Settings.OverwriteMode = ImportTestsHelper.OverwriteModeEnum.both
-			Sql = "select Identifier As [BatesNumber], Location As [FileLocation], DocumentArtifactID as [DocumentIdentifier]  from [File] WHERE [Identifier] IN ('Image_003')"
+			sql = "SELECT Identifier AS [BatesNumber], Location AS [FileLocation], DocumentArtifactID AS [DocumentIdentifier]  FROM [File] INNER JOIN [Document] ON [File].[Identifier] =  [Document].[ControlNumber] " + _
+	" WHERE [Identifier] IN ('Image_003') AND [Document].[ExtractedText] IS NOT NULL"
 			dataReader = ImportTestsHelper.ExecuteSQLStatementAsDataTableAsDataReader(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
 			ImportAPI.SourceData.SourceData = dataReader
 			ImportAPI.Execute()
 			' Assert
-			Dim dataTable As DataTable = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION)
+			dataTable = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION)
+			If Not String.IsNullOrEmpty(dataTable.Rows(0)("Location")) Then fileExists = ImportTestsHelper.DetermineIfFileExists(dataTable.Rows(0)("Location"))
 			Assert.AreEqual(0, _errors.Count, "Import was not successful. There are errors")
 			Assert.AreEqual(1, dataTable.Rows.Count, "documents are not correctly imported")
+			Assert.True(fileExists, "File was not copied ")
 		End Sub
 
 		<Test(), Category("HighPriority")> _
 		Public Sub ImportImageWithExtractedText_AppendOverlay_NoImageFile()
 			'Arrange
 			ImportAPI.Settings.OverwriteMode = ImportTestsHelper.OverwriteModeEnum.both
-			Sql = "select Identifier As [BatesNumber], Location As [FileLocation], DocumentArtifactID as [DocumentIdentifier]  from [File] WHERE [Identifier] IN ('Image_004')"
+			sql = "SELECT Identifier AS [BatesNumber], Location AS [FileLocation], DocumentArtifactID AS [DocumentIdentifier]  FROM [File] INNER JOIN [Document] ON [File].[Identifier] =  [Document].[ControlNumber] " + _
+	" WHERE [Identifier] IN ('Image_004') AND [Document].[ExtractedText] IS NOT NULL"
 			dataReader = ImportTestsHelper.ExecuteSQLStatementAsDataTableAsDataReader(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
 			ImportAPI.SourceData.SourceData = dataReader
 			ImportAPI.Execute()
 			dataReader.Close()
 			dataReader.Dispose()
 			' Assert
-			Dim dataTable As DataTable = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION)
+			dataTable = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION)
+			If Not String.IsNullOrEmpty(dataTable.Rows(0)("Location")) Then fileExists = ImportTestsHelper.DetermineIfFileExists(dataTable.Rows(0)("Location"))
 			Assert.AreNotEqual(0, _errors.Count, "Import was not successful. There are errors")
 			Assert.AreNotEqual(1, dataTable.Rows.Count, "documents are not correctly imported")
+			Assert.False(fileExists, "File was not copied ")
 		End Sub
 
 #End Region
@@ -197,28 +223,34 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 		Public Sub ImportImageWithExtractedText_Overlay_BadImageFile()
 			'Arrange
 			ImportAPI.Settings.OverwriteMode = ImportTestsHelper.OverwriteModeEnum.strict
-			Sql = "select Identifier As [BatesNumber], Location As [FileLocation], DocumentArtifactID as [DocumentIdentifier]  from [File] WHERE [Identifier] IN ('Image_001')"
+			sql = "SELECT Identifier AS [BatesNumber], Location AS [FileLocation], DocumentArtifactID AS [DocumentIdentifier]  FROM [File] INNER JOIN [Document] ON [File].[Identifier] =  [Document].[ControlNumber] " + _
+	" WHERE [Identifier] IN ('Image_001') AND [Document].[ExtractedText] IS NOT NULL"
 			dataReader = ImportTestsHelper.ExecuteSQLStatementAsDataTableAsDataReader(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
 			ImportAPI.SourceData.SourceData = dataReader
 			ImportAPI.Execute()
 			' Assert
-			Dim dataTable As DataTable = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION)
+			dataTable = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION)
+			If Not String.IsNullOrEmpty(dataTable.Rows(0)("Location")) Then fileExists = ImportTestsHelper.DetermineIfFileExists(dataTable.Rows(0)("Location"))
 			Assert.AreNotEqual(0, _errors.Count, "Import was not successful. There are errors")
 			Assert.AreEqual(0, dataTable.Rows.Count, "documents are not correctly imported")
+			Assert.False(fileExists, "File was not copied ")
 		End Sub
 
 		<Test(), Category("HighPriority")> _
 		Public Sub ImportImageWithExtractedText_Overlay_FileExistsInDestination()
 			'Arrange
 			ImportAPI.Settings.OverwriteMode = ImportTestsHelper.OverwriteModeEnum.strict
-			Sql = "select Identifier As [BatesNumber], Location As [FileLocation], DocumentArtifactID as [DocumentIdentifier]  from [File] WHERE [Identifier] IN ('Image_002')"
+			sql = "SELECT Identifier AS [BatesNumber], Location AS [FileLocation], DocumentArtifactID AS [DocumentIdentifier]  FROM [File] INNER JOIN [Document] ON [File].[Identifier] =  [Document].[ControlNumber] " + _
+	" WHERE [Identifier] IN ('Image_002') AND [Document].[ExtractedText] IS NOT NULL"
 			dataReader = ImportTestsHelper.ExecuteSQLStatementAsDataTableAsDataReader(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
 			ImportAPI.SourceData.SourceData = dataReader
 			ImportAPI.Execute()
 			' Assert
-			Dim dataTable As DataTable = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION)
+			dataTable = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION)
+			If Not String.IsNullOrEmpty(dataTable.Rows(0)("Location")) Then fileExists = ImportTestsHelper.DetermineIfFileExists(dataTable.Rows(0)("Location"))
 			Assert.AreEqual(0, _errors.Count, "Import was not successful. There are errors")
 			Assert.AreEqual(1, dataTable.Rows.Count, "documents are not correctly imported")
+			Assert.True(fileExists, "File was not copied ")
 		End Sub
 
 
@@ -226,28 +258,34 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 		Public Sub ImportImageWithExtractedText_Overlay_FileExistsInDestination_Negate()
 			'Arrange
 			ImportAPI.Settings.OverwriteMode = ImportTestsHelper.OverwriteModeEnum.strict
-			Sql = "select Identifier As [BatesNumber], Location As [FileLocation], DocumentArtifactID as [DocumentIdentifier]  from [File] WHERE [Identifier] IN ('Image_003')"
+			sql = "SELECT Identifier AS [BatesNumber], Location AS [FileLocation], DocumentArtifactID AS [DocumentIdentifier]  FROM [File] INNER JOIN [Document] ON [File].[Identifier] =  [Document].[ControlNumber] " + _
+	" WHERE [Identifier] IN ('Image_003') AND [Document].[ExtractedText] IS NOT NULL"
 			dataReader = ImportTestsHelper.ExecuteSQLStatementAsDataTableAsDataReader(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
 			ImportAPI.SourceData.SourceData = dataReader
 			ImportAPI.Execute()
 			' Assert
-			Dim dataTable As DataTable = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION)
+			dataTable = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION)
+			If Not String.IsNullOrEmpty(dataTable.Rows(0)("Location")) Then fileExists = ImportTestsHelper.DetermineIfFileExists(dataTable.Rows(0)("Location"))
 			Assert.AreNotEqual(0, _errors.Count, "Import was not successful. There are errors")
 			Assert.AreNotEqual(1, dataTable.Rows.Count, "documents are not correctly imported")
+			Assert.False(fileExists, "File was not copied ")
 		End Sub
 
 		<Test(), Category("HighPriority")> _
 		Public Sub ImportImageWithExtractedText_Overlay_NoImageFile()
 			'Arrange
 			ImportAPI.Settings.OverwriteMode = ImportTestsHelper.OverwriteModeEnum.strict
-			Sql = "select Identifier As [BatesNumber], Location As [FileLocation], DocumentArtifactID as [DocumentIdentifier]  from [File] WHERE [Identifier] IN ('Image_004')"
+			sql = "SELECT Identifier AS [BatesNumber], Location AS [FileLocation], DocumentArtifactID AS [DocumentIdentifier]  FROM [File] INNER JOIN [Document] ON [File].[Identifier] =  [Document].[ControlNumber] " + _
+	" WHERE [Identifier] IN ('Image_004') AND [Document].[ExtractedText] IS NOT NULL"
 			dataReader = ImportTestsHelper.ExecuteSQLStatementAsDataTableAsDataReader(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
 			ImportAPI.SourceData.SourceData = dataReader
 			ImportAPI.Execute()
 			' Assert
-			Dim dataTable As DataTable = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION)
+			dataTable = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION)
+			If Not String.IsNullOrEmpty(dataTable.Rows(0)("Location")) Then fileExists = ImportTestsHelper.DetermineIfFileExists(dataTable.Rows(0)("Location"))
 			Assert.AreNotEqual(0, _errors.Count, "Import was not successful. There are errors")
 			Assert.AreNotEqual(1, dataTable.Rows.Count, "documents are not correctly imported")
+			Assert.False(fileExists, "File was not copied ")
 		End Sub
 #End Region
 
