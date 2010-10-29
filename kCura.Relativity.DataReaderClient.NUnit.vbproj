@@ -140,6 +140,7 @@
   <ItemGroup>
     <Compile Include="Exceptions\DatabaseManagementException.vb" />
     <Compile Include="Exceptions\ProcuroException.vb" />
+    <Compile Include="Exceptions\RepositoryException.vb" />
     <Compile Include="HelpersTests\SetupHelperTests.vb" />
     <Compile Include="Helpers\CommonDefaults.vb" />
     <Compile Include="Helpers\FileHelper.vb" />
@@ -162,7 +163,7 @@
     </Compile>
     <Compile Include="WriteTests\CaseWriteTests.vb" />
     <Compile Include="WriteTests\FixtureSetupTeardown.vb" />
-    <Compile Include="WriteTests\ImportImageWithExtratedText.vb" />
+    <Compile Include="WriteTests\ImportImageWithExtractedText.vb" />
     <Compile Include="WriteTests\ImportTests.vb" />
     <Compile Include="WriteTests\ImportTestsHelper.vb" />
     <Compile Include="WriteTests\WriteTestsBase.vb" />
@@ -176,7 +177,9 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
+    <None Include="app.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="My Project\Application.myapp">
       <Generator>MyApplicationCodeGenerator</Generator>
       <LastGenOutput>Application.Designer.vb</LastGenOutput>

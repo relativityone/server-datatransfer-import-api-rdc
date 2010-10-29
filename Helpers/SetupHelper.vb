@@ -12,11 +12,8 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.Helpers
 		''' </summary>
 		Public Sub SetupTestWithRestore()
 			Dim restoreFromBackupAfterProcuro As Boolean = True
-			If RestoreDatabases(restoreFromBackupAfterProcuro) Then
-				'System.Data.SqlClient.SqlConnection.ClearAllPools()
-			Else
-				Throw New Exceptions.DatabaseManagementException("Database restore failed.")
-			End If
+			If Not RestoreDatabases(restoreFromBackupAfterProcuro) Then Throw New Exceptions.DatabaseManagementException("Database restore failed.")
+			If Not RestoreRepositories() Then Throw New Exceptions.RepositoryException("File Repository restore failed.")
 		End Sub
 
 		''' <summary>
@@ -54,25 +51,20 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.Helpers
 		Private Const _DBBACKUP_DIRECTORY_NAME As String = "Backups\DatabaseBackup"
 		Private Const _LOG_DIRECTORY_NAME As String = "C:\AutomatedTests\ImportAPI\Logs"
 		Private ReadOnly _DBBACKUP_DIRECTORY_FULL_PATH As String = kCura.Utility.URI.ParentDirectoryName + "\Backups\DatabaseBackup"
-		'"C:\SourceCode\Mainline\EDDS\kCura.Relativity.Client.NUnit\Backups\DatabaseBackup"
-
 		Private ReadOnly _TEMPDBBACKUP_DIRECTORY_FULL_PATH As String = "C:\AutomatedTests\ImportAPI\TempDatabaseBackups"
-
 		Private ReadOnly _CAINDEX_BACKUP_FULL_PATH As String = Path.Combine(ParentDirectoryName, _CAINDEX_BACKUP_DIRECTORY_NAME)
 		Private ReadOnly _DTSEARCHINDEX_BACKUP_FULL_PATH As String = Path.Combine(ParentDirectoryName, _DTSEARCHINDEX_BACKUP_DIRECTORY_NAME)
 		Private ReadOnly _FILEREPO_BACKUP_FULL_PATH As String = Path.Combine(ParentDirectoryName, _FILEREPO_BACKUP_DIRECTORY_NAME)
+		Private Const _IMPORTAPI_FILE_REPOSITORY_DIRECTORY As String = "C:\AutomatedTests\ImportAPIFileRepository"
+		Private ReadOnly _IMPORTAPI_FILE_REPOSITORY_BACKUP_DIRECTORY As String = kCura.Utility.URI.ParentDirectoryName + "\Backups\FileRepository"
 #End Region
 #Region "Other Members"
-		'Private Shared ReadOnly _CASEDBNAME_CRUD As String = "EDDS" + _CASE_ID_CRUD.ToString()
-		'Private Shared ReadOnly _CASEDBNAME_QUERY_BATCH_SCRIPT As String = "EDDS" + _CASE_ID_QUERY_BATCH_SCRIPT.ToString()
 
 		Private Shared ReadOnly _CASEDBNAME_ImportAPI_Source As String = "EDDS" + _CASE_ID_IMPORT_API_SOURCE.ToString()
 		Private Shared ReadOnly _CASEDBNAME_ImportAPI_Destination As String = "EDDS" + _CASE_ID_IMPORT_API_DESTINATION.ToString()
 
 		Public Shared ReadOnly _DBLIST() As String = {_CASEDBNAME_ImportAPI_Source, _CASEDBNAME_ImportAPI_Destination, "EDDS", "EDDSResource"}
 		Public ReadOnly _DBLIST_FOR_TEMP_BACKUP() As String = {_CASEDBNAME_ImportAPI_Source + "_AFTERPROCURO", _CASEDBNAME_ImportAPI_Destination + "_AFTERPROCURO", "EDDS_AFTERPROCURO", "EDDSResource_AFTERPROCURO"}
-		'Public Shared ReadOnly _DBLIST() As String = {_CASEDBNAME_CRUD, _CASEDBNAME_QUERY_BATCH_SCRIPT, "EDDS", "EDDSResource"}
-		'Public ReadOnly _DBLIST_FOR_TEMP_BACKUP() As String = {_CASEDBNAME_CRUD + "_AFTERPROCURO", _CASEDBNAME_QUERY_BATCH_SCRIPT + "_AFTERPROCURO", "EDDS_AFTERPROCURO", "EDDSResource_AFTERPROCURO"}
 
 		Private Shared _connStrForSetup As String = String.Empty
 		Public _restoreSucceeded As Boolean = False
@@ -455,6 +447,21 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.Helpers
 
 			Helpers.QueryExecutionHelper.RunSqlNonQuery(combinedSql, forSetup, New SqlClient.SqlConnection(GetConnectionString(forSetup)), _LOG_DIRECTORY_NAME)
 		End Sub
+
+		''' <summary>
+		''' Restore the file repositories (C:\AutomatedTests\ImportAPIFileRepositories\)
+		''' </summary>
+		Public Function RestoreRepositories() As Boolean
+			Try
+				Directory.Delete(_IMPORTAPI_FILE_REPOSITORY_DIRECTORY, True)
+				kCura.Utility.URI.EnsureDirectoryExists(_IMPORTAPI_FILE_REPOSITORY_DIRECTORY)
+				My.Computer.FileSystem.CopyDirectory(_IMPORTAPI_FILE_REPOSITORY_BACKUP_DIRECTORY, _IMPORTAPI_FILE_REPOSITORY_DIRECTORY, True)
+				Return True
+			Catch ex As Exception
+				Return False
+			End Try
+		End Function
+
 
 		''' <summary>
 		''' Restores backup database files and verifies that the restore succeeded
