@@ -67,16 +67,12 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 			Return result
 		End Function
 
-		Public Shared Function DetermineIfFileExists(ByVal fileName As String) As Boolean
-			Dim FileInformain As New FileInfo(fileName)
-			If FileInformain.Exists Then Return True
-			Return False
-		End Function
-
 		Public Shared Function GetFileSize(ByVal fileName As String) As Int32
-			Dim FileInformain As New FileInfo(fileName)
-			If FileInformain.Exists Then Return CType(FileInformain.Length, Int32)
-			Return 0
+			Dim retval As Boolean = 0
+			With New FileInfo(fileName)
+				If .Exists Then retval = CType(.Length, Int32)
+			End With
+			Return retval
 		End Function
 
 		Public Shared Sub CopyDirectory(ByVal SourcePath As String, ByVal DestPath As String)

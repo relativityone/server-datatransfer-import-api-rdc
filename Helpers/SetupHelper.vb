@@ -13,7 +13,8 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.Helpers
 		Public Sub SetupTestWithRestore()
 			Dim restoreFromBackupAfterProcuro As Boolean = True
 			If Not RestoreDatabases(restoreFromBackupAfterProcuro) Then Throw New Exceptions.DatabaseManagementException("Database restore failed.")
-			If Not RestoreRepositories() Then Throw New Exceptions.RepositoryException("File Repository restore failed.")
+			Dim retval = RestoreRepositories()
+			If retval <> String.Empty Then Throw New Exceptions.RepositoryException(String.Format("File Repository restore failed: {0}", retval))
 		End Sub
 
 		''' <summary>
@@ -451,14 +452,14 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.Helpers
 		''' <summary>
 		''' Restore the file repositories (C:\AutomatedTests\ImportAPIFileRepositories\)
 		''' </summary>
-		Public Function RestoreRepositories() As Boolean
+		Public Function RestoreRepositories() As String
 			Try
 				Directory.Delete(_IMPORTAPI_FILE_REPOSITORY_DIRECTORY, True)
 				kCura.Utility.URI.EnsureDirectoryExists(_IMPORTAPI_FILE_REPOSITORY_DIRECTORY)
 				My.Computer.FileSystem.CopyDirectory(_IMPORTAPI_FILE_REPOSITORY_BACKUP_DIRECTORY, _IMPORTAPI_FILE_REPOSITORY_DIRECTORY, True)
-				Return True
+				Return String.Empty
 			Catch ex As Exception
-				Return False
+				Return ex.Message
 			End Try
 		End Function
 

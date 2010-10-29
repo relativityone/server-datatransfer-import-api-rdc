@@ -89,7 +89,7 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 			sourceFileSize = ImportTestsHelper.GetFileSize(CType(dataTableSrc.Rows(0)("FileLocation"), String))
 			dataTableDest = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION)
 			If dataTableDest.Rows.Count > 0 Then
-				destinationFileExists = ImportTestsHelper.DetermineIfFileExists(CType(dataTableDest.Rows(0)("FileLocation"), String))
+				destinationFileExists = System.IO.File.Exists(CType(dataTableDest.Rows(0)("FileLocation"), String))
 				destinationFileSize = ImportTestsHelper.GetFileSize(CType(dataTableDest.Rows(0)("FileLocation"), String))
 			End If
 			Assert.AreNotEqual(0, _errors.Count, "Import failed.")
@@ -113,7 +113,7 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 			sourceFileSize = ImportTestsHelper.GetFileSize(CType(dataTableSrc.Rows(0)("FileLocation"), String))
 			dataTableDest = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION)
 			If dataTableDest.Rows.Count > 0 Then
-				destinationFileExists = ImportTestsHelper.DetermineIfFileExists(CType(dataTableDest.Rows(0)("FileLocation"), String))
+				destinationFileExists = System.IO.File.Exists(CType(dataTableDest.Rows(0)("FileLocation"), String))
 				destinationFileSize = ImportTestsHelper.GetFileSize(CType(dataTableDest.Rows(0)("FileLocation"), String))
 			End If
 			Assert.AreNotEqual(0, _errors.Count, "Import failed.")
@@ -138,7 +138,7 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 			sourceFileSize = ImportTestsHelper.GetFileSize(CType(dataTableSrc.Rows(0)("FileLocation"), String))
 			dataTableDest = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION)
 			If dataTableDest.Rows.Count > 0 Then
-				destinationFileExists = ImportTestsHelper.DetermineIfFileExists(CType(dataTableDest.Rows(0)("FileLocation"), String))
+				destinationFileExists = System.IO.File.Exists(CType(dataTableDest.Rows(0)("FileLocation"), String))
 				destinationFileSize = ImportTestsHelper.GetFileSize(CType(dataTableDest.Rows(0)("FileLocation"), String))
 			End If
 			Assert.AreEqual(0, _errors.Count, "Import failed.")
@@ -162,7 +162,7 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 			sourceFileSize = ImportTestsHelper.GetFileSize(CType(dataTableSrc.Rows(0)("FileLocation"), String))
 			dataTableDest = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION)
 			If dataTableDest.Rows.Count > 0 Then
-				destinationFileExists = ImportTestsHelper.DetermineIfFileExists(CType(dataTableDest.Rows(0)("FileLocation"), String))
+				destinationFileExists = System.IO.File.Exists(CType(dataTableDest.Rows(0)("FileLocation"), String))
 				destinationFileSize = ImportTestsHelper.GetFileSize(CType(dataTableDest.Rows(0)("FileLocation"), String))
 			End If
 
@@ -191,7 +191,7 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 			sourceFileSize = ImportTestsHelper.GetFileSize(CType(dataTableSrc.Rows(0)("FileLocation"), String))
 			dataTableDest = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION)
 			If dataTableDest.Rows.Count > 0 Then
-				destinationFileExists = ImportTestsHelper.DetermineIfFileExists(CType(dataTableDest.Rows(0)("FileLocation"), String))
+				destinationFileExists = System.IO.File.Exists(CType(dataTableDest.Rows(0)("FileLocation"), String))
 				destinationFileSize = ImportTestsHelper.GetFileSize(CType(dataTableDest.Rows(0)("FileLocation"), String))
 			End If
 			
@@ -216,7 +216,7 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 			sourceFileSize = ImportTestsHelper.GetFileSize(CType(dataTableSrc.Rows(0)("FileLocation"), String))
 			dataTableDest = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION)
 			If dataTableDest.Rows.Count > 0 Then
-				destinationFileExists = ImportTestsHelper.DetermineIfFileExists(CType(dataTableDest.Rows(0)("FileLocation"), String))
+				destinationFileExists = System.IO.File.Exists(CType(dataTableDest.Rows(0)("FileLocation"), String))
 				destinationFileSize = ImportTestsHelper.GetFileSize(CType(dataTableDest.Rows(0)("FileLocation"), String))
 			End If
 			Assert.AreEqual(0, _errors.Count, "Import failed.")
@@ -238,7 +238,7 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 			sourceFileSize = ImportTestsHelper.GetFileSize(CType(dataTableSrc.Rows(0)("FileLocation"), String))
 			dataTableDest = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION)
 			If dataTableDest.Rows.Count > 0 Then
-				destinationFileExists = ImportTestsHelper.DetermineIfFileExists(CType(dataTableDest.Rows(0)("FileLocation"), String))
+				destinationFileExists = System.IO.File.Exists(CType(dataTableDest.Rows(0)("FileLocation"), String))
 				destinationFileSize = ImportTestsHelper.GetFileSize(CType(dataTableDest.Rows(0)("FileLocation"), String))
 			End If
 			Assert.AreEqual(0, _errors.Count, "Import failed.")
@@ -259,7 +259,7 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 			sourceFileSize = ImportTestsHelper.GetFileSize(CType(dataTableSrc.Rows(0)("FileLocation"), String))
 			dataTableDest = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION)
 			If dataTableDest.Rows.Count > 0 Then
-				destinationFileExists = ImportTestsHelper.DetermineIfFileExists(CType(dataTableDest.Rows(0)("FileLocation"), String))
+				destinationFileExists = System.IO.File.Exists(CType(dataTableDest.Rows(0)("FileLocation"), String))
 				destinationFileSize = ImportTestsHelper.GetFileSize(CType(dataTableDest.Rows(0)("FileLocation"), String))
 			End If
 			Assert.AreNotEqual(0, _errors.Count, "Import failed.")
@@ -284,7 +284,7 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 			sourceFileSize = ImportTestsHelper.GetFileSize(CType(dataTableSrc.Rows(0)("FileLocation"), String))
 			dataTableDest = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION)
 			If dataTableDest.Rows.Count > 0 Then
-				destinationFileExists = ImportTestsHelper.DetermineIfFileExists(CType(dataTableDest.Rows(0)("FileLocation"), String))
+				destinationFileExists = System.IO.File.Exists(CType(dataTableDest.Rows(0)("FileLocation"), String))
 				destinationFileSize = ImportTestsHelper.GetFileSize(CType(dataTableDest.Rows(0)("FileLocation"), String))
 			End If
 			Assert.AreNotEqual(0, _errors.Count, "Import failed.")
@@ -306,7 +306,7 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 			sourceFileSize = ImportTestsHelper.GetFileSize(CType(dataTableSrc.Rows(0)("FileLocation"), String))
 			dataTableDest = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION)
 			If dataTableDest.Rows.Count > 0 Then
-				destinationFileExists = ImportTestsHelper.DetermineIfFileExists(CType(dataTableDest.Rows(0)("FileLocation"), String))
+				destinationFileExists = System.IO.File.Exists(CType(dataTableDest.Rows(0)("FileLocation"), String))
 				destinationFileSize = ImportTestsHelper.GetFileSize(CType(dataTableDest.Rows(0)("FileLocation"), String))
 			End If
 			Assert.AreEqual(0, _errors.Count, "Import failed.")
@@ -329,7 +329,7 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 			sourceFileSize = ImportTestsHelper.GetFileSize(CType(dataTableSrc.Rows(0)("FileLocation"), String))
 			dataTableDest = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION)
 			If dataTableDest.Rows.Count > 0 Then
-				destinationFileExists = ImportTestsHelper.DetermineIfFileExists(CType(dataTableDest.Rows(0)("FileLocation"), String))
+				destinationFileExists = System.IO.File.Exists(CType(dataTableDest.Rows(0)("FileLocation"), String))
 				destinationFileSize = ImportTestsHelper.GetFileSize(CType(dataTableDest.Rows(0)("FileLocation"), String))
 			End If
 			Assert.AreNotEqual(0, _errors.Count, "Import failed.")
@@ -351,7 +351,7 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 			sourceFileSize = ImportTestsHelper.GetFileSize(CType(dataTableSrc.Rows(0)("FileLocation"), String))
 			dataTableDest = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION)
 			If dataTableDest.Rows.Count > 0 Then
-				destinationFileExists = ImportTestsHelper.DetermineIfFileExists(CType(dataTableDest.Rows(0)("FileLocation"), String))
+				destinationFileExists = System.IO.File.Exists(CType(dataTableDest.Rows(0)("FileLocation"), String))
 				destinationFileSize = ImportTestsHelper.GetFileSize(CType(dataTableDest.Rows(0)("FileLocation"), String))
 			End If
 			Assert.AreNotEqual(0, _errors.Count, "Import failed.")
