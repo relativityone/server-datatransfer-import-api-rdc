@@ -68,9 +68,10 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 		End Function
 
 		Public Shared Function GetFileSize(ByVal fileName As String) As Int32
-			Dim retval As Boolean = 0
+			Dim retval As Int32 = 0
 			With New FileInfo(fileName)
 				If .Exists Then retval = CType(.Length, Int32)
+				.Delete()
 			End With
 			Return retval
 		End Function

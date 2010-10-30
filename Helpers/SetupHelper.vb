@@ -454,7 +454,7 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.Helpers
 		''' </summary>
 		Public Function RestoreRepositories() As String
 			Try
-				Directory.Delete(_IMPORTAPI_FILE_REPOSITORY_DIRECTORY, True)
+				System.IO.Directory.Delete(_IMPORTAPI_FILE_REPOSITORY_DIRECTORY, True)
 				kCura.Utility.URI.EnsureDirectoryExists(_IMPORTAPI_FILE_REPOSITORY_DIRECTORY)
 				My.Computer.FileSystem.CopyDirectory(_IMPORTAPI_FILE_REPOSITORY_BACKUP_DIRECTORY, _IMPORTAPI_FILE_REPOSITORY_DIRECTORY, True)
 				Return String.Empty
