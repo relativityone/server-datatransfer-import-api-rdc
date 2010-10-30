@@ -471,7 +471,7 @@ Namespace kCura.WinEDDS
 				Dim encodingList As New Generic.List(Of Int32)
 				For Each filename As String In textFileList
 					Dim chosenEncoding As System.Text.Encoding
-					Dim determinedEncodingStream As DeterminedEncodingStream = kCura.WinEDDS.Utility.DetectEncoding(filename, False)
+					Dim determinedEncodingStream As DeterminedEncodingStream = kCura.WinEDDS.Utility.DetectEncoding(filename, True)
 					Dim detectedEncoding As System.Text.Encoding = determinedEncodingStream.DeterminedEncoding
 					If detectedEncoding IsNot Nothing Then
 						chosenEncoding = detectedEncoding
