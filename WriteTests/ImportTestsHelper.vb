@@ -68,42 +68,12 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 		End Function
 
 		Public Shared Function GetFileSize(ByVal fileName As String) As Int32
-			Dim retval As Boolean = 0
+			Dim retval As Int32
 			With New FileInfo(fileName)
 				If .Exists Then retval = CType(.Length, Int32)
 			End With
 			Return retval
 		End Function
-
-		Public Shared Sub CopyDirectory(ByVal SourcePath As String, ByVal DestPath As String)
-			Dim SourceDir As DirectoryInfo = New DirectoryInfo(SourcePath)
-			Dim DestDir As DirectoryInfo = New DirectoryInfo(DestPath)
-			If SourceDir.Exists Then
-				If Not DestDir.Parent.Exists Then
-					Throw New DirectoryNotFoundException("Destination directory does not exist: " + DestDir.Parent.FullName)
-				End If
-
-				If Not DestDir.Exists Then
-					DestDir.Create()
-				End If
-
-				Dim ChildFile As FileInfo
-				For Each ChildFile In SourceDir.GetFiles()
-					If Not File.Exists(Path.Combine(DestDir.FullName, ChildFile.Name)) Then
-						ChildFile.CopyTo(Path.Combine(DestDir.FullName, ChildFile.Name), False)
-					End If
-				Next
-
-				Dim SubDir As DirectoryInfo
-				For Each SubDir In SourceDir.GetDirectories()
-					CopyDirectory(SubDir.FullName, Path.Combine(DestDir.FullName, SubDir.Name))
-				Next
-			Else
-				Throw New DirectoryNotFoundException("Source directory does not exist: " + SourceDir.FullName)
-			End If
-
-		End Sub
-
 
 		Public Enum OverwriteModeEnum
 			none
