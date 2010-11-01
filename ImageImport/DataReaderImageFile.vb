@@ -1,9 +1,7 @@
 Namespace kCura.WinEDDS.ImportExtension
 
-	Public Class DataReaderImageFile
+	Public Class DataTableImageFile
 		Inherits kCura.WinEDDS.ImageLoadFile
-
-		'Private _dataReader As System.Data.IDataReader
 		Private _dataTable As System.Data.DataTable
 		Public Property DataTable() As System.Data.DataTable
 			Get
