@@ -134,15 +134,15 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 
 			' Assert
 			dataTableDest = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION)
-			'If dataTableDest.Rows.Count > 0 Then
-			'destinationFileExists = System.IO.File.Exists(CType(dataTableDest.Rows(0)("FileLocation"), String))
-			'destinationFileSize = ImportTestsHelper.GetFileSize(CType(dataTableDest.Rows(0)("FileLocation"), String))
-			'End If
-			'sourceFileSize = ImportTestsHelper.GetFileSize(CType(dataTableSrc.Rows(0)("FileLocation"), String))
-			'Assert.AreEqual(0, _errors.Count, "Import failed.")
-			'Assert.AreEqual(1, dataTableDest.Rows.Count, "Documents were not imported (incorrect).")
-			'Assert.True(destinationFileExists, "File does not exists in destination repository (incorrect).")
-			'Assert.AreEqual(sourceFileSize, destinationFileSize, "Source and destination files are not the same size (incorrect).")
+			If dataTableDest.Rows.Count > 0 Then
+				destinationFileExists = System.IO.File.Exists(CType(dataTableDest.Rows(0)("FileLocation"), String))
+				destinationFileSize = ImportTestsHelper.GetFileSize(CType(dataTableDest.Rows(0)("FileLocation"), String))
+			End If
+			sourceFileSize = ImportTestsHelper.GetFileSize(CType(dataTableSrc.Rows(0)("FileLocation"), String))
+			Assert.AreEqual(0, _errors.Count, "Import failed.")
+			Assert.AreEqual(1, dataTableDest.Rows.Count, "Documents were not imported (incorrect).")
+			Assert.True(destinationFileExists, "File does not exists in destination repository (incorrect).")
+			Assert.AreEqual(sourceFileSize, destinationFileSize, "Source and destination files are not the same size (incorrect).")
 		End Sub
 
 		<Test(), _
