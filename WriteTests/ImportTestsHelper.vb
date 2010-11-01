@@ -16,7 +16,7 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 			Dim command As New SqlCommand
 			Dim resultReader As SqlDataReader
 			command.CommandText = sqlStatement
-			Dim connectionString = String.Format("data source=localhost\integratedtests;initial catalog={0};persist security info=False;user id=EDDSdbo;password=edds; workstation id=localhost;packet size=4096;pooling=false", "EDDS" & caseArtifactID)
+			Dim connectionString As String = String.Format("data source=localhost\integratedtests;initial catalog={0};persist security info=False;user id=EDDSdbo;password=edds; workstation id=localhost;packet size=4096;pooling=false", "EDDS" & caseArtifactID)
 			command.Connection = New SqlConnection(connectionString)
 			command.Connection.Open()
 			resultReader = command.ExecuteReader()
@@ -31,7 +31,7 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 			command.CommandText = sqlStatement
 			Dim initialCatalog As String = "EDDS"
 			If caseArtifactID > 0 Then initialCatalog &= caseArtifactID
-			Dim connectionString = String.Format("data source=localhost\integratedtests;initial catalog={0};persist security info=False;user id=EDDSdbo;password=edds; workstation id=localhost;packet size=4096;pooling=false", initialCatalog)
+			Dim connectionString As String = String.Format("data source=localhost\integratedtests;initial catalog={0};persist security info=False;user id=EDDSdbo;password=edds; workstation id=localhost;packet size=4096;pooling=false", initialCatalog)
 			command.Connection = New SqlConnection(connectionString)
 			command.Connection.Open()
 			dataAdapter = New System.Data.SqlClient.SqlDataAdapter(command)
@@ -46,7 +46,7 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 			command.CommandText = sqlStatement
 			Dim initialCatalog As String = "EDDS"
 			If caseArtifactID > 0 Then initialCatalog &= caseArtifactID
-			Dim connectionString = String.Format("data source=localhost\integratedtests;initial catalog={0};persist security info=False;user id=EDDSdbo;password=edds; workstation id=localhost;packet size=4096;pooling=false", initialCatalog)
+			Dim connectionString As String = String.Format("data source=localhost\integratedtests;initial catalog={0};persist security info=False;user id=EDDSdbo;password=edds; workstation id=localhost;packet size=4096;pooling=false", initialCatalog)
 			command.Connection = New SqlConnection(connectionString)
 			command.Connection.Open()
 			command.ExecuteNonQuery()
@@ -59,7 +59,7 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 			command.CommandText = sqlStatement
 			Dim initialCatalog As String = "EDDS"
 			If caseArtifactID > 0 Then initialCatalog &= caseArtifactID
-			Dim connectionString = String.Format("data source=localhost\integratedtests;initial catalog={0};persist security info=False;user id=EDDSdbo;password=edds; workstation id=localhost;packet size=4096;pooling=false", initialCatalog)
+			Dim connectionString As String = String.Format("data source=localhost\integratedtests;initial catalog={0};persist security info=False;user id=EDDSdbo;password=edds; workstation id=localhost;packet size=4096;pooling=false", initialCatalog)
 			command.Connection = New SqlConnection(connectionString)
 			command.Connection.Open()
 			result = DirectCast(command.ExecuteScalar, String)
@@ -75,13 +75,6 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 			End With
 			Return retval
 		End Function
-
-		Public Enum OverwriteModeEnum
-			none
-			strict
-			both
-		End Enum
-
 
 	End Class
 End Namespace

@@ -13,7 +13,7 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.Helpers
 		Public Sub SetupTestWithRestore()
 			Dim restoreFromBackupAfterProcuro As Boolean = True
 			If Not RestoreDatabases(restoreFromBackupAfterProcuro) Then Throw New Exceptions.DatabaseManagementException("Database restore failed.")
-			Dim retval = RestoreRepositories()
+			Dim retval As String = RestoreRepositories()
 			If retval <> String.Empty Then Throw New Exceptions.RepositoryException(String.Format("File Repository restore failed: {0}", retval))
 		End Sub
 
@@ -620,7 +620,7 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.Helpers
 			dirs.Add(ConfigurationManager.AppSettings("defaultDTSearchIndexDirectory").ToString())
 			dirs.Add(ConfigurationManager.AppSettings("defaultCAIndexDirectory").ToString())
 
-			For Each d In dirs
+			For Each d As String In dirs
 				If Not Directory.Exists(d) Then
 					Directory.CreateDirectory(d)
 				End If
