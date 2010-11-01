@@ -25,6 +25,7 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 				helper.SwitchRelativityServicesConnectionStringToTest()
 				helper.SwitchProcuroConnectionStringToTest()
 				helper.SwitchWebAPIConnectionStringToTest()
+				helper.SwitchWebDistributedConnectionStringToTest()
 				helper.BuildProcuo()
 				Dim procuroSucceeded As Boolean = helper.RunProcuro()
 				If Not procuroSucceeded Then
@@ -59,7 +60,8 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 			Next
 			helper.SwitchProcuroConnectionStringToDev()
 			helper.SwitchRelativityServicesConnectionStringToDev()
-			helper.SwitchWebAPIConnectionSTringToDev()
+			helper.SwitchWebAPIConnectionStringToDev()
+			helper.SwitchWebDistributedConnectionStringToDev()
 		End Sub
 	End Class
 End Namespace
