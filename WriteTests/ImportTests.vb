@@ -73,7 +73,7 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 		Category("HighPriority")> _
 		Public Sub ImportImage_Append_BadImageFile()
 			' Arrange
-			ImportAPI.Settings.OverwriteMode = ImportTestsHelper.OverwriteModeEnum.none
+			ImportAPI.Settings.OverwriteMode = kCura.Relativity.DataReaderClient.OverwriteModeEnum.Append
 			sql = "select Identifier AS [BatesNumber], Location AS [FileLocation], DocumentArtifactID AS [DocumentIdentifier]  from [File] WHERE [Identifier] IN ('FED000041') "
 			dataTableSrc = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
 			ImportAPI.SourceData.SourceData = dataTableSrc
@@ -93,7 +93,7 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 		 Category("HighPriority")> _
 		Public Sub ImportImage_Append_FileExistsInDestination()
 			' Arrange
-			ImportAPI.Settings.OverwriteMode = ImportTestsHelper.OverwriteModeEnum.none
+			ImportAPI.Settings.OverwriteMode = kCura.Relativity.DataReaderClient.OverwriteModeEnum.Append
 			sql = "select Identifier AS [BatesNumber], Location AS [FileLocation], DocumentArtifactID AS [DocumentIdentifier]  from [File] WHERE [Identifier] IN ('FED000042') "
 			dataTableSrc = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
 			ImportAPI.SourceData.SourceData = dataTableSrc
@@ -116,7 +116,7 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 		 Category("HighPriority")> _
 		Public Sub ImportImage_Append_FileExistsInDestination_Negate()
 			' Arrange
-			ImportAPI.Settings.OverwriteMode = ImportTestsHelper.OverwriteModeEnum.none
+			ImportAPI.Settings.OverwriteMode = kCura.Relativity.DataReaderClient.OverwriteModeEnum.Append
 			sql = "select Identifier As [BatesNumber], Location As [FileLocation], DocumentArtifactID as [DocumentIdentifier]  from [File] WHERE [Identifier] IN ('FED000043') "
 			dataTableSrc = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
 			ImportAPI.SourceData.SourceData = dataTableSrc
@@ -159,7 +159,7 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 		 Category("HighPriority")> _
 		Public Sub ImportImage_Append_NoImageFile()
 			' Arrange
-			ImportAPI.Settings.OverwriteMode = ImportTestsHelper.OverwriteModeEnum.none
+			ImportAPI.Settings.OverwriteMode = kCura.Relativity.DataReaderClient.OverwriteModeEnum.Append
 			sql = "select Identifier As [BatesNumber], Location As [FileLocation], DocumentArtifactID as [DocumentIdentifier]  from [File] WHERE [Identifier] IN ('FED000044') "
 			dataTableSrc = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
 			ImportAPI.SourceData.SourceData = dataTableSrc
@@ -182,7 +182,7 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 		<Test(), Category("HighPriority")> _
 		Public Sub ImportImage_AppendOverlay_BadImageFile()
 			' Arrange
-			ImportAPI.Settings.OverwriteMode = ImportTestsHelper.OverwriteModeEnum.both
+			ImportAPI.Settings.OverwriteMode = kCura.Relativity.DataReaderClient.OverwriteModeEnum.AppendOverlay
 			sql = "select Identifier As [BatesNumber], Location As [FileLocation], DocumentArtifactID as [DocumentIdentifier]  from [File] WHERE [Identifier] IN ('FED000045') "
 			dataTableSrc = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
 			ImportAPI.SourceData.SourceData = dataTableSrc
@@ -201,7 +201,7 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 		<Test(), Category("HighPriority")> _
 		Public Sub ImportImage_AppendOverlay_FileExistsInDestination()
 			' Arrange
-			ImportAPI.Settings.OverwriteMode = ImportTestsHelper.OverwriteModeEnum.both
+			ImportAPI.Settings.OverwriteMode = kCura.Relativity.DataReaderClient.OverwriteModeEnum.AppendOverlay
 			sql = "select Identifier As [BatesNumber], Location As [FileLocation], DocumentArtifactID as [DocumentIdentifier]  from [File] WHERE [Identifier] IN ('FED000046') "
 			dataTableSrc = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
 			ImportAPI.SourceData.SourceData = dataTableSrc
@@ -311,7 +311,7 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 		<Test(), Category("HighPriority")> _
 		Public Sub ImportImage_AppendOverlay_FileExistsInDestination_Negate()
 			' Arrange
-			ImportAPI.Settings.OverwriteMode = ImportTestsHelper.OverwriteModeEnum.both
+			ImportAPI.Settings.OverwriteMode = kCura.Relativity.DataReaderClient.OverwriteModeEnum.AppendOverlay
 			sql = "select Identifier As [BatesNumber], Location As [FileLocation], DocumentArtifactID as [DocumentIdentifier]  from [File] WHERE [Identifier] IN ('FED000047') "
 			dataTableSrc = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
 			ImportAPI.SourceData.SourceData = dataTableSrc
@@ -352,7 +352,7 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 		<Test(), Category("HighPriority")> _
 		Public Sub ImportImage_AppendOverlay_NoImageFile()
 			' Arrange
-			ImportAPI.Settings.OverwriteMode = ImportTestsHelper.OverwriteModeEnum.both
+			ImportAPI.Settings.OverwriteMode = kCura.Relativity.DataReaderClient.OverwriteModeEnum.AppendOverlay
 			sql = "select Identifier As [BatesNumber], Location As [FileLocation], DocumentArtifactID as [DocumentIdentifier]  from [File] WHERE [Identifier] IN ('FED000048') "
 			dataTableSrc = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
 			ImportAPI.SourceData.SourceData = dataTableSrc
@@ -375,7 +375,7 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 		<Test(), Category("HighPriority")> _
 		Public Sub ImportImage_Overlay_BadImageFile()
 			' Arrange
-			ImportAPI.Settings.OverwriteMode = ImportTestsHelper.OverwriteModeEnum.strict
+			ImportAPI.Settings.OverwriteMode = kCura.Relativity.DataReaderClient.OverwriteModeEnum.Overlay
 			sql = "select Identifier As [BatesNumber], Location As [FileLocation], DocumentArtifactID as [DocumentIdentifier]  from [File] WHERE [Identifier] IN ('FED000049') "
 			dataTableSrc = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
 			ImportAPI.SourceData.SourceData = dataTableSrc
@@ -394,7 +394,7 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 		<Test(), Category("HighPriority")> _
 		Public Sub ImportImage_Overlay_FileExistsInDestination()
 			' Arrange
-			ImportAPI.Settings.OverwriteMode = ImportTestsHelper.OverwriteModeEnum.strict
+			ImportAPI.Settings.OverwriteMode = kCura.Relativity.DataReaderClient.OverwriteModeEnum.Overlay
 			sql = "select Identifier As [BatesNumber], Location As [FileLocation], DocumentArtifactID as [DocumentIdentifier]  from [File] WHERE [Identifier] IN ('FED000050') "
 			dataTableSrc = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
 			ImportAPI.SourceData.SourceData = dataTableSrc
@@ -504,7 +504,7 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 		<Test(), Category("HighPriority")> _
 		Public Sub ImportImage_Overlay_FileExistsInDestination_Negate()
 			' Arrange
-			ImportAPI.Settings.OverwriteMode = ImportTestsHelper.OverwriteModeEnum.strict
+			ImportAPI.Settings.OverwriteMode = kCura.Relativity.DataReaderClient.OverwriteModeEnum.Overlay
 			sql = "select Identifier As [BatesNumber], Location As [FileLocation], DocumentArtifactID as [DocumentIdentifier]  from [File] WHERE [Identifier] IN ('FED000051') "
 			dataTableSrc = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
 			ImportAPI.SourceData.SourceData = dataTableSrc
@@ -523,7 +523,7 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 		<Test(), Category("HighPriority")> _
 		Public Sub ImportImage_Overlay_NoImageFile()
 			' Arrange
-			ImportAPI.Settings.OverwriteMode = ImportTestsHelper.OverwriteModeEnum.strict
+			ImportAPI.Settings.OverwriteMode = kCura.Relativity.DataReaderClient.OverwriteModeEnum.Overlay
 			sql = "select Identifier As [BatesNumber], Location As [FileLocation], DocumentArtifactID as [DocumentIdentifier]  from [File] WHERE [Identifier] IN ('FED000052') "
 			dataTableSrc = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
 			ImportAPI.SourceData.SourceData = dataTableSrc

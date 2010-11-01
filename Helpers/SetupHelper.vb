@@ -13,7 +13,7 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.Helpers
 		Public Sub SetupTestWithRestore()
 			Dim restoreFromBackupAfterProcuro As Boolean = True
 			If Not RestoreDatabases(restoreFromBackupAfterProcuro) Then Throw New Exceptions.DatabaseManagementException("Database restore failed.")
-			Dim retval = RestoreRepositories()
+			Dim retval As String = RestoreRepositories()
 			If retval <> String.Empty Then Throw New Exceptions.RepositoryException(String.Format("File Repository restore failed: {0}", retval))
 		End Sub
 
@@ -454,7 +454,7 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.Helpers
 		''' </summary>
 		Public Function RestoreRepositories() As String
 			Try
-				Directory.Delete(_IMPORTAPI_FILE_REPOSITORY_DIRECTORY, True)
+				System.IO.Directory.Delete(_IMPORTAPI_FILE_REPOSITORY_DIRECTORY, True)
 				kCura.Utility.URI.EnsureDirectoryExists(_IMPORTAPI_FILE_REPOSITORY_DIRECTORY)
 				My.Computer.FileSystem.CopyDirectory(_IMPORTAPI_FILE_REPOSITORY_BACKUP_DIRECTORY, _IMPORTAPI_FILE_REPOSITORY_DIRECTORY, True)
 				Return String.Empty
@@ -612,6 +612,42 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.Helpers
 
 		End Sub
 
+		Public Sub SwitchWebAPIConnectionStringToTest()
+			Dim NUnitDirectory As String = ParentDirectoryName
+			Dim EDDSDirectory As String = Directory.GetParent(NUnitDirectory).FullName
+			Dim pathToWebAPI As String = Path.Combine(EDDSDirectory, "kCura.EDDS.WebAPI")
+
+			Dim overwrite As Boolean = True
+			File.Copy(Path.Combine(pathToWebAPI, "Web.IntegratedTests.config"), Path.Combine(pathToWebAPI, "Web.config"), overwrite)
+		End Sub
+
+		Public Sub SwitchWebAPIConnectionStringToDev()
+			Dim NUnitDirectory As String = ParentDirectoryName
+			Dim EDDSDirectory As String = Directory.GetParent(NUnitDirectory).FullName
+			Dim pathToWebAPI As String = Path.Combine(EDDSDirectory, "kCura.EDDS.WebAPI")
+
+			Dim overwrite As Boolean = True
+			File.Copy(Path.Combine(pathToWebAPI, "Web.Dev.config"), Path.Combine(pathToWebAPI, "Web.config"), overwrite)
+		End Sub
+
+		Public Sub SwitchWebDistributedConnectionStringToTest()
+			Dim NUnitDirectory As String = ParentDirectoryName
+			Dim EDDSDirectory As String = Directory.GetParent(NUnitDirectory).FullName
+			Dim pathToWebAPI As String = Path.Combine(EDDSDirectory, "kCura.EDDS.Web.Distributed")
+
+			Dim overwrite As Boolean = True
+			File.Copy(Path.Combine(pathToWebAPI, "Web.IntegratedTests.config"), Path.Combine(pathToWebAPI, "Web.config"), overwrite)
+		End Sub
+
+		Public Sub SwitchWebDistributedConnectionStringToDev()
+			Dim NUnitDirectory As String = ParentDirectoryName
+			Dim EDDSDirectory As String = Directory.GetParent(NUnitDirectory).FullName
+			Dim pathToWebAPI As String = Path.Combine(EDDSDirectory, "kCura.EDDS.Web.Distributed")
+
+			Dim overwrite As Boolean = True
+			File.Copy(Path.Combine(pathToWebAPI, "Web.Dev.config"), Path.Combine(pathToWebAPI, "Web.config"), overwrite)
+		End Sub
+
 		Public Sub CreateDefaultDirectories()
 			Dim dirs As New List(Of String)()
 			dirs.Add(ConfigurationManager.AppSettings("defaultLDFDirectory").ToString())
@@ -620,7 +656,7 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.Helpers
 			dirs.Add(ConfigurationManager.AppSettings("defaultDTSearchIndexDirectory").ToString())
 			dirs.Add(ConfigurationManager.AppSettings("defaultCAIndexDirectory").ToString())
 
-			For Each d In dirs
+			For Each d As String In dirs
 				If Not Directory.Exists(d) Then
 					Directory.CreateDirectory(d)
 				End If

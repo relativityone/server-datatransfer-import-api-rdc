@@ -1,5 +1,5 @@
 ﻿Imports NUnit.Framework
-Imports kCura.Relativity.DataReaderClient.NUnit.kCura.Relativity.DataReaderClient.NUnit.Helpers
+Imports kCura.Relativity.DataReaderClient.NUnit.Helpers
 Imports System.Configuration
 Imports System.Data.SqlClient
 
@@ -24,6 +24,8 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 
 				helper.SwitchRelativityServicesConnectionStringToTest()
 				helper.SwitchProcuroConnectionStringToTest()
+				helper.SwitchWebAPIConnectionStringToTest()
+				helper.SwitchWebDistributedConnectionStringToTest()
 				helper.BuildProcuo()
 				Dim procuroSucceeded As Boolean = helper.RunProcuro()
 				If Not procuroSucceeded Then
@@ -58,6 +60,8 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 			Next
 			helper.SwitchProcuroConnectionStringToDev()
 			helper.SwitchRelativityServicesConnectionStringToDev()
+			helper.SwitchWebAPIConnectionStringToDev()
+			helper.SwitchWebDistributedConnectionStringToDev()
 		End Sub
 	End Class
 End Namespace
