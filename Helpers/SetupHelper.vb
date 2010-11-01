@@ -612,6 +612,24 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.Helpers
 
 		End Sub
 
+		Public Sub SwitchWebAPIConnectionStringToTest()
+			Dim NUnitDirectory As String = ParentDirectoryName
+			Dim EDDSDirectory As String = Directory.GetParent(NUnitDirectory).FullName
+			Dim pathToWebAPI As String = Path.Combine(EDDSDirectory, "kCura.EDDS.WebAPI")
+
+			Dim overwrite As Boolean = True
+			File.Copy(Path.Combine(pathToWebAPI, "Web.IntegratedTests.config"), Path.Combine(pathToWebAPI, "Web.config"), overwrite)
+		End Sub
+
+		Public Sub SwitchWebAPIConnectionStringToDev()
+			Dim NUnitDirectory As String = ParentDirectoryName
+			Dim EDDSDirectory As String = Directory.GetParent(NUnitDirectory).FullName
+			Dim pathToWebAPI As String = Path.Combine(EDDSDirectory, "kCura.EDDS.WebAPI")
+
+			Dim overwrite As Boolean = True
+			File.Copy(Path.Combine(pathToWebAPI, "Web.Dev.config"), Path.Combine(pathToWebAPI, "Web.config"), overwrite)
+		End Sub
+
 		Public Sub CreateDefaultDirectories()
 			Dim dirs As New List(Of String)()
 			dirs.Add(ConfigurationManager.AppSettings("defaultLDFDirectory").ToString())
