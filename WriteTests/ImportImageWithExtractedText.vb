@@ -193,7 +193,7 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 			sourceFileSize = ImportTestsHelper.GetFileSize(CType(dataTableSrc.Rows(0)("FileLocation"), String))
 			Assert.AreNotEqual(0, _errors.Count, "Import failed.")
 			Assert.AreEqual(0, dataTableDest.Rows.Count, "Documents were imported (incorrect).")
-			Assert.True(destinationFileExists, "File exists in destination repository (incorrect).")
+			Assert.False(destinationFileExists, "File exists in destination repository (incorrect).")
 			Assert.AreNotEqual(sourceFileSize, destinationFileSize, "Source and destination files are the same size (incorrect).")
 		End Sub
 
@@ -316,7 +316,7 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 			Assert.AreEqual(0, _errors.Count, "Import failed.")
 			Assert.AreEqual(1, dataTableDest.Rows.Count, "No documents  exists in destination (incorrect).")
 			Assert.True(destinationFileExists, "File does not exists in destination repository (incorrect).")
-			Assert.AreNotEqual(sourceFileSize, destinationFileSize, "Source and destination files are not the same size (incorrect).")
+			Assert.AreEqual(sourceFileSize, destinationFileSize, "Source and destination files are not the same size (incorrect).")
 		End Sub
 
 
