@@ -89,7 +89,6 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 			Assert.False(destinationFileExists, "File exists in destination repository (incorrect).")
 		End Sub
 
-
 		<Test(), _
 		 Category("HighPriority")> _
 		Public Sub ImportImage_Append_FileExistsInDestination()
@@ -112,8 +111,6 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 			Assert.True(destinationFileExists, "File does not exists in destination repository (incorrect).")
 			Assert.AreNotEqual(sourceFileSize, destinationFileSize, "Source and destination files are the same size (incorrect).")
 		End Sub
-
-
 
 		<Test(), _
 		 Category("HighPriority")> _
@@ -138,6 +135,25 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 			Assert.AreEqual(sourceFileSize, destinationFileSize, "Source and destination files are not the same size (incorrect).")
 		End Sub
 
+		<Test(), _
+		 Category("HighPriority")> _
+		Public Sub ImportImage_Append_FileExistsInDestination_Negate_NoIdentifier()
+			' Arrange
+			ImportAPI.Settings.OverwriteMode = ImportTestsHelper.OverwriteModeEnum.none
+			sql = "select '' As [BatesNumber], Location As [FileLocation], DocumentArtifactID as [DocumentIdentifier]  from [File] WHERE [Identifier] IN ('FED000043') "
+			dataTableSrc = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
+			ImportAPI.SourceData.SourceData = dataTableSrc
+			' Act
+			ImportAPI.Execute()
+			' Assert
+			dataTableDest = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION)
+			If dataTableDest.Rows.Count > 0 Then
+				destinationFileExists = System.IO.File.Exists(CType(dataTableDest.Rows(0)("FileLocation"), String))
+			End If
+			Assert.AreNotEqual(0, _errors.Count, "Import failed.")
+			Assert.AreNotEqual(1, dataTableDest.Rows.Count, "Documents were not imported (incorrect).")
+			Assert.False(destinationFileExists, "File does not exists in destination repository (incorrect).")
+		End Sub
 
 		<Test(), _
 		 Category("HighPriority")> _
@@ -205,6 +221,94 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 		End Sub
 
 		<Test(), Category("HighPriority")> _
+		Public Sub ImportImage_AppendOverlay_FileExistsInDestination_Redacted()
+			' Arrange
+			ImportAPI.Settings.OverwriteMode = ImportTestsHelper.OverwriteModeEnum.both
+			sql = "select Identifier As [BatesNumber], Location As [FileLocation], DocumentArtifactID as [DocumentIdentifier]  from [File] WHERE [Identifier] IN ('FED000053') "
+			dataTableSrc = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
+			ImportAPI.SourceData.SourceData = dataTableSrc
+			' Act
+			ImportAPI.Execute()
+			' Assert
+			sourceFileSize = ImportTestsHelper.GetFileSize(CType(dataTableSrc.Rows(0)("FileLocation"), String))
+			dataTableDest = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION)
+			If dataTableDest.Rows.Count > 0 Then
+				destinationFileExists = System.IO.File.Exists(CType(dataTableDest.Rows(0)("FileLocation"), String))
+				destinationFileSize = ImportTestsHelper.GetFileSize(CType(dataTableDest.Rows(0)("FileLocation"), String))
+			End If
+			Assert.AreNotEqual(0, _errors.Count, "Import failed.")
+			Assert.AreEqual(1, dataTableDest.Rows.Count, "No documents  exists in destination (incorrect).")
+			Assert.True(destinationFileExists, "File does not exists in destination repository (incorrect).")
+			Assert.AreEqual(sourceFileSize, destinationFileSize, "Source and destination files are not the same size (incorrect).")
+		End Sub
+
+		<Test(), Category("HighPriority")> _
+		Public Sub ImportImage_AppendOverlay_FileExistsInDestination_RedactedWithText()
+			' Arrange
+			ImportAPI.Settings.OverwriteMode = ImportTestsHelper.OverwriteModeEnum.both
+			sql = "select Identifier As [BatesNumber], Location As [FileLocation], DocumentArtifactID as [DocumentIdentifier]  from [File] WHERE [Identifier] IN ('FED000054') "
+			dataTableSrc = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
+			ImportAPI.SourceData.SourceData = dataTableSrc
+			' Act
+			ImportAPI.Execute()
+			' Assert
+			sourceFileSize = ImportTestsHelper.GetFileSize(CType(dataTableSrc.Rows(0)("FileLocation"), String))
+			dataTableDest = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION)
+			If dataTableDest.Rows.Count > 0 Then
+				destinationFileExists = System.IO.File.Exists(CType(dataTableDest.Rows(0)("FileLocation"), String))
+				destinationFileSize = ImportTestsHelper.GetFileSize(CType(dataTableDest.Rows(0)("FileLocation"), String))
+			End If
+			Assert.AreNotEqual(0, _errors.Count, "Import failed.")
+			Assert.AreEqual(1, dataTableDest.Rows.Count, "No documents  exists in destination (incorrect).")
+			Assert.True(destinationFileExists, "File does not exists in destination repository (incorrect).")
+			Assert.AreEqual(sourceFileSize, destinationFileSize, "Source and destination files are not the same size (incorrect).")
+		End Sub
+
+		<Test(), Category("HighPriority")> _
+		Public Sub ImportImage_AppendOverlay_FileExistsInDestination_Highlighted()
+			' Arrange
+			ImportAPI.Settings.OverwriteMode = ImportTestsHelper.OverwriteModeEnum.both
+			sql = "select Identifier As [BatesNumber], Location As [FileLocation], DocumentArtifactID as [DocumentIdentifier]  from [File] WHERE [Identifier] IN ('FED000055') "
+			dataTableSrc = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
+			ImportAPI.SourceData.SourceData = dataTableSrc
+			' Act
+			ImportAPI.Execute()
+			' Assert
+			sourceFileSize = ImportTestsHelper.GetFileSize(CType(dataTableSrc.Rows(0)("FileLocation"), String))
+			dataTableDest = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION)
+			If dataTableDest.Rows.Count > 0 Then
+				destinationFileExists = System.IO.File.Exists(CType(dataTableDest.Rows(0)("FileLocation"), String))
+				destinationFileSize = ImportTestsHelper.GetFileSize(CType(dataTableDest.Rows(0)("FileLocation"), String))
+			End If
+			Assert.AreNotEqual(0, _errors.Count, "Import failed.")
+			Assert.AreEqual(1, dataTableDest.Rows.Count, "No documents  exists in destination (incorrect).")
+			Assert.True(destinationFileExists, "File does not exists in destination repository (incorrect).")
+			Assert.AreEqual(sourceFileSize, destinationFileSize, "Source and destination files are not the same size (incorrect).")
+		End Sub
+
+		<Test(), Category("HighPriority")> _
+		Public Sub ImportImage_AppendOverlay_FileExistsInDestination_NoIdentifier()
+			' Arrange
+			ImportAPI.Settings.OverwriteMode = ImportTestsHelper.OverwriteModeEnum.both
+			sql = "select '' As [BatesNumber], Location As [FileLocation], DocumentArtifactID as [DocumentIdentifier]  from [File] WHERE [Identifier] IN ('FED000046') "
+			dataTableSrc = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
+			ImportAPI.SourceData.SourceData = dataTableSrc
+			' Act
+			ImportAPI.Execute()
+			' Assert
+			sourceFileSize = ImportTestsHelper.GetFileSize(CType(dataTableSrc.Rows(0)("FileLocation"), String))
+			dataTableDest = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION)
+			If dataTableDest.Rows.Count > 0 Then
+				destinationFileExists = System.IO.File.Exists(CType(dataTableDest.Rows(0)("FileLocation"), String))
+				destinationFileSize = ImportTestsHelper.GetFileSize(CType(dataTableDest.Rows(0)("FileLocation"), String))
+			End If
+			Assert.AreNotEqual(0, _errors.Count, "Import failed.")
+			Assert.AreEqual(1, dataTableDest.Rows.Count, "Documents were not imported (incorrect).")
+			Assert.True(destinationFileExists, "File does not exists in destination repository (incorrect).")
+			Assert.AreNotEqual(sourceFileSize, destinationFileSize, "Source and destination files are not the same size (incorrect).")
+		End Sub
+
+		<Test(), Category("HighPriority")> _
 		Public Sub ImportImage_AppendOverlay_FileExistsInDestination_Negate()
 			' Arrange
 			ImportAPI.Settings.OverwriteMode = ImportTestsHelper.OverwriteModeEnum.both
@@ -227,6 +331,25 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 		End Sub
 
 		<Test(), Category("HighPriority")> _
+		Public Sub ImportImage_AppendOverlay_FileExistsInDestination_Negate_NoIdentifier()
+			' Arrange
+			ImportAPI.Settings.OverwriteMode = ImportTestsHelper.OverwriteModeEnum.both
+			sql = "select '' As [BatesNumber], Location As [FileLocation], DocumentArtifactID as [DocumentIdentifier]  from [File] WHERE [Identifier] IN ('FED000047') "
+			dataTableSrc = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
+			ImportAPI.SourceData.SourceData = dataTableSrc
+			' Act
+			ImportAPI.Execute()
+			' Assert
+			dataTableDest = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION)
+			If dataTableDest.Rows.Count > 0 Then
+				destinationFileExists = System.IO.File.Exists(CType(dataTableDest.Rows(0)("FileLocation"), String))
+			End If
+			Assert.AreNotEqual(0, _errors.Count, "Import failed.")
+			Assert.AreNotEqual(1, dataTableDest.Rows.Count, "Documents were not imported (incorrect).")
+			Assert.False(destinationFileExists, "File does not exists in destination repository (incorrect).")
+		End Sub
+
+		<Test(), Category("HighPriority")> _
 		Public Sub ImportImage_AppendOverlay_NoImageFile()
 			' Arrange
 			ImportAPI.Settings.OverwriteMode = ImportTestsHelper.OverwriteModeEnum.both
@@ -243,6 +366,8 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 			Assert.AreEqual(0, dataTableDest.Rows.Count, "Documents were imported (incorrect).")
 			Assert.False(destinationFileExists, "File exists in destination repository (incorrect).")
 		End Sub
+
+		
 
 #End Region
 
@@ -288,6 +413,93 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 			Assert.AreEqual(sourceFileSize, destinationFileSize, "Source and destination files are not the same size (incorrect).")
 		End Sub
 
+		<Test(), Category("HighPriority")> _
+		Public Sub ImportImage_Overlay_FileExistsInDestination_Redacted()
+			' Arrange
+			ImportAPI.Settings.OverwriteMode = ImportTestsHelper.OverwriteModeEnum.strict
+			sql = "select Identifier As [BatesNumber], Location As [FileLocation], DocumentArtifactID as [DocumentIdentifier]  from [File] WHERE [Identifier] IN ('FED000053') "
+			dataTableSrc = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
+			ImportAPI.SourceData.SourceData = dataTableSrc
+			' Act
+			ImportAPI.Execute()
+			' Assert
+			sourceFileSize = ImportTestsHelper.GetFileSize(CType(dataTableSrc.Rows(0)("FileLocation"), String))
+			dataTableDest = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION)
+			If dataTableDest.Rows.Count > 0 Then
+				destinationFileExists = System.IO.File.Exists(CType(dataTableDest.Rows(0)("FileLocation"), String))
+				destinationFileSize = ImportTestsHelper.GetFileSize(CType(dataTableDest.Rows(0)("FileLocation"), String))
+			End If
+			Assert.AreNotEqual(0, _errors.Count, "Import failed.")
+			Assert.AreEqual(1, dataTableDest.Rows.Count, "No documents  exists in destination (incorrect).")
+			Assert.True(destinationFileExists, "File does not exists in destination repository (incorrect).")
+			Assert.AreEqual(sourceFileSize, destinationFileSize, "Source and destination files are not the same size (incorrect).")
+		End Sub
+
+		<Test(), Category("HighPriority")> _
+		Public Sub ImportImage_Overlay_FileExistsInDestination_RedactedWithText()
+			' Arrange
+			ImportAPI.Settings.OverwriteMode = ImportTestsHelper.OverwriteModeEnum.strict
+			sql = "select Identifier As [BatesNumber], Location As [FileLocation], DocumentArtifactID as [DocumentIdentifier]  from [File] WHERE [Identifier] IN ('FED000054') "
+			dataTableSrc = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
+			ImportAPI.SourceData.SourceData = dataTableSrc
+			' Act
+			ImportAPI.Execute()
+			' Assert
+			sourceFileSize = ImportTestsHelper.GetFileSize(CType(dataTableSrc.Rows(0)("FileLocation"), String))
+			dataTableDest = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION)
+			If dataTableDest.Rows.Count > 0 Then
+				destinationFileExists = System.IO.File.Exists(CType(dataTableDest.Rows(0)("FileLocation"), String))
+				destinationFileSize = ImportTestsHelper.GetFileSize(CType(dataTableDest.Rows(0)("FileLocation"), String))
+			End If
+			Assert.AreNotEqual(0, _errors.Count, "Import failed.")
+			Assert.AreEqual(1, dataTableDest.Rows.Count, "No documents  exists in destination (incorrect).")
+			Assert.True(destinationFileExists, "File does not exists in destination repository (incorrect).")
+			Assert.AreEqual(sourceFileSize, destinationFileSize, "Source and destination files are not the same size (incorrect).")
+		End Sub
+
+		<Test(), Category("HighPriority")> _
+		Public Sub ImportImage_Overlay_FileExistsInDestination_Highlighted()
+			' Arrange
+			ImportAPI.Settings.OverwriteMode = ImportTestsHelper.OverwriteModeEnum.strict
+			sql = "select Identifier As [BatesNumber], Location As [FileLocation], DocumentArtifactID as [DocumentIdentifier]  from [File] WHERE [Identifier] IN ('FED000055') "
+			dataTableSrc = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
+			ImportAPI.SourceData.SourceData = dataTableSrc
+			' Act
+			ImportAPI.Execute()
+			' Assert
+			sourceFileSize = ImportTestsHelper.GetFileSize(CType(dataTableSrc.Rows(0)("FileLocation"), String))
+			dataTableDest = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION)
+			If dataTableDest.Rows.Count > 0 Then
+				destinationFileExists = System.IO.File.Exists(CType(dataTableDest.Rows(0)("FileLocation"), String))
+				destinationFileSize = ImportTestsHelper.GetFileSize(CType(dataTableDest.Rows(0)("FileLocation"), String))
+			End If
+			Assert.AreNotEqual(0, _errors.Count, "Import failed.")
+			Assert.AreEqual(1, dataTableDest.Rows.Count, "No documents  exists in destination (incorrect).")
+			Assert.True(destinationFileExists, "File does not exists in destination repository (incorrect).")
+			Assert.AreEqual(sourceFileSize, destinationFileSize, "Source and destination files are not the same size (incorrect).")
+		End Sub
+
+		<Test(), Category("HighPriority")> _
+		Public Sub ImportImage_Overlay_FileExistsInDestination_NoIdentifier()
+			' Arrange
+			ImportAPI.Settings.OverwriteMode = ImportTestsHelper.OverwriteModeEnum.strict
+			sql = "select '' As [BatesNumber], Location As [FileLocation], DocumentArtifactID as [DocumentIdentifier]  from [File] WHERE [Identifier] IN ('FED000050') "
+			dataTableSrc = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
+			ImportAPI.SourceData.SourceData = dataTableSrc
+			' Act
+			ImportAPI.Execute()
+			' Assert
+			sourceFileSize = ImportTestsHelper.GetFileSize(CType(dataTableSrc.Rows(0)("FileLocation"), String))
+			dataTableDest = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION)
+			If dataTableDest.Rows.Count > 0 Then
+				destinationFileExists = System.IO.File.Exists(CType(dataTableDest.Rows(0)("FileLocation"), String))
+				destinationFileSize = ImportTestsHelper.GetFileSize(CType(dataTableDest.Rows(0)("FileLocation"), String))
+			End If
+			Assert.AreNotEqual(0, _errors.Count, "Import failed.")
+			Assert.AreEqual(1, dataTableDest.Rows.Count, "No documents  exists in destination (incorrect).")
+			Assert.True(destinationFileExists, "File does not exists in destination repository (incorrect).")
+			Assert.AreNotEqual(sourceFileSize, destinationFileSize, "Source and destination files are not the same size (incorrect).")
+		End Sub
 
 		<Test(), Category("HighPriority")> _
 		Public Sub ImportImage_Overlay_FileExistsInDestination_Negate()

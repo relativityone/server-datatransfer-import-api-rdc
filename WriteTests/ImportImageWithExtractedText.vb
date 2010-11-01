@@ -19,6 +19,7 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 		Private dataTableDest As DataTable
 		Private destinationFileExists As Boolean
 		Private sourceFileSize, destinationFileSize As Int32
+		Private sourceExtractedText, destinationExtractedText As String
 #End Region
 
 #Region "Setup/Tear down"
@@ -50,6 +51,8 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 			sourceFileSize = 0
 			destinationFileSize = 0
 			destinationFileExists = False
+			sourceExtractedText = String.Empty
+			destinationExtractedText = String.Empty
 		End Sub
 
 		''' <summary>
@@ -73,8 +76,8 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 		Public Sub ImportImageWithExtractedText_Append_BadImageFile()
 			' Arrange
 			ImportAPI.Settings.OverwriteMode = ImportTestsHelper.OverwriteModeEnum.none
-			sql = "SELECT Identifier AS [BatesNumber], Location AS [FileLocation], DocumentArtifactID AS [DocumentIdentifier]  FROM [File] INNER JOIN [Document] ON [File].[Identifier] =  [Document].[ControlNumber] " + _
-			" WHERE [Identifier] IN ('Image_001') AND [Document].[ExtractedText] IS NOT NULL"
+			sql = "SELECT Identifier AS [BatesNumber], Location AS [FileLocation], DocumentArtifactID AS [DocumentIdentifier], ExtractedText FROM [File] INNER JOIN [Document] ON [File].[Identifier] =  [Document].[ControlNumber] " + _
+	 " WHERE [Identifier] IN ('Image_001') AND [Document].[ExtractedText] IS NOT NULL"
 			dataTableSrc = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
 			ImportAPI.SourceData.SourceData = dataTableSrc
 
@@ -96,8 +99,8 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 		Public Sub ImportImageWithExtractedText_Append_FileExistsInDestination()
 			' Arrange		
 			ImportAPI.Settings.OverwriteMode = ImportTestsHelper.OverwriteModeEnum.none
-			sql = "SELECT Identifier AS [BatesNumber], Location AS [FileLocation], DocumentArtifactID AS [DocumentIdentifier]  FROM [File] INNER JOIN [Document] ON [File].[Identifier] =  [Document].[ControlNumber] " + _
-			" WHERE [Identifier] IN ('Image_002') AND [Document].[ExtractedText] IS NOT NULL"
+			sql = "SELECT Identifier AS [BatesNumber], Location AS [FileLocation], DocumentArtifactID AS [DocumentIdentifier], ExtractedText FROM [File] INNER JOIN [Document] ON [File].[Identifier] =  [Document].[ControlNumber] " + _
+	 " WHERE [Identifier] IN ('Image_002') AND [Document].[ExtractedText] IS NOT NULL"
 			dataTableSrc = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
 			ImportAPI.SourceData.SourceData = dataTableSrc
 
@@ -105,18 +108,19 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 			ImportAPI.Execute()
 
 			' Assert
-			sql = "SELECT [File].[Identifier] AS [BatesNumber], [File].[Location] AS [FileLocation], [File].[DocumentArtifactID] AS [DocumentIdentifier], [Document].[ExtractedText] FROM [File] " + _
-			" INNER JOIN [Document] on [File].[Identifier] =  [Document].[ControlNumber] WHERE [Identifier] IN ('Image_002') AND [Document].[ExtractedText] IS NOT NULL"
 			dataTableDest = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION)
 			If dataTableDest.Rows.Count > 0 Then
 				destinationFileExists = System.IO.File.Exists(CType(dataTableDest.Rows(0)("FileLocation"), String))
 				destinationFileSize = ImportTestsHelper.GetFileSize(CType(dataTableDest.Rows(0)("FileLocation"), String))
+				destinationExtractedText = CType(dataTableDest.Rows(0)("ExtractedText"), String)
 			End If
 			sourceFileSize = ImportTestsHelper.GetFileSize(CType(dataTableSrc.Rows(0)("FileLocation"), String))
+			sourceExtractedText = CType(dataTableSrc.Rows(0)("ExtractedText"), String)
 			Assert.AreNotEqual(0, _errors.Count, "Import failed.")
 			Assert.AreEqual(1, dataTableDest.Rows.Count, "Document does not exists in destination (incorrect).")
 			Assert.True(destinationFileExists, "File does not exists in destination repository (incorrect).")
 			Assert.AreNotEqual(sourceFileSize, destinationFileSize, "Source and destination files are the same size (incorrect).")
+			Assert.AreNotEqual(sourceExtractedText, destinationExtractedText, "Source and destination ExtractedText are the same (incorrect).")
 		End Sub
 
 		<Test(), _
@@ -124,8 +128,8 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 		Public Sub ImportImageWithExtractedText_Append_FileExistsInDestination_Negate()
 			' Arrange			
 			ImportAPI.Settings.OverwriteMode = ImportTestsHelper.OverwriteModeEnum.none
-			sql = "SELECT Identifier AS [BatesNumber], Location AS [FileLocation], DocumentArtifactID AS [DocumentIdentifier]  FROM [File] INNER JOIN [Document] ON [File].[Identifier] =  [Document].[ControlNumber] " + _
-			" WHERE [Identifier] IN ('Image_003') AND [Document].[ExtractedText] IS NOT NULL"
+			sql = "SELECT Identifier AS [BatesNumber], Location AS [FileLocation], DocumentArtifactID AS [DocumentIdentifier], ExtractedText FROM [File] INNER JOIN [Document] ON [File].[Identifier] =  [Document].[ControlNumber] " + _
+	 " WHERE [Identifier] IN ('Image_003') AND [Document].[ExtractedText] IS NOT NULL"
 			dataTableSrc = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
 			ImportAPI.SourceData.SourceData = dataTableSrc
 
@@ -137,21 +141,48 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 			If dataTableDest.Rows.Count > 0 Then
 				destinationFileExists = System.IO.File.Exists(CType(dataTableDest.Rows(0)("FileLocation"), String))
 				destinationFileSize = ImportTestsHelper.GetFileSize(CType(dataTableDest.Rows(0)("FileLocation"), String))
+				destinationExtractedText = CType(dataTableDest.Rows(0)("ExtractedText"), String)
 			End If
 			sourceFileSize = ImportTestsHelper.GetFileSize(CType(dataTableSrc.Rows(0)("FileLocation"), String))
+			sourceExtractedText = CType(dataTableSrc.Rows(0)("ExtractedText"), String)
 			Assert.AreEqual(0, _errors.Count, "Import failed.")
 			Assert.AreEqual(1, dataTableDest.Rows.Count, "Documents were not imported (incorrect).")
 			Assert.True(destinationFileExists, "File does not exists in destination repository (incorrect).")
 			Assert.AreEqual(sourceFileSize, destinationFileSize, "Source and destination files are not the same size (incorrect).")
+			Assert.AreEqual(sourceExtractedText, destinationExtractedText, "Source and destination ExtractedText are the same (incorrect).")
 		End Sub
+
+		<Test(), _
+		 Category("HighPriority")> _
+		Public Sub ImportImageWithExtractedText_Append_FileExistsInDestination_Negate_NoIdentifier()
+			' Arrange			
+			ImportAPI.Settings.OverwriteMode = ImportTestsHelper.OverwriteModeEnum.none
+			sql = "SELECT '' AS [BatesNumber], Location AS [FileLocation], DocumentArtifactID AS [DocumentIdentifier], ExtractedText FROM [File] INNER JOIN [Document] ON [File].[Identifier] =  [Document].[ControlNumber] " + _
+	 " WHERE [Identifier] IN ('Image_003') AND [Document].[ExtractedText] IS NOT NULL"
+			dataTableSrc = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
+			ImportAPI.SourceData.SourceData = dataTableSrc
+
+			' Act
+			ImportAPI.Execute()
+
+			' Assert
+			dataTableDest = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION)
+			If dataTableDest.Rows.Count > 0 Then
+				destinationFileExists = System.IO.File.Exists(CType(dataTableDest.Rows(0)("FileLocation"), String))
+			End If
+			Assert.AreNotEqual(0, _errors.Count, "Import failed.")
+			Assert.AreNotEqual(1, dataTableDest.Rows.Count, "Documents were not imported (incorrect).")
+			Assert.False(destinationFileExists, "File does not exists in destination repository (incorrect).")
+		End Sub
+
 
 		<Test(), _
 		 Category("HighPriority")> _
 		Public Sub ImportImageWithExtractedText_Append_NoImageFile()
 			' Arrange			
 			ImportAPI.Settings.OverwriteMode = ImportTestsHelper.OverwriteModeEnum.none
-			sql = "SELECT Identifier AS [BatesNumber], Location AS [FileLocation], DocumentArtifactID AS [DocumentIdentifier]  FROM [File] INNER JOIN [Document] ON [File].[Identifier] =  [Document].[ControlNumber] " + _
-			" WHERE [Identifier] IN ('Image_004') AND [Document].[ExtractedText] IS NOT NULL"
+			sql = "SELECT Identifier AS [BatesNumber], Location AS [FileLocation], DocumentArtifactID AS [DocumentIdentifier], ExtractedText FROM [File] INNER JOIN [Document] ON [File].[Identifier] =  [Document].[ControlNumber] " + _
+	" WHERE [Identifier] IN ('Image_004') AND [Document].[ExtractedText] IS NOT NULL"
 			dataTableSrc = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
 			ImportAPI.SourceData.SourceData = dataTableSrc
 
@@ -176,8 +207,8 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 		Public Sub ImportImageWithExtractedText_AppendOverlay_BadImageFile()
 			' Arrange
 			ImportAPI.Settings.OverwriteMode = ImportTestsHelper.OverwriteModeEnum.both
-			sql = "SELECT Identifier AS [BatesNumber], Location AS [FileLocation], DocumentArtifactID AS [DocumentIdentifier]  FROM [File] INNER JOIN [Document] ON [File].[Identifier] =  [Document].[ControlNumber] " + _
-			" WHERE [Identifier] IN ('Image_001') AND [Document].[ExtractedText] IS NOT NULL"
+			sql = "SELECT Identifier AS [BatesNumber], Location AS [FileLocation], DocumentArtifactID AS [DocumentIdentifier], ExtractedText FROM [File] INNER JOIN [Document] ON [File].[Identifier] =  [Document].[ControlNumber] " + _
+	 " WHERE [Identifier] IN ('Image_001') AND [Document].[ExtractedText] IS NOT NULL"
 			dataTableSrc = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
 			ImportAPI.SourceData.SourceData = dataTableSrc
 
@@ -201,8 +232,8 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 		Public Sub ImportImageWithExtractedText_AppendOverlay_FileExistsInDestination()
 			' Arrange
 			ImportAPI.Settings.OverwriteMode = ImportTestsHelper.OverwriteModeEnum.both
-			sql = "SELECT Identifier AS [BatesNumber], Location AS [FileLocation], DocumentArtifactID AS [DocumentIdentifier]  FROM [File] INNER JOIN [Document] ON [File].[Identifier] =  [Document].[ControlNumber] " + _
-			" WHERE [Identifier] IN ('Image_002') AND [Document].[ExtractedText] IS NOT NULL"
+			sql = "SELECT Identifier AS [BatesNumber], Location AS [FileLocation], DocumentArtifactID AS [DocumentIdentifier], ExtractedText FROM [File] INNER JOIN [Document] ON [File].[Identifier] =  [Document].[ControlNumber] " + _
+	 " WHERE [Identifier] IN ('Image_002') AND [Document].[ExtractedText] IS NOT NULL"
 			dataTableSrc = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
 			ImportAPI.SourceData.SourceData = dataTableSrc
 
@@ -214,20 +245,51 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 			If dataTableDest.Rows.Count > 0 Then
 				destinationFileExists = System.IO.File.Exists(CType(dataTableDest.Rows(0)("FileLocation"), String))
 				destinationFileSize = ImportTestsHelper.GetFileSize(CType(dataTableDest.Rows(0)("FileLocation"), String))
+				destinationExtractedText = CType(dataTableDest.Rows(0)("ExtractedText"), String)
 			End If
 			sourceFileSize = ImportTestsHelper.GetFileSize(CType(dataTableSrc.Rows(0)("FileLocation"), String))
+			sourceExtractedText = CType(dataTableSrc.Rows(0)("ExtractedText"), String)
 			Assert.AreEqual(0, _errors.Count, "Import failed.")
 			Assert.AreEqual(1, dataTableDest.Rows.Count, "Documents were not imported (incorrect).")
 			Assert.True(destinationFileExists, "File does not exists in destination repository (incorrect).")
 			Assert.AreEqual(sourceFileSize, destinationFileSize, "Source and destination files are not the same size (incorrect).")
+			Assert.AreEqual(sourceExtractedText, destinationExtractedText, "Source and destination ExtractedText are the same (incorrect).")
+		End Sub
+
+		<Test(), Category("HighPriority")> _
+		Public Sub ImportImageWithExtractedText_AppendOverlay_FileExistsInDestination_NoIdentifier()
+			' Arrange
+			ImportAPI.Settings.OverwriteMode = ImportTestsHelper.OverwriteModeEnum.both
+			sql = "SELECT '' AS [BatesNumber], Location AS [FileLocation], DocumentArtifactID AS [DocumentIdentifier], ExtractedText FROM [File] INNER JOIN [Document] ON [File].[Identifier] =  [Document].[ControlNumber] " + _
+	 " WHERE [Identifier] IN ('Image_002') AND [Document].[ExtractedText] IS NOT NULL"
+			dataTableSrc = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
+			ImportAPI.SourceData.SourceData = dataTableSrc
+
+			' Act
+			ImportAPI.Execute()
+
+			' Assert
+			dataTableDest = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION)
+			If dataTableDest.Rows.Count > 0 Then
+				destinationFileExists = System.IO.File.Exists(CType(dataTableDest.Rows(0)("FileLocation"), String))
+				destinationFileSize = ImportTestsHelper.GetFileSize(CType(dataTableDest.Rows(0)("FileLocation"), String))
+				destinationExtractedText = CType(dataTableDest.Rows(0)("ExtractedText"), String)
+			End If
+			sourceFileSize = ImportTestsHelper.GetFileSize(CType(dataTableSrc.Rows(0)("FileLocation"), String))
+			sourceExtractedText = CType(dataTableSrc.Rows(0)("ExtractedText"), String)
+			Assert.AreNotEqual(0, _errors.Count, "Import failed.")
+			Assert.AreEqual(1, dataTableDest.Rows.Count, "Documents were not imported (incorrect).")
+			Assert.True(destinationFileExists, "File does not exists in destination repository (incorrect).")
+			Assert.AreNotEqual(sourceFileSize, destinationFileSize, "Source and destination files are not the same size (incorrect).")
+			Assert.AreNotEqual(sourceExtractedText, destinationExtractedText, "Source and destination ExtractedText are the same (incorrect).")
 		End Sub
 
 		<Test(), Category("HighPriority")> _
 		Public Sub ImportImageWithExtractedText_AppendOverlay_FileExistsInDestination_Negate()
 			' Arrange
 			ImportAPI.Settings.OverwriteMode = ImportTestsHelper.OverwriteModeEnum.both
-			sql = "SELECT Identifier AS [BatesNumber], Location AS [FileLocation], DocumentArtifactID AS [DocumentIdentifier]  FROM [File] INNER JOIN [Document] ON [File].[Identifier] =  [Document].[ControlNumber] " + _
-			" WHERE [Identifier] IN ('Image_003') AND [Document].[ExtractedText] IS NOT NULL"
+			sql = "SELECT Identifier AS [BatesNumber], Location AS [FileLocation], DocumentArtifactID AS [DocumentIdentifier], ExtractedText FROM [File] INNER JOIN [Document] ON [File].[Identifier] =  [Document].[ControlNumber] " + _
+	 " WHERE [Identifier] IN ('Image_003') AND [Document].[ExtractedText] IS NOT NULL"
 			dataTableSrc = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
 			ImportAPI.SourceData.SourceData = dataTableSrc
 
@@ -239,20 +301,45 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 			If dataTableDest.Rows.Count > 0 Then
 				destinationFileExists = System.IO.File.Exists(CType(dataTableDest.Rows(0)("FileLocation"), String))
 				destinationFileSize = ImportTestsHelper.GetFileSize(CType(dataTableDest.Rows(0)("FileLocation"), String))
+				destinationExtractedText = CType(dataTableDest.Rows(0)("ExtractedText"), String)
 			End If
 			sourceFileSize = ImportTestsHelper.GetFileSize(CType(dataTableSrc.Rows(0)("FileLocation"), String))
+			sourceExtractedText = CType(dataTableSrc.Rows(0)("ExtractedText"), String)
 			Assert.AreEqual(0, _errors.Count, "Import failed.")
 			Assert.AreEqual(1, dataTableDest.Rows.Count, "Documents were not imported (incorrect).")
 			Assert.True(destinationFileExists, "File does not exists in destination repository (incorrect).")
 			Assert.AreEqual(sourceFileSize, destinationFileSize, "Source and destination files are not the same size (incorrect).")
+			Assert.AreEqual(sourceExtractedText, destinationExtractedText, "Source and destination ExtractedText are the same (incorrect).")
+		End Sub
+
+		<Test(), Category("HighPriority")> _
+		Public Sub ImportImageWithExtractedText_AppendOverlay_FileExistsInDestination_Negate_NoIdentifier()
+			' Arrange
+			ImportAPI.Settings.OverwriteMode = ImportTestsHelper.OverwriteModeEnum.both
+			sql = "SELECT '' AS [BatesNumber], Location AS [FileLocation], DocumentArtifactID AS [DocumentIdentifier], ExtractedText FROM [File] INNER JOIN [Document] ON [File].[Identifier] =  [Document].[ControlNumber] " + _
+	 " WHERE [Identifier] IN ('Image_003') AND [Document].[ExtractedText] IS NOT NULL"
+			dataTableSrc = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
+			ImportAPI.SourceData.SourceData = dataTableSrc
+
+			' Act
+			ImportAPI.Execute()
+
+			' Assert
+			dataTableDest = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION)
+			If dataTableDest.Rows.Count > 0 Then
+				destinationFileExists = System.IO.File.Exists(CType(dataTableDest.Rows(0)("FileLocation"), String))
+			End If
+			Assert.AreNotEqual(0, _errors.Count, "Import failed.")
+			Assert.AreNotEqual(1, dataTableDest.Rows.Count, "Documents were not imported (incorrect).")
+			Assert.False(destinationFileExists, "File does not exists in destination repository (incorrect).")
 		End Sub
 
 		<Test(), Category("HighPriority")> _
 		Public Sub ImportImageWithExtractedText_AppendOverlay_NoImageFile()
 			' Arrange
 			ImportAPI.Settings.OverwriteMode = ImportTestsHelper.OverwriteModeEnum.both
-			sql = "SELECT Identifier AS [BatesNumber], Location AS [FileLocation], DocumentArtifactID AS [DocumentIdentifier]  FROM [File] INNER JOIN [Document] ON [File].[Identifier] =  [Document].[ControlNumber] " + _
-			" WHERE [Identifier] IN ('Image_004') AND [Document].[ExtractedText] IS NOT NULL"
+			sql = "SELECT Identifier AS [BatesNumber], Location AS [FileLocation], DocumentArtifactID AS [DocumentIdentifier], ExtractedText FROM [File] INNER JOIN [Document] ON [File].[Identifier] =  [Document].[ControlNumber] " + _
+	 " WHERE [Identifier] IN ('Image_004') AND [Document].[ExtractedText] IS NOT NULL"
 			dataTableSrc = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
 			ImportAPI.SourceData.SourceData = dataTableSrc
 
@@ -276,8 +363,8 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 		Public Sub ImportImageWithExtractedText_Overlay_BadImageFile()
 			' Arrange
 			ImportAPI.Settings.OverwriteMode = ImportTestsHelper.OverwriteModeEnum.strict
-			sql = "SELECT Identifier AS [BatesNumber], Location AS [FileLocation], DocumentArtifactID AS [DocumentIdentifier]  FROM [File] INNER JOIN [Document] ON [File].[Identifier] =  [Document].[ControlNumber] " + _
-			" WHERE [Identifier] IN ('Image_001') AND [Document].[ExtractedText] IS NOT NULL"
+			sql = "SELECT Identifier AS [BatesNumber], Location AS [FileLocation], DocumentArtifactID AS [DocumentIdentifier], ExtractedText FROM [File] INNER JOIN [Document] ON [File].[Identifier] =  [Document].[ControlNumber] " + _
+	 " WHERE [Identifier] IN ('Image_001') AND [Document].[ExtractedText] IS NOT NULL"
 			dataTableSrc = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
 			ImportAPI.SourceData.SourceData = dataTableSrc
 
@@ -298,8 +385,8 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 		Public Sub ImportImageWithExtractedText_Overlay_FileExistsInDestination()
 			' Arrange
 			ImportAPI.Settings.OverwriteMode = ImportTestsHelper.OverwriteModeEnum.strict
-			sql = "SELECT Identifier AS [BatesNumber], Location AS [FileLocation], DocumentArtifactID AS [DocumentIdentifier]  FROM [File] INNER JOIN [Document] ON [File].[Identifier] =  [Document].[ControlNumber] " + _
-			" WHERE [Identifier] IN ('Image_002') AND [Document].[ExtractedText] IS NOT NULL"
+			sql = "SELECT Identifier AS [BatesNumber], Location AS [FileLocation], DocumentArtifactID AS [DocumentIdentifier], ExtractedText FROM [File] INNER JOIN [Document] ON [File].[Identifier] =  [Document].[ControlNumber] " + _
+	 " WHERE [Identifier] IN ('Image_002') AND [Document].[ExtractedText] IS NOT NULL"
 			dataTableSrc = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
 			ImportAPI.SourceData.SourceData = dataTableSrc
 
@@ -311,21 +398,51 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 			If dataTableDest.Rows.Count > 0 Then
 				destinationFileExists = System.IO.File.Exists(CType(dataTableDest.Rows(0)("FileLocation"), String))
 				destinationFileSize = ImportTestsHelper.GetFileSize(CType(dataTableDest.Rows(0)("FileLocation"), String))
+				destinationExtractedText = CType(dataTableDest.Rows(0)("ExtractedText"), String)
 			End If
 			sourceFileSize = ImportTestsHelper.GetFileSize(CType(dataTableSrc.Rows(0)("FileLocation"), String))
+			sourceExtractedText = CType(dataTableSrc.Rows(0)("ExtractedText"), String)
 			Assert.AreEqual(0, _errors.Count, "Import failed.")
 			Assert.AreEqual(1, dataTableDest.Rows.Count, "No documents  exists in destination (incorrect).")
 			Assert.True(destinationFileExists, "File does not exists in destination repository (incorrect).")
 			Assert.AreEqual(sourceFileSize, destinationFileSize, "Source and destination files are not the same size (incorrect).")
+			Assert.AreEqual(sourceExtractedText, destinationExtractedText, "Source and destination ExtractedText are the same (incorrect).")
 		End Sub
 
+		<Test(), Category("HighPriority")> _
+		Public Sub ImportImageWithExtractedText_Overlay_FileExistsInDestination_NoIdentifier()
+			' Arrange
+			ImportAPI.Settings.OverwriteMode = ImportTestsHelper.OverwriteModeEnum.strict
+			sql = "SELECT '' AS [BatesNumber], Location AS [FileLocation], DocumentArtifactID AS [DocumentIdentifier], ExtractedText FROM [File] INNER JOIN [Document] ON [File].[Identifier] =  [Document].[ControlNumber] " + _
+	" WHERE [Identifier] IN ('Image_002') AND [Document].[ExtractedText] IS NOT NULL"
+			dataTableSrc = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
+			ImportAPI.SourceData.SourceData = dataTableSrc
+
+			' Act
+			ImportAPI.Execute()
+
+			' Assert
+			dataTableDest = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION)
+			If dataTableDest.Rows.Count > 0 Then
+				destinationFileExists = System.IO.File.Exists(CType(dataTableDest.Rows(0)("FileLocation"), String))
+				destinationFileSize = ImportTestsHelper.GetFileSize(CType(dataTableDest.Rows(0)("FileLocation"), String))
+				destinationExtractedText = CType(dataTableDest.Rows(0)("ExtractedText"), String)
+			End If
+			sourceFileSize = ImportTestsHelper.GetFileSize(CType(dataTableSrc.Rows(0)("FileLocation"), String))
+			sourceExtractedText = CType(dataTableSrc.Rows(0)("ExtractedText"), String)
+			Assert.AreNotEqual(0, _errors.Count, "Import failed.")
+			Assert.AreEqual(1, dataTableDest.Rows.Count, "No documents  exists in destination (incorrect).")
+			Assert.True(destinationFileExists, "File does not exists in destination repository (incorrect).")
+			Assert.AreNotEqual(sourceFileSize, destinationFileSize, "Source and destination files are not the same size (incorrect).")
+			Assert.AreNotEqual(sourceExtractedText, destinationExtractedText, "Source and destination ExtractedText are the same (incorrect).")
+		End Sub
 
 		<Test(), Category("HighPriority")> _
 		Public Sub ImportImageWithExtractedText_Overlay_FileExistsInDestination_Negate()
 			' Arrange
 			ImportAPI.Settings.OverwriteMode = ImportTestsHelper.OverwriteModeEnum.strict
-			sql = "SELECT Identifier AS [BatesNumber], Location AS [FileLocation], DocumentArtifactID AS [DocumentIdentifier]  FROM [File] INNER JOIN [Document] ON [File].[Identifier] =  [Document].[ControlNumber] " + _
-			" WHERE [Identifier] IN ('Image_003') AND [Document].[ExtractedText] IS NOT NULL"
+			sql = "SELECT Identifier AS [BatesNumber], Location AS [FileLocation], DocumentArtifactID AS [DocumentIdentifier], ExtractedText FROM [File] INNER JOIN [Document] ON [File].[Identifier] =  [Document].[ControlNumber] " + _
+	 " WHERE [Identifier] IN ('Image_003') AND [Document].[ExtractedText] IS NOT NULL"
 			dataTableSrc = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
 			ImportAPI.SourceData.SourceData = dataTableSrc
 
@@ -349,8 +466,8 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 		Public Sub ImportImageWithExtractedText_Overlay_NoImageFile()
 			' Arrange
 			ImportAPI.Settings.OverwriteMode = ImportTestsHelper.OverwriteModeEnum.strict
-			sql = "SELECT Identifier AS [BatesNumber], Location AS [FileLocation], DocumentArtifactID AS [DocumentIdentifier]  FROM [File] INNER JOIN [Document] ON [File].[Identifier] =  [Document].[ControlNumber] " + _
-			" WHERE [Identifier] IN ('Image_004') AND [Document].[ExtractedText] IS NOT NULL"
+			sql = "SELECT Identifier AS [BatesNumber], Location AS [FileLocation], DocumentArtifactID AS [DocumentIdentifier], ExtractedText FROM [File] INNER JOIN [Document] ON [File].[Identifier] =  [Document].[ControlNumber] " + _
+	 " WHERE [Identifier] IN ('Image_004') AND [Document].[ExtractedText] IS NOT NULL"
 			dataTableSrc = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
 			ImportAPI.SourceData.SourceData = dataTableSrc
 
