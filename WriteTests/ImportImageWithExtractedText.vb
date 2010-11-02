@@ -156,36 +156,12 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 		End Sub
 
 		<Test(), _
-		 Category("HighPriority")> _
+	 Category("HighPriority")> _
 		Public Sub ImportImageWithExtractedText_Append_FileExistsInDestination_Negate_NoIdentifier()
 			' Arrange			
 			ImportAPI.Settings.OverwriteMode = kCura.Relativity.DataReaderClient.OverwriteModeEnum.Append
 			sql = "SELECT '' AS [BatesNumber], Location AS [FileLocation], DocumentArtifactID AS [DocumentIdentifier], ExtractedText FROM [File] INNER JOIN [Document] ON [File].[Identifier] =  [Document].[ControlNumber] " + _
-	 " WHERE [Identifier] IN ('Image_003') AND [Document].[ExtractedText] IS NOT NULL"
-			dataTableSrc = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
-			ImportAPI.SourceData.SourceData = dataTableSrc
-
-			' Act
-			ImportAPI.Execute()
-
-			' Assert
-			dataTableDest = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION)
-			If dataTableDest.Rows.Count > 0 Then
-				destinationFileExists = System.IO.File.Exists(CType(dataTableDest.Rows(0)("FileLocation"), String))
-			End If
-			Assert.AreNotEqual(0, _errors.Count, "Import failed.")
-			Assert.AreNotEqual(1, dataTableDest.Rows.Count, "Documents were not imported (incorrect).")
-			Assert.False(destinationFileExists, "File does not exists in destination repository (incorrect).")
-		End Sub
-
-
-		<Test(), _
-		 Category("HighPriority")> _
-		Public Sub ImportImageWithExtractedText_Append_FileExistsInDestination_Negate_NoIdentifier()
-			' Arrange			
-			ImportAPI.Settings.OverwriteMode = kCura.Relativity.DataReaderClient.OverwriteModeEnum.Append
-			sql = "SELECT '' AS [BatesNumber], Location AS [FileLocation], DocumentArtifactID AS [DocumentIdentifier], ExtractedText FROM [File] INNER JOIN [Document] ON [File].[Identifier] =  [Document].[ControlNumber] " + _
-	 " WHERE [Identifier] IN ('Image_003') AND [Document].[ExtractedText] IS NOT NULL"
+		 " WHERE [Identifier] IN ('Image_003') AND [Document].[ExtractedText] IS NOT NULL"
 			dataTableSrc = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
 			ImportAPI.SourceData.SourceData = dataTableSrc
 
