@@ -60,8 +60,11 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 		''' </summary>
 		<TearDown()> _
 		Public Sub TearDown()
-			dataTableSrc.Dispose()
-			dataTableDest.Dispose()
+			Try
+				dataTableSrc.Dispose()
+				dataTableDest.Dispose()
+			Catch ex As Exception
+			End Try
 			Dim helper As New Helpers.SetupHelper()
 			helper.TearDownTest()
 		End Sub
@@ -151,6 +154,30 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 			Assert.AreEqual(sourceFileSize, destinationFileSize, "Source and destination files are not the same size (incorrect).")
 			Assert.AreEqual(sourceExtractedText, destinationExtractedText, "Source and destination ExtractedText are the same (incorrect).")
 		End Sub
+
+		<Test(), _
+		 Category("HighPriority")> _
+		Public Sub ImportImageWithExtractedText_Append_FileExistsInDestination_Negate_NoIdentifier()
+			' Arrange			
+			ImportAPI.Settings.OverwriteMode = kCura.Relativity.DataReaderClient.OverwriteModeEnum.Append
+			sql = "SELECT '' AS [BatesNumber], Location AS [FileLocation], DocumentArtifactID AS [DocumentIdentifier], ExtractedText FROM [File] INNER JOIN [Document] ON [File].[Identifier] =  [Document].[ControlNumber] " + _
+	 " WHERE [Identifier] IN ('Image_003') AND [Document].[ExtractedText] IS NOT NULL"
+			dataTableSrc = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
+			ImportAPI.SourceData.SourceData = dataTableSrc
+
+			' Act
+			ImportAPI.Execute()
+
+			' Assert
+			dataTableDest = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_DESTINATION)
+			If dataTableDest.Rows.Count > 0 Then
+				destinationFileExists = System.IO.File.Exists(CType(dataTableDest.Rows(0)("FileLocation"), String))
+			End If
+			Assert.AreNotEqual(0, _errors.Count, "Import failed.")
+			Assert.AreNotEqual(1, dataTableDest.Rows.Count, "Documents were not imported (incorrect).")
+			Assert.False(destinationFileExists, "File does not exists in destination repository (incorrect).")
+		End Sub
+
 
 		<Test(), _
 		 Category("HighPriority")> _
