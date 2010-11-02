@@ -60,8 +60,11 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 		''' </summary>
 		<TearDown()> _
 		Public Sub TearDown()
-			dataTableSrc.Dispose()
-			dataTableDest.Dispose()
+			Try
+				dataTableSrc.Dispose()
+				dataTableDest.Dispose()
+			Catch ex As Exception
+			End Try
 			Dim helper As New Helpers.SetupHelper()
 			helper.TearDownTest()
 		End Sub
