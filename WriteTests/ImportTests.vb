@@ -71,7 +71,7 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 
 		<Test(), _
 		Category("HighPriority")> _
-		Public Sub ImportImage_Append_BadImageFile()
+		Public Sub ImportImage_Append_NotSupportedImageFile()
 			' Arrange
 			ImportAPI.Settings.OverwriteMode = kCura.Relativity.DataReaderClient.OverwriteModeEnum.Append
 			sql = "select Identifier AS [BatesNumber], Location AS [FileLocation], DocumentArtifactID AS [DocumentIdentifier]  from [File] WHERE [Identifier] IN ('FED000041') "
@@ -157,7 +157,7 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 
 		<Test(), _
 		 Category("HighPriority")> _
-		Public Sub ImportImage_Append_NoImageFile()
+		Public Sub ImportImage_Append_FileExistsInSource_Negate()
 			' Arrange
 			ImportAPI.Settings.OverwriteMode = kCura.Relativity.DataReaderClient.OverwriteModeEnum.Append
 			sql = "select Identifier As [BatesNumber], Location As [FileLocation], DocumentArtifactID as [DocumentIdentifier]  from [File] WHERE [Identifier] IN ('FED000044') "
@@ -180,7 +180,7 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 #Region "Test Import Image in AppendOverlay Mode"
 
 		<Test(), Category("HighPriority")> _
-		Public Sub ImportImage_AppendOverlay_BadImageFile()
+		Public Sub ImportImage_AppendOverlay_NotSupportedImageFile()
 			' Arrange
 			ImportAPI.Settings.OverwriteMode = kCura.Relativity.DataReaderClient.OverwriteModeEnum.AppendOverlay
 			sql = "select Identifier As [BatesNumber], Location As [FileLocation], DocumentArtifactID as [DocumentIdentifier]  from [File] WHERE [Identifier] IN ('FED000045') "
@@ -350,7 +350,7 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 		End Sub
 
 		<Test(), Category("HighPriority")> _
-		Public Sub ImportImage_AppendOverlay_NoImageFile()
+		Public Sub ImportImage_AppendOverlay_FileExistsInSource_Negate()
 			' Arrange
 			ImportAPI.Settings.OverwriteMode = kCura.Relativity.DataReaderClient.OverwriteModeEnum.AppendOverlay
 			sql = "select Identifier As [BatesNumber], Location As [FileLocation], DocumentArtifactID as [DocumentIdentifier]  from [File] WHERE [Identifier] IN ('FED000048') "
@@ -367,13 +367,12 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 			Assert.False(destinationFileExists, "File exists in destination repository (incorrect).")
 		End Sub
 
-		
-
 #End Region
 
 #Region "Test Import Image in Overlay Mode"
+
 		<Test(), Category("HighPriority")> _
-		Public Sub ImportImage_Overlay_BadImageFile()
+		Public Sub ImportImage_Overlay_NotSupportedImageFile()
 			' Arrange
 			ImportAPI.Settings.OverwriteMode = kCura.Relativity.DataReaderClient.OverwriteModeEnum.Overlay
 			sql = "select Identifier As [BatesNumber], Location As [FileLocation], DocumentArtifactID as [DocumentIdentifier]  from [File] WHERE [Identifier] IN ('FED000049') "
@@ -521,7 +520,7 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 		End Sub
 
 		<Test(), Category("HighPriority")> _
-		Public Sub ImportImage_Overlay_NoImageFile()
+		Public Sub ImportImage_Overlay_FileExistsInSource_Negate()
 			' Arrange
 			ImportAPI.Settings.OverwriteMode = kCura.Relativity.DataReaderClient.OverwriteModeEnum.Overlay
 			sql = "select Identifier As [BatesNumber], Location As [FileLocation], DocumentArtifactID as [DocumentIdentifier]  from [File] WHERE [Identifier] IN ('FED000052') "

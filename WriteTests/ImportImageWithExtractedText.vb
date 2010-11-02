@@ -73,11 +73,11 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 
 		<Test(), _
 		Category("HighPriority")> _
-		Public Sub ImportImageWithExtractedText_Append_BadImageFile()
+		Public Sub ImportImageWithExtractedText_Append_NotSupportedImageFile()
 			' Arrange
 			ImportAPI.Settings.OverwriteMode = kCura.Relativity.DataReaderClient.OverwriteModeEnum.Append
 			sql = "SELECT Identifier AS [BatesNumber], Location AS [FileLocation], DocumentArtifactID AS [DocumentIdentifier], ExtractedText FROM [File] INNER JOIN [Document] ON [File].[Identifier] =  [Document].[ControlNumber] " + _
-	 " WHERE [Identifier] IN ('Image_001') AND [Document].[ExtractedText] IS NOT NULL"
+		 " WHERE [Identifier] IN ('Image_001') AND [Document].[ExtractedText] IS NOT NULL"
 			dataTableSrc = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
 			ImportAPI.SourceData.SourceData = dataTableSrc
 
@@ -175,14 +175,13 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 			Assert.False(destinationFileExists, "File does not exists in destination repository (incorrect).")
 		End Sub
 
-
 		<Test(), _
-		 Category("HighPriority")> _
-		Public Sub ImportImageWithExtractedText_Append_NoImageFile()
+		Category("HighPriority")> _
+		Public Sub ImportImageWithExtractedText_Append_FileExistsInSource_Negate()
 			' Arrange			
 			ImportAPI.Settings.OverwriteMode = kCura.Relativity.DataReaderClient.OverwriteModeEnum.Append
 			sql = "SELECT Identifier AS [BatesNumber], Location AS [FileLocation], DocumentArtifactID AS [DocumentIdentifier], ExtractedText FROM [File] INNER JOIN [Document] ON [File].[Identifier] =  [Document].[ControlNumber] " + _
-	" WHERE [Identifier] IN ('Image_004') AND [Document].[ExtractedText] IS NOT NULL"
+			" WHERE [Identifier] IN ('Image_004') AND [Document].[ExtractedText] IS NOT NULL"
 			dataTableSrc = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
 			ImportAPI.SourceData.SourceData = dataTableSrc
 
@@ -204,11 +203,11 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 #Region "Test Import Image With Extracted Text in AppendOverlay Mode"
 
 		<Test(), Category("HighPriority")> _
-		Public Sub ImportImageWithExtractedText_AppendOverlay_BadImageFile()
+		Public Sub ImportImageWithExtractedText_AppendOverlay_NotSupportedImageFile()
 			' Arrange
 			ImportAPI.Settings.OverwriteMode = kCura.Relativity.DataReaderClient.OverwriteModeEnum.AppendOverlay
 			sql = "SELECT Identifier AS [BatesNumber], Location AS [FileLocation], DocumentArtifactID AS [DocumentIdentifier], ExtractedText FROM [File] INNER JOIN [Document] ON [File].[Identifier] =  [Document].[ControlNumber] " + _
-	 " WHERE [Identifier] IN ('Image_001') AND [Document].[ExtractedText] IS NOT NULL"
+		 " WHERE [Identifier] IN ('Image_001') AND [Document].[ExtractedText] IS NOT NULL"
 			dataTableSrc = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
 			ImportAPI.SourceData.SourceData = dataTableSrc
 
@@ -335,11 +334,11 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 		End Sub
 
 		<Test(), Category("HighPriority")> _
-		Public Sub ImportImageWithExtractedText_AppendOverlay_NoImageFile()
+		Public Sub ImportImageWithExtractedText_AppendOverlay_FileExistsInSource_Negate()
 			' Arrange
 			ImportAPI.Settings.OverwriteMode = kCura.Relativity.DataReaderClient.OverwriteModeEnum.AppendOverlay
 			sql = "SELECT Identifier AS [BatesNumber], Location AS [FileLocation], DocumentArtifactID AS [DocumentIdentifier], ExtractedText FROM [File] INNER JOIN [Document] ON [File].[Identifier] =  [Document].[ControlNumber] " + _
-	 " WHERE [Identifier] IN ('Image_004') AND [Document].[ExtractedText] IS NOT NULL"
+		 " WHERE [Identifier] IN ('Image_004') AND [Document].[ExtractedText] IS NOT NULL"
 			dataTableSrc = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
 			ImportAPI.SourceData.SourceData = dataTableSrc
 
@@ -360,11 +359,11 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 
 #Region "Test Import Image With Extracted Text in Overlay Mode"
 		<Test(), Category("HighPriority")> _
-		Public Sub ImportImageWithExtractedText_Overlay_BadImageFile()
+		Public Sub ImportImageWithExtractedText_Overlay_NotSupportedImageFile()
 			' Arrange
 			ImportAPI.Settings.OverwriteMode = kCura.Relativity.DataReaderClient.OverwriteModeEnum.Overlay
 			sql = "SELECT Identifier AS [BatesNumber], Location AS [FileLocation], DocumentArtifactID AS [DocumentIdentifier], ExtractedText FROM [File] INNER JOIN [Document] ON [File].[Identifier] =  [Document].[ControlNumber] " + _
-	 " WHERE [Identifier] IN ('Image_001') AND [Document].[ExtractedText] IS NOT NULL"
+		 " WHERE [Identifier] IN ('Image_001') AND [Document].[ExtractedText] IS NOT NULL"
 			dataTableSrc = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
 			ImportAPI.SourceData.SourceData = dataTableSrc
 
@@ -463,11 +462,11 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 		End Sub
 
 		<Test(), Category("HighPriority")> _
-		Public Sub ImportImageWithExtractedText_Overlay_NoImageFile()
+		Public Sub ImportImageWithExtractedText_Overlay_FileExistsInSource_Negate()
 			' Arrange
 			ImportAPI.Settings.OverwriteMode = kCura.Relativity.DataReaderClient.OverwriteModeEnum.Overlay
 			sql = "SELECT Identifier AS [BatesNumber], Location AS [FileLocation], DocumentArtifactID AS [DocumentIdentifier], ExtractedText FROM [File] INNER JOIN [Document] ON [File].[Identifier] =  [Document].[ControlNumber] " + _
-	 " WHERE [Identifier] IN ('Image_004') AND [Document].[ExtractedText] IS NOT NULL"
+		 " WHERE [Identifier] IN ('Image_004') AND [Document].[ExtractedText] IS NOT NULL"
 			dataTableSrc = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
 			ImportAPI.SourceData.SourceData = dataTableSrc
 
