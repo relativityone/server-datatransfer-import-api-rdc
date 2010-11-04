@@ -60,11 +60,8 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 		''' </summary>
 		<TearDown()> _
 		Public Sub TearDown()
-			Try
-				dataTableSrc.Dispose()
-				dataTableDest.Dispose()
-			Catch ex As Exception
-			End Try
+			dataTableSrc.Dispose()
+			dataTableDest.Dispose()
 			Dim helper As New Helpers.SetupHelper()
 			helper.TearDownTest()
 		End Sub
@@ -156,12 +153,12 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 		End Sub
 
 		<Test(), _
-	 Category("HighPriority")> _
+		 Category("HighPriority")> _
 		Public Sub ImportImageWithExtractedText_Append_FileExistsInDestination_Negate_NoIdentifier()
 			' Arrange			
 			ImportAPI.Settings.OverwriteMode = kCura.Relativity.DataReaderClient.OverwriteModeEnum.Append
 			sql = "SELECT '' AS [BatesNumber], Location AS [FileLocation], DocumentArtifactID AS [DocumentIdentifier], ExtractedText FROM [File] INNER JOIN [Document] ON [File].[Identifier] =  [Document].[ControlNumber] " + _
-		 " WHERE [Identifier] IN ('Image_003') AND [Document].[ExtractedText] IS NOT NULL"
+	 " WHERE [Identifier] IN ('Image_003') AND [Document].[ExtractedText] IS NOT NULL"
 			dataTableSrc = ImportTestsHelper.ExecuteSQLStatementAsDataTable(sql, Helpers.CommonDefaults.CASE_ID_IMPORT_API_SOURCE)
 			ImportAPI.SourceData.SourceData = dataTableSrc
 
