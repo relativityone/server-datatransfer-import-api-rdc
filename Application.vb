@@ -1574,6 +1574,7 @@ Namespace kCura.EDDS.WinForm
 			Dim relativityManager As New kCura.WinEDDS.Service.RelativityManager(cred, _cookieContainer)
 			Try
 				CheckVersion(cred)
+				VerifyLicense(cred)
 				If userManager.Login(cred.UserName, cred.Password) Then
 
 					Dim locale As New System.Globalization.CultureInfo(System.Globalization.CultureInfo.CurrentCulture.LCID, True)
@@ -1671,6 +1672,32 @@ Namespace kCura.EDDS.WinForm
 			Else
 				Exit Sub
 			End If
+		End Sub
+
+		Private Sub VerifyLicense(ByVal credential As Net.ICredentials)
+			'Dim relativityManager As New kCura.WinEDDS.Service.RelativityManager(DirectCast(credential, System.Net.NetworkCredential), _cookieContainer)
+			'Dim winVersionString As String = System.Reflection.Assembly.GetExecutingAssembly.FullName.Split(","c)(1).Split("="c)(1)
+			'Dim winRelativityVersion As String() = winVersionString.Split("."c)
+			'Dim relVersionString As String = relativityManager.RetrieveRelativityVersion
+			'Dim relativityWebVersion As String() = relVersionString.Split("."c)
+			'Dim match As Boolean = True
+			'Dim i As Int32
+			'For i = 0 To System.Math.Max(winRelativityVersion.Length - 1, relativityWebVersion.Length - 1)
+			'	Dim winv As String = "*"
+			'	Dim relv As String = "*"
+			'	If i <= winRelativityVersion.Length - 1 Then winv = winRelativityVersion(i)
+			'	If i <= relativityWebVersion.Length - 1 Then relv = relativityWebVersion(i)
+			'	If Not (relv = "*" OrElse winv = "*" OrElse relv.ToLower = winv.ToLower) Then
+			'		match = False
+			'		Exit For
+			'	End If
+			'Next
+			'If Not match Then
+			MsgBox("Your License is not valid", MsgBoxStyle.Critical, "Invalid License")
+			ExitApplication()
+			'Else
+			'Exit Sub
+			'End If
 		End Sub
 #End Region
 
