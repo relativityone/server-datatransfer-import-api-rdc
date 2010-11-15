@@ -312,6 +312,7 @@ Namespace kCura.EDDS.WebAPI.UserManagerBase
             Return CType(results(0),Boolean)
         End Function
         
+
         '''<remarks/>
         Public Function BeginLogin(ByVal emailAddress As String, ByVal password As String, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
             Return Me.BeginInvoke("Login", New Object() {emailAddress, password}, callback, asyncState)
