@@ -1,12 +1,12 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<?xml version='1.0' encoding='UTF-8'?>
+<Project DefaultTargets='Build' ToolsVersion='4.0' xmlns='http://schemas.microsoft.com/developer/msbuild/2003'>
   <PropertyGroup>
     <ProjectType>Local</ProjectType>
     <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{B092D1B2-909B-4EF0-9369-A81675C3FC18}</ProjectGuid>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <Configuration Condition=' &apos;$(Configuration)&apos; == &apos;&apos; '>Debug</Configuration>
+    <Platform Condition=' &apos;$(Platform)&apos; == &apos;&apos; '>AnyCPU</Platform>
     <ApplicationIcon>
     </ApplicationIcon>
     <AssemblyKeyContainerName>
@@ -49,9 +49,9 @@
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
-    <TargetFrameworkProfile />
+    <TargetFrameworkProfile/>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+  <PropertyGroup Condition=' &apos;$(Configuration)|$(Platform)&apos; == &apos;Debug|AnyCPU&apos; '>
     <OutputPath>bin\</OutputPath>
     <DocumentationFile>kCura.Windows.Process.xml</DocumentationFile>
     <BaseAddress>285212672</BaseAddress>
@@ -71,7 +71,7 @@
     <DebugType>full</DebugType>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+  <PropertyGroup Condition=' &apos;$(Configuration)|$(Platform)&apos; == &apos;Release|AnyCPU&apos; '>
     <OutputPath>bin\</OutputPath>
     <DocumentationFile>kCura.Windows.Process.xml</DocumentationFile>
     <BaseAddress>285212672</BaseAddress>
@@ -91,7 +91,7 @@
     <DebugType>none</DebugType>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+  <PropertyGroup Condition=' &apos;$(Configuration)|$(Platform)&apos; == &apos;Debug|x86&apos; '>
     <DebugSymbols>true</DebugSymbols>
     <DefineDebug>true</DefineDebug>
     <DefineTrace>true</DefineTrace>
@@ -104,7 +104,7 @@
     <PlatformTarget>x86</PlatformTarget>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+  <PropertyGroup Condition=' &apos;$(Configuration)|$(Platform)&apos; == &apos;Release|x86&apos; '>
     <DefineTrace>true</DefineTrace>
     <OutputPath>bin\x86\Release\</OutputPath>
     <BaseAddress>285212672</BaseAddress>
@@ -115,7 +115,7 @@
     <PlatformTarget>x86</PlatformTarget>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
+  <PropertyGroup Condition=' &apos;$(Configuration)|$(Platform)&apos; == &apos;Debug|x64&apos; '>
     <DebugSymbols>true</DebugSymbols>
     <DefineDebug>true</DefineDebug>
     <DefineTrace>true</DefineTrace>
@@ -128,7 +128,7 @@
     <PlatformTarget>x64</PlatformTarget>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
+  <PropertyGroup Condition=' &apos;$(Configuration)|$(Platform)&apos; == &apos;Release|x64&apos; '>
     <DefineTrace>true</DefineTrace>
     <OutputPath>bin\x64\Release\</OutputPath>
     <BaseAddress>285212672</BaseAddress>
@@ -140,113 +140,113 @@
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System">
+    <Reference Include='System'>
       <Name>System</Name>
     </Reference>
-    <Reference Include="System.configuration" />
-    <Reference Include="System.Data">
+    <Reference Include='System.configuration'/>
+    <Reference Include='System.Data'>
       <Name>System.Data</Name>
     </Reference>
-    <Reference Include="System.Drawing">
+    <Reference Include='System.Drawing'>
       <Name>System.Drawing</Name>
     </Reference>
-    <Reference Include="System.Web">
+    <Reference Include='System.Web'>
       <Name>System.Web</Name>
     </Reference>
-    <Reference Include="System.Windows.Forms">
+    <Reference Include='System.Windows.Forms'>
       <Name>System.Windows.Forms</Name>
     </Reference>
-    <Reference Include="System.Xml">
+    <Reference Include='System.Xml'>
       <Name>System.XML</Name>
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Import Include="Microsoft.VisualBasic" />
-    <Import Include="System" />
-    <Import Include="System.Collections" />
-    <Import Include="System.Data" />
-    <Import Include="System.Diagnostics" />
-    <Import Include="System.Drawing" />
-    <Import Include="System.Windows.Forms" />
+    <Import Include='Microsoft.VisualBasic'/>
+    <Import Include='System'/>
+    <Import Include='System.Collections'/>
+    <Import Include='System.Data'/>
+    <Import Include='System.Diagnostics'/>
+    <Import Include='System.Drawing'/>
+    <Import Include='System.Windows.Forms'/>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AssemblyInfo.vb">
+    <Compile Include='..\..\Version\AssemblyInfo.vb'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Config.vb">
+    <Compile Include='Config.vb'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Controller.vb">
+    <Compile Include='Controller.vb'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ErrorFileReader.vb">
+    <Compile Include='ErrorFileReader.vb'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="EventType.vb">
+    <Compile Include='EventType.vb'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="MessageBoxForm.vb">
+    <Compile Include='MessageBoxForm.vb'>
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ProcessBase.vb">
+    <Compile Include='ProcessBase.vb'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ProcessEvent.vb">
+    <Compile Include='ProcessEvent.vb'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ProcessForm.vb">
+    <Compile Include='ProcessForm.vb'>
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ProcessObserver.vb">
+    <Compile Include='ProcessObserver.vb'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ProcessPool.vb">
+    <Compile Include='ProcessPool.vb'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ProcessProgressEvent.vb">
+    <Compile Include='ProcessProgressEvent.vb'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="StatusEventArgs.vb">
+    <Compile Include='StatusEventArgs.vb'>
       <SubType>Code</SubType>
     </Compile>
-    <EmbeddedResource Include="MessageBoxForm.resx">
+    <EmbeddedResource Include='MessageBoxForm.resx'>
       <DependentUpon>MessageBoxForm.vb</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ProcessForm.resx">
+    <EmbeddedResource Include='ProcessForm.resx'>
       <DependentUpon>ProcessForm.vb</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\kCura.Utility\kCura.Utility.vbproj">
+    <ProjectReference Include='..\kCura.Utility\kCura.Utility.vbproj'>
       <Project>{E3450350-56E3-4FE9-A47A-4D24960BCBDB}</Project>
       <Name>kCura.Utility</Name>
     </ProjectReference>
-    <ProjectReference Include="..\kCura.Windows.Forms\kCura.Windows.Forms.vbproj">
+    <ProjectReference Include='..\kCura.Windows.Forms\kCura.Windows.Forms.vbproj'>
       <Project>{0DABBD47-5A46-429F-9D90-C95A58611E0A}</Project>
       <Name>kCura.Windows.Forms</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="My Project\" />
+    <Folder Include='My Project\'/>
   </ItemGroup>
   <ItemGroup>
-    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+    <BootstrapperPackage Include='Microsoft.Net.Client.3.5'>
       <Visible>False</Visible>
       <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+    <BootstrapperPackage Include='Microsoft.Net.Framework.3.5.SP1'>
       <Visible>False</Visible>
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+    <BootstrapperPackage Include='Microsoft.Windows.Installer.3.1'>
       <Visible>False</Visible>
       <ProductName>Windows Installer 3.1</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.VisualBasic.targets" />
+  <Import Project='$(MSBuildBinPath)\Microsoft.VisualBasic.targets'/>
   <PropertyGroup>
     <PreBuildEvent>
     </PreBuildEvent>
