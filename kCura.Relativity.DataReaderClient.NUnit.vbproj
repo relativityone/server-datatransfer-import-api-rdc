@@ -1,8 +1,8 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<?xml version='1.0' encoding='UTF-8'?>
+<Project DefaultTargets='Build' ToolsVersion='4.0' xmlns='http://schemas.microsoft.com/developer/msbuild/2003'>
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <Configuration Condition=' &apos;$(Configuration)&apos; == &apos;&apos; '>Debug</Configuration>
+    <Platform Condition=' &apos;$(Platform)&apos; == &apos;&apos; '>AnyCPU</Platform>
     <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{CCB5EB08-0DF3-433D-887B-47DF3D312736}</ProjectGuid>
@@ -20,7 +20,7 @@
     <FileUpgradeFlags>
     </FileUpgradeFlags>
     <OldToolsVersion>3.5</OldToolsVersion>
-    <UpgradeBackupLocation />
+    <UpgradeBackupLocation/>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -37,7 +37,7 @@
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+  <PropertyGroup Condition=' &apos;$(Configuration)|$(Platform)&apos; == &apos;Debug|AnyCPU&apos; '>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <DefineDebug>true</DefineDebug>
@@ -48,7 +48,7 @@
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
     <WarningsAsErrors>41999,42016,42017,42018,42019,42020,42021,42022,42032,42036</WarningsAsErrors>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+  <PropertyGroup Condition=' &apos;$(Configuration)|$(Platform)&apos; == &apos;Release|AnyCPU&apos; '>
     <DebugType>pdbonly</DebugType>
     <DefineDebug>false</DefineDebug>
     <DefineTrace>true</DefineTrace>
@@ -59,7 +59,7 @@
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
     <WarningsAsErrors>41999,42016,42017,42018,42019,42020,42021,42022,42032,42036</WarningsAsErrors>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
+  <PropertyGroup Condition=' &apos;$(Configuration)|$(Platform)&apos; == &apos;Debug|x64&apos; '>
     <DebugSymbols>true</DebugSymbols>
     <DefineDebug>true</DefineDebug>
     <DefineTrace>true</DefineTrace>
@@ -71,7 +71,7 @@
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
     <WarningsAsErrors>41999,42016,42017,42018,42019,42020,42021,42022,42032,42036</WarningsAsErrors>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
+  <PropertyGroup Condition=' &apos;$(Configuration)|$(Platform)&apos; == &apos;Release|x64&apos; '>
     <DefineTrace>true</DefineTrace>
     <OutputPath>bin\</OutputPath>
     <DocumentationFile>kCura.Relativity.DataReaderClient.NUnit.xml</DocumentationFile>
@@ -82,7 +82,7 @@
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
     <WarningsAsErrors>41999,42016,42017,42018,42019,42020,42021,42022,42032,42036</WarningsAsErrors>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+  <PropertyGroup Condition=' &apos;$(Configuration)|$(Platform)&apos; == &apos;Debug|x86&apos; '>
     <DebugSymbols>true</DebugSymbols>
     <DefineDebug>true</DefineDebug>
     <DefineTrace>true</DefineTrace>
@@ -94,7 +94,7 @@
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
     <WarningsAsErrors>41999,42016,42017,42018,42019,42020,42021,42022,42032,42036</WarningsAsErrors>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+  <PropertyGroup Condition=' &apos;$(Configuration)|$(Platform)&apos; == &apos;Release|x86&apos; '>
     <DefineTrace>true</DefineTrace>
     <OutputPath>bin\</OutputPath>
     <DocumentationFile>kCura.Relativity.DataReaderClient.NUnit.xml</DocumentationFile>
@@ -106,75 +106,75 @@
     <WarningsAsErrors>41999,42016,42017,42018,42019,42020,42021,42022,42032,42036</WarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="FreeImageNET, Version=3.13.0.1, Culture=neutral, processorArchitecture=AMD64">
+    <Reference Include='FreeImageNET, Version=3.13.0.1, Culture=neutral, processorArchitecture=AMD64'>
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Vendor\FreeImage\3.130\FreeImage\Wrapper\FreeImage.NET\cs\Deploy\x64\FreeImageNET.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Practices.EnterpriseLibrary.Logging, Version=5.0.414.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+    <Reference Include='Microsoft.Practices.EnterpriseLibrary.Logging, Version=5.0.414.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL'>
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Vendor\Enterprise Library\Microsoft.Practices.EnterpriseLibrary.Logging.dll</HintPath>
     </Reference>
-    <Reference Include="nunit.framework">
+    <Reference Include='nunit.framework'>
       <HintPath>..\..\..\..\Program Files (x86)\NUnit 2.5.5\bin\net-2.0\framework\nunit.framework.dll</HintPath>
     </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.configuration" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Web.Extensions" />
-    <Reference Include="System.Xml" />
-    <Reference Include="System.Core">
+    <Reference Include='System'/>
+    <Reference Include='System.configuration'/>
+    <Reference Include='System.Data'/>
+    <Reference Include='System.Web.Extensions'/>
+    <Reference Include='System.Xml'/>
+    <Reference Include='System.Core'>
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
-    <Reference Include="System.Xml.Linq">
+    <Reference Include='System.Xml.Linq'>
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
-    <Reference Include="System.Data.DataSetExtensions">
+    <Reference Include='System.Data.DataSetExtensions'>
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Import Include="Microsoft.VisualBasic" />
-    <Import Include="System" />
-    <Import Include="System.Collections" />
-    <Import Include="System.Collections.Generic" />
-    <Import Include="System.Data" />
-    <Import Include="System.Diagnostics" />
-    <Import Include="System.Linq" />
-    <Import Include="System.Xml.Linq" />
+    <Import Include='Microsoft.VisualBasic'/>
+    <Import Include='System'/>
+    <Import Include='System.Collections'/>
+    <Import Include='System.Collections.Generic'/>
+    <Import Include='System.Data'/>
+    <Import Include='System.Diagnostics'/>
+    <Import Include='System.Linq'/>
+    <Import Include='System.Xml.Linq'/>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Exceptions\DatabaseManagementException.vb" />
-    <Compile Include="Exceptions\ProcuroException.vb" />
-    <Compile Include="Exceptions\RepositoryException.vb" />
-    <Compile Include="HelpersTests\SetupHelperTests.vb" />
-    <Compile Include="Helpers\CommonDefaults.vb" />
-    <Compile Include="Helpers\FileHelper.vb" />
-    <Compile Include="Helpers\QueryExecutionHelper.vb" />
-    <Compile Include="Helpers\SetupHelper.vb" />
-    <Compile Include="My Project\AssemblyInfo.vb" />
-    <Compile Include="My Project\Application.Designer.vb">
+    <Compile Include='Exceptions\DatabaseManagementException.vb'/>
+    <Compile Include='Exceptions\ProcuroException.vb'/>
+    <Compile Include='Exceptions\RepositoryException.vb'/>
+    <Compile Include='HelpersTests\SetupHelperTests.vb'/>
+    <Compile Include='Helpers\CommonDefaults.vb'/>
+    <Compile Include='Helpers\FileHelper.vb'/>
+    <Compile Include='Helpers\QueryExecutionHelper.vb'/>
+    <Compile Include='Helpers\SetupHelper.vb'/>
+    <Compile Include='..\..\Version\AssemblyInfo.vb'/>
+    <Compile Include='My Project\Application.Designer.vb'>
       <AutoGen>True</AutoGen>
       <DependentUpon>Application.myapp</DependentUpon>
     </Compile>
-    <Compile Include="My Project\Resources.Designer.vb">
+    <Compile Include='My Project\Resources.Designer.vb'>
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="My Project\Settings.Designer.vb">
+    <Compile Include='My Project\Settings.Designer.vb'>
       <AutoGen>True</AutoGen>
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <Compile Include="WriteTests\CaseWriteTests.vb" />
-    <Compile Include="WriteTests\FixtureSetupTeardown.vb" />
-    <Compile Include="WriteTests\ImportImageWithExtractedText.vb" />
-    <Compile Include="WriteTests\ImportTests.vb" />
-    <Compile Include="WriteTests\ImportTestsHelper.vb" />
-    <Compile Include="WriteTests\WriteTestsBase.vb" />
+    <Compile Include='WriteTests\CaseWriteTests.vb'/>
+    <Compile Include='WriteTests\FixtureSetupTeardown.vb'/>
+    <Compile Include='WriteTests\ImportImageWithExtractedText.vb'/>
+    <Compile Include='WriteTests\ImportTests.vb'/>
+    <Compile Include='WriteTests\ImportTestsHelper.vb'/>
+    <Compile Include='WriteTests\WriteTestsBase.vb'/>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="My Project\Resources.resx">
+    <EmbeddedResource Include='My Project\Resources.resx'>
       <Generator>VbMyResourcesResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.vb</LastGenOutput>
       <CustomToolNamespace>My.Resources</CustomToolNamespace>
@@ -182,91 +182,91 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config">
+    <None Include='app.config'>
       <SubType>Designer</SubType>
     </None>
-    <None Include="My Project\Application.myapp">
+    <None Include='My Project\Application.myapp'>
       <Generator>MyApplicationCodeGenerator</Generator>
       <LastGenOutput>Application.Designer.vb</LastGenOutput>
     </None>
-    <None Include="My Project\Settings.settings">
+    <None Include='My Project\Settings.settings'>
       <Generator>SettingsSingleFileGenerator</Generator>
       <CustomToolNamespace>My</CustomToolNamespace>
       <LastGenOutput>Settings.Designer.vb</LastGenOutput>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\kCura\kCura.Data\kCura.Data.vbproj">
+    <ProjectReference Include='..\..\kCura\kCura.Data\kCura.Data.vbproj'>
       <Project>{6C4D3211-85B6-4A83-9356-7C7F0C319C75}</Project>
       <Name>kCura.Data</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\kCura\kCura.DynamicFields.Types\kCura.DynamicFields.Types.vbproj">
+    <ProjectReference Include='..\..\kCura\kCura.DynamicFields.Types\kCura.DynamicFields.Types.vbproj'>
       <Project>{E8C68A03-7FC4-40AD-BB0B-5F22A3E6447E}</Project>
       <Name>kCura.DynamicFields.Types</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\kCura\kCura.ImageValidator\kCura.ImageValidator.vbproj">
+    <ProjectReference Include='..\..\kCura\kCura.ImageValidator\kCura.ImageValidator.vbproj'>
       <Project>{C2FD8BF7-723A-4D40-A201-CD7458678A70}</Project>
       <Name>kCura.ImageValidator</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\kCura\kCura.IntegrationTest\kCura.IntegrationTest.vbproj">
+    <ProjectReference Include='..\..\kCura\kCura.IntegrationTest\kCura.IntegrationTest.vbproj'>
       <Project>{8A6B7E78-51B9-43DB-BBCA-17EE6A49E3FF}</Project>
       <Name>kCura.IntegrationTest</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\kCura\kCura.OI.FileID\kCura.OI.FileID.vbproj">
+    <ProjectReference Include='..\..\kCura\kCura.OI.FileID\kCura.OI.FileID.vbproj'>
       <Project>{CCEFD50F-0840-402D-AB16-C93F8E579B8B}</Project>
       <Name>kCura.OI.FileID</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\kCura\kCura.Utility\kCura.Utility.vbproj">
+    <ProjectReference Include='..\..\kCura\kCura.Utility\kCura.Utility.vbproj'>
       <Project>{E3450350-56E3-4FE9-A47A-4D24960BCBDB}</Project>
       <Name>kCura.Utility</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\kCura\kCura.Windows.Forms\kCura.Windows.Forms.vbproj">
+    <ProjectReference Include='..\..\kCura\kCura.Windows.Forms\kCura.Windows.Forms.vbproj'>
       <Project>{0DABBD47-5A46-429F-9D90-C95A58611E0A}</Project>
       <Name>kCura.Windows.Forms</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\kCura\kCura.Windows.Process\kCura.Windows.Process.vbproj">
+    <ProjectReference Include='..\..\kCura\kCura.Windows.Process\kCura.Windows.Process.vbproj'>
       <Project>{B092D1B2-909B-4EF0-9369-A81675C3FC18}</Project>
       <Name>kCura.Windows.Process</Name>
     </ProjectReference>
-    <ProjectReference Include="..\kCura.EDDS.Import\kCura.EDDS.Import.vbproj">
+    <ProjectReference Include='..\kCura.EDDS.Import\kCura.EDDS.Import.vbproj'>
       <Project>{94940707-AFFE-47EB-BD70-5ADE8F7C8A36}</Project>
       <Name>kCura.EDDS.Import</Name>
     </ProjectReference>
-    <ProjectReference Include="..\kCura.EDDS.Types\kCura.EDDS.Types.vbproj">
+    <ProjectReference Include='..\kCura.EDDS.Types\kCura.EDDS.Types.vbproj'>
       <Project>{6E14C37A-96F5-4488-9E2B-2C1A21C4D140}</Project>
       <Name>kCura.EDDS.Types</Name>
     </ProjectReference>
-    <ProjectReference Include="..\kCura.Relativity.DataReader\kCura.Relativity.DataReaderClient.vbproj">
+    <ProjectReference Include='..\kCura.Relativity.DataReader\kCura.Relativity.DataReaderClient.vbproj'>
       <Project>{94BD2810-9FD8-4EEE-AA2B-590E4BCD4CC0}</Project>
       <Name>kCura.Relativity.DataReaderClient</Name>
     </ProjectReference>
-    <ProjectReference Include="..\kCura.WinEDDS.ImportExtension\kCura.WinEDDS.ImportExtension.vbproj">
+    <ProjectReference Include='..\kCura.WinEDDS.ImportExtension\kCura.WinEDDS.ImportExtension.vbproj'>
       <Project>{86550F4B-BEF4-4458-9536-7B5C6F68B0E2}</Project>
       <Name>kCura.WinEDDS.ImportExtension</Name>
     </ProjectReference>
-    <ProjectReference Include="..\kCura.WinEDDS\kCura.WinEDDS.vbproj">
+    <ProjectReference Include='..\kCura.WinEDDS\kCura.WinEDDS.vbproj'>
       <Project>{F16A2219-5DAC-4F2B-89B0-6BD1243CBF8F}</Project>
       <Name>kCura.WinEDDS</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+    <BootstrapperPackage Include='Microsoft.Net.Client.3.5'>
       <Visible>False</Visible>
       <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+    <BootstrapperPackage Include='Microsoft.Net.Framework.3.5.SP1'>
       <Visible>False</Visible>
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+    <BootstrapperPackage Include='Microsoft.Windows.Installer.3.1'>
       <Visible>False</Visible>
       <ProductName>Windows Installer 3.1</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
+  <Import Project='$(MSBuildToolsPath)\Microsoft.VisualBasic.targets'/>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
