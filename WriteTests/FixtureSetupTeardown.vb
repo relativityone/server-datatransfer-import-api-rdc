@@ -6,9 +6,14 @@ Imports System.Data.SqlClient
 Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 	<SetUpFixture()> _
 	Public Class FixtureSetupTeardown
-		Public Sub New()
+		'Inherits kCura.IntegrationTest.FixtureSetupTeardownBase
 
-		End Sub
+		'Public Sub New()
+		'	Dim theseWorkspaceIDs As New System.Collections.Generic.List(Of Int32)
+		'	theseWorkspaceIDs.Add(1016621)
+		'	theseWorkspaceIDs.Add(1016623)
+		'	Me.WorkspaceIDs = theseWorkspaceIDs
+		'End Sub
 
 		<SetUp()> _
 		Public Sub FixtureSetup()
@@ -31,10 +36,10 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 				If Not procuroSucceeded Then
 					Throw New Exceptions.ProcuroException("Procuro Failed. Please refer to the results file " + _
 					 ConfigurationManager.AppSettings("procuroResultsLocation").ToString() + " to identify the problem." + _
-						"**** DEBUG INFO FOLLOWS **** NUnitDirectory = " + helper.ParentDirectoryName + _
-						", EDDSDirectory = " + System.IO.Directory.GetParent(helper.ParentDirectoryName).FullName + _
-						", procuroEXEPath = " + System.IO.Path.Combine(System.IO.Directory.GetParent(helper.ParentDirectoryName).FullName, _
-						ConfigurationManager.AppSettings("procuroBuildLocation").ToString()))
+					 "**** DEBUG INFO FOLLOWS **** NUnitDirectory = " + helper.ParentDirectoryName + _
+					 ", EDDSDirectory = " + System.IO.Directory.GetParent(helper.ParentDirectoryName).FullName + _
+					 ", procuroEXEPath = " + System.IO.Path.Combine(System.IO.Directory.GetParent(helper.ParentDirectoryName).FullName, _
+					 ConfigurationManager.AppSettings("procuroBuildLocation").ToString()))
 				End If
 			Catch x As SqlException
 				Throw New Exceptions.DatabaseManagementException( _
