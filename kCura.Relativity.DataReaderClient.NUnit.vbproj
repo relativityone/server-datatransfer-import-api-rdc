@@ -143,14 +143,9 @@
     <Import Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Exceptions\DatabaseManagementException.vb" />
-    <Compile Include="Exceptions\ProcuroException.vb" />
     <Compile Include="Exceptions\RepositoryException.vb" />
     <Compile Include="HelpersTests\SetupHelperTests.vb" />
     <Compile Include="Helpers\CommonDefaults.vb" />
-    <Compile Include="Helpers\FileHelper.vb" />
-    <Compile Include="Helpers\QueryExecutionHelper.vb" />
-    <Compile Include="Helpers\SetupHelper.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="My Project\Application.Designer.vb">
       <AutoGen>True</AutoGen>

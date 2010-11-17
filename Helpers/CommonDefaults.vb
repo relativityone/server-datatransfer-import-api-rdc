@@ -2,12 +2,8 @@
 	Public Class CommonDefaults
 		Public Const DOCTYPEID As Int32 = 10
 
-		'Public Const CASE_ID_CRUD As Int32 = Helpers.SetupHelper._CASE_ID_CRUD
-		'Public Const CASE_ID_QUERY_BATCH_SCRIPT As Int32 = Helpers.SetupHelper._CASE_ID_QUERY_BATCH_SCRIPT
-
-		Public Const CASE_ID_IMPORT_API_SOURCE As Int32 = Helpers.SetupHelper._CASE_ID_IMPORT_API_SOURCE
-		Public Const CASE_ID_IMPORT_API_DESTINATION As Int32 = Helpers.SetupHelper._CASE_ID_IMPORT_API_DESTINATION
-
+		Public Const CASE_ID_IMPORT_API_SOURCE As Int32 = 1016621
+		Public Const CASE_ID_IMPORT_API_DESTINATION As Int32 = 1016623
 
 		Public Const API_USER_CUSTOM_ADMIN As String = "apiglobal.admin@kcura.com"
 		Public Const API_USER_EDIT As String = "apiglobal.edit@kcura.com"

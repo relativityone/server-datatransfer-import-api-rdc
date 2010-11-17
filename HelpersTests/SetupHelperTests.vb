@@ -5,32 +5,19 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.HelperTests
 	Public Class SetupHelperTests
 
 		<Test(), _
-		Ignore(), _
 		Category("InfrastructureTests")> _
 		Public Sub RestoreDB_BackupExists_RestoreSucceeds()
 			' Arrange
-			Dim helper As New Helpers.SetupHelper()
-			Dim successful As Boolean
+			Dim helper As New kCura.IntegrationTest.SetupHelper()
 
 			' Act
-			successful = helper.RestoreDatabases()
+			Dim theseWorkspaceIDs As New System.Collections.Generic.List(Of Int32)
+			theseWorkspaceIDs.Add(1016623)
+			theseWorkspaceIDs.Add(1016621)
+			helper.SetupForIntegrationTests(theseWorkspaceIDs)
 
 			' Assert
-			Assert.That(successful, [Is].True)
-		End Sub
-
-		<Test(), _
-		Ignore(), _
-		Category("InfrastructureTests")> _
-		Public Sub ParentDirectoryName_ReturnsNUnitProjectDirectory()
-			' Arrange
-			Dim helper As New Helpers.SetupHelper()
-
-			' Act
-			Dim dir As String = helper.ParentDirectoryName()
-
-			' Assert
-			Assert.That(dir.ToLower(), [Is].EqualTo("C:\SourceCode\trunk\EDDS\kCura.Relativity.DataReaderClient.NUnit".ToLower()))
+			Assert.That(1, [Is].EqualTo(1))
 		End Sub
 	End Class
 End Namespace

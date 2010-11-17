@@ -27,11 +27,9 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 		''' Set up Artifact Test Cases
 		''' </summary>
 		<SetUp()> _
-		Public Sub SetUp()
-
-			Dim helper As New Helpers.SetupHelper()
+		Public Overrides Sub SetUp()
+			MyBase.SetUp()
 			_errors = New System.Collections.Generic.List(Of String)
-			helper.SetupTestWithRestore()
 			Try
 				ImportTestsHelper.ExecuteSQLStatementAsDataTable("select top 1 artifactid from artifact", -1)
 			Catch
@@ -55,15 +53,11 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 			destinationExtractedText = String.Empty
 		End Sub
 
-		''' <summary>
-		''' Tear down the test case
-		''' </summary>
 		<TearDown()> _
-		Public Sub TearDown()
+		Public Overrides Sub TearDown()
+			MyBase.TearDown()
 			dataTableSrc.Dispose()
 			dataTableDest.Dispose()
-			Dim helper As New Helpers.SetupHelper()
-			helper.TearDownTest()
 		End Sub
 #End Region
 
