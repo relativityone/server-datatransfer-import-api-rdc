@@ -103,7 +103,7 @@ Namespace kCura.Relativity.DataReaderClient
 		End Function
 
 		Private Function GetCredentials(ByVal settings As ImageSettings) As System.Net.ICredentials
-			Dim credential As System.Net.ICredentials
+			Dim credential As System.Net.ICredentials = Nothing
 			If credential Is Nothing Then
 				Try
 					credential = kCura.WinEDDS.Api.LoginHelper.LoginWindowsAuth(cookieMonster)
@@ -117,6 +117,7 @@ Namespace kCura.Relativity.DataReaderClient
 			End While
 			Return credential
 		End Function
+
 
 #End Region
 
