@@ -1,8 +1,11 @@
 ﻿Imports NUnit.Framework
+Imports kCura.Relativity.DataReaderClient.NUnit
+Imports System.Configuration
 
 Namespace kCura.Relativity.DataReaderClient.NUnit.HelperTests
 	<TestFixture()> _
 	Public Class SetupHelperTests
+		Inherits kCura.Relativity.DataReaderClient.NUnit.WriteTests.WriteTestsBase
 
 		<Test(), _
 		Category("InfrastructureTests")> _
