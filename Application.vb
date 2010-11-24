@@ -1051,6 +1051,7 @@ Namespace kCura.EDDS.WinForm
 				imageFile.CaseInfo = caseinfo
 				imageFile.SelectedCasePath = caseinfo.DocumentPath
 				imageFile.DestinationFolderID = destinationArtifactID
+				imageFile.CookieContainer = Me.CookieContainer
 				imageFile.ForProduction = False
 				imageFile.FullTextEncoding = Nothing
 				imageFile.CopyFilesToDocumentRepository = Config.CopyFilesToRepository
@@ -1078,6 +1079,7 @@ Namespace kCura.EDDS.WinForm
 				imageFile.CaseInfo = caseinfo
 				imageFile.DestinationFolderID = destinationArtifactID
 				imageFile.ForProduction = True
+				imageFile.CookieContainer = Me.CookieContainer
 				imageFile.SelectedCasePath = caseinfo.DocumentPath
 				imageFile.FullTextEncoding = System.Text.Encoding.Default
 				imageFile.CopyFilesToDocumentRepository = Config.CopyFilesToRepository
