@@ -175,26 +175,31 @@ Namespace kCura.Windows.Forms
 		Public Event HighlightItem(ByVal index As Int32, ByVal location As ListBoxLocation)
 		Public Event ClearSelectedItems(ByVal location As ListBoxLocation)
 		Private _outerBox As ListBoxLocation
-		Private _rightPersistedItems As System.Collections.Generic.List(Of Object)
-		Private _leftPersistedItems As System.Collections.Generic.List(Of Object)
+		Private _rightHighlightItem As Int32 = -1
+		Private _leftHighlightItem As Int32 = -1
+		Public Delegate Sub SomethingHappened(ByVal location As ListBoxLocation)
 
 
-		Public ReadOnly Property RightPersistedItems As System.Collections.Generic.List(Of Object)
+
+
+		Public Property RightHighlightItem As Int32
 			Get
-				If _rightPersistedItems Is Nothing Then
-					_rightPersistedItems = New System.Collections.Generic.List(Of Object)()
-				End If
-				Return _rightPersistedItems
+				Return _rightHighlightItem
 			End Get
+			Set(ByVal value As Int32)
+				_rightHighlightItem = value
+			End Set
 		End Property
-		Public ReadOnly Property LeftPersistedItems As System.Collections.Generic.List(Of Object)
+
+		Public Property LeftHighlightItem As Int32
 			Get
-				If _leftPersistedItems Is Nothing Then
-					_leftPersistedItems = New System.Collections.Generic.List(Of Object)()
-				End If
-				Return _leftPersistedItems
+				Return _leftHighlightItem
 			End Get
+			Set(ByVal value As Int32)
+				_leftHighlightItem = value
+			End Set
 		End Property
+
 		Public Property AlternateRowColors() As Boolean
 			Get
 				Return _alternateRowColors
@@ -418,20 +423,21 @@ Namespace kCura.Windows.Forms
 		End Sub
 
 		Private Sub _leftListBox_DrawItem(ByVal sender As Object, ByVal e As System.Windows.Forms.DrawItemEventArgs) Handles _leftListBox.DrawItem
-			Me.DrawBox(_leftListBox, e)
+			Me.DrawBox(_leftListBox, e, _leftHighlightItem)
 		End Sub
 
 		Private Sub _rightListBox_DrawItem(ByVal sender As Object, ByVal e As System.Windows.Forms.DrawItemEventArgs) Handles _rightListBox.DrawItem
-			Me.DrawBox(_rightListBox, e)
+			Me.DrawBox(_rightListBox, e, _rightHighlightItem)
 		End Sub
 
-		Private Sub DrawBox(ByVal listBox As System.Windows.Forms.ListBox, ByVal e As System.Windows.Forms.DrawItemEventArgs)
+		Private Sub DrawBox(ByVal listBox As System.Windows.Forms.ListBox, ByVal e As System.Windows.Forms.DrawItemEventArgs, ByVal highlightIndex As Int32)
 			If e.Index < 0 Then Exit Sub
 			Dim x As New System.Windows.Forms.DrawItemEventArgs(e.Graphics, e.Font, e.Bounds, e.Index, e.State, e.ForeColor, System.Drawing.Color.LightGray)
 			If e.Index Mod 2 = 1 Then
 				e = x
 			End If
-			Dim brush As New System.Drawing.SolidBrush(e.ForeColor)
+
+			Dim brush As New System.Drawing.SolidBrush(If(e.Index = highlightIndex, System.Drawing.Color.FromArgb(229, 142, 26), e.ForeColor))
 			e.DrawBackground()
 			e.Graphics.DrawString(listBox.Items(e.Index).ToString, e.Font, brush, e.Bounds.X, e.Bounds.Y)
 			e.DrawFocusRectangle()
@@ -448,61 +454,33 @@ Namespace kCura.Windows.Forms
 
 			Dim listbox As System.Windows.Forms.ListBox
 			If location = ListBoxLocation.Left Then
+				_leftHighlightItem = -1
 				listbox = _leftListBox
 			Else
+				_rightHighlightItem = -1
 				listbox = _rightListBox
 			End If
-			listbox.ClearSelected()
+			listbox.Refresh()
 
-			PersistItems(location)
 		End Sub
 
 		Public Sub HighlightItembyIndex(ByVal index As Int32, ByVal location As ListBoxLocation)
 			Dim listbox As System.Windows.Forms.ListBox = If(location = ListBoxLocation.Left, _leftListBox, _rightListBox)
-			If listbox.Items.Count - 1 >= index Then
-				listbox.SetSelected(index, True)
-			End If
-
-		End Sub
-
-		Private Sub PersistItems(ByVal location As ListBoxLocation)
-			Dim itemCollection As System.Collections.Generic.List(Of Object)
-			Dim listbox As System.Windows.Forms.ListBox
 			If location = ListBoxLocation.Left Then
-				listbox = _leftListBox
-				itemCollection = Me.LeftPersistedItems
+				_leftHighlightItem = index
+				_leftListBox.Refresh()
 			Else
-				listbox = _rightListBox
-				itemCollection = Me.RightPersistedItems
+				_rightHighlightItem = index
+				_rightListBox.Refresh()
 			End If
-			listbox.Items.Clear()
-			For Each objItem As Object In itemCollection
-				listbox.Items.Add(objItem)
-			Next
-			itemCollection.Clear()
 		End Sub
 
-
-
-		Private Sub CacheItems(ByVal location As ListBoxLocation)
-			Dim itemCollection As System.Collections.Generic.List(Of Object)
-			If location = ListBoxLocation.Left Then
-				itemCollection = Me.LeftPersistedItems
-			Else
-				itemCollection = Me.RightPersistedItems
-			End If
-			If Not itemCollection.Count = 0 Then
-				For Each objItem As System.Object In If(location = ListBoxLocation.Left, _leftListBox.Items, _rightListBox.Items)
-					itemCollection.Add(objItem)
-				Next
-			End If
-		End Sub
 
 		Private Sub HighlightMouseOverItem(ByVal sender As Object, ByVal e As System.Windows.Forms.MouseEventArgs, ByVal location As ListBoxLocation)
-			CacheItems(location)
+
 			ClearItems(location)
-			Dim raiseEventLocation As ListBoxLocation = If(location = ListBoxLocation.Left, ListBoxLocation.Right, ListBoxLocation.Left)
-			RaiseEvent ClearSelectedItems(raiseEventLocation)
+
+			RaiseEvent ClearSelectedItems(location)
 			Dim listbox As System.Windows.Forms.ListBox = DirectCast(sender, System.Windows.Forms.ListBox)
 
 			Dim G As System.Drawing.Graphics = System.Drawing.Graphics.FromHwnd(Me.Handle)
@@ -510,13 +488,19 @@ Namespace kCura.Windows.Forms
 			index = listbox.IndexFromPoint(New System.Drawing.Point(e.X, e.Y))
 			If index >= 0 Then	'mouse is over an item
 				HighlightItembyIndex(index, location)
-				RaiseEvent HighlightItem(index, raiseEventLocation)
+				RaiseEvent HighlightItem(index, location)
 			End If
 		End Sub
 
 		Private Sub _rightListBox_MouseLeave(ByVal sender As Object, ByVal e As System.EventArgs) Handles _rightListBox.MouseLeave
 			ClearItems(ListBoxLocation.Right)
+			RaiseEvent ClearSelectedItems(ListBoxLocation.Right)
+		End Sub
+
+		Private Sub _leftListBox_MouseLeave(ByVal sender As Object, ByVal e As System.EventArgs) Handles _leftListBox.MouseLeave
+			ClearItems(ListBoxLocation.Left)
 			RaiseEvent ClearSelectedItems(ListBoxLocation.Left)
+
 		End Sub
 		Private Sub _leftListBox_MouseMove(ByVal sender As Object, ByVal e As System.Windows.Forms.MouseEventArgs) Handles _leftListBox.MouseMove
 			If Not Me.OuterBox = ListBoxLocation.Left Then
