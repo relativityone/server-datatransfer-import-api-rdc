@@ -450,7 +450,14 @@ Namespace kCura.Windows.Forms
 			End If
 		End Sub
 
-		Public Sub ClearItems(ByVal location As ListBoxLocation)
+		Public Sub ClearItemsEvent(ByVal location As ListBoxLocation)
+			Dim oppositeLocation As ListBoxLocation = If(location = ListBoxLocation.Left, ListBoxLocation.Right, ListBoxLocation.Left)
+			If oppositeLocation <> Me.OuterBox Then
+				ClearItems(oppositeLocation)
+			End If
+		End Sub
+
+		Private Sub ClearItems(ByVal location As ListBoxLocation)
 
 			Dim listbox As System.Windows.Forms.ListBox
 			If location = ListBoxLocation.Left Then
@@ -479,28 +486,35 @@ Namespace kCura.Windows.Forms
 		Private Sub HighlightMouseOverItem(ByVal sender As Object, ByVal e As System.Windows.Forms.MouseEventArgs, ByVal location As ListBoxLocation)
 
 			ClearItems(location)
+			Dim raiseEventLocation As ListBoxLocation = If(location = ListBoxLocation.Left, ListBoxLocation.Right, ListBoxLocation.Left)
+			ClearItemsInSimilarControls(raiseEventLocation)
 
-			RaiseEvent ClearSelectedItems(location)
 			Dim listbox As System.Windows.Forms.ListBox = DirectCast(sender, System.Windows.Forms.ListBox)
-
 			Dim G As System.Drawing.Graphics = System.Drawing.Graphics.FromHwnd(Me.Handle)
 			Dim index As Int32
 			index = listbox.IndexFromPoint(New System.Drawing.Point(e.X, e.Y))
 			If index >= 0 Then	'mouse is over an item
 				HighlightItembyIndex(index, location)
-				RaiseEvent HighlightItem(index, location)
+				For Each uc As System.Windows.Forms.Control In Me.Parent.Controls
+					If TypeOf (uc) Is kCura.Windows.Forms.TwoListBox Then
+						Dim lb As kCura.Windows.Forms.TwoListBox = DirectCast(uc, kCura.Windows.Forms.TwoListBox)
+						If Not lb.OuterBox = raiseEventLocation Then
+							lb.HighlightItembyIndex(index, raiseEventLocation)
+							Exit For
+						End If
+					End If
+				Next
 			End If
 		End Sub
 
 		Private Sub _rightListBox_MouseLeave(ByVal sender As Object, ByVal e As System.EventArgs) Handles _rightListBox.MouseLeave
 			ClearItems(ListBoxLocation.Right)
-			RaiseEvent ClearSelectedItems(ListBoxLocation.Right)
+			ClearItemsInSimilarControls(ListBoxLocation.Left)
 		End Sub
 
 		Private Sub _leftListBox_MouseLeave(ByVal sender As Object, ByVal e As System.EventArgs) Handles _leftListBox.MouseLeave
 			ClearItems(ListBoxLocation.Left)
-			RaiseEvent ClearSelectedItems(ListBoxLocation.Left)
-
+			ClearItemsInSimilarControls(ListBoxLocation.Right)
 		End Sub
 		Private Sub _leftListBox_MouseMove(ByVal sender As Object, ByVal e As System.Windows.Forms.MouseEventArgs) Handles _leftListBox.MouseMove
 			If Not Me.OuterBox = ListBoxLocation.Left Then
@@ -518,5 +532,17 @@ Namespace kCura.Windows.Forms
 			Left = 0
 			Right = 1
 		End Enum
+
+		Private Sub ClearItemsInSimilarControls(ByVal location As ListBoxLocation)
+			For Each uc As System.Windows.Forms.Control In Me.Parent.Controls
+				If TypeOf (uc) Is kCura.Windows.Forms.TwoListBox Then
+					Dim lb As kCura.Windows.Forms.TwoListBox = DirectCast(uc, kCura.Windows.Forms.TwoListBox)
+					If Not lb.OuterBox = location Then
+						lb.ClearItems(location)
+						Exit For
+					End If
+				End If
+			Next
+		End Sub
 	End Class
 End Namespace
