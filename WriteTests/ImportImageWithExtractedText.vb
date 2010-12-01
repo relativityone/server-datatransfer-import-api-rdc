@@ -56,8 +56,12 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 		<TearDown()> _
 		Public Overrides Sub TearDown()
 			MyBase.TearDown()
-			dataTableSrc.Dispose()
-			dataTableDest.Dispose()
+			If Not dataTableSrc Is Nothing Then
+				dataTableSrc.Dispose()
+			End If
+			If Not dataTableDest Is Nothing Then
+				dataTableDest.Dispose()
+			End If
 		End Sub
 #End Region
 
