@@ -71,7 +71,13 @@ Namespace kCura.WinEDDS
 			System.Net.ServicePointManager.CertificatePolicy = New TrustAllCertificatePolicy
 			_cookieContainer = New System.Net.CookieContainer
 			Dim relativityManager As New kCura.WinEDDS.Service.RelativityManager(_credential, _cookieContainer)
-			If Not relativityManager.ValidateSuccesfulLogin Then
+			Dim successfulLogin As Boolean = False
+			Try
+				successfulLogin = relativityManager.ValidateSuccesfulLogin()
+			Catch ex As Exception
+				successfulLogin = False
+			End Try
+			If Not successfulLogin Then
 				If Not _credential.Password = "" Then
 					Dim userManager As New kCura.WinEDDS.Service.UserManager(_credential, _cookieContainer)
 					If userManager.Login(_credential.UserName, _credential.Password) Then
@@ -84,6 +90,7 @@ Namespace kCura.WinEDDS
 			End If
 			Throw New InvalidCredentialsException
 		End Sub
+
 
 		Protected Sub SaveObject(ByVal location As String, ByVal settings As Object)
 			Dim sw As New System.IO.StreamWriter(location)
