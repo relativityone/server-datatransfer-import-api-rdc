@@ -7,6 +7,7 @@ Namespace kCura.Relativity.DataReaderClient
 		Public Settings As ImageSettings
 		Public SourceData As ImageSourceIDataReader
 		Private _caseManager As kCura.WinEDDS.Service.CaseManager
+		Public ErrorReport As System.Collections.Generic.List(Of Hashtable)
 
 #End Region
 
@@ -20,6 +21,7 @@ Namespace kCura.Relativity.DataReaderClient
 		Public Sub New()
 			Me.Settings = New ImageSettings
 			Me.SourceData = New ImageSourceIDataReader
+			Me.ErrorReport = New System.Collections.Generic.List(Of Hashtable)
 		End Sub
 
 		Public Sub Execute()
@@ -228,6 +230,7 @@ Namespace kCura.Relativity.DataReaderClient
 				retval.Append(row(key))
 				retval.Append(vbNewLine)
 			Next
+			ErrorReport.Add(CType(row, Hashtable))
 			RaiseEvent OnMessage(New Status(retval.ToString))
 		End Sub
 
