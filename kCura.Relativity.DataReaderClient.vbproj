@@ -182,15 +182,9 @@
     <Compile Include="ImageImport\ImageImportBulkArtifactJob.vb" />
     <Compile Include="ImageImport\ImageSettings.vb" />
     <Compile Include="ImageImport\ImageSourceIDataReader.vb" />
-    <Compile Include="NativeImport\ImportLoadFileJob.vb">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="NativeImport\Settings.vb">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="NativeImport\SourceIDataReader.vb">
-      <SubType>Code</SubType>
-    </Compile>
+    <Compile Include="ImportLoadFileJob.vb" />
+    <Compile Include="Settings.vb" />
+    <Compile Include="SourceIDataReader.vb" />
     <Compile Include="Status.vb">
       <SubType>Code</SubType>
     </Compile>
@@ -224,6 +218,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="My Project\" />
+    <Folder Include="NativeImport\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.VisualBasic.targets" />
   <PropertyGroup>
