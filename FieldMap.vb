@@ -72,6 +72,7 @@ Namespace kCura.WinEDDS.UIControls
 			Me._fieldColumns.RightOrderControlVisible = True
 			Me._fieldColumns.Size = New System.Drawing.Size(364, 276)
 			Me._fieldColumns.TabIndex = 8
+			Me._fieldColumns.OuterBox = kCura.Windows.Forms.TwoListBox.ListBoxLocation.Left
 			'
 			'_loadFileColumns
 			'
@@ -83,6 +84,7 @@ Namespace kCura.WinEDDS.UIControls
 			Me._loadFileColumns.RightOrderControlVisible = False
 			Me._loadFileColumns.Size = New System.Drawing.Size(388, 276)
 			Me._loadFileColumns.TabIndex = 9
+			Me._loadFileColumns.OuterBox = kCura.Windows.Forms.TwoListBox.ListBoxLocation.Right
 			'
 			'FieldMap
 			'
