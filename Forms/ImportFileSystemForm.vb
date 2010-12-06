@@ -193,6 +193,7 @@ Namespace kCura.EDDS.WinForm
 			Me._fileFields.RightOrderControlVisible = False
 			Me._fileFields.Size = New System.Drawing.Size(356, 280)
 			Me._fileFields.TabIndex = 4
+			Me._fileFields.OuterBox = kCura.Windows.Forms.TwoListBox.ListBoxLocation.Right
 			'
 			'Label2
 			'
@@ -223,6 +224,7 @@ Namespace kCura.EDDS.WinForm
 			Me._caseFields.RightOrderControlVisible = True
 			Me._caseFields.Size = New System.Drawing.Size(360, 280)
 			Me._caseFields.TabIndex = 0
+			Me._caseFields.OuterBox = kCura.Windows.Forms.TwoListBox.ListBoxLocation.Left
 			'
 			'GroupBox3
 			'
