@@ -1597,6 +1597,8 @@ Namespace kCura.EDDS.WinForm
 				Dim x As New ErrorDialog
 				If Not ex.Message.IndexOf("Invalid License.") = -1 Then
 					x.Text = "Invalid License."
+				ElseIf Not ex.Message.IndexOf("Invalid Assembly.") = -1 Then
+					x.Text = "A library (dll) required to verify the Relativity license has been changed or removed.  Relativity will be inaccessible until this is resolved.  Please contact support@kcura.com"
 				Else
 					x.Text = "Unrecognized login error.  Try again?"
 				End If
