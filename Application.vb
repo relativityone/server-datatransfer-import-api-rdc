@@ -1051,6 +1051,7 @@ Namespace kCura.EDDS.WinForm
 				imageFile.CaseInfo = caseinfo
 				imageFile.SelectedCasePath = caseinfo.DocumentPath
 				imageFile.DestinationFolderID = destinationArtifactID
+				imageFile.CookieContainer = Me.CookieContainer
 				imageFile.ForProduction = False
 				imageFile.FullTextEncoding = Nothing
 				imageFile.CopyFilesToDocumentRepository = Config.CopyFilesToRepository
@@ -1078,6 +1079,7 @@ Namespace kCura.EDDS.WinForm
 				imageFile.CaseInfo = caseinfo
 				imageFile.DestinationFolderID = destinationArtifactID
 				imageFile.ForProduction = True
+				imageFile.CookieContainer = Me.CookieContainer
 				imageFile.SelectedCasePath = caseinfo.DocumentPath
 				imageFile.FullTextEncoding = System.Text.Encoding.Default
 				imageFile.CopyFilesToDocumentRepository = Config.CopyFilesToRepository
@@ -1597,6 +1599,8 @@ Namespace kCura.EDDS.WinForm
 				Dim x As New ErrorDialog
 				If Not ex.Message.IndexOf("Invalid License.") = -1 Then
 					x.Text = "Invalid License."
+				ElseIf (Not ex.Message.IndexOf("A library (dll)") = -1) OrElse (Not ex.Message.IndexOf("Relativity is temporarily unavailable.") = -1) Then
+					x.Text = "Invalid Assembly."
 				Else
 					x.Text = "Unrecognized login error.  Try again?"
 				End If
