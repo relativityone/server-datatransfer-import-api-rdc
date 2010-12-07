@@ -1599,7 +1599,7 @@ Namespace kCura.EDDS.WinForm
 				Dim x As New ErrorDialog
 				If Not ex.Message.IndexOf("Invalid License.") = -1 Then
 					x.Text = "Invalid License."
-				ElseIf Not ex.Message.IndexOf("A library (dll)") = -1 Then
+				ElseIf (Not ex.Message.IndexOf("A library (dll)") = -1) OrElse (Not ex.Message.IndexOf("Relativity is temporarily unavailable.") = -1) Then
 					x.Text = "Invalid Assembly."
 				Else
 					x.Text = "Unrecognized login error.  Try again?"
