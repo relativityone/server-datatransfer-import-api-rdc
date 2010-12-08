@@ -1,9 +1,11 @@
 Namespace kCura.Relativity.DataReaderClient
 	Public Class ImportBulkArtifactJob
 
-#Region " Public Evens and Variables "
+#Region " Public Evetns and Variables "
 
 		Public Event OnMessage(ByVal status As Status)
+		Public Event OnError(ByVal row As IDictionary)
+
 		Public Settings As Settings
 		Public SourceData As SourceIDataReader
 
@@ -298,6 +300,10 @@ Namespace kCura.Relativity.DataReaderClient
 
 		Private Sub _observer_OnProcessProgressEvent(ByVal evt As kCura.Windows.Process.ProcessProgressEvent) Handles _observer.OnProcessProgressEvent
 			RaiseEvent OnMessage(New Status(String.Format("[Timestamp: {0}] [Progress Info: {1} of {2}]", System.DateTime.Now, evt.TotalRecordsProcessedDisplay, evt.TotalRecordsDisplay)))
+		End Sub
+
+		Private Sub _observer_ErrorReportEvent(ByVal row As System.Collections.IDictionary) Handles _observer.ErrorReportEvent
+			RaiseEvent OnError(row)
 		End Sub
 
 #End Region

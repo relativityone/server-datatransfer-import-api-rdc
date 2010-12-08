@@ -1,9 +1,11 @@
 Namespace kCura.Relativity.DataReaderClient
 	Public Class ImageImportBulkArtifactJob
 
-#Region " Public Evens and Variables "
+#Region " Public Events and Variables "
 
 		Public Event OnMessage(ByVal status As Status)
+		Public Event OnError(ByVal row As IDictionary)
+
 		Public Settings As ImageSettings
 		Public SourceData As ImageSourceIDataReader
 		Private _caseManager As kCura.WinEDDS.Service.CaseManager
@@ -220,6 +222,8 @@ Namespace kCura.Relativity.DataReaderClient
 #Region " Event Handling "
 
 		Private Sub _observer_ErrorReportEvent(ByVal row As System.Collections.IDictionary) Handles _observer.ErrorReportEvent
+			RaiseEvent OnError(row)
+
 			Dim retval As New System.Text.StringBuilder
 			retval.AppendFormat("[error] ")
 			For Each key As String In row.Keys
