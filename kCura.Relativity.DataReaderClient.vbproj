@@ -140,17 +140,18 @@
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
+    <ProjectReference Include="..\kCura.WinEDDS.ImportExtension\kCura.WinEDDS.ImportExtension.vbproj">
+      <Project>{86550F4B-BEF4-4458-9536-7B5C6F68B0E2}</Project>
+      <Name>kCura.WinEDDS.ImportExtension</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.WinEDDS\kCura.WinEDDS.vbproj">
+      <Project>{F16A2219-5DAC-4F2B-89B0-6BD1243CBF8F}</Project>
+      <Name>kCura.WinEDDS</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Relativity\Relativity.vbproj">
       <Project>{044A6424-BC90-46CE-8805-0053A44AFCAB}</Project>
       <Name>Relativity</Name>
     </ProjectReference>
-    <Reference Include="kCura.Relativity">
-      <HintPath>..\kCura.Relativity\bin\kCura.Relativity.dll</HintPath>
-    </Reference>
-    <Reference Include="kCura.WinEDDS.ImportExtension, Version=6.8.0.0, Culture=neutral, processorArchitecture=AMD64">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\kCura.WinEDDS.ImportExtension\bin\x64\Release\kCura.WinEDDS.ImportExtension.dll</HintPath>
-    </Reference>
     <Reference Include="System">
       <Name>System</Name>
     </Reference>
@@ -163,10 +164,6 @@
     <ProjectReference Include="..\..\kCura\kCura.Windows.Process\kCura.Windows.Process.vbproj">
       <Project>{B092D1B2-909B-4EF0-9369-A81675C3FC18}</Project>
       <Name>kCura.Windows.Process</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\kCura.WinEDDS\kCura.WinEDDS.vbproj">
-      <Project>{F16A2219-5DAC-4F2B-89B0-6BD1243CBF8F}</Project>
-      <Name>kCura.WinEDDS</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
