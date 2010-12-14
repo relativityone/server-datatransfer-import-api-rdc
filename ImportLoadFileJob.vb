@@ -1,7 +1,7 @@
 Namespace kCura.Relativity.DataReaderClient
 	Public Class ImportBulkArtifactJob
 
-#Region " Public Evetns and Variables "
+#Region " Public Events and Variables "
 
 		Public Event OnMessage(ByVal status As Status)
 		Public Event OnError(ByVal row As IDictionary)
