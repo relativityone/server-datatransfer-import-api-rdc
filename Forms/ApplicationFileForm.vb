@@ -104,7 +104,7 @@ Namespace kCura.EDDS.WinForm
 			'ApplicationFileGroupBox
 			'
 			Me.ApplicationFileGroupBox.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-					Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+			  Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me.ApplicationFileGroupBox.Controls.Add(Me.BrowseButton)
 			Me.ApplicationFileGroupBox.Controls.Add(Me.FilePath)
 			Me.ApplicationFileGroupBox.Location = New System.Drawing.Point(16, 24)
@@ -126,7 +126,7 @@ Namespace kCura.EDDS.WinForm
 			'FilePath
 			'
 			Me.FilePath.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-					Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+			  Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me.FilePath.BackColor = System.Drawing.SystemColors.ControlLightLight
 			Me.FilePath.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
 			Me.FilePath.ForeColor = System.Drawing.SystemColors.ControlDarkDark
@@ -139,7 +139,7 @@ Namespace kCura.EDDS.WinForm
 			'ApplicationInformationGroupBox
 			'
 			Me.ApplicationInformationGroupBox.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-					Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+			  Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me.ApplicationInformationGroupBox.Controls.Add(Me.ApplicationName)
 			Me.ApplicationInformationGroupBox.Controls.Add(Me.ApplicationVersion)
 			Me.ApplicationInformationGroupBox.Controls.Add(Me.VersionLabel)
@@ -154,7 +154,7 @@ Namespace kCura.EDDS.WinForm
 			'ApplicationName
 			'
 			Me.ApplicationName.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-					Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+			  Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me.ApplicationName.Location = New System.Drawing.Point(72, 24)
 			Me.ApplicationName.Name = "ApplicationName"
 			Me.ApplicationName.ReadOnly = True
@@ -165,7 +165,7 @@ Namespace kCura.EDDS.WinForm
 			'ApplicationVersion
 			'
 			Me.ApplicationVersion.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-					Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+			  Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me.ApplicationVersion.Location = New System.Drawing.Point(72, 56)
 			Me.ApplicationVersion.Name = "ApplicationVersion"
 			Me.ApplicationVersion.ReadOnly = True
@@ -192,8 +192,8 @@ Namespace kCura.EDDS.WinForm
 			'ApplicationArtifactsGroupBox
 			'
 			Me.ApplicationArtifactsGroupBox.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-					Or System.Windows.Forms.AnchorStyles.Left) _
-					Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+			  Or System.Windows.Forms.AnchorStyles.Left) _
+			  Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me.ApplicationArtifactsGroupBox.Controls.Add(Me.TabList)
 			Me.ApplicationArtifactsGroupBox.Controls.Add(Me.ObjectList)
 			Me.ApplicationArtifactsGroupBox.Controls.Add(Me.TabsLabel)
@@ -208,7 +208,7 @@ Namespace kCura.EDDS.WinForm
 			'TabList
 			'
 			Me.TabList.Anchor = CType(((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left) _
-					Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+			  Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me.TabList.Location = New System.Drawing.Point(72, 232)
 			Me.TabList.Name = "TabList"
 			Me.TabList.Size = New System.Drawing.Size(624, 108)
@@ -217,8 +217,8 @@ Namespace kCura.EDDS.WinForm
 			'ObjectList
 			'
 			Me.ObjectList.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-					Or System.Windows.Forms.AnchorStyles.Left) _
-					Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+			  Or System.Windows.Forms.AnchorStyles.Left) _
+			  Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me.ObjectList.Location = New System.Drawing.Point(72, 32)
 			Me.ObjectList.Name = "ObjectList"
 			Me.ObjectList.Size = New System.Drawing.Size(624, 173)
@@ -256,7 +256,7 @@ Namespace kCura.EDDS.WinForm
 			Me.Menu = Me.MainMenu
 			Me.MinimumSize = New System.Drawing.Size(760, 621)
 			Me.Name = "ApplicationFileForm"
-			Me.Text = "Relativity Desktop Client | Import Applicatioin File"
+			Me.Text = "Relativity Desktop Client | Import Application File"
 			Me.ApplicationFileGroupBox.ResumeLayout(False)
 			Me.ApplicationInformationGroupBox.ResumeLayout(False)
 			Me.ApplicationArtifactsGroupBox.ResumeLayout(False)
@@ -283,45 +283,40 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 		Private Sub OpenFileDialog_FileOk(ByVal sender As Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles OpenFileDialog.FileOk
-			Dim document As New Xml.XmlDocument
-			Dim fileIsValid As Boolean
-			Dim errorMessage As String = String.Empty
+			Dim document As Xml.XmlDocument
 
-			fileIsValid = LoadFileIntoXML(document, OpenFileDialog.FileName)
-
-			If fileIsValid Then
-				'check the name
-				fileIsValid = LoadApplicationNameFromNode(document.SelectSingleNode("/Application/Name"))
+			document = LoadFileIntoXML(OpenFileDialog.FileName)
+			Dim ErrorMsg As Action(Of String) = Sub(msg As String)
+																e.Cancel = True
+																MsgBox(String.Format(System.Globalization.CultureInfo.CurrentCulture, "Invalid File: {0}", msg))
+															End Sub
+			If document Is Nothing Then
+				ErrorMsg("File is not an application")
 			Else
-				errorMessage = "Invalid file type.  Files must be xml files."
+				If Not LoadApplicationNameFromNode(document.SelectSingleNode("/Application/Name")) Then
+					ErrorMsg("Application must have a name")
+				End If
+
+				Dim version As String = LoadApplicationVersionFromNode(document.SelectSingleNode("/Application/Version"))
+				If String.IsNullOrEmpty(version) Then
+					ApplicationVersion.Visible = False
+					VersionLabel.Visible = False
+				Else
+					ApplicationVersion.Text = version
+					ApplicationVersion.Visible = True
+					VersionLabel.Visible = True
+				End If
+
+				LoadApplicationObjectsFromNodes(document.SelectNodes("/Application/Objects/Object/Name"))
+				LoadApplicationTabsFromNodes(document.SelectNodes("/Application/ExternalTabs/ExternalTab/Name"))
 			End If
 
-			If fileIsValid Then
-				'check the version
-				fileIsValid = LoadApplicationVersionFromNode(document.SelectSingleNode("/Application/Version"))
-			ElseIf errorMessage = String.Empty Then
-				errorMessage = "Invalid application file.  'Name' property is missing."
+			If e.Cancel Then
+				Return
 			End If
 
-			If fileIsValid Then
-				'check the objects
-				fileIsValid = LoadApplicationObjectsFromNodes(document.SelectNodes("/Application/Objects/Object/Name"))
-			ElseIf errorMessage = String.Empty Then
-				errorMessage = "Invalid application file.  'Version' property is missing."
-			End If
-
-			If fileIsValid Then
-				fileIsValid = LoadApplicationTabsFromNodes(document.SelectNodes("/Application/ExternalTabs/ExternalTab/Name"))
-			ElseIf errorMessage = String.Empty Then
-				errorMessage = "Invalid applicagtion file.  There are no Object Types to install."
-			End If
-
-			If fileIsValid Then
-				FilePath.Text = OpenFileDialog.FileName
-				_document = document
-			Else
-				MsgBox(String.Format(System.Globalization.CultureInfo.CurrentCulture, "Invalid File: {0}", errorMessage))
-			End If
+			FilePath.Text = OpenFileDialog.FileName
+			_document = document
 		End Sub
 
 #End Region
@@ -389,54 +384,36 @@ Namespace kCura.EDDS.WinForm
 			Return result
 		End Function
 
-		Private Function LoadApplicationObjectsFromNodes(ByVal nodes As Xml.XmlNodeList) As Boolean
-			Dim result As Boolean
-			If nodes.Count > 0 Then
-				ObjectList.Items.Clear()
-				For Each node As Xml.XmlNode In nodes
-					ObjectList.Items.Add(node.InnerText)
-				Next
-				result = True
-			Else
-				result = False
-			End If
-			Return result
-		End Function
+		Private Sub LoadApplicationObjectsFromNodes(ByVal nodes As Xml.XmlNodeList)
+			ObjectList.Items.Clear()
+			For Each node As Xml.XmlNode In nodes
+				ObjectList.Items.Add(node.InnerText)
+			Next
+		End Sub
 
-		Private Function LoadApplicationTabsFromNodes(ByVal nodes As Xml.XmlNodeList) As Boolean
-			Dim result As Boolean
+		Private Sub LoadApplicationTabsFromNodes(ByVal nodes As Xml.XmlNodeList)
 			TabList.Items.Clear()
 			For Each node As Xml.XmlNode In nodes
 				TabList.Items.Add(node.InnerText)
 			Next
-			result = True
-			Return result
-		End Function
+		End Sub
 
-		Private Function LoadApplicationVersionFromNode(ByVal node As Xml.XmlNode) As Boolean
-			Dim result As Boolean
+		Private Function LoadApplicationVersionFromNode(ByVal node As Xml.XmlNode) As String
 			If node Is Nothing Then
-				result = False
+				Return Nothing
 			Else
-				ApplicationVersion.Text = node.InnerText
-				result = True
+				Return node.InnerText
 			End If
-			Return result
 		End Function
 
-		Private Function LoadFileIntoXML(ByVal document As Xml.XmlDocument, ByVal filePath As String) As Boolean
-			Dim result As Boolean
-			If Not OpenFileDialog.FileName.EndsWith(".xml") Then
-				result = False
-			Else
-				Try
-					document.Load(OpenFileDialog.FileName)
-					result = True
-				Catch ex As Exception
-					result = False
-				End Try
-			End If
-			Return result
+		Private Function LoadFileIntoXML(ByVal filePath As String) As Xml.XmlDocument
+			Try
+				Dim document As New Xml.XmlDocument
+				document.Load(OpenFileDialog.FileName)
+				Return document
+			Catch ex As Exception
+				Return Nothing
+			End Try
 		End Function
 
 #End Region
