@@ -36,8 +36,16 @@ Namespace kCura.WinEDDS
 				Else
 					WriteStatus(String.Format(System.Globalization.CultureInfo.CurrentCulture, "Error installing Application: {0}", installationResult.ExceptionMessage))
 				End If
+			Catch ex As System.Web.Services.Protocols.SoapException
+				Try
+					Dim MrSoapy As System.Web.Services.Protocols.SoapException = CType(ex, System.Web.Services.Protocols.SoapException)
+					WriteError(MrSoapy.Detail("ExceptionMessage").InnerText)
+					Return
+				Catch ex2 As System.Exception	'MrSoapy not soapified :(
+					WriteError(String.Format("Application Installation Error: {0}", ex.Message))
+				End Try
 			Catch ex As Exception
-				WriteStatus(String.Format("Application Installation Error: {0}", ex.Message))
+				WriteError(String.Format("Application Installation Error: {0}", ex.Message))
 			End Try
 		End Sub
 
@@ -56,6 +64,10 @@ Namespace kCura.WinEDDS
 
 		Private Sub WriteStatus(ByVal message As String)
 			Me.ProcessObserver.RaiseStatusEvent("", message)
+		End Sub
+
+		Private Sub WriteError(ByVal message As String)
+			Me.ProcessObserver.RaiseErrorEvent("", message)
 		End Sub
 
 #End Region
