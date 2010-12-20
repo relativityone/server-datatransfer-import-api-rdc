@@ -68,7 +68,13 @@ Public Class TextDisplayForm
 
 	Private Sub ProcessObserver_OnProcessEvent(ByVal evt As kCura.Windows.Process.ProcessEvent) Handles ProcessObserver.OnProcessEvent
 		_application.CursorWait()
-		Me.AppendText(evt.Message & vbNewLine)
+		If Not evt.Message.Contains(vbLf) Then
+			Me.AppendText(evt.Message & vbNewLine)
+		Else
+			For Each s As String In evt.Message.Split(New String() {vbLf}, StringSplitOptions.None)
+				Me.AppendText(s & vbNewLine)
+			Next
+		End If
 		_application.CursorDefault()
 	End Sub
 
