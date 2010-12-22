@@ -34,7 +34,11 @@ Namespace kCura.WinEDDS
 					Next
 					WriteStatus(String.Format(System.Globalization.CultureInfo.CurrentCulture, "Installation successful.{0}{0}{1}", System.Environment.NewLine, installedArtifacts))
 				Else
-					WriteStatus(String.Format(System.Globalization.CultureInfo.CurrentCulture, "Error installing Application: {0}", installationResult.ExceptionMessage))
+					If String.IsNullOrEmpty(installationResult.ExceptionMessage) Then
+						WriteStatus(String.Format(System.Globalization.CultureInfo.CurrentCulture, "Error installing Application"))
+					Else
+						WriteStatus(String.Format(System.Globalization.CultureInfo.CurrentCulture, installationResult.ExceptionMessage))
+					End If
 				End If
 			Catch ex As System.Web.Services.Protocols.SoapException
 				Try
