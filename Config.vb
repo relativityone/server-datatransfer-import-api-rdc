@@ -149,6 +149,19 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
+		Public Shared ReadOnly Property DisableNativeValidation() As Boolean
+			Get
+				Return CType(ConfigSettings("DisableNativeValidation"), Boolean)
+			End Get
+		End Property
+
+		Public Shared ReadOnly Property DisableNativeLocationValidation() As Boolean
+			Get
+				Return CType(ConfigSettings("DisableNativeLocationValidation"), Boolean)
+			End Get
+		End Property
+
+
 		Public Shared Property ForceFolderPreview() As Boolean
 			Get
 				Dim registryValue As String = Config.GetRegistryKeyValue("ForceFolderPreview")

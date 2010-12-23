@@ -396,33 +396,63 @@ Namespace kCura.WinEDDS
 					filename = "." & filename
 				End If
 
-				fileExists = System.IO.File.Exists(filename)
+				If Config.DisableNativeLocationValidation Then
+					'assuming that file exists and not validating it
+					fileExists = True
+				Else
+					fileExists = System.IO.File.Exists(filename)
+				End If
+
+				If filename.Trim.Equals(String.Empty) Then
+					fileExists = False
+				End If
+
+
 				If filename <> String.Empty AndAlso Not fileExists Then lineStatus += Relativity.MassImport.ImportStatus.FileSpecifiedDne 'Throw New InvalidFilenameException(filename)
 				If fileExists Then
-					Dim now As DateTime = DateTime.Now
-					Dim tries As Int32 = kCura.Utility.Config.Settings.IoErrorNumberOfRetries
-					If Me.GetFileLength(filename) = 0 Then lineStatus += Relativity.MassImport.ImportStatus.EmptyFile 'Throw New EmptyNativeFileException(filename)
-					oixFileIdData = kCura.OI.FileID.Manager.Instance.GetFileIDDataByFilePath(filename)
-					If _copyFileToRepository Then
-						Dim start As Int64 = System.DateTime.Now.Ticks
-						Dim updateCurrentStats As Boolean = (start - _statisticsLastUpdated.Ticks) > 10000000
-						_statistics.FileBytes += Me.GetFileLength(filename)
-						fileGuid = _uploader.UploadFile(filename, _caseArtifactID)
-						_statistics.FileTime += System.DateTime.Now.Ticks - start
-						destinationVolume = _uploader.CurrentDestinationDirectory
-						If updateCurrentStats Then
-							_currentStatisticsSnapshot = _statistics.ToDictionary
-							_statisticsLastUpdated = New System.DateTime(start)
+					Try
+						Dim now As DateTime = DateTime.Now
+						Dim tries As Int32 = kCura.Utility.Config.Settings.IoErrorNumberOfRetries
+
+						If Config.DisableNativeLocationValidation Then
+							'Don't check for length
+						Else
+							If Me.GetFileLength(filename) = 0 Then lineStatus += Relativity.MassImport.ImportStatus.EmptyFile 'Throw New EmptyNativeFileException(filename)
 						End If
-					Else
-						fileGuid = System.Guid.NewGuid.ToString
-					End If
-					If _extractMd5Hash Then
-						md5hash = kCura.Utility.File.GenerateMD5HashForFile(filename)
-					End If
-					fullFilePath = filename
-					filename = filename.Substring(filename.LastIndexOf("\") + 1)
-					WriteStatusLine(Windows.Process.EventType.Status, String.Format("End upload file. ({0}ms)", DateTime.op_Subtraction(DateTime.Now, now).Milliseconds))
+
+						If Config.DisableNativeValidation Then
+							oixFileIdData = Nothing
+						Else
+							oixFileIdData = kCura.OI.FileID.Manager.Instance.GetFileIDDataByFilePath(filename)
+						End If
+
+						If _copyFileToRepository Then
+							Dim start As Int64 = System.DateTime.Now.Ticks
+							Dim updateCurrentStats As Boolean = (start - _statisticsLastUpdated.Ticks) > 10000000
+							_statistics.FileBytes += Me.GetFileLength(filename)
+							fileGuid = _uploader.UploadFile(filename, _caseArtifactID)
+							_statistics.FileTime += System.DateTime.Now.Ticks - start
+							destinationVolume = _uploader.CurrentDestinationDirectory
+							If updateCurrentStats Then
+								_currentStatisticsSnapshot = _statistics.ToDictionary
+								_statisticsLastUpdated = New System.DateTime(start)
+							End If
+						Else
+							fileGuid = System.Guid.NewGuid.ToString
+						End If
+						If _extractMd5Hash Then
+							md5hash = kCura.Utility.File.GenerateMD5HashForFile(filename)
+						End If
+						fullFilePath = filename
+						filename = filename.Substring(filename.LastIndexOf("\") + 1)
+						WriteStatusLine(Windows.Process.EventType.Status, String.Format("End upload file. ({0}ms)", DateTime.op_Subtraction(DateTime.Now, now).Milliseconds))
+					Catch ex As System.IO.FileNotFoundException
+						If Config.DisableNativeLocationValidation Then
+							'Don't do anything. This exception can only happen if DisableNativeLocationValidation is turned on
+						Else
+							Throw
+						End If
+					End Try
 				End If
 			End If
 			_timekeeper.MarkEnd("ManageDocument_Filesystem")
@@ -739,9 +769,17 @@ Namespace kCura.WinEDDS
 			If _artifactTypeID = Relativity.ArtifactType.Document Then
 				If _filePathColumnIndex <> -1 AndAlso mdoc.UploadFile AndAlso mdoc.IndexFileInDB Then
 					Dim boolString As String = "0"
+					Dim fieldType As String = ""
 					If Me.IsSupportedRelativityFileType(mdoc.FileIdData) Then boolString = "1"
 					_outputNativeFileWriter.Write(boolString & Constants.NATIVE_FIELD_DELIMITER)
-					_outputNativeFileWriter.Write(mdoc.FileIdData.FileType & Constants.NATIVE_FIELD_DELIMITER)
+
+					If mdoc.FileIdData Is Nothing Then
+						fieldType = "Unknown format"
+					Else
+						fieldType = mdoc.FileIdData.FileType
+					End If
+
+					_outputNativeFileWriter.Write(fieldType & Constants.NATIVE_FIELD_DELIMITER)
 					_outputNativeFileWriter.Write("1" & Constants.NATIVE_FIELD_DELIMITER)
 				Else
 					_outputNativeFileWriter.Write("0" & Constants.NATIVE_FIELD_DELIMITER)
@@ -804,7 +842,13 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Private Function IsSupportedRelativityFileType(ByVal fileData As OI.FileID.FileIDData) As Boolean
-			If fileData Is Nothing Then Return False
+			If fileData Is Nothing Then
+				If Config.DisableNativeValidation Then
+					Return True
+				Else
+					Return False
+				End If
+			End If
 			If _oixFileLookup Is Nothing Then
 				_oixFileLookup = New System.Collections.Specialized.HybridDictionary
 				For Each id As Int32 In _documentManager.RetrieveAllUnsupportedOiFileIds
