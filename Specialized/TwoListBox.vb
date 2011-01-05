@@ -3,6 +3,9 @@ Namespace kCura.Windows.Forms
   Public Class TwoListBox
     Inherits System.Windows.Forms.UserControl
 
+		Public Event ClearHighlightedItems(ByVal location As ListBoxLocation)
+		Public Event HighlightItemByLocationAndIndex(ByVal location As ListBoxLocation, ByVal index As Int32)
+
 #Region " Windows Form Designer generated code "
 
     Public Sub New()
@@ -31,8 +34,8 @@ Namespace kCura.Windows.Forms
     'NOTE: The following procedure is required by the Windows Form Designer
     'It can be modified using the Windows Form Designer.  
     'Do not modify it using the code editor.
-    Friend WithEvents _rightListBox As System.Windows.Forms.ListBox
-    Friend WithEvents _leftListBox As System.Windows.Forms.ListBox
+		Friend WithEvents _rightListBox As kCura.Windows.Forms.ListBox
+		Friend WithEvents _leftListBox As kCura.Windows.Forms.ListBox
     Friend WithEvents _moveAllFieldsLeft As System.Windows.Forms.Button
     Friend WithEvents _moveFieldLeft As System.Windows.Forms.Button
     Friend WithEvents _moveFieldRight As System.Windows.Forms.Button
@@ -42,12 +45,12 @@ Namespace kCura.Windows.Forms
     Friend WithEvents _moveLeftSelectedItemDown As System.Windows.Forms.Button
     Friend WithEvents _moveLeftSelectedItemUp As System.Windows.Forms.Button
     <System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
-			Me._rightListBox = New System.Windows.Forms.ListBox
+			Me._rightListBox = New kCura.Windows.Forms.ListBox(Me.RelativityHighlightColor)
 			Me._moveAllFieldsLeft = New System.Windows.Forms.Button
 			Me._moveFieldLeft = New System.Windows.Forms.Button
 			Me._moveFieldRight = New System.Windows.Forms.Button
 			Me._moveAllFieldsRight = New System.Windows.Forms.Button
-			Me._leftListBox = New System.Windows.Forms.ListBox
+			Me._leftListBox = New kCura.Windows.Forms.ListBox(Me.RelativityHighlightColor)
 			Me._moveRightSelectedItemDown = New System.Windows.Forms.Button
 			Me._moveRightSelectedItemUp = New System.Windows.Forms.Button
 			Me._moveLeftSelectedItemDown = New System.Windows.Forms.Button
@@ -63,6 +66,7 @@ Namespace kCura.Windows.Forms
 			Me._rightListBox.Name = "_rightListBox"
 			Me._rightListBox.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended
 			Me._rightListBox.Size = New System.Drawing.Size(144, 277)
+			Me._rightListBox.Font = New System.Drawing.Font("Microsoft Sans Serif", 8, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point)
 			Me._rightListBox.TabIndex = 16
 			'
 			'_moveAllFieldsLeft
@@ -110,6 +114,7 @@ Namespace kCura.Windows.Forms
 			Me._leftListBox.Name = "_leftListBox"
 			Me._leftListBox.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended
 			Me._leftListBox.Size = New System.Drawing.Size(144, 277)
+			Me._leftListBox.Font = New System.Drawing.Font("Microsoft Sans Serif", 8, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point)
 			Me._leftListBox.TabIndex = 9
 			'
 			'_moveRightSelectedItemDown
@@ -170,37 +175,13 @@ Namespace kCura.Windows.Forms
 
 #End Region
 
-
 #Region "Private Declarations"
 		Private _buttonsCentered As Boolean
 		Private _alternateRowColors As Boolean = False
-		Public Event HighlightItem(ByVal index As Int32, ByVal location As ListBoxLocation)
-		Public Event ClearSelectedItems(ByVal location As ListBoxLocation)
 		Private _outerBox As ListBoxLocation
-		Private _rightHighlightItem As Int32 = -1
-		Private _leftHighlightItem As Int32 = -1
-		Private _highlightThread As System.Threading.Thread
-		Private _similarListBoxControls As System.Collections.Generic.List(Of Int32)
 #End Region
 
 #Region "Properties"
-		Public Property RightHighlightItem As Int32
-			Get
-				Return _rightHighlightItem
-			End Get
-			Set(ByVal value As Int32)
-				_rightHighlightItem = value
-			End Set
-		End Property
-
-		Public Property LeftHighlightItem As Int32
-			Get
-				Return _leftHighlightItem
-			End Get
-			Set(ByVal value As Int32)
-				_leftHighlightItem = value
-			End Set
-		End Property
 
 		Public Property AlternateRowColors() As Boolean
 			Get
@@ -220,16 +201,12 @@ Namespace kCura.Windows.Forms
 			End Set
 		End Property
 
-		Public ReadOnly Property SimilarListBoxControls() As System.Collections.Generic.List(Of Int32)
+		Public ReadOnly Property RelativityHighlightColor() As System.Drawing.Color
 			Get
-				If _similarListBoxControls Is Nothing Then
-					_similarListBoxControls = New System.Collections.Generic.List(Of Int32)()
-				End If
-				Return _similarListBoxControls
+				Return System.Drawing.Color.FromArgb(229, 142, 26)
 			End Get
 		End Property
 #End Region
-
 
 		Private Sub MoveAllItems(ByVal giver As System.Windows.Forms.ListBox, ByVal receiver As System.Windows.Forms.ListBox)
 			receiver.Items.AddRange(giver.Items)
@@ -435,61 +412,43 @@ Namespace kCura.Windows.Forms
 			ShiftSelectedItems(_rightListBox, _leftListBox)
 		End Sub
 
-		Private Sub _leftListBox_DrawItem(ByVal sender As Object, ByVal e As System.Windows.Forms.DrawItemEventArgs) Handles _leftListBox.DrawItem
-			Me.DrawBox(_leftListBox, e, _leftHighlightItem)
-		End Sub
+		'Private Sub _leftListBox_DrawItem(ByVal sender As Object, ByVal e As System.Windows.Forms.DrawItemEventArgs) Handles _leftListBox.DrawItem
+		'	Me.DrawBox(_leftListBox, e, _leftListBox.HighlightIndex)
+		'End Sub
 
-		Private Sub _rightListBox_DrawItem(ByVal sender As Object, ByVal e As System.Windows.Forms.DrawItemEventArgs) Handles _rightListBox.DrawItem
-			Me.DrawBox(_rightListBox, e, _rightHighlightItem)
-		End Sub
+		'Private Sub _rightListBox_DrawItem(ByVal sender As Object, ByVal e As System.Windows.Forms.DrawItemEventArgs) Handles _rightListBox.DrawItem
+		'	Me.DrawBox(_rightListBox, e, _rightListBox.HighlightIndex)
+		'End Sub
 
-		Private Sub DrawBox(ByVal listBox As System.Windows.Forms.ListBox, ByVal e As System.Windows.Forms.DrawItemEventArgs, ByVal highlightIndex As Int32)
+		Private Sub DrawBox(ByVal listBox As kCura.Windows.Forms.ListBox, ByVal e As System.Windows.Forms.DrawItemEventArgs, ByVal highlightIndex As Int32)
 			If e.Index < 0 Then Exit Sub
 			Dim x As New System.Windows.Forms.DrawItemEventArgs(e.Graphics, e.Font, e.Bounds, e.Index, e.State, e.ForeColor, System.Drawing.Color.LightGray)
 			If e.Index Mod 2 = 1 Then
 				e = x
 			End If
 
-			Dim brush As New System.Drawing.SolidBrush(If(e.Index = highlightIndex, System.Drawing.Color.FromArgb(229, 142, 26), e.ForeColor))
-			e.DrawBackground()
-			e.Graphics.DrawString(listBox.Items(e.Index).ToString, e.Font, brush, e.Bounds.X, e.Bounds.Y)
-			e.DrawFocusRectangle()
+			'Dim brush As New System.Drawing.SolidBrush(If(e.Index = highlightIndex, Me.RelativityHighlightColor, e.ForeColor))
+			'e.DrawBackground()
+			'e.Graphics.DrawString(listBox.Items(e.Index).ToString, e.Font, brush, e.Bounds.X, e.Bounds.Y)
+			'e.DrawFocusRectangle()
 		End Sub
 
 		Private Sub TwoListBox_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles MyBase.Load
-			If _alternateRowColors Then
-				_leftListBox.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed
-				_rightListBox.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed
-			End If
-			FindSimilarListBoxControls()
+			_leftListBox.AlternateColors = _alternateRowColors
+			_rightListBox.AlternateColors = _alternateRowColors
 		End Sub
 
 
 #Region "Highlighting Methods and event handlers"
-		Private Sub FindSimilarListBoxControls()
-			For i As Int32 = 0 To Me.Parent.Controls.Count - 1 Step 1
-				If TypeOf (Me.Parent.Controls(i)) Is kCura.Windows.Forms.TwoListBox Then
-					Me.SimilarListBoxControls.Add(i)
-				End If
-			Next
-		End Sub
 
-
-		Public Sub ClearItemsEvent(ByVal location As ListBoxLocation)
-			Dim oppositeLocation As ListBoxLocation = If(location = ListBoxLocation.Left, ListBoxLocation.Right, ListBoxLocation.Left)
-			If oppositeLocation <> Me.OuterBox Then
-				ClearItems(oppositeLocation)
-			End If
-		End Sub
-
-		Private Sub ClearItems(ByVal location As ListBoxLocation)
+		Public Sub ClearItems(ByVal location As ListBoxLocation)
 
 			Dim listbox As System.Windows.Forms.ListBox
 			If location = ListBoxLocation.Left Then
-				_leftHighlightItem = -1
+				_leftListBox.HighlightIndex = -1
 				listbox = _leftListBox
 			Else
-				_rightHighlightItem = -1
+				_rightListBox.HighlightIndex = -1
 				listbox = _rightListBox
 			End If
 			listbox.Refresh()
@@ -497,47 +456,44 @@ Namespace kCura.Windows.Forms
 		End Sub
 
 		Public Sub HighlightItembyIndex(ByVal index As Int32, ByVal location As ListBoxLocation)
-			Dim listbox As System.Windows.Forms.ListBox = If(location = ListBoxLocation.Left, _leftListBox, _rightListBox)
+			Dim listbox As kCura.Windows.Forms.ListBox = If(location = ListBoxLocation.Left, _leftListBox, _rightListBox)
+
+
 			If location = ListBoxLocation.Left Then
-				_leftHighlightItem = index
+				_leftListBox.HighlightIndex = index
 				_leftListBox.Refresh()
 			Else
-				_rightHighlightItem = index
+				_rightListBox.HighlightIndex = index
 				_rightListBox.Refresh()
 			End If
+
 		End Sub
 
 
 		Private Sub HighlightMouseOverItem(ByVal sender As Object, ByVal e As System.Windows.Forms.MouseEventArgs, ByVal location As ListBoxLocation)
-
-			ClearItems(location)
 			Dim raiseEventLocation As ListBoxLocation = If(location = ListBoxLocation.Left, ListBoxLocation.Right, ListBoxLocation.Left)
-			ClearItemsInSimilarControls(raiseEventLocation)
 
-			Dim listbox As System.Windows.Forms.ListBox = DirectCast(sender, System.Windows.Forms.ListBox)
+			Dim listbox As kCura.Windows.Forms.ListBox = DirectCast(sender, kCura.Windows.Forms.ListBox)
 			Dim G As System.Drawing.Graphics = System.Drawing.Graphics.FromHwnd(Me.Handle)
 			Dim index As Int32
 			index = listbox.IndexFromPoint(New System.Drawing.Point(e.X, e.Y))
 			If index >= 0 Then	'mouse is over an item
 				HighlightItembyIndex(index, location)
-				For Each i As Int32 In Me.SimilarListBoxControls
-					Dim lb As kCura.Windows.Forms.TwoListBox = DirectCast(Me.Parent.Controls(i), kCura.Windows.Forms.TwoListBox)
-					If Not lb.OuterBox = raiseEventLocation Then
-						lb.HighlightItembyIndex(index, raiseEventLocation)
-						Exit For
-					End If
-				Next
+				RaiseEvent HighlightItemByLocationAndIndex(raiseEventLocation, index)
+			Else
+				ClearItems(location)
+				RaiseEvent ClearHighlightedItems(raiseEventLocation)
 			End If
 		End Sub
 
 		Private Sub _rightListBox_MouseLeave(ByVal sender As Object, ByVal e As System.EventArgs) Handles _rightListBox.MouseLeave
 			ClearItems(ListBoxLocation.Right)
-			ClearItemsInSimilarControls(ListBoxLocation.Left)
+			RaiseEvent ClearHighlightedItems(ListBoxLocation.Left)
 		End Sub
 
 		Private Sub _leftListBox_MouseLeave(ByVal sender As Object, ByVal e As System.EventArgs) Handles _leftListBox.MouseLeave
 			ClearItems(ListBoxLocation.Left)
-			ClearItemsInSimilarControls(ListBoxLocation.Right)
+			RaiseEvent ClearHighlightedItems(ListBoxLocation.Right)
 		End Sub
 		Private Sub _leftListBox_MouseMove(ByVal sender As Object, ByVal e As System.Windows.Forms.MouseEventArgs) Handles _leftListBox.MouseMove
 			If Not Me.OuterBox = ListBoxLocation.Left Then
@@ -555,16 +511,6 @@ Namespace kCura.Windows.Forms
 			Left = 0
 			Right = 1
 		End Enum
-
-		Private Sub ClearItemsInSimilarControls(ByVal location As ListBoxLocation)
-			For Each i As Int32 In Me.SimilarListBoxControls
-				Dim lb As kCura.Windows.Forms.TwoListBox = DirectCast(Me.Parent.Controls(i), kCura.Windows.Forms.TwoListBox)
-				If Not lb.OuterBox = location Then
-					lb.ClearItems(location)
-					Exit For
-				End If
-			Next
-		End Sub
 
 #End Region
 
