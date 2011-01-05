@@ -69,11 +69,6 @@
 			MyBase.OnPaint(e)
 
 		End Sub
-
-
-		Private Sub ListBox_FontChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.FontChanged
-			System.Windows.Forms.MessageBox.Show("what the?")
-		End Sub
 	End Class
 End Namespace
 
