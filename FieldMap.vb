@@ -41,6 +41,7 @@ Namespace kCura.WinEDDS.UIControls
 			Me._fieldColumns = New kCura.Windows.Forms.TwoListBox
 			Me._loadFileColumns = New kCura.Windows.Forms.TwoListBox
 			Me.SuspendLayout()
+			Me.DoubleBuffered = True
 			'
 			'_fieldColumnsLabel
 			'
@@ -158,6 +159,23 @@ Namespace kCura.WinEDDS.UIControls
 		Public Event FieldColumnsItemsShifted()
 		Public Event LoadFileColumnsItemsShifted()
 
+
+		Private Sub _fieldColumns_ClearHighlightedItems(ByVal location As Windows.Forms.TwoListBox.ListBoxLocation) Handles _fieldColumns.ClearHighlightedItems
+			_loadFileColumns.ClearItems(location)
+		End Sub
+
+		Private Sub _fieldColumns_HighlightItemByLocationAndIndex(ByVal location As Windows.Forms.TwoListBox.ListBoxLocation, ByVal index As Integer) Handles _fieldColumns.HighlightItemByLocationAndIndex
+			_loadFileColumns.HighlightItembyIndex(index, location)
+		End Sub
+
+
+		Private Sub _loadFileColumns_ClearHighlightedItems(ByVal location As Windows.Forms.TwoListBox.ListBoxLocation) Handles _loadFileColumns.ClearHighlightedItems
+			_fieldColumns.ClearItems(location)
+		End Sub
+
+		Private Sub _loadFileColumns_HighlightItemByLocationAndIndex(ByVal location As Windows.Forms.TwoListBox.ListBoxLocation, ByVal index As Integer) Handles _loadFileColumns.HighlightItemByLocationAndIndex
+			_fieldColumns.HighlightItembyIndex(index, location)
+		End Sub
 	End Class
 
 End Namespace
