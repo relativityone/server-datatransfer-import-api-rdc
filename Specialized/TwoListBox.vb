@@ -66,7 +66,6 @@ Namespace kCura.Windows.Forms
 			Me._rightListBox.Name = "_rightListBox"
 			Me._rightListBox.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended
 			Me._rightListBox.Size = New System.Drawing.Size(144, 277)
-			Me._rightListBox.Font = New System.Drawing.Font("Microsoft Sans Serif", 8, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point)
 			Me._rightListBox.TabIndex = 16
 			'
 			'_moveAllFieldsLeft
@@ -114,7 +113,6 @@ Namespace kCura.Windows.Forms
 			Me._leftListBox.Name = "_leftListBox"
 			Me._leftListBox.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended
 			Me._leftListBox.Size = New System.Drawing.Size(144, 277)
-			Me._leftListBox.Font = New System.Drawing.Font("Microsoft Sans Serif", 8, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point)
 			Me._leftListBox.TabIndex = 9
 			'
 			'_moveRightSelectedItemDown
