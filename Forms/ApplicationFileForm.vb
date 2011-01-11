@@ -1,3 +1,8 @@
+Imports System.Xml
+Imports System.Core
+Imports System.Xml.Linq
+
+
 Namespace kCura.EDDS.WinForm
 	Public Class ApplicationFileForm
 		Inherits System.Windows.Forms.Form
@@ -37,39 +42,34 @@ Namespace kCura.EDDS.WinForm
 		Friend WithEvents ApplicationName As System.Windows.Forms.TextBox
 		Friend WithEvents ApplicationVersion As System.Windows.Forms.TextBox
 		Friend WithEvents OpenFileDialog As System.Windows.Forms.OpenFileDialog
-		Friend WithEvents ObjectList As System.Windows.Forms.ListBox
-		Friend WithEvents TabList As System.Windows.Forms.ListBox
 		Friend WithEvents ApplicationFileGroupBox As System.Windows.Forms.GroupBox
 		Friend WithEvents ApplicationInformationGroupBox As System.Windows.Forms.GroupBox
 		Friend WithEvents ApplicationArtifactsGroupBox As System.Windows.Forms.GroupBox
 		Friend WithEvents MainMenu As System.Windows.Forms.MainMenu
 		Friend WithEvents NameLabel As System.Windows.Forms.Label
 		Friend WithEvents VersionLabel As System.Windows.Forms.Label
-		Friend WithEvents ObjectsLabel As System.Windows.Forms.Label
-		Friend WithEvents TabsLabel As System.Windows.Forms.Label
 		Friend WithEvents FilePath As System.Windows.Forms.TextBox
+		Friend WithEvents TreeView1 As System.Windows.Forms.TreeView
 		Friend WithEvents BrowseButton As System.Windows.Forms.Button
 		<System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
-			Dim resources As System.Resources.ResourceManager = New System.Resources.ResourceManager(GetType(ApplicationFileForm))
-			Me.MainMenu = New System.Windows.Forms.MainMenu
-			Me.MenuFile = New System.Windows.Forms.MenuItem
-			Me.MenuFile_Close = New System.Windows.Forms.MenuItem
-			Me.MenuImport = New System.Windows.Forms.MenuItem
-			Me.MenuImport_ImportApplication = New System.Windows.Forms.MenuItem
-			Me.ApplicationFileGroupBox = New System.Windows.Forms.GroupBox
-			Me.BrowseButton = New System.Windows.Forms.Button
-			Me.FilePath = New System.Windows.Forms.TextBox
-			Me.ApplicationInformationGroupBox = New System.Windows.Forms.GroupBox
-			Me.ApplicationName = New System.Windows.Forms.TextBox
-			Me.ApplicationVersion = New System.Windows.Forms.TextBox
-			Me.VersionLabel = New System.Windows.Forms.Label
-			Me.NameLabel = New System.Windows.Forms.Label
-			Me.ApplicationArtifactsGroupBox = New System.Windows.Forms.GroupBox
-			Me.TabList = New System.Windows.Forms.ListBox
-			Me.ObjectList = New System.Windows.Forms.ListBox
-			Me.TabsLabel = New System.Windows.Forms.Label
-			Me.ObjectsLabel = New System.Windows.Forms.Label
-			Me.OpenFileDialog = New System.Windows.Forms.OpenFileDialog
+			Me.components = New System.ComponentModel.Container()
+			Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(ApplicationFileForm))
+			Me.MainMenu = New System.Windows.Forms.MainMenu(Me.components)
+			Me.MenuFile = New System.Windows.Forms.MenuItem()
+			Me.MenuFile_Close = New System.Windows.Forms.MenuItem()
+			Me.MenuImport = New System.Windows.Forms.MenuItem()
+			Me.MenuImport_ImportApplication = New System.Windows.Forms.MenuItem()
+			Me.ApplicationFileGroupBox = New System.Windows.Forms.GroupBox()
+			Me.BrowseButton = New System.Windows.Forms.Button()
+			Me.FilePath = New System.Windows.Forms.TextBox()
+			Me.ApplicationInformationGroupBox = New System.Windows.Forms.GroupBox()
+			Me.ApplicationName = New System.Windows.Forms.TextBox()
+			Me.ApplicationVersion = New System.Windows.Forms.TextBox()
+			Me.VersionLabel = New System.Windows.Forms.Label()
+			Me.NameLabel = New System.Windows.Forms.Label()
+			Me.ApplicationArtifactsGroupBox = New System.Windows.Forms.GroupBox()
+			Me.OpenFileDialog = New System.Windows.Forms.OpenFileDialog()
+			Me.TreeView1 = New System.Windows.Forms.TreeView()
 			Me.ApplicationFileGroupBox.SuspendLayout()
 			Me.ApplicationInformationGroupBox.SuspendLayout()
 			Me.ApplicationArtifactsGroupBox.SuspendLayout()
@@ -104,7 +104,7 @@ Namespace kCura.EDDS.WinForm
 			'ApplicationFileGroupBox
 			'
 			Me.ApplicationFileGroupBox.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-			  Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+				 Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me.ApplicationFileGroupBox.Controls.Add(Me.BrowseButton)
 			Me.ApplicationFileGroupBox.Controls.Add(Me.FilePath)
 			Me.ApplicationFileGroupBox.Location = New System.Drawing.Point(16, 24)
@@ -126,7 +126,7 @@ Namespace kCura.EDDS.WinForm
 			'FilePath
 			'
 			Me.FilePath.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-			  Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+				 Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me.FilePath.BackColor = System.Drawing.SystemColors.ControlLightLight
 			Me.FilePath.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
 			Me.FilePath.ForeColor = System.Drawing.SystemColors.ControlDarkDark
@@ -139,7 +139,7 @@ Namespace kCura.EDDS.WinForm
 			'ApplicationInformationGroupBox
 			'
 			Me.ApplicationInformationGroupBox.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-			  Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+				 Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me.ApplicationInformationGroupBox.Controls.Add(Me.ApplicationName)
 			Me.ApplicationInformationGroupBox.Controls.Add(Me.ApplicationVersion)
 			Me.ApplicationInformationGroupBox.Controls.Add(Me.VersionLabel)
@@ -154,24 +154,22 @@ Namespace kCura.EDDS.WinForm
 			'ApplicationName
 			'
 			Me.ApplicationName.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-			  Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+				 Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me.ApplicationName.Location = New System.Drawing.Point(72, 24)
 			Me.ApplicationName.Name = "ApplicationName"
 			Me.ApplicationName.ReadOnly = True
 			Me.ApplicationName.Size = New System.Drawing.Size(624, 20)
 			Me.ApplicationName.TabIndex = 3
-			Me.ApplicationName.Text = ""
 			'
 			'ApplicationVersion
 			'
 			Me.ApplicationVersion.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-			  Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+				 Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me.ApplicationVersion.Location = New System.Drawing.Point(72, 56)
 			Me.ApplicationVersion.Name = "ApplicationVersion"
 			Me.ApplicationVersion.ReadOnly = True
 			Me.ApplicationVersion.Size = New System.Drawing.Size(624, 20)
 			Me.ApplicationVersion.TabIndex = 2
-			Me.ApplicationVersion.Text = ""
 			'
 			'VersionLabel
 			'
@@ -192,12 +190,9 @@ Namespace kCura.EDDS.WinForm
 			'ApplicationArtifactsGroupBox
 			'
 			Me.ApplicationArtifactsGroupBox.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-			  Or System.Windows.Forms.AnchorStyles.Left) _
-			  Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-			Me.ApplicationArtifactsGroupBox.Controls.Add(Me.TabList)
-			Me.ApplicationArtifactsGroupBox.Controls.Add(Me.ObjectList)
-			Me.ApplicationArtifactsGroupBox.Controls.Add(Me.TabsLabel)
-			Me.ApplicationArtifactsGroupBox.Controls.Add(Me.ObjectsLabel)
+				 Or System.Windows.Forms.AnchorStyles.Left) _
+				 Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+			Me.ApplicationArtifactsGroupBox.Controls.Add(Me.TreeView1)
 			Me.ApplicationArtifactsGroupBox.Location = New System.Drawing.Point(16, 192)
 			Me.ApplicationArtifactsGroupBox.Name = "ApplicationArtifactsGroupBox"
 			Me.ApplicationArtifactsGroupBox.Size = New System.Drawing.Size(720, 360)
@@ -205,50 +200,21 @@ Namespace kCura.EDDS.WinForm
 			Me.ApplicationArtifactsGroupBox.TabStop = False
 			Me.ApplicationArtifactsGroupBox.Text = "Application Artifacts"
 			'
-			'TabList
-			'
-			Me.TabList.Anchor = CType(((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left) _
-			  Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-			Me.TabList.Location = New System.Drawing.Point(72, 232)
-			Me.TabList.Name = "TabList"
-			Me.TabList.Size = New System.Drawing.Size(624, 108)
-			Me.TabList.TabIndex = 5
-			'
-			'ObjectList
-			'
-			Me.ObjectList.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-			  Or System.Windows.Forms.AnchorStyles.Left) _
-			  Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-			Me.ObjectList.Location = New System.Drawing.Point(72, 32)
-			Me.ObjectList.Name = "ObjectList"
-			Me.ObjectList.Size = New System.Drawing.Size(624, 173)
-			Me.ObjectList.TabIndex = 4
-			'
-			'TabsLabel
-			'
-			Me.TabsLabel.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
-			Me.TabsLabel.Location = New System.Drawing.Point(16, 232)
-			Me.TabsLabel.Name = "TabsLabel"
-			Me.TabsLabel.Size = New System.Drawing.Size(48, 23)
-			Me.TabsLabel.TabIndex = 2
-			Me.TabsLabel.Text = "Tabs:"
-			'
-			'ObjectsLabel
-			'
-			Me.ObjectsLabel.Location = New System.Drawing.Point(16, 32)
-			Me.ObjectsLabel.Name = "ObjectsLabel"
-			Me.ObjectsLabel.Size = New System.Drawing.Size(48, 23)
-			Me.ObjectsLabel.TabIndex = 1
-			Me.ObjectsLabel.Text = "Objects:"
-			'
 			'OpenFileDialog
 			'
 			Me.OpenFileDialog.Filter = "XML Files (*.xml)|*.xml"
 			'
+			'TreeView1
+			'
+			Me.TreeView1.Location = New System.Drawing.Point(8, 19)
+			Me.TreeView1.Name = "TreeView1"
+			Me.TreeView1.Size = New System.Drawing.Size(704, 335)
+			Me.TreeView1.TabIndex = 0
+			'
 			'ApplicationFileForm
 			'
 			Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
-			Me.ClientSize = New System.Drawing.Size(752, 566)
+			Me.ClientSize = New System.Drawing.Size(752, 594)
 			Me.Controls.Add(Me.ApplicationArtifactsGroupBox)
 			Me.Controls.Add(Me.ApplicationInformationGroupBox)
 			Me.Controls.Add(Me.ApplicationFileGroupBox)
@@ -258,7 +224,9 @@ Namespace kCura.EDDS.WinForm
 			Me.Name = "ApplicationFileForm"
 			Me.Text = "Relativity Desktop Client | Import Application File"
 			Me.ApplicationFileGroupBox.ResumeLayout(False)
+			Me.ApplicationFileGroupBox.PerformLayout()
 			Me.ApplicationInformationGroupBox.ResumeLayout(False)
+			Me.ApplicationInformationGroupBox.PerformLayout()
 			Me.ApplicationArtifactsGroupBox.ResumeLayout(False)
 			Me.ResumeLayout(False)
 
@@ -287,9 +255,9 @@ Namespace kCura.EDDS.WinForm
 
 			document = LoadFileIntoXML(OpenFileDialog.FileName)
 			Dim ErrorMsg As Action(Of String) = Sub(msg As String)
-																e.Cancel = True
-																MsgBox(String.Format(System.Globalization.CultureInfo.CurrentCulture, "Invalid File: {0}", msg))
-															End Sub
+																						e.Cancel = True
+																						MsgBox(String.Format(System.Globalization.CultureInfo.CurrentCulture, "Invalid File: {0}", msg))
+																					End Sub
 			If document Is Nothing Then
 				ErrorMsg("File is not an application")
 			Else
@@ -307,8 +275,7 @@ Namespace kCura.EDDS.WinForm
 					VersionLabel.Visible = True
 				End If
 
-				LoadApplicationObjectsFromNodes(document.SelectNodes("/Application/Objects/Object/Name"))
-				LoadApplicationTabsFromNodes(document.SelectNodes("/Application/ExternalTabs/ExternalTab/Name"))
+				LoadApplicationTree(document)
 			End If
 
 			If e.Cancel Then
@@ -384,17 +351,51 @@ Namespace kCura.EDDS.WinForm
 			Return result
 		End Function
 
-		Private Sub LoadApplicationObjectsFromNodes(ByVal nodes As Xml.XmlNodeList)
-			ObjectList.Items.Clear()
-			For Each node As Xml.XmlNode In nodes
-				ObjectList.Items.Add(node.InnerText)
+		Private Sub LoadApplicationTree(ByVal document As Xml.XmlDocument)
+			TreeView1.Nodes.Clear()
+			TreeView1.BeginUpdate()
+			Dim newNode As New TreeNode
+			Dim doc As XElement = XElement.Load(New System.IO.StringReader(document.OuterXml))
+			Dim objsNode = TreeView1.Nodes.Add("Object Types")
+			Dim boldfont As New Font(TreeView.DefaultFont, FontStyle.Bold)
+			objsNode.NodeFont = boldfont
+			For Each objlment As XElement In doc...<Object>
+				Dim objNode = objsNode.Nodes.Add(objlment.<Name>.Value)
+				PopulateChildren(objNode, "Fields", "Field", objlment)
+				PopulateChildren(objNode, "Layouts", "Layout", objlment)
+				PopulateChildren(objNode, "Tabs", "Tab", objlment)
+				PopulateChildren(objNode, "Views", "View", objlment)
 			Next
+			Dim externalTabsNode = TreeView1.Nodes.Add("External Tabs")
+			externalTabsNode.NodeFont = boldfont
+			For Each tablment As XElement In doc...<ExternalTab>
+				externalTabsNode.Nodes.Add(tablment.<Name>.Value)
+			Next
+			Dim scriptsNode = TreeView1.Nodes.Add("Scripts")
+			scriptsNode.NodeFont = boldfont
+			For Each scriptElment As XElement In doc...<ScriptElement>
+				scriptsNode.Nodes.Add(scriptElment.<Name>.Value)
+			Next
+			TreeView1.EndUpdate()
 		End Sub
 
-		Private Sub LoadApplicationTabsFromNodes(ByVal nodes As Xml.XmlNodeList)
-			TabList.Items.Clear()
-			For Each node As Xml.XmlNode In nodes
-				TabList.Items.Add(node.InnerText)
+		Private Sub PopulateChildren(ByVal rootNode As TreeNode, ByVal rootName As String, ByVal childName As String, ByVal objlment As XElement)
+			Dim childNodes = rootNode.Nodes.Add(rootName)
+			Dim boldfont As New Font(TreeView.DefaultFont, FontStyle.Bold)
+			childNodes.NodeFont = boldfont
+			For Each elmnt As XElement In objlment.Descendants(childName)
+				Dim grandChild As TreeNode = Nothing
+				If String.IsNullOrEmpty(elmnt.<Name>.Value) Then
+					grandChild = childNodes.Nodes.Add(elmnt.<DisplayName>.Value)
+				Else
+					grandChild = childNodes.Nodes.Add(elmnt.<Name>.Value)
+				End If
+				If childName = "Tab" Then
+					If Not String.IsNullOrEmpty(elmnt.<ParentTab>.Value) Then
+						Dim pt = elmnt.<ParentTab>
+						childNodes.Nodes.Add(pt.<Name>.Value)
+					End If
+				End If
 			Next
 		End Sub
 
@@ -418,5 +419,8 @@ Namespace kCura.EDDS.WinForm
 
 #End Region
 
+		Private Sub TreeView1_AfterSelect(ByVal sender As System.Object, ByVal e As System.Windows.Forms.TreeViewEventArgs) Handles TreeView1.AfterSelect
+
+		End Sub
 	End Class
 End Namespace
