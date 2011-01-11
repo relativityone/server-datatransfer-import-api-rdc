@@ -50,6 +50,9 @@ Namespace kCura.EDDS.WinForm
 		Friend WithEvents VersionLabel As System.Windows.Forms.Label
 		Friend WithEvents FilePath As System.Windows.Forms.TextBox
 		Friend WithEvents TreeView1 As System.Windows.Forms.TreeView
+		Friend WithEvents GroupBox1 As System.Windows.Forms.GroupBox
+		Friend WithEvents BrowseCasesButton As System.Windows.Forms.Button
+		Friend WithEvents CaseListTextBox As System.Windows.Forms.TextBox
 		Friend WithEvents BrowseButton As System.Windows.Forms.Button
 		<System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
 			Me.components = New System.ComponentModel.Container()
@@ -68,11 +71,15 @@ Namespace kCura.EDDS.WinForm
 			Me.VersionLabel = New System.Windows.Forms.Label()
 			Me.NameLabel = New System.Windows.Forms.Label()
 			Me.ApplicationArtifactsGroupBox = New System.Windows.Forms.GroupBox()
-			Me.OpenFileDialog = New System.Windows.Forms.OpenFileDialog()
 			Me.TreeView1 = New System.Windows.Forms.TreeView()
+			Me.OpenFileDialog = New System.Windows.Forms.OpenFileDialog()
+			Me.GroupBox1 = New System.Windows.Forms.GroupBox()
+			Me.BrowseCasesButton = New System.Windows.Forms.Button()
+			Me.CaseListTextBox = New System.Windows.Forms.TextBox()
 			Me.ApplicationFileGroupBox.SuspendLayout()
 			Me.ApplicationInformationGroupBox.SuspendLayout()
 			Me.ApplicationArtifactsGroupBox.SuspendLayout()
+			Me.GroupBox1.SuspendLayout()
 			Me.SuspendLayout()
 			'
 			'MainMenu
@@ -104,7 +111,7 @@ Namespace kCura.EDDS.WinForm
 			'ApplicationFileGroupBox
 			'
 			Me.ApplicationFileGroupBox.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-				 Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+									Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me.ApplicationFileGroupBox.Controls.Add(Me.BrowseButton)
 			Me.ApplicationFileGroupBox.Controls.Add(Me.FilePath)
 			Me.ApplicationFileGroupBox.Location = New System.Drawing.Point(16, 24)
@@ -126,7 +133,7 @@ Namespace kCura.EDDS.WinForm
 			'FilePath
 			'
 			Me.FilePath.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-				 Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+									Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me.FilePath.BackColor = System.Drawing.SystemColors.ControlLightLight
 			Me.FilePath.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
 			Me.FilePath.ForeColor = System.Drawing.SystemColors.ControlDarkDark
@@ -139,12 +146,12 @@ Namespace kCura.EDDS.WinForm
 			'ApplicationInformationGroupBox
 			'
 			Me.ApplicationInformationGroupBox.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-				 Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+									Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me.ApplicationInformationGroupBox.Controls.Add(Me.ApplicationName)
 			Me.ApplicationInformationGroupBox.Controls.Add(Me.ApplicationVersion)
 			Me.ApplicationInformationGroupBox.Controls.Add(Me.VersionLabel)
 			Me.ApplicationInformationGroupBox.Controls.Add(Me.NameLabel)
-			Me.ApplicationInformationGroupBox.Location = New System.Drawing.Point(16, 88)
+			Me.ApplicationInformationGroupBox.Location = New System.Drawing.Point(16, 139)
 			Me.ApplicationInformationGroupBox.Name = "ApplicationInformationGroupBox"
 			Me.ApplicationInformationGroupBox.Size = New System.Drawing.Size(720, 88)
 			Me.ApplicationInformationGroupBox.TabIndex = 23
@@ -154,7 +161,7 @@ Namespace kCura.EDDS.WinForm
 			'ApplicationName
 			'
 			Me.ApplicationName.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-				 Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+									Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me.ApplicationName.Location = New System.Drawing.Point(72, 24)
 			Me.ApplicationName.Name = "ApplicationName"
 			Me.ApplicationName.ReadOnly = True
@@ -164,7 +171,7 @@ Namespace kCura.EDDS.WinForm
 			'ApplicationVersion
 			'
 			Me.ApplicationVersion.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-				 Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+									Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me.ApplicationVersion.Location = New System.Drawing.Point(72, 56)
 			Me.ApplicationVersion.Name = "ApplicationVersion"
 			Me.ApplicationVersion.ReadOnly = True
@@ -190,31 +197,65 @@ Namespace kCura.EDDS.WinForm
 			'ApplicationArtifactsGroupBox
 			'
 			Me.ApplicationArtifactsGroupBox.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-				 Or System.Windows.Forms.AnchorStyles.Left) _
-				 Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+									Or System.Windows.Forms.AnchorStyles.Left) _
+									Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me.ApplicationArtifactsGroupBox.Controls.Add(Me.TreeView1)
-			Me.ApplicationArtifactsGroupBox.Location = New System.Drawing.Point(16, 192)
+			Me.ApplicationArtifactsGroupBox.Location = New System.Drawing.Point(12, 233)
 			Me.ApplicationArtifactsGroupBox.Name = "ApplicationArtifactsGroupBox"
-			Me.ApplicationArtifactsGroupBox.Size = New System.Drawing.Size(720, 360)
+			Me.ApplicationArtifactsGroupBox.Size = New System.Drawing.Size(720, 378)
 			Me.ApplicationArtifactsGroupBox.TabIndex = 24
 			Me.ApplicationArtifactsGroupBox.TabStop = False
 			Me.ApplicationArtifactsGroupBox.Text = "Application Artifacts"
+			'
+			'TreeView1
+			'
+			Me.TreeView1.Location = New System.Drawing.Point(10, 19)
+			Me.TreeView1.Name = "TreeView1"
+			Me.TreeView1.Size = New System.Drawing.Size(704, 345)
+			Me.TreeView1.TabIndex = 0
 			'
 			'OpenFileDialog
 			'
 			Me.OpenFileDialog.Filter = "XML Files (*.xml)|*.xml"
 			'
-			'TreeView1
+			'GroupBox1
 			'
-			Me.TreeView1.Location = New System.Drawing.Point(8, 19)
-			Me.TreeView1.Name = "TreeView1"
-			Me.TreeView1.Size = New System.Drawing.Size(704, 335)
-			Me.TreeView1.TabIndex = 0
+			Me.GroupBox1.Controls.Add(Me.BrowseCasesButton)
+			Me.GroupBox1.Controls.Add(Me.CaseListTextBox)
+			Me.GroupBox1.Location = New System.Drawing.Point(16, 78)
+			Me.GroupBox1.Name = "GroupBox1"
+			Me.GroupBox1.Size = New System.Drawing.Size(720, 55)
+			Me.GroupBox1.TabIndex = 25
+			Me.GroupBox1.TabStop = False
+			Me.GroupBox1.Text = "Application Case"
+			'
+			'BrowseCasesButton
+			'
+			Me.BrowseCasesButton.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+			Me.BrowseCasesButton.Location = New System.Drawing.Point(688, 23)
+			Me.BrowseCasesButton.Name = "BrowseCasesButton"
+			Me.BrowseCasesButton.Size = New System.Drawing.Size(24, 20)
+			Me.BrowseCasesButton.TabIndex = 6
+			Me.BrowseCasesButton.Text = "..."
+			'
+			'CaseListTextBox
+			'
+			Me.CaseListTextBox.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
+									Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+			Me.CaseListTextBox.BackColor = System.Drawing.SystemColors.ControlLightLight
+			Me.CaseListTextBox.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+			Me.CaseListTextBox.ForeColor = System.Drawing.SystemColors.ControlDarkDark
+			Me.CaseListTextBox.Location = New System.Drawing.Point(8, 23)
+			Me.CaseListTextBox.Name = "CaseListTextBox"
+			Me.CaseListTextBox.Size = New System.Drawing.Size(680, 20)
+			Me.CaseListTextBox.TabIndex = 5
+			Me.CaseListTextBox.Text = "Select a case  ..."
 			'
 			'ApplicationFileForm
 			'
 			Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
-			Me.ClientSize = New System.Drawing.Size(752, 594)
+			Me.ClientSize = New System.Drawing.Size(752, 664)
+			Me.Controls.Add(Me.GroupBox1)
 			Me.Controls.Add(Me.ApplicationArtifactsGroupBox)
 			Me.Controls.Add(Me.ApplicationInformationGroupBox)
 			Me.Controls.Add(Me.ApplicationFileGroupBox)
@@ -228,6 +269,8 @@ Namespace kCura.EDDS.WinForm
 			Me.ApplicationInformationGroupBox.ResumeLayout(False)
 			Me.ApplicationInformationGroupBox.PerformLayout()
 			Me.ApplicationArtifactsGroupBox.ResumeLayout(False)
+			Me.GroupBox1.ResumeLayout(False)
+			Me.GroupBox1.PerformLayout()
 			Me.ResumeLayout(False)
 
 		End Sub
@@ -246,7 +289,7 @@ Namespace kCura.EDDS.WinForm
 
 		Private Sub MenuImport_ImportApplication_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles MenuImport_ImportApplication.Click
 			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
-			_application.ImportApplicationFile(_document)
+			_application.ImportApplicationFile(_caseInfos, _document)
 			Me.Cursor = System.Windows.Forms.Cursors.Default
 		End Sub
 
@@ -286,6 +329,13 @@ Namespace kCura.EDDS.WinForm
 			_document = document
 		End Sub
 
+		Private Sub BrowseCasesButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles BrowseCasesButton.Click
+			Dim frm As New CaseSelectForm
+			frm.MultiSelect = True
+			frm.ShowDialog()
+			Me.CaseInfos = frm.SelectedCaseInfo
+		End Sub
+
 #End Region
 
 #Region " Friend Properties "
@@ -299,12 +349,18 @@ Namespace kCura.EDDS.WinForm
 			End Set
 		End Property
 
-		Friend Property CaseInfo() As Relativity.CaseInfo
+		Friend Property CaseInfos() As Generic.List(Of Relativity.CaseInfo)
 			Get
-				Return _caseInfo
+				Return _caseInfos
 			End Get
-			Set(ByVal Value As Relativity.CaseInfo)
-				_caseInfo = Value
+			Set(ByVal Value As Generic.List(Of Relativity.CaseInfo))
+				_caseInfos = Value
+				Dim sb As New System.Text.StringBuilder
+				For Each info As Relativity.CaseInfo In _caseInfos
+					sb.AppendFormat("{0}, ", info.Name)
+				Next
+				sb.Remove(sb.Length - 2, 2)
+				Me.CaseListTextBox.Text = sb.ToString
 			End Set
 		End Property
 
@@ -331,7 +387,7 @@ Namespace kCura.EDDS.WinForm
 #Region " Private Fields "
 
 		Private WithEvents _application As kCura.EDDS.WinForm.Application
-		Private _caseInfo As Relativity.CaseInfo
+		Private _caseInfos As Generic.List(Of Relativity.CaseInfo)
 		Private _cookieContainer As System.Net.CookieContainer
 		Private _credentials As System.Net.NetworkCredential
 		Private _document As Xml.XmlDocument
@@ -419,8 +475,5 @@ Namespace kCura.EDDS.WinForm
 
 #End Region
 
-		Private Sub TreeView1_AfterSelect(ByVal sender As System.Object, ByVal e As System.Windows.Forms.TreeViewEventArgs) Handles TreeView1.AfterSelect
-
-		End Sub
 	End Class
 End Namespace

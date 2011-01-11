@@ -115,29 +115,40 @@ Namespace kCura.EDDS.WinForm
 
 #Region " Declarations & Properties "
 		Private WithEvents _application As kCura.EDDS.WinForm.Application
-		Private _selectedCaseInfo As Relativity.CaseInfo
+		Private _selectedCaseInfo As Generic.List(Of Relativity.CaseInfo)
 
-		Public ReadOnly Property SelectedCaseInfo() As Relativity.CaseInfo
+		Public ReadOnly Property SelectedCaseInfo() As Generic.List(Of Relativity.CaseInfo)
 			Get
 				Return _selectedCaseInfo
 			End Get
 		End Property
+
+		Public WriteOnly Property MultiSelect As Boolean
+			Set(ByVal value As Boolean)
+				Me.CaseListView.MultiSelect = value
+			End Set
+		End Property
+
 #End Region
 		Private _cases As System.Data.DataSet
 		Private Sub CaseSelectForm_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
 			_cases = _application.GetCases
-			Me.LoadCases("")
+			Me.LoadCases(String.Empty)
 			Me.Focus()
 			SearchQuery.Focus()
 		End Sub
 
 		Private Sub CaseListView_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles CaseListView.SelectedIndexChanged
 			Dim caseManager As New kCura.EDDS.WebAPI.CaseManagerBase.CaseManager
+			Dim list As New Generic.List(Of Relativity.CaseInfo)
 			If CaseListView.SelectedItems.Count <> 0 Then
-				_selectedCaseInfo = DirectCast(CaseListView.SelectedItems.Item(0).Tag, Relativity.CaseInfo)
+				For Each si As ListViewItem In CaseListView.SelectedItems
+					list.Add(DirectCast(si.Tag, Relativity.CaseInfo))
+				Next
+				_selectedCaseInfo = list
 				_OKButton.Enabled = True
 			Else
-				_selectedCaseInfo = Nothing
+				_selectedCaseInfo = list
 			End If
 		End Sub
 
@@ -169,7 +180,7 @@ Namespace kCura.EDDS.WinForm
 			Dim dt As DataTable = _cases.Tables(0)
 			Dim row As DataRow
 			For Each row In dt.Rows
-				If searchText.Trim = "" OrElse CType(row.Item("Name"), String).ToLower.IndexOf(searchText.Trim.ToLower) <> -1 Then
+				If String.IsNullOrEmpty(searchText.Trim) OrElse CType(row.Item("Name"), String).ToLower.IndexOf(searchText.Trim.ToLower) <> -1 Then
 					Dim listItem As New System.Windows.Forms.ListViewItem
 					listItem.Text = CType(row.Item("Name"), String)
 					listItem.Tag = New Relativity.CaseInfo(row)

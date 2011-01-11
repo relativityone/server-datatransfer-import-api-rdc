@@ -520,8 +520,13 @@ Namespace kCura.EDDS.WinForm
 
 		Public Function GetCase() As Relativity.CaseInfo
 			Dim frm As New CaseSelectForm
+			frm.MultiSelect = False
 			frm.ShowDialog()
-			Return frm.SelectedCaseInfo
+			If frm.SelectedCaseInfo.Count = 0 Then
+				Return Nothing
+			Else
+				Return frm.SelectedCaseInfo.Item(0)
+			End If
 		End Function
 
 		Public Function GetConnectionStatus() As String
@@ -1003,7 +1008,9 @@ Namespace kCura.EDDS.WinForm
 			End If
 			Dim applicationForm As New ApplicationFileForm
 			applicationForm.Application = Me
-			applicationForm.CaseInfo = caseInfo
+			Dim list As New Generic.List(Of Relativity.CaseInfo)
+			list.Add(caseInfo)
+			applicationForm.CaseInfos = list
 			applicationForm.CookieContainer = Me.CookieContainer
 			applicationForm.Credentials = Me.Credential
 			applicationForm.Show()
@@ -1399,13 +1406,13 @@ Namespace kCura.EDDS.WinForm
 			CursorDefault()
 		End Sub
 
-		Public Sub ImportApplicationFile(ByVal application As Xml.XmlDocument)
+		Public Sub ImportApplicationFile(ByVal caseInfos As Generic.IEnumerable(Of Relativity.CaseInfo), ByVal application As Xml.XmlDocument)
 			CursorWait()
 			If Not Me.IsConnected(Me.SelectedCaseInfo.ArtifactID, 10) Then
 				CursorDefault()
 				Exit Sub
 			End If
-			Dim applicationDeploymentProcess As New kCura.WinEDDS.ApplicationDeploymentProcess(application, Me.Credential, Me.CookieContainer, Me.SelectedCaseInfo)
+			Dim applicationDeploymentProcess As New kCura.WinEDDS.ApplicationDeploymentProcess(application, Me.Credential, Me.CookieContainer, caseInfos)
 			Dim form As New TextDisplayForm
 			form.ProcessObserver = applicationDeploymentProcess.ProcessObserver
 			form.Text = "Application Deployment System"

@@ -175,7 +175,7 @@ Namespace kCura.EDDS.WinForm
 			template.Load(stream)
 			stream.Close()
 
-			Dim importer As New kCura.WinEDDS.ApplicationDeploymentProcess(template, _application.Credential, _application.CookieContainer, SelectedCaseInfo)
+			Dim importer As New kCura.WinEDDS.ApplicationDeploymentProcess(template, _application.Credential, _application.CookieContainer, New Relativity.CaseInfo() {SelectedCaseInfo})
 			Dim executor As New kCura.EDDS.WinForm.CommandLineProcessRunner(importer.ProcessObserver, importer.ProcessController, ErrorLoadFileLocation, ErrorReportFileLocation)
 			_application.StartProcess(importer)
 		End Sub
