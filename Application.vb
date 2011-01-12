@@ -263,7 +263,7 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 		Public Sub UpdateWebServiceURL(ByVal relogin As Boolean)
-			If Not Me.TemporaryWebServiceURL Is Nothing AndAlso Not Me.TemporaryWebServiceURL = "" AndAlso Not Me.TemporaryWebServiceURL.Equals(kCura.WinEDDS.Config.WebServiceURL) Then
+			If Not Me.TemporaryWebServiceURL Is Nothing AndAlso Not Me.TemporaryWebServiceURL = String.Empty AndAlso Not Me.TemporaryWebServiceURL.Equals(kCura.WinEDDS.Config.WebServiceURL) Then
 				kCura.WinEDDS.Config.WebServiceURL = Me.TemporaryWebServiceURL
 				If relogin Then
 					Me.NewLogin(True)
@@ -399,7 +399,7 @@ Namespace kCura.EDDS.WinForm
 #Region "Folder Management"
 		Public Function CreateNewFolder(ByVal parentFolderID As Int32) As Int32
 			Dim name As String = InputBox("Enter Folder Name", "Relativity Review")
-			If name <> "" Then
+			If name <> String.Empty Then
 				Try
 					Dim folderManager As New kCura.WinEDDS.Service.FolderManager(Me.Credential, _cookieContainer)
 					Dim folderID As Int32 = folderManager.Create(Me.SelectedCaseInfo.ArtifactID, parentFolderID, name)
@@ -818,11 +818,11 @@ Namespace kCura.EDDS.WinForm
 #End Region
 
 		Private Sub AddFoldersToTotalFolders(ByVal folderPath As String)
-			If folderPath <> "" AndAlso folderPath <> "\" Then
+			If folderPath <> String.Empty AndAlso folderPath <> "\" Then
 				If folderPath.LastIndexOf("\"c) < 1 Then
-					If Not _totalFolders.Contains(folderPath) Then _totalFolders.Add(folderPath, "")
+					If Not _totalFolders.Contains(folderPath) Then _totalFolders.Add(folderPath, String.Empty)
 				Else
-					If Not _totalFolders.Contains(folderPath) Then _totalFolders.Add(folderPath, "")
+					If Not _totalFolders.Contains(folderPath) Then _totalFolders.Add(folderPath, String.Empty)
 					AddFoldersToTotalFolders(folderPath.Substring(0, folderPath.LastIndexOf("\"c)))
 				End If
 			End If
@@ -1296,7 +1296,7 @@ Namespace kCura.EDDS.WinForm
 					frm.Text = "Import Load File Progress ..."
 					frm.ErrorFileExtension = System.IO.Path.GetExtension(loadFile.FilePath).TrimStart("."c).ToUpper
 					If frm.ErrorFileExtension Is Nothing Then frm.ErrorFileExtension = "TXT"
-					If frm.ErrorFileExtension = "" Then frm.ErrorFileExtension = "TXT"
+					If frm.ErrorFileExtension = String.Empty Then frm.ErrorFileExtension = "TXT"
 					frm.Show()
 					frm.ProcessID = _processPool.StartProcess(importer)
 					CursorDefault()
@@ -1487,9 +1487,9 @@ Namespace kCura.EDDS.WinForm
 			tempLoadFile.DestinationFolderID = loadFile.DestinationFolderID
 			tempLoadFile.SelectedIdentifierField = Me.CurrentFields(ArtifactTypeID, True).Item(Me.GetCaseIdentifierFields(ArtifactTypeID)(0))
 			Dim x As New System.Windows.Forms.OpenFileDialog
-			If Not loadFile.FilePath = "" AndAlso System.IO.File.Exists(loadFile.FilePath) Then
+			If Not loadFile.FilePath = String.Empty AndAlso System.IO.File.Exists(loadFile.FilePath) Then
 				x.FileName = loadFile.FilePath
-			ElseIf Not tempLoadFile.FilePath = "" AndAlso System.IO.File.Exists(tempLoadFile.FilePath) Then
+			ElseIf Not tempLoadFile.FilePath = String.Empty AndAlso System.IO.File.Exists(tempLoadFile.FilePath) Then
 				x.FileName = tempLoadFile.FilePath
 			End If
 			MsgBox("Please Choose a Load File", MsgBoxStyle.OkOnly)
@@ -1501,7 +1501,7 @@ Namespace kCura.EDDS.WinForm
 			End Select
 			tempLoadFile.FilePath = x.FileName
 			Dim mapItemToRemove As LoadFileFieldMap.LoadFileFieldMapItem = Nothing
-			If tempLoadFile.GroupIdentifierColumn = "" AndAlso System.IO.File.Exists(tempLoadFile.FilePath) Then
+			If tempLoadFile.GroupIdentifierColumn = String.Empty AndAlso System.IO.File.Exists(tempLoadFile.FilePath) Then
 				Dim fieldMapItem As kCura.WinEDDS.LoadFileFieldMap.LoadFileFieldMapItem
 				For Each fieldMapItem In tempLoadFile.FieldMap
 					If Not fieldMapItem.DocumentField Is Nothing AndAlso _
@@ -1517,6 +1517,7 @@ Namespace kCura.EDDS.WinForm
 							fieldMapItem.DocumentField.UseUnicode = thisField.UseUnicode
 							fieldMapItem.DocumentField.CodeTypeID = thisField.CodeTypeID
 							fieldMapItem.DocumentField.FieldLength = thisField.FieldLength
+							fieldMapItem.DocumentField.AllowRelationalNullsOnImport = thisField.AllowRelationalNullsOnImport
 						Catch
 						End Try
 					End If
@@ -1653,7 +1654,7 @@ Namespace kCura.EDDS.WinForm
 		Private Sub ChangeWebServiceUrl(ByVal message As String)
 			If MsgBox(message, MsgBoxStyle.YesNo) = MsgBoxResult.Yes Then
 				Dim url As String = InputBox("Enter New URL:", DefaultResponse:=kCura.WinEDDS.Config.WebServiceURL)
-				If url <> "" Then
+				If url <> String.Empty Then
 					kCura.WinEDDS.Config.WebServiceURL = url
 					NewLogin()
 				Else
