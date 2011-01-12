@@ -287,7 +287,7 @@ Namespace kCura.WinEDDS
 				Case Relativity.FieldTypeHelper.FieldType.Date
 					field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(CType(field.Value, Nullable(Of DateTime)), True)
 				Case Relativity.FieldTypeHelper.FieldType.User
-					Dim previewValue As String = ""
+					Dim previewValue As String = String.Empty
 					If field.Value Is Nothing Then
 						field.Value = String.Empty
 					ElseIf field.Value.ToString <> String.Empty Then
@@ -298,7 +298,7 @@ Namespace kCura.WinEDDS
 				Case Relativity.FieldTypeHelper.FieldType.Code
 					Dim fieldValue As String
 					If field.Value Is Nothing Then
-						fieldValue = ""
+						fieldValue = String.Empty
 					Else
 						fieldValue = field.Value.ToString.Trim
 					End If
@@ -309,7 +309,7 @@ Namespace kCura.WinEDDS
 						If fieldValue = "-1" Then
 							fieldValue = "[new code]"
 						End If
-						If fieldValue <> "" Then
+						If fieldValue <> String.Empty Then
 							AddToCodeCountPreviewHashTable(field.ArtifactID, field.DisplayName, fieldDisplayValue)
 						End If
 					End If
@@ -317,12 +317,12 @@ Namespace kCura.WinEDDS
 					If TypeOf Me Is BulkLoadFileImporter Then
 						fieldValue = ChrW(11) & fieldDisplayValue & ChrW(11)
 						field.Value = fieldValue
-						If Not fieldDisplayValue = "" Then
+						If Not fieldDisplayValue = String.Empty Then
 							DirectCast(Me, BulkLoadFileImporter).WriteCodeLineToTempFile(identityValue, Int32.Parse(kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(code)), field.CodeTypeID)
 							Dim sb As New System.Text.StringBuilder
 							field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(code)
 						Else
-							field.Value = ""
+							field.Value = String.Empty
 						End If
 					End If
 				Case Relativity.FieldTypeHelper.FieldType.MultiCode
@@ -332,7 +332,7 @@ Namespace kCura.WinEDDS
 					If value.Length = 0 Then
 						field.Value = String.Empty
 						If TypeOf Me Is BulkLoadFileImporter Then
-							field.Value = ""
+							field.Value = String.Empty
 						End If
 					Else
 						Dim codeValues As Nullable(Of Int32)() = GetMultiCode(value, columnIndex, field, forPreview)
@@ -357,7 +357,7 @@ Namespace kCura.WinEDDS
 						field.Value = newVal
 						If TypeOf Me Is BulkLoadFileImporter Then
 							If codeValues.Length = 0 Then
-								field.Value = ""
+								field.Value = String.Empty
 							Else
 								'field.Value = ChrW(11) & oldval.Trim(_multiValueSeparator).Replace(_multiValueSeparator, ChrW(11)) & ChrW(11)
 								field.Value = ChrW(11) & kCura.Utility.ArrayList.ArrayListToDelimitedString(New System.Collections.ArrayList(value), ChrW(11)) & ChrW(11)
@@ -432,8 +432,8 @@ Namespace kCura.WinEDDS
 				Case Relativity.FieldTypeHelper.FieldType.Text
 					If field.Category = Relativity.FieldCategory.FullText AndAlso _fullTextColumnMapsToFileLocation Then
 						Dim value As String = field.ValueAsString
-						If value = "" Then
-							field.Value = ""
+						If value = String.Empty Then
+							field.Value = String.Empty
 						ElseIf Not System.IO.File.Exists(value) Then
 							Throw New MissingFullTextFileException(Me.CurrentLineNumber, columnIndex)
 						Else
@@ -486,7 +486,7 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Public Function GetUserArtifactID(ByVal value As String, ByVal column As Int32) As Nullable(Of Int32)
-			If value = "" Then Return Nothing
+			If value = String.Empty Then Return Nothing
 			Dim retval As Nullable(Of Int32) = Me.Users(value)
 			If retval Is Nothing Then
 				Throw New MissingUserException(Me.CurrentLineNumber, column, value)

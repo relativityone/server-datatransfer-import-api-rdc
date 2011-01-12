@@ -606,7 +606,7 @@ Namespace kCura.WinEDDS
 
 			If _artifactTypeID = Relativity.ArtifactType.Document Then
 				settings.Repository = _defaultDestinationFolderPath
-				If settings.Repository = "" Then settings.Repository = _caseInfo.DocumentPath
+				If settings.Repository = String.Empty Then settings.Repository = _caseInfo.DocumentPath
 			Else
 				settings.Repository = _caseInfo.DocumentPath
 			End If
@@ -754,7 +754,7 @@ Namespace kCura.WinEDDS
 							determinedEncodingStream.Close()
 						End If
 					ElseIf field.Type = Relativity.FieldTypeHelper.FieldType.Boolean Then
-						If field.ValueAsString <> "" Then
+						If field.ValueAsString <> String.Empty Then
 							If Boolean.Parse(field.ValueAsString) Then
 								_outputNativeFileWriter.Write("1")
 							Else
@@ -770,7 +770,7 @@ Namespace kCura.WinEDDS
 			If _artifactTypeID = Relativity.ArtifactType.Document Then
 				If _filePathColumnIndex <> -1 AndAlso mdoc.UploadFile AndAlso mdoc.IndexFileInDB Then
 					Dim boolString As String = "0"
-					Dim fieldType As String = ""
+					Dim fieldType As String = String.Empty
 					If Me.IsSupportedRelativityFileType(mdoc.FileIdData) Then boolString = "1"
 					_outputNativeFileWriter.Write(boolString & Constants.NATIVE_FIELD_DELIMITER)
 
