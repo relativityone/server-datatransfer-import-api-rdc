@@ -2,27 +2,57 @@ Imports System.Runtime.Serialization
 Namespace kCura.WinEDDS
 	<Serializable()> Public Class DocumentField
 		Implements ISerializable
-#Region "Members"
-		Private _fieldName As String
-		Private _fieldID As Int32
-		Private _fieldTypeID As Int32
-		Private _value As String
-		Private _fieldCategoryID As Int32
-		Private _codeTypeID As Nullable(Of Int32)
-		Private _fileColumnIndex As Int32
-		Private _fieldLength As Nullable(Of Int32)
+
+		Public Enum RelationalFieldImportBehavior
+			LeaveBlankValuesBlank = 0
+			ReplaceBlankValuesWithIdentifier = 1
+		End Enum
+
+#Region "Properties"
+
 		<NonSerialized()> Private _associatedObjectTypeID As Nullable(Of Int32)
+		Public Property AssociatedObjectTypeID() As Nullable(Of Int32)
+			Get
+				Return _associatedObjectTypeID
+			End Get
+			Set(ByVal Value As Nullable(Of Int32))
+				_associatedObjectTypeID = Value
+			End Set
+		End Property
+
 		<NonSerialized()> Private _useUnicode As Boolean
+		Public Property UseUnicode() As Boolean
+			Get
+				Return _useUnicode
+			End Get
+			Set(ByVal value As Boolean)
+				_useUnicode = value
+			End Set
+		End Property
+
+		<NonSerialized()> Private _allowRelationalNullsOnImport As RelationalFieldImportBehavior
+		Public Property AllowRelationalNullsOnImport() As RelationalFieldImportBehavior
+			Get
+				Return _allowRelationalNullsOnImport
+			End Get
+			Set(ByVal value As RelationalFieldImportBehavior)
+				_allowRelationalNullsOnImport = value
+			End Set
+		End Property
+
+		Public Property FieldName() As String
+		Public Property FieldID() As Int32
+		Public Property FieldTypeID() As Int32
+		Public Property FieldCategoryID() As Int32
+		Public Property FieldCategory() As Relativity.FieldCategory
+		Public Property Value() As String
+		Public Property CodeTypeID() As Nullable(Of Int32)
+		Public Property FileColumnIndex() As Int32
+		Public Property FieldLength() As Nullable(Of Int32)
+
 #End Region
 
-		Public Sub GetObjectData(ByVal info As System.Runtime.Serialization.SerializationInfo, ByVal context As System.Runtime.Serialization.StreamingContext) Implements System.Runtime.Serialization.ISerializable.GetObjectData
-			info.AddValue("_fieldName", Me.FieldName, GetType(String))
-			info.AddValue("_fieldID", Me.FieldID, GetType(Int32))
-			info.AddValue("_fieldTypeID", Me.FieldTypeID, GetType(Int32))
-			info.AddValue("_value", Me.Value, GetType(String))
-			info.AddValue("_fieldCategoryID", Me.FieldCategoryID, GetType(Int32))
-			info.AddValue("_fileColumnIndex", Me.FileColumnIndex, GetType(Int32))
-		End Sub
+#Region "Constructors"
 
 		Private Sub New(ByVal info As System.Runtime.Serialization.SerializationInfo, ByVal Context As System.Runtime.Serialization.StreamingContext)
 			Me.FieldName = info.GetString("_fieldName")
@@ -33,113 +63,34 @@ Namespace kCura.WinEDDS
 			Me.FileColumnIndex = info.GetInt32("_fileColumnIndex")
 		End Sub
 
-#Region "Properties"
-		Public Property AssociatedObjectTypeID() As Nullable(Of Int32)
-			Get
-				Return _associatedObjectTypeID
-			End Get
-			Set(ByVal Value As Nullable(Of Int32))
-				_associatedObjectTypeID = Value
-			End Set
-		End Property
+		Public Sub New(ByVal fieldName As String, ByVal fieldID As Int32, ByVal fieldTypeID As Int32, ByVal fieldCategoryID As Int32, ByVal codeTypeID As Nullable(Of Int32), ByVal fieldLength As Nullable(Of Int32), ByVal associatedObjectTypeID As Nullable(Of Int32), ByVal useUnicode As Boolean, ByVal allowRelationalNulls As RelationalFieldImportBehavior)
+			MyBase.New()
+			_FieldName = fieldName
+			_FieldID = fieldID
+			_FieldTypeID = fieldTypeID
+			_FieldCategoryID = fieldCategoryID
+			_CodeTypeID = codeTypeID
+			_FieldLength = fieldLength
+			_associatedObjectTypeID = associatedObjectTypeID
+			_useUnicode = useUnicode
+			_allowRelationalNullsOnImport = allowRelationalNulls
+		End Sub
 
-		Public Property FieldName() As String
-			Get
-				Return _fieldName
-			End Get
-			Set(ByVal value As String)
-				_fieldName = value
-			End Set
-		End Property
+		Public Sub New(ByVal docField As DocumentField)
+			Me.New(docField.FieldName, docField.FieldID, docField.FieldTypeID, docField.FieldCategoryID, docField.CodeTypeID, docField.FieldLength, docField.AssociatedObjectTypeID, docField.UseUnicode, docField.AllowRelationalNullsOnImport)
+		End Sub
 
-		Public Property FieldID() As Int32
-			Get
-				Return _fieldID
-			End Get
-			Set(ByVal value As Int32)
-				_fieldID = value
-			End Set
-		End Property
-
-		Public Property FieldTypeID() As Int32
-			Get
-				Return _fieldTypeID
-			End Get
-			Set(ByVal value As Int32)
-				_fieldTypeID = value
-			End Set
-		End Property
-
-		Public Property FieldCategoryID() As Int32
-			Get
-				Return _fieldCategoryID
-			End Get
-			Set(ByVal value As Int32)
-				_fieldCategoryID = value
-			End Set
-		End Property
-
-		Public Property FieldCategory() As Relativity.FieldCategory
-			Get
-				Return CType(_fieldCategoryID, Relativity.FieldCategory)
-			End Get
-			Set(ByVal value As Relativity.FieldCategory)
-				_fieldCategoryID = value
-			End Set
-		End Property
-
-		Public Property Value() As String
-			Get
-				Return _value
-			End Get
-			Set(ByVal value As String)
-				_value = value
-			End Set
-		End Property
-
-		Public Property CodeTypeID() As Nullable(Of Int32)
-			Get
-				Return _codeTypeID
-			End Get
-			Set(ByVal value As Nullable(Of Int32))
-				_codeTypeID = value
-			End Set
-		End Property
-
-		Public Property FileColumnIndex() As Int32
-			Get
-				Return _fileColumnIndex
-			End Get
-			Set(ByVal value As Int32)
-				_fileColumnIndex = value
-			End Set
-		End Property
-
-		Public Property FieldLength() As Nullable(Of Int32)
-			Get
-				Return _fieldLength
-			End Get
-			Set(ByVal value As Nullable(Of Int32))
-				_fieldLength = value
-			End Set
-		End Property
-
-		Public Property UseUnicode() As Boolean
-			Get
-				Return _useUnicode
-			End Get
-			Set(ByVal value As Boolean)
-				_useUnicode = value
-			End Set
-		End Property
+#End Region
 
 		Public Function ToDisplayString() As String
 			Return String.Format("DocumentField[{0},{1},{2},{3},'{4}']", FieldCategoryID, FieldID, FieldName, FieldTypeID, kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(CodeTypeID))
 		End Function
+
 		Public Overrides Function ToString() As String
 			Return FieldName
 		End Function
-		Public Function ToFileInfo() As kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo
+
+		Public Function ToFieldInfo() As kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo
 			Dim retval As New kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo
 			retval.ArtifactID = Me.FieldID
 			retval.Category = CType(Me.FieldCategoryID, kCura.EDDS.WebAPI.BulkImportManagerBase.FieldCategory)
@@ -150,27 +101,15 @@ Namespace kCura.WinEDDS
 			retval.IsUnicodeEnabled = Me.UseUnicode
 			Return retval
 		End Function
-#End Region
 
-#Region "Constructors"
-
-		Public Sub New(ByVal fieldName As String, ByVal fieldID As Int32, ByVal fieldTypeID As Int32, ByVal fieldCategoryID As Int32, ByVal codeTypeID As Nullable(Of Int32), ByVal fieldLength As Nullable(Of Int32), ByVal associatedObjectTypeID As Nullable(Of Int32), ByVal useUnicode As Boolean)
-			MyBase.New()
-			_fieldName = fieldName
-			_fieldID = fieldID
-			_fieldTypeID = fieldTypeID
-			_fieldCategoryID = fieldCategoryID
-			_codeTypeID = codeTypeID
-			_fieldLength = fieldLength
-			_associatedObjectTypeID = associatedObjectTypeID
-			_useUnicode = useUnicode
+		Public Sub GetObjectData(ByVal info As System.Runtime.Serialization.SerializationInfo, ByVal context As System.Runtime.Serialization.StreamingContext) Implements System.Runtime.Serialization.ISerializable.GetObjectData
+			info.AddValue("_fieldName", Me.FieldName, GetType(String))
+			info.AddValue("_fieldID", Me.FieldID, GetType(Int32))
+			info.AddValue("_fieldTypeID", Me.FieldTypeID, GetType(Int32))
+			info.AddValue("_value", Me.Value, GetType(String))
+			info.AddValue("_fieldCategoryID", Me.FieldCategoryID, GetType(Int32))
+			info.AddValue("_fileColumnIndex", Me.FileColumnIndex, GetType(Int32))
 		End Sub
-
-		Public Sub New(ByVal docField As DocumentField)
-			Me.New(docField.FieldName, docField.FieldID, docField.FieldTypeID, docField.FieldCategoryID, docField.CodeTypeID, docField.FieldLength, docField.AssociatedObjectTypeID, docField.UseUnicode)
-		End Sub
-
-#End Region
 
 		Public Shared Function op_Equality(ByVal df1 As DocumentField, ByVal df2 As DocumentField) As Boolean
 			Dim areEqual As Boolean
