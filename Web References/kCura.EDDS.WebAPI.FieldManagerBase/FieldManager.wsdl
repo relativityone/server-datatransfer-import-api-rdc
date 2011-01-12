@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<wsdl:definitions xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://foley.com/EDDS/FieldManager" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://foley.com/EDDS/FieldManager" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+<wsdl:definitions xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://foley.com/EDDS/FieldManager" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:s1="http://microsoft.com/wsdl/types/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://foley.com/EDDS/FieldManager" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
   <wsdl:types>
     <s:schema elementFormDefault="qualified" targetNamespace="http://foley.com/EDDS/FieldManager">
+      <s:import namespace="http://microsoft.com/wsdl/types/" />
       <s:element name="Create">
         <s:complexType>
           <s:sequence>
@@ -54,6 +55,7 @@
               <s:element minOccurs="1" maxOccurs="1" name="AllowHtml" type="s:boolean" />
               <s:element minOccurs="1" maxOccurs="1" name="IsSortable" type="s:boolean" />
               <s:element minOccurs="0" maxOccurs="1" name="FriendlyName" type="s:string" />
+              <s:element minOccurs="1" maxOccurs="1" name="ImportBehavior" type="tns:ImportBehaviorChoice" />
               <s:element minOccurs="1" maxOccurs="1" name="RelationalIndexViewArtifactID" nillable="true" type="s:int" />
               <s:element minOccurs="0" maxOccurs="1" name="ObjectsFieldArgs" type="tns:ObjectsFieldParameters" />
               <s:element minOccurs="1" maxOccurs="1" name="AllowGroupBy" type="s:boolean" />
@@ -61,6 +63,9 @@
               <s:element minOccurs="1" maxOccurs="1" name="PopupPickerView" nillable="true" type="s:int" />
               <s:element minOccurs="1" maxOccurs="1" name="FieldTreeView" nillable="true" type="s:int" />
               <s:element minOccurs="0" maxOccurs="1" name="KeyboardShortcut" type="tns:KeyboardShortcut" />
+              <s:element minOccurs="1" maxOccurs="1" name="AvailableInViewer" type="s:boolean" />
+              <s:element minOccurs="0" maxOccurs="1" name="RelativityApplications" type="tns:ArrayOfInt" />
+              <s:element minOccurs="0" maxOccurs="1" name="RelationalPane" type="tns:RelationalFieldPane" />
             </s:sequence>
           </s:extension>
         </s:complexContent>
@@ -81,10 +86,12 @@
           <s:element minOccurs="1" maxOccurs="1" name="CreatedBy" type="s:int" />
           <s:element minOccurs="1" maxOccurs="1" name="CreatedOn" type="s:dateTime" />
           <s:element minOccurs="1" maxOccurs="1" name="DeleteFlag" type="s:boolean" />
+          <s:element minOccurs="1" maxOccurs="1" name="Guid" nillable="true" type="s1:guid" />
         </s:sequence>
       </s:complexType>
       <s:simpleType name="FieldType">
         <s:restriction base="s:string">
+          <s:enumeration value="Empty" />
           <s:enumeration value="Varchar" />
           <s:enumeration value="Integer" />
           <s:enumeration value="Date" />
@@ -121,6 +128,13 @@
           <s:enumeration value="Batch" />
         </s:restriction>
       </s:simpleType>
+      <s:simpleType name="ImportBehaviorChoice">
+        <s:restriction base="s:string">
+          <s:enumeration value="Empty" />
+          <s:enumeration value="LeaveBlankValuesBlank" />
+          <s:enumeration value="ReplaceBlankValuesWithIdentifier" />
+        </s:restriction>
+      </s:simpleType>
       <s:complexType name="ObjectsFieldParameters">
         <s:sequence>
           <s:element minOccurs="0" maxOccurs="1" name="SiblingFieldName" type="s:string" />
@@ -136,6 +150,24 @@
           <s:element minOccurs="1" maxOccurs="1" name="Ctrl" type="s:boolean" />
           <s:element minOccurs="1" maxOccurs="1" name="Alt" type="s:boolean" />
           <s:element minOccurs="1" maxOccurs="1" name="Key" type="s:int" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="ArrayOfInt">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="int" type="s:int" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="RelationalFieldPane">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="PaneOrder" type="s:int" />
+          <s:element minOccurs="0" maxOccurs="1" name="IconFilename" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="ColumnName" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="FieldArtifactID" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="RelationalViewArtifactID" type="s:int" />
+          <s:element minOccurs="0" maxOccurs="1" name="HeaderText" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="ImportBehavior" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="IconFileData" type="s:base64Binary" />
+          <s:element minOccurs="1" maxOccurs="1" name="PaneID" type="s:int" />
         </s:sequence>
       </s:complexType>
       <s:element name="CreateResponse">
@@ -160,6 +192,13 @@
           </s:sequence>
         </s:complexType>
       </s:element>
+    </s:schema>
+    <s:schema elementFormDefault="qualified" targetNamespace="http://microsoft.com/wsdl/types/">
+      <s:simpleType name="guid">
+        <s:restriction base="s:string">
+          <s:pattern value="[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}" />
+        </s:restriction>
+      </s:simpleType>
     </s:schema>
   </wsdl:types>
   <wsdl:message name="CreateSoapIn">

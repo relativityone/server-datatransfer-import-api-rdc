@@ -536,6 +536,8 @@ Namespace kCura.EDDS.WebAPI.FolderManagerBase
         
         Private deleteFlagField As Boolean
         
+        Private guidField As System.Nullable(Of System.Guid)
+        
         '''<remarks/>
         Public Property ArtifactID() As Integer
             Get
@@ -675,6 +677,17 @@ Namespace kCura.EDDS.WebAPI.FolderManagerBase
             End Get
             Set
                 Me.deleteFlagField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        <System.Xml.Serialization.XmlElementAttribute(IsNullable:=true)>  _
+        Public Property Guid() As System.Nullable(Of System.Guid)
+            Get
+                Return Me.guidField
+            End Get
+            Set
+                Me.guidField = value
             End Set
         End Property
     End Class

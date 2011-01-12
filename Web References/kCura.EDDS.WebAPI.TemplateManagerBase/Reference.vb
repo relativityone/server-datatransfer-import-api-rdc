@@ -298,9 +298,13 @@ Namespace kCura.EDDS.WebAPI.TemplateManagerBase
         
         Private passwordField As String
         
+        Private scriptIdsField() As Integer
+        
         Private userNameField As String
         
         Private userIDField As Integer
+        
+        Private externalTabIdsField() As Integer
         
         '''<remarks/>
         Public Property ApplicationVersion() As String
@@ -433,6 +437,16 @@ Namespace kCura.EDDS.WebAPI.TemplateManagerBase
         End Property
         
         '''<remarks/>
+        Public Property ScriptIds() As Integer()
+            Get
+                Return Me.scriptIdsField
+            End Get
+            Set
+                Me.scriptIdsField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
         Public Property UserName() As String
             Get
                 Return Me.userNameField
@@ -449,6 +463,16 @@ Namespace kCura.EDDS.WebAPI.TemplateManagerBase
             End Get
             Set
                 Me.userIDField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property ExternalTabIds() As Integer()
+            Get
+                Return Me.externalTabIdsField
+            End Get
+            Set
+                Me.externalTabIdsField = value
             End Set
         End Property
     End Class

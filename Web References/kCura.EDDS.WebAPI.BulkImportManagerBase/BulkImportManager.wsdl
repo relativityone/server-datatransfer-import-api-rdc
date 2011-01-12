@@ -174,6 +174,7 @@
       </s:simpleType>
       <s:simpleType name="FieldType">
         <s:restriction base="s:string">
+          <s:enumeration value="Empty" />
           <s:enumeration value="Varchar" />
           <s:enumeration value="Integer" />
           <s:enumeration value="Date" />

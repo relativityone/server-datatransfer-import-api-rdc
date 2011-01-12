@@ -3,11 +3,6 @@ Namespace kCura.WinEDDS
 	<Serializable()> Public Class DocumentField
 		Implements ISerializable
 
-		Public Enum RelationalFieldImportBehavior
-			LeaveBlankValuesBlank = 0
-			ReplaceBlankValuesWithIdentifier = 1
-		End Enum
-
 #Region "Properties"
 
 		<NonSerialized()> Private _associatedObjectTypeID As Nullable(Of Int32)
@@ -30,12 +25,12 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
-		<NonSerialized()> Private _allowRelationalNullsOnImport As RelationalFieldImportBehavior
-		Public Property AllowRelationalNullsOnImport() As RelationalFieldImportBehavior
+		<NonSerialized()> Private _allowRelationalNullsOnImport As kCura.EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice
+		Public Property AllowRelationalNullsOnImport() As kCura.EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice
 			Get
 				Return _allowRelationalNullsOnImport
 			End Get
-			Set(ByVal value As RelationalFieldImportBehavior)
+			Set(ByVal value As kCura.EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice)
 				_allowRelationalNullsOnImport = value
 			End Set
 		End Property
@@ -63,7 +58,7 @@ Namespace kCura.WinEDDS
 			Me.FileColumnIndex = info.GetInt32("_fileColumnIndex")
 		End Sub
 
-		Public Sub New(ByVal fieldName As String, ByVal fieldID As Int32, ByVal fieldTypeID As Int32, ByVal fieldCategoryID As Int32, ByVal codeTypeID As Nullable(Of Int32), ByVal fieldLength As Nullable(Of Int32), ByVal associatedObjectTypeID As Nullable(Of Int32), ByVal useUnicode As Boolean, ByVal allowRelationalNulls As RelationalFieldImportBehavior)
+		Public Sub New(ByVal fieldName As String, ByVal fieldID As Int32, ByVal fieldTypeID As Int32, ByVal fieldCategoryID As Int32, ByVal codeTypeID As Nullable(Of Int32), ByVal fieldLength As Nullable(Of Int32), ByVal associatedObjectTypeID As Nullable(Of Int32), ByVal useUnicode As Boolean, ByVal allowRelationalNulls As kCura.EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice)
 			MyBase.New()
 			_FieldName = fieldName
 			_FieldID = fieldID

@@ -264,6 +264,8 @@ Namespace kCura.EDDS.WebAPI.FieldManagerBase
         
         Private friendlyNameField As String
         
+        Private importBehaviorField As ImportBehaviorChoice
+        
         Private relationalIndexViewArtifactIDField As System.Nullable(Of Integer)
         
         Private objectsFieldArgsField As ObjectsFieldParameters
@@ -277,6 +279,12 @@ Namespace kCura.EDDS.WebAPI.FieldManagerBase
         Private fieldTreeViewField As System.Nullable(Of Integer)
         
         Private keyboardShortcutField As KeyboardShortcut
+        
+        Private availableInViewerField As Boolean
+        
+        Private relativityApplicationsField() As Integer
+        
+        Private relationalPaneField As RelationalFieldPane
         
         '''<remarks/>
         Public Property FieldArtifactTypeID() As Integer
@@ -683,6 +691,16 @@ Namespace kCura.EDDS.WebAPI.FieldManagerBase
         End Property
         
         '''<remarks/>
+        Public Property ImportBehavior() As ImportBehaviorChoice
+            Get
+                Return Me.importBehaviorField
+            End Get
+            Set
+                Me.importBehaviorField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
         <System.Xml.Serialization.XmlElementAttribute(IsNullable:=true)>  _
         Public Property RelationalIndexViewArtifactID() As System.Nullable(Of Integer)
             Get
@@ -754,6 +772,36 @@ Namespace kCura.EDDS.WebAPI.FieldManagerBase
                 Me.keyboardShortcutField = value
             End Set
         End Property
+        
+        '''<remarks/>
+        Public Property AvailableInViewer() As Boolean
+            Get
+                Return Me.availableInViewerField
+            End Get
+            Set
+                Me.availableInViewerField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property RelativityApplications() As Integer()
+            Get
+                Return Me.relativityApplicationsField
+            End Get
+            Set
+                Me.relativityApplicationsField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property RelationalPane() As RelationalFieldPane
+            Get
+                Return Me.relationalPaneField
+            End Get
+            Set
+                Me.relationalPaneField = value
+            End Set
+        End Property
     End Class
     
     '''<remarks/>
@@ -761,6 +809,9 @@ Namespace kCura.EDDS.WebAPI.FieldManagerBase
      System.SerializableAttribute(),  _
      System.Xml.Serialization.XmlTypeAttribute([Namespace]:="http://foley.com/EDDS/FieldManager")>  _
     Public Enum FieldType
+        
+        '''<remarks/>
+        Empty
         
         '''<remarks/>
         Varchar
@@ -859,6 +910,124 @@ Namespace kCura.EDDS.WebAPI.FieldManagerBase
         '''<remarks/>
         Batch
     End Enum
+    
+    '''<remarks/>
+    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.1"),  _
+     System.SerializableAttribute(),  _
+     System.Diagnostics.DebuggerStepThroughAttribute(),  _
+     System.ComponentModel.DesignerCategoryAttribute("code"),  _
+     System.Xml.Serialization.XmlTypeAttribute([Namespace]:="http://foley.com/EDDS/FieldManager")>  _
+    Partial Public Class RelationalFieldPane
+        
+        Private paneOrderField As Integer
+        
+        Private iconFilenameField As String
+        
+        Private columnNameField As String
+        
+        Private fieldArtifactIDField As Integer
+        
+        Private relationalViewArtifactIDField As Integer
+        
+        Private headerTextField As String
+        
+        Private importBehaviorField As String
+        
+        Private iconFileDataField() As Byte
+        
+        Private paneIDField As Integer
+        
+        '''<remarks/>
+        Public Property PaneOrder() As Integer
+            Get
+                Return Me.paneOrderField
+            End Get
+            Set
+                Me.paneOrderField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property IconFilename() As String
+            Get
+                Return Me.iconFilenameField
+            End Get
+            Set
+                Me.iconFilenameField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property ColumnName() As String
+            Get
+                Return Me.columnNameField
+            End Get
+            Set
+                Me.columnNameField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property FieldArtifactID() As Integer
+            Get
+                Return Me.fieldArtifactIDField
+            End Get
+            Set
+                Me.fieldArtifactIDField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property RelationalViewArtifactID() As Integer
+            Get
+                Return Me.relationalViewArtifactIDField
+            End Get
+            Set
+                Me.relationalViewArtifactIDField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property HeaderText() As String
+            Get
+                Return Me.headerTextField
+            End Get
+            Set
+                Me.headerTextField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property ImportBehavior() As String
+            Get
+                Return Me.importBehaviorField
+            End Get
+            Set
+                Me.importBehaviorField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        <System.Xml.Serialization.XmlElementAttribute(DataType:="base64Binary")>  _
+        Public Property IconFileData() As Byte()
+            Get
+                Return Me.iconFileDataField
+            End Get
+            Set
+                Me.iconFileDataField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property PaneID() As Integer
+            Get
+                Return Me.paneIDField
+            End Get
+            Set
+                Me.paneIDField = value
+            End Set
+        End Property
+    End Class
     
     '''<remarks/>
     <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.1"),  _
@@ -1023,6 +1192,8 @@ Namespace kCura.EDDS.WebAPI.FieldManagerBase
         
         Private deleteFlagField As Boolean
         
+        Private guidField As System.Nullable(Of System.Guid)
+        
         '''<remarks/>
         Public Property ArtifactID() As Integer
             Get
@@ -1164,7 +1335,34 @@ Namespace kCura.EDDS.WebAPI.FieldManagerBase
                 Me.deleteFlagField = value
             End Set
         End Property
+        
+        '''<remarks/>
+        <System.Xml.Serialization.XmlElementAttribute(IsNullable:=true)>  _
+        Public Property Guid() As System.Nullable(Of System.Guid)
+            Get
+                Return Me.guidField
+            End Get
+            Set
+                Me.guidField = value
+            End Set
+        End Property
     End Class
+    
+    '''<remarks/>
+    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.1"),  _
+     System.SerializableAttribute(),  _
+     System.Xml.Serialization.XmlTypeAttribute([Namespace]:="http://foley.com/EDDS/FieldManager")>  _
+    Public Enum ImportBehaviorChoice
+        
+        '''<remarks/>
+        Empty
+        
+        '''<remarks/>
+        LeaveBlankValuesBlank
+        
+        '''<remarks/>
+        ReplaceBlankValuesWithIdentifier
+    End Enum
     
     '''<remarks/>
     <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.0.30319.1")>  _

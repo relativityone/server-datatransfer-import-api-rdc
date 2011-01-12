@@ -705,6 +705,9 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
     Public Enum FieldType
         
         '''<remarks/>
+        Empty
+        
+        '''<remarks/>
         Varchar
         
         '''<remarks/>
