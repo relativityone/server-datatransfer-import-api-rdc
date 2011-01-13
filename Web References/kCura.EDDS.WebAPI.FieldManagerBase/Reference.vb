@@ -264,7 +264,7 @@ Namespace kCura.EDDS.WebAPI.FieldManagerBase
         
         Private friendlyNameField As String
         
-        Private importBehaviorField As ImportBehaviorChoice
+        Private importBehaviorField As System.Nullable(Of ImportBehaviorChoice)
         
         Private relationalIndexViewArtifactIDField As System.Nullable(Of Integer)
         
@@ -691,7 +691,8 @@ Namespace kCura.EDDS.WebAPI.FieldManagerBase
         End Property
         
         '''<remarks/>
-        Public Property ImportBehavior() As ImportBehaviorChoice
+        <System.Xml.Serialization.XmlElementAttribute(IsNullable:=true)>  _
+        Public Property ImportBehavior() As System.Nullable(Of ImportBehaviorChoice)
             Get
                 Return Me.importBehaviorField
             End Get
@@ -931,8 +932,6 @@ Namespace kCura.EDDS.WebAPI.FieldManagerBase
         
         Private headerTextField As String
         
-        Private importBehaviorField As String
-        
         Private iconFileDataField() As Byte
         
         Private paneIDField As Integer
@@ -994,16 +993,6 @@ Namespace kCura.EDDS.WebAPI.FieldManagerBase
             End Get
             Set
                 Me.headerTextField = value
-            End Set
-        End Property
-        
-        '''<remarks/>
-        Public Property ImportBehavior() As String
-            Get
-                Return Me.importBehaviorField
-            End Get
-            Set
-                Me.importBehaviorField = value
             End Set
         End Property
         
@@ -1353,9 +1342,6 @@ Namespace kCura.EDDS.WebAPI.FieldManagerBase
      System.SerializableAttribute(),  _
      System.Xml.Serialization.XmlTypeAttribute([Namespace]:="http://foley.com/EDDS/FieldManager")>  _
     Public Enum ImportBehaviorChoice
-        
-        '''<remarks/>
-        Empty
         
         '''<remarks/>
         LeaveBlankValuesBlank

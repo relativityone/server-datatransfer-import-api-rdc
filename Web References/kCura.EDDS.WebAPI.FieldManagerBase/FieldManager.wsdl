@@ -55,7 +55,7 @@
               <s:element minOccurs="1" maxOccurs="1" name="AllowHtml" type="s:boolean" />
               <s:element minOccurs="1" maxOccurs="1" name="IsSortable" type="s:boolean" />
               <s:element minOccurs="0" maxOccurs="1" name="FriendlyName" type="s:string" />
-              <s:element minOccurs="1" maxOccurs="1" name="ImportBehavior" type="tns:ImportBehaviorChoice" />
+              <s:element minOccurs="1" maxOccurs="1" name="ImportBehavior" nillable="true" type="tns:ImportBehaviorChoice" />
               <s:element minOccurs="1" maxOccurs="1" name="RelationalIndexViewArtifactID" nillable="true" type="s:int" />
               <s:element minOccurs="0" maxOccurs="1" name="ObjectsFieldArgs" type="tns:ObjectsFieldParameters" />
               <s:element minOccurs="1" maxOccurs="1" name="AllowGroupBy" type="s:boolean" />
@@ -130,7 +130,6 @@
       </s:simpleType>
       <s:simpleType name="ImportBehaviorChoice">
         <s:restriction base="s:string">
-          <s:enumeration value="Empty" />
           <s:enumeration value="LeaveBlankValuesBlank" />
           <s:enumeration value="ReplaceBlankValuesWithIdentifier" />
         </s:restriction>
@@ -165,7 +164,6 @@
           <s:element minOccurs="1" maxOccurs="1" name="FieldArtifactID" type="s:int" />
           <s:element minOccurs="1" maxOccurs="1" name="RelationalViewArtifactID" type="s:int" />
           <s:element minOccurs="0" maxOccurs="1" name="HeaderText" type="s:string" />
-          <s:element minOccurs="0" maxOccurs="1" name="ImportBehavior" type="s:string" />
           <s:element minOccurs="0" maxOccurs="1" name="IconFileData" type="s:base64Binary" />
           <s:element minOccurs="1" maxOccurs="1" name="PaneID" type="s:int" />
         </s:sequence>

@@ -25,13 +25,13 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
-		<NonSerialized()> Private _allowRelationalNullsOnImport As kCura.EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice
-		Public Property AllowRelationalNullsOnImport() As kCura.EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice
+		<NonSerialized()> Private _importBehavior As kCura.EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice
+		Public Property ImportBehavior() As kCura.EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice
 			Get
-				Return _allowRelationalNullsOnImport
+				Return _importBehavior
 			End Get
 			Set(ByVal value As kCura.EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice)
-				_allowRelationalNullsOnImport = value
+				_importBehavior = value
 			End Set
 		End Property
 
@@ -58,7 +58,7 @@ Namespace kCura.WinEDDS
 			Me.FileColumnIndex = info.GetInt32("_fileColumnIndex")
 		End Sub
 
-		Public Sub New(ByVal fieldName As String, ByVal fieldID As Int32, ByVal fieldTypeID As Int32, ByVal fieldCategoryID As Int32, ByVal codeTypeID As Nullable(Of Int32), ByVal fieldLength As Nullable(Of Int32), ByVal associatedObjectTypeID As Nullable(Of Int32), ByVal useUnicode As Boolean, ByVal allowRelationalNulls As kCura.EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice)
+		Public Sub New(ByVal fieldName As String, ByVal fieldID As Int32, ByVal fieldTypeID As Int32, ByVal fieldCategoryID As Int32, ByVal codeTypeID As Nullable(Of Int32), ByVal fieldLength As Nullable(Of Int32), ByVal associatedObjectTypeID As Nullable(Of Int32), ByVal useUnicode As Boolean, ByVal importBehavior As kCura.EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice)
 			MyBase.New()
 			_FieldName = fieldName
 			_FieldID = fieldID
@@ -68,11 +68,11 @@ Namespace kCura.WinEDDS
 			_FieldLength = fieldLength
 			_associatedObjectTypeID = associatedObjectTypeID
 			_useUnicode = useUnicode
-			_allowRelationalNullsOnImport = allowRelationalNulls
+			_importBehavior = importBehavior
 		End Sub
 
 		Public Sub New(ByVal docField As DocumentField)
-			Me.New(docField.FieldName, docField.FieldID, docField.FieldTypeID, docField.FieldCategoryID, docField.CodeTypeID, docField.FieldLength, docField.AssociatedObjectTypeID, docField.UseUnicode, docField.AllowRelationalNullsOnImport)
+			Me.New(docField.FieldName, docField.FieldID, docField.FieldTypeID, docField.FieldCategoryID, docField.CodeTypeID, docField.FieldLength, docField.AssociatedObjectTypeID, docField.UseUnicode, docField.ImportBehavior)
 		End Sub
 
 #End Region

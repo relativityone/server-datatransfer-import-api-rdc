@@ -165,7 +165,7 @@ Namespace kCura.WinEDDS
 				If _unmappedRelationalFields Is Nothing Then
 					Dim mappedRelationalFieldIds As New System.Collections.ArrayList
 					For Each item As LoadFileFieldMap.LoadFileFieldMapItem In _fieldMap
-						If Not item.DocumentField Is Nothing AndAlso item.DocumentField.FieldCategory = Relativity.FieldCategory.Relational AndAlso item.DocumentField.AllowRelationalNullsOnImport <> kCura.EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice.ReplaceBlankValuesWithIdentifier Then
+						If Not item.DocumentField Is Nothing AndAlso item.DocumentField.FieldCategory = Relativity.FieldCategory.Relational AndAlso item.DocumentField.ImportBehavior <> kCura.EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice.ReplaceBlankValuesWithIdentifier Then
 							mappedRelationalFieldIds.Add(item.DocumentField.FieldID)
 						End If
 					Next
