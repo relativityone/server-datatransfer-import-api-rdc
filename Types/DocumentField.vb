@@ -94,7 +94,18 @@ Namespace kCura.WinEDDS
 			If Not Me.FieldLength Is Nothing Then retval.TextLength = Me.FieldLength.Value
 			retval.Type = CType(Me.FieldTypeID, kCura.EDDS.WebAPI.BulkImportManagerBase.FieldType)
 			retval.IsUnicodeEnabled = Me.UseUnicode
+			retval.ImportBehavior = Me.ConvertImportBehaviorEnum(Me.ImportBehavior)
 			Return retval
+		End Function
+
+		Private Function ConvertImportBehaviorEnum(ByVal importBehavior As kCura.EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice?) As kCura.EDDS.WebAPI.BulkImportManagerBase.ImportBehaviorChoice?
+			If Not importBehavior.HasValue Then Return Nothing
+			Select Case importBehavior.Value
+				Case EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice.ReplaceBlankValuesWithIdentifier
+					Return EDDS.WebAPI.BulkImportManagerBase.ImportBehaviorChoice.ReplaceBlankValuesWithIdentifier
+				Case Else
+					Return EDDS.WebAPI.BulkImportManagerBase.ImportBehaviorChoice.LeaveBlankValuesUnchanged
+			End Select
 		End Function
 
 		Public Sub GetObjectData(ByVal info As System.Runtime.Serialization.SerializationInfo, ByVal context As System.Runtime.Serialization.StreamingContext) Implements System.Runtime.Serialization.ISerializable.GetObjectData

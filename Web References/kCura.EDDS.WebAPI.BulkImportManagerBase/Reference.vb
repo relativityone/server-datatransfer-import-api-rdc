@@ -763,6 +763,8 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
         
         Private isUnicodeEnabledField As Boolean
         
+        Private importBehaviorField As System.Nullable(Of ImportBehaviorChoice)
+        
         '''<remarks/>
         Public Property FormatString() As String
             Get
@@ -782,7 +784,31 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
                 Me.isUnicodeEnabledField = value
             End Set
         End Property
+        
+        '''<remarks/>
+        <System.Xml.Serialization.XmlElementAttribute(IsNullable:=true)>  _
+        Public Property ImportBehavior() As System.Nullable(Of ImportBehaviorChoice)
+            Get
+                Return Me.importBehaviorField
+            End Get
+            Set
+                Me.importBehaviorField = value
+            End Set
+        End Property
     End Class
+    
+    '''<remarks/>
+    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.1"),  _
+     System.SerializableAttribute(),  _
+     System.Xml.Serialization.XmlTypeAttribute([Namespace]:="http://www.kCura.com/EDDS/BulkImportManager")>  _
+    Public Enum ImportBehaviorChoice
+        
+        '''<remarks/>
+        LeaveBlankValuesUnchanged
+        
+        '''<remarks/>
+        ReplaceBlankValuesWithIdentifier
+    End Enum
     
     '''<remarks/>
     <System.Xml.Serialization.XmlIncludeAttribute(GetType(ObjectLoadInfo)),  _

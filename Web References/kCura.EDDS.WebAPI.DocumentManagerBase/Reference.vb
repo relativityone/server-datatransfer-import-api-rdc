@@ -2029,7 +2029,7 @@ Namespace kCura.EDDS.WebAPI.DocumentManagerBase
     Public Enum ImportBehaviorChoice
         
         '''<remarks/>
-        LeaveBlankValuesBlank
+        LeaveBlankValuesUnchanged
         
         '''<remarks/>
         ReplaceBlankValuesWithIdentifier

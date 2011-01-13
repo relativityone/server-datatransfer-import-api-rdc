@@ -464,13 +464,13 @@ Namespace kCura.WinEDDS
 			Next
 			If _settings.LoadNativeFiles AndAlso Not _settings.NativeFilePathColumn Is Nothing AndAlso Not _settings.NativeFilePathColumn = String.Empty AndAlso collection.FileField Is Nothing Then
 				Dim nativeFileIndex As Int32 = Int32.Parse(_settings.NativeFilePathColumn.Substring(_settings.NativeFilePathColumn.LastIndexOf("(")).Trim("()".ToCharArray))
-				Dim field As New Api.ArtifactField(New DocumentField("File", -1, Relativity.FieldTypeHelper.FieldType.File, Relativity.FieldCategory.FileInfo, Nothing, Nothing, Nothing, True, EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice.LeaveBlankValuesBlank))
+				Dim field As New Api.ArtifactField(New DocumentField("File", -1, Relativity.FieldTypeHelper.FieldType.File, Relativity.FieldCategory.FileInfo, Nothing, Nothing, Nothing, True, EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice.LeaveBlankValuesUnchanged))
 				field.Value = line(nativeFileIndex - 1)
 				collection.Add(field)
 			End If
 			If _settings.CreateFolderStructure AndAlso Not _settings.FolderStructureContainedInColumn Is Nothing AndAlso Not _settings.FolderStructureContainedInColumn = String.Empty Then
 				Dim parentIndex As Int32 = Int32.Parse(_settings.FolderStructureContainedInColumn.Substring(_settings.FolderStructureContainedInColumn.LastIndexOf("(")).Trim("()".ToCharArray))
-				Dim field As New Api.ArtifactField(New DocumentField("Parent", -2, Relativity.FieldTypeHelper.FieldType.Object, Relativity.FieldCategory.ParentArtifact, Nothing, Nothing, Nothing, True, EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice.LeaveBlankValuesBlank))
+				Dim field As New Api.ArtifactField(New DocumentField("Parent", -2, Relativity.FieldTypeHelper.FieldType.Object, Relativity.FieldCategory.ParentArtifact, Nothing, Nothing, Nothing, True, EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice.LeaveBlankValuesUnchanged))
 				field.Value = line(parentIndex - 1)
 				collection.Add(field)
 			End If

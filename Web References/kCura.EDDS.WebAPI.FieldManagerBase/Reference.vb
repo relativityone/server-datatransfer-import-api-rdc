@@ -1344,7 +1344,7 @@ Namespace kCura.EDDS.WebAPI.FieldManagerBase
     Public Enum ImportBehaviorChoice
         
         '''<remarks/>
-        LeaveBlankValuesBlank
+        LeaveBlankValuesUnchanged
         
         '''<remarks/>
         ReplaceBlankValuesWithIdentifier
