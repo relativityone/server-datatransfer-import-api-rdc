@@ -58,6 +58,7 @@ Namespace kCura.WinEDDS.Service
 							.UseUnicodeEncoding = CType(dv(i)("UseUnicodeEncoding"), Boolean)
 							.AllowHtml = CType(dv(i)("AllowHTML"), Boolean)
 							.AssociativeArtifactTypeID = kCura.Utility.NullableTypesHelper.DBNullConvertToNullable(Of Int32)(dv(i)("AssociativeArtifactTypeID"))
+							.ImportBehavior = Me.ConvertImportBehaviorEnum(kCura.Utility.NullableTypesHelper.DBNullConvertToNullable(Of Int32)(dv(i)("ImportBehavior")))
 						End With
 						If field.FieldType = EDDS.WebAPI.DocumentManagerBase.FieldType.Object OrElse field.FieldType = EDDS.WebAPI.DocumentManagerBase.FieldType.Objects OrElse field.FieldCategory = EDDS.WebAPI.DocumentManagerBase.FieldCategory.MultiReflected OrElse field.FieldCategory = EDDS.WebAPI.DocumentManagerBase.FieldCategory.Reflected Then
 							If field.AssociativeArtifactTypeID.HasValue AndAlso Relativity.ArtifactTypeHelper.IsDynamic(field.AssociativeArtifactTypeID.Value) Then fields.Add(field)
@@ -71,12 +72,17 @@ Namespace kCura.WinEDDS.Service
 			Return DirectCast(fields.ToArray(GetType(kCura.EDDS.WebAPI.DocumentManagerBase.Field)), kCura.EDDS.WebAPI.DocumentManagerBase.Field())
 		End Function
 
+		Private Function ConvertImportBehaviorEnum(ByVal input As Int32?) As kCura.EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice?
+			If Not input.HasValue Then Return Nothing
+			Dim ibc As Relativity.FieldInfo.ImportBehaviorChoice = CType(input, Relativity.FieldInfo.ImportBehaviorChoice)
+			Return CType(System.Enum.Parse(GetType(kCura.EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice), ibc.ToString), kCura.EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice)
+		End Function
 
 		Public Function RetrieveAllAsDocumentFieldCollection(ByVal caseContextArtifactID As Int32, ByVal artifactTypeID As Int32) As DocumentFieldCollection
 			Dim retval As New DocumentFieldCollection
 			For Each fieldDTO As kCura.EDDS.WebAPI.DocumentManagerBase.Field In Me.RetrieveAllAsArray(caseContextArtifactID, artifactTypeID)
 				With fieldDTO
-					retval.Add(New DocumentField(.DisplayName, .ArtifactID, .FieldTypeID, .FieldCategoryID, .CodeTypeID, .MaxLength, .AssociativeArtifactTypeID, .UseUnicodeEncoding, .ImportBehavior.Value))
+					retval.Add(New DocumentField(.DisplayName, .ArtifactID, .FieldTypeID, .FieldCategoryID, .CodeTypeID, .MaxLength, .AssociativeArtifactTypeID, .UseUnicodeEncoding, .ImportBehavior))
 				End With
 			Next
 			Return retval

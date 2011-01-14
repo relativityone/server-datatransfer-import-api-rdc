@@ -25,12 +25,12 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
-		<NonSerialized()> Private _importBehavior As kCura.EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice
-		Public Property ImportBehavior() As kCura.EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice
+		<NonSerialized()> Private _importBehavior As kCura.EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice?
+		Public Property ImportBehavior() As kCura.EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice?
 			Get
 				Return _importBehavior
 			End Get
-			Set(ByVal value As kCura.EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice)
+			Set(ByVal value As kCura.EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice?)
 				_importBehavior = value
 			End Set
 		End Property
@@ -58,7 +58,7 @@ Namespace kCura.WinEDDS
 			Me.FileColumnIndex = info.GetInt32("_fileColumnIndex")
 		End Sub
 
-		Public Sub New(ByVal fieldName As String, ByVal fieldID As Int32, ByVal fieldTypeID As Int32, ByVal fieldCategoryID As Int32, ByVal codeTypeID As Nullable(Of Int32), ByVal fieldLength As Nullable(Of Int32), ByVal associatedObjectTypeID As Nullable(Of Int32), ByVal useUnicode As Boolean, ByVal importBehavior As kCura.EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice)
+		Public Sub New(ByVal fieldName As String, ByVal fieldID As Int32, ByVal fieldTypeID As Int32, ByVal fieldCategoryID As Int32, ByVal codeTypeID As Nullable(Of Int32), ByVal fieldLength As Nullable(Of Int32), ByVal associatedObjectTypeID As Nullable(Of Int32), ByVal useUnicode As Boolean, ByVal importBehavior As kCura.EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice?)
 			MyBase.New()
 			_FieldName = fieldName
 			_FieldID = fieldID
@@ -92,10 +92,16 @@ Namespace kCura.WinEDDS
 			If Not Me.CodeTypeID Is Nothing Then retval.CodeTypeID = Me.CodeTypeID.Value
 			retval.DisplayName = Me.FieldName
 			If Not Me.FieldLength Is Nothing Then retval.TextLength = Me.FieldLength.Value
-			retval.Type = CType(Me.FieldTypeID, kCura.EDDS.WebAPI.BulkImportManagerBase.FieldType)
+			retval.Type = Me.ConvertFieldTypeEnum(Me.FieldTypeID)
 			retval.IsUnicodeEnabled = Me.UseUnicode
 			retval.ImportBehavior = Me.ConvertImportBehaviorEnum(Me.ImportBehavior)
 			Return retval
+		End Function
+
+		'HACK: This blows, but is necessary because the WSDL generator is mad-retarded re: enums with set numbers
+		Private Function ConvertFieldTypeEnum(ByVal fieldtypeID As Int32) As kCura.EDDS.WebAPI.BulkImportManagerBase.FieldType
+			Dim ft As Relativity.FieldTypeHelper.FieldType = CType(fieldtypeID, Relativity.FieldTypeHelper.FieldType)
+			Return CType(System.Enum.Parse(GetType(kCura.EDDS.WebAPI.BulkImportManagerBase.FieldType), ft.ToString), kCura.EDDS.WebAPI.BulkImportManagerBase.FieldType)
 		End Function
 
 		Private Function ConvertImportBehaviorEnum(ByVal importBehavior As kCura.EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice?) As kCura.EDDS.WebAPI.BulkImportManagerBase.ImportBehaviorChoice?
