@@ -3,6 +3,18 @@ Namespace kCura.WinEDDS
 	<Serializable()> Public Class DocumentField
 		Implements ISerializable
 
+#Region "Members"
+		Private _fieldName As String
+		Private _fieldID As Int32
+		Private _fieldTypeID As Int32
+		Private _value As String
+		Private _fieldCategoryID As Int32
+		Private _codeTypeID As Nullable(Of Int32)
+		Private _fileColumnIndex As Int32
+		Private _fieldLength As Nullable(Of Int32)
+#End Region
+
+
 #Region "Properties"
 
 		<NonSerialized()> Private _associatedObjectTypeID As Nullable(Of Int32)
@@ -36,14 +48,85 @@ Namespace kCura.WinEDDS
 		End Property
 
 		Public Property FieldName() As String
+			Get
+				Return _fieldName
+			End Get
+			Set(ByVal value As String)
+				_fieldName = value
+			End Set
+		End Property
+
 		Public Property FieldID() As Int32
+			Get
+				Return _fieldID
+			End Get
+			Set(ByVal value As Int32)
+				_fieldID = value
+			End Set
+		End Property
+
 		Public Property FieldTypeID() As Int32
+			Get
+				Return _fieldTypeID
+			End Get
+			Set(ByVal value As Int32)
+				_fieldTypeID = value
+			End Set
+		End Property
+
 		Public Property FieldCategoryID() As Int32
+			Get
+				Return _fieldCategoryID
+			End Get
+			Set(ByVal value As Int32)
+				_fieldCategoryID = value
+			End Set
+		End Property
+
 		Public Property FieldCategory() As Relativity.FieldCategory
+			Get
+				Return CType(_fieldCategoryID, Relativity.FieldCategory)
+			End Get
+			Set(ByVal value As Relativity.FieldCategory)
+				_fieldCategoryID = value
+			End Set
+		End Property
+
 		Public Property Value() As String
+			Get
+				Return _value
+			End Get
+			Set(ByVal value As String)
+				_value = value
+			End Set
+		End Property
+
 		Public Property CodeTypeID() As Nullable(Of Int32)
+			Get
+				Return _codeTypeID
+			End Get
+			Set(ByVal value As Nullable(Of Int32))
+				_codeTypeID = value
+			End Set
+		End Property
+
 		Public Property FileColumnIndex() As Int32
+			Get
+				Return _fileColumnIndex
+			End Get
+			Set(ByVal value As Int32)
+				_fileColumnIndex = value
+			End Set
+		End Property
+
 		Public Property FieldLength() As Nullable(Of Int32)
+			Get
+				Return _fieldLength
+			End Get
+			Set(ByVal value As Nullable(Of Int32))
+				_fieldLength = value
+			End Set
+		End Property
 
 #End Region
 

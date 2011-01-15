@@ -1,9 +1,7 @@
 'Imports kCura.EDDS.DynamicFields
 Namespace kCura.WinEDDS
 	Public Class LoadFilePreviewer
-
 		Inherits kCura.WinEDDS.LoadFileBase
-
 
 
 #Region "Members"
@@ -14,6 +12,8 @@ Namespace kCura.WinEDDS
 		Private _nativeFileCheckColumnName As String = ""
 		Private _selectedCaseArtifactID As Int32
 		Public Shared extractedTextEncodingFieldName As String = "Extracted Text Encoding"
+		Private _relationalDocumentFields As DocumentField()
+		Private _processedIdentifiers As New Collections.Specialized.NameValueCollection
 #End Region
 
 #Region "Constructors"
@@ -89,11 +89,10 @@ Namespace kCura.WinEDDS
 			RaiseEvent OnEvent(New EventArgs(type, bytes, total, [step]))
 		End Sub
 #End Region
-		Private _processedIdentifiers As New Collections.Specialized.NameValueCollection
 
 		Public Function ReadFile(ByVal path As String, ByVal formType As Int32) As Object
 			Dim earlyexit As Boolean = False
-			'_relationalDocumentFields = _fieldQuery.RetrieveAllAsDocumentFieldCollection(_selectedCaseArtifactID, _artifactTypeID).GetFieldsByCategory(Relativity.FieldCategory.Relational)
+			_relationalDocumentFields = _fieldQuery.RetrieveAllAsDocumentFieldCollection(_selectedCaseArtifactID, _artifactTypeID).GetFieldsByCategory(Relativity.FieldCategory.Relational)
 			Dim filesize As Int64 = _artifactReader.SizeInBytes
 			Dim stepsize As Int64 = CType(filesize / 100, Int64)
 			ProcessStart(0, filesize, stepsize)
@@ -150,11 +149,13 @@ Namespace kCura.WinEDDS
 			Dim lineContainsErrors As Boolean = False
 			Dim retval As New ArrayList
 			Dim identifierField As Api.ArtifactField
-			Dim unmappedFields As New System.Collections.Specialized.HybridDictionary
-			Dim mappedFields As New System.Collections.Specialized.HybridDictionary
-			'For Each relationalField As DocumentField In _relationalDocumentFields
-			'	unmappedFields.Add(relationalField.FieldID, New Api.ArtifactField(relationalField))
-			'Next
+			Dim unmappedRelationalNoBlankFields As New System.Collections.Specialized.HybridDictionary
+			Dim mappedRelationalNoBlankFields As New System.Collections.Specialized.HybridDictionary
+			For Each relationalField As DocumentField In _relationalDocumentFields
+				If relationalField.ImportBehavior = EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice.ReplaceBlankValuesWithIdentifier Then
+					unmappedRelationalNoBlankFields.Add(relationalField.FieldID, New Api.ArtifactField(relationalField))
+				End If
+			Next
 			If _keyFieldID > 0 Then
 				identifierField = record(_keyFieldID)
 			Else
@@ -166,17 +167,17 @@ Namespace kCura.WinEDDS
 					Dim field As Api.ArtifactField = record(mapItem.DocumentField.FieldID)
 					If Not (_artifactTypeID <> Relativity.ArtifactType.Document And field.Type = Relativity.FieldTypeHelper.FieldType.File) Then
 						Select Case field.Category
-							'Case Relativity.FieldCategory.Relational
-							'	If unmappedFields.Contains(field.ArtifactID) Then
-							'		unmappedFields.Remove(field.ArtifactID)
-							'	End If
-							'	If Not mappedFields.Contains(field.ArtifactID) Then
-							'		mappedFields.Add(field.ArtifactID, field)
-							'	End If
+							Case Relativity.FieldCategory.Relational
+								If unmappedRelationalNoBlankFields.Contains(field.ArtifactID) Then
+									unmappedRelationalNoBlankFields.Remove(field.ArtifactID)
+								End If
+								If Not mappedRelationalNoBlankFields.Contains(field.ArtifactID) Then
+									mappedRelationalNoBlankFields.Add(field.ArtifactID, field)
+								End If
 							Case Relativity.FieldCategory.Identifier
 								If Not _keyFieldID > 0 Then identifierField = field
 						End Select
-						lineContainsErrors = lineContainsErrors Or SetFieldValueOrErrorMessage(field, mapItem.NativeFileColumnIndex, identifierField.ValueAsString, codePageId)
+						lineContainsErrors = lineContainsErrors Or SetFieldValueOrErrorMessage(field, mapItem.NativeFileColumnIndex, identifierField.ValueAsString, codePageId, mapItem.DocumentField.ImportBehavior)
 						'dont add field if object type is not a document and the field is a file field
 						retval.Add(field)
 					End If
@@ -194,14 +195,10 @@ Namespace kCura.WinEDDS
 			End If
 
 			If Not identifierField Is Nothing And _artifactTypeID = Relativity.ArtifactType.Document Then
-				For Each field As Api.ArtifactField In unmappedFields.Values
-					field.Value = identifierField.ValueAsString
-					'field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(Me.GetNullableFixedString(record.IdentifierField.ValueAsString, -1, field.TextLength))
-					lineContainsErrors = lineContainsErrors Or SetFieldValueOrErrorMessage(field, -1, identifierField.ValueAsString, -1)
+				For Each field As Api.ArtifactField In unmappedRelationalNoBlankFields.Values
+					field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(Me.GetNullableFixedString(record.IdentifierField.ValueAsString, -1, field.TextLength))
+					lineContainsErrors = lineContainsErrors Or SetFieldValueOrErrorMessage(field, -1, identifierField.ValueAsString, -1, Nothing)
 					retval.Add(field)
-				Next
-				For Each field As Api.ArtifactField In mappedFields.Values
-					If field.ValueAsString = "" Then field.Value = identifierField.Value
 				Next
 			End If
 
@@ -289,9 +286,9 @@ Namespace kCura.WinEDDS
 			_nativeFileCheckColumnName = val
 		End Sub
 
-		Private Function SetFieldValueOrErrorMessage(ByVal field As Api.ArtifactField, ByVal column As Int32, ByVal identityValue As String, ByRef extractedTextCodePageId As Int32) As Boolean
+		Private Function SetFieldValueOrErrorMessage(ByVal field As Api.ArtifactField, ByVal column As Int32, ByVal identityValue As String, ByRef extractedTextCodePageId As Int32, ByVal importBehavior As EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice?) As Boolean
 			Try
-				SetFieldValue(field, column, True, identityValue, extractedTextCodePageId)
+				SetFieldValue(field, column, True, identityValue, extractedTextCodePageId, importBehavior)
 				Return TypeOf field.Value Is System.Exception
 			Catch ex As kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
 				field.Value = ex.Message

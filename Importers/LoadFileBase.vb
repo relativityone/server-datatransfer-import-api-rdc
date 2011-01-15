@@ -273,7 +273,7 @@ Namespace kCura.WinEDDS
 
 #End Region
 
-		Public Sub SetFieldValue(ByVal field As Api.ArtifactField, ByVal columnIndex As Int32, ByVal forPreview As Boolean, ByVal identityValue As String, ByRef extractedTextFileCodePageId As Int32)
+		Public Sub SetFieldValue(ByVal field As Api.ArtifactField, ByVal columnIndex As Int32, ByVal forPreview As Boolean, ByVal identityValue As String, ByRef extractedTextFileCodePageId As Int32, ByVal importBehavior As EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice?)
 			If TypeOf field.Value Is System.Exception Then
 				Throw DirectCast(field.Value, System.Exception)
 			End If
@@ -380,10 +380,11 @@ Namespace kCura.WinEDDS
 				Case Relativity.FieldTypeHelper.FieldType.Varchar
 					If field.Value Is Nothing Then field.Value = String.Empty
 					field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(Me.GetNullableFixedString(field.ValueAsString, columnIndex, field.TextLength))
-					'Select Case field.Category
-					'	Case Relativity.FieldCategory.Relational
-					'		If field.Value.ToString = String.Empty Then field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(Me.GetNullableFixedString(identityValue, columnIndex, field.TextLength))
-					'End Select
+					If field.Category = Relativity.FieldCategory.Relational Then
+						If field.Value.ToString = String.Empty AndAlso importBehavior.HasValue AndAlso importBehavior.Value = EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice.ReplaceBlankValuesWithIdentifier Then
+							field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(Me.GetNullableFixedString(identityValue, columnIndex, field.TextLength))
+						End If
+					End If
 				Case Relativity.FieldTypeHelper.FieldType.Object
 					If field.Value Is Nothing Then field.Value = String.Empty
 					field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(GetNullableAssociatedObjectName(field.Value.ToString, columnIndex, field.TextLength, field.DisplayName))

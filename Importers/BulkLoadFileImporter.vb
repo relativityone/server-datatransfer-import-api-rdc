@@ -29,8 +29,8 @@ Namespace kCura.WinEDDS
 		Private _destinationFolderColumnIndex As Int32 = -1
 		Private _folderCache As FolderCache
 		Private _fullTextField As kCura.EDDS.WebAPI.DocumentManagerBase.Field
-		Private _defaultDestinationFolderPath As String = ""
-		Private _defaultTextFolderPath As String = ""
+		Private _defaultDestinationFolderPath As String = String.Empty
+		Private _defaultTextFolderPath As String = String.Empty
 		Private _copyFileToRepository As Boolean
 		Private _oixFileLookup As System.Collections.Specialized.HybridDictionary
 		Private _fieldArtifactIds As Int32()
@@ -39,7 +39,7 @@ Namespace kCura.WinEDDS
 		Private _outputObjectFileWriter As System.IO.StreamWriter
 		Private _caseInfo As Relativity.CaseInfo
 
-		Private _runID As String = ""
+		Private _runID As String = String.Empty
 		Private _uploadKey As String
 
 		Private _outputNativeFilePath As String = System.IO.Path.GetTempFileName
@@ -47,12 +47,12 @@ Namespace kCura.WinEDDS
 		Private _outputObjectFilePath As String = System.IO.Path.GetTempFileName
 		Private _filePath As String
 		Private _batchCounter As Int32 = 0
-		Private _errorMessageFileLocation As String = ""
-		Private _errorLinesFileLocation As String = ""
+		Private _errorMessageFileLocation As String = String.Empty
+		Private _errorLinesFileLocation As String = String.Empty
 
 		Public Const MaxNumberOfErrorsInGrid As Int32 = 1000
 		Private _errorCount As Int32 = 0
-		Private _prePushErrorLineNumbersFileName As String = ""
+		Private _prePushErrorLineNumbersFileName As String = String.Empty
 		Private _isAuditingEnabled As Boolean
 		Private _processID As Guid
 		Private _parentArtifactTypeID As Int32
@@ -122,6 +122,7 @@ Namespace kCura.WinEDDS
 						Return field
 					End If
 				Next
+				Return Nothing
 			End Get
 		End Property
 
@@ -165,13 +166,13 @@ Namespace kCura.WinEDDS
 				If _unmappedRelationalFields Is Nothing Then
 					Dim mappedRelationalFieldIds As New System.Collections.ArrayList
 					For Each item As LoadFileFieldMap.LoadFileFieldMapItem In _fieldMap
-						If Not item.DocumentField Is Nothing AndAlso item.DocumentField.FieldCategory = Relativity.FieldCategory.Relational AndAlso item.DocumentField.ImportBehavior <> kCura.EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice.ReplaceBlankValuesWithIdentifier Then
+						If Not item.DocumentField Is Nothing AndAlso item.DocumentField.FieldCategory = Relativity.FieldCategory.Relational AndAlso item.DocumentField.ImportBehavior = kCura.EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice.ReplaceBlankValuesWithIdentifier Then
 							mappedRelationalFieldIds.Add(item.DocumentField.FieldID)
 						End If
 					Next
 					_unmappedRelationalFields = New System.Collections.ArrayList
 					For Each field As kCura.EDDS.WebAPI.DocumentManagerBase.Field In Me.AllFields(_artifactTypeID)
-						If field.FieldCategory = EDDS.WebAPI.DocumentManagerBase.FieldCategory.Relational And Not mappedRelationalFieldIds.Contains(field.ArtifactID) Then
+						If field.FieldCategory = EDDS.WebAPI.DocumentManagerBase.FieldCategory.Relational And Not mappedRelationalFieldIds.Contains(field.ArtifactID) AndAlso field.ImportBehavior = kCura.EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice.ReplaceBlankValuesWithIdentifier Then
 							_unmappedRelationalFields.Add(field)
 						End If
 					Next
@@ -804,6 +805,7 @@ Namespace kCura.WinEDDS
 					Return Me.FieldDtoToFieldInfo(field)
 				End If
 			Next
+			Return Nothing
 		End Function
 
 		Private Function GetRelativityFileTypeField() As kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo
@@ -812,6 +814,7 @@ Namespace kCura.WinEDDS
 					Return Me.FieldDtoToFieldInfo(field)
 				End If
 			Next
+			Return Nothing
 		End Function
 
 		Private Function GetHasNativesField() As kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo
@@ -820,6 +823,7 @@ Namespace kCura.WinEDDS
 					Return Me.FieldDtoToFieldInfo(field)
 				End If
 			Next
+			Return Nothing
 		End Function
 
 		Private Function GetObjectFileField() As kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo
@@ -828,6 +832,7 @@ Namespace kCura.WinEDDS
 					Return Me.FieldDtoToFieldInfo(field)
 				End If
 			Next
+			Return Nothing
 		End Function
 
 		Private Function FieldDtoToFieldInfo(ByVal input As kCura.EDDS.WebAPI.DocumentManagerBase.Field) As kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo
@@ -838,8 +843,13 @@ Namespace kCura.WinEDDS
 			retval.DisplayName = input.DisplayName
 			If Not input.MaxLength Is Nothing Then retval.TextLength = input.MaxLength.Value
 			retval.IsUnicodeEnabled = input.UseUnicodeEncoding
-			retval.Type = CType(input.FieldTypeID, kCura.EDDS.WebAPI.BulkImportManagerBase.FieldType)
+			retval.Type = Me.ConvertFieldTypeEnum(input.FieldTypeID)
 			Return retval
+		End Function
+
+		Private Function ConvertFieldTypeEnum(ByVal fieldtypeID As Int32) As kCura.EDDS.WebAPI.BulkImportManagerBase.FieldType
+			Dim ft As Relativity.FieldTypeHelper.FieldType = CType(fieldtypeID, Relativity.FieldTypeHelper.FieldType)
+			Return CType(System.Enum.Parse(GetType(kCura.EDDS.WebAPI.BulkImportManagerBase.FieldType), ft.ToString), kCura.EDDS.WebAPI.BulkImportManagerBase.FieldType)
 		End Function
 
 		Private Function IsSupportedRelativityFileType(ByVal fileData As OI.FileID.FileIDData) As Boolean
@@ -891,14 +901,16 @@ Namespace kCura.WinEDDS
 					If item.DocumentField.FieldTypeID = Relativity.FieldTypeHelper.FieldType.File Then
 						Me.ManageFileField(record(item.DocumentField.FieldID))
 					Else
-						MyBase.SetFieldValue(record(item.DocumentField.FieldID), item.NativeFileColumnIndex, False, identityValue, 0)
+						MyBase.SetFieldValue(record(item.DocumentField.FieldID), item.NativeFileColumnIndex, False, identityValue, 0, item.DocumentField.ImportBehavior)
 					End If
 				End If
 			Next
 			For Each fieldDTO As kCura.EDDS.WebAPI.DocumentManagerBase.Field In Me.UnmappedRelationalFields
-				Dim field As New Api.ArtifactField(fieldDTO)
-				field.Value = identityValue
-				Me.SetFieldValue(field, -1, False, identityValue, 0)
+				If fieldDTO.ImportBehavior = EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice.ReplaceBlankValuesWithIdentifier Then
+					Dim field As New Api.ArtifactField(fieldDTO)
+					field.Value = identityValue
+					Me.SetFieldValue(field, -1, False, identityValue, 0, fieldDTO.ImportBehavior)
+				End If
 			Next
 			_firstTimeThrough = False
 			System.Threading.Monitor.Exit(_outputNativeFileWriter)
