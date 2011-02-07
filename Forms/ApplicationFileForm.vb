@@ -280,6 +280,7 @@ Namespace kCura.EDDS.WinForm
 #Region " Event Handlers "
 
 		Private Sub BrowseButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles BrowseButton.Click
+			OpenFileDialog.InitialDirectory = Environment.CurrentDirectory & "\Applications"
 			OpenFileDialog.ShowDialog()
 		End Sub
 
