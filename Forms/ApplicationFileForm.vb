@@ -6,6 +6,7 @@ Imports System.Xml.Linq
 Namespace kCura.EDDS.WinForm
 	Public Class ApplicationFileForm
 		Inherits System.Windows.Forms.Form
+		Private OpenFileDialog As OpenFileDialog
 
 #Region " Windows Form Designer generated code "
 
@@ -16,7 +17,9 @@ Namespace kCura.EDDS.WinForm
 			InitializeComponent()
 
 			'Add any initialization after the InitializeComponent() call
-
+			OpenFileDialog = New OpenFileDialog
+			OpenFileDialog.Filter = "XML Files (*.xml)|*.xml"
+			OpenFileDialog.InitialDirectory = IO.Path.Combine(Environment.CurrentDirectory, "Applications")
 		End Sub
 
 		'Form overrides dispose to clean up the component list.
@@ -41,7 +44,6 @@ Namespace kCura.EDDS.WinForm
 		Friend WithEvents MenuImport_ImportApplication As System.Windows.Forms.MenuItem
 		Friend WithEvents ApplicationName As System.Windows.Forms.TextBox
 		Friend WithEvents ApplicationVersion As System.Windows.Forms.TextBox
-		Friend WithEvents OpenFileDialog As System.Windows.Forms.OpenFileDialog
 		Friend WithEvents ApplicationFileGroupBox As System.Windows.Forms.GroupBox
 		Friend WithEvents ApplicationInformationGroupBox As System.Windows.Forms.GroupBox
 		Friend WithEvents ApplicationArtifactsGroupBox As System.Windows.Forms.GroupBox
@@ -72,7 +74,6 @@ Namespace kCura.EDDS.WinForm
 			Me.NameLabel = New System.Windows.Forms.Label()
 			Me.ApplicationArtifactsGroupBox = New System.Windows.Forms.GroupBox()
 			Me.TreeView1 = New System.Windows.Forms.TreeView()
-			Me.OpenFileDialog = New System.Windows.Forms.OpenFileDialog()
 			Me.GroupBox1 = New System.Windows.Forms.GroupBox()
 			Me.BrowseCasesButton = New System.Windows.Forms.Button()
 			Me.CaseListTextBox = New System.Windows.Forms.TextBox()
@@ -111,7 +112,7 @@ Namespace kCura.EDDS.WinForm
 			'ApplicationFileGroupBox
 			'
 			Me.ApplicationFileGroupBox.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-					Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+			  Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me.ApplicationFileGroupBox.Controls.Add(Me.BrowseButton)
 			Me.ApplicationFileGroupBox.Controls.Add(Me.FilePath)
 			Me.ApplicationFileGroupBox.Location = New System.Drawing.Point(16, 24)
@@ -133,7 +134,7 @@ Namespace kCura.EDDS.WinForm
 			'FilePath
 			'
 			Me.FilePath.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-					Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+			  Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me.FilePath.BackColor = System.Drawing.SystemColors.ControlLightLight
 			Me.FilePath.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
 			Me.FilePath.ForeColor = System.Drawing.SystemColors.ControlDarkDark
@@ -146,7 +147,7 @@ Namespace kCura.EDDS.WinForm
 			'ApplicationInformationGroupBox
 			'
 			Me.ApplicationInformationGroupBox.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-					Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+			  Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me.ApplicationInformationGroupBox.Controls.Add(Me.ApplicationName)
 			Me.ApplicationInformationGroupBox.Controls.Add(Me.ApplicationVersion)
 			Me.ApplicationInformationGroupBox.Controls.Add(Me.VersionLabel)
@@ -161,7 +162,7 @@ Namespace kCura.EDDS.WinForm
 			'ApplicationName
 			'
 			Me.ApplicationName.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-					Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+			  Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me.ApplicationName.Location = New System.Drawing.Point(72, 24)
 			Me.ApplicationName.Name = "ApplicationName"
 			Me.ApplicationName.ReadOnly = True
@@ -171,7 +172,7 @@ Namespace kCura.EDDS.WinForm
 			'ApplicationVersion
 			'
 			Me.ApplicationVersion.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-					Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+			  Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me.ApplicationVersion.Location = New System.Drawing.Point(72, 56)
 			Me.ApplicationVersion.Name = "ApplicationVersion"
 			Me.ApplicationVersion.ReadOnly = True
@@ -197,8 +198,8 @@ Namespace kCura.EDDS.WinForm
 			'ApplicationArtifactsGroupBox
 			'
 			Me.ApplicationArtifactsGroupBox.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-					Or System.Windows.Forms.AnchorStyles.Left) _
-					Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+			  Or System.Windows.Forms.AnchorStyles.Left) _
+			  Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me.ApplicationArtifactsGroupBox.Controls.Add(Me.TreeView1)
 			Me.ApplicationArtifactsGroupBox.Location = New System.Drawing.Point(12, 233)
 			Me.ApplicationArtifactsGroupBox.Name = "ApplicationArtifactsGroupBox"
@@ -213,10 +214,6 @@ Namespace kCura.EDDS.WinForm
 			Me.TreeView1.Name = "TreeView1"
 			Me.TreeView1.Size = New System.Drawing.Size(704, 345)
 			Me.TreeView1.TabIndex = 0
-			'
-			'OpenFileDialog
-			'
-			Me.OpenFileDialog.Filter = "XML Files (*.xml)|*.xml"
 			'
 			'GroupBox1
 			'
@@ -241,7 +238,7 @@ Namespace kCura.EDDS.WinForm
 			'CaseListTextBox
 			'
 			Me.CaseListTextBox.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-					Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+			  Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me.CaseListTextBox.BackColor = System.Drawing.SystemColors.ControlLightLight
 			Me.CaseListTextBox.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
 			Me.CaseListTextBox.ForeColor = System.Drawing.SystemColors.ControlDarkDark
@@ -280,7 +277,6 @@ Namespace kCura.EDDS.WinForm
 #Region " Event Handlers "
 
 		Private Sub BrowseButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles BrowseButton.Click
-			OpenFileDialog.InitialDirectory = Environment.CurrentDirectory & "\Applications"
 			OpenFileDialog.ShowDialog()
 		End Sub
 
@@ -294,7 +290,7 @@ Namespace kCura.EDDS.WinForm
 			Me.Cursor = System.Windows.Forms.Cursors.Default
 		End Sub
 
-		Private Sub OpenFileDialog_FileOk(ByVal sender As Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles OpenFileDialog.FileOk
+		Private Sub OpenFileDialog_FileOk(ByVal sender As Object, ByVal e As System.ComponentModel.CancelEventArgs)
 			Dim document As Xml.XmlDocument
 
 			document = LoadFileIntoXML(OpenFileDialog.FileName)
