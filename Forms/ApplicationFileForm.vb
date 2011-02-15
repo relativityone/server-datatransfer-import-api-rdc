@@ -6,7 +6,7 @@ Imports System.Xml.Linq
 Namespace kCura.EDDS.WinForm
 	Public Class ApplicationFileForm
 		Inherits System.Windows.Forms.Form
-		Private OpenFileDialog As OpenFileDialog
+		Private WithEvents OpenFileDialog As OpenFileDialog
 
 #Region " Windows Form Designer generated code "
 
@@ -19,7 +19,9 @@ Namespace kCura.EDDS.WinForm
 			'Add any initialization after the InitializeComponent() call
 			OpenFileDialog = New OpenFileDialog
 			OpenFileDialog.Filter = "XML Files (*.xml)|*.xml"
-			OpenFileDialog.InitialDirectory = IO.Path.Combine(Environment.CurrentDirectory, "Applications")
+			OpenFileDialog.InitialDirectory = IO.Path.Combine(IO.Path.GetDirectoryName(System.Windows.Forms.Application.ExecutablePath), "Applications")
+			OpenFileDialog.CheckFileExists = True
+			OpenFileDialog.CheckPathExists = True
 		End Sub
 
 		'Form overrides dispose to clean up the component list.
@@ -290,7 +292,7 @@ Namespace kCura.EDDS.WinForm
 			Me.Cursor = System.Windows.Forms.Cursors.Default
 		End Sub
 
-		Private Sub OpenFileDialog_FileOk(ByVal sender As Object, ByVal e As System.ComponentModel.CancelEventArgs)
+		Private Sub OpenFileDialog_FileOk(ByVal sender As Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles OpenFileDialog.FileOk
 			Dim document As Xml.XmlDocument
 
 			document = LoadFileIntoXML(OpenFileDialog.FileName)
@@ -323,6 +325,9 @@ Namespace kCura.EDDS.WinForm
 			End If
 
 			FilePath.Text = OpenFileDialog.FileName
+			'I am sure that there is a way to make the openFileDialog preserve the old directory, but for whatever reason I can't get it to happen.
+			'Consider this a workaround, and if anyone knows how to make it work properly, please remove this line!
+			OpenFileDialog.InitialDirectory = IO.Path.GetDirectoryName(OpenFileDialog.FileName)
 			_document = document
 		End Sub
 
