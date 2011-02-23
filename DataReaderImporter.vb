@@ -21,7 +21,7 @@ Namespace kCura.WinEDDS.ImportExtension
 				allFields.Add(_sourceReader.GetName(i).ToLower())
 			Next
 
-
+			Dim columnIndex As Int32 = 0
 
 			For Each field As kCura.EDDS.WebAPI.DocumentManagerBase.Field In s.RetrieveAllAsArray(_settings.CaseInfo.ArtifactID, _settings.ArtifactTypeID, True)
 				field.Value = Nothing
@@ -36,7 +36,7 @@ Namespace kCura.WinEDDS.ImportExtension
 
 						'Do not add to field map if field.DisplayName is  _settings.FolderStructureContainedInColumn or _settings.NativeFilePathColumn
 						If _settings.FolderStructureContainedInColumn Is Nothing Then					'AndAlso _settings.NativeFilePathColumn Is Nothing Then
-							_settings.FieldMap.Add(New kCura.WinEDDS.LoadFileFieldMap.LoadFileFieldMapItem(New kCura.WinEDDS.DocumentField(field.DisplayName, field.ArtifactID, field.FieldTypeID, field.FieldCategoryID, field.CodeTypeID, field.MaxLength, field.AssociativeArtifactTypeID, field.UseUnicodeEncoding, field.ImportBehavior), 0))
+							_settings.FieldMap.Add(New kCura.WinEDDS.LoadFileFieldMap.LoadFileFieldMapItem(New kCura.WinEDDS.DocumentField(field.DisplayName, field.ArtifactID, field.FieldTypeID, field.FieldCategoryID, field.CodeTypeID, field.MaxLength, field.AssociativeArtifactTypeID, field.UseUnicodeEncoding, field.ImportBehavior), columnIndex))
 						Else
 							Dim s_FolderStructureContainedInColumn As String
 							Dim s_NativeFilePathColumn As String
@@ -54,7 +54,7 @@ Namespace kCura.WinEDDS.ImportExtension
 							End If
 
 							If Not field.DisplayName = s_FolderStructureContainedInColumn Then						'then AndAlso Not field.DisplayName = s_NativeFilePathColumn Then
-								_settings.FieldMap.Add(New kCura.WinEDDS.LoadFileFieldMap.LoadFileFieldMapItem(New kCura.WinEDDS.DocumentField(field.DisplayName, field.ArtifactID, field.FieldTypeID, field.FieldCategoryID, field.CodeTypeID, field.MaxLength, field.AssociativeArtifactTypeID, field.UseUnicodeEncoding, field.ImportBehavior), 0))
+								_settings.FieldMap.Add(New kCura.WinEDDS.LoadFileFieldMap.LoadFileFieldMapItem(New kCura.WinEDDS.DocumentField(field.DisplayName, field.ArtifactID, field.FieldTypeID, field.FieldCategoryID, field.CodeTypeID, field.MaxLength, field.AssociativeArtifactTypeID, field.UseUnicodeEncoding, field.ImportBehavior), columnIndex))
 							End If
 						End If
 
@@ -62,6 +62,7 @@ Namespace kCura.WinEDDS.ImportExtension
 				Catch ex As IndexOutOfRangeException
 					'field.Displayname is not in the DataReader, forget about it and continue
 				End Try
+				columnIndex = columnIndex + 1
 			Next
 			Dim retval As New DataReaderReader(New DataReaderReaderInitializationArgs(collection, _settings.ArtifactTypeID), _settings, _sourceReader)
 			Return retval

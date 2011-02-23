@@ -29,6 +29,7 @@ Namespace kCura.WinEDDS.ImportExtension
 			If _reader.Read() Then
 				_currentLineNumber += 1
 			Else
+				_currentLineNumber += 1
 				_reader.Close()
 			End If
 
