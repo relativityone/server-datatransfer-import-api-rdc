@@ -140,18 +140,6 @@
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="kCura.Windows.Process, Version=6.10.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\kCura\kCura.Windows.Process\bin\kCura.Windows.Process.dll</HintPath>
-    </Reference>
-    <Reference Include="kCura.WinEDDS, Version=6.10.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\kCura.WinEDDS\bin\kCura.WinEDDS.dll</HintPath>
-    </Reference>
-    <Reference Include="kCura.WinEDDS.ImportExtension, Version=6.10.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\kCura.WinEDDS.ImportExtension\bin\kCura.WinEDDS.ImportExtension.dll</HintPath>
-    </Reference>
-    <Reference Include="Relativity, Version=6.10.0.0, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\kCura.Relativity\bin\Relativity.dll</HintPath>
-    </Reference>
     <Reference Include="System">
       <Name>System</Name>
     </Reference>
@@ -217,6 +205,24 @@
   <ItemGroup>
     <Folder Include="My Project\" />
     <Folder Include="NativeImport\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\kCura\kCura.Windows.Process\kCura.Windows.Process.vbproj">
+      <Project>{B092D1B2-909B-4EF0-9369-A81675C3FC18}</Project>
+      <Name>kCura.Windows.Process</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.WinEDDS.ImportExtension\kCura.WinEDDS.ImportExtension.vbproj">
+      <Project>{86550F4B-BEF4-4458-9536-7B5C6F68B0E2}</Project>
+      <Name>kCura.WinEDDS.ImportExtension</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.WinEDDS\kCura.WinEDDS.vbproj">
+      <Project>{F16A2219-5DAC-4F2B-89B0-6BD1243CBF8F}</Project>
+      <Name>kCura.WinEDDS</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Relativity\Relativity.vbproj">
+      <Project>{044A6424-BC90-46CE-8805-0053A44AFCAB}</Project>
+      <Name>Relativity</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.VisualBasic.targets" />
   <PropertyGroup>
