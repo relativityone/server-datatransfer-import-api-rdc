@@ -148,10 +148,9 @@
       <Project>{F16A2219-5DAC-4F2B-89B0-6BD1243CBF8F}</Project>
       <Name>kCura.WinEDDS</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Relativity\Relativity.vbproj">
-      <Project>{044A6424-BC90-46CE-8805-0053A44AFCAB}</Project>
-      <Name>Relativity</Name>
-    </ProjectReference>
+    <Reference Include="Relativity">
+      <HintPath>..\Relativity\bin\Relativity.dll</HintPath>
+    </Reference>
     <Reference Include="System">
       <Name>System</Name>
     </Reference>

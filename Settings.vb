@@ -24,6 +24,7 @@ Namespace kCura.Relativity.DataReaderClient
 		Private _ParentObjectIdSourceFieldName As String
 
 		Private _NativeFilePathSourceFieldName As String
+		Private _rowCount As Int32
 		Private _NativeFileCopyMode As NativeFileCopyModeEnum
 		Private _ExtractedTextFieldContainsFilePath As Boolean
 		Private _ExtractedTextEncoding As System.Text.Encoding
@@ -180,6 +181,15 @@ Namespace kCura.Relativity.DataReaderClient
 			End Get
 			Set(ByVal Value As String)
 				_NativeFilePathSourceFieldName = Value
+			End Set
+		End Property
+
+		Public Property RowCount() As Int32
+			Get
+				Return _rowCount
+			End Get
+			Set(ByVal Value As Int32)
+				_rowCount = Value
 			End Set
 		End Property
 
