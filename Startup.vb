@@ -393,10 +393,13 @@ Namespace kCura.EDDS.WinForm
 							Next
 						End If
 						If Not mapItemToRemove Is Nothing Then tempLoadFile.FieldMap.Remove(mapItemToRemove)
+						Stop
 						For Each fieldMapItem As kCura.WinEDDS.LoadFileFieldMap.LoadFileFieldMapItem In tempLoadFile.FieldMap
 							If Not fieldMapItem.DocumentField Is Nothing Then
 								Try
 									Dim thisField As DocumentField = _application.CurrentFields(tempLoadFile.ArtifactTypeID).Item(fieldMapItem.DocumentField.FieldID)
+									If thisField Is Nothing Then thisField = _application.CurrentFields(tempLoadFile.ArtifactTypeID).Item(fieldMapItem.DocumentField.FieldName)
+									If thisField Is Nothing Then fieldMapItem.DocumentField = Nothing
 									fieldMapItem.DocumentField.AssociatedObjectTypeID = thisField.AssociatedObjectTypeID
 									fieldMapItem.DocumentField.UseUnicode = thisField.UseUnicode
 									fieldMapItem.DocumentField.CodeTypeID = thisField.CodeTypeID
