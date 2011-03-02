@@ -393,7 +393,7 @@ Namespace kCura.EDDS.WinForm
 							Next
 						End If
 						If Not mapItemToRemove Is Nothing Then tempLoadFile.FieldMap.Remove(mapItemToRemove)
-						Stop
+
 						For Each fieldMapItem As kCura.WinEDDS.LoadFileFieldMap.LoadFileFieldMapItem In tempLoadFile.FieldMap
 							If Not fieldMapItem.DocumentField Is Nothing Then
 								Try
