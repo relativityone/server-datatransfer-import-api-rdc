@@ -108,6 +108,7 @@ Namespace kCura.EDDS.WinForm
 			'
 			Me.MenuFile_Refresh.Enabled = False
 			Me.MenuFile_Refresh.Index = 0
+			Me.MenuFile_Refresh.Shortcut = System.Windows.Forms.Shortcut.F5
 			Me.MenuFile_Refresh.Text = "&Refresh"
 			'
 			'MenuItem2
@@ -130,7 +131,7 @@ Namespace kCura.EDDS.WinForm
 			'
 			Me.MenuImport_ImportApplication.Enabled = False
 			Me.MenuImport_ImportApplication.Index = 0
-			Me.MenuImport_ImportApplication.Shortcut = System.Windows.Forms.Shortcut.F5
+			Me.MenuImport_ImportApplication.Shortcut = System.Windows.Forms.Shortcut.F4
 			Me.MenuImport_ImportApplication.Text = "Import &Application"
 			'
 			'ApplicationFileGroupBox

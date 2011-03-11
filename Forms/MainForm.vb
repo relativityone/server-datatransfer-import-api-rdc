@@ -123,14 +123,14 @@ Namespace kCura.EDDS.WinForm
 			'MenuItem3
 			'
 			Me.EnhancedMenuProvider.SetImageIndex(Me.MenuItem3, -1)
-			Me.MenuItem3.Index = 1
+			Me.MenuItem3.Index = 2
 			Me.MenuItem3.OwnerDraw = True
 			Me.MenuItem3.Text = "-"
 			'
 			'ExitMenu
 			'
 			Me.EnhancedMenuProvider.SetImageIndex(Me.ExitMenu, -1)
-			Me.ExitMenu.Index = 2
+			Me.ExitMenu.Index = 3
 			Me.ExitMenu.OwnerDraw = True
 			Me.ExitMenu.Text = "&Exit"
 			'
@@ -138,7 +138,7 @@ Namespace kCura.EDDS.WinForm
 			'
 			Me._fileMenuRefresh.Enabled = False
 			Me.EnhancedMenuProvider.SetImageIndex(Me._fileMenuRefresh, -1)
-			Me._fileMenuRefresh.Index = 3
+			Me._fileMenuRefresh.Index = 1
 			Me._fileMenuRefresh.OwnerDraw = True
 			Me._fileMenuRefresh.Shortcut = System.Windows.Forms.Shortcut.F5
 			Me._fileMenuRefresh.Text = "Refresh"
@@ -166,7 +166,7 @@ Namespace kCura.EDDS.WinForm
 			Me.ToolsImportImageFileMenu.Index = 0
 			Me.ToolsImportImageFileMenu.OwnerDraw = True
 			Me.ToolsImportImageFileMenu.Shortcut = System.Windows.Forms.Shortcut.CtrlI
-			Me.ToolsImportImageFileMenu.Text = "&Image File..."
+			Me.ToolsImportImageFileMenu.Text = "&Image Load File..."
 			'
 			'ToolsImportLoadFileMenu
 			'
@@ -182,7 +182,7 @@ Namespace kCura.EDDS.WinForm
 			Me.ToolsImportProductionFileMenu.Index = 2
 			Me.ToolsImportProductionFileMenu.OwnerDraw = True
 			Me.ToolsImportProductionFileMenu.Shortcut = System.Windows.Forms.Shortcut.CtrlP
-			Me.ToolsImportProductionFileMenu.Text = "Production File..."
+			Me.ToolsImportProductionFileMenu.Text = "Production Load File..."
 			'
 			'ToolsImportApplicationFileMenu
 			'
@@ -190,7 +190,7 @@ Namespace kCura.EDDS.WinForm
 			Me.ToolsImportApplicationFileMenu.Index = 3
 			Me.ToolsImportApplicationFileMenu.OwnerDraw = True
 			Me.ToolsImportApplicationFileMenu.Shortcut = System.Windows.Forms.Shortcut.CtrlA
-			Me.ToolsImportApplicationFileMenu.Text = "&Application"
+			Me.ToolsImportApplicationFileMenu.Text = "&Application..."
 			'
 			'ToolsImportFileDirectoryMenu
 			'
@@ -281,7 +281,7 @@ Namespace kCura.EDDS.WinForm
 			Me.EnhancedMenuProvider.SetImageIndex(Me._optionsMenuCheckConnectivityItem, -1)
 			Me._optionsMenuCheckConnectivityItem.Index = 1
 			Me._optionsMenuCheckConnectivityItem.OwnerDraw = True
-			Me._optionsMenuCheckConnectivityItem.Text = "Check Connectivity"
+			Me._optionsMenuCheckConnectivityItem.Text = "Check Connectivity..."
 			Me._optionsMenuCheckConnectivityItem.Visible = False
 			'
 			'MenuItem4

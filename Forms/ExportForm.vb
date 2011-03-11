@@ -248,7 +248,7 @@ Public Class ExportForm
 		'RefreshMenu
 		'
 		Me.RefreshMenu.Index = 2
-		Me.RefreshMenu.Shortcut = System.Windows.Forms.Shortcut.CtrlR
+		Me.RefreshMenu.Shortcut = System.Windows.Forms.Shortcut.F5
 		Me.RefreshMenu.Text = "Refresh"
 		'
 		'_productionPrecedenceBox
@@ -1369,17 +1369,17 @@ Public Class ExportForm
 			Case ExportFile.ExportType.ArtifactSearch
 				_filters.Text = "Searches"
 				_filtersBox.Text = "Searches"
-				Me.Text = "Relativity Desktop Client: Export Saved Search"
+				Me.Text = "Relativity Desktop Client | Export Saved Search"
 			Case ExportFile.ExportType.ParentSearch, ExportFile.ExportType.AncestorSearch
 				_filters.Text = "Views"
 				_filtersBox.Text = "Views"
 				If Me.ExportFile.ArtifactTypeID = Relativity.ArtifactType.Document Then
-					Me.Text = "Relativity Desktop Client: Export Folder"
+					Me.Text = "Relativity Desktop Client | Export Folder"
 					If Me.ExportFile.TypeOfExport = ExportFile.ExportType.AncestorSearch Then
-						Me.Text = "Relativity Desktop Client: Export Folder and Subfolders"
+						Me.Text = "Relativity Desktop Client | Export Folder and Subfolders"
 					End If
 				Else
-					Me.Text = String.Format("Relativity Desktop Client: Export {0} Objects", Me.ObjectTypeName)
+					Me.Text = String.Format("Relativity Desktop Client | Export {0} Objects", Me.ObjectTypeName)
 				End If
 			Case ExportFile.ExportType.Production
 				Label5.Visible = True
@@ -1387,7 +1387,7 @@ Public Class ExportForm
 				_filtersBox.Text = "Productions"
 				_nativeFileNameSource.Visible = True
 				_nativeFileNameSource.SelectedIndex = 0
-				Me.Text = "Relativity Desktop Client: Export Production Set"
+				Me.Text = "Relativity Desktop Client | Export Production Set"
 				_productionPrecedenceBox.Visible = False
 		End Select
 		If Not Me.ExportFile.ArtifactTypeID = Relativity.ArtifactType.Document Then

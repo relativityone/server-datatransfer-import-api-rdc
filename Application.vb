@@ -1415,7 +1415,7 @@ Namespace kCura.EDDS.WinForm
 			Dim applicationDeploymentProcess As New kCura.WinEDDS.ApplicationDeploymentProcess(application, Me.Credential, Me.CookieContainer, caseInfos)
 			Dim form As New TextDisplayForm
 			form.ProcessObserver = applicationDeploymentProcess.ProcessObserver
-			form.Text = "Application Deployment System"
+			form.Text = "Relativity Application Deployment"
 			form.Show()
 			_processPool.StartProcess(applicationDeploymentProcess)
 			CursorDefault()

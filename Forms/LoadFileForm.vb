@@ -276,7 +276,7 @@ Namespace kCura.EDDS.WinForm
 			'_fileRefreshMenuItem
 			'
 			Me._fileRefreshMenuItem.Index = 5
-			Me._fileRefreshMenuItem.Shortcut = System.Windows.Forms.Shortcut.CtrlR
+			Me._fileRefreshMenuItem.Shortcut = System.Windows.Forms.Shortcut.F5
 			Me._fileRefreshMenuItem.Text = "Refresh"
 			'
 			'MenuItem2
