@@ -556,7 +556,7 @@ Namespace kCura.Windows.Process
 					Catch
 						_exportErrorFileLocation = exportFilePath
 					End Try
-					If MsgBox("Errors have occurred. Export error files?", MsgBoxStyle.OKCancel, "") = MsgBoxResult.OK Then
+					If MsgBox("Errors have occurred. Export error files?", MsgBoxStyle.OkCancel, "Relativity Desktop Client") = MsgBoxResult.Ok Then
 						If exportLog Then
 							Me.ExportErrorFiles()
 						Else
