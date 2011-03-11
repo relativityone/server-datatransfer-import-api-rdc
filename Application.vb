@@ -1748,7 +1748,7 @@ Namespace kCura.EDDS.WinForm
 			sb.Append("Version " & Me.GetDisplayAssemblyVersion() & nl)
 			sb.Append(Relativity.Constants.LICENSE_AGREEMENT_TEXT & nl)
 			sb.Append("Copyright © " & System.DateTime.Now.Year & " kCura Corporation")
-			MsgBox(sb.ToString, MsgBoxStyle.OkOnly, "Relativity Desktop Client")
+			MsgBox(sb.ToString, MsgBoxStyle.OkOnly, "Relativity Desktop Client | About")
 			If Not _loginForm Is Nothing AndAlso Not _loginForm.IsDisposed Then
 				_loginForm.TopMost = True
 			End If
