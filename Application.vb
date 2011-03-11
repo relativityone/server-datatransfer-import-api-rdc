@@ -1137,7 +1137,13 @@ Namespace kCura.EDDS.WinForm
 		Public Sub NewOptions()
 			CursorWait()
 			Dim frm As New OptionsForm
-			frm.Show()
+
+			If Not _loginForm Is Nothing Then
+				frm.Show(_loginForm)
+			Else
+				frm.Show()
+			End If
+
 			CursorDefault()
 		End Sub
 
@@ -1182,7 +1188,7 @@ Namespace kCura.EDDS.WinForm
 			Dim proc As New kCura.WinEDDS.ConnectionDetailsProcess(Me.Credential, Me.CookieContainer, Me.SelectedCaseInfo)
 			Dim form As New TextDisplayForm
 			form.ProcessObserver = proc.ProcessObserver
-			form.Text = "Connectivity Tests"
+			form.Text = "Relativity Desktop Client | Connectivity Tests"
 			form.Show()
 			_processPool.StartProcess(proc)
 			CursorDefault()

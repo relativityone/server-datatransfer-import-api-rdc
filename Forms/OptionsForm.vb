@@ -132,6 +132,8 @@ Namespace kCura.EDDS.WinForm
 			'
 			Me.AcceptButton = Me._okButton
 			Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
+			Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog
+			Me.MaximizeBox = False
 			Me.CancelButton = Me._cancelButton
 			Me.ClientSize = New System.Drawing.Size(552, 210)
 			Me.Controls.Add(Me.ForceFolderPreviewGroupBox)
