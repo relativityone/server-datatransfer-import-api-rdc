@@ -282,7 +282,7 @@ Namespace kCura.EDDS.WinForm
 			Me._optionsMenuCheckConnectivityItem.Index = 1
 			Me._optionsMenuCheckConnectivityItem.OwnerDraw = True
 			Me._optionsMenuCheckConnectivityItem.Text = "Check Connectivity..."
-			Me._optionsMenuCheckConnectivityItem.Visible = False
+			Me._optionsMenuCheckConnectivityItem.Enabled = False
 			'
 			'MenuItem4
 			'
@@ -377,7 +377,7 @@ Namespace kCura.EDDS.WinForm
 					_fileMenuRefresh.Enabled = True
 					UpdateStatus("Workspace Loaded - File Transfer Mode: " & _application.GetConnectionStatus)
 					PopulateObjectTypeDropDown()
-					_optionsMenuCheckConnectivityItem.Visible = True
+					_optionsMenuCheckConnectivityItem.Enabled = True
 				Case appEvent.AppEventType.LogOn
 					UpdateUserName(_application.LoggedInUser)
 				Case appEvent.AppEventType.ExitApplication
