@@ -108,6 +108,8 @@ Namespace kCura.EDDS.WinForm
 			'
 			'GroupBox3
 			'
+			Me.GroupBox3.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
+				 Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me.GroupBox3.Controls.Add(Me._browseButton)
 			Me.GroupBox3.Controls.Add(Me._filePath)
 			Me.GroupBox3.Controls.Add(Me._startLineNumberLabel)
@@ -121,6 +123,7 @@ Namespace kCura.EDDS.WinForm
 			'
 			'_browseButton
 			'
+			Me._browseButton.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me._browseButton.Location = New System.Drawing.Point(521, 19)
 			Me._browseButton.Name = "_browseButton"
 			Me._browseButton.Size = New System.Drawing.Size(24, 20)
@@ -129,6 +132,8 @@ Namespace kCura.EDDS.WinForm
 			'
 			'_filePath
 			'
+			Me._filePath.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
+				Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me._filePath.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
 			Me._filePath.Location = New System.Drawing.Point(8, 20)
 			Me._filePath.Name = "_filePath"
@@ -235,6 +240,8 @@ Namespace kCura.EDDS.WinForm
 			'
 			'ExtractedTextGroupBox
 			'
+			Me.ExtractedTextGroupBox.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
+				Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me.ExtractedTextGroupBox.Controls.Add(Me.Label9)
 			Me.ExtractedTextGroupBox.Controls.Add(Me._encodingPicker)
 			Me.ExtractedTextGroupBox.Controls.Add(Me._replaceFullText)
@@ -247,6 +254,8 @@ Namespace kCura.EDDS.WinForm
 			'
 			'_encodingPicker
 			'
+			Me._encodingPicker.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
+				Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me._encodingPicker.Enabled = False
 			Me._encodingPicker.Location = New System.Drawing.Point(293, 39)
 			Me._encodingPicker.Name = "_encodingPicker"
@@ -272,6 +281,8 @@ Namespace kCura.EDDS.WinForm
 			'
 			'_beginBatesDropdown
 			'
+			Me._beginBatesDropdown.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
+			 Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me._beginBatesDropdown.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
 			Me._beginBatesDropdown.Location = New System.Drawing.Point(293, 42)
 			Me._beginBatesDropdown.Name = "_beginBatesDropdown"
@@ -280,6 +291,8 @@ Namespace kCura.EDDS.WinForm
 			'
 			'GroupBox5
 			'
+			Me.GroupBox5.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
+			 Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me.GroupBox5.Controls.Add(Me._autoNumberingOn)
 			Me.GroupBox5.Controls.Add(Me._autoNumberingOff)
 			Me.GroupBox5.Location = New System.Drawing.Point(7, 92)
@@ -313,6 +326,8 @@ Namespace kCura.EDDS.WinForm
 			'
 			'GroupBox6
 			'
+			Me.GroupBox6.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
+				 Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me.GroupBox6.Controls.Add(Me._productionLabel)
 			Me.GroupBox6.Controls.Add(Me._productionDropdown)
 			Me.GroupBox6.Controls.Add(Me.Label2)
@@ -366,6 +381,8 @@ Namespace kCura.EDDS.WinForm
 			'
 			Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
 			Me.ClientSize = New System.Drawing.Size(571, 405)
+			Me.MinimumSize = New System.Drawing.Size(579, 455)
+			Me.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Show
 			Me.Controls.Add(Me.GroupBox6)
 			Me.Controls.Add(Me.GroupBox5)
 			Me.Controls.Add(Me.ExtractedTextGroupBox)

@@ -8,7 +8,7 @@ Namespace kCura.EDDS.WinForm
 		Private WithEvents OpenFileDialog As OpenFileDialog
 		Private WithEvents _application As kCura.EDDS.WinForm.Application
 		Friend WithEvents MenuFile_Refresh As System.Windows.Forms.MenuItem
-		Friend WithEvents MenuItem2 As System.Windows.Forms.MenuItem
+		Friend WithEvents MenuFile_Separator As System.Windows.Forms.MenuItem
 		Private _caseInfos As Generic.List(Of Relativity.CaseInfo)
 		Private _cookieContainer As System.Net.CookieContainer
 		Private _credentials As System.Net.NetworkCredential
@@ -71,7 +71,7 @@ Namespace kCura.EDDS.WinForm
 			Me.MainMenu = New System.Windows.Forms.MainMenu(Me.components)
 			Me.MenuFile = New System.Windows.Forms.MenuItem()
 			Me.MenuFile_Refresh = New System.Windows.Forms.MenuItem()
-			Me.MenuItem2 = New System.Windows.Forms.MenuItem()
+			Me.MenuFile_Separator = New System.Windows.Forms.MenuItem()
 			Me.MenuFile_Close = New System.Windows.Forms.MenuItem()
 			Me.MenuImport = New System.Windows.Forms.MenuItem()
 			Me.MenuImport_ImportApplication = New System.Windows.Forms.MenuItem()
@@ -101,7 +101,7 @@ Namespace kCura.EDDS.WinForm
 			'MenuFile
 			'
 			Me.MenuFile.Index = 0
-			Me.MenuFile.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.MenuFile_Refresh, Me.MenuItem2, Me.MenuFile_Close})
+			Me.MenuFile.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.MenuFile_Refresh, Me.MenuFile_Separator, Me.MenuFile_Close})
 			Me.MenuFile.Text = "&File"
 			'
 			'MenuFile_Refresh
@@ -113,8 +113,8 @@ Namespace kCura.EDDS.WinForm
 			'
 			'MenuItem2
 			'
-			Me.MenuItem2.Index = 1
-			Me.MenuItem2.Text = "-"
+			Me.MenuFile_Separator.Index = 1
+			Me.MenuFile_Separator.Text = "-"
 			'
 			'MenuFile_Close
 			'
@@ -137,7 +137,7 @@ Namespace kCura.EDDS.WinForm
 			'ApplicationFileGroupBox
 			'
 			Me.ApplicationFileGroupBox.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-									Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+						Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me.ApplicationFileGroupBox.Controls.Add(Me.BrowseButton)
 			Me.ApplicationFileGroupBox.Controls.Add(Me.FilePath)
 			Me.ApplicationFileGroupBox.Location = New System.Drawing.Point(15, 12)
@@ -159,7 +159,7 @@ Namespace kCura.EDDS.WinForm
 			'FilePath
 			'
 			Me.FilePath.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-									Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+						Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me.FilePath.BackColor = System.Drawing.SystemColors.ControlLightLight
 			Me.FilePath.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
 			Me.FilePath.ForeColor = System.Drawing.SystemColors.ControlDarkDark
@@ -173,7 +173,7 @@ Namespace kCura.EDDS.WinForm
 			'ApplicationInformationGroupBox
 			'
 			Me.ApplicationInformationGroupBox.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-									Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+						Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me.ApplicationInformationGroupBox.Controls.Add(Me.ApplicationName)
 			Me.ApplicationInformationGroupBox.Controls.Add(Me.ApplicationVersion)
 			Me.ApplicationInformationGroupBox.Controls.Add(Me.VersionLabel)
@@ -188,7 +188,7 @@ Namespace kCura.EDDS.WinForm
 			'ApplicationName
 			'
 			Me.ApplicationName.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-									Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+						Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me.ApplicationName.Location = New System.Drawing.Point(60, 24)
 			Me.ApplicationName.Name = "ApplicationName"
 			Me.ApplicationName.ReadOnly = True
@@ -198,7 +198,7 @@ Namespace kCura.EDDS.WinForm
 			'ApplicationVersion
 			'
 			Me.ApplicationVersion.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-									Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+						Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me.ApplicationVersion.Location = New System.Drawing.Point(60, 56)
 			Me.ApplicationVersion.Name = "ApplicationVersion"
 			Me.ApplicationVersion.ReadOnly = True
@@ -224,8 +224,8 @@ Namespace kCura.EDDS.WinForm
 			'ApplicationArtifactsGroupBox
 			'
 			Me.ApplicationArtifactsGroupBox.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-									Or System.Windows.Forms.AnchorStyles.Left) _
-									Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+						Or System.Windows.Forms.AnchorStyles.Left) _
+						Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me.ApplicationArtifactsGroupBox.Controls.Add(Me.TreeView1)
 			Me.ApplicationArtifactsGroupBox.Location = New System.Drawing.Point(13, 221)
 			Me.ApplicationArtifactsGroupBox.Name = "ApplicationArtifactsGroupBox"
@@ -245,7 +245,7 @@ Namespace kCura.EDDS.WinForm
 			'GroupBox1
 			'
 			Me.GroupBox1.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-									Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+						Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me.GroupBox1.Controls.Add(Me.BrowseCasesButton)
 			Me.GroupBox1.Controls.Add(Me.CaseListTextBox)
 			Me.GroupBox1.Location = New System.Drawing.Point(15, 66)
@@ -267,7 +267,7 @@ Namespace kCura.EDDS.WinForm
 			'CaseListTextBox
 			'
 			Me.CaseListTextBox.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-									Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+						Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me.CaseListTextBox.BackColor = System.Drawing.SystemColors.ControlLightLight
 			Me.CaseListTextBox.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
 			Me.CaseListTextBox.ForeColor = System.Drawing.SystemColors.ControlDarkDark
