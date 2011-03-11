@@ -1049,6 +1049,8 @@ Public Class ExportForm
 		'ExportForm
 		'
 		Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
+		Me.FormBorderStyle = Windows.Forms.FormBorderStyle.FixedDialog
+		Me.MaximizeBox = False
 		Me.BackColor = System.Drawing.SystemColors.Control
 		Me.ClientSize = New System.Drawing.Size(776, 453)
 		Me.Controls.Add(Me.TabControl1)
