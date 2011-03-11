@@ -522,7 +522,7 @@ Namespace kCura.EDDS.WinForm
 			Dim frm As New CaseSelectForm
 			frm.MultiSelect = False
 			frm.ShowDialog()
-			If frm.SelectedCaseInfo.Count = 0 Then
+			If frm.SelectedCaseInfo Is Nothing OrElse frm.SelectedCaseInfo.Count = 0 Then
 				Return Nothing
 			Else
 				Return frm.SelectedCaseInfo.Item(0)
