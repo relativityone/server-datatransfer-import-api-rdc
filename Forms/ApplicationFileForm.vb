@@ -7,10 +7,13 @@ Namespace kCura.EDDS.WinForm
 
 		Private WithEvents OpenFileDialog As OpenFileDialog
 		Private WithEvents _application As kCura.EDDS.WinForm.Application
+		Friend WithEvents MenuFile_Refresh As System.Windows.Forms.MenuItem
+		Friend WithEvents MenuItem2 As System.Windows.Forms.MenuItem
 		Private _caseInfos As Generic.List(Of Relativity.CaseInfo)
 		Private _cookieContainer As System.Net.CookieContainer
 		Private _credentials As System.Net.NetworkCredential
 		Private _document As Xml.XmlDocument
+		Private _filename As String
 
 #Region " Windows Form Designer generated code "
 
@@ -67,6 +70,8 @@ Namespace kCura.EDDS.WinForm
 			Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(ApplicationFileForm))
 			Me.MainMenu = New System.Windows.Forms.MainMenu(Me.components)
 			Me.MenuFile = New System.Windows.Forms.MenuItem()
+			Me.MenuFile_Refresh = New System.Windows.Forms.MenuItem()
+			Me.MenuItem2 = New System.Windows.Forms.MenuItem()
 			Me.MenuFile_Close = New System.Windows.Forms.MenuItem()
 			Me.MenuImport = New System.Windows.Forms.MenuItem()
 			Me.MenuImport_ImportApplication = New System.Windows.Forms.MenuItem()
@@ -96,12 +101,23 @@ Namespace kCura.EDDS.WinForm
 			'MenuFile
 			'
 			Me.MenuFile.Index = 0
-			Me.MenuFile.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.MenuFile_Close})
+			Me.MenuFile.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.MenuFile_Refresh, Me.MenuItem2, Me.MenuFile_Close})
 			Me.MenuFile.Text = "&File"
+			'
+			'MenuFile_Refresh
+			'
+			Me.MenuFile_Refresh.Enabled = False
+			Me.MenuFile_Refresh.Index = 0
+			Me.MenuFile_Refresh.Text = "&Refresh"
+			'
+			'MenuItem2
+			'
+			Me.MenuItem2.Index = 1
+			Me.MenuItem2.Text = "-"
 			'
 			'MenuFile_Close
 			'
-			Me.MenuFile_Close.Index = 0
+			Me.MenuFile_Close.Index = 2
 			Me.MenuFile_Close.Text = "&Close"
 			'
 			'MenuImport
@@ -114,6 +130,7 @@ Namespace kCura.EDDS.WinForm
 			'
 			Me.MenuImport_ImportApplication.Enabled = False
 			Me.MenuImport_ImportApplication.Index = 0
+			Me.MenuImport_ImportApplication.Shortcut = System.Windows.Forms.Shortcut.F5
 			Me.MenuImport_ImportApplication.Text = "Import &Application"
 			'
 			'ApplicationFileGroupBox
@@ -289,8 +306,16 @@ Namespace kCura.EDDS.WinForm
 
 #Region " Event Handlers "
 
-		Private Sub BrowseButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles BrowseButton.Click
-			OpenFileDialog.ShowDialog()
+		Private Sub MenuFile_Refresh_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuFile_Refresh.Click
+			Dim document As Xml.XmlDocument = LoadFileIntoXML(_filename)
+
+			If Not document Is Nothing AndAlso LoadApplicationNameFromNode(document.SelectSingleNode("/Application/Name")) Then
+				LoadApplicationVersionFromNode(document.SelectSingleNode("/Application/Version"))
+				LoadApplicationTree(document)
+				_document = document
+			Else
+				MsgBox("Unable to refresh the loaded Relativity Application template file.", MsgBoxStyle.Exclamation, "Relativity Desktop Client")
+			End If
 		End Sub
 
 		Private Sub MenuFile_Close_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles MenuFile_Close.Click
@@ -304,13 +329,11 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 		Private Sub OpenFileDialog_FileOk(ByVal sender As Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles OpenFileDialog.FileOk
-			MenuImport_ImportApplication.Enabled = False
-
 			Dim document As Xml.XmlDocument = LoadFileIntoXML(OpenFileDialog.FileName)
 
 			Dim ErrorMsg As Action(Of String) = Sub(msg As String)
 																						e.Cancel = True
-																						MsgBox(String.Format(System.Globalization.CultureInfo.CurrentCulture, "Invalid File: {0}", msg))
+																						MsgBox(msg, MsgBoxStyle.Critical, "Relativity Desktop Client")
 																					End Sub
 
 			If document Is Nothing Then
@@ -320,15 +343,22 @@ Namespace kCura.EDDS.WinForm
 			End If
 
 			If Not e.Cancel Then
-				ApplicationVersion.Text = LoadApplicationVersionFromNode(document.SelectSingleNode("/Application/Version"))
+				LoadApplicationVersionFromNode(document.SelectSingleNode("/Application/Version"))
 				LoadApplicationTree(document)
 
-				MenuImport_ImportApplication.Enabled = True
 				FilePath.Text = OpenFileDialog.FileName
-
 				OpenFileDialog.InitialDirectory = IO.Path.GetDirectoryName(OpenFileDialog.FileName)	' Preserve old directory
+
+				_filename = OpenFileDialog.FileName
 				_document = document
+
+				MenuImport_ImportApplication.Enabled = True
+				MenuFile_Refresh.Enabled = True
 			End If
+		End Sub
+
+		Private Sub BrowseButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles BrowseButton.Click
+			OpenFileDialog.ShowDialog()
 		End Sub
 
 		Private Sub BrowseCasesButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles BrowseCasesButton.Click
@@ -391,10 +421,22 @@ Namespace kCura.EDDS.WinForm
 
 		Private Function LoadApplicationNameFromNode(ByVal node As Xml.XmlNode) As Boolean
 			Dim result As Boolean
-			If node Is Nothing Then
+			If node Is Nothing OrElse String.IsNullOrEmpty(node.InnerText) Then
 				result = False
 			Else
 				ApplicationName.Text = node.InnerText
+				result = True
+			End If
+			Return result
+		End Function
+
+		Private Function LoadApplicationVersionFromNode(ByVal node As Xml.XmlNode) As Boolean
+			Dim result As Boolean
+			If node Is Nothing OrElse String.IsNullOrEmpty(node.InnerText) Then
+				ApplicationVersion.Text = "N/A"
+				result = False
+			Else
+				ApplicationVersion.Text = node.InnerText
 				result = True
 			End If
 			Return result
@@ -448,18 +490,10 @@ Namespace kCura.EDDS.WinForm
 			Next
 		End Sub
 
-		Private Function LoadApplicationVersionFromNode(ByVal node As Xml.XmlNode) As String
-			If node Is Nothing Then
-				Return "N/A"
-			Else
-				Return node.InnerText
-			End If
-		End Function
-
 		Private Function LoadFileIntoXML(ByVal filePath As String) As Xml.XmlDocument
 			Try
 				Dim document As New Xml.XmlDocument
-				document.Load(OpenFileDialog.FileName)
+				document.Load(filePath)
 				Return document
 			Catch ex As Exception
 				Return Nothing
