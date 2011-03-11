@@ -1232,7 +1232,7 @@ Namespace kCura.EDDS.WinForm
 				End Select
 				RefreshNativeFilePathFieldAndFileColumnHeaders(oldfilepath.ToLower <> "select file to load...", Me.LoadFile.SourceFileEncoding Is Nothing)
 			Catch ex As System.IO.IOException
-				MsgBox(ex.Message & Environment.NewLine & "Please close any application that might have a hold on the file before proceeding.", MsgBoxStyle.Exclamation)
+				MsgBox(ex.Message & Environment.NewLine & "Please close any application that might have a hold on the file before proceeding.", MsgBoxStyle.Exclamation, "Relativity Desktop Client")
 				_filePath.Text = oldfilepath
 			End Try
 		End Sub

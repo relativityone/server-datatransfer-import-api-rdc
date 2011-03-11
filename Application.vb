@@ -338,7 +338,7 @@ Namespace kCura.EDDS.WinForm
 				Return True
 			Else
 				MsgBox("The following identifier fields have not been mapped: " & ChrW(13) & unselectedIDFieldNames.ToString & _
-				 "Do you wish to continue?", MsgBoxStyle.Critical, "Warning!")
+				 "Do you wish to continue?", MsgBoxStyle.Critical, "Warning")
 				Return False
 			End If
 		End Function
@@ -352,15 +352,15 @@ Namespace kCura.EDDS.WinForm
 			Next
 			Dim fieldName As String = Me.CurrentFields(ArtifactTypeID, True).Item(loadFile.IdentityFieldId).FieldName
 			If Not forPreview AndAlso Me.IdentifierFieldIsMappedButNotKey(loadFile.FieldMap, loadFile.IdentityFieldId) Then
-				MsgBox("The field marked [identifier] cannot be part of a field map when it's not the Overlay Identifier field", MsgBoxStyle.Critical)
+				MsgBox("The field marked [identifier] cannot be part of a field map when it's not the Overlay Identifier field", MsgBoxStyle.Critical, "Relativity Desktop Client")
 				Return False
 			End If
 			If Not isIdentifierMapped Then
-				MsgBox("The key field [" & fieldName & "] is unmapped.  Please map it to continue", MsgBoxStyle.Critical)
+				MsgBox("The key field [" & fieldName & "] is unmapped.  Please map it to continue", MsgBoxStyle.Critical, "Relativity Desktop Client")
 				Return isIdentifierMapped
 			End If
 			If Not forPreview AndAlso Not New kCura.WinEDDS.Service.FieldQuery(Credential, _cookieContainer).IsFieldIndexed(Me.SelectedCaseInfo.ArtifactID, loadFile.IdentityFieldId) Then
-				Return MsgBox("There is no SQL index on the selected Overlay Identifier field.  " & vbNewLine & "Performing a load on an un-indexed SQL field will be drastically slower, " & vbNewLine & "and may negatively impact Relativity performance for all users." & vbNewLine & "Contact your SQL Administrator to have an index applied to the selected Overlay Identifier field.", MsgBoxStyle.OkCancel) = MsgBoxResult.Ok
+				Return MsgBox("There is no SQL index on the selected Overlay Identifier field.  " & vbNewLine & "Performing a load on an un-indexed SQL field will be drastically slower, " & vbNewLine & "and may negatively impact Relativity performance for all users." & vbNewLine & "Contact your SQL Administrator to have an index applied to the selected Overlay Identifier field.", MsgBoxStyle.OkCancel, "Relativity Desktop Client") = MsgBoxResult.Ok
 			Else
 				Return True
 			End If
@@ -1476,7 +1476,7 @@ Namespace kCura.EDDS.WinForm
 				tempLoadFile = DirectCast(deserializer.Deserialize(stringr), WinEDDS.LoadFile)
 				sr.Close()
 			Catch ex As System.Exception
-				If Not isSilent Then MsgBox("Load Failed", MsgBoxStyle.Critical)
+				If Not isSilent Then MsgBox("Load Failed", MsgBoxStyle.Critical, "Relativity Desktop Client")
 				'TODO: Log Exception
 				Return Nothing
 			End Try
@@ -1536,7 +1536,7 @@ Namespace kCura.EDDS.WinForm
 				retval = DirectCast(deserializer.Deserialize(sr.BaseStream), ImageLoadFile)
 				sr.Close()
 			Catch ex As System.Exception
-				MsgBox("Load Failed", MsgBoxStyle.Critical)
+				MsgBox("Load Failed", MsgBoxStyle.Critical, "Relativity Desktop Client")
 				'TODO: Log Exception
 				Return Nothing
 			End Try
@@ -1635,7 +1635,7 @@ Namespace kCura.EDDS.WinForm
 		End Function
 
 		Private Sub ReLogin(ByVal message As String)
-			If MsgBox(message, MsgBoxStyle.YesNo) = MsgBoxResult.Yes Then
+			If MsgBox(message, MsgBoxStyle.YesNo, "Relativity Desktop Client") = MsgBoxResult.Yes Then
 				NewLogin()
 			Else
 				ExitApplication()
@@ -1652,7 +1652,7 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 		Private Sub ChangeWebServiceUrl(ByVal message As String)
-			If MsgBox(message, MsgBoxStyle.YesNo) = MsgBoxResult.Yes Then
+			If MsgBox(message, MsgBoxStyle.YesNo, "Relativity Desktop Client") = MsgBoxResult.Yes Then
 				Dim url As String = InputBox("Enter New URL:", DefaultResponse:=kCura.WinEDDS.Config.WebServiceURL)
 				If url <> String.Empty Then
 					kCura.WinEDDS.Config.WebServiceURL = url
@@ -1748,7 +1748,7 @@ Namespace kCura.EDDS.WinForm
 			sb.Append("Version " & Me.GetDisplayAssemblyVersion() & nl)
 			sb.Append(Relativity.Constants.LICENSE_AGREEMENT_TEXT & nl)
 			sb.Append("Copyright © " & System.DateTime.Now.Year & " kCura Corporation")
-			MsgBox(sb.ToString, MsgBoxStyle.OkOnly, "About Relativity Desktop Client")
+			MsgBox(sb.ToString, MsgBoxStyle.OkOnly, "Relativity Desktop Client")
 			If Not _loginForm Is Nothing AndAlso Not _loginForm.IsDisposed Then
 				_loginForm.TopMost = True
 			End If

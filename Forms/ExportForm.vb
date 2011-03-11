@@ -1681,7 +1681,7 @@ Public Class ExportForm
 					s.Append("views ")
 			End Select
 			s.Append("in this case")
-			MsgBox(s.ToString, MsgBoxStyle.Critical)
+			MsgBox(s.ToString, MsgBoxStyle.Critical, "Relativity Desktop Client")
 			Me.Close()
 			Exit Sub
 		End If
@@ -1710,7 +1710,7 @@ Public Class ExportForm
 					msg &= "production"
 			End Select
 			msg &= " is no longer available."
-			MsgBox(msg, MsgBoxStyle.Exclamation)
+			MsgBox(msg, MsgBoxStyle.Exclamation, "Relativity Desktop Client")
 		End If
 		_dataSourceIsSet = True
 		Dim temporaryPotentialTextFields As New ArrayList
