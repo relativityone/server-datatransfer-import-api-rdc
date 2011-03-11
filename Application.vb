@@ -950,7 +950,7 @@ Namespace kCura.EDDS.WinForm
 							s.Append("views ")
 					End Select
 					s.Append("in this case")
-					MsgBox(s.ToString, MsgBoxStyle.Critical)
+					MsgBox(s.ToString, MsgBoxStyle.Critical, "Relativity Desktop Client")
 					Exit Sub
 				End If
 				frm.Application = Me
