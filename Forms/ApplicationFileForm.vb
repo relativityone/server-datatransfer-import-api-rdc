@@ -1,12 +1,16 @@
 Imports System.Xml
-Imports System.Core
 Imports System.Xml.Linq
-
 
 Namespace kCura.EDDS.WinForm
 	Public Class ApplicationFileForm
 		Inherits System.Windows.Forms.Form
+
 		Private WithEvents OpenFileDialog As OpenFileDialog
+		Private WithEvents _application As kCura.EDDS.WinForm.Application
+		Private _caseInfos As Generic.List(Of Relativity.CaseInfo)
+		Private _cookieContainer As System.Net.CookieContainer
+		Private _credentials As System.Net.NetworkCredential
+		Private _document As Xml.XmlDocument
 
 #Region " Windows Form Designer generated code "
 
@@ -108,90 +112,92 @@ Namespace kCura.EDDS.WinForm
 			'
 			'MenuImport_ImportApplication
 			'
+			Me.MenuImport_ImportApplication.Enabled = False
 			Me.MenuImport_ImportApplication.Index = 0
 			Me.MenuImport_ImportApplication.Text = "Import &Application"
 			'
 			'ApplicationFileGroupBox
 			'
 			Me.ApplicationFileGroupBox.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-			  Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+									Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me.ApplicationFileGroupBox.Controls.Add(Me.BrowseButton)
 			Me.ApplicationFileGroupBox.Controls.Add(Me.FilePath)
-			Me.ApplicationFileGroupBox.Location = New System.Drawing.Point(16, 24)
+			Me.ApplicationFileGroupBox.Location = New System.Drawing.Point(15, 12)
 			Me.ApplicationFileGroupBox.Name = "ApplicationFileGroupBox"
-			Me.ApplicationFileGroupBox.Size = New System.Drawing.Size(720, 48)
-			Me.ApplicationFileGroupBox.TabIndex = 22
+			Me.ApplicationFileGroupBox.Size = New System.Drawing.Size(613, 48)
+			Me.ApplicationFileGroupBox.TabIndex = 1
 			Me.ApplicationFileGroupBox.TabStop = False
 			Me.ApplicationFileGroupBox.Text = "Application File"
 			'
 			'BrowseButton
 			'
 			Me.BrowseButton.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-			Me.BrowseButton.Location = New System.Drawing.Point(688, 16)
+			Me.BrowseButton.Location = New System.Drawing.Point(544, 16)
 			Me.BrowseButton.Name = "BrowseButton"
-			Me.BrowseButton.Size = New System.Drawing.Size(24, 20)
-			Me.BrowseButton.TabIndex = 4
-			Me.BrowseButton.Text = "..."
+			Me.BrowseButton.Size = New System.Drawing.Size(61, 20)
+			Me.BrowseButton.TabIndex = 3
+			Me.BrowseButton.Text = "Browse..."
 			'
 			'FilePath
 			'
 			Me.FilePath.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-			  Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+									Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me.FilePath.BackColor = System.Drawing.SystemColors.ControlLightLight
 			Me.FilePath.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
 			Me.FilePath.ForeColor = System.Drawing.SystemColors.ControlDarkDark
 			Me.FilePath.Location = New System.Drawing.Point(8, 16)
 			Me.FilePath.Name = "FilePath"
-			Me.FilePath.Size = New System.Drawing.Size(680, 20)
+			Me.FilePath.ReadOnly = True
+			Me.FilePath.Size = New System.Drawing.Size(530, 20)
 			Me.FilePath.TabIndex = 2
 			Me.FilePath.Text = "Select a file ..."
 			'
 			'ApplicationInformationGroupBox
 			'
 			Me.ApplicationInformationGroupBox.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-			  Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+									Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me.ApplicationInformationGroupBox.Controls.Add(Me.ApplicationName)
 			Me.ApplicationInformationGroupBox.Controls.Add(Me.ApplicationVersion)
 			Me.ApplicationInformationGroupBox.Controls.Add(Me.VersionLabel)
 			Me.ApplicationInformationGroupBox.Controls.Add(Me.NameLabel)
-			Me.ApplicationInformationGroupBox.Location = New System.Drawing.Point(16, 139)
+			Me.ApplicationInformationGroupBox.Location = New System.Drawing.Point(15, 127)
 			Me.ApplicationInformationGroupBox.Name = "ApplicationInformationGroupBox"
-			Me.ApplicationInformationGroupBox.Size = New System.Drawing.Size(720, 88)
-			Me.ApplicationInformationGroupBox.TabIndex = 23
+			Me.ApplicationInformationGroupBox.Size = New System.Drawing.Size(613, 88)
+			Me.ApplicationInformationGroupBox.TabIndex = 7
 			Me.ApplicationInformationGroupBox.TabStop = False
 			Me.ApplicationInformationGroupBox.Text = "Application Information"
 			'
 			'ApplicationName
 			'
 			Me.ApplicationName.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-			  Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-			Me.ApplicationName.Location = New System.Drawing.Point(72, 24)
+									Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+			Me.ApplicationName.Location = New System.Drawing.Point(60, 24)
 			Me.ApplicationName.Name = "ApplicationName"
 			Me.ApplicationName.ReadOnly = True
-			Me.ApplicationName.Size = New System.Drawing.Size(624, 20)
-			Me.ApplicationName.TabIndex = 3
+			Me.ApplicationName.Size = New System.Drawing.Size(545, 20)
+			Me.ApplicationName.TabIndex = 8
 			'
 			'ApplicationVersion
 			'
 			Me.ApplicationVersion.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-			  Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-			Me.ApplicationVersion.Location = New System.Drawing.Point(72, 56)
+									Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+			Me.ApplicationVersion.Location = New System.Drawing.Point(60, 56)
 			Me.ApplicationVersion.Name = "ApplicationVersion"
 			Me.ApplicationVersion.ReadOnly = True
-			Me.ApplicationVersion.Size = New System.Drawing.Size(624, 20)
-			Me.ApplicationVersion.TabIndex = 2
+			Me.ApplicationVersion.Size = New System.Drawing.Size(545, 20)
+			Me.ApplicationVersion.TabIndex = 9
 			'
 			'VersionLabel
 			'
-			Me.VersionLabel.Location = New System.Drawing.Point(16, 56)
+			Me.VersionLabel.Location = New System.Drawing.Point(6, 56)
 			Me.VersionLabel.Name = "VersionLabel"
 			Me.VersionLabel.Size = New System.Drawing.Size(48, 23)
 			Me.VersionLabel.TabIndex = 1
-			Me.VersionLabel.Text = "Version"
+			Me.VersionLabel.Text = "Version:"
 			'
 			'NameLabel
 			'
-			Me.NameLabel.Location = New System.Drawing.Point(16, 24)
+			Me.NameLabel.Location = New System.Drawing.Point(6, 24)
 			Me.NameLabel.Name = "NameLabel"
 			Me.NameLabel.Size = New System.Drawing.Size(48, 23)
 			Me.NameLabel.TabIndex = 0
@@ -200,69 +206,74 @@ Namespace kCura.EDDS.WinForm
 			'ApplicationArtifactsGroupBox
 			'
 			Me.ApplicationArtifactsGroupBox.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-			  Or System.Windows.Forms.AnchorStyles.Left) _
-			  Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+									Or System.Windows.Forms.AnchorStyles.Left) _
+									Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me.ApplicationArtifactsGroupBox.Controls.Add(Me.TreeView1)
-			Me.ApplicationArtifactsGroupBox.Location = New System.Drawing.Point(12, 233)
+			Me.ApplicationArtifactsGroupBox.Location = New System.Drawing.Point(13, 221)
 			Me.ApplicationArtifactsGroupBox.Name = "ApplicationArtifactsGroupBox"
-			Me.ApplicationArtifactsGroupBox.Size = New System.Drawing.Size(720, 378)
-			Me.ApplicationArtifactsGroupBox.TabIndex = 24
+			Me.ApplicationArtifactsGroupBox.Size = New System.Drawing.Size(615, 247)
+			Me.ApplicationArtifactsGroupBox.TabIndex = 10
 			Me.ApplicationArtifactsGroupBox.TabStop = False
 			Me.ApplicationArtifactsGroupBox.Text = "Application Artifacts"
 			'
 			'TreeView1
 			'
-			Me.TreeView1.Location = New System.Drawing.Point(10, 19)
+			Me.TreeView1.Dock = System.Windows.Forms.DockStyle.Fill
+			Me.TreeView1.Location = New System.Drawing.Point(3, 16)
 			Me.TreeView1.Name = "TreeView1"
-			Me.TreeView1.Size = New System.Drawing.Size(704, 345)
-			Me.TreeView1.TabIndex = 0
+			Me.TreeView1.Size = New System.Drawing.Size(609, 228)
+			Me.TreeView1.TabIndex = 8
 			'
 			'GroupBox1
 			'
+			Me.GroupBox1.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
+									Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me.GroupBox1.Controls.Add(Me.BrowseCasesButton)
 			Me.GroupBox1.Controls.Add(Me.CaseListTextBox)
-			Me.GroupBox1.Location = New System.Drawing.Point(16, 78)
+			Me.GroupBox1.Location = New System.Drawing.Point(15, 66)
 			Me.GroupBox1.Name = "GroupBox1"
-			Me.GroupBox1.Size = New System.Drawing.Size(720, 55)
-			Me.GroupBox1.TabIndex = 25
+			Me.GroupBox1.Size = New System.Drawing.Size(613, 55)
+			Me.GroupBox1.TabIndex = 4
 			Me.GroupBox1.TabStop = False
-			Me.GroupBox1.Text = "Application Case"
+			Me.GroupBox1.Text = "Application Workspaces"
 			'
 			'BrowseCasesButton
 			'
 			Me.BrowseCasesButton.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-			Me.BrowseCasesButton.Location = New System.Drawing.Point(688, 23)
+			Me.BrowseCasesButton.Location = New System.Drawing.Point(544, 23)
 			Me.BrowseCasesButton.Name = "BrowseCasesButton"
-			Me.BrowseCasesButton.Size = New System.Drawing.Size(24, 20)
+			Me.BrowseCasesButton.Size = New System.Drawing.Size(61, 20)
 			Me.BrowseCasesButton.TabIndex = 6
-			Me.BrowseCasesButton.Text = "..."
+			Me.BrowseCasesButton.Text = "Browse..."
 			'
 			'CaseListTextBox
 			'
 			Me.CaseListTextBox.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-			  Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+									Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me.CaseListTextBox.BackColor = System.Drawing.SystemColors.ControlLightLight
 			Me.CaseListTextBox.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
 			Me.CaseListTextBox.ForeColor = System.Drawing.SystemColors.ControlDarkDark
 			Me.CaseListTextBox.Location = New System.Drawing.Point(8, 23)
 			Me.CaseListTextBox.Name = "CaseListTextBox"
-			Me.CaseListTextBox.Size = New System.Drawing.Size(680, 20)
+			Me.CaseListTextBox.ReadOnly = True
+			Me.CaseListTextBox.Size = New System.Drawing.Size(530, 20)
 			Me.CaseListTextBox.TabIndex = 5
-			Me.CaseListTextBox.Text = "Select a case  ..."
+			Me.CaseListTextBox.Text = "Select a workspace  ..."
 			'
 			'ApplicationFileForm
 			'
 			Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
-			Me.ClientSize = New System.Drawing.Size(752, 664)
+			Me.ClientSize = New System.Drawing.Size(640, 480)
 			Me.Controls.Add(Me.GroupBox1)
 			Me.Controls.Add(Me.ApplicationArtifactsGroupBox)
 			Me.Controls.Add(Me.ApplicationInformationGroupBox)
 			Me.Controls.Add(Me.ApplicationFileGroupBox)
 			Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
 			Me.Menu = Me.MainMenu
-			Me.MinimumSize = New System.Drawing.Size(760, 621)
+			Me.MinimumSize = New System.Drawing.Size(380, 395)
 			Me.Name = "ApplicationFileForm"
-			Me.Text = "Relativity Desktop Client | Import Application File"
+			Me.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Show
+			Me.Text = "Relativity Desktop Client | Import Application"
 			Me.ApplicationFileGroupBox.ResumeLayout(False)
 			Me.ApplicationFileGroupBox.PerformLayout()
 			Me.ApplicationInformationGroupBox.ResumeLayout(False)
@@ -293,42 +304,31 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 		Private Sub OpenFileDialog_FileOk(ByVal sender As Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles OpenFileDialog.FileOk
-			Dim document As Xml.XmlDocument
+			MenuImport_ImportApplication.Enabled = False
 
-			document = LoadFileIntoXML(OpenFileDialog.FileName)
+			Dim document As Xml.XmlDocument = LoadFileIntoXML(OpenFileDialog.FileName)
+
 			Dim ErrorMsg As Action(Of String) = Sub(msg As String)
-																e.Cancel = True
-																MsgBox(String.Format(System.Globalization.CultureInfo.CurrentCulture, "Invalid File: {0}", msg))
-															End Sub
+																						e.Cancel = True
+																						MsgBox(String.Format(System.Globalization.CultureInfo.CurrentCulture, "Invalid File: {0}", msg))
+																					End Sub
+
 			If document Is Nothing Then
-				ErrorMsg("File is not an application")
-			Else
-				If Not LoadApplicationNameFromNode(document.SelectSingleNode("/Application/Name")) Then
-					ErrorMsg("Application must have a name")
-				End If
+				ErrorMsg("The file is not a valid XML file.")
+			ElseIf Not LoadApplicationNameFromNode(document.SelectSingleNode("/Application/Name")) Then
+				ErrorMsg("The file is not a valid Relativity Application template file.")
+			End If
 
-				Dim version As String = LoadApplicationVersionFromNode(document.SelectSingleNode("/Application/Version"))
-				If String.IsNullOrEmpty(version) Then
-					ApplicationVersion.Visible = False
-					VersionLabel.Visible = False
-				Else
-					ApplicationVersion.Text = version
-					ApplicationVersion.Visible = True
-					VersionLabel.Visible = True
-				End If
-
+			If Not e.Cancel Then
+				ApplicationVersion.Text = LoadApplicationVersionFromNode(document.SelectSingleNode("/Application/Version"))
 				LoadApplicationTree(document)
-			End If
 
-			If e.Cancel Then
-				Return
-			End If
+				MenuImport_ImportApplication.Enabled = True
+				FilePath.Text = OpenFileDialog.FileName
 
-			FilePath.Text = OpenFileDialog.FileName
-			'I am sure that there is a way to make the openFileDialog preserve the old directory, but for whatever reason I can't get it to happen.
-			'Consider this a workaround, and if anyone knows how to make it work properly, please remove this line!
-			OpenFileDialog.InitialDirectory = IO.Path.GetDirectoryName(OpenFileDialog.FileName)
-			_document = document
+				OpenFileDialog.InitialDirectory = IO.Path.GetDirectoryName(OpenFileDialog.FileName)	' Preserve old directory
+				_document = document
+			End If
 		End Sub
 
 		Private Sub BrowseCasesButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles BrowseCasesButton.Click
@@ -384,16 +384,6 @@ Namespace kCura.EDDS.WinForm
 				_credentials = Value
 			End Set
 		End Property
-
-#End Region
-
-#Region " Private Fields "
-
-		Private WithEvents _application As kCura.EDDS.WinForm.Application
-		Private _caseInfos As Generic.List(Of Relativity.CaseInfo)
-		Private _cookieContainer As System.Net.CookieContainer
-		Private _credentials As System.Net.NetworkCredential
-		Private _document As Xml.XmlDocument
 
 #End Region
 
@@ -460,7 +450,7 @@ Namespace kCura.EDDS.WinForm
 
 		Private Function LoadApplicationVersionFromNode(ByVal node As Xml.XmlNode) As String
 			If node Is Nothing Then
-				Return Nothing
+				Return "N/A"
 			Else
 				Return node.InnerText
 			End If
