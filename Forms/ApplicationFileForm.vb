@@ -111,7 +111,7 @@ Namespace kCura.EDDS.WinForm
 			Me.MenuFile_Refresh.Shortcut = System.Windows.Forms.Shortcut.F5
 			Me.MenuFile_Refresh.Text = "&Refresh"
 			'
-			'MenuItem2
+			'MenuFile_Separator
 			'
 			Me.MenuFile_Separator.Index = 1
 			Me.MenuFile_Separator.Text = "-"
@@ -137,7 +137,7 @@ Namespace kCura.EDDS.WinForm
 			'ApplicationFileGroupBox
 			'
 			Me.ApplicationFileGroupBox.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-						Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+									Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me.ApplicationFileGroupBox.Controls.Add(Me.BrowseButton)
 			Me.ApplicationFileGroupBox.Controls.Add(Me.FilePath)
 			Me.ApplicationFileGroupBox.Location = New System.Drawing.Point(15, 12)
@@ -150,30 +150,30 @@ Namespace kCura.EDDS.WinForm
 			'BrowseButton
 			'
 			Me.BrowseButton.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-			Me.BrowseButton.Location = New System.Drawing.Point(544, 16)
+			Me.BrowseButton.Location = New System.Drawing.Point(579, 16)
 			Me.BrowseButton.Name = "BrowseButton"
-			Me.BrowseButton.Size = New System.Drawing.Size(61, 20)
+			Me.BrowseButton.Size = New System.Drawing.Size(24, 20)
 			Me.BrowseButton.TabIndex = 3
-			Me.BrowseButton.Text = "Browse..."
+			Me.BrowseButton.Text = "..."
 			'
 			'FilePath
 			'
 			Me.FilePath.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-						Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+									Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me.FilePath.BackColor = System.Drawing.SystemColors.ControlLightLight
 			Me.FilePath.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
 			Me.FilePath.ForeColor = System.Drawing.SystemColors.ControlDarkDark
 			Me.FilePath.Location = New System.Drawing.Point(8, 16)
 			Me.FilePath.Name = "FilePath"
 			Me.FilePath.ReadOnly = True
-			Me.FilePath.Size = New System.Drawing.Size(530, 20)
+			Me.FilePath.Size = New System.Drawing.Size(565, 20)
 			Me.FilePath.TabIndex = 2
 			Me.FilePath.Text = "Select a file ..."
 			'
 			'ApplicationInformationGroupBox
 			'
 			Me.ApplicationInformationGroupBox.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-						Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+									Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me.ApplicationInformationGroupBox.Controls.Add(Me.ApplicationName)
 			Me.ApplicationInformationGroupBox.Controls.Add(Me.ApplicationVersion)
 			Me.ApplicationInformationGroupBox.Controls.Add(Me.VersionLabel)
@@ -188,7 +188,7 @@ Namespace kCura.EDDS.WinForm
 			'ApplicationName
 			'
 			Me.ApplicationName.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-						Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+									Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me.ApplicationName.Location = New System.Drawing.Point(60, 24)
 			Me.ApplicationName.Name = "ApplicationName"
 			Me.ApplicationName.ReadOnly = True
@@ -198,7 +198,7 @@ Namespace kCura.EDDS.WinForm
 			'ApplicationVersion
 			'
 			Me.ApplicationVersion.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-						Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+									Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me.ApplicationVersion.Location = New System.Drawing.Point(60, 56)
 			Me.ApplicationVersion.Name = "ApplicationVersion"
 			Me.ApplicationVersion.ReadOnly = True
@@ -224,8 +224,8 @@ Namespace kCura.EDDS.WinForm
 			'ApplicationArtifactsGroupBox
 			'
 			Me.ApplicationArtifactsGroupBox.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-						Or System.Windows.Forms.AnchorStyles.Left) _
-						Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+									Or System.Windows.Forms.AnchorStyles.Left) _
+									Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me.ApplicationArtifactsGroupBox.Controls.Add(Me.TreeView1)
 			Me.ApplicationArtifactsGroupBox.Location = New System.Drawing.Point(13, 221)
 			Me.ApplicationArtifactsGroupBox.Name = "ApplicationArtifactsGroupBox"
@@ -245,7 +245,7 @@ Namespace kCura.EDDS.WinForm
 			'GroupBox1
 			'
 			Me.GroupBox1.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-						Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+									Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me.GroupBox1.Controls.Add(Me.BrowseCasesButton)
 			Me.GroupBox1.Controls.Add(Me.CaseListTextBox)
 			Me.GroupBox1.Location = New System.Drawing.Point(15, 66)
@@ -258,23 +258,23 @@ Namespace kCura.EDDS.WinForm
 			'BrowseCasesButton
 			'
 			Me.BrowseCasesButton.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-			Me.BrowseCasesButton.Location = New System.Drawing.Point(544, 23)
+			Me.BrowseCasesButton.Location = New System.Drawing.Point(579, 23)
 			Me.BrowseCasesButton.Name = "BrowseCasesButton"
-			Me.BrowseCasesButton.Size = New System.Drawing.Size(61, 20)
+			Me.BrowseCasesButton.Size = New System.Drawing.Size(24, 20)
 			Me.BrowseCasesButton.TabIndex = 6
-			Me.BrowseCasesButton.Text = "Browse..."
+			Me.BrowseCasesButton.Text = "..."
 			'
 			'CaseListTextBox
 			'
 			Me.CaseListTextBox.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-						Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+									Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me.CaseListTextBox.BackColor = System.Drawing.SystemColors.ControlLightLight
 			Me.CaseListTextBox.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
 			Me.CaseListTextBox.ForeColor = System.Drawing.SystemColors.ControlDarkDark
 			Me.CaseListTextBox.Location = New System.Drawing.Point(8, 23)
 			Me.CaseListTextBox.Name = "CaseListTextBox"
 			Me.CaseListTextBox.ReadOnly = True
-			Me.CaseListTextBox.Size = New System.Drawing.Size(530, 20)
+			Me.CaseListTextBox.Size = New System.Drawing.Size(565, 20)
 			Me.CaseListTextBox.TabIndex = 5
 			Me.CaseListTextBox.Text = "Select a workspace  ..."
 			'
