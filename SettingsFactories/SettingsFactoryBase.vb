@@ -72,7 +72,9 @@ Namespace kCura.WinEDDS
 
 		Protected Sub New(ByVal credential As System.Net.NetworkCredential)
 			_credential = credential
-			ServicePointManager.ServerCertificateValidationCallback = New RemoteCertificateValidationCallback(AddressOf ValidateCertificate)
+
+			ServicePointManager.ServerCertificateValidationCallback = Function(sender As Object, certificate As X509Certificate, chain As X509Chain, sslPolicyErrors As SslPolicyErrors) True
+
 			_cookieContainer = New System.Net.CookieContainer
 			Dim relativityManager As New kCura.WinEDDS.Service.RelativityManager(_credential, _cookieContainer)
 			Dim successfulLogin As Boolean = False
@@ -94,14 +96,6 @@ Namespace kCura.WinEDDS
 			End If
 			Throw New InvalidCredentialsException
 		End Sub
-
-		Private Function ValidateCertificate(ByVal sender As Object, ByVal certificate As X509Certificate, ByVal chain As X509Chain, ByVal sslPolicyErrors As SslPolicyErrors) As Boolean
-			Dim validationResult As Boolean = True
-			'
-			' TODO: Add policy code here
-			'
-			Return validationResult	' Return True to force the certificate to be accepted.
-		End Function
 
 		Protected Sub SaveObject(ByVal location As String, ByVal settings As Object)
 			Dim sw As New System.IO.StreamWriter(location)
