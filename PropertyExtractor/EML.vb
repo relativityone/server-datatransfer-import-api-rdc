@@ -71,6 +71,7 @@ Namespace kCura.WinEDDS.PropertyExtractor
 			If lineBuffer.IndexOf(":") > -1 Then
 				Return lineBuffer.Substring(0, lineBuffer.IndexOf(":"))
 			End If
+			Return Nothing
 		End Function
 
 		Private Function IsValidSMTPHeader(ByVal header As String) As Boolean

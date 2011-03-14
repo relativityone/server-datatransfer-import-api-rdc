@@ -44,6 +44,7 @@ Namespace kCura.WinEDDS.Exporters.LineFactory
 					Case ExportFile.ImageType.SinglePage
 						Return 0.ToString
 				End Select
+				Return Nothing
 			End Get
 		End Property
 
@@ -75,6 +76,7 @@ Namespace kCura.WinEDDS.Exporters.LineFactory
 					Case "tif", "tiff"
 						Return 2.ToString
 				End Select
+				Return Nothing
 			End Get
 		End Property
 

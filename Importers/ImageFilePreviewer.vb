@@ -97,6 +97,7 @@ Namespace kCura.WinEDDS
 			Catch ex As System.Exception
 				RaiseFatalError(ex)
 			End Try
+			Return Nothing
 		End Function
 
 		Private Sub DoFileUpload()

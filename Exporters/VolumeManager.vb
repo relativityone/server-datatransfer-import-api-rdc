@@ -620,6 +620,7 @@ Namespace kCura.WinEDDS
 				Case ExportNativeWithFilenameFrom.Production
 					Return doc.ProductionBeginBatesFileName(Me.Settings.AppendOriginalFileName)
 			End Select
+			Return Nothing
 		End Function
 
 		Public Sub Close()
@@ -888,6 +889,7 @@ Namespace kCura.WinEDDS
 			End If
 			_timekeeper.MarkStart("VolumeManager_ExportNative_WriteStatus")
 			_timekeeper.MarkEnd("VolumeManager_ExportNative_WriteStatus")
+			Return Nothing
 		End Function
 
 		Private Function DownloadNative(ByVal artifact As Exporters.ObjectExportInfo) As Int64

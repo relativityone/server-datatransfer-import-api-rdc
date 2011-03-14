@@ -336,6 +336,7 @@ Namespace kCura.WinEDDS
 			Catch ex As System.Exception
 				WriteFatalError(Me.CurrentLineNumber, ex)
 			End Try
+			Return Nothing
 		End Function
 
 		Private Function InitializeMembers(ByVal path As String) As Boolean
@@ -658,6 +659,7 @@ Namespace kCura.WinEDDS
 				_outputObjectFileWriter = New System.IO.StreamWriter(_outputObjectFilePath, False, System.Text.Encoding.Unicode)
 			End If
 			Me.ManageErrors(_artifactTypeID)
+			Return Nothing
 		End Function
 
 		Private Function GetMappedFields(ByVal artifactTypeID As Int32) As kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo()
@@ -685,7 +687,7 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Private Function ManageDocumentLine(ByVal identityValue As String, ByVal extractText As Boolean, ByVal filename As String, ByVal fileguid As String, ByVal mdoc As MetaDocument) As Int32
-			Dim chosenEncoding As System.Text.Encoding
+			Dim chosenEncoding As System.Text.Encoding = Nothing
 			_outputNativeFileWriter.Write(mdoc.LineStatus.ToString & Constants.NATIVE_FIELD_DELIMITER)
 			_outputNativeFileWriter.Write("0" & Constants.NATIVE_FIELD_DELIMITER)
 			_outputNativeFileWriter.Write("0" & Constants.NATIVE_FIELD_DELIMITER)
