@@ -1,4 +1,7 @@
 Imports System.Web.Services.Protocols
+Imports System.Security.Cryptography.X509Certificates
+Imports System.Net
+Imports System.Net.Security
 
 Namespace kCura.EDDS.WinForm
 	Public Class Application
@@ -10,12 +13,18 @@ Namespace kCura.EDDS.WinForm
 			_processPool = New kCura.Windows.Process.ProcessPool
 			Dim currentZone As System.TimeZone = System.TimeZone.CurrentTimeZone
 
-			'If currentZone.IsDaylightSavingTime(DateTime.Now) Then
-			'	_timeZoneOffset -= 1
-			'End If
-			System.Net.ServicePointManager.CertificatePolicy = New TrustAllCertificatePolicy
+			ServicePointManager.ServerCertificateValidationCallback = New RemoteCertificateValidationCallback(AddressOf ValidateCertificate)
+
 			_cookieContainer = New System.Net.CookieContainer
 		End Sub
+
+		Private Function ValidateCertificate(ByVal sender As Object, ByVal certificate As X509Certificate, ByVal chain As X509Chain, ByVal sslPolicyErrors As SslPolicyErrors) As Boolean
+			Dim validationResult As Boolean = True
+			'
+			' TODO: Add policy code here
+			'
+			Return validationResult	' Return True to force the certificate to be accepted.
+		End Function
 
 		Public Shared ReadOnly Property Instance() As Application
 			Get
