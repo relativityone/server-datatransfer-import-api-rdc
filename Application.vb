@@ -46,8 +46,6 @@ Namespace kCura.EDDS.WinForm
 		Private _documentRepositoryList As String()
 		Private _artifactTypeID As Int32
 		Private _totalFolders As New System.Collections.Specialized.HybridDictionary
-
-		'Private _identity As kCura.EDDS.EDDSIdentity
 #End Region
 
 #Region "Properties"
@@ -185,21 +183,6 @@ Namespace kCura.EDDS.WinForm
 			Return New kCura.WinEDDS.Service.ObjectTypeManager(Me.Credential, Me.CookieContainer).RetrieveAllUploadable(Me.SelectedCaseInfo.ArtifactID).Tables(0)
 		End Function
 
-		'Public ReadOnly Property CurrentGroupIdentifierField() As DocumentField
-		'	Get
-		'		Dim fieldManager As New kCura.WinEDDS.Service.FieldQuery(Credential, _cookieContainer)
-		'		Dim fields() As kCura.EDDS.WebAPI.DocumentManagerBase.Field = fieldManager.RetrieveAllAsArray(SelectedCaseInfo.ArtifactID, True)
-		'		Dim i As Int32
-		'		For i = 0 To fields.Length - 1
-		'			With fields(i)
-		'				If fields(i).DisplayName.ToLower = "group identifier" Then
-		'					Return New DocumentField(.DisplayName, .ArtifactID, .FieldTypeID, .FieldCategoryID, .CodeTypeID, .MaxLength, .UseUnicodeEncoding)
-		'				End If
-		'			End With
-		'		Next
-		'	End Get
-		'End Property
-
 		Friend ReadOnly Property Credential() As System.Net.NetworkCredential
 			Get
 				If _credential Is Nothing Then
@@ -244,7 +227,6 @@ Namespace kCura.EDDS.WinForm
 				_artifactTypeID = value
 			End Set
 		End Property
-
 #End Region
 
 #Region "Event Throwers"
@@ -429,7 +411,6 @@ Namespace kCura.EDDS.WinForm
 			Return retval
 		End Function
 
-
 		Public Function GetCaseFolders(ByVal caseID As Int32) As System.Data.DataSet
 			Try
 				Dim folderManager As New kCura.WinEDDS.Service.FolderManager(Credential, _cookieContainer)
@@ -453,20 +434,7 @@ Namespace kCura.EDDS.WinForm
 				End If
 			End Try
 			Return Nothing
-			'Dim dsFactory As New kCura.Utility.DataSetFactory
-			'dsFactory.AddColumn("ArtifactID", kCura.Utility.DataSetFactory.DataType.Integer)
-			'dsFactory.AddColumn("ParentArtifactID", kCura.Utility.DataSetFactory.DataType.Integer)
-			'dsFactory.AddColumn("Name", kCura.Utility.DataSetFactory.DataType.String)
-			'dsFactory.AddRow(1, System.DBNull.Value, "Case " + caseID.ToString)
-			'dsFactory.AddRow(2, 1, "Collection 1")
-			'dsFactory.AddRow(3, 1, "Collection 2")
-			'dsFactory.AddRow(4, 1, "Collection 3")
-			'dsFactory.AddRow(5, 3, "Folder 1")
-			'dsFactory.AddRow(6, 3, "Folder 2")
-			'dsFactory.AddRow(7, 3, "Folder 3")
-			'Return dsFactory.BuildDataSet
 		End Function
-
 #End Region
 
 #Region "Case Management"
@@ -553,12 +521,6 @@ Namespace kCura.EDDS.WinForm
 			loadfile.CookieContainer = Me.CookieContainer
 			Dim parser As New kCura.WinEDDS.BulkLoadFileImporter(loadfile, Nothing, _timeZoneOffset, False, Nothing, False)
 			Return parser.GetColumnNames(loadfile)
-			'Dim retValue(3) As String
-			'retValue(0) = "Filed 0"
-			'retValue(1) = "Field 1"
-			'retValue(2) = "Field 2"
-			'retValue(3) = "Field 3"
-			'Return retValue
 		End Function
 
 		Public Function GetCaseFolderPath(ByVal caseFolderArtifactID As Int32) As String
@@ -582,9 +544,6 @@ Namespace kCura.EDDS.WinForm
 		Public Function BuildLoadFileDataSource(ByVal al As ArrayList) As DataTable
 			Try
 				Me.GetCaseFields(_selectedCaseInfo.ArtifactID, Me.ArtifactTypeID, True)
-				'Dim previewer As New kCura.WinEDDS.LoadFilePreviewer(loadFile, _timeZoneOffset, errorsOnly)
-				'Dim al As ArrayList = DirectCast(previewer.ReadFile(loadFile.FilePath), ArrayList)
-				'previewer.Close()
 				Dim item As Object
 				Dim field As Api.ArtifactField
 				Dim fields As Api.ArtifactField()
@@ -749,73 +708,6 @@ Namespace kCura.EDDS.WinForm
 			Next
 			Return codeFieldColumnIndexes
 		End Function
-
-#Region "go away"
-		''Worker function for Previewing choice and folder counts
-		'Public Function BuildFoldersAndCodesDataSource2(ByVal al As ArrayList, ByVal previewCodeCount As System.Collections.Specialized.HybridDictionary) As DataTable
-		'	_totalFolders.Clear()
-		'	Try
-		'		Dim item As Object
-		'		Dim fields As Api.ArtifactField()
-		'		Dim codeFieldColumnIndexes As New ArrayList
-		'		Dim folderColumnIndex As Int32 = -1
-		'		Dim dt As New DataTable
-		'		'get the choice field column indicies
-		'		If al.Count > 0 Then
-		'			Dim firstRow As System.Array = DirectCast(al(0), System.Array)
-		'			Dim currentIndex As Int32 = 0
-		'			For Each field As Api.ArtifactField In firstRow
-		'				If field.Type = Relativity.FieldTypeHelper.FieldType.Code OrElse field.Type = Relativity.FieldTypeHelper.FieldType.MultiCode Then
-		'					codeFieldColumnIndexes.Add(currentIndex)
-		'				End If
-		'				If field.ArtifactID = -2 And field.DisplayName = "Parent Folder Identifier" Then folderColumnIndex = currentIndex
-		'				currentIndex += 1
-		'			Next
-		'		End If
-		'		dt.Columns.Add("Field Name")
-		'		dt.Columns.Add("Count")
-		'		Dim fieldValue As String
-		'		For Each item In al
-		'			If Not item Is Nothing Then
-		'				fields = DirectCast(item, Api.ArtifactField())
-		'				If folderColumnIndex <> -1 Then
-		'					fieldValue = fields(folderColumnIndex).ValueAsString
-		'					AddFoldersToTotalFolders(fieldValue)
-		'				End If
-		'			End If
-		'		Next
-		'		Dim folderRow As New System.Collections.ArrayList
-		'		folderRow.Add("Folders")
-		'		If folderColumnIndex <> -1 Then
-		'			folderRow.Add(_totalFolders.Count.ToString)
-		'		Else
-		'			folderRow.Add("0")
-		'		End If
-		'		dt.Rows.Add(folderRow.ToArray)
-		'		Dim blankRow As New System.Collections.ArrayList
-		'		blankRow.Add("")
-		'		blankRow.Add("")
-		'		dt.Rows.Add(blankRow.ToArray)
-		'		If codeFieldColumnIndexes.Count = 0 Then
-		'			dt.Columns.Add("     ")
-		'			dt.Rows.Add(New String() {"No choice fields have been mapped"})
-		'		Else
-		'			For Each key As String In previewCodeCount.Keys
-		'				Dim row As New System.Collections.ArrayList
-		'				row.Add(key.Split("_".ToCharArray, 2)(1))
-		'				Dim currentFieldHashTable As System.Collections.Specialized.HybridDictionary = DirectCast(previewCodeCount(key), System.Collections.Specialized.HybridDictionary)
-		'				row.Add(currentFieldHashTable.Count)
-		'				dt.Rows.Add(row.ToArray)
-		'				currentFieldHashTable.Clear()
-		'			Next
-		'		End If
-		'		Return dt
-		'	Catch ex As Exception
-		'		kCura.EDDS.WinForm.Utility.ThrowExceptionToGUI(ex)
-		'	End Try
-		'	Return Nothing
-		'End Function
-#End Region
 
 		Private Sub AddFoldersToTotalFolders(ByVal folderPath As String)
 			If folderPath <> String.Empty AndAlso folderPath <> "\" Then
@@ -1138,7 +1030,7 @@ Namespace kCura.EDDS.WinForm
 			CursorWait()
 			Dim frm As New OptionsForm
 
-			If Not _loginForm Is Nothing Then
+			If Not _loginForm Is Nothing AndAlso _loginForm.Visible Then
 				frm.Show(_loginForm)
 			Else
 				frm.Show()
@@ -1178,7 +1070,6 @@ Namespace kCura.EDDS.WinForm
 #End Region
 
 #Region "Process Management"
-
 		Public Function QueryConnectivity() As Guid
 			CursorWait()
 			If Not Me.IsConnected(Me.SelectedCaseInfo.ArtifactID, 10) Then
@@ -1354,24 +1245,6 @@ Namespace kCura.EDDS.WinForm
 			CursorDefault()
 		End Sub
 
-		'Public Function StartProduction(ByVal exportFile As ExportFile) As Guid
-		'	CursorWait()
-		'	If Not Me.IsConnected(_selectedCaseInfo.ArtifactID) Then
-		'		CursorDefault()
-		'		Exit Function
-		'	End If
-		'	Dim frm As New kCura.Windows.Process.ProgressForm
-		'	Dim exporter As New kCura.WinEDDS.ExportProductionProcess
-
-		'	exporter.ExportFile = exportFile
-		'	frm.ProcessObserver = exporter.ProcessObserver
-		'	frm.ProcessController = exporter.ProcessController
-		'	frm.Text = "Export Progress..."
-		'	frm.Show()
-		'	CursorDefault()
-		'	Return _processPool.StartProcess(exporter)
-		'End Function
-
 		Public Function StartSearch(ByVal exportFile As ExportFile) As Guid
 			CursorWait()
 			If Not Me.IsConnected(_selectedCaseInfo.ArtifactID, ArtifactTypeID) Then
@@ -1427,7 +1300,6 @@ Namespace kCura.EDDS.WinForm
 			_processPool.StartProcess(applicationDeploymentProcess)
 			CursorDefault()
 		End Sub
-
 #End Region
 
 #Region "Save/Load Settings Objects"
@@ -1449,6 +1321,7 @@ Namespace kCura.EDDS.WinForm
 				End Try
 			End Try
 		End Sub
+
 		Public Function CleanLoadFile(ByVal doc As System.Xml.XmlDocument) As String
 			For Each node As System.Xml.XmlNode In doc.ChildNodes(0).ChildNodes(0)
 				If node.Name = "a1:DocumentField" Then
@@ -1559,7 +1432,6 @@ Namespace kCura.EDDS.WinForm
 #End Region
 
 #Region "Login"
-
 		Friend Function DefaultCredentialsAreGood() As Boolean
 			Dim myHttpWebRequest As System.Net.HttpWebRequest
 			Dim myHttpWebResponse As System.Net.HttpWebResponse
@@ -1697,8 +1569,7 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 #End Region
 
-#Region " System Configuration "
-
+#Region "System Configuration"
 		Public Function GetDisplayAssemblyVersion() As String
 			Return System.Reflection.Assembly.GetExecutingAssembly.GetName.Version.ToString
 		End Function
@@ -1706,9 +1577,7 @@ Namespace kCura.EDDS.WinForm
 		Public Function GetSystemConfiguration() As System.Data.DataTable
 			Return New kCura.WinEDDS.Service.RelativityManager(Me.Credential, Me.CookieContainer).RetrieveRdcConfiguration().Tables(0)
 		End Function
-
 #End Region
-
 
 		Public Function GetProductionPrecendenceList(ByVal caseInfo As Relativity.CaseInfo) As System.Data.DataTable
 			Dim productionManager As kCura.WinEDDS.Service.ProductionManager
