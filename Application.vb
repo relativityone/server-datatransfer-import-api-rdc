@@ -13,18 +13,10 @@ Namespace kCura.EDDS.WinForm
 			_processPool = New kCura.Windows.Process.ProcessPool
 			Dim currentZone As System.TimeZone = System.TimeZone.CurrentTimeZone
 
-			ServicePointManager.ServerCertificateValidationCallback = New RemoteCertificateValidationCallback(AddressOf ValidateCertificate)
+			ServicePointManager.ServerCertificateValidationCallback = Function(sender As Object, certificate As X509Certificate, chain As X509Chain, sslPolicyErrors As SslPolicyErrors) True
 
 			_cookieContainer = New System.Net.CookieContainer
 		End Sub
-
-		Private Function ValidateCertificate(ByVal sender As Object, ByVal certificate As X509Certificate, ByVal chain As X509Chain, ByVal sslPolicyErrors As SslPolicyErrors) As Boolean
-			Dim validationResult As Boolean = True
-			'
-			' TODO: Add policy code here
-			'
-			Return validationResult	' Return True to force the certificate to be accepted.
-		End Function
 
 		Public Shared ReadOnly Property Instance() As Application
 			Get
