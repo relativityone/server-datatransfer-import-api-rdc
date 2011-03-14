@@ -1326,6 +1326,7 @@ Public Class ExportForm
 			Case ExportFile.ExportType.Production
 				Return "This is a list of all accessible productions marked as ""Produced"", which are not currently in the process of being populated or processed"
 		End Select
+		Return Nothing
 	End Function
 
 	Private Sub _browseButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _browseButton.Click
