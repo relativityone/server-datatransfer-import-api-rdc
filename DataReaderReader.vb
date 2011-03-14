@@ -302,6 +302,7 @@ Namespace kCura.WinEDDS.ImportExtension
 		End Sub
 
 		Public Function ManageErrorRecords(ByVal errorMessageFileLocation As String, ByVal prePushErrorLineNumbersFileName As String) As String Implements kCura.WinEDDS.Api.IArtifactReader.ManageErrorRecords
+			Return Nothing
 		End Function
 
 		Public Sub OnFatalErrorState() Implements kCura.WinEDDS.Api.IArtifactReader.OnFatalErrorState
