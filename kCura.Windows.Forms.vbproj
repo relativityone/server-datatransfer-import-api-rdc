@@ -268,9 +268,11 @@
     <Compile Include="RichTextBox.vb">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="Specialized\HighlightItemEventArgs.vb" />
     <Compile Include="Specialized\ListBox.vb">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Specialized\ListBoxLocation.vb" />
     <Compile Include="Specialized\OutputRichTextBox.vb">
       <SubType>UserControl</SubType>
     </Compile>

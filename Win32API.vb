@@ -3,7 +3,13 @@ Imports System.Runtime.InteropServices
 Namespace kCura.Windows.Forms
 	Public Class Win32API
 
+#Region " Constants "
+
 		Public Const MENU_CLASS As String = "#32768"
+		Public Const HC_ACTION As Integer = 0
+		Public Const WH_CALLWNDPROC As Integer = 4
+		Public Const GWL_WNDPROC As Integer = -4
+
 		Public Const WM_NCCALCSIZE As Integer = &H83
 		Public Const WM_WINDOWPOSCHANGING As Integer = &H46
 		Public Const WM_PAINT As Integer = &HF
@@ -14,12 +20,36 @@ Namespace kCura.Windows.Forms
 		Public Const WM_DESTROY As Integer = &H2
 		Public Const WM_SHOWWINDOW As Integer = &H18
 		Public Const WM_SHARED_MENU As Integer = 482
-		Public Const HC_ACTION As Integer = 0
-		Public Const WH_CALLWNDPROC As Integer = 4
-		Public Const GWL_WNDPROC As Integer = -4
+		Public Const WM_HSCROLL As Integer = &H114
+		Public Const WM_VSCROLL As Integer = &H115
+
+		Public Const SB_LINELEFT As Integer = 0
+		Public Const SB_LINERIGHT As Integer = 1
+		Public Const SB_PAGELEFT As Integer = 2
+		Public Const SB_PAGERIGHT As Integer = 3
+		Public Const SB_THUMBPOSITION As Integer = 4
+		Public Const SB_THUMBTRACK As Integer = 5
+		Public Const SB_LEFT As Integer = 6
+		Public Const SB_RIGHT As Integer = 7
+		Public Const SB_ENDSCROLL As Integer = 8
+		Public Const SBS_HORZ As Integer = 0
+		Public Const SBS_VERT As Integer = 1
+		Public Const SIF_TRACKPOS As Integer = &H10
+		Public Const SIF_RANGE As Integer = &H1
+		Public Const SIF_POS As Integer = &H4
+		Public Const SIF_PAGE As Integer = &H2
+		Public Const SIF_ALL As Integer = SIF_RANGE Or SIF_PAGE Or SIF_POS Or SIF_TRACKPOS
+
+#End Region
+
+#Region " Delegates "
 
 		Public Delegate Function WndProc(ByVal hwnd As IntPtr, ByVal msg As Integer, ByVal wparam As IntPtr, ByVal lparam As IntPtr) As Integer
 		Public Delegate Function HookProc(ByVal code As Integer, ByVal wparam As IntPtr, ByRef cwp As CWPSTRUCT) As Integer
+
+#End Region
+
+#Region " Structures "
 
 		<StructLayout(LayoutKind.Sequential)> _
 		Public Structure CWPSTRUCT
@@ -53,6 +83,21 @@ Namespace kCura.Windows.Forms
 			Public Right As Integer
 			Public Bottom As Integer
 		End Structure
+
+		<StructLayout(LayoutKind.Sequential)> _
+		Public Structure ScrollInfoStruct
+			Public cbSize As Integer
+			Public fMask As Integer
+			Public nMin As Integer
+			Public nMax As Integer
+			Public nPage As Integer
+			Public nPos As Integer
+			Public nTrackPos As Integer
+		End Structure
+
+#End Region
+
+#Region " Function declarations "
 
 		<DllImport("User32.dll", CharSet:=CharSet.Auto)> _
 		Public Shared Function GetWindowRect(ByVal hWnd As IntPtr, ByRef rect As RECT) As Boolean
@@ -101,6 +146,12 @@ Namespace kCura.Windows.Forms
 		<DllImport("User32.dll", CharSet:=CharSet.Auto)> _
 		Public Shared Function CallWindowProc(ByVal wndProc As IntPtr, ByVal hwnd As IntPtr, ByVal msg As Integer, ByVal wparam As IntPtr, ByVal lparam As IntPtr) As Integer
 		End Function
+
+		<DllImport("user32.dll", CharSet:=CharSet.Auto)> _
+		Public Shared Function GetScrollInfo(ByVal hwnd As IntPtr, ByVal nBar As Integer, ByRef lpsi As ScrollInfoStruct) As Integer
+		End Function
+
+#End Region
 
 	End Class
 End Namespace

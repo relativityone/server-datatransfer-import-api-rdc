@@ -1,50 +1,55 @@
+Imports System.Windows.Forms
+Imports System.Drawing
+
 ' TODO : Change namespace of this control
 Namespace kCura.Windows.Forms
-  Public Class TwoListBox
-    Inherits System.Windows.Forms.UserControl
 
-		Public Event ClearHighlightedItems(ByVal location As ListBoxLocation)
-		Public Event HighlightItemByLocationAndIndex(ByVal location As ListBoxLocation, ByVal index As Int32)
+	Public Class TwoListBox
+		Inherits System.Windows.Forms.UserControl
+
+		Public Event ClearHighlightedItems(ByVal sender As Object, ByVal e As HighlightItemEventArgs)
+		Public Event HighlightItemByLocationAndIndex(ByVal sender As Object, ByVal e As HighlightItemEventArgs)
+		Public Event ItemsShifted(ByVal sender As Object, ByVal e As EventArgs)
 
 #Region " Windows Form Designer generated code "
 
-    Public Sub New()
-      MyBase.New()
+		Public Sub New()
+			MyBase.New()
 
-      'This call is required by the Windows Form Designer.
-      InitializeComponent()
+			'This call is required by the Windows Form Designer.
+			InitializeComponent()
 
-      'Add any initialization after the InitializeComponent() call
+			'Add any initialization after the InitializeComponent() call
 
-    End Sub
+		End Sub
 
-    'UserControl overrides dispose to clean up the component list.
-    Protected Overloads Overrides Sub Dispose(ByVal disposing As Boolean)
-      If disposing Then
-        If Not (components Is Nothing) Then
-          components.Dispose()
-        End If
-      End If
-      MyBase.Dispose(disposing)
-    End Sub
+		'UserControl overrides dispose to clean up the component list.
+		Protected Overloads Overrides Sub Dispose(ByVal disposing As Boolean)
+			If disposing Then
+				If Not (components Is Nothing) Then
+					components.Dispose()
+				End If
+			End If
+			MyBase.Dispose(disposing)
+		End Sub
 
-    'Required by the Windows Form Designer
-    Private components As System.ComponentModel.IContainer
+		'Required by the Windows Form Designer
+		Private components As System.ComponentModel.IContainer
 
-    'NOTE: The following procedure is required by the Windows Form Designer
-    'It can be modified using the Windows Form Designer.  
-    'Do not modify it using the code editor.
+		'NOTE: The following procedure is required by the Windows Form Designer
+		'It can be modified using the Windows Form Designer.  
+		'Do not modify it using the code editor.
 		Friend WithEvents _rightListBox As kCura.Windows.Forms.ListBox
 		Friend WithEvents _leftListBox As kCura.Windows.Forms.ListBox
-    Friend WithEvents _moveAllFieldsLeft As System.Windows.Forms.Button
-    Friend WithEvents _moveFieldLeft As System.Windows.Forms.Button
-    Friend WithEvents _moveFieldRight As System.Windows.Forms.Button
-    Friend WithEvents _moveAllFieldsRight As System.Windows.Forms.Button
-    Friend WithEvents _moveRightSelectedItemDown As System.Windows.Forms.Button
-    Friend WithEvents _moveRightSelectedItemUp As System.Windows.Forms.Button
-    Friend WithEvents _moveLeftSelectedItemDown As System.Windows.Forms.Button
-    Friend WithEvents _moveLeftSelectedItemUp As System.Windows.Forms.Button
-    <System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
+		Friend WithEvents _moveAllFieldsLeft As System.Windows.Forms.Button
+		Friend WithEvents _moveFieldLeft As System.Windows.Forms.Button
+		Friend WithEvents _moveFieldRight As System.Windows.Forms.Button
+		Friend WithEvents _moveAllFieldsRight As System.Windows.Forms.Button
+		Friend WithEvents _moveRightSelectedItemDown As System.Windows.Forms.Button
+		Friend WithEvents _moveRightSelectedItemUp As System.Windows.Forms.Button
+		Friend WithEvents _moveLeftSelectedItemDown As System.Windows.Forms.Button
+		Friend WithEvents _moveLeftSelectedItemUp As System.Windows.Forms.Button
+		<System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
 			Me._rightListBox = New kCura.Windows.Forms.ListBox(Me.RelativityHighlightColor)
 			Me._moveAllFieldsLeft = New System.Windows.Forms.Button
 			Me._moveFieldLeft = New System.Windows.Forms.Button
@@ -60,7 +65,7 @@ Namespace kCura.Windows.Forms
 			'_rightListBox
 			'
 			Me._rightListBox.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-									Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
+			 Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
 			Me._rightListBox.HorizontalScrollbar = True
 			Me._rightListBox.Location = New System.Drawing.Point(212, 0)
 			Me._rightListBox.Name = "_rightListBox"
@@ -107,7 +112,7 @@ Namespace kCura.Windows.Forms
 			'_leftListBox
 			'
 			Me._leftListBox.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-									Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
+			 Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
 			Me._leftListBox.HorizontalScrollbar = True
 			Me._leftListBox.Location = New System.Drawing.Point(24, 0)
 			Me._leftListBox.Name = "_leftListBox"
@@ -173,30 +178,78 @@ Namespace kCura.Windows.Forms
 
 #End Region
 
-#Region "Private Declarations"
-		Private _buttonsCentered As Boolean
-		Private _alternateRowColors As Boolean = False
-		Private _outerBox As ListBoxLocation
-#End Region
-
-#Region "Properties"
+#Region " Properties "
 
 		Public Property AlternateRowColors() As Boolean
+
+		Public Property OuterBox() As ListBoxLocation
+
+		Public Property LeftOrderControlsVisible() As Boolean
 			Get
-				Return _alternateRowColors
+				Return _moveLeftSelectedItemDown.Visible
 			End Get
-			Set(ByVal Value As Boolean)
-				_alternateRowColors = Value
+			Set(ByVal value As Boolean)
+				_moveLeftSelectedItemDown.Visible = value
+				_moveLeftSelectedItemUp.Visible = value
+				If value = False Then
+					Dim pos As Int32 = -24
+					AdjustXPosition(_leftListBox, pos)
+					AdjustXPosition(_moveAllFieldsLeft, pos)
+					AdjustXPosition(_moveFieldLeft, pos)
+					AdjustXPosition(_moveFieldRight, pos)
+					AdjustXPosition(_moveAllFieldsRight, pos)
+					AdjustXPosition(_rightListBox, pos)
+					AdjustXPosition(_moveRightSelectedItemDown, pos)
+					AdjustXPosition(_moveRightSelectedItemUp, pos)
+				Else
+					Dim pos As Int32 = 24
+					If _leftListBox.Location.X <> 24 Then
+						AdjustXPosition(_leftListBox, pos)
+						AdjustXPosition(_moveAllFieldsLeft, pos)
+						AdjustXPosition(_moveFieldLeft, pos)
+						AdjustXPosition(_moveFieldRight, pos)
+						AdjustXPosition(_moveAllFieldsRight, pos)
+						AdjustXPosition(_rightListBox, pos)
+						AdjustXPosition(_moveRightSelectedItemUp, pos)
+						AdjustXPosition(_moveRightSelectedItemDown, pos)
+					End If
+				End If
 			End Set
 		End Property
 
-		Public Property OuterBox() As ListBoxLocation
+		Public Property RightOrderControlVisible() As Boolean
 			Get
-				Return _outerBox
+				Return _moveRightSelectedItemDown.Visible
 			End Get
-			Set(ByVal value As ListBoxLocation)
-				_outerBox = value
+			Set(ByVal value As Boolean)
+				_moveRightSelectedItemDown.Visible = value
+				_moveRightSelectedItemUp.Visible = value
 			End Set
+		End Property
+
+		Private _buttonsCentered As Boolean
+		Public Property KeepButtonsCentered() As Boolean
+			Get
+				Return _buttonsCentered
+			End Get
+			Set(ByVal value As Boolean)
+				_buttonsCentered = value
+				If _buttonsCentered Then
+					CenterButtons()
+				End If
+			End Set
+		End Property
+
+		Public ReadOnly Property LeftListBoxItems() As System.Windows.Forms.ListBox.ObjectCollection
+			Get
+				Return _leftListBox.Items
+			End Get
+		End Property
+
+		Public ReadOnly Property RightListBoxItems() As System.Windows.Forms.ListBox.ObjectCollection
+			Get
+				Return _rightListBox.Items
+			End Get
 		End Property
 
 		Public ReadOnly Property RelativityHighlightColor() As System.Drawing.Color
@@ -204,21 +257,17 @@ Namespace kCura.Windows.Forms
 				Return System.Drawing.Color.FromArgb(229, 142, 26)
 			End Get
 		End Property
+
 #End Region
 
-		Private Sub MoveAllItems(ByVal giver As System.Windows.Forms.ListBox, ByVal receiver As System.Windows.Forms.ListBox)
-			receiver.Items.AddRange(giver.Items)
-			giver.Items.Clear()
-			Me.RaiseItemsShifted()
-		End Sub
+#Region " ListBox methods and event handlers "
 
-
-		Private Sub ShiftSelectedItems(ByVal giver As System.Windows.Forms.ListBox, ByVal receiver As System.Windows.Forms.ListBox)
+		Private Sub ShiftSelectedItems(ByVal giver As kCura.Windows.Forms.ListBox, ByVal receiver As kCura.Windows.Forms.ListBox)
 			If giver.SelectedItems.Count > 0 Then
-				Dim i As Int32 = 0
-				For i = 0 To giver.SelectedItems.Count - 1
+				For i As Int32 = 0 To giver.SelectedItems.Count - 1
 					receiver.Items.Add(giver.SelectedItems.Item(i))
 				Next
+
 				While giver.SelectedItems.Count > 0
 					giver.Items.Remove(giver.SelectedItems.Item(0))
 				End While
@@ -229,20 +278,104 @@ Namespace kCura.Windows.Forms
 
 		Private Sub RaiseItemsShifted()
 			Me.EnsureHorizontalScrollbars()
-			RaiseEvent ItemsShifted()
+			RaiseEvent ItemsShifted(Me, New EventArgs)
 		End Sub
+
 		Public Sub EnsureHorizontalScrollbars()
 			Me.EnsureHorizontalScrollbarForBox(_leftListBox)
 			Me.EnsureHorizontalScrollbarForBox(_rightListBox)
 		End Sub
 
-		Private Sub EnsureHorizontalScrollbarForBox(ByVal box As System.Windows.Forms.ListBox)
-			If Not _alternateRowColors Then Exit Sub
-			Dim g As System.Drawing.Graphics = Me.CreateGraphics
-			box.HorizontalExtent = 0
-			For i As Int32 = 0 To box.Items.Count - 1
-				box.HorizontalExtent = System.Math.Max(CInt(box.HorizontalExtent), CInt(g.MeasureString(box.Items(i).ToString, box.Font, 0).Width))
-			Next
+		Private Sub EnsureHorizontalScrollbarForBox(ByVal box As kCura.Windows.Forms.ListBox)
+			If _AlternateRowColors Then
+				Dim g As System.Drawing.Graphics = Me.CreateGraphics
+				box.HorizontalExtent = 0
+				For i As Int32 = 0 To box.Items.Count - 1
+					box.HorizontalExtent = System.Math.Max(CInt(box.HorizontalExtent), CInt(g.MeasureString(box.Items(i).ToString, box.Font, 0).Width + 20))
+				Next
+			End If
+
+			If box.Items.Count >= 0 Then
+				box.HorizontalScrollOffset = 0
+			End If
+		End Sub
+
+		Public Sub CenterButtons()
+			Dim center As Int32 = CType(Me.Size.Height / 2, Int32)
+			SetYPosition(_moveFieldRight, center - 32)
+			SetYPosition(_moveAllFieldsRight, center - 64)
+			SetYPosition(_moveFieldLeft, center)
+			SetYPosition(_moveAllFieldsLeft, center + 32)
+			SetYPosition(_moveRightSelectedItemDown, center)
+			SetYPosition(_moveRightSelectedItemUp, center - 24)
+			SetYPosition(_moveLeftSelectedItemDown, center)
+			SetYPosition(_moveLeftSelectedItemUp, center - 24)
+		End Sub
+
+		Public Sub AdjustXPosition(ByVal control As System.Windows.Forms.Control, ByVal movement As Int32)
+			control.Location = New System.Drawing.Point(control.Location.X + movement, control.Location.Y)
+		End Sub
+
+		Public Sub SetYPosition(ByVal control As System.Windows.Forms.Control, ByVal yPosition As Int32)
+			control.Location = New System.Drawing.Point(control.Location.X, yPosition)
+		End Sub
+
+		Public Sub ClearAll()
+			_leftListBox.Items.Clear()
+			_leftListBox.HorizontalScrollOffset = 0
+
+			_rightListBox.Items.Clear()
+			_rightListBox.HorizontalScrollOffset = 0
+		End Sub
+
+		Private Sub TwoListBox_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles MyBase.Load
+			_leftListBox.AlternateColors = _AlternateRowColors
+			_rightListBox.AlternateColors = _AlternateRowColors
+		End Sub
+
+		Private Sub _leftListBox_DoubleClick(ByVal sender As Object, ByVal e As System.EventArgs) Handles _leftListBox.DoubleClick
+			ShiftSelectedItems(_leftListBox, _rightListBox)
+			EnsureHorizontalScrollbars()
+		End Sub
+
+		Private Sub _rightListBox_DoubleClick(ByVal sender As Object, ByVal e As System.EventArgs) Handles _rightListBox.DoubleClick
+			ShiftSelectedItems(_rightListBox, _leftListBox)
+			EnsureHorizontalScrollbars()
+		End Sub
+
+		Private Sub _leftListBox_Click(ByVal sender As Object, ByVal e As EventArgs) Handles _leftListBox.Click
+			_leftListBox.Invalidate()
+		End Sub
+
+		Private Sub _rightListBox_Click(ByVal sender As Object, ByVal e As EventArgs) Handles _rightListBox.Click
+			_rightListBox.Invalidate()
+		End Sub
+
+		Private Sub _leftListBox_Scrolled(ByVal sender As Object, ByVal e As ScrollEventArgs) Handles _leftListBox.Scrolled
+			If e.ScrollOrientation = ScrollOrientation.HorizontalScroll Then
+				_leftListBox.Invalidate()
+			End If
+		End Sub
+
+		Private Sub _rightListBox_Scrolled(ByVal sender As Object, ByVal e As ScrollEventArgs) Handles _rightListBox.Scrolled
+			If e.ScrollOrientation = ScrollOrientation.HorizontalScroll Then
+				_rightListBox.Invalidate()
+			End If
+		End Sub
+
+#End Region
+
+#Region " Move methods and event handlers "
+
+		Private Enum MoveDirection
+			Up
+			Down
+		End Enum
+
+		Private Sub MoveAllItems(ByVal giver As kCura.Windows.Forms.ListBox, ByVal receiver As System.Windows.Forms.ListBox)
+			receiver.Items.AddRange(giver.Items)
+			giver.Items.Clear()
+			Me.RaiseItemsShifted()
 		End Sub
 
 		Private Sub MoveSelectedItem(ByVal box As System.Windows.Forms.ListBox, ByVal direction As MoveDirection)
@@ -302,145 +435,11 @@ Namespace kCura.Windows.Forms
 			MoveSelectedItem(_rightListBox, MoveDirection.Down)
 		End Sub
 
-		Private Enum MoveDirection
-			Up
-			Down
-		End Enum
+#End Region
 
-		Public Property LeftOrderControlsVisible() As Boolean
-			Get
-				Return _moveLeftSelectedItemDown.Visible
-			End Get
-			Set(ByVal value As Boolean)
-				_moveLeftSelectedItemDown.Visible = value
-				_moveLeftSelectedItemUp.Visible = value
-				If value = False Then
-					Dim pos As Int32 = -24
-					AdjustXPosition(_leftListBox, pos)
-					AdjustXPosition(_moveAllFieldsLeft, pos)
-					AdjustXPosition(_moveFieldLeft, pos)
-					AdjustXPosition(_moveFieldRight, pos)
-					AdjustXPosition(_moveAllFieldsRight, pos)
-					AdjustXPosition(_rightListBox, pos)
-					AdjustXPosition(_moveRightSelectedItemDown, pos)
-					AdjustXPosition(_moveRightSelectedItemUp, pos)
-				Else
-					Dim pos As Int32 = 24
-					If _leftListBox.Location.X <> 24 Then
-						AdjustXPosition(_leftListBox, pos)
-						AdjustXPosition(_moveAllFieldsLeft, pos)
-						AdjustXPosition(_moveFieldLeft, pos)
-						AdjustXPosition(_moveFieldRight, pos)
-						AdjustXPosition(_moveAllFieldsRight, pos)
-						AdjustXPosition(_rightListBox, pos)
-						AdjustXPosition(_moveRightSelectedItemUp, pos)
-						AdjustXPosition(_moveRightSelectedItemDown, pos)
-					End If
-				End If
-			End Set
-		End Property
-
-		Public Property KeepButtonsCentered() As Boolean
-			Get
-				Return _buttonsCentered
-			End Get
-			Set(ByVal value As Boolean)
-				_buttonsCentered = value
-				If _buttonsCentered Then
-					CenterButtons()
-				End If
-			End Set
-		End Property
-
-		Public Sub CenterButtons()
-			Dim center As Int32 = CType(Me.Size.Height / 2, Int32)
-			SetYPosition(_moveFieldRight, center - 32)
-			SetYPosition(_moveAllFieldsRight, center - 64)
-			SetYPosition(_moveFieldLeft, center)
-			SetYPosition(_moveAllFieldsLeft, center + 32)
-			SetYPosition(_moveRightSelectedItemDown, center)
-			SetYPosition(_moveRightSelectedItemUp, center - 24)
-			SetYPosition(_moveLeftSelectedItemDown, center)
-			SetYPosition(_moveLeftSelectedItemUp, center - 24)
-		End Sub
-
-		Public Sub AdjustXPosition(ByVal control As System.Windows.Forms.Control, ByVal movement As Int32)
-			control.Location = New System.Drawing.Point(control.Location.X + movement, control.Location.Y)
-		End Sub
-
-		Public Sub SetYPosition(ByVal control As System.Windows.Forms.Control, ByVal yPosition As Int32)
-			control.Location = New System.Drawing.Point(control.Location.X, yPosition)
-		End Sub
-
-
-		Public Property RightOrderControlVisible() As Boolean
-			Get
-				Return _moveRightSelectedItemDown.Visible
-			End Get
-			Set(ByVal value As Boolean)
-				_moveRightSelectedItemDown.Visible = value
-				_moveRightSelectedItemUp.Visible = value
-			End Set
-		End Property
-
-		Public Sub ClearAll()
-			_leftListBox.Items.Clear()
-			_rightListBox.Items.Clear()
-		End Sub
-
-		Public ReadOnly Property LeftListBoxItems() As System.Windows.Forms.ListBox.ObjectCollection
-			Get
-				Return _leftListBox.Items
-			End Get
-		End Property
-
-		Public ReadOnly Property RightListBoxItems() As System.Windows.Forms.ListBox.ObjectCollection
-			Get
-				Return _rightListBox.Items
-			End Get
-		End Property
-
-		Public Event ItemsShifted()
-
-		Private Sub _leftListBox_DoubleClick(ByVal sender As Object, ByVal e As System.EventArgs) Handles _leftListBox.DoubleClick
-			ShiftSelectedItems(_leftListBox, _rightListBox)
-		End Sub
-
-		Private Sub _rightListBox_DoubleClick(ByVal sender As Object, ByVal e As System.EventArgs) Handles _rightListBox.DoubleClick
-			ShiftSelectedItems(_rightListBox, _leftListBox)
-		End Sub
-
-		'Private Sub _leftListBox_DrawItem(ByVal sender As Object, ByVal e As System.Windows.Forms.DrawItemEventArgs) Handles _leftListBox.DrawItem
-		'	Me.DrawBox(_leftListBox, e, _leftListBox.HighlightIndex)
-		'End Sub
-
-		'Private Sub _rightListBox_DrawItem(ByVal sender As Object, ByVal e As System.Windows.Forms.DrawItemEventArgs) Handles _rightListBox.DrawItem
-		'	Me.DrawBox(_rightListBox, e, _rightListBox.HighlightIndex)
-		'End Sub
-
-		Private Sub DrawBox(ByVal listBox As kCura.Windows.Forms.ListBox, ByVal e As System.Windows.Forms.DrawItemEventArgs, ByVal highlightIndex As Int32)
-			If e.Index < 0 Then Exit Sub
-			Dim x As New System.Windows.Forms.DrawItemEventArgs(e.Graphics, e.Font, e.Bounds, e.Index, e.State, e.ForeColor, System.Drawing.Color.LightGray)
-			If e.Index Mod 2 = 1 Then
-				e = x
-			End If
-
-			'Dim brush As New System.Drawing.SolidBrush(If(e.Index = highlightIndex, Me.RelativityHighlightColor, e.ForeColor))
-			'e.DrawBackground()
-			'e.Graphics.DrawString(listBox.Items(e.Index).ToString, e.Font, brush, e.Bounds.X, e.Bounds.Y)
-			'e.DrawFocusRectangle()
-		End Sub
-
-		Private Sub TwoListBox_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles MyBase.Load
-			_leftListBox.AlternateColors = _alternateRowColors
-			_rightListBox.AlternateColors = _alternateRowColors
-		End Sub
-
-
-#Region "Highlighting Methods and event handlers"
+#Region " Highlight methods and event handlers "
 
 		Public Sub ClearItems(ByVal location As ListBoxLocation)
-
 			Dim listbox As System.Windows.Forms.ListBox
 			If location = ListBoxLocation.Left Then
 				_leftListBox.HighlightIndex = -1
@@ -450,12 +449,10 @@ Namespace kCura.Windows.Forms
 				listbox = _rightListBox
 			End If
 			listbox.Refresh()
-
 		End Sub
 
 		Public Sub HighlightItembyIndex(ByVal index As Int32, ByVal location As ListBoxLocation)
 			Dim listbox As kCura.Windows.Forms.ListBox = If(location = ListBoxLocation.Left, _leftListBox, _rightListBox)
-
 
 			If location = ListBoxLocation.Left Then
 				_leftListBox.HighlightIndex = index
@@ -464,35 +461,33 @@ Namespace kCura.Windows.Forms
 				_rightListBox.HighlightIndex = index
 				_rightListBox.Refresh()
 			End If
-
 		End Sub
-
 
 		Private Sub HighlightMouseOverItem(ByVal sender As Object, ByVal e As System.Windows.Forms.MouseEventArgs, ByVal location As ListBoxLocation)
 			Dim raiseEventLocation As ListBoxLocation = If(location = ListBoxLocation.Left, ListBoxLocation.Right, ListBoxLocation.Left)
 
 			Dim listbox As kCura.Windows.Forms.ListBox = DirectCast(sender, kCura.Windows.Forms.ListBox)
-			Dim G As System.Drawing.Graphics = System.Drawing.Graphics.FromHwnd(Me.Handle)
-			Dim index As Int32
-			index = listbox.IndexFromPoint(New System.Drawing.Point(e.X, e.Y))
+			Dim g As System.Drawing.Graphics = System.Drawing.Graphics.FromHwnd(Me.Handle)
+			Dim index As Int32 = listbox.IndexFromPoint(New System.Drawing.Point(e.X, e.Y))
 			If index >= 0 Then	'mouse is over an item
 				HighlightItembyIndex(index, location)
-				RaiseEvent HighlightItemByLocationAndIndex(raiseEventLocation, index)
+				RaiseEvent HighlightItemByLocationAndIndex(Me, New HighlightItemEventArgs With {.Location = raiseEventLocation, .Index = index})
 			Else
 				ClearItems(location)
-				RaiseEvent ClearHighlightedItems(raiseEventLocation)
+				RaiseEvent ClearHighlightedItems(Me, New HighlightItemEventArgs With {.Location = raiseEventLocation})
 			End If
 		End Sub
 
 		Private Sub _rightListBox_MouseLeave(ByVal sender As Object, ByVal e As System.EventArgs) Handles _rightListBox.MouseLeave
 			ClearItems(ListBoxLocation.Right)
-			RaiseEvent ClearHighlightedItems(ListBoxLocation.Left)
+			RaiseEvent ClearHighlightedItems(Me, New HighlightItemEventArgs With {.Location = ListBoxLocation.Left})
 		End Sub
 
 		Private Sub _leftListBox_MouseLeave(ByVal sender As Object, ByVal e As System.EventArgs) Handles _leftListBox.MouseLeave
 			ClearItems(ListBoxLocation.Left)
-			RaiseEvent ClearHighlightedItems(ListBoxLocation.Right)
+			RaiseEvent ClearHighlightedItems(Me, New HighlightItemEventArgs With {.Location = ListBoxLocation.Right})
 		End Sub
+
 		Private Sub _leftListBox_MouseMove(ByVal sender As Object, ByVal e As System.Windows.Forms.MouseEventArgs) Handles _leftListBox.MouseMove
 			If Not Me.OuterBox = ListBoxLocation.Left Then
 				HighlightMouseOverItem(sender, e, ListBoxLocation.Left)
@@ -505,12 +500,8 @@ Namespace kCura.Windows.Forms
 			End If
 		End Sub
 
-		Public Enum ListBoxLocation
-			Left = 0
-			Right = 1
-		End Enum
-
 #End Region
 
 	End Class
+
 End Namespace
