@@ -213,7 +213,7 @@ Namespace kCura.EDDS.WinForm
 			'OpenFileDialog
 			'
 			Me.OpenFileDialog.Filter = "All files (*.*)|*.*|CSV Files (*.csv)|*.csv|Text Files (*.txt)|*.txt|DAT Files|*." & _
-				"dat"
+			 "dat"
 			'
 			'GroupBox1
 			'
@@ -1436,13 +1436,13 @@ Namespace kCura.EDDS.WinForm
 
 		Private Sub _importMenuPreviewErrorsItem_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles _importMenuPreviewErrorsItem.Click
 			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
-			If PopulateLoadFileObject(True) Then _application.PreviewLoadFile(_loadFile, True, kCura.EDDS.WinForm.LoadFilePreviewForm.FormType.LoadFile)
+			If PopulateLoadFileObject(True) AndAlso _application.ReadyToLoad(Me.LoadFile, True) Then _application.PreviewLoadFile(_loadFile, True, kCura.EDDS.WinForm.LoadFilePreviewForm.FormType.LoadFile)
 			Me.Cursor = System.Windows.Forms.Cursors.Default
 		End Sub
 
 		Private Sub _importMenuPreviewFoldersAndCodesItem_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles _importMenuPreviewFoldersAndCodesItem.Click
 			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
-			If PopulateLoadFileObject(True) Then _application.PreviewLoadFile(_loadFile, False, kCura.EDDS.WinForm.LoadFilePreviewForm.FormType.Codes)
+			If PopulateLoadFileObject(True) AndAlso _application.ReadyToLoad(Me.LoadFile, True) Then _application.PreviewLoadFile(_loadFile, False, kCura.EDDS.WinForm.LoadFilePreviewForm.FormType.Codes)
 			Me.Cursor = System.Windows.Forms.Cursors.Default
 		End Sub
 
