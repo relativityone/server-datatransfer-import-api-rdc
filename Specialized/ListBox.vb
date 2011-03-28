@@ -45,14 +45,16 @@ Namespace kCura.Windows.Forms
 			If msg.Msg = Win32API.WM_HSCROLL OrElse msg.Msg = Win32API.WM_VSCROLL Then
 				Dim si As New Win32API.ScrollInfoStruct With {.fMask = Win32API.SIF_ALL, .cbSize = Marshal.SizeOf(si)}
 
-				Win32API.GetScrollInfo(msg.HWnd, 0, si)
-
 				If msg.WParam.ToInt32() = Win32API.SB_ENDSCROLL Then
 					If msg.Msg = Win32API.WM_HSCROLL Then
+						Win32API.GetScrollInfo(msg.HWnd, Win32API.SBS_HORZ, si)
 						HorizontalScrollOffset = si.nPos
+
 						RaiseEvent Scrolled(Me, New ScrollEventArgs(ScrollEventType.EndScroll, si.nPos, ScrollOrientation.HorizontalScroll))
-					Else
+					ElseIf msg.Msg = Win32API.WM_VSCROLL Then
+						Win32API.GetScrollInfo(msg.HWnd, Win32API.SBS_VERT, si)
 						VerticalScrollOffset = si.nPos
+
 						RaiseEvent Scrolled(Me, New ScrollEventArgs(ScrollEventType.EndScroll, si.nPos, ScrollOrientation.VerticalScroll))
 					End If
 				End If
@@ -80,8 +82,6 @@ Namespace kCura.Windows.Forms
 				' Adjust where the drawing will begin to account for any shift made by the scroll bar
 				Dim newOffset As New System.Drawing.PointF(newArgs.Bounds.Left - HorizontalScrollOffset, newArgs.Bounds.Top)
 
-				System.Diagnostics.Debug.WriteLine(String.Format("-------->Offset:{0} Index:{1} SelectedIndex:{2}", HorizontalScrollOffset, newArgs.Index, SelectedIndex))
-
 				newArgs.DrawBackground()
 				newArgs.Graphics.DrawString(Me.Items(e.Index).ToString, newArgs.Font, brush, newOffset)
 				newArgs.DrawFocusRectangle()
@@ -99,6 +99,7 @@ Namespace kCura.Windows.Forms
 			If Me.Items.Count > 0 Then
 				For i As Int32 = 0 To Me.Items.Count - 1
 					Dim rect As System.Drawing.Rectangle = Me.GetItemRectangle(i)
+
 					If e.ClipRectangle.IntersectsWith(rect) Then
 						If ((Me.SelectionMode = System.Windows.Forms.SelectionMode.One AndAlso Me.SelectedIndex = i) OrElse _
 						 (Me.SelectionMode = System.Windows.Forms.SelectionMode.MultiSimple AndAlso Me.SelectedIndices.Contains(i)) OrElse _
@@ -107,6 +108,7 @@ Namespace kCura.Windows.Forms
 						Else
 							OnDrawItem(New System.Windows.Forms.DrawItemEventArgs(e.Graphics, Me.Font, rect, i, System.Windows.Forms.DrawItemState.Default, Me.ForeColor, Me.BackColor))
 						End If
+
 						region.Complement(rect)
 					End If
 				Next

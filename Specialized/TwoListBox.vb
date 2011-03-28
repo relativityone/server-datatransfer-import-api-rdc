@@ -293,6 +293,8 @@ Namespace kCura.Windows.Forms
 				For i As Int32 = 0 To box.Items.Count - 1
 					box.HorizontalExtent = System.Math.Max(CInt(box.HorizontalExtent), CInt(g.MeasureString(box.Items(i).ToString, box.Font, 0).Width + 20))
 				Next
+
+				g.Dispose()
 			End If
 
 			If box.Items.Count >= 0 Then
@@ -331,6 +333,20 @@ Namespace kCura.Windows.Forms
 		Private Sub TwoListBox_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles MyBase.Load
 			_leftListBox.AlternateColors = _AlternateRowColors
 			_rightListBox.AlternateColors = _AlternateRowColors
+		End Sub
+
+		Private Sub _leftListBox_KeyUp(ByVal sender As Object, ByVal e As System.Windows.Forms.KeyEventArgs) Handles _leftListBox.KeyUp
+			If e.KeyCode = Keys.Up OrElse e.KeyCode = Keys.Down Then
+				_leftListBox.Invalidate()
+			ElseIf e.KeyCode = Keys.Left OrElse e.KeyCode = Keys.Right Then
+			End If
+		End Sub
+
+		Private Sub _rightListBox_KeyUp(ByVal sender As Object, ByVal e As System.Windows.Forms.KeyEventArgs) Handles _rightListBox.KeyUp
+			If e.KeyCode = Keys.Up OrElse e.KeyCode = Keys.Down Then
+				_rightListBox.Invalidate()
+			ElseIf e.KeyCode = Keys.Left OrElse e.KeyCode = Keys.Right Then
+			End If
 		End Sub
 
 		Private Sub _leftListBox_DoubleClick(ByVal sender As Object, ByVal e As System.EventArgs) Handles _leftListBox.DoubleClick
@@ -476,6 +492,8 @@ Namespace kCura.Windows.Forms
 				ClearItems(location)
 				RaiseEvent ClearHighlightedItems(Me, New HighlightItemEventArgs With {.Location = raiseEventLocation})
 			End If
+
+			g.Dispose()
 		End Sub
 
 		Private Sub _rightListBox_MouseLeave(ByVal sender As Object, ByVal e As System.EventArgs) Handles _rightListBox.MouseLeave
