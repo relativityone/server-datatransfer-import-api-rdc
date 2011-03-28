@@ -1,7 +1,12 @@
+Imports kCura.Windows.Forms
+
 Namespace kCura.WinEDDS.UIControls
 
 	Public Class FieldMap
 		Inherits System.Windows.Forms.UserControl
+
+		Public Event FieldColumnsItemsShifted(ByVal sender As Object, ByVal e As EventArgs)
+		Public Event LoadFileColumnsItemsShifted(ByVal sender As Object, ByVal e As EventArgs)
 
 #Region " Windows Form Designer generated code "
 
@@ -73,7 +78,7 @@ Namespace kCura.WinEDDS.UIControls
 			Me._fieldColumns.RightOrderControlVisible = True
 			Me._fieldColumns.Size = New System.Drawing.Size(364, 276)
 			Me._fieldColumns.TabIndex = 8
-			Me._fieldColumns.OuterBox = kCura.Windows.Forms.TwoListBox.ListBoxLocation.Left
+			Me._fieldColumns.OuterBox = kCura.Windows.Forms.ListBoxLocation.Left
 			'
 			'_loadFileColumns
 			'
@@ -85,7 +90,7 @@ Namespace kCura.WinEDDS.UIControls
 			Me._loadFileColumns.RightOrderControlVisible = False
 			Me._loadFileColumns.Size = New System.Drawing.Size(388, 276)
 			Me._loadFileColumns.TabIndex = 9
-			Me._loadFileColumns.OuterBox = kCura.Windows.Forms.TwoListBox.ListBoxLocation.Right
+			Me._loadFileColumns.OuterBox = kCura.Windows.Forms.ListBoxLocation.Right
 			'
 			'FieldMap
 			'
@@ -124,7 +129,6 @@ Namespace kCura.WinEDDS.UIControls
 #End Region
 
 		Public Sub MapCaseFieldsToLoadFileFields(ByVal caseFields As String(), ByVal columnHeaders As String(), ByVal selectedFieldNameList As System.Collections.ArrayList, ByVal selectedColumnNameList As System.Collections.ArrayList)
-
 			Dim selectedFieldNames As String() = DirectCast(selectedFieldNameList.ToArray(GetType(String)), String())
 			Dim selectedColumnNames As String() = DirectCast(selectedColumnNameList.ToArray(GetType(String)), String())
 			Me.FieldColumns.RightListBoxItems.AddRange(selectedFieldNames)
@@ -140,7 +144,6 @@ Namespace kCura.WinEDDS.UIControls
 					Me.LoadFileColumns.RightListBoxItems.Add(name)
 				End If
 			Next
-
 		End Sub
 
 		Public Sub ClearAll()
@@ -148,34 +151,31 @@ Namespace kCura.WinEDDS.UIControls
 			_loadFileColumns.ClearAll()
 		End Sub
 
+#Region " Event handlers "
 		Private Sub _FieldColumns_ItemsShifted() Handles _fieldColumns.ItemsShifted
-			RaiseEvent FieldColumnsItemsShifted()
+			RaiseEvent FieldColumnsItemsShifted(Me, New EventArgs)
 		End Sub
 
 		Private Sub _LoadFileColumns_ItemsShifted() Handles _loadFileColumns.ItemsShifted
-			RaiseEvent LoadFileColumnsItemsShifted()
+			RaiseEvent LoadFileColumnsItemsShifted(Me, New EventArgs)
 		End Sub
 
-		Public Event FieldColumnsItemsShifted()
-		Public Event LoadFileColumnsItemsShifted()
-
-
-		Private Sub _fieldColumns_ClearHighlightedItems(ByVal location As Windows.Forms.TwoListBox.ListBoxLocation) Handles _fieldColumns.ClearHighlightedItems
-			_loadFileColumns.ClearItems(location)
+		Private Sub _fieldColumns_ClearHighlightedItems(ByVal sender As Object, ByVal e As HighlightItemEventArgs) Handles _fieldColumns.ClearHighlightedItems
+			_loadFileColumns.ClearItems(e.Location)
 		End Sub
 
-		Private Sub _fieldColumns_HighlightItemByLocationAndIndex(ByVal location As Windows.Forms.TwoListBox.ListBoxLocation, ByVal index As Integer) Handles _fieldColumns.HighlightItemByLocationAndIndex
-			_loadFileColumns.HighlightItembyIndex(index, location)
+		Private Sub _fieldColumns_HighlightItemByLocationAndIndex(ByVal sender As Object, ByVal e As HighlightItemEventArgs) Handles _fieldColumns.HighlightItemByLocationAndIndex
+			_loadFileColumns.HighlightItembyIndex(e.Index, e.Location)
 		End Sub
 
-
-		Private Sub _loadFileColumns_ClearHighlightedItems(ByVal location As Windows.Forms.TwoListBox.ListBoxLocation) Handles _loadFileColumns.ClearHighlightedItems
-			_fieldColumns.ClearItems(location)
+		Private Sub _loadFileColumns_ClearHighlightedItems(ByVal sender As Object, ByVal e As HighlightItemEventArgs) Handles _loadFileColumns.ClearHighlightedItems
+			_fieldColumns.ClearItems(e.Location)
 		End Sub
 
-		Private Sub _loadFileColumns_HighlightItemByLocationAndIndex(ByVal location As Windows.Forms.TwoListBox.ListBoxLocation, ByVal index As Integer) Handles _loadFileColumns.HighlightItemByLocationAndIndex
-			_fieldColumns.HighlightItembyIndex(index, location)
+		Private Sub _loadFileColumns_HighlightItemByLocationAndIndex(ByVal sender As Object, ByVal e As HighlightItemEventArgs) Handles _loadFileColumns.HighlightItemByLocationAndIndex
+			_fieldColumns.HighlightItembyIndex(e.Index, e.Location)
 		End Sub
+#End Region
 	End Class
 
 End Namespace
