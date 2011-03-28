@@ -193,7 +193,7 @@ Namespace kCura.EDDS.WinForm
 			Me._fileFields.RightOrderControlVisible = False
 			Me._fileFields.Size = New System.Drawing.Size(356, 280)
 			Me._fileFields.TabIndex = 4
-			Me._fileFields.OuterBox = kCura.Windows.Forms.TwoListBox.ListBoxLocation.Right
+			Me._fileFields.OuterBox = kCura.Windows.Forms.ListBoxLocation.Right
 			'
 			'Label2
 			'
@@ -224,7 +224,7 @@ Namespace kCura.EDDS.WinForm
 			Me._caseFields.RightOrderControlVisible = True
 			Me._caseFields.Size = New System.Drawing.Size(360, 280)
 			Me._caseFields.TabIndex = 0
-			Me._caseFields.OuterBox = kCura.Windows.Forms.TwoListBox.ListBoxLocation.Left
+			Me._caseFields.OuterBox = kCura.Windows.Forms.ListBoxLocation.Left
 			'
 			'GroupBox3
 			'
@@ -329,11 +329,9 @@ Namespace kCura.EDDS.WinForm
 
 			Dim fieldMappings() As ImportFileDirectorySettings.FieldMap
 
-			Dim i As Int32
-
 			ReDim fieldMappings(_caseFields.RightListBoxItems.Count - 1)
 
-			For i = 0 To _caseFields.RightListBoxItems.Count - 1
+			For i As Int32 = 0 To _caseFields.RightListBoxItems.Count - 1
 				Dim fieldMap As New ImportFileDirectorySettings.FieldMap
 				fieldMap.CaseField = CType(_caseFields.RightListBoxItems.Item(i), String)
 				fieldMap.FileField = CType(_fileFields.LeftListBoxItems.Item(i), String)
