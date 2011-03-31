@@ -165,8 +165,18 @@ Namespace kCura.WinEDDS.ImportExtension
 									End Try
 									If System.IO.File.Exists(newLocation) Then
 										kCura.Utility.File.Delete(newLocation)
+										Try
+											kCura.Utility.File.Delete(newLocation)
+										Catch ex As Exception
+											'This is to make sure we don't have buggy data.  Clients that have run the line that sets attributes below will never hit this line.
+											'However, clients on old versions of ImportAPI may hit this line and we want to make sure we're accounting for our mistake.
+											System.IO.File.SetAttributes(newLocation, System.IO.FileAttributes.Normal)
+											kCura.Utility.File.Delete(newLocation)
+										End Try
 									End If
 									System.IO.File.Copy(field.ValueAsString, newLocation)
+									'Set the attributes to Normal so we can delete the file if it's read only
+									System.IO.File.SetAttributes(newLocation, System.IO.FileAttributes.Normal)
 									field.Value = newLocation
 									'Only one file field is allowed
 									Exit For
