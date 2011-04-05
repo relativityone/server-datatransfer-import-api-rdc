@@ -899,7 +899,7 @@ Namespace kCura.EDDS.WinForm
 				CursorDefault()
 				Exit Sub
 			End If
-			Dim applicationForm As New ApplicationFileForm
+			Dim applicationForm As New RelativityApplicationForm
 			applicationForm.Application = Me
 			Dim list As New Generic.List(Of Relativity.CaseInfo)
 			list.Add(caseInfo)

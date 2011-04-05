@@ -309,7 +309,7 @@
     <Compile Include="Forms\AdvancedFileLocation.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\ApplicationFileForm.vb">
+    <Compile Include="Forms\RelativityApplicationForm.vb">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\CaseSelectForm.vb">
@@ -381,8 +381,8 @@
     <EmbeddedResource Include="Forms\AdvancedFileLocation.resx">
       <DependentUpon>AdvancedFileLocation.vb</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\ApplicationFileForm.resx">
-      <DependentUpon>ApplicationFileForm.vb</DependentUpon>
+    <EmbeddedResource Include="Forms\RelativityApplicationForm.resx">
+      <DependentUpon>RelativityApplicationForm.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\CaseSelectForm.resx">
       <DependentUpon>CaseSelectForm.vb</DependentUpon>

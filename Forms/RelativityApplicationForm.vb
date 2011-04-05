@@ -2,16 +2,13 @@ Imports System.Xml
 Imports System.Xml.Linq
 
 Namespace kCura.EDDS.WinForm
-	Public Class ApplicationFileForm
+	Public Class RelativityApplicationForm
 		Inherits System.Windows.Forms.Form
 
 		Private WithEvents OpenFileDialog As OpenFileDialog
-		Private WithEvents _application As kCura.EDDS.WinForm.Application
 		Friend WithEvents MenuFile_Refresh As System.Windows.Forms.MenuItem
 		Friend WithEvents MenuFile_Separator As System.Windows.Forms.MenuItem
 		Private _caseInfos As Generic.List(Of Relativity.CaseInfo)
-		Private _cookieContainer As System.Net.CookieContainer
-		Private _credentials As System.Net.NetworkCredential
 		Private _document As Xml.XmlDocument
 		Private _filename As String
 
@@ -67,7 +64,7 @@ Namespace kCura.EDDS.WinForm
 		Friend WithEvents BrowseButton As System.Windows.Forms.Button
 		<System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
 			Me.components = New System.ComponentModel.Container()
-			Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(ApplicationFileForm))
+			Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(RelativityApplicationForm))
 			Me.MainMenu = New System.Windows.Forms.MainMenu(Me.components)
 			Me.MenuFile = New System.Windows.Forms.MenuItem()
 			Me.MenuFile_Refresh = New System.Windows.Forms.MenuItem()
@@ -137,7 +134,7 @@ Namespace kCura.EDDS.WinForm
 			'ApplicationFileGroupBox
 			'
 			Me.ApplicationFileGroupBox.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-									Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+						Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me.ApplicationFileGroupBox.Controls.Add(Me.BrowseButton)
 			Me.ApplicationFileGroupBox.Controls.Add(Me.FilePath)
 			Me.ApplicationFileGroupBox.Location = New System.Drawing.Point(15, 12)
@@ -159,7 +156,7 @@ Namespace kCura.EDDS.WinForm
 			'FilePath
 			'
 			Me.FilePath.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-									Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+						Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me.FilePath.BackColor = System.Drawing.SystemColors.ControlLightLight
 			Me.FilePath.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
 			Me.FilePath.ForeColor = System.Drawing.SystemColors.ControlDarkDark
@@ -173,7 +170,7 @@ Namespace kCura.EDDS.WinForm
 			'ApplicationInformationGroupBox
 			'
 			Me.ApplicationInformationGroupBox.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-									Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+						Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me.ApplicationInformationGroupBox.Controls.Add(Me.ApplicationName)
 			Me.ApplicationInformationGroupBox.Controls.Add(Me.ApplicationVersion)
 			Me.ApplicationInformationGroupBox.Controls.Add(Me.VersionLabel)
@@ -188,7 +185,7 @@ Namespace kCura.EDDS.WinForm
 			'ApplicationName
 			'
 			Me.ApplicationName.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-									Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+						Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me.ApplicationName.Location = New System.Drawing.Point(60, 24)
 			Me.ApplicationName.Name = "ApplicationName"
 			Me.ApplicationName.ReadOnly = True
@@ -198,7 +195,7 @@ Namespace kCura.EDDS.WinForm
 			'ApplicationVersion
 			'
 			Me.ApplicationVersion.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-									Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+						Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me.ApplicationVersion.Location = New System.Drawing.Point(60, 56)
 			Me.ApplicationVersion.Name = "ApplicationVersion"
 			Me.ApplicationVersion.ReadOnly = True
@@ -224,8 +221,8 @@ Namespace kCura.EDDS.WinForm
 			'ApplicationArtifactsGroupBox
 			'
 			Me.ApplicationArtifactsGroupBox.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-									Or System.Windows.Forms.AnchorStyles.Left) _
-									Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+						Or System.Windows.Forms.AnchorStyles.Left) _
+						Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me.ApplicationArtifactsGroupBox.Controls.Add(Me.TreeView1)
 			Me.ApplicationArtifactsGroupBox.Location = New System.Drawing.Point(13, 221)
 			Me.ApplicationArtifactsGroupBox.Name = "ApplicationArtifactsGroupBox"
@@ -245,7 +242,7 @@ Namespace kCura.EDDS.WinForm
 			'GroupBox1
 			'
 			Me.GroupBox1.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-									Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+						Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me.GroupBox1.Controls.Add(Me.BrowseCasesButton)
 			Me.GroupBox1.Controls.Add(Me.CaseListTextBox)
 			Me.GroupBox1.Location = New System.Drawing.Point(15, 66)
@@ -267,7 +264,7 @@ Namespace kCura.EDDS.WinForm
 			'CaseListTextBox
 			'
 			Me.CaseListTextBox.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-									Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+						Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me.CaseListTextBox.BackColor = System.Drawing.SystemColors.ControlLightLight
 			Me.CaseListTextBox.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
 			Me.CaseListTextBox.ForeColor = System.Drawing.SystemColors.ControlDarkDark
@@ -375,13 +372,10 @@ Namespace kCura.EDDS.WinForm
 #Region " Friend Properties "
 
 		Friend Property Application() As kCura.EDDS.WinForm.Application
-			Get
-				Return _application
-			End Get
-			Set(ByVal Value As kCura.EDDS.WinForm.Application)
-				_application = Value
-			End Set
-		End Property
+			
+		Friend Property CookieContainer() As System.Net.CookieContainer
+
+		Friend Property Credentials() As System.Net.NetworkCredential
 
 		Friend Property CaseInfos() As Generic.List(Of Relativity.CaseInfo)
 			Get
@@ -395,24 +389,6 @@ Namespace kCura.EDDS.WinForm
 				Next
 				sb.Remove(sb.Length - 2, 2)
 				Me.CaseListTextBox.Text = sb.ToString
-			End Set
-		End Property
-
-		Friend Property CookieContainer() As System.Net.CookieContainer
-			Get
-				Return _cookieContainer
-			End Get
-			Set(ByVal Value As System.Net.CookieContainer)
-				_cookieContainer = Value
-			End Set
-		End Property
-
-		Friend Property Credentials() As System.Net.NetworkCredential
-			Get
-				Return _credentials
-			End Get
-			Set(ByVal Value As System.Net.NetworkCredential)
-				_credentials = Value
 			End Set
 		End Property
 
@@ -451,22 +427,23 @@ Namespace kCura.EDDS.WinForm
 			Dim objsNode = TreeView1.Nodes.Add("Object Types")
 			Dim boldfont As New Font(TreeView.DefaultFont, FontStyle.Bold)
 			objsNode.NodeFont = boldfont
-			For Each objlment As XElement In doc...<Object>
-				Dim objNode = objsNode.Nodes.Add(objlment.<Name>.Value)
-				PopulateChildren(objNode, "Fields", "Field", objlment)
-				PopulateChildren(objNode, "Layouts", "Layout", objlment)
-				PopulateChildren(objNode, "Tabs", "Tab", objlment)
-				PopulateChildren(objNode, "Views", "View", objlment)
+			For Each item As XElement In doc...<Object>
+				Dim objNode = objsNode.Nodes.Add(item.<Name>.Value)
+				PopulateChildren(objNode, "Fields", "Field", item)
+				PopulateChildren(objNode, "Layouts", "Layout", item)
+				PopulateChildren(objNode, "Tabs", "Tab", item)
+				PopulateChildren(objNode, "Views", "View", item)
+				PopulateChildren(objNode, "ObjectRules", "ObjectRule", item)
 			Next
 			Dim externalTabsNode = TreeView1.Nodes.Add("External Tabs")
 			externalTabsNode.NodeFont = boldfont
-			For Each tablment As XElement In doc...<ExternalTab>
-				externalTabsNode.Nodes.Add(tablment.<Name>.Value)
+			For Each item As XElement In doc...<ExternalTab>
+				externalTabsNode.Nodes.Add(item.<Name>.Value)
 			Next
 			Dim scriptsNode = TreeView1.Nodes.Add("Scripts")
 			scriptsNode.NodeFont = boldfont
-			For Each scriptElment As XElement In doc...<ScriptElement>
-				scriptsNode.Nodes.Add(scriptElment.<Name>.Value)
+			For Each item As XElement In doc...<ScriptElement>
+				scriptsNode.Nodes.Add(item.<Name>.Value)
 			Next
 			TreeView1.EndUpdate()
 		End Sub
@@ -478,7 +455,9 @@ Namespace kCura.EDDS.WinForm
 			For Each elmnt As XElement In objlment.Descendants(childName)
 				Dim grandChild As TreeNode = Nothing
 				If String.IsNullOrEmpty(elmnt.<Name>.Value) Then
-					grandChild = childNodes.Nodes.Add(elmnt.<DisplayName>.Value)
+					If Not String.IsNullOrEmpty(elmnt.<DisplayName>.Value) Then
+						grandChild = childNodes.Nodes.Add(elmnt.<DisplayName>.Value)
+					End If
 				Else
 					grandChild = childNodes.Nodes.Add(elmnt.<Name>.Value)
 				End If
@@ -497,8 +476,9 @@ Namespace kCura.EDDS.WinForm
 				document.Load(filePath)
 				Return document
 			Catch ex As Exception
-				Return Nothing
 			End Try
+
+			Return Nothing
 		End Function
 
 #End Region
