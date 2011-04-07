@@ -274,7 +274,7 @@ Namespace kCura.EDDS.WinForm
 			Me.EnhancedMenuProvider.SetImageIndex(Me._toolsMenuSettingsItem, -1)
 			Me._toolsMenuSettingsItem.Index = 0
 			Me._toolsMenuSettingsItem.OwnerDraw = True
-			Me._toolsMenuSettingsItem.Text = "Settings"
+			Me._toolsMenuSettingsItem.Text = "Settings..."
 			'
 			'_optionsMenuCheckConnectivityItem
 			'
@@ -297,7 +297,7 @@ Namespace kCura.EDDS.WinForm
 			Me.EnhancedMenuProvider.SetImageIndex(Me._aboutMenuItem, -1)
 			Me._aboutMenuItem.Index = 0
 			Me._aboutMenuItem.OwnerDraw = True
-			Me._aboutMenuItem.Text = "About"
+			Me._aboutMenuItem.Text = "About..."
 			'
 			'StatusBar
 			'
