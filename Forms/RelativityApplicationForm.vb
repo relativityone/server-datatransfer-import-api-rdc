@@ -434,7 +434,7 @@ Namespace kCura.EDDS.WinForm
 				PopulateChildren(objNode, "Tabs", "Tab", item)
 				PopulateChildren(objNode, "Views", "View", item)
 				PopulateChildren(objNode, "ObjectRules", "ObjectRule", item)
-				PopulateChildren(objNode, "EventHandlers", "EventHandler", item)
+				PopulateChildren(objNode, "EventHandlers", "ActiveSync", item)
 			Next
 			Dim externalTabsNode = TreeView1.Nodes.Add("External Tabs")
 			externalTabsNode.NodeFont = boldfont
