@@ -1,10 +1,8 @@
 Namespace kCura.Windows.Process
 	Public Class ProcessPool
-
-		'Private _threadCollection As ArrayList
 		Private _threadCollection As Hashtable
 
-		Public Function StartProcess(ByVal process As ProcessBase) As System.Guid
+		Public Function StartProcess(ByVal process As IRunable) As System.Guid
 			Dim key As Guid = Guid.NewGuid
 			Dim thread As System.Threading.Thread
 			process.ProcessID = key
@@ -33,7 +31,5 @@ Namespace kCura.Windows.Process
 		Public Sub New()
 			_threadCollection = New Hashtable
 		End Sub
-
 	End Class
-
 End Namespace

@@ -16,11 +16,4 @@ Namespace kCura.Windows.Process
 			Me.Message = messageValue
 		End Sub
 	End Class
-
-	Public Enum ProcessEventTypeEnum
-		Status = 0
-		Warning = 1
-		[Error] = 2
-	End Enum
-
 End Namespace

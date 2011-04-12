@@ -1,14 +1,14 @@
-Namespace kCura.Windows.Process
-	Public MustInherit Class ProcessBase
+Namespace kCura.Windows.Process.Generic
+	Public MustInherit Class ProcessBase(Of T)
 		Implements IRunable
 
-		Private _processObserver As ProcessObserver
+		Private _processObserver As ProcessObserver(Of T)
 		Private _processController As Controller
 		Private _processID As Guid
 
 		Protected MustOverride Sub Execute()
 
-		Public ReadOnly Property ProcessObserver() As kCura.Windows.Process.ProcessObserver
+		Public ReadOnly Property ProcessObserver() As kCura.Windows.Process.Generic.ProcessObserver(Of T)
 			Get
 				Return _processObserver
 			End Get
@@ -20,8 +20,8 @@ Namespace kCura.Windows.Process
 			End Get
 		End Property
 
-		Protected Sub New()
-			_processObserver = New kCura.Windows.Process.ProcessObserver
+		Protected Sub New(ByVal getMessage As Func(Of T, String), ByVal getRecordInfo As Func(Of T, String))
+			_processObserver = New kCura.Windows.Process.Generic.ProcessObserver(Of T)(getMessage, getRecordInfo)
 			_processController = New kCura.Windows.Process.Controller
 		End Sub
 
