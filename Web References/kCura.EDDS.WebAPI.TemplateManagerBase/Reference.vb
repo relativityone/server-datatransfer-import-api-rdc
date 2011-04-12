@@ -493,6 +493,16 @@ Namespace kCura.EDDS.WebAPI.TemplateManagerBase
         
         Private typeField As ApplicationArtifactType
         
+        Private parentArtifactField As ApplicationArtifact
+        
+        Private conflictArtifactField As ApplicationArtifact
+        
+        Private statusField As StatusCode
+        
+        Private statusMessageField As String
+        
+        Private statusDetailsField As String
+        
         '''<remarks/>
         Public Property ArtifactId() As Integer
             Get
@@ -530,6 +540,56 @@ Namespace kCura.EDDS.WebAPI.TemplateManagerBase
             End Get
             Set
                 Me.typeField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property ParentArtifact() As ApplicationArtifact
+            Get
+                Return Me.parentArtifactField
+            End Get
+            Set
+                Me.parentArtifactField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property ConflictArtifact() As ApplicationArtifact
+            Get
+                Return Me.conflictArtifactField
+            End Get
+            Set
+                Me.conflictArtifactField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property Status() As StatusCode
+            Get
+                Return Me.statusField
+            End Get
+            Set
+                Me.statusField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property StatusMessage() As String
+            Get
+                Return Me.statusMessageField
+            End Get
+            Set
+                Me.statusMessageField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property StatusDetails() As String
+            Get
+                Return Me.statusDetailsField
+            End Get
+            Set
+                Me.statusDetailsField = value
             End Set
         End Property
     End Class
@@ -574,6 +634,34 @@ Namespace kCura.EDDS.WebAPI.TemplateManagerBase
     '''<remarks/>
     <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.1"),  _
      System.SerializableAttribute(),  _
+     System.Xml.Serialization.XmlTypeAttribute([Namespace]:="http://www.kCura.com/EDDS/TemplateManager")>  _
+    Public Enum StatusCode
+        
+        '''<remarks/>
+        UnknownError
+        
+        '''<remarks/>
+        Created
+        
+        '''<remarks/>
+        Updated
+        
+        '''<remarks/>
+        NameConflict
+        
+        '''<remarks/>
+        FriendlyNameConflict
+        
+        '''<remarks/>
+        SharedByLockedApp
+        
+        '''<remarks/>
+        MultipleFileField
+    End Enum
+    
+    '''<remarks/>
+    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.1"),  _
+     System.SerializableAttribute(),  _
      System.Diagnostics.DebuggerStepThroughAttribute(),  _
      System.ComponentModel.DesignerCategoryAttribute("code"),  _
      System.Xml.Serialization.XmlTypeAttribute([Namespace]:="http://www.kCura.com/EDDS/TemplateManager")>  _
@@ -581,11 +669,15 @@ Namespace kCura.EDDS.WebAPI.TemplateManagerBase
         
         Private exceptionMessageField As String
         
+        Private detailsField As String
+        
         Private newApplicationArtifactsField() As ApplicationArtifact
         
         Private successField As Boolean
         
         Private updatedApplicationArtifactsField() As ApplicationArtifact
+        
+        Private statusApplicationArtifactsField() As ApplicationArtifact
         
         '''<remarks/>
         Public Property ExceptionMessage() As String
@@ -594,6 +686,16 @@ Namespace kCura.EDDS.WebAPI.TemplateManagerBase
             End Get
             Set
                 Me.exceptionMessageField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property Details() As String
+            Get
+                Return Me.detailsField
+            End Get
+            Set
+                Me.detailsField = value
             End Set
         End Property
         
@@ -624,6 +726,16 @@ Namespace kCura.EDDS.WebAPI.TemplateManagerBase
             End Get
             Set
                 Me.updatedApplicationArtifactsField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property StatusApplicationArtifacts() As ApplicationArtifact()
+            Get
+                Return Me.statusApplicationArtifactsField
+            End Get
+            Set
+                Me.statusApplicationArtifactsField = value
             End Set
         End Property
     End Class

@@ -1,11 +1,12 @@
+Imports kCura.EDDS.WebAPI.TemplateManagerBase
 Namespace kCura.WinEDDS
 	Public Class ApplicationDeploymentProcess
-		Inherits kCura.Windows.Process.ProcessBase
+		Inherits kCura.Windows.Process.Generic.ProcessBase(Of ApplicationInstallationResult)
 
 #Region " Constructors "
 
 		Public Sub New(ByVal application As Xml.XmlDocument, ByVal credential As Net.NetworkCredential, ByVal cookieContainer As Net.CookieContainer, ByVal caseInfos As Generic.IEnumerable(Of Relativity.CaseInfo))
-			MyBase.New()
+			MyBase.New(Function(res As ApplicationInstallationResult) res.ExceptionMessage, Function(res As ApplicationInstallationResult) res.Details)
 			_application = application
 			_credential = credential
 			_cookieContainer = cookieContainer
@@ -19,29 +20,14 @@ Namespace kCura.WinEDDS
 		Protected Overrides Sub Execute()
 			For Each caseInfo As Relativity.CaseInfo In _caseInfos
 				Try
-					Dim installationParameters As New kCura.EDDS.WebAPI.TemplateManagerBase.ApplicationInstallationParameters
+					Dim installationParameters As New ApplicationInstallationParameters
 					installationParameters.CaseId = caseInfo.ArtifactID
 
 					Dim applicationDeploymentSystem As New WinEDDS.Service.TemplateManager(_credential, Me._cookieContainer)
-					Dim installationResult As kCura.EDDS.WebAPI.TemplateManagerBase.ApplicationInstallationResult = applicationDeploymentSystem.InstallTemplate(_application, installationParameters)
+					Dim installationResult As ApplicationInstallationResult = applicationDeploymentSystem.InstallTemplate(_application, installationParameters)
 
-					If installationResult.Success Then
-						Dim installedArtifacts As New System.Text.StringBuilder
-						For Each applicationArtifact As kCura.EDDS.WebAPI.TemplateManagerBase.ApplicationArtifact In installationResult.NewApplicationArtifacts
-							installedArtifacts.AppendFormat(System.Globalization.CultureInfo.CurrentCulture, "Created {0}: {1} (ID = {2}){3}", applicationArtifact.Type, applicationArtifact.Name, applicationArtifact.ArtifactId, System.Environment.NewLine)
-						Next
-						For Each applicationArtifact As kCura.EDDS.WebAPI.TemplateManagerBase.ApplicationArtifact In installationResult.UpdatedApplicationArtifacts
-							installedArtifacts.AppendFormat(System.Globalization.CultureInfo.CurrentCulture, "Updated {0}: {1} (ID = {2}){3}", applicationArtifact.Type, applicationArtifact.Name, applicationArtifact.ArtifactId, System.Environment.NewLine)
-						Next
-						WriteStatus(String.Format(System.Globalization.CultureInfo.CurrentCulture, "Installation successful.{0}{0}{1}", System.Environment.NewLine, installedArtifacts))
-					Else
-						If String.IsNullOrEmpty(installationResult.ExceptionMessage) Then
-							WriteStatus(String.Format(System.Globalization.CultureInfo.CurrentCulture, "Error installing Application"))
-						Else
-							WriteStatus(String.Format(System.Globalization.CultureInfo.CurrentCulture, installationResult.ExceptionMessage))
-						End If
-						Exit For
-					End If
+					Me.ProcessObserver.RaiseStatusEvent(installationResult)
+
 				Catch ex As System.Web.Services.Protocols.SoapException
 					Try
 						Dim MrSoapy As System.Web.Services.Protocols.SoapException = CType(ex, System.Web.Services.Protocols.SoapException)
@@ -71,12 +57,12 @@ Namespace kCura.WinEDDS
 
 #Region " Private Methods "
 
-		Private Sub WriteStatus(ByVal message As String)
-			Me.ProcessObserver.RaiseStatusEvent("", message)
-		End Sub
 
-		Private Sub WriteError(ByVal message As String)
-			Me.ProcessObserver.RaiseErrorEvent("", message)
+		Private Sub WriteError(ByVal message As String)	'TODO: KFM
+			Dim res As New ApplicationInstallationResult()
+			res.ExceptionMessage = message
+			res.Details = ""
+			Me.ProcessObserver.RaiseErrorEvent(res)
 		End Sub
 
 #End Region

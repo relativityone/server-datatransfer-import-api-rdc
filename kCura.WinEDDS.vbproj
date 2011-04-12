@@ -421,6 +421,7 @@
     <Compile Include="Process\ApplicationDeploymentProcess.vb">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Process\ApplicationInstallProcessEvent.vb" />
     <Compile Include="Process\ConnectionDetailsProcess.vb">
       <SubType>Code</SubType>
     </Compile>
