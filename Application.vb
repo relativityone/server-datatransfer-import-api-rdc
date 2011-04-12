@@ -1120,9 +1120,10 @@ Namespace kCura.EDDS.WinForm
 			CursorDefault()
 		End Function
 
-		Public Function StartProcess(ByVal process As kCura.Windows.Process.ProcessBase) As System.Guid
+		Public Function StartProcess(ByVal process As Windows.Process.IRunable) As System.Guid
 			Return _processPool.StartProcess(process)
 		End Function
+
 		Public Function ImportDirectory(ByVal importFileDirectorySettings As ImportFileDirectorySettings) As Guid
 			CursorWait()
 			If Not Me.IsConnected(importFileDirectorySettings.CaseInfo.ArtifactID, ArtifactTypeID) Then
@@ -1293,11 +1294,12 @@ Namespace kCura.EDDS.WinForm
 				Exit Sub
 			End If
 			Dim applicationDeploymentProcess As New kCura.WinEDDS.ApplicationDeploymentProcess(application, Me.Credential, Me.CookieContainer, caseInfos)
-			Dim form As New TextDisplayForm
-			form.ProcessObserver = applicationDeploymentProcess.ProcessObserver
-			form.Size = New System.Drawing.Size(398, 378)
-			form.Text = "Relativity Desktop Client | Application Deployment"
-			form.Show()
+			'todo: kfm
+			'Dim form As New TextDisplayForm
+			'form.ProcessObserver = applicationDeploymentProcess.ProcessObserver
+			'form.Size = New System.Drawing.Size(398, 378)
+			'form.Text = "Relativity Desktop Client | Application Deployment"
+			'form.Show()
 			_processPool.StartProcess(applicationDeploymentProcess)
 			CursorDefault()
 		End Sub

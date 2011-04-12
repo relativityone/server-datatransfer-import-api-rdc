@@ -1,6 +1,9 @@
+Imports kCura.EDDS.WebAPI.TemplateManagerBase
+
 Namespace kCura.EDDS.WinForm
 	Public Class CommandLineProcessRunner
 		Private WithEvents _observer As kCura.Windows.Process.ProcessObserver
+		Private WithEvents _gobserver As kCura.Windows.Process.Generic.ProcessObserver(Of ApplicationInstallationResult)
 		Private WithEvents _controller As kCura.Windows.Process.Controller
 		Private _lastUpdated As Long = 0
 		Private _hasReceivedFatalError As Boolean = False
@@ -17,13 +20,55 @@ Namespace kCura.EDDS.WinForm
 		End Enum
 
 		Public Sub New(ByVal observer As kCura.Windows.Process.ProcessObserver, ByVal controller As kCura.Windows.Process.Controller, ByVal exportErrorFileLocation As String, ByVal exportErrorReportLocation As String)
+			If observer Is Nothing Then
+				Throw New ArgumentNullException("observer")
+			End If
+
+			If controller Is Nothing Then
+				Throw New ArgumentNullException("controller")
+			End If
+
 			_observer = observer
+			AddHandler _observer.OnProcessEvent, AddressOf _observer_OnProcessEvent
+
 			_controller = controller
+
 			If Not exportErrorFileLocation Is Nothing Then _exportErrorFileLocation = exportErrorFileLocation
 			If Not exportErrorReportLocation Is Nothing Then _exportErrorReportLocation = exportErrorReportLocation
 		End Sub
 
-		Private Sub _observer_OnProcessEvent(ByVal evt As kCura.Windows.Process.ProcessEvent) Handles _observer.OnProcessEvent
+		Public Sub New(ByVal observer As kCura.Windows.Process.Generic.ProcessObserver(Of ApplicationInstallationResult), ByVal controller As kCura.Windows.Process.Controller, ByVal exportErrorFileLocation As String, ByVal exportErrorReportLocation As String)
+			If observer Is Nothing Then
+				Throw New ArgumentNullException("observer")
+			End If
+
+			If controller Is Nothing Then
+				Throw New ArgumentNullException("controller")
+			End If
+
+			_gobserver = observer
+			AddHandler _gobserver.OnProcessEvent, AddressOf _gobserver_OnProcessEvent
+
+			_controller = controller
+
+			If Not exportErrorFileLocation Is Nothing Then _exportErrorFileLocation = exportErrorFileLocation
+			If Not exportErrorReportLocation Is Nothing Then _exportErrorReportLocation = exportErrorReportLocation
+		End Sub
+
+		Private Sub _observer_OnProcessEvent(ByVal evt As kCura.Windows.Process.ProcessEvent)
+			Select Case evt.Type
+				Case kCura.Windows.Process.ProcessEventTypeEnum.Status
+					WriteLine(evt.Message + " " + evt.RecordInfo, ParsableLineType.Status)
+				Case kCura.Windows.Process.ProcessEventTypeEnum.Error
+					WriteLine(evt.Message, ParsableLineType.LineError)
+					_hasReceivedLineError = True
+				Case kCura.Windows.Process.ProcessEventTypeEnum.Warning
+					WriteLine(evt.Message, ParsableLineType.Warning)
+					_hasReceivedLineWarning = True
+			End Select
+		End Sub
+
+		Private Sub _gobserver_OnProcessEvent(ByVal evt As kCura.Windows.Process.Generic.ProcessEvent(Of ApplicationInstallationResult))
 			Select Case evt.Type
 				Case kCura.Windows.Process.ProcessEventTypeEnum.Status
 					WriteLine(evt.Message + " " + evt.RecordInfo, ParsableLineType.Status)
