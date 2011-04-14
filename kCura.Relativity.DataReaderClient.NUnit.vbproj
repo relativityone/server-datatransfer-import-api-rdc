@@ -226,10 +226,6 @@
       <Project>{94940707-AFFE-47EB-BD70-5ADE8F7C8A36}</Project>
       <Name>kCura.EDDS.Import</Name>
     </ProjectReference>
-    <ProjectReference Include="..\kCura.EDDS.Types\kCura.EDDS.Types.vbproj">
-      <Project>{6E14C37A-96F5-4488-9E2B-2C1A21C4D140}</Project>
-      <Name>kCura.EDDS.Types</Name>
-    </ProjectReference>
     <ProjectReference Include="..\kCura.Relativity.DataReader\kCura.Relativity.DataReaderClient.vbproj">
       <Project>{94BD2810-9FD8-4EEE-AA2B-590E4BCD4CC0}</Project>
       <Name>kCura.Relativity.DataReaderClient</Name>
