@@ -10,11 +10,12 @@ Namespace kCura.Windows.Process.Generic
 
 		End Sub
 
-		Public Sub New(ByVal typeValue As ProcessEventTypeEnum, ByVal result As T, ByVal getMessage As Func(Of T, String), ByVal getRecordInfo As Func(Of T, String))
+		Public Sub New(ByVal typeValue As ProcessEventTypeEnum, ByVal res As T, ByVal getMessage As Func(Of T, String), ByVal getRecordInfo As Func(Of T, String))
 			Me.DateTime = System.DateTime.Now
 			Me.Type = typeValue
-			Me.RecordInfo = getRecordInfo(result)
-			Me.Message = getMessage(result)
+			Result = res
+			Me.RecordInfo = getRecordInfo(Result)
+			Me.Message = getMessage(Result)
 		End Sub
 	End Class
 End Namespace
