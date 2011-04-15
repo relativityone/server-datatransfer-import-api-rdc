@@ -6,7 +6,7 @@ Namespace kCura.WinEDDS
 #Region " Constructors "
 
 		Public Sub New(ByVal application As Xml.XmlDocument, ByVal credential As Net.NetworkCredential, ByVal cookieContainer As Net.CookieContainer, ByVal caseInfos As Generic.IEnumerable(Of Relativity.CaseInfo))
-			MyBase.New(Function(res As ApplicationInstallationResult) res.ExceptionMessage, Function(res As ApplicationInstallationResult) res.Details)
+			MyBase.New(Function(res As ApplicationInstallationResult) res.Message, Function(res As ApplicationInstallationResult) res.Details)
 			_application = application
 			_credential = credential
 			_cookieContainer = cookieContainer
@@ -60,7 +60,7 @@ Namespace kCura.WinEDDS
 
 		Private Sub WriteError(ByVal message As String)	'TODO: KFM
 			Dim res As New ApplicationInstallationResult()
-			res.ExceptionMessage = message
+			res.Message = message
 			res.Details = ""
 			Me.ProcessObserver.RaiseErrorEvent(res)
 		End Sub

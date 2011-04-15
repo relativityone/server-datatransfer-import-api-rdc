@@ -27,7 +27,8 @@ Namespace kCura.EDDS.WebAPI.TemplateManagerBase
     <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.0.30319.1"),  _
      System.Diagnostics.DebuggerStepThroughAttribute(),  _
      System.ComponentModel.DesignerCategoryAttribute("code"),  _
-     System.Web.Services.WebServiceBindingAttribute(Name:="TemplateManagerSoap", [Namespace]:="http://www.kCura.com/EDDS/TemplateManager")>  _
+     System.Web.Services.WebServiceBindingAttribute(Name:="TemplateManagerSoap", [Namespace]:="http://www.kCura.com/EDDS/TemplateManager"),  _
+     System.Xml.Serialization.XmlIncludeAttribute(GetType(ApplicationBase))>  _
     Partial Public Class TemplateManager
         Inherits System.Web.Services.Protocols.SoapHttpClientProtocol
         
@@ -478,12 +479,84 @@ Namespace kCura.EDDS.WebAPI.TemplateManagerBase
     End Class
     
     '''<remarks/>
+    <System.Xml.Serialization.XmlIncludeAttribute(GetType(Application)),  _
+     System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.1"),  _
+     System.SerializableAttribute(),  _
+     System.Diagnostics.DebuggerStepThroughAttribute(),  _
+     System.ComponentModel.DesignerCategoryAttribute("code"),  _
+     System.Xml.Serialization.XmlTypeAttribute([Namespace]:="http://www.kCura.com/EDDS/TemplateManager")>  _
+    Partial Public Class ApplicationBase
+        
+        Private guidField As System.Guid
+        
+        Private inDevelopmentField As Boolean
+        
+        Private nameField As String
+        
+        Private versionField As String
+        
+        '''<remarks/>
+        Public Property Guid() As System.Guid
+            Get
+                Return Me.guidField
+            End Get
+            Set
+                Me.guidField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property InDevelopment() As Boolean
+            Get
+                Return Me.inDevelopmentField
+            End Get
+            Set
+                Me.inDevelopmentField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property Name() As String
+            Get
+                Return Me.nameField
+            End Get
+            Set
+                Me.nameField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property Version() As String
+            Get
+                Return Me.versionField
+            End Get
+            Set
+                Me.versionField = value
+            End Set
+        End Property
+    End Class
+    
+    '''<remarks/>
+    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.1"),  _
+     System.SerializableAttribute(),  _
+     System.Diagnostics.DebuggerStepThroughAttribute(),  _
+     System.ComponentModel.DesignerCategoryAttribute("code"),  _
+     System.Xml.Serialization.XmlTypeAttribute([Namespace]:="http://www.kCura.com/EDDS/TemplateManager")>  _
+    Partial Public Class Application
+        Inherits ApplicationBase
+    End Class
+    
+    '''<remarks/>
     <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.1"),  _
      System.SerializableAttribute(),  _
      System.Diagnostics.DebuggerStepThroughAttribute(),  _
      System.ComponentModel.DesignerCategoryAttribute("code"),  _
      System.Xml.Serialization.XmlTypeAttribute([Namespace]:="http://www.kCura.com/EDDS/TemplateManager")>  _
     Partial Public Class ApplicationArtifact
+        
+        Private workspaceIDField As Integer
+        
+        Private applicationsField() As Application
         
         Private artifactIdField As Integer
         
@@ -502,6 +575,26 @@ Namespace kCura.EDDS.WebAPI.TemplateManagerBase
         Private statusMessageField As String
         
         Private statusDetailsField As String
+        
+        '''<remarks/>
+        Public Property WorkspaceID() As Integer
+            Get
+                Return Me.workspaceIDField
+            End Get
+            Set
+                Me.workspaceIDField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property Applications() As Application()
+            Get
+                Return Me.applicationsField
+            End Get
+            Set
+                Me.applicationsField = value
+            End Set
+        End Property
         
         '''<remarks/>
         Public Property ArtifactId() As Integer
@@ -667,7 +760,7 @@ Namespace kCura.EDDS.WebAPI.TemplateManagerBase
      System.Xml.Serialization.XmlTypeAttribute([Namespace]:="http://www.kCura.com/EDDS/TemplateManager")>  _
     Partial Public Class ApplicationInstallationResult
         
-        Private exceptionMessageField As String
+        Private messageField As String
         
         Private detailsField As String
         
@@ -680,12 +773,12 @@ Namespace kCura.EDDS.WebAPI.TemplateManagerBase
         Private statusApplicationArtifactsField() As ApplicationArtifact
         
         '''<remarks/>
-        Public Property ExceptionMessage() As String
+        Public Property Message() As String
             Get
-                Return Me.exceptionMessageField
+                Return Me.messageField
             End Get
             Set
-                Me.exceptionMessageField = value
+                Me.messageField = value
             End Set
         End Property
         
