@@ -47,7 +47,6 @@ Namespace kCura.EDDS.WinForm
 		Private _documentRepositoryList As String()
 		Private _artifactTypeID As Int32
 		Private _totalFolders As New System.Collections.Specialized.HybridDictionary
-		Private _applicationOutputFormLauncher As ApplicationOutputFormLauncher
 #End Region
 
 #Region "Properties"

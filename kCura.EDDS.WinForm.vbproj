@@ -287,7 +287,6 @@
     <Compile Include="..\..\Version\AssemblyInfo.vb">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ApplicationOutputFormLauncher.vb" />
     <Compile Include="CommandLineProcessRunner.vb">
       <SubType>Code</SubType>
     </Compile>
