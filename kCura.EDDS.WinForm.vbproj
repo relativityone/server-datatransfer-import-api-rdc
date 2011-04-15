@@ -208,9 +208,11 @@
     <Reference Include="System.Drawing">
       <Name>System.Drawing</Name>
     </Reference>
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Runtime.Serialization.Formatters.Soap">
       <Name>system.runtime.serialization.formatters.soap</Name>
     </Reference>
+    <Reference Include="System.ServiceModel" />
     <Reference Include="System.Web.Services">
       <Name>System.Web.Services</Name>
     </Reference>
@@ -285,6 +287,7 @@
     <Compile Include="..\..\Version\AssemblyInfo.vb">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="ApplicationOutputFormLauncher.vb" />
     <Compile Include="CommandLineProcessRunner.vb">
       <SubType>Code</SubType>
     </Compile>
@@ -476,6 +479,9 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="My Project\" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.VisualBasic.targets" />
   <PropertyGroup>

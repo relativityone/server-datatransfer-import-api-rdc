@@ -47,6 +47,7 @@ Namespace kCura.EDDS.WinForm
 		Private _documentRepositoryList As String()
 		Private _artifactTypeID As Int32
 		Private _totalFolders As New System.Collections.Specialized.HybridDictionary
+		Private _applicationOutputFormLauncher As ApplicationOutputFormLauncher
 #End Region
 
 #Region "Properties"
@@ -1295,11 +1296,9 @@ Namespace kCura.EDDS.WinForm
 			End If
 			Dim applicationDeploymentProcess As New kCura.WinEDDS.ApplicationDeploymentProcess(application, Me.Credential, Me.CookieContainer, caseInfos)
 			'todo: kfm
-			'Dim form As New TextDisplayForm
-			'form.ProcessObserver = applicationDeploymentProcess.ProcessObserver
-			'form.Size = New System.Drawing.Size(398, 378)
-			'form.Text = "Relativity Desktop Client | Application Deployment"
-			'form.Show()
+			Dim form As New ApplicationOutputForm()
+			form.observer = applicationDeploymentProcess.ProcessObserver
+			form.Show()
 			_processPool.StartProcess(applicationDeploymentProcess)
 			CursorDefault()
 		End Sub
