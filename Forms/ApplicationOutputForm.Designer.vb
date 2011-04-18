@@ -22,10 +22,11 @@ Partial Class ApplicationOutputForm
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
-		Dim DataGridViewCellStyle1 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-		Dim DataGridViewCellStyle2 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+		Dim DataGridViewCellStyle3 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+		Dim DataGridViewCellStyle4 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
 		Me.Label1 = New System.Windows.Forms.Label()
 		Me.ArtifactStatusTable = New System.Windows.Forms.DataGridView()
+		Me.InformationLabel = New System.Windows.Forms.LinkLabel()
 		CType(Me.ArtifactStatusTable, System.ComponentModel.ISupportInitialize).BeginInit()
 		Me.SuspendLayout()
 		'
@@ -42,26 +43,39 @@ Partial Class ApplicationOutputForm
 		'ArtifactStatusTable
 		'
 		Me.ArtifactStatusTable.AllowUserToAddRows = False
-		DataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.[True]
-		Me.ArtifactStatusTable.AlternatingRowsDefaultCellStyle = DataGridViewCellStyle1
-		Me.ArtifactStatusTable.Anchor = CType(((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left) _
+		DataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.[True]
+		Me.ArtifactStatusTable.AlternatingRowsDefaultCellStyle = DataGridViewCellStyle3
+		Me.ArtifactStatusTable.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
+						Or System.Windows.Forms.AnchorStyles.Left) _
 						Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 		Me.ArtifactStatusTable.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.DisplayedCells
 		Me.ArtifactStatusTable.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
-		Me.ArtifactStatusTable.Location = New System.Drawing.Point(12, 132)
+		Me.ArtifactStatusTable.Location = New System.Drawing.Point(12, 179)
 		Me.ArtifactStatusTable.Name = "ArtifactStatusTable"
 		Me.ArtifactStatusTable.RowHeadersWidth = 75
-		DataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.[True]
-		Me.ArtifactStatusTable.RowsDefaultCellStyle = DataGridViewCellStyle2
+		DataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.[True]
+		Me.ArtifactStatusTable.RowsDefaultCellStyle = DataGridViewCellStyle4
 		Me.ArtifactStatusTable.RowTemplate.Height = 30
-		Me.ArtifactStatusTable.Size = New System.Drawing.Size(841, 325)
+		Me.ArtifactStatusTable.Size = New System.Drawing.Size(791, 344)
 		Me.ArtifactStatusTable.TabIndex = 1
+		'
+		'InformationLabel
+		'
+		Me.InformationLabel.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
+						Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+		Me.InformationLabel.LinkArea = New System.Windows.Forms.LinkArea(0, 0)
+		Me.InformationLabel.Location = New System.Drawing.Point(9, 38)
+		Me.InformationLabel.Name = "InformationLabel"
+		Me.InformationLabel.Size = New System.Drawing.Size(792, 129)
+		Me.InformationLabel.TabIndex = 2
+		Me.InformationLabel.Text = "Importing..."
 		'
 		'ApplicationOutputForm
 		'
 		Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
 		Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-		Me.ClientSize = New System.Drawing.Size(863, 505)
+		Me.ClientSize = New System.Drawing.Size(813, 571)
+		Me.Controls.Add(Me.InformationLabel)
 		Me.Controls.Add(Me.ArtifactStatusTable)
 		Me.Controls.Add(Me.Label1)
 		Me.Name = "ApplicationOutputForm"
@@ -73,4 +87,5 @@ Partial Class ApplicationOutputForm
 	End Sub
 	Friend WithEvents Label1 As System.Windows.Forms.Label
 	Friend WithEvents ArtifactStatusTable As System.Windows.Forms.DataGridView
+	Friend WithEvents InformationLabel As System.Windows.Forms.LinkLabel
 End Class
