@@ -58,7 +58,7 @@ Public Class ApplicationOutputForm
 			artifactTable.Columns.Add("Conflict Artifact ID", GetType(Integer))
 			artifactTable.Columns.Add("Locked Applications", GetType(String))
 			artifactTable.Columns.Add("Error", GetType(String))
-			artifactTable.Columns.Add("Error Details", GetType(String))
+			artifactTable.Columns.Add("Details", GetType(String))
 
 
 			For Each art As TemplateManagerBase.ApplicationArtifact In result.StatusApplicationArtifacts
@@ -94,9 +94,7 @@ Public Class ApplicationOutputForm
 			Next
 
 			ArtifactStatusTable.DataSource = artifactTable
-
-			updateTableForMode()
-
+			ArtifactStatusTable.Columns(0).Width = 5
 			ColorTable()
 			End If
 
@@ -120,7 +118,7 @@ Public Class ApplicationOutputForm
 				ArtifactStatusTable.Columns("Conflict Artifact ID").Visible = True
 				ArtifactStatusTable.Columns("Locked Applications").Visible = True
 				ArtifactStatusTable.Columns("Error").Visible = True
-				ArtifactStatusTable.Columns("Error Details").Visible = False
+				ArtifactStatusTable.Columns("Details").Visible = False
 			Else
 				ArtifactStatusTable.Columns("Artifact Type").Visible = True
 				ArtifactStatusTable.Columns("Object Type").Visible = True
@@ -129,7 +127,7 @@ Public Class ApplicationOutputForm
 				ArtifactStatusTable.Columns("Conflict Artifact ID").Visible = False
 				ArtifactStatusTable.Columns("Locked Applications").Visible = False
 				ArtifactStatusTable.Columns("Error").Visible = False
-				ArtifactStatusTable.Columns("Error Details").Visible = True
+				ArtifactStatusTable.Columns("Details").Visible = True
 			End If
 		End If
 	End Sub
@@ -159,10 +157,6 @@ Public Class ApplicationOutputForm
 		End If
 	End Sub
 
-	Private Sub bleah(ByVal sender As Object, ByVal e As EventArgs)
-
-	End Sub
-
 	Private Sub ColorTable()
 		If result.Success Then
 			For Each row As DataGridViewRow In ArtifactStatusTable.Rows
@@ -170,9 +164,9 @@ Public Class ApplicationOutputForm
 			Next
 		Else
 			For Each row As DataGridViewRow In ArtifactStatusTable.Rows
-				row.Cells("Error").ToolTipText = row.Cells("Error Details").Value.ToString
+				row.Cells("Error").ToolTipText = row.Cells("Details").Value.ToString
 				row.Cells("Error").Style.BackColor = Color.LightPink
-				row.Cells("Error Details").Style.BackColor = Color.LightPink
+				'row.Cells("Details").Style.BackColor = Color.LightPink
 			Next
 		End If
 	End Sub
@@ -230,7 +224,9 @@ Public Class ApplicationOutputForm
 		Dim saveAsCsvDialog As New SaveFileDialog()
 		saveAsCsvDialog.Filter = "csv files (*.csv)|*.csv"
 		If result.Success Then
-			'saveAsCsvDialog.FileName = 
+			saveAsCsvDialog.FileName = "Application_Import_Log"
+		Else
+			saveAsCsvDialog.FileName = "Application_Import_Error_Log"
 		End If
 
 		If saveAsCsvDialog.ShowDialog() = DialogResult.OK Then
@@ -244,14 +240,7 @@ Public Class ApplicationOutputForm
 
 	End Sub
 
-	Private Sub advancedToggle_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles advancedToggle.Click
-		advancedMode = Not advancedMode
-		If advancedMode Then
-			advancedToggle.Text = "Normal View"
-		Else
-			advancedToggle.Text = "Advanced View"
-		End If
-		updateTableForMode()
+	Private Sub Button1_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles CloseButton.Click
+		Me.Close()
 	End Sub
-
 End Class
