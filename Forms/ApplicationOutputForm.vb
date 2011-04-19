@@ -111,24 +111,26 @@ Public Class ApplicationOutputForm
 	End Function
 
 	Private Sub updateTableForMode()
-		If advancedMode Then
-			ArtifactStatusTable.Columns("Artifact Type").Visible = True
-			ArtifactStatusTable.Columns("Object Type").Visible = True
-			ArtifactStatusTable.Columns("Name").Visible = True
-			ArtifactStatusTable.Columns("Conflict Artifact Name").Visible = True
-			ArtifactStatusTable.Columns("Conflict Artifact ID").Visible = True
-			ArtifactStatusTable.Columns("Locked Applications").Visible = True
-			ArtifactStatusTable.Columns("Error").Visible = True
-			ArtifactStatusTable.Columns("Error Details").Visible = False
-		Else
-			ArtifactStatusTable.Columns("Artifact Type").Visible = True
-			ArtifactStatusTable.Columns("Object Type").Visible = True
-			ArtifactStatusTable.Columns("Name").Visible = True
-			ArtifactStatusTable.Columns("Conflict Artifact Name").Visible = False
-			ArtifactStatusTable.Columns("Conflict Artifact ID").Visible = False
-			ArtifactStatusTable.Columns("Locked Applications").Visible = False
-			ArtifactStatusTable.Columns("Error").Visible = False
-			ArtifactStatusTable.Columns("Error Details").Visible = True
+		If Not result.Success Then
+			If advancedMode Then
+				ArtifactStatusTable.Columns("Artifact Type").Visible = True
+				ArtifactStatusTable.Columns("Object Type").Visible = True
+				ArtifactStatusTable.Columns("Name").Visible = True
+				ArtifactStatusTable.Columns("Conflict Artifact Name").Visible = True
+				ArtifactStatusTable.Columns("Conflict Artifact ID").Visible = True
+				ArtifactStatusTable.Columns("Locked Applications").Visible = True
+				ArtifactStatusTable.Columns("Error").Visible = True
+				ArtifactStatusTable.Columns("Error Details").Visible = False
+			Else
+				ArtifactStatusTable.Columns("Artifact Type").Visible = True
+				ArtifactStatusTable.Columns("Object Type").Visible = True
+				ArtifactStatusTable.Columns("Name").Visible = True
+				ArtifactStatusTable.Columns("Conflict Artifact Name").Visible = False
+				ArtifactStatusTable.Columns("Conflict Artifact ID").Visible = False
+				ArtifactStatusTable.Columns("Locked Applications").Visible = False
+				ArtifactStatusTable.Columns("Error").Visible = False
+				ArtifactStatusTable.Columns("Error Details").Visible = True
+			End If
 		End If
 	End Sub
 
