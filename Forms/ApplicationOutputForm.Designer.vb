@@ -33,6 +33,8 @@ Partial Class ApplicationOutputForm
 		Me.CopyErrorToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
 		Me.MainSplitContainer = New System.Windows.Forms.SplitContainer()
 		Me.Panel1 = New System.Windows.Forms.Panel()
+		Me.ExportButton = New System.Windows.Forms.Button()
+		Me.advancedToggle = New System.Windows.Forms.Button()
 		CType(Me.ArtifactStatusTable, System.ComponentModel.ISupportInitialize).BeginInit()
 		Me.CopyErrorMenu.SuspendLayout()
 		Me.MainSplitContainer.Panel1.SuspendLayout()
@@ -69,7 +71,7 @@ Partial Class ApplicationOutputForm
 		Me.ArtifactStatusTable.RowsDefaultCellStyle = DataGridViewCellStyle2
 		Me.ArtifactStatusTable.RowTemplate.Height = 30
 		Me.ArtifactStatusTable.RowTemplate.ReadOnly = True
-		Me.ArtifactStatusTable.Size = New System.Drawing.Size(805, 285)
+		Me.ArtifactStatusTable.Size = New System.Drawing.Size(763, 287)
 		Me.ArtifactStatusTable.TabIndex = 1
 		'
 		'InformationText
@@ -115,9 +117,11 @@ Partial Class ApplicationOutputForm
 		'
 		'MainSplitContainer.Panel2
 		'
+		Me.MainSplitContainer.Panel2.Controls.Add(Me.advancedToggle)
+		Me.MainSplitContainer.Panel2.Controls.Add(Me.ExportButton)
 		Me.MainSplitContainer.Panel2.Controls.Add(Me.ArtifactStatusTable)
-		Me.MainSplitContainer.Size = New System.Drawing.Size(811, 538)
-		Me.MainSplitContainer.SplitterDistance = 218
+		Me.MainSplitContainer.Size = New System.Drawing.Size(769, 541)
+		Me.MainSplitContainer.SplitterDistance = 219
 		Me.MainSplitContainer.TabIndex = 3
 		'
 		'Panel1
@@ -126,14 +130,34 @@ Partial Class ApplicationOutputForm
 		Me.Panel1.Controls.Add(Me.InformationText)
 		Me.Panel1.Location = New System.Drawing.Point(12, 3)
 		Me.Panel1.Name = "Panel1"
-		Me.Panel1.Size = New System.Drawing.Size(789, 204)
+		Me.Panel1.Size = New System.Drawing.Size(747, 206)
 		Me.Panel1.TabIndex = 3
+		'
+		'ExportButton
+		'
+		Me.ExportButton.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+		Me.ExportButton.Location = New System.Drawing.Point(663, 292)
+		Me.ExportButton.Name = "ExportButton"
+		Me.ExportButton.Size = New System.Drawing.Size(103, 23)
+		Me.ExportButton.TabIndex = 2
+		Me.ExportButton.Text = "Export To CSV"
+		Me.ExportButton.UseVisualStyleBackColor = True
+		'
+		'advancedToggle
+		'
+		Me.advancedToggle.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+		Me.advancedToggle.Location = New System.Drawing.Point(554, 292)
+		Me.advancedToggle.Name = "advancedToggle"
+		Me.advancedToggle.Size = New System.Drawing.Size(103, 22)
+		Me.advancedToggle.TabIndex = 3
+		Me.advancedToggle.Text = "Advanced View"
+		Me.advancedToggle.UseVisualStyleBackColor = True
 		'
 		'ApplicationOutputForm
 		'
 		Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
 		Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-		Me.ClientSize = New System.Drawing.Size(813, 571)
+		Me.ClientSize = New System.Drawing.Size(771, 574)
 		Me.Controls.Add(Me.MainSplitContainer)
 		Me.Controls.Add(Me.Label1)
 		Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
@@ -157,4 +181,6 @@ Partial Class ApplicationOutputForm
 	Friend WithEvents Panel1 As System.Windows.Forms.Panel
 	Friend WithEvents CopyErrorMenu As System.Windows.Forms.ContextMenuStrip
 	Friend WithEvents CopyErrorToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
+	Friend WithEvents ExportButton As System.Windows.Forms.Button
+	Friend WithEvents advancedToggle As System.Windows.Forms.Button
 End Class

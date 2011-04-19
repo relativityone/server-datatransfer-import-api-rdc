@@ -6,7 +6,9 @@ Public Class ApplicationOutputForm
 	Public WithEvents observer As kCura.Windows.Process.Generic.ProcessObserver(Of TemplateManagerBase.ApplicationInstallationResult)
 
 	Private result As TemplateManagerBase.ApplicationInstallationResult
+	Private artifactTable As DataTable
 	Private errorExpanded As Boolean
+	Private advancedMode As Boolean
 
 	Private Sub observer_OnProcessEvent(ByVal evt As kCura.Windows.Process.Generic.ProcessEvent(Of TemplateManagerBase.ApplicationInstallationResult)) Handles observer.OnProcessEvent
 		Me.Invoke(Sub() updateArtifactStatusTable(evt))
@@ -15,11 +17,12 @@ Public Class ApplicationOutputForm
 	Private Sub updateArtifactStatusTable(ByVal evt As kCura.Windows.Process.Generic.ProcessEvent(Of TemplateManagerBase.ApplicationInstallationResult))
 		result = evt.Result
 		errorExpanded = False
+		advancedMode = False
 
 		If result.Success Then
 			InformationText.Text = "Installation complete."
 
-			Dim artifactTable = New DataTable()
+			artifactTable = New DataTable()
 			artifactTable.Columns.Add("Name", GetType(String))
 			artifactTable.Columns.Add("Artifact Type", GetType(String))
 			artifactTable.Columns.Add("Artifact ID", GetType(Integer))
@@ -47,10 +50,10 @@ Public Class ApplicationOutputForm
 				InformationText.Links.Add(195, 1, "Details")
 			End If
 
-			Dim artifactTable = New DataTable()
-			artifactTable.Columns.Add("Name", GetType(String))
-			artifactTable.Columns.Add("Object Type", GetType(String))
+			artifactTable = New DataTable()
 			artifactTable.Columns.Add("Artifact Type", GetType(String))
+			artifactTable.Columns.Add("Object Type", GetType(String))
+			artifactTable.Columns.Add("Name", GetType(String))
 			artifactTable.Columns.Add("Conflict Artifact Name", GetType(String))
 			artifactTable.Columns.Add("Conflict Artifact ID", GetType(Integer))
 			artifactTable.Columns.Add("Locked Applications", GetType(String))
@@ -91,7 +94,8 @@ Public Class ApplicationOutputForm
 			Next
 
 			ArtifactStatusTable.DataSource = artifactTable
-			'ArtifactStatusTable.Columns("Error").Visible = False
+
+			updateTableForMode()
 
 			ColorTable()
 			End If
@@ -106,6 +110,28 @@ Public Class ApplicationOutputForm
 		End If
 	End Function
 
+	Private Sub updateTableForMode()
+		If advancedMode Then
+			ArtifactStatusTable.Columns("Artifact Type").Visible = True
+			ArtifactStatusTable.Columns("Object Type").Visible = True
+			ArtifactStatusTable.Columns("Name").Visible = True
+			ArtifactStatusTable.Columns("Conflict Artifact Name").Visible = True
+			ArtifactStatusTable.Columns("Conflict Artifact ID").Visible = True
+			ArtifactStatusTable.Columns("Locked Applications").Visible = True
+			ArtifactStatusTable.Columns("Error").Visible = True
+			ArtifactStatusTable.Columns("Error Details").Visible = False
+		Else
+			ArtifactStatusTable.Columns("Artifact Type").Visible = True
+			ArtifactStatusTable.Columns("Object Type").Visible = True
+			ArtifactStatusTable.Columns("Name").Visible = True
+			ArtifactStatusTable.Columns("Conflict Artifact Name").Visible = False
+			ArtifactStatusTable.Columns("Conflict Artifact ID").Visible = False
+			ArtifactStatusTable.Columns("Locked Applications").Visible = False
+			ArtifactStatusTable.Columns("Error").Visible = False
+			ArtifactStatusTable.Columns("Error Details").Visible = True
+		End If
+	End Sub
+
 	Private Sub ArtifactStatusTable_sort(ByVal sender As Object, ByVal e As System.EventArgs) Handles ArtifactStatusTable.Sorted
 		ColorTable()
 	End Sub
@@ -115,9 +141,6 @@ Public Class ApplicationOutputForm
 			If errorExpanded Then
 				InformationText.Text = "Installation failed. For detailed information on how to resolve errors, refer to the Relativity Applications documentation." & Environment.NewLine & Environment.NewLine & _
 				 "The following errors occurred while installing the application:" & Environment.NewLine & Environment.NewLine & " + " & result.Message
-				'InformationText.Links.Clear()
-				'InformationText.Links.Add(84, 37, "http://kcura.com/relativity/support/documentation/documentation-6.10")
-				'InformationText.Links.Add(195, 1, "Details")
 				errorExpanded = False
 				InformationText.Parent.Height = InformationText.Height
 				InformationText.Parent.Width = InformationText.Width
@@ -125,9 +148,6 @@ Public Class ApplicationOutputForm
 				InformationText.Text = "Installation failed. For detailed information on how to resolve errors, refer to the Relativity Applications documentation." & Environment.NewLine & Environment.NewLine & _
 				 "The following errors occurred while installing the application:" & Environment.NewLine & Environment.NewLine & " - " & result.Message & _
 				 Environment.NewLine & result.Details
-				'InformationText.Links.Clear()
-				'InformationText.Links.Add(84, 37, "http://kcura.com/relativity/support/documentation/documentation-6.10")
-				'InformationText.Links.Add(195, 1, "Details")
 				errorExpanded = True
 				InformationText.Parent.Height = InformationText.Height
 				InformationText.Parent.Width = InformationText.Width
@@ -180,5 +200,52 @@ Public Class ApplicationOutputForm
 		Else
 			Clipboard.SetText("Message:" & Environment.NewLine & result.Message)
 		End If
+	End Sub
+
+	Private Sub ExportButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ExportButton.Click
+		Dim csvBuilder As New System.Text.StringBuilder()
+		Dim prepend As String = """"
+		For Each col As DataColumn In artifactTable.Columns
+			csvBuilder.Append(prepend)
+			csvBuilder.Append(col.ColumnName.Replace("""", """"""))
+			csvBuilder.Append("""")
+			prepend = ","""
+		Next
+		csvBuilder.Append(Environment.NewLine)
+
+		For Each row As DataRow In artifactTable.Rows
+			prepend = """"
+			For Each cell In row.ItemArray
+				csvBuilder.Append(prepend)
+				csvBuilder.Append(cell.ToString.Replace("""", """"""))
+				csvBuilder.Append("""")
+				prepend = ","""
+			Next
+			csvBuilder.Append(Environment.NewLine)
+		Next
+
+		Dim myStream As IO.Stream
+		Dim saveAsCsvDialog As New SaveFileDialog()
+		saveAsCsvDialog.Filter = "csv files (*.csv)|*.csv"
+
+		If saveAsCsvDialog.ShowDialog() = DialogResult.OK Then
+			myStream = saveAsCsvDialog.OpenFile()
+			If (myStream IsNot Nothing) Then
+				Dim encoding As New System.Text.UTF8Encoding()
+				myStream.Write(encoding.GetBytes(csvBuilder.ToString), 0, encoding.GetByteCount(csvBuilder.ToString))
+				myStream.Close()
+			End If
+		End If
+
+	End Sub
+
+	Private Sub advancedToggle_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles advancedToggle.Click
+		advancedMode = Not advancedMode
+		If advancedMode Then
+			advancedToggle.Text = "Normal Mode"
+		Else
+			advancedToggle.Text = "Advanced Mode"
+		End If
+		updateTableForMode()
 	End Sub
 End Class
