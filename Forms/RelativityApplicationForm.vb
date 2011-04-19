@@ -10,6 +10,8 @@ Namespace kCura.EDDS.WinForm
 		Friend WithEvents MenuFile_Separator As System.Windows.Forms.MenuItem
 		Private _caseInfos As Generic.List(Of Relativity.CaseInfo)
 		Private _document As Xml.XmlDocument
+		Friend WithEvents ImportButton As System.Windows.Forms.Button
+		Friend WithEvents CloseButton As System.Windows.Forms.Button
 		Private _filename As String
 
 #Region " Windows Form Designer generated code "
@@ -85,6 +87,8 @@ Namespace kCura.EDDS.WinForm
 			Me.GroupBox1 = New System.Windows.Forms.GroupBox()
 			Me.BrowseCasesButton = New System.Windows.Forms.Button()
 			Me.CaseListTextBox = New System.Windows.Forms.TextBox()
+			Me.ImportButton = New System.Windows.Forms.Button()
+			Me.CloseButton = New System.Windows.Forms.Button()
 			Me.ApplicationFileGroupBox.SuspendLayout()
 			Me.ApplicationInformationGroupBox.SuspendLayout()
 			Me.ApplicationArtifactsGroupBox.SuspendLayout()
@@ -134,12 +138,12 @@ Namespace kCura.EDDS.WinForm
 			'ApplicationFileGroupBox
 			'
 			Me.ApplicationFileGroupBox.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-						Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+									Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me.ApplicationFileGroupBox.Controls.Add(Me.BrowseButton)
 			Me.ApplicationFileGroupBox.Controls.Add(Me.FilePath)
 			Me.ApplicationFileGroupBox.Location = New System.Drawing.Point(15, 12)
 			Me.ApplicationFileGroupBox.Name = "ApplicationFileGroupBox"
-			Me.ApplicationFileGroupBox.Size = New System.Drawing.Size(613, 48)
+			Me.ApplicationFileGroupBox.Size = New System.Drawing.Size(611, 48)
 			Me.ApplicationFileGroupBox.TabIndex = 1
 			Me.ApplicationFileGroupBox.TabStop = False
 			Me.ApplicationFileGroupBox.Text = "Application File"
@@ -147,7 +151,7 @@ Namespace kCura.EDDS.WinForm
 			'BrowseButton
 			'
 			Me.BrowseButton.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-			Me.BrowseButton.Location = New System.Drawing.Point(579, 16)
+			Me.BrowseButton.Location = New System.Drawing.Point(577, 16)
 			Me.BrowseButton.Name = "BrowseButton"
 			Me.BrowseButton.Size = New System.Drawing.Size(24, 20)
 			Me.BrowseButton.TabIndex = 3
@@ -156,28 +160,28 @@ Namespace kCura.EDDS.WinForm
 			'FilePath
 			'
 			Me.FilePath.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-						Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+									Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me.FilePath.BackColor = System.Drawing.SystemColors.ControlLightLight
 			Me.FilePath.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
 			Me.FilePath.ForeColor = System.Drawing.SystemColors.ControlDarkDark
 			Me.FilePath.Location = New System.Drawing.Point(8, 16)
 			Me.FilePath.Name = "FilePath"
 			Me.FilePath.ReadOnly = True
-			Me.FilePath.Size = New System.Drawing.Size(565, 20)
+			Me.FilePath.Size = New System.Drawing.Size(563, 20)
 			Me.FilePath.TabIndex = 2
 			Me.FilePath.Text = "Select a file ..."
 			'
 			'ApplicationInformationGroupBox
 			'
 			Me.ApplicationInformationGroupBox.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-						Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+									Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me.ApplicationInformationGroupBox.Controls.Add(Me.ApplicationName)
 			Me.ApplicationInformationGroupBox.Controls.Add(Me.ApplicationVersion)
 			Me.ApplicationInformationGroupBox.Controls.Add(Me.VersionLabel)
 			Me.ApplicationInformationGroupBox.Controls.Add(Me.NameLabel)
 			Me.ApplicationInformationGroupBox.Location = New System.Drawing.Point(15, 127)
 			Me.ApplicationInformationGroupBox.Name = "ApplicationInformationGroupBox"
-			Me.ApplicationInformationGroupBox.Size = New System.Drawing.Size(613, 88)
+			Me.ApplicationInformationGroupBox.Size = New System.Drawing.Size(611, 88)
 			Me.ApplicationInformationGroupBox.TabIndex = 7
 			Me.ApplicationInformationGroupBox.TabStop = False
 			Me.ApplicationInformationGroupBox.Text = "Application Information"
@@ -185,21 +189,21 @@ Namespace kCura.EDDS.WinForm
 			'ApplicationName
 			'
 			Me.ApplicationName.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-						Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+									Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me.ApplicationName.Location = New System.Drawing.Point(60, 24)
 			Me.ApplicationName.Name = "ApplicationName"
 			Me.ApplicationName.ReadOnly = True
-			Me.ApplicationName.Size = New System.Drawing.Size(545, 20)
+			Me.ApplicationName.Size = New System.Drawing.Size(543, 20)
 			Me.ApplicationName.TabIndex = 8
 			'
 			'ApplicationVersion
 			'
 			Me.ApplicationVersion.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-						Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+									Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me.ApplicationVersion.Location = New System.Drawing.Point(60, 56)
 			Me.ApplicationVersion.Name = "ApplicationVersion"
 			Me.ApplicationVersion.ReadOnly = True
-			Me.ApplicationVersion.Size = New System.Drawing.Size(545, 20)
+			Me.ApplicationVersion.Size = New System.Drawing.Size(543, 20)
 			Me.ApplicationVersion.TabIndex = 9
 			'
 			'VersionLabel
@@ -221,12 +225,12 @@ Namespace kCura.EDDS.WinForm
 			'ApplicationArtifactsGroupBox
 			'
 			Me.ApplicationArtifactsGroupBox.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-						Or System.Windows.Forms.AnchorStyles.Left) _
-						Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+									Or System.Windows.Forms.AnchorStyles.Left) _
+									Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me.ApplicationArtifactsGroupBox.Controls.Add(Me.TreeView1)
 			Me.ApplicationArtifactsGroupBox.Location = New System.Drawing.Point(13, 221)
 			Me.ApplicationArtifactsGroupBox.Name = "ApplicationArtifactsGroupBox"
-			Me.ApplicationArtifactsGroupBox.Size = New System.Drawing.Size(615, 247)
+			Me.ApplicationArtifactsGroupBox.Size = New System.Drawing.Size(610, 242)
 			Me.ApplicationArtifactsGroupBox.TabIndex = 10
 			Me.ApplicationArtifactsGroupBox.TabStop = False
 			Me.ApplicationArtifactsGroupBox.Text = "Application Artifacts"
@@ -236,18 +240,18 @@ Namespace kCura.EDDS.WinForm
 			Me.TreeView1.Dock = System.Windows.Forms.DockStyle.Fill
 			Me.TreeView1.Location = New System.Drawing.Point(3, 16)
 			Me.TreeView1.Name = "TreeView1"
-			Me.TreeView1.Size = New System.Drawing.Size(609, 228)
+			Me.TreeView1.Size = New System.Drawing.Size(604, 223)
 			Me.TreeView1.TabIndex = 8
 			'
 			'GroupBox1
 			'
 			Me.GroupBox1.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-						Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+									Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me.GroupBox1.Controls.Add(Me.BrowseCasesButton)
 			Me.GroupBox1.Controls.Add(Me.CaseListTextBox)
 			Me.GroupBox1.Location = New System.Drawing.Point(15, 66)
 			Me.GroupBox1.Name = "GroupBox1"
-			Me.GroupBox1.Size = New System.Drawing.Size(613, 55)
+			Me.GroupBox1.Size = New System.Drawing.Size(611, 55)
 			Me.GroupBox1.TabIndex = 4
 			Me.GroupBox1.TabStop = False
 			Me.GroupBox1.Text = "Application Workspaces"
@@ -255,7 +259,7 @@ Namespace kCura.EDDS.WinForm
 			'BrowseCasesButton
 			'
 			Me.BrowseCasesButton.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-			Me.BrowseCasesButton.Location = New System.Drawing.Point(579, 23)
+			Me.BrowseCasesButton.Location = New System.Drawing.Point(577, 23)
 			Me.BrowseCasesButton.Name = "BrowseCasesButton"
 			Me.BrowseCasesButton.Size = New System.Drawing.Size(24, 20)
 			Me.BrowseCasesButton.TabIndex = 6
@@ -264,21 +268,44 @@ Namespace kCura.EDDS.WinForm
 			'CaseListTextBox
 			'
 			Me.CaseListTextBox.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-						Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+									Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me.CaseListTextBox.BackColor = System.Drawing.SystemColors.ControlLightLight
 			Me.CaseListTextBox.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
 			Me.CaseListTextBox.ForeColor = System.Drawing.SystemColors.ControlDarkDark
 			Me.CaseListTextBox.Location = New System.Drawing.Point(8, 23)
 			Me.CaseListTextBox.Name = "CaseListTextBox"
 			Me.CaseListTextBox.ReadOnly = True
-			Me.CaseListTextBox.Size = New System.Drawing.Size(565, 20)
+			Me.CaseListTextBox.Size = New System.Drawing.Size(563, 20)
 			Me.CaseListTextBox.TabIndex = 5
 			Me.CaseListTextBox.Text = "Select a workspace  ..."
 			'
-			'ApplicationFileForm
+			'ImportButton
+			'
+			Me.ImportButton.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+			Me.ImportButton.Enabled = False
+			Me.ImportButton.Location = New System.Drawing.Point(548, 469)
+			Me.ImportButton.Name = "ImportButton"
+			Me.ImportButton.Size = New System.Drawing.Size(75, 23)
+			Me.ImportButton.TabIndex = 11
+			Me.ImportButton.Text = "Import"
+			Me.ImportButton.UseVisualStyleBackColor = True
+			'
+			'CloseButton
+			'
+			Me.CloseButton.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+			Me.CloseButton.Location = New System.Drawing.Point(467, 469)
+			Me.CloseButton.Name = "CloseButton"
+			Me.CloseButton.Size = New System.Drawing.Size(75, 23)
+			Me.CloseButton.TabIndex = 12
+			Me.CloseButton.Text = "Cancel"
+			Me.CloseButton.UseVisualStyleBackColor = True
+			'
+			'RelativityApplicationForm
 			'
 			Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
-			Me.ClientSize = New System.Drawing.Size(640, 480)
+			Me.ClientSize = New System.Drawing.Size(638, 501)
+			Me.Controls.Add(Me.CloseButton)
+			Me.Controls.Add(Me.ImportButton)
 			Me.Controls.Add(Me.GroupBox1)
 			Me.Controls.Add(Me.ApplicationArtifactsGroupBox)
 			Me.Controls.Add(Me.ApplicationInformationGroupBox)
@@ -286,7 +313,7 @@ Namespace kCura.EDDS.WinForm
 			Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
 			Me.Menu = Me.MainMenu
 			Me.MinimumSize = New System.Drawing.Size(380, 395)
-			Me.Name = "ApplicationFileForm"
+			Me.Name = "RelativityApplicationForm"
 			Me.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Show
 			Me.Text = "Relativity Desktop Client | Import Application"
 			Me.ApplicationFileGroupBox.ResumeLayout(False)
@@ -316,13 +343,13 @@ Namespace kCura.EDDS.WinForm
 			End If
 		End Sub
 
-		Private Sub MenuFile_Close_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles MenuFile_Close.Click
+		Private Sub MenuFile_Close_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles MenuFile_Close.Click, CloseButton.Click
 			Me.Close()
 		End Sub
 
-		Private Sub MenuImport_ImportApplication_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles MenuImport_ImportApplication.Click
+		Private Sub MenuImport_ImportApplication_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles MenuImport_ImportApplication.Click, ImportButton.Click
 			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
-			_application.ImportApplicationFile(_caseInfos, _document)
+			_Application.ImportApplicationFile(_caseInfos, _document)
 			Me.Cursor = System.Windows.Forms.Cursors.Default
 		End Sub
 
@@ -351,6 +378,7 @@ Namespace kCura.EDDS.WinForm
 				_document = document
 
 				MenuImport_ImportApplication.Enabled = True
+				ImportButton.Enabled = True
 				MenuFile_Refresh.Enabled = True
 			End If
 		End Sub
@@ -372,7 +400,7 @@ Namespace kCura.EDDS.WinForm
 #Region " Friend Properties "
 
 		Friend Property Application() As kCura.EDDS.WinForm.Application
-			
+
 		Friend Property CookieContainer() As System.Net.CookieContainer
 
 		Friend Property Credentials() As System.Net.NetworkCredential
