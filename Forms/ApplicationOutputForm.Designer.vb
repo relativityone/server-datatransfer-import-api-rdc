@@ -33,8 +33,8 @@ Partial Class ApplicationOutputForm
 		Me.CopyErrorToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
 		Me.MainSplitContainer = New System.Windows.Forms.SplitContainer()
 		Me.Panel1 = New System.Windows.Forms.Panel()
-		Me.ExportButton = New System.Windows.Forms.Button()
 		Me.advancedToggle = New System.Windows.Forms.Button()
+		Me.ExportButton = New System.Windows.Forms.Button()
 		CType(Me.ArtifactStatusTable, System.ComponentModel.ISupportInitialize).BeginInit()
 		Me.CopyErrorMenu.SuspendLayout()
 		Me.MainSplitContainer.Panel1.SuspendLayout()
@@ -130,18 +130,8 @@ Partial Class ApplicationOutputForm
 		Me.Panel1.Controls.Add(Me.InformationText)
 		Me.Panel1.Location = New System.Drawing.Point(12, 3)
 		Me.Panel1.Name = "Panel1"
-		Me.Panel1.Size = New System.Drawing.Size(747, 206)
+		Me.Panel1.Size = New System.Drawing.Size(747, 204)
 		Me.Panel1.TabIndex = 3
-		'
-		'ExportButton
-		'
-		Me.ExportButton.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-		Me.ExportButton.Location = New System.Drawing.Point(663, 292)
-		Me.ExportButton.Name = "ExportButton"
-		Me.ExportButton.Size = New System.Drawing.Size(103, 23)
-		Me.ExportButton.TabIndex = 2
-		Me.ExportButton.Text = "Export To CSV"
-		Me.ExportButton.UseVisualStyleBackColor = True
 		'
 		'advancedToggle
 		'
@@ -152,6 +142,16 @@ Partial Class ApplicationOutputForm
 		Me.advancedToggle.TabIndex = 3
 		Me.advancedToggle.Text = "Advanced View"
 		Me.advancedToggle.UseVisualStyleBackColor = True
+		'
+		'ExportButton
+		'
+		Me.ExportButton.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+		Me.ExportButton.Location = New System.Drawing.Point(663, 292)
+		Me.ExportButton.Name = "ExportButton"
+		Me.ExportButton.Size = New System.Drawing.Size(103, 23)
+		Me.ExportButton.TabIndex = 2
+		Me.ExportButton.Text = "Export To CSV"
+		Me.ExportButton.UseVisualStyleBackColor = True
 		'
 		'ApplicationOutputForm
 		'

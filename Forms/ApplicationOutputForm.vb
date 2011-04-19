@@ -51,9 +51,9 @@ Public Class ApplicationOutputForm
 			End If
 
 			artifactTable = New DataTable()
-			artifactTable.Columns.Add("Artifact Type", GetType(String))
-			artifactTable.Columns.Add("Object Type", GetType(String))
 			artifactTable.Columns.Add("Name", GetType(String))
+			artifactTable.Columns.Add("Object Type", GetType(String))
+			artifactTable.Columns.Add("Artifact Type", GetType(String))
 			artifactTable.Columns.Add("Conflict Artifact Name", GetType(String))
 			artifactTable.Columns.Add("Conflict Artifact ID", GetType(Integer))
 			artifactTable.Columns.Add("Locked Applications", GetType(String))
@@ -229,6 +229,9 @@ Public Class ApplicationOutputForm
 		Dim myStream As IO.Stream
 		Dim saveAsCsvDialog As New SaveFileDialog()
 		saveAsCsvDialog.Filter = "csv files (*.csv)|*.csv"
+		If result.Success Then
+			'saveAsCsvDialog.FileName = 
+		End If
 
 		If saveAsCsvDialog.ShowDialog() = DialogResult.OK Then
 			myStream = saveAsCsvDialog.OpenFile()
