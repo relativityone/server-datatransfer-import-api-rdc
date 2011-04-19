@@ -33,8 +33,8 @@ Partial Class ApplicationOutputForm
 		Me.CopyErrorToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
 		Me.MainSplitContainer = New System.Windows.Forms.SplitContainer()
 		Me.Panel1 = New System.Windows.Forms.Panel()
-		Me.ExportButton = New System.Windows.Forms.Button()
 		Me.advancedToggle = New System.Windows.Forms.Button()
+		Me.ExportButton = New System.Windows.Forms.Button()
 		CType(Me.ArtifactStatusTable, System.ComponentModel.ISupportInitialize).BeginInit()
 		Me.CopyErrorMenu.SuspendLayout()
 		Me.MainSplitContainer.Panel1.SuspendLayout()
@@ -60,8 +60,8 @@ Partial Class ApplicationOutputForm
 		DataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.[True]
 		Me.ArtifactStatusTable.AlternatingRowsDefaultCellStyle = DataGridViewCellStyle1
 		Me.ArtifactStatusTable.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-						Or System.Windows.Forms.AnchorStyles.Left) _
-						Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+								Or System.Windows.Forms.AnchorStyles.Left) _
+								Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 		Me.ArtifactStatusTable.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.DisplayedCells
 		Me.ArtifactStatusTable.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
 		Me.ArtifactStatusTable.Location = New System.Drawing.Point(3, 3)
@@ -71,14 +71,14 @@ Partial Class ApplicationOutputForm
 		Me.ArtifactStatusTable.RowsDefaultCellStyle = DataGridViewCellStyle2
 		Me.ArtifactStatusTable.RowTemplate.Height = 30
 		Me.ArtifactStatusTable.RowTemplate.ReadOnly = True
-		Me.ArtifactStatusTable.Size = New System.Drawing.Size(763, 287)
+		Me.ArtifactStatusTable.Size = New System.Drawing.Size(763, 269)
 		Me.ArtifactStatusTable.TabIndex = 1
 		'
 		'InformationText
 		'
 		Me.InformationText.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-						Or System.Windows.Forms.AnchorStyles.Left) _
-						Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+								Or System.Windows.Forms.AnchorStyles.Left) _
+								Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 		Me.InformationText.AutoSize = True
 		Me.InformationText.ContextMenuStrip = Me.CopyErrorMenu
 		Me.InformationText.LinkArea = New System.Windows.Forms.LinkArea(0, 0)
@@ -103,8 +103,8 @@ Partial Class ApplicationOutputForm
 		'MainSplitContainer
 		'
 		Me.MainSplitContainer.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-						Or System.Windows.Forms.AnchorStyles.Left) _
-						Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+								Or System.Windows.Forms.AnchorStyles.Left) _
+								Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 		Me.MainSplitContainer.Location = New System.Drawing.Point(0, 36)
 		Me.MainSplitContainer.Name = "MainSplitContainer"
 		Me.MainSplitContainer.Orientation = System.Windows.Forms.Orientation.Horizontal
@@ -120,38 +120,38 @@ Partial Class ApplicationOutputForm
 		Me.MainSplitContainer.Panel2.Controls.Add(Me.advancedToggle)
 		Me.MainSplitContainer.Panel2.Controls.Add(Me.ExportButton)
 		Me.MainSplitContainer.Panel2.Controls.Add(Me.ArtifactStatusTable)
-		Me.MainSplitContainer.Size = New System.Drawing.Size(769, 541)
-		Me.MainSplitContainer.SplitterDistance = 219
+		Me.MainSplitContainer.Size = New System.Drawing.Size(769, 516)
+		Me.MainSplitContainer.SplitterDistance = 208
 		Me.MainSplitContainer.TabIndex = 3
 		'
 		'Panel1
 		'
 		Me.Panel1.AutoScroll = True
 		Me.Panel1.Controls.Add(Me.InformationText)
-		Me.Panel1.Location = New System.Drawing.Point(12, 3)
+		Me.Panel1.Location = New System.Drawing.Point(6, 3)
 		Me.Panel1.Name = "Panel1"
-		Me.Panel1.Size = New System.Drawing.Size(747, 206)
+		Me.Panel1.Size = New System.Drawing.Size(758, 196)
 		Me.Panel1.TabIndex = 3
+		'
+		'advancedToggle
+		'
+		Me.advancedToggle.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+		Me.advancedToggle.Location = New System.Drawing.Point(554, 279)
+		Me.advancedToggle.Name = "advancedToggle"
+		Me.advancedToggle.Size = New System.Drawing.Size(103, 22)
+		Me.advancedToggle.TabIndex = 3
+		Me.advancedToggle.Text = "Show Details"
+		Me.advancedToggle.UseVisualStyleBackColor = True
 		'
 		'ExportButton
 		'
 		Me.ExportButton.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-		Me.ExportButton.Location = New System.Drawing.Point(663, 292)
+		Me.ExportButton.Location = New System.Drawing.Point(663, 278)
 		Me.ExportButton.Name = "ExportButton"
 		Me.ExportButton.Size = New System.Drawing.Size(103, 23)
 		Me.ExportButton.TabIndex = 2
 		Me.ExportButton.Text = "Export To CSV"
 		Me.ExportButton.UseVisualStyleBackColor = True
-		'
-		'advancedToggle
-		'
-		Me.advancedToggle.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-		Me.advancedToggle.Location = New System.Drawing.Point(554, 292)
-		Me.advancedToggle.Name = "advancedToggle"
-		Me.advancedToggle.Size = New System.Drawing.Size(103, 22)
-		Me.advancedToggle.TabIndex = 3
-		Me.advancedToggle.Text = "Advanced View"
-		Me.advancedToggle.UseVisualStyleBackColor = True
 		'
 		'ApplicationOutputForm
 		'
@@ -162,6 +162,7 @@ Partial Class ApplicationOutputForm
 		Me.Controls.Add(Me.Label1)
 		Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
 		Me.Name = "ApplicationOutputForm"
+		Me.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Show
 		Me.Text = "Relativity Desktop Client | Application Deployment System"
 		CType(Me.ArtifactStatusTable, System.ComponentModel.ISupportInitialize).EndInit()
 		Me.CopyErrorMenu.ResumeLayout(False)
