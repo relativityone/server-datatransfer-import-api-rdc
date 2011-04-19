@@ -247,10 +247,11 @@ Public Class ApplicationOutputForm
 	Private Sub advancedToggle_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles advancedToggle.Click
 		advancedMode = Not advancedMode
 		If advancedMode Then
-			advancedToggle.Text = "Normal Mode"
+			advancedToggle.Text = "Normal View"
 		Else
-			advancedToggle.Text = "Advanced Mode"
+			advancedToggle.Text = "Advanced View"
 		End If
 		updateTableForMode()
 	End Sub
+
 End Class

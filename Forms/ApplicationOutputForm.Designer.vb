@@ -71,7 +71,7 @@ Partial Class ApplicationOutputForm
 		Me.ArtifactStatusTable.RowsDefaultCellStyle = DataGridViewCellStyle2
 		Me.ArtifactStatusTable.RowTemplate.Height = 30
 		Me.ArtifactStatusTable.RowTemplate.ReadOnly = True
-		Me.ArtifactStatusTable.Size = New System.Drawing.Size(763, 287)
+		Me.ArtifactStatusTable.Size = New System.Drawing.Size(763, 269)
 		Me.ArtifactStatusTable.TabIndex = 1
 		'
 		'InformationText
@@ -120,23 +120,23 @@ Partial Class ApplicationOutputForm
 		Me.MainSplitContainer.Panel2.Controls.Add(Me.advancedToggle)
 		Me.MainSplitContainer.Panel2.Controls.Add(Me.ExportButton)
 		Me.MainSplitContainer.Panel2.Controls.Add(Me.ArtifactStatusTable)
-		Me.MainSplitContainer.Size = New System.Drawing.Size(769, 541)
-		Me.MainSplitContainer.SplitterDistance = 219
+		Me.MainSplitContainer.Size = New System.Drawing.Size(769, 516)
+		Me.MainSplitContainer.SplitterDistance = 208
 		Me.MainSplitContainer.TabIndex = 3
 		'
 		'Panel1
 		'
 		Me.Panel1.AutoScroll = True
 		Me.Panel1.Controls.Add(Me.InformationText)
-		Me.Panel1.Location = New System.Drawing.Point(12, 3)
+		Me.Panel1.Location = New System.Drawing.Point(6, 3)
 		Me.Panel1.Name = "Panel1"
-		Me.Panel1.Size = New System.Drawing.Size(747, 204)
+		Me.Panel1.Size = New System.Drawing.Size(758, 196)
 		Me.Panel1.TabIndex = 3
 		'
 		'advancedToggle
 		'
 		Me.advancedToggle.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-		Me.advancedToggle.Location = New System.Drawing.Point(554, 292)
+		Me.advancedToggle.Location = New System.Drawing.Point(554, 279)
 		Me.advancedToggle.Name = "advancedToggle"
 		Me.advancedToggle.Size = New System.Drawing.Size(103, 22)
 		Me.advancedToggle.TabIndex = 3
@@ -146,7 +146,7 @@ Partial Class ApplicationOutputForm
 		'ExportButton
 		'
 		Me.ExportButton.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-		Me.ExportButton.Location = New System.Drawing.Point(663, 292)
+		Me.ExportButton.Location = New System.Drawing.Point(663, 278)
 		Me.ExportButton.Name = "ExportButton"
 		Me.ExportButton.Size = New System.Drawing.Size(103, 23)
 		Me.ExportButton.TabIndex = 2
@@ -162,6 +162,7 @@ Partial Class ApplicationOutputForm
 		Me.Controls.Add(Me.Label1)
 		Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
 		Me.Name = "ApplicationOutputForm"
+		Me.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Show
 		Me.Text = "Relativity Desktop Client | Application Deployment System"
 		CType(Me.ArtifactStatusTable, System.ComponentModel.ISupportInitialize).EndInit()
 		Me.CopyErrorMenu.ResumeLayout(False)
