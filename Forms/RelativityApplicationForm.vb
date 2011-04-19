@@ -11,7 +11,7 @@ Namespace kCura.EDDS.WinForm
 		Private _caseInfos As Generic.List(Of Relativity.CaseInfo)
 		Private _document As Xml.XmlDocument
 		Friend WithEvents ImportButton As System.Windows.Forms.Button
-		Friend WithEvents CancelButton As System.Windows.Forms.Button
+		Friend WithEvents CloseButton As System.Windows.Forms.Button
 		Private _filename As String
 
 #Region " Windows Form Designer generated code "
@@ -88,7 +88,7 @@ Namespace kCura.EDDS.WinForm
 			Me.BrowseCasesButton = New System.Windows.Forms.Button()
 			Me.CaseListTextBox = New System.Windows.Forms.TextBox()
 			Me.ImportButton = New System.Windows.Forms.Button()
-			Me.CancelButton = New System.Windows.Forms.Button()
+			Me.CloseButton = New System.Windows.Forms.Button()
 			Me.ApplicationFileGroupBox.SuspendLayout()
 			Me.ApplicationInformationGroupBox.SuspendLayout()
 			Me.ApplicationArtifactsGroupBox.SuspendLayout()
@@ -282,6 +282,7 @@ Namespace kCura.EDDS.WinForm
 			'ImportButton
 			'
 			Me.ImportButton.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+			Me.ImportButton.Enabled = False
 			Me.ImportButton.Location = New System.Drawing.Point(548, 469)
 			Me.ImportButton.Name = "ImportButton"
 			Me.ImportButton.Size = New System.Drawing.Size(75, 23)
@@ -289,21 +290,21 @@ Namespace kCura.EDDS.WinForm
 			Me.ImportButton.Text = "Import"
 			Me.ImportButton.UseVisualStyleBackColor = True
 			'
-			'CancelButton
+			'CloseButton
 			'
-			Me.CancelButton.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-			Me.CancelButton.Location = New System.Drawing.Point(467, 469)
-			Me.CancelButton.Name = "CancelButton"
-			Me.CancelButton.Size = New System.Drawing.Size(75, 23)
-			Me.CancelButton.TabIndex = 12
-			Me.CancelButton.Text = "Cancel"
-			Me.CancelButton.UseVisualStyleBackColor = True
+			Me.CloseButton.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+			Me.CloseButton.Location = New System.Drawing.Point(467, 469)
+			Me.CloseButton.Name = "CloseButton"
+			Me.CloseButton.Size = New System.Drawing.Size(75, 23)
+			Me.CloseButton.TabIndex = 12
+			Me.CloseButton.Text = "Cancel"
+			Me.CloseButton.UseVisualStyleBackColor = True
 			'
 			'RelativityApplicationForm
 			'
 			Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
 			Me.ClientSize = New System.Drawing.Size(638, 501)
-			Me.Controls.Add(Me.CancelButton)
+			Me.Controls.Add(Me.CloseButton)
 			Me.Controls.Add(Me.ImportButton)
 			Me.Controls.Add(Me.GroupBox1)
 			Me.Controls.Add(Me.ApplicationArtifactsGroupBox)
@@ -342,7 +343,7 @@ Namespace kCura.EDDS.WinForm
 			End If
 		End Sub
 
-		Private Sub MenuFile_Close_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles MenuFile_Close.Click, CancelButton.Click
+		Private Sub MenuFile_Close_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles MenuFile_Close.Click, CloseButton.Click
 			Me.Close()
 		End Sub
 
@@ -377,6 +378,7 @@ Namespace kCura.EDDS.WinForm
 				_document = document
 
 				MenuImport_ImportApplication.Enabled = True
+				ImportButton.Enabled = True
 				MenuFile_Refresh.Enabled = True
 			End If
 		End Sub
