@@ -455,13 +455,22 @@ Namespace kCura.EDDS.WinForm
 			childNodes.NodeFont = boldfont
 			For Each elmnt As XElement In objlment.Descendants(childName)
 				Dim grandChild As TreeNode = Nothing
+
 				If String.IsNullOrEmpty(elmnt.<Name>.Value) Then
-					If Not String.IsNullOrEmpty(elmnt.<DisplayName>.Value) Then
-						grandChild = childNodes.Nodes.Add(elmnt.<DisplayName>.Value)
-					End If
+					Select Case childName
+						Case "ActiveSync"
+							If Not String.IsNullOrEmpty(elmnt.<ClassName>.Value) Then
+								grandChild = childNodes.Nodes.Add(elmnt.<ClassName>.Value)
+							End If
+						Case Else
+							If Not String.IsNullOrEmpty(elmnt.<DisplayName>.Value) Then
+								grandChild = childNodes.Nodes.Add(elmnt.<DisplayName>.Value)
+							End If
+					End Select
 				Else
 					grandChild = childNodes.Nodes.Add(elmnt.<Name>.Value)
 				End If
+
 				If childName = "Tab" Then
 					If Not String.IsNullOrEmpty(elmnt.<ParentTab>.Value) Then
 						Dim pt = elmnt.<ParentTab>
