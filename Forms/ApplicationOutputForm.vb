@@ -1,4 +1,5 @@
-﻿Imports kCura.EDDS.WebAPI
+﻿Imports System.Globalization
+Imports kCura.EDDS.WebAPI
 
 Public Class ApplicationOutputForm
 	Inherits System.Windows.Forms.Form
@@ -8,6 +9,10 @@ Public Class ApplicationOutputForm
 	Private artifactTable As New DataTable()
 	Private result As TemplateManagerBase.ApplicationInstallationResult
 	Private errorExpanded As Boolean
+
+	Private Const ExpandedText As String = "More Detail"
+	Private Const CollapseText As String = "Less Detail"
+	Private Const HelpLink As String = "http://help.kcura.com/relativity/Relativity Applications/Using a Relativity Application.pdf#installhelp"
 
 	Private Sub UpdateArtifactStatusTable(ByVal evt As kCura.Windows.Process.Generic.ProcessEvent(Of TemplateManagerBase.ApplicationInstallationResult))
 		result = evt.Result
@@ -20,18 +25,19 @@ Public Class ApplicationOutputForm
 		Else
 			InformationText.Text = "Installation failed. For detailed information on how to resolve errors, refer to the Relativity Applications documentation." & Environment.NewLine & Environment.NewLine & _
 			"The following errors occurred while installing the application:" & Environment.NewLine & Environment.NewLine
-			InformationText.Links.Add(84, 38, "http://help.kcura.com/relativity/Relativity Applications/Using a Relativity Application.pdf#installhelp")
+			InformationText.Links.Add(84, 38, HelpLink)
 
 			If Not String.IsNullOrEmpty(result.Message) Then
-				InformationText.Text = InformationText.Text & " + " & result.Message
-				InformationText.Links.Add(195, 1, "Details")
+				InformationText.Text = String.Format(CultureInfo.CurrentCulture, "{0} {1} {2}", InformationText.Text, ExpandedText, result.Message)
+				InformationText.Links.Add(195, ExpandedText.Length, "Details")
 			End If
 
 			artifactTable = CreateFailedTable(result)
 		End If
 
 		ArtifactStatusTable.DataSource = artifactTable
-		ArtifactStatusTable.AutoResizeColumns()
+		ArtifactStatusTable.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.None
+		ArtifactStatusTable.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill
 		ArtifactStatusTable.RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.EnableResizing
 		ArtifactStatusTable.AllowUserToResizeColumns = True
 		ArtifactStatusTable.AllowUserToOrderColumns = True
@@ -78,6 +84,7 @@ Public Class ApplicationOutputForm
 			Dim conflictName As String = ""
 			Dim conflictID As Integer = Nothing
 			Dim conflictApps As New System.Text.StringBuilder()
+
 			If art.ParentArtifact IsNot Nothing Then
 				parentName = art.ParentArtifact.Name
 			End If
@@ -100,7 +107,7 @@ Public Class ApplicationOutputForm
 			 parentName, _
 			 TypeToString(art.Type), _
 			 conflictName, _
-			conflictID, _
+			 conflictID, _
 			 conflictApps, _
 			 StatusToString(art.Status), _
 			 art.StatusMessage})
@@ -118,7 +125,6 @@ Public Class ApplicationOutputForm
 			For Each row As DataGridViewRow In ArtifactStatusTable.Rows
 				row.Cells("Error").ToolTipText = row.Cells("Details").Value.ToString
 				row.Cells("Error").Style.BackColor = Color.LightPink
-				'row.Cells("Details").Style.BackColor = Color.LightPink
 			Next
 		End If
 	End Sub
@@ -137,13 +143,13 @@ Public Class ApplicationOutputForm
 		If String.Equals(CType(e.Link.LinkData, String), "Details") Then
 			If errorExpanded Then
 				InformationText.Text = "Installation failed. For detailed information on how to resolve errors, refer to the Relativity Applications documentation." & Environment.NewLine & Environment.NewLine & _
-				 "The following errors occurred while installing the application:" & Environment.NewLine & Environment.NewLine & " + " & result.Message
+				 "The following errors occurred while installing the application:" & Environment.NewLine & Environment.NewLine & " More Detail " & result.Message
 				errorExpanded = False
 				InformationText.Parent.Height = InformationText.Height
 				InformationText.Parent.Width = InformationText.Width
 			Else
 				InformationText.Text = "Installation failed. For detailed information on how to resolve errors, refer to the Relativity Applications documentation." & Environment.NewLine & Environment.NewLine & _
-				 "The following errors occurred while installing the application:" & Environment.NewLine & Environment.NewLine & " - " & result.Message & _
+				 "The following errors occurred while installing the application:" & Environment.NewLine & Environment.NewLine & " Less Detail " & result.Message & _
 				 Environment.NewLine & result.Details
 				errorExpanded = True
 				InformationText.Parent.Height = InformationText.Height
