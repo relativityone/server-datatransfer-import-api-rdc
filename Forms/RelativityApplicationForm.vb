@@ -297,7 +297,7 @@ Namespace kCura.EDDS.WinForm
 			Me.CloseButton.Name = "CloseButton"
 			Me.CloseButton.Size = New System.Drawing.Size(75, 23)
 			Me.CloseButton.TabIndex = 12
-			Me.CloseButton.Text = "Cancel"
+			Me.CloseButton.Text = "Close"
 			Me.CloseButton.UseVisualStyleBackColor = True
 			'
 			'RelativityApplicationForm

@@ -5,41 +5,18 @@ Public Class ApplicationOutputForm
 
 	Public WithEvents observer As kCura.Windows.Process.Generic.ProcessObserver(Of TemplateManagerBase.ApplicationInstallationResult)
 
+	Private artifactTable As New DataTable()
 	Private result As TemplateManagerBase.ApplicationInstallationResult
-	Private artifactTable As DataTable
 	Private errorExpanded As Boolean
-	Private advancedMode As Boolean
 
-	Private Sub observer_OnProcessEvent(ByVal evt As kCura.Windows.Process.Generic.ProcessEvent(Of TemplateManagerBase.ApplicationInstallationResult)) Handles observer.OnProcessEvent
-		Me.Invoke(Sub() updateArtifactStatusTable(evt))
-	End Sub
-
-	Private Sub updateArtifactStatusTable(ByVal evt As kCura.Windows.Process.Generic.ProcessEvent(Of TemplateManagerBase.ApplicationInstallationResult))
+	Private Sub UpdateArtifactStatusTable(ByVal evt As kCura.Windows.Process.Generic.ProcessEvent(Of TemplateManagerBase.ApplicationInstallationResult))
 		result = evt.Result
 		errorExpanded = False
-		advancedMode = False
 
 		If result.Success Then
 			InformationText.Text = "Installation complete."
 
-			artifactTable = New DataTable()
-			artifactTable.Columns.Add("Name", GetType(String))
-			artifactTable.Columns.Add("Artifact Type", GetType(String))
-			artifactTable.Columns.Add("Artifact ID", GetType(Integer))
-			artifactTable.Columns.Add("Status", GetType(String))
-
-			For Each art As TemplateManagerBase.ApplicationArtifact In result.NewApplicationArtifacts
-				artifactTable.Rows.Add(New Object() {art.Name, TypeToString(art.Type), art.ArtifactId, "Created"})
-			Next
-
-			For Each art As TemplateManagerBase.ApplicationArtifact In result.UpdatedApplicationArtifacts
-				artifactTable.Rows.Add(New Object() {art.Name, TypeToString(art.Type), art.ArtifactId, "Updated"})
-			Next
-
-			ArtifactStatusTable.DataSource = artifactTable
-
-			ColorTable()
-
+			artifactTable = CreateSucessTable(result)
 		Else
 			InformationText.Text = "Installation failed. For detailed information on how to resolve errors, refer to the Relativity Applications documentation." & Environment.NewLine & Environment.NewLine & _
 			"The following errors occurred while installing the application:" & Environment.NewLine & Environment.NewLine
@@ -50,86 +27,106 @@ Public Class ApplicationOutputForm
 				InformationText.Links.Add(195, 1, "Details")
 			End If
 
-			artifactTable = New DataTable()
-			artifactTable.Columns.Add("Name", GetType(String))
-			artifactTable.Columns.Add("Object Type", GetType(String))
-			artifactTable.Columns.Add("Artifact Type", GetType(String))
-			artifactTable.Columns.Add("Conflict Artifact Name", GetType(String))
-			artifactTable.Columns.Add("Conflict Artifact ID", GetType(Integer))
-			artifactTable.Columns.Add("Locked Applications", GetType(String))
-			artifactTable.Columns.Add("Error", GetType(String))
-			artifactTable.Columns.Add("Details", GetType(String))
+			artifactTable = CreateFailedTable(result)
+		End If
 
+		ArtifactStatusTable.DataSource = artifactTable
+		ArtifactStatusTable.AutoResizeColumns()
+		ArtifactStatusTable.RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.EnableResizing
+		ArtifactStatusTable.AllowUserToResizeColumns = True
+		ArtifactStatusTable.AllowUserToOrderColumns = True
+		ArtifactStatusTable.ReadOnly = True
 
-			For Each art As TemplateManagerBase.ApplicationArtifact In result.StatusApplicationArtifacts
-				Dim parentName As String = ""
-				Dim conflictName As String = ""
-				Dim conflictID As Integer = Nothing
-				Dim conflictApps As New System.Text.StringBuilder()
-				If art.ParentArtifact IsNot Nothing Then
-					parentName = art.ParentArtifact.Name
-				End If
-				If art.ConflictArtifact IsNot Nothing Then
-					conflictID = art.ConflictArtifact.ArtifactId
-					conflictName = art.ConflictArtifact.Name
-					If art.ConflictArtifact.Applications IsNot Nothing Then
-						Dim sepString As String = ""
-						For Each app As TemplateManagerBase.Application In art.ConflictArtifact.Applications
-							conflictApps.Append(sepString)
-							conflictApps.Append(app.Name)
-							sepString = ", "
-						Next
-					End If
-				End If
+		ColorTable()
 
-				artifactTable.Rows.Add(New Object() { _
-				 art.Name, _
-				 parentName, _
-				 TypeToString(art.Type), _
-				 conflictName, _
-				conflictID, _
-				 conflictApps, _
-				 StatusToString(art.Status), _
-				 art.StatusMessage})
-			Next
-
-			ArtifactStatusTable.DataSource = artifactTable
-			ArtifactStatusTable.Columns(0).Width = 5
-			ColorTable()
-			End If
-
+		ExportButton.Enabled = True
 	End Sub
 
-	Private Function TypeToString(ByVal type As TemplateManagerBase.ApplicationArtifactType) As String
-		If type = TemplateManagerBase.ApplicationArtifactType.Object Then
-			Return "Object Type"
-		Else
-			Return type.ToString
-		End If
+	Private Function CreateSucessTable(ByVal result As TemplateManagerBase.ApplicationInstallationResult) As DataTable
+		Dim successTable As New DataTable()
+
+		successTable.Columns.Add("Name", GetType(String))
+		successTable.Columns.Add("Artifact Type", GetType(String))
+		successTable.Columns.Add("Artifact ID", GetType(Integer))
+		successTable.Columns.Add("Status", GetType(String))
+
+		For Each art As TemplateManagerBase.ApplicationArtifact In result.NewApplicationArtifacts
+			successTable.Rows.Add(New Object() {art.Name, TypeToString(art.Type), art.ArtifactId, "Created"})
+		Next
+
+		For Each art As TemplateManagerBase.ApplicationArtifact In result.UpdatedApplicationArtifacts
+			successTable.Rows.Add(New Object() {art.Name, TypeToString(art.Type), art.ArtifactId, "Updated"})
+		Next
+
+		Return successTable
 	End Function
 
-	Private Sub updateTableForMode()
-		If Not result.Success Then
-			If advancedMode Then
-				ArtifactStatusTable.Columns("Artifact Type").Visible = True
-				ArtifactStatusTable.Columns("Object Type").Visible = True
-				ArtifactStatusTable.Columns("Name").Visible = True
-				ArtifactStatusTable.Columns("Conflict Artifact Name").Visible = True
-				ArtifactStatusTable.Columns("Conflict Artifact ID").Visible = True
-				ArtifactStatusTable.Columns("Locked Applications").Visible = True
-				ArtifactStatusTable.Columns("Error").Visible = True
-				ArtifactStatusTable.Columns("Details").Visible = False
-			Else
-				ArtifactStatusTable.Columns("Artifact Type").Visible = True
-				ArtifactStatusTable.Columns("Object Type").Visible = True
-				ArtifactStatusTable.Columns("Name").Visible = True
-				ArtifactStatusTable.Columns("Conflict Artifact Name").Visible = False
-				ArtifactStatusTable.Columns("Conflict Artifact ID").Visible = False
-				ArtifactStatusTable.Columns("Locked Applications").Visible = False
-				ArtifactStatusTable.Columns("Error").Visible = False
-				ArtifactStatusTable.Columns("Details").Visible = True
+	Private Function CreateFailedTable(ByVal result As TemplateManagerBase.ApplicationInstallationResult) As DataTable
+		Dim failedTable As New DataTable()
+
+		failedTable.Columns.Add("Name", GetType(String))
+		failedTable.Columns.Add("Object Type", GetType(String))
+		failedTable.Columns.Add("Artifact Type", GetType(String))
+		failedTable.Columns.Add("Conflicting Artifact Name", GetType(String))
+		failedTable.Columns.Add("Conflicting Artifact ID", GetType(Integer))
+		failedTable.Columns.Add("Locked Applications", GetType(String))
+		failedTable.Columns.Add("Error", GetType(String))
+		failedTable.Columns.Add("Details", GetType(String))
+
+		For Each art As TemplateManagerBase.ApplicationArtifact In result.StatusApplicationArtifacts
+			Dim parentName As String = ""
+			Dim conflictName As String = ""
+			Dim conflictID As Integer = Nothing
+			Dim conflictApps As New System.Text.StringBuilder()
+			If art.ParentArtifact IsNot Nothing Then
+				parentName = art.ParentArtifact.Name
 			End If
+
+			If art.ConflictArtifact IsNot Nothing Then
+				conflictID = art.ConflictArtifact.ArtifactId
+				conflictName = art.ConflictArtifact.Name
+				If art.ConflictArtifact.Applications IsNot Nothing Then
+					Dim sepString As String = ""
+					For Each app As TemplateManagerBase.Application In art.ConflictArtifact.Applications
+						conflictApps.Append(sepString)
+						conflictApps.Append(app.Name)
+						sepString = ", "
+					Next
+				End If
+			End If
+
+			failedTable.Rows.Add(New Object() { _
+			 art.Name, _
+			 parentName, _
+			 TypeToString(art.Type), _
+			 conflictName, _
+			conflictID, _
+			 conflictApps, _
+			 StatusToString(art.Status), _
+			 art.StatusMessage})
+		Next
+
+		Return failedTable
+	End Function
+
+	Private Sub ColorTable()
+		If result.Success Then
+			For Each row As DataGridViewRow In ArtifactStatusTable.Rows
+				row.Cells("Status").Style.BackColor = Color.PaleGreen
+			Next
+		Else
+			For Each row As DataGridViewRow In ArtifactStatusTable.Rows
+				row.Cells("Error").ToolTipText = row.Cells("Details").Value.ToString
+				row.Cells("Error").Style.BackColor = Color.LightPink
+				'row.Cells("Details").Style.BackColor = Color.LightPink
+			Next
 		End If
+	End Sub
+
+#Region " Event handlers "
+
+	Private Sub Observer_OnProcessEvent(ByVal evt As kCura.Windows.Process.Generic.ProcessEvent(Of TemplateManagerBase.ApplicationInstallationResult)) Handles observer.OnProcessEvent
+		Me.Invoke(Sub() UpdateArtifactStatusTable(evt))
 	End Sub
 
 	Private Sub ArtifactStatusTable_sort(ByVal sender As Object, ByVal e As System.EventArgs) Handles ArtifactStatusTable.Sorted
@@ -157,39 +154,6 @@ Public Class ApplicationOutputForm
 		End If
 	End Sub
 
-	Private Sub ColorTable()
-		If result.Success Then
-			For Each row As DataGridViewRow In ArtifactStatusTable.Rows
-				row.Cells("Status").Style.BackColor = Color.PaleGreen
-			Next
-		Else
-			For Each row As DataGridViewRow In ArtifactStatusTable.Rows
-				row.Cells("Error").ToolTipText = row.Cells("Details").Value.ToString
-				row.Cells("Error").Style.BackColor = Color.LightPink
-				'row.Cells("Details").Style.BackColor = Color.LightPink
-			Next
-		End If
-	End Sub
-
-	Private Function StatusToString(ByVal stat As TemplateManagerBase.StatusCode) As String
-		Select Case stat
-			Case TemplateManagerBase.StatusCode.FriendlyNameConflict
-				Return "Friendly Name Conflict"
-			Case TemplateManagerBase.StatusCode.MultipleFileField
-				Return "Multiple File Fields"
-			Case TemplateManagerBase.StatusCode.NameConflict
-				Return "Name Conflict"
-			Case TemplateManagerBase.StatusCode.SharedByLockedApp
-				Return "Shared By A Locked App"
-			Case TemplateManagerBase.StatusCode.UnknownError
-				Return "Unknown Error"
-			Case Else
-				Return stat.ToString
-		End Select
-	End Function
-
-
-
 	Private Sub CopyErrorToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles CopyErrorToolStripMenuItem.Click
 		If errorExpanded Then
 			Clipboard.SetText("Message:" & Environment.NewLine & result.Message & Environment.NewLine & Environment.NewLine & "Details:" & Environment.NewLine & result.Details)
@@ -199,6 +163,8 @@ Public Class ApplicationOutputForm
 	End Sub
 
 	Private Sub ExportButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ExportButton.Click
+		Debug.Assert(artifactTable IsNot Nothing)
+
 		Dim csvBuilder As New System.Text.StringBuilder()
 		Dim prepend As String = """"
 		For Each col As DataColumn In artifactTable.Columns
@@ -240,7 +206,35 @@ Public Class ApplicationOutputForm
 
 	End Sub
 
-	Private Sub Button1_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles CloseButton.Click
+	Private Sub CloseButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles CloseButton.Click
 		Me.Close()
 	End Sub
+
+#End Region
+
+	Private Function TypeToString(ByVal type As TemplateManagerBase.ApplicationArtifactType) As String
+		If type = TemplateManagerBase.ApplicationArtifactType.Object Then
+			Return "Object Type"
+		Else
+			Return type.ToString
+		End If
+	End Function
+
+	Private Function StatusToString(ByVal stat As TemplateManagerBase.StatusCode) As String
+		Select Case stat
+			Case TemplateManagerBase.StatusCode.FriendlyNameConflict
+				Return "Friendly Name Conflict"
+			Case TemplateManagerBase.StatusCode.MultipleFileField
+				Return "Multiple File Fields"
+			Case TemplateManagerBase.StatusCode.NameConflict
+				Return "Name Conflict"
+			Case TemplateManagerBase.StatusCode.SharedByLockedApp
+				Return "Shared By A Locked App"
+			Case TemplateManagerBase.StatusCode.UnknownError
+				Return "Unknown Error"
+			Case Else
+				Return stat.ToString
+		End Select
+	End Function
+
 End Class
