@@ -311,10 +311,10 @@
     <Compile Include="Forms\AdvancedFileLocation.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\ApplicationOutputForm.Designer.vb">
-      <DependentUpon>ApplicationOutputForm.vb</DependentUpon>
+    <Compile Include="Forms\RelativityApplicationStatusForm.Designer.vb">
+      <DependentUpon>RelativityApplicationStatusForm.vb</DependentUpon>
     </Compile>
-    <Compile Include="Forms\ApplicationOutputForm.vb">
+    <Compile Include="Forms\RelativityApplicationStatusForm.vb">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\RelativityApplicationForm.vb">
@@ -389,8 +389,8 @@
     <EmbeddedResource Include="Forms\AdvancedFileLocation.resx">
       <DependentUpon>AdvancedFileLocation.vb</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\ApplicationOutputForm.resx">
-      <DependentUpon>ApplicationOutputForm.vb</DependentUpon>
+    <EmbeddedResource Include="Forms\RelativityApplicationStatusForm.resx">
+      <DependentUpon>RelativityApplicationStatusForm.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\RelativityApplicationForm.resx">
       <DependentUpon>RelativityApplicationForm.vb</DependentUpon>

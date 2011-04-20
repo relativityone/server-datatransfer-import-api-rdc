@@ -1,7 +1,7 @@
 ﻿Imports System.Globalization
 Imports kCura.EDDS.WebAPI
 
-Public Class ApplicationOutputForm
+Public Class RelativityApplicationStatusForm
 	Inherits System.Windows.Forms.Form
 
 	Public WithEvents observer As kCura.Windows.Process.Generic.ProcessObserver(Of TemplateManagerBase.ApplicationInstallationResult)

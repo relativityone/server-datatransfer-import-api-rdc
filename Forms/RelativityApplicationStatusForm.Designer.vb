@@ -1,31 +1,31 @@
 ﻿<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
-Partial Class ApplicationOutputForm
-    Inherits System.Windows.Forms.Form
+Partial Class RelativityApplicationStatusForm
+	Inherits System.Windows.Forms.Form
 
-    'Form overrides dispose to clean up the component list.
-    <System.Diagnostics.DebuggerNonUserCode()> _
-    Protected Overrides Sub Dispose(ByVal disposing As Boolean)
-        Try
-            If disposing AndAlso components IsNot Nothing Then
-                components.Dispose()
-            End If
-        Finally
-            MyBase.Dispose(disposing)
-        End Try
-    End Sub
+	'Form overrides dispose to clean up the component list.
+	<System.Diagnostics.DebuggerNonUserCode()> _
+	Protected Overrides Sub Dispose(ByVal disposing As Boolean)
+		Try
+			If disposing AndAlso components IsNot Nothing Then
+				components.Dispose()
+			End If
+		Finally
+			MyBase.Dispose(disposing)
+		End Try
+	End Sub
 
-    'Required by the Windows Form Designer
-    Private components As System.ComponentModel.IContainer
+	'Required by the Windows Form Designer
+	Private components As System.ComponentModel.IContainer
 
-    'NOTE: The following procedure is required by the Windows Form Designer
-    'It can be modified using the Windows Form Designer.  
-    'Do not modify it using the code editor.
-    <System.Diagnostics.DebuggerStepThrough()> _
-    Private Sub InitializeComponent()
+	'NOTE: The following procedure is required by the Windows Form Designer
+	'It can be modified using the Windows Form Designer.  
+	'Do not modify it using the code editor.
+	<System.Diagnostics.DebuggerStepThrough()> _
+	Private Sub InitializeComponent()
 		Me.components = New System.ComponentModel.Container()
 		Dim DataGridViewCellStyle1 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
 		Dim DataGridViewCellStyle2 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-		Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(ApplicationOutputForm))
+		Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(RelativityApplicationStatusForm))
 		Me.Label1 = New System.Windows.Forms.Label()
 		Me.ArtifactStatusTable = New System.Windows.Forms.DataGridView()
 		Me.InformationText = New System.Windows.Forms.LinkLabel()
@@ -60,8 +60,8 @@ Partial Class ApplicationOutputForm
 		DataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.[True]
 		Me.ArtifactStatusTable.AlternatingRowsDefaultCellStyle = DataGridViewCellStyle1
 		Me.ArtifactStatusTable.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-								Or System.Windows.Forms.AnchorStyles.Left) _
-								Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+					Or System.Windows.Forms.AnchorStyles.Left) _
+					Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 		Me.ArtifactStatusTable.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.DisplayedCells
 		Me.ArtifactStatusTable.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
 		Me.ArtifactStatusTable.Location = New System.Drawing.Point(3, 3)
@@ -77,8 +77,8 @@ Partial Class ApplicationOutputForm
 		'InformationText
 		'
 		Me.InformationText.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-								Or System.Windows.Forms.AnchorStyles.Left) _
-								Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+					Or System.Windows.Forms.AnchorStyles.Left) _
+					Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 		Me.InformationText.AutoSize = True
 		Me.InformationText.ContextMenuStrip = Me.CopyErrorMenu
 		Me.InformationText.LinkArea = New System.Windows.Forms.LinkArea(0, 0)
@@ -103,8 +103,8 @@ Partial Class ApplicationOutputForm
 		'MainSplitContainer
 		'
 		Me.MainSplitContainer.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-								Or System.Windows.Forms.AnchorStyles.Left) _
-								Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+					Or System.Windows.Forms.AnchorStyles.Left) _
+					Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 		Me.MainSplitContainer.Location = New System.Drawing.Point(0, 36)
 		Me.MainSplitContainer.Name = "MainSplitContainer"
 		Me.MainSplitContainer.Orientation = System.Windows.Forms.Orientation.Horizontal

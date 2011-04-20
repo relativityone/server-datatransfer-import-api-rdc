@@ -1295,7 +1295,7 @@ Namespace kCura.EDDS.WinForm
 			End If
 			Dim applicationDeploymentProcess As New kCura.WinEDDS.ApplicationDeploymentProcess(application, Me.Credential, Me.CookieContainer, caseInfos)
 			'todo: kfm
-			Dim form As New ApplicationOutputForm()
+			Dim form As New RelativityApplicationStatusForm()
 			form.observer = applicationDeploymentProcess.ProcessObserver
 			form.Show()
 			_processPool.StartProcess(applicationDeploymentProcess)
