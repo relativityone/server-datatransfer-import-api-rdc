@@ -192,24 +192,18 @@ Public Class ApplicationOutputForm
 			csvBuilder.Append(Environment.NewLine)
 		Next
 
-		Dim myStream As IO.Stream
 		Dim saveAsCsvDialog As New SaveFileDialog()
 		saveAsCsvDialog.Filter = "csv files (*.csv)|*.csv"
-		If result.Success Then
-			saveAsCsvDialog.FileName = "Application_Import_Log"
-		Else
-			saveAsCsvDialog.FileName = "Application_Import_Error_Log"
-		End If
+		saveAsCsvDialog.FileName = String.Format("RA_{0}_{1}.csv", "Import", System.DateTime.Now.ToString("yyyyMMddHHmmss"))
 
 		If saveAsCsvDialog.ShowDialog() = DialogResult.OK Then
-			myStream = saveAsCsvDialog.OpenFile()
+			Dim myStream As IO.Stream = saveAsCsvDialog.OpenFile()
 			If (myStream IsNot Nothing) Then
 				Dim encoding As New System.Text.UTF8Encoding()
 				myStream.Write(encoding.GetBytes(csvBuilder.ToString), 0, encoding.GetByteCount(csvBuilder.ToString))
 				myStream.Close()
 			End If
 		End If
-
 	End Sub
 
 	Private Sub CloseButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles CloseButton.Click
