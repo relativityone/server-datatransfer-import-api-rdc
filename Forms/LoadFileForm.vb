@@ -999,7 +999,7 @@ Namespace kCura.EDDS.WinForm
 				If System.IO.File.Exists(Me.LoadFile.FilePath) Then
 					columnHeaders = _application.GetColumnHeadersFromLoadFile(Me.LoadFile, _firstLineContainsColumnNames.Checked)
 				Else
-					MsgBox("The load file specified does not exist.", MsgBoxStyle.Exclamation, "WinRelativity Warning")
+					MsgBox("The load file specified does not exist.", MsgBoxStyle.Exclamation, "Relativity Desktop Client Warning")
 					columnHeaders = New String() {}
 				End If
 				BuildMappingFromLoadFile(caseFields, columnHeaders)
