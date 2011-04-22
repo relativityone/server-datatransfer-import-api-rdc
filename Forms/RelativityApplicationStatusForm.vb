@@ -13,6 +13,7 @@ Public Class RelativityApplicationStatusForm
 	Private Const ExpandedText As String = "More Detail"
 	Private Const CollapseText As String = "Less Detail"
 	Private Const HelpLink As String = "http://help.kcura.com/relativity/Relativity Applications/Using a Relativity Application.pdf#installhelp"
+	Private Const ErrorMessage As String = "Installation failed. For detailed information on how to resolve errors, refer to the Relativity Applications documentation."
 
 	Private Sub UpdateArtifactStatusTable(ByVal evt As kCura.Windows.Process.Generic.ProcessEvent(Of TemplateManagerBase.ApplicationInstallationResult))
 		result = evt.Result
@@ -23,9 +24,9 @@ Public Class RelativityApplicationStatusForm
 
 			artifactTable = CreateSucessTable(result)
 		Else
-			InformationText.Text = "Installation failed. For detailed information on how to resolve errors, refer to the Relativity Applications documentation." & Environment.NewLine & Environment.NewLine & _
-			"The following errors occurred while installing the application:" & Environment.NewLine & Environment.NewLine
-			InformationText.Links.Add(84, 38, HelpLink)
+			InformationText.Text = ErrorMessage & Environment.NewLine & Environment.NewLine & _
+	"The following errors occurred while installing the application:" & Environment.NewLine & Environment.NewLine
+			InformationText.Links.Add(85, 38, HelpLink)
 
 			If Not String.IsNullOrEmpty(result.Message) Then
 				InformationText.Text = String.Format(CultureInfo.CurrentCulture, "{0} {1} {2}", InformationText.Text, ExpandedText, result.Message)
@@ -142,19 +143,27 @@ Public Class RelativityApplicationStatusForm
 	Private Sub InformationLabel_LinkClicked(ByVal sender As Object, ByVal e As System.Windows.Forms.LinkLabelLinkClickedEventArgs) Handles InformationText.LinkClicked
 		If String.Equals(CType(e.Link.LinkData, String), "Details") Then
 			If errorExpanded Then
-				InformationText.Text = "Installation failed. For detailed information on how to resolve errors, refer to the Relativity Applications documentation." & Environment.NewLine & Environment.NewLine & _
-				 "The following errors occurred while installing the application:" & Environment.NewLine & Environment.NewLine & " More Detail " & result.Message
+				InformationText.Text = ErrorMessage & Environment.NewLine & Environment.NewLine & _
+	  "The following errors occurred while installing the application:" & Environment.NewLine & Environment.NewLine & " More Detail " & result.Message
 				errorExpanded = False
 				InformationText.Parent.Height = InformationText.Height
 				InformationText.Parent.Width = InformationText.Width
+
 			Else
-				InformationText.Text = "Installation failed. For detailed information on how to resolve errors, refer to the Relativity Applications documentation." & Environment.NewLine & Environment.NewLine & _
-				 "The following errors occurred while installing the application:" & Environment.NewLine & Environment.NewLine & " Less Detail " & result.Message & _
-				 Environment.NewLine & result.Details
+				InformationText.Text = ErrorMessage & Environment.NewLine & Environment.NewLine & _
+	  "The following errors occurred while installing the application:" & Environment.NewLine & Environment.NewLine & " Less Detail " & result.Message & _
+	  Environment.NewLine & result.Details
 				errorExpanded = True
 				InformationText.Parent.Height = InformationText.Height
 				InformationText.Parent.Width = InformationText.Width
 			End If
+
+			InformationText.Links.Clear()
+			InformationText.Links.Add(84, 38, HelpLink)
+			If Not String.IsNullOrEmpty(result.Message) Then
+				InformationText.Links.Add(195, ExpandedText.Length, "Details")
+			End If
+
 		Else
 			System.Diagnostics.Process.Start(CType(e.Link.LinkData, String))
 		End If
