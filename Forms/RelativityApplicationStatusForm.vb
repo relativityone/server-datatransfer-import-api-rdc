@@ -1,4 +1,5 @@
-﻿Imports System.Globalization
+﻿
+Imports System.Globalization
 Imports kCura.EDDS.WebAPI
 
 Public Class RelativityApplicationStatusForm
@@ -6,36 +7,112 @@ Public Class RelativityApplicationStatusForm
 
 	Public WithEvents observer As kCura.Windows.Process.Generic.ProcessObserver(Of TemplateManagerBase.ApplicationInstallationResult)
 
+	Private Const workspaceIDColumnName As String = "Workspace ID"
+	Private Const workspaceNameColumnName As String = "Workspace Name"
+	Private Const workspaceStatusColumnName As String = "Install Status"
+
+	Private Const WorkspaceSuccessString As String = "Completed"
+	Private Const WorkspaceErrorString As String = "Error"
+
 	Private artifactTable As New DataTable()
-	Private result As TemplateManagerBase.ApplicationInstallationResult
+	Private results As Generic.List(Of TemplateManagerBase.ApplicationInstallationResult)
+	Private globalSuccess As Boolean = True
+	Private currentResultIndex As Int32
+	Private _workspaceView As Boolean
 	Private errorExpanded As Boolean
 
-	Private Const ExpandedText As String = "More Detail"
-	Private Const CollapseText As String = "Less Detail"
+	Private Const ExpandText As String = "[+]"
+	Private Const CollapseText As String = "[-]"
 	Private Const HelpLink As String = "http://help.kcura.com/relativity/Relativity Applications/Using a Relativity Application.pdf#installhelp"
-	Private Const ErrorMessage As String = "Installation failed. For detailed information on how to resolve errors, refer to the Relativity Applications documentation."
+	Private ErrorMessagePart1 As String = "Installation failed. For detailed information on how to resolve errors, refer to the "
+	Private ErrorMessageLink As String = "Relativity Applications documentation."
+	Private ErrorMessagePart2 As String = Environment.NewLine & Environment.NewLine & "The following errors occurred while installing the application:" & Environment.NewLine & Environment.NewLine
 
-	Private Sub UpdateArtifactStatusTable(ByVal evt As kCura.Windows.Process.Generic.ProcessEvent(Of TemplateManagerBase.ApplicationInstallationResult))
-		result = evt.Result
+	Private Property WorkspaceView As Boolean
+		Get
+			Return _workspaceView
+		End Get
+		Set(ByVal value As Boolean)
+			If value Then
+				DetailsButton.Text = "View Details"
+			Else
+				DetailsButton.Text = "Back to Workspaces"
+			End If
+			_workspaceView = value
+		End Set
+	End Property
+
+	Private Sub Observer_OnProcessEvent(ByVal evt As kCura.Windows.Process.Generic.ProcessEvent(Of TemplateManagerBase.ApplicationInstallationResult)) Handles observer.OnProcessEvent
+		Me.Invoke(Sub() ProcessEvent(evt))
+	End Sub
+
+	Private Sub ProcessEvent(ByVal evt As kCura.Windows.Process.Generic.ProcessEvent(Of TemplateManagerBase.ApplicationInstallationResult))
+		If results Is Nothing Then
+			results = New Generic.List(Of TemplateManagerBase.ApplicationInstallationResult)(evt.Result.TotalWorkspaces)
+		End If
+
+		results.Add(evt.Result)
+		globalSuccess = globalSuccess And evt.Result.Success
+		If results.Capacity > 1 Then
+			DetailsButton.Visible = True
+			UpdateWorkspaceStatusView()
+		Else
+			DetailsButton.Visible = False
+			currentResultIndex = 0
+			UpdateArtifactStatusView()
+		End If
+
+	End Sub
+
+	Private Sub UpdateWorkspaceStatusView()
+		WorkspaceView = True
+		StatusHeader.Text = "Installation Status Report"
+		If results.Count < results.Capacity Then
+			InformationText.Text = String.Format("Installing... ({0}/{1})", results.Count, results.Capacity)
+		Else
+			If globalSuccess Then
+				InformationText.Text = String.Format("Installaiton complete. Select a workspace, then click the ""View Details"" button for more information.")
+			Else
+				InformationText.Text = String.Format(CultureInfo.CurrentCulture, "{0}{1}{2} Select a workspace, then click the ""View Details"" button for more information.", ErrorMessagePart1, ErrorMessageLink, ErrorMessagePart2)
+				InformationText.Links.Clear()
+				InformationText.Links.Add(ErrorMessagePart1.Length, ErrorMessageLink.Length, HelpLink)
+			End If
+		End If
+
+		artifactTable = CreateWorkspaceTable()
+		UpdateArtifactStatusTableProperties()
+
+	End Sub
+
+	Private Sub UpdateArtifactStatusView()
+		WorkspaceView = False
 		errorExpanded = False
+		Dim result As TemplateManagerBase.ApplicationInstallationResult = results(currentResultIndex)
+		StatusHeader.Text = String.Format("Installation Status Report -- {0} ({1})", result.WorkspaceName, result.WorkspaceID)
 
 		If result.Success Then
 			InformationText.Text = "Installation complete."
 
 			artifactTable = CreateSucessTable(result)
 		Else
-			InformationText.Text = ErrorMessage & Environment.NewLine & Environment.NewLine & _
-	"The following errors occurred while installing the application:" & Environment.NewLine & Environment.NewLine
-			InformationText.Links.Add(85, 38, HelpLink)
+			InformationText.Text = String.Format(CultureInfo.CurrentCulture, "{0}{1}{2}", ErrorMessagePart1, ErrorMessageLink, ErrorMessagePart2)
+			InformationText.Links.Clear()
+			InformationText.Links.Add(ErrorMessagePart1.Length, ErrorMessageLink.Length, HelpLink)
 
 			If Not String.IsNullOrEmpty(result.Message) Then
-				InformationText.Text = String.Format(CultureInfo.CurrentCulture, "{0} {1} {2}", InformationText.Text, ExpandedText, result.Message)
-				InformationText.Links.Add(195, ExpandedText.Length, "Details")
+				InformationText.Text = String.Format(CultureInfo.CurrentCulture, "{0}{1} {2}", InformationText.Text, ExpandText, result.Message)
+				InformationText.Links.Add(ErrorMessagePart1.Length + ErrorMessageLink.Length + ErrorMessagePart2.Length, ExpandText.Length, "Details")
 			End If
 
 			artifactTable = CreateFailedTable(result)
 		End If
 
+		UpdateArtifactStatusTableProperties()
+
+		ExportButton.Enabled = True
+	End Sub
+
+	Private Sub UpdateArtifactStatusTableProperties()
 		ArtifactStatusTable.DataSource = artifactTable
 		ArtifactStatusTable.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.None
 		ArtifactStatusTable.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill
@@ -43,11 +120,25 @@ Public Class RelativityApplicationStatusForm
 		ArtifactStatusTable.AllowUserToResizeColumns = True
 		ArtifactStatusTable.AllowUserToOrderColumns = True
 		ArtifactStatusTable.ReadOnly = True
+		ArtifactStatusTable.MultiSelect = False
 
 		ColorTable()
-
-		ExportButton.Enabled = True
 	End Sub
+
+	Private Function CreateWorkspaceTable() As DataTable
+		Dim workspaceTable As New DataTable()
+
+		workspaceTable.Columns.Add(workspaceIDColumnName, GetType(Integer))
+		workspaceTable.Columns.Add(workspaceNameColumnName, GetType(String))
+		workspaceTable.Columns.Add(workspaceStatusColumnName, GetType(String))
+
+		For Each res As TemplateManagerBase.ApplicationInstallationResult In results
+			workspaceTable.Rows.Add(New Object() {res.WorkspaceID, res.WorkspaceName, WorkspaceResultToString(res.Success)})
+		Next
+
+		Return workspaceTable
+
+	End Function
 
 	Private Function CreateSucessTable(ByVal result As TemplateManagerBase.ApplicationInstallationResult) As DataTable
 		Dim successTable As New DataTable()
@@ -118,51 +209,88 @@ Public Class RelativityApplicationStatusForm
 	End Function
 
 	Private Sub ColorTable()
-		If result.Success Then
+		If WorkspaceView Then
 			For Each row As DataGridViewRow In ArtifactStatusTable.Rows
-				row.Cells("Status").Style.BackColor = Color.PaleGreen
+				If row.Cells(workspaceStatusColumnName).Value.ToString.Equals(WorkspaceSuccessString) Then
+					row.Cells(workspaceStatusColumnName).Style.BackColor = Color.PaleGreen
+				Else
+					row.Cells(workspaceStatusColumnName).Style.BackColor = Color.LightPink
+				End If
 			Next
 		Else
-			For Each row As DataGridViewRow In ArtifactStatusTable.Rows
-				row.Cells("Error").ToolTipText = row.Cells("Details").Value.ToString
-				row.Cells("Error").Style.BackColor = Color.LightPink
-			Next
+			If results(currentResultIndex).Success Then
+				For Each row As DataGridViewRow In ArtifactStatusTable.Rows
+					row.Cells("Status").Style.BackColor = Color.PaleGreen
+				Next
+			Else
+				For Each row As DataGridViewRow In ArtifactStatusTable.Rows
+					row.Cells("Error").ToolTipText = row.Cells("Details").Value.ToString
+					row.Cells("Error").Style.BackColor = Color.LightPink
+				Next
+			End If
 		End If
+		
 	End Sub
 
 #Region " Event handlers "
 
-	Private Sub Observer_OnProcessEvent(ByVal evt As kCura.Windows.Process.Generic.ProcessEvent(Of TemplateManagerBase.ApplicationInstallationResult)) Handles observer.OnProcessEvent
-		Me.Invoke(Sub() UpdateArtifactStatusTable(evt))
-	End Sub
-
-	Private Sub ArtifactStatusTable_sort(ByVal sender As Object, ByVal e As System.EventArgs) Handles ArtifactStatusTable.Sorted
+	Private Sub ArtifactStatusTable_Sort(ByVal sender As Object, ByVal e As System.EventArgs) Handles ArtifactStatusTable.Sorted
 		ColorTable()
 	End Sub
 
+	Private Sub ArtifactStatusTable_DoubleClick(ByVal sender As Object, ByVal e As System.EventArgs) Handles ArtifactStatusTable.DoubleClick
+		If WorkspaceView Then
+			GoToDetailsView()
+		End If
+
+	End Sub
+
+	Private Sub DetailsButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles DetailsButton.Click
+		If WorkspaceView Then
+			GoToDetailsView()
+		Else
+			UpdateWorkspaceStatusView()
+		End If
+	End Sub
+
+	Private Sub GoToDetailsView()
+		If ArtifactStatusTable.SelectedRows.Count > 0 Then
+			currentResultIndex = findResultByID(CInt(ArtifactStatusTable.SelectedRows(0).Cells(workspaceIDColumnName).Value))
+		ElseIf ArtifactStatusTable.SelectedCells.Count > 0 Then
+			currentResultIndex = findResultByID(CInt(ArtifactStatusTable.Rows(ArtifactStatusTable.SelectedCells(0).RowIndex).Cells(workspaceIDColumnName).Value))
+		Else
+			Return 'The user has done something asinine, like selecting a column. Do nothing.
+		End If
+		UpdateArtifactStatusView()
+	End Sub
+
 	Private Sub InformationLabel_LinkClicked(ByVal sender As Object, ByVal e As System.Windows.Forms.LinkLabelLinkClickedEventArgs) Handles InformationText.LinkClicked
+		Dim result As TemplateManagerBase.ApplicationInstallationResult = results(currentResultIndex)
 		If String.Equals(CType(e.Link.LinkData, String), "Details") Then
+			InformationText.Links.Clear()
 			If errorExpanded Then
-				InformationText.Text = ErrorMessage & Environment.NewLine & Environment.NewLine & _
-	  "The following errors occurred while installing the application:" & Environment.NewLine & Environment.NewLine & " More Detail " & result.Message
+				InformationText.Text = String.Format(CultureInfo.CurrentCulture, "{0}{1}{2}{3} {4}", ErrorMessagePart1, ErrorMessageLink, ErrorMessagePart2, ExpandText, result.Message)
 				errorExpanded = False
 				InformationText.Parent.Height = InformationText.Height
 				InformationText.Parent.Width = InformationText.Width
 
+				If Not String.IsNullOrEmpty(result.Message) Then
+					InformationText.Links.Add(ErrorMessagePart1.Length + ErrorMessageLink.Length + ErrorMessagePart2.Length, ExpandText.Length, "Details")
+				End If
+
 			Else
-				InformationText.Text = ErrorMessage & Environment.NewLine & Environment.NewLine & _
-	  "The following errors occurred while installing the application:" & Environment.NewLine & Environment.NewLine & " Less Detail " & result.Message & _
-	  Environment.NewLine & result.Details
+				InformationText.Text = String.Format(CultureInfo.CurrentCulture, "{0}{1}{2}{3} {4}{5}{6}", ErrorMessagePart1, ErrorMessageLink, ErrorMessagePart2, CollapseText, result.Message, Environment.NewLine, result.Details)
 				errorExpanded = True
 				InformationText.Parent.Height = InformationText.Height
 				InformationText.Parent.Width = InformationText.Width
+
+				If Not String.IsNullOrEmpty(result.Message) Then
+					InformationText.Links.Add(ErrorMessagePart1.Length + ErrorMessageLink.Length + ErrorMessagePart2.Length, CollapseText.Length, "Details")
+				End If
+
 			End If
 
-			InformationText.Links.Clear()
-			InformationText.Links.Add(84, 38, HelpLink)
-			If Not String.IsNullOrEmpty(result.Message) Then
-				InformationText.Links.Add(195, ExpandedText.Length, "Details")
-			End If
+			InformationText.Links.Add(ErrorMessagePart1.Length - 1, ErrorMessageLink.Length, HelpLink)
 
 		Else
 			System.Diagnostics.Process.Start(CType(e.Link.LinkData, String))
@@ -170,6 +298,7 @@ Public Class RelativityApplicationStatusForm
 	End Sub
 
 	Private Sub CopyErrorToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles CopyErrorToolStripMenuItem.Click
+		Dim result As TemplateManagerBase.ApplicationInstallationResult = results(currentResultIndex)
 		If errorExpanded Then
 			Clipboard.SetText("Message:" & Environment.NewLine & result.Message & Environment.NewLine & Environment.NewLine & "Details:" & Environment.NewLine & result.Details)
 		Else
@@ -221,6 +350,15 @@ Public Class RelativityApplicationStatusForm
 
 #End Region
 
+	Private Function findResultByID(ByVal workspaceID As Int32) As Int32
+		For i = 0 To results.Count
+			If results(i).WorkspaceID = workspaceID Then
+				Return i
+			End If
+		Next
+		Throw New System.Exception(String.Format("The following Workspace ID was not found in the results list: {0}", workspaceID))
+	End Function
+
 	Private Function TypeToString(ByVal type As TemplateManagerBase.ApplicationArtifactType) As String
 		If type = TemplateManagerBase.ApplicationArtifactType.Object Then
 			Return "Object Type"
@@ -244,6 +382,14 @@ Public Class RelativityApplicationStatusForm
 			Case Else
 				Return stat.ToString
 		End Select
+	End Function
+
+	Private Function WorkspaceResultToString(ByVal stat As Boolean) As String
+		If stat Then
+			Return WorkspaceSuccessString
+		Else
+			Return WorkspaceErrorString
+		End If
 	End Function
 
 End Class
