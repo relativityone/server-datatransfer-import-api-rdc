@@ -283,7 +283,7 @@ Namespace kCura.EDDS.WinForm
 			'
 			Me.ImportButton.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me.ImportButton.Enabled = False
-			Me.ImportButton.Location = New System.Drawing.Point(548, 469)
+			Me.ImportButton.Location = New System.Drawing.Point(467, 469)
 			Me.ImportButton.Name = "ImportButton"
 			Me.ImportButton.Size = New System.Drawing.Size(75, 23)
 			Me.ImportButton.TabIndex = 11
@@ -293,7 +293,7 @@ Namespace kCura.EDDS.WinForm
 			'CloseButton
 			'
 			Me.CloseButton.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-			Me.CloseButton.Location = New System.Drawing.Point(467, 469)
+			Me.CloseButton.Location = New System.Drawing.Point(548, 469)
 			Me.CloseButton.Name = "CloseButton"
 			Me.CloseButton.Size = New System.Drawing.Size(75, 23)
 			Me.CloseButton.TabIndex = 12
