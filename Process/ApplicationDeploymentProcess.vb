@@ -25,7 +25,9 @@ Namespace kCura.WinEDDS
 
 					Dim applicationDeploymentSystem As New WinEDDS.Service.TemplateManager(_credential, Me._cookieContainer)
 					Dim installationResult As ApplicationInstallationResult = applicationDeploymentSystem.InstallTemplate(_application, installationParameters)
-
+					installationResult.TotalWorkspaces = _caseInfos.Count
+					installationResult.WorkspaceID = caseInfo.ArtifactID
+					installationResult.WorkspaceName = caseInfo.Name
 					Me.ProcessObserver.RaiseStatusEvent(installationResult)
 
 				Catch ex As System.Web.Services.Protocols.SoapException

@@ -827,9 +827,6 @@
     </None>
     <None Include="Web References\kCura.EDDS.WebAPI.SearchManagerBase\SearchManager.disco" />
     <None Include="Web References\kCura.EDDS.WebAPI.SearchManagerBase\SearchManager.wsdl" />
-    <None Include="Web References\kCura.EDDS.WebAPI.TemplateManagerBase\ApplicationExtractionResult.datasource">
-      <DependentUpon>Reference.map</DependentUpon>
-    </None>
     <None Include="Web References\kCura.EDDS.WebAPI.TemplateManagerBase\ApplicationInstallationResult.datasource">
       <DependentUpon>Reference.map</DependentUpon>
     </None>
