@@ -138,7 +138,7 @@ Namespace kCura.WinEDDS.ImportExtension
 				If _loadFileSettings.LoadNativeFiles AndAlso Not _loadFileSettings.NativeFilePathColumn Is Nothing AndAlso Not _loadFileSettings.NativeFilePathColumn = String.Empty Then
 					Dim nativeFileIndex As Int32 = Int32.Parse(_loadFileSettings.NativeFilePathColumn.Substring(_loadFileSettings.NativeFilePathColumn.LastIndexOf("(")).Trim("()".ToCharArray))
 					Dim displayName As String = _reader.GetName(nativeFileIndex - 1)
-					Dim field As New Api.ArtifactField(New DocumentField(displayName, -1, Relativity.FieldTypeHelper.FieldType.File, Relativity.FieldCategory.FileInfo, New Nullable(Of Int32)(Nothing), New Nullable(Of Int32)(Nothing), New Nullable(Of Int32)(Nothing), True))
+					Dim field As New Api.ArtifactField(New DocumentField(displayName, -1, Relativity.FieldTypeHelper.FieldType.File, Relativity.FieldCategory.FileInfo, New Nullable(Of Int32)(Nothing), New Nullable(Of Int32)(Nothing), New Nullable(Of Int32)(Nothing), True, EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice.LeaveBlankValuesUnchanged))
 					Me.SetFieldValue(field, _reader.Item(nativeFileIndex - 1))
 					retval.Add(field)
 				End If
