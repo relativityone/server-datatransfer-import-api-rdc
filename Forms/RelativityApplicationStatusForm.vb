@@ -290,7 +290,7 @@ Public Class RelativityApplicationStatusForm
 
 			End If
 
-			InformationText.Links.Add(ErrorMessagePart1.Length - 1, ErrorMessageLink.Length, HelpLink)
+			InformationText.Links.Add(ErrorMessagePart1.Length, ErrorMessageLink.Length, HelpLink)
 
 		Else
 			System.Diagnostics.Process.Start(CType(e.Link.LinkData, String))
