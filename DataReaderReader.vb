@@ -181,9 +181,12 @@ Namespace kCura.WinEDDS.ImportExtension
 									'Only one file field is allowed
 									Exit For
 								Else
-									Throw New Exception("File" + field.ValueAsString + " does not exist or you don't have sufficient privilidges to access it")
+									' [Salesforce:84392]
+									' We used to throw an exception here, but it caused the import to be aborted
+									' so right now we silently ignore this error and this error will be caught by
+									' BulkLoadFileImporter.ManageDocuments. This is consistent with other
+									' implementations of IArtifactReader (see LoadFileReader.ReadArtifact).
 								End If
-
 							End If
 						End If
 					Next
