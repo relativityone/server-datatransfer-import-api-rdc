@@ -70,6 +70,8 @@ Public Class RelativityApplicationStatusForm
 		If results.Count < results.Capacity Then
 			InformationText.Text = String.Format("Installing... ({0}/{1})", results.Count, results.Capacity)
 		Else
+			DetailsButton.Enabled = True
+			ExportButton.Enabled = True
 			If globalSuccess Then
 				InformationText.Text = String.Format("Installaiton complete. Select a workspace, then click the ""View Details"" button for more information.")
 			Else

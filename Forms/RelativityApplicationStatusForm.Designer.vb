@@ -138,6 +138,7 @@ Partial Class RelativityApplicationStatusForm
 		'DetailsButton
 		'
 		Me.DetailsButton.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+		Me.DetailsButton.Enabled = False
 		Me.DetailsButton.Location = New System.Drawing.Point(416, 367)
 		Me.DetailsButton.Name = "DetailsButton"
 		Me.DetailsButton.Size = New System.Drawing.Size(134, 23)
