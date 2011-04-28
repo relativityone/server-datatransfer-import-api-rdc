@@ -160,7 +160,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <Compile Include="WriteTests\CaseWriteTests.vb" />
+    <Compile Include="WriteTests\SanityTests.vb" />
     <Compile Include="WriteTests\FixtureSetupTeardown.vb" />
     <Compile Include="WriteTests\ImportImageWithExtractedText.vb" />
     <Compile Include="WriteTests\ImportTests.vb" />
