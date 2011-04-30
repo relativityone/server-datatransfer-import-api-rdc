@@ -39,10 +39,11 @@ Namespace kCura.WinEDDS
 			If _locationAccessMatrix Is Nothing Then _locationAccessMatrix = New System.Collections.Hashtable
 		End Sub
 
-		Private Sub SetType(ByVal destinationFolderPath As String)
+		Private Sub SetType(ByVal destFolderPath As String)
 			Try
-				System.IO.File.Create(destinationFolderPath & "123").Close()
-				System.IO.File.Delete(destinationFolderPath & "123")
+				Dim dummyText As String = System.Guid.NewGuid().ToString().Replace("-", String.Empty).Substring(0, 5)
+				System.IO.File.Create(destFolderPath & dummyText).Close()
+				System.IO.File.Delete(destFolderPath & dummyText)
 				Me.UploaderType = FileAccessType.Direct
 			Catch ex As System.Exception
 				Me.UploaderType = FileAccessType.Web
