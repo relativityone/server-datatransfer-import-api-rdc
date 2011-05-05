@@ -24,9 +24,9 @@ Public Class RelativityApplicationStatusForm
 	Private Const ExpandText As String = "[+]"
 	Private Const CollapseText As String = "[-]"
 	Private Const HelpLink As String = "http://help.kcura.com/relativity/Relativity Applications/Using a Relativity Application.pdf#installhelp"
-	Private ErrorMessagePart1 As String = "Installation failed. For detailed information on how to resolve errors, refer to the "
+	Private ErrorMessagePart1 As String = "Installation failed. For details on potential resolutions to the errors you may have encountered here, please refer to the "
 	Private ErrorMessageLink As String = "Relativity Applications documentation."
-	Private ErrorMessagePart2 As String = Environment.NewLine & Environment.NewLine & "The following errors occurred while installing the application:" & Environment.NewLine & Environment.NewLine
+	Private ErrorMessagePart2 As String = Environment.NewLine & " - this link takes you to the most recent version of the document, which may not match with your version of Relativity" & Environment.NewLine & Environment.NewLine & "The following errors occurred while installing the application:" & Environment.NewLine & Environment.NewLine
 
 	Private Property WorkspaceView As Boolean
 		Get
@@ -80,6 +80,8 @@ Public Class RelativityApplicationStatusForm
 				InformationText.Links.Add(ErrorMessagePart1.Length, ErrorMessageLink.Length, HelpLink)
 			End If
 		End If
+		InformationText.Parent.Height = InformationText.Height
+		InformationText.Parent.Width = InformationText.Width
 
 		artifactTable = CreateWorkspaceTable()
 		UpdateArtifactStatusTableProperties()
@@ -108,6 +110,8 @@ Public Class RelativityApplicationStatusForm
 
 			artifactTable = CreateFailedTable(result)
 		End If
+		InformationText.Parent.Height = InformationText.Height
+		InformationText.Parent.Width = InformationText.Width
 
 		UpdateArtifactStatusTableProperties()
 
@@ -275,6 +279,7 @@ Public Class RelativityApplicationStatusForm
 				errorExpanded = False
 				InformationText.Parent.Height = InformationText.Height
 				InformationText.Parent.Width = InformationText.Width
+
 
 				If Not String.IsNullOrEmpty(result.Message) Then
 					InformationText.Links.Add(ErrorMessagePart1.Length + ErrorMessageLink.Length + ErrorMessagePart2.Length, ExpandText.Length, "Details")

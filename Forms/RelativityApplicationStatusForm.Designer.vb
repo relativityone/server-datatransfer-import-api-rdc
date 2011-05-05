@@ -72,7 +72,7 @@ Partial Class RelativityApplicationStatusForm
 		Me.ArtifactStatusTable.RowsDefaultCellStyle = DataGridViewCellStyle2
 		Me.ArtifactStatusTable.RowTemplate.Height = 30
 		Me.ArtifactStatusTable.RowTemplate.ReadOnly = True
-		Me.ArtifactStatusTable.Size = New System.Drawing.Size(763, 358)
+		Me.ArtifactStatusTable.Size = New System.Drawing.Size(818, 358)
 		Me.ArtifactStatusTable.TabIndex = 1
 		'
 		'InformationText
@@ -122,8 +122,8 @@ Partial Class RelativityApplicationStatusForm
 		Me.MainSplitContainer.Panel2.Controls.Add(Me.CloseButton)
 		Me.MainSplitContainer.Panel2.Controls.Add(Me.ExportButton)
 		Me.MainSplitContainer.Panel2.Controls.Add(Me.ArtifactStatusTable)
-		Me.MainSplitContainer.Size = New System.Drawing.Size(769, 516)
-		Me.MainSplitContainer.SplitterDistance = 119
+		Me.MainSplitContainer.Size = New System.Drawing.Size(824, 515)
+		Me.MainSplitContainer.SplitterDistance = 118
 		Me.MainSplitContainer.TabIndex = 3
 		'
 		'Panel1
@@ -132,14 +132,14 @@ Partial Class RelativityApplicationStatusForm
 		Me.Panel1.Controls.Add(Me.InformationText)
 		Me.Panel1.Location = New System.Drawing.Point(6, 3)
 		Me.Panel1.Name = "Panel1"
-		Me.Panel1.Size = New System.Drawing.Size(753, 103)
+		Me.Panel1.Size = New System.Drawing.Size(161, 55)
 		Me.Panel1.TabIndex = 3
 		'
 		'DetailsButton
 		'
 		Me.DetailsButton.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 		Me.DetailsButton.Enabled = False
-		Me.DetailsButton.Location = New System.Drawing.Point(416, 367)
+		Me.DetailsButton.Location = New System.Drawing.Point(471, 367)
 		Me.DetailsButton.Name = "DetailsButton"
 		Me.DetailsButton.Size = New System.Drawing.Size(134, 23)
 		Me.DetailsButton.TabIndex = 5
@@ -149,7 +149,7 @@ Partial Class RelativityApplicationStatusForm
 		'CloseButton
 		'
 		Me.CloseButton.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-		Me.CloseButton.Location = New System.Drawing.Point(663, 367)
+		Me.CloseButton.Location = New System.Drawing.Point(718, 367)
 		Me.CloseButton.Name = "CloseButton"
 		Me.CloseButton.Size = New System.Drawing.Size(103, 23)
 		Me.CloseButton.TabIndex = 4
@@ -160,7 +160,7 @@ Partial Class RelativityApplicationStatusForm
 		'
 		Me.ExportButton.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 		Me.ExportButton.Enabled = False
-		Me.ExportButton.Location = New System.Drawing.Point(556, 367)
+		Me.ExportButton.Location = New System.Drawing.Point(611, 367)
 		Me.ExportButton.Name = "ExportButton"
 		Me.ExportButton.Size = New System.Drawing.Size(103, 23)
 		Me.ExportButton.TabIndex = 2
@@ -171,7 +171,7 @@ Partial Class RelativityApplicationStatusForm
 		'
 		Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
 		Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-		Me.ClientSize = New System.Drawing.Size(771, 574)
+		Me.ClientSize = New System.Drawing.Size(826, 573)
 		Me.Controls.Add(Me.MainSplitContainer)
 		Me.Controls.Add(Me.StatusHeader)
 		Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
