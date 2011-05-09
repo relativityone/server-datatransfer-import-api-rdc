@@ -13,6 +13,7 @@ Namespace kCura.Relativity.DataReaderClient
 
 #Region " Private variables "
 		Private WithEvents _observer As kCura.Windows.Process.ProcessObserver
+		Private _controller As kCura.Windows.Process.Controller
 #End Region
 
 #Region " Public Methods "
@@ -28,7 +29,7 @@ Namespace kCura.Relativity.DataReaderClient
 
 				Dim process As New kCura.WinEDDS.ImportExtension.DataReaderImporterProcess(SourceData.SourceData)
 				_observer = process.ProcessObserver
-
+				_controller = process.ProcessController
 				RaiseEvent OnMessage(New Status("Updating settings"))
 				process.LoadFile = Me.CreateLoadFile(Settings)
 
@@ -41,6 +42,15 @@ Namespace kCura.Relativity.DataReaderClient
 			Else
 				RaiseEvent OnMessage(New Status("There was an error in your settings.  Import aborted."))
 			End If
+		End Sub
+
+		''' <summary>
+		''' Exports the error log file from the import if any errors occurred.
+		''' If no errors occurred, no file is copied.
+		''' </summary>
+		''' <param name="location">The location to export the error file to</param>
+		Public Sub ExportErrorReport(ByVal location As String)
+			_controller.ExportErrorReport(location)
 		End Sub
 
 #End Region
