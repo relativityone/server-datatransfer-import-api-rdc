@@ -6,8 +6,16 @@ Namespace kCura.WinEDDS.ImportExtension
 
 		Private _sourceReader As System.Data.IDataReader
 
-		Public Sub New(ByVal loadFile As kCura.WinEDDS.ImportExtension.DataReaderLoadFile)
-			MyBase.New(loadFile, Nothing, 0, True, System.Guid.NewGuid, True)
+		''' <summary>
+		''' Constructs a new importer that loads the provided <paramref name="loadFile" />
+		''' and responds to events fired on the provided <paramref name="controller" />.
+		''' </summary>
+		''' <param name="loadFile">Information about the data to load into the
+		''' importer</param>
+		''' <param name="controller">A controller that can send events to
+		''' the process that is importing</param>
+		Public Sub New(ByVal loadFile As kCura.WinEDDS.ImportExtension.DataReaderLoadFile, ByVal controller As kCura.Windows.Process.Controller)
+			MyBase.New(loadFile, controller, 0, True, System.Guid.NewGuid, True)
 		End Sub
 
 		Protected Overrides Function GetArtifactReader() As kCura.WinEDDS.Api.IArtifactReader
