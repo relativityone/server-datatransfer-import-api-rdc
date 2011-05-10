@@ -9,6 +9,8 @@ Namespace kCura.Relativity.DataReaderClient
 		Public Settings As Settings
 		Public SourceData As SourceIDataReader
 
+		Public _bulkLoadFileFieldDelimiter As String
+
 #End Region
 
 #Region " Private variables "
@@ -16,11 +18,37 @@ Namespace kCura.Relativity.DataReaderClient
 		Private _controller As kCura.Windows.Process.Controller
 #End Region
 
+#Region " Public Properties "
+		''' <summary>
+		''' Gets or sets the field delimiter to use when writing
+		''' out the bulk load file. Line delimiters will be this value plus a line feed.
+		''' </summary>
+		''' <exception cref="ArgumentNullException">Thrown if <paramref name="bulkLoadFileFieldDelimiter"/>
+		''' is <c>null</c> or <c>String.Empty</c>.</exception>
+		Public Property BulkLoadFileFieldDelimiter As String
+			Get
+				Return _bulkLoadFileFieldDelimiter
+			End Get
+			Set(ByVal value As String)
+				If String.IsNullOrEmpty(value) Then
+					Throw New ArgumentNullException("bulkLoadFileFieldDelimiter")
+				End If
+
+				_bulkLoadFileFieldDelimiter = value
+			End Set
+		End Property
+#End Region
+
 #Region " Public Methods "
 
+		''' <summary>
+		''' Creates a new job that can bulk insert a large amount of artifacts.
+		''' </summary>
 		Public Sub New()
 			Me.Settings = New Settings
 			Me.SourceData = New SourceIDataReader
+
+			Me.BulkLoadFileFieldDelimiter = Global.Relativity.Constants.DEFAULT_FIELD_DELIMITER
 		End Sub
 
 		Public Sub Execute()
@@ -32,6 +60,7 @@ Namespace kCura.Relativity.DataReaderClient
 				_controller = process.ProcessController
 				RaiseEvent OnMessage(New Status("Updating settings"))
 				process.LoadFile = Me.CreateLoadFile(Settings)
+				process.BulkLoadFileFieldDelimiter = BulkLoadFileFieldDelimiter
 
 				RaiseEvent OnMessage(New Status("Executing"))
 				Try
