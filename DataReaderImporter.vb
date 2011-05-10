@@ -14,8 +14,11 @@ Namespace kCura.WinEDDS.ImportExtension
 		''' importer</param>
 		''' <param name="controller">A controller that can send events to
 		''' the process that is importing</param>
-		Public Sub New(ByVal loadFile As kCura.WinEDDS.ImportExtension.DataReaderLoadFile, ByVal controller As kCura.Windows.Process.Controller)
-			MyBase.New(loadFile, controller, 0, True, System.Guid.NewGuid, True)
+		''' <param name="bulkLoadFileFieldDelimiter">The field delimiter that
+		''' was used to create the bulk load file. Line delimiters are a field
+		''' delimiter followed by a new line.</param>
+		Public Sub New(ByVal loadFile As kCura.WinEDDS.ImportExtension.DataReaderLoadFile, ByVal controller As kCura.Windows.Process.Controller, ByVal bulkLoadFileFieldDelimiter As String)
+			MyBase.New(loadFile, controller, 0, True, System.Guid.NewGuid, True, bulkLoadFileFieldDelimiter)
 		End Sub
 
 		Protected Overrides Function GetArtifactReader() As kCura.WinEDDS.Api.IArtifactReader
