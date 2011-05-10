@@ -12,6 +12,13 @@ Namespace kCura.WinEDDS
 		Private WithEvents _newlineCounter As kCura.Utility.File.LineCounter
 		Private _hasRunPRocessComplete As Boolean = False
 		Private _uploadModeText As String = Nothing
+
+		''' <summary>
+		''' Gets or sets the delimiter to use to separate fields in the bulk
+		''' file created in this process. Line delimiters will be this value plus a line feed.
+		''' </summary>
+		Public Property BulkLoadFileFieldDelimiter As String
+
 		Public Property TimeZoneOffset() As Int32
 			Get
 				Return _timeZoneOffset
@@ -22,7 +29,7 @@ Namespace kCura.WinEDDS
 		End Property
 
 		Public Overridable Function GetImporter() As kCura.WinEDDS.BulkLoadFileImporter
-			Return New kCura.WinEDDS.BulkLoadFileImporter(LoadFile, ProcessController, _timeZoneOffset, True, Me.ProcessID, True)
+			Return New kCura.WinEDDS.BulkLoadFileImporter(LoadFile, ProcessController, _timeZoneOffset, True, Me.ProcessID, True, BulkLoadFileFieldDelimiter)
 		End Function
 
 		Protected Overrides Sub Execute()

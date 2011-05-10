@@ -63,6 +63,7 @@ Namespace kCura.WinEDDS
 		Private _start As System.DateTime
 		Private _unmappedRelationalFields As System.Collections.ArrayList
 
+		Private _bulkLoadFileFieldDelimiter As String
 #End Region
 
 #Region "Accessors"
@@ -185,11 +186,39 @@ Namespace kCura.WinEDDS
 
 #Region "Constructors"
 
-		Public Sub New(ByVal args As LoadFile, ByVal processController As kCura.Windows.Process.Controller, ByVal timeZoneOffset As Int32, ByVal initializeUploaders As Boolean, ByVal processID As Guid, ByVal doRetryLogic As Boolean)
-			Me.New(args, processController, timeZoneOffset, True, initializeUploaders, processID, doRetryLogic)
+		''' <summary>
+		''' Constructs a new importer that will prepare a bulk load file from a provided file.
+		''' </summary>
+		''' <param name="args">Information about the file being loaded</param>
+		''' <param name="processController">The process that is running</param>
+		''' <param name="timeZoneOffset">The running context's time zone offset from UTC</param>
+		''' <param name="initializeUploaders">Sets whether or not the uploaders should be initialized
+		''' for use</param>
+		''' <param name="processID">The identifier of the process running</param>
+		''' <param name="bulkLoadFileFieldDelimiter">Sets the field delimiter to use when writing
+		''' out the bulk load file. Line delimiters will be this value plus a line feed.</param>
+		''' <exception cref="ArgumentNullException">Thrown if <paramref name="bulkLoadFileFieldDelimiter"/>
+		''' is <c>null</c> or <c>String.Empty</c>.</exception>
+		Public Sub New(ByVal args As LoadFile, ByVal processController As kCura.Windows.Process.Controller, ByVal timeZoneOffset As Int32, ByVal initializeUploaders As Boolean, ByVal processID As Guid, ByVal doRetryLogic As Boolean, _
+		 ByVal bulkLoadFileFieldDelimiter As String)
+			Me.New(args, processController, timeZoneOffset, True, initializeUploaders, processID, doRetryLogic, bulkLoadFileFieldDelimiter)
 		End Sub
 
-		Public Sub New(ByVal args As LoadFile, ByVal processController As kCura.Windows.Process.Controller, ByVal timeZoneOffset As Int32, ByVal autoDetect As Boolean, ByVal initializeUploaders As Boolean, ByVal processID As Guid, ByVal doRetryLogic As Boolean)
+		''' <summary>
+		''' Constructs a new importer that will prepare a bulk load file from a provided file.
+		''' </summary>
+		''' <param name="args">Information about the file being loaded</param>
+		''' <param name="processController">The process that is running</param>
+		''' <param name="timeZoneOffset">The running context's time zone offset from UTC</param>
+		''' <param name="initializeUploaders">Sets whether or not the uploaders should be initialized
+		''' for use</param>
+		''' <param name="processID">The identifier of the process running</param>
+		''' <param name="bulkLoadFileFieldDelimiter">Sets the field delimiter to use when writing
+		''' out the bulk load file. Line delimiters will be this value plus a line feed.</param>
+		''' <exception cref="ArgumentNullException">Thrown if <paramref name="bulkLoadFileFieldDelimiter"/>
+		''' is <c>null</c> or <c>String.Empty</c>.</exception>
+		Public Sub New(ByVal args As LoadFile, ByVal processController As kCura.Windows.Process.Controller, ByVal timeZoneOffset As Int32, ByVal autoDetect As Boolean, ByVal initializeUploaders As Boolean, ByVal processID As Guid, ByVal doRetryLogic As Boolean, _
+		 ByVal bulkLoadFileFieldDelimiter As String)
 			MyBase.New(args, timeZoneOffset, doRetryLogic, autoDetect)
 			_overwrite = args.OverwriteDestination
 			_auditManager = New kCura.WinEDDS.Service.AuditManager(args.Credentials, args.CookieContainer)
@@ -224,6 +253,12 @@ Namespace kCura.WinEDDS
 			_startLineNumber = args.StartLineNumber
 			Dim parentQuery As New kCura.WinEDDS.Service.ObjectTypeManager(args.Credentials, args.CookieContainer)
 			_parentArtifactTypeID = CType(parentQuery.RetrieveParentArtifactTypeID(args.CaseInfo.ArtifactID, args.ArtifactTypeID).Tables(0).Rows(0)("ParentArtifactTypeID"), Int32)
+
+			If String.IsNullOrEmpty(bulkLoadFileFieldDelimiter) Then
+				Throw New ArgumentNullException("bulkLoadFileFieldDelimiter")
+			End If
+
+			_bulkLoadFileFieldDelimiter = bulkLoadFileFieldDelimiter
 		End Sub
 
 #End Region
@@ -247,11 +282,11 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Public Sub WriteCodeLineToTempFile(ByVal documentIdentifier As String, ByVal codeArtifactID As Int32, ByVal codeTypeID As Int32)
-			_outputCodeFileWriter.WriteLine(String.Format("{1}{0}{2}{0}{3}{0}", Constants.NATIVE_FIELD_DELIMITER, documentIdentifier, codeArtifactID, codeTypeID))
+			_outputCodeFileWriter.WriteLine(String.Format("{1}{0}{2}{0}{3}{0}", _bulkLoadFileFieldDelimiter, documentIdentifier, codeArtifactID, codeTypeID))
 		End Sub
 
 		Public Sub WriteObjectLineToTempFile(ByVal ownerIdentifier As String, ByVal objectName As String, ByVal artifactID As Int32, ByVal objectTypeArtifactID As Int32, ByVal fieldID As Int32)
-			_outputObjectFileWriter.WriteLine(String.Format("{1}{0}{2}{0}{3}{0}{4}{0}{5}{0}", Constants.NATIVE_FIELD_DELIMITER, ownerIdentifier, objectName, artifactID, objectTypeArtifactID, fieldID))
+			_outputObjectFileWriter.WriteLine(String.Format("{1}{0}{2}{0}{3}{0}{4}{0}{5}{0}", _bulkLoadFileFieldDelimiter, ownerIdentifier, objectName, artifactID, objectTypeArtifactID, fieldID))
 		End Sub
 
 #End Region
@@ -688,49 +723,49 @@ Namespace kCura.WinEDDS
 
 		Private Function ManageDocumentLine(ByVal identityValue As String, ByVal extractText As Boolean, ByVal filename As String, ByVal fileguid As String, ByVal mdoc As MetaDocument) As Int32
 			Dim chosenEncoding As System.Text.Encoding = Nothing
-			_outputNativeFileWriter.Write(mdoc.LineStatus.ToString & Constants.NATIVE_FIELD_DELIMITER)
-			_outputNativeFileWriter.Write("0" & Constants.NATIVE_FIELD_DELIMITER)
-			_outputNativeFileWriter.Write("0" & Constants.NATIVE_FIELD_DELIMITER)
-			_outputNativeFileWriter.Write(mdoc.LineNumber & Constants.NATIVE_FIELD_DELIMITER)
+			_outputNativeFileWriter.Write(mdoc.LineStatus.ToString & _bulkLoadFileFieldDelimiter)
+			_outputNativeFileWriter.Write("0" & _bulkLoadFileFieldDelimiter)
+			_outputNativeFileWriter.Write("0" & _bulkLoadFileFieldDelimiter)
+			_outputNativeFileWriter.Write(mdoc.LineNumber & _bulkLoadFileFieldDelimiter)
 			If mdoc.UploadFile And mdoc.IndexFileInDB Then
-				_outputNativeFileWriter.Write(fileguid & Constants.NATIVE_FIELD_DELIMITER)
-				_outputNativeFileWriter.Write(filename & Constants.NATIVE_FIELD_DELIMITER)
+				_outputNativeFileWriter.Write(fileguid & _bulkLoadFileFieldDelimiter)
+				_outputNativeFileWriter.Write(filename & _bulkLoadFileFieldDelimiter)
 				If _settings.CopyFilesToDocumentRepository Then
-					_outputNativeFileWriter.Write(_defaultDestinationFolderPath & mdoc.DestinationVolume & "\" & fileguid & Constants.NATIVE_FIELD_DELIMITER)
-					_outputNativeFileWriter.Write(mdoc.FullFilePath & Constants.NATIVE_FIELD_DELIMITER)
+					_outputNativeFileWriter.Write(_defaultDestinationFolderPath & mdoc.DestinationVolume & "\" & fileguid & _bulkLoadFileFieldDelimiter)
+					_outputNativeFileWriter.Write(mdoc.FullFilePath & _bulkLoadFileFieldDelimiter)
 				Else
-					_outputNativeFileWriter.Write(mdoc.FullFilePath & Constants.NATIVE_FIELD_DELIMITER)
-					_outputNativeFileWriter.Write(mdoc.FullFilePath & Constants.NATIVE_FIELD_DELIMITER)
+					_outputNativeFileWriter.Write(mdoc.FullFilePath & _bulkLoadFileFieldDelimiter)
+					_outputNativeFileWriter.Write(mdoc.FullFilePath & _bulkLoadFileFieldDelimiter)
 				End If
-				_outputNativeFileWriter.Write(Me.GetFileLength(mdoc.FullFilePath) & Constants.NATIVE_FIELD_DELIMITER)
+				_outputNativeFileWriter.Write(Me.GetFileLength(mdoc.FullFilePath) & _bulkLoadFileFieldDelimiter)
 			Else
-				_outputNativeFileWriter.Write(Constants.NATIVE_FIELD_DELIMITER)
-				_outputNativeFileWriter.Write(Constants.NATIVE_FIELD_DELIMITER)
-				_outputNativeFileWriter.Write(Constants.NATIVE_FIELD_DELIMITER)
-				_outputNativeFileWriter.Write(Constants.NATIVE_FIELD_DELIMITER)
-				_outputNativeFileWriter.Write("0" & Constants.NATIVE_FIELD_DELIMITER)
+				_outputNativeFileWriter.Write(_bulkLoadFileFieldDelimiter)
+				_outputNativeFileWriter.Write(_bulkLoadFileFieldDelimiter)
+				_outputNativeFileWriter.Write(_bulkLoadFileFieldDelimiter)
+				_outputNativeFileWriter.Write(_bulkLoadFileFieldDelimiter)
+				_outputNativeFileWriter.Write("0" & _bulkLoadFileFieldDelimiter)
 			End If
-			_outputNativeFileWriter.Write(mdoc.ParentFolderID & Constants.NATIVE_FIELD_DELIMITER)
+			_outputNativeFileWriter.Write(mdoc.ParentFolderID & _bulkLoadFileFieldDelimiter)
 			For Each field As Api.ArtifactField In mdoc.Record
 				If field.Type = Relativity.FieldTypeHelper.FieldType.MultiCode OrElse field.Type = Relativity.FieldTypeHelper.FieldType.Code Then
 					_outputNativeFileWriter.Write(field.Value)
-					_outputNativeFileWriter.Write(Constants.NATIVE_FIELD_DELIMITER)
+					_outputNativeFileWriter.Write(_bulkLoadFileFieldDelimiter)
 				ElseIf field.Type = Relativity.FieldTypeHelper.FieldType.File AndAlso _artifactTypeID <> Relativity.ArtifactType.Document Then
 					Dim fileFieldValues() As String = System.Web.HttpUtility.UrlDecode(field.ValueAsString).Split(Chr(11))
 					If fileFieldValues.Length > 1 Then
 						_outputNativeFileWriter.Write(fileFieldValues(0))
-						_outputNativeFileWriter.Write(Constants.NATIVE_FIELD_DELIMITER)
+						_outputNativeFileWriter.Write(_bulkLoadFileFieldDelimiter)
 						_outputNativeFileWriter.Write(fileFieldValues(1))
-						_outputNativeFileWriter.Write(Constants.NATIVE_FIELD_DELIMITER)
+						_outputNativeFileWriter.Write(_bulkLoadFileFieldDelimiter)
 						_outputNativeFileWriter.Write(fileFieldValues(2))
-						_outputNativeFileWriter.Write(Constants.NATIVE_FIELD_DELIMITER)
+						_outputNativeFileWriter.Write(_bulkLoadFileFieldDelimiter)
 					Else
 						_outputNativeFileWriter.Write("")
-						_outputNativeFileWriter.Write(Constants.NATIVE_FIELD_DELIMITER)
+						_outputNativeFileWriter.Write(_bulkLoadFileFieldDelimiter)
 						_outputNativeFileWriter.Write("")
-						_outputNativeFileWriter.Write(Constants.NATIVE_FIELD_DELIMITER)
+						_outputNativeFileWriter.Write(_bulkLoadFileFieldDelimiter)
 						_outputNativeFileWriter.Write("")
-						_outputNativeFileWriter.Write(Constants.NATIVE_FIELD_DELIMITER)
+						_outputNativeFileWriter.Write(_bulkLoadFileFieldDelimiter)
 					End If
 				ElseIf field.Type = Relativity.FieldTypeHelper.FieldType.File AndAlso _artifactTypeID = Relativity.ArtifactType.Document Then
 					'do nothing
@@ -767,7 +802,7 @@ Namespace kCura.WinEDDS
 					Else
 						_outputNativeFileWriter.Write(field.Value)
 					End If
-					_outputNativeFileWriter.Write(Constants.NATIVE_FIELD_DELIMITER)
+					_outputNativeFileWriter.Write(_bulkLoadFileFieldDelimiter)
 				End If
 			Next
 			If _artifactTypeID = Relativity.ArtifactType.Document Then
@@ -775,7 +810,7 @@ Namespace kCura.WinEDDS
 					Dim boolString As String = "0"
 					Dim fieldType As String = String.Empty
 					If Me.IsSupportedRelativityFileType(mdoc.FileIdData) Then boolString = "1"
-					_outputNativeFileWriter.Write(boolString & Constants.NATIVE_FIELD_DELIMITER)
+					_outputNativeFileWriter.Write(boolString & _bulkLoadFileFieldDelimiter)
 
 					If mdoc.FileIdData Is Nothing Then
 						fieldType = "Unknown format"
@@ -783,22 +818,22 @@ Namespace kCura.WinEDDS
 						fieldType = mdoc.FileIdData.FileType
 					End If
 
-					_outputNativeFileWriter.Write(fieldType & Constants.NATIVE_FIELD_DELIMITER)
-					_outputNativeFileWriter.Write("1" & Constants.NATIVE_FIELD_DELIMITER)
+					_outputNativeFileWriter.Write(fieldType & _bulkLoadFileFieldDelimiter)
+					_outputNativeFileWriter.Write("1" & _bulkLoadFileFieldDelimiter)
 				Else
-					_outputNativeFileWriter.Write("0" & Constants.NATIVE_FIELD_DELIMITER)
-					_outputNativeFileWriter.Write(Constants.NATIVE_FIELD_DELIMITER)
-					_outputNativeFileWriter.Write("0" & Constants.NATIVE_FIELD_DELIMITER)
+					_outputNativeFileWriter.Write("0" & _bulkLoadFileFieldDelimiter)
+					_outputNativeFileWriter.Write(_bulkLoadFileFieldDelimiter)
+					_outputNativeFileWriter.Write("0" & _bulkLoadFileFieldDelimiter)
 				End If
 			End If
 			If chosenEncoding IsNot Nothing Then
 				_outputNativeFileWriter.Write(String.Format("{0}", chosenEncoding.CodePage))
-				_outputNativeFileWriter.Write(Constants.NATIVE_FIELD_DELIMITER)
+				_outputNativeFileWriter.Write(_bulkLoadFileFieldDelimiter)
 			ElseIf _fullTextColumnMapsToFileLocation Then
 				_outputNativeFileWriter.Write(String.Format("{0}", ""))
-				_outputNativeFileWriter.Write(Constants.NATIVE_FIELD_DELIMITER)
+				_outputNativeFileWriter.Write(_bulkLoadFileFieldDelimiter)
 			End If
-			_outputNativeFileWriter.Write(vbNewLine)
+			_outputNativeFileWriter.Write(vbCrLf)
 		End Function
 
 		Private Function GetIsSupportedRelativityFileTypeField() As kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo
