@@ -14,8 +14,12 @@ Public Class RelativityApplicationStatusForm
 	Private Const WorkspaceSuccessString As String = "Completed"
 	Private Const WorkspaceErrorString As String = "Error"
 
-	Private Const HiddenErrorString As String = "Error"
-	Private Const DetailsErrorString As String = "Resolution"
+	Private Const ArtifactErrorColumnName As String = "Error"
+	Private Const ArtifactHiddenErrorColumnName As String = "Hidden Error"
+	Private Const ArtifactDetailsColumnName As String = "Resolution"
+
+	Private Delegate Sub SelectCell(ByVal cell As DataGridViewCell)
+	Private _selectCell As SelectCell
 
 	Private artifactTable As New DataTable()
 	Private results As Generic.List(Of TemplateManagerBase.ApplicationInstallationResult)
@@ -26,10 +30,16 @@ Public Class RelativityApplicationStatusForm
 
 	Private Const ExpandText As String = "[+]"
 	Private Const CollapseText As String = "[-]"
-	Private Const HelpLink As String = "http://help.kcura.com/relativity/Relativity Applications/Using a Relativity Application.pdf#installhelp"
+	Private Const HelpLink As String = "http://help.kcura.com/relativity/Relativity Applications/Using Relativity Applications for RDC - 7.0.pdf#Resolving-Errors"
 	Private ErrorMessagePart1 As String = "Installation failed. For details on potential resolutions to the errors you may have encountered here, please refer to the "
 	Private ErrorMessageLink As String = "Relativity Applications documentation."
-	Private ErrorMessagePart2 As String = Environment.NewLine & " - this link takes you to the most recent version of the document, which may not match with your version of Relativity" & Environment.NewLine & Environment.NewLine & "The following errors occurred while installing the application:" & Environment.NewLine & Environment.NewLine
+	Private ErrorMessagePart2 As String = Environment.NewLine & "(Note: This link takes you to the most recent version of the document, which may not match with your version of Relativity.)" & Environment.NewLine & Environment.NewLine & "The following errors occurred while installing the application:" & Environment.NewLine & Environment.NewLine
+
+	Private application As Xml.XmlDocument
+	Private credential As Net.NetworkCredential
+	Private cookieContainer As Net.CookieContainer
+	Private caseInfos As Generic.IEnumerable(Of Relativity.CaseInfo)
+	Private _processPool As kCura.Windows.Process.ProcessPool
 
 	Private shouldBeEditingThis As DataGridViewCell = Nothing
 
@@ -46,6 +56,16 @@ Public Class RelativityApplicationStatusForm
 			_workspaceView = value
 		End Set
 	End Property
+
+	Public Sub New(ByVal app As Xml.XmlDocument, ByVal cred As Net.NetworkCredential, ByVal cookies As Net.CookieContainer, ByVal cases As Generic.IEnumerable(Of Relativity.CaseInfo))
+		InitializeComponent()
+
+		application = app
+		credential = cred
+		cookieContainer = cookies
+		caseInfos = cases
+		_processPool = New kCura.Windows.Process.ProcessPool()
+	End Sub
 
 	Private Sub Observer_OnProcessEvent(ByVal evt As kCura.Windows.Process.Generic.ProcessEvent(Of TemplateManagerBase.ApplicationInstallationResult)) Handles observer.OnProcessEvent
 		Me.Invoke(Sub() ProcessEvent(evt))
@@ -123,52 +143,6 @@ Public Class RelativityApplicationStatusForm
 		ExportButton.Enabled = True
 	End Sub
 
-	Private Sub UpdateArtifactStatusTableProperties()
-		ArtifactStatusTable.DataSource = artifactTable
-		'ArtifactStatusTable.ReadOnly = True
-		ArtifactStatusTable.Columns("Locked Applications").Visible = False
-		Dim dropDownColumn As New DataGridViewComboBoxColumn()
-		dropDownColumn.Name = DetailsErrorString
-		ArtifactStatusTable.Columns.Add(dropDownColumn)
-
-		For Each row As DataGridViewRow In ArtifactStatusTable.Rows
-			Select Case row.Cells(HiddenErrorString).Value.ToString
-				Case "Friendly Name Conflict"
-					CType(row.Cells(DetailsErrorString), DataGridViewComboBoxCell).Items.Add("Rename in Workspace")
-				Case "Multiple File Fields"
-					
-				Case "Name Conflict"
-					CType(row.Cells(DetailsErrorString), DataGridViewComboBoxCell).Items.Add("Rename in Workspace")
-				Case "Shared By A Locked App"
-					CType(row.Cells(DetailsErrorString), DataGridViewComboBoxCell).Items.Add("Force Import")
-				Case "Unknown Error"
-					'
-				Case Else
-			End Select
-			CType(row.Cells(DetailsErrorString), DataGridViewComboBoxCell).ReadOnly = False
-
-			CType(row.Cells(DetailsErrorString), DataGridViewComboBoxCell).FlatStyle = Windows.Forms.FlatStyle.Standard
-			row.Cells(DetailsErrorString).ReadOnly = False
-
-
-
-		Next
-		Dim resolutionStyle As New DataGridViewCellStyle()
-
-		ArtifactStatusTable.Columns(0).DefaultCellStyle = resolutionStyle
-		ArtifactStatusTable.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells
-		ArtifactStatusTable.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells
-		ArtifactStatusTable.Columns("Details").AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill
-		ArtifactStatusTable.RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.EnableResizing
-		ArtifactStatusTable.AllowUserToResizeColumns = True
-		ArtifactStatusTable.AllowUserToOrderColumns = True
-		ArtifactStatusTable.MultiSelect = False
-		ArtifactStatusTable.RowHeadersWidth = 15
-		ArtifactStatusTable.EditMode = DataGridViewEditMode.EditOnEnter And DataGridViewEditMode.EditProgrammatically
-
-		ColorTable()
-	End Sub
-
 	Private Function CreateWorkspaceTable() As DataTable
 		Dim workspaceTable As New DataTable()
 
@@ -206,13 +180,14 @@ Public Class RelativityApplicationStatusForm
 	Private Function CreateFailedTable(ByVal result As TemplateManagerBase.ApplicationInstallationResult) As DataTable
 		Dim failedTable As New DataTable()
 
-		failedTable.Columns.Add(HiddenErrorString, GetType(String))
+		failedTable.Columns.Add(ArtifactErrorColumnName, GetType(String))
+		failedTable.Columns.Add(ArtifactHiddenErrorColumnName, GetType(TemplateManagerBase.StatusCode))
 		failedTable.Columns.Add("Name", GetType(String))
 		failedTable.Columns.Add("Object Type Name", GetType(String))
 		failedTable.Columns.Add("Artifact Type", GetType(String))
 		failedTable.Columns.Add("Locked Applications", GetType(String))
-		failedTable.Columns.Add("Conflicting Artifact ID", GetType(Integer))
 		failedTable.Columns.Add("Conflicting Artifact Name", GetType(String))
+		failedTable.Columns.Add("Conflicting Artifact ID", GetType(Integer))
 		failedTable.Columns.Add("Details", GetType(String))
 
 		For Each art As TemplateManagerBase.ApplicationArtifact In result.StatusApplicationArtifacts
@@ -239,18 +214,65 @@ Public Class RelativityApplicationStatusForm
 			End If
 
 			failedTable.Rows.Add(New Object() { _
-			 StatusToString(art.Status), _
+			 StatusToString(art.Status, conflictApps.ToString), _
+			 art.Status, _
 			 art.Name, _
 			 parentName, _
 			 TypeToString(art.Type), _
 			 conflictApps, _
-			 conflictID, _
 			 conflictName, _
+			 conflictID, _
 			 art.StatusMessage})
 		Next
 
 		Return failedTable
 	End Function
+
+	Private Sub UpdateArtifactStatusTableProperties()
+		ArtifactStatusTable.DataSource = artifactTable
+		'ArtifactStatusTable.ReadOnly = True
+		ArtifactStatusTable.Columns("Locked Applications").Visible = False
+		ArtifactStatusTable.Columns(ArtifactHiddenErrorColumnName).Visible = False
+		Dim dropDownColumn As New DataGridViewComboBoxColumn()
+		dropDownColumn.Name = ArtifactDetailsColumnName
+		ArtifactStatusTable.Columns.Insert(0, dropDownColumn)
+
+		For Each row As DataGridViewRow In ArtifactStatusTable.Rows
+			Select Case CType(row.Cells(ArtifactHiddenErrorColumnName).Value, TemplateManagerBase.StatusCode)
+				Case TemplateManagerBase.StatusCode.FriendlyNameConflict
+					CType(row.Cells(ArtifactDetailsColumnName), DataGridViewComboBoxCell).Items.Add("Rename in Workspace")
+				Case TemplateManagerBase.StatusCode.MultipleFileField
+
+				Case TemplateManagerBase.StatusCode.NameConflict
+					CType(row.Cells(ArtifactDetailsColumnName), DataGridViewComboBoxCell).Items.Add("Rename in Workspace")
+				Case TemplateManagerBase.StatusCode.SharedByLockedApp
+					CType(row.Cells(ArtifactDetailsColumnName), DataGridViewComboBoxCell).Items.Add("Force Import")
+				Case TemplateManagerBase.StatusCode.UnknownError
+					'
+				Case Else
+			End Select
+			CType(row.Cells(ArtifactDetailsColumnName), DataGridViewComboBoxCell).ReadOnly = False
+
+			row.Cells(ArtifactDetailsColumnName).ReadOnly = False
+
+
+
+		Next
+		Dim resolutionStyle As New DataGridViewCellStyle()
+
+		ArtifactStatusTable.Columns(0).DefaultCellStyle = resolutionStyle
+		ArtifactStatusTable.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells
+		ArtifactStatusTable.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells
+		ArtifactStatusTable.Columns("Details").AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill
+		ArtifactStatusTable.RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.EnableResizing
+		ArtifactStatusTable.AllowUserToResizeColumns = True
+		ArtifactStatusTable.AllowUserToOrderColumns = True
+		ArtifactStatusTable.MultiSelect = False
+		ArtifactStatusTable.RowHeadersWidth = 15
+		ArtifactStatusTable.EditMode = DataGridViewEditMode.EditOnEnter And DataGridViewEditMode.EditProgrammatically
+
+		ColorTable()
+	End Sub
 
 	Private Sub ColorTable()
 		If WorkspaceView Then
@@ -268,7 +290,7 @@ Public Class RelativityApplicationStatusForm
 				Next
 			Else
 				For Each row As DataGridViewRow In ArtifactStatusTable.Rows
-					row.Cells(HiddenErrorString).Style.BackColor = Color.LightPink
+					row.Cells(ArtifactErrorColumnName).Style.BackColor = Color.LightPink
 				Next
 			End If
 		End If
@@ -281,22 +303,30 @@ Public Class RelativityApplicationStatusForm
 		ColorTable()
 	End Sub
 
-	Private Sub ArtifactStatusTable_CellValueChanged(ByVal sender As Object, ByVal e As DataGridViewCellEventArgs) Handles ArtifactStatusTable.CellValueChanged
-		Dim currentRow As DataGridViewRow = ArtifactStatusTable.Rows(e.RowIndex)
-
-		If String.Equals(ArtifactStatusTable.Columns(e.ColumnIndex).Name, DetailsErrorString) AndAlso CType(ArtifactStatusTable.Rows(e.RowIndex).Cells(e.ColumnIndex), DataGridViewComboBoxCell).Value.ToString.Equals("Rename in Workspace") Then
-			currentRow.Cells("Conflicting Artifact Name").ReadOnly = False
-			shouldBeEditingThis = currentRow.Cells("Conflicting Artifact Name")
+	Private Sub ArtifactStatusTable_EditingControlShowing(ByVal sender As Object, ByVal e As System.Windows.Forms.DataGridViewEditingControlShowingEventArgs) Handles ArtifactStatusTable.EditingControlShowing
+		If String.Equals(ArtifactStatusTable.CurrentCell.OwningColumn.Name, "Resolution", StringComparison.InvariantCultureIgnoreCase) Then
+			Dim comboBox As ComboBox = DirectCast(e.Control, ComboBox)
+			AddHandler comboBox.SelectedValueChanged, AddressOf Me.renameCell_SelectedIndexChanged
+		End If
+	End Sub
+	Private Sub renameCell_SelectedIndexChanged(ByVal sender As Object, ByVal e As EventArgs)
+		If ArtifactStatusTable.SelectedCells.Count > 0 Then
+			Dim cell As DataGridViewComboBoxCell = DirectCast(ArtifactStatusTable.SelectedCells.Item(0), DataGridViewComboBoxCell)
+			If Not cell Is Nothing AndAlso cell.Items.Count > 0 AndAlso String.Equals(DirectCast(cell.Items.Item(0), String), "Rename in Workspace", StringComparison.InvariantCultureIgnoreCase) Then
+				cell.Selected = False
+				Dim conflictingNameCell As DataGridViewCell = cell.OwningRow.Cells("Conflicting Artifact Name")
+				_selectCell = New SelectCell(AddressOf SelectCellSub)
+				ArtifactStatusTable.BeginInvoke(_selectCell, conflictingNameCell)
+			End If
 		End If
 	End Sub
 
-	Private Sub ArtifactStatusTable_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles ArtifactStatusTable.Click
-		If shouldBeEditingThis IsNot Nothing Then
-			shouldBeEditingThis.Selected = True
-			ArtifactStatusTable.BeginEdit(True)
-			shouldBeEditingThis = Nothing
-		End If
+	Private Sub SelectCellSub(ByVal cell As DataGridViewCell)
+		cell.ReadOnly = False
+		cell.Selected = True
+		ArtifactStatusTable.BeginEdit(True)
 	End Sub
+
 
 	Private Sub ArtifactStatusTable_DoubleClick(ByVal sender As Object, ByVal e As System.EventArgs) Handles ArtifactStatusTable.DoubleClick
 		If WorkspaceView Then
@@ -405,6 +435,16 @@ Public Class RelativityApplicationStatusForm
 		End If
 	End Sub
 
+	Private Sub RetryImportButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles RetryImportButton.Click
+		ArtifactStatusTable.DataSource = Nothing
+		ArtifactStatusTable.Columns.Clear()
+		results = Nothing
+		InformationText.Text = "Importing..."
+		Dim applicationDeploymentProcess As New kCura.WinEDDS.ApplicationDeploymentProcess(application, Me.credential, Me.cookieContainer, caseInfos)
+		Me.observer = applicationDeploymentProcess.ProcessObserver
+		_processPool.StartProcess(applicationDeploymentProcess)
+	End Sub
+
 	Private Sub CloseButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles CloseButton.Click
 		Me.Close()
 	End Sub
@@ -428,7 +468,7 @@ Public Class RelativityApplicationStatusForm
 		End If
 	End Function
 
-	Private Function StatusToString(ByVal stat As TemplateManagerBase.StatusCode) As String
+	Private Function StatusToString(ByVal stat As TemplateManagerBase.StatusCode, ByVal lockedApps As String) As String
 		Dim resolutionDropDown As New ComboBox
 		'resolutionDropDown.BackColor = Color.LightPink
 		Select Case stat
@@ -439,7 +479,7 @@ Public Class RelativityApplicationStatusForm
 			Case TemplateManagerBase.StatusCode.NameConflict
 				Return "Name Conflict"
 			Case TemplateManagerBase.StatusCode.SharedByLockedApp
-				Return "Shared By A Locked App"
+				Return String.Format("Shared By A Locked App: {0}", lockedApps)
 			Case TemplateManagerBase.StatusCode.UnknownError
 				Return "Unknown Error"
 			Case Else

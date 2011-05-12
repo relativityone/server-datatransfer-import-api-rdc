@@ -140,7 +140,7 @@ Partial Class RelativityApplicationStatusForm
 		'RetryImportButton
 		'
 		Me.RetryImportButton.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-		Me.RetryImportButton.Location = New System.Drawing.Point(556, 382)
+		Me.RetryImportButton.Location = New System.Drawing.Point(556, 383)
 		Me.RetryImportButton.Name = "RetryImportButton"
 		Me.RetryImportButton.Size = New System.Drawing.Size(103, 23)
 		Me.RetryImportButton.TabIndex = 6
@@ -151,7 +151,7 @@ Partial Class RelativityApplicationStatusForm
 		'
 		Me.DetailsButton.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 		Me.DetailsButton.Enabled = False
-		Me.DetailsButton.Location = New System.Drawing.Point(416, 382)
+		Me.DetailsButton.Location = New System.Drawing.Point(416, 383)
 		Me.DetailsButton.Name = "DetailsButton"
 		Me.DetailsButton.Size = New System.Drawing.Size(134, 23)
 		Me.DetailsButton.TabIndex = 5
@@ -161,7 +161,7 @@ Partial Class RelativityApplicationStatusForm
 		'CloseButton
 		'
 		Me.CloseButton.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-		Me.CloseButton.Location = New System.Drawing.Point(774, 382)
+		Me.CloseButton.Location = New System.Drawing.Point(774, 383)
 		Me.CloseButton.Name = "CloseButton"
 		Me.CloseButton.Size = New System.Drawing.Size(103, 23)
 		Me.CloseButton.TabIndex = 4
@@ -172,7 +172,7 @@ Partial Class RelativityApplicationStatusForm
 		'
 		Me.ExportButton.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 		Me.ExportButton.Enabled = False
-		Me.ExportButton.Location = New System.Drawing.Point(665, 382)
+		Me.ExportButton.Location = New System.Drawing.Point(665, 383)
 		Me.ExportButton.Name = "ExportButton"
 		Me.ExportButton.Size = New System.Drawing.Size(103, 23)
 		Me.ExportButton.TabIndex = 2
