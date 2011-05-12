@@ -367,10 +367,10 @@
   </wsdl:binding>
   <wsdl:service name="RelativityManager">
     <wsdl:port name="RelativityManagerSoap" binding="tns:RelativityManagerSoap">
-      <soap:address location="http://localhost/EDDSWebAPI/RelativityManager.asmx" />
+      <soap:address location="http://localhost/RelativityWebApi/RelativityManager.asmx" />
     </wsdl:port>
     <wsdl:port name="RelativityManagerSoap12" binding="tns:RelativityManagerSoap12">
-      <soap12:address location="http://localhost/EDDSWebAPI/RelativityManager.asmx" />
+      <soap12:address location="http://localhost/RelativityWebApi/RelativityManager.asmx" />
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>

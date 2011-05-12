@@ -406,10 +406,10 @@
   </wsdl:binding>
   <wsdl:service name="CodeManager">
     <wsdl:port name="CodeManagerSoap" binding="tns:CodeManagerSoap">
-      <soap:address location="http://localhost/EDDSWebAPI/CodeManager.asmx" />
+      <soap:address location="http://localhost/RelativityWebApi/CodeManager.asmx" />
     </wsdl:port>
     <wsdl:port name="CodeManagerSoap12" binding="tns:CodeManagerSoap12">
-      <soap12:address location="http://localhost/EDDSWebAPI/CodeManager.asmx" />
+      <soap12:address location="http://localhost/RelativityWebApi/CodeManager.asmx" />
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>

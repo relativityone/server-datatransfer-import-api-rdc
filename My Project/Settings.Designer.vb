@@ -57,7 +57,7 @@ Namespace My
         <Global.System.Configuration.ApplicationScopedSettingAttribute(),  _
          Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
          Global.System.Configuration.SpecialSettingAttribute(Global.System.Configuration.SpecialSetting.WebServiceUrl),  _
-         Global.System.Configuration.DefaultSettingValueAttribute("http://localhost/EDDSWebAPI/ExportManager.asmx")>  _
+         Global.System.Configuration.DefaultSettingValueAttribute("http://localhost/RelativityWebApi/ExportManager.asmx")>  _
         Public ReadOnly Property kCura_WinEDDS_kCura_EDDS_WebAPI_ExportManagerBase_ExportManager() As String
             Get
                 Return CType(Me("kCura_WinEDDS_kCura_EDDS_WebAPI_ExportManagerBase_ExportManager"),String)

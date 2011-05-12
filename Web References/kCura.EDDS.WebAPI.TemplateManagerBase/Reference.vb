@@ -39,7 +39,7 @@ Namespace kCura.EDDS.WebAPI.TemplateManagerBase
         '''<remarks/>
         Public Sub New()
             MyBase.New
-            Me.Url = "http://localhost/EDDSWebAPI/TemplateManager.asmx"
+            Me.Url = "http://localhost/RelativityWebApi/TemplateManager.asmx"
             If (Me.IsLocalFileSystemWebService(Me.Url) = true) Then
                 Me.UseDefaultCredentials = true
                 Me.useDefaultCredentialsSetExplicitly = false

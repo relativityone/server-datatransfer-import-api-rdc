@@ -542,10 +542,10 @@
   </wsdl:binding>
   <wsdl:service name="BulkImportManager">
     <wsdl:port name="BulkImportManagerSoap" binding="tns:BulkImportManagerSoap">
-      <soap:address location="http://localhost/EDDSWebAPI/BulkImportManager.asmx" />
+      <soap:address location="http://localhost/RelativityWebApi/BulkImportManager.asmx" />
     </wsdl:port>
     <wsdl:port name="BulkImportManagerSoap12" binding="tns:BulkImportManagerSoap12">
-      <soap12:address location="http://localhost/EDDSWebAPI/BulkImportManager.asmx" />
+      <soap12:address location="http://localhost/RelativityWebApi/BulkImportManager.asmx" />
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>

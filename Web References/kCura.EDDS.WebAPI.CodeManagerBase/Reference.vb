@@ -52,7 +52,7 @@ Namespace kCura.EDDS.WebAPI.CodeManagerBase
         '''<remarks/>
         Public Sub New()
             MyBase.New
-            Me.Url = "http://localhost/EDDSWebAPI/CodeManager.asmx"
+            Me.Url = "http://localhost/RelativityWebApi/CodeManager.asmx"
             If (Me.IsLocalFileSystemWebService(Me.Url) = true) Then
                 Me.UseDefaultCredentials = true
                 Me.useDefaultCredentialsSetExplicitly = false

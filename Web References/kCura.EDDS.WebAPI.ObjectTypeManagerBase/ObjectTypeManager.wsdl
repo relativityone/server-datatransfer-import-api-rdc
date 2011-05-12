@@ -113,10 +113,10 @@
   </wsdl:binding>
   <wsdl:service name="ObjectTypeManager">
     <wsdl:port name="ObjectTypeManagerSoap" binding="tns:ObjectTypeManagerSoap">
-      <soap:address location="http://localhost/EDDSWebAPI/ObjectTypeManager.asmx" />
+      <soap:address location="http://localhost/RelativityWebApi/ObjectTypeManager.asmx" />
     </wsdl:port>
     <wsdl:port name="ObjectTypeManagerSoap12" binding="tns:ObjectTypeManagerSoap12">
-      <soap12:address location="http://localhost/EDDSWebAPI/ObjectTypeManager.asmx" />
+      <soap12:address location="http://localhost/RelativityWebApi/ObjectTypeManager.asmx" />
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>

@@ -151,10 +151,10 @@
   </wsdl:binding>
   <wsdl:service name="TemplateManager">
     <wsdl:port name="TemplateManagerSoap" binding="tns:TemplateManagerSoap">
-      <soap:address location="http://localhost/EDDSWebAPI/TemplateManager.asmx" />
+      <soap:address location="http://localhost/RelativityWebApi/TemplateManager.asmx" />
     </wsdl:port>
     <wsdl:port name="TemplateManagerSoap12" binding="tns:TemplateManagerSoap12">
-      <soap12:address location="http://localhost/EDDSWebAPI/TemplateManager.asmx" />
+      <soap12:address location="http://localhost/RelativityWebApi/TemplateManager.asmx" />
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>

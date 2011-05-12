@@ -265,10 +265,10 @@
   </wsdl:binding>
   <wsdl:service name="FieldManager">
     <wsdl:port name="FieldManagerSoap" binding="tns:FieldManagerSoap">
-      <soap:address location="http://localhost/EDDSWebAPI/FieldManager.asmx" />
+      <soap:address location="http://localhost/RelativityWebApi/FieldManager.asmx" />
     </wsdl:port>
     <wsdl:port name="FieldManagerSoap12" binding="tns:FieldManagerSoap12">
-      <soap12:address location="http://localhost/EDDSWebAPI/FieldManager.asmx" />
+      <soap12:address location="http://localhost/RelativityWebApi/FieldManager.asmx" />
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>

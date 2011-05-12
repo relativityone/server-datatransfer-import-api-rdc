@@ -1063,10 +1063,10 @@
   </wsdl:binding>
   <wsdl:service name="SearchManager">
     <wsdl:port name="SearchManagerSoap" binding="tns:SearchManagerSoap">
-      <soap:address location="http://localhost/EDDSWebAPI/SearchManager.asmx" />
+      <soap:address location="http://localhost/RelativityWebApi/SearchManager.asmx" />
     </wsdl:port>
     <wsdl:port name="SearchManagerSoap12" binding="tns:SearchManagerSoap12">
-      <soap12:address location="http://localhost/EDDSWebAPI/SearchManager.asmx" />
+      <soap12:address location="http://localhost/RelativityWebApi/SearchManager.asmx" />
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>

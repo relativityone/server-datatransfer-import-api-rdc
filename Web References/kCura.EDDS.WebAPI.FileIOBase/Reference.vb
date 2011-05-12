@@ -56,7 +56,7 @@ Namespace kCura.EDDS.WebAPI.FileIOBase
         '''<remarks/>
         Public Sub New()
             MyBase.New
-            Me.Url = "http://localhost/EDDSWebAPI/FileIO.asmx"
+            Me.Url = "http://localhost/RelativityWebApi/FileIO.asmx"
             If (Me.IsLocalFileSystemWebService(Me.Url) = true) Then
                 Me.UseDefaultCredentials = true
                 Me.useDefaultCredentialsSetExplicitly = false
