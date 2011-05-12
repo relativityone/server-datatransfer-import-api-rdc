@@ -284,8 +284,7 @@ Public Class RelativityApplicationStatusForm
 	Private Sub ArtifactStatusTable_CellValueChanged(ByVal sender As Object, ByVal e As DataGridViewCellEventArgs) Handles ArtifactStatusTable.CellValueChanged
 		Dim currentRow As DataGridViewRow = ArtifactStatusTable.Rows(e.RowIndex)
 
-		If CType(ArtifactStatusTable.Rows(e.RowIndex).Cells(e.ColumnIndex), DataGridViewComboBoxCell).Value.ToString.Equals("Rename in Workspace") _
-		 AndAlso String.Equals(ArtifactStatusTable.Columns(e.ColumnIndex).Name, DetailsErrorString) Then
+		If String.Equals(ArtifactStatusTable.Columns(e.ColumnIndex).Name, DetailsErrorString) AndAlso CType(ArtifactStatusTable.Rows(e.RowIndex).Cells(e.ColumnIndex), DataGridViewComboBoxCell).Value.ToString.Equals("Rename in Workspace") Then
 			currentRow.Cells("Conflicting Artifact Name").ReadOnly = False
 			shouldBeEditingThis = currentRow.Cells("Conflicting Artifact Name")
 		End If
