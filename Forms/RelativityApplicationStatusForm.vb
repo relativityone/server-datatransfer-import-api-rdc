@@ -1,4 +1,4 @@
-﻿
+﻿Imports System.Linq
 Imports System.Globalization
 Imports kCura.EDDS.WebAPI
 
@@ -16,7 +16,16 @@ Public Class RelativityApplicationStatusForm
 
 	Private Const ArtifactErrorColumnName As String = "Error"
 	Private Const ArtifactHiddenErrorColumnName As String = "Hidden Error"
-	Private Const ArtifactDetailsColumnName As String = "Resolution"
+	Private Const ArtifactApplicationIdsColumnName As String = "Application IDs"
+	Private Const ArtifactResolutionColumnName As String = "Resolution"
+	Private Const ArtifactConflictIDColumnName As String = "Conflicting Artifact ID"
+	Private Const ArtifactTypeIDColumnName As String = "Artifact Type ID"
+	Private Const ArtifactConflictNameColumnName As String = "Conflicting Artifact Name"
+	Private Const ArtifactIndexColumnName As String = "Index"
+
+	Private Const DropdownForceImport As String = "Force Import"
+	Private Const DropdownRenameInWorkspace As String = "Rename in Workspace"
+	Private Const DropdownRenameFriendlyNameInWorkspace As String = "Rename in Workspace"
 
 	Private Delegate Sub SelectCell(ByVal cell As DataGridViewCell)
 	Private _selectCell As SelectCell
@@ -166,6 +175,10 @@ Public Class RelativityApplicationStatusForm
 		successTable.Columns.Add("Artifact ID", GetType(Integer))
 		successTable.Columns.Add("Status", GetType(String))
 
+		For Each art As TemplateManagerBase.ApplicationArtifact In result.StatusApplicationArtifacts
+			successTable.Rows.Add(New Object() {art.Name, TypeToString(art.Type), art.ArtifactId, StatusToString(art.Status, "")})
+		Next
+
 		For Each art As TemplateManagerBase.ApplicationArtifact In result.NewApplicationArtifacts
 			successTable.Rows.Add(New Object() {art.Name, TypeToString(art.Type), art.ArtifactId, "Created"})
 		Next
@@ -185,16 +198,21 @@ Public Class RelativityApplicationStatusForm
 		failedTable.Columns.Add("Name", GetType(String))
 		failedTable.Columns.Add("Object Type Name", GetType(String))
 		failedTable.Columns.Add("Artifact Type", GetType(String))
+		failedTable.Columns.Add(ArtifactTypeIDColumnName, GetType(TemplateManagerBase.ApplicationArtifactType))
 		failedTable.Columns.Add("Locked Applications", GetType(String))
-		failedTable.Columns.Add("Conflicting Artifact Name", GetType(String))
-		failedTable.Columns.Add("Conflicting Artifact ID", GetType(Integer))
+		failedTable.Columns.Add(ArtifactApplicationIdsColumnName, GetType(Int32()))
+		failedTable.Columns.Add(ArtifactConflictNameColumnName, GetType(String))
+		failedTable.Columns.Add(ArtifactConflictIDColumnName, GetType(Integer))
 		failedTable.Columns.Add("Details", GetType(String))
+		failedTable.Columns.Add(ArtifactIndexColumnName, GetType(Integer))
 
+		Dim index As Int32 = 0
 		For Each art As TemplateManagerBase.ApplicationArtifact In result.StatusApplicationArtifacts
 			Dim parentName As String = ""
 			Dim conflictName As String = ""
 			Dim conflictID As Integer = Nothing
 			Dim conflictApps As New System.Text.StringBuilder()
+			Dim conflictAppIDs As New System.Collections.Generic.List(Of Int32)
 
 			If art.ParentArtifact IsNot Nothing Then
 				parentName = art.ParentArtifact.Name
@@ -209,6 +227,8 @@ Public Class RelativityApplicationStatusForm
 						conflictApps.Append(sepString)
 						conflictApps.Append(app.Name)
 						sepString = ", "
+
+						conflictAppIDs.Add(app.ID)
 					Next
 				End If
 			End If
@@ -219,10 +239,14 @@ Public Class RelativityApplicationStatusForm
 			 art.Name, _
 			 parentName, _
 			 TypeToString(art.Type), _
+			 art.Type, _
 			 conflictApps, _
+			 conflictAppIDs.ToArray(), _
 			 conflictName, _
 			 conflictID, _
-			 art.StatusMessage})
+			 art.StatusMessage, _
+			 index})
+			index += 1
 		Next
 
 		Return failedTable
@@ -231,39 +255,40 @@ Public Class RelativityApplicationStatusForm
 	Private Sub UpdateArtifactStatusTableProperties()
 		ArtifactStatusTable.DataSource = artifactTable
 		'ArtifactStatusTable.ReadOnly = True
-		ArtifactStatusTable.Columns("Locked Applications").Visible = False
-		ArtifactStatusTable.Columns(ArtifactHiddenErrorColumnName).Visible = False
-		Dim dropDownColumn As New DataGridViewComboBoxColumn()
-		dropDownColumn.Name = ArtifactDetailsColumnName
-		ArtifactStatusTable.Columns.Insert(0, dropDownColumn)
 
-		For Each row As DataGridViewRow In ArtifactStatusTable.Rows
-			Select Case CType(row.Cells(ArtifactHiddenErrorColumnName).Value, TemplateManagerBase.StatusCode)
-				Case TemplateManagerBase.StatusCode.FriendlyNameConflict
-					CType(row.Cells(ArtifactDetailsColumnName), DataGridViewComboBoxCell).Items.Add("Rename in Workspace")
-				Case TemplateManagerBase.StatusCode.MultipleFileField
+		If Not results(currentResultIndex).Success Then
+			ArtifactStatusTable.Columns("Locked Applications").Visible = False
+			ArtifactStatusTable.Columns(ArtifactHiddenErrorColumnName).Visible = False
+			ArtifactStatusTable.Columns(ArtifactIndexColumnName).Visible = False
+			ArtifactStatusTable.Columns(ArtifactTypeIDColumnName).Visible = False
+			Dim dropDownColumn As New DataGridViewComboBoxColumn()
+			dropDownColumn.Name = ArtifactResolutionColumnName
+			ArtifactStatusTable.Columns.Insert(0, dropDownColumn)
 
-				Case TemplateManagerBase.StatusCode.NameConflict
-					CType(row.Cells(ArtifactDetailsColumnName), DataGridViewComboBoxCell).Items.Add("Rename in Workspace")
-				Case TemplateManagerBase.StatusCode.SharedByLockedApp
-					CType(row.Cells(ArtifactDetailsColumnName), DataGridViewComboBoxCell).Items.Add("Force Import")
-				Case TemplateManagerBase.StatusCode.UnknownError
-					'
-				Case Else
-			End Select
-			CType(row.Cells(ArtifactDetailsColumnName), DataGridViewComboBoxCell).ReadOnly = False
+			For Each row As DataGridViewRow In ArtifactStatusTable.Rows
+				Select Case CType(row.Cells(ArtifactHiddenErrorColumnName).Value, TemplateManagerBase.StatusCode)
+					Case TemplateManagerBase.StatusCode.FriendlyNameConflict
+						CType(row.Cells(ArtifactResolutionColumnName), DataGridViewComboBoxCell).Items.Add(DropdownRenameFriendlyNameInWorkspace)
+					Case TemplateManagerBase.StatusCode.MultipleFileField
 
-			row.Cells(ArtifactDetailsColumnName).ReadOnly = False
+					Case TemplateManagerBase.StatusCode.NameConflict
+						CType(row.Cells(ArtifactResolutionColumnName), DataGridViewComboBoxCell).Items.Add(DropdownRenameInWorkspace)
+					Case TemplateManagerBase.StatusCode.SharedByLockedApp
+						CType(row.Cells(ArtifactResolutionColumnName), DataGridViewComboBoxCell).Items.Add(DropdownForceImport)
+					Case TemplateManagerBase.StatusCode.UnknownError
+						'
+					Case Else
+				End Select
+				CType(row.Cells(ArtifactResolutionColumnName), DataGridViewComboBoxCell).ReadOnly = False
 
+				row.Cells(ArtifactResolutionColumnName).ReadOnly = False
 
+			Next
+		End If
 
-		Next
-		Dim resolutionStyle As New DataGridViewCellStyle()
-
-		ArtifactStatusTable.Columns(0).DefaultCellStyle = resolutionStyle
 		ArtifactStatusTable.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells
 		ArtifactStatusTable.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells
-		ArtifactStatusTable.Columns("Details").AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill
+		If Not results(currentResultIndex).Success Then ArtifactStatusTable.Columns("Details").AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill
 		ArtifactStatusTable.RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.EnableResizing
 		ArtifactStatusTable.AllowUserToResizeColumns = True
 		ArtifactStatusTable.AllowUserToOrderColumns = True
@@ -312,7 +337,8 @@ Public Class RelativityApplicationStatusForm
 	Private Sub renameCell_SelectedIndexChanged(ByVal sender As Object, ByVal e As EventArgs)
 		If ArtifactStatusTable.SelectedCells.Count > 0 Then
 			Dim cell As DataGridViewComboBoxCell = DirectCast(ArtifactStatusTable.SelectedCells.Item(0), DataGridViewComboBoxCell)
-			If Not cell Is Nothing AndAlso cell.Items.Count > 0 AndAlso String.Equals(DirectCast(cell.Items.Item(0), String), "Rename in Workspace", StringComparison.InvariantCultureIgnoreCase) Then
+			If Not cell Is Nothing AndAlso cell.Items.Count > 0 AndAlso (String.Equals(DirectCast(cell.Items.Item(0), String), DropdownRenameInWorkspace, StringComparison.InvariantCultureIgnoreCase) _
+									OrElse String.Equals(DirectCast(cell.Items.Item(0), String), DropdownRenameFriendlyNameInWorkspace, StringComparison.InvariantCultureIgnoreCase)) Then
 				cell.Selected = False
 				Dim conflictingNameCell As DataGridViewCell = cell.OwningRow.Cells("Conflicting Artifact Name")
 				_selectCell = New SelectCell(AddressOf SelectCellSub)
@@ -436,12 +462,17 @@ Public Class RelativityApplicationStatusForm
 	End Sub
 
 	Private Sub RetryImportButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles RetryImportButton.Click
+		Dim appsToOverride() As Int32 = GetAppsToOverride()
+		Dim resArts() As TemplateManagerBase.ResolveArtifact = GetResolveArtifacts()
+
+		Dim applicationDeploymentProcess As New kCura.WinEDDS.ApplicationDeploymentProcess(appsToOverride, resArts, application, Me.credential, Me.cookieContainer, caseInfos)
+		Me.observer = applicationDeploymentProcess.ProcessObserver
+
+		InformationText.Text = "Importing..."
 		ArtifactStatusTable.DataSource = Nothing
 		ArtifactStatusTable.Columns.Clear()
 		results = Nothing
-		InformationText.Text = "Importing..."
-		Dim applicationDeploymentProcess As New kCura.WinEDDS.ApplicationDeploymentProcess(application, Me.credential, Me.cookieContainer, caseInfos)
-		Me.observer = applicationDeploymentProcess.ProcessObserver
+
 		_processPool.StartProcess(applicationDeploymentProcess)
 	End Sub
 
@@ -450,6 +481,42 @@ Public Class RelativityApplicationStatusForm
 	End Sub
 
 #End Region
+
+	Private Function GetAppsToOverride() As Int32()
+		Dim apps As New System.Collections.Generic.List(Of Int32)
+		Dim ids() As Int32
+		For Each row As DataGridViewRow In ArtifactStatusTable.Rows
+			If row.Cells(ArtifactResolutionColumnName).Value IsNot Nothing AndAlso String.Equals(row.Cells(ArtifactResolutionColumnName).Value.ToString, DropdownForceImport) Then
+				Dim index As Int32 = CInt(row.Cells(ArtifactIndexColumnName).Value)
+				Dim appIDs() As Int32 = CType(artifactTable.Rows(index).Item(ArtifactApplicationIdsColumnName), Int32())
+				ids = (From i As Int32 In (appIDs).AsEnumerable() Select i Where Not apps.Contains(i)).ToArray()
+				apps.AddRange(ids)
+			End If
+		Next
+		Return apps.ToArray
+	End Function
+
+	Private Function GetResolveArtifacts() As TemplateManagerBase.ResolveArtifact()
+		Dim resArts As New System.Collections.Generic.List(Of TemplateManagerBase.ResolveArtifact)
+
+		Dim kvp As TemplateManagerBase.FieldKVP
+		For Each row As DataGridViewRow In ArtifactStatusTable.Rows
+			If row.Cells(ArtifactResolutionColumnName).Value IsNot Nothing AndAlso (String.Equals(row.Cells(ArtifactResolutionColumnName).Value.ToString, DropdownRenameInWorkspace) OrElse String.Equals(row.Cells(ArtifactResolutionColumnName).Value.ToString, DropdownRenameFriendlyNameInWorkspace)) Then
+				kvp = New TemplateManagerBase.FieldKVP()
+				If CType(row.Cells(ArtifactHiddenErrorColumnName).Value, TemplateManagerBase.StatusCode) = TemplateManagerBase.StatusCode.FriendlyNameConflict Then
+					kvp.Key = "Friendly Name"
+				Else
+					kvp.Key = "Name"
+				End If
+				kvp.Value = row.Cells(ArtifactConflictNameColumnName).Value
+				resArts.Add(New TemplateManagerBase.ResolveArtifact() With {.ArtifactID = CInt(row.Cells(ArtifactConflictIDColumnName).Value), _
+				 .ArtifactTypeID = CType(row.Cells(ArtifactTypeIDColumnName).Value,  _
+				  TemplateManagerBase.ApplicationArtifactType), .Fields = New TemplateManagerBase.FieldKVP() {kvp}, _
+				 .Action = TemplateManagerBase.ResolveAction.Update})
+			End If
+		Next
+		Return resArts.ToArray()
+	End Function
 
 	Private Function findResultByID(ByVal workspaceID As Int32) As Int32
 		For i = 0 To results.Count
