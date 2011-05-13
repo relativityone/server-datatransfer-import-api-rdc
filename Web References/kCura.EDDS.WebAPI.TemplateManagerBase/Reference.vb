@@ -28,11 +28,15 @@ Namespace kCura.EDDS.WebAPI.TemplateManagerBase
      System.Diagnostics.DebuggerStepThroughAttribute(),  _
      System.ComponentModel.DesignerCategoryAttribute("code"),  _
      System.Web.Services.WebServiceBindingAttribute(Name:="TemplateManagerSoap", [Namespace]:="http://www.kCura.com/EDDS/TemplateManager"),  _
-     System.Xml.Serialization.XmlIncludeAttribute(GetType(ApplicationBase))>  _
+     System.Xml.Serialization.XmlIncludeAttribute(GetType(ApplicationBase)),  _
+     System.Xml.Serialization.XmlIncludeAttribute(GetType(ResolveArtifact())),  _
+     System.Xml.Serialization.XmlIncludeAttribute(GetType(FieldKVP()))>  _
     Partial Public Class TemplateManager
         Inherits System.Web.Services.Protocols.SoapHttpClientProtocol
         
         Private InstallTemplateOperationCompleted As System.Threading.SendOrPostCallback
+        
+        Private ResolveConflictsOperationCompleted As System.Threading.SendOrPostCallback
         
         Private useDefaultCredentialsSetExplicitly As Boolean
         
@@ -76,15 +80,18 @@ Namespace kCura.EDDS.WebAPI.TemplateManagerBase
         Public Event InstallTemplateCompleted As InstallTemplateCompletedEventHandler
         
         '''<remarks/>
+        Public Event ResolveConflictsCompleted As ResolveConflictsCompletedEventHandler
+        
+        '''<remarks/>
         <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/TemplateManager/InstallTemplate", RequestNamespace:="http://www.kCura.com/EDDS/TemplateManager", ResponseNamespace:="http://www.kCura.com/EDDS/TemplateManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
-        Public Function InstallTemplate(ByVal template As System.Xml.XmlNode, ByVal installationParameters As ApplicationInstallationParameters) As ApplicationInstallationResult
-            Dim results() As Object = Me.Invoke("InstallTemplate", New Object() {template, installationParameters})
+        Public Function InstallTemplate(ByVal appsToOverride() As Integer, ByVal template As System.Xml.XmlNode, ByVal installationParameters As ApplicationInstallationParameters) As ApplicationInstallationResult
+            Dim results() As Object = Me.Invoke("InstallTemplate", New Object() {appsToOverride, template, installationParameters})
             Return CType(results(0),ApplicationInstallationResult)
         End Function
         
         '''<remarks/>
-        Public Function BeginInstallTemplate(ByVal template As System.Xml.XmlNode, ByVal installationParameters As ApplicationInstallationParameters, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
-            Return Me.BeginInvoke("InstallTemplate", New Object() {template, installationParameters}, callback, asyncState)
+        Public Function BeginInstallTemplate(ByVal appsToOverride() As Integer, ByVal template As System.Xml.XmlNode, ByVal installationParameters As ApplicationInstallationParameters, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("InstallTemplate", New Object() {appsToOverride, template, installationParameters}, callback, asyncState)
         End Function
         
         '''<remarks/>
@@ -94,22 +101,60 @@ Namespace kCura.EDDS.WebAPI.TemplateManagerBase
         End Function
         
         '''<remarks/>
-        Public Overloads Sub InstallTemplateAsync(ByVal template As System.Xml.XmlNode, ByVal installationParameters As ApplicationInstallationParameters)
-            Me.InstallTemplateAsync(template, installationParameters, Nothing)
+        Public Overloads Sub InstallTemplateAsync(ByVal appsToOverride() As Integer, ByVal template As System.Xml.XmlNode, ByVal installationParameters As ApplicationInstallationParameters)
+            Me.InstallTemplateAsync(appsToOverride, template, installationParameters, Nothing)
         End Sub
         
         '''<remarks/>
-        Public Overloads Sub InstallTemplateAsync(ByVal template As System.Xml.XmlNode, ByVal installationParameters As ApplicationInstallationParameters, ByVal userState As Object)
+        Public Overloads Sub InstallTemplateAsync(ByVal appsToOverride() As Integer, ByVal template As System.Xml.XmlNode, ByVal installationParameters As ApplicationInstallationParameters, ByVal userState As Object)
             If (Me.InstallTemplateOperationCompleted Is Nothing) Then
                 Me.InstallTemplateOperationCompleted = AddressOf Me.OnInstallTemplateOperationCompleted
             End If
-            Me.InvokeAsync("InstallTemplate", New Object() {template, installationParameters}, Me.InstallTemplateOperationCompleted, userState)
+            Me.InvokeAsync("InstallTemplate", New Object() {appsToOverride, template, installationParameters}, Me.InstallTemplateOperationCompleted, userState)
         End Sub
         
         Private Sub OnInstallTemplateOperationCompleted(ByVal arg As Object)
             If (Not (Me.InstallTemplateCompletedEvent) Is Nothing) Then
                 Dim invokeArgs As System.Web.Services.Protocols.InvokeCompletedEventArgs = CType(arg,System.Web.Services.Protocols.InvokeCompletedEventArgs)
                 RaiseEvent InstallTemplateCompleted(Me, New InstallTemplateCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState))
+            End If
+        End Sub
+        
+        '''<remarks/>
+        <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/TemplateManager/ResolveConflicts", RequestNamespace:="http://www.kCura.com/EDDS/TemplateManager", ResponseNamespace:="http://www.kCura.com/EDDS/TemplateManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
+        Public Function ResolveConflicts(ByVal appsToOverride() As Integer, ByVal resolveArtifacts() As ResolveArtifact, ByVal installationParameters As ApplicationInstallationParameters) As ApplicationInstallationResult
+            Dim results() As Object = Me.Invoke("ResolveConflicts", New Object() {appsToOverride, resolveArtifacts, installationParameters})
+            Return CType(results(0),ApplicationInstallationResult)
+        End Function
+        
+        '''<remarks/>
+        Public Function BeginResolveConflicts(ByVal appsToOverride() As Integer, ByVal resolveArtifacts() As ResolveArtifact, ByVal installationParameters As ApplicationInstallationParameters, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("ResolveConflicts", New Object() {appsToOverride, resolveArtifacts, installationParameters}, callback, asyncState)
+        End Function
+        
+        '''<remarks/>
+        Public Function EndResolveConflicts(ByVal asyncResult As System.IAsyncResult) As ApplicationInstallationResult
+            Dim results() As Object = Me.EndInvoke(asyncResult)
+            Return CType(results(0),ApplicationInstallationResult)
+        End Function
+        
+        '''<remarks/>
+        Public Overloads Sub ResolveConflictsAsync(ByVal appsToOverride() As Integer, ByVal resolveArtifacts() As ResolveArtifact, ByVal installationParameters As ApplicationInstallationParameters)
+            Me.ResolveConflictsAsync(appsToOverride, resolveArtifacts, installationParameters, Nothing)
+        End Sub
+        
+        '''<remarks/>
+        Public Overloads Sub ResolveConflictsAsync(ByVal appsToOverride() As Integer, ByVal resolveArtifacts() As ResolveArtifact, ByVal installationParameters As ApplicationInstallationParameters, ByVal userState As Object)
+            If (Me.ResolveConflictsOperationCompleted Is Nothing) Then
+                Me.ResolveConflictsOperationCompleted = AddressOf Me.OnResolveConflictsOperationCompleted
+            End If
+            Me.InvokeAsync("ResolveConflicts", New Object() {appsToOverride, resolveArtifacts, installationParameters}, Me.ResolveConflictsOperationCompleted, userState)
+        End Sub
+        
+        Private Sub OnResolveConflictsOperationCompleted(ByVal arg As Object)
+            If (Not (Me.ResolveConflictsCompletedEvent) Is Nothing) Then
+                Dim invokeArgs As System.Web.Services.Protocols.InvokeCompletedEventArgs = CType(arg,System.Web.Services.Protocols.InvokeCompletedEventArgs)
+                RaiseEvent ResolveConflictsCompleted(Me, New ResolveConflictsCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState))
             End If
         End Sub
         
@@ -154,6 +199,140 @@ Namespace kCura.EDDS.WebAPI.TemplateManagerBase
     End Class
     
     '''<remarks/>
+    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.1"),  _
+     System.SerializableAttribute(),  _
+     System.Diagnostics.DebuggerStepThroughAttribute(),  _
+     System.ComponentModel.DesignerCategoryAttribute("code"),  _
+     System.Xml.Serialization.XmlTypeAttribute([Namespace]:="http://www.kCura.com/EDDS/TemplateManager")>  _
+    Partial Public Class FieldKVP
+        
+        Private keyField As String
+        
+        Private valueField As Object
+        
+        '''<remarks/>
+        Public Property Key() As String
+            Get
+                Return Me.keyField
+            End Get
+            Set
+                Me.keyField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property Value() As Object
+            Get
+                Return Me.valueField
+            End Get
+            Set
+                Me.valueField = value
+            End Set
+        End Property
+    End Class
+    
+    '''<remarks/>
+    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.1"),  _
+     System.SerializableAttribute(),  _
+     System.Diagnostics.DebuggerStepThroughAttribute(),  _
+     System.ComponentModel.DesignerCategoryAttribute("code"),  _
+     System.Xml.Serialization.XmlTypeAttribute([Namespace]:="http://www.kCura.com/EDDS/TemplateManager")>  _
+    Partial Public Class ResolveArtifact
+        
+        Private artifactIDField As Integer
+        
+        Private artifactTypeIDField As ApplicationArtifactType
+        
+        Private fieldsField() As FieldKVP
+        
+        Private actionField As ResolveAction
+        
+        '''<remarks/>
+        Public Property ArtifactID() As Integer
+            Get
+                Return Me.artifactIDField
+            End Get
+            Set
+                Me.artifactIDField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property ArtifactTypeID() As ApplicationArtifactType
+            Get
+                Return Me.artifactTypeIDField
+            End Get
+            Set
+                Me.artifactTypeIDField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property Fields() As FieldKVP()
+            Get
+                Return Me.fieldsField
+            End Get
+            Set
+                Me.fieldsField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property Action() As ResolveAction
+            Get
+                Return Me.actionField
+            End Get
+            Set
+                Me.actionField = value
+            End Set
+        End Property
+    End Class
+    
+    '''<remarks/>
+    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.1"),  _
+     System.SerializableAttribute(),  _
+     System.Xml.Serialization.XmlTypeAttribute([Namespace]:="http://www.kCura.com/EDDS/TemplateManager")>  _
+    Public Enum ApplicationArtifactType
+        
+        '''<remarks/>
+        Code
+        
+        '''<remarks/>
+        Field
+        
+        '''<remarks/>
+        Layout
+        
+        '''<remarks/>
+        [Object]
+        
+        '''<remarks/>
+        Rule
+        
+        '''<remarks/>
+        Sync
+        
+        '''<remarks/>
+        Tab
+        
+        '''<remarks/>
+        View
+        
+        '''<remarks/>
+        Script
+    End Enum
+    
+    '''<remarks/>
+    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.1"),  _
+     System.SerializableAttribute(),  _
+     System.Xml.Serialization.XmlTypeAttribute([Namespace]:="http://www.kCura.com/EDDS/TemplateManager")>  _
+    Public Enum ResolveAction
+        
+        '''<remarks/>
+        Update
+    End Enum
+    
+    '''<remarks/>
     <System.Xml.Serialization.XmlIncludeAttribute(GetType(Application)),  _
      System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.1"),  _
      System.SerializableAttribute(),  _
@@ -163,6 +342,8 @@ Namespace kCura.EDDS.WebAPI.TemplateManagerBase
     Partial Public Class ApplicationBase
         
         Private guidField As System.Guid
+        
+        Private idField As Integer
         
         Private inDevelopmentField As Boolean
         
@@ -177,6 +358,16 @@ Namespace kCura.EDDS.WebAPI.TemplateManagerBase
             End Get
             Set
                 Me.guidField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property ID() As Integer
+            Get
+                Return Me.idField
+            End Get
+            Set
+                Me.idField = value
             End Set
         End Property
         
@@ -366,40 +557,6 @@ Namespace kCura.EDDS.WebAPI.TemplateManagerBase
     <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.1"),  _
      System.SerializableAttribute(),  _
      System.Xml.Serialization.XmlTypeAttribute([Namespace]:="http://www.kCura.com/EDDS/TemplateManager")>  _
-    Public Enum ApplicationArtifactType
-        
-        '''<remarks/>
-        Code
-        
-        '''<remarks/>
-        Field
-        
-        '''<remarks/>
-        Layout
-        
-        '''<remarks/>
-        [Object]
-        
-        '''<remarks/>
-        Rule
-        
-        '''<remarks/>
-        Sync
-        
-        '''<remarks/>
-        Tab
-        
-        '''<remarks/>
-        View
-        
-        '''<remarks/>
-        Script
-    End Enum
-    
-    '''<remarks/>
-    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.1"),  _
-     System.SerializableAttribute(),  _
-     System.Xml.Serialization.XmlTypeAttribute([Namespace]:="http://www.kCura.com/EDDS/TemplateManager")>  _
     Public Enum StatusCode
         
         '''<remarks/>
@@ -550,6 +707,33 @@ Namespace kCura.EDDS.WebAPI.TemplateManagerBase
      System.Diagnostics.DebuggerStepThroughAttribute(),  _
      System.ComponentModel.DesignerCategoryAttribute("code")>  _
     Partial Public Class InstallTemplateCompletedEventArgs
+        Inherits System.ComponentModel.AsyncCompletedEventArgs
+        
+        Private results() As Object
+        
+        Friend Sub New(ByVal results() As Object, ByVal exception As System.Exception, ByVal cancelled As Boolean, ByVal userState As Object)
+            MyBase.New(exception, cancelled, userState)
+            Me.results = results
+        End Sub
+        
+        '''<remarks/>
+        Public ReadOnly Property Result() As ApplicationInstallationResult
+            Get
+                Me.RaiseExceptionIfNecessary
+                Return CType(Me.results(0),ApplicationInstallationResult)
+            End Get
+        End Property
+    End Class
+    
+    '''<remarks/>
+    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.0.30319.1")>  _
+    Public Delegate Sub ResolveConflictsCompletedEventHandler(ByVal sender As Object, ByVal e As ResolveConflictsCompletedEventArgs)
+    
+    '''<remarks/>
+    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.0.30319.1"),  _
+     System.Diagnostics.DebuggerStepThroughAttribute(),  _
+     System.ComponentModel.DesignerCategoryAttribute("code")>  _
+    Partial Public Class ResolveConflictsCompletedEventArgs
         Inherits System.ComponentModel.AsyncCompletedEventArgs
         
         Private results() As Object
