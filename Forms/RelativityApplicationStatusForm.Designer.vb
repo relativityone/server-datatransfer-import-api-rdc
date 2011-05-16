@@ -62,8 +62,8 @@ Partial Class RelativityApplicationStatusForm
 		DataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.[True]
 		Me.ArtifactStatusTable.AlternatingRowsDefaultCellStyle = DataGridViewCellStyle1
 		Me.ArtifactStatusTable.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-						Or System.Windows.Forms.AnchorStyles.Left) _
-						Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+								Or System.Windows.Forms.AnchorStyles.Left) _
+								Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 		Me.ArtifactStatusTable.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.DisplayedCells
 		Me.ArtifactStatusTable.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
 		Me.ArtifactStatusTable.Location = New System.Drawing.Point(3, 3)
@@ -79,8 +79,8 @@ Partial Class RelativityApplicationStatusForm
 		'InformationText
 		'
 		Me.InformationText.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-						Or System.Windows.Forms.AnchorStyles.Left) _
-						Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+								Or System.Windows.Forms.AnchorStyles.Left) _
+								Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 		Me.InformationText.AutoSize = True
 		Me.InformationText.ContextMenuStrip = Me.CopyErrorMenu
 		Me.InformationText.LinkArea = New System.Windows.Forms.LinkArea(0, 0)
@@ -105,8 +105,8 @@ Partial Class RelativityApplicationStatusForm
 		'MainSplitContainer
 		'
 		Me.MainSplitContainer.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-						Or System.Windows.Forms.AnchorStyles.Left) _
-						Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+								Or System.Windows.Forms.AnchorStyles.Left) _
+								Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 		Me.MainSplitContainer.Location = New System.Drawing.Point(0, 36)
 		Me.MainSplitContainer.Name = "MainSplitContainer"
 		Me.MainSplitContainer.Orientation = System.Windows.Forms.Orientation.Horizontal
@@ -140,6 +140,7 @@ Partial Class RelativityApplicationStatusForm
 		'RetryImportButton
 		'
 		Me.RetryImportButton.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+		Me.RetryImportButton.Enabled = False
 		Me.RetryImportButton.Location = New System.Drawing.Point(556, 383)
 		Me.RetryImportButton.Name = "RetryImportButton"
 		Me.RetryImportButton.Size = New System.Drawing.Size(103, 23)

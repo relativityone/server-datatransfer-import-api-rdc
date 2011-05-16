@@ -49,7 +49,7 @@ Public Class RelativityApplicationStatusForm
 	Private cookieContainer As Net.CookieContainer
 	Private caseInfos As Generic.IEnumerable(Of Relativity.CaseInfo)
 	Private _processPool As kCura.Windows.Process.ProcessPool
-
+	Private _retryEnabled As Boolean = False
 	Private shouldBeEditingThis As DataGridViewCell = Nothing
 
 	Private Property WorkspaceView As Boolean
@@ -130,9 +130,12 @@ Public Class RelativityApplicationStatusForm
 
 		If result.Success Then
 			InformationText.Text = "Installation complete."
-
+			_retryEnabled = False
+			SetButtonVisibility()
 			artifactTable = CreateSucessTable(result)
 		Else
+			_retryEnabled = True
+			SetButtonVisibility()
 			InformationText.Text = String.Format(CultureInfo.CurrentCulture, "{0}{1}{2}", ErrorMessagePart1, ErrorMessageLink, ErrorMessagePart2)
 			InformationText.Links.Clear()
 			InformationText.Links.Add(ErrorMessagePart1.Length, ErrorMessageLink.Length, HelpLink)
@@ -561,5 +564,13 @@ Public Class RelativityApplicationStatusForm
 			Return WorkspaceErrorString
 		End If
 	End Function
+
+	Private Sub SetButtonVisibility()
+		If Not _retryEnabled Then
+			RetryImportButton.Enabled = False
+		Else
+			RetryImportButton.Enabled = True
+		End If
+	End Sub
 
 End Class
