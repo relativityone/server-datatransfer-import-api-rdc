@@ -370,8 +370,8 @@ Public Class RelativityApplicationStatusForm
 
 		For Each dgrv As DataGridViewRow In ArtifactStatusTable.Rows
 			cb = DirectCast(dgrv.Cells("Resolution"), DataGridViewComboBoxCell)
-			cbStr = DirectCast(cb.Items.Item(0), String)
-
+			cbStr = DirectCast(cb.EditedFormattedValue, String)
+			If String.IsNullOrEmpty(cbStr) Then _retryEnabled = False : Exit For
 			If String.Equals(cbStr, DropdownRenameInWorkspace, StringComparison.InvariantCultureIgnoreCase) OrElse String.Equals(cbStr, DropdownRenameFriendlyNameInWorkspace, StringComparison.InvariantCultureIgnoreCase) Then
 				If TypeOf (dgrv.Cells(ArtifactConflictNameColumnName)) Is DataGridViewTextBoxCell Then
 					renamedText = DirectCast(dgrv.Cells(ArtifactConflictNameColumnName), DataGridViewTextBoxCell).EditedFormattedValue.ToString()
