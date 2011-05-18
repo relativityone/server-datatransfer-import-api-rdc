@@ -7,6 +7,8 @@ Public Class RelativityApplicationStatusForm
 
 	Public WithEvents observer As kCura.Windows.Process.Generic.ProcessObserver(Of TemplateManagerBase.ApplicationInstallationResult)
 
+	Private Const FIELD_NAME_MAX_LENGTH As Int32 = 50
+
 	Private Const workspaceIDColumnName As String = "Workspace ID"
 	Private Const workspaceNameColumnName As String = "Workspace Name"
 	Private Const workspaceStatusColumnName As String = "Install Status"
@@ -14,6 +16,7 @@ Public Class RelativityApplicationStatusForm
 	Private Const WorkspaceSuccessString As String = "Completed"
 	Private Const WorkspaceErrorString As String = "Error"
 
+	Private Const ArtifactNameColumnName As String = "Name"
 	Private Const ArtifactErrorColumnName As String = "Error"
 	Private Const ArtifactHiddenErrorColumnName As String = "Hidden Error"
 	Private Const ArtifactApplicationIdsColumnName As String = "Application IDs"
@@ -22,7 +25,6 @@ Public Class RelativityApplicationStatusForm
 	Private Const ArtifactTypeIDColumnName As String = "Artifact Type ID"
 	Private Const ArtifactConflictNameColumnName As String = "Conflicting Artifact Name"
 	Private Const ArtifactIndexColumnName As String = "Index"
-
 	Private Const DropdownForceImport As String = "Force Import"
 	Private Const DropdownRenameInWorkspace As String = "Rename in Workspace"
 	Private Const DropdownRenameFriendlyNameInWorkspace As String = "Rename in Workspace"
@@ -130,12 +132,9 @@ Public Class RelativityApplicationStatusForm
 
 		If result.Success Then
 			InformationText.Text = "Installation complete."
-			_retryEnabled = False
-			SetButtonVisibility()
 			artifactTable = CreateSucessTable(result)
 		Else
-			_retryEnabled = True
-			SetButtonVisibility()
+		
 			InformationText.Text = String.Format(CultureInfo.CurrentCulture, "{0}{1}{2}", ErrorMessagePart1, ErrorMessageLink, ErrorMessagePart2)
 			InformationText.Links.Clear()
 			InformationText.Links.Add(ErrorMessagePart1.Length, ErrorMessageLink.Length, HelpLink)
@@ -153,6 +152,9 @@ Public Class RelativityApplicationStatusForm
 		UpdateArtifactStatusTableProperties()
 
 		ExportButton.Enabled = True
+
+		_retryEnabled = False
+		SetButtonVisibility()
 	End Sub
 
 	Private Function CreateWorkspaceTable() As DataTable
@@ -198,7 +200,7 @@ Public Class RelativityApplicationStatusForm
 
 		failedTable.Columns.Add(ArtifactErrorColumnName, GetType(String))
 		failedTable.Columns.Add(ArtifactHiddenErrorColumnName, GetType(TemplateManagerBase.StatusCode))
-		failedTable.Columns.Add("Name", GetType(String))
+		failedTable.Columns.Add(ArtifactNameColumnName, GetType(String))
 		failedTable.Columns.Add("Object Type Name", GetType(String))
 		failedTable.Columns.Add("Artifact Type", GetType(String))
 		failedTable.Columns.Add(ArtifactTypeIDColumnName, GetType(TemplateManagerBase.ApplicationArtifactType))
@@ -327,7 +329,7 @@ Public Class RelativityApplicationStatusForm
 
 #Region " Event handlers "
 
-	Private Sub ArtifactStatusTable_Sort(ByVal sender As Object, ByVal e As System.EventArgs) Handles ArtifactStatusTable.Sorted
+	Private Sub ArtifactStatusTable_Sort(ByVal sender As Object, ByVal e As System.EventArgs)	'Handles ArtifactStatusTable.Sorted
 		ColorTable()
 	End Sub
 
@@ -335,19 +337,57 @@ Public Class RelativityApplicationStatusForm
 		If String.Equals(ArtifactStatusTable.CurrentCell.OwningColumn.Name, "Resolution", StringComparison.InvariantCultureIgnoreCase) Then
 			Dim comboBox As ComboBox = DirectCast(e.Control, ComboBox)
 			AddHandler comboBox.SelectedValueChanged, AddressOf Me.renameCell_SelectedIndexChanged
+		ElseIf String.Equals(ArtifactStatusTable.CurrentCell.OwningColumn.Name, ArtifactConflictNameColumnName, StringComparison.InvariantCultureIgnoreCase) Then
+			Dim textBox As TextBox = DirectCast(e.Control, TextBox)
+			textBox.MaxLength = FIELD_NAME_MAX_LENGTH
+			AddHandler textBox.TextChanged, AddressOf Me.ConflictingArtifactName_TextChanged
 		End If
 	End Sub
+
+	Private Sub ConflictingArtifactName_TextChanged(ByVal sender As Object, ByVal e As System.EventArgs)
+		CheckForRetryEnabled()
+	End Sub
+
 	Private Sub renameCell_SelectedIndexChanged(ByVal sender As Object, ByVal e As EventArgs)
 		If ArtifactStatusTable.SelectedCells.Count > 0 Then
 			Dim cell As DataGridViewComboBoxCell = DirectCast(ArtifactStatusTable.SelectedCells.Item(0), DataGridViewComboBoxCell)
 			If Not cell Is Nothing AndAlso cell.Items.Count > 0 AndAlso (String.Equals(DirectCast(cell.Items.Item(0), String), DropdownRenameInWorkspace, StringComparison.InvariantCultureIgnoreCase) _
 									OrElse String.Equals(DirectCast(cell.Items.Item(0), String), DropdownRenameFriendlyNameInWorkspace, StringComparison.InvariantCultureIgnoreCase)) Then
 				cell.Selected = False
-				Dim conflictingNameCell As DataGridViewCell = cell.OwningRow.Cells("Conflicting Artifact Name")
+				Dim conflictingNameCell As DataGridViewCell = cell.OwningRow.Cells(ArtifactConflictNameColumnName)
 				_selectCell = New SelectCell(AddressOf SelectCellSub)
 				ArtifactStatusTable.BeginInvoke(_selectCell, conflictingNameCell)
 			End If
 		End If
+		CheckForRetryEnabled()
+	End Sub
+
+	Private Sub CheckForRetryEnabled()
+		_retryEnabled = True
+		Dim cb As DataGridViewComboBoxCell = Nothing
+		Dim cbStr As String = Nothing
+		Dim renamedText As String = Nothing
+
+		For Each dgrv As DataGridViewRow In ArtifactStatusTable.Rows
+			cb = DirectCast(dgrv.Cells("Resolution"), DataGridViewComboBoxCell)
+			cbStr = DirectCast(cb.Items.Item(0), String)
+
+			If String.Equals(cbStr, DropdownRenameInWorkspace, StringComparison.InvariantCultureIgnoreCase) OrElse String.Equals(cbStr, DropdownRenameFriendlyNameInWorkspace, StringComparison.InvariantCultureIgnoreCase) Then
+				If TypeOf (dgrv.Cells(ArtifactConflictNameColumnName)) Is DataGridViewTextBoxCell Then
+					renamedText = DirectCast(dgrv.Cells(ArtifactConflictNameColumnName), DataGridViewTextBoxCell).EditedFormattedValue.ToString()
+				Else
+					renamedText = dgrv.Cells(ArtifactConflictNameColumnName).Value.ToString()
+				End If
+				If String.Equals(renamedText, dgrv.Cells(ArtifactNameColumnName).Value.ToString(), StringComparison.InvariantCultureIgnoreCase) OrElse String.IsNullOrEmpty(renamedText) Then
+					_retryEnabled = False
+					Exit For
+				End If
+			ElseIf Not String.Equals(cbStr, DropdownForceImport, StringComparison.InvariantCultureIgnoreCase) Then
+				_retryEnabled = False
+				Exit For
+			End If
+		Next
+		SetButtonVisibility()
 	End Sub
 
 	Private Sub SelectCellSub(ByVal cell As DataGridViewCell)
@@ -494,6 +534,7 @@ Public Class RelativityApplicationStatusForm
 				Dim appIDs() As Int32 = CType(artifactTable.Rows(index).Item(ArtifactApplicationIdsColumnName), Int32())
 				ids = (From i As Int32 In (appIDs).AsEnumerable() Select i Where Not apps.Contains(i)).ToArray()
 				apps.AddRange(ids)
+
 			End If
 		Next
 		Return apps.ToArray
