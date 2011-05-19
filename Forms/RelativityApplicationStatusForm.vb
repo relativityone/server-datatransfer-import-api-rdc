@@ -17,6 +17,7 @@ Public Class RelativityApplicationStatusForm
 	Private Const WorkspaceErrorString As String = "Error"
 
 	Private Const ArtifactNameColumnName As String = "Name"
+	Private Const ArtifactIDColumnName As String = "Artifact ID"
 	Private Const ArtifactErrorColumnName As String = "Error"
 	Private Const ArtifactHiddenErrorColumnName As String = "Hidden Error"
 	Private Const ArtifactApplicationIdsColumnName As String = "Application IDs"
@@ -202,6 +203,7 @@ Public Class RelativityApplicationStatusForm
 		failedTable.Columns.Add(ArtifactErrorColumnName, GetType(String))
 		failedTable.Columns.Add(ArtifactHiddenErrorColumnName, GetType(TemplateManagerBase.StatusCode))
 		failedTable.Columns.Add(ArtifactNameColumnName, GetType(String))
+		failedTable.Columns.Add(ArtifactIDColumnName, GetType(Int32))
 		failedTable.Columns.Add("Object Type Name", GetType(String))
 		failedTable.Columns.Add("Artifact Type", GetType(String))
 		failedTable.Columns.Add(ArtifactTypeIDColumnName, GetType(TemplateManagerBase.ApplicationArtifactType))
@@ -243,6 +245,7 @@ Public Class RelativityApplicationStatusForm
 			 StatusToString(art.Status, conflictApps.ToString), _
 			 art.Status, _
 			 art.Name, _
+			 art.ArtifactId, _
 			 parentName, _
 			 TypeToString(art.Type), _
 			 art.Type, _
@@ -267,6 +270,7 @@ Public Class RelativityApplicationStatusForm
 			ArtifactStatusTable.Columns(ArtifactHiddenErrorColumnName).Visible = False
 			ArtifactStatusTable.Columns(ArtifactIndexColumnName).Visible = False
 			ArtifactStatusTable.Columns(ArtifactTypeIDColumnName).Visible = False
+			ArtifactStatusTable.Columns(ArtifactIDColumnName).Visible = False
 			Dim dropDownColumn As New DataGridViewComboBoxColumn()
 			dropDownColumn.Name = ArtifactResolutionColumnName
 			ArtifactStatusTable.Columns.Insert(0, dropDownColumn)
@@ -550,18 +554,28 @@ Public Class RelativityApplicationStatusForm
 
 		Dim kvp As TemplateManagerBase.FieldKVP
 		For Each row As DataGridViewRow In ArtifactStatusTable.Rows
-			If row.Cells(ArtifactResolutionColumnName).Value IsNot Nothing AndAlso (String.Equals(row.Cells(ArtifactResolutionColumnName).Value.ToString, DropdownRenameInWorkspace) OrElse String.Equals(row.Cells(ArtifactResolutionColumnName).Value.ToString, DropdownRenameFriendlyNameInWorkspace)) Then
-				kvp = New TemplateManagerBase.FieldKVP()
-				If CType(row.Cells(ArtifactHiddenErrorColumnName).Value, TemplateManagerBase.StatusCode) = TemplateManagerBase.StatusCode.FriendlyNameConflict Then
-					kvp.Key = "Friendly Name"
-				Else
+			If row.Cells(ArtifactResolutionColumnName).Value IsNot Nothing Then
+				If (String.Equals(row.Cells(ArtifactResolutionColumnName).Value.ToString, DropdownRenameInWorkspace) OrElse String.Equals(row.Cells(ArtifactResolutionColumnName).Value.ToString, DropdownRenameFriendlyNameInWorkspace)) Then
+					kvp = New TemplateManagerBase.FieldKVP()
+					If CType(row.Cells(ArtifactHiddenErrorColumnName).Value, TemplateManagerBase.StatusCode) = TemplateManagerBase.StatusCode.FriendlyNameConflict Then
+						kvp.Key = "Friendly Name"
+					Else
+						kvp.Key = "Name"
+					End If
+					kvp.Value = row.Cells(ArtifactConflictNameColumnName).Value
+					resArts.Add(New TemplateManagerBase.ResolveArtifact() With {.ArtifactID = CInt(row.Cells(ArtifactConflictIDColumnName).Value), _
+					 .ArtifactTypeID = CType(row.Cells(ArtifactTypeIDColumnName).Value,  _
+					  TemplateManagerBase.ApplicationArtifactType), .Fields = New TemplateManagerBase.FieldKVP() {kvp}, _
+					 .Action = TemplateManagerBase.ResolveAction.Update})
+				ElseIf String.Equals(row.Cells(ArtifactResolutionColumnName).Value.ToString, DropdownRetryRename) Then
+					kvp = New TemplateManagerBase.FieldKVP()
 					kvp.Key = "Name"
+					kvp.Value = row.Cells(ArtifactConflictNameColumnName).Value
+					resArts.Add(New TemplateManagerBase.ResolveArtifact() With {.ArtifactID = CInt(row.Cells(ArtifactIDColumnName).Value), _
+					 .ArtifactTypeID = CType(row.Cells(ArtifactTypeIDColumnName).Value, TemplateManagerBase.ApplicationArtifactType), _
+					.Fields = New TemplateManagerBase.FieldKVP() {kvp}, _
+					 .Action = TemplateManagerBase.ResolveAction.Update})
 				End If
-				kvp.Value = row.Cells(ArtifactConflictNameColumnName).Value
-				resArts.Add(New TemplateManagerBase.ResolveArtifact() With {.ArtifactID = CInt(row.Cells(ArtifactConflictIDColumnName).Value), _
-				 .ArtifactTypeID = CType(row.Cells(ArtifactTypeIDColumnName).Value,  _
-				  TemplateManagerBase.ApplicationArtifactType), .Fields = New TemplateManagerBase.FieldKVP() {kvp}, _
-				 .Action = TemplateManagerBase.ResolveAction.Update})
 			End If
 		Next
 		Return resArts.ToArray()
