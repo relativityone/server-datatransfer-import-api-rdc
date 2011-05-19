@@ -16,18 +16,18 @@ Public Class RelativityApplicationStatusForm
 	Private Const WorkspaceSuccessString As String = "Completed"
 	Private Const WorkspaceErrorString As String = "Error"
 
-	Private Const ArtifactNameColumnName As String = "Name"
-	Private Const ArtifactErrorColumnName As String = "Error"
-	Private Const ArtifactHiddenErrorColumnName As String = "Hidden Error"
-	Private Const ArtifactApplicationIdsColumnName As String = "Application IDs"
-	Private Const ArtifactResolutionColumnName As String = "Resolution"
-	Private Const ArtifactConflictIDColumnName As String = "Conflicting Artifact ID"
-	Private Const ArtifactTypeIDColumnName As String = "Artifact Type ID"
-	Private Const ArtifactConflictNameColumnName As String = "Conflicting Artifact Name"
+  Private Const ArtifactNameColumnName As String = "Name"
+  Private Const ArtifactErrorColumnName As String = "Error"
+  Private Const ArtifactHiddenErrorColumnName As String = "Hidden Error"
+  Private Const ArtifactApplicationIdsColumnName As String = "Application IDs"
+  Private Const ArtifactResolutionColumnName As String = "Resolution"
+  Private Const ArtifactConflictIDColumnName As String = "Conflicting Artifact ID"
+  Private Const ArtifactTypeIDColumnName As String = "Artifact Type ID"
+  Private Const ArtifactConflictNameColumnName As String = "Conflicting Artifact Name"
   Private Const ArtifactIndexColumnName As String = "Index"
   Private Const ArtifcactSelectedResolutionColumnName = "Selected Resolution"
-	Private Const DropdownForceImport As String = "Force Import"
-	Private Const DropdownRenameInWorkspace As String = "Rename in Workspace"
+  Private Const DropdownForceImport As String = "Force Import"
+  Private Const DropdownRenameInWorkspace As String = "Rename in Workspace"
   Private Const DropdownRenameFriendlyNameInWorkspace As String = "Rename in Workspace"
   Private Const DropdownSelect As String = "Select. . . "
 
@@ -37,242 +37,242 @@ Public Class RelativityApplicationStatusForm
 
 #End Region
 
-	Private Delegate Sub SelectCell(ByVal cell As DataGridViewCell)
-	Private _selectCell As SelectCell
+  Private Delegate Sub SelectCell(ByVal cell As DataGridViewCell)
+  Private _selectCell As SelectCell
 
-	Private artifactTable As New DataTable()
-	Private results As Generic.List(Of TemplateManagerBase.ApplicationInstallationResult)
-	Private globalSuccess As Boolean = True
-	Private currentResultIndex As Int32
-	Private _workspaceView As Boolean
-	Private errorExpanded As Boolean
+  Private artifactTable As New DataTable()
+  Private results As Generic.List(Of TemplateManagerBase.ApplicationInstallationResult)
+  Private globalSuccess As Boolean = True
+  Private currentResultIndex As Int32
+  Private _workspaceView As Boolean
+  Private errorExpanded As Boolean
 
   Private ErrorMessagePart1 As String = "Installation failed. For details on potential resolutions to the errors you may have encountered here, please refer to the "
-	Private ErrorMessageLink As String = "Relativity Applications documentation."
-	Private ErrorMessagePart2 As String = Environment.NewLine & "(Note: This link takes you to the most recent version of the document, which may not match with your version of Relativity.)" & Environment.NewLine & Environment.NewLine & "The following errors occurred while installing the application:" & Environment.NewLine & Environment.NewLine
+  Private ErrorMessageLink As String = "Relativity Applications documentation."
+  Private ErrorMessagePart2 As String = Environment.NewLine & "(Note: This link takes you to the most recent version of the document, which may not match with your version of Relativity.)" & Environment.NewLine & Environment.NewLine & "The following errors occurred while installing the application:" & Environment.NewLine & Environment.NewLine
 
-	Private application As Xml.XmlDocument
-	Private credential As Net.NetworkCredential
-	Private cookieContainer As Net.CookieContainer
-	Private caseInfos As Generic.IEnumerable(Of Relativity.CaseInfo)
-	Private _processPool As kCura.Windows.Process.ProcessPool
+  Private application As Xml.XmlDocument
+  Private credential As Net.NetworkCredential
+  Private cookieContainer As Net.CookieContainer
+  Private caseInfos As Generic.IEnumerable(Of Relativity.CaseInfo)
+  Private _processPool As kCura.Windows.Process.ProcessPool
   Private _retryEnabled As Boolean
-	Private shouldBeEditingThis As DataGridViewCell = Nothing
+  Private shouldBeEditingThis As DataGridViewCell = Nothing
 
-	Private Property WorkspaceView As Boolean
-		Get
-			Return _workspaceView
-		End Get
-		Set(ByVal value As Boolean)
-			If value Then
-				DetailsButton.Text = "View Details"
-			Else
-				DetailsButton.Text = "Back to Workspaces"
-			End If
-			_workspaceView = value
-		End Set
-	End Property
+  Private Property WorkspaceView As Boolean
+    Get
+      Return _workspaceView
+    End Get
+    Set(ByVal value As Boolean)
+      If value Then
+        DetailsButton.Text = "View Details"
+      Else
+        DetailsButton.Text = "Back to Workspaces"
+      End If
+      _workspaceView = value
+    End Set
+  End Property
 
-	Public Sub New(ByVal app As Xml.XmlDocument, ByVal cred As Net.NetworkCredential, ByVal cookies As Net.CookieContainer, ByVal cases As Generic.IEnumerable(Of Relativity.CaseInfo))
-		InitializeComponent()
+  Public Sub New(ByVal app As Xml.XmlDocument, ByVal cred As Net.NetworkCredential, ByVal cookies As Net.CookieContainer, ByVal cases As Generic.IEnumerable(Of Relativity.CaseInfo))
+    InitializeComponent()
 
-		application = app
-		credential = cred
-		cookieContainer = cookies
-		caseInfos = cases
-		_processPool = New kCura.Windows.Process.ProcessPool()
-	End Sub
+    application = app
+    credential = cred
+    cookieContainer = cookies
+    caseInfos = cases
+    _processPool = New kCura.Windows.Process.ProcessPool()
+  End Sub
 
-	Private Sub Observer_OnProcessEvent(ByVal evt As kCura.Windows.Process.Generic.ProcessEvent(Of TemplateManagerBase.ApplicationInstallationResult)) Handles observer.OnProcessEvent
-		Me.Invoke(Sub() ProcessEvent(evt))
-	End Sub
+  Private Sub Observer_OnProcessEvent(ByVal evt As kCura.Windows.Process.Generic.ProcessEvent(Of TemplateManagerBase.ApplicationInstallationResult)) Handles observer.OnProcessEvent
+    Me.Invoke(Sub() ProcessEvent(evt))
+  End Sub
 
-	Private Sub ProcessEvent(ByVal evt As kCura.Windows.Process.Generic.ProcessEvent(Of TemplateManagerBase.ApplicationInstallationResult))
-		If results Is Nothing Then
-			results = New Generic.List(Of TemplateManagerBase.ApplicationInstallationResult)(evt.Result.TotalWorkspaces)
-		End If
-
-		results.Add(evt.Result)
-    globalSuccess = globalSuccess And evt.Result.Success
-
-		If results.Capacity > 1 Then
-			DetailsButton.Visible = True
-			UpdateWorkspaceStatusView()
-		Else
-			DetailsButton.Visible = False
-			currentResultIndex = 0
-			UpdateArtifactStatusView()
-		End If
-	End Sub
-
-	Private Sub UpdateWorkspaceStatusView()
-		WorkspaceView = True
-    StatusHeader.Text = "Installation Status Report"
-
-		If results.Count < results.Capacity Then
-			InformationText.Text = String.Format("Installing... ({0}/{1})", results.Count, results.Capacity)
-		Else
-			DetailsButton.Enabled = True
-			ExportButton.Enabled = True
-			If globalSuccess Then
-        InformationText.Text = String.Format("Installation complete. Select a workspace, then click the ""View Details"" button for more information.")
-			Else
-				InformationText.Text = String.Format(CultureInfo.CurrentCulture, "{0}{1}{2} Select a workspace, then click the ""View Details"" button for more information.", ErrorMessagePart1, ErrorMessageLink, ErrorMessagePart2)
-				InformationText.Links.Clear()
-				InformationText.Links.Add(ErrorMessagePart1.Length, ErrorMessageLink.Length, HelpLink)
-			End If
+  Private Sub ProcessEvent(ByVal evt As kCura.Windows.Process.Generic.ProcessEvent(Of TemplateManagerBase.ApplicationInstallationResult))
+    If results Is Nothing Then
+      results = New Generic.List(Of TemplateManagerBase.ApplicationInstallationResult)(evt.Result.TotalWorkspaces)
     End If
 
-		InformationText.Parent.Height = InformationText.Height
-		InformationText.Parent.Width = InformationText.Width
+    results.Add(evt.Result)
+    globalSuccess = globalSuccess And evt.Result.Success
+
+    If results.Capacity > 1 Then
+      DetailsButton.Visible = True
+      UpdateWorkspaceStatusView()
+    Else
+      DetailsButton.Visible = False
+      currentResultIndex = 0
+      UpdateArtifactStatusView()
+    End If
+  End Sub
+
+  Private Sub UpdateWorkspaceStatusView()
+    WorkspaceView = True
+    StatusHeader.Text = "Installation Status Report"
+
+    If results.Count < results.Capacity Then
+      InformationText.Text = String.Format("Installing... ({0}/{1})", results.Count, results.Capacity)
+    Else
+      DetailsButton.Enabled = True
+      ExportButton.Enabled = True
+      If globalSuccess Then
+        InformationText.Text = String.Format("Installation complete. Select a workspace, then click the ""View Details"" button for more information.")
+      Else
+        InformationText.Text = String.Format(CultureInfo.CurrentCulture, "{0}{1}{2} Select a workspace, then click the ""View Details"" button for more information.", ErrorMessagePart1, ErrorMessageLink, ErrorMessagePart2)
+        InformationText.Links.Clear()
+        InformationText.Links.Add(ErrorMessagePart1.Length, ErrorMessageLink.Length, HelpLink)
+      End If
+    End If
+
+    InformationText.Parent.Height = InformationText.Height
+    InformationText.Parent.Width = InformationText.Width
 
     artifactTable = CreateWorkspaceTable()
     ArtifactStatusTable.DataSource = artifactTable
 
-		UpdateArtifactStatusTableProperties()
-	End Sub
+    UpdateArtifactStatusTableProperties()
+  End Sub
 
-	Private Sub UpdateArtifactStatusView()
-		WorkspaceView = False
-		errorExpanded = False
-		Dim result As TemplateManagerBase.ApplicationInstallationResult = results(currentResultIndex)
-		StatusHeader.Text = String.Format("Installation Status Report -- {0} ({1})", result.WorkspaceName, result.WorkspaceID)
+  Private Sub UpdateArtifactStatusView()
+    WorkspaceView = False
+    errorExpanded = False
+    Dim result As TemplateManagerBase.ApplicationInstallationResult = results(currentResultIndex)
+    StatusHeader.Text = String.Format("Installation Status Report -- {0} ({1})", result.WorkspaceName, result.WorkspaceID)
 
-		If result.Success Then
-			InformationText.Text = "Installation complete."
-			artifactTable = CreateSucessTable(result)
-		Else
-		
-			InformationText.Text = String.Format(CultureInfo.CurrentCulture, "{0}{1}{2}", ErrorMessagePart1, ErrorMessageLink, ErrorMessagePart2)
-			InformationText.Links.Clear()
-			InformationText.Links.Add(ErrorMessagePart1.Length, ErrorMessageLink.Length, HelpLink)
+    If result.Success Then
+      InformationText.Text = "Installation complete."
+      artifactTable = CreateSucessTable(result)
+    Else
 
-			If Not String.IsNullOrEmpty(result.Message) Then
-				InformationText.Text = String.Format(CultureInfo.CurrentCulture, "{0}{1} {2}", InformationText.Text, ExpandText, result.Message)
-				InformationText.Links.Add(ErrorMessagePart1.Length + ErrorMessageLink.Length + ErrorMessagePart2.Length, ExpandText.Length, "Details")
-			End If
+      InformationText.Text = String.Format(CultureInfo.CurrentCulture, "{0}{1}{2}", ErrorMessagePart1, ErrorMessageLink, ErrorMessagePart2)
+      InformationText.Links.Clear()
+      InformationText.Links.Add(ErrorMessagePart1.Length, ErrorMessageLink.Length, HelpLink)
 
-			artifactTable = CreateFailedTable(result)
+      If Not String.IsNullOrEmpty(result.Message) Then
+        InformationText.Text = String.Format(CultureInfo.CurrentCulture, "{0}{1} {2}", InformationText.Text, ExpandText, result.Message)
+        InformationText.Links.Add(ErrorMessagePart1.Length + ErrorMessageLink.Length + ErrorMessagePart2.Length, ExpandText.Length, "Details")
+      End If
+
+      artifactTable = CreateFailedTable(result)
     End If
 
-		InformationText.Parent.Height = InformationText.Height
-		InformationText.Parent.Width = InformationText.Width
+    InformationText.Parent.Height = InformationText.Height
+    InformationText.Parent.Width = InformationText.Width
 
     ArtifactStatusTable.DataSource = artifactTable
 
-		UpdateArtifactStatusTableProperties()
+    UpdateArtifactStatusTableProperties()
 
-		ExportButton.Enabled = True
+    ExportButton.Enabled = True
 
-		_retryEnabled = False
-		SetButtonVisibility()
-	End Sub
+    _retryEnabled = False
+    SetButtonVisibility()
+  End Sub
 
-	Private Function CreateWorkspaceTable() As DataTable
-		Dim workspaceTable As New DataTable()
+  Private Function CreateWorkspaceTable() As DataTable
+    Dim workspaceTable As New DataTable()
 
-		workspaceTable.Columns.Add(workspaceIDColumnName, GetType(Integer))
-		workspaceTable.Columns.Add(workspaceNameColumnName, GetType(String))
-		workspaceTable.Columns.Add(workspaceStatusColumnName, GetType(String))
+    workspaceTable.Columns.Add(workspaceIDColumnName, GetType(Integer))
+    workspaceTable.Columns.Add(workspaceNameColumnName, GetType(String))
+    workspaceTable.Columns.Add(workspaceStatusColumnName, GetType(String))
 
-		For Each res As TemplateManagerBase.ApplicationInstallationResult In results
-			workspaceTable.Rows.Add(New Object() {res.WorkspaceID, res.WorkspaceName, WorkspaceResultToString(res.Success)})
-		Next
+    For Each res As TemplateManagerBase.ApplicationInstallationResult In results
+      workspaceTable.Rows.Add(New Object() {res.WorkspaceID, res.WorkspaceName, WorkspaceResultToString(res.Success)})
+    Next
 
-		Return workspaceTable
-	End Function
+    Return workspaceTable
+  End Function
 
-	Private Function CreateSucessTable(ByVal result As TemplateManagerBase.ApplicationInstallationResult) As DataTable
-		Dim successTable As New DataTable()
+  Private Function CreateSucessTable(ByVal result As TemplateManagerBase.ApplicationInstallationResult) As DataTable
+    Dim successTable As New DataTable()
 
-		successTable.Columns.Add("Name", GetType(String))
-		successTable.Columns.Add("Artifact Type", GetType(String))
-		successTable.Columns.Add("Artifact ID", GetType(Integer))
-		successTable.Columns.Add("Status", GetType(String))
+    successTable.Columns.Add("Name", GetType(String))
+    successTable.Columns.Add("Artifact Type", GetType(String))
+    successTable.Columns.Add("Artifact ID", GetType(Integer))
+    successTable.Columns.Add("Status", GetType(String))
 
-		For Each art As TemplateManagerBase.ApplicationArtifact In result.StatusApplicationArtifacts
-			successTable.Rows.Add(New Object() {art.Name, TypeToString(art.Type), art.ArtifactId, StatusToString(art.Status, "")})
-		Next
+    For Each art As TemplateManagerBase.ApplicationArtifact In result.StatusApplicationArtifacts
+      successTable.Rows.Add(New Object() {art.Name, TypeToString(art.Type), art.ArtifactId, StatusToString(art.Status, "")})
+    Next
 
-		For Each art As TemplateManagerBase.ApplicationArtifact In result.NewApplicationArtifacts
-			successTable.Rows.Add(New Object() {art.Name, TypeToString(art.Type), art.ArtifactId, "Created"})
-		Next
+    For Each art As TemplateManagerBase.ApplicationArtifact In result.NewApplicationArtifacts
+      successTable.Rows.Add(New Object() {art.Name, TypeToString(art.Type), art.ArtifactId, "Created"})
+    Next
 
-		For Each art As TemplateManagerBase.ApplicationArtifact In result.UpdatedApplicationArtifacts
-			successTable.Rows.Add(New Object() {art.Name, TypeToString(art.Type), art.ArtifactId, "Updated"})
-		Next
+    For Each art As TemplateManagerBase.ApplicationArtifact In result.UpdatedApplicationArtifacts
+      successTable.Rows.Add(New Object() {art.Name, TypeToString(art.Type), art.ArtifactId, "Updated"})
+    Next
 
-		Return successTable
-	End Function
+    Return successTable
+  End Function
 
-	Private Function CreateFailedTable(ByVal result As TemplateManagerBase.ApplicationInstallationResult) As DataTable
-		Dim failedTable As New DataTable()
+  Private Function CreateFailedTable(ByVal result As TemplateManagerBase.ApplicationInstallationResult) As DataTable
+    Dim failedTable As New DataTable()
 
-		failedTable.Columns.Add(ArtifactErrorColumnName, GetType(String))
-		failedTable.Columns.Add(ArtifactHiddenErrorColumnName, GetType(TemplateManagerBase.StatusCode))
-		failedTable.Columns.Add(ArtifactNameColumnName, GetType(String))
-		failedTable.Columns.Add("Object Type Name", GetType(String))
-		failedTable.Columns.Add("Artifact Type", GetType(String))
-		failedTable.Columns.Add(ArtifactTypeIDColumnName, GetType(TemplateManagerBase.ApplicationArtifactType))
-		failedTable.Columns.Add("Locked Applications", GetType(String))
-		failedTable.Columns.Add(ArtifactApplicationIdsColumnName, GetType(Int32()))
-		failedTable.Columns.Add(ArtifactConflictNameColumnName, GetType(String))
-		failedTable.Columns.Add(ArtifactConflictIDColumnName, GetType(Integer))
-		failedTable.Columns.Add("Details", GetType(String))
+    failedTable.Columns.Add(ArtifactErrorColumnName, GetType(String))
+    failedTable.Columns.Add(ArtifactHiddenErrorColumnName, GetType(TemplateManagerBase.StatusCode))
+    failedTable.Columns.Add(ArtifactNameColumnName, GetType(String))
+    failedTable.Columns.Add("Object Type Name", GetType(String))
+    failedTable.Columns.Add("Artifact Type", GetType(String))
+    failedTable.Columns.Add(ArtifactTypeIDColumnName, GetType(TemplateManagerBase.ApplicationArtifactType))
+    failedTable.Columns.Add("Locked Applications", GetType(String))
+    failedTable.Columns.Add(ArtifactApplicationIdsColumnName, GetType(Int32()))
+    failedTable.Columns.Add(ArtifactConflictNameColumnName, GetType(String))
+    failedTable.Columns.Add(ArtifactConflictIDColumnName, GetType(Integer))
+    failedTable.Columns.Add("Details", GetType(String))
     failedTable.Columns.Add(ArtifactIndexColumnName, GetType(Integer))
     failedTable.Columns.Add(ArtifcactSelectedResolutionColumnName, GetType(String))
 
-		Dim index As Int32 = 0
-		For Each art As TemplateManagerBase.ApplicationArtifact In result.StatusApplicationArtifacts
-			Dim parentName As String = ""
-			Dim conflictName As String = ""
-			Dim conflictID As Integer = Nothing
-			Dim conflictApps As New System.Text.StringBuilder()
-			Dim conflictAppIDs As New System.Collections.Generic.List(Of Int32)
+    Dim index As Int32 = 0
+    For Each art As TemplateManagerBase.ApplicationArtifact In result.StatusApplicationArtifacts
+      Dim parentName As String = ""
+      Dim conflictName As String = ""
+      Dim conflictID As Integer = Nothing
+      Dim conflictApps As New System.Text.StringBuilder()
+      Dim conflictAppIDs As New System.Collections.Generic.List(Of Int32)
 
-			If art.ParentArtifact IsNot Nothing Then
-				parentName = art.ParentArtifact.Name
-			End If
+      If art.ParentArtifact IsNot Nothing Then
+        parentName = art.ParentArtifact.Name
+      End If
 
-			If art.ConflictArtifact IsNot Nothing Then
-				conflictID = art.ConflictArtifact.ArtifactId
-				conflictName = art.ConflictArtifact.Name
-				If art.ConflictArtifact.Applications IsNot Nothing Then
-					Dim sepString As String = ""
-					For Each app As TemplateManagerBase.Application In art.ConflictArtifact.Applications
-						conflictApps.Append(sepString)
-						conflictApps.Append(app.Name)
-						sepString = ", "
+      If art.ConflictArtifact IsNot Nothing Then
+        conflictID = art.ConflictArtifact.ArtifactId
+        conflictName = art.ConflictArtifact.Name
+        If art.ConflictArtifact.Applications IsNot Nothing Then
+          Dim sepString As String = ""
+          For Each app As TemplateManagerBase.Application In art.ConflictArtifact.Applications
+            conflictApps.Append(sepString)
+            conflictApps.Append(app.Name)
+            sepString = ", "
 
-						conflictAppIDs.Add(app.ID)
-					Next
-				End If
-			End If
+            conflictAppIDs.Add(app.ID)
+          Next
+        End If
+      End If
 
-			failedTable.Rows.Add(New Object() { _
-			 StatusToString(art.Status, conflictApps.ToString), _
-			 art.Status, _
-			 art.Name, _
-			 parentName, _
-			 TypeToString(art.Type), _
-			 art.Type, _
-			 conflictApps, _
-			 conflictAppIDs.ToArray(), _
-			 conflictName, _
-			 conflictID, _
-			 art.StatusMessage, _
-			 index})
-			index += 1
-		Next
+      failedTable.Rows.Add(New Object() { _
+       StatusToString(art.Status, conflictApps.ToString), _
+       art.Status, _
+       art.Name, _
+       parentName, _
+       TypeToString(art.Type), _
+       art.Type, _
+       conflictApps, _
+       conflictAppIDs.ToArray(), _
+       conflictName, _
+       conflictID, _
+       art.StatusMessage, _
+       index})
+      index += 1
+    Next
 
-		Return failedTable
-	End Function
+    Return failedTable
+  End Function
 
-	Private Sub UpdateArtifactStatusTableProperties()
-		If Not results(currentResultIndex).Success Then
+  Private Sub UpdateArtifactStatusTableProperties()
+    If Not results(currentResultIndex).Success Then
       ArtifactStatusTable.Columns("Locked Applications").Visible = False
-			ArtifactStatusTable.Columns(ArtifactHiddenErrorColumnName).Visible = False
-			ArtifactStatusTable.Columns(ArtifactIndexColumnName).Visible = False
+      ArtifactStatusTable.Columns(ArtifactHiddenErrorColumnName).Visible = False
+      ArtifactStatusTable.Columns(ArtifactIndexColumnName).Visible = False
       ArtifactStatusTable.Columns(ArtifactTypeIDColumnName).Visible = False
       ArtifactStatusTable.Columns(ArtifcactSelectedResolutionColumnName).Visible = False
 
@@ -324,29 +324,29 @@ Public Class RelativityApplicationStatusForm
     ArtifactStatusTable.EditMode = DataGridViewEditMode.EditOnEnter And DataGridViewEditMode.EditProgrammatically
 
     ColorTable()
-	End Sub
+  End Sub
 
-	Private Sub ColorTable()
-		If WorkspaceView Then
-			For Each row As DataGridViewRow In ArtifactStatusTable.Rows
+  Private Sub ColorTable()
+    If WorkspaceView Then
+      For Each row As DataGridViewRow In ArtifactStatusTable.Rows
         If row.Cells(workspaceStatusColumnName).Value.ToString.Equals(WorkspaceSuccessString, StringComparison.CurrentCulture) Then
           row.Cells(workspaceStatusColumnName).Style.BackColor = Color.PaleGreen
         Else
           row.Cells(workspaceStatusColumnName).Style.BackColor = Color.LightPink
         End If
-			Next
-		Else
-			If results(currentResultIndex).Success Then
-				For Each row As DataGridViewRow In ArtifactStatusTable.Rows
-					row.Cells("Status").Style.BackColor = Color.PaleGreen
-				Next
-			Else
-				For Each row As DataGridViewRow In ArtifactStatusTable.Rows
-					row.Cells(ArtifactErrorColumnName).Style.BackColor = Color.LightPink
-				Next
-			End If
-		End If
-	End Sub
+      Next
+    Else
+      If results(currentResultIndex).Success Then
+        For Each row As DataGridViewRow In ArtifactStatusTable.Rows
+          row.Cells("Status").Style.BackColor = Color.PaleGreen
+        Next
+      Else
+        For Each row As DataGridViewRow In ArtifactStatusTable.Rows
+          row.Cells(ArtifactErrorColumnName).Style.BackColor = Color.LightPink
+        Next
+      End If
+    End If
+  End Sub
 
   Private Sub SelectCellSub(ByVal cell As DataGridViewCell)
     cell.ReadOnly = False
@@ -417,36 +417,36 @@ Public Class RelativityApplicationStatusForm
           ArtifactStatusTable.BeginInvoke(_selectCell, conflictingNameCell)
         End If
       End If
-		CheckForRetryEnabled()
-	End Sub
-
-	Private Sub CheckForRetryEnabled()
-		_retryEnabled = True
-		Dim cb As DataGridViewComboBoxCell = Nothing
-		Dim cbStr As String = Nothing
-		Dim renamedText As String = Nothing
-
-		For Each dgrv As DataGridViewRow In ArtifactStatusTable.Rows
-			cb = DirectCast(dgrv.Cells("Resolution"), DataGridViewComboBoxCell)
-			cbStr = DirectCast(cb.EditedFormattedValue, String)
-			If String.IsNullOrEmpty(cbStr) Then _retryEnabled = False : Exit For
-			If String.Equals(cbStr, DropdownRenameInWorkspace, StringComparison.InvariantCultureIgnoreCase) OrElse String.Equals(cbStr, DropdownRenameFriendlyNameInWorkspace, StringComparison.InvariantCultureIgnoreCase) Then
-				If TypeOf (dgrv.Cells(ArtifactConflictNameColumnName)) Is DataGridViewTextBoxCell Then
-					renamedText = DirectCast(dgrv.Cells(ArtifactConflictNameColumnName), DataGridViewTextBoxCell).EditedFormattedValue.ToString()
-				Else
-					renamedText = dgrv.Cells(ArtifactConflictNameColumnName).Value.ToString()
-				End If
-				If String.Equals(renamedText, dgrv.Cells(ArtifactNameColumnName).Value.ToString(), StringComparison.InvariantCultureIgnoreCase) OrElse String.IsNullOrEmpty(renamedText) Then
-					_retryEnabled = False
-					Exit For
-				End If
-			ElseIf Not String.Equals(cbStr, DropdownForceImport, StringComparison.InvariantCultureIgnoreCase) Then
-				_retryEnabled = False
-				Exit For
-			End If
-		Next
-		SetButtonVisibility()
     End If
+    CheckForRetryEnabled()
+  End Sub
+
+  Private Sub CheckForRetryEnabled()
+    _retryEnabled = True
+    Dim cb As DataGridViewComboBoxCell = Nothing
+    Dim cbStr As String = Nothing
+    Dim renamedText As String = Nothing
+
+    For Each dgrv As DataGridViewRow In ArtifactStatusTable.Rows
+      cb = DirectCast(dgrv.Cells("Resolution"), DataGridViewComboBoxCell)
+      cbStr = DirectCast(cb.EditedFormattedValue, String)
+      If String.IsNullOrEmpty(cbStr) Then _retryEnabled = False : Exit For
+      If String.Equals(cbStr, DropdownRenameInWorkspace, StringComparison.InvariantCultureIgnoreCase) OrElse String.Equals(cbStr, DropdownRenameFriendlyNameInWorkspace, StringComparison.InvariantCultureIgnoreCase) Then
+        If TypeOf (dgrv.Cells(ArtifactConflictNameColumnName)) Is DataGridViewTextBoxCell Then
+          renamedText = DirectCast(dgrv.Cells(ArtifactConflictNameColumnName), DataGridViewTextBoxCell).EditedFormattedValue.ToString()
+        Else
+          renamedText = dgrv.Cells(ArtifactConflictNameColumnName).Value.ToString()
+        End If
+        If String.Equals(renamedText, dgrv.Cells(ArtifactNameColumnName).Value.ToString(), StringComparison.InvariantCultureIgnoreCase) OrElse String.IsNullOrEmpty(renamedText) Then
+          _retryEnabled = False
+          Exit For
+        End If
+      ElseIf Not String.Equals(cbStr, DropdownForceImport, StringComparison.InvariantCultureIgnoreCase) Then
+        _retryEnabled = False
+        Exit For
+      End If
+    Next
+    SetButtonVisibility()
   End Sub
 
   Private Sub DetailsButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles DetailsButton.Click
