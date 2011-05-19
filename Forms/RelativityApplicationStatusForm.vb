@@ -16,6 +16,7 @@ Public Class RelativityApplicationStatusForm
 	Private Const WorkspaceSuccessString As String = "Completed"
 	Private Const WorkspaceErrorString As String = "Error"
 
+	Private Const ArtifactNameColumnName As String = "Name"
 	Private Const ArtifactErrorColumnName As String = "Error"
 	Private Const ArtifactHiddenErrorColumnName As String = "Hidden Error"
 	Private Const ArtifactApplicationIdsColumnName As String = "Application IDs"
@@ -25,7 +26,6 @@ Public Class RelativityApplicationStatusForm
 	Private Const ArtifactConflictNameColumnName As String = "Conflicting Artifact Name"
   Private Const ArtifactIndexColumnName As String = "Index"
   Private Const ArtifcactSelectedResolutionColumnName = "Selected Resolution"
-
 	Private Const DropdownForceImport As String = "Force Import"
 	Private Const DropdownRenameInWorkspace As String = "Rename in Workspace"
   Private Const DropdownRenameFriendlyNameInWorkspace As String = "Rename in Workspace"
@@ -140,12 +140,9 @@ Public Class RelativityApplicationStatusForm
 
 		If result.Success Then
 			InformationText.Text = "Installation complete."
-			_retryEnabled = False
-			SetButtonVisibility()
 			artifactTable = CreateSucessTable(result)
 		Else
-			_retryEnabled = True
-			SetButtonVisibility()
+		
 			InformationText.Text = String.Format(CultureInfo.CurrentCulture, "{0}{1}{2}", ErrorMessagePart1, ErrorMessageLink, ErrorMessagePart2)
 			InformationText.Links.Clear()
 			InformationText.Links.Add(ErrorMessagePart1.Length, ErrorMessageLink.Length, HelpLink)
@@ -166,6 +163,9 @@ Public Class RelativityApplicationStatusForm
 		UpdateArtifactStatusTableProperties()
 
 		ExportButton.Enabled = True
+
+		_retryEnabled = False
+		SetButtonVisibility()
 	End Sub
 
 	Private Function CreateWorkspaceTable() As DataTable
@@ -210,7 +210,7 @@ Public Class RelativityApplicationStatusForm
 
 		failedTable.Columns.Add(ArtifactErrorColumnName, GetType(String))
 		failedTable.Columns.Add(ArtifactHiddenErrorColumnName, GetType(TemplateManagerBase.StatusCode))
-		failedTable.Columns.Add("Name", GetType(String))
+		failedTable.Columns.Add(ArtifactNameColumnName, GetType(String))
 		failedTable.Columns.Add("Object Type Name", GetType(String))
 		failedTable.Columns.Add("Artifact Type", GetType(String))
 		failedTable.Columns.Add(ArtifactTypeIDColumnName, GetType(TemplateManagerBase.ApplicationArtifactType))
@@ -417,6 +417,35 @@ Public Class RelativityApplicationStatusForm
           ArtifactStatusTable.BeginInvoke(_selectCell, conflictingNameCell)
         End If
       End If
+		CheckForRetryEnabled()
+	End Sub
+
+	Private Sub CheckForRetryEnabled()
+		_retryEnabled = True
+		Dim cb As DataGridViewComboBoxCell = Nothing
+		Dim cbStr As String = Nothing
+		Dim renamedText As String = Nothing
+
+		For Each dgrv As DataGridViewRow In ArtifactStatusTable.Rows
+			cb = DirectCast(dgrv.Cells("Resolution"), DataGridViewComboBoxCell)
+			cbStr = DirectCast(cb.EditedFormattedValue, String)
+			If String.IsNullOrEmpty(cbStr) Then _retryEnabled = False : Exit For
+			If String.Equals(cbStr, DropdownRenameInWorkspace, StringComparison.InvariantCultureIgnoreCase) OrElse String.Equals(cbStr, DropdownRenameFriendlyNameInWorkspace, StringComparison.InvariantCultureIgnoreCase) Then
+				If TypeOf (dgrv.Cells(ArtifactConflictNameColumnName)) Is DataGridViewTextBoxCell Then
+					renamedText = DirectCast(dgrv.Cells(ArtifactConflictNameColumnName), DataGridViewTextBoxCell).EditedFormattedValue.ToString()
+				Else
+					renamedText = dgrv.Cells(ArtifactConflictNameColumnName).Value.ToString()
+				End If
+				If String.Equals(renamedText, dgrv.Cells(ArtifactNameColumnName).Value.ToString(), StringComparison.InvariantCultureIgnoreCase) OrElse String.IsNullOrEmpty(renamedText) Then
+					_retryEnabled = False
+					Exit For
+				End If
+			ElseIf Not String.Equals(cbStr, DropdownForceImport, StringComparison.InvariantCultureIgnoreCase) Then
+				_retryEnabled = False
+				Exit For
+			End If
+		Next
+		SetButtonVisibility()
     End If
   End Sub
 
@@ -535,6 +564,7 @@ Public Class RelativityApplicationStatusForm
         Dim appIDs() As Int32 = CType(artifactTable.Rows(index).Item(ArtifactApplicationIdsColumnName), Int32())
         Dim ids() As Int32 = (From i As Int32 In (appIDs).AsEnumerable() Select i Where Not apps.Contains(i)).ToArray()
         apps.AddRange(ids)
+
       End If
     Next
 
