@@ -19,6 +19,7 @@ Public Class RelativityApplicationStatusForm
   Private Const WorkspaceErrorString As String = "Error"
 
   Private Const ArtifactNameColumnName As String = "Name"
+	Private Const ArtifactIDColumnName As String = "Artifact ID"
   Private Const ArtifactErrorColumnName As String = "Error"
   Private Const ArtifactHiddenErrorColumnName As String = "Hidden Error"
   Private Const ArtifactApplicationIdsColumnName As String = "Application IDs"
@@ -31,7 +32,7 @@ Public Class RelativityApplicationStatusForm
   Private Const DropdownForceImport As String = "Force Import"
   Private Const DropdownRenameInWorkspace As String = "Rename in Workspace"
   Private Const DropdownRenameFriendlyNameInWorkspace As String = "Rename in Workspace"
-
+	Private Const DropdownRetryRename As String = "Choose another Name"
   Private Const ExpandText As String = "[+]"
   Private Const CollapseText As String = "[-]"
   Private Const HelpLink As String = "http://help.kcura.com/relativity/Relativity Applications/Using Relativity Applications for RDC - 7.0.pdf#Resolving-Errors"
@@ -212,6 +213,7 @@ Public Class RelativityApplicationStatusForm
     failedTable.Columns.Add(ArtifactErrorColumnName, GetType(String))
     failedTable.Columns.Add(ArtifactHiddenErrorColumnName, GetType(TemplateManagerBase.StatusCode))
     failedTable.Columns.Add(ArtifactNameColumnName, GetType(String))
+		failedTable.Columns.Add(ArtifactIDColumnName, GetType(Int32))
     failedTable.Columns.Add("Object Type Name", GetType(String))
     failedTable.Columns.Add("Artifact Type", GetType(String))
     failedTable.Columns.Add(ArtifactTypeIDColumnName, GetType(TemplateManagerBase.ApplicationArtifactType))
@@ -254,6 +256,7 @@ Public Class RelativityApplicationStatusForm
        StatusToString(art.Status, conflictApps.ToString), _
        art.Status, _
        art.Name, _
+			 art.ArtifactId, _
        parentName, _
        TypeToString(art.Type), _
        art.Type, _
@@ -301,6 +304,8 @@ Public Class RelativityApplicationStatusForm
             theCell.Items.Add(DropdownForceImport)
           Case TemplateManagerBase.StatusCode.MultipleFileField
           Case TemplateManagerBase.StatusCode.UnknownError
+					Case TemplateManagerBase.StatusCode.RenameConflict
+						CType(row.Cells(ArtifactResolutionColumnName), DataGridViewComboBoxCell).Items.Add(DropdownRetryRename)
           Case Else
         End Select
 
@@ -426,6 +431,8 @@ Public Class RelativityApplicationStatusForm
           cell.OwningRow.Cells(ArtifcactSelectedResolutionColumnName).Value = choice
 
           If (String.Equals(choice, DropdownRenameInWorkspace, StringComparison.CurrentCulture) OrElse String.Equals(choice, DropdownRenameFriendlyNameInWorkspace, StringComparison.CurrentCulture)) Then
+			OrElse String.Equals(DirectCast(cell.EditedFormattedValue, String), DropdownRenameFriendlyNameInWorkspace) _
+			OrElse String.Equals(DirectCast(cell.EditedFormattedValue, String), DropdownRetryRename)) Then
             cell.Selected = False
             Dim conflictingNameCell As DataGridViewCell = cell.OwningRow.Cells(ArtifactConflictNameColumnName)
 
@@ -610,6 +617,15 @@ Public Class RelativityApplicationStatusForm
           .ArtifactTypeID = CType(row.Cells(ArtifactTypeIDColumnName).Value, TemplateManagerBase.ApplicationArtifactType),
           .Fields = New TemplateManagerBase.FieldKVP() {kvp},
           .Action = TemplateManagerBase.ResolveAction.Update})
+				ElseIf String.Equals(row.Cells(ArtifactResolutionColumnName).Value.ToString, DropdownRetryRename) Then
+					kvp = New TemplateManagerBase.FieldKVP()
+					kvp.Key = "Name"
+					kvp.Value = row.Cells(ArtifactConflictNameColumnName).Value
+					resArts.Add(New TemplateManagerBase.ResolveArtifact() With {.ArtifactID = CInt(row.Cells(ArtifactIDColumnName).Value), _
+					 .ArtifactTypeID = CType(row.Cells(ArtifactTypeIDColumnName).Value, TemplateManagerBase.ApplicationArtifactType), _
+					.Fields = New TemplateManagerBase.FieldKVP() {kvp}, _
+					 .Action = TemplateManagerBase.ResolveAction.Update})
+				End If
       End If
     Next
 
@@ -646,6 +662,8 @@ Public Class RelativityApplicationStatusForm
         Return String.Format("Shared By A Locked App: {0}", lockedApps)
       Case TemplateManagerBase.StatusCode.UnknownError
         Return "Unknown Error"
+			Case TemplateManagerBase.StatusCode.RenameConflict
+				Return "Rename Conflict"
       Case Else
         Return stat.ToString
     End Select
