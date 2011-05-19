@@ -420,9 +420,7 @@ Namespace kCura.EDDS.WebAPI.TemplateManagerBase
      System.Xml.Serialization.XmlTypeAttribute([Namespace]:="http://www.kCura.com/EDDS/TemplateManager")>  _
     Partial Public Class ApplicationArtifact
         
-        Private workspaceIDField As Integer
-        
-        Private applicationsField() As Application
+        Private workspaceIdField As Integer
         
         Private artifactIdField As Integer
         
@@ -442,23 +440,15 @@ Namespace kCura.EDDS.WebAPI.TemplateManagerBase
         
         Private statusDetailsField As String
         
-        '''<remarks/>
-        Public Property WorkspaceID() As Integer
-            Get
-                Return Me.workspaceIDField
-            End Get
-            Set
-                Me.workspaceIDField = value
-            End Set
-        End Property
+        Private applicationsField() As Application
         
         '''<remarks/>
-        Public Property Applications() As Application()
+        Public Property WorkspaceId() As Integer
             Get
-                Return Me.applicationsField
+                Return Me.workspaceIdField
             End Get
             Set
-                Me.applicationsField = value
+                Me.workspaceIdField = value
             End Set
         End Property
         
@@ -551,6 +541,16 @@ Namespace kCura.EDDS.WebAPI.TemplateManagerBase
                 Me.statusDetailsField = value
             End Set
         End Property
+        
+        '''<remarks/>
+        Public Property Applications() As Application()
+            Get
+                Return Me.applicationsField
+            End Get
+            Set
+                Me.applicationsField = value
+            End Set
+        End Property
     End Class
     
     '''<remarks/>
@@ -579,6 +579,9 @@ Namespace kCura.EDDS.WebAPI.TemplateManagerBase
         
         '''<remarks/>
         MultipleFileField
+        
+        '''<remarks/>
+        RenameConflict
     End Enum
     
     '''<remarks/>
