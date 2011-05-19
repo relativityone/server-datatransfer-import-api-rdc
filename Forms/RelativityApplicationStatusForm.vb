@@ -28,6 +28,7 @@ Public Class RelativityApplicationStatusForm
 	Private Const DropdownForceImport As String = "Force Import"
 	Private Const DropdownRenameInWorkspace As String = "Rename in Workspace"
 	Private Const DropdownRenameFriendlyNameInWorkspace As String = "Rename in Workspace"
+	Private Const DropdownRetryRename As String = "Choose another Name"
 
 	Private Delegate Sub SelectCell(ByVal cell As DataGridViewCell)
 	Private _selectCell As SelectCell
@@ -282,6 +283,8 @@ Public Class RelativityApplicationStatusForm
 						CType(row.Cells(ArtifactResolutionColumnName), DataGridViewComboBoxCell).Items.Add(DropdownForceImport)
 					Case TemplateManagerBase.StatusCode.UnknownError
 						'
+					Case TemplateManagerBase.StatusCode.RenameConflict
+						CType(row.Cells(ArtifactResolutionColumnName), DataGridViewComboBoxCell).Items.Add(DropdownRetryRename)
 					Case Else
 				End Select
 				CType(row.Cells(ArtifactResolutionColumnName), DataGridViewComboBoxCell).ReadOnly = False
@@ -334,10 +337,10 @@ Public Class RelativityApplicationStatusForm
 	End Sub
 
 	Private Sub ArtifactStatusTable_EditingControlShowing(ByVal sender As Object, ByVal e As System.Windows.Forms.DataGridViewEditingControlShowingEventArgs) Handles ArtifactStatusTable.EditingControlShowing
-		If String.Equals(ArtifactStatusTable.CurrentCell.OwningColumn.Name, "Resolution", StringComparison.InvariantCultureIgnoreCase) Then
+		If String.Equals(ArtifactStatusTable.CurrentCell.OwningColumn.Name, ArtifactResolutionColumnName) Then
 			Dim comboBox As ComboBox = DirectCast(e.Control, ComboBox)
 			AddHandler comboBox.SelectedValueChanged, AddressOf Me.renameCell_SelectedIndexChanged
-		ElseIf String.Equals(ArtifactStatusTable.CurrentCell.OwningColumn.Name, ArtifactConflictNameColumnName, StringComparison.InvariantCultureIgnoreCase) Then
+		ElseIf String.Equals(ArtifactStatusTable.CurrentCell.OwningColumn.Name, ArtifactConflictNameColumnName) Then
 			Dim textBox As TextBox = DirectCast(e.Control, TextBox)
 			textBox.MaxLength = FIELD_NAME_MAX_LENGTH
 			AddHandler textBox.TextChanged, AddressOf Me.ConflictingArtifactName_TextChanged
@@ -351,8 +354,10 @@ Public Class RelativityApplicationStatusForm
 	Private Sub renameCell_SelectedIndexChanged(ByVal sender As Object, ByVal e As EventArgs)
 		If ArtifactStatusTable.SelectedCells.Count > 0 Then
 			Dim cell As DataGridViewComboBoxCell = DirectCast(ArtifactStatusTable.SelectedCells.Item(0), DataGridViewComboBoxCell)
-			If Not cell Is Nothing AndAlso cell.Items.Count > 0 AndAlso (String.Equals(DirectCast(cell.Items.Item(0), String), DropdownRenameInWorkspace, StringComparison.InvariantCultureIgnoreCase) _
-									OrElse String.Equals(DirectCast(cell.Items.Item(0), String), DropdownRenameFriendlyNameInWorkspace, StringComparison.InvariantCultureIgnoreCase)) Then
+
+			If Not cell Is Nothing AndAlso cell.Items.Count > 0 AndAlso (String.Equals(DirectCast(cell.EditedFormattedValue, String), DropdownRenameInWorkspace) _
+			OrElse String.Equals(DirectCast(cell.EditedFormattedValue, String), DropdownRenameFriendlyNameInWorkspace) _
+			OrElse String.Equals(DirectCast(cell.EditedFormattedValue, String), DropdownRetryRename)) Then
 				cell.Selected = False
 				Dim conflictingNameCell As DataGridViewCell = cell.OwningRow.Cells(ArtifactConflictNameColumnName)
 				_selectCell = New SelectCell(AddressOf SelectCellSub)
@@ -372,7 +377,7 @@ Public Class RelativityApplicationStatusForm
 			cb = DirectCast(dgrv.Cells("Resolution"), DataGridViewComboBoxCell)
 			cbStr = DirectCast(cb.EditedFormattedValue, String)
 			If String.IsNullOrEmpty(cbStr) Then _retryEnabled = False : Exit For
-			If String.Equals(cbStr, DropdownRenameInWorkspace, StringComparison.InvariantCultureIgnoreCase) OrElse String.Equals(cbStr, DropdownRenameFriendlyNameInWorkspace, StringComparison.InvariantCultureIgnoreCase) Then
+			If String.Equals(cbStr, DropdownRenameInWorkspace, StringComparison.InvariantCultureIgnoreCase) OrElse String.Equals(cbStr, DropdownRenameFriendlyNameInWorkspace, StringComparison.InvariantCultureIgnoreCase) OrElse String.Equals(cbStr, DropdownRetryRename) Then
 				If TypeOf (dgrv.Cells(ArtifactConflictNameColumnName)) Is DataGridViewTextBoxCell Then
 					renamedText = DirectCast(dgrv.Cells(ArtifactConflictNameColumnName), DataGridViewTextBoxCell).EditedFormattedValue.ToString()
 				Else
@@ -593,6 +598,8 @@ Public Class RelativityApplicationStatusForm
 				Return String.Format("Shared By A Locked App: {0}", lockedApps)
 			Case TemplateManagerBase.StatusCode.UnknownError
 				Return "Unknown Error"
+			Case TemplateManagerBase.StatusCode.RenameConflict
+				Return "Rename Conflict"
 			Case Else
 				Return stat.ToString
 		End Select
