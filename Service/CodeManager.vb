@@ -156,6 +156,23 @@ Namespace kCura.WinEDDS.Service
 			Return Nothing
 		End Function
 
+		Public Shadows Function GetChoiceLimitForUI() As Int32
+			Dim tries As Int32 = 0
+			While tries < Config.MaxReloginTries
+				tries += 1
+				Try
+					Return MyBase.GetChoiceLimitForUI()
+				Catch ex As System.Exception
+					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
+						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
+					Else
+						Throw
+					End If
+				End Try
+			End While
+			Return 0
+		End Function
+
 		Public Shared Function Convert(ByVal webserviceChoiceInfo As kCura.EDDS.WebAPI.CodeManagerBase.ChoiceInfo) As Relativity.ChoiceInfo
 			If webserviceChoiceInfo Is Nothing Then Return Nothing
 			Dim retval As New Relativity.ChoiceInfo
