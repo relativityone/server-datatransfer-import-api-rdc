@@ -188,6 +188,10 @@
     <OptionInfer>On</OptionInfer>
   </PropertyGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\kCura\kCura.Web.UI.WebControls\kCura.Web.UI.WebControls.vbproj">
+      <Project>{DBDD8ACF-80B1-4629-AEC2-EFEDAC556083}</Project>
+      <Name>kCura.Web.UI.WebControls</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Relativity\Relativity.vbproj">
       <Project>{044A6424-BC90-46CE-8805-0053A44AFCAB}</Project>
       <Name>Relativity</Name>
