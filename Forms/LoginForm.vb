@@ -126,6 +126,13 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 #End Region
+
+#If DEBUG Then
+		Private _timer As System.Threading.Timer
+		Private Delegate Sub AutoLoginDelegateSub()
+		Private _autoLoginDelegate As AutoLoginDelegateSub
+#End If
+
 		Friend WithEvents _application As kCura.EDDS.WinForm.Application
 
 		Private _credential As System.Net.NetworkCredential
@@ -169,13 +176,31 @@ Namespace kCura.EDDS.WinForm
 			_application.ExitApplication()
 		End Sub
 
+
 		Private Sub LoginForm_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles MyBase.Load
 			Me.Focus()
 			_loginTextBox.Focus()
+#If DEBUG Then
+			Dim machinesToAutoLogin As System.Collections.Generic.List(Of String) = kCura.Utility.DevelopmentHelper.AutoLogins
+			If machinesToAutoLogin.Contains(Environment.MachineName) Then
+				_autoLoginDelegate = New AutoLoginDelegateSub(AddressOf AutoLoginSub)
+				_timer = New System.Threading.Timer(New System.Threading.TimerCallback(AddressOf AutoLoginInvoker), Nothing, 100, 0)
+			End If
+#End If
 		End Sub
 
-		Private Sub _loginTextBox_TextChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _loginTextBox.TextChanged
-
+#If DEBUG Then
+		Private Sub AutoLoginInvoker(ByVal nada As Object)
+			_timer.Dispose()
+			Me.BeginInvoke(_autoLoginDelegate)
 		End Sub
+
+		Private Sub AutoLoginSub()
+			_loginTextBox.Text = kCura.Utility.DevelopmentHelper.DefaultUserName
+			_passwordTextBox.Text = kCura.Utility.DevelopmentHelper.DefaultPassword
+			_okButton.PerformClick()
+		End Sub
+#End If
+
 	End Class
 End Namespace

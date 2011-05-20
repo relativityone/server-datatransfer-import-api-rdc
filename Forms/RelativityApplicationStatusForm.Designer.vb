@@ -33,6 +33,7 @@ Partial Class RelativityApplicationStatusForm
 		Me.CopyErrorToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
 		Me.MainSplitContainer = New System.Windows.Forms.SplitContainer()
 		Me.Panel1 = New System.Windows.Forms.Panel()
+		Me.RetryImportButton = New System.Windows.Forms.Button()
 		Me.DetailsButton = New System.Windows.Forms.Button()
 		Me.CloseButton = New System.Windows.Forms.Button()
 		Me.ExportButton = New System.Windows.Forms.Button()
@@ -61,8 +62,8 @@ Partial Class RelativityApplicationStatusForm
 		DataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.[True]
 		Me.ArtifactStatusTable.AlternatingRowsDefaultCellStyle = DataGridViewCellStyle1
 		Me.ArtifactStatusTable.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-						Or System.Windows.Forms.AnchorStyles.Left) _
-						Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+								Or System.Windows.Forms.AnchorStyles.Left) _
+								Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 		Me.ArtifactStatusTable.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.DisplayedCells
 		Me.ArtifactStatusTable.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
 		Me.ArtifactStatusTable.Location = New System.Drawing.Point(3, 3)
@@ -72,14 +73,14 @@ Partial Class RelativityApplicationStatusForm
 		Me.ArtifactStatusTable.RowsDefaultCellStyle = DataGridViewCellStyle2
 		Me.ArtifactStatusTable.RowTemplate.Height = 30
 		Me.ArtifactStatusTable.RowTemplate.ReadOnly = True
-		Me.ArtifactStatusTable.Size = New System.Drawing.Size(818, 358)
+		Me.ArtifactStatusTable.Size = New System.Drawing.Size(874, 378)
 		Me.ArtifactStatusTable.TabIndex = 1
 		'
 		'InformationText
 		'
 		Me.InformationText.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-						Or System.Windows.Forms.AnchorStyles.Left) _
-						Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+								Or System.Windows.Forms.AnchorStyles.Left) _
+								Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 		Me.InformationText.AutoSize = True
 		Me.InformationText.ContextMenuStrip = Me.CopyErrorMenu
 		Me.InformationText.LinkArea = New System.Windows.Forms.LinkArea(0, 0)
@@ -104,8 +105,8 @@ Partial Class RelativityApplicationStatusForm
 		'MainSplitContainer
 		'
 		Me.MainSplitContainer.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-						Or System.Windows.Forms.AnchorStyles.Left) _
-						Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+								Or System.Windows.Forms.AnchorStyles.Left) _
+								Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 		Me.MainSplitContainer.Location = New System.Drawing.Point(0, 36)
 		Me.MainSplitContainer.Name = "MainSplitContainer"
 		Me.MainSplitContainer.Orientation = System.Windows.Forms.Orientation.Horizontal
@@ -118,12 +119,13 @@ Partial Class RelativityApplicationStatusForm
 		'
 		'MainSplitContainer.Panel2
 		'
+		Me.MainSplitContainer.Panel2.Controls.Add(Me.RetryImportButton)
 		Me.MainSplitContainer.Panel2.Controls.Add(Me.DetailsButton)
 		Me.MainSplitContainer.Panel2.Controls.Add(Me.CloseButton)
 		Me.MainSplitContainer.Panel2.Controls.Add(Me.ExportButton)
 		Me.MainSplitContainer.Panel2.Controls.Add(Me.ArtifactStatusTable)
-		Me.MainSplitContainer.Size = New System.Drawing.Size(824, 515)
-		Me.MainSplitContainer.SplitterDistance = 118
+		Me.MainSplitContainer.Size = New System.Drawing.Size(886, 534)
+		Me.MainSplitContainer.SplitterDistance = 122
 		Me.MainSplitContainer.TabIndex = 3
 		'
 		'Panel1
@@ -135,11 +137,22 @@ Partial Class RelativityApplicationStatusForm
 		Me.Panel1.Size = New System.Drawing.Size(161, 55)
 		Me.Panel1.TabIndex = 3
 		'
+		'RetryImportButton
+		'
+		Me.RetryImportButton.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+		Me.RetryImportButton.Enabled = False
+		Me.RetryImportButton.Location = New System.Drawing.Point(556, 383)
+		Me.RetryImportButton.Name = "RetryImportButton"
+		Me.RetryImportButton.Size = New System.Drawing.Size(103, 23)
+		Me.RetryImportButton.TabIndex = 6
+		Me.RetryImportButton.Text = "Retry Import"
+		Me.RetryImportButton.UseVisualStyleBackColor = True
+		'
 		'DetailsButton
 		'
 		Me.DetailsButton.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 		Me.DetailsButton.Enabled = False
-		Me.DetailsButton.Location = New System.Drawing.Point(471, 367)
+		Me.DetailsButton.Location = New System.Drawing.Point(416, 383)
 		Me.DetailsButton.Name = "DetailsButton"
 		Me.DetailsButton.Size = New System.Drawing.Size(134, 23)
 		Me.DetailsButton.TabIndex = 5
@@ -149,7 +162,7 @@ Partial Class RelativityApplicationStatusForm
 		'CloseButton
 		'
 		Me.CloseButton.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-		Me.CloseButton.Location = New System.Drawing.Point(718, 367)
+		Me.CloseButton.Location = New System.Drawing.Point(774, 383)
 		Me.CloseButton.Name = "CloseButton"
 		Me.CloseButton.Size = New System.Drawing.Size(103, 23)
 		Me.CloseButton.TabIndex = 4
@@ -160,7 +173,7 @@ Partial Class RelativityApplicationStatusForm
 		'
 		Me.ExportButton.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 		Me.ExportButton.Enabled = False
-		Me.ExportButton.Location = New System.Drawing.Point(611, 367)
+		Me.ExportButton.Location = New System.Drawing.Point(665, 383)
 		Me.ExportButton.Name = "ExportButton"
 		Me.ExportButton.Size = New System.Drawing.Size(103, 23)
 		Me.ExportButton.TabIndex = 2
@@ -171,7 +184,7 @@ Partial Class RelativityApplicationStatusForm
 		'
 		Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
 		Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-		Me.ClientSize = New System.Drawing.Size(826, 573)
+		Me.ClientSize = New System.Drawing.Size(883, 582)
 		Me.Controls.Add(Me.MainSplitContainer)
 		Me.Controls.Add(Me.StatusHeader)
 		Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
@@ -200,4 +213,5 @@ Partial Class RelativityApplicationStatusForm
 	Friend WithEvents ExportButton As System.Windows.Forms.Button
 	Friend WithEvents CloseButton As System.Windows.Forms.Button
 	Friend WithEvents DetailsButton As System.Windows.Forms.Button
+	Friend WithEvents RetryImportButton As System.Windows.Forms.Button
 End Class
