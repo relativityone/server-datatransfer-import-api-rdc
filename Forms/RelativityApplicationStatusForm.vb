@@ -59,7 +59,7 @@ Public Class RelativityApplicationStatusForm
   Private caseInfos As Generic.IEnumerable(Of Relativity.CaseInfo)
   Private _processPool As kCura.Windows.Process.ProcessPool
   Private _retryEnabled As Boolean
-  Private shouldBeEditingThis As DataGridViewCell = Nothing
+  Private ar As IAsyncResult = Nothing
 
   Private Property WorkspaceView As Boolean
     Get
@@ -137,6 +137,7 @@ Public Class RelativityApplicationStatusForm
   Private Sub UpdateArtifactStatusView()
     WorkspaceView = False
     errorExpanded = False
+
     Dim result As TemplateManagerBase.ApplicationInstallationResult = results(currentResultIndex)
     StatusHeader.Text = String.Format("Installation Status Report -- {0} ({1})", result.WorkspaceName, result.WorkspaceID)
 
@@ -253,19 +254,19 @@ Public Class RelativityApplicationStatusForm
       End If
 
       failedTable.Rows.Add(New Object() { _
-       StatusToString(art.Status, conflictApps.ToString), _
-       art.Status, _
-       art.Name, _
-    art.ArtifactId, _
-       parentName, _
-       TypeToString(art.Type), _
-       art.Type, _
-       conflictApps, _
-       conflictAppIDs.ToArray(), _
-       conflictName, _
-       conflictID, _
-       art.StatusMessage, _
-       index})
+        StatusToString(art.Status, conflictApps.ToString), _
+        art.Status, _
+        art.Name, _
+        art.ArtifactId, _
+        parentName, _
+        TypeToString(art.Type), _
+        art.Type, _
+        conflictApps, _
+        conflictAppIDs.ToArray(), _
+        conflictName, _
+        conflictID, _
+        art.StatusMessage, _
+        index})
       index += 1
     Next
 
@@ -293,29 +294,29 @@ Public Class RelativityApplicationStatusForm
       Next
 
       For Each row As DataGridViewRow In ArtifactStatusTable.Rows
-        Dim theCell As DataGridViewComboBoxCell = CType(row.Cells(ArtifactResolutionColumnName), DataGridViewComboBoxCell)
+        Dim comboBoxCell As DataGridViewComboBoxCell = CType(row.Cells(ArtifactResolutionColumnName), DataGridViewComboBoxCell)
 
         Select Case CType(row.Cells(ArtifactHiddenErrorColumnName).Value, TemplateManagerBase.StatusCode)
           Case TemplateManagerBase.StatusCode.FriendlyNameConflict
-            theCell.Items.Add(DropdownRenameFriendlyNameInWorkspace)
+            comboBoxCell.Items.Add(DropdownRenameFriendlyNameInWorkspace)
           Case TemplateManagerBase.StatusCode.NameConflict
-            theCell.Items.Add(DropdownRenameInWorkspace)
+            comboBoxCell.Items.Add(DropdownRenameInWorkspace)
           Case TemplateManagerBase.StatusCode.SharedByLockedApp
-            theCell.Items.Add(DropdownForceImport)
+            comboBoxCell.Items.Add(DropdownForceImport)
+          Case TemplateManagerBase.StatusCode.RenameConflict
+            comboBoxCell.Items.Add(DropdownRetryRename)
           Case TemplateManagerBase.StatusCode.MultipleFileField
           Case TemplateManagerBase.StatusCode.UnknownError
-          Case TemplateManagerBase.StatusCode.RenameConflict
-            CType(row.Cells(ArtifactResolutionColumnName), DataGridViewComboBoxCell).Items.Add(DropdownRetryRename)
           Case Else
         End Select
 
         Dim selectedResolution As String = If(row.Cells(ArtifcactSelectedResolutionColumnName).Value Is Nothing, String.Empty, row.Cells(ArtifcactSelectedResolutionColumnName).Value.ToString)
         If Not String.IsNullOrEmpty(selectedResolution) Then
-          theCell.Value = selectedResolution
+          comboBoxCell.Value = selectedResolution
           row.Cells(ArtifactResolutionColumnName).ReadOnly = False
         End If
 
-        theCell.ReadOnly = False
+        comboBoxCell.ReadOnly = False
       Next
     End If
 
@@ -387,12 +388,7 @@ Public Class RelativityApplicationStatusForm
     ElseIf String.Equals(ArtifactStatusTable.CurrentCell.OwningColumn.Name, ArtifactConflictNameColumnName, StringComparison.CurrentCulture) Then
       Dim textBox As TextBox = DirectCast(e.Control, TextBox)
       textBox.MaxLength = FieldNameMaximumLength
-      'AddHandler textBox.TextChanged, AddressOf Me.ConflictingArtifactName_TextChanged
-    End If
-  End Sub
-
-  Private Sub ConflictingArtifactName_TextChanged(ByVal sender As Object, ByVal e As EventArgs)
-    CheckForRetryEnabled()
+      End If
   End Sub
 
   Private Sub ArtifactStatusTable_DoubleClick(ByVal sender As Object, ByVal e As System.EventArgs) Handles ArtifactStatusTable.DoubleClick
@@ -405,7 +401,7 @@ Public Class RelativityApplicationStatusForm
     ' Validate the rename entry by disallowing empty strings and ensuring size limits.
     If ArtifactStatusTable.Columns(e.ColumnIndex).Name = ArtifactConflictNameColumnName Then
       If e.FormattedValue Is Nothing OrElse _
-        e.FormattedValue.ToString().Length < 1 OrElse e.FormattedValue.ToString.Length > 50 Then
+        e.FormattedValue.ToString().Length < 1 OrElse e.FormattedValue.ToString.Length > FieldNameMaximumLength Then
         e.Cancel = True
       End If
     End If
@@ -419,8 +415,6 @@ Public Class RelativityApplicationStatusForm
       ArtifactStatusTable.EndInvoke(ar)
     End If
   End Sub
-
-  Private ar As IAsyncResult = Nothing
 
   Private Sub renameCell_SelectedIndexChanged(ByVal sender As Object, ByVal e As EventArgs)
     If ArtifactStatusTable.SelectedCells.Count > 0 Then
@@ -447,13 +441,10 @@ Public Class RelativityApplicationStatusForm
   Private Sub CheckForRetryEnabled()
     _retryEnabled = True
 
-    Dim cb As DataGridViewComboBoxCell = Nothing
-    Dim cbStr As String = Nothing
-    Dim renamedText As String = Nothing
-
     For Each row As DataGridViewRow In ArtifactStatusTable.Rows
-      cb = DirectCast(row.Cells("Resolution"), DataGridViewComboBoxCell)
-      cbStr = DirectCast(cb.EditedFormattedValue, String)
+      Dim cb As DataGridViewComboBoxCell = DirectCast(row.Cells("Resolution"), DataGridViewComboBoxCell)
+      Dim cbStr As String = DirectCast(cb.EditedFormattedValue, String)
+      Dim renamedText As String = Nothing
 
       If String.IsNullOrEmpty(cbStr) Then _retryEnabled = False : Exit For
 
@@ -600,8 +591,8 @@ Public Class RelativityApplicationStatusForm
 
   Private Function GetResolveArtifacts() As TemplateManagerBase.ResolveArtifact()
     Dim resArts As New System.Collections.Generic.List(Of TemplateManagerBase.ResolveArtifact)
-
     Dim kvp As TemplateManagerBase.FieldKVP
+
     For Each row As DataGridViewRow In ArtifactStatusTable.Rows
       If row.Cells(ArtifactResolutionColumnName).Value IsNot Nothing Then
         If (String.Equals(row.Cells(ArtifactResolutionColumnName).Value.ToString, DropdownRenameInWorkspace) OrElse String.Equals(row.Cells(ArtifactResolutionColumnName).Value.ToString, DropdownRenameFriendlyNameInWorkspace)) Then
@@ -612,21 +603,24 @@ Public Class RelativityApplicationStatusForm
             kvp.Key = "Name"
           End If
           kvp.Value = row.Cells(ArtifactConflictNameColumnName).Value
-          resArts.Add(New TemplateManagerBase.ResolveArtifact() With {.ArtifactID = CInt(row.Cells(ArtifactConflictIDColumnName).Value), _
-           .ArtifactTypeID = CType(row.Cells(ArtifactTypeIDColumnName).Value,  _
+          resArts.Add(New TemplateManagerBase.ResolveArtifact() With { _
+            .ArtifactID = CInt(row.Cells(ArtifactConflictIDColumnName).Value), _
+            .ArtifactTypeID = CType(row.Cells(ArtifactTypeIDColumnName).Value,  _
             TemplateManagerBase.ApplicationArtifactType), .Fields = New TemplateManagerBase.FieldKVP() {kvp}, _
-           .Action = TemplateManagerBase.ResolveAction.Update})
+            .Action = TemplateManagerBase.ResolveAction.Update})
         ElseIf String.Equals(row.Cells(ArtifactResolutionColumnName).Value.ToString, DropdownRetryRename) Then
           kvp = New TemplateManagerBase.FieldKVP()
           kvp.Key = "Name"
           kvp.Value = row.Cells(ArtifactConflictNameColumnName).Value
-          resArts.Add(New TemplateManagerBase.ResolveArtifact() With {.ArtifactID = CInt(row.Cells(ArtifactIDColumnName).Value), _
-           .ArtifactTypeID = CType(row.Cells(ArtifactTypeIDColumnName).Value, TemplateManagerBase.ApplicationArtifactType), _
-          .Fields = New TemplateManagerBase.FieldKVP() {kvp}, _
-           .Action = TemplateManagerBase.ResolveAction.Update})
+          resArts.Add(New TemplateManagerBase.ResolveArtifact() With { _
+            .ArtifactID = CInt(row.Cells(ArtifactIDColumnName).Value), _
+            .ArtifactTypeID = CType(row.Cells(ArtifactTypeIDColumnName).Value, TemplateManagerBase.ApplicationArtifactType), _
+            .Fields = New TemplateManagerBase.FieldKVP() {kvp}, _
+            .Action = TemplateManagerBase.ResolveAction.Update})
         End If
       End If
     Next
+
     Return resArts.ToArray()
   End Function
 
