@@ -19,7 +19,7 @@ Public Class RelativityApplicationStatusForm
   Private Const WorkspaceErrorString As String = "Error"
 
   Private Const ArtifactNameColumnName As String = "Name"
-	Private Const ArtifactIDColumnName As String = "Artifact ID"
+  Private Const ArtifactIDColumnName As String = "Artifact ID"
   Private Const ArtifactErrorColumnName As String = "Error"
   Private Const ArtifactHiddenErrorColumnName As String = "Hidden Error"
   Private Const ArtifactApplicationIdsColumnName As String = "Application IDs"
@@ -32,7 +32,7 @@ Public Class RelativityApplicationStatusForm
   Private Const DropdownForceImport As String = "Force Import"
   Private Const DropdownRenameInWorkspace As String = "Rename in Workspace"
   Private Const DropdownRenameFriendlyNameInWorkspace As String = "Rename in Workspace"
-	Private Const DropdownRetryRename As String = "Choose another Name"
+  Private Const DropdownRetryRename As String = "Choose another Name"
   Private Const ExpandText As String = "[+]"
   Private Const CollapseText As String = "[-]"
   Private Const HelpLink As String = "http://help.kcura.com/relativity/Relativity Applications/Using Relativity Applications for RDC - 7.0.pdf#Resolving-Errors"
@@ -213,7 +213,7 @@ Public Class RelativityApplicationStatusForm
     failedTable.Columns.Add(ArtifactErrorColumnName, GetType(String))
     failedTable.Columns.Add(ArtifactHiddenErrorColumnName, GetType(TemplateManagerBase.StatusCode))
     failedTable.Columns.Add(ArtifactNameColumnName, GetType(String))
-		failedTable.Columns.Add(ArtifactIDColumnName, GetType(Int32))
+    failedTable.Columns.Add(ArtifactIDColumnName, GetType(Int32))
     failedTable.Columns.Add("Object Type Name", GetType(String))
     failedTable.Columns.Add("Artifact Type", GetType(String))
     failedTable.Columns.Add(ArtifactTypeIDColumnName, GetType(TemplateManagerBase.ApplicationArtifactType))
@@ -256,7 +256,7 @@ Public Class RelativityApplicationStatusForm
        StatusToString(art.Status, conflictApps.ToString), _
        art.Status, _
        art.Name, _
-			 art.ArtifactId, _
+    art.ArtifactId, _
        parentName, _
        TypeToString(art.Type), _
        art.Type, _
@@ -304,8 +304,8 @@ Public Class RelativityApplicationStatusForm
             theCell.Items.Add(DropdownForceImport)
           Case TemplateManagerBase.StatusCode.MultipleFileField
           Case TemplateManagerBase.StatusCode.UnknownError
-					Case TemplateManagerBase.StatusCode.RenameConflict
-						CType(row.Cells(ArtifactResolutionColumnName), DataGridViewComboBoxCell).Items.Add(DropdownRetryRename)
+          Case TemplateManagerBase.StatusCode.RenameConflict
+            CType(row.Cells(ArtifactResolutionColumnName), DataGridViewComboBoxCell).Items.Add(DropdownRetryRename)
           Case Else
         End Select
 
@@ -384,7 +384,7 @@ Public Class RelativityApplicationStatusForm
         RemoveHandler comboBox.SelectedValueChanged, AddressOf Me.renameCell_SelectedIndexChanged
         AddHandler comboBox.SelectedValueChanged, AddressOf Me.renameCell_SelectedIndexChanged
       End If
-    ElseIf String.Equals(ArtifactStatusTable.CurrentCell.OwningColumn.Name, ArtifactConflictNameColumnName, StringComparison.InvariantCultureIgnoreCase) Then
+    ElseIf String.Equals(ArtifactStatusTable.CurrentCell.OwningColumn.Name, ArtifactConflictNameColumnName, StringComparison.CurrentCulture) Then
       Dim textBox As TextBox = DirectCast(e.Control, TextBox)
       textBox.MaxLength = FieldNameMaximumLength
       'AddHandler textBox.TextChanged, AddressOf Me.ConflictingArtifactName_TextChanged
@@ -423,33 +423,30 @@ Public Class RelativityApplicationStatusForm
   Private ar As IAsyncResult = Nothing
 
   Private Sub renameCell_SelectedIndexChanged(ByVal sender As Object, ByVal e As EventArgs)
-    Try
-      If ArtifactStatusTable.SelectedCells.Count > 0 Then
-        Dim cell As DataGridViewComboBoxCell = DirectCast(ArtifactStatusTable.SelectedCells.Item(0), DataGridViewComboBoxCell)
-        If Not cell Is Nothing AndAlso cell.Items.Count > 0 Then
-          Dim choice As String = DirectCast(cell.Items.Item(0), String)
-          cell.OwningRow.Cells(ArtifcactSelectedResolutionColumnName).Value = choice
+    If ArtifactStatusTable.SelectedCells.Count > 0 Then
+      Dim cell As DataGridViewComboBoxCell = DirectCast(ArtifactStatusTable.SelectedCells.Item(0), DataGridViewComboBoxCell)
+      If Not cell Is Nothing AndAlso cell.Items.Count > 0 Then
+        Dim choice As String = DirectCast(cell.Items.Item(0), String)
+        cell.OwningRow.Cells(ArtifcactSelectedResolutionColumnName).Value = choice
 
-          If (String.Equals(choice, DropdownRenameInWorkspace, StringComparison.CurrentCulture) OrElse String.Equals(choice, DropdownRenameFriendlyNameInWorkspace, StringComparison.CurrentCulture)) Then
-			OrElse String.Equals(DirectCast(cell.EditedFormattedValue, String), DropdownRenameFriendlyNameInWorkspace) _
-			OrElse String.Equals(DirectCast(cell.EditedFormattedValue, String), DropdownRetryRename)) Then
-            cell.Selected = False
-            Dim conflictingNameCell As DataGridViewCell = cell.OwningRow.Cells(ArtifactConflictNameColumnName)
+        If Not cell Is Nothing AndAlso cell.Items.Count > 0 AndAlso (String.Equals(DirectCast(cell.EditedFormattedValue, String), DropdownRenameInWorkspace) _
+        OrElse String.Equals(DirectCast(cell.EditedFormattedValue, String), DropdownRenameFriendlyNameInWorkspace) _
+        OrElse String.Equals(DirectCast(cell.EditedFormattedValue, String), DropdownRetryRename)) Then
+          cell.Selected = False
+          Dim conflictingNameCell As DataGridViewCell = cell.OwningRow.Cells(ArtifactConflictNameColumnName)
 
-            _selectCell = New SelectCell(AddressOf SelectCellSub)
-            ar = ArtifactStatusTable.BeginInvoke(_selectCell, conflictingNameCell)
-          End If
+          _selectCell = New SelectCell(AddressOf SelectCellSub)
+          ar = ArtifactStatusTable.BeginInvoke(_selectCell, conflictingNameCell)
         End If
       End If
+    End If
 
-      CheckForRetryEnabled()
-    Catch ex As System.StackOverflowException
-
-    End Try
+    CheckForRetryEnabled()
   End Sub
 
   Private Sub CheckForRetryEnabled()
     _retryEnabled = True
+
     Dim cb As DataGridViewComboBoxCell = Nothing
     Dim cbStr As String = Nothing
     Dim renamedText As String = Nothing
@@ -460,17 +457,17 @@ Public Class RelativityApplicationStatusForm
 
       If String.IsNullOrEmpty(cbStr) Then _retryEnabled = False : Exit For
 
-      If String.Equals(cbStr, DropdownRenameInWorkspace, StringComparison.InvariantCultureIgnoreCase) OrElse String.Equals(cbStr, DropdownRenameFriendlyNameInWorkspace, StringComparison.InvariantCultureIgnoreCase) Then
+      If String.Equals(cbStr, DropdownRenameInWorkspace, StringComparison.CurrentCulture) OrElse String.Equals(cbStr, DropdownRenameFriendlyNameInWorkspace, StringComparison.CurrentCulture) Then
         If TypeOf (row.Cells(ArtifactConflictNameColumnName)) Is DataGridViewTextBoxCell Then
           renamedText = DirectCast(row.Cells(ArtifactConflictNameColumnName), DataGridViewTextBoxCell).EditedFormattedValue.ToString()
         Else
           renamedText = row.Cells(ArtifactConflictNameColumnName).Value.ToString()
         End If
-        If String.Equals(renamedText, row.Cells(ArtifactNameColumnName).Value.ToString(), StringComparison.InvariantCultureIgnoreCase) OrElse String.IsNullOrEmpty(renamedText) Then
+        If String.Equals(renamedText, row.Cells(ArtifactNameColumnName).Value.ToString(), StringComparison.CurrentCulture) OrElse String.IsNullOrEmpty(renamedText) Then
           _retryEnabled = False
           Exit For
         End If
-      ElseIf Not String.Equals(cbStr, DropdownForceImport, StringComparison.InvariantCultureIgnoreCase) Then
+      ElseIf Not String.Equals(cbStr, DropdownForceImport, StringComparison.CurrentCulture) Then
         _retryEnabled = False
         Exit For
       End If
@@ -604,31 +601,32 @@ Public Class RelativityApplicationStatusForm
   Private Function GetResolveArtifacts() As TemplateManagerBase.ResolveArtifact()
     Dim resArts As New System.Collections.Generic.List(Of TemplateManagerBase.ResolveArtifact)
 
+    Dim kvp As TemplateManagerBase.FieldKVP
     For Each row As DataGridViewRow In ArtifactStatusTable.Rows
-      If row.Cells(ArtifactResolutionColumnName).Value IsNot Nothing AndAlso (String.Equals(row.Cells(ArtifactResolutionColumnName).Value.ToString, DropdownRenameInWorkspace) OrElse String.Equals(row.Cells(ArtifactResolutionColumnName).Value.ToString, DropdownRenameFriendlyNameInWorkspace)) Then
-        Dim kvp As TemplateManagerBase.FieldKVP = New TemplateManagerBase.FieldKVP()
-        If CType(row.Cells(ArtifactHiddenErrorColumnName).Value, TemplateManagerBase.StatusCode) = TemplateManagerBase.StatusCode.FriendlyNameConflict Then
-          kvp.Key = "Friendly Name"
-        Else
+      If row.Cells(ArtifactResolutionColumnName).Value IsNot Nothing Then
+        If (String.Equals(row.Cells(ArtifactResolutionColumnName).Value.ToString, DropdownRenameInWorkspace) OrElse String.Equals(row.Cells(ArtifactResolutionColumnName).Value.ToString, DropdownRenameFriendlyNameInWorkspace)) Then
+          kvp = New TemplateManagerBase.FieldKVP()
+          If CType(row.Cells(ArtifactHiddenErrorColumnName).Value, TemplateManagerBase.StatusCode) = TemplateManagerBase.StatusCode.FriendlyNameConflict Then
+            kvp.Key = "Friendly Name"
+          Else
+            kvp.Key = "Name"
+          End If
+          kvp.Value = row.Cells(ArtifactConflictNameColumnName).Value
+          resArts.Add(New TemplateManagerBase.ResolveArtifact() With {.ArtifactID = CInt(row.Cells(ArtifactConflictIDColumnName).Value), _
+           .ArtifactTypeID = CType(row.Cells(ArtifactTypeIDColumnName).Value,  _
+            TemplateManagerBase.ApplicationArtifactType), .Fields = New TemplateManagerBase.FieldKVP() {kvp}, _
+           .Action = TemplateManagerBase.ResolveAction.Update})
+        ElseIf String.Equals(row.Cells(ArtifactResolutionColumnName).Value.ToString, DropdownRetryRename) Then
+          kvp = New TemplateManagerBase.FieldKVP()
           kvp.Key = "Name"
+          kvp.Value = row.Cells(ArtifactConflictNameColumnName).Value
+          resArts.Add(New TemplateManagerBase.ResolveArtifact() With {.ArtifactID = CInt(row.Cells(ArtifactIDColumnName).Value), _
+           .ArtifactTypeID = CType(row.Cells(ArtifactTypeIDColumnName).Value, TemplateManagerBase.ApplicationArtifactType), _
+          .Fields = New TemplateManagerBase.FieldKVP() {kvp}, _
+           .Action = TemplateManagerBase.ResolveAction.Update})
         End If
-        kvp.Value = row.Cells(ArtifactConflictNameColumnName).Value
-        resArts.Add(New TemplateManagerBase.ResolveArtifact() With {.ArtifactID = CInt(row.Cells(ArtifactConflictIDColumnName).Value),
-          .ArtifactTypeID = CType(row.Cells(ArtifactTypeIDColumnName).Value, TemplateManagerBase.ApplicationArtifactType),
-          .Fields = New TemplateManagerBase.FieldKVP() {kvp},
-          .Action = TemplateManagerBase.ResolveAction.Update})
-				ElseIf String.Equals(row.Cells(ArtifactResolutionColumnName).Value.ToString, DropdownRetryRename) Then
-					kvp = New TemplateManagerBase.FieldKVP()
-					kvp.Key = "Name"
-					kvp.Value = row.Cells(ArtifactConflictNameColumnName).Value
-					resArts.Add(New TemplateManagerBase.ResolveArtifact() With {.ArtifactID = CInt(row.Cells(ArtifactIDColumnName).Value), _
-					 .ArtifactTypeID = CType(row.Cells(ArtifactTypeIDColumnName).Value, TemplateManagerBase.ApplicationArtifactType), _
-					.Fields = New TemplateManagerBase.FieldKVP() {kvp}, _
-					 .Action = TemplateManagerBase.ResolveAction.Update})
-				End If
       End If
     Next
-
     Return resArts.ToArray()
   End Function
 
@@ -662,8 +660,8 @@ Public Class RelativityApplicationStatusForm
         Return String.Format("Shared By A Locked App: {0}", lockedApps)
       Case TemplateManagerBase.StatusCode.UnknownError
         Return "Unknown Error"
-			Case TemplateManagerBase.StatusCode.RenameConflict
-				Return "Rename Conflict"
+      Case TemplateManagerBase.StatusCode.RenameConflict
+        Return "Rename Conflict"
       Case Else
         Return stat.ToString
     End Select
