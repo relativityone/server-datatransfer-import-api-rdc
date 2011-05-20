@@ -59,7 +59,7 @@ Public Class RelativityApplicationStatusForm
   Private caseInfos As Generic.IEnumerable(Of Relativity.CaseInfo)
   Private _processPool As kCura.Windows.Process.ProcessPool
   Private _retryEnabled As Boolean
-  Private ar As IAsyncResult = Nothing
+  Private _ar As IAsyncResult = Nothing
 
   Private Property WorkspaceView As Boolean
     Get
@@ -95,7 +95,7 @@ Public Class RelativityApplicationStatusForm
     End If
 
     results.Add(evt.Result)
-    globalSuccess = globalSuccess And evt.Result.Success
+    globalSuccess = globalSuccess AndAlso evt.Result.Success
 
     If results.Capacity > 1 Then
       DetailsButton.Visible = True
@@ -145,7 +145,6 @@ Public Class RelativityApplicationStatusForm
       InformationText.Text = "Installation complete."
       artifactTable = CreateSucessTable(result)
     Else
-
       InformationText.Text = String.Format(CultureInfo.CurrentCulture, "{0}{1}{2}", ErrorMessagePart1, ErrorMessageLink, ErrorMessagePart2)
       InformationText.Links.Clear()
       InformationText.Links.Add(ErrorMessagePart1.Length, ErrorMessageLink.Length, HelpLink)
@@ -287,9 +286,9 @@ Public Class RelativityApplicationStatusForm
         ArtifactStatusTable.Columns.Insert(0, dropDownColumn)
       End If
 
-      For Each col As DataGridViewColumn In ArtifactStatusTable.Columns
-        If Not col.Name.Equals(ArtifactConflictNameColumnName, StringComparison.CurrentCulture) AndAlso Not col.Name.Equals(ArtifactResolutionColumnName, StringComparison.CurrentCulture) Then
-          col.ReadOnly = True
+      For Each column As DataGridViewColumn In ArtifactStatusTable.Columns
+        If Not column.Name.Equals(ArtifactConflictNameColumnName, StringComparison.CurrentCulture) AndAlso Not column.Name.Equals(ArtifactResolutionColumnName, StringComparison.CurrentCulture) Then
+          column.ReadOnly = True
         End If
       Next
 
@@ -380,15 +379,15 @@ Public Class RelativityApplicationStatusForm
 
   Private Sub ArtifactStatusTable_EditingControlShowing(ByVal sender As Object, ByVal e As System.Windows.Forms.DataGridViewEditingControlShowingEventArgs) Handles ArtifactStatusTable.EditingControlShowing
     If String.Equals(ArtifactStatusTable.CurrentCell.OwningColumn.Name, ArtifactResolutionColumnName, StringComparison.CurrentCulture) Then
-      Dim comboBox As ComboBox = DirectCast(e.Control, ComboBox)
-      If Not comboBox Is Nothing Then
-        RemoveHandler comboBox.SelectedValueChanged, AddressOf Me.renameCell_SelectedIndexChanged
-        AddHandler comboBox.SelectedValueChanged, AddressOf Me.renameCell_SelectedIndexChanged
+      Dim comboBoxControl As ComboBox = DirectCast(e.Control, ComboBox)
+      If Not comboBoxControl Is Nothing Then
+        RemoveHandler comboBoxControl.SelectedValueChanged, AddressOf Me.renameCell_SelectedIndexChanged
+        AddHandler comboBoxControl.SelectedValueChanged, AddressOf Me.renameCell_SelectedIndexChanged
       End If
     ElseIf String.Equals(ArtifactStatusTable.CurrentCell.OwningColumn.Name, ArtifactConflictNameColumnName, StringComparison.CurrentCulture) Then
-      Dim textBox As TextBox = DirectCast(e.Control, TextBox)
-      textBox.MaxLength = FieldNameMaximumLength
-      End If
+      Dim textBoxControl As TextBox = DirectCast(e.Control, TextBox)
+      textBoxControl.MaxLength = FieldNameMaximumLength
+    End If
   End Sub
 
   Private Sub ArtifactStatusTable_DoubleClick(ByVal sender As Object, ByVal e As System.EventArgs) Handles ArtifactStatusTable.DoubleClick
@@ -411,26 +410,27 @@ Public Class RelativityApplicationStatusForm
     ' Clear the row error in case the user presses ESC.   
     ArtifactStatusTable.Rows(e.RowIndex).ErrorText = String.Empty
 
-    If Not ar Is Nothing Then
-      ArtifactStatusTable.EndInvoke(ar)
+    If Not _ar Is Nothing Then
+      ArtifactStatusTable.EndInvoke(_ar)
     End If
   End Sub
 
   Private Sub renameCell_SelectedIndexChanged(ByVal sender As Object, ByVal e As EventArgs)
     If ArtifactStatusTable.SelectedCells.Count > 0 Then
-      Dim cell As DataGridViewComboBoxCell = DirectCast(ArtifactStatusTable.SelectedCells.Item(0), DataGridViewComboBoxCell)
-      If Not cell Is Nothing AndAlso cell.Items.Count > 0 Then
-        Dim choice As String = DirectCast(cell.Items.Item(0), String)
-        cell.OwningRow.Cells(ArtifcactSelectedResolutionColumnName).Value = choice
+      Dim comboCell As DataGridViewComboBoxCell = DirectCast(ArtifactStatusTable.SelectedCells.Item(0), DataGridViewComboBoxCell)
 
-        If Not cell Is Nothing AndAlso cell.Items.Count > 0 AndAlso (String.Equals(DirectCast(cell.EditedFormattedValue, String), DropdownRenameInWorkspace) _
-        OrElse String.Equals(DirectCast(cell.EditedFormattedValue, String), DropdownRenameFriendlyNameInWorkspace) _
-        OrElse String.Equals(DirectCast(cell.EditedFormattedValue, String), DropdownRetryRename)) Then
-          cell.Selected = False
-          Dim conflictingNameCell As DataGridViewCell = cell.OwningRow.Cells(ArtifactConflictNameColumnName)
+      If Not comboCell Is Nothing AndAlso comboCell.Items.Count > 0 Then
+        Dim choice As String = DirectCast(comboCell.Items.Item(0), String)
+        comboCell.OwningRow.Cells(ArtifcactSelectedResolutionColumnName).Value = choice
+
+        If Not comboCell Is Nothing AndAlso comboCell.Items.Count > 0 AndAlso (String.Equals(DirectCast(comboCell.EditedFormattedValue, String), DropdownRenameInWorkspace) _
+        OrElse String.Equals(DirectCast(comboCell.EditedFormattedValue, String), DropdownRenameFriendlyNameInWorkspace) _
+        OrElse String.Equals(DirectCast(comboCell.EditedFormattedValue, String), DropdownRetryRename)) Then
+          comboCell.Selected = False
+          Dim conflictingNameCell As DataGridViewCell = comboCell.OwningRow.Cells(ArtifactConflictNameColumnName)
 
           _selectCell = New SelectCell(AddressOf SelectCellSub)
-          ar = ArtifactStatusTable.BeginInvoke(_selectCell, conflictingNameCell)
+          _ar = ArtifactStatusTable.BeginInvoke(_selectCell, conflictingNameCell)
         End If
       End If
     End If
@@ -444,9 +444,10 @@ Public Class RelativityApplicationStatusForm
     For Each row As DataGridViewRow In ArtifactStatusTable.Rows
       Dim cb As DataGridViewComboBoxCell = DirectCast(row.Cells("Resolution"), DataGridViewComboBoxCell)
       Dim cbStr As String = DirectCast(cb.EditedFormattedValue, String)
-      Dim renamedText As String = Nothing
 
       If String.IsNullOrEmpty(cbStr) Then _retryEnabled = False : Exit For
+
+      Dim renamedText As String = Nothing
 
       If String.Equals(cbStr, DropdownRenameInWorkspace, StringComparison.CurrentCulture) OrElse String.Equals(cbStr, DropdownRenameFriendlyNameInWorkspace, StringComparison.CurrentCulture) Then
         If TypeOf (row.Cells(ArtifactConflictNameColumnName)) Is DataGridViewTextBoxCell Then
@@ -581,8 +582,8 @@ Public Class RelativityApplicationStatusForm
         Dim index As Int32 = CInt(row.Cells(ArtifactIndexColumnName).Value)
         Dim appIDs() As Int32 = CType(artifactTable.Rows(index).Item(ArtifactApplicationIdsColumnName), Int32())
         Dim ids() As Int32 = (From i As Int32 In (appIDs).AsEnumerable() Select i Where Not apps.Contains(i)).ToArray()
-        apps.AddRange(ids)
 
+        apps.AddRange(ids)
       End If
     Next
 
