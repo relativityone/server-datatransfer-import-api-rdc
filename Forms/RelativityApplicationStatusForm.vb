@@ -29,7 +29,7 @@ Public Class RelativityApplicationStatusForm
 	Private Const ArtifactConflictNameColumnName As String = "Conflicting Artifact Name"
 	Private Const ArtifactIndexColumnName As String = "Index"
 	Private Const ArtifcactSelectedResolutionColumnName = "Selected Resolution"
-	Private Const DropdownForceImport As String = "Force Import"
+	Private Const DropdownUnlock As String = "Unlock"
 	Private Const DropdownRenameInWorkspace As String = "Rename in Workspace"
 	Private Const DropdownRenameFriendlyNameInWorkspace As String = "Rename in Workspace"
 	Private Const DropdownRetryRename As String = "Choose another Name"
@@ -254,19 +254,19 @@ Public Class RelativityApplicationStatusForm
 			End If
 
 			failedTable.Rows.Add(New Object() { _
-				StatusToString(art.Status, conflictApps.ToString), _
-				art.Status, _
-				art.Name, _
-				art.ArtifactId, _
-				parentName, _
-				TypeToString(art.Type), _
-				art.Type, _
-				conflictApps, _
-				conflictAppIDs.ToArray(), _
-				conflictName, _
-				conflictID, _
-				art.StatusMessage, _
-				index})
+			 StatusToString(art.Status, conflictApps.ToString), _
+			 art.Status, _
+			 art.Name, _
+			 art.ArtifactId, _
+			 parentName, _
+			 TypeToString(art.Type), _
+			 art.Type, _
+			 conflictApps, _
+			 conflictAppIDs.ToArray(), _
+			 conflictName, _
+			 conflictID, _
+			 art.StatusMessage, _
+			 index})
 			index += 1
 		Next
 
@@ -302,7 +302,7 @@ Public Class RelativityApplicationStatusForm
 					Case TemplateManagerBase.StatusCode.NameConflict
 						comboBoxCell.Items.Add(DropdownRenameInWorkspace)
 					Case TemplateManagerBase.StatusCode.SharedByLockedApp
-						comboBoxCell.Items.Add(DropdownForceImport)
+						comboBoxCell.Items.Add(DropdownUnlock)
 					Case TemplateManagerBase.StatusCode.RenameConflict
 						comboBoxCell.Items.Add(DropdownRetryRename)
 					Case TemplateManagerBase.StatusCode.MultipleFileField
@@ -409,7 +409,7 @@ Public Class RelativityApplicationStatusForm
 		' Validate the rename entry by disallowing empty strings and ensuring size limits.
 		If ArtifactStatusTable.Columns(e.ColumnIndex).Name = ArtifactConflictNameColumnName Then
 			If e.FormattedValue Is Nothing OrElse _
-				e.FormattedValue.ToString().Length < 1 OrElse e.FormattedValue.ToString.Length > FieldNameMaximumLength Then
+			 e.FormattedValue.ToString().Length < 1 OrElse e.FormattedValue.ToString.Length > FieldNameMaximumLength Then
 				e.Cancel = True
 			End If
 		End If
@@ -425,25 +425,25 @@ Public Class RelativityApplicationStatusForm
 	End Sub
 
 	Private Sub renameCell_SelectedIndexChanged(ByVal sender As Object, ByVal e As EventArgs)
-			If ArtifactStatusTable.SelectedCells.Count > 0 Then
-				Dim cell As DataGridViewComboBoxCell = DirectCast(ArtifactStatusTable.SelectedCells.Item(0), DataGridViewComboBoxCell)
-				If Not cell Is Nothing AndAlso cell.Items.Count > 0 Then
-					Dim choice As String = DirectCast(cell.Items.Item(0), String)
+		If ArtifactStatusTable.SelectedCells.Count > 0 Then
+			Dim cell As DataGridViewComboBoxCell = DirectCast(ArtifactStatusTable.SelectedCells.Item(0), DataGridViewComboBoxCell)
+			If Not cell Is Nothing AndAlso cell.Items.Count > 0 Then
+				Dim choice As String = DirectCast(cell.Items.Item(0), String)
 				If Not choice.Equals(cell.OwningRow.Cells(ArtifcactSelectedResolutionColumnName).Value.ToString, StringComparison.InvariantCulture) Then
 					cell.OwningRow.Cells(ArtifcactSelectedResolutionColumnName).Value = choice
 				End If
 
-					If Not cell Is Nothing AndAlso cell.Items.Count > 0 AndAlso (String.Equals(DirectCast(cell.EditedFormattedValue, String), DropdownRenameInWorkspace) _
-					OrElse String.Equals(DirectCast(cell.EditedFormattedValue, String), DropdownRenameFriendlyNameInWorkspace) _
-					OrElse String.Equals(DirectCast(cell.EditedFormattedValue, String), DropdownRetryRename)) Then
-						cell.Selected = False
-						Dim conflictingNameCell As DataGridViewCell = cell.OwningRow.Cells(ArtifactConflictNameColumnName)
+				If Not cell Is Nothing AndAlso cell.Items.Count > 0 AndAlso (String.Equals(DirectCast(cell.EditedFormattedValue, String), DropdownRenameInWorkspace) _
+				OrElse String.Equals(DirectCast(cell.EditedFormattedValue, String), DropdownRenameFriendlyNameInWorkspace) _
+				OrElse String.Equals(DirectCast(cell.EditedFormattedValue, String), DropdownRetryRename)) Then
+					cell.Selected = False
+					Dim conflictingNameCell As DataGridViewCell = cell.OwningRow.Cells(ArtifactConflictNameColumnName)
 
-						_selectCell = New SelectCell(AddressOf SelectCellSub)
-						ar = ArtifactStatusTable.BeginInvoke(_selectCell, conflictingNameCell)
-					End If
+					_selectCell = New SelectCell(AddressOf SelectCellSub)
+					ar = ArtifactStatusTable.BeginInvoke(_selectCell, conflictingNameCell)
 				End If
 			End If
+		End If
 
 		CheckForRetryEnabled()
 	End Sub
@@ -468,7 +468,7 @@ Public Class RelativityApplicationStatusForm
 					_retryEnabled = False
 					Exit For
 				End If
-			ElseIf Not String.Equals(cbStr, DropdownForceImport, StringComparison.CurrentCulture) Then
+			ElseIf Not String.Equals(cbStr, DropdownUnlock, StringComparison.CurrentCulture) Then
 				_retryEnabled = False
 				Exit For
 			End If
@@ -587,7 +587,7 @@ Public Class RelativityApplicationStatusForm
 		Dim apps As New System.Collections.Generic.List(Of Int32)
 
 		For Each row As DataGridViewRow In ArtifactStatusTable.Rows
-			If row.Cells(ArtifactResolutionColumnName).Value IsNot Nothing AndAlso String.Equals(row.Cells(ArtifactResolutionColumnName).Value.ToString, DropdownForceImport) Then
+			If row.Cells(ArtifactResolutionColumnName).Value IsNot Nothing AndAlso String.Equals(row.Cells(ArtifactResolutionColumnName).Value.ToString, DropdownUnlock) Then
 				Dim index As Int32 = CInt(row.Cells(ArtifactIndexColumnName).Value)
 				Dim appIDs() As Int32 = CType(artifactTable.Rows(index).Item(ArtifactApplicationIdsColumnName), Int32())
 				Dim ids() As Int32 = (From i As Int32 In (appIDs).AsEnumerable() Select i Where Not apps.Contains(i)).ToArray()
