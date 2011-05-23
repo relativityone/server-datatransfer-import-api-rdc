@@ -49,9 +49,9 @@ Public Class RelativityApplicationStatusForm
 	Private _workspaceView As Boolean
 	Private errorExpanded As Boolean
 
-	Private ErrorMessagePart1 As String = "Installation failed. For details on potential resolutions to the errors you may have encountered here, please refer to the "
+	Private ErrorMessagePart1 As String = "Installation failed.  For details on potential resolutions to the errors you may have encountered here, refer to the "
 	Private ErrorMessageLink As String = "Relativity Applications documentation."
-	Private ErrorMessagePart2 As String = Environment.NewLine & "(Note: This link takes you to the most recent version of the document, which may not match with your version of Relativity.)" & Environment.NewLine & Environment.NewLine & "The following errors occurred while installing the application:" & Environment.NewLine & Environment.NewLine
+	Private ErrorMessagePart2 As String = Environment.NewLine & Environment.NewLine & "The following errors occurred while installing the application:" & Environment.NewLine & Environment.NewLine
 
 	Private application As Xml.XmlDocument
 	Private credential As Net.NetworkCredential
