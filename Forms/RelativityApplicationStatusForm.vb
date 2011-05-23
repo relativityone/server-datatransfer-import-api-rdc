@@ -20,7 +20,7 @@ Public Class RelativityApplicationStatusForm
 
 	Private Const ArtifactNameColumnName As String = "Name"
 	Private Const ArtifactIDColumnName As String = "Artifact ID"
-	Private Const ArtifactErrorColumnName As String = "Error"
+	Private Const ArtifactStatusColumnName As String = "Status"
 	Private Const ArtifactHiddenErrorColumnName As String = "Hidden Error"
 	Private Const ArtifactApplicationIdsColumnName As String = "Application IDs"
 	Private Const ArtifactResolutionColumnName As String = "Resolution"
@@ -211,7 +211,7 @@ Public Class RelativityApplicationStatusForm
 	Private Function CreateFailedTable(ByVal result As TemplateManagerBase.ApplicationInstallationResult) As DataTable
 		Dim failedTable As New DataTable()
 
-		failedTable.Columns.Add(ArtifactErrorColumnName, GetType(String))
+		failedTable.Columns.Add(ArtifactStatusColumnName, GetType(String))
 		failedTable.Columns.Add(ArtifactHiddenErrorColumnName, GetType(TemplateManagerBase.StatusCode))
 		failedTable.Columns.Add(ArtifactNameColumnName, GetType(String))
 		failedTable.Columns.Add(ArtifactIDColumnName, GetType(Int32))
@@ -307,6 +307,9 @@ Public Class RelativityApplicationStatusForm
 						comboBoxCell.Items.Add(DropdownRetryRename)
 					Case TemplateManagerBase.StatusCode.MultipleFileField
 					Case TemplateManagerBase.StatusCode.UnknownError
+					Case TemplateManagerBase.StatusCode.Updated
+						comboBoxCell.ReadOnly = True
+						comboBoxCell.DisplayStyle = DataGridViewComboBoxDisplayStyle.Nothing
 					Case Else
 				End Select
 
@@ -349,7 +352,7 @@ Public Class RelativityApplicationStatusForm
 				Next
 			Else
 				For Each row As DataGridViewRow In ArtifactStatusTable.Rows
-					row.Cells(ArtifactErrorColumnName).Style.BackColor = Color.LightPink
+					row.Cells(ArtifactStatusColumnName).Style.BackColor = If(String.Equals(row.Cells(ArtifactStatusColumnName).Value.ToString(), "Updated", StringComparison.InvariantCulture), Color.PaleGreen, Color.LightPink)
 				Next
 			End If
 		End If
@@ -452,26 +455,30 @@ Public Class RelativityApplicationStatusForm
 		_retryEnabled = True
 
 		For Each row As DataGridViewRow In ArtifactStatusTable.Rows
-			Dim cb As DataGridViewComboBoxCell = DirectCast(row.Cells("Resolution"), DataGridViewComboBoxCell)
-			Dim cbStr As String = DirectCast(cb.EditedFormattedValue, String)
-			Dim renamedText As String = Nothing
+			Dim status As String = row.Cells(ArtifactStatusColumnName).Value.ToString()
+			If Not String.Equals(status, "Updated", StringComparison.InvariantCulture) Then
+				Dim cb As DataGridViewComboBoxCell = DirectCast(row.Cells("Resolution"), DataGridViewComboBoxCell)
+				Dim cbStr As String = DirectCast(cb.EditedFormattedValue, String)
+				Dim renamedText As String = Nothing
 
-			If String.IsNullOrEmpty(cbStr) Then _retryEnabled = False : Exit For
+				If String.IsNullOrEmpty(cbStr) Then _retryEnabled = False : Exit For
 
-			If String.Equals(cbStr, DropdownRenameInWorkspace, StringComparison.InvariantCulture) OrElse String.Equals(cbStr, DropdownRenameFriendlyNameInWorkspace, StringComparison.InvariantCulture) Then
-				If TypeOf (row.Cells(ArtifactConflictNameColumnName)) Is DataGridViewTextBoxCell Then
-					renamedText = DirectCast(row.Cells(ArtifactConflictNameColumnName), DataGridViewTextBoxCell).EditedFormattedValue.ToString()
-				Else
-					renamedText = row.Cells(ArtifactConflictNameColumnName).Value.ToString()
-				End If
-				If String.IsNullOrEmpty(renamedText) OrElse String.Equals(renamedText, row.Cells(ArtifactNameColumnName).Value.ToString(), StringComparison.CurrentCultureIgnoreCase) Then
+				If String.Equals(cbStr, DropdownRenameInWorkspace, StringComparison.InvariantCulture) OrElse String.Equals(cbStr, DropdownRenameFriendlyNameInWorkspace, StringComparison.InvariantCulture) OrElse String.Equals(cbStr, DropdownRetryRename, StringComparison.InvariantCulture) Then
+					If TypeOf (row.Cells(ArtifactConflictNameColumnName)) Is DataGridViewTextBoxCell Then
+						renamedText = DirectCast(row.Cells(ArtifactConflictNameColumnName), DataGridViewTextBoxCell).EditedFormattedValue.ToString()
+					Else
+						renamedText = row.Cells(ArtifactConflictNameColumnName).Value.ToString()
+					End If
+					If String.IsNullOrEmpty(renamedText) OrElse String.Equals(renamedText, row.Cells(ArtifactNameColumnName).Value.ToString(), StringComparison.CurrentCultureIgnoreCase) Then
+						_retryEnabled = False
+						Exit For
+					End If
+				ElseIf Not String.Equals(cbStr, DropdownUnlock, StringComparison.CurrentCulture) Then
 					_retryEnabled = False
 					Exit For
 				End If
-			ElseIf Not String.Equals(cbStr, DropdownUnlock, StringComparison.CurrentCulture) Then
-				_retryEnabled = False
-				Exit For
 			End If
+
 		Next
 
 		SetButtonVisibility()
