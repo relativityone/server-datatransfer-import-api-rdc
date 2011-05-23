@@ -9,8 +9,6 @@ Public Class RelativityApplicationStatusForm
 
 #Region " Constants "
 
-
-	Private _indexChanging As Boolean = False
 	Private Const FieldNameMaximumLength As Int32 = 50
 
 	Private Const workspaceIDColumnName As String = "Workspace ID"
@@ -427,25 +425,25 @@ Public Class RelativityApplicationStatusForm
 	End Sub
 
 	Private Sub renameCell_SelectedIndexChanged(ByVal sender As Object, ByVal e As EventArgs)
-		If ArtifactStatusTable.SelectedCells.Count > 0 Then
-			Dim cell As DataGridViewComboBoxCell = DirectCast(ArtifactStatusTable.SelectedCells.Item(0), DataGridViewComboBoxCell)
-			If Not cell Is Nothing AndAlso cell.Items.Count > 0 Then
-				Dim choice As String = DirectCast(cell.Items.Item(0), String)
+			If ArtifactStatusTable.SelectedCells.Count > 0 Then
+				Dim cell As DataGridViewComboBoxCell = DirectCast(ArtifactStatusTable.SelectedCells.Item(0), DataGridViewComboBoxCell)
+				If Not cell Is Nothing AndAlso cell.Items.Count > 0 Then
+					Dim choice As String = DirectCast(cell.Items.Item(0), String)
 				If Not choice.Equals(cell.OwningRow.Cells(ArtifcactSelectedResolutionColumnName).Value.ToString, StringComparison.InvariantCulture) Then
 					cell.OwningRow.Cells(ArtifcactSelectedResolutionColumnName).Value = choice
 				End If
 
-				If Not cell Is Nothing AndAlso cell.Items.Count > 0 AndAlso (String.Equals(DirectCast(cell.EditedFormattedValue, String), DropdownRenameInWorkspace) _
-				OrElse String.Equals(DirectCast(cell.EditedFormattedValue, String), DropdownRenameFriendlyNameInWorkspace) _
-				OrElse String.Equals(DirectCast(cell.EditedFormattedValue, String), DropdownRetryRename)) Then
-					cell.Selected = False
-					Dim conflictingNameCell As DataGridViewCell = cell.OwningRow.Cells(ArtifactConflictNameColumnName)
+					If Not cell Is Nothing AndAlso cell.Items.Count > 0 AndAlso (String.Equals(DirectCast(cell.EditedFormattedValue, String), DropdownRenameInWorkspace) _
+					OrElse String.Equals(DirectCast(cell.EditedFormattedValue, String), DropdownRenameFriendlyNameInWorkspace) _
+					OrElse String.Equals(DirectCast(cell.EditedFormattedValue, String), DropdownRetryRename)) Then
+						cell.Selected = False
+						Dim conflictingNameCell As DataGridViewCell = cell.OwningRow.Cells(ArtifactConflictNameColumnName)
 
-					_selectCell = New SelectCell(AddressOf SelectCellSub)
-					ar = ArtifactStatusTable.BeginInvoke(_selectCell, conflictingNameCell)
+						_selectCell = New SelectCell(AddressOf SelectCellSub)
+						ar = ArtifactStatusTable.BeginInvoke(_selectCell, conflictingNameCell)
+					End If
 				End If
 			End If
-		End If
 
 		CheckForRetryEnabled()
 	End Sub
@@ -460,13 +458,13 @@ Public Class RelativityApplicationStatusForm
 
 			If String.IsNullOrEmpty(cbStr) Then _retryEnabled = False : Exit For
 
-			If String.Equals(cbStr, DropdownRenameInWorkspace, StringComparison.InvariantCulture) OrElse String.Equals(cbStr, DropdownRenameFriendlyNameInWorkspace, StringComparison.CurrentCulture) Then
+			If String.Equals(cbStr, DropdownRenameInWorkspace, StringComparison.InvariantCulture) OrElse String.Equals(cbStr, DropdownRenameFriendlyNameInWorkspace, StringComparison.InvariantCulture) Then
 				If TypeOf (row.Cells(ArtifactConflictNameColumnName)) Is DataGridViewTextBoxCell Then
 					renamedText = DirectCast(row.Cells(ArtifactConflictNameColumnName), DataGridViewTextBoxCell).EditedFormattedValue.ToString()
 				Else
 					renamedText = row.Cells(ArtifactConflictNameColumnName).Value.ToString()
 				End If
-				If String.Equals(renamedText, row.Cells(ArtifactNameColumnName).Value.ToString(), StringComparison.CurrentCulture) OrElse String.IsNullOrEmpty(renamedText) Then
+				If String.IsNullOrEmpty(renamedText) OrElse String.Equals(renamedText, row.Cells(ArtifactNameColumnName).Value.ToString(), StringComparison.CurrentCultureIgnoreCase) Then
 					_retryEnabled = False
 					Exit For
 				End If
