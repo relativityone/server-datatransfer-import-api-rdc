@@ -1,4 +1,7 @@
-﻿Namespace kCura.WinEDDS
+﻿Imports System.Collections.Generic
+Imports System.Linq
+
+Namespace kCura.WinEDDS
 	Public Class LoadFilePreProcessor
 		Inherits LoadFileReader
 
@@ -61,7 +64,7 @@
 		Private WithEvents _haltListener As HaltListener
 		Private _continue As Boolean
 		Dim _folders As System.Collections.Specialized.HybridDictionary
-
+		Dim _choicesTable As New Dictionary(Of Int32, Dictionary(Of String, Boolean))	 'Dictionary to track the choice values created per column index
 #End Region
 
 #Region "Event stuff"
@@ -97,8 +100,18 @@
 			_folders = New System.Collections.Specialized.HybridDictionary
 		End Sub
 
+		Private Function NeedToCheckFolders() As Boolean
+			Return (_settings.ForceFolderPreview AndAlso _settings.CreateFolderStructure AndAlso Not _settings.FolderStructureContainedInColumn Is Nothing AndAlso _artifactTypeID = Relativity.ArtifactType.Document AndAlso _settings.OverwriteDestination = "None")
+		End Function
+
+		Private Function NeedToCheckChoices() As Boolean
+			Return Me._fieldMap.ToArray() _
+			 .Where(Function(item) item.DocumentField.FieldTypeID = Relativity.FieldTypeHelper.FieldType.Code Or item.DocumentField.FieldTypeID = Relativity.FieldTypeHelper.FieldType.MultiCode) _
+			 .Count() > 0	 'Look for any choice fields in the _fieldMap
+		End Function
+
 		Public Sub CountLines()
-			If _settings.ForceFolderPreview AndAlso _settings.CreateFolderStructure AndAlso Not _settings.FolderStructureContainedInColumn Is Nothing AndAlso _artifactTypeID = Relativity.ArtifactType.Document AndAlso _settings.OverwriteDestination = "None" Then
+			If NeedToCheckFolders() OrElse NeedToCheckChoices() Then
 				Me.ReadFile(_settings.FilePath)
 			Else
 				Me.ReadFileSimple(_settings.FilePath)
@@ -131,53 +144,87 @@
 			Dim fileSize As Int64 = Me.Reader.BaseStream.Length
 			Dim stepSize As Int64 = GetStepSize(fileSize)
 			Dim folderColumnIndex As Int32 = Me.GetColumnIndexFromString(_settings.FolderStructureContainedInColumn)
+			Dim choiceColumnIndexList As New System.Collections.Generic.List(Of Int32)
 			Dim currentRun As Int64 = System.DateTime.Now.Ticks
 			Dim lastRun As Int64 = currentRun
 			Dim showedPopup As Boolean = False
 			Dim popupRetVal As Int32 = -1
 			Dim lineToParse As String()
+			Dim checkFolders As Boolean = NeedToCheckFolders()
+			Dim checkChoices As Boolean = NeedToCheckChoices()
+			Dim onFirstLine As Boolean = True
 
+			'Inits
 			Me.ProcessStart(Me.CurrentLineNumber, 0, fileSize, stepSize)
 
-			While Not Me.HasReachedEOF And _continue
+			'Prepare the choice count columns
+			_choicesTable.Clear()
+			For Each item As LoadFileFieldMap.LoadFileFieldMapItem In _fieldMap.ToArray() _
+				.Where(Function(mitem) mitem.DocumentField.FieldTypeID = Relativity.FieldTypeHelper.FieldType.Code Or mitem.DocumentField.FieldTypeID = Relativity.FieldTypeHelper.FieldType.MultiCode)
+
+				_choicesTable(item.NativeFileColumnIndex) = New Dictionary(Of String, Boolean)
+			Next
+
+			'Parse up to the first X lines in the file and track the folders and choices that will be created
+			While Not Me.HasReachedEOF And Me.GetActualLineCount < kCura.WinEDDS.Config.PREVIEW_THRESHOLD And _continue
+				'Report progress
 				currentRun = System.DateTime.Now.Ticks
 				If currentRun - lastRun > 10000000 Then
 					lastRun = currentRun
 					Me.ProcessProgress(Me.CurrentLineNumber, Me.Reader.BaseStream.Position, fileSize, stepSize)
 				End If
-				If Me.GetActualLineCount < kCura.WinEDDS.Config.PREVIEW_THRESHOLD Then	'TODO: make this a fucking constant :(
-					lineToParse = Me.GetLine()
-					Me.AddFolder(lineToParse.GetValue(folderColumnIndex).ToString)
-					If Me.GetActualLineCount = kCura.WinEDDS.Config.PREVIEW_THRESHOLD AndAlso Not _settings.FolderStructureContainedInColumn Is Nothing Then
-						showedPopup = True
-						popupRetVal = MsgBox(GetPopupMessage(), (MsgBoxStyle.YesNo Or MsgBoxStyle.ApplicationModal), "Relativity Desktop Client")
-						If Not popupRetVal = MsgBoxResult.Yes Then
-							Me.ProcessCancel(Me.CurrentLineNumber, Me.Reader.BaseStream.Position, fileSize, stepSize)
-							Return Nothing
-						End If
-					End If
-				Else
-					Me.AdvanceLine()
+
+				'Skip first line if needed
+				If _settings.FirstLineContainsHeaders And onFirstLine Then
+					AdvanceLine()
+					onFirstLine = False
+					Continue While
 				End If
+
+				'Parse each line and track folders and choices.
+				lineToParse = Me.GetLine()
+				If checkFolders Then AddFolder(lineToParse.GetValue(folderColumnIndex).ToString)
+				If checkChoices Then
+					For Each choiceColumnIdx As Int32 In _choicesTable.Keys
+						Dim choiceVal As String = lineToParse.GetValue(choiceColumnIdx).ToString
+						_choicesTable(choiceColumnIdx)(choiceVal) = True
+					Next
+				End If
+
+				AdvanceLine()
 			End While
 
-			If Not showedPopup Then
-				popupRetVal = MsgBox(GetPopupMessage(), (MsgBoxStyle.YesNo Or MsgBoxStyle.ApplicationModal), "Relativity Desktop Client")
-
-				If Not popupRetVal = MsgBoxResult.Yes Then
-					Me.ProcessCancel(Me.CurrentLineNumber, Me.Reader.BaseStream.Position, fileSize, stepSize)
-				Else
-					Me.ProcessComplete(Me.CurrentLineNumber, Me.Reader.BaseStream.Position, fileSize, stepSize)
-				End If
-			Else
-				Me.ProcessComplete(Me.CurrentLineNumber, Me.Reader.BaseStream.Position, fileSize, stepSize)
+			'Determine choice threshold
+			Dim choiceCountThreshold As Int32
+			If checkChoices Then
+				choiceCountThreshold = _codeManager.GetChoiceLimitForUI()
 			End If
 
+			'Display choice and folder warning to the user
+			If _continue Then
+				Dim reportFolders As Boolean = checkFolders AndAlso Me.GetActualFolderCount > 0
+				Dim reportChoices As Boolean = checkChoices AndAlso Me.GetMaxChoiceCount > choiceCountThreshold
+				If reportFolders Or reportChoices Then
+					Dim popupMsg As String = BuildImportWarningMessage(Me.GetActualLineCount, reportFolders, Me.GetActualFolderCount, reportChoices, Me.GetMaxChoiceCount)
+					popupRetVal = MsgBox(popupMsg, (MsgBoxStyle.YesNo Or MsgBoxStyle.ApplicationModal), "Relativity Desktop Client")
+					If popupRetVal <> MsgBoxResult.Yes Then
+						Me.ProcessCancel(Me.CurrentLineNumber, Me.Reader.BaseStream.Position, fileSize, stepSize)
+						Return Nothing
+					End If
+				End If
+			End If
+
+			'Cleanup
+			Me.ProcessComplete(Me.CurrentLineNumber, Me.Reader.BaseStream.Position, fileSize, stepSize)
 			Return Nothing
 		End Function
 
-		Private Function GetPopupMessage() As String
-			Return String.Format("The first {0} records of this load file will create {1} folders.  Would you like to continue?", Me.GetActualLineCount, Me.GetActualFolderCount)
+		Private Function BuildImportWarningMessage(ByVal lineCount As Int32, ByVal reportFolders As Boolean, ByVal numOfFolders As Int32, ByVal reportChoices As Boolean, ByVal numOfChoices As Int32) As String
+			Dim snippetList As New List(Of String)
+			If reportFolders Then snippetList.Add(String.Format("{0} folders", numOfFolders))
+			If reportChoices Then snippetList.Add(String.Format("{0} choices", numOfChoices))
+			Dim countSegment As String = String.Join(" and ", snippetList.ToArray())
+			Return String.Format("The first {0} records of this load file will create {1}.  Would you like to continue?", lineCount, countSegment)
 		End Function
 
 		Private Function GetActualLineCount() As Int32
@@ -193,6 +240,18 @@
 				Return _folders.Count - 1
 			End If
 			Return _folders.Count
+		End Function
+
+		''' <summary>
+		''' Returns maximum snumber of choices that will be created in any column of the import (based on the rows analyzed so far)
+		''' </summary>
+		Private Function GetMaxChoiceCount() As Int32
+			Dim maxChoiceCount As Int32 = 0
+			For Each choiceKey As Int32 In _choicesTable.Keys
+				Dim currentChoiceCount As Int32 = _choicesTable(choiceKey).Keys.Count
+				maxChoiceCount = Math.Max(maxChoiceCount, currentChoiceCount)
+			Next
+			Return maxChoiceCount
 		End Function
 
 		Private Function GetColumnIndexFromString(ByVal pathColumn As String) As Int32
