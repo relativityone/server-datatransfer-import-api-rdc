@@ -14,6 +14,7 @@ Public Class RelativityApplicationStatusForm
 	Private Const workspaceIDColumnName As String = "Workspace ID"
 	Private Const workspaceNameColumnName As String = "Workspace Name"
 	Private Const workspaceStatusColumnName As String = "Install Status"
+	Private Const workspaceMessageColumnName As String = "Install Detials"
 
 	Private Const WorkspaceSuccessString As String = "Completed"
 	Private Const WorkspaceErrorString As String = "Error"
@@ -42,7 +43,9 @@ Public Class RelativityApplicationStatusForm
 	Private Delegate Sub SelectCell(ByVal cell As DataGridViewCell)
 	Private _selectCell As SelectCell
 
-	Private artifactTable As New DataTable()
+	'Private artifactTable As New DataTable()
+	Private workspaceTable As DataTable = Nothing
+	Private artifactTables As Generic.List(Of DataTable)
 	Private results As Generic.List(Of TemplateManagerBase.ApplicationInstallationResult)
 	Private globalSuccess As Boolean = True
 	Private currentResultIndex As Int32
@@ -90,12 +93,14 @@ Public Class RelativityApplicationStatusForm
 	End Sub
 
 	Private Sub ProcessEvent(ByVal evt As kCura.Windows.Process.Generic.ProcessEvent(Of TemplateManagerBase.ApplicationInstallationResult))
-		If results Is Nothing Then
-			results = New Generic.List(Of TemplateManagerBase.ApplicationInstallationResult)(evt.Result.TotalWorkspaces)
+		globalSuccess = globalSuccess And evt.Result.Success
+
+		If artifactTables Is Nothing Then
+			artifactTables = New Generic.List(Of DataTable)(evt.Result.TotalWorkspaces)
 		End If
 
-		results.Add(evt.Result)
-		globalSuccess = globalSuccess And evt.Result.Success
+		addRowToWorkspaceTable(evt.Result)
+		addTableToArtifactTable(evt.Result)
 
 		If results.Capacity > 1 Then
 			DetailsButton.Visible = True
@@ -128,8 +133,7 @@ Public Class RelativityApplicationStatusForm
 		InformationText.Parent.Height = InformationText.Height
 		InformationText.Parent.Width = InformationText.Width
 
-		artifactTable = CreateWorkspaceTable()
-		ArtifactStatusTable.DataSource = artifactTable
+		ArtifactStatusTable.DataSource = workspaceTable
 
 		UpdateArtifactStatusTableProperties()
 	End Sub
@@ -137,31 +141,29 @@ Public Class RelativityApplicationStatusForm
 	Private Sub UpdateArtifactStatusView()
 		WorkspaceView = False
 		errorExpanded = False
+		Dim currentRow As DataRow = workspaceTable.Rows(currentResultIndex)
 
-		Dim result As TemplateManagerBase.ApplicationInstallationResult = results(currentResultIndex)
-		StatusHeader.Text = String.Format("Installation Status Report -- {0} ({1})", result.WorkspaceName, result.WorkspaceID)
+		StatusHeader.Text = String.Format("Installation Status Report -- {0} ({1})", currentRow.Item(workspaceNameColumnName), currentRow.Item(workspaceIDColumnName))
 
-		If result.Success Then
+		If currentRow.Item(workspaceStatusColumnName).ToString.Equals(WorkspaceSuccessString, StringComparison.InvariantCulture) Then
 			InformationText.Text = "Installation complete."
-			artifactTable = CreateSucessTable(result)
 		Else
 
 			InformationText.Text = String.Format(CultureInfo.CurrentCulture, "{0}{1}{2}", ErrorMessagePart1, ErrorMessageLink, ErrorMessagePart2)
 			InformationText.Links.Clear()
 			InformationText.Links.Add(ErrorMessagePart1.Length, ErrorMessageLink.Length, HelpLink)
 
-			If Not String.IsNullOrEmpty(result.Message) Then
-				InformationText.Text = String.Format(CultureInfo.CurrentCulture, "{0}{1} {2}", InformationText.Text, ExpandText, result.Message)
+			If Not String.IsNullOrEmpty(currentRow.Item(workspaceMessageColumnName).ToString) Then
+				InformationText.Text = String.Format(CultureInfo.CurrentCulture, "{0}{1} {2}", InformationText.Text, ExpandText, currentRow.Item(workspaceMessageColumnName))
 				InformationText.Links.Add(ErrorMessagePart1.Length + ErrorMessageLink.Length + ErrorMessagePart2.Length, ExpandText.Length, "Details")
 			End If
 
-			artifactTable = CreateFailedTable(result)
 		End If
 
 		InformationText.Parent.Height = InformationText.Height
 		InformationText.Parent.Width = InformationText.Width
 
-		ArtifactStatusTable.DataSource = artifactTable
+		ArtifactStatusTable.DataSource = artifactTables(currentResultIndex)
 
 		UpdateArtifactStatusTableProperties()
 
@@ -171,19 +173,27 @@ Public Class RelativityApplicationStatusForm
 		SetButtonVisibility()
 	End Sub
 
-	Private Function CreateWorkspaceTable() As DataTable
-		Dim workspaceTable As New DataTable()
+	Private Sub addRowToWorkspaceTable(ByVal res As TemplateManagerBase.ApplicationInstallationResult)
+		If workspaceTable Is Nothing Then
+			workspaceTable = New DataTable()
+			workspaceTable.Columns.Add(workspaceIDColumnName, GetType(Integer))
+			workspaceTable.Columns.Add(workspaceNameColumnName, GetType(String))
+			workspaceTable.Columns.Add(workspaceStatusColumnName, GetType(String))
+			workspaceTable.Columns.Add(workspaceMessageColumnName, GetType(String))
 
-		workspaceTable.Columns.Add(workspaceIDColumnName, GetType(Integer))
-		workspaceTable.Columns.Add(workspaceNameColumnName, GetType(String))
-		workspaceTable.Columns.Add(workspaceStatusColumnName, GetType(String))
+		End If
 
-		For Each res As TemplateManagerBase.ApplicationInstallationResult In results
-			workspaceTable.Rows.Add(New Object() {res.WorkspaceID, res.WorkspaceName, WorkspaceResultToString(res.Success)})
-		Next
+		workspaceTable.Rows.Add(New Object() {res.WorkspaceID, res.WorkspaceName, WorkspaceResultToString(res.Success), res.Message})
 
-		Return workspaceTable
-	End Function
+	End Sub
+
+	Private Sub addTableToArtifactTable(ByVal res As TemplateManagerBase.ApplicationInstallationResult)
+		If res.Success Then
+			artifactTables.Add(CreateSucessTable(res))
+		Else
+			artifactTables.Add(CreateFailedTable(res))
+		End If
+	End Sub
 
 	Private Function CreateSucessTable(ByVal result As TemplateManagerBase.ApplicationInstallationResult) As DataTable
 		Dim successTable As New DataTable()
@@ -254,19 +264,19 @@ Public Class RelativityApplicationStatusForm
 			End If
 
 			failedTable.Rows.Add(New Object() { _
-				StatusToString(art.Status, conflictApps.ToString), _
-				art.Status, _
-				art.Name, _
-				art.ArtifactId, _
-				parentName, _
-				TypeToString(art.Type), _
-				art.Type, _
-				conflictApps, _
-				conflictAppIDs.ToArray(), _
-				conflictName, _
-				conflictID, _
-				art.StatusMessage, _
-				index})
+			 StatusToString(art.Status, conflictApps.ToString), _
+			 art.Status, _
+			 art.Name, _
+			 art.ArtifactId, _
+			 parentName, _
+			 TypeToString(art.Type), _
+			 art.Type, _
+			 conflictApps, _
+			 conflictAppIDs.ToArray(), _
+			 conflictName, _
+			 conflictID, _
+			 art.StatusMessage, _
+			 index})
 			index += 1
 		Next
 
@@ -375,7 +385,7 @@ Public Class RelativityApplicationStatusForm
 #Region " Event handlers "
 
 	Private Sub artifactstatustable_sort(ByVal sender As Object, ByVal e As System.EventArgs) Handles ArtifactStatusTable.Sorted
-		updateartifactstatustableproperties()
+		UpdateArtifactStatusTableProperties()
 	End Sub
 
 	Private Sub ArtifactStatusTable_EditingControlShowing(ByVal sender As Object, ByVal e As System.Windows.Forms.DataGridViewEditingControlShowingEventArgs) Handles ArtifactStatusTable.EditingControlShowing
@@ -409,7 +419,7 @@ Public Class RelativityApplicationStatusForm
 		' Validate the rename entry by disallowing empty strings and ensuring size limits.
 		If ArtifactStatusTable.Columns(e.ColumnIndex).Name = ArtifactConflictNameColumnName Then
 			If e.FormattedValue Is Nothing OrElse _
-				e.FormattedValue.ToString().Length < 1 OrElse e.FormattedValue.ToString.Length > FieldNameMaximumLength Then
+			 e.FormattedValue.ToString().Length < 1 OrElse e.FormattedValue.ToString.Length > FieldNameMaximumLength Then
 				e.Cancel = True
 			End If
 		End If
@@ -425,25 +435,25 @@ Public Class RelativityApplicationStatusForm
 	End Sub
 
 	Private Sub renameCell_SelectedIndexChanged(ByVal sender As Object, ByVal e As EventArgs)
-			If ArtifactStatusTable.SelectedCells.Count > 0 Then
-				Dim cell As DataGridViewComboBoxCell = DirectCast(ArtifactStatusTable.SelectedCells.Item(0), DataGridViewComboBoxCell)
-				If Not cell Is Nothing AndAlso cell.Items.Count > 0 Then
-					Dim choice As String = DirectCast(cell.Items.Item(0), String)
+		If ArtifactStatusTable.SelectedCells.Count > 0 Then
+			Dim cell As DataGridViewComboBoxCell = DirectCast(ArtifactStatusTable.SelectedCells.Item(0), DataGridViewComboBoxCell)
+			If Not cell Is Nothing AndAlso cell.Items.Count > 0 Then
+				Dim choice As String = DirectCast(cell.Items.Item(0), String)
 				If Not choice.Equals(cell.OwningRow.Cells(ArtifcactSelectedResolutionColumnName).Value.ToString, StringComparison.InvariantCulture) Then
 					cell.OwningRow.Cells(ArtifcactSelectedResolutionColumnName).Value = choice
 				End If
 
-					If Not cell Is Nothing AndAlso cell.Items.Count > 0 AndAlso (String.Equals(DirectCast(cell.EditedFormattedValue, String), DropdownRenameInWorkspace) _
-					OrElse String.Equals(DirectCast(cell.EditedFormattedValue, String), DropdownRenameFriendlyNameInWorkspace) _
-					OrElse String.Equals(DirectCast(cell.EditedFormattedValue, String), DropdownRetryRename)) Then
-						cell.Selected = False
-						Dim conflictingNameCell As DataGridViewCell = cell.OwningRow.Cells(ArtifactConflictNameColumnName)
+				If Not cell Is Nothing AndAlso cell.Items.Count > 0 AndAlso (String.Equals(DirectCast(cell.EditedFormattedValue, String), DropdownRenameInWorkspace) _
+				OrElse String.Equals(DirectCast(cell.EditedFormattedValue, String), DropdownRenameFriendlyNameInWorkspace) _
+				OrElse String.Equals(DirectCast(cell.EditedFormattedValue, String), DropdownRetryRename)) Then
+					cell.Selected = False
+					Dim conflictingNameCell As DataGridViewCell = cell.OwningRow.Cells(ArtifactConflictNameColumnName)
 
-						_selectCell = New SelectCell(AddressOf SelectCellSub)
-						ar = ArtifactStatusTable.BeginInvoke(_selectCell, conflictingNameCell)
-					End If
+					_selectCell = New SelectCell(AddressOf SelectCellSub)
+					ar = ArtifactStatusTable.BeginInvoke(_selectCell, conflictingNameCell)
 				End If
 			End If
+		End If
 
 		CheckForRetryEnabled()
 	End Sub
@@ -525,7 +535,13 @@ Public Class RelativityApplicationStatusForm
 	End Sub
 
 	Private Sub ExportButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ExportButton.Click
-		Debug.Assert(artifactTable IsNot Nothing)
+		Debug.Assert(artifactTables IsNot Nothing)
+		Dim artifactTable As DataTable
+		If WorkspaceView Then
+			artifactTable = artifactTables(currentResultIndex)
+		Else
+			artifactTable = workspaceTable
+		End If
 
 		Dim csvBuilder As New System.Text.StringBuilder()
 		Dim prepend As String = """"
@@ -589,7 +605,7 @@ Public Class RelativityApplicationStatusForm
 		For Each row As DataGridViewRow In ArtifactStatusTable.Rows
 			If row.Cells(ArtifactResolutionColumnName).Value IsNot Nothing AndAlso String.Equals(row.Cells(ArtifactResolutionColumnName).Value.ToString, DropdownForceImport) Then
 				Dim index As Int32 = CInt(row.Cells(ArtifactIndexColumnName).Value)
-				Dim appIDs() As Int32 = CType(artifactTable.Rows(index).Item(ArtifactApplicationIdsColumnName), Int32())
+				Dim appIDs() As Int32 = CType(artifactTables(currentResultIndex).Rows(index).Item(ArtifactApplicationIdsColumnName), Int32())
 				Dim ids() As Int32 = (From i As Int32 In (appIDs).AsEnumerable() Select i Where Not apps.Contains(i)).ToArray()
 				apps.AddRange(ids)
 
@@ -614,19 +630,19 @@ Public Class RelativityApplicationStatusForm
 					End If
 					kvp.Value = row.Cells(ArtifactConflictNameColumnName).Value
 					resArts.Add(New TemplateManagerBase.ResolveArtifact() With { _
-						.ArtifactID = CInt(row.Cells(ArtifactConflictIDColumnName).Value), _
-						.ArtifactTypeID = CType(row.Cells(ArtifactTypeIDColumnName).Value,  _
-						TemplateManagerBase.ApplicationArtifactType), .Fields = New TemplateManagerBase.FieldKVP() {kvp}, _
-						.Action = TemplateManagerBase.ResolveAction.Update})
+					 .ArtifactID = CInt(row.Cells(ArtifactConflictIDColumnName).Value), _
+					 .ArtifactTypeID = CType(row.Cells(ArtifactTypeIDColumnName).Value,  _
+					 TemplateManagerBase.ApplicationArtifactType), .Fields = New TemplateManagerBase.FieldKVP() {kvp}, _
+					 .Action = TemplateManagerBase.ResolveAction.Update})
 				ElseIf String.Equals(row.Cells(ArtifactResolutionColumnName).Value.ToString, DropdownRetryRename) Then
 					kvp = New TemplateManagerBase.FieldKVP()
 					kvp.Key = "Name"
 					kvp.Value = row.Cells(ArtifactConflictNameColumnName).Value
 					resArts.Add(New TemplateManagerBase.ResolveArtifact() With { _
-						.ArtifactID = CInt(row.Cells(ArtifactIDColumnName).Value), _
-						.ArtifactTypeID = CType(row.Cells(ArtifactTypeIDColumnName).Value, TemplateManagerBase.ApplicationArtifactType), _
-						.Fields = New TemplateManagerBase.FieldKVP() {kvp}, _
-						.Action = TemplateManagerBase.ResolveAction.Update})
+					 .ArtifactID = CInt(row.Cells(ArtifactIDColumnName).Value), _
+					 .ArtifactTypeID = CType(row.Cells(ArtifactTypeIDColumnName).Value, TemplateManagerBase.ApplicationArtifactType), _
+					 .Fields = New TemplateManagerBase.FieldKVP() {kvp}, _
+					 .Action = TemplateManagerBase.ResolveAction.Update})
 				End If
 			End If
 		Next
