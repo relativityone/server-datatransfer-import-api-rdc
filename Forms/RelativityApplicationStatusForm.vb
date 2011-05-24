@@ -1,5 +1,6 @@
 ﻿Imports System.Linq
 Imports System.Globalization
+Imports System.Collections
 Imports kCura.EDDS.WebAPI
 
 Public Class RelativityApplicationStatusForm
@@ -16,6 +17,8 @@ Public Class RelativityApplicationStatusForm
 	Private Const workspaceStatusColumnName As String = "Install Status"
 	Private Const workspaceMessageColumnName As String = "Install Message"
 	Private Const workspaceDetailsColumnName As String = "Install Details"
+	Private Const workspaceResolvedColumnName As String = "Ready to Retry Import"
+	Private Const workspaceAppsToUnlockColumnName As String = "AppIDs to Unlock"
 	Private Const workspaceIndexColumnName As String = "Index"
 
 
@@ -50,7 +53,7 @@ Public Class RelativityApplicationStatusForm
 	Private workspaceTable As DataTable = Nothing
 	Private artifactTables As Generic.List(Of DataTable)
 	Private globalSuccess As Boolean = True
-	Private currentResultIndex As Int32
+	Private currentResultIndex As Int32 = -1
 	Private workspaceIncrementIndex As Int32
 	Private _workspaceView As Boolean
 	Private errorExpanded As Boolean
@@ -64,7 +67,6 @@ Public Class RelativityApplicationStatusForm
 	Private cookieContainer As Net.CookieContainer
 	Private caseInfos As Generic.IEnumerable(Of Relativity.CaseInfo)
 	Private _processPool As kCura.Windows.Process.ProcessPool
-	Private _retryEnabled As Boolean
 	Private ar As IAsyncResult = Nothing
 
 	Private Property WorkspaceView As Boolean
@@ -96,22 +98,35 @@ Public Class RelativityApplicationStatusForm
 	End Sub
 
 	Private Sub ProcessEvent(ByVal evt As kCura.Windows.Process.Generic.ProcessEvent(Of TemplateManagerBase.ApplicationInstallationResult))
-		globalSuccess = globalSuccess And evt.Result.Success
 
-		If artifactTables Is Nothing Then
-			artifactTables = New Generic.List(Of DataTable)(evt.Result.TotalWorkspaces)
-		End If
-
-		addRowToWorkspaceTable(evt.Result)
-		addTableToArtifactTable(evt.Result)
-
-		If artifactTables.Capacity > 1 Then
-			DetailsButton.Visible = True
-			UpdateWorkspaceStatusView()
-		Else
-			DetailsButton.Visible = False
-			currentResultIndex = 0
+		If currentResultIndex >= 0 Then
+			workspaceTable.Rows(currentResultIndex).ItemArray = _
+			 CreateWorkspaceRow(evt.Result, DirectCast(workspaceTable.Rows(currentResultIndex).Item(workspaceAppsToUnlockColumnName), Generic.List(Of Int32)), currentResultIndex)
+			If evt.Result.Success Then
+				artifactTables(currentResultIndex) = CreateSucessTable(evt.Result)
+			Else
+				artifactTables(currentResultIndex) = CreateFailedTable(evt.Result)
+			End If
 			UpdateArtifactStatusView()
+		Else
+
+			globalSuccess = globalSuccess And evt.Result.Success
+
+			If artifactTables Is Nothing Then
+				artifactTables = New Generic.List(Of DataTable)(evt.Result.TotalWorkspaces)
+			End If
+
+			addRowToWorkspaceTable(evt.Result)
+			addTableToArtifactTable(evt.Result)
+
+			If artifactTables.Capacity > 1 Then
+				DetailsButton.Visible = True
+				UpdateWorkspaceStatusView()
+			Else
+				DetailsButton.Visible = False
+				currentResultIndex = 0
+				UpdateArtifactStatusView()
+			End If
 		End If
 	End Sub
 
@@ -172,7 +187,6 @@ Public Class RelativityApplicationStatusForm
 
 		ExportButton.Enabled = True
 
-		_retryEnabled = False
 		SetButtonVisibility()
 	End Sub
 
@@ -184,15 +198,21 @@ Public Class RelativityApplicationStatusForm
 			workspaceTable.Columns.Add(workspaceStatusColumnName, GetType(String))
 			workspaceTable.Columns.Add(workspaceMessageColumnName, GetType(String))
 			workspaceTable.Columns.Add(workspaceDetailsColumnName, GetType(String))
+			workspaceTable.Columns.Add(workspaceResolvedColumnName, GetType(Boolean))
+			workspaceTable.Columns.Add(workspaceAppsToUnlockColumnName, GetType(Generic.List(Of Int32)))
 			workspaceTable.Columns.Add(workspaceIndexColumnName, GetType(Integer))
 
 			workspaceIncrementIndex = 0
 		End If
 
-		workspaceTable.Rows.Add(New Object() {res.WorkspaceID, res.WorkspaceName, WorkspaceResultToString(res.Success), res.Message, res.Details, workspaceIncrementIndex})
+		workspaceTable.Rows.Add(CreateWorkspaceRow(res, New Generic.List(Of Int32)(), workspaceIncrementIndex))
 		workspaceIncrementIndex += 1
 
 	End Sub
+
+	Private Function CreateWorkspaceRow(ByVal res As TemplateManagerBase.ApplicationInstallationResult, ByVal apps As Generic.List(Of Int32), ByVal index As Int32) As Object()
+		Return New Object() {res.WorkspaceID, res.WorkspaceName, WorkspaceResultToString(res.Success), res.Message, res.Details, False, apps, index}
+	End Function
 
 	Private Sub addTableToArtifactTable(ByVal res As TemplateManagerBase.ApplicationInstallationResult)
 		If res.Success Then
@@ -249,7 +269,7 @@ Public Class RelativityApplicationStatusForm
 			Dim conflictName As String = ""
 			Dim conflictID As Integer = Nothing
 			Dim conflictApps As New System.Text.StringBuilder()
-			Dim conflictAppIDs As New System.Collections.Generic.List(Of Int32)
+			Dim conflictAppIDs As New Generic.List(Of Int32)
 
 			If art.ParentArtifact IsNot Nothing Then
 				parentName = art.ParentArtifact.Name
@@ -396,6 +416,7 @@ Public Class RelativityApplicationStatusForm
 			Else
 				For Each row As DataGridViewRow In ArtifactStatusTable.Rows
 					row.Cells(ArtifactStatusColumnName).Style.BackColor = If(String.Equals(row.Cells(ArtifactStatusColumnName).Value.ToString(), "Updated", StringComparison.InvariantCulture), Color.PaleGreen, Color.LightPink)
+					row.Cells(ArtifactConflictNameColumnName).ReadOnly = Not dropdownRequiresEdit(DirectCast(row.Cells(ArtifactResolutionColumnName), DataGridViewComboBoxCell))
 				Next
 			End If
 		End If
@@ -479,9 +500,7 @@ Public Class RelativityApplicationStatusForm
 					cell.OwningRow.Cells(ArtifcactSelectedResolutionColumnName).Value = choice
 				End If
 
-				If Not cell Is Nothing AndAlso cell.Items.Count > 0 AndAlso (String.Equals(DirectCast(cell.EditedFormattedValue, String), DropdownRenameInWorkspace) _
-				OrElse String.Equals(DirectCast(cell.EditedFormattedValue, String), DropdownRenameFriendlyNameInWorkspace) _
-				OrElse String.Equals(DirectCast(cell.EditedFormattedValue, String), DropdownRetryRename)) Then
+				If dropdownRequiresEdit(cell) Then
 					cell.Selected = False
 					Dim conflictingNameCell As DataGridViewCell = cell.OwningRow.Cells(ArtifactConflictNameColumnName)
 
@@ -494,8 +513,14 @@ Public Class RelativityApplicationStatusForm
 		CheckForRetryEnabled()
 	End Sub
 
+	Private Function dropdownRequiresEdit(ByVal cell As DataGridViewComboBoxCell) As Boolean
+		Return Not cell Is Nothing AndAlso cell.Items.Count > 0 AndAlso (String.Equals(DirectCast(cell.EditedFormattedValue, String), DropdownRenameInWorkspace) _
+	 OrElse String.Equals(DirectCast(cell.EditedFormattedValue, String), DropdownRenameFriendlyNameInWorkspace) _
+	 OrElse String.Equals(DirectCast(cell.EditedFormattedValue, String), DropdownRetryRename))
+	End Function
+
 	Private Sub CheckForRetryEnabled()
-		_retryEnabled = True
+		Dim retryEnabled As Boolean = True
 
 		For Each row As DataGridViewRow In ArtifactStatusTable.Rows
 			Dim status As String = row.Cells(ArtifactStatusColumnName).Value.ToString()
@@ -504,7 +529,7 @@ Public Class RelativityApplicationStatusForm
 				Dim cbStr As String = DirectCast(cb.EditedFormattedValue, String)
 				Dim renamedText As String = Nothing
 
-				If String.IsNullOrEmpty(cbStr) Then _retryEnabled = False : Exit For
+				If String.IsNullOrEmpty(cbStr) Then retryEnabled = False : Exit For
 
 				If String.Equals(cbStr, DropdownRenameInWorkspace, StringComparison.InvariantCulture) OrElse String.Equals(cbStr, DropdownRenameFriendlyNameInWorkspace, StringComparison.InvariantCulture) OrElse String.Equals(cbStr, DropdownRetryRename, StringComparison.InvariantCulture) Then
 					If TypeOf (row.Cells(ArtifactConflictNameColumnName)) Is DataGridViewTextBoxCell Then
@@ -513,17 +538,17 @@ Public Class RelativityApplicationStatusForm
 						renamedText = row.Cells(ArtifactConflictNameColumnName).Value.ToString()
 					End If
 					If String.IsNullOrEmpty(renamedText) OrElse String.Equals(renamedText, row.Cells(ArtifactNameColumnName).Value.ToString(), StringComparison.CurrentCultureIgnoreCase) Then
-						_retryEnabled = False
+						retryEnabled = False
 						Exit For
 					End If
 				ElseIf Not String.Equals(cbStr, DropdownUnlock, StringComparison.CurrentCulture) Then
-					_retryEnabled = False
+					retryEnabled = False
 					Exit For
 				End If
 			End If
 
 		Next
-
+		workspaceTable.Rows(currentResultIndex).Item(workspaceResolvedColumnName) = retryEnabled
 		SetButtonVisibility()
 	End Sub
 
@@ -622,18 +647,15 @@ Public Class RelativityApplicationStatusForm
 	End Sub
 
 	Private Sub RetryImportButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles RetryImportButton.Click
-		Dim appsToOverride() As Int32 = GetAppsToOverride()
+		workspaceTable.Rows(currentResultIndex).Item(workspaceAppsToUnlockColumnName) = GetAppsToOverride(DirectCast(workspaceTable.Rows(currentResultIndex).Item(workspaceAppsToUnlockColumnName), Generic.List(Of Int32)))
 		Dim resArts() As TemplateManagerBase.ResolveArtifact = GetResolveArtifacts()
 
-		Dim applicationDeploymentProcess As New kCura.WinEDDS.ApplicationDeploymentProcess(appsToOverride, resArts, application, Me.credential, Me.cookieContainer, caseInfos)
+		Dim applicationDeploymentProcess As New kCura.WinEDDS.ApplicationDeploymentProcess(DirectCast(workspaceTable.Rows(currentResultIndex).Item(workspaceAppsToUnlockColumnName), Generic.List(Of Int32)).ToArray, {resArts}, application, Me.credential, Me.cookieContainer, {caseInfos(currentResultIndex)})
 		Me.observer = applicationDeploymentProcess.ProcessObserver
 
 		InformationText.Text = "Importing..."
 		ArtifactStatusTable.DataSource = Nothing
 		ArtifactStatusTable.Columns.Clear()
-
-		artifactTables = Nothing
-		workspaceTable.Rows.Clear()
 
 		_processPool.StartProcess(applicationDeploymentProcess)
 	End Sub
@@ -644,8 +666,7 @@ Public Class RelativityApplicationStatusForm
 
 #End Region
 
-	Private Function GetAppsToOverride() As Int32()
-		Dim apps As New System.Collections.Generic.List(Of Int32)
+	Private Function GetAppsToOverride(ByVal apps As Generic.List(Of Int32)) As Generic.List(Of Int32)
 
 		For Each row As DataGridViewRow In ArtifactStatusTable.Rows
 			If row.Cells(ArtifactResolutionColumnName).Value IsNot Nothing AndAlso String.Equals(row.Cells(ArtifactResolutionColumnName).Value.ToString, DropdownUnlock) Then
@@ -657,11 +678,11 @@ Public Class RelativityApplicationStatusForm
 			End If
 		Next
 
-		Return apps.ToArray
+		Return apps
 	End Function
 
 	Private Function GetResolveArtifacts() As TemplateManagerBase.ResolveArtifact()
-		Dim resArts As New System.Collections.Generic.List(Of TemplateManagerBase.ResolveArtifact)
+		Dim resArts As New Generic.List(Of TemplateManagerBase.ResolveArtifact)
 		Dim kvp As TemplateManagerBase.FieldKVP
 
 		For Each row As DataGridViewRow In ArtifactStatusTable.Rows
@@ -736,7 +757,7 @@ Public Class RelativityApplicationStatusForm
 	End Function
 
 	Private Sub SetButtonVisibility()
-		If Not _retryEnabled Then
+		If Not DirectCast(workspaceTable.Rows(currentResultIndex).Item(workspaceResolvedColumnName), Boolean) Then
 			RetryImportButton.Enabled = False
 		Else
 			RetryImportButton.Enabled = True
