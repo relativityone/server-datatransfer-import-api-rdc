@@ -5,7 +5,7 @@ Namespace kCura.WinEDDS
 
 #Region " Constructors "
 
-		Public Sub New(ByVal appsToOverride As Int32(), ByVal resolveArtifacts() As ResolveArtifact, ByVal application As Xml.XmlDocument, ByVal credential As Net.NetworkCredential, ByVal cookieContainer As Net.CookieContainer, ByVal caseInfos As Generic.IEnumerable(Of Relativity.CaseInfo))
+		Public Sub New(ByVal appsToOverride As Int32(), ByVal resolveArtifacts()() As ResolveArtifact, ByVal application As Xml.XmlDocument, ByVal credential As Net.NetworkCredential, ByVal cookieContainer As Net.CookieContainer, ByVal caseInfos As Generic.IEnumerable(Of Relativity.CaseInfo))
 			MyBase.New(Function(res As ApplicationInstallationResult) res.Message, Function(res As ApplicationInstallationResult) res.Details)
 			_application = application
 			_appsToOverride = appsToOverride
@@ -20,15 +20,16 @@ Namespace kCura.WinEDDS
 #Region " Protected Methods "
 
 		Protected Overrides Sub Execute()
-			For Each caseInfo As Relativity.CaseInfo In _caseInfos
+			For i As Int32 = 0 To _caseInfos.Count - 1
+				Dim caseInfo As Relativity.CaseInfo = _caseInfos(i)
 				Try
 					Dim installationParameters As New ApplicationInstallationParameters
 					installationParameters.CaseId = caseInfo.ArtifactID
 
 					Dim applicationDeploymentSystem As New WinEDDS.Service.TemplateManager(_credential, Me._cookieContainer)
 					Dim resolutionResult As ApplicationInstallationResult = Nothing
-					If _resolveArtifacts.Count > 0 Then
-						resolutionResult = applicationDeploymentSystem.ResolveConflicts(_appsToOverride, _resolveArtifacts, installationParameters)
+					If _resolveArtifacts IsNot Nothing AndAlso _resolveArtifacts(i).Count > 0 Then
+						resolutionResult = applicationDeploymentSystem.ResolveConflicts(_appsToOverride, _resolveArtifacts(i), installationParameters)
 						If Not resolutionResult.Success Then
 							resolutionResult.TotalWorkspaces = _caseInfos.Count
 							resolutionResult.WorkspaceID = caseInfo.ArtifactID
@@ -71,7 +72,7 @@ Namespace kCura.WinEDDS
 
 		Private _application As Xml.XmlDocument
 		Private _appsToOverride As Int32()
-		Private _resolveArtifacts As ResolveArtifact()
+		Private _resolveArtifacts As ResolveArtifact()()
 		Private _caseInfos As Generic.IEnumerable(Of Relativity.CaseInfo)
 		Private _cookieContainer As Net.CookieContainer
 		Private _credential As Net.NetworkCredential
