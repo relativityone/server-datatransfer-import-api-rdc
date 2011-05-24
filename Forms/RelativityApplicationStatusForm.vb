@@ -14,7 +14,10 @@ Public Class RelativityApplicationStatusForm
 	Private Const workspaceIDColumnName As String = "Workspace ID"
 	Private Const workspaceNameColumnName As String = "Workspace Name"
 	Private Const workspaceStatusColumnName As String = "Install Status"
-	Private Const workspaceMessageColumnName As String = "Install Detials"
+	Private Const workspaceMessageColumnName As String = "Install Message"
+	Private Const workspaceDetailsColumnName As String = "Install Details"
+	Private Const workspaceIndexColumnName As String = "Index"
+
 
 	Private Const WorkspaceSuccessString As String = "Completed"
 	Private Const WorkspaceErrorString As String = "Error"
@@ -46,9 +49,9 @@ Public Class RelativityApplicationStatusForm
 	'Private artifactTable As New DataTable()
 	Private workspaceTable As DataTable = Nothing
 	Private artifactTables As Generic.List(Of DataTable)
-	Private results As Generic.List(Of TemplateManagerBase.ApplicationInstallationResult)
 	Private globalSuccess As Boolean = True
 	Private currentResultIndex As Int32
+	Private workspaceIncrementIndex As Int32
 	Private _workspaceView As Boolean
 	Private errorExpanded As Boolean
 
@@ -102,7 +105,7 @@ Public Class RelativityApplicationStatusForm
 		addRowToWorkspaceTable(evt.Result)
 		addTableToArtifactTable(evt.Result)
 
-		If results.Capacity > 1 Then
+		If artifactTables.Capacity > 1 Then
 			DetailsButton.Visible = True
 			UpdateWorkspaceStatusView()
 		Else
@@ -116,8 +119,8 @@ Public Class RelativityApplicationStatusForm
 		WorkspaceView = True
 		StatusHeader.Text = "Installation Status Report"
 
-		If results.Count < results.Capacity Then
-			InformationText.Text = String.Format("Installing... ({0}/{1})", results.Count, results.Capacity)
+		If artifactTables.Count < artifactTables.Capacity Then
+			InformationText.Text = String.Format("Installing... ({0}/{1})", artifactTables.Count, artifactTables.Capacity)
 		Else
 			DetailsButton.Enabled = True
 			ExportButton.Enabled = True
@@ -135,7 +138,7 @@ Public Class RelativityApplicationStatusForm
 
 		ArtifactStatusTable.DataSource = workspaceTable
 
-		UpdateArtifactStatusTableProperties()
+		UpdateWorkspaceStatusTableProperties()
 	End Sub
 
 	Private Sub UpdateArtifactStatusView()
@@ -180,10 +183,14 @@ Public Class RelativityApplicationStatusForm
 			workspaceTable.Columns.Add(workspaceNameColumnName, GetType(String))
 			workspaceTable.Columns.Add(workspaceStatusColumnName, GetType(String))
 			workspaceTable.Columns.Add(workspaceMessageColumnName, GetType(String))
+			workspaceTable.Columns.Add(workspaceDetailsColumnName, GetType(String))
+			workspaceTable.Columns.Add(workspaceIndexColumnName, GetType(Integer))
 
+			workspaceIncrementIndex = 0
 		End If
 
-		workspaceTable.Rows.Add(New Object() {res.WorkspaceID, res.WorkspaceName, WorkspaceResultToString(res.Success), res.Message})
+		workspaceTable.Rows.Add(New Object() {res.WorkspaceID, res.WorkspaceName, WorkspaceResultToString(res.Success), res.Message, res.Details, workspaceIncrementIndex})
+		workspaceIncrementIndex += 1
 
 	End Sub
 
@@ -283,18 +290,44 @@ Public Class RelativityApplicationStatusForm
 		Return failedTable
 	End Function
 
+	Private Sub UpdateWorkspaceStatusTableProperties()
+		If ArtifactStatusTable.Columns.Contains(ArtifactResolutionColumnName) Then
+			ArtifactStatusTable.Columns.Remove(ArtifactResolutionColumnName)
+		End If
+		ArtifactStatusTable.Columns(workspaceMessageColumnName).Visible = False
+		ArtifactStatusTable.Columns(workspaceDetailsColumnName).Visible = False
+		ArtifactStatusTable.Columns(workspaceIndexColumnName).Visible = False
+
+		ArtifactStatusTable.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells
+		ArtifactStatusTable.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells
+		ArtifactStatusTable.RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.EnableResizing
+		ArtifactStatusTable.AllowUserToResizeColumns = True
+		ArtifactStatusTable.AllowUserToOrderColumns = True
+		ArtifactStatusTable.MultiSelect = False
+		ArtifactStatusTable.RowHeadersWidth = 15
+		ArtifactStatusTable.EditMode = DataGridViewEditMode.EditOnEnter And DataGridViewEditMode.EditProgrammatically
+
+		ColorTable()
+	End Sub
+
 	Private Sub UpdateArtifactStatusTableProperties()
-		If Not results(currentResultIndex).Success Then
+		If Not currentSuccess() Then
 			ArtifactStatusTable.Columns("Locked Applications").Visible = False
 			ArtifactStatusTable.Columns(ArtifactHiddenErrorColumnName).Visible = False
 			ArtifactStatusTable.Columns(ArtifactIndexColumnName).Visible = False
 			ArtifactStatusTable.Columns(ArtifactTypeIDColumnName).Visible = False
 			ArtifactStatusTable.Columns(ArtifcactSelectedResolutionColumnName).Visible = False
 
-			If Not ArtifactStatusTable.Columns.Contains(ArtifactResolutionColumnName) Then
-				Dim dropDownColumn As New DataGridViewComboBoxColumn()
-				dropDownColumn.Name = ArtifactResolutionColumnName
-				ArtifactStatusTable.Columns.Insert(0, dropDownColumn)
+			If currentSuccess() Then
+				If ArtifactStatusTable.Columns.Contains(ArtifactResolutionColumnName) Then
+					ArtifactStatusTable.Columns.Remove(ArtifactResolutionColumnName)
+				End If
+			Else
+				If Not ArtifactStatusTable.Columns.Contains(ArtifactResolutionColumnName) Then
+					Dim dropDownColumn As New DataGridViewComboBoxColumn()
+					dropDownColumn.Name = ArtifactResolutionColumnName
+					ArtifactStatusTable.Columns.Insert(0, dropDownColumn)
+				End If
 			End If
 
 			For Each col As DataGridViewColumn In ArtifactStatusTable.Columns
@@ -335,7 +368,7 @@ Public Class RelativityApplicationStatusForm
 
 		ArtifactStatusTable.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells
 		ArtifactStatusTable.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells
-		If Not results(currentResultIndex).Success Then ArtifactStatusTable.Columns("Details").AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill
+		If Not currentSuccess() Then ArtifactStatusTable.Columns("Details").AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill
 		ArtifactStatusTable.RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.EnableResizing
 		ArtifactStatusTable.AllowUserToResizeColumns = True
 		ArtifactStatusTable.AllowUserToOrderColumns = True
@@ -356,7 +389,7 @@ Public Class RelativityApplicationStatusForm
 				End If
 			Next
 		Else
-			If results(currentResultIndex).Success Then
+			If currentSuccess() Then
 				For Each row As DataGridViewRow In ArtifactStatusTable.Rows
 					row.Cells("Status").Style.BackColor = Color.PaleGreen
 				Next
@@ -376,9 +409,9 @@ Public Class RelativityApplicationStatusForm
 
 	Private Sub GoToDetailsView()
 		If ArtifactStatusTable.SelectedRows.Count > 0 Then
-			currentResultIndex = FindResultByID(CInt(ArtifactStatusTable.SelectedRows(0).Cells(workspaceIDColumnName).Value))
+			currentResultIndex = CInt(ArtifactStatusTable.SelectedRows(0).Cells(workspaceIndexColumnName).Value)
 		ElseIf ArtifactStatusTable.SelectedCells.Count > 0 Then
-			currentResultIndex = FindResultByID(CInt(ArtifactStatusTable.Rows(ArtifactStatusTable.SelectedCells(0).RowIndex).Cells(workspaceIDColumnName).Value))
+			currentResultIndex = CInt(ArtifactStatusTable.Rows(ArtifactStatusTable.SelectedCells(0).RowIndex).Cells(workspaceIndexColumnName).Value)
 		Else
 			Return 'The user selected a column. Do nothing.
 		End If
@@ -503,23 +536,25 @@ Public Class RelativityApplicationStatusForm
 	End Sub
 
 	Private Sub InformationLabel_LinkClicked(ByVal sender As Object, ByVal e As System.Windows.Forms.LinkLabelLinkClickedEventArgs) Handles InformationText.LinkClicked
-		Dim result As TemplateManagerBase.ApplicationInstallationResult = results(currentResultIndex)
 		Dim linkData As String = CType(e.Link.LinkData, String)
 
 		If String.Equals(linkData, "Details", StringComparison.CurrentCulture) Then
 			InformationText.Links.Clear()
+			Dim message As String = workspaceTable.Rows(currentResultIndex).Item(workspaceMessageColumnName).ToString
+			Dim details As String = workspaceTable.Rows(currentResultIndex).Item(workspaceDetailsColumnName).ToString
+
 			If errorExpanded Then
-				InformationText.Text = String.Format(CultureInfo.CurrentCulture, "{0}{1}{2}{3} {4}", ErrorMessagePart1, ErrorMessageLink, ErrorMessagePart2, ExpandText, result.Message)
+				InformationText.Text = String.Format(CultureInfo.CurrentCulture, "{0}{1}{2}{3} {4}", ErrorMessagePart1, ErrorMessageLink, ErrorMessagePart2, ExpandText, message)
 				errorExpanded = False
 
-				If Not String.IsNullOrEmpty(result.Message) Then
+				If Not String.IsNullOrEmpty(message) Then
 					InformationText.Links.Add(ErrorMessagePart1.Length + ErrorMessageLink.Length + ErrorMessagePart2.Length, ExpandText.Length, "Details")
 				End If
 			Else
-				InformationText.Text = String.Format(CultureInfo.CurrentCulture, "{0}{1}{2}{3} {4}{5}{6}", ErrorMessagePart1, ErrorMessageLink, ErrorMessagePart2, CollapseText, result.Message, Environment.NewLine, result.Details)
+				InformationText.Text = String.Format(CultureInfo.CurrentCulture, "{0}{1}{2}{3} {4}{5}{6}", ErrorMessagePart1, ErrorMessageLink, ErrorMessagePart2, CollapseText, message, Environment.NewLine, details)
 				errorExpanded = True
 
-				If Not String.IsNullOrEmpty(result.Message) Then
+				If Not String.IsNullOrEmpty(message) Then
 					InformationText.Links.Add(ErrorMessagePart1.Length + ErrorMessageLink.Length + ErrorMessagePart2.Length, CollapseText.Length, "Details")
 				End If
 			End If
@@ -533,11 +568,12 @@ Public Class RelativityApplicationStatusForm
 	End Sub
 
 	Private Sub CopyErrorToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles CopyErrorToolStripMenuItem.Click
-		Dim result As TemplateManagerBase.ApplicationInstallationResult = results(currentResultIndex)
+		Dim message As String = workspaceTable.Rows(currentResultIndex).Item(workspaceMessageColumnName).ToString
+		Dim details As String = workspaceTable.Rows(currentResultIndex).Item(workspaceDetailsColumnName).ToString
 		If errorExpanded Then
-			Clipboard.SetText("Message:" & Environment.NewLine & result.Message & Environment.NewLine & Environment.NewLine & "Details:" & Environment.NewLine & result.Details)
+			Clipboard.SetText("Message:" & Environment.NewLine & message & Environment.NewLine & Environment.NewLine & "Details:" & Environment.NewLine & details)
 		Else
-			Clipboard.SetText("Message:" & Environment.NewLine & result.Message)
+			Clipboard.SetText("Message:" & Environment.NewLine & message)
 		End If
 	End Sub
 
@@ -595,7 +631,9 @@ Public Class RelativityApplicationStatusForm
 		InformationText.Text = "Importing..."
 		ArtifactStatusTable.DataSource = Nothing
 		ArtifactStatusTable.Columns.Clear()
-		results = Nothing
+
+		artifactTables = Nothing
+		workspaceTable.Rows.Clear()
 
 		_processPool.StartProcess(applicationDeploymentProcess)
 	End Sub
@@ -657,15 +695,6 @@ Public Class RelativityApplicationStatusForm
 		Return resArts.ToArray()
 	End Function
 
-	Private Function FindResultByID(ByVal workspaceID As Int32) As Int32
-		For i = 0 To results.Count
-			If results(i).WorkspaceID = workspaceID Then
-				Return i
-			End If
-		Next
-		Throw New System.Exception(String.Format("The following Workspace ID was not found in the results list: {0}", workspaceID))
-	End Function
-
 	Private Function TypeToString(ByVal type As TemplateManagerBase.ApplicationArtifactType) As String
 		If type = TemplateManagerBase.ApplicationArtifactType.Object Then
 			Return "Object Type"
@@ -700,6 +729,10 @@ Public Class RelativityApplicationStatusForm
 		Else
 			Return WorkspaceErrorString
 		End If
+	End Function
+
+	Private Function currentSuccess() As Boolean
+		Return workspaceTable.Rows(currentResultIndex).Item(workspaceStatusColumnName).ToString.Equals(WorkspaceSuccessString, StringComparison.InvariantCulture)
 	End Function
 
 	Private Sub SetButtonVisibility()
