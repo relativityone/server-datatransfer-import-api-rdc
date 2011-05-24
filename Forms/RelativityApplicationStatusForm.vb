@@ -21,7 +21,7 @@ Public Class RelativityApplicationStatusForm
 
 	Private Const ArtifactNameColumnName As String = "Name"
 	Private Const ArtifactIDColumnName As String = "Artifact ID"
-	Private Const ArtifactErrorColumnName As String = "Error"
+	Private Const ArtifactStatusColumnName As String = "Status"
 	Private Const ArtifactHiddenErrorColumnName As String = "Hidden Error"
 	Private Const ArtifactApplicationIdsColumnName As String = "Application IDs"
 	Private Const ArtifactResolutionColumnName As String = "Resolution"
@@ -30,7 +30,7 @@ Public Class RelativityApplicationStatusForm
 	Private Const ArtifactConflictNameColumnName As String = "Conflicting Artifact Name"
 	Private Const ArtifactIndexColumnName As String = "Index"
 	Private Const ArtifcactSelectedResolutionColumnName = "Selected Resolution"
-	Private Const DropdownForceImport As String = "Force Import"
+	Private Const DropdownUnlock As String = "Unlock"
 	Private Const DropdownRenameInWorkspace As String = "Rename in Workspace"
 	Private Const DropdownRenameFriendlyNameInWorkspace As String = "Rename in Workspace"
 	Private Const DropdownRetryRename As String = "Choose another Name"
@@ -52,9 +52,9 @@ Public Class RelativityApplicationStatusForm
 	Private _workspaceView As Boolean
 	Private errorExpanded As Boolean
 
-	Private ErrorMessagePart1 As String = "Installation failed. For details on potential resolutions to the errors you may have encountered here, please refer to the "
+	Private ErrorMessagePart1 As String = "Installation failed.  For details on potential resolutions to the errors you may have encountered here, refer to the "
 	Private ErrorMessageLink As String = "Relativity Applications documentation."
-	Private ErrorMessagePart2 As String = Environment.NewLine & "(Note: This link takes you to the most recent version of the document, which may not match with your version of Relativity.)" & Environment.NewLine & Environment.NewLine & "The following errors occurred while installing the application:" & Environment.NewLine & Environment.NewLine
+	Private ErrorMessagePart2 As String = Environment.NewLine & Environment.NewLine & "The following errors occurred while installing the application:" & Environment.NewLine & Environment.NewLine
 
 	Private application As Xml.XmlDocument
 	Private credential As Net.NetworkCredential
@@ -221,7 +221,7 @@ Public Class RelativityApplicationStatusForm
 	Private Function CreateFailedTable(ByVal result As TemplateManagerBase.ApplicationInstallationResult) As DataTable
 		Dim failedTable As New DataTable()
 
-		failedTable.Columns.Add(ArtifactErrorColumnName, GetType(String))
+		failedTable.Columns.Add(ArtifactStatusColumnName, GetType(String))
 		failedTable.Columns.Add(ArtifactHiddenErrorColumnName, GetType(TemplateManagerBase.StatusCode))
 		failedTable.Columns.Add(ArtifactNameColumnName, GetType(String))
 		failedTable.Columns.Add(ArtifactIDColumnName, GetType(Int32))
@@ -312,11 +312,14 @@ Public Class RelativityApplicationStatusForm
 					Case TemplateManagerBase.StatusCode.NameConflict
 						comboBoxCell.Items.Add(DropdownRenameInWorkspace)
 					Case TemplateManagerBase.StatusCode.SharedByLockedApp
-						comboBoxCell.Items.Add(DropdownForceImport)
+						comboBoxCell.Items.Add(DropdownUnlock)
 					Case TemplateManagerBase.StatusCode.RenameConflict
 						comboBoxCell.Items.Add(DropdownRetryRename)
 					Case TemplateManagerBase.StatusCode.MultipleFileField
 					Case TemplateManagerBase.StatusCode.UnknownError
+					Case TemplateManagerBase.StatusCode.Updated
+						comboBoxCell.ReadOnly = True
+						comboBoxCell.DisplayStyle = DataGridViewComboBoxDisplayStyle.Nothing
 					Case Else
 				End Select
 
@@ -359,7 +362,7 @@ Public Class RelativityApplicationStatusForm
 				Next
 			Else
 				For Each row As DataGridViewRow In ArtifactStatusTable.Rows
-					row.Cells(ArtifactErrorColumnName).Style.BackColor = Color.LightPink
+					row.Cells(ArtifactStatusColumnName).Style.BackColor = If(String.Equals(row.Cells(ArtifactStatusColumnName).Value.ToString(), "Updated", StringComparison.InvariantCulture), Color.PaleGreen, Color.LightPink)
 				Next
 			End If
 		End If
@@ -462,26 +465,30 @@ Public Class RelativityApplicationStatusForm
 		_retryEnabled = True
 
 		For Each row As DataGridViewRow In ArtifactStatusTable.Rows
-			Dim cb As DataGridViewComboBoxCell = DirectCast(row.Cells("Resolution"), DataGridViewComboBoxCell)
-			Dim cbStr As String = DirectCast(cb.EditedFormattedValue, String)
-			Dim renamedText As String = Nothing
+			Dim status As String = row.Cells(ArtifactStatusColumnName).Value.ToString()
+			If Not String.Equals(status, "Updated", StringComparison.InvariantCulture) Then
+				Dim cb As DataGridViewComboBoxCell = DirectCast(row.Cells("Resolution"), DataGridViewComboBoxCell)
+				Dim cbStr As String = DirectCast(cb.EditedFormattedValue, String)
+				Dim renamedText As String = Nothing
 
-			If String.IsNullOrEmpty(cbStr) Then _retryEnabled = False : Exit For
+				If String.IsNullOrEmpty(cbStr) Then _retryEnabled = False : Exit For
 
-			If String.Equals(cbStr, DropdownRenameInWorkspace, StringComparison.InvariantCulture) OrElse String.Equals(cbStr, DropdownRenameFriendlyNameInWorkspace, StringComparison.InvariantCulture) Then
-				If TypeOf (row.Cells(ArtifactConflictNameColumnName)) Is DataGridViewTextBoxCell Then
-					renamedText = DirectCast(row.Cells(ArtifactConflictNameColumnName), DataGridViewTextBoxCell).EditedFormattedValue.ToString()
-				Else
-					renamedText = row.Cells(ArtifactConflictNameColumnName).Value.ToString()
-				End If
-				If String.IsNullOrEmpty(renamedText) OrElse String.Equals(renamedText, row.Cells(ArtifactNameColumnName).Value.ToString(), StringComparison.CurrentCultureIgnoreCase) Then
+				If String.Equals(cbStr, DropdownRenameInWorkspace, StringComparison.InvariantCulture) OrElse String.Equals(cbStr, DropdownRenameFriendlyNameInWorkspace, StringComparison.InvariantCulture) OrElse String.Equals(cbStr, DropdownRetryRename, StringComparison.InvariantCulture) Then
+					If TypeOf (row.Cells(ArtifactConflictNameColumnName)) Is DataGridViewTextBoxCell Then
+						renamedText = DirectCast(row.Cells(ArtifactConflictNameColumnName), DataGridViewTextBoxCell).EditedFormattedValue.ToString()
+					Else
+						renamedText = row.Cells(ArtifactConflictNameColumnName).Value.ToString()
+					End If
+					If String.IsNullOrEmpty(renamedText) OrElse String.Equals(renamedText, row.Cells(ArtifactNameColumnName).Value.ToString(), StringComparison.CurrentCultureIgnoreCase) Then
+						_retryEnabled = False
+						Exit For
+					End If
+				ElseIf Not String.Equals(cbStr, DropdownUnlock, StringComparison.CurrentCulture) Then
 					_retryEnabled = False
 					Exit For
 				End If
-			ElseIf Not String.Equals(cbStr, DropdownForceImport, StringComparison.CurrentCulture) Then
-				_retryEnabled = False
-				Exit For
 			End If
+
 		Next
 
 		SetButtonVisibility()
@@ -603,7 +610,7 @@ Public Class RelativityApplicationStatusForm
 		Dim apps As New System.Collections.Generic.List(Of Int32)
 
 		For Each row As DataGridViewRow In ArtifactStatusTable.Rows
-			If row.Cells(ArtifactResolutionColumnName).Value IsNot Nothing AndAlso String.Equals(row.Cells(ArtifactResolutionColumnName).Value.ToString, DropdownForceImport) Then
+			If row.Cells(ArtifactResolutionColumnName).Value IsNot Nothing AndAlso String.Equals(row.Cells(ArtifactResolutionColumnName).Value.ToString, DropdownUnlock) Then
 				Dim index As Int32 = CInt(row.Cells(ArtifactIndexColumnName).Value)
 				Dim appIDs() As Int32 = CType(artifactTables(currentResultIndex).Rows(index).Item(ArtifactApplicationIdsColumnName), Int32())
 				Dim ids() As Int32 = (From i As Int32 In (appIDs).AsEnumerable() Select i Where Not apps.Contains(i)).ToArray()
