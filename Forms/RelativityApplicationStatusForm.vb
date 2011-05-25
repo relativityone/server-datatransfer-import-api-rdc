@@ -606,7 +606,7 @@ Public Class RelativityApplicationStatusForm
 				Dim artifactTable As New DataTable()
 				Dim newRow As System.Data.DataRow
 
-				Dim iRows As System.Collections.Generic.IEnumerable(Of DataGridViewRow) = (From row In ArtifactStatusTable.Rows Select DirectCast(row, DataGridViewRow))
+				Dim iRows As System.Collections.Generic.IEnumerable(Of DataGridViewRow) = ArtifactStatusTable.Rows.Cast(Of DataGridViewRow)()
 				Dim iCells As System.Collections.Generic.IEnumerable(Of DataGridViewCell)
 
 				For Each col As DataGridViewColumn In ArtifactStatusTable.Columns
@@ -617,9 +617,9 @@ Public Class RelativityApplicationStatusForm
 
 				For Each iRow As DataGridViewRow In iRows
 					newRow = artifactTable.NewRow()
-					iCells = (From cell In iRow.Cells Select DirectCast(cell, DataGridViewCell))
+					iCells = iRow.Cells.Cast(Of DataGridViewCell)()
 
-					newRow.ItemArray = (From cell As DataGridViewCell In iCells Where cell.OwningColumn.Visible Select cell.Value).ToArray()
+					newRow.ItemArray = iCells.Where(Function(c As DataGridViewCell) c.OwningColumn.Visible).Select(Of Object)(Function(c As DataGridViewCell) c.Value).ToArray()
 					artifactTable.Rows.Add(newRow)
 				Next
 
