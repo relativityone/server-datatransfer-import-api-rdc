@@ -371,12 +371,9 @@ Public Class RelativityApplicationStatusForm
 						comboBoxCell.Items.Add(DropdownUnlock)
 					Case TemplateManagerBase.StatusCode.RenameConflict
 						comboBoxCell.Items.Add(DropdownRetryRename)
-					Case TemplateManagerBase.StatusCode.MultipleFileField
-					Case TemplateManagerBase.StatusCode.UnknownError
-					Case TemplateManagerBase.StatusCode.Updated
+					Case Else
 						comboBoxCell.ReadOnly = True
 						comboBoxCell.DisplayStyle = DataGridViewComboBoxDisplayStyle.Nothing
-					Case Else
 				End Select
 
 				Dim selectedResolution As String = If(row.Cells(ArtifcactSelectedResolutionColumnName).Value Is Nothing, String.Empty, row.Cells(ArtifcactSelectedResolutionColumnName).Value.ToString)
@@ -414,11 +411,11 @@ Public Class RelativityApplicationStatusForm
 		Else
 			If currentSuccess() Then
 				For Each row As DataGridViewRow In ArtifactStatusTable.Rows
-					row.Cells("Status").Style.BackColor = Color.PaleGreen
+					row.Cells(ArtifactStatusColumnName).Style.BackColor = Color.PaleGreen
 				Next
 			Else
 				For Each row As DataGridViewRow In ArtifactStatusTable.Rows
-					row.Cells(ArtifactStatusColumnName).Style.BackColor = If(String.Equals(row.Cells(ArtifactStatusColumnName).Value.ToString(), "Updated", StringComparison.InvariantCulture), Color.PaleGreen, Color.LightPink)
+					row.Cells(ArtifactStatusColumnName).Style.BackColor = If(String.Equals(row.Cells(ArtifactStatusColumnName).Value.ToString(), TemplateManagerBase.StatusCode.Updated.ToString(), StringComparison.InvariantCulture), Color.PaleGreen, Color.LightPink)
 					row.Cells(ArtifactConflictNameColumnName).ReadOnly = Not dropdownRequiresEdit(DirectCast(row.Cells(ArtifactResolutionColumnName), DataGridViewComboBoxCell))
 				Next
 			End If
@@ -533,8 +530,8 @@ Public Class RelativityApplicationStatusForm
 
 	Private Function dropdownRequiresEdit(ByVal cell As DataGridViewComboBoxCell) As Boolean
 		Return Not cell Is Nothing AndAlso cell.Items.Count > 0 AndAlso (String.Equals(DirectCast(cell.EditedFormattedValue, String), DropdownRenameInWorkspace) _
-	 OrElse String.Equals(DirectCast(cell.EditedFormattedValue, String), DropdownRenameFriendlyNameInWorkspace) _
-	 OrElse String.Equals(DirectCast(cell.EditedFormattedValue, String), DropdownRetryRename))
+		OrElse String.Equals(DirectCast(cell.EditedFormattedValue, String), DropdownRenameFriendlyNameInWorkspace) _
+		OrElse String.Equals(DirectCast(cell.EditedFormattedValue, String), DropdownRetryRename))
 	End Function
 
 	Private Sub CheckForRetryEnabled()
@@ -542,7 +539,7 @@ Public Class RelativityApplicationStatusForm
 
 		For Each row As DataGridViewRow In ArtifactStatusTable.Rows
 			Dim status As String = row.Cells(ArtifactStatusColumnName).Value.ToString()
-			If Not String.Equals(status, "Updated", StringComparison.InvariantCulture) Then
+			If Not String.Equals(status, TemplateManagerBase.StatusCode.Updated.ToString(), StringComparison.InvariantCulture) Then
 				Dim cb As DataGridViewComboBoxCell = DirectCast(row.Cells("Resolution"), DataGridViewComboBoxCell)
 				Dim cbStr As String = DirectCast(cb.EditedFormattedValue, String)
 				Dim renamedText As String = Nothing
@@ -621,47 +618,67 @@ Public Class RelativityApplicationStatusForm
 	End Sub
 
 	Private Sub ExportButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ExportButton.Click
-		Debug.Assert(artifactTables IsNot Nothing)
-		Dim artifactTable As DataTable
-		If WorkspaceView Then
-			artifactTable = artifactTables(currentResultIndex)
-		Else
-			artifactTable = workspaceTable
-		End If
+		Try
+			Debug.Assert(artifactTables IsNot Nothing)
+			If ArtifactStatusTable.Rows.Count > 0 Then
+				Dim artifactTable As New DataTable()
+				Dim newRow As System.Data.DataRow
 
-		Dim csvBuilder As New System.Text.StringBuilder()
-		Dim prepend As String = """"
-		For Each col As DataColumn In artifactTable.Columns
-			csvBuilder.Append(prepend)
-			csvBuilder.Append(col.ColumnName.Replace("""", """"""))
-			csvBuilder.Append("""")
-			prepend = ","""
-		Next
-		csvBuilder.Append(Environment.NewLine)
+				Dim iRows As System.Collections.Generic.IEnumerable(Of DataGridViewRow) = (From row In ArtifactStatusTable.Rows Select DirectCast(row, DataGridViewRow))
+				Dim iCells As System.Collections.Generic.IEnumerable(Of DataGridViewCell)
 
-		For Each row As DataRow In artifactTable.Rows
-			prepend = """"
-			For Each cell In row.ItemArray
-				csvBuilder.Append(prepend)
-				csvBuilder.Append(cell.ToString.Replace("""", """"""))
-				csvBuilder.Append("""")
-				prepend = ","""
-			Next
-			csvBuilder.Append(Environment.NewLine)
-		Next
+				For Each col As DataGridViewColumn In ArtifactStatusTable.Columns
+					If col.Visible Then
+						artifactTable.Columns.Add(col.Name)
+					End If
+				Next
 
-		Dim saveAsCsvDialog As New SaveFileDialog()
-		saveAsCsvDialog.Filter = "csv files (*.csv)|*.csv"
-		saveAsCsvDialog.FileName = String.Format("RA_{0}_{1}.csv", "Import", System.DateTime.Now.ToString("yyyyMMddHHmmss"))
+				For Each iRow As DataGridViewRow In iRows
+					newRow = artifactTable.NewRow()
+					iCells = (From cell In iRow.Cells Select DirectCast(cell, DataGridViewCell))
 
-		If saveAsCsvDialog.ShowDialog() = DialogResult.OK Then
-			Dim myStream As IO.Stream = saveAsCsvDialog.OpenFile()
-			If (myStream IsNot Nothing) Then
-				Dim encoding As New System.Text.UTF8Encoding()
-				myStream.Write(encoding.GetBytes(csvBuilder.ToString), 0, encoding.GetByteCount(csvBuilder.ToString))
-				myStream.Close()
+					newRow.ItemArray = (From cell As DataGridViewCell In iCells Where cell.OwningColumn.Visible Select cell.Value).ToArray()
+					artifactTable.Rows.Add(newRow)
+				Next
+
+				Dim csvBuilder As New System.Text.StringBuilder()
+				Dim prepend As String = """"
+				For Each col As DataColumn In artifactTable.Columns
+					csvBuilder.Append(prepend)
+					csvBuilder.Append(col.ColumnName.Replace("""", """"""))
+					csvBuilder.Append("""")
+					prepend = ","""
+				Next
+				csvBuilder.Append(Environment.NewLine)
+
+				For Each row As DataRow In artifactTable.Rows
+					prepend = """"
+					For Each cell In row.ItemArray
+						csvBuilder.Append(prepend)
+						csvBuilder.Append(cell.ToString.Replace("""", """"""))
+						csvBuilder.Append("""")
+						prepend = ","""
+					Next
+					csvBuilder.Append(Environment.NewLine)
+				Next
+
+				Dim saveAsCsvDialog As New SaveFileDialog()
+				saveAsCsvDialog.Filter = "csv files (*.csv)|*.csv"
+				saveAsCsvDialog.FileName = String.Format("RA_{0}_{1}.csv", "Import", System.DateTime.Now.ToString("yyyyMMddHHmmss"))
+
+				If saveAsCsvDialog.ShowDialog() = DialogResult.OK Then
+					Dim myStream As IO.Stream = saveAsCsvDialog.OpenFile()
+					If (myStream IsNot Nothing) Then
+						Dim encoding As New System.Text.UTF8Encoding()
+						myStream.Write(encoding.GetBytes(csvBuilder.ToString), 0, encoding.GetByteCount(csvBuilder.ToString))
+						myStream.Close()
+					End If
+				End If
 			End If
-		End If
+		Catch ex As Exception
+			MessageBox.Show(String.Format("There was an error exporting items from the grid.  Exception: {0}", ex.Message))
+		End Try
+
 	End Sub
 
 	Private Sub RetryImportButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles RetryImportButton.Click
@@ -708,7 +725,7 @@ Public Class RelativityApplicationStatusForm
 		Dim kvp As TemplateManagerBase.FieldKVP
 
 		For Each row As DataRow In artifactTables(currentResultIndex).Rows
-			If row.Item(ArtifcactSelectedResolutionColumnName) IsNot Nothing Then
+			If row.Item(ArtifcactSelectedResolutionColumnName) IsNot Nothing AndAlso Not String.Equals(row.Item(ArtifactStatusColumnName).ToString(), TemplateManagerBase.StatusCode.Updated.ToString(), StringComparison.InvariantCulture) Then
 				If (String.Equals(row.Item(ArtifcactSelectedResolutionColumnName).ToString, DropdownRenameInWorkspace) OrElse String.Equals(row.Item(ArtifcactSelectedResolutionColumnName).ToString, DropdownRenameFriendlyNameInWorkspace)) Then
 					kvp = New TemplateManagerBase.FieldKVP()
 					If CType(row.Item(ArtifactHiddenErrorColumnName), TemplateManagerBase.StatusCode) = TemplateManagerBase.StatusCode.FriendlyNameConflict Then
