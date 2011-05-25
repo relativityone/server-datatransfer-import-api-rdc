@@ -512,8 +512,8 @@ Public Class RelativityApplicationStatusForm
 
 	Private Function dropdownRequiresEdit(ByVal cell As DataGridViewComboBoxCell) As Boolean
 		Return Not cell Is Nothing AndAlso cell.Items.Count > 0 AndAlso (String.Equals(DirectCast(cell.EditedFormattedValue, String), DropdownRenameInWorkspace) _
-	 OrElse String.Equals(DirectCast(cell.EditedFormattedValue, String), DropdownRenameFriendlyNameInWorkspace) _
-	 OrElse String.Equals(DirectCast(cell.EditedFormattedValue, String), DropdownRetryRename))
+		OrElse String.Equals(DirectCast(cell.EditedFormattedValue, String), DropdownRenameFriendlyNameInWorkspace) _
+		OrElse String.Equals(DirectCast(cell.EditedFormattedValue, String), DropdownRetryRename))
 	End Function
 
 	Private Sub CheckForRetryEnabled()
@@ -600,47 +600,67 @@ Public Class RelativityApplicationStatusForm
 	End Sub
 
 	Private Sub ExportButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ExportButton.Click
-		Debug.Assert(artifactTables IsNot Nothing)
-		Dim artifactTable As DataTable
-		If WorkspaceView Then
-			artifactTable = artifactTables(currentResultIndex)
-		Else
-			artifactTable = workspaceTable
-		End If
+		Try
+			Debug.Assert(artifactTables IsNot Nothing)
+			If ArtifactStatusTable.Rows.Count > 0 Then
+				Dim artifactTable As New DataTable()
+				Dim newRow As System.Data.DataRow
 
-		Dim csvBuilder As New System.Text.StringBuilder()
-		Dim prepend As String = """"
-		For Each col As DataColumn In artifactTable.Columns
-			csvBuilder.Append(prepend)
-			csvBuilder.Append(col.ColumnName.Replace("""", """"""))
-			csvBuilder.Append("""")
-			prepend = ","""
-		Next
-		csvBuilder.Append(Environment.NewLine)
+				Dim iRows As System.Collections.Generic.IEnumerable(Of DataGridViewRow) = (From row In ArtifactStatusTable.Rows Select DirectCast(row, DataGridViewRow))
+				Dim iCells As System.Collections.Generic.IEnumerable(Of DataGridViewCell)
 
-		For Each row As DataRow In artifactTable.Rows
-			prepend = """"
-			For Each cell In row.ItemArray
-				csvBuilder.Append(prepend)
-				csvBuilder.Append(cell.ToString.Replace("""", """"""))
-				csvBuilder.Append("""")
-				prepend = ","""
-			Next
-			csvBuilder.Append(Environment.NewLine)
-		Next
+				For Each col As DataGridViewColumn In ArtifactStatusTable.Columns
+					If col.Visible Then
+						artifactTable.Columns.Add(col.Name)
+					End If
+				Next
 
-		Dim saveAsCsvDialog As New SaveFileDialog()
-		saveAsCsvDialog.Filter = "csv files (*.csv)|*.csv"
-		saveAsCsvDialog.FileName = String.Format("RA_{0}_{1}.csv", "Import", System.DateTime.Now.ToString("yyyyMMddHHmmss"))
+				For Each iRow As DataGridViewRow In iRows
+					newRow = artifactTable.NewRow()
+					iCells = (From cell In iRow.Cells Select DirectCast(cell, DataGridViewCell))
 
-		If saveAsCsvDialog.ShowDialog() = DialogResult.OK Then
-			Dim myStream As IO.Stream = saveAsCsvDialog.OpenFile()
-			If (myStream IsNot Nothing) Then
-				Dim encoding As New System.Text.UTF8Encoding()
-				myStream.Write(encoding.GetBytes(csvBuilder.ToString), 0, encoding.GetByteCount(csvBuilder.ToString))
-				myStream.Close()
+					newRow.ItemArray = (From cell As DataGridViewCell In iCells Where cell.OwningColumn.Visible Select cell.Value).ToArray()
+					artifactTable.Rows.Add(newRow)
+				Next
+
+				Dim csvBuilder As New System.Text.StringBuilder()
+				Dim prepend As String = """"
+				For Each col As DataColumn In artifactTable.Columns
+					csvBuilder.Append(prepend)
+					csvBuilder.Append(col.ColumnName.Replace("""", """"""))
+					csvBuilder.Append("""")
+					prepend = ","""
+				Next
+				csvBuilder.Append(Environment.NewLine)
+
+				For Each row As DataRow In artifactTable.Rows
+					prepend = """"
+					For Each cell In row.ItemArray
+						csvBuilder.Append(prepend)
+						csvBuilder.Append(cell.ToString.Replace("""", """"""))
+						csvBuilder.Append("""")
+						prepend = ","""
+					Next
+					csvBuilder.Append(Environment.NewLine)
+				Next
+
+				Dim saveAsCsvDialog As New SaveFileDialog()
+				saveAsCsvDialog.Filter = "csv files (*.csv)|*.csv"
+				saveAsCsvDialog.FileName = String.Format("RA_{0}_{1}.csv", "Import", System.DateTime.Now.ToString("yyyyMMddHHmmss"))
+
+				If saveAsCsvDialog.ShowDialog() = DialogResult.OK Then
+					Dim myStream As IO.Stream = saveAsCsvDialog.OpenFile()
+					If (myStream IsNot Nothing) Then
+						Dim encoding As New System.Text.UTF8Encoding()
+						myStream.Write(encoding.GetBytes(csvBuilder.ToString), 0, encoding.GetByteCount(csvBuilder.ToString))
+						myStream.Close()
+					End If
+				End If
 			End If
-		End If
+		Catch ex As Exception
+			MessageBox.Show(String.Format("There was an error exporting items from the grid.  Exception: {0}", ex.Message))
+		End Try
+
 	End Sub
 
 	Private Sub RetryImportButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles RetryImportButton.Click
