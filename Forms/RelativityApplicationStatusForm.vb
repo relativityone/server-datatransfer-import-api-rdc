@@ -368,12 +368,9 @@ Public Class RelativityApplicationStatusForm
 						comboBoxCell.Items.Add(DropdownUnlock)
 					Case TemplateManagerBase.StatusCode.RenameConflict
 						comboBoxCell.Items.Add(DropdownRetryRename)
-					Case TemplateManagerBase.StatusCode.MultipleFileField
-					Case TemplateManagerBase.StatusCode.UnknownError
-					Case TemplateManagerBase.StatusCode.Updated
+					Case Else
 						comboBoxCell.ReadOnly = True
 						comboBoxCell.DisplayStyle = DataGridViewComboBoxDisplayStyle.Nothing
-					Case Else
 				End Select
 
 				Dim selectedResolution As String = If(row.Cells(ArtifcactSelectedResolutionColumnName).Value Is Nothing, String.Empty, row.Cells(ArtifcactSelectedResolutionColumnName).Value.ToString)
@@ -411,11 +408,11 @@ Public Class RelativityApplicationStatusForm
 		Else
 			If currentSuccess() Then
 				For Each row As DataGridViewRow In ArtifactStatusTable.Rows
-					row.Cells("Status").Style.BackColor = Color.PaleGreen
+					row.Cells(ArtifactStatusColumnName).Style.BackColor = Color.PaleGreen
 				Next
 			Else
 				For Each row As DataGridViewRow In ArtifactStatusTable.Rows
-					row.Cells(ArtifactStatusColumnName).Style.BackColor = If(String.Equals(row.Cells(ArtifactStatusColumnName).Value.ToString(), "Updated", StringComparison.InvariantCulture), Color.PaleGreen, Color.LightPink)
+					row.Cells(ArtifactStatusColumnName).Style.BackColor = If(String.Equals(row.Cells(ArtifactStatusColumnName).Value.ToString(), TemplateManagerBase.StatusCode.Updated.ToString(), StringComparison.InvariantCulture), Color.PaleGreen, Color.LightPink)
 					row.Cells(ArtifactConflictNameColumnName).ReadOnly = Not dropdownRequiresEdit(DirectCast(row.Cells(ArtifactResolutionColumnName), DataGridViewComboBoxCell))
 				Next
 			End If
@@ -524,7 +521,7 @@ Public Class RelativityApplicationStatusForm
 
 		For Each row As DataGridViewRow In ArtifactStatusTable.Rows
 			Dim status As String = row.Cells(ArtifactStatusColumnName).Value.ToString()
-			If Not String.Equals(status, "Updated", StringComparison.InvariantCulture) Then
+			If Not String.Equals(status, TemplateManagerBase.StatusCode.Updated.ToString(), StringComparison.InvariantCulture) Then
 				Dim cb As DataGridViewComboBoxCell = DirectCast(row.Cells("Resolution"), DataGridViewComboBoxCell)
 				Dim cbStr As String = DirectCast(cb.EditedFormattedValue, String)
 				Dim renamedText As String = Nothing
@@ -686,7 +683,7 @@ Public Class RelativityApplicationStatusForm
 		Dim kvp As TemplateManagerBase.FieldKVP
 
 		For Each row As DataGridViewRow In ArtifactStatusTable.Rows
-			If row.Cells(ArtifactResolutionColumnName).Value IsNot Nothing Then
+			If row.Cells(ArtifactResolutionColumnName).Value IsNot Nothing AndAlso Not String.Equals(row.Cells(ArtifactStatusColumnName).Value.ToString(), TemplateManagerBase.StatusCode.Updated.ToString(), StringComparison.InvariantCulture) Then
 				If (String.Equals(row.Cells(ArtifactResolutionColumnName).Value.ToString, DropdownRenameInWorkspace) OrElse String.Equals(row.Cells(ArtifactResolutionColumnName).Value.ToString, DropdownRenameFriendlyNameInWorkspace)) Then
 					kvp = New TemplateManagerBase.FieldKVP()
 					If CType(row.Cells(ArtifactHiddenErrorColumnName).Value, TemplateManagerBase.StatusCode) = TemplateManagerBase.StatusCode.FriendlyNameConflict Then
