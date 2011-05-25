@@ -327,6 +327,9 @@ Public Class RelativityApplicationStatusForm
 		ArtifactStatusTable.RowHeadersWidth = 15
 		ArtifactStatusTable.EditMode = DataGridViewEditMode.EditOnEnter And DataGridViewEditMode.EditProgrammatically
 
+		If currentResultIndex >= 0 Then
+			ArtifactStatusTable.Rows(currentResultIndex).Cells(0).Selected = True
+		End If
 		ColorTable()
 	End Sub
 
@@ -429,14 +432,22 @@ Public Class RelativityApplicationStatusForm
 	End Sub
 
 	Private Sub GoToDetailsView()
-		If ArtifactStatusTable.SelectedRows.Count > 0 Then
-			currentResultIndex = CInt(ArtifactStatusTable.SelectedRows(0).Cells(workspaceIndexColumnName).Value)
-		ElseIf ArtifactStatusTable.SelectedCells.Count > 0 Then
-			currentResultIndex = CInt(ArtifactStatusTable.Rows(ArtifactStatusTable.SelectedCells(0).RowIndex).Cells(workspaceIndexColumnName).Value)
-		Else
-			Return 'The user selected a column. Do nothing.
+		UpdateCurrentResultIndex()
+		If currentResultIndex > -1 Then
+			UpdateArtifactStatusView()
 		End If
-		UpdateArtifactStatusView()
+	End Sub
+
+	Private Sub UpdateCurrentResultIndex()
+		If WorkspaceView Then
+			If ArtifactStatusTable.SelectedRows.Count > 0 Then
+				currentResultIndex = CInt(ArtifactStatusTable.SelectedRows(0).Cells(workspaceIndexColumnName).Value)
+			ElseIf ArtifactStatusTable.SelectedCells.Count > 0 Then
+				currentResultIndex = CInt(ArtifactStatusTable.Rows(ArtifactStatusTable.SelectedCells(0).RowIndex).Cells(workspaceIndexColumnName).Value)
+			Else
+				currentResultIndex = -1
+			End If
+		End If
 	End Sub
 
 #Region " Event handlers "
@@ -469,6 +480,13 @@ Public Class RelativityApplicationStatusForm
 	Private Sub ArtifactStatusTable_DoubleClick(ByVal sender As Object, ByVal e As System.EventArgs) Handles ArtifactStatusTable.DoubleClick
 		If WorkspaceView Then
 			GoToDetailsView()
+		End If
+	End Sub
+
+	Private Sub ArtifactStatusTable_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles ArtifactStatusTable.Click
+		If WorkspaceView Then
+			UpdateCurrentResultIndex()
+			SetButtonVisibility()
 		End If
 	End Sub
 
@@ -647,6 +665,10 @@ Public Class RelativityApplicationStatusForm
 	End Sub
 
 	Private Sub RetryImportButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles RetryImportButton.Click
+		UpdateCurrentResultIndex()
+		If currentResultIndex < 0 Then Exit Sub 'If nothing is selected, do nothing.
+		If Not CBool(workspaceTable.Rows(currentResultIndex).Item(workspaceResolvedColumnName)) Then Exit Sub 'If the selected entry isn't ready for import do nothing.
+
 		workspaceTable.Rows(currentResultIndex).Item(workspaceAppsToUnlockColumnName) = GetAppsToOverride(DirectCast(workspaceTable.Rows(currentResultIndex).Item(workspaceAppsToUnlockColumnName), Generic.List(Of Int32)))
 		Dim resArts() As TemplateManagerBase.ResolveArtifact = GetResolveArtifacts()
 
@@ -668,9 +690,9 @@ Public Class RelativityApplicationStatusForm
 
 	Private Function GetAppsToOverride(ByVal apps As Generic.List(Of Int32)) As Generic.List(Of Int32)
 
-		For Each row As DataGridViewRow In ArtifactStatusTable.Rows
-			If row.Cells(ArtifactResolutionColumnName).Value IsNot Nothing AndAlso String.Equals(row.Cells(ArtifactResolutionColumnName).Value.ToString, DropdownUnlock) Then
-				Dim index As Int32 = CInt(row.Cells(ArtifactIndexColumnName).Value)
+		For Each row As DataRow In artifactTables(currentResultIndex).Rows
+			If row.Item(ArtifcactSelectedResolutionColumnName) IsNot Nothing AndAlso String.Equals(row.Item(ArtifcactSelectedResolutionColumnName).ToString, DropdownUnlock) Then
+				Dim index As Int32 = CInt(row.Item(ArtifactIndexColumnName))
 				Dim appIDs() As Int32 = CType(artifactTables(currentResultIndex).Rows(index).Item(ArtifactApplicationIdsColumnName), Int32())
 				Dim ids() As Int32 = (From i As Int32 In (appIDs).AsEnumerable() Select i Where Not apps.Contains(i)).ToArray()
 				apps.AddRange(ids)
@@ -685,28 +707,28 @@ Public Class RelativityApplicationStatusForm
 		Dim resArts As New Generic.List(Of TemplateManagerBase.ResolveArtifact)
 		Dim kvp As TemplateManagerBase.FieldKVP
 
-		For Each row As DataGridViewRow In ArtifactStatusTable.Rows
-			If row.Cells(ArtifactResolutionColumnName).Value IsNot Nothing Then
-				If (String.Equals(row.Cells(ArtifactResolutionColumnName).Value.ToString, DropdownRenameInWorkspace) OrElse String.Equals(row.Cells(ArtifactResolutionColumnName).Value.ToString, DropdownRenameFriendlyNameInWorkspace)) Then
+		For Each row As DataRow In artifactTables(currentResultIndex).Rows
+			If row.Item(ArtifcactSelectedResolutionColumnName) IsNot Nothing Then
+				If (String.Equals(row.Item(ArtifcactSelectedResolutionColumnName).ToString, DropdownRenameInWorkspace) OrElse String.Equals(row.Item(ArtifcactSelectedResolutionColumnName).ToString, DropdownRenameFriendlyNameInWorkspace)) Then
 					kvp = New TemplateManagerBase.FieldKVP()
-					If CType(row.Cells(ArtifactHiddenErrorColumnName).Value, TemplateManagerBase.StatusCode) = TemplateManagerBase.StatusCode.FriendlyNameConflict Then
+					If CType(row.Item(ArtifactHiddenErrorColumnName), TemplateManagerBase.StatusCode) = TemplateManagerBase.StatusCode.FriendlyNameConflict Then
 						kvp.Key = "Friendly Name"
 					Else
 						kvp.Key = "Name"
 					End If
-					kvp.Value = row.Cells(ArtifactConflictNameColumnName).Value
+					kvp.Value = row.Item(ArtifactConflictNameColumnName)
 					resArts.Add(New TemplateManagerBase.ResolveArtifact() With { _
-					 .ArtifactID = CInt(row.Cells(ArtifactConflictIDColumnName).Value), _
-					 .ArtifactTypeID = CType(row.Cells(ArtifactTypeIDColumnName).Value,  _
+					 .ArtifactID = CInt(row.Item(ArtifactConflictIDColumnName)), _
+					 .ArtifactTypeID = CType(row.Item(ArtifactTypeIDColumnName),  _
 					 TemplateManagerBase.ApplicationArtifactType), .Fields = New TemplateManagerBase.FieldKVP() {kvp}, _
 					 .Action = TemplateManagerBase.ResolveAction.Update})
-				ElseIf String.Equals(row.Cells(ArtifactResolutionColumnName).Value.ToString, DropdownRetryRename) Then
+				ElseIf String.Equals(row.Item(ArtifcactSelectedResolutionColumnName).ToString, DropdownRetryRename) Then
 					kvp = New TemplateManagerBase.FieldKVP()
 					kvp.Key = "Name"
-					kvp.Value = row.Cells(ArtifactConflictNameColumnName).Value
+					kvp.Value = row.Item(ArtifactConflictNameColumnName)
 					resArts.Add(New TemplateManagerBase.ResolveArtifact() With { _
-					 .ArtifactID = CInt(row.Cells(ArtifactIDColumnName).Value), _
-					 .ArtifactTypeID = CType(row.Cells(ArtifactTypeIDColumnName).Value, TemplateManagerBase.ApplicationArtifactType), _
+					 .ArtifactID = CInt(row.Item(ArtifactIDColumnName)), _
+					 .ArtifactTypeID = CType(row.Item(ArtifactTypeIDColumnName), TemplateManagerBase.ApplicationArtifactType), _
 					 .Fields = New TemplateManagerBase.FieldKVP() {kvp}, _
 					 .Action = TemplateManagerBase.ResolveAction.Update})
 				End If
