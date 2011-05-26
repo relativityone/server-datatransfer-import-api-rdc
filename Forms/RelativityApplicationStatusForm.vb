@@ -39,7 +39,7 @@ Public Class RelativityApplicationStatusForm
 	Private Const DropdownUnlock As String = "Unlock"
 	Private Const DropdownRenameInWorkspace As String = "Rename in Workspace"
 	Private Const DropdownRenameFriendlyNameInWorkspace As String = "Rename in Workspace"
-	Private Const DropdownRetryRename As String = "Choose another Name"
+	Private Const DropdownRetryRename As String = "Rename in Workspace"
 	Private Const ExpandText As String = "[+]"
 	Private Const CollapseText As String = "[-]"
 	Private Const HelpLink As String = "http://help.kcura.com/relativity/Relativity Applications/Using Relativity Applications for RDC - 7.0.pdf#Resolving-Errors"
@@ -370,6 +370,8 @@ Public Class RelativityApplicationStatusForm
 					Case TemplateManagerBase.StatusCode.SharedByLockedApp
 						comboBoxCell.Items.Add(DropdownUnlock)
 					Case TemplateManagerBase.StatusCode.RenameConflict
+						comboBoxCell.Items.Add(DropdownRetryRename)
+					Case TemplateManagerBase.StatusCode.RenameFriendlyNameConflict
 						comboBoxCell.Items.Add(DropdownRetryRename)
 					Case Else
 						comboBoxCell.ReadOnly = True
@@ -726,7 +728,7 @@ Public Class RelativityApplicationStatusForm
 
 		For Each row As DataRow In artifactTables(currentResultIndex).Rows
 			If row.Item(ArtifcactSelectedResolutionColumnName) IsNot Nothing AndAlso Not String.Equals(row.Item(ArtifactStatusColumnName).ToString(), TemplateManagerBase.StatusCode.Updated.ToString(), StringComparison.InvariantCulture) Then
-				If (String.Equals(row.Item(ArtifcactSelectedResolutionColumnName).ToString, DropdownRenameInWorkspace) OrElse String.Equals(row.Item(ArtifcactSelectedResolutionColumnName).ToString, DropdownRenameFriendlyNameInWorkspace)) Then
+				If (DirectCast(row.Item(ArtifactHiddenErrorColumnName), TemplateManagerBase.StatusCode) = TemplateManagerBase.StatusCode.NameConflict OrElse DirectCast(row.Item(ArtifactHiddenErrorColumnName), TemplateManagerBase.StatusCode) = TemplateManagerBase.StatusCode.FriendlyNameConflict) Then
 					kvp = New TemplateManagerBase.FieldKVP()
 					If CType(row.Item(ArtifactHiddenErrorColumnName), TemplateManagerBase.StatusCode) = TemplateManagerBase.StatusCode.FriendlyNameConflict Then
 						kvp.Key = "Friendly Name"
@@ -739,7 +741,7 @@ Public Class RelativityApplicationStatusForm
 					 .ArtifactTypeID = CType(row.Item(ArtifactTypeIDColumnName),  _
 					 TemplateManagerBase.ApplicationArtifactType), .Fields = New TemplateManagerBase.FieldKVP() {kvp}, _
 					 .Action = TemplateManagerBase.ResolveAction.Update})
-				ElseIf String.Equals(row.Item(ArtifcactSelectedResolutionColumnName).ToString, DropdownRetryRename) Then
+				ElseIf (DirectCast(row.Item(ArtifactHiddenErrorColumnName), TemplateManagerBase.StatusCode) = TemplateManagerBase.StatusCode.RenameConflict OrElse DirectCast(row.Item(ArtifactHiddenErrorColumnName), TemplateManagerBase.StatusCode) = TemplateManagerBase.StatusCode.RenameFriendlyNameConflict) Then
 					kvp = New TemplateManagerBase.FieldKVP()
 					kvp.Key = "Name"
 					kvp.Value = row.Item(ArtifactConflictNameColumnName)
@@ -777,7 +779,9 @@ Public Class RelativityApplicationStatusForm
 			Case TemplateManagerBase.StatusCode.UnknownError
 				Return "Unknown Error"
 			Case TemplateManagerBase.StatusCode.RenameConflict
-				Return "Rename Conflict"
+				Return "Name Conflict"
+			Case TemplateManagerBase.StatusCode.RenameFriendlyNameConflict
+				Return "Friendly Name Conflict"
 			Case Else
 				Return stat.ToString
 		End Select
