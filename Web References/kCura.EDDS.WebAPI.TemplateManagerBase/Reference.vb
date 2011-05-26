@@ -582,6 +582,9 @@ Namespace kCura.EDDS.WebAPI.TemplateManagerBase
         
         '''<remarks/>
         RenameConflict
+        
+        '''<remarks/>
+        RenameFriendlyNameConflict
     End Enum
     
     '''<remarks/>
