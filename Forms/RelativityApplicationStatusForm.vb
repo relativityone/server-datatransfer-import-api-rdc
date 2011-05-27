@@ -391,6 +391,7 @@ Public Class RelativityApplicationStatusForm
 		ArtifactStatusTable.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells
 		ArtifactStatusTable.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells
 		If Not currentSuccess() Then ArtifactStatusTable.Columns("Details").AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill
+		If Not currentSuccess() Then ArtifactStatusTable.Columns("Details").MinimumWidth = 100
 		ArtifactStatusTable.RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.EnableResizing
 		ArtifactStatusTable.AllowUserToResizeColumns = True
 		ArtifactStatusTable.AllowUserToOrderColumns = True
