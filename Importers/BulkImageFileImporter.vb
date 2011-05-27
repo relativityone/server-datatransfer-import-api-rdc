@@ -9,7 +9,7 @@ Namespace kCura.WinEDDS
 		Private _docManager As kCura.WinEDDS.Service.DocumentManager
 		Private _fieldQuery As kCura.WinEDDS.Service.FieldQuery
 		Private _folderManager As kCura.WinEDDS.Service.FolderManager
-		Private _auditManager As kCura.WinEDDS.Service.AuditManager
+		'Private _auditManager As kCura.WinEDDS.Service.AuditManager
 		Private WithEvents _fileUploader As kCura.WinEDDS.FileUploader
 		Private WithEvents _bcpuploader As kCura.WinEDDS.FileUploader
 		Private _fileManager As kCura.WinEDDS.Service.FileManager
@@ -117,7 +117,7 @@ Namespace kCura.WinEDDS
 			_docManager = New kCura.WinEDDS.Service.DocumentManager(args.Credential, args.CookieContainer)
 			_fieldQuery = New kCura.WinEDDS.Service.FieldQuery(args.Credential, args.CookieContainer)
 			_folderManager = New kCura.WinEDDS.Service.FolderManager(args.Credential, args.CookieContainer)
-			_auditManager = New kCura.WinEDDS.Service.AuditManager(args.Credential, args.CookieContainer)
+			'_auditManager = New kCura.WinEDDS.Service.AuditManager(args.Credential, args.CookieContainer)
 			_fileManager = New kCura.WinEDDS.Service.FileManager(args.Credential, args.CookieContainer)
 			_productionManager = New kCura.WinEDDS.Service.ProductionManager(args.Credential, args.CookieContainer)
 			_bulkImportManager = New kCura.WinEDDS.Service.BulkImportManager(args.Credential, args.CookieContainer)
