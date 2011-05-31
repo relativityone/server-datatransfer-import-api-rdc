@@ -39,7 +39,7 @@ Public Class RelativityApplicationStatusForm
 	Private Const DropdownUnlock As String = "Unlock"
 	Private Const DropdownRenameInWorkspace As String = "Rename in Workspace"
 	Private Const DropdownRenameFriendlyNameInWorkspace As String = "Rename in Workspace"
-	Private Const DropdownRetryRename As String = "Choose another Name"
+	Private Const DropdownRetryRename As String = "Rename in Workspace"
 	Private Const ExpandText As String = "[+]"
 	Private Const CollapseText As String = "[-]"
 	Private Const HelpLink As String = "http://help.kcura.com/relativity/Relativity Applications/Using Relativity Applications for RDC - 7.0.pdf#Resolving-Errors"
@@ -49,7 +49,6 @@ Public Class RelativityApplicationStatusForm
 	Private Delegate Sub SelectCell(ByVal cell As DataGridViewCell)
 	Private _selectCell As SelectCell
 
-	'Private artifactTable As New DataTable()
 	Private workspaceTable As DataTable = Nothing
 	Private artifactTables As Generic.List(Of DataTable)
 	Private globalSuccess As Boolean = True
@@ -98,18 +97,18 @@ Public Class RelativityApplicationStatusForm
 	End Sub
 
 	Private Sub ProcessEvent(ByVal evt As kCura.Windows.Process.Generic.ProcessEvent(Of TemplateManagerBase.ApplicationInstallationResult))
-
 		If currentResultIndex >= 0 Then
 			workspaceTable.Rows(currentResultIndex).ItemArray = _
 			 CreateWorkspaceRow(evt.Result, DirectCast(workspaceTable.Rows(currentResultIndex).Item(workspaceAppsToUnlockColumnName), Generic.List(Of Int32)), currentResultIndex)
+
 			If evt.Result.Success Then
 				artifactTables(currentResultIndex) = CreateSucessTable(evt.Result)
 			Else
 				artifactTables(currentResultIndex) = CreateFailedTable(evt.Result)
 			End If
+
 			UpdateArtifactStatusView()
 		Else
-
 			globalSuccess = globalSuccess And evt.Result.Success
 
 			If artifactTables Is Nothing Then
@@ -139,6 +138,7 @@ Public Class RelativityApplicationStatusForm
 		Else
 			DetailsButton.Enabled = True
 			ExportButton.Enabled = True
+
 			If globalSuccess Then
 				InformationText.Text = String.Format("Installation complete. Select a workspace, then click the ""View Details"" button for more information.")
 			Else
@@ -334,14 +334,14 @@ Public Class RelativityApplicationStatusForm
 	End Sub
 
 	Private Sub UpdateArtifactStatusTableProperties()
-		If Not currentSuccess() Then
+		If Not CurrentSuccess() Then
 			ArtifactStatusTable.Columns("Locked Applications").Visible = False
 			ArtifactStatusTable.Columns(ArtifactHiddenErrorColumnName).Visible = False
 			ArtifactStatusTable.Columns(ArtifactIndexColumnName).Visible = False
 			ArtifactStatusTable.Columns(ArtifactTypeIDColumnName).Visible = False
 			ArtifactStatusTable.Columns(ArtifcactSelectedResolutionColumnName).Visible = False
 
-			If currentSuccess() Then
+			If CurrentSuccess() Then
 				If ArtifactStatusTable.Columns.Contains(ArtifactResolutionColumnName) Then
 					ArtifactStatusTable.Columns.Remove(ArtifactResolutionColumnName)
 				End If
@@ -371,6 +371,8 @@ Public Class RelativityApplicationStatusForm
 						comboBoxCell.Items.Add(DropdownUnlock)
 					Case TemplateManagerBase.StatusCode.RenameConflict
 						comboBoxCell.Items.Add(DropdownRetryRename)
+					Case TemplateManagerBase.StatusCode.RenameFriendlyNameConflict
+						comboBoxCell.Items.Add(DropdownRetryRename)
 					Case Else
 						comboBoxCell.ReadOnly = True
 						comboBoxCell.DisplayStyle = DataGridViewComboBoxDisplayStyle.Nothing
@@ -388,7 +390,8 @@ Public Class RelativityApplicationStatusForm
 
 		ArtifactStatusTable.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells
 		ArtifactStatusTable.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells
-		If Not currentSuccess() Then ArtifactStatusTable.Columns("Details").AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill
+		If Not CurrentSuccess() Then ArtifactStatusTable.Columns("Details").AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill
+		If Not currentSuccess() Then ArtifactStatusTable.Columns("Details").MinimumWidth = 100
 		ArtifactStatusTable.RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.EnableResizing
 		ArtifactStatusTable.AllowUserToResizeColumns = True
 		ArtifactStatusTable.AllowUserToOrderColumns = True
@@ -409,7 +412,7 @@ Public Class RelativityApplicationStatusForm
 				End If
 			Next
 		Else
-			If currentSuccess() Then
+			If CurrentSuccess() Then
 				For Each row As DataGridViewRow In ArtifactStatusTable.Rows
 					row.Cells(ArtifactStatusColumnName).Style.BackColor = Color.PaleGreen
 				Next
@@ -684,6 +687,7 @@ Public Class RelativityApplicationStatusForm
 	Private Sub RetryImportButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles RetryImportButton.Click
 		UpdateCurrentResultIndex()
 		If currentResultIndex < 0 Then Exit Sub 'If nothing is selected, do nothing.
+
 		If Not CBool(workspaceTable.Rows(currentResultIndex).Item(workspaceResolvedColumnName)) Then Exit Sub 'If the selected entry isn't ready for import do nothing.
 
 		workspaceTable.Rows(currentResultIndex).Item(workspaceAppsToUnlockColumnName) = GetAppsToOverride(DirectCast(workspaceTable.Rows(currentResultIndex).Item(workspaceAppsToUnlockColumnName), Generic.List(Of Int32)))
@@ -696,6 +700,8 @@ Public Class RelativityApplicationStatusForm
 		ArtifactStatusTable.DataSource = Nothing
 		ArtifactStatusTable.Columns.Clear()
 
+		RetryImportButton.Enabled = False
+
 		_processPool.StartProcess(applicationDeploymentProcess)
 	End Sub
 
@@ -706,7 +712,6 @@ Public Class RelativityApplicationStatusForm
 #End Region
 
 	Private Function GetAppsToOverride(ByVal apps As Generic.List(Of Int32)) As Generic.List(Of Int32)
-
 		For Each row As DataRow In artifactTables(currentResultIndex).Rows
 			If row.Item(ArtifcactSelectedResolutionColumnName) IsNot Nothing AndAlso String.Equals(row.Item(ArtifcactSelectedResolutionColumnName).ToString, DropdownUnlock) Then
 				Dim index As Int32 = CInt(row.Item(ArtifactIndexColumnName))
@@ -726,7 +731,7 @@ Public Class RelativityApplicationStatusForm
 
 		For Each row As DataRow In artifactTables(currentResultIndex).Rows
 			If row.Item(ArtifcactSelectedResolutionColumnName) IsNot Nothing AndAlso Not String.Equals(row.Item(ArtifactStatusColumnName).ToString(), TemplateManagerBase.StatusCode.Updated.ToString(), StringComparison.InvariantCulture) Then
-				If (String.Equals(row.Item(ArtifcactSelectedResolutionColumnName).ToString, DropdownRenameInWorkspace) OrElse String.Equals(row.Item(ArtifcactSelectedResolutionColumnName).ToString, DropdownRenameFriendlyNameInWorkspace)) Then
+				If (DirectCast(row.Item(ArtifactHiddenErrorColumnName), TemplateManagerBase.StatusCode) = TemplateManagerBase.StatusCode.NameConflict OrElse DirectCast(row.Item(ArtifactHiddenErrorColumnName), TemplateManagerBase.StatusCode) = TemplateManagerBase.StatusCode.FriendlyNameConflict) Then
 					kvp = New TemplateManagerBase.FieldKVP()
 					If CType(row.Item(ArtifactHiddenErrorColumnName), TemplateManagerBase.StatusCode) = TemplateManagerBase.StatusCode.FriendlyNameConflict Then
 						kvp.Key = "Friendly Name"
@@ -739,7 +744,7 @@ Public Class RelativityApplicationStatusForm
 					 .ArtifactTypeID = CType(row.Item(ArtifactTypeIDColumnName),  _
 					 TemplateManagerBase.ApplicationArtifactType), .Fields = New TemplateManagerBase.FieldKVP() {kvp}, _
 					 .Action = TemplateManagerBase.ResolveAction.Update})
-				ElseIf String.Equals(row.Item(ArtifcactSelectedResolutionColumnName).ToString, DropdownRetryRename) Then
+				ElseIf (DirectCast(row.Item(ArtifactHiddenErrorColumnName), TemplateManagerBase.StatusCode) = TemplateManagerBase.StatusCode.RenameConflict OrElse DirectCast(row.Item(ArtifactHiddenErrorColumnName), TemplateManagerBase.StatusCode) = TemplateManagerBase.StatusCode.RenameFriendlyNameConflict) Then
 					kvp = New TemplateManagerBase.FieldKVP()
 					kvp.Key = "Name"
 					kvp.Value = row.Item(ArtifactConflictNameColumnName)
@@ -777,7 +782,9 @@ Public Class RelativityApplicationStatusForm
 			Case TemplateManagerBase.StatusCode.UnknownError
 				Return "Unknown Error"
 			Case TemplateManagerBase.StatusCode.RenameConflict
-				Return "Rename Conflict"
+				Return "Name Conflict"
+			Case TemplateManagerBase.StatusCode.RenameFriendlyNameConflict
+				Return "Friendly Name Conflict"
 			Case Else
 				Return stat.ToString
 		End Select
@@ -791,7 +798,7 @@ Public Class RelativityApplicationStatusForm
 		End If
 	End Function
 
-	Private Function currentSuccess() As Boolean
+	Private Function CurrentSuccess() As Boolean
 		Return workspaceTable.Rows(currentResultIndex).Item(workspaceStatusColumnName).ToString.Equals(WorkspaceSuccessString, StringComparison.InvariantCulture)
 	End Function
 
