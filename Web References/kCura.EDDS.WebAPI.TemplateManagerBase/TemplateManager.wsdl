@@ -91,6 +91,7 @@
           <s:enumeration value="SharedByLockedApp" />
           <s:enumeration value="MultipleFileField" />
           <s:enumeration value="RenameConflict" />
+          <s:enumeration value="RenameFriendlyNameConflict" />
         </s:restriction>
       </s:simpleType>
       <s:complexType name="ArrayOfApplication">
