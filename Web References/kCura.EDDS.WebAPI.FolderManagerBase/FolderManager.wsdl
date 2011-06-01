@@ -466,10 +466,10 @@
   </wsdl:binding>
   <wsdl:service name="FolderManager">
     <wsdl:port name="FolderManagerSoap" binding="tns:FolderManagerSoap">
-      <soap:address location="http://localhost/RelativityWebApi/FolderManager.asmx" />
+      <soap:address location="http://localhost/EDDSWebAPI/FolderManager.asmx" />
     </wsdl:port>
     <wsdl:port name="FolderManagerSoap12" binding="tns:FolderManagerSoap12">
-      <soap12:address location="http://localhost/RelativityWebApi/FolderManager.asmx" />
+      <soap12:address location="http://localhost/EDDSWebAPI/FolderManager.asmx" />
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>

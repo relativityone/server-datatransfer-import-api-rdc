@@ -47,7 +47,7 @@ Namespace kCura.EDDS.WebAPI.FieldQueryBase
         '''<remarks/>
         Public Sub New()
             MyBase.New
-            Me.Url = "http://localhost/RelativityWebApi/FieldQuery.asmx"
+            Me.Url = "http://localhost/EDDSWebAPI/FieldQuery.asmx"
             If (Me.IsLocalFileSystemWebService(Me.Url) = true) Then
                 Me.UseDefaultCredentials = true
                 Me.useDefaultCredentialsSetExplicitly = false

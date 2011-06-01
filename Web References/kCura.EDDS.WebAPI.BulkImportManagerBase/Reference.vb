@@ -55,7 +55,7 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
         '''<remarks/>
         Public Sub New()
             MyBase.New
-            Me.Url = "http://localhost/RelativityWebApi/BulkImportManager.asmx"
+            Me.Url = "http://localhost/EDDSWebAPI/BulkImportManager.asmx"
             If (Me.IsLocalFileSystemWebService(Me.Url) = true) Then
                 Me.UseDefaultCredentials = true
                 Me.useDefaultCredentialsSetExplicitly = false

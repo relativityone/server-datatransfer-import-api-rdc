@@ -36,7 +36,7 @@
     <OldToolsVersion>3.5</OldToolsVersion>
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -209,6 +209,10 @@
     <Reference Include="System.Data">
       <Name>System.Data</Name>
     </Reference>
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing">
+      <Name>System.Drawing</Name>
+    </Reference>
     <Reference Include="System.EnterpriseServices" />
     <Reference Include="System.Runtime.Serialization.Formatters.Soap">
       <Name>System.Runtime.Serialization.Formatters.Soap</Name>
@@ -218,6 +222,9 @@
     </Reference>
     <Reference Include="System.Web.Services">
       <Name>system.web.services</Name>
+    </Reference>
+    <Reference Include="System.Windows.Forms">
+      <Name>System.Windows.Forms</Name>
     </Reference>
     <Reference Include="System.Xml">
       <Name>System.XML</Name>
@@ -252,6 +259,7 @@
     <Import Include="System" />
     <Import Include="System.Collections" />
     <Import Include="System.Data" />
+    <Import Include="System.Diagnostics" />
     <Import Include="System.Linq" />
   </ItemGroup>
   <ItemGroup>
@@ -834,75 +842,30 @@
     </None>
     <None Include="Web References\kCura.EDDS.WebAPI.UserManagerBase\UserManager.disco" />
     <None Include="Web References\kCura.EDDS.WebAPI.UserManagerBase\UserManager.wsdl" />
-    <WebReferenceUrl Include="http://localhost/RelativityWebApi/AuditManager.asmx">
+    <WebReferenceUrl Include="http://localhost/EDDSWebAPI/AuditManager.asmx">
       <RelPath>Web References\kCura.EDDS.WebAPI.AuditManagerBase\</RelPath>
       <UrlBehavior>Static</UrlBehavior>
-      <UpdateFromURL>http://localhost/RelativityWebApi/AuditManager.asmx</UpdateFromURL>
-      <ServiceLocationURL>
-      </ServiceLocationURL>
-      <CachedDynamicPropName>
-      </CachedDynamicPropName>
-      <CachedAppSettingsObjectName>
-      </CachedAppSettingsObjectName>
-      <CachedSettingsPropName>
-      </CachedSettingsPropName>
     </WebReferenceUrl>
-    <WebReferenceUrl Include="http://localhost/RelativityWebApi/BulkImportManager.asmx">
+    <WebReferenceUrl Include="http://localhost/EDDSWebAPI/BulkImportManager.asmx">
       <RelPath>Web References\kCura.EDDS.WebAPI.BulkImportManagerBase\</RelPath>
       <UrlBehavior>Static</UrlBehavior>
-      <UpdateFromURL>http://localhost/RelativityWebApi/BulkImportManager.asmx</UpdateFromURL>
-      <ServiceLocationURL>
-      </ServiceLocationURL>
-      <CachedDynamicPropName>
-      </CachedDynamicPropName>
-      <CachedAppSettingsObjectName>
-      </CachedAppSettingsObjectName>
-      <CachedSettingsPropName>
-      </CachedSettingsPropName>
     </WebReferenceUrl>
-    <WebReferenceUrl Include="http://localhost/RelativityWebApi/CaseManager.asmx">
+    <WebReferenceUrl Include="http://localhost/EDDSWebAPI/CaseManager.asmx">
       <RelPath>Web References\kCura.EDDS.WebAPI.CaseManagerBase\</RelPath>
       <UrlBehavior>Static</UrlBehavior>
-      <UpdateFromURL>http://localhost/RelativityWebApi/CaseManager.asmx</UpdateFromURL>
-      <ServiceLocationURL>
-      </ServiceLocationURL>
-      <CachedDynamicPropName>
-      </CachedDynamicPropName>
-      <CachedAppSettingsObjectName>
-      </CachedAppSettingsObjectName>
-      <CachedSettingsPropName>
-      </CachedSettingsPropName>
     </WebReferenceUrl>
-    <WebReferenceUrl Include="http://localhost/RelativityWebApi/CodeManager.asmx">
+    <WebReferenceUrl Include="http://localhost/EDDSWebAPI/CodeManager.asmx">
       <RelPath>Web References\kCura.EDDS.WebAPI.CodeManagerBase\</RelPath>
       <UrlBehavior>Static</UrlBehavior>
-      <UpdateFromURL>http://localhost/RelativityWebApi/CodeManager.asmx</UpdateFromURL>
-      <ServiceLocationURL>
-      </ServiceLocationURL>
-      <CachedDynamicPropName>
-      </CachedDynamicPropName>
-      <CachedAppSettingsObjectName>
-      </CachedAppSettingsObjectName>
-      <CachedSettingsPropName>
-      </CachedSettingsPropName>
     </WebReferenceUrl>
-    <WebReferenceUrl Include="http://localhost/RelativityWebApi/DocumentManager.asmx">
+    <WebReferenceUrl Include="http://localhost/EDDSWebAPI/DocumentManager.asmx">
       <RelPath>Web References\kCura.EDDS.WebAPI.DocumentManagerBase\</RelPath>
       <UrlBehavior>Static</UrlBehavior>
-      <UpdateFromURL>http://localhost/RelativityWebApi/DocumentManager.asmx</UpdateFromURL>
-      <ServiceLocationURL>
-      </ServiceLocationURL>
-      <CachedDynamicPropName>
-      </CachedDynamicPropName>
-      <CachedAppSettingsObjectName>
-      </CachedAppSettingsObjectName>
-      <CachedSettingsPropName>
-      </CachedSettingsPropName>
     </WebReferenceUrl>
-    <WebReferenceUrl Include="http://localhost/RelativityWebApi/ExportManager.asmx">
+    <WebReferenceUrl Include="http://localhost/EDDSWebAPI/ExportManager.asmx">
       <UrlBehavior>Dynamic</UrlBehavior>
       <RelPath>Web References\kCura.EDDS.WebAPI.ExportManagerBase\</RelPath>
-      <UpdateFromURL>http://localhost/RelativityWebApi/ExportManager.asmx</UpdateFromURL>
+      <UpdateFromURL>http://localhost/EDDSWebAPI/ExportManager.asmx</UpdateFromURL>
       <ServiceLocationURL>
       </ServiceLocationURL>
       <CachedDynamicPropName>
@@ -910,161 +873,53 @@
       <CachedAppSettingsObjectName>MySettings</CachedAppSettingsObjectName>
       <CachedSettingsPropName>kCura_WinEDDS_kCura_EDDS_WebAPI_ExportManagerBase_ExportManager</CachedSettingsPropName>
     </WebReferenceUrl>
-    <WebReferenceUrl Include="http://localhost/RelativityWebApi/FieldManager.asmx">
+    <WebReferenceUrl Include="http://localhost/EDDSWebAPI/FieldManager.asmx">
       <RelPath>Web References\kCura.EDDS.WebAPI.FieldManagerBase\</RelPath>
       <UrlBehavior>Static</UrlBehavior>
-      <UpdateFromURL>http://localhost/RelativityWebApi/FieldManager.asmx</UpdateFromURL>
-      <ServiceLocationURL>
-      </ServiceLocationURL>
-      <CachedDynamicPropName>
-      </CachedDynamicPropName>
-      <CachedAppSettingsObjectName>
-      </CachedAppSettingsObjectName>
-      <CachedSettingsPropName>
-      </CachedSettingsPropName>
     </WebReferenceUrl>
-    <WebReferenceUrl Include="http://localhost/RelativityWebApi/FieldQuery.asmx">
+    <WebReferenceUrl Include="http://localhost/EDDSWebAPI/FieldQuery.asmx">
       <RelPath>Web References\kCura.EDDS.WebAPI.FieldQueryBase\</RelPath>
       <UrlBehavior>Static</UrlBehavior>
-      <UpdateFromURL>http://localhost/RelativityWebApi/FieldQuery.asmx</UpdateFromURL>
-      <ServiceLocationURL>
-      </ServiceLocationURL>
-      <CachedDynamicPropName>
-      </CachedDynamicPropName>
-      <CachedAppSettingsObjectName>
-      </CachedAppSettingsObjectName>
-      <CachedSettingsPropName>
-      </CachedSettingsPropName>
     </WebReferenceUrl>
-    <WebReferenceUrl Include="http://localhost/RelativityWebApi/FileIO.asmx">
+    <WebReferenceUrl Include="http://localhost/EDDSWebAPI/FileIO.asmx">
       <RelPath>Web References\kCura.EDDS.WebAPI.FileIOBase\</RelPath>
       <UrlBehavior>Static</UrlBehavior>
-      <UpdateFromURL>http://localhost/RelativityWebApi/FileIO.asmx</UpdateFromURL>
-      <ServiceLocationURL>
-      </ServiceLocationURL>
-      <CachedDynamicPropName>
-      </CachedDynamicPropName>
-      <CachedAppSettingsObjectName>
-      </CachedAppSettingsObjectName>
-      <CachedSettingsPropName>
-      </CachedSettingsPropName>
     </WebReferenceUrl>
-    <WebReferenceUrl Include="http://localhost/RelativityWebApi/FileManager.asmx">
+    <WebReferenceUrl Include="http://localhost/EDDSWebAPI/FileManager.asmx">
       <RelPath>Web References\kCura.EDDS.WebAPI.FileManagerBase\</RelPath>
       <UrlBehavior>Static</UrlBehavior>
-      <UpdateFromURL>http://localhost/RelativityWebApi/FileManager.asmx</UpdateFromURL>
-      <ServiceLocationURL>
-      </ServiceLocationURL>
-      <CachedDynamicPropName>
-      </CachedDynamicPropName>
-      <CachedAppSettingsObjectName>
-      </CachedAppSettingsObjectName>
-      <CachedSettingsPropName>
-      </CachedSettingsPropName>
     </WebReferenceUrl>
-    <WebReferenceUrl Include="http://localhost/RelativityWebApi/FolderManager.asmx">
+    <WebReferenceUrl Include="http://localhost/EDDSWebAPI/FolderManager.asmx">
       <RelPath>Web References\kCura.EDDS.WebAPI.FolderManagerBase\</RelPath>
       <UrlBehavior>Static</UrlBehavior>
-      <UpdateFromURL>http://localhost/RelativityWebApi/FolderManager.asmx</UpdateFromURL>
-      <ServiceLocationURL>
-      </ServiceLocationURL>
-      <CachedDynamicPropName>
-      </CachedDynamicPropName>
-      <CachedAppSettingsObjectName>
-      </CachedAppSettingsObjectName>
-      <CachedSettingsPropName>
-      </CachedSettingsPropName>
     </WebReferenceUrl>
-    <WebReferenceUrl Include="http://localhost/RelativityWebApi/ObjectManager.asmx">
+    <WebReferenceUrl Include="http://localhost/EDDSWebAPI/ObjectManager.asmx">
       <RelPath>Web References\kCura.EDDS.WebAPI.ObjectManagerBase\</RelPath>
       <UrlBehavior>Static</UrlBehavior>
-      <UpdateFromURL>http://localhost/RelativityWebApi/ObjectManager.asmx</UpdateFromURL>
-      <ServiceLocationURL>
-      </ServiceLocationURL>
-      <CachedDynamicPropName>
-      </CachedDynamicPropName>
-      <CachedAppSettingsObjectName>
-      </CachedAppSettingsObjectName>
-      <CachedSettingsPropName>
-      </CachedSettingsPropName>
     </WebReferenceUrl>
-    <WebReferenceUrl Include="http://localhost/RelativityWebApi/ObjectTypeManager.asmx">
+    <WebReferenceUrl Include="http://localhost/EDDSWebAPI/ObjectTypeManager.asmx">
       <RelPath>Web References\kCura.EDDS.WebAPI.ObjectTypeManagerBase\</RelPath>
       <UrlBehavior>Static</UrlBehavior>
-      <UpdateFromURL>http://localhost/RelativityWebApi/ObjectTypeManager.asmx</UpdateFromURL>
-      <ServiceLocationURL>
-      </ServiceLocationURL>
-      <CachedDynamicPropName>
-      </CachedDynamicPropName>
-      <CachedAppSettingsObjectName>
-      </CachedAppSettingsObjectName>
-      <CachedSettingsPropName>
-      </CachedSettingsPropName>
     </WebReferenceUrl>
-    <WebReferenceUrl Include="http://localhost/RelativityWebApi/ProductionManager.asmx">
+    <WebReferenceUrl Include="http://localhost/EDDSWebAPI/ProductionManager.asmx">
       <RelPath>Web References\kCura.EDDS.WebAPI.ProductionManagerBase\</RelPath>
       <UrlBehavior>Static</UrlBehavior>
-      <UpdateFromURL>http://localhost/RelativityWebApi/ProductionManager.asmx</UpdateFromURL>
-      <ServiceLocationURL>
-      </ServiceLocationURL>
-      <CachedDynamicPropName>
-      </CachedDynamicPropName>
-      <CachedAppSettingsObjectName>
-      </CachedAppSettingsObjectName>
-      <CachedSettingsPropName>
-      </CachedSettingsPropName>
     </WebReferenceUrl>
-    <WebReferenceUrl Include="http://localhost/RelativityWebApi/RelativityManager.asmx">
+    <WebReferenceUrl Include="http://localhost/EDDSWebAPI/RelativityManager.asmx">
       <RelPath>Web References\kCura.EDDS.WebAPI.RelativityManagerBase\</RelPath>
       <UrlBehavior>Static</UrlBehavior>
-      <UpdateFromURL>http://localhost/RelativityWebApi/RelativityManager.asmx</UpdateFromURL>
-      <ServiceLocationURL>
-      </ServiceLocationURL>
-      <CachedDynamicPropName>
-      </CachedDynamicPropName>
-      <CachedAppSettingsObjectName>
-      </CachedAppSettingsObjectName>
-      <CachedSettingsPropName>
-      </CachedSettingsPropName>
     </WebReferenceUrl>
-    <WebReferenceUrl Include="http://localhost/RelativityWebApi/SearchManager.asmx">
+    <WebReferenceUrl Include="http://localhost/EDDSWebAPI/SearchManager.asmx">
       <RelPath>Web References\kCura.EDDS.WebAPI.SearchManagerBase\</RelPath>
       <UrlBehavior>Static</UrlBehavior>
-      <UpdateFromURL>http://localhost/RelativityWebApi/SearchManager.asmx</UpdateFromURL>
-      <ServiceLocationURL>
-      </ServiceLocationURL>
-      <CachedDynamicPropName>
-      </CachedDynamicPropName>
-      <CachedAppSettingsObjectName>
-      </CachedAppSettingsObjectName>
-      <CachedSettingsPropName>
-      </CachedSettingsPropName>
     </WebReferenceUrl>
-    <WebReferenceUrl Include="http://localhost/RelativityWebApi/TemplateManager.asmx">
+    <WebReferenceUrl Include="http://localhost/EDDSWebAPI/TemplateManager.asmx">
       <RelPath>Web References\kCura.EDDS.WebAPI.TemplateManagerBase\</RelPath>
       <UrlBehavior>Static</UrlBehavior>
-      <UpdateFromURL>http://localhost/RelativityWebApi/TemplateManager.asmx</UpdateFromURL>
-      <ServiceLocationURL>
-      </ServiceLocationURL>
-      <CachedDynamicPropName>
-      </CachedDynamicPropName>
-      <CachedAppSettingsObjectName>
-      </CachedAppSettingsObjectName>
-      <CachedSettingsPropName>
-      </CachedSettingsPropName>
     </WebReferenceUrl>
-    <WebReferenceUrl Include="http://localhost/RelativityWebApi/UserManager.asmx">
+    <WebReferenceUrl Include="http://localhost/EDDSWebAPI/UserManager.asmx">
       <RelPath>Web References\kCura.EDDS.WebAPI.UserManagerBase\</RelPath>
       <UrlBehavior>Static</UrlBehavior>
-      <UpdateFromURL>http://localhost/RelativityWebApi/UserManager.asmx</UpdateFromURL>
-      <ServiceLocationURL>
-      </ServiceLocationURL>
-      <CachedDynamicPropName>
-      </CachedDynamicPropName>
-      <CachedAppSettingsObjectName>
-      </CachedAppSettingsObjectName>
-      <CachedSettingsPropName>
-      </CachedSettingsPropName>
     </WebReferenceUrl>
     <WebReferences Include="Web References\" />
   </ItemGroup>

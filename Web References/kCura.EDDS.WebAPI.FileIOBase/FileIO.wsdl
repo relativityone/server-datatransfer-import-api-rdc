@@ -449,10 +449,10 @@
   </wsdl:binding>
   <wsdl:service name="FileIO">
     <wsdl:port name="FileIOSoap" binding="tns:FileIOSoap">
-      <soap:address location="http://localhost/RelativityWebApi/FileIO.asmx" />
+      <soap:address location="http://localhost/EDDSWebAPI/FileIO.asmx" />
     </wsdl:port>
     <wsdl:port name="FileIOSoap12" binding="tns:FileIOSoap12">
-      <soap12:address location="http://localhost/RelativityWebApi/FileIO.asmx" />
+      <soap12:address location="http://localhost/EDDSWebAPI/FileIO.asmx" />
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>

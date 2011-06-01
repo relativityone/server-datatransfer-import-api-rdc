@@ -666,10 +666,10 @@
   </wsdl:binding>
   <wsdl:service name="FileManager">
     <wsdl:port name="FileManagerSoap" binding="tns:FileManagerSoap">
-      <soap:address location="http://localhost/RelativityWebApi/FileManager.asmx" />
+      <soap:address location="http://localhost/EDDSWebAPI/FileManager.asmx" />
     </wsdl:port>
     <wsdl:port name="FileManagerSoap12" binding="tns:FileManagerSoap12">
-      <soap12:address location="http://localhost/RelativityWebApi/FileManager.asmx" />
+      <soap12:address location="http://localhost/EDDSWebAPI/FileManager.asmx" />
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>

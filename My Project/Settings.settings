@@ -3,7 +3,7 @@
   <Profiles />
   <Settings>
     <Setting Name="kCura_WinEDDS_kCura_EDDS_WebAPI_ExportManagerBase_ExportManager" Type="(Web Service URL)" Scope="Application">
-      <Value Profile="(Default)">http://localhost/RelativityWebApi/ExportManager.asmx</Value>
+      <Value Profile="(Default)">http://localhost/EDDSWebAPI/ExportManager.asmx</Value>
     </Setting>
   </Settings>
 </SettingsFile>

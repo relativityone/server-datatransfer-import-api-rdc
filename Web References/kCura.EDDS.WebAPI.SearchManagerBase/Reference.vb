@@ -79,7 +79,7 @@ Namespace kCura.EDDS.WebAPI.SearchManagerBase
         '''<remarks/>
         Public Sub New()
             MyBase.New
-            Me.Url = "http://localhost/RelativityWebApi/SearchManager.asmx"
+            Me.Url = "http://localhost/EDDSWebAPI/SearchManager.asmx"
             If (Me.IsLocalFileSystemWebService(Me.Url) = true) Then
                 Me.UseDefaultCredentials = true
                 Me.useDefaultCredentialsSetExplicitly = false

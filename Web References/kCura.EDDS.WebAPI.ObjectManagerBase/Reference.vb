@@ -41,7 +41,7 @@ Namespace kCura.EDDS.WebAPI.ObjectManagerBase
         '''<remarks/>
         Public Sub New()
             MyBase.New
-            Me.Url = "http://localhost/RelativityWebApi/ObjectManager.asmx"
+            Me.Url = "http://localhost/EDDSWebAPI/ObjectManager.asmx"
             If (Me.IsLocalFileSystemWebService(Me.Url) = true) Then
                 Me.UseDefaultCredentials = true
                 Me.useDefaultCredentialsSetExplicitly = false

@@ -45,7 +45,7 @@ Namespace kCura.EDDS.WebAPI.AuditManagerBase
         '''<remarks/>
         Public Sub New()
             MyBase.New
-            Me.Url = "http://localhost/RelativityWebApi/AuditManager.asmx"
+            Me.Url = "http://localhost/EDDSWebAPI/AuditManager.asmx"
             If (Me.IsLocalFileSystemWebService(Me.Url) = true) Then
                 Me.UseDefaultCredentials = true
                 Me.useDefaultCredentialsSetExplicitly = false

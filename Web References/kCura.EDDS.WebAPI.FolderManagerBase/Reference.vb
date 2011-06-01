@@ -56,7 +56,7 @@ Namespace kCura.EDDS.WebAPI.FolderManagerBase
         '''<remarks/>
         Public Sub New()
             MyBase.New
-            Me.Url = "http://localhost/RelativityWebApi/FolderManager.asmx"
+            Me.Url = "http://localhost/EDDSWebAPI/FolderManager.asmx"
             If (Me.IsLocalFileSystemWebService(Me.Url) = true) Then
                 Me.UseDefaultCredentials = true
                 Me.useDefaultCredentialsSetExplicitly = false

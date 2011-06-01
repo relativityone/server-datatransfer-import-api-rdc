@@ -354,10 +354,10 @@
   </wsdl:binding>
   <wsdl:service name="AuditManager">
     <wsdl:port name="AuditManagerSoap" binding="tns:AuditManagerSoap">
-      <soap:address location="http://localhost/RelativityWebApi/AuditManager.asmx" />
+      <soap:address location="http://localhost/EDDSWebAPI/AuditManager.asmx" />
     </wsdl:port>
     <wsdl:port name="AuditManagerSoap12" binding="tns:AuditManagerSoap12">
-      <soap12:address location="http://localhost/RelativityWebApi/AuditManager.asmx" />
+      <soap12:address location="http://localhost/EDDSWebAPI/AuditManager.asmx" />
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>

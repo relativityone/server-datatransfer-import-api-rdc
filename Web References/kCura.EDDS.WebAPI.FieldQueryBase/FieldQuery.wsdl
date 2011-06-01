@@ -248,10 +248,10 @@
   </wsdl:binding>
   <wsdl:service name="FieldQuery">
     <wsdl:port name="FieldQuerySoap" binding="tns:FieldQuerySoap">
-      <soap:address location="http://localhost/RelativityWebApi/FieldQuery.asmx" />
+      <soap:address location="http://localhost/EDDSWebAPI/FieldQuery.asmx" />
     </wsdl:port>
     <wsdl:port name="FieldQuerySoap12" binding="tns:FieldQuerySoap12">
-      <soap12:address location="http://localhost/RelativityWebApi/FieldQuery.asmx" />
+      <soap12:address location="http://localhost/EDDSWebAPI/FieldQuery.asmx" />
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>

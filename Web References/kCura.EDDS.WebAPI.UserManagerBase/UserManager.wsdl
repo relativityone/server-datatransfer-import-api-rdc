@@ -448,10 +448,10 @@
   </wsdl:binding>
   <wsdl:service name="UserManager">
     <wsdl:port name="UserManagerSoap" binding="tns:UserManagerSoap">
-      <soap:address location="http://localhost/RelativityWebApi/UserManager.asmx" />
+      <soap:address location="http://localhost/EDDSWebAPI/UserManager.asmx" />
     </wsdl:port>
     <wsdl:port name="UserManagerSoap12" binding="tns:UserManagerSoap12">
-      <soap12:address location="http://localhost/RelativityWebApi/UserManager.asmx" />
+      <soap12:address location="http://localhost/EDDSWebAPI/UserManager.asmx" />
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>
