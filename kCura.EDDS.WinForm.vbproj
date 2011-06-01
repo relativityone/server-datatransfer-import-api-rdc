@@ -33,7 +33,7 @@
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
     <IsWebBootstrapper>false</IsWebBootstrapper>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -208,9 +208,11 @@
     <Reference Include="System.Drawing">
       <Name>System.Drawing</Name>
     </Reference>
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Runtime.Serialization.Formatters.Soap">
       <Name>system.runtime.serialization.formatters.soap</Name>
     </Reference>
+    <Reference Include="System.ServiceModel" />
     <Reference Include="System.Web.Services">
       <Name>System.Web.Services</Name>
     </Reference>
@@ -228,6 +230,10 @@
     <ProjectReference Include="..\..\kCura\kCura.Config\kCura.Config.vbproj">
       <Project>{4705D839-6569-4489-9ED2-2A791AC27965}</Project>
       <Name>kCura.Config</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\kCura\kCura.Data\kCura.Data.vbproj">
+      <Project>{6C4D3211-85B6-4A83-9356-7C7F0C319C75}</Project>
+      <Name>kCura.Data</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\kCura\kCura.Utility\kCura.Utility.vbproj">
       <Project>{E3450350-56E3-4FE9-A47A-4D24960BCBDB}</Project>
