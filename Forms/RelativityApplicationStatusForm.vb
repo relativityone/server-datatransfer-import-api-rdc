@@ -14,9 +14,9 @@ Public Class RelativityApplicationStatusForm
 
 	Private Const workspaceIDColumnName As String = "Workspace ID"
 	Private Const workspaceNameColumnName As String = "Workspace Name"
-	Private Const workspaceStatusColumnName As String = "Install Status"
-	Private Const workspaceMessageColumnName As String = "Install Message"
-	Private Const workspaceDetailsColumnName As String = "Install Details"
+	Private Const workspaceStatusColumnName As String = "Import Status"
+	Private Const workspaceMessageColumnName As String = "Imort Message"
+	Private Const workspaceDetailsColumnName As String = "Import Details"
 	Private Const workspaceResolvedColumnName As String = "Ready to Retry Import"
 	Private Const workspaceAppsToUnlockColumnName As String = "AppIDs to Unlock"
 	Private Const workspaceIndexColumnName As String = "Index"
@@ -42,7 +42,7 @@ Public Class RelativityApplicationStatusForm
 	Private Const DropdownRetryRename As String = "Rename in Workspace"
 	Private Const ExpandText As String = "[+]"
 	Private Const CollapseText As String = "[-]"
-	Private Const HelpLink As String = "http://help.kcura.com/relativity/Relativity Applications/Using Relativity Applications for RDC - 7.0.pdf#Resolving-Errors"
+	Private Const HelpLink As String = "http://help.kcura.com/relativity/Relativity Applications/Using Relativity Applications for RDC - 7.0%23Resolving-Errors.pdf"
 
 #End Region
 
@@ -57,9 +57,9 @@ Public Class RelativityApplicationStatusForm
 	Private _workspaceView As Boolean
 	Private errorExpanded As Boolean
 
-	Private ErrorMessagePart1 As String = "Installation failed.  For details on potential resolutions to the errors you may have encountered here, refer to the "
+	Private ErrorMessagePart1 As String = "Import failed.  For details on potential resolutions to the errors you may have encountered here, refer to the "
 	Private ErrorMessageLink As String = "Relativity Applications documentation."
-	Private ErrorMessagePart2 As String = Environment.NewLine & Environment.NewLine & "The following errors occurred while installing the application:" & Environment.NewLine & Environment.NewLine
+	Private ErrorMessagePart2 As String = Environment.NewLine & Environment.NewLine & "The following errors occurred while importing the application:" & Environment.NewLine & Environment.NewLine
 
 	Private application As Xml.XmlDocument
 	Private credential As Net.NetworkCredential
@@ -131,16 +131,16 @@ Public Class RelativityApplicationStatusForm
 
 	Private Sub UpdateWorkspaceStatusView()
 		WorkspaceView = True
-		StatusHeader.Text = "Installation Status Report"
+		StatusHeader.Text = "Import Status Report"
 
 		If artifactTables.Count < artifactTables.Capacity Then
-			InformationText.Text = String.Format("Installing... ({0}/{1})", artifactTables.Count, artifactTables.Capacity)
+			InformationText.Text = String.Format("Importing... ({0}/{1})", artifactTables.Count, artifactTables.Capacity)
 		Else
 			DetailsButton.Enabled = True
 			ExportButton.Enabled = True
 
 			If globalSuccess Then
-				InformationText.Text = String.Format("Installation complete. Select a workspace, then click the ""View Details"" button for more information.")
+				InformationText.Text = String.Format("Import complete. Select a workspace, then click the ""View Details"" button for more information.")
 			Else
 				InformationText.Text = String.Format(CultureInfo.CurrentCulture, "{0}{1}{2} Select a workspace, then click the ""View Details"" button for more information.", ErrorMessagePart1, ErrorMessageLink, ErrorMessagePart2)
 				InformationText.Links.Clear()
@@ -161,10 +161,10 @@ Public Class RelativityApplicationStatusForm
 		errorExpanded = False
 		Dim currentRow As DataRow = workspaceTable.Rows(currentResultIndex)
 
-		StatusHeader.Text = String.Format("Installation Status Report -- {0} ({1})", currentRow.Item(workspaceNameColumnName), currentRow.Item(workspaceIDColumnName))
+		StatusHeader.Text = String.Format("Import Status Report -- {0} ({1})", currentRow.Item(workspaceNameColumnName), currentRow.Item(workspaceIDColumnName))
 
 		If currentRow.Item(workspaceStatusColumnName).ToString.Equals(WorkspaceSuccessString, StringComparison.InvariantCulture) Then
-			InformationText.Text = "Installation complete."
+			InformationText.Text = "Import complete."
 		Else
 
 			InformationText.Text = String.Format(CultureInfo.CurrentCulture, "{0}{1}{2}", ErrorMessagePart1, ErrorMessageLink, ErrorMessagePart2)
