@@ -158,6 +158,154 @@
           </s:sequence>
         </s:complexType>
       </s:element>
+      <s:element name="GetAvailableObjectsForMapping">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="workspaceID" type="s:int" />
+            <s:element minOccurs="0" maxOccurs="1" name="objectGuids" type="tns:ArrayOfString" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="ArrayOfString">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="string" nillable="true" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="KeyValuePairOfStringString" />
+      <s:complexType name="ArrayOfKeyValuePairOfStringString">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="KeyValuePairOfStringString" type="tns:KeyValuePairOfStringString" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="GetAvailableObjectsForMappingResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetAvailableObjectsForMappingResult" type="tns:ArrayOfKeyValuePairOfStringString" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetAvailableFieldsForMapping">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="workspaceID" type="s:int" />
+            <s:element minOccurs="0" maxOccurs="1" name="objectGuid" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="fieldElements" type="tns:ArrayOfFieldElement" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="ArrayOfFieldElement">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="FieldElement" nillable="true" type="tns:FieldElement" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="FieldElement">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="AllowHTML" type="s:boolean" />
+          <s:element minOccurs="1" maxOccurs="1" name="ArtifactId" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="ArtifactViewFieldId" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="AssociativeArtifactTypeId" nillable="true" type="s:int" />
+          <s:element minOccurs="0" maxOccurs="1" name="Codes" type="tns:ArrayOfCodeElement" />
+          <s:element minOccurs="1" maxOccurs="1" name="CodeTypeId" nillable="true" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="ConnectorFieldArtifactId" nillable="true" type="s:int" />
+          <s:element minOccurs="0" maxOccurs="1" name="DisplayName" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="DisplayValueFalse" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="DisplayValueTrue" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="FieldArtifactTypeId" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="FieldCategoryId" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="FieldTypeId" type="s:int" />
+          <s:element minOccurs="0" maxOccurs="1" name="FilterType" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="FormatString" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="FriendlyName" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="Guid" type="s1:guid" />
+          <s:element minOccurs="1" maxOccurs="1" name="ImportBehavior" nillable="true" type="tns:ImportBehaviorChoice" />
+          <s:element minOccurs="1" maxOccurs="1" name="IsAdditionalFileField" type="s:boolean" />
+          <s:element minOccurs="1" maxOccurs="1" name="IsArtifactBaseField" type="s:boolean" />
+          <s:element minOccurs="1" maxOccurs="1" name="IsAvailableInChoiceTree" type="s:boolean" />
+          <s:element minOccurs="1" maxOccurs="1" name="IsAvailableToAssociativeObjects" type="s:boolean" />
+          <s:element minOccurs="1" maxOccurs="1" name="IsEditable" type="s:boolean" />
+          <s:element minOccurs="1" maxOccurs="1" name="IsGroupByEnabled" type="s:boolean" />
+          <s:element minOccurs="1" maxOccurs="1" name="IsIndexEnabled" type="s:boolean" />
+          <s:element minOccurs="1" maxOccurs="1" name="IsLinked" type="s:boolean" />
+          <s:element minOccurs="1" maxOccurs="1" name="IsRemovable" type="s:boolean" />
+          <s:element minOccurs="1" maxOccurs="1" name="IsRequired" type="s:boolean" />
+          <s:element minOccurs="1" maxOccurs="1" name="IsSortable" type="s:boolean" />
+          <s:element minOccurs="1" maxOccurs="1" name="IsVisible" type="s:boolean" />
+          <s:element minOccurs="0" maxOccurs="1" name="Keywords" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="LinkType" type="s:boolean" />
+          <s:element minOccurs="1" maxOccurs="1" name="MaxLength" nillable="true" type="s:int" />
+          <s:element minOccurs="0" maxOccurs="1" name="Notes" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Pane" type="tns:PaneElement" />
+          <s:element minOccurs="1" maxOccurs="1" name="RelationalIndexViewArtifactID" nillable="true" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="SourceFieldArtifactId" nillable="true" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="UseUnicodeEncoding" type="s:boolean" />
+          <s:element minOccurs="0" maxOccurs="1" name="Width" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="Wrapping" type="s:boolean" />
+          <s:element minOccurs="1" maxOccurs="1" name="AllowPivot" type="s:boolean" />
+          <s:element minOccurs="1" maxOccurs="1" name="AllowGroupBy" type="s:boolean" />
+          <s:element minOccurs="1" maxOccurs="1" name="AvailableInViewer" type="s:boolean" />
+          <s:element minOccurs="1" maxOccurs="1" name="PopupPickerView" nillable="true" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="FieldTreeView" nillable="true" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="SiblingFieldArtifactID" nillable="true" type="s:int" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="ArrayOfCodeElement">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="Code" nillable="true" type="tns:CodeElement" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="CodeElement">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="ArtifactId" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="Guid" type="s1:guid" />
+          <s:element minOccurs="1" maxOccurs="1" name="IsActive" type="s:boolean" />
+          <s:element minOccurs="0" maxOccurs="1" name="Keywords" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Name" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Notes" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="OIHiliteStyleID" nillable="true" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="Order" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="ParentArtifactId" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="ParentIsCode" type="s:boolean" />
+          <s:element minOccurs="1" maxOccurs="1" name="UpdateInSearchEngine" type="s:boolean" />
+        </s:sequence>
+      </s:complexType>
+      <s:simpleType name="ImportBehaviorChoice">
+        <s:restriction base="s:string">
+          <s:enumeration value="LeaveBlankValuesUnchanged" />
+          <s:enumeration value="ReplaceBlankValuesWithIdentifier" />
+        </s:restriction>
+      </s:simpleType>
+      <s:complexType name="PaneElement">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="FieldId" type="s:int" />
+          <s:element minOccurs="0" maxOccurs="1" name="HeaderText" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="ImageFileData" type="s:base64Binary" />
+          <s:element minOccurs="0" maxOccurs="1" name="ImageFileName" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="Order" type="s:int" />
+          <s:element minOccurs="0" maxOccurs="1" name="Src" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Type" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="ViewId" type="s:int" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="ObjectValidationResult">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="ObjectName" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="ObjectGuid" type="s1:guid" />
+          <s:element minOccurs="0" maxOccurs="unbounded" name="FieldToFieldsMaps" type="tns:FieldToFieldsMap" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="FieldToFieldsMap">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="FieldGuid" type="s1:guid" />
+          <s:element minOccurs="0" maxOccurs="unbounded" name="Fields" type="tns:FieldElement" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="GetAvailableFieldsForMappingResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetAvailableFieldsForMappingResult" type="tns:ObjectValidationResult" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
     </s:schema>
     <s:schema elementFormDefault="qualified" targetNamespace="http://microsoft.com/wsdl/types/">
       <s:simpleType name="guid">
@@ -179,6 +327,18 @@
   <wsdl:message name="ResolveConflictsSoapOut">
     <wsdl:part name="parameters" element="tns:ResolveConflictsResponse" />
   </wsdl:message>
+  <wsdl:message name="GetAvailableObjectsForMappingSoapIn">
+    <wsdl:part name="parameters" element="tns:GetAvailableObjectsForMapping" />
+  </wsdl:message>
+  <wsdl:message name="GetAvailableObjectsForMappingSoapOut">
+    <wsdl:part name="parameters" element="tns:GetAvailableObjectsForMappingResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetAvailableFieldsForMappingSoapIn">
+    <wsdl:part name="parameters" element="tns:GetAvailableFieldsForMapping" />
+  </wsdl:message>
+  <wsdl:message name="GetAvailableFieldsForMappingSoapOut">
+    <wsdl:part name="parameters" element="tns:GetAvailableFieldsForMappingResponse" />
+  </wsdl:message>
   <wsdl:portType name="TemplateManagerSoap">
     <wsdl:operation name="InstallTemplate">
       <wsdl:input message="tns:InstallTemplateSoapIn" />
@@ -187,6 +347,14 @@
     <wsdl:operation name="ResolveConflicts">
       <wsdl:input message="tns:ResolveConflictsSoapIn" />
       <wsdl:output message="tns:ResolveConflictsSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetAvailableObjectsForMapping">
+      <wsdl:input message="tns:GetAvailableObjectsForMappingSoapIn" />
+      <wsdl:output message="tns:GetAvailableObjectsForMappingSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetAvailableFieldsForMapping">
+      <wsdl:input message="tns:GetAvailableFieldsForMappingSoapIn" />
+      <wsdl:output message="tns:GetAvailableFieldsForMappingSoapOut" />
     </wsdl:operation>
   </wsdl:portType>
   <wsdl:binding name="TemplateManagerSoap" type="tns:TemplateManagerSoap">
@@ -209,6 +377,24 @@
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="GetAvailableObjectsForMapping">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/TemplateManager/GetAvailableObjectsForMapping" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetAvailableFieldsForMapping">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/TemplateManager/GetAvailableFieldsForMapping" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
   </wsdl:binding>
   <wsdl:binding name="TemplateManagerSoap12" type="tns:TemplateManagerSoap">
     <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
@@ -223,6 +409,24 @@
     </wsdl:operation>
     <wsdl:operation name="ResolveConflicts">
       <soap12:operation soapAction="http://www.kCura.com/EDDS/TemplateManager/ResolveConflicts" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetAvailableObjectsForMapping">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/TemplateManager/GetAvailableObjectsForMapping" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetAvailableFieldsForMapping">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/TemplateManager/GetAvailableFieldsForMapping" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>

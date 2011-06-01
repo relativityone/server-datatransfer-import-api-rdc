@@ -38,6 +38,10 @@ Namespace kCura.EDDS.WebAPI.TemplateManagerBase
         
         Private ResolveConflictsOperationCompleted As System.Threading.SendOrPostCallback
         
+        Private GetAvailableObjectsForMappingOperationCompleted As System.Threading.SendOrPostCallback
+        
+        Private GetAvailableFieldsForMappingOperationCompleted As System.Threading.SendOrPostCallback
+        
         Private useDefaultCredentialsSetExplicitly As Boolean
         
         '''<remarks/>
@@ -81,6 +85,12 @@ Namespace kCura.EDDS.WebAPI.TemplateManagerBase
         
         '''<remarks/>
         Public Event ResolveConflictsCompleted As ResolveConflictsCompletedEventHandler
+        
+        '''<remarks/>
+        Public Event GetAvailableObjectsForMappingCompleted As GetAvailableObjectsForMappingCompletedEventHandler
+        
+        '''<remarks/>
+        Public Event GetAvailableFieldsForMappingCompleted As GetAvailableFieldsForMappingCompletedEventHandler
         
         '''<remarks/>
         <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/TemplateManager/InstallTemplate", RequestNamespace:="http://www.kCura.com/EDDS/TemplateManager", ResponseNamespace:="http://www.kCura.com/EDDS/TemplateManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
@@ -159,6 +169,82 @@ Namespace kCura.EDDS.WebAPI.TemplateManagerBase
         End Sub
         
         '''<remarks/>
+        <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/TemplateManager/GetAvailableObjectsForMapping", RequestNamespace:="http://www.kCura.com/EDDS/TemplateManager", ResponseNamespace:="http://www.kCura.com/EDDS/TemplateManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
+        Public Function GetAvailableObjectsForMapping(ByVal workspaceID As Integer, ByVal objectGuids() As String) As <System.Xml.Serialization.XmlArrayItemAttribute(IsNullable:=false)> KeyValuePairOfStringString()
+            Dim results() As Object = Me.Invoke("GetAvailableObjectsForMapping", New Object() {workspaceID, objectGuids})
+            Return CType(results(0),KeyValuePairOfStringString())
+        End Function
+        
+        '''<remarks/>
+        Public Function BeginGetAvailableObjectsForMapping(ByVal workspaceID As Integer, ByVal objectGuids() As String, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("GetAvailableObjectsForMapping", New Object() {workspaceID, objectGuids}, callback, asyncState)
+        End Function
+        
+        '''<remarks/>
+        Public Function EndGetAvailableObjectsForMapping(ByVal asyncResult As System.IAsyncResult) As KeyValuePairOfStringString()
+            Dim results() As Object = Me.EndInvoke(asyncResult)
+            Return CType(results(0),KeyValuePairOfStringString())
+        End Function
+        
+        '''<remarks/>
+        Public Overloads Sub GetAvailableObjectsForMappingAsync(ByVal workspaceID As Integer, ByVal objectGuids() As String)
+            Me.GetAvailableObjectsForMappingAsync(workspaceID, objectGuids, Nothing)
+        End Sub
+        
+        '''<remarks/>
+        Public Overloads Sub GetAvailableObjectsForMappingAsync(ByVal workspaceID As Integer, ByVal objectGuids() As String, ByVal userState As Object)
+            If (Me.GetAvailableObjectsForMappingOperationCompleted Is Nothing) Then
+                Me.GetAvailableObjectsForMappingOperationCompleted = AddressOf Me.OnGetAvailableObjectsForMappingOperationCompleted
+            End If
+            Me.InvokeAsync("GetAvailableObjectsForMapping", New Object() {workspaceID, objectGuids}, Me.GetAvailableObjectsForMappingOperationCompleted, userState)
+        End Sub
+        
+        Private Sub OnGetAvailableObjectsForMappingOperationCompleted(ByVal arg As Object)
+            If (Not (Me.GetAvailableObjectsForMappingCompletedEvent) Is Nothing) Then
+                Dim invokeArgs As System.Web.Services.Protocols.InvokeCompletedEventArgs = CType(arg,System.Web.Services.Protocols.InvokeCompletedEventArgs)
+                RaiseEvent GetAvailableObjectsForMappingCompleted(Me, New GetAvailableObjectsForMappingCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState))
+            End If
+        End Sub
+        
+        '''<remarks/>
+        <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/TemplateManager/GetAvailableFieldsForMapping", RequestNamespace:="http://www.kCura.com/EDDS/TemplateManager", ResponseNamespace:="http://www.kCura.com/EDDS/TemplateManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
+        Public Function GetAvailableFieldsForMapping(ByVal workspaceID As Integer, ByVal objectGuid As String, ByVal fieldElements() As FieldElement) As ObjectValidationResult
+            Dim results() As Object = Me.Invoke("GetAvailableFieldsForMapping", New Object() {workspaceID, objectGuid, fieldElements})
+            Return CType(results(0),ObjectValidationResult)
+        End Function
+        
+        '''<remarks/>
+        Public Function BeginGetAvailableFieldsForMapping(ByVal workspaceID As Integer, ByVal objectGuid As String, ByVal fieldElements() As FieldElement, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("GetAvailableFieldsForMapping", New Object() {workspaceID, objectGuid, fieldElements}, callback, asyncState)
+        End Function
+        
+        '''<remarks/>
+        Public Function EndGetAvailableFieldsForMapping(ByVal asyncResult As System.IAsyncResult) As ObjectValidationResult
+            Dim results() As Object = Me.EndInvoke(asyncResult)
+            Return CType(results(0),ObjectValidationResult)
+        End Function
+        
+        '''<remarks/>
+        Public Overloads Sub GetAvailableFieldsForMappingAsync(ByVal workspaceID As Integer, ByVal objectGuid As String, ByVal fieldElements() As FieldElement)
+            Me.GetAvailableFieldsForMappingAsync(workspaceID, objectGuid, fieldElements, Nothing)
+        End Sub
+        
+        '''<remarks/>
+        Public Overloads Sub GetAvailableFieldsForMappingAsync(ByVal workspaceID As Integer, ByVal objectGuid As String, ByVal fieldElements() As FieldElement, ByVal userState As Object)
+            If (Me.GetAvailableFieldsForMappingOperationCompleted Is Nothing) Then
+                Me.GetAvailableFieldsForMappingOperationCompleted = AddressOf Me.OnGetAvailableFieldsForMappingOperationCompleted
+            End If
+            Me.InvokeAsync("GetAvailableFieldsForMapping", New Object() {workspaceID, objectGuid, fieldElements}, Me.GetAvailableFieldsForMappingOperationCompleted, userState)
+        End Sub
+        
+        Private Sub OnGetAvailableFieldsForMappingOperationCompleted(ByVal arg As Object)
+            If (Not (Me.GetAvailableFieldsForMappingCompletedEvent) Is Nothing) Then
+                Dim invokeArgs As System.Web.Services.Protocols.InvokeCompletedEventArgs = CType(arg,System.Web.Services.Protocols.InvokeCompletedEventArgs)
+                RaiseEvent GetAvailableFieldsForMappingCompleted(Me, New GetAvailableFieldsForMappingCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState))
+            End If
+        End Sub
+        
+        '''<remarks/>
         Public Shadows Sub CancelAsync(ByVal userState As Object)
             MyBase.CancelAsync(userState)
         End Sub
@@ -196,6 +282,928 @@ Namespace kCura.EDDS.WebAPI.TemplateManagerBase
                 Me.caseIdField = value
             End Set
         End Property
+    End Class
+    
+    '''<remarks/>
+    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.1"),  _
+     System.SerializableAttribute(),  _
+     System.Diagnostics.DebuggerStepThroughAttribute(),  _
+     System.ComponentModel.DesignerCategoryAttribute("code"),  _
+     System.Xml.Serialization.XmlTypeAttribute([Namespace]:="http://www.kCura.com/EDDS/TemplateManager")>  _
+    Partial Public Class FieldToFieldsMap
+        
+        Private fieldGuidField As System.Guid
+        
+        Private fieldsField() As FieldElement
+        
+        '''<remarks/>
+        Public Property FieldGuid() As System.Guid
+            Get
+                Return Me.fieldGuidField
+            End Get
+            Set
+                Me.fieldGuidField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        <System.Xml.Serialization.XmlElementAttribute("Fields")>  _
+        Public Property Fields() As FieldElement()
+            Get
+                Return Me.fieldsField
+            End Get
+            Set
+                Me.fieldsField = value
+            End Set
+        End Property
+    End Class
+    
+    '''<remarks/>
+    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.1"),  _
+     System.SerializableAttribute(),  _
+     System.Diagnostics.DebuggerStepThroughAttribute(),  _
+     System.ComponentModel.DesignerCategoryAttribute("code"),  _
+     System.Xml.Serialization.XmlTypeAttribute([Namespace]:="http://www.kCura.com/EDDS/TemplateManager")>  _
+    Partial Public Class FieldElement
+        
+        Private allowHTMLField As Boolean
+        
+        Private artifactIdField As Integer
+        
+        Private artifactViewFieldIdField As Integer
+        
+        Private associativeArtifactTypeIdField As System.Nullable(Of Integer)
+        
+        Private codesField() As CodeElement
+        
+        Private codeTypeIdField As System.Nullable(Of Integer)
+        
+        Private connectorFieldArtifactIdField As System.Nullable(Of Integer)
+        
+        Private displayNameField As String
+        
+        Private displayValueFalseField As String
+        
+        Private displayValueTrueField As String
+        
+        Private fieldArtifactTypeIdField As Integer
+        
+        Private fieldCategoryIdField As Integer
+        
+        Private fieldTypeIdField As Integer
+        
+        Private filterTypeField As String
+        
+        Private formatStringField As String
+        
+        Private friendlyNameField As String
+        
+        Private guidField As System.Guid
+        
+        Private importBehaviorField As System.Nullable(Of ImportBehaviorChoice)
+        
+        Private isAdditionalFileFieldField As Boolean
+        
+        Private isArtifactBaseFieldField As Boolean
+        
+        Private isAvailableInChoiceTreeField As Boolean
+        
+        Private isAvailableToAssociativeObjectsField As Boolean
+        
+        Private isEditableField As Boolean
+        
+        Private isGroupByEnabledField As Boolean
+        
+        Private isIndexEnabledField As Boolean
+        
+        Private isLinkedField As Boolean
+        
+        Private isRemovableField As Boolean
+        
+        Private isRequiredField As Boolean
+        
+        Private isSortableField As Boolean
+        
+        Private isVisibleField As Boolean
+        
+        Private keywordsField As String
+        
+        Private linkTypeField As Boolean
+        
+        Private maxLengthField As System.Nullable(Of Integer)
+        
+        Private notesField As String
+        
+        Private paneField As PaneElement
+        
+        Private relationalIndexViewArtifactIDField As System.Nullable(Of Integer)
+        
+        Private sourceFieldArtifactIdField As System.Nullable(Of Integer)
+        
+        Private useUnicodeEncodingField As Boolean
+        
+        Private widthField As String
+        
+        Private wrappingField As Boolean
+        
+        Private allowPivotField As Boolean
+        
+        Private allowGroupByField As Boolean
+        
+        Private availableInViewerField As Boolean
+        
+        Private popupPickerViewField As System.Nullable(Of Integer)
+        
+        Private fieldTreeViewField As System.Nullable(Of Integer)
+        
+        Private siblingFieldArtifactIDField As System.Nullable(Of Integer)
+        
+        '''<remarks/>
+        Public Property AllowHTML() As Boolean
+            Get
+                Return Me.allowHTMLField
+            End Get
+            Set
+                Me.allowHTMLField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property ArtifactId() As Integer
+            Get
+                Return Me.artifactIdField
+            End Get
+            Set
+                Me.artifactIdField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property ArtifactViewFieldId() As Integer
+            Get
+                Return Me.artifactViewFieldIdField
+            End Get
+            Set
+                Me.artifactViewFieldIdField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        <System.Xml.Serialization.XmlElementAttribute(IsNullable:=true)>  _
+        Public Property AssociativeArtifactTypeId() As System.Nullable(Of Integer)
+            Get
+                Return Me.associativeArtifactTypeIdField
+            End Get
+            Set
+                Me.associativeArtifactTypeIdField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        <System.Xml.Serialization.XmlArrayItemAttribute("Code")>  _
+        Public Property Codes() As CodeElement()
+            Get
+                Return Me.codesField
+            End Get
+            Set
+                Me.codesField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        <System.Xml.Serialization.XmlElementAttribute(IsNullable:=true)>  _
+        Public Property CodeTypeId() As System.Nullable(Of Integer)
+            Get
+                Return Me.codeTypeIdField
+            End Get
+            Set
+                Me.codeTypeIdField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        <System.Xml.Serialization.XmlElementAttribute(IsNullable:=true)>  _
+        Public Property ConnectorFieldArtifactId() As System.Nullable(Of Integer)
+            Get
+                Return Me.connectorFieldArtifactIdField
+            End Get
+            Set
+                Me.connectorFieldArtifactIdField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property DisplayName() As String
+            Get
+                Return Me.displayNameField
+            End Get
+            Set
+                Me.displayNameField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property DisplayValueFalse() As String
+            Get
+                Return Me.displayValueFalseField
+            End Get
+            Set
+                Me.displayValueFalseField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property DisplayValueTrue() As String
+            Get
+                Return Me.displayValueTrueField
+            End Get
+            Set
+                Me.displayValueTrueField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property FieldArtifactTypeId() As Integer
+            Get
+                Return Me.fieldArtifactTypeIdField
+            End Get
+            Set
+                Me.fieldArtifactTypeIdField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property FieldCategoryId() As Integer
+            Get
+                Return Me.fieldCategoryIdField
+            End Get
+            Set
+                Me.fieldCategoryIdField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property FieldTypeId() As Integer
+            Get
+                Return Me.fieldTypeIdField
+            End Get
+            Set
+                Me.fieldTypeIdField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property FilterType() As String
+            Get
+                Return Me.filterTypeField
+            End Get
+            Set
+                Me.filterTypeField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property FormatString() As String
+            Get
+                Return Me.formatStringField
+            End Get
+            Set
+                Me.formatStringField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property FriendlyName() As String
+            Get
+                Return Me.friendlyNameField
+            End Get
+            Set
+                Me.friendlyNameField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property Guid() As System.Guid
+            Get
+                Return Me.guidField
+            End Get
+            Set
+                Me.guidField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        <System.Xml.Serialization.XmlElementAttribute(IsNullable:=true)>  _
+        Public Property ImportBehavior() As System.Nullable(Of ImportBehaviorChoice)
+            Get
+                Return Me.importBehaviorField
+            End Get
+            Set
+                Me.importBehaviorField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property IsAdditionalFileField() As Boolean
+            Get
+                Return Me.isAdditionalFileFieldField
+            End Get
+            Set
+                Me.isAdditionalFileFieldField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property IsArtifactBaseField() As Boolean
+            Get
+                Return Me.isArtifactBaseFieldField
+            End Get
+            Set
+                Me.isArtifactBaseFieldField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property IsAvailableInChoiceTree() As Boolean
+            Get
+                Return Me.isAvailableInChoiceTreeField
+            End Get
+            Set
+                Me.isAvailableInChoiceTreeField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property IsAvailableToAssociativeObjects() As Boolean
+            Get
+                Return Me.isAvailableToAssociativeObjectsField
+            End Get
+            Set
+                Me.isAvailableToAssociativeObjectsField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property IsEditable() As Boolean
+            Get
+                Return Me.isEditableField
+            End Get
+            Set
+                Me.isEditableField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property IsGroupByEnabled() As Boolean
+            Get
+                Return Me.isGroupByEnabledField
+            End Get
+            Set
+                Me.isGroupByEnabledField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property IsIndexEnabled() As Boolean
+            Get
+                Return Me.isIndexEnabledField
+            End Get
+            Set
+                Me.isIndexEnabledField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property IsLinked() As Boolean
+            Get
+                Return Me.isLinkedField
+            End Get
+            Set
+                Me.isLinkedField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property IsRemovable() As Boolean
+            Get
+                Return Me.isRemovableField
+            End Get
+            Set
+                Me.isRemovableField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property IsRequired() As Boolean
+            Get
+                Return Me.isRequiredField
+            End Get
+            Set
+                Me.isRequiredField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property IsSortable() As Boolean
+            Get
+                Return Me.isSortableField
+            End Get
+            Set
+                Me.isSortableField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property IsVisible() As Boolean
+            Get
+                Return Me.isVisibleField
+            End Get
+            Set
+                Me.isVisibleField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property Keywords() As String
+            Get
+                Return Me.keywordsField
+            End Get
+            Set
+                Me.keywordsField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property LinkType() As Boolean
+            Get
+                Return Me.linkTypeField
+            End Get
+            Set
+                Me.linkTypeField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        <System.Xml.Serialization.XmlElementAttribute(IsNullable:=true)>  _
+        Public Property MaxLength() As System.Nullable(Of Integer)
+            Get
+                Return Me.maxLengthField
+            End Get
+            Set
+                Me.maxLengthField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property Notes() As String
+            Get
+                Return Me.notesField
+            End Get
+            Set
+                Me.notesField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property Pane() As PaneElement
+            Get
+                Return Me.paneField
+            End Get
+            Set
+                Me.paneField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        <System.Xml.Serialization.XmlElementAttribute(IsNullable:=true)>  _
+        Public Property RelationalIndexViewArtifactID() As System.Nullable(Of Integer)
+            Get
+                Return Me.relationalIndexViewArtifactIDField
+            End Get
+            Set
+                Me.relationalIndexViewArtifactIDField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        <System.Xml.Serialization.XmlElementAttribute(IsNullable:=true)>  _
+        Public Property SourceFieldArtifactId() As System.Nullable(Of Integer)
+            Get
+                Return Me.sourceFieldArtifactIdField
+            End Get
+            Set
+                Me.sourceFieldArtifactIdField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property UseUnicodeEncoding() As Boolean
+            Get
+                Return Me.useUnicodeEncodingField
+            End Get
+            Set
+                Me.useUnicodeEncodingField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property Width() As String
+            Get
+                Return Me.widthField
+            End Get
+            Set
+                Me.widthField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property Wrapping() As Boolean
+            Get
+                Return Me.wrappingField
+            End Get
+            Set
+                Me.wrappingField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property AllowPivot() As Boolean
+            Get
+                Return Me.allowPivotField
+            End Get
+            Set
+                Me.allowPivotField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property AllowGroupBy() As Boolean
+            Get
+                Return Me.allowGroupByField
+            End Get
+            Set
+                Me.allowGroupByField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property AvailableInViewer() As Boolean
+            Get
+                Return Me.availableInViewerField
+            End Get
+            Set
+                Me.availableInViewerField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        <System.Xml.Serialization.XmlElementAttribute(IsNullable:=true)>  _
+        Public Property PopupPickerView() As System.Nullable(Of Integer)
+            Get
+                Return Me.popupPickerViewField
+            End Get
+            Set
+                Me.popupPickerViewField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        <System.Xml.Serialization.XmlElementAttribute(IsNullable:=true)>  _
+        Public Property FieldTreeView() As System.Nullable(Of Integer)
+            Get
+                Return Me.fieldTreeViewField
+            End Get
+            Set
+                Me.fieldTreeViewField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        <System.Xml.Serialization.XmlElementAttribute(IsNullable:=true)>  _
+        Public Property SiblingFieldArtifactID() As System.Nullable(Of Integer)
+            Get
+                Return Me.siblingFieldArtifactIDField
+            End Get
+            Set
+                Me.siblingFieldArtifactIDField = value
+            End Set
+        End Property
+    End Class
+    
+    '''<remarks/>
+    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.1"),  _
+     System.SerializableAttribute(),  _
+     System.Diagnostics.DebuggerStepThroughAttribute(),  _
+     System.ComponentModel.DesignerCategoryAttribute("code"),  _
+     System.Xml.Serialization.XmlTypeAttribute([Namespace]:="http://www.kCura.com/EDDS/TemplateManager")>  _
+    Partial Public Class CodeElement
+        
+        Private artifactIdField As Integer
+        
+        Private guidField As System.Guid
+        
+        Private isActiveField As Boolean
+        
+        Private keywordsField As String
+        
+        Private nameField As String
+        
+        Private notesField As String
+        
+        Private oIHiliteStyleIDField As System.Nullable(Of Integer)
+        
+        Private orderField As Integer
+        
+        Private parentArtifactIdField As Integer
+        
+        Private parentIsCodeField As Boolean
+        
+        Private updateInSearchEngineField As Boolean
+        
+        '''<remarks/>
+        Public Property ArtifactId() As Integer
+            Get
+                Return Me.artifactIdField
+            End Get
+            Set
+                Me.artifactIdField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property Guid() As System.Guid
+            Get
+                Return Me.guidField
+            End Get
+            Set
+                Me.guidField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property IsActive() As Boolean
+            Get
+                Return Me.isActiveField
+            End Get
+            Set
+                Me.isActiveField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property Keywords() As String
+            Get
+                Return Me.keywordsField
+            End Get
+            Set
+                Me.keywordsField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property Name() As String
+            Get
+                Return Me.nameField
+            End Get
+            Set
+                Me.nameField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property Notes() As String
+            Get
+                Return Me.notesField
+            End Get
+            Set
+                Me.notesField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        <System.Xml.Serialization.XmlElementAttribute(IsNullable:=true)>  _
+        Public Property OIHiliteStyleID() As System.Nullable(Of Integer)
+            Get
+                Return Me.oIHiliteStyleIDField
+            End Get
+            Set
+                Me.oIHiliteStyleIDField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property Order() As Integer
+            Get
+                Return Me.orderField
+            End Get
+            Set
+                Me.orderField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property ParentArtifactId() As Integer
+            Get
+                Return Me.parentArtifactIdField
+            End Get
+            Set
+                Me.parentArtifactIdField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property ParentIsCode() As Boolean
+            Get
+                Return Me.parentIsCodeField
+            End Get
+            Set
+                Me.parentIsCodeField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property UpdateInSearchEngine() As Boolean
+            Get
+                Return Me.updateInSearchEngineField
+            End Get
+            Set
+                Me.updateInSearchEngineField = value
+            End Set
+        End Property
+    End Class
+    
+    '''<remarks/>
+    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.1"),  _
+     System.SerializableAttribute(),  _
+     System.Xml.Serialization.XmlTypeAttribute([Namespace]:="http://www.kCura.com/EDDS/TemplateManager")>  _
+    Public Enum ImportBehaviorChoice
+        
+        '''<remarks/>
+        LeaveBlankValuesUnchanged
+        
+        '''<remarks/>
+        ReplaceBlankValuesWithIdentifier
+    End Enum
+    
+    '''<remarks/>
+    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.1"),  _
+     System.SerializableAttribute(),  _
+     System.Diagnostics.DebuggerStepThroughAttribute(),  _
+     System.ComponentModel.DesignerCategoryAttribute("code"),  _
+     System.Xml.Serialization.XmlTypeAttribute([Namespace]:="http://www.kCura.com/EDDS/TemplateManager")>  _
+    Partial Public Class PaneElement
+        
+        Private fieldIdField As Integer
+        
+        Private headerTextField As String
+        
+        Private imageFileDataField() As Byte
+        
+        Private imageFileNameField As String
+        
+        Private orderField As Integer
+        
+        Private srcField As String
+        
+        Private typeField As String
+        
+        Private viewIdField As Integer
+        
+        '''<remarks/>
+        Public Property FieldId() As Integer
+            Get
+                Return Me.fieldIdField
+            End Get
+            Set
+                Me.fieldIdField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property HeaderText() As String
+            Get
+                Return Me.headerTextField
+            End Get
+            Set
+                Me.headerTextField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        <System.Xml.Serialization.XmlElementAttribute(DataType:="base64Binary")>  _
+        Public Property ImageFileData() As Byte()
+            Get
+                Return Me.imageFileDataField
+            End Get
+            Set
+                Me.imageFileDataField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property ImageFileName() As String
+            Get
+                Return Me.imageFileNameField
+            End Get
+            Set
+                Me.imageFileNameField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property Order() As Integer
+            Get
+                Return Me.orderField
+            End Get
+            Set
+                Me.orderField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property Src() As String
+            Get
+                Return Me.srcField
+            End Get
+            Set
+                Me.srcField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property Type() As String
+            Get
+                Return Me.typeField
+            End Get
+            Set
+                Me.typeField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property ViewId() As Integer
+            Get
+                Return Me.viewIdField
+            End Get
+            Set
+                Me.viewIdField = value
+            End Set
+        End Property
+    End Class
+    
+    '''<remarks/>
+    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.1"),  _
+     System.SerializableAttribute(),  _
+     System.Diagnostics.DebuggerStepThroughAttribute(),  _
+     System.ComponentModel.DesignerCategoryAttribute("code"),  _
+     System.Xml.Serialization.XmlTypeAttribute([Namespace]:="http://www.kCura.com/EDDS/TemplateManager")>  _
+    Partial Public Class ObjectValidationResult
+        
+        Private objectNameField As String
+        
+        Private objectGuidField As System.Guid
+        
+        Private fieldToFieldsMapsField() As FieldToFieldsMap
+        
+        '''<remarks/>
+        Public Property ObjectName() As String
+            Get
+                Return Me.objectNameField
+            End Get
+            Set
+                Me.objectNameField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property ObjectGuid() As System.Guid
+            Get
+                Return Me.objectGuidField
+            End Get
+            Set
+                Me.objectGuidField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        <System.Xml.Serialization.XmlElementAttribute("FieldToFieldsMaps")>  _
+        Public Property FieldToFieldsMaps() As FieldToFieldsMap()
+            Get
+                Return Me.fieldToFieldsMapsField
+            End Get
+            Set
+                Me.fieldToFieldsMapsField = value
+            End Set
+        End Property
+    End Class
+    
+    '''<remarks/>
+    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.1"),  _
+     System.SerializableAttribute(),  _
+     System.Diagnostics.DebuggerStepThroughAttribute(),  _
+     System.ComponentModel.DesignerCategoryAttribute("code"),  _
+     System.Xml.Serialization.XmlTypeAttribute([Namespace]:="http://www.kCura.com/EDDS/TemplateManager")>  _
+    Partial Public Class KeyValuePairOfStringString
     End Class
     
     '''<remarks/>
@@ -754,6 +1762,60 @@ Namespace kCura.EDDS.WebAPI.TemplateManagerBase
             Get
                 Me.RaiseExceptionIfNecessary
                 Return CType(Me.results(0),ApplicationInstallationResult)
+            End Get
+        End Property
+    End Class
+    
+    '''<remarks/>
+    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.0.30319.1")>  _
+    Public Delegate Sub GetAvailableObjectsForMappingCompletedEventHandler(ByVal sender As Object, ByVal e As GetAvailableObjectsForMappingCompletedEventArgs)
+    
+    '''<remarks/>
+    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.0.30319.1"),  _
+     System.Diagnostics.DebuggerStepThroughAttribute(),  _
+     System.ComponentModel.DesignerCategoryAttribute("code")>  _
+    Partial Public Class GetAvailableObjectsForMappingCompletedEventArgs
+        Inherits System.ComponentModel.AsyncCompletedEventArgs
+        
+        Private results() As Object
+        
+        Friend Sub New(ByVal results() As Object, ByVal exception As System.Exception, ByVal cancelled As Boolean, ByVal userState As Object)
+            MyBase.New(exception, cancelled, userState)
+            Me.results = results
+        End Sub
+        
+        '''<remarks/>
+        Public ReadOnly Property Result() As KeyValuePairOfStringString()
+            Get
+                Me.RaiseExceptionIfNecessary
+                Return CType(Me.results(0),KeyValuePairOfStringString())
+            End Get
+        End Property
+    End Class
+    
+    '''<remarks/>
+    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.0.30319.1")>  _
+    Public Delegate Sub GetAvailableFieldsForMappingCompletedEventHandler(ByVal sender As Object, ByVal e As GetAvailableFieldsForMappingCompletedEventArgs)
+    
+    '''<remarks/>
+    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.0.30319.1"),  _
+     System.Diagnostics.DebuggerStepThroughAttribute(),  _
+     System.ComponentModel.DesignerCategoryAttribute("code")>  _
+    Partial Public Class GetAvailableFieldsForMappingCompletedEventArgs
+        Inherits System.ComponentModel.AsyncCompletedEventArgs
+        
+        Private results() As Object
+        
+        Friend Sub New(ByVal results() As Object, ByVal exception As System.Exception, ByVal cancelled As Boolean, ByVal userState As Object)
+            MyBase.New(exception, cancelled, userState)
+            Me.results = results
+        End Sub
+        
+        '''<remarks/>
+        Public ReadOnly Property Result() As ObjectValidationResult
+            Get
+                Me.RaiseExceptionIfNecessary
+                Return CType(Me.results(0),ObjectValidationResult)
             End Get
         End Property
     End Class
