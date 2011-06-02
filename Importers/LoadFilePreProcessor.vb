@@ -187,7 +187,10 @@ Namespace kCura.WinEDDS
 				If checkChoices Then
 					For Each choiceColumnIdx As Int32 In _choicesTable.Keys
 						Dim choiceVal As String = lineToParse.GetValue(choiceColumnIdx).ToString
-						_choicesTable(choiceColumnIdx)(choiceVal) = True
+						'Choices can be imported as comma-delimited strings for multi-choices, need to look at each choice
+						For Each choiceItem In choiceVal.Split(New Char() {","c})
+							_choicesTable(choiceColumnIdx)(choiceItem) = True
+						Next
 					Next
 				End If
 

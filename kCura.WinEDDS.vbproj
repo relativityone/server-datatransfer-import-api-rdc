@@ -190,6 +190,9 @@
     <PlatformTarget>x64</PlatformTarget>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
+  <PropertyGroup>
+    <OptionInfer>On</OptionInfer>
+  </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\Relativity\Relativity.vbproj">
       <Project>{044A6424-BC90-46CE-8805-0053A44AFCAB}</Project>
