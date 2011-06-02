@@ -474,10 +474,10 @@
   </wsdl:binding>
   <wsdl:service name="ProductionManager">
     <wsdl:port name="ProductionManagerSoap" binding="tns:ProductionManagerSoap">
-      <soap:address location="http://localhost/EDDSWebAPI/ProductionManager.asmx" />
+      <soap:address location="http://localhost/RelativityWebApi/ProductionManager.asmx" />
     </wsdl:port>
     <wsdl:port name="ProductionManagerSoap12" binding="tns:ProductionManagerSoap12">
-      <soap12:address location="http://localhost/EDDSWebAPI/ProductionManager.asmx" />
+      <soap12:address location="http://localhost/RelativityWebApi/ProductionManager.asmx" />
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>

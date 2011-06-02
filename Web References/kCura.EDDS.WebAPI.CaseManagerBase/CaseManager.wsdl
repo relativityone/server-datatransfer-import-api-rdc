@@ -424,10 +424,10 @@
   </wsdl:binding>
   <wsdl:service name="CaseManager">
     <wsdl:port name="CaseManagerSoap" binding="tns:CaseManagerSoap">
-      <soap:address location="http://localhost/EDDSWebAPI/CaseManager.asmx" />
+      <soap:address location="http://localhost/RelativityWebApi/CaseManager.asmx" />
     </wsdl:port>
     <wsdl:port name="CaseManagerSoap12" binding="tns:CaseManagerSoap12">
-      <soap12:address location="http://localhost/EDDSWebAPI/CaseManager.asmx" />
+      <soap12:address location="http://localhost/RelativityWebApi/CaseManager.asmx" />
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>

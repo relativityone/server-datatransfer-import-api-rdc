@@ -75,7 +75,7 @@ Namespace kCura.EDDS.WebAPI.DocumentManagerBase
         '''<remarks/>
         Public Sub New()
             MyBase.New
-            Me.Url = "http://localhost/EDDSWebAPI/DocumentManager.asmx"
+            Me.Url = "http://localhost/RelativityWebApi/DocumentManager.asmx"
             If (Me.IsLocalFileSystemWebService(Me.Url) = true) Then
                 Me.UseDefaultCredentials = true
                 Me.useDefaultCredentialsSetExplicitly = false
@@ -1204,6 +1204,8 @@ Namespace kCura.EDDS.WebAPI.DocumentManagerBase
         
         Private transcriptGuidField As String
         
+        Private auditMessagesField() As String
+        
         '''<remarks/>
         Public Property Fields() As Field()
             Get
@@ -1281,6 +1283,16 @@ Namespace kCura.EDDS.WebAPI.DocumentManagerBase
             End Get
             Set
                 Me.transcriptGuidField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property AuditMessages() As String()
+            Get
+                Return Me.auditMessagesField
+            End Get
+            Set
+                Me.auditMessagesField = value
             End Set
         End Property
     End Class

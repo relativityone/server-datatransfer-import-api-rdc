@@ -234,10 +234,10 @@
   </wsdl:binding>
   <wsdl:service name="ExportManager">
     <wsdl:port name="ExportManagerSoap" binding="tns:ExportManagerSoap">
-      <soap:address location="http://localhost/EDDSWebAPI/ExportManager.asmx" />
+      <soap:address location="http://localhost/RelativityWebApi/ExportManager.asmx" />
     </wsdl:port>
     <wsdl:port name="ExportManagerSoap12" binding="tns:ExportManagerSoap12">
-      <soap12:address location="http://localhost/EDDSWebAPI/ExportManager.asmx" />
+      <soap12:address location="http://localhost/RelativityWebApi/ExportManager.asmx" />
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>
