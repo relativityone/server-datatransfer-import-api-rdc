@@ -8,7 +8,7 @@ Namespace kCura.WinEDDS
 		Public ExportManager As kCura.WinEDDS.Service.ExportManager
 		Private _folderManager As kCura.WinEDDS.Service.FolderManager
 		Private _fieldManager As kCura.WinEDDS.Service.FieldManager
-		Private _auditManager As kCura.WinEDDS.Service.AuditManager
+		'	Private _auditManager As kCura.WinEDDS.Service.AuditManager
 		Private _exportFile As kCura.WinEDDS.ExportFile
 		Private _columns As System.Collections.ArrayList
 		Private _sourceDirectory As String
@@ -92,7 +92,7 @@ Namespace kCura.WinEDDS
 			_downloadHandler = New FileDownloader(exportFile.Credential, exportFile.CaseInfo.DocumentPath & "\EDDS" & exportFile.CaseInfo.ArtifactID, exportFile.CaseInfo.DownloadHandlerURL, exportFile.CookieContainer, kCura.WinEDDS.Service.Settings.AuthenticationToken)
 			FileDownloader.TotalWebTime = 0
 			_productionManager = New kCura.WinEDDS.Service.ProductionManager(exportFile.Credential, exportFile.CookieContainer)
-			_auditManager = New kCura.WinEDDS.Service.AuditManager(exportFile.Credential, exportFile.CookieContainer)
+			'_auditManager = New kCura.WinEDDS.Service.AuditManager(exportFile.Credential, exportFile.CookieContainer)
 			_fieldManager = New kCura.WinEDDS.Service.FieldManager(exportFile.Credential, exportFile.CookieContainer)
 			Me.ExportManager = New kCura.WinEDDS.Service.ExportManager(exportFile.Credential, exportFile.CookieContainer)
 			_halt = False
@@ -685,7 +685,7 @@ Namespace kCura.WinEDDS
 			args.CopyFilesFromRepository = Me.Settings.VolumeInfo.CopyFilesFromRepository
 			args.WarningCount = _warningCount
 			Try
-				_auditManager.AuditExport(Me.Settings.CaseInfo.ArtifactID, Not success, args)
+				'_auditManager.AuditExport(Me.Settings.CaseInfo.ArtifactID, Not success, args)
 			Catch
 			End Try
 		End Sub
