@@ -188,13 +188,14 @@ Namespace kCura.WinEDDS
 					For Each choiceColumnIdx As Int32 In _choicesTable.Keys
 						Dim choiceVal As String = lineToParse.GetValue(choiceColumnIdx).ToString
 						'Choices can be imported as comma-delimited strings for multi-choices, need to look at each choice
-						For Each choiceItem In choiceVal.Split(New Char() {","c})
-							_choicesTable(choiceColumnIdx)(choiceItem) = True
+						For Each choiceSet As String In choiceVal.Split(New Char() {";"c})
+							For Each choiceItem In choiceSet.Split(New Char() {"\"c})
+								_choicesTable(choiceColumnIdx)(choiceItem) = True
+							Next
 						Next
 					Next
 				End If
 
-				AdvanceLine()
 			End While
 
 			'Determine choice threshold
@@ -225,7 +226,7 @@ Namespace kCura.WinEDDS
 		Private Function BuildImportWarningMessage(ByVal lineCount As Int32, ByVal reportFolders As Boolean, ByVal numOfFolders As Int32, ByVal reportChoices As Boolean, ByVal numOfChoices As Int32) As String
 			Dim snippetList As New List(Of String)
 			If reportFolders Then snippetList.Add(String.Format("{0} folders", numOfFolders))
-			If reportChoices Then snippetList.Add(String.Format("{0} choices", numOfChoices))
+			If reportChoices Then snippetList.Add(String.Format("{0} choices in a single field", numOfChoices))
 			Dim countSegment As String = String.Join(" and ", snippetList.ToArray())
 			Return String.Format("The first {0} records of this load file will create {1}.  Would you like to continue?", lineCount, countSegment)
 		End Function
