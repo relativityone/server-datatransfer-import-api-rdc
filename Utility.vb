@@ -43,6 +43,13 @@ Namespace kCura.WinEDDS
 			Return output
 		End Function
 
+		''' <summary>
+		''' Attempts to determine the encoding for a file by detecting the Byte Order Mark (BOM).
+		''' </summary>
+		''' <param name="filename"></param>
+		''' <param name="returnEncodingOnly"></param>
+		''' <returns>Returns System.Text.Encoding.UTF8, Unicode, or BigEndianUnicode if the BOM is found and Nothing otherwise.</returns>
+		''' <remarks></remarks>
 		Public Shared Function DetectEncoding(ByVal filename As String, ByVal returnEncodingOnly As Boolean) As DeterminedEncodingStream
 			Dim enc As System.Text.Encoding = Nothing
 			Dim filein As System.IO.FileStream = Nothing
