@@ -206,10 +206,10 @@ Namespace kCura.WinEDDS
 
 			'Display choice and folder warning to the user
 			If _continue Then
-				Dim reportFolders As Boolean = checkFolders AndAlso Me.GetActualFolderCount > 0
+				Dim reportFolders As Boolean = checkFolders AndAlso Me.GetFolderCount > 0
 				Dim reportChoices As Boolean = checkChoices AndAlso Me.GetMaxChoiceCount > choiceCountThreshold
 				If reportFolders Or reportChoices Then
-					Dim popupMsg As String = BuildImportWarningMessage(Me.GetActualLineCount, reportFolders, Me.GetActualFolderCount, reportChoices, Me.GetMaxChoiceCount)
+					Dim popupMsg As String = BuildImportWarningMessage(Me.GetActualLineCount, reportFolders, Me.GetFolderCount, reportChoices, Me.GetMaxChoiceCount)
 					popupRetVal = MsgBox(popupMsg, (MsgBoxStyle.YesNo Or MsgBoxStyle.ApplicationModal), "Relativity Desktop Client")
 					If popupRetVal <> MsgBoxResult.Yes Then
 						Me.ProcessCancel(Me.CurrentLineNumber, Me.Reader.BaseStream.Position, fileSize, stepSize)
@@ -239,10 +239,7 @@ Namespace kCura.WinEDDS
 			End If
 		End Function
 
-		Private Function GetActualFolderCount() As Int32
-			If _settings.FirstLineContainsHeaders Then
-				Return _folders.Count - 1
-			End If
+		Private Function GetFolderCount() As Int32
 			Return _folders.Count
 		End Function
 
