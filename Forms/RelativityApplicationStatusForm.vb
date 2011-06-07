@@ -27,6 +27,7 @@ Public Class RelativityApplicationStatusForm
 
 	Private Const ArtifactNameColumnName As String = "Name"
 	Private Const ArtifactIDColumnName As String = "Artifact ID"
+	Private Const ArtifactGuidColumnName As String = "Artifact Guid"
 	Private Const ArtifactStatusColumnName As String = "Status"
 	Private Const ArtifactHiddenErrorColumnName As String = "Hidden Error"
 	Private Const ArtifactApplicationIdsColumnName As String = "Application IDs"
@@ -40,6 +41,7 @@ Public Class RelativityApplicationStatusForm
 	Private Const DropdownRenameInWorkspace As String = "Rename in Workspace"
 	Private Const DropdownRenameFriendlyNameInWorkspace As String = "Rename in Workspace"
 	Private Const DropdownRetryRename As String = "Rename in Workspace"
+	Private Const DropdownMap As String = "Harmonize"
 	Private Const ExpandText As String = "[+]"
 	Private Const CollapseText As String = "[-]"
 	Private Const HelpLink As String = "http://help.kcura.com/relativity/Relativity Applications/Using Relativity Applications for RDC - 7.0%23Resolving-Errors.pdf"
@@ -252,6 +254,7 @@ Public Class RelativityApplicationStatusForm
 		failedTable.Columns.Add(ArtifactHiddenErrorColumnName, GetType(TemplateManagerBase.StatusCode))
 		failedTable.Columns.Add(ArtifactNameColumnName, GetType(String))
 		failedTable.Columns.Add(ArtifactIDColumnName, GetType(Int32))
+		failedTable.Columns.Add(ArtifactGuidColumnName, GetType(Guid))
 		failedTable.Columns.Add("Object Type Name", GetType(String))
 		failedTable.Columns.Add("Artifact Type", GetType(String))
 		failedTable.Columns.Add(ArtifactTypeIDColumnName, GetType(TemplateManagerBase.ApplicationArtifactType))
@@ -295,6 +298,7 @@ Public Class RelativityApplicationStatusForm
 			 art.Status, _
 			 art.Name, _
 			 art.ArtifactId, _
+			 art.Guid, _
 			 parentName, _
 			 TypeToString(art.Type), _
 			 art.Type, _
@@ -338,6 +342,7 @@ Public Class RelativityApplicationStatusForm
 			ArtifactStatusTable.Columns("Locked Applications").Visible = False
 			ArtifactStatusTable.Columns(ArtifactHiddenErrorColumnName).Visible = False
 			ArtifactStatusTable.Columns(ArtifactIndexColumnName).Visible = False
+			ArtifactStatusTable.Columns(ArtifactGuidColumnName).Visible = False
 			ArtifactStatusTable.Columns(ArtifactTypeIDColumnName).Visible = False
 			ArtifactStatusTable.Columns(ArtifcactSelectedResolutionColumnName).Visible = False
 
@@ -730,21 +735,48 @@ Public Class RelativityApplicationStatusForm
 		Dim kvp As TemplateManagerBase.FieldKVP
 
 		For Each row As DataRow In artifactTables(currentResultIndex).Rows
-			If row.Item(ArtifcactSelectedResolutionColumnName) IsNot Nothing AndAlso Not String.Equals(row.Item(ArtifactStatusColumnName).ToString(), TemplateManagerBase.StatusCode.Updated.ToString(), StringComparison.InvariantCulture) Then
-				If (DirectCast(row.Item(ArtifactHiddenErrorColumnName), TemplateManagerBase.StatusCode) = TemplateManagerBase.StatusCode.NameConflict OrElse DirectCast(row.Item(ArtifactHiddenErrorColumnName), TemplateManagerBase.StatusCode) = TemplateManagerBase.StatusCode.FriendlyNameConflict) Then
-					kvp = New TemplateManagerBase.FieldKVP()
-					If CType(row.Item(ArtifactHiddenErrorColumnName), TemplateManagerBase.StatusCode) = TemplateManagerBase.StatusCode.FriendlyNameConflict Then
-						kvp.Key = "Friendly Name"
-					Else
-						kvp.Key = "Name"
+			If row.Item(ArtifcactSelectedResolutionColumnName) IsNot Nothing _
+			AndAlso Not String.Equals(row.Item(ArtifactStatusColumnName).ToString(), TemplateManagerBase.StatusCode.Updated.ToString(), StringComparison.InvariantCulture) Then
+				'(If it's an error row)
+
+				If (DirectCast(row.Item(ArtifactHiddenErrorColumnName), TemplateManagerBase.StatusCode) = TemplateManagerBase.StatusCode.NameConflict _
+				  OrElse DirectCast(row.Item(ArtifactHiddenErrorColumnName), TemplateManagerBase.StatusCode) = TemplateManagerBase.StatusCode.FriendlyNameConflict) Then
+					'(If it's a name or friendlyname conflict)
+
+					If String.Equals(row.Item(ArtifcactSelectedResolutionColumnName).ToString, DropdownRenameInWorkspace, StringComparison.InvariantCulture) _
+					 OrElse String.Equals(row.Item(ArtifcactSelectedResolutionColumnName).ToString, DropdownRenameFriendlyNameInWorkspace, StringComparison.InvariantCulture) Then
+						'(If it's a rename)
+
+						kvp = New TemplateManagerBase.FieldKVP()
+						If CType(row.Item(ArtifactHiddenErrorColumnName), TemplateManagerBase.StatusCode) = TemplateManagerBase.StatusCode.FriendlyNameConflict Then
+							kvp.Key = "Friendly Name"
+						Else
+							kvp.Key = "Name"
+						End If
+						kvp.Value = row.Item(ArtifactConflictNameColumnName)
+						resArts.Add(New TemplateManagerBase.ResolveArtifact() With { _
+						 .ArtifactID = CInt(row.Item(ArtifactConflictIDColumnName)), _
+						 .ArtifactTypeID = CType(row.Item(ArtifactTypeIDColumnName), TemplateManagerBase.ApplicationArtifactType), _
+						 .Fields = New TemplateManagerBase.FieldKVP() {kvp}, _
+						 .Action = TemplateManagerBase.ResolveAction.Update})
+
+					ElseIf String.Equals(row.Item(ArtifcactSelectedResolutionColumnName).ToString, DropdownMap, StringComparison.InvariantCulture) Then
+						'(If it's a mapping)
+
+						kvp = New TemplateManagerBase.FieldKVP()
+						kvp.Key = "Guid"
+						kvp.Value = row.Item(ArtifactGuidColumnName)
+						resArts.Add(New TemplateManagerBase.ResolveArtifact() With { _
+						 .ArtifactID = CInt(row.Item(ArtifactConflictIDColumnName)), _
+						 .ArtifactTypeID = CType(row.Item(ArtifactTypeIDColumnName), TemplateManagerBase.ApplicationArtifactType), _
+						 .Fields = New TemplateManagerBase.FieldKVP() {kvp}, _
+						 .Action = TemplateManagerBase.ResolveAction.Update})
 					End If
-					kvp.Value = row.Item(ArtifactConflictNameColumnName)
-					resArts.Add(New TemplateManagerBase.ResolveArtifact() With { _
-					 .ArtifactID = CInt(row.Item(ArtifactConflictIDColumnName)), _
-					 .ArtifactTypeID = CType(row.Item(ArtifactTypeIDColumnName),  _
-					 TemplateManagerBase.ApplicationArtifactType), .Fields = New TemplateManagerBase.FieldKVP() {kvp}, _
-					 .Action = TemplateManagerBase.ResolveAction.Update})
-				ElseIf (DirectCast(row.Item(ArtifactHiddenErrorColumnName), TemplateManagerBase.StatusCode) = TemplateManagerBase.StatusCode.RenameConflict OrElse DirectCast(row.Item(ArtifactHiddenErrorColumnName), TemplateManagerBase.StatusCode) = TemplateManagerBase.StatusCode.RenameFriendlyNameConflict) Then
+
+				ElseIf (DirectCast(row.Item(ArtifactHiddenErrorColumnName), TemplateManagerBase.StatusCode) = TemplateManagerBase.StatusCode.RenameConflict _
+				  OrElse DirectCast(row.Item(ArtifactHiddenErrorColumnName), TemplateManagerBase.StatusCode) = TemplateManagerBase.StatusCode.RenameFriendlyNameConflict) Then
+					'(Else, If it's a rename or rename friendlyname conflict)
+
 					kvp = New TemplateManagerBase.FieldKVP()
 					kvp.Key = "Name"
 					kvp.Value = row.Item(ArtifactConflictNameColumnName)
@@ -754,7 +786,7 @@ Public Class RelativityApplicationStatusForm
 					 .Fields = New TemplateManagerBase.FieldKVP() {kvp}, _
 					 .Action = TemplateManagerBase.ResolveAction.Update})
 				End If
-			End If
+				End If
 		Next
 
 		Return resArts.ToArray()
