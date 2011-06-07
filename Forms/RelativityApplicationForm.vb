@@ -11,7 +11,7 @@ Namespace kCura.EDDS.WinForm
 		Private _caseInfos As Generic.List(Of Relativity.CaseInfo)
 		Private _document As Xml.XmlDocument
 		Friend WithEvents ImportButton As System.Windows.Forms.Button
-		Friend WithEvents CloseButton As System.Windows.Forms.Button
+		Friend WithEvents MapFieldsButton As System.Windows.Forms.Button
 		Private _filename As String
 
 #Region " Windows Form Designer generated code "
@@ -88,7 +88,7 @@ Namespace kCura.EDDS.WinForm
 			Me.BrowseCasesButton = New System.Windows.Forms.Button()
 			Me.CaseListTextBox = New System.Windows.Forms.TextBox()
 			Me.ImportButton = New System.Windows.Forms.Button()
-			Me.CloseButton = New System.Windows.Forms.Button()
+			Me.MapFieldsButton = New System.Windows.Forms.Button()
 			Me.ApplicationFileGroupBox.SuspendLayout()
 			Me.ApplicationInformationGroupBox.SuspendLayout()
 			Me.ApplicationArtifactsGroupBox.SuspendLayout()
@@ -143,7 +143,7 @@ Namespace kCura.EDDS.WinForm
 			Me.ApplicationFileGroupBox.Controls.Add(Me.FilePath)
 			Me.ApplicationFileGroupBox.Location = New System.Drawing.Point(15, 12)
 			Me.ApplicationFileGroupBox.Name = "ApplicationFileGroupBox"
-			Me.ApplicationFileGroupBox.Size = New System.Drawing.Size(611, 48)
+			Me.ApplicationFileGroupBox.Size = New System.Drawing.Size(849, 48)
 			Me.ApplicationFileGroupBox.TabIndex = 1
 			Me.ApplicationFileGroupBox.TabStop = False
 			Me.ApplicationFileGroupBox.Text = "Application File"
@@ -151,7 +151,7 @@ Namespace kCura.EDDS.WinForm
 			'BrowseButton
 			'
 			Me.BrowseButton.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-			Me.BrowseButton.Location = New System.Drawing.Point(577, 16)
+			Me.BrowseButton.Location = New System.Drawing.Point(815, 16)
 			Me.BrowseButton.Name = "BrowseButton"
 			Me.BrowseButton.Size = New System.Drawing.Size(24, 20)
 			Me.BrowseButton.TabIndex = 3
@@ -167,7 +167,7 @@ Namespace kCura.EDDS.WinForm
 			Me.FilePath.Location = New System.Drawing.Point(8, 16)
 			Me.FilePath.Name = "FilePath"
 			Me.FilePath.ReadOnly = True
-			Me.FilePath.Size = New System.Drawing.Size(563, 20)
+			Me.FilePath.Size = New System.Drawing.Size(801, 20)
 			Me.FilePath.TabIndex = 2
 			Me.FilePath.Text = "Select a file ..."
 			'
@@ -181,7 +181,7 @@ Namespace kCura.EDDS.WinForm
 			Me.ApplicationInformationGroupBox.Controls.Add(Me.NameLabel)
 			Me.ApplicationInformationGroupBox.Location = New System.Drawing.Point(15, 127)
 			Me.ApplicationInformationGroupBox.Name = "ApplicationInformationGroupBox"
-			Me.ApplicationInformationGroupBox.Size = New System.Drawing.Size(611, 88)
+			Me.ApplicationInformationGroupBox.Size = New System.Drawing.Size(849, 88)
 			Me.ApplicationInformationGroupBox.TabIndex = 7
 			Me.ApplicationInformationGroupBox.TabStop = False
 			Me.ApplicationInformationGroupBox.Text = "Application Information"
@@ -193,7 +193,7 @@ Namespace kCura.EDDS.WinForm
 			Me.ApplicationName.Location = New System.Drawing.Point(60, 24)
 			Me.ApplicationName.Name = "ApplicationName"
 			Me.ApplicationName.ReadOnly = True
-			Me.ApplicationName.Size = New System.Drawing.Size(543, 20)
+			Me.ApplicationName.Size = New System.Drawing.Size(781, 20)
 			Me.ApplicationName.TabIndex = 8
 			'
 			'ApplicationVersion
@@ -203,7 +203,7 @@ Namespace kCura.EDDS.WinForm
 			Me.ApplicationVersion.Location = New System.Drawing.Point(60, 56)
 			Me.ApplicationVersion.Name = "ApplicationVersion"
 			Me.ApplicationVersion.ReadOnly = True
-			Me.ApplicationVersion.Size = New System.Drawing.Size(543, 20)
+			Me.ApplicationVersion.Size = New System.Drawing.Size(781, 20)
 			Me.ApplicationVersion.TabIndex = 9
 			'
 			'VersionLabel
@@ -230,7 +230,7 @@ Namespace kCura.EDDS.WinForm
 			Me.ApplicationArtifactsGroupBox.Controls.Add(Me.TreeView1)
 			Me.ApplicationArtifactsGroupBox.Location = New System.Drawing.Point(13, 221)
 			Me.ApplicationArtifactsGroupBox.Name = "ApplicationArtifactsGroupBox"
-			Me.ApplicationArtifactsGroupBox.Size = New System.Drawing.Size(610, 242)
+			Me.ApplicationArtifactsGroupBox.Size = New System.Drawing.Size(848, 369)
 			Me.ApplicationArtifactsGroupBox.TabIndex = 10
 			Me.ApplicationArtifactsGroupBox.TabStop = False
 			Me.ApplicationArtifactsGroupBox.Text = "Application Artifacts"
@@ -240,7 +240,7 @@ Namespace kCura.EDDS.WinForm
 			Me.TreeView1.Dock = System.Windows.Forms.DockStyle.Fill
 			Me.TreeView1.Location = New System.Drawing.Point(3, 16)
 			Me.TreeView1.Name = "TreeView1"
-			Me.TreeView1.Size = New System.Drawing.Size(604, 223)
+			Me.TreeView1.Size = New System.Drawing.Size(842, 350)
 			Me.TreeView1.TabIndex = 8
 			'
 			'GroupBox1
@@ -251,15 +251,15 @@ Namespace kCura.EDDS.WinForm
 			Me.GroupBox1.Controls.Add(Me.CaseListTextBox)
 			Me.GroupBox1.Location = New System.Drawing.Point(15, 66)
 			Me.GroupBox1.Name = "GroupBox1"
-			Me.GroupBox1.Size = New System.Drawing.Size(611, 55)
+			Me.GroupBox1.Size = New System.Drawing.Size(849, 55)
 			Me.GroupBox1.TabIndex = 4
 			Me.GroupBox1.TabStop = False
-			Me.GroupBox1.Text = "Application Workspaces"
+			Me.GroupBox1.Text = "Target Workspace"
 			'
 			'BrowseCasesButton
 			'
 			Me.BrowseCasesButton.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-			Me.BrowseCasesButton.Location = New System.Drawing.Point(577, 23)
+			Me.BrowseCasesButton.Location = New System.Drawing.Point(815, 23)
 			Me.BrowseCasesButton.Name = "BrowseCasesButton"
 			Me.BrowseCasesButton.Size = New System.Drawing.Size(24, 20)
 			Me.BrowseCasesButton.TabIndex = 6
@@ -275,7 +275,7 @@ Namespace kCura.EDDS.WinForm
 			Me.CaseListTextBox.Location = New System.Drawing.Point(8, 23)
 			Me.CaseListTextBox.Name = "CaseListTextBox"
 			Me.CaseListTextBox.ReadOnly = True
-			Me.CaseListTextBox.Size = New System.Drawing.Size(563, 20)
+			Me.CaseListTextBox.Size = New System.Drawing.Size(801, 20)
 			Me.CaseListTextBox.TabIndex = 5
 			Me.CaseListTextBox.Text = "Select a workspace  ..."
 			'
@@ -283,28 +283,28 @@ Namespace kCura.EDDS.WinForm
 			'
 			Me.ImportButton.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me.ImportButton.Enabled = False
-			Me.ImportButton.Location = New System.Drawing.Point(467, 469)
+			Me.ImportButton.Location = New System.Drawing.Point(693, 596)
 			Me.ImportButton.Name = "ImportButton"
 			Me.ImportButton.Size = New System.Drawing.Size(75, 23)
 			Me.ImportButton.TabIndex = 11
 			Me.ImportButton.Text = "Import"
 			Me.ImportButton.UseVisualStyleBackColor = True
 			'
-			'CloseButton
+			'MapFieldsButton
 			'
-			Me.CloseButton.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-			Me.CloseButton.Location = New System.Drawing.Point(548, 469)
-			Me.CloseButton.Name = "CloseButton"
-			Me.CloseButton.Size = New System.Drawing.Size(75, 23)
-			Me.CloseButton.TabIndex = 12
-			Me.CloseButton.Text = "Close"
-			Me.CloseButton.UseVisualStyleBackColor = True
+			Me.MapFieldsButton.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+			Me.MapFieldsButton.Location = New System.Drawing.Point(774, 596)
+			Me.MapFieldsButton.Name = "MapFieldsButton"
+			Me.MapFieldsButton.Size = New System.Drawing.Size(87, 23)
+			Me.MapFieldsButton.TabIndex = 12
+			Me.MapFieldsButton.Text = "Map Fields >>"
+			Me.MapFieldsButton.UseVisualStyleBackColor = True
 			'
 			'RelativityApplicationForm
 			'
 			Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
-			Me.ClientSize = New System.Drawing.Size(638, 501)
-			Me.Controls.Add(Me.CloseButton)
+			Me.ClientSize = New System.Drawing.Size(876, 628)
+			Me.Controls.Add(Me.MapFieldsButton)
 			Me.Controls.Add(Me.ImportButton)
 			Me.Controls.Add(Me.GroupBox1)
 			Me.Controls.Add(Me.ApplicationArtifactsGroupBox)
@@ -343,7 +343,7 @@ Namespace kCura.EDDS.WinForm
 			End If
 		End Sub
 
-		Private Sub MenuFile_Close_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles MenuFile_Close.Click, CloseButton.Click
+		Private Sub MenuFile_Close_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles MenuFile_Close.Click
 			Me.Close()
 		End Sub
 
@@ -521,5 +521,22 @@ Namespace kCura.EDDS.WinForm
 
 #End Region
 
+		Private Sub MapFieldsButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MapFieldsButton.Click
+			If MapFieldsButton.Text.Equals("Map Fields >>") Then
+				MapFieldsButton.Text = "<< Back"
+
+				BrowseButton.Visible = False
+				FilePath.Enabled = False
+				ApplicationArtifactsGroupBox.Visible = False
+				TreeView1.Visible = False
+			Else
+				MapFieldsButton.Text = "Map Fields >>"
+
+				BrowseButton.Visible = True
+				FilePath.Enabled = True
+				ApplicationArtifactsGroupBox.Visible = True
+				TreeView1.Visible = True
+			End If
+		End Sub
 	End Class
 End Namespace
