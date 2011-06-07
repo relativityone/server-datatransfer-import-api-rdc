@@ -298,7 +298,7 @@ Public Class RelativityApplicationStatusForm
 			 art.Status, _
 			 art.Name, _
 			 art.ArtifactId, _
-			 art.Guid, _
+			 art.Guids, _
 			 parentName, _
 			 TypeToString(art.Type), _
 			 art.Type, _
@@ -342,7 +342,6 @@ Public Class RelativityApplicationStatusForm
 			ArtifactStatusTable.Columns("Locked Applications").Visible = False
 			ArtifactStatusTable.Columns(ArtifactHiddenErrorColumnName).Visible = False
 			ArtifactStatusTable.Columns(ArtifactIndexColumnName).Visible = False
-			ArtifactStatusTable.Columns(ArtifactGuidColumnName).Visible = False
 			ArtifactStatusTable.Columns(ArtifactTypeIDColumnName).Visible = False
 			ArtifactStatusTable.Columns(ArtifcactSelectedResolutionColumnName).Visible = False
 
