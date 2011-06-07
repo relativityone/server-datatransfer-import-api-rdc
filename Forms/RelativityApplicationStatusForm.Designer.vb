@@ -51,9 +51,9 @@ Partial Class RelativityApplicationStatusForm
 		Me.StatusHeader.Font = New System.Drawing.Font("Microsoft Sans Serif", 14.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
 		Me.StatusHeader.Location = New System.Drawing.Point(0, 2)
 		Me.StatusHeader.Name = "StatusHeader"
-		Me.StatusHeader.Size = New System.Drawing.Size(212, 24)
+		Me.StatusHeader.Size = New System.Drawing.Size(178, 24)
 		Me.StatusHeader.TabIndex = 0
-		Me.StatusHeader.Text = "Installation Status Report"
+		Me.StatusHeader.Text = "Import Status Report"
 		'
 		'ArtifactStatusTable
 		'
@@ -62,8 +62,8 @@ Partial Class RelativityApplicationStatusForm
 		DataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.[True]
 		Me.ArtifactStatusTable.AlternatingRowsDefaultCellStyle = DataGridViewCellStyle1
 		Me.ArtifactStatusTable.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-								Or System.Windows.Forms.AnchorStyles.Left) _
-								Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+						Or System.Windows.Forms.AnchorStyles.Left) _
+						Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 		Me.ArtifactStatusTable.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.DisplayedCells
 		Me.ArtifactStatusTable.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
 		Me.ArtifactStatusTable.Location = New System.Drawing.Point(3, 3)
@@ -79,8 +79,8 @@ Partial Class RelativityApplicationStatusForm
 		'InformationText
 		'
 		Me.InformationText.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-								Or System.Windows.Forms.AnchorStyles.Left) _
-								Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+						Or System.Windows.Forms.AnchorStyles.Left) _
+						Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 		Me.InformationText.AutoSize = True
 		Me.InformationText.ContextMenuStrip = Me.CopyErrorMenu
 		Me.InformationText.LinkArea = New System.Windows.Forms.LinkArea(0, 0)
@@ -105,8 +105,8 @@ Partial Class RelativityApplicationStatusForm
 		'MainSplitContainer
 		'
 		Me.MainSplitContainer.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-								Or System.Windows.Forms.AnchorStyles.Left) _
-								Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+						Or System.Windows.Forms.AnchorStyles.Left) _
+						Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 		Me.MainSplitContainer.Location = New System.Drawing.Point(0, 36)
 		Me.MainSplitContainer.Name = "MainSplitContainer"
 		Me.MainSplitContainer.Orientation = System.Windows.Forms.Orientation.Horizontal
@@ -191,7 +191,7 @@ Partial Class RelativityApplicationStatusForm
 		Me.MinimumSize = New System.Drawing.Size(380, 395)
 		Me.Name = "RelativityApplicationStatusForm"
 		Me.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Show
-		Me.Text = "Relativity Desktop Client | Installation Status"
+		Me.Text = "Relativity Desktop Client | Import Status"
 		CType(Me.ArtifactStatusTable, System.ComponentModel.ISupportInitialize).EndInit()
 		Me.CopyErrorMenu.ResumeLayout(False)
 		Me.MainSplitContainer.Panel1.ResumeLayout(False)
