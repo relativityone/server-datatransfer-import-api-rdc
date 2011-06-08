@@ -27,7 +27,7 @@ Public Class RelativityApplicationStatusForm
 
 	Private Const ArtifactNameColumnName As String = "Name"
 	Private Const ArtifactIDColumnName As String = "Artifact ID"
-	Private Const ArtifactGuidColumnName As String = "Artifact Guid"
+	Private Const ArtifactGuidColumnName As String = "Artifact Guids"
 	Private Const ArtifactStatusColumnName As String = "Status"
 	Private Const ArtifactHiddenErrorColumnName As String = "Hidden Error"
 	Private Const ArtifactApplicationIdsColumnName As String = "Application IDs"
@@ -254,7 +254,7 @@ Public Class RelativityApplicationStatusForm
 		failedTable.Columns.Add(ArtifactHiddenErrorColumnName, GetType(TemplateManagerBase.StatusCode))
 		failedTable.Columns.Add(ArtifactNameColumnName, GetType(String))
 		failedTable.Columns.Add(ArtifactIDColumnName, GetType(Int32))
-		failedTable.Columns.Add(ArtifactGuidColumnName, GetType(Guid))
+		failedTable.Columns.Add(ArtifactGuidColumnName, GetType(Guid()))
 		failedTable.Columns.Add("Object Type Name", GetType(String))
 		failedTable.Columns.Add("Artifact Type", GetType(String))
 		failedTable.Columns.Add(ArtifactTypeIDColumnName, GetType(TemplateManagerBase.ApplicationArtifactType))
