@@ -825,6 +825,12 @@
     <None Include="Web References\kCura.EDDS.WebAPI.TemplateManagerBase\ApplicationInstallationResult.datasource">
       <DependentUpon>Reference.map</DependentUpon>
     </None>
+    <None Include="Web References\kCura.EDDS.WebAPI.TemplateManagerBase\KeyValuePairOfStringString.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\kCura.EDDS.WebAPI.TemplateManagerBase\ObjectValidationResult.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
     <None Include="Web References\kCura.EDDS.WebAPI.TemplateManagerBase\Reference.map">
       <Generator>MSDiscoCodeGenerator</Generator>
       <LastGenOutput>Reference.vb</LastGenOutput>

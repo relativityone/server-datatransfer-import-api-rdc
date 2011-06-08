@@ -170,13 +170,13 @@ Namespace kCura.EDDS.WebAPI.TemplateManagerBase
         
         '''<remarks/>
         <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/TemplateManager/GetAvailableObjectsForMapping", RequestNamespace:="http://www.kCura.com/EDDS/TemplateManager", ResponseNamespace:="http://www.kCura.com/EDDS/TemplateManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
-        Public Function GetAvailableObjectsForMapping(ByVal workspaceID As Integer, ByVal objectGuids() As String) As <System.Xml.Serialization.XmlArrayItemAttribute(IsNullable:=false)> KeyValuePairOfStringString()
+        Public Function GetAvailableObjectsForMapping(ByVal workspaceID As Integer, ByVal objectGuids() As System.Guid) As <System.Xml.Serialization.XmlArrayItemAttribute(IsNullable:=false)> KeyValuePairOfStringString()
             Dim results() As Object = Me.Invoke("GetAvailableObjectsForMapping", New Object() {workspaceID, objectGuids})
             Return CType(results(0),KeyValuePairOfStringString())
         End Function
         
         '''<remarks/>
-        Public Function BeginGetAvailableObjectsForMapping(ByVal workspaceID As Integer, ByVal objectGuids() As String, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+        Public Function BeginGetAvailableObjectsForMapping(ByVal workspaceID As Integer, ByVal objectGuids() As System.Guid, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
             Return Me.BeginInvoke("GetAvailableObjectsForMapping", New Object() {workspaceID, objectGuids}, callback, asyncState)
         End Function
         
@@ -187,12 +187,12 @@ Namespace kCura.EDDS.WebAPI.TemplateManagerBase
         End Function
         
         '''<remarks/>
-        Public Overloads Sub GetAvailableObjectsForMappingAsync(ByVal workspaceID As Integer, ByVal objectGuids() As String)
+        Public Overloads Sub GetAvailableObjectsForMappingAsync(ByVal workspaceID As Integer, ByVal objectGuids() As System.Guid)
             Me.GetAvailableObjectsForMappingAsync(workspaceID, objectGuids, Nothing)
         End Sub
         
         '''<remarks/>
-        Public Overloads Sub GetAvailableObjectsForMappingAsync(ByVal workspaceID As Integer, ByVal objectGuids() As String, ByVal userState As Object)
+        Public Overloads Sub GetAvailableObjectsForMappingAsync(ByVal workspaceID As Integer, ByVal objectGuids() As System.Guid, ByVal userState As Object)
             If (Me.GetAvailableObjectsForMappingOperationCompleted Is Nothing) Then
                 Me.GetAvailableObjectsForMappingOperationCompleted = AddressOf Me.OnGetAvailableObjectsForMappingOperationCompleted
             End If
@@ -208,13 +208,13 @@ Namespace kCura.EDDS.WebAPI.TemplateManagerBase
         
         '''<remarks/>
         <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/TemplateManager/GetAvailableFieldsForMapping", RequestNamespace:="http://www.kCura.com/EDDS/TemplateManager", ResponseNamespace:="http://www.kCura.com/EDDS/TemplateManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
-        Public Function GetAvailableFieldsForMapping(ByVal workspaceID As Integer, ByVal objectGuid As String, ByVal fieldElements() As FieldElement) As ObjectValidationResult
+        Public Function GetAvailableFieldsForMapping(ByVal workspaceID As Integer, ByVal objectGuid As System.Guid, ByVal fieldElements() As FieldElement) As ObjectValidationResult
             Dim results() As Object = Me.Invoke("GetAvailableFieldsForMapping", New Object() {workspaceID, objectGuid, fieldElements})
             Return CType(results(0),ObjectValidationResult)
         End Function
         
         '''<remarks/>
-        Public Function BeginGetAvailableFieldsForMapping(ByVal workspaceID As Integer, ByVal objectGuid As String, ByVal fieldElements() As FieldElement, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+        Public Function BeginGetAvailableFieldsForMapping(ByVal workspaceID As Integer, ByVal objectGuid As System.Guid, ByVal fieldElements() As FieldElement, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
             Return Me.BeginInvoke("GetAvailableFieldsForMapping", New Object() {workspaceID, objectGuid, fieldElements}, callback, asyncState)
         End Function
         
@@ -225,12 +225,12 @@ Namespace kCura.EDDS.WebAPI.TemplateManagerBase
         End Function
         
         '''<remarks/>
-        Public Overloads Sub GetAvailableFieldsForMappingAsync(ByVal workspaceID As Integer, ByVal objectGuid As String, ByVal fieldElements() As FieldElement)
+        Public Overloads Sub GetAvailableFieldsForMappingAsync(ByVal workspaceID As Integer, ByVal objectGuid As System.Guid, ByVal fieldElements() As FieldElement)
             Me.GetAvailableFieldsForMappingAsync(workspaceID, objectGuid, fieldElements, Nothing)
         End Sub
         
         '''<remarks/>
-        Public Overloads Sub GetAvailableFieldsForMappingAsync(ByVal workspaceID As Integer, ByVal objectGuid As String, ByVal fieldElements() As FieldElement, ByVal userState As Object)
+        Public Overloads Sub GetAvailableFieldsForMappingAsync(ByVal workspaceID As Integer, ByVal objectGuid As System.Guid, ByVal fieldElements() As FieldElement, ByVal userState As Object)
             If (Me.GetAvailableFieldsForMappingOperationCompleted Is Nothing) Then
                 Me.GetAvailableFieldsForMappingOperationCompleted = AddressOf Me.OnGetAvailableFieldsForMappingOperationCompleted
             End If
@@ -357,6 +357,8 @@ Namespace kCura.EDDS.WebAPI.TemplateManagerBase
         Private formatStringField As String
         
         Private friendlyNameField As String
+        
+        Private guidsField() As System.Guid
         
         Private guidField As System.Guid
         
@@ -579,6 +581,17 @@ Namespace kCura.EDDS.WebAPI.TemplateManagerBase
             End Get
             Set
                 Me.friendlyNameField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        <System.Xml.Serialization.XmlElementAttribute("Guids")>  _
+        Public Property Guids() As System.Guid()
+            Get
+                Return Me.guidsField
+            End Get
+            Set
+                Me.guidsField = value
             End Set
         End Property
         
@@ -1432,7 +1445,7 @@ Namespace kCura.EDDS.WebAPI.TemplateManagerBase
         
         Private artifactIdField As Integer
         
-        Private guidField As System.Guid
+        Private guidsField() As System.Guid
         
         Private nameField As String
         
@@ -1471,12 +1484,12 @@ Namespace kCura.EDDS.WebAPI.TemplateManagerBase
         End Property
         
         '''<remarks/>
-        Public Property Guid() As System.Guid
+        Public Property Guids() As System.Guid()
             Get
-                Return Me.guidField
+                Return Me.guidsField
             End Get
             Set
-                Me.guidField = value
+                Me.guidsField = value
             End Set
         End Property
         
