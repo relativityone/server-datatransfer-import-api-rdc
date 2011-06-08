@@ -166,7 +166,14 @@ Namespace kCura.WinEDDS
 			Next
 
 			'Parse up to the first X lines in the file and track the folders and choices that will be created
-			While Not Me.HasReachedEOF And Me.GetActualLineCount < kCura.WinEDDS.Config.PREVIEW_THRESHOLD And _continue
+			While Not Me.HasReachedEOF And _continue
+				'Get the line
+				lineToParse = Me.GetLine()
+				onFirstLine = False
+				If Me.GetActualLineCount >= kCura.WinEDDS.Config.PREVIEW_THRESHOLD Then
+					Continue While 'Just keep skipping lines until we get to the end so we report the correct line count
+				End If
+
 				'Report progress
 				currentRun = System.DateTime.Now.Ticks
 				If currentRun - lastRun > 10000000 Then
@@ -176,13 +183,10 @@ Namespace kCura.WinEDDS
 
 				'Skip first line if needed
 				If _settings.FirstLineContainsHeaders And onFirstLine Then
-					AdvanceLine()
-					onFirstLine = False
 					Continue While
 				End If
 
 				'Parse each line and track folders and choices.
-				lineToParse = Me.GetLine()
 				If checkFolders Then AddFolder(lineToParse.GetValue(folderColumnIndex).ToString)
 				If checkChoices Then
 					For Each choiceColumnIdx As Int32 In _choicesTable.Keys
