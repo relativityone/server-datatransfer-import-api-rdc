@@ -167,19 +167,14 @@ Namespace kCura.WinEDDS
 
 			'Parse up to the first X lines in the file and track the folders and choices that will be created
 			While Not Me.HasReachedEOF And _continue
-				'Get the line
-				lineToParse = Me.GetLine()
-				onFirstLine = False
 				If Me.GetActualLineCount >= kCura.WinEDDS.Config.PREVIEW_THRESHOLD Then
+					AdvanceLine()
 					Continue While 'Just keep skipping lines until we get to the end so we report the correct line count
 				End If
 
-				'Report progress
-				currentRun = System.DateTime.Now.Ticks
-				If currentRun - lastRun > 10000000 Then
-					lastRun = currentRun
-					Me.ProcessProgress(Me.CurrentLineNumber, Me.Reader.BaseStream.Position, fileSize, stepSize)
-				End If
+				'Get the line
+				lineToParse = Me.GetLine()
+				onFirstLine = False
 
 				'Skip first line if needed
 				If _settings.FirstLineContainsHeaders And onFirstLine Then
@@ -191,13 +186,20 @@ Namespace kCura.WinEDDS
 				If checkChoices Then
 					For Each choiceColumnIdx As Int32 In _choicesTable.Keys
 						Dim choiceVal As String = lineToParse.GetValue(choiceColumnIdx).ToString
-						'Choices can be imported as comma-delimited strings for multi-choices, need to look at each choice
+						'Choices can be imported as -delimited strings for multi-choices, need to look at each choice
 						For Each choiceSet As String In choiceVal.Split(New Char() {";"c})
 							For Each choiceItem In choiceSet.Split(New Char() {"\"c})
 								_choicesTable(choiceColumnIdx)(choiceItem) = True
 							Next
 						Next
 					Next
+				End If
+
+				'Report progress
+				currentRun = System.DateTime.Now.Ticks
+				If currentRun - lastRun > 10000000 Then
+					lastRun = currentRun
+					Me.ProcessProgress(Me.CurrentLineNumber, Me.Reader.BaseStream.Position, fileSize, stepSize)
 				End If
 
 			End While
@@ -213,7 +215,7 @@ Namespace kCura.WinEDDS
 				Dim reportFolders As Boolean = checkFolders AndAlso Me.GetFolderCount > 0
 				Dim reportChoices As Boolean = checkChoices AndAlso Me.GetMaxChoiceCount > choiceCountThreshold
 				If reportFolders Or reportChoices Then
-					Dim popupMsg As String = BuildImportWarningMessage(Me.GetActualLineCount, reportFolders, Me.GetFolderCount, reportChoices, Me.GetMaxChoiceCount)
+					Dim popupMsg As String = BuildImportWarningMessage(kCura.WinEDDS.Config.PREVIEW_THRESHOLD, reportFolders, Me.GetFolderCount, reportChoices, Me.GetMaxChoiceCount)
 					popupRetVal = MsgBox(popupMsg, (MsgBoxStyle.YesNo Or MsgBoxStyle.ApplicationModal), "Relativity Desktop Client")
 					If popupRetVal <> MsgBoxResult.Yes Then
 						Me.ProcessCancel(Me.CurrentLineNumber, Me.Reader.BaseStream.Position, fileSize, stepSize)
@@ -227,12 +229,12 @@ Namespace kCura.WinEDDS
 			Return Nothing
 		End Function
 
-		Private Function BuildImportWarningMessage(ByVal lineCount As Int32, ByVal reportFolders As Boolean, ByVal numOfFolders As Int32, ByVal reportChoices As Boolean, ByVal numOfChoices As Int32) As String
+		Private Function BuildImportWarningMessage(ByVal currentLineCount As Int32, ByVal reportFolders As Boolean, ByVal numOfFolders As Int32, ByVal reportChoices As Boolean, ByVal numOfChoices As Int32) As String
 			Dim snippetList As New List(Of String)
 			If reportFolders Then snippetList.Add(String.Format("{0} folders", numOfFolders))
 			If reportChoices Then snippetList.Add(String.Format("{0} choices in a single field", numOfChoices))
 			Dim countSegment As String = String.Join(" and ", snippetList.ToArray())
-			Return String.Format("The first {0} records of this load file will create {1}.  Would you like to continue?", lineCount, countSegment)
+			Return String.Format("The first {0} records of this load file will create {1}.  Would you like to continue?", currentLineCount, countSegment)
 		End Function
 
 		Private Function GetActualLineCount() As Int32
