@@ -174,11 +174,12 @@ Namespace kCura.WinEDDS
 
 				'Get the line
 				lineToParse = Me.GetLine()
-				onFirstLine = False
-
-				'Skip first line if needed
-				If _settings.FirstLineContainsHeaders And onFirstLine Then
-					Continue While
+				If onFirstLine Then
+					onFirstLine = False
+					'Skip first line if needed
+					If _settings.FirstLineContainsHeaders Then
+						Continue While
+					End If
 				End If
 
 				'Parse each line and track folders and choices.
