@@ -66,6 +66,7 @@
           <s:element minOccurs="0" maxOccurs="1" name="StatusMessage" type="s:string" />
           <s:element minOccurs="0" maxOccurs="1" name="StatusDetails" type="s:string" />
           <s:element minOccurs="0" maxOccurs="1" name="Applications" type="tns:ArrayOfApplication" />
+          <s:element minOccurs="1" maxOccurs="1" name="IsMappable" type="s:boolean" />
         </s:sequence>
       </s:complexType>
       <s:complexType name="ArrayOfGuid">
@@ -190,6 +191,7 @@
             <s:element minOccurs="1" maxOccurs="1" name="workspaceID" type="s:int" />
             <s:element minOccurs="1" maxOccurs="1" name="objectGuid" type="s1:guid" />
             <s:element minOccurs="0" maxOccurs="1" name="fieldElements" type="tns:ArrayOfFieldElement" />
+            <s:element minOccurs="0" maxOccurs="1" name="artifactTypeToGuidsMap" type="tns:ArrayOfArtifactTypeIDToObjectGuids" />
           </s:sequence>
         </s:complexType>
       </s:element>
@@ -285,6 +287,22 @@
           <s:element minOccurs="0" maxOccurs="1" name="Src" type="s:string" />
           <s:element minOccurs="0" maxOccurs="1" name="Type" type="s:string" />
           <s:element minOccurs="1" maxOccurs="1" name="ViewId" type="s:int" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="ArrayOfArtifactTypeIDToObjectGuids">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="ArtifactTypeIDToObjectGuids" nillable="true" type="tns:ArtifactTypeIDToObjectGuids" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="ArtifactTypeIDToObjectGuids">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="ArtifactTypeID" type="s:int" />
+          <s:element minOccurs="0" maxOccurs="1" name="ObjectGuids" type="tns:ArrayOfGuid1" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="ArrayOfGuid1">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="ObjectGuid" type="s1:guid" />
         </s:sequence>
       </s:complexType>
       <s:complexType name="ObjectValidationResult">
