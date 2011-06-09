@@ -148,7 +148,6 @@ Namespace kCura.WinEDDS
 			Dim currentRun As Int64 = System.DateTime.Now.Ticks
 			Dim lastRun As Int64 = currentRun
 			Dim showedPopup As Boolean = False
-			Dim popupRetVal As Int32 = -1
 			Dim lineToParse As String()
 			Dim checkFolders As Boolean = NeedToCheckFolders()
 			Dim checkChoices As Boolean = NeedToCheckChoices()
@@ -160,14 +159,15 @@ Namespace kCura.WinEDDS
 			'Prepare the choice count columns
 			_choicesTable.Clear()
 			For Each item As LoadFileFieldMap.LoadFileFieldMapItem In _fieldMap.ToArray() _
-				.Where(Function(mitem) mitem.DocumentField.FieldTypeID = Relativity.FieldTypeHelper.FieldType.Code Or mitem.DocumentField.FieldTypeID = Relativity.FieldTypeHelper.FieldType.MultiCode)
+			 .Where(Function(mitem) mitem.DocumentField.FieldTypeID = Relativity.FieldTypeHelper.FieldType.Code Or mitem.DocumentField.FieldTypeID = Relativity.FieldTypeHelper.FieldType.MultiCode)
 
 				_choicesTable(item.NativeFileColumnIndex) = New Dictionary(Of String, Boolean)
 			Next
 
 			'Parse up to the first X lines in the file and track the folders and choices that will be created
+			Dim warningDialogShown = False
 			While Not Me.HasReachedEOF And _continue
-				If Me.GetActualLineCount >= kCura.WinEDDS.Config.PREVIEW_THRESHOLD Then
+				If Me.CurrentLineNumber >= kCura.WinEDDS.Config.PREVIEW_THRESHOLD Then
 					AdvanceLine()
 					Continue While 'Just keep skipping lines until we get to the end so we report the correct line count
 				End If
@@ -196,6 +196,15 @@ Namespace kCura.WinEDDS
 					Next
 				End If
 
+				'Display warning message to user about folders and choices
+				If Me.CurrentLineNumber = kCura.WinEDDS.Config.PREVIEW_THRESHOLD Then
+					If Not DisplayFolderAndChoiceWarning(checkFolders, checkChoices) Then
+						Me.ProcessCancel(Me.CurrentLineNumber, Me.Reader.BaseStream.Position, fileSize, stepSize)
+						Return Nothing
+					End If
+					showedPopup = True
+				End If
+
 				'Report progress
 				currentRun = System.DateTime.Now.Ticks
 				If currentRun - lastRun > 10000000 Then
@@ -205,23 +214,11 @@ Namespace kCura.WinEDDS
 
 			End While
 
-			'Determine choice threshold
-			Dim choiceCountThreshold As Int32
-			If checkChoices Then
-				choiceCountThreshold = _codeManager.GetChoiceLimitForUI()
-			End If
-
 			'Display choice and folder warning to the user
-			If _continue Then
-				Dim reportFolders As Boolean = checkFolders AndAlso Me.GetFolderCount > 0
-				Dim reportChoices As Boolean = checkChoices AndAlso Me.GetMaxChoiceCount > choiceCountThreshold
-				If reportFolders Or reportChoices Then
-					Dim popupMsg As String = BuildImportWarningMessage(kCura.WinEDDS.Config.PREVIEW_THRESHOLD, reportFolders, Me.GetFolderCount, reportChoices, Me.GetMaxChoiceCount)
-					popupRetVal = MsgBox(popupMsg, (MsgBoxStyle.YesNo Or MsgBoxStyle.ApplicationModal), "Relativity Desktop Client")
-					If popupRetVal <> MsgBoxResult.Yes Then
-						Me.ProcessCancel(Me.CurrentLineNumber, Me.Reader.BaseStream.Position, fileSize, stepSize)
-						Return Nothing
-					End If
+			If _continue And Not showedPopup Then
+				If Not DisplayFolderAndChoiceWarning(checkFolders, checkChoices) Then
+					Me.ProcessCancel(Me.CurrentLineNumber, Me.Reader.BaseStream.Position, fileSize, stepSize)
+					Return Nothing
 				End If
 			End If
 
@@ -230,15 +227,43 @@ Namespace kCura.WinEDDS
 			Return Nothing
 		End Function
 
-		Private Function BuildImportWarningMessage(ByVal currentLineCount As Int32, ByVal reportFolders As Boolean, ByVal numOfFolders As Int32, ByVal reportChoices As Boolean, ByVal numOfChoices As Int32) As String
+		Private Function DisplayFolderAndChoiceWarning(ByVal checkFolders As Boolean, ByVal checkChoices As Boolean) As Boolean
+			'Determine choice threshold
+			Dim popupRetVal As Int32 = -1
+			Dim choiceCountThreshold As Int32
+			If checkChoices Then
+				choiceCountThreshold = _codeManager.GetChoiceLimitForUI()
+			End If
+			Dim reportFolders As Boolean = checkFolders AndAlso Me.GetFolderCount > 0
+			Dim reportChoices As Boolean = checkChoices AndAlso Me.GetMaxChoiceCount > choiceCountThreshold
+			If reportFolders Or reportChoices Then
+				Dim popupMsg As String = BuildImportWarningMessage(Me.RecordCount, reportFolders, Me.GetFolderCount, reportChoices, Me.GetMaxChoiceCount)
+				popupRetVal = MsgBox(popupMsg, (MsgBoxStyle.YesNo Or MsgBoxStyle.ApplicationModal), "Relativity Desktop Client")
+				If popupRetVal <> MsgBoxResult.Yes Then
+					Return False
+				End If
+			Else
+				Return True	'No warning to display
+			End If
+		End Function
+
+		''' <summary>
+		''' Builds a warning message to the user regarding the number of choices and folders that will be imported.
+		''' </summary>
+		Private Function BuildImportWarningMessage(ByVal recordCount As Int32, ByVal reportFolders As Boolean, ByVal numOfFolders As Int32, ByVal reportChoices As Boolean, ByVal numOfChoices As Int32) As String
 			Dim snippetList As New List(Of String)
 			If reportFolders Then snippetList.Add(String.Format("{0} folders", numOfFolders))
 			If reportChoices Then snippetList.Add(String.Format("{0} choices in a single field", numOfChoices))
 			Dim countSegment As String = String.Join(" and ", snippetList.ToArray())
-			Return String.Format("The first {0} records of this load file will create {1}.  Would you like to continue?", currentLineCount, countSegment)
+			Return String.Format("The first {0} records of this load file will create {1}.  Would you like to continue?", recordCount, countSegment)
 		End Function
 
-		Private Function GetActualLineCount() As Int32
+		''' <summary>
+		''' Returns the number of data records that have been read so far.  If the file has a header row, this count is one less than the current line count.
+		''' </summary>
+		''' <returns></returns>
+		''' <remarks></remarks>
+		Private Function RecordCount() As Int32
 			If _settings.FirstLineContainsHeaders Then
 				Return Me.CurrentLineNumber - 1
 			Else
@@ -246,6 +271,11 @@ Namespace kCura.WinEDDS
 			End If
 		End Function
 
+		''' <summary>
+		''' Gets the number of folders counted so far.
+		''' </summary>
+		''' <returns></returns>
+		''' <remarks></remarks>
 		Private Function GetFolderCount() As Int32
 			Return _folders.Count
 		End Function
