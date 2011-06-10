@@ -172,16 +172,21 @@
           </s:sequence>
         </s:complexType>
       </s:element>
-      <s:complexType name="KeyValuePairOfStringString" />
-      <s:complexType name="ArrayOfKeyValuePairOfStringString">
+      <s:complexType name="ObjectGuidToName">
         <s:sequence>
-          <s:element minOccurs="0" maxOccurs="unbounded" name="KeyValuePairOfStringString" type="tns:KeyValuePairOfStringString" />
+          <s:element minOccurs="1" maxOccurs="1" name="ObjectGuid" type="s1:guid" />
+          <s:element minOccurs="0" maxOccurs="1" name="ObjectName" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="ArrayOfObjectGuidToName">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="ObjectGuidToName" nillable="true" type="tns:ObjectGuidToName" />
         </s:sequence>
       </s:complexType>
       <s:element name="GetAvailableObjectsForMappingResponse">
         <s:complexType>
           <s:sequence>
-            <s:element minOccurs="0" maxOccurs="1" name="GetAvailableObjectsForMappingResult" type="tns:ArrayOfKeyValuePairOfStringString" />
+            <s:element minOccurs="0" maxOccurs="1" name="GetAvailableObjectsForMappingResult" type="tns:ArrayOfObjectGuidToName" />
           </s:sequence>
         </s:complexType>
       </s:element>

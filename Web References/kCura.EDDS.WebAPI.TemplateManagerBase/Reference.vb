@@ -170,9 +170,9 @@ Namespace kCura.EDDS.WebAPI.TemplateManagerBase
         
         '''<remarks/>
         <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/TemplateManager/GetAvailableObjectsForMapping", RequestNamespace:="http://www.kCura.com/EDDS/TemplateManager", ResponseNamespace:="http://www.kCura.com/EDDS/TemplateManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
-        Public Function GetAvailableObjectsForMapping(ByVal workspaceID As Integer, ByVal objectGuids() As System.Guid) As <System.Xml.Serialization.XmlArrayItemAttribute(IsNullable:=false)> KeyValuePairOfStringString()
+        Public Function GetAvailableObjectsForMapping(ByVal workspaceID As Integer, ByVal objectGuids() As System.Guid) As ObjectGuidToName()
             Dim results() As Object = Me.Invoke("GetAvailableObjectsForMapping", New Object() {workspaceID, objectGuids})
-            Return CType(results(0),KeyValuePairOfStringString())
+            Return CType(results(0),ObjectGuidToName())
         End Function
         
         '''<remarks/>
@@ -181,9 +181,9 @@ Namespace kCura.EDDS.WebAPI.TemplateManagerBase
         End Function
         
         '''<remarks/>
-        Public Function EndGetAvailableObjectsForMapping(ByVal asyncResult As System.IAsyncResult) As KeyValuePairOfStringString()
+        Public Function EndGetAvailableObjectsForMapping(ByVal asyncResult As System.IAsyncResult) As ObjectGuidToName()
             Dim results() As Object = Me.EndInvoke(asyncResult)
-            Return CType(results(0),KeyValuePairOfStringString())
+            Return CType(results(0),ObjectGuidToName())
         End Function
         
         '''<remarks/>
@@ -1250,7 +1250,31 @@ Namespace kCura.EDDS.WebAPI.TemplateManagerBase
      System.Diagnostics.DebuggerStepThroughAttribute(),  _
      System.ComponentModel.DesignerCategoryAttribute("code"),  _
      System.Xml.Serialization.XmlTypeAttribute([Namespace]:="http://www.kCura.com/EDDS/TemplateManager")>  _
-    Partial Public Class KeyValuePairOfStringString
+    Partial Public Class ObjectGuidToName
+        
+        Private objectGuidField As System.Guid
+        
+        Private objectNameField As String
+        
+        '''<remarks/>
+        Public Property ObjectGuid() As System.Guid
+            Get
+                Return Me.objectGuidField
+            End Get
+            Set
+                Me.objectGuidField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property ObjectName() As String
+            Get
+                Return Me.objectNameField
+            End Get
+            Set
+                Me.objectNameField = value
+            End Set
+        End Property
     End Class
     
     '''<remarks/>
@@ -1844,10 +1868,10 @@ Namespace kCura.EDDS.WebAPI.TemplateManagerBase
         End Sub
         
         '''<remarks/>
-        Public ReadOnly Property Result() As KeyValuePairOfStringString()
+        Public ReadOnly Property Result() As ObjectGuidToName()
             Get
                 Me.RaiseExceptionIfNecessary
-                Return CType(Me.results(0),KeyValuePairOfStringString())
+                Return CType(Me.results(0),ObjectGuidToName())
             End Get
         End Property
     End Class
