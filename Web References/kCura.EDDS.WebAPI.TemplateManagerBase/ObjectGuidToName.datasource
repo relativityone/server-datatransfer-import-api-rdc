@@ -5,6 +5,6 @@
     Renaming the file extension or editing the content of this file may   
     cause the file to be unrecognizable by the program.
 -->
-<GenericObjectDataSource DisplayName="KeyValuePairOfStringString" Version="1.0" xmlns="urn:schemas-microsoft-com:xml-msdatasource">
-   <TypeInfo>kCura.EDDS.WebAPI.TemplateManagerBase.KeyValuePairOfStringString, Web References.kCura.EDDS.WebAPI.TemplateManagerBase.Reference.vb, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null</TypeInfo>
+<GenericObjectDataSource DisplayName="ObjectGuidToName" Version="1.0" xmlns="urn:schemas-microsoft-com:xml-msdatasource">
+   <TypeInfo>kCura.EDDS.WebAPI.TemplateManagerBase.ObjectGuidToName, Web References.kCura.EDDS.WebAPI.TemplateManagerBase.Reference.vb, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null</TypeInfo>
 </GenericObjectDataSource>
