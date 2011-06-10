@@ -167,7 +167,7 @@ Namespace kCura.WinEDDS
 			'Parse up to the first X lines in the file and track the folders and choices that will be created
 			Dim warningDialogShown = False
 			While Not Me.HasReachedEOF And _continue
-				If Me.CurrentLineNumber >= kCura.WinEDDS.Config.PREVIEW_THRESHOLD Then
+				If Me.RecordCount > kCura.WinEDDS.Config.PREVIEW_THRESHOLD Then
 					AdvanceLine()
 					Continue While 'Just keep skipping lines until we get to the end so we report the correct line count
 				End If
@@ -197,7 +197,7 @@ Namespace kCura.WinEDDS
 				End If
 
 				'Display warning message to user about folders and choices
-				If Me.CurrentLineNumber = kCura.WinEDDS.Config.PREVIEW_THRESHOLD Then
+				If Me.RecordCount = kCura.WinEDDS.Config.PREVIEW_THRESHOLD Then
 					If Not DisplayFolderAndChoiceWarning(checkFolders, checkChoices) Then
 						Me.ProcessCancel(Me.CurrentLineNumber, Me.Reader.BaseStream.Position, fileSize, stepSize)
 						Return Nothing
@@ -241,6 +241,8 @@ Namespace kCura.WinEDDS
 				popupRetVal = MsgBox(popupMsg, (MsgBoxStyle.YesNo Or MsgBoxStyle.ApplicationModal), "Relativity Desktop Client")
 				If popupRetVal <> MsgBoxResult.Yes Then
 					Return False
+				Else
+					Return True
 				End If
 			Else
 				Return True	'No warning to display
