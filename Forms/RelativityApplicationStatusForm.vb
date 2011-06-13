@@ -42,7 +42,7 @@ Public Class RelativityApplicationStatusForm
 	Private Const DropdownRenameInWorkspace As String = "Rename in Workspace"
 	Private Const DropdownRenameFriendlyNameInWorkspace As String = "Rename in Workspace"
 	Private Const DropdownRetryRename As String = "Rename in Workspace"
-	Private Const DropdownMap As String = "Harmonize"
+	Private Const DropdownMap As String = "Map Field"
 	Private Const ExpandText As String = "[+]"
 	Private Const CollapseText As String = "[-]"
 	Private Const HelpLink As String = "http://help.kcura.com/relativity/Relativity Applications/Using Relativity Applications for RDC - 7.0%23Resolving-Errors.pdf"
