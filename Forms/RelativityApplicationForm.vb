@@ -47,6 +47,9 @@ Namespace kCura.EDDS.WinForm
 		Dim _app As RelativityApplicationElement
 		Dim _appMappingData As AppMappingData
 		Friend WithEvents NoTargetFieldsQualifyLabel As System.Windows.Forms.Label
+		Friend WithEvents Label4 As System.Windows.Forms.Label
+		Friend WithEvents Label3 As System.Windows.Forms.Label
+		Friend WithEvents Label2 As System.Windows.Forms.Label
 		Dim _mapController As FieldMapFourPickerController
 
 
@@ -129,6 +132,7 @@ Namespace kCura.EDDS.WinForm
 			Me.AppArtifactsPanel = New System.Windows.Forms.Panel()
 			Me.FieldMapPanel = New System.Windows.Forms.Panel()
 			Me.ArtifactMappingGroupBox = New System.Windows.Forms.GroupBox()
+			Me.NoTargetFieldsQualifyLabel = New System.Windows.Forms.Label()
 			Me.MapToAppBtn = New System.Windows.Forms.Button()
 			Me.AppToMapBtn = New System.Windows.Forms.Button()
 			Me.MapToTargetBtn = New System.Windows.Forms.Button()
@@ -140,7 +144,9 @@ Namespace kCura.EDDS.WinForm
 			Me.ObjectInfoGroupBox = New System.Windows.Forms.GroupBox()
 			Me.ObjectMapComboBox = New System.Windows.Forms.ComboBox()
 			Me.Label1 = New System.Windows.Forms.Label()
-			Me.NoTargetFieldsQualifyLabel = New System.Windows.Forms.Label()
+			Me.Label2 = New System.Windows.Forms.Label()
+			Me.Label3 = New System.Windows.Forms.Label()
+			Me.Label4 = New System.Windows.Forms.Label()
 			Me.ApplicationFileGroupBox.SuspendLayout()
 			Me.ApplicationInformationGroupBox.SuspendLayout()
 			Me.ApplicationArtifactsGroupBox.SuspendLayout()
@@ -385,6 +391,9 @@ Namespace kCura.EDDS.WinForm
 			Me.ArtifactMappingGroupBox.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
 									Or System.Windows.Forms.AnchorStyles.Left) _
 									Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+			Me.ArtifactMappingGroupBox.Controls.Add(Me.Label4)
+			Me.ArtifactMappingGroupBox.Controls.Add(Me.Label3)
+			Me.ArtifactMappingGroupBox.Controls.Add(Me.Label2)
 			Me.ArtifactMappingGroupBox.Controls.Add(Me.NoTargetFieldsQualifyLabel)
 			Me.ArtifactMappingGroupBox.Controls.Add(Me.MapToAppBtn)
 			Me.ArtifactMappingGroupBox.Controls.Add(Me.AppToMapBtn)
@@ -400,6 +409,18 @@ Namespace kCura.EDDS.WinForm
 			Me.ArtifactMappingGroupBox.TabIndex = 11
 			Me.ArtifactMappingGroupBox.TabStop = False
 			Me.ArtifactMappingGroupBox.Text = "Artifact Mapping"
+			'
+			'NoTargetFieldsQualifyLabel
+			'
+			Me.NoTargetFieldsQualifyLabel.BackColor = System.Drawing.SystemColors.Window
+			Me.NoTargetFieldsQualifyLabel.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+			Me.NoTargetFieldsQualifyLabel.Location = New System.Drawing.Point(688, 98)
+			Me.NoTargetFieldsQualifyLabel.Name = "NoTargetFieldsQualifyLabel"
+			Me.NoTargetFieldsQualifyLabel.Size = New System.Drawing.Size(147, 135)
+			Me.NoTargetFieldsQualifyLabel.TabIndex = 15
+			Me.NoTargetFieldsQualifyLabel.Text = "No fields in the target workspace qualify for mapping to this application field."
+			Me.NoTargetFieldsQualifyLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter
+			Me.NoTargetFieldsQualifyLabel.Visible = False
 			'
 			'MapToAppBtn
 			'
@@ -444,33 +465,33 @@ Namespace kCura.EDDS.WinForm
 			'TargetFieldList
 			'
 			Me.TargetFieldList.FormattingEnabled = True
-			Me.TargetFieldList.Location = New System.Drawing.Point(672, 28)
+			Me.TargetFieldList.Location = New System.Drawing.Point(672, 54)
 			Me.TargetFieldList.Name = "TargetFieldList"
-			Me.TargetFieldList.Size = New System.Drawing.Size(177, 225)
+			Me.TargetFieldList.Size = New System.Drawing.Size(177, 199)
 			Me.TargetFieldList.TabIndex = 3
 			'
 			'MappedList_Target
 			'
 			Me.MappedList_Target.FormattingEnabled = True
-			Me.MappedList_Target.Location = New System.Drawing.Point(434, 28)
+			Me.MappedList_Target.Location = New System.Drawing.Point(434, 54)
 			Me.MappedList_Target.Name = "MappedList_Target"
-			Me.MappedList_Target.Size = New System.Drawing.Size(177, 225)
+			Me.MappedList_Target.Size = New System.Drawing.Size(177, 199)
 			Me.MappedList_Target.TabIndex = 2
 			'
 			'MappedList_App
 			'
 			Me.MappedList_App.FormattingEnabled = True
-			Me.MappedList_App.Location = New System.Drawing.Point(257, 28)
+			Me.MappedList_App.Location = New System.Drawing.Point(257, 54)
 			Me.MappedList_App.Name = "MappedList_App"
-			Me.MappedList_App.Size = New System.Drawing.Size(177, 225)
+			Me.MappedList_App.Size = New System.Drawing.Size(177, 199)
 			Me.MappedList_App.TabIndex = 1
 			'
 			'AppFieldList
 			'
 			Me.AppFieldList.FormattingEnabled = True
-			Me.AppFieldList.Location = New System.Drawing.Point(18, 28)
+			Me.AppFieldList.Location = New System.Drawing.Point(18, 54)
 			Me.AppFieldList.Name = "AppFieldList"
-			Me.AppFieldList.Size = New System.Drawing.Size(177, 225)
+			Me.AppFieldList.Size = New System.Drawing.Size(177, 199)
 			Me.AppFieldList.TabIndex = 0
 			'
 			'ObjectInfoGroupBox
@@ -485,7 +506,7 @@ Namespace kCura.EDDS.WinForm
 			Me.ObjectInfoGroupBox.Size = New System.Drawing.Size(870, 60)
 			Me.ObjectInfoGroupBox.TabIndex = 10
 			Me.ObjectInfoGroupBox.TabStop = False
-			Me.ObjectInfoGroupBox.Text = "Ojbect Information"
+			Me.ObjectInfoGroupBox.Text = "Object Information"
 			'
 			'ObjectMapComboBox
 			'
@@ -504,17 +525,35 @@ Namespace kCura.EDDS.WinForm
 			Me.Label1.TabIndex = 9
 			Me.Label1.Text = "Object Name:"
 			'
-			'NoTargetFieldsQualifyLabel
+			'Label2
 			'
-			Me.NoTargetFieldsQualifyLabel.BackColor = System.Drawing.SystemColors.Window
-			Me.NoTargetFieldsQualifyLabel.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-			Me.NoTargetFieldsQualifyLabel.Location = New System.Drawing.Point(688, 84)
-			Me.NoTargetFieldsQualifyLabel.Name = "NoTargetFieldsQualifyLabel"
-			Me.NoTargetFieldsQualifyLabel.Size = New System.Drawing.Size(147, 149)
-			Me.NoTargetFieldsQualifyLabel.TabIndex = 15
-			Me.NoTargetFieldsQualifyLabel.Text = "No fields in the target workspace qualify for mapping to this application field."
-			Me.NoTargetFieldsQualifyLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter
-			Me.NoTargetFieldsQualifyLabel.Visible = False
+			Me.Label2.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+			Me.Label2.Location = New System.Drawing.Point(18, 28)
+			Me.Label2.Name = "Label2"
+			Me.Label2.Size = New System.Drawing.Size(177, 23)
+			Me.Label2.TabIndex = 16
+			Me.Label2.Text = "  Application Fields"
+			Me.Label2.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+			'
+			'Label3
+			'
+			Me.Label3.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+			Me.Label3.Location = New System.Drawing.Point(672, 28)
+			Me.Label3.Name = "Label3"
+			Me.Label3.Size = New System.Drawing.Size(177, 23)
+			Me.Label3.TabIndex = 17
+			Me.Label3.Text = "  Workspace Fields"
+			Me.Label3.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+			'
+			'Label4
+			'
+			Me.Label4.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+			Me.Label4.Location = New System.Drawing.Point(344, 28)
+			Me.Label4.Name = "Label4"
+			Me.Label4.Size = New System.Drawing.Size(177, 23)
+			Me.Label4.TabIndex = 18
+			Me.Label4.Text = "Mapping"
+			Me.Label4.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
 			'
 			'RelativityApplicationForm
 			'
@@ -577,7 +616,7 @@ Namespace kCura.EDDS.WinForm
 
 		Private Sub MenuImport_ImportApplication_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles MenuImport_ImportApplication.Click, ImportButton.Click
 			If Not _mapController.AreMappingsValid Then
-				MessageBox.Show("You have unfinished field mappings that must be completed before importing.")
+				MessageBox.Show("You have unfinished field mappings that must be completed before importing.", "Import Error")
 				Return
 			End If
 
