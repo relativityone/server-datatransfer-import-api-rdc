@@ -194,6 +194,10 @@
     <OptionInfer>On</OptionInfer>
   </PropertyGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Relativity.Applications.Serialization\Relativity.Applications.Serialization.vbproj">
+      <Project>{E621897E-45AF-4FBD-ADA4-EEE787E5233F}</Project>
+      <Name>Relativity.Applications.Serialization</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Relativity\Relativity.vbproj">
       <Project>{044A6424-BC90-46CE-8805-0053A44AFCAB}</Project>
       <Name>Relativity</Name>
@@ -825,7 +829,7 @@
     <None Include="Web References\kCura.EDDS.WebAPI.TemplateManagerBase\ApplicationInstallationResult.datasource">
       <DependentUpon>Reference.map</DependentUpon>
     </None>
-    <None Include="Web References\kCura.EDDS.WebAPI.TemplateManagerBase\KeyValuePairOfStringString.datasource">
+    <None Include="Web References\kCura.EDDS.WebAPI.TemplateManagerBase\ObjectGuidToName1.datasource">
       <DependentUpon>Reference.map</DependentUpon>
     </None>
     <None Include="Web References\kCura.EDDS.WebAPI.TemplateManagerBase\ObjectValidationResult.datasource">
