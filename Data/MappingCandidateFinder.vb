@@ -25,6 +25,7 @@ Namespace kCura.EDDS.WinForm.Data
 		Public Sub PopulateMappingCandidates(ByVal appXml As System.Xml.XmlDocument, ByVal appMappingData As AppMappingData) Implements IMappingCandidateFinder.PopulateMappingCandidates
 			Dim appElement = ApplicationElement.Deserialize(Of ApplicationElement)(appXml)
 			Dim templateMgr As New Service.TemplateManager(_credentials, _cookieContainer)
+			Dim fieldElements As kCura.EDDS.WebAPI.TemplateManagerBase.FieldElement()
 
 			'Handle Document special case
 			For Each obj In appElement.Objects
@@ -72,7 +73,9 @@ Namespace kCura.EDDS.WinForm.Data
 					Dim apiFieldElement = Mapper.Map(Of Relativity.Applications.Serialization.Elements.FieldElement, kCura.EDDS.WebAPI.TemplateManagerBase.FieldElement)(field)
 					apiFieldElementList.Add(apiFieldElement)
 				Next
-				Dim objValResult = templateMgr.GetAvailableFieldsForMapping(_workspaceID, obj.Guid, apiFieldElementList.ToArray(), apiGuidMap.ToArray())
+				fieldElements = apiFieldElementList.ToArray()
+				If Not fieldElements.Count() > 0 Then Continue For
+				Dim objValResult = templateMgr.GetAvailableFieldsForMapping(_workspaceID, obj.Guid, fieldElements, apiGuidMap.ToArray())
 				If objValResult.FieldToFieldsMaps IsNot Nothing Then
 					For Each fieldMapResult In objValResult.FieldToFieldsMaps
 						Dim appFieldGuid = fieldMapResult.FieldGuid
