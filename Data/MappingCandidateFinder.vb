@@ -58,6 +58,9 @@ Namespace kCura.EDDS.WinForm.Data
 				apiGuidMap.Add(apuGuidItem)
 			Next
 
+			Dim allFieldGuids As System.Collections.Generic.List(Of System.Guid) = Relativity.Applications.Serialization.SerializationHelper.GetAllFieldGuids(appElement)
+
+
 			'Populate mapping candidates
 			For Each obj In appElement.Objects
 				Dim objectGuidToCheck = obj.Guid
@@ -82,6 +85,7 @@ Namespace kCura.EDDS.WinForm.Data
 						Dim appField = appObject.AppFields.First(Function(item) item.FieldGuids.Contains(appFieldGuid))
 						For Each candidate In fieldMapResult.Fields
 							Dim targetField = appObject.FindExistingTargertField(candidate.ArtifactId)
+							If allFieldGuids.Intersect(targetField.FieldGuids).Count() > 0 Then Continue For
 							If targetField Is Nothing Then
 								targetField = New TargetField()
 								targetField.ArtifactID = candidate.ArtifactId
