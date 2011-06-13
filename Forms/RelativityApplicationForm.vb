@@ -894,8 +894,7 @@ Namespace kCura.EDDS.WinForm
 				Dim targetField As TargetField = CType(MappedList_Target.SelectedItem, TargetField)
 				If targetField IsNot Nothing Then
 					_mapController.UnmapTargetField(targetField)
-					MappedList_Target.SelectedItem = Nothing
-					MappedList_App.SelectedItem = Nothing
+					MappedList_App.SelectedIndex = MappedList_Target.SelectedIndex
 					TargetFieldList.SelectedItem = targetField
 				End If
 			Finally
@@ -1031,11 +1030,12 @@ Namespace kCura.EDDS.WinForm
 		Private Sub UpdateMappingButtonsAndUI()
 			Dim selectedMappedAppField = CType(MappedList_App.SelectedItem, AppField)
 			Dim selectedtargetField = CType(TargetFieldList.SelectedItem, TargetField)
+			Dim selectedMappedTargetField = CType(MappedList_Target.SelectedItem, TargetField)
 			AppToMapBtn.Enabled = Not AppFieldList.SelectedItem Is Nothing
 			MapToAppBtn.Enabled = Not MappedList_App.SelectedItem Is Nothing
 			TargetToMapBtn.Enabled = selectedtargetField IsNot Nothing AndAlso selectedMappedAppField IsNot Nothing AndAlso selectedMappedAppField.MappedTargetField.IsEmpty
-			MapToTargetBtn.Enabled = selectedtargetField IsNot Nothing AndAlso selectedtargetField.IsEmpty = False
-			NoTargetFieldsQualifyLabel.Visible = MappedList_App.SelectedItem IsNot Nothing AndAlso (_mapController.TargetFieldsList_NotMapped.Count = 0)
+			MapToTargetBtn.Enabled = selectedMappedTargetField IsNot Nothing AndAlso selectedMappedTargetField.IsEmpty = False
+			NoTargetFieldsQualifyLabel.Visible = (MappedList_Target.SelectedItem IsNot Nothing) AndAlso (CType(MappedList_Target.SelectedItem, TargetField).IsEmpty) AndAlso (_mapController.TargetFieldsList_NotMapped.Count = 0)
 		End Sub
 
 #End Region
