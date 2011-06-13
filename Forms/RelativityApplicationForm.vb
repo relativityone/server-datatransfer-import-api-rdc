@@ -585,7 +585,7 @@ Namespace kCura.EDDS.WinForm
 			Dim resolveArtifactList As New List(Of WebAPI.TemplateManagerBase.ResolveArtifact)
 			For Each appObj In _appMappingData.AppObjects
 				For Each appFld In appObj.AppFields
-					If appFld.MappedTargetField IsNot Nothing Then
+					If Not appFld.MappedTargetField.IsEmpty Then
 						Dim resolve = New WebAPI.TemplateManagerBase.ResolveArtifact
 						resolve.ArtifactID = appFld.MappedTargetField.ArtifactID
 						resolve.Action = WebAPI.TemplateManagerBase.ResolveAction.Update
@@ -598,7 +598,7 @@ Namespace kCura.EDDS.WinForm
 					End If
 				Next
 			Next
-			Dim resolveArtifacts As WebAPI.TemplateManagerBase.ResolveArtifact()() = {}
+			Dim resolveArtifacts As WebAPI.TemplateManagerBase.ResolveArtifact()() = {New WebAPI.TemplateManagerBase.ResolveArtifact() {}}
 			If resolveArtifactList.Count > 0 Then
 				resolveArtifacts = {resolveArtifactList.ToArray()}
 			End If
