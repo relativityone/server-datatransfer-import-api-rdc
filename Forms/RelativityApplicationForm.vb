@@ -628,6 +628,11 @@ Namespace kCura.EDDS.WinForm
 			frm.MultiSelect = True
 			If frm.ShowDialog() = DialogResult.OK Then
 				Me.CaseInfos = frm.SelectedCaseInfo
+				If Me.CaseInfos.Count = 1 Then
+					Me.MapFieldsButton.Enabled = True
+				Else
+					Me.MapFieldsButton.Enabled = False
+				End If
 				RefreshAllData()
 			End If
 		End Sub
