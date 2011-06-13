@@ -277,15 +277,20 @@ Namespace kCura.WinEDDS
 			If TypeOf field.Value Is System.Exception Then
 				Throw DirectCast(field.Value, System.Exception)
 			End If
+
 			Select Case field.Type
 				Case Relativity.FieldTypeHelper.FieldType.Boolean
 					field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(CType(field.Value, Nullable(Of Boolean)))
+
 				Case Relativity.FieldTypeHelper.FieldType.Integer
 					field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(CType(field.Value, Nullable(Of Int32)))
+
 				Case Relativity.FieldTypeHelper.FieldType.Currency, Relativity.FieldTypeHelper.FieldType.Decimal
 					field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(CType(field.Value, Nullable(Of Decimal)))
+
 				Case Relativity.FieldTypeHelper.FieldType.Date
 					field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(CType(field.Value, Nullable(Of DateTime)), True)
+
 				Case Relativity.FieldTypeHelper.FieldType.User
 					Dim previewValue As String = String.Empty
 					If field.Value Is Nothing Then
@@ -295,6 +300,7 @@ Namespace kCura.WinEDDS
 						field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(Me.GetUserArtifactID(field.Value.ToString, columnIndex))
 					End If
 					If forPreview Then field.Value = previewValue
+
 				Case Relativity.FieldTypeHelper.FieldType.Code
 					Dim fieldValue As String
 					If field.Value Is Nothing Then
@@ -325,6 +331,7 @@ Namespace kCura.WinEDDS
 							field.Value = String.Empty
 						End If
 					End If
+
 				Case Relativity.FieldTypeHelper.FieldType.MultiCode
 					Dim value As String() = Nothing
 					If Not field.Value Is Nothing Then value = DirectCast(field.Value, String())
@@ -377,6 +384,7 @@ Namespace kCura.WinEDDS
 							End If
 						End If
 					End If
+
 				Case Relativity.FieldTypeHelper.FieldType.Varchar
 					If field.Value Is Nothing Then field.Value = String.Empty
 					field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(Me.GetNullableFixedString(field.ValueAsString, columnIndex, field.TextLength))
@@ -385,10 +393,12 @@ Namespace kCura.WinEDDS
 							field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(Me.GetNullableFixedString(identityValue, columnIndex, field.TextLength))
 						End If
 					End If
+
 				Case Relativity.FieldTypeHelper.FieldType.Object
 					If field.Value Is Nothing Then field.Value = String.Empty
 					field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(GetNullableAssociatedObjectName(field.Value.ToString, columnIndex, field.TextLength, field.DisplayName))
 					If forPreview Then field.Value = field.Value.ToString.Trim
+
 				Case Relativity.FieldTypeHelper.FieldType.Objects
 					Dim value As String() = Nothing
 					If Not field.Value Is Nothing Then value = DirectCast(field.Value, String())
@@ -430,6 +440,7 @@ Namespace kCura.WinEDDS
 							End If
 						End If
 					End If
+
 				Case Relativity.FieldTypeHelper.FieldType.Text
 					If field.Category = Relativity.FieldCategory.FullText AndAlso _fullTextColumnMapsToFileLocation Then
 						Dim value As String = field.ValueAsString
@@ -437,6 +448,8 @@ Namespace kCura.WinEDDS
 							field.Value = String.Empty
 						ElseIf Not System.IO.File.Exists(value) Then
 							Throw New MissingFullTextFileException(Me.CurrentLineNumber, columnIndex)
+						ElseIf New System.IO.FileInfo(value).Length > GetMaxExtractedTextLength(value) Then
+							Throw New ExtractedTextTooLargeException
 						Else
 							If forPreview Then
 								' Determine Encoding Here
@@ -470,6 +483,23 @@ Namespace kCura.WinEDDS
 					Throw New System.Exception("Unsupported Field Type '" & field.Type.ToString & "'")
 			End Select
 		End Sub
+
+		Private Function GetMaxExtractedTextLength(ByVal value As String) As Int32
+			Dim determinedEncodingStream As DeterminedEncodingStream = kCura.WinEDDS.Utility.DetectEncoding(value, False)
+			Dim detectedEncoding As System.Text.Encoding = determinedEncodingStream.DeterminedEncoding
+			Dim oneGigabyte As Int32 = Convert.ToInt32(Int32.MaxValue / 2)
+
+			If detectedEncoding Is Nothing Then
+				' Unknown encoding, assume it's ASCII or some other one-byte encoding scheme. When writing to the BCPPath
+				' this will be converted to UTF-16 which will double the size of the data.
+				Return oneGigabyte
+			ElseIf detectedEncoding Is System.Text.Encoding.UTF8 Then
+				Return oneGigabyte
+			Else
+				' Encoding is already UTF-16 (or comparable)
+				Return Int32.MaxValue
+			End If
+		End Function
 
 		Public Sub AddToCodeCountPreviewHashTable(ByVal fieldID As Int32, ByVal fieldName As String, ByVal fieldValue As String)
 			Dim fieldKeyID As String = String.Format("{0}_{1}", fieldID, fieldName)
@@ -515,6 +545,13 @@ Namespace kCura.WinEDDS
 
 
 #Region "Exceptions"
+
+		Public Class ExtractedTextTooLargeException
+			Inherits kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
+			Public Sub New()
+				MyBase.New(String.Format("Extracted text is too large."))
+			End Sub
+		End Class
 
 		Public Class IdentifierOverlapException
 			Inherits kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
