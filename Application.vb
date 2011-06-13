@@ -1288,13 +1288,13 @@ Namespace kCura.EDDS.WinForm
 			CursorDefault()
 		End Sub
 
-		Public Sub ImportApplicationFile(ByVal caseInfos As Generic.IEnumerable(Of Relativity.CaseInfo), ByVal application As Xml.XmlDocument)
+		Public Sub ImportApplicationFile(ByVal caseInfos As Generic.IEnumerable(Of Relativity.CaseInfo), ByVal application As Xml.XmlDocument, ByVal appsToOverride As Int32(), ByVal resolveArtifacts()() As kCura.EDDS.WebAPI.TemplateManagerBase.ResolveArtifact)
 			CursorWait()
 			If Not Me.IsConnected(Me.SelectedCaseInfo.ArtifactID, 10) Then
 				CursorDefault()
 				Exit Sub
 			End If
-			Dim applicationDeploymentProcess As New kCura.WinEDDS.ApplicationDeploymentProcess(New Int32() {}, Nothing, application, Me.Credential, Me.CookieContainer, caseInfos)
+			Dim applicationDeploymentProcess As New kCura.WinEDDS.ApplicationDeploymentProcess(appsToOverride, resolveArtifacts, application, Me.Credential, Me.CookieContainer, caseInfos)
 			'todo: kfm
 			Dim form As New RelativityApplicationStatusForm(application, Me.Credential, Me.CookieContainer, caseInfos)
 			form.observer = applicationDeploymentProcess.ProcessObserver
