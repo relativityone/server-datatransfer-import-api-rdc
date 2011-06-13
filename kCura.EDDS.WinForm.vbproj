@@ -188,10 +188,21 @@
     <OptionInfer>On</OptionInfer>
   </PropertyGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Relativity.Applications.Serialization\Relativity.Applications.Serialization.vbproj">
+      <Project>{E621897E-45AF-4FBD-ADA4-EEE787E5233F}</Project>
+      <Name>Relativity.Applications.Serialization</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Relativity\Relativity.vbproj">
       <Project>{044A6424-BC90-46CE-8805-0053A44AFCAB}</Project>
       <Name>Relativity</Name>
     </ProjectReference>
+    <Reference Include="AutoMapper, Version=1.1.0.188, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Vendor\AutoMapper\1.1RTW\AutoMapper.dll</HintPath>
+    </Reference>
+    <Reference Include="Facet.Combinatorics">
+      <HintPath>..\..\Vendor\Combinatorics\Facet.Combinatorics.dll</HintPath>
+    </Reference>
     <Reference Include="kCura.Resources, Version=1.0.3635.26400, Culture=neutral, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Vendor\kCura\1.0.2131.20968\x64\kCura.Resources.dll</HintPath>
@@ -291,6 +302,7 @@
     <Compile Include="ConfigDictionary.vb">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Controller\FieldMapFourPickerController.vb" />
     <Compile Include="Controls\CaseFolderExplorer.vb">
       <SubType>UserControl</SubType>
     </Compile>
@@ -303,6 +315,13 @@
     <Compile Include="Controls\EncodingPicker.vb">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="Data\AppField.vb" />
+    <Compile Include="Data\AppMappingData.vb" />
+    <Compile Include="Data\AppMappingDataFactory.vb" />
+    <Compile Include="Data\AppObject.vb" />
+    <Compile Include="Data\IMappingCandidateFinder.vb" />
+    <Compile Include="Data\MappingCandidateFinder.vb" />
+    <Compile Include="Data\TargetField.vb" />
     <Compile Include="Forms\AdvancedFileLocation.vb">
       <SubType>Form</SubType>
     </Compile>
