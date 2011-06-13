@@ -1611,22 +1611,9 @@ Namespace kCura.EDDS.WinForm
 				_loginForm.TopMost = False
 			End If
 
-			Dim sb As New System.Text.StringBuilder
-			Dim nl As String = System.Environment.NewLine & System.Environment.NewLine
-			Dim bitness As String = String.Empty
+			Dim aboutFrm As New AboutForm()
+			aboutFrm.ShowDialog()
 
-			' Determine build bitness
-			If IntPtr.Size = 8 Then
-				bitness = "64-bit"
-			ElseIf IntPtr.Size = 4 Then
-				bitness = "32-bit"
-			End If
-
-			sb.Append(String.Format("Relativity Desktop Client {0} {1}", bitness, nl))
-			sb.Append("Version " & Me.GetDisplayAssemblyVersion() & nl)
-			sb.Append(Relativity.Constants.LICENSE_AGREEMENT_TEXT & nl)
-			sb.Append("Copyright © " & System.DateTime.Now.Year & " kCura Corporation")
-			MsgBox(sb.ToString, MsgBoxStyle.OkOnly, "Relativity Desktop Client | About")
 			If Not _loginForm Is Nothing AndAlso Not _loginForm.IsDisposed Then
 				_loginForm.TopMost = True
 			End If
