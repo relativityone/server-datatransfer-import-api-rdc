@@ -30,6 +30,7 @@ Public Class RelativityApplicationStatusForm
 	Private Const ArtifactGuidColumnName As String = "Artifact Guids"
 	Private Const ArtifactStatusColumnName As String = "Status"
 	Private Const ArtifactHiddenErrorColumnName As String = "Hidden Error"
+	Private Const ArtifactIsMappableColumnName As String = "Can Be Mapped"
 	Private Const ArtifactApplicationIdsColumnName As String = "Application IDs"
 	Private Const ArtifactResolutionColumnName As String = "Resolution"
 	Private Const ArtifactConflictIDColumnName As String = "Conflicting Artifact ID"
@@ -252,6 +253,7 @@ Public Class RelativityApplicationStatusForm
 
 		failedTable.Columns.Add(ArtifactStatusColumnName, GetType(String))
 		failedTable.Columns.Add(ArtifactHiddenErrorColumnName, GetType(TemplateManagerBase.StatusCode))
+		failedTable.Columns.Add(ArtifactIsMappableColumnName, GetType(Boolean))
 		failedTable.Columns.Add(ArtifactNameColumnName, GetType(String))
 		failedTable.Columns.Add(ArtifactIDColumnName, GetType(Int32))
 		failedTable.Columns.Add(ArtifactGuidColumnName, GetType(Guid()))
@@ -295,7 +297,8 @@ Public Class RelativityApplicationStatusForm
 
 			failedTable.Rows.Add(New Object() { _
 			 StatusToString(art.Status, conflictApps.ToString), _
-			 art.Status, _
+			 art.Status,
+			 art.IsMappable, _
 			 art.Name, _
 			 art.ArtifactId, _
 			 art.Guids, _
@@ -341,6 +344,7 @@ Public Class RelativityApplicationStatusForm
 		If Not CurrentSuccess() Then
 			ArtifactStatusTable.Columns("Locked Applications").Visible = False
 			ArtifactStatusTable.Columns(ArtifactHiddenErrorColumnName).Visible = False
+			ArtifactStatusTable.Columns(ArtifactIsMappableColumnName).Visible = False
 			ArtifactStatusTable.Columns(ArtifactIndexColumnName).Visible = False
 			ArtifactStatusTable.Columns(ArtifactTypeIDColumnName).Visible = False
 			ArtifactStatusTable.Columns(ArtifcactSelectedResolutionColumnName).Visible = False
@@ -381,6 +385,10 @@ Public Class RelativityApplicationStatusForm
 						comboBoxCell.ReadOnly = True
 						comboBoxCell.DisplayStyle = DataGridViewComboBoxDisplayStyle.Nothing
 				End Select
+
+				If CBool(row.Cells(ArtifactIsMappableColumnName).Value) Then
+					comboBoxCell.Items.Add(DropdownMap)
+				End If
 
 				Dim selectedResolution As String = If(row.Cells(ArtifcactSelectedResolutionColumnName).Value Is Nothing, String.Empty, row.Cells(ArtifcactSelectedResolutionColumnName).Value.ToString)
 				If Not String.IsNullOrEmpty(selectedResolution) Then
@@ -517,7 +525,7 @@ Public Class RelativityApplicationStatusForm
 		If ArtifactStatusTable.SelectedCells.Count > 0 Then
 			Dim cell As DataGridViewComboBoxCell = DirectCast(ArtifactStatusTable.SelectedCells.Item(0), DataGridViewComboBoxCell)
 			If Not cell Is Nothing AndAlso cell.Items.Count > 0 Then
-				Dim choice As String = DirectCast(cell.Items.Item(0), String)
+				Dim choice As String = DirectCast(cell.EditedFormattedValue, String)
 				If Not choice.Equals(cell.OwningRow.Cells(ArtifcactSelectedResolutionColumnName).Value.ToString, StringComparison.InvariantCulture) Then
 					cell.OwningRow.Cells(ArtifcactSelectedResolutionColumnName).Value = choice
 				End If
@@ -563,7 +571,7 @@ Public Class RelativityApplicationStatusForm
 						retryEnabled = False
 						Exit For
 					End If
-				ElseIf Not String.Equals(cbStr, DropdownUnlock, StringComparison.CurrentCulture) Then
+				ElseIf Not (String.Equals(cbStr, DropdownUnlock, StringComparison.InvariantCulture) OrElse String.Equals(cbStr, DropdownMap, StringComparison.InvariantCulture)) Then
 					retryEnabled = False
 					Exit For
 				End If
@@ -763,7 +771,7 @@ Public Class RelativityApplicationStatusForm
 						'(If it's a mapping)
 
 						kvp = New TemplateManagerBase.FieldKVP()
-						kvp.Key = "Guid"
+						kvp.Key = "Guids"
 						kvp.Value = row.Item(ArtifactGuidColumnName)
 						resArts.Add(New TemplateManagerBase.ResolveArtifact() With { _
 						 .ArtifactID = CInt(row.Item(ArtifactConflictIDColumnName)), _
