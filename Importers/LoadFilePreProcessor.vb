@@ -238,8 +238,8 @@ Namespace kCura.WinEDDS
 			Dim reportChoices As Boolean = checkChoices AndAlso Me.GetMaxChoiceCount > choiceCountThreshold
 			If reportFolders Or reportChoices Then
 				Dim popupMsg As String = BuildImportWarningMessage(Me.RecordCount, reportFolders, Me.GetFolderCount, reportChoices, Me.GetMaxChoiceCount)
-				popupRetVal = MsgBox(popupMsg, (MsgBoxStyle.YesNo Or MsgBoxStyle.ApplicationModal), "Relativity Desktop Client")
-				If popupRetVal <> MsgBoxResult.Yes Then
+				popupRetVal = System.Windows.Forms.MessageBox.Show(popupMsg, "Relativity Desktop Client", System.Windows.Forms.MessageBoxButtons.OKCancel)
+				If popupRetVal <> MsgBoxResult.Ok Then
 					Return False
 				Else
 					Return True
