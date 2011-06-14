@@ -45,7 +45,9 @@ Public Class RelativityApplicationStatusForm
 	Private Const DropdownMap As String = "Map Field"
 	Private Const ExpandText As String = "[+]"
 	Private Const CollapseText As String = "[-]"
-	Private Const HelpLink As String = "http://help.kcura.com/relativity/Relativity Applications/Using Relativity Applications for RDC - 7.0%23Resolving-Errors.pdf"
+
+
+	Private Shared HelpLink As String
 
 #End Region
 
@@ -93,6 +95,14 @@ Public Class RelativityApplicationStatusForm
 		cookieContainer = cookies
 		caseInfos = cases
 		_processPool = New kCura.Windows.Process.ProcessPool()
+
+		Dim minorVersion As Int32
+		Dim majorVersion As Int32
+		Dim currentVersion As System.Version = System.Reflection.Assembly.GetExecutingAssembly.GetName.Version
+		minorVersion = currentVersion.Minor
+		majorVersion = currentVersion.Major
+
+		HelpLink = String.Format("http://help.kcura.com/relativity/Relativity Applications/Using Relativity Applications for RDC - {0}.{1}%23Resolving-Errors.pdf", majorVersion, minorVersion)
 	End Sub
 
 	Private Sub Observer_OnProcessEvent(ByVal evt As kCura.Windows.Process.Generic.ProcessEvent(Of TemplateManagerBase.ApplicationInstallationResult)) Handles observer.OnProcessEvent
