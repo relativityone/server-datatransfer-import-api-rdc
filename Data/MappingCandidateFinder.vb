@@ -85,7 +85,6 @@ Namespace kCura.EDDS.WinForm.Data
 						Dim appField = appObject.AppFields.First(Function(item) item.FieldGuids.Contains(appFieldGuid))
 						For Each candidate In fieldMapResult.Fields
 							Dim targetField = appObject.FindExistingTargertField(candidate.ArtifactId)
-							If allFieldGuids.Intersect(targetField.FieldGuids).Count() > 0 Then Continue For
 							If targetField Is Nothing Then
 								targetField = New TargetField()
 								targetField.ArtifactID = candidate.ArtifactId
@@ -94,11 +93,29 @@ Namespace kCura.EDDS.WinForm.Data
 								End If
 								targetField.MyName = candidate.DisplayName
 							End If
+							If allFieldGuids.Intersect(targetField.FieldGuids).Count() > 0 Then Continue For
 							appField.MappingCandidates.Add(targetField)
 						Next
 					Next
 				End If
 			Next
+
+			'Remove fields that have no mapping candidatesa
+			Dim appObjsToRemove As New List(Of AppObject)
+			For Each appObj In appMappingData.AppObjects
+				Dim appObjToCheck = appObj
+				Dim appFldsToRemove = New List(Of AppField)
+				For Each appFld In appObj.AppFields
+					If appFld.MappingCandidates.Count = 0 Then
+						appFldsToRemove.Add(appFld)
+					End If
+				Next
+				appFldsToRemove.ForEach(Sub(item) appObjToCheck.AppFields.Remove(item))
+				If appObj.AppFields.Count = 0 Then
+					appObjsToRemove.Add(appObj)
+				End If
+			Next
+			appObjsToRemove.ForEach(Sub(item) appMappingData.AppObjects.Remove(item))
 
 		End Sub
 
