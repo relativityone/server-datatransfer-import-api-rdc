@@ -599,8 +599,11 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 		Private Sub RefreshAllData()
-			Dim document As Xml.XmlDocument = LoadFileIntoXML(_filename)
+			If _filename Is Nothing OrElse _filename.Length = 0 Then
+				Return 'File has not been selected - nothing to do
+			End If
 
+			Dim document As Xml.XmlDocument = LoadFileIntoXML(_filename)
 			If Not document Is Nothing AndAlso LoadApplicationNameFromNode(document.SelectSingleNode("/Application/Name")) Then
 				LoadApplicationVersionFromNode(document.SelectSingleNode("/Application/Version"))
 				LoadApplicationTree(document)
@@ -688,11 +691,6 @@ Namespace kCura.EDDS.WinForm
 			frm.MultiSelect = True
 			If frm.ShowDialog() = DialogResult.OK Then
 				Me.CaseInfos = frm.SelectedCaseInfo
-				If Me.CaseInfos.Count = 1 Then
-					Me.MapFieldsButton.Enabled = True
-				Else
-					Me.MapFieldsButton.Enabled = False
-				End If
 				RefreshAllData()
 			End If
 		End Sub
@@ -968,6 +966,14 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 		Private Sub LoadMappingControls(ByVal xml As Xml.XmlDocument)
+			'Check that we have one and only one case loaded
+			If Me.CaseInfos.Count = 1 Then
+				Me.MapFieldsButton.Enabled = True
+			Else
+				Me.MapFieldsButton.Enabled = False
+				Return 'Can load anything more
+			End If
+
 			_app = ApplicationElement.Deserialize(Of RelativityApplicationElement)(xml)
 			Dim factory As New AppMappingDataFactory()
 			_appMappingData = factory.CreateMappingData(_app)
