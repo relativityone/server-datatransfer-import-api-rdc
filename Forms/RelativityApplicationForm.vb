@@ -1001,6 +1001,7 @@ Namespace kCura.EDDS.WinForm
 
 			WireUpMappingEventHandlers()
 			HandleSelectedObjectChanged()
+			UpdateMappingButtonsAndUI()
 		End Sub
 
 		Dim supressMappedListSelectedIndexChangedEvents As Boolean = False
