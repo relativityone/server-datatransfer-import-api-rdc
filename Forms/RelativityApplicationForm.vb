@@ -132,6 +132,9 @@ Namespace kCura.EDDS.WinForm
 			Me.AppArtifactsPanel = New System.Windows.Forms.Panel()
 			Me.FieldMapPanel = New System.Windows.Forms.Panel()
 			Me.ArtifactMappingGroupBox = New System.Windows.Forms.GroupBox()
+			Me.Label4 = New System.Windows.Forms.Label()
+			Me.Label3 = New System.Windows.Forms.Label()
+			Me.Label2 = New System.Windows.Forms.Label()
 			Me.NoTargetFieldsQualifyLabel = New System.Windows.Forms.Label()
 			Me.MapToAppBtn = New System.Windows.Forms.Button()
 			Me.AppToMapBtn = New System.Windows.Forms.Button()
@@ -144,9 +147,6 @@ Namespace kCura.EDDS.WinForm
 			Me.ObjectInfoGroupBox = New System.Windows.Forms.GroupBox()
 			Me.ObjectMapComboBox = New System.Windows.Forms.ComboBox()
 			Me.Label1 = New System.Windows.Forms.Label()
-			Me.Label2 = New System.Windows.Forms.Label()
-			Me.Label3 = New System.Windows.Forms.Label()
-			Me.Label4 = New System.Windows.Forms.Label()
 			Me.ApplicationFileGroupBox.SuspendLayout()
 			Me.ApplicationInformationGroupBox.SuspendLayout()
 			Me.ApplicationArtifactsGroupBox.SuspendLayout()
@@ -410,6 +410,36 @@ Namespace kCura.EDDS.WinForm
 			Me.ArtifactMappingGroupBox.TabStop = False
 			Me.ArtifactMappingGroupBox.Text = "Artifact Mapping"
 			'
+			'Label4
+			'
+			Me.Label4.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+			Me.Label4.Location = New System.Drawing.Point(344, 28)
+			Me.Label4.Name = "Label4"
+			Me.Label4.Size = New System.Drawing.Size(177, 23)
+			Me.Label4.TabIndex = 18
+			Me.Label4.Text = "Mapping"
+			Me.Label4.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
+			'
+			'Label3
+			'
+			Me.Label3.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+			Me.Label3.Location = New System.Drawing.Point(672, 28)
+			Me.Label3.Name = "Label3"
+			Me.Label3.Size = New System.Drawing.Size(177, 23)
+			Me.Label3.TabIndex = 17
+			Me.Label3.Text = "  Workspace Fields"
+			Me.Label3.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+			'
+			'Label2
+			'
+			Me.Label2.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+			Me.Label2.Location = New System.Drawing.Point(18, 28)
+			Me.Label2.Name = "Label2"
+			Me.Label2.Size = New System.Drawing.Size(177, 23)
+			Me.Label2.TabIndex = 16
+			Me.Label2.Text = "  Application Fields"
+			Me.Label2.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+			'
 			'NoTargetFieldsQualifyLabel
 			'
 			Me.NoTargetFieldsQualifyLabel.BackColor = System.Drawing.SystemColors.Window
@@ -525,36 +555,6 @@ Namespace kCura.EDDS.WinForm
 			Me.Label1.TabIndex = 9
 			Me.Label1.Text = "Object Name:"
 			'
-			'Label2
-			'
-			Me.Label2.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-			Me.Label2.Location = New System.Drawing.Point(18, 28)
-			Me.Label2.Name = "Label2"
-			Me.Label2.Size = New System.Drawing.Size(177, 23)
-			Me.Label2.TabIndex = 16
-			Me.Label2.Text = "  Application Fields"
-			Me.Label2.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
-			'
-			'Label3
-			'
-			Me.Label3.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-			Me.Label3.Location = New System.Drawing.Point(672, 28)
-			Me.Label3.Name = "Label3"
-			Me.Label3.Size = New System.Drawing.Size(177, 23)
-			Me.Label3.TabIndex = 17
-			Me.Label3.Text = "  Workspace Fields"
-			Me.Label3.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
-			'
-			'Label4
-			'
-			Me.Label4.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-			Me.Label4.Location = New System.Drawing.Point(344, 28)
-			Me.Label4.Name = "Label4"
-			Me.Label4.Size = New System.Drawing.Size(177, 23)
-			Me.Label4.TabIndex = 18
-			Me.Label4.Text = "Mapping"
-			Me.Label4.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
-			'
 			'RelativityApplicationForm
 			'
 			Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
@@ -568,6 +568,7 @@ Namespace kCura.EDDS.WinForm
 			Me.Controls.Add(Me.ImportButton)
 			Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog
 			Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
+			Me.MaximizeBox = False
 			Me.Menu = Me.MainMenu
 			Me.MinimumSize = New System.Drawing.Size(380, 395)
 			Me.Name = "RelativityApplicationForm"
@@ -868,7 +869,7 @@ Namespace kCura.EDDS.WinForm
 
 #Region "Mapping Control Methods"
 
-		Private Sub AppToMapBtn_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles AppToMapBtn.Click
+		Private Sub DoAppToMap()
 			Try
 				supressMappedListSelectedIndexChangedEvents = True
 				Dim appField As AppField = CType(AppFieldList.SelectedItem, AppField)
@@ -888,7 +889,7 @@ Namespace kCura.EDDS.WinForm
 			End Try
 		End Sub
 
-		Private Sub MapToAppBtn_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MapToAppBtn.Click
+		Private Sub DoMapToApp()
 			Try
 				supressMappedListSelectedIndexChangedEvents = True
 				Dim appField As AppField = CType(MappedList_App.SelectedItem, AppField)
@@ -909,7 +910,7 @@ Namespace kCura.EDDS.WinForm
 			End Try
 		End Sub
 
-		Private Sub TargetToMapBtn_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles TargetToMapBtn.Click
+		Private Sub DoTargetToMap()
 			Try
 				supressMappedListSelectedIndexChangedEvents = True
 				Dim targetField As TargetField = CType(TargetFieldList.SelectedItem, TargetField)
@@ -927,7 +928,7 @@ Namespace kCura.EDDS.WinForm
 			End Try
 		End Sub
 
-		Private Sub MapToTargetBtn_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MapToTargetBtn.Click
+		Private Sub DoMapToTarget()
 			Try
 				supressMappedListSelectedIndexChangedEvents = True
 				Dim targetField As TargetField = CType(MappedList_Target.SelectedItem, TargetField)
@@ -940,6 +941,22 @@ Namespace kCura.EDDS.WinForm
 				supressMappedListSelectedIndexChangedEvents = False
 				UpdateMappingButtonsAndUI()
 			End Try
+		End Sub
+
+		Private Sub AppToMapBtn_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles AppToMapBtn.Click
+			DoAppToMap()
+		End Sub
+
+		Private Sub MapToAppBtn_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MapToAppBtn.Click
+			DoMapToApp()
+		End Sub
+
+		Private Sub TargetToMapBtn_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles TargetToMapBtn.Click
+			DoTargetToMap()
+		End Sub
+
+		Private Sub MapToTargetBtn_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MapToTargetBtn.Click
+			DoMapToTarget()
 		End Sub
 
 		Private Sub WireUpMappingEventHandlers()
@@ -1078,6 +1095,22 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 #End Region
+
+		Private Sub AppFieldList_DoubleClick(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles AppFieldList.DoubleClick
+			DoAppToMap()
+		End Sub
+
+		Private Sub MappedList_App_DoubleClick(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MappedList_App.DoubleClick
+			DoMapToApp()
+		End Sub
+
+		Private Sub MappedList_Target_DoubleClick(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MappedList_Target.DoubleClick
+			DoMapToTarget()
+		End Sub
+
+		Private Sub TargetFieldList_DoubleClick(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles TargetFieldList.DoubleClick
+			DoTargetToMap()
+		End Sub
 
 	End Class
 End Namespace
