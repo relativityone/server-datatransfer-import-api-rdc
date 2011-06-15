@@ -568,6 +568,7 @@ Namespace kCura.EDDS.WinForm
 			Me.Controls.Add(Me.ImportButton)
 			Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog
 			Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
+			Me.MaximizeBox = False
 			Me.Menu = Me.MainMenu
 			Me.MinimumSize = New System.Drawing.Size(380, 395)
 			Me.Name = "RelativityApplicationForm"
