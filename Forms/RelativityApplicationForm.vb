@@ -4,6 +4,7 @@ Imports System.Collections.Generic
 Imports System.ComponentModel
 Imports System.Linq
 Imports Facet.Combinatorics
+Imports Relativity.Applications.Serialization
 Imports Relativity.Applications.Serialization.Elements
 Imports kCura.EDDS.WinForm.Presentation.Controller
 Imports kCura.EDDS.WinForm.Data
@@ -13,6 +14,7 @@ Namespace kCura.EDDS.WinForm
 		Inherits System.Windows.Forms.Form
 
 		Const FORM_BOTTOM_BUFFER As Int32 = 50
+		Const MIN_APP_VERSION_FOR_EMPTY_GUID_CHECK As Decimal = 7@
 
 		Private Enum FormUIState
 			General = 1
@@ -51,7 +53,6 @@ Namespace kCura.EDDS.WinForm
 		Friend WithEvents Label3 As System.Windows.Forms.Label
 		Friend WithEvents Label2 As System.Windows.Forms.Label
 		Dim _mapController As FieldMapFourPickerController
-
 
 #Region " Windows Form Designer generated code "
 
@@ -220,7 +221,7 @@ Namespace kCura.EDDS.WinForm
 			'FilePath
 			'
 			Me.FilePath.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-									Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+						Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me.FilePath.BackColor = System.Drawing.SystemColors.ControlLightLight
 			Me.FilePath.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
 			Me.FilePath.ForeColor = System.Drawing.SystemColors.ControlDarkDark
@@ -247,7 +248,7 @@ Namespace kCura.EDDS.WinForm
 			'ApplicationName
 			'
 			Me.ApplicationName.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-									Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+						Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me.ApplicationName.Location = New System.Drawing.Point(60, 24)
 			Me.ApplicationName.Name = "ApplicationName"
 			Me.ApplicationName.ReadOnly = True
@@ -257,7 +258,7 @@ Namespace kCura.EDDS.WinForm
 			'ApplicationVersion
 			'
 			Me.ApplicationVersion.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-									Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+						Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me.ApplicationVersion.Location = New System.Drawing.Point(60, 56)
 			Me.ApplicationVersion.Name = "ApplicationVersion"
 			Me.ApplicationVersion.ReadOnly = True
@@ -283,8 +284,8 @@ Namespace kCura.EDDS.WinForm
 			'ApplicationArtifactsGroupBox
 			'
 			Me.ApplicationArtifactsGroupBox.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-									Or System.Windows.Forms.AnchorStyles.Left) _
-									Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+						Or System.Windows.Forms.AnchorStyles.Left) _
+						Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me.ApplicationArtifactsGroupBox.Controls.Add(Me.AppNotLoadedLabel)
 			Me.ApplicationArtifactsGroupBox.Controls.Add(Me.ArtifactsTreeView)
 			Me.ApplicationArtifactsGroupBox.Location = New System.Drawing.Point(10, 5)
@@ -338,7 +339,7 @@ Namespace kCura.EDDS.WinForm
 			'CaseListTextBox
 			'
 			Me.CaseListTextBox.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-									Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+						Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me.CaseListTextBox.BackColor = System.Drawing.SystemColors.ControlLightLight
 			Me.CaseListTextBox.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
 			Me.CaseListTextBox.ForeColor = System.Drawing.SystemColors.ControlDarkDark
@@ -389,8 +390,8 @@ Namespace kCura.EDDS.WinForm
 			'ArtifactMappingGroupBox
 			'
 			Me.ArtifactMappingGroupBox.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-									Or System.Windows.Forms.AnchorStyles.Left) _
-									Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+						Or System.Windows.Forms.AnchorStyles.Left) _
+						Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me.ArtifactMappingGroupBox.Controls.Add(Me.Label4)
 			Me.ArtifactMappingGroupBox.Controls.Add(Me.Label3)
 			Me.ArtifactMappingGroupBox.Controls.Add(Me.Label2)
@@ -527,8 +528,8 @@ Namespace kCura.EDDS.WinForm
 			'ObjectInfoGroupBox
 			'
 			Me.ObjectInfoGroupBox.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-									Or System.Windows.Forms.AnchorStyles.Left) _
-									Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+						Or System.Windows.Forms.AnchorStyles.Left) _
+						Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me.ObjectInfoGroupBox.Controls.Add(Me.ObjectMapComboBox)
 			Me.ObjectInfoGroupBox.Controls.Add(Me.Label1)
 			Me.ObjectInfoGroupBox.Location = New System.Drawing.Point(8, 0)
@@ -608,6 +609,7 @@ Namespace kCura.EDDS.WinForm
 				LoadApplicationVersionFromNode(document.SelectSingleNode("/Application/Version"))
 				LoadApplicationTree(document)
 				LoadMappingControls(document)
+				WarnOnInvalidFieldGuids(_app)
 				_document = document
 			Else
 				MsgBox("Unable to refresh the loaded Relativity Application template file.", MsgBoxStyle.Exclamation, "Relativity Desktop Client")
@@ -668,9 +670,8 @@ Namespace kCura.EDDS.WinForm
 			If Not e.Cancel Then
 				LoadApplicationVersionFromNode(document.SelectSingleNode("/Application/Version"))
 				LoadApplicationTree(document)
-
-				'Dim factory As New AppMappingDataFactory()
 				LoadMappingControls(document)
+				WarnOnInvalidFieldGuids(_app)
 
 				FilePath.Text = OpenFileDialog.FileName
 				OpenFileDialog.InitialDirectory = IO.Path.GetDirectoryName(OpenFileDialog.FileName)	' Preserve old directory
@@ -680,6 +681,30 @@ Namespace kCura.EDDS.WinForm
 				_isAppAndCaseLoaded = True
 				SetFormState(FormUIState.General)
 			End If
+		End Sub
+
+		Private Sub WarnOnInvalidFieldGuids(ByVal relApp As RelativityApplicationElement)
+			Try
+				'We need to check guids for Relativity 7.0 and above.  This is mostly for internal testing applications at kCura that might have empty guids.
+				Dim appVersion = Decimal.Parse(relApp.RelativityVersion)
+				If appVersion >= MIN_APP_VERSION_FOR_EMPTY_GUID_CHECK Then
+					'Check for empty guids
+					Dim guidList As New List(Of Guid)
+					For Each objElement In relApp.Objects
+						For Each fldElement In objElement.Fields.Union(objElement.SystemFields)
+							guidList.Add(fldElement.Guid)
+							guidList.AddRange(fldElement.Guids)
+						Next
+					Next
+
+					Dim documentContainsTheEmptyGuid As Boolean = guidList.Contains(Guid.Empty)
+					If documentContainsTheEmptyGuid Then
+						MsgBox("The application file you selected contains empty guids and may be invalid or corrupt.", MsgBoxStyle.Exclamation, "Relativity Desktop Client")
+					End If
+				End If
+			Catch ex As Exception
+				'Do nothing.  This code block is only for kCura testers, so we don't worry about exceptions for production.
+			End Try
 		End Sub
 
 		Private Sub BrowseButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles BrowseButton.Click
