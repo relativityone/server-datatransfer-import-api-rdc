@@ -15,6 +15,10 @@ Namespace kCura.EDDS.WinForm
 
 		Const FORM_BOTTOM_BUFFER As Int32 = 50
 		Const MIN_APP_VERSION_FOR_EMPTY_GUID_CHECK As Decimal = 7@
+		Const MAPFIELDSLINKTEXT_CLICKTOMAP As String = "Map Fields (optional)"
+		Const MAPFIELDSLINKTEXT_BACK As String = "Back"
+		Const WARNING_ABOUT_LOSING_MAPPINGS = "This operation will reload all data in the form. Any field mappings you have selected will need to be re-mapped. Do you want to continue?"
+		Const ERRORMSG_CANNOT_MAP_TOO_MANY_CASES_SELECTED = "You cannot map fields with more than one case selected."
 
 		Private Enum FormUIState
 			General = 1
@@ -27,7 +31,6 @@ Namespace kCura.EDDS.WinForm
 		Private _caseInfos As Generic.List(Of Relativity.CaseInfo)
 		Private _document As Xml.XmlDocument
 		Friend WithEvents ImportButton As System.Windows.Forms.Button
-		Friend WithEvents MapFieldsButton As System.Windows.Forms.Button
 		Friend WithEvents AppArtifactsPanel As System.Windows.Forms.Panel
 		Friend WithEvents FieldMapPanel As System.Windows.Forms.Panel
 		Friend WithEvents ObjectInfoGroupBox As System.Windows.Forms.GroupBox
@@ -52,7 +55,11 @@ Namespace kCura.EDDS.WinForm
 		Friend WithEvents Label4 As System.Windows.Forms.Label
 		Friend WithEvents Label3 As System.Windows.Forms.Label
 		Friend WithEvents Label2 As System.Windows.Forms.Label
+		Friend WithEvents MapFieldsLink As System.Windows.Forms.LinkLabel
 		Dim _mapController As FieldMapFourPickerController
+		Friend WithEvents CannotMapPanel As System.Windows.Forms.Panel
+		Friend WithEvents CannotMapLabel As System.Windows.Forms.Label
+		Dim _mapFieldsLinkTextHolder As String = String.Empty
 
 #Region " Windows Form Designer generated code "
 
@@ -129,7 +136,6 @@ Namespace kCura.EDDS.WinForm
 			Me.BrowseCasesButton = New System.Windows.Forms.Button()
 			Me.CaseListTextBox = New System.Windows.Forms.TextBox()
 			Me.ImportButton = New System.Windows.Forms.Button()
-			Me.MapFieldsButton = New System.Windows.Forms.Button()
 			Me.AppArtifactsPanel = New System.Windows.Forms.Panel()
 			Me.FieldMapPanel = New System.Windows.Forms.Panel()
 			Me.ArtifactMappingGroupBox = New System.Windows.Forms.GroupBox()
@@ -148,6 +154,9 @@ Namespace kCura.EDDS.WinForm
 			Me.ObjectInfoGroupBox = New System.Windows.Forms.GroupBox()
 			Me.ObjectMapComboBox = New System.Windows.Forms.ComboBox()
 			Me.Label1 = New System.Windows.Forms.Label()
+			Me.MapFieldsLink = New System.Windows.Forms.LinkLabel()
+			Me.CannotMapPanel = New System.Windows.Forms.Panel()
+			Me.CannotMapLabel = New System.Windows.Forms.Label()
 			Me.ApplicationFileGroupBox.SuspendLayout()
 			Me.ApplicationInformationGroupBox.SuspendLayout()
 			Me.ApplicationArtifactsGroupBox.SuspendLayout()
@@ -156,6 +165,7 @@ Namespace kCura.EDDS.WinForm
 			Me.FieldMapPanel.SuspendLayout()
 			Me.ArtifactMappingGroupBox.SuspendLayout()
 			Me.ObjectInfoGroupBox.SuspendLayout()
+			Me.CannotMapPanel.SuspendLayout()
 			Me.SuspendLayout()
 			'
 			'MainMenu
@@ -221,7 +231,7 @@ Namespace kCura.EDDS.WinForm
 			'FilePath
 			'
 			Me.FilePath.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-						Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+									Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me.FilePath.BackColor = System.Drawing.SystemColors.ControlLightLight
 			Me.FilePath.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
 			Me.FilePath.ForeColor = System.Drawing.SystemColors.ControlDarkDark
@@ -248,7 +258,7 @@ Namespace kCura.EDDS.WinForm
 			'ApplicationName
 			'
 			Me.ApplicationName.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-						Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+									Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me.ApplicationName.Location = New System.Drawing.Point(60, 24)
 			Me.ApplicationName.Name = "ApplicationName"
 			Me.ApplicationName.ReadOnly = True
@@ -258,7 +268,7 @@ Namespace kCura.EDDS.WinForm
 			'ApplicationVersion
 			'
 			Me.ApplicationVersion.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-						Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+									Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me.ApplicationVersion.Location = New System.Drawing.Point(60, 56)
 			Me.ApplicationVersion.Name = "ApplicationVersion"
 			Me.ApplicationVersion.ReadOnly = True
@@ -284,8 +294,8 @@ Namespace kCura.EDDS.WinForm
 			'ApplicationArtifactsGroupBox
 			'
 			Me.ApplicationArtifactsGroupBox.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-						Or System.Windows.Forms.AnchorStyles.Left) _
-						Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+									Or System.Windows.Forms.AnchorStyles.Left) _
+									Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me.ApplicationArtifactsGroupBox.Controls.Add(Me.AppNotLoadedLabel)
 			Me.ApplicationArtifactsGroupBox.Controls.Add(Me.ArtifactsTreeView)
 			Me.ApplicationArtifactsGroupBox.Location = New System.Drawing.Point(10, 5)
@@ -339,7 +349,7 @@ Namespace kCura.EDDS.WinForm
 			'CaseListTextBox
 			'
 			Me.CaseListTextBox.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-						Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+									Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me.CaseListTextBox.BackColor = System.Drawing.SystemColors.ControlLightLight
 			Me.CaseListTextBox.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
 			Me.CaseListTextBox.ForeColor = System.Drawing.SystemColors.ControlDarkDark
@@ -353,22 +363,12 @@ Namespace kCura.EDDS.WinForm
 			'ImportButton
 			'
 			Me.ImportButton.Enabled = False
-			Me.ImportButton.Location = New System.Drawing.Point(724, 585)
+			Me.ImportButton.Location = New System.Drawing.Point(817, 583)
 			Me.ImportButton.Name = "ImportButton"
 			Me.ImportButton.Size = New System.Drawing.Size(75, 23)
 			Me.ImportButton.TabIndex = 11
 			Me.ImportButton.Text = "Import"
 			Me.ImportButton.UseVisualStyleBackColor = True
-			'
-			'MapFieldsButton
-			'
-			Me.MapFieldsButton.Enabled = False
-			Me.MapFieldsButton.Location = New System.Drawing.Point(805, 585)
-			Me.MapFieldsButton.Name = "MapFieldsButton"
-			Me.MapFieldsButton.Size = New System.Drawing.Size(87, 23)
-			Me.MapFieldsButton.TabIndex = 12
-			Me.MapFieldsButton.Text = "Map Fields >>"
-			Me.MapFieldsButton.UseVisualStyleBackColor = True
 			'
 			'AppArtifactsPanel
 			'
@@ -390,8 +390,8 @@ Namespace kCura.EDDS.WinForm
 			'ArtifactMappingGroupBox
 			'
 			Me.ArtifactMappingGroupBox.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-						Or System.Windows.Forms.AnchorStyles.Left) _
-						Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+									Or System.Windows.Forms.AnchorStyles.Left) _
+									Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me.ArtifactMappingGroupBox.Controls.Add(Me.Label4)
 			Me.ArtifactMappingGroupBox.Controls.Add(Me.Label3)
 			Me.ArtifactMappingGroupBox.Controls.Add(Me.Label2)
@@ -404,6 +404,7 @@ Namespace kCura.EDDS.WinForm
 			Me.ArtifactMappingGroupBox.Controls.Add(Me.MappedList_Target)
 			Me.ArtifactMappingGroupBox.Controls.Add(Me.MappedList_App)
 			Me.ArtifactMappingGroupBox.Controls.Add(Me.AppFieldList)
+			Me.ArtifactMappingGroupBox.Controls.Add(Me.CannotMapPanel)
 			Me.ArtifactMappingGroupBox.Location = New System.Drawing.Point(11, 66)
 			Me.ArtifactMappingGroupBox.Name = "ArtifactMappingGroupBox"
 			Me.ArtifactMappingGroupBox.Size = New System.Drawing.Size(867, 273)
@@ -528,8 +529,8 @@ Namespace kCura.EDDS.WinForm
 			'ObjectInfoGroupBox
 			'
 			Me.ObjectInfoGroupBox.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-						Or System.Windows.Forms.AnchorStyles.Left) _
-						Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+									Or System.Windows.Forms.AnchorStyles.Left) _
+									Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me.ObjectInfoGroupBox.Controls.Add(Me.ObjectMapComboBox)
 			Me.ObjectInfoGroupBox.Controls.Add(Me.Label1)
 			Me.ObjectInfoGroupBox.Location = New System.Drawing.Point(8, 0)
@@ -556,16 +557,45 @@ Namespace kCura.EDDS.WinForm
 			Me.Label1.TabIndex = 9
 			Me.Label1.Text = "Object Name:"
 			'
+			'MapFieldsLink
+			'
+			Me.MapFieldsLink.Location = New System.Drawing.Point(665, 583)
+			Me.MapFieldsLink.Name = "MapFieldsLink"
+			Me.MapFieldsLink.Size = New System.Drawing.Size(136, 23)
+			Me.MapFieldsLink.TabIndex = 15
+			Me.MapFieldsLink.TabStop = True
+			Me.MapFieldsLink.Text = "MapFieldsLink"
+			Me.MapFieldsLink.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+			Me.MapFieldsLink.Visible = False
+			'
+			'CannotMapPanel
+			'
+			Me.CannotMapPanel.Controls.Add(Me.CannotMapLabel)
+			Me.CannotMapPanel.Location = New System.Drawing.Point(8, 19)
+			Me.CannotMapPanel.Name = "CannotMapPanel"
+			Me.CannotMapPanel.Size = New System.Drawing.Size(853, 248)
+			Me.CannotMapPanel.TabIndex = 16
+			'
+			'CannotMapLabel
+			'
+			Me.CannotMapLabel.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+			Me.CannotMapLabel.Location = New System.Drawing.Point(130, 60)
+			Me.CannotMapLabel.Name = "CannotMapLabel"
+			Me.CannotMapLabel.Size = New System.Drawing.Size(573, 112)
+			Me.CannotMapLabel.TabIndex = 0
+			Me.CannotMapLabel.Text = "CannotMapLabel"
+			Me.CannotMapLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
+			'
 			'RelativityApplicationForm
 			'
 			Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
 			Me.ClientSize = New System.Drawing.Size(904, 1011)
+			Me.Controls.Add(Me.MapFieldsLink)
 			Me.Controls.Add(Me.FieldMapPanel)
 			Me.Controls.Add(Me.AppArtifactsPanel)
 			Me.Controls.Add(Me.GroupBox1)
 			Me.Controls.Add(Me.ApplicationInformationGroupBox)
 			Me.Controls.Add(Me.ApplicationFileGroupBox)
-			Me.Controls.Add(Me.MapFieldsButton)
 			Me.Controls.Add(Me.ImportButton)
 			Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog
 			Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
@@ -587,15 +617,66 @@ Namespace kCura.EDDS.WinForm
 			Me.FieldMapPanel.ResumeLayout(False)
 			Me.ArtifactMappingGroupBox.ResumeLayout(False)
 			Me.ObjectInfoGroupBox.ResumeLayout(False)
+			Me.CannotMapPanel.ResumeLayout(False)
 			Me.ResumeLayout(False)
 
 		End Sub
 
 #End Region
 
+		''' <summary>
+		''' Returns true if the user has started down the path of mapping fields.  This can be used to warn the user that they might have to start
+		''' from scratch if data on the form is reloaded.
+		''' </summary>
+		Private ReadOnly Property UserHasStartedMappingInUI() As Boolean
+			Get
+				If _mapController Is Nothing Then
+					Return False
+				End If
+				Return _mapController.AppFieldsList_Mapped.Count > 0 Or _mapController.TargetFieldsList_Mapped.Count > 0
+			End Get
+		End Property
+
+		''' <summary>
+		''' Displays a dialog to the user warning them that they are about to lose their field mappings.
+		''' </summary>
+		''' <returns>MsgBox.Yes if the user wants to continue.</returns>
+		Private Function WarnAboutLosingFieldMappings() As DialogResult
+			Return MessageBox.Show(WARNING_ABOUT_LOSING_MAPPINGS, "Confirm Operation", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation)
+		End Function
+
 #Region " Event Handlers "
 
+		Private Sub AppFieldList_DoubleClick(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles AppFieldList.DoubleClick
+			DoAppToMap()
+		End Sub
+
+		Private Sub MappedList_App_DoubleClick(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MappedList_App.DoubleClick
+			DoMapToApp()
+		End Sub
+
+		Private Sub MappedList_Target_DoubleClick(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MappedList_Target.DoubleClick
+			DoMapToTarget()
+		End Sub
+
+		Private Sub TargetFieldList_DoubleClick(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles TargetFieldList.DoubleClick
+			DoTargetToMap()
+		End Sub
+
+		Private Sub MapFieldsLink_LinkClicked(ByVal sender As System.Object, ByVal e As System.Windows.Forms.LinkLabelLinkClickedEventArgs) Handles MapFieldsLink.LinkClicked
+			If _formState = FormUIState.General Then
+				SetFormState(FormUIState.FieldMapping)
+			Else
+				SetFormState(FormUIState.General)
+			End If
+		End Sub
+
 		Private Sub MenuFile_Refresh_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuFile_Refresh.Click
+			If UserHasStartedMappingInUI Then
+				If WarnAboutLosingFieldMappings() <> DialogResult.Yes Then
+					Return 'Early exit, user does not want to continue
+				End If
+			End If
 			RefreshAllData()
 		End Sub
 
@@ -603,6 +684,18 @@ Namespace kCura.EDDS.WinForm
 			If _filename Is Nothing OrElse _filename.Length = 0 Then
 				Return 'File has not been selected - nothing to do
 			End If
+
+			'Handle whether we can map based on the number of cases selected
+			If Me.CaseInfos.Count > 1 Then
+				CannotMapPanel.BringToFront()
+				CannotMapPanel.Visible = True
+				CannotMapLabel.Text = ERRORMSG_CANNOT_MAP_TOO_MANY_CASES_SELECTED
+			Else
+				CannotMapPanel.SendToBack()
+				CannotMapPanel.Visible = False
+			End If
+
+			MapFieldsLink.Visible = True
 
 			Dim document As Xml.XmlDocument = LoadFileIntoXML(_filename)
 			If Not document Is Nothing AndAlso LoadApplicationNameFromNode(document.SelectSingleNode("/Application/Name")) Then
@@ -714,10 +807,20 @@ Namespace kCura.EDDS.WinForm
 		Private Sub BrowseCasesButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles BrowseCasesButton.Click
 			Dim frm As New CaseSelectForm
 			frm.MultiSelect = True
-			If frm.ShowDialog() = DialogResult.OK Then
-				Me.CaseInfos = frm.SelectedCaseInfo
-				RefreshAllData()
+			If frm.ShowDialog() <> DialogResult.OK Then
+				Return 'Early exit, user does not want to continue
 			End If
+
+			'Check if we are going to lose mappings and warn the user.
+			Dim selectedCasesAreChanging As Boolean = Me.CaseInfos.Union(frm.SelectedCaseInfo).Count <> Me.CaseInfos.Count 'Union/count allows for different order of elements
+			If selectedCasesAreChanging And UserHasStartedMappingInUI Then
+				If WarnAboutLosingFieldMappings() <> DialogResult.Yes Then
+					Return 'Early exit, user does not want to continue
+				End If
+			End If
+			Me.CaseInfos = frm.SelectedCaseInfo
+			RefreshAllData()
+
 		End Sub
 
 #End Region
@@ -849,14 +952,6 @@ Namespace kCura.EDDS.WinForm
 
 #End Region
 
-		Private Sub MapFieldsButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MapFieldsButton.Click
-			If _formState = FormUIState.General Then
-				SetFormState(FormUIState.FieldMapping)
-			Else
-				SetFormState(FormUIState.General)
-			End If
-		End Sub
-
 		Private Sub RelativityApplicationForm_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
 			'Set up form size and bottom panels
 			Dim newHeight As Int32 = ImportButton.Location.Y + ImportButton.Height + FORM_BOTTOM_BUFFER
@@ -875,16 +970,13 @@ Namespace kCura.EDDS.WinForm
 			ArtifactsTreeView.Enabled = _isAppAndCaseLoaded
 			AppNotLoadedLabel.Visible = Not _isAppAndCaseLoaded
 			AppArtifactsPanel.Visible = toggleVal
-			MapFieldsButton.Enabled = _isAppAndCaseLoaded
-			BrowseButton.Enabled = toggleVal
-			BrowseCasesButton.Enabled = toggleVal
-			FilePath.Enabled = toggleVal
-			CaseListTextBox.Enabled = toggleVal
+			MapFieldsLink.Visible = _isAppAndCaseLoaded
 			ArtifactsTreeView.Visible = toggleVal
+
 			If toggleVal Then
-				MapFieldsButton.Text = "Map Fields >>"
+				MapFieldsLink.Text = MAPFIELDSLINKTEXT_CLICKTOMAP
 			Else
-				MapFieldsButton.Text = "<< Back"
+				MapFieldsLink.Text = MAPFIELDSLINKTEXT_BACK
 			End If
 			FieldMapPanel.Visible = Not toggleVal
 		End Sub
@@ -993,10 +1085,10 @@ Namespace kCura.EDDS.WinForm
 		Private Sub LoadMappingControls(ByVal xml As Xml.XmlDocument)
 			'Check that we have one and only one case loaded
 			If Me.CaseInfos.Count = 1 Then
-				Me.MapFieldsButton.Enabled = True
+				Me.ObjectMapComboBox.Enabled = True
 			Else
-				Me.MapFieldsButton.Enabled = False
-				Return 'Can load anything more
+				Me.ObjectMapComboBox.Enabled = False
+				Return 'Cannot load anything more
 			End If
 
 			_app = ApplicationElement.Deserialize(Of RelativityApplicationElement)(xml)
@@ -1127,22 +1219,6 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 #End Region
-
-		Private Sub AppFieldList_DoubleClick(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles AppFieldList.DoubleClick
-			DoAppToMap()
-		End Sub
-
-		Private Sub MappedList_App_DoubleClick(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MappedList_App.DoubleClick
-			DoMapToApp()
-		End Sub
-
-		Private Sub MappedList_Target_DoubleClick(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MappedList_Target.DoubleClick
-			DoMapToTarget()
-		End Sub
-
-		Private Sub TargetFieldList_DoubleClick(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles TargetFieldList.DoubleClick
-			DoTargetToMap()
-		End Sub
 
 	End Class
 End Namespace
