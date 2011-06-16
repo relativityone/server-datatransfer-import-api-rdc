@@ -512,15 +512,15 @@ Public Class RelativityApplicationStatusForm
 		End If
 	End Sub
 
-	Private Sub ArtifactStatusTable_CellValidating(ByVal sender As Object, ByVal e As DataGridViewCellValidatingEventArgs) Handles ArtifactStatusTable.CellValidating
-		' Validate the rename entry by disallowing empty strings and ensuring size limits.
-		If ArtifactStatusTable.Columns(e.ColumnIndex).Name = ArtifactConflictNameColumnName Then
-			If e.FormattedValue Is Nothing OrElse _
-			 e.FormattedValue.ToString().Length < 1 OrElse e.FormattedValue.ToString.Length > FieldNameMaximumLength Then
-				e.Cancel = True
-			End If
-		End If
-	End Sub
+	'Private Sub ArtifactStatusTable_CellValidating(ByVal sender As Object, ByVal e As DataGridViewCellValidatingEventArgs) Handles ArtifactStatusTable.CellValidating
+	'	' Validate the rename entry by disallowing empty strings and ensuring size limits.
+	'	If ArtifactStatusTable.Columns(e.ColumnIndex).Name = ArtifactConflictNameColumnName Then
+	'		If e.FormattedValue Is Nothing OrElse _
+	'		 e.FormattedValue.ToString().Length < 1 OrElse e.FormattedValue.ToString.Length > FieldNameMaximumLength Then
+	'			e.Cancel = True
+	'		End If
+	'	End If
+	'End Sub
 
 	Private Sub ArtifactStatusTable_CellEndEdit(ByVal sender As Object, ByVal e As System.Windows.Forms.DataGridViewCellEventArgs) Handles ArtifactStatusTable.CellEndEdit
 		' Clear the row error in case the user presses ESC.   
@@ -757,7 +757,7 @@ Public Class RelativityApplicationStatusForm
 				'(If it's an error row)
 
 				If (DirectCast(row.Item(ArtifactHiddenErrorColumnName), TemplateManagerBase.StatusCode) = TemplateManagerBase.StatusCode.NameConflict _
-				  OrElse DirectCast(row.Item(ArtifactHiddenErrorColumnName), TemplateManagerBase.StatusCode) = TemplateManagerBase.StatusCode.FriendlyNameConflict) Then
+					OrElse DirectCast(row.Item(ArtifactHiddenErrorColumnName), TemplateManagerBase.StatusCode) = TemplateManagerBase.StatusCode.FriendlyNameConflict) Then
 					'(If it's a name or friendlyname conflict)
 
 					If String.Equals(row.Item(ArtifcactSelectedResolutionColumnName).ToString, DropdownRenameInWorkspace, StringComparison.InvariantCulture) _
@@ -791,7 +791,7 @@ Public Class RelativityApplicationStatusForm
 					End If
 
 				ElseIf (DirectCast(row.Item(ArtifactHiddenErrorColumnName), TemplateManagerBase.StatusCode) = TemplateManagerBase.StatusCode.RenameConflict _
-				  OrElse DirectCast(row.Item(ArtifactHiddenErrorColumnName), TemplateManagerBase.StatusCode) = TemplateManagerBase.StatusCode.RenameFriendlyNameConflict) Then
+					OrElse DirectCast(row.Item(ArtifactHiddenErrorColumnName), TemplateManagerBase.StatusCode) = TemplateManagerBase.StatusCode.RenameFriendlyNameConflict) Then
 					'(Else, If it's a rename or rename friendlyname conflict)
 
 					kvp = New TemplateManagerBase.FieldKVP()
@@ -803,7 +803,7 @@ Public Class RelativityApplicationStatusForm
 					 .Fields = New TemplateManagerBase.FieldKVP() {kvp}, _
 					 .Action = TemplateManagerBase.ResolveAction.Update})
 				End If
-				End If
+			End If
 		Next
 
 		Return resArts.ToArray()
