@@ -779,7 +779,7 @@ Public Class RelativityApplicationStatusForm
 				'(If it's an error row)
 
 				If (DirectCast(row.Item(ArtifactHiddenErrorColumnName), TemplateManagerBase.StatusCode) = TemplateManagerBase.StatusCode.NameConflict _
-					OrElse DirectCast(row.Item(ArtifactHiddenErrorColumnName), TemplateManagerBase.StatusCode) = TemplateManagerBase.StatusCode.FriendlyNameConflict) Then
+				 OrElse DirectCast(row.Item(ArtifactHiddenErrorColumnName), TemplateManagerBase.StatusCode) = TemplateManagerBase.StatusCode.FriendlyNameConflict) Then
 					'(If it's a name or friendlyname conflict)
 
 					If String.Equals(row.Item(ArtifcactSelectedResolutionColumnName).ToString, DropdownRenameInWorkspace, StringComparison.InvariantCulture) _
@@ -813,7 +813,7 @@ Public Class RelativityApplicationStatusForm
 					End If
 
 				ElseIf (DirectCast(row.Item(ArtifactHiddenErrorColumnName), TemplateManagerBase.StatusCode) = TemplateManagerBase.StatusCode.RenameConflict _
-					OrElse DirectCast(row.Item(ArtifactHiddenErrorColumnName), TemplateManagerBase.StatusCode) = TemplateManagerBase.StatusCode.RenameFriendlyNameConflict) Then
+				 OrElse DirectCast(row.Item(ArtifactHiddenErrorColumnName), TemplateManagerBase.StatusCode) = TemplateManagerBase.StatusCode.RenameFriendlyNameConflict) Then
 					'(Else, If it's a rename or rename friendlyname conflict)
 
 					kvp = New TemplateManagerBase.FieldKVP()
