@@ -23,7 +23,7 @@ Public Class RelativityApplicationStatusForm
 
 	Private Const ExpandText As String = "[+]"
 	Private Const CollapseText As String = "[-]"
-	Private Const HelpLink As String = "http://help.kcura.com/relativity/Relativity Applications/7.0/Using Relativity Applications for RDC - 7.0.pdf#Resolving-Errors"
+	Private Const HelpLink As String = "http://help.kcura.com/relativity/Relativity Applications/7.0/Using a Relativity Application.pdf#Resolving-Errors"
 	Private ErrorMessagePart1 As String = "Installation failed.  For details on potential resolutions to the errors you may have encountered here, refer to the "
 	Private ErrorMessageLink As String = "Relativity Applications documentation."
 	Private ErrorMessagePart2 As String = Environment.NewLine & Environment.NewLine & "The following errors occurred while installing the application:" & Environment.NewLine & Environment.NewLine
