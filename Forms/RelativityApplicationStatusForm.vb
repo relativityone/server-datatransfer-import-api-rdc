@@ -36,6 +36,7 @@ Public Class RelativityApplicationStatusForm
 	Private Const ArtifactConflictIDColumnName As String = "Conflicting Artifact ID"
 	Private Const ArtifactTypeIDColumnName As String = "Artifact Type ID"
 	Private Const ArtifactConflictNameColumnName As String = "Conflicting Artifact Name"
+	Private Const ArtifactConflictNameOriginalColumnName As String = "Conflicting Artifact Name (orig)"
 	Private Const ArtifactIndexColumnName As String = "Index"
 	Private Const ArtifcactSelectedResolutionColumnName = "Selected Resolution"
 	Private Const DropdownUnlock As String = "Unlock"
@@ -273,6 +274,7 @@ Public Class RelativityApplicationStatusForm
 		failedTable.Columns.Add("Locked Applications", GetType(String))
 		failedTable.Columns.Add(ArtifactApplicationIdsColumnName, GetType(Int32()))
 		failedTable.Columns.Add(ArtifactConflictNameColumnName, GetType(String))
+		failedTable.Columns.Add(ArtifactConflictNameOriginalColumnName, GetType(String))
 		failedTable.Columns.Add(ArtifactConflictIDColumnName, GetType(Integer))
 		failedTable.Columns.Add("Details", GetType(String))
 		failedTable.Columns.Add(ArtifactIndexColumnName, GetType(Integer))
@@ -318,6 +320,7 @@ Public Class RelativityApplicationStatusForm
 			 conflictApps, _
 			 conflictAppIDs.ToArray(), _
 			 conflictName, _
+			 conflictName, _
 			 conflictID, _
 			 art.StatusMessage, _
 			 index})
@@ -358,6 +361,7 @@ Public Class RelativityApplicationStatusForm
 			ArtifactStatusTable.Columns(ArtifactIndexColumnName).Visible = False
 			ArtifactStatusTable.Columns(ArtifactTypeIDColumnName).Visible = False
 			ArtifactStatusTable.Columns(ArtifcactSelectedResolutionColumnName).Visible = False
+			ArtifactStatusTable.Columns(ArtifactConflictNameOriginalColumnName).Visible = False
 
 			If CurrentSuccess() Then
 				If ArtifactStatusTable.Columns.Contains(ArtifactResolutionColumnName) Then
@@ -404,6 +408,8 @@ Public Class RelativityApplicationStatusForm
 				If Not String.IsNullOrEmpty(selectedResolution) Then
 					comboBoxCell.Value = selectedResolution
 					row.Cells(ArtifactResolutionColumnName).ReadOnly = False
+				Else
+					row.Cells(ArtifactResolutionColumnName).ReadOnly = True
 				End If
 
 				comboBoxCell.ReadOnly = False
@@ -546,6 +552,18 @@ Public Class RelativityApplicationStatusForm
 
 					_selectCell = New SelectCell(AddressOf SelectCellSub)
 					ar = ArtifactStatusTable.BeginInvoke(_selectCell, conflictingNameCell)
+				ElseIf dropdownIsMapOption(cell) Then
+					'Reset the conflict name cell
+					Dim conflictingNameCell As DataGridViewCell = cell.OwningRow.Cells(ArtifactConflictNameColumnName)
+					Dim origConflictingNameCell As DataGridViewCell = cell.OwningRow.Cells(ArtifactConflictNameOriginalColumnName)
+					Dim currentConflictName As String = DirectCast(conflictingNameCell.Value, String)
+					Dim origConflictName As String = DirectCast(origConflictingNameCell.Value, String)
+					If conflictingNameCell.ReadOnly = False Then
+						conflictingNameCell.ReadOnly = True
+					End If
+					If currentConflictName <> origConflictName Then
+						conflictingNameCell.Value = origConflictName
+					End If
 				End If
 			End If
 		End If
@@ -557,6 +575,10 @@ Public Class RelativityApplicationStatusForm
 		Return Not cell Is Nothing AndAlso cell.Items.Count > 0 AndAlso (String.Equals(DirectCast(cell.EditedFormattedValue, String), DropdownRenameInWorkspace) _
 		OrElse String.Equals(DirectCast(cell.EditedFormattedValue, String), DropdownRenameFriendlyNameInWorkspace) _
 		OrElse String.Equals(DirectCast(cell.EditedFormattedValue, String), DropdownRetryRename))
+	End Function
+
+	Private Function dropdownIsMapOption(ByVal cell As DataGridViewComboBoxCell) As Boolean
+		Return Not cell Is Nothing AndAlso cell.Items.Count > 0 AndAlso (String.Equals(DirectCast(cell.EditedFormattedValue, String), DropdownMap))
 	End Function
 
 	Private Sub CheckForRetryEnabled()
