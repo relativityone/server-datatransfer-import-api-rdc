@@ -44,6 +44,7 @@ Public Class RelativityApplicationStatusForm
 	Private Const DropdownRenameFriendlyNameInWorkspace As String = "Rename in Workspace"
 	Private Const DropdownRetryRename As String = "Rename in Workspace"
 	Private Const DropdownMap As String = "Map Field"
+	Private Const DropdownUserMustResolve As String = "User Must Resolve in Workspace"
 	Private Const ExpandText As String = "[+]"
 	Private Const CollapseText As String = "[-]"
 
@@ -122,6 +123,7 @@ Public Class RelativityApplicationStatusForm
 			End If
 
 			UpdateArtifactStatusView()
+
 		Else
 			globalSuccess = globalSuccess And evt.Result.Success
 
@@ -200,7 +202,7 @@ Public Class RelativityApplicationStatusForm
 		UpdateArtifactStatusTableProperties()
 
 		ExportButton.Enabled = True
-
+		CheckForRetryEnabled()
 		SetButtonVisibility()
 	End Sub
 
@@ -395,6 +397,9 @@ Public Class RelativityApplicationStatusForm
 						comboBoxCell.Items.Add(DropdownRetryRename)
 					Case TemplateManagerBase.StatusCode.RenameFriendlyNameConflict
 						comboBoxCell.Items.Add(DropdownRetryRename)
+					Case TemplateManagerBase.StatusCode.MultipleFileField
+						comboBoxCell.Items.Add(DropdownUserMustResolve)
+						comboBoxCell.Value = DropdownUserMustResolve
 					Case Else
 						comboBoxCell.ReadOnly = True
 						comboBoxCell.DisplayStyle = DataGridViewComboBoxDisplayStyle.Nothing
@@ -603,6 +608,8 @@ Public Class RelativityApplicationStatusForm
 						retryEnabled = False
 						Exit For
 					End If
+				ElseIf String.Equals(cbStr, DropdownUserMustResolve, StringComparison.InvariantCulture) Then
+					'Do nothing, no further validation for this resolution choice
 				ElseIf Not (String.Equals(cbStr, DropdownUnlock, StringComparison.InvariantCulture) OrElse String.Equals(cbStr, DropdownMap, StringComparison.InvariantCulture)) Then
 					retryEnabled = False
 					Exit For
