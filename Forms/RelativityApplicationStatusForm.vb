@@ -596,7 +596,7 @@ Public Class RelativityApplicationStatusForm
 						Dim subsetAppIDs = CType(artifactTables(currentResultIndex).Rows(row.Index).Item(ArtifactApplicationIdsColumnName), Int32())
 						Dim subset = New List(Of Int32)(subsetAppIDs)
 						If IsSubsetOrTheSame(subset, superset) Then
-							ArtifactStatusTable.Rows(row.Index).Cells(ArtifcactSelectedResolutionColumnName).Value = DropdownUnlock
+							ArtifactStatusTable.Rows(row.Index).Cells(ArtifactResolutionColumnName).Value = DropdownUnlock
 						End If
 					Next
 
@@ -626,7 +626,7 @@ Public Class RelativityApplicationStatusForm
 
 		For Each row As DataGridViewRow In ArtifactStatusTable.Rows
 			Dim status As String = row.Cells(ArtifactStatusColumnName).Value.ToString()
-			If Not String.Equals(status, TemplateManagerBase.StatusCode.Updated.ToString(), StringComparison.InvariantCulture) Then
+			If Not String.Equals(status, TemplateManagerBase.StatusCode.Updated.ToString(), StringComparison.InvariantCulture) AndAlso Not String.Equals(status, TemplateManagerBase.StatusCode.Created.ToString(), StringComparison.InvariantCulture) Then
 				Dim cb As DataGridViewComboBoxCell = DirectCast(row.Cells("Resolution"), DataGridViewComboBoxCell)
 				Dim cbStr As String = DirectCast(cb.EditedFormattedValue, String)
 				Dim renamedText As String = Nothing
