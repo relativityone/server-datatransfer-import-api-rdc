@@ -1,6 +1,7 @@
 ﻿Imports System.Linq
 Imports System.Globalization
 Imports System.Collections
+Imports System.Collections.Generic
 Imports kCura.EDDS.WebAPI
 
 Public Class RelativityApplicationStatusForm
@@ -332,6 +333,16 @@ Public Class RelativityApplicationStatusForm
 		Return failedTable
 	End Function
 
+	Private Function IsSubsetOrTheSame(ByVal subset As List(Of Int32), ByVal superset As List(Of Int32)) As Boolean
+		For Each item In subset
+			If Not superset.Contains(item) Then
+				Return False
+			End If
+		Next
+		Return True
+	End Function
+
+
 	Private Sub UpdateWorkspaceStatusTableProperties()
 		If ArtifactStatusTable.Columns.Contains(ArtifactResolutionColumnName) Then
 			ArtifactStatusTable.Columns.Remove(ArtifactResolutionColumnName)
@@ -424,7 +435,7 @@ Public Class RelativityApplicationStatusForm
 		ArtifactStatusTable.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells
 		ArtifactStatusTable.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells
 		If Not CurrentSuccess() Then ArtifactStatusTable.Columns("Details").AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill
-		If Not currentSuccess() Then ArtifactStatusTable.Columns("Details").MinimumWidth = 100
+		If Not CurrentSuccess() Then ArtifactStatusTable.Columns("Details").MinimumWidth = 100
 		ArtifactStatusTable.RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.EnableResizing
 		ArtifactStatusTable.AllowUserToResizeColumns = True
 		ArtifactStatusTable.AllowUserToOrderColumns = True
@@ -569,6 +580,26 @@ Public Class RelativityApplicationStatusForm
 					If currentConflictName <> origConflictName Then
 						conflictingNameCell.Value = origConflictName
 					End If
+
+				ElseIf dropdownIsUnlockOption(cell) Then
+					'Unlock all other lock conflicts that have the same or a subset of the same applications
+					Dim myLockedAppIDs = CType(artifactTables(currentResultIndex).Rows(cell.RowIndex).Item(ArtifactApplicationIdsColumnName), Int32())
+					Dim superset = New List(Of Int32)(myLockedAppIDs)
+					For Each row As DataGridViewRow In ArtifactStatusTable.Rows
+						If cell.OwningRow Is row Then
+							Continue For 'Skip our own row
+						End If
+						Dim statusCode = CType(cell.OwningRow.Cells(ArtifactHiddenErrorColumnName).Value, TemplateManagerBase.StatusCode)
+						If statusCode <> TemplateManagerBase.StatusCode.SharedByLockedApp Then
+							Continue For	'We only care about locked app rows
+						End If
+						Dim subsetAppIDs = CType(artifactTables(currentResultIndex).Rows(row.Index).Item(ArtifactApplicationIdsColumnName), Int32())
+						Dim subset = New List(Of Int32)(subsetAppIDs)
+						If IsSubsetOrTheSame(subset, superset) Then
+							ArtifactStatusTable.Rows(row.Index).Cells(ArtifcactSelectedResolutionColumnName).Value = DropdownUnlock
+						End If
+					Next
+
 				End If
 			End If
 		End If
@@ -584,6 +615,10 @@ Public Class RelativityApplicationStatusForm
 
 	Private Function dropdownIsMapOption(ByVal cell As DataGridViewComboBoxCell) As Boolean
 		Return Not cell Is Nothing AndAlso cell.Items.Count > 0 AndAlso (String.Equals(DirectCast(cell.EditedFormattedValue, String), DropdownMap))
+	End Function
+
+	Private Function dropdownIsUnlockOption(ByVal cell As DataGridViewComboBoxCell) As Boolean
+		Return Not cell Is Nothing AndAlso cell.Items.Count > 0 AndAlso (String.Equals(DirectCast(cell.EditedFormattedValue, String), DropdownUnlock))
 	End Function
 
 	Private Sub CheckForRetryEnabled()
