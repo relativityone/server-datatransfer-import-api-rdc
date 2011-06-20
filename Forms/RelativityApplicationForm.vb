@@ -714,33 +714,36 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 		Private Sub MenuImport_ImportApplication_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles MenuImport_ImportApplication.Click, ImportButton.Click
-			If Not _mapController.AreMappingsValid Then
+			If _mapController IsNot Nothing AndAlso Not _mapController.AreMappingsValid Then
 				MessageBox.Show("You have unfinished field mappings that must be completed before importing.", "Import Error")
 				Return
 			End If
 
 			'Determine if we have any fields to map
 			Dim resolveArtifactList As New List(Of WebAPI.TemplateManagerBase.ResolveArtifact)
-			For Each appObj In _appMappingData.AppObjects
-				For Each appFld In appObj.AppFields
-					If Not appFld.MappedTargetField.IsEmpty Then
-						Dim resolve = New WebAPI.TemplateManagerBase.ResolveArtifact
-						resolve.ArtifactID = appFld.MappedTargetField.ArtifactID
-						resolve.Action = WebAPI.TemplateManagerBase.ResolveAction.Update
-						resolve.ArtifactTypeID = WebAPI.TemplateManagerBase.ApplicationArtifactType.Field
-						Dim fieldKVP = New WebAPI.TemplateManagerBase.FieldKVP()
-						fieldKVP.Key = "Guids"
-						fieldKVP.Value = appFld.FieldGuids.ToArray()
-						resolve.Fields = New WebAPI.TemplateManagerBase.FieldKVP() {fieldKVP}
-						resolveArtifactList.Add(resolve)
-					End If
+			If _appMappingData IsNot Nothing Then
+				For Each appObj In _appMappingData.AppObjects
+					For Each appFld In appObj.AppFields
+						If Not appFld.MappedTargetField.IsEmpty Then
+							Dim resolve = New WebAPI.TemplateManagerBase.ResolveArtifact
+							resolve.ArtifactID = appFld.MappedTargetField.ArtifactID
+							resolve.Action = WebAPI.TemplateManagerBase.ResolveAction.Update
+							resolve.ArtifactTypeID = WebAPI.TemplateManagerBase.ApplicationArtifactType.Field
+							Dim fieldKVP = New WebAPI.TemplateManagerBase.FieldKVP()
+							fieldKVP.Key = "Guids"
+							fieldKVP.Value = appFld.FieldGuids.ToArray()
+							resolve.Fields = New WebAPI.TemplateManagerBase.FieldKVP() {fieldKVP}
+							resolveArtifactList.Add(resolve)
+						End If
+					Next
 				Next
-			Next
+			End If
 			Dim resolveArtifacts As WebAPI.TemplateManagerBase.ResolveArtifact()() = {New WebAPI.TemplateManagerBase.ResolveArtifact() {}}
 			If resolveArtifactList.Count > 0 Then
 				resolveArtifacts = {resolveArtifactList.ToArray()}
 			End If
 
+			'Do the import
 			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
 			_Application.ImportApplicationFile(_caseInfos, _document, {}, resolveArtifacts)
 			Me.Cursor = System.Windows.Forms.Cursors.Default
