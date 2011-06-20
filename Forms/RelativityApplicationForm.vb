@@ -719,6 +719,11 @@ Namespace kCura.EDDS.WinForm
 				Return
 			End If
 
+			Dim resolveArtifactCaseList As New List(Of WebAPI.TemplateManagerBase.ResolveArtifact())
+			For caseIdx = 1 To CaseInfos.Count
+				resolveArtifactCaseList.Add(New WebAPI.TemplateManagerBase.ResolveArtifact() {})
+			Next
+
 			'Determine if we have any fields to map
 			Dim resolveArtifactList As New List(Of WebAPI.TemplateManagerBase.ResolveArtifact)
 			If _appMappingData IsNot Nothing Then
@@ -737,15 +742,12 @@ Namespace kCura.EDDS.WinForm
 						End If
 					Next
 				Next
-			End If
-			Dim resolveArtifacts As WebAPI.TemplateManagerBase.ResolveArtifact()() = {New WebAPI.TemplateManagerBase.ResolveArtifact() {}}
-			If resolveArtifactList.Count > 0 Then
-				resolveArtifacts = {resolveArtifactList.ToArray()}
+				resolveArtifactCaseList(0) = resolveArtifactList.ToArray()
 			End If
 
 			'Do the import
 			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
-			_Application.ImportApplicationFile(_caseInfos, _document, {}, resolveArtifacts)
+			_Application.ImportApplicationFile(_caseInfos, _document, {}, resolveArtifactCaseList.ToArray())
 			Me.Cursor = System.Windows.Forms.Cursors.Default
 		End Sub
 
