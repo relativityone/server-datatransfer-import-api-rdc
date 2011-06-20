@@ -583,17 +583,19 @@ Public Class RelativityApplicationStatusForm
 
 				ElseIf dropdownIsUnlockOption(cell) Then
 					'Unlock all other lock conflicts that have the same or a subset of the same applications
-					Dim myLockedAppIDs = CType(artifactTables(currentResultIndex).Rows(cell.RowIndex).Item(ArtifactApplicationIdsColumnName), Int32())
+
+					Dim currentRowIndex As Int32 = CInt(cell.OwningRow.Cells(ArtifactIndexColumnName).Value)
+					Dim myLockedAppIDs = CType(artifactTables(currentResultIndex).Rows(currentRowIndex).Item(ArtifactApplicationIdsColumnName), Int32())
 					Dim superset = New List(Of Int32)(myLockedAppIDs)
 					For Each row As DataGridViewRow In ArtifactStatusTable.Rows
 						If cell.OwningRow Is row Then
 							Continue For 'Skip our own row
 						End If
-						Dim statusCode = CType(cell.OwningRow.Cells(ArtifactHiddenErrorColumnName).Value, TemplateManagerBase.StatusCode)
+						Dim statusCode = CType(row.Cells(ArtifactHiddenErrorColumnName).Value, TemplateManagerBase.StatusCode)
 						If statusCode <> TemplateManagerBase.StatusCode.SharedByLockedApp Then
 							Continue For	'We only care about locked app rows
 						End If
-						Dim subsetAppIDs = CType(artifactTables(currentResultIndex).Rows(row.Index).Item(ArtifactApplicationIdsColumnName), Int32())
+						Dim subsetAppIDs = CType(artifactTables(currentResultIndex).Rows(CInt(row.Cells(ArtifactIndexColumnName).Value)).Item(ArtifactApplicationIdsColumnName), Int32())
 						Dim subset = New List(Of Int32)(subsetAppIDs)
 						If IsSubsetOrTheSame(subset, superset) Then
 							ArtifactStatusTable.Rows(row.Index).Cells(ArtifactResolutionColumnName).Value = DropdownUnlock
