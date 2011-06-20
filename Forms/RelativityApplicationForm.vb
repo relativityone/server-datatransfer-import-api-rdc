@@ -773,6 +773,7 @@ Namespace kCura.EDDS.WinForm
 				_document = document
 				_isAppAndCaseLoaded = True
 				SetFormState(FormUIState.General)
+				RefreshAllData()
 			End If
 		End Sub
 
