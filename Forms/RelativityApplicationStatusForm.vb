@@ -462,7 +462,7 @@ Public Class RelativityApplicationStatusForm
 				Next
 			Else
 				For Each row As DataGridViewRow In ArtifactStatusTable.Rows
-					row.Cells(ArtifactStatusColumnName).Style.BackColor = If(String.Equals(row.Cells(ArtifactStatusColumnName).Value.ToString(), TemplateManagerBase.StatusCode.Updated.ToString(), StringComparison.InvariantCulture), Color.PaleGreen, Color.LightPink)
+					row.Cells(ArtifactStatusColumnName).Style.BackColor = If(IsSuccess(row.Cells(ArtifactStatusColumnName).Value.ToString()), Color.PaleGreen, Color.LightPink)
 					row.Cells(ArtifactConflictNameColumnName).ReadOnly = Not dropdownRequiresEdit(DirectCast(row.Cells(ArtifactResolutionColumnName), DataGridViewComboBoxCell))
 				Next
 			End If
@@ -633,29 +633,29 @@ Public Class RelativityApplicationStatusForm
 
 		For Each row As DataGridViewRow In ArtifactStatusTable.Rows
 			Dim status As String = row.Cells(ArtifactStatusColumnName).Value.ToString()
-			If Not String.Equals(status, TemplateManagerBase.StatusCode.Updated.ToString(), StringComparison.InvariantCulture) AndAlso Not String.Equals(status, TemplateManagerBase.StatusCode.Created.ToString(), StringComparison.InvariantCulture) Then
-				Dim cb As DataGridViewComboBoxCell = DirectCast(row.Cells("Resolution"), DataGridViewComboBoxCell)
-				Dim cbStr As String = DirectCast(cb.EditedFormattedValue, String)
-				Dim renamedText As String = Nothing
+			If Not IsSuccess(status) Then
+			Dim cb As DataGridViewComboBoxCell = DirectCast(row.Cells("Resolution"), DataGridViewComboBoxCell)
+			Dim cbStr As String = DirectCast(cb.EditedFormattedValue, String)
+			Dim renamedText As String = Nothing
 
-				If String.IsNullOrEmpty(cbStr) Then retryEnabled = False : Exit For
+			If String.IsNullOrEmpty(cbStr) Then retryEnabled = False : Exit For
 
-				If String.Equals(cbStr, DropdownRenameInWorkspace, StringComparison.InvariantCulture) OrElse String.Equals(cbStr, DropdownRenameFriendlyNameInWorkspace, StringComparison.InvariantCulture) OrElse String.Equals(cbStr, DropdownRetryRename, StringComparison.InvariantCulture) Then
-					If TypeOf (row.Cells(ArtifactConflictNameColumnName)) Is DataGridViewTextBoxCell Then
-						renamedText = DirectCast(row.Cells(ArtifactConflictNameColumnName), DataGridViewTextBoxCell).EditedFormattedValue.ToString()
-					Else
-						renamedText = row.Cells(ArtifactConflictNameColumnName).Value.ToString()
-					End If
-					If String.IsNullOrEmpty(renamedText) OrElse String.Equals(renamedText, row.Cells(ArtifactNameColumnName).Value.ToString(), StringComparison.CurrentCultureIgnoreCase) Then
-						retryEnabled = False
-						Exit For
-					End If
-				ElseIf String.Equals(cbStr, DropdownUserMustResolve, StringComparison.InvariantCulture) Then
-					'Do nothing, no further validation for this resolution choice
-				ElseIf Not (String.Equals(cbStr, DropdownUnlock, StringComparison.InvariantCulture) OrElse String.Equals(cbStr, DropdownMap, StringComparison.InvariantCulture)) Then
+			If String.Equals(cbStr, DropdownRenameInWorkspace, StringComparison.InvariantCulture) OrElse String.Equals(cbStr, DropdownRenameFriendlyNameInWorkspace, StringComparison.InvariantCulture) OrElse String.Equals(cbStr, DropdownRetryRename, StringComparison.InvariantCulture) Then
+				If TypeOf (row.Cells(ArtifactConflictNameColumnName)) Is DataGridViewTextBoxCell Then
+					renamedText = DirectCast(row.Cells(ArtifactConflictNameColumnName), DataGridViewTextBoxCell).EditedFormattedValue.ToString()
+				Else
+					renamedText = row.Cells(ArtifactConflictNameColumnName).Value.ToString()
+				End If
+				If String.IsNullOrEmpty(renamedText) OrElse String.Equals(renamedText, row.Cells(ArtifactNameColumnName).Value.ToString(), StringComparison.CurrentCultureIgnoreCase) Then
 					retryEnabled = False
 					Exit For
 				End If
+			ElseIf String.Equals(cbStr, DropdownUserMustResolve, StringComparison.InvariantCulture) Then
+				'Do nothing, no further validation for this resolution choice
+			ElseIf Not (String.Equals(cbStr, DropdownUnlock, StringComparison.InvariantCulture) OrElse String.Equals(cbStr, DropdownMap, StringComparison.InvariantCulture)) Then
+				retryEnabled = False
+				Exit For
+			End If
 			End If
 
 		Next
@@ -920,6 +920,11 @@ Public Class RelativityApplicationStatusForm
 
 	Private Function CurrentSuccess() As Boolean
 		Return workspaceTable.Rows(currentResultIndex).Item(workspaceStatusColumnName).ToString.Equals(WorkspaceSuccessString, StringComparison.InvariantCulture)
+	End Function
+
+	Private Function IsSuccess(ByVal status As String) As Boolean
+		Return (String.Equals(status, TemplateManagerBase.StatusCode.Updated.ToString(), StringComparison.InvariantCulture) OrElse String.Equals(status, TemplateManagerBase.StatusCode.Created.ToString(), StringComparison.InvariantCulture) _
+  OrElse String.Equals(status, TemplateManagerBase.StatusCode.Renamed.ToString(), StringComparison.InvariantCulture) OrElse String.Equals(status, TemplateManagerBase.StatusCode.Mapped.ToString(), StringComparison.InvariantCulture))
 	End Function
 
 	Private Sub SetButtonVisibility()
