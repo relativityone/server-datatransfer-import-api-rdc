@@ -626,6 +626,11 @@ Public Class RelativityApplicationStatusForm
 	Private Sub CheckForRetryEnabled()
 		Dim retryEnabled As Boolean = True
 
+		If CurrentSuccess() Then
+			retryEnabled = False
+			Exit Sub
+		End If
+
 		For Each row As DataGridViewRow In ArtifactStatusTable.Rows
 			Dim status As String = row.Cells(ArtifactStatusColumnName).Value.ToString()
 			If Not String.Equals(status, TemplateManagerBase.StatusCode.Updated.ToString(), StringComparison.InvariantCulture) AndAlso Not String.Equals(status, TemplateManagerBase.StatusCode.Created.ToString(), StringComparison.InvariantCulture) Then
