@@ -98,6 +98,8 @@
           <s:enumeration value="MultipleFileField" />
           <s:enumeration value="RenameConflict" />
           <s:enumeration value="RenameFriendlyNameConflict" />
+          <s:enumeration value="Renamed" />
+          <s:enumeration value="Mapped" />
         </s:restriction>
       </s:simpleType>
       <s:complexType name="ArrayOfApplication">
