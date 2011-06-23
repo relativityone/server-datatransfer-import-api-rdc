@@ -193,6 +193,14 @@ Namespace kCura.WinEDDS
 			Return 0
 		End Function
 
+		Private Function CheckNestedChoicesNameLength(ByVal codeStr As String) As Boolean
+			Dim choiceNames As String() = codeStr.Split(New Char() {CChar(_hierarchicalMultiValueFieldDelmiter)})
+			For Each choiceString As String In choiceNames
+				If choiceString.Length > 200 Then Return True
+			Next
+			Return False
+		End Function
+
 		Public Overridable Function GetMultiCode(ByVal value As String(), ByVal column As Int32, ByVal field As Api.ArtifactField, ByVal forPreview As Boolean) As Nullable(Of Int32)()
 			Try
 				Dim al As New System.Collections.ArrayList(value)
@@ -201,7 +209,7 @@ Namespace kCura.WinEDDS
 					codeString = codeString.Trim
 					If codeString <> "" Then
 						If goodCodes.Contains(codeString) Then Throw New DuplicateMulticodeValueException(Me.CurrentLineNumber, column, codeString)
-						If codeString.Length > 200 Then Throw New CodeCreationException(Me.CurrentLineNumber, column, False, "Proposed choice name '" & codeString & "' exceeds 200 characters, which is the maximum allowable.")
+						If CheckNestedChoicesNameLength(codeString) Then Throw New CodeCreationException(Me.CurrentLineNumber, column, False, "Proposed choice name '" & codeString & "' exceeds 200 characters, which is the maximum allowable.")
 						goodCodes.Add(codeString)
 					End If
 				Next
