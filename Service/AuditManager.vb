@@ -4,13 +4,13 @@ Namespace kCura.WinEDDS.Service
 
 #Region "Constructors"
 
-		'Public Sub New(ByVal credentials As Net.ICredentials, ByVal cookieContainer As System.Net.CookieContainer)
-		'	MyBase.New()
-		'	Me.Credentials = credentials
-		'	Me.CookieContainer = cookieContainer
-		'	Me.Url = String.Format("{0}AuditManager.asmx", kCura.WinEDDS.Config.WebServiceURL)
-		'	Me.Timeout = Settings.DefaultTimeOut
-		'End Sub
+		Public Sub New(ByVal credentials As Net.ICredentials, ByVal cookieContainer As System.Net.CookieContainer)
+			MyBase.New()
+			Me.Credentials = credentials
+			Me.CookieContainer = cookieContainer
+			Me.Url = String.Format("{0}AuditManager.asmx", kCura.WinEDDS.Config.WebServiceURL)
+			Me.Timeout = Settings.DefaultTimeOut
+		End Sub
 
 #End Region
 

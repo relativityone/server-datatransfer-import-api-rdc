@@ -115,8 +115,8 @@ Namespace kCura.WinEDDS
 				retval.StartLine = CType(System.Math.Min(LoadFile.StartLineNumber, Int32.MaxValue), Int32)
 				retval.TotalMetadataBytes = _loadFileImporter.Statistics.MetadataBytes
 				retval.SendNotification = LoadFile.SendEmailOnLoadCompletion
-				'Dim auditManager As New kCura.WinEDDS.Service.AuditManager(LoadFile.Credentials, LoadFile.CookieContainer)
-				'auditManager.AuditObjectImport(LoadFile.CaseInfo.ArtifactID, runID, Not success, retval)
+				Dim auditManager As New kCura.WinEDDS.Service.AuditManager(LoadFile.Credentials, LoadFile.CookieContainer)
+				auditManager.AuditObjectImport(LoadFile.CaseInfo.ArtifactID, runID, Not success, retval)
 			Catch
 			End Try
 		End Sub
