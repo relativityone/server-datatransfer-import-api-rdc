@@ -27,13 +27,12 @@ Namespace kCura.EDDS.WebAPI.TemplateManagerBase
     <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.0.30319.1"),  _
      System.Diagnostics.DebuggerStepThroughAttribute(),  _
      System.ComponentModel.DesignerCategoryAttribute("code"),  _
-     System.Web.Services.WebServiceBindingAttribute(Name:="TemplateManagerSoap", [Namespace]:="http://www.kCura.com/EDDS/TemplateManager")>  _
+     System.Web.Services.WebServiceBindingAttribute(Name:="TemplateManagerSoap", [Namespace]:="http://www.kCura.com/EDDS/TemplateManager"),  _
+     System.Xml.Serialization.XmlIncludeAttribute(GetType(ApplicationBase))>  _
     Partial Public Class TemplateManager
         Inherits System.Web.Services.Protocols.SoapHttpClientProtocol
         
         Private InstallTemplateOperationCompleted As System.Threading.SendOrPostCallback
-        
-        Private ExtractApplicationOperationCompleted As System.Threading.SendOrPostCallback
         
         Private useDefaultCredentialsSetExplicitly As Boolean
         
@@ -77,9 +76,6 @@ Namespace kCura.EDDS.WebAPI.TemplateManagerBase
         Public Event InstallTemplateCompleted As InstallTemplateCompletedEventHandler
         
         '''<remarks/>
-        Public Event ExtractApplicationCompleted As ExtractApplicationCompletedEventHandler
-        
-        '''<remarks/>
         <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/TemplateManager/InstallTemplate", RequestNamespace:="http://www.kCura.com/EDDS/TemplateManager", ResponseNamespace:="http://www.kCura.com/EDDS/TemplateManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
         Public Function InstallTemplate(ByVal template As System.Xml.XmlNode, ByVal installationParameters As ApplicationInstallationParameters) As ApplicationInstallationResult
             Dim results() As Object = Me.Invoke("InstallTemplate", New Object() {template, installationParameters})
@@ -114,44 +110,6 @@ Namespace kCura.EDDS.WebAPI.TemplateManagerBase
             If (Not (Me.InstallTemplateCompletedEvent) Is Nothing) Then
                 Dim invokeArgs As System.Web.Services.Protocols.InvokeCompletedEventArgs = CType(arg,System.Web.Services.Protocols.InvokeCompletedEventArgs)
                 RaiseEvent InstallTemplateCompleted(Me, New InstallTemplateCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState))
-            End If
-        End Sub
-        
-        '''<remarks/>
-        <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/TemplateManager/ExtractApplication", RequestNamespace:="http://www.kCura.com/EDDS/TemplateManager", ResponseNamespace:="http://www.kCura.com/EDDS/TemplateManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
-        Public Function ExtractApplication(ByVal extractParameters As ApplicationExtractionParameters) As ApplicationExtractionResult
-            Dim results() As Object = Me.Invoke("ExtractApplication", New Object() {extractParameters})
-            Return CType(results(0),ApplicationExtractionResult)
-        End Function
-        
-        '''<remarks/>
-        Public Function BeginExtractApplication(ByVal extractParameters As ApplicationExtractionParameters, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
-            Return Me.BeginInvoke("ExtractApplication", New Object() {extractParameters}, callback, asyncState)
-        End Function
-        
-        '''<remarks/>
-        Public Function EndExtractApplication(ByVal asyncResult As System.IAsyncResult) As ApplicationExtractionResult
-            Dim results() As Object = Me.EndInvoke(asyncResult)
-            Return CType(results(0),ApplicationExtractionResult)
-        End Function
-        
-        '''<remarks/>
-        Public Overloads Sub ExtractApplicationAsync(ByVal extractParameters As ApplicationExtractionParameters)
-            Me.ExtractApplicationAsync(extractParameters, Nothing)
-        End Sub
-        
-        '''<remarks/>
-        Public Overloads Sub ExtractApplicationAsync(ByVal extractParameters As ApplicationExtractionParameters, ByVal userState As Object)
-            If (Me.ExtractApplicationOperationCompleted Is Nothing) Then
-                Me.ExtractApplicationOperationCompleted = AddressOf Me.OnExtractApplicationOperationCompleted
-            End If
-            Me.InvokeAsync("ExtractApplication", New Object() {extractParameters}, Me.ExtractApplicationOperationCompleted, userState)
-        End Sub
-        
-        Private Sub OnExtractApplicationOperationCompleted(ByVal arg As Object)
-            If (Not (Me.ExtractApplicationCompletedEvent) Is Nothing) Then
-                Dim invokeArgs As System.Web.Services.Protocols.InvokeCompletedEventArgs = CType(arg,System.Web.Services.Protocols.InvokeCompletedEventArgs)
-                RaiseEvent ExtractApplicationCompleted(Me, New ExtractApplicationCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState))
             End If
         End Sub
         
@@ -196,193 +154,49 @@ Namespace kCura.EDDS.WebAPI.TemplateManagerBase
     End Class
     
     '''<remarks/>
-    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.1"),  _
+    <System.Xml.Serialization.XmlIncludeAttribute(GetType(Application)),  _
+     System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.1"),  _
      System.SerializableAttribute(),  _
      System.Diagnostics.DebuggerStepThroughAttribute(),  _
      System.ComponentModel.DesignerCategoryAttribute("code"),  _
      System.Xml.Serialization.XmlTypeAttribute([Namespace]:="http://www.kCura.com/EDDS/TemplateManager")>  _
-    Partial Public Class ApplicationExtractionResult
+    Partial Public Class ApplicationBase
         
-        Private resultLogField As String
+        Private guidField As System.Guid
         
-        Private exceptionMessageField As String
+        Private inDevelopmentField As Boolean
         
-        Private successField As Boolean
-        
-        Private templateField As System.Xml.XmlNode
-        
-        Private hTMLVisualisationField As String
-        
-        '''<remarks/>
-        Public Property ResultLog() As String
-            Get
-                Return Me.resultLogField
-            End Get
-            Set
-                Me.resultLogField = value
-            End Set
-        End Property
-        
-        '''<remarks/>
-        Public Property ExceptionMessage() As String
-            Get
-                Return Me.exceptionMessageField
-            End Get
-            Set
-                Me.exceptionMessageField = value
-            End Set
-        End Property
-        
-        '''<remarks/>
-        Public Property Success() As Boolean
-            Get
-                Return Me.successField
-            End Get
-            Set
-                Me.successField = value
-            End Set
-        End Property
-        
-        '''<remarks/>
-        Public Property Template() As System.Xml.XmlNode
-            Get
-                Return Me.templateField
-            End Get
-            Set
-                Me.templateField = value
-            End Set
-        End Property
-        
-        '''<remarks/>
-        Public Property HTMLVisualisation() As String
-            Get
-                Return Me.hTMLVisualisationField
-            End Get
-            Set
-                Me.hTMLVisualisationField = value
-            End Set
-        End Property
-    End Class
-    
-    '''<remarks/>
-    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.1"),  _
-     System.SerializableAttribute(),  _
-     System.Diagnostics.DebuggerStepThroughAttribute(),  _
-     System.ComponentModel.DesignerCategoryAttribute("code"),  _
-     System.Xml.Serialization.XmlTypeAttribute([Namespace]:="http://www.kCura.com/EDDS/TemplateManager")>  _
-    Partial Public Class ApplicationExtractionParameters
-        
-        Private applicationVersionField As String
-        
-        Private applicationNameField As String
-        
-        Private applicationIDField As Integer
-        
-        Private applicationGuidField As String
-        
-        Private caseArtifactIdField As Integer
-        
-        Private caseNameField As String
-        
-        Private displayHelpField As Boolean
-        
-        Private fileNameField As String
+        Private nameField As String
         
         Private versionField As String
         
-        Private contextRequestOriginationField As String
-        
-        Private contextApplicationArtifactIDField As Integer
-        
-        Private objectIdsField() As Integer
-        
-        Private passwordField As String
-        
-        Private scriptIdsField() As Integer
-        
-        Private userNameField As String
-        
-        Private userIDField As Integer
-        
-        Private externalTabIdsField() As Integer
-        
         '''<remarks/>
-        Public Property ApplicationVersion() As String
+        Public Property Guid() As System.Guid
             Get
-                Return Me.applicationVersionField
+                Return Me.guidField
             End Get
             Set
-                Me.applicationVersionField = value
+                Me.guidField = value
             End Set
         End Property
         
         '''<remarks/>
-        Public Property ApplicationName() As String
+        Public Property InDevelopment() As Boolean
             Get
-                Return Me.applicationNameField
+                Return Me.inDevelopmentField
             End Get
             Set
-                Me.applicationNameField = value
+                Me.inDevelopmentField = value
             End Set
         End Property
         
         '''<remarks/>
-        Public Property ApplicationID() As Integer
+        Public Property Name() As String
             Get
-                Return Me.applicationIDField
+                Return Me.nameField
             End Get
             Set
-                Me.applicationIDField = value
-            End Set
-        End Property
-        
-        '''<remarks/>
-        Public Property ApplicationGuid() As String
-            Get
-                Return Me.applicationGuidField
-            End Get
-            Set
-                Me.applicationGuidField = value
-            End Set
-        End Property
-        
-        '''<remarks/>
-        Public Property CaseArtifactId() As Integer
-            Get
-                Return Me.caseArtifactIdField
-            End Get
-            Set
-                Me.caseArtifactIdField = value
-            End Set
-        End Property
-        
-        '''<remarks/>
-        Public Property CaseName() As String
-            Get
-                Return Me.caseNameField
-            End Get
-            Set
-                Me.caseNameField = value
-            End Set
-        End Property
-        
-        '''<remarks/>
-        Public Property DisplayHelp() As Boolean
-            Get
-                Return Me.displayHelpField
-            End Get
-            Set
-                Me.displayHelpField = value
-            End Set
-        End Property
-        
-        '''<remarks/>
-        Public Property FileName() As String
-            Get
-                Return Me.fileNameField
-            End Get
-            Set
-                Me.fileNameField = value
+                Me.nameField = value
             End Set
         End Property
         
@@ -395,86 +209,16 @@ Namespace kCura.EDDS.WebAPI.TemplateManagerBase
                 Me.versionField = value
             End Set
         End Property
-        
-        '''<remarks/>
-        Public Property ContextRequestOrigination() As String
-            Get
-                Return Me.contextRequestOriginationField
-            End Get
-            Set
-                Me.contextRequestOriginationField = value
-            End Set
-        End Property
-        
-        '''<remarks/>
-        Public Property ContextApplicationArtifactID() As Integer
-            Get
-                Return Me.contextApplicationArtifactIDField
-            End Get
-            Set
-                Me.contextApplicationArtifactIDField = value
-            End Set
-        End Property
-        
-        '''<remarks/>
-        Public Property ObjectIds() As Integer()
-            Get
-                Return Me.objectIdsField
-            End Get
-            Set
-                Me.objectIdsField = value
-            End Set
-        End Property
-        
-        '''<remarks/>
-        Public Property Password() As String
-            Get
-                Return Me.passwordField
-            End Get
-            Set
-                Me.passwordField = value
-            End Set
-        End Property
-        
-        '''<remarks/>
-        Public Property ScriptIds() As Integer()
-            Get
-                Return Me.scriptIdsField
-            End Get
-            Set
-                Me.scriptIdsField = value
-            End Set
-        End Property
-        
-        '''<remarks/>
-        Public Property UserName() As String
-            Get
-                Return Me.userNameField
-            End Get
-            Set
-                Me.userNameField = value
-            End Set
-        End Property
-        
-        '''<remarks/>
-        Public Property UserID() As Integer
-            Get
-                Return Me.userIDField
-            End Get
-            Set
-                Me.userIDField = value
-            End Set
-        End Property
-        
-        '''<remarks/>
-        Public Property ExternalTabIds() As Integer()
-            Get
-                Return Me.externalTabIdsField
-            End Get
-            Set
-                Me.externalTabIdsField = value
-            End Set
-        End Property
+    End Class
+    
+    '''<remarks/>
+    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.1"),  _
+     System.SerializableAttribute(),  _
+     System.Diagnostics.DebuggerStepThroughAttribute(),  _
+     System.ComponentModel.DesignerCategoryAttribute("code"),  _
+     System.Xml.Serialization.XmlTypeAttribute([Namespace]:="http://www.kCura.com/EDDS/TemplateManager")>  _
+    Partial Public Class Application
+        Inherits ApplicationBase
     End Class
     
     '''<remarks/>
@@ -485,6 +229,10 @@ Namespace kCura.EDDS.WebAPI.TemplateManagerBase
      System.Xml.Serialization.XmlTypeAttribute([Namespace]:="http://www.kCura.com/EDDS/TemplateManager")>  _
     Partial Public Class ApplicationArtifact
         
+        Private workspaceIDField As Integer
+        
+        Private applicationsField() As Application
+        
         Private artifactIdField As Integer
         
         Private guidField As System.Guid
@@ -492,6 +240,36 @@ Namespace kCura.EDDS.WebAPI.TemplateManagerBase
         Private nameField As String
         
         Private typeField As ApplicationArtifactType
+        
+        Private parentArtifactField As ApplicationArtifact
+        
+        Private conflictArtifactField As ApplicationArtifact
+        
+        Private statusField As StatusCode
+        
+        Private statusMessageField As String
+        
+        Private statusDetailsField As String
+        
+        '''<remarks/>
+        Public Property WorkspaceID() As Integer
+            Get
+                Return Me.workspaceIDField
+            End Get
+            Set
+                Me.workspaceIDField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property Applications() As Application()
+            Get
+                Return Me.applicationsField
+            End Get
+            Set
+                Me.applicationsField = value
+            End Set
+        End Property
         
         '''<remarks/>
         Public Property ArtifactId() As Integer
@@ -532,6 +310,56 @@ Namespace kCura.EDDS.WebAPI.TemplateManagerBase
                 Me.typeField = value
             End Set
         End Property
+        
+        '''<remarks/>
+        Public Property ParentArtifact() As ApplicationArtifact
+            Get
+                Return Me.parentArtifactField
+            End Get
+            Set
+                Me.parentArtifactField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property ConflictArtifact() As ApplicationArtifact
+            Get
+                Return Me.conflictArtifactField
+            End Get
+            Set
+                Me.conflictArtifactField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property Status() As StatusCode
+            Get
+                Return Me.statusField
+            End Get
+            Set
+                Me.statusField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property StatusMessage() As String
+            Get
+                Return Me.statusMessageField
+            End Get
+            Set
+                Me.statusMessageField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property StatusDetails() As String
+            Get
+                Return Me.statusDetailsField
+            End Get
+            Set
+                Me.statusDetailsField = value
+            End Set
+        End Property
     End Class
     
     '''<remarks/>
@@ -539,9 +367,6 @@ Namespace kCura.EDDS.WebAPI.TemplateManagerBase
      System.SerializableAttribute(),  _
      System.Xml.Serialization.XmlTypeAttribute([Namespace]:="http://www.kCura.com/EDDS/TemplateManager")>  _
     Public Enum ApplicationArtifactType
-        
-        '''<remarks/>
-        [Case]
         
         '''<remarks/>
         Code
@@ -574,12 +399,42 @@ Namespace kCura.EDDS.WebAPI.TemplateManagerBase
     '''<remarks/>
     <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.1"),  _
      System.SerializableAttribute(),  _
+     System.Xml.Serialization.XmlTypeAttribute([Namespace]:="http://www.kCura.com/EDDS/TemplateManager")>  _
+    Public Enum StatusCode
+        
+        '''<remarks/>
+        UnknownError
+        
+        '''<remarks/>
+        Created
+        
+        '''<remarks/>
+        Updated
+        
+        '''<remarks/>
+        NameConflict
+        
+        '''<remarks/>
+        FriendlyNameConflict
+        
+        '''<remarks/>
+        SharedByLockedApp
+        
+        '''<remarks/>
+        MultipleFileField
+    End Enum
+    
+    '''<remarks/>
+    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.1"),  _
+     System.SerializableAttribute(),  _
      System.Diagnostics.DebuggerStepThroughAttribute(),  _
      System.ComponentModel.DesignerCategoryAttribute("code"),  _
      System.Xml.Serialization.XmlTypeAttribute([Namespace]:="http://www.kCura.com/EDDS/TemplateManager")>  _
     Partial Public Class ApplicationInstallationResult
         
-        Private exceptionMessageField As String
+        Private messageField As String
+        
+        Private detailsField As String
         
         Private newApplicationArtifactsField() As ApplicationArtifact
         
@@ -587,13 +442,31 @@ Namespace kCura.EDDS.WebAPI.TemplateManagerBase
         
         Private updatedApplicationArtifactsField() As ApplicationArtifact
         
+        Private statusApplicationArtifactsField() As ApplicationArtifact
+        
+        Private totalWorkspacesField As Integer
+        
+        Private workspaceIDField As Integer
+        
+        Private workspaceNameField As String
+        
         '''<remarks/>
-        Public Property ExceptionMessage() As String
+        Public Property Message() As String
             Get
-                Return Me.exceptionMessageField
+                Return Me.messageField
             End Get
             Set
-                Me.exceptionMessageField = value
+                Me.messageField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property Details() As String
+            Get
+                Return Me.detailsField
+            End Get
+            Set
+                Me.detailsField = value
             End Set
         End Property
         
@@ -626,6 +499,46 @@ Namespace kCura.EDDS.WebAPI.TemplateManagerBase
                 Me.updatedApplicationArtifactsField = value
             End Set
         End Property
+        
+        '''<remarks/>
+        Public Property StatusApplicationArtifacts() As ApplicationArtifact()
+            Get
+                Return Me.statusApplicationArtifactsField
+            End Get
+            Set
+                Me.statusApplicationArtifactsField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property TotalWorkspaces() As Integer
+            Get
+                Return Me.totalWorkspacesField
+            End Get
+            Set
+                Me.totalWorkspacesField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property WorkspaceID() As Integer
+            Get
+                Return Me.workspaceIDField
+            End Get
+            Set
+                Me.workspaceIDField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property WorkspaceName() As String
+            Get
+                Return Me.workspaceNameField
+            End Get
+            Set
+                Me.workspaceNameField = value
+            End Set
+        End Property
     End Class
     
     '''<remarks/>
@@ -651,33 +564,6 @@ Namespace kCura.EDDS.WebAPI.TemplateManagerBase
             Get
                 Me.RaiseExceptionIfNecessary
                 Return CType(Me.results(0),ApplicationInstallationResult)
-            End Get
-        End Property
-    End Class
-    
-    '''<remarks/>
-    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.0.30319.1")>  _
-    Public Delegate Sub ExtractApplicationCompletedEventHandler(ByVal sender As Object, ByVal e As ExtractApplicationCompletedEventArgs)
-    
-    '''<remarks/>
-    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.0.30319.1"),  _
-     System.Diagnostics.DebuggerStepThroughAttribute(),  _
-     System.ComponentModel.DesignerCategoryAttribute("code")>  _
-    Partial Public Class ExtractApplicationCompletedEventArgs
-        Inherits System.ComponentModel.AsyncCompletedEventArgs
-        
-        Private results() As Object
-        
-        Friend Sub New(ByVal results() As Object, ByVal exception As System.Exception, ByVal cancelled As Boolean, ByVal userState As Object)
-            MyBase.New(exception, cancelled, userState)
-            Me.results = results
-        End Sub
-        
-        '''<remarks/>
-        Public ReadOnly Property Result() As ApplicationExtractionResult
-            Get
-                Me.RaiseExceptionIfNecessary
-                Return CType(Me.results(0),ApplicationExtractionResult)
             End Get
         End Property
     End Class

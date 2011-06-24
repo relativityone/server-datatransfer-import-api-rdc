@@ -38,6 +38,7 @@ Namespace kCura.WinEDDS.Service
 					End If
 				End Try
 			End While
+			Return Nothing
 		End Function
 
 #End Region

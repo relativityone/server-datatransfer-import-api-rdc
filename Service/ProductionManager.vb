@@ -95,6 +95,7 @@ Namespace kCura.WinEDDS.Service
 					End If
 				End Try
 			End While
+			Return Nothing
 		End Function
 
 		Public Shadows Function RetrieveImportEligibleByContextArtifactID(ByVal caseContextArtifactID As Int32) As System.Data.DataSet
@@ -115,6 +116,7 @@ Namespace kCura.WinEDDS.Service
 					End If
 				End Try
 			End While
+			Return Nothing
 		End Function
 
 		Public Shadows Function Read(ByVal caseContextArtifactID As Int32, ByVal productionArtifactID As Int32) As kCura.EDDS.WebAPI.ProductionManagerBase.Production
@@ -135,6 +137,7 @@ Namespace kCura.WinEDDS.Service
 					End If
 				End Try
 			End While
+			Return Nothing
 		End Function
 
 		Public Shadows Function RetrieveProducedWithSecurity(ByVal contextArtifactID As Int32) As System.Data.DataSet
@@ -155,6 +158,7 @@ Namespace kCura.WinEDDS.Service
 					End If
 				End Try
 			End While
+			Return Nothing
 		End Function
 
 		Public Shadows Sub DoPostImportProcessing(ByVal contextArtifactID As Int32, ByVal productionArtifactID As Int32)

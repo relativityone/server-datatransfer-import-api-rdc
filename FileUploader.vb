@@ -221,6 +221,7 @@ Namespace kCura.WinEDDS
 					End If
 				End Try
 			End While
+			Return Nothing
 		End Function
 
 		Private Function IsWarningException(ByVal ex As System.Exception) As Boolean

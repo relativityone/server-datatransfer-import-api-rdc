@@ -49,6 +49,7 @@ Namespace kCura.WinEDDS.Service
 					End If
 				End Try
 			End While
+			Return Nothing
 		End Function
 
 		Public Shadows Function Create(ByVal caseContextArtifactID As Int32, ByVal code As kCura.EDDS.WebAPI.CodeManagerBase.Code) As Object
@@ -65,6 +66,7 @@ Namespace kCura.WinEDDS.Service
 					End If
 				End Try
 			End While
+			Return Nothing
 		End Function
 
 		Public Shadows Function ReadID(ByVal caseContextArtifactID As Int32, ByVal parentArtifactID As Int32, ByVal codeTypeID As Int32, ByVal name As String) As Int32
@@ -99,6 +101,7 @@ Namespace kCura.WinEDDS.Service
 					End If
 				End Try
 			End While
+			Return Nothing
 		End Function
 
 		Public Shadows Function GetLastChunk(ByVal caseContextArtifactID As Integer, ByVal codeTypeID As Integer, ByVal lastCodeID As Integer) As System.Data.DataSet
@@ -115,6 +118,7 @@ Namespace kCura.WinEDDS.Service
 					End If
 				End Try
 			End While
+			Return Nothing
 		End Function
 
 		Public Function RetrieveAllCodesOfType(ByVal caseContextArtifactID As Int32, ByVal codeTypeID As Int32) As Relativity.ChoiceInfo()
@@ -149,7 +153,7 @@ Namespace kCura.WinEDDS.Service
 					End If
 				End Try
 			End While
-
+			Return Nothing
 		End Function
 
 		Public Shared Function Convert(ByVal webserviceChoiceInfo As kCura.EDDS.WebAPI.CodeManagerBase.ChoiceInfo) As Relativity.ChoiceInfo

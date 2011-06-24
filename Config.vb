@@ -96,6 +96,8 @@ Namespace kCura.WinEDDS
 			Dim regKey As Microsoft.Win32.RegistryKey = Config.GetRegistryKey(True)
 			regKey.SetValue(keyName, keyVal)
 			regKey.Close()
+			Return Nothing
+
 		End Function
 
 		Private Shared ReadOnly Property GetRegistryKey(ByVal write As Boolean) As Microsoft.Win32.RegistryKey

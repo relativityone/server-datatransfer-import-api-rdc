@@ -101,6 +101,7 @@ Namespace kCura.WinEDDS
 				Me.WriteStatus("Direct Mode test: Failed")
 				Me.WriteStatus("Uploading in Web Mode")
 			End If
+			Return Nothing
 		End Function
 
 		Private Function CheckWebBasedRepositoryLifecycle() As Boolean

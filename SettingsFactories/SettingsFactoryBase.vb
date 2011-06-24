@@ -1,3 +1,7 @@
+Imports System.Security.Cryptography.X509Certificates
+Imports System.Net
+Imports System.Net.Security
+
 Namespace kCura.WinEDDS
 	Public MustInherit Class SettingsFactoryBase
 
@@ -68,7 +72,9 @@ Namespace kCura.WinEDDS
 
 		Protected Sub New(ByVal credential As System.Net.NetworkCredential)
 			_credential = credential
-			System.Net.ServicePointManager.CertificatePolicy = New TrustAllCertificatePolicy
+
+			ServicePointManager.ServerCertificateValidationCallback = Function(sender As Object, certificate As X509Certificate, chain As X509Chain, sslPolicyErrors As SslPolicyErrors) True
+
 			_cookieContainer = New System.Net.CookieContainer
 			Dim relativityManager As New kCura.WinEDDS.Service.RelativityManager(_credential, _cookieContainer)
 			Dim successfulLogin As Boolean = False
@@ -90,7 +96,6 @@ Namespace kCura.WinEDDS
 			End If
 			Throw New InvalidCredentialsException
 		End Sub
-
 
 		Protected Sub SaveObject(ByVal location As String, ByVal settings As Object)
 			Dim sw As New System.IO.StreamWriter(location)

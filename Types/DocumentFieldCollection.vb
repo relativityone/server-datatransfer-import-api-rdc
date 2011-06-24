@@ -59,6 +59,7 @@ Namespace kCura.WinEDDS
 					Return field
 				End If
 			Next
+			Return Nothing
 		End Function
 
 		Public Function GetFieldsByCategory(ByVal type As Relativity.FieldCategory) As DocumentField()

@@ -421,6 +421,7 @@
     <Compile Include="Process\ApplicationDeploymentProcess.vb">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Process\ApplicationInstallProcessEvent.vb" />
     <Compile Include="Process\ConnectionDetailsProcess.vb">
       <SubType>Code</SubType>
     </Compile>
@@ -537,9 +538,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="SettingsFactories\SettingsFactoryBase.vb">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="TrustAllCertificatePolicy.vb">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Types\DocumentField.vb">
@@ -829,9 +827,6 @@
     </None>
     <None Include="Web References\kCura.EDDS.WebAPI.SearchManagerBase\SearchManager.disco" />
     <None Include="Web References\kCura.EDDS.WebAPI.SearchManagerBase\SearchManager.wsdl" />
-    <None Include="Web References\kCura.EDDS.WebAPI.TemplateManagerBase\ApplicationExtractionResult.datasource">
-      <DependentUpon>Reference.map</DependentUpon>
-    </None>
     <None Include="Web References\kCura.EDDS.WebAPI.TemplateManagerBase\ApplicationInstallationResult.datasource">
       <DependentUpon>Reference.map</DependentUpon>
     </None>
