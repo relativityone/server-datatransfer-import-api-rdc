@@ -1730,6 +1730,7 @@ Public Class ExportForm
 			_potentialTextFields.Items.AddRange(temporaryPotentialTextFields.ToArray)
 			_potentialTextFields.SelectedIndex = temporaryPotentialTextFieldsSelectedIndex
 		End If
+		'TODO: this will send -1 index to OnDraw during refresh on exports. Known defect. In backlog
 		_columnSelecter.LeftListBoxItems.Clear()
 		_columnSelecter.RightListBoxItems.Clear()
 		Dim al As New System.Collections.ArrayList(_exportFile.AllExportableFields)
