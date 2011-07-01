@@ -6,6 +6,10 @@ Namespace kCura.WinEDDS.ImportExtension
 
 		Public Sub New(ByVal sourceData As System.Data.IDataReader)
 			_sourceData = sourceData
+
+			' Use the default value for the delimiter because as a public class,
+			' users of this class may not know what value to set for this
+			BulkLoadFileFieldDelimiter = Relativity.Constants.DEFAULT_FIELD_DELIMITER
 		End Sub
 
 		Private Function AddColumnIndexToName(ByVal dr As System.Data.IDataReader, ByVal columnName As String) As String
