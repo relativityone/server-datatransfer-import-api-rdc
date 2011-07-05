@@ -256,10 +256,10 @@ Namespace kCura.Windows.Forms
 
       Public Overloads Overrides Sub PaintValue(ByVal e As System.Drawing.Design.PaintValueEventArgs)
         With e
-          If .Context Is Nothing OrElse .Context.Instance Is Nothing OrElse Not TypeOf .Value Is Integer Then Return
-          Dim intIndex As Integer = DirectCast(.Value, Integer)
-          If intIndex < 0 Then Return
-          Dim imgList As ImageList = DirectCast(TypeDescriptor.GetProperties(.Context.Instance).Find("ImageList", False).GetValue(.Context.Instance), ImageList)
+					If .Context Is Nothing OrElse .Context.Instance Is Nothing OrElse Not TypeOf .Value Is Integer Then Return
+					Dim intIndex As Integer = DirectCast(.Value, Integer)
+					If intIndex < 0 Then Return
+					Dim imgList As ImageList = DirectCast(TypeDescriptor.GetProperties(.Context.Instance).Find("ImageList", False).GetValue(.Context.Instance), ImageList)
           If imgList Is Nothing OrElse intIndex >= imgList.Images.Count Then Return
           .Graphics.DrawImage(imgList.Images(intIndex), .Bounds)
         End With
