@@ -20,7 +20,7 @@ Namespace kCura.EDDS.WinForm
 		Public Shared ReadOnly Property DataConfigSettings() As System.Collections.IDictionary
 			Get
 				If _dataConfigDictionary Is Nothing Then
-					_dataConfigDictionary = kCura.Config.Manager.GetConfig("kCura.EDDS.Data", New ConfigDictionaryFactory)
+					_dataConfigDictionary = kCura.Config.Manager.GetConfig("Relativity.Data", New ConfigDictionaryFactory)
 				End If
 				Return _dataConfigDictionary
 			End Get
