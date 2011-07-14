@@ -387,7 +387,6 @@ Namespace kCura.WinEDDS
 			Dim identityValue As String = String.Empty
 			Dim markUploadStart As DateTime = DateTime.Now
 			Dim parentFolderID As Int32
-			Dim md5hash As String = ""
 			Dim fullFilePath As String = ""
 			Dim oixFileIdData As OI.FileID.FileIDData = Nothing
 			Dim destinationVolume As String = Nothing
@@ -441,9 +440,6 @@ Namespace kCura.WinEDDS
 							End If
 						Else
 							fileGuid = System.Guid.NewGuid.ToString
-						End If
-						If _extractMd5Hash Then
-							md5hash = kCura.Utility.File.GenerateMD5HashForFile(filename)
 						End If
 						fullFilePath = filename
 						filename = filename.Substring(filename.LastIndexOf("\") + 1)
@@ -499,7 +495,7 @@ Namespace kCura.WinEDDS
 				'lineStatus += ImportStatus.IdentifierOverlap				'	
 				Throw New IdentifierOverlapException(identityValue, _processedDocumentIdentifiers(identityValue))
 			End If
-			Dim metadoc As New MetaDocument(fileGuid, identityValue, fileExists AndAlso uploadFile AndAlso (fileGuid <> String.Empty OrElse Not _copyFileToRepository), filename, fullFilePath, uploadFile, CurrentLineNumber, parentFolderID, md5hash, record, oixFileIdData, lineStatus, destinationVolume)
+			Dim metadoc As New MetaDocument(fileGuid, identityValue, fileExists AndAlso uploadFile AndAlso (fileGuid <> String.Empty OrElse Not _copyFileToRepository), filename, fullFilePath, uploadFile, CurrentLineNumber, parentFolderID, record, oixFileIdData, lineStatus, destinationVolume)
 			'_docsToProcess.Push(metadoc)
 			_timekeeper.MarkStart("ManageDocument_ManageDocumentMetadata")
 			ManageDocumentMetaData(metadoc)
