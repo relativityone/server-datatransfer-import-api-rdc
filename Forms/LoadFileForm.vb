@@ -1385,22 +1385,7 @@ Namespace kCura.EDDS.WinForm
 			_fullTextFileEncodingPicker.Enabled = _extractedTextValueContainsFileLocation.Enabled And _extractedTextValueContainsFileLocation.Checked
 		End Sub
 
-		Private ReadOnly Property EnableMd5Hash() As Boolean
-			Get
-				Return False
-				'If Not _nativeFilePathField.Enabled Then Return False
-				'Dim item As String
-				'For Each item In _fieldMap.RightListBoxItems
-				'	Try
-				'		If _application.CurrentFields.Item(item).FieldCategoryID = Relativity.FieldCategory.DuplicateHash Then
-				'			Return False
-				'		End If
-				'	Catch
-				'	End Try
-				'Next
-				'Return True
-			End Get
-		End Property
+
 
 		Private Sub _LoadFileColumns_ItemsShifted() Handles _fieldMap.LoadFileColumnsItemsShifted
 			ActionMenuEnabled = ReadyToRun
