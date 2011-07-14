@@ -77,7 +77,6 @@ Namespace kCura.Relativity.DataReaderClient
 			tempLoadFile.ExtractedTextFileEncoding = loadFileTemp.ExtractedTextFileEncoding
 			tempLoadFile.ExtractedTextFileEncodingName = loadFileTemp.ExtractedTextFileEncodingName
 			tempLoadFile.ExtractFullTextFromNativeFile = loadFileTemp.ExtractFullTextFromNativeFile
-			tempLoadFile.ExtractMD5HashFromNativeFile = loadFileTemp.ExtractMD5HashFromNativeFile
 			tempLoadFile.FieldMap = loadFileTemp.FieldMap
 			tempLoadFile.FilePath = loadFileTemp.FilePath
 			tempLoadFile.FirstLineContainsHeaders = loadFileTemp.FirstLineContainsHeaders
