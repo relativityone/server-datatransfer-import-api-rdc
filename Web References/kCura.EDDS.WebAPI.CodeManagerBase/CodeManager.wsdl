@@ -43,6 +43,7 @@
               <s:element minOccurs="1" maxOccurs="1" name="UpdateInSearchEngine" type="s:boolean" />
               <s:element minOccurs="1" maxOccurs="1" name="OIHiliteStyleID" nillable="true" type="s:int" />
               <s:element minOccurs="0" maxOccurs="1" name="KeyboardShortcut" type="tns:KeyboardShortcut" />
+              <s:element minOccurs="0" maxOccurs="1" name="RelativityApplications" type="tns:ArrayOfInt" />
             </s:sequence>
           </s:extension>
         </s:complexContent>
@@ -63,7 +64,12 @@
           <s:element minOccurs="1" maxOccurs="1" name="CreatedBy" type="s:int" />
           <s:element minOccurs="1" maxOccurs="1" name="CreatedOn" type="s:dateTime" />
           <s:element minOccurs="1" maxOccurs="1" name="DeleteFlag" type="s:boolean" />
-          <s:element minOccurs="1" maxOccurs="1" name="Guid" nillable="true" type="s1:guid" />
+          <s:element minOccurs="0" maxOccurs="1" name="Guids" type="tns:ArrayOfGuid" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="ArrayOfGuid">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="guid" type="s1:guid" />
         </s:sequence>
       </s:complexType>
       <s:complexType name="KeyboardShortcut">
@@ -73,6 +79,11 @@
           <s:element minOccurs="1" maxOccurs="1" name="Ctrl" type="s:boolean" />
           <s:element minOccurs="1" maxOccurs="1" name="Alt" type="s:boolean" />
           <s:element minOccurs="1" maxOccurs="1" name="Key" type="s:int" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="ArrayOfInt">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="int" type="s:int" />
         </s:sequence>
       </s:complexType>
       <s:element name="CreateResponse">
@@ -444,10 +455,10 @@
   </wsdl:binding>
   <wsdl:service name="CodeManager">
     <wsdl:port name="CodeManagerSoap" binding="tns:CodeManagerSoap">
-      <soap:address location="http://localhost/RelativityWebAPI/CodeManager.asmx" />
+      <soap:address location="http://localhost/RelativityWebApi/CodeManager.asmx" />
     </wsdl:port>
     <wsdl:port name="CodeManagerSoap12" binding="tns:CodeManagerSoap12">
-      <soap12:address location="http://localhost/RelativityWebAPI/CodeManager.asmx" />
+      <soap12:address location="http://localhost/RelativityWebApi/CodeManager.asmx" />
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>

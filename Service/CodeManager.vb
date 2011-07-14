@@ -27,6 +27,7 @@ Namespace kCura.WinEDDS.Service
 			code.Notes = String.Empty
 			code.ParentArtifactID = New Nullable(Of Int32)(caseSystemID)
 			code.ContainerID = New Nullable(Of Int32)(caseSystemID)
+			code.RelativityApplications = New Int32() {}
 			Return code
 		End Function
 
