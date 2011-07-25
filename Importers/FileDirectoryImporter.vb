@@ -188,7 +188,7 @@ Namespace kCura.WinEDDS
 			End Sub
 		End Class
 
-		'Public Sub New(ByVal importSettings As kCura.WinEDDS.ImportFileDirectorySettings, ByVal credential As Net.NetworkCredential, ByVal cookieContainer As System.Net.CookieContainer, ByVal identity As kCura.EDDS.EDDSIdentity)
+		'Public Sub New(ByVal importSettings As kCura.WinEDDS.ImportFileDirectorySettings, ByVal credential As Net.NetworkCredential, ByVal cookieContainer As System.Net.CookieContainer, ByVal identity As Relativity.Core.EDDSIdentity)
 		Public Sub New(ByVal importSettings As kCura.WinEDDS.ImportFileDirectorySettings, ByVal credential As Net.NetworkCredential, ByVal cookieContainer As System.Net.CookieContainer)
 			_importFileDirectorySettings = importSettings
 			_credential = credential

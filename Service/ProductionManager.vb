@@ -19,7 +19,7 @@ Namespace kCura.WinEDDS.Service
 		End Function
 
 #Region " Translations "
-		'Public Function DTOToWebAPIProduction(ByVal productionDTO As kCura.EDDS.DTO.Production) As kCura.EDDS.WebAPI.ProductionManagerBase.Production
+		'Public Function DTOToWebAPIProduction(ByVal productionDTO As Relativity.Core.DTO.Production) As kCura.EDDS.WebAPI.ProductionManagerBase.Production
 		'	Dim production As New kCura.EDDS.WebAPI.ProductionManagerBase.Production
 
 		'	production.AccessControlListID = productionDTO.AccessControlListID

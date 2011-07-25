@@ -3,11 +3,11 @@ Namespace kCura.WinEDDS.Service
 	Public Class FieldQuery
 		Inherits kCura.EDDS.WebAPI.FieldQueryBase.FieldQuery
 
-		'Private _fieldQuery As New kCura.EDDS.Service.DynamicFields.FieldQuery
-		'Private _identity As kCura.EDDS.EDDSIdentity
+		'Private _fieldQuery As New Relativity.Core.Service.DynamicFields.FieldQuery
+		'Private _identity As Relativity.Core.EDDSIdentity
 
 		Public Sub New(ByVal credentials As Net.ICredentials, ByVal cookieContainer As System.Net.CookieContainer)
-			'Public Sub New(ByVal credentials As Net.NetworkCredential, ByVal cookieContainer As System.Net.CookieContainer, ByVal identity As kCura.EDDS.EDDSIdentity)
+			'Public Sub New(ByVal credentials As Net.NetworkCredential, ByVal cookieContainer As System.Net.CookieContainer, ByVal identity As Relativity.Core.EDDSIdentity)
 			MyBase.New()
 			Me.Credentials = credentials
 			Me.CookieContainer = cookieContainer

@@ -8,7 +8,7 @@ Namespace kCura.WinEDDS
 		Public ImportFileDirectorySettings As ImportFileDirectorySettings
 		Private _credential As Net.NetworkCredential
 		Private _cookieContainer As System.Net.CookieContainer
-		'Private _identity As kCura.EDDS.EDDSIdentity
+		'Private _identity As Relativity.Core.EDDSIdentity
 
 		Protected Overrides Sub Execute()
 			'_fileDirectoryImporter = New kCura.WinEDDS.FileDirectoryImporter(ImportFileDirectorySettings, _credential, _cookieContainer, _identity)
@@ -31,7 +31,7 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Public Sub New(ByVal credential As Net.NetworkCredential, ByVal cookieContainer As System.Net.CookieContainer)
-			'Public Sub New(ByVal credential As Net.NetworkCredential, ByVal cookieContainer As System.Net.CookieContainer, ByVal identity As kCura.EDDS.EDDSIdentity)
+			'Public Sub New(ByVal credential As Net.NetworkCredential, ByVal cookieContainer As System.Net.CookieContainer, ByVal identity As Relativity.Core.EDDSIdentity)
 			MyBase.new()
 			_credential = credential
 			_cookieContainer = cookieContainer

@@ -37,7 +37,7 @@ Namespace kCura.WinEDDS
 		<NonSerialized()> Public CaseInfo As Relativity.CaseInfo
 		<NonSerialized()> Public SelectedCasePath As String = ""
 		<NonSerialized()> Public CopyFilesToDocumentRepository As Boolean = True
-		'<NonSerialized()> Public Identity As kCura.EDDS.EDDSIdentity
+		'<NonSerialized()> Public Identity As Relativity.Core.EDDSIdentity
 
 		Public Property CookieContainer() As System.Net.CookieContainer
 			Get

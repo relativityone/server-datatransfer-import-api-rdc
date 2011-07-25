@@ -22,10 +22,10 @@ Namespace kCura.WinEDDS
 		<NonSerialized()> Public CopyFilesToDocumentRepository As Boolean = True
 		<NonSerialized()> Public Credential As Net.NetworkCredential
 		<NonSerialized()> Public CookieContainer As System.Net.CookieContainer
-		'<NonSerialized()> Public Identity As kCura.EDDS.EDDSIdentity
+		'<NonSerialized()> Public Identity As Relativity.Core.EDDSIdentity
 
 		Public Sub New()
-			'Public Sub New(ByVal identity As kCura.EDDS.EDDSIdentity)
+			'Public Sub New(ByVal identity As Relativity.Core.EDDSIdentity)
 			MyBase.New()
 			Overwrite = "None"
 			ProductionArtifactID = 0

@@ -1,6 +1,6 @@
 Namespace kCura.WinEDDS
 	Public Class ExportFile
-		'Protected _identity As kCura.EDDS.EDDSIdentity
+		'Protected _identity As Relativity.Core.EDDSIdentity
 		Protected _caseInfo As Relativity.CaseInfo
 		Protected _dataTable As System.Data.DataTable
 		Protected _typeOfExport As ExportType

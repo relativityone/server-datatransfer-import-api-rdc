@@ -2,11 +2,11 @@ Namespace kCura.WinEDDS.Service
 	Public Class SearchManager
 		Inherits kCura.EDDS.WebAPI.SearchManagerBase.SearchManager
 
-		'Private _searchManager As New kCura.EDDS.Service.SearchManager
-		'Private _viewManager As New kCura.EDDS.Service.ViewManager
-		'Private _identity As kCura.EDDS.EDDSIdentity
+		'Private _searchManager As New Relativity.Core.Service.SearchManager
+		'Private _viewManager As New Relativity.Core.Service.ViewManager
+		'Private _identity As Relativity.Core.EDDSIdentity
 
-		'Public Sub New(ByVal credentials As Net.NetworkCredential, ByVal cookieContainer As System.Net.CookieContainer, ByVal identity As kCura.EDDS.EDDSIdentity)
+		'Public Sub New(ByVal credentials As Net.NetworkCredential, ByVal cookieContainer As System.Net.CookieContainer, ByVal identity As Relativity.Core.EDDSIdentity)
 		Public Sub New(ByVal credentials As Net.ICredentials, ByVal cookieContainer As System.Net.CookieContainer)
 			MyBase.New()
 			Me.Credentials = credentials

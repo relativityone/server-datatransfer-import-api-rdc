@@ -230,7 +230,7 @@ Namespace kCura.WinEDDS.Service
 					If kCura.WinEDDS.Config.UsesWebAPI Then
 						Return MyBase.GetDocumentDirectoryByCaseArtifactID(caseArtifactID)
 					Else
-						'Return kCura.EDDS.DocumentHelper.GetDocumentDirectoryByCaseArtifactID(caseArtifactID)
+						'Return Relativity.Core.DocumentHelper.GetDocumentDirectoryByCaseArtifactID(caseArtifactID)
 					End If
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then

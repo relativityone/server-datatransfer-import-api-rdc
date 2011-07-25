@@ -2,7 +2,7 @@ Namespace kCura.WinEDDS.Service
 	Public Class FileIO
 		Inherits kCura.EDDS.WebAPI.FileIOBase.FileIO
 
-		'Dim _externalIOManager As New kCura.EDDS.Service.ExternalIO
+		'Dim _externalIOManager As New Relativity.Core.Service.ExternalIO
 
 		Public Sub New(ByVal credentials As Net.ICredentials, ByVal cookieContainer As System.Net.CookieContainer)
 			MyBase.New()
