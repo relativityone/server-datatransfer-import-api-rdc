@@ -98,6 +98,8 @@ Namespace kCura.WinEDDS.ImportExtension
 					_markerNameIsMapped = True
 				Catch ex As IndexOutOfRangeException
 					_markerNameIsMapped = False
+				Catch ex As ArgumentException
+					_markerNameIsMapped = False
 				End Try
 			End If
 			Return _markerNameIsMapped.Value
