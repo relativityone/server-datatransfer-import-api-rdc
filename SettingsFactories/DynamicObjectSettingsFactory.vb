@@ -29,7 +29,6 @@ Namespace kCura.WinEDDS
 			_loadFile.ExtractedTextFileEncoding = System.Text.Encoding.Default
 			_loadFile.ExtractedTextFileEncodingName = Relativity.SqlNameHelper.GetSqlFriendlyName(_loadFile.ExtractedTextFileEncoding.EncodingName).ToLower
 			_loadFile.ExtractFullTextFromNativeFile = False
-			_loadFile.ExtractMD5HashFromNativeFile = False
 			_loadFile.FieldMap = New kCura.WinEDDS.LoadFileFieldMap
 			_loadFile.FirstLineContainsHeaders = True
 			_loadFile.FolderStructureContainedInColumn = Nothing
