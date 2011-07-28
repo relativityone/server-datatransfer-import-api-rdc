@@ -145,7 +145,7 @@ Namespace kCura.WinEDDS
 						Next
 						field.Value = DirectCast(al.ToArray(GetType(String)), String())
 					Case Relativity.FieldTypeHelper.FieldType.Varchar
-						field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(Me.GetNullableFixedString(value, column, field.TextLength))
+						field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(Me.GetNullableFixedString(value, column, field.TextLength, field.DisplayName))
 					Case Relativity.FieldTypeHelper.FieldType.Text
 						If _settings.FullTextColumnContainsFileLocation Then
 							field.Value = value
