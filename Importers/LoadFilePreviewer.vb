@@ -196,7 +196,7 @@ Namespace kCura.WinEDDS
 
 			If Not identifierField Is Nothing And _artifactTypeID = Relativity.ArtifactType.Document Then
 				For Each field As Api.ArtifactField In unmappedRelationalNoBlankFields.Values
-					field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(Me.GetNullableFixedString(record.IdentifierField.ValueAsString, -1, field.TextLength))
+					field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(Me.GetNullableFixedString(record.IdentifierField.ValueAsString, -1, field.TextLength, field.DisplayName))
 					lineContainsErrors = lineContainsErrors Or SetFieldValueOrErrorMessage(field, -1, identifierField.ValueAsString, -1, Nothing)
 					retval.Add(field)
 				Next
