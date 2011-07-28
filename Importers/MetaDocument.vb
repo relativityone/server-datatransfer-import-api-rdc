@@ -8,7 +8,7 @@ Namespace kCura.WinEDDS
 		Private _uploadFile As Boolean
 		Private _lineNumber As Int32
 		Private _parentFolderID As Int32
-		Private _md5Hash As String
+
 		Private _record As Api.ArtifactFieldCollection
 		Private _fileIdData As OI.FileID.FileIDData
 		Private _lineStatus As Int32
@@ -95,14 +95,7 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
-		Public Property Md5Hash() As String
-			Get
-				Return _md5Hash
-			End Get
-			Set(ByVal value As String)
-				_md5Hash = value
-			End Set
-		End Property
+
 
 		Public Property FullFilePath() As String
 			Get
@@ -140,7 +133,6 @@ Namespace kCura.WinEDDS
 		 ByVal uploadFile As Boolean, _
 		 ByVal lineNumber As Int32, _
 		 ByVal parentFolderID As Int32, _
-		 ByVal md5Hash As String, _
 		 ByVal record As Api.ArtifactFieldCollection, _
 		 ByVal oixFileData As OI.FileID.FileIDData, _
 		 ByVal lineStatus As Int32, _
@@ -155,7 +147,7 @@ Namespace kCura.WinEDDS
 			_lineNumber = lineNumber
 			_parentFolderID = parentFolderID
 			_record = record
-			_md5Hash = md5Hash
+
 			_fileIdData = oixFileData
 			_lineStatus = lineStatus
 			_destinationVolume = destinationVolume

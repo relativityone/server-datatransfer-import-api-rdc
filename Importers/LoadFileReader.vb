@@ -36,7 +36,6 @@ Namespace kCura.WinEDDS
 		Protected _fieldMap As LoadFileFieldMap
 		Protected _createFolderStructure As Boolean
 		Protected _destinationFolder As String
-		Protected _extractMd5Hash As Boolean
 		Protected _fullTextColumnMapsToFileLocation As Boolean
 		Private _users As UserCollection
 		Protected _sourceFileEncoding As System.Text.Encoding
@@ -86,7 +85,6 @@ Namespace kCura.WinEDDS
 			_uploadFiles = args.LoadNativeFiles
 			_createFolderStructure = args.CreateFolderStructure
 			_destinationFolder = args.FolderStructureContainedInColumn
-			_extractMd5Hash = args.ExtractMD5HashFromNativeFile
 			_fullTextColumnMapsToFileLocation = args.FullTextColumnContainsFileLocation
 			_sourceFileEncoding = args.SourceFileEncoding
 			_extractedTextFileEncoding = args.ExtractedTextFileEncoding

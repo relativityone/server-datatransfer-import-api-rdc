@@ -17,7 +17,7 @@ Namespace kCura.WinEDDS
 		Public NativeFilePathColumn As String
 		Public GroupIdentifierColumn As String
 		Public SelectedIdentifierField As kCura.WinEDDS.DocumentField
-		Public ExtractMD5HashFromNativeFile As Boolean
+
 		Public CreateFolderStructure As Boolean
 		Public FolderStructureContainedInColumn As String
 		Public FullTextColumnContainsFileLocation As Boolean
@@ -65,7 +65,7 @@ Namespace kCura.WinEDDS
 			info.AddValue("FirstLineContainsHeaders", Me.FirstLineContainsHeaders, GetType(Boolean))
 			info.AddValue("LoadNativeFiles", Me.LoadNativeFiles, GetType(Boolean))
 			info.AddValue("ExtractFullTextFromNativeFile", Me.ExtractFullTextFromNativeFile, GetType(Boolean))
-			info.AddValue("ExtractMD5HashFromNativeFile", Me.ExtractMD5HashFromNativeFile, GetType(Boolean))
+
 			info.AddValue("RecordDelimiter", AscW(Me.RecordDelimiter), GetType(Integer))
 			info.AddValue("QuoteDelimiter", AscW(Me.QuoteDelimiter), GetType(Integer))
 			info.AddValue("NewlineDelimiter", AscW(Me.NewlineDelimiter), GetType(Integer))
@@ -113,7 +113,6 @@ Namespace kCura.WinEDDS
 				Me.FirstLineContainsHeaders = info.GetBoolean("FirstLineContainsHeaders")
 				Me.LoadNativeFiles = info.GetBoolean("LoadNativeFiles")
 				Me.ExtractFullTextFromNativeFile = info.GetBoolean("ExtractFullTextFromNativeFile")
-				Me.ExtractMD5HashFromNativeFile = info.GetBoolean("ExtractMD5HashFromNativeFile")
 				Me.OverwriteDestination = info.GetString("OverwriteDestination")
 
 				Me.RecordDelimiter = ChrW(info.GetInt32("RecordDelimiter"))
