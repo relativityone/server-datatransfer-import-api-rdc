@@ -393,6 +393,7 @@
     <Compile Include="Startup.vb">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="ThreadExceptionHandler.vb" />
     <Compile Include="TrustAllCertificatePolicy.vb">
       <SubType>Code</SubType>
     </Compile>

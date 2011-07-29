@@ -1,4 +1,5 @@
 Namespace kCura.EDDS.WinForm
+
 	Public Module Startup
 
 #Region " Library Functions "
@@ -49,6 +50,8 @@ Namespace kCura.EDDS.WinForm
 #End Region
 
 		Public Sub Main()
+			Dim handler As ThreadExceptionHandler = New ThreadExceptionHandler()
+			AddHandler System.Windows.Forms.Application.ThreadException, AddressOf handler.Application_ThreadException
 
 			Dim args As String() = System.Environment.GetCommandLineArgs
 			If args.Length = 1 Then
