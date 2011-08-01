@@ -14,6 +14,10 @@ Namespace kCura.WinEDDS.Service
 
 #End Region
 
+		Private Sub CheckResultsForException(ByVal results As EDDS.WebAPI.BulkImportManagerBase.MassImportResults)
+			If results.ErrorText <> "" Then Throw New BulkImportSqlException(results.ErrorText)
+		End Sub
+
 #Region " Shadow Methods "
 		Public Shadows Function BulkImportImage(ByVal appID As Int32, ByVal bulkFileName As String, ByVal uploadFullText As Boolean, ByVal overwrite As kCura.EDDS.WebAPI.BulkImportManagerBase.OverwriteType, ByVal destinationFolderArtifactID As Int32, ByVal repository As String, ByVal useBulk As Boolean, ByVal runID As String, ByVal keyFieldID As Int32, ByVal inRepository As Boolean) As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults
 			Dim tries As Int32 = 0
@@ -21,7 +25,7 @@ Namespace kCura.WinEDDS.Service
 				tries += 1
 				Try
 					Dim retval As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults = Me.InvokeBulkImportImage(appID, bulkFileName, uploadFullText, overwrite, destinationFolderArtifactID, repository, useBulk, runID, keyFieldID, inRepository)
-					If retval.ErrorText <> "" Then Throw New BulkImportSqlException(retval.ErrorText)
+					Me.CheckResultsForException(retval)
 					Return retval
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
@@ -40,7 +44,7 @@ Namespace kCura.WinEDDS.Service
 				tries += 1
 				Try
 					Dim retval As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults = Me.InvokeBulkImportProductionImage(appID, bulkFileName, uploadFullText, overwrite, destinationFolderArtifactID, repository, productionArtifactID, useBulk, runID, productionKeyFieldArtifactID, inRepository)
-					If retval.ErrorText <> "" Then Throw New BulkImportSqlException(retval.ErrorText)
+					Me.CheckResultsForException(retval)
 					Return retval
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
@@ -97,7 +101,7 @@ Namespace kCura.WinEDDS.Service
 				tries += 1
 				Try
 					Dim retval As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults = Me.InvokeBulkImportNative(appID, settings, inRepository, includeExtractedTextEncoding)
-					If retval.ErrorText <> "" Then Throw New BulkImportSqlException(retval.ErrorText)
+					Me.CheckResultsForException(retval)
 					Return retval
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
@@ -116,7 +120,7 @@ Namespace kCura.WinEDDS.Service
 				tries += 1
 				Try
 					Dim retval As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults = Me.InvokeBulkImportObjects(appID, settings, inRepository)
-					If retval.ErrorText <> "" Then Throw New BulkImportSqlException(retval.ErrorText)
+					Me.CheckResultsForException(retval)
 					Return retval
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
