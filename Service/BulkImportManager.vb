@@ -15,7 +15,7 @@ Namespace kCura.WinEDDS.Service
 #End Region
 
 		Private Sub CheckResultsForException(ByVal results As EDDS.WebAPI.BulkImportManagerBase.MassImportResults)
-			If results.ErrorText <> "" Then Throw New BulkImportSqlException(results.ErrorText)
+			If results.ExceptionDetail IsNot Nothing Then Throw New BulkImportSqlException(results.ExceptionDetail)
 		End Sub
 
 #Region " Shadow Methods "
@@ -175,8 +175,11 @@ Namespace kCura.WinEDDS.Service
 
 		Public Class BulkImportSqlException
 			Inherits System.Exception
-			Public Sub New(ByVal errorText As String)
-				MyBase.New(errorText)
+
+			Private Property DetailedException As EDDS.WebAPI.BulkImportManagerBase.SoapExceptionDetail
+			Public Sub New(ByVal exception As EDDS.WebAPI.BulkImportManagerBase.SoapExceptionDetail)
+				MyBase.New(exception.ExceptionMessage)
+				Me.DetailedException = exception
 			End Sub
 		End Class
 	End Class
