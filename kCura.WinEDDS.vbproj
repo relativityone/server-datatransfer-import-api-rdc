@@ -540,6 +540,7 @@
     <Compile Include="SettingsFactories\SettingsFactoryBase.vb">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Types\ClientSideErrorCollection.vb" />
     <Compile Include="Types\DocumentField.vb">
       <SubType>Code</SubType>
     </Compile>
