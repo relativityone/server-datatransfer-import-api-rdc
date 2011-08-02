@@ -11,6 +11,7 @@ Namespace kCura.Windows.Process
 			InitializeComponent()
 
 			'Add any initialization after the InitializeComponent() call
+			Me._linkLableShowHideFatalErrors.SendToBack()
 		End Sub
 
 		'Form overrides dispose to clean up the component list.
@@ -217,14 +218,14 @@ Namespace kCura.Windows.Process
 			'
 			'_linkLableShowHideFatalErrors
 			'
-			Me._linkLableShowHideFatalErrors.Location = New System.Drawing.Point(5, 5)
+			Me._linkLableShowHideFatalErrors.Location = New System.Drawing.Point(3, 3)
 			Me._linkLableShowHideFatalErrors.Name = "_linkLableShowHideFatalErrors"
-			Me._linkLableShowHideFatalErrors.Size = New System.Drawing.Size(20, 15)
-			Me._linkLableShowHideFatalErrors.Font = New System.Drawing.Font("Courier", 10.0!)
+			Me._linkLableShowHideFatalErrors.Size = New System.Drawing.Size(25, 15)
+			Me._linkLableShowHideFatalErrors.Font = New System.Drawing.Font("Courier New", 8.0!)
 			Me._linkLableShowHideFatalErrors.TabIndex = 11
 			Me._linkLableShowHideFatalErrors.TabStop = True
 			Me._linkLableShowHideFatalErrors.Text = plusSign
-			Me._linkLableShowHideFatalErrors.BringToFront()
+
 			'
 			'_txtBoxFatalFriendlyError
 			'
@@ -660,12 +661,7 @@ Namespace kCura.Windows.Process
 				errorFullMessage = System.Web.HttpUtility.HtmlDecode(errorFullMessage)
 			End If
 			_outputTextBox.WriteLine(errorFullMessage)
-			'_errorsOutputTextBox.WriteLine(errorString)
-			_errorsOutputTextBox.Visible = False
-			_linkLableShowHideFatalErrors.Visible = True
-			_txtBoxFatalFriendlyError.Visible = True
-			_txtBoxFatalFriendlyError.WriteLine(errorFriendlyMessage)
-			_txtBoxFatalFullError.WriteLine(errorFullMessage)
+			WriteFataExceptionDetailsToErrorsTab(errorFriendlyMessage, errorFullMessage)
 
 			_currentRecordLabel.Text = "Fatal Exception Encountered"
 			_hasReceivedFatalError = True
@@ -674,6 +670,15 @@ Namespace kCura.Windows.Process
 			_saveOutputButton.Enabled = Config.LogAllEvents
 			_summaryOutput.ForeColor = System.Drawing.Color.Red
 			Me.ShowDetail()
+		End Sub
+
+		Private Sub WriteFataExceptionDetailsToErrorsTab(ByVal errorFriendlyMessage As String, ByVal errorFullMessage As String)
+			_errorsOutputTextBox.Visible = False
+			_linkLableShowHideFatalErrors.Visible = True
+			_linkLableShowHideFatalErrors.BringToFront()
+			_txtBoxFatalFriendlyError.Visible = True
+			_txtBoxFatalFriendlyError.WriteLine(errorFriendlyMessage)
+			_txtBoxFatalFullError.WriteLine(errorFullMessage)
 		End Sub
 
 #End Region
