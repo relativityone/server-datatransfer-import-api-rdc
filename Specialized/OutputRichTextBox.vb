@@ -11,11 +11,11 @@ Namespace kCura.Windows.Forms
       'This call is required by the Windows Form Designer.
       InitializeComponent()
 
-      'Add any initialization after the InitializeComponent() call
+			'Add any initialization after the InitializeComponent() call
+			ExtraSpace = ""
+		End Sub
 
-    End Sub
-
-    'UserControl overrides dispose to clean up the component list.
+		'UserControl overrides dispose to clean up the component list.
     Protected Overloads Overrides Sub Dispose(ByVal disposing As Boolean)
       If disposing Then
         If Not (components Is Nothing) Then
@@ -58,7 +58,13 @@ Namespace kCura.Windows.Forms
 
 #End Region
 
-    Public AllowForSave As Boolean
+		Public ReadOnly Property DisplayTextBox As System.Windows.Forms.TextBox
+			Get
+				Return Me.TextBox
+			End Get
+		End Property
+		Public Property ExtraSpace As String
+		Public AllowForSave As Boolean
 
     Dim _inSafeMode As Boolean
     Dim _totalLineCount As Int32
@@ -88,7 +94,7 @@ Namespace kCura.Windows.Forms
 
 		Public Sub WriteLine(ByVal message As String)
 			_totalLineCount = _totalLineCount + 1
-			message = String.Format("{0}  {1}{2}", System.DateTime.Now.ToLongTimeString + " " + _totalLineCount.ToString("000000"), message, vbCrLf)
+			message = String.Format("{0}{1}  {2}{3}", ExtraSpace, System.DateTime.Now.ToLongTimeString + " " + _totalLineCount.ToString("000000"), message, vbCrLf)
 
 			If AllowForSave Then
 				If _tmpFileName = "" Then
