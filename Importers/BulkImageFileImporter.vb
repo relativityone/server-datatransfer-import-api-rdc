@@ -795,6 +795,8 @@ Namespace kCura.WinEDDS
 				Catch
 				End Try
 				Throw
+			Finally
+				_verboseErrorCollection.Clear()
 			End Try
 		End Sub
 
