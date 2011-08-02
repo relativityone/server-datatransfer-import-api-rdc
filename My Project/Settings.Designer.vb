@@ -63,6 +63,16 @@ Namespace My
                 Return CType(Me("kCura_WinEDDS_kCura_EDDS_WebAPI_ExportManagerBase_ExportManager"),String)
             End Get
         End Property
+        
+        <Global.System.Configuration.ApplicationScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.SpecialSettingAttribute(Global.System.Configuration.SpecialSetting.WebServiceUrl),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("http://localhost/RelativityWebApi/BulkImportManager.asmx")>  _
+        Public ReadOnly Property kCura_WinEDDS_kCura_EDDS_WebAPI_BulkImportManagerBase_BulkImportManager() As String
+            Get
+                Return CType(Me("kCura_WinEDDS_kCura_EDDS_WebAPI_BulkImportManagerBase_BulkImportManager"),String)
+            End Get
+        End Property
     End Class
 End Namespace
 
