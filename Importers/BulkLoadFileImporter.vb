@@ -579,7 +579,7 @@ Namespace kCura.WinEDDS
 				WriteFatalError(metaDoc.LineNumber, ex)
 			End Try
 			_timekeeper.MarkStart("ManageDocumentMetadata_ProgressEvent")
-			WriteStatusLine(Windows.Process.EventType.Progress, String.Format("Document '{0}' processed.", metaDoc.IdentityValue), metaDoc.LineNumber)
+			WriteStatusLine(Windows.Process.EventType.Progress, String.Format("Item '{0}' processed.", metaDoc.IdentityValue), metaDoc.LineNumber)
 			_timekeeper.MarkEnd("ManageDocumentMetadata_ProgressEvent")
 		End Sub
 
