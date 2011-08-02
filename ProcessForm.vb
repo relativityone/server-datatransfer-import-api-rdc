@@ -46,6 +46,11 @@ Namespace kCura.Windows.Process
 		Friend WithEvents _currentMessageStatus As System.Windows.Forms.Label
 		Friend WithEvents _warningsOutputTextBox As kCura.Windows.Forms.OutputRichTextBox
 		Friend WithEvents _errorsOutputTextBox As kCura.Windows.Forms.OutputRichTextBox
+
+		Friend WithEvents _linkLableShowHideFatalErrors As System.Windows.Forms.LinkLabel
+		Friend WithEvents _txtBoxFatalFriendlyError As kCura.Windows.Forms.OutputRichTextBox
+		Friend WithEvents _txtBoxFatalFullError As kCura.Windows.Forms.OutputRichTextBox
+
 		Friend WithEvents _statusBar As System.Windows.Forms.Label
 		Friend WithEvents ErrorReportTab As System.Windows.Forms.TabPage
 		Friend WithEvents _reportDataGrid As System.Windows.Forms.DataGrid
@@ -68,6 +73,9 @@ Namespace kCura.Windows.Process
 			Me._summaryOutput = New System.Windows.Forms.TextBox
 			Me.ErrorsTab = New System.Windows.Forms.TabPage
 			Me._errorsOutputTextBox = New kCura.Windows.Forms.OutputRichTextBox
+			Me._linkLableShowHideFatalErrors = New System.Windows.Forms.LinkLabel
+			Me._txtBoxFatalFriendlyError = New kCura.Windows.Forms.OutputRichTextBox
+			Me._txtBoxFatalFullError = New kCura.Windows.Forms.OutputRichTextBox
 			Me.ProgressTab = New System.Windows.Forms.TabPage
 			Me._outputTextBox = New kCura.Windows.Forms.OutputRichTextBox
 			Me.WarningsTab = New System.Windows.Forms.TabPage
@@ -111,7 +119,7 @@ Namespace kCura.Windows.Process
 			'_progressBar
 			'
 			Me._progressBar.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-									Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+						Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me._progressBar.Location = New System.Drawing.Point(4, 56)
 			Me._progressBar.Name = "_progressBar"
 			Me._progressBar.Size = New System.Drawing.Size(372, 23)
@@ -120,7 +128,7 @@ Namespace kCura.Windows.Process
 			'_currentRecordLabel
 			'
 			Me._currentRecordLabel.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-									Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+						Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me._currentRecordLabel.Location = New System.Drawing.Point(4, 4)
 			Me._currentRecordLabel.Name = "_currentRecordLabel"
 			Me._currentRecordLabel.Size = New System.Drawing.Size(460, 16)
@@ -152,8 +160,8 @@ Namespace kCura.Windows.Process
 			'_Tabs
 			'
 			Me._Tabs.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-									Or System.Windows.Forms.AnchorStyles.Left) _
-									Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+						Or System.Windows.Forms.AnchorStyles.Left) _
+						Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me._Tabs.Controls.Add(Me.SummaryTab)
 			Me._Tabs.Controls.Add(Me.ErrorsTab)
 			Me._Tabs.Controls.Add(Me.ProgressTab)
@@ -189,6 +197,9 @@ Namespace kCura.Windows.Process
 			'ErrorsTab
 			'
 			Me.ErrorsTab.Controls.Add(Me._errorsOutputTextBox)
+			Me.ErrorsTab.Controls.Add(Me._linkLableShowHideFatalErrors)
+			Me.ErrorsTab.Controls.Add(Me._txtBoxFatalFriendlyError)
+			Me.ErrorsTab.Controls.Add(Me._txtBoxFatalFullError)
 			Me.ErrorsTab.Location = New System.Drawing.Point(4, 22)
 			Me.ErrorsTab.Name = "ErrorsTab"
 			Me.ErrorsTab.Size = New System.Drawing.Size(456, 202)
@@ -203,6 +214,39 @@ Namespace kCura.Windows.Process
 			Me._errorsOutputTextBox.Name = "_errorsOutputTextBox"
 			Me._errorsOutputTextBox.Size = New System.Drawing.Size(456, 202)
 			Me._errorsOutputTextBox.TabIndex = 11
+			'
+			'_linkLableShowHideFatalErrors
+			'
+			Me._linkLableShowHideFatalErrors.Location = New System.Drawing.Point(5, 5)
+			Me._linkLableShowHideFatalErrors.Name = "_linkLableShowHideFatalErrors"
+			Me._linkLableShowHideFatalErrors.Size = New System.Drawing.Size(20, 15)
+			Me._linkLableShowHideFatalErrors.Font = New System.Drawing.Font("Courier", 10.0!)
+			Me._linkLableShowHideFatalErrors.TabIndex = 11
+			Me._linkLableShowHideFatalErrors.TabStop = True
+			Me._linkLableShowHideFatalErrors.Text = plusSign
+			Me._linkLableShowHideFatalErrors.BringToFront()
+			'
+			'_txtBoxFatalFriendlyError
+			'
+			Me._txtBoxFatalFriendlyError.Location = New System.Drawing.Point(0, 0)
+			Me._txtBoxFatalFriendlyError.Name = "_txtBoxFatalFriendlyError"
+			Me._txtBoxFatalFriendlyError.Size = New System.Drawing.Size(456, 101)
+			Me._txtBoxFatalFriendlyError.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top) Or System.Windows.Forms.AnchorStyles.Left) Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+			Me._txtBoxFatalFriendlyError.BackColor = System.Drawing.SystemColors.ScrollBar
+			Me._txtBoxFatalFriendlyError.InSafeMode = False
+			Me._txtBoxFatalFriendlyError.DisplayTextBox.BackColor = System.Drawing.SystemColors.ScrollBar
+			Me._txtBoxFatalFriendlyError.DisplayTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
+			Me._txtBoxFatalFriendlyError.ExtraSpace = "      "
+			'
+			'_txtBoxFatalFullError
+			'
+			Me._txtBoxFatalFullError.Location = New System.Drawing.Point(0, 101)
+			Me._txtBoxFatalFullError.Name = "_txtBoxFatalFullError"
+			Me._txtBoxFatalFullError.Size = New System.Drawing.Size(456, 101)
+			Me._txtBoxFatalFullError.Anchor = CType((((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Top) Or System.Windows.Forms.AnchorStyles.Left) Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+			Me._txtBoxFatalFullError.InSafeMode = False
+			Me._txtBoxFatalFullError.DisplayTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
+			Me._txtBoxFatalFullError.Visible = False
 			'
 			'ProgressTab
 			'
@@ -270,8 +314,8 @@ Namespace kCura.Windows.Process
 			'_reportDataGrid
 			'
 			Me._reportDataGrid.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-									Or System.Windows.Forms.AnchorStyles.Left) _
-									Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+						Or System.Windows.Forms.AnchorStyles.Left) _
+						Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me._reportDataGrid.DataMember = ""
 			Me._reportDataGrid.HeaderForeColor = System.Drawing.SystemColors.ControlText
 			Me._reportDataGrid.Location = New System.Drawing.Point(0, 24)
@@ -282,7 +326,7 @@ Namespace kCura.Windows.Process
 			'_currentMessageStatus
 			'
 			Me._currentMessageStatus.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-									Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+						Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me._currentMessageStatus.Location = New System.Drawing.Point(4, 24)
 			Me._currentMessageStatus.Name = "_currentMessageStatus"
 			Me._currentMessageStatus.Size = New System.Drawing.Size(460, 28)
@@ -330,6 +374,8 @@ Namespace kCura.Windows.Process
 
 #End Region
 
+		Private Const plusSign As String = "[+]"
+		Private Const minusSign As String = "[-]"
 		Protected _processId As Guid
 		Protected WithEvents _processObserver As kCura.Windows.Process.ProcessObserver
 		Protected WithEvents _controller As kCura.Windows.Process.Controller
@@ -606,12 +652,21 @@ Namespace kCura.Windows.Process
 		End Sub
 
 		Private Sub _processObserver_OnProcessFatalException(ByVal ex As System.Exception) Handles _processObserver.OnProcessFatalException
-			Dim errorString As String = ex.ToString
-			If errorString.ToLower.IndexOf("soapexception") <> -1 Then
-				errorString = System.Web.HttpUtility.HtmlDecode(errorString)
+
+			Dim errorFriendlyMessage As String = ex.Message
+			Dim errorFullMessage As String = ex.ToString
+
+			If errorFullMessage.ToLower.IndexOf("soapexception") <> -1 Then
+				errorFullMessage = System.Web.HttpUtility.HtmlDecode(errorFullMessage)
 			End If
-			_outputTextBox.WriteLine(errorString)
-			_errorsOutputTextBox.WriteLine(errorString)
+			_outputTextBox.WriteLine(errorFullMessage)
+			'_errorsOutputTextBox.WriteLine(errorString)
+			_errorsOutputTextBox.Visible = False
+			_linkLableShowHideFatalErrors.Visible = True
+			_txtBoxFatalFriendlyError.Visible = True
+			_txtBoxFatalFriendlyError.WriteLine(errorFriendlyMessage)
+			_txtBoxFatalFullError.WriteLine(errorFullMessage)
+
 			_currentRecordLabel.Text = "Fatal Exception Encountered"
 			_hasReceivedFatalError = True
 			'_stopImportButton.Text = "Stop"
@@ -734,7 +789,16 @@ Namespace kCura.Windows.Process
 		Private Sub _observer_ShutdownEvent() Handles _processObserver.ShutdownEvent
 			Me.Close()
 		End Sub
+
+		Private Sub _linkLableShowHideFatalErrors_LinkClicked(ByVal sender As System.Object, ByVal e As System.Windows.Forms.LinkLabelLinkClickedEventArgs) Handles _linkLableShowHideFatalErrors.LinkClicked
+			If _linkLableShowHideFatalErrors.Text.Equals(plusSign, StringComparison.InvariantCultureIgnoreCase) Then
+				_txtBoxFatalFullError.Visible = True
+				_linkLableShowHideFatalErrors.Text = minusSign
+			ElseIf _linkLableShowHideFatalErrors.Text.Equals(minusSign, StringComparison.InvariantCultureIgnoreCase) Then
+				_txtBoxFatalFullError.Visible = False
+				_linkLableShowHideFatalErrors.Text = plusSign
+			End If
+		End Sub
+
 	End Class
-
-
 End Namespace
