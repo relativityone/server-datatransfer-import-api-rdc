@@ -267,6 +267,7 @@ Namespace kCura.WinEDDS
 			Dim objectDisplayNames As String() = DirectCast(goodObjects.ToArray(GetType(String)), String())
 			Dim nameIDPairs As New System.Collections.Hashtable
 			For Each objectName As String In objectDisplayNames
+				If objectName.Length > field.TextLength Then Throw New kCura.Utility.DelimitedFileImporter.InputStringExceedsFixedLengthException(Me.CurrentLineNumber, column, field.TextLength, field.DisplayName)
 				Dim artifactID As System.Data.DataSet = _objectManager.RetrieveArtifactIdOfMappedObject(_caseArtifactID, objectName, associatedObjectTypeID)
 				If artifactID.Tables(0).Rows.Count > 0 Then
 					nameIDPairs(objectName) = CType(artifactID.Tables(0).Rows(0)(0), Int32)
