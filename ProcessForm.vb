@@ -231,7 +231,7 @@ Namespace kCura.Windows.Process
 			'
 			Me._txtBoxFatalFriendlyError.Location = New System.Drawing.Point(0, 0)
 			Me._txtBoxFatalFriendlyError.Name = "_txtBoxFatalFriendlyError"
-			Me._txtBoxFatalFriendlyError.Size = New System.Drawing.Size(456, 45)
+			Me._txtBoxFatalFriendlyError.Size = New System.Drawing.Size(456, 50)
 			Me._txtBoxFatalFriendlyError.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top) Or System.Windows.Forms.AnchorStyles.Left) Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me._txtBoxFatalFriendlyError.BackColor = System.Drawing.SystemColors.ScrollBar
 			Me._txtBoxFatalFriendlyError.InSafeMode = False
@@ -241,9 +241,9 @@ Namespace kCura.Windows.Process
 			'
 			'_txtBoxFatalFullError
 			'
-			Me._txtBoxFatalFullError.Location = New System.Drawing.Point(0, 46)
+			Me._txtBoxFatalFullError.Location = New System.Drawing.Point(0, 51)
 			Me._txtBoxFatalFullError.Name = "_txtBoxFatalFullError"
-			Me._txtBoxFatalFullError.Size = New System.Drawing.Size(456, 157)
+			Me._txtBoxFatalFullError.Size = New System.Drawing.Size(456, 152)
 			Me._txtBoxFatalFullError.Anchor = CType((((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Top) Or System.Windows.Forms.AnchorStyles.Left) Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me._txtBoxFatalFullError.InSafeMode = False
 			Me._txtBoxFatalFullError.DisplayTextBox.BackColor = System.Drawing.SystemColors.ScrollBar
