@@ -5,12 +5,14 @@ Namespace kCura.EDDS.WinForm
 	Public Class ThreadExceptionHandler
 		Public Sub Application_ThreadException(ByVal sender As System.Object, ByVal e As Threading.ThreadExceptionEventArgs)
 			Try
-				' Exit the program if the user clicks Abort.
-				Dim result As DialogResult = ShowThreadExceptionDialog(e.Exception)
+				'' Exit the program if the user clicks Abort.
+				'Dim result As DialogResult = ShowThreadExceptionDialog(e.Exception)
 
-				If (result = DialogResult.Abort) Then
-					System.Windows.Forms.Application.Exit()
-				End If
+				'If (result = DialogResult.Abort) Then
+				'	System.Windows.Forms.Application.Exit()
+				'End If
+
+				ShowErrorDialog(e.Exception)
 			Catch ex As System.Exception
 				' Fatal error, terminate program
 				Try
@@ -21,6 +23,14 @@ Namespace kCura.EDDS.WinForm
 			End Try
 		End Sub
 
+
+		Private Sub ShowErrorDialog(ByVal ex As System.Exception)
+			Dim x As New ErrorDialog With {.Text = "Relativity Desktop Client Error"}
+			x.Initialize(ex)
+			If x.ShowDialog() <> DialogResult.OK Then
+				Environment.Exit(1)
+			End If
+		End Sub
 
 		Private Function ShowThreadExceptionDialog(ByVal ex As Exception) As DialogResult
 

@@ -33,27 +33,19 @@ Public Class ErrorDialog
 	'NOTE: The following procedure is required by the Windows Form Designer
 	'It can be modified using the Windows Form Designer.  
 	'Do not modify it using the code editor.
-	Friend WithEvents Label1 As System.Windows.Forms.Label
 	Friend WithEvents _okButton As System.Windows.Forms.Button
 	Friend WithEvents _cancelButton As System.Windows.Forms.Button
 	Friend WithEvents _errorText As System.Windows.Forms.TextBox
+	Friend WithEvents txtBoxFriendlyError As System.Windows.Forms.TextBox
 	Friend WithEvents LinkLabel1 As System.Windows.Forms.LinkLabel
 	<System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
 		Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(ErrorDialog))
-		Me.Label1 = New System.Windows.Forms.Label
-		Me._okButton = New System.Windows.Forms.Button
-		Me._cancelButton = New System.Windows.Forms.Button
-		Me._errorText = New System.Windows.Forms.TextBox
-		Me.LinkLabel1 = New System.Windows.Forms.LinkLabel
+		Me._okButton = New System.Windows.Forms.Button()
+		Me._cancelButton = New System.Windows.Forms.Button()
+		Me._errorText = New System.Windows.Forms.TextBox()
+		Me.LinkLabel1 = New System.Windows.Forms.LinkLabel()
+		Me.txtBoxFriendlyError = New System.Windows.Forms.TextBox()
 		Me.SuspendLayout()
-		'
-		'Label1
-		'
-		Me.Label1.Location = New System.Drawing.Point(4, 0)
-		Me.Label1.Name = "Label1"
-		Me.Label1.Size = New System.Drawing.Size(288, 48)
-		Me.Label1.TabIndex = 0
-		Me.Label1.Text = "Label1"
 		'
 		'_okButton
 		'
@@ -91,16 +83,26 @@ Public Class ErrorDialog
 		Me.LinkLabel1.TabStop = True
 		Me.LinkLabel1.Text = "Show Error Text"
 		'
+		'txtBoxFriendlyError
+		'
+		Me.txtBoxFriendlyError.BackColor = System.Drawing.SystemColors.ScrollBar
+		Me.txtBoxFriendlyError.Location = New System.Drawing.Point(4, 1)
+		Me.txtBoxFriendlyError.Multiline = True
+		Me.txtBoxFriendlyError.Name = "txtBoxFriendlyError"
+		Me.txtBoxFriendlyError.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
+		Me.txtBoxFriendlyError.Size = New System.Drawing.Size(288, 45)
+		Me.txtBoxFriendlyError.TabIndex = 5
+		'
 		'ErrorDialog
 		'
 		Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
 		Me.ClientSize = New System.Drawing.Size(296, 89)
 		Me.ControlBox = False
+		Me.Controls.Add(Me.txtBoxFriendlyError)
 		Me.Controls.Add(Me.LinkLabel1)
 		Me.Controls.Add(Me._errorText)
 		Me.Controls.Add(Me._cancelButton)
 		Me.Controls.Add(Me._okButton)
-		Me.Controls.Add(Me.Label1)
 		Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
 		Me.MaximizeBox = False
 		Me.MaximumSize = New System.Drawing.Size(304, 116)
@@ -123,14 +125,14 @@ Public Class ErrorDialog
 		If TypeOf ex Is SoapException Then
 			Try
 				Dim MrSoapy As SoapException = CType(ex, SoapException)
-				Label1.Text = MrSoapy.Detail("ExceptionMessage").InnerText
-				_errorText.Text = MrSoapy.Detail("ExceptionType").InnerText & Environment.NewLine & MrSoapy.Detail("ExceptionTrace").InnerText
+				txtBoxFriendlyError.Text = MrSoapy.Detail("ExceptionMessage").InnerText
+				_errorText.Text = MrSoapy.Detail("ExceptionFullText").InnerText
 				Return
 			Catch ex2 As System.Exception	'MrSoapy not soapified :(
 				'cascade to a default rendering
 			End Try
 		End If
-		Label1.Text = errorMessage
+		txtBoxFriendlyError.Text = errorMessage
 		_errorText.Text = errorMessage & vbNewLine & "-----" & vbNewLine & ex.ToString
 	End Sub
 
