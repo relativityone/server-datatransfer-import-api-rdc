@@ -294,6 +294,14 @@ Namespace kCura.WinEDDS
 					field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(CType(field.Value, Nullable(Of Int32)))
 
 				Case Relativity.FieldTypeHelper.FieldType.Currency, Relativity.FieldTypeHelper.FieldType.Decimal
+
+					'is a decimal's integer portion is longer than 15 it will cause errors further down the line
+					Dim testingDecimal As Decimal? = CType(field.Value, Nullable(Of Decimal))
+					If testingDecimal.HasValue Then
+						Dim decimalIntegerPart As String = CStr(Decimal.Truncate(testingDecimal.Value))
+						If decimalIntegerPart.Length > 15 Then Throw New kCura.Utility.DelimitedFileImporter.DecimalException(CurrentLineNumber, columnIndex)
+					End If
+
 					field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(CType(field.Value, Nullable(Of Decimal)))
 
 				Case Relativity.FieldTypeHelper.FieldType.Date
