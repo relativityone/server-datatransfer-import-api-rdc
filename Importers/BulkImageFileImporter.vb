@@ -762,7 +762,7 @@ Namespace kCura.WinEDDS
 						ht.Add("Messages", errorMessages)
 						RaiseReportError(ht, Int32.Parse(line(0)), line(2), "server")
 						'TODO: track stats
-						RaiseEvent StatusMessage(New kCura.Windows.Process.StatusEventArgs(Windows.Process.EventType.Error, Int32.Parse(line(0)) - 1, _fileLineCount, "[Line " & line(0) & "]" & line(3), Nothing))
+						RaiseEvent StatusMessage(New kCura.Windows.Process.StatusEventArgs(Windows.Process.EventType.Error, Int32.Parse(line(0)) - 1, _fileLineCount, "[Line " & line(0) & "]" & errorMessages, Nothing))
 						line = sr.ReadLine
 					End While
 					sr.Close()
