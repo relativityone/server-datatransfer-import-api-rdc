@@ -1,4 +1,5 @@
 Imports System.IO
+Imports kCura.Utility.Extensions.CollectionExtension
 Namespace kCura.WinEDDS
 	Public Class BulkImageFileImporter
 		Inherits kCura.Utility.RobustIoReporter
@@ -59,6 +60,7 @@ Namespace kCura.WinEDDS
 		Private _snapshotLastModifiedOn As System.DateTime = System.DateTime.Now
 		Private _timekeeper As New kCura.Utility.Timekeeper
 		Private _doRetryLogic As Boolean
+		Private _verboseErrorCollection As New ClientSideErrorCollection
 #End Region
 
 #Region "Accessors"
@@ -400,8 +402,13 @@ Namespace kCura.WinEDDS
 						If Not Config.DisableImageTypeValidation Then validator.ValidateImage(path)
 						Me.RaiseStatusEvent(Windows.Process.EventType.Progress, String.Format("Image file ( {0} ) validated.", imageRecord.FileLocation), CType((_totalValidated + _totalProcessed) / 2, Int64), Me.CurrentLineNumber)
 					Catch ex As System.Exception
+						If TypeOf ex Is kCura.ImageValidator.Exception.Base Then
+							retval = Relativity.MassImport.ImportStatus.InvalidImageFormat
+							_verboseErrorCollection.AddError(imageRecord.OriginalIndex, ex)
+						Else
+							Throw
+						End If
 						'Me.RaiseStatusEvent(Windows.Process.EventType.Error, String.Format("Error in '{0}': {1}", path, ex.Message))
-						retval = Relativity.MassImport.ImportStatus.InvalidImageFormat
 					End Try
 				End If
 				Return retval
@@ -739,11 +746,20 @@ Namespace kCura.WinEDDS
 					Dim line As String() = sr.ReadLine
 					While Not line Is Nothing
 						_errorCount += 1
+						Dim originalIndex As Int64 = Int64.Parse(line(0))
 						Dim ht As New System.Collections.Hashtable
 						ht.Add("Line Number", Int32.Parse(line(0)))
 						ht.Add("DocumentID", line(1))
 						ht.Add("FileID", line(2))
-						ht.Add("Messages", line(3))
+						Dim errorMessages As String = line(3)
+						If _verboseErrorCollection.ContainsLine(originalIndex) Then
+							Dim sb As New System.Text.StringBuilder
+							For Each message As String In _verboseErrorCollection(originalIndex)
+								sb.Append(Relativity.MassImport.ImportStatusHelper.ConvertToMessageLineInCell(message))
+							Next
+							errorMessages = sb.ToString.TrimEnd(ChrW(10))
+						End If
+						ht.Add("Messages", errorMessages)
 						RaiseReportError(ht, Int32.Parse(line(0)), line(2), "server")
 						'TODO: track stats
 						RaiseEvent StatusMessage(New kCura.Windows.Process.StatusEventArgs(Windows.Process.EventType.Error, Int32.Parse(line(0)) - 1, _fileLineCount, "[Line " & line(0) & "]" & line(3), Nothing))
@@ -779,6 +795,8 @@ Namespace kCura.WinEDDS
 				Catch
 				End Try
 				Throw
+			Finally
+				_verboseErrorCollection.Clear()
 			End Try
 		End Sub
 
