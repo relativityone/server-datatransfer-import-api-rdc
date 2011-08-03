@@ -579,7 +579,7 @@ Namespace kCura.WinEDDS
 				WriteFatalError(metaDoc.LineNumber, ex)
 			End Try
 			_timekeeper.MarkStart("ManageDocumentMetadata_ProgressEvent")
-			WriteStatusLine(Windows.Process.EventType.Progress, String.Format("Document '{0}' processed.", metaDoc.IdentityValue), metaDoc.LineNumber)
+			WriteStatusLine(Windows.Process.EventType.Progress, String.Format("Item '{0}' processed.", metaDoc.IdentityValue), metaDoc.LineNumber)
 			_timekeeper.MarkEnd("ManageDocumentMetadata_ProgressEvent")
 		End Sub
 
@@ -594,7 +594,7 @@ Namespace kCura.WinEDDS
 					End If
 				Catch ex As Exception
 					tries -= 1
-					If tries = 0 OrElse TypeOf ex Is kCura.WinEDDS.Service.BulkImportManager.BulkImportSqlException OrElse _continue = False Then
+					If tries = 0 OrElse TypeOf ex Is Service.BulkImportManager.BulkImportSqlException OrElse _continue = False Then
 						Throw
 					ElseIf tries < kCura.Utility.Config.Settings.IoErrorNumberOfRetries Then
 						Me.RaiseIoWarning(New kCura.Utility.DelimitedFileImporter.IoWarningEventArgs(kCura.Utility.Config.Settings.IoErrorWaitTimeInSeconds, ex, Me.CurrentLineNumber))

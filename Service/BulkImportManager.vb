@@ -181,6 +181,10 @@ Namespace kCura.WinEDDS.Service
 				MyBase.New(exception.ExceptionMessage)
 				Me.DetailedException = exception
 			End Sub
+
+			Public Overrides Function ToString() As String
+				Return DetailedException.ExceptionFullText
+			End Function
 		End Class
 	End Class
 End Namespace
