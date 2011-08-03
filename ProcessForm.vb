@@ -225,6 +225,7 @@ Namespace kCura.Windows.Process
 			Me._linkLableShowHideFatalErrors.TabIndex = 11
 			Me._linkLableShowHideFatalErrors.TabStop = True
 			Me._linkLableShowHideFatalErrors.Text = plusSign
+			Me._linkLableShowHideFatalErrors.BackColor = System.Drawing.SystemColors.ScrollBar
 
 			'
 			'_txtBoxFatalFriendlyError
