@@ -8,7 +8,7 @@ Namespace kCura.WinEDDS.Service
 			MyBase.New()
 			Me.Credentials = credentials
 			Me.CookieContainer = cookieContainer
-			Me.Url = String.Format("{0}BulkImportManager.asmx", kCura.WinEDDS.Config.WebServiceURL)
+			Me.WebServiceURL = String.Format("{0}BulkImportManager.asmx", kCura.WinEDDS.Config.WebServiceURL)
 			Me.Timeout = Settings.DefaultTimeOut
 		End Sub
 
@@ -17,6 +17,15 @@ Namespace kCura.WinEDDS.Service
 		Private Sub CheckResultsForException(ByVal results As EDDS.WebAPI.BulkImportManagerBase.MassImportResults)
 			If results.ExceptionDetail IsNot Nothing Then Throw New BulkImportSqlException(results.ExceptionDetail)
 		End Sub
+
+		Protected Overridable Property WebServiceURL As String
+			Get
+				Return Me.Url
+			End Get
+			Set(ByVal value As String)
+				Me.Url = value
+			End Set
+		End Property
 
 #Region " Shadow Methods "
 		Public Shadows Function BulkImportImage(ByVal appID As Int32, ByVal bulkFileName As String, ByVal uploadFullText As Boolean, ByVal overwrite As kCura.EDDS.WebAPI.BulkImportManagerBase.OverwriteType, ByVal destinationFolderArtifactID As Int32, ByVal repository As String, ByVal useBulk As Boolean, ByVal runID As String, ByVal keyFieldID As Int32, ByVal inRepository As Boolean) As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults
