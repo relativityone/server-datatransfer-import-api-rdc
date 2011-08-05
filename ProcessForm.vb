@@ -236,8 +236,8 @@ Namespace kCura.Windows.Process
 			Me._txtBoxFatalFriendlyError.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top) Or System.Windows.Forms.AnchorStyles.Left) Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me._txtBoxFatalFriendlyError.BackColor = System.Drawing.SystemColors.ScrollBar
 			Me._txtBoxFatalFriendlyError.InSafeMode = False
-			Me._txtBoxFatalFriendlyError.DisplayTextBox.BackColor = System.Drawing.SystemColors.ScrollBar
-			Me._txtBoxFatalFriendlyError.DisplayTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
+			Me._txtBoxFatalFriendlyError.BackColor = System.Drawing.SystemColors.ScrollBar
+			Me._txtBoxFatalFriendlyError.Scrollbars = System.Windows.Forms.RichTextBoxScrollBars.Vertical
 			Me._txtBoxFatalFriendlyError.ExtraSpace = "      "
 			'
 			'_txtBoxFatalFullError
@@ -247,8 +247,8 @@ Namespace kCura.Windows.Process
 			Me._txtBoxFatalFullError.Size = New System.Drawing.Size(456, 152)
 			Me._txtBoxFatalFullError.Anchor = CType((((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Top) Or System.Windows.Forms.AnchorStyles.Left) Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me._txtBoxFatalFullError.InSafeMode = False
-			Me._txtBoxFatalFullError.DisplayTextBox.BackColor = System.Drawing.SystemColors.ScrollBar
-			Me._txtBoxFatalFullError.DisplayTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
+			Me._txtBoxFatalFullError.BackColor = System.Drawing.SystemColors.ScrollBar
+			Me._txtBoxFatalFullError.Scrollbars = System.Windows.Forms.RichTextBoxScrollBars.Vertical
 			Me._txtBoxFatalFullError.Visible = False
 			'
 			'ProgressTab
