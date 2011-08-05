@@ -7,6 +7,7 @@ Namespace kCura.Windows.Process
 		Private _processID As Guid
 
 		Protected MustOverride Sub Execute()
+		Protected MustOverride Sub Execute(ByVal webServiceURL As String)
 
 		Public ReadOnly Property ProcessObserver() As kCura.Windows.Process.ProcessObserver
 			Get
@@ -39,6 +40,9 @@ Namespace kCura.Windows.Process
 		Public Sub StartProcess() Implements IRunable.StartProcess
 			Try
 				Me.Execute()
+
+				'TODO: PHIL LOOK HERE
+
 				_processObserver.RaiseProcessCompleteEvent()
 			Catch ex As Exception
 				_processObserver.RaiseFatalExceptionEvent(ex)
