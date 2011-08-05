@@ -52,6 +52,11 @@ Namespace kCura.Relativity.DataReaderClient
 		End Sub
 
 		Public Sub Execute()
+			'TODO: PHIL LOOK HERE
+			Execute("")
+		End Sub
+
+		Public Sub Execute(ByVal webServiceURL As String)
 			If IsSettingsValid() Then
 				RaiseEvent OnMessage(New Status("Getting source data from database"))
 
