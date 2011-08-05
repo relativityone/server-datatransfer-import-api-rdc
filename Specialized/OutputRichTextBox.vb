@@ -30,11 +30,11 @@ Namespace kCura.Windows.Forms
     'NOTE: The following procedure is required by the Windows Form Designer
     'It can be modified using the Windows Form Designer.  
     'Do not modify it using the code editor.
-		Friend WithEvents TextBox As System.Windows.Forms.RichTextBox
+		Friend WithEvents TextBox As System.Windows.Forms.TextBox
 		Public WithEvents DetailsLink As System.Windows.Forms.LinkLabel
 
     <System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
-			Me.TextBox = New System.Windows.Forms.RichTextBox
+			Me.TextBox = New System.Windows.Forms.TextBox
 			Me.DetailsLink = New System.Windows.Forms.LinkLabel
       Me.SuspendLayout()
       '
@@ -50,7 +50,7 @@ Namespace kCura.Windows.Forms
 			Me.TextBox.Text = ""
 			Me.TextBox.ReadOnly = True
 			Me.BackColor = Drawing.Color.White
-			Me.Scrollbars = System.Windows.Forms.RichTextBoxScrollBars.None
+			Me.Scrollbars = System.Windows.Forms.ScrollBars.None
       '
       'OutputRichTextBox
 			'
@@ -82,11 +82,11 @@ Namespace kCura.Windows.Forms
 			End Set
 		End Property
 
-		Public Property Scrollbars As System.Windows.Forms.RichTextBoxScrollBars
+		Public Property Scrollbars As System.Windows.Forms.ScrollBars
 			Get
 				Return Me.TextBox.ScrollBars
 			End Get
-			Set(ByVal value As System.Windows.Forms.RichTextBoxScrollBars)
+			Set(ByVal value As System.Windows.Forms.ScrollBars)
 				Me.TextBox.ScrollBars = value
 			End Set
 		End Property
