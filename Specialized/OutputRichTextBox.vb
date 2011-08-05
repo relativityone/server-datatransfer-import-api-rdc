@@ -31,9 +31,9 @@ Namespace kCura.Windows.Forms
     'NOTE: The following procedure is required by the Windows Form Designer
     'It can be modified using the Windows Form Designer.  
     'Do not modify it using the code editor.
-    Friend WithEvents TextBox As System.Windows.Forms.TextBox
+		Friend WithEvents TextBox As System.Windows.Forms.RichTextBox
     <System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
-      Me.TextBox = New System.Windows.Forms.TextBox
+			Me.TextBox = New System.Windows.Forms.RichTextBox
       Me.SuspendLayout()
       '
       'TextBox
@@ -45,7 +45,10 @@ Namespace kCura.Windows.Forms
       Me.TextBox.Name = "TextBox"
       Me.TextBox.Size = New System.Drawing.Size(150, 144)
       Me.TextBox.TabIndex = 0
-      Me.TextBox.Text = ""
+			Me.TextBox.Text = ""
+			Me.TextBox.ReadOnly = True
+			Me.BackColor = Drawing.Color.White
+			Me.Scrollbars = System.Windows.Forms.RichTextBoxScrollBars.None
       '
       'OutputRichTextBox
       '
@@ -58,39 +61,57 @@ Namespace kCura.Windows.Forms
 
 #End Region
 
-		Public ReadOnly Property DisplayTextBox As System.Windows.Forms.TextBox
+#Region " Properties "
+
+		Public Overrides Property BackColor As System.Drawing.Color
 			Get
-				Return Me.TextBox
+				Return Me.TextBox.BackColor
 			End Get
+			Set(ByVal value As System.Drawing.Color)
+				Me.TextBox.BackColor = value
+			End Set
 		End Property
+
+		Public Property Scrollbars As System.Windows.Forms.RichTextBoxScrollBars
+			Get
+				Return Me.TextBox.ScrollBars
+			End Get
+			Set(ByVal value As System.Windows.Forms.RichTextBoxScrollBars)
+				Me.TextBox.ScrollBars = value
+			End Set
+		End Property
+
+		Public Property InSafeMode() As Boolean
+			Get
+				Return _inSafeMode
+			End Get
+			Set(ByVal Value As Boolean)
+				_inSafeMode = Value
+			End Set
+		End Property
+
+		Public Property AllowForSave As Boolean
+
 		Public Property ExtraSpace As String
-		Public AllowForSave As Boolean
 
-    Dim _inSafeMode As Boolean
-    Dim _totalLineCount As Int32
-    Dim _visibleLineCount As Int32
-    Dim _totalOutput As New System.Collections.ArrayList
-    Dim _tmpFileName As String
+#End Region
 
-    Public Property InSafeMode() As Boolean
-      Get
-        Return _inSafeMode
-      End Get
-      Set(ByVal Value As Boolean)
-        _inSafeMode = Value
-      End Set
-    End Property
+		Dim _inSafeMode As Boolean
+		Dim _totalLineCount As Int32
+		Dim _visibleLineCount As Int32
+		Dim _totalOutput As New System.Collections.ArrayList
+		Dim _tmpFileName As String
 
-    Public Sub Reset()
-      _totalOutput = New System.Collections.ArrayList
-      TextBox.Text = ""
-    End Sub
+		Public Sub Reset()
+			_totalOutput = New System.Collections.ArrayList
+			TextBox.Text = ""
+		End Sub
 
-    Public Sub Save(ByVal filePath As String)
-      If AllowForSave Then
-        System.IO.File.Move(_tmpFileName, filePath)
-      End If
-    End Sub
+		Public Sub Save(ByVal filePath As String)
+			If AllowForSave Then
+				System.IO.File.Move(_tmpFileName, filePath)
+			End If
+		End Sub
 
 		Public Sub WriteLine(ByVal message As String)
 			_totalLineCount = _totalLineCount + 1
@@ -113,21 +134,19 @@ Namespace kCura.Windows.Forms
 
 		Private Sub DumpOutput()
 
-      If _visibleLineCount > 0 Then
-        Dim sb As New System.Text.StringBuilder
-        Dim i As Int32
-        Dim j As Int32
-        i = _totalOutput.Count - _visibleLineCount
-        If i < 0 Then i = 0
-        For j = i To _totalOutput.Count - 1
-          sb.Append(_totalOutput.Item(j))
-        Next
-        ' get rid of last line feed so it doesn't scroll
-        If sb.Length > 2 Then
-          TextBox.Text = sb.Remove(sb.Length - 2, 2).ToString()
-        End If
-      End If
-
+			If _visibleLineCount > 0 Then
+				Dim sb As New System.Text.StringBuilder
+				Dim i As Int32
+				Dim j As Int32
+				i = _totalOutput.Count - _visibleLineCount
+				If i < 0 Then i = 0
+				For j = i To _totalOutput.Count - 1
+					sb.Append(_totalOutput.Item(j))
+				Next
+				If sb.Length > 2 Then
+						TextBox.Text = sb.Remove(sb.Length - 2, 2).ToString()
+				End If
+			End If
 		End Sub
 
 		Private Sub TextBox_Resize1(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles TextBox.Resize
