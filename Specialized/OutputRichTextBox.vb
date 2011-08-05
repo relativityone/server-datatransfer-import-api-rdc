@@ -12,7 +12,6 @@ Namespace kCura.Windows.Forms
       InitializeComponent()
 
 			'Add any initialization after the InitializeComponent() call
-			ExtraSpace = ""
 		End Sub
 
 		'UserControl overrides dispose to clean up the component list.
@@ -32,8 +31,11 @@ Namespace kCura.Windows.Forms
     'It can be modified using the Windows Form Designer.  
     'Do not modify it using the code editor.
 		Friend WithEvents TextBox As System.Windows.Forms.RichTextBox
+		Public WithEvents DetailsLink As System.Windows.Forms.LinkLabel
+
     <System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
 			Me.TextBox = New System.Windows.Forms.RichTextBox
+			Me.DetailsLink = New System.Windows.Forms.LinkLabel
       Me.SuspendLayout()
       '
       'TextBox
@@ -51,7 +53,15 @@ Namespace kCura.Windows.Forms
 			Me.Scrollbars = System.Windows.Forms.RichTextBoxScrollBars.None
       '
       'OutputRichTextBox
-      '
+			'
+
+			'
+			'DetailsLink
+			'
+			Me.DetailsLink.Text = ""
+			Me.DetailsLink.SendToBack()
+			Me.TextBox.Controls.Add(Me.DetailsLink)
+
       Me.Controls.Add(Me.TextBox)
       Me.Name = "OutputRichTextBox"
       Me.Size = New System.Drawing.Size(150, 144)
@@ -92,8 +102,6 @@ Namespace kCura.Windows.Forms
 
 		Public Property AllowForSave As Boolean
 
-		Public Property ExtraSpace As String
-
 #End Region
 
 		Dim _inSafeMode As Boolean
@@ -105,6 +113,8 @@ Namespace kCura.Windows.Forms
 		Public Sub Reset()
 			_totalOutput = New System.Collections.ArrayList
 			TextBox.Text = ""
+			Me.DetailsLink.Text = ""
+			Me.DetailsLink.SendToBack()
 		End Sub
 
 		Public Sub Save(ByVal filePath As String)
@@ -114,8 +124,12 @@ Namespace kCura.Windows.Forms
 		End Sub
 
 		Public Sub WriteLine(ByVal message As String)
+			WriteLine(message, vbCrLf)
+		End Sub
+
+		Public Sub WriteLine(ByVal message As String, ByVal lineDelimiter As String)
 			_totalLineCount = _totalLineCount + 1
-			message = String.Format("{0}{1}  {2}{3}", ExtraSpace, System.DateTime.Now.ToLongTimeString + " " + _totalLineCount.ToString("000000"), message, vbCrLf)
+			message = String.Format("{0}  {1}{2}", System.DateTime.Now.ToLongTimeString + " " + _totalLineCount.ToString("000000"), message.TrimEnd(vbCrLf.ToCharArray), lineDelimiter)
 
 			If AllowForSave Then
 				If _tmpFileName = "" Then
@@ -130,6 +144,12 @@ Namespace kCura.Windows.Forms
 			If _totalOutput.Count = 100 Then _totalOutput.RemoveAt(0)
 			_totalOutput.Add(message)
 			DumpOutput()
+		End Sub
+
+		Public Sub WriteErrorDetails()
+			Me.DetailsLink.Location = Me.TextBox.GetPositionFromCharIndex(Me.TextBox.TextLength - 10)
+			Me.DetailsLink.BringToFront()
+			Me.DetailsLink.Text = "More Details"
 		End Sub
 
 		Private Sub DumpOutput()
@@ -152,6 +172,7 @@ Namespace kCura.Windows.Forms
 		Private Sub TextBox_Resize1(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles TextBox.Resize
 			_visibleLineCount = CType(System.Math.Round((Me.Height / 15), 0), Int32)
 			DumpOutput()
+			Me.DetailsLink.Location = Me.TextBox.GetPositionFromCharIndex(Me.TextBox.TextLength - 10)
 		End Sub
 
 	End Class
