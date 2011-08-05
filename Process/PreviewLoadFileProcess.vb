@@ -55,6 +55,14 @@ Namespace kCura.WinEDDS
 			Me.ProcessObserver.RaiseProcessCompleteEvent(True)
 		End Sub
 
+		Protected Overrides Sub Execute(ByVal webServiceURL As String)
+			If String.IsNullOrEmpty(webServiceURL) Then
+				Throw New ArgumentNullException("webServiceURL")
+			End If
+
+			Me.Execute()
+		End Sub
+
 		Private Sub _loadFilePreviewer_OnEvent(ByVal e As LoadFilePreviewer.EventArgs) Handles _loadFilePreviewer.OnEvent
 			System.Threading.Monitor.Enter(Me.ProcessObserver)
 			Dim totaldisplay As String

@@ -24,6 +24,14 @@ Namespace kCura.WinEDDS
 			End If
 		End Sub
 
+		Protected Overrides Sub Execute(ByVal webServiceURL As String)
+			If String.IsNullOrEmpty(webServiceURL) Then
+				Throw New ArgumentNullException("webServiceURL")
+			End If
+
+			Me.Execute()
+		End Sub
+
 		Protected Overridable Function GetImageFileImporter() As kCura.WinEDDS.BulkImageFileImporter
 			Return New kCura.WinEDDS.BulkImageFileImporter(ImageLoadFile.DestinationFolderID, ImageLoadFile, ProcessController, Me.ProcessID, True)
 		End Function

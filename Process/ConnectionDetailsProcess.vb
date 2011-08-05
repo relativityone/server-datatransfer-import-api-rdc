@@ -29,15 +29,25 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
-		Protected Overrides Sub Execute()
+		Protected Overrides Sub Execute(ByVal webServiceURL As String)
+			If String.IsNullOrEmpty(webServiceURL) Then
+				Throw New ArgumentNullException("webServiceURL")
+			End If
+
+			'TODO: PHIL LOOK HERE
+
 			Dim bcpEnabled As Boolean = Me.CheckBcp()
 			Me.WriteStatus("")
-			Me.CheckDownloadHandlerURL()
+			Me.CheckDownloadHandlerURL(webServiceURL)
 			Me.WriteStatus("")
 			Me.CheckRepositoryConnectivity()
 			Me.WriteStatus("")
 			Me.CheckWebBasedRepositoryLifecycle()
 			Me.WriteStatus("")
+		End Sub
+
+		Protected Overrides Sub Execute()
+			Execute(kCura.Utility.URI.GetFullyQualifiedPath(_caseInfo.DownloadHandlerURL, New System.Uri(kCura.WinEDDS.Config.WebServiceURL)))
 		End Sub
 
 		Private Function CheckRepositoryConnectivity() As String
@@ -184,9 +194,8 @@ Namespace kCura.WinEDDS
 			Return True
 		End Function
 
-		Private Sub CheckDownloadHandlerURL()
+		Private Sub CheckDownloadHandlerURL(ByVal downloadURL As String)
 			Me.WriteStatus("Validate Download URL:")
-			Dim downloadUrl As String = kCura.Utility.URI.GetFullyQualifiedPath(_caseInfo.DownloadHandlerURL, New System.Uri(kCura.WinEDDS.Config.WebServiceURL))
 			Dim token As String = kCura.WinEDDS.Service.Settings.AuthenticationToken
 			Me.WriteStatus(downloadUrl)
 			Dim myReq As System.Net.HttpWebRequest = DirectCast(System.Net.WebRequest.Create(downloadUrl & "AccessDenied.aspx"), System.Net.HttpWebRequest)

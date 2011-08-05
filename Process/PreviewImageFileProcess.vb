@@ -51,6 +51,14 @@ Namespace kCura.WinEDDS
 			Me.ProcessObserver.RaiseProcessCompleteEvent()
 		End Sub
 
+		Protected Overrides Sub Execute(ByVal webServiceURL As String)
+			If String.IsNullOrEmpty(webServiceURL) Then
+				Throw New ArgumentNullException("webServiceURL")
+			End If
+
+			Me.Execute()
+		End Sub
+
 		Private Sub _imageFileImporter_StatusMessage(ByVal e As kCura.Windows.Process.StatusEventArgs) Handles _imageFilePreviewer.StatusMessage
 			Select Case e.EventType
 				Case kCura.Windows.Process.EventType.Error
