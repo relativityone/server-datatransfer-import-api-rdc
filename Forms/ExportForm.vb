@@ -1167,7 +1167,7 @@ Public Class ExportForm
 				AppendErrorMessage(msg, "No file name source selected")
 			End If
 		End If
-		If _dataFileEncoding.SelectedEncoding Is Nothing Then
+		If _dataFileEncoding.SelectedEncoding Is Nothing AndAlso (_exportNativeFiles.Checked OrElse _columnSelecter.RightListBoxItems.Count > 0) Then
 			AppendErrorMessage(msg, "No encoding selected for metadata file.")
 		End If
 		If _exportFullTextAsFile.Checked Then
