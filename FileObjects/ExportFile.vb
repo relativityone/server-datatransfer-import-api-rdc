@@ -1,5 +1,6 @@
 Namespace kCura.WinEDDS
-	Public Class ExportFile
+	<Serializable()> Public Class ExportFile
+		Implements System.Runtime.Serialization.ISerializable
 		'Protected _identity As Relativity.Core.EDDSIdentity
 		Protected _caseInfo As Relativity.CaseInfo
 		Protected _dataTable As System.Data.DataTable
@@ -442,6 +443,10 @@ Namespace kCura.WinEDDS
 		End Property
 
 #End Region
+
+		Public Sub GetObjectData(ByVal info As System.Runtime.Serialization.SerializationInfo, ByVal context As System.Runtime.Serialization.StreamingContext) Implements System.Runtime.Serialization.ISerializable.GetObjectData
+
+		End Sub
 
 		Public Sub New(ByVal artifactTypeID As Int32)
 			Me.RecordDelimiter = ChrW(20)
