@@ -343,9 +343,6 @@
     <Compile Include="Forms\CaseSelectForm.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\ErrorDialog.vb">
-      <SubType>Form</SubType>
-    </Compile>
     <Compile Include="Forms\ErrorForm.vb">
       <SubType>Form</SubType>
     </Compile>
@@ -426,9 +423,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\CaseSelectForm.resx">
       <DependentUpon>CaseSelectForm.vb</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\ErrorDialog.resx">
-      <DependentUpon>ErrorDialog.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\ErrorForm.resx">
       <DependentUpon>ErrorForm.vb</DependentUpon>
