@@ -14,6 +14,7 @@ Namespace kCura.WinEDDS
 					If Not _configDictionary.Contains("ImportBatchMaxVolume") Then _configDictionary.Add("ImportBatchMaxVolume", "10485760") '10(2^20) - don't know what 10MB standard is
 					If Not _configDictionary.Contains("ExportBatchSize") Then _configDictionary.Add("ExportBatchSize", "1000")
 					If Not _configDictionary.Contains("EnableSingleModeImport") Then _configDictionary.Add("EnableSingleModeImport", "False")
+					If Not _configDictionary.Contains("CreateErrorForEmptyNativeFile") Then _configDictionary.Add("CreateErrorForEmptyNativeFile", "False")
 				End If
 				Return _configDictionary
 			End Get
@@ -162,6 +163,13 @@ Namespace kCura.WinEDDS
 				Return CType(ConfigSettings("DisableNativeLocationValidation"), Boolean)
 			End Get
 		End Property
+
+		Public Shared ReadOnly Property CreateErrorForEmptyNativeFile() As Boolean
+			Get
+				Return CType(ConfigSettings("CreateErrorForEmptyNativeFile"), Boolean)
+			End Get
+		End Property
+
 
 
 		Public Shared Property ForceFolderPreview() As Boolean
