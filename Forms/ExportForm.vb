@@ -108,17 +108,22 @@ Public Class ExportForm
 	Friend WithEvents _potentialTextFields As System.Windows.Forms.ComboBox
 	Friend WithEvents RefreshMenu As System.Windows.Forms.MenuItem
 	Friend WithEvents MenuItem3 As System.Windows.Forms.MenuItem
+	Friend WithEvents SaveExportSettings As System.Windows.Forms.MenuItem
+	Friend WithEvents LoadExportSettings As System.Windows.Forms.MenuItem
 	Friend WithEvents _volumeDigitPadding As System.Windows.Forms.NumericUpDown
 	Friend WithEvents Label22 As System.Windows.Forms.Label
 	Friend WithEvents _subdirectoryDigitPadding As System.Windows.Forms.NumericUpDown
 	Friend WithEvents Label23 As System.Windows.Forms.Label
 	Friend WithEvents Label24 As System.Windows.Forms.Label
 	Friend WithEvents _startExportAtDocumentNumber As System.Windows.Forms.NumericUpDown
+	Friend WithEvents _saveExportSettingsDialog As System.Windows.Forms.SaveFileDialog
 	<System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
 		Dim resources As System.Resources.ResourceManager = New System.Resources.ResourceManager(GetType(ExportForm))
 		Me.MainMenu1 = New System.Windows.Forms.MainMenu
 		Me.ExportMenu = New System.Windows.Forms.MenuItem
 		Me.RunMenu = New System.Windows.Forms.MenuItem
+		Me.SaveExportSettings = New System.Windows.Forms.MenuItem
+		Me.LoadExportSettings = New System.Windows.Forms.MenuItem
 		Me.MenuItem3 = New System.Windows.Forms.MenuItem
 		Me.RefreshMenu = New System.Windows.Forms.MenuItem
 		Me._destinationFolderDialog = New System.Windows.Forms.FolderBrowserDialog
@@ -201,6 +206,7 @@ Public Class ExportForm
 		Me._newLineDelimiter = New System.Windows.Forms.ComboBox
 		Me.Label2 = New System.Windows.Forms.Label
 		Me._recordDelimiter = New System.Windows.Forms.ComboBox
+		Me._saveExportSettingsDialog = New System.Windows.Forms.SaveFileDialog
 		Me._productionPrecedenceBox.SuspendLayout()
 		Me.GroupBox3.SuspendLayout()
 		Me.TabControl1.SuspendLayout()
@@ -232,22 +238,32 @@ Public Class ExportForm
 		'ExportMenu
 		'
 		Me.ExportMenu.Index = 0
-		Me.ExportMenu.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.RunMenu, Me.MenuItem3, Me.RefreshMenu})
+		Me.ExportMenu.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.RunMenu, Me.SaveExportSettings, Me.LoadExportSettings, Me.MenuItem3, Me.RefreshMenu})
 		Me.ExportMenu.Text = "File"
 		'
 		'RunMenu
 		'
-		Me.RunMenu.Index = 0
+		Me.SaveExportSettings.Index = 0
+		Me.SaveExportSettings.Text = "Save Export Settings"
+		'
+		'LoadExportSettings
+		'
+		Me.LoadExportSettings.Index = 1
+		Me.LoadExportSettings.Text = "Load Export Settings"
+		'
+		'RunMenu
+		'
+		Me.RunMenu.Index = 2
 		Me.RunMenu.Text = "Run"
 		'
 		'MenuItem3
 		'
-		Me.MenuItem3.Index = 1
+		Me.MenuItem3.Index = 3
 		Me.MenuItem3.Text = "-"
 		'
 		'RefreshMenu
 		'
-		Me.RefreshMenu.Index = 2
+		Me.RefreshMenu.Index = 4
 		Me.RefreshMenu.Shortcut = System.Windows.Forms.Shortcut.F5
 		Me.RefreshMenu.Text = "Refresh"
 		'
@@ -1046,6 +1062,12 @@ Public Class ExportForm
 		Me._recordDelimiter.Size = New System.Drawing.Size(116, 21)
 		Me._recordDelimiter.TabIndex = 8
 		'
+		'_saveExportSettingsDialog
+		'
+		Me._saveExportSettingsDialog.DefaultExt = "kwe"
+		Me._saveExportSettingsDialog.Filter = "WinEDDS native load files (*.kwe)|*.kwe|All files (*.*)|*.*"
+		Me._saveExportSettingsDialog.RestoreDirectory = True
+		'
 		'ExportForm
 		'
 		Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
@@ -1125,6 +1147,18 @@ Public Class ExportForm
 
 	Private Sub AppendErrorMessage(ByVal msg As System.Text.StringBuilder, ByVal errorText As String)
 		msg.Append(" - ").Append(errorText).Append(vbNewLine)
+	End Sub
+
+	Private Sub SaveExportSettings_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles SaveExportSettings.Click
+		Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
+		'PopulateExportFile()
+		_saveExportSettingsDialog.ShowDialog()
+		Me.Cursor = System.Windows.Forms.Cursors.Default
+	End Sub
+
+
+	Private Sub LoadExportSettings_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles LoadExportSettings.Click
+
 	End Sub
 
 	Private Sub RunMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles RunMenu.Click
