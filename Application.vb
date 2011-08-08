@@ -1305,6 +1305,14 @@ Namespace kCura.EDDS.WinForm
 #End Region
 
 #Region "Save/Load Settings Objects"
+		Public Sub SaveImageLoadFile(ByVal imageLoadFile As ImageLoadFile, ByVal path As String)
+			SaveFileObject(imageLoadFile, path)
+		End Sub
+
+		Public Sub SaveExportFile(ByVal exportFile As ExportFile, ByVal path As String)
+			SaveFileObject(exportFile, path)
+		End Sub
+
 		Public Sub SaveLoadFile(ByVal loadFile As LoadFile, ByVal path As String)
 			SaveFileObject(loadFile, path)
 		End Sub
@@ -1428,9 +1436,6 @@ Namespace kCura.EDDS.WinForm
 			Return retval
 		End Function
 
-		Public Sub SaveImageLoadFile(ByVal imageLoadFile As ImageLoadFile, ByVal path As String)
-			SaveFileObject(imageLoadFile, path)
-		End Sub
 #End Region
 
 #Region "Login"
