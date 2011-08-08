@@ -429,6 +429,7 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\ExportForm.resx">
       <DependentUpon>ExportForm.vb</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\ImageLoadForm.resx">
       <DependentUpon>ImageLoadForm.vb</DependentUpon>

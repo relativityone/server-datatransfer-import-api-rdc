@@ -243,15 +243,17 @@ Public Class ExportForm
 		Me.ExportMenu.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.RunMenu, Me.SaveExportSettings, Me.LoadExportSettings, Me.MenuItem3, Me.RefreshMenu})
 		Me.ExportMenu.Text = "File"
 		'
-		'RunMenu
-		'
-		Me.SaveExportSettings.Index = 0
-		Me.SaveExportSettings.Text = "Save Export Settings"
-		'
 		'LoadExportSettings
 		'
-		Me.LoadExportSettings.Index = 1
+		Me.LoadExportSettings.Index = 0
+		Me.LoadExportSettings.Shortcut = System.Windows.Forms.Shortcut.CtrlO
 		Me.LoadExportSettings.Text = "Load Export Settings"
+		'
+		'SaveExportSettings
+		'
+		Me.SaveExportSettings.Index = 1
+		Me.SaveExportSettings.Shortcut = System.Windows.Forms.Shortcut.CtrlS
+		Me.SaveExportSettings.Text = "Save Export Settings"
 		'
 		'RunMenu
 		'
