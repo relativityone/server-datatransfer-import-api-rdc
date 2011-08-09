@@ -1,5 +1,5 @@
 Namespace kCura.WinEDDS
-	Public Class Pair
+	<Serializable()> Public Class Pair
 		Public Value As String
 		Public Display As String
 		Public Overrides Function ToString() As String

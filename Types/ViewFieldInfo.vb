@@ -1,5 +1,5 @@
 Namespace kCura.WinEDDS
-	Public Class ViewFieldInfo
+	<Serializable()> Public Class ViewFieldInfo
 		Inherits Relativity.ViewFieldInfo
 		Implements IComparable
 		Public Sub New(ByVal row As System.Data.DataRow)

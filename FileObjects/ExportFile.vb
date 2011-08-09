@@ -484,6 +484,10 @@ Namespace kCura.WinEDDS
 			info.AddValue("SubdirectoryDigitPadding", Me.SubdirectoryDigitPadding, GetType(Int32))
 			info.AddValue("StartAtDocumentNumber", Me.StartAtDocumentNumber, GetType(Int32))
 			info.AddValue("VolumeInfo", Me.VolumeInfo, GetType(kCura.WinEDDS.Exporters.VolumeInfo))
+			info.AddValue("SelectedTextField", Me.SelectedTextField, GetType(kCura.WinEDDS.ViewFieldInfo))
+			info.AddValue("ImagePrecedence", Me.ImagePrecedence, GetType(kCura.WinEDDS.Pair()))
+			info.AddValue("SelectedViewFields", Me.SelectedViewFields, GetType(kCura.WinEDDS.ViewFieldInfo()))
+
 		End Sub
 		'
 		Private Sub New(ByVal info As System.Runtime.Serialization.SerializationInfo, ByVal Context As System.Runtime.Serialization.StreamingContext)
@@ -522,6 +526,9 @@ Namespace kCura.WinEDDS
 				Me.SubdirectoryDigitPadding = info.GetInt32("SubdirectoryDigitPadding")
 				Me.StartAtDocumentNumber = info.GetInt32("StartAtDocumentNumber")
 				Me.VolumeInfo = CType(info.GetValue("VolumeInfo", GetType(kCura.WinEDDS.Exporters.VolumeInfo)), kCura.WinEDDS.Exporters.VolumeInfo)
+				Me.SelectedTextField = DirectCast(info.GetValue("SelectedTextField", GetType(kCura.WinEDDS.ViewFieldInfo)), kCura.WinEDDS.ViewFieldInfo)
+				Me.ImagePrecedence = DirectCast(info.GetValue("ImagePrecedence", GetType(kCura.WinEDDS.Pair())), kCura.WinEDDS.Pair())
+				Me.SelectedViewFields = DirectCast(info.GetValue("SelectedViewFields", GetType(kCura.WinEDDS.ViewFieldInfo())), kCura.WinEDDS.ViewFieldInfo())
 
 			End With
 		End Sub
