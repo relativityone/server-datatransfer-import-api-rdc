@@ -39,7 +39,7 @@ Public Class ExportForm
 	Public WithEvents _productionPrecedenceBox As System.Windows.Forms.GroupBox
 	Public WithEvents _productionPrecedenceList As System.Windows.Forms.ListBox
 	Public WithEvents Label5 As System.Windows.Forms.Label
-	Public WithEvents _overwriteButton As System.Windows.Forms.CheckBox
+	Public WithEvents _overwriteCheckBox As System.Windows.Forms.CheckBox
 	Public WithEvents _browseButton As System.Windows.Forms.Button
 	Public WithEvents _folderPath As System.Windows.Forms.TextBox
 	Public WithEvents _appendOriginalFilename As System.Windows.Forms.CheckBox
@@ -133,7 +133,7 @@ Public Class ExportForm
 		Me._productionPrecedenceList = New System.Windows.Forms.ListBox
 		Me._pickPrecedenceButton = New System.Windows.Forms.Button
 		Me.Label5 = New System.Windows.Forms.Label
-		Me._overwriteButton = New System.Windows.Forms.CheckBox
+		Me._overwriteCheckBox = New System.Windows.Forms.CheckBox
 		Me._browseButton = New System.Windows.Forms.Button
 		Me._folderPath = New System.Windows.Forms.TextBox
 		Me._appendOriginalFilename = New System.Windows.Forms.CheckBox
@@ -306,11 +306,11 @@ Public Class ExportForm
 		'
 		'_overwriteButton
 		'
-		Me._overwriteButton.Location = New System.Drawing.Point(8, 48)
-		Me._overwriteButton.Name = "_overwriteButton"
-		Me._overwriteButton.Size = New System.Drawing.Size(100, 16)
-		Me._overwriteButton.TabIndex = 7
-		Me._overwriteButton.Text = "Overwrite Files"
+		Me._overwriteCheckBox.Location = New System.Drawing.Point(8, 48)
+		Me._overwriteCheckBox.Name = "_overwriteButton"
+		Me._overwriteCheckBox.Size = New System.Drawing.Size(100, 16)
+		Me._overwriteCheckBox.TabIndex = 7
+		Me._overwriteCheckBox.Text = "Overwrite Files"
 		'
 		'_browseButton
 		'
@@ -339,7 +339,7 @@ Public Class ExportForm
 		'
 		'GroupBox3
 		'
-		Me.GroupBox3.Controls.Add(Me._overwriteButton)
+		Me.GroupBox3.Controls.Add(Me._overwriteCheckBox)
 		Me.GroupBox3.Controls.Add(Me._browseButton)
 		Me.GroupBox3.Controls.Add(Me._folderPath)
 		Me.GroupBox3.Location = New System.Drawing.Point(8, 4)
@@ -1251,7 +1251,7 @@ Public Class ExportForm
 				End If
 		End Select
 		_exportFile.MulticodesAsNested = _exportMulticodeFieldsAsNested.Checked
-		_exportFile.Overwrite = _overwriteButton.Checked
+		_exportFile.Overwrite = _overwriteCheckBox.Checked
 		'_exportFile.ExportFullText = _exportFullText.Checked
 		_exportFile.ExportFullTextAsFile = _exportFullTextAsFile.Checked
 		_exportFile.ExportNative = _exportNativeFiles.Checked
@@ -1319,6 +1319,36 @@ Public Class ExportForm
 	Public Sub LoadExportFile(ByVal ef As kCura.WinEDDS.ExportFile)
 		If _exportNativeFiles.Checked <> ef.ExportNative Then _exportNativeFiles.Checked = ef.ExportNative
 		If _exportImages.Checked <> ef.ExportImages Then _exportImages.Checked = ef.ExportImages
+		If _overwriteCheckBox.Checked <> ef.Overwrite Then _overwriteCheckBox.Checked = ef.Overwrite
+		If _folderPath.Text <> ef.FolderPath Then _folderPath.Text = ef.FolderPath
+		If ef.VolumeDigitPadding >= _volumeDigitPadding.Minimum AndAlso ef.VolumeDigitPadding <= _volumeDigitPadding.Maximum Then
+			If _volumeDigitPadding.Value <> ef.VolumeDigitPadding Then _volumeDigitPadding.Value = ef.VolumeDigitPadding
+		End If
+		If ef.VolumeInfo IsNot Nothing Then
+			If _copyFilesFromRepository.Checked <> ef.VolumeInfo.CopyFilesFromRepository Then _copyFilesFromRepository.Checked = ef.VolumeInfo.CopyFilesFromRepository
+			If Not _volumePrefix.Text.Equals(ef.VolumeInfo.VolumePrefix, StringComparison.InvariantCultureIgnoreCase) Then _volumePrefix.Text = ef.VolumeInfo.VolumePrefix
+			If _volumeStartNumber.Value <> ef.VolumeInfo.VolumeStartNumber Then _volumeStartNumber.Value = ef.VolumeInfo.VolumeStartNumber
+			If _volumeMaxSize.Value <> ef.VolumeInfo.VolumeMaxSize Then _volumeMaxSize.Value = ef.VolumeInfo.VolumeMaxSize
+			If Not _subdirectoryImagePrefix.Text.Equals(ef.VolumeInfo.SubdirectoryImagePrefix) Then _subdirectoryImagePrefix.Text = ef.VolumeInfo.SubdirectoryImagePrefix
+			If Not _subDirectoryNativePrefix.Text.Equals(ef.VolumeInfo.SubdirectoryNativePrefix) Then _subDirectoryNativePrefix.Text = ef.VolumeInfo.SubdirectoryNativePrefix
+			If Not _subdirectoryTextPrefix.Text.Equals(ef.VolumeInfo.SubdirectoryFullTextPrefix) Then _subdirectoryTextPrefix.Text = ef.VolumeInfo.SubdirectoryFullTextPrefix
+			If _subdirectoryStartNumber.Value <> ef.VolumeInfo.SubdirectoryStartNumber Then _subdirectoryStartNumber.Value = ef.VolumeInfo.SubdirectoryStartNumber
+			If _subDirectoryMaxSize.Value <> ef.VolumeInfo.SubdirectoryMaxSize Then _subDirectoryMaxSize.Value = ef.VolumeInfo.SubdirectoryMaxSize
+		End If
+		If ef.SubdirectoryDigitPadding >= _subdirectoryDigitPadding.Minimum AndAlso ef.SubdirectoryDigitPadding <= _subdirectoryDigitPadding.Maximum Then
+			If _subdirectoryDigitPadding.Value <> ef.SubdirectoryDigitPadding Then _subdirectoryDigitPadding.Value = ef.SubdirectoryDigitPadding
+		End If
+		Select Case ef.TypeOfExportedFilePath
+			Case kCura.WinEDDS.ExportFile.ExportedFilePathType.Absolute
+				_useAbsolutePaths.Checked = True
+			Case kCura.WinEDDS.ExportFile.ExportedFilePathType.Prefix
+				_usePrefix.Checked = True
+			Case kCura.WinEDDS.ExportFile.ExportedFilePathType.Relative
+				_useRelativePaths.Checked = True
+
+		End Select
+
+
 	End Sub
 
 	Private Sub RunMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles RunMenu.Click
@@ -1414,7 +1444,7 @@ Public Class ExportForm
 				End If
 		End Select
 		_exportFile.MulticodesAsNested = _exportMulticodeFieldsAsNested.Checked
-		_exportFile.Overwrite = _overwriteButton.Checked
+		_exportFile.Overwrite = _overwriteCheckBox.Checked
 		'_exportFile.ExportFullText = _exportFullText.Checked
 		_exportFile.ExportFullTextAsFile = _exportFullTextAsFile.Checked
 		_exportFile.ExportNative = _exportNativeFiles.Checked
