@@ -1345,7 +1345,17 @@ Public Class ExportForm
 				_usePrefix.Checked = True
 			Case kCura.WinEDDS.ExportFile.ExportedFilePathType.Relative
 				_useRelativePaths.Checked = True
+		End Select
+		_recordDelimiter.SelectedValue = ef.RecordDelimiter
+		If _appendOriginalFilename.Checked <> ef.AppendOriginalFileName Then _appendOriginalFilename.Checked = ef.AppendOriginalFileName
 
+		Select Case ef.ExportNativesToFileNamedFrom
+			Case kCura.WinEDDS.ExportNativeWithFilenameFrom.Identifier
+				_nativeFileNameSource.SelectedItem = "Identifier"
+			Case kCura.WinEDDS.ExportNativeWithFilenameFrom.Production
+				_nativeFileNameSource.SelectedItem = "Begin bates"
+			Case kCura.WinEDDS.ExportNativeWithFilenameFrom.Select
+				_nativeFileNameSource.SelectedItem = "Select..."
 		End Select
 
 
