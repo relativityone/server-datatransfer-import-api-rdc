@@ -34,9 +34,15 @@ Namespace kCura.Windows.Forms
 		Public WithEvents DetailsLink As System.Windows.Forms.LinkLabel
 
     <System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
-			Me.TextBox = New System.Windows.Forms.TextBox
 			Me.DetailsLink = New System.Windows.Forms.LinkLabel
-      Me.SuspendLayout()
+			Me.TextBox = New System.Windows.Forms.TextBox
+			Me.SuspendLayout()
+
+			'
+			'DetailsLink
+			'
+			Me.TextBox.Controls.Add(Me.DetailsLink)
+
       '
       'TextBox
       '
@@ -55,17 +61,11 @@ Namespace kCura.Windows.Forms
       'OutputRichTextBox
 			'
 
-			'
-			'DetailsLink
-			'
-			Me.DetailsLink.Text = ""
-			Me.DetailsLink.SendToBack()
-			Me.TextBox.Controls.Add(Me.DetailsLink)
-
       Me.Controls.Add(Me.TextBox)
       Me.Name = "OutputRichTextBox"
-      Me.Size = New System.Drawing.Size(150, 144)
-      Me.ResumeLayout(False)
+			Me.Size = New System.Drawing.Size(150, 144)
+			Me.ResumeLayout(False)
+			HideErrorDetailsLink()
 
     End Sub
 
@@ -113,8 +113,7 @@ Namespace kCura.Windows.Forms
 		Public Sub Reset()
 			_totalOutput = New System.Collections.ArrayList
 			TextBox.Text = ""
-			Me.DetailsLink.Text = ""
-			Me.DetailsLink.SendToBack()
+			HideErrorDetailsLink()
 		End Sub
 
 		Public Sub Save(ByVal filePath As String)
@@ -148,12 +147,11 @@ Namespace kCura.Windows.Forms
 
 		Public Sub WriteErrorDetails()
 			Me.DetailsLink.Location = Me.TextBox.GetPositionFromCharIndex(Me.TextBox.TextLength - 10)
-			Me.DetailsLink.BringToFront()
+			Me.DetailsLink.Show()
 			Me.DetailsLink.Text = "More Details"
 		End Sub
 
 		Private Sub DumpOutput()
-
 			If _visibleLineCount > 0 Then
 				Dim sb As New System.Text.StringBuilder
 				Dim i As Int32
@@ -173,6 +171,11 @@ Namespace kCura.Windows.Forms
 			_visibleLineCount = CType(System.Math.Round((Me.Height / 15), 0), Int32)
 			DumpOutput()
 			Me.DetailsLink.Location = Me.TextBox.GetPositionFromCharIndex(Me.TextBox.TextLength - 10)
+		End Sub
+
+		Private Sub HideErrorDetailsLink()
+			Me.DetailsLink.Hide()
+			Me.DetailsLink.Text = ""
 		End Sub
 
 	End Class
