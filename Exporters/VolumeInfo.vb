@@ -1,5 +1,5 @@
 Namespace kCura.WinEDDS.Exporters
-	Public Class VolumeInfo
+	<Serializable()> Public Class VolumeInfo
 		Private _volumePrefix As String
 		Private _volumeStartNumber As Int32
 		Private _volumeMaxSize As Int64

@@ -1,7 +1,7 @@
 Namespace kCura.WinEDDS
 
 	Public Enum ExportNativeWithFilenameFrom
-		Identifier
-		Production
+		Identifier = 0
+		Production = 1
 	End Enum
 End Namespace
