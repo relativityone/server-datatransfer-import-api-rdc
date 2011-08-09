@@ -42,6 +42,9 @@ Namespace kCura.Windows.Forms
 			'DetailsLink
 			'
 			Me.TextBox.Controls.Add(Me.DetailsLink)
+			Me.DetailsLink.Text = ""
+			Me.DetailsLink.SendToBack()
+			Me.DetailsLink.Size = New System.Drawing.Size(0, 0)
 
       '
       'TextBox
@@ -65,7 +68,7 @@ Namespace kCura.Windows.Forms
       Me.Name = "OutputRichTextBox"
 			Me.Size = New System.Drawing.Size(150, 144)
 			Me.ResumeLayout(False)
-			HideErrorDetailsLink()
+
 
     End Sub
 
@@ -113,7 +116,9 @@ Namespace kCura.Windows.Forms
 		Public Sub Reset()
 			_totalOutput = New System.Collections.ArrayList
 			TextBox.Text = ""
-			HideErrorDetailsLink()
+			Me.DetailsLink.SendToBack()
+			Me.DetailsLink.Text = ""
+			Me.DetailsLink.Size = New System.Drawing.Size(0, 0)
 		End Sub
 
 		Public Sub Save(ByVal filePath As String)
@@ -147,8 +152,9 @@ Namespace kCura.Windows.Forms
 
 		Public Sub WriteErrorDetails()
 			Me.DetailsLink.Location = Me.TextBox.GetPositionFromCharIndex(Me.TextBox.TextLength - 10)
-			Me.DetailsLink.Show()
+			Me.DetailsLink.Size = New System.Drawing.Size(100, 23)
 			Me.DetailsLink.Text = "More Details"
+			Me.DetailsLink.BringToFront()
 		End Sub
 
 		Private Sub DumpOutput()
@@ -171,11 +177,6 @@ Namespace kCura.Windows.Forms
 			_visibleLineCount = CType(System.Math.Round((Me.Height / 15), 0), Int32)
 			DumpOutput()
 			Me.DetailsLink.Location = Me.TextBox.GetPositionFromCharIndex(Me.TextBox.TextLength - 10)
-		End Sub
-
-		Private Sub HideErrorDetailsLink()
-			Me.DetailsLink.Hide()
-			Me.DetailsLink.Text = ""
 		End Sub
 
 	End Class

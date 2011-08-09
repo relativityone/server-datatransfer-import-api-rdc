@@ -172,6 +172,11 @@ Public Class ErrorDialog
 		Me.MinimumSize = New System.Drawing.Size(304, 308)
 		_errorText.Visible = True
 		_errorText.Focus()
+		_errorText.Select(0, 0)
+	End Sub
+
+	Private Sub _errorText_VisibleChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles _errorText.VisibleChanged
+		_errorText.Select(0, 0)
 	End Sub
 
 	Private Sub _okButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _okButton.Click
