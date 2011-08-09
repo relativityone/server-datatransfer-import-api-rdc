@@ -444,19 +444,21 @@ Namespace kCura.WinEDDS
 					fileExists = False
 				End If
 
-
 				If filename <> String.Empty AndAlso Not fileExists Then lineStatus += Relativity.MassImport.ImportStatus.FileSpecifiedDne 'Throw New InvalidFilenameException(filename)
+				If fileExists AndAlso Not Config.DisableImageLocationValidation Then
+					If Me.GetFileLength(filename) = 0 Then
+						If Config.CreateErrorForEmptyNativeFile Then
+							lineStatus += Relativity.MassImport.ImportStatus.EmptyFile 'Throw New EmptyNativeFileException(filename)
+						Else
+							WriteWarning("The file " & filename & " to be uploaded is empty; only metadata will be loaded for this record")
+							fileExists = False
+							filename = String.Empty
+						End If
+					End If
+				End If
 				If fileExists Then
 					Try
 						Dim now As DateTime = DateTime.Now
-						Dim tries As Int32 = kCura.Utility.Config.Settings.IoErrorNumberOfRetries
-
-						If Config.DisableNativeLocationValidation Then
-							'Don't check for length
-						Else
-							If Me.GetFileLength(filename) = 0 Then lineStatus += Relativity.MassImport.ImportStatus.EmptyFile 'Throw New EmptyNativeFileException(filename)
-						End If
-
 						If Config.DisableNativeValidation Then
 							oixFileIdData = Nothing
 						Else

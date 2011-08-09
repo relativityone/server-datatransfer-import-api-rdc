@@ -254,6 +254,7 @@
       <Project>{94940707-AFFE-47EB-BD70-5ADE8F7C8A36}</Project>
       <Name>kCura.EDDS.Import</Name>
     </ProjectReference>
+    <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
     <Import Include="Microsoft.VisualBasic" />
@@ -348,6 +349,7 @@
     <Compile Include="FileObjects\ExportFile.vb">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="FileObjects\ExportFileSerializer.vb" />
     <Compile Include="FileObjects\ImageLoadFile.vb">
       <SubType>Code</SubType>
     </Compile>
@@ -400,6 +402,7 @@
     <Compile Include="Importers\MetaDocument.vb">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Importers\NativeFileValidator.vb" />
     <Compile Include="Importers\NestedArtifactCache.vb">
       <SubType>Code</SubType>
     </Compile>

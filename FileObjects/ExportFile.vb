@@ -1,7 +1,9 @@
 Namespace kCura.WinEDDS
 	<Serializable()> Public Class ExportFile
 		Implements System.Runtime.Serialization.ISerializable
-		'Protected _identity As Relativity.Core.EDDSIdentity
+
+#Region " Members "
+
 		Protected _caseInfo As Relativity.CaseInfo
 		Protected _dataTable As System.Data.DataTable
 		Protected _typeOfExport As ExportType
@@ -45,6 +47,8 @@ Namespace kCura.WinEDDS
 		Protected _startAtDocument As Int32 = 0
 		Private _artifactTypeID As Int32
 		Private _fileField As DocumentField
+
+#End Region
 
 #Region "Public Properties"
 		Public ReadOnly Property ArtifactTypeID() As Int32
@@ -444,9 +448,88 @@ Namespace kCura.WinEDDS
 
 #End Region
 
-		Public Sub GetObjectData(ByVal info As System.Runtime.Serialization.SerializationInfo, ByVal context As System.Runtime.Serialization.StreamingContext) Implements System.Runtime.Serialization.ISerializable.GetObjectData
+#Region " Serialization "
 
+
+		Public Sub GetObjectData(ByVal info As System.Runtime.Serialization.SerializationInfo, ByVal context As System.Runtime.Serialization.StreamingContext) Implements System.Runtime.Serialization.ISerializable.GetObjectData
+			info.AddValue("ArtifactID", Me.ArtifactID, GetType(Int32))
+			info.AddValue("LoadFilesPrefix", Me.LoadFilesPrefix, GetType(Int32))
+			info.AddValue("NestedValueDelimiter", AscW(Me.NestedValueDelimiter), GetType(Int32))
+			info.AddValue("TypeOfExport", CInt(Me.TypeOfExport), GetType(Int32))
+			info.AddValue("FolderPath", Me.FolderPath, GetType(String))
+			info.AddValue("ViewID", Me.ViewID, GetType(Int32))
+			info.AddValue("Overwrite", Me.Overwrite, GetType(Boolean))
+			info.AddValue("RecordDelimiter", AscW(Me.RecordDelimiter), GetType(Int32))
+			info.AddValue("QuoteDelimiter", AscW(Me.QuoteDelimiter), GetType(Int32))
+			info.AddValue("NewlineDelimiter", AscW(Me.NewlineDelimiter), GetType(Int32))
+			info.AddValue("MultiRecordDelimiter", AscW(Me.MultiRecordDelimiter), GetType(Int32))
+			info.AddValue("ExportFullText", Me.ExportFullText, GetType(Boolean))
+			info.AddValue("ExportFullTextAsFile", Me.ExportFullTextAsFile, GetType(Boolean))
+			info.AddValue("ExportNative", Me.ExportNative, GetType(Boolean))
+			info.AddValue("LogFileFormat", CInt(Me.LogFileFormat), GetType(Int32))
+			info.AddValue("RenameFilesToIdentifier", Me.RenameFilesToIdentifier, GetType(Boolean))
+			info.AddValue("IdentifierColumnName", Me.IdentifierColumnName, GetType(String))
+			info.AddValue("LoadFileExtension", Me.LoadFileExtension, GetType(String))
+			info.AddValue("ExportImages", Me.ExportImages, GetType(Boolean))
+			info.AddValue("ExportNativesToFileNamedFrom", CInt(Me.ExportNativesToFileNamedFrom), GetType(Int32))
+			info.AddValue("FilePrefix", Me.FilePrefix, GetType(String))
+			info.AddValue("TypeOfExportedFilePath", CInt(Me.TypeOfExportedFilePath), GetType(Int32))
+			info.AddValue("TypeOfImage", CInt(Me.TypeOfImage), GetType(Int32))
+			info.AddValue("AppendOriginalFileName", Me.AppendOriginalFileName, GetType(Boolean))
+			info.AddValue("LoadFileIsHtml", Me.LoadFileIsHtml, GetType(Boolean))
+			info.AddValue("MulticodesAsNested", Me.MulticodesAsNested, GetType(Boolean))
+			info.AddValue("LoadFileEncoding", If(Me.LoadFileEncoding Is Nothing, -1, Me.LoadFileEncoding.CodePage), GetType(Int32))
+			info.AddValue("TextFileEncoding", If(Me.TextFileEncoding Is Nothing, -1, Me.TextFileEncoding.CodePage), GetType(Int32))
+			info.AddValue("VolumeDigitPadding", Me.VolumeDigitPadding, GetType(Int32))
+			info.AddValue("SubdirectoryDigitPadding", Me.SubdirectoryDigitPadding, GetType(Int32))
+			info.AddValue("StartAtDocumentNumber", Me.StartAtDocumentNumber, GetType(Int32))
+			info.AddValue("VolumeInfo", Me.VolumeInfo, GetType(kCura.WinEDDS.Exporters.VolumeInfo))
 		End Sub
+		'
+		Private Sub New(ByVal info As System.Runtime.Serialization.SerializationInfo, ByVal Context As System.Runtime.Serialization.StreamingContext)
+			With info
+				Me.ArtifactID = info.GetInt32("ArtifactID")
+				Me.LoadFilesPrefix = info.GetString("LoadFilesPrefix")
+				Me.NestedValueDelimiter = ChrW(info.GetInt32("NestedValueDelimiter"))
+				Me.TypeOfExport = CType(info.GetInt32("TypeOfExport"), kCura.WinEDDS.ExportFile.ExportType)
+				Me.FolderPath = info.GetString("FolderPath")
+				Me.ViewID = info.GetInt32("ViewID")
+				Me.Overwrite = info.GetBoolean("Overwrite")
+				Me.RecordDelimiter = ChrW(info.GetInt32("RecordDelimiter"))
+				Me.QuoteDelimiter = ChrW(info.GetInt32("QuoteDelimiter"))
+				Me.NewlineDelimiter = ChrW(info.GetInt32("NewlineDelimiter"))
+				Me.MultiRecordDelimiter = ChrW(info.GetInt32("MultiRecordDelimiter"))
+				Me.ExportFullText = info.GetBoolean("ExportFullText")
+				Me.ExportFullTextAsFile = info.GetBoolean("ExportFullTextAsFile")
+				Me.ExportNative = info.GetBoolean("ExportNative")
+				Me.LogFileFormat = CType(info.GetInt32("LogFileFormat"), kCura.WinEDDS.LoadFileType.FileFormat)
+				Me.RenameFilesToIdentifier = info.GetBoolean("RenameFilesToIdentifier")
+				Me.IdentifierColumnName = info.GetString("IdentifierColumnName")
+				Me.LoadFileExtension = info.GetString("LoadFileExtension")
+				Me.ExportImages = info.GetBoolean("ExportImages")
+				Me.ExportNativesToFileNamedFrom = CType(info.GetInt32("ExportNativesToFileNamedFrom"), kCura.WinEDDS.ExportNativeWithFilenameFrom)
+				Me.FilePrefix = info.GetString("FilePrefix")
+				Me.TypeOfExportedFilePath = CType(info.GetInt32("TypeOfExportedFilePath"), kCura.WinEDDS.ExportFile.ExportedFilePathType)
+				Me.TypeOfImage = CType(info.GetInt32("TypeOfImage"), kCura.WinEDDS.ExportFile.ImageType)
+				Me.AppendOriginalFileName = info.GetBoolean("AppendOriginalFileName")
+				Me.LoadFileIsHtml = info.GetBoolean("LoadFileIsHtml")
+				Me.MulticodesAsNested = info.GetBoolean("MulticodesAsNested")
+				Dim encod As Int32 = info.GetInt32("LoadFileEncoding")
+				Me.LoadFileEncoding = If(encod > 0, System.Text.Encoding.GetEncoding(encod), Nothing)
+				encod = info.GetInt32("TextFileEncoding")
+				Me.TextFileEncoding = If(encod > 0, System.Text.Encoding.GetEncoding(encod), Nothing)
+				Me.VolumeDigitPadding = info.GetInt32("VolumeDigitPadding")
+				Me.SubdirectoryDigitPadding = info.GetInt32("SubdirectoryDigitPadding")
+				Me.StartAtDocumentNumber = info.GetInt32("StartAtDocumentNumber")
+				Me.VolumeInfo = CType(info.GetValue("VolumeInfo", GetType(kCura.WinEDDS.Exporters.VolumeInfo)), kCura.WinEDDS.Exporters.VolumeInfo)
+
+			End With
+		End Sub
+
+#End Region
+
+#Region " Constructors "
+
 
 		Public Sub New(ByVal artifactTypeID As Int32)
 			Me.RecordDelimiter = ChrW(20)
@@ -458,17 +541,22 @@ Namespace kCura.WinEDDS
 			_artifactTypeID = artifactTypeID
 		End Sub
 
+#End Region
+
+#Region " Enums "
+
+
 		Public Enum ExportType
-			Production
-			ArtifactSearch
-			ParentSearch
-			AncestorSearch
+			Production = 0
+			ArtifactSearch = 1
+			ParentSearch = 2
+			AncestorSearch = 3
 		End Enum
 
 		Public Enum ExportedFilePathType
-			Relative
-			Absolute
-			Prefix
+			Relative = 0
+			Absolute = 1
+			Prefix = 2
 		End Enum
 
 		Public Enum ImageType
@@ -476,6 +564,7 @@ Namespace kCura.WinEDDS
 			MultiPageTiff
 			Pdf
 		End Enum
+#End Region
 
 	End Class
 End Namespace
