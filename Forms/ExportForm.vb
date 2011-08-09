@@ -243,15 +243,17 @@ Public Class ExportForm
 		Me.ExportMenu.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.RunMenu, Me.SaveExportSettings, Me.LoadExportSettings, Me.MenuItem3, Me.RefreshMenu})
 		Me.ExportMenu.Text = "File"
 		'
-		'RunMenu
-		'
-		Me.SaveExportSettings.Index = 0
-		Me.SaveExportSettings.Text = "Save Export Settings"
-		'
 		'LoadExportSettings
 		'
-		Me.LoadExportSettings.Index = 1
+		Me.LoadExportSettings.Index = 0
+		Me.LoadExportSettings.Shortcut = System.Windows.Forms.Shortcut.CtrlO
 		Me.LoadExportSettings.Text = "Load Export Settings"
+		'
+		'SaveExportSettings
+		'
+		Me.SaveExportSettings.Index = 1
+		Me.SaveExportSettings.Shortcut = System.Windows.Forms.Shortcut.CtrlS
+		Me.SaveExportSettings.Text = "Save Export Settings"
 		'
 		'RunMenu
 		'
@@ -1401,7 +1403,7 @@ Public Class ExportForm
 				AppendErrorMessage(msg, "No file name source selected")
 			End If
 		End If
-		If _dataFileEncoding.SelectedEncoding Is Nothing Then
+		If _dataFileEncoding.SelectedEncoding Is Nothing AndAlso (_exportNativeFiles.Checked OrElse _columnSelecter.RightListBoxItems.Count > 0) Then
 			AppendErrorMessage(msg, "No encoding selected for metadata file.")
 		End If
 		If _exportFullTextAsFile.Checked Then
