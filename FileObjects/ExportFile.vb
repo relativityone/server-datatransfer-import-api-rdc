@@ -444,8 +444,116 @@ Namespace kCura.WinEDDS
 
 #End Region
 
-		Public Sub GetObjectData(ByVal info As System.Runtime.Serialization.SerializationInfo, ByVal context As System.Runtime.Serialization.StreamingContext) Implements System.Runtime.Serialization.ISerializable.GetObjectData
+#Region " Serialization "
 
+#End Region
+
+		Public Sub GetObjectData(ByVal info As System.Runtime.Serialization.SerializationInfo, ByVal context As System.Runtime.Serialization.StreamingContext) Implements System.Runtime.Serialization.ISerializable.GetObjectData
+			info.AddValue("ArtifactID", Me.ArtifactID, GetType(Int32))
+			info.AddValue("LoadFilesPrefix", Me.LoadFilesPrefix, GetType(Int32))
+			info.AddValue("NestedValueDelimiter", Me.NestedValueDelimiter, GetType(Char))
+			info.AddValue("TypeOfExport", Me.TypeOfExport, GetType(Int32))
+		End Sub
+
+		Private Sub New(ByVal info As System.Runtime.Serialization.SerializationInfo, ByVal Context As System.Runtime.Serialization.StreamingContext)
+			With info
+				Me.ArtifactID = info.GetInt32("ArtifactID")
+				Me.LoadFilesPrefix = info.GetString("LoadFilesPrefix")
+				Me.NestedValueDelimiter = info.GetChar("NestedValueDelimiter")
+				Me.TypeOfExport = CType(info.GetInt32("TypeOfExport"), kCura.WinEDDS.ExportFile.ExportType)
+				'Me.CaseInfo = DirectCast(info.GetValue("CaseInfo", GetType(Relativity.CaseInfo)), Relativity.CaseInfo)
+				'Me.FilePath = info.GetString("FilePath")
+				'Try
+				'	If Not System.IO.File.Exists(Me.FilePath) Then
+				'		Me.FilePath = ""
+				'	End If
+				'Catch ex As System.Exception
+				'	Me.FilePath = ""
+				'End Try
+				'Me.NativeFilePathColumn = info.GetString("NativeFilePathColumn")
+				'Me.FirstLineContainsHeaders = info.GetBoolean("FirstLineContainsHeaders")
+				'Me.LoadNativeFiles = info.GetBoolean("LoadNativeFiles")
+				'Me.ExtractFullTextFromNativeFile = info.GetBoolean("ExtractFullTextFromNativeFile")
+				'Me.OverwriteDestination = info.GetString("OverwriteDestination")
+
+				'Me.RecordDelimiter = ChrW(info.GetInt32("RecordDelimiter"))
+				'Me.QuoteDelimiter = ChrW(info.GetInt32("QuoteDelimiter"))
+				'Me.NewlineDelimiter = ChrW(info.GetInt32("NewlineDelimiter"))
+				'Me.MultiRecordDelimiter = ChrW(info.GetInt32("MultiRecordDelimiter"))
+
+				'Me.SelectedIdentifierField = DirectCast(info.GetValue("SelectedIdentifierField", GetType(kCura.WinEDDS.DocumentField)), kCura.WinEDDS.DocumentField)
+				'Try
+				'	Me.GroupIdentifierColumn = DirectCast(info.GetValue("GroupIdentifierColumn", GetType(String)), String)
+				'Catch
+				'	Me.GroupIdentifierColumn = ""
+				'End Try
+				''Me.SelectedFields = DirectCast(info.GetValue("SelectedFields", GetType(kCura.WinEDDS.DocumentField())), kCura.WinEDDS.DocumentField())
+				'Me.FieldMap = DirectCast(info.GetValue("FieldMap", GetType(kCura.WinEDDS.LoadFileFieldMap)), LoadFileFieldMap)
+
+				'Me.FolderStructureContainedInColumn = info.GetString("FolderStructureContainedInColumn")
+				'Me.CreateFolderStructure = info.GetBoolean("CreateFolderStructure")
+				'Try
+				'	Me.FullTextColumnContainsFileLocation = info.GetBoolean("FullTextColumnContainsFileLocation")
+				'Catch ex As System.Exception
+				'	Me.FullTextColumnContainsFileLocation = False
+				'End Try
+				'Dim hval As Int32 = 0
+				'Try
+				'	hval = info.GetInt32("HierarchicalValueDelimiter")
+				'Catch ex As Exception
+				'End Try
+				'If hval = 0 Then hval = AscW("\"c)
+				'Try
+				'	Me.HierarchicalValueDelimiter = ChrW(hval)
+				'Catch ex As Exception
+				'	Me.HierarchicalValueDelimiter = "\"c
+				'End Try
+				'Try
+				'	Dim codePageID As Int32 = info.GetInt32("SourceFileEncoding")
+				'	If codePageID = -1 Then
+				'		Me.SourceFileEncoding = Nothing
+				'	Else
+				'		Me.SourceFileEncoding = System.Text.Encoding.GetEncoding(codePageID)
+				'	End If
+				'Catch
+				'	Me.SourceFileEncoding = System.Text.Encoding.Default
+				'End Try
+				'Try
+				'	Dim codePageID As Int32 = info.GetInt32("ExtractedTextFileEncoding")
+				'	If codePageID = -1 Then
+				'		Me.ExtractedTextFileEncoding = Nothing
+				'	Else
+				'		Me.ExtractedTextFileEncoding = System.Text.Encoding.GetEncoding(codePageID)
+				'	End If
+				'Catch
+				'	Me.ExtractedTextFileEncoding = Nothing
+				'End Try
+				'Try
+				'	Me.ArtifactTypeID = info.GetInt32("ArtifactTypeID")
+				'Catch
+				'	Me.ArtifactTypeID = Relativity.ArtifactType.Document
+				'End Try
+				'Try
+				'	Me.StartLineNumber = info.GetInt64("StartLineNumber")
+				'Catch
+				'	Me.StartLineNumber = 0
+				'End Try
+				'Try
+				'	Me.IdentityFieldId = info.GetInt32("IdentityFieldId")
+				'Catch
+				'	Me.IdentityFieldId = -1
+				'End Try
+				'Try
+				'	Me.SendEmailOnLoadCompletion = info.GetBoolean("SendEmailOnLoadCompletion")
+				'Catch
+				'	Me.SendEmailOnLoadCompletion = kCura.WinEDDS.Service.Settings.SendEmailOnLoadCompletion
+				'End Try
+				'Try
+				'	Me.ForceFolderPreview = info.GetBoolean("ForceFolderPreview")
+				'Catch
+				'	Me.ForceFolderPreview = kCura.WinEDDS.Config.ForceFolderPreview
+				'End Try
+			End With
 		End Sub
 
 		Public Sub New(ByVal artifactTypeID As Int32)
