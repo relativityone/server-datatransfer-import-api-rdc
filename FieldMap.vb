@@ -161,7 +161,7 @@ Namespace kCura.WinEDDS.UIControls
 		End Sub
 
 		Private Sub _fieldColumns_ClearHighlightedItems(ByVal sender As Object, ByVal e As HighlightItemEventArgs) Handles _fieldColumns.ClearHighlightedItems
-			_loadFileColumns.ClearItems(e.Location)
+			_loadFileColumns.ClearHighlight(e.Location)
 		End Sub
 
 		Private Sub _fieldColumns_HighlightItemByLocationAndIndex(ByVal sender As Object, ByVal e As HighlightItemEventArgs) Handles _fieldColumns.HighlightItemByLocationAndIndex
@@ -169,7 +169,7 @@ Namespace kCura.WinEDDS.UIControls
 		End Sub
 
 		Private Sub _loadFileColumns_ClearHighlightedItems(ByVal sender As Object, ByVal e As HighlightItemEventArgs) Handles _loadFileColumns.ClearHighlightedItems
-			_fieldColumns.ClearItems(e.Location)
+			_fieldColumns.ClearHighlight(e.Location)
 		End Sub
 
 		Private Sub _loadFileColumns_HighlightItemByLocationAndIndex(ByVal sender As Object, ByVal e As HighlightItemEventArgs) Handles _loadFileColumns.HighlightItemByLocationAndIndex
