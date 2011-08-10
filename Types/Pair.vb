@@ -9,5 +9,8 @@ Namespace kCura.WinEDDS
 			Me.Value = v
 			Me.Display = d
 		End Sub
+		Public Shadows Function equals(ByVal other As kCura.WinEDDS.Pair) As Boolean
+			Return (Me.Display = other.Display And Me.Value = other.Value)
+		End Function
 	End Class
 End Namespace
