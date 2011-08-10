@@ -1,4 +1,10 @@
 Namespace kCura.WinEDDS
+	''' <summary>
+	''' Container class for all export settings
+	''' </summary>
+	''' <remarks>
+	''' Writable properties that are not marked as ReadFromExisting are used in saving/loading these files to disk.  If one needs to add a property, and it needs to be save-able, make sure to add those settings to the serialize/deserialize methods.
+	''' </remarks>
 	<Serializable()> Public Class ExportFile
 		Implements System.Runtime.Serialization.ISerializable
 
@@ -75,7 +81,7 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
-		Public Property CaseInfo() As Relativity.CaseInfo
+		<ReadFromExisting()> Public Property CaseInfo() As Relativity.CaseInfo
 			Get
 				Return _caseInfo
 			End Get
@@ -90,7 +96,7 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
-		Public Property DataTable() As System.Data.DataTable
+		<ReadFromExisting()> Public Property DataTable() As System.Data.DataTable
 			Get
 				Return _dataTable
 			End Get
@@ -99,7 +105,7 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
-		Public Property ArtifactAvfLookup() As Specialized.HybridDictionary
+		<ReadFromExisting()> Public Property ArtifactAvfLookup() As Specialized.HybridDictionary
 			Get
 				Return _artifactAvfLookup
 			End Get
@@ -198,7 +204,7 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
-		Public Property Credential() As Net.NetworkCredential
+		<ReadFromExisting()> Public Property Credential() As Net.NetworkCredential
 			Get
 				Return _credential
 			End Get
@@ -207,7 +213,7 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
-		Public Property CookieContainer() As System.Net.CookieContainer
+		<ReadFromExisting()> Public Property CookieContainer() As System.Net.CookieContainer
 			Get
 				Return _cookieContainer
 			End Get
@@ -350,7 +356,7 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
-		Public Property AllExportableFields() As WinEDDS.ViewFieldInfo()
+		<ReadFromExisting()> Public Property AllExportableFields() As WinEDDS.ViewFieldInfo()
 			Get
 				Return _allExportableFields
 			End Get
@@ -431,7 +437,7 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
-		Public Property FileField() As DocumentField
+		<ReadFromExisting()> Public Property FileField() As DocumentField
 			Get
 				Return _fileField
 			End Get
@@ -484,6 +490,10 @@ Namespace kCura.WinEDDS
 			info.AddValue("SubdirectoryDigitPadding", Me.SubdirectoryDigitPadding, GetType(Int32))
 			info.AddValue("StartAtDocumentNumber", Me.StartAtDocumentNumber, GetType(Int32))
 			info.AddValue("VolumeInfo", Me.VolumeInfo, GetType(kCura.WinEDDS.Exporters.VolumeInfo))
+			info.AddValue("SelectedTextField", Me.SelectedTextField, GetType(kCura.WinEDDS.ViewFieldInfo))
+			info.AddValue("ImagePrecedence", Me.ImagePrecedence, GetType(kCura.WinEDDS.Pair()))
+			info.AddValue("SelectedViewFields", Me.SelectedViewFields, GetType(kCura.WinEDDS.ViewFieldInfo()))
+
 		End Sub
 		'
 		Private Sub New(ByVal info As System.Runtime.Serialization.SerializationInfo, ByVal Context As System.Runtime.Serialization.StreamingContext)
@@ -522,6 +532,9 @@ Namespace kCura.WinEDDS
 				Me.SubdirectoryDigitPadding = info.GetInt32("SubdirectoryDigitPadding")
 				Me.StartAtDocumentNumber = info.GetInt32("StartAtDocumentNumber")
 				Me.VolumeInfo = CType(info.GetValue("VolumeInfo", GetType(kCura.WinEDDS.Exporters.VolumeInfo)), kCura.WinEDDS.Exporters.VolumeInfo)
+				Me.SelectedTextField = DirectCast(info.GetValue("SelectedTextField", GetType(kCura.WinEDDS.ViewFieldInfo)), kCura.WinEDDS.ViewFieldInfo)
+				Me.ImagePrecedence = DirectCast(info.GetValue("ImagePrecedence", GetType(kCura.WinEDDS.Pair())), kCura.WinEDDS.Pair())
+				Me.SelectedViewFields = DirectCast(info.GetValue("SelectedViewFields", GetType(kCura.WinEDDS.ViewFieldInfo())), kCura.WinEDDS.ViewFieldInfo())
 
 			End With
 		End Sub
