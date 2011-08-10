@@ -1420,12 +1420,30 @@ Public Class ExportForm
 			For Each vfi As kCura.WinEDDS.ViewFieldInfo In itemsToRemoveFromLeftListBox
 				_columnSelecter.LeftListBoxItems.Remove(vfi)
 			Next
-
-
 		End If
 
 		If ef.StartAtDocumentNumber > _startExportAtDocumentNumber.Minimum AndAlso ef.StartAtDocumentNumber < _startExportAtDocumentNumber.Maximum Then
 			_startExportAtDocumentNumber.Value = ef.StartAtDocumentNumber
+		End If
+
+		If ef.ImagePrecedence IsNot Nothing AndAlso ef.ImagePrecedence.Length > 0 Then
+			Dim validPrecedenceTable As System.Data.DataTable = _application.GetProductionPrecendenceList(ef.CaseInfo)
+			Dim validPrecedencePairs As New System.Collections.Generic.List(Of kCura.WinEDDS.Pair)()
+			For i As Int32 = 0 To validPrecedenceTable.Rows.Count - 1
+				validPrecedencePairs.Add(New kCura.WinEDDS.Pair(validPrecedenceTable.Rows.Item(i)("Value").ToString, validPrecedenceTable.Rows.Item(i)("Display").ToString))
+			Next
+			_productionPrecedenceList.Items.Clear()
+
+			For Each precedencePair As kCura.WinEDDS.Pair In ef.ImagePrecedence
+				For Each item As kCura.WinEDDS.Pair In validPrecedencePairs
+					If precedencePair.equals(item) Then
+						_productionPrecedenceList.Items.Add(precedencePair)
+						Exit For
+					End If
+				Next
+			Next
+		Else
+			'original is already there
 		End If
 
 	End Sub
