@@ -53,9 +53,8 @@ Namespace kCura.WinEDDS
 		Public Const MaxNumberOfErrorsInGrid As Int32 = 1000
 		Private _errorCount As Int32 = 0
 		Private _prePushErrorLineNumbersFileName As String = String.Empty
-		Private _isAuditingEnabled As Boolean
 		Private _processID As Guid
-		Private _parentArtifactTypeID As Int32
+		Private _parentArtifactTypeID As Int32?
 		Private _statistics As New kCura.WinEDDS.Statistics
 		Private _timekeeper As New kCura.Utility.Timekeeper
 		Private _currentStatisticsSnapshot As IDictionary
@@ -182,6 +181,16 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
+		Protected Overridable ReadOnly Property ParentArtifactTypeID As Int32
+			Get
+				If Not _parentArtifactTypeID.HasValue Then
+					Dim parentQuery As New kCura.WinEDDS.Service.ObjectTypeManager(_settings.Credentials, _settings.CookieContainer)
+					_parentArtifactTypeID = CType(parentQuery.RetrieveParentArtifactTypeID(_settings.CaseInfo.ArtifactID, _settings.ArtifactTypeID).Tables(0).Rows(0)("ParentArtifactTypeID"), Int32)
+				End If
+				Return _parentArtifactTypeID.Value
+			End Get
+		End Property
+
 #End Region
 
 #Region "Constructors"
@@ -248,11 +257,8 @@ Namespace kCura.WinEDDS
 			_firstTimeThrough = True
 			_caseInfo = args.CaseInfo
 			_settings = args
-			_isAuditingEnabled = New kCura.WinEDDS.Service.RelativityManager(args.Credentials, args.CookieContainer).IsAuditingEnabled
 			_processID = processID
 			_startLineNumber = args.StartLineNumber
-			Dim parentQuery As New kCura.WinEDDS.Service.ObjectTypeManager(args.Credentials, args.CookieContainer)
-			_parentArtifactTypeID = CType(parentQuery.RetrieveParentArtifactTypeID(args.CaseInfo.ArtifactID, args.ArtifactTypeID).Tables(0).Rows(0)("ParentArtifactTypeID"), Int32)
 
 			If String.IsNullOrEmpty(bulkLoadFileFieldDelimiter) Then
 				Throw New ArgumentNullException("bulkLoadFileFieldDelimiter")
@@ -517,7 +523,7 @@ Namespace kCura.WinEDDS
 					End If
 				End If
 			Else
-				If _artifactTypeID = Relativity.ArtifactType.Document OrElse _parentArtifactTypeID = Relativity.ArtifactType.Case Then
+				If _artifactTypeID = Relativity.ArtifactType.Document OrElse Me.ParentArtifactTypeID = Relativity.ArtifactType.Case Then
 					parentFolderID = _folderID
 				Else
 					parentFolderID = -1
@@ -590,9 +596,9 @@ Namespace kCura.WinEDDS
 			While tries > 0
 				Try
 					If TypeOf settings Is kCura.EDDS.WebAPI.BulkImportManagerBase.ObjectLoadInfo Then
-						Return _bulkImportManager.BulkImportObjects(_caseInfo.ArtifactID, DirectCast(settings, kCura.EDDS.WebAPI.BulkImportManagerBase.ObjectLoadInfo), _copyFileToRepository)
+						Return Me.BulkImportManager.BulkImportObjects(_caseInfo.ArtifactID, DirectCast(settings, kCura.EDDS.WebAPI.BulkImportManagerBase.ObjectLoadInfo), _copyFileToRepository)
 					Else
-						Return _bulkImportManager.BulkImportNative(_caseInfo.ArtifactID, settings, _copyFileToRepository, includeExtractedTextEncoding)
+						Return Me.BulkImportManager.BulkImportNative(_caseInfo.ArtifactID, settings, _copyFileToRepository, includeExtractedTextEncoding)
 					End If
 				Catch ex As Exception
 					tries -= 1
@@ -1224,13 +1230,13 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Private Sub ManageErrors(ByVal artifactTypeID As Int32)
-			If Not _bulkImportManager.NativeRunHasErrors(_caseInfo.ArtifactID, _runID) Then Exit Sub
+			If Not Me.BulkImportManager.NativeRunHasErrors(_caseInfo.ArtifactID, _runID) Then Exit Sub
 			Dim sr As kCura.Utility.GenericCsvReader = Nothing
 			Dim downloader As FileDownloader = Nothing
 			Try
-				With _bulkImportManager.GenerateNativeErrorFiles(_caseInfo.ArtifactID, _runID, artifactTypeID, True, _keyFieldID)
+				With Me.BulkImportManager.GenerateNativeErrorFiles(_caseInfo.ArtifactID, _runID, artifactTypeID, True, _keyFieldID)
 					Me.WriteStatusLine(Windows.Process.EventType.Status, "Retrieving errors from server")
-					downloader = New FileDownloader(DirectCast(_bulkImportManager.Credentials, System.Net.NetworkCredential), _caseInfo.DocumentPath, _caseInfo.DownloadHandlerURL, _bulkImportManager.CookieContainer, kCura.WinEDDS.Service.Settings.AuthenticationToken)
+					downloader = New FileDownloader(DirectCast(Me.BulkImportManager.Credentials, System.Net.NetworkCredential), _caseInfo.DocumentPath, _caseInfo.DownloadHandlerURL, Me.BulkImportManager.CookieContainer, kCura.WinEDDS.Service.Settings.AuthenticationToken)
 					AddHandler downloader.UploadStatusEvent, AddressOf _uploader_UploadStatusEvent
 					Dim errorsLocation As String = System.IO.Path.GetTempFileName
 					downloader.MoveTempFileToLocal(errorsLocation, .LogKey, _caseInfo)
@@ -1268,7 +1274,7 @@ Namespace kCura.WinEDDS
 		Private Sub CleanupTempTables()
 			If Not _runID Is Nothing AndAlso _runID <> "" Then
 				Try
-					_bulkImportManager.DisposeTempTables(_caseInfo.ArtifactID, _runID)
+					Me.BulkImportManager.DisposeTempTables(_caseInfo.ArtifactID, _runID)
 				Catch
 				End Try
 			End If
