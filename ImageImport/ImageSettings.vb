@@ -3,6 +3,9 @@ Namespace kCura.Relativity.DataReaderClient
 	Public Class ImageSettings
 
 #Region " Private Variables "
+		Private _dataSourceBatesNumberField As String
+		Private _dataSourceDocumentIdentifierField As String
+		Private _dataSourceFileLocation As String
 
 		Private _RelativityUsername As String
 		Private _RelativityPassword As String
@@ -282,6 +285,42 @@ Namespace kCura.Relativity.DataReaderClient
 			End Set
 		End Property
 
+		''' <summary>
+		''' Name of the field in the data source corresponding to the BatesNumber field
+		''' </summary>
+		Public Property BatesNumberField() As String
+			Get
+				Return _dataSourceBatesNumberField
+			End Get
+			Set(value As String)
+				_dataSourceBatesNumberField = value
+			End Set
+		End Property
+
+		''' <summary>
+		''' Name of the field in the data source corresponding to the DocumentIdentifier field
+		''' </summary>
+		''' <value></value>
+		Public Property DocumentIdentifierField() As String
+			Get
+				Return _dataSourceDocumentIdentifierField
+			End Get
+			Set(value As String)
+				_dataSourceDocumentIdentifierField = value
+			End Set
+		End Property
+
+		''' <summary>
+		''' Name of the field in the data source corresponding to the FileLocation field
+		''' </summary>
+		Public Property FileLocationField() As String
+			Get
+				Return _dataSourceFileLocation
+			End Get
+			Set(value As String)
+				_dataSourceFileLocation = value
+			End Set
+		End Property
 #End Region
 
 	End Class

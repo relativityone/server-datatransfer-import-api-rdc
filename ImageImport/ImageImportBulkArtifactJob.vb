@@ -28,6 +28,9 @@ Namespace kCura.Relativity.DataReaderClient
 			If IsSettingsValid() Then
 				RaiseEvent OnMessage(New Status("Getting source data from database"))
 
+				Dim updatedSourceData As DataTable = MapSuppliedFieldNamesToActual(Settings, SourceData.SourceData)
+				SourceData.SourceData = updatedSourceData
+
 				Dim process As New kCura.WinEDDS.ImportExtension.DataReaderImageImporterProcess(SourceData.SourceData)
 				_observer = process.ProcessObserver
 
@@ -89,6 +92,16 @@ Namespace kCura.Relativity.DataReaderClient
 
 		End Function
 
+		Private Function MapSuppliedFieldNamesToActual(ByVal imageSettings As ImageSettings, ByVal srcDataTable As DataTable) As DataTable
+			'kCura.WinEDDS.ImportExtension.ImageDataTableReader contains the real field names
+			Dim returnDataTbl As DataTable = srcDataTable.Copy()
+			returnDataTbl.Columns(imageSettings.BatesNumberField).ColumnName = "BatesNumber"
+			returnDataTbl.Columns(imageSettings.DocumentIdentifierField).ColumnName = "DocumentIdentifier"
+			returnDataTbl.Columns(imageSettings.FileLocationField).ColumnName = "FileLocation"
+
+			Return returnDataTbl
+		End Function
+
 		Private Function GetDefaultIdentifierFieldID(ByVal credential As System.Net.NetworkCredential, ByVal caseArtifactID As Int32) As Int32
 			Dim retval As Int32
 			Dim dt As System.Data.DataTable = New kCura.WinEDDS.Service.FieldQuery(credential, cookieMonster).RetrievePotentialBeginBatesFields(caseArtifactID).Tables(0)
@@ -130,6 +143,7 @@ Namespace kCura.Relativity.DataReaderClient
 				'	ValidateSqlCommandSettings()
 				ValidateRelativitySettings()
 				ValidateDelimiterSettings()
+				ValidateDataSourceSettings()
 				'ValidateOverwriteModeSettings()
 				'ValidateExtractedTextSettings()
 			Catch ex As Exception
@@ -173,6 +187,34 @@ Namespace kCura.Relativity.DataReaderClient
 		'	RaiseEvent OnMessage(New Status("SQLCommand is valid"))
 
 		'End Sub
+
+		Private Sub ValidateDataSourceSettings()
+			'This expects the DataTable in SourceData to have already been set
+
+			If String.IsNullOrEmpty(Settings.BatesNumberField) Then
+				Throw New Exception("No field name specified for BatesNumber")
+			Else
+				If Not SourceData.SourceData.Columns.Contains(Settings.BatesNumberField) Then
+					Throw New Exception(String.Format("No field named {0} found in the DataTable for BatesNumber", Settings.BatesNumberField))
+				End If
+			End If
+
+			If String.IsNullOrEmpty(Settings.DocumentIdentifierField) Then
+				Throw New Exception("No field name specified for DocumentIdentifier")
+			Else
+				If Not SourceData.SourceData.Columns.Contains(Settings.DocumentIdentifierField) Then
+					Throw New Exception(String.Format("No field named {0} found in the DataTable for DocumentIdentifier", Settings.DocumentIdentifierField))
+				End If
+			End If
+
+			If String.IsNullOrEmpty(Settings.FileLocationField) Then
+				Throw New Exception("No field name specified for FileLocation")
+			Else
+				If Not SourceData.SourceData.Columns.Contains(Settings.FileLocationField) Then
+					Throw New Exception(String.Format("No field named {0} found in the DataTable for FileLocation", Settings.FileLocationField))
+				End If
+			End If
+		End Sub
 
 		Private Sub ValidateRelativitySettings()
 			If Settings.RelativityUsername Is Nothing OrElse Settings.RelativityUsername = String.Empty Then
