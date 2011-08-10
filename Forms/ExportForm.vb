@@ -1360,8 +1360,83 @@ Public Class ExportForm
 				_nativeFileNameSource.SelectedItem = "Select..."
 		End Select
 
+		If ef.LoadFileIsHtml Then
+			_nativeFileFormat.SelectedItem = "HTML (.html)"
+		Else
+			Select Case ef.LoadFileExtension
+				Case "csv"
+					_nativeFileFormat.SelectedItem = "Comma-separated (.csv)"
+				Case "dat"
+					_nativeFileFormat.SelectedItem = "Concordance (.dat)"
+				Case "txt"
+					_nativeFileFormat.SelectedItem = "Custom (.txt)"
+				Case Else
+					_nativeFileFormat.SelectedItem = "Custom (.txt)"
+			End Select
+		End If
+
+		_dataFileEncoding.SelectedEncoding = ef.LoadFileEncoding
+		_textFileEncoding.SelectedEncoding = ef.TextFileEncoding
+
+		_recordDelimiter.SelectedValue = ef.RecordDelimiter
+		_quoteDelimiter.SelectedValue = ef.QuoteDelimiter
+		_newLineDelimiter.SelectedValue = ef.NewlineDelimiter
+		_nestedValueDelimiter.SelectedValue = ef.NestedValueDelimiter
+		_multiRecordDelimiter.SelectedValue = ef.MultiRecordDelimiter
+
+		_exportFullTextAsFile.Checked = ef.ExportFullTextAsFile
+
+		_potentialTextFields.SelectedItem = ef.SelectedTextField
+		_exportMulticodeFieldsAsNested.Checked = ef.MulticodesAsNested
+
+		If ef.DataTable IsNot Nothing AndAlso ef.DataTable.Rows.Count > 0 Then
+			Dim filterArtifactId As Int32 = CInt(ef.DataTable.Rows(0)(0).ToString)
+			If ValueContainsInDropDown(_filters, filterArtifactId) Then
+				_filters.SelectedValue = filterArtifactId
+			End If
+		End If
+
+		If ef.AllExportableFields IsNot Nothing Then
+			For Each vfi As kCura.WinEDDS.ViewFieldInfo In ef.AllExportableFields
+				If Not _columnSelecter.LeftListBoxItems.Contains(vfi) Then
+					_columnSelecter.LeftListBoxItems.Add(vfi)
+				End If
+			Next
+		End If
+
+
+		If ef.SelectedViewFields IsNot Nothing Then
+			Dim itemsToRemoveFromLeftListBox As New System.Collections.Generic.List(Of kCura.WinEDDS.ViewFieldInfo)()
+
+			For Each item As kCura.WinEDDS.ViewFieldInfo In _columnSelecter.LeftListBoxItems
+				For Each vfi As kCura.WinEDDS.ViewFieldInfo In ef.SelectedViewFields
+					If item.AvfId = vfi.AvfId Then
+						itemsToRemoveFromLeftListBox.Add(item)
+						_columnSelecter.RightListBoxItems.Add(vfi)
+					End If
+				Next
+			Next
+
+			For Each vfi As kCura.WinEDDS.ViewFieldInfo In itemsToRemoveFromLeftListBox
+				_columnSelecter.LeftListBoxItems.Remove(vfi)
+			Next
+
+
+		End If
 
 	End Sub
+
+	Private Function ValueContainsInDropDown(ByVal dropDown As ComboBox, ByVal value As Int32) As Boolean
+		Dim retVal As Boolean = False
+		For i As Int32 = 0 To dropDown.Items.Count - 1
+			Dim dropDownRow As DataRow = DirectCast(dropDown.Items(i), System.Data.DataRowView).Row
+			If CInt(dropDownRow("ArtifactID")) = value Then
+				retVal = True
+				Exit For
+			End If
+		Next
+		Return retVal
+	End Function
 
 	Private Sub RunMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles RunMenu.Click
 		Dim msg As New System.Text.StringBuilder
