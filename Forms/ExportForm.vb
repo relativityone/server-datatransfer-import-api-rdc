@@ -119,6 +119,7 @@ Public Class ExportForm
 	Public WithEvents Label24 As System.Windows.Forms.Label
 	Public WithEvents _startExportAtDocumentNumber As System.Windows.Forms.NumericUpDown
 	Public WithEvents _saveExportSettingsDialog As System.Windows.Forms.SaveFileDialog
+	Public WithEvents _loadExportSettingsDialog As System.Windows.Forms.OpenFileDialog
 	<System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
 		Dim resources As System.Resources.ResourceManager = New System.Resources.ResourceManager(GetType(ExportForm))
 		Me.MainMenu1 = New System.Windows.Forms.MainMenu
@@ -209,6 +210,7 @@ Public Class ExportForm
 		Me.Label2 = New System.Windows.Forms.Label
 		Me._recordDelimiter = New System.Windows.Forms.ComboBox
 		Me._saveExportSettingsDialog = New System.Windows.Forms.SaveFileDialog
+		Me._loadExportSettingsDialog = New System.Windows.Forms.OpenFileDialog
 		Me._productionPrecedenceBox.SuspendLayout()
 		Me.GroupBox3.SuspendLayout()
 		Me.TabControl1.SuspendLayout()
@@ -1069,8 +1071,13 @@ Public Class ExportForm
 		'_saveExportSettingsDialog
 		'
 		Me._saveExportSettingsDialog.DefaultExt = "kwe"
-		Me._saveExportSettingsDialog.Filter = "WinEDDS native load files (*.kwe)|*.kwe|All files (*.*)|*.*"
+		Me._saveExportSettingsDialog.Filter = "Relativity Desktop Client settings files (*.kwe)|*.kwe|All files (*.*)|*.*"
 		Me._saveExportSettingsDialog.RestoreDirectory = True
+
+		Me._loadExportSettingsDialog.DefaultExt = "kwe"
+		Me._loadExportSettingsDialog.Filter = "Relativity Desktop Client settings files (*.kwe)|*.kwe|All files (*.*)|*.*"
+		Me._loadExportSettingsDialog.RestoreDirectory = True
+
 		'
 		'ExportForm
 		'
@@ -1155,14 +1162,23 @@ Public Class ExportForm
 
 	Private Sub SaveExportSettings_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles SaveExportSettings.Click
 		Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
-		PopulateExportFile(Me)
-		_saveExportSettingsDialog.ShowDialog()
-		Me.Cursor = System.Windows.Forms.Cursors.Default
+		Try
+			If PopulateExportFile(Me, False) Then
+				Select Case _saveExportSettingsDialog.ShowDialog()
+					Case DialogResult.OK
+						_application.SaveExportFile(_exportFile, _saveExportSettingsDialog.FileName)
+				End Select
+			End If
+		Catch
+			Throw
+		Finally
+			Me.Cursor = System.Windows.Forms.Cursors.Default
+		End Try
 	End Sub
 
-	Public Sub PopulateExportFile(ByVal abstractExportForm As ExportForm)
+	Private Function IsValid(ByVal abstractExportForm As ExportForm) As Boolean
 		Dim msg As New System.Text.StringBuilder
-		Dim d As DocumentFieldCollection = _application.CurrentFields(_exportFile.ArtifactTypeID, True)
+		Dim retval As Boolean = True
 		If Not System.IO.Directory.Exists(_folderPath.Text) OrElse _folderPath.Text.Trim = String.Empty Then
 			If _folderPath.Text.Trim = String.Empty Then
 				AppendErrorMessage(msg, "Export destination folder empty")
@@ -1221,13 +1237,16 @@ Public Class ExportForm
 		If msg.ToString.Trim <> String.Empty Then
 			msg.Insert(0, "The following issues need to be addressed before continuing:" & vbNewLine & vbNewLine)
 			MsgBox(msg.ToString, MsgBoxStyle.Exclamation, "Warning")
-			Exit Sub
+			retval = False
 		End If
-		Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
-		If Not _application.IsConnected(_exportFile.CaseArtifactID, 10) Then
-			Me.Cursor = System.Windows.Forms.Cursors.Default
-			Exit Sub
-		End If
+		Return retval
+	End Function
+
+	Public Function PopulateExportFile(ByVal abstractExportForm As ExportForm, ByVal validateForm As Boolean) As Boolean
+		Dim d As DocumentFieldCollection = _application.CurrentFields(_exportFile.ArtifactTypeID, True)
+		Dim retval As Boolean = True
+		If validateForm AndAlso Not Me.IsValid(abstractExportForm) Then Return False
+		If Not _application.IsConnected(_exportFile.CaseArtifactID, 10) Then Return False
 		_exportFile.FolderPath = _folderPath.Text
 		Select Case Me.ExportFile.TypeOfExport
 			Case ExportFile.ExportType.AncestorSearch
@@ -1237,7 +1256,7 @@ Public Class ExportForm
 				_exportFile.ArtifactID = CType(_filters.SelectedValue, Int32)
 				If Not _application.IsAssociatedSearchProviderAccessible(_exportFile.CaseArtifactID, _exportFile.ArtifactID) Then
 					Me.Cursor = System.Windows.Forms.Cursors.Default
-					Exit Sub
+					Exit Function
 				End If
 				_exportFile.LoadFilesPrefix = DirectCast(_filters.SelectedItem, System.Data.DataRowView)(_filters.DisplayMember).ToString
 			Case ExportFile.ExportType.ParentSearch
@@ -1305,15 +1324,16 @@ Public Class ExportForm
 		_exportFile.VolumeDigitPadding = CType(_volumeDigitPadding.Value, Int32)
 		_exportFile.SubdirectoryDigitPadding = CType(_subdirectoryDigitPadding.Value, Int32)
 		_exportFile.StartAtDocumentNumber = CType(_startExportAtDocumentNumber.Value, Int32) - 1
-		_application.StartSearch(Me.ExportFile)
-		Me.Cursor = System.Windows.Forms.Cursors.Default
-	End Sub
+		Return True
+	End Function
 
 
 	Private Sub LoadExportSettings_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles LoadExportSettings.Click
-		'Read string from file
-		'De serialize string
-		'load deserialized string into export file (ef)
+		_loadExportSettingsDialog.ShowDialog()
+		Dim settings As String = kCura.Utility.File.ReadFileAsString(_loadExportSettingsDialog.FileName)
+		Dim newFile As ExportFile = New kCura.WinEDDS.ExportFileSerializer().DeserializeExportFile(_exportFile, settings)
+		_exportFile = newFile
+
 		'LoadExportFile(ef)
 
 	End Sub
@@ -1364,152 +1384,14 @@ Public Class ExportForm
 	End Sub
 
 	Private Sub RunMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles RunMenu.Click
-		Dim msg As New System.Text.StringBuilder
-		Dim d As DocumentFieldCollection = _application.CurrentFields(_exportFile.ArtifactTypeID, True)
-		If Not System.IO.Directory.Exists(_folderPath.Text) OrElse _folderPath.Text.Trim = String.Empty Then
-			If _folderPath.Text.Trim = String.Empty Then
-				AppendErrorMessage(msg, "Export destination folder empty")
-			Else
-				AppendErrorMessage(msg, "Export destination folder does not exist")
-			End If
-		End If
-		If _filters.SelectedItem Is Nothing Then
-			Dim filterType As String
-			Select Case Me.ExportFile.TypeOfExport
-				Case ExportFile.ExportType.Production
-					filterType = "production"
-				Case ExportFile.ExportType.ArtifactSearch
-					filterType = "saved search"
-				Case Else
-					filterType = "view"
-			End Select
-			msg.AppendFormat("No {0} selected", filterType)
-		End If
-		If _exportNativeFiles.Checked OrElse _columnSelecter.RightListBoxItems.Count > 0 Then
-			If CType(_nativeFileFormat.SelectedItem, String) = "Select..." Then
-				AppendErrorMessage(msg, "No metadata data file format selected")
-			End If
-		End If
-		If _exportImages.Checked Then
-			If CType(_imageFileFormat.SelectedValue, Int32) = -1 Then
-				AppendErrorMessage(msg, "No image data file format selected")
-			End If
-			If _imageTypeDropdown.SelectedIndex = 0 Then
-				AppendErrorMessage(msg, "No image file type selected")
-			End If
-		End If
-		If Me.ExportFile.TypeOfExport = ExportFile.ExportType.Production AndAlso _exportNativeFiles.Checked Then
-			If CType(_nativeFileNameSource.SelectedItem, String) = "Select..." Then
-				AppendErrorMessage(msg, "No file name source selected")
-			End If
-		End If
-		If _dataFileEncoding.SelectedEncoding Is Nothing AndAlso (_exportNativeFiles.Checked OrElse _columnSelecter.RightListBoxItems.Count > 0) Then
-			AppendErrorMessage(msg, "No encoding selected for metadata file.")
-		End If
-		If _exportFullTextAsFile.Checked Then
-			If _textFileEncoding.SelectedEncoding Is Nothing Then
-				AppendErrorMessage(msg, "No encoding selected for text field files.")
-			End If
-		End If
-		If Me.CreateVolume Then
-			If Not _subdirectoryImagePrefix.Text.Trim <> "" Then AppendErrorMessage(msg, "Subdirectory Image Prefix cannot be blank.")
-			If Not _subdirectoryTextPrefix.Text.Trim <> "" Then AppendErrorMessage(msg, "Subdirectory Text Prefix cannot be blank.")
-			If CType(_subDirectoryMaxSize.Value, Int64) < 1 OrElse _subDirectoryMaxSize.Text.Trim = "" Then AppendErrorMessage(msg, "Subdirectory Max Size must be greater than zero.")
-			If Not _subDirectoryNativePrefix.Text.Trim <> "" Then AppendErrorMessage(msg, "Subdirectory Native Prefix cannot be blank.")
-			If CType(_subdirectoryStartNumber.Value, Int32) < 1 OrElse _subdirectoryStartNumber.Text.Trim = "" Then AppendErrorMessage(msg, "Subdirectory Start Number must be greater than zero.")
-			If CType(_volumeMaxSize.Value, Int64) < 1 OrElse _volumeMaxSize.Text.Trim = "" Then AppendErrorMessage(msg, "Volume Max Size must be greater than zero.")
-			If Not _volumePrefix.Text.Trim <> "" Then AppendErrorMessage(msg, "Volume Prefix cannot be blank.")
-			If CType(_volumeStartNumber.Value, Int32) < 1 Then AppendErrorMessage(msg, "Volume Start Number must be greater than zero.")
-		End If
-		If msg.ToString.Trim <> String.Empty Then
-			msg.Insert(0, "The following issues need to be addressed before continuing:" & vbNewLine & vbNewLine)
-			MsgBox(msg.ToString, MsgBoxStyle.Exclamation, "Warning")
-			Exit Sub
-		End If
 		Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
-		If Not _application.IsConnected(_exportFile.CaseArtifactID, 10) Then
+		Try
+			If Me.PopulateExportFile(Me, True) Then _application.StartSearch(Me.ExportFile)
+		Catch
+			Throw
+		Finally
 			Me.Cursor = System.Windows.Forms.Cursors.Default
-			Exit Sub
-		End If
-		_exportFile.FolderPath = _folderPath.Text
-		Select Case Me.ExportFile.TypeOfExport
-			Case ExportFile.ExportType.AncestorSearch
-				_exportFile.ViewID = CType(_filters.SelectedValue, Int32)
-				_exportFile.LoadFilesPrefix = DirectCast(_filters.SelectedItem, System.Data.DataRowView)(_filters.DisplayMember).ToString
-			Case ExportFile.ExportType.ArtifactSearch
-				_exportFile.ArtifactID = CType(_filters.SelectedValue, Int32)
-				If Not _application.IsAssociatedSearchProviderAccessible(_exportFile.CaseArtifactID, _exportFile.ArtifactID) Then
-					Me.Cursor = System.Windows.Forms.Cursors.Default
-					Exit Sub
-				End If
-				_exportFile.LoadFilesPrefix = DirectCast(_filters.SelectedItem, System.Data.DataRowView)(_filters.DisplayMember).ToString
-			Case ExportFile.ExportType.ParentSearch
-				_exportFile.ViewID = CType(_filters.SelectedValue, Int32)
-				_exportFile.LoadFilesPrefix = DirectCast(_filters.SelectedItem, System.Data.DataRowView)(_filters.DisplayMember).ToString
-			Case ExportFile.ExportType.Production
-				_exportFile.ArtifactID = CType(_filters.SelectedValue, Int32)
-				_exportFile.LoadFilesPrefix = DirectCast(_filters.SelectedItem, System.Data.DataRowView)(_filters.DisplayMember).ToString
-				If _nativeFileNameSource.SelectedItem.ToString.ToLower = "identifier" Then
-					_exportFile.ExportNativesToFileNamedFrom = ExportNativeWithFilenameFrom.Identifier
-				Else
-					_exportFile.ExportNativesToFileNamedFrom = ExportNativeWithFilenameFrom.Production
-				End If
-		End Select
-		_exportFile.MulticodesAsNested = _exportMulticodeFieldsAsNested.Checked
-		_exportFile.Overwrite = _overwriteCheckBox.Checked
-		'_exportFile.ExportFullText = _exportFullText.Checked
-		_exportFile.ExportFullTextAsFile = _exportFullTextAsFile.Checked
-		_exportFile.ExportNative = _exportNativeFiles.Checked
-		_exportFile.QuoteDelimiter = ChrW(CType(_quoteDelimiter.SelectedValue, Int32))
-		_exportFile.RecordDelimiter = ChrW(CType(_recordDelimiter.SelectedValue, Int32))
-		_exportFile.MultiRecordDelimiter = ChrW(CType(_multiRecordDelimiter.SelectedValue, Int32))
-		_exportFile.NewlineDelimiter = ChrW(CType(_newLineDelimiter.SelectedValue, Int32))
-		_exportFile.NestedValueDelimiter = ChrW(CType(_nestedValueDelimiter.SelectedValue, Int32))
-		_exportFile.AppendOriginalFileName = _appendOriginalFilename.Checked
-
-		_exportFile.CookieContainer = _application.CookieContainer
-		_exportFile.FilePrefix = ""
-		If _useAbsolutePaths.Checked Then
-			_exportFile.TypeOfExportedFilePath = ExportFile.ExportedFilePathType.Absolute
-		ElseIf _useRelativePaths.Checked Then
-			_exportFile.TypeOfExportedFilePath = ExportFile.ExportedFilePathType.Relative
-		Else
-			_exportFile.TypeOfExportedFilePath = ExportFile.ExportedFilePathType.Prefix
-			_exportFile.FilePrefix = _prefixText.Text
-		End If
-		'TODO: WINFLEX - ArtifactTypeID
-		_exportFile.IdentifierColumnName = d.IdentifierFieldNames(0)
-		_exportFile.RenameFilesToIdentifier = True
-		_exportFile.VolumeInfo = Me.BuildVolumeInfo
-		_exportFile.ExportImages = _exportImages.Checked
-		_exportFile.LogFileFormat = CType(_imageFileFormat.SelectedValue, kCura.WinEDDS.LoadFileType.FileFormat)
-		_exportFile.LoadFileIsHtml = _nativeFileFormat.SelectedIndex = 4
-		If _exportFile.LoadFileIsHtml Then
-			_exportFile.LoadFileExtension = "html"
-		Else
-			_exportFile.LoadFileExtension = Me.GetNativeFileFormatExtension()
-		End If
-		_exportFile.ImagePrecedence = Me.GetImagePrecedence
-		_exportFile.TypeOfImage = Me.GetSelectedImageType
-		Dim selectedViewFields As New System.Collections.ArrayList
-		For Each field As ViewFieldInfo In _columnSelecter.RightListBoxItems
-			selectedViewFields.Add(field)
-		Next
-		_exportFile.SelectedViewFields = DirectCast(selectedViewFields.ToArray(GetType(ViewFieldInfo)), ViewFieldInfo())
-		If _potentialTextFields.SelectedIndex <> -1 Then
-			_exportFile.SelectedTextField = DirectCast(_potentialTextFields.SelectedItem, ViewFieldInfo)
-			_exportFile.ExportFullText = True
-		Else
-			_exportFile.SelectedTextField = Nothing
-			_exportFile.ExportFullText = False
-		End If
-		_exportFile.LoadFileEncoding = _dataFileEncoding.SelectedEncoding
-		_exportFile.TextFileEncoding = _textFileEncoding.SelectedEncoding
-		_exportFile.VolumeDigitPadding = CType(_volumeDigitPadding.Value, Int32)
-		_exportFile.SubdirectoryDigitPadding = CType(_subdirectoryDigitPadding.Value, Int32)
-		_exportFile.StartAtDocumentNumber = CType(_startExportAtDocumentNumber.Value, Int32) - 1
-		_application.StartSearch(Me.ExportFile)
-		Me.Cursor = System.Windows.Forms.Cursors.Default
+		End Try
 	End Sub
 
 
