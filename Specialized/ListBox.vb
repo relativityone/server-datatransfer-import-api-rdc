@@ -82,7 +82,7 @@ Namespace kCura.Windows.Forms
 				Dim newOffset As New System.Drawing.PointF(newArgs.Bounds.Left - HorizontalScrollOffset, newArgs.Bounds.Top)
 
 				newArgs.DrawBackground()
-				newArgs.Graphics.DrawString(Me.Items(e.Index).ToString, newArgs.Font, brush, newOffset)
+				If e.Index > -1 Then newArgs.Graphics.DrawString(Me.Items(e.Index).ToString, newArgs.Font, brush, newOffset)
 				newArgs.DrawFocusRectangle()
 
 				brush.Dispose()

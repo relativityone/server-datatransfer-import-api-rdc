@@ -455,28 +455,24 @@ Namespace kCura.Windows.Forms
 
 #Region " Highlight methods and event handlers "
 
-		Public Sub ClearItems(ByVal location As ListBoxLocation)
-			Dim listbox As System.Windows.Forms.ListBox
-			If location = ListBoxLocation.Left Then
-				_leftListBox.HighlightIndex = -1
-				listbox = _leftListBox
-			Else
-				_rightListBox.HighlightIndex = -1
-				listbox = _rightListBox
-			End If
+		Public Sub ClearHighlight(ByVal location As ListBoxLocation)
+			Dim listbox As kCura.Windows.Forms.ListBox = If(location = ListBoxLocation.Left, _leftListBox, _rightListBox)
+			listbox.HighlightIndex = -1
+			listbox.Refresh()
+		End Sub
+
+		Public Sub ClearSelection(ByVal location As ListBoxLocation)
+			Dim listbox As kCura.Windows.Forms.ListBox = If(location = ListBoxLocation.Left, _leftListBox, _rightListBox)
+			listbox.SelectedItem = Nothing
+			listbox.SelectionMode = SelectionMode.None
+			listbox.SelectionMode = SelectionMode.MultiExtended
 			listbox.Refresh()
 		End Sub
 
 		Public Sub HighlightItembyIndex(ByVal index As Int32, ByVal location As ListBoxLocation)
 			Dim listbox As kCura.Windows.Forms.ListBox = If(location = ListBoxLocation.Left, _leftListBox, _rightListBox)
-
-			If location = ListBoxLocation.Left Then
-				_leftListBox.HighlightIndex = index
-				_leftListBox.Refresh()
-			Else
-				_rightListBox.HighlightIndex = index
-				_rightListBox.Refresh()
-			End If
+			listbox.HighlightIndex = index
+			listbox.Refresh()
 		End Sub
 
 		Private Sub HighlightMouseOverItem(ByVal sender As Object, ByVal e As System.Windows.Forms.MouseEventArgs, ByVal location As ListBoxLocation)
@@ -489,7 +485,7 @@ Namespace kCura.Windows.Forms
 				HighlightItembyIndex(index, location)
 				RaiseEvent HighlightItemByLocationAndIndex(Me, New HighlightItemEventArgs With {.Location = raiseEventLocation, .Index = index})
 			Else
-				ClearItems(location)
+				ClearHighlight(location)
 				RaiseEvent ClearHighlightedItems(Me, New HighlightItemEventArgs With {.Location = raiseEventLocation})
 			End If
 
@@ -497,12 +493,12 @@ Namespace kCura.Windows.Forms
 		End Sub
 
 		Private Sub _rightListBox_MouseLeave(ByVal sender As Object, ByVal e As System.EventArgs) Handles _rightListBox.MouseLeave
-			ClearItems(ListBoxLocation.Right)
+			ClearHighlight(ListBoxLocation.Right)
 			RaiseEvent ClearHighlightedItems(Me, New HighlightItemEventArgs With {.Location = ListBoxLocation.Left})
 		End Sub
 
 		Private Sub _leftListBox_MouseLeave(ByVal sender As Object, ByVal e As System.EventArgs) Handles _leftListBox.MouseLeave
-			ClearItems(ListBoxLocation.Left)
+			ClearHighlight(ListBoxLocation.Left)
 			RaiseEvent ClearHighlightedItems(Me, New HighlightItemEventArgs With {.Location = ListBoxLocation.Right})
 		End Sub
 
