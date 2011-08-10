@@ -1326,17 +1326,16 @@ Public Class ExportForm
 		_exportFile.StartAtDocumentNumber = CType(_startExportAtDocumentNumber.Value, Int32) - 1
 		Return True
 	End Function
-	End Sub
 
 
 	Private Sub LoadExportSettings_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles LoadExportSettings.Click
-		_loadExportSettingsDialog.ShowDialog()
-		Dim settings As String = kCura.Utility.File.ReadFileAsString(_loadExportSettingsDialog.FileName)
-		Dim newFile As ExportFile = New kCura.WinEDDS.ExportFileSerializer().DeserializeExportFile(_exportFile, settings)
-		_exportFile = newFile
+		If _loadExportSettingsDialog.ShowDialog() = System.Windows.Forms.DialogResult.OK Then
+			Dim settings As String = kCura.Utility.File.ReadFileAsString(_loadExportSettingsDialog.FileName)
+			Dim newFile As ExportFile = New kCura.WinEDDS.ExportFileSerializer().DeserializeExportFile(_exportFile, settings)
+			_exportFile = newFile
 
-		'LoadExportFile(ef)
-
+			LoadExportFile(_exportFile)
+		End If
 	End Sub
 
 	Public Sub LoadExportFile(ByVal ef As kCura.WinEDDS.ExportFile)
@@ -1352,9 +1351,9 @@ Public Class ExportForm
 			If Not _volumePrefix.Text.Equals(ef.VolumeInfo.VolumePrefix, StringComparison.InvariantCultureIgnoreCase) Then _volumePrefix.Text = ef.VolumeInfo.VolumePrefix
 			If _volumeStartNumber.Value <> ef.VolumeInfo.VolumeStartNumber Then _volumeStartNumber.Value = ef.VolumeInfo.VolumeStartNumber
 			If _volumeMaxSize.Value <> ef.VolumeInfo.VolumeMaxSize Then _volumeMaxSize.Value = ef.VolumeInfo.VolumeMaxSize
-			If Not _subdirectoryImagePrefix.Text.Equals(ef.VolumeInfo.SubdirectoryImagePrefix) Then _subdirectoryImagePrefix.Text = ef.VolumeInfo.SubdirectoryImagePrefix
-			If Not _subDirectoryNativePrefix.Text.Equals(ef.VolumeInfo.SubdirectoryNativePrefix) Then _subDirectoryNativePrefix.Text = ef.VolumeInfo.SubdirectoryNativePrefix
-			If Not _subdirectoryTextPrefix.Text.Equals(ef.VolumeInfo.SubdirectoryFullTextPrefix) Then _subdirectoryTextPrefix.Text = ef.VolumeInfo.SubdirectoryFullTextPrefix
+			If Not _subdirectoryImagePrefix.Text.Equals(ef.VolumeInfo.SubdirectoryImagePrefix) Then _subdirectoryImagePrefix.Text = ef.VolumeInfo.SubdirectoryImagePrefix(False)
+			If Not _subDirectoryNativePrefix.Text.Equals(ef.VolumeInfo.SubdirectoryNativePrefix) Then _subDirectoryNativePrefix.Text = ef.VolumeInfo.SubdirectoryNativePrefix(False)
+			If Not _subdirectoryTextPrefix.Text.Equals(ef.VolumeInfo.SubdirectoryFullTextPrefix) Then _subdirectoryTextPrefix.Text = ef.VolumeInfo.SubdirectoryFullTextPrefix(False)
 			If _subdirectoryStartNumber.Value <> ef.VolumeInfo.SubdirectoryStartNumber Then _subdirectoryStartNumber.Value = ef.VolumeInfo.SubdirectoryStartNumber
 			If _subDirectoryMaxSize.Value <> ef.VolumeInfo.SubdirectoryMaxSize Then _subDirectoryMaxSize.Value = ef.VolumeInfo.SubdirectoryMaxSize
 		End If
@@ -1392,7 +1391,7 @@ Public Class ExportForm
 				Case "txt"
 					_nativeFileFormat.SelectedItem = "Custom (.txt)"
 				Case Else
-					_nativeFileFormat.SelectedItem = "Custom (.txt)"
+					_nativeFileFormat.SelectedIndex = 0
 			End Select
 		End If
 
@@ -1418,17 +1417,18 @@ Public Class ExportForm
 		End If
 
 		If ef.AllExportableFields IsNot Nothing Then
-			For Each vfi As kCura.WinEDDS.ViewFieldInfo In ef.AllExportableFields
-				If Not _columnSelecter.LeftListBoxItems.Contains(vfi) Then
-					_columnSelecter.LeftListBoxItems.Add(vfi)
-				End If
-			Next
+			_columnSelecter.ClearSelection(kCura.Windows.Forms.ListBoxLocation.Left)
+			_columnSelecter.LeftListBoxItems.Clear()
+			Array.Sort(ef.AllExportableFields)
+			_columnSelecter.LeftListBoxItems.AddRange(ef.AllExportableFields)
 		End If
 
 
 		If ef.SelectedViewFields IsNot Nothing Then
-			Dim itemsToRemoveFromLeftListBox As New System.Collections.Generic.List(Of kCura.WinEDDS.ViewFieldInfo)()
 
+			Dim itemsToRemoveFromLeftListBox As New System.Collections.Generic.List(Of kCura.WinEDDS.ViewFieldInfo)()
+			_columnSelecter.ClearSelection(kCura.Windows.Forms.ListBoxLocation.Right)
+			_columnSelecter.RightListBoxItems.Clear()
 			For Each item As kCura.WinEDDS.ViewFieldInfo In _columnSelecter.LeftListBoxItems
 				For Each vfi As kCura.WinEDDS.ViewFieldInfo In ef.SelectedViewFields
 					If item.AvfId = vfi.AvfId Then
@@ -1457,7 +1457,7 @@ Public Class ExportForm
 
 			For Each precedencePair As kCura.WinEDDS.Pair In ef.ImagePrecedence
 				For Each item As kCura.WinEDDS.Pair In validPrecedencePairs
-					If precedencePair.equals(item) Then
+					If precedencePair.equals(item) OrElse (precedencePair.Display = "Original" AndAlso precedencePair.Value = "-1") Then
 						_productionPrecedenceList.Items.Add(precedencePair)
 						Exit For
 					End If
@@ -1513,7 +1513,7 @@ Public Class ExportForm
 		ElseIf selected.IndexOf("(.dat)") <> -1 Then
 			Return "dat"
 		Else
-			Return "txt"
+			Return String.Empty
 		End If
 	End Function
 
