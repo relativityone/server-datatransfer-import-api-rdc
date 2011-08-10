@@ -1424,6 +1424,10 @@ Public Class ExportForm
 
 		End If
 
+		If ef.StartAtDocumentNumber > _startExportAtDocumentNumber.Minimum AndAlso ef.StartAtDocumentNumber < _startExportAtDocumentNumber.Maximum Then
+			_startExportAtDocumentNumber.Value = ef.StartAtDocumentNumber
+		End If
+
 	End Sub
 
 	Private Function ValueContainsInDropDown(ByVal dropDown As ComboBox, ByVal value As Int32) As Boolean
