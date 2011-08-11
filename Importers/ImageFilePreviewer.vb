@@ -19,6 +19,7 @@ Namespace kCura.WinEDDS
 		Private _order As Int32
 		Private _csvwriter As System.Text.StringBuilder
 		Private _nextLine As String()
+		Private _serviceURL As String
 		Private WithEvents _processController As kCura.Windows.Process.Controller
 
 		Private Enum Columns
@@ -26,6 +27,20 @@ Namespace kCura.WinEDDS
 			FileLocation = 2
 			MultiPageIndicator = 3
 		End Enum
+
+		Public Property ServiceURL As String
+			Get
+				Return _serviceURL
+			End Get
+			Set(value As String)
+				_serviceURL = value
+				_docManager.ServiceURL = value
+				_fieldQuery.ServiceURL = value
+				_folderManager.ServiceURL = value
+				_fileManager.ServiceURL = value
+				_fileUploader.ServiceURL = value
+			End Set
+		End Property
 
 		Friend WriteOnly Property FilePath() As String
 			Set(ByVal value As String)
@@ -46,12 +61,22 @@ Namespace kCura.WinEDDS
 		Public Event StatusMessage(ByVal args As kCura.Windows.Process.StatusEventArgs)
 
 		Public Sub New(ByVal args As ImageLoadFile, ByVal controller As kCura.Windows.Process.Controller, ByVal doRetryLogic As Boolean)
+			Me.New(args, controller, doRetryLogic, kCura.WinEDDS.Config.WebServiceURL)
+		End Sub
+
+		Public Sub New(ByVal args As ImageLoadFile, ByVal controller As kCura.Windows.Process.Controller, ByVal doRetryLogic As Boolean, ByVal webURL As String)
 			MyBase.New(New Char() {","c}, doRetryLogic)
+			_serviceURL = webURL
+
 			_docManager = New kCura.WinEDDS.Service.DocumentManager(args.Credential, args.CookieContainer)
 			_fieldQuery = New kCura.WinEDDS.Service.FieldQuery(args.Credential, args.CookieContainer)
 			_folderManager = New kCura.WinEDDS.Service.FolderManager(args.Credential, args.CookieContainer)
 			_fileManager = New kCura.WinEDDS.Service.FileManager(args.Credential, args.CookieContainer)
-			_fileUploader = New kCura.WinEDDS.FileUploader(args.Credential, args.CaseInfo.ArtifactID, _docManager.GetDocumentDirectoryByCaseArtifactID(args.CaseInfo.ArtifactID) & "\", args.CookieContainer)
+			_fileUploader = New kCura.WinEDDS.FileUploader(args.Credential, args.CaseInfo.ArtifactID, _docManager.GetDocumentDirectoryByCaseArtifactID(args.CaseInfo.ArtifactID) & "\", args.CookieContainer, ServiceURL)
+
+			'This is done to force the update of all ServiceURL() properties for the Manager objects
+			ServiceURL = ServiceURL
+
 			_overwrite = args.Overwrite
 			_replaceFullText = args.ReplaceFullText
 			_selectedIdentifierField = args.ControlKeyField

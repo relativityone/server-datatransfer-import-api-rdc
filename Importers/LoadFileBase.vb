@@ -49,6 +49,7 @@ Namespace kCura.WinEDDS
 		Protected _settings As kCura.WinEDDS.LoadFile
 		Private _codeValidator As CodeValidator.Base
 		Private _codesCreated As Int32 = 0
+		Private _serviceURL As String
 		Protected WithEvents _artifactReader As Api.IArtifactReader
 #End Region
 
@@ -95,6 +96,24 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
+		Public Property ServiceURL As String
+			Get
+				Return _serviceURL
+			End Get
+			Set(value As String)
+				_serviceURL = value
+				_documentManager.ServiceURL = value
+				_uploadManager.ServiceURL = value
+				_codeManager.ServiceURL = value
+				_folderManager.ServiceURL = value
+				_fieldQuery.ServiceURL = value
+				_fileManager.ServiceURL = value
+				_usermanager.ServiceURL = value
+				_bulkImportManager.ServiceURL = value
+				_objectManager.ServiceURL = value
+			End Set
+		End Property
+
 #End Region
 
 #Region " Virtual Members "
@@ -109,7 +128,13 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Protected Sub New(ByVal args As LoadFile, ByVal timezoneoffset As Int32, ByVal doRetryLogic As Boolean, ByVal autoDetect As Boolean)
+			Me.New(args, timezoneoffset, doRetryLogic, autoDetect, kCura.WinEDDS.Config.WebServiceURL)
+		End Sub
+
+		Protected Sub New(ByVal args As LoadFile, ByVal timezoneoffset As Int32, ByVal doRetryLogic As Boolean, ByVal autoDetect As Boolean, ByVal webURL As String)
 			'MyBase.New(args.RecordDelimiter, args.QuoteDelimiter, args.NewlineDelimiter, doRetryLogic)
+			_serviceURL = webURL
+
 			_settings = args
 			_artifactReader = Me.GetArtifactReader
 			_docFields = args.FieldMap.DocumentFields
@@ -125,6 +150,10 @@ Namespace kCura.WinEDDS
 			_usermanager = New kCura.WinEDDS.Service.UserManager(args.Credentials, args.CookieContainer)
 			_bulkImportManager = New kCura.WinEDDS.Service.BulkImportManager(args.Credentials, args.CookieContainer)
 			_objectManager = New kCura.WinEDDS.Service.ObjectManager(args.Credentials, args.CookieContainer)
+
+			'This is done to force the update of all ServiceURL() properties for the Manager objects
+			ServiceURL = ServiceURL
+
 			_keyFieldID = args.IdentityFieldId
 			_multiValueSeparator = args.MultiRecordDelimiter.ToString.ToCharArray
 			_folderID = args.DestinationFolderID
@@ -216,14 +245,16 @@ Namespace kCura.WinEDDS
 				Dim i As Int32
 				Dim hierarchicCodeManager As Service.IHierarchicArtifactManager
 				If forPreview Then
-					hierarchicCodeManager = New Service.FieldSpecificCodePreviewer(_codeManager, field.CodeTypeID)
+					hierarchicCodeManager = New Service.FieldSpecificCodePreviewer(_codeManager, field.CodeTypeID, ServiceURL)
 				Else
-					hierarchicCodeManager = New Service.FieldSpecificCodeManager(_codeManager, field.CodeTypeID)
+					hierarchicCodeManager = New Service.FieldSpecificCodeManager(_codeManager, field.CodeTypeID, ServiceURL)
 				End If
 				If Not Me.MulticodeMatrix.Contains(field.CodeTypeID) Then
-					Me.MulticodeMatrix.Add(field.CodeTypeID, New NestedArtifactCache(hierarchicCodeManager, _caseSystemID, _caseArtifactID, _hierarchicalMultiValueFieldDelmiter))
+					Me.MulticodeMatrix.Add(field.CodeTypeID, New NestedArtifactCache(hierarchicCodeManager, _caseSystemID, _caseArtifactID, _hierarchicalMultiValueFieldDelmiter, ServiceURL))
 				End If
 				Dim artifactCache As NestedArtifactCache = DirectCast(Me.MulticodeMatrix(field.CodeTypeID), NestedArtifactCache)
+				artifactCache.ServiceURL = ServiceURL
+
 				Dim c As New System.Collections.ArrayList
 				For Each codeString As String In codeDisplayNames
 					For Each id As Object() In artifactCache.SelectedIds(_hierarchicalMultiValueFieldDelmiter & codeString.Trim(_hierarchicalMultiValueFieldDelmiter.ToCharArray))

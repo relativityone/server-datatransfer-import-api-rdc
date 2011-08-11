@@ -4,10 +4,25 @@ Namespace kCura.WinEDDS.Service
 
 		Private _codeManager As kCura.WinEDDS.Service.CodeManager
 		Private _codeTypeID As Int32
+
 		Public Sub New(ByVal codeManager As kCura.WinEDDS.Service.CodeManager, ByVal codeTypeID As Int32)
+			Me.New(codeManager, codeTypeID, kCura.WinEDDS.Config.WebServiceURL)
+		End Sub
+
+		Public Sub New(ByVal codeManager As kCura.WinEDDS.Service.CodeManager, ByVal codeTypeID As Int32, ByVal webURL As String)
 			_codeManager = codeManager
 			_codeTypeID = codeTypeID
+			ServiceURL = webURL
 		End Sub
+
+		Public Property ServiceURL As String
+			Get
+				Return _codeManager.ServiceURL
+			End Get
+			Set(ByVal value As String)
+				_codeManager.ServiceURL = value
+			End Set
+		End Property
 
 		Public Function Create(ByVal caseContextArtifactID As Integer, ByVal parentArtifactID As Integer, ByVal name As String) As Integer Implements IHierarchicArtifactManager.Create
 			Dim code As kCura.EDDS.WebAPI.CodeManagerBase.Code = _codeManager.CreateNewCodeDTOProxy(_codeTypeID, name, 1, parentArtifactID)

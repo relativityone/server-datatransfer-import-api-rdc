@@ -182,6 +182,18 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
+		Public Shadows Property ServiceURL As String
+			Get
+				Return MyBase.ServiceURL
+			End Get
+			Set(value As String)
+				MyBase.ServiceURL = value
+				_uploader.ServiceURL = value
+				_bcpuploader.ServiceURL = value
+				_auditManager.ServiceURL = value
+			End Set
+		End Property
+
 #End Region
 
 #Region "Constructors"
@@ -201,7 +213,12 @@ Namespace kCura.WinEDDS
 		''' is <c>null</c> or <c>String.Empty</c>.</exception>
 		Public Sub New(ByVal args As LoadFile, ByVal processController As kCura.Windows.Process.Controller, ByVal timeZoneOffset As Int32, ByVal initializeUploaders As Boolean, ByVal processID As Guid, ByVal doRetryLogic As Boolean, _
 		 ByVal bulkLoadFileFieldDelimiter As String)
-			Me.New(args, processController, timeZoneOffset, True, initializeUploaders, processID, doRetryLogic, bulkLoadFileFieldDelimiter)
+			Me.New(args, processController, timeZoneOffset, initializeUploaders, processID, doRetryLogic, bulkLoadFileFieldDelimiter, kCura.WinEDDS.Config.WebServiceURL)
+		End Sub
+
+		Public Sub New(ByVal args As LoadFile, ByVal processController As kCura.Windows.Process.Controller, ByVal timeZoneOffset As Int32, ByVal initializeUploaders As Boolean, ByVal processID As Guid, ByVal doRetryLogic As Boolean, _
+		 ByVal bulkLoadFileFieldDelimiter As String, ByVal webURL As String)
+			Me.New(args, processController, timeZoneOffset, True, initializeUploaders, processID, doRetryLogic, bulkLoadFileFieldDelimiter, webURL)
 		End Sub
 
 		''' <summary>
@@ -219,9 +236,17 @@ Namespace kCura.WinEDDS
 		''' is <c>null</c> or <c>String.Empty</c>.</exception>
 		Public Sub New(ByVal args As LoadFile, ByVal processController As kCura.Windows.Process.Controller, ByVal timeZoneOffset As Int32, ByVal autoDetect As Boolean, ByVal initializeUploaders As Boolean, ByVal processID As Guid, ByVal doRetryLogic As Boolean, _
 		 ByVal bulkLoadFileFieldDelimiter As String)
-			MyBase.New(args, timeZoneOffset, doRetryLogic, autoDetect)
+			Me.New(args, processController, timeZoneOffset, autoDetect, initializeUploaders, processID, doRetryLogic, bulkLoadFileFieldDelimiter, kCura.WinEDDS.Config.WebServiceURL)
+		End Sub
+
+		Public Sub New(ByVal args As LoadFile, ByVal processController As kCura.Windows.Process.Controller, ByVal timeZoneOffset As Int32, ByVal autoDetect As Boolean, ByVal initializeUploaders As Boolean, ByVal processID As Guid, ByVal doRetryLogic As Boolean, _
+		 ByVal bulkLoadFileFieldDelimiter As String, ByVal webURL As String)
+			MyBase.New(args, timeZoneOffset, doRetryLogic, autoDetect, webURL)
+
 			_overwrite = args.OverwriteDestination
 			_auditManager = New kCura.WinEDDS.Service.AuditManager(args.Credentials, args.CookieContainer)
+			_auditManager.ServiceURL = ServiceURL
+
 			If args.CopyFilesToDocumentRepository Then
 				_defaultDestinationFolderPath = args.SelectedCasePath & "EDDS" & args.CaseInfo.ArtifactID & "\"
 				If args.ArtifactTypeID <> Relativity.ArtifactType.Document Then
@@ -234,8 +259,8 @@ Namespace kCura.WinEDDS
 			End If
 			_defaultTextFolderPath = args.CaseDefaultPath & "EDDS" & args.CaseInfo.ArtifactID & "\"
 			If initializeUploaders Then
-				_uploader = New kCura.WinEDDS.FileUploader(args.Credentials, args.CaseInfo.ArtifactID, _defaultDestinationFolderPath, args.CookieContainer)
-				_bcpuploader = New kCura.WinEDDS.FileUploader(args.Credentials, args.CaseInfo.ArtifactID, _defaultDestinationFolderPath, args.CookieContainer, False)
+				_uploader = New kCura.WinEDDS.FileUploader(args.Credentials, args.CaseInfo.ArtifactID, _defaultDestinationFolderPath, args.CookieContainer, ServiceURL)
+				_bcpuploader = New kCura.WinEDDS.FileUploader(args.Credentials, args.CaseInfo.ArtifactID, _defaultDestinationFolderPath, args.CookieContainer, ServiceURL, False)
 				'_textUploader = New kCura.WinEDDS.FileUploader(args.Credentials, args.CaseInfo.ArtifactID, _defaultTextFolderPath, args.CookieContainer, False)
 			End If
 			_extractFullTextFromNative = args.ExtractFullTextFromNativeFile
@@ -248,10 +273,16 @@ Namespace kCura.WinEDDS
 			_firstTimeThrough = True
 			_caseInfo = args.CaseInfo
 			_settings = args
-			_isAuditingEnabled = New kCura.WinEDDS.Service.RelativityManager(args.Credentials, args.CookieContainer).IsAuditingEnabled
+
+			Dim tempRelMan As Service.RelativityManager = New kCura.WinEDDS.Service.RelativityManager(args.Credentials, args.CookieContainer)
+			tempRelMan.ServiceURL = ServiceURL
+
+			_isAuditingEnabled = tempRelMan.IsAuditingEnabled
 			_processID = processID
 			_startLineNumber = args.StartLineNumber
 			Dim parentQuery As New kCura.WinEDDS.Service.ObjectTypeManager(args.Credentials, args.CookieContainer)
+			parentQuery.ServiceURL = ServiceURL
+
 			_parentArtifactTypeID = CType(parentQuery.RetrieveParentArtifactTypeID(args.CaseInfo.ArtifactID, args.ArtifactTypeID).Tables(0).Rows(0)("ParentArtifactTypeID"), Int32)
 
 			If String.IsNullOrEmpty(bulkLoadFileFieldDelimiter) Then
@@ -1230,7 +1261,7 @@ Namespace kCura.WinEDDS
 			Try
 				With _bulkImportManager.GenerateNativeErrorFiles(_caseInfo.ArtifactID, _runID, artifactTypeID, True, _keyFieldID)
 					Me.WriteStatusLine(Windows.Process.EventType.Status, "Retrieving errors from server")
-					downloader = New FileDownloader(DirectCast(_bulkImportManager.Credentials, System.Net.NetworkCredential), _caseInfo.DocumentPath, _caseInfo.DownloadHandlerURL, _bulkImportManager.CookieContainer, kCura.WinEDDS.Service.Settings.AuthenticationToken)
+					downloader = New FileDownloader(DirectCast(_bulkImportManager.Credentials, System.Net.NetworkCredential), _caseInfo.DocumentPath, _caseInfo.DownloadHandlerURL, _bulkImportManager.CookieContainer, kCura.WinEDDS.Service.Settings.AuthenticationToken, ServiceURL)
 					AddHandler downloader.UploadStatusEvent, AddressOf _uploader_UploadStatusEvent
 					Dim errorsLocation As String = System.IO.Path.GetTempFileName
 					downloader.MoveTempFileToLocal(errorsLocation, .LogKey, _caseInfo)
@@ -1284,7 +1315,7 @@ Namespace kCura.WinEDDS
 			Return New CodeValidator.SingleImporter(_settings.CaseInfo, _codeManager)
 		End Function
 		Protected Overrides Function GetArtifactReader() As Api.IArtifactReader
-			Return New kCura.WinEDDS.LoadFileReader(_settings, False)
+			Return New kCura.WinEDDS.LoadFileReader(_settings, False, ServiceURL)
 		End Function
 
 

@@ -94,7 +94,11 @@ Namespace kCura.WinEDDS
 #End Region
 
 		Public Sub New(ByVal args As LoadFile, ByVal trackErrorsAsFieldValues As Boolean)
-			MyBase.New(args, trackErrorsAsFieldValues)
+			Me.New(args, trackErrorsAsFieldValues, kCura.WinEDDS.Config.WebServiceURL)
+		End Sub
+
+		Public Sub New(ByVal args As LoadFile, ByVal trackErrorsAsFieldValues As Boolean, ByVal webURL As String)
+			MyBase.New(args, trackErrorsAsFieldValues, webURL)
 			_haltListener = New HaltListener
 			_continue = True
 			_folders = New System.Collections.Specialized.HybridDictionary

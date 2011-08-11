@@ -30,12 +30,19 @@ Namespace kCura.WinEDDS
 				Return _repositoryPathManager.CurrentDestinationDirectory
 			End Get
 		End Property
+
 		Public Sub SetDesintationFolderName(ByVal value As String)
 			_destinationFolderPath = value
 		End Sub
 
 		Public Sub New(ByVal credentials As Net.NetworkCredential, ByVal caseArtifactID As Int32, ByVal destinationFolderPath As String, ByVal cookieContainer As System.Net.CookieContainer, Optional ByVal sortIntoVolumes As Boolean = True)
+			Me.New(credentials, caseArtifactID, destinationFolderPath, cookieContainer, kCura.WinEDDS.Config.WebServiceURL, sortIntoVolumes)
+		End Sub
+
+		Public Sub New(ByVal credentials As Net.NetworkCredential, ByVal caseArtifactID As Int32, ByVal destinationFolderPath As String, ByVal cookieContainer As System.Net.CookieContainer, ByVal webURL As String, Optional ByVal sortIntoVolumes As Boolean = True)
 			_gateway = New kCura.WinEDDS.Service.FileIO(credentials, cookieContainer)
+			_gateway.ServiceURL = webURL
+
 			_gateway.Credentials = credentials
 			_gateway.Timeout = Int32.MaxValue
 			_credentials = credentials
@@ -45,6 +52,15 @@ Namespace kCura.WinEDDS
 			_sortIntoVolumes = sortIntoVolumes
 			SetType(_destinationFolderPath)
 		End Sub
+
+		Public Property ServiceURL As String
+			Get
+				Return _gateway.ServiceURL
+			End Get
+			Set(ByVal value As String)
+				_gateway.ServiceURL = value
+			End Set
+		End Property
 
 		Private Sub SetType(ByVal destFolderPath As String)
 			Try
