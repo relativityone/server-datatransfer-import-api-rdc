@@ -76,6 +76,12 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
+		Protected Overridable ReadOnly Property NumberOfRetries() As Int32
+			Get
+				Return kCura.Utility.Config.Settings.IoErrorNumberOfRetries
+			End Get
+		End Property
+
 		Public ReadOnly Property AllFields(ByVal artifactTypeID As Int32) As kCura.EDDS.WebAPI.DocumentManagerBase.Field()
 			Get
 				If _allFields Is Nothing Then
@@ -389,15 +395,17 @@ Namespace kCura.WinEDDS
 
 			Me.InitializeFolderManagement()
 			Me.InitializeFieldIdList()
-			kCura.Utility.File.Delete(_outputNativeFilePath)
-			kCura.Utility.File.Delete(_outputCodeFilePath)
-			kCura.Utility.File.Delete(_outputObjectFilePath)
-			_outputNativeFileWriter = New System.IO.StreamWriter(_outputNativeFilePath, False, System.Text.Encoding.Unicode)
-			_outputCodeFileWriter = New System.IO.StreamWriter(_outputCodeFilePath, False, System.Text.Encoding.Unicode)
-			_outputObjectFileWriter = New System.IO.StreamWriter(_outputObjectFilePath, False, System.Text.Encoding.Unicode)
+			DeleteFiles()
+			OpenFileWriters()
 			RaiseEvent StatusMessage(New kCura.Windows.Process.StatusEventArgs(Windows.Process.EventType.ResetStartTime, 0, _recordCount, "Reset time for import rolling average", Nothing))
 			Return True
 		End Function
+
+		Private Sub DeleteFiles()
+			kCura.Utility.File.Delete(_outputNativeFilePath)
+			kCura.Utility.File.Delete(_outputCodeFilePath)
+			kCura.Utility.File.Delete(_outputObjectFilePath)
+		End Sub
 
 		Private Sub InitializeFolderManagement()
 			If _createFolderStructure Then
@@ -591,27 +599,47 @@ Namespace kCura.WinEDDS
 			_timekeeper.MarkEnd("ManageDocumentMetadata_ProgressEvent")
 		End Sub
 
-		Private Function BulkImport(ByVal settings As kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo, ByVal includeExtractedTextEncoding As Boolean) As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults
-			Dim tries As Int32 = kCura.Utility.Config.Settings.IoErrorNumberOfRetries
+		Protected Function BulkImport(ByVal settings As kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo, ByVal includeExtractedTextEncoding As Boolean) As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults
+			Dim tries As Int32 = NumberOfRetries()
+			Dim retval As New kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults
 			While tries > 0
 				Try
 					If TypeOf settings Is kCura.EDDS.WebAPI.BulkImportManagerBase.ObjectLoadInfo Then
-						Return Me.BulkImportManager.BulkImportObjects(_caseInfo.ArtifactID, DirectCast(settings, kCura.EDDS.WebAPI.BulkImportManagerBase.ObjectLoadInfo), _copyFileToRepository)
+						retval = Me.BulkImportManager.BulkImportObjects(_caseInfo.ArtifactID, DirectCast(settings, kCura.EDDS.WebAPI.BulkImportManagerBase.ObjectLoadInfo), _copyFileToRepository)
 					Else
-						Return Me.BulkImportManager.BulkImportNative(_caseInfo.ArtifactID, settings, _copyFileToRepository, includeExtractedTextEncoding)
+						retval = Me.BulkImportManager.BulkImportNative(_caseInfo.ArtifactID, settings, _copyFileToRepository, includeExtractedTextEncoding)
 					End If
 				Catch ex As Exception
 					tries -= 1
-					If tries = 0 OrElse TypeOf ex Is Service.BulkImportManager.BulkImportSqlException OrElse _continue = False Then
+					If tries = 0 OrElse ex.GetType = GetType(Service.BulkImportManager.BulkImportSqlException) OrElse _continue = False Then
 						Throw
-					ElseIf tries < kCura.Utility.Config.Settings.IoErrorNumberOfRetries Then
-						Me.RaiseIoWarning(New kCura.Utility.DelimitedFileImporter.IoWarningEventArgs(kCura.Utility.Config.Settings.IoErrorWaitTimeInSeconds, ex, Me.CurrentLineNumber))
-						System.Threading.Thread.CurrentThread.Join(1000 * kCura.Utility.Config.Settings.IoErrorWaitTimeInSeconds)
+					ElseIf tries < NumberOfRetries() Then
+						If ExceptionIsTimeoutRelated(ex) Then Me.LowerBatchSize()
+						Me.RaiseWarningAndPause(ex)
 					End If
 				End Try
 			End While
-			Return Nothing
+			Return retval
 		End Function
+
+		Private Function ExceptionIsTimeoutRelated(ByVal ex As Exception) As Boolean
+			If TypeOf ex Is Service.BulkImportManager.BulkImportSqlTimeoutException Then
+				Return True
+			ElseIf TypeOf ex Is System.Net.WebException AndAlso ex.Message.ToString.Contains("timed out") Then
+				Return True
+			Else
+				Return False
+			End If
+		End Function
+
+		Protected Overridable Sub LowerBatchSize()
+			'TODO: change batch size
+		End Sub
+
+		Protected Overridable Sub RaiseWarningAndPause(ByVal ex As Exception)
+			Me.RaiseIoWarning(New kCura.Utility.DelimitedFileImporter.IoWarningEventArgs(kCura.Utility.Config.Settings.IoErrorWaitTimeInSeconds, ex, Me.CurrentLineNumber))
+			System.Threading.Thread.CurrentThread.Join(1000 * kCura.Utility.Config.Settings.IoErrorWaitTimeInSeconds)
+		End Sub
 
 		Private Function GetSettingsObject() As kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo
 			If _artifactTypeID = Relativity.ArtifactType.Document Then
@@ -624,9 +652,7 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Private Function PushNativeBatch(Optional ByVal lastRun As Boolean = False) As Object
-			_outputNativeFileWriter.Close()
-			_outputCodeFileWriter.Close()
-			_outputObjectFileWriter.Close()
+			CloseFileWriters()
 			Dim start As Int64 = System.DateTime.Now.Ticks
 			If _batchCounter = 0 Then Return Nothing
 			_batchCounter = 0
@@ -664,8 +690,7 @@ Namespace kCura.WinEDDS
 					Throw New BcpPathAccessException(uploadBcp.Value)
 				End If
 			End If
-			_statistics.MetadataTime += System.Math.Max((System.DateTime.Now.Ticks - start), 1)
-			_statistics.MetadataBytes += (Me.GetFileLength(_outputCodeFilePath) + Me.GetFileLength(_outputNativeFilePath) + Me.GetFileLength(_outputObjectFilePath))
+
 			settings.RunID = _runID
 			settings.CodeFileName = codeFileUploadKey
 			settings.DataFileName = nativeFileUploadKey
@@ -680,26 +705,39 @@ Namespace kCura.WinEDDS
 				Case Else
 					settings.Overlay = EDDS.WebAPI.BulkImportManagerBase.OverwriteType.Both
 			End Select
-			start = System.DateTime.Now.Ticks
 			settings.UploadFiles = _filePathColumnIndex <> -1 AndAlso _settings.LoadNativeFiles
+
+			_statistics.MetadataTime += System.Math.Max((System.DateTime.Now.Ticks - start), 1)
+			_statistics.MetadataBytes += (Me.GetFileLength(_outputCodeFilePath) + Me.GetFileLength(_outputNativeFilePath) + Me.GetFileLength(_outputObjectFilePath))
+			start = System.DateTime.Now.Ticks
+
 			Dim runResults As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults = Me.BulkImport(settings, _fullTextColumnMapsToFileLocation)
+
 			_statistics.ProcessRunResults(runResults)
 			_runID = runResults.RunID
 			_statistics.SqlTime += (System.DateTime.Now.Ticks - start)
 
-			kCura.Utility.File.Delete(_outputNativeFilePath)
-			kCura.Utility.File.Delete(_outputCodeFilePath)
-			kCura.Utility.File.Delete(_outputObjectFilePath)
+			DeleteFiles()
 			_currentStatisticsSnapshot = _statistics.ToDictionary
 			_statisticsLastUpdated = System.DateTime.Now
 			If Not lastRun Then
-				_outputNativeFileWriter = New System.IO.StreamWriter(_outputNativeFilePath, False, System.Text.Encoding.Unicode)
-				_outputCodeFileWriter = New System.IO.StreamWriter(_outputCodeFilePath, False, System.Text.Encoding.Unicode)
-				_outputObjectFileWriter = New System.IO.StreamWriter(_outputObjectFilePath, False, System.Text.Encoding.Unicode)
+				OpenFileWriters()
 			End If
 			Me.ManageErrors(_artifactTypeID)
 			Return Nothing
 		End Function
+
+		Private Sub OpenFileWriters()
+			_outputNativeFileWriter = New System.IO.StreamWriter(_outputNativeFilePath, False, System.Text.Encoding.Unicode)
+			_outputCodeFileWriter = New System.IO.StreamWriter(_outputCodeFilePath, False, System.Text.Encoding.Unicode)
+			_outputObjectFileWriter = New System.IO.StreamWriter(_outputObjectFilePath, False, System.Text.Encoding.Unicode)
+		End Sub
+
+		Private Sub CloseFileWriters()
+			_outputNativeFileWriter.Close()
+			_outputCodeFileWriter.Close()
+			_outputObjectFileWriter.Close()
+		End Sub
 
 		Private Function GetMappedFields(ByVal artifactTypeID As Int32) As kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo()
 			Dim retval As New System.Collections.ArrayList
