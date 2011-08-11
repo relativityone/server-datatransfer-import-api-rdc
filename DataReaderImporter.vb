@@ -18,7 +18,11 @@ Namespace kCura.WinEDDS.ImportExtension
 		''' was used to create the bulk load file. Line delimiters are a field
 		''' delimiter followed by a new line.</param>
 		Public Sub New(ByVal loadFile As kCura.WinEDDS.ImportExtension.DataReaderLoadFile, ByVal controller As kCura.Windows.Process.Controller, ByVal bulkLoadFileFieldDelimiter As String)
-			MyBase.New(loadFile, controller, 0, True, System.Guid.NewGuid, True, bulkLoadFileFieldDelimiter)
+			Me.New(loadFile, controller, bulkLoadFileFieldDelimiter, kCura.WinEDDS.Config.WebServiceURL)
+		End Sub
+
+		Public Sub New(ByVal loadFile As kCura.WinEDDS.ImportExtension.DataReaderLoadFile, ByVal controller As kCura.Windows.Process.Controller, ByVal bulkLoadFileFieldDelimiter As String, ByVal webURL As String)
+			MyBase.New(loadFile, controller, 0, True, System.Guid.NewGuid, True, bulkLoadFileFieldDelimiter, webURL)
 		End Sub
 
 		Protected Overrides Function GetArtifactReader() As kCura.WinEDDS.Api.IArtifactReader
