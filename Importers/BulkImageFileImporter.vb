@@ -199,6 +199,8 @@ Namespace kCura.WinEDDS
 					End If
 				Catch ex As Exception
 					tries -= 1
+					'If tries < kCura.Utility.Config.Settings.IoErrorNumberOfRetries AndAlso TypeOf ex Is kCura.WinEDDS.Service.BulkImportManager.BulkImportSqlTimeoutException Then
+					'change batch size, retry
 					If tries = 0 OrElse TypeOf ex Is kCura.WinEDDS.Service.BulkImportManager.BulkImportSqlException OrElse _continue = False Then
 						Throw
 					ElseIf tries < kCura.Utility.Config.Settings.IoErrorNumberOfRetries Then
