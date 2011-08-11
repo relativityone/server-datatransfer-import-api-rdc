@@ -3,6 +3,7 @@ Namespace kCura.Relativity.DataReaderClient
 	Public Class Settings
 
 #Region " Private Variables "
+		Private _webServiceURL As String
 
 		Private _RelativityUsername As String
 		Private _RelativityPassword As String
@@ -229,6 +230,17 @@ Namespace kCura.Relativity.DataReaderClient
 			End Set
 		End Property
 
+		''' <summary>
+		''' URL of the web service to use; set String.Empty or Nothing to use default
+		''' </summary>
+		Public Property ServiceURL() As String
+			Get
+				Return _webServiceURL
+			End Get
+			Set(value As String)
+				_webServiceURL = value
+			End Set
+		End Property
 #End Region
 
 	End Class

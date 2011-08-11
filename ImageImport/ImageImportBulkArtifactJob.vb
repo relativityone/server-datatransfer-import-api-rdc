@@ -31,7 +31,14 @@ Namespace kCura.Relativity.DataReaderClient
 				Dim updatedSourceData As DataTable = MapSuppliedFieldNamesToActual(Settings, SourceData.SourceData)
 				SourceData.SourceData = updatedSourceData
 
-				Dim process As New kCura.WinEDDS.ImportExtension.DataReaderImageImporterProcess(SourceData.SourceData)
+				If String.IsNullOrWhiteSpace(Settings.ServiceURL) Then
+					Settings.ServiceURL = kCura.WinEDDS.Config.WebServiceURL
+					RaiseEvent OnMessage(New Status("Setting default ServiceURL, none was found"))
+				End If
+
+				Dim process As WinEDDS.ImportExtension.DataReaderImageImporterProcess = New WinEDDS.ImportExtension.DataReaderImageImporterProcess(SourceData.SourceData, Settings.ServiceURL)
+				RaiseEvent OnMessage(New Status(String.Format("Using value {0} for ServiceURL", Settings.ServiceURL)))
+
 				_observer = process.ProcessObserver
 
 				RaiseEvent OnMessage(New Status("Updating settings"))
@@ -92,6 +99,7 @@ Namespace kCura.Relativity.DataReaderClient
 
 		End Function
 
+		'TODO: Allow user to specify "Just overwrite the original column names to avoid a copy operation"?
 		Private Function MapSuppliedFieldNamesToActual(ByVal imageSettings As ImageSettings, ByVal srcDataTable As DataTable) As DataTable
 			'kCura.WinEDDS.ImportExtension.ImageDataTableReader contains the real field names
 			Dim returnDataTbl As DataTable = srcDataTable.Copy()
@@ -104,7 +112,10 @@ Namespace kCura.Relativity.DataReaderClient
 
 		Private Function GetDefaultIdentifierFieldID(ByVal credential As System.Net.NetworkCredential, ByVal caseArtifactID As Int32) As Int32
 			Dim retval As Int32
-			Dim dt As System.Data.DataTable = New kCura.WinEDDS.Service.FieldQuery(credential, cookieMonster).RetrievePotentialBeginBatesFields(caseArtifactID).Tables(0)
+			Dim tempFieldQuery As kCura.WinEDDS.Service.FieldQuery = New kCura.WinEDDS.Service.FieldQuery(credential, cookieMonster)
+			tempFieldQuery.ServiceURL = Settings.ServiceURL
+
+			Dim dt As System.Data.DataTable = tempFieldQuery.RetrievePotentialBeginBatesFields(caseArtifactID).Tables(0)
 			For Each identifierRow As System.Data.DataRow In dt.Rows
 				If CType(identifierRow("FieldCategoryID"), Global.Relativity.FieldCategory) = Global.Relativity.FieldCategory.Identifier Then
 					retval = CType(identifierRow("ArtifactID"), Int32)
@@ -114,20 +125,23 @@ Namespace kCura.Relativity.DataReaderClient
 		End Function
 
 		Private Function GetCaseManager(ByVal credentials As Net.ICredentials) As kCura.WinEDDS.Service.CaseManager
-			Return New kCura.WinEDDS.Service.CaseManager(credentials, cookieMonster)
+			Dim returnCaseMan As kCura.WinEDDS.Service.CaseManager = New kCura.WinEDDS.Service.CaseManager(credentials, cookieMonster)
+			returnCaseMan.ServiceURL = Settings.ServiceURL
+
+			Return returnCaseMan
 		End Function
 
 		Private Function GetCredentials(ByVal settings As ImageSettings) As System.Net.ICredentials
 			Dim credential As System.Net.ICredentials = Nothing
 			If credential Is Nothing Then
 				Try
-					credential = kCura.WinEDDS.Api.LoginHelper.LoginWindowsAuth(cookieMonster)
+					credential = kCura.WinEDDS.Api.LoginHelper.LoginWindowsAuthWithServiceURL(cookieMonster, settings.ServiceURL)
 				Catch
 				End Try
 			End If
 
 			While credential Is Nothing
-				credential = kCura.WinEDDS.Api.LoginHelper.LoginUsernamePassword(settings.RelativityUsername, settings.RelativityPassword, cookieMonster)
+				credential = kCura.WinEDDS.Api.LoginHelper.LoginUsernamePasswordWithServiceURL(settings.RelativityUsername, settings.RelativityPassword, cookieMonster, settings.ServiceURL)
 				Exit While
 			End While
 			Return credential

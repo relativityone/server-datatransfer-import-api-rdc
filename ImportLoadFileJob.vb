@@ -55,7 +55,14 @@ Namespace kCura.Relativity.DataReaderClient
 			If IsSettingsValid() Then
 				RaiseEvent OnMessage(New Status("Getting source data from database"))
 
-				Dim process As New kCura.WinEDDS.ImportExtension.DataReaderImporterProcess(SourceData.SourceData)
+				If String.IsNullOrWhiteSpace(Settings.ServiceURL) Then
+					Settings.ServiceURL = kCura.WinEDDS.Config.WebServiceURL
+					RaiseEvent OnMessage(New Status("Setting default ServiceURL, none was found"))
+				End If
+
+				Dim process As WinEDDS.ImportExtension.DataReaderImporterProcess = New WinEDDS.ImportExtension.DataReaderImporterProcess(SourceData.SourceData, Settings.ServiceURL)
+				RaiseEvent OnMessage(New Status(String.Format("Using value {0} for ServiceURL", Settings.ServiceURL)))
+
 				_observer = process.ProcessObserver
 				_controller = process.ProcessController
 				RaiseEvent OnMessage(New Status("Updating settings"))
@@ -133,7 +140,7 @@ Namespace kCura.Relativity.DataReaderClient
 		End Function
 
 		Private Function MapToDynamicObjectSettingsFactory(ByVal sqlClientSettings As Settings) As kCura.WinEDDS.DynamicObjectSettingsFactory
-			Dim dosf_settings As New kCura.WinEDDS.DynamicObjectSettingsFactory(sqlClientSettings.RelativityUsername, sqlClientSettings.RelativityPassword, sqlClientSettings.CaseArtifactId, sqlClientSettings.ArtifactTypeId)
+			Dim dosf_settings As kCura.WinEDDS.DynamicObjectSettingsFactory = New kCura.WinEDDS.DynamicObjectSettingsFactory(sqlClientSettings.RelativityUsername, sqlClientSettings.RelativityPassword, sqlClientSettings.CaseArtifactId, sqlClientSettings.ArtifactTypeId, sqlClientSettings.ServiceURL)
 
 			With dosf_settings
 				.FirstLineContainsHeaders = False
