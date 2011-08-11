@@ -464,6 +464,7 @@
     <Compile Include="PropertyExtractor\File.vb">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="ReadFromExisting.vb" />
     <Compile Include="Service\AuditManager.vb">
       <SubType>Code</SubType>
     </Compile>
