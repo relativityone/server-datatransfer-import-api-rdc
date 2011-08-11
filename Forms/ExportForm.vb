@@ -1,3 +1,4 @@
+Imports System.Linq
 Public Class ExportForm
 	Inherits System.Windows.Forms.Form
 	'Implements kCura.EDDS.WinForm.IExportForm
@@ -1332,9 +1333,8 @@ Public Class ExportForm
 		If _loadExportSettingsDialog.ShowDialog() = System.Windows.Forms.DialogResult.OK Then
 			Dim settings As String = kCura.Utility.File.ReadFileAsString(_loadExportSettingsDialog.FileName)
 			Dim newFile As ExportFile = New kCura.WinEDDS.ExportFileSerializer().DeserializeExportFile(_exportFile, settings)
+			LoadExportFile(newFile)
 			_exportFile = newFile
-
-			LoadExportFile(_exportFile)
 		End If
 	End Sub
 
@@ -1365,6 +1365,7 @@ Public Class ExportForm
 				_useAbsolutePaths.Checked = True
 			Case kCura.WinEDDS.ExportFile.ExportedFilePathType.Prefix
 				_usePrefix.Checked = True
+				_prefixText.Text = ef.FilePrefix
 			Case kCura.WinEDDS.ExportFile.ExportedFilePathType.Relative
 				_useRelativePaths.Checked = True
 		End Select
@@ -1397,28 +1398,14 @@ Public Class ExportForm
 
 		_dataFileEncoding.SelectedEncoding = ef.LoadFileEncoding
 		_textFileEncoding.SelectedEncoding = ef.TextFileEncoding
-
 		_recordDelimiter.SelectedValue = ef.RecordDelimiter
 		_quoteDelimiter.SelectedValue = ef.QuoteDelimiter
 		_newLineDelimiter.SelectedValue = ef.NewlineDelimiter
 		_nestedValueDelimiter.SelectedValue = ef.NestedValueDelimiter
 		_multiRecordDelimiter.SelectedValue = ef.MultiRecordDelimiter
-
 		_exportFullTextAsFile.Checked = ef.ExportFullTextAsFile
-
 		_potentialTextFields.SelectedItem = ef.SelectedTextField
 		_exportMulticodeFieldsAsNested.Checked = ef.MulticodesAsNested
-
-		'If ef.DataTable IsNot Nothing AndAlso ef.DataTable.Rows.Count > 0 Then
-		'	Dim filterArtifactId As Int32 = CInt(ef.DataTable.Rows(0)(0).ToString)
-		'	If ValueContainsInDropDown(_filters, filterArtifactId) Then
-		'		_filters.SelectedValue = filterArtifactId
-		'	End If
-		'End If
-
-		If ValueContainsInDropDown(_filters, ef.ArtifactID) Then
-			_filters.SelectedValue = ef.ArtifactID
-		End If
 
 		If ef.AllExportableFields IsNot Nothing Then
 			_columnSelecter.ClearSelection(kCura.Windows.Forms.ListBoxLocation.Left)
@@ -1426,7 +1413,6 @@ Public Class ExportForm
 			Array.Sort(ef.AllExportableFields)
 			_columnSelecter.LeftListBoxItems.AddRange(ef.AllExportableFields)
 		End If
-
 
 		If ef.SelectedViewFields IsNot Nothing Then
 
@@ -1470,6 +1456,11 @@ Public Class ExportForm
 		Else
 			'original is already there
 		End If
+		Dim selectedFilterId As Int32? = Me.GetSelectedFilterId(ef)
+		If _exportFile.TypeOfExport = ef.TypeOfExport AndAlso selectedFilterId.HasValue AndAlso Me.ValueContainsInDropDown(_filters, selectedFilterId.Value) Then
+			_filters.SelectedValue = selectedFilterId
+		End If
+
 
 	End Sub
 
@@ -1483,6 +1474,16 @@ Public Class ExportForm
 			End If
 		Next
 		Return retVal
+	End Function
+	Private Function GetSelectedFilterId(ByVal ef As ExportFile) As Int32?
+		Dim retval As New Int32?
+		Select Case ef.TypeOfExport
+			Case kCura.WinEDDS.ExportFile.ExportType.AncestorSearch, kCura.WinEDDS.ExportFile.ExportType.ParentSearch
+				retval = ef.ViewID
+			Case Else
+				retval = ef.ArtifactID
+		End Select
+		Return retval
 	End Function
 
 	Private Sub RunMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles RunMenu.Click
