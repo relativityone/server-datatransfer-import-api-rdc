@@ -1395,6 +1395,14 @@ Public Class ExportForm
 			End Select
 		End If
 
+		If ef.ExportImages Then
+			If ef.LogFileFormat.HasValue Then
+				_imageFileFormat.SelectedValue = ef.LogFileFormat.Value
+			Else
+				_imageFileFormat.SelectedIndex = 0
+			End If
+			Me.SetSelectedImageType(ef.TypeOfImage)
+		End If
 		_dataFileEncoding.SelectedEncoding = ef.LoadFileEncoding
 		_textFileEncoding.SelectedEncoding = ef.TextFileEncoding
 
@@ -1536,6 +1544,20 @@ Public Class ExportForm
 				Return ExportFile.ImageType.Pdf
 		End Select
 	End Function
+
+	Private Sub SetSelectedImageType(ByVal imageType As ExportFile.ImageType?)
+		If Not imageType.HasValue Then
+			_imageTypeDropdown.SelectedIndex = 0
+		ElseIf imageType.Value = kCura.WinEDDS.ExportFile.ImageType.SinglePage Then
+			_imageTypeDropdown.SelectedIndex = 1
+		ElseIf imageType.Value = kCura.WinEDDS.ExportFile.ImageType.MultiPageTiff Then
+			_imageTypeDropdown.SelectedIndex = 2
+		ElseIf imageType.Value = kCura.WinEDDS.ExportFile.ImageType.Pdf Then
+			_imageTypeDropdown.SelectedIndex = 3
+		Else
+			Throw New ArgumentException("Unsupported image type: " & imageType.Value.ToString)
+		End If
+	End Sub
 
 	Private Function GetDatasourceToolTip() As String
 		Select Case ExportFile.TypeOfExport
