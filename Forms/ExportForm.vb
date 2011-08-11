@@ -1070,12 +1070,12 @@ Public Class ExportForm
 		'
 		'_saveExportSettingsDialog
 		'
-		Me._saveExportSettingsDialog.DefaultExt = "kwe"
-		Me._saveExportSettingsDialog.Filter = "Relativity Desktop Client settings files (*.kwe)|*.kwe|All files (*.*)|*.*"
+		Me._saveExportSettingsDialog.DefaultExt = "kwx"
+		Me._saveExportSettingsDialog.Filter = "Relativity Desktop Client settings files (*.kwx)|*.kwx|All files (*.*)|*.*"
 		Me._saveExportSettingsDialog.RestoreDirectory = True
 
-		Me._loadExportSettingsDialog.DefaultExt = "kwe"
-		Me._loadExportSettingsDialog.Filter = "Relativity Desktop Client settings files (*.kwe)|*.kwe|All files (*.*)|*.*"
+		Me._loadExportSettingsDialog.DefaultExt = "kwx"
+		Me._loadExportSettingsDialog.Filter = "Relativity Desktop Client settings files (*.kwx)|*.kwx|All files (*.*)|*.*"
 		Me._loadExportSettingsDialog.RestoreDirectory = True
 
 		'
@@ -1409,11 +1409,15 @@ Public Class ExportForm
 		_potentialTextFields.SelectedItem = ef.SelectedTextField
 		_exportMulticodeFieldsAsNested.Checked = ef.MulticodesAsNested
 
-		If ef.DataTable IsNot Nothing AndAlso ef.DataTable.Rows.Count > 0 Then
-			Dim filterArtifactId As Int32 = CInt(ef.DataTable.Rows(0)(0).ToString)
-			If ValueContainsInDropDown(_filters, filterArtifactId) Then
-				_filters.SelectedValue = filterArtifactId
-			End If
+		'If ef.DataTable IsNot Nothing AndAlso ef.DataTable.Rows.Count > 0 Then
+		'	Dim filterArtifactId As Int32 = CInt(ef.DataTable.Rows(0)(0).ToString)
+		'	If ValueContainsInDropDown(_filters, filterArtifactId) Then
+		'		_filters.SelectedValue = filterArtifactId
+		'	End If
+		'End If
+
+		If ValueContainsInDropDown(_filters, ef.ArtifactID) Then
+			_filters.SelectedValue = ef.ArtifactID
 		End If
 
 		If ef.AllExportableFields IsNot Nothing Then
@@ -1444,7 +1448,7 @@ Public Class ExportForm
 		End If
 
 		If ef.StartAtDocumentNumber > _startExportAtDocumentNumber.Minimum AndAlso ef.StartAtDocumentNumber < _startExportAtDocumentNumber.Maximum Then
-			_startExportAtDocumentNumber.Value = ef.StartAtDocumentNumber
+			_startExportAtDocumentNumber.Value = ef.StartAtDocumentNumber + 1
 		End If
 
 		If ef.ImagePrecedence IsNot Nothing AndAlso ef.ImagePrecedence.Length > 0 Then
