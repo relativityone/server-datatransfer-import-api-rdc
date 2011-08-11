@@ -11,6 +11,13 @@ Namespace kCura.WinEDDS
 			For Each p As System.Reflection.PropertyInfo In (From prop As System.Reflection.PropertyInfo In retval.GetType.GetProperties Where prop.CanWrite)
 				p.SetValue(retval, p.GetValue(If(PropertyIsReadFromExisting(p), currentExportFile, deserialized), Nothing), Nothing)
 			Next
+			'TODO: test
+			Select Case retval.TypeOfExport
+				Case ExportFile.ExportType.AncestorSearch, ExportFile.ExportType.ParentSearch
+					retval.ArtifactID = currentExportFile.ArtifactID
+				Case ExportFile.ExportType.Production
+					retval.ImagePrecedence = New Pair() {}
+			End Select
 			Return retval
 		End Function
 
