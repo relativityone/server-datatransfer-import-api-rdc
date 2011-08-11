@@ -141,7 +141,7 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
-		<ReadFromExisting()> Public Property ArtifactID() As Int32
+		Public Property ArtifactID() As Int32
 			Get
 				Return _artifactID
 			End Get
