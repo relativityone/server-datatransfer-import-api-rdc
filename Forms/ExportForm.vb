@@ -1070,12 +1070,12 @@ Public Class ExportForm
 		'
 		'_saveExportSettingsDialog
 		'
-		Me._saveExportSettingsDialog.DefaultExt = "kwe"
-		Me._saveExportSettingsDialog.Filter = "Relativity Desktop Client settings files (*.kwe)|*.kwe|All files (*.*)|*.*"
+		Me._saveExportSettingsDialog.DefaultExt = "kwx"
+		Me._saveExportSettingsDialog.Filter = "Relativity Desktop Client settings files (*.kwx)|*.kwx|All files (*.*)|*.*"
 		Me._saveExportSettingsDialog.RestoreDirectory = True
 
-		Me._loadExportSettingsDialog.DefaultExt = "kwe"
-		Me._loadExportSettingsDialog.Filter = "Relativity Desktop Client settings files (*.kwe)|*.kwe|All files (*.*)|*.*"
+		Me._loadExportSettingsDialog.DefaultExt = "kwx"
+		Me._loadExportSettingsDialog.Filter = "Relativity Desktop Client settings files (*.kwx)|*.kwx|All files (*.*)|*.*"
 		Me._loadExportSettingsDialog.RestoreDirectory = True
 
 		'
