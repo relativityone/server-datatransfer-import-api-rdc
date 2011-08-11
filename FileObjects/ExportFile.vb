@@ -27,7 +27,7 @@ Namespace kCura.WinEDDS
 		Protected _exportFullText As Boolean
 		Protected _exportFullTextAsFile As Boolean
 		Protected _exportNative As Boolean
-		Protected _logFileFormat As kCura.WinEDDS.LoadFileType.FileFormat
+		Protected _logFileFormat As kCura.WinEDDS.LoadFileType.FileFormat?
 		Protected _renameFilesToIdentifier As Boolean
 		Protected _identifierColumnName As String
 		Protected _volumeInfo As kCura.WinEDDS.Exporters.VolumeInfo
@@ -37,7 +37,7 @@ Namespace kCura.WinEDDS
 		Protected _loadFilesPrefix As String
 		Protected _filePrefix As String
 		Protected _typeOfExportedFilePath As ExportedFilePathType
-		Protected _typeOfImage As ImageType
+		Protected _typeOfImage As ImageType?
 		Private _exportNativesToFileNamedFrom As kCura.WinEDDS.ExportNativeWithFilenameFrom = ExportNativeWithFilenameFrom.Identifier
 		Private _appendOriginalFileName As Boolean
 		Private _loadFileIsHtml As Boolean = False
@@ -249,11 +249,11 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
-		Public Property LogFileFormat() As kCura.WinEDDS.LoadFileType.FileFormat
+		Public Property LogFileFormat() As kCura.WinEDDS.LoadFileType.FileFormat?
 			Get
 				Return _logFileFormat
 			End Get
-			Set(ByVal value As kCura.WinEDDS.LoadFileType.FileFormat)
+			Set(ByVal value As kCura.WinEDDS.LoadFileType.FileFormat?)
 				_logFileFormat = value
 			End Set
 		End Property
@@ -329,11 +329,11 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
-		Public Property TypeOfImage() As ImageType
+		Public Property TypeOfImage() As ImageType?
 			Get
 				Return _typeOfImage
 			End Get
-			Set(ByVal value As ImageType)
+			Set(ByVal value As ImageType?)
 				_typeOfImage = value
 			End Set
 		End Property
@@ -472,7 +472,7 @@ Namespace kCura.WinEDDS
 			info.AddValue("ExportFullText", Me.ExportFullText, GetType(Boolean))
 			info.AddValue("ExportFullTextAsFile", Me.ExportFullTextAsFile, GetType(Boolean))
 			info.AddValue("ExportNative", Me.ExportNative, GetType(Boolean))
-			info.AddValue("LogFileFormat", CInt(Me.LogFileFormat), GetType(Int32))
+			info.AddValue("LogFileFormat", If(Me.LogFileFormat.HasValue, CInt(Me.LogFileFormat.Value).ToString, String.Empty), GetType(String))
 			info.AddValue("RenameFilesToIdentifier", Me.RenameFilesToIdentifier, GetType(Boolean))
 			info.AddValue("IdentifierColumnName", Me.IdentifierColumnName, GetType(String))
 			info.AddValue("LoadFileExtension", Me.LoadFileExtension, GetType(String))
@@ -480,7 +480,7 @@ Namespace kCura.WinEDDS
 			info.AddValue("ExportNativesToFileNamedFrom", CInt(Me.ExportNativesToFileNamedFrom), GetType(Int32))
 			info.AddValue("FilePrefix", Me.FilePrefix, GetType(String))
 			info.AddValue("TypeOfExportedFilePath", CInt(Me.TypeOfExportedFilePath), GetType(Int32))
-			info.AddValue("TypeOfImage", CInt(Me.TypeOfImage), GetType(Int32))
+			info.AddValue("TypeOfImage", If(Me.TypeOfImage.HasValue, CInt(Me.TypeOfImage.Value).ToString, String.Empty), GetType(String))
 			info.AddValue("AppendOriginalFileName", Me.AppendOriginalFileName, GetType(Boolean))
 			info.AddValue("LoadFileIsHtml", Me.LoadFileIsHtml, GetType(Boolean))
 			info.AddValue("MulticodesAsNested", Me.MulticodesAsNested, GetType(Boolean))
@@ -493,7 +493,6 @@ Namespace kCura.WinEDDS
 			info.AddValue("SelectedTextField", Me.SelectedTextField, GetType(kCura.WinEDDS.ViewFieldInfo))
 			info.AddValue("ImagePrecedence", Me.ImagePrecedence, GetType(kCura.WinEDDS.Pair()))
 			info.AddValue("SelectedViewFields", Me.SelectedViewFields, GetType(kCura.WinEDDS.ViewFieldInfo()))
-
 		End Sub
 		'
 		Private Sub New(ByVal info As System.Runtime.Serialization.SerializationInfo, ByVal Context As System.Runtime.Serialization.StreamingContext)
@@ -512,7 +511,10 @@ Namespace kCura.WinEDDS
 				Me.ExportFullText = info.GetBoolean("ExportFullText")
 				Me.ExportFullTextAsFile = info.GetBoolean("ExportFullTextAsFile")
 				Me.ExportNative = info.GetBoolean("ExportNative")
-				Me.LogFileFormat = CType(info.GetInt32("LogFileFormat"), kCura.WinEDDS.LoadFileType.FileFormat)
+				With kCura.Utility.NullableTypesHelper.ToNullableInt32(info.GetString("LogFileFormat"))
+					Me.LogFileFormat = Nothing
+					If .HasValue Then Me.LogFileFormat = CType(.Value, kCura.WinEDDS.LoadFileType.FileFormat)
+				End With
 				Me.RenameFilesToIdentifier = info.GetBoolean("RenameFilesToIdentifier")
 				Me.IdentifierColumnName = info.GetString("IdentifierColumnName")
 				Me.LoadFileExtension = info.GetString("LoadFileExtension")
@@ -520,7 +522,10 @@ Namespace kCura.WinEDDS
 				Me.ExportNativesToFileNamedFrom = CType(info.GetInt32("ExportNativesToFileNamedFrom"), kCura.WinEDDS.ExportNativeWithFilenameFrom)
 				Me.FilePrefix = info.GetString("FilePrefix")
 				Me.TypeOfExportedFilePath = CType(info.GetInt32("TypeOfExportedFilePath"), kCura.WinEDDS.ExportFile.ExportedFilePathType)
-				Me.TypeOfImage = CType(info.GetInt32("TypeOfImage"), kCura.WinEDDS.ExportFile.ImageType)
+				With kCura.Utility.NullableTypesHelper.ToNullableInt32(info.GetString("TypeOfImage"))
+					Me.TypeOfImage = Nothing
+					If .HasValue Then Me.TypeOfImage = CType(.Value, kCura.WinEDDS.ExportFile.ImageType)
+				End With
 				Me.AppendOriginalFileName = info.GetBoolean("AppendOriginalFileName")
 				Me.LoadFileIsHtml = info.GetBoolean("LoadFileIsHtml")
 				Me.MulticodesAsNested = info.GetBoolean("MulticodesAsNested")
@@ -577,6 +582,21 @@ Namespace kCura.WinEDDS
 			MultiPageTiff
 			Pdf
 		End Enum
+		Public Class ImageTypeParser
+			Public Function Parse(ByVal s As String) As ImageType?
+				If String.IsNullOrEmpty(s) Then Return Nothing
+				Dim retval As New ImageType?
+				Select Case s
+					Case "Single-page TIF/JPG"
+						retval = ImageType.SinglePage
+					Case "Multi-page TIF"
+						retval = ImageType.MultiPageTiff
+					Case "PDF"
+						retval = ImageType.Pdf
+				End Select
+				Return retval
+			End Function
+		End Class
 #End Region
 
 	End Class

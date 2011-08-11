@@ -16,11 +16,11 @@ Namespace kCura.WinEDDS.Service
 
 		Private Sub CheckResultsForException(ByVal results As EDDS.WebAPI.BulkImportManagerBase.MassImportResults)
 			If results.ExceptionDetail IsNot Nothing Then
-				'If results.ExceptionDetail.ExceptionMessage.Contains("Error: Timeout expired.  The timeout period elapsed prior to completion of the operation or the server is not responding.") Then
-				'	Throw New BulkImportSqlTimeoutException(results.ExceptionDetail)
-				'Else
-				Throw New BulkImportSqlException(results.ExceptionDetail)
-				'End If
+				If results.ExceptionDetail.ExceptionMessage IsNot Nothing AndAlso results.ExceptionDetail.ExceptionMessage.Contains("Timeout expired") Then
+					Throw New BulkImportSqlTimeoutException(results.ExceptionDetail)
+				Else
+					Throw New BulkImportSqlException(results.ExceptionDetail)
+				End If
 			End If
 		End Sub
 
