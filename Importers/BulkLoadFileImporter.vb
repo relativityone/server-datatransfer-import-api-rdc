@@ -625,7 +625,7 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Private Function ExceptionIsTimeoutRelated(ByVal ex As Exception) As Boolean
-			If TypeOf ex Is Service.BulkImportManager.BulkImportSqlTimeoutException Then
+			If ex.GetType = GetType(Service.BulkImportManager.BulkImportSqlTimeoutException) Then
 				Return True
 			ElseIf TypeOf ex Is System.Net.WebException AndAlso ex.Message.ToString.Contains("timed out") Then
 				Return True
