@@ -1337,7 +1337,7 @@ Public Class ExportForm
 			Dim settings As String = kCura.Utility.File.ReadFileAsString(_loadExportSettingsDialog.FileName)
 			Dim newFile As ExportFile = New kCura.WinEDDS.ExportFileSerializer().DeserializeExportFile(_exportFile, settings)
 			If TypeOf newFile Is kCura.WinEDDS.ErrorExportFile Then
-				MsgBox("Cannot load saved settings: " & DirectCast(newFile, kCura.WinEDDS.ErrorExportFile).ErrorMessage, MsgBoxStyle.Exclamation)
+				MsgBox(DirectCast(newFile, kCura.WinEDDS.ErrorExportFile).ErrorMessage, MsgBoxStyle.Exclamation)
 			End If
 			LoadExportFile(newFile)
 			_exportFile = newFile
