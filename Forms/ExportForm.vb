@@ -1434,14 +1434,14 @@ Public Class ExportForm
 			Dim itemsToRemoveFromLeftListBox As New System.Collections.Generic.List(Of kCura.WinEDDS.ViewFieldInfo)()
 			_columnSelecter.ClearSelection(kCura.Windows.Forms.ListBoxLocation.Right)
 			_columnSelecter.RightListBoxItems.Clear()
-			For Each vfi As kCura.WinEDDS.ViewFieldInfo In ef.SelectedViewFields
-				For Each item As kCura.WinEDDS.ViewFieldInfo In _columnSelecter.LeftListBoxItems
-						If item.DisplayName.Equals(vfi.DisplayName, StringComparison.InvariantCultureIgnoreCase) Then
-							itemsToRemoveFromLeftListBox.Add(item)
-							_columnSelecter.RightListBoxItems.Add(vfi)
-						End If
-					Next
+			For Each viewFieldFromKwx As kCura.WinEDDS.ViewFieldInfo In ef.SelectedViewFields
+				For Each leftListBoxViewField As kCura.WinEDDS.ViewFieldInfo In _columnSelecter.LeftListBoxItems
+					If leftListBoxViewField.DisplayName.Equals(viewFieldFromKwx.DisplayName, StringComparison.InvariantCulture) Then
+						itemsToRemoveFromLeftListBox.Add(leftListBoxViewField)
+						_columnSelecter.RightListBoxItems.Add(leftListBoxViewField)
+					End If
 				Next
+			Next
 
 				For Each vfi As kCura.WinEDDS.ViewFieldInfo In itemsToRemoveFromLeftListBox
 					_columnSelecter.LeftListBoxItems.Remove(vfi)
