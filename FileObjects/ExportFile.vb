@@ -452,10 +452,11 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
+		Public Property ObjectTypeName As String
+
 #End Region
 
 #Region " Serialization "
-
 
 		Public Sub GetObjectData(ByVal info As System.Runtime.Serialization.SerializationInfo, ByVal context As System.Runtime.Serialization.StreamingContext) Implements System.Runtime.Serialization.ISerializable.GetObjectData
 			info.AddValue("ArtifactID", Me.ArtifactID, GetType(Int32))
@@ -493,6 +494,7 @@ Namespace kCura.WinEDDS
 			info.AddValue("SelectedTextField", Me.SelectedTextField, GetType(kCura.WinEDDS.ViewFieldInfo))
 			info.AddValue("ImagePrecedence", Me.ImagePrecedence, GetType(kCura.WinEDDS.Pair()))
 			info.AddValue("SelectedViewFields", Me.SelectedViewFields, GetType(kCura.WinEDDS.ViewFieldInfo()))
+			info.AddValue("ObjectTypeName", Me.ObjectTypeName, GetType(String))
 		End Sub
 		'
 		Private Sub New(ByVal info As System.Runtime.Serialization.SerializationInfo, ByVal Context As System.Runtime.Serialization.StreamingContext)
@@ -540,7 +542,7 @@ Namespace kCura.WinEDDS
 				Me.SelectedTextField = DirectCast(info.GetValue("SelectedTextField", GetType(kCura.WinEDDS.ViewFieldInfo)), kCura.WinEDDS.ViewFieldInfo)
 				Me.ImagePrecedence = DirectCast(info.GetValue("ImagePrecedence", GetType(kCura.WinEDDS.Pair())), kCura.WinEDDS.Pair())
 				Me.SelectedViewFields = DirectCast(info.GetValue("SelectedViewFields", GetType(kCura.WinEDDS.ViewFieldInfo())), kCura.WinEDDS.ViewFieldInfo())
-
+				Me.ObjectTypeName = info.GetString("ObjectTypeName")
 			End With
 		End Sub
 
