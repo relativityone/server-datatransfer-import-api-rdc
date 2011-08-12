@@ -1126,6 +1126,7 @@ Public Class ExportForm
 	Private _allExportableFields As Relativity.ViewFieldInfo
 	Private _dataSourceIsSet As Boolean = False
 	Private _objectTypeName As String = ""
+	Private _isLoadingExport As Boolean = False
 	Public Property Application() As kCura.EDDS.WinForm.Application
 		Get
 			Return _application
@@ -1339,6 +1340,7 @@ Public Class ExportForm
 	End Sub
 
 	Public Sub LoadExportFile(ByVal ef As kCura.WinEDDS.ExportFile)
+		_isLoadingExport = True
 		If _exportNativeFiles.Checked <> ef.ExportNative Then _exportNativeFiles.Checked = ef.ExportNative
 		If _exportImages.Checked <> ef.ExportImages Then _exportImages.Checked = ef.ExportImages
 		If _overwriteCheckBox.Checked <> ef.Overwrite Then _overwriteCheckBox.Checked = ef.Overwrite
@@ -1422,23 +1424,28 @@ Public Class ExportForm
 			_columnSelecter.LeftListBoxItems.AddRange(ef.AllExportableFields)
 		End If
 
+		Dim selectedFilterId As Int32? = Me.GetSelectedFilterId(ef)
+		If _exportFile.TypeOfExport = ef.TypeOfExport AndAlso selectedFilterId.HasValue AndAlso Me.ValueContainsInDropDown(_filters, selectedFilterId.Value) Then
+			_filters.SelectedValue = selectedFilterId
+		End If
+
 		If ef.SelectedViewFields IsNot Nothing Then
 
 			Dim itemsToRemoveFromLeftListBox As New System.Collections.Generic.List(Of kCura.WinEDDS.ViewFieldInfo)()
 			_columnSelecter.ClearSelection(kCura.Windows.Forms.ListBoxLocation.Right)
 			_columnSelecter.RightListBoxItems.Clear()
-			For Each item As kCura.WinEDDS.ViewFieldInfo In _columnSelecter.LeftListBoxItems
-				For Each vfi As kCura.WinEDDS.ViewFieldInfo In ef.SelectedViewFields
-					If item.AvfId = vfi.AvfId Then
-						itemsToRemoveFromLeftListBox.Add(item)
-						_columnSelecter.RightListBoxItems.Add(vfi)
-					End If
+			For Each vfi As kCura.WinEDDS.ViewFieldInfo In ef.SelectedViewFields
+				For Each item As kCura.WinEDDS.ViewFieldInfo In _columnSelecter.LeftListBoxItems
+						If item.DisplayName.Equals(vfi.DisplayName, StringComparison.InvariantCultureIgnoreCase) Then
+							itemsToRemoveFromLeftListBox.Add(item)
+							_columnSelecter.RightListBoxItems.Add(vfi)
+						End If
+					Next
 				Next
-			Next
 
-			For Each vfi As kCura.WinEDDS.ViewFieldInfo In itemsToRemoveFromLeftListBox
-				_columnSelecter.LeftListBoxItems.Remove(vfi)
-			Next
+				For Each vfi As kCura.WinEDDS.ViewFieldInfo In itemsToRemoveFromLeftListBox
+					_columnSelecter.LeftListBoxItems.Remove(vfi)
+				Next
 		End If
 
 		If ef.StartAtDocumentNumber > _startExportAtDocumentNumber.Minimum AndAlso ef.StartAtDocumentNumber < _startExportAtDocumentNumber.Maximum Then
@@ -1464,10 +1471,8 @@ Public Class ExportForm
 		Else
 			'original is already there
 		End If
-		Dim selectedFilterId As Int32? = Me.GetSelectedFilterId(ef)
-		If _exportFile.TypeOfExport = ef.TypeOfExport AndAlso selectedFilterId.HasValue AndAlso Me.ValueContainsInDropDown(_filters, selectedFilterId.Value) Then
-			_filters.SelectedValue = selectedFilterId
-		End If
+
+		_isLoadingExport = False
 
 
 	End Sub
@@ -1661,7 +1666,7 @@ Public Class ExportForm
 	End Sub
 
 	Private Sub _searchList_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _filters.SelectedIndexChanged
-		If _dataSourceIsSet AndAlso Not _filters.SelectedItem Is Nothing Then Me.InitializeColumnSelecter()
+		If Not _isLoadingExport AndAlso _dataSourceIsSet AndAlso Not _filters.SelectedItem Is Nothing Then Me.InitializeColumnSelecter()
 	End Sub
 
 	Private Sub InitializeFileControls()
