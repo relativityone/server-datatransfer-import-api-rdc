@@ -1,3 +1,4 @@
+Imports kCura.EDDS.WebAPI.BulkImportManagerBase
 Imports Relativity.MassImport
 Namespace kCura.WinEDDS
 	Public Class BulkLoadFileImporter
@@ -26,6 +27,8 @@ Namespace kCura.WinEDDS
 		Protected _firstTimeThrough As Boolean
 		Private _genericTimestamp As System.DateTime
 		Private _number As Int64 = 0
+		Private _importBatchSize As Int32?
+		Private _importBatchVolume As Int32?
 		Private _destinationFolderColumnIndex As Int32 = -1
 		Private _folderCache As FolderCache
 		Private _fullTextField As kCura.EDDS.WebAPI.DocumentManagerBase.Field
@@ -195,6 +198,26 @@ Namespace kCura.WinEDDS
 				End If
 				Return _parentArtifactTypeID.Value
 			End Get
+		End Property
+
+		Protected Overridable Property ImportBatchSize As Int32
+			Get
+				If Not _importBatchSize.HasValue Then _importBatchSize = Config.ImportBatchSize
+				Return _importBatchSize.Value
+			End Get
+			Set(ByVal value As Int32)
+				_importBatchSize = value
+			End Set
+		End Property
+
+		Protected Overridable Property ImportBatchVolume As Int32
+			Get
+				If Not _importBatchVolume.HasValue Then _importBatchVolume = Config.ImportBatchMaxVolume
+				Return _importBatchVolume.Value
+			End Get
+			Set(ByVal value As Int32)
+				_importBatchVolume = value
+			End Set
 		End Property
 
 #End Region
@@ -589,7 +612,7 @@ Namespace kCura.WinEDDS
 				_timekeeper.MarkEnd("ManageDocumentMetadata_ManageDocumentLine")
 				_batchCounter += 1
 				_timekeeper.MarkStart("ManageDocumentMetadata_WserviceCall")
-				If _outputNativeFileWriter.BaseStream.Length > Config.ImportBatchMaxVolume OrElse _batchCounter > Config.ImportBatchSize - 1 Then
+				If _outputNativeFileWriter.BaseStream.Length > ImportBatchVolume OrElse _batchCounter > ImportBatchSize - 1 Then
 					Me.PushNativeBatch()
 				End If
 				_timekeeper.MarkEnd("ManageDocumentMetadata_WserviceCall")
@@ -606,26 +629,43 @@ Namespace kCura.WinEDDS
 		Protected Function BulkImport(ByVal settings As kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo, ByVal includeExtractedTextEncoding As Boolean) As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults
 			Dim tries As Int32 = NumberOfRetries()
 			Dim retval As New kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults
+			Dim totalRecords As Int32 = Me.ImportBatchSize
+			Dim recordsToImport As Int32
 			While tries > 0
 				Try
-					If TypeOf settings Is kCura.EDDS.WebAPI.BulkImportManagerBase.ObjectLoadInfo Then
-						retval = Me.BulkImportManager.BulkImportObjects(_caseInfo.ArtifactID, DirectCast(settings, kCura.EDDS.WebAPI.BulkImportManagerBase.ObjectLoadInfo), _copyFileToRepository)
-						Exit While
+					recordsToImport = Me.ImportBatchSize
+					If recordsToImport = totalRecords Then
+						retval = FullBatchBulkImport(settings, includeExtractedTextEncoding)
 					Else
-						retval = Me.BulkImportManager.BulkImportNative(_caseInfo.ArtifactID, settings, _copyFileToRepository, includeExtractedTextEncoding)
-						Exit While
+						retval = ReducedBatchBulkImport(settings, includeExtractedTextEncoding, recordsToImport, totalRecords)
 					End If
+					Exit While
 				Catch ex As Exception
 					tries -= 1
 					If tries = 0 OrElse ex.GetType = GetType(Service.BulkImportManager.BulkImportSqlException) OrElse _continue = False Then
 						Throw
 					ElseIf tries < NumberOfRetries() Then
-						If ExceptionIsTimeoutRelated(ex) Then Me.LowerBatchSize()
+						If ExceptionIsTimeoutRelated(ex) Then Me.LowerBatchLimits()
 						Me.RaiseWarningAndPause(ex)
 					End If
 				End Try
 			End While
 			Return retval
+		End Function
+
+		Private Function FullBatchBulkImport(ByVal settings As NativeLoadInfo, ByVal includeExtractedTextEncoding As Boolean) As MassImportResults
+			Dim retval As MassImportResults
+			If TypeOf settings Is kCura.EDDS.WebAPI.BulkImportManagerBase.ObjectLoadInfo Then
+				retval = Me.BulkImportManager.BulkImportObjects(_caseInfo.ArtifactID, DirectCast(settings, kCura.EDDS.WebAPI.BulkImportManagerBase.ObjectLoadInfo), _copyFileToRepository)
+			Else
+				retval = Me.BulkImportManager.BulkImportNative(_caseInfo.ArtifactID, settings, _copyFileToRepository, includeExtractedTextEncoding)
+			End If
+			Return retval
+		End Function
+
+		Private Function ReducedBatchBulkImport(ByVal settings As NativeLoadInfo, ByVal includeExtractedTextEncoding As Boolean, ByVal recordsToImport As Int32, ByVal totalRecords As Int32) As MassImportResults
+			'TODO: make this run separate sub-batches until all the original batch docs are processed
+			Return FullBatchBulkImport(settings, includeExtractedTextEncoding)
 		End Function
 
 		Private Function ExceptionIsTimeoutRelated(ByVal ex As Exception) As Boolean
@@ -638,8 +678,9 @@ Namespace kCura.WinEDDS
 			End If
 		End Function
 
-		Protected Overridable Sub LowerBatchSize()
-			'TODO: change batch size
+		Protected Overridable Sub LowerBatchLimits()
+			'TODO: change batch size, check batch volume
+			Me.ImportBatchSize -= 100
 		End Sub
 
 		Protected Overridable Sub RaiseWarningAndPause(ByVal ex As Exception)
