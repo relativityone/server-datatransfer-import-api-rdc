@@ -464,7 +464,7 @@ Namespace kCura.WinEDDS
 						If Config.CreateErrorForEmptyNativeFile Then
 							lineStatus += Relativity.MassImport.ImportStatus.EmptyFile 'Throw New EmptyNativeFileException(filename)
 						Else
-							WriteWarning("The file " & filename & " to be uploaded is empty; only metadata will be loaded for this record")
+							WriteWarning("The file " & filename & " empty; only metadata will be loaded for this record.")
 							fileExists = False
 							filename = String.Empty
 						End If
