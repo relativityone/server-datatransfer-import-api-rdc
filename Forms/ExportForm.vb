@@ -1247,6 +1247,8 @@ Public Class ExportForm
 	Public Function PopulateExportFile(ByVal abstractExportForm As ExportForm, ByVal validateForm As Boolean) As Boolean
 		Dim d As DocumentFieldCollection = _application.CurrentFields(_exportFile.ArtifactTypeID, True)
 		Dim retval As Boolean = True
+		_exportFile.ObjectTypeName = _application.GetObjectTypeName(_exportFile.ArtifactTypeID)
+
 		If validateForm AndAlso Not Me.IsValid(abstractExportForm) Then Return False
 		If Not _application.IsConnected(_exportFile.CaseArtifactID, 10) Then Return False
 		_exportFile.FolderPath = _folderPath.Text
@@ -1334,6 +1336,9 @@ Public Class ExportForm
 		If _loadExportSettingsDialog.ShowDialog() = System.Windows.Forms.DialogResult.OK Then
 			Dim settings As String = kCura.Utility.File.ReadFileAsString(_loadExportSettingsDialog.FileName)
 			Dim newFile As ExportFile = New kCura.WinEDDS.ExportFileSerializer().DeserializeExportFile(_exportFile, settings)
+			If TypeOf newFile Is kCura.WinEDDS.ErrorExportFile Then
+				MsgBox("Cannot load saved settings: " & DirectCast(newFile, kCura.WinEDDS.ErrorExportFile).ErrorMessage, MsgBoxStyle.Exclamation)
+			End If
 			LoadExportFile(newFile)
 			_exportFile = newFile
 		End If
@@ -1436,16 +1441,16 @@ Public Class ExportForm
 			_columnSelecter.RightListBoxItems.Clear()
 			For Each vfi As kCura.WinEDDS.ViewFieldInfo In ef.SelectedViewFields
 				For Each item As kCura.WinEDDS.ViewFieldInfo In _columnSelecter.LeftListBoxItems
-						If item.DisplayName.Equals(vfi.DisplayName, StringComparison.InvariantCultureIgnoreCase) Then
-							itemsToRemoveFromLeftListBox.Add(item)
-							_columnSelecter.RightListBoxItems.Add(vfi)
-						End If
-					Next
+					If item.DisplayName.Equals(vfi.DisplayName, StringComparison.InvariantCultureIgnoreCase) Then
+						itemsToRemoveFromLeftListBox.Add(item)
+						_columnSelecter.RightListBoxItems.Add(vfi)
+					End If
 				Next
+			Next
 
-				For Each vfi As kCura.WinEDDS.ViewFieldInfo In itemsToRemoveFromLeftListBox
-					_columnSelecter.LeftListBoxItems.Remove(vfi)
-				Next
+			For Each vfi As kCura.WinEDDS.ViewFieldInfo In itemsToRemoveFromLeftListBox
+				_columnSelecter.LeftListBoxItems.Remove(vfi)
+			Next
 		End If
 
 		If ef.StartAtDocumentNumber > _startExportAtDocumentNumber.Minimum AndAlso ef.StartAtDocumentNumber < _startExportAtDocumentNumber.Maximum Then
