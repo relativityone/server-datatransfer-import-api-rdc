@@ -1448,8 +1448,9 @@ Public Class ExportForm
 				Next
 		End If
 
-		If ef.StartAtDocumentNumber > _startExportAtDocumentNumber.Minimum AndAlso ef.StartAtDocumentNumber < _startExportAtDocumentNumber.Maximum Then
-			_startExportAtDocumentNumber.Value = ef.StartAtDocumentNumber + 1
+		Dim trueStartExportAtDocumentNumber As Int32 = ef.StartAtDocumentNumber + 1
+		If trueStartExportAtDocumentNumber >= _startExportAtDocumentNumber.Minimum AndAlso trueStartExportAtDocumentNumber <= _startExportAtDocumentNumber.Maximum Then
+			_startExportAtDocumentNumber.Value = trueStartExportAtDocumentNumber
 		End If
 
 		If ef.ImagePrecedence IsNot Nothing AndAlso ef.ImagePrecedence.Length > 0 Then
