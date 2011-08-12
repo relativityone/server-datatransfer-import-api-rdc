@@ -236,7 +236,6 @@ Namespace kCura.WinEDDS
 		 ByVal bulkLoadFileFieldDelimiter As String)
 			MyBase.New(args, timeZoneOffset, doRetryLogic, autoDetect)
 			_overwrite = args.OverwriteDestination
-			_auditManager = New kCura.WinEDDS.Service.AuditManager(args.Credentials, args.CookieContainer)
 			If args.CopyFilesToDocumentRepository Then
 				_defaultDestinationFolderPath = args.SelectedCasePath & "EDDS" & args.CaseInfo.ArtifactID & "\"
 				If args.ArtifactTypeID <> Relativity.ArtifactType.Document Then
@@ -400,6 +399,11 @@ Namespace kCura.WinEDDS
 			RaiseEvent StatusMessage(New kCura.Windows.Process.StatusEventArgs(Windows.Process.EventType.ResetStartTime, 0, _recordCount, "Reset time for import rolling average", Nothing))
 			Return True
 		End Function
+
+		Protected Overrides Sub InitializeManagers(ByVal args As LoadFile)
+			MyBase.InitializeManagers(args)
+			_auditManager = New kCura.WinEDDS.Service.AuditManager(args.Credentials, args.CookieContainer)
+		End Sub
 
 		Private Sub DeleteFiles()
 			kCura.Utility.File.Delete(_outputNativeFilePath)
