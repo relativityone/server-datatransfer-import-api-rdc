@@ -323,6 +323,16 @@ Namespace kCura.WinEDDS
 			_outputObjectFileWriter.WriteLine(String.Format("{1}{0}{2}{0}{3}{0}{4}{0}{5}{0}", _bulkLoadFileFieldDelimiter, ownerIdentifier, objectName, artifactID, objectTypeArtifactID, fieldID))
 		End Sub
 
+		Private Function MergeResults(ByVal originalResult As MassImportResults, ByVal newResult As MassImportResults) As MassImportResults
+			originalResult.ArtifactsCreated += newResult.ArtifactsCreated
+			originalResult.ArtifactsUpdated += newResult.ArtifactsUpdated
+			originalResult.FilesProcessed += newResult.FilesProcessed
+			If newResult.ExceptionDetail IsNot Nothing Then
+				originalResult.ExceptionDetail = newResult.ExceptionDetail
+			End If
+			Return originalResult
+		End Function
+
 #End Region
 
 #Region "Main"
@@ -630,14 +640,12 @@ Namespace kCura.WinEDDS
 			Dim tries As Int32 = NumberOfRetries()
 			Dim retval As New kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults
 			Dim totalRecords As Int32 = Me.ImportBatchSize
-			Dim recordsToImport As Int32
 			While tries > 0
 				Try
-					recordsToImport = Me.ImportBatchSize
-					If recordsToImport = totalRecords Then
+					If Me.ImportBatchSize = totalRecords Then
 						retval = FullBatchBulkImport(settings, includeExtractedTextEncoding)
 					Else
-						retval = ReducedBatchBulkImport(settings, includeExtractedTextEncoding, recordsToImport, totalRecords)
+						retval = ReducedBatchBulkImport(settings, includeExtractedTextEncoding, totalRecords)
 					End If
 					Exit While
 				Catch ex As Exception
@@ -663,8 +671,17 @@ Namespace kCura.WinEDDS
 			Return retval
 		End Function
 
-		Private Function ReducedBatchBulkImport(ByVal settings As NativeLoadInfo, ByVal includeExtractedTextEncoding As Boolean, ByVal recordsToImport As Int32, ByVal totalRecords As Int32) As MassImportResults
+		Private Function ReducedBatchBulkImport(ByVal settings As NativeLoadInfo, ByVal includeExtractedTextEncoding As Boolean, ByVal totalRecords As Int32) As MassImportResults
 			'TODO: make this run separate sub-batches until all the original batch docs are processed
+			'Dim retval As New MassImportResults
+			'Dim startPoint As Int32 = 0
+			'Dim endPoint As Int32 = ImportBatchSize
+			'While endPoint < totalRecords
+			'	'retval = MergeResults(retval, NEWEBSERVICECALL(startpoint, endpoint))
+			'	startPoint = startPoint + Me.ImportBatchSize
+			'	endPoint = Math.Min(endPoint + Me.ImportBatchSize, totalRecords)
+			'End While
+
 			Return FullBatchBulkImport(settings, includeExtractedTextEncoding)
 		End Function
 
