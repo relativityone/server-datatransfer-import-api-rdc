@@ -346,6 +346,7 @@
     <Compile Include="FileDownloader.vb">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="FileObjects\ErrorExportFile.vb" />
     <Compile Include="FileObjects\ExportFile.vb">
       <SubType>Code</SubType>
     </Compile>
