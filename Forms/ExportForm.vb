@@ -1419,7 +1419,11 @@ Public Class ExportForm
 		_nestedValueDelimiter.SelectedValue = ef.NestedValueDelimiter
 		_multiRecordDelimiter.SelectedValue = ef.MultiRecordDelimiter
 		_exportFullTextAsFile.Checked = ef.ExportFullTextAsFile
+
 		_potentialTextFields.SelectedItem = ef.SelectedTextField
+
+
+
 		_exportMulticodeFieldsAsNested.Checked = ef.MulticodesAsNested
 
 		If ef.AllExportableFields IsNot Nothing Then
@@ -1447,6 +1451,8 @@ Public Class ExportForm
 					End If
 				Next
 			Next
+
+			ManagePotentialTextFields()
 
 			For Each vfi As kCura.WinEDDS.ViewFieldInfo In itemsToRemoveFromLeftListBox
 				_columnSelecter.LeftListBoxItems.Remove(vfi)
