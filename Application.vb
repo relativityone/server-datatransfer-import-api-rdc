@@ -867,6 +867,7 @@ Namespace kCura.EDDS.WinForm
 			exportFile.CaseInfo = caseInfo
 			exportFile.Credential = Me.Credential
 			exportFile.TypeOfExport = typeOfExport
+			exportFile.ObjectTypeName = Me.GetObjectTypeName(exportFile.ArtifactTypeID)
 			Select Case typeOfExport
 				Case exportFile.ExportType.Production
 					exportFile.DataTable = productionManager.RetrieveProducedByContextArtifactID(caseInfo.ArtifactID).Tables(0)
