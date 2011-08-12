@@ -236,7 +236,6 @@ Namespace kCura.WinEDDS
 		 ByVal bulkLoadFileFieldDelimiter As String)
 			MyBase.New(args, timeZoneOffset, doRetryLogic, autoDetect)
 			_overwrite = args.OverwriteDestination
-			_auditManager = New kCura.WinEDDS.Service.AuditManager(args.Credentials, args.CookieContainer)
 			If args.CopyFilesToDocumentRepository Then
 				_defaultDestinationFolderPath = args.SelectedCasePath & "EDDS" & args.CaseInfo.ArtifactID & "\"
 				If args.ArtifactTypeID <> Relativity.ArtifactType.Document Then
@@ -401,6 +400,11 @@ Namespace kCura.WinEDDS
 			Return True
 		End Function
 
+		Protected Overrides Sub InitializeManagers(ByVal args As LoadFile)
+			MyBase.InitializeManagers(args)
+			_auditManager = New kCura.WinEDDS.Service.AuditManager(args.Credentials, args.CookieContainer)
+		End Sub
+
 		Private Sub DeleteFiles()
 			kCura.Utility.File.Delete(_outputNativeFilePath)
 			kCura.Utility.File.Delete(_outputCodeFilePath)
@@ -464,7 +468,7 @@ Namespace kCura.WinEDDS
 						If Config.CreateErrorForEmptyNativeFile Then
 							lineStatus += Relativity.MassImport.ImportStatus.EmptyFile 'Throw New EmptyNativeFileException(filename)
 						Else
-							WriteWarning("The file " & filename & " to be uploaded is empty; only metadata will be loaded for this record")
+							WriteWarning("The file " & filename & " empty; only metadata will be loaded for this record.")
 							fileExists = False
 							filename = String.Empty
 						End If
