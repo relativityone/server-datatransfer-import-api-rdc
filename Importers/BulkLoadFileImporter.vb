@@ -211,7 +211,6 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
-
 		Protected Property ImportBatchSize As Int32
 			Get
 				If Not _importBatchSize.HasValue Then _importBatchSize = Config.ImportBatchSize

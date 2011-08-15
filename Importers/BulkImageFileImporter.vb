@@ -1,4 +1,5 @@
 Imports System.IO
+Imports kCura.EDDS.WebAPI.BulkImportManagerBase
 Imports kCura.Utility.Extensions.CollectionExtension
 Namespace kCura.WinEDDS
 	Public Class BulkImageFileImporter
@@ -15,7 +16,7 @@ Namespace kCura.WinEDDS
 		Private WithEvents _bcpuploader As kCura.WinEDDS.FileUploader
 		Private _fileManager As kCura.WinEDDS.Service.FileManager
 		Private _productionManager As kCura.WinEDDS.Service.ProductionManager
-		Private _bulkImportManager As kCura.WinEDDS.Service.BulkImportManager
+		Protected _bulkImportManager As kCura.WinEDDS.Service.BulkImportManager
 		Private _folderID As Int32
 		Private _productionArtifactID As Int32
 		Private _overwrite As String
@@ -28,6 +29,9 @@ Namespace kCura.WinEDDS
 		Private _order As Int32
 		Private _csvwriter As System.Text.StringBuilder
 		Private _nextLine As String()
+		Private _importBatchSize As Int32?
+		Private _importBatchVolume As Int32?
+		Private _minimumBatchSize As Int32?
 		Private _autoNumberImages As Boolean
 		Private _copyFilesToRepository As Boolean
 		Private _repositoryPath As String
@@ -35,8 +39,8 @@ Namespace kCura.WinEDDS
 		Private _caseInfo As Relativity.CaseInfo
 
 		Private WithEvents _processController As kCura.Windows.Process.Controller
-		Private _productionDTO As kCura.EDDS.WebAPI.ProductionManagerBase.Production
-		Private _keyFieldDto As kCura.EDDS.WebAPI.FieldManagerBase.Field
+		Protected _productionDTO As kCura.EDDS.WebAPI.ProductionManagerBase.Production
+		Protected _keyFieldDto As kCura.EDDS.WebAPI.FieldManagerBase.Field
 		Private _bulkLoadFileWriter As System.IO.StreamWriter
 		Private _sourceTextEncoding As System.Text.Encoding = System.Text.Encoding.Default
 		Private _uploadKey As String = ""
@@ -107,7 +111,48 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
+		Protected Overridable Property MinimumBatchSize As Int32
+			Get
+				If Not _minimumBatchSize.HasValue Then _minimumBatchSize = 0 'TODO: call config value
+				Return _minimumBatchSize.Value
+			End Get
+			Set(ByVal value As Int32)
+				_minimumBatchSize = value
+			End Set
+		End Property
 
+		Protected Property ImportBatchSize As Int32
+			Get
+				If Not _importBatchSize.HasValue Then _importBatchSize = Config.ImportBatchSize
+				Return _importBatchSize.Value
+			End Get
+			Set(ByVal value As Int32)
+				_importBatchSize = If(value > MinimumBatchSize, value, MinimumBatchSize)
+			End Set
+		End Property
+
+		Protected Property ImportBatchVolume As Int32
+			Get
+				If Not _importBatchVolume.HasValue Then _importBatchVolume = Config.ImportBatchMaxVolume
+				Return _importBatchVolume.Value
+			End Get
+			Set(ByVal value As Int32)
+				_importBatchVolume = value
+			End Set
+		End Property
+
+		Protected Overridable ReadOnly Property NumberOfRetries() As Int32
+			Get
+				Return kCura.Utility.Config.Settings.IoErrorNumberOfRetries
+			End Get
+		End Property
+
+		Protected Overridable ReadOnly Property BulkImportManager As kCura.WinEDDS.Service.BulkImportManager
+			Get
+				If _bulkImportManager Is Nothing Then _bulkImportManager = New kCura.WinEDDS.Service.BulkImportManager(_settings.Credential, _settings.CookieContainer)
+				Return _bulkImportManager
+			End Get
+		End Property
 
 #End Region
 
@@ -116,13 +161,7 @@ Namespace kCura.WinEDDS
 		Public Sub New(ByVal folderID As Int32, ByVal args As ImageLoadFile, ByVal controller As kCura.Windows.Process.Controller, ByVal processID As Guid, ByVal doRetryLogic As Boolean)
 			MyBase.New()
 			_doRetryLogic = doRetryLogic
-			_docManager = New kCura.WinEDDS.Service.DocumentManager(args.Credential, args.CookieContainer)
-			_fieldQuery = New kCura.WinEDDS.Service.FieldQuery(args.Credential, args.CookieContainer)
-			_folderManager = New kCura.WinEDDS.Service.FolderManager(args.Credential, args.CookieContainer)
-			_auditManager = New kCura.WinEDDS.Service.AuditManager(args.Credential, args.CookieContainer)
-			_fileManager = New kCura.WinEDDS.Service.FileManager(args.Credential, args.CookieContainer)
-			_productionManager = New kCura.WinEDDS.Service.ProductionManager(args.Credential, args.CookieContainer)
-			_bulkImportManager = New kCura.WinEDDS.Service.BulkImportManager(args.Credential, args.CookieContainer)
+			InitializeManagers(args)
 			Dim suffix As String = "\EDDS" & args.CaseInfo.ArtifactID & "\"
 			If args.SelectedCasePath = "" Then
 				_repositoryPath = args.CaseDefaultPath.TrimEnd("\"c) & suffix
@@ -130,19 +169,10 @@ Namespace kCura.WinEDDS
 				_repositoryPath = args.SelectedCasePath.TrimEnd("\"c) & suffix
 			End If
 			_textRepositoryPath = args.CaseDefaultPath & "EDDS" & args.CaseInfo.ArtifactID & "\"
-			_fileUploader = New kCura.WinEDDS.FileUploader(args.Credential, args.CaseInfo.ArtifactID, _repositoryPath, args.CookieContainer)
-			_bcpuploader = New kCura.WinEDDS.FileUploader(args.Credential, args.CaseInfo.ArtifactID, _repositoryPath, args.CookieContainer, False)
+			InitializeUploaders(args)
 			_folderID = folderID
 			_productionArtifactID = args.ProductionArtifactID
-			If _productionArtifactID <> 0 Then
-				_productionDTO = _productionManager.Read(args.CaseInfo.ArtifactID, _productionArtifactID)
-				_keyFieldDto = New kCura.WinEDDS.Service.FieldManager(args.Credential, args.CookieContainer).Read(args.CaseInfo.ArtifactID, args.BeginBatesFieldArtifactID)
-			ElseIf args.IdentityFieldId <> -1 Then
-				_keyFieldDto = New kCura.WinEDDS.Service.FieldManager(args.Credential, args.CookieContainer).Read(args.CaseInfo.ArtifactID, args.IdentityFieldId)
-			Else
-				Dim fieldID As Int32 = _fieldQuery.RetrieveAllAsDocumentFieldCollection(args.CaseInfo.ArtifactID, Relativity.ArtifactType.Document).IdentifierFields(0).FieldID
-				_keyFieldDto = New kCura.WinEDDS.Service.FieldManager(args.Credential, args.CookieContainer).Read(args.CaseInfo.ArtifactID, fieldID)
-			End If
+			InitializeDTOs(args)
 			_overwrite = args.Overwrite
 			_replaceFullText = args.ReplaceFullText
 			_selectedIdentifierField = args.ControlKeyField
@@ -154,6 +184,33 @@ Namespace kCura.WinEDDS
 			_settings = args
 			_processID = processID
 			_startLineNumber = args.StartLineNumber
+		End Sub
+
+		Protected Overridable Sub InitializeUploaders(ByVal args As ImageLoadFile)
+			_fileUploader = New kCura.WinEDDS.FileUploader(args.Credential, args.CaseInfo.ArtifactID, _repositoryPath, args.CookieContainer)
+			_bcpuploader = New kCura.WinEDDS.FileUploader(args.Credential, args.CaseInfo.ArtifactID, _repositoryPath, args.CookieContainer, False)
+		End Sub
+
+		Protected Overridable Sub InitializeDTOs(ByVal args As ImageLoadFile)
+			If _productionArtifactID <> 0 Then
+				_productionDTO = _productionManager.Read(args.CaseInfo.ArtifactID, _productionArtifactID)
+				_keyFieldDto = New kCura.WinEDDS.Service.FieldManager(args.Credential, args.CookieContainer).Read(args.CaseInfo.ArtifactID, args.BeginBatesFieldArtifactID)
+			ElseIf args.IdentityFieldId <> -1 Then
+				_keyFieldDto = New kCura.WinEDDS.Service.FieldManager(args.Credential, args.CookieContainer).Read(args.CaseInfo.ArtifactID, args.IdentityFieldId)
+			Else
+				Dim fieldID As Int32 = _fieldQuery.RetrieveAllAsDocumentFieldCollection(args.CaseInfo.ArtifactID, Relativity.ArtifactType.Document).IdentifierFields(0).FieldID
+				_keyFieldDto = New kCura.WinEDDS.Service.FieldManager(args.Credential, args.CookieContainer).Read(args.CaseInfo.ArtifactID, fieldID)
+			End If
+		End Sub
+
+		Protected Overridable Sub InitializeManagers(ByVal args As ImageLoadFile)
+			_docManager = New kCura.WinEDDS.Service.DocumentManager(args.Credential, args.CookieContainer)
+			_fieldQuery = New kCura.WinEDDS.Service.FieldQuery(args.Credential, args.CookieContainer)
+			_folderManager = New kCura.WinEDDS.Service.FolderManager(args.Credential, args.CookieContainer)
+			_auditManager = New kCura.WinEDDS.Service.AuditManager(args.Credential, args.CookieContainer)
+			_fileManager = New kCura.WinEDDS.Service.FileManager(args.Credential, args.CookieContainer)
+			_productionManager = New kCura.WinEDDS.Service.ProductionManager(args.Credential, args.CookieContainer)
+			_bulkImportManager = New kCura.WinEDDS.Service.BulkImportManager(args.Credential, args.CookieContainer)
 		End Sub
 
 #End Region
@@ -180,7 +237,7 @@ Namespace kCura.WinEDDS
 				Me.ProcessDocument(al, status)
 				al.Clear()
 				status = 0
-				If _bulkLoadFileWriter.BaseStream.Length > Config.ImportBatchMaxVolume OrElse _batchCount > Config.ImportBatchSize - 1 Then
+				If _bulkLoadFileWriter.BaseStream.Length > ImportBatchVolume OrElse _batchCount > ImportBatchSize - 1 Then
 					Me.PushImageBatch(bulkLoadFilePath, False)
 				End If
 			Catch ex As Exception
@@ -189,29 +246,60 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Public Function RunBulkImport(ByVal overwrite As kCura.EDDS.WebAPI.BulkImportManagerBase.OverwriteType, ByVal useBulk As Boolean) As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults
-			Dim tries As Int32 = kCura.Utility.Config.Settings.IoErrorNumberOfRetries
+			Dim tries As Int32 = NumberOfRetries()
+			Dim retval As New kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults
+			Dim totalRecords As Int32 = Me.ImportBatchSize
 			While tries > 0
 				Try
-					If _productionArtifactID = 0 Then
-						Return _bulkImportManager.BulkImportImage(_caseInfo.ArtifactID, _uploadKey, _replaceFullText, overwrite, _folderID, _repositoryPath, useBulk, _runId, _keyFieldDto.ArtifactID, _copyFilesToRepository)
+					If Me.ImportBatchSize = totalRecords Then
+						retval = FullBatchBulkImport(overwrite, useBulk)
 					Else
-						Return _bulkImportManager.BulkImportProductionImage(_caseInfo.ArtifactID, _uploadKey, _replaceFullText, overwrite, _folderID, _repositoryPath, _productionArtifactID, useBulk, _runId, _keyFieldDto.ArtifactID, _copyFilesToRepository)
+						retval = ReducedBatchBulkImport(overwrite, useBulk, ImportBatchSize)
 					End If
+					Exit While
 				Catch ex As Exception
 					tries -= 1
-					If tries = 0 OrElse TypeOf ex Is kCura.WinEDDS.Service.BulkImportManager.BulkImportSqlException OrElse _continue = False Then
+					If tries = 0 OrElse ex.GetType = GetType(Service.BulkImportManager.BulkImportSqlException) OrElse _continue = False Then
 						Throw
-					ElseIf tries < kCura.Utility.Config.Settings.IoErrorNumberOfRetries Then
-						If TypeOf ex Is kCura.WinEDDS.Service.BulkImportManager.BulkImportSqlTimeoutException Then Me.LowerBatchSize()
+					ElseIf tries < NumberOfRetries Then
+						If ExceptionIsTimeoutRelated(ex) Then Me.LowerBatchLimits()
 						Me.RaiseWarningAndPause(ex)
 					End If
 				End Try
 			End While
-			Return Nothing
+			Return retval
 		End Function
 
-		Protected Overridable Sub LowerBatchSize()
-			'TODO: change batch size
+		Private Function BatchBulkImport(ByVal overwrite As OverwriteType, ByVal useBulk As Boolean, ByVal startRecord As Int32, ByVal endRecord As Int32) As MassImportResults
+			Dim retval As MassImportResults
+			If _productionArtifactID = 0 Then
+				retval = _bulkImportManager.BulkImportImage(_caseInfo.ArtifactID, _uploadKey, _replaceFullText, overwrite, _folderID, _repositoryPath, useBulk, _runId, _keyFieldDto.ArtifactID, _copyFilesToRepository, startRecord, endRecord)
+			Else
+				retval = _bulkImportManager.BulkImportProductionImage(_caseInfo.ArtifactID, _uploadKey, _replaceFullText, overwrite, _folderID, _repositoryPath, _productionArtifactID, useBulk, _runId, _keyFieldDto.ArtifactID, _copyFilesToRepository, startRecord, endRecord)
+			End If
+			Return retval
+		End Function
+
+		Private Function ReducedBatchBulkImport(ByVal overwrite As OverwriteType, ByVal useBulk As Boolean, ByVal totalRecords As Int32) As MassImportResults
+			Dim retval As New MassImportResults
+			Dim startPoint As Int32 = 0
+			Dim endPoint As Int32 = ImportBatchSize
+			While startPoint < totalRecords
+				retval = MergeResults(retval, BatchBulkImport(overwrite, useBulk, startPoint, endPoint))
+				startPoint = endPoint + 1
+				endPoint = Math.Min(endPoint + Me.ImportBatchSize, totalRecords)
+			End While
+
+			Return retval
+		End Function
+
+		Private Function FullBatchBulkImport(ByVal overwrite As OverwriteType, ByVal useBulk As Boolean) As MassImportResults
+			Return BatchBulkImport(overwrite, useBulk, 0, ImportBatchSize)
+		End Function
+
+		Protected Overridable Sub LowerBatchLimits()
+			'TODO: change batch size, check batch volume
+			Me.ImportBatchSize -= 100
 		End Sub
 
 		Protected Overridable Sub RaiseWarningAndPause(ByVal ex As Exception)
@@ -280,6 +368,26 @@ Namespace kCura.WinEDDS
 
 		Public Overridable Function GetImageReader() As kCura.WinEDDS.Api.IImageReader
 			Return New OpticonFileReader(_folderID, _settings, Nothing, Nothing, _doRetryLogic)
+		End Function
+
+		Private Function MergeResults(ByVal originalResult As MassImportResults, ByVal newResult As MassImportResults) As MassImportResults
+			originalResult.ArtifactsCreated += newResult.ArtifactsCreated
+			originalResult.ArtifactsUpdated += newResult.ArtifactsUpdated
+			originalResult.FilesProcessed += newResult.FilesProcessed
+			If newResult.ExceptionDetail IsNot Nothing Then
+				originalResult.ExceptionDetail = newResult.ExceptionDetail
+			End If
+			Return originalResult
+		End Function
+
+		Private Function ExceptionIsTimeoutRelated(ByVal ex As Exception) As Boolean
+			If ex.GetType = GetType(Service.BulkImportManager.BulkImportSqlTimeoutException) Then
+				Return True
+			ElseIf TypeOf ex Is System.Net.WebException AndAlso ex.Message.ToString.Contains("timed out") Then
+				Return True
+			Else
+				Return False
+			End If
 		End Function
 
 		Public Sub AdvanceRecord()
@@ -470,7 +578,7 @@ Namespace kCura.WinEDDS
 				Next
 				If hasFileIdentifierProblem Then status += Relativity.MassImport.ImportStatus.IdentifierOverlap
 
-				Dim record As api.ImageRecord = lines(0)
+				Dim record As Api.ImageRecord = lines(0)
 				Dim textFileList As New System.Collections.ArrayList
 				Dim documentId As String = record.BatesNumber
 				Dim offset As Int64 = 0
