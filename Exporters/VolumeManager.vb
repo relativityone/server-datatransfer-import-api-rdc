@@ -176,7 +176,7 @@ Namespace kCura.WinEDDS
 				If Not Me.Settings.Overwrite AndAlso System.IO.File.Exists(imageFilePath) Then
 					Throw New System.Exception(String.Format("Overwrite not selected and file '{0}' exists.", imageFilePath))
 				End If
-				_imageFileWriter = New System.IO.StreamWriter(imageFilePath, False, _encoding)
+				_imageFileWriter = New System.IO.StreamWriter(imageFilePath, False, Me.GetImageFileEncoding)
 			End If
 			If Me.Settings.LoadFileIsHtml Then
 				_loadFileFormatter = New Exporters.HtmlCellFormatter(Me.Settings)
@@ -187,6 +187,19 @@ Namespace kCura.WinEDDS
 				_ordinalLookup.Add(columnNamesInOrder(i), i)
 			Next
 		End Sub
+
+		Private Function GetImageFileEncoding() As System.Text.Encoding
+			Dim retval As System.Text.Encoding
+			If Me.Settings.ExportImages Then
+				retval = System.Text.Encoding.Default
+				If Me.Settings.LogFileFormat <> LoadFileType.FileFormat.Opticon Then
+					retval = System.Text.Encoding.UTF8
+				End If
+			Else
+				retval = _encoding
+			End If
+			Return retval
+		End Function
 
 
 		Public ReadOnly Property LoadFileDestinationPath() As String
@@ -270,7 +283,7 @@ Namespace kCura.WinEDDS
 
 		Private Sub ReInitializeAllStreams()
 			If Not _nativeFileWriter Is Nothing Then _nativeFileWriter = Me.ReInitializeStream(_nativeFileWriter, _nativeFileWriterPosition, Me.LoadFileDestinationPath, _encoding)
-			If Not _imageFileWriter Is Nothing Then _imageFileWriter = Me.ReInitializeStream(_imageFileWriter, _imageFileWriterPosition, Me.ImageFileDestinationPath, _encoding)
+			If Not _imageFileWriter Is Nothing Then _imageFileWriter = Me.ReInitializeStream(_imageFileWriter, _imageFileWriterPosition, Me.ImageFileDestinationPath, Me.GetImageFileEncoding)
 		End Sub
 
 		Private Function ReInitializeStream(ByVal brokenStream As System.IO.StreamWriter, ByVal position As Int64, ByVal filepath As String, ByVal encoding As System.Text.Encoding) As System.IO.StreamWriter
@@ -854,7 +867,7 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Private Sub WriteIproImageLine(ByVal batesNumber As String, ByVal pageNumber As Int32, ByVal fullFilePath As String)
-			Dim linefactory As New Exporters.LineFactory.SimpleIproImageLineFactory(batesNumber, pageNumber, fullFilePath, Me.CurrentVolumeLabel, Me.Settings.TypeOfImage)
+			Dim linefactory As New Exporters.LineFactory.SimpleIproImageLineFactory(batesNumber, pageNumber, fullFilePath, Me.CurrentVolumeLabel, Me.Settings.TypeOfImage.Value)
 			linefactory.WriteLine(_imageFileWriter)
 		End Sub
 

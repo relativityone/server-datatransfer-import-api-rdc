@@ -65,6 +65,7 @@ Namespace kCura.WinEDDS
 		Private _continue As Boolean
 		Dim _folders As System.Collections.Specialized.HybridDictionary
 		Dim _choicesTable As New Dictionary(Of Int32, Dictionary(Of String, Boolean))	 'Dictionary to track the choice values created per column index
+		Dim _codeManager As kCura.WinEDDS.Service.CodeManager
 #End Region
 
 #Region "Event stuff"
@@ -98,6 +99,7 @@ Namespace kCura.WinEDDS
 			_haltListener = New HaltListener
 			_continue = True
 			_folders = New System.Collections.Specialized.HybridDictionary
+			_codeManager = New kCura.WinEDDS.Service.CodeManager(args.Credentials, args.CookieContainer)
 		End Sub
 
 		Private Function NeedToCheckFolders() As Boolean

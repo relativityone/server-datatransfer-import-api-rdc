@@ -1,6 +1,15 @@
 Namespace kCura.WinEDDS
-	Public Class ExportFile
-		'Protected _identity As Relativity.Core.EDDSIdentity
+	''' <summary>
+	''' Container class for all export settings
+	''' </summary>
+	''' <remarks>
+	''' Writable properties that are not marked as ReadFromExisting are used in saving/loading these files to disk.  If one needs to add a property, and it needs to be save-able, make sure to add those settings to the serialize/deserialize methods.
+	''' </remarks>
+	<Serializable()> Public Class ExportFile
+		Implements System.Runtime.Serialization.ISerializable
+
+#Region " Members "
+
 		Protected _caseInfo As Relativity.CaseInfo
 		Protected _dataTable As System.Data.DataTable
 		Protected _typeOfExport As ExportType
@@ -18,7 +27,7 @@ Namespace kCura.WinEDDS
 		Protected _exportFullText As Boolean
 		Protected _exportFullTextAsFile As Boolean
 		Protected _exportNative As Boolean
-		Protected _logFileFormat As kCura.WinEDDS.LoadFileType.FileFormat
+		Protected _logFileFormat As kCura.WinEDDS.LoadFileType.FileFormat?
 		Protected _renameFilesToIdentifier As Boolean
 		Protected _identifierColumnName As String
 		Protected _volumeInfo As kCura.WinEDDS.Exporters.VolumeInfo
@@ -28,7 +37,7 @@ Namespace kCura.WinEDDS
 		Protected _loadFilesPrefix As String
 		Protected _filePrefix As String
 		Protected _typeOfExportedFilePath As ExportedFilePathType
-		Protected _typeOfImage As ImageType
+		Protected _typeOfImage As ImageType?
 		Private _exportNativesToFileNamedFrom As kCura.WinEDDS.ExportNativeWithFilenameFrom = ExportNativeWithFilenameFrom.Identifier
 		Private _appendOriginalFileName As Boolean
 		Private _loadFileIsHtml As Boolean = False
@@ -44,6 +53,8 @@ Namespace kCura.WinEDDS
 		Protected _startAtDocument As Int32 = 0
 		Private _artifactTypeID As Int32
 		Private _fileField As DocumentField
+
+#End Region
 
 #Region "Public Properties"
 		Public ReadOnly Property ArtifactTypeID() As Int32
@@ -70,7 +81,7 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
-		Public Property CaseInfo() As Relativity.CaseInfo
+		<ReadFromExisting()> Public Property CaseInfo() As Relativity.CaseInfo
 			Get
 				Return _caseInfo
 			End Get
@@ -85,7 +96,7 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
-		Public Property DataTable() As System.Data.DataTable
+		<ReadFromExisting()> Public Property DataTable() As System.Data.DataTable
 			Get
 				Return _dataTable
 			End Get
@@ -94,7 +105,7 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
-		Public Property ArtifactAvfLookup() As Specialized.HybridDictionary
+		<ReadFromExisting()> Public Property ArtifactAvfLookup() As Specialized.HybridDictionary
 			Get
 				Return _artifactAvfLookup
 			End Get
@@ -193,7 +204,7 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
-		Public Property Credential() As Net.NetworkCredential
+		<ReadFromExisting()> Public Property Credential() As Net.NetworkCredential
 			Get
 				Return _credential
 			End Get
@@ -202,7 +213,7 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
-		Public Property CookieContainer() As System.Net.CookieContainer
+		<ReadFromExisting()> Public Property CookieContainer() As System.Net.CookieContainer
 			Get
 				Return _cookieContainer
 			End Get
@@ -238,11 +249,11 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
-		Public Property LogFileFormat() As kCura.WinEDDS.LoadFileType.FileFormat
+		Public Property LogFileFormat() As kCura.WinEDDS.LoadFileType.FileFormat?
 			Get
 				Return _logFileFormat
 			End Get
-			Set(ByVal value As kCura.WinEDDS.LoadFileType.FileFormat)
+			Set(ByVal value As kCura.WinEDDS.LoadFileType.FileFormat?)
 				_logFileFormat = value
 			End Set
 		End Property
@@ -318,11 +329,11 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
-		Public Property TypeOfImage() As ImageType
+		Public Property TypeOfImage() As ImageType?
 			Get
 				Return _typeOfImage
 			End Get
-			Set(ByVal value As ImageType)
+			Set(ByVal value As ImageType?)
 				_typeOfImage = value
 			End Set
 		End Property
@@ -345,7 +356,7 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
-		Public Property AllExportableFields() As WinEDDS.ViewFieldInfo()
+		<ReadFromExisting()> Public Property AllExportableFields() As WinEDDS.ViewFieldInfo()
 			Get
 				Return _allExportableFields
 			End Get
@@ -426,7 +437,7 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
-		Public Property FileField() As DocumentField
+		<ReadFromExisting()> Public Property FileField() As DocumentField
 			Get
 				Return _fileField
 			End Get
@@ -441,7 +452,104 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
+		Public Property ObjectTypeName As String
+
 #End Region
+
+#Region " Serialization "
+
+		Public Sub GetObjectData(ByVal info As System.Runtime.Serialization.SerializationInfo, ByVal context As System.Runtime.Serialization.StreamingContext) Implements System.Runtime.Serialization.ISerializable.GetObjectData
+			info.AddValue("ArtifactID", Me.ArtifactID, GetType(Int32))
+			info.AddValue("LoadFilesPrefix", Me.LoadFilesPrefix, GetType(Int32))
+			info.AddValue("NestedValueDelimiter", AscW(Me.NestedValueDelimiter), GetType(Int32))
+			info.AddValue("TypeOfExport", CInt(Me.TypeOfExport), GetType(Int32))
+			info.AddValue("FolderPath", Me.FolderPath, GetType(String))
+			info.AddValue("ViewID", Me.ViewID, GetType(Int32))
+			info.AddValue("Overwrite", Me.Overwrite, GetType(Boolean))
+			info.AddValue("RecordDelimiter", AscW(Me.RecordDelimiter), GetType(Int32))
+			info.AddValue("QuoteDelimiter", AscW(Me.QuoteDelimiter), GetType(Int32))
+			info.AddValue("NewlineDelimiter", AscW(Me.NewlineDelimiter), GetType(Int32))
+			info.AddValue("MultiRecordDelimiter", AscW(Me.MultiRecordDelimiter), GetType(Int32))
+			info.AddValue("ExportFullText", Me.ExportFullText, GetType(Boolean))
+			info.AddValue("ExportFullTextAsFile", Me.ExportFullTextAsFile, GetType(Boolean))
+			info.AddValue("ExportNative", Me.ExportNative, GetType(Boolean))
+			info.AddValue("LogFileFormat", If(Me.LogFileFormat.HasValue, CInt(Me.LogFileFormat.Value).ToString, String.Empty), GetType(String))
+			info.AddValue("RenameFilesToIdentifier", Me.RenameFilesToIdentifier, GetType(Boolean))
+			info.AddValue("IdentifierColumnName", Me.IdentifierColumnName, GetType(String))
+			info.AddValue("LoadFileExtension", Me.LoadFileExtension, GetType(String))
+			info.AddValue("ExportImages", Me.ExportImages, GetType(Boolean))
+			info.AddValue("ExportNativesToFileNamedFrom", CInt(Me.ExportNativesToFileNamedFrom), GetType(Int32))
+			info.AddValue("FilePrefix", Me.FilePrefix, GetType(String))
+			info.AddValue("TypeOfExportedFilePath", CInt(Me.TypeOfExportedFilePath), GetType(Int32))
+			info.AddValue("TypeOfImage", If(Me.TypeOfImage.HasValue, CInt(Me.TypeOfImage.Value).ToString, String.Empty), GetType(String))
+			info.AddValue("AppendOriginalFileName", Me.AppendOriginalFileName, GetType(Boolean))
+			info.AddValue("LoadFileIsHtml", Me.LoadFileIsHtml, GetType(Boolean))
+			info.AddValue("MulticodesAsNested", Me.MulticodesAsNested, GetType(Boolean))
+			info.AddValue("LoadFileEncoding", If(Me.LoadFileEncoding Is Nothing, -1, Me.LoadFileEncoding.CodePage), GetType(Int32))
+			info.AddValue("TextFileEncoding", If(Me.TextFileEncoding Is Nothing, -1, Me.TextFileEncoding.CodePage), GetType(Int32))
+			info.AddValue("VolumeDigitPadding", Me.VolumeDigitPadding, GetType(Int32))
+			info.AddValue("SubdirectoryDigitPadding", Me.SubdirectoryDigitPadding, GetType(Int32))
+			info.AddValue("StartAtDocumentNumber", Me.StartAtDocumentNumber, GetType(Int32))
+			info.AddValue("VolumeInfo", Me.VolumeInfo, GetType(kCura.WinEDDS.Exporters.VolumeInfo))
+			info.AddValue("SelectedTextField", Me.SelectedTextField, GetType(kCura.WinEDDS.ViewFieldInfo))
+			info.AddValue("ImagePrecedence", Me.ImagePrecedence, GetType(kCura.WinEDDS.Pair()))
+			info.AddValue("SelectedViewFields", Me.SelectedViewFields, GetType(kCura.WinEDDS.ViewFieldInfo()))
+			info.AddValue("ObjectTypeName", Me.ObjectTypeName, GetType(String))
+		End Sub
+		'
+		Private Sub New(ByVal info As System.Runtime.Serialization.SerializationInfo, ByVal Context As System.Runtime.Serialization.StreamingContext)
+			With info
+				Me.ArtifactID = info.GetInt32("ArtifactID")
+				Me.LoadFilesPrefix = info.GetString("LoadFilesPrefix")
+				Me.NestedValueDelimiter = ChrW(info.GetInt32("NestedValueDelimiter"))
+				Me.TypeOfExport = CType(info.GetInt32("TypeOfExport"), kCura.WinEDDS.ExportFile.ExportType)
+				Me.FolderPath = info.GetString("FolderPath")
+				Me.ViewID = info.GetInt32("ViewID")
+				Me.Overwrite = info.GetBoolean("Overwrite")
+				Me.RecordDelimiter = ChrW(info.GetInt32("RecordDelimiter"))
+				Me.QuoteDelimiter = ChrW(info.GetInt32("QuoteDelimiter"))
+				Me.NewlineDelimiter = ChrW(info.GetInt32("NewlineDelimiter"))
+				Me.MultiRecordDelimiter = ChrW(info.GetInt32("MultiRecordDelimiter"))
+				Me.ExportFullText = info.GetBoolean("ExportFullText")
+				Me.ExportFullTextAsFile = info.GetBoolean("ExportFullTextAsFile")
+				Me.ExportNative = info.GetBoolean("ExportNative")
+				With kCura.Utility.NullableTypesHelper.ToNullableInt32(info.GetString("LogFileFormat"))
+					Me.LogFileFormat = Nothing
+					If .HasValue Then Me.LogFileFormat = CType(.Value, kCura.WinEDDS.LoadFileType.FileFormat)
+				End With
+				Me.RenameFilesToIdentifier = info.GetBoolean("RenameFilesToIdentifier")
+				Me.IdentifierColumnName = info.GetString("IdentifierColumnName")
+				Me.LoadFileExtension = info.GetString("LoadFileExtension")
+				Me.ExportImages = info.GetBoolean("ExportImages")
+				Me.ExportNativesToFileNamedFrom = CType(info.GetInt32("ExportNativesToFileNamedFrom"), kCura.WinEDDS.ExportNativeWithFilenameFrom)
+				Me.FilePrefix = info.GetString("FilePrefix")
+				Me.TypeOfExportedFilePath = CType(info.GetInt32("TypeOfExportedFilePath"), kCura.WinEDDS.ExportFile.ExportedFilePathType)
+				With kCura.Utility.NullableTypesHelper.ToNullableInt32(info.GetString("TypeOfImage"))
+					Me.TypeOfImage = Nothing
+					If .HasValue Then Me.TypeOfImage = CType(.Value, kCura.WinEDDS.ExportFile.ImageType)
+				End With
+				Me.AppendOriginalFileName = info.GetBoolean("AppendOriginalFileName")
+				Me.LoadFileIsHtml = info.GetBoolean("LoadFileIsHtml")
+				Me.MulticodesAsNested = info.GetBoolean("MulticodesAsNested")
+				Dim encod As Int32 = info.GetInt32("LoadFileEncoding")
+				Me.LoadFileEncoding = If(encod > 0, System.Text.Encoding.GetEncoding(encod), Nothing)
+				encod = info.GetInt32("TextFileEncoding")
+				Me.TextFileEncoding = If(encod > 0, System.Text.Encoding.GetEncoding(encod), Nothing)
+				Me.VolumeDigitPadding = info.GetInt32("VolumeDigitPadding")
+				Me.SubdirectoryDigitPadding = info.GetInt32("SubdirectoryDigitPadding")
+				Me.StartAtDocumentNumber = info.GetInt32("StartAtDocumentNumber")
+				Me.VolumeInfo = CType(info.GetValue("VolumeInfo", GetType(kCura.WinEDDS.Exporters.VolumeInfo)), kCura.WinEDDS.Exporters.VolumeInfo)
+				Me.SelectedTextField = DirectCast(info.GetValue("SelectedTextField", GetType(kCura.WinEDDS.ViewFieldInfo)), kCura.WinEDDS.ViewFieldInfo)
+				Me.ImagePrecedence = DirectCast(info.GetValue("ImagePrecedence", GetType(kCura.WinEDDS.Pair())), kCura.WinEDDS.Pair())
+				Me.SelectedViewFields = DirectCast(info.GetValue("SelectedViewFields", GetType(kCura.WinEDDS.ViewFieldInfo())), kCura.WinEDDS.ViewFieldInfo())
+				Me.ObjectTypeName = info.GetString("ObjectTypeName")
+			End With
+		End Sub
+
+#End Region
+
+#Region " Constructors "
+
 
 		Public Sub New(ByVal artifactTypeID As Int32)
 			Me.RecordDelimiter = ChrW(20)
@@ -453,17 +561,22 @@ Namespace kCura.WinEDDS
 			_artifactTypeID = artifactTypeID
 		End Sub
 
+#End Region
+
+#Region " Enums "
+
+
 		Public Enum ExportType
-			Production
-			ArtifactSearch
-			ParentSearch
-			AncestorSearch
+			Production = 0
+			ArtifactSearch = 1
+			ParentSearch = 2
+			AncestorSearch = 3
 		End Enum
 
 		Public Enum ExportedFilePathType
-			Relative
-			Absolute
-			Prefix
+			Relative = 0
+			Absolute = 1
+			Prefix = 2
 		End Enum
 
 		Public Enum ImageType
@@ -471,6 +584,22 @@ Namespace kCura.WinEDDS
 			MultiPageTiff
 			Pdf
 		End Enum
+		Public Class ImageTypeParser
+			Public Function Parse(ByVal s As String) As ImageType?
+				If String.IsNullOrEmpty(s) Then Return Nothing
+				Dim retval As New ImageType?
+				Select Case s
+					Case "Single-page TIF/JPG"
+						retval = ImageType.SinglePage
+					Case "Multi-page TIF"
+						retval = ImageType.MultiPageTiff
+					Case "PDF"
+						retval = ImageType.Pdf
+				End Select
+				Return retval
+			End Function
+		End Class
+#End Region
 
 	End Class
 End Namespace

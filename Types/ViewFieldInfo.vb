@@ -1,7 +1,8 @@
 Namespace kCura.WinEDDS
-	Public Class ViewFieldInfo
+	<Serializable()> Public Class ViewFieldInfo
 		Inherits Relativity.ViewFieldInfo
 		Implements IComparable
+
 		Public Sub New(ByVal row As System.Data.DataRow)
 			MyBase.New(row)
 		End Sub
@@ -15,6 +16,15 @@ Namespace kCura.WinEDDS
 
 		Public Function CompareTo(ByVal obj As Object) As Integer Implements System.IComparable.CompareTo
 			Return String.Compare(Me.DisplayName, obj.ToString)
+		End Function
+
+		Public Shadows Function Equals(ByVal other As ViewFieldInfo) As Boolean
+			If Me.AvfId = other.AvfId AndAlso Me.AvfColumnName = other.AvfColumnName Then Return True
+			Return False
+		End Function
+
+		Public Overrides Function GetHashCode() As Integer
+			Return 45 * Me.AvfId
 		End Function
 	End Class
 
