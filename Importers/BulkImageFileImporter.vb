@@ -575,6 +575,7 @@ Namespace kCura.WinEDDS
 				If _replaceFullText AndAlso System.IO.File.Exists(extractedTextFileName) AndAlso Not fullTextFiles Is Nothing Then
 					offset += Me.GetFileLength(extractedTextFileName)
 				End If
+				_bulkLoadFileWriter.Write("0,")
 				_bulkLoadFileWriter.Write(status & ",")
 				_bulkLoadFileWriter.Write("0,")
 				_bulkLoadFileWriter.Write("0,")
