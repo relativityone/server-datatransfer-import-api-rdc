@@ -672,16 +672,16 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Private Function ReducedBatchBulkImport(ByVal settings As NativeLoadInfo, ByVal includeExtractedTextEncoding As Boolean, ByVal totalRecords As Int32) As MassImportResults
-			'TODO: make this run separate sub-batches until all the original batch docs are processed
 			'Dim retval As New MassImportResults
 			'Dim startPoint As Int32 = 0
 			'Dim endPoint As Int32 = ImportBatchSize
-			'While endPoint < totalRecords
-			'	'retval = MergeResults(retval, NEWEBSERVICECALL(startpoint, endpoint))
-			'	startPoint = startPoint + Me.ImportBatchSize
+			'While startPoint < totalRecords
+			'	'retval = MergeResults(retval, _bulkImportManager.NEWEBSERVICECALL(startpoint, endPoint))
+			'	startPoint = endPoint + 1
 			'	endPoint = Math.Min(endPoint + Me.ImportBatchSize, totalRecords)
 			'End While
 
+			'Return retval
 			Return FullBatchBulkImport(settings, includeExtractedTextEncoding)
 		End Function
 
