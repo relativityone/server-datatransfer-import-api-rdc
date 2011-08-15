@@ -1452,6 +1452,10 @@ Public Class ExportForm
 				Next
 			Next
 
+			If _columnSelecter.RightListBoxItems.Count = 0 Then
+				_metadataGroup.Enabled = False
+			End If
+
 			ManagePotentialTextFields()
 
 			For Each vfi As kCura.WinEDDS.ViewFieldInfo In itemsToRemoveFromLeftListBox
