@@ -283,18 +283,18 @@ Namespace kCura.WinEDDS
 		Private Function ReducedBatchBulkImport(ByVal overwrite As OverwriteType, ByVal useBulk As Boolean, ByVal totalRecords As Int32) As MassImportResults
 			Dim retval As New MassImportResults
 			Dim startPoint As Int32 = 0
-			Dim endPoint As Int32 = ImportBatchSize
+			Dim endPoint As Int32 = ImportBatchSize - 1
 			While startPoint < totalRecords
 				retval = MergeResults(retval, BatchBulkImport(overwrite, useBulk, startPoint, endPoint))
 				startPoint = endPoint + 1
-				endPoint = Math.Min(endPoint + Me.ImportBatchSize, totalRecords)
+				endPoint = Math.Min(endPoint + Me.ImportBatchSize, totalRecords) - 1
 			End While
 
 			Return retval
 		End Function
 
 		Private Function FullBatchBulkImport(ByVal overwrite As OverwriteType, ByVal useBulk As Boolean) As MassImportResults
-			Return BatchBulkImport(overwrite, useBulk, 0, ImportBatchSize)
+			Return BatchBulkImport(overwrite, useBulk, 0, ImportBatchSize - 1)
 		End Function
 
 		Protected Overridable Sub LowerBatchLimits()

@@ -683,17 +683,17 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Private Function FullBatchBulkImport(ByVal settings As NativeLoadInfo, ByVal includeExtractedTextEncoding As Boolean) As MassImportResults
-			Return Me.BatchBulkImport(settings, includeExtractedTextEncoding, 0, ImportBatchSize)
+			Return Me.BatchBulkImport(settings, includeExtractedTextEncoding, 0, ImportBatchSize - 1)
 		End Function
 
 		Private Function ReducedBatchBulkImport(ByVal settings As NativeLoadInfo, ByVal includeExtractedTextEncoding As Boolean, ByVal totalRecords As Int32) As MassImportResults
 			Dim retval As New MassImportResults
 			Dim startPoint As Int32 = 0
-			Dim endPoint As Int32 = ImportBatchSize
+			Dim endPoint As Int32 = ImportBatchSize - 1
 			While startPoint < totalRecords
 				retval = MergeResults(retval, BatchBulkImport(settings, includeExtractedTextEncoding, startPoint, endPoint))
 				startPoint = endPoint + 1
-				endPoint = Math.Min(endPoint + Me.ImportBatchSize, totalRecords)
+				endPoint = Math.Min(endPoint + Me.ImportBatchSize, totalRecords) - 1
 			End While
 
 			Return retval
