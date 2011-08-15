@@ -290,50 +290,23 @@ Namespace kCura.Relativity.DataReaderClient
 		''' Name of the field in the data source corresponding to the BatesNumber field
 		''' </summary>
 		Public Property BatesNumberField() As String
-			Get
-				Return _dataSourceBatesNumberField
-			End Get
-			Set(value As String)
-				_dataSourceBatesNumberField = value
-			End Set
-		End Property
 
 		''' <summary>
 		''' Name of the field in the data source corresponding to the DocumentIdentifier field
 		''' </summary>
 		''' <value></value>
 		Public Property DocumentIdentifierField() As String
-			Get
-				Return _dataSourceDocumentIdentifierField
-			End Get
-			Set(value As String)
-				_dataSourceDocumentIdentifierField = value
-			End Set
-		End Property
 
 		''' <summary>
 		''' Name of the field in the data source corresponding to the FileLocation field
 		''' </summary>
 		Public Property FileLocationField() As String
-			Get
-				Return _dataSourceFileLocation
-			End Get
-			Set(value As String)
-				_dataSourceFileLocation = value
-			End Set
-		End Property
-
+		
 		''' <summary>
 		''' URL of the web service to use; set String.Empty or Nothing to use default
 		''' </summary>
 		Public Property ServiceURL() As String
-			Get
-				Return _webServiceURL
-			End Get
-			Set(value As String)
-				_webServiceURL = value
-			End Set
-		End Property
+		
 #End Region
 
 	End Class
