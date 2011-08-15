@@ -1,4 +1,4 @@
-Namespace kCura.WinEDDS.ImportExtension
+﻿Namespace kCura.WinEDDS.ImportExtension
 
 	Public Class DataReaderLoadFile
 		Inherits kCura.WinEDDS.LoadFile
