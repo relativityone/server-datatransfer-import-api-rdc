@@ -30,6 +30,7 @@ Namespace kCura.WinEDDS
 		Private _importBatchSize As Int32?
 		Private _importBatchVolume As Int32?
 		Private _minimumBatchSize As Int32?
+		Private _batchSizeHistoryList As System.Collections.Generic.List(Of Int32)
 		Private _destinationFolderColumnIndex As Int32 = -1
 		Private _folderCache As FolderCache
 		Private _fullTextField As kCura.EDDS.WebAPI.DocumentManagerBase.Field
@@ -70,6 +71,12 @@ Namespace kCura.WinEDDS
 #End Region
 
 #Region "Accessors"
+
+		Public ReadOnly Property BatchSizeHistoryList As System.Collections.Generic.List(Of Int32)
+			Get
+				Return _batchSizeHistoryList
+			End Get
+		End Property
 
 		Friend WriteOnly Property FilePath() As String
 			Set(ByVal value As String)
@@ -310,6 +317,9 @@ Namespace kCura.WinEDDS
 			End If
 
 			_bulkLoadFileFieldDelimiter = bulkLoadFileFieldDelimiter
+
+			_batchSizeHistoryList = New System.Collections.Generic.List(Of Int32)
+			BatchSizeHistoryList.Add(ImportBatchSize)
 		End Sub
 
 #End Region
@@ -722,6 +732,7 @@ Namespace kCura.WinEDDS
 		Protected Overridable Sub LowerBatchLimits()
 			'TODO: change batch size, check batch volume
 			Me.ImportBatchSize -= 100
+			Me.BatchSizeHistoryList.Add(Me.ImportBatchSize)
 		End Sub
 
 		Protected Overridable Sub RaiseWarningAndPause(ByVal ex As Exception, ByVal timeoutSeconds As Int32)

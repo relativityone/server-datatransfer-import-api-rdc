@@ -32,6 +32,7 @@ Namespace kCura.WinEDDS
 			Try
 				Dim retval As New kCura.EDDS.WebAPI.AuditManagerBase.ImageImportStatistics
 				retval.DestinationFolderArtifactID = ImageLoadFile.DestinationFolderID
+				retval.BatchSizes = _imageFileImporter.BatchSizeHistoryList.ToArray
 				If ImageLoadFile.ProductionArtifactID > 0 Then retval.DestinationProductionArtifactID = ImageLoadFile.ProductionArtifactID
 				retval.ExtractedTextReplaced = ImageLoadFile.ReplaceFullText
 				retval.ExtractedTextDefaultEncodingCodePageID = 0

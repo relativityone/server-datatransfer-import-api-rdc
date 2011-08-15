@@ -55,6 +55,7 @@ Namespace kCura.WinEDDS
 			Try
 				Dim retval As New kCura.EDDS.WebAPI.AuditManagerBase.ObjectImportStatistics
 				retval.ArtifactTypeID = LoadFile.ArtifactTypeID
+				retval.BatchSizes = _loadFileImporter.BatchSizeHistoryList.ToArray
 				retval.Bound = LoadFile.QuoteDelimiter
 				retval.Delimiter = LoadFile.RecordDelimiter
 				retval.NestedValueDelimiter = LoadFile.HierarchicalValueDelimiter
