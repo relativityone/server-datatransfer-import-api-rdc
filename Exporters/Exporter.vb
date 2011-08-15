@@ -256,9 +256,7 @@ Namespace kCura.WinEDDS
 				End If
 				If _halt Then Exit While
 			End While
-			For start = 0 To Me.TotalExportArtifactCount - 1 Step Config.ExportBatchSize
 
-			Next
 			Me.WriteStatusLine(Windows.Process.EventType.Status, kCura.WinEDDS.FileDownloader.TotalWebTime.ToString, True)
 			_timekeeper.GenerateCsvReportItemsAsRows()
 			_volumeManager.Finish()

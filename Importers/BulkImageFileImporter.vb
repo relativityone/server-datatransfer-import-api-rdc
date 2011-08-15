@@ -240,13 +240,22 @@ Namespace kCura.WinEDDS
 					If tries = 0 OrElse TypeOf ex Is kCura.WinEDDS.Service.BulkImportManager.BulkImportSqlException OrElse _continue = False Then
 						Throw
 					ElseIf tries < kCura.Utility.Config.Settings.IoErrorNumberOfRetries Then
-						Me.RaiseIoWarning(New kCura.Utility.DelimitedFileImporter.IoWarningEventArgs(kCura.Utility.Config.Settings.IoErrorWaitTimeInSeconds, ex, Me.CurrentLineNumber))
-						System.Threading.Thread.CurrentThread.Join(1000 * kCura.Utility.Config.Settings.IoErrorWaitTimeInSeconds)
+						If TypeOf ex Is kCura.WinEDDS.Service.BulkImportManager.BulkImportSqlTimeoutException Then Me.LowerBatchSize()
+						Me.RaiseWarningAndPause(ex)
 					End If
 				End Try
 			End While
 			Return Nothing
 		End Function
+
+		Protected Overridable Sub LowerBatchSize()
+			'TODO: change batch size
+		End Sub
+
+		Protected Overridable Sub RaiseWarningAndPause(ByVal ex As Exception)
+			Me.RaiseIoWarning(New kCura.Utility.DelimitedFileImporter.IoWarningEventArgs(kCura.Utility.Config.Settings.IoErrorWaitTimeInSeconds, ex, Me.CurrentLineNumber))
+			System.Threading.Thread.CurrentThread.Join(1000 * kCura.Utility.Config.Settings.IoErrorWaitTimeInSeconds)
+		End Sub
 
 		Protected Function GetImageRecord() As Api.ImageRecord
 			Return _imageReader.GetImageRecord
@@ -604,6 +613,7 @@ Namespace kCura.WinEDDS
 				If _replaceFullText AndAlso System.IO.File.Exists(extractedTextFileName) AndAlso Not fullTextFiles Is Nothing Then
 					offset += Me.GetFileLength(extractedTextFileName)
 				End If
+				_bulkLoadFileWriter.Write("0,")
 				_bulkLoadFileWriter.Write(status & ",")
 				_bulkLoadFileWriter.Write("0,")
 				_bulkLoadFileWriter.Write("0,")

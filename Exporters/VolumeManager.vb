@@ -889,7 +889,7 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Private Sub WriteIproImageLine(ByVal batesNumber As String, ByVal pageNumber As Int32, ByVal fullFilePath As String)
-			Dim linefactory As New Exporters.LineFactory.SimpleIproImageLineFactory(batesNumber, pageNumber, fullFilePath, Me.CurrentVolumeLabel, Me.Settings.TypeOfImage)
+			Dim linefactory As New Exporters.LineFactory.SimpleIproImageLineFactory(batesNumber, pageNumber, fullFilePath, Me.CurrentVolumeLabel, Me.Settings.TypeOfImage.Value)
 			linefactory.WriteLine(_imageFileWriter)
 		End Sub
 

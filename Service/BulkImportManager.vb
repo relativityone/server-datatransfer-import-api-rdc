@@ -19,7 +19,13 @@ Namespace kCura.WinEDDS.Service
 #End Region
 
 		Private Sub CheckResultsForException(ByVal results As EDDS.WebAPI.BulkImportManagerBase.MassImportResults)
-			If results.ExceptionDetail IsNot Nothing Then Throw New BulkImportSqlException(results.ExceptionDetail)
+			If results.ExceptionDetail IsNot Nothing Then
+				If results.ExceptionDetail.ExceptionMessage IsNot Nothing AndAlso results.ExceptionDetail.ExceptionMessage.Contains("Timeout expired") Then
+					Throw New BulkImportSqlTimeoutException(results.ExceptionDetail)
+				Else
+					Throw New BulkImportSqlException(results.ExceptionDetail)
+				End If
+			End If
 		End Sub
 
 		Public Property ServiceURL As String
@@ -208,5 +214,13 @@ Namespace kCura.WinEDDS.Service
 				Return DetailedException.ExceptionFullText
 			End Function
 		End Class
+
+		Public Class BulkImportSqlTimeoutException
+			Inherits BulkImportSqlException
+			Public Sub New(ByVal exception As EDDS.WebAPI.BulkImportManagerBase.SoapExceptionDetail)
+				MyBase.New(exception)
+			End Sub
+		End Class
+
 	End Class
 End Namespace
