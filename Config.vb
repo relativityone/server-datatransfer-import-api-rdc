@@ -139,8 +139,8 @@ Namespace kCura.WinEDDS
 
 		Public Shared ReadOnly Property AutoBatchOn() As Boolean		'Allow or not to automatically decrease import batch size while import is in progress
 			Get
-				Return CType(ConfigSettings("AutoBathcOn"), Boolean)
-			End Get
+				Return CType(ConfigSettings("AutoBatchOn"), Boolean)
+				End Get
 		End Property
 
 		Public Shared ReadOnly Property MinimumBatchSize() As Int32		'When AutoBatch is on. This is the lower ceiling up to which batch will decrease
