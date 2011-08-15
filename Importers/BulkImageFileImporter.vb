@@ -154,6 +154,12 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
+		Protected Overridable ReadOnly Property BatchResizeEnabled As Boolean
+			Get
+				Return kCura.WinEDDS.Config.AutoBatchOn
+			End Get
+		End Property
+
 #End Region
 
 #Region "Constructors"
@@ -262,7 +268,7 @@ Namespace kCura.WinEDDS
 					If tries = 0 OrElse ex.GetType = GetType(Service.BulkImportManager.BulkImportSqlException) OrElse _continue = False Then
 						Throw
 					ElseIf tries < NumberOfRetries Then
-						If ExceptionIsTimeoutRelated(ex) AndAlso kCura.WinEDDS.Config.AutoBatchOn Then
+						If ExceptionIsTimeoutRelated(ex) AndAlso BatchResizeEnabled Then
 							Me.LowerBatchLimits()
 							Me.RaiseWarningAndPause(ex, kCura.WinEDDS.Config.WaitTimeBetweenRetryAttempts)
 						Else
