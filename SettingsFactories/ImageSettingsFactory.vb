@@ -41,6 +41,10 @@ Namespace kCura.WinEDDS
 			_loadFile.SelectedCasePath = _loadFile.CaseInfo.DocumentPath
 		End Sub
 
+		Public Function ToLoadFile() As ImageLoadFile
+			Return _loadFile
+		End Function
+
 		Public WriteOnly Property CaseArtifactID() As Int32
 			Set(ByVal value As Int32)
 				_loadFile.CaseInfo = Me.CaseManager.Read(value)
