@@ -1,24 +1,13 @@
 Namespace kCura.Relativity.DataReaderClient
 
 	Public Class Settings
+		Inherits ImportSettingsBase
 
 #Region " Private Variables "
-		Private _webServiceURL As String
-
-		Private _RelativityUsername As String
-		Private _RelativityPassword As String
-		Private _CaseArtifactID As Int32
-		Private _ArtifactTypeId As Int32
-
-		Private _DestinationFolderArtifactID As Int32
 
 		Private _NewLineDelimiter As Char
 		Private _MultiValueDelimiter As Char
 		Private _NestedValueDelimiter As Char
-
-		Private _OverwriteMode As OverwriteModeEnum
-
-		Private _OverlayIdentifierSourceFieldName As String
 
 		Private _FolderPathSourceFieldName As String
 
@@ -26,9 +15,6 @@ Namespace kCura.Relativity.DataReaderClient
 
 		Private _NativeFilePathSourceFieldName As String
 		Private _rowCount As Int32
-		Private _NativeFileCopyMode As NativeFileCopyModeEnum
-		Private _ExtractedTextFieldContainsFilePath As Boolean
-		Private _ExtractedTextEncoding As System.Text.Encoding
 
 #End Region
 
@@ -36,68 +22,16 @@ Namespace kCura.Relativity.DataReaderClient
 		Public Sub New()
 			_MultiValueDelimiter = CType(";", Char)
 			_NestedValueDelimiter = CType("\", Char)
-			_ExtractedTextFieldContainsFilePath = False
-			_OverlayIdentifierSourceFieldName = String.Empty
+			ExtractedTextFieldContainsFilePath = False
+			OverlayIdentifierSourceFieldName = String.Empty
 		End Sub
 #End Region
 
 #Region " Properties "
 		''' <summary>
-		''' Username to log into the destination Relativity instance
-		''' </summary>
-		Public Property RelativityUsername() As String
-			Get
-				Return _RelativityUsername
-			End Get
-			Set(ByVal Value As String)
-				_RelativityUsername = Value
-			End Set
-		End Property
-
-		''' <summary>
-		''' Password to log into the destination Relativity instance
-		''' </summary>
-		Public Property RelativityPassword() As String
-			Get
-				Return _RelativityPassword
-			End Get
-			Set(ByVal Value As String)
-				_RelativityPassword = Value
-			End Set
-		End Property
-
-		''' <summary>
-		''' ArtifactId of the destination Relativity case
-		''' </summary>
-		Public Property CaseArtifactId() As Int32
-			Get
-				Return _CaseArtifactID
-			End Get
-			Set(ByVal Value As Int32)
-				_CaseArtifactID = Value
-			End Set
-		End Property
-
-		''' <summary>
 		''' ArtifactTypeId of the destination Relativity dynamic object
 		''' </summary>
 		Public Property ArtifactTypeId() As Int32
-			Get
-				Return _ArtifactTypeId
-			End Get
-			Set(ByVal Value As Int32)
-				_ArtifactTypeId = Value
-			End Set
-		End Property
-
-		Public Property DestinationFolderArtifactID() As Int32
-			Get
-				Return _DestinationFolderArtifactID
-			End Get
-			Set(ByVal Value As Int32)
-				_DestinationFolderArtifactID = Value
-			End Set
-		End Property
 
 		''' <summary>
 		''' Delimiter to separate multiple values such as two different single-choice field values
@@ -121,30 +55,6 @@ Namespace kCura.Relativity.DataReaderClient
 			End Get
 			Set(ByVal Value As Char)
 				_NestedValueDelimiter = Value
-			End Set
-		End Property
-
-		''' <summary>
-		''' Determines if records should be appended or overlayed
-		''' </summary>
-		Public Property OverwriteMode() As OverwriteModeEnum
-			Get
-				Return _OverwriteMode
-			End Get
-			Set(ByVal Value As OverwriteModeEnum)
-				_OverwriteMode = Value
-			End Set
-		End Property
-
-		''' <summary>
-		''' Field name to identify matching records when overlaying records
-		''' </summary>
-		Public Property OverlayIdentifierSourceFieldName() As String
-			Get
-				Return _OverlayIdentifierSourceFieldName
-			End Get
-			Set(ByVal Value As String)
-				_OverlayIdentifierSourceFieldName = Value
 			End Set
 		End Property
 
@@ -191,54 +101,6 @@ Namespace kCura.Relativity.DataReaderClient
 			End Get
 			Set(ByVal Value As Int32)
 				_rowCount = Value
-			End Set
-		End Property
-
-		''' <summary>
-		''' Sets whether native files are copied to the destination Relativity instance or whether they are used as links
-		''' </summary>
-		Public Property NativeFileCopyMode() As NativeFileCopyModeEnum
-			Get
-				Return _NativeFileCopyMode
-			End Get
-			Set(ByVal Value As NativeFileCopyModeEnum)
-				_NativeFileCopyMode = Value
-			End Set
-		End Property
-
-		''' <summary>
-		''' Sets whether the "Extracted Text" field contains paths to extracted text files or contains the actual extracted text
-		''' </summary>
-		Public Property ExtractedTextFieldContainsFilePath() As Boolean
-			Get
-				Return _ExtractedTextFieldContainsFilePath
-			End Get
-			Set(ByVal Value As Boolean)
-				_ExtractedTextFieldContainsFilePath = Value
-			End Set
-		End Property
-
-		''' <summary>
-		''' Sets the encoding of the extracted text files
-		''' </summary>
-		Public Property ExtractedTextEncoding() As System.Text.Encoding
-			Get
-				Return _ExtractedTextEncoding
-			End Get
-			Set(ByVal Value As System.Text.Encoding)
-				_ExtractedTextEncoding = Value
-			End Set
-		End Property
-
-		''' <summary>
-		''' URL of the web service to use; set String.Empty or Nothing to use default
-		''' </summary>
-		Public Property ServiceURL() As String
-			Get
-				Return _webServiceURL
-			End Get
-			Set(value As String)
-				_webServiceURL = value
 			End Set
 		End Property
 #End Region

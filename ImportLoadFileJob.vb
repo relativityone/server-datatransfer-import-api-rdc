@@ -95,7 +95,7 @@ Namespace kCura.Relativity.DataReaderClient
 
 		Private Function CreateLoadFile(ByVal sqlClientSettings As Settings) As kCura.WinEDDS.ImportExtension.DataReaderLoadFile
 			'A SQLLoadFile contains everything that a regular load file contains plus sql connection string properties and a query.
-			Dim loadFileTemp As kCura.WinEDDS.LoadFile = MapToDynamicObjectSettingsFactory(Settings).ToLoadFile
+			Dim loadFileTemp As kCura.WinEDDS.LoadFile = MapToDynamicObjectSettingsFactory(sqlClientSettings).ToLoadFile
 
 			Dim tempLoadFile As New kCura.WinEDDS.ImportExtension.DataReaderLoadFile
 			tempLoadFile.DataReader = SourceData.SourceData
@@ -131,7 +131,7 @@ Namespace kCura.Relativity.DataReaderClient
 			tempLoadFile.RecordDelimiter = loadFileTemp.RecordDelimiter
 			tempLoadFile.SelectedCasePath = loadFileTemp.SelectedCasePath
 			tempLoadFile.SelectedIdentifierField = loadFileTemp.SelectedIdentifierField
-			tempLoadFile.SendEmailOnLoadCompletion = loadFileTemp.SendEmailOnLoadCompletion
+			tempLoadFile.SendEmailOnLoadCompletion = sqlClientSettings.SendEmailOnLoadCompletion
 			tempLoadFile.SourceFileEncoding = loadFileTemp.SourceFileEncoding
 			tempLoadFile.StartLineNumber = loadFileTemp.StartLineNumber
 

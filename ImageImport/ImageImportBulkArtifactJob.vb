@@ -42,7 +42,7 @@ Namespace kCura.Relativity.DataReaderClient
 				_observer = process.ProcessObserver
 
 				RaiseEvent OnMessage(New Status("Updating settings"))
-				process.ImageLoadFile = Me.CreateLoadFile()
+				process.ImageLoadFile = Me.CreateLoadFile(Settings)
 
 				RaiseEvent OnMessage(New Status("Executing"))
 				Try
@@ -59,35 +59,30 @@ Namespace kCura.Relativity.DataReaderClient
 
 #Region " Private Methods "
 
-		Private Function CreateLoadFile() As kCura.WinEDDS.ImportExtension.DataTableImageFile
-			Dim credential As System.Net.NetworkCredential = DirectCast(GetCredentials(Settings), Net.NetworkCredential)
+		Private Function CreateLoadFile(ByVal imgSettings As ImageSettings) As WinEDDS.ImageLoadFile
+			Dim credential As System.Net.NetworkCredential = DirectCast(GetCredentials(imgSettings), Net.NetworkCredential)
 			Dim casemanager As kCura.WinEDDS.Service.CaseManager = GetCaseManager(credential)
-			Dim tempLoadFile As New kCura.WinEDDS.ImportExtension.DataTableImageFile
-			tempLoadFile.DataTable = SourceData.SourceData
+
+			Dim tempImgSettings As WinEDDS.ImageSettingsFactory = MapToImageSettingsFactory(credential, imgSettings)
+			Dim tempLoadFile As WinEDDS.ImageLoadFile = tempImgSettings.ToLoadFile()
 
 			'These are ALL of the image file settings
-			tempLoadFile.AutoNumberImages = Settings.AutoNumberImages
-			tempLoadFile.CaseInfo = casemanager.Read(Settings.CaseArtifactId)
-			'tempLoadFile.ControlKeyField = "Identifier"
+			tempLoadFile.AutoNumberImages = imgSettings.AutoNumberImages
+			'These 3 will get set as a result of ImageSettingsFactory.CaseArtifactID
+			'tempLoadFile.CaseInfo
+			'tempLoadFile.CaseDefaultPath
+			'tempLoadFile.DestinationFolderID
 			tempLoadFile.Credential = credential
 			tempLoadFile.CookieContainer = cookieMonster
-			tempLoadFile.CopyFilesToDocumentRepository = Settings.CopyFilesToDocumentRepository
 			tempLoadFile.DestinationFolderID = tempLoadFile.CaseInfo.RootFolderID
-			tempLoadFile.ForProduction = Settings.ForProduction
-			tempLoadFile.FullTextEncoding = Settings.ExtractedTextEncoding
-			tempLoadFile.Overwrite = Settings.OverwriteMode.ToString
-			tempLoadFile.ReplaceFullText = Settings.ExtractedTextFieldContainsFilePath
+			tempLoadFile.ForProduction = imgSettings.ForProduction
+			tempLoadFile.FullTextEncoding = imgSettings.ExtractedTextEncoding
+			tempLoadFile.Overwrite = imgSettings.OverwriteMode.ToString
+			tempLoadFile.ReplaceFullText = imgSettings.ExtractedTextFieldContainsFilePath
 			If tempLoadFile.Overwrite = OverwriteModeEnum.Overlay.ToString Then
-				tempLoadFile.IdentityFieldId = GetDefaultIdentifierFieldID(credential, Settings.CaseArtifactId)
+				tempLoadFile.IdentityFieldId = GetDefaultIdentifierFieldID(credential, imgSettings.CaseArtifactId)
 			Else
-				tempLoadFile.IdentityFieldId = Settings.IdentityFieldId	'e.x Control Number
-			End If
-
-			If Settings.ProductionArtifactID = 0 Then
-				tempLoadFile.ProductionArtifactID = 0
-				'tempLoadFile.ProductionTable = Nothing	'Don't know what this should be
-			Else
-				tempLoadFile.ProductionArtifactID = Settings.ProductionArtifactID
+				tempLoadFile.IdentityFieldId = imgSettings.IdentityFieldId	'e.x Control Number
 			End If
 
 			tempLoadFile.SelectedCasePath = tempLoadFile.CaseInfo.DocumentPath
@@ -108,6 +103,47 @@ Namespace kCura.Relativity.DataReaderClient
 			returnDataTbl.Columns(imageSettings.FileLocationField).ColumnName = "FileLocation"
 
 			Return returnDataTbl
+		End Function
+
+		Private Function MapToImageSettingsFactory(ByVal credential As Net.NetworkCredential, ByVal imgSettings As ImageSettings) As WinEDDS.ImageSettingsFactory
+			Dim tempImgSettings As WinEDDS.ImageSettingsFactory = New WinEDDS.ImageSettingsFactory(credential, imgSettings.CaseArtifactId, imgSettings.ServiceURL)
+
+			With tempImgSettings
+				If imgSettings.BeginBatesFieldArtifactID > 0 Then
+					.BeginBatesFieldArtifactID = imgSettings.BeginBatesFieldArtifactID
+				End If
+
+				If imgSettings.DestinationFolderArtifactID > 0 Then
+					.DestinationFolderID = imgSettings.DestinationFolderArtifactID
+				End If
+
+				Select Case imgSettings.NativeFileCopyMode
+					Case NativeFileCopyModeEnum.CopyFiles
+						.CopyFilesToDocumentRepository = True
+					Case NativeFileCopyModeEnum.SetFileLinks, Nothing
+						.CopyFilesToDocumentRepository = False
+					Case Else
+						Throw New Exception("ERROR with  NativeFileCopyMode")
+				End Select
+
+				Select Case imgSettings.OverwriteMode
+					Case OverwriteModeEnum.Append
+						.OverwriteDestination = WinEDDS.SettingsFactoryBase.OverwriteType.Append
+					Case OverwriteModeEnum.AppendOverlay
+						.OverwriteDestination = WinEDDS.SettingsFactoryBase.OverwriteType.AppendOverlay
+					Case OverwriteModeEnum.Overlay
+						.OverwriteDestination = WinEDDS.SettingsFactoryBase.OverwriteType.Overlay
+				End Select
+
+				If imgSettings.ProductionArtifactID = 0 Then
+					.ProductionArtifactID = 0
+					'.ProductionTable = Nothing	'Don't know what this should be
+				Else
+					.ProductionArtifactID = imgSettings.ProductionArtifactID
+				End If
+			End With
+
+			Return tempImgSettings
 		End Function
 
 		Private Function GetDefaultIdentifierFieldID(ByVal credential As System.Net.NetworkCredential, ByVal caseArtifactID As Int32) As Int32
@@ -239,9 +275,6 @@ Namespace kCura.Relativity.DataReaderClient
 			End If
 			If Settings.CaseArtifactId = 0 Then
 				Throw New Exception(String.Format("{0} must be set and cannot be 0", "CaseArtifactId"))
-			End If
-			If Settings.ArtifactTypeId = 0 Then
-				Throw New Exception(String.Format("{0} must be set and cannot be 0", "ArtifactTypeId"))
 			End If
 		End Sub
 
