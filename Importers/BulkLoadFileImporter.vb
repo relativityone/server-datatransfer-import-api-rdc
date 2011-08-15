@@ -29,6 +29,7 @@ Namespace kCura.WinEDDS
 		Private _number As Int64 = 0
 		Private _importBatchSize As Int32?
 		Private _importBatchVolume As Int32?
+		Private _minimumBatchSize As Int32?
 		Private _destinationFolderColumnIndex As Int32 = -1
 		Private _folderCache As FolderCache
 		Private _fullTextField As kCura.EDDS.WebAPI.DocumentManagerBase.Field
@@ -200,17 +201,28 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
-		Protected Overridable Property ImportBatchSize As Int32
+		Protected Overridable Property MinimumBatchSize As Int32
+			Get
+				If Not _minimumBatchSize.HasValue Then _minimumBatchSize = 0 'TODO: call config value
+				Return _minimumBatchSize.Value
+			End Get
+			Set(ByVal value As Int32)
+				_minimumBatchSize = value
+			End Set
+		End Property
+
+
+		Protected Property ImportBatchSize As Int32
 			Get
 				If Not _importBatchSize.HasValue Then _importBatchSize = Config.ImportBatchSize
 				Return _importBatchSize.Value
 			End Get
 			Set(ByVal value As Int32)
-				_importBatchSize = value
+				_importBatchSize = If(value > MinimumBatchSize, value, MinimumBatchSize)
 			End Set
 		End Property
 
-		Protected Overridable Property ImportBatchVolume As Int32
+		Protected Property ImportBatchVolume As Int32
 			Get
 				If Not _importBatchVolume.HasValue Then _importBatchVolume = Config.ImportBatchMaxVolume
 				Return _importBatchVolume.Value
@@ -661,28 +673,31 @@ Namespace kCura.WinEDDS
 			Return retval
 		End Function
 
-		Private Function FullBatchBulkImport(ByVal settings As NativeLoadInfo, ByVal includeExtractedTextEncoding As Boolean) As MassImportResults
+		Private Function BatchBulkImport(ByVal settings As NativeLoadInfo, ByVal includeExtractedTextEncoding As Boolean, ByVal startRecord As Int32, ByVal endRecord As Int32) As MassImportResults
 			Dim retval As MassImportResults
 			If TypeOf settings Is kCura.EDDS.WebAPI.BulkImportManagerBase.ObjectLoadInfo Then
-				retval = Me.BulkImportManager.BulkImportObjects(_caseInfo.ArtifactID, DirectCast(settings, kCura.EDDS.WebAPI.BulkImportManagerBase.ObjectLoadInfo), _copyFileToRepository)
+				retval = Me.BulkImportManager.BulkImportObjects(_caseInfo.ArtifactID, DirectCast(settings, kCura.EDDS.WebAPI.BulkImportManagerBase.ObjectLoadInfo), _copyFileToRepository, startRecord, endRecord)
 			Else
-				retval = Me.BulkImportManager.BulkImportNative(_caseInfo.ArtifactID, settings, _copyFileToRepository, includeExtractedTextEncoding)
+				retval = Me.BulkImportManager.BulkImportNative(_caseInfo.ArtifactID, settings, _copyFileToRepository, includeExtractedTextEncoding, startRecord, endRecord)
 			End If
 			Return retval
 		End Function
 
-		Private Function ReducedBatchBulkImport(ByVal settings As NativeLoadInfo, ByVal includeExtractedTextEncoding As Boolean, ByVal totalRecords As Int32) As MassImportResults
-			'Dim retval As New MassImportResults
-			'Dim startPoint As Int32 = 0
-			'Dim endPoint As Int32 = ImportBatchSize
-			'While startPoint < totalRecords
-			'	'retval = MergeResults(retval, _bulkImportManager.NEWEBSERVICECALL(startpoint, endPoint))
-			'	startPoint = endPoint + 1
-			'	endPoint = Math.Min(endPoint + Me.ImportBatchSize, totalRecords)
-			'End While
+		Private Function FullBatchBulkImport(ByVal settings As NativeLoadInfo, ByVal includeExtractedTextEncoding As Boolean) As MassImportResults
+			Return Me.BatchBulkImport(settings, includeExtractedTextEncoding, 0, ImportBatchSize)
+		End Function
 
-			'Return retval
-			Return FullBatchBulkImport(settings, includeExtractedTextEncoding)
+		Private Function ReducedBatchBulkImport(ByVal settings As NativeLoadInfo, ByVal includeExtractedTextEncoding As Boolean, ByVal totalRecords As Int32) As MassImportResults
+			Dim retval As New MassImportResults
+			Dim startPoint As Int32 = 0
+			Dim endPoint As Int32 = ImportBatchSize
+			While startPoint < totalRecords
+				retval = MergeResults(retval, BatchBulkImport(settings, includeExtractedTextEncoding, startPoint, endPoint))
+				startPoint = endPoint + 1
+				endPoint = Math.Min(endPoint + Me.ImportBatchSize, totalRecords)
+			End While
+
+			Return retval
 		End Function
 
 		Private Function ExceptionIsTimeoutRelated(ByVal ex As Exception) As Boolean
