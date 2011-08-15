@@ -113,7 +113,7 @@ Namespace kCura.WinEDDS
 
 		Protected Overridable Property MinimumBatchSize As Int32
 			Get
-				If Not _minimumBatchSize.HasValue Then _minimumBatchSize = 0 'TODO: call config value
+				If Not _minimumBatchSize.HasValue Then _minimumBatchSize = kCura.WinEDDS.Config.MinimumBatchSize
 				Return _minimumBatchSize.Value
 			End Get
 			Set(ByVal value As Int32)
@@ -262,8 +262,12 @@ Namespace kCura.WinEDDS
 					If tries = 0 OrElse ex.GetType = GetType(Service.BulkImportManager.BulkImportSqlException) OrElse _continue = False Then
 						Throw
 					ElseIf tries < NumberOfRetries Then
-						If ExceptionIsTimeoutRelated(ex) Then Me.LowerBatchLimits()
-						Me.RaiseWarningAndPause(ex)
+						If ExceptionIsTimeoutRelated(ex) AndAlso kCura.WinEDDS.Config.AutoBatchOn Then
+							Me.LowerBatchLimits()
+							Me.RaiseWarningAndPause(ex, kCura.WinEDDS.Config.WaitTimeBetweenRetryAttempts)
+						Else
+							Me.RaiseWarningAndPause(ex, kCura.Utility.Config.Settings.IoErrorWaitTimeInSeconds)
+						End If
 					End If
 				End Try
 			End While
@@ -302,9 +306,9 @@ Namespace kCura.WinEDDS
 			Me.ImportBatchSize -= 100
 		End Sub
 
-		Protected Overridable Sub RaiseWarningAndPause(ByVal ex As Exception)
-			Me.RaiseIoWarning(New kCura.Utility.DelimitedFileImporter.IoWarningEventArgs(kCura.Utility.Config.Settings.IoErrorWaitTimeInSeconds, ex, Me.CurrentLineNumber))
-			System.Threading.Thread.CurrentThread.Join(1000 * kCura.Utility.Config.Settings.IoErrorWaitTimeInSeconds)
+		Protected Overridable Sub RaiseWarningAndPause(ByVal ex As Exception, ByVal timeoutSeconds As Int32)
+			Me.RaiseIoWarning(New kCura.Utility.DelimitedFileImporter.IoWarningEventArgs(timeoutSeconds, ex, Me.CurrentLineNumber))
+			System.Threading.Thread.CurrentThread.Join(1000 * timeoutSeconds)
 		End Sub
 
 		Protected Function GetImageRecord() As Api.ImageRecord

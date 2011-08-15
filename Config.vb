@@ -137,7 +137,7 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
-		Public Shared ReadOnly Property AutoBathcOn() As Boolean		'Allow or not to automatically decrease import batch size while import is in progress
+		Public Shared ReadOnly Property AutoBatchOn() As Boolean		'Allow or not to automatically decrease import batch size while import is in progress
 			Get
 				Return CType(ConfigSettings("AutoBathcOn"), Boolean)
 			End Get
