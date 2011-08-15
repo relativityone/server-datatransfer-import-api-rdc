@@ -38,7 +38,7 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Public Sub New(ByVal credentials As Net.NetworkCredential, ByVal destinationFolderPath As String, ByVal downloadHandlerUrl As String, ByVal cookieContainer As System.Net.CookieContainer, ByVal authenticationToken As String, ByVal webURL As String)
-			ServiceURL = webURL
+			_serviceURL = webURL
 
 			_gateway = New kCura.WinEDDS.Service.FileIO(credentials, cookieContainer)
 			_gateway.ServiceURL = ServiceURL
