@@ -56,15 +56,6 @@ Namespace kCura.WinEDDS
 			End Get
 			Set(value As String)
 				_serviceURL = value
-				_documentManager.ServiceURL = value
-				_uploadManager.ServiceURL = value
-				_codeManager.ServiceURL = value
-				_folderManager.ServiceURL = value
-				_fieldQuery.ServiceURL = value
-				_fileManager.ServiceURL = value
-				_usermanager.ServiceURL = value
-				_bulkImportManager.ServiceURL = value
-				_objectManager.ServiceURL = value
 			End Set
 		End Property
 

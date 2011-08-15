@@ -96,21 +96,31 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
-		Public Property ServiceURL As String
+		Protected Overridable ReadOnly Property BulkImportManager As kCura.WinEDDS.Service.BulkImportManager
+			Get
+				If _bulkImportManager Is Nothing Then _bulkImportManager = New kCura.WinEDDS.Service.BulkImportManager(_settings.Credentials, _settings.CookieContainer)
+				_bulkImportManager.ServiceURL = ServiceURL
+
+				Return _bulkImportManager
+			End Get
+		End Property
+
+		Public Property ServiceURL() As String
 			Get
 				Return _serviceURL
 			End Get
 			Set(value As String)
-				_serviceURL = value
-				_documentManager.ServiceURL = value
-				_uploadManager.ServiceURL = value
 				_codeManager.ServiceURL = value
-				_folderManager.ServiceURL = value
+				_documentManager.ServiceURL = value
 				_fieldQuery.ServiceURL = value
 				_fileManager.ServiceURL = value
-				_usermanager.ServiceURL = value
-				_bulkImportManager.ServiceURL = value
+				_folderManager.ServiceURL = value
 				_objectManager.ServiceURL = value
+				_uploadManager.ServiceURL = value
+				_usermanager.ServiceURL = value
+				If Not _bulkImportManager Is Nothing Then
+					_bulkImportManager.ServiceURL = value
+				End If
 			End Set
 		End Property
 
@@ -128,31 +138,20 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Protected Sub New(ByVal args As LoadFile, ByVal timezoneoffset As Int32, ByVal doRetryLogic As Boolean, ByVal autoDetect As Boolean)
-			Me.New(args, timezoneoffset, doRetryLogic, autoDetect, kCura.WinEDDS.Config.WebServiceURL)
+			Me.New(args, timezoneoffset, doRetryLogic, autoDetect, Config.WebServiceURL)
 		End Sub
 
 		Protected Sub New(ByVal args As LoadFile, ByVal timezoneoffset As Int32, ByVal doRetryLogic As Boolean, ByVal autoDetect As Boolean, ByVal webURL As String)
 			'MyBase.New(args.RecordDelimiter, args.QuoteDelimiter, args.NewlineDelimiter, doRetryLogic)
-			_serviceURL = webURL
-
 			_settings = args
 			_artifactReader = Me.GetArtifactReader
 			_docFields = args.FieldMap.DocumentFields
 			_filePathColumn = args.NativeFilePathColumn
 			_firstLineContainsColumnNames = args.FirstLineContainsHeaders
 			_fieldMap = args.FieldMap
-			_documentManager = New kCura.WinEDDS.Service.DocumentManager(args.Credentials, args.CookieContainer)
-			_uploadManager = New kCura.WinEDDS.Service.FileIO(args.Credentials, args.CookieContainer)
-			_codeManager = New kCura.WinEDDS.Service.CodeManager(args.Credentials, args.CookieContainer)
-			_folderManager = New kCura.WinEDDS.Service.FolderManager(args.Credentials, args.CookieContainer)
-			_fieldQuery = New kCura.WinEDDS.Service.FieldQuery(args.Credentials, args.CookieContainer)
-			_fileManager = New kCura.WinEDDS.Service.FileManager(args.Credentials, args.CookieContainer)
-			_usermanager = New kCura.WinEDDS.Service.UserManager(args.Credentials, args.CookieContainer)
-			_bulkImportManager = New kCura.WinEDDS.Service.BulkImportManager(args.Credentials, args.CookieContainer)
-			_objectManager = New kCura.WinEDDS.Service.ObjectManager(args.Credentials, args.CookieContainer)
+			_serviceURL = webURL
 
-			'This is done to force the update of all ServiceURL() properties for the Manager objects
-			ServiceURL = ServiceURL
+			InitializeManagers(args, ServiceURL)
 
 			_keyFieldID = args.IdentityFieldId
 			_multiValueSeparator = args.MultiRecordDelimiter.ToString.ToCharArray
@@ -185,6 +184,25 @@ Namespace kCura.WinEDDS
 					End If
 				Next
 			End If
+		End Sub
+
+		Protected Overridable Sub InitializeManagers(ByVal args As LoadFile)
+			InitializeManagers(args, Config.WebServiceURL)
+		End Sub
+
+		Protected Overridable Sub InitializeManagers(ByVal args As LoadFile, ByVal webURL As String)
+			_documentManager = New kCura.WinEDDS.Service.DocumentManager(args.Credentials, args.CookieContainer)
+			_uploadManager = New kCura.WinEDDS.Service.FileIO(args.Credentials, args.CookieContainer)
+			_codeManager = New kCura.WinEDDS.Service.CodeManager(args.Credentials, args.CookieContainer)
+			_folderManager = New kCura.WinEDDS.Service.FolderManager(args.Credentials, args.CookieContainer)
+			_fieldQuery = New kCura.WinEDDS.Service.FieldQuery(args.Credentials, args.CookieContainer)
+			_fileManager = New kCura.WinEDDS.Service.FileManager(args.Credentials, args.CookieContainer)
+			_usermanager = New kCura.WinEDDS.Service.UserManager(args.Credentials, args.CookieContainer)
+			'_bulkImportManager = New kCura.WinEDDS.Service.BulkImportManager(args.Credentials, args.CookieContainer)
+			_objectManager = New kCura.WinEDDS.Service.ObjectManager(args.Credentials, args.CookieContainer)
+
+			'This is done to force the update of all ServiceURL() properties for the Manager objects
+			ServiceURL = webURL
 		End Sub
 
 #Region "Code Parsing"
@@ -253,8 +271,6 @@ Namespace kCura.WinEDDS
 					Me.MulticodeMatrix.Add(field.CodeTypeID, New NestedArtifactCache(hierarchicCodeManager, _caseSystemID, _caseArtifactID, _hierarchicalMultiValueFieldDelmiter, ServiceURL))
 				End If
 				Dim artifactCache As NestedArtifactCache = DirectCast(Me.MulticodeMatrix(field.CodeTypeID), NestedArtifactCache)
-				artifactCache.ServiceURL = ServiceURL
-
 				Dim c As New System.Collections.ArrayList
 				For Each codeString As String In codeDisplayNames
 					For Each id As Object() In artifactCache.SelectedIds(_hierarchicalMultiValueFieldDelmiter & codeString.Trim(_hierarchicalMultiValueFieldDelmiter.ToCharArray))
