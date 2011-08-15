@@ -11,6 +11,9 @@ Namespace kCura.WinEDDS
 					_configDictionary = DirectCast(System.Configuration.ConfigurationManager.GetSection("kCura.WinEDDS"), System.Collections.IDictionary)
 					If _configDictionary Is Nothing Then _configDictionary = New System.Collections.Hashtable
 					If Not _configDictionary.Contains("ImportBatchSize") Then _configDictionary.Add("ImportBatchSize", "1000")
+					If Not _configDictionary.Contains("AutoBatchOn") Then _configDictionary.Add("AutoBatchOn", "False")
+					If Not _configDictionary.Contains("MinimumBatchSize") Then _configDictionary.Add("MinimumBatchSize", "100")
+					If Not _configDictionary.Contains("WaitTimeBetweenRetryAttempts") Then _configDictionary.Add("WaitTimeBetweenRetryAttempts", "30")
 					If Not _configDictionary.Contains("ImportBatchMaxVolume") Then _configDictionary.Add("ImportBatchMaxVolume", "10485760") '10(2^20) - don't know what 10MB standard is
 					If Not _configDictionary.Contains("ExportBatchSize") Then _configDictionary.Add("ExportBatchSize", "1000")
 					If Not _configDictionary.Contains("EnableSingleModeImport") Then _configDictionary.Add("EnableSingleModeImport", "False")
@@ -131,6 +134,24 @@ Namespace kCura.WinEDDS
 				Catch ex As Exception
 					Return 500
 				End Try
+			End Get
+		End Property
+
+		Public Shared ReadOnly Property AutoBathcOn() As Boolean		'Allow or not to automatically decrease import batch size while import is in progress
+			Get
+				Return CType(ConfigSettings("AutoBathcOn"), Boolean)
+			End Get
+		End Property
+
+		Public Shared ReadOnly Property MinimumBatchSize() As Int32		'When AutoBatch is on. This is the lower ceiling up to which batch will decrease
+			Get
+				Return CType(ConfigSettings("MinimumBatchSize"), Int32)
+			End Get
+		End Property
+
+		Public Shared ReadOnly Property WaitTimeBetweenRetryAttempts() As Int32
+			Get
+				Return CType(ConfigSettings("WaitTimeBetweenRetryAttempts"), Int32)
 			End Get
 		End Property
 
