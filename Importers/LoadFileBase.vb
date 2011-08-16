@@ -143,13 +143,13 @@ Namespace kCura.WinEDDS
 
 		Protected Sub New(ByVal args As LoadFile, ByVal timezoneoffset As Int32, ByVal doRetryLogic As Boolean, ByVal autoDetect As Boolean, ByVal webURL As String)
 			'MyBase.New(args.RecordDelimiter, args.QuoteDelimiter, args.NewlineDelimiter, doRetryLogic)
+			_serviceURL = webURL
 			_settings = args
 			_artifactReader = Me.GetArtifactReader
 			_docFields = args.FieldMap.DocumentFields
 			_filePathColumn = args.NativeFilePathColumn
 			_firstLineContainsColumnNames = args.FirstLineContainsHeaders
 			_fieldMap = args.FieldMap
-			_serviceURL = webURL
 
 			InitializeManagers(args, ServiceURL)
 
