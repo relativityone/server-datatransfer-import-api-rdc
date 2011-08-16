@@ -774,6 +774,7 @@ Namespace kCura.WinEDDS
 			_outputNativeFileWriter.Write(mdoc.LineStatus.ToString & _bulkLoadFileFieldDelimiter)
 			_outputNativeFileWriter.Write("0" & _bulkLoadFileFieldDelimiter)
 			_outputNativeFileWriter.Write("0" & _bulkLoadFileFieldDelimiter)
+			_outputNativeFileWriter.Write("0" & _bulkLoadFileFieldDelimiter)
 			_outputNativeFileWriter.Write(mdoc.LineNumber & _bulkLoadFileFieldDelimiter)
 			If mdoc.UploadFile And mdoc.IndexFileInDB Then
 				_outputNativeFileWriter.Write(fileguid & _bulkLoadFileFieldDelimiter)
