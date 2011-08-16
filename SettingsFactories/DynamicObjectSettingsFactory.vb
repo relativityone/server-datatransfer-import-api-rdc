@@ -80,6 +80,16 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
+		Public ReadOnly Property DocumentIdentifierFields() As DocumentField()
+			Get
+				If Not _docFields Is Nothing Then
+					Return _docFields.IdentifierFields
+				End If
+
+				Return Nothing
+			End Get
+		End Property
+
 #End Region
 
 		Public WriteOnly Property CopyFilesToDocumentRepository() As Boolean
