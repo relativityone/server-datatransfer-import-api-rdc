@@ -329,6 +329,8 @@ Namespace kCura.EDDS.WebAPI.AuditManagerBase
      System.Xml.Serialization.XmlTypeAttribute([Namespace]:="http://www.kCura.com/EDDS/AuditManager")>  _
     Partial Public MustInherit Class ImportStatistics
         
+        Private batchSizesField() As Integer
+        
         Private repositoryConnectionField As RepositoryConnectionType
         
         Private overwriteField As OverwriteType
@@ -360,6 +362,16 @@ Namespace kCura.EDDS.WebAPI.AuditManagerBase
         Private runTimeInMillisecondsField As Integer
         
         Private sendNotificationField As Boolean
+        
+        '''<remarks/>
+        Public Property BatchSizes() As Integer()
+            Get
+                Return Me.batchSizesField
+            End Get
+            Set
+                Me.batchSizesField = value
+            End Set
+        End Property
         
         '''<remarks/>
         Public Property RepositoryConnection() As RepositoryConnectionType
