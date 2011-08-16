@@ -199,8 +199,8 @@ Namespace kCura.WinEDDS
 
 		Public Shared ReadOnly Property AppConfigWebServiceURL() As String
 			Get
-				If _configDictionary.Contains("WebServiceURL") Then
-					Return CType(_configDictionary("WebServiceURL"), String)
+				If ConfigSettings.Contains("WebServiceURL") Then
+					Return CType(ConfigSettings("WebServiceURL"), String)
 				End If
 
 				Return Nothing
