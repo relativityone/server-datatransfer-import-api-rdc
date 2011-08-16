@@ -52,6 +52,7 @@ Namespace kCura.WinEDDS
 
 		Public Overridable Function GetImporter() As kCura.WinEDDS.BulkLoadFileImporter
 			Dim returnImporter As BulkLoadFileImporter = New kCura.WinEDDS.BulkLoadFileImporter(LoadFile, ProcessController, _timeZoneOffset, True, Me.ProcessID, True, BulkLoadFileFieldDelimiter, ServiceURL)
+			returnImporter.ServiceURL = ServiceURL
 
 			Return returnImporter
 		End Function
