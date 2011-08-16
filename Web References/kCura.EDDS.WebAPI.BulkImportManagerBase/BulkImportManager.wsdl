@@ -49,6 +49,31 @@
           <s:element minOccurs="0" maxOccurs="1" name="ExceptionFullText" type="s:string" />
         </s:sequence>
       </s:complexType>
+      <s:element name="BulkImportImageWithRange">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="appID" type="s:int" />
+            <s:element minOccurs="0" maxOccurs="1" name="bulkFileName" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="uploadFullText" type="s:boolean" />
+            <s:element minOccurs="1" maxOccurs="1" name="overwrite" type="tns:OverwriteType" />
+            <s:element minOccurs="1" maxOccurs="1" name="destinationFolderArtifactID" type="s:int" />
+            <s:element minOccurs="0" maxOccurs="1" name="repository" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="useBulk" type="s:boolean" />
+            <s:element minOccurs="0" maxOccurs="1" name="runID" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="keyFieldID" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="inRepository" type="s:boolean" />
+            <s:element minOccurs="1" maxOccurs="1" name="startIndex" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="count" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="BulkImportImageWithRangeResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="BulkImportImageWithRangeResult" type="tns:MassImportResults" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
       <s:element name="BulkImportProductionImage">
         <s:complexType>
           <s:sequence>
@@ -70,6 +95,32 @@
         <s:complexType>
           <s:sequence>
             <s:element minOccurs="0" maxOccurs="1" name="BulkImportProductionImageResult" type="tns:MassImportResults" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="BulkImportProductionImageWithRange">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="appID" type="s:int" />
+            <s:element minOccurs="0" maxOccurs="1" name="bulkFileName" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="uploadFullText" type="s:boolean" />
+            <s:element minOccurs="1" maxOccurs="1" name="overwrite" type="tns:OverwriteType" />
+            <s:element minOccurs="1" maxOccurs="1" name="destinationFolderArtifactID" type="s:int" />
+            <s:element minOccurs="0" maxOccurs="1" name="repository" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="productionArtifactID" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="useBulk" type="s:boolean" />
+            <s:element minOccurs="0" maxOccurs="1" name="runID" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="productionKeyFieldArtifactID" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="inRepository" type="s:boolean" />
+            <s:element minOccurs="1" maxOccurs="1" name="startIndex" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="count" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="BulkImportProductionImageWithRangeResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="BulkImportProductionImageWithRangeResult" type="tns:MassImportResults" />
           </s:sequence>
         </s:complexType>
       </s:element>
@@ -123,6 +174,7 @@
       </s:element>
       <s:complexType name="NativeLoadInfo">
         <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="Range" type="tns:LoadRange" />
           <s:element minOccurs="0" maxOccurs="1" name="MappedFields" type="tns:ArrayOfFieldInfo" />
           <s:element minOccurs="1" maxOccurs="1" name="Overlay" type="tns:OverwriteType" />
           <s:element minOccurs="0" maxOccurs="1" name="Repository" type="s:string" />
@@ -133,6 +185,12 @@
           <s:element minOccurs="0" maxOccurs="1" name="CodeFileName" type="s:string" />
           <s:element minOccurs="0" maxOccurs="1" name="ObjectFileName" type="s:string" />
           <s:element minOccurs="1" maxOccurs="1" name="KeyFieldArtifactID" type="s:int" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="LoadRange">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="StartIndex" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="Count" type="s:int" />
         </s:sequence>
       </s:complexType>
       <s:complexType name="ArrayOfFieldInfo">
@@ -294,11 +352,23 @@
   <wsdl:message name="BulkImportImageSoapOut">
     <wsdl:part name="parameters" element="tns:BulkImportImageResponse" />
   </wsdl:message>
+  <wsdl:message name="BulkImportImageWithRangeSoapIn">
+    <wsdl:part name="parameters" element="tns:BulkImportImageWithRange" />
+  </wsdl:message>
+  <wsdl:message name="BulkImportImageWithRangeSoapOut">
+    <wsdl:part name="parameters" element="tns:BulkImportImageWithRangeResponse" />
+  </wsdl:message>
   <wsdl:message name="BulkImportProductionImageSoapIn">
     <wsdl:part name="parameters" element="tns:BulkImportProductionImage" />
   </wsdl:message>
   <wsdl:message name="BulkImportProductionImageSoapOut">
     <wsdl:part name="parameters" element="tns:BulkImportProductionImageResponse" />
+  </wsdl:message>
+  <wsdl:message name="BulkImportProductionImageWithRangeSoapIn">
+    <wsdl:part name="parameters" element="tns:BulkImportProductionImageWithRange" />
+  </wsdl:message>
+  <wsdl:message name="BulkImportProductionImageWithRangeSoapOut">
+    <wsdl:part name="parameters" element="tns:BulkImportProductionImageWithRangeResponse" />
   </wsdl:message>
   <wsdl:message name="GenerateImageErrorFilesSoapIn">
     <wsdl:part name="parameters" element="tns:GenerateImageErrorFiles" />
@@ -347,9 +417,17 @@
       <wsdl:input message="tns:BulkImportImageSoapIn" />
       <wsdl:output message="tns:BulkImportImageSoapOut" />
     </wsdl:operation>
+    <wsdl:operation name="BulkImportImageWithRange">
+      <wsdl:input message="tns:BulkImportImageWithRangeSoapIn" />
+      <wsdl:output message="tns:BulkImportImageWithRangeSoapOut" />
+    </wsdl:operation>
     <wsdl:operation name="BulkImportProductionImage">
       <wsdl:input message="tns:BulkImportProductionImageSoapIn" />
       <wsdl:output message="tns:BulkImportProductionImageSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="BulkImportProductionImageWithRange">
+      <wsdl:input message="tns:BulkImportProductionImageWithRangeSoapIn" />
+      <wsdl:output message="tns:BulkImportProductionImageWithRangeSoapOut" />
     </wsdl:operation>
     <wsdl:operation name="GenerateImageErrorFiles">
       <wsdl:input message="tns:GenerateImageErrorFilesSoapIn" />
@@ -391,8 +469,26 @@
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="BulkImportImageWithRange">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/BulkImportManager/BulkImportImageWithRange" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="BulkImportProductionImage">
       <soap:operation soapAction="http://www.kCura.com/EDDS/BulkImportManager/BulkImportProductionImage" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="BulkImportProductionImageWithRange">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/BulkImportManager/BulkImportProductionImageWithRange" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -475,8 +571,26 @@
         <soap12:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="BulkImportImageWithRange">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/BulkImportManager/BulkImportImageWithRange" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="BulkImportProductionImage">
       <soap12:operation soapAction="http://www.kCura.com/EDDS/BulkImportManager/BulkImportProductionImage" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="BulkImportProductionImageWithRange">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/BulkImportManager/BulkImportProductionImageWithRange" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>

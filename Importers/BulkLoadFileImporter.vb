@@ -319,7 +319,6 @@ Namespace kCura.WinEDDS
 			_bulkLoadFileFieldDelimiter = bulkLoadFileFieldDelimiter
 
 			_batchSizeHistoryList = New System.Collections.Generic.List(Of Int32)
-			BatchSizeHistoryList.Add(ImportBatchSize)
 		End Sub
 
 #End Region
@@ -664,13 +663,14 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Protected Function BulkImport(ByVal settings As kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo, ByVal includeExtractedTextEncoding As Boolean) As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults
+			If BatchSizeHistoryList.Count = 0 Then BatchSizeHistoryList.Add(ImportBatchSize)
 			Dim tries As Int32 = NumberOfRetries()
 			Dim retval As New kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults
 			Dim totalRecords As Int32 = Me.ImportBatchSize
 			While tries > 0
 				Try
 					If Me.ImportBatchSize = totalRecords Then
-						retval = FullBatchBulkImport(settings, includeExtractedTextEncoding)
+						retval = BatchBulkImport(settings, includeExtractedTextEncoding)
 					Else
 						retval = ReducedBatchBulkImport(settings, includeExtractedTextEncoding, totalRecords)
 					End If
@@ -692,28 +692,29 @@ Namespace kCura.WinEDDS
 			Return retval
 		End Function
 
-		Private Function BatchBulkImport(ByVal settings As NativeLoadInfo, ByVal includeExtractedTextEncoding As Boolean, ByVal startRecord As Int32, ByVal endRecord As Int32) As MassImportResults
+		Private Function BatchBulkImport(ByVal settings As NativeLoadInfo, ByVal includeExtractedTextEncoding As Boolean) As MassImportResults
 			Dim retval As MassImportResults
 			If TypeOf settings Is kCura.EDDS.WebAPI.BulkImportManagerBase.ObjectLoadInfo Then
-				retval = Me.BulkImportManager.BulkImportObjects(_caseInfo.ArtifactID, DirectCast(settings, kCura.EDDS.WebAPI.BulkImportManagerBase.ObjectLoadInfo), _copyFileToRepository, startRecord, endRecord)
+				retval = Me.BulkImportManager.BulkImportObjects(_caseInfo.ArtifactID, DirectCast(settings, kCura.EDDS.WebAPI.BulkImportManagerBase.ObjectLoadInfo), _copyFileToRepository)
 			Else
-				retval = Me.BulkImportManager.BulkImportNative(_caseInfo.ArtifactID, settings, _copyFileToRepository, includeExtractedTextEncoding, startRecord, endRecord)
+				retval = Me.BulkImportManager.BulkImportNative(_caseInfo.ArtifactID, settings, _copyFileToRepository, includeExtractedTextEncoding)
 			End If
 			Return retval
 		End Function
 
-		Private Function FullBatchBulkImport(ByVal settings As NativeLoadInfo, ByVal includeExtractedTextEncoding As Boolean) As MassImportResults
-			Return Me.BatchBulkImport(settings, includeExtractedTextEncoding, 0, ImportBatchSize - 1)
-		End Function
-
 		Private Function ReducedBatchBulkImport(ByVal settings As NativeLoadInfo, ByVal includeExtractedTextEncoding As Boolean, ByVal totalRecords As Int32) As MassImportResults
 			Dim retval As New MassImportResults
-			Dim startPoint As Int32 = 0
-			Dim endPoint As Int32 = ImportBatchSize - 1
+			Dim startPoint As Int32 = 1
+			Dim endPoint As Int32 = ImportBatchSize
 			While startPoint < totalRecords
-				retval = MergeResults(retval, BatchBulkImport(settings, includeExtractedTextEncoding, startPoint, endPoint))
+
+				settings.Range = New LoadRange()
+				settings.Range.StartIndex = startPoint
+				settings.Range.Count = endPoint - startPoint
+
+				retval = MergeResults(retval, BatchBulkImport(settings, includeExtractedTextEncoding))
 				startPoint = endPoint + 1
-				endPoint = Math.Min(endPoint + Me.ImportBatchSize, totalRecords) - 1
+				endPoint = Math.Min(endPoint + Me.ImportBatchSize, totalRecords)
 			End While
 
 			Return retval
@@ -730,7 +731,6 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Protected Overridable Sub LowerBatchLimits()
-			'TODO: change batch size, check batch volume
 			Me.ImportBatchSize -= 100
 			Me.BatchSizeHistoryList.Add(Me.ImportBatchSize)
 		End Sub

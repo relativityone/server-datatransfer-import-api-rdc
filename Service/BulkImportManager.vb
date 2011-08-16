@@ -174,7 +174,7 @@ Namespace kCura.WinEDDS.Service
 			While tries < Config.MaxReloginTries
 				tries += 1
 				Try
-					Dim retval As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults = Me.InvokeBulkImportImage(appID, bulkFileName, uploadFullText, overwrite, destinationFolderArtifactID, repository, useBulk, runID, keyFieldID, inRepository, startRecord, endRecord)
+					Dim retval As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults = Me.InvokeBulkImportImageWithRange(appID, bulkFileName, uploadFullText, overwrite, destinationFolderArtifactID, repository, useBulk, runID, keyFieldID, inRepository, startRecord, endRecord)
 					Me.CheckResultsForException(retval)
 					Return retval
 				Catch ex As System.Exception
@@ -193,45 +193,7 @@ Namespace kCura.WinEDDS.Service
 			While tries < Config.MaxReloginTries
 				tries += 1
 				Try
-					Dim retval As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults = Me.InvokeBulkImportProductionImage(appID, bulkFileName, uploadFullText, overwrite, destinationFolderArtifactID, repository, productionArtifactID, useBulk, runID, productionKeyFieldArtifactID, inRepository, startRecord, endRecord)
-					Me.CheckResultsForException(retval)
-					Return retval
-				Catch ex As System.Exception
-					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
-					Else
-						Throw
-					End If
-				End Try
-			End While
-			Return Nothing
-		End Function
-
-		Public Shadows Function BulkImportNative(ByVal appID As Int32, ByVal settings As kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo, ByVal inRepository As Boolean, ByVal includeExtractedTextEncoding As Boolean, ByVal startRecord As Int32, ByVal endRecord As Int32) As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults
-			Dim tries As Int32 = 0
-			While tries < Config.MaxReloginTries
-				tries += 1
-				Try
-					Dim retval As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults = Me.InvokeBulkImportNative(appID, settings, inRepository, includeExtractedTextEncoding, startRecord, endRecord)
-					Me.CheckResultsForException(retval)
-					Return retval
-				Catch ex As System.Exception
-					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
-					Else
-						Throw
-					End If
-				End Try
-			End While
-			Return Nothing
-		End Function
-
-		Public Shadows Function BulkImportObjects(ByVal appID As Int32, ByVal settings As kCura.EDDS.WebAPI.BulkImportManagerBase.ObjectLoadInfo, ByVal inRepository As Boolean, ByVal startRecord As Int32, ByVal endRecord As Int32) As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults
-			Dim tries As Int32 = 0
-			While tries < Config.MaxReloginTries
-				tries += 1
-				Try
-					Dim retval As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults = Me.InvokeBulkImportObjects(appID, settings, inRepository, startRecord, endRecord)
+					Dim retval As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults = Me.InvokeBulkImportProductionImageWithRange(appID, bulkFileName, uploadFullText, overwrite, destinationFolderArtifactID, repository, productionArtifactID, useBulk, runID, productionKeyFieldArtifactID, inRepository, startRecord, endRecord)
 					Me.CheckResultsForException(retval)
 					Return retval
 				Catch ex As System.Exception
@@ -253,35 +215,23 @@ Namespace kCura.WinEDDS.Service
 			Return MyBase.BulkImportImage(appID, bulkFileName, uploadFullText, overwrite, destinationFolderArtifactID, repository, useBulk, runID, keyFieldID, inRepository)
 		End Function
 
-		Protected Overridable Function InvokeBulkImportImage(ByVal appID As Integer, ByVal bulkFileName As String, ByVal uploadFullText As Boolean, ByVal overwrite As kCura.EDDS.WebAPI.BulkImportManagerBase.OverwriteType, ByVal destinationFolderArtifactID As Integer, ByVal repository As String, ByVal useBulk As Boolean, ByVal runID As String, ByVal keyFieldID As Integer, ByVal inRepository As Boolean, ByVal startRecord As Int32, ByVal endRecord As Int32) As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults
-			'TODO: change this to use the new call
-			Return MyBase.BulkImportImage(appID, bulkFileName, uploadFullText, overwrite, destinationFolderArtifactID, repository, useBulk, runID, keyFieldID, inRepository)
+		Protected Overridable Function InvokeBulkImportImageWithRange(ByVal appID As Integer, ByVal bulkFileName As String, ByVal uploadFullText As Boolean, ByVal overwrite As kCura.EDDS.WebAPI.BulkImportManagerBase.OverwriteType, ByVal destinationFolderArtifactID As Integer, ByVal repository As String, ByVal useBulk As Boolean, ByVal runID As String, ByVal keyFieldID As Integer, ByVal inRepository As Boolean, ByVal startRecord As Int32, ByVal recordCount As Int32) As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults
+			Return MyBase.BulkImportImageWithRange(appID, bulkFileName, uploadFullText, overwrite, destinationFolderArtifactID, repository, useBulk, runID, keyFieldID, inRepository, startRecord, recordCount)
 		End Function
 
 		Protected Overridable Function InvokeBulkImportProductionImage(ByVal appID As Integer, ByVal bulkFileName As String, ByVal uploadFullText As Boolean, ByVal overwrite As kCura.EDDS.WebAPI.BulkImportManagerBase.OverwriteType, ByVal destinationFolderArtifactID As Integer, ByVal repository As String, ByVal productionArtifactID As Integer, ByVal useBulk As Boolean, ByVal runID As String, ByVal productionKeyFieldArtifactID As Integer, ByVal inRepository As Boolean) As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults
 			Return MyBase.BulkImportProductionImage(appID, bulkFileName, uploadFullText, overwrite, destinationFolderArtifactID, repository, productionArtifactID, useBulk, runID, productionKeyFieldArtifactID, inRepository)
 		End Function
 
-		Protected Overridable Function InvokeBulkImportProductionImage(ByVal appID As Integer, ByVal bulkFileName As String, ByVal uploadFullText As Boolean, ByVal overwrite As kCura.EDDS.WebAPI.BulkImportManagerBase.OverwriteType, ByVal destinationFolderArtifactID As Integer, ByVal repository As String, ByVal productionArtifactID As Integer, ByVal useBulk As Boolean, ByVal runID As String, ByVal productionKeyFieldArtifactID As Integer, ByVal inRepository As Boolean, ByVal startRecord As Int32, ByVal endRecord As Int32) As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults
-			'TODO: change this to use the new call
-			Return MyBase.BulkImportProductionImage(appID, bulkFileName, uploadFullText, overwrite, destinationFolderArtifactID, repository, productionArtifactID, useBulk, runID, productionKeyFieldArtifactID, inRepository)
+		Protected Overridable Function InvokeBulkImportProductionImageWithRange(ByVal appID As Integer, ByVal bulkFileName As String, ByVal uploadFullText As Boolean, ByVal overwrite As kCura.EDDS.WebAPI.BulkImportManagerBase.OverwriteType, ByVal destinationFolderArtifactID As Integer, ByVal repository As String, ByVal productionArtifactID As Integer, ByVal useBulk As Boolean, ByVal runID As String, ByVal productionKeyFieldArtifactID As Integer, ByVal inRepository As Boolean, ByVal startRecord As Int32, ByVal recordCount As Int32) As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults
+			Return MyBase.BulkImportProductionImageWithRange(appID, bulkFileName, uploadFullText, overwrite, destinationFolderArtifactID, repository, productionArtifactID, useBulk, runID, productionKeyFieldArtifactID, inRepository, startRecord, recordCount)
 		End Function
 
 		Protected Overridable Function InvokeBulkImportNative(ByVal appID As Integer, ByVal settings As EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo, ByVal inRepository As Boolean, ByVal includeExtractedTextEncoding As Boolean) As EDDS.WebAPI.BulkImportManagerBase.MassImportResults
 			Return MyBase.BulkImportNative(appID, settings, inRepository, includeExtractedTextEncoding)
 		End Function
 
-		Protected Overridable Function InvokeBulkImportNative(ByVal appID As Integer, ByVal settings As EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo, ByVal inRepository As Boolean, ByVal includeExtractedTextEncoding As Boolean, ByVal startRecord As Int32, ByVal endRecord As Int32) As EDDS.WebAPI.BulkImportManagerBase.MassImportResults
-			'TODO: change this to use the new call
-			Return MyBase.BulkImportNative(appID, settings, inRepository, includeExtractedTextEncoding)
-		End Function
-
 		Protected Overridable Function InvokeBulkImportObjects(ByVal appID As Integer, ByVal settings As EDDS.WebAPI.BulkImportManagerBase.ObjectLoadInfo, ByVal inRepository As Boolean) As EDDS.WebAPI.BulkImportManagerBase.MassImportResults
-			Return MyBase.BulkImportObjects(appID, settings, inRepository)
-		End Function
-
-		Protected Overridable Function InvokeBulkImportObjects(ByVal appID As Integer, ByVal settings As EDDS.WebAPI.BulkImportManagerBase.ObjectLoadInfo, ByVal inRepository As Boolean, ByVal startRecord As Int32, ByVal endRecord As Int32) As EDDS.WebAPI.BulkImportManagerBase.MassImportResults
-			'TODO: change this to use the new call
 			Return MyBase.BulkImportObjects(appID, settings, inRepository)
 		End Function
 

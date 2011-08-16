@@ -199,7 +199,6 @@ Namespace kCura.WinEDDS
 			_startLineNumber = args.StartLineNumber
 
 			_batchSizeHistoryList = New System.Collections.Generic.List(Of Int32)
-			BatchSizeHistoryList.Add(ImportBatchSize)
 		End Sub
 
 		Protected Overridable Sub InitializeUploaders(ByVal args As ImageLoadFile)
@@ -262,6 +261,7 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Public Function RunBulkImport(ByVal overwrite As kCura.EDDS.WebAPI.BulkImportManagerBase.OverwriteType, ByVal useBulk As Boolean) As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults
+			If BatchSizeHistoryList.Count = 0 Then BatchSizeHistoryList.Add(ImportBatchSize)
 			Dim tries As Int32 = NumberOfRetries()
 			Dim retval As New kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults
 			Dim totalRecords As Int32 = Me.ImportBatchSize
@@ -290,35 +290,40 @@ Namespace kCura.WinEDDS
 			Return retval
 		End Function
 
-		Private Function BatchBulkImport(ByVal overwrite As OverwriteType, ByVal useBulk As Boolean, ByVal startRecord As Int32, ByVal endRecord As Int32) As MassImportResults
+		Private Function SubBatchBulkImport(ByVal overwrite As OverwriteType, ByVal useBulk As Boolean, ByVal startRecord As Int32, ByVal recordCount As Int32) As MassImportResults
 			Dim retval As MassImportResults
 			If _productionArtifactID = 0 Then
-				retval = _bulkImportManager.BulkImportImage(_caseInfo.ArtifactID, _uploadKey, _replaceFullText, overwrite, _folderID, _repositoryPath, useBulk, _runId, _keyFieldDto.ArtifactID, _copyFilesToRepository, startRecord, endRecord)
+				retval = _bulkImportManager.BulkImportImage(_caseInfo.ArtifactID, _uploadKey, _replaceFullText, overwrite, _folderID, _repositoryPath, useBulk, _runId, _keyFieldDto.ArtifactID, _copyFilesToRepository, startRecord, recordCount)
 			Else
-				retval = _bulkImportManager.BulkImportProductionImage(_caseInfo.ArtifactID, _uploadKey, _replaceFullText, overwrite, _folderID, _repositoryPath, _productionArtifactID, useBulk, _runId, _keyFieldDto.ArtifactID, _copyFilesToRepository, startRecord, endRecord)
+				retval = _bulkImportManager.BulkImportProductionImage(_caseInfo.ArtifactID, _uploadKey, _replaceFullText, overwrite, _folderID, _repositoryPath, _productionArtifactID, useBulk, _runId, _keyFieldDto.ArtifactID, _copyFilesToRepository, startRecord, recordCount)
 			End If
 			Return retval
 		End Function
 
 		Private Function ReducedBatchBulkImport(ByVal overwrite As OverwriteType, ByVal useBulk As Boolean, ByVal totalRecords As Int32) As MassImportResults
 			Dim retval As New MassImportResults
-			Dim startPoint As Int32 = 0
-			Dim endPoint As Int32 = ImportBatchSize - 1
+			Dim startPoint As Int32 = 1
+			Dim endPoint As Int32 = ImportBatchSize
 			While startPoint < totalRecords
-				retval = MergeResults(retval, BatchBulkImport(overwrite, useBulk, startPoint, endPoint))
+				retval = MergeResults(retval, SubBatchBulkImport(overwrite, useBulk, startPoint, endPoint - startPoint))
 				startPoint = endPoint + 1
-				endPoint = Math.Min(endPoint + Me.ImportBatchSize, totalRecords) - 1
+				endPoint = Math.Min(endPoint + Me.ImportBatchSize, totalRecords)
 			End While
 
 			Return retval
 		End Function
 
 		Private Function FullBatchBulkImport(ByVal overwrite As OverwriteType, ByVal useBulk As Boolean) As MassImportResults
-			Return BatchBulkImport(overwrite, useBulk, 0, ImportBatchSize - 1)
+			Dim retval As MassImportResults
+			If _productionArtifactID = 0 Then
+				retval = _bulkImportManager.BulkImportImage(_caseInfo.ArtifactID, _uploadKey, _replaceFullText, overwrite, _folderID, _repositoryPath, useBulk, _runId, _keyFieldDto.ArtifactID, _copyFilesToRepository)
+			Else
+				retval = _bulkImportManager.BulkImportProductionImage(_caseInfo.ArtifactID, _uploadKey, _replaceFullText, overwrite, _folderID, _repositoryPath, _productionArtifactID, useBulk, _runId, _keyFieldDto.ArtifactID, _copyFilesToRepository)
+			End If
+			Return retval
 		End Function
 
 		Protected Overridable Sub LowerBatchLimits()
-			'TODO: change batch size, check batch volume
 			Me.ImportBatchSize -= 100
 			Me.BatchSizeHistoryList.Add(Me.ImportBatchSize)
 		End Sub
