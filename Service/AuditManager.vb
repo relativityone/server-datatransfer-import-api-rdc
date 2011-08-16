@@ -2,17 +2,30 @@ Namespace kCura.WinEDDS.Service
 	Public Class AuditManager
 		Inherits kCura.EDDS.WebAPI.AuditManagerBase.AuditManager
 
+		Private ReadOnly _serviceURLPageFormat As String
+
 #Region "Constructors"
 
 		Public Sub New(ByVal credentials As Net.ICredentials, ByVal cookieContainer As System.Net.CookieContainer)
 			MyBase.New()
+
+			_serviceURLPageFormat = "{0}AuditManager.asmx"
 			Me.Credentials = credentials
 			Me.CookieContainer = cookieContainer
-			Me.Url = String.Format("{0}AuditManager.asmx", kCura.WinEDDS.Config.WebServiceURL)
+			Me.ServiceURL = kCura.WinEDDS.Config.WebServiceURL
 			Me.Timeout = Settings.DefaultTimeOut
 		End Sub
 
 #End Region
+
+		Public Property ServiceURL As String
+			Get
+				Return Me.Url
+			End Get
+			Set(ByVal value As String)
+				Me.Url = String.Format(_serviceURLPageFormat, value)
+			End Set
+		End Property
 
 #Region " Shadow Methods "
 		Public Shadows Function CreateAuditRecord(ByVal caseContextArtifactID As Int32, ByVal artifactID As Int32, ByVal action As Int32, ByVal details As String, ByVal origination As String) As Boolean
@@ -23,7 +36,7 @@ Namespace kCura.WinEDDS.Service
 					Return MyBase.CreateAuditRecord(caseContextArtifactID, artifactID, action, details, origination)
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
+						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries, ServiceURL)
 					Else
 						Throw
 					End If
@@ -39,7 +52,7 @@ Namespace kCura.WinEDDS.Service
 					Return MyBase.AuditImageImport(appID, runId, isFatalError, importStats)
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
+						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries, ServiceURL)
 					Else
 						Throw
 					End If
@@ -55,7 +68,7 @@ Namespace kCura.WinEDDS.Service
 					Return MyBase.AuditObjectImport(appID, runId, isFatalError, importStats)
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
+						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries, ServiceURL)
 					Else
 						Throw
 					End If
@@ -71,7 +84,7 @@ Namespace kCura.WinEDDS.Service
 					Return MyBase.AuditExport(appID, isFatalError, exportStats)
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
+						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries, ServiceURL)
 					Else
 						Throw
 					End If

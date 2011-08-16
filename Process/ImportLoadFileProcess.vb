@@ -12,6 +12,28 @@ Namespace kCura.WinEDDS
 		Private WithEvents _newlineCounter As kCura.Utility.File.LineCounter
 		Private _hasRunPRocessComplete As Boolean = False
 		Private _uploadModeText As String = Nothing
+		Private _serviceURL As String
+
+		Public Property ServiceURL As String
+			Get
+				Return _serviceURL
+			End Get
+			Set(value As String)
+				_serviceURL = value
+				If Not _loadFileImporter Is Nothing Then
+					_loadFileImporter.ServiceURL = value
+				End If
+			End Set
+		End Property
+
+		Public Sub New()
+			Me.New(kCura.WinEDDS.Config.WebServiceURL)
+		End Sub
+
+		Public Sub New(ByVal webURL As String)
+			MyBase.New()
+			ServiceURL = webURL
+		End Sub
 
 		''' <summary>
 		''' Gets or sets the delimiter to use to separate fields in the bulk
@@ -29,7 +51,9 @@ Namespace kCura.WinEDDS
 		End Property
 
 		Public Overridable Function GetImporter() As kCura.WinEDDS.BulkLoadFileImporter
-			Return New kCura.WinEDDS.BulkLoadFileImporter(LoadFile, ProcessController, _timeZoneOffset, True, Me.ProcessID, True, BulkLoadFileFieldDelimiter)
+			Dim returnImporter As BulkLoadFileImporter = New kCura.WinEDDS.BulkLoadFileImporter(LoadFile, ProcessController, _timeZoneOffset, True, Me.ProcessID, True, BulkLoadFileFieldDelimiter, ServiceURL)
+
+			Return returnImporter
 		End Function
 
 		Protected Overrides Sub Execute()
@@ -63,6 +87,7 @@ Namespace kCura.WinEDDS
 			Try
 				Dim retval As New kCura.EDDS.WebAPI.AuditManagerBase.ObjectImportStatistics
 				retval.ArtifactTypeID = LoadFile.ArtifactTypeID
+				retval.BatchSizes = _loadFileImporter.BatchSizeHistoryList.ToArray
 				retval.Bound = LoadFile.QuoteDelimiter
 				retval.Delimiter = LoadFile.RecordDelimiter
 				retval.NestedValueDelimiter = LoadFile.HierarchicalValueDelimiter
@@ -131,6 +156,8 @@ Namespace kCura.WinEDDS
 				retval.TotalMetadataBytes = _loadFileImporter.Statistics.MetadataBytes
 				retval.SendNotification = LoadFile.SendEmailOnLoadCompletion
 				Dim auditManager As New kCura.WinEDDS.Service.AuditManager(LoadFile.Credentials, LoadFile.CookieContainer)
+				auditManager.ServiceURL = ServiceURL
+
 				auditManager.AuditObjectImport(LoadFile.CaseInfo.ArtifactID, runID, Not success, retval)
 			Catch
 			End Try

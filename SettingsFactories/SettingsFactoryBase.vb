@@ -17,6 +17,28 @@ Namespace kCura.WinEDDS
 		Private _folderManager As kCura.WinEDDS.Service.FolderManager
 		Private _fieldManager As kCura.WinEDDS.Service.FieldManager
 		Private _productionManager As kCura.WinEDDS.Service.ProductionManager
+		Private _serviceURL As String
+
+		Protected Property ServiceURL() As String
+			Get
+				Return _serviceURL
+			End Get
+			Set(value As String)
+				_serviceURL = value
+				If Not _caseManager Is Nothing Then
+					_caseManager.ServiceURL = value
+				End If
+				If Not _folderManager Is Nothing Then
+					_folderManager.ServiceURL = value
+				End If
+				If Not _fieldManager Is Nothing Then
+					_fieldManager.ServiceURL = value
+				End If
+				If Not _productionManager Is Nothing Then
+					_productionManager.ServiceURL = value
+				End If
+			End Set
+		End Property
 
 		Protected ReadOnly Property Credential() As System.Net.NetworkCredential
 			Get
@@ -34,6 +56,7 @@ Namespace kCura.WinEDDS
 			Get
 				If _caseManager Is Nothing Then
 					_caseManager = New Service.CaseManager(_credential, _cookieContainer)
+					_caseManager.ServiceURL = ServiceURL
 				End If
 				Return _caseManager
 			End Get
@@ -43,6 +66,7 @@ Namespace kCura.WinEDDS
 			Get
 				If _folderManager Is Nothing Then
 					_folderManager = New Service.FolderManager(_credential, _cookieContainer)
+					_folderManager.ServiceURL = ServiceURL
 				End If
 				Return _folderManager
 			End Get
@@ -52,6 +76,7 @@ Namespace kCura.WinEDDS
 			Get
 				If _fieldManager Is Nothing Then
 					_fieldManager = New Service.FieldManager(_credential, _cookieContainer)
+					_fieldManager.ServiceURL = ServiceURL
 				End If
 				Return _fieldManager
 			End Get
@@ -61,22 +86,34 @@ Namespace kCura.WinEDDS
 			Get
 				If _productionManager Is Nothing Then
 					_productionManager = New Service.ProductionManager(_credential, _cookieContainer)
+					_productionManager.ServiceURL = ServiceURL
 				End If
 				Return _productionManager
 			End Get
 		End Property
 
 		Protected Sub New(ByVal login As String, ByVal password As String)
-			Me.New(New System.Net.NetworkCredential(login, password))
+			Me.New(New System.Net.NetworkCredential(login, password), kCura.WinEDDS.Config.WebServiceURL)
+		End Sub
+
+		Protected Sub New(ByVal login As String, ByVal password As String, ByVal webURL As String)
+			Me.New(New System.Net.NetworkCredential(login, password), webURL)
 		End Sub
 
 		Protected Sub New(ByVal credential As System.Net.NetworkCredential)
+			Me.New(credential, kCura.WinEDDS.Config.WebServiceURL)
+		End Sub
+
+		Protected Sub New(ByVal credential As System.Net.NetworkCredential, ByVal webURL As String)
 			_credential = credential
+			_serviceURL = webURL
 
 			ServicePointManager.ServerCertificateValidationCallback = Function(sender As Object, certificate As X509Certificate, chain As X509Chain, sslPolicyErrors As SslPolicyErrors) True
 
 			_cookieContainer = New System.Net.CookieContainer
 			Dim relativityManager As New kCura.WinEDDS.Service.RelativityManager(_credential, _cookieContainer)
+			relativityManager.ServiceURL = ServiceURL
+
 			Dim successfulLogin As Boolean = False
 			Try
 				successfulLogin = relativityManager.ValidateSuccesfulLogin()
@@ -86,6 +123,8 @@ Namespace kCura.WinEDDS
 			If Not successfulLogin Then
 				If Not _credential.Password = "" Then
 					Dim userManager As New kCura.WinEDDS.Service.UserManager(_credential, _cookieContainer)
+					userManager.ServiceURL = ServiceURL
+
 					If userManager.Login(_credential.UserName, _credential.Password) Then
 						kCura.WinEDDS.Service.Settings.AuthenticationToken = userManager.GenerateDistributedAuthenticationToken()
 						Exit Sub

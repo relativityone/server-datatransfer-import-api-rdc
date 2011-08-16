@@ -3,6 +3,7 @@ Namespace kCura.WinEDDS.Service
 		Inherits kCura.EDDS.WebAPI.FieldManagerBase.FieldManager
 
 		Private _query As kCura.WinEDDS.Service.FieldQuery
+		Private ReadOnly _serviceURLPageFormat As String
 
 		Public ReadOnly Property Query() As kCura.WinEDDS.Service.FieldQuery
 			Get
@@ -19,12 +20,24 @@ Namespace kCura.WinEDDS.Service
 
 		Public Sub New(ByVal credentials As Net.ICredentials, ByVal cookieContainer As System.Net.CookieContainer)
 			MyBase.New()
+
+			_serviceURLPageFormat = "{0}FieldManager.asmx"
 			Me.Credentials = credentials
 			Me.CookieContainer = cookieContainer
-			Me.Url = String.Format("{0}FieldManager.asmx", kCura.WinEDDS.Config.WebServiceURL)
-			Me.Timeout = Settings.DefaultTimeOut
 			_query = New kCura.WinEDDS.Service.FieldQuery(credentials, Me.CookieContainer)
+			Me.ServiceURL = kCura.WinEDDS.Config.WebServiceURL
+			Me.Timeout = Settings.DefaultTimeOut
 		End Sub
+
+		Public Property ServiceURL As String
+			Get
+				Return Me.Url
+			End Get
+			Set(ByVal value As String)
+				Me.Url = String.Format(_serviceURLPageFormat, value)
+				_query.ServiceURL = value
+			End Set
+		End Property
 
 #Region " Translations "
 		Public Shared Function DTOtoDocumentField(ByVal dto As kCura.EDDS.WebAPI.DocumentManagerBase.Field) As DocumentField
@@ -63,7 +76,7 @@ Namespace kCura.WinEDDS.Service
 					End If
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
+						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries, ServiceURL)
 					Else
 						Throw
 					End If
@@ -84,7 +97,7 @@ Namespace kCura.WinEDDS.Service
 					End If
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
+						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries, ServiceURL)
 					Else
 						Throw
 					End If

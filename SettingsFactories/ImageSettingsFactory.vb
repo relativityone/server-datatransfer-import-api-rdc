@@ -6,12 +6,20 @@ Namespace kCura.WinEDDS
 		Private _docFields As DocumentFieldCollection
 
 		Public Sub New(ByVal login As String, ByVal password As String, ByVal caseArtifactID As Int32)
-			MyBase.New(login, password)
-			Me.InitLoadFile(caseArtifactID)
+			Me.New(login, password, caseArtifactID, kCura.WinEDDS.Config.WebServiceURL)
 		End Sub
 
 		Public Sub New(ByVal credential As System.Net.NetworkCredential, ByVal caseArtifactID As Int32)
-			MyBase.New(credential)
+			Me.New(credential, caseArtifactID, kCura.WinEDDS.Config.WebServiceURL)
+		End Sub
+
+		Public Sub New(ByVal login As String, ByVal password As String, ByVal caseArtifactID As Int32, ByVal webURL As String)
+			MyBase.New(login, password, webURL)
+			Me.InitLoadFile(caseArtifactID)
+		End Sub
+
+		Public Sub New(ByVal credential As System.Net.NetworkCredential, ByVal caseArtifactID As Int32, ByVal webURL As String)
+			MyBase.New(credential, webURL)
 			Me.InitLoadFile(caseArtifactID)
 		End Sub
 
@@ -31,7 +39,12 @@ Namespace kCura.WinEDDS
 			_loadFile.BeginBatesFieldArtifactID = 0
 			_loadFile.ControlKeyField = ""
 			_loadFile.SelectedCasePath = _loadFile.CaseInfo.DocumentPath
+			_loadFile.StartLineNumber = 0
 		End Sub
+
+		Public Function ToLoadFile() As ImageLoadFile
+			Return _loadFile
+		End Function
 
 		Public WriteOnly Property CaseArtifactID() As Int32
 			Set(ByVal value As Int32)
@@ -128,6 +141,18 @@ Namespace kCura.WinEDDS
 		Public WriteOnly Property SelectedDestinationRepository() As String
 			Set(ByVal value As String)
 				_loadFile.SelectedCasePath = value
+			End Set
+		End Property
+
+		Public WriteOnly Property StartLineNumber() As Int64
+			Set(ByVal value As Int64)
+				_loadFile.StartLineNumber = value
+			End Set
+		End Property
+
+		Public WriteOnly Property IdentityFieldId() As Int32
+			Set(value As Int32)
+				_loadFile.IdentityFieldId = value
 			End Set
 		End Property
 

@@ -35,6 +35,7 @@ Namespace kCura.WinEDDS
 		Private _warningCount As Int32 = 0
 		Private _errorCount As Int32 = 0
 		Private _fileCount As Int64 = 0
+		Private _serviceURL As String
 #End Region
 
 #Region "Accessors"
@@ -76,6 +77,30 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
+		Public Property ServiceURL As String
+			Get
+				Return _serviceURL
+			End Get
+			Set(value As String)
+				_serviceURL = value
+				_searchManager.ServiceURL = value
+				ExportManager.ServiceURL = value
+				_folderManager.ServiceURL = value
+				_fieldManager.ServiceURL = value
+				_auditManager.ServiceURL = value
+				_documentManager.ServiceURL = value
+				_downloadHandler.ServiceURL = value
+				_productionManager.ServiceURL = value
+
+				If Not _volumeManager Is Nothing Then
+					_volumeManager.ServiceURL = value
+				End If
+				If Not _fullTextDownloader Is Nothing Then
+					_fullTextDownloader.ServiceURL = value
+				End If
+			End Set
+		End Property
+
 #End Region
 
 		Public Event ShutdownEvent()
@@ -86,15 +111,25 @@ Namespace kCura.WinEDDS
 #Region "Constructors"
 
 		Public Sub New(ByVal exportFile As kCura.WinEDDS.ExportFile, ByVal processController As kCura.Windows.Process.Controller)
+			Me.New(exportFile, processController, kCura.WinEDDS.Config.WebServiceURL)
+		End Sub
+
+		Public Sub New(ByVal exportFile As kCura.WinEDDS.ExportFile, ByVal processController As kCura.Windows.Process.Controller, ByVal webURL As String)
+			_serviceURL = webURL
+
 			_searchManager = New kCura.WinEDDS.Service.SearchManager(exportFile.Credential, exportFile.CookieContainer)
 			_folderManager = New kCura.WinEDDS.Service.FolderManager(exportFile.Credential, exportFile.CookieContainer)
 			_documentManager = New kCura.WinEDDS.Service.DocumentManager(exportFile.Credential, exportFile.CookieContainer)
-			_downloadHandler = New FileDownloader(exportFile.Credential, exportFile.CaseInfo.DocumentPath & "\EDDS" & exportFile.CaseInfo.ArtifactID, exportFile.CaseInfo.DownloadHandlerURL, exportFile.CookieContainer, kCura.WinEDDS.Service.Settings.AuthenticationToken)
+			_downloadHandler = New FileDownloader(exportFile.Credential, exportFile.CaseInfo.DocumentPath & "\EDDS" & exportFile.CaseInfo.ArtifactID, exportFile.CaseInfo.DownloadHandlerURL, exportFile.CookieContainer, kCura.WinEDDS.Service.Settings.AuthenticationToken, ServiceURL)
 			FileDownloader.TotalWebTime = 0
 			_productionManager = New kCura.WinEDDS.Service.ProductionManager(exportFile.Credential, exportFile.CookieContainer)
 			_auditManager = New kCura.WinEDDS.Service.AuditManager(exportFile.Credential, exportFile.CookieContainer)
 			_fieldManager = New kCura.WinEDDS.Service.FieldManager(exportFile.Credential, exportFile.CookieContainer)
 			Me.ExportManager = New kCura.WinEDDS.Service.ExportManager(exportFile.Credential, exportFile.CookieContainer)
+
+			'This is done to force the update of all ServiceURL() properties for the Manager objects
+			ServiceURL = ServiceURL
+
 			_halt = False
 			_processController = processController
 			Me.DocumentsExported = 0
@@ -186,7 +221,9 @@ Namespace kCura.WinEDDS
 			_statistics.MetadataTime += System.Math.Max(System.DateTime.Now.Ticks - startTicks, 1)
 			RaiseEvent FileTransferModeChangeEvent(_downloadHandler.UploaderType.ToString)
 			_volumeManager = New VolumeManager(Me.Settings, Me.Settings.FolderPath, Me.Settings.Overwrite, Me.TotalExportArtifactCount, Me, _downloadHandler, _timekeeper, exportInitializationArgs.ColumnNames, _statistics)
+			_volumeManager.ServiceURL = ServiceURL
 			_fullTextDownloader = New kCura.WinEDDS.FullTextManager(Me.Settings.Credential, _sourceDirectory, Me.Settings.CookieContainer)
+			_fullTextDownloader.ServiceURL = ServiceURL
 			Me.WriteStatusLine(kCura.Windows.Process.EventType.Status, "Created search log file.", True)
 			_volumeManager.ColumnHeaderString = columnHeaderString
 			Me.WriteUpdate("Data retrieved. Beginning " & typeOfExportDisplayString & " export...")
