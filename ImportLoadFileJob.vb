@@ -118,6 +118,17 @@ Namespace kCura.Relativity.DataReaderClient
 			Return tempLoadFile
 		End Function
 
+		''' <summary>
+		''' Using the specified field name(s), search for the matching DocumentField in the given collection.
+		''' </summary>
+		''' <param name="docFieldCollection">An array of DocumentField objects, all of which should be Field Identifiers.</param>
+		''' <param name="controlNumCompatEnabled">If True, will first try to find <paramref name="compatFieldName"></paramref>, otherwise
+		''' just try to find <paramref name="desiredNonCompatField"></paramref>.</param>
+		''' <param name="compatFieldName">The field name to find if <paramref name="controlNumCompatEnabled"></paramref> is True.</param>
+		''' <param name="desiredNonCompatField">The field name to find if <paramref name="compatFieldName"></paramref> can't be
+		''' found when <paramref name="controlNumCompatEnabled"></paramref> is True, otherwise is the only field name to look for.</param>
+		''' <returns>The DocumentField if found, otherwise Nothing.</returns>
+		''' <remarks>This function raises OnMessage events that contain further information.</remarks>
 		Private Function SelectIdentifier(ByVal docFieldCollection As WinEDDS.DocumentField(), ByVal controlNumCompatEnabled As Boolean, ByVal compatFieldName As String, ByVal desiredNonCompatField As String) As WinEDDS.DocumentField
 			Dim tempIDField As WinEDDS.DocumentField = Nothing
 
@@ -126,15 +137,16 @@ Namespace kCura.Relativity.DataReaderClient
 			End If
 
 			If tempIDField Is Nothing Then
-				If controlNumCompatEnabled = True Then
-					RaiseEvent OnMessage(New Status(String.Format("Unable to find compatibility identifier field {0}", compatFieldName)))
-				End If
+				RaiseEvent OnMessage(New Status(String.Format("Unable to find compatibility identifier field {0}", compatFieldName)))
 
-				tempIDField = GetIdentifierFieldFromName(docFieldCollection, desiredNonCompatField)
-				If Not tempIDField Is Nothing Then
-					RaiseEvent OnMessage(New Status(String.Format("Using selected identifier field {0}", desiredNonCompatField)))
-				Else
-					RaiseEvent OnMessage(New Status(String.Format("Unable to find selected identifier field {0}", desiredNonCompatField)))
+				If Not desiredNonCompatField Is Nothing Then
+					tempIDField = GetIdentifierFieldFromName(docFieldCollection, desiredNonCompatField)
+
+					If Not tempIDField Is Nothing Then
+						RaiseEvent OnMessage(New Status(String.Format("Using selected identifier field {0}", desiredNonCompatField)))
+					Else
+						RaiseEvent OnMessage(New Status(String.Format("Unable to find selected identifier field {0}", desiredNonCompatField)))
+					End If
 				End If
 			Else
 				RaiseEvent OnMessage(New Status(String.Format("Using compatibility identifier {0}", compatFieldName)))
@@ -261,7 +273,7 @@ Namespace kCura.Relativity.DataReaderClient
 				RaiseEvent OnMessage(New Status(String.Format("Using application configuration ServiceURL {0}", WinEDDS.Config.AppConfigWebServiceURL)))
 				Settings.ServiceURL = WinEDDS.Config.AppConfigWebServiceURL
 			Else
-				RaiseEvent OnMessage(New Status(String.Format("Using supplied ServiceURL {0}", WinEDDS.Config.WebServiceURL)))
+				RaiseEvent OnMessage(New Status(String.Format("Using default ServiceURL {0}", WinEDDS.Config.WebServiceURL)))
 				Settings.ServiceURL = WinEDDS.Config.WebServiceURL
 			End If
 		End Sub

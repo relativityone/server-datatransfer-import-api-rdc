@@ -4,6 +4,11 @@ Namespace kCura.Relativity.DataReaderClient
 
 #Region "Properties"
 		''' <summary>
+		''' TODO: Remove. Only here for the NUnit project.
+		''' </summary>
+		Public Property ArtifactTypeId() As Int32
+
+		''' <summary>
 		''' Auto number Images yes/no
 		''' </summary>
 		Public Property AutoNumberImages() As Boolean
