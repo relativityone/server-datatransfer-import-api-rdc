@@ -169,6 +169,7 @@
     <Compile Include="ImageImport\ImageSettings.vb" />
     <Compile Include="ImageImport\ImageSourceIDataReader.vb" />
     <Compile Include="ImportLoadFileJob.vb" />
+    <Compile Include="ImportSettingsBase.vb" />
     <Compile Include="Settings.vb" />
     <Compile Include="SourceIDataReader.vb" />
     <Compile Include="Status.vb">

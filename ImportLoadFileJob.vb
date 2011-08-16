@@ -1,67 +1,44 @@
 Namespace kCura.Relativity.DataReaderClient
 	Public Class ImportBulkArtifactJob
+		Inherits LoadFileJobBase
 
-#Region " Public Events and Variables "
-
-		Public Event OnMessage(ByVal status As Status)
-		Public Event OnError(ByVal row As IDictionary)
-
-		Public Settings As Settings
-		Public SourceData As SourceIDataReader
-
-		Public _bulkLoadFileFieldDelimiter As String
-
+#Region "Private Variables"
+		Private _bulkLoadFileFieldDelimiter As String
 #End Region
 
-#Region " Private variables "
-		Private WithEvents _observer As kCura.Windows.Process.ProcessObserver
-		Private _controller As kCura.Windows.Process.Controller
-#End Region
-
-#Region " Public Properties "
-		''' <summary>
-		''' Gets or sets the field delimiter to use when writing
-		''' out the bulk load file. Line delimiters will be this value plus a line feed.
-		''' </summary>
-		''' <exception cref="ArgumentNullException">Thrown if <paramref name="bulkLoadFileFieldDelimiter"/>
-		''' is <c>null</c> or <c>String.Empty</c>.</exception>
-		Public Property BulkLoadFileFieldDelimiter As String
-			Get
-				Return _bulkLoadFileFieldDelimiter
-			End Get
-			Set(ByVal value As String)
-				If String.IsNullOrEmpty(value) Then
-					Throw New ArgumentNullException("bulkLoadFileFieldDelimiter")
-				End If
-
-				_bulkLoadFileFieldDelimiter = value
-			End Set
-		End Property
-#End Region
-
-#Region " Public Methods "
-
+#Region "Constructors"
 		''' <summary>
 		''' Creates a new job that can bulk insert a large amount of artifacts.
 		''' </summary>
 		Public Sub New()
-			Me.Settings = New Settings
-			Me.SourceData = New SourceIDataReader
+			_nativeSettings = New Settings
+			_nativeDataReader = New SourceIDataReader
 
-			Me.BulkLoadFileFieldDelimiter = Global.Relativity.Constants.DEFAULT_FIELD_DELIMITER
+			BulkLoadFileFieldDelimiter = Global.Relativity.Constants.DEFAULT_FIELD_DELIMITER
 		End Sub
+#End Region
 
-		Public Sub Execute()
+#Region "Events"
+		Public Shadows Event OnMessage(ByVal status As Status)
+		Public Shadows Event OnError(ByVal row As IDictionary)
+#End Region
+
+#Region "Public Routines"
+		Public Overrides Sub Execute()
 			If IsSettingsValid() Then
 				RaiseEvent OnMessage(New Status("Getting source data from database"))
 
-				If String.IsNullOrWhiteSpace(Settings.ServiceURL) Then
-					Settings.ServiceURL = kCura.WinEDDS.Config.WebServiceURL
-					RaiseEvent OnMessage(New Status("Setting default ServiceURL, none was found"))
+				If Not String.IsNullOrWhiteSpace(Settings.ServiceURL) Then
+					RaiseEvent OnMessage(New Status(String.Format("Using supplied ServiceURL {0}", Settings.ServiceURL)))
+				ElseIf Not String.IsNullOrWhiteSpace(WinEDDS.Config.AppConfigWebServiceURL) Then
+					RaiseEvent OnMessage(New Status(String.Format("Using application configuration ServiceURL {0}", WinEDDS.Config.AppConfigWebServiceURL)))
+					Settings.ServiceURL = WinEDDS.Config.AppConfigWebServiceURL
+				Else
+					RaiseEvent OnMessage(New Status(String.Format("Using supplied ServiceURL {0}", WinEDDS.Config.WebServiceURL)))
+					Settings.ServiceURL = WinEDDS.Config.WebServiceURL
 				End If
 
 				Dim process As WinEDDS.ImportExtension.DataReaderImporterProcess = New WinEDDS.ImportExtension.DataReaderImporterProcess(SourceData.SourceData, Settings.ServiceURL)
-				RaiseEvent OnMessage(New Status(String.Format("Using value {0} for ServiceURL", Settings.ServiceURL)))
 
 				_observer = process.ProcessObserver
 				_controller = process.ProcessController
@@ -88,20 +65,16 @@ Namespace kCura.Relativity.DataReaderClient
 		Public Sub ExportErrorReport(ByVal location As String)
 			_controller.ExportErrorReport(location)
 		End Sub
-
 #End Region
 
-#Region " Private Methods "
+#Region "Private Functions"
+		Private Function CreateLoadFile(ByVal clientSettings As Settings) As kCura.WinEDDS.ImportExtension.DataReaderLoadFile
+			Dim loadFileTemp As WinEDDS.LoadFile = MapInputToSettingsFactory(clientSettings).ToLoadFile
 
-		Private Function CreateLoadFile(ByVal sqlClientSettings As Settings) As kCura.WinEDDS.ImportExtension.DataReaderLoadFile
-			'A SQLLoadFile contains everything that a regular load file contains plus sql connection string properties and a query.
-			Dim loadFileTemp As kCura.WinEDDS.LoadFile = MapToDynamicObjectSettingsFactory(sqlClientSettings).ToLoadFile
-
-			Dim tempLoadFile As New kCura.WinEDDS.ImportExtension.DataReaderLoadFile
+			Dim tempLoadFile As New WinEDDS.ImportExtension.DataReaderLoadFile
 			tempLoadFile.DataReader = SourceData.SourceData
 
 			'These are ALL of the load file settings
-
 			tempLoadFile.ArtifactTypeID = loadFileTemp.ArtifactTypeID
 			tempLoadFile.CaseDefaultPath = loadFileTemp.CaseDefaultPath
 			tempLoadFile.CaseInfo = loadFileTemp.CaseInfo
@@ -131,95 +104,15 @@ Namespace kCura.Relativity.DataReaderClient
 			tempLoadFile.RecordDelimiter = loadFileTemp.RecordDelimiter
 			tempLoadFile.SelectedCasePath = loadFileTemp.SelectedCasePath
 			tempLoadFile.SelectedIdentifierField = loadFileTemp.SelectedIdentifierField
-			tempLoadFile.SendEmailOnLoadCompletion = sqlClientSettings.SendEmailOnLoadCompletion
+			tempLoadFile.SendEmailOnLoadCompletion = clientSettings.SendEmailOnLoadCompletion
 			tempLoadFile.SourceFileEncoding = loadFileTemp.SourceFileEncoding
 			tempLoadFile.StartLineNumber = loadFileTemp.StartLineNumber
 
 			Return tempLoadFile
-
 		End Function
 
-		Private Function MapToDynamicObjectSettingsFactory(ByVal sqlClientSettings As Settings) As kCura.WinEDDS.DynamicObjectSettingsFactory
-			Dim dosf_settings As kCura.WinEDDS.DynamicObjectSettingsFactory = New kCura.WinEDDS.DynamicObjectSettingsFactory(sqlClientSettings.RelativityUsername, sqlClientSettings.RelativityPassword, sqlClientSettings.CaseArtifactId, sqlClientSettings.ArtifactTypeId, sqlClientSettings.ServiceURL)
-
-			With dosf_settings
-				.FirstLineContainsHeaders = False
-
-				Select Case sqlClientSettings.OverwriteMode
-					Case OverwriteModeEnum.Append
-						.OverwriteDestination = WinEDDS.SettingsFactoryBase.OverwriteType.Append
-					Case OverwriteModeEnum.AppendOverlay
-						.OverwriteDestination = WinEDDS.SettingsFactoryBase.OverwriteType.AppendOverlay
-					Case OverwriteModeEnum.Overlay
-						.OverwriteDestination = WinEDDS.SettingsFactoryBase.OverwriteType.Overlay
-				End Select
-
-				.MultiRecordDelimiter = CType(sqlClientSettings.MultiValueDelimiter, Char)
-				.HierarchicalValueDelimiter = CType(sqlClientSettings.NestedValueDelimiter, Char)
-
-				If Not sqlClientSettings.NativeFilePathSourceFieldName = String.Empty Then
-					.NativeFilePathColumn = sqlClientSettings.NativeFilePathSourceFieldName
-					.LoadNativeFiles = True
-				Else
-					.LoadNativeFiles = False
-				End If
-
-				If Not sqlClientSettings.ParentObjectIdSourceFieldName = String.Empty AndAlso Not sqlClientSettings.FolderPathSourceFieldName = String.Empty Then
-					If Not sqlClientSettings.ParentObjectIdSourceFieldName = sqlClientSettings.FolderPathSourceFieldName Then
-						Throw New Exception("Only set one of ParentObjectIdSourceFieldName and FolderPathSourceFieldName")
-					End If
-				End If
-
-				If Not sqlClientSettings.ParentObjectIdSourceFieldName = String.Empty Then
-					.ParentInfoContainedInColumn = sqlClientSettings.ParentObjectIdSourceFieldName
-					.CreateFolderStructure = True
-				Else
-					.CreateFolderStructure = False
-				End If
-
-				If Not sqlClientSettings.FolderPathSourceFieldName = String.Empty Then
-					.ParentInfoContainedInColumn = sqlClientSettings.FolderPathSourceFieldName
-					.CreateFolderStructure = True
-				Else
-					.CreateFolderStructure = False
-				End If
-
-				Select Case sqlClientSettings.NativeFileCopyMode
-					Case NativeFileCopyModeEnum.CopyFiles
-						.CopyFilesToDocumentRepository = True
-					Case NativeFileCopyModeEnum.SetFileLinks, Nothing
-						.CopyFilesToDocumentRepository = False
-					Case Else
-						Throw New Exception("ERROR with  NativeFileCopyMode")
-				End Select
-
-				.FullTextColumnContainsFileLocation = sqlClientSettings.ExtractedTextFieldContainsFilePath
-				If Not sqlClientSettings.ExtractedTextEncoding Is Nothing Then
-					.ExtractedTextFileEncoding = sqlClientSettings.ExtractedTextEncoding
-				Else
-					.ExtractedTextFileEncoding = System.Text.Encoding.Default
-				End If
-
-				If sqlClientSettings.DestinationFolderArtifactID > 0 Then
-					'This is automatically set from the caseArtifactID. optionally, it can be changed to point to a different folder
-					.DestinationFolderID = sqlClientSettings.DestinationFolderArtifactID
-				End If
-
-
-				'				sqlClientSettings.OverlayIdentifierSourceFieldName()
-
-			End With
-			Return dosf_settings
-		End Function
-
-
-#End Region
-
-#Region " Validation "
-
-		Private Function IsSettingsValid() As Boolean
+		Protected Overrides Function IsSettingsValid() As Boolean
 			Try
-				'	ValidateSqlCommandSettings()
 				ValidateRelativitySettings()
 				ValidateDelimiterSettings()
 				ValidateOverwriteModeSettings()
@@ -232,40 +125,125 @@ Namespace kCura.Relativity.DataReaderClient
 			Return True
 		End Function
 
-		'Private Sub ValidateSqlCommandSettings()
-		'	RaiseEvent OnMessage(New Status("Validating SqlCommand"))
+		Private Function MapInputToSettingsFactory(ByVal clientSettings As Settings) As WinEDDS.DynamicObjectSettingsFactory
+			Dim dosf_settings As kCura.WinEDDS.DynamicObjectSettingsFactory = New kCura.WinEDDS.DynamicObjectSettingsFactory(clientSettings.RelativityUsername, clientSettings.RelativityPassword, clientSettings.CaseArtifactId, clientSettings.ArtifactTypeId, clientSettings.ServiceURL)
 
-		'	If SQLCommand.ServerName Is Nothing OrElse SQLCommand.ServerName = String.Empty Then
-		'		Throw New Exception("SqlCommand.ServerName is not set")
-		'	End If
+			With dosf_settings
+				.FirstLineContainsHeaders = False
 
-		'	If SQLCommand.DatabaseName Is Nothing OrElse SQLCommand.DatabaseName = String.Empty Then
-		'		Throw New Exception("SqlCommand.DatabaseName is not set")
-		'	End If
+				Select Case clientSettings.OverwriteMode
+					Case OverwriteModeEnum.Append
+						.OverwriteDestination = WinEDDS.SettingsFactoryBase.OverwriteType.Append
+					Case OverwriteModeEnum.AppendOverlay
+						.OverwriteDestination = WinEDDS.SettingsFactoryBase.OverwriteType.AppendOverlay
+					Case OverwriteModeEnum.Overlay
+						.OverwriteDestination = WinEDDS.SettingsFactoryBase.OverwriteType.Overlay
+				End Select
 
-		'	If SQLCommand.LoginName Is Nothing OrElse SQLCommand.LoginName = String.Empty Then
-		'		Throw New Exception("SqlCommand.LoginName is not set")
-		'	End If
+				.MultiRecordDelimiter = CType(clientSettings.MultiValueDelimiter, Char)
+				.HierarchicalValueDelimiter = CType(clientSettings.NestedValueDelimiter, Char)
 
-		'	If SQLCommand.LoginPassword Is Nothing OrElse SQLCommand.LoginPassword = String.Empty Then
-		'		Throw New Exception("SqlCommand.LoginPassword is not set")
-		'	End If
+				If Not clientSettings.NativeFilePathSourceFieldName = String.Empty Then
+					.NativeFilePathColumn = clientSettings.NativeFilePathSourceFieldName
+					.LoadNativeFiles = True
+				Else
+					.LoadNativeFiles = False
+				End If
 
-		'	If SQLCommand.Query Is Nothing OrElse SQLCommand.Query = String.Empty Then
-		'		Throw New Exception("SqlCommand.Query is not set")
-		'	End If
+				If Not clientSettings.ParentObjectIdSourceFieldName = String.Empty AndAlso Not clientSettings.FolderPathSourceFieldName = String.Empty Then
+					If Not clientSettings.ParentObjectIdSourceFieldName = clientSettings.FolderPathSourceFieldName Then
+						Throw New Exception("Only set one of ParentObjectIdSourceFieldName and FolderPathSourceFieldName")
+					End If
+				End If
 
-		'	Try
-		'		'TODO: Find a better way to verify the SQL connection and that the query runs
-		'		Dim process As New kCura.WinEDDS.ImportExtension.QueryImporterProcess(SQLCommand.ServerName, SQLCommand.DatabaseName, SQLCommand.LoginName, SQLCommand.LoginPassword, SQLCommand.Query)
-		'	Catch ex As Exception
-		'		RaiseEvent OnMessage(New Status(String.Format("Error in SQL Command. There is a problem connecting to the database or executing the query ")))
-		'		Throw
-		'	End Try
+				If Not clientSettings.ParentObjectIdSourceFieldName = String.Empty Then
+					.ParentInfoContainedInColumn = clientSettings.ParentObjectIdSourceFieldName
+					.CreateFolderStructure = True
+				Else
+					.CreateFolderStructure = False
+				End If
 
-		'	RaiseEvent OnMessage(New Status("SQLCommand is valid"))
+				If Not clientSettings.FolderPathSourceFieldName = String.Empty Then
+					.ParentInfoContainedInColumn = clientSettings.FolderPathSourceFieldName
+					.CreateFolderStructure = True
+				Else
+					.CreateFolderStructure = False
+				End If
 
-		'End Sub
+				Select Case clientSettings.NativeFileCopyMode
+					Case NativeFileCopyModeEnum.CopyFiles
+						.CopyFilesToDocumentRepository = True
+					Case NativeFileCopyModeEnum.SetFileLinks, Nothing
+						.CopyFilesToDocumentRepository = False
+					Case Else
+						Throw New Exception("ERROR with  NativeFileCopyMode")
+				End Select
+
+				.FullTextColumnContainsFileLocation = clientSettings.ExtractedTextFieldContainsFilePath
+				If Not clientSettings.ExtractedTextEncoding Is Nothing Then
+					.ExtractedTextFileEncoding = clientSettings.ExtractedTextEncoding
+				Else
+					.ExtractedTextFileEncoding = System.Text.Encoding.Default
+				End If
+
+				If clientSettings.DestinationFolderArtifactID > 0 Then
+					'This is automatically set from the caseArtifactID. optionally, it can be changed to point to a different folder
+					.DestinationFolderID = clientSettings.DestinationFolderArtifactID
+				End If
+
+				If clientSettings.StartRecordNumber > 0 Then
+					.StartLineNumber = clientSettings.StartRecordNumber
+				End If
+			End With
+
+			Return dosf_settings
+		End Function
+#End Region
+
+#Region "Private Routines"
+		Protected Overrides Sub Finalize()
+			MyBase.Finalize()
+		End Sub
+
+		Private Sub ValidateDelimiterSettings()
+			If String.IsNullOrEmpty(Settings.MultiValueDelimiter) Then
+				Throw New Exception("MultiValueDelimiter not set")
+			End If
+
+			If String.IsNullOrEmpty(Settings.NestedValueDelimiter) Then
+				Throw New Exception("NestedValueDelimiter not set")
+			End If
+		End Sub
+
+		Private Sub ValidateExtractedTextSettings()
+			If Settings.ExtractedTextFieldContainsFilePath Then
+				If Settings.ExtractedTextEncoding Is Nothing Then
+					Throw New Exception("ExtractedTextEncoding not set")
+				End If
+			End If
+		End Sub
+
+		Private Sub ValidateNativeFileSettings()
+			If Settings.NativeFileCopyMode = NativeFileCopyModeEnum.DoNotImportNativeFiles Then
+				If Not Settings.NativeFilePathSourceFieldName = String.Empty Then
+					Throw New Exception("If NativeFileCopyMode is set to DoNotImportNativeFiles, then NativeFilePathSourceFieldName cannot be set.")
+				End If
+			Else
+				If Settings.NativeFilePathSourceFieldName = String.Empty Then
+					Throw New Exception("If NativeFileCopyMode is set, then NativeFilePathSourceFieldName must be set. Format: [Field] ([index]). Example: File (3). ")
+				Else
+					RaiseEvent OnMessage(New Status(String.Format("Importing native files using {0}", Settings.NativeFileCopyMode.ToString)))
+				End If
+			End If
+		End Sub
+
+		Private Sub ValidateOverwriteModeSettings()
+			If Settings.OverwriteMode = OverwriteModeEnum.Overlay Then
+				If Settings.OverlayIdentifierSourceFieldName Is Nothing OrElse Settings.OverlayIdentifierSourceFieldName.Trim = String.Empty Then
+					Throw New Exception("When Overwrite Mode is set to Overlay, Overlay Identifier Field must be set.")
+				End If
+			End If
+		End Sub
 
 		Private Sub ValidateRelativitySettings()
 			If Settings.RelativityUsername Is Nothing OrElse Settings.RelativityUsername = String.Empty Then
@@ -281,53 +259,12 @@ Namespace kCura.Relativity.DataReaderClient
 				Throw New Exception(String.Format("{0} must be set and cannot be 0", "ArtifactTypeId"))
 			End If
 		End Sub
-
-
-		Private Sub ValidateDelimiterSettings()
-			If Settings.MultiValueDelimiter = String.Empty Then
-				Throw New Exception("MultiValueDelimiter not set")
-			End If
-
-			If Settings.NestedValueDelimiter = String.Empty Then
-				Throw New Exception("NestedValueDelimiter not set")
-			End If
-		End Sub
-
-		Private Sub ValidateOverwriteModeSettings()
-			If Settings.OverwriteMode = OverwriteModeEnum.Overlay Then
-				If Settings.OverlayIdentifierSourceFieldName Is Nothing OrElse Settings.OverlayIdentifierSourceFieldName.Trim = String.Empty Then
-					Throw New Exception("When Overwrite Mode is set to Overlay, Overlay Identifier Field must be set.")
-				End If
-			End If
-		End Sub
-
-		Private Sub ValidateExtractedTextSettings()
-			If Settings.ExtractedTextFieldContainsFilePath Then
-				If Settings.ExtractedTextEncoding Is Nothing Then
-					Throw New Exception("ExtractedTextEncoding not set")
-				End If
-			End If
-		End Sub
-
-		Private Sub ValidateNativeFileSettings()
-
-			If Settings.NativeFileCopyMode = NativeFileCopyModeEnum.DoNotImportNativeFiles Then
-				If Not Settings.NativeFilePathSourceFieldName = String.Empty Then
-					Throw New Exception("If NativeFileCopyMode is set to DoNotImportNativeFiles, then NativeFilePathSourceFieldName cannot be set.")
-				End If
-			Else
-				If Settings.NativeFilePathSourceFieldName = String.Empty Then
-					Throw New Exception("If NativeFileCopyMode is set, then NativeFilePathSourceFieldName must be set. Format: [Field] ([index]). Example: File (3). ")
-				Else
-					RaiseEvent OnMessage(New Status(String.Format("Importing native files using {0}", Settings.NativeFileCopyMode.ToString)))
-				End If
-			End If
-
-		End Sub
-
 #End Region
 
-#Region " Event Handling "
+#Region "Event Handlers"
+		Private Sub _observer_ErrorReportEvent(ByVal row As System.Collections.IDictionary) Handles _observer.ErrorReportEvent
+			RaiseEvent OnError(row)
+		End Sub
 
 		Private Sub _observer_OnProcessComplete(ByVal closeForm As Boolean, ByVal exportFilePath As String, ByVal exportLogs As Boolean) Handles _observer.OnProcessComplete
 			RaiseEvent OnMessage(New Status(String.Format("Completed!")))
@@ -346,15 +283,49 @@ Namespace kCura.Relativity.DataReaderClient
 		Private Sub _observer_OnProcessProgressEvent(ByVal evt As kCura.Windows.Process.ProcessProgressEvent) Handles _observer.OnProcessProgressEvent
 			RaiseEvent OnMessage(New Status(String.Format("[Timestamp: {0}] [Progress Info: {1} of {2}]", System.DateTime.Now, evt.TotalRecordsProcessedDisplay, Settings.RowCount)))
 		End Sub
-
-		Private Sub _observer_ErrorReportEvent(ByVal row As System.Collections.IDictionary) Handles _observer.ErrorReportEvent
-			RaiseEvent OnError(row)
-		End Sub
-
 #End Region
 
-		Protected Overrides Sub Finalize()
-			MyBase.Finalize()
-		End Sub
+#Region "Properties"
+		''' <summary>
+		''' Gets or sets the field delimiter to use when writing
+		''' out the bulk load file. Line delimiters will be this value plus a line feed.
+		''' </summary>
+		''' <exception cref="ArgumentNullException">Thrown if <paramref name="bulkLoadFileFieldDelimiter"/>
+		''' is <c>null</c> or <c>String.Empty</c>.</exception>
+		<Obsolete("TODO: Use the Settings class version instead")>
+		Public Property BulkLoadFileFieldDelimiter() As String
+			Get
+				Return _bulkLoadFileFieldDelimiter
+			End Get
+			Set(ByVal value As String)
+				If String.IsNullOrEmpty(value) Then
+					Throw New ArgumentNullException("bulkLoadFileFieldDelimiter")
+				End If
+
+				_bulkLoadFileFieldDelimiter = value
+			End Set
+		End Property
+
+		'TODO: Because these were public fields before (vs properties), no exception was thrown
+		' if value = Nothing; for compatibility that is the case here
+		Public Property Settings() As Settings
+			Get
+				Return CType(_nativeSettings, Settings)
+			End Get
+			Set(value As Settings)
+				_nativeSettings = value
+			End Set
+		End Property
+
+		Public Property SourceData() As SourceIDataReader
+			Get
+				Return _nativeDataReader
+			End Get
+			Set(value As SourceIDataReader)
+				_nativeDataReader = value
+			End Set
+		End Property
+#End Region
+
 	End Class
 End Namespace

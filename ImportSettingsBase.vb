@@ -1,5 +1,10 @@
 ﻿Namespace kCura.Relativity.DataReaderClient
 	Public Class ImportSettingsBase
+		Protected Sub New()
+			ExtractedTextFieldContainsFilePath = False
+			OverlayIdentifierSourceFieldName = String.Empty
+		End Sub
+
 		''' <summary>
 		''' ArtifactId of the destination Relativity workspace ('workspace' = 'case')
 		''' </summary>
@@ -43,6 +48,11 @@
 		Public Property ExtractedTextFieldContainsFilePath() As Boolean
 
 		''' <summary>
+		''' The key field that can only be set on Overwrite only
+		''' </summary>
+		Public Property IdentityFieldId() As Int32
+
+		''' <summary>
 		''' Sets whether native files are copied to the destination Relativity instance or whether they are used as links
 		''' </summary>
 		Public Property NativeFileCopyMode() As NativeFileCopyModeEnum
@@ -70,11 +80,21 @@
 		''' <summary>
 		''' '
 		''' </summary>
+		Public Property SelectedIdentifierFieldName() As String
+
+		''' <summary>
+		''' '
+		''' </summary>
 		Public Property SendEmailOnLoadCompletion() As Boolean
 
 		''' <summary>
 		''' URL of the web service to use
 		''' </summary>
 		Public Property ServiceURL() As String
+
+		''' <summary>
+		''' '
+		''' </summary>
+		Public Property StartRecordNumber() As Int64
 	End Class
 End Namespace
