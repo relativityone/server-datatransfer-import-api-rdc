@@ -1420,8 +1420,6 @@ Public Class ExportForm
 		_multiRecordDelimiter.SelectedValue = ef.MultiRecordDelimiter
 		_exportFullTextAsFile.Checked = ef.ExportFullTextAsFile
 
-		_potentialTextFields.SelectedItem = ef.SelectedTextField
-
 
 
 		_exportMulticodeFieldsAsNested.Checked = ef.MulticodesAsNested
@@ -1457,6 +1455,17 @@ Public Class ExportForm
 			End If
 
 			ManagePotentialTextFields()
+
+			If ef.SelectedTextField IsNot Nothing Then
+				For i As Int32 = 0 To _potentialTextFields.Items.Count - 1
+					Dim loadedVfi As kCura.WinEDDS.ViewFieldInfo = DirectCast(_potentialTextFields.Items(i), kCura.WinEDDS.ViewFieldInfo)
+					If loadedVfi.DisplayName.Equals(ef.SelectedTextField.DisplayName, StringComparison.InvariantCulture) Then
+						_potentialTextFields.SelectedIndex = i
+						Exit For
+					End If
+				Next
+			End If
+
 
 			For Each vfi As kCura.WinEDDS.ViewFieldInfo In itemsToRemoveFromLeftListBox
 				_columnSelecter.LeftListBoxItems.Remove(vfi)
