@@ -150,6 +150,7 @@ Namespace kCura.WinEDDS
 			_filePathColumn = args.NativeFilePathColumn
 			_firstLineContainsColumnNames = args.FirstLineContainsHeaders
 			_fieldMap = args.FieldMap
+			_serviceURL = webURL
 
 			InitializeManagers(args, ServiceURL)
 
