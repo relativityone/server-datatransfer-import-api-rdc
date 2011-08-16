@@ -76,6 +76,14 @@ Namespace kCura.WinEDDS
 			End If
 		End Sub
 
+		Protected Overrides Sub Execute(ByVal webServiceURL As String)
+			If String.IsNullOrEmpty(webServiceURL) Then
+				Throw New ArgumentNullException("webServiceURL")
+			End If
+
+			Me.Execute()
+		End Sub
+
 		Private Sub AuditRun(ByVal success As Boolean, ByVal runID As String)
 			Try
 				Dim retval As New kCura.EDDS.WebAPI.AuditManagerBase.ObjectImportStatistics
