@@ -27,7 +27,7 @@ Namespace kCura.Relativity.DataReaderClient
 		''' ignores SelectedIdentifierField. If false and SelectedIdentifierField is not
 		''' set, will use the default identifier field.
 		''' </summary>
-		Public Property ControlNumberCompatibilityMode() As Boolean
+		Public Property DisableControlNumberCompatibilityMode() As Boolean
 
 		''' <summary>
 		''' Field name that contains ???

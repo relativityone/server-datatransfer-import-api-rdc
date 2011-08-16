@@ -101,7 +101,7 @@ Namespace kCura.Relativity.DataReaderClient
 			'
 			'
 			'
-			Dim tempIDField As WinEDDS.DocumentField = SelectIdentifier(_docIDFieldCollection, clientSettings.ControlNumberCompatibilityMode, _controlNumberFieldName, clientSettings.SelectedIdentifierFieldName)
+			Dim tempIDField As WinEDDS.DocumentField = SelectIdentifier(_docIDFieldCollection, Not clientSettings.DisableControlNumberCompatibilityMode, _controlNumberFieldName, clientSettings.SelectedIdentifierFieldName)
 			If tempIDField Is Nothing Then
 				RaiseEvent OnMessage(New Status(String.Format("Using default identifier field {0}", loadFileTemp.SelectedIdentifierField.FieldName)))
 				tempIDField = loadFileTemp.SelectedIdentifierField
@@ -137,7 +137,9 @@ Namespace kCura.Relativity.DataReaderClient
 			End If
 
 			If tempIDField Is Nothing Then
-				RaiseEvent OnMessage(New Status(String.Format("Unable to find compatibility identifier field {0}", compatFieldName)))
+				If controlNumCompatEnabled = True Then
+					RaiseEvent OnMessage(New Status(String.Format("Unable to find compatibility identifier field {0}", compatFieldName)))
+				End If
 
 				If Not desiredNonCompatField Is Nothing Then
 					tempIDField = GetIdentifierFieldFromName(docFieldCollection, desiredNonCompatField)
