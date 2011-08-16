@@ -33,15 +33,7 @@ Namespace kCura.Relativity.DataReaderClient
 				Dim updatedSourceData As DataTable = MapSuppliedFieldNamesToActual(Settings, SourceData.SourceData)
 				SourceData.SourceData = updatedSourceData
 
-				If Not String.IsNullOrWhiteSpace(Settings.ServiceURL) Then
-					RaiseEvent OnMessage(New Status(String.Format("Using supplied ServiceURL {0}", Settings.ServiceURL)))
-				ElseIf Not String.IsNullOrWhiteSpace(WinEDDS.Config.AppConfigWebServiceURL) Then
-					RaiseEvent OnMessage(New Status(String.Format("Using application configuration ServiceURL {0}", WinEDDS.Config.AppConfigWebServiceURL)))
-					Settings.ServiceURL = WinEDDS.Config.AppConfigWebServiceURL
-				Else
-					RaiseEvent OnMessage(New Status(String.Format("Using supplied ServiceURL {0}", WinEDDS.Config.WebServiceURL)))
-					Settings.ServiceURL = WinEDDS.Config.WebServiceURL
-				End If
+				SelectServiceURL()
 
 				Dim process As WinEDDS.ImportExtension.DataReaderImageImporterProcess = New WinEDDS.ImportExtension.DataReaderImageImporterProcess(SourceData.SourceData, Settings.ServiceURL)
 
@@ -60,7 +52,6 @@ Namespace kCura.Relativity.DataReaderClient
 				RaiseEvent OnMessage(New Status("There was an error in your settings.  Import aborted."))
 			End If
 		End Sub
-
 #End Region
 
 #Region "Private Functions"
@@ -74,7 +65,7 @@ Namespace kCura.Relativity.DataReaderClient
 			'tempLoadFile.CaseInfo
 			'tempLoadFile.CaseDefaultPath
 			'tempLoadFile.DestinationFolderID
-			'These 2 will get set in ImageSettingsFactory in its constructor
+			'These 2 will get set in ImageSettingsFactory
 			'tempLoadFile.Credential = credential
 			'tempLoadFile.CookieContainer = _cookieContainer
 			tempLoadFile.ForProduction = imgSettings.ForProduction
@@ -175,6 +166,18 @@ Namespace kCura.Relativity.DataReaderClient
 #End Region
 
 #Region "Private Routines"
+		Protected Overrides Sub SelectServiceURL()
+			If Not String.IsNullOrWhiteSpace(Settings.ServiceURL) Then
+				RaiseEvent OnMessage(New Status(String.Format("Using supplied ServiceURL {0}", Settings.ServiceURL)))
+			ElseIf Not String.IsNullOrWhiteSpace(WinEDDS.Config.AppConfigWebServiceURL) Then
+				RaiseEvent OnMessage(New Status(String.Format("Using application configuration ServiceURL {0}", WinEDDS.Config.AppConfigWebServiceURL)))
+				Settings.ServiceURL = WinEDDS.Config.AppConfigWebServiceURL
+			Else
+				RaiseEvent OnMessage(New Status(String.Format("Using supplied ServiceURL {0}", WinEDDS.Config.WebServiceURL)))
+				Settings.ServiceURL = WinEDDS.Config.WebServiceURL
+			End If
+		End Sub
+
 		Private Sub ValidateDataSourceSettings()
 			'This expects the DataTable in SourceData to have already been set
 

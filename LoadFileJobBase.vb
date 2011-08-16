@@ -37,7 +37,7 @@
 #End Region
 
 #Region "Private Routines"
-		'
+		Protected MustOverride Sub SelectServiceURL()
 #End Region
 
 #Region "Properties"

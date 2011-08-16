@@ -23,6 +23,13 @@ Namespace kCura.Relativity.DataReaderClient
 		Public Property BulkLoadFileFieldDelimiter() As String
 
 		''' <summary>
+		''' If true, tries to use "Control Number" for the SelectedIdentifierField and
+		''' ignores SelectedIdentifierField. If false and SelectedIdentifierField is not
+		''' set, will use the default identifier field.
+		''' </summary>
+		Public Property ControlNumberCompatibilityMode() As Boolean
+
+		''' <summary>
 		''' Field name that contains ???
 		''' </summary>
 		Public Property FolderPathSourceFieldName() As String

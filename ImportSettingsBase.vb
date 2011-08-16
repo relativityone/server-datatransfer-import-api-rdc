@@ -50,6 +50,7 @@
 		''' <summary>
 		''' The key field that can only be set on Overwrite only
 		''' </summary>
+		''' <remarks>Also known as OverlayIdentifierFieldArtifactID; see ImportLoadFileProcess.AuditRun(Boolean,String)</remarks>
 		Public Property IdentityFieldId() As Int32
 
 		''' <summary>
@@ -59,6 +60,7 @@
 
 		''' <summary>
 		''' Field name to identify matching records when overlaying records
+		''' TODO: What is this meant for? Not used anywhere. (Maybe SelectedIdentifierFieldName?)
 		''' </summary>
 		Public Property OverlayIdentifierSourceFieldName() As String
 

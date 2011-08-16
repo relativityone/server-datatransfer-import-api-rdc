@@ -4,6 +4,7 @@ Namespace kCura.Relativity.DataReaderClient
 
 #Region "Private Variables"
 		Private _bulkLoadFileFieldDelimiter As String
+		Private ReadOnly _controlNumberFieldName As String
 		Private _docIDFieldCollection As WinEDDS.DocumentField()
 #End Region
 
@@ -12,6 +13,7 @@ Namespace kCura.Relativity.DataReaderClient
 		''' Creates a new job that can bulk insert a large amount of artifacts.
 		''' </summary>
 		Public Sub New()
+			_controlNumberFieldName = "control number"
 			_nativeSettings = New Settings
 			_nativeDataReader = New SourceIDataReader
 
@@ -29,22 +31,14 @@ Namespace kCura.Relativity.DataReaderClient
 			If IsSettingsValid() Then
 				RaiseEvent OnMessage(New Status("Getting source data from database"))
 
-				If Not String.IsNullOrWhiteSpace(Settings.ServiceURL) Then
-					RaiseEvent OnMessage(New Status(String.Format("Using supplied ServiceURL {0}", Settings.ServiceURL)))
-				ElseIf Not String.IsNullOrWhiteSpace(WinEDDS.Config.AppConfigWebServiceURL) Then
-					RaiseEvent OnMessage(New Status(String.Format("Using application configuration ServiceURL {0}", WinEDDS.Config.AppConfigWebServiceURL)))
-					Settings.ServiceURL = WinEDDS.Config.AppConfigWebServiceURL
-				Else
-					RaiseEvent OnMessage(New Status(String.Format("Using supplied ServiceURL {0}", WinEDDS.Config.WebServiceURL)))
-					Settings.ServiceURL = WinEDDS.Config.WebServiceURL
-				End If
+				SelectServiceURL()
 
 				Dim process As WinEDDS.ImportExtension.DataReaderImporterProcess = New WinEDDS.ImportExtension.DataReaderImporterProcess(SourceData.SourceData, Settings.ServiceURL)
 
 				_observer = process.ProcessObserver
 				_controller = process.ProcessController
 				RaiseEvent OnMessage(New Status("Updating settings"))
-				process.LoadFile = Me.CreateLoadFile(Settings)
+				process.LoadFile = CreateLoadFile(Settings)
 				process.BulkLoadFileFieldDelimiter = BulkLoadFileFieldDelimiter
 
 				RaiseEvent OnMessage(New Status("Executing"))
@@ -106,17 +100,16 @@ Namespace kCura.Relativity.DataReaderClient
 			tempLoadFile.SelectedCasePath = loadFileTemp.SelectedCasePath
 			'
 			'
-			'TODO: RaiseEvent if we fall back to default??
 			'
-			tempLoadFile.SelectedIdentifierField = loadFileTemp.SelectedIdentifierField
-			If Not String.IsNullOrWhiteSpace(clientSettings.SelectedIdentifierFieldName) Then
-				Dim tempIDField As WinEDDS.DocumentField = GetIdentifierFieldFromName(_docIDFieldCollection, clientSettings.SelectedIdentifierFieldName)
-
-				If Not tempIDField Is Nothing Then
-					tempLoadFile.SelectedIdentifierField = tempIDField
-					RaiseEvent OnMessage(New Status(String.Format("Selected identifier {0} found", clientSettings.SelectedIdentifierFieldName)))
-				End If
+			Dim tempIDField As WinEDDS.DocumentField = SelectIdentifier(_docIDFieldCollection, clientSettings.ControlNumberCompatibilityMode, _controlNumberFieldName, clientSettings.SelectedIdentifierFieldName)
+			If tempIDField Is Nothing Then
+				RaiseEvent OnMessage(New Status(String.Format("Using default identifier field {0}", loadFileTemp.SelectedIdentifierField.FieldName)))
+				tempIDField = loadFileTemp.SelectedIdentifierField
 			End If
+			'
+			'
+			'
+			tempLoadFile.SelectedIdentifierField = tempIDField
 			'
 			tempLoadFile.SendEmailOnLoadCompletion = clientSettings.SendEmailOnLoadCompletion
 			tempLoadFile.SourceFileEncoding = loadFileTemp.SourceFileEncoding
@@ -125,15 +118,42 @@ Namespace kCura.Relativity.DataReaderClient
 			Return tempLoadFile
 		End Function
 
+		Private Function SelectIdentifier(ByVal docFieldCollection As WinEDDS.DocumentField(), ByVal controlNumCompatEnabled As Boolean, ByVal compatFieldName As String, ByVal desiredNonCompatField As String) As WinEDDS.DocumentField
+			Dim tempIDField As WinEDDS.DocumentField = Nothing
+
+			If controlNumCompatEnabled = True Then
+				tempIDField = GetIdentifierFieldFromName(docFieldCollection, compatFieldName)
+			End If
+
+			If tempIDField Is Nothing Then
+				If controlNumCompatEnabled = True Then
+					RaiseEvent OnMessage(New Status(String.Format("Unable to find compatibility identifier field {0}", compatFieldName)))
+				End If
+
+				tempIDField = GetIdentifierFieldFromName(docFieldCollection, desiredNonCompatField)
+				If Not tempIDField Is Nothing Then
+					RaiseEvent OnMessage(New Status(String.Format("Using selected identifier field {0}", desiredNonCompatField)))
+				Else
+					RaiseEvent OnMessage(New Status(String.Format("Unable to find selected identifier field {0}", desiredNonCompatField)))
+				End If
+			Else
+				RaiseEvent OnMessage(New Status(String.Format("Using compatibility identifier {0}", compatFieldName)))
+			End If
+
+			Return tempIDField
+		End Function
+
 		Private Function GetIdentifierFieldFromName(ByVal docIDFieldHayStack As WinEDDS.DocumentField(), ByVal docFieldNeedle As String) As WinEDDS.DocumentField
 			Dim returnField As WinEDDS.DocumentField = Nothing
 
-			For Each identifierField As WinEDDS.DocumentField In docIDFieldHayStack
-				If identifierField.FieldName.Equals(docFieldNeedle, StringComparison.CurrentCultureIgnoreCase) Then
-					returnField = identifierField
-					Exit For
-				End If
-			Next
+			If Not docFieldNeedle Is Nothing Then
+				For Each identifierField As WinEDDS.DocumentField In docIDFieldHayStack
+					If identifierField.FieldName.Equals(docFieldNeedle, StringComparison.CurrentCultureIgnoreCase) Then
+						returnField = identifierField
+						Exit For
+					End If
+				Next
+			End If
 
 			Return returnField
 		End Function
@@ -142,7 +162,7 @@ Namespace kCura.Relativity.DataReaderClient
 			Try
 				ValidateRelativitySettings()
 				ValidateDelimiterSettings()
-				ValidateOverwriteModeSettings()
+				'ValidateOverwriteModeSettings()
 				ValidateNativeFileSettings()
 				ValidateExtractedTextSettings()
 			Catch ex As Exception
@@ -233,6 +253,19 @@ Namespace kCura.Relativity.DataReaderClient
 			MyBase.Finalize()
 		End Sub
 
+		'TODO: This should be in the base class--but with
+		Protected Overrides Sub SelectServiceURL()
+			If Not String.IsNullOrWhiteSpace(Settings.ServiceURL) Then
+				RaiseEvent OnMessage(New Status(String.Format("Using supplied ServiceURL {0}", Settings.ServiceURL)))
+			ElseIf Not String.IsNullOrWhiteSpace(WinEDDS.Config.AppConfigWebServiceURL) Then
+				RaiseEvent OnMessage(New Status(String.Format("Using application configuration ServiceURL {0}", WinEDDS.Config.AppConfigWebServiceURL)))
+				Settings.ServiceURL = WinEDDS.Config.AppConfigWebServiceURL
+			Else
+				RaiseEvent OnMessage(New Status(String.Format("Using supplied ServiceURL {0}", WinEDDS.Config.WebServiceURL)))
+				Settings.ServiceURL = WinEDDS.Config.WebServiceURL
+			End If
+		End Sub
+
 		Private Sub ValidateDelimiterSettings()
 			If String.IsNullOrEmpty(Settings.MultiValueDelimiter) Then
 				Throw New Exception("MultiValueDelimiter not set")
@@ -265,13 +298,13 @@ Namespace kCura.Relativity.DataReaderClient
 			End If
 		End Sub
 
-		Private Sub ValidateOverwriteModeSettings()
-			If Settings.OverwriteMode = OverwriteModeEnum.Overlay Then
-				If Settings.OverlayIdentifierSourceFieldName Is Nothing OrElse Settings.OverlayIdentifierSourceFieldName.Trim = String.Empty Then
-					Throw New Exception("When Overwrite Mode is set to Overlay, Overlay Identifier Field must be set.")
-				End If
-			End If
-		End Sub
+		'Private Sub ValidateOverwriteModeSettings()
+		'	If Settings.OverwriteMode = OverwriteModeEnum.Overlay Then
+		'		If Settings.OverlayIdentifierSourceFieldName Is Nothing OrElse Settings.OverlayIdentifierSourceFieldName.Trim = String.Empty Then
+		'			Throw New Exception("When Overwrite Mode is set to Overlay, Overlay Identifier Field must be set.")
+		'		End If
+		'	End If
+		'End Sub
 
 		Private Sub ValidateRelativitySettings()
 			If Settings.RelativityUsername Is Nothing OrElse Settings.RelativityUsername = String.Empty Then
