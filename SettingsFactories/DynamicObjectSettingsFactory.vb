@@ -54,6 +54,7 @@ Namespace kCura.WinEDDS
 			Me.CaseArtifactID = caseArtifactID
 			_loadFile.SelectedCasePath = _loadFile.CaseInfo.DocumentPath
 			_loadFile.SelectedIdentifierField = _docFields.IdentifierFields(0)
+			_loadFile.StartLineNumber = 0
 		End Sub
 
 
@@ -216,6 +217,11 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
+		Public WriteOnly Property StartLineNumber() As Int64
+			Set(value As Int64)
+				_loadFile.StartLineNumber = value
+			End Set
+		End Property
 
 		Public Overrides Sub Save(ByVal location As String)
 			MyBase.SaveObject(location, _loadFile)
@@ -224,4 +230,3 @@ Namespace kCura.WinEDDS
 	End Class
 
 End Namespace
-

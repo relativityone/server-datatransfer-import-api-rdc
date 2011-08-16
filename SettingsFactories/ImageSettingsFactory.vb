@@ -39,6 +39,7 @@ Namespace kCura.WinEDDS
 			_loadFile.BeginBatesFieldArtifactID = 0
 			_loadFile.ControlKeyField = ""
 			_loadFile.SelectedCasePath = _loadFile.CaseInfo.DocumentPath
+			_loadFile.StartLineNumber = 0
 		End Sub
 
 		Public Function ToLoadFile() As ImageLoadFile
@@ -140,6 +141,18 @@ Namespace kCura.WinEDDS
 		Public WriteOnly Property SelectedDestinationRepository() As String
 			Set(ByVal value As String)
 				_loadFile.SelectedCasePath = value
+			End Set
+		End Property
+
+		Public WriteOnly Property StartLineNumber() As Int64
+			Set(ByVal value As Int64)
+				_loadFile.StartLineNumber = value
+			End Set
+		End Property
+
+		Public WriteOnly Property IdentityFieldId() As Int32
+			Set(value As Int32)
+				_loadFile.IdentityFieldId = value
 			End Set
 		End Property
 
