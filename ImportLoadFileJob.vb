@@ -33,7 +33,7 @@ Namespace kCura.Relativity.DataReaderClient
 
 				SelectServiceURL()
 
-				Dim process As WinEDDS.ImportExtension.DataReaderImporterProcess = New WinEDDS.ImportExtension.DataReaderImporterProcess(SourceData.SourceData, Settings.ServiceURL)
+				Dim process As WinEDDS.ImportExtension.DataReaderImporterProcess = New WinEDDS.ImportExtension.DataReaderImporterProcess(SourceData.SourceData, Settings.WebServiceURL)
 
 				_observer = process.ProcessObserver
 				_controller = process.ProcessController
@@ -187,7 +187,7 @@ Namespace kCura.Relativity.DataReaderClient
 		End Function
 
 		Private Function MapInputToSettingsFactory(ByVal clientSettings As Settings) As WinEDDS.DynamicObjectSettingsFactory
-			Dim dosf_settings As kCura.WinEDDS.DynamicObjectSettingsFactory = New kCura.WinEDDS.DynamicObjectSettingsFactory(clientSettings.RelativityUsername, clientSettings.RelativityPassword, clientSettings.CaseArtifactId, clientSettings.ArtifactTypeId, clientSettings.ServiceURL)
+			Dim dosf_settings As kCura.WinEDDS.DynamicObjectSettingsFactory = New kCura.WinEDDS.DynamicObjectSettingsFactory(clientSettings.RelativityUsername, clientSettings.RelativityPassword, clientSettings.CaseArtifactId, clientSettings.ArtifactTypeId, clientSettings.WebServiceURL)
 			_docIDFieldCollection = dosf_settings.DocumentIdentifierFields
 
 			With dosf_settings
@@ -269,14 +269,14 @@ Namespace kCura.Relativity.DataReaderClient
 
 		'TODO: This should be in the base class--but with
 		Protected Overrides Sub SelectServiceURL()
-			If Not String.IsNullOrWhiteSpace(Settings.ServiceURL) Then
-				RaiseEvent OnMessage(New Status(String.Format("Using supplied ServiceURL {0}", Settings.ServiceURL)))
+			If Not String.IsNullOrWhiteSpace(Settings.WebServiceURL) Then
+				RaiseEvent OnMessage(New Status(String.Format("Using supplied ServiceURL {0}", Settings.WebServiceURL)))
 			ElseIf Not String.IsNullOrWhiteSpace(WinEDDS.Config.AppConfigWebServiceURL) Then
 				RaiseEvent OnMessage(New Status(String.Format("Using application configuration ServiceURL {0}", WinEDDS.Config.AppConfigWebServiceURL)))
-				Settings.ServiceURL = WinEDDS.Config.AppConfigWebServiceURL
+				Settings.WebServiceURL = WinEDDS.Config.AppConfigWebServiceURL
 			Else
 				RaiseEvent OnMessage(New Status(String.Format("Using default ServiceURL {0}", WinEDDS.Config.WebServiceURL)))
-				Settings.ServiceURL = WinEDDS.Config.WebServiceURL
+				Settings.WebServiceURL = WinEDDS.Config.WebServiceURL
 			End If
 		End Sub
 

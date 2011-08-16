@@ -35,7 +35,7 @@ Namespace kCura.Relativity.DataReaderClient
 
 				SelectServiceURL()
 
-				Dim process As WinEDDS.ImportExtension.DataReaderImageImporterProcess = New WinEDDS.ImportExtension.DataReaderImageImporterProcess(SourceData.SourceData, Settings.ServiceURL)
+				Dim process As WinEDDS.ImportExtension.DataReaderImageImporterProcess = New WinEDDS.ImportExtension.DataReaderImageImporterProcess(SourceData.SourceData, Settings.WebServiceURL)
 
 				_observer = process.ProcessObserver
 
@@ -79,7 +79,7 @@ Namespace kCura.Relativity.DataReaderClient
 		Private Function GetDefaultIdentifierFieldID(ByVal credential As Net.NetworkCredential, ByVal caseArtifactID As Int32) As Int32
 			Dim retval As Int32
 			Dim tempFieldQuery As WinEDDS.Service.FieldQuery = New WinEDDS.Service.FieldQuery(credential, _cookieContainer)
-			tempFieldQuery.ServiceURL = Settings.ServiceURL
+			tempFieldQuery.ServiceURL = Settings.WebServiceURL
 
 			Dim dt As System.Data.DataTable = tempFieldQuery.RetrievePotentialBeginBatesFields(caseArtifactID).Tables(0)
 			For Each identifierRow As System.Data.DataRow In dt.Rows
@@ -114,7 +114,7 @@ Namespace kCura.Relativity.DataReaderClient
 
 		Private Function MapInputToSettingsFactory(ByVal imgSettings As ImageSettings) As WinEDDS.ImageSettingsFactory
 			Dim tempCredential As Net.NetworkCredential = New Net.NetworkCredential(imgSettings.RelativityUsername, imgSettings.RelativityPassword)
-			Dim tempImgSettings As WinEDDS.ImageSettingsFactory = New WinEDDS.ImageSettingsFactory(tempCredential, imgSettings.CaseArtifactId, imgSettings.ServiceURL)
+			Dim tempImgSettings As WinEDDS.ImageSettingsFactory = New WinEDDS.ImageSettingsFactory(tempCredential, imgSettings.CaseArtifactId, imgSettings.WebServiceURL)
 
 			With tempImgSettings
 				If imgSettings.BeginBatesFieldArtifactID > 0 Then
@@ -167,14 +167,14 @@ Namespace kCura.Relativity.DataReaderClient
 
 #Region "Private Routines"
 		Protected Overrides Sub SelectServiceURL()
-			If Not String.IsNullOrWhiteSpace(Settings.ServiceURL) Then
-				RaiseEvent OnMessage(New Status(String.Format("Using supplied ServiceURL {0}", Settings.ServiceURL)))
+			If Not String.IsNullOrWhiteSpace(Settings.WebServiceURL) Then
+				RaiseEvent OnMessage(New Status(String.Format("Using supplied ServiceURL {0}", Settings.WebServiceURL)))
 			ElseIf Not String.IsNullOrWhiteSpace(WinEDDS.Config.AppConfigWebServiceURL) Then
 				RaiseEvent OnMessage(New Status(String.Format("Using application configuration ServiceURL {0}", WinEDDS.Config.AppConfigWebServiceURL)))
-				Settings.ServiceURL = WinEDDS.Config.AppConfigWebServiceURL
+				Settings.WebServiceURL = WinEDDS.Config.AppConfigWebServiceURL
 			Else
 				RaiseEvent OnMessage(New Status(String.Format("Using supplied ServiceURL {0}", WinEDDS.Config.WebServiceURL)))
-				Settings.ServiceURL = WinEDDS.Config.WebServiceURL
+				Settings.WebServiceURL = WinEDDS.Config.WebServiceURL
 			End If
 		End Sub
 

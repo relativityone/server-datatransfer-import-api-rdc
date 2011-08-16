@@ -1,6 +1,6 @@
 ﻿Namespace kCura.Relativity.DataReaderClient
 	Public Class ImportSettingsBase
-		Private _serviceURL As String
+		Private _webServiceURL As String
 
 		Protected Sub New()
 			ExtractedTextFieldContainsFilePath = False
@@ -94,16 +94,16 @@
 		''' <summary>
 		''' URL of the web service to use
 		''' </summary>
-		Public Property ServiceURL() As String
+		Public Property WebServiceURL() As String
 			Get
-				Return _serviceURL
+				Return _webServiceURL
 			End Get
 			Set(value As String)
 				If Not value Is Nothing Then
 					If value.IndexOf("/", StringComparison.CurrentCulture) <> (value.Length - 1) Then
-						_serviceURL = String.Format("{0}/", value)
+						_webServiceURL = String.Format("{0}/", value)
 					Else
-						_serviceURL = value
+						_webServiceURL = value
 					End If
 				End If
 			End Set
