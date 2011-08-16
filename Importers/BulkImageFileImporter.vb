@@ -117,16 +117,9 @@ Namespace kCura.WinEDDS
 			End Get
 			Set(value As String)
 				_serviceURL = value
-				_docManager.ServiceURL = ServiceURL
-				_fieldQuery.ServiceURL = ServiceURL
-				_folderManager.ServiceURL = ServiceURL
-				_auditManager.ServiceURL = ServiceURL
-				_fileManager.ServiceURL = ServiceURL
-				_productionManager.ServiceURL = ServiceURL
-				_bulkImportManager.ServiceURL = ServiceURL
+				UpdateServiceURLs()
 			End Set
 		End Property
-
 #End Region
 
 #Region "Constructors"
@@ -136,6 +129,7 @@ Namespace kCura.WinEDDS
 
 		Public Sub New(ByVal folderID As Int32, ByVal args As ImageLoadFile, ByVal controller As kCura.Windows.Process.Controller, ByVal processID As Guid, ByVal doRetryLogic As Boolean, ByVal webURL As String)
 			MyBase.New()
+			'We set this instead of using the property to avoid null references
 			_serviceURL = webURL
 
 			InitManagers(args)
@@ -191,8 +185,17 @@ Namespace kCura.WinEDDS
 			_productionManager = New kCura.WinEDDS.Service.ProductionManager(args.Credential, args.CookieContainer)
 			_bulkImportManager = New kCura.WinEDDS.Service.BulkImportManager(args.Credential, args.CookieContainer)
 
-			'This is only done to force the ServiceURL property update for all of these Manager objects; see Me.ServiceURL()
-			ServiceURL = ServiceURL
+			UpdateServiceURLs()
+		End Sub
+
+		Private Sub UpdateServiceURLs()
+			_docManager.ServiceURL = ServiceURL
+			_fieldQuery.ServiceURL = ServiceURL
+			_folderManager.ServiceURL = ServiceURL
+			_auditManager.ServiceURL = ServiceURL
+			_fileManager.ServiceURL = ServiceURL
+			_productionManager.ServiceURL = ServiceURL
+			_bulkImportManager.ServiceURL = ServiceURL
 		End Sub
 #End Region
 
