@@ -49,6 +49,14 @@ Namespace kCura.WinEDDS.ImportExtension
 			If System.IO.Directory.Exists(tempdir) Then System.IO.Directory.Delete(tempdir, True)
 		End Sub
 
+		Protected Overrides Sub Execute(ByVal webServiceURL As String)
+			If String.IsNullOrEmpty(webServiceURL) Then
+				Throw New ArgumentNullException("webServiceURL")
+			End If
+
+			Me.Execute()
+		End Sub
+
 	End Class
 End Namespace
 
