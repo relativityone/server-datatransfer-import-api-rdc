@@ -30,6 +30,7 @@ Namespace kCura.WinEDDS.ImportExtension
 			Dim thisSettings As kCura.WinEDDS.ImportExtension.DataReaderLoadFile = DirectCast(_settings, kCura.WinEDDS.ImportExtension.DataReaderLoadFile)
 			_sourceReader = thisSettings.DataReader
 			Dim s As New kCura.WinEDDS.Service.FieldQuery(_settings.Credentials, _settings.CookieContainer)
+			s.ServiceURL = ServiceURL
 
 			Dim allFields As List(Of [String]) = New List(Of [String])()
 			For i As Integer = 0 To _sourceReader.FieldCount - 1
