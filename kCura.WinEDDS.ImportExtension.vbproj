@@ -192,9 +192,7 @@
     <Compile Include="DataReaderImporterProcess.vb">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="DataReaderLoadFile.vb">
-      <SubType>Code</SubType>
-    </Compile>
+    <Compile Include="DataReaderLoadFile.vb" />
     <Compile Include="DataReaderReader.vb">
       <SubType>Code</SubType>
     </Compile>
@@ -203,7 +201,6 @@
     </Compile>
     <Compile Include="ImageImport\DataReaderImageImporterProcess.vb" />
     <Compile Include="ImageImport\DataReaderImageImporter.vb" />
-    <Compile Include="ImageImport\DataReaderImageFile.vb" />
     <Compile Include="ImageImport\DataSource.vb" />
     <Compile Include="ImageImport\ImageDataTableReader.vb" />
   </ItemGroup>
