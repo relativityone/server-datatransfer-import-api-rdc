@@ -181,6 +181,7 @@ Namespace kCura.Windows.Process
 			Me._summaryOutput.Font = New System.Drawing.Font("Courier New", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
 			Me._summaryOutput.Location = New System.Drawing.Point(0, 0)
 			Me._summaryOutput.Multiline = True
+			Me._summaryOutput.ReadOnly = True
 			Me._summaryOutput.Name = "_summaryOutput"
 			Me._summaryOutput.ScrollBars = System.Windows.Forms.ScrollBars.Both
 			Me._summaryOutput.Size = New System.Drawing.Size(456, 202)
