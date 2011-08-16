@@ -4,6 +4,7 @@ Namespace kCura.Relativity.DataReaderClient
 
 #Region "Private Variables"
 		Private _bulkLoadFileFieldDelimiter As String
+		Private _docIDFieldCollection As WinEDDS.DocumentField()
 #End Region
 
 #Region "Constructors"
@@ -103,12 +104,38 @@ Namespace kCura.Relativity.DataReaderClient
 			tempLoadFile.QuoteDelimiter = loadFileTemp.QuoteDelimiter
 			tempLoadFile.RecordDelimiter = loadFileTemp.RecordDelimiter
 			tempLoadFile.SelectedCasePath = loadFileTemp.SelectedCasePath
+			'
+			'
+			'TODO: RaiseEvent if we fall back to default??
+			'
 			tempLoadFile.SelectedIdentifierField = loadFileTemp.SelectedIdentifierField
+			If Not String.IsNullOrWhiteSpace(clientSettings.SelectedIdentifierFieldName) Then
+				Dim tempIDField As WinEDDS.DocumentField = GetIdentifierFieldFromName(_docIDFieldCollection, clientSettings.SelectedIdentifierFieldName)
+
+				If Not tempIDField Is Nothing Then
+					tempLoadFile.SelectedIdentifierField = tempIDField
+					RaiseEvent OnMessage(New Status(String.Format("Selected identifier {0} found", clientSettings.SelectedIdentifierFieldName)))
+				End If
+			End If
+			'
 			tempLoadFile.SendEmailOnLoadCompletion = clientSettings.SendEmailOnLoadCompletion
 			tempLoadFile.SourceFileEncoding = loadFileTemp.SourceFileEncoding
 			tempLoadFile.StartLineNumber = loadFileTemp.StartLineNumber
 
 			Return tempLoadFile
+		End Function
+
+		Private Function GetIdentifierFieldFromName(ByVal docIDFieldHayStack As WinEDDS.DocumentField(), ByVal docFieldNeedle As String) As WinEDDS.DocumentField
+			Dim returnField As WinEDDS.DocumentField = Nothing
+
+			For Each identifierField As WinEDDS.DocumentField In docIDFieldHayStack
+				If identifierField.FieldName.Equals(docFieldNeedle, StringComparison.CurrentCultureIgnoreCase) Then
+					returnField = identifierField
+					Exit For
+				End If
+			Next
+
+			Return returnField
 		End Function
 
 		Protected Overrides Function IsSettingsValid() As Boolean
@@ -127,6 +154,7 @@ Namespace kCura.Relativity.DataReaderClient
 
 		Private Function MapInputToSettingsFactory(ByVal clientSettings As Settings) As WinEDDS.DynamicObjectSettingsFactory
 			Dim dosf_settings As kCura.WinEDDS.DynamicObjectSettingsFactory = New kCura.WinEDDS.DynamicObjectSettingsFactory(clientSettings.RelativityUsername, clientSettings.RelativityPassword, clientSettings.CaseArtifactId, clientSettings.ArtifactTypeId, clientSettings.ServiceURL)
+			_docIDFieldCollection = dosf_settings.DocumentIdentifierFields
 
 			With dosf_settings
 				.FirstLineContainsHeaders = False
