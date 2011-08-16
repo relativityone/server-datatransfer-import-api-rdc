@@ -7,7 +7,6 @@ Namespace kCura.Windows.Process
 		Private _processID As Guid
 
 		Protected MustOverride Sub Execute()
-		Protected MustOverride Sub Execute(ByVal webServiceURL As String)
 
 		Public ReadOnly Property ProcessObserver() As kCura.Windows.Process.ProcessObserver
 			Get
