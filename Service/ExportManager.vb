@@ -21,7 +21,7 @@
 			Me.Timeout = Settings.DefaultTimeOut
 		End Sub
 
-		Public Property ServiceURL As String
+		Public Overridable Property ServiceURL As String
 			Get
 				Return Me.Url
 			End Get

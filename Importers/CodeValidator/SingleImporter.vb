@@ -4,11 +4,7 @@ Namespace kCura.WinEDDS.CodeValidator
 		Private _createdCodeCount As Int32 = 0
 
 		Public Sub New(ByVal caseInfo As Relativity.CaseInfo, ByVal codeManager As kCura.WinEDDS.Service.CodeManager)
-			MyBase.New(caseInfo, codeManager, kCura.WinEDDS.Config.WebServiceURL)
-		End Sub
-
-		Public Sub New(ByVal caseInfo As Relativity.CaseInfo, ByVal codeManager As kCura.WinEDDS.Service.CodeManager, ByVal webURL As String)
-			MyBase.New(caseInfo, codeManager, webURL)
+			MyBase.New(caseInfo, codeManager)
 		End Sub
 
 		Protected Overrides ReadOnly Property DoRealtimeDatabaseLookup() As Boolean

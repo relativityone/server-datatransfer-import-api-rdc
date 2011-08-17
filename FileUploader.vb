@@ -53,7 +53,7 @@ Namespace kCura.WinEDDS
 			SetType(_destinationFolderPath)
 		End Sub
 
-		Public Property ServiceURL As String
+		Public Overridable Property ServiceURL As String
 			Get
 				Return _gateway.ServiceURL
 			End Get

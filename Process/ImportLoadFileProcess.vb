@@ -14,7 +14,7 @@ Namespace kCura.WinEDDS
 		Private _uploadModeText As String = Nothing
 		Private _serviceURL As String
 
-		Public Property ServiceURL As String
+		Public Overridable Property ServiceURL As String
 			Get
 				Return _serviceURL
 			End Get

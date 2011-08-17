@@ -50,7 +50,7 @@ Namespace kCura.WinEDDS
 		Private _serviceURL As String
 #End Region
 
-		Public Property ServiceURL As String
+		Public Overridable Property ServiceURL As String
 			Get
 				Return _serviceURL
 			End Get
