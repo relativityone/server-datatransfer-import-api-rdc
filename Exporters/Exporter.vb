@@ -92,9 +92,9 @@ Namespace kCura.WinEDDS
 				_downloadHandler.ServiceURL = value
 				_productionManager.ServiceURL = value
 
-				If Not _volumeManager Is Nothing Then
-					_volumeManager.ServiceURL = value
-				End If
+				'If Not _volumeManager Is Nothing Then
+				'	_volumeManager.ServiceURL = value
+				'End If
 				If Not _fullTextDownloader Is Nothing Then
 					_fullTextDownloader.ServiceURL = value
 				End If
