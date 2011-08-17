@@ -342,10 +342,11 @@ Namespace kCura.WinEDDS
 			Try
 				PushImageBatch(bulkLoadFilePath)
 			Catch ex As Exception
-				If BatchResizeEnabled AndAlso ExceptionIsTimeoutRelated(ex) Then
+				If BatchResizeEnabled AndAlso ExceptionIsTimeoutRelated(ex) AndAlso _continue Then
 					Dim originalBatchSize As Int32 = Me.ImportBatchSize
 					LowerBatchLimits()
 					Me.RaiseWarningAndPause(ex, kCura.WinEDDS.Config.WaitTimeBetweenRetryAttempts)
+					If Not _continue Then Throw 'after the pause
 					Me.LowerBatchSizeAndRetry(bulkLoadFilePath, originalBatchSize)
 				Else
 					Throw
@@ -400,9 +401,10 @@ Namespace kCura.WinEDDS
 					recordsProcessed += i
 					charactersSuccessfullyProcessed += charactersProcessed
 				Catch ex As Exception
-					If tries < NumberOfRetries() AndAlso BatchResizeEnabled AndAlso ExceptionIsTimeoutRelated(ex) Then
+					If tries < NumberOfRetries() AndAlso BatchResizeEnabled AndAlso ExceptionIsTimeoutRelated(ex) AndAlso _continue Then
 						LowerBatchLimits()
 						Me.RaiseWarningAndPause(ex, kCura.WinEDDS.Config.WaitTimeBetweenRetryAttempts)
+						If Not _continue Then Throw 'after the pause
 						tries += 1
 						hasReachedEof = False
 					Else
