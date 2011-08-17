@@ -439,7 +439,7 @@ Public Class ExportForm
 		'
 		'_columnSelecter
 		'
-		Me._columnSelecter.AlternateRowColors = False
+		Me._columnSelecter.AlternateRowColors = True
 		Me._columnSelecter.KeepButtonsCentered = False
 		Me._columnSelecter.LeftOrderControlsVisible = False
 		Me._columnSelecter.Location = New System.Drawing.Point(12, 64)
@@ -1341,6 +1341,7 @@ Public Class ExportForm
 			Else
 				LoadExportFile(newFile)
 				_exportFile = newFile
+				_columnSelecter.EnsureHorizontalScrollbars()
 			End If
 		End If
 	End Sub
@@ -1626,6 +1627,7 @@ Public Class ExportForm
 
 	Private Sub ExportProduction_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles MyBase.Load
 		HandleLoad(sender, e, kCura.EDDS.WinForm.Config.ExportVolumeDigitPadding, kCura.EDDS.WinForm.Config.ExportSubdirectoryDigitPadding)
+		_columnSelecter.EnsureHorizontalScrollbars()
 	End Sub
 
 	Public Sub HandleLoad(ByVal sender As Object, ByVal e As System.EventArgs, ByVal volumeDigitPadding As Int32, ByVal exportSubdirectoryDigitPadding As Int32)
