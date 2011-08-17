@@ -1,3 +1,4 @@
+Imports System.Linq
 Public Class ExportForm
 	Inherits System.Windows.Forms.Form
 	'Implements kCura.EDDS.WinForm.IExportForm
@@ -301,12 +302,30 @@ Public Class ExportForm
 		'
 		'Label5
 		'
-		Me.Label5.Location = New System.Drawing.Point(20, 40)
+		Me.Label5.Location = New System.Drawing.Point(20, 18)
 		Me.Label5.Name = "Label5"
 		Me.Label5.Size = New System.Drawing.Size(96, 21)
 		Me.Label5.TabIndex = 18
 		Me.Label5.Text = "Named after:"
 		Me.Label5.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+		'
+		'_nativeFileNameSource
+		'
+		Me._nativeFileNameSource.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+		Me._nativeFileNameSource.Items.AddRange(New Object() {"Select...", "Identifier", "Begin bates"})
+		Me._nativeFileNameSource.Location = New System.Drawing.Point(116, 18)
+		Me._nativeFileNameSource.Name = "_nativeFileNameSource"
+		Me._nativeFileNameSource.Size = New System.Drawing.Size(176, 21)
+		Me._nativeFileNameSource.TabIndex = 19
+		Me._nativeFileNameSource.Visible = False
+		'
+		'_appendOriginalFilename
+		'
+		Me._appendOriginalFilename.Location = New System.Drawing.Point(12, 44)
+		Me._appendOriginalFilename.Name = "_appendOriginalFilename"
+		Me._appendOriginalFilename.Size = New System.Drawing.Size(148, 16)
+		Me._appendOriginalFilename.TabIndex = 17
+		Me._appendOriginalFilename.Text = "Append original filename"
 		'
 		'_overwriteButton
 		'
@@ -333,14 +352,6 @@ Public Class ExportForm
 		Me._folderPath.TabIndex = 5
 		Me._folderPath.Text = "Select a folder ..."
 		'
-		'_appendOriginalFilename
-		'
-		Me._appendOriginalFilename.Location = New System.Drawing.Point(12, 20)
-		Me._appendOriginalFilename.Name = "_appendOriginalFilename"
-		Me._appendOriginalFilename.Size = New System.Drawing.Size(148, 16)
-		Me._appendOriginalFilename.TabIndex = 17
-		Me._appendOriginalFilename.Text = "Append original filename"
-		'
 		'GroupBox3
 		'
 		Me.GroupBox3.Controls.Add(Me._overwriteCheckBox)
@@ -352,16 +363,6 @@ Public Class ExportForm
 		Me.GroupBox3.TabIndex = 11
 		Me.GroupBox3.TabStop = False
 		Me.GroupBox3.Text = "Export Location"
-		'
-		'_nativeFileNameSource
-		'
-		Me._nativeFileNameSource.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
-		Me._nativeFileNameSource.Items.AddRange(New Object() {"Select...", "Identifier", "Begin bates"})
-		Me._nativeFileNameSource.Location = New System.Drawing.Point(116, 40)
-		Me._nativeFileNameSource.Name = "_nativeFileNameSource"
-		Me._nativeFileNameSource.Size = New System.Drawing.Size(176, 21)
-		Me._nativeFileNameSource.TabIndex = 19
-		Me._nativeFileNameSource.Visible = False
 		'
 		'TabControl1
 		'
@@ -438,7 +439,7 @@ Public Class ExportForm
 		'
 		'_columnSelecter
 		'
-		Me._columnSelecter.AlternateRowColors = False
+		Me._columnSelecter.AlternateRowColors = True
 		Me._columnSelecter.KeepButtonsCentered = False
 		Me._columnSelecter.LeftOrderControlsVisible = False
 		Me._columnSelecter.Location = New System.Drawing.Point(12, 64)
@@ -1125,6 +1126,7 @@ Public Class ExportForm
 	Private _allExportableFields As Relativity.ViewFieldInfo
 	Private _dataSourceIsSet As Boolean = False
 	Private _objectTypeName As String = ""
+	Private _isLoadingExport As Boolean = False
 	Public Property Application() As kCura.EDDS.WinForm.Application
 		Get
 			Return _application
@@ -1245,6 +1247,8 @@ Public Class ExportForm
 	Public Function PopulateExportFile(ByVal abstractExportForm As ExportForm, ByVal validateForm As Boolean) As Boolean
 		Dim d As DocumentFieldCollection = _application.CurrentFields(_exportFile.ArtifactTypeID, True)
 		Dim retval As Boolean = True
+		_exportFile.ObjectTypeName = _application.GetObjectTypeName(_exportFile.ArtifactTypeID)
+
 		If validateForm AndAlso Not Me.IsValid(abstractExportForm) Then Return False
 		If Not _application.IsConnected(_exportFile.CaseArtifactID, 10) Then Return False
 		_exportFile.FolderPath = _folderPath.Text
@@ -1332,13 +1336,18 @@ Public Class ExportForm
 		If _loadExportSettingsDialog.ShowDialog() = System.Windows.Forms.DialogResult.OK Then
 			Dim settings As String = kCura.Utility.File.ReadFileAsString(_loadExportSettingsDialog.FileName)
 			Dim newFile As ExportFile = New kCura.WinEDDS.ExportFileSerializer().DeserializeExportFile(_exportFile, settings)
-			_exportFile = newFile
-
-			LoadExportFile(_exportFile)
+			If TypeOf newFile Is kCura.WinEDDS.ErrorExportFile Then
+				MsgBox(DirectCast(newFile, kCura.WinEDDS.ErrorExportFile).ErrorMessage, MsgBoxStyle.Exclamation)
+			Else
+				LoadExportFile(newFile)
+				_exportFile = newFile
+				_columnSelecter.EnsureHorizontalScrollbars()
+			End If
 		End If
 	End Sub
 
 	Public Sub LoadExportFile(ByVal ef As kCura.WinEDDS.ExportFile)
+		_isLoadingExport = True
 		If _exportNativeFiles.Checked <> ef.ExportNative Then _exportNativeFiles.Checked = ef.ExportNative
 		If _exportImages.Checked <> ef.ExportImages Then _exportImages.Checked = ef.ExportImages
 		If _overwriteCheckBox.Checked <> ef.Overwrite Then _overwriteCheckBox.Checked = ef.Overwrite
@@ -1365,6 +1374,7 @@ Public Class ExportForm
 				_useAbsolutePaths.Checked = True
 			Case kCura.WinEDDS.ExportFile.ExportedFilePathType.Prefix
 				_usePrefix.Checked = True
+				_prefixText.Text = ef.FilePrefix
 			Case kCura.WinEDDS.ExportFile.ExportedFilePathType.Relative
 				_useRelativePaths.Checked = True
 		End Select
@@ -1395,30 +1405,28 @@ Public Class ExportForm
 			End Select
 		End If
 
+		If ef.ExportImages Then
+			If ef.LogFileFormat.HasValue Then
+				_imageFileFormat.SelectedValue = ef.LogFileFormat.Value
+			Else
+				_imageFileFormat.SelectedIndex = 0
+			End If
+			Me.SetSelectedImageType(ef.TypeOfImage)
+		End If
+		_dataFileEncoding.InitializeDropdown()
 		_dataFileEncoding.SelectedEncoding = ef.LoadFileEncoding
+		_textFileEncoding.InitializeDropdown()
 		_textFileEncoding.SelectedEncoding = ef.TextFileEncoding
-
 		_recordDelimiter.SelectedValue = ef.RecordDelimiter
 		_quoteDelimiter.SelectedValue = ef.QuoteDelimiter
 		_newLineDelimiter.SelectedValue = ef.NewlineDelimiter
 		_nestedValueDelimiter.SelectedValue = ef.NestedValueDelimiter
 		_multiRecordDelimiter.SelectedValue = ef.MultiRecordDelimiter
-
 		_exportFullTextAsFile.Checked = ef.ExportFullTextAsFile
 
-		_potentialTextFields.SelectedItem = ef.SelectedTextField
+
+
 		_exportMulticodeFieldsAsNested.Checked = ef.MulticodesAsNested
-
-		'If ef.DataTable IsNot Nothing AndAlso ef.DataTable.Rows.Count > 0 Then
-		'	Dim filterArtifactId As Int32 = CInt(ef.DataTable.Rows(0)(0).ToString)
-		'	If ValueContainsInDropDown(_filters, filterArtifactId) Then
-		'		_filters.SelectedValue = filterArtifactId
-		'	End If
-		'End If
-
-		If ValueContainsInDropDown(_filters, ef.ArtifactID) Then
-			_filters.SelectedValue = ef.ArtifactID
-		End If
 
 		If ef.AllExportableFields IsNot Nothing Then
 			_columnSelecter.ClearSelection(kCura.Windows.Forms.ListBoxLocation.Left)
@@ -1427,28 +1435,50 @@ Public Class ExportForm
 			_columnSelecter.LeftListBoxItems.AddRange(ef.AllExportableFields)
 		End If
 
+		Dim selectedFilterId As Int32? = Me.GetSelectedFilterId(ef)
+		If _exportFile.TypeOfExport = ef.TypeOfExport AndAlso selectedFilterId.HasValue AndAlso Me.ValueContainsInDropDown(_filters, selectedFilterId.Value) Then
+			_filters.SelectedValue = selectedFilterId
+		End If
 
 		If ef.SelectedViewFields IsNot Nothing Then
 
 			Dim itemsToRemoveFromLeftListBox As New System.Collections.Generic.List(Of kCura.WinEDDS.ViewFieldInfo)()
 			_columnSelecter.ClearSelection(kCura.Windows.Forms.ListBoxLocation.Right)
 			_columnSelecter.RightListBoxItems.Clear()
-			For Each item As kCura.WinEDDS.ViewFieldInfo In _columnSelecter.LeftListBoxItems
-				For Each vfi As kCura.WinEDDS.ViewFieldInfo In ef.SelectedViewFields
-					If item.AvfId = vfi.AvfId Then
-						itemsToRemoveFromLeftListBox.Add(item)
-						_columnSelecter.RightListBoxItems.Add(vfi)
+			For Each viewFieldFromKwx As kCura.WinEDDS.ViewFieldInfo In ef.SelectedViewFields
+				For Each leftListBoxViewField As kCura.WinEDDS.ViewFieldInfo In _columnSelecter.LeftListBoxItems
+					If leftListBoxViewField.DisplayName.Equals(viewFieldFromKwx.DisplayName, StringComparison.InvariantCulture) Then
+						itemsToRemoveFromLeftListBox.Add(leftListBoxViewField)
+						_columnSelecter.RightListBoxItems.Add(leftListBoxViewField)
 					End If
 				Next
 			Next
+
+			If _columnSelecter.RightListBoxItems.Count = 0 Then
+				_metadataGroup.Enabled = False
+			End If
+
+			ManagePotentialTextFields()
+
+			If ef.SelectedTextField IsNot Nothing Then
+				For i As Int32 = 0 To _potentialTextFields.Items.Count - 1
+					Dim loadedVfi As kCura.WinEDDS.ViewFieldInfo = DirectCast(_potentialTextFields.Items(i), kCura.WinEDDS.ViewFieldInfo)
+					If loadedVfi.DisplayName.Equals(ef.SelectedTextField.DisplayName, StringComparison.InvariantCulture) Then
+						_potentialTextFields.SelectedIndex = i
+						Exit For
+					End If
+				Next
+			End If
+
 
 			For Each vfi As kCura.WinEDDS.ViewFieldInfo In itemsToRemoveFromLeftListBox
 				_columnSelecter.LeftListBoxItems.Remove(vfi)
 			Next
 		End If
 
-		If ef.StartAtDocumentNumber > _startExportAtDocumentNumber.Minimum AndAlso ef.StartAtDocumentNumber < _startExportAtDocumentNumber.Maximum Then
-			_startExportAtDocumentNumber.Value = ef.StartAtDocumentNumber + 1
+		Dim trueStartExportAtDocumentNumber As Int32 = ef.StartAtDocumentNumber + 1
+		If trueStartExportAtDocumentNumber >= _startExportAtDocumentNumber.Minimum AndAlso trueStartExportAtDocumentNumber <= _startExportAtDocumentNumber.Maximum Then
+			_startExportAtDocumentNumber.Value = trueStartExportAtDocumentNumber
 		End If
 
 		If ef.ImagePrecedence IsNot Nothing AndAlso ef.ImagePrecedence.Length > 0 Then
@@ -1471,6 +1501,9 @@ Public Class ExportForm
 			'original is already there
 		End If
 
+		_isLoadingExport = False
+
+
 	End Sub
 
 	Private Function ValueContainsInDropDown(ByVal dropDown As ComboBox, ByVal value As Int32) As Boolean
@@ -1483,6 +1516,16 @@ Public Class ExportForm
 			End If
 		Next
 		Return retVal
+	End Function
+	Private Function GetSelectedFilterId(ByVal ef As ExportFile) As Int32?
+		Dim retval As New Int32?
+		Select Case ef.TypeOfExport
+			Case kCura.WinEDDS.ExportFile.ExportType.AncestorSearch, kCura.WinEDDS.ExportFile.ExportType.ParentSearch
+				retval = ef.ViewID
+			Case Else
+				retval = ef.ArtifactID
+		End Select
+		Return retval
 	End Function
 
 	Private Sub RunMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles RunMenu.Click
@@ -1537,6 +1580,20 @@ Public Class ExportForm
 		End Select
 	End Function
 
+	Private Sub SetSelectedImageType(ByVal imageType As ExportFile.ImageType?)
+		If Not imageType.HasValue Then
+			_imageTypeDropdown.SelectedIndex = 0
+		ElseIf imageType.Value = kCura.WinEDDS.ExportFile.ImageType.SinglePage Then
+			_imageTypeDropdown.SelectedIndex = 1
+		ElseIf imageType.Value = kCura.WinEDDS.ExportFile.ImageType.MultiPageTiff Then
+			_imageTypeDropdown.SelectedIndex = 2
+		ElseIf imageType.Value = kCura.WinEDDS.ExportFile.ImageType.Pdf Then
+			_imageTypeDropdown.SelectedIndex = 3
+		Else
+			Throw New ArgumentException("Unsupported image type: " & imageType.Value.ToString)
+		End If
+	End Sub
+
 	Private Function GetDatasourceToolTip() As String
 		Select Case ExportFile.TypeOfExport
 			Case ExportFile.ExportType.ArtifactSearch
@@ -1570,6 +1627,7 @@ Public Class ExportForm
 
 	Private Sub ExportProduction_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles MyBase.Load
 		HandleLoad(sender, e, kCura.EDDS.WinForm.Config.ExportVolumeDigitPadding, kCura.EDDS.WinForm.Config.ExportSubdirectoryDigitPadding)
+		_columnSelecter.EnsureHorizontalScrollbars()
 	End Sub
 
 	Public Sub HandleLoad(ByVal sender As Object, ByVal e As System.EventArgs, ByVal volumeDigitPadding As Int32, ByVal exportSubdirectoryDigitPadding As Int32)
@@ -1638,7 +1696,7 @@ Public Class ExportForm
 	End Sub
 
 	Private Sub _searchList_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _filters.SelectedIndexChanged
-		If _dataSourceIsSet AndAlso Not _filters.SelectedItem Is Nothing Then Me.InitializeColumnSelecter()
+		If Not _isLoadingExport AndAlso _dataSourceIsSet AndAlso Not _filters.SelectedItem Is Nothing Then Me.InitializeColumnSelecter()
 	End Sub
 
 	Private Sub InitializeFileControls()
@@ -1871,7 +1929,7 @@ Public Class ExportForm
 				End If
 			Next
 		End If
-		If Not isSelectedItemSet AndAlso _potentialTextFields.Items.Count > 0 Then
+		If Not isSelectedItemSet AndAlso _potentialTextFields.Items.Count > 0 And Not _isLoadingExport Then
 			For i As Int32 = 0 To _potentialTextFields.Items.Count - 1
 				If DirectCast(_potentialTextFields.Items(i), ViewFieldInfo).Category = Relativity.FieldCategory.FullText Then
 					_potentialTextFields.SelectedIndex = i
@@ -1881,7 +1939,7 @@ Public Class ExportForm
 			Next
 		End If
 		If Not isSelectedItemSet AndAlso _potentialTextFields.Items.Count > 0 Then
-			_potentialTextFields.SelectedIndex = 0
+			_potentialTextFields.SelectedIndex = If(_isLoadingExport, -1, 0) 'dont select first available on load
 		End If
 	End Sub
 
