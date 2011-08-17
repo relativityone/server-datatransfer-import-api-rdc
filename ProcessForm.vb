@@ -182,6 +182,7 @@ Namespace kCura.Windows.Process
 			Me._summaryOutput.Location = New System.Drawing.Point(0, 0)
 			Me._summaryOutput.Multiline = True
 			Me._summaryOutput.ReadOnly = True
+			Me._summaryOutput.BackColor = Color.White
 			Me._summaryOutput.Name = "_summaryOutput"
 			Me._summaryOutput.ScrollBars = System.Windows.Forms.ScrollBars.Both
 			Me._summaryOutput.Size = New System.Drawing.Size(456, 202)
