@@ -769,7 +769,7 @@ Namespace kCura.WinEDDS
 			Dim charactersSuccessfullyProcessed As Int64 = 0
 			Dim hasReachedEof As Boolean = False
 			Dim tries As Int32 = 1 'already starts at 1 retry
-			While totalRecords > recordsProcessed AndAlso Not hasReachedEof
+			While totalRecords > recordsProcessed AndAlso Not hasReachedEof AndAlso _continue
 				Dim i As Int32 = 0
 				Dim charactersProcessed As Int64 = 0
 				Using sr As New System.IO.StreamReader(outputNativePath, System.Text.Encoding.Unicode), sw As New System.IO.StreamWriter(nativeTempLocation, False, System.Text.Encoding.Unicode)
