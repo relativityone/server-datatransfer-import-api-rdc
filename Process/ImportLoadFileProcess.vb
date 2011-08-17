@@ -220,7 +220,7 @@ Namespace kCura.WinEDDS
 					message.Append("Error accessing load file - retrying")
 					If e.WaitTime > 0 Then message.Append(" in " & e.WaitTime & " seconds")
 					message.Append(vbNewLine)
-					message.Append("Actual error: " & e.Exception.ToString)
+					message.Append("Actual error: " & e.Exception.Message)
 			End Select
 			Me.ProcessObserver.RaiseWarningEvent((e.CurrentLineNumber + 1).ToString, message.ToString)
 			System.Threading.Monitor.Exit(Me.ProcessObserver)

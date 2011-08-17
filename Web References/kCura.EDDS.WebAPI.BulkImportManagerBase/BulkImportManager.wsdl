@@ -47,6 +47,7 @@
           <s:element minOccurs="0" maxOccurs="1" name="ExceptionMessage" type="s:string" />
           <s:element minOccurs="0" maxOccurs="1" name="ExceptionTrace" type="s:string" />
           <s:element minOccurs="0" maxOccurs="1" name="ExceptionFullText" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="unbounded" name="Details" type="s:string" />
         </s:sequence>
       </s:complexType>
       <s:element name="BulkImportImageWithRange">

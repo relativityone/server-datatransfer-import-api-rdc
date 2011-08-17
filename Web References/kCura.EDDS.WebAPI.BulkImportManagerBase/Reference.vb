@@ -663,6 +663,8 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
         
         Private exceptionFullTextField As String
         
+        Private detailsField() As String
+        
         '''<remarks/>
         Public Property ExceptionType() As String
             Get
@@ -700,6 +702,17 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
             End Get
             Set
                 Me.exceptionFullTextField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        <System.Xml.Serialization.XmlElementAttribute("Details")>  _
+        Public Property Details() As String()
+            Get
+                Return Me.detailsField
+            End Get
+            Set
+                Me.detailsField = value
             End Set
         End Property
     End Class

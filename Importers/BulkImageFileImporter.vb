@@ -293,9 +293,9 @@ Namespace kCura.WinEDDS
 		Private Function SubBatchBulkImport(ByVal overwrite As OverwriteType, ByVal useBulk As Boolean, ByVal startRecord As Int32, ByVal recordCount As Int32) As MassImportResults
 			Dim retval As MassImportResults
 			If _productionArtifactID = 0 Then
-				retval = _bulkImportManager.BulkImportImage(_caseInfo.ArtifactID, _uploadKey, _replaceFullText, overwrite, _folderID, _repositoryPath, useBulk, _runId, _keyFieldDto.ArtifactID, _copyFilesToRepository, startRecord, recordCount)
+				retval = _bulkImportManager.BulkImportImage(_caseInfo.ArtifactID, _uploadKey, _replaceFullText, overwrite, _folderID, _repositoryPath, useBulk, _runId, _keyFieldDto.ArtifactID, _copyFilesToRepository)
 			Else
-				retval = _bulkImportManager.BulkImportProductionImage(_caseInfo.ArtifactID, _uploadKey, _replaceFullText, overwrite, _folderID, _repositoryPath, _productionArtifactID, useBulk, _runId, _keyFieldDto.ArtifactID, _copyFilesToRepository, startRecord, recordCount)
+				retval = _bulkImportManager.BulkImportProductionImage(_caseInfo.ArtifactID, _uploadKey, _replaceFullText, overwrite, _folderID, _repositoryPath, _productionArtifactID, useBulk, _runId, _keyFieldDto.ArtifactID, _copyFilesToRepository)
 			End If
 			Return retval
 		End Function
