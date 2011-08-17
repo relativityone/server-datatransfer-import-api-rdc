@@ -1,6 +1,17 @@
 ﻿Imports System.Xml.Linq
 Namespace kCura.WinEDDS
 	Public Class ExportFileSerializer
+		Private _settingsValidator As New ExportSettingsValidator
+		Public Property SettingsValidator As ExportSettingsValidator
+			Get
+				If _settingsValidator Is Nothing Then _settingsValidator = New ExportSettingsValidator
+				Return _settingsValidator
+			End Get
+			Set(ByVal value As ExportSettingsValidator)
+				_settingsValidator = value
+			End Set
+		End Property
+
 		Public Overridable Function TransformExportFileXml(ByVal input As XDocument) As String
 			Return input.ToString
 		End Function
@@ -21,6 +32,7 @@ Namespace kCura.WinEDDS
 			If Not Relativity.SqlNameHelper.GetSqlFriendlyName(currentExportFile.ObjectTypeName).Equals(Relativity.SqlNameHelper.GetSqlFriendlyName(retval.ObjectTypeName)) Then
 				retval = New ErrorExportFile("Cannot load '" & currentExportFile.ObjectTypeName & "' settings from a saved '" & retval.ObjectTypeName & "' export")
 			End If
+			If Not Me.SettingsValidator.IsValidExportDirectory(retval.FolderPath) Then retval.FolderPath = String.Empty
 			Return retval
 		End Function
 
@@ -46,6 +58,11 @@ Namespace kCura.WinEDDS
 			Return deserialized
 		End Function
 
+		Public Class ExportSettingsValidator
+			Public Overridable Function IsValidExportDirectory(ByVal path As String) As Boolean
+				Return System.IO.Directory.Exists(path)
+			End Function
+		End Class
 	End Class
 End Namespace
 
