@@ -123,7 +123,7 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
-		Public Property TypeOfExport() As ExportType
+		<ReadFromExisting()> Public Property TypeOfExport() As ExportType
 			Get
 				Return _typeOfExport
 			End Get
