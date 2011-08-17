@@ -253,7 +253,7 @@ Namespace kCura.WinEDDS
 				al.Clear()
 				status = 0
 				If _bulkLoadFileWriter.BaseStream.Length > ImportBatchVolume OrElse _batchCount > ImportBatchSize - 1 Then
-					Me.PushImageBatch(bulkLoadFilePath, False)
+					Me.TryPushImageBatch(bulkLoadFilePath, False)
 				End If
 			Catch ex As Exception
 				Throw
@@ -337,9 +337,96 @@ Namespace kCura.WinEDDS
 			Return _imageReader.GetImageRecord
 		End Function
 
-		Public Function PushImageBatch(ByVal bulkLoadFilePath As String, ByVal isFinal As Boolean) As Object
+		Private Function TryPushImageBatch(ByVal bulkLoadFilePath As String, ByVal isFinal As Boolean) As Object
 			_bulkLoadFileWriter.Close()
 			_fileIdentifierLookup.Clear()
+			Try
+				PushImageBatch(bulkLoadFilePath)
+			Catch ex As Exception
+				If BatchResizeEnabled AndAlso ExceptionIsTimeoutRelated(ex) Then
+					Dim originalBatchSize As Int32 = Me.ImportBatchSize
+					LowerBatchLimits()
+					Me.RaiseWarningAndPause(ex, kCura.WinEDDS.Config.WaitTimeBetweenRetryAttempts)
+					Me.LowerBatchSizeAndRetry(bulkLoadFilePath, originalBatchSize)
+				Else
+					Throw
+				End If
+			End Try
+			If Not isFinal Then
+				Try
+					_bulkLoadFileWriter = New System.IO.StreamWriter(bulkLoadFilePath, False, System.Text.Encoding.Unicode)
+				Catch
+					_bulkLoadFileWriter = New System.IO.StreamWriter(bulkLoadFilePath, False, System.Text.Encoding.Unicode)
+				End Try
+			End If
+			_currentStatisticsSnapshot = _statistics.ToDictionary
+			_snapshotLastModifiedOn = System.DateTime.Now
+			Return Nothing
+		End Function
+
+		Private Sub LowerBatchSizeAndRetry(ByVal outputPath As String, ByVal totalRecords As Int32)
+
+			Dim tmpLocation As String = System.IO.Path.GetTempFileName
+			Dim limit As String = Relativity.Constants.ENDLINETERMSTRING
+			Dim last As New System.Collections.Generic.Queue(Of Char)
+			Dim recordsProcessed As Int32 = 0
+			Dim charactersSuccessfullyProcessed As Int64 = 0
+			Dim hasReachedEof As Boolean = False
+			Dim tries As Int32 = 1 'already starts at 1 retry
+			Dim lastBatchSize As Int32 = 0
+			While totalRecords > recordsProcessed AndAlso Not hasReachedEof
+				Dim i As Int32 = 0
+				Dim charactersProcessed As Int64 = 0
+				Using sr As New System.IO.StreamReader(outputPath, System.Text.Encoding.Unicode), sw As New System.IO.StreamWriter(tmpLocation, False, System.Text.Encoding.Unicode)
+					Me.AdvanceStream(sr, charactersSuccessfullyProcessed)
+					While (Not hasReachedEof AndAlso (i < Me.ImportBatchSize OrElse sr.Peek = AscW("0")))
+						Dim c As Char = ChrW(sr.Read)
+						last.Enqueue(c)
+						If last.Count > limit.Length Then last.Dequeue()
+						If New String(last.ToArray) = limit Then
+							sw.Flush()
+							i += 1
+						End If
+						sw.Write(c)
+						charactersProcessed += 1
+						hasReachedEof = (sr.Peek = -1)
+					End While
+					sw.Flush()
+				End Using
+				Try
+					_batchCount = i
+					RaiseStatusEvent(kCura.Windows.Process.EventType.Warning, "Begin processing sub-batch of size " & i & ".", CType((_totalValidated + _totalProcessed) / 2, Int64), Me.CurrentLineNumber)
+					Me.PushImageBatch(tmpLocation)
+					RaiseStatusEvent(kCura.Windows.Process.EventType.Warning, "End processing sub-batch of size " & i & ".  " & recordsProcessed & " of " & totalRecords & " in the original batch processed", CType((_totalValidated + _totalProcessed) / 2, Int64), Me.CurrentLineNumber)
+					recordsProcessed += i
+					charactersSuccessfullyProcessed += charactersProcessed
+				Catch ex As Exception
+					If tries < NumberOfRetries() AndAlso BatchResizeEnabled AndAlso ExceptionIsTimeoutRelated(ex) Then
+						LowerBatchLimits()
+						Me.RaiseWarningAndPause(ex, kCura.WinEDDS.Config.WaitTimeBetweenRetryAttempts)
+						tries += 1
+						hasReachedEof = False
+					Else
+						kCura.Utility.File.Delete(tmpLocation)
+						Throw
+					End If
+				End Try
+			End While
+			kCura.Utility.File.Delete(tmpLocation)
+		End Sub
+		Private Sub AdvanceStream(ByVal sr As System.IO.StreamReader, ByVal count As Int64)
+			Dim i As Int32
+			If count > 0 Then
+				For j As Int64 = 0 To count - 1
+					i = sr.Read()
+				Next
+			End If
+		End Sub
+
+
+
+
+		Public Function PushImageBatch(ByVal bulkLoadFilePath As String) As Object
 			If _batchCount = 0 Then Return Nothing
 			_batchCount = 0
 			_statistics.MetadataBytes += Me.GetFileLength(bulkLoadFilePath)
@@ -379,15 +466,6 @@ Namespace kCura.WinEDDS
 			Else
 				Throw New kCura.WinEDDS.LoadFileBase.BcpPathAccessException(validateBcp.Value)
 			End If
-			If Not isFinal Then
-				Try
-					_bulkLoadFileWriter = New System.IO.StreamWriter(bulkLoadFilePath, False, System.Text.Encoding.Unicode)
-				Catch
-					_bulkLoadFileWriter = New System.IO.StreamWriter(bulkLoadFilePath, False, System.Text.Encoding.Unicode)
-				End Try
-			End If
-			_currentStatisticsSnapshot = _statistics.ToDictionary
-			_snapshotLastModifiedOn = System.DateTime.Now
 			ManageErrors()
 			Return Nothing
 		End Function
@@ -468,7 +546,7 @@ Namespace kCura.WinEDDS
 				_timekeeper.MarkEnd("ReadFile_Main")
 
 				_timekeeper.MarkStart("ReadFile_Cleanup")
-				Me.PushImageBatch(bulkLoadFilePath, True)
+				Me.TryPushImageBatch(bulkLoadFilePath, True)
 				Me.CompleteSuccess()
 				CleanupTempTables()
 				_timekeeper.MarkEnd("ReadFile_Cleanup")
@@ -610,7 +688,7 @@ Namespace kCura.WinEDDS
 				Dim offset As Int64 = 0
 				For i As Int32 = 0 To lines.Count - 1
 					record = lines(i)
-					Me.GetImageForDocument(BulkImageFileImporter.GetFileLocation(record), record.BatesNumber, documentId, i, offset, textFileList, i < lines.Count - 1, record.OriginalIndex.ToString, status, lines.Count)
+					Me.GetImageForDocument(BulkImageFileImporter.GetFileLocation(record), record.BatesNumber, documentId, i, offset, textFileList, i < lines.Count - 1, record.OriginalIndex.ToString, status, lines.Count, i = 0)
 				Next
 
 
@@ -671,7 +749,7 @@ Namespace kCura.WinEDDS
 		End Sub
 
 
-		Private Sub GetImageForDocument(ByVal imageFileName As String, ByVal batesNumber As String, ByVal documentIdentifier As String, ByVal order As Int32, ByRef offset As Int64, ByVal fullTextFiles As System.Collections.ArrayList, ByVal writeLineTermination As Boolean, ByVal originalLineNumber As String, ByVal status As Int32, ByVal totalForDocument As Int32)
+		Private Sub GetImageForDocument(ByVal imageFileName As String, ByVal batesNumber As String, ByVal documentIdentifier As String, ByVal order As Int32, ByRef offset As Int64, ByVal fullTextFiles As System.Collections.ArrayList, ByVal writeLineTermination As Boolean, ByVal originalLineNumber As String, ByVal status As Int32, ByVal totalForDocument As Int32, ByVal isStartRecord As Boolean)
 			Try
 				_totalProcessed += 1
 				Dim filename As String = imageFileName.Substring(imageFileName.LastIndexOf("\") + 1)
@@ -709,7 +787,7 @@ Namespace kCura.WinEDDS
 				If _replaceFullText AndAlso System.IO.File.Exists(extractedTextFileName) AndAlso Not fullTextFiles Is Nothing Then
 					offset += Me.GetFileLength(extractedTextFileName)
 				End If
-				_bulkLoadFileWriter.Write("0,")
+				_bulkLoadFileWriter.Write(If(isStartRecord, "1,", "0,"))
 				_bulkLoadFileWriter.Write(status & ",")
 				_bulkLoadFileWriter.Write("0,")
 				_bulkLoadFileWriter.Write("0,")

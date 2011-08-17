@@ -34,11 +34,7 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
         
         Private BulkImportImageOperationCompleted As System.Threading.SendOrPostCallback
         
-        Private BulkImportImageWithRangeOperationCompleted As System.Threading.SendOrPostCallback
-        
         Private BulkImportProductionImageOperationCompleted As System.Threading.SendOrPostCallback
-        
-        Private BulkImportProductionImageWithRangeOperationCompleted As System.Threading.SendOrPostCallback
         
         Private GenerateImageErrorFilesOperationCompleted As System.Threading.SendOrPostCallback
         
@@ -96,13 +92,7 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
         Public Event BulkImportImageCompleted As BulkImportImageCompletedEventHandler
         
         '''<remarks/>
-        Public Event BulkImportImageWithRangeCompleted As BulkImportImageWithRangeCompletedEventHandler
-        
-        '''<remarks/>
         Public Event BulkImportProductionImageCompleted As BulkImportProductionImageCompletedEventHandler
-        
-        '''<remarks/>
-        Public Event BulkImportProductionImageWithRangeCompleted As BulkImportProductionImageWithRangeCompletedEventHandler
         
         '''<remarks/>
         Public Event GenerateImageErrorFilesCompleted As GenerateImageErrorFilesCompletedEventHandler
@@ -164,44 +154,6 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
         End Sub
         
         '''<remarks/>
-        <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/BulkImportManager/BulkImportImageWithRange", RequestNamespace:="http://www.kCura.com/EDDS/BulkImportManager", ResponseNamespace:="http://www.kCura.com/EDDS/BulkImportManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
-        Public Function BulkImportImageWithRange(ByVal appID As Integer, ByVal bulkFileName As String, ByVal uploadFullText As Boolean, ByVal overwrite As OverwriteType, ByVal destinationFolderArtifactID As Integer, ByVal repository As String, ByVal useBulk As Boolean, ByVal runID As String, ByVal keyFieldID As Integer, ByVal inRepository As Boolean, ByVal startIndex As Integer, ByVal count As Integer) As MassImportResults
-            Dim results() As Object = Me.Invoke("BulkImportImageWithRange", New Object() {appID, bulkFileName, uploadFullText, overwrite, destinationFolderArtifactID, repository, useBulk, runID, keyFieldID, inRepository, startIndex, count})
-            Return CType(results(0),MassImportResults)
-        End Function
-        
-        '''<remarks/>
-        Public Function BeginBulkImportImageWithRange(ByVal appID As Integer, ByVal bulkFileName As String, ByVal uploadFullText As Boolean, ByVal overwrite As OverwriteType, ByVal destinationFolderArtifactID As Integer, ByVal repository As String, ByVal useBulk As Boolean, ByVal runID As String, ByVal keyFieldID As Integer, ByVal inRepository As Boolean, ByVal startIndex As Integer, ByVal count As Integer, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
-            Return Me.BeginInvoke("BulkImportImageWithRange", New Object() {appID, bulkFileName, uploadFullText, overwrite, destinationFolderArtifactID, repository, useBulk, runID, keyFieldID, inRepository, startIndex, count}, callback, asyncState)
-        End Function
-        
-        '''<remarks/>
-        Public Function EndBulkImportImageWithRange(ByVal asyncResult As System.IAsyncResult) As MassImportResults
-            Dim results() As Object = Me.EndInvoke(asyncResult)
-            Return CType(results(0),MassImportResults)
-        End Function
-        
-        '''<remarks/>
-        Public Overloads Sub BulkImportImageWithRangeAsync(ByVal appID As Integer, ByVal bulkFileName As String, ByVal uploadFullText As Boolean, ByVal overwrite As OverwriteType, ByVal destinationFolderArtifactID As Integer, ByVal repository As String, ByVal useBulk As Boolean, ByVal runID As String, ByVal keyFieldID As Integer, ByVal inRepository As Boolean, ByVal startIndex As Integer, ByVal count As Integer)
-            Me.BulkImportImageWithRangeAsync(appID, bulkFileName, uploadFullText, overwrite, destinationFolderArtifactID, repository, useBulk, runID, keyFieldID, inRepository, startIndex, count, Nothing)
-        End Sub
-        
-        '''<remarks/>
-        Public Overloads Sub BulkImportImageWithRangeAsync(ByVal appID As Integer, ByVal bulkFileName As String, ByVal uploadFullText As Boolean, ByVal overwrite As OverwriteType, ByVal destinationFolderArtifactID As Integer, ByVal repository As String, ByVal useBulk As Boolean, ByVal runID As String, ByVal keyFieldID As Integer, ByVal inRepository As Boolean, ByVal startIndex As Integer, ByVal count As Integer, ByVal userState As Object)
-            If (Me.BulkImportImageWithRangeOperationCompleted Is Nothing) Then
-                Me.BulkImportImageWithRangeOperationCompleted = AddressOf Me.OnBulkImportImageWithRangeOperationCompleted
-            End If
-            Me.InvokeAsync("BulkImportImageWithRange", New Object() {appID, bulkFileName, uploadFullText, overwrite, destinationFolderArtifactID, repository, useBulk, runID, keyFieldID, inRepository, startIndex, count}, Me.BulkImportImageWithRangeOperationCompleted, userState)
-        End Sub
-        
-        Private Sub OnBulkImportImageWithRangeOperationCompleted(ByVal arg As Object)
-            If (Not (Me.BulkImportImageWithRangeCompletedEvent) Is Nothing) Then
-                Dim invokeArgs As System.Web.Services.Protocols.InvokeCompletedEventArgs = CType(arg,System.Web.Services.Protocols.InvokeCompletedEventArgs)
-                RaiseEvent BulkImportImageWithRangeCompleted(Me, New BulkImportImageWithRangeCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState))
-            End If
-        End Sub
-        
-        '''<remarks/>
         <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/BulkImportManager/BulkImportProductionImage", RequestNamespace:="http://www.kCura.com/EDDS/BulkImportManager", ResponseNamespace:="http://www.kCura.com/EDDS/BulkImportManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
         Public Function BulkImportProductionImage(ByVal appID As Integer, ByVal bulkFileName As String, ByVal uploadFullText As Boolean, ByVal overwrite As OverwriteType, ByVal destinationFolderArtifactID As Integer, ByVal repository As String, ByVal productionArtifactID As Integer, ByVal useBulk As Boolean, ByVal runID As String, ByVal productionKeyFieldArtifactID As Integer, ByVal inRepository As Boolean) As MassImportResults
             Dim results() As Object = Me.Invoke("BulkImportProductionImage", New Object() {appID, bulkFileName, uploadFullText, overwrite, destinationFolderArtifactID, repository, productionArtifactID, useBulk, runID, productionKeyFieldArtifactID, inRepository})
@@ -236,44 +188,6 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
             If (Not (Me.BulkImportProductionImageCompletedEvent) Is Nothing) Then
                 Dim invokeArgs As System.Web.Services.Protocols.InvokeCompletedEventArgs = CType(arg,System.Web.Services.Protocols.InvokeCompletedEventArgs)
                 RaiseEvent BulkImportProductionImageCompleted(Me, New BulkImportProductionImageCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState))
-            End If
-        End Sub
-        
-        '''<remarks/>
-        <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/BulkImportManager/BulkImportProductionImageWithRange", RequestNamespace:="http://www.kCura.com/EDDS/BulkImportManager", ResponseNamespace:="http://www.kCura.com/EDDS/BulkImportManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
-        Public Function BulkImportProductionImageWithRange(ByVal appID As Integer, ByVal bulkFileName As String, ByVal uploadFullText As Boolean, ByVal overwrite As OverwriteType, ByVal destinationFolderArtifactID As Integer, ByVal repository As String, ByVal productionArtifactID As Integer, ByVal useBulk As Boolean, ByVal runID As String, ByVal productionKeyFieldArtifactID As Integer, ByVal inRepository As Boolean, ByVal startIndex As Integer, ByVal count As Integer) As MassImportResults
-            Dim results() As Object = Me.Invoke("BulkImportProductionImageWithRange", New Object() {appID, bulkFileName, uploadFullText, overwrite, destinationFolderArtifactID, repository, productionArtifactID, useBulk, runID, productionKeyFieldArtifactID, inRepository, startIndex, count})
-            Return CType(results(0),MassImportResults)
-        End Function
-        
-        '''<remarks/>
-        Public Function BeginBulkImportProductionImageWithRange(ByVal appID As Integer, ByVal bulkFileName As String, ByVal uploadFullText As Boolean, ByVal overwrite As OverwriteType, ByVal destinationFolderArtifactID As Integer, ByVal repository As String, ByVal productionArtifactID As Integer, ByVal useBulk As Boolean, ByVal runID As String, ByVal productionKeyFieldArtifactID As Integer, ByVal inRepository As Boolean, ByVal startIndex As Integer, ByVal count As Integer, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
-            Return Me.BeginInvoke("BulkImportProductionImageWithRange", New Object() {appID, bulkFileName, uploadFullText, overwrite, destinationFolderArtifactID, repository, productionArtifactID, useBulk, runID, productionKeyFieldArtifactID, inRepository, startIndex, count}, callback, asyncState)
-        End Function
-        
-        '''<remarks/>
-        Public Function EndBulkImportProductionImageWithRange(ByVal asyncResult As System.IAsyncResult) As MassImportResults
-            Dim results() As Object = Me.EndInvoke(asyncResult)
-            Return CType(results(0),MassImportResults)
-        End Function
-        
-        '''<remarks/>
-        Public Overloads Sub BulkImportProductionImageWithRangeAsync(ByVal appID As Integer, ByVal bulkFileName As String, ByVal uploadFullText As Boolean, ByVal overwrite As OverwriteType, ByVal destinationFolderArtifactID As Integer, ByVal repository As String, ByVal productionArtifactID As Integer, ByVal useBulk As Boolean, ByVal runID As String, ByVal productionKeyFieldArtifactID As Integer, ByVal inRepository As Boolean, ByVal startIndex As Integer, ByVal count As Integer)
-            Me.BulkImportProductionImageWithRangeAsync(appID, bulkFileName, uploadFullText, overwrite, destinationFolderArtifactID, repository, productionArtifactID, useBulk, runID, productionKeyFieldArtifactID, inRepository, startIndex, count, Nothing)
-        End Sub
-        
-        '''<remarks/>
-        Public Overloads Sub BulkImportProductionImageWithRangeAsync(ByVal appID As Integer, ByVal bulkFileName As String, ByVal uploadFullText As Boolean, ByVal overwrite As OverwriteType, ByVal destinationFolderArtifactID As Integer, ByVal repository As String, ByVal productionArtifactID As Integer, ByVal useBulk As Boolean, ByVal runID As String, ByVal productionKeyFieldArtifactID As Integer, ByVal inRepository As Boolean, ByVal startIndex As Integer, ByVal count As Integer, ByVal userState As Object)
-            If (Me.BulkImportProductionImageWithRangeOperationCompleted Is Nothing) Then
-                Me.BulkImportProductionImageWithRangeOperationCompleted = AddressOf Me.OnBulkImportProductionImageWithRangeOperationCompleted
-            End If
-            Me.InvokeAsync("BulkImportProductionImageWithRange", New Object() {appID, bulkFileName, uploadFullText, overwrite, destinationFolderArtifactID, repository, productionArtifactID, useBulk, runID, productionKeyFieldArtifactID, inRepository, startIndex, count}, Me.BulkImportProductionImageWithRangeOperationCompleted, userState)
-        End Sub
-        
-        Private Sub OnBulkImportProductionImageWithRangeOperationCompleted(ByVal arg As Object)
-            If (Not (Me.BulkImportProductionImageWithRangeCompletedEvent) Is Nothing) Then
-                Dim invokeArgs As System.Web.Services.Protocols.InvokeCompletedEventArgs = CType(arg,System.Web.Services.Protocols.InvokeCompletedEventArgs)
-                RaiseEvent BulkImportProductionImageWithRangeCompleted(Me, New BulkImportProductionImageWithRangeCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState))
             End If
         End Sub
         
@@ -1225,33 +1139,6 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
     
     '''<remarks/>
     <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.0.30319.1")>  _
-    Public Delegate Sub BulkImportImageWithRangeCompletedEventHandler(ByVal sender As Object, ByVal e As BulkImportImageWithRangeCompletedEventArgs)
-    
-    '''<remarks/>
-    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.0.30319.1"),  _
-     System.Diagnostics.DebuggerStepThroughAttribute(),  _
-     System.ComponentModel.DesignerCategoryAttribute("code")>  _
-    Partial Public Class BulkImportImageWithRangeCompletedEventArgs
-        Inherits System.ComponentModel.AsyncCompletedEventArgs
-        
-        Private results() As Object
-        
-        Friend Sub New(ByVal results() As Object, ByVal exception As System.Exception, ByVal cancelled As Boolean, ByVal userState As Object)
-            MyBase.New(exception, cancelled, userState)
-            Me.results = results
-        End Sub
-        
-        '''<remarks/>
-        Public ReadOnly Property Result() As MassImportResults
-            Get
-                Me.RaiseExceptionIfNecessary
-                Return CType(Me.results(0),MassImportResults)
-            End Get
-        End Property
-    End Class
-    
-    '''<remarks/>
-    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.0.30319.1")>  _
     Public Delegate Sub BulkImportProductionImageCompletedEventHandler(ByVal sender As Object, ByVal e As BulkImportProductionImageCompletedEventArgs)
     
     '''<remarks/>
@@ -1259,33 +1146,6 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
      System.Diagnostics.DebuggerStepThroughAttribute(),  _
      System.ComponentModel.DesignerCategoryAttribute("code")>  _
     Partial Public Class BulkImportProductionImageCompletedEventArgs
-        Inherits System.ComponentModel.AsyncCompletedEventArgs
-        
-        Private results() As Object
-        
-        Friend Sub New(ByVal results() As Object, ByVal exception As System.Exception, ByVal cancelled As Boolean, ByVal userState As Object)
-            MyBase.New(exception, cancelled, userState)
-            Me.results = results
-        End Sub
-        
-        '''<remarks/>
-        Public ReadOnly Property Result() As MassImportResults
-            Get
-                Me.RaiseExceptionIfNecessary
-                Return CType(Me.results(0),MassImportResults)
-            End Get
-        End Property
-    End Class
-    
-    '''<remarks/>
-    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.0.30319.1")>  _
-    Public Delegate Sub BulkImportProductionImageWithRangeCompletedEventHandler(ByVal sender As Object, ByVal e As BulkImportProductionImageWithRangeCompletedEventArgs)
-    
-    '''<remarks/>
-    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.0.30319.1"),  _
-     System.Diagnostics.DebuggerStepThroughAttribute(),  _
-     System.ComponentModel.DesignerCategoryAttribute("code")>  _
-    Partial Public Class BulkImportProductionImageWithRangeCompletedEventArgs
         Inherits System.ComponentModel.AsyncCompletedEventArgs
         
         Private results() As Object
