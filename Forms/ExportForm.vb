@@ -1926,7 +1926,7 @@ Public Class ExportForm
 				End If
 			Next
 		End If
-		If Not isSelectedItemSet AndAlso _potentialTextFields.Items.Count > 0 Then
+		If Not isSelectedItemSet AndAlso _potentialTextFields.Items.Count > 0 And Not _isLoadingExport Then
 			For i As Int32 = 0 To _potentialTextFields.Items.Count - 1
 				If DirectCast(_potentialTextFields.Items(i), ViewFieldInfo).Category = Relativity.FieldCategory.FullText Then
 					_potentialTextFields.SelectedIndex = i
@@ -1936,7 +1936,7 @@ Public Class ExportForm
 			Next
 		End If
 		If Not isSelectedItemSet AndAlso _potentialTextFields.Items.Count > 0 Then
-			_potentialTextFields.SelectedIndex = 0
+			_potentialTextFields.SelectedIndex = If(_isLoadingExport, -1, 0) 'dont select first available on load
 		End If
 	End Sub
 
