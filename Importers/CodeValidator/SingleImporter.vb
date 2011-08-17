@@ -2,6 +2,7 @@ Namespace kCura.WinEDDS.CodeValidator
 	Public Class SingleImporter
 		Inherits Base
 		Private _createdCodeCount As Int32 = 0
+
 		Public Sub New(ByVal caseInfo As Relativity.CaseInfo, ByVal codeManager As kCura.WinEDDS.Service.CodeManager)
 			MyBase.New(caseInfo, codeManager)
 		End Sub

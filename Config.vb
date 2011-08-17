@@ -218,6 +218,16 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
+		Public Shared ReadOnly Property AppConfigWebServiceURL() As String
+			Get
+				If ConfigSettings.Contains("WebServiceURL") Then
+					Return CType(ConfigSettings("WebServiceURL"), String)
+				End If
+
+				Return Nothing
+			End Get
+		End Property
+
 		Public Shared ReadOnly Property EnableSingleModeImport() As Boolean
 			Get
 				Try

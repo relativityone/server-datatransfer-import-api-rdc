@@ -263,7 +263,12 @@ Namespace kCura.WinEDDS
 		''' is <c>null</c> or <c>String.Empty</c>.</exception>
 		Public Sub New(ByVal args As LoadFile, ByVal processController As kCura.Windows.Process.Controller, ByVal timeZoneOffset As Int32, ByVal initializeUploaders As Boolean, ByVal processID As Guid, ByVal doRetryLogic As Boolean, _
 		 ByVal bulkLoadFileFieldDelimiter As String)
-			Me.New(args, processController, timeZoneOffset, True, initializeUploaders, processID, doRetryLogic, bulkLoadFileFieldDelimiter)
+			Me.New(args, processController, timeZoneOffset, initializeUploaders, processID, doRetryLogic, bulkLoadFileFieldDelimiter, Config.WebServiceURL)
+		End Sub
+
+		Public Sub New(ByVal args As LoadFile, ByVal processController As kCura.Windows.Process.Controller, ByVal timeZoneOffset As Int32, ByVal initializeUploaders As Boolean, ByVal processID As Guid, ByVal doRetryLogic As Boolean, _
+		 ByVal bulkLoadFileFieldDelimiter As String, ByVal webURL As String)
+			Me.New(args, processController, timeZoneOffset, True, initializeUploaders, processID, doRetryLogic, bulkLoadFileFieldDelimiter, webURL)
 		End Sub
 
 		''' <summary>
@@ -281,7 +286,12 @@ Namespace kCura.WinEDDS
 		''' is <c>null</c> or <c>String.Empty</c>.</exception>
 		Public Sub New(ByVal args As LoadFile, ByVal processController As kCura.Windows.Process.Controller, ByVal timeZoneOffset As Int32, ByVal autoDetect As Boolean, ByVal initializeUploaders As Boolean, ByVal processID As Guid, ByVal doRetryLogic As Boolean, _
 		 ByVal bulkLoadFileFieldDelimiter As String)
-			MyBase.New(args, timeZoneOffset, doRetryLogic, autoDetect)
+			Me.New(args, processController, timeZoneOffset, autoDetect, initializeUploaders, processID, doRetryLogic, bulkLoadFileFieldDelimiter, Config.WebServiceURL)
+		End Sub
+
+		Public Sub New(ByVal args As LoadFile, ByVal processController As kCura.Windows.Process.Controller, ByVal timeZoneOffset As Int32, ByVal autoDetect As Boolean, ByVal initializeUploaders As Boolean, ByVal processID As Guid, ByVal doRetryLogic As Boolean, _
+		 ByVal bulkLoadFileFieldDelimiter As String, ByVal webURL As String)
+			MyBase.New(args, timeZoneOffset, doRetryLogic, autoDetect, webURL)
 			_overwrite = args.OverwriteDestination
 			If args.CopyFilesToDocumentRepository Then
 				_defaultDestinationFolderPath = args.SelectedCasePath & "EDDS" & args.CaseInfo.ArtifactID & "\"
@@ -295,8 +305,8 @@ Namespace kCura.WinEDDS
 			End If
 			_defaultTextFolderPath = args.CaseDefaultPath & "EDDS" & args.CaseInfo.ArtifactID & "\"
 			If initializeUploaders Then
-				_uploader = New kCura.WinEDDS.FileUploader(args.Credentials, args.CaseInfo.ArtifactID, _defaultDestinationFolderPath, args.CookieContainer)
-				_bcpuploader = New kCura.WinEDDS.FileUploader(args.Credentials, args.CaseInfo.ArtifactID, _defaultDestinationFolderPath, args.CookieContainer, False)
+				_uploader = New kCura.WinEDDS.FileUploader(args.Credentials, args.CaseInfo.ArtifactID, _defaultDestinationFolderPath, args.CookieContainer, webURL)
+				_bcpuploader = New kCura.WinEDDS.FileUploader(args.Credentials, args.CaseInfo.ArtifactID, _defaultDestinationFolderPath, args.CookieContainer, webURL, False)
 				'_textUploader = New kCura.WinEDDS.FileUploader(args.Credentials, args.CaseInfo.ArtifactID, _defaultTextFolderPath, args.CookieContainer, False)
 			End If
 			_extractFullTextFromNative = args.ExtractFullTextFromNativeFile
@@ -462,6 +472,7 @@ Namespace kCura.WinEDDS
 		Protected Overrides Sub InitializeManagers(ByVal args As LoadFile)
 			MyBase.InitializeManagers(args)
 			_auditManager = New kCura.WinEDDS.Service.AuditManager(args.Credentials, args.CookieContainer)
+			_auditManager.ServiceURL = ServiceURL
 		End Sub
 
 		Private Sub DeleteFiles()
@@ -472,7 +483,7 @@ Namespace kCura.WinEDDS
 
 		Private Sub InitializeFolderManagement()
 			If _createFolderStructure Then
-				If _artifactTypeID = 10 Then _folderCache = New FolderCache(_folderManager, _folderID, _caseArtifactID)
+				If _artifactTypeID = 10 Then _folderCache = New FolderCache(_folderManager, _folderID, _caseArtifactID, ServiceURL)
 				Dim openParenIndex As Int32 = _destinationFolder.LastIndexOf("("c) + 1
 				Dim closeParenIndex As Int32 = _destinationFolder.LastIndexOf(")"c)
 				_destinationFolderColumnIndex = Int32.Parse(_destinationFolder.Substring(openParenIndex, closeParenIndex - openParenIndex)) - 1
@@ -1427,7 +1438,7 @@ Namespace kCura.WinEDDS
 			Try
 				With Me.BulkImportManager.GenerateNativeErrorFiles(_caseInfo.ArtifactID, _runID, artifactTypeID, True, _keyFieldID)
 					Me.WriteStatusLine(Windows.Process.EventType.Status, "Retrieving errors from server")
-					downloader = New FileDownloader(DirectCast(Me.BulkImportManager.Credentials, System.Net.NetworkCredential), _caseInfo.DocumentPath, _caseInfo.DownloadHandlerURL, Me.BulkImportManager.CookieContainer, kCura.WinEDDS.Service.Settings.AuthenticationToken)
+					downloader = New FileDownloader(DirectCast(Me.BulkImportManager.Credentials, System.Net.NetworkCredential), _caseInfo.DocumentPath, _caseInfo.DownloadHandlerURL, Me.BulkImportManager.CookieContainer, kCura.WinEDDS.Service.Settings.AuthenticationToken, ServiceURL)
 					AddHandler downloader.UploadStatusEvent, AddressOf _uploader_UploadStatusEvent
 					Dim errorsLocation As String = System.IO.Path.GetTempFileName
 					downloader.MoveTempFileToLocal(errorsLocation, .LogKey, _caseInfo)
@@ -1481,7 +1492,7 @@ Namespace kCura.WinEDDS
 			Return New CodeValidator.SingleImporter(_settings.CaseInfo, _codeManager)
 		End Function
 		Protected Overrides Function GetArtifactReader() As Api.IArtifactReader
-			Return New kCura.WinEDDS.LoadFileReader(_settings, False)
+			Return New kCura.WinEDDS.LoadFileReader(_settings, False, ServiceURL)
 		End Function
 
 

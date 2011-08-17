@@ -47,18 +47,38 @@ Namespace kCura.WinEDDS
 		Private _recordCount As Int64 = -1
 		Private _genericTimestamp As System.DateTime
 		Private _trackErrorsInFieldValues As Boolean
+		Private _serviceURL As String
 #End Region
+
+		Public Overridable Property ServiceURL As String
+			Get
+				Return _serviceURL
+			End Get
+			Set(value As String)
+				_serviceURL = value
+			End Set
+		End Property
 
 #Region " Constructors "
 
 		Public Sub New(ByVal args As LoadFile, ByVal trackErrorsAsFieldValues As Boolean)
+			Me.New(args, trackErrorsAsFieldValues, kCura.WinEDDS.Config.WebServiceURL)
+		End Sub
+
+		Public Sub New(ByVal args As LoadFile, ByVal trackErrorsAsFieldValues As Boolean, ByVal webURL As String)
 			MyBase.New(args.RecordDelimiter, args.QuoteDelimiter, args.NewlineDelimiter, True)
+			_serviceURL = webURL
+
 			_settings = args
 			_trackErrorsInFieldValues = trackErrorsAsFieldValues
 			_docFields = args.FieldMap.DocumentFields
 			_filePathColumn = args.NativeFilePathColumn
 			_firstLineContainsColumnNames = args.FirstLineContainsHeaders
 			_fieldMap = args.FieldMap
+
+			'This is done to force the update of all ServiceURL() properties for the Manager objects
+			ServiceURL = ServiceURL
+
 			_keyFieldID = args.IdentityFieldId
 			_multiValueSeparator = args.MultiRecordDelimiter.ToString.ToCharArray
 			_folderID = args.DestinationFolderID
@@ -336,7 +356,7 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Public Function CountRecords() As Int64 Implements Api.IArtifactReader.CountRecords
-			_loadFilePreProcessor = New kCura.WinEDDS.LoadFilePreProcessor(_settings, _trackErrorsInFieldValues)
+			_loadFilePreProcessor = New kCura.WinEDDS.LoadFilePreProcessor(_settings, _trackErrorsInFieldValues, ServiceURL)
 			_loadFilePreProcessor.CountLines()
 			Return _recordCount
 		End Function

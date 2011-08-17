@@ -15,14 +15,34 @@ Namespace kCura.WinEDDS
 		Private _authenticationToken As String
 		Private _userManager As kCura.WinEDDS.Service.UserManager
 		Private _isBcpEnabled As Boolean = True
+		Private _serviceURL As String
 		Private Shared _locationAccessMatrix As New System.Collections.Hashtable
 
 		Public Sub SetDesintationFolderName(ByVal value As String)
 			_destinationFolderPath = value
 		End Sub
 
+		Public Overridable Property ServiceURL As String
+			Get
+				Return _serviceURL
+			End Get
+			Set(value As String)
+				_serviceURL = value
+				_gateway.ServiceURL = value
+				_userManager.ServiceURL = value
+			End Set
+		End Property
+
 		Public Sub New(ByVal credentials As Net.NetworkCredential, ByVal destinationFolderPath As String, ByVal downloadHandlerUrl As String, ByVal cookieContainer As System.Net.CookieContainer, ByVal authenticationToken As String)
+			Me.New(credentials, destinationFolderPath, downloadHandlerUrl, cookieContainer, authenticationToken, kCura.WinEDDS.Config.WebServiceURL)
+		End Sub
+
+		Public Sub New(ByVal credentials As Net.NetworkCredential, ByVal destinationFolderPath As String, ByVal downloadHandlerUrl As String, ByVal cookieContainer As System.Net.CookieContainer, ByVal authenticationToken As String, ByVal webURL As String)
+			_serviceURL = webURL
+
 			_gateway = New kCura.WinEDDS.Service.FileIO(credentials, cookieContainer)
+			_gateway.ServiceURL = ServiceURL
+
 			_cookieContainer = cookieContainer
 			_gateway.Credentials = credentials
 			_gateway.Timeout = Int32.MaxValue
@@ -31,11 +51,13 @@ Namespace kCura.WinEDDS
 				destinationFolderPath &= "\"
 			End If
 			_destinationFolderPath = destinationFolderPath
-			_downloadUrl = kCura.Utility.URI.GetFullyQualifiedPath(downloadHandlerUrl, New System.Uri(kCura.WinEDDS.Config.WebServiceURL))
+			_downloadUrl = kCura.Utility.URI.GetFullyQualifiedPath(downloadHandlerUrl, New System.Uri(ServiceURL))
 			'Dim documentManager As kCura.EDDS.WebAPI.DocumentManagerBase.DocumentManager
 			SetType(_destinationFolderPath)
 			_authenticationToken = authenticationToken
 			_userManager = New kCura.WinEDDS.Service.UserManager(credentials, cookieContainer)
+			_userManager.ServiceURL = ServiceURL
+
 			If _locationAccessMatrix Is Nothing Then _locationAccessMatrix = New System.Collections.Hashtable
 		End Sub
 

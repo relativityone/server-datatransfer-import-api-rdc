@@ -7,14 +7,28 @@ Namespace kCura.WinEDDS.Service
 		'Private _identity As Relativity.Core.EDDSIdentity
 
 		'Public Sub New(ByVal credentials As Net.NetworkCredential, ByVal cookieContainer As System.Net.CookieContainer, ByVal identity As Relativity.Core.EDDSIdentity)
+
+		Private ReadOnly _serviceURLPageFormat As String
+
 		Public Sub New(ByVal credentials As Net.ICredentials, ByVal cookieContainer As System.Net.CookieContainer)
 			MyBase.New()
+
+			_serviceURLPageFormat = "{0}SearchManager.asmx"
 			Me.Credentials = credentials
 			Me.CookieContainer = cookieContainer
-			Me.Url = String.Format("{0}SearchManager.asmx", kCura.WinEDDS.Config.WebServiceURL)
+			Me.ServiceURL = kCura.WinEDDS.Config.WebServiceURL
 			Me.Timeout = Settings.DefaultTimeOut
 			'_identity = identity
 		End Sub
+
+		Public Overridable Property ServiceURL As String
+			Get
+				Return Me.Url
+			End Get
+			Set(ByVal value As String)
+				Me.Url = String.Format(_serviceURLPageFormat, value)
+			End Set
+		End Property
 
 		Protected Overrides Function GetWebRequest(ByVal uri As System.Uri) As System.Net.WebRequest
 			Dim wr As System.Net.HttpWebRequest = DirectCast(MyBase.GetWebRequest(uri), System.Net.HttpWebRequest)
@@ -36,7 +50,7 @@ Namespace kCura.WinEDDS.Service
 					End If
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
+						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries, ServiceURL)
 					Else
 						Throw
 					End If
@@ -56,7 +70,7 @@ Namespace kCura.WinEDDS.Service
 					End If
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
+						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries, ServiceURL)
 					Else
 						Throw
 					End If
@@ -73,7 +87,7 @@ Namespace kCura.WinEDDS.Service
 					Return MyBase.RetrieveNativesForProduction(caseContextArtifactID, productionArtifactID, documentArtifactIDs)
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
+						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries, ServiceURL)
 					Else
 						Throw
 					End If
@@ -90,7 +104,7 @@ Namespace kCura.WinEDDS.Service
 					Return MyBase.RetrieveNativesForSearch(caseContextArtifactID, documentArtifactIDs)
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
+						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries, ServiceURL)
 					Else
 						Throw
 					End If
@@ -107,7 +121,7 @@ Namespace kCura.WinEDDS.Service
 					Return MyBase.RetrieveFilesForDynamicObjects(caseContextArtifactID, fileFieldArtifactID, objectIds)
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
+						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries, ServiceURL)
 					Else
 						Throw
 					End If
@@ -124,7 +138,7 @@ Namespace kCura.WinEDDS.Service
 					Return RetrieveImagesForSearch(caseContextArtifactID, documentArtifactIDs)
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
+						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries, ServiceURL)
 					Else
 						Throw
 					End If
@@ -141,7 +155,7 @@ Namespace kCura.WinEDDS.Service
 					Return Me.RetrieveImagesByProductionArtifactIDForProductionExportByDocumentSet(caseContextArtifactID, productionArtifactID, documentArtifactIDs)
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
+						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries, ServiceURL)
 					Else
 						Throw
 					End If
@@ -158,7 +172,7 @@ Namespace kCura.WinEDDS.Service
 					Return MyBase.RetrieveFullTextExistenceForSearch(caseContextArtifactID, documentArtifactIDs)
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
+						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries, ServiceURL)
 					Else
 						Throw
 					End If
@@ -175,7 +189,7 @@ Namespace kCura.WinEDDS.Service
 					Return MyBase.RetrieveImagesForSearch(caseContextArtifactID, documentArtifactIDs)
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
+						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries, ServiceURL)
 					Else
 						Throw
 					End If
@@ -192,7 +206,7 @@ Namespace kCura.WinEDDS.Service
 					Return MyBase.RetrieveImagesByProductionIDsAndDocumentIDsForExport(caseContextArtifactID, productionArtifactIDs, documentArtifactIDs)
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
+						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries, ServiceURL)
 					Else
 						Throw
 					End If
@@ -209,7 +223,7 @@ Namespace kCura.WinEDDS.Service
 					Return MyBase.RetrieveViewsByContextArtifactID(caseContextArtifactID, artifactTypeID, isSearch)
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
+						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries, ServiceURL)
 					Else
 						Throw
 					End If
@@ -226,7 +240,7 @@ Namespace kCura.WinEDDS.Service
 					Return MyBase.RetrieveSearchFields(caseContextArtifactID, viewArtifactID)
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
+						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries, ServiceURL)
 					Else
 						Throw
 					End If
@@ -243,7 +257,7 @@ Namespace kCura.WinEDDS.Service
 					Return MyBase.RetrieveSearchFieldsForProduction(caseContextArtifactID, productionArtifactID)
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
+						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries, ServiceURL)
 					Else
 						Throw
 					End If
@@ -260,7 +274,7 @@ Namespace kCura.WinEDDS.Service
 					Return MyBase.CountSearchByParentArtifactID(caseContextArtifactID, parentArtifactID, searchSubFolders, viewArtifactID)
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
+						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries, ServiceURL)
 					Else
 						Throw
 					End If
@@ -276,7 +290,7 @@ Namespace kCura.WinEDDS.Service
 					Return MyBase.SearchByParentArtifactID(caseContextArtifactID, parentArtifactID, searchSubFolders, start, finish, viewArtifactID, avfids, displayMulticodesAsNested, nestedValueDelimiter)
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
+						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries, ServiceURL)
 					Else
 						Throw
 					End If
@@ -293,7 +307,7 @@ Namespace kCura.WinEDDS.Service
 					Return MyBase.SearchByProductionArtifactID(caseContextArtifactID, productionArtifactID, start, finish, avfids, displayMulticodesAsNested, nestedValueDelimiter)
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
+						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries, ServiceURL)
 					Else
 						Throw
 					End If
@@ -310,7 +324,7 @@ Namespace kCura.WinEDDS.Service
 					Return MyBase.IsExtractedTextUnicode(caseArtifactID)
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
+						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries, ServiceURL)
 					Else
 						Throw
 					End If
@@ -334,7 +348,7 @@ Namespace kCura.WinEDDS.Service
 					Return retval
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
+						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries, ServiceURL)
 					Else
 						Throw
 					End If
@@ -356,7 +370,7 @@ Namespace kCura.WinEDDS.Service
 					Return DirectCast(retval.ToArray(GetType(WinEDDS.ViewFieldInfo)), WinEDDS.ViewFieldInfo())
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
+						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries, ServiceURL)
 					Else
 						Throw
 					End If
@@ -373,7 +387,7 @@ Namespace kCura.WinEDDS.Service
 					Return MyBase.IsAssociatedSearchProviderAccessible(caseContextArtifactID, searchArtifactID)
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
+						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries, ServiceURL)
 					Else
 						Throw
 					End If

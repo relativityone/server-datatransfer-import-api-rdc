@@ -2,13 +2,17 @@ Namespace kCura.WinEDDS.Service
 	Public Class BulkImportManager
 		Inherits kCura.EDDS.WebAPI.BulkImportManagerBase.BulkImportManager
 
+		Private ReadOnly _serviceURLPageFormat As String
+
 #Region "Constructors"
 
 		Public Sub New(ByVal credentials As Net.ICredentials, ByVal cookieContainer As System.Net.CookieContainer)
 			MyBase.New()
+
+			_serviceURLPageFormat = "{0}BulkImportManager.asmx"
 			Me.Credentials = credentials
 			Me.CookieContainer = cookieContainer
-			Me.WebServiceURL = String.Format("{0}BulkImportManager.asmx", kCura.WinEDDS.Config.WebServiceURL)
+			Me.ServiceURL = kCura.WinEDDS.Config.WebServiceURL
 			Me.Timeout = Settings.DefaultTimeOut
 		End Sub
 
@@ -23,6 +27,15 @@ Namespace kCura.WinEDDS.Service
 				End If
 			End If
 		End Sub
+
+		Public Overridable Property ServiceURL As String
+			Get
+				Return Me.Url
+			End Get
+			Set(ByVal value As String)
+				Me.Url = String.Format(_serviceURLPageFormat, value)
+			End Set
+		End Property
 
 		Protected Overridable Property WebServiceURL As String
 			Get
@@ -44,7 +57,7 @@ Namespace kCura.WinEDDS.Service
 					Return retval
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
+						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries, ServiceURL)
 					Else
 						Throw
 					End If
@@ -63,7 +76,7 @@ Namespace kCura.WinEDDS.Service
 					Return retval
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
+						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries, ServiceURL)
 					Else
 						Throw
 					End If
@@ -85,7 +98,7 @@ Namespace kCura.WinEDDS.Service
 					Return retval
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
+						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries, ServiceURL)
 					Else
 						Throw
 					End If
@@ -102,7 +115,7 @@ Namespace kCura.WinEDDS.Service
 					Return MyBase.ImageRunHasErrors(appID, runId)
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
+						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries, ServiceURL)
 					Else
 						Throw
 					End If
@@ -120,7 +133,7 @@ Namespace kCura.WinEDDS.Service
 					Return retval
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
+						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries, ServiceURL)
 					Else
 						Throw
 					End If
@@ -139,7 +152,7 @@ Namespace kCura.WinEDDS.Service
 					Return retval
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
+						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries, ServiceURL)
 					Else
 						Throw
 					End If
@@ -156,7 +169,7 @@ Namespace kCura.WinEDDS.Service
 					Return MyBase.DisposeTempTables(appID, runId)
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
+						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries, ServiceURL)
 					Else
 						Throw
 					End If

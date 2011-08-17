@@ -2,13 +2,26 @@ Namespace kCura.WinEDDS.Service
 	Public Class UserManager
 		Inherits kCura.EDDS.WebAPI.UserManagerBase.UserManager
 
+		Private ReadOnly _serviceURLPageFormat As String
+
 		Public Sub New(ByVal credentials As Net.ICredentials, ByVal cookieContainer As System.Net.CookieContainer)
 			MyBase.New()
+
+			_serviceURLPageFormat = "{0}userManager.asmx"
 			Me.Credentials = credentials
 			Me.CookieContainer = cookieContainer
-			Me.Url = String.Format("{0}userManager.asmx", kCura.WinEDDS.Config.WebServiceURL)
+			Me.ServiceURL = kCura.WinEDDS.Config.WebServiceURL
 			Me.Timeout = Settings.DefaultTimeOut
 		End Sub
+
+		Public Overridable Property ServiceURL As String
+			Get
+				Return Me.Url
+			End Get
+			Set(ByVal value As String)
+				Me.Url = String.Format(_serviceURLPageFormat, value)
+			End Set
+		End Property
 
 #Region " Shadow Methods "
 		Public Shadows Function Login(ByVal emailAddress As String, ByVal password As String) As Boolean
@@ -33,7 +46,7 @@ Namespace kCura.WinEDDS.Service
 					End If
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
+						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries, ServiceURL)
 					Else
 						Throw
 					End If

@@ -1,6 +1,9 @@
 ﻿Namespace kCura.WinEDDS.Service
 	Public Class ExportManager
 		Inherits kCura.EDDS.WebAPI.ExportManagerBase.ExportManager
+
+		Private ReadOnly _serviceURLPageFormat As String
+
 		Protected Overrides Function GetWebRequest(ByVal uri As System.Uri) As System.Net.WebRequest
 			Dim wr As System.Net.HttpWebRequest = DirectCast(MyBase.GetWebRequest(uri), System.Net.HttpWebRequest)
 			wr.UnsafeAuthenticatedConnectionSharing = True
@@ -10,11 +13,22 @@
 
 		Public Sub New(ByVal credentials As Net.ICredentials, ByVal cookieContainer As System.Net.CookieContainer)
 			MyBase.New()
+
+			_serviceURLPageFormat = "{0}ExportManager.asmx"
 			Me.Credentials = credentials
 			Me.CookieContainer = cookieContainer
-			Me.Url = String.Format("{0}ExportManager.asmx", kCura.WinEDDS.Config.WebServiceURL)
+			Me.ServiceURL = kCura.WinEDDS.Config.WebServiceURL
 			Me.Timeout = Settings.DefaultTimeOut
 		End Sub
+
+		Public Overridable Property ServiceURL As String
+			Get
+				Return Me.Url
+			End Get
+			Set(ByVal value As String)
+				Me.Url = String.Format(_serviceURLPageFormat, value)
+			End Set
+		End Property
 
 		Public Shadows Function InitializeFolderExport(ByVal appID As Int32, ByVal viewArtifactID As Int32, ByVal parentArtifactID As Int32, ByVal includeSubFolders As Boolean, ByVal avfIds As Int32(), ByVal startAtRecord As Int32, ByVal artifactTypeID As Int32) As kCura.EDDS.WebAPI.ExportManagerBase.InitializationResults
 			Dim tries As Int32 = 0
@@ -24,7 +38,7 @@
 					Return MyBase.InitializeFolderExport(appID, viewArtifactID, parentArtifactID, includeSubFolders, avfIds, startAtRecord, artifactTypeID)
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
+						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries, ServiceURL)
 					Else
 						Throw
 					End If
@@ -41,7 +55,7 @@
 					Return MyBase.InitializeProductionExport(appID, productionArtifactID, avfIds, startAtRecord)
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
+						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries, ServiceURL)
 					Else
 						Throw
 					End If
@@ -58,7 +72,7 @@
 					Return MyBase.InitializeSearchExport(appID, searchArtifactID, avfIds, startAtRecord)
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
+						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries, ServiceURL)
 					Else
 						Throw
 					End If
@@ -83,7 +97,7 @@
 					Return retval
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
+						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries, ServiceURL)
 					Else
 						Throw
 					End If
