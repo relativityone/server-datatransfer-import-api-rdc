@@ -302,12 +302,30 @@ Public Class ExportForm
 		'
 		'Label5
 		'
-		Me.Label5.Location = New System.Drawing.Point(20, 40)
+		Me.Label5.Location = New System.Drawing.Point(20, 18)
 		Me.Label5.Name = "Label5"
 		Me.Label5.Size = New System.Drawing.Size(96, 21)
 		Me.Label5.TabIndex = 18
 		Me.Label5.Text = "Named after:"
 		Me.Label5.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+		'
+		'_nativeFileNameSource
+		'
+		Me._nativeFileNameSource.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+		Me._nativeFileNameSource.Items.AddRange(New Object() {"Select...", "Identifier", "Begin bates"})
+		Me._nativeFileNameSource.Location = New System.Drawing.Point(116, 18)
+		Me._nativeFileNameSource.Name = "_nativeFileNameSource"
+		Me._nativeFileNameSource.Size = New System.Drawing.Size(176, 21)
+		Me._nativeFileNameSource.TabIndex = 19
+		Me._nativeFileNameSource.Visible = False
+		'
+		'_appendOriginalFilename
+		'
+		Me._appendOriginalFilename.Location = New System.Drawing.Point(12, 44)
+		Me._appendOriginalFilename.Name = "_appendOriginalFilename"
+		Me._appendOriginalFilename.Size = New System.Drawing.Size(148, 16)
+		Me._appendOriginalFilename.TabIndex = 17
+		Me._appendOriginalFilename.Text = "Append original filename"
 		'
 		'_overwriteButton
 		'
@@ -334,14 +352,6 @@ Public Class ExportForm
 		Me._folderPath.TabIndex = 5
 		Me._folderPath.Text = "Select a folder ..."
 		'
-		'_appendOriginalFilename
-		'
-		Me._appendOriginalFilename.Location = New System.Drawing.Point(12, 20)
-		Me._appendOriginalFilename.Name = "_appendOriginalFilename"
-		Me._appendOriginalFilename.Size = New System.Drawing.Size(148, 16)
-		Me._appendOriginalFilename.TabIndex = 17
-		Me._appendOriginalFilename.Text = "Append original filename"
-		'
 		'GroupBox3
 		'
 		Me.GroupBox3.Controls.Add(Me._overwriteCheckBox)
@@ -353,16 +363,6 @@ Public Class ExportForm
 		Me.GroupBox3.TabIndex = 11
 		Me.GroupBox3.TabStop = False
 		Me.GroupBox3.Text = "Export Location"
-		'
-		'_nativeFileNameSource
-		'
-		Me._nativeFileNameSource.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
-		Me._nativeFileNameSource.Items.AddRange(New Object() {"Select...", "Identifier", "Begin bates"})
-		Me._nativeFileNameSource.Location = New System.Drawing.Point(116, 40)
-		Me._nativeFileNameSource.Name = "_nativeFileNameSource"
-		Me._nativeFileNameSource.Size = New System.Drawing.Size(176, 21)
-		Me._nativeFileNameSource.TabIndex = 19
-		Me._nativeFileNameSource.Visible = False
 		'
 		'TabControl1
 		'
