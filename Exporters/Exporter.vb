@@ -128,7 +128,7 @@ Namespace kCura.WinEDDS
 			Me.ExportManager = New kCura.WinEDDS.Service.ExportManager(exportFile.Credential, exportFile.CookieContainer)
 
 			'This is done to force the update of all ServiceURL() properties for the Manager objects
-			ServiceURL = ServiceURL
+			ServiceURL = webURL
 
 			_halt = False
 			_processController = processController
