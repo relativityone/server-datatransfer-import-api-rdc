@@ -35,7 +35,7 @@ Namespace kCura.WinEDDS.Service
 			Return code
 		End Function
 
-		Public Property ServiceURL As String
+		Public Overridable Property ServiceURL As String
 			Get
 				Return Me.Url
 			End Get

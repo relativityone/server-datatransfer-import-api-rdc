@@ -3,7 +3,6 @@ Namespace kCura.WinEDDS.CodeValidator
 		Private _codeManager As kCura.WinEDDS.Service.CodeManager
 		Private _lookup As New System.Collections.Hashtable
 		Private _caseInfo As Relativity.CaseInfo
-		Private _serviceURL As String
 
 		Protected ReadOnly Property CodeManager() As kCura.WinEDDS.Service.CodeManager
 			Get
@@ -17,24 +16,9 @@ Namespace kCura.WinEDDS.CodeValidator
 			End Get
 		End Property
 
-		Public Property ServiceURL As String
-			Get
-				Return _serviceURL
-			End Get
-			Set(value As String)
-				_serviceURL = value
-				_codeManager.ServiceURL = value
-			End Set
-		End Property
-
 		Protected Sub New(ByVal caseInfo As Relativity.CaseInfo, ByVal codeManager As kCura.WinEDDS.Service.CodeManager)
-			Me.New(caseInfo, codeManager, kCura.WinEDDS.Config.WebServiceURL)
-		End Sub
-
-		Protected Sub New(ByVal caseInfo As Relativity.CaseInfo, ByVal codeManager As kCura.WinEDDS.Service.CodeManager, ByVal webURL As String)
 			_codeManager = codeManager
 			_caseInfo = caseInfo
-			ServiceURL = webURL
 		End Sub
 
 		Public Function ValidateSingleCode(ByVal field As Api.ArtifactField, ByVal codeName As String) As Nullable(Of Int32)

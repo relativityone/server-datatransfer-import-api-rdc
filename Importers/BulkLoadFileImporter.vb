@@ -1436,7 +1436,7 @@ Namespace kCura.WinEDDS
 		End Property
 
 		Protected Overrides Function GetSingleCodeValidator() As CodeValidator.Base
-			Return New CodeValidator.SingleImporter(_settings.CaseInfo, _codeManager, ServiceURL)
+			Return New CodeValidator.SingleImporter(_settings.CaseInfo, _codeManager)
 		End Function
 		Protected Overrides Function GetArtifactReader() As Api.IArtifactReader
 			Return New kCura.WinEDDS.LoadFileReader(_settings, False, ServiceURL)

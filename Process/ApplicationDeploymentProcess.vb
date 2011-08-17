@@ -24,7 +24,7 @@ Namespace kCura.WinEDDS
 
 #End Region
 
-		Public Property ServiceURL As String
+		Public Overridable Property ServiceURL As String
 			Get
 				Return _serviceURL
 			End Get

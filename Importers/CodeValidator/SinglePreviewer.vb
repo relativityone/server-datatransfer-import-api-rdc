@@ -3,11 +3,7 @@ Namespace kCura.WinEDDS.CodeValidator
 		Inherits Base
 
 		Public Sub New(ByVal caseInfo As Relativity.CaseInfo, ByVal codeManager As kCura.WinEDDS.Service.CodeManager)
-			Me.New(caseInfo, codeManager, kCura.WinEDDS.Config.WebServiceURL)
-		End Sub
-
-		Public Sub New(ByVal caseInfo As Relativity.CaseInfo, ByVal codeManager As kCura.WinEDDS.Service.CodeManager, ByVal webURL As String)
-			MyBase.New(caseInfo, codeManager, webURL)
+			MyBase.New(caseInfo, codeManager)
 		End Sub
 
 		Public Overrides ReadOnly Property CreatedCodeCount() As Integer

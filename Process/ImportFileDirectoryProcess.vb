@@ -11,7 +11,7 @@ Namespace kCura.WinEDDS
 		Private _serviceURL As String
 		'Private _identity As Relativity.Core.EDDSIdentity
 
-		Public Property ServiceURL As String
+		Public Overridable Property ServiceURL As String
 			Get
 				Return _serviceURL
 			End Get

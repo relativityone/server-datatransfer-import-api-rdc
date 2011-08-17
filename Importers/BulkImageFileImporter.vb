@@ -170,7 +170,7 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
-		Public Property ServiceURL() As String
+		Public Overridable Property ServiceURL() As String
 			Get
 				Return _serviceURL
 			End Get

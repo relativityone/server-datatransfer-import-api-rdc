@@ -21,7 +21,7 @@ Namespace kCura.WinEDDS.Service
 			'_identity = identity
 		End Sub
 
-		Public Property ServiceURL As String
+		Public Overridable Property ServiceURL As String
 			Get
 				Return Me.Url
 			End Get

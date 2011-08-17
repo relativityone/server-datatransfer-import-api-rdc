@@ -14,7 +14,7 @@ Namespace kCura.WinEDDS
 		Private _uploadModeText As String = Nothing
 		Private _serviceURL As String
 
-		Public Property ServiceURL As String
+		Public Overridable Property ServiceURL As String
 			Get
 				Return _serviceURL
 			End Get
@@ -52,7 +52,6 @@ Namespace kCura.WinEDDS
 
 		Public Overridable Function GetImporter() As kCura.WinEDDS.BulkLoadFileImporter
 			Dim returnImporter As BulkLoadFileImporter = New kCura.WinEDDS.BulkLoadFileImporter(LoadFile, ProcessController, _timeZoneOffset, True, Me.ProcessID, True, BulkLoadFileFieldDelimiter, ServiceURL)
-			returnImporter.ServiceURL = ServiceURL
 
 			Return returnImporter
 		End Function
