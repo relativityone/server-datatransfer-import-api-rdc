@@ -25,7 +25,7 @@ Namespace kCura.Relativity.DataReaderClient
 #End Region
 
 #Region "Public Routines"
-		Public Overrides Sub Execute()
+		Public Sub Execute()
 			If IsSettingsValid() Then
 				'TODO: Remove this? What database data???
 				RaiseEvent OnMessage(New Status("Getting source data from database"))
@@ -180,29 +180,18 @@ Namespace kCura.Relativity.DataReaderClient
 
 		Private Sub ValidateDataSourceSettings()
 			'This expects the DataTable in SourceData to have already been set
+			EnsureFieldNameIsValid("BatesNumber", Settings.BatesNumberField)
+			EnsureFieldNameIsValid("DocumentIdentifier", Settings.DocumentIdentifierField)
+			EnsureFieldNameIsValid("FileLocation", Settings.FileLocationField)
+		End Sub
 
-			If String.IsNullOrEmpty(Settings.BatesNumberField) Then
-				Throw New Exception("No field name specified for BatesNumber")
-			Else
-				If Not SourceData.SourceData.Columns.Contains(Settings.BatesNumberField) Then
-					Throw New Exception(String.Format("No field named {0} found in the DataTable for BatesNumber", Settings.BatesNumberField))
-				End If
+		Private Sub EnsureFieldNameIsValid(ByVal imageSettingsField As String, ByVal forFieldName As String)
+			If String.IsNullOrEmpty(imageSettingsField) Then
+				Throw New Exception("No field name specified for " & forFieldName)
 			End If
 
-			If String.IsNullOrEmpty(Settings.DocumentIdentifierField) Then
-				Throw New Exception("No field name specified for DocumentIdentifier")
-			Else
-				If Not SourceData.SourceData.Columns.Contains(Settings.DocumentIdentifierField) Then
-					Throw New Exception(String.Format("No field named {0} found in the DataTable for DocumentIdentifier", Settings.DocumentIdentifierField))
-				End If
-			End If
-
-			If String.IsNullOrEmpty(Settings.FileLocationField) Then
-				Throw New Exception("No field name specified for FileLocation")
-			Else
-				If Not SourceData.SourceData.Columns.Contains(Settings.FileLocationField) Then
-					Throw New Exception(String.Format("No field named {0} found in the DataTable for FileLocation", Settings.FileLocationField))
-				End If
+			If Not SourceData.SourceData.Columns.Contains(imageSettingsField) Then
+				Throw New Exception(String.Format("No field named {0} found in the DataTable for " & forFieldName, imageSettingsField))
 			End If
 		End Sub
 
