@@ -1411,7 +1411,9 @@ Public Class ExportForm
 			End If
 			Me.SetSelectedImageType(ef.TypeOfImage)
 		End If
+		_dataFileEncoding.InitializeDropdown()
 		_dataFileEncoding.SelectedEncoding = ef.LoadFileEncoding
+		_textFileEncoding.InitializeDropdown()
 		_textFileEncoding.SelectedEncoding = ef.TextFileEncoding
 		_recordDelimiter.SelectedValue = ef.RecordDelimiter
 		_quoteDelimiter.SelectedValue = ef.QuoteDelimiter
