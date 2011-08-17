@@ -127,7 +127,8 @@ Namespace kCura.WinEDDS
 			End Get
 			Set(value As String)
 				_serviceURL = value
-				_parent.ServiceURL = value
+				'The following is not necessary because the ServiceURL will already be set on instances handed to us
+				'_parent.ServiceURL = value
 				_downloadManager.ServiceURL = value
 				'Uncomment if _documentManager gets used
 				'_documentManager.ServiceURL = value
