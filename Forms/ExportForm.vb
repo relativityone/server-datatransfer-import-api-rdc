@@ -1338,9 +1338,10 @@ Public Class ExportForm
 			Dim newFile As ExportFile = New kCura.WinEDDS.ExportFileSerializer().DeserializeExportFile(_exportFile, settings)
 			If TypeOf newFile Is kCura.WinEDDS.ErrorExportFile Then
 				MsgBox(DirectCast(newFile, kCura.WinEDDS.ErrorExportFile).ErrorMessage, MsgBoxStyle.Exclamation)
+			Else
+				LoadExportFile(newFile)
+				_exportFile = newFile
 			End If
-			LoadExportFile(newFile)
-			_exportFile = newFile
 		End If
 	End Sub
 
