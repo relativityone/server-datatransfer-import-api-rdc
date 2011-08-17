@@ -174,7 +174,7 @@ Namespace kCura.WinEDDS
 			Get
 				Return _serviceURL
 			End Get
-			Set(value As String)
+			Set(ByVal value As String)
 				_serviceURL = value
 				UpdateServiceURLs()
 			End Set
@@ -307,55 +307,11 @@ Namespace kCura.WinEDDS
 			Dim tries As Int32 = NumberOfRetries()
 			Dim retval As New kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults
 			Dim totalRecords As Int32 = Me.ImportBatchSize
-			While tries > 0
-				Try
-					If Me.ImportBatchSize = totalRecords Then
-						retval = FullBatchBulkImport(overwrite, useBulk)
-					Else
-						retval = ReducedBatchBulkImport(overwrite, useBulk, ImportBatchSize)
-					End If
-					Exit While
-				Catch ex As Exception
-					tries -= 1
-					If tries = 0 OrElse ex.GetType = GetType(Service.BulkImportManager.BulkImportSqlException) OrElse _continue = False Then
-						Throw
-					ElseIf tries < NumberOfRetries Then
-						If ExceptionIsTimeoutRelated(ex) AndAlso BatchResizeEnabled Then
-							Me.LowerBatchLimits()
-							Me.RaiseWarningAndPause(ex, kCura.WinEDDS.Config.WaitTimeBetweenRetryAttempts)
-						Else
-							Me.RaiseWarningAndPause(ex, kCura.Utility.Config.Settings.IoErrorWaitTimeInSeconds)
-						End If
-					End If
-				End Try
-			End While
+			retval = BulkImport(overwrite, useBulk)
 			Return retval
 		End Function
 
-		Private Function SubBatchBulkImport(ByVal overwrite As OverwriteType, ByVal useBulk As Boolean, ByVal startRecord As Int32, ByVal recordCount As Int32) As MassImportResults
-			Dim retval As MassImportResults
-			If _productionArtifactID = 0 Then
-				retval = _bulkImportManager.BulkImportImage(_caseInfo.ArtifactID, _uploadKey, _replaceFullText, overwrite, _folderID, _repositoryPath, useBulk, _runId, _keyFieldDto.ArtifactID, _copyFilesToRepository)
-			Else
-				retval = _bulkImportManager.BulkImportProductionImage(_caseInfo.ArtifactID, _uploadKey, _replaceFullText, overwrite, _folderID, _repositoryPath, _productionArtifactID, useBulk, _runId, _keyFieldDto.ArtifactID, _copyFilesToRepository)
-			End If
-			Return retval
-		End Function
-
-		Private Function ReducedBatchBulkImport(ByVal overwrite As OverwriteType, ByVal useBulk As Boolean, ByVal totalRecords As Int32) As MassImportResults
-			Dim retval As New MassImportResults
-			Dim startPoint As Int32 = 1
-			Dim endPoint As Int32 = ImportBatchSize
-			While startPoint < totalRecords
-				retval = MergeResults(retval, SubBatchBulkImport(overwrite, useBulk, startPoint, endPoint - startPoint))
-				startPoint = endPoint + 1
-				endPoint = Math.Min(endPoint + Me.ImportBatchSize, totalRecords)
-			End While
-
-			Return retval
-		End Function
-
-		Private Function FullBatchBulkImport(ByVal overwrite As OverwriteType, ByVal useBulk As Boolean) As MassImportResults
+		Private Function BulkImport(ByVal overwrite As OverwriteType, ByVal useBulk As Boolean) As MassImportResults
 			Dim retval As MassImportResults
 			If _productionArtifactID = 0 Then
 				retval = _bulkImportManager.BulkImportImage(_caseInfo.ArtifactID, _uploadKey, _replaceFullText, overwrite, _folderID, _repositoryPath, useBulk, _runId, _keyFieldDto.ArtifactID, _copyFilesToRepository)
@@ -367,6 +323,7 @@ Namespace kCura.WinEDDS
 
 		Protected Overridable Sub LowerBatchLimits()
 			Me.ImportBatchSize -= 100
+			Me.Statistics.BatchSize = Me.ImportBatchSize
 			Me.BatchSizeHistoryList.Add(Me.ImportBatchSize)
 		End Sub
 
@@ -567,6 +524,7 @@ Namespace kCura.WinEDDS
 				Else
 					RaiseEvent UploadModeChangeEvent(_fileUploader.UploaderType.ToString, _bcpuploader.IsBulkEnabled)
 				End If
+				Me.Statistics.BatchSize = Me.ImportBatchSize
 				While Me.[Continue]
 					If _productionArtifactID <> 0 Then _productionManager.DoPreImportProcessing(_caseInfo.ArtifactID, _productionArtifactID)
 					If Me.CurrentLineNumber < _startLineNumber Then

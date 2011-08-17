@@ -397,6 +397,7 @@ Namespace kCura.WinEDDS
 				_columnHeaders = _artifactReader.GetColumnNames(_settings)
 				If _firstLineContainsColumnNames Then _offset = -1
 				Dim isError As Boolean = False
+				_statistics.BatchSize = Me.ImportBatchSize
 				While _continue AndAlso _artifactReader.HasMoreRecords
 					Try
 						If Me.CurrentLineNumber < _startLineNumber Then
@@ -715,6 +716,7 @@ Namespace kCura.WinEDDS
 
 		Protected Overridable Sub LowerBatchLimits()
 			Me.ImportBatchSize -= 100
+			Me.Statistics.BatchSize = Me.ImportBatchSize
 			Me.BatchSizeHistoryList.Add(Me.ImportBatchSize)
 		End Sub
 
