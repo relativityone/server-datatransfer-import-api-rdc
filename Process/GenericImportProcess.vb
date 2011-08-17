@@ -16,14 +16,6 @@ Namespace kCura.WinEDDS
 			_importer.Import()
 		End Sub
 
-		Protected Overrides Sub Execute(ByVal webServiceURL As String)
-			If String.IsNullOrEmpty(webServiceURL) Then
-				Throw New ArgumentNullException("webServiceURL")
-			End If
-
-			Me.Execute()
-		End Sub
-
 		Private Function GetImporter() As kCura.EDDS.Import.ImporterBase
 			Dim importerAssembly As System.Reflection.Assembly
 			importerAssembly = System.Reflection.Assembly.LoadFrom(Config.OutlookImporterLocation)

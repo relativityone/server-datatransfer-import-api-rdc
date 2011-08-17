@@ -9,14 +9,6 @@ Namespace kCura.WinEDDS
 			_sqlImporter.Import()
 		End Sub
 
-		Protected Overrides Sub Execute(ByVal webServiceURL As String)
-			If String.IsNullOrEmpty(webServiceURL) Then
-				Throw New ArgumentNullException("webServiceURL")
-			End If
-
-			Me.Execute()
-		End Sub
-
 		Private Sub _sqlImporter_OnStatusEvent(ByVal msgId As String, ByVal eventMessage As String) Handles _sqlImporter.OnStatusEvent
 			MyBase.ProcessObserver.RaiseStatusEvent(msgId, eventMessage)
 		End Sub
