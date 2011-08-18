@@ -29,7 +29,7 @@ Namespace kCura.WinEDDS.ImportExtension
 			Dim collection As New kCura.WinEDDS.Api.ArtifactFieldCollection
 			Dim thisSettings As kCura.WinEDDS.ImportExtension.DataReaderLoadFile = DirectCast(_settings, kCura.WinEDDS.ImportExtension.DataReaderLoadFile)
 			_sourceReader = thisSettings.DataReader
-			Dim s As New kCura.WinEDDS.Service.FieldQuery(_settings.Credentials, _settings.CookieContainer)
+			Dim s As New kCura.WinEDDS.Service.FieldQuery(_settings.Credentials, _settings.CookieContainer, ServiceURL)
 			s.ServiceURL = ServiceURL
 
 			Dim allFields As List(Of [String]) = New List(Of [String])()
