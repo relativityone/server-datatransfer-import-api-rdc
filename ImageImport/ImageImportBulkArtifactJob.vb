@@ -1,3 +1,6 @@
+Imports kCura.WinEDDS.ImportExtension
+Imports kCura.WinEDDS
+
 Namespace kCura.Relativity.DataReaderClient
 	Public Class ImageImportBulkArtifactJob
 		Inherits LoadFileJobBase
@@ -35,8 +38,7 @@ Namespace kCura.Relativity.DataReaderClient
 
 				SelectServiceURL()
 
-				Dim process As WinEDDS.ImportExtension.DataReaderImageImporterProcess = New WinEDDS.ImportExtension.DataReaderImageImporterProcess(SourceData.SourceData, Settings.WebServiceURL)
-
+				Dim process As ImportImageFileProcess = CreateImageImporterProcess(SourceData.SourceData, Settings.WebServiceURL)
 				_observer = process.ProcessObserver
 
 				RaiseEvent OnMessage(New Status("Updating settings"))
@@ -52,6 +54,10 @@ Namespace kCura.Relativity.DataReaderClient
 				RaiseEvent OnMessage(New Status("There was an error in your settings.  Import aborted."))
 			End If
 		End Sub
+
+		Protected Overridable Function CreateImageImporterProcess(ByVal sourceData As DataTable, ByVal webServiceUrl As String) As ImportImageFileProcess
+			Return New DataReaderImageImporterProcess(sourceData, webServiceUrl)
+		End Function
 #End Region
 
 #Region "Private Functions"
@@ -196,29 +202,18 @@ Namespace kCura.Relativity.DataReaderClient
 
 		Private Sub ValidateDataSourceSettings()
 			'This expects the DataTable in SourceData to have already been set
+			EnsureFieldNameIsValid("BatesNumber", Settings.BatesNumberField)
+			EnsureFieldNameIsValid("DocumentIdentifier", Settings.DocumentIdentifierField)
+			EnsureFieldNameIsValid("FileLocation", Settings.FileLocationField)
+		End Sub
 
-			If String.IsNullOrEmpty(Settings.BatesNumberField) Then
-				Throw New Exception("No field name specified for BatesNumber")
-			Else
-				If Not SourceData.SourceData.Columns.Contains(Settings.BatesNumberField) Then
-					Throw New Exception(String.Format("No field named {0} found in the DataTable for BatesNumber", Settings.BatesNumberField))
-				End If
+		Private Sub EnsureFieldNameIsValid(ByVal imageSettingsField As String, ByVal forFieldName As String)
+			If String.IsNullOrEmpty(imageSettingsField) Then
+				Throw New Exception("No field name specified for " & forFieldName)
 			End If
 
-			If String.IsNullOrEmpty(Settings.DocumentIdentifierField) Then
-				Throw New Exception("No field name specified for DocumentIdentifier")
-			Else
-				If Not SourceData.SourceData.Columns.Contains(Settings.DocumentIdentifierField) Then
-					Throw New Exception(String.Format("No field named {0} found in the DataTable for DocumentIdentifier", Settings.DocumentIdentifierField))
-				End If
-			End If
-
-			If String.IsNullOrEmpty(Settings.FileLocationField) Then
-				Throw New Exception("No field name specified for FileLocation")
-			Else
-				If Not SourceData.SourceData.Columns.Contains(Settings.FileLocationField) Then
-					Throw New Exception(String.Format("No field named {0} found in the DataTable for FileLocation", Settings.FileLocationField))
-				End If
+			If Not SourceData.SourceData.Columns.Contains(imageSettingsField) Then
+				Throw New Exception(String.Format("No field named {0} found in the DataTable for " & forFieldName, imageSettingsField))
 			End If
 		End Sub
 
