@@ -40,8 +40,7 @@ Namespace kCura.WinEDDS
 		Public Sub New(ByVal credentials As Net.NetworkCredential, ByVal destinationFolderPath As String, ByVal downloadHandlerUrl As String, ByVal cookieContainer As System.Net.CookieContainer, ByVal authenticationToken As String, ByVal webURL As String)
 			_serviceURL = webURL
 
-			_gateway = New kCura.WinEDDS.Service.FileIO(credentials, cookieContainer)
-			_gateway.ServiceURL = ServiceURL
+			_gateway = New kCura.WinEDDS.Service.FileIO(credentials, cookieContainer, ServiceURL)
 
 			_cookieContainer = cookieContainer
 			_gateway.Credentials = credentials
@@ -55,8 +54,7 @@ Namespace kCura.WinEDDS
 			'Dim documentManager As kCura.EDDS.WebAPI.DocumentManagerBase.DocumentManager
 			SetType(_destinationFolderPath)
 			_authenticationToken = authenticationToken
-			_userManager = New kCura.WinEDDS.Service.UserManager(credentials, cookieContainer)
-			_userManager.ServiceURL = ServiceURL
+			_userManager = New kCura.WinEDDS.Service.UserManager(credentials, cookieContainer, ServiceURL)
 
 			If _locationAccessMatrix Is Nothing Then _locationAccessMatrix = New System.Collections.Hashtable
 		End Sub

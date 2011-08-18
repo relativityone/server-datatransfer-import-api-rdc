@@ -47,8 +47,7 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Protected Overridable Function GetImageFileImporter() As kCura.WinEDDS.BulkImageFileImporter
-			Dim returnImporter As BulkImageFileImporter = New kCura.WinEDDS.BulkImageFileImporter(ImageLoadFile.DestinationFolderID, ImageLoadFile, ProcessController, Me.ProcessID, True)
-			returnImporter.ServiceURL = ServiceURL
+			Dim returnImporter As BulkImageFileImporter = New kCura.WinEDDS.BulkImageFileImporter(ImageLoadFile.DestinationFolderID, ImageLoadFile, ProcessController, Me.ProcessID, True, ServiceURL)
 
 			Return returnImporter
 		End Function
@@ -95,8 +94,7 @@ Namespace kCura.WinEDDS
 				retval.TotalFileSize = _imageFileImporter.Statistics.FileBytes
 				retval.TotalMetadataBytes = _imageFileImporter.Statistics.MetadataBytes
 				retval.SendNotification = ImageLoadFile.SendEmailOnLoadCompletion
-				Dim auditmanager As New kCura.WinEDDS.Service.AuditManager(ImageLoadFile.Credential, ImageLoadFile.CookieContainer)
-				auditmanager.ServiceURL = ServiceURL
+				Dim auditmanager As New kCura.WinEDDS.Service.AuditManager(ImageLoadFile.Credential, ImageLoadFile.CookieContainer, ServiceURL)
 
 				auditmanager.AuditImageImport(ImageLoadFile.CaseInfo.ArtifactID, runID, Not success, retval)
 			Catch

@@ -18,8 +18,7 @@
 			myHttpWebRequest = DirectCast(System.Net.WebRequest.Create(requestURIString), System.Net.HttpWebRequest)
 			myHttpWebRequest.Credentials = cred
 			myHttpWebResponse = DirectCast(myHttpWebRequest.GetResponse(), System.Net.HttpWebResponse)
-			relativityManager = New kCura.WinEDDS.Service.RelativityManager(cred, cookieContainer)
-			relativityManager.ServiceURL = webURL
+			relativityManager = New kCura.WinEDDS.Service.RelativityManager(cred, cookieContainer, webURL)
 
 			If relativityManager.ValidateSuccesfulLogin Then
 				CheckVersionWithServiceURL(cred, cookieContainer, webURL)
@@ -36,10 +35,8 @@
 		Public Shared Function LoginUsernamePasswordWithServiceURL(ByVal username As String, ByVal password As String, ByVal cookieContainer As Net.CookieContainer, ByVal webURL As String) As System.Net.NetworkCredential
 			If cookieContainer Is Nothing Then Throw New ArgumentException("Cookie container not set")
 			Dim credential As New Net.NetworkCredential(username, password)
-			Dim userManager As New kCura.WinEDDS.Service.UserManager(credential, cookieContainer)
-			Dim relativityManager As New kCura.WinEDDS.Service.RelativityManager(credential, cookieContainer)
-			userManager.ServiceURL = webURL
-			relativityManager.ServiceURL = webURL
+			Dim userManager As New kCura.WinEDDS.Service.UserManager(credential, cookieContainer, webURL)
+			Dim relativityManager As New kCura.WinEDDS.Service.RelativityManager(credential, cookieContainer, webURL)
 
 			CheckVersionWithServiceURL(credential, cookieContainer, webURL)
 			If userManager.Login(username, password) Then
@@ -58,8 +55,7 @@
 			locale.NumberFormat.CurrencySymbol = relativityManager.RetrieveCurrencySymbol
 			System.Threading.Thread.CurrentThread.CurrentCulture = locale
 
-			Dim userMan As kCura.WinEDDS.Service.UserManager = New kCura.WinEDDS.Service.UserManager(relativityManager.Credentials, relativityManager.CookieContainer)
-			userMan.ServiceURL = webURL
+			Dim userMan As kCura.WinEDDS.Service.UserManager = New kCura.WinEDDS.Service.UserManager(relativityManager.Credentials, relativityManager.CookieContainer, webURL)
 
 			kCura.WinEDDS.Service.Settings.AuthenticationToken = userMan.GenerateDistributedAuthenticationToken()
 		End Sub
@@ -69,8 +65,7 @@
 		End Sub
 
 		Private Shared Sub CheckVersionWithServiceURL(ByVal credential As Net.ICredentials, ByVal cookieContainer As System.Net.CookieContainer, ByVal webURL As String)
-			Dim relativityManager As New kCura.WinEDDS.Service.RelativityManager(credential, cookieContainer)
-			relativityManager.ServiceURL = webURL
+			Dim relativityManager As New kCura.WinEDDS.Service.RelativityManager(credential, cookieContainer, webURL)
 
 			Dim winVersionString As String = System.Reflection.Assembly.GetExecutingAssembly.FullName.Split(","c)(1).Split("="c)(1)
 			Dim winRelativityVersion As String() = winVersionString.Split("."c)

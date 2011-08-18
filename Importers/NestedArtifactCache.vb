@@ -18,11 +18,7 @@ Namespace kCura.WinEDDS
 			Set(value As String)
 				_serviceURL = value
 				'Didn't want to change the IHierarchicArtifactManager interface...this is the result.
-				If TypeOf _manager Is Service.FieldSpecificCodeManager Then
-					DirectCast(_manager, Service.FieldSpecificCodeManager).ServiceURL = value
-				ElseIf TypeOf _manager Is Service.FieldSpecificCodePreviewer Then
-					DirectCast(_manager, Service.FieldSpecificCodePreviewer).ServiceURL = value
-				ElseIf TypeOf _manager Is Service.FolderManager Then
+				If TypeOf _manager Is Service.FolderManager Then
 					DirectCast(_manager, Service.FolderManager).ServiceURL = value
 				End If
 			End Set

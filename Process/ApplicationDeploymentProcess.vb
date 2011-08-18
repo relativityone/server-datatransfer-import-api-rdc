@@ -42,8 +42,7 @@ Namespace kCura.WinEDDS
 					Dim installationParameters As New ApplicationInstallationParameters
 					installationParameters.CaseId = caseInfo.ArtifactID
 
-					Dim applicationDeploymentSystem As New WinEDDS.Service.TemplateManager(_credential, Me._cookieContainer)
-					applicationDeploymentSystem.ServiceURL = ServiceURL
+					Dim applicationDeploymentSystem As New WinEDDS.Service.TemplateManager(_credential, Me._cookieContainer, ServiceURL)
 
 					Dim resolutionResult As ApplicationInstallationResult = Nothing
 					If _resolveArtifacts IsNot Nothing AndAlso _resolveArtifacts(i).Count > 0 Then

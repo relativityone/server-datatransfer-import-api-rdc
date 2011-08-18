@@ -159,7 +159,7 @@ Namespace kCura.WinEDDS
 
 		Protected Overridable ReadOnly Property BulkImportManager As kCura.WinEDDS.Service.BulkImportManager
 			Get
-				If _bulkImportManager Is Nothing Then _bulkImportManager = New kCura.WinEDDS.Service.BulkImportManager(_settings.Credential, _settings.CookieContainer)
+				If _bulkImportManager Is Nothing Then _bulkImportManager = New kCura.WinEDDS.Service.BulkImportManager(_settings.Credential, _settings.CookieContainer, ServiceURL)
 				Return _bulkImportManager
 			End Get
 		End Property
@@ -176,7 +176,7 @@ Namespace kCura.WinEDDS
 			End Get
 			Set(ByVal value As String)
 				_serviceURL = value
-				UpdateServiceURLs()
+				UpdateServiceURLs(value)
 			End Set
 		End Property
 
@@ -226,8 +226,7 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Protected Overridable Sub InitializeDTOs(ByVal args As ImageLoadFile)
-			Dim fieldManager As FieldManager = New kCura.WinEDDS.Service.FieldManager(args.Credential, args.CookieContainer)
-			fieldManager.ServiceURL = ServiceURL
+			Dim fieldManager As FieldManager = New kCura.WinEDDS.Service.FieldManager(args.Credential, args.CookieContainer, ServiceURL)
 
 			If _productionArtifactID <> 0 Then
 				_productionDTO = _productionManager.Read(args.CaseInfo.ArtifactID, _productionArtifactID)
@@ -241,34 +240,26 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Protected Overridable Sub InitializeManagers(ByVal args As ImageLoadFile)
-			_docManager = New kCura.WinEDDS.Service.DocumentManager(args.Credential, args.CookieContainer)
-			_fieldQuery = New kCura.WinEDDS.Service.FieldQuery(args.Credential, args.CookieContainer)
-			_folderManager = New kCura.WinEDDS.Service.FolderManager(args.Credential, args.CookieContainer)
-			_auditManager = New kCura.WinEDDS.Service.AuditManager(args.Credential, args.CookieContainer)
-			_fileManager = New kCura.WinEDDS.Service.FileManager(args.Credential, args.CookieContainer)
-			_productionManager = New kCura.WinEDDS.Service.ProductionManager(args.Credential, args.CookieContainer)
-			_bulkImportManager = New kCura.WinEDDS.Service.BulkImportManager(args.Credential, args.CookieContainer)
-
-			_docManager.ServiceURL = ServiceURL
-			_fieldQuery.ServiceURL = ServiceURL
-			_folderManager.ServiceURL = ServiceURL
-			_auditManager.ServiceURL = ServiceURL
-			_fileManager.ServiceURL = ServiceURL
-			_productionManager.ServiceURL = ServiceURL
-			_bulkImportManager.ServiceURL = ServiceURL
+			_docManager = New kCura.WinEDDS.Service.DocumentManager(args.Credential, args.CookieContainer, ServiceURL)
+			_fieldQuery = New kCura.WinEDDS.Service.FieldQuery(args.Credential, args.CookieContainer, ServiceURL)
+			_folderManager = New kCura.WinEDDS.Service.FolderManager(args.Credential, args.CookieContainer, ServiceURL)
+			_auditManager = New kCura.WinEDDS.Service.AuditManager(args.Credential, args.CookieContainer, ServiceURL)
+			_fileManager = New kCura.WinEDDS.Service.FileManager(args.Credential, args.CookieContainer, ServiceURL)
+			_productionManager = New kCura.WinEDDS.Service.ProductionManager(args.Credential, args.CookieContainer, ServiceURL)
+			_bulkImportManager = New kCura.WinEDDS.Service.BulkImportManager(args.Credential, args.CookieContainer, ServiceURL)
 		End Sub
 
-		Private Sub UpdateServiceURLs()
-			_fileUploader.ServiceURL = ServiceURL
-			_bcpuploader.ServiceURL = ServiceURL
+		Private Sub UpdateServiceURLs(ByVal newURL As String)
+			_fileUploader.ServiceURL = newURL
+			_bcpuploader.ServiceURL = newURL
 
-			_docManager.ServiceURL = ServiceURL
-			_fieldQuery.ServiceURL = ServiceURL
-			_folderManager.ServiceURL = ServiceURL
-			_auditManager.ServiceURL = ServiceURL
-			_fileManager.ServiceURL = ServiceURL
-			_productionManager.ServiceURL = ServiceURL
-			_bulkImportManager.ServiceURL = ServiceURL
+			_docManager.ServiceURL = newURL
+			_fieldQuery.ServiceURL = newURL
+			_folderManager.ServiceURL = newURL
+			_auditManager.ServiceURL = newURL
+			_fileManager.ServiceURL = newURL
+			_productionManager.ServiceURL = newURL
+			_bulkImportManager.ServiceURL = newURL
 		End Sub
 #End Region
 

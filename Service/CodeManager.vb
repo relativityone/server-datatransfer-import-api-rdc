@@ -5,12 +5,16 @@ Namespace kCura.WinEDDS.Service
 		Private ReadOnly _serviceURLPageFormat As String
 
 		Public Sub New(ByVal credentials As Net.ICredentials, ByVal cookieContainer As System.Net.CookieContainer)
+			Me.New(credentials, cookieContainer, kCura.WinEDDS.Config.WebServiceURL)
+		End Sub
+
+		Public Sub New(ByVal credentials As Net.ICredentials, ByVal cookieContainer As System.Net.CookieContainer, ByVal webURL As String)
 			MyBase.New()
 
 			_serviceURLPageFormat = "{0}CodeManager.asmx"
 			Me.Credentials = credentials
 			Me.CookieContainer = cookieContainer
-			Me.ServiceURL = kCura.WinEDDS.Config.WebServiceURL
+			Me.ServiceURL = webURL
 			Me.Timeout = Settings.DefaultTimeOut
 		End Sub
 

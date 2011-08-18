@@ -98,8 +98,7 @@ Namespace kCura.WinEDDS
 
 		Protected Overridable ReadOnly Property BulkImportManager As kCura.WinEDDS.Service.BulkImportManager
 			Get
-				If _bulkImportManager Is Nothing Then _bulkImportManager = New kCura.WinEDDS.Service.BulkImportManager(_settings.Credentials, _settings.CookieContainer)
-				_bulkImportManager.ServiceURL = ServiceURL
+				If _bulkImportManager Is Nothing Then _bulkImportManager = New kCura.WinEDDS.Service.BulkImportManager(_settings.Credentials, _settings.CookieContainer, ServiceURL)
 
 				Return _bulkImportManager
 			End Get
@@ -110,17 +109,7 @@ Namespace kCura.WinEDDS
 				Return _serviceURL
 			End Get
 			Set(value As String)
-				_codeManager.ServiceURL = value
-				_documentManager.ServiceURL = value
-				_fieldQuery.ServiceURL = value
-				_fileManager.ServiceURL = value
-				_folderManager.ServiceURL = value
-				_objectManager.ServiceURL = value
-				_uploadManager.ServiceURL = value
-				_usermanager.ServiceURL = value
-				If Not _bulkImportManager Is Nothing Then
-					_bulkImportManager.ServiceURL = value
-				End If
+				UpdateServiceURLs(value)
 			End Set
 		End Property
 
@@ -191,18 +180,29 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Protected Overridable Sub InitializeManagers(ByVal args As LoadFile, ByVal webURL As String)
-			_documentManager = New kCura.WinEDDS.Service.DocumentManager(args.Credentials, args.CookieContainer)
-			_uploadManager = New kCura.WinEDDS.Service.FileIO(args.Credentials, args.CookieContainer)
-			_codeManager = New kCura.WinEDDS.Service.CodeManager(args.Credentials, args.CookieContainer)
-			_folderManager = New kCura.WinEDDS.Service.FolderManager(args.Credentials, args.CookieContainer)
-			_fieldQuery = New kCura.WinEDDS.Service.FieldQuery(args.Credentials, args.CookieContainer)
-			_fileManager = New kCura.WinEDDS.Service.FileManager(args.Credentials, args.CookieContainer)
-			_usermanager = New kCura.WinEDDS.Service.UserManager(args.Credentials, args.CookieContainer)
+			_documentManager = New kCura.WinEDDS.Service.DocumentManager(args.Credentials, args.CookieContainer, ServiceURL)
+			_uploadManager = New kCura.WinEDDS.Service.FileIO(args.Credentials, args.CookieContainer, ServiceURL)
+			_codeManager = New kCura.WinEDDS.Service.CodeManager(args.Credentials, args.CookieContainer, ServiceURL)
+			_folderManager = New kCura.WinEDDS.Service.FolderManager(args.Credentials, args.CookieContainer, ServiceURL)
+			_fieldQuery = New kCura.WinEDDS.Service.FieldQuery(args.Credentials, args.CookieContainer, ServiceURL)
+			_fileManager = New kCura.WinEDDS.Service.FileManager(args.Credentials, args.CookieContainer, ServiceURL)
+			_usermanager = New kCura.WinEDDS.Service.UserManager(args.Credentials, args.CookieContainer, ServiceURL)
 			'_bulkImportManager = New kCura.WinEDDS.Service.BulkImportManager(args.Credentials, args.CookieContainer)
-			_objectManager = New kCura.WinEDDS.Service.ObjectManager(args.Credentials, args.CookieContainer)
+			_objectManager = New kCura.WinEDDS.Service.ObjectManager(args.Credentials, args.CookieContainer, ServiceURL)
+		End Sub
 
-			'This is done to force the update of all ServiceURL() properties for the Manager objects
-			ServiceURL = webURL
+		Private Sub UpdateServiceURLs(ByVal value As String)
+			_codeManager.ServiceURL = value
+			_documentManager.ServiceURL = value
+			_fieldQuery.ServiceURL = value
+			_fileManager.ServiceURL = value
+			_folderManager.ServiceURL = value
+			_objectManager.ServiceURL = value
+			_uploadManager.ServiceURL = value
+			_usermanager.ServiceURL = value
+			If Not _bulkImportManager Is Nothing Then
+				_bulkImportManager.ServiceURL = value
+			End If
 		End Sub
 
 #Region "Code Parsing"
@@ -263,9 +263,9 @@ Namespace kCura.WinEDDS
 				Dim i As Int32
 				Dim hierarchicCodeManager As Service.IHierarchicArtifactManager
 				If forPreview Then
-					hierarchicCodeManager = New Service.FieldSpecificCodePreviewer(_codeManager, field.CodeTypeID, ServiceURL)
+					hierarchicCodeManager = New Service.FieldSpecificCodePreviewer(_codeManager, field.CodeTypeID)
 				Else
-					hierarchicCodeManager = New Service.FieldSpecificCodeManager(_codeManager, field.CodeTypeID, ServiceURL)
+					hierarchicCodeManager = New Service.FieldSpecificCodeManager(_codeManager, field.CodeTypeID)
 				End If
 				If Not Me.MulticodeMatrix.Contains(field.CodeTypeID) Then
 					Me.MulticodeMatrix.Add(field.CodeTypeID, New NestedArtifactCache(hierarchicCodeManager, _caseSystemID, _caseArtifactID, _hierarchicalMultiValueFieldDelmiter, ServiceURL))

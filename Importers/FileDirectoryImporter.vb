@@ -26,17 +26,14 @@ Namespace kCura.WinEDDS
 		Public Overrides Sub Import()
 
 			' create webservice proxies
-			_documentManager = New kCura.WinEDDS.Service.DocumentManager(_credential, _cookieContainer)
-			_documentManager.ServiceURL = ServiceURL
-			_folderManager = New kCura.WinEDDS.Service.FolderManager(_credential, _cookieContainer)
+			_documentManager = New kCura.WinEDDS.Service.DocumentManager(_credential, _cookieContainer, ServiceURL)
+			_folderManager = New kCura.WinEDDS.Service.FolderManager(_credential, _cookieContainer, ServiceURL)
 			_folderManager.ServiceURL = ServiceURL
-			_fileManager = New kCura.WinEDDS.Service.FileManager(_credential, _cookieContainer)
-			_fileManager.ServiceURL = ServiceURL
+			_fileManager = New kCura.WinEDDS.Service.FileManager(_credential, _cookieContainer, ServiceURL)
 			_uploader = New kCura.WinEDDS.FileUploader(_credential, _importFileDirectorySettings.CaseInfo.ArtifactID, _documentManager.GetDocumentDirectoryByCaseArtifactID(_importFileDirectorySettings.CaseInfo.ArtifactID) & "\", _cookieContainer, ServiceURL)
 
 			' get case fields
-			Dim fieldManager As New kCura.WinEDDS.Service.FieldQuery(_credential, _cookieContainer)
-			fieldManager.ServiceURL = ServiceURL
+			Dim fieldManager As New kCura.WinEDDS.Service.FieldQuery(_credential, _cookieContainer, ServiceURL)
 
 			'TODO: WINFLEX ArtifactTypeID
 			_caseFields = fieldManager.RetrieveAllAsArray(_importFileDirectorySettings.CaseInfo.ArtifactID, 10)

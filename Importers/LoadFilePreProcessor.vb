@@ -103,7 +103,7 @@ Namespace kCura.WinEDDS
 			_haltListener = New HaltListener
 			_continue = True
 			_folders = New System.Collections.Specialized.HybridDictionary
-			_codeManager = New kCura.WinEDDS.Service.CodeManager(args.Credentials, args.CookieContainer)
+			_codeManager = New kCura.WinEDDS.Service.CodeManager(args.Credentials, args.CookieContainer, ServiceURL)
 		End Sub
 
 		Private Function NeedToCheckFolders() As Boolean

@@ -201,7 +201,7 @@ Namespace kCura.WinEDDS
 		Protected Overridable ReadOnly Property ParentArtifactTypeID As Int32
 			Get
 				If Not _parentArtifactTypeID.HasValue Then
-					Dim parentQuery As New kCura.WinEDDS.Service.ObjectTypeManager(_settings.Credentials, _settings.CookieContainer)
+					Dim parentQuery As New kCura.WinEDDS.Service.ObjectTypeManager(_settings.Credentials, _settings.CookieContainer, ServiceURL)
 					_parentArtifactTypeID = CType(parentQuery.RetrieveParentArtifactTypeID(_settings.CaseInfo.ArtifactID, _settings.ArtifactTypeID).Tables(0).Rows(0)("ParentArtifactTypeID"), Int32)
 				End If
 				Return _parentArtifactTypeID.Value
@@ -472,8 +472,7 @@ Namespace kCura.WinEDDS
 
 		Protected Overrides Sub InitializeManagers(ByVal args As LoadFile)
 			MyBase.InitializeManagers(args)
-			_auditManager = New kCura.WinEDDS.Service.AuditManager(args.Credentials, args.CookieContainer)
-			_auditManager.ServiceURL = ServiceURL
+			_auditManager = New kCura.WinEDDS.Service.AuditManager(args.Credentials, args.CookieContainer, ServiceURL)
 		End Sub
 
 		Private Sub DeleteFiles()

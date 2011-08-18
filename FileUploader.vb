@@ -40,8 +40,7 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Public Sub New(ByVal credentials As Net.NetworkCredential, ByVal caseArtifactID As Int32, ByVal destinationFolderPath As String, ByVal cookieContainer As System.Net.CookieContainer, ByVal webURL As String, Optional ByVal sortIntoVolumes As Boolean = True)
-			_gateway = New kCura.WinEDDS.Service.FileIO(credentials, cookieContainer)
-			_gateway.ServiceURL = webURL
+			_gateway = New kCura.WinEDDS.Service.FileIO(credentials, cookieContainer, webURL)
 
 			_gateway.Credentials = credentials
 			_gateway.Timeout = Int32.MaxValue

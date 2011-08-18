@@ -9,13 +9,17 @@ Namespace kCura.WinEDDS.Service
 		Private ReadOnly _serviceURLPageFormat As String
 
 		Public Sub New(ByVal credentials As Net.ICredentials, ByVal cookieContainer As System.Net.CookieContainer)
+			Me.New(credentials, cookieContainer, kCura.WinEDDS.Config.WebServiceURL)
+		End Sub
+
+		Public Sub New(ByVal credentials As Net.ICredentials, ByVal cookieContainer As System.Net.CookieContainer, ByVal webURL As String)
 			'Public Sub New(ByVal credentials As Net.NetworkCredential, ByVal cookieContainer As System.Net.CookieContainer, ByVal identity As Relativity.Core.EDDSIdentity)
 			MyBase.New()
 
 			_serviceURLPageFormat = "{0}FieldQuery.asmx"
 			Me.Credentials = credentials
 			Me.CookieContainer = cookieContainer
-			Me.ServiceURL = kCura.WinEDDS.Config.WebServiceURL
+			Me.ServiceURL = webURL
 			Me.Timeout = Settings.DefaultTimeOut
 			'_identity = identity
 		End Sub

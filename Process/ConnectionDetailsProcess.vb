@@ -174,8 +174,7 @@ Namespace kCura.WinEDDS
 				Return False
 			End Try
 			Try
-				Dim gateway As New kCura.WinEDDS.Service.FileIO(_credential, _cookieContainer)
-				gateway.ServiceURL = ServiceURL
+				Dim gateway As New kCura.WinEDDS.Service.FileIO(_credential, _cookieContainer, ServiceURL)
 
 				gateway.RemoveTempFile(_caseInfo.ArtifactID, dest)
 				Me.WriteStatus("Temp file successfully removed from repository")
@@ -190,8 +189,7 @@ Namespace kCura.WinEDDS
 			End Try
 			Try
 				Me.WriteStatus("Retrieving default repository drive information:")
-				Dim tempFileIO As Service.FileIO = New kCura.WinEDDS.Service.FileIO(_credential, _cookieContainer)
-				tempFileIO.ServiceURL = ServiceURL
+				Dim tempFileIO As Service.FileIO = New kCura.WinEDDS.Service.FileIO(_credential, _cookieContainer, ServiceURL)
 
 				Dim s As String()() = tempFileIO.GetDefaultRepositorySpaceReport(_caseInfo.ArtifactID)
 				Me.WriteStatus("Success - report follows:")
@@ -231,8 +229,7 @@ Namespace kCura.WinEDDS
 
 		Private Function CheckBcp() As Boolean
 			Me.WriteStatus("Checking Bulk Share Configuration")
-			Dim gateway As New kCura.WinEDDS.Service.FileIO(_credential, _cookieContainer)
-			gateway.ServiceURL = ServiceURL
+			Dim gateway As New kCura.WinEDDS.Service.FileIO(_credential, _cookieContainer, ServiceURL)
 
 			Dim bcpPath As String
 			Try

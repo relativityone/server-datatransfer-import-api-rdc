@@ -19,13 +19,17 @@ Namespace kCura.WinEDDS.Service
 		End Function
 
 		Public Sub New(ByVal credentials As Net.ICredentials, ByVal cookieContainer As System.Net.CookieContainer)
+			Me.New(credentials, cookieContainer, kCura.WinEDDS.Config.WebServiceURL)
+		End Sub
+
+		Public Sub New(ByVal credentials As Net.ICredentials, ByVal cookieContainer As System.Net.CookieContainer, ByVal webURL As String)
 			MyBase.New()
 
 			_serviceURLPageFormat = "{0}FieldManager.asmx"
 			Me.Credentials = credentials
 			Me.CookieContainer = cookieContainer
-			_query = New kCura.WinEDDS.Service.FieldQuery(credentials, Me.CookieContainer)
-			Me.ServiceURL = kCura.WinEDDS.Config.WebServiceURL
+			_query = New kCura.WinEDDS.Service.FieldQuery(credentials, Me.CookieContainer, webURL)
+			Me.ServiceURL = webURL
 			Me.Timeout = Settings.DefaultTimeOut
 		End Sub
 

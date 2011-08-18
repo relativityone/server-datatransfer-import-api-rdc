@@ -68,14 +68,11 @@ Namespace kCura.WinEDDS
 			MyBase.New(New Char() {","c}, doRetryLogic)
 			_serviceURL = webURL
 
-			_docManager = New kCura.WinEDDS.Service.DocumentManager(args.Credential, args.CookieContainer)
-			_fieldQuery = New kCura.WinEDDS.Service.FieldQuery(args.Credential, args.CookieContainer)
-			_folderManager = New kCura.WinEDDS.Service.FolderManager(args.Credential, args.CookieContainer)
-			_fileManager = New kCura.WinEDDS.Service.FileManager(args.Credential, args.CookieContainer)
+			_docManager = New kCura.WinEDDS.Service.DocumentManager(args.Credential, args.CookieContainer, ServiceURL)
+			_fieldQuery = New kCura.WinEDDS.Service.FieldQuery(args.Credential, args.CookieContainer, ServiceURL)
+			_folderManager = New kCura.WinEDDS.Service.FolderManager(args.Credential, args.CookieContainer, ServiceURL)
+			_fileManager = New kCura.WinEDDS.Service.FileManager(args.Credential, args.CookieContainer, ServiceURL)
 			_fileUploader = New kCura.WinEDDS.FileUploader(args.Credential, args.CaseInfo.ArtifactID, _docManager.GetDocumentDirectoryByCaseArtifactID(args.CaseInfo.ArtifactID) & "\", args.CookieContainer, ServiceURL)
-
-			'This is done to force the update of all ServiceURL() properties for the Manager objects
-			ServiceURL = ServiceURL
 
 			_overwrite = args.Overwrite
 			_replaceFullText = args.ReplaceFullText
