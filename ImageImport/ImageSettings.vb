@@ -49,11 +49,6 @@ Namespace kCura.Relativity.DataReaderClient
 		Public Property ImageFilePathSourceFieldName() As String
 
 		''' <summary>
-		''' Field name which contains the unique identifier of a records parent object record
-		''' </summary>
-		Public Property ParentObjectIdSourceFieldName() As String
-
-		''' <summary>
 		''' If this is set then images will load into selected production
 		''' </summary>
 		Public Property ProductionArtifactID() As Int32

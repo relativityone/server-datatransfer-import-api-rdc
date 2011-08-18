@@ -50,11 +50,6 @@ Namespace kCura.Relativity.DataReaderClient
 		Public Property NestedValueDelimiter() As Char
 
 		''' <summary>
-		''' Field name which contains the unique identifier of a records parent object record
-		''' </summary>
-		Public Property ParentObjectIdSourceFieldName() As String
-
-		''' <summary>
 		''' '
 		''' </summary>
 		Public Property RowCount() As Int32

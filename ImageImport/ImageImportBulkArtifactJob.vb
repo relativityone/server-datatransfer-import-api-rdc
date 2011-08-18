@@ -66,7 +66,7 @@ Namespace kCura.Relativity.DataReaderClient
 			'tempLoadFile.CaseDefaultPath
 			'tempLoadFile.DestinationFolderID
 			'These 2 will get set in ImageSettingsFactory
-			'tempLoadFile.Credential = credential
+			'tempLoadFile.Credential = CType(GetCredentials(Settings), Net.NetworkCredential)
 			'tempLoadFile.CookieContainer = _cookieContainer
 			tempLoadFile.ForProduction = imgSettings.ForProduction
 			tempLoadFile.FullTextEncoding = imgSettings.ExtractedTextEncoding
@@ -74,6 +74,22 @@ Namespace kCura.Relativity.DataReaderClient
 			tempLoadFile.SendEmailOnLoadCompletion = imgSettings.SendEmailOnLoadCompletion
 
 			Return tempLoadFile
+		End Function
+
+		Private Function GetCredentials(ByVal imgSettings As ImageSettings) As Net.ICredentials
+			Dim credential As System.Net.ICredentials = Nothing
+			If credential Is Nothing Then
+				Try
+					credential = kCura.WinEDDS.Api.LoginHelper.LoginWindowsAuthWithServiceURL(_cookieContainer, Settings.WebServiceURL)
+				Catch
+				End Try
+			End If
+
+			While credential Is Nothing
+				credential = kCura.WinEDDS.Api.LoginHelper.LoginUsernamePasswordWithServiceURL(Settings.RelativityUsername, Settings.RelativityPassword, _cookieContainer, Settings.WebServiceURL)
+				Exit While
+			End While
+			Return credential
 		End Function
 
 		Private Function GetDefaultIdentifierFieldID(ByVal credential As Net.NetworkCredential, ByVal caseArtifactID As Int32) As Int32
@@ -101,7 +117,8 @@ Namespace kCura.Relativity.DataReaderClient
 			Return True
 		End Function
 
-		'TODO: Allow user to specify "Just overwrite the original column names to avoid a copy operation"?
+		'TODO: Don't need Copy()
+		'TODO: Have sane defaults for 3 new properties
 		Private Function MapSuppliedFieldNamesToActual(ByVal imageSettings As ImageSettings, ByVal srcDataTable As DataTable) As DataTable
 			'kCura.WinEDDS.ImportExtension.ImageDataTableReader contains the real field names
 			Dim returnDataTbl As DataTable = srcDataTable.Copy()
@@ -113,7 +130,7 @@ Namespace kCura.Relativity.DataReaderClient
 		End Function
 
 		Private Function MapInputToSettingsFactory(ByVal imgSettings As ImageSettings) As WinEDDS.ImageSettingsFactory
-			Dim tempCredential As Net.NetworkCredential = New Net.NetworkCredential(imgSettings.RelativityUsername, imgSettings.RelativityPassword)
+			Dim tempCredential As Net.NetworkCredential = CType(GetCredentials(imgSettings), Net.NetworkCredential)
 			Dim tempImgSettings As WinEDDS.ImageSettingsFactory = New WinEDDS.ImageSettingsFactory(tempCredential, imgSettings.CaseArtifactId, imgSettings.WebServiceURL)
 
 			With tempImgSettings
@@ -173,7 +190,7 @@ Namespace kCura.Relativity.DataReaderClient
 				RaiseEvent OnMessage(New Status(String.Format("Using application configuration ServiceURL {0}", WinEDDS.Config.AppConfigWebServiceURL)))
 				Settings.WebServiceURL = WinEDDS.Config.AppConfigWebServiceURL
 			Else
-				RaiseEvent OnMessage(New Status(String.Format("Using supplied ServiceURL {0}", WinEDDS.Config.WebServiceURL)))
+				RaiseEvent OnMessage(New Status(String.Format("Using default ServiceURL {0}", WinEDDS.Config.WebServiceURL)))
 				Settings.WebServiceURL = WinEDDS.Config.WebServiceURL
 			End If
 		End Sub

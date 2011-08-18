@@ -72,6 +72,11 @@
 		Public Property OverwriteMode() As OverwriteModeEnum
 
 		''' <summary>
+		''' Field name which contains the unique identifier of a records parent object record
+		''' </summary>
+		Public Property ParentObjectIdSourceFieldName() As String
+
+		''' <summary>
 		''' Password to log into the destination Relativity instance
 		''' </summary>
 		Public Property RelativityPassword() As String
@@ -100,7 +105,8 @@
 			End Get
 			Set(value As String)
 				If Not value Is Nothing Then
-					If value.IndexOf("/", StringComparison.CurrentCulture) <> (value.Length - 1) Then
+					Dim slashIndex As Integer = value.LastIndexOf("/", StringComparison.CurrentCulture)
+					If slashIndex <> (value.Length - 1) Then
 						_webServiceURL = String.Format("{0}/", value)
 					Else
 						_webServiceURL = value
