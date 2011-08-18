@@ -303,13 +303,23 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Public Function RunBulkImport(ByVal overwrite As kCura.EDDS.WebAPI.BulkImportManagerBase.OverwriteType, ByVal useBulk As Boolean) As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults
-			If BatchSizeHistoryList.Count = 0 Then BatchSizeHistoryList.Add(ImportBatchSize)
-			Dim tries As Int32 = NumberOfRetries()
+			Dim tries As Int32 = kCura.Utility.Config.Settings.IoErrorNumberOfRetries
 			Dim retval As New kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults
-			Dim totalRecords As Int32 = Me.ImportBatchSize
-			retval = BulkImport(overwrite, useBulk)
+			While tries > 0
+				Try
+					retval = BulkImport(overwrite, useBulk)
+				Catch ex As Exception
+					tries -= 1
+					If tries = 0 OrElse ExceptionIsTimeoutRelated(ex) OrElse _continue = False OrElse ex.GetType = GetType(Service.BulkImportManager.BulkImportSqlException) Then
+						Throw
+					Else
+						Me.RaiseWarningAndPause(ex, kCura.Utility.Config.Settings.IoErrorWaitTimeInSeconds)
+					End If
+				End Try
+			End While
 			Return retval
 		End Function
+
 
 		Private Function BulkImport(ByVal overwrite As OverwriteType, ByVal useBulk As Boolean) As MassImportResults
 			Dim retval As MassImportResults

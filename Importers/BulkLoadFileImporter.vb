@@ -684,7 +684,7 @@ Namespace kCura.WinEDDS
 					Exit While
 				Catch ex As Exception
 					tries -= 1
-					If tries = 0 OrElse ExceptionIsTimeoutRelated(ex) OrElse _continue = False Then
+					If tries = 0 OrElse ExceptionIsTimeoutRelated(ex) OrElse _continue = False OrElse ex.GetType = GetType(Service.BulkImportManager.BulkImportSqlException) Then
 						Throw
 					Else
 						Me.RaiseWarningAndPause(ex, kCura.Utility.Config.Settings.IoErrorWaitTimeInSeconds)
