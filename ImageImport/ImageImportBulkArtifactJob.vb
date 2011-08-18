@@ -1,3 +1,6 @@
+Imports kCura.WinEDDS.ImportExtension
+Imports kCura.WinEDDS
+
 Namespace kCura.Relativity.DataReaderClient
 	Public Class ImageImportBulkArtifactJob
 		Inherits LoadFileJobBase
@@ -25,7 +28,7 @@ Namespace kCura.Relativity.DataReaderClient
 #End Region
 
 #Region "Public Routines"
-		Public Sub Execute()
+		Public Overrides Sub Execute()
 			If IsSettingsValid() Then
 				'TODO: Remove this? What database data???
 				RaiseEvent OnMessage(New Status("Getting source data from database"))
@@ -35,8 +38,7 @@ Namespace kCura.Relativity.DataReaderClient
 
 				SelectServiceURL()
 
-				Dim process As WinEDDS.ImportExtension.DataReaderImageImporterProcess = New WinEDDS.ImportExtension.DataReaderImageImporterProcess(SourceData.SourceData, Settings.WebServiceURL)
-
+				Dim process As ImportImageFileProcess = CreateImageImporterProcess(SourceData.SourceData, Settings.WebServiceURL)
 				_observer = process.ProcessObserver
 
 				RaiseEvent OnMessage(New Status("Updating settings"))
@@ -52,6 +54,10 @@ Namespace kCura.Relativity.DataReaderClient
 				RaiseEvent OnMessage(New Status("There was an error in your settings.  Import aborted."))
 			End If
 		End Sub
+
+		Protected Overridable Function CreateImageImporterProcess(ByVal sourceData As DataTable, ByVal webServiceUrl As String) As ImportImageFileProcess
+			Return New DataReaderImageImporterProcess(sourceData, webServiceUrl)
+		End Function
 #End Region
 
 #Region "Private Functions"
