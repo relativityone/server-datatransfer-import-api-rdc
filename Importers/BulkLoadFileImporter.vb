@@ -44,7 +44,7 @@ Namespace kCura.WinEDDS
 		Private _outputObjectFileWriter As System.IO.StreamWriter
 		Private _caseInfo As Relativity.CaseInfo
 
-		Private _runID As String = String.Empty
+		Private _runID As String = System.Guid.NewGuid.ToString.Replace("-", "_")
 		Private _uploadKey As String
 
 		Private _outputNativeFilePath As String = System.IO.Path.GetTempFileName
@@ -885,7 +885,7 @@ Namespace kCura.WinEDDS
 			Dim runResults As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults = Me.BulkImport(settings, _fullTextColumnMapsToFileLocation)
 
 			_statistics.ProcessRunResults(runResults)
-			_runID = runResults.RunID
+			'_runID = runResults.RunID
 			_statistics.SqlTime += (System.DateTime.Now.Ticks - start)
 
 			_currentStatisticsSnapshot = _statistics.ToDictionary
