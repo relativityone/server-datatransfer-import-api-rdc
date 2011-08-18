@@ -80,13 +80,13 @@ Namespace kCura.Relativity.DataReaderClient
 			Dim credential As System.Net.ICredentials = Nothing
 			If credential Is Nothing Then
 				Try
-					credential = kCura.WinEDDS.Api.LoginHelper.LoginWindowsAuthWithServiceURL(_cookieContainer, Settings.WebServiceURL)
+					credential = kCura.WinEDDS.Api.LoginHelper.LoginWindowsAuthWithServiceURL(_cookieContainer, imgSettings.WebServiceURL)
 				Catch
 				End Try
 			End If
 
 			While credential Is Nothing
-				credential = kCura.WinEDDS.Api.LoginHelper.LoginUsernamePasswordWithServiceURL(Settings.RelativityUsername, Settings.RelativityPassword, _cookieContainer, Settings.WebServiceURL)
+				credential = kCura.WinEDDS.Api.LoginHelper.LoginUsernamePasswordWithServiceURL(imgSettings.RelativityUsername, imgSettings.RelativityPassword, _cookieContainer, imgSettings.WebServiceURL)
 				Exit While
 			End While
 			Return credential
@@ -94,8 +94,7 @@ Namespace kCura.Relativity.DataReaderClient
 
 		Private Function GetDefaultIdentifierFieldID(ByVal credential As Net.NetworkCredential, ByVal caseArtifactID As Int32) As Int32
 			Dim retval As Int32
-			Dim tempFieldQuery As WinEDDS.Service.FieldQuery = New WinEDDS.Service.FieldQuery(credential, _cookieContainer)
-			tempFieldQuery.ServiceURL = Settings.WebServiceURL
+			Dim tempFieldQuery As WinEDDS.Service.FieldQuery = New WinEDDS.Service.FieldQuery(credential, _cookieContainer, Settings.WebServiceURL)
 
 			Dim dt As System.Data.DataTable = tempFieldQuery.RetrievePotentialBeginBatesFields(caseArtifactID).Tables(0)
 			For Each identifierRow As System.Data.DataRow In dt.Rows
