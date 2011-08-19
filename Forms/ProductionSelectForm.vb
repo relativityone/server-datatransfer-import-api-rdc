@@ -3,26 +3,23 @@ Namespace kCura.EDDS.WinForm
 		Inherits kCura.EDDS.WinForm.SelectFormBase
 
 #Region " Declarations & Properties "
-		Private _selectedProductionArtifactID As Generic.List(Of Int32)
+		Private _selectedItemArtifactID As Generic.List(Of Int32)
 
-		Public ReadOnly Property SelectedProductionArtifactID() As Generic.List(Of Int32)
+		Public ReadOnly Property SelectedItemArtifactID() As Generic.List(Of Int32)
 			Get
-				Return _selectedProductionArtifactID
+				Return _selectedItemArtifactID
 			End Get
 		End Property
-		Protected Property PossibleProductionNameToSelect() As String
 
+		Private Property PossibleItemNameToSelect() As String
+		Private _itemListTable As System.Data.DataTable
 #End Region
-		Private _productions As System.Data.DataTable
 
-		Private Property CaseInfo As Relativity.CaseInfo
 
 		Private Sub ItemSelectForm_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
-			_productions = Application.GetListOfProductionsForCase(Me.CaseInfo)
-			Me.Text = "Relativity Desktop Client | Select Production"
 			Me.LoadItems(String.Empty)
 			Me.Focus()
-			SelecteAnItem()
+			SelectItemByName(PossibleItemNameToSelect)
 			SearchQuery.Focus()
 		End Sub
 
@@ -32,15 +29,15 @@ Namespace kCura.EDDS.WinForm
 				For Each si As ListViewItem In ItemListView.SelectedItems
 					list.Add(DirectCast(si.Tag, Int32))
 				Next
-				_selectedProductionArtifactID = list
+				_selectedItemArtifactID = list
 				ConfirmButton.Enabled = True
 			Else
-				_selectedProductionArtifactID = list
+				_selectedItemArtifactID = list
 			End If
 		End Sub
 
 		Private Sub CancelBtn_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles CancelBtn.Click
-			_selectedProductionArtifactID = Nothing
+			_selectedItemArtifactID = Nothing
 			Me.DialogResult = DialogResult.Cancel
 			Me.Close()
 		End Sub
@@ -48,14 +45,12 @@ Namespace kCura.EDDS.WinForm
 		Protected Overrides Sub LoadItems(ByVal searchText As String)
 			Me.Cursor = Cursors.WaitCursor
 			ItemListView.Items.Clear()
-			If _productions Is Nothing Then
+			If _itemListTable Is Nothing Then
 				Me.Cursor = Cursors.Default
 				Me.Close()
 				Exit Sub
 			End If
-			Dim dt As DataTable = _productions
-			Dim row As DataRow
-			For Each row In dt.Rows
+			For Each row As DataRow In _itemListTable
 				If String.IsNullOrEmpty(searchText.Trim) OrElse CType(row.Item("Name"), String).ToLower.IndexOf(searchText.Trim.ToLower) <> -1 Then
 					Dim listItem As New System.Windows.Forms.ListViewItem
 					listItem.Text = CType(row.Item("Name"), String)
@@ -68,22 +63,22 @@ Namespace kCura.EDDS.WinForm
 
 		End Sub
 
-		Private Sub SelecteAnItem()
+		Private Sub SelectItemByName(ByVal itemName As String)
 			For Each item As ListViewItem In ItemListView.Items
-				If item.Text.Equals(PossibleProductionNameToSelect, StringComparison.InvariantCulture) Then
+				If item.Text.Equals(itemName, StringComparison.InvariantCulture) Then
 					item.Selected = True
 					Exit For
 				End If
 			Next
 		End Sub
 
-		Public Sub New(ByVal caseInfo As Relativity.CaseInfo, ByVal possibleProductionNameToSelect As String)
+		Public Sub New(ByVal savedItemNameToSelect As String, ByVal objectTypeName As String, ByVal listViewDataSource As DataTable)
 			MyBase.New()
-			Me.CaseInfo = caseInfo
 			Me.MultiSelect = False
-			Me.PossibleProductionNameToSelect = possibleProductionNameToSelect
+			Me.PossibleItemNameToSelect = savedItemNameToSelect
+			_itemListTable = listViewDataSource
+			Me.Text = String.Format("Relativity Desktop Client | Select {0}", objectTypeName)
 		End Sub
-
 
 	End Class
 End Namespace
