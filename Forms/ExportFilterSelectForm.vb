@@ -1,5 +1,5 @@
 Namespace kCura.EDDS.WinForm
-	Public Class ProductionSelectForm
+	Public Class ExportFilterSelectForm
 		Inherits kCura.EDDS.WinForm.SelectFormBase
 
 #Region " Declarations & Properties "
