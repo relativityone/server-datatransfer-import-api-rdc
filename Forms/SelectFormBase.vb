@@ -31,7 +31,7 @@ Namespace kCura.EDDS.WinForm
 		'It can be modified using the Windows Form Designer.  
 		'Do not modify it using the code editor.
 		Friend WithEvents RepositoryName As System.Windows.Forms.TextBox
-		Friend WithEvents ItemListView As System.Windows.Forms.ListView
+		Protected Friend WithEvents ItemListView As System.Windows.Forms.ListView
 		Friend WithEvents NameColumnHeader As System.Windows.Forms.ColumnHeader
 		Friend WithEvents OKButton As System.Windows.Forms.Button
 		Friend WithEvents CancelBtn As System.Windows.Forms.Button

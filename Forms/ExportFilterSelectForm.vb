@@ -3,11 +3,11 @@ Namespace kCura.EDDS.WinForm
 		Inherits kCura.EDDS.WinForm.SelectFormBase
 
 #Region " Declarations & Properties "
-		Private _selectedItemArtifactID As Generic.List(Of Int32)
+		Private _selectedItemArtifactIDs As Generic.List(Of Int32)
 
-		Public ReadOnly Property SelectedItemArtifactID() As Generic.List(Of Int32)
+		Public ReadOnly Property SelectedItemArtifactIDs() As Generic.List(Of Int32)
 			Get
-				Return _selectedItemArtifactID
+				Return _selectedItemArtifactIDs
 			End Get
 		End Property
 
@@ -16,7 +16,7 @@ Namespace kCura.EDDS.WinForm
 #End Region
 
 
-		Private Sub ItemSelectForm_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
+		Protected Sub ItemSelectForm_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
 			Me.LoadItems(String.Empty)
 			Me.Focus()
 			SelectItemByName(PossibleItemNameToSelect)
@@ -29,15 +29,15 @@ Namespace kCura.EDDS.WinForm
 				For Each si As ListViewItem In ItemListView.SelectedItems
 					list.Add(DirectCast(si.Tag, Int32))
 				Next
-				_selectedItemArtifactID = list
+				_selectedItemArtifactIDs = list
 				ConfirmButton.Enabled = True
 			Else
-				_selectedItemArtifactID = list
+				_selectedItemArtifactIDs = list
 			End If
 		End Sub
 
 		Private Sub CancelBtn_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles CancelBtn.Click
-			_selectedItemArtifactID = Nothing
+			_selectedItemArtifactIDs = Nothing
 			Me.DialogResult = DialogResult.Cancel
 			Me.Close()
 		End Sub

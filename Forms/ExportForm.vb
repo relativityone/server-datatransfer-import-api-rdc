@@ -1339,6 +1339,9 @@ Public Class ExportForm
 			If TypeOf newFile Is kCura.WinEDDS.ErrorExportFile Then
 				MsgBox(DirectCast(newFile, kCura.WinEDDS.ErrorExportFile).ErrorMessage, MsgBoxStyle.Exclamation)
 			Else
+				Dim exportFilterSelectionForm As New kCura.EDDS.WinForm.ExportFilterSelectForm(newFile.LoadFilesPrefix, ExportTypeStringName, DirectCast(_filters.DataSource, DataTable))
+				exportFilterSelectionForm.ShowDialog()
+				'act on selectedArtifactID
 				LoadExportFile(newFile)
 				_exportFile = newFile
 				_columnSelecter.EnsureHorizontalScrollbars()
@@ -1347,8 +1350,6 @@ Public Class ExportForm
 	End Sub
 
 	Public Sub LoadExportFile(ByVal ef As kCura.WinEDDS.ExportFile)
-		Dim productionSelecteForm As New kCura.EDDS.WinForm.ExportFilterSelectForm(DirectCast(_filters.SelectedItem, DataRowView)("Name").ToString, "Production", DirectCast(_filters.DataSource, DataTable))
-		productionSelecteForm.ShowDialog()
 		_isLoadingExport = True
 		If _exportNativeFiles.Checked <> ef.ExportNative Then _exportNativeFiles.Checked = ef.ExportNative
 		If _exportImages.Checked <> ef.ExportImages Then _exportImages.Checked = ef.ExportImages
@@ -1980,14 +1981,7 @@ Public Class ExportForm
 		If selectedindex = -1 Then
 			selectedindex = 0
 			Dim msg As String = "Selected "
-			Select Case Me.ExportFile.TypeOfExport
-				Case ExportFile.ExportType.AncestorSearch, ExportFile.ExportType.ParentSearch
-					msg &= "view"
-				Case ExportFile.ExportType.ArtifactSearch
-					msg &= "saved search"
-				Case ExportFile.ExportType.Production
-					msg &= "production"
-			End Select
+			msg &= ExportTypeStringName().ToLower
 			msg &= " is no longer available."
 			MsgBox(msg, MsgBoxStyle.Exclamation, "Relativity Desktop Client")
 		End If
@@ -2028,6 +2022,20 @@ Public Class ExportForm
 			End If
 		Next
 	End Sub
+
+	Private ReadOnly Property ExportTypeStringName() As String
+		Get
+			Select Case Me.ExportFile.TypeOfExport
+				Case ExportFile.ExportType.AncestorSearch, ExportFile.ExportType.ParentSearch
+					Return "View"
+				Case ExportFile.ExportType.ArtifactSearch
+					Return "Saved Search"
+				Case ExportFile.ExportType.Production
+					Return "Production"
+			End Select
+			Return ""
+		End Get
+	End Property
 
 	Private Sub _copyFilesFromRepository_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _copyFilesFromRepository.CheckedChanged
 		_imageTypeDropdown.Enabled = _exportImages.Checked And _copyFilesFromRepository.Checked
