@@ -1437,9 +1437,10 @@ Public Class ExportForm
 			_columnSelecter.LeftListBoxItems.AddRange(ef.AllExportableFields)
 		End If
 
-		Dim selectedFilterId As Int32? = Me.GetSelectedFilterId(ef)
-		If _exportFile.TypeOfExport = ef.TypeOfExport AndAlso selectedFilterId.HasValue AndAlso Me.ValueContainsInDropDown(_filters, selectedFilterId.Value) Then
-			_filters.SelectedValue = selectedFilterId
+		Dim selectedFilterName As String = ef.LoadFilesPrefix
+		Dim existingFilterItemID As Int32? = Me.FindArtifactIDByName(_filters, selectedFilterName)
+		If _exportFile.TypeOfExport = ef.TypeOfExport AndAlso existingFilterItemID.HasValue Then
+			_filters.SelectedValue = existingFilterItemID.Value
 		End If
 
 		If ef.SelectedViewFields IsNot Nothing Then
@@ -1508,26 +1509,16 @@ Public Class ExportForm
 
 	End Sub
 
-	Private Function ValueContainsInDropDown(ByVal dropDown As ComboBox, ByVal value As Int32) As Boolean
-		Dim retVal As Boolean = False
+	Private Function FindArtifactIDByName(ByVal dropDown As ComboBox, ByVal name As String) As Int32?
+		Dim retVal As Int32?
 		For i As Int32 = 0 To dropDown.Items.Count - 1
 			Dim dropDownRow As DataRow = DirectCast(dropDown.Items(i), System.Data.DataRowView).Row
-			If CInt(dropDownRow("ArtifactID")) = value Then
-				retVal = True
+			If CStr(dropDownRow("Name")).Equals(name, StringComparison.InvariantCulture) Then
+				retVal = CInt(dropDownRow("ArtifactID"))
 				Exit For
 			End If
 		Next
 		Return retVal
-	End Function
-	Private Function GetSelectedFilterId(ByVal ef As ExportFile) As Int32?
-		Dim retval As New Int32?
-		Select Case ef.TypeOfExport
-			Case kCura.WinEDDS.ExportFile.ExportType.AncestorSearch, kCura.WinEDDS.ExportFile.ExportType.ParentSearch
-				retval = ef.ViewID
-			Case Else
-				retval = ef.ArtifactID
-		End Select
-		Return retval
 	End Function
 
 	Private Sub RunMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles RunMenu.Click
