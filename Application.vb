@@ -321,7 +321,7 @@ Namespace kCura.EDDS.WinForm
 				Return True
 			Else
 				MsgBox("The following identifier fields have not been mapped: " & ChrW(13) & unselectedIDFieldNames.ToString & _
-				 "Do you wish to continue?", MsgBoxStyle.Critical, "Warning")
+				"Do you wish to continue?", MsgBoxStyle.Critical, "Warning")
 				Return False
 			End If
 		End Function
@@ -858,6 +858,12 @@ Namespace kCura.EDDS.WinForm
 				End If
 			End Try
 		End Sub
+
+		Public Function GetListOfProductionsForCase(ByVal caseInfo As Relativity.CaseInfo) As System.Data.DataTable
+			Dim productionManager As New kCura.WinEDDS.Service.ProductionManager(Me.Credential, _cookieContainer)
+			Return productionManager.RetrieveProducedByContextArtifactID(caseInfo.ArtifactID).Tables(0)
+		End Function
+
 
 		Public Function GetNewExportFileSettingsObject(ByVal selectedFolderId As Int32, ByVal caseInfo As Relativity.CaseInfo, ByVal typeOfExport As kCura.WinEDDS.ExportFile.ExportType, ByVal artifactTypeID As Int32) As WinEDDS.ExportFile
 			Dim exportFile As New WinEDDS.ExportFile(artifactTypeID)
@@ -1396,8 +1402,8 @@ Namespace kCura.EDDS.WinForm
 				Dim fieldMapItem As kCura.WinEDDS.LoadFileFieldMap.LoadFileFieldMapItem
 				For Each fieldMapItem In tempLoadFile.FieldMap
 					If Not fieldMapItem.DocumentField Is Nothing AndAlso _
-					 fieldMapItem.NativeFileColumnIndex >= 0 AndAlso _
-					 fieldMapItem.DocumentField.FieldName.ToLower = "group identifier" Then
+					fieldMapItem.NativeFileColumnIndex >= 0 AndAlso _
+					fieldMapItem.DocumentField.FieldName.ToLower = "group identifier" Then
 						tempLoadFile.GroupIdentifierColumn = Me.GetColumnHeadersFromLoadFile(tempLoadFile, tempLoadFile.FirstLineContainsHeaders)(fieldMapItem.NativeFileColumnIndex)
 						'mapItemToRemove = fieldMapItem
 					End If
@@ -1480,7 +1486,7 @@ Namespace kCura.EDDS.WinForm
 					_credential = cred
 					kCura.WinEDDS.Service.Settings.AuthenticationToken = userManager.GenerateDistributedAuthenticationToken()
 					If openCaseSelector Then OpenCase()
-					_timeZoneOffset = 0					'New kCura.WinEDDS.Service.RelativityManager(cred, _cookieContainer).GetServerTimezoneOffset
+					_timeZoneOffset = 0															'New kCura.WinEDDS.Service.RelativityManager(cred, _cookieContainer).GetServerTimezoneOffset
 				Else
 					Me.ReLogin("Invalid login. Try again?")
 				End If
@@ -1514,7 +1520,7 @@ Namespace kCura.EDDS.WinForm
 			If userManager.Login(cred.UserName, cred.Password) Then
 				_credential = cred
 				kCura.WinEDDS.Service.Settings.AuthenticationToken = userManager.GenerateDistributedAuthenticationToken()
-				_timeZoneOffset = 0				'New kCura.WinEDDS.Service.RelativityManager(cred, _cookieContainer).GetServerTimezoneOffset
+				_timeZoneOffset = 0											 'New kCura.WinEDDS.Service.RelativityManager(cred, _cookieContainer).GetServerTimezoneOffset
 				Return True
 			Else
 				Return False
@@ -1626,3 +1632,4 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 	End Class
 End Namespace
+
