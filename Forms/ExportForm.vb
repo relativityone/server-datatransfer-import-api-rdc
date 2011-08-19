@@ -1347,6 +1347,8 @@ Public Class ExportForm
 	End Sub
 
 	Public Sub LoadExportFile(ByVal ef As kCura.WinEDDS.ExportFile)
+		Dim productionSelecteForm As New kCura.EDDS.WinForm.ProductionSelectForm(ef.CaseInfo, "test")
+		productionSelecteForm.ShowDialog()
 		_isLoadingExport = True
 		If _exportNativeFiles.Checked <> ef.ExportNative Then _exportNativeFiles.Checked = ef.ExportNative
 		If _exportImages.Checked <> ef.ExportImages Then _exportImages.Checked = ef.ExportImages
