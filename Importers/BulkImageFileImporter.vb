@@ -166,7 +166,7 @@ Namespace kCura.WinEDDS
 
 		Protected Overridable ReadOnly Property BatchResizeEnabled As Boolean
 			Get
-				Return kCura.WinEDDS.Config.AutoBatchOn
+				Return kCura.WinEDDS.Config.DynamicBatchResizingOn
 			End Get
 		End Property
 
