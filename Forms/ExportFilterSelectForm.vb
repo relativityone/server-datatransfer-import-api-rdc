@@ -50,7 +50,7 @@ Namespace kCura.EDDS.WinForm
 				Me.Close()
 				Exit Sub
 			End If
-			For Each row As DataRow In _itemListTable
+			For Each row As DataRow In _itemListTable.Rows
 				If String.IsNullOrEmpty(searchText.Trim) OrElse CType(row.Item("Name"), String).ToLower.IndexOf(searchText.Trim.ToLower) <> -1 Then
 					Dim listItem As New System.Windows.Forms.ListViewItem
 					listItem.Text = CType(row.Item("Name"), String)
@@ -60,13 +60,15 @@ Namespace kCura.EDDS.WinForm
 			Next
 			NameColumnHeader.Width = ItemListView.Width - 6
 			Me.Cursor = Cursors.Default
-
 		End Sub
 
 		Private Sub SelectItemByName(ByVal itemName As String)
-			For Each item As ListViewItem In ItemListView.Items
-				If item.Text.Equals(itemName, StringComparison.InvariantCulture) Then
-					item.Selected = True
+			For i As Int32 = 0 To ItemListView.Items.Count - 1
+				If ItemListView.Items(i).Text.Equals(itemName, StringComparison.InvariantCulture) Then
+					ItemListView.Items(i).Focused = True
+					ItemListView.Items(i).Selected = True
+					ItemListView.EnsureVisible(i)
+					ItemListView.HideSelection = False
 					Exit For
 				End If
 			Next

@@ -1347,7 +1347,7 @@ Public Class ExportForm
 	End Sub
 
 	Public Sub LoadExportFile(ByVal ef As kCura.WinEDDS.ExportFile)
-		Dim productionSelecteForm As New kCura.EDDS.WinForm.ExportFilterSelectForm(_filters.SelectedText, "Production", DirectCast(_filters.DataSource, DataTable))
+		Dim productionSelecteForm As New kCura.EDDS.WinForm.ExportFilterSelectForm(DirectCast(_filters.SelectedItem, DataRowView)("Name").ToString, "Production", DirectCast(_filters.DataSource, DataTable))
 		productionSelecteForm.ShowDialog()
 		_isLoadingExport = True
 		If _exportNativeFiles.Checked <> ef.ExportNative Then _exportNativeFiles.Checked = ef.ExportNative
