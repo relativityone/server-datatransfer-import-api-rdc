@@ -20,7 +20,6 @@ Namespace kCura.EDDS.WinForm
 			Me.LoadItems(String.Empty)
 			Me.Focus()
 			SelectItemByName(PossibleItemNameToSelect)
-			SearchQuery.Focus()
 		End Sub
 
 		Protected Overrides Sub ItemListView_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ItemListView.SelectedIndexChanged
@@ -82,5 +81,12 @@ Namespace kCura.EDDS.WinForm
 			Me.Text = String.Format("Relativity Desktop Client | Select {0}", objectTypeName)
 		End Sub
 
+		Private Sub ExportFilterSelectForm_Shown(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Shown
+			If ItemListView.SelectedItems.Count = 0 Then
+				SearchQuery.Focus()
+			Else
+				ItemListView.Focus()
+			End If
+		End Sub
 	End Class
 End Namespace
