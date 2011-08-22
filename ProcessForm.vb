@@ -348,6 +348,16 @@ Namespace kCura.Windows.Process
 		Private _summaryString As System.Text.StringBuilder
 		Private _cancelled As Boolean = False
 
+		Private Property NumberOfWarnings As Long
+		Private Property ShowWarningPopup As Boolean
+			Get
+				Return (NumberOfWarnings <> 0)
+			End Get
+			Set(ByVal value As Boolean)
+				If Not value Then NumberOfWarnings = 0
+			End Set
+		End Property
+
 		Public Property ErrorFileExtension() As String
 			Get
 				Return _errorFilesExtension
@@ -508,6 +518,8 @@ Namespace kCura.Windows.Process
 			_progressBar.Value = totalRecordsProcessed
 			_overalProgressLabel.Text = evt.TotalRecordsProcessedDisplay + " of " + evt.TotalRecordsDisplay + " processed"
 
+			NumberOfWarnings = evt.TotalRecordsProcessedWithWarnings
+
 			'_summaryOutput.Text = ""
 			WriteSummaryLine("Start Time: " + evt.StartTime.ToLongTimeString)
 			If evt.EndTime <> stubDate Then
@@ -553,6 +565,7 @@ Namespace kCura.Windows.Process
 				_stopImportButton.Enabled = True
 				_saveOutputButton.Enabled = Config.LogAllEvents
 				If exportFilePath <> "" Then
+					ShowWarningPopup = False
 					_exportErrorFileButton.Visible = True
 					Try
 						Dim x As New System.Guid(exportFilePath)
@@ -568,6 +581,9 @@ Namespace kCura.Windows.Process
 						End If
 					End If
 					_exportErrorFileButton.Visible = True
+				ElseIf ShowWarningPopup Then
+					MsgBox(String.Format("All records have been processed with {0} warning{1}.", NumberOfWarnings, If(NumberOfWarnings <> 1, "s", "")), MsgBoxStyle.OkOnly, "Relativity Desktop Client")
+					ShowWarningPopup = False
 				End If
 			End If
 		End Sub
@@ -628,6 +644,7 @@ Namespace kCura.Windows.Process
 
 
 			_currentRecordLabel.Text = "Fatal Exception Encountered"
+			ShowWarningPopup = False
 			_hasReceivedFatalError = True
 			'_stopImportButton.Text = "Stop"
 			_stopImportButton.Text = "Close"
