@@ -1494,7 +1494,7 @@ Public Class ExportForm
 
 			For Each precedencePair As kCura.WinEDDS.Pair In ef.ImagePrecedence
 				For Each item As kCura.WinEDDS.Pair In validPrecedencePairs
-					If precedencePair.equals(item) OrElse (precedencePair.Display = "Original" AndAlso precedencePair.Value = "-1") Then
+					If precedencePair.Display.Equals(item.Display, StringComparison.InvariantCulture) OrElse (precedencePair.Display = "Original" AndAlso precedencePair.Value = "-1") Then
 						_productionPrecedenceList.Items.Add(precedencePair)
 						Exit For
 					End If
