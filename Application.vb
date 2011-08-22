@@ -1630,6 +1630,18 @@ Namespace kCura.EDDS.WinForm
 				_loginForm.TopMost = True
 			End If
 		End Sub
+
+		Public Sub DoHelp()
+			If Not _loginForm Is Nothing AndAlso Not _loginForm.IsDisposed Then
+				_loginForm.TopMost = False
+			End If
+
+			Process.Start(System.IO.Path.Combine(System.Windows.Forms.Application.StartupPath, "documents\RelativityDesktopClientGuide.pdf"))
+
+			If Not _loginForm Is Nothing AndAlso Not _loginForm.IsDisposed Then
+				_loginForm.TopMost = True
+			End If
+		End Sub
 	End Class
 End Namespace
 

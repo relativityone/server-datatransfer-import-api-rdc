@@ -55,6 +55,7 @@ Namespace kCura.EDDS.WinForm
 		Friend WithEvents _fileMenuRefresh As System.Windows.Forms.MenuItem
 		Friend WithEvents MenuItem4 As System.Windows.Forms.MenuItem
 		Friend WithEvents _aboutMenuItem As System.Windows.Forms.MenuItem
+		Friend WithEvents _helpMenuItem As System.Windows.Forms.MenuItem
 		Friend WithEvents _exportFoldersMenuItem As System.Windows.Forms.MenuItem
 		Friend WithEvents _exportFoldersAndSubfoldersMenuItem As System.Windows.Forms.MenuItem
 		Friend WithEvents ToolsImportProductionFileMenu As System.Windows.Forms.MenuItem
@@ -91,6 +92,7 @@ Namespace kCura.EDDS.WinForm
 			Me._optionsMenuCheckConnectivityItem = New System.Windows.Forms.MenuItem
 			Me.MenuItem4 = New System.Windows.Forms.MenuItem
 			Me._aboutMenuItem = New System.Windows.Forms.MenuItem
+			Me._helpMenuItem = New System.Windows.Forms.MenuItem
 			Me.StatusBar = New System.Windows.Forms.StatusBar
 			Me.AppStatusPanel = New System.Windows.Forms.StatusBarPanel
 			Me.LoggedInUserPanel = New System.Windows.Forms.StatusBarPanel
@@ -288,7 +290,7 @@ Namespace kCura.EDDS.WinForm
 			'
 			Me.EnhancedMenuProvider.SetImageIndex(Me.MenuItem4, -1)
 			Me.MenuItem4.Index = 3
-			Me.MenuItem4.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me._aboutMenuItem})
+			Me.MenuItem4.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me._aboutMenuItem, Me._helpMenuItem})
 			Me.MenuItem4.OwnerDraw = True
 			Me.MenuItem4.Text = "Help"
 			'
@@ -298,6 +300,13 @@ Namespace kCura.EDDS.WinForm
 			Me._aboutMenuItem.Index = 0
 			Me._aboutMenuItem.OwnerDraw = True
 			Me._aboutMenuItem.Text = "About..."
+			'
+			'_helpMenuItem
+			'
+			Me.EnhancedMenuProvider.SetImageIndex(Me._helpMenuItem, -1)
+			Me._helpMenuItem.Index = 1
+			Me._helpMenuItem.OwnerDraw = True
+			Me._helpMenuItem.Text = "Help"
 			'
 			'StatusBar
 			'
@@ -490,6 +499,10 @@ Namespace kCura.EDDS.WinForm
 
 		Private Sub _aboutMenuItem_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles _aboutMenuItem.Click
 			_application.DoAbout()
+		End Sub
+
+		Private Sub _helpMenuItem_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles _helpMenuItem.Click
+			_application.DoHelp()
 		End Sub
 
 		Private Sub MainForm_Closed(ByVal sender As Object, ByVal e As System.EventArgs) Handles MyBase.Closed
