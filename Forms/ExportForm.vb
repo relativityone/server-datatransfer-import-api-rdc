@@ -1341,11 +1341,16 @@ Public Class ExportForm
 			Else
 				Dim exportFilterSelectionForm As New kCura.EDDS.WinForm.ExportFilterSelectForm(newFile.LoadFilesPrefix, ExportTypeStringName, DirectCast(_filters.DataSource, DataTable))
 				exportFilterSelectionForm.ShowDialog()
-				'act on selectedArtifactID
-				LoadExportFile(newFile)
-				_exportFile = newFile
+				If exportFilterSelectionForm.DialogResult = DialogResult.OK Then
+					If exportFilterSelectionForm.SelectedItemArtifactIDs IsNot Nothing Then
+						_filters.SelectedValue = exportFilterSelectionForm.SelectedItemArtifactIDs(0)
+					End If
+					LoadExportFile(newFile)
+					_exportFile = newFile
+				End If
+
 				_columnSelecter.EnsureHorizontalScrollbars()
-			End If
+				End If
 		End If
 	End Sub
 
@@ -1436,12 +1441,6 @@ Public Class ExportForm
 			_columnSelecter.LeftListBoxItems.Clear()
 			Array.Sort(ef.AllExportableFields)
 			_columnSelecter.LeftListBoxItems.AddRange(ef.AllExportableFields)
-		End If
-
-		Dim selectedFilterName As String = ef.LoadFilesPrefix
-		Dim existingFilterItemID As Int32? = Me.FindArtifactIDByName(_filters, selectedFilterName)
-		If _exportFile.TypeOfExport = ef.TypeOfExport AndAlso existingFilterItemID.HasValue Then
-			_filters.SelectedValue = existingFilterItemID.Value
 		End If
 
 		If ef.SelectedViewFields IsNot Nothing Then
