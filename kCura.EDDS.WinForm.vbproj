@@ -331,7 +331,7 @@
     <Compile Include="Forms\AdvancedFileLocation.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\ProductionSelectForm.vb">
+    <Compile Include="Forms\ExportFilterSelectForm.vb">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\RelativityApplicationStatusForm.Designer.vb">
@@ -421,8 +421,8 @@
     <EmbeddedResource Include="Forms\AdvancedFileLocation.resx">
       <DependentUpon>AdvancedFileLocation.vb</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\ProductionSelectForm.resx">
-      <DependentUpon>ProductionSelectForm.vb</DependentUpon>
+    <EmbeddedResource Include="Forms\ExportFilterSelectForm.resx">
+      <DependentUpon>ExportFilterSelectForm.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\RelativityApplicationStatusForm.resx">
       <DependentUpon>RelativityApplicationStatusForm.vb</DependentUpon>
@@ -464,6 +464,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\ProductionPrecedenceForm.resx">
       <DependentUpon>ProductionPrecedenceForm.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\SelectFormBase.resx">
+      <DependentUpon>SelectFormBase.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\SelectFormBase.resx">
       <DependentUpon>SelectFormBase.vb</DependentUpon>

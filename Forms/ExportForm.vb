@@ -1339,16 +1339,22 @@ Public Class ExportForm
 			If TypeOf newFile Is kCura.WinEDDS.ErrorExportFile Then
 				MsgBox(DirectCast(newFile, kCura.WinEDDS.ErrorExportFile).ErrorMessage, MsgBoxStyle.Exclamation)
 			Else
-				LoadExportFile(newFile)
-				_exportFile = newFile
+				Dim exportFilterSelectionForm As New kCura.EDDS.WinForm.ExportFilterSelectForm(newFile.LoadFilesPrefix, ExportTypeStringName, DirectCast(_filters.DataSource, DataTable))
+				exportFilterSelectionForm.ShowDialog()
+				If exportFilterSelectionForm.DialogResult = DialogResult.OK Then
+					If exportFilterSelectionForm.SelectedItemArtifactIDs IsNot Nothing Then
+						_filters.SelectedValue = exportFilterSelectionForm.SelectedItemArtifactIDs(0)
+					End If
+					LoadExportFile(newFile)
+					_exportFile = newFile
+				End If
+
 				_columnSelecter.EnsureHorizontalScrollbars()
-			End If
+				End If
 		End If
 	End Sub
 
 	Public Sub LoadExportFile(ByVal ef As kCura.WinEDDS.ExportFile)
-		Dim productionSelecteForm As New kCura.EDDS.WinForm.ProductionSelectForm(ef.CaseInfo, "test")
-		productionSelecteForm.ShowDialog()
 		_isLoadingExport = True
 		If _exportNativeFiles.Checked <> ef.ExportNative Then _exportNativeFiles.Checked = ef.ExportNative
 		If _exportImages.Checked <> ef.ExportImages Then _exportImages.Checked = ef.ExportImages
@@ -1435,12 +1441,6 @@ Public Class ExportForm
 			_columnSelecter.LeftListBoxItems.Clear()
 			Array.Sort(ef.AllExportableFields)
 			_columnSelecter.LeftListBoxItems.AddRange(ef.AllExportableFields)
-		End If
-
-		Dim selectedFilterName As String = ef.LoadFilesPrefix
-		Dim existingFilterItemID As Int32? = Me.FindArtifactIDByName(_filters, selectedFilterName)
-		If _exportFile.TypeOfExport = ef.TypeOfExport AndAlso existingFilterItemID.HasValue Then
-			_filters.SelectedValue = existingFilterItemID.Value
 		End If
 
 		If ef.SelectedViewFields IsNot Nothing Then
@@ -1980,14 +1980,7 @@ Public Class ExportForm
 		If selectedindex = -1 Then
 			selectedindex = 0
 			Dim msg As String = "Selected "
-			Select Case Me.ExportFile.TypeOfExport
-				Case ExportFile.ExportType.AncestorSearch, ExportFile.ExportType.ParentSearch
-					msg &= "view"
-				Case ExportFile.ExportType.ArtifactSearch
-					msg &= "saved search"
-				Case ExportFile.ExportType.Production
-					msg &= "production"
-			End Select
+			msg &= ExportTypeStringName().ToLower
 			msg &= " is no longer available."
 			MsgBox(msg, MsgBoxStyle.Exclamation, "Relativity Desktop Client")
 		End If
@@ -2028,6 +2021,20 @@ Public Class ExportForm
 			End If
 		Next
 	End Sub
+
+	Private ReadOnly Property ExportTypeStringName() As String
+		Get
+			Select Case Me.ExportFile.TypeOfExport
+				Case ExportFile.ExportType.AncestorSearch, ExportFile.ExportType.ParentSearch
+					Return "View"
+				Case ExportFile.ExportType.ArtifactSearch
+					Return "Saved Search"
+				Case ExportFile.ExportType.Production
+					Return "Production"
+			End Select
+			Return ""
+		End Get
+	End Property
 
 	Private Sub _copyFilesFromRepository_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _copyFilesFromRepository.CheckedChanged
 		_imageTypeDropdown.Enabled = _exportImages.Checked And _copyFilesFromRepository.Checked
