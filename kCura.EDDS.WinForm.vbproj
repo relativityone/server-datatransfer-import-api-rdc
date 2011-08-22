@@ -468,9 +468,6 @@
     <EmbeddedResource Include="Forms\SelectFormBase.resx">
       <DependentUpon>SelectFormBase.vb</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\SelectFormBase.resx">
-      <DependentUpon>SelectFormBase.vb</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Forms\SetWebServiceURL.resx">
       <DependentUpon>SetWebServiceURL.vb</DependentUpon>
     </EmbeddedResource>
