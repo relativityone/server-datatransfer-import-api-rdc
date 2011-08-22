@@ -1339,10 +1339,18 @@ Public Class ExportForm
 			If TypeOf newFile Is kCura.WinEDDS.ErrorExportFile Then
 				MsgBox(DirectCast(newFile, kCura.WinEDDS.ErrorExportFile).ErrorMessage, MsgBoxStyle.Exclamation)
 			Else
-				LoadExportFile(newFile)
-				_exportFile = newFile
+				Dim exportFilterSelectionForm As New kCura.EDDS.WinForm.ExportFilterSelectForm(newFile.LoadFilesPrefix, ExportTypeStringName, DirectCast(_filters.DataSource, DataTable))
+				exportFilterSelectionForm.ShowDialog()
+				If exportFilterSelectionForm.DialogResult = DialogResult.OK Then
+					If exportFilterSelectionForm.SelectedItemArtifactIDs IsNot Nothing Then
+						_filters.SelectedValue = exportFilterSelectionForm.SelectedItemArtifactIDs(0)
+					End If
+					LoadExportFile(newFile)
+					_exportFile = newFile
+				End If
+
 				_columnSelecter.EnsureHorizontalScrollbars()
-			End If
+				End If
 		End If
 	End Sub
 
@@ -1435,11 +1443,6 @@ Public Class ExportForm
 			_columnSelecter.LeftListBoxItems.AddRange(ef.AllExportableFields)
 		End If
 
-		Dim selectedFilterId As Int32? = Me.GetSelectedFilterId(ef)
-		If _exportFile.TypeOfExport = ef.TypeOfExport AndAlso selectedFilterId.HasValue AndAlso Me.ValueContainsInDropDown(_filters, selectedFilterId.Value) Then
-			_filters.SelectedValue = selectedFilterId
-		End If
-
 		If ef.SelectedViewFields IsNot Nothing Then
 
 			Dim itemsToRemoveFromLeftListBox As New System.Collections.Generic.List(Of kCura.WinEDDS.ViewFieldInfo)()
@@ -1506,26 +1509,16 @@ Public Class ExportForm
 
 	End Sub
 
-	Private Function ValueContainsInDropDown(ByVal dropDown As ComboBox, ByVal value As Int32) As Boolean
-		Dim retVal As Boolean = False
+	Private Function FindArtifactIDByName(ByVal dropDown As ComboBox, ByVal name As String) As Int32?
+		Dim retVal As Int32?
 		For i As Int32 = 0 To dropDown.Items.Count - 1
 			Dim dropDownRow As DataRow = DirectCast(dropDown.Items(i), System.Data.DataRowView).Row
-			If CInt(dropDownRow("ArtifactID")) = value Then
-				retVal = True
+			If CStr(dropDownRow("Name")).Equals(name, StringComparison.InvariantCulture) Then
+				retVal = CInt(dropDownRow("ArtifactID"))
 				Exit For
 			End If
 		Next
 		Return retVal
-	End Function
-	Private Function GetSelectedFilterId(ByVal ef As ExportFile) As Int32?
-		Dim retval As New Int32?
-		Select Case ef.TypeOfExport
-			Case kCura.WinEDDS.ExportFile.ExportType.AncestorSearch, kCura.WinEDDS.ExportFile.ExportType.ParentSearch
-				retval = ef.ViewID
-			Case Else
-				retval = ef.ArtifactID
-		End Select
-		Return retval
 	End Function
 
 	Private Sub RunMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles RunMenu.Click
@@ -1987,14 +1980,7 @@ Public Class ExportForm
 		If selectedindex = -1 Then
 			selectedindex = 0
 			Dim msg As String = "Selected "
-			Select Case Me.ExportFile.TypeOfExport
-				Case ExportFile.ExportType.AncestorSearch, ExportFile.ExportType.ParentSearch
-					msg &= "view"
-				Case ExportFile.ExportType.ArtifactSearch
-					msg &= "saved search"
-				Case ExportFile.ExportType.Production
-					msg &= "production"
-			End Select
+			msg &= ExportTypeStringName().ToLower
 			msg &= " is no longer available."
 			MsgBox(msg, MsgBoxStyle.Exclamation, "Relativity Desktop Client")
 		End If
@@ -2035,6 +2021,20 @@ Public Class ExportForm
 			End If
 		Next
 	End Sub
+
+	Private ReadOnly Property ExportTypeStringName() As String
+		Get
+			Select Case Me.ExportFile.TypeOfExport
+				Case ExportFile.ExportType.AncestorSearch, ExportFile.ExportType.ParentSearch
+					Return "View"
+				Case ExportFile.ExportType.ArtifactSearch
+					Return "Saved Search"
+				Case ExportFile.ExportType.Production
+					Return "Production"
+			End Select
+			Return ""
+		End Get
+	End Property
 
 	Private Sub _copyFilesFromRepository_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _copyFilesFromRepository.CheckedChanged
 		_imageTypeDropdown.Enabled = _exportImages.Checked And _copyFilesFromRepository.Checked
