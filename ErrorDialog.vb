@@ -1,6 +1,7 @@
 Imports System
 Imports System.Xml
 Imports System.Web.Services.Protocols
+Imports System.Windows.Forms
 
 Public Class ErrorDialog
 	Inherits System.Windows.Forms.Form
@@ -34,40 +35,29 @@ Public Class ErrorDialog
 	'It can be modified using the Windows Form Designer.  
 	'Do not modify it using the code editor.
 	Friend WithEvents _okButton As System.Windows.Forms.Button
-	Friend WithEvents _cancelButton As System.Windows.Forms.Button
 	Friend WithEvents _errorText As System.Windows.Forms.TextBox
 	Friend WithEvents txtBoxFriendlyError As System.Windows.Forms.TextBox
+	Friend WithEvents _MoreDetailsButton As System.Windows.Forms.Button
 	Friend WithEvents LinkLabel1 As System.Windows.Forms.LinkLabel
 	<System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
 		Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(ErrorDialog))
 		Me._okButton = New System.Windows.Forms.Button()
-		Me._cancelButton = New System.Windows.Forms.Button()
 		Me._errorText = New System.Windows.Forms.TextBox()
 		Me.LinkLabel1 = New System.Windows.Forms.LinkLabel()
 		Me.txtBoxFriendlyError = New System.Windows.Forms.TextBox()
+		Me._MoreDetailsButton = New System.Windows.Forms.Button()
 		Me.SuspendLayout()
 		'
 		'_okButton
 		'
 		Me._okButton.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-		Me._okButton.Location = New System.Drawing.Point(176, 58)
+		Me._okButton.Location = New System.Drawing.Point(251, 58)
 		Me._okButton.MaximumSize = New System.Drawing.Size(68, 23)
 		Me._okButton.MinimumSize = New System.Drawing.Size(68, 23)
 		Me._okButton.Name = "_okButton"
 		Me._okButton.Size = New System.Drawing.Size(68, 23)
 		Me._okButton.TabIndex = 1
 		Me._okButton.Text = "Continue"
-		'
-		'_cancelButton
-		'
-		Me._cancelButton.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-		Me._cancelButton.Location = New System.Drawing.Point(252, 58)
-		Me._cancelButton.MaximumSize = New System.Drawing.Size(68, 23)
-		Me._cancelButton.MinimumSize = New System.Drawing.Size(68, 23)
-		Me._cancelButton.Name = "_cancelButton"
-		Me._cancelButton.Size = New System.Drawing.Size(68, 23)
-		Me._cancelButton.TabIndex = 2
-		Me._cancelButton.Text = "Quit"
 		'
 		'_errorText
 		'
@@ -93,7 +83,7 @@ Public Class ErrorDialog
 		Me.LinkLabel1.Size = New System.Drawing.Size(126, 16)
 		Me.LinkLabel1.TabIndex = 4
 		Me.LinkLabel1.TabStop = True
-		Me.LinkLabel1.Text = "Show Error Text"
+		Me.LinkLabel1.Text = "Copy to Clipboard"
 		'
 		'txtBoxFriendlyError
 		'
@@ -107,15 +97,24 @@ Public Class ErrorDialog
 		Me.txtBoxFriendlyError.Size = New System.Drawing.Size(315, 45)
 		Me.txtBoxFriendlyError.TabIndex = 5
 		'
+		'_MoreDetailsButton
+		'
+		Me._MoreDetailsButton.Location = New System.Drawing.Point(167, 58)
+		Me._MoreDetailsButton.MaximumSize = New System.Drawing.Size(78, 23)
+		Me._MoreDetailsButton.MinimumSize = New System.Drawing.Size(68, 23)
+		Me._MoreDetailsButton.Name = "_MoreDetailsButton"
+		Me._MoreDetailsButton.Size = New System.Drawing.Size(78, 23)
+		Me._MoreDetailsButton.TabIndex = 6
+		Me._MoreDetailsButton.Text = "More Details"
+		'
 		'ErrorDialog
 		'
 		Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None
 		Me.ClientSize = New System.Drawing.Size(323, 113)
-		Me.ControlBox = False
+		Me.Controls.Add(Me._MoreDetailsButton)
 		Me.Controls.Add(Me.txtBoxFriendlyError)
 		Me.Controls.Add(Me.LinkLabel1)
 		Me.Controls.Add(Me._errorText)
-		Me.Controls.Add(Me._cancelButton)
 		Me.Controls.Add(Me._okButton)
 		Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
 		Me.MaximizeBox = False
@@ -142,7 +141,7 @@ Public Class ErrorDialog
 		Initialize(ex, ex.Message)
 		Me.IsFatalException = isFatalError
 		Me._okButton.Visible = False
-		Me._cancelButton.Text = "Close"
+		Me._MoreDetailsButton.Location = New System.Drawing.Point(241, _MoreDetailsButton.Location.Y)
 		Me._errorText.Hide()
 		CollapseExceptionDetails()
 	End Sub
@@ -163,7 +162,11 @@ Public Class ErrorDialog
 	End Sub
 
 	Private Sub LinkLabel1_LinkClicked(ByVal sender As System.Object, ByVal e As System.Windows.Forms.LinkLabelLinkClickedEventArgs) Handles LinkLabel1.LinkClicked
-		If LinkLabel1.Text.ToLower = "show error text" Then
+		System.Windows.Forms.Clipboard.SetText(_errorText.Text)
+	End Sub
+
+	Private Sub _MoreDetailsButton_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles _MoreDetailsButton.Click
+		If _MoreDetailsButton.Text.ToLower = "more details" Then
 			ExpandExceptionDetails()
 		Else
 			CollapseExceptionDetails()
@@ -171,22 +174,16 @@ Public Class ErrorDialog
 	End Sub
 
 	Private Sub CollapseExceptionDetails()
-		LinkLabel1.Text = "Show Error Text"
-		'Me.Width = 304
+		_MoreDetailsButton.Text = "More Details"
 		Me.Height = 140
-		'Me.MaximumSize = New System.Drawing.Size(304, 116)
-		'Me.MinimumSize = New System.Drawing.Size(304, 116)
 		_errorText.Focus()
 		_errorText.Visible = False
 		_errorText.Hide()
 	End Sub
 
 	Private Sub ExpandExceptionDetails()
-		LinkLabel1.Text = "Hide Error Text"
-		'Me.Width = 304
+		_MoreDetailsButton.Text = "Hide Details"
 		Me.Height = 317
-		'Me.MaximumSize = New System.Drawing.Size(304, 308)
-		'Me.MinimumSize = New System.Drawing.Size(304, 308)
 		_errorText.Visible = True
 		_errorText.Show()
 		_errorText.Focus()
@@ -202,7 +199,7 @@ Public Class ErrorDialog
 		Me.Close()
 	End Sub
 
-	Private Sub _cancelButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _cancelButton.Click
+	Private Sub _cancelButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs)
 		If Me.IsFatalException Then
 			Me.DialogResult = Windows.Forms.DialogResult.OK
 		Else
@@ -216,4 +213,5 @@ Public Class ErrorDialog
 			ExpandExceptionDetails()
 		End If
 	End Sub
+
 End Class
