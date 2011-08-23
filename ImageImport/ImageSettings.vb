@@ -2,6 +2,25 @@ Namespace kCura.Relativity.DataReaderClient
 	Public Class ImageSettings
 		Inherits ImportSettingsBase
 
+#Region "Private Variables"
+		Private _batesNumberField As String
+		Private ReadOnly _batesNumberFieldDefault As String
+		Private _documentIDField As String
+		Private ReadOnly _documentIDFieldDefault As String
+		Private _fileLocationField As String
+		Private ReadOnly _fileLocationFieldDefault As String
+#End Region
+
+#Region "Constructors"
+		Public Sub New()
+			MyBase.New()
+
+			_batesNumberFieldDefault = "BatesNumber"
+			_documentIDFieldDefault = "DocumentIdentifier"
+			_fileLocationFieldDefault = "FileLocation"
+		End Sub
+#End Region
+
 #Region "Properties"
 		''' <summary>
 		''' TODO: Remove. Only here for the NUnit project.
@@ -17,6 +36,17 @@ Namespace kCura.Relativity.DataReaderClient
 		''' Name of the field in the data source corresponding to the BatesNumber field
 		''' </summary>
 		Public Property BatesNumberField() As String
+			Get
+				If _batesNumberField Is Nothing Then
+					Return _batesNumberFieldDefault
+				End If
+
+				Return _batesNumberField
+			End Get
+			Set(value As String)
+				_batesNumberField = value
+			End Set
+		End Property
 
 		''' <summary>
 		''' '
@@ -27,11 +57,33 @@ Namespace kCura.Relativity.DataReaderClient
 		''' Name of the field in the data source corresponding to the DocumentIdentifier field
 		''' </summary>
 		Public Property DocumentIdentifierField() As String
+			Get
+				If _documentIDField Is Nothing Then
+					Return _documentIDFieldDefault
+				End If
+
+				Return _documentIDField
+			End Get
+			Set(value As String)
+				_documentIDField = value
+			End Set
+		End Property
 
 		''' <summary>
 		''' Name of the field in the data source corresponding to the FileLocation field
 		''' </summary>
 		Public Property FileLocationField() As String
+			Get
+				If _fileLocationField Is Nothing Then
+					Return _fileLocationFieldDefault
+				End If
+
+				Return _fileLocationField
+			End Get
+			Set(value As String)
+				_fileLocationField = value
+			End Set
+		End Property
 
 		''' <summary>
 		''' Field name that contains ???

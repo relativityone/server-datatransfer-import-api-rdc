@@ -33,8 +33,7 @@ Namespace kCura.Relativity.DataReaderClient
 				'TODO: Remove this? What database data???
 				RaiseEvent OnMessage(New Status("Getting source data from database"))
 
-				Dim updatedSourceData As DataTable = MapSuppliedFieldNamesToActual(Settings, SourceData.SourceData)
-				SourceData.SourceData = updatedSourceData
+				MapSuppliedFieldNamesToActual(Settings, SourceData.SourceData)
 
 				SelectServiceURL()
 
@@ -122,17 +121,12 @@ Namespace kCura.Relativity.DataReaderClient
 			Return True
 		End Function
 
-		'TODO: Don't need Copy()
-		'TODO: Have sane defaults for 3 new properties
-		Private Function MapSuppliedFieldNamesToActual(ByVal imageSettings As ImageSettings, ByVal srcDataTable As DataTable) As DataTable
-			'kCura.WinEDDS.ImportExtension.ImageDataTableReader contains the real field names
-			Dim returnDataTbl As DataTable = srcDataTable.Copy()
-			returnDataTbl.Columns(imageSettings.BatesNumberField).ColumnName = "BatesNumber"
-			returnDataTbl.Columns(imageSettings.DocumentIdentifierField).ColumnName = "DocumentIdentifier"
-			returnDataTbl.Columns(imageSettings.FileLocationField).ColumnName = "FileLocation"
-
-			Return returnDataTbl
-		End Function
+		Private Sub MapSuppliedFieldNamesToActual(ByVal imageSettings As ImageSettings, ByRef srcDataTable As DataTable)
+			'kCura.WinEDDS.ImportExtension.ImageDataTableReader contains the 'real' field names
+			srcDataTable.Columns(imageSettings.BatesNumberField).ColumnName = "BatesNumber"
+			srcDataTable.Columns(imageSettings.DocumentIdentifierField).ColumnName = "DocumentIdentifier"
+			srcDataTable.Columns(imageSettings.FileLocationField).ColumnName = "FileLocation"
+		End Sub
 
 		Private Function MapInputToSettingsFactory(ByVal imgSettings As ImageSettings) As WinEDDS.ImageSettingsFactory
 			Dim tempCredential As Net.NetworkCredential = CType(GetCredentials(imgSettings), Net.NetworkCredential)
