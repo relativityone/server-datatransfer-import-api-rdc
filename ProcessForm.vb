@@ -636,10 +636,8 @@ Namespace kCura.Windows.Process
 			End If
 			_outputTextBox.WriteLine(errorFullMessage)
 
-			If Not _errorsOutputTextBox.IsDisposed Then
-				_errorsOutputTextBox.WriteLine(errorFriendlyMessage, " ............")
-				_errorsOutputTextBox.WriteErrorDetails()
-			End If
+			_errorsOutputTextBox.WriteLine(errorFriendlyMessage, " ............")
+			_errorsOutputTextBox.WriteErrorDetails()
 
 			AddHandler _errorsOutputTextBox.DetailsLink.LinkClicked, AddressOf OpenDetailsPane
 
