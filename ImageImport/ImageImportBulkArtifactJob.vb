@@ -202,12 +202,12 @@ Namespace kCura.Relativity.DataReaderClient
 		End Sub
 
 		Private Sub EnsureFieldNameIsValid(ByVal imageSettingsField As String, ByVal forFieldName As String)
-			If String.IsNullOrEmpty(imageSettingsField) Then
-				Throw New Exception("No field name specified for " & forFieldName)
+			If String.IsNullOrEmpty(forFieldName) Then
+				Throw New Exception("No field name specified for " & imageSettingsField)
 			End If
 
-			If Not SourceData.SourceData.Columns.Contains(imageSettingsField) Then
-				Throw New Exception(String.Format("No field named {0} found in the DataTable for " & forFieldName, imageSettingsField))
+			If Not SourceData.SourceData.Columns.Contains(forFieldName) Then
+				Throw New Exception(String.Format("No field named {0} found in the DataTable for " & imageSettingsField, forFieldName))
 			End If
 		End Sub
 
