@@ -10,14 +10,14 @@ Namespace kCura.WinEDDS
 #Region "Members"
 		Dim _start As System.DateTime
 		Private _imageReader As kCura.WinEDDS.Api.IImageReader
-		Private _docManager As kCura.WinEDDS.Service.DocumentManager
-		Private _fieldQuery As kCura.WinEDDS.Service.FieldQuery
-		Private _folderManager As kCura.WinEDDS.Service.FolderManager
-		Private _auditManager As kCura.WinEDDS.Service.AuditManager
+		Protected _docManager As kCura.WinEDDS.Service.DocumentManager
+		Protected _fieldQuery As kCura.WinEDDS.Service.FieldQuery
+		Protected _folderManager As kCura.WinEDDS.Service.FolderManager
+		Protected _auditManager As kCura.WinEDDS.Service.AuditManager
 		Private WithEvents _fileUploader As kCura.WinEDDS.FileUploader
 		Private WithEvents _bcpuploader As kCura.WinEDDS.FileUploader
-		Private _fileManager As kCura.WinEDDS.Service.FileManager
-		Private _productionManager As kCura.WinEDDS.Service.ProductionManager
+		Protected _fileManager As kCura.WinEDDS.Service.FileManager
+		Protected _productionManager As kCura.WinEDDS.Service.ProductionManager
 		Protected _bulkImportManager As kCura.WinEDDS.Service.BulkImportManager
 		Private _folderID As Int32
 		Private _productionArtifactID As Int32
@@ -154,13 +154,6 @@ Namespace kCura.WinEDDS
 		Protected Overridable ReadOnly Property NumberOfRetries() As Int32
 			Get
 				Return kCura.Utility.Config.Settings.IoErrorNumberOfRetries
-			End Get
-		End Property
-
-		Protected Overridable ReadOnly Property BulkImportManager As kCura.WinEDDS.Service.BulkImportManager
-			Get
-				If _bulkImportManager Is Nothing Then _bulkImportManager = New kCura.WinEDDS.Service.BulkImportManager(_settings.Credential, _settings.CookieContainer, ServiceURL)
-				Return _bulkImportManager
 			End Get
 		End Property
 

@@ -11,7 +11,7 @@ Namespace kCura.WinEDDS.Service
 		Public Sub New(ByVal credentials As Net.ICredentials, ByVal cookieContainer As System.Net.CookieContainer, ByVal webURL As String)
 			MyBase.New()
 
-			_serviceURLPageFormat = "{0}userManager.asmx"
+			_serviceURLPageFormat = "{0}UserManager.asmx"
 			Me.Credentials = credentials
 			Me.CookieContainer = cookieContainer
 			Me.ServiceURL = webURL

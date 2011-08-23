@@ -14,7 +14,7 @@ Namespace kCura.WinEDDS
 		Private _selectedIdentifier As DocumentField
 		Private _docFieldCollection As DocumentFieldCollection
 		Private _parentFolderDTO As kCura.EDDS.WebAPI.FolderManagerBase.Folder
-		Private _auditManager As kCura.WinEDDS.Service.AuditManager
+		Protected _auditManager As kCura.WinEDDS.Service.AuditManager
 
 		Private _recordCount As Int64 = -1
 		Private _extractFullTextFromNative As Boolean

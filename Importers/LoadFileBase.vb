@@ -140,7 +140,7 @@ Namespace kCura.WinEDDS
 			_firstLineContainsColumnNames = args.FirstLineContainsHeaders
 			_fieldMap = args.FieldMap
 
-			InitializeManagers(args, ServiceURL)
+			InitializeManagers(args)
 
 			_keyFieldID = args.IdentityFieldId
 			_multiValueSeparator = args.MultiRecordDelimiter.ToString.ToCharArray
@@ -176,10 +176,6 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Protected Overridable Sub InitializeManagers(ByVal args As LoadFile)
-			InitializeManagers(args, Config.WebServiceURL)
-		End Sub
-
-		Protected Overridable Sub InitializeManagers(ByVal args As LoadFile, ByVal webURL As String)
 			_documentManager = New kCura.WinEDDS.Service.DocumentManager(args.Credentials, args.CookieContainer, ServiceURL)
 			_uploadManager = New kCura.WinEDDS.Service.FileIO(args.Credentials, args.CookieContainer, ServiceURL)
 			_codeManager = New kCura.WinEDDS.Service.CodeManager(args.Credentials, args.CookieContainer, ServiceURL)
