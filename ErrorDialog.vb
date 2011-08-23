@@ -34,30 +34,17 @@ Public Class ErrorDialog
 	'NOTE: The following procedure is required by the Windows Form Designer
 	'It can be modified using the Windows Form Designer.  
 	'Do not modify it using the code editor.
-	Friend WithEvents _okButton As System.Windows.Forms.Button
 	Friend WithEvents _errorText As System.Windows.Forms.TextBox
 	Friend WithEvents txtBoxFriendlyError As System.Windows.Forms.TextBox
 	Friend WithEvents _MoreDetailsButton As System.Windows.Forms.Button
 	Friend WithEvents LinkLabel1 As System.Windows.Forms.LinkLabel
 	<System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
 		Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(ErrorDialog))
-		Me._okButton = New System.Windows.Forms.Button()
 		Me._errorText = New System.Windows.Forms.TextBox()
 		Me.LinkLabel1 = New System.Windows.Forms.LinkLabel()
 		Me.txtBoxFriendlyError = New System.Windows.Forms.TextBox()
 		Me._MoreDetailsButton = New System.Windows.Forms.Button()
 		Me.SuspendLayout()
-		'
-		'_okButton
-		'
-		Me._okButton.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-		Me._okButton.Location = New System.Drawing.Point(251, 58)
-		Me._okButton.MaximumSize = New System.Drawing.Size(68, 23)
-		Me._okButton.MinimumSize = New System.Drawing.Size(68, 23)
-		Me._okButton.Name = "_okButton"
-		Me._okButton.Size = New System.Drawing.Size(68, 23)
-		Me._okButton.TabIndex = 1
-		Me._okButton.Text = "Continue"
 		'
 		'_errorText
 		'
@@ -75,15 +62,13 @@ Public Class ErrorDialog
 		'
 		'LinkLabel1
 		'
-		Me.LinkLabel1.Location = New System.Drawing.Point(1, 65)
+		Me.LinkLabel1.Location = New System.Drawing.Point(1, 62)
 		Me.LinkLabel1.Margin = New System.Windows.Forms.Padding(3, 0, 3, 15)
-		Me.LinkLabel1.MaximumSize = New System.Drawing.Size(126, 16)
-		Me.LinkLabel1.MinimumSize = New System.Drawing.Size(126, 16)
 		Me.LinkLabel1.Name = "LinkLabel1"
-		Me.LinkLabel1.Size = New System.Drawing.Size(126, 16)
+		Me.LinkLabel1.Size = New System.Drawing.Size(176, 20)
 		Me.LinkLabel1.TabIndex = 4
 		Me.LinkLabel1.TabStop = True
-		Me.LinkLabel1.Text = "Copy to Clipboard"
+		Me.LinkLabel1.Text = "Copy Error Text to Clipboard"
 		'
 		'txtBoxFriendlyError
 		'
@@ -99,7 +84,8 @@ Public Class ErrorDialog
 		'
 		'_MoreDetailsButton
 		'
-		Me._MoreDetailsButton.Location = New System.Drawing.Point(167, 58)
+		Me._MoreDetailsButton.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+		Me._MoreDetailsButton.Location = New System.Drawing.Point(241, 59)
 		Me._MoreDetailsButton.MaximumSize = New System.Drawing.Size(78, 23)
 		Me._MoreDetailsButton.MinimumSize = New System.Drawing.Size(68, 23)
 		Me._MoreDetailsButton.Name = "_MoreDetailsButton"
@@ -115,7 +101,6 @@ Public Class ErrorDialog
 		Me.Controls.Add(Me.txtBoxFriendlyError)
 		Me.Controls.Add(Me.LinkLabel1)
 		Me.Controls.Add(Me._errorText)
-		Me.Controls.Add(Me._okButton)
 		Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
 		Me.MaximizeBox = False
 		Me.MaximumSize = New System.Drawing.Size(500, 500)
@@ -140,8 +125,6 @@ Public Class ErrorDialog
 	Public Sub Initialize(ByVal ex As System.Exception, ByVal isFatalError As Boolean)
 		Initialize(ex, ex.Message)
 		Me.IsFatalException = isFatalError
-		Me._okButton.Visible = False
-		Me._MoreDetailsButton.Location = New System.Drawing.Point(241, _MoreDetailsButton.Location.Y)
 		Me._errorText.Hide()
 		CollapseExceptionDetails()
 	End Sub
@@ -194,18 +177,8 @@ Public Class ErrorDialog
 		_errorText.Select(0, 0)
 	End Sub
 
-	Private Sub _okButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _okButton.Click
+	Private Sub ErrorDialog_FormClosed(ByVal sender As Object, ByVal e As System.Windows.Forms.FormClosedEventArgs) Handles Me.FormClosed
 		Me.DialogResult = Windows.Forms.DialogResult.OK
-		Me.Close()
-	End Sub
-
-	Private Sub _cancelButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs)
-		If Me.IsFatalException Then
-			Me.DialogResult = Windows.Forms.DialogResult.OK
-		Else
-			Me.DialogResult = Windows.Forms.DialogResult.Cancel
-		End If
-		Me.Close()
 	End Sub
 
 	Private Sub ErrorDialog_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Shown
@@ -213,5 +186,7 @@ Public Class ErrorDialog
 			ExpandExceptionDetails()
 		End If
 	End Sub
+
+
 
 End Class

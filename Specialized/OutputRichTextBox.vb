@@ -151,10 +151,12 @@ Namespace kCura.Windows.Forms
 		End Sub
 
 		Public Sub WriteErrorDetails()
-			Me.DetailsLink.Location = Me.TextBox.GetPositionFromCharIndex(Me.TextBox.TextLength - 10)
-			Me.DetailsLink.Size = New System.Drawing.Size(100, 23)
-			Me.DetailsLink.Text = "More Details"
-			Me.DetailsLink.BringToFront()
+			If Not Me.TextBox.IsDisposed Then
+				Me.DetailsLink.Location = Me.TextBox.GetPositionFromCharIndex(Me.TextBox.TextLength - 10)
+				Me.DetailsLink.Size = New System.Drawing.Size(100, 23)
+				Me.DetailsLink.Text = "More Details"
+				Me.DetailsLink.BringToFront()
+			End If
 		End Sub
 
 		Private Sub DumpOutput()
