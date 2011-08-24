@@ -374,7 +374,7 @@ Namespace kCura.WinEDDS
 				Dim charactersProcessed As Int64 = 0
 				Using sr As New System.IO.StreamReader(outputPath, System.Text.Encoding.Unicode), sw As New System.IO.StreamWriter(tmpLocation, False, System.Text.Encoding.Unicode)
 					Me.AdvanceStream(sr, charactersSuccessfullyProcessed)
-					While (Not hasReachedEof AndAlso (i < Me.ImportBatchSize OrElse sr.Peek = AscW("0")))
+					While (Not hasReachedEof AndAlso i < Me.ImportBatchSize)
 						Dim c As Char = ChrW(sr.Read)
 						last.Enqueue(c)
 						If last.Count > limit.Length Then last.Dequeue()
