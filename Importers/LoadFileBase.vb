@@ -264,7 +264,7 @@ Namespace kCura.WinEDDS
 					hierarchicCodeManager = New Service.FieldSpecificCodeManager(_codeManager, field.CodeTypeID)
 				End If
 				If Not Me.MulticodeMatrix.Contains(field.CodeTypeID) Then
-					Me.MulticodeMatrix.Add(field.CodeTypeID, New NestedArtifactCache(hierarchicCodeManager, _caseSystemID, _caseArtifactID, _hierarchicalMultiValueFieldDelmiter, ServiceURL))
+					Me.MulticodeMatrix.Add(field.CodeTypeID, New NestedArtifactCache(hierarchicCodeManager, _caseSystemID, _caseArtifactID, _hierarchicalMultiValueFieldDelmiter))
 				End If
 				Dim artifactCache As NestedArtifactCache = DirectCast(Me.MulticodeMatrix(field.CodeTypeID), NestedArtifactCache)
 				Dim c As New System.Collections.ArrayList
