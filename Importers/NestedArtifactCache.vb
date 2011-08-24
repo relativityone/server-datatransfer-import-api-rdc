@@ -9,20 +9,6 @@ Namespace kCura.WinEDDS
 		Private _nestedItemDelimiter As String
 		Private _nestedCountCodes As New ArrayList
 		Private _createCount As Int32 = 0
-		Private _serviceURL As String
-
-		Public Overridable Property ServiceURL As String
-			Get
-				Return _serviceURL
-			End Get
-			Set(value As String)
-				_serviceURL = value
-				'Didn't want to change the IHierarchicArtifactManager interface...this is the result.
-				If TypeOf _manager Is Service.FolderManager Then
-					DirectCast(_manager, Service.FolderManager).ServiceURL = value
-				End If
-			End Set
-		End Property
 
 		Public ReadOnly Property CreationCount() As Int32
 			Get
@@ -116,14 +102,8 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Public Sub New(ByVal artifactManager As Service.IHierarchicArtifactManager, ByVal rootArtifactID As Int32, ByVal caseContextArtifactID As Int32, ByVal nestedItemDelimiter As String)
-			Me.New(artifactManager, rootArtifactID, caseContextArtifactID, nestedItemDelimiter, kCura.WinEDDS.Config.WebServiceURL)
-		End Sub
-
-		Public Sub New(ByVal artifactManager As Service.IHierarchicArtifactManager, ByVal rootArtifactID As Int32, ByVal caseContextArtifactID As Int32, ByVal nestedItemDelimiter As String, ByVal webURL As String)
 			_ht = New Hashtable
-			'Setting _manager first allows the ServiceURL property here to update _manager's ServiceURL
 			_manager = artifactManager
-			ServiceURL = webURL
 
 			_caseContextArtifactID = caseContextArtifactID
 			_rootArtifactID = rootArtifactID
