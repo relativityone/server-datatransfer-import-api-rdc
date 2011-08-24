@@ -85,9 +85,9 @@ Public Class ErrorDialog
 		'_MoreDetailsButton
 		'
 		Me._MoreDetailsButton.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-		Me._MoreDetailsButton.Location = New System.Drawing.Point(241, 59)
-		Me._MoreDetailsButton.MaximumSize = New System.Drawing.Size(78, 23)
-		Me._MoreDetailsButton.MinimumSize = New System.Drawing.Size(68, 23)
+		Me._MoreDetailsButton.AutoSize = True
+		Me._MoreDetailsButton.Location = New System.Drawing.Point(240, 59)
+		Me._MoreDetailsButton.MinimumSize = New System.Drawing.Size(78, 23)
 		Me._MoreDetailsButton.Name = "_MoreDetailsButton"
 		Me._MoreDetailsButton.Size = New System.Drawing.Size(78, 23)
 		Me._MoreDetailsButton.TabIndex = 6
