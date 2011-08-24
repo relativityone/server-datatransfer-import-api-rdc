@@ -169,7 +169,8 @@ Namespace kCura.WinEDDS
 			End Get
 			Set(ByVal value As String)
 				_serviceURL = value
-				UpdateServiceURLs(value)
+				UpdateUploaderServiceURLs(value)
+				UpdateManagerServiceURLs(value)
 			End Set
 		End Property
 
@@ -242,9 +243,7 @@ Namespace kCura.WinEDDS
 			_bulkImportManager = New kCura.WinEDDS.Service.BulkImportManager(args.Credential, args.CookieContainer, ServiceURL)
 		End Sub
 
-		Private Sub UpdateServiceURLs(ByVal newURL As String)
-			_fileUploader.ServiceURL = newURL
-			_bcpuploader.ServiceURL = newURL
+		Protected Sub UpdateManagerServiceURLs(ByVal newURL As String)
 
 			_docManager.ServiceURL = newURL
 			_fieldQuery.ServiceURL = newURL
@@ -254,6 +253,13 @@ Namespace kCura.WinEDDS
 			_productionManager.ServiceURL = newURL
 			_bulkImportManager.ServiceURL = newURL
 		End Sub
+
+		Protected Overridable Sub UpdateUploaderServiceURLs(ByVal newURL As String)
+
+			_fileUploader.ServiceURL = newURL
+			_bcpuploader.ServiceURL = newURL
+		End Sub
+
 #End Region
 
 #Region "Enumerations"

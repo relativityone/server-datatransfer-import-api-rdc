@@ -3,11 +3,11 @@ Namespace kCura.WinEDDS
 	Public Class ImageFilePreviewer
 		Inherits kCura.Utility.DelimitedFileImporter
 
-		Private _docManager As kCura.WinEDDS.Service.DocumentManager
-		Private _fieldQuery As kCura.WinEDDS.Service.FieldQuery
-		Private _folderManager As kCura.WinEDDS.Service.FolderManager
+		Protected _docManager As kCura.WinEDDS.Service.DocumentManager
+		Protected _fieldQuery As kCura.WinEDDS.Service.FieldQuery
+		Protected _folderManager As kCura.WinEDDS.Service.FolderManager
 		Private _fileUploader As kCura.WinEDDS.FileUploader
-		Private _fileManager As kCura.WinEDDS.Service.FileManager
+		Protected _fileManager As kCura.WinEDDS.Service.FileManager
 		Private _folderID As Int32
 		Private _overwrite As String
 		Private _filePath As String
@@ -34,13 +34,21 @@ Namespace kCura.WinEDDS
 			End Get
 			Set(value As String)
 				_serviceURL = value
-				_docManager.ServiceURL = value
-				_fieldQuery.ServiceURL = value
-				_folderManager.ServiceURL = value
-				_fileManager.ServiceURL = value
-				_fileUploader.ServiceURL = value
+				UpdateManagerServiceURLs(value)
+				UpdateUploaderURLs(value)
 			End Set
 		End Property
+
+		Protected Sub UpdateManagerServiceURLs(ByVal value As String)
+			_docManager.ServiceURL = value
+			_fieldQuery.ServiceURL = value
+			_folderManager.ServiceURL = value
+			_fileManager.ServiceURL = value
+		End Sub
+
+		Protected Overridable Sub UpdateUploaderURLs(ByVal value As String)
+			_fileUploader.ServiceURL = value
+		End Sub
 
 		Friend WriteOnly Property FilePath() As String
 			Set(ByVal value As String)
@@ -72,13 +80,17 @@ Namespace kCura.WinEDDS
 			_fieldQuery = New kCura.WinEDDS.Service.FieldQuery(args.Credential, args.CookieContainer, ServiceURL)
 			_folderManager = New kCura.WinEDDS.Service.FolderManager(args.Credential, args.CookieContainer, ServiceURL)
 			_fileManager = New kCura.WinEDDS.Service.FileManager(args.Credential, args.CookieContainer, ServiceURL)
-			_fileUploader = New kCura.WinEDDS.FileUploader(args.Credential, args.CaseInfo.ArtifactID, _docManager.GetDocumentDirectoryByCaseArtifactID(args.CaseInfo.ArtifactID) & "\", args.CookieContainer, ServiceURL)
+			InitializeUploaders(args)
 
 			_overwrite = args.Overwrite
 			_replaceFullText = args.ReplaceFullText
 			_selectedIdentifierField = args.ControlKeyField
 			_processController = controller
 			_continue = True
+		End Sub
+
+		Protected Overridable Sub InitializeUploaders(ByVal args As ImageLoadFile)
+			_fileUploader = New kCura.WinEDDS.FileUploader(args.Credential, args.CaseInfo.ArtifactID, _docManager.GetDocumentDirectoryByCaseArtifactID(args.CaseInfo.ArtifactID) & "\", args.CookieContainer, ServiceURL)
 		End Sub
 
 		Public Overloads Overrides Function ReadFile(ByVal path As String) As Object
