@@ -1189,16 +1189,7 @@ Public Class ExportForm
 			End If
 		End If
 		If _filters.SelectedItem Is Nothing Then
-			Dim filterType As String
-			Select Case Me.ExportFile.TypeOfExport
-				Case ExportFile.ExportType.Production
-					filterType = "production"
-				Case ExportFile.ExportType.ArtifactSearch
-					filterType = "saved search"
-				Case Else
-					filterType = "view"
-			End Select
-			msg.AppendFormat("No {0} selected", filterType)
+			msg.AppendFormat("No {0} selected", Me.ExportTypeStringName.ToLower)
 		End If
 		If _exportNativeFiles.Checked OrElse _columnSelecter.RightListBoxItems.Count > 0 Then
 			If CType(_nativeFileFormat.SelectedItem, String) = "Select..." Then
