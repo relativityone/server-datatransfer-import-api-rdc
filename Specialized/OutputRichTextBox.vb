@@ -45,6 +45,7 @@ Namespace kCura.Windows.Forms
 			Me.DetailsLink.Text = ""
 			Me.DetailsLink.SendToBack()
 			Me.DetailsLink.Size = New System.Drawing.Size(0, 0)
+			Me.DetailsLink.AutoSize = True
 
       '
       'TextBox
