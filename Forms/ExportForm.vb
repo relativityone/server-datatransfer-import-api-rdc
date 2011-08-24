@@ -1492,6 +1492,7 @@ Public Class ExportForm
 				Next
 				If precedencePair.Display = "Original" AndAlso precedencePair.Value = "-1" Then _productionPrecedenceList.Items.Add(precedencePair)
 			Next
+			If _productionPrecedenceList.Items.Count = 0 Then _productionPrecedenceList.Items.Add(New Pair("-1", "Original"))
 		Else
 			'original is already there
 		End If
