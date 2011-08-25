@@ -49,7 +49,7 @@ Namespace kCura.WinEDDS
 		Protected _settings As kCura.WinEDDS.LoadFile
 		Private _codeValidator As CodeValidator.Base
 		Private _codesCreated As Int32 = 0
-		Private _serviceURL As String
+		Protected _serviceURL As String
 		Protected WithEvents _artifactReader As Api.IArtifactReader
 #End Region
 
@@ -109,6 +109,7 @@ Namespace kCura.WinEDDS
 				Return _serviceURL
 			End Get
 			Set(value As String)
+				_serviceURL = value
 				UpdateServiceURLs(value)
 			End Set
 		End Property
@@ -187,7 +188,7 @@ Namespace kCura.WinEDDS
 			_objectManager = New kCura.WinEDDS.Service.ObjectManager(args.Credentials, args.CookieContainer, ServiceURL)
 		End Sub
 
-		Private Sub UpdateServiceURLs(ByVal value As String)
+		Protected Overridable Sub UpdateServiceURLs(ByVal value As String)
 			_codeManager.ServiceURL = value
 			_documentManager.ServiceURL = value
 			_fieldQuery.ServiceURL = value
