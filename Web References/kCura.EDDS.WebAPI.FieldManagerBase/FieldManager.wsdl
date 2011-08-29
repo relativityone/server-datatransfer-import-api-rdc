@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<wsdl:definitions xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://foley.com/EDDS/FieldManager" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:s1="http://microsoft.com/wsdl/types/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://foley.com/EDDS/FieldManager" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+<wsdl:definitions xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://www.kCura.com/EDDS/FieldManager" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:s1="http://microsoft.com/wsdl/types/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://www.kCura.com/EDDS/FieldManager" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
   <wsdl:types>
-    <s:schema elementFormDefault="qualified" targetNamespace="http://foley.com/EDDS/FieldManager">
+    <s:schema elementFormDefault="qualified" targetNamespace="http://www.kCura.com/EDDS/FieldManager">
       <s:import namespace="http://microsoft.com/wsdl/types/" />
       <s:element name="Create">
         <s:complexType>
@@ -66,6 +66,7 @@
               <s:element minOccurs="1" maxOccurs="1" name="AvailableInViewer" type="s:boolean" />
               <s:element minOccurs="0" maxOccurs="1" name="RelativityApplications" type="tns:ArrayOfInt" />
               <s:element minOccurs="0" maxOccurs="1" name="RelationalPane" type="tns:RelationalFieldPane" />
+              <s:element minOccurs="1" maxOccurs="1" name="AutoAddChoices" type="s:boolean" />
             </s:sequence>
           </s:extension>
         </s:complexContent>
@@ -86,7 +87,12 @@
           <s:element minOccurs="1" maxOccurs="1" name="CreatedBy" type="s:int" />
           <s:element minOccurs="1" maxOccurs="1" name="CreatedOn" type="s:dateTime" />
           <s:element minOccurs="1" maxOccurs="1" name="DeleteFlag" type="s:boolean" />
-          <s:element minOccurs="1" maxOccurs="1" name="Guid" nillable="true" type="s1:guid" />
+          <s:element minOccurs="0" maxOccurs="1" name="Guids" type="tns:ArrayOfGuid" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="ArrayOfGuid">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="guid" type="s1:guid" />
         </s:sequence>
       </s:complexType>
       <s:simpleType name="FieldType">
@@ -224,7 +230,7 @@
   <wsdl:binding name="FieldManagerSoap" type="tns:FieldManagerSoap">
     <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
     <wsdl:operation name="Create">
-      <soap:operation soapAction="http://foley.com/EDDS/FieldManager/Create" style="document" />
+      <soap:operation soapAction="http://www.kCura.com/EDDS/FieldManager/Create" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -233,7 +239,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="Read">
-      <soap:operation soapAction="http://foley.com/EDDS/FieldManager/Read" style="document" />
+      <soap:operation soapAction="http://www.kCura.com/EDDS/FieldManager/Read" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -245,7 +251,7 @@
   <wsdl:binding name="FieldManagerSoap12" type="tns:FieldManagerSoap">
     <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
     <wsdl:operation name="Create">
-      <soap12:operation soapAction="http://foley.com/EDDS/FieldManager/Create" style="document" />
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/FieldManager/Create" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
@@ -254,7 +260,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="Read">
-      <soap12:operation soapAction="http://foley.com/EDDS/FieldManager/Read" style="document" />
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/FieldManager/Read" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>

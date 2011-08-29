@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<wsdl:definitions xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://foley.com/EDDS/FileManager" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://foley.com/EDDS/FileManager" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+<wsdl:definitions xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://www.kCura.com/EDDS/FileManager" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://www.kCura.com/EDDS/FileManager" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
   <wsdl:types>
-    <s:schema elementFormDefault="qualified" targetNamespace="http://foley.com/EDDS/FileManager">
+    <s:schema elementFormDefault="qualified" targetNamespace="http://www.kCura.com/EDDS/FileManager">
       <s:element name="BeginFill">
         <s:complexType>
           <s:sequence>
@@ -264,7 +264,7 @@
   <wsdl:binding name="FileIOSoap" type="tns:FileIOSoap">
     <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
     <wsdl:operation name="BeginFill">
-      <soap:operation soapAction="http://foley.com/EDDS/FileManager/BeginFill" style="document" />
+      <soap:operation soapAction="http://www.kCura.com/EDDS/FileManager/BeginFill" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -273,7 +273,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="FileFill">
-      <soap:operation soapAction="http://foley.com/EDDS/FileManager/FileFill" style="document" />
+      <soap:operation soapAction="http://www.kCura.com/EDDS/FileManager/FileFill" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -282,7 +282,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="RemoveFill">
-      <soap:operation soapAction="http://foley.com/EDDS/FileManager/RemoveFill" style="document" />
+      <soap:operation soapAction="http://www.kCura.com/EDDS/FileManager/RemoveFill" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -291,7 +291,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="RemoveTempFile">
-      <soap:operation soapAction="http://foley.com/EDDS/FileManager/RemoveTempFile" style="document" />
+      <soap:operation soapAction="http://www.kCura.com/EDDS/FileManager/RemoveTempFile" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -300,7 +300,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="ReadFileAsString">
-      <soap:operation soapAction="http://foley.com/EDDS/FileManager/ReadFileAsString" style="document" />
+      <soap:operation soapAction="http://www.kCura.com/EDDS/FileManager/ReadFileAsString" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -309,7 +309,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="GetBcpSharePath">
-      <soap:operation soapAction="http://foley.com/EDDS/FileManager/GetBcpSharePath" style="document" />
+      <soap:operation soapAction="http://www.kCura.com/EDDS/FileManager/GetBcpSharePath" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -318,7 +318,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="ValidateBcpShare">
-      <soap:operation soapAction="http://foley.com/EDDS/FileManager/ValidateBcpShare" style="document" />
+      <soap:operation soapAction="http://www.kCura.com/EDDS/FileManager/ValidateBcpShare" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -327,7 +327,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="GetBcpShareSpaceReport">
-      <soap:operation soapAction="http://foley.com/EDDS/FileManager/GetBcpShareSpaceReport" style="document" />
+      <soap:operation soapAction="http://www.kCura.com/EDDS/FileManager/GetBcpShareSpaceReport" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -336,7 +336,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="GetDefaultRepositorySpaceReport">
-      <soap:operation soapAction="http://foley.com/EDDS/FileManager/GetDefaultRepositorySpaceReport" style="document" />
+      <soap:operation soapAction="http://www.kCura.com/EDDS/FileManager/GetDefaultRepositorySpaceReport" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -345,7 +345,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="RepositoryVolumeMax">
-      <soap:operation soapAction="http://foley.com/EDDS/FileManager/RepositoryVolumeMax" style="document" />
+      <soap:operation soapAction="http://www.kCura.com/EDDS/FileManager/RepositoryVolumeMax" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -357,7 +357,7 @@
   <wsdl:binding name="FileIOSoap12" type="tns:FileIOSoap">
     <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
     <wsdl:operation name="BeginFill">
-      <soap12:operation soapAction="http://foley.com/EDDS/FileManager/BeginFill" style="document" />
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/FileManager/BeginFill" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
@@ -366,7 +366,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="FileFill">
-      <soap12:operation soapAction="http://foley.com/EDDS/FileManager/FileFill" style="document" />
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/FileManager/FileFill" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
@@ -375,7 +375,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="RemoveFill">
-      <soap12:operation soapAction="http://foley.com/EDDS/FileManager/RemoveFill" style="document" />
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/FileManager/RemoveFill" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
@@ -384,7 +384,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="RemoveTempFile">
-      <soap12:operation soapAction="http://foley.com/EDDS/FileManager/RemoveTempFile" style="document" />
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/FileManager/RemoveTempFile" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
@@ -393,7 +393,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="ReadFileAsString">
-      <soap12:operation soapAction="http://foley.com/EDDS/FileManager/ReadFileAsString" style="document" />
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/FileManager/ReadFileAsString" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
@@ -402,7 +402,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="GetBcpSharePath">
-      <soap12:operation soapAction="http://foley.com/EDDS/FileManager/GetBcpSharePath" style="document" />
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/FileManager/GetBcpSharePath" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
@@ -411,7 +411,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="ValidateBcpShare">
-      <soap12:operation soapAction="http://foley.com/EDDS/FileManager/ValidateBcpShare" style="document" />
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/FileManager/ValidateBcpShare" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
@@ -420,7 +420,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="GetBcpShareSpaceReport">
-      <soap12:operation soapAction="http://foley.com/EDDS/FileManager/GetBcpShareSpaceReport" style="document" />
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/FileManager/GetBcpShareSpaceReport" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
@@ -429,7 +429,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="GetDefaultRepositorySpaceReport">
-      <soap12:operation soapAction="http://foley.com/EDDS/FileManager/GetDefaultRepositorySpaceReport" style="document" />
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/FileManager/GetDefaultRepositorySpaceReport" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
@@ -438,7 +438,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="RepositoryVolumeMax">
-      <soap12:operation soapAction="http://foley.com/EDDS/FileManager/RepositoryVolumeMax" style="document" />
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/FileManager/RepositoryVolumeMax" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>

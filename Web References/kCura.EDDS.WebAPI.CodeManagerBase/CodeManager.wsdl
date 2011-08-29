@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<wsdl:definitions xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://foley.com/EDDS/CodeManager" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:s1="http://microsoft.com/wsdl/types/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://foley.com/EDDS/CodeManager" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+<wsdl:definitions xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://www.kCura.com/EDDS/CodeManager" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:s1="http://microsoft.com/wsdl/types/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://www.kCura.com/EDDS/CodeManager" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
   <wsdl:types>
-    <s:schema elementFormDefault="qualified" targetNamespace="http://foley.com/EDDS/CodeManager">
+    <s:schema elementFormDefault="qualified" targetNamespace="http://www.kCura.com/EDDS/CodeManager">
       <s:import namespace="http://microsoft.com/wsdl/types/" />
       <s:element name="RetrieveCodesAndTypesForCase">
         <s:complexType>
@@ -306,7 +306,7 @@
   <wsdl:binding name="CodeManagerSoap" type="tns:CodeManagerSoap">
     <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
     <wsdl:operation name="RetrieveCodesAndTypesForCase">
-      <soap:operation soapAction="http://foley.com/EDDS/CodeManager/RetrieveCodesAndTypesForCase" style="document" />
+      <soap:operation soapAction="http://www.kCura.com/EDDS/CodeManager/RetrieveCodesAndTypesForCase" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -315,7 +315,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="Create">
-      <soap:operation soapAction="http://foley.com/EDDS/CodeManager/Create" style="document" />
+      <soap:operation soapAction="http://www.kCura.com/EDDS/CodeManager/Create" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -324,7 +324,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="GetAllForHierarchical">
-      <soap:operation soapAction="http://foley.com/EDDS/CodeManager/GetAllForHierarchical" style="document" />
+      <soap:operation soapAction="http://www.kCura.com/EDDS/CodeManager/GetAllForHierarchical" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -333,7 +333,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="GetInitialChunk">
-      <soap:operation soapAction="http://foley.com/EDDS/CodeManager/GetInitialChunk" style="document" />
+      <soap:operation soapAction="http://www.kCura.com/EDDS/CodeManager/GetInitialChunk" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -342,7 +342,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="GetLastChunk">
-      <soap:operation soapAction="http://foley.com/EDDS/CodeManager/GetLastChunk" style="document" />
+      <soap:operation soapAction="http://www.kCura.com/EDDS/CodeManager/GetLastChunk" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -351,7 +351,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="RetrieveCodeByNameAndTypeID">
-      <soap:operation soapAction="http://foley.com/EDDS/CodeManager/RetrieveCodeByNameAndTypeID" style="document" />
+      <soap:operation soapAction="http://www.kCura.com/EDDS/CodeManager/RetrieveCodeByNameAndTypeID" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -360,7 +360,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="ReadID">
-      <soap:operation soapAction="http://foley.com/EDDS/CodeManager/ReadID" style="document" />
+      <soap:operation soapAction="http://www.kCura.com/EDDS/CodeManager/ReadID" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -369,7 +369,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="GetChoiceLimitForUI">
-      <soap:operation soapAction="http://foley.com/EDDS/CodeManager/GetChoiceLimitForUI" style="document" />
+      <soap:operation soapAction="http://www.kCura.com/EDDS/CodeManager/GetChoiceLimitForUI" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -381,7 +381,7 @@
   <wsdl:binding name="CodeManagerSoap12" type="tns:CodeManagerSoap">
     <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
     <wsdl:operation name="RetrieveCodesAndTypesForCase">
-      <soap12:operation soapAction="http://foley.com/EDDS/CodeManager/RetrieveCodesAndTypesForCase" style="document" />
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/CodeManager/RetrieveCodesAndTypesForCase" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
@@ -390,7 +390,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="Create">
-      <soap12:operation soapAction="http://foley.com/EDDS/CodeManager/Create" style="document" />
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/CodeManager/Create" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
@@ -399,7 +399,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="GetAllForHierarchical">
-      <soap12:operation soapAction="http://foley.com/EDDS/CodeManager/GetAllForHierarchical" style="document" />
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/CodeManager/GetAllForHierarchical" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
@@ -408,7 +408,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="GetInitialChunk">
-      <soap12:operation soapAction="http://foley.com/EDDS/CodeManager/GetInitialChunk" style="document" />
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/CodeManager/GetInitialChunk" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
@@ -417,7 +417,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="GetLastChunk">
-      <soap12:operation soapAction="http://foley.com/EDDS/CodeManager/GetLastChunk" style="document" />
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/CodeManager/GetLastChunk" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
@@ -426,7 +426,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="RetrieveCodeByNameAndTypeID">
-      <soap12:operation soapAction="http://foley.com/EDDS/CodeManager/RetrieveCodeByNameAndTypeID" style="document" />
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/CodeManager/RetrieveCodeByNameAndTypeID" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
@@ -435,7 +435,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="ReadID">
-      <soap12:operation soapAction="http://foley.com/EDDS/CodeManager/ReadID" style="document" />
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/CodeManager/ReadID" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
@@ -444,7 +444,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="GetChoiceLimitForUI">
-      <soap12:operation soapAction="http://foley.com/EDDS/CodeManager/GetChoiceLimitForUI" style="document" />
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/CodeManager/GetChoiceLimitForUI" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>

@@ -256,6 +256,7 @@
           <s:element minOccurs="1" maxOccurs="1" name="PopupPickerView" nillable="true" type="s:int" />
           <s:element minOccurs="1" maxOccurs="1" name="FieldTreeView" nillable="true" type="s:int" />
           <s:element minOccurs="1" maxOccurs="1" name="SiblingFieldArtifactID" nillable="true" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="AutoAddChoices" nillable="true" type="s:boolean" />
         </s:sequence>
       </s:complexType>
       <s:complexType name="ArrayOfCodeElement">
