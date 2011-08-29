@@ -533,7 +533,7 @@ Namespace kCura.WinEDDS
 				End If
 
 				If filename <> String.Empty AndAlso Not fileExists Then lineStatus += Relativity.MassImport.ImportStatus.FileSpecifiedDne 'Throw New InvalidFilenameException(filename)
-				If fileExists AndAlso Not Config.DisableImageLocationValidation Then
+				If fileExists AndAlso Not Config.DisableNativeLocationValidation Then
 					If Me.GetFileLength(filename) = 0 Then
 						If Config.CreateErrorForEmptyNativeFile Then
 							lineStatus += Relativity.MassImport.ImportStatus.EmptyFile 'Throw New EmptyNativeFileException(filename)
@@ -931,8 +931,9 @@ Namespace kCura.WinEDDS
 
 		Private Function ManageDocumentLine(ByVal identityValue As String, ByVal extractText As Boolean, ByVal filename As String, ByVal fileguid As String, ByVal mdoc As MetaDocument) As Int32
 			Dim chosenEncoding As System.Text.Encoding = Nothing
-			_outputNativeFileWriter.Write(mdoc.LineStatus.ToString & _bulkLoadFileFieldDelimiter)
+			'ID column
 			_outputNativeFileWriter.Write("0" & _bulkLoadFileFieldDelimiter)
+			_outputNativeFileWriter.Write(mdoc.LineStatus.ToString & _bulkLoadFileFieldDelimiter)
 			_outputNativeFileWriter.Write("0" & _bulkLoadFileFieldDelimiter)
 			_outputNativeFileWriter.Write("0" & _bulkLoadFileFieldDelimiter)
 			_outputNativeFileWriter.Write(mdoc.LineNumber & _bulkLoadFileFieldDelimiter)
