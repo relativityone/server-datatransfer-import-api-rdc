@@ -2,9 +2,9 @@ Imports Relativity.MassImport
 Imports kCura.WinEDDS.Api
 Namespace kCura.WinEDDS
 	Public Class LoadFileReader
-
 		Inherits kCura.Utility.DelimitedFileImporter
 		Implements IArtifactReader
+
 		Public Const MAXIMUM_COLUMN_NAME_LENGTH As Int32 = 500
 
 #Region "Members"

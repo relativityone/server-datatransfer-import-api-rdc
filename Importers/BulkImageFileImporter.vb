@@ -10,14 +10,14 @@ Namespace kCura.WinEDDS
 #Region "Members"
 		Dim _start As System.DateTime
 		Private _imageReader As kCura.WinEDDS.Api.IImageReader
-		Private _docManager As kCura.WinEDDS.Service.DocumentManager
-		Private _fieldQuery As kCura.WinEDDS.Service.FieldQuery
-		Private _folderManager As kCura.WinEDDS.Service.FolderManager
-		Private _auditManager As kCura.WinEDDS.Service.AuditManager
+		Protected _docManager As kCura.WinEDDS.Service.DocumentManager
+		Protected _fieldQuery As kCura.WinEDDS.Service.FieldQuery
+		Protected _folderManager As kCura.WinEDDS.Service.FolderManager
+		Protected _auditManager As kCura.WinEDDS.Service.AuditManager
 		Private WithEvents _fileUploader As kCura.WinEDDS.FileUploader
 		Private WithEvents _bcpuploader As kCura.WinEDDS.FileUploader
-		Private _fileManager As kCura.WinEDDS.Service.FileManager
-		Private _productionManager As kCura.WinEDDS.Service.ProductionManager
+		Protected _fileManager As kCura.WinEDDS.Service.FileManager
+		Protected _productionManager As kCura.WinEDDS.Service.ProductionManager
 		Protected _bulkImportManager As kCura.WinEDDS.Service.BulkImportManager
 		Private _folderID As Int32
 		Private _productionArtifactID As Int32
@@ -131,7 +131,7 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
-		Protected Property ImportBatchSize As Int32
+		Protected Overridable Property ImportBatchSize As Int32
 			Get
 				If Not _importBatchSize.HasValue Then _importBatchSize = Config.ImportBatchSize
 				Return _importBatchSize.Value
@@ -157,16 +157,9 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
-		Protected Overridable ReadOnly Property BulkImportManager As kCura.WinEDDS.Service.BulkImportManager
-			Get
-				If _bulkImportManager Is Nothing Then _bulkImportManager = New kCura.WinEDDS.Service.BulkImportManager(_settings.Credential, _settings.CookieContainer, ServiceURL)
-				Return _bulkImportManager
-			End Get
-		End Property
-
 		Protected Overridable ReadOnly Property BatchResizeEnabled As Boolean
 			Get
-				Return kCura.WinEDDS.Config.AutoBatchOn
+				Return kCura.WinEDDS.Config.DynamicBatchResizingOn
 			End Get
 		End Property
 
@@ -176,7 +169,8 @@ Namespace kCura.WinEDDS
 			End Get
 			Set(ByVal value As String)
 				_serviceURL = value
-				UpdateServiceURLs(value)
+				UpdateUploaderServiceURLs(value)
+				UpdateManagerServiceURLs(value)
 			End Set
 		End Property
 
@@ -249,9 +243,7 @@ Namespace kCura.WinEDDS
 			_bulkImportManager = New kCura.WinEDDS.Service.BulkImportManager(args.Credential, args.CookieContainer, ServiceURL)
 		End Sub
 
-		Private Sub UpdateServiceURLs(ByVal newURL As String)
-			_fileUploader.ServiceURL = newURL
-			_bcpuploader.ServiceURL = newURL
+		Protected Sub UpdateManagerServiceURLs(ByVal newURL As String)
 
 			_docManager.ServiceURL = newURL
 			_fieldQuery.ServiceURL = newURL
@@ -261,6 +253,13 @@ Namespace kCura.WinEDDS
 			_productionManager.ServiceURL = newURL
 			_bulkImportManager.ServiceURL = newURL
 		End Sub
+
+		Protected Overridable Sub UpdateUploaderServiceURLs(ByVal newURL As String)
+
+			_fileUploader.ServiceURL = newURL
+			_bcpuploader.ServiceURL = newURL
+		End Sub
+
 #End Region
 
 #Region "Enumerations"
@@ -366,8 +365,7 @@ Namespace kCura.WinEDDS
 			Return Nothing
 		End Function
 
-		Private Sub LowerBatchSizeAndRetry(ByVal outputPath As String, ByVal totalRecords As Int32)
-
+		Protected Sub LowerBatchSizeAndRetry(ByVal outputPath As String, ByVal totalRecords As Int32)
 			Dim tmpLocation As String = System.IO.Path.GetTempFileName
 			Dim limit As String = Relativity.Constants.ENDLINETERMSTRING
 			Dim last As New System.Collections.Generic.Queue(Of Char)
@@ -379,9 +377,10 @@ Namespace kCura.WinEDDS
 			While totalRecords > recordsProcessed AndAlso Not hasReachedEof AndAlso _continue
 				Dim i As Int32 = 0
 				Dim charactersProcessed As Int64 = 0
-				Using sr As New System.IO.StreamReader(outputPath, System.Text.Encoding.Unicode), sw As New System.IO.StreamWriter(tmpLocation, False, System.Text.Encoding.Unicode)
+				Using sr = CreateStreamReader(outputPath), sw = CreateStreamWriter(tmpLocation)
 					Me.AdvanceStream(sr, charactersSuccessfullyProcessed)
-					While (Not hasReachedEof AndAlso (i < Me.ImportBatchSize OrElse sr.Peek = AscW("0")))
+					Dim tempBatchSize As Int32 = Me.ImportBatchSize
+					While (Not hasReachedEof AndAlso i < tempBatchSize)
 						Dim c As Char = ChrW(sr.Read)
 						last.Enqueue(c)
 						If last.Count > limit.Length Then last.Dequeue()
@@ -392,21 +391,20 @@ Namespace kCura.WinEDDS
 						sw.Write(c)
 						charactersProcessed += 1
 						hasReachedEof = (sr.Peek = -1)
+						If Not i < tempBatchSize AndAlso sr.Peek = AscW("0") Then
+							tempBatchSize += 1
+						End If
 					End While
 					sw.Flush()
 				End Using
 				Try
-					_batchCount = i
-					RaiseStatusEvent(kCura.Windows.Process.EventType.Warning, "Begin processing sub-batch of size " & i & ".", CType((_totalValidated + _totalProcessed) / 2, Int64), Me.CurrentLineNumber)
-					Me.PushImageBatch(tmpLocation)
-					RaiseStatusEvent(kCura.Windows.Process.EventType.Warning, "End processing sub-batch of size " & i & ".  " & recordsProcessed & " of " & totalRecords & " in the original batch processed", CType((_totalValidated + _totalProcessed) / 2, Int64), Me.CurrentLineNumber)
-					recordsProcessed += i
-					charactersSuccessfullyProcessed += charactersProcessed
+					recordsProcessed = DoLogicAndPushImageBatch(totalRecords, recordsProcessed, tmpLocation, charactersSuccessfullyProcessed, i, charactersProcessed)
 				Catch ex As Exception
 					If tries < NumberOfRetries() AndAlso BatchResizeEnabled AndAlso ExceptionIsTimeoutRelated(ex) AndAlso _continue Then
 						LowerBatchLimits()
 						Me.RaiseWarningAndPause(ex, kCura.WinEDDS.Config.WaitTimeBetweenRetryAttempts)
-						If Not _continue Then Throw 'after the pause
+						If Not _continue Then Throw
+						'after the pause
 						tries += 1
 						hasReachedEof = False
 					Else
@@ -417,7 +415,26 @@ Namespace kCura.WinEDDS
 			End While
 			kCura.Utility.File.Delete(tmpLocation)
 		End Sub
-		Private Sub AdvanceStream(ByVal sr As System.IO.StreamReader, ByVal count As Int64)
+
+		Protected Overridable Function DoLogicAndPushImageBatch(ByVal totalRecords As Integer, ByVal recordsProcessed As Integer, ByVal tmpLocation As String, ByRef charactersSuccessfullyProcessed As Long, ByVal i As Integer, ByVal charactersProcessed As Long) As Integer
+			_batchCount = i
+			RaiseStatusEvent(kCura.Windows.Process.EventType.Warning, "Begin processing sub-batch of size " & i & ".", CType((_totalValidated + _totalProcessed) / 2, Int64), Me.CurrentLineNumber)
+			Me.PushImageBatch(tmpLocation)
+			RaiseStatusEvent(kCura.Windows.Process.EventType.Warning, "End processing sub-batch of size " & i & ".  " & recordsProcessed & " of " & totalRecords & " in the original batch processed", CType((_totalValidated + _totalProcessed) / 2, Int64), Me.CurrentLineNumber)
+			recordsProcessed += i
+			charactersSuccessfullyProcessed += charactersProcessed
+			Return recordsProcessed
+		End Function
+
+		Protected Overridable Function CreateStreamWriter(ByVal tmpLocation As String) As System.IO.TextWriter
+			Return New System.IO.StreamWriter(tmpLocation, False, System.Text.Encoding.Unicode)
+		End Function
+
+		Protected Overridable Function CreateStreamReader(ByVal outputPath As String) As TextReader
+			Return New System.IO.StreamReader(outputPath, System.Text.Encoding.Unicode)
+		End Function
+
+		Private Sub AdvanceStream(ByVal sr As System.IO.TextReader, ByVal count As Int64)
 			Dim i As Int32
 			If count > 0 Then
 				For j As Int64 = 0 To count - 1

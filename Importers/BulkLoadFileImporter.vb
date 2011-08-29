@@ -14,7 +14,7 @@ Namespace kCura.WinEDDS
 		Private _selectedIdentifier As DocumentField
 		Private _docFieldCollection As DocumentFieldCollection
 		Private _parentFolderDTO As kCura.EDDS.WebAPI.FolderManagerBase.Folder
-		Private _auditManager As kCura.WinEDDS.Service.AuditManager
+		Protected _auditManager As kCura.WinEDDS.Service.AuditManager
 
 		Private _recordCount As Int64 = -1
 		Private _extractFullTextFromNative As Boolean
@@ -240,7 +240,7 @@ Namespace kCura.WinEDDS
 
 		Protected Overridable ReadOnly Property BatchResizeEnabled As Boolean
 			Get
-				Return kCura.WinEDDS.Config.AutoBatchOn
+				Return kCura.WinEDDS.Config.DynamicBatchResizingOn
 			End Get
 		End Property
 
@@ -305,8 +305,7 @@ Namespace kCura.WinEDDS
 			End If
 			_defaultTextFolderPath = args.CaseDefaultPath & "EDDS" & args.CaseInfo.ArtifactID & "\"
 			If initializeUploaders Then
-				_uploader = New kCura.WinEDDS.FileUploader(args.Credentials, args.CaseInfo.ArtifactID, _defaultDestinationFolderPath, args.CookieContainer, webURL)
-				_bcpuploader = New kCura.WinEDDS.FileUploader(args.Credentials, args.CaseInfo.ArtifactID, _defaultDestinationFolderPath, args.CookieContainer, webURL, False)
+				CreateUploaders(args, webURL)
 				'_textUploader = New kCura.WinEDDS.FileUploader(args.Credentials, args.CaseInfo.ArtifactID, _defaultTextFolderPath, args.CookieContainer, False)
 			End If
 			_extractFullTextFromNative = args.ExtractFullTextFromNativeFile
@@ -329,6 +328,11 @@ Namespace kCura.WinEDDS
 			_bulkLoadFileFieldDelimiter = bulkLoadFileFieldDelimiter
 
 			_batchSizeHistoryList = New System.Collections.Generic.List(Of Int32)
+		End Sub
+
+		Protected Overridable Sub CreateUploaders(ByVal args As LoadFile, ByVal webURL As String)
+			_uploader = New kCura.WinEDDS.FileUploader(args.Credentials, args.CaseInfo.ArtifactID, _defaultDestinationFolderPath, args.CookieContainer, webURL)
+			_bcpuploader = New kCura.WinEDDS.FileUploader(args.Credentials, args.CaseInfo.ArtifactID, _defaultDestinationFolderPath, args.CookieContainer, webURL, False)
 		End Sub
 
 #End Region
@@ -1495,12 +1499,33 @@ Namespace kCura.WinEDDS
 		Protected Overrides Function GetSingleCodeValidator() As CodeValidator.Base
 			Return New CodeValidator.SingleImporter(_settings.CaseInfo, _codeManager)
 		End Function
+
 		Protected Overrides Function GetArtifactReader() As Api.IArtifactReader
 			Return New kCura.WinEDDS.LoadFileReader(_settings, False, ServiceURL)
 		End Function
 
+		Protected Overrides Sub UpdateServiceURLs(ByVal value As String)
+			_codeManager.ServiceURL = value
+			_documentManager.ServiceURL = value
+			_fieldQuery.ServiceURL = value
+			_fileManager.ServiceURL = value
+			_folderManager.ServiceURL = value
+			_objectManager.ServiceURL = value
+			_uploadManager.ServiceURL = value
+			_usermanager.ServiceURL = value
 
+			If Not _bulkImportManager Is Nothing Then
+				_bulkImportManager.ServiceURL = value
+			End If
 
+			_auditManager.ServiceURL = value
+			UpdateUploaderURLs()
+		End Sub
+
+		Protected Overridable Sub UpdateUploaderURLs()
+			_uploader.ServiceURL = ServiceURL
+			_bcpuploader.ServiceURL = ServiceURL
+		End Sub
 	End Class
 
 	Public Class WebServiceFieldInfoNameComparer

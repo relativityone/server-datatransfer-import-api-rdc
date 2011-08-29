@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<wsdl:definitions xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://foley.com/EDDS/FieldQuery" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://foley.com/EDDS/FieldQuery" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+<wsdl:definitions xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://www.kCura.com/EDDS/FieldQuery" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://www.kCura.com/EDDS/FieldQuery" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
   <wsdl:types>
-    <s:schema elementFormDefault="qualified" targetNamespace="http://foley.com/EDDS/FieldQuery">
+    <s:schema elementFormDefault="qualified" targetNamespace="http://www.kCura.com/EDDS/FieldQuery">
       <s:element name="RetrieveDisplayFieldNameByFieldCategoryID">
         <s:complexType>
           <s:sequence>
@@ -153,7 +153,7 @@
   <wsdl:binding name="FieldQuerySoap" type="tns:FieldQuerySoap">
     <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
     <wsdl:operation name="RetrieveDisplayFieldNameByFieldCategoryID">
-      <soap:operation soapAction="http://foley.com/EDDS/FieldQuery/RetrieveDisplayFieldNameByFieldCategoryID" style="document" />
+      <soap:operation soapAction="http://www.kCura.com/EDDS/FieldQuery/RetrieveDisplayFieldNameByFieldCategoryID" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -162,7 +162,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="RetrieveAllMappable">
-      <soap:operation soapAction="http://foley.com/EDDS/FieldQuery/RetrieveAllMappable" style="document" />
+      <soap:operation soapAction="http://www.kCura.com/EDDS/FieldQuery/RetrieveAllMappable" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -171,7 +171,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="RetrieveAll">
-      <soap:operation soapAction="http://foley.com/EDDS/FieldQuery/RetrieveAll" style="document" />
+      <soap:operation soapAction="http://www.kCura.com/EDDS/FieldQuery/RetrieveAll" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -180,7 +180,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="RetrievePotentialBeginBatesFields">
-      <soap:operation soapAction="http://foley.com/EDDS/FieldQuery/RetrievePotentialBeginBatesFields" style="document" />
+      <soap:operation soapAction="http://www.kCura.com/EDDS/FieldQuery/RetrievePotentialBeginBatesFields" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -189,7 +189,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="IsFieldIndexed">
-      <soap:operation soapAction="http://foley.com/EDDS/FieldQuery/IsFieldIndexed" style="document" />
+      <soap:operation soapAction="http://www.kCura.com/EDDS/FieldQuery/IsFieldIndexed" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -201,7 +201,7 @@
   <wsdl:binding name="FieldQuerySoap12" type="tns:FieldQuerySoap">
     <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
     <wsdl:operation name="RetrieveDisplayFieldNameByFieldCategoryID">
-      <soap12:operation soapAction="http://foley.com/EDDS/FieldQuery/RetrieveDisplayFieldNameByFieldCategoryID" style="document" />
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/FieldQuery/RetrieveDisplayFieldNameByFieldCategoryID" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
@@ -210,7 +210,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="RetrieveAllMappable">
-      <soap12:operation soapAction="http://foley.com/EDDS/FieldQuery/RetrieveAllMappable" style="document" />
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/FieldQuery/RetrieveAllMappable" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
@@ -219,7 +219,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="RetrieveAll">
-      <soap12:operation soapAction="http://foley.com/EDDS/FieldQuery/RetrieveAll" style="document" />
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/FieldQuery/RetrieveAll" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
@@ -228,7 +228,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="RetrievePotentialBeginBatesFields">
-      <soap12:operation soapAction="http://foley.com/EDDS/FieldQuery/RetrievePotentialBeginBatesFields" style="document" />
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/FieldQuery/RetrievePotentialBeginBatesFields" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
@@ -237,7 +237,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="IsFieldIndexed">
-      <soap12:operation soapAction="http://foley.com/EDDS/FieldQuery/IsFieldIndexed" style="document" />
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/FieldQuery/IsFieldIndexed" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
