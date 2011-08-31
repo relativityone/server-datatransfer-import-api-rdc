@@ -639,6 +639,10 @@ Namespace kCura.Windows.Process
 			_errorsOutputTextBox.WriteLine(errorFriendlyMessage, " ............")
 			_errorsOutputTextBox.WriteErrorDetails()
 
+			If _Tabs.SelectedTab.Equals(ErrorsTab) Then
+				_errorsOutputTextBox.PositionDetailsLink()
+			End If
+
 			AddHandler _errorsOutputTextBox.DetailsLink.LinkClicked, AddressOf OpenDetailsPane
 
 
@@ -772,5 +776,8 @@ Namespace kCura.Windows.Process
 			Me.Close()
 		End Sub
 
+		Private Sub ErrorsTab_GotFocus(ByVal sender As Object, ByVal e As System.EventArgs) Handles ErrorsTab.GotFocus
+			_errorsOutputTextBox.PositionDetailsLink()
+		End Sub
 	End Class
 End Namespace
