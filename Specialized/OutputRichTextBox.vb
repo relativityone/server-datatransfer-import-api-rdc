@@ -42,9 +42,9 @@ Namespace kCura.Windows.Forms
 			'DetailsLink
 			'
 			Me.TextBox.Controls.Add(Me.DetailsLink)
+			Me.DetailsLink.Size = New System.Drawing.Size(0, 0)
 			Me.DetailsLink.Text = ""
 			Me.DetailsLink.SendToBack()
-			Me.DetailsLink.Size = New System.Drawing.Size(0, 0)
 			Me.DetailsLink.AutoSize = True
 
       '
@@ -119,7 +119,6 @@ Namespace kCura.Windows.Forms
 			TextBox.Text = ""
 			Me.DetailsLink.SendToBack()
 			Me.DetailsLink.Text = ""
-			Me.DetailsLink.Size = New System.Drawing.Size(0, 0)
 		End Sub
 
 		Public Sub Save(ByVal filePath As String)
@@ -153,8 +152,6 @@ Namespace kCura.Windows.Forms
 
 		Public Sub WriteErrorDetails()
 			If Not Me.TextBox.IsDisposed Then
-				Me.DetailsLink.Location = Me.TextBox.GetPositionFromCharIndex(Me.TextBox.TextLength - 10)
-				Me.DetailsLink.Size = New System.Drawing.Size(100, 23)
 				Me.DetailsLink.Text = "More Details"
 				Me.DetailsLink.BringToFront()
 			End If
@@ -171,7 +168,7 @@ Namespace kCura.Windows.Forms
 					sb.Append(_totalOutput.Item(j))
 				Next
 				If sb.Length > 2 Then
-						TextBox.Text = sb.Remove(sb.Length - 2, 2).ToString()
+					TextBox.Text = sb.Remove(sb.Length - 2, 2).ToString()
 				End If
 			End If
 		End Sub
@@ -179,8 +176,11 @@ Namespace kCura.Windows.Forms
 		Private Sub TextBox_Resize1(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles TextBox.Resize
 			_visibleLineCount = CType(System.Math.Round((Me.Height / 15), 0), Int32)
 			DumpOutput()
-			Me.DetailsLink.Location = Me.TextBox.GetPositionFromCharIndex(Me.TextBox.TextLength - 10)
+			PositionDetailsLink()
 		End Sub
 
+		Public Sub PositionDetailsLink()
+			Me.DetailsLink.Location = Me.TextBox.GetPositionFromCharIndex(Me.TextBox.TextLength - 10)
+		End Sub
 	End Class
 End Namespace
