@@ -76,9 +76,6 @@ Namespace kCura.WinEDDS
 			_firstLineContainsColumnNames = args.FirstLineContainsHeaders
 			_fieldMap = args.FieldMap
 
-			'This is done to force the update of all ServiceURL() properties for the Manager objects
-			ServiceURL = webURL
-
 			_keyFieldID = args.IdentityFieldId
 			_multiValueSeparator = args.MultiRecordDelimiter.ToString.ToCharArray
 			_folderID = args.DestinationFolderID
