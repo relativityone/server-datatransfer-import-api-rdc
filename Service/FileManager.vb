@@ -318,6 +318,7 @@ Namespace kCura.WinEDDS.Service
 					End If
 				End Try
 			End While
+			Return Nothing
 		End Function
 
 		Public Shadows Sub SetRotation(ByVal caseContextArtifactID As Int32, ByVal guid As String, ByVal rotation As Int32)
@@ -380,6 +381,7 @@ Namespace kCura.WinEDDS.Service
 					End If
 				End Try
 			End While
+			Return Nothing
 		End Function
 #End Region
 

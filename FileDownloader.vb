@@ -144,6 +144,7 @@ Namespace kCura.WinEDDS
 					Return Me.WebDownloadFile(localFilePath, artifactID, remoteFileGuid, appID, remoteLocationKey, False, -1, fileID, fileFieldArtifactID)
 				End Try
 			End If
+			Return Nothing
 		End Function
 
 		Public Function DownloadFileForDocument(ByVal localFilePath As String, ByVal remoteFileGuid As String, ByVal remoteLocation As String, ByVal artifactID As Int32, ByVal appID As String) As Boolean

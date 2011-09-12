@@ -244,6 +244,7 @@ Namespace kCura.WinEDDS
 			_timekeeper.GenerateCsvReportItemsAsRows()
 			_volumeManager.Finish()
 			Me.AuditRun(True)
+			Return Nothing
 		End Function
 
 #Region "Private Helper Functions"

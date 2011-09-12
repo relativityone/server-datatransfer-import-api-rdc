@@ -58,6 +58,7 @@ Namespace kCura.WinEDDS.Service
 					End If
 				End Try
 			End While
+			Return Nothing
 		End Function
 
 		Public Shadows Function RetrieveRdcConfiguration() As System.Data.DataSet
