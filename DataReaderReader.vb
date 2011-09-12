@@ -274,29 +274,7 @@ Namespace kCura.WinEDDS.ImportExtension
 			End If
 		End Sub
 
-		Private Function GetNullableBoolean(ByVal value As String) As Nullable(Of Boolean)
-			Select Case value.ToLower
-				Case "yes", "y"
-					value = "True"
-				Case "no", "n"
-					value = "False"
-				Case "true", "false"
-				Case Else
-					If Not value = "" Then
-						Try
-							Dim boolval As Int32 = Int32.Parse(value)
-							If boolval = 0 Then
-								value = "False"
-							Else
-								value = "True"
-							End If
-						Catch ex As Exception
-							value = "false"
-						End Try
-					End If
-			End Select
-			Return NullableTypesHelper.ToNullableBoolean(value)
-		End Function
+
 
 		Private Overloads Function GetNullableDateTime(ByVal value As String) As Nullable(Of System.DateTime)
 			Dim nullableDateValue As Nullable(Of System.DateTime)
@@ -352,13 +330,13 @@ Namespace kCura.WinEDDS.ImportExtension
 			Else
 				Select Case field.Type
 					Case Relativity.FieldTypeHelper.FieldType.Boolean
-						field.Value = GetNullableBoolean(value)
+						field.Value = kCura.Utility.NullableTypesEnhanced.GetNullableBoolean(value)
 
 					Case Relativity.FieldTypeHelper.FieldType.Currency, Relativity.FieldTypeHelper.FieldType.Decimal
 						field.Value = kCura.Utility.NullableTypesHelper.ToNullableDecimal(value.Trim)
 
 					Case Relativity.FieldTypeHelper.FieldType.Date
-						field.Value = Me.GetNullableDateTime(value)
+						field.Value = kCura.Utility.NullableTypesEnhanced.GetNullableDateTime(value)
 
 					Case Relativity.FieldTypeHelper.FieldType.Integer
 						field.Value = NullableTypesHelper.ToNullableInt32(value.Replace(",", ""))
