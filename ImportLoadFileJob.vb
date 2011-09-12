@@ -17,7 +17,7 @@ Namespace kCura.Relativity.DataReaderClient
 			_nativeSettings = New Settings
 			_nativeDataReader = New SourceIDataReader
 
-			BulkLoadFileFieldDelimiter = Global.Relativity.Constants.DEFAULT_FIELD_DELIMITER
+			_bulkLoadFileFieldDelimiter = Global.Relativity.Constants.DEFAULT_FIELD_DELIMITER
 		End Sub
 #End Region
 
@@ -39,7 +39,7 @@ Namespace kCura.Relativity.DataReaderClient
 				_controller = process.ProcessController
 				RaiseEvent OnMessage(New Status("Updating settings"))
 				process.LoadFile = CreateLoadFile(Settings)
-				process.BulkLoadFileFieldDelimiter = BulkLoadFileFieldDelimiter
+				process.BulkLoadFileFieldDelimiter = _bulkLoadFileFieldDelimiter
 
 				RaiseEvent OnMessage(New Status("Executing"))
 				Try

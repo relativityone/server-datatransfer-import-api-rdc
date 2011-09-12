@@ -12,7 +12,6 @@
 		''' </summary>
 		Public Property CaseArtifactId() As Int32
 
-		<Obsolete("TODO: NativeFileCopyMode")>
 		Public Property CopyFilesToDocumentRepository() As Boolean
 			Get
 				Select Case NativeFileCopyMode
