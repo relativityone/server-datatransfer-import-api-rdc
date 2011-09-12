@@ -167,52 +167,6 @@ Namespace kCura.WinEDDS
 			End Try
 		End Sub
 
-		Public Overloads Function GetNullableDateTime(ByVal value As String, ByVal column As Int32) As Nullable(Of DateTime)
-			Dim nullableDateValue As Nullable(Of DateTime)
-			Try
-				nullableDateValue = MyBase.GetNullableDateTime(value, column)
-			Catch ex As System.Exception
-				Select Case value.Trim
-					Case "00/00/0000", "0/0/0000", "0/0/00", "00/00/00", "0/00", "0/0000", "00/00", "00/0000", "0"
-						nullableDateValue = Nothing
-					Case Else
-						Try
-
-							If System.Text.RegularExpressions.Regex.IsMatch(value.Trim, "\d\d\d\d\d\d\d\d") Then
-								If value.Trim = "00000000" Then
-									nullableDateValue = Nothing
-								Else
-									Dim v As String = value.Trim
-									Dim year As Int32 = Int32.Parse(v.Substring(0, 4))
-									Dim month As Int32 = Int32.Parse(v.Substring(4, 2))
-									Dim day As Int32 = Int32.Parse(v.Substring(6, 2))
-									Try
-										nullableDateValue = New Nullable(Of DateTime)(New System.DateTime(year, month, day))
-									Catch dx As System.Exception
-										Throw New kCura.Utility.DelimitedFileImporter.DateException(Me.CurrentLineNumber, column)
-									End Try
-								End If
-							Else
-								Throw New kCura.Utility.DelimitedFileImporter.DateException(Me.CurrentLineNumber, column)
-							End If
-						Catch
-							Throw New kCura.Utility.DelimitedFileImporter.DateException(Me.CurrentLineNumber, column)
-						End Try
-				End Select
-			End Try
-			Try
-				If nullableDateValue Is Nothing Then Return nullableDateValue
-				Dim datevalue As DateTime
-				datevalue = nullableDateValue.Value
-				Dim timeZoneOffset As Int32 = 0
-				If datevalue < DateTime.Parse("1/1/1753") Then
-					Throw New kCura.Utility.DelimitedFileImporter.DateException(Me.CurrentLineNumber, column)
-				End If
-				Return New Nullable(Of DateTime)(datevalue)
-			Catch ex As Exception
-				Throw New kCura.Utility.DelimitedFileImporter.DateException(Me.CurrentLineNumber, column)
-			End Try
-		End Function
 
 #End Region
 
