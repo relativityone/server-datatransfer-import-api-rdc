@@ -377,7 +377,7 @@ Namespace kCura.WinEDDS
 			While totalRecords > recordsProcessed AndAlso Not hasReachedEof AndAlso _continue
 				Dim i As Int32 = 0
 				Dim charactersProcessed As Int64 = 0
-				Using sr = CreateStreamReader(outputPath), sw = CreateStreamWriter(tmpLocation)
+				Using sr As TextReader = CreateStreamReader(outputPath), sw As TextWriter = CreateStreamWriter(tmpLocation)
 					Me.AdvanceStream(sr, charactersSuccessfullyProcessed)
 					Dim tempBatchSize As Int32 = Me.ImportBatchSize
 					While (Not hasReachedEof AndAlso i < tempBatchSize)
