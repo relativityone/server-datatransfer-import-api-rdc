@@ -380,7 +380,7 @@ Namespace kCura.EDDS.WinForm
 #End Region
 
 #Region "Folder Management"
-		Public Function CreateNewFolder(ByVal parentFolderID As Int32) As Int32
+		Public Sub CreateNewFolder(ByVal parentFolderID As Int32)
 			Dim name As String = InputBox("Enter Folder Name", "Relativity Review")
 			If name <> String.Empty Then
 				Try
@@ -395,7 +395,7 @@ Namespace kCura.EDDS.WinForm
 					End If
 				End Try
 			End If
-		End Function
+		End Sub
 
 		Public Function GetCaseRootFolderForErrorState(ByVal caseID As Int32) As System.Data.DataSet
 			Dim dt As New System.Data.DataTable

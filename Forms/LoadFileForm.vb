@@ -854,7 +854,7 @@ Namespace kCura.EDDS.WinForm
 				End If
 			End If
 			Me.PopulateLoadFileDelimiters()
-			If Not Me.EnsureConnection() Then Exit Function
+			If Not Me.EnsureConnection() Then Return Nothing
 			Dim currentFields As WinEDDS.DocumentFieldCollection = _application.CurrentFields(Me.LoadFile.ArtifactTypeID, True)
 			If currentFields Is Nothing Then
 				Me.Cursor = System.Windows.Forms.Cursors.Default

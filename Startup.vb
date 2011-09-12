@@ -339,6 +339,7 @@ Namespace kCura.EDDS.WinForm
 					Throw New InvalidArtifactTypeException(command.Value)
 				End If
 			Next
+			Return Nothing
 		End Function
 
 

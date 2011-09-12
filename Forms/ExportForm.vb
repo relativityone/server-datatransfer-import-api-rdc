@@ -1251,7 +1251,7 @@ Public Class ExportForm
 				_exportFile.ArtifactID = CType(_filters.SelectedValue, Int32)
 				If Not _application.IsAssociatedSearchProviderAccessible(_exportFile.CaseArtifactID, _exportFile.ArtifactID) Then
 					Me.Cursor = System.Windows.Forms.Cursors.Default
-					Exit Function
+					Return Nothing
 				End If
 				_exportFile.LoadFilesPrefix = DirectCast(_filters.SelectedItem, System.Data.DataRowView)(_filters.DisplayMember).ToString
 			Case ExportFile.ExportType.ParentSearch
@@ -1564,6 +1564,7 @@ Public Class ExportForm
 			Case 3
 				Return ExportFile.ImageType.Pdf
 		End Select
+		Return Nothing
 	End Function
 
 	Private Sub SetSelectedImageType(ByVal imageType As ExportFile.ImageType?)
