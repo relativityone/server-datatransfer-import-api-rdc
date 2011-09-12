@@ -1,7 +1,12 @@
+Imports kCura.WinEDDS.Api
 Imports kCura.WinEDDS
+Imports kCura.Utility
+
 Namespace kCura.WinEDDS.ImportExtension
 	Public Class DataReaderReader
+
 		Implements kCura.WinEDDS.Api.IArtifactReader
+
 
 		Private Const _KCURAMARKERFILENAME As String = "kcuramarkerfilename"
 
@@ -242,7 +247,130 @@ Namespace kCura.WinEDDS.ImportExtension
 			RaiseEvent StatusMessage(mappedFields)
 		End Sub
 
+		Private Function NonTextField(ByVal fieldType As Relativity.FieldTypeHelper.FieldType) As Boolean
+			Select Case fieldType
+				Case Relativity.FieldTypeHelper.FieldType.Boolean, Relativity.FieldTypeHelper.FieldType.Currency,
+				 Relativity.FieldTypeHelper.FieldType.Decimal, Relativity.FieldTypeHelper.FieldType.Date,
+				 Relativity.FieldTypeHelper.FieldType.Integer
+					Return True
+				Case Else
+					Return False
+			End Select
+
+		End Function
 		Private Sub SetFieldValue(ByVal field As Api.ArtifactField, ByVal value As Object)
+
+			If value Is Nothing Then
+				field.Value = Nothing
+			Else
+				If TypeOf value Is String And NonTextField(field.Type) Then
+					' we have a mismatch - string data passed in
+					Dim stringValue As String = CType(value, String)
+					SetNativeFieldFromTextValue(field, stringValue)
+				Else
+					SetNativeFieldValue(field, value)
+
+				End If
+			End If
+		End Sub
+
+		Private Function GetNullableBoolean(ByVal value As String) As Nullable(Of Boolean)
+			Select Case value.ToLower
+				Case "yes", "y"
+					value = "True"
+				Case "no", "n"
+					value = "False"
+				Case "true", "false"
+				Case Else
+					If Not value = "" Then
+						Try
+							Dim boolval As Int32 = Int32.Parse(value)
+							If boolval = 0 Then
+								value = "False"
+							Else
+								value = "True"
+							End If
+						Catch ex As Exception
+							value = "false"
+						End Try
+					End If
+			End Select
+			Return NullableTypesHelper.ToNullableBoolean(value)
+		End Function
+
+		Private Overloads Function GetNullableDateTime(ByVal value As String) As Nullable(Of System.DateTime)
+			Dim nullableDateValue As Nullable(Of System.DateTime)
+
+			Try
+				nullableDateValue = NullableTypesHelper.ToNullableDateTime(value)
+			Catch ex As System.Exception
+				Select Case value.Trim
+					Case "00/00/0000", "0/0/0000", "0/0/00", "00/00/00", "0/00", "0/0000", "00/00", "00/0000", "0"
+						nullableDateValue = Nothing
+					Case Else
+						Try
+
+							If System.Text.RegularExpressions.Regex.IsMatch(value.Trim, "\d\d\d\d\d\d\d\d") Then
+								If value.Trim = "00000000" Then
+									nullableDateValue = Nothing
+								Else
+									Dim v As String = value.Trim
+									Dim year As Int32 = Int32.Parse(v.Substring(0, 4))
+									Dim month As Int32 = Int32.Parse(v.Substring(4, 2))
+									Dim day As Int32 = Int32.Parse(v.Substring(6, 2))
+									Try
+										nullableDateValue = New Nullable(Of System.DateTime)(New System.DateTime(year, month, day))
+									Catch dx As System.Exception
+										Throw New SystemException("Invalid date.")
+									End Try
+								End If
+							Else
+								Throw New SystemException("Invalid date.")
+							End If
+						Catch
+							Throw New SystemException("Invalid date.")
+						End Try
+				End Select
+			End Try
+			Try
+				If nullableDateValue Is Nothing Then Return nullableDateValue
+				Dim datevalue As System.DateTime
+				datevalue = nullableDateValue.Value
+				Dim timeZoneOffset As Int32 = 0
+				If datevalue < System.DateTime.Parse("1/1/1753") Then
+					Throw New SystemException("Invalid date.")
+				End If
+				Return New Nullable(Of System.DateTime)(datevalue)
+			Catch ex As Exception
+				Throw New SystemException("Invalid date.")
+			End Try
+		End Function
+
+		Private Sub SetNativeFieldFromTextValue(ByVal field As ArtifactField, ByVal value As String)
+			If value.Trim.Length = 0 Then
+				field.Value = Nothing
+			Else
+				Select Case field.Type
+					Case Relativity.FieldTypeHelper.FieldType.Boolean
+						field.Value = GetNullableBoolean(value)
+
+					Case Relativity.FieldTypeHelper.FieldType.Currency, Relativity.FieldTypeHelper.FieldType.Decimal
+						field.Value = kCura.Utility.NullableTypesHelper.ToNullableDecimal(value.Trim)
+
+					Case Relativity.FieldTypeHelper.FieldType.Date
+						field.Value = Me.GetNullableDateTime(value)
+
+					Case Relativity.FieldTypeHelper.FieldType.Integer
+						field.Value = NullableTypesHelper.ToNullableInt32(value.Replace(",", ""))
+
+					Case Else
+						Throw New System.ArgumentException("Unsupported field type '" & field.Type.ToString & "'")
+				End Select
+			End If
+		End Sub
+
+		Private Sub SetNativeFieldValue(ByVal field As ArtifactField, ByVal value As Object)
+
 			'RaiseEvent StatusMessage("Field ArtifactID = " & field.ArtifactID)
 			Select Case field.Type
 				Case Relativity.FieldTypeHelper.FieldType.Boolean
