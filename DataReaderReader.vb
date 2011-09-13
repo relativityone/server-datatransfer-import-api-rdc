@@ -258,7 +258,9 @@ Namespace kCura.WinEDDS.ImportExtension
 			End Select
 
 		End Function
-		Private Sub SetFieldValue(ByVal field As Api.ArtifactField, ByVal value As Object)
+
+
+		Protected Sub SetFieldValue(ByVal field As Api.ArtifactField, ByVal value As Object)
 
 			If value Is Nothing Then
 				field.Value = Nothing
@@ -274,55 +276,6 @@ Namespace kCura.WinEDDS.ImportExtension
 			End If
 		End Sub
 
-
-
-		Private Overloads Function GetNullableDateTime(ByVal value As String) As Nullable(Of System.DateTime)
-			Dim nullableDateValue As Nullable(Of System.DateTime)
-
-			Try
-				nullableDateValue = NullableTypesHelper.ToNullableDateTime(value)
-			Catch ex As System.Exception
-				Select Case value.Trim
-					Case "00/00/0000", "0/0/0000", "0/0/00", "00/00/00", "0/00", "0/0000", "00/00", "00/0000", "0"
-						nullableDateValue = Nothing
-					Case Else
-						Try
-
-							If System.Text.RegularExpressions.Regex.IsMatch(value.Trim, "\d\d\d\d\d\d\d\d") Then
-								If value.Trim = "00000000" Then
-									nullableDateValue = Nothing
-								Else
-									Dim v As String = value.Trim
-									Dim year As Int32 = Int32.Parse(v.Substring(0, 4))
-									Dim month As Int32 = Int32.Parse(v.Substring(4, 2))
-									Dim day As Int32 = Int32.Parse(v.Substring(6, 2))
-									Try
-										nullableDateValue = New Nullable(Of System.DateTime)(New System.DateTime(year, month, day))
-									Catch dx As System.Exception
-										Throw New SystemException("Invalid date.")
-									End Try
-								End If
-							Else
-								Throw New SystemException("Invalid date.")
-							End If
-						Catch
-							Throw New SystemException("Invalid date.")
-						End Try
-				End Select
-			End Try
-			Try
-				If nullableDateValue Is Nothing Then Return nullableDateValue
-				Dim datevalue As System.DateTime
-				datevalue = nullableDateValue.Value
-				Dim timeZoneOffset As Int32 = 0
-				If datevalue < System.DateTime.Parse("1/1/1753") Then
-					Throw New SystemException("Invalid date.")
-				End If
-				Return New Nullable(Of System.DateTime)(datevalue)
-			Catch ex As Exception
-				Throw New SystemException("Invalid date.")
-			End Try
-		End Function
 
 		Private Sub SetNativeFieldFromTextValue(ByVal field As ArtifactField, ByVal value As String)
 			If value.Trim.Length = 0 Then
