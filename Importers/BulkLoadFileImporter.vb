@@ -929,11 +929,11 @@ Namespace kCura.WinEDDS
 			Return DirectCast(retval.ToArray(GetType(kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo)), kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo())
 		End Function
 
-		Private Function ManageDocumentLine(ByVal mdoc As MetaDocument, ByVal extractText As Boolean) As Int32
-			Return ManageDocumentLine(mdoc.IdentityValue, mdoc.FileGuid <> String.Empty AndAlso extractText, mdoc.Filename, mdoc.FileGuid, mdoc)
-		End Function
+		Private Sub ManageDocumentLine(ByVal mdoc As MetaDocument, ByVal extractText As Boolean)
+			ManageDocumentLine(mdoc.IdentityValue, mdoc.FileGuid <> String.Empty AndAlso extractText, mdoc.Filename, mdoc.FileGuid, mdoc)
+		End Sub
 
-		Private Function ManageDocumentLine(ByVal identityValue As String, ByVal extractText As Boolean, ByVal filename As String, ByVal fileguid As String, ByVal mdoc As MetaDocument) As Int32
+		Private Sub ManageDocumentLine(ByVal identityValue As String, ByVal extractText As Boolean, ByVal filename As String, ByVal fileguid As String, ByVal mdoc As MetaDocument)
 			Dim chosenEncoding As System.Text.Encoding = Nothing
 			'ID column
 			_outputNativeFileWriter.Write("0" & _bulkLoadFileFieldDelimiter)
@@ -1048,7 +1048,7 @@ Namespace kCura.WinEDDS
 				_outputNativeFileWriter.Write(_bulkLoadFileFieldDelimiter)
 			End If
 			_outputNativeFileWriter.Write(vbCrLf)
-		End Function
+		End Sub
 
 		Private Function GetIsSupportedRelativityFileTypeField() As kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo
 			For Each field As kCura.EDDS.WebAPI.DocumentManagerBase.Field In _allFields

@@ -171,7 +171,7 @@ Namespace kCura.WinEDDS
 			Next
 
 			'Parse up to the first X lines in the file and track the folders and choices that will be created
-			Dim warningDialogShown = False
+			Dim warningDialogShown As Boolean = False
 			While Not Me.HasReachedEOF And _continue
 				If Me.RecordCount > kCura.WinEDDS.Config.PREVIEW_THRESHOLD Then
 					AdvanceLine()
@@ -195,7 +195,7 @@ Namespace kCura.WinEDDS
 						Dim choiceVal As String = lineToParse.GetValue(choiceColumnIdx).ToString
 						'Choices can be imported as -delimited strings for multi-choices, need to look at each choice
 						For Each choiceSet As String In choiceVal.Split(New Char() {";"c})
-							For Each choiceItem In choiceSet.Split(New Char() {"\"c})
+							For Each choiceItem As String In choiceSet.Split(New Char() {"\"c})
 								_choicesTable(choiceColumnIdx)(choiceItem) = True
 							Next
 						Next

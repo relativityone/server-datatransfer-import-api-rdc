@@ -36,6 +36,7 @@ Namespace kCura.WinEDDS.Service
 					Throw
 				End Try
 			End If
+			Return Nothing
 		End Function
 
 		Public Shadows Function RetrieveAllAssignableInCase(ByVal caseContextArtifactID As Int32) As System.Data.DataSet

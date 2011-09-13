@@ -46,6 +46,7 @@ Namespace kCura.WinEDDS.Service
 					End If
 				End Try
 			End While
+			Return Nothing
 		End Function
 
 		Public Shadows Function AuditImageImport(ByVal appID As Int32, ByVal runId As String, ByVal isFatalError As Boolean, ByVal importStats As kCura.EDDS.WebAPI.AuditManagerBase.ImageImportStatistics) As Boolean
@@ -62,6 +63,7 @@ Namespace kCura.WinEDDS.Service
 					End If
 				End Try
 			End While
+			Return Nothing
 		End Function
 
 		Public Shadows Function AuditObjectImport(ByVal appID As Int32, ByVal runId As String, ByVal isFatalError As Boolean, ByVal importStats As kCura.EDDS.WebAPI.AuditManagerBase.ObjectImportStatistics) As Boolean
@@ -78,6 +80,7 @@ Namespace kCura.WinEDDS.Service
 					End If
 				End Try
 			End While
+			Return Nothing
 		End Function
 
 		Public Shadows Function AuditExport(ByVal appID As Int32, ByVal isFatalError As Boolean, ByVal exportStats As kCura.EDDS.WebAPI.AuditManagerBase.ExportStatistics) As Boolean
@@ -94,6 +97,7 @@ Namespace kCura.WinEDDS.Service
 					End If
 				End Try
 			End While
+			Return Nothing
 		End Function
 
 #End Region

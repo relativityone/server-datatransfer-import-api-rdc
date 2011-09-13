@@ -232,6 +232,7 @@ Namespace kCura.WinEDDS.Service
 					End If
 				End Try
 			End While
+			Return Nothing
 		End Function
 
 		Public Shadows Sub CreateProductionDocumentFiles(ByVal caseContextArtifactID As Int32, ByVal productionDocumentFiles As kCura.EDDS.WebAPI.ProductionManagerBase.ProductionDocumentFileInfoBase(), ByVal productionArtifactID As Int32, ByVal documentArtifactID As Int32)

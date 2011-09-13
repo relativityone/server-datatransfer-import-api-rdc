@@ -159,6 +159,7 @@ Namespace kCura.WinEDDS
 			Public Function Compare(ByVal x As Object, ByVal y As Object) As Integer Implements System.Collections.IComparer.Compare
 				Dim lhs As DocumentField = DirectCast(x, DocumentField)
 				Dim rhs As DocumentField = DirectCast(y, DocumentField)
+				Return Nothing
 			End Function
 		End Class
 
