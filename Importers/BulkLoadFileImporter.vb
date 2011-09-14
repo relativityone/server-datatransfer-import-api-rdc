@@ -1,5 +1,6 @@
 Imports kCura.EDDS.WebAPI.BulkImportManagerBase
 Imports Relativity.MassImport
+
 Namespace kCura.WinEDDS
 	Public Class BulkLoadFileImporter
 		Inherits kCura.WinEDDS.LoadFileBase
@@ -432,7 +433,7 @@ Namespace kCura.WinEDDS
 						Else
 							WriteError(Me.CurrentLineNumber, ex.Message)
 						End If
-					Catch ex As kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
+					Catch ex As kCura.Utility.ImporterExceptionBase
 						WriteError(Me.CurrentLineNumber, ex.Message)
 					Catch ex As System.IO.FileNotFoundException
 						WriteError(Me.CurrentLineNumber, ex.Message)
@@ -667,7 +668,7 @@ Namespace kCura.WinEDDS
 					Me.TryPushNativeBatch()
 				End If
 				_timekeeper.MarkEnd("ManageDocumentMetadata_WserviceCall")
-			Catch ex As kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
+			Catch ex As kCura.Utility.ImporterExceptionBase
 				WriteError(metaDoc.LineNumber, ex.Message)
 			Catch ex As System.Exception
 				WriteFatalError(metaDoc.LineNumber, ex)
@@ -1366,56 +1367,56 @@ Namespace kCura.WinEDDS
 #Region "Exceptions"
 
 		Public Class IdentityValueNotSetException
-			Inherits kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
+			Inherits kCura.Utility.ImporterExceptionBase
 			Public Sub New()
 				MyBase.New("Identity value not set")
 			End Sub
 		End Class
 
 		Public Class IdentityValueNotFoundException
-			Inherits kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
+			Inherits kCura.Utility.ImporterExceptionBase
 			Public Sub New(ByVal value As String)
 				MyBase.New(String.Format("Identity value '{0}' not found", value))
 			End Sub
 		End Class
 
 		Public Class DocumentDomainException
-			Inherits kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
+			Inherits kCura.Utility.ImporterExceptionBase
 			Public Sub New(ByVal ex As System.Exception)
 				MyBase.New("Error accessing document information in domain layer: " & ex.Message.Replace("System.Web.Services.Protocols.SoapException: Server was unable to process request. ---> ", ""), ex)
 			End Sub
 		End Class
 
 		Public Class DocumentReadException
-			Inherits kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
+			Inherits kCura.Utility.ImporterExceptionBase
 			Public Sub New(ByVal parentException As System.Exception)
 				MyBase.New("Error retrieving document information from EDDS: [" & parentException.Message & "]", parentException)
 			End Sub
 		End Class
 
 		Public Class DocumentOverwriteException
-			Inherits kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
+			Inherits kCura.Utility.ImporterExceptionBase
 			Public Sub New()
 				MyBase.New("Identifier points to document that would be overwritten")
 			End Sub
 		End Class
 
 		Public Class InvalidFilenameException
-			Inherits kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
+			Inherits kCura.Utility.ImporterExceptionBase
 			Public Sub New(ByVal filename As String)
 				MyBase.New(String.Format("File '{0}' not found.", filename))
 			End Sub
 		End Class
 
 		Public Class EmptyNativeFileException
-			Inherits kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
+			Inherits kCura.Utility.ImporterExceptionBase
 			Public Sub New(ByVal filename As String)
 				MyBase.New(String.Format("File '{0}' contains 0 bytes.", filename))
 			End Sub
 		End Class
 
 		Public Class FileUploadFailedException
-			Inherits kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
+			Inherits kCura.Utility.ImporterExceptionBase
 			Public Sub New()
 				MyBase.New(String.Format("File upload failed.  Either the access to the path is denied or there is no disk space available."))
 			End Sub

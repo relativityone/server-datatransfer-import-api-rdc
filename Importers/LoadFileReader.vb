@@ -1,5 +1,7 @@
 Imports Relativity.MassImport
 Imports kCura.WinEDDS.Api
+Imports kCura.Utility
+
 Namespace kCura.WinEDDS
 	Public Class LoadFileReader
 		Inherits kCura.Utility.DelimitedFileImporter

@@ -1,4 +1,6 @@
 'Imports kCura.EDDS.DynamicFields
+Imports kCura.Utility
+
 Namespace kCura.WinEDDS
 	Public Class LoadFilePreviewer
 		Inherits kCura.WinEDDS.LoadFileBase
@@ -128,7 +130,7 @@ Namespace kCura.WinEDDS
 						Dim x As Api.ArtifactField() = CheckLine(record, formType)
 						'If Not x Is Nothing AndAlso Not (_firstLineContainsColumnNames AndAlso i = 0) Then fieldArrays.Add(x)
 						If Not x Is Nothing Then fieldArrays.Add(x)
-					Catch ex As kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
+					Catch ex As ImporterExceptionBase
 						fieldArrays.Add(ex)
 					End Try
 					i += 1
@@ -151,7 +153,7 @@ Namespace kCura.WinEDDS
 		Private Function CheckLine(ByVal record As Api.ArtifactFieldCollection, ByVal formType As Int32) As Api.ArtifactField()
 			Dim mapItem As LoadFileFieldMap.LoadFileFieldMapItem
 			Dim lineContainsErrors As Boolean = False
-			Dim retval As New ArrayList
+			Dim retval As New Collections.ArrayList
 			Dim identifierField As Api.ArtifactField
 			Dim unmappedRelationalNoBlankFields As New System.Collections.Specialized.HybridDictionary
 			Dim mappedRelationalNoBlankFields As New System.Collections.Specialized.HybridDictionary
@@ -294,7 +296,7 @@ Namespace kCura.WinEDDS
 			Try
 				SetFieldValue(field, column, True, identityValue, extractedTextCodePageId, importBehavior)
 				Return TypeOf field.Value Is System.Exception
-			Catch ex As kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
+			Catch ex As ImporterExceptionBase
 				field.Value = ex.Message
 				Return True
 			End Try

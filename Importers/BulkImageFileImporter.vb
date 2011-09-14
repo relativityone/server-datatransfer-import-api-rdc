@@ -2,6 +2,7 @@ Imports System.IO
 Imports kCura.EDDS.WebAPI.BulkImportManagerBase
 Imports kCura.Utility.Extensions.CollectionExtension
 Imports kCura.WinEDDS.Service
+Imports kCura.Utility
 
 Namespace kCura.WinEDDS
 	Public Class BulkImageFileImporter
@@ -891,63 +892,63 @@ Namespace kCura.WinEDDS
 
 #Region "Exceptions - Errors"
 		Public Class FileLoadException
-			Inherits kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
+			Inherits ImporterExceptionBase
 			Public Sub New()
 				MyBase.New("Error uploading file.  Skipping line.")
 			End Sub
 		End Class
 
 		Public Class CreateDocumentException
-			Inherits kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
+			Inherits ImporterExceptionBase
 			Public Sub New(ByVal parentException As System.Exception)
 				MyBase.New("Error creating new document.  Skipping line: " & parentException.Message, parentException)
 			End Sub
 		End Class
 
 		Public Class OverwriteNoneException
-			Inherits kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
+			Inherits ImporterExceptionBase
 			Public Sub New(ByVal docIdentifier As String)
 				MyBase.New(String.Format("Document '{0}' exists - upload aborted.", docIdentifier))
 			End Sub
 		End Class
 
 		Public Class OverwriteStrictException
-			Inherits kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
+			Inherits ImporterExceptionBase
 			Public Sub New(ByVal docIdentifier As String)
 				MyBase.New(String.Format("Document '{0}' does not exist - upload aborted.", docIdentifier))
 			End Sub
 		End Class
 
 		Public Class ImageCountMismatchException
-			Inherits kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
+			Inherits ImporterExceptionBase
 			Public Sub New()
 				MyBase.New("Production and Document image counts don't match - upload aborted.")
 			End Sub
 		End Class
 
 		Public Class DocumentInProductionException
-			Inherits kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
+			Inherits ImporterExceptionBase
 			Public Sub New()
 				MyBase.New("Document is already in specified production - upload aborted.")
 			End Sub
 		End Class
 
 		Public Class ProductionOverwriteException
-			Inherits kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
+			Inherits ImporterExceptionBase
 			Public Sub New(ByVal identifier As String)
 				MyBase.New(String.Format("Document '{0}' belongs to one or more productions.  Document skipped.", identifier))
 			End Sub
 		End Class
 
 		Public Class RedactionOverwriteException
-			Inherits kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
+			Inherits ImporterExceptionBase
 			Public Sub New(ByVal identifier As String)
 				MyBase.New(String.Format("The one or more images for document '{0}' have redactions.  Document skipped.", identifier))
 			End Sub
 		End Class
 
 		Public Class InvalidIdentifierKeyException
-			Inherits kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
+			Inherits ImporterExceptionBase
 			Public Sub New(ByVal identifier As String, ByVal fieldName As String)
 				MyBase.New(String.Format("More than one document contains '{0}' as its '{1}' value.  Document skipped.", identifier, fieldName))
 			End Sub
