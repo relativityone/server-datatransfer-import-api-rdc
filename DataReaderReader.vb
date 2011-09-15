@@ -131,13 +131,18 @@ Namespace kCura.WinEDDS.ImportExtension
 
 			For i As Integer = 0 To _reader.FieldCount - 1
 				Dim field As Api.ArtifactField = _allFields(_reader.GetName(i).ToLower)
-				If Not field Is Nothing Then
-					If Not field.DisplayName = folderStructureContainedInColumnWithoutIndex Then
-						Dim thisCell As Api.ArtifactField = field.Copy
-						Me.SetFieldValue(thisCell, _reader.Item(i))
-						retval.Add(thisCell)
+				Try
+					If Not field Is Nothing Then
+						If Not field.DisplayName = folderStructureContainedInColumnWithoutIndex Then
+							Dim thisCell As Api.ArtifactField = field.Copy
+							Me.SetFieldValue(thisCell, _reader.Item(i))
+							retval.Add(thisCell)
+
+						End If
 					End If
-				End If
+				Catch ex As Exception
+					Throw New FieldValueImportException(ex, _currentLineNumber, field.DisplayName, ex.Message)
+				End Try
 			Next
 
 			'NativeFilePathColumn is in the format  displayname(index).  _reader only has name.  I need to get the index, get _reader.name, and add a field with the data.
@@ -146,7 +151,11 @@ Namespace kCura.WinEDDS.ImportExtension
 					Dim nativeFileIndex As Int32 = Int32.Parse(_loadFileSettings.NativeFilePathColumn.Substring(_loadFileSettings.NativeFilePathColumn.LastIndexOf("(")).Trim("()".ToCharArray))
 					Dim displayName As String = _reader.GetName(nativeFileIndex - 1)
 					Dim field As New Api.ArtifactField(New DocumentField(displayName, -1, Relativity.FieldTypeHelper.FieldType.File, Relativity.FieldCategory.FileInfo, New Nullable(Of Int32)(Nothing), New Nullable(Of Int32)(Nothing), New Nullable(Of Int32)(Nothing), True, EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice.LeaveBlankValuesUnchanged))
-					Me.SetFieldValue(field, _reader.Item(nativeFileIndex - 1))
+					Try
+						Me.SetFieldValue(field, _reader.Item(nativeFileIndex - 1))
+					Catch ex As Exception
+						Throw New FieldValueImportException(ex, _currentLineNumber, displayName, ex.Message)
+					End Try
 					retval.Add(field)
 				End If
 			End If
@@ -206,7 +215,11 @@ Namespace kCura.WinEDDS.ImportExtension
 				Dim parentIndex As Int32 = Int32.Parse(_loadFileSettings.FolderStructureContainedInColumn.Substring(_loadFileSettings.FolderStructureContainedInColumn.LastIndexOf("(")).Trim("()".ToCharArray))
 				Dim displayName As String = _reader.GetName(parentIndex - 1)
 				Dim field As New Api.ArtifactField(displayName, -2, Relativity.FieldTypeHelper.FieldType.Object, Relativity.FieldCategory.ParentArtifact, New Nullable(Of Int32)(Nothing), New Nullable(Of Int32)(255), New Nullable(Of Int32)(Nothing))
-				Me.SetFieldValue(field, _reader.Item(parentIndex - 1))
+				Try
+					Me.SetFieldValue(field, _reader.Item(parentIndex - 1))
+				Catch ex As Exception
+					Throw New FieldValueImportException(ex, _currentLineNumber, displayName, ex.Message)
+				End Try
 				retval.Add(field)
 			End If
 
