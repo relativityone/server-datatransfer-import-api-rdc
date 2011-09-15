@@ -12,7 +12,7 @@ Namespace kCura.WinEDDS.ImportExtension
 
 		Private _reader As System.Data.IDataReader
 		Private _loadFileSettings As kCura.WinEDDS.LoadFile
-		Private _currentLineNumber As Long = 0
+		Protected _currentLineNumber As Long = 0
 		Private _size As Long = -1
 		Private _columnNames As String()
 		Private _allFields As Api.ArtifactFieldCollection
@@ -131,18 +131,13 @@ Namespace kCura.WinEDDS.ImportExtension
 
 			For i As Integer = 0 To _reader.FieldCount - 1
 				Dim field As Api.ArtifactField = _allFields(_reader.GetName(i).ToLower)
-				Try
-					If Not field Is Nothing Then
-						If Not field.DisplayName = folderStructureContainedInColumnWithoutIndex Then
-							Dim thisCell As Api.ArtifactField = field.Copy
-							Me.SetFieldValue(thisCell, _reader.Item(i))
-							retval.Add(thisCell)
-
-						End If
+				If Not field Is Nothing Then
+					If Not field.DisplayName = folderStructureContainedInColumnWithoutIndex Then
+						Dim thisCell As Api.ArtifactField = field.Copy
+						SetFieldValueInvoker(i, thisCell, field.DisplayName)
+						retval.Add(thisCell)
 					End If
-				Catch ex As Exception
-					Throw New FieldValueImportException(ex, _currentLineNumber, field.DisplayName, ex.Message)
-				End Try
+				End If
 			Next
 
 			'NativeFilePathColumn is in the format  displayname(index).  _reader only has name.  I need to get the index, get _reader.name, and add a field with the data.
@@ -151,11 +146,7 @@ Namespace kCura.WinEDDS.ImportExtension
 					Dim nativeFileIndex As Int32 = Int32.Parse(_loadFileSettings.NativeFilePathColumn.Substring(_loadFileSettings.NativeFilePathColumn.LastIndexOf("(")).Trim("()".ToCharArray))
 					Dim displayName As String = _reader.GetName(nativeFileIndex - 1)
 					Dim field As New Api.ArtifactField(New DocumentField(displayName, -1, Relativity.FieldTypeHelper.FieldType.File, Relativity.FieldCategory.FileInfo, New Nullable(Of Int32)(Nothing), New Nullable(Of Int32)(Nothing), New Nullable(Of Int32)(Nothing), True, EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice.LeaveBlankValuesUnchanged))
-					Try
-						Me.SetFieldValue(field, _reader.Item(nativeFileIndex - 1))
-					Catch ex As Exception
-						Throw New FieldValueImportException(ex, _currentLineNumber, displayName, ex.Message)
-					End Try
+					SetFieldValueInvoker(nativeFileIndex - 1, field, displayName)
 					retval.Add(field)
 				End If
 			End If
@@ -215,11 +206,7 @@ Namespace kCura.WinEDDS.ImportExtension
 				Dim parentIndex As Int32 = Int32.Parse(_loadFileSettings.FolderStructureContainedInColumn.Substring(_loadFileSettings.FolderStructureContainedInColumn.LastIndexOf("(")).Trim("()".ToCharArray))
 				Dim displayName As String = _reader.GetName(parentIndex - 1)
 				Dim field As New Api.ArtifactField(displayName, -2, Relativity.FieldTypeHelper.FieldType.Object, Relativity.FieldCategory.ParentArtifact, New Nullable(Of Int32)(Nothing), New Nullable(Of Int32)(255), New Nullable(Of Int32)(Nothing))
-				Try
-					Me.SetFieldValue(field, _reader.Item(parentIndex - 1))
-				Catch ex As Exception
-					Throw New FieldValueImportException(ex, _currentLineNumber, displayName, ex.Message)
-				End Try
+				SetFieldValueInvoker(parentIndex - 1, field, displayName)
 				retval.Add(field)
 			End If
 
@@ -231,6 +218,15 @@ Namespace kCura.WinEDDS.ImportExtension
 
 			Return retval
 		End Function
+
+		' Extracted from the middle of ReadArtifact() for testing purposes
+		Protected Sub SetFieldValueInvoker(ByVal idx As Integer, ByVal field As ArtifactField, ByVal displayName As String)
+			Try
+				Me.SetFieldValue(field, _reader.Item(idx))
+			Catch ex As Exception
+				Throw New FieldValueImportException(ex, _currentLineNumber, displayName, ex.Message)
+			End Try
+		End Sub
 
 		Private Sub DisplayFieldMap(ByVal sourceData As System.Data.IDataReader, ByVal destination As kCura.WinEDDS.Api.ArtifactFieldCollection)
 			'TODO: fix thsi display.  something with uppercase/lowercase, I think.
