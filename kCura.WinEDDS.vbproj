@@ -329,6 +329,7 @@
     <Compile Include="Exceptions\ExportBaseException.vb">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Exceptions\FieldValueImportException.vb" />
     <Compile Include="Exceptions\FileWriteError.vb">
       <SubType>Code</SubType>
     </Compile>

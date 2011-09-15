@@ -599,49 +599,49 @@ Namespace kCura.WinEDDS
 #Region "Exceptions"
 
 		Public Class ExtractedTextTooLargeException
-			Inherits kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
+			Inherits kCura.Utility.ImporterExceptionBase
 			Public Sub New()
 				MyBase.New(String.Format("Extracted text is too large."))
 			End Sub
 		End Class
 
 		Public Class IdentifierOverlapException
-			Inherits kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
+			Inherits kCura.Utility.ImporterExceptionBase
 			Public Sub New(ByVal identityValue As String, ByVal previousLineNumber As String)
 				MyBase.New(String.Format("Document '({0})' has been previously processed in this file on line {1}.", identityValue, previousLineNumber))
 			End Sub
 		End Class
 
 		Public Class MissingCodeTypeException
-			Inherits kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
+			Inherits kCura.Utility.ImporterExceptionBase
 			Public Sub New(ByVal row As Int32, ByVal column As Int32)
 				MyBase.New(row, column, String.Format("Document field is marked as a code type, but it's missing a CodeType."))
 			End Sub
 		End Class
 
 		Public Class NullGroupIdentifierException
-			Inherits kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
+			Inherits kCura.Utility.ImporterExceptionBase
 			Public Sub New(ByVal row As Int32, ByVal column As Int32)
 				MyBase.New(row, column, String.Format("Group Identifier fields cannot accept null or empty values."))
 			End Sub
 		End Class
 
 		Public Class MissingFullTextFileException
-			Inherits kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
+			Inherits kCura.Utility.ImporterExceptionBase
 			Public Sub New(ByVal row As Int32, ByVal column As Int32)
 				MyBase.New(row, column, String.Format("Error: full text file specified does not exist."))
 			End Sub
 		End Class
 
 		Public Class MissingUserException
-			Inherits kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
+			Inherits kCura.Utility.ImporterExceptionBase
 			Public Sub New(ByVal row As Int32, ByVal column As Int32, ByVal invalidEmailaddress As String)
 				MyBase.New(row, column, String.Format("User '{0}' does not exist in the system or is not available for assignment.", invalidEmailaddress))
 			End Sub
 		End Class
 
 		Public Class CodeCreationException
-			Inherits kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
+			Inherits kCura.Utility.ImporterExceptionBase
 			Private _isFatal As Boolean
 			Public ReadOnly Property IsFatal() As Boolean
 				Get
@@ -655,42 +655,42 @@ Namespace kCura.WinEDDS
 		End Class
 
 		Public Class ColumnCountMismatchException
-			Inherits kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
+			Inherits kCura.Utility.ImporterExceptionBase
 			Public Sub New(ByVal row As Int32, ByVal expecting As Int32, ByVal actual As Int32)
 				MyBase.New(row, -1, String.Format("There are an invalid number of cells in this row - expecting:{0}, actual:{1}.", expecting, actual))
 			End Sub
 		End Class
 
 		Public Class DuplicateObjectReferenceException
-			Inherits kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
+			Inherits kCura.Utility.ImporterExceptionBase
 			Public Sub New(ByVal row As Int32, ByVal column As Int32, ByVal fieldName As String)
 				MyBase.New(row, column, String.Format("Object identifier for field {0} references an identifier that is not unique.", fieldName))
 			End Sub
 		End Class
 
 		Public Class NonExistentParentException
-			Inherits kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
+			Inherits kCura.Utility.ImporterExceptionBase
 			Public Sub New(ByVal row As Int32, ByVal column As Int32, ByVal fieldName As String)
 				MyBase.New(row, column, String.Format("Object references a parent object that does not exist.", fieldName))
 			End Sub
 		End Class
 
 		Public Class ParentObjectReferenceRequiredException
-			Inherits kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
+			Inherits kCura.Utility.ImporterExceptionBase
 			Public Sub New(ByVal row As Int32, ByVal column As Int32)
 				MyBase.New(row, column, String.Format("Null parent object identifier found, this is required for the Parent Info field."))
 			End Sub
 		End Class
 
 		Public Class BcpPathAccessException
-			Inherits kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
+			Inherits kCura.Utility.ImporterExceptionBase
 			Public Sub New(ByVal details As String)
 				MyBase.New("Error accessing the bcp share. Please contact your system administrator with the following details: " & System.Environment.NewLine & details)
 			End Sub
 		End Class
 
 		Public Class DuplicateMulticodeValueException
-			Inherits kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
+			Inherits kCura.Utility.ImporterExceptionBase
 			Public Sub New(ByVal row As Int32, ByVal column As Int32, ByVal codeName As String)
 				MyBase.New(row, column, String.Format("Code value '{0}' specified twice for this record", codeName))
 			End Sub

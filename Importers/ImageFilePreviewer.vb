@@ -1,4 +1,6 @@
 Imports System.IO
+Imports kCura.Utility
+
 Namespace kCura.WinEDDS
 	Public Class ImageFilePreviewer
 		Inherits kCura.Utility.DelimitedFileImporter
@@ -216,21 +218,21 @@ Namespace kCura.WinEDDS
 
 #Region "Exceptions"
 		Public Class FileLoadException
-			Inherits kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
+			Inherits ImporterExceptionBase
 			Public Sub New()
 				MyBase.New("Error uploading file.  Skipping line.")
 			End Sub
 		End Class
 
 		Public Class CreateDocumentException
-			Inherits kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
+			Inherits ImporterExceptionBase
 			Public Sub New(ByVal parentException As System.Exception)
 				MyBase.New("Error creating new document.  Skipping line: " & parentException.Message, parentException)
 			End Sub
 		End Class
 
 		Public Class OverwriteException
-			Inherits kCura.Utility.DelimitedFileImporter.ImporterExceptionBase
+			Inherits ImporterExceptionBase
 			Public Sub New()
 				MyBase.New("Document exists - upload aborted.")
 			End Sub
