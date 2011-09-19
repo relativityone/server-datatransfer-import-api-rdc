@@ -172,14 +172,14 @@ Namespace kCura.WinEDDS.ImportExtension
 										newLocation = _tempLocalDirectory & System.IO.Path.GetFileName(field.ValueAsString)
 									End Try
 									If System.IO.File.Exists(newLocation) Then
-										kCura.Utility.File.Delete(newLocation)
+										kCura.Utility.File.Instance.Delete(newLocation)
 										Try
-											kCura.Utility.File.Delete(newLocation)
+											kCura.Utility.File.Instance.Delete(newLocation)
 										Catch ex As Exception
 											'This is to make sure we don't have buggy data.  Clients that have run the line that sets attributes below will never hit this line.
 											'However, clients on old versions of ImportAPI may hit this line and we want to make sure we're accounting for our mistake.
 											System.IO.File.SetAttributes(newLocation, System.IO.FileAttributes.Normal)
-											kCura.Utility.File.Delete(newLocation)
+											kCura.Utility.File.Instance.Delete(newLocation)
 										End Try
 									End If
 									System.IO.File.Copy(field.ValueAsString, newLocation)
