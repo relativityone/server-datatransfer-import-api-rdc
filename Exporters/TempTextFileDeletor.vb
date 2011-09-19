@@ -7,7 +7,7 @@
 		End Sub
 		Public Sub DeleteFiles()
 			For Each path As String In _filepaths
-				If Not String.IsNullOrEmpty(path) Then kCura.Utility.File.Delete(path)
+				If Not String.IsNullOrEmpty(path) Then kCura.Utility.File.Instance.Delete(path)
 			Next
 		End Sub
 	End Class

@@ -184,7 +184,7 @@ Namespace kCura.WinEDDS
 				Return False
 			End Try
 			Try
-				kCura.Utility.File.Delete(path)
+				kCura.Utility.File.Instance.Delete(path)
 			Catch ex As Exception
 			End Try
 			Try

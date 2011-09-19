@@ -481,9 +481,9 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Private Sub DeleteFiles()
-			kCura.Utility.File.Delete(_outputNativeFilePath)
-			kCura.Utility.File.Delete(_outputCodeFilePath)
-			kCura.Utility.File.Delete(_outputObjectFilePath)
+			kCura.Utility.File.Instance.Delete(_outputNativeFilePath)
+			kCura.Utility.File.Instance.Delete(_outputCodeFilePath)
+			kCura.Utility.File.Instance.Delete(_outputObjectFilePath)
 		End Sub
 
 		Private Sub InitializeFolderManagement()
@@ -806,16 +806,16 @@ Namespace kCura.WinEDDS
 						tries += 1
 						hasReachedEof = False
 					Else
-						kCura.Utility.File.Delete(nativeTempLocation)
-						kCura.Utility.File.Delete(objectTempLocation)
-						kCura.Utility.File.Delete(codeTempLocation)
+						kCura.Utility.File.Instance.Delete(nativeTempLocation)
+						kCura.Utility.File.Instance.Delete(objectTempLocation)
+						kCura.Utility.File.Instance.Delete(codeTempLocation)
 						Throw
 					End If
 				End Try
 			End While
-			kCura.Utility.File.Delete(nativeTempLocation)
-			kCura.Utility.File.Delete(objectTempLocation)
-			kCura.Utility.File.Delete(codeTempLocation)
+			kCura.Utility.File.Instance.Delete(nativeTempLocation)
+			kCura.Utility.File.Instance.Delete(objectTempLocation)
+			kCura.Utility.File.Instance.Delete(codeTempLocation)
 		End Sub
 
 		Private Sub AdvanceStream(ByVal sr As System.IO.StreamReader, ByVal count As Int64)

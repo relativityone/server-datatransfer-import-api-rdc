@@ -409,12 +409,12 @@ Namespace kCura.WinEDDS
 						tries += 1
 						hasReachedEof = False
 					Else
-						kCura.Utility.File.Delete(tmpLocation)
+						kCura.Utility.File.Instance.Delete(tmpLocation)
 						Throw
 					End If
 				End Try
 			End While
-			kCura.Utility.File.Delete(tmpLocation)
+			kCura.Utility.File.Instance.Delete(tmpLocation)
 		End Sub
 
 		Protected Overridable Function DoLogicAndPushImageBatch(ByVal totalRecords As Integer, ByVal recordsProcessed As Integer, ByVal tmpLocation As String, ByRef charactersSuccessfullyProcessed As Long, ByVal i As Integer, ByVal charactersProcessed As Long) As Integer
@@ -1021,7 +1021,7 @@ Namespace kCura.WinEDDS
 					End While
 					w.Close()
 					r.Close()
-					kCura.Utility.File.Delete(tmp)
+					kCura.Utility.File.Instance.Delete(tmp)
 					RemoveHandler sr.IoWarningEvent, AddressOf Me.IoWarningHandler
 				End With
 			Catch ex As Exception
