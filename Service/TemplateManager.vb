@@ -2,34 +2,18 @@ Namespace kCura.WinEDDS.Service
 	Public Class TemplateManager
 		Inherits kCura.EDDS.WebAPI.TemplateManagerBase.TemplateManager
 
-		Private ReadOnly _serviceURLPageFormat As String
-
 #Region " Constructors "
 
 		Public Sub New(ByVal credentials As Net.ICredentials, ByVal cookieContainer As System.Net.CookieContainer)
-			Me.New(credentials, cookieContainer, kCura.WinEDDS.Config.WebServiceURL)
-		End Sub
-
-		Public Sub New(ByVal credentials As Net.ICredentials, ByVal cookieContainer As System.Net.CookieContainer, ByVal webURL As String)
 			MyBase.New()
 
-			_serviceURLPageFormat = "{0}TemplateManager.asmx"
 			Me.Credentials = credentials
 			Me.CookieContainer = cookieContainer
-			Me.ServiceURL = webURL
+			Me.Url = String.Format("{0}TemplateManager.asmx", kCura.WinEDDS.Config.WebServiceURL)
 			Me.Timeout = Settings.DefaultTimeOut
 		End Sub
 
 #End Region
-
-		Public Overridable Property ServiceURL As String
-			Get
-				Return Me.Url
-			End Get
-			Set(ByVal value As String)
-				Me.Url = String.Format(_serviceURLPageFormat, value)
-			End Set
-		End Property
 
 #Region " Shadow Methods "
 
@@ -41,7 +25,7 @@ Namespace kCura.WinEDDS.Service
 					Return MyBase.InstallTemplate(appsToOverride, template, installationParameters)
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries, ServiceURL)
+						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
 					Else
 						Throw
 					End If

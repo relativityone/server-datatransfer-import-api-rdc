@@ -11,30 +11,15 @@ Namespace kCura.WinEDDS
 		Private _credential As Net.NetworkCredential
 		Private _cookieContainer As Net.CookieContainer
 		Private _caseInfo As Relativity.CaseInfo
-		Private _serviceURL As String
 
 		Public Sub New(ByVal credential As Net.NetworkCredential, ByVal cookieContainer As Net.CookieContainer, ByVal caseInfo As Relativity.CaseInfo)
-			Me.New(credential, cookieContainer, caseInfo, kCura.WinEDDS.Config.WebServiceURL)
-		End Sub
-
-		Public Sub New(ByVal credential As Net.NetworkCredential, ByVal cookieContainer As Net.CookieContainer, ByVal caseInfo As Relativity.CaseInfo, ByVal webURL As String)
 			MyBase.New()
 
 			_credential = credential
 			_cookieContainer = cookieContainer
 			_caseInfo = caseInfo
 			_defaultDestinationDirectory = caseInfo.DocumentPath
-			_serviceURL = webURL
 		End Sub
-
-		Public Overridable Property ServiceURL() As String
-			Get
-				Return _serviceURL
-			End Get
-			Set(value As String)
-				_serviceURL = value
-			End Set
-		End Property
 
 		Public Property DefaultDestinationDirectory() As String
 			Get
@@ -124,7 +109,7 @@ Namespace kCura.WinEDDS
 			Me.WriteStatus("Web Mode Connectivity:")
 			Dim uploader As kCura.WinEDDS.FileUploader
 			Try
-				uploader = New kCura.WinEDDS.FileUploader(_credential, _caseInfo.ArtifactID, _caseInfo.DocumentPath, _cookieContainer, ServiceURL, False)
+				uploader = New kCura.WinEDDS.FileUploader(_credential, _caseInfo.ArtifactID, _caseInfo.DocumentPath, _cookieContainer, False)
 			Catch ex As Exception
 				Me.WriteStatus("Error creating uploader object: " & ex.ToString)
 				Return False
@@ -159,7 +144,7 @@ Namespace kCura.WinEDDS
 			End Try
 			Dim downloader As kCura.WinEDDS.FileDownloader
 			Try
-				downloader = New kCura.WinEDDS.FileDownloader(_credential, _caseInfo.DocumentPath, kCura.Utility.URI.GetFullyQualifiedPath(_caseInfo.DownloadHandlerURL, New System.Uri(ServiceURL)), _cookieContainer, kCura.WinEDDS.Service.Settings.AuthenticationToken, ServiceURL)
+				downloader = New kCura.WinEDDS.FileDownloader(_credential, _caseInfo.DocumentPath, kCura.Utility.URI.GetFullyQualifiedPath(_caseInfo.DownloadHandlerURL, New System.Uri(WinEDDS.Config.WebServiceURL)), _cookieContainer, kCura.WinEDDS.Service.Settings.AuthenticationToken)
 			Catch ex As Exception
 				Me.WriteStatus("Error initializing file downloader")
 				Me.WriteStatus("Actual error: " & ex.ToString)
@@ -174,7 +159,7 @@ Namespace kCura.WinEDDS
 				Return False
 			End Try
 			Try
-				Dim gateway As New kCura.WinEDDS.Service.FileIO(_credential, _cookieContainer, ServiceURL)
+				Dim gateway As New kCura.WinEDDS.Service.FileIO(_credential, _cookieContainer)
 
 				gateway.RemoveTempFile(_caseInfo.ArtifactID, dest)
 				Me.WriteStatus("Temp file successfully removed from repository")
@@ -189,7 +174,7 @@ Namespace kCura.WinEDDS
 			End Try
 			Try
 				Me.WriteStatus("Retrieving default repository drive information:")
-				Dim tempFileIO As Service.FileIO = New kCura.WinEDDS.Service.FileIO(_credential, _cookieContainer, ServiceURL)
+				Dim tempFileIO As Service.FileIO = New kCura.WinEDDS.Service.FileIO(_credential, _cookieContainer)
 
 				Dim s As String()() = tempFileIO.GetDefaultRepositorySpaceReport(_caseInfo.ArtifactID)
 				Me.WriteStatus("Success - report follows:")
@@ -205,7 +190,7 @@ Namespace kCura.WinEDDS
 
 		Private Sub CheckDownloadHandlerURL()
 			Me.WriteStatus("Validate Download URL:")
-			Dim downloadUrl As String = kCura.Utility.URI.GetFullyQualifiedPath(_caseInfo.DownloadHandlerURL, New System.Uri(ServiceURL))
+			Dim downloadUrl As String = kCura.Utility.URI.GetFullyQualifiedPath(_caseInfo.DownloadHandlerURL, New System.Uri(kCura.WinEDDS.Config.WebServiceURL))
 			Dim token As String = kCura.WinEDDS.Service.Settings.AuthenticationToken
 			Me.WriteStatus(downloadUrl)
 			Dim myReq As System.Net.HttpWebRequest = DirectCast(System.Net.WebRequest.Create(downloadUrl & "AccessDenied.aspx"), System.Net.HttpWebRequest)
@@ -229,7 +214,7 @@ Namespace kCura.WinEDDS
 
 		Private Function CheckBcp() As Boolean
 			Me.WriteStatus("Checking Bulk Share Configuration")
-			Dim gateway As New kCura.WinEDDS.Service.FileIO(_credential, _cookieContainer, ServiceURL)
+			Dim gateway As New kCura.WinEDDS.Service.FileIO(_credential, _cookieContainer)
 
 			Dim bcpPath As String
 			Try

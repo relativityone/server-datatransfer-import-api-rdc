@@ -36,7 +36,6 @@ Namespace kCura.WinEDDS
 		Private _halt As Boolean = False
 		Private _ordinalLookup As New System.Collections.Generic.Dictionary(Of String, Int32)
 		Private _loadFileFormatter As Exporters.ILoadFileCellFormatter
-		Private _serviceURL As String
 #End Region
 
 		Private Enum ExportFileType
@@ -121,32 +120,13 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
-		Public Overridable Property ServiceURL As String
-			Get
-				Return _serviceURL
-			End Get
-			Set(value As String)
-				_serviceURL = value
-				'The following is not necessary because the ServiceURL will already be set on instances handed to us
-				'_parent.ServiceURL = value
-				_downloadManager.ServiceURL = value
-				'Uncomment if _documentManager gets used
-				'_documentManager.ServiceURL = value
-			End Set
-		End Property
-
 #End Region
 
 #Region "Constructors"
 
 		Public Sub New(ByVal settings As ExportFile, ByVal rootDirectory As String, ByVal overWriteFiles As Boolean, ByVal totalFiles As Int64, ByVal parent As WinEDDS.Exporter, ByVal downloadHandler As FileDownloader, ByVal t As kCura.Utility.Timekeeper, ByVal columnNamesInOrder As String(), ByVal statistics As kCura.WinEDDS.ExportStatistics)
-			Me.New(settings, rootDirectory, overWriteFiles, totalFiles, parent, downloadHandler, t, columnNamesInOrder, statistics, kCura.WinEDDS.Config.WebServiceURL)
-		End Sub
-
-		Public Sub New(ByVal settings As ExportFile, ByVal rootDirectory As String, ByVal overWriteFiles As Boolean, ByVal totalFiles As Int64, ByVal parent As WinEDDS.Exporter, ByVal downloadHandler As FileDownloader, ByVal t As kCura.Utility.Timekeeper, ByVal columnNamesInOrder As String(), ByVal statistics As kCura.WinEDDS.ExportStatistics, ByVal webURL As String)
 			_settings = settings
 			_statistics = statistics
-			_serviceURL = webURL
 
 			If Me.Settings.ExportImages Then
 			End If
@@ -177,9 +157,7 @@ Namespace kCura.WinEDDS
 			_currentTextSubdirectorySize = 0
 			_currentNativeSubdirectorySize = 0
 			_downloadManager = downloadHandler
-			_downloadManager.ServiceURL = ServiceURL
 			_parent = parent
-			_parent.ServiceURL = ServiceURL
 			Dim loadFilePath As String = Me.LoadFileDestinationPath
 			If Not Me.Settings.Overwrite AndAlso System.IO.File.Exists(loadFilePath) Then
 				MsgBox(String.Format("Overwrite not selected and file '{0}' exists.", loadFilePath))

@@ -8,39 +8,20 @@ Namespace kCura.WinEDDS
 
 		Private _gateway As kCura.WinEDDS.Service.FileIO
 		Private _credentials As Net.NetworkCredential
-		'Private _cookieContainer As System.Net.CookieContainer
 		Private _type As ConnectionType
 		Private _destinationFolderPath As String
-		Private _serviceURL As String
-
-		Public Overridable Property ServiceURL As String
-			Get
-				Return _serviceURL
-			End Get
-			Set(value As String)
-				_serviceURL = value
-				_gateway.ServiceURL = value
-			End Set
-		End Property
 
 		Public Sub SetDesintationFolderName(ByVal value As String)
 			_destinationFolderPath = value
 		End Sub
 
 		Public Sub New(ByVal credentials As Net.NetworkCredential, ByVal sourceFolderPath As String, ByVal cookieContainer As System.Net.CookieContainer)
-			Me.New(credentials, sourceFolderPath, cookieContainer, kCura.WinEDDS.Config.WebServiceURL)
-		End Sub
-
-		Public Sub New(ByVal credentials As Net.NetworkCredential, ByVal sourceFolderPath As String, ByVal cookieContainer As System.Net.CookieContainer, ByVal webURL As String)
-			_serviceURL = webURL
-
-			_gateway = New kCura.WinEDDS.Service.FileIO(credentials, cookieContainer, webURL)
+			_gateway = New kCura.WinEDDS.Service.FileIO(credentials, cookieContainer)
 
 			_gateway.Credentials = credentials
 			_gateway.Timeout = Int32.MaxValue
 			_credentials = credentials
 			_destinationFolderPath = sourceFolderPath
-			'Dim documentManager As kCura.EDDS.WebAPI.DocumentManagerBase.DocumentManager
 			Try
 				System.IO.File.Create(sourceFolderPath & "123").Close()
 				System.IO.File.Delete(sourceFolderPath & "123")
