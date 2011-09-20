@@ -94,7 +94,7 @@
 		End Function
 
 		Public Function CountRecords() As Long Implements Api.IImageReader.CountRecords
-			Return kCura.Utility.File.CountLinesInFile(Me.Settings.FileName)
+			Return kCura.Utility.File.Instance.CountLinesInFile(Me.Settings.FileName)
 		End Function
 
 		Public Sub Cancel() Implements Api.IImageReader.Cancel

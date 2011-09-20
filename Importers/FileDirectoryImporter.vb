@@ -53,7 +53,7 @@ Namespace kCura.WinEDDS
 
 			' determine the number of records to process
 			Me.ReportStatus("", "Counting number of files to import...")
-			Me.TotalRecords = kCura.Utility.File.CountFilesInDirectory(_importFileDirectorySettings.FilePath, True) + 1
+			Me.TotalRecords = kCura.Utility.File.Instance.CountFilesInDirectory(_importFileDirectorySettings.FilePath, True) + 1
 
 			' set the batesnumber seed
 			_currentBatesNumber = _importFileDirectorySettings.BatesNumberSeed

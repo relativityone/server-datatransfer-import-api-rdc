@@ -153,7 +153,7 @@ Namespace kCura.WinEDDS
 			Dim typeOfExportDisplayString As String = ""
 			Dim fileCount As Int32 = 0
 			Dim errorOutputFilePath As String = _exportFile.FolderPath & "\" & _exportFile.LoadFilesPrefix & "_img_errors.txt"
-			If System.IO.File.Exists(errorOutputFilePath) AndAlso _exportFile.Overwrite Then kCura.Utility.File.Delete(errorOutputFilePath)
+			If System.IO.File.Exists(errorOutputFilePath) AndAlso _exportFile.Overwrite Then kCura.Utility.File.Instance.Delete(errorOutputFilePath)
 			Me.WriteUpdate("Retrieving export data from the server...")
 			Dim startTicks As Int64 = System.DateTime.Now.Ticks
 			Dim exportInitializationArgs As kCura.EDDS.WebAPI.ExportManagerBase.InitializationResults = Nothing
@@ -418,7 +418,7 @@ Namespace kCura.WinEDDS
 					If image.FileName.IndexOf(".") <> -1 Then
 						filenameExtension = "." & image.FileName.Substring(image.FileName.LastIndexOf(".") + 1)
 					End If
-					image.FileName = kCura.Utility.File.ConvertIllegalCharactersInFilename(image.BatesNumber.ToString & filenameExtension)
+					image.FileName = kCura.Utility.File.Instance.ConvertIllegalCharactersInFilename(image.BatesNumber.ToString & filenameExtension)
 					image.SourceLocation = drv("Location").ToString
 					retval.Add(image)
 					i += 1

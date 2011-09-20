@@ -98,7 +98,7 @@ Namespace kCura.WinEDDS
 		Public Overloads Overrides Function ReadFile(ByVal path As String) As Object
 			Try
 				Dim documentIdentifier As String = String.Empty
-				_fileLineCount = kCura.Utility.File.CountLinesInFile(path)
+				_fileLineCount = kCura.Utility.File.Instance.CountLinesInFile(path)
 				Reader = New StreamReader(path)
 				RaiseStatusEvent(kCura.Windows.Process.EventType.Progress, "Begin Image Upload")
 

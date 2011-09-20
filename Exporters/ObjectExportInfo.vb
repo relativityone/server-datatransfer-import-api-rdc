@@ -147,7 +147,7 @@ Namespace kCura.WinEDDS.Exporters
 					retval = IdentifierValue
 				End If
 			End If
-			Return kCura.Utility.File.ConvertIllegalCharactersInFilename(retval)
+			Return kCura.Utility.File.Instance.ConvertIllegalCharactersInFilename(retval)
 		End Function
 
 		Public Function FullTextFileName(ByVal nameFilesAfterIdentifier As Boolean) As String
@@ -157,7 +157,7 @@ Namespace kCura.WinEDDS.Exporters
 			Else
 				retval = Me.IdentifierValue
 			End If
-			Return kCura.Utility.File.ConvertIllegalCharactersInFilename(retval & ".txt")
+			Return kCura.Utility.File.Instance.ConvertIllegalCharactersInFilename(retval & ".txt")
 		End Function
 
 		Public Property OriginalFileName() As String
@@ -181,7 +181,7 @@ Namespace kCura.WinEDDS.Exporters
 						retval = ProductionBeginBates
 					End If
 				End If
-				Return kCura.Utility.File.ConvertIllegalCharactersInFilename(retval)
+				Return kCura.Utility.File.Instance.ConvertIllegalCharactersInFilename(retval)
 			End Get
 		End Property
 
