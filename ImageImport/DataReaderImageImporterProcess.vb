@@ -7,11 +7,7 @@ Namespace kCura.WinEDDS.ImportExtension
 		Private _sourceData As System.Data.DataTable
 
 		Public Sub New(ByVal sourceData As System.Data.DataTable)
-			Me.New(sourceData, kCura.WinEDDS.Config.WebServiceURL)
-		End Sub
-
-		Public Sub New(ByVal sourceData As DataTable, ByVal webURL As String)
-			MyBase.New(webURL)
+			MyBase.New()
 			_sourceData = sourceData
 		End Sub
 

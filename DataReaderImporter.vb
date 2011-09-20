@@ -18,19 +18,14 @@ Namespace kCura.WinEDDS.ImportExtension
 		''' was used to create the bulk load file. Line delimiters are a field
 		''' delimiter followed by a new line.</param>
 		Public Sub New(ByVal loadFile As kCura.WinEDDS.ImportExtension.DataReaderLoadFile, ByVal controller As kCura.Windows.Process.Controller, ByVal bulkLoadFileFieldDelimiter As String)
-			Me.New(loadFile, controller, bulkLoadFileFieldDelimiter, kCura.WinEDDS.Config.WebServiceURL)
-		End Sub
-
-		Public Sub New(ByVal loadFile As kCura.WinEDDS.ImportExtension.DataReaderLoadFile, ByVal controller As kCura.Windows.Process.Controller, ByVal bulkLoadFileFieldDelimiter As String, ByVal webURL As String)
-			MyBase.New(loadFile, controller, 0, True, System.Guid.NewGuid, True, bulkLoadFileFieldDelimiter, webURL)
+			MyBase.New(loadFile, controller, 0, True, System.Guid.NewGuid, True, bulkLoadFileFieldDelimiter)
 		End Sub
 
 		Protected Overrides Function GetArtifactReader() As kCura.WinEDDS.Api.IArtifactReader
 			Dim collection As New kCura.WinEDDS.Api.ArtifactFieldCollection
 			Dim thisSettings As kCura.WinEDDS.ImportExtension.DataReaderLoadFile = DirectCast(_settings, kCura.WinEDDS.ImportExtension.DataReaderLoadFile)
 			_sourceReader = thisSettings.DataReader
-			Dim s As New kCura.WinEDDS.Service.FieldQuery(_settings.Credentials, _settings.CookieContainer, ServiceURL)
-			s.ServiceURL = ServiceURL
+			Dim s As New kCura.WinEDDS.Service.FieldQuery(_settings.Credentials, _settings.CookieContainer)
 
 			Dim allFields As List(Of [String]) = New List(Of [String])()
 			For i As Integer = 0 To _sourceReader.FieldCount - 1
