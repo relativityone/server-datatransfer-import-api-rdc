@@ -9,11 +9,7 @@ Namespace kCura.WinEDDS.ImportExtension
 		Private _sourceTable As System.Data.DataTable
 
 		Public Sub New(ByVal folderId As Int32, ByVal imageLoadFile As kCura.WinEDDS.ImageLoadFile, ByVal controller As kCura.Windows.Process.Controller, ByVal processID As System.Guid, ByVal sourceDataReader As System.Data.DataTable)
-			Me.New(folderId, imageLoadFile, controller, processID, sourceDataReader, kCura.WinEDDS.Config.WebServiceURL)
-		End Sub
-
-		Public Sub New(ByVal folderId As Int32, ByVal imageLoadFile As kCura.WinEDDS.ImageLoadFile, ByVal controller As kCura.Windows.Process.Controller, ByVal processID As System.Guid, ByVal sourceDataReader As System.Data.DataTable, ByVal webURL As String)
-			MyBase.New(folderId, imageLoadFile, controller, processID, False, webURL)
+			MyBase.New(folderId, imageLoadFile, controller, processID, False)
 			_sourceTable = sourceDataReader
 		End Sub
 
