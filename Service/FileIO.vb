@@ -2,32 +2,14 @@ Namespace kCura.WinEDDS.Service
 	Public Class FileIO
 		Inherits kCura.EDDS.WebAPI.FileIOBase.FileIO
 
-		'Dim _externalIOManager As New Relativity.Core.Service.ExternalIO
-
-		Private ReadOnly _serviceURLPageFormat As String
-
 		Public Sub New(ByVal credentials As Net.ICredentials, ByVal cookieContainer As System.Net.CookieContainer)
-			Me.New(credentials, cookieContainer, kCura.WinEDDS.Config.WebServiceURL)
-		End Sub
-
-		Public Sub New(ByVal credentials As Net.ICredentials, ByVal cookieContainer As System.Net.CookieContainer, ByVal webURL As String)
 			MyBase.New()
 
-			_serviceURLPageFormat = "{0}FileIO.asmx"
 			Me.Credentials = credentials
 			Me.CookieContainer = cookieContainer
-			Me.ServiceURL = webURL
+			Me.Url = String.Format("{0}FileIO.asmx", kCura.WinEDDS.Config.WebServiceURL)
 			Me.Timeout = Settings.DefaultTimeOut
 		End Sub
-
-		Public Overridable Property ServiceURL As String
-			Get
-				Return Me.Url
-			End Get
-			Set(ByVal value As String)
-				Me.Url = String.Format(_serviceURLPageFormat, value)
-			End Set
-		End Property
 
 		Protected Overrides Function GetWebRequest(ByVal uri As System.Uri) As System.Net.WebRequest
 			Dim wr As System.Net.HttpWebRequest = DirectCast(MyBase.GetWebRequest(uri), System.Net.HttpWebRequest)
@@ -45,7 +27,7 @@ Namespace kCura.WinEDDS.Service
 					Return MyBase.BeginFill(caseContextArtifactID, b, documentDirectory, fileGuid)
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries, ServiceURL)
+						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
 					Else
 						Throw
 					End If
@@ -62,7 +44,7 @@ Namespace kCura.WinEDDS.Service
 					Return MyBase.FileFill(caseContextArtifactID, documentDirectory, fileName, b)
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries, ServiceURL)
+						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
 					Else
 						Throw
 					End If
@@ -79,7 +61,7 @@ Namespace kCura.WinEDDS.Service
 					MyBase.RemoveFill(caseContextArtifactID, documentDirectory, fileName)
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries, ServiceURL)
+						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
 					Else
 						Throw
 					End If
@@ -95,7 +77,7 @@ Namespace kCura.WinEDDS.Service
 					Return MyBase.ReadFileAsString(path)
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries, ServiceURL)
+						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
 					Else
 						Throw
 					End If
@@ -110,14 +92,14 @@ Namespace kCura.WinEDDS.Service
 				tries += 1
 				Try
 					Dim retval As String = MyBase.GetBcpSharePath(appID)
-					If String.IsNullOrEmpty(retval) Then 
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries, ServiceURL)
+					If String.IsNullOrEmpty(retval) Then
+						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
 					Else
 						Return retval
 					End If
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries, ServiceURL)
+						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
 					Else
 						If TypeOf ex Is System.Web.Services.Protocols.SoapException Then
 							Throw ParseExceptionForMoreInfo(ex)
@@ -159,7 +141,7 @@ Namespace kCura.WinEDDS.Service
 					If kCura.WinEDDS.Config.UsesWebAPI Then Return MyBase.ValidateBcpShare(appID)
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries, ServiceURL)
+						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
 					Else
 						Throw
 					End If
@@ -176,7 +158,7 @@ Namespace kCura.WinEDDS.Service
 					If kCura.WinEDDS.Config.UsesWebAPI Then Return MyBase.GetBcpShareSpaceReport(appID)
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries, ServiceURL)
+						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
 					Else
 						Throw
 					End If
@@ -193,7 +175,7 @@ Namespace kCura.WinEDDS.Service
 					If kCura.WinEDDS.Config.UsesWebAPI Then Return MyBase.GetDefaultRepositorySpaceReport(appID)
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries, ServiceURL)
+						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
 					Else
 						Throw
 					End If
@@ -210,7 +192,7 @@ Namespace kCura.WinEDDS.Service
 					Return MyBase.RepositoryVolumeMax
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries, ServiceURL)
+						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
 					Else
 						Throw
 					End If
