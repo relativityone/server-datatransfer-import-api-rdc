@@ -224,7 +224,7 @@ Namespace kCura.WinEDDS.ImportExtension
 			Try
 				Me.SetFieldValue(field, _reader.Item(idx))
 			Catch ex As Exception
-				Throw New FieldValueImportException(ex, _currentLineNumber, displayName, ex.Message)
+				Throw New Exceptions.FieldValueImportException(ex, _currentLineNumber, displayName, ex.Message)
 			End Try
 		End Sub
 
