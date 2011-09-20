@@ -68,7 +68,6 @@ Namespace kCura.WinEDDS
 		Private _timekeeper As New kCura.Utility.Timekeeper
 		Private _doRetryLogic As Boolean
 		Private _verboseErrorCollection As New ClientSideErrorCollection
-		Private _serviceURL As String
 #End Region
 
 #Region "Accessors"
@@ -163,28 +162,11 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
-		Public Overridable Property ServiceURL() As String
-			Get
-				Return _serviceURL
-			End Get
-			Set(ByVal value As String)
-				_serviceURL = value
-				UpdateUploaderServiceURLs(value)
-				UpdateManagerServiceURLs(value)
-			End Set
-		End Property
-
 #End Region
 
 #Region "Constructors"
 		Public Sub New(ByVal folderID As Int32, ByVal args As ImageLoadFile, ByVal controller As kCura.Windows.Process.Controller, ByVal processID As Guid, ByVal doRetryLogic As Boolean)
-			Me.New(folderID, args, controller, processID, doRetryLogic, Config.WebServiceURL)
-		End Sub
-
-		Public Sub New(ByVal folderID As Int32, ByVal args As ImageLoadFile, ByVal controller As kCura.Windows.Process.Controller, ByVal processID As Guid, ByVal doRetryLogic As Boolean, ByVal webURL As String)
 			MyBase.New()
-			'We don't use the property to avoid null references
-			_serviceURL = webURL
 
 			_doRetryLogic = doRetryLogic
 			InitializeManagers(args)
@@ -215,12 +197,12 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Protected Overridable Sub InitializeUploaders(ByVal args As ImageLoadFile)
-			_fileUploader = New kCura.WinEDDS.FileUploader(args.Credential, args.CaseInfo.ArtifactID, _repositoryPath, args.CookieContainer, ServiceURL)
-			_bcpuploader = New kCura.WinEDDS.FileUploader(args.Credential, args.CaseInfo.ArtifactID, _repositoryPath, args.CookieContainer, ServiceURL, False)
+			_fileUploader = New kCura.WinEDDS.FileUploader(args.Credential, args.CaseInfo.ArtifactID, _repositoryPath, args.CookieContainer)
+			_bcpuploader = New kCura.WinEDDS.FileUploader(args.Credential, args.CaseInfo.ArtifactID, _repositoryPath, args.CookieContainer, False)
 		End Sub
 
 		Protected Overridable Sub InitializeDTOs(ByVal args As ImageLoadFile)
-			Dim fieldManager As FieldManager = New kCura.WinEDDS.Service.FieldManager(args.Credential, args.CookieContainer, ServiceURL)
+			Dim fieldManager As FieldManager = New kCura.WinEDDS.Service.FieldManager(args.Credential, args.CookieContainer)
 
 			If _productionArtifactID <> 0 Then
 				_productionDTO = _productionManager.Read(args.CaseInfo.ArtifactID, _productionArtifactID)
@@ -234,30 +216,13 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Protected Overridable Sub InitializeManagers(ByVal args As ImageLoadFile)
-			_docManager = New kCura.WinEDDS.Service.DocumentManager(args.Credential, args.CookieContainer, ServiceURL)
-			_fieldQuery = New kCura.WinEDDS.Service.FieldQuery(args.Credential, args.CookieContainer, ServiceURL)
-			_folderManager = New kCura.WinEDDS.Service.FolderManager(args.Credential, args.CookieContainer, ServiceURL)
-			_auditManager = New kCura.WinEDDS.Service.AuditManager(args.Credential, args.CookieContainer, ServiceURL)
-			_fileManager = New kCura.WinEDDS.Service.FileManager(args.Credential, args.CookieContainer, ServiceURL)
-			_productionManager = New kCura.WinEDDS.Service.ProductionManager(args.Credential, args.CookieContainer, ServiceURL)
-			_bulkImportManager = New kCura.WinEDDS.Service.BulkImportManager(args.Credential, args.CookieContainer, ServiceURL)
-		End Sub
-
-		Protected Sub UpdateManagerServiceURLs(ByVal newURL As String)
-
-			_docManager.ServiceURL = newURL
-			_fieldQuery.ServiceURL = newURL
-			_folderManager.ServiceURL = newURL
-			_auditManager.ServiceURL = newURL
-			_fileManager.ServiceURL = newURL
-			_productionManager.ServiceURL = newURL
-			_bulkImportManager.ServiceURL = newURL
-		End Sub
-
-		Protected Overridable Sub UpdateUploaderServiceURLs(ByVal newURL As String)
-
-			_fileUploader.ServiceURL = newURL
-			_bcpuploader.ServiceURL = newURL
+			_docManager = New kCura.WinEDDS.Service.DocumentManager(args.Credential, args.CookieContainer)
+			_fieldQuery = New kCura.WinEDDS.Service.FieldQuery(args.Credential, args.CookieContainer)
+			_folderManager = New kCura.WinEDDS.Service.FolderManager(args.Credential, args.CookieContainer)
+			_auditManager = New kCura.WinEDDS.Service.AuditManager(args.Credential, args.CookieContainer)
+			_fileManager = New kCura.WinEDDS.Service.FileManager(args.Credential, args.CookieContainer)
+			_productionManager = New kCura.WinEDDS.Service.ProductionManager(args.Credential, args.CookieContainer)
+			_bulkImportManager = New kCura.WinEDDS.Service.BulkImportManager(args.Credential, args.CookieContainer)
 		End Sub
 
 #End Region
@@ -981,7 +946,7 @@ Namespace kCura.WinEDDS
 			Try
 				With _bulkImportManager.GenerateImageErrorFiles(_caseInfo.ArtifactID, _runId, True, _keyFieldDto.ArtifactID)
 					Me.RaiseStatusEvent(Windows.Process.EventType.Status, "Retrieving errors from server", Me.CurrentLineNumber, Me.CurrentLineNumber)
-					Dim downloader As New FileDownloader(DirectCast(_bulkImportManager.Credentials, System.Net.NetworkCredential), _caseInfo.DocumentPath, _caseInfo.DownloadHandlerURL, _bulkImportManager.CookieContainer, kCura.WinEDDS.Service.Settings.AuthenticationToken, ServiceURL)
+					Dim downloader As New FileDownloader(DirectCast(_bulkImportManager.Credentials, System.Net.NetworkCredential), _caseInfo.DocumentPath, _caseInfo.DownloadHandlerURL, _bulkImportManager.CookieContainer, kCura.WinEDDS.Service.Settings.AuthenticationToken)
 					Dim errorsLocation As String = System.IO.Path.GetTempFileName
 					downloader.MoveTempFileToLocal(errorsLocation, .LogKey, _caseInfo)
 					sr = New kCura.Utility.GenericCsvReader(errorsLocation, True)

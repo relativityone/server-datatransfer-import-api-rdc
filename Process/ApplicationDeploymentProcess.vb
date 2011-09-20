@@ -3,15 +3,9 @@ Namespace kCura.WinEDDS
 	Public Class ApplicationDeploymentProcess
 		Inherits kCura.Windows.Process.Generic.ProcessBase(Of ApplicationInstallationResult)
 
-		Private _serviceURL As String
-
 #Region " Constructors "
 
 		Public Sub New(ByVal appsToOverride As Int32(), ByVal resolveArtifacts()() As ResolveArtifact, ByVal application As Xml.XmlDocument, ByVal credential As Net.NetworkCredential, ByVal cookieContainer As Net.CookieContainer, ByVal caseInfos As Generic.IEnumerable(Of Relativity.CaseInfo))
-			Me.New(appsToOverride, resolveArtifacts, application, credential, cookieContainer, caseInfos, kCura.WinEDDS.Config.WebServiceURL)
-		End Sub
-
-		Public Sub New(ByVal appsToOverride As Int32(), ByVal resolveArtifacts()() As ResolveArtifact, ByVal application As Xml.XmlDocument, ByVal credential As Net.NetworkCredential, ByVal cookieContainer As Net.CookieContainer, ByVal caseInfos As Generic.IEnumerable(Of Relativity.CaseInfo), ByVal webURL As String)
 			MyBase.New(Function(res As ApplicationInstallationResult) res.Message, Function(res As ApplicationInstallationResult) res.Details)
 			_application = application
 			_appsToOverride = appsToOverride
@@ -19,19 +13,9 @@ Namespace kCura.WinEDDS
 			_credential = credential
 			_cookieContainer = cookieContainer
 			_caseInfos = caseInfos
-			ServiceURL = webURL
 		End Sub
 
 #End Region
-
-		Public Overridable Property ServiceURL As String
-			Get
-				Return _serviceURL
-			End Get
-			Set(ByVal value As String)
-				_serviceURL = value
-			End Set
-		End Property
 
 #Region " Protected Methods "
 
@@ -42,7 +26,7 @@ Namespace kCura.WinEDDS
 					Dim installationParameters As New ApplicationInstallationParameters
 					installationParameters.CaseId = caseInfo.ArtifactID
 
-					Dim applicationDeploymentSystem As New WinEDDS.Service.TemplateManager(_credential, Me._cookieContainer, ServiceURL)
+					Dim applicationDeploymentSystem As New WinEDDS.Service.TemplateManager(_credential, Me._cookieContainer)
 
 					Dim resolutionResult As ApplicationInstallationResult = Nothing
 					If _resolveArtifacts IsNot Nothing AndAlso _resolveArtifacts(i).Count > 0 Then

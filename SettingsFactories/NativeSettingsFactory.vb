@@ -7,18 +7,12 @@ Namespace kCura.WinEDDS
 
 
 		Public Sub New(ByVal credential As System.Net.NetworkCredential, ByVal caseArtifactID As Int32)
-			Me.New(credential, caseArtifactID, kCura.WinEDDS.Config.WebServiceURL)
-		End Sub
-		Public Sub New(ByVal login As String, ByVal password As String, ByVal caseArtifactID As Int32)
-			Me.New(login, password, caseArtifactID, kCura.WinEDDS.Config.WebServiceURL)
-		End Sub
-
-		Public Sub New(ByVal credential As System.Net.NetworkCredential, ByVal caseArtifactID As Int32, ByVal webURL As String)
-			MyBase.New(credential, webURL)
+			MyBase.New(credential)
 			Me.InitloadFile(caseArtifactID)
 		End Sub
-		Public Sub New(ByVal login As String, ByVal password As String, ByVal caseArtifactID As Int32, ByVal webURL As String)
-			MyBase.New(login, password, webURL)
+
+		Public Sub New(ByVal login As String, ByVal password As String, ByVal caseArtifactID As Int32)
+			MyBase.New(login, password)
 			Me.InitloadFile(caseArtifactID)
 		End Sub
 

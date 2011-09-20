@@ -9,28 +9,6 @@ Namespace kCura.WinEDDS
 		Private _warningCount As Int32
 		Private _hasRunProcessComplete As Boolean = False
 		Private _uploadModeText As String = Nothing
-		Private _serviceURL As String
-
-		Public Overridable Property ServiceURL As String
-			Get
-				Return _serviceURL
-			End Get
-			Set(value As String)
-				_serviceURL = value
-				If Not _imageFileImporter Is Nothing Then
-					_imageFileImporter.ServiceURL = value
-				End If
-			End Set
-		End Property
-
-		Public Sub New()
-			Me.New(kCura.WinEDDS.Config.WebServiceURL)
-		End Sub
-
-		Public Sub New(ByVal webURL As String)
-			MyBase.New()
-			ServiceURL = webURL
-		End Sub
 
 		Protected Overrides Sub Execute()
 			_startTime = DateTime.Now
@@ -47,7 +25,7 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Protected Overridable Function GetImageFileImporter() As kCura.WinEDDS.BulkImageFileImporter
-			Dim returnImporter As BulkImageFileImporter = New kCura.WinEDDS.BulkImageFileImporter(ImageLoadFile.DestinationFolderID, ImageLoadFile, ProcessController, Me.ProcessID, True, ServiceURL)
+			Dim returnImporter As BulkImageFileImporter = New kCura.WinEDDS.BulkImageFileImporter(ImageLoadFile.DestinationFolderID, ImageLoadFile, ProcessController, Me.ProcessID, True)
 
 			Return returnImporter
 		End Function
@@ -94,7 +72,7 @@ Namespace kCura.WinEDDS
 				retval.TotalFileSize = _imageFileImporter.Statistics.FileBytes
 				retval.TotalMetadataBytes = _imageFileImporter.Statistics.MetadataBytes
 				retval.SendNotification = ImageLoadFile.SendEmailOnLoadCompletion
-				Dim auditmanager As New kCura.WinEDDS.Service.AuditManager(ImageLoadFile.Credential, ImageLoadFile.CookieContainer, ServiceURL)
+				Dim auditmanager As New kCura.WinEDDS.Service.AuditManager(ImageLoadFile.Credential, ImageLoadFile.CookieContainer)
 
 				auditmanager.AuditImageImport(ImageLoadFile.CaseInfo.ArtifactID, runID, Not success, retval)
 			Catch

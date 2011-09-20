@@ -14,28 +14,6 @@ Namespace kCura.WinEDDS
 		Private WithEvents _valueThrower As ValueThrower
 		Public ReturnValueCollection As Hashtable
 		Public ReturnValueKey As Guid
-		Private _serviceURL As String
-
-		Public Sub New()
-			Me.New(kCura.WinEDDS.Config.WebServiceURL)
-		End Sub
-
-		Public Sub New(ByVal webURL As String)
-			MyBase.New()
-			ServiceURL = webURL
-		End Sub
-
-		Public Overridable Property ServiceURL As String
-			Get
-				Return _serviceURL
-			End Get
-			Set(value As String)
-				_serviceURL = value
-				If Not _imageFilePreviewer Is Nothing Then
-					_imageFilePreviewer.ServiceURL = value
-				End If
-			End Set
-		End Property
 
 		Public Property TimeZoneOffset() As Int32
 			Get
@@ -69,7 +47,6 @@ Namespace kCura.WinEDDS
 			_warningCount = 0
 			_errorCount = 0
 			_imageFilePreviewer = New kCura.WinEDDS.ImageFilePreviewer(LoadFile, ProcessController, True)
-			_imageFilePreviewer.ServiceURL = ServiceURL
 
 			_imageFilePreviewer.ReadFile(LoadFile.FileName)
 			Me.ProcessObserver.RaiseProcessCompleteEvent()

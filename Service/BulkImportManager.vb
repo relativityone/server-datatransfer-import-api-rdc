@@ -2,21 +2,14 @@ Namespace kCura.WinEDDS.Service
 	Public Class BulkImportManager
 		Inherits kCura.EDDS.WebAPI.BulkImportManagerBase.BulkImportManager
 
-		Private ReadOnly _serviceURLPageFormat As String
-
 #Region "Constructors"
 
 		Public Sub New(ByVal credentials As Net.ICredentials, ByVal cookieContainer As System.Net.CookieContainer)
-			Me.New(credentials, cookieContainer, kCura.WinEDDS.Config.WebServiceURL)
-		End Sub
-
-		Public Sub New(ByVal credentials As Net.ICredentials, ByVal cookieContainer As System.Net.CookieContainer, ByVal webURL As String)
 			MyBase.New()
 
-			_serviceURLPageFormat = "{0}BulkImportManager.asmx"
 			Me.Credentials = credentials
 			Me.CookieContainer = cookieContainer
-			Me.ServiceURL = webURL
+			Me.Url = String.Format("{0}BulkImportManager.asmx", kCura.WinEDDS.Config.WebServiceURL)
 			Me.Timeout = Settings.DefaultTimeOut
 		End Sub
 
@@ -32,24 +25,6 @@ Namespace kCura.WinEDDS.Service
 			End If
 		End Sub
 
-		Public Overridable Property ServiceURL As String
-			Get
-				Return Me.Url
-			End Get
-			Set(ByVal value As String)
-				Me.Url = String.Format(_serviceURLPageFormat, value)
-			End Set
-		End Property
-
-		Protected Overridable Property WebServiceURL As String
-			Get
-				Return Me.Url
-			End Get
-			Set(ByVal value As String)
-				Me.Url = value
-			End Set
-		End Property
-
 #Region " Shadow Methods "
 		Public Shadows Function BulkImportImage(ByVal appID As Int32, ByVal bulkFileName As String, ByVal uploadFullText As Boolean, ByVal overwrite As kCura.EDDS.WebAPI.BulkImportManagerBase.OverwriteType, ByVal destinationFolderArtifactID As Int32, ByVal repository As String, ByVal useBulk As Boolean, ByVal runID As String, ByVal keyFieldID As Int32, ByVal inRepository As Boolean) As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults
 			Dim tries As Int32 = 0
@@ -61,7 +36,7 @@ Namespace kCura.WinEDDS.Service
 					Return retval
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries, ServiceURL)
+						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
 					Else
 						Throw
 					End If
@@ -80,7 +55,7 @@ Namespace kCura.WinEDDS.Service
 					Return retval
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries, ServiceURL)
+						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
 					Else
 						Throw
 					End If
@@ -102,7 +77,7 @@ Namespace kCura.WinEDDS.Service
 					Return retval
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries, ServiceURL)
+						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
 					Else
 						Throw
 					End If
@@ -119,7 +94,7 @@ Namespace kCura.WinEDDS.Service
 					Return MyBase.ImageRunHasErrors(appID, runId)
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries, ServiceURL)
+						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
 					Else
 						Throw
 					End If
@@ -137,7 +112,7 @@ Namespace kCura.WinEDDS.Service
 					Return retval
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries, ServiceURL)
+						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
 					Else
 						Throw
 					End If
@@ -156,7 +131,7 @@ Namespace kCura.WinEDDS.Service
 					Return retval
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries, ServiceURL)
+						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
 					Else
 						Throw
 					End If
@@ -173,7 +148,7 @@ Namespace kCura.WinEDDS.Service
 					Return MyBase.DisposeTempTables(appID, runId)
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries, ServiceURL)
+						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
 					Else
 						Throw
 					End If

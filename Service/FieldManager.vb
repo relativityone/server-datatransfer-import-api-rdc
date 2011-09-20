@@ -3,8 +3,6 @@ Namespace kCura.WinEDDS.Service
 		Inherits kCura.EDDS.WebAPI.FieldManagerBase.FieldManager
 
 		Private _query As kCura.WinEDDS.Service.FieldQuery
-		Private ReadOnly _serviceURLPageFormat As String
-
 		Public ReadOnly Property Query() As kCura.WinEDDS.Service.FieldQuery
 			Get
 				Return _query
@@ -19,29 +17,15 @@ Namespace kCura.WinEDDS.Service
 		End Function
 
 		Public Sub New(ByVal credentials As Net.ICredentials, ByVal cookieContainer As System.Net.CookieContainer)
-			Me.New(credentials, cookieContainer, kCura.WinEDDS.Config.WebServiceURL)
-		End Sub
-
-		Public Sub New(ByVal credentials As Net.ICredentials, ByVal cookieContainer As System.Net.CookieContainer, ByVal webURL As String)
 			MyBase.New()
 
-			_serviceURLPageFormat = "{0}FieldManager.asmx"
 			Me.Credentials = credentials
 			Me.CookieContainer = cookieContainer
-			_query = New kCura.WinEDDS.Service.FieldQuery(credentials, Me.CookieContainer, webURL)
-			Me.ServiceURL = webURL
+			_query = New kCura.WinEDDS.Service.FieldQuery(credentials, Me.CookieContainer)
+			Me.Url = String.Format("{0}FieldManager.asmx", kCura.WinEDDS.Config.WebServiceURL)
 			Me.Timeout = Settings.DefaultTimeOut
 		End Sub
 
-		Public Overridable Property ServiceURL As String
-			Get
-				Return Me.Url
-			End Get
-			Set(ByVal value As String)
-				Me.Url = String.Format(_serviceURLPageFormat, value)
-				_query.ServiceURL = value
-			End Set
-		End Property
 
 #Region " Translations "
 		Public Shared Function DTOtoDocumentField(ByVal dto As kCura.EDDS.WebAPI.DocumentManagerBase.Field) As DocumentField
@@ -80,7 +64,7 @@ Namespace kCura.WinEDDS.Service
 					End If
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries, ServiceURL)
+						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
 					Else
 						Throw
 					End If
@@ -101,7 +85,7 @@ Namespace kCura.WinEDDS.Service
 					End If
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries, ServiceURL)
+						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
 					Else
 						Throw
 					End If

@@ -21,19 +21,18 @@ Namespace kCura.WinEDDS
 		Private _cookieContainer As System.Net.CookieContainer
 		Private _currentBatesNumber As Integer
 		Private _fileExtentionsToImport As System.Collections.ArrayList
-		Private _serviceURL As String
 
 		Public Overrides Sub Import()
 
 			' create webservice proxies
-			_documentManager = New kCura.WinEDDS.Service.DocumentManager(_credential, _cookieContainer, ServiceURL)
-			_folderManager = New kCura.WinEDDS.Service.FolderManager(_credential, _cookieContainer, ServiceURL)
+			_documentManager = New kCura.WinEDDS.Service.DocumentManager(_credential, _cookieContainer)
+			_folderManager = New kCura.WinEDDS.Service.FolderManager(_credential, _cookieContainer)
 			'_folderManager.ServiceURL = ServiceURL
-			_fileManager = New kCura.WinEDDS.Service.FileManager(_credential, _cookieContainer, ServiceURL)
-			_uploader = New kCura.WinEDDS.FileUploader(_credential, _importFileDirectorySettings.CaseInfo.ArtifactID, _documentManager.GetDocumentDirectoryByCaseArtifactID(_importFileDirectorySettings.CaseInfo.ArtifactID) & "\", _cookieContainer, ServiceURL)
+			_fileManager = New kCura.WinEDDS.Service.FileManager(_credential, _cookieContainer)
+			_uploader = New kCura.WinEDDS.FileUploader(_credential, _importFileDirectorySettings.CaseInfo.ArtifactID, _documentManager.GetDocumentDirectoryByCaseArtifactID(_importFileDirectorySettings.CaseInfo.ArtifactID) & "\", _cookieContainer)
 
 			' get case fields
-			Dim fieldManager As New kCura.WinEDDS.Service.FieldQuery(_credential, _cookieContainer, ServiceURL)
+			Dim fieldManager As New kCura.WinEDDS.Service.FieldQuery(_credential, _cookieContainer)
 
 			'TODO: WINFLEX ArtifactTypeID
 			_caseFields = fieldManager.RetrieveAllAsArray(_importFileDirectorySettings.CaseInfo.ArtifactID, 10)
@@ -191,34 +190,10 @@ Namespace kCura.WinEDDS
 
 		'Public Sub New(ByVal importSettings As kCura.WinEDDS.ImportFileDirectorySettings, ByVal credential As Net.NetworkCredential, ByVal cookieContainer As System.Net.CookieContainer, ByVal identity As Relativity.Core.EDDSIdentity)
 		Public Sub New(ByVal importSettings As kCura.WinEDDS.ImportFileDirectorySettings, ByVal credential As Net.NetworkCredential, ByVal cookieContainer As System.Net.CookieContainer)
-			Me.New(importSettings, credential, cookieContainer, kCura.WinEDDS.Config.WebServiceURL)
-		End Sub
-
-		Public Sub New(ByVal importSettings As kCura.WinEDDS.ImportFileDirectorySettings, ByVal credential As Net.NetworkCredential, ByVal cookieContainer As System.Net.CookieContainer, ByVal webURL As String)
 			_importFileDirectorySettings = importSettings
 			_credential = credential
 			_cookieContainer = cookieContainer
-			_serviceURL = webURL
-			'_identity = identity
 		End Sub
-
-		Public Overridable Property ServiceURL As String
-			Get
-				Return _serviceURL
-			End Get
-			Set(value As String)
-				_serviceURL = value
-				If Not _documentManager Is Nothing Then
-					_documentManager.ServiceURL = value
-				End If
-				If Not _fileManager Is Nothing Then
-					_fileManager.ServiceURL = value
-				End If
-				If Not _folderManager Is Nothing Then
-					_folderManager.ServiceURL = value
-				End If
-			End Set
-		End Property
 
 	End Class
 
