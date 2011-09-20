@@ -8,13 +8,14 @@ Namespace kCura.Relativity.DataReaderClient
 
 		Public Settings As ImageSettings
 		Public SourceData As ImageSourceIDataReader
-		Private _caseManager As kCura.WinEDDS.Service.CaseManager
-
+		
 #End Region
 
 #Region " Private variables "
 		Private WithEvents _observer As kCura.Windows.Process.ProcessObserver
 		Private cookieMonster As New Net.CookieContainer
+		Private _controller As kCura.Windows.Process.Controller
+
 #End Region
 
 #Region " Public Methods "
@@ -34,6 +35,7 @@ Namespace kCura.Relativity.DataReaderClient
 
 				Dim process As New kCura.WinEDDS.ImportExtension.DataReaderImageImporterProcess(SourceData.SourceData)
 				_observer = process.ProcessObserver
+				_controller = process.ProcessController
 
 				RaiseEvent OnMessage(New Status("Updating settings"))
 				process.ImageLoadFile = Me.CreateLoadFile()
@@ -158,8 +160,8 @@ Namespace kCura.Relativity.DataReaderClient
 				'	ValidateSqlCommandSettings()
 				ValidateRelativitySettings()
 				ValidateDataSourceSettings()
-				'ValidateOverwriteModeSettings()
-				'ValidateExtractedTextSettings()
+				ValidateOverwriteModeSettings()
+				ValidateExtractedTextSettings()
 			Catch ex As Exception
 				RaiseEvent OnMessage(New Status(ex.Message))
 				Return False
@@ -169,32 +171,25 @@ Namespace kCura.Relativity.DataReaderClient
 
 		Private Sub ValidateRelativitySettings()
 			If Settings.RelativityUsername Is Nothing OrElse Settings.RelativityUsername = String.Empty Then
-				Throw New Exception(String.Format("{0} must be set", "RelativityUsername"))
+				Throw New ImportSettingsException("RelativityUserName", String.Empty)
 			End If
 			If Settings.RelativityPassword Is Nothing OrElse Settings.RelativityPassword = String.Empty Then
-				Throw New Exception(String.Format("{0} must be set", "RelativityPassword"))
+				Throw New ImportSettingsException("RelativityPassword", String.Empty)
 			End If
-			If Settings.CaseArtifactId = 0 Then
-				Throw New Exception(String.Format("{0} must be set and cannot be 0", "CaseArtifactId"))
-			End If
-			If Settings.ArtifactTypeId = 0 Then
-				Throw New Exception(String.Format("{0} must be set and cannot be 0", "ArtifactTypeId"))
+			If Settings.CaseArtifactId <= 0 Then
+				Throw New ImportSettingsException("CaseArtifactId", "This must be the ID of an existing case.")
 			End If
 		End Sub
 
 		Private Sub ValidateOverwriteModeSettings()
-			If Settings.OverwriteMode = OverwriteModeEnum.Overlay Then
-				If Settings.OverlayIdentifierSourceFieldName Is Nothing OrElse Settings.OverlayIdentifierSourceFieldName.Trim = String.Empty Then
-					Throw New Exception("When Overwrite Mode is set to Overlay, Overlay Identifier Field must be set.")
-				End If
+			If Settings.OverwriteMode = OverwriteModeEnum.Overlay AndAlso String.IsNullOrWhiteSpace(Settings.OverlayIdentifierSourceFieldName) Then
+				Throw New ImportSettingsException("OverlayIdentifier", "When Overwrite Mode is set to Overlay, then the Overlay Identifier Field must be set.")
 			End If
 		End Sub
 
 		Private Sub ValidateExtractedTextSettings()
-			If Settings.ExtractedTextFieldContainsFilePath Then
-				If Settings.ExtractedTextEncoding Is Nothing Then
-					Throw New Exception("ExtractedTextEncoding not set")
-				End If
+			If Settings.ExtractedTextFieldContainsFilePath AndAlso Settings.ExtractedTextEncoding Is Nothing Then
+				Throw New ImportSettingsException("ExtractedTextEncoding", String.Empty)
 			End If
 		End Sub
 
@@ -235,6 +230,17 @@ Namespace kCura.Relativity.DataReaderClient
 		End Sub
 
 #End Region
+
+		''' <summary>
+		''' ExportErrorReport
+		''' Export the CSV file containing any errors from the import
+		''' </summary>
+		''' <param name="filePathAndName">Specify a full path and filename which will contain the output.</param>
+		''' <remarks></remarks>
+		Public Sub ExportErrorReport(ByVal filePathAndName As String)
+			_controller.ExportErrorReport(FilePathAndName)
+		End Sub
+
 
 	End Class
 End Namespace
