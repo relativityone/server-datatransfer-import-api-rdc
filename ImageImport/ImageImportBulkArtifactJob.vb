@@ -160,8 +160,8 @@ Namespace kCura.Relativity.DataReaderClient
 				'	ValidateSqlCommandSettings()
 				ValidateRelativitySettings()
 				ValidateDataSourceSettings()
-				'ValidateOverwriteModeSettings()
-				'ValidateExtractedTextSettings()
+				ValidateOverwriteModeSettings()
+				ValidateExtractedTextSettings()
 			Catch ex As Exception
 				RaiseEvent OnMessage(New Status(ex.Message))
 				Return False
@@ -171,32 +171,25 @@ Namespace kCura.Relativity.DataReaderClient
 
 		Private Sub ValidateRelativitySettings()
 			If Settings.RelativityUsername Is Nothing OrElse Settings.RelativityUsername = String.Empty Then
-				Throw New Exception(String.Format("{0} must be set", "RelativityUsername"))
+				Throw New ImportSettingsException("RelativityUserName", String.Empty)
 			End If
 			If Settings.RelativityPassword Is Nothing OrElse Settings.RelativityPassword = String.Empty Then
-				Throw New Exception(String.Format("{0} must be set", "RelativityPassword"))
+				Throw New ImportSettingsException("RelativityPassword", String.Empty)
 			End If
-			If Settings.CaseArtifactId = 0 Then
-				Throw New Exception(String.Format("{0} must be set and cannot be 0", "CaseArtifactId"))
-			End If
-			If Settings.ArtifactTypeId = 0 Then
-				Throw New Exception(String.Format("{0} must be set and cannot be 0", "ArtifactTypeId"))
+			If Settings.CaseArtifactId <= 0 Then
+				Throw New ImportSettingsException("CaseArtifactId", "This must be the ID of an existing case.")
 			End If
 		End Sub
 
 		Private Sub ValidateOverwriteModeSettings()
-			If Settings.OverwriteMode = OverwriteModeEnum.Overlay Then
-				If Settings.OverlayIdentifierSourceFieldName Is Nothing OrElse Settings.OverlayIdentifierSourceFieldName.Trim = String.Empty Then
-					Throw New Exception("When Overwrite Mode is set to Overlay, Overlay Identifier Field must be set.")
-				End If
+			If Settings.OverwriteMode = OverwriteModeEnum.Overlay AndAlso String.IsNullOrWhiteSpace(Settings.OverlayIdentifierSourceFieldName) Then
+				Throw New ImportSettingsException("OverlayIdentifier", "When Overwrite Mode is set to Overlay, then the Overlay Identifier Field must be set.")
 			End If
 		End Sub
 
 		Private Sub ValidateExtractedTextSettings()
-			If Settings.ExtractedTextFieldContainsFilePath Then
-				If Settings.ExtractedTextEncoding Is Nothing Then
-					Throw New Exception("ExtractedTextEncoding not set")
-				End If
+			If Settings.ExtractedTextFieldContainsFilePath AndAlso Settings.ExtractedTextEncoding Is Nothing Then
+				Throw New ImportSettingsException("ExtractedTextEncoding", String.Empty)
 			End If
 		End Sub
 

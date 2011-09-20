@@ -56,9 +56,9 @@ Namespace kCura.Relativity.DataReaderClient
 		''' Exports the error log file from the import if any errors occurred.
 		''' If no errors occurred, no file is copied.
 		''' </summary>
-		''' <param name="location">The location to export the error file to</param>
-		Public Sub ExportErrorReport(ByVal location As String)
-			_controller.ExportErrorReport(location)
+		''' <param name="filePathAndName">The folder path and file name to export the error file</param>
+		Public Sub ExportErrorReport(ByVal filePathAndName As String)
+			_controller.ExportErrorReport(filePathAndName)
 		End Sub
 #End Region
 
