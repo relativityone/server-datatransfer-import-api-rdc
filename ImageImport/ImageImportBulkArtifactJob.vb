@@ -8,13 +8,14 @@ Namespace kCura.Relativity.DataReaderClient
 
 		Public Settings As ImageSettings
 		Public SourceData As ImageSourceIDataReader
-		Private _caseManager As kCura.WinEDDS.Service.CaseManager
-
+		
 #End Region
 
 #Region " Private variables "
 		Private WithEvents _observer As kCura.Windows.Process.ProcessObserver
 		Private cookieMonster As New Net.CookieContainer
+		Private _controller As kCura.Windows.Process.Controller
+
 #End Region
 
 #Region " Public Methods "
@@ -34,6 +35,7 @@ Namespace kCura.Relativity.DataReaderClient
 
 				Dim process As New kCura.WinEDDS.ImportExtension.DataReaderImageImporterProcess(SourceData.SourceData, Settings.WebServiceURL)
 				_observer = process.ProcessObserver
+				_controller = process.ProcessController
 
 				RaiseEvent OnMessage(New Status("Updating settings"))
 				process.ImageLoadFile = Me.CreateLoadFile()
@@ -247,6 +249,17 @@ Namespace kCura.Relativity.DataReaderClient
 		End Sub
 
 #End Region
+
+		''' <summary>
+		''' ExportErrorReport
+		''' Export the CSV file containing any errors from the import
+		''' </summary>
+		''' <param name="filePathAndName">Specify a full path and filename which will contain the output.</param>
+		''' <remarks></remarks>
+		Public Sub ExportErrorReport(ByVal filePathAndName As String)
+			_controller.ExportErrorReport(FilePathAndName)
+		End Sub
+
 
 	End Class
 End Namespace
