@@ -168,7 +168,7 @@
     <Compile Include="ImageImport\ImageImportBulkArtifactJob.vb" />
     <Compile Include="ImageImport\ImageSettings.vb" />
     <Compile Include="ImageImport\ImageSourceIDataReader.vb" />
-    <Compile Include="ImportException.vb" />
+    <Compile Include="ImportSettingsException.vb" />
     <Compile Include="ImportLoadFileJob.vb" />
     <Compile Include="ImportSettingsBase.vb" />
     <Compile Include="LoadFileJobBase.vb" />
