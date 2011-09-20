@@ -27,7 +27,6 @@ Namespace kCura.WinEDDS
 			' create webservice proxies
 			_documentManager = New kCura.WinEDDS.Service.DocumentManager(_credential, _cookieContainer)
 			_folderManager = New kCura.WinEDDS.Service.FolderManager(_credential, _cookieContainer)
-			'_folderManager.ServiceURL = ServiceURL
 			_fileManager = New kCura.WinEDDS.Service.FileManager(_credential, _cookieContainer)
 			_uploader = New kCura.WinEDDS.FileUploader(_credential, _importFileDirectorySettings.CaseInfo.ArtifactID, _documentManager.GetDocumentDirectoryByCaseArtifactID(_importFileDirectorySettings.CaseInfo.ArtifactID) & "\", _cookieContainer)
 
