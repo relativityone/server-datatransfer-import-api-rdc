@@ -171,6 +171,11 @@ Namespace kCura.WinEDDS
 			While Not Me.HasReachedEOF And _continue
 				If Me.RecordCount > kCura.WinEDDS.Config.PREVIEW_THRESHOLD Then
 					AdvanceLine()
+					currentRun = System.DateTime.Now.Ticks
+					If currentRun - lastRun > 10000000 Then
+						lastRun = currentRun
+						Me.ProcessProgress(Me.CurrentLineNumber, Me.Reader.BaseStream.Position, fileSize, stepSize)
+					End If
 					Continue While 'Just keep skipping lines until we get to the end so we report the correct line count
 				End If
 
