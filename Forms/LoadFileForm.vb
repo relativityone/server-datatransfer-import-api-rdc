@@ -977,7 +977,9 @@ Namespace kCura.EDDS.WinForm
 			kCura.EDDS.WinForm.Utility.InitializeCharacterDropDown(_multiRecordDelimiter, _loadFile.MultiRecordDelimiter)
 			kCura.EDDS.WinForm.Utility.InitializeCharacterDropDown(_hierarchicalValueDelimiter, _loadFile.HierarchicalValueDelimiter)
 			_importMenuSendEmailNotificationItem.Visible = _application.SendLoadNotificationEmailEnabled
-			_filePath.Text = LoadFile.FilePath
+			If Not String.IsNullOrEmpty(LoadFile.FilePath) Then
+				_filePath.Text = LoadFile.FilePath
+			End If
 			_importDestinationText.Text = _application.GetCaseFolderPath(LoadFile.DestinationFolderID)
 			_fieldMap.ClearAll()
 			_fileColumnHeaders.Items.Clear()
