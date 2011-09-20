@@ -49,7 +49,7 @@ Namespace kCura.WinEDDS
 		End Property
 
 		Public Sub New()
-			Me.FilePath = "Select file to load..."
+			Me.FilePath = String.Empty
 			Me.RecordDelimiter = ChrW(20)
 			Me.QuoteDelimiter = ChrW(254)
 			Me.NewlineDelimiter = ChrW(174)
