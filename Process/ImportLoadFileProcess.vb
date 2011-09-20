@@ -12,29 +12,7 @@ Namespace kCura.WinEDDS
 		Private WithEvents _newlineCounter As kCura.Utility.File.LineCounter
 		Private _hasRunPRocessComplete As Boolean = False
 		Private _uploadModeText As String = Nothing
-		Private _serviceURL As String
-
-		Public Overridable Property ServiceURL As String
-			Get
-				Return _serviceURL
-			End Get
-			Set(value As String)
-				_serviceURL = value
-				If Not _loadFileImporter Is Nothing Then
-					_loadFileImporter.ServiceURL = value
-				End If
-			End Set
-		End Property
-
-		Public Sub New()
-			Me.New(kCura.WinEDDS.Config.WebServiceURL)
-		End Sub
-
-		Public Sub New(ByVal webURL As String)
-			MyBase.New()
-			ServiceURL = webURL
-		End Sub
-
+	
 		''' <summary>
 		''' Gets or sets the delimiter to use to separate fields in the bulk
 		''' file created in this process. Line delimiters will be this value plus a line feed.
@@ -51,7 +29,7 @@ Namespace kCura.WinEDDS
 		End Property
 
 		Public Overridable Function GetImporter() As kCura.WinEDDS.BulkLoadFileImporter
-			Dim returnImporter As BulkLoadFileImporter = New kCura.WinEDDS.BulkLoadFileImporter(LoadFile, ProcessController, _timeZoneOffset, True, Me.ProcessID, True, BulkLoadFileFieldDelimiter, ServiceURL)
+			Dim returnImporter As BulkLoadFileImporter = New kCura.WinEDDS.BulkLoadFileImporter(LoadFile, ProcessController, _timeZoneOffset, True, Me.ProcessID, True, BulkLoadFileFieldDelimiter)
 
 			Return returnImporter
 		End Function
@@ -147,7 +125,7 @@ Namespace kCura.WinEDDS
 				retval.StartLine = CType(System.Math.Min(LoadFile.StartLineNumber, Int32.MaxValue), Int32)
 				retval.TotalMetadataBytes = _loadFileImporter.Statistics.MetadataBytes
 				retval.SendNotification = LoadFile.SendEmailOnLoadCompletion
-				Dim auditManager As New kCura.WinEDDS.Service.AuditManager(LoadFile.Credentials, LoadFile.CookieContainer, ServiceURL)
+				Dim auditManager As New kCura.WinEDDS.Service.AuditManager(LoadFile.Credentials, LoadFile.CookieContainer)
 
 				auditManager.AuditObjectImport(LoadFile.CaseInfo.ArtifactID, runID, Not success, retval)
 			Catch

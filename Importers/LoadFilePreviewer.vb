@@ -21,11 +21,7 @@ Namespace kCura.WinEDDS
 #Region "Constructors"
 
 		Public Sub New(ByVal args As LoadFile, ByVal timeZoneOffset As Int32, ByVal errorsOnly As Boolean, ByVal doRetryLogic As Boolean, Optional ByVal processController As kCura.Windows.Process.Controller = Nothing)
-			Me.New(args, timeZoneOffset, errorsOnly, doRetryLogic, kCura.WinEDDS.Config.WebServiceURL, processController)
-		End Sub
-
-		Public Sub New(ByVal args As LoadFile, ByVal timeZoneOffset As Int32, ByVal errorsOnly As Boolean, ByVal doRetryLogic As Boolean, ByVal webURL As String, Optional ByVal processController As kCura.Windows.Process.Controller = Nothing)
-			MyBase.New(args, timeZoneOffset, doRetryLogic, True, webURL)
+			MyBase.New(args, timeZoneOffset, doRetryLogic, True)
 			_selectedCaseArtifactID = args.CaseInfo.ArtifactID
 			_errorsOnly = errorsOnly
 			_processController = processController
@@ -317,7 +313,7 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Protected Overrides Function GetArtifactReader() As Api.IArtifactReader
-			Return New LoadFileReader(_settings, True, ServiceURL)
+			Return New LoadFileReader(_settings, True)
 		End Function
 	End Class
 End Namespace

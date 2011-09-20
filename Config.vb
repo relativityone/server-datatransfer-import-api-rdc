@@ -211,21 +211,31 @@ Namespace kCura.WinEDDS
 
 		Public Shared Property WebServiceURL() As String
 			Get
-				Return Config.GetRegistryKeyValue("WebServiceURL")
+				Dim returnValue As String = Nothing
+
+				'Programmatic ServiceURL
+				If _programmaticServiceURL IsNot Nothing Then
+					returnValue = _programmaticServiceURL
+				ElseIf ConfigSettings.Contains("WebServiceURL") Then
+					'App.config ServiceURL
+					returnValue = CType(ConfigSettings("WebServiceURL"), String)
+				Else
+					'Registry ServiceURL
+					returnValue = Config.GetRegistryKeyValue("WebServiceURL")
+				End If
+
+				Return returnValue
 			End Get
 			Set(ByVal value As String)
 				Config.SetRegistryKeyValue("WebServiceURL", value)
 			End Set
 		End Property
 
-		Public Shared ReadOnly Property AppConfigWebServiceURL() As String
-			Get
-				If ConfigSettings.Contains("WebServiceURL") Then
-					Return CType(ConfigSettings("WebServiceURL"), String)
-				End If
-
-				Return Nothing
-			End Get
+		Private Shared _programmaticServiceURL As String = Nothing
+		Public Shared WriteOnly Property ProgrammaticServiceURL() As String
+			Set(value As String)
+				_programmaticServiceURL = value
+			End Set
 		End Property
 
 		Public Shared ReadOnly Property EnableSingleModeImport() As Boolean

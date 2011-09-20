@@ -7,17 +7,6 @@ Namespace kCura.WinEDDS
 		Private _folderManager As Service.FolderManager
 		Private _rootFolderID As Int32
 		Private _caseContextArtifactID As Int32
-		Private _serviceURL As String
-
-		Public Overridable Property ServiceURL As String
-			Get
-				Return _serviceURL
-			End Get
-			Set(value As String)
-				_serviceURL = value
-				_folderManager.ServiceURL = value
-			End Set
-		End Property
 
 		Default Public ReadOnly Property FolderID(ByVal folderPath As String) As Int32
 			Get
@@ -94,14 +83,8 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Public Sub New(ByVal folderManager As Service.FolderManager, ByVal rootFolderID As Int32, ByVal caseContextArtifactID As Int32)
-			Me.New(folderManager, rootFolderID, caseContextArtifactID, kCura.WinEDDS.Config.WebServiceURL)
-		End Sub
-
-		Public Sub New(ByVal folderManager As Service.FolderManager, ByVal rootFolderID As Int32, ByVal caseContextArtifactID As Int32, ByVal webURL As String)
 			_ht = New Hashtable
-			'Update ServiceURL property after setting _folderManager to update _folderManager.ServiceURL as well
 			_folderManager = folderManager
-			ServiceURL = webURL
 			_caseContextArtifactID = caseContextArtifactID
 			_rootFolderID = rootFolderID
 			Dim folderRow As System.Data.DataRow

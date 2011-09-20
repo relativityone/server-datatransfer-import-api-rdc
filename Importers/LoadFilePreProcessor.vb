@@ -95,15 +95,11 @@ Namespace kCura.WinEDDS
 #End Region
 
 		Public Sub New(ByVal args As LoadFile, ByVal trackErrorsAsFieldValues As Boolean)
-			Me.New(args, trackErrorsAsFieldValues, kCura.WinEDDS.Config.WebServiceURL)
-		End Sub
-
-		Public Sub New(ByVal args As LoadFile, ByVal trackErrorsAsFieldValues As Boolean, ByVal webURL As String)
-			MyBase.New(args, trackErrorsAsFieldValues, webURL)
+			MyBase.New(args, trackErrorsAsFieldValues)
 			_haltListener = New HaltListener
 			_continue = True
 			_folders = New System.Collections.Specialized.HybridDictionary
-			_codeManager = New kCura.WinEDDS.Service.CodeManager(args.Credentials, args.CookieContainer, ServiceURL)
+			_codeManager = New kCura.WinEDDS.Service.CodeManager(args.Credentials, args.CookieContainer)
 		End Sub
 
 		Private Function NeedToCheckFolders() As Boolean
@@ -175,6 +171,11 @@ Namespace kCura.WinEDDS
 			While Not Me.HasReachedEOF And _continue
 				If Me.RecordCount > kCura.WinEDDS.Config.PREVIEW_THRESHOLD Then
 					AdvanceLine()
+					currentRun = System.DateTime.Now.Ticks
+					If currentRun - lastRun > 10000000 Then
+						lastRun = currentRun
+						Me.ProcessProgress(Me.CurrentLineNumber, Me.Reader.BaseStream.Position, fileSize, stepSize)
+					End If
 					Continue While 'Just keep skipping lines until we get to the end so we report the correct line count
 				End If
 

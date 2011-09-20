@@ -6,20 +6,12 @@ Namespace kCura.WinEDDS
 		Private _docFields As DocumentFieldCollection
 
 		Public Sub New(ByVal login As String, ByVal password As String, ByVal caseArtifactID As Int32, ByVal artifactTypeID As Int32)
-			Me.New(login, password, caseArtifactID, artifactTypeID, kCura.WinEDDS.Config.WebServiceURL)
-		End Sub
-
-		Public Sub New(ByVal login As String, ByVal password As String, ByVal caseArtifactID As Int32, ByVal artifactTypeID As Int32, ByVal webURL As String)
-			MyBase.New(login, password, webURL)
+			MyBase.New(login, password)
 			Me.InitLoadFile(caseArtifactID, artifactTypeID)
 		End Sub
 
 		Public Sub New(ByVal credential As System.Net.NetworkCredential, ByVal caseArtifactID As Int32, ByVal artifactTypeID As Int32)
-			Me.New(credential, caseArtifactID, artifactTypeID, kCura.WinEDDS.Config.WebServiceURL)
-		End Sub
-
-		Public Sub New(ByVal credential As System.Net.NetworkCredential, ByVal caseArtifactID As Int32, ByVal artifactTypeID As Int32, ByVal webURL As String)
-			MyBase.New(credential, webURL)
+			MyBase.New(credential)
 			Me.InitLoadFile(caseArtifactID, artifactTypeID)
 		End Sub
 
