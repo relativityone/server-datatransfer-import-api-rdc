@@ -29,11 +29,11 @@ Namespace kCura.Relativity.DataReaderClient
 			If IsSettingsValid() Then
 				RaiseEvent OnMessage(New Status("Getting source data from database"))
 
-				SelectServiceURL()
+				WinEDDS.Config.ProgrammaticServiceURL = Settings.WebServiceURL
 
 				MapSuppliedFieldNamesToActual(Settings, SourceData.SourceData)
 
-				Dim process As New kCura.WinEDDS.ImportExtension.DataReaderImageImporterProcess(SourceData.SourceData, Settings.WebServiceURL)
+				Dim process As New kCura.WinEDDS.ImportExtension.DataReaderImageImporterProcess(SourceData.SourceData)
 				_observer = process.ProcessObserver
 				_controller = process.ProcessController
 
@@ -74,7 +74,7 @@ Namespace kCura.Relativity.DataReaderClient
 
 		Private Function CreateLoadFile() As WinEDDS.ImageLoadFile
 			Dim credential As System.Net.NetworkCredential = DirectCast(GetCredentials(Settings), Net.NetworkCredential)
-			Dim casemanager As kCura.WinEDDS.Service.CaseManager = GetCaseManager(credential, Settings.WebServiceURL)
+			Dim casemanager As kCura.WinEDDS.Service.CaseManager = GetCaseManager(credential)
 			Dim tempLoadFile As New kCura.WinEDDS.ImageLoadFile
 			'tempLoadFile.DataTable = SourceData.SourceData
 
@@ -121,7 +121,7 @@ Namespace kCura.Relativity.DataReaderClient
 
 		Private Function GetDefaultIdentifierFieldID(ByVal credential As System.Net.NetworkCredential, ByVal caseArtifactID As Int32) As Int32
 			Dim retval As Int32
-			Dim dt As System.Data.DataTable = New kCura.WinEDDS.Service.FieldQuery(credential, cookieMonster, Settings.WebServiceURL).RetrievePotentialBeginBatesFields(caseArtifactID).Tables(0)
+			Dim dt As System.Data.DataTable = New kCura.WinEDDS.Service.FieldQuery(credential, cookieMonster).RetrievePotentialBeginBatesFields(caseArtifactID).Tables(0)
 			For Each identifierRow As System.Data.DataRow In dt.Rows
 				If CType(identifierRow("FieldCategoryID"), Global.Relativity.FieldCategory) = Global.Relativity.FieldCategory.Identifier Then
 					retval = CType(identifierRow("ArtifactID"), Int32)
@@ -130,21 +130,21 @@ Namespace kCura.Relativity.DataReaderClient
 			Return retval
 		End Function
 
-		Private Function GetCaseManager(ByVal credentials As Net.ICredentials, webURL As String) As kCura.WinEDDS.Service.CaseManager
-			Return New kCura.WinEDDS.Service.CaseManager(credentials, cookieMonster, webURL)
+		Private Function GetCaseManager(ByVal credentials As Net.ICredentials) As kCura.WinEDDS.Service.CaseManager
+			Return New kCura.WinEDDS.Service.CaseManager(credentials, cookieMonster)
 		End Function
 
 		Private Function GetCredentials(ByVal settings As ImageSettings) As System.Net.ICredentials
 			Dim credential As System.Net.ICredentials = Nothing
 			If credential Is Nothing Then
 				Try
-					credential = kCura.WinEDDS.Api.LoginHelper.LoginWindowsAuthWithServiceURL(cookieMonster, settings.WebServiceURL)
+					credential = kCura.WinEDDS.Api.LoginHelper.LoginWindowsAuth(cookieMonster)
 				Catch
 				End Try
 			End If
 
 			While credential Is Nothing
-				credential = kCura.WinEDDS.Api.LoginHelper.LoginUsernamePasswordWithServiceURL(settings.RelativityUsername, settings.RelativityPassword, cookieMonster, settings.WebServiceURL)
+				credential = kCura.WinEDDS.Api.LoginHelper.LoginUsernamePassword(settings.RelativityUsername, settings.RelativityPassword, cookieMonster)
 				Exit While
 			End While
 			Return credential
@@ -190,18 +190,6 @@ Namespace kCura.Relativity.DataReaderClient
 		Private Sub ValidateExtractedTextSettings()
 			If Settings.ExtractedTextFieldContainsFilePath AndAlso Settings.ExtractedTextEncoding Is Nothing Then
 				Throw New ImportSettingsException("ExtractedTextEncoding", String.Empty)
-			End If
-		End Sub
-
-		Protected Sub SelectServiceURL()
-			If Not String.IsNullOrWhiteSpace(Settings.WebServiceURL) Then
-				RaiseEvent OnMessage(New Status(String.Format("Using supplied ServiceURL {0}", Settings.WebServiceURL)))
-			ElseIf Not String.IsNullOrWhiteSpace(WinEDDS.Config.AppConfigWebServiceURL) Then
-				RaiseEvent OnMessage(New Status(String.Format("Using application configuration ServiceURL {0}", WinEDDS.Config.AppConfigWebServiceURL)))
-				Settings.WebServiceURL = WinEDDS.Config.AppConfigWebServiceURL
-			Else
-				RaiseEvent OnMessage(New Status(String.Format("Using default ServiceURL {0}", WinEDDS.Config.WebServiceURL)))
-				Settings.WebServiceURL = WinEDDS.Config.WebServiceURL
 			End If
 		End Sub
 
