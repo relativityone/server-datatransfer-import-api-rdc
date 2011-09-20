@@ -49,7 +49,6 @@ Namespace kCura.WinEDDS
 		Protected _settings As kCura.WinEDDS.LoadFile
 		Private _codeValidator As CodeValidator.Base
 		Private _codesCreated As Int32 = 0
-		Protected _serviceURL As String
 		Protected WithEvents _artifactReader As Api.IArtifactReader
 #End Region
 
@@ -98,20 +97,10 @@ Namespace kCura.WinEDDS
 
 		Protected Overridable ReadOnly Property BulkImportManager As kCura.WinEDDS.Service.BulkImportManager
 			Get
-				If _bulkImportManager Is Nothing Then _bulkImportManager = New kCura.WinEDDS.Service.BulkImportManager(_settings.Credentials, _settings.CookieContainer, ServiceURL)
+				If _bulkImportManager Is Nothing Then _bulkImportManager = New kCura.WinEDDS.Service.BulkImportManager(_settings.Credentials, _settings.CookieContainer)
 
 				Return _bulkImportManager
 			End Get
-		End Property
-
-		Public Overridable Property ServiceURL() As String
-			Get
-				Return _serviceURL
-			End Get
-			Set(value As String)
-				_serviceURL = value
-				UpdateServiceURLs(value)
-			End Set
 		End Property
 
 #End Region
@@ -128,12 +117,6 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Protected Sub New(ByVal args As LoadFile, ByVal timezoneoffset As Int32, ByVal doRetryLogic As Boolean, ByVal autoDetect As Boolean)
-			Me.New(args, timezoneoffset, doRetryLogic, autoDetect, Config.WebServiceURL)
-		End Sub
-
-		Protected Sub New(ByVal args As LoadFile, ByVal timezoneoffset As Int32, ByVal doRetryLogic As Boolean, ByVal autoDetect As Boolean, ByVal webURL As String)
-			'MyBase.New(args.RecordDelimiter, args.QuoteDelimiter, args.NewlineDelimiter, doRetryLogic)
-			_serviceURL = webURL
 			_settings = args
 			_artifactReader = Me.GetArtifactReader
 			_docFields = args.FieldMap.DocumentFields
@@ -177,29 +160,15 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Protected Overridable Sub InitializeManagers(ByVal args As LoadFile)
-			_documentManager = New kCura.WinEDDS.Service.DocumentManager(args.Credentials, args.CookieContainer, ServiceURL)
-			_uploadManager = New kCura.WinEDDS.Service.FileIO(args.Credentials, args.CookieContainer, ServiceURL)
-			_codeManager = New kCura.WinEDDS.Service.CodeManager(args.Credentials, args.CookieContainer, ServiceURL)
-			_folderManager = New kCura.WinEDDS.Service.FolderManager(args.Credentials, args.CookieContainer, ServiceURL)
-			_fieldQuery = New kCura.WinEDDS.Service.FieldQuery(args.Credentials, args.CookieContainer, ServiceURL)
-			_fileManager = New kCura.WinEDDS.Service.FileManager(args.Credentials, args.CookieContainer, ServiceURL)
-			_usermanager = New kCura.WinEDDS.Service.UserManager(args.Credentials, args.CookieContainer, ServiceURL)
+			_documentManager = New kCura.WinEDDS.Service.DocumentManager(args.Credentials, args.CookieContainer)
+			_uploadManager = New kCura.WinEDDS.Service.FileIO(args.Credentials, args.CookieContainer)
+			_codeManager = New kCura.WinEDDS.Service.CodeManager(args.Credentials, args.CookieContainer)
+			_folderManager = New kCura.WinEDDS.Service.FolderManager(args.Credentials, args.CookieContainer)
+			_fieldQuery = New kCura.WinEDDS.Service.FieldQuery(args.Credentials, args.CookieContainer)
+			_fileManager = New kCura.WinEDDS.Service.FileManager(args.Credentials, args.CookieContainer)
+			_usermanager = New kCura.WinEDDS.Service.UserManager(args.Credentials, args.CookieContainer)
 			'_bulkImportManager = New kCura.WinEDDS.Service.BulkImportManager(args.Credentials, args.CookieContainer)
-			_objectManager = New kCura.WinEDDS.Service.ObjectManager(args.Credentials, args.CookieContainer, ServiceURL)
-		End Sub
-
-		Protected Overridable Sub UpdateServiceURLs(ByVal value As String)
-			_codeManager.ServiceURL = value
-			_documentManager.ServiceURL = value
-			_fieldQuery.ServiceURL = value
-			_fileManager.ServiceURL = value
-			_folderManager.ServiceURL = value
-			_objectManager.ServiceURL = value
-			_uploadManager.ServiceURL = value
-			_usermanager.ServiceURL = value
-			If Not _bulkImportManager Is Nothing Then
-				_bulkImportManager.ServiceURL = value
-			End If
+			_objectManager = New kCura.WinEDDS.Service.ObjectManager(args.Credentials, args.CookieContainer)
 		End Sub
 
 #Region "Code Parsing"

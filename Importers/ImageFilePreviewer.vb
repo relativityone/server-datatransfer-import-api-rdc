@@ -21,7 +21,6 @@ Namespace kCura.WinEDDS
 		Private _order As Int32
 		Private _csvwriter As System.Text.StringBuilder
 		Private _nextLine As String()
-		Private _serviceURL As String
 		Private WithEvents _processController As kCura.Windows.Process.Controller
 
 		Private Enum Columns
@@ -29,28 +28,6 @@ Namespace kCura.WinEDDS
 			FileLocation = 2
 			MultiPageIndicator = 3
 		End Enum
-
-		Public Overridable Property ServiceURL As String
-			Get
-				Return _serviceURL
-			End Get
-			Set(value As String)
-				_serviceURL = value
-				UpdateManagerServiceURLs(value)
-				UpdateUploaderURLs(value)
-			End Set
-		End Property
-
-		Protected Sub UpdateManagerServiceURLs(ByVal value As String)
-			_docManager.ServiceURL = value
-			_fieldQuery.ServiceURL = value
-			_folderManager.ServiceURL = value
-			_fileManager.ServiceURL = value
-		End Sub
-
-		Protected Overridable Sub UpdateUploaderURLs(ByVal value As String)
-			_fileUploader.ServiceURL = value
-		End Sub
 
 		Friend WriteOnly Property FilePath() As String
 			Set(ByVal value As String)
@@ -71,17 +48,12 @@ Namespace kCura.WinEDDS
 		Public Event StatusMessage(ByVal args As kCura.Windows.Process.StatusEventArgs)
 
 		Public Sub New(ByVal args As ImageLoadFile, ByVal controller As kCura.Windows.Process.Controller, ByVal doRetryLogic As Boolean)
-			Me.New(args, controller, doRetryLogic, kCura.WinEDDS.Config.WebServiceURL)
-		End Sub
-
-		Public Sub New(ByVal args As ImageLoadFile, ByVal controller As kCura.Windows.Process.Controller, ByVal doRetryLogic As Boolean, ByVal webURL As String)
 			MyBase.New(New Char() {","c}, doRetryLogic)
-			_serviceURL = webURL
 
-			_docManager = New kCura.WinEDDS.Service.DocumentManager(args.Credential, args.CookieContainer, ServiceURL)
-			_fieldQuery = New kCura.WinEDDS.Service.FieldQuery(args.Credential, args.CookieContainer, ServiceURL)
-			_folderManager = New kCura.WinEDDS.Service.FolderManager(args.Credential, args.CookieContainer, ServiceURL)
-			_fileManager = New kCura.WinEDDS.Service.FileManager(args.Credential, args.CookieContainer, ServiceURL)
+			_docManager = New kCura.WinEDDS.Service.DocumentManager(args.Credential, args.CookieContainer)
+			_fieldQuery = New kCura.WinEDDS.Service.FieldQuery(args.Credential, args.CookieContainer)
+			_folderManager = New kCura.WinEDDS.Service.FolderManager(args.Credential, args.CookieContainer)
+			_fileManager = New kCura.WinEDDS.Service.FileManager(args.Credential, args.CookieContainer)
 			InitializeUploaders(args)
 
 			_overwrite = args.Overwrite
@@ -92,7 +64,7 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Protected Overridable Sub InitializeUploaders(ByVal args As ImageLoadFile)
-			_fileUploader = New kCura.WinEDDS.FileUploader(args.Credential, args.CaseInfo.ArtifactID, _docManager.GetDocumentDirectoryByCaseArtifactID(args.CaseInfo.ArtifactID) & "\", args.CookieContainer, ServiceURL)
+			_fileUploader = New kCura.WinEDDS.FileUploader(args.Credential, args.CaseInfo.ArtifactID, _docManager.GetDocumentDirectoryByCaseArtifactID(args.CaseInfo.ArtifactID) & "\", args.CookieContainer)
 		End Sub
 
 		Public Overloads Overrides Function ReadFile(ByVal path As String) As Object
@@ -102,15 +74,6 @@ Namespace kCura.WinEDDS
 				Reader = New StreamReader(path)
 				RaiseStatusEvent(kCura.Windows.Process.EventType.Progress, "Begin Image Upload")
 
-				'_csvwriter = New System.Text.StringBuilder
-				'_csvwriter.Append("DocInitialization" & Microsoft.VisualBasic.ControlChars.Tab)
-				'_csvwriter.Append("OW Check Delete Existing" & Microsoft.VisualBasic.ControlChars.Tab)
-				'_csvwriter.Append("File Upload" & Microsoft.VisualBasic.ControlChars.Tab)
-				'_csvwriter.Append("DocumentManager.Create" & Microsoft.VisualBasic.ControlChars.Tab)
-				'_csvwriter.Append("FileManager.Create" & Microsoft.VisualBasic.ControlChars.Tab)
-				'_csvwriter.Append("UpdateFullText" & Microsoft.VisualBasic.ControlChars.Tab)
-				'_csvwriter.Append("File size" & Microsoft.VisualBasic.ControlChars.Tab)
-				'_csvwriter.Append(System.Environment.NewLine)
 				While [Continue]
 					Try
 						DoFileUpload()
@@ -125,10 +88,6 @@ Namespace kCura.WinEDDS
 					End Try
 				End While
 				Me.Reader.Close()
-				'Dim outputfile As String = "C:\UploadMetrics\" & DateTime.Now.Year.ToString & DateTime.Now.Month.ToString & DateTime.Now.Day.ToString & "_" & System.Guid.NewGuid.ToString & ".txt"
-				'Dim sr As New System.IO.StreamWriter(outputfile)
-				'sr.Write(_csvwriter.ToString)
-				'sr.Close()
 				RaiseStatusEvent(kCura.Windows.Process.EventType.Progress, "End Image Upload")
 			Catch ex As System.Exception
 				RaiseFatalError(ex)
