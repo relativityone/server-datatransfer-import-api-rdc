@@ -36,10 +36,6 @@
 		Protected MustOverride Function IsSettingsValid() As Boolean
 #End Region
 
-#Region "Private Routines"
-		Protected MustOverride Sub SelectServiceURL()
-#End Region
-
 #Region "Properties"
 		'TODO: As of now, the 2 inheriting classes use Settings() to refer to 2
 		' different object types, so we can't "MustOverride" here with our more
