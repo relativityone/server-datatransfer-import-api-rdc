@@ -5,11 +5,7 @@ Namespace kCura.WinEDDS.ImportExtension
 		Private _sourceData As System.Data.IDataReader
 
 		Public Sub New(ByVal sourceData As System.Data.IDataReader)
-			Me.New(sourceData, kCura.WinEDDS.Config.WebServiceURL)
-		End Sub
-
-		Public Sub New(ByVal sourceData As System.Data.IDataReader, ByVal webURL As String)
-			MyBase.New(webURL)
+			MyBase.New()
 			_sourceData = sourceData
 
 			' Use the default value for the delimiter because as a public class,
@@ -34,7 +30,7 @@ Namespace kCura.WinEDDS.ImportExtension
 		End Function
 
 		Public Overrides Function GetImporter() As kCura.WinEDDS.BulkLoadFileImporter
-			Dim temp As DataReaderImporter = New DataReaderImporter(DirectCast(Me.LoadFile, kCura.WinEDDS.ImportExtension.DataReaderLoadFile), ProcessController, BulkLoadFileFieldDelimiter, ServiceURL)
+			Dim temp As DataReaderImporter = New DataReaderImporter(DirectCast(Me.LoadFile, kCura.WinEDDS.ImportExtension.DataReaderLoadFile), ProcessController, BulkLoadFileFieldDelimiter)
 			Dim dr As System.Data.IDataReader = temp.SourceData
 			'These settings need to have [columnName]([index])
 			LoadFile.FolderStructureContainedInColumn = AddColumnIndexToName(dr, LoadFile.FolderStructureContainedInColumn)
