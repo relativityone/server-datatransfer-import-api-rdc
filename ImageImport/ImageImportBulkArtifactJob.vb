@@ -171,10 +171,10 @@ Namespace kCura.Relativity.DataReaderClient
 
 		Private Sub ValidateRelativitySettings()
 			If Settings.RelativityUsername Is Nothing OrElse Settings.RelativityUsername = String.Empty Then
-				Throw New ImportSettingsException("RelativityUserName", String.Empty)
+				Throw New ImportSettingsException("RelativityUserName")
 			End If
 			If Settings.RelativityPassword Is Nothing OrElse Settings.RelativityPassword = String.Empty Then
-				Throw New ImportSettingsException("RelativityPassword", String.Empty)
+				Throw New ImportSettingsException("RelativityPassword")
 			End If
 			If Settings.CaseArtifactId <= 0 Then
 				Throw New ImportSettingsException("CaseArtifactId", "This must be the ID of an existing case.")
@@ -189,7 +189,7 @@ Namespace kCura.Relativity.DataReaderClient
 
 		Private Sub ValidateExtractedTextSettings()
 			If Settings.ExtractedTextFieldContainsFilePath AndAlso Settings.ExtractedTextEncoding Is Nothing Then
-				Throw New ImportSettingsException("ExtractedTextEncoding", String.Empty)
+				Throw New ImportSettingsException("ExtractedTextEncoding")
 			End If
 		End Sub
 
