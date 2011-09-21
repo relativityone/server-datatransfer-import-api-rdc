@@ -123,6 +123,16 @@ Namespace kCura.WinEDDS.ImportExtension
 		End Function
 
 		Public Function ReadArtifact() As kCura.WinEDDS.Api.ArtifactFieldCollection Implements kCura.WinEDDS.Api.IArtifactReader.ReadArtifact
+			Try
+				Return ReadArtifactData()
+			Catch ex As Exception
+				Throw
+			Finally
+				AdvanceRecord()
+			End Try
+		End Function
+
+		Private Function ReadArtifactData() As kCura.WinEDDS.Api.ArtifactFieldCollection
 			Dim retval As New Api.ArtifactFieldCollection
 
 
@@ -214,7 +224,6 @@ Namespace kCura.WinEDDS.ImportExtension
 				DisplayFieldMap(_reader, retval)
 			End If
 
-			AdvanceRecord()
 
 			Return retval
 		End Function
