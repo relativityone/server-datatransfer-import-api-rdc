@@ -269,18 +269,18 @@ Namespace kCura.Relativity.DataReaderClient
 
 		Private Sub ValidateDelimiterSettings()
 			If String.IsNullOrEmpty(Settings.MultiValueDelimiter) Then
-				Throw New Exception("MultiValueDelimiter not set")
+				Throw New ImportSettingsException("MultiValueDelimiter", String.Empty)
 			End If
 
 			If String.IsNullOrEmpty(Settings.NestedValueDelimiter) Then
-				Throw New Exception("NestedValueDelimiter not set")
+				Throw New ImportSettingsException("NestedValueDelimiter", String.Empty)
 			End If
 		End Sub
 
 		Private Sub ValidateExtractedTextSettings()
 			If Settings.ExtractedTextFieldContainsFilePath Then
 				If Settings.ExtractedTextEncoding Is Nothing Then
-					Throw New Exception("ExtractedTextEncoding not set")
+					Throw New ImportSettingsException("ExtractedTextEncoding", String.Empty)
 				End If
 			End If
 		End Sub
@@ -288,11 +288,11 @@ Namespace kCura.Relativity.DataReaderClient
 		Private Sub ValidateNativeFileSettings()
 			If Settings.NativeFileCopyMode = NativeFileCopyModeEnum.DoNotImportNativeFiles Then
 				If Not Settings.NativeFilePathSourceFieldName = String.Empty Then
-					Throw New Exception("If NativeFileCopyMode is set to DoNotImportNativeFiles, then NativeFilePathSourceFieldName cannot be set.")
+					Throw New ImportSettingsConflictException("NativeFileCopyMode", "NativeFilePathSourceFieldName", "If NativeFileCopyMode is set to DoNotImportNativeFiles, then NativeFilePathSourceFieldName cannot be set.")
 				End If
 			Else
 				If Settings.NativeFilePathSourceFieldName = String.Empty Then
-					Throw New Exception("If NativeFileCopyMode is set, then NativeFilePathSourceFieldName must be set. Format: [Field] ([index]). Example: File (3). ")
+					Throw New ImportSettingsException("NativeFilePathSourceFieldName", "If NativeFileCopyMode is set, then NativeFilePathSourceFieldName must be set. Format: [Field] ([index]). Example: File (3). ")
 				Else
 					RaiseEvent OnMessage(New Status(String.Format("Importing native files using {0}", Settings.NativeFileCopyMode.ToString)))
 				End If
@@ -309,16 +309,16 @@ Namespace kCura.Relativity.DataReaderClient
 
 		Private Sub ValidateRelativitySettings()
 			If Settings.RelativityUsername Is Nothing OrElse Settings.RelativityUsername = String.Empty Then
-				Throw New Exception(String.Format("{0} must be set", "RelativityUsername"))
+				Throw New ImportSettingsException("RelativityUserName")
 			End If
 			If Settings.RelativityPassword Is Nothing OrElse Settings.RelativityPassword = String.Empty Then
-				Throw New Exception(String.Format("{0} must be set", "RelativityPassword"))
+				Throw New ImportSettingsException("RelativityPassword")
 			End If
-			If Settings.CaseArtifactId = 0 Then
-				Throw New Exception(String.Format("{0} must be set and cannot be 0", "CaseArtifactId"))
+			If Settings.CaseArtifactId <= 0 Then
+				Throw New ImportSettingsException("CaseArtifactId", "This must be the ID of an existing case.")
 			End If
-			If Settings.ArtifactTypeId = 0 Then
-				Throw New Exception(String.Format("{0} must be set and cannot be 0", "ArtifactTypeId"))
+			If Settings.ArtifactTypeId <= 0 Then
+				Throw New ImportSettingsException("ArtifactTypeId", "This must be the ID of an existing artifact type.")
 			End If
 		End Sub
 #End Region
