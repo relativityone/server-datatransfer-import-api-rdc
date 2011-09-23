@@ -318,10 +318,6 @@ Namespace kCura.EDDS.WinForm
 			_application.NewOutlookImport(CType(_contextMenuTreeNode.Tag, FolderInfo).ArtifactID, _application.SelectedCaseInfo)
 		End Sub
 
-		Private Sub ImportSQLDatabase_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ImportSQLDatabase.Click
-			_application.NewSQLImport(CType(_contextMenuTreeNode.Tag, FolderInfo).ArtifactID, _application.SelectedCaseInfo)
-		End Sub
-
 		Private Sub ExportFolder_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles ExportFolder.Click
 			_application.NewSearchExport(CType(_contextMenuTreeNode.Tag, FolderInfo).ArtifactID, _application.SelectedCaseInfo, ExportFile.ExportType.ParentSearch)
 		End Sub

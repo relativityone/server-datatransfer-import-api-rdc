@@ -936,15 +936,6 @@ Namespace kCura.EDDS.WinForm
 			frm.Show()
 		End Sub
 
-		Public Sub NewSQLImport(ByVal destinationArtifactID As Int32, ByVal caseInfo As Relativity.CaseInfo)
-			Dim frm As New SQLImportForm
-			Dim sQLImportSettings As New SQLImportSettings
-			sQLImportSettings.DestinationFolderID = destinationArtifactID
-			sQLImportSettings.CaseInfo = caseInfo
-			frm.SQLImportSettings = sQLImportSettings
-			frm.Show()
-		End Sub
-
 		Public Sub NewImageFile(ByVal destinationArtifactID As Int32, ByVal caseinfo As Relativity.CaseInfo)
 			CursorWait()
 			If Not Me.IsConnected(caseinfo.ArtifactID, Me.ArtifactTypeID) Then
@@ -1162,23 +1153,6 @@ Namespace kCura.EDDS.WinForm
 			frm.Show()
 			CursorDefault()
 			Return _processPool.StartProcess(importer)
-		End Function
-
-		Public Function ImportSQL(ByVal sqlimportsettings As SQLImportSettings) As Guid
-			CursorWait()
-			If Not Me.IsConnected(_selectedCaseInfo.ArtifactID, ArtifactTypeID) Then
-				CursorDefault()
-				Exit Function
-			End If
-			Dim frm As New kCura.Windows.Process.ProgressForm
-			Dim imporProcess As New kCura.WinEDDS.SQLImportProcess
-			imporProcess.SQLImportSettings = sqlimportsettings
-			frm.ProcessObserver = imporProcess.ProcessObserver
-			frm.ProcessController = imporProcess.ProcessController
-			frm.Text = "Import SQL Progress ..."
-			frm.Show()
-			CursorDefault()
-			Return _processPool.StartProcess(imporProcess)
 		End Function
 
 		Public Function ImportLoadFile(ByVal loadFile As LoadFile) As Guid
