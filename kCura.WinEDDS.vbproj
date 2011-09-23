@@ -434,15 +434,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Importers\OpticonFileReader.vb" />
-    <Compile Include="Importers\SQL\SQLImporter.vb">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Importers\SQL\SQLImportProcess.vb">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Importers\SQL\SQLImportSettings.vb">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="My Project\Settings.Designer.vb">
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
