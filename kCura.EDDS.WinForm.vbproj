@@ -408,9 +408,6 @@
     <Compile Include="Forms\SetWebServiceURL.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\SQLImportForm.vb">
-      <SubType>Form</SubType>
-    </Compile>
     <Compile Include="Forms\TextDisplayForm.vb">
       <SubType>Form</SubType>
     </Compile>
@@ -496,9 +493,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\SetWebServiceURL.resx">
       <DependentUpon>SetWebServiceURL.vb</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\SQLImportForm.resx">
-      <DependentUpon>SQLImportForm.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\TextDisplayForm.resx">
       <DependentUpon>TextDisplayForm.vb</DependentUpon>
