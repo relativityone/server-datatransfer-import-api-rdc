@@ -182,8 +182,8 @@ Namespace kCura.Relativity.DataReaderClient
 		End Sub
 
 		Private Sub ValidateOverwriteModeSettings()
-			If Settings.OverwriteMode = OverwriteModeEnum.Overlay AndAlso String.IsNullOrWhiteSpace(Settings.OverlayIdentifierSourceFieldName) Then
-				Throw New ImportSettingsException("OverlayIdentifier", "When Overwrite Mode is set to Overlay, then the Overlay Identifier Field must be set.")
+			If Settings.OverwriteMode = OverwriteModeEnum.Overlay AndAlso Settings.IdentityFieldId < 1 Then
+				Throw New ImportSettingsException("IdentityFieldId", "When OverwriteMode is set to Overlay, then the IdentityFieldId must be set.")
 			End If
 		End Sub
 
