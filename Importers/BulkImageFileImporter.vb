@@ -836,9 +836,21 @@ Namespace kCura.WinEDDS
 				moretobefoundMessage.Add("Message", "Maximum number of errors for display reached.  Export errors to view full list.")
 				RaiseEvent ReportErrorEvent(moretobefoundMessage)
 			End If
-			errorMessageFileWriter.WriteLine(String.Format("""{1}{0}{2}{0}{3}{0}{4}""", """,""", row("Line Number").ToString, row("DocumentID").ToString, row("FileID").ToString, row("Messages").ToString))
+			errorMessageFileWriter.WriteLine(String.Format("{0},{1},{2},{3}", CSVFormat(row("Line Number").ToString), CSVFormat(row("DocumentID").ToString), CSVFormat(row("FileID").ToString), CSVFormat(row("Messages").ToString)))
 			errorMessageFileWriter.Close()
 		End Sub
+
+		''' <summary>
+		''' CSVFormat will take in a string, replace a double quote characters with a pair of double quote characters, then surround the string with double quote characters
+		''' This preps it for being written as a field in a CSV file
+		''' </summary>
+		''' <param name="fieldValue">The string to convert to CSV format</param>
+		''' <returns>the converted data</returns>
+		''' <remarks></remarks>
+		Private Function CSVFormat(ByVal fieldValue As String) As String
+			Return ControlChars.Quote + fieldValue.Replace(ControlChars.Quote, ControlChars.Quote + ControlChars.Quote) + ControlChars.Quote
+		End Function
+
 
 		Private Sub _uploader_UploadModeChangeEvent(ByVal mode As String, ByVal isBulkEnabled As Boolean) Handles _fileUploader.UploadModeChangeEvent
 			RaiseEvent UploadModeChangeEvent(mode, _bcpuploader.IsBulkEnabled)

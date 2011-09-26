@@ -1,5 +1,6 @@
 Imports kCura.EDDS.WebAPI.BulkImportManagerBase
 Imports Relativity.MassImport
+Imports Microsoft.VisualBasic
 
 Namespace kCura.WinEDDS
 	Public Class BulkLoadFileImporter
@@ -1237,9 +1238,20 @@ Namespace kCura.WinEDDS
 				moretobefoundMessage.Add("Message", "Maximum number of errors for display reached.  Export errors to view full list.")
 				RaiseEvent ReportErrorEvent(moretobefoundMessage)
 			End If
-			errorMessageFileWriter.WriteLine("""" & row("Line Number").ToString & """,""" & row("Message").ToString & """,""" & identifier & """,""" & type & """")
+			errorMessageFileWriter.WriteLine(String.Format("{0},{1},{2},{3}", CSVFormat(row("Line Number").ToString), CSVFormat(row("Message").ToString), CSVFormat(identifier), CSVFormat(type)))
 			errorMessageFileWriter.Close()
 		End Sub
+
+		''' <summary>
+		''' CSVFormat will take in a string, replace a double quote characters with a pair of double quote characters, then surround the string with double quote characters
+		''' This preps it for being written as a field in a CSV file
+		''' </summary>
+		''' <param name="fieldValue">The string to convert to CSV format</param>
+		''' <returns>the converted data</returns>
+		''' <remarks></remarks>
+		Private Function CSVFormat(ByVal fieldValue As String) As String
+			Return ControlChars.Quote + fieldValue.Replace(ControlChars.Quote, ControlChars.Quote + ControlChars.Quote) + ControlChars.Quote
+		End Function
 
 		Private Sub WriteWarning(ByVal line As String)
 			WriteStatusLine(kCura.Windows.Process.EventType.Warning, line)
