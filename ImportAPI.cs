@@ -61,26 +61,10 @@ namespace kCura.Relativity.ImportAPI
 			var wsds = cm.RetrieveAll();
 			var dt = wsds.Tables[0];
 
-			var workspaces = new List<Workspace>();
-
-			foreach (DataRow row in dt.Rows)
-			{
-				var ws = new Workspace
-				         	{
-				         		ArtifactID = (int)row["ArtifactID"],
-				         		DocumentPath = (String)row["DefaultFileLocationName"],
-				         		DownloadHandlerURL = (String)row["DownloadHandlerApplicationPath"],
-				         		MatterArtifactID = (int)row["MatterArtifactID"],
-				         		Name = (String)row["Name"],
-				         		RootArtifactID = (int)row["RootArtifactID"],
-				         		RootFolderID = (int)row["RootFolderID"],
-				         		StatusCodeArtifactID = (int)row["StatusCodeArtifactID"]
-				         	};
-
-				workspaces.Add(ws);
-			}
-
-			return workspaces;
+			return dt.Rows.OfType<DataRow>().Select(row => new Workspace 
+				{ ArtifactID = (int)row["ArtifactID"], DocumentPath = (String)row["DefaultFileLocationName"], DownloadHandlerURL = (String)row["DownloadHandlerApplicationPath"], 
+					MatterArtifactID = (int)row["MatterArtifactID"], Name = (String)row["Name"], RootArtifactID = (int)row["RootArtifactID"], 
+					RootFolderID = (int)row["RootFolderID"], StatusCodeArtifactID = (int)row["StatusCodeArtifactID"] }).ToList();
 		}
 
 		/// <summary>
