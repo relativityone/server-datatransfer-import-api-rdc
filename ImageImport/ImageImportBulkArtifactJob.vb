@@ -1,20 +1,48 @@
+Imports System.Runtime.CompilerServices
+Imports System.Net
+
+
 Namespace kCura.Relativity.DataReaderClient
+
 	Public Class ImageImportBulkArtifactJob
+
+
 
 #Region " Public Events and Variables "
 
 		Public Event OnMessage(ByVal status As Status)
 		Public Event OnError(ByVal row As IDictionary)
 
-		Public Settings As ImageSettings
-		Public SourceData As ImageSourceIDataReader
-		
+
+		Public Property Settings As ImageSettings
+			Get
+				Return _settings
+			End Get
+			Private Set(value As ImageSettings)
+				_settings = value
+			End Set
+		End Property
+
+
+
+		Public Property SourceData As ImageSourceIDataReader
+			Get
+				Return _sourceData
+			End Get
+			Private Set(value As ImageSourceIDataReader)
+				_sourceData = value
+			End Set
+		End Property
+
 #End Region
 
 #Region " Private variables "
 		Private WithEvents _observer As kCura.Windows.Process.ProcessObserver
-		Private cookieMonster As New Net.CookieContainer
 		Private _controller As kCura.Windows.Process.Controller
+		Private _settings As ImageSettings
+		Private _sourceData As ImageSourceIDataReader
+		Private _credentials As ICredentials
+		Private _cookieMonster As Net.CookieContainer
 
 #End Region
 
@@ -23,7 +51,18 @@ Namespace kCura.Relativity.DataReaderClient
 		Public Sub New()
 			Me.Settings = New ImageSettings
 			Me.SourceData = New ImageSourceIDataReader
+			_cookieMonster = New Net.CookieContainer()
 		End Sub
+
+		Friend Sub New(ByVal credentials As ICredentials, ByVal cookieMonster As Net.CookieContainer, ByVal relativityUserName As String, ByVal password As String)
+			Me.New()
+			_credentials = credentials
+			_cookieMonster = cookieMonster
+			Settings.RelativityUsername = relativityUserName
+			Settings.RelativityPassword = password
+
+		End Sub
+
 
 		Public Sub Execute()
 			If IsSettingsValid() Then
@@ -73,7 +112,12 @@ Namespace kCura.Relativity.DataReaderClient
 		End Sub
 
 		Private Function CreateLoadFile() As WinEDDS.ImageLoadFile
-			Dim credential As System.Net.NetworkCredential = DirectCast(GetCredentials(Settings), Net.NetworkCredential)
+
+			Dim credential As System.Net.NetworkCredential = DirectCast(_credentials, Net.NetworkCredential)
+			If credential Is Nothing Then
+				credential = DirectCast(GetCredentials(Settings), Net.NetworkCredential)
+			End If
+
 			Dim casemanager As kCura.WinEDDS.Service.CaseManager = GetCaseManager(credential)
 			Dim tempLoadFile As New kCura.WinEDDS.ImageLoadFile
 			'tempLoadFile.DataTable = SourceData.SourceData
@@ -83,7 +127,7 @@ Namespace kCura.Relativity.DataReaderClient
 			tempLoadFile.CaseInfo = casemanager.Read(Settings.CaseArtifactId)
 			'tempLoadFile.ControlKeyField = "Identifier"
 			tempLoadFile.Credential = credential
-			tempLoadFile.CookieContainer = cookieMonster
+			tempLoadFile.CookieContainer = _cookieMonster
 			tempLoadFile.CopyFilesToDocumentRepository = Settings.CopyFilesToDocumentRepository
 			tempLoadFile.DestinationFolderID = tempLoadFile.CaseInfo.RootFolderID
 			tempLoadFile.ForProduction = Settings.ForProduction
@@ -121,7 +165,7 @@ Namespace kCura.Relativity.DataReaderClient
 
 		Private Function GetDefaultIdentifierFieldID(ByVal credential As System.Net.NetworkCredential, ByVal caseArtifactID As Int32) As Int32
 			Dim retval As Int32
-			Dim dt As System.Data.DataTable = New kCura.WinEDDS.Service.FieldQuery(credential, cookieMonster).RetrievePotentialBeginBatesFields(caseArtifactID).Tables(0)
+			Dim dt As System.Data.DataTable = New kCura.WinEDDS.Service.FieldQuery(credential, _cookieMonster).RetrievePotentialBeginBatesFields(caseArtifactID).Tables(0)
 			For Each identifierRow As System.Data.DataRow In dt.Rows
 				If CType(identifierRow("FieldCategoryID"), Global.Relativity.FieldCategory) = Global.Relativity.FieldCategory.Identifier Then
 					retval = CType(identifierRow("ArtifactID"), Int32)
@@ -131,20 +175,20 @@ Namespace kCura.Relativity.DataReaderClient
 		End Function
 
 		Private Function GetCaseManager(ByVal credentials As Net.ICredentials) As kCura.WinEDDS.Service.CaseManager
-			Return New kCura.WinEDDS.Service.CaseManager(credentials, cookieMonster)
+			Return New kCura.WinEDDS.Service.CaseManager(credentials, _cookieMonster)
 		End Function
 
 		Private Function GetCredentials(ByVal settings As ImageSettings) As System.Net.ICredentials
 			Dim credential As System.Net.ICredentials = Nothing
 			If credential Is Nothing Then
 				Try
-					credential = kCura.WinEDDS.Api.LoginHelper.LoginWindowsAuth(cookieMonster)
+					credential = kCura.WinEDDS.Api.LoginHelper.LoginWindowsAuth(_cookieMonster)
 				Catch
 				End Try
 			End If
 
 			While credential Is Nothing
-				credential = kCura.WinEDDS.Api.LoginHelper.LoginUsernamePassword(settings.RelativityUsername, settings.RelativityPassword, cookieMonster)
+				credential = kCura.WinEDDS.Api.LoginHelper.LoginUsernamePassword(settings.RelativityUsername, settings.RelativityPassword, _cookieMonster)
 				Exit While
 			End While
 			Return credential
@@ -170,12 +214,16 @@ Namespace kCura.Relativity.DataReaderClient
 		End Function
 
 		Private Sub ValidateRelativitySettings()
-			If Settings.RelativityUsername Is Nothing OrElse Settings.RelativityUsername = String.Empty Then
-				Throw New ImportSettingsException("RelativityUserName")
+			If Not _credentials Is Nothing Then
+				' using the new ImportAPI class, credentials will be passed in automatically.  In that case, the username and password will be ignored and the original credentials will be used.
+				If Settings.RelativityUsername Is Nothing OrElse Settings.RelativityUsername = String.Empty Then
+					Throw New ImportSettingsException("RelativityUserName")
+				End If
+				If Settings.RelativityPassword Is Nothing OrElse Settings.RelativityPassword = String.Empty Then
+					Throw New ImportSettingsException("RelativityPassword")
+				End If
 			End If
-			If Settings.RelativityPassword Is Nothing OrElse Settings.RelativityPassword = String.Empty Then
-				Throw New ImportSettingsException("RelativityPassword")
-			End If
+
 			If Settings.CaseArtifactId <= 0 Then
 				Throw New ImportSettingsException("CaseArtifactId", "This must be the ID of an existing case.")
 			End If
@@ -238,7 +286,7 @@ Namespace kCura.Relativity.DataReaderClient
 		''' <param name="filePathAndName">Specify a full path and filename which will contain the output.</param>
 		''' <remarks></remarks>
 		Public Sub ExportErrorReport(ByVal filePathAndName As String)
-			_controller.ExportErrorReport(FilePathAndName)
+			_controller.ExportErrorReport(filePathAndName)
 		End Sub
 
 
