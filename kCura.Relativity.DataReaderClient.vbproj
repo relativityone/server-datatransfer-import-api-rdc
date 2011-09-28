@@ -180,6 +180,7 @@
     <Compile Include="..\..\Version\AssemblyInfo.vb">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="AssemblyInfoLocal.vb" />
     <Compile Include="Enum.vb">
       <SubType>Code</SubType>
     </Compile>
@@ -225,7 +226,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="My Project\" />
-    <Folder Include="NativeImport\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\kCura\kCura.Windows.Process\kCura.Windows.Process.vbproj">

@@ -1,3 +1,5 @@
+Imports System.Net
+
 Namespace kCura.Relativity.DataReaderClient
 	Public Class ImportBulkArtifactJob
 		Inherits LoadFileJobBase
@@ -6,6 +8,9 @@ Namespace kCura.Relativity.DataReaderClient
 		Private _bulkLoadFileFieldDelimiter As String
 		Private ReadOnly _controlNumberFieldName As String
 		Private _docIDFieldCollection As WinEDDS.DocumentField()
+		Private _credentials As ICredentials
+		Private _cookieMonster As Net.CookieContainer
+
 #End Region
 
 #Region "Constructors"
@@ -19,6 +24,13 @@ Namespace kCura.Relativity.DataReaderClient
 
 			_bulkLoadFileFieldDelimiter = Global.Relativity.Constants.DEFAULT_FIELD_DELIMITER
 		End Sub
+
+		Friend Sub New(ByVal relativityUserName As String, ByVal password As String)
+			Me.New()
+			Settings.RelativityUsername = relativityUserName
+			Settings.RelativityPassword = password
+		End Sub
+
 #End Region
 
 #Region "Events"
@@ -374,7 +386,7 @@ Namespace kCura.Relativity.DataReaderClient
 			Get
 				Return CType(_nativeSettings, Settings)
 			End Get
-			Set(value As Settings)
+			Private Set(value As Settings)
 				_nativeSettings = value
 			End Set
 		End Property
@@ -383,7 +395,7 @@ Namespace kCura.Relativity.DataReaderClient
 			Get
 				Return _nativeDataReader
 			End Get
-			Set(value As SourceIDataReader)
+			Private Set(value As SourceIDataReader)
 				_nativeDataReader = value
 			End Set
 		End Property
