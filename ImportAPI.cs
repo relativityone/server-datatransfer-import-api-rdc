@@ -4,6 +4,7 @@ using System.Data;
 using System.Linq;
 using System.Net;
 using System.Text;
+using kCura.Relativity.ImportAPI.Data;
 using kCura.WinEDDS;
 using kCura.WinEDDS.Service;
 using kCura.Relativity.DataReaderClient;
@@ -61,23 +62,30 @@ namespace kCura.Relativity.ImportAPI
 			var wsds = cm.RetrieveAll();
 			var dt = wsds.Tables[0];
 
+			// to-do:  maybe add an enumeration for artifact type IDs
 			return dt.Rows.OfType<DataRow>().Select(row => new Workspace 
 				{ ArtifactID = (int)row["ArtifactID"], DocumentPath = (String)row["DefaultFileLocationName"], DownloadHandlerURL = (String)row["DownloadHandlerApplicationPath"], 
 					MatterArtifactID = (int)row["MatterArtifactID"], Name = (String)row["Name"], RootArtifactID = (int)row["RootArtifactID"], 
-					RootFolderID = (int)row["RootFolderID"], StatusCodeArtifactID = (int)row["StatusCodeArtifactID"] }).ToList();
+					RootFolderID = (int)row["RootFolderID"], StatusCodeArtifactID = (int)row["StatusCodeArtifactID"], ArtifactTypeId = 8, 
+					ParentArtifactID = (int)row["ParentArtifactID"] }).ToList();
 		}
 
 		/// <summary>
 		/// Given a workspace artifact ID, and an artifact type ID, the fields that apply to that artifact type will be returned.
 		/// </summary>
-		/// <param name="WorkspaceArtifactID"></param>
-		/// <param name="ArtifactTypeID"></param>
+		/// <param name="workspaceArtifactID"></param>
+		/// <param name="artifactTypeID"></param>
 		/// <returns></returns>
-		public DocumentFieldCollection GetWorkspaceFields(int WorkspaceArtifactID, int ArtifactTypeID)
+		public IEnumerable<Field> GetWorkspaceFields(int workspaceArtifactID, int artifactTypeID)
 		{
 			var fm = new WinEDDS.Service.FieldManager(_credentials, _cookieMonster);
-			return fm.Query.RetrieveAllAsDocumentFieldCollection(WorkspaceArtifactID, ArtifactTypeID);
+			var fields = fm.Query.RetrieveAllAsDocumentFieldCollection(workspaceArtifactID, artifactTypeID);
 
+			return (from DocumentField docfield in fields
+			        select new Field
+			               	{
+			               		ArtifactID = docfield.FieldID, ArtifactTypeId = docfield.FieldTypeID, Name = docfield.FieldName, FieldLength = docfield.FieldLength, FieldTypeID = docfield.FieldTypeID, AssociatedObjectTypeID = docfield.AssociatedObjectTypeID, UseUnicode = docfield.UseUnicode
+			               	}).ToList();
 		}
 
 

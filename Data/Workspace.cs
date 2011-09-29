@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace kCura.Relativity.ImportAPI
+namespace kCura.Relativity.ImportAPI.Data
 {
 	/// <summary>
 	/// Representation of a workspace
 	/// </summary>
-	public class Workspace
+	public class Workspace : Artifact
 	{
 
 		internal Workspace()
@@ -16,12 +16,6 @@ namespace kCura.Relativity.ImportAPI
 		}
 
 
-		public int ArtifactID
-		{
-			get; internal set;
-		}
-
-		public String Name { get; internal set; }
 
 		public int MatterArtifactID { get; internal set; }
 
@@ -35,9 +29,5 @@ namespace kCura.Relativity.ImportAPI
 
 		public String DocumentPath { get; internal set; }
 
-		public override String ToString()
-		{
-			return Name;
-		}
 	}
 }
