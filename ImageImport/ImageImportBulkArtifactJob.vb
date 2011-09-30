@@ -18,7 +18,8 @@ Namespace kCura.Relativity.DataReaderClient
 			Get
 				Return _settings
 			End Get
-			Private Set(value As ImageSettings)
+			<Obsolete("Assigning a value to the 'Settings' property is being phased out.  Please use the existing value of the property.")>
+			Set(value As ImageSettings)
 				_settings = value
 			End Set
 		End Property
@@ -29,7 +30,8 @@ Namespace kCura.Relativity.DataReaderClient
 			Get
 				Return _sourceData
 			End Get
-			Private Set(value As ImageSourceIDataReader)
+			<Obsolete("Assigning a value to the 'SourceData' property is being phased out.  Please use the existing value of the property.")>
+			Set(value As ImageSourceIDataReader)
 				_sourceData = value
 			End Set
 		End Property
@@ -49,8 +51,8 @@ Namespace kCura.Relativity.DataReaderClient
 #Region " Public Methods "
 
 		Public Sub New()
-			Me.Settings = New ImageSettings
-			Me.SourceData = New ImageSourceIDataReader
+			_settings = New ImageSettings
+			_sourceData = New ImageSourceIDataReader
 			_cookieMonster = New Net.CookieContainer()
 		End Sub
 
