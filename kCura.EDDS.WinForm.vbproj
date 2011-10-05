@@ -528,7 +528,7 @@
     <PreBuildEvent>
     </PreBuildEvent>
     <PostBuildEvent>if "$(ConfigurationName)" == "Release" goto :eof
-copy /Y "$(ProjectDir)..\..\Vendor\FreeImage\3.130\FreeImage\Release\$(PlatformName)\FreeImage.dll" "$(TargetDir)"
+copy /Y "$(ProjectDir)..\..\Vendor\FreeImage\3.151\FreeImage\Release\$(PlatformName)\FreeImage.dll" "$(TargetDir)"
 copy /Y "$(ProjectDir)..\..\Vendor\Oracle\OutsideIn\8.3.5\$(PlatformName)\FileID\redist\*" "$(TargetDir)"
 mkdir "$(TargetDir)documents"
 copy /Y "$(ProjectDir)\documents\*" "$(TargetDir)documents\"</PostBuildEvent>
