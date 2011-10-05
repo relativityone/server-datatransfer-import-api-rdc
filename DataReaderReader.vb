@@ -253,7 +253,7 @@ Namespace kCura.WinEDDS.ImportExtension
 							'This is a special field
 							mappedFields = String.Concat(mappedFields, String.Format(fieldMapRow, _reader.GetName(i).ToLower, "*NativeFilePath*"))
 						Else
-							mappedFields = String.Concat(mappedFields, String.Format(fieldMapRow, _reader.GetName(i).ToLower, "NOT MAPPED"))
+							mappedFields = String.Concat(mappedFields, String.Format(fieldMapRow, _reader.GetName(i).ToLower, "NOT MAPPED (Target field not found)"))
 						End If
 					End If
 				Else
