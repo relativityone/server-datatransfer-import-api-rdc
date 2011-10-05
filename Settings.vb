@@ -49,6 +49,8 @@ Namespace kCura.Relativity.DataReaderClient
 		''' </summary>
 		Public Property NestedValueDelimiter() As Char
 
+		'TODO: This shouldn't be used as a progress indicator in ImportBulkArtifactJob
+		' -Phil S. 10/04/11
 		''' <summary>
 		''' '
 		''' </summary>

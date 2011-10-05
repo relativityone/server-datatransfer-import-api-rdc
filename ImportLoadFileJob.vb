@@ -230,6 +230,8 @@ Namespace kCura.Relativity.DataReaderClient
 					End If
 				End If
 
+				'TODO: EVIL!!!!!!! These following 2 If-Else-EndIf blocks are identical.
+				' -Phil S. 10/04/11
 				If Not clientSettings.ParentObjectIdSourceFieldName = String.Empty Then
 					.ParentInfoContainedInColumn = clientSettings.ParentObjectIdSourceFieldName
 					.CreateFolderStructure = True
