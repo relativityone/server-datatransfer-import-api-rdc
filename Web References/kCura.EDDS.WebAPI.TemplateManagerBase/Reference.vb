@@ -1412,6 +1412,9 @@ Namespace kCura.EDDS.WebAPI.TemplateManagerBase
         
         '''<remarks/>
         Script
+        
+        '''<remarks/>
+        Instance
     End Enum
     
     '''<remarks/>
@@ -1705,6 +1708,8 @@ Namespace kCura.EDDS.WebAPI.TemplateManagerBase
      System.Xml.Serialization.XmlTypeAttribute([Namespace]:="http://www.kCura.com/EDDS/TemplateManager")>  _
     Partial Public Class ApplicationInstallationResult
         
+        Private applicationArtifactIDField As Integer
+        
         Private messageField As String
         
         Private detailsField As String
@@ -1722,6 +1727,16 @@ Namespace kCura.EDDS.WebAPI.TemplateManagerBase
         Private workspaceIDField As Integer
         
         Private workspaceNameField As String
+        
+        '''<remarks/>
+        Public Property ApplicationArtifactID() As Integer
+            Get
+                Return Me.applicationArtifactIDField
+            End Get
+            Set
+                Me.applicationArtifactIDField = value
+            End Set
+        End Property
         
         '''<remarks/>
         Public Property Message() As String

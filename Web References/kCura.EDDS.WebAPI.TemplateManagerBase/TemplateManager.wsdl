@@ -37,6 +37,7 @@
       </s:element>
       <s:complexType name="ApplicationInstallationResult">
         <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="ApplicationArtifactID" type="s:int" />
           <s:element minOccurs="0" maxOccurs="1" name="Message" type="s:string" />
           <s:element minOccurs="0" maxOccurs="1" name="Details" type="s:string" />
           <s:element minOccurs="0" maxOccurs="1" name="NewApplicationArtifacts" type="tns:ArrayOfApplicationArtifact" />
@@ -85,6 +86,7 @@
           <s:enumeration value="Tab" />
           <s:enumeration value="View" />
           <s:enumeration value="Script" />
+          <s:enumeration value="Instance" />
         </s:restriction>
       </s:simpleType>
       <s:simpleType name="StatusCode">
