@@ -750,7 +750,7 @@ Namespace kCura.EDDS.WinForm
 
 			'Do the import
 			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
-			_Application.ImportApplicationFile(_caseInfos, _document, {}, resolveArtifactCaseList.ToArray())
+			_Application.ImportApplicationFile(_caseInfos, _document, New Int32() {}, resolveArtifactCaseList.ToArray())
 			Me.Cursor = System.Windows.Forms.Cursors.Default
 		End Sub
 
