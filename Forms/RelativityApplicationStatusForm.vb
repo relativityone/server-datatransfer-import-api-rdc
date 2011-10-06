@@ -284,51 +284,53 @@ Public Class RelativityApplicationStatusForm
 		failedTable.Columns.Add(ArtifcactSelectedResolutionColumnName, GetType(String))
 
 		Dim index As Int32 = 0
-		For Each art As TemplateManagerBase.ApplicationArtifact In result.StatusApplicationArtifacts
-			Dim parentName As String = ""
-			Dim conflictName As String = ""
-			Dim conflictID As Integer = Nothing
-			Dim conflictApps As New System.Text.StringBuilder()
-			Dim conflictAppIDs As New Generic.List(Of Int32)
+		If result.StatusApplicationArtifacts IsNot Nothing Then
+			For Each art As TemplateManagerBase.ApplicationArtifact In result.StatusApplicationArtifacts
+				Dim parentName As String = ""
+				Dim conflictName As String = ""
+				Dim conflictID As Integer = Nothing
+				Dim conflictApps As New System.Text.StringBuilder()
+				Dim conflictAppIDs As New Generic.List(Of Int32)
 
-			If art.ParentArtifact IsNot Nothing Then
-				parentName = art.ParentArtifact.Name
-			End If
-
-			If art.ConflictArtifact IsNot Nothing Then
-				conflictID = art.ConflictArtifact.ArtifactId
-				conflictName = art.ConflictArtifact.Name
-				If art.ConflictArtifact.Applications IsNot Nothing Then
-					Dim sepString As String = ""
-					For Each app As TemplateManagerBase.Application In art.ConflictArtifact.Applications
-						conflictApps.Append(sepString)
-						conflictApps.Append(app.Name)
-						sepString = ", "
-
-						conflictAppIDs.Add(app.ID)
-					Next
+				If art.ParentArtifact IsNot Nothing Then
+					parentName = art.ParentArtifact.Name
 				End If
-			End If
 
-			failedTable.Rows.Add(New Object() { _
-			 StatusToString(art.Status, conflictApps.ToString), _
-			 art.Status,
-			 art.IsMappable, _
-			 art.Name, _
-			 art.ArtifactId, _
-			 art.Guids, _
-			 parentName, _
-			 TypeToString(art.Type), _
-			 art.Type, _
-			 conflictApps, _
-			 conflictAppIDs.ToArray(), _
-			 conflictName, _
-			 conflictName, _
-			 conflictID, _
-			 art.StatusMessage, _
-			 index})
-			index += 1
-		Next
+				If art.ConflictArtifact IsNot Nothing Then
+					conflictID = art.ConflictArtifact.ArtifactId
+					conflictName = art.ConflictArtifact.Name
+					If art.ConflictArtifact.Applications IsNot Nothing Then
+						Dim sepString As String = ""
+						For Each app As TemplateManagerBase.Application In art.ConflictArtifact.Applications
+							conflictApps.Append(sepString)
+							conflictApps.Append(app.Name)
+							sepString = ", "
+
+							conflictAppIDs.Add(app.ID)
+						Next
+					End If
+				End If
+
+				failedTable.Rows.Add(New Object() { _
+				 StatusToString(art.Status, conflictApps.ToString), _
+				 art.Status,
+				 art.IsMappable, _
+				 art.Name, _
+				 art.ArtifactId, _
+				 art.Guids, _
+				 parentName, _
+				 TypeToString(art.Type), _
+				 art.Type, _
+				 conflictApps, _
+				 conflictAppIDs.ToArray(), _
+				 conflictName, _
+				 conflictName, _
+				 conflictID, _
+				 art.StatusMessage, _
+				 index})
+				index += 1
+			Next
+		End If
 
 		Return failedTable
 	End Function
