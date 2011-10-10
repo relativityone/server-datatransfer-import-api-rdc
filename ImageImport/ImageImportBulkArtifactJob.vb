@@ -283,6 +283,18 @@ Namespace kCura.Relativity.DataReaderClient
 				retval.Append(vbNewLine)
 			Next
 			RaiseEvent OnMessage(New Status(retval.ToString))
+
+			' slm 10/10/2011 - really?  these are called "Messages" and "Line Number"?  These are different names than for the native document import.
+
+			Dim msg As String = row.Item("Messages").ToString
+			Dim lineNumbObj As Object = row.Item("Line Number")
+			Dim lineNum As Long = 0
+			If Not lineNumbObj Is Nothing Then
+				lineNum = DirectCast(lineNumbObj, Int32)
+			End If
+
+			_jobReport.ErrorRows.Add(New JobReport.RowError(lineNum, msg))
+
 		End Sub
 
 		Private Sub _observer_OnProcessComplete(ByVal closeForm As Boolean, ByVal exportFilePath As String, ByVal exportLogs As Boolean) Handles _observer.OnProcessComplete
