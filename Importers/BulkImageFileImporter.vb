@@ -205,10 +205,11 @@ Namespace kCura.WinEDDS
 		Protected Overridable Sub InitializeDTOs(ByVal args As ImageLoadFile)
 			Dim fieldManager As FieldManager = New kCura.WinEDDS.Service.FieldManager(args.Credential, args.CookieContainer)
 
-			If _productionArtifactID <> 0 Then
+			' slm- 10/10/2011 - fixed both of these to check for ID greater than zero
+			If _productionArtifactID > 0 Then
 				_productionDTO = _productionManager.Read(args.CaseInfo.ArtifactID, _productionArtifactID)
 				_keyFieldDto = fieldManager.Read(args.CaseInfo.ArtifactID, args.BeginBatesFieldArtifactID)
-			ElseIf args.IdentityFieldId <> -1 Then
+			ElseIf args.IdentityFieldId > 0 Then
 				_keyFieldDto = fieldManager.Read(args.CaseInfo.ArtifactID, args.IdentityFieldId)
 			Else
 				Dim fieldID As Int32 = _fieldQuery.RetrieveAllAsDocumentFieldCollection(args.CaseInfo.ArtifactID, Relativity.ArtifactType.Document).IdentifierFields(0).FieldID
@@ -1054,7 +1055,13 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Private Sub _processController_ExportErrorReportEvent(ByVal exportLocation As String) Handles _processController.ExportErrorReportEvent
-			If _errorMessageFileLocation Is Nothing Then Exit Sub
+			If String.IsNullOrEmpty(_errorMessageFileLocation) Then
+				' write out a blank file if there is no error message file
+				Dim fileWriter As StreamWriter = System.IO.File.CreateText(exportLocation)
+				fileWriter.Close()
+
+				Exit Sub
+			End If
 			Try
 				If System.IO.File.Exists(_errorMessageFileLocation) Then System.IO.File.Copy(_errorMessageFileLocation, exportLocation, True)
 			Catch ex As Exception

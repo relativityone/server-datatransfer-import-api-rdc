@@ -90,6 +90,7 @@ Namespace kCura.WinEDDS
 				Case kCura.Windows.Process.EventType.Progress
 					Me.ProcessObserver.RaiseStatusEvent(e.CurrentRecordIndex.ToString, e.Message)
 					Me.ProcessObserver.RaiseProgressEvent(e.TotalRecords, e.CurrentRecordIndex, _warningCount, _errorCount, _startTime, New System.DateTime, Nothing, Nothing, additionalInfo)
+					Me.ProcessObserver.RaiseRecordProcessed(e.CurrentRecordIndex)
 				Case kCura.Windows.Process.EventType.Status
 					Me.ProcessObserver.RaiseStatusEvent(e.CurrentRecordIndex.ToString, e.Message)
 				Case kCura.Windows.Process.EventType.Warning

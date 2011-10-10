@@ -1,3 +1,4 @@
+Imports System.IO
 Imports kCura.EDDS.WebAPI.BulkImportManagerBase
 Imports Relativity.MassImport
 Imports Microsoft.VisualBasic
@@ -10,7 +11,6 @@ Namespace kCura.WinEDDS
 		Private _overwrite As String
 		Private WithEvents _uploader As kCura.WinEDDS.FileUploader
 		Private WithEvents _bcpuploader As kCura.WinEDDS.FileUploader
-		'Private _textUploader As kCura.WinEDDS.FileUploader
 		Private _path As String
 		Private _pathIsSet As Boolean = False
 		Private _selectedIdentifier As DocumentField
@@ -282,6 +282,9 @@ Namespace kCura.WinEDDS
 		''' is <c>null</c> or <c>String.Empty</c>.</exception>
 		Public Sub New(ByVal args As LoadFile, ByVal processController As kCura.Windows.Process.Controller, ByVal timeZoneOffset As Int32, ByVal autoDetect As Boolean, ByVal initializeUploaders As Boolean, ByVal processID As Guid, ByVal doRetryLogic As Boolean, ByVal bulkLoadFileFieldDelimiter As String)
 			MyBase.New(args, timeZoneOffset, doRetryLogic, autoDetect)
+
+			' get an instance of the specific type of artifact reader so we can get the fieldmapped event
+
 			_overwrite = args.OverwriteDestination
 			If args.CopyFilesToDocumentRepository Then
 				_defaultDestinationFolderPath = args.SelectedCasePath & "EDDS" & args.CaseInfo.ArtifactID & "\"
@@ -1229,7 +1232,10 @@ Namespace kCura.WinEDDS
 
 		Private Sub RaiseReportError(ByVal row As System.Collections.Hashtable, ByVal lineNumber As Int32, ByVal identifier As String, ByVal type As String)
 			_errorCount += 1
-			If _errorMessageFileLocation = "" Then _errorMessageFileLocation = System.IO.Path.GetTempFileName
+			If String.IsNullOrEmpty(_errorMessageFileLocation) Then
+				_errorMessageFileLocation = System.IO.Path.GetTempFileName
+			End If
+
 			Dim errorMessageFileWriter As New System.IO.StreamWriter(_errorMessageFileLocation, True, System.Text.Encoding.Default)
 			If _errorCount < BulkLoadFileImporter.MaxNumberOfErrorsInGrid Then
 				RaiseEvent ReportErrorEvent(row)
@@ -1285,6 +1291,7 @@ Namespace kCura.WinEDDS
 
 		Public Event ReportErrorEvent(ByVal row As System.Collections.IDictionary)
 		Public Event DataSourcePrepEvent(ByVal e As Api.DataSourcePrepEventArgs)
+		Public Event FieldMapped(ByVal sourceField As String, ByVal workspaceField As String)
 
 #End Region
 
@@ -1341,7 +1348,15 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Private Sub _processController_ExportErrorReportEvent(ByVal exportLocation As String) Handles _processController.ExportErrorReportEvent
-			If _errorMessageFileLocation Is Nothing OrElse _errorMessageFileLocation = "" Then Exit Sub
+			If String.IsNullOrEmpty(_errorMessageFileLocation) Then
+				' write out a blank file if there is no error message file
+				Dim fileWriter As StreamWriter = System.IO.File.CreateText(exportLocation)
+				fileWriter.Close()
+
+				Exit Sub
+			End If
+
+			' not sure why the following is done twice.  It seems silly.
 			Try
 				System.IO.File.Copy(_errorMessageFileLocation, exportLocation, True)
 			Catch ex As Exception
@@ -1436,6 +1451,12 @@ Namespace kCura.WinEDDS
 			RaiseEvent StatusMessage(New kCura.Windows.Process.StatusEventArgs(Windows.Process.EventType.Status, _artifactReader.CurrentLineNumber, _recordCount, message, False, _currentStatisticsSnapshot))
 		End Sub
 
+		Private Sub _artifactReader_FieldMapped(ByVal sourceField As String, ByVal workspaceField As String) Handles _artifactReader.FieldMapped
+			RaiseEvent FieldMapped(sourceField, workspaceField)
+		End Sub
+
+
+
 		Private Sub IoWarningHandler(ByVal e As IoWarningEventArgs)
 			MyBase.RaiseIoWarning(e)
 		End Sub
@@ -1504,7 +1525,6 @@ Namespace kCura.WinEDDS
 		Protected Overrides Function GetArtifactReader() As Api.IArtifactReader
 			Return New kCura.WinEDDS.LoadFileReader(_settings, False)
 		End Function
-
 	End Class
 
 	Public Class WebServiceFieldInfoNameComparer

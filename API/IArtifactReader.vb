@@ -18,6 +18,7 @@ Namespace kCura.WinEDDS.Api
 		Event OnIoWarning(ByVal e As kCura.WinEDDS.Api.IoWarningEventArgs)
 		Event DataSourcePrep(ByVal e As Api.DataSourcePrepEventArgs)
 		Event StatusMessage(ByVal message As String)
+		Event FieldMapped(ByVal sourceField As String, ByVal workspaceField As String)
 
 	End Interface
 End Namespace

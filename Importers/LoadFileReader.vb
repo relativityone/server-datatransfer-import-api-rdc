@@ -229,6 +229,7 @@ Namespace kCura.WinEDDS
 
 		Public Event OnIoWarning(ByVal e As kCura.WinEDDS.Api.IoWarningEventArgs) Implements Api.IArtifactReader.OnIoWarning
 		Public Event StatusMessage(ByVal message As String) Implements Api.IArtifactReader.StatusMessage
+		Public Event FieldMapped(ByVal sourceField As String, ByVal workspaceField As String) Implements IArtifactReader.FieldMapped
 		Public Event DataSourcePrep(ByVal e As Api.DataSourcePrepEventArgs) Implements Api.IArtifactReader.DataSourcePrep
 
 		Public ReadOnly Property HasMoreRecords() As Boolean Implements Api.IArtifactReader.HasMoreRecords
