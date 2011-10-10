@@ -184,13 +184,14 @@
     <Compile Include="Enum.vb">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="IImportNotifier.vb" />
     <Compile Include="ImageImport\ImageImportBulkArtifactJob.vb" />
     <Compile Include="ImageImport\ImageSettings.vb" />
     <Compile Include="ImageImport\ImageSourceIDataReader.vb" />
     <Compile Include="ImportSettingsException.vb" />
     <Compile Include="ImportLoadFileJob.vb" />
     <Compile Include="ImportSettingsBase.vb" />
-    <Compile Include="LoadFileJobBase.vb" />
+    <Compile Include="JobReport.vb" />
     <Compile Include="Settings.vb" />
     <Compile Include="SourceIDataReader.vb" />
     <Compile Include="Status.vb">

@@ -5,13 +5,16 @@ Imports System.Net
 Namespace kCura.Relativity.DataReaderClient
 
 	Public Class ImageImportBulkArtifactJob
-
+		Implements IImportNotifier
 
 
 #Region " Public Events and Variables "
 
 		Public Event OnMessage(ByVal status As Status)
 		Public Event OnError(ByVal row As IDictionary)
+		Public Event OnComplete(ByVal jobReport As JobReport) Implements IImportNotifier.OnComplete
+		Public Event OnFatalException(ByVal jobReport As JobReport) Implements IImportNotifier.OnFatalException
+		Public Event OnProgress(ByVal completedRow As Long) Implements IImportNotifier.OnProgress
 
 
 		Public Property Settings As ImageSettings
@@ -45,6 +48,7 @@ Namespace kCura.Relativity.DataReaderClient
 		Private _sourceData As ImageSourceIDataReader
 		Private _credentials As ICredentials
 		Private _cookieMonster As Net.CookieContainer
+		Private _jobReport As JobReport
 
 #End Region
 
@@ -66,7 +70,12 @@ Namespace kCura.Relativity.DataReaderClient
 		End Sub
 
 
+
+
 		Public Sub Execute()
+			_jobReport = New JobReport()
+			_jobReport.StartTime = DateTime.Now()
+
 			If IsSettingsValid() Then
 				RaiseEvent OnMessage(New Status("Getting source data from database"))
 
@@ -86,15 +95,29 @@ Namespace kCura.Relativity.DataReaderClient
 					process.StartProcess()
 				Catch ex As Exception
 					RaiseEvent OnMessage(New Status(String.Format("Exception: {0}", ex.ToString)))
+					_jobReport.FatalException = ex
+					RaiseFatalException()
+
 				End Try
 			Else
 				RaiseEvent OnMessage(New Status("There was an error in your settings.  Import aborted."))
+				RaiseFatalException()
+
 			End If
 		End Sub
 
 #End Region
 
 #Region " Private Methods "
+		Private Sub RaiseFatalException()
+			_jobReport.EndTime = DateTime.Now
+			RaiseEvent OnFatalException(_jobReport)
+		End Sub
+
+		Private Sub RaiseComplete()
+			_jobReport.EndTime = DateTime.Now
+			RaiseEvent OnComplete(_jobReport)
+		End Sub
 
 		Private Sub ValidateDataSourceSettings()
 			'This expects the DataTable in SourceData to have already been set
@@ -209,6 +232,7 @@ Namespace kCura.Relativity.DataReaderClient
 				ValidateOverwriteModeSettings()
 				ValidateExtractedTextSettings()
 			Catch ex As Exception
+				_jobReport.FatalException = ex
 				RaiseEvent OnMessage(New Status(ex.Message))
 				Return False
 			End Try
@@ -263,6 +287,7 @@ Namespace kCura.Relativity.DataReaderClient
 
 		Private Sub _observer_OnProcessComplete(ByVal closeForm As Boolean, ByVal exportFilePath As String, ByVal exportLogs As Boolean) Handles _observer.OnProcessComplete
 			RaiseEvent OnMessage(New Status(String.Format("Completed!")))
+			RaiseComplete()
 		End Sub
 
 		Private Sub _observer_OnProcessEvent(ByVal evt As kCura.Windows.Process.ProcessEvent) Handles _observer.OnProcessEvent
@@ -273,12 +298,17 @@ Namespace kCura.Relativity.DataReaderClient
 
 		Private Sub _observer_OnProcessFatalException(ByVal ex As System.Exception) Handles _observer.OnProcessFatalException
 			RaiseEvent OnMessage(New Status(String.Format("FatalException: {0}", ex.ToString)))
+			_jobReport.FatalException = ex
+			RaiseEvent OnFatalException(_jobReport)
 		End Sub
 
 		Private Sub _observer_OnProcessProgressEvent(ByVal evt As kCura.Windows.Process.ProcessProgressEvent) Handles _observer.OnProcessProgressEvent
-			RaiseEvent OnMessage(New Status(String.Format("[Timestamp: {0}] [Progress Info: {1} of {2}]", System.DateTime.Now, evt.TotalRecordsProcessedDisplay, evt.TotalRecordsDisplay)))
+			RaiseEvent OnMessage(New Status(String.Format("[Timestamp: {0}] [Progress Info: {1} ]", System.DateTime.Now, evt.TotalRecordsProcessedDisplay)))
 		End Sub
 
+		Private Sub _observer_RecordProcessedEvent(ByVal recordNumber As Long) Handles _observer.RecordProcessed
+			RaiseEvent OnProgress(recordNumber)
+		End Sub
 #End Region
 
 		''' <summary>

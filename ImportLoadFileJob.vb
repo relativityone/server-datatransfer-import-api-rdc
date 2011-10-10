@@ -2,14 +2,22 @@ Imports System.Net
 
 Namespace kCura.Relativity.DataReaderClient
 	Public Class ImportBulkArtifactJob
-		Inherits LoadFileJobBase
+		Implements IImportNotifier
+
+
 
 #Region "Private Variables"
+
+		Private _jobReport As JobReport
 		Private _bulkLoadFileFieldDelimiter As String
 		Private ReadOnly _controlNumberFieldName As String
 		Private _docIDFieldCollection As WinEDDS.DocumentField()
-		Private _credentials As ICredentials
-		Private _cookieMonster As Net.CookieContainer
+
+		Private _hasErrors As Boolean
+		Private _controller As Windows.Process.Controller
+		Private _nativeDataReader As SourceIDataReader
+		Private _nativeSettings As ImportSettingsBase
+		Private WithEvents _observer As Windows.Process.ProcessObserver
 
 #End Region
 
@@ -23,6 +31,7 @@ Namespace kCura.Relativity.DataReaderClient
 			_nativeDataReader = New SourceIDataReader
 
 			_bulkLoadFileFieldDelimiter = Global.Relativity.Constants.DEFAULT_FIELD_DELIMITER
+			_hasErrors = False
 		End Sub
 
 		Friend Sub New(ByVal relativityUserName As String, ByVal password As String)
@@ -34,13 +43,22 @@ Namespace kCura.Relativity.DataReaderClient
 #End Region
 
 #Region "Events"
-		Public Shadows Event OnMessage(ByVal status As Status)
-		Public Shadows Event OnError(ByVal row As IDictionary)
+		Public Event OnMessage(ByVal status As Status)
+		Public Event OnError(ByVal row As IDictionary)
+		Public Event OnComplete(ByVal jobReport As JobReport) Implements IImportNotifier.OnComplete
+		Public Event OnFatalException(ByVal jobReport As JobReport) Implements IImportNotifier.OnFatalException
+		Public Event OnProgress(ByVal completedRow As Long) Implements IImportNotifier.OnProgress
+
+
 #End Region
 
 #Region "Public Routines"
-		Public Overrides Sub Execute()
+		Public Sub Execute()
+			_jobReport = New JobReport()
+			_jobReport.StartTime = DateTime.Now()
+
 			If IsSettingsValid() Then
+
 				RaiseEvent OnMessage(New Status("Getting source data from database"))
 
 				WinEDDS.Config.ProgrammaticServiceURL = Settings.WebServiceURL
@@ -58,11 +76,26 @@ Namespace kCura.Relativity.DataReaderClient
 					process.StartProcess()
 				Catch ex As Exception
 					RaiseEvent OnMessage(New Status(String.Format("Exception: {0}", ex.ToString)))
+					_jobReport.FatalException = ex
+					RaiseFatalException()
 				End Try
 			Else
 				RaiseEvent OnMessage(New Status("There was an error in your settings.  Import aborted."))
+				' exception was set in the IsSettingsValid function
+				RaiseFatalException()
 			End If
 		End Sub
+
+		Private Sub RaiseFatalException()
+			_jobReport.EndTime = DateTime.Now
+			RaiseEvent OnFatalException(_jobReport)
+		End Sub
+
+		Private Sub RaiseComplete()
+			_jobReport.EndTime = DateTime.Now
+			RaiseEvent OnComplete(_jobReport)
+		End Sub
+
 
 		''' <summary>
 		''' Exports the error log file from the import if any errors occurred.
@@ -184,7 +217,9 @@ Namespace kCura.Relativity.DataReaderClient
 			Return returnField
 		End Function
 
-		Protected Overrides Function IsSettingsValid() As Boolean
+		Protected Function IsSettingsValid() As Boolean
+
+
 			Try
 				ValidateRelativitySettings()
 				ValidateDelimiterSettings()
@@ -192,11 +227,16 @@ Namespace kCura.Relativity.DataReaderClient
 				ValidateNativeFileSettings()
 				ValidateExtractedTextSettings()
 			Catch ex As Exception
+
+				_jobReport.FatalException = ex
 				RaiseEvent OnMessage(New Status(ex.Message))
+
 				Return False
 			End Try
 			Return True
 		End Function
+
+
 
 		Private Function MapInputToSettingsFactory(ByVal clientSettings As Settings) As WinEDDS.DynamicObjectSettingsFactory
 			Dim dosf_settings As kCura.WinEDDS.DynamicObjectSettingsFactory = New kCura.WinEDDS.DynamicObjectSettingsFactory(clientSettings.RelativityUsername, clientSettings.RelativityPassword, clientSettings.CaseArtifactId, clientSettings.ArtifactTypeId)
@@ -339,11 +379,25 @@ Namespace kCura.Relativity.DataReaderClient
 
 #Region "Event Handlers"
 		Private Sub _observer_ErrorReportEvent(ByVal row As System.Collections.IDictionary) Handles _observer.ErrorReportEvent
+			_hasErrors = True
 			RaiseEvent OnError(row)
+			Dim msg As String = row.Item("Message").ToString
+			Dim lineNumbObj As Object = row.Item("LineNumber")
+			Dim lineNum As Long = 0
+			If Not lineNumbObj Is Nothing Then
+				lineNum = DirectCast(lineNumbObj, Int32)
+			End If
+
+			_jobReport.ErrorRows.Add(New JobReport.RowError(lineNum, msg))
+		End Sub
+
+		Private Sub _observer_FieldMapped(ByVal sourceField As String, ByVal workspaceField As String) Handles _observer.FieldMapped
+			_jobReport.FieldMap.Add(New JobReport.FieldMapEntry(sourceField, workspaceField))
 		End Sub
 
 		Private Sub _observer_OnProcessComplete(ByVal closeForm As Boolean, ByVal exportFilePath As String, ByVal exportLogs As Boolean) Handles _observer.OnProcessComplete
 			RaiseEvent OnMessage(New Status(String.Format("Completed!")))
+			RaiseComplete()
 		End Sub
 
 		Private Sub _observer_OnProcessEvent(ByVal evt As kCura.Windows.Process.ProcessEvent) Handles _observer.OnProcessEvent
@@ -352,12 +406,18 @@ Namespace kCura.Relativity.DataReaderClient
 			End If
 		End Sub
 
-		Private Sub _observer_OnProcessFatalException(ByVal ex As System.Exception) Handles _observer.OnProcessFatalException
+		Private Sub _observer_OnProcessFatalException(ByVal ex As Exception) Handles _observer.OnProcessFatalException
 			RaiseEvent OnMessage(New Status(String.Format("FatalException: {0}", ex.ToString)))
+			_jobReport.FatalException = ex
+			RaiseFatalException()
 		End Sub
 
 		Private Sub _observer_OnProcessProgressEvent(ByVal evt As kCura.Windows.Process.ProcessProgressEvent) Handles _observer.OnProcessProgressEvent
-			RaiseEvent OnMessage(New Status(String.Format("[Timestamp: {0}] [Progress Info: {1} of {2}]", System.DateTime.Now, evt.TotalRecordsProcessedDisplay, Settings.RowCount)))
+			RaiseEvent OnMessage(New Status(String.Format("[Timestamp: {0}] [Progress Info: {1} ]", System.DateTime.Now, evt.TotalRecordsProcessedDisplay)))
+		End Sub
+
+		Private Sub _observer_RecordProcessedEvent(ByVal recordNumber As Long) Handles _observer.RecordProcessed
+			RaiseEvent OnProgress(recordNumber)
 		End Sub
 #End Region
 
@@ -405,5 +465,7 @@ Namespace kCura.Relativity.DataReaderClient
 		End Property
 #End Region
 
+
 	End Class
+
 End Namespace
