@@ -40,9 +40,9 @@ Namespace kCura.Windows.Process
 			Try
 				Me.Execute()
 
-				'TODO: PHIL LOOK HERE
 
-				_processObserver.RaiseProcessCompleteEvent()
+				' removed this.  The base class should not raise this event.  Let the actual implementation raise it when it is truly complete.
+				'_processObserver.RaiseProcessCompleteEvent()
 			Catch ex As Exception
 				_processObserver.RaiseFatalExceptionEvent(ex)
 			End Try

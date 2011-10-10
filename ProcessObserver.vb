@@ -39,12 +39,23 @@ Namespace kCura.Windows.Process
 		Public Event ShowReportEvent(ByVal datasource As System.Data.DataTable, ByVal maxlengthExceeded As Boolean)
 		Public Event ErrorReportEvent(ByVal row As System.Collections.IDictionary)
 		Public Event ShutdownEvent()
+		Public Event FieldMapped(ByVal sourceField As String, ByVal workspaceField As String)
+		Public Event RecordProcessed(ByVal recordNumber As Long)
+
 #End Region
 
 #Region "Event Throwers"
 
 		Public Sub Shutdown()
 			RaiseEvent ShutdownEvent()
+		End Sub
+
+		Public Sub RaiseRecordProcessed(ByVal recordNumber As Long)
+			RaiseEvent RecordProcessed(recordNumber)
+		End Sub
+
+		Public Sub RaiseFieldMapped(ByVal sourceField As String, ByVal workspaceField As String)
+			RaiseEvent FieldMapped(sourceField, workspaceField)
 		End Sub
 
 		Public Sub RaiseStatusEvent(ByVal recordInfo As String, ByVal message As String)
