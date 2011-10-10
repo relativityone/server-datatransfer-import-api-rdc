@@ -240,6 +240,11 @@ Namespace kCura.WinEDDS.ImportExtension
 		Private Sub DisplayFieldMap(ByVal sourceData As System.Data.IDataReader, ByVal destination As kCura.WinEDDS.Api.ArtifactFieldCollection)
 			'TODO: fix thsi display.  something with uppercase/lowercase, I think.
 			'Display a list field mappings and unmapped fields
+
+			Const SPECIALFILENAME As String = "*Filename*"
+			Const NATIVEFILEPATH As String = "*NativeFilePath*"
+			Const NOTMAPPED As String = "NOT MAPPED (Target field not found)"
+
 			Dim mappedFields As String = String.Concat(vbCrLf, "----------", vbCrLf, "Field Mapping:", vbCrLf)
 			Dim fieldMapRow As String = String.Concat("Source field [{0}] --> Destination field [{1}]", vbCrLf)
 			For i As Integer = 0 To sourceData.FieldCount - 1
@@ -247,17 +252,22 @@ Namespace kCura.WinEDDS.ImportExtension
 				If field Is Nothing Then
 					If _loadFileSettings.CopyFilesToDocumentRepository = True And _reader.GetName(i).ToLower = _KCURAMARKERFILENAME.ToLower Then
 						'This is a special field.
-						mappedFields = String.Concat(mappedFields, String.Format(fieldMapRow, _reader.GetName(i).ToLower, "*Filename*"))
+						mappedFields = String.Concat(mappedFields, String.Format(fieldMapRow, _reader.GetName(i).ToLower, SPECIALFILENAME))
+						RaiseEvent FieldMapped(_reader.GetName(i), SPECIALFILENAME)
 					Else
 						If Not (_loadFileSettings.NativeFilePathColumn Is Nothing) AndAlso _reader.GetName(i).ToLower = nameWithoutIndex(_loadFileSettings.NativeFilePathColumn.ToLower) Then
 							'This is a special field
-							mappedFields = String.Concat(mappedFields, String.Format(fieldMapRow, _reader.GetName(i).ToLower, "*NativeFilePath*"))
+							mappedFields = String.Concat(mappedFields, String.Format(fieldMapRow, _reader.GetName(i).ToLower, NATIVEFILEPATH))
+							RaiseEvent FieldMapped(_reader.GetName(i), NATIVEFILEPATH)
 						Else
-							mappedFields = String.Concat(mappedFields, String.Format(fieldMapRow, _reader.GetName(i).ToLower, "NOT MAPPED (Target field not found)"))
+							mappedFields = String.Concat(mappedFields, String.Format(fieldMapRow, _reader.GetName(i).ToLower, NOTMAPPED))
+							RaiseEvent FieldMapped(_reader.GetName(i), NOTMAPPED)
+
 						End If
 					End If
 				Else
 					mappedFields = String.Concat(mappedFields, String.Format(fieldMapRow, _reader.GetName(i).ToLower, field.DisplayName.ToLower))
+					RaiseEvent FieldMapped(_reader.GetName(i), field.DisplayName)
 				End If
 			Next
 
@@ -380,6 +390,7 @@ Namespace kCura.WinEDDS.ImportExtension
 #Region " Events "
 
 		Public Event StatusMessage(ByVal message As String) Implements kCura.WinEDDS.Api.IArtifactReader.StatusMessage
+		Public Event FieldMapped(ByVal sourceField As String, ByVal workspaceField As String) Implements IArtifactReader.FieldMapped
 		Public Event DataSourcePrep(ByVal e As kCura.WinEDDS.Api.DataSourcePrepEventArgs) Implements kCura.WinEDDS.Api.IArtifactReader.DataSourcePrep
 		Public Event OnIoWarning(ByVal e As kCura.WinEDDS.Api.IoWarningEventArgs) Implements kCura.WinEDDS.Api.IArtifactReader.OnIoWarning
 
