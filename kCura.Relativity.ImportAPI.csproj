@@ -107,6 +107,8 @@
   <ItemGroup>
     <Compile Include="Data\Artifact.cs" />
     <Compile Include="Data\Field.cs" />
+    <Compile Include="Enumeration\FieldCategoryEnum.cs" />
+    <Compile Include="Enumeration\FieldTypeEnum.cs" />
     <Compile Include="ImportAPI.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Data\Workspace.cs" />

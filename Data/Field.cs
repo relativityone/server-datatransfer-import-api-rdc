@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using kCura.Relativity.ImportAPI.Enumeration;
 
 namespace kCura.Relativity.ImportAPI.Data
 {
@@ -11,10 +12,11 @@ namespace kCura.Relativity.ImportAPI.Data
 
 		public bool UseUnicode { get; internal set; }
 
-		public int FieldTypeID { get; internal set; }
+		public FieldTypeEnum FieldTypeID { get; internal set; }
 
 		public int? FieldLength { get; internal set; }
 
-
+		public FieldCategoryEnum FieldCategory { get; internal set; }
 	}
+
 }

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using kCura.Relativity.ImportAPI.Data;
+using kCura.Relativity.ImportAPI.Enumeration;
 using kCura.WinEDDS;
 using kCura.WinEDDS.Service;
 using kCura.Relativity.DataReaderClient;
@@ -84,7 +85,9 @@ namespace kCura.Relativity.ImportAPI
 			return (from DocumentField docfield in fields
 			        select new Field
 			               	{
-			               		ArtifactID = docfield.FieldID, ArtifactTypeId = docfield.FieldTypeID, Name = docfield.FieldName, FieldLength = docfield.FieldLength, FieldTypeID = docfield.FieldTypeID, AssociatedObjectTypeID = docfield.AssociatedObjectTypeID, UseUnicode = docfield.UseUnicode
+								
+			               		ArtifactID = docfield.FieldID, ArtifactTypeId = docfield.FieldTypeID, Name = docfield.FieldName, FieldLength = docfield.FieldLength, FieldTypeID =  (FieldTypeEnum) Enum.ToObject(typeof (FieldTypeEnum), 
+								docfield.FieldTypeID), AssociatedObjectTypeID = docfield.AssociatedObjectTypeID, UseUnicode = docfield.UseUnicode, FieldCategory = (FieldCategoryEnum) Enum.ToObject(typeof(FieldCategoryEnum), docfield.FieldCategoryID)
 			               	}).ToList();
 		}
 
