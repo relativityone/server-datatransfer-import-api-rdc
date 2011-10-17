@@ -4,7 +4,7 @@
 
 		Protected Sub New()
 			ExtractedTextFieldContainsFilePath = False
-			OverlayIdentifierSourceFieldName = String.Empty
+
 		End Sub
 
 		''' <summary>
@@ -61,8 +61,10 @@
 
 		''' <summary>
 		''' Field name to identify matching records when overlaying records
-		''' TODO: What is this meant for? Not used anywhere. (Maybe SelectedIdentifierFieldName?)
+		''' TODO: What is this meant for? Not used anywhere. (Maybe SelectedIdentifierFieldName?)  
+		''' Marking as obsolete since it is not used, and no one knows the intention of it.
 		''' </summary>
+		<Obsolete()>
 		Public Property OverlayIdentifierSourceFieldName() As String
 
 		''' <summary>
