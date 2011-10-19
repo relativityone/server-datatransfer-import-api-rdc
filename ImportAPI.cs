@@ -5,7 +5,6 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using kCura.Relativity.ImportAPI.Data;
-using kCura.Relativity.ImportAPI.Enumeration;
 using kCura.WinEDDS;
 using kCura.WinEDDS.Service;
 using kCura.Relativity.DataReaderClient;
@@ -80,14 +79,22 @@ namespace kCura.Relativity.ImportAPI
 		public IEnumerable<Field> GetWorkspaceFields(int workspaceArtifactID, int artifactTypeID)
 		{
 			var fm = new WinEDDS.Service.FieldManager(_credentials, _cookieMonster);
+            //This returned collection contains fields excluding those with one of the following FieldCategory's
+            // FieldCategory.AutoCreate
+            // FieldCategory.Batch
+            // FieldCategory.FileInfo
+            // FieldCategory.FileSize
+            // FieldCategory.MarkupSetMarker
+            // FieldCategory.MultiReflected
+            // FieldCategory.ProductionMarker
+            // FieldCategory.Reflected
+            // See kCura.WinEDDS.Service.FieldQuery.RetrieveAllAsArray -Phil S. 10/19/2011
 			var fields = fm.Query.RetrieveAllAsDocumentFieldCollection(workspaceArtifactID, artifactTypeID);
 
 			return (from DocumentField docfield in fields
 			        select new Field
 			               	{
-								
-			               		ArtifactID = docfield.FieldID, ArtifactTypeId = docfield.FieldTypeID, Name = docfield.FieldName, FieldLength = docfield.FieldLength, FieldTypeID =  (FieldTypeEnum) Enum.ToObject(typeof (FieldTypeEnum), 
-								docfield.FieldTypeID), AssociatedObjectTypeID = docfield.AssociatedObjectTypeID, UseUnicode = docfield.UseUnicode, FieldCategory = (FieldCategoryEnum) Enum.ToObject(typeof(FieldCategoryEnum), docfield.FieldCategoryID)
+			               		ArtifactID = docfield.FieldID, ArtifactTypeId = docfield.FieldTypeID, Name = docfield.FieldName, FieldLength = docfield.FieldLength, FieldTypeID = docfield.FieldTypeID, AssociatedObjectTypeID = docfield.AssociatedObjectTypeID, UseUnicode = docfield.UseUnicode
 			               	}).ToList();
 		}
 
