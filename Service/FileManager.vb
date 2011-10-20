@@ -2,17 +2,13 @@ Namespace kCura.WinEDDS.Service
 	Public Class FileManager
 		Inherits kCura.EDDS.WebAPI.FileManagerBase.FileManager
 
-		'Private _fileManager As New kCura.EDDS.Service.FileManager
-		'Private _identity As kCura.EDDS.EDDSIdentity
-
-		'Public Sub New(ByVal credentials As Net.NetworkCredential, ByVal cookieContainer As System.Net.CookieContainer, ByVal identity As kCura.EDDS.EDDSIdentity)
 		Public Sub New(ByVal credentials As Net.ICredentials, ByVal cookieContainer As System.Net.CookieContainer)
 			MyBase.New()
+
 			Me.Credentials = credentials
 			Me.CookieContainer = cookieContainer
 			Me.Url = String.Format("{0}FileManager.asmx", kCura.WinEDDS.Config.WebServiceURL)
 			Me.Timeout = Settings.DefaultTimeOut
-			'_identity = identity
 		End Sub
 
 		Protected Overrides Function GetWebRequest(ByVal uri As System.Uri) As System.Net.WebRequest
@@ -52,7 +48,7 @@ Namespace kCura.WinEDDS.Service
 			Return files
 		End Function
 
-		'Public Shared Function DTOtoWebAPIFile(ByVal dto As kCura.EDDS.DTO.File) As kCura.EDDS.WebAPI.DocumentManagerBase.File
+		'Public Shared Function DTOtoWebAPIFile(ByVal dto As Relativity.Core.DTO.File) As kCura.EDDS.WebAPI.DocumentManagerBase.File
 		'	Dim file As New kCura.EDDS.WebAPI.DocumentManagerBase.File
 
 		'	file.DocumentArtifactID = dto.DocumentArtifactID
@@ -63,7 +59,7 @@ Namespace kCura.WinEDDS.Service
 		'	Return file
 		'End Function
 
-		'Public Shared Function DTOstoWebAPIFiles(ByVal dtos As kCura.EDDS.DTO.File()) As kCura.EDDS.WebAPI.DocumentManagerBase.File()
+		'Public Shared Function DTOstoWebAPIFiles(ByVal dtos As Relativity.Core.DTO.File()) As kCura.EDDS.WebAPI.DocumentManagerBase.File()
 		'	Dim files(dtos.Length - 1) As kCura.EDDS.WebAPI.DocumentManagerBase.File
 
 		'	Dim i As Int32
@@ -73,8 +69,8 @@ Namespace kCura.WinEDDS.Service
 		'	Return files
 		'End Function
 
-		'Public Shared Function DocumentWebAPIFiletoDTO(ByVal file As kCura.EDDS.WebAPI.DocumentManagerBase.File) As kCura.EDDS.DTO.File
-		'	Dim dto As New kCura.EDDS.DTO.File
+		'Public Shared Function DocumentWebAPIFiletoDTO(ByVal file As kCura.EDDS.WebAPI.DocumentManagerBase.File) As Relativity.Core.DTO.File
+		'	Dim dto As New Relativity.Core.DTO.File
 
 		'	dto.DocumentArtifactID = file.DocumentArtifactID
 		'	dto.Filename = file.Filename
@@ -84,8 +80,8 @@ Namespace kCura.WinEDDS.Service
 		'	Return dto
 		'End Function
 
-		'Public Shared Function FileWebAPIFiletoDTO(ByVal file As kCura.EDDS.WebAPI.FileManagerBase.File) As kCura.EDDS.DTO.File
-		'	Dim dto As New kCura.EDDS.DTO.File
+		'Public Shared Function FileWebAPIFiletoDTO(ByVal file As kCura.EDDS.WebAPI.FileManagerBase.File) As Relativity.Core.DTO.File
+		'	Dim dto As New Relativity.Core.DTO.File
 
 		'	dto.DocumentArtifactID = file.DocumentArtifactID
 		'	dto.Filename = file.Filename
@@ -95,9 +91,9 @@ Namespace kCura.WinEDDS.Service
 		'	Return dto
 		'End Function
 
-		'Public Shared Function WebAPIFilestoDTOs(ByVal files As kCura.EDDS.WebAPI.DocumentManagerBase.File()) As kCura.EDDS.DTO.File()
+		'Public Shared Function WebAPIFilestoDTOs(ByVal files As kCura.EDDS.WebAPI.DocumentManagerBase.File()) As Relativity.Core.DTO.File()
 		'	If files Is Nothing Then Return Nothing
-		'	Dim dtos(files.Length - 1) As kCura.EDDS.DTO.File
+		'	Dim dtos(files.Length - 1) As Relativity.Core.DTO.File
 
 		'	Dim i As Int32
 		'	For i = 0 To dtos.Length - 1
@@ -134,7 +130,7 @@ Namespace kCura.WinEDDS.Service
 					If kCura.WinEDDS.Config.UsesWebAPI Then
 						Return MyBase.RetrieveByProductionArtifactIDForProduction(caseContextArtifactID, productionArtifactID)
 					Else
-						'Return kCura.EDDS.Service.FileQuery.RetrieveByProductionArtifactIDForProduction(productionArtifactID, _identity).ToDataSet()
+						'Return Relativity.Core.Service.FileQuery.RetrieveByProductionArtifactIDForProduction(productionArtifactID, _identity).ToDataSet()
 					End If
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
@@ -155,7 +151,7 @@ Namespace kCura.WinEDDS.Service
 					If kCura.WinEDDS.Config.UsesWebAPI Then
 						Return MyBase.RetrieveFileGuidsByDocumentArtifactIDAndProductionArtifactID(caseContextArtifactID, documentArtifactID, productionArtifactID)
 					Else
-						'Return kCura.EDDS.Service.FileQuery.RetrieveFileGuidsByProductionArtifactID(productionArtifactID, documentArtifactID, _identity)
+						'Return Relativity.Core.Service.FileQuery.RetrieveFileGuidsByProductionArtifactID(productionArtifactID, documentArtifactID, _identity)
 					End If
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
@@ -176,7 +172,7 @@ Namespace kCura.WinEDDS.Service
 					If kCura.WinEDDS.Config.UsesWebAPI Then
 						Return MyBase.ReturnFileGuidsForOriginalImages(caseContextArtifactID, documentArtifactID)
 					Else
-						'Return kCura.EDDS.Service.FileQuery.ReturnFileGuidsForOriginalImages(_identity, documentArtifactID)
+						'Return Relativity.Core.Service.FileQuery.ReturnFileGuidsForOriginalImages(_identity, documentArtifactID)
 					End If
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
@@ -290,7 +286,7 @@ Namespace kCura.WinEDDS.Service
 					If kCura.WinEDDS.Config.UsesWebAPI Then
 						Return MyBase.GetRotation(caseContextArtifactID, guid)
 					Else
-						'Return New kCura.EDDS.Service.FileManager().Read(guid, artifactID, _identity).Rotation
+						'Return New Relativity.Core.Service.FileManager().Read(guid, artifactID, _identity).Rotation
 					End If
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then

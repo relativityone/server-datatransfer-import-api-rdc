@@ -27,6 +27,7 @@ Namespace kCura.WinEDDS
 					installationParameters.CaseId = caseInfo.ArtifactID
 
 					Dim applicationDeploymentSystem As New WinEDDS.Service.TemplateManager(_credential, Me._cookieContainer)
+
 					Dim resolutionResult As ApplicationInstallationResult = Nothing
 					If _resolveArtifacts IsNot Nothing AndAlso _resolveArtifacts(i).Count > 0 Then
 						resolutionResult = applicationDeploymentSystem.ResolveConflicts(_appsToOverride, _resolveArtifacts(i), installationParameters)

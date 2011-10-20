@@ -32,6 +32,7 @@ Namespace kCura.WinEDDS
 
 			' get case fields
 			Dim fieldManager As New kCura.WinEDDS.Service.FieldQuery(_credential, _cookieContainer)
+
 			'TODO: WINFLEX ArtifactTypeID
 			_caseFields = fieldManager.RetrieveAllAsArray(_importFileDirectorySettings.CaseInfo.ArtifactID, 10)
 
@@ -186,12 +187,11 @@ Namespace kCura.WinEDDS
 			End Sub
 		End Class
 
-		'Public Sub New(ByVal importSettings As kCura.WinEDDS.ImportFileDirectorySettings, ByVal credential As Net.NetworkCredential, ByVal cookieContainer As System.Net.CookieContainer, ByVal identity As kCura.EDDS.EDDSIdentity)
+		'Public Sub New(ByVal importSettings As kCura.WinEDDS.ImportFileDirectorySettings, ByVal credential As Net.NetworkCredential, ByVal cookieContainer As System.Net.CookieContainer, ByVal identity As Relativity.Core.EDDSIdentity)
 		Public Sub New(ByVal importSettings As kCura.WinEDDS.ImportFileDirectorySettings, ByVal credential As Net.NetworkCredential, ByVal cookieContainer As System.Net.CookieContainer)
 			_importFileDirectorySettings = importSettings
 			_credential = credential
 			_cookieContainer = cookieContainer
-			'_identity = identity
 		End Sub
 
 	End Class

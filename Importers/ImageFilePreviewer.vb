@@ -3,11 +3,11 @@ Namespace kCura.WinEDDS
 	Public Class ImageFilePreviewer
 		Inherits kCura.Utility.DelimitedFileImporter
 
-		Private _docManager As kCura.WinEDDS.Service.DocumentManager
-		Private _fieldQuery As kCura.WinEDDS.Service.FieldQuery
-		Private _folderManager As kCura.WinEDDS.Service.FolderManager
+		Protected _docManager As kCura.WinEDDS.Service.DocumentManager
+		Protected _fieldQuery As kCura.WinEDDS.Service.FieldQuery
+		Protected _folderManager As kCura.WinEDDS.Service.FolderManager
 		Private _fileUploader As kCura.WinEDDS.FileUploader
-		Private _fileManager As kCura.WinEDDS.Service.FileManager
+		Protected _fileManager As kCura.WinEDDS.Service.FileManager
 		Private _folderID As Int32
 		Private _overwrite As String
 		Private _filePath As String
@@ -47,16 +47,22 @@ Namespace kCura.WinEDDS
 
 		Public Sub New(ByVal args As ImageLoadFile, ByVal controller As kCura.Windows.Process.Controller, ByVal doRetryLogic As Boolean)
 			MyBase.New(New Char() {","c}, doRetryLogic)
+
 			_docManager = New kCura.WinEDDS.Service.DocumentManager(args.Credential, args.CookieContainer)
 			_fieldQuery = New kCura.WinEDDS.Service.FieldQuery(args.Credential, args.CookieContainer)
 			_folderManager = New kCura.WinEDDS.Service.FolderManager(args.Credential, args.CookieContainer)
 			_fileManager = New kCura.WinEDDS.Service.FileManager(args.Credential, args.CookieContainer)
-			_fileUploader = New kCura.WinEDDS.FileUploader(args.Credential, args.CaseInfo.ArtifactID, _docManager.GetDocumentDirectoryByCaseArtifactID(args.CaseInfo.ArtifactID) & "\", args.CookieContainer)
+			InitializeUploaders(args)
+
 			_overwrite = args.Overwrite
 			_replaceFullText = args.ReplaceFullText
 			_selectedIdentifierField = args.ControlKeyField
 			_processController = controller
 			_continue = True
+		End Sub
+
+		Protected Overridable Sub InitializeUploaders(ByVal args As ImageLoadFile)
+			_fileUploader = New kCura.WinEDDS.FileUploader(args.Credential, args.CaseInfo.ArtifactID, _docManager.GetDocumentDirectoryByCaseArtifactID(args.CaseInfo.ArtifactID) & "\", args.CookieContainer)
 		End Sub
 
 		Public Overloads Overrides Function ReadFile(ByVal path As String) As Object
@@ -66,15 +72,6 @@ Namespace kCura.WinEDDS
 				Reader = New StreamReader(path)
 				RaiseStatusEvent(kCura.Windows.Process.EventType.Progress, "Begin Image Upload")
 
-				'_csvwriter = New System.Text.StringBuilder
-				'_csvwriter.Append("DocInitialization" & Microsoft.VisualBasic.ControlChars.Tab)
-				'_csvwriter.Append("OW Check Delete Existing" & Microsoft.VisualBasic.ControlChars.Tab)
-				'_csvwriter.Append("File Upload" & Microsoft.VisualBasic.ControlChars.Tab)
-				'_csvwriter.Append("DocumentManager.Create" & Microsoft.VisualBasic.ControlChars.Tab)
-				'_csvwriter.Append("FileManager.Create" & Microsoft.VisualBasic.ControlChars.Tab)
-				'_csvwriter.Append("UpdateFullText" & Microsoft.VisualBasic.ControlChars.Tab)
-				'_csvwriter.Append("File size" & Microsoft.VisualBasic.ControlChars.Tab)
-				'_csvwriter.Append(System.Environment.NewLine)
 				While [Continue]
 					Try
 						DoFileUpload()
@@ -89,10 +86,6 @@ Namespace kCura.WinEDDS
 					End Try
 				End While
 				Me.Reader.Close()
-				'Dim outputfile As String = "C:\UploadMetrics\" & DateTime.Now.Year.ToString & DateTime.Now.Month.ToString & DateTime.Now.Day.ToString & "_" & System.Guid.NewGuid.ToString & ".txt"
-				'Dim sr As New System.IO.StreamWriter(outputfile)
-				'sr.Write(_csvwriter.ToString)
-				'sr.Close()
 				RaiseStatusEvent(kCura.Windows.Process.EventType.Progress, "End Image Upload")
 			Catch ex As System.Exception
 				RaiseFatalError(ex)

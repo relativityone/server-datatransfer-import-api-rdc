@@ -4,11 +4,11 @@ Namespace kCura.WinEDDS.Service
 
 		Public Sub New(ByVal credentials As Net.ICredentials, ByVal cookieContainer As System.Net.CookieContainer)
 			MyBase.New()
+
 			Me.Credentials = credentials
 			Me.CookieContainer = cookieContainer
 			Me.Url = String.Format("{0}ProductionManager.asmx", kCura.WinEDDS.Config.WebServiceURL)
 			Me.Timeout = Settings.DefaultTimeOut
-			'_identity = identity
 		End Sub
 
 		Protected Overrides Function GetWebRequest(ByVal uri As System.Uri) As System.Net.WebRequest
@@ -19,7 +19,7 @@ Namespace kCura.WinEDDS.Service
 		End Function
 
 #Region " Translations "
-		'Public Function DTOToWebAPIProduction(ByVal productionDTO As kCura.EDDS.DTO.Production) As kCura.EDDS.WebAPI.ProductionManagerBase.Production
+		'Public Function DTOToWebAPIProduction(ByVal productionDTO As Relativity.Core.DTO.Production) As kCura.EDDS.WebAPI.ProductionManagerBase.Production
 		'	Dim production As New kCura.EDDS.WebAPI.ProductionManagerBase.Production
 
 		'	production.AccessControlListID = productionDTO.AccessControlListID

@@ -4,6 +4,7 @@ Namespace kCura.WinEDDS.Service
 
 		Public Sub New(ByVal credentials As Net.ICredentials, ByVal cookieContainer As System.Net.CookieContainer)
 			MyBase.New()
+
 			Me.Credentials = credentials
 			Me.CookieContainer = cookieContainer
 			Me.Url = String.Format("{0}CodeManager.asmx", kCura.WinEDDS.Config.WebServiceURL)
@@ -27,6 +28,7 @@ Namespace kCura.WinEDDS.Service
 			code.Notes = String.Empty
 			code.ParentArtifactID = New Nullable(Of Int32)(caseSystemID)
 			code.ContainerID = New Nullable(Of Int32)(caseSystemID)
+			code.RelativityApplications = New Int32() {}
 			Return code
 		End Function
 

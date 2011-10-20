@@ -8,7 +8,6 @@ Namespace kCura.WinEDDS
 
 		Private _gateway As kCura.WinEDDS.Service.FileIO
 		Private _credentials As Net.NetworkCredential
-		'Private _cookieContainer As System.Net.CookieContainer
 		Private _type As ConnectionType
 		Private _destinationFolderPath As String
 
@@ -18,11 +17,11 @@ Namespace kCura.WinEDDS
 
 		Public Sub New(ByVal credentials As Net.NetworkCredential, ByVal sourceFolderPath As String, ByVal cookieContainer As System.Net.CookieContainer)
 			_gateway = New kCura.WinEDDS.Service.FileIO(credentials, cookieContainer)
+
 			_gateway.Credentials = credentials
 			_gateway.Timeout = Int32.MaxValue
 			_credentials = credentials
 			_destinationFolderPath = sourceFolderPath
-			'Dim documentManager As kCura.EDDS.WebAPI.DocumentManagerBase.DocumentManager
 			Try
 				System.IO.File.Create(sourceFolderPath & "123").Close()
 				System.IO.File.Delete(sourceFolderPath & "123")

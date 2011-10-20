@@ -95,6 +95,7 @@ Namespace kCura.WinEDDS
 			_auditManager = New kCura.WinEDDS.Service.AuditManager(exportFile.Credential, exportFile.CookieContainer)
 			_fieldManager = New kCura.WinEDDS.Service.FieldManager(exportFile.Credential, exportFile.CookieContainer)
 			Me.ExportManager = New kCura.WinEDDS.Service.ExportManager(exportFile.Credential, exportFile.CookieContainer)
+
 			_halt = False
 			_processController = processController
 			Me.DocumentsExported = 0
@@ -219,9 +220,7 @@ Namespace kCura.WinEDDS
 				End If
 				If _halt Then Exit While
 			End While
-			For start = 0 To Me.TotalExportArtifactCount - 1 Step Config.ExportBatchSize
 
-			Next
 			Me.WriteStatusLine(Windows.Process.EventType.Status, kCura.WinEDDS.FileDownloader.TotalWebTime.ToString, True)
 			_timekeeper.GenerateCsvReportItemsAsRows()
 			_volumeManager.Finish()
@@ -532,6 +531,7 @@ Namespace kCura.WinEDDS
 			End If
 			Return _productionArtifactIDs
 		End Function
+
 #End Region
 
 

@@ -30,12 +30,14 @@ Namespace kCura.WinEDDS
 				Return _repositoryPathManager.CurrentDestinationDirectory
 			End Get
 		End Property
+
 		Public Sub SetDesintationFolderName(ByVal value As String)
 			_destinationFolderPath = value
 		End Sub
 
 		Public Sub New(ByVal credentials As Net.NetworkCredential, ByVal caseArtifactID As Int32, ByVal destinationFolderPath As String, ByVal cookieContainer As System.Net.CookieContainer, Optional ByVal sortIntoVolumes As Boolean = True)
 			_gateway = New kCura.WinEDDS.Service.FileIO(credentials, cookieContainer)
+
 			_gateway.Credentials = credentials
 			_gateway.Timeout = Int32.MaxValue
 			_credentials = credentials
@@ -91,12 +93,6 @@ Namespace kCura.WinEDDS
 		Public ReadOnly Property CaseArtifactID() As Int32
 			Get
 				Return _caseArtifactID
-			End Get
-		End Property
-
-		Private ReadOnly Property Gateway() As kCura.WinEDDS.Service.FileIO
-			Get
-				Return _gateway
 			End Get
 		End Property
 
@@ -278,7 +274,7 @@ Namespace kCura.WinEDDS
 					Dim b(readLimit) As Byte
 					fileStream.Read(b, 0, readLimit)
 					If i = 1 Then
-						With Gateway.BeginFill(_caseArtifactID, b, destinationDirectory, fileGuid)
+						With _gateway.BeginFill(_caseArtifactID, b, destinationDirectory, fileGuid)
 							If .Success Then
 								fileGuid = .Filename
 							Else
@@ -288,9 +284,9 @@ Namespace kCura.WinEDDS
 					End If
 					If i <= trips And i > 1 Then
 						RaiseEvent UploadStatusEvent("Trip " & i & " of " & trips)
-						With Gateway.FileFill(_caseArtifactID, destinationDirectory, fileGuid, b, contextArtifactID)
+						With _gateway.FileFill(_caseArtifactID, destinationDirectory, fileGuid, b, contextArtifactID)
 							If Not .Success Then
-								Gateway.RemoveFill(_caseArtifactID, destinationDirectory, fileGuid)
+								_gateway.RemoveFill(_caseArtifactID, destinationDirectory, fileGuid)
 								Throw New System.IO.IOException(.ErrorMessage)
 							End If
 						End With

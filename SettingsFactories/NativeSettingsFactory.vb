@@ -10,6 +10,7 @@ Namespace kCura.WinEDDS
 			MyBase.New(credential)
 			Me.InitloadFile(caseArtifactID)
 		End Sub
+
 		Public Sub New(ByVal login As String, ByVal password As String, ByVal caseArtifactID As Int32)
 			MyBase.New(login, password)
 			Me.InitloadFile(caseArtifactID)

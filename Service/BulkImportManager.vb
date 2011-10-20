@@ -6,6 +6,7 @@ Namespace kCura.WinEDDS.Service
 
 		Public Sub New(ByVal credentials As Net.ICredentials, ByVal cookieContainer As System.Net.CookieContainer)
 			MyBase.New()
+
 			Me.Credentials = credentials
 			Me.CookieContainer = cookieContainer
 			Me.Url = String.Format("{0}BulkImportManager.asmx", kCura.WinEDDS.Config.WebServiceURL)
@@ -14,14 +15,24 @@ Namespace kCura.WinEDDS.Service
 
 #End Region
 
+		Private Sub CheckResultsForException(ByVal results As EDDS.WebAPI.BulkImportManagerBase.MassImportResults)
+			If results.ExceptionDetail IsNot Nothing Then
+				If results.ExceptionDetail.ExceptionMessage IsNot Nothing AndAlso results.ExceptionDetail.ExceptionMessage.Contains("Timeout expired") Then
+					Throw New BulkImportSqlTimeoutException(results.ExceptionDetail)
+				Else
+					Throw New BulkImportSqlException(results.ExceptionDetail)
+				End If
+			End If
+		End Sub
+
 #Region " Shadow Methods "
 		Public Shadows Function BulkImportImage(ByVal appID As Int32, ByVal bulkFileName As String, ByVal uploadFullText As Boolean, ByVal overwrite As kCura.EDDS.WebAPI.BulkImportManagerBase.OverwriteType, ByVal destinationFolderArtifactID As Int32, ByVal repository As String, ByVal useBulk As Boolean, ByVal runID As String, ByVal keyFieldID As Int32, ByVal inRepository As Boolean) As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults
 			Dim tries As Int32 = 0
 			While tries < Config.MaxReloginTries
 				tries += 1
 				Try
-					Dim retval As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults = MyBase.BulkImportImage(appID, bulkFileName, uploadFullText, overwrite, destinationFolderArtifactID, repository, useBulk, runID, keyFieldID, inRepository)
-					If retval.ErrorText <> "" Then Throw New BulkImportSqlException(retval.ErrorText)
+					Dim retval As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults = Me.InvokeBulkImportImage(appID, bulkFileName, uploadFullText, overwrite, destinationFolderArtifactID, repository, useBulk, runID, keyFieldID, inRepository)
+					Me.CheckResultsForException(retval)
 					Return retval
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
@@ -39,8 +50,8 @@ Namespace kCura.WinEDDS.Service
 			While tries < Config.MaxReloginTries
 				tries += 1
 				Try
-					Dim retval As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults = MyBase.BulkImportProductionImage(appID, bulkFileName, uploadFullText, overwrite, destinationFolderArtifactID, repository, productionArtifactID, useBulk, runID, productionKeyFieldArtifactID, inRepository)
-					If retval.ErrorText <> "" Then Throw New BulkImportSqlException(retval.ErrorText)
+					Dim retval As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults = Me.InvokeBulkImportProductionImage(appID, bulkFileName, uploadFullText, overwrite, destinationFolderArtifactID, repository, productionArtifactID, useBulk, runID, productionKeyFieldArtifactID, inRepository)
+					Me.CheckResultsForException(retval)
 					Return retval
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
@@ -96,8 +107,8 @@ Namespace kCura.WinEDDS.Service
 			While tries < Config.MaxReloginTries
 				tries += 1
 				Try
-					Dim retval As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults = MyBase.BulkImportNative(appID, settings, inRepository, includeExtractedTextEncoding)
-					If retval.ErrorText <> "" Then Throw New BulkImportSqlException(retval.ErrorText)
+					Dim retval As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults = Me.InvokeBulkImportNative(appID, settings, inRepository, includeExtractedTextEncoding)
+					Me.CheckResultsForException(retval)
 					Return retval
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
@@ -115,8 +126,8 @@ Namespace kCura.WinEDDS.Service
 			While tries < Config.MaxReloginTries
 				tries += 1
 				Try
-					Dim retval As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults = MyBase.BulkImportObjects(appID, settings, inRepository)
-					If retval.ErrorText <> "" Then Throw New BulkImportSqlException(retval.ErrorText)
+					Dim retval As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults = Me.InvokeBulkImportObjects(appID, settings, inRepository)
+					Me.CheckResultsForException(retval)
 					Return retval
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
@@ -148,11 +159,53 @@ Namespace kCura.WinEDDS.Service
 
 #End Region
 
+#Region " Webservice Wrapper Methods "
+
+		Protected Overridable Function InvokeBulkImportImage(ByVal appID As Integer, ByVal bulkFileName As String, ByVal uploadFullText As Boolean, ByVal overwrite As kCura.EDDS.WebAPI.BulkImportManagerBase.OverwriteType, ByVal destinationFolderArtifactID As Integer, ByVal repository As String, ByVal useBulk As Boolean, ByVal runID As String, ByVal keyFieldID As Integer, ByVal inRepository As Boolean) As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults
+			Return MyBase.BulkImportImage(appID, bulkFileName, uploadFullText, overwrite, destinationFolderArtifactID, repository, useBulk, runID, keyFieldID, inRepository)
+		End Function
+
+		Protected Overridable Function InvokeBulkImportProductionImage(ByVal appID As Integer, ByVal bulkFileName As String, ByVal uploadFullText As Boolean, ByVal overwrite As kCura.EDDS.WebAPI.BulkImportManagerBase.OverwriteType, ByVal destinationFolderArtifactID As Integer, ByVal repository As String, ByVal productionArtifactID As Integer, ByVal useBulk As Boolean, ByVal runID As String, ByVal productionKeyFieldArtifactID As Integer, ByVal inRepository As Boolean) As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults
+			Return MyBase.BulkImportProductionImage(appID, bulkFileName, uploadFullText, overwrite, destinationFolderArtifactID, repository, productionArtifactID, useBulk, runID, productionKeyFieldArtifactID, inRepository)
+		End Function
+
+		Protected Overridable Function InvokeBulkImportNative(ByVal appID As Integer, ByVal settings As EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo, ByVal inRepository As Boolean, ByVal includeExtractedTextEncoding As Boolean) As EDDS.WebAPI.BulkImportManagerBase.MassImportResults
+			Return MyBase.BulkImportNative(appID, settings, inRepository, includeExtractedTextEncoding)
+		End Function
+
+		Protected Overridable Function InvokeBulkImportObjects(ByVal appID As Integer, ByVal settings As EDDS.WebAPI.BulkImportManagerBase.ObjectLoadInfo, ByVal inRepository As Boolean) As EDDS.WebAPI.BulkImportManagerBase.MassImportResults
+			Return MyBase.BulkImportObjects(appID, settings, inRepository)
+		End Function
+
+#End Region
+
 		Public Class BulkImportSqlException
 			Inherits System.Exception
-			Public Sub New(ByVal errorText As String)
-				MyBase.New(errorText)
+
+			Private Property DetailedException As EDDS.WebAPI.BulkImportManagerBase.SoapExceptionDetail
+			Public Sub New(ByVal exception As EDDS.WebAPI.BulkImportManagerBase.SoapExceptionDetail)
+				MyBase.New(exception.ExceptionMessage)
+				Me.DetailedException = exception
+			End Sub
+
+			Public Overrides Function ToString() As String
+				Return DetailedException.ExceptionFullText
+			End Function
+		End Class
+
+		Public Class BulkImportSqlTimeoutException
+			Inherits BulkImportSqlException
+			Private _details As String()
+			Public ReadOnly Property Details As String()
+				Get
+					Return _details
+				End Get
+			End Property
+			Public Sub New(ByVal exception As EDDS.WebAPI.BulkImportManagerBase.SoapExceptionDetail)
+				MyBase.New(exception)
+				_details = exception.Details
 			End Sub
 		End Class
+
 	End Class
 End Namespace

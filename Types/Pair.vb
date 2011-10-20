@@ -1,5 +1,5 @@
 Namespace kCura.WinEDDS
-	Public Class Pair
+	<Serializable()> Public Class Pair
 		Public Value As String
 		Public Display As String
 		Public Overrides Function ToString() As String
@@ -9,5 +9,8 @@ Namespace kCura.WinEDDS
 			Me.Value = v
 			Me.Display = d
 		End Sub
+		Public Shadows Function equals(ByVal other As kCura.WinEDDS.Pair) As Boolean
+			Return (Me.Display = other.Display And Me.Value = other.Value)
+		End Function
 	End Class
 End Namespace

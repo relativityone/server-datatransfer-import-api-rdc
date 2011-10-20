@@ -3,17 +3,13 @@ Namespace kCura.WinEDDS.Service
 	Public Class FieldQuery
 		Inherits kCura.EDDS.WebAPI.FieldQueryBase.FieldQuery
 
-		'Private _fieldQuery As New kCura.EDDS.Service.DynamicFields.FieldQuery
-		'Private _identity As kCura.EDDS.EDDSIdentity
-
 		Public Sub New(ByVal credentials As Net.ICredentials, ByVal cookieContainer As System.Net.CookieContainer)
-			'Public Sub New(ByVal credentials As Net.NetworkCredential, ByVal cookieContainer As System.Net.CookieContainer, ByVal identity As kCura.EDDS.EDDSIdentity)
 			MyBase.New()
+
 			Me.Credentials = credentials
 			Me.CookieContainer = cookieContainer
 			Me.Url = String.Format("{0}FieldQuery.asmx", kCura.WinEDDS.Config.WebServiceURL)
 			Me.Timeout = Settings.DefaultTimeOut
-			'_identity = identity
 		End Sub
 
 		Protected Overrides Function GetWebRequest(ByVal uri As System.Uri) As System.Net.WebRequest

@@ -4,9 +4,10 @@ Namespace kCura.WinEDDS.Service
 
 		Public Sub New(ByVal credentials As Net.ICredentials, ByVal cookieContainer As System.Net.CookieContainer)
 			MyBase.New()
+
 			Me.Credentials = credentials
 			Me.CookieContainer = cookieContainer
-			Me.Url = String.Format("{0}userManager.asmx", kCura.WinEDDS.Config.WebServiceURL)
+			Me.Url = String.Format("{0}UserManager.asmx", kCura.WinEDDS.Config.WebServiceURL)
 			Me.Timeout = Settings.DefaultTimeOut
 		End Sub
 
@@ -29,7 +30,7 @@ Namespace kCura.WinEDDS.Service
 					If kCura.WinEDDS.Config.UsesWebAPI Then
 						Return MyBase.RetrieveAllAssignableInCase(caseContextArtifactID)
 					Else
-						'Return kCura.EDDS.Service.FileQuery.RetrieveFullTextFilesForDocuments(_identity, artifactID, documentArtifactIDs).ToDataSet()
+						'Return Relativity.Core.Service.FileQuery.RetrieveFullTextFilesForDocuments(_identity, artifactID, documentArtifactIDs).ToDataSet()
 					End If
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then

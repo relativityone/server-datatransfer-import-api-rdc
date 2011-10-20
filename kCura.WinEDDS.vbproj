@@ -254,6 +254,7 @@
       <Project>{94940707-AFFE-47EB-BD70-5ADE8F7C8A36}</Project>
       <Name>kCura.EDDS.Import</Name>
     </ProjectReference>
+    <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
     <Import Include="Microsoft.VisualBasic" />
@@ -345,9 +346,11 @@
     <Compile Include="FileDownloader.vb">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="FileObjects\ErrorExportFile.vb" />
     <Compile Include="FileObjects\ExportFile.vb">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="FileObjects\ExportFileSerializer.vb" />
     <Compile Include="FileObjects\ImageLoadFile.vb">
       <SubType>Code</SubType>
     </Compile>
@@ -461,6 +464,7 @@
     <Compile Include="PropertyExtractor\File.vb">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="ReadFromExisting.vb" />
     <Compile Include="Service\AuditManager.vb">
       <SubType>Code</SubType>
     </Compile>
@@ -540,6 +544,7 @@
     <Compile Include="SettingsFactories\SettingsFactoryBase.vb">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Types\ClientSideErrorCollection.vb" />
     <Compile Include="Types\DocumentField.vb">
       <SubType>Code</SubType>
     </Compile>
@@ -598,10 +603,9 @@
       <AutoGen>True</AutoGen>
     </Compile>
     <Compile Include="Web References\kCura.EDDS.WebAPI.BulkImportManagerBase\Reference.vb">
-      <DependentUpon>Reference.map</DependentUpon>
-      <SubType>code</SubType>
-      <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.map</DependentUpon>
     </Compile>
     <Compile Include="Web References\kCura.EDDS.WebAPI.CaseManagerBase\Reference.vb">
       <DependentUpon>Reference.map</DependentUpon>
@@ -704,7 +708,6 @@
       <Generator>MSDiscoCodeGenerator</Generator>
       <LastGenOutput>Reference.vb</LastGenOutput>
     </None>
-    <None Include="Web References\kCura.EDDS.WebAPI.BulkImportManagerBase\BulkImportManager.disco" />
     <None Include="Web References\kCura.EDDS.WebAPI.BulkImportManagerBase\BulkImportManager.wsdl" />
     <None Include="Web References\kCura.EDDS.WebAPI.BulkImportManagerBase\ErrorFileKey.datasource">
       <DependentUpon>Reference.map</DependentUpon>
@@ -862,17 +865,15 @@
       </CachedSettingsPropName>
     </WebReferenceUrl>
     <WebReferenceUrl Include="http://localhost/RelativityWebApi/BulkImportManager.asmx">
+      <UrlBehavior>Dynamic</UrlBehavior>
       <RelPath>Web References\kCura.EDDS.WebAPI.BulkImportManagerBase\</RelPath>
-      <UrlBehavior>Static</UrlBehavior>
       <UpdateFromURL>http://localhost/RelativityWebApi/BulkImportManager.asmx</UpdateFromURL>
       <ServiceLocationURL>
       </ServiceLocationURL>
       <CachedDynamicPropName>
       </CachedDynamicPropName>
-      <CachedAppSettingsObjectName>
-      </CachedAppSettingsObjectName>
-      <CachedSettingsPropName>
-      </CachedSettingsPropName>
+      <CachedAppSettingsObjectName>MySettings</CachedAppSettingsObjectName>
+      <CachedSettingsPropName>kCura_WinEDDS_kCura_EDDS_WebAPI_BulkImportManagerBase_BulkImportManager</CachedSettingsPropName>
     </WebReferenceUrl>
     <WebReferenceUrl Include="http://localhost/RelativityWebApi/CaseManager.asmx">
       <RelPath>Web References\kCura.EDDS.WebAPI.CaseManagerBase\</RelPath>
@@ -1120,7 +1121,12 @@
       <Install>true</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Web References\kCura.EDDS.WebAPI.BulkImportManagerBase\BulkImportManager.disco" />
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.VisualBasic.targets" />
   <PropertyGroup>
     <PreBuildEvent>

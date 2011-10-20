@@ -55,7 +55,7 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
         '''<remarks/>
         Public Sub New()
             MyBase.New
-            Me.Url = "http://localhost/RelativityWebApi/BulkImportManager.asmx"
+            Me.Url = Global.My.MySettings.Default.kCura_WinEDDS_kCura_EDDS_WebAPI_BulkImportManagerBase_BulkImportManager
             If (Me.IsLocalFileSystemWebService(Me.Url) = true) Then
                 Me.UseDefaultCredentials = true
                 Me.useDefaultCredentialsSetExplicitly = false
@@ -506,7 +506,7 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
         
         Private artifactsUpdatedField As Integer
         
-        Private errorTextField As String
+        Private exceptionDetailField As SoapExceptionDetail
         
         Private runIDField As String
         
@@ -541,12 +541,12 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
         End Property
         
         '''<remarks/>
-        Public Property ErrorText() As String
+        Public Property ExceptionDetail() As SoapExceptionDetail
             Get
-                Return Me.errorTextField
+                Return Me.exceptionDetailField
             End Get
             Set
-                Me.errorTextField = value
+                Me.exceptionDetailField = value
             End Set
         End Property
         
@@ -557,6 +557,76 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
             End Get
             Set
                 Me.runIDField = value
+            End Set
+        End Property
+    End Class
+    
+    '''<remarks/>
+    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.1"),  _
+     System.SerializableAttribute(),  _
+     System.Diagnostics.DebuggerStepThroughAttribute(),  _
+     System.ComponentModel.DesignerCategoryAttribute("code"),  _
+     System.Xml.Serialization.XmlTypeAttribute([Namespace]:="http://www.kCura.com/EDDS/BulkImportManager")>  _
+    Partial Public Class SoapExceptionDetail
+        
+        Private exceptionTypeField As String
+        
+        Private exceptionMessageField As String
+        
+        Private exceptionTraceField As String
+        
+        Private exceptionFullTextField As String
+        
+        Private detailsField() As String
+        
+        '''<remarks/>
+        Public Property ExceptionType() As String
+            Get
+                Return Me.exceptionTypeField
+            End Get
+            Set
+                Me.exceptionTypeField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property ExceptionMessage() As String
+            Get
+                Return Me.exceptionMessageField
+            End Get
+            Set
+                Me.exceptionMessageField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property ExceptionTrace() As String
+            Get
+                Return Me.exceptionTraceField
+            End Get
+            Set
+                Me.exceptionTraceField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property ExceptionFullText() As String
+            Get
+                Return Me.exceptionFullTextField
+            End Get
+            Set
+                Me.exceptionFullTextField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        <System.Xml.Serialization.XmlElementAttribute("Details")>  _
+        Public Property Details() As String()
+            Get
+                Return Me.detailsField
+            End Get
+            Set
+                Me.detailsField = value
             End Set
         End Property
     End Class
@@ -811,6 +881,39 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
     End Enum
     
     '''<remarks/>
+    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.1"),  _
+     System.SerializableAttribute(),  _
+     System.Diagnostics.DebuggerStepThroughAttribute(),  _
+     System.ComponentModel.DesignerCategoryAttribute("code"),  _
+     System.Xml.Serialization.XmlTypeAttribute([Namespace]:="http://www.kCura.com/EDDS/BulkImportManager")>  _
+    Partial Public Class LoadRange
+        
+        Private startIndexField As Integer
+        
+        Private countField As Integer
+        
+        '''<remarks/>
+        Public Property StartIndex() As Integer
+            Get
+                Return Me.startIndexField
+            End Get
+            Set
+                Me.startIndexField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property Count() As Integer
+            Get
+                Return Me.countField
+            End Get
+            Set
+                Me.countField = value
+            End Set
+        End Property
+    End Class
+    
+    '''<remarks/>
     <System.Xml.Serialization.XmlIncludeAttribute(GetType(ObjectLoadInfo)),  _
      System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.1"),  _
      System.SerializableAttribute(),  _
@@ -818,6 +921,8 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
      System.ComponentModel.DesignerCategoryAttribute("code"),  _
      System.Xml.Serialization.XmlTypeAttribute([Namespace]:="http://www.kCura.com/EDDS/BulkImportManager")>  _
     Partial Public Class NativeLoadInfo
+        
+        Private rangeField As LoadRange
         
         Private mappedFieldsField() As FieldInfo
         
@@ -838,6 +943,16 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
         Private objectFileNameField As String
         
         Private keyFieldArtifactIDField As Integer
+        
+        '''<remarks/>
+        Public Property Range() As LoadRange
+            Get
+                Return Me.rangeField
+            End Get
+            Set
+                Me.rangeField = value
+            End Set
+        End Property
         
         '''<remarks/>
         Public Property MappedFields() As FieldInfo()

@@ -14,6 +14,7 @@ Namespace kCura.WinEDDS
 
 		Public Sub New(ByVal credential As Net.NetworkCredential, ByVal cookieContainer As Net.CookieContainer, ByVal caseInfo As Relativity.CaseInfo)
 			MyBase.New()
+
 			_credential = credential
 			_cookieContainer = cookieContainer
 			_caseInfo = caseInfo
@@ -143,7 +144,7 @@ Namespace kCura.WinEDDS
 			End Try
 			Dim downloader As kCura.WinEDDS.FileDownloader
 			Try
-				downloader = New kCura.WinEDDS.FileDownloader(_credential, _caseInfo.DocumentPath, kCura.Utility.URI.GetFullyQualifiedPath(_caseInfo.DownloadHandlerURL, New System.Uri(kCura.WinEDDS.Config.WebServiceURL)), _cookieContainer, kCura.WinEDDS.Service.Settings.AuthenticationToken)
+				downloader = New kCura.WinEDDS.FileDownloader(_credential, _caseInfo.DocumentPath, kCura.Utility.URI.GetFullyQualifiedPath(_caseInfo.DownloadHandlerURL, New System.Uri(WinEDDS.Config.WebServiceURL)), _cookieContainer, kCura.WinEDDS.Service.Settings.AuthenticationToken)
 			Catch ex As Exception
 				Me.WriteStatus("Error initializing file downloader")
 				Me.WriteStatus("Actual error: " & ex.ToString)
@@ -159,6 +160,7 @@ Namespace kCura.WinEDDS
 			End Try
 			Try
 				Dim gateway As New kCura.WinEDDS.Service.FileIO(_credential, _cookieContainer)
+
 				gateway.RemoveTempFile(_caseInfo.ArtifactID, dest)
 				Me.WriteStatus("Temp file successfully removed from repository")
 			Catch ex As Exception
@@ -172,7 +174,9 @@ Namespace kCura.WinEDDS
 			End Try
 			Try
 				Me.WriteStatus("Retrieving default repository drive information:")
-				Dim s As String()() = New kCura.WinEDDS.Service.FileIO(_credential, _cookieContainer).GetDefaultRepositorySpaceReport(_caseInfo.ArtifactID)
+				Dim tempFileIO As Service.FileIO = New kCura.WinEDDS.Service.FileIO(_credential, _cookieContainer)
+
+				Dim s As String()() = tempFileIO.GetDefaultRepositorySpaceReport(_caseInfo.ArtifactID)
 				Me.WriteStatus("Success - report follows:")
 				Me.WriteOutReportString(s)
 			Catch ex As Exception
@@ -211,6 +215,7 @@ Namespace kCura.WinEDDS
 		Private Function CheckBcp() As Boolean
 			Me.WriteStatus("Checking Bulk Share Configuration")
 			Dim gateway As New kCura.WinEDDS.Service.FileIO(_credential, _cookieContainer)
+
 			Dim bcpPath As String
 			Try
 				bcpPath = gateway.GetBcpSharePath(_caseInfo.ArtifactID)

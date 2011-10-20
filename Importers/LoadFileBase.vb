@@ -95,6 +95,14 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
+		Protected Overridable ReadOnly Property BulkImportManager As kCura.WinEDDS.Service.BulkImportManager
+			Get
+				If _bulkImportManager Is Nothing Then _bulkImportManager = New kCura.WinEDDS.Service.BulkImportManager(_settings.Credentials, _settings.CookieContainer)
+
+				Return _bulkImportManager
+			End Get
+		End Property
+
 #End Region
 
 #Region " Virtual Members "
@@ -109,22 +117,15 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Protected Sub New(ByVal args As LoadFile, ByVal timezoneoffset As Int32, ByVal doRetryLogic As Boolean, ByVal autoDetect As Boolean)
-			'MyBase.New(args.RecordDelimiter, args.QuoteDelimiter, args.NewlineDelimiter, doRetryLogic)
 			_settings = args
 			_artifactReader = Me.GetArtifactReader
 			_docFields = args.FieldMap.DocumentFields
 			_filePathColumn = args.NativeFilePathColumn
 			_firstLineContainsColumnNames = args.FirstLineContainsHeaders
 			_fieldMap = args.FieldMap
-			_documentManager = New kCura.WinEDDS.Service.DocumentManager(args.Credentials, args.CookieContainer)
-			_uploadManager = New kCura.WinEDDS.Service.FileIO(args.Credentials, args.CookieContainer)
-			_codeManager = New kCura.WinEDDS.Service.CodeManager(args.Credentials, args.CookieContainer)
-			_folderManager = New kCura.WinEDDS.Service.FolderManager(args.Credentials, args.CookieContainer)
-			_fieldQuery = New kCura.WinEDDS.Service.FieldQuery(args.Credentials, args.CookieContainer)
-			_fileManager = New kCura.WinEDDS.Service.FileManager(args.Credentials, args.CookieContainer)
-			_usermanager = New kCura.WinEDDS.Service.UserManager(args.Credentials, args.CookieContainer)
-			_bulkImportManager = New kCura.WinEDDS.Service.BulkImportManager(args.Credentials, args.CookieContainer)
-			_objectManager = New kCura.WinEDDS.Service.ObjectManager(args.Credentials, args.CookieContainer)
+
+			InitializeManagers(args)
+
 			_keyFieldID = args.IdentityFieldId
 			_multiValueSeparator = args.MultiRecordDelimiter.ToString.ToCharArray
 			_folderID = args.DestinationFolderID
@@ -156,6 +157,18 @@ Namespace kCura.WinEDDS
 					End If
 				Next
 			End If
+		End Sub
+
+		Protected Overridable Sub InitializeManagers(ByVal args As LoadFile)
+			_documentManager = New kCura.WinEDDS.Service.DocumentManager(args.Credentials, args.CookieContainer)
+			_uploadManager = New kCura.WinEDDS.Service.FileIO(args.Credentials, args.CookieContainer)
+			_codeManager = New kCura.WinEDDS.Service.CodeManager(args.Credentials, args.CookieContainer)
+			_folderManager = New kCura.WinEDDS.Service.FolderManager(args.Credentials, args.CookieContainer)
+			_fieldQuery = New kCura.WinEDDS.Service.FieldQuery(args.Credentials, args.CookieContainer)
+			_fileManager = New kCura.WinEDDS.Service.FileManager(args.Credentials, args.CookieContainer)
+			_usermanager = New kCura.WinEDDS.Service.UserManager(args.Credentials, args.CookieContainer)
+			'_bulkImportManager = New kCura.WinEDDS.Service.BulkImportManager(args.Credentials, args.CookieContainer)
+			_objectManager = New kCura.WinEDDS.Service.ObjectManager(args.Credentials, args.CookieContainer)
 		End Sub
 
 #Region "Code Parsing"
@@ -267,6 +280,7 @@ Namespace kCura.WinEDDS
 			Dim objectDisplayNames As String() = DirectCast(goodObjects.ToArray(GetType(String)), String())
 			Dim nameIDPairs As New System.Collections.Hashtable
 			For Each objectName As String In objectDisplayNames
+				If objectName.Length > field.TextLength Then Throw New kCura.Utility.DelimitedFileImporter.InputStringExceedsFixedLengthException(Me.CurrentLineNumber, column, field.TextLength, field.DisplayName)
 				Dim artifactID As System.Data.DataSet = _objectManager.RetrieveArtifactIdOfMappedObject(_caseArtifactID, objectName, associatedObjectTypeID)
 				If artifactID.Tables(0).Rows.Count > 0 Then
 					nameIDPairs(objectName) = CType(artifactID.Tables(0).Rows(0)(0), Int32)
@@ -394,10 +408,10 @@ Namespace kCura.WinEDDS
 
 				Case Relativity.FieldTypeHelper.FieldType.Varchar
 					If field.Value Is Nothing Then field.Value = String.Empty
-					field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(Me.GetNullableFixedString(field.ValueAsString, columnIndex, field.TextLength))
+					field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(Me.GetNullableFixedString(field.ValueAsString, columnIndex, field.TextLength, field.DisplayName))
 					If field.Category = Relativity.FieldCategory.Relational Then
 						If field.Value.ToString = String.Empty AndAlso importBehavior.HasValue AndAlso importBehavior.Value = EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice.ReplaceBlankValuesWithIdentifier Then
-							field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(Me.GetNullableFixedString(identityValue, columnIndex, field.TextLength))
+							field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(Me.GetNullableFixedString(identityValue, columnIndex, field.TextLength, field.DisplayName))
 						End If
 					End If
 
@@ -533,9 +547,9 @@ Namespace kCura.WinEDDS
 			End If
 		End Function
 
-		Public Function GetNullableFixedString(ByVal value As String, ByVal column As Int32, ByVal fieldLength As Int32) As String
+		Public Function GetNullableFixedString(ByVal value As String, ByVal column As Int32, ByVal fieldLength As Int32, ByVal displayName As String) As String
 			If value.Length > fieldLength Then
-				Throw New kCura.Utility.DelimitedFileImporter.InputStringExceedsFixedLengthException(CurrentLineNumber, column, fieldLength)
+				Throw New kCura.Utility.DelimitedFileImporter.InputStringExceedsFixedLengthException(CurrentLineNumber, column, fieldLength, displayName)
 			Else
 				Return kCura.Utility.NullableTypesHelper.DBNullString(value)
 			End If

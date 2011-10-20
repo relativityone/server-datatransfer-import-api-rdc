@@ -25,13 +25,16 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Protected Overridable Function GetImageFileImporter() As kCura.WinEDDS.BulkImageFileImporter
-			Return New kCura.WinEDDS.BulkImageFileImporter(ImageLoadFile.DestinationFolderID, ImageLoadFile, ProcessController, Me.ProcessID, True)
+			Dim returnImporter As BulkImageFileImporter = New kCura.WinEDDS.BulkImageFileImporter(ImageLoadFile.DestinationFolderID, ImageLoadFile, ProcessController, Me.ProcessID, True)
+
+			Return returnImporter
 		End Function
 
 		Private Sub AuditRun(ByVal success As Boolean, ByVal runID As String)
 			Try
 				Dim retval As New kCura.EDDS.WebAPI.AuditManagerBase.ImageImportStatistics
 				retval.DestinationFolderArtifactID = ImageLoadFile.DestinationFolderID
+				retval.BatchSizes = _imageFileImporter.BatchSizeHistoryList.ToArray
 				If ImageLoadFile.ProductionArtifactID > 0 Then retval.DestinationProductionArtifactID = ImageLoadFile.ProductionArtifactID
 				retval.ExtractedTextReplaced = ImageLoadFile.ReplaceFullText
 				retval.ExtractedTextDefaultEncodingCodePageID = 0
@@ -70,6 +73,7 @@ Namespace kCura.WinEDDS
 				retval.TotalMetadataBytes = _imageFileImporter.Statistics.MetadataBytes
 				retval.SendNotification = ImageLoadFile.SendEmailOnLoadCompletion
 				Dim auditmanager As New kCura.WinEDDS.Service.AuditManager(ImageLoadFile.Credential, ImageLoadFile.CookieContainer)
+
 				auditmanager.AuditImageImport(ImageLoadFile.CaseInfo.ArtifactID, runID, Not success, retval)
 			Catch
 			End Try

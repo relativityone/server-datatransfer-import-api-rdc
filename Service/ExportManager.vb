@@ -1,6 +1,7 @@
 ﻿Namespace kCura.WinEDDS.Service
 	Public Class ExportManager
 		Inherits kCura.EDDS.WebAPI.ExportManagerBase.ExportManager
+
 		Protected Overrides Function GetWebRequest(ByVal uri As System.Uri) As System.Net.WebRequest
 			Dim wr As System.Net.HttpWebRequest = DirectCast(MyBase.GetWebRequest(uri), System.Net.HttpWebRequest)
 			wr.UnsafeAuthenticatedConnectionSharing = True
@@ -10,6 +11,7 @@
 
 		Public Sub New(ByVal credentials As Net.ICredentials, ByVal cookieContainer As System.Net.CookieContainer)
 			MyBase.New()
+
 			Me.Credentials = credentials
 			Me.CookieContainer = cookieContainer
 			Me.Url = String.Format("{0}ExportManager.asmx", kCura.WinEDDS.Config.WebServiceURL)

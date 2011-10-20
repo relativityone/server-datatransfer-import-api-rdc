@@ -77,6 +77,7 @@ Namespace kCura.WinEDDS
 
 			_cookieContainer = New System.Net.CookieContainer
 			Dim relativityManager As New kCura.WinEDDS.Service.RelativityManager(_credential, _cookieContainer)
+
 			Dim successfulLogin As Boolean = False
 			Try
 				successfulLogin = relativityManager.ValidateSuccesfulLogin()
@@ -86,6 +87,7 @@ Namespace kCura.WinEDDS
 			If Not successfulLogin Then
 				If Not _credential.Password = "" Then
 					Dim userManager As New kCura.WinEDDS.Service.UserManager(_credential, _cookieContainer)
+
 					If userManager.Login(_credential.UserName, _credential.Password) Then
 						kCura.WinEDDS.Service.Settings.AuthenticationToken = userManager.GenerateDistributedAuthenticationToken()
 						Exit Sub

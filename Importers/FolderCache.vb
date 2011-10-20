@@ -7,6 +7,7 @@ Namespace kCura.WinEDDS
 		Private _folderManager As Service.FolderManager
 		Private _rootFolderID As Int32
 		Private _caseContextArtifactID As Int32
+
 		Default Public ReadOnly Property FolderID(ByVal folderPath As String) As Int32
 			Get
 				Dim newFolderPath As New System.Text.StringBuilder

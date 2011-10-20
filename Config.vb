@@ -11,9 +11,13 @@ Namespace kCura.WinEDDS
 					_configDictionary = DirectCast(System.Configuration.ConfigurationManager.GetSection("kCura.WinEDDS"), System.Collections.IDictionary)
 					If _configDictionary Is Nothing Then _configDictionary = New System.Collections.Hashtable
 					If Not _configDictionary.Contains("ImportBatchSize") Then _configDictionary.Add("ImportBatchSize", "1000")
+					If Not _configDictionary.Contains("DynamicBatchResizingOn") Then _configDictionary.Add("DynamicBatchResizingOn", "True")
+					If Not _configDictionary.Contains("MinimumBatchSize") Then _configDictionary.Add("MinimumBatchSize", "100")
+					If Not _configDictionary.Contains("WaitTimeBetweenRetryAttempts") Then _configDictionary.Add("WaitTimeBetweenRetryAttempts", "30")
 					If Not _configDictionary.Contains("ImportBatchMaxVolume") Then _configDictionary.Add("ImportBatchMaxVolume", "10485760") '10(2^20) - don't know what 10MB standard is
 					If Not _configDictionary.Contains("ExportBatchSize") Then _configDictionary.Add("ExportBatchSize", "1000")
 					If Not _configDictionary.Contains("EnableSingleModeImport") Then _configDictionary.Add("EnableSingleModeImport", "False")
+					If Not _configDictionary.Contains("CreateErrorForEmptyNativeFile") Then _configDictionary.Add("CreateErrorForEmptyNativeFile", "False")
 				End If
 				Return _configDictionary
 			End Get
@@ -133,6 +137,24 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
+		Public Shared ReadOnly Property DynamicBatchResizingOn() As Boolean		'Allow or not to automatically decrease import batch size while import is in progress
+			Get
+				Return CType(ConfigSettings("DynamicBatchResizingOn"), Boolean)
+			End Get
+		End Property
+
+		Public Shared ReadOnly Property MinimumBatchSize() As Int32		'When AutoBatch is on. This is the lower ceiling up to which batch will decrease
+			Get
+				Return CType(ConfigSettings("MinimumBatchSize"), Int32)
+			End Get
+		End Property
+
+		Public Shared ReadOnly Property WaitTimeBetweenRetryAttempts() As Int32
+			Get
+				Return CType(ConfigSettings("WaitTimeBetweenRetryAttempts"), Int32)
+			End Get
+		End Property
+
 		Public Shared ReadOnly Property ExportBatchSize() As Int32		'Number of records
 			Get
 				Return CType(ConfigSettings("ExportBatchSize"), Int32)
@@ -163,6 +185,13 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
+		Public Shared ReadOnly Property CreateErrorForEmptyNativeFile() As Boolean
+			Get
+				Return CType(ConfigSettings("CreateErrorForEmptyNativeFile"), Boolean)
+			End Get
+		End Property
+
+
 
 		Public Shared Property ForceFolderPreview() As Boolean
 			Get
@@ -182,10 +211,30 @@ Namespace kCura.WinEDDS
 
 		Public Shared Property WebServiceURL() As String
 			Get
-				Return Config.GetRegistryKeyValue("WebServiceURL")
+				Dim returnValue As String = Nothing
+
+				'Programmatic ServiceURL
+				If _programmaticServiceURL IsNot Nothing Then
+					returnValue = _programmaticServiceURL
+				ElseIf ConfigSettings.Contains("WebServiceURL") Then
+					'App.config ServiceURL
+					returnValue = CType(ConfigSettings("WebServiceURL"), String)
+				Else
+					'Registry ServiceURL
+					returnValue = Config.GetRegistryKeyValue("WebServiceURL")
+				End If
+
+				Return returnValue
 			End Get
 			Set(ByVal value As String)
 				Config.SetRegistryKeyValue("WebServiceURL", value)
+			End Set
+		End Property
+
+		Private Shared _programmaticServiceURL As String = Nothing
+		Public Shared WriteOnly Property ProgrammaticServiceURL() As String
+			Set(value As String)
+				_programmaticServiceURL = value
 			End Set
 		End Property
 

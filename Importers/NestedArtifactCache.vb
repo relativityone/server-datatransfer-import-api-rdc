@@ -104,6 +104,7 @@ Namespace kCura.WinEDDS
 		Public Sub New(ByVal artifactManager As Service.IHierarchicArtifactManager, ByVal rootArtifactID As Int32, ByVal caseContextArtifactID As Int32, ByVal nestedItemDelimiter As String)
 			_ht = New Hashtable
 			_manager = artifactManager
+
 			_caseContextArtifactID = caseContextArtifactID
 			_rootArtifactID = rootArtifactID
 			_nestedItemDelimiter = nestedItemDelimiter

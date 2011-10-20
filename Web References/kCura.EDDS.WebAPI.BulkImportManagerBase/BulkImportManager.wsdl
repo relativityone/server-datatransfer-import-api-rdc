@@ -37,8 +37,17 @@
           <s:element minOccurs="1" maxOccurs="1" name="FilesProcessed" type="s:int" />
           <s:element minOccurs="1" maxOccurs="1" name="ArtifactsCreated" type="s:int" />
           <s:element minOccurs="1" maxOccurs="1" name="ArtifactsUpdated" type="s:int" />
-          <s:element minOccurs="0" maxOccurs="1" name="ErrorText" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="ExceptionDetail" type="tns:SoapExceptionDetail" />
           <s:element minOccurs="0" maxOccurs="1" name="RunID" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="SoapExceptionDetail">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="ExceptionType" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="ExceptionMessage" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="ExceptionTrace" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="ExceptionFullText" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="unbounded" name="Details" type="s:string" />
         </s:sequence>
       </s:complexType>
       <s:element name="BulkImportProductionImage">
@@ -115,6 +124,7 @@
       </s:element>
       <s:complexType name="NativeLoadInfo">
         <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="Range" type="tns:LoadRange" />
           <s:element minOccurs="0" maxOccurs="1" name="MappedFields" type="tns:ArrayOfFieldInfo" />
           <s:element minOccurs="1" maxOccurs="1" name="Overlay" type="tns:OverwriteType" />
           <s:element minOccurs="0" maxOccurs="1" name="Repository" type="s:string" />
@@ -125,6 +135,12 @@
           <s:element minOccurs="0" maxOccurs="1" name="CodeFileName" type="s:string" />
           <s:element minOccurs="0" maxOccurs="1" name="ObjectFileName" type="s:string" />
           <s:element minOccurs="1" maxOccurs="1" name="KeyFieldArtifactID" type="s:int" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="LoadRange">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="StartIndex" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="Count" type="s:int" />
         </s:sequence>
       </s:complexType>
       <s:complexType name="ArrayOfFieldInfo">

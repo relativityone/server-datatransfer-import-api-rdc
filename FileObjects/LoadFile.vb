@@ -37,7 +37,7 @@ Namespace kCura.WinEDDS
 		<NonSerialized()> Public CaseInfo As Relativity.CaseInfo
 		<NonSerialized()> Public SelectedCasePath As String = ""
 		<NonSerialized()> Public CopyFilesToDocumentRepository As Boolean = True
-		'<NonSerialized()> Public Identity As kCura.EDDS.EDDSIdentity
+		'<NonSerialized()> Public Identity As Relativity.Core.EDDSIdentity
 
 		Public Property CookieContainer() As System.Net.CookieContainer
 			Get
@@ -49,7 +49,7 @@ Namespace kCura.WinEDDS
 		End Property
 
 		Public Sub New()
-			Me.FilePath = "Select file to load..."
+			Me.FilePath = String.Empty
 			Me.RecordDelimiter = ChrW(20)
 			Me.QuoteDelimiter = ChrW(254)
 			Me.NewlineDelimiter = ChrW(174)

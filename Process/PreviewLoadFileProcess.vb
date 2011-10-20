@@ -19,6 +19,7 @@ Namespace kCura.WinEDDS
 		Public Sub New(ByVal formType As Int32)
 			_formType = formType
 		End Sub
+
 		Public Property TimeZoneOffset() As Int32
 			Get
 				Return _timeZoneOffset
@@ -51,6 +52,7 @@ Namespace kCura.WinEDDS
 			_warningCount = 0
 			_errorCount = 0
 			_loadFilePreviewer = New kCura.WinEDDS.LoadFilePreviewer(LoadFile, _timeZoneOffset, _errorsOnly, True, ProcessController)
+
 			_valueThrower.ThrowValue(New Object() {_loadFilePreviewer.ReadFile(LoadFile.FilePath, _formType), _errorsOnly})
 			Me.ProcessObserver.RaiseProcessCompleteEvent(True)
 		End Sub

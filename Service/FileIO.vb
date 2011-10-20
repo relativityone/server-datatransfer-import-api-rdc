@@ -2,10 +2,9 @@ Namespace kCura.WinEDDS.Service
 	Public Class FileIO
 		Inherits kCura.EDDS.WebAPI.FileIOBase.FileIO
 
-		'Dim _externalIOManager As New kCura.EDDS.Service.ExternalIO
-
 		Public Sub New(ByVal credentials As Net.ICredentials, ByVal cookieContainer As System.Net.CookieContainer)
 			MyBase.New()
+
 			Me.Credentials = credentials
 			Me.CookieContainer = cookieContainer
 			Me.Url = String.Format("{0}FileIO.asmx", kCura.WinEDDS.Config.WebServiceURL)
@@ -93,7 +92,7 @@ Namespace kCura.WinEDDS.Service
 				tries += 1
 				Try
 					Dim retval As String = MyBase.GetBcpSharePath(appID)
-					If String.IsNullOrEmpty(retval) Then 
+					If String.IsNullOrEmpty(retval) Then
 						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
 					Else
 						Return retval
@@ -102,12 +101,36 @@ Namespace kCura.WinEDDS.Service
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
 						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
 					Else
-						Throw
+						If TypeOf ex Is System.Web.Services.Protocols.SoapException Then
+							Throw ParseExceptionForMoreInfo(ex)
+						Else
+							Throw ex
+						End If
 					End If
 				End Try
 			End While
 			Throw New System.Exception("Unable to retrieve BCP share path from the server")
 			Return Nothing
+		End Function
+
+		Public Shared Function ParseExceptionForMoreInfo(ByVal ex As Exception) As System.Exception
+			Dim resultException As System.Exception = ex
+			Dim detailedException As Relativity.SoapExceptionDetail = Nothing
+			If TypeOf ex Is System.Web.Services.Protocols.SoapException Then
+				Dim soapException As System.Web.Services.Protocols.SoapException = DirectCast(ex, System.Web.Services.Protocols.SoapException)
+				Dim xs As New Xml.Serialization.XmlSerializer(GetType(Relativity.SoapExceptionDetail))
+				Dim doc As New System.Xml.XmlDocument
+				doc.LoadXml(soapException.Detail.OuterXml)
+				Dim xr As Xml.XmlReader = doc.CreateNavigator.ReadSubtree
+				detailedException = TryCast(xs.Deserialize(xr), Relativity.SoapExceptionDetail)
+			End If
+
+			If detailedException IsNot Nothing Then
+				resultException = New CustomException(detailedException.ExceptionMessage, ex)
+			End If
+
+			Return resultException
+
 		End Function
 
 		Public Shadows Function ValidateBcpShare(ByVal appID As Int32) As Boolean
@@ -176,6 +199,19 @@ Namespace kCura.WinEDDS.Service
 			End While
 		End Function
 #End Region
+
+		Public Class CustomException
+			Inherits System.Exception
+
+			Public Sub New(ByVal message As String, ByVal innerException As System.Exception)
+				MyBase.New(message, innerException)
+			End Sub
+
+			Public Overrides Function ToString() As String
+				Return MyBase.ToString + vbNewLine + MyBase.InnerException.ToString
+			End Function
+		End Class
+
 
 	End Class
 End Namespace

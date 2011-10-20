@@ -23,6 +23,7 @@ Namespace kCura.WinEDDS
 
 		Public Sub New(ByVal credentials As Net.NetworkCredential, ByVal destinationFolderPath As String, ByVal downloadHandlerUrl As String, ByVal cookieContainer As System.Net.CookieContainer, ByVal authenticationToken As String)
 			_gateway = New kCura.WinEDDS.Service.FileIO(credentials, cookieContainer)
+
 			_cookieContainer = cookieContainer
 			_gateway.Credentials = credentials
 			_gateway.Timeout = Int32.MaxValue
@@ -32,10 +33,10 @@ Namespace kCura.WinEDDS
 			End If
 			_destinationFolderPath = destinationFolderPath
 			_downloadUrl = kCura.Utility.URI.GetFullyQualifiedPath(downloadHandlerUrl, New System.Uri(kCura.WinEDDS.Config.WebServiceURL))
-			'Dim documentManager As kCura.EDDS.WebAPI.DocumentManagerBase.DocumentManager
 			SetType(_destinationFolderPath)
 			_authenticationToken = authenticationToken
 			_userManager = New kCura.WinEDDS.Service.UserManager(credentials, cookieContainer)
+
 			If _locationAccessMatrix Is Nothing Then _locationAccessMatrix = New System.Collections.Hashtable
 		End Sub
 
@@ -187,8 +188,6 @@ Namespace kCura.WinEDDS
 				httpWebRequest.Credentials = _credentials
 				httpWebRequest.CookieContainer = _cookieContainer
 				httpWebRequest.UnsafeAuthenticatedConnectionSharing = True
-				'TODO: remove entirely in 6.0
-				'httpWebRequest.Headers.Add("SOURCEID", "9AAC98ED-01A4-4111-B66E-D25130875E5D")				'Verifies WinEDDS as a trusted source with the Distributed environment.
 				Dim webResponse As System.Net.HttpWebResponse = DirectCast(httpWebRequest.GetResponse(), System.Net.HttpWebResponse)
 				Dim length As Int64 = 0
 				If Not webResponse Is Nothing Then

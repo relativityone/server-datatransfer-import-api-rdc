@@ -12,7 +12,7 @@ Namespace kCura.WinEDDS
 		Private WithEvents _newlineCounter As kCura.Utility.File.LineCounter
 		Private _hasRunPRocessComplete As Boolean = False
 		Private _uploadModeText As String = Nothing
-
+	
 		''' <summary>
 		''' Gets or sets the delimiter to use to separate fields in the bulk
 		''' file created in this process. Line delimiters will be this value plus a line feed.
@@ -29,7 +29,9 @@ Namespace kCura.WinEDDS
 		End Property
 
 		Public Overridable Function GetImporter() As kCura.WinEDDS.BulkLoadFileImporter
-			Return New kCura.WinEDDS.BulkLoadFileImporter(LoadFile, ProcessController, _timeZoneOffset, True, Me.ProcessID, True, BulkLoadFileFieldDelimiter)
+			Dim returnImporter As BulkLoadFileImporter = New kCura.WinEDDS.BulkLoadFileImporter(LoadFile, ProcessController, _timeZoneOffset, True, Me.ProcessID, True, BulkLoadFileFieldDelimiter)
+
+			Return returnImporter
 		End Function
 
 		Protected Overrides Sub Execute()
@@ -55,6 +57,7 @@ Namespace kCura.WinEDDS
 			Try
 				Dim retval As New kCura.EDDS.WebAPI.AuditManagerBase.ObjectImportStatistics
 				retval.ArtifactTypeID = LoadFile.ArtifactTypeID
+				retval.BatchSizes = _loadFileImporter.BatchSizeHistoryList.ToArray
 				retval.Bound = LoadFile.QuoteDelimiter
 				retval.Delimiter = LoadFile.RecordDelimiter
 				retval.NestedValueDelimiter = LoadFile.HierarchicalValueDelimiter
@@ -123,6 +126,7 @@ Namespace kCura.WinEDDS
 				retval.TotalMetadataBytes = _loadFileImporter.Statistics.MetadataBytes
 				retval.SendNotification = LoadFile.SendEmailOnLoadCompletion
 				Dim auditManager As New kCura.WinEDDS.Service.AuditManager(LoadFile.Credentials, LoadFile.CookieContainer)
+
 				auditManager.AuditObjectImport(LoadFile.CaseInfo.ArtifactID, runID, Not success, retval)
 			Catch
 			End Try
@@ -219,7 +223,7 @@ Namespace kCura.WinEDDS
 					message.Append("Error accessing load file - retrying")
 					If e.WaitTime > 0 Then message.Append(" in " & e.WaitTime & " seconds")
 					message.Append(vbNewLine)
-					message.Append("Actual error: " & e.Exception.ToString)
+					message.Append("Actual error: " & e.Exception.Message)
 			End Select
 			Me.ProcessObserver.RaiseWarningEvent((e.CurrentLineNumber + 1).ToString, message.ToString)
 			System.Threading.Monitor.Exit(Me.ProcessObserver)

@@ -3,6 +3,7 @@ Namespace kCura.WinEDDS.Service
 		Implements Service.IHierarchicArtifactManager
 		Private _codeManager As kCura.WinEDDS.Service.CodeManager
 		Private _codeTypeID As Int32
+
 		Public Sub New(ByVal codeManager As kCura.WinEDDS.Service.CodeManager, ByVal codeTypeID As Int32)
 			_codeManager = codeManager
 			_codeTypeID = codeTypeID

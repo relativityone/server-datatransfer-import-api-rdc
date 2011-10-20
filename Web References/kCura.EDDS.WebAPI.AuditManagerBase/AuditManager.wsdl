@@ -45,6 +45,7 @@
       </s:complexType>
       <s:complexType name="ImportStatistics" abstract="true">
         <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="BatchSizes" type="tns:ArrayOfInt" />
           <s:element minOccurs="1" maxOccurs="1" name="RepositoryConnection" type="tns:RepositoryConnectionType" />
           <s:element minOccurs="1" maxOccurs="1" name="Overwrite" type="tns:OverwriteType" />
           <s:element minOccurs="1" maxOccurs="1" name="OverlayIdentifierFieldArtifactID" type="s:int" />
@@ -61,6 +62,11 @@
           <s:element minOccurs="1" maxOccurs="1" name="NumberOfWarnings" type="s:long" />
           <s:element minOccurs="1" maxOccurs="1" name="RunTimeInMilliseconds" type="s:int" />
           <s:element minOccurs="1" maxOccurs="1" name="SendNotification" type="s:boolean" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="ArrayOfInt">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="int" type="s:int" />
         </s:sequence>
       </s:complexType>
       <s:simpleType name="RepositoryConnectionType">
@@ -118,11 +124,6 @@
       <s:complexType name="ArrayOfArrayOfInt">
         <s:sequence>
           <s:element minOccurs="0" maxOccurs="unbounded" name="ArrayOfInt" nillable="true" type="tns:ArrayOfInt" />
-        </s:sequence>
-      </s:complexType>
-      <s:complexType name="ArrayOfInt">
-        <s:sequence>
-          <s:element minOccurs="0" maxOccurs="unbounded" name="int" type="s:int" />
         </s:sequence>
       </s:complexType>
       <s:element name="AuditObjectImportResponse">

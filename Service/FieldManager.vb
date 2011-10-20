@@ -3,7 +3,6 @@ Namespace kCura.WinEDDS.Service
 		Inherits kCura.EDDS.WebAPI.FieldManagerBase.FieldManager
 
 		Private _query As kCura.WinEDDS.Service.FieldQuery
-
 		Public ReadOnly Property Query() As kCura.WinEDDS.Service.FieldQuery
 			Get
 				Return _query
@@ -19,12 +18,14 @@ Namespace kCura.WinEDDS.Service
 
 		Public Sub New(ByVal credentials As Net.ICredentials, ByVal cookieContainer As System.Net.CookieContainer)
 			MyBase.New()
+
 			Me.Credentials = credentials
 			Me.CookieContainer = cookieContainer
+			_query = New kCura.WinEDDS.Service.FieldQuery(credentials, Me.CookieContainer)
 			Me.Url = String.Format("{0}FieldManager.asmx", kCura.WinEDDS.Config.WebServiceURL)
 			Me.Timeout = Settings.DefaultTimeOut
-			_query = New kCura.WinEDDS.Service.FieldQuery(credentials, Me.CookieContainer)
 		End Sub
+
 
 #Region " Translations "
 		Public Shared Function DTOtoDocumentField(ByVal dto As kCura.EDDS.WebAPI.DocumentManagerBase.Field) As DocumentField
