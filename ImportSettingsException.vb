@@ -16,10 +16,6 @@ Public Class ImportSettingsException
 		_additionalInfo = AdditionalInfo
 	End Sub
 
-	Public Sub New(ByVal setting As String, ByVal conflictingSetting As String, ByVal additionalInfo As String)
-		'
-	End Sub
-
 	Public ReadOnly Property Setting As String
 		Get
 			Return _setting
