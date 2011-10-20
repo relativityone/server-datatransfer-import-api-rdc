@@ -321,7 +321,7 @@ Namespace kCura.EDDS.WinForm
 				Return True
 			Else
 				MsgBox("The following identifier fields have not been mapped: " & ChrW(13) & unselectedIDFieldNames.ToString & _
-				 "Do you wish to continue?", MsgBoxStyle.Critical, "Warning")
+				"Do you wish to continue?", MsgBoxStyle.Critical, "Warning")
 				Return False
 			End If
 		End Function
@@ -859,6 +859,12 @@ Namespace kCura.EDDS.WinForm
 			End Try
 		End Sub
 
+		Public Function GetListOfProductionsForCase(ByVal caseInfo As Relativity.CaseInfo) As System.Data.DataTable
+			Dim productionManager As New kCura.WinEDDS.Service.ProductionManager(Me.Credential, _cookieContainer)
+			Return productionManager.RetrieveProducedByContextArtifactID(caseInfo.ArtifactID).Tables(0)
+		End Function
+
+
 		Public Function GetNewExportFileSettingsObject(ByVal selectedFolderId As Int32, ByVal caseInfo As Relativity.CaseInfo, ByVal typeOfExport As kCura.WinEDDS.ExportFile.ExportType, ByVal artifactTypeID As Int32) As WinEDDS.ExportFile
 			Dim exportFile As New WinEDDS.ExportFile(artifactTypeID)
 			Dim searchManager As New kCura.WinEDDS.Service.SearchManager(Me.Credential, _cookieContainer)
@@ -867,6 +873,7 @@ Namespace kCura.EDDS.WinForm
 			exportFile.CaseInfo = caseInfo
 			exportFile.Credential = Me.Credential
 			exportFile.TypeOfExport = typeOfExport
+			exportFile.ObjectTypeName = Me.GetObjectTypeName(exportFile.ArtifactTypeID)
 			Select Case typeOfExport
 				Case exportFile.ExportType.Production
 					exportFile.DataTable = productionManager.RetrieveProducedByContextArtifactID(caseInfo.ArtifactID).Tables(0)
@@ -1305,6 +1312,14 @@ Namespace kCura.EDDS.WinForm
 #End Region
 
 #Region "Save/Load Settings Objects"
+		Public Sub SaveImageLoadFile(ByVal imageLoadFile As ImageLoadFile, ByVal path As String)
+			SaveFileObject(imageLoadFile, path)
+		End Sub
+
+		Public Sub SaveExportFile(ByVal exportFile As ExportFile, ByVal path As String)
+			SaveFileObject(exportFile, path)
+		End Sub
+
 		Public Sub SaveLoadFile(ByVal loadFile As LoadFile, ByVal path As String)
 			SaveFileObject(loadFile, path)
 		End Sub
@@ -1387,8 +1402,8 @@ Namespace kCura.EDDS.WinForm
 				Dim fieldMapItem As kCura.WinEDDS.LoadFileFieldMap.LoadFileFieldMapItem
 				For Each fieldMapItem In tempLoadFile.FieldMap
 					If Not fieldMapItem.DocumentField Is Nothing AndAlso _
-					 fieldMapItem.NativeFileColumnIndex >= 0 AndAlso _
-					 fieldMapItem.DocumentField.FieldName.ToLower = "group identifier" Then
+					fieldMapItem.NativeFileColumnIndex >= 0 AndAlso _
+					fieldMapItem.DocumentField.FieldName.ToLower = "group identifier" Then
 						tempLoadFile.GroupIdentifierColumn = Me.GetColumnHeadersFromLoadFile(tempLoadFile, tempLoadFile.FirstLineContainsHeaders)(fieldMapItem.NativeFileColumnIndex)
 						'mapItemToRemove = fieldMapItem
 					End If
@@ -1428,9 +1443,6 @@ Namespace kCura.EDDS.WinForm
 			Return retval
 		End Function
 
-		Public Sub SaveImageLoadFile(ByVal imageLoadFile As ImageLoadFile, ByVal path As String)
-			SaveFileObject(imageLoadFile, path)
-		End Sub
 #End Region
 
 #Region "Login"
@@ -1474,7 +1486,7 @@ Namespace kCura.EDDS.WinForm
 					_credential = cred
 					kCura.WinEDDS.Service.Settings.AuthenticationToken = userManager.GenerateDistributedAuthenticationToken()
 					If openCaseSelector Then OpenCase()
-					_timeZoneOffset = 0					'New kCura.WinEDDS.Service.RelativityManager(cred, _cookieContainer).GetServerTimezoneOffset
+					_timeZoneOffset = 0															'New kCura.WinEDDS.Service.RelativityManager(cred, _cookieContainer).GetServerTimezoneOffset
 				Else
 					Me.ReLogin("Invalid login. Try again?")
 				End If
@@ -1508,7 +1520,7 @@ Namespace kCura.EDDS.WinForm
 			If userManager.Login(cred.UserName, cred.Password) Then
 				_credential = cred
 				kCura.WinEDDS.Service.Settings.AuthenticationToken = userManager.GenerateDistributedAuthenticationToken()
-				_timeZoneOffset = 0				'New kCura.WinEDDS.Service.RelativityManager(cred, _cookieContainer).GetServerTimezoneOffset
+				_timeZoneOffset = 0											 'New kCura.WinEDDS.Service.RelativityManager(cred, _cookieContainer).GetServerTimezoneOffset
 				Return True
 			Else
 				Return False
@@ -1581,7 +1593,7 @@ Namespace kCura.EDDS.WinForm
 		End Function
 #End Region
 
-		Public Function GetProductionPrecendenceList(ByVal caseInfo As Relativity.CaseInfo) As System.Data.DataTable
+		Public Overridable Function GetProductionPrecendenceList(ByVal caseInfo As Relativity.CaseInfo) As System.Data.DataTable
 			Dim productionManager As kCura.WinEDDS.Service.ProductionManager
 			Dim dt As System.Data.DataTable
 			Try
@@ -1618,5 +1630,18 @@ Namespace kCura.EDDS.WinForm
 				_loginForm.TopMost = True
 			End If
 		End Sub
+
+		Public Sub DoHelp()
+			If Not _loginForm Is Nothing AndAlso Not _loginForm.IsDisposed Then
+				_loginForm.TopMost = False
+			End If
+
+			Process.Start(System.IO.Path.Combine(System.Windows.Forms.Application.StartupPath, "documents\RelativityDesktopClientGuide.pdf"))
+
+			If Not _loginForm Is Nothing AndAlso Not _loginForm.IsDisposed Then
+				_loginForm.TopMost = True
+			End If
+		End Sub
 	End Class
 End Namespace
+

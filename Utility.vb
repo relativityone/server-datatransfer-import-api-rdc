@@ -9,14 +9,14 @@ Namespace kCura.EDDS.WinForm
 			ddown.Tag = True
 		End Sub
 
-		Public Shared Function ExtractValueFromCharacterDropDown(ByVal ddown As System.Windows.Forms.ComboBox, ByRef charvalue As Char) As Char
+		Public Shared Sub ExtractValueFromCharacterDropDown(ByVal ddown As System.Windows.Forms.ComboBox, ByRef charvalue As Char)
 			Dim x As Char = charvalue
 			Try
 				charvalue = CType(ddown.SelectedValue, Char)
-			Catch ex As System.Exception
+			Catch ex As Exception
 				charvalue = x
 			End Try
-		End Function
+		End Sub
 
 		Public Shared Function ExtractFieldMap(ByVal tLSelect As kCura.Windows.Forms.TwoListBox, ByVal docFieldList As DocumentFieldCollection) As DocumentField()
 			Dim i As Int32
@@ -57,7 +57,7 @@ Namespace kCura.EDDS.WinForm
 		End Function
 
 		Public Shared Function ExtractFieldNames(ByVal list As System.Windows.Forms.ListBox.ObjectCollection) As String()
-			Dim i As Int32 = 0
+			Dim i As Int32
 			Dim names(list.Count - 1) As String
 			For i = 0 To list.Count - 1
 				names(i) = CType(list(i), String)

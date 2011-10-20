@@ -96,6 +96,7 @@ Namespace kCura.EDDS.WinForm
 			Me._autoNumberingOff = New System.Windows.Forms.RadioButton
 			Me.GroupBox6 = New System.Windows.Forms.GroupBox
 			Me._productionLabel = New System.Windows.Forms.Label
+			Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle
 			Me.Label2 = New System.Windows.Forms.Label
 			Me.Label1 = New System.Windows.Forms.Label
 			Me.Label9 = New System.Windows.Forms.Label
@@ -105,11 +106,12 @@ Namespace kCura.EDDS.WinForm
 			Me.GroupBox5.SuspendLayout()
 			Me.GroupBox6.SuspendLayout()
 			Me.SuspendLayout()
+
 			'
 			'GroupBox3
 			'
 			Me.GroupBox3.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-				 Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+			  Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me.GroupBox3.Controls.Add(Me._browseButton)
 			Me.GroupBox3.Controls.Add(Me._filePath)
 			Me.GroupBox3.Controls.Add(Me._startLineNumberLabel)
@@ -133,7 +135,7 @@ Namespace kCura.EDDS.WinForm
 			'_filePath
 			'
 			Me._filePath.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-				Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+			 Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me._filePath.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
 			Me._filePath.Location = New System.Drawing.Point(8, 20)
 			Me._filePath.Name = "_filePath"
@@ -161,7 +163,7 @@ Namespace kCura.EDDS.WinForm
 			'_openFileDialog
 			'
 			Me._openFileDialog.Filter = "Opticon Files (*.opt)|*.opt|Log Files (*.log)|*.log|Text Files (*.txt)|*.txt|All " & _
-					"files (*.*)|*.*"
+			  "files (*.*)|*.*"
 			'
 			'_overwriteDropdown
 			'
@@ -241,7 +243,7 @@ Namespace kCura.EDDS.WinForm
 			'ExtractedTextGroupBox
 			'
 			Me.ExtractedTextGroupBox.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-				Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+			 Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me.ExtractedTextGroupBox.Controls.Add(Me.Label9)
 			Me.ExtractedTextGroupBox.Controls.Add(Me._encodingPicker)
 			Me.ExtractedTextGroupBox.Controls.Add(Me._replaceFullText)
@@ -255,7 +257,7 @@ Namespace kCura.EDDS.WinForm
 			'_encodingPicker
 			'
 			Me._encodingPicker.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-				Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+			 Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me._encodingPicker.Enabled = False
 			Me._encodingPicker.Location = New System.Drawing.Point(293, 39)
 			Me._encodingPicker.Name = "_encodingPicker"
@@ -327,7 +329,7 @@ Namespace kCura.EDDS.WinForm
 			'GroupBox6
 			'
 			Me.GroupBox6.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-				 Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+			  Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me.GroupBox6.Controls.Add(Me._productionLabel)
 			Me.GroupBox6.Controls.Add(Me._productionDropdown)
 			Me.GroupBox6.Controls.Add(Me.Label2)

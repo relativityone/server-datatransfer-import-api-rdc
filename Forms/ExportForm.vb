@@ -1,5 +1,8 @@
+Imports System.Linq
 Public Class ExportForm
 	Inherits System.Windows.Forms.Form
+	'Implements kCura.EDDS.WinForm.IExportForm
+
 
 #Region " Windows Form Designer generated code "
 
@@ -29,96 +32,102 @@ Public Class ExportForm
 	'NOTE: The following procedure is required by the Windows Form Designer
 	'It can be modified using the Windows Form Designer.  
 	'Do not modify it using the code editor.
-	Friend WithEvents MainMenu1 As System.Windows.Forms.MainMenu
-	Friend WithEvents ExportMenu As System.Windows.Forms.MenuItem
-	Friend WithEvents RunMenu As System.Windows.Forms.MenuItem
-	Friend WithEvents _destinationFolderDialog As System.Windows.Forms.FolderBrowserDialog
-	Friend WithEvents _pickPrecedenceButton As System.Windows.Forms.Button
-	Friend WithEvents _productionPrecedenceBox As System.Windows.Forms.GroupBox
-	Friend WithEvents _productionPrecedenceList As System.Windows.Forms.ListBox
-	Friend WithEvents Label5 As System.Windows.Forms.Label
-	Friend WithEvents _overwriteButton As System.Windows.Forms.CheckBox
-	Friend WithEvents _browseButton As System.Windows.Forms.Button
-	Friend WithEvents _folderPath As System.Windows.Forms.TextBox
-	Friend WithEvents _appendOriginalFilename As System.Windows.Forms.CheckBox
-	Friend WithEvents GroupBox3 As System.Windows.Forms.GroupBox
-	Friend WithEvents _nativeFileNameSource As System.Windows.Forms.ComboBox
-	Friend WithEvents TabControl1 As System.Windows.Forms.TabControl
-	Friend WithEvents _dataSourceTabPage As System.Windows.Forms.TabPage
-	Friend WithEvents _destinationFileTabPage As System.Windows.Forms.TabPage
-	Friend WithEvents _loadFileCharacterInformation As System.Windows.Forms.GroupBox
-	Friend WithEvents _multiRecordDelimiter As System.Windows.Forms.ComboBox
-	Friend WithEvents Label6 As System.Windows.Forms.Label
-	Friend WithEvents Label4 As System.Windows.Forms.Label
-	Friend WithEvents _quoteDelimiter As System.Windows.Forms.ComboBox
-	Friend WithEvents Label3 As System.Windows.Forms.Label
-	Friend WithEvents _newLineDelimiter As System.Windows.Forms.ComboBox
-	Friend WithEvents Label2 As System.Windows.Forms.Label
-	Friend WithEvents _recordDelimiter As System.Windows.Forms.ComboBox
-	Friend WithEvents GroupBox23 As System.Windows.Forms.GroupBox
-	Friend WithEvents _imageTypeDropdown As System.Windows.Forms.ComboBox
-	Friend WithEvents _prefixText As System.Windows.Forms.TextBox
-	Friend WithEvents _usePrefix As System.Windows.Forms.RadioButton
-	Friend WithEvents _useAbsolutePaths As System.Windows.Forms.RadioButton
-	Friend WithEvents _useRelativePaths As System.Windows.Forms.RadioButton
-	Friend WithEvents _imageFileFormat As System.Windows.Forms.ComboBox
-	Friend WithEvents GroupBox1 As System.Windows.Forms.GroupBox
-	Friend WithEvents _copyFilesFromRepository As System.Windows.Forms.CheckBox
-	Friend WithEvents _subDirectoryInformationGroupBox As System.Windows.Forms.GroupBox
-	Friend WithEvents _subdirectoryTextPrefix As System.Windows.Forms.TextBox
-	Friend WithEvents Label8 As System.Windows.Forms.Label
-	Friend WithEvents _subDirectoryNativePrefix As System.Windows.Forms.TextBox
-	Friend WithEvents Label13 As System.Windows.Forms.Label
-	Friend WithEvents _subDirectoryMaxSize As System.Windows.Forms.NumericUpDown
-	Friend WithEvents _subdirectoryStartNumber As System.Windows.Forms.NumericUpDown
-	Friend WithEvents Label9 As System.Windows.Forms.Label
-	Friend WithEvents Label10 As System.Windows.Forms.Label
-	Friend WithEvents Label11 As System.Windows.Forms.Label
-	Friend WithEvents _subdirectoryImagePrefix As System.Windows.Forms.TextBox
-	Friend WithEvents _volumeInformationGroupBox As System.Windows.Forms.GroupBox
-	Friend WithEvents _volumeMaxSize As System.Windows.Forms.NumericUpDown
-	Friend WithEvents _volumeStartNumber As System.Windows.Forms.NumericUpDown
-	Friend WithEvents Label14 As System.Windows.Forms.Label
-	Friend WithEvents Label15 As System.Windows.Forms.Label
-	Friend WithEvents Label16 As System.Windows.Forms.Label
-	Friend WithEvents _volumePrefix As System.Windows.Forms.TextBox
-	Friend WithEvents Label12 As System.Windows.Forms.Label
-	Friend WithEvents Label7 As System.Windows.Forms.Label
-	Friend WithEvents GroupBox2 As System.Windows.Forms.GroupBox
-	Friend WithEvents _exportImages As System.Windows.Forms.CheckBox
-	Friend WithEvents Label17 As System.Windows.Forms.Label
-	Friend WithEvents GroupBox4 As System.Windows.Forms.GroupBox
-	Friend WithEvents _exportNativeFiles As System.Windows.Forms.CheckBox
-	Friend WithEvents _exportFullTextAsFile As System.Windows.Forms.CheckBox
-	Friend WithEvents GroupBox6 As System.Windows.Forms.GroupBox
-	Friend WithEvents _exportMulticodeFieldsAsNested As System.Windows.Forms.CheckBox
-	Friend WithEvents _nestedValueDelimiter As System.Windows.Forms.ComboBox
-	Friend WithEvents Label18 As System.Windows.Forms.Label
-	Friend WithEvents _filters As System.Windows.Forms.ComboBox
-	Friend WithEvents _columnSelecter As kCura.Windows.Forms.TwoListBox
-	Friend WithEvents _filtersBox As System.Windows.Forms.GroupBox
-	Friend WithEvents _metadataGroup As System.Windows.Forms.GroupBox
-	Friend WithEvents Label1 As System.Windows.Forms.Label
-	Friend WithEvents _nativeFileFormat As System.Windows.Forms.ComboBox
-	Friend WithEvents _dataFileEncoding As kCura.EDDS.WinForm.EncodingPicker
-	Friend WithEvents Label19 As System.Windows.Forms.Label
-	Friend WithEvents Label20 As System.Windows.Forms.Label
-	Friend WithEvents _textFileEncoding As kCura.EDDS.WinForm.EncodingPicker
-	Friend WithEvents Label21 As System.Windows.Forms.Label
-	Friend WithEvents _potentialTextFields As System.Windows.Forms.ComboBox
-	Friend WithEvents RefreshMenu As System.Windows.Forms.MenuItem
-	Friend WithEvents MenuItem3 As System.Windows.Forms.MenuItem
-	Friend WithEvents _volumeDigitPadding As System.Windows.Forms.NumericUpDown
-	Friend WithEvents Label22 As System.Windows.Forms.Label
-	Friend WithEvents _subdirectoryDigitPadding As System.Windows.Forms.NumericUpDown
-	Friend WithEvents Label23 As System.Windows.Forms.Label
-	Friend WithEvents Label24 As System.Windows.Forms.Label
-	Friend WithEvents _startExportAtDocumentNumber As System.Windows.Forms.NumericUpDown
+	Public WithEvents MainMenu1 As System.Windows.Forms.MainMenu
+	Public WithEvents ExportMenu As System.Windows.Forms.MenuItem
+	Public WithEvents RunMenu As System.Windows.Forms.MenuItem
+	Public WithEvents _destinationFolderDialog As System.Windows.Forms.FolderBrowserDialog
+	Public WithEvents _pickPrecedenceButton As System.Windows.Forms.Button
+	Public WithEvents _productionPrecedenceBox As System.Windows.Forms.GroupBox
+	Public WithEvents _productionPrecedenceList As System.Windows.Forms.ListBox
+	Public WithEvents Label5 As System.Windows.Forms.Label
+	Public WithEvents _overwriteCheckBox As System.Windows.Forms.CheckBox
+	Public WithEvents _browseButton As System.Windows.Forms.Button
+	Public WithEvents _folderPath As System.Windows.Forms.TextBox
+	Public WithEvents _appendOriginalFilename As System.Windows.Forms.CheckBox
+	Public WithEvents GroupBox3 As System.Windows.Forms.GroupBox
+	Public WithEvents _nativeFileNameSource As System.Windows.Forms.ComboBox
+	Public WithEvents TabControl1 As System.Windows.Forms.TabControl
+	Public WithEvents _dataSourceTabPage As System.Windows.Forms.TabPage
+	Public WithEvents _destinationFileTabPage As System.Windows.Forms.TabPage
+	Public WithEvents _loadFileCharacterInformation As System.Windows.Forms.GroupBox
+	Public WithEvents _multiRecordDelimiter As System.Windows.Forms.ComboBox
+	Public WithEvents Label6 As System.Windows.Forms.Label
+	Public WithEvents Label4 As System.Windows.Forms.Label
+	Public WithEvents _quoteDelimiter As System.Windows.Forms.ComboBox
+	Public WithEvents Label3 As System.Windows.Forms.Label
+	Public WithEvents _newLineDelimiter As System.Windows.Forms.ComboBox
+	Public WithEvents Label2 As System.Windows.Forms.Label
+	Public WithEvents _recordDelimiter As System.Windows.Forms.ComboBox
+	Public WithEvents GroupBox23 As System.Windows.Forms.GroupBox
+	Public WithEvents _imageTypeDropdown As System.Windows.Forms.ComboBox
+	Public WithEvents _prefixText As System.Windows.Forms.TextBox
+	Public WithEvents _usePrefix As System.Windows.Forms.RadioButton
+	Public WithEvents _useAbsolutePaths As System.Windows.Forms.RadioButton
+	Public WithEvents _useRelativePaths As System.Windows.Forms.RadioButton
+	Public WithEvents _imageFileFormat As System.Windows.Forms.ComboBox
+	Public WithEvents GroupBox1 As System.Windows.Forms.GroupBox
+	Public WithEvents _copyFilesFromRepository As System.Windows.Forms.CheckBox
+	Public WithEvents _subDirectoryInformationGroupBox As System.Windows.Forms.GroupBox
+	Public WithEvents _subdirectoryTextPrefix As System.Windows.Forms.TextBox
+	Public WithEvents Label8 As System.Windows.Forms.Label
+	Public WithEvents _subDirectoryNativePrefix As System.Windows.Forms.TextBox
+	Public WithEvents Label13 As System.Windows.Forms.Label
+	Public WithEvents _subDirectoryMaxSize As System.Windows.Forms.NumericUpDown
+	Public WithEvents _subdirectoryStartNumber As System.Windows.Forms.NumericUpDown
+	Public WithEvents Label9 As System.Windows.Forms.Label
+	Public WithEvents Label10 As System.Windows.Forms.Label
+	Public WithEvents Label11 As System.Windows.Forms.Label
+	Public WithEvents _subdirectoryImagePrefix As System.Windows.Forms.TextBox
+	Public WithEvents _volumeInformationGroupBox As System.Windows.Forms.GroupBox
+	Public WithEvents _volumeMaxSize As System.Windows.Forms.NumericUpDown
+	Public WithEvents _volumeStartNumber As System.Windows.Forms.NumericUpDown
+	Public WithEvents Label14 As System.Windows.Forms.Label
+	Public WithEvents Label15 As System.Windows.Forms.Label
+	Public WithEvents Label16 As System.Windows.Forms.Label
+	Public WithEvents _volumePrefix As System.Windows.Forms.TextBox
+	Public WithEvents Label12 As System.Windows.Forms.Label
+	Public WithEvents Label7 As System.Windows.Forms.Label
+	Public WithEvents GroupBox2 As System.Windows.Forms.GroupBox
+	Public WithEvents _exportImages As System.Windows.Forms.CheckBox
+	Public WithEvents Label17 As System.Windows.Forms.Label
+	Public WithEvents GroupBox4 As System.Windows.Forms.GroupBox
+	Public WithEvents _exportNativeFiles As System.Windows.Forms.CheckBox
+	Public WithEvents _exportFullTextAsFile As System.Windows.Forms.CheckBox
+	Public WithEvents GroupBox6 As System.Windows.Forms.GroupBox
+	Public WithEvents _exportMulticodeFieldsAsNested As System.Windows.Forms.CheckBox
+	Public WithEvents _nestedValueDelimiter As System.Windows.Forms.ComboBox
+	Public WithEvents Label18 As System.Windows.Forms.Label
+	Public WithEvents _filters As System.Windows.Forms.ComboBox
+	Public WithEvents _columnSelecter As kCura.Windows.Forms.TwoListBox
+	Public WithEvents _filtersBox As System.Windows.Forms.GroupBox
+	Public WithEvents _metadataGroup As System.Windows.Forms.GroupBox
+	Public WithEvents Label1 As System.Windows.Forms.Label
+	Public WithEvents _nativeFileFormat As System.Windows.Forms.ComboBox
+	Public WithEvents _dataFileEncoding As kCura.EDDS.WinForm.EncodingPicker
+	Public WithEvents Label19 As System.Windows.Forms.Label
+	Public WithEvents Label20 As System.Windows.Forms.Label
+	Public WithEvents _textFileEncoding As kCura.EDDS.WinForm.EncodingPicker
+	Public WithEvents Label21 As System.Windows.Forms.Label
+	Public WithEvents _potentialTextFields As System.Windows.Forms.ComboBox
+	Public WithEvents RefreshMenu As System.Windows.Forms.MenuItem
+	Public WithEvents MenuItem3 As System.Windows.Forms.MenuItem
+	Public WithEvents SaveExportSettings As System.Windows.Forms.MenuItem
+	Public WithEvents LoadExportSettings As System.Windows.Forms.MenuItem
+	Public WithEvents _volumeDigitPadding As System.Windows.Forms.NumericUpDown
+	Public WithEvents Label22 As System.Windows.Forms.Label
+	Public WithEvents _subdirectoryDigitPadding As System.Windows.Forms.NumericUpDown
+	Public WithEvents Label23 As System.Windows.Forms.Label
+	Public WithEvents Label24 As System.Windows.Forms.Label
+	Public WithEvents _startExportAtDocumentNumber As System.Windows.Forms.NumericUpDown
+	Public WithEvents _saveExportSettingsDialog As System.Windows.Forms.SaveFileDialog
+	Public WithEvents _loadExportSettingsDialog As System.Windows.Forms.OpenFileDialog
 	<System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
 		Dim resources As System.Resources.ResourceManager = New System.Resources.ResourceManager(GetType(ExportForm))
 		Me.MainMenu1 = New System.Windows.Forms.MainMenu
 		Me.ExportMenu = New System.Windows.Forms.MenuItem
 		Me.RunMenu = New System.Windows.Forms.MenuItem
+		Me.SaveExportSettings = New System.Windows.Forms.MenuItem
+		Me.LoadExportSettings = New System.Windows.Forms.MenuItem
 		Me.MenuItem3 = New System.Windows.Forms.MenuItem
 		Me.RefreshMenu = New System.Windows.Forms.MenuItem
 		Me._destinationFolderDialog = New System.Windows.Forms.FolderBrowserDialog
@@ -126,7 +135,7 @@ Public Class ExportForm
 		Me._productionPrecedenceList = New System.Windows.Forms.ListBox
 		Me._pickPrecedenceButton = New System.Windows.Forms.Button
 		Me.Label5 = New System.Windows.Forms.Label
-		Me._overwriteButton = New System.Windows.Forms.CheckBox
+		Me._overwriteCheckBox = New System.Windows.Forms.CheckBox
 		Me._browseButton = New System.Windows.Forms.Button
 		Me._folderPath = New System.Windows.Forms.TextBox
 		Me._appendOriginalFilename = New System.Windows.Forms.CheckBox
@@ -201,6 +210,8 @@ Public Class ExportForm
 		Me._newLineDelimiter = New System.Windows.Forms.ComboBox
 		Me.Label2 = New System.Windows.Forms.Label
 		Me._recordDelimiter = New System.Windows.Forms.ComboBox
+		Me._saveExportSettingsDialog = New System.Windows.Forms.SaveFileDialog
+		Me._loadExportSettingsDialog = New System.Windows.Forms.OpenFileDialog
 		Me._productionPrecedenceBox.SuspendLayout()
 		Me.GroupBox3.SuspendLayout()
 		Me.TabControl1.SuspendLayout()
@@ -232,22 +243,34 @@ Public Class ExportForm
 		'ExportMenu
 		'
 		Me.ExportMenu.Index = 0
-		Me.ExportMenu.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.RunMenu, Me.MenuItem3, Me.RefreshMenu})
+		Me.ExportMenu.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.RunMenu, Me.SaveExportSettings, Me.LoadExportSettings, Me.MenuItem3, Me.RefreshMenu})
 		Me.ExportMenu.Text = "File"
+		'
+		'LoadExportSettings
+		'
+		Me.LoadExportSettings.Index = 0
+		Me.LoadExportSettings.Shortcut = System.Windows.Forms.Shortcut.CtrlO
+		Me.LoadExportSettings.Text = "Load Export Settings"
+		'
+		'SaveExportSettings
+		'
+		Me.SaveExportSettings.Index = 1
+		Me.SaveExportSettings.Shortcut = System.Windows.Forms.Shortcut.CtrlS
+		Me.SaveExportSettings.Text = "Save Export Settings"
 		'
 		'RunMenu
 		'
-		Me.RunMenu.Index = 0
+		Me.RunMenu.Index = 2
 		Me.RunMenu.Text = "Run"
 		'
 		'MenuItem3
 		'
-		Me.MenuItem3.Index = 1
+		Me.MenuItem3.Index = 3
 		Me.MenuItem3.Text = "-"
 		'
 		'RefreshMenu
 		'
-		Me.RefreshMenu.Index = 2
+		Me.RefreshMenu.Index = 4
 		Me.RefreshMenu.Shortcut = System.Windows.Forms.Shortcut.F5
 		Me.RefreshMenu.Text = "Refresh"
 		'
@@ -279,20 +302,38 @@ Public Class ExportForm
 		'
 		'Label5
 		'
-		Me.Label5.Location = New System.Drawing.Point(20, 40)
+		Me.Label5.Location = New System.Drawing.Point(20, 18)
 		Me.Label5.Name = "Label5"
 		Me.Label5.Size = New System.Drawing.Size(96, 21)
 		Me.Label5.TabIndex = 18
 		Me.Label5.Text = "Named after:"
 		Me.Label5.TextAlign = System.Drawing.ContentAlignment.MiddleRight
 		'
+		'_nativeFileNameSource
+		'
+		Me._nativeFileNameSource.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+		Me._nativeFileNameSource.Items.AddRange(New Object() {"Select...", "Identifier", "Begin bates"})
+		Me._nativeFileNameSource.Location = New System.Drawing.Point(116, 18)
+		Me._nativeFileNameSource.Name = "_nativeFileNameSource"
+		Me._nativeFileNameSource.Size = New System.Drawing.Size(176, 21)
+		Me._nativeFileNameSource.TabIndex = 19
+		Me._nativeFileNameSource.Visible = False
+		'
+		'_appendOriginalFilename
+		'
+		Me._appendOriginalFilename.Location = New System.Drawing.Point(12, 44)
+		Me._appendOriginalFilename.Name = "_appendOriginalFilename"
+		Me._appendOriginalFilename.Size = New System.Drawing.Size(148, 16)
+		Me._appendOriginalFilename.TabIndex = 17
+		Me._appendOriginalFilename.Text = "Append original filename"
+		'
 		'_overwriteButton
 		'
-		Me._overwriteButton.Location = New System.Drawing.Point(8, 48)
-		Me._overwriteButton.Name = "_overwriteButton"
-		Me._overwriteButton.Size = New System.Drawing.Size(100, 16)
-		Me._overwriteButton.TabIndex = 7
-		Me._overwriteButton.Text = "Overwrite Files"
+		Me._overwriteCheckBox.Location = New System.Drawing.Point(8, 48)
+		Me._overwriteCheckBox.Name = "_overwriteButton"
+		Me._overwriteCheckBox.Size = New System.Drawing.Size(100, 16)
+		Me._overwriteCheckBox.TabIndex = 7
+		Me._overwriteCheckBox.Text = "Overwrite Files"
 		'
 		'_browseButton
 		'
@@ -311,17 +352,9 @@ Public Class ExportForm
 		Me._folderPath.TabIndex = 5
 		Me._folderPath.Text = "Select a folder ..."
 		'
-		'_appendOriginalFilename
-		'
-		Me._appendOriginalFilename.Location = New System.Drawing.Point(12, 20)
-		Me._appendOriginalFilename.Name = "_appendOriginalFilename"
-		Me._appendOriginalFilename.Size = New System.Drawing.Size(148, 16)
-		Me._appendOriginalFilename.TabIndex = 17
-		Me._appendOriginalFilename.Text = "Append original filename"
-		'
 		'GroupBox3
 		'
-		Me.GroupBox3.Controls.Add(Me._overwriteButton)
+		Me.GroupBox3.Controls.Add(Me._overwriteCheckBox)
 		Me.GroupBox3.Controls.Add(Me._browseButton)
 		Me.GroupBox3.Controls.Add(Me._folderPath)
 		Me.GroupBox3.Location = New System.Drawing.Point(8, 4)
@@ -330,16 +363,6 @@ Public Class ExportForm
 		Me.GroupBox3.TabIndex = 11
 		Me.GroupBox3.TabStop = False
 		Me.GroupBox3.Text = "Export Location"
-		'
-		'_nativeFileNameSource
-		'
-		Me._nativeFileNameSource.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
-		Me._nativeFileNameSource.Items.AddRange(New Object() {"Select...", "Identifier", "Begin bates"})
-		Me._nativeFileNameSource.Location = New System.Drawing.Point(116, 40)
-		Me._nativeFileNameSource.Name = "_nativeFileNameSource"
-		Me._nativeFileNameSource.Size = New System.Drawing.Size(176, 21)
-		Me._nativeFileNameSource.TabIndex = 19
-		Me._nativeFileNameSource.Visible = False
 		'
 		'TabControl1
 		'
@@ -416,7 +439,7 @@ Public Class ExportForm
 		'
 		'_columnSelecter
 		'
-		Me._columnSelecter.AlternateRowColors = False
+		Me._columnSelecter.AlternateRowColors = True
 		Me._columnSelecter.KeepButtonsCentered = False
 		Me._columnSelecter.LeftOrderControlsVisible = False
 		Me._columnSelecter.Location = New System.Drawing.Point(12, 64)
@@ -1046,6 +1069,17 @@ Public Class ExportForm
 		Me._recordDelimiter.Size = New System.Drawing.Size(116, 21)
 		Me._recordDelimiter.TabIndex = 8
 		'
+		'_saveExportSettingsDialog
+		'
+		Me._saveExportSettingsDialog.DefaultExt = "kwx"
+		Me._saveExportSettingsDialog.Filter = "Relativity Desktop Client settings files (*.kwx)|*.kwx|All files (*.*)|*.*"
+		Me._saveExportSettingsDialog.RestoreDirectory = True
+
+		Me._loadExportSettingsDialog.DefaultExt = "kwx"
+		Me._loadExportSettingsDialog.Filter = "Relativity Desktop Client settings files (*.kwx)|*.kwx|All files (*.*)|*.*"
+		Me._loadExportSettingsDialog.RestoreDirectory = True
+
+		'
 		'ExportForm
 		'
 		Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
@@ -1092,6 +1126,7 @@ Public Class ExportForm
 	Private _allExportableFields As Relativity.ViewFieldInfo
 	Private _dataSourceIsSet As Boolean = False
 	Private _objectTypeName As String = ""
+	Private _isLoadingExport As Boolean = False
 	Public Property Application() As kCura.EDDS.WinForm.Application
 		Get
 			Return _application
@@ -1127,9 +1162,25 @@ Public Class ExportForm
 		msg.Append(" - ").Append(errorText).Append(vbNewLine)
 	End Sub
 
-	Private Sub RunMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles RunMenu.Click
+	Private Sub SaveExportSettings_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles SaveExportSettings.Click
+		Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
+		Try
+			If PopulateExportFile(Me, False) Then
+				Select Case _saveExportSettingsDialog.ShowDialog()
+					Case DialogResult.OK
+						_application.SaveExportFile(_exportFile, _saveExportSettingsDialog.FileName)
+				End Select
+			End If
+		Catch
+			Throw
+		Finally
+			Me.Cursor = System.Windows.Forms.Cursors.Default
+		End Try
+	End Sub
+
+	Private Function IsValid(ByVal abstractExportForm As ExportForm) As Boolean
 		Dim msg As New System.Text.StringBuilder
-		Dim d As DocumentFieldCollection = _application.CurrentFields(_exportFile.ArtifactTypeID, True)
+		Dim retval As Boolean = True
 		If Not System.IO.Directory.Exists(_folderPath.Text) OrElse _folderPath.Text.Trim = String.Empty Then
 			If _folderPath.Text.Trim = String.Empty Then
 				AppendErrorMessage(msg, "Export destination folder empty")
@@ -1138,16 +1189,7 @@ Public Class ExportForm
 			End If
 		End If
 		If _filters.SelectedItem Is Nothing Then
-			Dim filterType As String
-			Select Case Me.ExportFile.TypeOfExport
-				Case ExportFile.ExportType.Production
-					filterType = "production"
-				Case ExportFile.ExportType.ArtifactSearch
-					filterType = "saved search"
-				Case Else
-					filterType = "view"
-			End Select
-			msg.AppendFormat("No {0} selected", filterType)
+			msg.AppendFormat("No {0} selected", Me.ExportTypeStringName.ToLower)
 		End If
 		If _exportNativeFiles.Checked OrElse _columnSelecter.RightListBoxItems.Count > 0 Then
 			If CType(_nativeFileFormat.SelectedItem, String) = "Select..." Then
@@ -1188,13 +1230,18 @@ Public Class ExportForm
 		If msg.ToString.Trim <> String.Empty Then
 			msg.Insert(0, "The following issues need to be addressed before continuing:" & vbNewLine & vbNewLine)
 			MsgBox(msg.ToString, MsgBoxStyle.Exclamation, "Warning")
-			Exit Sub
+			retval = False
 		End If
-		Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
-		If Not _application.IsConnected(_exportFile.CaseArtifactID, 10) Then
-			Me.Cursor = System.Windows.Forms.Cursors.Default
-			Exit Sub
-		End If
+		Return retval
+	End Function
+
+	Public Function PopulateExportFile(ByVal abstractExportForm As ExportForm, ByVal validateForm As Boolean) As Boolean
+		Dim d As DocumentFieldCollection = _application.CurrentFields(_exportFile.ArtifactTypeID, True)
+		Dim retval As Boolean = True
+		_exportFile.ObjectTypeName = _application.GetObjectTypeName(_exportFile.ArtifactTypeID)
+
+		If validateForm AndAlso Not Me.IsValid(abstractExportForm) Then Return False
+		If Not _application.IsConnected(_exportFile.CaseArtifactID, 10) Then Return False
 		_exportFile.FolderPath = _folderPath.Text
 		Select Case Me.ExportFile.TypeOfExport
 			Case ExportFile.ExportType.AncestorSearch
@@ -1204,7 +1251,7 @@ Public Class ExportForm
 				_exportFile.ArtifactID = CType(_filters.SelectedValue, Int32)
 				If Not _application.IsAssociatedSearchProviderAccessible(_exportFile.CaseArtifactID, _exportFile.ArtifactID) Then
 					Me.Cursor = System.Windows.Forms.Cursors.Default
-					Exit Sub
+					Exit Function
 				End If
 				_exportFile.LoadFilesPrefix = DirectCast(_filters.SelectedItem, System.Data.DataRowView)(_filters.DisplayMember).ToString
 			Case ExportFile.ExportType.ParentSearch
@@ -1220,7 +1267,7 @@ Public Class ExportForm
 				End If
 		End Select
 		_exportFile.MulticodesAsNested = _exportMulticodeFieldsAsNested.Checked
-		_exportFile.Overwrite = _overwriteButton.Checked
+		_exportFile.Overwrite = _overwriteCheckBox.Checked
 		'_exportFile.ExportFullText = _exportFullText.Checked
 		_exportFile.ExportFullTextAsFile = _exportFullTextAsFile.Checked
 		_exportFile.ExportNative = _exportNativeFiles.Checked
@@ -1272,8 +1319,210 @@ Public Class ExportForm
 		_exportFile.VolumeDigitPadding = CType(_volumeDigitPadding.Value, Int32)
 		_exportFile.SubdirectoryDigitPadding = CType(_subdirectoryDigitPadding.Value, Int32)
 		_exportFile.StartAtDocumentNumber = CType(_startExportAtDocumentNumber.Value, Int32) - 1
-		_application.StartSearch(Me.ExportFile)
-		Me.Cursor = System.Windows.Forms.Cursors.Default
+		Return True
+	End Function
+
+
+	Private Sub LoadExportSettings_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles LoadExportSettings.Click
+		If _loadExportSettingsDialog.ShowDialog() = System.Windows.Forms.DialogResult.OK Then
+			Dim settings As String = kCura.Utility.File.ReadFileAsString(_loadExportSettingsDialog.FileName)
+			Dim newFile As ExportFile = New kCura.WinEDDS.ExportFileSerializer().DeserializeExportFile(_exportFile, settings)
+			If TypeOf newFile Is kCura.WinEDDS.ErrorExportFile Then
+				MsgBox(DirectCast(newFile, kCura.WinEDDS.ErrorExportFile).ErrorMessage, MsgBoxStyle.Exclamation)
+			Else
+				Dim exportFilterSelectionForm As New kCura.EDDS.WinForm.ExportFilterSelectForm(newFile.LoadFilesPrefix, ExportTypeStringName, DirectCast(_filters.DataSource, DataTable))
+				exportFilterSelectionForm.ShowDialog()
+				If exportFilterSelectionForm.DialogResult = DialogResult.OK Then
+					If exportFilterSelectionForm.SelectedItemArtifactIDs IsNot Nothing Then
+						_filters.SelectedValue = exportFilterSelectionForm.SelectedItemArtifactIDs(0)
+					End If
+					LoadExportFile(newFile)
+					_exportFile = newFile
+				End If
+
+				_columnSelecter.EnsureHorizontalScrollbars()
+				End If
+		End If
+	End Sub
+
+	Public Sub LoadExportFile(ByVal ef As kCura.WinEDDS.ExportFile)
+		_isLoadingExport = True
+		If _exportNativeFiles.Checked <> ef.ExportNative Then _exportNativeFiles.Checked = ef.ExportNative
+		If _exportImages.Checked <> ef.ExportImages Then _exportImages.Checked = ef.ExportImages
+		If _overwriteCheckBox.Checked <> ef.Overwrite Then _overwriteCheckBox.Checked = ef.Overwrite
+		If _folderPath.Text <> ef.FolderPath Then _folderPath.Text = ef.FolderPath
+		If ef.VolumeDigitPadding >= _volumeDigitPadding.Minimum AndAlso ef.VolumeDigitPadding <= _volumeDigitPadding.Maximum Then
+			If _volumeDigitPadding.Value <> ef.VolumeDigitPadding Then _volumeDigitPadding.Value = ef.VolumeDigitPadding
+		End If
+		If ef.VolumeInfo IsNot Nothing Then
+			If _copyFilesFromRepository.Checked <> ef.VolumeInfo.CopyFilesFromRepository Then _copyFilesFromRepository.Checked = ef.VolumeInfo.CopyFilesFromRepository
+			If Not _volumePrefix.Text.Equals(ef.VolumeInfo.VolumePrefix, StringComparison.InvariantCultureIgnoreCase) Then _volumePrefix.Text = ef.VolumeInfo.VolumePrefix
+			If _volumeStartNumber.Value <> ef.VolumeInfo.VolumeStartNumber Then _volumeStartNumber.Value = ef.VolumeInfo.VolumeStartNumber
+			If _volumeMaxSize.Value <> ef.VolumeInfo.VolumeMaxSize Then _volumeMaxSize.Value = ef.VolumeInfo.VolumeMaxSize
+			If Not _subdirectoryImagePrefix.Text.Equals(ef.VolumeInfo.SubdirectoryImagePrefix) Then _subdirectoryImagePrefix.Text = ef.VolumeInfo.SubdirectoryImagePrefix(False)
+			If Not _subDirectoryNativePrefix.Text.Equals(ef.VolumeInfo.SubdirectoryNativePrefix) Then _subDirectoryNativePrefix.Text = ef.VolumeInfo.SubdirectoryNativePrefix(False)
+			If Not _subdirectoryTextPrefix.Text.Equals(ef.VolumeInfo.SubdirectoryFullTextPrefix) Then _subdirectoryTextPrefix.Text = ef.VolumeInfo.SubdirectoryFullTextPrefix(False)
+			If _subdirectoryStartNumber.Value <> ef.VolumeInfo.SubdirectoryStartNumber Then _subdirectoryStartNumber.Value = ef.VolumeInfo.SubdirectoryStartNumber
+			If _subDirectoryMaxSize.Value <> ef.VolumeInfo.SubdirectoryMaxSize Then _subDirectoryMaxSize.Value = ef.VolumeInfo.SubdirectoryMaxSize
+		End If
+		If ef.SubdirectoryDigitPadding >= _subdirectoryDigitPadding.Minimum AndAlso ef.SubdirectoryDigitPadding <= _subdirectoryDigitPadding.Maximum Then
+			If _subdirectoryDigitPadding.Value <> ef.SubdirectoryDigitPadding Then _subdirectoryDigitPadding.Value = ef.SubdirectoryDigitPadding
+		End If
+		Select Case ef.TypeOfExportedFilePath
+			Case kCura.WinEDDS.ExportFile.ExportedFilePathType.Absolute
+				_useAbsolutePaths.Checked = True
+			Case kCura.WinEDDS.ExportFile.ExportedFilePathType.Prefix
+				_usePrefix.Checked = True
+				_prefixText.Text = ef.FilePrefix
+			Case kCura.WinEDDS.ExportFile.ExportedFilePathType.Relative
+				_useRelativePaths.Checked = True
+		End Select
+		_recordDelimiter.SelectedValue = ef.RecordDelimiter
+		If _appendOriginalFilename.Checked <> ef.AppendOriginalFileName Then _appendOriginalFilename.Checked = ef.AppendOriginalFileName
+
+		Select Case ef.ExportNativesToFileNamedFrom
+			Case kCura.WinEDDS.ExportNativeWithFilenameFrom.Identifier
+				_nativeFileNameSource.SelectedItem = "Identifier"
+			Case kCura.WinEDDS.ExportNativeWithFilenameFrom.Production
+				_nativeFileNameSource.SelectedItem = "Begin bates"
+			Case kCura.WinEDDS.ExportNativeWithFilenameFrom.Select
+				_nativeFileNameSource.SelectedItem = "Select..."
+		End Select
+
+		If ef.LoadFileIsHtml Then
+			_nativeFileFormat.SelectedItem = "HTML (.html)"
+		Else
+			Select Case ef.LoadFileExtension
+				Case "csv"
+					_nativeFileFormat.SelectedItem = "Comma-separated (.csv)"
+				Case "dat"
+					_nativeFileFormat.SelectedItem = "Concordance (.dat)"
+				Case "txt"
+					_nativeFileFormat.SelectedItem = "Custom (.txt)"
+				Case Else
+					_nativeFileFormat.SelectedIndex = 0
+			End Select
+		End If
+
+		If ef.ExportImages Then
+			If ef.LogFileFormat.HasValue Then
+				_imageFileFormat.SelectedValue = ef.LogFileFormat.Value
+			Else
+				_imageFileFormat.SelectedIndex = 0
+			End If
+			Me.SetSelectedImageType(ef.TypeOfImage)
+		End If
+		_dataFileEncoding.InitializeDropdown()
+		_dataFileEncoding.SelectedEncoding = ef.LoadFileEncoding
+		_textFileEncoding.InitializeDropdown()
+		_textFileEncoding.SelectedEncoding = ef.TextFileEncoding
+		_recordDelimiter.SelectedValue = ef.RecordDelimiter
+		_quoteDelimiter.SelectedValue = ef.QuoteDelimiter
+		_newLineDelimiter.SelectedValue = ef.NewlineDelimiter
+		_nestedValueDelimiter.SelectedValue = ef.NestedValueDelimiter
+		_multiRecordDelimiter.SelectedValue = ef.MultiRecordDelimiter
+		_exportFullTextAsFile.Checked = ef.ExportFullTextAsFile
+
+
+
+		_exportMulticodeFieldsAsNested.Checked = ef.MulticodesAsNested
+
+		If ef.AllExportableFields IsNot Nothing Then
+			_columnSelecter.ClearSelection(kCura.Windows.Forms.ListBoxLocation.Left)
+			_columnSelecter.LeftListBoxItems.Clear()
+			Array.Sort(ef.AllExportableFields)
+			_columnSelecter.LeftListBoxItems.AddRange(ef.AllExportableFields)
+		End If
+
+		If ef.SelectedViewFields IsNot Nothing Then
+
+			Dim itemsToRemoveFromLeftListBox As New System.Collections.Generic.List(Of kCura.WinEDDS.ViewFieldInfo)()
+			_columnSelecter.ClearSelection(kCura.Windows.Forms.ListBoxLocation.Right)
+			_columnSelecter.RightListBoxItems.Clear()
+			For Each viewFieldFromKwx As kCura.WinEDDS.ViewFieldInfo In ef.SelectedViewFields
+				For Each leftListBoxViewField As kCura.WinEDDS.ViewFieldInfo In _columnSelecter.LeftListBoxItems
+					If leftListBoxViewField.DisplayName.Equals(viewFieldFromKwx.DisplayName, StringComparison.InvariantCulture) Then
+						itemsToRemoveFromLeftListBox.Add(leftListBoxViewField)
+						_columnSelecter.RightListBoxItems.Add(leftListBoxViewField)
+					End If
+				Next
+			Next
+
+			If _columnSelecter.RightListBoxItems.Count = 0 Then
+				_metadataGroup.Enabled = False
+			End If
+
+			ManagePotentialTextFields()
+
+			If ef.SelectedTextField IsNot Nothing Then
+				For i As Int32 = 0 To _potentialTextFields.Items.Count - 1
+					Dim loadedVfi As kCura.WinEDDS.ViewFieldInfo = DirectCast(_potentialTextFields.Items(i), kCura.WinEDDS.ViewFieldInfo)
+					If loadedVfi.DisplayName.Equals(ef.SelectedTextField.DisplayName, StringComparison.InvariantCulture) Then
+						_potentialTextFields.SelectedIndex = i
+						Exit For
+					End If
+				Next
+			End If
+
+
+			For Each vfi As kCura.WinEDDS.ViewFieldInfo In itemsToRemoveFromLeftListBox
+				_columnSelecter.LeftListBoxItems.Remove(vfi)
+			Next
+		End If
+
+		Dim trueStartExportAtDocumentNumber As Int32 = ef.StartAtDocumentNumber + 1
+		If trueStartExportAtDocumentNumber >= _startExportAtDocumentNumber.Minimum AndAlso trueStartExportAtDocumentNumber <= _startExportAtDocumentNumber.Maximum Then
+			_startExportAtDocumentNumber.Value = trueStartExportAtDocumentNumber
+		End If
+
+		If ef.ImagePrecedence IsNot Nothing AndAlso ef.ImagePrecedence.Length > 0 Then
+			Dim validPrecedenceTable As System.Data.DataTable = _application.GetProductionPrecendenceList(ef.CaseInfo)
+			Dim validPrecedencePairs As New System.Collections.Generic.List(Of kCura.WinEDDS.Pair)()
+			For i As Int32 = 0 To validPrecedenceTable.Rows.Count - 1
+				validPrecedencePairs.Add(New kCura.WinEDDS.Pair(validPrecedenceTable.Rows.Item(i)("Value").ToString, validPrecedenceTable.Rows.Item(i)("Display").ToString))
+			Next
+			_productionPrecedenceList.Items.Clear()
+
+			For Each precedencePair As kCura.WinEDDS.Pair In ef.ImagePrecedence
+				For Each item As kCura.WinEDDS.Pair In validPrecedencePairs
+					If precedencePair.Display.Equals(item.Display, StringComparison.InvariantCulture) Then
+						_productionPrecedenceList.Items.Add(item)
+						Exit For
+					End If
+				Next
+				If precedencePair.Display = "Original" AndAlso precedencePair.Value = "-1" Then _productionPrecedenceList.Items.Add(precedencePair)
+			Next
+			If _productionPrecedenceList.Items.Count = 0 Then _productionPrecedenceList.Items.Add(New Pair("-1", "Original"))
+		Else
+			'original is already there
+		End If
+
+		_isLoadingExport = False
+
+
+	End Sub
+
+	Private Function FindArtifactIDByName(ByVal dropDown As ComboBox, ByVal name As String) As Int32?
+		Dim retVal As Int32?
+		For i As Int32 = 0 To dropDown.Items.Count - 1
+			Dim dropDownRow As DataRow = DirectCast(dropDown.Items(i), System.Data.DataRowView).Row
+			If CStr(dropDownRow("Name")).Equals(name, StringComparison.InvariantCulture) Then
+				retVal = CInt(dropDownRow("ArtifactID"))
+				Exit For
+			End If
+		Next
+		Return retVal
+	End Function
+
+	Private Sub RunMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles RunMenu.Click
+		Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
+		Try
+			If Me.PopulateExportFile(Me, True) Then _application.StartSearch(Me.ExportFile)
+		Catch
+			Throw
+		Finally
+			Me.Cursor = System.Windows.Forms.Cursors.Default
+		End Try
 	End Sub
 
 
@@ -1297,7 +1546,7 @@ Public Class ExportForm
 		ElseIf selected.IndexOf("(.dat)") <> -1 Then
 			Return "dat"
 		Else
-			Return "txt"
+			Return String.Empty
 		End If
 	End Function
 
@@ -1316,6 +1565,20 @@ Public Class ExportForm
 				Return ExportFile.ImageType.Pdf
 		End Select
 	End Function
+
+	Private Sub SetSelectedImageType(ByVal imageType As ExportFile.ImageType?)
+		If Not imageType.HasValue Then
+			_imageTypeDropdown.SelectedIndex = 0
+		ElseIf imageType.Value = kCura.WinEDDS.ExportFile.ImageType.SinglePage Then
+			_imageTypeDropdown.SelectedIndex = 1
+		ElseIf imageType.Value = kCura.WinEDDS.ExportFile.ImageType.MultiPageTiff Then
+			_imageTypeDropdown.SelectedIndex = 2
+		ElseIf imageType.Value = kCura.WinEDDS.ExportFile.ImageType.Pdf Then
+			_imageTypeDropdown.SelectedIndex = 3
+		Else
+			Throw New ArgumentException("Unsupported image type: " & imageType.Value.ToString)
+		End If
+	End Sub
 
 	Private Function GetDatasourceToolTip() As String
 		Select Case ExportFile.TypeOfExport
@@ -1349,6 +1612,11 @@ Public Class ExportForm
 	End Function
 
 	Private Sub ExportProduction_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles MyBase.Load
+		HandleLoad(sender, e, kCura.EDDS.WinForm.Config.ExportVolumeDigitPadding, kCura.EDDS.WinForm.Config.ExportSubdirectoryDigitPadding)
+		_columnSelecter.EnsureHorizontalScrollbars()
+	End Sub
+
+	Public Sub HandleLoad(ByVal sender As Object, ByVal e As System.EventArgs, ByVal volumeDigitPadding As Int32, ByVal exportSubdirectoryDigitPadding As Int32)
 		_dataSourceIsSet = False
 		_filters.DataSource = ExportFile.DataTable
 		_filters.DisplayMember = "Name"
@@ -1360,8 +1628,8 @@ Public Class ExportForm
 		kCura.EDDS.WinForm.Utility.InitializeCharacterDropDown(_newLineDelimiter, _exportFile.NewlineDelimiter)
 		kCura.EDDS.WinForm.Utility.InitializeCharacterDropDown(_multiRecordDelimiter, _exportFile.MultiRecordDelimiter)
 		kCura.EDDS.WinForm.Utility.InitializeCharacterDropDown(_nestedValueDelimiter, _exportFile.NestedValueDelimiter)
-		_volumeDigitPadding.Value = kCura.EDDS.WinForm.Config.ExportVolumeDigitPadding
-		_subdirectoryDigitPadding.Value = kCura.EDDS.WinForm.Config.ExportSubdirectoryDigitPadding
+		_volumeDigitPadding.Value = volumeDigitPadding
+		_subdirectoryDigitPadding.Value = exportSubdirectoryDigitPadding
 		_imageFileFormat.DataSource = kCura.WinEDDS.LoadFileType.GetLoadFileTypes
 		_imageFileFormat.DisplayMember = "DisplayName"
 		_imageFileFormat.ValueMember = "Value"
@@ -1414,7 +1682,7 @@ Public Class ExportForm
 	End Sub
 
 	Private Sub _searchList_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _filters.SelectedIndexChanged
-		If _dataSourceIsSet AndAlso Not _filters.SelectedItem Is Nothing Then Me.InitializeColumnSelecter()
+		If Not _isLoadingExport AndAlso _dataSourceIsSet AndAlso Not _filters.SelectedItem Is Nothing Then Me.InitializeColumnSelecter()
 	End Sub
 
 	Private Sub InitializeFileControls()
@@ -1472,8 +1740,9 @@ Public Class ExportForm
 
 	Private Sub _exportNativeFiles_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _exportNativeFiles.CheckedChanged
 		_useAbsolutePaths.Enabled = True
-		_nativeFileFormat.Enabled = True
 		_metadataGroup.Enabled = _columnSelecter.RightListBoxItems.Count > 0 OrElse _exportNativeFiles.Checked
+		_nativeFileFormat.Enabled = True
+
 	End Sub
 
 	Private Sub ToggleLoadFileCharacterInformation(ByVal enabled As Boolean)
@@ -1704,14 +1973,7 @@ Public Class ExportForm
 		If selectedindex = -1 Then
 			selectedindex = 0
 			Dim msg As String = "Selected "
-			Select Case Me.ExportFile.TypeOfExport
-				Case ExportFile.ExportType.AncestorSearch, ExportFile.ExportType.ParentSearch
-					msg &= "view"
-				Case ExportFile.ExportType.ArtifactSearch
-					msg &= "saved search"
-				Case ExportFile.ExportType.Production
-					msg &= "production"
-			End Select
+			msg &= ExportTypeStringName().ToLower
 			msg &= " is no longer available."
 			MsgBox(msg, MsgBoxStyle.Exclamation, "Relativity Desktop Client")
 		End If
@@ -1752,6 +2014,20 @@ Public Class ExportForm
 			End If
 		Next
 	End Sub
+
+	Private ReadOnly Property ExportTypeStringName() As String
+		Get
+			Select Case Me.ExportFile.TypeOfExport
+				Case ExportFile.ExportType.AncestorSearch, ExportFile.ExportType.ParentSearch
+					Return "View"
+				Case ExportFile.ExportType.ArtifactSearch
+					Return "Saved Search"
+				Case ExportFile.ExportType.Production
+					Return "Production"
+			End Select
+			Return ""
+		End Get
+	End Property
 
 	Private Sub _copyFilesFromRepository_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _copyFilesFromRepository.CheckedChanged
 		_imageTypeDropdown.Enabled = _exportImages.Checked And _copyFilesFromRepository.Checked

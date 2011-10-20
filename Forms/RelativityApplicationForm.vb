@@ -19,6 +19,9 @@ Namespace kCura.EDDS.WinForm
 		Const MAPFIELDSLINKTEXT_BACK As String = "Back"
 		Const WARNING_ABOUT_LOSING_MAPPINGS = "This operation will reload all data in the form. Any field mappings you have selected will need to be re-mapped. Do you want to continue?"
 		Const ERRORMSG_CANNOT_MAP_TOO_MANY_CASES_SELECTED = "You cannot map fields with more than one case selected."
+		Const FIELDTYPEID_SINGLECHOICE = 5
+		Const FIELDTYPEID_MULTICHOICE = 8
+		Const CHOICE_NODE_LIMIT = 50
 
 		Private Enum FormUIState
 			General = 1
@@ -231,7 +234,7 @@ Namespace kCura.EDDS.WinForm
 			'FilePath
 			'
 			Me.FilePath.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-									Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+						Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me.FilePath.BackColor = System.Drawing.SystemColors.ControlLightLight
 			Me.FilePath.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
 			Me.FilePath.ForeColor = System.Drawing.SystemColors.ControlDarkDark
@@ -258,7 +261,7 @@ Namespace kCura.EDDS.WinForm
 			'ApplicationName
 			'
 			Me.ApplicationName.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-									Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+						Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me.ApplicationName.Location = New System.Drawing.Point(60, 24)
 			Me.ApplicationName.Name = "ApplicationName"
 			Me.ApplicationName.ReadOnly = True
@@ -268,7 +271,7 @@ Namespace kCura.EDDS.WinForm
 			'ApplicationVersion
 			'
 			Me.ApplicationVersion.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-									Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+						Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me.ApplicationVersion.Location = New System.Drawing.Point(60, 56)
 			Me.ApplicationVersion.Name = "ApplicationVersion"
 			Me.ApplicationVersion.ReadOnly = True
@@ -294,8 +297,8 @@ Namespace kCura.EDDS.WinForm
 			'ApplicationArtifactsGroupBox
 			'
 			Me.ApplicationArtifactsGroupBox.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-									Or System.Windows.Forms.AnchorStyles.Left) _
-									Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+						Or System.Windows.Forms.AnchorStyles.Left) _
+						Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me.ApplicationArtifactsGroupBox.Controls.Add(Me.AppNotLoadedLabel)
 			Me.ApplicationArtifactsGroupBox.Controls.Add(Me.ArtifactsTreeView)
 			Me.ApplicationArtifactsGroupBox.Location = New System.Drawing.Point(10, 5)
@@ -349,7 +352,7 @@ Namespace kCura.EDDS.WinForm
 			'CaseListTextBox
 			'
 			Me.CaseListTextBox.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-									Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+						Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me.CaseListTextBox.BackColor = System.Drawing.SystemColors.ControlLightLight
 			Me.CaseListTextBox.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
 			Me.CaseListTextBox.ForeColor = System.Drawing.SystemColors.ControlDarkDark
@@ -390,8 +393,8 @@ Namespace kCura.EDDS.WinForm
 			'ArtifactMappingGroupBox
 			'
 			Me.ArtifactMappingGroupBox.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-									Or System.Windows.Forms.AnchorStyles.Left) _
-									Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+						Or System.Windows.Forms.AnchorStyles.Left) _
+						Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me.ArtifactMappingGroupBox.Controls.Add(Me.Label4)
 			Me.ArtifactMappingGroupBox.Controls.Add(Me.Label3)
 			Me.ArtifactMappingGroupBox.Controls.Add(Me.Label2)
@@ -529,8 +532,8 @@ Namespace kCura.EDDS.WinForm
 			'ObjectInfoGroupBox
 			'
 			Me.ObjectInfoGroupBox.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-									Or System.Windows.Forms.AnchorStyles.Left) _
-									Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+						Or System.Windows.Forms.AnchorStyles.Left) _
+						Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me.ObjectInfoGroupBox.Controls.Add(Me.ObjectMapComboBox)
 			Me.ObjectInfoGroupBox.Controls.Add(Me.Label1)
 			Me.ObjectInfoGroupBox.Location = New System.Drawing.Point(8, 0)
@@ -941,8 +944,27 @@ Namespace kCura.EDDS.WinForm
 						Dim pt = elmnt.<ParentTab>
 						childNodes.Nodes.Add(pt.<Name>.Value)
 					End If
+				ElseIf childName = "Field" Then
+					'Populate choices tree nodes if needed
+					Dim fieldTypeID = CType(elmnt.<FieldTypeId>.Value, Int32)
+					If fieldTypeID = FIELDTYPEID_SINGLECHOICE Or fieldTypeID = FIELDTYPEID_MULTICHOICE Then
+						PopulateChoiceTreeNodes(grandChild, elmnt)
+					End If
 				End If
 			Next
+		End Sub
+
+		Private Sub PopulateChoiceTreeNodes(fieldTreeNode As TreeNode, fieldElement As XElement)
+			Dim numChoicesFound = 0
+			Dim choicesTreeNode = fieldTreeNode.Nodes.Add("Choices")
+			For Each choiceElement In fieldElement.<Codes>.Descendants("Code")
+				numChoicesFound += 1
+				If numChoicesFound > CHOICE_NODE_LIMIT Then Continue For
+				choicesTreeNode.Nodes.Add(choiceElement.<Name>.Value)
+			Next
+			If numChoicesFound > CHOICE_NODE_LIMIT Then
+				choicesTreeNode.Nodes.Add(String.Format("And {0} more...", numChoicesFound - CHOICE_NODE_LIMIT))
+			End If
 		End Sub
 
 		Private Function LoadFileIntoXML(ByVal filePath As String) As Xml.XmlDocument

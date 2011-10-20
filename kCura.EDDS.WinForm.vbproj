@@ -331,6 +331,9 @@
     <Compile Include="Forms\AdvancedFileLocation.vb">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Forms\ExportFilterSelectForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Forms\RelativityApplicationStatusForm.Designer.vb">
       <DependentUpon>RelativityApplicationStatusForm.vb</DependentUpon>
     </Compile>
@@ -341,9 +344,6 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\CaseSelectForm.vb">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\ErrorDialog.vb">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\ErrorForm.vb">
@@ -376,6 +376,9 @@
     <Compile Include="Forms\ProductionPrecedenceForm.vb">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Forms\SelectFormBase.vb">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Forms\SetWebServiceURL.vb">
       <SubType>Form</SubType>
     </Compile>
@@ -393,6 +396,7 @@
     <Compile Include="Startup.vb">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="ThreadExceptionHandler.vb" />
     <Compile Include="TrustAllCertificatePolicy.vb">
       <SubType>Code</SubType>
     </Compile>
@@ -417,6 +421,9 @@
     <EmbeddedResource Include="Forms\AdvancedFileLocation.resx">
       <DependentUpon>AdvancedFileLocation.vb</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ExportFilterSelectForm.resx">
+      <DependentUpon>ExportFilterSelectForm.vb</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\RelativityApplicationStatusForm.resx">
       <DependentUpon>RelativityApplicationStatusForm.vb</DependentUpon>
     </EmbeddedResource>
@@ -426,14 +433,12 @@
     <EmbeddedResource Include="Forms\CaseSelectForm.resx">
       <DependentUpon>CaseSelectForm.vb</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\ErrorDialog.resx">
-      <DependentUpon>ErrorDialog.vb</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Forms\ErrorForm.resx">
       <DependentUpon>ErrorForm.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\ExportForm.resx">
       <DependentUpon>ExportForm.vb</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\ImageLoadForm.resx">
       <DependentUpon>ImageLoadForm.vb</DependentUpon>
@@ -449,6 +454,7 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\LoginForm.resx">
       <DependentUpon>LoginForm.vb</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\MainForm.resx">
       <DependentUpon>MainForm.vb</DependentUpon>
@@ -458,6 +464,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\ProductionPrecedenceForm.resx">
       <DependentUpon>ProductionPrecedenceForm.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\SelectFormBase.resx">
+      <DependentUpon>SelectFormBase.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\SetWebServiceURL.resx">
       <DependentUpon>SetWebServiceURL.vb</DependentUpon>
@@ -520,6 +529,8 @@
     </PreBuildEvent>
     <PostBuildEvent>if "$(ConfigurationName)" == "Release" goto :eof
 copy /Y "$(ProjectDir)..\..\Vendor\FreeImage\3.130\FreeImage\Release\$(PlatformName)\FreeImage.dll" "$(TargetDir)"
-copy /Y "$(ProjectDir)..\..\Vendor\Oracle\OutsideIn\8.3.5\$(PlatformName)\FileID\redist\*" "$(TargetDir)"</PostBuildEvent>
+copy /Y "$(ProjectDir)..\..\Vendor\Oracle\OutsideIn\8.3.5\$(PlatformName)\FileID\redist\*" "$(TargetDir)"
+mkdir "$(TargetDir)documents"
+copy /Y "$(ProjectDir)\documents\*" "$(TargetDir)documents\"</PostBuildEvent>
   </PropertyGroup>
 </Project>
