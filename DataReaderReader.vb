@@ -18,6 +18,8 @@ Namespace kCura.WinEDDS.ImportExtension
 		Private _allFields As Api.ArtifactFieldCollection
 		Private _tempLocalDirectory As String
 		Private _markerNameIsMapped As Nullable(Of Boolean)
+		Private _identifierFieldIndex As Integer
+		Private _lastSourceIdentifier As String
 
 		Public Sub New(ByVal args As DataReaderReaderInitializationArgs, ByVal fieldMap As kCura.WinEDDS.LoadFile, ByVal reader As System.Data.IDataReader)
 			_reader = reader
@@ -26,9 +28,20 @@ Namespace kCura.WinEDDS.ImportExtension
 			_loadFileSettings = fieldMap
 			_allFields = args.AllFields
 			_tempLocalDirectory = System.IO.Path.GetTempPath + "FlexMigrationFiles\"
+
+			For i As Integer = 0 To reader.FieldCount - 1
+				If reader.GetName(i).Equals(fieldMap.SelectedIdentifierField.FieldName, StringComparison.CurrentCultureIgnoreCase) Then
+					_identifierFieldIndex = i
+					Exit For
+				End If
+			Next
 		End Sub
 
 #Region " Artifact Reader Implementation "
+
+		Public Function SourceIdentifierValue() As String Implements IArtifactReader.SourceIdentifierValue
+			Return _lastSourceIdentifier
+		End Function
 
 		Public Sub AdvanceRecord() Implements kCura.WinEDDS.Api.IArtifactReader.AdvanceRecord
 			If _reader.Read() Then
@@ -139,6 +152,9 @@ Namespace kCura.WinEDDS.ImportExtension
 			Dim folderStructureContainedInColumnWithoutIndex As String = nameWithoutIndex(_loadFileSettings.FolderStructureContainedInColumn)
 			Dim nativeFilePathColumnWithoutIndex As String = nameWithoutIndex(_loadFileSettings.NativeFilePathColumn)
 
+			' step 1 - save off the identifier for the current record
+			_lastSourceIdentifier = _reader.Item(_identifierFieldIndex).ToString()
+
 			For i As Integer = 0 To _reader.FieldCount - 1
 				Dim field As Api.ArtifactField = _allFields(_reader.GetName(i).ToLower)
 				If Not field Is Nothing Then
@@ -233,7 +249,8 @@ Namespace kCura.WinEDDS.ImportExtension
 			Try
 				Me.SetFieldValue(field, _reader.Item(idx))
 			Catch ex As Exception
-				Throw New Exceptions.FieldValueImportException(ex, _currentLineNumber, displayName, ex.Message)
+				' for ease of message formatting, the line number is a one-based number
+				Throw New Exceptions.FieldValueImportException(ex, _currentLineNumber + 1, displayName, ex.Message)
 			End Try
 		End Sub
 
