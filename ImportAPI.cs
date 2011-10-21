@@ -25,6 +25,7 @@ namespace kCura.Relativity.ImportAPI
 		private CaseManager _caseManager;
 		private CookieContainer _cookieMonster;
 		private ICredentials _credentials;
+		private ObjectTypeManager _objectTypeManager;
 
 		/// <summary>
 		/// Create an instance of ImportAPI.  Username and Password are required (unless using windows auth), and will be validated.
@@ -137,7 +138,21 @@ namespace kCura.Relativity.ImportAPI
 			return GetFileUploadMode(caseArtifactID, caseInfo.DocumentPath);
 		}
 
-#region "Private items"
+		public IEnumerable<ArtifactType> GetAllUploadable(int caseArtifactID)
+		{
+			var om = GetObjectTypeManager();
+			var ds = om.RetrieveAllUploadable(caseArtifactID);
+			var dt = ds.Tables[0];
+			var dr = dt.Rows;
+
+			return (from DataRow singleRow in dr
+					select new ArtifactType
+					{
+						ID = (int)singleRow["DescriptorArtifactTypeID"],Name = (string)singleRow["Name"]
+					}).ToList();
+		}
+
+		#region "Private items"
 
 		/// <summary>
 		/// Create a repository path based on the given workspace ArtifactID and
@@ -165,6 +180,16 @@ namespace kCura.Relativity.ImportAPI
 			}
 
 			return _caseManager;
+		}
+
+		private ObjectTypeManager GetObjectTypeManager()
+		{
+			if (_objectTypeManager == null)
+			{
+				_objectTypeManager = new ObjectTypeManager(_credentials, _cookieMonster);
+			}
+
+			return _objectTypeManager;
 		}
 
 		private ICredentials GetCredentials()
