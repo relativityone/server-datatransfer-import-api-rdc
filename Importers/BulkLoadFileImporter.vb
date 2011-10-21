@@ -1226,7 +1226,8 @@ Namespace kCura.WinEDDS
 			Dim ht As New System.Collections.Hashtable
 			ht.Add("Message", line)
 			ht.Add("Line Number", currentLineNumber)
-			RaiseReportError(ht, currentLineNumber, "", "client")
+			ht.Add("Identifier", _artifactReader.SourceIdentifierValue)
+			RaiseReportError(ht, currentLineNumber, _artifactReader.SourceIdentifierValue, "client")
 			WriteStatusLine(kCura.Windows.Process.EventType.Error, line)
 		End Sub
 

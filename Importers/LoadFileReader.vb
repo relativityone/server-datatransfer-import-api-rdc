@@ -253,6 +253,11 @@ Namespace kCura.WinEDDS
 			Return _columnHeaders
 		End Function
 
+		Public Function SourceIdentifierValue() As String Implements IArtifactReader.SourceIdentifierValue
+			Return String.Empty
+			' not implemented here.  Really only for the import api.
+		End Function
+
 		Public Sub AdvanceRecord() Implements Api.IArtifactReader.AdvanceRecord
 			Me.AdvanceLine()
 		End Sub
