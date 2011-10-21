@@ -72,12 +72,14 @@ Public Class JobReport
 	End Property
 
 	Public Class RowError
-		Public Sub New(ByVal rowNumber As Long, ByVal message As String)
-			Me.RowNumber = RowNumber
-			Me.Message = Message
+		Public Sub New(ByVal rowNumber As Long, ByVal message As String, ByVal identifier As String)
+			Me.RowNumber = rowNumber
+			Me.Message = message
+			Me.Identifier = identifier
 		End Sub
 		Public Property RowNumber As Long
 		Public Property Message As String
+		Public Property Identifier As String
 	End Class
 
 	Public Class FieldMapEntry

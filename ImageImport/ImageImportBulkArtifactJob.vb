@@ -293,7 +293,14 @@ Namespace kCura.Relativity.DataReaderClient
 				lineNum = DirectCast(lineNumbObj, Int32)
 			End If
 
-			_jobReport.ErrorRows.Add(New JobReport.RowError(lineNum, msg))
+			Dim idobj As Object
+			idobj = row.Item("DocumentID")
+			Dim id As String = String.Empty
+			If Not idobj Is Nothing Then
+				id = idobj.ToString()
+			End If
+
+			_jobReport.ErrorRows.Add(New JobReport.RowError(lineNum, msg, id))
 
 		End Sub
 

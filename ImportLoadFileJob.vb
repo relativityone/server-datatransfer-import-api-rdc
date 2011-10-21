@@ -382,13 +382,19 @@ Namespace kCura.Relativity.DataReaderClient
 			_hasErrors = True
 			RaiseEvent OnError(row)
 			Dim msg As String = row.Item("Message").ToString
-			Dim lineNumbObj As Object = row.Item("LineNumber")
+			Dim lineNumbObj As Object = row.Item("Line Number")	' or is it "Line Number" ????
 			Dim lineNum As Long = 0
 			If Not lineNumbObj Is Nothing Then
 				lineNum = DirectCast(lineNumbObj, Int32)
 			End If
 
-			_jobReport.ErrorRows.Add(New JobReport.RowError(lineNum, msg))
+			Dim idobj As Object
+			idobj = row.Item("Identifier")
+			Dim id As String = String.Empty
+			If Not idobj Is Nothing Then
+				id = idobj.ToString()
+			End If
+			_jobReport.ErrorRows.Add(New JobReport.RowError(lineNum, msg, id))
 		End Sub
 
 		Private Sub _observer_FieldMapped(ByVal sourceField As String, ByVal workspaceField As String) Handles _observer.FieldMapped
