@@ -109,6 +109,7 @@
     <Compile Include="Data\Field.cs" />
     <Compile Include="Enumeration\FieldCategoryEnum.cs" />
     <Compile Include="Enumeration\FieldTypeEnum.cs" />
+    <Compile Include="Enumeration\UploadTypeEnum.cs" />
     <Compile Include="ImportAPI.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Data\Workspace.cs" />
@@ -121,6 +122,10 @@
     <ProjectReference Include="..\kCura.WinEDDS\kCura.WinEDDS.vbproj">
       <Project>{F16A2219-5DAC-4F2B-89B0-6BD1243CBF8F}</Project>
       <Name>kCura.WinEDDS</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Relativity\Relativity.vbproj">
+      <Project>{044A6424-BC90-46CE-8805-0053A44AFCAB}</Project>
+      <Name>Relativity</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
