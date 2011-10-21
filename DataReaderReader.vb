@@ -29,12 +29,16 @@ Namespace kCura.WinEDDS.ImportExtension
 			_allFields = args.AllFields
 			_tempLocalDirectory = System.IO.Path.GetTempPath + "FlexMigrationFiles\"
 
-			For i As Integer = 0 To reader.FieldCount - 1
-				If reader.GetName(i).Equals(fieldMap.SelectedIdentifierField.FieldName, StringComparison.CurrentCultureIgnoreCase) Then
-					_identifierFieldIndex = i
-					Exit For
-				End If
-			Next
+			If Not fieldMap Is Nothing Then
+				For i As Integer = 0 To reader.FieldCount - 1
+					If reader.GetName(i).Equals(fieldMap.SelectedIdentifierField.FieldName, StringComparison.CurrentCultureIgnoreCase) Then
+						_identifierFieldIndex = i
+						Exit For
+					End If
+				Next
+			Else
+				_identifierFieldIndex = -1
+			End If
 		End Sub
 
 #Region " Artifact Reader Implementation "
@@ -153,7 +157,9 @@ Namespace kCura.WinEDDS.ImportExtension
 			Dim nativeFilePathColumnWithoutIndex As String = nameWithoutIndex(_loadFileSettings.NativeFilePathColumn)
 
 			' step 1 - save off the identifier for the current record
-			_lastSourceIdentifier = _reader.Item(_identifierFieldIndex).ToString()
+			If _identifierFieldIndex > -1 Then
+				_lastSourceIdentifier = _reader.Item(_identifierFieldIndex).ToString()
+			End If
 
 			For i As Integer = 0 To _reader.FieldCount - 1
 				Dim field As Api.ArtifactField = _allFields(_reader.GetName(i).ToLower)
