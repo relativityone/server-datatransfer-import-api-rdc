@@ -138,7 +138,7 @@ namespace kCura.Relativity.ImportAPI
 			return GetFileUploadMode(caseArtifactID, caseInfo.DocumentPath);
 		}
 
-		public IEnumerable<ArtifactType> GetAllUploadable(int caseArtifactID)
+		public IEnumerable<ArtifactType> GetUploadableArtifactTypes(int caseArtifactID)
 		{
 			var om = GetObjectTypeManager();
 			var ds = om.RetrieveAllUploadable(caseArtifactID);
