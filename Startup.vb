@@ -404,6 +404,7 @@ Namespace kCura.EDDS.WinForm
 									fieldMapItem.DocumentField.UseUnicode = thisField.UseUnicode
 									fieldMapItem.DocumentField.CodeTypeID = thisField.CodeTypeID
 									fieldMapItem.DocumentField.FieldLength = thisField.FieldLength
+									fieldMapItem.DocumentField.ImportBehavior = thisField.ImportBehavior
 								Catch
 								End Try
 							End If
