@@ -182,6 +182,10 @@ Public Class RelativityApplicationStatusForm
 
 		If currentRow.Item(workspaceStatusColumnName).ToString.Equals(WorkspaceSuccessString, StringComparison.InvariantCulture) Then
 			InformationText.Text = "Import complete."
+			Dim msgText = String.Format(CultureInfo.CurrentCulture, "{0}", currentRow.Item(workspaceMessageColumnName))
+			If Not String.IsNullOrEmpty(msgText) Then
+				InformationText.Text += " " + msgText
+			End If
 		Else
 
 			InformationText.Text = String.Format(CultureInfo.CurrentCulture, "{0}{1}{2}", ErrorMessagePart1, ErrorMessageLink, ErrorMessagePart2)
