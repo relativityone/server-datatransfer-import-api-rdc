@@ -105,7 +105,7 @@ Public Class RelativityApplicationStatusForm
 		minorVersion = currentVersion.Minor
 		majorVersion = currentVersion.Major
 
-		HelpLink = String.Format("http://help.kcura.com/relativity/Relativity Applications/{0}.{1}/Using a Relativity Application.pdf#Resolving-Errors", majorVersion, minorVersion)
+		HelpLink = "http://help.kcura.com/relativity/Relativity%20Applications/7.3/Content/Applications/Import%20with%20the%20Relativity%20Desktop%20Client.htm#kanchor63"
 	End Sub
 
 	Private Sub Observer_OnProcessEvent(ByVal evt As kCura.Windows.Process.Generic.ProcessEvent(Of TemplateManagerBase.ApplicationInstallationResult)) Handles observer.OnProcessEvent
