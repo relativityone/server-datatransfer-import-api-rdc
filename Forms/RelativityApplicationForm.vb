@@ -911,8 +911,13 @@ Namespace kCura.EDDS.WinForm
 			Next
 			Dim scriptsNode = ArtifactsTreeView.Nodes.Add("Scripts")
 			scriptsNode.NodeFont = boldfont
-			For Each item As XElement In doc...<ScriptElement>
-				scriptsNode.Nodes.Add(item.<Name>.Value)
+
+			'This loop covers library and standard scripts
+			For Each scriptItem As XElement In doc...<ScriptElement>
+				Dim isLibraryScript = Not String.IsNullOrEmpty(scriptItem.<SystemScriptArtifactID>.Value)
+				If Not isLibraryScript Then
+					scriptsNode.Nodes.Add(scriptItem.<Name>.Value)
+				End If
 			Next
 			ArtifactsTreeView.EndUpdate()
 		End Sub
