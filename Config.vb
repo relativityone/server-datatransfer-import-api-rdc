@@ -224,6 +224,9 @@ Namespace kCura.WinEDDS
 					returnValue = Config.GetRegistryKeyValue("WebServiceURL")
 				End If
 
+				If Not String.IsNullOrEmpty(returnValue) AndAlso Not returnValue.Trim.EndsWith("/") Then
+					returnValue = returnValue.Trim + "/"
+				End If
 				Return returnValue
 			End Get
 			Set(ByVal value As String)
