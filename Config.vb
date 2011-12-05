@@ -55,6 +55,8 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
+		Private Const webServiceUrlKeyName As String = "WebServiceURL"
+
 		Public Const PREVIEW_THRESHOLD As Int32 = 1000
 
 		Public Shared ReadOnly Property FileTransferModeExplanationText(ByVal includeBulk As Boolean) As String
@@ -114,6 +116,20 @@ Namespace kCura.WinEDDS
 				Return regKey
 			End Get
 		End Property
+
+		Private Shared Function ValidateURIFormat(ByVal returnValue As String) As String
+			If Not String.IsNullOrEmpty(returnValue) AndAlso Not returnValue.Trim.EndsWith("/") Then
+				returnValue = returnValue.Trim + "/"
+			End If
+
+			'NOTE: This is here for validation; an improper URI will cause this to throw an
+			' exception. We set it then to 'Nothing' to avoid a warning-turned-error about
+			' having an unused variable. -Phil S. 12/05/2011
+			Dim uriObj As Uri = New Uri(returnValue)
+			uriObj = Nothing
+
+			Return returnValue
+		End Function
 
 #End Region
 
@@ -191,8 +207,6 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
-
-
 		Public Shared Property ForceFolderPreview() As Boolean
 			Get
 				Dim registryValue As String = Config.GetRegistryKeyValue("ForceFolderPreview")
@@ -214,27 +228,33 @@ Namespace kCura.WinEDDS
 				Dim returnValue As String = Nothing
 
 				'Programmatic ServiceURL
-				If _programmaticServiceURL IsNot Nothing Then
+				If Not String.IsNullOrWhiteSpace(_programmaticServiceURL) Then
 					returnValue = _programmaticServiceURL
-				ElseIf ConfigSettings.Contains("WebServiceURL") Then
+				ElseIf ConfigSettings.Contains(webServiceUrlKeyName) Then
 					'App.config ServiceURL
-					returnValue = CType(ConfigSettings("WebServiceURL"), String)
-				Else
-					'Registry ServiceURL
-					returnValue = Config.GetRegistryKeyValue("WebServiceURL")
+					Dim regUrl As String = CType(ConfigSettings(webServiceUrlKeyName), String)
+
+					If Not String.IsNullOrWhiteSpace(regUrl) Then
+						returnValue = regUrl
+					End If
 				End If
 
-				If Not String.IsNullOrEmpty(returnValue) AndAlso Not returnValue.Trim.EndsWith("/") Then
-					returnValue = returnValue.Trim + "/"
+				'Registry ServiceURL
+				If String.IsNullOrWhiteSpace(returnValue) Then
+					returnValue = GetRegistryKeyValue(webServiceUrlKeyName)
 				End If
-				Return returnValue
+
+				Return ValidateURIFormat(returnValue)
 			End Get
 			Set(ByVal value As String)
-				Config.SetRegistryKeyValue("WebServiceURL", value)
+				Dim properURI As String = ValidateURIFormat(value)
+
+				SetRegistryKeyValue(webServiceUrlKeyName, properURI)
 			End Set
 		End Property
 
 		Private Shared _programmaticServiceURL As String = Nothing
+
 		Public Shared WriteOnly Property ProgrammaticServiceURL() As String
 			Set(value As String)
 				_programmaticServiceURL = value
