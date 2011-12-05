@@ -55,6 +55,8 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
+		Private Const webServiceUrlKeyName As String = "WebServiceURL"
+
 		Public Const PREVIEW_THRESHOLD As Int32 = 1000
 
 		Public Shared ReadOnly Property FileTransferModeExplanationText(ByVal includeBulk As Boolean) As String
@@ -226,14 +228,18 @@ Namespace kCura.WinEDDS
 				Dim returnValue As String = Nothing
 
 				'Programmatic ServiceURL
-				If _programmaticServiceURL IsNot Nothing Then
+				If Not String.IsNullOrWhiteSpace(_programmaticServiceURL) Then
 					returnValue = _programmaticServiceURL
-				ElseIf ConfigSettings.Contains("WebServiceURL") Then
+				ElseIf ConfigSettings.Contains(webServiceUrlKeyName) Then
 					'App.config ServiceURL
-					returnValue = CType(ConfigSettings("WebServiceURL"), String)
-				Else
-					'Registry ServiceURL
-					returnValue = Config.GetRegistryKeyValue("WebServiceURL")
+					Dim regUrl As String = CType(ConfigSettings.Contains(webServiceUrlKeyName), String)
+
+					If Not String.IsNullOrWhiteSpace(regUrl) Then
+						'Registry ServiceURL
+						returnValue = GetRegistryKeyValue(webServiceUrlKeyName)
+					Else
+						returnValue = CType(ConfigSettings(webServiceUrlKeyName), String)
+					End If
 				End If
 
 				Return ValidateURIFormat(returnValue)
@@ -241,7 +247,7 @@ Namespace kCura.WinEDDS
 			Set(ByVal value As String)
 				Dim properURI As String = ValidateURIFormat(value)
 
-				Config.SetRegistryKeyValue("WebServiceURL", properURI)
+				SetRegistryKeyValue(webServiceUrlKeyName, properURI)
 			End Set
 		End Property
 
