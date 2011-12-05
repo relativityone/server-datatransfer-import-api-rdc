@@ -232,14 +232,16 @@ Namespace kCura.WinEDDS
 					returnValue = _programmaticServiceURL
 				ElseIf ConfigSettings.Contains(webServiceUrlKeyName) Then
 					'App.config ServiceURL
-					Dim regUrl As String = CType(ConfigSettings.Contains(webServiceUrlKeyName), String)
+					Dim regUrl As String = CType(ConfigSettings(webServiceUrlKeyName), String)
 
 					If Not String.IsNullOrWhiteSpace(regUrl) Then
-						'Registry ServiceURL
-						returnValue = GetRegistryKeyValue(webServiceUrlKeyName)
-					Else
-						returnValue = CType(ConfigSettings(webServiceUrlKeyName), String)
+						returnValue = regUrl
 					End If
+				End If
+
+				'Registry ServiceURL
+				If String.IsNullOrWhiteSpace(returnValue) Then
+					returnValue = GetRegistryKeyValue(webServiceUrlKeyName)
 				End If
 
 				Return ValidateURIFormat(returnValue)
