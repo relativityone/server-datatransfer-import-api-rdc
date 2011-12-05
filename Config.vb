@@ -115,6 +115,20 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
+		Private Shared Function ValidateURIFormat(ByVal returnValue As String) As String
+			If Not String.IsNullOrEmpty(returnValue) AndAlso Not returnValue.Trim.EndsWith("/") Then
+				returnValue = returnValue.Trim + "/"
+			End If
+
+			'NOTE: This is here for validation; an improper URI will cause this to throw an
+			' exception. We set it then to 'Nothing' to avoid a warning-turned-error about
+			' having an unused variable. -Phil S. 12/05/2011
+			Dim uriObj As Uri = New Uri(returnValue)
+			uriObj = Nothing
+
+			Return returnValue
+		End Function
+
 #End Region
 
 		Public Shared ReadOnly Property ImportBatchMaxVolume() As Int32		'Volume in bytes
@@ -191,8 +205,6 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
-
-
 		Public Shared Property ForceFolderPreview() As Boolean
 			Get
 				Dim registryValue As String = Config.GetRegistryKeyValue("ForceFolderPreview")
@@ -224,17 +236,17 @@ Namespace kCura.WinEDDS
 					returnValue = Config.GetRegistryKeyValue("WebServiceURL")
 				End If
 
-				If Not String.IsNullOrEmpty(returnValue) AndAlso Not returnValue.Trim.EndsWith("/") Then
-					returnValue = returnValue.Trim + "/"
-				End If
-				Return returnValue
+				Return ValidateURIFormat(returnValue)
 			End Get
 			Set(ByVal value As String)
-				Config.SetRegistryKeyValue("WebServiceURL", value)
+				Dim properURI As String = ValidateURIFormat(value)
+
+				Config.SetRegistryKeyValue("WebServiceURL", properURI)
 			End Set
 		End Property
 
 		Private Shared _programmaticServiceURL As String = Nothing
+
 		Public Shared WriteOnly Property ProgrammaticServiceURL() As String
 			Set(value As String)
 				_programmaticServiceURL = value
