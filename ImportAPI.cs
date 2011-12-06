@@ -77,7 +77,7 @@ namespace kCura.Relativity.ImportAPI
 		public IEnumerable<ProductionSet> GetProductionSets(int workspaceArtifactID)
 		{
 			var prodMan = GetProductionManager();
-			var prodSets = _productionManager.RetrieveImportEligibleByContextArtifactID(workspaceArtifactID).Tables[0];
+			var prodSets = prodMan.RetrieveImportEligibleByContextArtifactID(workspaceArtifactID).Tables[0];
 
 			// ArtifactTypeId of 17 indicates a 'Production' object type
 			return from object row in prodSets.Rows select row as DataRow into row1 where row1 != null && (int)row1["ArtifactID"] > 0 select new ProductionSet
