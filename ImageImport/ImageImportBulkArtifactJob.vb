@@ -145,7 +145,6 @@ Namespace kCura.Relativity.DataReaderClient
 
 			Dim casemanager As kCura.WinEDDS.Service.CaseManager = GetCaseManager(credential)
 			Dim tempLoadFile As New kCura.WinEDDS.ImageLoadFile
-			'tempLoadFile.DataTable = SourceData.SourceData
 
 			'These are ALL of the image file settings
 			tempLoadFile.AutoNumberImages = Settings.AutoNumberImages
@@ -165,20 +164,13 @@ Namespace kCura.Relativity.DataReaderClient
 				tempLoadFile.IdentityFieldId = Settings.IdentityFieldId	'e.x Control Number
 			End If
 
-			If Settings.ProductionArtifactID = 0 Then
-				tempLoadFile.ProductionArtifactID = 0
-				'tempLoadFile.ProductionTable = Nothing	'Don't know what this should be
-			Else
-				tempLoadFile.ProductionArtifactID = Settings.ProductionArtifactID
-			End If
-
+			tempLoadFile.ProductionArtifactID = Settings.ProductionArtifactID
 			tempLoadFile.SelectedCasePath = tempLoadFile.CaseInfo.DocumentPath
 			tempLoadFile.SendEmailOnLoadCompletion = False
 			tempLoadFile.StartLineNumber = 0
-			'tempLoadFile.BeginBatesFieldArtifactID = 1035276
+			tempLoadFile.BeginBatesFieldArtifactID = GetDefaultIdentifierFieldID(credential, Settings.CaseArtifactId)
 
 			Return tempLoadFile
-
 		End Function
 
 		Private Sub MapSuppliedFieldNamesToActual(ByVal imageSettings As ImageSettings, ByRef srcDataTable As DataTable)
@@ -231,6 +223,7 @@ Namespace kCura.Relativity.DataReaderClient
 				ValidateDataSourceSettings()
 				ValidateOverwriteModeSettings()
 				ValidateExtractedTextSettings()
+				ValidateProductionSettings()
 			Catch ex As Exception
 				_jobReport.FatalException = ex
 				RaiseEvent OnMessage(New Status(ex.Message))
@@ -264,6 +257,12 @@ Namespace kCura.Relativity.DataReaderClient
 		Private Sub ValidateExtractedTextSettings()
 			If Settings.ExtractedTextFieldContainsFilePath AndAlso Settings.ExtractedTextEncoding Is Nothing Then
 				Throw New ImportSettingsException("ExtractedTextEncoding")
+			End If
+		End Sub
+
+		Private Sub ValidateProductionSettings()
+			If Settings.ForProduction AndAlso Settings.ProductionArtifactID < 1 Then
+				Throw New ImportSettingsException("ProductionArtifactID", "When specifying a production import, the ProductionArtifactID must be set.")
 			End If
 		End Sub
 
