@@ -26,6 +26,7 @@ namespace kCura.Relativity.ImportAPI
 		private CookieContainer _cookieMonster;
 		private ICredentials _credentials;
 		private ObjectTypeManager _objectTypeManager;
+		private ProductionManager _productionManager;
 
 		/// <summary>
 		/// Create an instance of ImportAPI.  Username and Password are required (unless using windows auth), and will be validated.
@@ -65,11 +66,24 @@ namespace kCura.Relativity.ImportAPI
 			var dt = wsds.Tables[0];
 
 			// to-do:  maybe add an enumeration for artifact type IDs
+			// for now, 8 = Workspaces
 			return dt.Rows.OfType<DataRow>().Select(row => new Workspace 
 				{ ArtifactID = (int)row["ArtifactID"], DocumentPath = (String)row["DefaultFileLocationName"], DownloadHandlerURL = (String)row["DownloadHandlerApplicationPath"], 
 					MatterArtifactID = (int)row["MatterArtifactID"], Name = (String)row["Name"], RootArtifactID = (int)row["RootArtifactID"], 
 					RootFolderID = (int)row["RootFolderID"], StatusCodeArtifactID = (int)row["StatusCodeArtifactID"], ArtifactTypeId = 8, 
 					ParentArtifactID = (int)row["ParentArtifactID"] }).ToList();
+		}
+
+		public IEnumerable<ProductionSet> GetProductionSets(int workspaceArtifactID)
+		{
+			var prodMan = GetProductionManager();
+			var prodSets = _productionManager.RetrieveImportEligibleByContextArtifactID(workspaceArtifactID).Tables[0];
+
+			// ArtifactTypeId of 17 indicates a 'Production' object type
+			return from object row in prodSets.Rows select row as DataRow into row1 where row1 != null && (int)row1["ArtifactID"] > 0 select new ProductionSet
+				{
+					ArtifactID = (int) row1["ArtifactID"], ArtifactTypeId = 17, Name = (String) row1["Name"], ParentArtifactID = workspaceArtifactID, ProductionOrder = (int) row1["ProductionOrder"]
+				};
 		}
 
 		/// <summary>
@@ -190,6 +204,16 @@ namespace kCura.Relativity.ImportAPI
 			}
 
 			return _objectTypeManager;
+		}
+
+		private ProductionManager GetProductionManager()
+		{
+			if (_productionManager == null)
+			{
+				_productionManager = new ProductionManager(_credentials, _cookieMonster);
+			}
+
+			return _productionManager;
 		}
 
 		private ICredentials GetCredentials()
