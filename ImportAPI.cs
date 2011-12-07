@@ -74,6 +74,11 @@ namespace kCura.Relativity.ImportAPI
 					ParentArtifactID = (int)row["ParentArtifactID"] }).ToList();
 		}
 
+		/// <summary>
+		/// Given a workspace artifact ID, return all production sets eligble for import
+		/// </summary>
+		/// <param name="workspaceArtifactID"></param>
+		/// <returns></returns>
 		public IEnumerable<ProductionSet> GetProductionSets(int workspaceArtifactID)
 		{
 			var prodMan = GetProductionManager();
