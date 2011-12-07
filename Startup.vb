@@ -540,7 +540,7 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 		Private Sub GetHelpPage()
-			Console.WriteLine(kCura.Resources.Helper.RetrieveDataFromResource("StringConstants", "HelpPage"))
+			Console.WriteLine(kCura.Utility.Resources.Helper.RetrieveDataFromResource("StringConstants", "HelpPage"))
 		End Sub
 
 		Private Sub GetEncodingList()

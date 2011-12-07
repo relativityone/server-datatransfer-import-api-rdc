@@ -214,10 +214,6 @@
     <OptionInfer>On</OptionInfer>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\kCura\kCura.Resources\kCura.Resources.vbproj">
-      <Project>{8DF36335-205C-4349-9D32-5999EC85A601}</Project>
-      <Name>kCura.Resources</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Relativity.Applications.Serialization\Relativity.Applications.Serialization.vbproj">
       <Project>{E621897E-45AF-4FBD-ADA4-EEE787E5233F}</Project>
       <Name>Relativity.Applications.Serialization</Name>
