@@ -226,9 +226,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Vendor\AutoMapper\1.1RTW\AutoMapper.dll</HintPath>
     </Reference>
-    <Reference Include="Facet.Combinatorics">
-      <HintPath>..\..\Vendor\Combinatorics\Facet.Combinatorics.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.VisualBasic">
       <Name>Microsoft.VisualBasic</Name>
     </Reference>

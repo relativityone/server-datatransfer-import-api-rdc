@@ -3,7 +3,6 @@ Imports System.Xml.Linq
 Imports System.Collections.Generic
 Imports System.ComponentModel
 Imports System.Linq
-Imports Facet.Combinatorics
 Imports Relativity.Applications.Serialization
 Imports Relativity.Applications.Serialization.Elements
 Imports kCura.EDDS.WinForm.Presentation.Controller
