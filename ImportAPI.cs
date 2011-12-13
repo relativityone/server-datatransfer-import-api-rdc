@@ -133,6 +133,25 @@ namespace kCura.Relativity.ImportAPI
 		}
 
 		/// <summary>
+		/// This method will return a new instance of an ImageImportBulkArtifactJob.
+		/// The returned object can be used to import a set of production images.
+		/// Setting the username and password property for the job will not be required, as the credentials will be pre-populated using this method.
+		/// </summary>
+		/// <param name="productionArtifactID">Artifact ID of the production set to import to.</param>
+		/// <returns>The returned ImageImportBulkArtifactJob object is identical to one returned
+		/// from NewImageImportJob(), with 2 changes. The Settings.ForProduction is already set to true,
+		/// along with the Settings.ProductionArtifactID = <paramref name="productionArtifactID"/>.
+		/// </returns>
+		public ImageImportBulkArtifactJob NewProductionImportJob(int productionArtifactID)
+		{
+			var imgJob = NewImageImportJob();
+			imgJob.Settings.ForProduction = true;
+			imgJob.Settings.ProductionArtifactID = productionArtifactID;
+
+			return imgJob;
+		}
+
+		/// <summary>
 		/// This method will return a new instance of an ImportBulkArtifactJob.
 		/// The returned object can be used to import a set of native documents.
 		/// Setting the username and password property for the job will not be required, as the credentials will be pre-populated using this method.
