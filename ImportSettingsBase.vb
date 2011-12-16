@@ -1,6 +1,5 @@
 ﻿Namespace kCura.Relativity.DataReaderClient
 	Public Class ImportSettingsBase
-		Private _webServiceURL As String
 
 		Protected Sub New()
 			ExtractedTextFieldContainsFilePath = False
@@ -102,16 +101,17 @@
 		''' </summary>
 		Public Property WebServiceURL() As String
 			Get
-				Return _webServiceURL
+				Return WinEDDS.Config.ProgrammaticServiceURL
 			End Get
 			Set(value As String)
 				If Not value Is Nothing Then
-					Dim slashIndex As Integer = value.LastIndexOf("/", StringComparison.CurrentCulture)
-					If slashIndex <> (value.Length - 1) Then
-						_webServiceURL = String.Format("{0}/", value)
-					Else
-						_webServiceURL = value
-					End If
+					'Dim slashIndex As Integer = value.LastIndexOf("/", StringComparison.CurrentCulture)
+					'If slashIndex <> (value.Length - 1) Then
+					'	_webServiceURL = String.Format("{0}/", value)
+					'Else
+					'	_webServiceURL = value
+					'End If
+					WinEDDS.Config.ProgrammaticServiceURL = value
 				End If
 			End Set
 		End Property

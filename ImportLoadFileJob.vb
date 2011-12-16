@@ -61,8 +61,6 @@ Namespace kCura.Relativity.DataReaderClient
 
 				RaiseEvent OnMessage(New Status("Getting source data from database"))
 
-				WinEDDS.Config.ProgrammaticServiceURL = Settings.WebServiceURL
-
 				Dim process As WinEDDS.ImportExtension.DataReaderImporterProcess = New WinEDDS.ImportExtension.DataReaderImporterProcess(SourceData.SourceData)
 
 				_observer = process.ProcessObserver
