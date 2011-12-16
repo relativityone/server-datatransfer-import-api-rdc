@@ -6,7 +6,7 @@ Imports System.Linq
 Imports Relativity.Applications.Serialization
 Imports Relativity.Applications.Serialization.Elements
 Imports kCura.EDDS.WinForm.Presentation.Controller
-Imports kCura.EDDS.WinForm.Data
+Imports kCura.EDDS.WebAPI.TemplateManagerBase
 
 Namespace kCura.EDDS.WinForm
 	Public Class RelativityApplicationForm
@@ -52,7 +52,7 @@ Namespace kCura.EDDS.WinForm
 		Private _formState As FormUIState = FormUIState.General
 		Private _isAppAndCaseLoaded As Boolean = False
 		Dim _app As RelativityApplicationElement
-		Dim _appMappingData As AppMappingData
+		Private _appMappingData As kCura.EDDS.WebAPI.TemplateManagerBase.AppMappingData
 		Friend WithEvents NoTargetFieldsQualifyLabel As System.Windows.Forms.Label
 		Friend WithEvents Label4 As System.Windows.Forms.Label
 		Friend WithEvents Label3 As System.Windows.Forms.Label
@@ -1124,10 +1124,12 @@ Namespace kCura.EDDS.WinForm
 			End If
 
 			_app = ApplicationElement.Deserialize(Of RelativityApplicationElement)(xml)
-			Dim factory As New AppMappingDataFactory()
-			_appMappingData = factory.CreateMappingData(_app)
-			Dim mapCandidateFinder As IMappingCandidateFinder = New MappingCandidateFinder(Me.Credentials, Me.CookieContainer, Me.CaseInfos(0).ArtifactID)
-			mapCandidateFinder.PopulateMappingCandidates(xml, _appMappingData)
+
+			Dim fieldMappingHelper As New Service.TemplateManager(Me.Credentials, Me.CookieContainer)
+			Dim installationParams As New kCura.EDDS.WebAPI.TemplateManagerBase.ApplicationInstallationParameters()
+			installationParams.CaseId = Me.CaseInfos(0).ArtifactID
+
+			_appMappingData = fieldMappingHelper.GetAppMappingDataForWorkspace(xml, installationParams)
 			_mapController = New FieldMapFourPickerController(_appMappingData)
 
 			'Databinding

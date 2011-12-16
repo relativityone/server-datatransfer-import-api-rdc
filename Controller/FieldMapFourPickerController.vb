@@ -3,7 +3,7 @@ Imports System.Linq
 Imports System.Collections.Generic
 Imports System.ComponentModel
 Imports Relativity.Applications.Serialization.Elements
-Imports kCura.EDDS.WinForm.Data
+Imports kCura.EDDS.WebAPI.TemplateManagerBase
 
 Namespace kCura.EDDS.WinForm.Presentation.Controller
 
@@ -181,7 +181,7 @@ Namespace kCura.EDDS.WinForm.Presentation.Controller
 			If targetField.IsEmpty Then
 				Return 'We don't care about empty target fields
 			End If
-			If _selectedObject.AppFields.Exists(Function(appField) appField.MappedTargetField Is targetField) Then
+			If _selectedObject.AppFields.Where(Function(appField) appField.MappedTargetField Is targetField).Count() > 0 Then
 				Throw New ArgumentException("Supplied TargetField is already mapped to an AppField")
 			End If
 		End Sub

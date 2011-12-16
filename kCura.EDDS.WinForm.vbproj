@@ -334,13 +334,6 @@
     <Compile Include="Controls\EncodingPicker.vb">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Data\AppField.vb" />
-    <Compile Include="Data\AppMappingData.vb" />
-    <Compile Include="Data\AppMappingDataFactory.vb" />
-    <Compile Include="Data\AppObject.vb" />
-    <Compile Include="Data\IMappingCandidateFinder.vb" />
-    <Compile Include="Data\MappingCandidateFinder.vb" />
-    <Compile Include="Data\TargetField.vb" />
     <Compile Include="Forms\AboutForm.Designer.vb">
       <DependentUpon>AboutForm.vb</DependentUpon>
     </Compile>
