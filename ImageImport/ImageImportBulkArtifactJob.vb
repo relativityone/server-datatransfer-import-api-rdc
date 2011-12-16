@@ -79,8 +79,6 @@ Namespace kCura.Relativity.DataReaderClient
 			If IsSettingsValid() Then
 				RaiseEvent OnMessage(New Status("Getting source data from database"))
 
-				WinEDDS.Config.ProgrammaticServiceURL = Settings.WebServiceURL
-
 				MapSuppliedFieldNamesToActual(Settings, SourceData.SourceData)
 
 				Dim process As New kCura.WinEDDS.ImportExtension.DataReaderImageImporterProcess(SourceData.SourceData)
