@@ -3,6 +3,80 @@
   <wsdl:types>
     <s:schema elementFormDefault="qualified" targetNamespace="http://www.kCura.com/EDDS/TemplateManager">
       <s:import namespace="http://microsoft.com/wsdl/types/" />
+      <s:element name="GetAppMappingDataForWorkspace">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="template">
+              <s:complexType mixed="true">
+                <s:sequence>
+                  <s:any />
+                </s:sequence>
+              </s:complexType>
+            </s:element>
+            <s:element minOccurs="0" maxOccurs="1" name="installationParameters" type="tns:ApplicationInstallationParameters" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="ApplicationInstallationParameters">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="CaseId" type="s:int" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="GetAppMappingDataForWorkspaceResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetAppMappingDataForWorkspaceResult" type="tns:AppMappingData" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="AppMappingData">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="AppObjects" type="tns:ArrayOfAppObject" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="ArrayOfAppObject">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="AppObject" nillable="true" type="tns:AppObject" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="AppObject">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="ObjectName" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="ObjectGuid" type="s1:guid" />
+          <s:element minOccurs="0" maxOccurs="1" name="AppFields" type="tns:ArrayOfAppField" />
+          <s:element minOccurs="1" maxOccurs="1" name="QualifiesForMapping" type="s:boolean" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="ArrayOfAppField">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="AppField" nillable="true" type="tns:AppField" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="AppField">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="MyName" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="FieldGuids" type="tns:ArrayOfGuid" />
+          <s:element minOccurs="0" maxOccurs="1" name="MappingCandidates" type="tns:ArrayOfTargetField" />
+          <s:element minOccurs="0" maxOccurs="1" name="MappedTargetField" type="tns:TargetField" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="ArrayOfGuid">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="guid" type="s1:guid" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="ArrayOfTargetField">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="TargetField" nillable="true" type="tns:TargetField" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="TargetField">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="MyName" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="FieldGuids" type="tns:ArrayOfGuid" />
+          <s:element minOccurs="1" maxOccurs="1" name="ArtifactID" type="s:int" />
+        </s:sequence>
+      </s:complexType>
       <s:element name="InstallTemplate">
         <s:complexType>
           <s:sequence>
@@ -21,11 +95,6 @@
       <s:complexType name="ArrayOfInt">
         <s:sequence>
           <s:element minOccurs="0" maxOccurs="unbounded" name="int" type="s:int" />
-        </s:sequence>
-      </s:complexType>
-      <s:complexType name="ApplicationInstallationParameters">
-        <s:sequence>
-          <s:element minOccurs="1" maxOccurs="1" name="CaseId" type="s:int" />
         </s:sequence>
       </s:complexType>
       <s:element name="InstallTemplateResponse">
@@ -70,11 +139,6 @@
           <s:element minOccurs="1" maxOccurs="1" name="IsMappable" type="s:boolean" />
         </s:sequence>
       </s:complexType>
-      <s:complexType name="ArrayOfGuid">
-        <s:sequence>
-          <s:element minOccurs="0" maxOccurs="unbounded" name="guid" type="s1:guid" />
-        </s:sequence>
-      </s:complexType>
       <s:simpleType name="ApplicationArtifactType">
         <s:restriction base="s:string">
           <s:enumeration value="Code" />
@@ -102,6 +166,7 @@
           <s:enumeration value="RenameFriendlyNameConflict" />
           <s:enumeration value="Renamed" />
           <s:enumeration value="Mapped" />
+          <s:enumeration value="NotUpdated" />
         </s:restriction>
       </s:simpleType>
       <s:complexType name="ArrayOfApplication">
@@ -259,6 +324,7 @@
           <s:element minOccurs="1" maxOccurs="1" name="FieldTreeView" nillable="true" type="s:int" />
           <s:element minOccurs="1" maxOccurs="1" name="SiblingFieldArtifactID" nillable="true" type="s:int" />
           <s:element minOccurs="1" maxOccurs="1" name="AutoAddChoices" nillable="true" type="s:boolean" />
+          <s:element minOccurs="0" maxOccurs="1" name="ApplicationVersion" type="s:string" />
         </s:sequence>
       </s:complexType>
       <s:complexType name="ArrayOfCodeElement">
@@ -279,6 +345,7 @@
           <s:element minOccurs="1" maxOccurs="1" name="ParentArtifactId" type="s:int" />
           <s:element minOccurs="1" maxOccurs="1" name="ParentIsCode" type="s:boolean" />
           <s:element minOccurs="1" maxOccurs="1" name="UpdateInSearchEngine" type="s:boolean" />
+          <s:element minOccurs="0" maxOccurs="1" name="ApplicationVersion" type="s:string" />
         </s:sequence>
       </s:complexType>
       <s:simpleType name="ImportBehaviorChoice">
@@ -344,6 +411,12 @@
       </s:simpleType>
     </s:schema>
   </wsdl:types>
+  <wsdl:message name="GetAppMappingDataForWorkspaceSoapIn">
+    <wsdl:part name="parameters" element="tns:GetAppMappingDataForWorkspace" />
+  </wsdl:message>
+  <wsdl:message name="GetAppMappingDataForWorkspaceSoapOut">
+    <wsdl:part name="parameters" element="tns:GetAppMappingDataForWorkspaceResponse" />
+  </wsdl:message>
   <wsdl:message name="InstallTemplateSoapIn">
     <wsdl:part name="parameters" element="tns:InstallTemplate" />
   </wsdl:message>
@@ -369,6 +442,10 @@
     <wsdl:part name="parameters" element="tns:GetAvailableFieldsForMappingResponse" />
   </wsdl:message>
   <wsdl:portType name="TemplateManagerSoap">
+    <wsdl:operation name="GetAppMappingDataForWorkspace">
+      <wsdl:input message="tns:GetAppMappingDataForWorkspaceSoapIn" />
+      <wsdl:output message="tns:GetAppMappingDataForWorkspaceSoapOut" />
+    </wsdl:operation>
     <wsdl:operation name="InstallTemplate">
       <wsdl:input message="tns:InstallTemplateSoapIn" />
       <wsdl:output message="tns:InstallTemplateSoapOut" />
@@ -388,6 +465,15 @@
   </wsdl:portType>
   <wsdl:binding name="TemplateManagerSoap" type="tns:TemplateManagerSoap">
     <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="GetAppMappingDataForWorkspace">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/TemplateManager/GetAppMappingDataForWorkspace" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="InstallTemplate">
       <soap:operation soapAction="http://www.kCura.com/EDDS/TemplateManager/InstallTemplate" style="document" />
       <wsdl:input>
@@ -427,6 +513,15 @@
   </wsdl:binding>
   <wsdl:binding name="TemplateManagerSoap12" type="tns:TemplateManagerSoap">
     <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="GetAppMappingDataForWorkspace">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/TemplateManager/GetAppMappingDataForWorkspace" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="InstallTemplate">
       <soap12:operation soapAction="http://www.kCura.com/EDDS/TemplateManager/InstallTemplate" style="document" />
       <wsdl:input>

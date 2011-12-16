@@ -242,6 +242,7 @@
     <Reference Include="System.Data">
       <Name>System.Data</Name>
     </Reference>
+    <Reference Include="System.Drawing" />
     <Reference Include="System.EnterpriseServices" />
     <Reference Include="System.Runtime.Serialization.Formatters.Soap">
       <Name>System.Runtime.Serialization.Formatters.Soap</Name>
@@ -370,6 +371,7 @@
     <Compile Include="Exporters\VolumeManager.vb">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="FieldMapping\FieldMappingHelper.vb" />
     <Compile Include="FileDownloader.vb">
       <SubType>Code</SubType>
     </Compile>
@@ -482,6 +484,7 @@
     <Compile Include="PropertyExtractor\File.vb">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="ProxyClasses\TargetField.vb" />
     <Compile Include="ReadFromExisting.vb" />
     <Compile Include="Service\AuditManager.vb">
       <SubType>Code</SubType>
@@ -849,6 +852,9 @@
     <None Include="Web References\kCura.EDDS.WebAPI.SearchManagerBase\SearchManager.disco" />
     <None Include="Web References\kCura.EDDS.WebAPI.SearchManagerBase\SearchManager.wsdl" />
     <None Include="Web References\kCura.EDDS.WebAPI.TemplateManagerBase\ApplicationInstallationResult.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\kCura.EDDS.WebAPI.TemplateManagerBase\AppMappingData.datasource">
       <DependentUpon>Reference.map</DependentUpon>
     </None>
     <None Include="Web References\kCura.EDDS.WebAPI.TemplateManagerBase\ObjectGuidToName1.datasource">
