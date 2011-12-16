@@ -255,7 +255,10 @@ Namespace kCura.WinEDDS
 
 		Private Shared _programmaticServiceURL As String = Nothing
 
-		Public Shared WriteOnly Property ProgrammaticServiceURL() As String
+		Public Shared Property ProgrammaticServiceURL() As String
+			Get
+				Return _programmaticServiceURL
+			End Get
 			Set(value As String)
 				_programmaticServiceURL = value
 			End Set
