@@ -35,7 +35,7 @@ Namespace kCura.WinEDDS.ImportExtension
 					ImageLoadFile.Overwrite = "both"
 			End Select
 
-			Return New DataReaderImageImporter(1003697, ImageLoadFile, New kCura.Windows.Process.Controller, System.Guid.NewGuid, _sourceData)
+			Return New DataReaderImageImporter(ImageLoadFile.DestinationFolderID, ImageLoadFile, New kCura.Windows.Process.Controller, System.Guid.NewGuid, _sourceData)
 			'Dim temp As DataReaderImporter = New DataReaderImporter(DirectCast(Me.LoadFile, kCura.WinEDDS.ImportExtension.DataReaderLoadFile))
 			'Dim dr As System.Data.IDataReader = temp.SourceData
 			''These settings need to have [columnName]([index])
