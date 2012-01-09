@@ -491,7 +491,7 @@ Namespace kCura.WinEDDS
 			info.AddValue("SubdirectoryDigitPadding", Me.SubdirectoryDigitPadding, GetType(Int32))
 			info.AddValue("StartAtDocumentNumber", Me.StartAtDocumentNumber, GetType(Int32))
 			info.AddValue("VolumeInfo", Me.VolumeInfo, GetType(kCura.WinEDDS.Exporters.VolumeInfo))
-			info.AddValue("SelectedTextField", Me.SelectedTextFields, GetType(kCura.WinEDDS.ViewFieldInfo))
+			info.AddValue("SelectedTextFields", Me.SelectedTextFields, GetType(kCura.WinEDDS.ViewFieldInfo()))
 			info.AddValue("ImagePrecedence", Me.ImagePrecedence, GetType(kCura.WinEDDS.Pair()))
 			info.AddValue("SelectedViewFields", Me.SelectedViewFields, GetType(kCura.WinEDDS.ViewFieldInfo()))
 			info.AddValue("ObjectTypeName", Me.ObjectTypeName, GetType(String))
