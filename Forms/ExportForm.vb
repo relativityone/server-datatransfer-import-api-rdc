@@ -1308,10 +1308,10 @@ Public Class ExportForm
 		Next
 		_exportFile.SelectedViewFields = DirectCast(selectedViewFields.ToArray(GetType(ViewFieldInfo)), ViewFieldInfo())
 		If _potentialTextFields.SelectedIndex <> -1 Then
-			_exportFile.SelectedTextField = DirectCast(_potentialTextFields.SelectedItem, ViewFieldInfo)
+			_exportFile.SelectedTextFields = {DirectCast(_potentialTextFields.SelectedItem, ViewFieldInfo)}
 			_exportFile.ExportFullText = True
 		Else
-			_exportFile.SelectedTextField = Nothing
+			_exportFile.SelectedTextFields = Nothing
 			_exportFile.ExportFullText = False
 		End If
 		_exportFile.LoadFileEncoding = _dataFileEncoding.SelectedEncoding
@@ -1341,7 +1341,7 @@ Public Class ExportForm
 				End If
 
 				_columnSelecter.EnsureHorizontalScrollbars()
-				End If
+			End If
 		End If
 	End Sub
 
@@ -1454,10 +1454,10 @@ Public Class ExportForm
 
 			ManagePotentialTextFields()
 
-			If ef.SelectedTextField IsNot Nothing Then
+			If ef.SelectedTextFields IsNot Nothing Then
 				For i As Int32 = 0 To _potentialTextFields.Items.Count - 1
 					Dim loadedVfi As kCura.WinEDDS.ViewFieldInfo = DirectCast(_potentialTextFields.Items(i), kCura.WinEDDS.ViewFieldInfo)
-					If loadedVfi.DisplayName.Equals(ef.SelectedTextField.DisplayName, StringComparison.InvariantCulture) Then
+					If loadedVfi.DisplayName.Equals(ef.SelectedTextFields(0).DisplayName, StringComparison.InvariantCulture) Then
 						_potentialTextFields.SelectedIndex = i
 						Exit For
 					End If
