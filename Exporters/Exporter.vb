@@ -557,7 +557,7 @@ Namespace kCura.WinEDDS
 			args.DestinationFilesystemFolder = Me.Settings.FolderPath
 			args.DocumentExportCount = Me.DocumentsExported
 			args.ErrorCount = _errorCount
-			If Not Me.Settings.SelectedTextField Is Nothing Then args.ExportedTextFieldID = Me.Settings.SelectedTextField.FieldArtifactId
+			If Not Me.Settings.SelectedTextFields Is Nothing Then args.ExportedTextFieldID = Me.Settings.SelectedTextFields(0).FieldArtifactId
 			If Me.Settings.ExportFullTextAsFile Then
 				args.ExportedTextFileEncodingCodePage = Me.Settings.TextFileEncoding.CodePage
 				args.ExportTextFieldAsFiles = True

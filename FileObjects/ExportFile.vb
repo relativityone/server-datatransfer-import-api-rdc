@@ -45,7 +45,7 @@ Namespace kCura.WinEDDS
 		Protected _allExportableFields As WinEDDS.ViewFieldInfo()
 		Protected _selectedViewFields As WinEDDS.ViewFieldInfo()
 		Protected _multicodesAsNested As Boolean
-		Protected _selectedTextField As WinEDDS.ViewFieldInfo
+		Protected _selectedTextFields As WinEDDS.ViewFieldInfo()
 		Protected _loadFileEncoding As System.Text.Encoding
 		Protected _textFileEncoding As System.Text.Encoding
 		Protected _volumeDigitPadding As Int32
@@ -383,12 +383,12 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
-		Public Property SelectedTextField() As WinEDDS.ViewFieldInfo
+		Public Property SelectedTextFields() As WinEDDS.ViewFieldInfo()
 			Get
-				Return _selectedTextField
+				Return _selectedTextFields
 			End Get
-			Set(ByVal value As WinEDDS.ViewFieldInfo)
-				_selectedTextField = value
+			Set(ByVal value As WinEDDS.ViewFieldInfo())
+				_selectedTextFields = value
 			End Set
 		End Property
 
@@ -491,7 +491,7 @@ Namespace kCura.WinEDDS
 			info.AddValue("SubdirectoryDigitPadding", Me.SubdirectoryDigitPadding, GetType(Int32))
 			info.AddValue("StartAtDocumentNumber", Me.StartAtDocumentNumber, GetType(Int32))
 			info.AddValue("VolumeInfo", Me.VolumeInfo, GetType(kCura.WinEDDS.Exporters.VolumeInfo))
-			info.AddValue("SelectedTextField", Me.SelectedTextField, GetType(kCura.WinEDDS.ViewFieldInfo))
+			info.AddValue("SelectedTextField", Me.SelectedTextFields, GetType(kCura.WinEDDS.ViewFieldInfo))
 			info.AddValue("ImagePrecedence", Me.ImagePrecedence, GetType(kCura.WinEDDS.Pair()))
 			info.AddValue("SelectedViewFields", Me.SelectedViewFields, GetType(kCura.WinEDDS.ViewFieldInfo()))
 			info.AddValue("ObjectTypeName", Me.ObjectTypeName, GetType(String))
@@ -539,7 +539,12 @@ Namespace kCura.WinEDDS
 				Me.SubdirectoryDigitPadding = info.GetInt32("SubdirectoryDigitPadding")
 				Me.StartAtDocumentNumber = info.GetInt32("StartAtDocumentNumber")
 				Me.VolumeInfo = CType(info.GetValue("VolumeInfo", GetType(kCura.WinEDDS.Exporters.VolumeInfo)), kCura.WinEDDS.Exporters.VolumeInfo)
-				Me.SelectedTextField = DirectCast(info.GetValue("SelectedTextField", GetType(kCura.WinEDDS.ViewFieldInfo)), kCura.WinEDDS.ViewFieldInfo)
+				Try
+					Me.SelectedTextFields = DirectCast(info.GetValue("SelectedTextFields", GetType(kCura.WinEDDS.ViewFieldInfo())), kCura.WinEDDS.ViewFieldInfo())
+				Catch
+					Dim field As kCura.WinEDDS.ViewFieldInfo = DirectCast(info.GetValue("SelectedTextField", GetType(kCura.WinEDDS.ViewFieldInfo)), kCura.WinEDDS.ViewFieldInfo)
+					Me.SelectedTextFields = If(field Is Nothing, Nothing, {field})
+				End Try
 				Me.ImagePrecedence = DirectCast(info.GetValue("ImagePrecedence", GetType(kCura.WinEDDS.Pair())), kCura.WinEDDS.Pair())
 				Me.SelectedViewFields = DirectCast(info.GetValue("SelectedViewFields", GetType(kCura.WinEDDS.ViewFieldInfo())), kCura.WinEDDS.ViewFieldInfo())
 				Me.ObjectTypeName = info.GetString("ObjectTypeName")

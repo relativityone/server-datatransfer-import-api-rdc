@@ -367,11 +367,11 @@ Namespace kCura.WinEDDS
 #End Region
 
 		Private Function CopySelectedLongTextToFile(ByVal artifact As Exporters.ObjectExportInfo, ByRef len As Int64) As String
-			Dim text As Object = artifact.Metadata(Me.OrdinalLookup(Me.Settings.SelectedTextField.AvfColumnName))
+			Dim text As Object = artifact.Metadata(Me.OrdinalLookup(Me.Settings.SelectedTextFields(0).AvfColumnName))
 			If text Is Nothing Then text = String.Empty
 			Dim longText As String = text.ToString
 			If longText = Relativity.Constants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN Then
-				Dim filePath As String = Me.DownloadTextFieldAsFile(artifact, Me.Settings.SelectedTextField)
+				Dim filePath As String = Me.DownloadTextFieldAsFile(artifact, Me.Settings.SelectedTextFields(0))
 				len += New System.IO.FileInfo(filePath).Length
 				Return filePath
 			Else
@@ -443,7 +443,7 @@ Namespace kCura.WinEDDS
 			End If
 
 			If Me.Settings.LogFileFormat = LoadFileType.FileFormat.IPRO_FullText AndAlso Me.Settings.ExportImages Then
-				If Me.Settings.SelectedTextField Is Nothing OrElse Me.Settings.SelectedTextField.Category <> Relativity.FieldCategory.FullText Then
+				If Me.Settings.SelectedTextFields(0) Is Nothing OrElse Me.Settings.SelectedTextFields(0).Category <> Relativity.FieldCategory.FullText Then
 					tempLocalIproFullTextFilePath = System.IO.Path.GetTempFileName
 					Dim tries As Int32 = 20
 					Dim start As Int64 = System.DateTime.Now.Ticks
@@ -471,7 +471,7 @@ Namespace kCura.WinEDDS
 						End While
 					End If
 					_statistics.MetadataTime += System.Math.Max(System.DateTime.Now.Ticks - start, 1)
-				ElseIf Me.Settings.SelectedTextField.Category = Relativity.FieldCategory.FullText Then
+				ElseIf Me.Settings.SelectedTextFields(0).Category = Relativity.FieldCategory.FullText Then
 					If tempLocalFullTextFilePath <> String.Empty Then
 						tempLocalIproFullTextFilePath = String.Copy(tempLocalFullTextFilePath)
 					Else
@@ -982,7 +982,7 @@ Namespace kCura.WinEDDS
 			Dim destination As System.IO.TextWriter = Nothing
 			Dim downloadedFileExists As Boolean = Not String.IsNullOrEmpty(downloadedTextFilePath) AndAlso System.IO.File.Exists(downloadedTextFilePath)
 			If textValue = Relativity.Constants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN Then
-				If Me.Settings.SelectedTextField.AvfId = textField.AvfId AndAlso downloadedFileExists Then
+				If Me.Settings.SelectedTextFields(0).AvfId = textField.AvfId AndAlso downloadedFileExists Then
 					source = Me.GetLongTextStream(downloadedTextFilePath, textField)
 				Else
 					source = Me.GetLongTextStream(artifact, textField)
@@ -993,7 +993,7 @@ Namespace kCura.WinEDDS
 			Dim destinationPathExists As Boolean
 			Dim destinationFilePath As String = String.Empty
 			Dim formatter As Exporters.ILongTextStreamFormatter
-			If Me.Settings.ExportFullTextAsFile AndAlso Me.Settings.SelectedTextField.AvfId = textField.AvfId Then
+			If Me.Settings.ExportFullTextAsFile AndAlso Me.Settings.SelectedTextFields(0).AvfId = textField.AvfId Then
 				destinationFilePath = Me.GetLocalTextFilePath(artifact)
 				destinationPathExists = System.IO.File.Exists(destinationFilePath)
 				If destinationPathExists AndAlso Not _settings.Overwrite Then
