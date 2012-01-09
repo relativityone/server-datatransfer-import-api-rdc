@@ -107,8 +107,8 @@ Public Class ExportForm
 	Public WithEvents Label19 As System.Windows.Forms.Label
 	Public WithEvents Label20 As System.Windows.Forms.Label
 	Public WithEvents _textFileEncoding As kCura.EDDS.WinForm.EncodingPicker
+	Public WithEvents _textFieldPrecedencePicker As kCura.EDDS.WinForm.TextFieldPrecedencePicker
 	Public WithEvents Label21 As System.Windows.Forms.Label
-	Public WithEvents _potentialTextFields As System.Windows.Forms.ComboBox
 	Public WithEvents RefreshMenu As System.Windows.Forms.MenuItem
 	Public WithEvents MenuItem3 As System.Windows.Forms.MenuItem
 	Public WithEvents SaveExportSettings As System.Windows.Forms.MenuItem
@@ -153,8 +153,8 @@ Public Class ExportForm
 		Me.GroupBox6 = New System.Windows.Forms.GroupBox
 		Me._metadataGroup = New System.Windows.Forms.GroupBox
 		Me.Label21 = New System.Windows.Forms.Label
-		Me._potentialTextFields = New System.Windows.Forms.ComboBox
 		Me._textFileEncoding = New kCura.EDDS.WinForm.EncodingPicker
+		Me._textFieldPrecedencePicker = New kCura.EDDS.WinForm.TextFieldPrecedencePicker
 		Me.Label20 = New System.Windows.Forms.Label
 		Me.Label19 = New System.Windows.Forms.Label
 		Me._dataFileEncoding = New kCura.EDDS.WinForm.EncodingPicker
@@ -481,7 +481,7 @@ Public Class ExportForm
 		'_metadataGroup
 		'
 		Me._metadataGroup.Controls.Add(Me.Label21)
-		Me._metadataGroup.Controls.Add(Me._potentialTextFields)
+		Me._metadataGroup.Controls.Add(Me._textFieldPrecedencePicker)
 		Me._metadataGroup.Controls.Add(Me._textFileEncoding)
 		Me._metadataGroup.Controls.Add(Me.Label20)
 		Me._metadataGroup.Controls.Add(Me.Label19)
@@ -505,14 +505,11 @@ Public Class ExportForm
 		Me.Label21.TabIndex = 21
 		Me.Label21.Text = "Text Field:"
 		Me.Label21.TextAlign = System.Drawing.ContentAlignment.MiddleRight
-		'
-		'_potentialTextFields
-		'
-		Me._potentialTextFields.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
-		Me._potentialTextFields.Location = New System.Drawing.Point(116, 128)
-		Me._potentialTextFields.Name = "_potentialTextFields"
-		Me._potentialTextFields.Size = New System.Drawing.Size(176, 21)
-		Me._potentialTextFields.TabIndex = 20
+		'_textFieldPrecedencePicker
+		Me._textFieldPrecedencePicker.Location = New System.Drawing.Point(115, 125)
+		Me._textFieldPrecedencePicker.Name = "_textFieldPrecedencePicker"
+		Me._textFieldPrecedencePicker.Size = New System.Drawing.Size(175, 21)
+		Me._textFieldPrecedencePicker.TabIndex = 20
 		'
 		'_textFileEncoding
 		'
@@ -1123,6 +1120,7 @@ Public Class ExportForm
 	Private WithEvents _application As kCura.EDDS.WinForm.Application
 	Protected _exportFile As kCura.WinEDDS.ExportFile
 	Protected WithEvents _precedenceForm As kCura.EDDS.WinForm.ProductionPrecedenceForm
+	Protected WithEvents _textFieldPrecedenceForm As kCura.EDDS.WinForm.TextPrecedenceForm
 	Private _allExportableFields As Relativity.ViewFieldInfo
 	Private _dataSourceIsSet As Boolean = False
 	Private _objectTypeName As String = ""
@@ -1307,8 +1305,8 @@ Public Class ExportForm
 			selectedViewFields.Add(field)
 		Next
 		_exportFile.SelectedViewFields = DirectCast(selectedViewFields.ToArray(GetType(ViewFieldInfo)), ViewFieldInfo())
-		If _potentialTextFields.SelectedIndex <> -1 Then
-			_exportFile.SelectedTextField = DirectCast(_potentialTextFields.SelectedItem, ViewFieldInfo)
+		If _textFieldPrecedencePicker.PotentialTextFields.SelectedIndex <> -1 Then
+			_exportFile.SelectedTextField = DirectCast(_textFieldPrecedencePicker.PotentialTextFields.SelectedItem, ViewFieldInfo)
 			_exportFile.ExportFullText = True
 		Else
 			_exportFile.SelectedTextField = Nothing
@@ -1455,10 +1453,10 @@ Public Class ExportForm
 			ManagePotentialTextFields()
 
 			If ef.SelectedTextField IsNot Nothing Then
-				For i As Int32 = 0 To _potentialTextFields.Items.Count - 1
-					Dim loadedVfi As kCura.WinEDDS.ViewFieldInfo = DirectCast(_potentialTextFields.Items(i), kCura.WinEDDS.ViewFieldInfo)
+				For i As Int32 = 0 To _textFieldPrecedencePicker.PotentialTextFields.Items.Count - 1
+					Dim loadedVfi As kCura.WinEDDS.ViewFieldInfo = DirectCast(_textFieldPrecedencePicker.PotentialTextFields.Items(i), kCura.WinEDDS.ViewFieldInfo)
 					If loadedVfi.DisplayName.Equals(ef.SelectedTextField.DisplayName, StringComparison.InvariantCulture) Then
-						_potentialTextFields.SelectedIndex = i
+						_textFieldPrecedencePicker.PotentialTextFields.SelectedIndex = i
 						Exit For
 					End If
 				Next
@@ -1894,10 +1892,10 @@ Public Class ExportForm
 
 	Private Sub ManagePotentialTextFields()
 		Dim selectedItem As kCura.WinEDDS.ViewFieldInfo = Nothing
-		If Not _potentialTextFields.SelectedIndex = -1 Then
-			selectedItem = CType(_potentialTextFields.SelectedItem, kCura.WinEDDS.ViewFieldInfo)
+		If Not _textFieldPrecedencePicker.PotentialTextFields.SelectedIndex = -1 Then
+			selectedItem = CType(_textFieldPrecedencePicker.PotentialTextFields.SelectedItem, kCura.WinEDDS.ViewFieldInfo)
 		End If
-		_potentialTextFields.Items.Clear()
+		_textFieldPrecedencePicker.PotentialTextFields.Items.Clear()
 		Dim textFields As New System.Collections.ArrayList
 		For Each field As kCura.WinEDDS.ViewFieldInfo In _columnSelecter.RightListBoxItems
 			If field.FieldType = Relativity.FieldTypeHelper.FieldType.Text Then
@@ -1905,28 +1903,28 @@ Public Class ExportForm
 			End If
 		Next
 		textFields.Sort()
-		_potentialTextFields.Items.AddRange(DirectCast(textFields.ToArray(GetType(ViewFieldInfo)), ViewFieldInfo()))
+		_textFieldPrecedencePicker.PotentialTextFields.Items.AddRange(DirectCast(textFields.ToArray(GetType(ViewFieldInfo)), ViewFieldInfo()))
 		Dim isSelectedItemSet As Boolean = False
 		If Not selectedItem Is Nothing Then
-			For i As Int32 = 0 To _potentialTextFields.Items.Count - 1
-				If DirectCast(_potentialTextFields.Items(i), ViewFieldInfo).AvfId = selectedItem.AvfId Then
-					_potentialTextFields.SelectedIndex = i
+			For i As Int32 = 0 To _textFieldPrecedencePicker.PotentialTextFields.Items.Count - 1
+				If DirectCast(_textFieldPrecedencePicker.PotentialTextFields.Items(i), ViewFieldInfo).AvfId = selectedItem.AvfId Then
+					_textFieldPrecedencePicker.PotentialTextFields.SelectedIndex = i
 					isSelectedItemSet = True
 					Exit For
 				End If
 			Next
 		End If
-		If Not isSelectedItemSet AndAlso _potentialTextFields.Items.Count > 0 Then
-			For i As Int32 = 0 To _potentialTextFields.Items.Count - 1
-				If DirectCast(_potentialTextFields.Items(i), ViewFieldInfo).Category = Relativity.FieldCategory.FullText Then
-					_potentialTextFields.SelectedIndex = i
+		If Not isSelectedItemSet AndAlso _textFieldPrecedencePicker.PotentialTextFields.Items.Count > 0 Then
+			For i As Int32 = 0 To _textFieldPrecedencePicker.PotentialTextFields.Items.Count - 1
+				If DirectCast(_textFieldPrecedencePicker.PotentialTextFields.Items(i), ViewFieldInfo).Category = Relativity.FieldCategory.FullText Then
+					_textFieldPrecedencePicker.PotentialTextFields.SelectedIndex = i
 					isSelectedItemSet = True
 					Exit For
 				End If
 			Next
 		End If
-		If Not isSelectedItemSet AndAlso _potentialTextFields.Items.Count > 0 Then
-			_potentialTextFields.SelectedIndex = 0
+		If Not isSelectedItemSet AndAlso _textFieldPrecedencePicker.PotentialTextFields.Items.Count > 0 Then
+			_textFieldPrecedencePicker.PotentialTextFields.SelectedIndex = 0
 		End If
 	End Sub
 
@@ -1981,17 +1979,17 @@ Public Class ExportForm
 		_dataSourceIsSet = True
 		Dim temporaryPotentialTextFields As New ArrayList
 		Dim temporaryPotentialTextFieldsSelectedIndex As Int32
-		If _potentialTextFields.Items.Count > 0 Then
-			For Each test As Object In _potentialTextFields.Items
+		If _textFieldPrecedencePicker.PotentialTextFields.Items.Count > 0 Then
+			For Each test As Object In _textFieldPrecedencePicker.PotentialTextFields.Items
 				temporaryPotentialTextFields.Add(test)
 			Next
-			temporaryPotentialTextFieldsSelectedIndex = _potentialTextFields.SelectedIndex
+			temporaryPotentialTextFieldsSelectedIndex = _textFieldPrecedencePicker.PotentialTextFields.SelectedIndex
 		End If
 		_filters.SelectedIndex = selectedindex
 		If temporaryPotentialTextFields.Count > 0 Then
-			_potentialTextFields.Items.Clear()
-			_potentialTextFields.Items.AddRange(temporaryPotentialTextFields.ToArray)
-			_potentialTextFields.SelectedIndex = temporaryPotentialTextFieldsSelectedIndex
+			_textFieldPrecedencePicker.PotentialTextFields.Items.Clear()
+			_textFieldPrecedencePicker.PotentialTextFields.Items.AddRange(temporaryPotentialTextFields.ToArray)
+			_textFieldPrecedencePicker.PotentialTextFields.SelectedIndex = temporaryPotentialTextFieldsSelectedIndex
 		End If
 		'TODO: this will send -1 index to OnDraw during refresh on exports. Known defect. In backlog
 		_columnSelecter.LeftListBoxItems.Clear()
@@ -2035,6 +2033,28 @@ Public Class ExportForm
 		If Not _copyFilesFromRepository.Checked Then
 			_imageTypeDropdown.SelectedIndex = 1
 		End If
+	End Sub
+
+	Private Sub _pickTextFieldPrecedenceButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _textFieldPrecedencePicker.Picker_Click
+		'Dim dt As System.Data.DataTable = _application.GetProductionPrecendenceList(ExportFile.CaseInfo)
+		'If dt Is Nothing Then Exit Sub
+		'_precedenceForm = New kCura.EDDS.WinForm.ProductionPrecedenceForm
+		'_precedenceForm.ExportFile = Me.ExportFile
+		'_precedenceForm.PrecedenceTable = dt
+		'If _productionPrecedenceList.Items.Count > 0 Then
+		'	Dim precedenceList(_productionPrecedenceList.Items.Count - 1) As Pair
+		'	Dim i As Int32 = 0
+		'	For i = 0 To _productionPrecedenceList.Items.Count - 1
+		'		precedenceList(i) = DirectCast(_productionPrecedenceList.Items(i), Pair)
+		'	Next
+		'	_precedenceForm.PrecedenceList = precedenceList
+		'Else
+		'	Dim precedenceList(0) As Pair
+		'	precedenceList(0) = New Pair("-1", "Original")
+		'	_precedenceForm.PrecedenceList = Nothing
+		'End If
+		_textFieldPrecedenceForm = New kCura.EDDS.WinForm.TextPrecedenceForm()
+		_textFieldPrecedenceForm.ShowDialog()
 	End Sub
 
 End Class

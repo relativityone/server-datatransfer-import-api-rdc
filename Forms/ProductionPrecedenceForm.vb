@@ -6,7 +6,6 @@ Namespace kCura.EDDS.WinForm
 
 		Public Sub New()
 			MyBase.New()
-
 			'This call is required by the Windows Form Designer.
 			InitializeComponent()
 
