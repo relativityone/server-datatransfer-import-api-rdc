@@ -501,14 +501,14 @@ Public Class ExportForm
 		'
 		'Label21
 		'
-		Me.Label21.Location = New System.Drawing.Point(4, 128)
+		Me.Label21.Location = New System.Drawing.Point(8, 125)
 		Me.Label21.Name = "Label21"
-		Me.Label21.Size = New System.Drawing.Size(108, 21)
+		Me.Label21.Size = New System.Drawing.Size(107, 21)
 		Me.Label21.TabIndex = 21
-		Me.Label21.Text = "Text Field Precedence:"
+		Me.Label21.Text = "Text Precedence:"
 		Me.Label21.TextAlign = System.Drawing.ContentAlignment.MiddleRight
 		'_textFieldPrecedencePicker
-		Me._textFieldPrecedencePicker.Location = New System.Drawing.Point(115, 125)
+		Me._textFieldPrecedencePicker.Location = New System.Drawing.Point(116, 125)
 		Me._textFieldPrecedencePicker.Name = "_textFieldPrecedencePicker"
 		Me._textFieldPrecedencePicker.Size = New System.Drawing.Size(175, 21)
 		Me._textFieldPrecedencePicker.TabIndex = 20

@@ -30,7 +30,7 @@
 			'_pickTextFieldPrecedenceButton
 			'
 			Me._pickTextFieldPrecedenceButton.Anchor = System.Windows.Forms.AnchorStyles.Top
-			Me._pickTextFieldPrecedenceButton.Location = New System.Drawing.Point(151, 0)
+			Me._pickTextFieldPrecedenceButton.Location = New System.Drawing.Point(150, 0)
 			Me._pickTextFieldPrecedenceButton.Name = "_pickTextFieldPrecedenceButton"
 			Me._pickTextFieldPrecedenceButton.Size = New System.Drawing.Size(24, 20)
 			Me._pickTextFieldPrecedenceButton.TabIndex = 2
@@ -41,7 +41,7 @@
 			Me._selectedTextFieldsTextBox.Location = New System.Drawing.Point(0, 0)
 			Me._selectedTextFieldsTextBox.Name = "_selectedTextFieldsTextBox"
 			Me._selectedTextFieldsTextBox.ReadOnly = True
-			Me._selectedTextFieldsTextBox.Size = New System.Drawing.Size(149, 20)
+			Me._selectedTextFieldsTextBox.Size = New System.Drawing.Size(148, 20)
 			Me._selectedTextFieldsTextBox.TabIndex = 4
 			'
 			'TextFieldPrecedencePicker
