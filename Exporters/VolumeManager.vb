@@ -187,6 +187,11 @@ Namespace kCura.WinEDDS
 			For i As Int32 = 0 To columnNamesInOrder.Length - 1
 				_ordinalLookup.Add(columnNamesInOrder(i), i)
 			Next
+			If Not Me.Settings.SelectedTextFields Is Nothing AndAlso Me.Settings.SelectedTextFields.Count > 0 Then
+				Dim newindex As Int32 = _ordinalLookup.Count
+				_ordinalLookup.Add(Relativity.Export.Constants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME, newindex)
+			End If
+
 		End Sub
 
 		Private Function GetImageFileEncoding() As System.Text.Encoding
@@ -584,6 +589,13 @@ Namespace kCura.WinEDDS
 			End If
 		End Function
 
+		Private Function GetFieldForLongTextPrecedenceDownload(ByVal input As ViewFieldInfo) As ViewFieldInfo
+			Dim retval As ViewFieldInfo = input
+			If input.AvfColumnName = Relativity.Export.Constants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME Then
+
+			End If
+			Return retval
+		End Function
 		Private Function DownloadTextFieldAsFile(ByVal artifact As WinEDDS.Exporters.ObjectExportInfo, ByVal field As WinEDDS.ViewFieldInfo) As String
 			Dim tempLocalFullTextFilePath As String = System.IO.Path.GetTempFileName
 			Dim tries As Int32 = 20
@@ -594,7 +606,8 @@ Namespace kCura.WinEDDS
 					If Me.Settings.ArtifactTypeID = Relativity.ArtifactType.Document AndAlso field.Category = Relativity.FieldCategory.FullText Then
 						_downloadManager.DownloadFullTextFile(tempLocalFullTextFilePath, artifact.ArtifactID, _settings.CaseInfo.ArtifactID.ToString)
 					Else
-						_downloadManager.DownloadLongTextFile(tempLocalFullTextFilePath, artifact.ArtifactID, field, _settings.CaseInfo.ArtifactID.ToString)
+						Dim fieldToActuallyExportFrom As ViewFieldInfo = Me.GetFieldForLongTextPrecedenceDownload(field)
+						_downloadManager.DownloadLongTextFile(tempLocalFullTextFilePath, artifact.ArtifactID, fieldToActuallyExportFrom, _settings.CaseInfo.ArtifactID.ToString)
 					End If
 					Exit While
 				Catch ex As System.Exception
@@ -993,7 +1006,7 @@ Namespace kCura.WinEDDS
 			Dim destinationPathExists As Boolean
 			Dim destinationFilePath As String = String.Empty
 			Dim formatter As Exporters.ILongTextStreamFormatter
-			If Me.Settings.ExportFullTextAsFile AndAlso Me.Settings.SelectedTextFields(0).AvfId = textField.AvfId Then
+			If Me.Settings.ExportFullTextAsFile AndAlso TypeOf textField Is CoalescedTextViewField Then
 				destinationFilePath = Me.GetLocalTextFilePath(artifact)
 				destinationPathExists = System.IO.File.Exists(destinationFilePath)
 				If destinationPathExists AndAlso Not _settings.Overwrite Then
