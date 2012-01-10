@@ -1308,10 +1308,10 @@ Public Class ExportForm
 		Next
 		_exportFile.SelectedViewFields = DirectCast(selectedViewFields.ToArray(GetType(ViewFieldInfo)), ViewFieldInfo())
 		If _textFieldPrecedencePicker.SelectedFields.Count > 0 Then
-			_exportFile.SelectedTextField = DirectCast(_textFieldPrecedencePicker.SelectedFields(0), ViewFieldInfo)
+			_exportFile.SelectedTextFields = _textFieldPrecedencePicker.SelectedFields.ToArray()
 			_exportFile.ExportFullText = True
 		Else
-			_exportFile.SelectedTextField = Nothing
+			_exportFile.SelectedTextFields = Nothing
 			_exportFile.ExportFullText = False
 		End If
 		_exportFile.LoadFileEncoding = _dataFileEncoding.SelectedEncoding
@@ -1454,10 +1454,10 @@ Public Class ExportForm
 
 			ManagePotentialTextFields()
 
-			If ef.SelectedTextField IsNot Nothing Then
+			If ef.SelectedTextFields IsNot Nothing Then
 				For i As Int32 = 0 To _textFieldPrecedencePicker.SelectedFields.Count - 1
 					Dim loadedVfi As kCura.WinEDDS.ViewFieldInfo = DirectCast(_textFieldPrecedencePicker.SelectedFields(i), kCura.WinEDDS.ViewFieldInfo)
-					If loadedVfi.DisplayName.Equals(ef.SelectedTextField.DisplayName, StringComparison.InvariantCulture) Then
+					If loadedVfi.DisplayName.Equals(ef.SelectedTextFields(0).DisplayName, StringComparison.InvariantCulture) Then
 						_textFieldPrecedencePicker.SelectedFields = Nothing	' TODO: Get list of fields from load File
 						Exit For
 					End If
