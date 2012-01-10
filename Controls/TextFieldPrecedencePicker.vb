@@ -1,5 +1,6 @@
 ﻿Imports System.Collections.Generic
 Imports System.Text
+Imports System.Linq
 
 Namespace kCura.EDDS.WinForm
 	Public Class TextFieldPrecedencePicker
@@ -11,7 +12,7 @@ Namespace kCura.EDDS.WinForm
 				Dim toolTipStringBuilder As New StringBuilder()
 				If SelectedTextFieldsListBox.Items.Count > 0 Then
 					Dim listOfPotentialTextFields As New List(Of ViewFieldInfo)()
-					For Each pObject As ViewFieldInfo In PotentialTextFieldsList
+					For Each pObject As ViewFieldInfo In SelectedTextFieldsList
 						Dim pObjectVfi As ViewFieldInfo = DirectCast(pObject, ViewFieldInfo)
 						listOfPotentialTextFields.Add(pObjectVfi)
 					Next
@@ -39,7 +40,7 @@ Namespace kCura.EDDS.WinForm
 
 		Private _toolTip As New ToolTip()
 
-		Public ReadOnly Property PotentialTextFieldsList() As List(Of ViewFieldInfo)
+		Public ReadOnly Property SelectedTextFieldsList() As List(Of ViewFieldInfo)
 			Get
 				Dim retVal As New List(Of ViewFieldInfo)()
 				For i As Int32 = 0 To SelectedTextFieldsListBox.Items.Count - 1
@@ -82,6 +83,14 @@ Namespace kCura.EDDS.WinForm
 			End If
 
 			SetToolTip(toolTipStringBuilder.ToString().Trim())
+		End Sub
+
+		Public Sub SelectDefautlTextField()
+			If _allAvailableLongTextFields.Count > 0 Then
+				Dim firstField As ViewFieldInfo = _allAvailableLongTextFields.First
+				_SelectedTextFieldsListBox.Items.Add(firstField)
+				SetToolTip(firstField.DisplayName)
+			End If
 		End Sub
 	End Class
 End Namespace

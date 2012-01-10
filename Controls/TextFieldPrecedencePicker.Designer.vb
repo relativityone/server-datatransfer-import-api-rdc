@@ -36,13 +36,13 @@
 			Me._pickTextFieldPrecedenceButton.TabIndex = 2
 			Me._pickTextFieldPrecedenceButton.Text = "..."
 			'
-			'PotentialTextFieldsDropDown
+			'SelectedTextFieldsListBox
 			'
 			Me.SelectedTextFieldsListBox.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
 			Me.SelectedTextFieldsListBox.FormattingEnabled = True
 			Me.SelectedTextFieldsListBox.ItemHeight = 15
 			Me.SelectedTextFieldsListBox.Location = New System.Drawing.Point(0, 0)
-			Me.SelectedTextFieldsListBox.Name = "PotentialTextFieldsDropDown"
+			Me.SelectedTextFieldsListBox.Name = "SelectedTextFieldsListBox"
 			Me.SelectedTextFieldsListBox.Size = New System.Drawing.Size(149, 19)
 			Me.SelectedTextFieldsListBox.TabIndex = 3
 			'

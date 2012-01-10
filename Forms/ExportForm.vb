@@ -1680,6 +1680,7 @@ Public Class ExportForm
 		_productionPrecedenceList.Items.Add(New Pair("-1", "Original"))
 		Me.InitializeColumnSelecter()
 		Me.InitializeFileControls()
+		_textFieldPrecedencePicker.SelectDefautlTextField()
 	End Sub
 
 	Private Sub _searchList_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _filters.SelectedIndexChanged
@@ -1895,7 +1896,7 @@ Public Class ExportForm
 	Private Sub ManagePotentialTextFields()
 		Dim selectedItems As Generic.List(Of kCura.WinEDDS.ViewFieldInfo) = Nothing
 		If Not _textFieldPrecedencePicker.SelectedTextFieldsListBox.SelectedIndex = -1 Then
-			selectedItems = _textFieldPrecedencePicker.PotentialTextFieldsList
+			selectedItems = _textFieldPrecedencePicker.SelectedTextFieldsList
 		End If
 		'_textFieldPrecedencePicker.PotentialTextFieldsDropDown.Items.Clear()
 		Dim textFields As New List(Of ViewFieldInfo)
@@ -1980,19 +1981,20 @@ Public Class ExportForm
 			MsgBox(msg, MsgBoxStyle.Exclamation, "Relativity Desktop Client")
 		End If
 		_dataSourceIsSet = True
-		Dim temporaryPotentialTextFields As New ArrayList
+		Dim temporaryPotentialTextFields As New List(Of ViewFieldInfo)()
 		Dim temporaryPotentialTextFieldsSelectedIndex As Int32
 		If _textFieldPrecedencePicker.SelectedTextFieldsListBox.Items.Count > 0 Then
 			For Each test As Object In _textFieldPrecedencePicker.SelectedTextFieldsListBox.Items
-				temporaryPotentialTextFields.Add(test)
+				temporaryPotentialTextFields.Add(DirectCast(test, ViewFieldInfo))
 			Next
 			temporaryPotentialTextFieldsSelectedIndex = _textFieldPrecedencePicker.SelectedTextFieldsListBox.SelectedIndex
 		End If
 		_filters.SelectedIndex = selectedindex
 		If temporaryPotentialTextFields.Count > 0 Then
-			_textFieldPrecedencePicker.SelectedTextFieldsListBox.Items.Clear()
-			_textFieldPrecedencePicker.SelectedTextFieldsListBox.Items.AddRange(temporaryPotentialTextFields.ToArray)
-			_textFieldPrecedencePicker.SelectedTextFieldsListBox.SelectedIndex = temporaryPotentialTextFieldsSelectedIndex
+			'_textFieldPrecedencePicker.SelectedTextFieldsListBox.Items.Clear()
+			'_textFieldPrecedencePicker.SelectedTextFieldsListBox.Items.AddRange(temporaryPotentialTextFields.ToArray)
+			'_textFieldPrecedencePicker.SelectedTextFieldsListBox.SelectedIndex = temporaryPotentialTextFieldsSelectedIndex
+			_textFieldPrecedencePicker.AllAvailableLongTextFields = New List(Of ViewFieldInfo)(temporaryPotentialTextFields)
 		End If
 		'TODO: this will send -1 index to OnDraw during refresh on exports. Known defect. In backlog
 		_columnSelecter.LeftListBoxItems.Clear()
