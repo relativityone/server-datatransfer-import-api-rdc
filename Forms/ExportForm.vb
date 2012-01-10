@@ -501,11 +501,11 @@ Public Class ExportForm
 		'
 		'Label21
 		'
-		Me.Label21.Location = New System.Drawing.Point(24, 128)
+		Me.Label21.Location = New System.Drawing.Point(4, 128)
 		Me.Label21.Name = "Label21"
-		Me.Label21.Size = New System.Drawing.Size(92, 21)
+		Me.Label21.Size = New System.Drawing.Size(108, 21)
 		Me.Label21.TabIndex = 21
-		Me.Label21.Text = "Text Field:"
+		Me.Label21.Text = "Text Field Precedence:"
 		Me.Label21.TextAlign = System.Drawing.ContentAlignment.MiddleRight
 		'_textFieldPrecedencePicker
 		Me._textFieldPrecedencePicker.Location = New System.Drawing.Point(115, 125)
@@ -1307,8 +1307,8 @@ Public Class ExportForm
 			selectedViewFields.Add(field)
 		Next
 		_exportFile.SelectedViewFields = DirectCast(selectedViewFields.ToArray(GetType(ViewFieldInfo)), ViewFieldInfo())
-		If _textFieldPrecedencePicker.SelectedTextFieldsListBox.SelectedIndex <> -1 Then
-			_exportFile.SelectedTextField = DirectCast(_textFieldPrecedencePicker.SelectedTextFieldsListBox.SelectedItem, ViewFieldInfo)
+		If _textFieldPrecedencePicker.SelectedFields.Count > 0 Then
+			_exportFile.SelectedTextField = DirectCast(_textFieldPrecedencePicker.SelectedFields(0), ViewFieldInfo)
 			_exportFile.ExportFullText = True
 		Else
 			_exportFile.SelectedTextField = Nothing
@@ -1455,10 +1455,10 @@ Public Class ExportForm
 			ManagePotentialTextFields()
 
 			If ef.SelectedTextField IsNot Nothing Then
-				For i As Int32 = 0 To _textFieldPrecedencePicker.SelectedTextFieldsListBox.Items.Count - 1
-					Dim loadedVfi As kCura.WinEDDS.ViewFieldInfo = DirectCast(_textFieldPrecedencePicker.SelectedTextFieldsListBox.Items(i), kCura.WinEDDS.ViewFieldInfo)
+				For i As Int32 = 0 To _textFieldPrecedencePicker.SelectedFields.Count - 1
+					Dim loadedVfi As kCura.WinEDDS.ViewFieldInfo = DirectCast(_textFieldPrecedencePicker.SelectedFields(i), kCura.WinEDDS.ViewFieldInfo)
 					If loadedVfi.DisplayName.Equals(ef.SelectedTextField.DisplayName, StringComparison.InvariantCulture) Then
-						_textFieldPrecedencePicker.SelectedTextFieldsListBox.SelectedIndex = i
+						_textFieldPrecedencePicker.SelectedFields = Nothing	' TODO: Get list of fields from load File
 						Exit For
 					End If
 				Next
@@ -1895,8 +1895,8 @@ Public Class ExportForm
 
 	Private Sub ManagePotentialTextFields()
 		Dim selectedItems As Generic.List(Of kCura.WinEDDS.ViewFieldInfo) = Nothing
-		If Not _textFieldPrecedencePicker.SelectedTextFieldsListBox.SelectedIndex = -1 Then
-			selectedItems = _textFieldPrecedencePicker.SelectedTextFieldsList
+		If _textFieldPrecedencePicker.SelectedFields.Count > 0 Then
+			selectedItems = _textFieldPrecedencePicker.SelectedFields
 		End If
 		'_textFieldPrecedencePicker.PotentialTextFieldsDropDown.Items.Clear()
 		Dim textFields As New List(Of ViewFieldInfo)
@@ -1982,18 +1982,13 @@ Public Class ExportForm
 		End If
 		_dataSourceIsSet = True
 		Dim temporaryPotentialTextFields As New List(Of ViewFieldInfo)()
-		Dim temporaryPotentialTextFieldsSelectedIndex As Int32
-		If _textFieldPrecedencePicker.SelectedTextFieldsListBox.Items.Count > 0 Then
-			For Each test As Object In _textFieldPrecedencePicker.SelectedTextFieldsListBox.Items
+		If _textFieldPrecedencePicker.SelectedFields.Count > 0 Then
+			For Each test As Object In _textFieldPrecedencePicker.SelectedFields
 				temporaryPotentialTextFields.Add(DirectCast(test, ViewFieldInfo))
 			Next
-			temporaryPotentialTextFieldsSelectedIndex = _textFieldPrecedencePicker.SelectedTextFieldsListBox.SelectedIndex
 		End If
 		_filters.SelectedIndex = selectedindex
 		If temporaryPotentialTextFields.Count > 0 Then
-			'_textFieldPrecedencePicker.SelectedTextFieldsListBox.Items.Clear()
-			'_textFieldPrecedencePicker.SelectedTextFieldsListBox.Items.AddRange(temporaryPotentialTextFields.ToArray)
-			'_textFieldPrecedencePicker.SelectedTextFieldsListBox.SelectedIndex = temporaryPotentialTextFieldsSelectedIndex
 			_textFieldPrecedencePicker.AllAvailableLongTextFields = New List(Of ViewFieldInfo)(temporaryPotentialTextFields)
 		End If
 		'TODO: this will send -1 index to OnDraw during refresh on exports. Known defect. In backlog

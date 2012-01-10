@@ -6,18 +6,24 @@ Namespace kCura.EDDS.WinForm
 	Public Class TextFieldPrecedencePicker
 		Private WithEvents _textFieldPrecedenceForm As kCura.EDDS.WinForm.TextPrecedenceForm
 		Private _allAvailableLongTextFields As List(Of ViewFieldInfo)
+		Private _toolTip As New ToolTip()
+		Private _selectedFields As New List(Of ViewFieldInfo)
+
+		Public Property SelectedFields() As List(Of ViewFieldInfo)
+			Get
+				Return _selectedFields
+			End Get
+			Set(ByVal value As List(Of ViewFieldInfo))
+				_selectedFields = value
+			End Set
+		End Property
 
 		Public WriteOnly Property AllAvailableLongTextFields() As List(Of ViewFieldInfo)
 			Set(ByVal value As List(Of ViewFieldInfo))
-				Dim toolTipStringBuilder As New StringBuilder()
-				If SelectedTextFieldsListBox.Items.Count > 0 Then
-					Dim listOfPotentialTextFields As New List(Of ViewFieldInfo)()
-					For Each pObject As ViewFieldInfo In SelectedTextFieldsList
-						Dim pObjectVfi As ViewFieldInfo = DirectCast(pObject, ViewFieldInfo)
-						listOfPotentialTextFields.Add(pObjectVfi)
-					Next
-
-					For Each selectedItem As ViewFieldInfo In listOfPotentialTextFields
+				If Me.SelectedFields.Count > 0 Then
+					Dim tempSelectedFields As New List(Of ViewFieldInfo)()
+					tempSelectedFields.AddRange(Me.SelectedFields)
+					For Each selectedItem As ViewFieldInfo In tempSelectedFields
 						Dim selectedItemViewlFieldInfo As ViewFieldInfo = DirectCast(selectedItem, ViewFieldInfo)
 						Dim selectedItemExists As Boolean = False
 						For Each item As ViewFieldInfo In value
@@ -27,31 +33,17 @@ Namespace kCura.EDDS.WinForm
 							End If
 						Next
 						If Not selectedItemExists Then
-							SelectedTextFieldsListBox.Items.Remove(selectedItem)
-						Else
-							toolTipStringBuilder.AppendLine(selectedItem.DisplayName)
+							Me.SelectedFields.Remove(selectedItem)
 						End If
 					Next
 				End If
 				_allAvailableLongTextFields = value
-				SetToolTip(toolTipStringBuilder.ToString().Trim())
+				ManageLabel()
 			End Set
 		End Property
 
-		Private _toolTip As New ToolTip()
-
-		Public ReadOnly Property SelectedTextFieldsList() As List(Of ViewFieldInfo)
-			Get
-				Dim retVal As New List(Of ViewFieldInfo)()
-				For i As Int32 = 0 To SelectedTextFieldsListBox.Items.Count - 1
-					retVal.Add(DirectCast(SelectedTextFieldsListBox.Items(i), ViewFieldInfo))
-				Next
-				Return retVal
-			End Get
-		End Property
-
-		Private Sub _pickTextFieldPrecedenceButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _pickTextFieldPrecedenceButton.Click
-			_textFieldPrecedenceForm = New kCura.EDDS.WinForm.TextPrecedenceForm(_allAvailableLongTextFields, SelectedTextFieldsListBox)
+	Private Sub _pickTextFieldPrecedenceButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _pickTextFieldPrecedenceButton.Click
+			_textFieldPrecedenceForm = New kCura.EDDS.WinForm.TextPrecedenceForm(_allAvailableLongTextFields, Me.SelectedFields)
 			_textFieldPrecedenceForm.ShowDialog()
 		End Sub
 
@@ -63,33 +55,37 @@ Namespace kCura.EDDS.WinForm
 			'ManageColumns()
 		End Sub
 
-		Private Sub SetToolTip(ByVal text As String)
-			_toolTip.AutoPopDelay = 5000
-			_toolTip.InitialDelay = 1000
-			_toolTip.ReshowDelay = 500
+		Private Sub ManageLabel()
+			Dim toolTipBuilder As New StringBuilder()
+			For Each selectedField As ViewFieldInfo In Me.SelectedFields
+				toolTipBuilder.AppendLine(selectedField.DisplayName)
+			Next
+			_toolTip.AutoPopDelay = 2500
+			_toolTip.InitialDelay = 100
+			_toolTip.ReshowDelay = 125
 			_toolTip.ShowAlways = True
-			_toolTip.SetToolTip(SelectedTextFieldsListBox, text)
+			_toolTip.SetToolTip(_selectedTextFieldsTextBox, toolTipBuilder.ToString().Trim)
+			If SelectedFields.Count > 0 Then
+				_selectedTextFieldsTextBox.Text = Me.SelectedFields.First.DisplayName & If(SelectedFields.Count > 1, "...", "")
+			Else
+				_selectedTextFieldsTextBox.Text = ""
+			End If
 		End Sub
 
 		Private Sub ManageColumns()
-			SelectedTextFieldsListBox.Items.Clear()
-			Dim toolTipStringBuilder As New StringBuilder()
+			Me.SelectedFields.Clear()
 			For Each item As Object In _textFieldPrecedenceForm.SelectedTextFields
-				SelectedTextFieldsListBox.Items.Add(item)
-				toolTipStringBuilder.AppendLine(CType(item, ViewFieldInfo).DisplayName)
+				Me.SelectedFields.Add(DirectCast(item, ViewFieldInfo))
 			Next
-			If SelectedTextFieldsListBox.Items.Count > 0 Then
-				SelectedTextFieldsListBox.SelectedIndex = 0
-			End If
-
-			SetToolTip(toolTipStringBuilder.ToString().Trim())
+			ManageLabel()
 		End Sub
 
 		Public Sub SelectDefautlTextField()
 			If _allAvailableLongTextFields.Count > 0 Then
 				Dim firstField As ViewFieldInfo = _allAvailableLongTextFields.First
-				_SelectedTextFieldsListBox.Items.Add(firstField)
-				SetToolTip(firstField.DisplayName)
+				Me.SelectedFields.Clear()
+				Me.SelectedFields.Add(firstField)
+				ManageLabel()
 			End If
 		End Sub
 	End Class

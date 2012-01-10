@@ -10,7 +10,7 @@ Namespace kCura.EDDS.WinForm
 		Private _listOfAllLongTextFields As New List(Of ViewFieldInfo)
 		Private _selectedTextFields As New List(Of ViewFieldInfo)
 
-		Public Sub New(ByVal listOfLongTextFields As List(Of ViewFieldInfo), ByVal selectedTextFieldsDropDown As ListBox)
+		Public Sub New(ByVal listOfLongTextFields As List(Of ViewFieldInfo), ByVal selectedTextFields As List(Of ViewFieldInfo))
 
 			' This call is required by the designer.
 			InitializeComponent()
@@ -19,9 +19,7 @@ Namespace kCura.EDDS.WinForm
 			_listOfAllLongTextFields.Clear()
 			_listOfAllLongTextFields.AddRange(listOfLongTextFields)
 
-			For i As Int32 = 0 To selectedTextFieldsDropDown.Items.Count - 1
-				_selectedTextFields.Add(DirectCast(selectedTextFieldsDropDown.Items(i), ViewFieldInfo))
-			Next
+			_selectedTextFields.AddRange(selectedTextFields)
 
 		End Sub
 
