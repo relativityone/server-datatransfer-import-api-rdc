@@ -1,4 +1,5 @@
 ﻿Imports System.Collections.Generic
+Imports System.Linq
 
 Namespace kCura.EDDS.WinForm
 	Public Class TextPrecedenceForm
@@ -58,13 +59,25 @@ Namespace kCura.EDDS.WinForm
 
 			'Me._longTextFields.LeftListBoxItems.AddRange(_listOfAllLongTextFields)
 			For Each item As ViewFieldInfo In _listOfAllLongTextFields
-				If _selectedTextFields IsNot Nothing AndAlso _selectedTextFields.Contains(item) Then
+				Dim itemExistsInSelected As Boolean = GetItemExistsInSelected(item)
+				If _selectedTextFields IsNot Nothing AndAlso itemExistsInSelected Then	 '  _selectedTextFields.Contains(item) Then
 					_longTextFieldsTwoListBox.RightListBoxItems.Add(item)
 				Else
 					_longTextFieldsTwoListBox.LeftListBoxItems.Add(item)
 				End If
 			Next
 		End Sub
+
+		Private Function GetItemExistsInSelected(ByVal item As ViewFieldInfo) As Boolean
+			Dim itemExistsInSelected As Boolean = False
+			For Each selectedItem As ViewFieldInfo In _selectedTextFields
+				If item.AvfId = selectedItem.AvfId Then
+					itemExistsInSelected = True
+					Exit For
+				End If
+			Next
+			Return itemExistsInSelected
+		End Function
 
 		Public Event OkClicked()
 

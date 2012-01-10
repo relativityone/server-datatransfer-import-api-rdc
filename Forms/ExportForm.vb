@@ -1307,8 +1307,8 @@ Public Class ExportForm
 			selectedViewFields.Add(field)
 		Next
 		_exportFile.SelectedViewFields = DirectCast(selectedViewFields.ToArray(GetType(ViewFieldInfo)), ViewFieldInfo())
-		If _textFieldPrecedencePicker.PotentialTextFieldsDropDown.SelectedIndex <> -1 Then
-			_exportFile.SelectedTextField = DirectCast(_textFieldPrecedencePicker.PotentialTextFieldsDropDown.SelectedItem, ViewFieldInfo)
+		If _textFieldPrecedencePicker.SelectedTextFieldsListBox.SelectedIndex <> -1 Then
+			_exportFile.SelectedTextField = DirectCast(_textFieldPrecedencePicker.SelectedTextFieldsListBox.SelectedItem, ViewFieldInfo)
 			_exportFile.ExportFullText = True
 		Else
 			_exportFile.SelectedTextField = Nothing
@@ -1455,10 +1455,10 @@ Public Class ExportForm
 			ManagePotentialTextFields()
 
 			If ef.SelectedTextField IsNot Nothing Then
-				For i As Int32 = 0 To _textFieldPrecedencePicker.PotentialTextFieldsDropDown.Items.Count - 1
-					Dim loadedVfi As kCura.WinEDDS.ViewFieldInfo = DirectCast(_textFieldPrecedencePicker.PotentialTextFieldsDropDown.Items(i), kCura.WinEDDS.ViewFieldInfo)
+				For i As Int32 = 0 To _textFieldPrecedencePicker.SelectedTextFieldsListBox.Items.Count - 1
+					Dim loadedVfi As kCura.WinEDDS.ViewFieldInfo = DirectCast(_textFieldPrecedencePicker.SelectedTextFieldsListBox.Items(i), kCura.WinEDDS.ViewFieldInfo)
 					If loadedVfi.DisplayName.Equals(ef.SelectedTextField.DisplayName, StringComparison.InvariantCulture) Then
-						_textFieldPrecedencePicker.PotentialTextFieldsDropDown.SelectedIndex = i
+						_textFieldPrecedencePicker.SelectedTextFieldsListBox.SelectedIndex = i
 						Exit For
 					End If
 				Next
@@ -1894,7 +1894,7 @@ Public Class ExportForm
 
 	Private Sub ManagePotentialTextFields()
 		Dim selectedItems As Generic.List(Of kCura.WinEDDS.ViewFieldInfo) = Nothing
-		If Not _textFieldPrecedencePicker.PotentialTextFieldsDropDown.SelectedIndex = -1 Then
+		If Not _textFieldPrecedencePicker.SelectedTextFieldsListBox.SelectedIndex = -1 Then
 			selectedItems = _textFieldPrecedencePicker.PotentialTextFieldsList
 		End If
 		'_textFieldPrecedencePicker.PotentialTextFieldsDropDown.Items.Clear()
@@ -1982,17 +1982,17 @@ Public Class ExportForm
 		_dataSourceIsSet = True
 		Dim temporaryPotentialTextFields As New ArrayList
 		Dim temporaryPotentialTextFieldsSelectedIndex As Int32
-		If _textFieldPrecedencePicker.PotentialTextFieldsDropDown.Items.Count > 0 Then
-			For Each test As Object In _textFieldPrecedencePicker.PotentialTextFieldsDropDown.Items
+		If _textFieldPrecedencePicker.SelectedTextFieldsListBox.Items.Count > 0 Then
+			For Each test As Object In _textFieldPrecedencePicker.SelectedTextFieldsListBox.Items
 				temporaryPotentialTextFields.Add(test)
 			Next
-			temporaryPotentialTextFieldsSelectedIndex = _textFieldPrecedencePicker.PotentialTextFieldsDropDown.SelectedIndex
+			temporaryPotentialTextFieldsSelectedIndex = _textFieldPrecedencePicker.SelectedTextFieldsListBox.SelectedIndex
 		End If
 		_filters.SelectedIndex = selectedindex
 		If temporaryPotentialTextFields.Count > 0 Then
-			_textFieldPrecedencePicker.PotentialTextFieldsDropDown.Items.Clear()
-			_textFieldPrecedencePicker.PotentialTextFieldsDropDown.Items.AddRange(temporaryPotentialTextFields.ToArray)
-			_textFieldPrecedencePicker.PotentialTextFieldsDropDown.SelectedIndex = temporaryPotentialTextFieldsSelectedIndex
+			_textFieldPrecedencePicker.SelectedTextFieldsListBox.Items.Clear()
+			_textFieldPrecedencePicker.SelectedTextFieldsListBox.Items.AddRange(temporaryPotentialTextFields.ToArray)
+			_textFieldPrecedencePicker.SelectedTextFieldsListBox.SelectedIndex = temporaryPotentialTextFieldsSelectedIndex
 		End If
 		'TODO: this will send -1 index to OnDraw during refresh on exports. Known defect. In backlog
 		_columnSelecter.LeftListBoxItems.Clear()
