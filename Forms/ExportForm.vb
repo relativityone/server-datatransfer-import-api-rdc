@@ -1680,7 +1680,9 @@ Public Class ExportForm
 		_productionPrecedenceList.Items.Add(New Pair("-1", "Original"))
 		Me.InitializeColumnSelecter()
 		Me.InitializeFileControls()
-		_textFieldPrecedencePicker.SelectDefautlTextField()
+
+		Dim selectedTextFields As List(Of ViewFieldInfo) = Me.GetRightColumnTextFields
+		_textFieldPrecedencePicker.SelectDefautlTextField(If(selectedTextFields.Count > 0, selectedTextFields.First(), Nothing))
 	End Sub
 
 	Private Sub _searchList_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _filters.SelectedIndexChanged
@@ -1898,39 +1900,29 @@ Public Class ExportForm
 		If _textFieldPrecedencePicker.SelectedFields.Count > 0 Then
 			selectedItems = _textFieldPrecedencePicker.SelectedFields
 		End If
-		'_textFieldPrecedencePicker.PotentialTextFieldsDropDown.Items.Clear()
-		Dim textFields As New List(Of ViewFieldInfo)
-		For Each field As kCura.WinEDDS.ViewFieldInfo In _columnSelecter.RightListBoxItems
-			If field.FieldType = Relativity.FieldTypeHelper.FieldType.Text Then
-				textFields.Add(New kCura.WinEDDS.ViewFieldInfo(field))
-			End If
-		Next
+		Dim textFields As List(Of ViewFieldInfo) = GetAllLongTextFields()
 		textFields.Sort()
-		'_textFieldPrecedencePicker.PotentialTextFields.Items.AddRange(DirectCast(textFields.ToArray(GetType(ViewFieldInfo)), ViewFieldInfo()))
 		_textFieldPrecedencePicker.AllAvailableLongTextFields = textFields
-		'Dim isSelectedItemSet As Boolean = False
-		'If Not selectedItems Is Nothing Then
-		'	For i As Int32 = 0 To _textFieldPrecedencePicker.PotentialTextFieldsDropDown.Items.Count - 1
-		'		If DirectCast(_textFieldPrecedencePicker.PotentialTextFields.Items(i), ViewFieldInfo).AvfId = selectedItem.AvfId Then
-		'			_textFieldPrecedencePicker.PotentialTextFieldsDropDown.SelectedIndex = i
-		'			isSelectedItemSet = True
-		'			Exit For
-		'		End If
-		'	Next
-		'End If
-		'If Not isSelectedItemSet AndAlso _textFieldPrecedencePicker.PotentialTextFieldsDropDown.Items.Count > 0 Then
-		'	For i As Int32 = 0 To _textFieldPrecedencePicker.PotentialTextFieldsDropDown.Items.Count - 1
-		'		If DirectCast(_textFieldPrecedencePicker.PotentialTextFieldsDropDown.Items(i), ViewFieldInfo).Category = Relativity.FieldCategory.FullText Then
-		'			_textFieldPrecedencePicker.PotentialTextFieldsDropDown.SelectedIndex = i
-		'			isSelectedItemSet = True
-		'			Exit For
-		'		End If
-		'	Next
-		'End If
-		'If Not isSelectedItemSet AndAlso _textFieldPrecedencePicker.PotentialTextFieldsDropDown.Items.Count > 0 Then
-		'	_textFieldPrecedencePicker.PotentialTextFieldsDropDown.SelectedIndex = 0
-		'End If
 	End Sub
+
+	Private Function GetAllLongTextFields() As List(Of ViewFieldInfo)
+		Dim textFields As New List(Of ViewFieldInfo)
+		textFields.AddRange(Me.GetRightColumnTextFields())
+		textFields.AddRange(Me.GetLeftColumnTextFields())
+		Return textFields
+	End Function
+
+	Private Function GetRightColumnTextFields() As List(Of ViewFieldInfo)
+		Return GetTextFields(_columnSelecter.RightListBoxItems.Cast(Of ViewFieldInfo)().ToList())
+	End Function
+
+	Private Function GetLeftColumnTextFields() As List(Of ViewFieldInfo)
+		Return GetTextFields(_columnSelecter.LeftListBoxItems.Cast(Of ViewFieldInfo)().ToList())
+	End Function
+
+	Private Function GetTextFields(ByVal unfilteredList As List(Of ViewFieldInfo)) As List(Of ViewFieldInfo)
+		Return (From field In unfilteredList Where field.FieldType = Relativity.FieldTypeHelper.FieldType.Text Select field).ToList()
+	End Function
 
 	Private Sub RefreshMenu_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles RefreshMenu.Click
 		Me.RefreshRelativityInformation()
@@ -1981,15 +1973,11 @@ Public Class ExportForm
 			MsgBox(msg, MsgBoxStyle.Exclamation, "Relativity Desktop Client")
 		End If
 		_dataSourceIsSet = True
-		Dim temporaryPotentialTextFields As New List(Of ViewFieldInfo)()
-		If _textFieldPrecedencePicker.SelectedFields.Count > 0 Then
-			For Each test As Object In _textFieldPrecedencePicker.SelectedFields
-				temporaryPotentialTextFields.Add(DirectCast(test, ViewFieldInfo))
-			Next
-		End If
 		_filters.SelectedIndex = selectedindex
-		If temporaryPotentialTextFields.Count > 0 Then
-			_textFieldPrecedencePicker.AllAvailableLongTextFields = New List(Of ViewFieldInfo)(temporaryPotentialTextFields)
+		Dim allLongTextFields As List(Of ViewFieldInfo) = GetAllLongTextFields()
+		allLongTextFields.Sort()
+		If allLongTextFields.Count > 0 Then
+			_textFieldPrecedencePicker.AllAvailableLongTextFields = allLongTextFields
 		End If
 		'TODO: this will send -1 index to OnDraw during refresh on exports. Known defect. In backlog
 		_columnSelecter.LeftListBoxItems.Clear()

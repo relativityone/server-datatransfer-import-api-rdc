@@ -80,11 +80,12 @@ Namespace kCura.EDDS.WinForm
 			ManageLabel()
 		End Sub
 
-		Public Sub SelectDefautlTextField()
+		Public Sub SelectDefautlTextField(ByVal firstSelectedField As ViewFieldInfo)
 			If _allAvailableLongTextFields.Count > 0 Then
-				Dim firstField As ViewFieldInfo = _allAvailableLongTextFields.First
 				Me.SelectedFields.Clear()
-				Me.SelectedFields.Add(firstField)
+				If firstSelectedField IsNot Nothing Then
+					Me.SelectedFields.Add(firstSelectedField)
+				End If
 				ManageLabel()
 			End If
 		End Sub
