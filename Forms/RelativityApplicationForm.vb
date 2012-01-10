@@ -1129,7 +1129,15 @@ Namespace kCura.EDDS.WinForm
 			Dim installationParams As New kCura.EDDS.WebAPI.TemplateManagerBase.ApplicationInstallationParameters()
 			installationParams.CaseId = Me.CaseInfos(0).ArtifactID
 
+			'Use the Empty class as a placeholder for the bindinglists in the mapping control
 			_appMappingData = fieldMappingHelper.GetAppMappingDataForWorkspace(xml, installationParams)
+			For Each appObj In _appMappingData.AppObjects
+				For Each appField In appObj.AppFields
+					If appField.MappedTargetField Is Nothing Then
+						appField.MappedTargetField = TargetField.Empty
+					End If
+				Next
+			Next
 			_mapController = New FieldMapFourPickerController(_appMappingData)
 
 			'Databinding
