@@ -374,7 +374,7 @@ Namespace kCura.WinEDDS
 
 		Private Function CopySelectedLongTextToFile(ByVal artifact As Exporters.ObjectExportInfo, ByRef len As Int64) As String
 			Dim field As ViewFieldInfo = Me.GetFieldForLongTextPrecedenceDownload(Nothing, artifact)
-			Dim text As Object = artifact.Metadata(Me.OrdinalLookup(field.AvfColumnName))
+			Dim text As Object = artifact.Metadata(Me.OrdinalLookup(Relativity.Export.Constants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME))
 			If text Is Nothing Then text = String.Empty
 			Dim longText As String = text.ToString
 			If longText = Relativity.Constants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN Then
