@@ -1436,6 +1436,8 @@ Public Class ExportForm
 
 		If ef.SelectedViewFields IsNot Nothing Then
 
+
+
 			Dim itemsToRemoveFromLeftListBox As New System.Collections.Generic.List(Of kCura.WinEDDS.ViewFieldInfo)()
 			_columnSelecter.ClearSelection(kCura.Windows.Forms.ListBoxLocation.Right)
 			_columnSelecter.RightListBoxItems.Clear()
@@ -1448,6 +1450,7 @@ Public Class ExportForm
 				Next
 			Next
 
+
 			If _columnSelecter.RightListBoxItems.Count = 0 Then
 				_metadataGroup.Enabled = False
 			End If
@@ -1455,15 +1458,22 @@ Public Class ExportForm
 			ManagePotentialTextFields()
 
 			If ef.SelectedTextFields IsNot Nothing Then
-				For i As Int32 = 0 To _textFieldPrecedencePicker.SelectedFields.Count - 1
-					Dim loadedVfi As kCura.WinEDDS.ViewFieldInfo = DirectCast(_textFieldPrecedencePicker.SelectedFields(i), kCura.WinEDDS.ViewFieldInfo)
-					If loadedVfi.DisplayName.Equals(ef.SelectedTextFields(0).DisplayName, StringComparison.InvariantCulture) Then
-						_textFieldPrecedencePicker.SelectedFields = Nothing	' TODO: Get list of fields from load File
-						Exit For
+				Dim updatedListOfSelectedFields As New List(Of ViewFieldInfo)(_textFieldPrecedencePicker.SelectedFields)
+				For Each incomingSelectedField As ViewFieldInfo In ef.SelectedTextFields
+					Dim incomingSelectedFieldExistsInCurrentSelectedFieldsList As Boolean = False
+					For Each currentlySelectedField In _textFieldPrecedencePicker.SelectedFields
+						If currentlySelectedField.Equals(incomingSelectedField) Then
+							incomingSelectedFieldExistsInCurrentSelectedFieldsList = True
+							Exit For
+						End If
+					Next
+					If Not incomingSelectedFieldExistsInCurrentSelectedFieldsList Then
+						updatedListOfSelectedFields.Add(incomingSelectedField)
 					End If
 				Next
+				_textFieldPrecedencePicker.SelectedFields.Clear()
+				_textFieldPrecedencePicker.SelectedFields.AddRange(updatedListOfSelectedFields)
 			End If
-
 
 			For Each vfi As kCura.WinEDDS.ViewFieldInfo In itemsToRemoveFromLeftListBox
 				_columnSelecter.LeftListBoxItems.Remove(vfi)
