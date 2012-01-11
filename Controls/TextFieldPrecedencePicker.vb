@@ -51,10 +51,6 @@ Namespace kCura.EDDS.WinForm
 			ManageColumns()
 		End Sub
 
-		Private Sub TextFieldPrecedencePicker_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
-			'ManageColumns()
-		End Sub
-
 		Private Sub ManageLabel()
 			Dim toolTipBuilder As New StringBuilder()
 			For Each selectedField As ViewFieldInfo In Me.SelectedFields
