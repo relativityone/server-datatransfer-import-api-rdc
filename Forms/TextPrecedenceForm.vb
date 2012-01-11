@@ -31,21 +31,21 @@ Namespace kCura.EDDS.WinForm
 			Me._longTextFieldsTwoListBox.AlternateRowColors = False
 			Me._longTextFieldsTwoListBox.KeepButtonsCentered = True
 			Me._longTextFieldsTwoListBox.LeftOrderControlsVisible = False
-			Me._longTextFieldsTwoListBox.Location = New System.Drawing.Point(8, 104)
+			Me._longTextFieldsTwoListBox.Location = New System.Drawing.Point(8, 24)
 			Me._longTextFieldsTwoListBox.Name = "_longTextFields"
 			Me._longTextFieldsTwoListBox.RightOrderControlVisible = True
 			Me._longTextFieldsTwoListBox.Size = New System.Drawing.Size(360, 280)
 			Me._longTextFieldsTwoListBox.TabIndex = 2
 
 			Me._availableLongTextFieldsLabel = New System.Windows.Forms.Label
-			Me._availableLongTextFieldsLabel.Location = New System.Drawing.Point(8, 88)
+			Me._availableLongTextFieldsLabel.Location = New System.Drawing.Point(8, 8)
 			Me._availableLongTextFieldsLabel.Name = "_availableLongTextFieldsLabel"
 			Me._availableLongTextFieldsLabel.Size = New System.Drawing.Size(144, 16)
 			Me._availableLongTextFieldsLabel.TabIndex = 3
 			Me._availableLongTextFieldsLabel.Text = "Available Long Text Fields"
 
 			Me._selectedLongTextFieldsLabel = New System.Windows.Forms.Label
-			Me._selectedLongTextFieldsLabel.Location = New System.Drawing.Point(196, 88)
+			Me._selectedLongTextFieldsLabel.Location = New System.Drawing.Point(196, 8)
 			Me._selectedLongTextFieldsLabel.Name = "_selectedLongTextFieldsLabel"
 			Me._selectedLongTextFieldsLabel.Size = New System.Drawing.Size(144, 16)
 			Me._selectedLongTextFieldsLabel.TabIndex = 4

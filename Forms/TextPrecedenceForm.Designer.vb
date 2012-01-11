@@ -30,7 +30,7 @@
 			'
 			'_okButton
 			'
-			Me._okButton.Location = New System.Drawing.Point(369, 327)
+			Me._okButton.Location = New System.Drawing.Point(369, 247)
 			Me._okButton.Name = "_okButton"
 			Me._okButton.Size = New System.Drawing.Size(75, 23)
 			Me._okButton.TabIndex = 0
@@ -40,7 +40,7 @@
 			'_cancelButton
 			'
 			Me._cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel
-			Me._cancelButton.Location = New System.Drawing.Point(369, 358)
+			Me._cancelButton.Location = New System.Drawing.Point(369, 278)
 			Me._cancelButton.Name = "_cancelButton"
 			Me._cancelButton.Size = New System.Drawing.Size(75, 23)
 			Me._cancelButton.TabIndex = 1
@@ -52,14 +52,14 @@
 			Me.AcceptButton = Me._okButton
 			Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
 			Me.CancelButton = Me._cancelButton
-			Me.ClientSize = New System.Drawing.Size(456, 393)
+			Me.ClientSize = New System.Drawing.Size(456, 313)
 			Me.Controls.Add(Me._cancelButton)
 			Me.Controls.Add(Me._okButton)
 			Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
 			Me.MaximizeBox = False
-			Me.MaximumSize = New System.Drawing.Size(464, 420)
+			Me.MaximumSize = New System.Drawing.Size(464, 340)
 			Me.MinimizeBox = False
-			Me.MinimumSize = New System.Drawing.Size(464, 420)
+			Me.MinimumSize = New System.Drawing.Size(464, 340)
 			Me.Name = "TextPrecedenceForm"
 			Me.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide
 			Me.Text = "Text Precedence Form"
