@@ -1462,7 +1462,7 @@ Public Class ExportForm
 				For Each incomingSelectedField As ViewFieldInfo In ef.SelectedTextFields
 					Dim incomingSelectedFieldExistsInCurrentSelectedFieldsList As Boolean = False
 					For Each currentlySelectedField In _textFieldPrecedencePicker.SelectedFields
-						If currentlySelectedField.Equals(incomingSelectedField) Then
+						If currentlySelectedField.DisplayName.Equals(incomingSelectedField.DisplayName, StringComparison.InvariantCulture) Then
 							incomingSelectedFieldExistsInCurrentSelectedFieldsList = True
 							Exit For
 						End If
@@ -1713,7 +1713,7 @@ Public Class ExportForm
 		GroupBox2.Visible = False
 		If Me.ExportFile.HasFileField Then
 			GroupBox4.Text = Me.ExportFile.FileField.FieldName
-			_exportNativeFiles.Text = "Export " & Me.ExportFile.FileField.FieldName & " Files"
+			_exportNativeFiles.Text = String.Format("Export {0} Files", Me.ExportFile.FileField.FieldName)
 		Else
 			_exportNativeFiles.Checked = False
 			_exportNativeFiles.Enabled = False
