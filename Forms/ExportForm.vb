@@ -1457,23 +1457,7 @@ Public Class ExportForm
 
 			ManagePotentialTextFields()
 
-			If ef.SelectedTextFields IsNot Nothing Then
-				Dim updatedListOfSelectedFields As New List(Of ViewFieldInfo)(_textFieldPrecedencePicker.SelectedFields)
-				For Each incomingSelectedField As ViewFieldInfo In ef.SelectedTextFields
-					Dim incomingSelectedFieldExistsInCurrentSelectedFieldsList As Boolean = False
-					For Each currentlySelectedField In _textFieldPrecedencePicker.SelectedFields
-						If currentlySelectedField.DisplayName.Equals(incomingSelectedField.DisplayName, StringComparison.InvariantCulture) Then
-							incomingSelectedFieldExistsInCurrentSelectedFieldsList = True
-							Exit For
-						End If
-					Next
-					If Not incomingSelectedFieldExistsInCurrentSelectedFieldsList Then
-						updatedListOfSelectedFields.Add(incomingSelectedField)
-					End If
-				Next
-				_textFieldPrecedencePicker.SelectedFields.Clear()
-				_textFieldPrecedencePicker.SelectedFields.AddRange(updatedListOfSelectedFields)
-			End If
+			_textFieldPrecedencePicker.LoadNewSelectedFields(ef.SelectedTextFields)
 
 			For Each vfi As kCura.WinEDDS.ViewFieldInfo In itemsToRemoveFromLeftListBox
 				_columnSelecter.LeftListBoxItems.Remove(vfi)
@@ -1692,7 +1676,7 @@ Public Class ExportForm
 		Me.InitializeFileControls()
 
 		Dim selectedTextFields As List(Of ViewFieldInfo) = Me.GetRightColumnTextFields
-		_textFieldPrecedencePicker.SelectDefautlTextField(If(selectedTextFields.Count > 0, selectedTextFields.First(), Nothing))
+		_textFieldPrecedencePicker.SelectDefaultTextField(If(selectedTextFields.Count > 0, selectedTextFields.First(), Nothing))
 	End Sub
 
 	Private Sub _searchList_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _filters.SelectedIndexChanged
@@ -1702,7 +1686,7 @@ Public Class ExportForm
 			textFields.Sort()
 			_textFieldPrecedencePicker.AllAvailableLongTextFields = textFields
 			Dim selectedTextFields As List(Of ViewFieldInfo) = Me.GetRightColumnTextFields
-			_textFieldPrecedencePicker.SelectDefautlTextField(If(selectedTextFields.Count > 0, selectedTextFields.First(), Nothing))
+			_textFieldPrecedencePicker.SelectDefaultTextField(If(selectedTextFields.Count > 0, selectedTextFields.First(), Nothing))
 		End If
 	End Sub
 

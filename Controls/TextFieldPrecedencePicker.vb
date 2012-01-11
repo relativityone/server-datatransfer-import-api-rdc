@@ -42,7 +42,28 @@ Namespace kCura.EDDS.WinForm
 			End Set
 		End Property
 
-	Private Sub _pickTextFieldPrecedenceButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _pickTextFieldPrecedenceButton.Click
+		Public Sub LoadNewSelectedFields(newFields As IEnumerable(Of ViewFieldInfo))
+			Dim updatedListOfSelectedFields As New List(Of ViewFieldInfo)()
+			If newFields IsNot Nothing Then
+				For Each incomingSelectedField As ViewFieldInfo In newFields
+					Dim incomingSelectedFieldExistsInCurrentSelectedFieldsList As Boolean = False
+					For Each currentlySelectedField In Me.SelectedFields
+						If currentlySelectedField.DisplayName.Equals(incomingSelectedField.DisplayName, StringComparison.InvariantCulture) Then
+							incomingSelectedFieldExistsInCurrentSelectedFieldsList = True
+							Exit For
+						End If
+					Next
+					If Not incomingSelectedFieldExistsInCurrentSelectedFieldsList Then
+						updatedListOfSelectedFields.Add(incomingSelectedField)
+					End If
+				Next
+			End If
+			Me.SelectedFields.Clear()
+			Me.SelectedFields.AddRange(updatedListOfSelectedFields)
+			Me.ManageLabel()
+		End Sub
+
+		Private Sub _pickTextFieldPrecedenceButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _pickTextFieldPrecedenceButton.Click
 			_textFieldPrecedenceForm = New kCura.EDDS.WinForm.TextPrecedenceForm(_allAvailableLongTextFields, Me.SelectedFields)
 			_textFieldPrecedenceForm.ShowDialog()
 		End Sub
@@ -76,7 +97,7 @@ Namespace kCura.EDDS.WinForm
 			ManageLabel()
 		End Sub
 
-		Public Sub SelectDefautlTextField(ByVal firstSelectedField As ViewFieldInfo)
+		Public Sub SelectDefaultTextField(ByVal firstSelectedField As ViewFieldInfo)
 			If _allAvailableLongTextFields.Count > 0 Then
 				Me.SelectedFields.Clear()
 				If firstSelectedField IsNot Nothing Then
