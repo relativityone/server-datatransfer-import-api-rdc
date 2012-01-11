@@ -55,20 +55,23 @@ Namespace kCura.EDDS.WinForm
 			Me.Controls.Add(Me._availableLongTextFieldsLabel)
 			Me.Controls.Add(Me._selectedLongTextFieldsLabel)
 
-			'Me._longTextFields.LeftListBoxItems.AddRange(_listOfAllLongTextFields)
-			For Each item As ViewFieldInfo In _listOfAllLongTextFields
-				Dim itemExistsInSelected As Boolean = GetItemExistsInSelected(item)
-				If _selectedTextFields IsNot Nothing AndAlso itemExistsInSelected Then	 '  _selectedTextFields.Contains(item) Then
+
+			For Each field As ViewFieldInfo In _listOfAllLongTextFields
+				_longTextFieldsTwoListBox.LeftListBoxItems.Add(field)
+			Next
+
+			For Each item As ViewFieldInfo In _selectedTextFields
+				Dim itemExistsInAllAvailable As Boolean = GetItemExistsInAllAvailable(item)
+				If itemExistsInAllAvailable Then
 					_longTextFieldsTwoListBox.RightListBoxItems.Add(item)
-				Else
-					_longTextFieldsTwoListBox.LeftListBoxItems.Add(item)
+					_longTextFieldsTwoListBox.LeftListBoxItems.Remove(item)
 				End If
 			Next
 		End Sub
 
-		Private Function GetItemExistsInSelected(ByVal item As ViewFieldInfo) As Boolean
+		Private Function GetItemExistsInAllAvailable(ByVal item As ViewFieldInfo) As Boolean
 			Dim itemExistsInSelected As Boolean = False
-			For Each selectedItem As ViewFieldInfo In _selectedTextFields
+			For Each selectedItem As ViewFieldInfo In _listOfAllLongTextFields
 				If item.AvfId = selectedItem.AvfId Then
 					itemExistsInSelected = True
 					Exit For
