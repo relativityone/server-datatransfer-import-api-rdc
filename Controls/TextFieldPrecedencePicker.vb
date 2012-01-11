@@ -47,13 +47,13 @@ Namespace kCura.EDDS.WinForm
 			If newFields IsNot Nothing Then
 				For Each incomingSelectedField As ViewFieldInfo In newFields
 					Dim incomingSelectedFieldExistsInCurrentSelectedFieldsList As Boolean = False
-					For Each currentlySelectedField In Me.SelectedFields
+					For Each currentlySelectedField In _allAvailableLongTextFields
 						If currentlySelectedField.DisplayName.Equals(incomingSelectedField.DisplayName, StringComparison.InvariantCulture) Then
 							incomingSelectedFieldExistsInCurrentSelectedFieldsList = True
 							Exit For
 						End If
 					Next
-					If Not incomingSelectedFieldExistsInCurrentSelectedFieldsList Then
+					If incomingSelectedFieldExistsInCurrentSelectedFieldsList Then
 						updatedListOfSelectedFields.Add(incomingSelectedField)
 					End If
 				Next
