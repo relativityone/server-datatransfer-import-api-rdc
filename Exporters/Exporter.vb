@@ -1,4 +1,6 @@
 Imports System.IO
+Imports System.Collections.Generic
+
 Namespace kCura.WinEDDS
 	Public Class Exporter
 
@@ -451,7 +453,12 @@ Namespace kCura.WinEDDS
 			Next
 			_columns = New System.Collections.ArrayList(Me.Settings.SelectedViewFields)
 			If Not Me.Settings.SelectedTextFields Is Nothing AndAlso Me.Settings.SelectedTextFields.Count > 0 Then
-				_columns.Add(New CoalescedTextViewField(Me.Settings.SelectedTextFields(0)))
+				Dim longTextSelectedViewFields As New List(Of ViewFieldInfo)()
+				longTextSelectedViewFields.AddRange(Me.Settings.SelectedViewFields.Where(Function(f As ViewFieldInfo) f.FieldType = Relativity.FieldTypeHelper.FieldType.Text))
+				If (Me.Settings.SelectedTextFields.Count = 1) AndAlso longTextSelectedViewFields.Exists(Function(f As ViewFieldInfo) f.Equals(Me.Settings.SelectedTextFields(0))) Then
+					Else
+					_columns.Add(New CoalescedTextViewField(Me.Settings.SelectedTextFields(0)))
+				End If
 			End If
 			For i As Int32 = 0 To _columns.Count - 1
 				Dim field As ViewFieldInfo = DirectCast(_columns(i), ViewFieldInfo)
