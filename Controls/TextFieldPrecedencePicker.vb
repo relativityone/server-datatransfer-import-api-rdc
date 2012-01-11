@@ -9,6 +9,18 @@ Namespace kCura.EDDS.WinForm
 		Private _toolTip As New ToolTip()
 		Private _selectedFields As New List(Of ViewFieldInfo)
 
+		Public ReadOnly Property LabelText As String
+			Get
+				Return _selectedTextFieldsTextBox.Text
+			End Get
+		End Property
+
+		Public ReadOnly Property ToolTipText As String
+			Get
+				Return _toolTip.GetToolTip(_selectedTextFieldsTextBox)
+			End Get
+		End Property
+
 		Public Property SelectedFields() As List(Of ViewFieldInfo)
 			Get
 				Return _selectedFields
