@@ -189,7 +189,8 @@ Namespace kCura.WinEDDS
 			Next
 			If Not Me.Settings.SelectedTextFields Is Nothing AndAlso Me.Settings.SelectedTextFields.Count > 0 Then
 				Dim newindex As Int32 = _ordinalLookup.Count
-				_ordinalLookup.Add(Relativity.Export.Constants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME, newindex)
+				_ordinalLookup.Add(Relativity.Export.Constants.TEXT_PRECEDENCE_AWARE_ORIGINALSOURCE_AVF_COLUMN_NAME, newindex)
+				_ordinalLookup.Add(Relativity.Export.Constants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME, newindex + 1)
 			End If
 
 		End Sub
@@ -372,11 +373,12 @@ Namespace kCura.WinEDDS
 #End Region
 
 		Private Function CopySelectedLongTextToFile(ByVal artifact As Exporters.ObjectExportInfo, ByRef len As Int64) As String
-			Dim text As Object = artifact.Metadata(Me.OrdinalLookup(Me.Settings.SelectedTextFields(0).AvfColumnName))
+			Dim field As ViewFieldInfo = Me.GetFieldForLongTextPrecedenceDownload(Nothing, artifact)
+			Dim text As Object = artifact.Metadata(Me.OrdinalLookup(field.AvfColumnName))
 			If text Is Nothing Then text = String.Empty
 			Dim longText As String = text.ToString
 			If longText = Relativity.Constants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN Then
-				Dim filePath As String = Me.DownloadTextFieldAsFile(artifact, Me.Settings.SelectedTextFields(0))
+				Dim filePath As String = Me.DownloadTextFieldAsFile(artifact, field)
 				len += New System.IO.FileInfo(filePath).Length
 				Return filePath
 			Else
@@ -589,10 +591,10 @@ Namespace kCura.WinEDDS
 			End If
 		End Function
 
-		Private Function GetFieldForLongTextPrecedenceDownload(ByVal input As ViewFieldInfo) As ViewFieldInfo
+		Private Function GetFieldForLongTextPrecedenceDownload(ByVal input As ViewFieldInfo, ByVal artifact As WinEDDS.Exporters.ObjectExportInfo) As ViewFieldInfo
 			Dim retval As ViewFieldInfo = input
-			If input.AvfColumnName = Relativity.Export.Constants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME Then
-
+			If input Is Nothing OrElse input.AvfColumnName = Relativity.Export.Constants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME Then
+				retval = (From f In Me.Settings.SelectedTextFields Where f.FieldArtifactId = CInt(artifact.Metadata(_ordinalLookup(Relativity.Export.Constants.TEXT_PRECEDENCE_AWARE_ORIGINALSOURCE_AVF_COLUMN_NAME)))).First
 			End If
 			Return retval
 		End Function
@@ -603,10 +605,10 @@ Namespace kCura.WinEDDS
 			While tries > 0 AndAlso Not Me.Halt
 				tries -= 1
 				Try
-					If Me.Settings.ArtifactTypeID = Relativity.ArtifactType.Document AndAlso field.Category = Relativity.FieldCategory.FullText Then
+					If Me.Settings.ArtifactTypeID = Relativity.ArtifactType.Document AndAlso field.Category = Relativity.FieldCategory.FullText AndAlso Not TypeOf field Is CoalescedTextViewField Then
 						_downloadManager.DownloadFullTextFile(tempLocalFullTextFilePath, artifact.ArtifactID, _settings.CaseInfo.ArtifactID.ToString)
 					Else
-						Dim fieldToActuallyExportFrom As ViewFieldInfo = Me.GetFieldForLongTextPrecedenceDownload(field)
+						Dim fieldToActuallyExportFrom As ViewFieldInfo = Me.GetFieldForLongTextPrecedenceDownload(field, artifact)
 						_downloadManager.DownloadLongTextFile(tempLocalFullTextFilePath, artifact.ArtifactID, fieldToActuallyExportFrom, _settings.CaseInfo.ArtifactID.ToString)
 					End If
 					Exit While
