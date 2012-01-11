@@ -1913,10 +1913,6 @@ Public Class ExportForm
 	End Sub
 
 	Private Sub ManagePotentialTextFields()
-		Dim selectedItems As Generic.List(Of kCura.WinEDDS.ViewFieldInfo) = Nothing
-		If _textFieldPrecedencePicker.SelectedFields.Count > 0 Then
-			selectedItems = _textFieldPrecedencePicker.SelectedFields
-		End If
 		Dim textFields As List(Of ViewFieldInfo) = GetAllLongTextFields()
 		textFields.Sort()
 		_textFieldPrecedencePicker.AllAvailableLongTextFields = textFields
