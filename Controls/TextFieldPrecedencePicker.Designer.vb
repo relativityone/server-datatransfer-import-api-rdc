@@ -46,8 +46,7 @@
 			'
 			'TextFieldPrecedencePicker
 			'
-			Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
-			Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
+			Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit
 			Me.Controls.Add(Me._selectedTextFieldsTextBox)
 			Me.Controls.Add(Me._pickTextFieldPrecedenceButton)
 			Me.Name = "TextFieldPrecedencePicker"
