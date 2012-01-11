@@ -1697,6 +1697,13 @@ Public Class ExportForm
 
 	Private Sub _searchList_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _filters.SelectedIndexChanged
 		If Not _isLoadingExport AndAlso _dataSourceIsSet AndAlso Not _filters.SelectedItem Is Nothing Then Me.InitializeColumnSelecter()
+		If _textFieldPrecedencePicker IsNot Nothing Then
+			Dim textFields As List(Of ViewFieldInfo) = GetAllLongTextFields()
+			textFields.Sort()
+			_textFieldPrecedencePicker.AllAvailableLongTextFields = textFields
+			Dim selectedTextFields As List(Of ViewFieldInfo) = Me.GetRightColumnTextFields
+			_textFieldPrecedencePicker.SelectDefautlTextField(If(selectedTextFields.Count > 0, selectedTextFields.First(), Nothing))
+		End If
 	End Sub
 
 	Private Sub InitializeFileControls()
