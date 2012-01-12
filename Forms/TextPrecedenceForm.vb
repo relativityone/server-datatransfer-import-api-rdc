@@ -64,9 +64,20 @@ Namespace kCura.EDDS.WinForm
 				Dim itemExistsInAllAvailable As Boolean = GetItemExistsInAllAvailable(item)
 				If itemExistsInAllAvailable Then
 					_longTextFieldsTwoListBox.RightListBoxItems.Add(item)
-					_longTextFieldsTwoListBox.LeftListBoxItems.Remove(item)
+					RemoveItemByName(_longTextFieldsTwoListBox.LeftListBoxItems, item)
 				End If
 			Next
+		End Sub
+
+		Private Sub RemoveItemByName(objectCollection As System.Windows.Forms.ListBox.ObjectCollection, item As ViewFieldInfo)
+			Dim fieldToRemove As ViewFieldInfo = Nothing
+			For Each field As ViewFieldInfo In objectCollection
+				If field.DisplayName.Equals(item.DisplayName, StringComparison.InvariantCulture) Then
+					fieldToRemove = field
+					Exit For
+				End If
+			Next
+			If fieldToRemove IsNot Nothing Then objectCollection.Remove(fieldToRemove)
 		End Sub
 
 		Private Function GetItemExistsInAllAvailable(ByVal item As ViewFieldInfo) As Boolean
