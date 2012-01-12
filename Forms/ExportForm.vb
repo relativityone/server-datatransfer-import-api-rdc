@@ -1455,14 +1455,14 @@ Public Class ExportForm
 				_metadataGroup.Enabled = False
 			End If
 
-			ManagePotentialTextFields()
-
-			_textFieldPrecedencePicker.LoadNewSelectedFields(ef.SelectedTextFields)
-
 			For Each vfi As kCura.WinEDDS.ViewFieldInfo In itemsToRemoveFromLeftListBox
 				_columnSelecter.LeftListBoxItems.Remove(vfi)
 			Next
 		End If
+
+		ManagePotentialTextFields()
+
+		_textFieldPrecedencePicker.LoadNewSelectedFields(ef.SelectedTextFields)
 
 		Dim trueStartExportAtDocumentNumber As Int32 = ef.StartAtDocumentNumber + 1
 		If trueStartExportAtDocumentNumber >= _startExportAtDocumentNumber.Minimum AndAlso trueStartExportAtDocumentNumber <= _startExportAtDocumentNumber.Maximum Then
