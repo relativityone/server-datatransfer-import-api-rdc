@@ -83,7 +83,7 @@ Namespace kCura.EDDS.WinForm
 		Private Function GetItemExistsInAllAvailable(ByVal item As ViewFieldInfo) As Boolean
 			Dim itemExistsInSelected As Boolean = False
 			For Each selectedItem As ViewFieldInfo In _listOfAllLongTextFields
-				If item.AvfId = selectedItem.AvfId Then
+				If selectedItem.DisplayName.Equals(item.DisplayName, StringComparison.InvariantCulture) Then
 					itemExistsInSelected = True
 					Exit For
 				End If
