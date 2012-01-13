@@ -95,7 +95,7 @@ Namespace kCura.EDDS.WinForm
 			_toolTip.ShowAlways = True
 			_toolTip.SetToolTip(_selectedTextFieldsTextBox, toolTipBuilder.ToString().Trim)
 			If SelectedFields.Count > 0 Then
-				_selectedTextFieldsTextBox.Text = Me.SelectedFields.First.DisplayName & If(SelectedFields.Count > 1, "...", "")
+				_selectedTextFieldsTextBox.Text = Me.SelectedFields.First.DisplayName & If(SelectedFields.Count > 1, " (+)", "")
 			Else
 				_selectedTextFieldsTextBox.Text = ""
 			End If
