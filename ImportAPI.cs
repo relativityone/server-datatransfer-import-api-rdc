@@ -74,6 +74,19 @@ namespace kCura.Relativity.ImportAPI
 		}
 
 		/// <summary>
+		/// Create an instance of ImportAPI.  Username and Password are required (unless using windows auth), and will be validated
+		/// against the Relativity WebAPI instance located at <paramref name="WebServiceURL"/>.
+		/// </summary>
+		/// <param name="UserName">UserName to log in</param>
+		/// <param name="Password">Password for the user</param>
+		/// <param name="WebServiceURL"></param>
+		public ImportAPI(String UserName, String Password, String WebServiceURL)
+		{
+			Config.ProgrammaticServiceURL = WebServiceURL;
+			PerformLogin(UserName, Password);
+		}
+
+		/// <summary>
 		/// Workspaces - returns a collection of available workspaces for the logged in user
 		/// </summary>
 		/// <returns></returns>
