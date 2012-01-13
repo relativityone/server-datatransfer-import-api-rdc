@@ -1,4 +1,6 @@
 Imports System.IO
+Imports System.Collections.Generic
+
 Namespace kCura.WinEDDS
 	Public Class Exporter
 
@@ -451,7 +453,20 @@ Namespace kCura.WinEDDS
 			Next
 			_columns = New System.Collections.ArrayList(Me.Settings.SelectedViewFields)
 			If Not Me.Settings.SelectedTextFields Is Nothing AndAlso Me.Settings.SelectedTextFields.Count > 0 Then
-				_columns.Add(New CoalescedTextViewField(Me.Settings.SelectedTextFields(0)))
+				Dim longTextSelectedViewFields As New List(Of ViewFieldInfo)()
+				longTextSelectedViewFields.AddRange(Me.Settings.SelectedViewFields.Where(Function(f As ViewFieldInfo) f.FieldType = Relativity.FieldTypeHelper.FieldType.Text))
+				If (Me.Settings.SelectedTextFields.Count = 1) AndAlso longTextSelectedViewFields.Exists(Function(f As ViewFieldInfo) f.Equals(Me.Settings.SelectedTextFields.First)) Then
+					Dim selectedViewFieldToRemove As ViewFieldInfo = longTextSelectedViewFields.Find(Function(f As ViewFieldInfo) f.Equals(Me.Settings.SelectedTextFields.First))
+					If selectedViewFieldToRemove IsNot Nothing Then
+						Dim indexOfSelectedViewFieldToRemove As Int32 = _columns.IndexOf(selectedViewFieldToRemove)
+						_columns.RemoveAt(indexOfSelectedViewFieldToRemove)
+						_columns.Insert(indexOfSelectedViewFieldToRemove, New CoalescedTextViewField(Me.Settings.SelectedTextFields.First, True))
+					Else
+						_columns.Add(New CoalescedTextViewField(Me.Settings.SelectedTextFields.First, False))
+					End If
+				Else
+					_columns.Add(New CoalescedTextViewField(Me.Settings.SelectedTextFields.First, False))
+				End If
 			End If
 			For i As Int32 = 0 To _columns.Count - 1
 				Dim field As ViewFieldInfo = DirectCast(_columns(i), ViewFieldInfo)
