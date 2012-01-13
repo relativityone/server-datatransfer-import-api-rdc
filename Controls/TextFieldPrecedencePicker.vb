@@ -62,6 +62,7 @@ Namespace kCura.EDDS.WinForm
 					For Each currentlySelectedField In _allAvailableLongTextFields
 						If currentlySelectedField.DisplayName.Equals(incomingSelectedField.DisplayName, StringComparison.InvariantCulture) Then
 							incomingSelectedFieldExistsInCurrentSelectedFieldsList = True
+							incomingSelectedField = currentlySelectedField
 							Exit For
 						End If
 					Next
