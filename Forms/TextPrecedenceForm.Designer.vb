@@ -62,7 +62,7 @@
 			Me.MinimumSize = New System.Drawing.Size(464, 340)
 			Me.Name = "TextPrecedenceForm"
 			Me.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide
-			Me.Text = "Text Precedence Form"
+			Me.Text = "Pick Text Precedence"
 			Me.ResumeLayout(False)
 
 		End Sub
