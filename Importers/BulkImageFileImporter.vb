@@ -73,6 +73,9 @@ Namespace kCura.WinEDDS
 
 #Region "Accessors"
 
+		Public Property DisableImageTypeValidation As Boolean = Config.DisableImageTypeValidation
+		Public Property DisableImageLocationValidation As Boolean = Config.DisableImageLocationValidation
+
 		Public ReadOnly Property BatchSizeHistoryList As System.Collections.Generic.List(Of Int32)
 			Get
 				Return _batchSizeHistoryList
@@ -601,14 +604,14 @@ Namespace kCura.WinEDDS
 				If imageRecord.BatesNumber.Trim = "" Then
 					Me.RaiseStatusEvent(Windows.Process.EventType.Error, String.Format("No image file or identifier specified on line."), CType((_totalValidated + _totalProcessed) / 2, Int64), Me.CurrentLineNumber)
 					retval = Relativity.MassImport.ImportStatus.NoImageSpecifiedOnLine
-				ElseIf Not Config.DisableImageLocationValidation AndAlso Not System.IO.File.Exists(BulkImageFileImporter.GetFileLocation(imageRecord)) Then
+				ElseIf Not Me.DisableImageLocationValidation AndAlso Not System.IO.File.Exists(BulkImageFileImporter.GetFileLocation(imageRecord)) Then
 					Me.RaiseStatusEvent(Windows.Process.EventType.Error, String.Format("Image file specified ( {0} ) does not exist.", imageRecord.FileLocation), CType((_totalValidated + _totalProcessed) / 2, Int64), Me.CurrentLineNumber)
 					retval = Relativity.MassImport.ImportStatus.FileSpecifiedDne
 				Else
 					Dim validator As New kCura.ImageValidator.ImageValidator
 					Dim path As String = BulkImageFileImporter.GetFileLocation(imageRecord)
 					Try
-						If Not Config.DisableImageTypeValidation Then validator.ValidateImage(path)
+						If Not Me.DisableImageTypeValidation Then validator.ValidateImage(path)
 						Me.RaiseStatusEvent(Windows.Process.EventType.Progress, String.Format("Image file ( {0} ) validated.", imageRecord.FileLocation), CType((_totalValidated + _totalProcessed) / 2, Int64), Me.CurrentLineNumber)
 					Catch ex As System.Exception
 						If TypeOf ex Is kCura.ImageValidator.Exception.Base Then
