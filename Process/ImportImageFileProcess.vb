@@ -10,12 +10,32 @@ Namespace kCura.WinEDDS
 		Private _hasRunProcessComplete As Boolean = False
 		Private _uploadModeText As String = Nothing
 
+		Private _disableImageTypeValidation As Boolean?
+		Private _disableImageLocationValidation As Boolean?
+
+		Public WriteOnly Property DisableImageTypeValidation As Boolean
+			Set(value As Boolean)
+				_disableImageTypeValidation = value
+			End Set
+		End Property
+
+		Public WriteOnly Property DisableImageLocationValidation As Boolean
+			Set(value As Boolean)
+				_disableImageLocationValidation = value
+			End Set
+		End Property
+
+
 		Protected Overrides Sub Execute()
 			_startTime = DateTime.Now
 			_warningCount = 0
 			_errorCount = 0
 			Me.ProcessObserver.InputArgs = ImageLoadFile.FileName
 			_imageFileImporter = Me.GetImageFileImporter
+
+			If _disableImageTypeValidation.HasValue Then _imageFileImporter.DisableImageTypeValidation = _disableImageTypeValidation.Value
+			If _disableImageLocationValidation.HasValue Then _imageFileImporter.DisableImageLocationValidation = _disableImageLocationValidation.Value
+
 			_imageFileImporter.ReadFile(ImageLoadFile.FileName)
 			If Not _hasRunProcessComplete Then
 				Dim exportFilePath As String = ""
@@ -26,7 +46,6 @@ Namespace kCura.WinEDDS
 
 		Protected Overridable Function GetImageFileImporter() As kCura.WinEDDS.BulkImageFileImporter
 			Dim returnImporter As BulkImageFileImporter = New kCura.WinEDDS.BulkImageFileImporter(ImageLoadFile.DestinationFolderID, ImageLoadFile, ProcessController, Me.ProcessID, True)
-
 			Return returnImporter
 		End Function
 

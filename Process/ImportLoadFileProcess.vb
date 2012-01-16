@@ -12,7 +12,22 @@ Namespace kCura.WinEDDS
 		Private WithEvents _newlineCounter As kCura.Utility.File.LineCounter
 		Private _hasRunPRocessComplete As Boolean = False
 		Private _uploadModeText As String = Nothing
-	
+
+		Private _disableNativeValidation As Boolean?
+		Private _disableNativeLocationValidation As Boolean?
+
+		Public WriteOnly Property DisableNativeValidation As Boolean
+			Set(value As Boolean)
+				_disableNativeValidation = value
+			End Set
+		End Property
+
+		Public WriteOnly Property DisableNativeLocationValidation As Boolean
+			Set(value As Boolean)
+				_disableNativeLocationValidation = value
+			End Set
+		End Property
+
 		''' <summary>
 		''' Gets or sets the delimiter to use to separate fields in the bulk
 		''' file created in this process. Line delimiters will be this value plus a line feed.
@@ -39,6 +54,10 @@ Namespace kCura.WinEDDS
 			_warningCount = 0
 			_errorCount = 0
 			_loadFileImporter = Me.GetImporter()
+
+			If _disableNativeValidation.HasValue Then _loadFileImporter.DisableNativeValidation = _disableNativeValidation.Value
+			If _disableNativeLocationValidation.HasValue Then _loadFileImporter.DisableNativeLocationValidation = _disableNativeLocationValidation.Value
+
 			'_newlineCounter = New kCura.Utility.File.Instance.LineCounter
 			'_newlineCounter.Path = LoadFile.FilePath
 			Me.ProcessObserver.InputArgs = LoadFile.FilePath
