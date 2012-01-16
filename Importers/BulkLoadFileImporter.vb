@@ -74,6 +74,10 @@ Namespace kCura.WinEDDS
 
 #Region "Accessors"
 
+		Public Property DisableNativeValidation As Boolean = Config.DisableNativeValidation
+		Public Property DisableNativeLocationValidation As Boolean = Config.DisableNativeLocationValidation
+
+
 		Public ReadOnly Property BatchSizeHistoryList As System.Collections.Generic.List(Of Int32)
 			Get
 				Return _batchSizeHistoryList
@@ -518,7 +522,7 @@ Namespace kCura.WinEDDS
 					filename = "." & filename
 				End If
 
-				If Config.DisableNativeLocationValidation Then
+				If Me.DisableNativeLocationValidation Then
 					'assuming that file exists and not validating it
 					fileExists = True
 				Else
@@ -530,7 +534,7 @@ Namespace kCura.WinEDDS
 				End If
 
 				If filename <> String.Empty AndAlso Not fileExists Then lineStatus += Relativity.MassImport.ImportStatus.FileSpecifiedDne 'Throw New InvalidFilenameException(filename)
-				If fileExists AndAlso Not Config.DisableNativeLocationValidation Then
+				If fileExists AndAlso Not Me.DisableNativeLocationValidation Then
 					If Me.GetFileLength(filename) = 0 Then
 						If Config.CreateErrorForEmptyNativeFile Then
 							lineStatus += Relativity.MassImport.ImportStatus.EmptyFile 'Throw New EmptyNativeFileException(filename)
@@ -544,7 +548,7 @@ Namespace kCura.WinEDDS
 				If fileExists Then
 					Try
 						Dim now As DateTime = DateTime.Now
-						If Config.DisableNativeValidation Then
+						If Me.DisableNativeValidation Then
 							oixFileIdData = Nothing
 						Else
 							oixFileIdData = kCura.OI.FileID.Manager.Instance.GetFileIDDataByFilePath(filename)
@@ -568,7 +572,7 @@ Namespace kCura.WinEDDS
 						filename = filename.Substring(filename.LastIndexOf("\") + 1)
 						WriteStatusLine(Windows.Process.EventType.Status, String.Format("End upload file. ({0}ms)", DateTime.op_Subtraction(DateTime.Now, now).Milliseconds))
 					Catch ex As System.IO.FileNotFoundException
-						If Config.DisableNativeLocationValidation Then
+						If Me.DisableNativeLocationValidation Then
 							'Don't do anything. This exception can only happen if DisableNativeLocationValidation is turned on
 						Else
 							Throw
@@ -1098,7 +1102,7 @@ Namespace kCura.WinEDDS
 
 		Private Function IsSupportedRelativityFileType(ByVal fileData As OI.FileID.FileIDData) As Boolean
 			If fileData Is Nothing Then
-				If Config.DisableNativeValidation Then
+				If Me.DisableNativeValidation Then
 					Return True
 				Else
 					Return False
