@@ -16,6 +16,21 @@ Namespace kCura.Relativity.DataReaderClient
 		Public Event OnFatalException(ByVal jobReport As JobReport) Implements IImportNotifier.OnFatalException
 		Public Event OnProgress(ByVal completedRow As Long) Implements IImportNotifier.OnProgress
 
+		''' <summary>
+		''' Enables or disables image type validation for the current job
+		''' </summary>
+		''' <value>True: validation is disabled
+		''' False: validation is enabled
+		''' Nothing: validation will use the pre-configured value</value>
+		Public Property DisableImageTypeValidation As Boolean?
+
+		''' <summary>
+		''' Enables or disables image location validation for the current job
+		''' </summary>
+		''' <value>True: validation is disabled
+		''' False: validation is enabled
+		''' Nothing: validation will use the pre-configured value</value>
+		Public Property DisableImageLocationValidation As Boolean?
 
 		Public Property Settings As ImageSettings
 			Get
@@ -84,6 +99,9 @@ Namespace kCura.Relativity.DataReaderClient
 				Dim process As New kCura.WinEDDS.ImportExtension.DataReaderImageImporterProcess(SourceData.SourceData)
 				_observer = process.ProcessObserver
 				_controller = process.ProcessController
+
+				If DisableImageTypeValidation.HasValue Then process.DisableImageTypeValidation = DisableImageTypeValidation.Value
+				If DisableImageLocationValidation.HasValue Then process.DisableImageLocationValidation = DisableImageLocationValidation.Value
 
 				RaiseEvent OnMessage(New Status("Updating settings"))
 				process.ImageLoadFile = Me.CreateLoadFile()

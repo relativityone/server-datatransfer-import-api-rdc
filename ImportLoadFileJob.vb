@@ -18,7 +18,7 @@ Namespace kCura.Relativity.DataReaderClient
 		Private _nativeDataReader As SourceIDataReader
 		Private _nativeSettings As ImportSettingsBase
 		Private WithEvents _observer As Windows.Process.ProcessObserver
-
+		
 #End Region
 
 #Region "Constructors"
@@ -62,9 +62,12 @@ Namespace kCura.Relativity.DataReaderClient
 				RaiseEvent OnMessage(New Status("Getting source data from database"))
 
 				Dim process As WinEDDS.ImportExtension.DataReaderImporterProcess = New WinEDDS.ImportExtension.DataReaderImporterProcess(SourceData.SourceData)
-
 				_observer = process.ProcessObserver
 				_controller = process.ProcessController
+
+				If DisableNativeValidation.HasValue Then process.DisableNativeValidation = DisableNativeValidation.Value
+				If DisableNativeLocationValidation.HasValue Then process.DisableNativeLocationValidation = DisableNativeLocationValidation.Value
+
 				RaiseEvent OnMessage(New Status("Updating settings"))
 				process.LoadFile = CreateLoadFile(Settings)
 				process.BulkLoadFileFieldDelimiter = _bulkLoadFileFieldDelimiter
@@ -467,8 +470,25 @@ Namespace kCura.Relativity.DataReaderClient
 				_nativeDataReader = value
 			End Set
 		End Property
-#End Region
 
+		''' <summary>
+		''' Enables or disables native validation for the current job
+		''' </summary>
+		''' <value>True: validation is disabled
+		''' False: validation is enabled
+		''' Nothing: validation will use the pre-configured value</value>
+		Public Property DisableNativeValidation As Boolean?
+
+		''' <summary>
+		''' Enables or disables native location validation for the current job
+		''' </summary>
+		''' <value>True: validation is disabled
+		''' False: validation is enabled
+		''' Nothing: validation will use the pre-configured value</value>
+		Public Property DisableNativeLocationValidation As Boolean?
+
+
+#End Region
 
 	End Class
 
