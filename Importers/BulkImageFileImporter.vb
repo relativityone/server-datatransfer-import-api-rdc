@@ -284,10 +284,21 @@ Namespace kCura.WinEDDS
 
 		Private Function BulkImport(ByVal overwrite As OverwriteType, ByVal useBulk As Boolean) As MassImportResults
 			Dim retval As MassImportResults
+			Dim settings As New ImageLoadInfo With {
+			.RunID = _runId,
+			.DestinationFolderArtifactID = _folderID,
+			.BulkFileName = _uploadKey,
+			.Overlay = overwrite,
+			.KeyFieldArtifactID = _keyFieldDto.ArtifactID,
+			.Repository = _repositoryPath,
+			.UseBulkDataImport = useBulk,
+			.UploadFullText = _replaceFullText
+			}
+
 			If _productionArtifactID = 0 Then
-				retval = _bulkImportManager.BulkImportImage(_caseInfo.ArtifactID, _uploadKey, _replaceFullText, overwrite, _folderID, _repositoryPath, useBulk, _runId, _keyFieldDto.ArtifactID, _copyFilesToRepository)
+				retval = _bulkImportManager.BulkImportImage(_caseInfo.ArtifactID, settings, _copyFilesToRepository)
 			Else
-				retval = _bulkImportManager.BulkImportProductionImage(_caseInfo.ArtifactID, _uploadKey, _replaceFullText, overwrite, _folderID, _repositoryPath, _productionArtifactID, useBulk, _runId, _keyFieldDto.ArtifactID, _copyFilesToRepository)
+				retval = _bulkImportManager.BulkImportProductionImage(_caseInfo.ArtifactID, settings, _productionArtifactID, _copyFilesToRepository)
 			End If
 			Return retval
 		End Function

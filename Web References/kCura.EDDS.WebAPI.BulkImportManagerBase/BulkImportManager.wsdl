@@ -6,18 +6,24 @@
         <s:complexType>
           <s:sequence>
             <s:element minOccurs="1" maxOccurs="1" name="appID" type="s:int" />
-            <s:element minOccurs="0" maxOccurs="1" name="bulkFileName" type="s:string" />
-            <s:element minOccurs="1" maxOccurs="1" name="uploadFullText" type="s:boolean" />
-            <s:element minOccurs="1" maxOccurs="1" name="overwrite" type="tns:OverwriteType" />
-            <s:element minOccurs="1" maxOccurs="1" name="destinationFolderArtifactID" type="s:int" />
-            <s:element minOccurs="0" maxOccurs="1" name="repository" type="s:string" />
-            <s:element minOccurs="1" maxOccurs="1" name="useBulk" type="s:boolean" />
-            <s:element minOccurs="0" maxOccurs="1" name="runID" type="s:string" />
-            <s:element minOccurs="1" maxOccurs="1" name="keyFieldID" type="s:int" />
+            <s:element minOccurs="0" maxOccurs="1" name="settings" type="tns:ImageLoadInfo" />
             <s:element minOccurs="1" maxOccurs="1" name="inRepository" type="s:boolean" />
           </s:sequence>
         </s:complexType>
       </s:element>
+      <s:complexType name="ImageLoadInfo">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="DisableUserSecurityCheck" type="s:boolean" />
+          <s:element minOccurs="0" maxOccurs="1" name="RunID" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="Overlay" type="tns:OverwriteType" />
+          <s:element minOccurs="0" maxOccurs="1" name="Repository" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="UseBulkDataImport" type="s:boolean" />
+          <s:element minOccurs="1" maxOccurs="1" name="UploadFullText" type="s:boolean" />
+          <s:element minOccurs="0" maxOccurs="1" name="BulkFileName" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="KeyFieldArtifactID" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="DestinationFolderArtifactID" type="s:int" />
+        </s:sequence>
+      </s:complexType>
       <s:simpleType name="OverwriteType">
         <s:restriction base="s:string">
           <s:enumeration value="Append" />
@@ -54,15 +60,8 @@
         <s:complexType>
           <s:sequence>
             <s:element minOccurs="1" maxOccurs="1" name="appID" type="s:int" />
-            <s:element minOccurs="0" maxOccurs="1" name="bulkFileName" type="s:string" />
-            <s:element minOccurs="1" maxOccurs="1" name="uploadFullText" type="s:boolean" />
-            <s:element minOccurs="1" maxOccurs="1" name="overwrite" type="tns:OverwriteType" />
-            <s:element minOccurs="1" maxOccurs="1" name="destinationFolderArtifactID" type="s:int" />
-            <s:element minOccurs="0" maxOccurs="1" name="repository" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="settings" type="tns:ImageLoadInfo" />
             <s:element minOccurs="1" maxOccurs="1" name="productionArtifactID" type="s:int" />
-            <s:element minOccurs="1" maxOccurs="1" name="useBulk" type="s:boolean" />
-            <s:element minOccurs="0" maxOccurs="1" name="runID" type="s:string" />
-            <s:element minOccurs="1" maxOccurs="1" name="productionKeyFieldArtifactID" type="s:int" />
             <s:element minOccurs="1" maxOccurs="1" name="inRepository" type="s:boolean" />
           </s:sequence>
         </s:complexType>
