@@ -920,6 +920,8 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
         
         Private objectFileNameField As String
         
+        Private disableUserSecurityCheckField As Boolean
+        
         Private keyFieldArtifactIDField As Integer
         
         '''<remarks/>
@@ -1019,6 +1021,16 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
             End Get
             Set
                 Me.objectFileNameField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property DisableUserSecurityCheck() As Boolean
+            Get
+                Return Me.disableUserSecurityCheckField
+            End Get
+            Set
+                Me.disableUserSecurityCheckField = value
             End Set
         End Property
         
