@@ -13,6 +13,7 @@ Namespace kCura.WinEDDS
 		Private _hasRunPRocessComplete As Boolean = False
 		Private _uploadModeText As String = Nothing
 
+		Private _disableUserSecutityCheck As Boolean
 		Private _disableNativeValidation As Boolean?
 		Private _disableNativeLocationValidation As Boolean?
 
@@ -25,6 +26,12 @@ Namespace kCura.WinEDDS
 		Public WriteOnly Property DisableNativeLocationValidation As Boolean
 			Set(value As Boolean)
 				_disableNativeLocationValidation = value
+			End Set
+		End Property
+
+		Public WriteOnly Property DisableUserSecurityCheck As Boolean
+			Set(value As Boolean)
+				_disableUserSecutityCheck = value
 			End Set
 		End Property
 
@@ -57,6 +64,7 @@ Namespace kCura.WinEDDS
 
 			If _disableNativeValidation.HasValue Then _loadFileImporter.DisableNativeValidation = _disableNativeValidation.Value
 			If _disableNativeLocationValidation.HasValue Then _loadFileImporter.DisableNativeLocationValidation = _disableNativeLocationValidation.Value
+			_loadFileImporter.DisableUserSecurityCheck = _disableUserSecutityCheck
 
 			'_newlineCounter = New kCura.Utility.File.Instance.LineCounter
 			'_newlineCounter.Path = LoadFile.FilePath

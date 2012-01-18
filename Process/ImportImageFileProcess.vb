@@ -10,6 +10,7 @@ Namespace kCura.WinEDDS
 		Private _hasRunProcessComplete As Boolean = False
 		Private _uploadModeText As String = Nothing
 
+		Private _disableUserSecurityCheck As Boolean
 		Private _disableImageTypeValidation As Boolean?
 		Private _disableImageLocationValidation As Boolean?
 
@@ -25,6 +26,12 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
+		Public WriteOnly Property DisableUserSecurityCheck As Boolean
+			Set(value As Boolean)
+				_disableUserSecurityCheck = value
+			End Set
+		End Property
+
 
 		Protected Overrides Sub Execute()
 			_startTime = DateTime.Now
@@ -35,6 +42,7 @@ Namespace kCura.WinEDDS
 
 			If _disableImageTypeValidation.HasValue Then _imageFileImporter.DisableImageTypeValidation = _disableImageTypeValidation.Value
 			If _disableImageLocationValidation.HasValue Then _imageFileImporter.DisableImageLocationValidation = _disableImageLocationValidation.Value
+			_imageFileImporter.DisableUserSecurityCheck = _disableUserSecurityCheck
 
 			_imageFileImporter.ReadFile(ImageLoadFile.FileName)
 			If Not _hasRunProcessComplete Then
