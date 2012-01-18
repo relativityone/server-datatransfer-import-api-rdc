@@ -76,6 +76,7 @@ Namespace kCura.WinEDDS
 		Public Property DisableImageTypeValidation As Boolean = Config.DisableImageTypeValidation
 		Public Property DisableImageLocationValidation As Boolean = Config.DisableImageLocationValidation
 		Public Property DisableUserSecurityCheck As Boolean
+		Public Property AuditLevel As ImportAuditLevel = ImportAuditLevel.FullAudit
 
 		Public ReadOnly Property BatchSizeHistoryList As System.Collections.Generic.List(Of Int32)
 			Get
@@ -319,7 +320,8 @@ Namespace kCura.WinEDDS
 			.KeyFieldArtifactID = _keyFieldDto.ArtifactID,
 			.Repository = _repositoryPath,
 			.UploadFullText = _replaceFullText,
-			.DisableUserSecurityCheck = Me.DisableUserSecurityCheck
+			.DisableUserSecurityCheck = Me.DisableUserSecurityCheck,
+			.AuditLevel = Me.AuditLevel
 			}
 			Return settings
 		End Function

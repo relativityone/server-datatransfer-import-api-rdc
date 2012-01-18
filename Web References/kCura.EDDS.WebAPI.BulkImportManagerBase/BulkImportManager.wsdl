@@ -22,6 +22,7 @@
           <s:element minOccurs="0" maxOccurs="1" name="BulkFileName" type="s:string" />
           <s:element minOccurs="1" maxOccurs="1" name="KeyFieldArtifactID" type="s:int" />
           <s:element minOccurs="1" maxOccurs="1" name="DestinationFolderArtifactID" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="AuditLevel" type="tns:ImportAuditLevel" />
         </s:sequence>
       </s:complexType>
       <s:simpleType name="OverwriteType">
@@ -29,6 +30,13 @@
           <s:enumeration value="Append" />
           <s:enumeration value="Overlay" />
           <s:enumeration value="Both" />
+        </s:restriction>
+      </s:simpleType>
+      <s:simpleType name="ImportAuditLevel">
+        <s:restriction base="s:string">
+          <s:enumeration value="FullAudit" />
+          <s:enumeration value="NoSnapshot" />
+          <s:enumeration value="NoAudit" />
         </s:restriction>
       </s:simpleType>
       <s:element name="BulkImportImageResponse">
