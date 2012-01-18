@@ -67,6 +67,7 @@ Namespace kCura.Relativity.DataReaderClient
 
 				If DisableNativeValidation.HasValue Then process.DisableNativeValidation = DisableNativeValidation.Value
 				If DisableNativeLocationValidation.HasValue Then process.DisableNativeLocationValidation = DisableNativeLocationValidation.Value
+				process.DisableUserSecurityCheck = Me.DisableUserSecurityCheck
 
 				RaiseEvent OnMessage(New Status("Updating settings"))
 				process.LoadFile = CreateLoadFile(Settings)
@@ -486,6 +487,13 @@ Namespace kCura.Relativity.DataReaderClient
 		''' False: validation is enabled
 		''' Nothing: validation will use the pre-configured value</value>
 		Public Property DisableNativeLocationValidation As Boolean?
+
+		''' <summary>
+		''' Enables or disables user permission checks per document or object
+		''' </summary>
+		''' <value>True: security checks are disabled
+		''' False: security checks are enabled</value>
+		Public Property DisableUserSecurityCheck As Boolean
 
 
 #End Region

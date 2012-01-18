@@ -32,6 +32,13 @@ Namespace kCura.Relativity.DataReaderClient
 		''' Nothing: validation will use the pre-configured value</value>
 		Public Property DisableImageLocationValidation As Boolean?
 
+		''' <summary>
+		''' Enables or disables user permission checks per image
+		''' </summary>
+		''' <value>True: security checks are disabled
+		''' False: security checks are enabled</value>
+		Public Property DisableUserSecurityCheck As Boolean
+
 		Public Property Settings As ImageSettings
 			Get
 				Return _settings
@@ -102,6 +109,7 @@ Namespace kCura.Relativity.DataReaderClient
 
 				If DisableImageTypeValidation.HasValue Then process.DisableImageTypeValidation = Me.DisableImageTypeValidation.Value
 				If DisableImageLocationValidation.HasValue Then process.DisableImageLocationValidation = Me.DisableImageLocationValidation.Value
+				process.DisableUserSecurityCheck = Me.DisableUserSecurityCheck
 
 				RaiseEvent OnMessage(New Status("Updating settings"))
 				process.ImageLoadFile = Me.CreateLoadFile()
