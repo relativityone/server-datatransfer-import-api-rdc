@@ -100,8 +100,8 @@ Namespace kCura.Relativity.DataReaderClient
 				_observer = process.ProcessObserver
 				_controller = process.ProcessController
 
-				If DisableImageTypeValidation.HasValue Then process.DisableImageTypeValidation = DisableImageTypeValidation.Value
-				If DisableImageLocationValidation.HasValue Then process.DisableImageLocationValidation = DisableImageLocationValidation.Value
+				If DisableImageTypeValidation.HasValue Then process.DisableImageTypeValidation = Me.DisableImageTypeValidation.Value
+				If DisableImageLocationValidation.HasValue Then process.DisableImageLocationValidation = Me.DisableImageLocationValidation.Value
 
 				RaiseEvent OnMessage(New Status("Updating settings"))
 				process.ImageLoadFile = Me.CreateLoadFile()
