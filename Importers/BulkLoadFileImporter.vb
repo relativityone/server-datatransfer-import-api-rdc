@@ -76,7 +76,7 @@ Namespace kCura.WinEDDS
 
 		Public Property DisableNativeValidation As Boolean = Config.DisableNativeValidation
 		Public Property DisableNativeLocationValidation As Boolean = Config.DisableNativeLocationValidation
-
+		Public Property DisableUserSecurityCheck As Boolean
 
 		Public ReadOnly Property BatchSizeHistoryList As System.Collections.Generic.List(Of Int32)
 			Get
@@ -684,7 +684,7 @@ Namespace kCura.WinEDDS
 					Exit While
 				Catch ex As Exception
 					tries -= 1
-					If tries = 0 OrElse ExceptionIsTimeoutRelated(ex) OrElse _continue = False OrElse ex.GetType = GetType(Service.BulkImportManager.BulkImportSqlException) Then
+					If tries = 0 OrElse ExceptionIsTimeoutRelated(ex) OrElse _continue = False OrElse ex.GetType = GetType(Service.BulkImportManager.BulkImportSqlException) OrElse ex.GetType = GetType(Relativity.InsufficientPermissionsForImportException) Then
 						Throw
 					Else
 						Me.RaiseWarningAndPause(ex, kCura.Utility.Config.Settings.IoErrorWaitTimeInSeconds)
@@ -727,7 +727,7 @@ Namespace kCura.WinEDDS
 
 		Private Function GetSettingsObject() As kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo
 			If _artifactTypeID = Relativity.ArtifactType.Document Then
-				Return New kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo
+				Return New kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo With {.DisableUserSecurityCheck = Me.DisableUserSecurityCheck}
 			Else
 				Dim settings As New kCura.EDDS.WebAPI.BulkImportManagerBase.ObjectLoadInfo
 				settings.ArtifactTypeID = _artifactTypeID
