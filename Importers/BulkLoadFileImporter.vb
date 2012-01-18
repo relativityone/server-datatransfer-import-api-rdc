@@ -729,7 +729,7 @@ Namespace kCura.WinEDDS
 			If _artifactTypeID = Relativity.ArtifactType.Document Then
 				Return New kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo With {.DisableUserSecurityCheck = Me.DisableUserSecurityCheck}
 			Else
-				Dim settings As New kCura.EDDS.WebAPI.BulkImportManagerBase.ObjectLoadInfo
+				Dim settings As New kCura.EDDS.WebAPI.BulkImportManagerBase.ObjectLoadInfo With {.DisableUserSecurityCheck = Me.DisableUserSecurityCheck}
 				settings.ArtifactTypeID = _artifactTypeID
 				Return settings
 			End If

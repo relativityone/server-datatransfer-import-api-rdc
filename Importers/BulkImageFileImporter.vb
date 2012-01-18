@@ -75,6 +75,7 @@ Namespace kCura.WinEDDS
 
 		Public Property DisableImageTypeValidation As Boolean = Config.DisableImageTypeValidation
 		Public Property DisableImageLocationValidation As Boolean = Config.DisableImageLocationValidation
+		Public Property DisableUserSecurityCheck As Boolean
 
 		Public ReadOnly Property BatchSizeHistoryList As System.Collections.Generic.List(Of Int32)
 			Get
@@ -271,7 +272,7 @@ Namespace kCura.WinEDDS
 					Exit While
 				Catch ex As Exception
 					tries -= 1
-					If tries = 0 OrElse ExceptionIsTimeoutRelated(ex) OrElse _continue = False OrElse ex.GetType = GetType(Service.BulkImportManager.BulkImportSqlException) Then
+					If tries = 0 OrElse ExceptionIsTimeoutRelated(ex) OrElse _continue = False OrElse ex.GetType = GetType(Service.BulkImportManager.BulkImportSqlException) OrElse ex.GetType = GetType(Relativity.InsufficientPermissionsForImportException) Then
 						Throw
 					Else
 						Me.RaiseWarningAndPause(ex, kCura.Utility.Config.Settings.IoErrorWaitTimeInSeconds)
@@ -280,20 +281,12 @@ Namespace kCura.WinEDDS
 			End While
 			Return retval
 		End Function
-
-
+		
 		Private Function BulkImport(ByVal overwrite As OverwriteType, ByVal useBulk As Boolean) As MassImportResults
 			Dim retval As MassImportResults
-			Dim settings As New ImageLoadInfo With {
-			.RunID = _runId,
-			.DestinationFolderArtifactID = _folderID,
-			.BulkFileName = _uploadKey,
-			.Overlay = overwrite,
-			.KeyFieldArtifactID = _keyFieldDto.ArtifactID,
-			.Repository = _repositoryPath,
-			.UseBulkDataImport = useBulk,
-			.UploadFullText = _replaceFullText
-			}
+			Dim settings As ImageLoadInfo = Me.GetSettingsObject
+			settings.UseBulkDataImport = useBulk
+			settings.Overlay = overwrite
 
 			If _productionArtifactID = 0 Then
 				retval = _bulkImportManager.BulkImportImage(_caseInfo.ArtifactID, settings, _copyFilesToRepository)
@@ -316,6 +309,19 @@ Namespace kCura.WinEDDS
 
 		Protected Function GetImageRecord() As Api.ImageRecord
 			Return _imageReader.GetImageRecord
+		End Function
+
+		Private Function GetSettingsObject() As kCura.EDDS.WebAPI.BulkImportManagerBase.ImageLoadInfo
+			Dim settings As New ImageLoadInfo With {
+			.RunID = _runId,
+			.DestinationFolderArtifactID = _folderID,
+			.BulkFileName = _uploadKey,
+			.KeyFieldArtifactID = _keyFieldDto.ArtifactID,
+			.Repository = _repositoryPath,
+			.UploadFullText = _replaceFullText,
+			.DisableUserSecurityCheck = Me.DisableUserSecurityCheck
+			}
+			Return settings
 		End Function
 
 		Private Function TryPushImageBatch(ByVal bulkLoadFilePath As String, ByVal isFinal As Boolean) As Object
