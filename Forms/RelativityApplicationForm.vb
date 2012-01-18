@@ -73,7 +73,7 @@ Namespace kCura.EDDS.WinForm
 
 			'Add any initialization after the InitializeComponent() call
 			OpenFileDialog = New OpenFileDialog
-			OpenFileDialog.Filter = "XML Files (*.xml)|*.xml"
+			OpenFileDialog.Filter = "XML Files (*.xml)|*.xml|Relativity Application Packages (*.rap)|*.rap"
 			OpenFileDialog.InitialDirectory = IO.Path.Combine(IO.Path.GetDirectoryName(System.Windows.Forms.Application.ExecutablePath), "Applications")
 			OpenFileDialog.CheckFileExists = True
 			OpenFileDialog.CheckPathExists = True
@@ -762,9 +762,9 @@ Namespace kCura.EDDS.WinForm
 																					End Sub
 
 			If document Is Nothing Then
-				ErrorMsg("The file is not a valid XML file.")
+				ErrorMsg("The file is not a valid Relativity Application file.")
 			ElseIf Not LoadApplicationNameFromNode(document.SelectSingleNode("/Application/Name")) Then
-				ErrorMsg("The file is not a valid Relativity Application template file.")
+				ErrorMsg("The file is not a valid Relativity Application file.")
 			End If
 
 			If Not e.Cancel Then
