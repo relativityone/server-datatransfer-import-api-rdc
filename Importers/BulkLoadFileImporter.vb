@@ -1,5 +1,6 @@
 Imports System.IO
 Imports kCura.EDDS.WebAPI.BulkImportManagerBase
+
 Imports Relativity.MassImport
 Imports Microsoft.VisualBasic
 
@@ -77,6 +78,7 @@ Namespace kCura.WinEDDS
 		Public Property DisableNativeValidation As Boolean = Config.DisableNativeValidation
 		Public Property DisableNativeLocationValidation As Boolean = Config.DisableNativeLocationValidation
 		Public Property DisableUserSecurityCheck As Boolean
+		Public Property AuditLevel As kCura.EDDS.WebAPI.BulkImportManagerBase.ImportAuditLevel = kCura.EDDS.WebAPI.BulkImportManagerBase.ImportAuditLevel.FullAudit
 
 		Public ReadOnly Property BatchSizeHistoryList As System.Collections.Generic.List(Of Int32)
 			Get
@@ -694,7 +696,7 @@ Namespace kCura.WinEDDS
 			Return retval
 		End Function
 
-		Private Function BatchBulkImport(ByVal settings As NativeLoadInfo, ByVal includeExtractedTextEncoding As Boolean) As MassImportResults
+		Private Function BatchBulkImport(ByVal settings As kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo, ByVal includeExtractedTextEncoding As Boolean) As MassImportResults
 			Dim retval As MassImportResults
 			If TypeOf settings Is kCura.EDDS.WebAPI.BulkImportManagerBase.ObjectLoadInfo Then
 				retval = Me.BulkImportManager.BulkImportObjects(_caseInfo.ArtifactID, DirectCast(settings, kCura.EDDS.WebAPI.BulkImportManagerBase.ObjectLoadInfo), _copyFileToRepository)
@@ -727,9 +729,9 @@ Namespace kCura.WinEDDS
 
 		Private Function GetSettingsObject() As kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo
 			If _artifactTypeID = Relativity.ArtifactType.Document Then
-				Return New kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo With {.DisableUserSecurityCheck = Me.DisableUserSecurityCheck}
+				Return New kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo With {.DisableUserSecurityCheck = Me.DisableUserSecurityCheck, .AuditLevel = Me.AuditLevel}
 			Else
-				Dim settings As New kCura.EDDS.WebAPI.BulkImportManagerBase.ObjectLoadInfo With {.DisableUserSecurityCheck = Me.DisableUserSecurityCheck}
+				Dim settings As New kCura.EDDS.WebAPI.BulkImportManagerBase.ObjectLoadInfo With {.DisableUserSecurityCheck = Me.DisableUserSecurityCheck, .AuditLevel = Me.AuditLevel}
 				settings.ArtifactTypeID = _artifactTypeID
 				Return settings
 			End If

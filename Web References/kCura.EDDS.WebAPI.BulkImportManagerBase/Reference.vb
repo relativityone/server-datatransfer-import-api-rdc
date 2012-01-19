@@ -502,6 +502,8 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
         
         Private destinationFolderArtifactIDField As Integer
         
+        Private auditLevelField As ImportAuditLevel
+        
         '''<remarks/>
         Public Property DisableUserSecurityCheck() As Boolean
             Get
@@ -591,6 +593,16 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
                 Me.destinationFolderArtifactIDField = value
             End Set
         End Property
+        
+        '''<remarks/>
+        Public Property AuditLevel() As ImportAuditLevel
+            Get
+                Return Me.auditLevelField
+            End Get
+            Set
+                Me.auditLevelField = value
+            End Set
+        End Property
     End Class
     
     '''<remarks/>
@@ -607,6 +619,22 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
         
         '''<remarks/>
         Both
+    End Enum
+    
+    '''<remarks/>
+    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.233"),  _
+     System.SerializableAttribute(),  _
+     System.Xml.Serialization.XmlTypeAttribute([Namespace]:="http://www.kCura.com/EDDS/BulkImportManager")>  _
+    Public Enum ImportAuditLevel
+        
+        '''<remarks/>
+        FullAudit
+        
+        '''<remarks/>
+        NoSnapshot
+        
+        '''<remarks/>
+        NoAudit
     End Enum
     
     '''<remarks/>
@@ -922,6 +950,8 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
         
         Private disableUserSecurityCheckField As Boolean
         
+        Private auditLevelField As ImportAuditLevel
+        
         Private keyFieldArtifactIDField As Integer
         
         '''<remarks/>
@@ -1031,6 +1061,16 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
             End Get
             Set
                 Me.disableUserSecurityCheckField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property AuditLevel() As ImportAuditLevel
+            Get
+                Return Me.auditLevelField
+            End Get
+            Set
+                Me.auditLevelField = value
             End Set
         End Property
         
