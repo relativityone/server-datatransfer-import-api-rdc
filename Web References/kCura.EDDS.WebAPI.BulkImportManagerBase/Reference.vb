@@ -638,22 +638,6 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
     End Enum
     
     '''<remarks/>
-    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.233"),  _
-     System.SerializableAttribute(),  _
-     System.Xml.Serialization.XmlTypeAttribute([Namespace]:="http://www.kCura.com/EDDS/BulkImportManager")>  _
-    Public Enum ImportAuditLevel
-        
-        '''<remarks/>
-        FullAudit
-        
-        '''<remarks/>
-        NoSnapshot
-        
-        '''<remarks/>
-        NoAudit
-    End Enum
-    
-    '''<remarks/>
     <System.Xml.Serialization.XmlIncludeAttribute(GetType(FieldInfo)),  _
      System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.233"),  _
      System.SerializableAttribute(),  _
