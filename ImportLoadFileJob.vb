@@ -68,6 +68,7 @@ Namespace kCura.Relativity.DataReaderClient
 				If DisableNativeValidation.HasValue Then process.DisableNativeValidation = DisableNativeValidation.Value
 				If DisableNativeLocationValidation.HasValue Then process.DisableNativeLocationValidation = DisableNativeLocationValidation.Value
 				process.DisableUserSecurityCheck = Me.DisableUserSecurityCheck
+				process.AuditLevel = Me.AuditLevel
 
 				RaiseEvent OnMessage(New Status("Updating settings"))
 				process.LoadFile = CreateLoadFile(Settings)
@@ -494,6 +495,14 @@ Namespace kCura.Relativity.DataReaderClient
 		''' <value>True: security checks are disabled
 		''' False: security checks are enabled</value>
 		Public Property DisableUserSecurityCheck As Boolean
+
+		''' <summary>
+		''' Allows to set AuditLevel used during import
+		''' </summary>
+		''' <value>		FullAudit - default
+		'''           NoSnapshot - audit is recored but not auditDetails
+		'''           NoAudit - no audit at all</value>
+		Public Property AuditLevel As kCura.EDDS.WebAPI.BulkImportManagerBase.ImportAuditLevel = kCura.EDDS.WebAPI.BulkImportManagerBase.ImportAuditLevel.FullAudit
 
 
 #End Region
