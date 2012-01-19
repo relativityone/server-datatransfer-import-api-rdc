@@ -11,13 +11,9 @@ Namespace kCura.WinEDDS
 #Region "Members"
 		Dim _start As System.DateTime
 		Private _imageReader As kCura.WinEDDS.Api.IImageReader
-		'Protected _docManager As kCura.WinEDDS.Service.DocumentManager
 		Protected _fieldQuery As kCura.WinEDDS.Service.FieldQuery
-		'Protected _folderManager As kCura.WinEDDS.Service.FolderManager
-		'Protected _auditManager As kCura.WinEDDS.Service.AuditManager
 		Private WithEvents _fileUploader As kCura.WinEDDS.FileUploader
 		Private WithEvents _bcpuploader As kCura.WinEDDS.FileUploader
-		'Protected _fileManager As kCura.WinEDDS.Service.FileManager
 		Protected _productionManager As kCura.WinEDDS.Service.ProductionManager
 		Protected _bulkImportManager As kCura.WinEDDS.Service.BulkImportManager
 		Private _folderID As Int32
@@ -43,7 +39,6 @@ Namespace kCura.WinEDDS
 		Private _caseInfo As Relativity.CaseInfo
 
 		Private WithEvents _processController As kCura.Windows.Process.Controller
-		Protected _productionDTO As kCura.EDDS.WebAPI.ProductionManagerBase.Production
 		Protected _keyFieldDto As kCura.EDDS.WebAPI.FieldManagerBase.Field
 		Private _bulkLoadFileWriter As System.IO.StreamWriter
 		Private _sourceTextEncoding As System.Text.Encoding = System.Text.Encoding.Default
@@ -212,7 +207,6 @@ Namespace kCura.WinEDDS
 
 			' slm- 10/10/2011 - fixed both of these to check for ID greater than zero
 			If _productionArtifactID > 0 Then
-				'_productionDTO = _productionManager.Read(args.CaseInfo.ArtifactID, _productionArtifactID)
 				_keyFieldDto = fieldManager.Read(args.CaseInfo.ArtifactID, args.BeginBatesFieldArtifactID)
 			ElseIf args.IdentityFieldId > 0 Then
 				_keyFieldDto = fieldManager.Read(args.CaseInfo.ArtifactID, args.IdentityFieldId)
@@ -223,11 +217,7 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Protected Overridable Sub InitializeManagers(ByVal args As ImageLoadFile)
-			'_docManager = New kCura.WinEDDS.Service.DocumentManager(args.Credential, args.CookieContainer)
 			_fieldQuery = New kCura.WinEDDS.Service.FieldQuery(args.Credential, args.CookieContainer)
-			'_folderManager = New kCura.WinEDDS.Service.FolderManager(args.Credential, args.CookieContainer)
-			'_auditManager = New kCura.WinEDDS.Service.AuditManager(args.Credential, args.CookieContainer)
-			'_fileManager = New kCura.WinEDDS.Service.FileManager(args.Credential, args.CookieContainer)
 			_productionManager = New kCura.WinEDDS.Service.ProductionManager(args.Credential, args.CookieContainer)
 			_bulkImportManager = New kCura.WinEDDS.Service.BulkImportManager(args.Credential, args.CookieContainer)
 		End Sub
