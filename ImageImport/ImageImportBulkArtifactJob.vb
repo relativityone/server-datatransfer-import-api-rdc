@@ -39,6 +39,14 @@ Namespace kCura.Relativity.DataReaderClient
 		''' False: security checks are enabled</value>
 		Public Property DisableUserSecurityCheck As Boolean
 
+		''' <summary>
+		''' Sets the level of auditing for the import job
+		''' </summary>
+		''' <value>FullAudit: default auditing
+		''' NoSnapshot: no audit details for updates
+		''' NoAudit: auditing is disabled</value>
+		Public Property AuditLevel As kCura.EDDS.WebAPI.BulkImportManagerBase.ImportAuditLevel = EDDS.WebAPI.BulkImportManagerBase.ImportAuditLevel.FullAudit
+
 		Public Property Settings As ImageSettings
 			Get
 				Return _settings
@@ -110,6 +118,7 @@ Namespace kCura.Relativity.DataReaderClient
 				If DisableImageTypeValidation.HasValue Then process.DisableImageTypeValidation = Me.DisableImageTypeValidation.Value
 				If DisableImageLocationValidation.HasValue Then process.DisableImageLocationValidation = Me.DisableImageLocationValidation.Value
 				process.DisableUserSecurityCheck = Me.DisableUserSecurityCheck
+				process.AuditLevel = Me.AuditLevel
 
 				RaiseEvent OnMessage(New Status("Updating settings"))
 				process.ImageLoadFile = Me.CreateLoadFile()
