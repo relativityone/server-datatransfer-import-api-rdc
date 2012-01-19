@@ -11,6 +11,7 @@ Namespace kCura.WinEDDS
 		Private _uploadModeText As String = Nothing
 
 		Private _disableUserSecurityCheck As Boolean
+		Private _importAuditLevel As kCura.EDDS.WebAPI.BulkImportManagerBase.ImportAuditLevel = EDDS.WebAPI.BulkImportManagerBase.ImportAuditLevel.FullAudit
 		Private _disableImageTypeValidation As Boolean?
 		Private _disableImageLocationValidation As Boolean?
 
@@ -32,6 +33,12 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
+		Public WriteOnly Property AuditLevel As kCura.EDDS.WebAPI.BulkImportManagerBase.ImportAuditLevel
+			Set(value As kCura.EDDS.WebAPI.BulkImportManagerBase.ImportAuditLevel)
+				_importAuditLevel = value
+			End Set
+		End Property
+
 
 		Protected Overrides Sub Execute()
 			_startTime = DateTime.Now
@@ -43,6 +50,7 @@ Namespace kCura.WinEDDS
 			If _disableImageTypeValidation.HasValue Then _imageFileImporter.DisableImageTypeValidation = _disableImageTypeValidation.Value
 			If _disableImageLocationValidation.HasValue Then _imageFileImporter.DisableImageLocationValidation = _disableImageLocationValidation.Value
 			_imageFileImporter.DisableUserSecurityCheck = _disableUserSecurityCheck
+			_imageFileImporter.AuditLevel = _importAuditLevel
 
 			_imageFileImporter.ReadFile(ImageLoadFile.FileName)
 			If Not _hasRunProcessComplete Then

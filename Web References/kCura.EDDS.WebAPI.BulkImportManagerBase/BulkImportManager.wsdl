@@ -39,6 +39,13 @@
           <s:enumeration value="NoAudit" />
         </s:restriction>
       </s:simpleType>
+      <s:simpleType name="ImportAuditLevel">
+        <s:restriction base="s:string">
+          <s:enumeration value="FullAudit" />
+          <s:enumeration value="NoSnapshot" />
+          <s:enumeration value="NoAudit" />
+        </s:restriction>
+      </s:simpleType>
       <s:element name="BulkImportImageResponse">
         <s:complexType>
           <s:sequence>
