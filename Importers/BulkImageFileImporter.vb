@@ -753,7 +753,7 @@ Namespace kCura.WinEDDS
 			Try
 				_totalProcessed += 1
 				Dim filename As String = imageFileName.Substring(imageFileName.LastIndexOf("\") + 1)
-				Dim extractedTextFileName As String = GetFileNameWithoutExtension(imageFileName)
+				Dim extractedTextFileName As String = imageFileName.Substring(0, imageFileName.LastIndexOf("."c) + 1) & "txt"
 				Dim fileGuid As String = ""
 				Dim fileLocation As String = imageFileName
 				Dim fileSize As Int64 = 0
@@ -811,14 +811,6 @@ Namespace kCura.WinEDDS
 				Throw
 			End Try
 		End Sub
-
-		Private Function GetFileNameWithoutExtension(ByVal imageFileName As String) As String
-			Dim retVal As String = imageFileName
-			Dim lastIndexOfDot As Int32 = imageFileName.LastIndexOf("."c)
-			If lastIndexOfDot <> -1 AndAlso lastIndexOfDot <> imageFileName.Length - 1 Then
-				Return imageFileName.Substring(0, imageFileName.LastIndexOf("."c) + 1) & "txt"
-		End Function
-
 #End Region
 
 #Region "Events and Event Handling"
