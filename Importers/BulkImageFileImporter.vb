@@ -811,7 +811,6 @@ Namespace kCura.WinEDDS
 				Throw
 			End Try
 		End Sub
-
 #End Region
 
 #Region "Events and Event Handling"
