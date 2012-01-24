@@ -188,6 +188,8 @@ Namespace kCura.Relativity.DataReaderClient
 			tempLoadFile.CopyFilesToDocumentRepository = Settings.CopyFilesToDocumentRepository
 			If Settings.DestinationFolderArtifactID > 0 Then
 				tempLoadFile.DestinationFolderID = Settings.DestinationFolderArtifactID
+			Else
+				tempLoadFile.DestinationFolderID = tempLoadFile.CaseInfo.RootFolderID
 			End If
 			tempLoadFile.ForProduction = Settings.ForProduction
 			tempLoadFile.FullTextEncoding = Settings.ExtractedTextEncoding
