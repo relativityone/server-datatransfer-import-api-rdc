@@ -186,7 +186,7 @@ Namespace kCura.Relativity.DataReaderClient
 			tempLoadFile.Credential = credential
 			tempLoadFile.CookieContainer = _cookieMonster
 			tempLoadFile.CopyFilesToDocumentRepository = Settings.CopyFilesToDocumentRepository
-			If Settings.DestinationFolderArtifactID IsNot Nothing AndAlso Settings.DestinationFolderArtifactID > 0 Then
+			If Settings.DestinationFolderArtifactID > 0 Then
 				tempLoadFile.DestinationFolderID = Settings.DestinationFolderArtifactID
 			End If
 			tempLoadFile.ForProduction = Settings.ForProduction
