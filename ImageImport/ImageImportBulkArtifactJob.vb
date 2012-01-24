@@ -186,7 +186,7 @@ Namespace kCura.Relativity.DataReaderClient
 			tempLoadFile.Credential = credential
 			tempLoadFile.CookieContainer = _cookieMonster
 			tempLoadFile.CopyFilesToDocumentRepository = Settings.CopyFilesToDocumentRepository
-			tempLoadFile.DestinationFolderID = tempLoadFile.CaseInfo.RootFolderID
+			tempLoadFile.DestinationFolderID = Settings.DestinationFolderArtifactID
 			tempLoadFile.ForProduction = Settings.ForProduction
 			tempLoadFile.FullTextEncoding = Settings.ExtractedTextEncoding
 			tempLoadFile.Overwrite = Settings.OverwriteMode.ToString
