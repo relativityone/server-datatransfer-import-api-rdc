@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<wsdl:definitions xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://www.kCura.com/EDDS/DocumentManager" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:s1="http://microsoft.com/wsdl/types/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://www.kCura.com/EDDS/DocumentManager" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+<wsdl:definitions xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://foley.com/EDDS/DocumentManager" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:s1="http://microsoft.com/wsdl/types/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://foley.com/EDDS/DocumentManager" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
   <wsdl:types>
-    <s:schema elementFormDefault="qualified" targetNamespace="http://www.kCura.com/EDDS/DocumentManager">
+    <s:schema elementFormDefault="qualified" targetNamespace="http://foley.com/EDDS/DocumentManager">
       <s:import namespace="http://microsoft.com/wsdl/types/" />
       <s:element name="GetAllDocumentsForCase">
         <s:complexType>
@@ -737,7 +737,7 @@
   <wsdl:binding name="DocumentManagerSoap" type="tns:DocumentManagerSoap">
     <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
     <wsdl:operation name="GetAllDocumentsForCase">
-      <soap:operation soapAction="http://www.kCura.com/EDDS/DocumentManager/GetAllDocumentsForCase" style="document" />
+      <soap:operation soapAction="http://foley.com/EDDS/DocumentManager/GetAllDocumentsForCase" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -746,7 +746,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="NewFileDTO">
-      <soap:operation soapAction="http://www.kCura.com/EDDS/DocumentManager/NewFileDTO" style="document" />
+      <soap:operation soapAction="http://foley.com/EDDS/DocumentManager/NewFileDTO" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -755,7 +755,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="CreateEmptyDocument">
-      <soap:operation soapAction="http://www.kCura.com/EDDS/DocumentManager/CreateEmptyDocument" style="document" />
+      <soap:operation soapAction="http://foley.com/EDDS/DocumentManager/CreateEmptyDocument" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -764,7 +764,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="Read">
-      <soap:operation soapAction="http://www.kCura.com/EDDS/DocumentManager/Read" style="document" />
+      <soap:operation soapAction="http://foley.com/EDDS/DocumentManager/Read" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -773,7 +773,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="Create">
-      <soap:operation soapAction="http://www.kCura.com/EDDS/DocumentManager/Create" style="document" />
+      <soap:operation soapAction="http://foley.com/EDDS/DocumentManager/Create" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -782,7 +782,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="Update">
-      <soap:operation soapAction="http://www.kCura.com/EDDS/DocumentManager/Update" style="document" />
+      <soap:operation soapAction="http://foley.com/EDDS/DocumentManager/Update" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -791,7 +791,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="AddFullTextToDocument">
-      <soap:operation soapAction="http://www.kCura.com/EDDS/DocumentManager/AddFullTextToDocument" style="document" />
+      <soap:operation soapAction="http://foley.com/EDDS/DocumentManager/AddFullTextToDocument" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -800,7 +800,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="GetDocumentArtifactIDFromIdentifier">
-      <soap:operation soapAction="http://www.kCura.com/EDDS/DocumentManager/GetDocumentArtifactIDFromIdentifier" style="document" />
+      <soap:operation soapAction="http://foley.com/EDDS/DocumentManager/GetDocumentArtifactIDFromIdentifier" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -809,7 +809,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="GetDocumentArtifactIDFromFieldValue">
-      <soap:operation soapAction="http://www.kCura.com/EDDS/DocumentManager/GetDocumentArtifactIDFromFieldValue" style="document" />
+      <soap:operation soapAction="http://foley.com/EDDS/DocumentManager/GetDocumentArtifactIDFromFieldValue" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -818,7 +818,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="ReadFromIdentifier">
-      <soap:operation soapAction="http://www.kCura.com/EDDS/DocumentManager/ReadFromIdentifier" style="document" />
+      <soap:operation soapAction="http://foley.com/EDDS/DocumentManager/ReadFromIdentifier" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -827,7 +827,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="ReadFromIdentifierWithFileList">
-      <soap:operation soapAction="http://www.kCura.com/EDDS/DocumentManager/ReadFromIdentifierWithFileList" style="document" />
+      <soap:operation soapAction="http://foley.com/EDDS/DocumentManager/ReadFromIdentifierWithFileList" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -836,7 +836,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="ClearImagesFromDocument">
-      <soap:operation soapAction="http://www.kCura.com/EDDS/DocumentManager/ClearImagesFromDocument" style="document" />
+      <soap:operation soapAction="http://foley.com/EDDS/DocumentManager/ClearImagesFromDocument" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -845,7 +845,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="GetDocumentDirectoryByCaseArtifactID">
-      <soap:operation soapAction="http://www.kCura.com/EDDS/DocumentManager/GetDocumentDirectoryByCaseArtifactID" style="document" />
+      <soap:operation soapAction="http://foley.com/EDDS/DocumentManager/GetDocumentDirectoryByCaseArtifactID" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -854,7 +854,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="GetPrintImageGuids">
-      <soap:operation soapAction="http://www.kCura.com/EDDS/DocumentManager/GetPrintImageGuids" style="document" />
+      <soap:operation soapAction="http://foley.com/EDDS/DocumentManager/GetPrintImageGuids" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -863,7 +863,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="AllHaveOriginalImages">
-      <soap:operation soapAction="http://www.kCura.com/EDDS/DocumentManager/AllHaveOriginalImages" style="document" />
+      <soap:operation soapAction="http://foley.com/EDDS/DocumentManager/AllHaveOriginalImages" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -872,7 +872,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="GetIdentifierFromDocumentArtifactID">
-      <soap:operation soapAction="http://www.kCura.com/EDDS/DocumentManager/GetIdentifierFromDocumentArtifactID" style="document" />
+      <soap:operation soapAction="http://foley.com/EDDS/DocumentManager/GetIdentifierFromDocumentArtifactID" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -881,7 +881,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="RetrieveAllUnsupportedOiFileIds">
-      <soap:operation soapAction="http://www.kCura.com/EDDS/DocumentManager/RetrieveAllUnsupportedOiFileIds" style="document" />
+      <soap:operation soapAction="http://foley.com/EDDS/DocumentManager/RetrieveAllUnsupportedOiFileIds" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -890,7 +890,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="ReadAsNameValueCollectionFromLayoutArtifactID">
-      <soap:operation soapAction="http://www.kCura.com/EDDS/DocumentManager/ReadAsNameValueCollectionFromLayoutArtifactID" style="document" />
+      <soap:operation soapAction="http://foley.com/EDDS/DocumentManager/ReadAsNameValueCollectionFromLayoutArtifactID" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -902,7 +902,7 @@
   <wsdl:binding name="DocumentManagerSoap12" type="tns:DocumentManagerSoap">
     <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
     <wsdl:operation name="GetAllDocumentsForCase">
-      <soap12:operation soapAction="http://www.kCura.com/EDDS/DocumentManager/GetAllDocumentsForCase" style="document" />
+      <soap12:operation soapAction="http://foley.com/EDDS/DocumentManager/GetAllDocumentsForCase" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
@@ -911,7 +911,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="NewFileDTO">
-      <soap12:operation soapAction="http://www.kCura.com/EDDS/DocumentManager/NewFileDTO" style="document" />
+      <soap12:operation soapAction="http://foley.com/EDDS/DocumentManager/NewFileDTO" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
@@ -920,7 +920,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="CreateEmptyDocument">
-      <soap12:operation soapAction="http://www.kCura.com/EDDS/DocumentManager/CreateEmptyDocument" style="document" />
+      <soap12:operation soapAction="http://foley.com/EDDS/DocumentManager/CreateEmptyDocument" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
@@ -929,7 +929,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="Read">
-      <soap12:operation soapAction="http://www.kCura.com/EDDS/DocumentManager/Read" style="document" />
+      <soap12:operation soapAction="http://foley.com/EDDS/DocumentManager/Read" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
@@ -938,7 +938,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="Create">
-      <soap12:operation soapAction="http://www.kCura.com/EDDS/DocumentManager/Create" style="document" />
+      <soap12:operation soapAction="http://foley.com/EDDS/DocumentManager/Create" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
@@ -947,7 +947,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="Update">
-      <soap12:operation soapAction="http://www.kCura.com/EDDS/DocumentManager/Update" style="document" />
+      <soap12:operation soapAction="http://foley.com/EDDS/DocumentManager/Update" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
@@ -956,7 +956,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="AddFullTextToDocument">
-      <soap12:operation soapAction="http://www.kCura.com/EDDS/DocumentManager/AddFullTextToDocument" style="document" />
+      <soap12:operation soapAction="http://foley.com/EDDS/DocumentManager/AddFullTextToDocument" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
@@ -965,7 +965,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="GetDocumentArtifactIDFromIdentifier">
-      <soap12:operation soapAction="http://www.kCura.com/EDDS/DocumentManager/GetDocumentArtifactIDFromIdentifier" style="document" />
+      <soap12:operation soapAction="http://foley.com/EDDS/DocumentManager/GetDocumentArtifactIDFromIdentifier" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
@@ -974,7 +974,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="GetDocumentArtifactIDFromFieldValue">
-      <soap12:operation soapAction="http://www.kCura.com/EDDS/DocumentManager/GetDocumentArtifactIDFromFieldValue" style="document" />
+      <soap12:operation soapAction="http://foley.com/EDDS/DocumentManager/GetDocumentArtifactIDFromFieldValue" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
@@ -983,7 +983,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="ReadFromIdentifier">
-      <soap12:operation soapAction="http://www.kCura.com/EDDS/DocumentManager/ReadFromIdentifier" style="document" />
+      <soap12:operation soapAction="http://foley.com/EDDS/DocumentManager/ReadFromIdentifier" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
@@ -992,7 +992,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="ReadFromIdentifierWithFileList">
-      <soap12:operation soapAction="http://www.kCura.com/EDDS/DocumentManager/ReadFromIdentifierWithFileList" style="document" />
+      <soap12:operation soapAction="http://foley.com/EDDS/DocumentManager/ReadFromIdentifierWithFileList" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
@@ -1001,7 +1001,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="ClearImagesFromDocument">
-      <soap12:operation soapAction="http://www.kCura.com/EDDS/DocumentManager/ClearImagesFromDocument" style="document" />
+      <soap12:operation soapAction="http://foley.com/EDDS/DocumentManager/ClearImagesFromDocument" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
@@ -1010,7 +1010,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="GetDocumentDirectoryByCaseArtifactID">
-      <soap12:operation soapAction="http://www.kCura.com/EDDS/DocumentManager/GetDocumentDirectoryByCaseArtifactID" style="document" />
+      <soap12:operation soapAction="http://foley.com/EDDS/DocumentManager/GetDocumentDirectoryByCaseArtifactID" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
@@ -1019,7 +1019,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="GetPrintImageGuids">
-      <soap12:operation soapAction="http://www.kCura.com/EDDS/DocumentManager/GetPrintImageGuids" style="document" />
+      <soap12:operation soapAction="http://foley.com/EDDS/DocumentManager/GetPrintImageGuids" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
@@ -1028,7 +1028,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="AllHaveOriginalImages">
-      <soap12:operation soapAction="http://www.kCura.com/EDDS/DocumentManager/AllHaveOriginalImages" style="document" />
+      <soap12:operation soapAction="http://foley.com/EDDS/DocumentManager/AllHaveOriginalImages" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
@@ -1037,7 +1037,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="GetIdentifierFromDocumentArtifactID">
-      <soap12:operation soapAction="http://www.kCura.com/EDDS/DocumentManager/GetIdentifierFromDocumentArtifactID" style="document" />
+      <soap12:operation soapAction="http://foley.com/EDDS/DocumentManager/GetIdentifierFromDocumentArtifactID" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
@@ -1046,7 +1046,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="RetrieveAllUnsupportedOiFileIds">
-      <soap12:operation soapAction="http://www.kCura.com/EDDS/DocumentManager/RetrieveAllUnsupportedOiFileIds" style="document" />
+      <soap12:operation soapAction="http://foley.com/EDDS/DocumentManager/RetrieveAllUnsupportedOiFileIds" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
@@ -1055,7 +1055,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="ReadAsNameValueCollectionFromLayoutArtifactID">
-      <soap12:operation soapAction="http://www.kCura.com/EDDS/DocumentManager/ReadAsNameValueCollectionFromLayoutArtifactID" style="document" />
+      <soap12:operation soapAction="http://foley.com/EDDS/DocumentManager/ReadAsNameValueCollectionFromLayoutArtifactID" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
