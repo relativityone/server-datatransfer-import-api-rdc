@@ -197,7 +197,7 @@
       <Project>{C2FD8BF7-723A-4D40-A201-CD7458678A70}</Project>
       <Name>kCura.ImageValidator</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\kCura\kCura.IntegrationTest\kCura.IntegrationTest.vbproj">
+    <ProjectReference Include="..\..\kCura\kCura.NUnit.Integration\kCura.NUnit.Integration.vbproj">
       <Project>{8A6B7E78-51B9-43DB-BBCA-17EE6A49E3FF}</Project>
       <Name>kCura.IntegrationTest</Name>
     </ProjectReference>
