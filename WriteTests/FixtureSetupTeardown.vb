@@ -6,7 +6,7 @@ Imports System.Data.SqlClient
 Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 	<SetUpFixture()> _
 	Public Class FixtureSetupTeardown
-		Inherits kCura.IntegrationTest.FixtureSetupTeardownBase
+		Inherits kCura.NUnit.Integration.FixtureSetupTeardownBase
 
 		Public Sub New()
 			Dim theseWorkspaceIDs As New System.Collections.Generic.List(Of Int32)

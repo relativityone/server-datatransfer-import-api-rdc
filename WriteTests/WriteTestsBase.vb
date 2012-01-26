@@ -7,14 +7,14 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 		<SetUp()> _
 		Public Overridable Sub SetUp()
 			Try
-				Dim helper As New kCura.IntegrationTest.SetupHelper
+				Dim helper As New kCura.NUnit.Integration.SetupHelper
 				For Each databaseName As String In DatabaseNames
 					helper.RestoreSingleDatabaseFromTempBackup(databaseName)
 				Next
 				Dim retval As String = helper.RestoreRepositories()
 				If retval <> String.Empty Then Throw New Exceptions.RepositoryException(String.Format("File Repository restore failed: {0}", retval))
 			Catch ex As SqlClient.SqlException
-				Throw New kCura.IntegrationTest.Exceptions.DatabaseManagementException("Database restore failed." + ex.Message + vbNewLine + ex.StackTrace)
+				Throw New kCura.NUnit.Integration.Exceptions.DatabaseManagementException("Database restore failed." + ex.Message + vbNewLine + ex.StackTrace)
 			End Try
 		End Sub
 
