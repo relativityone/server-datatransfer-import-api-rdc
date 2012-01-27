@@ -731,6 +731,9 @@ Namespace kCura.WinEDDS
 			End If
 		End Function
 
+		Public Overridable Sub OnSettingsObjectCreate(settings As kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo)
+			'Do Nothing
+		End Sub
 
 		Private Function TryPushNativeBatch(Optional ByVal lastRun As Boolean = False) As Object
 			CloseFileWriters()

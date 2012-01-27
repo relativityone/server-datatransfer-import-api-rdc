@@ -48,6 +48,35 @@
           </s:sequence>
         </s:complexType>
       </s:element>
+      <s:element name="Update">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="appArtifactId" type="s:int" />
+            <s:element minOccurs="0" maxOccurs="1" name="artifact" type="tns:SimplifiedMaskDto" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="SimplifiedMaskDto">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="ArtifactId" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="ArtifactTypeId" type="s:int" />
+          <s:element minOccurs="0" maxOccurs="1" name="Fields" type="tns:ArrayOfSimplifiedFieldDto" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="ArrayOfSimplifiedFieldDto">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="SimplifiedFieldDto" nillable="true" type="tns:SimplifiedFieldDto" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="SimplifiedFieldDto">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="ArtifactId" type="s:int" />
+          <s:element minOccurs="0" maxOccurs="1" name="Value" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="UpdateResponse">
+        <s:complexType />
+      </s:element>
     </s:schema>
   </wsdl:types>
   <wsdl:message name="RetrieveArtifactIdOfMappedObjectSoapIn">
@@ -62,6 +91,12 @@
   <wsdl:message name="RetrieveArtifactIdOfMappedParentObjectSoapOut">
     <wsdl:part name="parameters" element="tns:RetrieveArtifactIdOfMappedParentObjectResponse" />
   </wsdl:message>
+  <wsdl:message name="UpdateSoapIn">
+    <wsdl:part name="parameters" element="tns:Update" />
+  </wsdl:message>
+  <wsdl:message name="UpdateSoapOut">
+    <wsdl:part name="parameters" element="tns:UpdateResponse" />
+  </wsdl:message>
   <wsdl:portType name="ObjectManagerSoap">
     <wsdl:operation name="RetrieveArtifactIdOfMappedObject">
       <wsdl:input message="tns:RetrieveArtifactIdOfMappedObjectSoapIn" />
@@ -70,6 +105,10 @@
     <wsdl:operation name="RetrieveArtifactIdOfMappedParentObject">
       <wsdl:input message="tns:RetrieveArtifactIdOfMappedParentObjectSoapIn" />
       <wsdl:output message="tns:RetrieveArtifactIdOfMappedParentObjectSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="Update">
+      <wsdl:input message="tns:UpdateSoapIn" />
+      <wsdl:output message="tns:UpdateSoapOut" />
     </wsdl:operation>
   </wsdl:portType>
   <wsdl:binding name="ObjectManagerSoap" type="tns:ObjectManagerSoap">
@@ -92,6 +131,15 @@
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="Update">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/ObjectManager/Update" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
   </wsdl:binding>
   <wsdl:binding name="ObjectManagerSoap12" type="tns:ObjectManagerSoap">
     <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
@@ -106,6 +154,15 @@
     </wsdl:operation>
     <wsdl:operation name="RetrieveArtifactIdOfMappedParentObject">
       <soap12:operation soapAction="http://www.kCura.com/EDDS/ObjectManager/RetrieveArtifactIdOfMappedParentObject" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Update">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/ObjectManager/Update" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>

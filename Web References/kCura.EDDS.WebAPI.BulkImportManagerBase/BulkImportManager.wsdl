@@ -134,6 +134,7 @@
           <s:element minOccurs="1" maxOccurs="1" name="UploadFiles" type="s:boolean" />
           <s:element minOccurs="0" maxOccurs="1" name="CodeFileName" type="s:string" />
           <s:element minOccurs="0" maxOccurs="1" name="ObjectFileName" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="OnBehalfOfMasterUserId" nillable="true" type="s:int" />
           <s:element minOccurs="1" maxOccurs="1" name="KeyFieldArtifactID" type="s:int" />
         </s:sequence>
       </s:complexType>

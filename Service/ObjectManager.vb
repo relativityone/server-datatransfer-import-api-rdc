@@ -62,6 +62,24 @@ Namespace kCura.WinEDDS.Service
 		End Function
 
 
+		Public Shadows Sub Update(appArtifactID As Int32, artifact As kCura.EDDS.WebAPI.ObjectManagerBase.SimplifiedMaskDto)
+			Dim tries As Int32 = 0
+			While tries < Config.MaxReloginTries
+				tries += 1
+				Try
+					MyBase.Update(appArtifactID, artifact)
+					Return
+				Catch ex As System.Exception
+					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
+						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
+					Else
+						Throw
+					End If
+				End Try
+			End While
+		End Sub
+
+
 #End Region
 
 	End Class
