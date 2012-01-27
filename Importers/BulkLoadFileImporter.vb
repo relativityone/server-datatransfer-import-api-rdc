@@ -1,5 +1,6 @@
 Imports System.IO
 Imports kCura.EDDS.WebAPI.BulkImportManagerBase
+
 Imports Relativity.MassImport
 Imports Microsoft.VisualBasic
 
@@ -73,6 +74,11 @@ Namespace kCura.WinEDDS
 #End Region
 
 #Region "Accessors"
+
+		Public Property DisableNativeValidation As Boolean = Config.DisableNativeValidation
+		Public Property DisableNativeLocationValidation As Boolean = Config.DisableNativeLocationValidation
+		Public Property DisableUserSecurityCheck As Boolean
+		Public Property AuditLevel As kCura.EDDS.WebAPI.BulkImportManagerBase.ImportAuditLevel = kCura.EDDS.WebAPI.BulkImportManagerBase.ImportAuditLevel.FullAudit
 
 		Public ReadOnly Property BatchSizeHistoryList As System.Collections.Generic.List(Of Int32)
 			Get
@@ -321,6 +327,7 @@ Namespace kCura.WinEDDS
 			_bulkLoadFileFieldDelimiter = bulkLoadFileFieldDelimiter
 
 			_batchSizeHistoryList = New System.Collections.Generic.List(Of Int32)
+			_disableNativeLocationValidation = Config.DisableNativeLocationValidation
 		End Sub
 
 		Protected Overridable Sub CreateUploaders(ByVal args As LoadFile)
@@ -518,7 +525,7 @@ Namespace kCura.WinEDDS
 					filename = "." & filename
 				End If
 
-				If Config.DisableNativeLocationValidation Then
+				If Me.DisableNativeLocationValidation Then
 					'assuming that file exists and not validating it
 					fileExists = True
 				Else
@@ -530,7 +537,7 @@ Namespace kCura.WinEDDS
 				End If
 
 				If filename <> String.Empty AndAlso Not fileExists Then lineStatus += Relativity.MassImport.ImportStatus.FileSpecifiedDne 'Throw New InvalidFilenameException(filename)
-				If fileExists AndAlso Not Config.DisableNativeLocationValidation Then
+				If fileExists AndAlso Not Me.DisableNativeLocationValidation Then
 					If Me.GetFileLength(filename) = 0 Then
 						If Config.CreateErrorForEmptyNativeFile Then
 							lineStatus += Relativity.MassImport.ImportStatus.EmptyFile 'Throw New EmptyNativeFileException(filename)
@@ -544,7 +551,7 @@ Namespace kCura.WinEDDS
 				If fileExists Then
 					Try
 						Dim now As DateTime = DateTime.Now
-						If Config.DisableNativeValidation Then
+						If Me.DisableNativeValidation Then
 							oixFileIdData = Nothing
 						Else
 							oixFileIdData = kCura.OI.FileID.Manager.Instance.GetFileIDDataByFilePath(filename)
@@ -568,7 +575,7 @@ Namespace kCura.WinEDDS
 						filename = filename.Substring(filename.LastIndexOf("\") + 1)
 						WriteStatusLine(Windows.Process.EventType.Status, String.Format("End upload file. ({0}ms)", DateTime.op_Subtraction(DateTime.Now, now).Milliseconds))
 					Catch ex As System.IO.FileNotFoundException
-						If Config.DisableNativeLocationValidation Then
+						If Me.DisableNativeLocationValidation Then
 							'Don't do anything. This exception can only happen if DisableNativeLocationValidation is turned on
 						Else
 							Throw
@@ -680,7 +687,7 @@ Namespace kCura.WinEDDS
 					Exit While
 				Catch ex As Exception
 					tries -= 1
-					If tries = 0 OrElse ExceptionIsTimeoutRelated(ex) OrElse _continue = False OrElse ex.GetType = GetType(Service.BulkImportManager.BulkImportSqlException) Then
+					If tries = 0 OrElse ExceptionIsTimeoutRelated(ex) OrElse _continue = False OrElse ex.GetType = GetType(Service.BulkImportManager.BulkImportSqlException) OrElse ex.GetType = GetType(Relativity.InsufficientPermissionsForImportException) Then
 						Throw
 					Else
 						Me.RaiseWarningAndPause(ex, kCura.Utility.Config.Settings.IoErrorWaitTimeInSeconds)
@@ -690,7 +697,7 @@ Namespace kCura.WinEDDS
 			Return retval
 		End Function
 
-		Private Function BatchBulkImport(ByVal settings As NativeLoadInfo, ByVal includeExtractedTextEncoding As Boolean) As MassImportResults
+		Private Function BatchBulkImport(ByVal settings As kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo, ByVal includeExtractedTextEncoding As Boolean) As MassImportResults
 			Dim retval As MassImportResults
 			If TypeOf settings Is kCura.EDDS.WebAPI.BulkImportManagerBase.ObjectLoadInfo Then
 				retval = Me.BulkImportManager.BulkImportObjects(_caseInfo.ArtifactID, DirectCast(settings, kCura.EDDS.WebAPI.BulkImportManagerBase.ObjectLoadInfo), _copyFileToRepository)
@@ -723,9 +730,9 @@ Namespace kCura.WinEDDS
 
 		Private Function GetSettingsObject() As kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo
 			If _artifactTypeID = Relativity.ArtifactType.Document Then
-				Return New kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo
+				Return New kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo With {.DisableUserSecurityCheck = Me.DisableUserSecurityCheck, .AuditLevel = Me.AuditLevel}
 			Else
-				Dim settings As New kCura.EDDS.WebAPI.BulkImportManagerBase.ObjectLoadInfo
+				Dim settings As New kCura.EDDS.WebAPI.BulkImportManagerBase.ObjectLoadInfo With {.DisableUserSecurityCheck = Me.DisableUserSecurityCheck, .AuditLevel = Me.AuditLevel}
 				settings.ArtifactTypeID = _artifactTypeID
 				Return settings
 			End If
@@ -1101,7 +1108,7 @@ Namespace kCura.WinEDDS
 
 		Private Function IsSupportedRelativityFileType(ByVal fileData As OI.FileID.FileIDData) As Boolean
 			If fileData Is Nothing Then
-				If Config.DisableNativeValidation Then
+				If Me.DisableNativeValidation Then
 					Return True
 				Else
 					Return False

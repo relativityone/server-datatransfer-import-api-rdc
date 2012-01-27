@@ -1,4 +1,6 @@
 Imports System.IO
+Imports System.Collections.Generic
+
 Namespace kCura.WinEDDS
 	Public Class Exporter
 
@@ -143,7 +145,7 @@ Namespace kCura.WinEDDS
 			Dim columnHeaderString As String = Me.LoadColumns
 			Dim allAvfIds As New System.Collections.Generic.List(Of Int32)
 			For i As Int32 = 0 To _columns.Count - 1
-				allAvfIds.Add(Me.Settings.SelectedViewFields(i).AvfId)
+				If Not TypeOf _columns(i) Is CoalescedTextViewField Then allAvfIds.Add(Me.Settings.SelectedViewFields(i).AvfId)
 			Next
 			Dim production As kCura.EDDS.WebAPI.ProductionManagerBase.Production = Nothing
 			If Me.Settings.TypeOfExport = ExportFile.ExportType.Production Then
@@ -200,7 +202,9 @@ Namespace kCura.WinEDDS
 				finish = Math.Min(Me.TotalExportArtifactCount - 1 + Me.Settings.StartAtDocumentNumber, realStart + Config.ExportBatchSize - 1)
 				_timekeeper.MarkStart("Exporter_GetDocumentBlock")
 				startTicks = System.DateTime.Now.Ticks
-				records = Me.ExportManager.RetrieveResultsBlock(Me.Settings.CaseInfo.ArtifactID, exportInitializationArgs.RunId, Me.Settings.ArtifactTypeID, allAvfIds.ToArray, Config.ExportBatchSize, Me.Settings.MulticodesAsNested, Me.Settings.MultiRecordDelimiter, Me.Settings.NestedValueDelimiter)
+				Dim textPrecedenceAvfIds As Int32() = Nothing
+				If Not Me.Settings.SelectedTextFields Is Nothing AndAlso Me.Settings.SelectedTextFields.Count > 0 Then textPrecedenceAvfIds = Me.Settings.SelectedTextFields.Select(Of Int32)(Function(f As ViewFieldInfo) f.AvfId).ToArray
+				records = Me.ExportManager.RetrieveResultsBlock(Me.Settings.CaseInfo.ArtifactID, exportInitializationArgs.RunId, Me.Settings.ArtifactTypeID, allAvfIds.ToArray, Config.ExportBatchSize, Me.Settings.MulticodesAsNested, Me.Settings.MultiRecordDelimiter, Me.Settings.NestedValueDelimiter, textPrecedenceAvfIds)
 				If records Is Nothing Then Exit While
 				If Me.Settings.TypeOfExport = ExportFile.ExportType.Production AndAlso production IsNot Nothing AndAlso production.DocumentsHaveRedactions Then
 					WriteStatusLineWithoutDocCount(kCura.Windows.Process.EventType.Warning, "Please Note - Documents in this production were produced with redactions applied.  Ensure that you have exported text that was generated via OCR of the redacted documents.", True)
@@ -448,6 +452,22 @@ Namespace kCura.WinEDDS
 				Me.Settings.ExportFullText = Me.Settings.ExportFullText OrElse field.Category = Relativity.FieldCategory.FullText
 			Next
 			_columns = New System.Collections.ArrayList(Me.Settings.SelectedViewFields)
+			If Not Me.Settings.SelectedTextFields Is Nothing AndAlso Me.Settings.SelectedTextFields.Count > 0 Then
+				Dim longTextSelectedViewFields As New List(Of ViewFieldInfo)()
+				longTextSelectedViewFields.AddRange(Me.Settings.SelectedViewFields.Where(Function(f As ViewFieldInfo) f.FieldType = Relativity.FieldTypeHelper.FieldType.Text))
+				If (Me.Settings.SelectedTextFields.Count = 1) AndAlso longTextSelectedViewFields.Exists(Function(f As ViewFieldInfo) f.Equals(Me.Settings.SelectedTextFields.First)) Then
+					Dim selectedViewFieldToRemove As ViewFieldInfo = longTextSelectedViewFields.Find(Function(f As ViewFieldInfo) f.Equals(Me.Settings.SelectedTextFields.First))
+					If selectedViewFieldToRemove IsNot Nothing Then
+						Dim indexOfSelectedViewFieldToRemove As Int32 = _columns.IndexOf(selectedViewFieldToRemove)
+						_columns.RemoveAt(indexOfSelectedViewFieldToRemove)
+						_columns.Insert(indexOfSelectedViewFieldToRemove, New CoalescedTextViewField(Me.Settings.SelectedTextFields.First, True))
+					Else
+						_columns.Add(New CoalescedTextViewField(Me.Settings.SelectedTextFields.First, False))
+					End If
+				Else
+					_columns.Add(New CoalescedTextViewField(Me.Settings.SelectedTextFields.First, False))
+				End If
+			End If
 			For i As Int32 = 0 To _columns.Count - 1
 				Dim field As ViewFieldInfo = DirectCast(_columns(i), ViewFieldInfo)
 				If _exportFile.LoadFileIsHtml Then

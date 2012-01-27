@@ -1,3 +1,4 @@
+
 Namespace kCura.WinEDDS
 
 	Public Class ImportLoadFileProcess
@@ -12,7 +13,36 @@ Namespace kCura.WinEDDS
 		Private WithEvents _newlineCounter As kCura.Utility.File.LineCounter
 		Private _hasRunPRocessComplete As Boolean = False
 		Private _uploadModeText As String = Nothing
-	
+
+		Private _disableUserSecutityCheck As Boolean
+		Private _disableNativeValidation As Boolean?
+		Private _disableNativeLocationValidation As Boolean?
+		Private _auditLevel As kCura.EDDS.WebAPI.BulkImportManagerBase.ImportAuditLevel = kCura.EDDS.WebAPI.BulkImportManagerBase.ImportAuditLevel.FullAudit
+
+		Public WriteOnly Property DisableNativeValidation As Boolean
+			Set(ByVal value As Boolean)
+				_disableNativeValidation = value
+			End Set
+		End Property
+
+		Public WriteOnly Property DisableNativeLocationValidation As Boolean
+			Set(ByVal value As Boolean)
+				_disableNativeLocationValidation = value
+			End Set
+		End Property
+
+		Public WriteOnly Property DisableUserSecurityCheck As Boolean
+			Set(ByVal value As Boolean)
+				_disableUserSecutityCheck = value
+			End Set
+		End Property
+
+		Public WriteOnly Property AuditLevel As kCura.EDDS.WebAPI.BulkImportManagerBase.ImportAuditLevel
+			Set(ByVal value As kCura.EDDS.WebAPI.BulkImportManagerBase.ImportAuditLevel)
+				_auditLevel = value
+			End Set
+		End Property
+
 		''' <summary>
 		''' Gets or sets the delimiter to use to separate fields in the bulk
 		''' file created in this process. Line delimiters will be this value plus a line feed.
@@ -39,6 +69,12 @@ Namespace kCura.WinEDDS
 			_warningCount = 0
 			_errorCount = 0
 			_loadFileImporter = Me.GetImporter()
+
+			If _disableNativeValidation.HasValue Then _loadFileImporter.DisableNativeValidation = _disableNativeValidation.Value
+			If _disableNativeLocationValidation.HasValue Then _loadFileImporter.DisableNativeLocationValidation = _disableNativeLocationValidation.Value
+			_loadFileImporter.AuditLevel = _auditLevel
+			_loadFileImporter.DisableUserSecurityCheck = _disableUserSecutityCheck
+
 			'_newlineCounter = New kCura.Utility.File.Instance.LineCounter
 			'_newlineCounter.Path = LoadFile.FilePath
 			Me.ProcessObserver.InputArgs = LoadFile.FilePath
@@ -132,7 +168,7 @@ Namespace kCura.WinEDDS
 			End Try
 		End Sub
 
-		Private Sub _loadFileImporter_FieldMapped(sourceField As String, workspaceField As String) Handles _loadFileImporter.FieldMapped
+		Private Sub _loadFileImporter_FieldMapped(ByVal sourceField As String, ByVal workspaceField As String) Handles _loadFileImporter.FieldMapped
 			Me.ProcessObserver.RaiseFieldMapped(sourceField, workspaceField)
 		End Sub
 

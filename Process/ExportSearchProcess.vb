@@ -19,6 +19,7 @@ Namespace kCura.WinEDDS
 				Me.ProcessObserver.RaiseProcessCompleteEvent(False, _searchExporter.ErrorLogFileName)
 			Else
 				Me.ProcessObserver.RaiseStatusEvent("", "Export completed")
+				Me.ProcessObserver.RaiseProcessCompleteEvent()
 			End If
 		End Sub
 

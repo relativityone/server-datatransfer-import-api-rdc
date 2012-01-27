@@ -11,13 +11,9 @@ Namespace kCura.WinEDDS
 #Region "Members"
 		Dim _start As System.DateTime
 		Private _imageReader As kCura.WinEDDS.Api.IImageReader
-		Protected _docManager As kCura.WinEDDS.Service.DocumentManager
 		Protected _fieldQuery As kCura.WinEDDS.Service.FieldQuery
-		Protected _folderManager As kCura.WinEDDS.Service.FolderManager
-		Protected _auditManager As kCura.WinEDDS.Service.AuditManager
 		Private WithEvents _fileUploader As kCura.WinEDDS.FileUploader
 		Private WithEvents _bcpuploader As kCura.WinEDDS.FileUploader
-		Protected _fileManager As kCura.WinEDDS.Service.FileManager
 		Protected _productionManager As kCura.WinEDDS.Service.ProductionManager
 		Protected _bulkImportManager As kCura.WinEDDS.Service.BulkImportManager
 		Private _folderID As Int32
@@ -43,7 +39,6 @@ Namespace kCura.WinEDDS
 		Private _caseInfo As Relativity.CaseInfo
 
 		Private WithEvents _processController As kCura.Windows.Process.Controller
-		Protected _productionDTO As kCura.EDDS.WebAPI.ProductionManagerBase.Production
 		Protected _keyFieldDto As kCura.EDDS.WebAPI.FieldManagerBase.Field
 		Private _bulkLoadFileWriter As System.IO.StreamWriter
 		Private _sourceTextEncoding As System.Text.Encoding = System.Text.Encoding.Default
@@ -72,6 +67,11 @@ Namespace kCura.WinEDDS
 #End Region
 
 #Region "Accessors"
+
+		Public Property DisableImageTypeValidation As Boolean = Config.DisableImageTypeValidation
+		Public Property DisableImageLocationValidation As Boolean = Config.DisableImageLocationValidation
+		Public Property DisableUserSecurityCheck As Boolean
+		Public Property AuditLevel As ImportAuditLevel = ImportAuditLevel.FullAudit
 
 		Public ReadOnly Property BatchSizeHistoryList As System.Collections.Generic.List(Of Int32)
 			Get
@@ -207,7 +207,6 @@ Namespace kCura.WinEDDS
 
 			' slm- 10/10/2011 - fixed both of these to check for ID greater than zero
 			If _productionArtifactID > 0 Then
-				_productionDTO = _productionManager.Read(args.CaseInfo.ArtifactID, _productionArtifactID)
 				_keyFieldDto = fieldManager.Read(args.CaseInfo.ArtifactID, args.BeginBatesFieldArtifactID)
 			ElseIf args.IdentityFieldId > 0 Then
 				_keyFieldDto = fieldManager.Read(args.CaseInfo.ArtifactID, args.IdentityFieldId)
@@ -218,11 +217,7 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Protected Overridable Sub InitializeManagers(ByVal args As ImageLoadFile)
-			_docManager = New kCura.WinEDDS.Service.DocumentManager(args.Credential, args.CookieContainer)
 			_fieldQuery = New kCura.WinEDDS.Service.FieldQuery(args.Credential, args.CookieContainer)
-			_folderManager = New kCura.WinEDDS.Service.FolderManager(args.Credential, args.CookieContainer)
-			_auditManager = New kCura.WinEDDS.Service.AuditManager(args.Credential, args.CookieContainer)
-			_fileManager = New kCura.WinEDDS.Service.FileManager(args.Credential, args.CookieContainer)
 			_productionManager = New kCura.WinEDDS.Service.ProductionManager(args.Credential, args.CookieContainer)
 			_bulkImportManager = New kCura.WinEDDS.Service.BulkImportManager(args.Credential, args.CookieContainer)
 		End Sub
@@ -268,7 +263,7 @@ Namespace kCura.WinEDDS
 					Exit While
 				Catch ex As Exception
 					tries -= 1
-					If tries = 0 OrElse ExceptionIsTimeoutRelated(ex) OrElse _continue = False OrElse ex.GetType = GetType(Service.BulkImportManager.BulkImportSqlException) Then
+					If tries = 0 OrElse ExceptionIsTimeoutRelated(ex) OrElse _continue = False OrElse ex.GetType = GetType(Service.BulkImportManager.BulkImportSqlException) OrElse ex.GetType = GetType(Relativity.InsufficientPermissionsForImportException) Then
 						Throw
 					Else
 						Me.RaiseWarningAndPause(ex, kCura.Utility.Config.Settings.IoErrorWaitTimeInSeconds)
@@ -277,14 +272,17 @@ Namespace kCura.WinEDDS
 			End While
 			Return retval
 		End Function
-
-
+		
 		Private Function BulkImport(ByVal overwrite As OverwriteType, ByVal useBulk As Boolean) As MassImportResults
 			Dim retval As MassImportResults
+			Dim settings As ImageLoadInfo = Me.GetSettingsObject
+			settings.UseBulkDataImport = useBulk
+			settings.Overlay = overwrite
+
 			If _productionArtifactID = 0 Then
-				retval = _bulkImportManager.BulkImportImage(_caseInfo.ArtifactID, _uploadKey, _replaceFullText, overwrite, _folderID, _repositoryPath, useBulk, _runId, _keyFieldDto.ArtifactID, _copyFilesToRepository)
+				retval = _bulkImportManager.BulkImportImage(_caseInfo.ArtifactID, settings, _copyFilesToRepository)
 			Else
-				retval = _bulkImportManager.BulkImportProductionImage(_caseInfo.ArtifactID, _uploadKey, _replaceFullText, overwrite, _folderID, _repositoryPath, _productionArtifactID, useBulk, _runId, _keyFieldDto.ArtifactID, _copyFilesToRepository)
+				retval = _bulkImportManager.BulkImportProductionImage(_caseInfo.ArtifactID, settings, _productionArtifactID, _copyFilesToRepository)
 			End If
 			Return retval
 		End Function
@@ -302,6 +300,20 @@ Namespace kCura.WinEDDS
 
 		Protected Function GetImageRecord() As Api.ImageRecord
 			Return _imageReader.GetImageRecord
+		End Function
+
+		Private Function GetSettingsObject() As kCura.EDDS.WebAPI.BulkImportManagerBase.ImageLoadInfo
+			Dim settings As New ImageLoadInfo With {
+			.RunID = _runId,
+			.DestinationFolderArtifactID = _folderID,
+			.BulkFileName = _uploadKey,
+			.KeyFieldArtifactID = _keyFieldDto.ArtifactID,
+			.Repository = _repositoryPath,
+			.UploadFullText = _replaceFullText,
+			.DisableUserSecurityCheck = Me.DisableUserSecurityCheck,
+			.AuditLevel = Me.AuditLevel
+			}
+			Return settings
 		End Function
 
 		Private Function TryPushImageBatch(ByVal bulkLoadFilePath As String, ByVal isFinal As Boolean) As Object
@@ -601,14 +613,14 @@ Namespace kCura.WinEDDS
 				If imageRecord.BatesNumber.Trim = "" Then
 					Me.RaiseStatusEvent(Windows.Process.EventType.Error, String.Format("No image file or identifier specified on line."), CType((_totalValidated + _totalProcessed) / 2, Int64), Me.CurrentLineNumber)
 					retval = Relativity.MassImport.ImportStatus.NoImageSpecifiedOnLine
-				ElseIf Not Config.DisableImageLocationValidation AndAlso Not System.IO.File.Exists(BulkImageFileImporter.GetFileLocation(imageRecord)) Then
+				ElseIf Not Me.DisableImageLocationValidation AndAlso Not System.IO.File.Exists(BulkImageFileImporter.GetFileLocation(imageRecord)) Then
 					Me.RaiseStatusEvent(Windows.Process.EventType.Error, String.Format("Image file specified ( {0} ) does not exist.", imageRecord.FileLocation), CType((_totalValidated + _totalProcessed) / 2, Int64), Me.CurrentLineNumber)
 					retval = Relativity.MassImport.ImportStatus.FileSpecifiedDne
 				Else
 					Dim validator As New kCura.ImageValidator.ImageValidator
 					Dim path As String = BulkImageFileImporter.GetFileLocation(imageRecord)
 					Try
-						If Not Config.DisableImageTypeValidation Then validator.ValidateImage(path)
+						If Not Me.DisableImageTypeValidation Then validator.ValidateImage(path)
 						Me.RaiseStatusEvent(Windows.Process.EventType.Progress, String.Format("Image file ( {0} ) validated.", imageRecord.FileLocation), CType((_totalValidated + _totalProcessed) / 2, Int64), Me.CurrentLineNumber)
 					Catch ex As System.Exception
 						If TypeOf ex Is kCura.ImageValidator.Exception.Base Then
@@ -799,7 +811,6 @@ Namespace kCura.WinEDDS
 				Throw
 			End Try
 		End Sub
-
 #End Region
 
 #Region "Events and Event Handling"
