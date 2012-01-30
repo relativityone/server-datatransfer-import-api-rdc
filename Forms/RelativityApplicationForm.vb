@@ -3,6 +3,7 @@ Imports System.Xml.Linq
 Imports System.Collections.Generic
 Imports System.ComponentModel
 Imports System.Linq
+Imports kCura.WinEDDS.Exceptions
 Imports Relativity.Applications.Serialization
 Imports Relativity.Applications.Serialization.Elements
 Imports kCura.EDDS.WinForm.Presentation.Controller
@@ -51,6 +52,7 @@ Namespace kCura.EDDS.WinForm
 		Friend WithEvents AppNotLoadedLabel As System.Windows.Forms.Label
 		Private _formState As FormUIState = FormUIState.General
 		Private _isAppAndCaseLoaded As Boolean = False
+		Dim _packageData As Byte()
 		Dim _app As RelativityApplicationElement
 		Private _appMappingData As kCura.EDDS.WebAPI.TemplateManagerBase.AppMappingData
 		Friend WithEvents NoTargetFieldsQualifyLabel As System.Windows.Forms.Label
@@ -699,13 +701,22 @@ Namespace kCura.EDDS.WinForm
 
 			MapFieldsLink.Visible = True
 
-			Dim document As Xml.XmlDocument = LoadFileIntoXML(_filename)
+			Dim pkgData As Byte() = Nothing
+			Dim document As Xml.XmlDocument = Nothing
+			Try
+				pkgData = System.IO.File.ReadAllBytes(_filename)
+				Dim pkgHelper As New PackageHelper()
+				document = pkgHelper.ExtractApplicationXML(pkgData, _filename)
+			Catch ex As System.Exception
+				'Eat the exception.  This sucks, but it's what the existing code did.
+			End Try
 			If Not document Is Nothing AndAlso LoadApplicationNameFromNode(document.SelectSingleNode("/Application/Name")) Then
 				LoadApplicationVersionFromNode(document.SelectSingleNode("/Application/Version"))
 				LoadApplicationTree(document)
 				LoadMappingControls(document)
 				WarnOnInvalidFieldGuids(_app)
 				_document = document
+				_packageData = pkgData
 			Else
 				MsgBox("Unable to refresh the loaded Relativity Application template file.", MsgBoxStyle.Exclamation, "Relativity Desktop Client")
 			End If
@@ -749,12 +760,20 @@ Namespace kCura.EDDS.WinForm
 
 			'Do the import
 			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
-			_Application.ImportApplicationFile(_caseInfos, _document, New Int32() {}, resolveArtifactCaseList.ToArray())
+			_Application.ImportApplicationFile(_caseInfos, _packageData, New Int32() {}, resolveArtifactCaseList.ToArray())
 			Me.Cursor = System.Windows.Forms.Cursors.Default
 		End Sub
 
 		Private Sub OpenFileDialog_FileOk(ByVal sender As Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles OpenFileDialog.FileOk
-			Dim document As Xml.XmlDocument = LoadFileIntoXML(OpenFileDialog.FileName)
+			Dim pkgData As Byte() = Nothing
+			Dim document As Xml.XmlDocument = Nothing
+			Try
+				pkgData = System.IO.File.ReadAllBytes(OpenFileDialog.FileName)
+				Dim pkgHelper As New PackageHelper()
+				document = pkgHelper.ExtractApplicationXML(pkgData, OpenFileDialog.FileName)
+			Catch ex As System.Exception
+				'Eat the exception.  This sucks, but it's what the existing code did.
+			End Try
 
 			Dim ErrorMsg As Action(Of String) = Sub(msg As String)
 																						e.Cancel = True
@@ -778,6 +797,7 @@ Namespace kCura.EDDS.WinForm
 
 				_filename = OpenFileDialog.FileName
 				_document = document
+				_packageData = pkgData
 				_isAppAndCaseLoaded = True
 				SetFormState(FormUIState.General)
 				RefreshAllData()
@@ -903,6 +923,8 @@ Namespace kCura.EDDS.WinForm
 				PopulateChildren(objNode, "ObjectRules", "ObjectRule", item)
 				PopulateChildren(objNode, "EventHandlers", "ActiveSync", item)
 			Next
+
+			'External Tabs
 			Dim externalTabsNode = ArtifactsTreeView.Nodes.Add("External Tabs")
 			externalTabsNode.NodeFont = boldfont
 			For Each item As XElement In doc...<ExternalTab>
@@ -918,6 +940,14 @@ Namespace kCura.EDDS.WinForm
 					scriptsNode.Nodes.Add(scriptItem.<Name>.Value)
 				End If
 			Next
+
+			'Custom Pages
+			Dim customPagesNode = ArtifactsTreeView.Nodes.Add("Custom Pages")
+			customPagesNode.NodeFont = boldfont
+			For Each item As XElement In doc...<CustomPage>
+				customPagesNode.Nodes.Add(item.<FileName>.Value)
+			Next
+
 			ArtifactsTreeView.EndUpdate()
 		End Sub
 
@@ -973,8 +1003,9 @@ Namespace kCura.EDDS.WinForm
 
 		Private Function LoadFileIntoXML(ByVal filePath As String) As Xml.XmlDocument
 			Try
-				Dim document As New Xml.XmlDocument
-				document.Load(filePath)
+				Dim pkgData As Byte() = System.IO.File.ReadAllBytes(filePath)
+				Dim pkgHelper As New PackageHelper()
+				Dim document As Xml.XmlDocument = pkgHelper.ExtractApplicationXML(pkgData, filePath)
 				Return document
 			Catch ex As Exception
 			End Try
