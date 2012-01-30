@@ -5,9 +5,9 @@ Namespace kCura.WinEDDS
 
 #Region " Constructors "
 
-		Public Sub New(ByVal appsToOverride As Int32(), ByVal resolveArtifacts()() As ResolveArtifact, ByVal application As Xml.XmlDocument, ByVal credential As Net.NetworkCredential, ByVal cookieContainer As Net.CookieContainer, ByVal caseInfos As Generic.IEnumerable(Of Relativity.CaseInfo))
+		Public Sub New(ByVal appsToOverride As Int32(), ByVal resolveArtifacts()() As ResolveArtifact, packageData As Byte(), ByVal credential As Net.NetworkCredential, ByVal cookieContainer As Net.CookieContainer, ByVal caseInfos As Generic.IEnumerable(Of Relativity.CaseInfo))
 			MyBase.New(Function(res As ApplicationInstallationResult) res.Message, Function(res As ApplicationInstallationResult) res.Details)
-			_application = application
+			_packageData = packageData
 			_appsToOverride = appsToOverride
 			_resolveArtifacts = resolveArtifacts
 			_credential = credential
@@ -40,7 +40,7 @@ Namespace kCura.WinEDDS
 						End If
 					End If
 
-					Dim installationResult As ApplicationInstallationResult = applicationDeploymentSystem.InstallTemplate(_appsToOverride, _application, installationParameters)
+					Dim installationResult As ApplicationInstallationResult = applicationDeploymentSystem.InstallTemplate(_appsToOverride, _packageData, installationParameters)
 					Dim tempArr As New System.Collections.Generic.List(Of ApplicationArtifact)(installationResult.StatusApplicationArtifacts)
 					If resolutionResult IsNot Nothing Then
 						tempArr.AddRange(resolutionResult.StatusApplicationArtifacts)
@@ -71,7 +71,7 @@ Namespace kCura.WinEDDS
 
 #Region " Private Fields "
 
-		Private _application As Xml.XmlDocument
+		Private _packageData As Byte()
 		Private _appsToOverride As Int32()
 		Private _resolveArtifacts As ResolveArtifact()()
 		Private _caseInfos As Generic.IEnumerable(Of Relativity.CaseInfo)

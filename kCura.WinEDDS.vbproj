@@ -233,6 +233,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Vendor\FreeImage\3.151\FreeImage\Wrapper\FreeImage.NET\cs\Deploy\x64\FreeImageNET.dll</HintPath>
     </Reference>
+    <Reference Include="Ionic.Zip">
+      <HintPath>..\..\Vendor\DotNetZipLib-DevKit-v1.8\DotNetZip-v1.8\Release\Ionic.Zip.dll</HintPath>
+    </Reference>
     <Reference Include="System">
       <Name>System</Name>
     </Reference>
@@ -437,11 +440,13 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Importers\OpticonFileReader.vb" />
+    <Compile Include="Exceptions\InvalidPackageException.vb" />
     <Compile Include="My Project\Settings.Designer.vb">
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
+    <Compile Include="PackageHelper.vb" />
     <Compile Include="Process\ApplicationDeploymentProcess.vb">
       <SubType>Code</SubType>
     </Compile>
