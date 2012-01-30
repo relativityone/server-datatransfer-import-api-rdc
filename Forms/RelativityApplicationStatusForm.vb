@@ -3,6 +3,7 @@ Imports System.Globalization
 Imports System.Collections
 Imports System.Collections.Generic
 Imports kCura.EDDS.WebAPI
+Imports System.Xml
 
 Public Class RelativityApplicationStatusForm
 	Inherits System.Windows.Forms.Form
@@ -69,7 +70,7 @@ Public Class RelativityApplicationStatusForm
 	Private ErrorMessageLink As String = "Relativity Applications documentation."
 	Private ErrorMessagePart2 As String = Environment.NewLine & Environment.NewLine & "The following errors occurred while importing the application:" & Environment.NewLine & Environment.NewLine
 
-	Private application As Xml.XmlDocument
+	Private _packageData As Byte()
 	Private credential As Net.NetworkCredential
 	Private cookieContainer As Net.CookieContainer
 	Private caseInfos As Generic.IEnumerable(Of Relativity.CaseInfo)
@@ -90,10 +91,9 @@ Public Class RelativityApplicationStatusForm
 		End Set
 	End Property
 
-	Public Sub New(ByVal app As Xml.XmlDocument, ByVal cred As Net.NetworkCredential, ByVal cookies As Net.CookieContainer, ByVal cases As Generic.IEnumerable(Of Relativity.CaseInfo))
+	Public Sub New(packageData As Byte(), ByVal cred As Net.NetworkCredential, ByVal cookies As Net.CookieContainer, ByVal cases As Generic.IEnumerable(Of Relativity.CaseInfo))
 		InitializeComponent()
-
-		application = app
+		_packageData = packageData
 		credential = cred
 		cookieContainer = cookies
 		caseInfos = cases
@@ -640,28 +640,28 @@ Public Class RelativityApplicationStatusForm
 		For Each row As DataGridViewRow In ArtifactStatusTable.Rows
 			Dim status As String = row.Cells(ArtifactStatusColumnName).Value.ToString()
 			If Not IsSuccess(status) Then
-			Dim cb As DataGridViewComboBoxCell = DirectCast(row.Cells("Resolution"), DataGridViewComboBoxCell)
-			Dim cbStr As String = DirectCast(cb.EditedFormattedValue, String)
-			Dim renamedText As String = Nothing
+				Dim cb As DataGridViewComboBoxCell = DirectCast(row.Cells("Resolution"), DataGridViewComboBoxCell)
+				Dim cbStr As String = DirectCast(cb.EditedFormattedValue, String)
+				Dim renamedText As String = Nothing
 
-			If String.IsNullOrEmpty(cbStr) Then retryEnabled = False : Exit For
+				If String.IsNullOrEmpty(cbStr) Then retryEnabled = False : Exit For
 
-			If String.Equals(cbStr, DropdownRenameInWorkspace, StringComparison.InvariantCulture) OrElse String.Equals(cbStr, DropdownRenameFriendlyNameInWorkspace, StringComparison.InvariantCulture) OrElse String.Equals(cbStr, DropdownRetryRename, StringComparison.InvariantCulture) Then
-				If TypeOf (row.Cells(ArtifactConflictNameColumnName)) Is DataGridViewTextBoxCell Then
-					renamedText = DirectCast(row.Cells(ArtifactConflictNameColumnName), DataGridViewTextBoxCell).EditedFormattedValue.ToString()
-				Else
-					renamedText = row.Cells(ArtifactConflictNameColumnName).Value.ToString()
-				End If
-				If String.IsNullOrEmpty(renamedText) OrElse String.Equals(renamedText, row.Cells(ArtifactNameColumnName).Value.ToString(), StringComparison.CurrentCultureIgnoreCase) Then
+				If String.Equals(cbStr, DropdownRenameInWorkspace, StringComparison.InvariantCulture) OrElse String.Equals(cbStr, DropdownRenameFriendlyNameInWorkspace, StringComparison.InvariantCulture) OrElse String.Equals(cbStr, DropdownRetryRename, StringComparison.InvariantCulture) Then
+					If TypeOf (row.Cells(ArtifactConflictNameColumnName)) Is DataGridViewTextBoxCell Then
+						renamedText = DirectCast(row.Cells(ArtifactConflictNameColumnName), DataGridViewTextBoxCell).EditedFormattedValue.ToString()
+					Else
+						renamedText = row.Cells(ArtifactConflictNameColumnName).Value.ToString()
+					End If
+					If String.IsNullOrEmpty(renamedText) OrElse String.Equals(renamedText, row.Cells(ArtifactNameColumnName).Value.ToString(), StringComparison.CurrentCultureIgnoreCase) Then
+						retryEnabled = False
+						Exit For
+					End If
+				ElseIf String.Equals(cbStr, DropdownUserMustResolve, StringComparison.InvariantCulture) Then
+					'Do nothing, no further validation for this resolution choice
+				ElseIf Not (String.Equals(cbStr, DropdownUnlock, StringComparison.InvariantCulture) OrElse String.Equals(cbStr, DropdownMap, StringComparison.InvariantCulture)) Then
 					retryEnabled = False
 					Exit For
 				End If
-			ElseIf String.Equals(cbStr, DropdownUserMustResolve, StringComparison.InvariantCulture) Then
-				'Do nothing, no further validation for this resolution choice
-			ElseIf Not (String.Equals(cbStr, DropdownUnlock, StringComparison.InvariantCulture) OrElse String.Equals(cbStr, DropdownMap, StringComparison.InvariantCulture)) Then
-				retryEnabled = False
-				Exit For
-			End If
 			End If
 
 		Next
@@ -792,7 +792,7 @@ Public Class RelativityApplicationStatusForm
 		workspaceTable.Rows(currentResultIndex).Item(workspaceAppsToUnlockColumnName) = GetAppsToOverride(DirectCast(workspaceTable.Rows(currentResultIndex).Item(workspaceAppsToUnlockColumnName), Generic.List(Of Int32)))
 		Dim resArts() As TemplateManagerBase.ResolveArtifact = GetResolveArtifacts()
 
-		Dim applicationDeploymentProcess As New kCura.WinEDDS.ApplicationDeploymentProcess(DirectCast(workspaceTable.Rows(currentResultIndex).Item(workspaceAppsToUnlockColumnName), Generic.List(Of Int32)).ToArray, {resArts}, application, Me.credential, Me.cookieContainer, {caseInfos(currentResultIndex)})
+		Dim applicationDeploymentProcess As New kCura.WinEDDS.ApplicationDeploymentProcess(DirectCast(workspaceTable.Rows(currentResultIndex).Item(workspaceAppsToUnlockColumnName), Generic.List(Of Int32)).ToArray, {resArts}, _packageData, Me.credential, Me.cookieContainer, {caseInfos(currentResultIndex)})
 		Me.observer = applicationDeploymentProcess.ProcessObserver
 
 		InformationText.Text = "Importing..."
@@ -930,7 +930,7 @@ Public Class RelativityApplicationStatusForm
 
 	Private Function IsSuccess(ByVal status As String) As Boolean
 		Return (String.Equals(status, TemplateManagerBase.StatusCode.Updated.ToString(), StringComparison.InvariantCulture) OrElse String.Equals(status, TemplateManagerBase.StatusCode.Created.ToString(), StringComparison.InvariantCulture) _
-  OrElse String.Equals(status, TemplateManagerBase.StatusCode.Renamed.ToString(), StringComparison.InvariantCulture) OrElse String.Equals(status, TemplateManagerBase.StatusCode.Mapped.ToString(), StringComparison.InvariantCulture))
+		OrElse String.Equals(status, TemplateManagerBase.StatusCode.Renamed.ToString(), StringComparison.InvariantCulture) OrElse String.Equals(status, TemplateManagerBase.StatusCode.Mapped.ToString(), StringComparison.InvariantCulture))
 	End Function
 
 	Private Sub SetButtonVisibility()
