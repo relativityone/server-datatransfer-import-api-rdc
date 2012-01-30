@@ -18,7 +18,6 @@ Namespace kCura.WinEDDS
 					If Not _configDictionary.Contains("ExportBatchSize") Then _configDictionary.Add("ExportBatchSize", "1000")
 					If Not _configDictionary.Contains("EnableSingleModeImport") Then _configDictionary.Add("EnableSingleModeImport", "False")
 					If Not _configDictionary.Contains("CreateErrorForEmptyNativeFile") Then _configDictionary.Add("CreateErrorForEmptyNativeFile", "False")
-					If Not _configDictionary.Contains("DisableUserSecurityCheck") Then _configDictionary.Add("DisableUserSecurityCheck", "False")
 					If Not _configDictionary.Contains("AuditLevel") Then _configDictionary.Add("AuditLevel", "FullAudit")
 				End If
 				Return _configDictionary
@@ -206,12 +205,6 @@ Namespace kCura.WinEDDS
 		Public Shared ReadOnly Property CreateErrorForEmptyNativeFile() As Boolean
 			Get
 				Return CType(ConfigSettings("CreateErrorForEmptyNativeFile"), Boolean)
-			End Get
-		End Property
-
-		Public Shared ReadOnly Property DisableUserSecurityCheck() As Boolean
-			Get
-				Return CType(ConfigSettings("DisableUserSecurityCheck"), Boolean)
 			End Get
 		End Property
 

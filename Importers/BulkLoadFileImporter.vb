@@ -77,7 +77,7 @@ Namespace kCura.WinEDDS
 
 		Public Property DisableNativeValidation As Boolean = Config.DisableNativeValidation
 		Public Property DisableNativeLocationValidation As Boolean = Config.DisableNativeLocationValidation
-		Public Property DisableUserSecurityCheck As Boolean = WinEDDS.Config.DisableUserSecurityCheck
+		Public Property DisableUserSecurityCheck As Boolean
 		Public Property AuditLevel As kCura.EDDS.WebAPI.BulkImportManagerBase.ImportAuditLevel = WinEDDS.Config.AuditLevel
 
 		Public ReadOnly Property BatchSizeHistoryList As System.Collections.Generic.List(Of Int32)

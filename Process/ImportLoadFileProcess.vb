@@ -14,7 +14,7 @@ Namespace kCura.WinEDDS
 		Private _hasRunPRocessComplete As Boolean = False
 		Private _uploadModeText As String = Nothing
 
-		Private _disableUserSecutityCheck As Boolean = Config.DisableUserSecurityCheck
+		Private _disableUserSecutityCheck As Boolean
 		Private _disableNativeValidation As Boolean?
 		Private _disableNativeLocationValidation As Boolean?
 		Private _auditLevel As kCura.EDDS.WebAPI.BulkImportManagerBase.ImportAuditLevel = Config.AuditLevel
