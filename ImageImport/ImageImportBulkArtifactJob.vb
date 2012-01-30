@@ -45,8 +45,7 @@ Namespace kCura.Relativity.DataReaderClient
 		''' <value>FullAudit: default auditing
 		''' NoSnapshot: no audit details for updates
 		''' NoAudit: auditing is disabled</value>
-		Public Property AuditLevel As kCura.EDDS.WebAPI.BulkImportManagerBase.ImportAuditLevel = EDDS.WebAPI.BulkImportManagerBase.ImportAuditLevel.FullAudit
-
+		Public Property AuditLevel As kCura.EDDS.WebAPI.BulkImportManagerBase.ImportAuditLevel = WinEDDS.Config.AuditLevel
 		Public Property Settings As ImageSettings
 			Get
 				Return _settings
