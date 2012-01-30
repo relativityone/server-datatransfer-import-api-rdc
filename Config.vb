@@ -127,8 +127,15 @@ Namespace kCura.WinEDDS
 			'NOTE: This is here for validation; an improper URI will cause this to throw an
 			' exception. We set it then to 'Nothing' to avoid a warning-turned-error about
 			' having an unused variable. -Phil S. 12/05/2011
-			Dim uriObj As Uri = New Uri(returnValue)
-			uriObj = Nothing
+			' fixed 1/24/2012 - slm - return an empty string if invalid uri format.  this will cause the 
+			' rdc to pop up its dialog prompting the user to enter a valid address
+
+			Try
+				Dim uriObj As Uri = New Uri(returnValue)
+				uriObj = Nothing
+			Catch
+				returnValue = String.Empty
+			End Try
 
 			Return returnValue
 		End Function
