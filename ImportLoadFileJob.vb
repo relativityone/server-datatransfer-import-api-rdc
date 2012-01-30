@@ -494,7 +494,7 @@ Namespace kCura.Relativity.DataReaderClient
 		''' </summary>
 		''' <value>True: security checks are disabled
 		''' False: security checks are enabled</value>
-		Public Property DisableUserSecurityCheck As Boolean
+		Public Property DisableUserSecurityCheck As Boolean = WinEDDS.Config.DisableUserSecurityCheck
 
 		''' <summary>
 		''' Allows to set AuditLevel used during import
@@ -502,7 +502,7 @@ Namespace kCura.Relativity.DataReaderClient
 		''' <value>		FullAudit - default
 		'''           NoSnapshot - audit is recored but not auditDetails
 		'''           NoAudit - no audit at all</value>
-		Public Property AuditLevel As kCura.EDDS.WebAPI.BulkImportManagerBase.ImportAuditLevel = kCura.EDDS.WebAPI.BulkImportManagerBase.ImportAuditLevel.FullAudit
+		Public Property AuditLevel As kCura.EDDS.WebAPI.BulkImportManagerBase.ImportAuditLevel = WinEDDS.Config.AuditLevel
 
 
 #End Region

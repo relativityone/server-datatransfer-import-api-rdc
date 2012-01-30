@@ -37,7 +37,7 @@ Namespace kCura.Relativity.DataReaderClient
 		''' </summary>
 		''' <value>True: security checks are disabled
 		''' False: security checks are enabled</value>
-		Public Property DisableUserSecurityCheck As Boolean
+		Public Property DisableUserSecurityCheck As Boolean = WinEDDS.Config.DisableUserSecurityCheck
 
 		''' <summary>
 		''' Sets the level of auditing for the import job
