@@ -945,7 +945,7 @@ Namespace kCura.EDDS.WinForm
 			Dim customPagesNode = ArtifactsTreeView.Nodes.Add("Custom Pages")
 			customPagesNode.NodeFont = boldfont
 			For Each item As XElement In doc...<CustomPage>
-				customPagesNode.Nodes.Add(item.<FileName>.Value)
+				customPagesNode.Nodes.Add(item.<Name>.Value)
 			Next
 
 			ArtifactsTreeView.EndUpdate()
