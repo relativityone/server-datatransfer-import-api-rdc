@@ -166,6 +166,61 @@
       <s:element name="CreateNativesResponse">
         <s:complexType />
       </s:element>
+      <s:element name="GetHeight">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
+            <s:element minOccurs="0" maxOccurs="1" name="guid" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetHeightResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="GetHeightResult" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetWidth">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
+            <s:element minOccurs="0" maxOccurs="1" name="guid" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetWidthResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="GetWidthResult" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="DeleteImagesByGuidForDocument">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="documentArtifactId" type="s:int" />
+            <s:element minOccurs="0" maxOccurs="1" name="guidList" type="tns:ArrayOfString" />
+            <s:element minOccurs="0" maxOccurs="1" name="imageOrder" type="tns:ArrayOfInt" />
+            <s:element minOccurs="0" maxOccurs="1" name="documentIdentifier" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="DeleteImagesByGuidForDocumentResponse">
+        <s:complexType />
+      </s:element>
+      <s:element name="Delete">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
+            <s:element minOccurs="0" maxOccurs="1" name="guid" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="DeleteResponse">
+        <s:complexType />
+      </s:element>
       <s:element name="GetRotation">
         <s:complexType>
           <s:sequence>
@@ -311,6 +366,30 @@
   <wsdl:message name="CreateNativesSoapOut">
     <wsdl:part name="parameters" element="tns:CreateNativesResponse" />
   </wsdl:message>
+  <wsdl:message name="GetHeightSoapIn">
+    <wsdl:part name="parameters" element="tns:GetHeight" />
+  </wsdl:message>
+  <wsdl:message name="GetHeightSoapOut">
+    <wsdl:part name="parameters" element="tns:GetHeightResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetWidthSoapIn">
+    <wsdl:part name="parameters" element="tns:GetWidth" />
+  </wsdl:message>
+  <wsdl:message name="GetWidthSoapOut">
+    <wsdl:part name="parameters" element="tns:GetWidthResponse" />
+  </wsdl:message>
+  <wsdl:message name="DeleteImagesByGuidForDocumentSoapIn">
+    <wsdl:part name="parameters" element="tns:DeleteImagesByGuidForDocument" />
+  </wsdl:message>
+  <wsdl:message name="DeleteImagesByGuidForDocumentSoapOut">
+    <wsdl:part name="parameters" element="tns:DeleteImagesByGuidForDocumentResponse" />
+  </wsdl:message>
+  <wsdl:message name="DeleteSoapIn">
+    <wsdl:part name="parameters" element="tns:Delete" />
+  </wsdl:message>
+  <wsdl:message name="DeleteSoapOut">
+    <wsdl:part name="parameters" element="tns:DeleteResponse" />
+  </wsdl:message>
   <wsdl:message name="GetRotationSoapIn">
     <wsdl:part name="parameters" element="tns:GetRotation" />
   </wsdl:message>
@@ -381,6 +460,22 @@
     <wsdl:operation name="CreateNatives">
       <wsdl:input message="tns:CreateNativesSoapIn" />
       <wsdl:output message="tns:CreateNativesSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetHeight">
+      <wsdl:input message="tns:GetHeightSoapIn" />
+      <wsdl:output message="tns:GetHeightSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetWidth">
+      <wsdl:input message="tns:GetWidthSoapIn" />
+      <wsdl:output message="tns:GetWidthSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="DeleteImagesByGuidForDocument">
+      <wsdl:input message="tns:DeleteImagesByGuidForDocumentSoapIn" />
+      <wsdl:output message="tns:DeleteImagesByGuidForDocumentSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="Delete">
+      <wsdl:input message="tns:DeleteSoapIn" />
+      <wsdl:output message="tns:DeleteSoapOut" />
     </wsdl:operation>
     <wsdl:operation name="GetRotation">
       <wsdl:input message="tns:GetRotationSoapIn" />
@@ -469,6 +564,42 @@
     </wsdl:operation>
     <wsdl:operation name="CreateNatives">
       <soap:operation soapAction="http://www.kCura.com/EDDS/FileManager/CreateNatives" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetHeight">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/FileManager/GetHeight" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetWidth">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/FileManager/GetWidth" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="DeleteImagesByGuidForDocument">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/FileManager/DeleteImagesByGuidForDocument" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Delete">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/FileManager/Delete" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -598,6 +729,42 @@
     </wsdl:operation>
     <wsdl:operation name="CreateNatives">
       <soap12:operation soapAction="http://www.kCura.com/EDDS/FileManager/CreateNatives" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetHeight">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/FileManager/GetHeight" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetWidth">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/FileManager/GetWidth" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="DeleteImagesByGuidForDocument">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/FileManager/DeleteImagesByGuidForDocument" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Delete">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/FileManager/Delete" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>

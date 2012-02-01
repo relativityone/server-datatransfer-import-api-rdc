@@ -948,8 +948,9 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
         
         Private objectFileNameField As String
         
-        Private onBehalfOfMasterUserIdField As System.Nullable(Of Integer)
         Private disableUserSecurityCheckField As Boolean
+        
+        Private onBehalfOfMasterUserIdField As System.Nullable(Of Integer)
         
         Private auditLevelField As ImportAuditLevel
         
@@ -1056,8 +1057,17 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
         End Property
         
         '''<remarks/>
-        <System.Xml.Serialization.XmlElementAttribute(IsNullable:=true)>  _
         Public Property DisableUserSecurityCheck() As Boolean
+            Get
+                Return Me.disableUserSecurityCheckField
+            End Get
+            Set
+                Me.disableUserSecurityCheckField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        <System.Xml.Serialization.XmlElementAttribute(IsNullable:=true)>  _
         Public Property OnBehalfOfMasterUserId() As System.Nullable(Of Integer)
             Get
                 Return Me.onBehalfOfMasterUserIdField
