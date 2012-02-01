@@ -71,7 +71,7 @@ Namespace kCura.WinEDDS
 		Public Property DisableImageTypeValidation As Boolean = Config.DisableImageTypeValidation
 		Public Property DisableImageLocationValidation As Boolean = Config.DisableImageLocationValidation
 		Public Property DisableUserSecurityCheck As Boolean
-		Public Property AuditLevel As ImportAuditLevel = ImportAuditLevel.FullAudit
+		Public Property AuditLevel As ImportAuditLevel = Config.AuditLevel
 
 		Public ReadOnly Property BatchSizeHistoryList As System.Collections.Generic.List(Of Int32)
 			Get

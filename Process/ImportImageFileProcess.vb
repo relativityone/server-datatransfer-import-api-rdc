@@ -11,7 +11,7 @@ Namespace kCura.WinEDDS
 		Private _uploadModeText As String = Nothing
 
 		Private _disableUserSecurityCheck As Boolean
-		Private _importAuditLevel As kCura.EDDS.WebAPI.BulkImportManagerBase.ImportAuditLevel = EDDS.WebAPI.BulkImportManagerBase.ImportAuditLevel.FullAudit
+		Private _importAuditLevel As kCura.EDDS.WebAPI.BulkImportManagerBase.ImportAuditLevel = WinEDDS.Config.AuditLevel
 		Private _disableImageTypeValidation As Boolean?
 		Private _disableImageLocationValidation As Boolean?
 

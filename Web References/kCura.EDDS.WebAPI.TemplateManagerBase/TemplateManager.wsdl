@@ -81,13 +81,7 @@
         <s:complexType>
           <s:sequence>
             <s:element minOccurs="0" maxOccurs="1" name="appsToOverride" type="tns:ArrayOfInt" />
-            <s:element minOccurs="0" maxOccurs="1" name="template">
-              <s:complexType mixed="true">
-                <s:sequence>
-                  <s:any />
-                </s:sequence>
-              </s:complexType>
-            </s:element>
+            <s:element minOccurs="0" maxOccurs="1" name="packageData" type="s:base64Binary" />
             <s:element minOccurs="0" maxOccurs="1" name="installationParameters" type="tns:ApplicationInstallationParameters" />
           </s:sequence>
         </s:complexType>
@@ -151,6 +145,7 @@
           <s:enumeration value="View" />
           <s:enumeration value="Script" />
           <s:enumeration value="Instance" />
+          <s:enumeration value="CustomPage" />
         </s:restriction>
       </s:simpleType>
       <s:simpleType name="StatusCode">

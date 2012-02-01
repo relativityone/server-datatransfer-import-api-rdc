@@ -18,6 +18,7 @@ Namespace kCura.WinEDDS
 					If Not _configDictionary.Contains("ExportBatchSize") Then _configDictionary.Add("ExportBatchSize", "1000")
 					If Not _configDictionary.Contains("EnableSingleModeImport") Then _configDictionary.Add("EnableSingleModeImport", "False")
 					If Not _configDictionary.Contains("CreateErrorForEmptyNativeFile") Then _configDictionary.Add("CreateErrorForEmptyNativeFile", "False")
+					If Not _configDictionary.Contains("AuditLevel") Then _configDictionary.Add("AuditLevel", "FullAudit")
 				End If
 				Return _configDictionary
 			End Get
@@ -125,8 +126,15 @@ Namespace kCura.WinEDDS
 			'NOTE: This is here for validation; an improper URI will cause this to throw an
 			' exception. We set it then to 'Nothing' to avoid a warning-turned-error about
 			' having an unused variable. -Phil S. 12/05/2011
-			Dim uriObj As Uri = New Uri(returnValue)
-			uriObj = Nothing
+			' fixed 1/24/2012 - slm - return an empty string if invalid uri format.  this will cause the 
+			' rdc to pop up its dialog prompting the user to enter a valid address
+
+			Try
+				Dim uriObj As Uri = New Uri(returnValue)
+				uriObj = Nothing
+			Catch
+				returnValue = String.Empty
+			End Try
 
 			Return returnValue
 		End Function
@@ -204,6 +212,12 @@ Namespace kCura.WinEDDS
 		Public Shared ReadOnly Property CreateErrorForEmptyNativeFile() As Boolean
 			Get
 				Return CType(ConfigSettings("CreateErrorForEmptyNativeFile"), Boolean)
+			End Get
+		End Property
+
+		Public Shared ReadOnly Property AuditLevel() As kCura.EDDS.WebAPI.BulkImportManagerBase.ImportAuditLevel
+			Get
+				Return DirectCast([Enum].Parse(GetType(kCura.EDDS.WebAPI.BulkImportManagerBase.ImportAuditLevel), CStr(ConfigSettings("AuditLevel"))), kCura.EDDS.WebAPI.BulkImportManagerBase.ImportAuditLevel)
 			End Get
 		End Property
 

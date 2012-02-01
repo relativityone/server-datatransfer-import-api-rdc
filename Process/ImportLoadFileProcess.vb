@@ -17,7 +17,7 @@ Namespace kCura.WinEDDS
 		Private _disableUserSecutityCheck As Boolean
 		Private _disableNativeValidation As Boolean?
 		Private _disableNativeLocationValidation As Boolean?
-		Private _auditLevel As kCura.EDDS.WebAPI.BulkImportManagerBase.ImportAuditLevel = kCura.EDDS.WebAPI.BulkImportManagerBase.ImportAuditLevel.FullAudit
+		Private _auditLevel As kCura.EDDS.WebAPI.BulkImportManagerBase.ImportAuditLevel = Config.AuditLevel
 
 		Public WriteOnly Property DisableNativeValidation As Boolean
 			Set(ByVal value As Boolean)
