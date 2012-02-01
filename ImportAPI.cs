@@ -28,6 +28,8 @@ namespace kCura.Relativity.ImportAPI
 		private ObjectTypeManager _objectTypeManager;
 		private ProductionManager _productionManager;
 
+		public CookieContainer CookieCache  { get { return _cookieMonster; } }
+		public ICredentials Credentials { get { return _credentials; } }
 		/// <summary>
 		/// Create an instance of ImportAPI.  Username and Password are required (unless using windows auth), and will be validated.
 		/// </summary>
