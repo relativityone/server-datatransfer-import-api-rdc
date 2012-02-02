@@ -30,6 +30,7 @@ namespace kCura.Relativity.ImportAPI
 
 		public CookieContainer CookieCache  { get { return _cookieMonster; } }
 		public ICredentials Credentials { get { return _credentials; } }
+
 		/// <summary>
 		/// Create an instance of ImportAPI.  Username and Password are required (unless using windows auth), and will be validated.
 		/// </summary>
@@ -73,6 +74,17 @@ namespace kCura.Relativity.ImportAPI
 		{
 			Config.ProgrammaticServiceURL = WebServiceURL;
 			PerformLogin(UserName, Password);
+		}
+
+		/// <summary>
+		/// Create an instance of ImportAPI. This is for the use of WinAuth and the user will be validated
+		/// against the Relativity WebAPI instance located at <paramref name="WebServiceURL"/>.
+		/// </summary>
+		/// <param name="WebServiceURL"></param>
+		public ImportAPI(String WebServiceURL)
+		{
+			Config.ProgrammaticServiceURL = WebServiceURL;
+			this.PerformLogin(null, null);
 		}
 
 		/// <summary>
