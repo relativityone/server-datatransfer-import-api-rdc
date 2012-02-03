@@ -120,5 +120,7 @@
 		''' '
 		''' </summary>
 		Public Property StartRecordNumber() As Int64
+
+		Public Property Credential As System.Net.NetworkCredential
 	End Class
 End Namespace

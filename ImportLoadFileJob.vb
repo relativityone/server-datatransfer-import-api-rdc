@@ -242,7 +242,12 @@ Namespace kCura.Relativity.DataReaderClient
 
 
 		Private Function MapInputToSettingsFactory(ByVal clientSettings As Settings) As WinEDDS.DynamicObjectSettingsFactory
-			Dim dosf_settings As kCura.WinEDDS.DynamicObjectSettingsFactory = New kCura.WinEDDS.DynamicObjectSettingsFactory(clientSettings.RelativityUsername, clientSettings.RelativityPassword, clientSettings.CaseArtifactId, clientSettings.ArtifactTypeId)
+			Dim dosf_settings As kCura.WinEDDS.DynamicObjectSettingsFactory = Nothing
+			If clientSettings.Credential Is Nothing Then
+				dosf_settings = New kCura.WinEDDS.DynamicObjectSettingsFactory(clientSettings.RelativityUsername, clientSettings.RelativityPassword, clientSettings.CaseArtifactId, clientSettings.ArtifactTypeId)
+			Else
+				dosf_settings = New kCura.WinEDDS.DynamicObjectSettingsFactory(clientSettings.Credential, clientSettings.CaseArtifactId, clientSettings.ArtifactTypeId)
+			End If
 			_docIDFieldCollection = dosf_settings.DocumentIdentifierFields
 
 			With dosf_settings
