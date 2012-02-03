@@ -84,7 +84,7 @@ namespace kCura.Relativity.ImportAPI
 		public ImportAPI(String WebServiceURL)
 		{
 			Config.ProgrammaticServiceURL = WebServiceURL;
-			this.PerformLogin(null, null);
+			this.PerformLogin("A","B");
 		}
 
 		/// <summary>
@@ -277,7 +277,6 @@ namespace kCura.Relativity.ImportAPI
 			ICredentials credentials = null;
 
 			credentials = kCura.WinEDDS.Api.LoginHelper.LoginWindowsAuth(_cookieMonster);
-
 			if (credentials == null)
 			{
 				credentials = kCura.WinEDDS.Api.LoginHelper.LoginUsernamePassword(_userName, _password, _cookieMonster);
