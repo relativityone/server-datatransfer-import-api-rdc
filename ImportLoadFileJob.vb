@@ -42,6 +42,9 @@ Namespace kCura.Relativity.DataReaderClient
 
 #End Region
 
+		Public Property OnBehalfOfUserMasterId As Int32? = Nothing
+
+
 #Region "Events"
 		Public Event OnMessage(ByVal status As Status)
 		Public Event OnError(ByVal row As IDictionary)
@@ -61,7 +64,7 @@ Namespace kCura.Relativity.DataReaderClient
 
 				RaiseEvent OnMessage(New Status("Getting source data from database"))
 
-				Dim process As WinEDDS.ImportExtension.DataReaderImporterProcess = New WinEDDS.ImportExtension.DataReaderImporterProcess(SourceData.SourceData)
+				Dim process As WinEDDS.ImportExtension.DataReaderImporterProcess = New WinEDDS.ImportExtension.DataReaderImporterProcess(SourceData.SourceData) With {.OnBehalfOfUserMasterId = Me.OnBehalfOfUserMasterId}
 				_observer = process.ProcessObserver
 				_controller = process.ProcessController
 
