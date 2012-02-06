@@ -13,6 +13,9 @@ Namespace kCura.WinEDDS.ImportExtension
 			BulkLoadFileFieldDelimiter = Relativity.Constants.DEFAULT_FIELD_DELIMITER
 		End Sub
 
+		Public Property OnBehalfOfUserMasterId As Int32? = Nothing
+
+
 		Private Function AddColumnIndexToName(ByVal dr As System.Data.IDataReader, ByVal columnName As String) As String
 			'function: convert [columnName] to [columnName]([index]) if [columnName] is a column in DR.  Example: FileLocation -> FileLocation(3)
 			'*Note: I want the result to be a 1-based index. DR uses a 0-based index.  Computers, man, computers.
@@ -30,7 +33,7 @@ Namespace kCura.WinEDDS.ImportExtension
 		End Function
 
 		Public Overrides Function GetImporter() As kCura.WinEDDS.BulkLoadFileImporter
-			Dim temp As DataReaderImporter = New DataReaderImporter(DirectCast(Me.LoadFile, kCura.WinEDDS.ImportExtension.DataReaderLoadFile), ProcessController, BulkLoadFileFieldDelimiter)
+			Dim temp As DataReaderImporter = New DataReaderImporter(DirectCast(Me.LoadFile, kCura.WinEDDS.ImportExtension.DataReaderLoadFile), ProcessController, BulkLoadFileFieldDelimiter) With {.OnBehalfOfUserMasterId = Me.OnBehalfOfUserMasterId}
 			Dim dr As System.Data.IDataReader = temp.SourceData
 			'These settings need to have [columnName]([index])
 			LoadFile.FolderStructureContainedInColumn = AddColumnIndexToName(dr, LoadFile.FolderStructureContainedInColumn)

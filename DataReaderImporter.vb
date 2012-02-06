@@ -5,7 +5,7 @@ Namespace kCura.WinEDDS.ImportExtension
 		Inherits kCura.WinEDDS.BulkLoadFileImporter
 
 		Private _sourceReader As System.Data.IDataReader
-
+		Public Property OnBehalfOfUserMasterId() As Int32? = Nothing
 		''' <summary>
 		''' Constructs a new importer that loads the provided <paramref name="loadFile" />
 		''' and responds to events fired on the provided <paramref name="controller" />.
@@ -19,6 +19,10 @@ Namespace kCura.WinEDDS.ImportExtension
 		''' delimiter followed by a new line.</param>
 		Public Sub New(ByVal loadFile As kCura.WinEDDS.ImportExtension.DataReaderLoadFile, ByVal controller As kCura.Windows.Process.Controller, ByVal bulkLoadFileFieldDelimiter As String)
 			MyBase.New(loadFile, controller, 0, True, System.Guid.NewGuid, True, bulkLoadFileFieldDelimiter)
+		End Sub
+
+		Overrides Sub OnSettingsObjectCreate(settings As kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo)
+			settings.OnBehalfOfMasterUserId = Me.OnBehalfOfUserMasterId
 		End Sub
 
 		Protected Overrides Function GetArtifactReader() As kCura.WinEDDS.Api.IArtifactReader
