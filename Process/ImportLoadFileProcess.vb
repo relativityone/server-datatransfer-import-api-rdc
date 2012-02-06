@@ -43,6 +43,7 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
+
 		''' <summary>
 		''' Gets or sets the delimiter to use to separate fields in the bulk
 		''' file created in this process. Line delimiters will be this value plus a line feed.
