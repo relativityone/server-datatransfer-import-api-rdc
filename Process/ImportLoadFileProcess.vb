@@ -142,6 +142,7 @@ Namespace kCura.WinEDDS
 			If Not e.AdditionalInfo Is Nothing Then statisticsDictionary = DirectCast(e.AdditionalInfo, IDictionary)
 			Select Case e.EventType
 				Case kCura.Windows.Process.EventType.End
+					Me.ProcessObserver.RaiseRecordProcessed(e.CurrentRecordIndex)
 					Me.ProcessObserver.RaiseProgressEvent(e.TotalRecords, e.CurrentRecordIndex, _warningCount, _errorCount, _startTime, System.DateTime.Now, Nothing, Nothing, statisticsDictionary)
 					Me.ProcessObserver.RaiseStatusEvent(e.CurrentRecordIndex.ToString, e.Message)
 				Case kCura.Windows.Process.EventType.Error
