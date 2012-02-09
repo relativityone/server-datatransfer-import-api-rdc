@@ -84,7 +84,7 @@ namespace kCura.Relativity.ImportAPI
 		public ImportAPI(String WebServiceURL)
 		{
 			Config.ProgrammaticServiceURL = WebServiceURL;
-			this.PerformLogin("A","B");
+			this.PerformLogin("","");
 		}
 
 		/// <summary>
