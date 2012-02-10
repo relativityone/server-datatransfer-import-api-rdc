@@ -7,6 +7,14 @@
 		End Sub
 
 		''' <summary>
+		''' Sets the level of auditing for the import job
+		''' </summary>
+		''' <value>FullAudit: default auditing
+		''' NoSnapshot: no audit details for updates
+		''' NoAudit: auditing is disabled</value>
+		Public Property AuditLevel As kCura.EDDS.WebAPI.BulkImportManagerBase.ImportAuditLevel = WinEDDS.Config.AuditLevel
+
+		''' <summary>
 		''' ArtifactId of the destination Relativity workspace ('workspace' = 'case')
 		''' </summary>
 		Public Property CaseArtifactId() As Int32
@@ -36,6 +44,13 @@
 		''' '
 		''' </summary>
 		Public Property DestinationFolderArtifactID() As Int32
+
+		''' <summary>
+		''' Enables or disables user permission checks per image
+		''' </summary>
+		''' <value>True: security checks are disabled
+		''' False: security checks are enabled</value>
+		Public Property DisableUserSecurityCheck As Boolean
 
 		''' <summary>
 		''' Sets the encoding of the extracted text files

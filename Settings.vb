@@ -30,6 +30,22 @@ Namespace kCura.Relativity.DataReaderClient
 		Public Property DisableControlNumberCompatibilityMode() As Boolean
 
 		''' <summary>
+		''' Enables or disables native location validation for the current job
+		''' </summary>
+		''' <value>True: validation is disabled
+		''' False: validation is enabled
+		''' Nothing: validation will use the pre-configured value</value>
+		Public Property DisableNativeLocationValidation As Boolean?
+
+		''' <summary>
+		''' Enables or disables native validation for the current job
+		''' </summary>
+		''' <value>True: validation is disabled
+		''' False: validation is enabled
+		''' Nothing: validation will use the pre-configured value</value>
+		Public Property DisableNativeValidation As Boolean?
+
+		''' <summary>
 		''' Field name that contains ???
 		''' </summary>
 		Public Property FolderPathSourceFieldName() As String
@@ -48,6 +64,8 @@ Namespace kCura.Relativity.DataReaderClient
 		''' Delimiter to separate nested values such as choices and child choices on a multi-choice field
 		''' </summary>
 		Public Property NestedValueDelimiter() As Char
+
+		Public Property OnBehalfOfUserMasterId As Int32? = Nothing
 
 		'TODO: This shouldn't be used as a progress indicator in ImportBulkArtifactJob
 		' -Phil S. 10/04/11

@@ -42,9 +42,6 @@ Namespace kCura.Relativity.DataReaderClient
 
 #End Region
 
-		Public Property OnBehalfOfUserMasterId As Int32? = Nothing
-
-
 #Region "Events"
 		Public Event OnMessage(ByVal status As Status)
 		Public Event OnError(ByVal row As IDictionary)
@@ -64,14 +61,14 @@ Namespace kCura.Relativity.DataReaderClient
 
 				RaiseEvent OnMessage(New Status("Getting source data from database"))
 
-				Dim process As WinEDDS.ImportExtension.DataReaderImporterProcess = New WinEDDS.ImportExtension.DataReaderImporterProcess(SourceData.SourceData) With {.OnBehalfOfUserMasterId = Me.OnBehalfOfUserMasterId}
+				Dim process As WinEDDS.ImportExtension.DataReaderImporterProcess = New WinEDDS.ImportExtension.DataReaderImporterProcess(SourceData.SourceData) With {.OnBehalfOfUserMasterId = Settings.OnBehalfOfUserMasterId}
 				_observer = process.ProcessObserver
 				_controller = process.ProcessController
 
-				If DisableNativeValidation.HasValue Then process.DisableNativeValidation = DisableNativeValidation.Value
-				If DisableNativeLocationValidation.HasValue Then process.DisableNativeLocationValidation = DisableNativeLocationValidation.Value
-				process.DisableUserSecurityCheck = Me.DisableUserSecurityCheck
-				process.AuditLevel = Me.AuditLevel
+				If Settings.DisableNativeValidation.HasValue Then process.DisableNativeValidation = Settings.DisableNativeValidation.Value
+				If Settings.DisableNativeLocationValidation.HasValue Then process.DisableNativeLocationValidation = Settings.DisableNativeLocationValidation.Value
+				process.DisableUserSecurityCheck = Settings.DisableUserSecurityCheck
+				process.AuditLevel = Settings.AuditLevel
 
 				RaiseEvent OnMessage(New Status("Updating settings"))
 				process.LoadFile = CreateLoadFile(Settings)
@@ -480,39 +477,6 @@ Namespace kCura.Relativity.DataReaderClient
 				_nativeDataReader = value
 			End Set
 		End Property
-
-		''' <summary>
-		''' Enables or disables native validation for the current job
-		''' </summary>
-		''' <value>True: validation is disabled
-		''' False: validation is enabled
-		''' Nothing: validation will use the pre-configured value</value>
-		Public Property DisableNativeValidation As Boolean?
-
-		''' <summary>
-		''' Enables or disables native location validation for the current job
-		''' </summary>
-		''' <value>True: validation is disabled
-		''' False: validation is enabled
-		''' Nothing: validation will use the pre-configured value</value>
-		Public Property DisableNativeLocationValidation As Boolean?
-
-		''' <summary>
-		''' Enables or disables user permission checks per document or object
-		''' </summary>
-		''' <value>True: security checks are disabled
-		''' False: security checks are enabled</value>
-		Public Property DisableUserSecurityCheck As Boolean
-
-		''' <summary>
-		''' Allows to set AuditLevel used during import
-		''' </summary>
-		''' <value>		FullAudit - default
-		'''           NoSnapshot - audit is recored but not auditDetails
-		'''           NoAudit - no audit at all</value>
-		Public Property AuditLevel As kCura.EDDS.WebAPI.BulkImportManagerBase.ImportAuditLevel = WinEDDS.Config.AuditLevel
-
-
 #End Region
 
 	End Class

@@ -1,51 +1,17 @@
-Imports System.Runtime.CompilerServices
 Imports System.Net
 
 
 Namespace kCura.Relativity.DataReaderClient
-
 	Public Class ImageImportBulkArtifactJob
 		Implements IImportNotifier
 
-
 #Region " Public Events and Variables "
-
 		Public Event OnMessage(ByVal status As Status)
 		Public Event OnError(ByVal row As IDictionary)
 		Public Event OnComplete(ByVal jobReport As JobReport) Implements IImportNotifier.OnComplete
 		Public Event OnFatalException(ByVal jobReport As JobReport) Implements IImportNotifier.OnFatalException
 		Public Event OnProgress(ByVal completedRow As Long) Implements IImportNotifier.OnProgress
 
-		''' <summary>
-		''' Enables or disables image type validation for the current job
-		''' </summary>
-		''' <value>True: validation is disabled
-		''' False: validation is enabled
-		''' Nothing: validation will use the pre-configured value</value>
-		Public Property DisableImageTypeValidation As Boolean?
-
-		''' <summary>
-		''' Enables or disables image location validation for the current job
-		''' </summary>
-		''' <value>True: validation is disabled
-		''' False: validation is enabled
-		''' Nothing: validation will use the pre-configured value</value>
-		Public Property DisableImageLocationValidation As Boolean?
-
-		''' <summary>
-		''' Enables or disables user permission checks per image
-		''' </summary>
-		''' <value>True: security checks are disabled
-		''' False: security checks are enabled</value>
-		Public Property DisableUserSecurityCheck As Boolean
-
-		''' <summary>
-		''' Sets the level of auditing for the import job
-		''' </summary>
-		''' <value>FullAudit: default auditing
-		''' NoSnapshot: no audit details for updates
-		''' NoAudit: auditing is disabled</value>
-		Public Property AuditLevel As kCura.EDDS.WebAPI.BulkImportManagerBase.ImportAuditLevel = WinEDDS.Config.AuditLevel
 		Public Property Settings As ImageSettings
 			Get
 				Return _settings
@@ -56,8 +22,6 @@ Namespace kCura.Relativity.DataReaderClient
 			End Set
 		End Property
 
-
-
 		Public Property SourceData As ImageSourceIDataReader
 			Get
 				Return _sourceData
@@ -67,7 +31,6 @@ Namespace kCura.Relativity.DataReaderClient
 				_sourceData = value
 			End Set
 		End Property
-
 #End Region
 
 #Region " Private variables "
@@ -78,11 +41,9 @@ Namespace kCura.Relativity.DataReaderClient
 		Private _credentials As ICredentials
 		Private _cookieMonster As Net.CookieContainer
 		Private _jobReport As JobReport
-
 #End Region
 
 #Region " Public Methods "
-
 		Public Sub New()
 			_settings = New ImageSettings
 			_sourceData = New ImageSourceIDataReader
@@ -98,9 +59,6 @@ Namespace kCura.Relativity.DataReaderClient
 
 		End Sub
 
-
-
-
 		Public Sub Execute()
 			_jobReport = New JobReport()
 			_jobReport.StartTime = DateTime.Now()
@@ -114,10 +72,10 @@ Namespace kCura.Relativity.DataReaderClient
 				_observer = process.ProcessObserver
 				_controller = process.ProcessController
 
-				If DisableImageTypeValidation.HasValue Then process.DisableImageTypeValidation = Me.DisableImageTypeValidation.Value
-				If DisableImageLocationValidation.HasValue Then process.DisableImageLocationValidation = Me.DisableImageLocationValidation.Value
-				process.DisableUserSecurityCheck = Me.DisableUserSecurityCheck
-				process.AuditLevel = Me.AuditLevel
+				If Settings.DisableImageTypeValidation.HasValue Then process.DisableImageTypeValidation = Settings.DisableImageTypeValidation.Value
+				If Settings.DisableImageLocationValidation.HasValue Then process.DisableImageLocationValidation = Settings.DisableImageLocationValidation.Value
+				process.DisableUserSecurityCheck = Settings.DisableUserSecurityCheck
+				process.AuditLevel = Settings.AuditLevel
 
 				RaiseEvent OnMessage(New Status("Updating settings"))
 				process.ImageLoadFile = Me.CreateLoadFile()
@@ -251,7 +209,6 @@ Namespace kCura.Relativity.DataReaderClient
 #End Region
 
 #Region " Validation "
-
 		Private Function IsSettingsValid() As Boolean
 			Try
 				'	ValidateSqlCommandSettings()
@@ -301,11 +258,9 @@ Namespace kCura.Relativity.DataReaderClient
 				Throw New ImportSettingsException("ProductionArtifactID", "When specifying a production import, the ProductionArtifactID must be set.")
 			End If
 		End Sub
-
 #End Region
 
 #Region " Event Handling "
-
 		Private Sub _observer_ErrorReportEvent(ByVal row As System.Collections.IDictionary) Handles _observer.ErrorReportEvent
 			RaiseEvent OnError(row)
 

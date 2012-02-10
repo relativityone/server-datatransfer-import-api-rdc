@@ -54,6 +54,22 @@ Namespace kCura.Relativity.DataReaderClient
 		Public Property BeginBatesFieldArtifactID() As Int32
 
 		''' <summary>
+		''' Enables or disables image location validation for the current job
+		''' </summary>
+		''' <value>True: validation is disabled
+		''' False: validation is enabled
+		''' Nothing: validation will use the pre-configured value</value>
+		Public Property DisableImageLocationValidation As Boolean?
+
+		''' <summary>
+		''' Enables or disables image type validation for the current job
+		''' </summary>
+		''' <value>True: validation is disabled
+		''' False: validation is enabled
+		''' Nothing: validation will use the pre-configured value</value>
+		Public Property DisableImageTypeValidation As Boolean?
+
+		''' <summary>
 		''' Name of the field in the data source corresponding to the DocumentIdentifier field
 		''' </summary>
 		Public Property DocumentIdentifierField() As String
