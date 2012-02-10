@@ -3,7 +3,7 @@
 Namespace kCura.EDDS.WinForm.Tests
 	<TestFixture()> Public Class TextFieldPrecedencePicker
 
-		Private _queryFieldFactory As New kCura.WinEDDS.Tests.TestObjectFactories.QueryFieldFactory()
+		Private _queryFieldFactory As New kCura.WinEDDS.NUnit.TestObjectFactories.QueryFieldFactory()
 
 #Region " setting available fields "
 

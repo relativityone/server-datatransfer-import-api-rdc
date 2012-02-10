@@ -203,9 +203,9 @@
       <Project>{86550F4B-BEF4-4458-9536-7B5C6F68B0E2}</Project>
       <Name>kCura.WinEDDS.ImportExtension</Name>
     </ProjectReference>
-    <ProjectReference Include="..\kCura.WinEDDS.Tests\kCura.WinEDDS.Tests.vbproj">
+    <ProjectReference Include="..\kCura.WinEDDS.NUnit\kCura.WinEDDS.NUnit.vbproj">
       <Project>{048E9473-082F-4053-9070-2868CC8DBBA6}</Project>
-      <Name>kCura.WinEDDS.Tests</Name>
+      <Name>kCura.WinEDDS.NUnit</Name>
     </ProjectReference>
     <ProjectReference Include="..\kCura.WinEDDS.UIControls\kCura.WinEDDS.UIControls.vbproj">
       <Project>{C3B9ECF5-48A9-4B5A-AF9E-016AF3C097F9}</Project>

@@ -6,7 +6,7 @@ Namespace kCura.EDDS.WinForm.Tests
 	<TestFixture()>
 	Public Class ExportForm
 		Private _form As Global.ExportForm
-		Private _queryFieldFactory As New kCura.WinEDDS.Tests.TestObjectFactories.QueryFieldFactory()
+		Private _queryFieldFactory As New kCura.WinEDDS.NUnit.TestObjectFactories.QueryFieldFactory()
 		Private _filtersDataTable As New DataTable()
 
 		<SetUp()> Public Sub SetUp()
