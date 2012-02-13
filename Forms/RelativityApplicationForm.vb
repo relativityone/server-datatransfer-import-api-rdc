@@ -75,7 +75,7 @@ Namespace kCura.EDDS.WinForm
 
 			'Add any initialization after the InitializeComponent() call
 			OpenFileDialog = New OpenFileDialog
-			OpenFileDialog.Filter = "XML Files (*.xml)|*.xml|Relativity Application Packages (*.rap)|*.rap"
+			OpenFileDialog.Filter = "Relativity Applications (*.xml;*.rap)|*.xml;*.rap"
 			OpenFileDialog.InitialDirectory = IO.Path.Combine(IO.Path.GetDirectoryName(System.Windows.Forms.Application.ExecutablePath), "Applications")
 			OpenFileDialog.CheckFileExists = True
 			OpenFileDialog.CheckPathExists = True
