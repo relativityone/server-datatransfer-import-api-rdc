@@ -193,9 +193,13 @@ namespace kCura.Relativity.ImportAPI
 		{
 			return NewNativeDocumentImportJob(null);
 		}
+
 		public ImportBulkArtifactJob NewNativeDocumentImportJob(Int32? onBehalfOfUserMasterId)
 		{
-			return new ImportBulkArtifactJob(_userName, _password) {OnBehalfOfUserMasterId = onBehalfOfUserMasterId};
+			var importJob = new ImportBulkArtifactJob(_userName, _password);
+			importJob.Settings.OnBehalfOfUserMasterId = onBehalfOfUserMasterId;
+
+			return importJob;
 		}
 
 		/// <summary>
