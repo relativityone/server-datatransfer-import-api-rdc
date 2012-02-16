@@ -48,6 +48,12 @@
       <s:element name="LogoutResponse">
         <s:complexType />
       </s:element>
+      <s:element name="ClearCookiesBeforeLogin">
+        <s:complexType />
+      </s:element>
+      <s:element name="ClearCookiesBeforeLoginResponse">
+        <s:complexType />
+      </s:element>
       <s:element name="Login">
         <s:complexType>
           <s:sequence>
@@ -160,6 +166,12 @@
   <wsdl:message name="LogoutSoapOut">
     <wsdl:part name="parameters" element="tns:LogoutResponse" />
   </wsdl:message>
+  <wsdl:message name="ClearCookiesBeforeLoginSoapIn">
+    <wsdl:part name="parameters" element="tns:ClearCookiesBeforeLogin" />
+  </wsdl:message>
+  <wsdl:message name="ClearCookiesBeforeLoginSoapOut">
+    <wsdl:part name="parameters" element="tns:ClearCookiesBeforeLoginResponse" />
+  </wsdl:message>
   <wsdl:message name="LoginSoapIn">
     <wsdl:part name="parameters" element="tns:Login" />
   </wsdl:message>
@@ -216,6 +228,10 @@
     <wsdl:operation name="Logout">
       <wsdl:input message="tns:LogoutSoapIn" />
       <wsdl:output message="tns:LogoutSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ClearCookiesBeforeLogin">
+      <wsdl:input message="tns:ClearCookiesBeforeLoginSoapIn" />
+      <wsdl:output message="tns:ClearCookiesBeforeLoginSoapOut" />
     </wsdl:operation>
     <wsdl:operation name="Login">
       <wsdl:input message="tns:LoginSoapIn" />
@@ -282,6 +298,15 @@
     </wsdl:operation>
     <wsdl:operation name="Logout">
       <soap:operation soapAction="http://www.kCura.com/EDDS/UserManager/Logout" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ClearCookiesBeforeLogin">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/UserManager/ClearCookiesBeforeLogin" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -384,6 +409,15 @@
     </wsdl:operation>
     <wsdl:operation name="Logout">
       <soap12:operation soapAction="http://www.kCura.com/EDDS/UserManager/Logout" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ClearCookiesBeforeLogin">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/UserManager/ClearCookiesBeforeLogin" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>

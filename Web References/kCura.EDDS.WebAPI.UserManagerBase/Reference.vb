@@ -42,6 +42,8 @@ Namespace kCura.EDDS.WebAPI.UserManagerBase
         
         Private LogoutOperationCompleted As System.Threading.SendOrPostCallback
         
+        Private ClearCookiesBeforeLoginOperationCompleted As System.Threading.SendOrPostCallback
+        
         Private LoginOperationCompleted As System.Threading.SendOrPostCallback
         
         Private LoginWithAuthenticationTokenOperationCompleted As System.Threading.SendOrPostCallback
@@ -106,6 +108,9 @@ Namespace kCura.EDDS.WebAPI.UserManagerBase
         
         '''<remarks/>
         Public Event LogoutCompleted As LogoutCompletedEventHandler
+        
+        '''<remarks/>
+        Public Event ClearCookiesBeforeLoginCompleted As ClearCookiesBeforeLoginCompletedEventHandler
         
         '''<remarks/>
         Public Event LoginCompleted As LoginCompletedEventHandler
@@ -302,6 +307,42 @@ Namespace kCura.EDDS.WebAPI.UserManagerBase
             If (Not (Me.LogoutCompletedEvent) Is Nothing) Then
                 Dim invokeArgs As System.Web.Services.Protocols.InvokeCompletedEventArgs = CType(arg,System.Web.Services.Protocols.InvokeCompletedEventArgs)
                 RaiseEvent LogoutCompleted(Me, New System.ComponentModel.AsyncCompletedEventArgs(invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState))
+            End If
+        End Sub
+        
+        '''<remarks/>
+        <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/UserManager/ClearCookiesBeforeLogin", RequestNamespace:="http://www.kCura.com/EDDS/UserManager", ResponseNamespace:="http://www.kCura.com/EDDS/UserManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
+        Public Sub ClearCookiesBeforeLogin()
+            Me.Invoke("ClearCookiesBeforeLogin", New Object(-1) {})
+        End Sub
+        
+        '''<remarks/>
+        Public Function BeginClearCookiesBeforeLogin(ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("ClearCookiesBeforeLogin", New Object(-1) {}, callback, asyncState)
+        End Function
+        
+        '''<remarks/>
+        Public Sub EndClearCookiesBeforeLogin(ByVal asyncResult As System.IAsyncResult)
+            Me.EndInvoke(asyncResult)
+        End Sub
+        
+        '''<remarks/>
+        Public Overloads Sub ClearCookiesBeforeLoginAsync()
+            Me.ClearCookiesBeforeLoginAsync(Nothing)
+        End Sub
+        
+        '''<remarks/>
+        Public Overloads Sub ClearCookiesBeforeLoginAsync(ByVal userState As Object)
+            If (Me.ClearCookiesBeforeLoginOperationCompleted Is Nothing) Then
+                Me.ClearCookiesBeforeLoginOperationCompleted = AddressOf Me.OnClearCookiesBeforeLoginOperationCompleted
+            End If
+            Me.InvokeAsync("ClearCookiesBeforeLogin", New Object(-1) {}, Me.ClearCookiesBeforeLoginOperationCompleted, userState)
+        End Sub
+        
+        Private Sub OnClearCookiesBeforeLoginOperationCompleted(ByVal arg As Object)
+            If (Not (Me.ClearCookiesBeforeLoginCompletedEvent) Is Nothing) Then
+                Dim invokeArgs As System.Web.Services.Protocols.InvokeCompletedEventArgs = CType(arg,System.Web.Services.Protocols.InvokeCompletedEventArgs)
+                RaiseEvent ClearCookiesBeforeLoginCompleted(Me, New System.ComponentModel.AsyncCompletedEventArgs(invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState))
             End If
         End Sub
         
@@ -571,6 +612,10 @@ Namespace kCura.EDDS.WebAPI.UserManagerBase
     '''<remarks/>
     <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.0.30319.1")>  _
     Public Delegate Sub LogoutCompletedEventHandler(ByVal sender As Object, ByVal e As System.ComponentModel.AsyncCompletedEventArgs)
+    
+    '''<remarks/>
+    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.0.30319.1")>  _
+    Public Delegate Sub ClearCookiesBeforeLoginCompletedEventHandler(ByVal sender As Object, ByVal e As System.ComponentModel.AsyncCompletedEventArgs)
     
     '''<remarks/>
     <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.0.30319.1")>  _
