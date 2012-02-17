@@ -1451,8 +1451,6 @@ Namespace kCura.EDDS.WinForm
 			Dim relativityManager As New kCura.WinEDDS.Service.RelativityManager(cred, _cookieContainer)
 			Try
 				CheckVersion(cred)
-				'ClearCookiesBeforeLogin call MUST be made before Login web method is called
-				userManager.ClearCookiesBeforeLogin()
 				If userManager.Login(cred.UserName, cred.Password) Then
 
 					Dim locale As New System.Globalization.CultureInfo(System.Globalization.CultureInfo.CurrentCulture.LCID, True)
