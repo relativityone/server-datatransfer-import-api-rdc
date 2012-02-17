@@ -15,6 +15,8 @@ Namespace kCura.WinEDDS.Service
 		Public Shadows Function Login(ByVal emailAddress As String, ByVal password As String) As Boolean
 			If kCura.WinEDDS.Config.UsesWebAPI Then
 				Try
+					'ClearCookiesBeforeLogin call MUST be made before Login web method is called
+					MyBase.ClearCookiesBeforeLogin()
 					Return MyBase.Login(emailAddress, password)
 				Catch ex As System.Exception
 					Throw
