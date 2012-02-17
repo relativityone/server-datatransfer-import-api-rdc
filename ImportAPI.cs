@@ -196,10 +196,10 @@ namespace kCura.Relativity.ImportAPI
 			return NewNativeDocumentImportJob(null);
 		}
 
-		public ImportBulkArtifactJob NewNativeDocumentImportJob(string onBehalfOfUserMasterId)
+		public ImportBulkArtifactJob NewNativeDocumentImportJob(int? onBehalfOfUserMasterId)
 		{
 			var importJob = new ImportBulkArtifactJob(_userName, _password);
-			importJob.Settings.OnBehalfOfUserMasterId = DecryptUserIdHash(onBehalfOfUserMasterId);
+			importJob.Settings.OnBehalfOfUserMasterId = onBehalfOfUserMasterId;
 
 			return importJob;
 		}
@@ -330,33 +330,6 @@ namespace kCura.Relativity.ImportAPI
 			}
 
 			return returnUploadType;
-		}
-
-		private int DecryptUserIdHash(string str)
-		{
-			return Convert.ToInt32(Decrypt(str, "&%#@ ,:*"));
-		}
-
-		private string Decrypt(string strText, string strEncrypt)
-		{
-			byte[] bKey = new byte[20];
-			byte[] IV = { 0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD, 0xEF };
-			try
-			{
-				bKey = System.Text.Encoding.UTF8.GetBytes(strEncrypt.Substring(0, 8));
-				DESCryptoServiceProvider des = new DESCryptoServiceProvider();
-				Byte[] inputByteArray = inputByteArray = Convert.FromBase64String(strText);
-				MemoryStream ms = new MemoryStream();
-				CryptoStream cs = new CryptoStream(ms, des.CreateDecryptor(bKey, IV), CryptoStreamMode.Write);
-				cs.Write(inputByteArray, 0, inputByteArray.Length);
-				cs.FlushFinalBlock();
-				System.Text.Encoding encoding = System.Text.Encoding.UTF8;
-				return encoding.GetString(ms.ToArray());
-			}
-			catch (Exception ex)
-			{
-				throw ex;
-			}
 		}
 
 #endregion
