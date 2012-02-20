@@ -1074,7 +1074,7 @@ Namespace kCura.EDDS.WinForm.Tests
 		<Test()> Public Sub LoadExportFile_NamedAfter_Production()
 			Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {.AppendOriginalFileName = False, .ExportNativesToFileNamedFrom = kCura.WinEDDS.ExportNativeWithFilenameFrom.Production}
 			_form.LoadExportFile(ef)
-			Assert.AreEqual("Begin bates", _form._nativeFileNameSource.SelectedItem.ToString)
+			Assert.AreEqual("Begin production number", _form._nativeFileNameSource.SelectedItem.ToString)
 		End Sub
 
 #End Region
