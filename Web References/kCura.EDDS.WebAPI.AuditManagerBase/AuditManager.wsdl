@@ -226,6 +226,20 @@
           </s:sequence>
         </s:complexType>
       </s:element>
+      <s:element name="GetUserIdByGuid">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="token" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetUserIdByGuidResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="GetUserIdByGuidResult" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
     </s:schema>
     <s:schema elementFormDefault="qualified" targetNamespace="http://microsoft.com/wsdl/types/">
       <s:simpleType name="char">
@@ -257,6 +271,12 @@
   <wsdl:message name="AuditExportSoapOut">
     <wsdl:part name="parameters" element="tns:AuditExportResponse" />
   </wsdl:message>
+  <wsdl:message name="GetUserIdByGuidSoapIn">
+    <wsdl:part name="parameters" element="tns:GetUserIdByGuid" />
+  </wsdl:message>
+  <wsdl:message name="GetUserIdByGuidSoapOut">
+    <wsdl:part name="parameters" element="tns:GetUserIdByGuidResponse" />
+  </wsdl:message>
   <wsdl:portType name="AuditManagerSoap">
     <wsdl:operation name="CreateAuditRecord">
       <wsdl:input message="tns:CreateAuditRecordSoapIn" />
@@ -273,6 +293,10 @@
     <wsdl:operation name="AuditExport">
       <wsdl:input message="tns:AuditExportSoapIn" />
       <wsdl:output message="tns:AuditExportSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetUserIdByGuid">
+      <wsdl:input message="tns:GetUserIdByGuidSoapIn" />
+      <wsdl:output message="tns:GetUserIdByGuidSoapOut" />
     </wsdl:operation>
   </wsdl:portType>
   <wsdl:binding name="AuditManagerSoap" type="tns:AuditManagerSoap">
@@ -313,6 +337,15 @@
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="GetUserIdByGuid">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/AuditManager/GetUserIdByGuid" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
   </wsdl:binding>
   <wsdl:binding name="AuditManagerSoap12" type="tns:AuditManagerSoap">
     <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
@@ -345,6 +378,15 @@
     </wsdl:operation>
     <wsdl:operation name="AuditExport">
       <soap12:operation soapAction="http://www.kCura.com/EDDS/AuditManager/AuditExport" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetUserIdByGuid">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/AuditManager/GetUserIdByGuid" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
