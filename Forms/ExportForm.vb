@@ -314,7 +314,7 @@ Public Class ExportForm
 		'_nativeFileNameSource
 		'
 		Me._nativeFileNameSource.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
-		Me._nativeFileNameSource.Items.AddRange(New Object() {"Select...", "Identifier", "Begin bates"})
+		Me._nativeFileNameSource.Items.AddRange(New Object() {"Select...", "Identifier", "Begin production number"})
 		Me._nativeFileNameSource.Location = New System.Drawing.Point(116, 18)
 		Me._nativeFileNameSource.Name = "_nativeFileNameSource"
 		Me._nativeFileNameSource.Size = New System.Drawing.Size(176, 21)
@@ -1384,7 +1384,7 @@ Public Class ExportForm
 			Case kCura.WinEDDS.ExportNativeWithFilenameFrom.Identifier
 				_nativeFileNameSource.SelectedItem = "Identifier"
 			Case kCura.WinEDDS.ExportNativeWithFilenameFrom.Production
-				_nativeFileNameSource.SelectedItem = "Begin bates"
+				_nativeFileNameSource.SelectedItem = "Begin production number"
 			Case kCura.WinEDDS.ExportNativeWithFilenameFrom.Select
 				_nativeFileNameSource.SelectedItem = "Select..."
 		End Select
