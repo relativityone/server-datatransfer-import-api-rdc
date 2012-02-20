@@ -196,11 +196,18 @@ namespace kCura.Relativity.ImportAPI
 			return NewNativeDocumentImportJob(null);
 		}
 
-		public ImportBulkArtifactJob NewNativeDocumentImportJob(int? onBehalfOfUserMasterId)
+		public ImportBulkArtifactJob NewNativeDocumentImportJob(string token)
 		{
 			var importJob = new ImportBulkArtifactJob(_userName, _password);
-			importJob.Settings.OnBehalfOfUserMasterId = onBehalfOfUserMasterId;
+			int? userId = null;
 
+			if (token != null || token != string.Empty)
+			{
+				var auditManager = new kCura.EDDS.WebAPI.AuditManagerBase.AuditManager();	
+				userId = auditManager.GetUserIdByGuid(token);
+			}
+
+			importJob.Settings.OnBehalfOfUserMasterId = userId;
 			return importJob;
 		}
 
