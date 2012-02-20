@@ -528,6 +528,14 @@ Namespace kCura.EDDS.WebAPI.ProductionManagerBase
         
         Private restrictionOverrideOnField As System.Nullable(Of Date)
         
+        Private documentNumberPageNumberSeparatorField As String
+        
+        Private numberOfDigitsForPageNumberingField As Integer
+        
+        Private useDocumentLevelNumberingField As Boolean
+        
+        Private includeImageLevelNumberingForDocumentLevelNumberingField As Boolean
+        
         '''<remarks/>
         Public Property Name() As String
             Get
@@ -984,6 +992,46 @@ Namespace kCura.EDDS.WebAPI.ProductionManagerBase
             End Get
             Set
                 Me.restrictionOverrideOnField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property DocumentNumberPageNumberSeparator() As String
+            Get
+                Return Me.documentNumberPageNumberSeparatorField
+            End Get
+            Set
+                Me.documentNumberPageNumberSeparatorField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property NumberOfDigitsForPageNumbering() As Integer
+            Get
+                Return Me.numberOfDigitsForPageNumberingField
+            End Get
+            Set
+                Me.numberOfDigitsForPageNumberingField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property UseDocumentLevelNumbering() As Boolean
+            Get
+                Return Me.useDocumentLevelNumberingField
+            End Get
+            Set
+                Me.useDocumentLevelNumberingField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property IncludeImageLevelNumberingForDocumentLevelNumbering() As Boolean
+            Get
+                Return Me.includeImageLevelNumberingForDocumentLevelNumberingField
+            End Get
+            Set
+                Me.includeImageLevelNumberingForDocumentLevelNumberingField = value
             End Set
         End Property
     End Class

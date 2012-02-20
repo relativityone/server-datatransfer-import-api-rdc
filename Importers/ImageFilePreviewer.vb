@@ -138,7 +138,7 @@ Namespace kCura.WinEDDS
 				retval = valuearray(Columns.DocumentArtifactID)
 				Return retval
 			Catch ex As IndexOutOfRangeException
-				Me.RaiseStatusEvent(Windows.Process.EventType.Error, "Invalid line format - Bates number specified in line.")
+				Me.RaiseStatusEvent(Windows.Process.EventType.Error, "Invalid line format - production number specified in line.")
 				Return ""
 			End Try
 		End Function
