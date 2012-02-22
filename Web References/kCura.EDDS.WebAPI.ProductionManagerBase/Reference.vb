@@ -444,7 +444,7 @@ Namespace kCura.EDDS.WebAPI.ProductionManagerBase
         
         Private beginBatesFieldArtifactIDField As Integer
         
-        Private endBatesFieldArtifactIDField As Integer
+        Private endBatesFieldArtifactIDField As System.Nullable(Of Integer)
         
         Private attachmentIdentifierFieldArtifactIDField As System.Nullable(Of Integer)
         
@@ -557,7 +557,8 @@ Namespace kCura.EDDS.WebAPI.ProductionManagerBase
         End Property
         
         '''<remarks/>
-        Public Property EndBatesFieldArtifactID() As Integer
+        <System.Xml.Serialization.XmlElementAttribute(IsNullable:=true)>  _
+        Public Property EndBatesFieldArtifactID() As System.Nullable(Of Integer)
             Get
                 Return Me.endBatesFieldArtifactIDField
             End Get
