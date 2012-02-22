@@ -37,6 +37,9 @@ Namespace kCura.WinEDDS
 		Private _warningCount As Int32 = 0
 		Private _errorCount As Int32 = 0
 		Private _fileCount As Int64 = 0
+		Private _productionExportProduction As kCura.EDDS.WebAPI.ProductionManagerBase.Production
+		Private _productionLookup As New System.Collections.Generic.Dictionary(Of Int32, kCura.EDDS.WebAPI.ProductionManagerBase.Production)
+
 #End Region
 
 #Region "Accessors"
@@ -150,6 +153,7 @@ Namespace kCura.WinEDDS
 			Dim production As kCura.EDDS.WebAPI.ProductionManagerBase.Production = Nothing
 			If Me.Settings.TypeOfExport = ExportFile.ExportType.Production Then
 				production = _productionManager.Read(Me.Settings.CaseArtifactID, Me.Settings.ArtifactID)
+				_productionExportProduction = production
 				With _fieldManager.Read(Me.Settings.CaseArtifactID, production.BeginBatesFieldArtifactID)
 					_beginBatesColumn = Relativity.SqlNameHelper.GetSqlFriendlyName(.DisplayName)
 					If Not allAvfIds.Contains(.ArtifactViewFieldID) Then allAvfIds.Add(.ArtifactViewFieldID)
@@ -329,7 +333,11 @@ Namespace kCura.WinEDDS
 					If image.FileName.IndexOf(".") <> -1 Then
 						filenameExtension = "." & image.FileName.Substring(image.FileName.LastIndexOf(".") + 1)
 					End If
-					image.FileName = image.BatesNumber & filenameExtension
+					Dim filename As String = image.BatesNumber
+					If IsDocNumberOnlyProduction(_productionExportProduction) AndAlso i > 0 Then
+						filename &= "_" & (i + 1).ToString
+					End If
+					image.FileName = filename & filenameExtension
 					If Not image.FileGuid = "" Then
 						retval.Add(image)
 					End If
@@ -337,6 +345,17 @@ Namespace kCura.WinEDDS
 				Next
 			End If
 			Return retval
+		End Function
+		Private Function GetProduction(ByVal productionArtifactId As String) As kCura.EDDS.WebAPI.ProductionManagerBase.Production
+			Dim id As Int32 = CInt(productionArtifactId)
+			If Not _productionLookup.ContainsKey(id) Then
+				_productionLookup.Add(id, _productionManager.Read(Me.Settings.CaseArtifactID, id))
+			End If
+			Return _productionLookup(id)
+		End Function
+
+		Private Function IsDocNumberOnlyProduction(ByVal production As kCura.EDDS.WebAPI.ProductionManagerBase.Production) As Boolean
+			Return Not production Is Nothing AndAlso production.BatesNumbering = False AndAlso production.UseDocumentLevelNumbering AndAlso Not production.IncludeImageLevelNumberingForDocumentLevelNumbering
 		End Function
 
 		Private Function PrepareImages(ByVal imagesView As System.Data.DataView, ByVal productionImagesView As System.Data.DataView, ByVal documentArtifactID As Int32, ByVal batesBase As String, ByVal artifact As Exporters.ObjectExportInfo, ByVal productionOrderList As Pair()) As System.Collections.ArrayList
@@ -364,7 +383,9 @@ Namespace kCura.WinEDDS
 								If image.FileName.IndexOf(".") <> -1 Then
 									filenameExtension = "." & image.FileName.Substring(image.FileName.LastIndexOf(".") + 1)
 								End If
-								image.FileName = image.BatesNumber & filenameExtension
+								Dim filename As String = image.BatesNumber
+								If IsDocNumberOnlyProduction(Me.GetProduction(item.Value)) AndAlso i > 0 Then filename &= "_" & (i + 1).ToString
+								image.FileName = filename & filenameExtension
 								image.SourceLocation = drv("Location").ToString
 								retval.Add(image)
 								i += 1
