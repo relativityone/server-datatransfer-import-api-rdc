@@ -86,7 +86,7 @@ namespace kCura.Relativity.ImportAPI
 		public ImportAPI(String WebServiceURL)
 		{
 			Config.ProgrammaticServiceURL = WebServiceURL;
-			this.PerformLogin("","");
+			this.PerformLogin("A","B");
 		}
 
 		/// <summary>
@@ -203,7 +203,9 @@ namespace kCura.Relativity.ImportAPI
 
 			if (!string.IsNullOrEmpty(token))
 			{
-				var auditManager = new kCura.EDDS.WebAPI.AuditManagerBase.AuditManager();	
+				var auditManager = new kCura.EDDS.WebAPI.AuditManagerBase.AuditManager();
+				auditManager.CookieContainer = _cookieMonster;
+				auditManager.Credentials = _credentials;
 				userId = auditManager.GetUserIdByGuid(token);
 			}
 
