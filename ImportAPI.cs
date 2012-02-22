@@ -201,7 +201,7 @@ namespace kCura.Relativity.ImportAPI
 			var importJob = new ImportBulkArtifactJob(_userName, _password);
 			int? userId = null;
 
-			if (token != null || token != string.Empty)
+			if (!string.IsNullOrEmpty(token))
 			{
 				var auditManager = new kCura.EDDS.WebAPI.AuditManagerBase.AuditManager();	
 				userId = auditManager.GetUserIdByGuid(token);
