@@ -206,6 +206,7 @@ namespace kCura.Relativity.ImportAPI
 				var auditManager = new kCura.EDDS.WebAPI.AuditManagerBase.AuditManager();
 				auditManager.CookieContainer = _cookieMonster;
 				auditManager.Credentials = _credentials;
+				auditManager.Url = System.IO.Path.Combine(Config.ProgrammaticServiceURL, "AuditManager.asmx");
 				userId = auditManager.GetUserIdByGuid(token);
 			}
 
