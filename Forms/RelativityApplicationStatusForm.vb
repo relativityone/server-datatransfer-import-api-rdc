@@ -934,7 +934,7 @@ Public Class RelativityApplicationStatusForm
 	End Function
 
 	Private Sub SetButtonVisibility()
-		If Not DirectCast(workspaceTable.Rows(currentResultIndex).Item(workspaceResolvedColumnName), Boolean) Then
+		If currentResultIndex = -1 OrElse Not DirectCast(workspaceTable.Rows(currentResultIndex).Item(workspaceResolvedColumnName), Boolean) Then
 			RetryImportButton.Enabled = False
 		Else
 			RetryImportButton.Enabled = True
