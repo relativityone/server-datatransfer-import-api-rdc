@@ -837,7 +837,7 @@ Namespace kCura.WinEDDS
 				moretobefoundMessage.Add("Message", "Maximum number of errors for display reached.  Export errors to view full list.")
 				RaiseEvent ReportErrorEvent(moretobefoundMessage)
 			End If
-			errorMessageFileWriter.WriteLine(String.Format("{0},{1},{2},{3}", CSVFormat(row("Line Number").ToString), CSVFormat(row("DocumentID").ToString), CSVFormat(row("FileID").ToString), CSVFormat(row("Messages").ToString)))
+			errorMessageFileWriter.WriteLine(String.Format("{0},{1},{2},{3}", CSVFormat(row("Line Number").ToString), CSVFormat(row("DocumentID").ToString), CSVFormat(row("FileID").ToString), CSVFormat(row("Message").ToString)))
 			errorMessageFileWriter.Close()
 		End Sub
 
@@ -981,7 +981,7 @@ Namespace kCura.WinEDDS
 							Next
 							errorMessages = sb.ToString.TrimEnd(ChrW(10))
 						End If
-						ht.Add("Messages", errorMessages)
+						ht.Add("Message", errorMessages)
 						RaiseReportError(ht, Int32.Parse(line(0)), line(2), "server")
 						'TODO: track stats
 						RaiseEvent StatusMessage(New kCura.Windows.Process.StatusEventArgs(Windows.Process.EventType.Error, Int32.Parse(line(0)) - 1, _fileLineCount, "[Line " & line(0) & "]" & errorMessages, Nothing))
