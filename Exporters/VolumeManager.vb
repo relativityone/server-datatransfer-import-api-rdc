@@ -450,7 +450,7 @@ Namespace kCura.WinEDDS
 			End If
 
 			If Me.Settings.LogFileFormat = LoadFileType.FileFormat.IPRO_FullText AndAlso Me.Settings.ExportImages Then
-				If Me.Settings.SelectedTextFields(0) Is Nothing OrElse Me.Settings.SelectedTextFields(0).Category <> Relativity.FieldCategory.FullText Then
+				If Me.Settings.SelectedTextFields Is Nothing OrElse Me.Settings.SelectedTextFields.Count = 0 OrElse Me.Settings.SelectedTextFields(0) Is Nothing OrElse Me.Settings.SelectedTextFields(0).Category <> Relativity.FieldCategory.FullText Then
 					tempLocalIproFullTextFilePath = System.IO.Path.GetTempFileName
 					Dim tries As Int32 = 20
 					Dim start As Int64 = System.DateTime.Now.Ticks
