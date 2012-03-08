@@ -387,6 +387,11 @@ Namespace kCura.WinEDDS
 			End If
 		End Function
 
+		Private Function TextPrecedenceIsSet() As Boolean
+			If Me.Settings.SelectedTextFields Is Nothing Then Return False
+			If Me.Settings.SelectedTextFields.Count = 0 Then Return False
+			Return (From f In Me.Settings.SelectedTextFields Where f IsNot Nothing).Any
+		End Function
 		Private Function ExportArtifact(ByVal artifact As Exporters.ObjectExportInfo, ByVal isRetryAttempt As Boolean) As Int64
 			If isRetryAttempt Then Me.ReInitializeAllStreams()
 			Dim totalFileSize As Int64 = 0
@@ -450,7 +455,7 @@ Namespace kCura.WinEDDS
 			End If
 
 			If Me.Settings.LogFileFormat = LoadFileType.FileFormat.IPRO_FullText AndAlso Me.Settings.ExportImages Then
-				If Me.Settings.SelectedTextFields Is Nothing OrElse Me.Settings.SelectedTextFields.Count = 0 OrElse Me.Settings.SelectedTextFields(0) Is Nothing OrElse Me.Settings.SelectedTextFields(0).Category <> Relativity.FieldCategory.FullText Then
+				If Not Me.TextPrecedenceIsSet Then
 					tempLocalIproFullTextFilePath = System.IO.Path.GetTempFileName
 					Dim tries As Int32 = 20
 					Dim start As Int64 = System.DateTime.Now.Ticks
@@ -478,13 +483,13 @@ Namespace kCura.WinEDDS
 						End While
 					End If
 					_statistics.MetadataTime += System.Math.Max(System.DateTime.Now.Ticks - start, 1)
-				ElseIf Me.Settings.SelectedTextFields(0).Category = Relativity.FieldCategory.FullText Then
+				Else
 					If tempLocalFullTextFilePath <> String.Empty Then
 						tempLocalIproFullTextFilePath = String.Copy(tempLocalFullTextFilePath)
 					Else
 						tempLocalIproFullTextFilePath = System.IO.Path.GetTempFileName
 						Dim sw As New System.IO.StreamWriter(tempLocalIproFullTextFilePath, False, System.Text.Encoding.Unicode)
-						Dim val As String = artifact.Metadata(Me.OrdinalLookup("ExtractedText")).ToString
+						Dim val As String = artifact.Metadata(Me.OrdinalLookup(Relativity.Export.Constants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME)).ToString
 						sw.Write(val)
 						sw.Close()
 					End If
