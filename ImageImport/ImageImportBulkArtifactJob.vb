@@ -275,8 +275,9 @@ Namespace kCura.Relativity.DataReaderClient
 			RaiseEvent OnMessage(New Status(retval.ToString))
 
 			' slm 10/10/2011 - really?  these are called "Messages" and "Line Number"?  These are different names than for the native document import.
+			' cjh 2/28/2012 - turning Messages all to Message.  Use only "Message"
 
-			Dim msg As String = row.Item("Messages").ToString
+			Dim msg As String = row.Item("Message").ToString
 			Dim lineNumbObj As Object = row.Item("Line Number")
 			Dim lineNum As Long = 0
 			If Not lineNumbObj Is Nothing Then
