@@ -147,7 +147,7 @@ Namespace kCura.WinEDDS.NUnit
 
 #Region " Test - Serialization not broken "
 
-		<Category("MultipleDomain")>
+		<Category("SeparateDomain")>
 		<Test()> Public Sub DeserializeExportFile_AllPrimitivesSet_7_2()
 			Dim test As kCura.WinEDDS.ExportFile = _serializer.DeserializeExportFile(XDocument.Parse(AllPrimitivesSet_7_2))
 			Compare(test)
@@ -157,7 +157,7 @@ Namespace kCura.WinEDDS.NUnit
 			Assert.IsNull(test.SelectedViewFields)
 		End Sub
 
-		<Category("MultipleDomain")>
+		<Category("SeparateDomain")>
 		<Test()> Public Sub DeserializeExportFile_EverythingSet_7_2()
 			Dim test As kCura.WinEDDS.ExportFile = _serializer.DeserializeExportFile(XDocument.Parse(EverythingSet_7_2))
 			Compare(test)
@@ -186,7 +186,7 @@ Namespace kCura.WinEDDS.NUnit
 			Assert.IsNotNull(test.SelectedViewFields)
 		End Sub
 
-		<Category("MultipleDomain")>
+		<Category("SeparateDomain")>
 		<Test()> Public Sub DeserializeExportFile_EverythingSet_7_4()
 			Dim test As kCura.WinEDDS.ExportFile = _serializer.DeserializeExportFile(XDocument.Parse(EverythingSet_7_4))
 			Compare(test)
@@ -215,19 +215,19 @@ Namespace kCura.WinEDDS.NUnit
 			Assert.IsNotNull(test.SelectedViewFields)
 		End Sub
 
-		<Category("MultipleDomain")>
+		<Category("SeparateDomain")>
 		<Test()> Public Sub DeserializeExportFile_LogFileFormat_Unselected()
 			Dim test As kCura.WinEDDS.ExportFile = _serializer.DeserializeExportFile(XDocument.Parse(AllPrimitivesSetExceptLogFileFormat_7_2))
 			Assert.IsNull(test.LogFileFormat)
 		End Sub
 
-		<Category("MultipleDomain")>
+		<Category("SeparateDomain")>
 		<Test()> Public Sub DeserializeExportFile_ImageType_Unselected()
 			Dim test As kCura.WinEDDS.ExportFile = _serializer.DeserializeExportFile(XDocument.Parse(AllPrimitivesSetExceptImageType_7_2))
 			Assert.IsNull(test.TypeOfImage)
 		End Sub
 
-		<Category("MultipleDomain")>
+		<Category("SeparateDomain")>
 		<Test()> Public Sub DeserializeExportFile_ObjectTypeNameMismatch_ErrorExportFileType()
 			Dim incomingExportFile As New kCura.WinEDDS.ExportFile(1000001) With {.ObjectTypeName = "Custodian"}
 			_serializer.DeserializeExportFile(incomingExportFile, AllPrimitivesSetExceptImageType_7_2)
@@ -235,7 +235,7 @@ Namespace kCura.WinEDDS.NUnit
 			Assert.AreEqual(GetType(kCura.WinEDDS.ErrorExportFile), test.GetType)
 		End Sub
 
-		<Category("MultipleDomain")>
+		<Category("SeparateDomain")>
 		<Test()> Public Sub DeserializeExportFile_FolderPath_InvalidLocation()
 			Dim incomingExportFile As New kCura.WinEDDS.ExportFile(1000001) With {.FolderPath = "Blah Blah Invalid", .ObjectTypeName = "Document"}
 			_serializer.DeserializeExportFile(incomingExportFile, AllPrimitivesSetExceptImageType_7_2)
@@ -243,7 +243,7 @@ Namespace kCura.WinEDDS.NUnit
 			Assert.AreEqual(String.Empty, test.FolderPath)
 		End Sub
 
-		<Category("MultipleDomain")>
+		<Category("SeparateDomain")>
 		<Test()> Public Sub DeserializeExportFile_FolderPath_EmptyLocation()
 			Dim incomingExportFile As New kCura.WinEDDS.ExportFile(1000001) With {.FolderPath = "Blah Blah Invalid", .ObjectTypeName = "Document"}
 			_serializer.DeserializeExportFile(incomingExportFile, EmptyFolderPath)
@@ -251,7 +251,7 @@ Namespace kCura.WinEDDS.NUnit
 			Assert.AreEqual(String.Empty, test.FolderPath)
 		End Sub
 
-		<Category("MultipleDomain")>
+		<Category("SeparateDomain")>
 		<Test()> Public Sub DeserializeExportFile_FolderPath_CorrectFolderPath()
 			Dim incomingExportFile As New kCura.WinEDDS.ExportFile(1000001) With {.FolderPath = "Blah Blah Invalid", .ObjectTypeName = "Document"}
 			_serializer.DeserializeExportFile(incomingExportFile, CorrectFolderPath)
