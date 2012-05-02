@@ -116,515 +116,515 @@ Namespace kCura.EDDS.WinForm
 		Friend WithEvents CaseListTextBox As System.Windows.Forms.TextBox
 		Friend WithEvents BrowseButton As System.Windows.Forms.Button
 		<System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
-			Me.components = New System.ComponentModel.Container()
-			Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(RelativityApplicationForm))
-			Me.MainMenu = New System.Windows.Forms.MainMenu(Me.components)
-			Me.MenuFile = New System.Windows.Forms.MenuItem()
-			Me.MenuFile_Refresh = New System.Windows.Forms.MenuItem()
-			Me.MenuFile_Separator = New System.Windows.Forms.MenuItem()
-			Me.MenuFile_Close = New System.Windows.Forms.MenuItem()
-			Me.MenuImport = New System.Windows.Forms.MenuItem()
-			Me.MenuImport_ImportApplication = New System.Windows.Forms.MenuItem()
-			Me.ApplicationFileGroupBox = New System.Windows.Forms.GroupBox()
-			Me.BrowseButton = New System.Windows.Forms.Button()
-			Me.FilePath = New System.Windows.Forms.TextBox()
-			Me.ApplicationInformationGroupBox = New System.Windows.Forms.GroupBox()
-			Me.ApplicationName = New System.Windows.Forms.TextBox()
-			Me.ApplicationVersion = New System.Windows.Forms.TextBox()
-			Me.VersionLabel = New System.Windows.Forms.Label()
-			Me.NameLabel = New System.Windows.Forms.Label()
-			Me.ApplicationArtifactsGroupBox = New System.Windows.Forms.GroupBox()
-			Me.AppNotLoadedLabel = New System.Windows.Forms.Label()
-			Me.ArtifactsTreeView = New System.Windows.Forms.TreeView()
-			Me.GroupBox1 = New System.Windows.Forms.GroupBox()
-			Me.BrowseCasesButton = New System.Windows.Forms.Button()
-			Me.CaseListTextBox = New System.Windows.Forms.TextBox()
-			Me.ImportButton = New System.Windows.Forms.Button()
-			Me.AppArtifactsPanel = New System.Windows.Forms.Panel()
-			Me.FieldMapPanel = New System.Windows.Forms.Panel()
-			Me.ArtifactMappingGroupBox = New System.Windows.Forms.GroupBox()
-			Me.Label4 = New System.Windows.Forms.Label()
-			Me.Label3 = New System.Windows.Forms.Label()
-			Me.Label2 = New System.Windows.Forms.Label()
-			Me.NoTargetFieldsQualifyLabel = New System.Windows.Forms.Label()
-			Me.MapToAppBtn = New System.Windows.Forms.Button()
-			Me.AppToMapBtn = New System.Windows.Forms.Button()
-			Me.MapToTargetBtn = New System.Windows.Forms.Button()
-			Me.TargetToMapBtn = New System.Windows.Forms.Button()
-			Me.TargetFieldList = New System.Windows.Forms.ListBox()
-			Me.MappedList_Target = New System.Windows.Forms.ListBox()
-			Me.MappedList_App = New System.Windows.Forms.ListBox()
-			Me.AppFieldList = New System.Windows.Forms.ListBox()
-			Me.ObjectInfoGroupBox = New System.Windows.Forms.GroupBox()
-			Me.ObjectMapComboBox = New System.Windows.Forms.ComboBox()
-			Me.Label1 = New System.Windows.Forms.Label()
-			Me.MapFieldsLink = New System.Windows.Forms.LinkLabel()
-			Me.CannotMapPanel = New System.Windows.Forms.Panel()
-			Me.CannotMapLabel = New System.Windows.Forms.Label()
-			Me.ApplicationFileGroupBox.SuspendLayout()
-			Me.ApplicationInformationGroupBox.SuspendLayout()
-			Me.ApplicationArtifactsGroupBox.SuspendLayout()
-			Me.GroupBox1.SuspendLayout()
-			Me.AppArtifactsPanel.SuspendLayout()
-			Me.FieldMapPanel.SuspendLayout()
-			Me.ArtifactMappingGroupBox.SuspendLayout()
-			Me.ObjectInfoGroupBox.SuspendLayout()
-			Me.CannotMapPanel.SuspendLayout()
-			Me.SuspendLayout()
-			'
-			'MainMenu
-			'
-			Me.MainMenu.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.MenuFile, Me.MenuImport})
-			'
-			'MenuFile
-			'
-			Me.MenuFile.Index = 0
-			Me.MenuFile.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.MenuFile_Refresh, Me.MenuFile_Separator, Me.MenuFile_Close})
-			Me.MenuFile.Text = "&File"
-			'
-			'MenuFile_Refresh
-			'
-			Me.MenuFile_Refresh.Enabled = False
-			Me.MenuFile_Refresh.Index = 0
-			Me.MenuFile_Refresh.Shortcut = System.Windows.Forms.Shortcut.F5
-			Me.MenuFile_Refresh.Text = "&Refresh"
-			'
-			'MenuFile_Separator
-			'
-			Me.MenuFile_Separator.Index = 1
-			Me.MenuFile_Separator.Text = "-"
-			'
-			'MenuFile_Close
-			'
-			Me.MenuFile_Close.Index = 2
-			Me.MenuFile_Close.Text = "&Close"
-			'
-			'MenuImport
-			'
-			Me.MenuImport.Index = 1
-			Me.MenuImport.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.MenuImport_ImportApplication})
-			Me.MenuImport.Text = "&Import"
-			'
-			'MenuImport_ImportApplication
-			'
-			Me.MenuImport_ImportApplication.Enabled = False
-			Me.MenuImport_ImportApplication.Index = 0
-			Me.MenuImport_ImportApplication.Shortcut = System.Windows.Forms.Shortcut.F4
-			Me.MenuImport_ImportApplication.Text = "Import &Application"
-			'
-			'ApplicationFileGroupBox
-			'
-			Me.ApplicationFileGroupBox.Controls.Add(Me.BrowseButton)
-			Me.ApplicationFileGroupBox.Controls.Add(Me.FilePath)
-			Me.ApplicationFileGroupBox.Location = New System.Drawing.Point(15, 12)
-			Me.ApplicationFileGroupBox.Name = "ApplicationFileGroupBox"
-			Me.ApplicationFileGroupBox.Size = New System.Drawing.Size(868, 48)
-			Me.ApplicationFileGroupBox.TabIndex = 1
-			Me.ApplicationFileGroupBox.TabStop = False
-			Me.ApplicationFileGroupBox.Text = "Application File"
-			'
-			'BrowseButton
-			'
-			Me.BrowseButton.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-			Me.BrowseButton.Location = New System.Drawing.Point(834, 16)
-			Me.BrowseButton.Name = "BrowseButton"
-			Me.BrowseButton.Size = New System.Drawing.Size(24, 20)
-			Me.BrowseButton.TabIndex = 3
-			Me.BrowseButton.Text = "..."
-			'
-			'FilePath
-			'
-			Me.FilePath.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-						Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-			Me.FilePath.BackColor = System.Drawing.SystemColors.ControlLightLight
-			Me.FilePath.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-			Me.FilePath.ForeColor = System.Drawing.SystemColors.ControlDarkDark
-			Me.FilePath.Location = New System.Drawing.Point(8, 16)
-			Me.FilePath.Name = "FilePath"
-			Me.FilePath.ReadOnly = True
-			Me.FilePath.Size = New System.Drawing.Size(820, 20)
-			Me.FilePath.TabIndex = 2
-			Me.FilePath.Text = "Select a file ..."
-			'
-			'ApplicationInformationGroupBox
-			'
-			Me.ApplicationInformationGroupBox.Controls.Add(Me.ApplicationName)
-			Me.ApplicationInformationGroupBox.Controls.Add(Me.ApplicationVersion)
-			Me.ApplicationInformationGroupBox.Controls.Add(Me.VersionLabel)
-			Me.ApplicationInformationGroupBox.Controls.Add(Me.NameLabel)
-			Me.ApplicationInformationGroupBox.Location = New System.Drawing.Point(15, 127)
-			Me.ApplicationInformationGroupBox.Name = "ApplicationInformationGroupBox"
-			Me.ApplicationInformationGroupBox.Size = New System.Drawing.Size(868, 88)
-			Me.ApplicationInformationGroupBox.TabIndex = 7
-			Me.ApplicationInformationGroupBox.TabStop = False
-			Me.ApplicationInformationGroupBox.Text = "Application Information"
-			'
-			'ApplicationName
-			'
-			Me.ApplicationName.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-						Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-			Me.ApplicationName.Location = New System.Drawing.Point(60, 24)
-			Me.ApplicationName.Name = "ApplicationName"
-			Me.ApplicationName.ReadOnly = True
-			Me.ApplicationName.Size = New System.Drawing.Size(800, 20)
-			Me.ApplicationName.TabIndex = 8
-			'
-			'ApplicationVersion
-			'
-			Me.ApplicationVersion.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-						Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-			Me.ApplicationVersion.Location = New System.Drawing.Point(60, 56)
-			Me.ApplicationVersion.Name = "ApplicationVersion"
-			Me.ApplicationVersion.ReadOnly = True
-			Me.ApplicationVersion.Size = New System.Drawing.Size(800, 20)
-			Me.ApplicationVersion.TabIndex = 9
-			'
-			'VersionLabel
-			'
-			Me.VersionLabel.Location = New System.Drawing.Point(6, 56)
-			Me.VersionLabel.Name = "VersionLabel"
-			Me.VersionLabel.Size = New System.Drawing.Size(48, 23)
-			Me.VersionLabel.TabIndex = 1
-			Me.VersionLabel.Text = "Version:"
-			'
-			'NameLabel
-			'
-			Me.NameLabel.Location = New System.Drawing.Point(6, 24)
-			Me.NameLabel.Name = "NameLabel"
-			Me.NameLabel.Size = New System.Drawing.Size(48, 23)
-			Me.NameLabel.TabIndex = 0
-			Me.NameLabel.Text = "Name:"
-			'
-			'ApplicationArtifactsGroupBox
-			'
-			Me.ApplicationArtifactsGroupBox.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-						Or System.Windows.Forms.AnchorStyles.Left) _
-						Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-			Me.ApplicationArtifactsGroupBox.Controls.Add(Me.AppNotLoadedLabel)
-			Me.ApplicationArtifactsGroupBox.Controls.Add(Me.ArtifactsTreeView)
-			Me.ApplicationArtifactsGroupBox.Location = New System.Drawing.Point(10, 5)
-			Me.ApplicationArtifactsGroupBox.Name = "ApplicationArtifactsGroupBox"
-			Me.ApplicationArtifactsGroupBox.Size = New System.Drawing.Size(868, 342)
-			Me.ApplicationArtifactsGroupBox.TabIndex = 10
-			Me.ApplicationArtifactsGroupBox.TabStop = False
-			Me.ApplicationArtifactsGroupBox.Text = "Application Artifacts"
-			'
-			'AppNotLoadedLabel
-			'
-			Me.AppNotLoadedLabel.AutoSize = True
-			Me.AppNotLoadedLabel.BackColor = System.Drawing.SystemColors.Window
-			Me.AppNotLoadedLabel.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-			Me.AppNotLoadedLabel.Location = New System.Drawing.Point(289, 134)
-			Me.AppNotLoadedLabel.Name = "AppNotLoadedLabel"
-			Me.AppNotLoadedLabel.Size = New System.Drawing.Size(286, 26)
-			Me.AppNotLoadedLabel.TabIndex = 9
-			Me.AppNotLoadedLabel.Text = "Select an Application File and Target Workspace" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "using the buttons above"
-			Me.AppNotLoadedLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter
-			'
-			'ArtifactsTreeView
-			'
-			Me.ArtifactsTreeView.Dock = System.Windows.Forms.DockStyle.Fill
-			Me.ArtifactsTreeView.Enabled = False
-			Me.ArtifactsTreeView.Location = New System.Drawing.Point(3, 16)
-			Me.ArtifactsTreeView.Name = "ArtifactsTreeView"
-			Me.ArtifactsTreeView.Size = New System.Drawing.Size(862, 323)
-			Me.ArtifactsTreeView.TabIndex = 8
-			'
-			'GroupBox1
-			'
-			Me.GroupBox1.Controls.Add(Me.BrowseCasesButton)
-			Me.GroupBox1.Controls.Add(Me.CaseListTextBox)
-			Me.GroupBox1.Location = New System.Drawing.Point(15, 66)
-			Me.GroupBox1.Name = "GroupBox1"
-			Me.GroupBox1.Size = New System.Drawing.Size(868, 55)
-			Me.GroupBox1.TabIndex = 4
-			Me.GroupBox1.TabStop = False
-			Me.GroupBox1.Text = "Target Workspace"
-			'
-			'BrowseCasesButton
-			'
-			Me.BrowseCasesButton.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-			Me.BrowseCasesButton.Location = New System.Drawing.Point(834, 23)
-			Me.BrowseCasesButton.Name = "BrowseCasesButton"
-			Me.BrowseCasesButton.Size = New System.Drawing.Size(24, 20)
-			Me.BrowseCasesButton.TabIndex = 6
-			Me.BrowseCasesButton.Text = "..."
-			'
-			'CaseListTextBox
-			'
-			Me.CaseListTextBox.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-						Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-			Me.CaseListTextBox.BackColor = System.Drawing.SystemColors.ControlLightLight
-			Me.CaseListTextBox.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-			Me.CaseListTextBox.ForeColor = System.Drawing.SystemColors.ControlDarkDark
-			Me.CaseListTextBox.Location = New System.Drawing.Point(8, 23)
-			Me.CaseListTextBox.Name = "CaseListTextBox"
-			Me.CaseListTextBox.ReadOnly = True
-			Me.CaseListTextBox.Size = New System.Drawing.Size(820, 20)
-			Me.CaseListTextBox.TabIndex = 5
-			Me.CaseListTextBox.Text = "Select a workspace  ..."
-			'
-			'ImportButton
-			'
-			Me.ImportButton.Enabled = False
-			Me.ImportButton.Location = New System.Drawing.Point(817, 583)
-			Me.ImportButton.Name = "ImportButton"
-			Me.ImportButton.Size = New System.Drawing.Size(75, 23)
-			Me.ImportButton.TabIndex = 11
-			Me.ImportButton.Text = "Import"
-			Me.ImportButton.UseVisualStyleBackColor = True
-			'
-			'AppArtifactsPanel
-			'
-			Me.AppArtifactsPanel.Controls.Add(Me.ApplicationArtifactsGroupBox)
-			Me.AppArtifactsPanel.Location = New System.Drawing.Point(5, 230)
-			Me.AppArtifactsPanel.Name = "AppArtifactsPanel"
-			Me.AppArtifactsPanel.Size = New System.Drawing.Size(887, 350)
-			Me.AppArtifactsPanel.TabIndex = 13
-			'
-			'FieldMapPanel
-			'
-			Me.FieldMapPanel.Controls.Add(Me.ArtifactMappingGroupBox)
-			Me.FieldMapPanel.Controls.Add(Me.ObjectInfoGroupBox)
-			Me.FieldMapPanel.Location = New System.Drawing.Point(5, 632)
-			Me.FieldMapPanel.Name = "FieldMapPanel"
-			Me.FieldMapPanel.Size = New System.Drawing.Size(887, 350)
-			Me.FieldMapPanel.TabIndex = 14
-			'
-			'ArtifactMappingGroupBox
-			'
-			Me.ArtifactMappingGroupBox.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-						Or System.Windows.Forms.AnchorStyles.Left) _
-						Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-			Me.ArtifactMappingGroupBox.Controls.Add(Me.Label4)
-			Me.ArtifactMappingGroupBox.Controls.Add(Me.Label3)
-			Me.ArtifactMappingGroupBox.Controls.Add(Me.Label2)
-			Me.ArtifactMappingGroupBox.Controls.Add(Me.NoTargetFieldsQualifyLabel)
-			Me.ArtifactMappingGroupBox.Controls.Add(Me.MapToAppBtn)
-			Me.ArtifactMappingGroupBox.Controls.Add(Me.AppToMapBtn)
-			Me.ArtifactMappingGroupBox.Controls.Add(Me.MapToTargetBtn)
-			Me.ArtifactMappingGroupBox.Controls.Add(Me.TargetToMapBtn)
-			Me.ArtifactMappingGroupBox.Controls.Add(Me.TargetFieldList)
-			Me.ArtifactMappingGroupBox.Controls.Add(Me.MappedList_Target)
-			Me.ArtifactMappingGroupBox.Controls.Add(Me.MappedList_App)
-			Me.ArtifactMappingGroupBox.Controls.Add(Me.AppFieldList)
-			Me.ArtifactMappingGroupBox.Controls.Add(Me.CannotMapPanel)
-			Me.ArtifactMappingGroupBox.Location = New System.Drawing.Point(11, 66)
-			Me.ArtifactMappingGroupBox.Name = "ArtifactMappingGroupBox"
-			Me.ArtifactMappingGroupBox.Size = New System.Drawing.Size(867, 273)
-			Me.ArtifactMappingGroupBox.TabIndex = 11
-			Me.ArtifactMappingGroupBox.TabStop = False
-			Me.ArtifactMappingGroupBox.Text = "Artifact Mapping"
-			'
-			'Label4
-			'
-			Me.Label4.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-			Me.Label4.Location = New System.Drawing.Point(344, 28)
-			Me.Label4.Name = "Label4"
-			Me.Label4.Size = New System.Drawing.Size(177, 23)
-			Me.Label4.TabIndex = 18
-			Me.Label4.Text = "Mapping"
-			Me.Label4.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
-			'
-			'Label3
-			'
-			Me.Label3.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-			Me.Label3.Location = New System.Drawing.Point(672, 28)
-			Me.Label3.Name = "Label3"
-			Me.Label3.Size = New System.Drawing.Size(177, 23)
-			Me.Label3.TabIndex = 17
-			Me.Label3.Text = "  Workspace Fields"
-			Me.Label3.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
-			'
-			'Label2
-			'
-			Me.Label2.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-			Me.Label2.Location = New System.Drawing.Point(18, 28)
-			Me.Label2.Name = "Label2"
-			Me.Label2.Size = New System.Drawing.Size(177, 23)
-			Me.Label2.TabIndex = 16
-			Me.Label2.Text = "  Application Fields"
-			Me.Label2.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
-			'
-			'NoTargetFieldsQualifyLabel
-			'
-			Me.NoTargetFieldsQualifyLabel.BackColor = System.Drawing.SystemColors.Window
-			Me.NoTargetFieldsQualifyLabel.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-			Me.NoTargetFieldsQualifyLabel.Location = New System.Drawing.Point(688, 98)
-			Me.NoTargetFieldsQualifyLabel.Name = "NoTargetFieldsQualifyLabel"
-			Me.NoTargetFieldsQualifyLabel.Size = New System.Drawing.Size(147, 135)
-			Me.NoTargetFieldsQualifyLabel.TabIndex = 15
-			Me.NoTargetFieldsQualifyLabel.Text = "No fields in the target workspace qualify for mapping to this application field."
-			Me.NoTargetFieldsQualifyLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter
-			Me.NoTargetFieldsQualifyLabel.Visible = False
-			'
-			'MapToAppBtn
-			'
-			Me.MapToAppBtn.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-			Me.MapToAppBtn.Location = New System.Drawing.Point(204, 108)
-			Me.MapToAppBtn.Name = "MapToAppBtn"
-			Me.MapToAppBtn.Size = New System.Drawing.Size(45, 23)
-			Me.MapToAppBtn.TabIndex = 7
-			Me.MapToAppBtn.Text = "<"
-			Me.MapToAppBtn.UseVisualStyleBackColor = True
-			'
-			'AppToMapBtn
-			'
-			Me.AppToMapBtn.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-			Me.AppToMapBtn.Location = New System.Drawing.Point(204, 79)
-			Me.AppToMapBtn.Name = "AppToMapBtn"
-			Me.AppToMapBtn.Size = New System.Drawing.Size(45, 23)
-			Me.AppToMapBtn.TabIndex = 6
-			Me.AppToMapBtn.Text = ">"
-			Me.AppToMapBtn.UseVisualStyleBackColor = True
-			'
-			'MapToTargetBtn
-			'
-			Me.MapToTargetBtn.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-			Me.MapToTargetBtn.Location = New System.Drawing.Point(620, 108)
-			Me.MapToTargetBtn.Name = "MapToTargetBtn"
-			Me.MapToTargetBtn.Size = New System.Drawing.Size(45, 23)
-			Me.MapToTargetBtn.TabIndex = 5
-			Me.MapToTargetBtn.Text = ">"
-			Me.MapToTargetBtn.UseVisualStyleBackColor = True
-			'
-			'TargetToMapBtn
-			'
-			Me.TargetToMapBtn.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-			Me.TargetToMapBtn.Location = New System.Drawing.Point(620, 79)
-			Me.TargetToMapBtn.Name = "TargetToMapBtn"
-			Me.TargetToMapBtn.Size = New System.Drawing.Size(45, 23)
-			Me.TargetToMapBtn.TabIndex = 4
-			Me.TargetToMapBtn.Text = "<"
-			Me.TargetToMapBtn.UseVisualStyleBackColor = True
-			'
-			'TargetFieldList
-			'
-			Me.TargetFieldList.FormattingEnabled = True
-			Me.TargetFieldList.Location = New System.Drawing.Point(672, 54)
-			Me.TargetFieldList.Name = "TargetFieldList"
-			Me.TargetFieldList.Size = New System.Drawing.Size(177, 199)
-			Me.TargetFieldList.TabIndex = 3
-			'
-			'MappedList_Target
-			'
-			Me.MappedList_Target.FormattingEnabled = True
-			Me.MappedList_Target.Location = New System.Drawing.Point(434, 54)
-			Me.MappedList_Target.Name = "MappedList_Target"
-			Me.MappedList_Target.Size = New System.Drawing.Size(177, 199)
-			Me.MappedList_Target.TabIndex = 2
-			'
-			'MappedList_App
-			'
-			Me.MappedList_App.FormattingEnabled = True
-			Me.MappedList_App.Location = New System.Drawing.Point(257, 54)
-			Me.MappedList_App.Name = "MappedList_App"
-			Me.MappedList_App.Size = New System.Drawing.Size(177, 199)
-			Me.MappedList_App.TabIndex = 1
-			'
-			'AppFieldList
-			'
-			Me.AppFieldList.FormattingEnabled = True
-			Me.AppFieldList.Location = New System.Drawing.Point(18, 54)
-			Me.AppFieldList.Name = "AppFieldList"
-			Me.AppFieldList.Size = New System.Drawing.Size(177, 199)
-			Me.AppFieldList.TabIndex = 0
-			'
-			'ObjectInfoGroupBox
-			'
-			Me.ObjectInfoGroupBox.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-						Or System.Windows.Forms.AnchorStyles.Left) _
-						Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-			Me.ObjectInfoGroupBox.Controls.Add(Me.ObjectMapComboBox)
-			Me.ObjectInfoGroupBox.Controls.Add(Me.Label1)
-			Me.ObjectInfoGroupBox.Location = New System.Drawing.Point(8, 0)
-			Me.ObjectInfoGroupBox.Name = "ObjectInfoGroupBox"
-			Me.ObjectInfoGroupBox.Size = New System.Drawing.Size(870, 60)
-			Me.ObjectInfoGroupBox.TabIndex = 10
-			Me.ObjectInfoGroupBox.TabStop = False
-			Me.ObjectInfoGroupBox.Text = "Object Information"
-			'
-			'ObjectMapComboBox
-			'
-			Me.ObjectMapComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
-			Me.ObjectMapComboBox.FormattingEnabled = True
-			Me.ObjectMapComboBox.Location = New System.Drawing.Point(88, 25)
-			Me.ObjectMapComboBox.Name = "ObjectMapComboBox"
-			Me.ObjectMapComboBox.Size = New System.Drawing.Size(303, 21)
-			Me.ObjectMapComboBox.TabIndex = 10
-			'
-			'Label1
-			'
-			Me.Label1.Location = New System.Drawing.Point(18, 28)
-			Me.Label1.Name = "Label1"
-			Me.Label1.Size = New System.Drawing.Size(74, 23)
-			Me.Label1.TabIndex = 9
-			Me.Label1.Text = "Object Name:"
-			'
-			'MapFieldsLink
-			'
-			Me.MapFieldsLink.Location = New System.Drawing.Point(665, 583)
-			Me.MapFieldsLink.Name = "MapFieldsLink"
-			Me.MapFieldsLink.Size = New System.Drawing.Size(136, 23)
-			Me.MapFieldsLink.TabIndex = 15
-			Me.MapFieldsLink.TabStop = True
-			Me.MapFieldsLink.Text = "MapFieldsLink"
-			Me.MapFieldsLink.TextAlign = System.Drawing.ContentAlignment.MiddleRight
-			Me.MapFieldsLink.Visible = False
-			'
-			'CannotMapPanel
-			'
-			Me.CannotMapPanel.Controls.Add(Me.CannotMapLabel)
-			Me.CannotMapPanel.Location = New System.Drawing.Point(8, 19)
-			Me.CannotMapPanel.Name = "CannotMapPanel"
-			Me.CannotMapPanel.Size = New System.Drawing.Size(853, 248)
-			Me.CannotMapPanel.TabIndex = 16
-			'
-			'CannotMapLabel
-			'
-			Me.CannotMapLabel.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-			Me.CannotMapLabel.Location = New System.Drawing.Point(130, 60)
-			Me.CannotMapLabel.Name = "CannotMapLabel"
-			Me.CannotMapLabel.Size = New System.Drawing.Size(573, 112)
-			Me.CannotMapLabel.TabIndex = 0
-			Me.CannotMapLabel.Text = "CannotMapLabel"
-			Me.CannotMapLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
-			'
-			'RelativityApplicationForm
-			'
-			Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
-			Me.ClientSize = New System.Drawing.Size(904, 1011)
-			Me.Controls.Add(Me.MapFieldsLink)
-			Me.Controls.Add(Me.FieldMapPanel)
-			Me.Controls.Add(Me.AppArtifactsPanel)
-			Me.Controls.Add(Me.GroupBox1)
-			Me.Controls.Add(Me.ApplicationInformationGroupBox)
-			Me.Controls.Add(Me.ApplicationFileGroupBox)
-			Me.Controls.Add(Me.ImportButton)
-			Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog
-			Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
-			Me.MaximizeBox = False
-			Me.Menu = Me.MainMenu
-			Me.MinimumSize = New System.Drawing.Size(380, 395)
-			Me.Name = "RelativityApplicationForm"
-			Me.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Show
-			Me.Text = "Relativity Desktop Client | Import Application"
-			Me.ApplicationFileGroupBox.ResumeLayout(False)
-			Me.ApplicationFileGroupBox.PerformLayout()
-			Me.ApplicationInformationGroupBox.ResumeLayout(False)
-			Me.ApplicationInformationGroupBox.PerformLayout()
-			Me.ApplicationArtifactsGroupBox.ResumeLayout(False)
-			Me.ApplicationArtifactsGroupBox.PerformLayout()
-			Me.GroupBox1.ResumeLayout(False)
-			Me.GroupBox1.PerformLayout()
-			Me.AppArtifactsPanel.ResumeLayout(False)
-			Me.FieldMapPanel.ResumeLayout(False)
-			Me.ArtifactMappingGroupBox.ResumeLayout(False)
-			Me.ObjectInfoGroupBox.ResumeLayout(False)
-			Me.CannotMapPanel.ResumeLayout(False)
-			Me.ResumeLayout(False)
+Me.components = New System.ComponentModel.Container()
+Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(RelativityApplicationForm))
+Me.MainMenu = New System.Windows.Forms.MainMenu(Me.components)
+Me.MenuFile = New System.Windows.Forms.MenuItem()
+Me.MenuFile_Refresh = New System.Windows.Forms.MenuItem()
+Me.MenuFile_Separator = New System.Windows.Forms.MenuItem()
+Me.MenuFile_Close = New System.Windows.Forms.MenuItem()
+Me.MenuImport = New System.Windows.Forms.MenuItem()
+Me.MenuImport_ImportApplication = New System.Windows.Forms.MenuItem()
+Me.ApplicationFileGroupBox = New System.Windows.Forms.GroupBox()
+Me.BrowseButton = New System.Windows.Forms.Button()
+Me.FilePath = New System.Windows.Forms.TextBox()
+Me.ApplicationInformationGroupBox = New System.Windows.Forms.GroupBox()
+Me.ApplicationName = New System.Windows.Forms.TextBox()
+Me.ApplicationVersion = New System.Windows.Forms.TextBox()
+Me.VersionLabel = New System.Windows.Forms.Label()
+Me.NameLabel = New System.Windows.Forms.Label()
+Me.ApplicationArtifactsGroupBox = New System.Windows.Forms.GroupBox()
+Me.AppNotLoadedLabel = New System.Windows.Forms.Label()
+Me.ArtifactsTreeView = New System.Windows.Forms.TreeView()
+Me.GroupBox1 = New System.Windows.Forms.GroupBox()
+Me.BrowseCasesButton = New System.Windows.Forms.Button()
+Me.CaseListTextBox = New System.Windows.Forms.TextBox()
+Me.ImportButton = New System.Windows.Forms.Button()
+Me.AppArtifactsPanel = New System.Windows.Forms.Panel()
+Me.FieldMapPanel = New System.Windows.Forms.Panel()
+Me.ArtifactMappingGroupBox = New System.Windows.Forms.GroupBox()
+Me.Label4 = New System.Windows.Forms.Label()
+Me.Label3 = New System.Windows.Forms.Label()
+Me.Label2 = New System.Windows.Forms.Label()
+Me.NoTargetFieldsQualifyLabel = New System.Windows.Forms.Label()
+Me.MapToAppBtn = New System.Windows.Forms.Button()
+Me.AppToMapBtn = New System.Windows.Forms.Button()
+Me.MapToTargetBtn = New System.Windows.Forms.Button()
+Me.TargetToMapBtn = New System.Windows.Forms.Button()
+Me.TargetFieldList = New System.Windows.Forms.ListBox()
+Me.MappedList_Target = New System.Windows.Forms.ListBox()
+Me.MappedList_App = New System.Windows.Forms.ListBox()
+Me.AppFieldList = New System.Windows.Forms.ListBox()
+Me.CannotMapPanel = New System.Windows.Forms.Panel()
+Me.CannotMapLabel = New System.Windows.Forms.Label()
+Me.ObjectInfoGroupBox = New System.Windows.Forms.GroupBox()
+Me.ObjectMapComboBox = New System.Windows.Forms.ComboBox()
+Me.Label1 = New System.Windows.Forms.Label()
+Me.MapFieldsLink = New System.Windows.Forms.LinkLabel()
+Me.ApplicationFileGroupBox.SuspendLayout()
+Me.ApplicationInformationGroupBox.SuspendLayout()
+Me.ApplicationArtifactsGroupBox.SuspendLayout()
+Me.GroupBox1.SuspendLayout()
+Me.AppArtifactsPanel.SuspendLayout()
+Me.FieldMapPanel.SuspendLayout()
+Me.ArtifactMappingGroupBox.SuspendLayout()
+Me.CannotMapPanel.SuspendLayout()
+Me.ObjectInfoGroupBox.SuspendLayout()
+Me.SuspendLayout()
+'
+'MainMenu
+'
+Me.MainMenu.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.MenuFile, Me.MenuImport})
+'
+'MenuFile
+'
+Me.MenuFile.Index = 0
+Me.MenuFile.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.MenuFile_Refresh, Me.MenuFile_Separator, Me.MenuFile_Close})
+Me.MenuFile.Text = "&File"
+'
+'MenuFile_Refresh
+'
+Me.MenuFile_Refresh.Enabled = False
+Me.MenuFile_Refresh.Index = 0
+Me.MenuFile_Refresh.Shortcut = System.Windows.Forms.Shortcut.F5
+Me.MenuFile_Refresh.Text = "&Refresh"
+'
+'MenuFile_Separator
+'
+Me.MenuFile_Separator.Index = 1
+Me.MenuFile_Separator.Text = "-"
+'
+'MenuFile_Close
+'
+Me.MenuFile_Close.Index = 2
+Me.MenuFile_Close.Text = "&Close"
+'
+'MenuImport
+'
+Me.MenuImport.Index = 1
+Me.MenuImport.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.MenuImport_ImportApplication})
+Me.MenuImport.Text = "&Import"
+'
+'MenuImport_ImportApplication
+'
+Me.MenuImport_ImportApplication.Enabled = False
+Me.MenuImport_ImportApplication.Index = 0
+Me.MenuImport_ImportApplication.Shortcut = System.Windows.Forms.Shortcut.F4
+Me.MenuImport_ImportApplication.Text = "Import &Application"
+'
+'ApplicationFileGroupBox
+'
+Me.ApplicationFileGroupBox.Controls.Add(Me.BrowseButton)
+Me.ApplicationFileGroupBox.Controls.Add(Me.FilePath)
+Me.ApplicationFileGroupBox.Location = New System.Drawing.Point(15, 12)
+Me.ApplicationFileGroupBox.Name = "ApplicationFileGroupBox"
+Me.ApplicationFileGroupBox.Size = New System.Drawing.Size(868, 48)
+Me.ApplicationFileGroupBox.TabIndex = 1
+Me.ApplicationFileGroupBox.TabStop = False
+Me.ApplicationFileGroupBox.Text = "Application File"
+'
+'BrowseButton
+'
+Me.BrowseButton.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+Me.BrowseButton.Location = New System.Drawing.Point(834, 16)
+Me.BrowseButton.Name = "BrowseButton"
+Me.BrowseButton.Size = New System.Drawing.Size(24, 20)
+Me.BrowseButton.TabIndex = 3
+Me.BrowseButton.Text = "..."
+'
+'FilePath
+'
+Me.FilePath.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
+				Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+Me.FilePath.BackColor = System.Drawing.SystemColors.ControlLightLight
+Me.FilePath.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+Me.FilePath.ForeColor = System.Drawing.SystemColors.ControlDarkDark
+Me.FilePath.Location = New System.Drawing.Point(8, 16)
+Me.FilePath.Name = "FilePath"
+Me.FilePath.ReadOnly = True
+Me.FilePath.Size = New System.Drawing.Size(820, 20)
+Me.FilePath.TabIndex = 2
+Me.FilePath.Text = "Select a file ..."
+'
+'ApplicationInformationGroupBox
+'
+Me.ApplicationInformationGroupBox.Controls.Add(Me.ApplicationName)
+Me.ApplicationInformationGroupBox.Controls.Add(Me.ApplicationVersion)
+Me.ApplicationInformationGroupBox.Controls.Add(Me.VersionLabel)
+Me.ApplicationInformationGroupBox.Controls.Add(Me.NameLabel)
+Me.ApplicationInformationGroupBox.Location = New System.Drawing.Point(15, 127)
+Me.ApplicationInformationGroupBox.Name = "ApplicationInformationGroupBox"
+Me.ApplicationInformationGroupBox.Size = New System.Drawing.Size(868, 88)
+Me.ApplicationInformationGroupBox.TabIndex = 7
+Me.ApplicationInformationGroupBox.TabStop = False
+Me.ApplicationInformationGroupBox.Text = "Application Information"
+'
+'ApplicationName
+'
+Me.ApplicationName.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
+				Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+Me.ApplicationName.Location = New System.Drawing.Point(60, 24)
+Me.ApplicationName.Name = "ApplicationName"
+Me.ApplicationName.ReadOnly = True
+Me.ApplicationName.Size = New System.Drawing.Size(800, 20)
+Me.ApplicationName.TabIndex = 8
+'
+'ApplicationVersion
+'
+Me.ApplicationVersion.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
+				Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+Me.ApplicationVersion.Location = New System.Drawing.Point(60, 56)
+Me.ApplicationVersion.Name = "ApplicationVersion"
+Me.ApplicationVersion.ReadOnly = True
+Me.ApplicationVersion.Size = New System.Drawing.Size(800, 20)
+Me.ApplicationVersion.TabIndex = 9
+'
+'VersionLabel
+'
+Me.VersionLabel.Location = New System.Drawing.Point(6, 56)
+Me.VersionLabel.Name = "VersionLabel"
+Me.VersionLabel.Size = New System.Drawing.Size(48, 23)
+Me.VersionLabel.TabIndex = 1
+Me.VersionLabel.Text = "Version:"
+'
+'NameLabel
+'
+Me.NameLabel.Location = New System.Drawing.Point(6, 24)
+Me.NameLabel.Name = "NameLabel"
+Me.NameLabel.Size = New System.Drawing.Size(48, 23)
+Me.NameLabel.TabIndex = 0
+Me.NameLabel.Text = "Name:"
+'
+'ApplicationArtifactsGroupBox
+'
+Me.ApplicationArtifactsGroupBox.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
+				Or System.Windows.Forms.AnchorStyles.Left) _
+				Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+Me.ApplicationArtifactsGroupBox.Controls.Add(Me.AppNotLoadedLabel)
+Me.ApplicationArtifactsGroupBox.Controls.Add(Me.ArtifactsTreeView)
+Me.ApplicationArtifactsGroupBox.Location = New System.Drawing.Point(10, 5)
+Me.ApplicationArtifactsGroupBox.Name = "ApplicationArtifactsGroupBox"
+Me.ApplicationArtifactsGroupBox.Size = New System.Drawing.Size(868, 342)
+Me.ApplicationArtifactsGroupBox.TabIndex = 10
+Me.ApplicationArtifactsGroupBox.TabStop = False
+Me.ApplicationArtifactsGroupBox.Text = "Application Artifacts"
+'
+'AppNotLoadedLabel
+'
+Me.AppNotLoadedLabel.AutoSize = True
+Me.AppNotLoadedLabel.BackColor = System.Drawing.SystemColors.Window
+Me.AppNotLoadedLabel.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+Me.AppNotLoadedLabel.Location = New System.Drawing.Point(289, 134)
+Me.AppNotLoadedLabel.Name = "AppNotLoadedLabel"
+Me.AppNotLoadedLabel.Size = New System.Drawing.Size(286, 26)
+Me.AppNotLoadedLabel.TabIndex = 9
+Me.AppNotLoadedLabel.Text = "Select an Application File and Target Workspace" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "using the buttons above"
+Me.AppNotLoadedLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter
+'
+'ArtifactsTreeView
+'
+Me.ArtifactsTreeView.Dock = System.Windows.Forms.DockStyle.Fill
+Me.ArtifactsTreeView.Enabled = False
+Me.ArtifactsTreeView.Location = New System.Drawing.Point(3, 16)
+Me.ArtifactsTreeView.Name = "ArtifactsTreeView"
+Me.ArtifactsTreeView.Size = New System.Drawing.Size(862, 323)
+Me.ArtifactsTreeView.TabIndex = 8
+'
+'GroupBox1
+'
+Me.GroupBox1.Controls.Add(Me.BrowseCasesButton)
+Me.GroupBox1.Controls.Add(Me.CaseListTextBox)
+Me.GroupBox1.Location = New System.Drawing.Point(15, 66)
+Me.GroupBox1.Name = "GroupBox1"
+Me.GroupBox1.Size = New System.Drawing.Size(868, 55)
+Me.GroupBox1.TabIndex = 4
+Me.GroupBox1.TabStop = False
+Me.GroupBox1.Text = "Target Workspace(s)"
+'
+'BrowseCasesButton
+'
+Me.BrowseCasesButton.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+Me.BrowseCasesButton.Location = New System.Drawing.Point(834, 23)
+Me.BrowseCasesButton.Name = "BrowseCasesButton"
+Me.BrowseCasesButton.Size = New System.Drawing.Size(24, 20)
+Me.BrowseCasesButton.TabIndex = 6
+Me.BrowseCasesButton.Text = "..."
+'
+'CaseListTextBox
+'
+Me.CaseListTextBox.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
+				Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+Me.CaseListTextBox.BackColor = System.Drawing.SystemColors.ControlLightLight
+Me.CaseListTextBox.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+Me.CaseListTextBox.ForeColor = System.Drawing.SystemColors.ControlDarkDark
+Me.CaseListTextBox.Location = New System.Drawing.Point(8, 23)
+Me.CaseListTextBox.Name = "CaseListTextBox"
+Me.CaseListTextBox.ReadOnly = True
+Me.CaseListTextBox.Size = New System.Drawing.Size(820, 20)
+Me.CaseListTextBox.TabIndex = 5
+Me.CaseListTextBox.Text = "Select one or more workspaces  ..."
+'
+'ImportButton
+'
+Me.ImportButton.Enabled = False
+Me.ImportButton.Location = New System.Drawing.Point(817, 583)
+Me.ImportButton.Name = "ImportButton"
+Me.ImportButton.Size = New System.Drawing.Size(75, 23)
+Me.ImportButton.TabIndex = 11
+Me.ImportButton.Text = "Import"
+Me.ImportButton.UseVisualStyleBackColor = True
+'
+'AppArtifactsPanel
+'
+Me.AppArtifactsPanel.Controls.Add(Me.ApplicationArtifactsGroupBox)
+Me.AppArtifactsPanel.Location = New System.Drawing.Point(5, 230)
+Me.AppArtifactsPanel.Name = "AppArtifactsPanel"
+Me.AppArtifactsPanel.Size = New System.Drawing.Size(887, 350)
+Me.AppArtifactsPanel.TabIndex = 13
+'
+'FieldMapPanel
+'
+Me.FieldMapPanel.Controls.Add(Me.ArtifactMappingGroupBox)
+Me.FieldMapPanel.Controls.Add(Me.ObjectInfoGroupBox)
+Me.FieldMapPanel.Location = New System.Drawing.Point(5, 632)
+Me.FieldMapPanel.Name = "FieldMapPanel"
+Me.FieldMapPanel.Size = New System.Drawing.Size(887, 350)
+Me.FieldMapPanel.TabIndex = 14
+'
+'ArtifactMappingGroupBox
+'
+Me.ArtifactMappingGroupBox.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
+				Or System.Windows.Forms.AnchorStyles.Left) _
+				Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+Me.ArtifactMappingGroupBox.Controls.Add(Me.Label4)
+Me.ArtifactMappingGroupBox.Controls.Add(Me.Label3)
+Me.ArtifactMappingGroupBox.Controls.Add(Me.Label2)
+Me.ArtifactMappingGroupBox.Controls.Add(Me.NoTargetFieldsQualifyLabel)
+Me.ArtifactMappingGroupBox.Controls.Add(Me.MapToAppBtn)
+Me.ArtifactMappingGroupBox.Controls.Add(Me.AppToMapBtn)
+Me.ArtifactMappingGroupBox.Controls.Add(Me.MapToTargetBtn)
+Me.ArtifactMappingGroupBox.Controls.Add(Me.TargetToMapBtn)
+Me.ArtifactMappingGroupBox.Controls.Add(Me.TargetFieldList)
+Me.ArtifactMappingGroupBox.Controls.Add(Me.MappedList_Target)
+Me.ArtifactMappingGroupBox.Controls.Add(Me.MappedList_App)
+Me.ArtifactMappingGroupBox.Controls.Add(Me.AppFieldList)
+Me.ArtifactMappingGroupBox.Controls.Add(Me.CannotMapPanel)
+Me.ArtifactMappingGroupBox.Location = New System.Drawing.Point(11, 66)
+Me.ArtifactMappingGroupBox.Name = "ArtifactMappingGroupBox"
+Me.ArtifactMappingGroupBox.Size = New System.Drawing.Size(867, 273)
+Me.ArtifactMappingGroupBox.TabIndex = 11
+Me.ArtifactMappingGroupBox.TabStop = False
+Me.ArtifactMappingGroupBox.Text = "Artifact Mapping"
+'
+'Label4
+'
+Me.Label4.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+Me.Label4.Location = New System.Drawing.Point(344, 28)
+Me.Label4.Name = "Label4"
+Me.Label4.Size = New System.Drawing.Size(177, 23)
+Me.Label4.TabIndex = 18
+Me.Label4.Text = "Mapping"
+Me.Label4.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
+'
+'Label3
+'
+Me.Label3.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+Me.Label3.Location = New System.Drawing.Point(672, 28)
+Me.Label3.Name = "Label3"
+Me.Label3.Size = New System.Drawing.Size(177, 23)
+Me.Label3.TabIndex = 17
+Me.Label3.Text = "  Workspace Fields"
+Me.Label3.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+'
+'Label2
+'
+Me.Label2.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+Me.Label2.Location = New System.Drawing.Point(18, 28)
+Me.Label2.Name = "Label2"
+Me.Label2.Size = New System.Drawing.Size(177, 23)
+Me.Label2.TabIndex = 16
+Me.Label2.Text = "  Application Fields"
+Me.Label2.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+'
+'NoTargetFieldsQualifyLabel
+'
+Me.NoTargetFieldsQualifyLabel.BackColor = System.Drawing.SystemColors.Window
+Me.NoTargetFieldsQualifyLabel.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+Me.NoTargetFieldsQualifyLabel.Location = New System.Drawing.Point(688, 98)
+Me.NoTargetFieldsQualifyLabel.Name = "NoTargetFieldsQualifyLabel"
+Me.NoTargetFieldsQualifyLabel.Size = New System.Drawing.Size(147, 135)
+Me.NoTargetFieldsQualifyLabel.TabIndex = 15
+Me.NoTargetFieldsQualifyLabel.Text = "No fields in the target workspace qualify for mapping to this application field."
+Me.NoTargetFieldsQualifyLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter
+Me.NoTargetFieldsQualifyLabel.Visible = False
+'
+'MapToAppBtn
+'
+Me.MapToAppBtn.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+Me.MapToAppBtn.Location = New System.Drawing.Point(204, 108)
+Me.MapToAppBtn.Name = "MapToAppBtn"
+Me.MapToAppBtn.Size = New System.Drawing.Size(45, 23)
+Me.MapToAppBtn.TabIndex = 7
+Me.MapToAppBtn.Text = "<"
+Me.MapToAppBtn.UseVisualStyleBackColor = True
+'
+'AppToMapBtn
+'
+Me.AppToMapBtn.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+Me.AppToMapBtn.Location = New System.Drawing.Point(204, 79)
+Me.AppToMapBtn.Name = "AppToMapBtn"
+Me.AppToMapBtn.Size = New System.Drawing.Size(45, 23)
+Me.AppToMapBtn.TabIndex = 6
+Me.AppToMapBtn.Text = ">"
+Me.AppToMapBtn.UseVisualStyleBackColor = True
+'
+'MapToTargetBtn
+'
+Me.MapToTargetBtn.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+Me.MapToTargetBtn.Location = New System.Drawing.Point(620, 108)
+Me.MapToTargetBtn.Name = "MapToTargetBtn"
+Me.MapToTargetBtn.Size = New System.Drawing.Size(45, 23)
+Me.MapToTargetBtn.TabIndex = 5
+Me.MapToTargetBtn.Text = ">"
+Me.MapToTargetBtn.UseVisualStyleBackColor = True
+'
+'TargetToMapBtn
+'
+Me.TargetToMapBtn.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+Me.TargetToMapBtn.Location = New System.Drawing.Point(620, 79)
+Me.TargetToMapBtn.Name = "TargetToMapBtn"
+Me.TargetToMapBtn.Size = New System.Drawing.Size(45, 23)
+Me.TargetToMapBtn.TabIndex = 4
+Me.TargetToMapBtn.Text = "<"
+Me.TargetToMapBtn.UseVisualStyleBackColor = True
+'
+'TargetFieldList
+'
+Me.TargetFieldList.FormattingEnabled = True
+Me.TargetFieldList.Location = New System.Drawing.Point(672, 54)
+Me.TargetFieldList.Name = "TargetFieldList"
+Me.TargetFieldList.Size = New System.Drawing.Size(177, 199)
+Me.TargetFieldList.TabIndex = 3
+'
+'MappedList_Target
+'
+Me.MappedList_Target.FormattingEnabled = True
+Me.MappedList_Target.Location = New System.Drawing.Point(434, 54)
+Me.MappedList_Target.Name = "MappedList_Target"
+Me.MappedList_Target.Size = New System.Drawing.Size(177, 199)
+Me.MappedList_Target.TabIndex = 2
+'
+'MappedList_App
+'
+Me.MappedList_App.FormattingEnabled = True
+Me.MappedList_App.Location = New System.Drawing.Point(257, 54)
+Me.MappedList_App.Name = "MappedList_App"
+Me.MappedList_App.Size = New System.Drawing.Size(177, 199)
+Me.MappedList_App.TabIndex = 1
+'
+'AppFieldList
+'
+Me.AppFieldList.FormattingEnabled = True
+Me.AppFieldList.Location = New System.Drawing.Point(18, 54)
+Me.AppFieldList.Name = "AppFieldList"
+Me.AppFieldList.Size = New System.Drawing.Size(177, 199)
+Me.AppFieldList.TabIndex = 0
+'
+'CannotMapPanel
+'
+Me.CannotMapPanel.Controls.Add(Me.CannotMapLabel)
+Me.CannotMapPanel.Location = New System.Drawing.Point(8, 19)
+Me.CannotMapPanel.Name = "CannotMapPanel"
+Me.CannotMapPanel.Size = New System.Drawing.Size(853, 248)
+Me.CannotMapPanel.TabIndex = 16
+'
+'CannotMapLabel
+'
+Me.CannotMapLabel.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+Me.CannotMapLabel.Location = New System.Drawing.Point(130, 60)
+Me.CannotMapLabel.Name = "CannotMapLabel"
+Me.CannotMapLabel.Size = New System.Drawing.Size(573, 112)
+Me.CannotMapLabel.TabIndex = 0
+Me.CannotMapLabel.Text = "CannotMapLabel"
+Me.CannotMapLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
+'
+'ObjectInfoGroupBox
+'
+Me.ObjectInfoGroupBox.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
+				Or System.Windows.Forms.AnchorStyles.Left) _
+				Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+Me.ObjectInfoGroupBox.Controls.Add(Me.ObjectMapComboBox)
+Me.ObjectInfoGroupBox.Controls.Add(Me.Label1)
+Me.ObjectInfoGroupBox.Location = New System.Drawing.Point(8, 0)
+Me.ObjectInfoGroupBox.Name = "ObjectInfoGroupBox"
+Me.ObjectInfoGroupBox.Size = New System.Drawing.Size(870, 60)
+Me.ObjectInfoGroupBox.TabIndex = 10
+Me.ObjectInfoGroupBox.TabStop = False
+Me.ObjectInfoGroupBox.Text = "Object Information"
+'
+'ObjectMapComboBox
+'
+Me.ObjectMapComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+Me.ObjectMapComboBox.FormattingEnabled = True
+Me.ObjectMapComboBox.Location = New System.Drawing.Point(88, 25)
+Me.ObjectMapComboBox.Name = "ObjectMapComboBox"
+Me.ObjectMapComboBox.Size = New System.Drawing.Size(303, 21)
+Me.ObjectMapComboBox.TabIndex = 10
+'
+'Label1
+'
+Me.Label1.Location = New System.Drawing.Point(18, 28)
+Me.Label1.Name = "Label1"
+Me.Label1.Size = New System.Drawing.Size(74, 23)
+Me.Label1.TabIndex = 9
+Me.Label1.Text = "Object Name:"
+'
+'MapFieldsLink
+'
+Me.MapFieldsLink.Location = New System.Drawing.Point(665, 583)
+Me.MapFieldsLink.Name = "MapFieldsLink"
+Me.MapFieldsLink.Size = New System.Drawing.Size(136, 23)
+Me.MapFieldsLink.TabIndex = 15
+Me.MapFieldsLink.TabStop = True
+Me.MapFieldsLink.Text = "MapFieldsLink"
+Me.MapFieldsLink.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+Me.MapFieldsLink.Visible = False
+'
+'RelativityApplicationForm
+'
+Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
+Me.ClientSize = New System.Drawing.Size(904, 1011)
+Me.Controls.Add(Me.MapFieldsLink)
+Me.Controls.Add(Me.FieldMapPanel)
+Me.Controls.Add(Me.AppArtifactsPanel)
+Me.Controls.Add(Me.GroupBox1)
+Me.Controls.Add(Me.ApplicationInformationGroupBox)
+Me.Controls.Add(Me.ApplicationFileGroupBox)
+Me.Controls.Add(Me.ImportButton)
+Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog
+Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
+Me.MaximizeBox = False
+Me.Menu = Me.MainMenu
+Me.MinimumSize = New System.Drawing.Size(380, 395)
+Me.Name = "RelativityApplicationForm"
+Me.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Show
+Me.Text = "Relativity Desktop Client | Import Application"
+Me.ApplicationFileGroupBox.ResumeLayout(False)
+Me.ApplicationFileGroupBox.PerformLayout()
+Me.ApplicationInformationGroupBox.ResumeLayout(False)
+Me.ApplicationInformationGroupBox.PerformLayout()
+Me.ApplicationArtifactsGroupBox.ResumeLayout(False)
+Me.ApplicationArtifactsGroupBox.PerformLayout()
+Me.GroupBox1.ResumeLayout(False)
+Me.GroupBox1.PerformLayout()
+Me.AppArtifactsPanel.ResumeLayout(False)
+Me.FieldMapPanel.ResumeLayout(False)
+Me.ArtifactMappingGroupBox.ResumeLayout(False)
+Me.CannotMapPanel.ResumeLayout(False)
+Me.ObjectInfoGroupBox.ResumeLayout(False)
+Me.ResumeLayout(False)
 
-		End Sub
+End Sub
 
 #End Region
 
