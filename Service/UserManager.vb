@@ -2,8 +2,6 @@ Namespace kCura.WinEDDS.Service
 	Public Class UserManager
 		Inherits kCura.EDDS.WebAPI.UserManagerBase.UserManager
 
-		Private Shared _cookieSyncLock As New System.Object
-
 		Public Sub New(ByVal credentials As Net.ICredentials, ByVal cookieContainer As System.Net.CookieContainer)
 			MyBase.New()
 
@@ -18,10 +16,8 @@ Namespace kCura.WinEDDS.Service
 			If kCura.WinEDDS.Config.UsesWebAPI Then
 				Try
 					'ClearCookiesBeforeLogin call MUST be made before Login web method is called
-					SyncLock _cookieSyncLock
-						MyBase.ClearCookiesBeforeLogin()
-						Return MyBase.Login(emailAddress, password)
-					End SyncLock
+					MyBase.ClearCookiesBeforeLogin()
+					Return MyBase.Login(emailAddress, password)
 				Catch ex As System.Exception
 					Throw
 				End Try
