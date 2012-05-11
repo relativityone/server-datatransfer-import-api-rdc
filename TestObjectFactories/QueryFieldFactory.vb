@@ -37,6 +37,7 @@
 				_dt.Columns.Add("RelationalTableName", GetType(String))
 				_dt.Columns.Add("RelationalTableColumnName", GetType(String))
 				_dt.Columns.Add("RelationalTableColumnName2", GetType(String))
+				_dt.Columns.Add("IsDirected", GetType(Boolean))
 			End If
 			Return _dt.NewRow
 		End Function
@@ -71,7 +72,8 @@
 		 ByVal dataSource As String, _
 		 ByVal relationalTableName As String, _
 		 ByVal relationalTableColumnName As String, _
-		 ByVal relationalTableColumnName2 As String _
+		 ByVal relationalTableColumnName2 As String, _
+		 Optional ByVal isDirected As Boolean = False _
 		) As kCura.WinEDDS.ViewFieldInfo
 			Dim row As System.Data.DataRow = Me.GenerateRow
 			row("FieldArtifactId") = fieldArtifactID
@@ -104,6 +106,7 @@
 			row("RelationalTableName") = relationalTableName
 			row("RelationalTableColumnName") = relationalTableColumnName
 			row("RelationalTableColumnName2") = relationalTableColumnName2
+			row("IsDirected") = isDirected
 			Return New kCura.WinEDDS.ViewFieldInfo(row)
 		End Function
 
