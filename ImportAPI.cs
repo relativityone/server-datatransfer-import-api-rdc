@@ -29,6 +29,7 @@ namespace kCura.Relativity.ImportAPI
 		private ICredentials _credentials;
 		private ObjectTypeManager _objectTypeManager;
 		private ProductionManager _productionManager;
+		private string _webServiceURL;
 
 		public CookieContainer CookieCache  { get { return _cookieMonster; } }
 		public ICredentials Credentials { get { return _credentials; } }
@@ -40,18 +41,18 @@ namespace kCura.Relativity.ImportAPI
 		/// <param name="Password">Password for the user</param>
 		public ImportAPI(String UserName, String Password)
 		{
-			PerformLogin(UserName, Password);
+			PerformLogin(UserName, Password, string.Empty );
 		}
 
-		private void PerformLogin(string UserName, string Password)
+
+		private void PerformLogin(string UserName, string Password, string WebServiceURL)
 		{
-			_userName = UserName;
-			_password = Password;
-			_cookieMonster = new CookieContainer();
+			ImportCredentialManager.SessionCredentials creds;
 
 			try
 			{
-				_credentials = GetCredentials();
+				ImportCredentialManager.WebServiceURL = WebServiceURL;
+				creds = ImportCredentialManager.GetCredentials(UserName, Password);
 			}
 			catch (Exception ex)
 			{
@@ -59,11 +60,15 @@ namespace kCura.Relativity.ImportAPI
 				throw newex;
 			}
 
+			_credentials = creds.Credentials;
+			_cookieMonster = creds.CookieMonster;
+
 			if (_credentials == null)
 			{
 				throw new Exception("Login failed.");
 			}
 		}
+
 
 		/// <summary>
 		/// Create an instance of ImportAPI.  Username and Password are required (unless using windows auth), and will be validated
@@ -74,8 +79,7 @@ namespace kCura.Relativity.ImportAPI
 		/// <param name="WebServiceURL"></param>
 		public ImportAPI(String UserName, String Password, String WebServiceURL)
 		{
-			Config.ProgrammaticServiceURL = WebServiceURL;
-			PerformLogin(UserName, Password);
+			PerformLogin(UserName, Password, WebServiceURL );
 		}
 
 		/// <summary>
@@ -85,8 +89,7 @@ namespace kCura.Relativity.ImportAPI
 		/// <param name="WebServiceURL"></param>
 		public ImportAPI(String WebServiceURL)
 		{
-			Config.ProgrammaticServiceURL = WebServiceURL;
-			this.PerformLogin("A","B");
+			this.PerformLogin(null, null, WebServiceURL );
 		}
 
 		/// <summary>
@@ -198,7 +201,7 @@ namespace kCura.Relativity.ImportAPI
 
 		public ImportBulkArtifactJob NewNativeDocumentImportJob(string token)
 		{
-			var importJob = new ImportBulkArtifactJob(_userName, _password);
+			var importJob = new ImportBulkArtifactJob(_credentials, _cookieMonster, _userName, _password);
 			int? userId = null;
 
 			if (!string.IsNullOrEmpty(token))
