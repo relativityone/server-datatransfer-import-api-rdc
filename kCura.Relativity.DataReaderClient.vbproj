@@ -181,6 +181,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="AssemblyInfoLocal.vb" />
+    <Compile Include="ImportCredentialManager.vb" />
     <Compile Include="Enum.vb">
       <SubType>Code</SubType>
     </Compile>

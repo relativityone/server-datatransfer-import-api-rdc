@@ -18,7 +18,10 @@ Namespace kCura.Relativity.DataReaderClient
 		Private _nativeDataReader As SourceIDataReader
 		Private _nativeSettings As ImportSettingsBase
 		Private WithEvents _observer As Windows.Process.ProcessObserver
-		
+
+		Private _credentials As ICredentials
+		Private _cookieMonster As Net.CookieContainer
+
 #End Region
 
 #Region "Constructors"
@@ -34,10 +37,19 @@ Namespace kCura.Relativity.DataReaderClient
 			_hasErrors = False
 		End Sub
 
-		Friend Sub New(ByVal relativityUserName As String, ByVal password As String)
+		'Friend Sub New(ByVal relativityUserName As String, ByVal password As String)
+		'	Me.New()
+		'	Settings.RelativityUsername = relativityUserName
+		'	Settings.RelativityPassword = password
+		'End Sub
+
+		Friend Sub New(ByVal credentials As ICredentials, ByVal cookieMonster As Net.CookieContainer, ByVal relativityUserName As String, ByVal password As String)
 			Me.New()
+			_credentials = credentials
+			_cookieMonster = cookieMonster
 			Settings.RelativityUsername = relativityUserName
 			Settings.RelativityPassword = password
+
 		End Sub
 
 #End Region
@@ -69,6 +81,14 @@ Namespace kCura.Relativity.DataReaderClient
 				If Settings.DisableNativeLocationValidation.HasValue Then process.DisableNativeLocationValidation = Settings.DisableNativeLocationValidation.Value
 				process.DisableUserSecurityCheck = Settings.DisableUserSecurityCheck
 				process.AuditLevel = Settings.AuditLevel
+
+				' authenticate here
+				If _credentials Is Nothing Then
+					ImportCredentialManager.WebServiceURL = Settings.WebServiceURL
+					Dim creds As ImportCredentialManager.SessionCredentials = ImportCredentialManager.GetCredentials(Settings.RelativityUsername, Settings.RelativityPassword)
+					_credentials = creds.Credentials
+					_cookieMonster = creds.CookieMonster
+				End If
 
 				RaiseEvent OnMessage(New Status("Updating settings"))
 				process.LoadFile = CreateLoadFile(Settings)
@@ -243,11 +263,11 @@ Namespace kCura.Relativity.DataReaderClient
 
 		Private Function MapInputToSettingsFactory(ByVal clientSettings As Settings) As WinEDDS.DynamicObjectSettingsFactory
 			Dim dosf_settings As kCura.WinEDDS.DynamicObjectSettingsFactory = Nothing
-			If clientSettings.Credential Is Nothing Then
-				dosf_settings = New kCura.WinEDDS.DynamicObjectSettingsFactory(clientSettings.RelativityUsername, clientSettings.RelativityPassword, clientSettings.CaseArtifactId, clientSettings.ArtifactTypeId)
-			Else
-				dosf_settings = New kCura.WinEDDS.DynamicObjectSettingsFactory(clientSettings.Credential, clientSettings.CaseArtifactId, clientSettings.ArtifactTypeId)
-			End If
+			'If clientSettings.Credential Is Nothing Then
+			'dosf_settings = New kCura.WinEDDS.DynamicObjectSettingsFactory(clientSettings.RelativityUsername, clientSettings.RelativityPassword, clientSettings.CaseArtifactId, clientSettings.ArtifactTypeId)
+			'Else
+			dosf_settings = New kCura.WinEDDS.DynamicObjectSettingsFactory(_credentials, _cookieMonster, clientSettings.CaseArtifactId, clientSettings.ArtifactTypeId)
+			'End If
 			_docIDFieldCollection = dosf_settings.DocumentIdentifierFields
 
 			With dosf_settings
@@ -370,11 +390,14 @@ Namespace kCura.Relativity.DataReaderClient
 		'End Sub
 
 		Private Sub ValidateRelativitySettings()
-			If Settings.RelativityUsername Is Nothing OrElse Settings.RelativityUsername = String.Empty Then
-				Throw New ImportSettingsException("RelativityUserName")
-			End If
-			If Settings.RelativityPassword Is Nothing OrElse Settings.RelativityPassword = String.Empty Then
-				Throw New ImportSettingsException("RelativityPassword")
+			If _credentials Is Nothing Then
+				' not sure we should even validate these here!  It may be unnecessary
+				If Settings.RelativityUsername Is Nothing OrElse Settings.RelativityUsername = String.Empty Then
+					Throw New ImportSettingsException("RelativityUserName")
+				End If
+				If Settings.RelativityPassword Is Nothing OrElse Settings.RelativityPassword = String.Empty Then
+					Throw New ImportSettingsException("RelativityPassword")
+				End If
 			End If
 			If Settings.CaseArtifactId <= 0 Then
 				Throw New ImportSettingsException("CaseArtifactId", "This must be the ID of an existing case.")

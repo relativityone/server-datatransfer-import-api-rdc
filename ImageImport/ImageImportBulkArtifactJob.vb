@@ -77,6 +77,14 @@ Namespace kCura.Relativity.DataReaderClient
 				process.DisableUserSecurityCheck = Settings.DisableUserSecurityCheck
 				process.AuditLevel = Settings.AuditLevel
 
+				' Authenticate here instead of in CreateLoadFile
+				If _credentials Is Nothing Then
+					ImportCredentialManager.WebServiceURL = Settings.WebServiceURL
+					Dim creds As ImportCredentialManager.SessionCredentials = ImportCredentialManager.GetCredentials(Settings.RelativityUsername, Settings.RelativityPassword)
+					_credentials = creds.Credentials
+					_cookieMonster = creds.CookieMonster
+				End If
+
 				RaiseEvent OnMessage(New Status("Updating settings"))
 				process.ImageLoadFile = Me.CreateLoadFile()
 
@@ -129,9 +137,6 @@ Namespace kCura.Relativity.DataReaderClient
 		Private Function CreateLoadFile() As WinEDDS.ImageLoadFile
 
 			Dim credential As System.Net.NetworkCredential = DirectCast(_credentials, Net.NetworkCredential)
-			If credential Is Nothing Then
-				credential = DirectCast(GetCredentials(Settings), Net.NetworkCredential)
-			End If
 
 			Dim casemanager As kCura.WinEDDS.Service.CaseManager = GetCaseManager(credential)
 			Dim tempLoadFile As New kCura.WinEDDS.ImageLoadFile
@@ -187,22 +192,6 @@ Namespace kCura.Relativity.DataReaderClient
 
 		Private Function GetCaseManager(ByVal credentials As Net.ICredentials) As kCura.WinEDDS.Service.CaseManager
 			Return New kCura.WinEDDS.Service.CaseManager(credentials, _cookieMonster)
-		End Function
-
-		Private Function GetCredentials(ByVal settings As ImageSettings) As System.Net.ICredentials
-			Dim credential As System.Net.ICredentials = Nothing
-			If credential Is Nothing Then
-				Try
-					credential = kCura.WinEDDS.Api.LoginHelper.LoginWindowsAuth(_cookieMonster)
-				Catch
-				End Try
-			End If
-
-			While credential Is Nothing
-				credential = kCura.WinEDDS.Api.LoginHelper.LoginUsernamePassword(settings.RelativityUsername, settings.RelativityPassword, _cookieMonster)
-				Exit While
-			End While
-			Return credential
 		End Function
 
 

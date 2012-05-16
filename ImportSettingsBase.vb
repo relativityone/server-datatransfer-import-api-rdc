@@ -115,27 +115,12 @@
 		''' URL of the web service to use
 		''' </summary>
 		Public Property WebServiceURL() As String
-			Get
-				Return WinEDDS.Config.ProgrammaticServiceURL
-			End Get
-			Set(value As String)
-				If Not value Is Nothing Then
-					'Dim slashIndex As Integer = value.LastIndexOf("/", StringComparison.CurrentCulture)
-					'If slashIndex <> (value.Length - 1) Then
-					'	_webServiceURL = String.Format("{0}/", value)
-					'Else
-					'	_webServiceURL = value
-					'End If
-					WinEDDS.Config.ProgrammaticServiceURL = value
-				End If
-			End Set
-		End Property
 
 		''' <summary>
 		''' '
 		''' </summary>
 		Public Property StartRecordNumber() As Int64
 
-		Public Property Credential As System.Net.NetworkCredential
+		'Public Property Credential As System.Net.NetworkCredential
 	End Class
 End Namespace
