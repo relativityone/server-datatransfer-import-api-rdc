@@ -14,6 +14,9 @@ Friend Class ImportCredentialManager
 			Return _WebServiceURL
 		End Get
 		Set(value As String)
+			If value Is Nothing Then
+				value = String.Empty
+			End If
 			_WebServiceURL = value.Trim.ToLower
 			Config.ProgrammaticServiceURL = value
 		End Set
