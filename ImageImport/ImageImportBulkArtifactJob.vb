@@ -63,6 +63,14 @@ Namespace kCura.Relativity.DataReaderClient
 			_jobReport = New JobReport()
 			_jobReport.StartTime = DateTime.Now()
 
+			' Authenticate here instead of in CreateLoadFile
+			If _credentials Is Nothing Then
+				ImportCredentialManager.WebServiceURL = Settings.WebServiceURL
+				Dim creds As ImportCredentialManager.SessionCredentials = ImportCredentialManager.GetCredentials(Settings.RelativityUsername, Settings.RelativityPassword)
+				_credentials = creds.Credentials
+				_cookieMonster = creds.CookieMonster
+			End If
+
 			If IsSettingsValid() Then
 				RaiseEvent OnMessage(New Status("Getting source data from database"))
 
@@ -77,13 +85,6 @@ Namespace kCura.Relativity.DataReaderClient
 				process.DisableUserSecurityCheck = Settings.DisableUserSecurityCheck
 				process.AuditLevel = Settings.AuditLevel
 
-				' Authenticate here instead of in CreateLoadFile
-				If _credentials Is Nothing Then
-					ImportCredentialManager.WebServiceURL = Settings.WebServiceURL
-					Dim creds As ImportCredentialManager.SessionCredentials = ImportCredentialManager.GetCredentials(Settings.RelativityUsername, Settings.RelativityPassword)
-					_credentials = creds.Credentials
-					_cookieMonster = creds.CookieMonster
-				End If
 
 				RaiseEvent OnMessage(New Status("Updating settings"))
 				process.ImageLoadFile = Me.CreateLoadFile()
@@ -215,15 +216,6 @@ Namespace kCura.Relativity.DataReaderClient
 		End Function
 
 		Private Sub ValidateRelativitySettings()
-			If Not _credentials Is Nothing Then
-				' using the new ImportAPI class, credentials will be passed in automatically.  In that case, the username and password will be ignored and the original credentials will be used.
-				If Settings.RelativityUsername Is Nothing OrElse Settings.RelativityUsername = String.Empty Then
-					Throw New ImportSettingsException("RelativityUserName")
-				End If
-				If Settings.RelativityPassword Is Nothing OrElse Settings.RelativityPassword = String.Empty Then
-					Throw New ImportSettingsException("RelativityPassword")
-				End If
-			End If
 
 			If Settings.CaseArtifactId <= 0 Then
 				Throw New ImportSettingsException("CaseArtifactId", "This must be the ID of an existing case.")

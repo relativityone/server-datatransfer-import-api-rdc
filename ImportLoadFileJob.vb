@@ -69,6 +69,14 @@ Namespace kCura.Relativity.DataReaderClient
 			_jobReport = New JobReport()
 			_jobReport.StartTime = DateTime.Now()
 
+			' authenticate here
+			If _credentials Is Nothing Then
+				ImportCredentialManager.WebServiceURL = Settings.WebServiceURL
+				Dim creds As ImportCredentialManager.SessionCredentials = ImportCredentialManager.GetCredentials(Settings.RelativityUsername, Settings.RelativityPassword)
+				_credentials = creds.Credentials
+				_cookieMonster = creds.CookieMonster
+			End If
+
 			If IsSettingsValid() Then
 
 				RaiseEvent OnMessage(New Status("Getting source data from database"))
@@ -82,13 +90,6 @@ Namespace kCura.Relativity.DataReaderClient
 				process.DisableUserSecurityCheck = Settings.DisableUserSecurityCheck
 				process.AuditLevel = Settings.AuditLevel
 
-				' authenticate here
-				If _credentials Is Nothing Then
-					ImportCredentialManager.WebServiceURL = Settings.WebServiceURL
-					Dim creds As ImportCredentialManager.SessionCredentials = ImportCredentialManager.GetCredentials(Settings.RelativityUsername, Settings.RelativityPassword)
-					_credentials = creds.Credentials
-					_cookieMonster = creds.CookieMonster
-				End If
 
 				RaiseEvent OnMessage(New Status("Updating settings"))
 				process.LoadFile = CreateLoadFile(Settings)
@@ -381,24 +382,8 @@ Namespace kCura.Relativity.DataReaderClient
 			End If
 		End Sub
 
-		'Private Sub ValidateOverwriteModeSettings()
-		'	If Settings.OverwriteMode = OverwriteModeEnum.Overlay Then
-		'		If Settings.OverlayIdentifierSourceFieldName Is Nothing OrElse Settings.OverlayIdentifierSourceFieldName.Trim = String.Empty Then
-		'			Throw New Exception("When Overwrite Mode is set to Overlay, Overlay Identifier Field must be set.")
-		'		End If
-		'	End If
-		'End Sub
 
 		Private Sub ValidateRelativitySettings()
-			If _credentials Is Nothing Then
-				' not sure we should even validate these here!  It may be unnecessary
-				If Settings.RelativityUsername Is Nothing OrElse Settings.RelativityUsername = String.Empty Then
-					Throw New ImportSettingsException("RelativityUserName")
-				End If
-				If Settings.RelativityPassword Is Nothing OrElse Settings.RelativityPassword = String.Empty Then
-					Throw New ImportSettingsException("RelativityPassword")
-				End If
-			End If
 			If Settings.CaseArtifactId <= 0 Then
 				Throw New ImportSettingsException("CaseArtifactId", "This must be the ID of an existing case.")
 			End If
