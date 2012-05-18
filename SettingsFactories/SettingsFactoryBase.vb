@@ -71,11 +71,17 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Protected Sub New(ByVal credential As System.Net.NetworkCredential)
+			Me.new(credential, New System.Net.CookieContainer)
+		End Sub
+
+		Protected Sub New(ByVal credential As System.Net.NetworkCredential, ByVal cookieContainer As System.Net.CookieContainer)
+
 			_credential = credential
 
 			ServicePointManager.ServerCertificateValidationCallback = Function(sender As Object, certificate As X509Certificate, chain As X509Chain, sslPolicyErrors As SslPolicyErrors) True
 
-			_cookieContainer = New System.Net.CookieContainer
+			_cookieContainer = cookieContainer
+
 			Dim relativityManager As New kCura.WinEDDS.Service.RelativityManager(_credential, _cookieContainer)
 
 			Dim successfulLogin As Boolean = False

@@ -52,7 +52,15 @@ Namespace kCura.WinEDDS.Service
 			Try
 				System.Threading.Thread.CurrentThread.Join(Config.WaitBeforeReconnect)
 				Dim cred As System.Net.NetworkCredential = DirectCast(Me.Credentials, System.Net.NetworkCredential)
-				If Not Me.Credentials Is System.Net.CredentialCache.DefaultCredentials Then Me.Login(cred.UserName, cred.Password)
+				If Not Me.Credentials Is System.Net.CredentialCache.DefaultCredentials Then
+					If String.IsNullOrEmpty(cred.Password) Then
+						Dim relativityManager As New kCura.WinEDDS.Service.RelativityManager(cred, Me.CookieContainer)
+
+						relativityManager.ValidateSuccesfulLogin()
+					Else
+						Me.Login(cred.UserName, cred.Password)
+					End If
+				End If
 				kCura.WinEDDS.Service.Settings.AuthenticationToken = Me.GenerateDistributedAuthenticationToken()
 				Return True
 			Catch ex As System.Exception

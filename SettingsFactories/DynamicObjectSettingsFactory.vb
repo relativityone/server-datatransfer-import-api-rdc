@@ -15,6 +15,11 @@ Namespace kCura.WinEDDS
 			Me.InitLoadFile(caseArtifactID, artifactTypeID)
 		End Sub
 
+		Public Sub New(ByVal credential As System.Net.ICredentials, ByVal cookieContainer As System.Net.CookieContainer, ByVal caseArtifactID As Int32, ByVal artifactTypeID As Int32)
+			MyBase.new(DirectCast(credential, System.Net.NetworkCredential), cookieContainer)
+			Me.InitLoadFile(caseArtifactID, artifactTypeID)
+		End Sub
+
 		Public Function ToLoadFile() As kCura.WinEDDS.LoadFile
 			Return _loadFile
 		End Function
