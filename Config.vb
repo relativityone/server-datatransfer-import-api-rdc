@@ -4,21 +4,27 @@ Namespace kCura.WinEDDS
 
 #Region " ConfigSettings "
 
+		Private Shared _LoadLock As New System.Object
+
 		Private Shared _configDictionary As System.Collections.IDictionary
 		Public Shared ReadOnly Property ConfigSettings() As System.Collections.IDictionary
 			Get
 				If _configDictionary Is Nothing Then
-					_configDictionary = DirectCast(System.Configuration.ConfigurationManager.GetSection("kCura.WinEDDS"), System.Collections.IDictionary)
-					If _configDictionary Is Nothing Then _configDictionary = New System.Collections.Hashtable
-					If Not _configDictionary.Contains("ImportBatchSize") Then _configDictionary.Add("ImportBatchSize", "1000")
-					If Not _configDictionary.Contains("DynamicBatchResizingOn") Then _configDictionary.Add("DynamicBatchResizingOn", "True")
-					If Not _configDictionary.Contains("MinimumBatchSize") Then _configDictionary.Add("MinimumBatchSize", "100")
-					If Not _configDictionary.Contains("WaitTimeBetweenRetryAttempts") Then _configDictionary.Add("WaitTimeBetweenRetryAttempts", "30")
-					If Not _configDictionary.Contains("ImportBatchMaxVolume") Then _configDictionary.Add("ImportBatchMaxVolume", "10485760") '10(2^20) - don't know what 10MB standard is
-					If Not _configDictionary.Contains("ExportBatchSize") Then _configDictionary.Add("ExportBatchSize", "1000")
-					If Not _configDictionary.Contains("EnableSingleModeImport") Then _configDictionary.Add("EnableSingleModeImport", "False")
-					If Not _configDictionary.Contains("CreateErrorForEmptyNativeFile") Then _configDictionary.Add("CreateErrorForEmptyNativeFile", "False")
-					If Not _configDictionary.Contains("AuditLevel") Then _configDictionary.Add("AuditLevel", "FullAudit")
+					SyncLock _LoadLock
+						If _configDictionary Is Nothing Then
+							_configDictionary = DirectCast(System.Configuration.ConfigurationManager.GetSection("kCura.WinEDDS"), System.Collections.IDictionary)
+							If _configDictionary Is Nothing Then _configDictionary = New System.Collections.Hashtable
+							If Not _configDictionary.Contains("ImportBatchSize") Then _configDictionary.Add("ImportBatchSize", "1000")
+							If Not _configDictionary.Contains("DynamicBatchResizingOn") Then _configDictionary.Add("DynamicBatchResizingOn", "True")
+							If Not _configDictionary.Contains("MinimumBatchSize") Then _configDictionary.Add("MinimumBatchSize", "100")
+							If Not _configDictionary.Contains("WaitTimeBetweenRetryAttempts") Then _configDictionary.Add("WaitTimeBetweenRetryAttempts", "30")
+							If Not _configDictionary.Contains("ImportBatchMaxVolume") Then _configDictionary.Add("ImportBatchMaxVolume", "10485760") '10(2^20) - don't know what 10MB standard is
+							If Not _configDictionary.Contains("ExportBatchSize") Then _configDictionary.Add("ExportBatchSize", "1000")
+							If Not _configDictionary.Contains("EnableSingleModeImport") Then _configDictionary.Add("EnableSingleModeImport", "False")
+							If Not _configDictionary.Contains("CreateErrorForEmptyNativeFile") Then _configDictionary.Add("CreateErrorForEmptyNativeFile", "False")
+							If Not _configDictionary.Contains("AuditLevel") Then _configDictionary.Add("AuditLevel", "FullAudit")
+						End If
+					End SyncLock
 				End If
 				Return _configDictionary
 			End Get
