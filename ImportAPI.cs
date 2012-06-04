@@ -196,7 +196,7 @@ namespace kCura.Relativity.ImportAPI
 		/// <returns></returns>
 		public ImportBulkArtifactJob NewNativeDocumentImportJob()
 		{
-			return NewNativeDocumentImportJob(null);
+			return NewObjectImportJob(10);
 		}
 
 		public ImportBulkArtifactJob NewNativeDocumentImportJob(string token)
@@ -215,6 +215,19 @@ namespace kCura.Relativity.ImportAPI
 
 			importJob.Settings.OnBehalfOfUserMasterId = userId;
 			return importJob;
+		}
+
+		/// <summary>
+		/// This will return a new instance of an ImportBulkArtifactJob, with the
+		/// instance's Settings.ArtifactTypeId property set to <paramref name="artifactTypeId"/>.
+		/// </summary>
+		/// <param name="artifactTypeId">The ArtifactTypeId of the objects to be imported.</param>
+		public ImportBulkArtifactJob NewObjectImportJob(int artifactTypeId) {
+			var returnJob = NewNativeDocumentImportJob(null);
+
+			returnJob.Settings.ArtifactTypeId = artifactTypeId;
+
+			return returnJob;
 		}
 
 		/// <summary>
