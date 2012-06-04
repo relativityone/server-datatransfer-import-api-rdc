@@ -470,8 +470,7 @@ Namespace kCura.Relativity.DataReaderClient
 			Get
 				Return CType(_nativeSettings, Settings)
 			End Get
-			<Obsolete("Assigning a value to the 'Settings' property is being phased out.  Please use the existing value of the property.")>
-			Set(value As Settings)
+			Friend Set(value As Settings)
 				_nativeSettings = value
 			End Set
 		End Property
@@ -480,8 +479,7 @@ Namespace kCura.Relativity.DataReaderClient
 			Get
 				Return _nativeDataReader
 			End Get
-			<Obsolete("Assigning a value to the 'SourceData' property is being phased out.  Please use the existing value of the property.")>
-			Set(value As SourceIDataReader)
+			Friend Set(value As SourceIDataReader)
 				_nativeDataReader = value
 			End Set
 		End Property

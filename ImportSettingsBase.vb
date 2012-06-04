@@ -1,7 +1,7 @@
 ﻿Namespace kCura.Relativity.DataReaderClient
 	Public Class ImportSettingsBase
 
-		Protected Sub New()
+		Friend Sub New()
 			ExtractedTextFieldContainsFilePath = False
 
 		End Sub

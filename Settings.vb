@@ -3,7 +3,7 @@ Namespace kCura.Relativity.DataReaderClient
 		Inherits ImportSettingsBase
 
 #Region "Constructors"
-		Public Sub New()
+		Friend Sub New()
 			MyBase.New()
 			MultiValueDelimiter = CType(";", Char)
 			NestedValueDelimiter = CType("\", Char)

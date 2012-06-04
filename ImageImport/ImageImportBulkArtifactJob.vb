@@ -16,8 +16,7 @@ Namespace kCura.Relativity.DataReaderClient
 			Get
 				Return _settings
 			End Get
-			<Obsolete("Assigning a value to the 'Settings' property is being phased out.  Please use the existing value of the property.")>
-			Set(value As ImageSettings)
+			Friend Set(value As ImageSettings)
 				_settings = value
 			End Set
 		End Property
@@ -26,8 +25,7 @@ Namespace kCura.Relativity.DataReaderClient
 			Get
 				Return _sourceData
 			End Get
-			<Obsolete("Assigning a value to the 'SourceData' property is being phased out.  Please use the existing value of the property.")>
-			Set(value As ImageSourceIDataReader)
+			Friend Set(value As ImageSourceIDataReader)
 				_sourceData = value
 			End Set
 		End Property

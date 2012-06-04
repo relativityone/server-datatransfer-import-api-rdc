@@ -12,7 +12,7 @@ Namespace kCura.Relativity.DataReaderClient
 #End Region
 
 #Region "Constructors"
-		Public Sub New()
+		Friend Sub New()
 			MyBase.New()
 
 			_batesNumberFieldDefault = "BatesNumber"
