@@ -1470,39 +1470,22 @@ Namespace kCura.EDDS.WinForm
 				ElseIf Not ex.Message.IndexOf("The request failed with HTTP status 401") = -1 AndAlso ex.Source = "System.Web.Services" Then
 					Me.ChangeWebServiceURL("The current Web Service URL was resolved but is not configured correctly. Try a new URL?")
 				End If
-			Catch ex As System.Web.Services.Protocols.SoapException
-				Dim errorText As String = Nothing
-				If ex.Detail IsNot Nothing Then
-					If ex.Detail.ChildNodes.Count > 0 Then
-						If ex.Detail.FirstChild.InnerText = "Relativity.Core.Exception.RelativityAccessDisabledException" Then
-							errorText = "Your Relativity account has been disabled."
-						End If
-					End If
-				End If
-				HandleException(ex, errorText)
 			Catch ex As System.Exception
-				HandleException(ex, Nothing)
+				Dim x As New ErrorDialog
+				If Not ex.Message.IndexOf("Invalid License.") = -1 Then
+					x.Text = "Invalid License."
+				ElseIf (Not ex.Message.IndexOf("A library (dll)") = -1) OrElse (Not ex.Message.IndexOf("Relativity is temporarily unavailable.") = -1) Then
+					x.Text = "Invalid Assembly."
+				Else
+					x.Text = "Unrecognized login error.  Try again?"
+				End If
+				x.Initialize(ex, x.Text)
+				If x.ShowDialog = DialogResult.OK Then
+					NewLogin()
+				Else
+					ExitApplication()
+				End If
 			End Try
-		End Sub
-
-		Public Sub HandleException(ex As System.Exception, errorText As String)
-			Dim x As New ErrorDialog
-			If Not ex.Message.IndexOf("Invalid License.") = -1 Then
-				x.Text = "Invalid License."
-			ElseIf (Not ex.Message.IndexOf("A library (dll)") = -1) OrElse (Not ex.Message.IndexOf("Relativity is temporarily unavailable.") = -1) Then
-				x.Text = "Invalid Assembly."
-			Else
-				x.Text = "Unrecognized login error.  Try again?"
-			End If
-			x.Initialize(ex, x.Text)
-			If (errorText IsNot Nothing) Then
-				x.Text = errorText
-			End If
-			If x.ShowDialog = DialogResult.OK Then
-				NewLogin()
-			Else
-				ExitApplication()
-			End If
 		End Sub
 
 		Public Function DoLogin(ByVal cred As System.Net.NetworkCredential) As Boolean
