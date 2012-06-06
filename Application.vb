@@ -1482,7 +1482,7 @@ Namespace kCura.EDDS.WinForm
 					ElseIf (Not ex.Message.IndexOf("A library (dll)") = -1) OrElse (Not ex.Message.IndexOf("Relativity is temporarily unavailable.") = -1) Then
 						x.Text = "Invalid Assembly."
 					Else
-						x.Text = "Unrecognized login error.  Try again?"
+						x.Text = "Unrecognized login error."
 					End If
 					x.Initialize(ex, x.Text)
 				End If
