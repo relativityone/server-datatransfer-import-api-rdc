@@ -1472,14 +1472,20 @@ Namespace kCura.EDDS.WinForm
 				End If
 			Catch ex As System.Exception
 				Dim x As New ErrorDialog
-				If Not ex.Message.IndexOf("Invalid License.") = -1 Then
-					x.Text = "Invalid License."
-				ElseIf (Not ex.Message.IndexOf("A library (dll)") = -1) OrElse (Not ex.Message.IndexOf("Relativity is temporarily unavailable.") = -1) Then
-					x.Text = "Invalid Assembly."
+				If IsAccessDisabledException(ex) Then
+					x.Text = "Account Disabled"
+					x.InitializeSoapExceptionWithCustomMessage(DirectCast(ex, System.Web.Services.Protocols.SoapException), _
+							"Your Relativity account has been disabled.")
 				Else
-					x.Text = "Unrecognized login error.  Try again?"
+					If Not ex.Message.IndexOf("Invalid License.") = -1 Then
+						x.Text = "Invalid License."
+					ElseIf (Not ex.Message.IndexOf("A library (dll)") = -1) OrElse (Not ex.Message.IndexOf("Relativity is temporarily unavailable.") = -1) Then
+						x.Text = "Invalid Assembly."
+					Else
+						x.Text = "Unrecognized login error.  Try again?"
+					End If
+					x.Initialize(ex, x.Text)
 				End If
-				x.Initialize(ex, x.Text)
 				If x.ShowDialog = DialogResult.OK Then
 					NewLogin()
 				Else
@@ -1487,6 +1493,22 @@ Namespace kCura.EDDS.WinForm
 				End If
 			End Try
 		End Sub
+
+		Public Function IsAccessDisabledException(ByVal ex As System.Exception) As Boolean
+			If TypeOf ex Is System.Web.Services.Protocols.SoapException Then
+				Dim soapEx As System.Web.Services.Protocols.SoapException = DirectCast(ex, System.Web.Services.Protocols.SoapException)
+				Dim exceptionType As String = String.Empty
+				Try
+					exceptionType = soapEx.Detail("ExceptionType").InnerText
+				Catch caughtEx As Exception
+					' Not a properly formatted SoapException
+					Return False
+				End Try
+				Return exceptionType = "Relativity.Core.Exception.RelativityAccessDisabledException"
+			Else
+				Return False
+			End If
+		End Function
 
 		Public Function DoLogin(ByVal cred As System.Net.NetworkCredential) As Boolean
 			Dim userManager As New kCura.WinEDDS.Service.UserManager(cred, _cookieContainer)
