@@ -144,6 +144,23 @@ Public Class ErrorDialog
 		_errorText.Text = errorMessage & vbNewLine & "-----" & vbNewLine & ex.ToString
 	End Sub
 
+	Public Sub InitializeSoapExceptionWithCustomMessage(ByVal ex As SoapException, ByVal errorMessage As String)
+		Try
+			Dim MrSoapy As SoapException = CType(ex, SoapException)
+			If String.IsNullOrEmpty(errorMessage) Then
+				txtBoxFriendlyError.Text = MrSoapy.Detail("ExceptionMessage").InnerText
+			Else
+				txtBoxFriendlyError.Text = errorMessage
+			End If
+			_errorText.Text = MrSoapy.Detail("ExceptionFullText").InnerText
+			Return
+		Catch ex2 As System.Exception	'MrSoapy not soapified :(
+			'use a default rendering
+			txtBoxFriendlyError.Text = errorMessage
+			_errorText.Text = errorMessage & vbNewLine & "-----" & vbNewLine & ex.ToString
+		End Try
+	End Sub
+
 	Private Sub LinkLabel1_LinkClicked(ByVal sender As System.Object, ByVal e As System.Windows.Forms.LinkLabelLinkClickedEventArgs) Handles LinkLabel1.LinkClicked
 		System.Windows.Forms.Clipboard.SetText(_errorText.Text)
 	End Sub
