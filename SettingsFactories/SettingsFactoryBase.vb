@@ -86,7 +86,7 @@ Namespace kCura.WinEDDS
 
 			Dim successfulLogin As Boolean = False
 			Try
-				successfulLogin = relativityManager.ValidateSuccessfulLogin()
+				successfulLogin = relativityManager.ValidateSuccesfulLogin()
 			Catch ex As Exception
 				successfulLogin = False
 			End Try

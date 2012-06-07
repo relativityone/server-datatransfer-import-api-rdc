@@ -18,12 +18,7 @@ Namespace kCura.WinEDDS.Service
 			Return wr
 		End Function
 
-		''' <summary>
-		''' Try to log in using Windows Authentication
-		''' </summary>
-		''' <returns>true if successful, else false</returns>
-		''' <remarks></remarks>
-		Public Shadows Function ValidateSuccessfulLogin() As Boolean
+		Public Shadows Function ValidateSuccesfulLogin() As Boolean
 			Dim retVal As Boolean
 			If kCura.WinEDDS.Config.UsesWebAPI Then
 				retVal = MyBase.ValidateSuccessfulLogin
