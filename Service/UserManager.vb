@@ -56,7 +56,7 @@ Namespace kCura.WinEDDS.Service
 					If String.IsNullOrEmpty(cred.Password) Then
 						Dim relativityManager As New kCura.WinEDDS.Service.RelativityManager(cred, Me.CookieContainer)
 
-						relativityManager.ValidateSuccesfulLogin()
+						relativityManager.ValidateSuccessfulLogin()
 					Else
 						Me.Login(cred.UserName, cred.Password)
 					End If

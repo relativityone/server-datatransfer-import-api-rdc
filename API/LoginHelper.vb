@@ -16,7 +16,7 @@
 			myHttpWebResponse = DirectCast(myHttpWebRequest.GetResponse(), System.Net.HttpWebResponse)
 			relativityManager = New kCura.WinEDDS.Service.RelativityManager(cred, cookieContainer)
 
-			If relativityManager.ValidateSuccesfulLogin Then
+			If relativityManager.ValidateSuccessfulLogin Then
 				CheckVersion(cred, cookieContainer)
 				Initialize(relativityManager)
 				Return cred
