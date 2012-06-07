@@ -1420,6 +1420,11 @@ Namespace kCura.EDDS.WinForm
 #End Region
 
 #Region "Login"
+		''' <summary>
+		''' Try to log in using Windows Authentication
+		''' </summary>
+		''' <returns>true if successful, else false</returns>
+		''' <remarks></remarks>
 		Friend Function DefaultCredentialsAreGood() As Boolean
 			Dim myHttpWebRequest As System.Net.HttpWebRequest
 			Dim myHttpWebResponse As System.Net.HttpWebResponse
@@ -1432,7 +1437,7 @@ Namespace kCura.EDDS.WinForm
 			Try
 				myHttpWebResponse = DirectCast(myHttpWebRequest.GetResponse(), System.Net.HttpWebResponse)
 				relativityManager = New kCura.WinEDDS.Service.RelativityManager(cred, _cookieContainer)
-				If relativityManager.ValidateSuccesfulLogin Then
+				If relativityManager.ValidateSuccessfulLogin Then
 					CheckVersion(System.Net.CredentialCache.DefaultCredentials)
 					_credential = cred
 					kCura.WinEDDS.Service.Settings.AuthenticationToken = New kCura.WinEDDS.Service.UserManager(cred, _cookieContainer).GenerateDistributedAuthenticationToken()
@@ -1475,7 +1480,7 @@ Namespace kCura.EDDS.WinForm
 				If IsAccessDisabledException(ex) Then
 					x.Text = "Account Disabled"
 					x.InitializeSoapExceptionWithCustomMessage(DirectCast(ex, System.Web.Services.Protocols.SoapException), _
-							"Your Relativity account has been disabled.")
+						"Your Relativity account has been disabled.")
 				Else
 					If Not ex.Message.IndexOf("Invalid License.") = -1 Then
 						x.Text = "Invalid License."
