@@ -4,7 +4,7 @@ Imports kCura.WinEDDS
 
 Friend Class ImportCredentialManager
 
-	Private Shared CredentialCache As List(Of CredentialEntry)
+	Private Shared CredentialCache As New List(Of CredentialEntry)
 	Private Shared _WebServiceURL As String
 
 	Private Shared _lockObject As New System.Object
