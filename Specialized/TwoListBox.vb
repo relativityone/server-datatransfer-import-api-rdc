@@ -79,7 +79,7 @@ Namespace kCura.Windows.Forms
 			Me._moveAllFieldsLeft.Location = New System.Drawing.Point(172, 172)
 			Me._moveAllFieldsLeft.Name = "_moveAllFieldsLeft"
 			Me._moveAllFieldsLeft.Size = New System.Drawing.Size(36, 24)
-			Me._moveAllFieldsLeft.TabIndex = 13
+			Me._moveAllFieldsLeft.TabIndex = 15
 			Me._moveAllFieldsLeft.Text = "çç"
 			'
 			'_moveFieldLeft
@@ -88,7 +88,7 @@ Namespace kCura.Windows.Forms
 			Me._moveFieldLeft.Location = New System.Drawing.Point(172, 140)
 			Me._moveFieldLeft.Name = "_moveFieldLeft"
 			Me._moveFieldLeft.Size = New System.Drawing.Size(36, 24)
-			Me._moveFieldLeft.TabIndex = 12
+			Me._moveFieldLeft.TabIndex = 14
 			Me._moveFieldLeft.Text = "ß"
 			'
 			'_moveFieldRight
@@ -97,7 +97,7 @@ Namespace kCura.Windows.Forms
 			Me._moveFieldRight.Location = New System.Drawing.Point(172, 108)
 			Me._moveFieldRight.Name = "_moveFieldRight"
 			Me._moveFieldRight.Size = New System.Drawing.Size(36, 24)
-			Me._moveFieldRight.TabIndex = 11
+			Me._moveFieldRight.TabIndex = 13
 			Me._moveFieldRight.Text = "à"
 			'
 			'_moveAllFieldsRight
@@ -106,7 +106,7 @@ Namespace kCura.Windows.Forms
 			Me._moveAllFieldsRight.Location = New System.Drawing.Point(172, 76)
 			Me._moveAllFieldsRight.Name = "_moveAllFieldsRight"
 			Me._moveAllFieldsRight.Size = New System.Drawing.Size(36, 24)
-			Me._moveAllFieldsRight.TabIndex = 10
+			Me._moveAllFieldsRight.TabIndex = 12
 			Me._moveAllFieldsRight.Text = "èè"
 			'
 			'_leftListBox
@@ -118,7 +118,7 @@ Namespace kCura.Windows.Forms
 			Me._leftListBox.Name = "_leftListBox"
 			Me._leftListBox.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended
 			Me._leftListBox.Size = New System.Drawing.Size(144, 277)
-			Me._leftListBox.TabIndex = 9
+			Me._leftListBox.TabIndex = 11
 			'
 			'_moveRightSelectedItemDown
 			'
@@ -127,7 +127,7 @@ Namespace kCura.Windows.Forms
 			Me._moveRightSelectedItemDown.Name = "_moveRightSelectedItemDown"
 			Me._moveRightSelectedItemDown.RightToLeft = System.Windows.Forms.RightToLeft.No
 			Me._moveRightSelectedItemDown.Size = New System.Drawing.Size(20, 24)
-			Me._moveRightSelectedItemDown.TabIndex = 15
+			Me._moveRightSelectedItemDown.TabIndex = 18
 			Me._moveRightSelectedItemDown.Text = "â"
 			'
 			'_moveRightSelectedItemUp
@@ -136,7 +136,7 @@ Namespace kCura.Windows.Forms
 			Me._moveRightSelectedItemUp.Location = New System.Drawing.Point(360, 108)
 			Me._moveRightSelectedItemUp.Name = "_moveRightSelectedItemUp"
 			Me._moveRightSelectedItemUp.Size = New System.Drawing.Size(20, 24)
-			Me._moveRightSelectedItemUp.TabIndex = 14
+			Me._moveRightSelectedItemUp.TabIndex = 17
 			Me._moveRightSelectedItemUp.Text = "á"
 			'
 			'_moveLeftSelectedItemDown
@@ -146,7 +146,7 @@ Namespace kCura.Windows.Forms
 			Me._moveLeftSelectedItemDown.Name = "_moveLeftSelectedItemDown"
 			Me._moveLeftSelectedItemDown.RightToLeft = System.Windows.Forms.RightToLeft.No
 			Me._moveLeftSelectedItemDown.Size = New System.Drawing.Size(20, 24)
-			Me._moveLeftSelectedItemDown.TabIndex = 18
+			Me._moveLeftSelectedItemDown.TabIndex = 10
 			Me._moveLeftSelectedItemDown.Text = "â"
 			'
 			'_moveLeftSelectedItemUp
@@ -155,7 +155,7 @@ Namespace kCura.Windows.Forms
 			Me._moveLeftSelectedItemUp.Location = New System.Drawing.Point(0, 108)
 			Me._moveLeftSelectedItemUp.Name = "_moveLeftSelectedItemUp"
 			Me._moveLeftSelectedItemUp.Size = New System.Drawing.Size(20, 24)
-			Me._moveLeftSelectedItemUp.TabIndex = 17
+			Me._moveLeftSelectedItemUp.TabIndex = 9
 			Me._moveLeftSelectedItemUp.Text = "á"
 			'
 			'TwoListBox
