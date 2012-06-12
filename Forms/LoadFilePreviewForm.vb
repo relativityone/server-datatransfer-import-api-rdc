@@ -19,6 +19,7 @@ Namespace kCura.EDDS.WinForm
 			_formType = formType
 			_multiRecordDelimiter = mutliRecordDelimiter
 			_previewCodeCount = previewCodeCount
+
 			Me.Text = "Relativity Desktop Client | Preview Load File"
 			If _formType = kCura.EDDS.WinForm.LoadFilePreviewForm.FormType.Codes Then
 				Me.Text = "Relativity Desktop Client | Preview Choices and Folders"
@@ -81,6 +82,7 @@ Namespace kCura.EDDS.WinForm
 
 		Public DataSource As DataTable
 		Public IsError As Boolean
+		Private _erroredCellCollection As Generic.Dictionary(Of String, Generic.List(Of Integer))
 
 		Public Enum FormType
 			LoadFile = 1
@@ -103,6 +105,13 @@ Namespace kCura.EDDS.WinForm
 				Dim col As New HighlightErrorColumn
 				col.MappingName = column.ColumnName
 				col.HeaderText = column.ColumnName
+				If (_erroredCellCollection.ContainsKey(column.ColumnName)) Then
+					If (Not IsNothing(_erroredCellCollection(column.ColumnName))) Then
+						For Each i In _erroredCellCollection(column.ColumnName)
+							col.AddErrorRow(i)
+						Next
+					End If
+				End If
 				tablestyles.GridColumnStyles.Add(col)
 			Next
 			_grid.TableStyles.Add(tablestyles)
@@ -115,10 +124,53 @@ Namespace kCura.EDDS.WinForm
 			If _formType = FormType.Codes Then
 				Me.DataSource = _application.BuildFoldersAndCodesDataSource(DirectCast(args(0), ArrayList), _previewCodeCount)
 			Else
+				populateErroredCellCollection(DirectCast(args(0), ArrayList))
 				Me.DataSource = _application.BuildLoadFileDataSource(DirectCast(args(0), ArrayList))
 			End If
 			Me.IsError = CType(args(1), Boolean)
 			Me.Invoke(New HandleDataSourceDelegate(AddressOf HandleDataSource))
+		End Sub
+
+		Private Sub populateErroredCellCollection(ByVal al As ArrayList)
+			_erroredCellCollection = New Generic.Dictionary(Of String, Generic.List(Of Integer))
+
+			Dim column As New System.Data.DataColumn
+			Dim rowNumber As Integer = 0
+			Dim colNumber As Integer = 0
+			Dim listOfRowWideErrors As Generic.List(Of Integer) = New Generic.List(Of Integer)
+
+			For Each r In al
+				If Not r Is Nothing Then
+					If TypeOf r Is System.Exception Then
+						' row-wide error
+						listOfRowWideErrors.Add(rowNumber)
+					Else
+						colNumber = 0
+						Dim c As Api.ArtifactField
+						For Each c In DirectCast(r, Api.ArtifactField())
+							If Not c Is Nothing Then
+								If Not _erroredCellCollection.ContainsKey(c.DisplayName) Then
+									_erroredCellCollection(c.DisplayName) = New Generic.List(Of Integer)
+								End If
+								' how is what was an exception now just a string?
+								If TypeOf c.Value Is System.Exception Then
+									' column error
+									_erroredCellCollection(c.DisplayName).Add(rowNumber)
+								End If
+							End If
+							colNumber += 1
+						Next
+					End If
+
+				End If
+				rowNumber += 1
+			Next
+
+			For Each i As Integer In listOfRowWideErrors
+				For Each key In _erroredCellCollection.Keys
+					_erroredCellCollection(key).Add(i)
+				Next
+			Next
 		End Sub
 
 		Public Sub HandleDataSource()
@@ -132,6 +184,23 @@ Namespace kCura.EDDS.WinForm
 
 	Public Class HighlightErrorColumn
 		Inherits DataGridColumnStyle
+
+		Protected _listOfErrorRows As Generic.List(Of Integer)
+
+		Public Sub AddErrorRow(ByVal rowNumber As Integer)
+			_listOfErrorRows = If(_listOfErrorRows Is Nothing, New Generic.List(Of Integer)(), _listOfErrorRows)
+			If (Not _listOfErrorRows Is Nothing) And rowNumber >= 0 And Not _listOfErrorRows.Contains(rowNumber) Then
+				_listOfErrorRows.Add(rowNumber)
+			End If
+		End Sub
+
+		Protected Function IsRowErrored(ByVal rowNumber As Integer) As Boolean
+			If (Not (IsNothing(_listOfErrorRows))) Then
+				Return _listOfErrorRows.Contains(rowNumber)
+			End If
+			Return False
+		End Function
+
 
 		Protected Overrides Sub Abort(ByVal rowNum As Integer)
 
@@ -162,12 +231,13 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 		Protected Overloads Overrides Sub Paint(ByVal g As System.Drawing.Graphics, ByVal bounds As System.Drawing.Rectangle, ByVal source As System.Windows.Forms.CurrencyManager, ByVal rowNum As Integer, ByVal alignToRight As Boolean)
-			Dim cellcontents As String = Me.GetColumnValueAtRow(source, rowNum).ToString.ToLower
-			If cellcontents.IndexOf("error") <> -1 Then
-				Me.Paint(g, bounds, source, rowNum, Brushes.White, Brushes.Red, alignToRight)
-			Else
-				Me.Paint(g, bounds, source, rowNum, Brushes.White, Brushes.Black, alignToRight)
-			End If
+			'### NOTE: Brush Color decision is made in the other Paint(), so there's no need to duplicate it here, especially now that it's a check on error
+			'			Dim cellcontents As String = Me.GetColumnValueAtRow(source, rowNum).ToString.ToLower
+			'		If cellcontents.IndexOf("error") <> -1 Then
+			'Me.Paint(g, bounds, source, rowNum, Brushes.White, Brushes.Red, alignToRight)
+			'Else
+			Me.Paint(g, bounds, source, rowNum, Brushes.White, Brushes.Black, alignToRight)
+			'End If
 		End Sub
 
 		Protected Overloads Overrides Sub Paint(ByVal g As Graphics, ByVal bounds As Rectangle, ByVal [source] As CurrencyManager, ByVal rowNum As Integer, ByVal backBrush As Brush, ByVal foreBrush As Brush, ByVal alignToRight As Boolean)
@@ -178,7 +248,8 @@ Namespace kCura.EDDS.WinForm
 			rect.Height -= 2
 			Dim myForeBrush As Brush = foreBrush
 			Dim cellcontents As String = Me.GetColumnValueAtRow(source, rowNum).ToString.ToLower
-			If cellcontents.IndexOf("error") <> -1 Then
+			'		If cellcontents.IndexOf("error") <> -1 Then
+			If IsRowErrored(rowNum) Then
 				myForeBrush = Brushes.Red
 				'Me.Paint(g, bounds, source, rowNum, Brushes.White, Brushes.Red, alignToRight)
 			Else
