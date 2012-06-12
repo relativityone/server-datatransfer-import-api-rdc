@@ -293,10 +293,22 @@ Namespace kCura.WinEDDS
 				SetFieldValue(field, column, True, identityValue, extractedTextCodePageId, importBehavior)
 				Return TypeOf field.Value Is System.Exception
 			Catch ex As ImporterExceptionBase
-				field.Value = ex.Message
+				field.Value = New ErrorMessage(ex)
 				Return True
 			End Try
 		End Function
+
+		Public Class ErrorMessage
+			Private _message As System.String
+			Public Sub New(ex As System.Exception)
+				_message = ex.Message
+			End Sub
+			Public Overrides Function ToString() As String
+				Return _message
+			End Function
+
+
+		End Class
 
 		Private Sub _processController_HaltProcessEvent(ByVal processID As System.Guid) Handles _processController.HaltProcessEvent
 			_continue = False
