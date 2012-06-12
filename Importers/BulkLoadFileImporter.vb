@@ -409,6 +409,10 @@ Namespace kCura.WinEDDS
 						Else
 							_timekeeper.MarkStart("ReadFile_GetLine")
 							_statistics.DocCount += 1
+							'The EventType.Count is used as an 'easy' way for the ImportAPI to eventually get a record count.
+							' It could be done in DataReaderClient in other ways, but those ways turned out to be pretty messy.
+							' -Phil S. 06/12/2012
+							WriteStatusLine(Windows.Process.EventType.Count, String.Empty)
 							line = _artifactReader.ReadArtifact
 							_timekeeper.MarkEnd("ReadFile_GetLine")
 							Dim lineStatus As Int32 = 0
