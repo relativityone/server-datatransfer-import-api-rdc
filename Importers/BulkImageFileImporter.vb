@@ -530,6 +530,10 @@ Namespace kCura.WinEDDS
 					If Me.CurrentLineNumber < _startLineNumber Then
 						Me.AdvanceRecord()
 					Else
+						'The EventType.Count is used as an 'easy' way for the ImportAPI to eventually get a record count.
+						' It could be done in DataReaderClient in other ways, but those ways turned out to be pretty messy.
+						' -Phil S. 06/12/2012
+						RaiseStatusEvent(Windows.Process.EventType.Count, String.Empty, 0, 0)
 						Dim record As Api.ImageRecord = _imageReader.GetImageRecord
 						record.OriginalIndex = _imageReader.CurrentRecordNumber
 						If (record.IsNewDoc) Then
