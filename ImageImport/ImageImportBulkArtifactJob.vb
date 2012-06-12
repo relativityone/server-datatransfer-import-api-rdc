@@ -300,6 +300,10 @@ Namespace kCura.Relativity.DataReaderClient
 		Private Sub _observer_RecordProcessedEvent(ByVal recordNumber As Long) Handles _observer.RecordProcessed
 			RaiseEvent OnProgress(recordNumber)
 		End Sub
+
+		Private Sub _observer_IncrementRecordCount() Handles _observer.IncrementRecordCount
+			_jobReport.TotalRows += 1
+		End Sub
 #End Region
 
 		''' <summary>
