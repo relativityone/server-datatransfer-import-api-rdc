@@ -41,7 +41,7 @@ Namespace kCura.Windows.Process
 		Public Event ShutdownEvent()
 		Public Event FieldMapped(ByVal sourceField As String, ByVal workspaceField As String)
 		Public Event RecordProcessed(ByVal recordNumber As Long)
-
+		Public Event IncrementRecordCount()
 #End Region
 
 #Region "Event Throwers"
@@ -104,6 +104,10 @@ Namespace kCura.Windows.Process
 
 		Public Sub RaiseReportErrorEvent(ByVal row As System.Collections.IDictionary)
 			RaiseEvent ErrorReportEvent(row)
+		End Sub
+
+		Public Sub RaiseCountEvent()
+			RaiseEvent IncrementRecordCount()
 		End Sub
 
 #End Region

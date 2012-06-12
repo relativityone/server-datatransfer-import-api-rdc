@@ -6,5 +6,6 @@ Namespace kCura.Windows.Process
 		Warning
 		[Error]
 		ResetStartTime
+		Count
 	End Enum
 End Namespace
