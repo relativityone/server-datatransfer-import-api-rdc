@@ -302,6 +302,10 @@ Namespace kCura.Relativity.DataReaderClient
 		Private Sub _observer_IncrementRecordCount() Handles _observer.IncrementRecordCount
 			_jobReport.TotalRows += 1
 		End Sub
+
+		Private Sub _observer_IncrementRecordCount() Handles _observer.IncrementRecordCount
+			_jobReport.TotalRows += 1
+		End Sub
 #End Region
 
 		''' <summary>
