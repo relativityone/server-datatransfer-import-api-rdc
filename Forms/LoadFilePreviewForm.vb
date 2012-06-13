@@ -153,7 +153,7 @@ Namespace kCura.EDDS.WinForm
 									_erroredCellCollection(c.DisplayName) = New Generic.List(Of Integer)
 								End If
 								' how is what was an exception now just a string?
-								If TypeOf c.Value Is System.Exception Then
+								If TypeOf c.Value Is ErrorMessage Then
 									' column error
 									_erroredCellCollection(c.DisplayName).Add(rowNumber)
 								End If
