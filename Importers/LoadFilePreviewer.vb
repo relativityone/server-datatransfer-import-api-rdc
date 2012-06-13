@@ -298,18 +298,6 @@ Namespace kCura.WinEDDS
 			End Try
 		End Function
 
-		Public Class ErrorMessage
-			Private _message As System.String
-			Public Sub New(ex As System.Exception)
-				_message = ex.Message
-			End Sub
-			Public Overrides Function ToString() As String
-				Return _message
-			End Function
-
-
-		End Class
-
 		Private Sub _processController_HaltProcessEvent(ByVal processID As System.Guid) Handles _processController.HaltProcessEvent
 			_continue = False
 		End Sub

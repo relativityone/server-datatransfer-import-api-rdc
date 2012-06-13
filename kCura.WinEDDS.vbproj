@@ -331,6 +331,7 @@
     <Compile Include="Exceptions\CodeCreationFailedException.vb">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Exceptions\ErrorMessage.vb" />
     <Compile Include="Exceptions\ExportBaseException.vb">
       <SubType>Code</SubType>
     </Compile>
