@@ -533,11 +533,8 @@ Namespace kCura.EDDS.WinForm
 			Dim errorRow As System.Data.DataRow = dt.NewRow
 			rowcount += 1
 			For Each column As System.Data.DataColumn In dt.Columns
-				If column.ColumnName = "Record Number" Then
-					errorRow(column.ColumnName) = rowcount.ToString
-				Else
-					errorRow(column.ColumnName) = "Row-wide error: " & err.Message
-				End If
+				Dim errorMessage As DataTableCellValueBooleanPair = New DataTableCellValueBooleanPair(New Exceptions.ErrorMessage(If((column.ColumnName = "Record Number"), rowcount.ToString, "Row-wide error: " & err.Message)))
+				errorRow(column.ColumnName) = errorMessage
 			Next
 			dt.Rows.Add(errorRow)
 		End Sub
@@ -570,8 +567,10 @@ Namespace kCura.EDDS.WinForm
 								fields = DirectCast(item, Api.ArtifactField())
 								If firstTimeThrough Then
 									dt.Columns.Add("Record Number")
+									' dt.Columns("Record Number").DataType = GetType(DataTableCellValueBooleanPair)
 									For Each field In fields
 										dt.Columns.Add(field.DisplayName)
+										dt.Columns(field.DisplayName).DataType = GetType(DataTableCellValueBooleanPair)
 										If field.DisplayName.ToLower.Contains("extracted text") Then
 											'dt.Columns.Add("Extracted Text Encoding")
 										End If
@@ -606,7 +605,7 @@ Namespace kCura.EDDS.WinForm
 				Dim field As Api.ArtifactField
 				row.Add(counter.ToString())
 				For Each field In fields
-					row.Add(field.ValueAsString)
+					row.Add(New DataTableCellValueBooleanPair(field.Value))
 					If field.DisplayName.ToLower.Contains("extracted text") Then
 						'row.Add("...Encoding will go here...")
 					End If
