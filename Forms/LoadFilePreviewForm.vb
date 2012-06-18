@@ -175,8 +175,8 @@ Namespace kCura.EDDS.WinForm
 			rect.Height -= 2
 			Dim myForeBrush As Brush = foreBrush
 			Dim cellcontents As Object = Me.GetColumnValueAtRow(source, rowNum)
-			If TypeOf cellcontents Is DataTableCellValueBooleanPair Then
-				If CType(cellcontents, DataTableCellValueBooleanPair).IsError Then
+			If TypeOf cellcontents Is LoadFilePreviewColumnItem Then
+				If CType(cellcontents, LoadFilePreviewColumnItem).IsError Then
 					myForeBrush = Brushes.Red
 				End If
 			End If
