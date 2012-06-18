@@ -1,5 +1,5 @@
 ﻿Namespace kCura.WinEDDS
-	Public Class DataTableCellValueBooleanPair
+	Public Class LoadFilePreviewColumnItem
 		Private _value As String
 		Private _isError As Boolean
 		Public Sub New(obj As Object)
