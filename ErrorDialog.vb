@@ -196,8 +196,8 @@ Namespace kCura.Windows.Forms
 		End Sub
 
 		Private Sub ErrorDialog_FormClosed(ByVal sender As Object, ByVal e As System.Windows.Forms.FormClosedEventArgs) Handles Me.FormClosed
-			Me.DialogResult = Windows.Forms.DialogResult.OK
-		End Sub
+            Me.DialogResult = DialogResult.OK
+        End Sub
 
 		Private Sub ErrorDialog_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Shown
 			If Me.IsFatalException Then
