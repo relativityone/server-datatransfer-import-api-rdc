@@ -183,6 +183,7 @@ Namespace kCura.Relativity.DataReaderClient
 			tempLoadFile.SendEmailOnLoadCompletion = clientSettings.SendEmailOnLoadCompletion
 			tempLoadFile.SourceFileEncoding = loadFileTemp.SourceFileEncoding
 			tempLoadFile.StartLineNumber = loadFileTemp.StartLineNumber
+			tempLoadFile.ObjectFieldIdListContainsArtifactId = loadFileTemp.ObjectFieldIdListContainsArtifactId
 
 			Return tempLoadFile
 		End Function
@@ -339,6 +340,7 @@ Namespace kCura.Relativity.DataReaderClient
 				If clientSettings.StartRecordNumber > 0 Then
 					.StartLineNumber = clientSettings.StartRecordNumber
 				End If
+				.ObjectFieldIdListContainsArtifactId = clientSettings.ObjectFieldIdListContainsArtifactId
 			End With
 
 			Return dosf_settings

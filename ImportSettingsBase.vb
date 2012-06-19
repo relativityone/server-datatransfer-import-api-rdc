@@ -1,4 +1,6 @@
-﻿Namespace kCura.Relativity.DataReaderClient
+﻿Imports System.Collections.Generic
+
+Namespace kCura.Relativity.DataReaderClient
 	Public Class ImportSettingsBase
 
 		Friend Sub New()
@@ -120,6 +122,11 @@
 		''' '
 		''' </summary>
 		Public Property StartRecordNumber() As Int64
+
+		''' <summary>
+		''' '
+		''' </summary>
+		Public Property ObjectFieldIdListContainsArtifactId As IList(Of Int32)
 
 		'Public Property Credential As System.Net.NetworkCredential
 	End Class
