@@ -1,11 +1,12 @@
 ﻿Imports System.Windows.Forms
 Imports NUnit.Framework
 Imports kCura.WinEDDS
+'Imports kCura.EDDS.WinForm.Forms
 
 Namespace kCura.EDDS.WinForm.Tests
 	<TestFixture()>
 	Public Class ExportForm
-		Private _form As Global.ExportForm
+        Private _form As Forms.ExportForm
 		Private _queryFieldFactory As New kCura.WinEDDS.NUnit.TestObjectFactories.QueryFieldFactory()
 		Private _filtersDataTable As New DataTable()
 
@@ -23,7 +24,7 @@ Namespace kCura.EDDS.WinForm.Tests
 			_filtersDataTable.Rows.Add({"123", 123})
 			_filtersDataTable.Rows.Add({"245", 245})
 
-			_form = New Global.ExportForm
+            _form = New Forms.ExportForm
 			_form.ExportFile = New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {
 			.AllExportableFields = New kCura.WinEDDS.ViewFieldInfo() {},
 			.DataTable = _filtersDataTable,
@@ -43,7 +44,7 @@ Namespace kCura.EDDS.WinForm.Tests
 			_filtersDataTable.Rows.Add({"123", 123})
 			_filtersDataTable.Rows.Add({"245", 245})
 
-			_form = New Global.ExportForm
+            _form = New Forms.ExportForm
 			_form.ExportFile = New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {
 			.AllExportableFields = _queryFieldFactory.GetAllDocumentFields,
 			.DataTable = _filtersDataTable,
@@ -65,7 +66,7 @@ Namespace kCura.EDDS.WinForm.Tests
 			_filtersDataTable.Rows.Add({"123", 123})
 			_filtersDataTable.Rows.Add({"245", 245})
 
-			_form = New Global.ExportForm
+            _form = New Forms.ExportForm
 			_form.ExportFile = New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {
 			.AllExportableFields = _queryFieldFactory.GetAllDocumentFields,
 			.DataTable = _filtersDataTable,
