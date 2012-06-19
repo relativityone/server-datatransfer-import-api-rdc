@@ -293,7 +293,7 @@ Namespace kCura.WinEDDS
 				SetFieldValue(field, column, True, identityValue, extractedTextCodePageId, importBehavior)
 				Return TypeOf field.Value Is System.Exception
 			Catch ex As ImporterExceptionBase
-				field.Value = ex.Message
+				field.Value = New Exceptions.ErrorMessage(ex.Message)
 				Return True
 			End Try
 		End Function
