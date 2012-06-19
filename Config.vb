@@ -1,4 +1,7 @@
 Imports System.Configuration
+Imports System.Linq
+Imports System.Collections.Generic
+
 Namespace kCura.WinEDDS
 	Public Class Config
 
@@ -255,6 +258,20 @@ Namespace kCura.WinEDDS
 				Dim registryValue As String = "false"
 				If value Then registryValue = "true"
 				Config.SetRegistryKeyValue("ForceFolderPreview", registryValue)
+			End Set
+		End Property
+
+		Public Shared Property ObjectFieldIdListContainsArtifactId() As IList(Of Int32)
+			Get
+				Dim registryValue As String = Config.GetRegistryKeyValue("ObjectFieldIdListContainsArtifactId")
+				If String.IsNullOrEmpty(registryValue) Then
+					Config.SetRegistryKeyValue("ObjectFieldIdListContainsArtifactId", "")
+					Return New List(Of Int32)
+				End If
+				Return registryValue.Split(New String() {","}, StringSplitOptions.RemoveEmptyEntries).Select(Function(s As String) Int32.Parse(s)).ToArray
+			End Get
+			Set(ByVal value As IList(Of Int32))
+				Config.SetRegistryKeyValue("ObjectFieldIdListContainsArtifactId", String.Join(",", value.Select(Function(x) x.ToString()).ToArray))
 			End Set
 		End Property
 
