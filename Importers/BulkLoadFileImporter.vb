@@ -76,7 +76,7 @@ Namespace kCura.WinEDDS
 #Region "Accessors"
 
 		Public Property DisableNativeValidation As Boolean = Config.DisableNativeValidation
-		Public Property DisableNativeLocationValidation As Boolean = Config.DisableNativeLocationValidation
+        Public Property DisableNativeLocationValidation As Boolean = Config.DisableNativeLocationValidation
 		Public Property DisableUserSecurityCheck As Boolean
 		Public Property AuditLevel As kCura.EDDS.WebAPI.BulkImportManagerBase.ImportAuditLevel = WinEDDS.Config.AuditLevel
 
