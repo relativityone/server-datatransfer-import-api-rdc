@@ -152,7 +152,7 @@
     <Compile Include="ExportFilterSelectForm.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ExportForm.vb" />
+    <Compile Include="ExportFormTest.vb" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\kCura\kCura.CommandLine\kCura.CommandLine.vbproj">
