@@ -3,6 +3,7 @@ Imports kCura.EDDS.WebAPI.BulkImportManagerBase
 
 Imports Relativity.MassImport
 Imports Microsoft.VisualBasic
+Imports System.Collections.Generic
 
 Namespace kCura.WinEDDS
 	Public Class BulkLoadFileImporter
@@ -327,7 +328,7 @@ Namespace kCura.WinEDDS
 			_bulkLoadFileFieldDelimiter = bulkLoadFileFieldDelimiter
 
 			_batchSizeHistoryList = New System.Collections.Generic.List(Of Int32)
-			_disableNativeLocationValidation = Config.DisableNativeLocationValidation
+			_DisableNativeLocationValidation = Config.DisableNativeLocationValidation
 		End Sub
 
 		Protected Overridable Sub CreateUploaders(ByVal args As LoadFile)
@@ -879,7 +880,7 @@ Namespace kCura.WinEDDS
 			settings.CodeFileName = codeFileUploadKey
 			settings.DataFileName = nativeFileUploadKey
 			settings.ObjectFileName = objectFileUploadKey
-			settings.MappedFields = Me.GetMappedFields(_artifactTypeID)
+			settings.MappedFields = Me.GetMappedFields(_artifactTypeID, _settings.ObjectFieldIdListContainsArtifactId)
 			settings.KeyFieldArtifactID = _keyFieldID
 			Select Case _overwrite.ToLower
 				Case "strict"
@@ -919,11 +920,12 @@ Namespace kCura.WinEDDS
 			_outputObjectFileWriter.Close()
 		End Sub
 
-		Private Function GetMappedFields(ByVal artifactTypeID As Int32) As kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo()
+		Private Function GetMappedFields(ByVal artifactTypeID As Int32, ByVal ObjectFieldIdListContainsArtifactId As IList(Of Int32)) As kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo()
 			Dim retval As New System.Collections.ArrayList
 			For Each item As WinEDDS.LoadFileFieldMap.LoadFileFieldMapItem In _fieldMap
 				If Not item.DocumentField Is Nothing Then
-					retval.Add(item.DocumentField.ToFieldInfo)
+					Dim i As Integer = retval.Add(item.DocumentField.ToFieldInfo)
+					If ObjectFieldIdListContainsArtifactId.Contains(CType(retval(i), FieldInfo).ArtifactID) Then CType(retval(i), FieldInfo).ImportBehavior = ImportBehaviorChoice.ObjectFieldContainsArtifactId
 				End If
 			Next
 			retval.Sort(New WebServiceFieldInfoNameComparer)
