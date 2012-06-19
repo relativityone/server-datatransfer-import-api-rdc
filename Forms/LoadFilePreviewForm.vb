@@ -19,6 +19,7 @@ Namespace kCura.EDDS.WinForm
 			_formType = formType
 			_multiRecordDelimiter = mutliRecordDelimiter
 			_previewCodeCount = previewCodeCount
+
 			Me.Text = "Relativity Desktop Client | Preview Load File"
 			If _formType = kCura.EDDS.WinForm.LoadFilePreviewForm.FormType.Codes Then
 				Me.Text = "Relativity Desktop Client | Preview Choices and Folders"
@@ -81,6 +82,7 @@ Namespace kCura.EDDS.WinForm
 
 		Public DataSource As DataTable
 		Public IsError As Boolean
+		Private _erroredCellCollection As Generic.Dictionary(Of String, Generic.List(Of Integer))
 
 		Public Enum FormType
 			LoadFile = 1
@@ -162,12 +164,7 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 		Protected Overloads Overrides Sub Paint(ByVal g As System.Drawing.Graphics, ByVal bounds As System.Drawing.Rectangle, ByVal source As System.Windows.Forms.CurrencyManager, ByVal rowNum As Integer, ByVal alignToRight As Boolean)
-			Dim cellcontents As String = Me.GetColumnValueAtRow(source, rowNum).ToString.ToLower
-			If cellcontents.IndexOf("error") <> -1 Then
-				Me.Paint(g, bounds, source, rowNum, Brushes.White, Brushes.Red, alignToRight)
-			Else
-				Me.Paint(g, bounds, source, rowNum, Brushes.White, Brushes.Black, alignToRight)
-			End If
+			Me.Paint(g, bounds, source, rowNum, Brushes.White, Brushes.Black, alignToRight)
 		End Sub
 
 		Protected Overloads Overrides Sub Paint(ByVal g As Graphics, ByVal bounds As Rectangle, ByVal [source] As CurrencyManager, ByVal rowNum As Integer, ByVal backBrush As Brush, ByVal foreBrush As Brush, ByVal alignToRight As Boolean)
@@ -177,13 +174,13 @@ Namespace kCura.EDDS.WinForm
 			rect.Offset(0, 2)
 			rect.Height -= 2
 			Dim myForeBrush As Brush = foreBrush
-			Dim cellcontents As String = Me.GetColumnValueAtRow(source, rowNum).ToString.ToLower
-			If cellcontents.IndexOf("error") <> -1 Then
-				myForeBrush = Brushes.Red
-				'Me.Paint(g, bounds, source, rowNum, Brushes.White, Brushes.Red, alignToRight)
-			Else
+			Dim cellcontents As Object = Me.GetColumnValueAtRow(source, rowNum)
+			If TypeOf cellcontents Is LoadFilePreviewColumnItem Then
+				If CType(cellcontents, LoadFilePreviewColumnItem).IsError Then
+					myForeBrush = Brushes.Red
+				End If
 			End If
-			g.DrawString(cellcontents, Me.DataGridTableStyle.DataGrid.Font, myForeBrush, RectangleF.FromLTRB(rect.X, rect.Y, rect.Right, rect.Bottom))
+			g.DrawString(cellcontents.ToString, Me.DataGridTableStyle.DataGrid.Font, myForeBrush, RectangleF.FromLTRB(rect.X, rect.Y, rect.Right, rect.Bottom))
 		End Sub
 	End Class
 
