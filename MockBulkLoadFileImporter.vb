@@ -9,6 +9,16 @@ Namespace kCura.WinEDDS.NUnit
 		Inherits kCura.WinEDDS.BulkLoadFileImporter
 
 		Private Property WillThrowException As Boolean
+
+		Public Property FieldMap As LoadFileFieldMap
+			Get
+				Return MyBase._fieldMap
+			End Get
+			Set(ByVal value As LoadFileFieldMap)
+				MyBase._fieldMap = value
+			End Set
+		End Property
+
 		Public Property BatchSize As Int32
 			Get
 				Return Me.ImportBatchSize

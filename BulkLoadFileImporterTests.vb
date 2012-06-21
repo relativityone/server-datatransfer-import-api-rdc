@@ -1,6 +1,7 @@
 Imports kCura.EDDS.WebAPI.BulkImportManagerBase
 Imports NUnit.Framework
 Imports kCura.Windows.Process
+Imports kCura.WinEDDS.LoadFileFieldMap
 
 Namespace kCura.WinEDDS.NUnit
 	<TestFixture()> Public Class BulkLoadFileImporterTests
@@ -148,5 +149,149 @@ Namespace kCura.WinEDDS.NUnit
 
 #End Region
 
+#Region " GetMappedFields "
+		<Test()> Public Sub GetMappedFields_AllObjectFieldsSelected_AllFieldsObjectFieldContainsArtifactId()
+			Dim bulkImporter As MockBulkLoadFileImporter = New MockBulkLoadFileImporter(_args, _controller, 0, False, False, _guid, True, "S", True, New MockBulkImportManagerWebExceptions(True))
+
+			Dim FieldMap As New LoadFileFieldMap
+			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field1", 1, Relativity.FieldTypeHelper.FieldType.Object, 1, 0, 0, 0, True, Nothing), 0))
+			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field2", 2, Relativity.FieldTypeHelper.FieldType.Objects, 1, 0, 0, 0, True, Nothing), 0))
+			bulkImporter.FieldMap = FieldMap
+
+			Dim fields As kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo() =
+			 bulkImporter.GetMappedFields(1, New System.Collections.Generic.List(Of Integer)(New Integer() {1, 2}))
+
+			Assert.AreEqual(ImportBehaviorChoice.ObjectFieldContainsArtifactId, fields(0).ImportBehavior)
+			Assert.AreEqual(ImportBehaviorChoice.ObjectFieldContainsArtifactId, fields(1).ImportBehavior)
+		End Sub
+
+		<Test()> Public Sub GetMappedFields_NoObjectFieldsSelected_NoFieldsObjectFieldContainsArtifactId()
+			Dim bulkImporter As MockBulkLoadFileImporter = New MockBulkLoadFileImporter(_args, _controller, 0, False, False, _guid, True, "S", True, New MockBulkImportManagerWebExceptions(True))
+
+			Dim FieldMap As New LoadFileFieldMap
+			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field1", 1, Relativity.FieldTypeHelper.FieldType.Object, 1, 0, 0, 0, True, Nothing), 0))
+			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field2", 2, Relativity.FieldTypeHelper.FieldType.Objects, 1, 0, 0, 0, True, Nothing), 0))
+			bulkImporter.FieldMap = FieldMap
+
+			Dim fields As kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo() =
+			 bulkImporter.GetMappedFields(1, New System.Collections.Generic.List(Of Integer)(New Integer() {11, 22}))
+
+			Assert.AreEqual(Nothing, fields(0).ImportBehavior)
+			Assert.AreEqual(Nothing, fields(1).ImportBehavior)
+		End Sub
+
+		<Test()> Public Sub GetMappedFields_NoSelection_NoFieldsObjectFieldContainsArtifactId()
+			Dim bulkImporter As MockBulkLoadFileImporter = New MockBulkLoadFileImporter(_args, _controller, 0, False, False, _guid, True, "S", True, New MockBulkImportManagerWebExceptions(True))
+
+			Dim FieldMap As New LoadFileFieldMap
+			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field1", 1, Relativity.FieldTypeHelper.FieldType.Object, 1, 0, 0, 0, True, Nothing), 0))
+			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field2", 2, Relativity.FieldTypeHelper.FieldType.Objects, 1, 0, 0, 0, True, Nothing), 0))
+			bulkImporter.FieldMap = FieldMap
+
+			Dim fields As kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo() =
+			 bulkImporter.GetMappedFields(1, New System.Collections.Generic.List(Of Integer)())
+
+			Assert.AreEqual(Nothing, fields(0).ImportBehavior)
+			Assert.AreEqual(Nothing, fields(1).ImportBehavior)
+		End Sub
+
+		<Test()> Public Sub GetMappedFields_OneObjectFieldSelected_OneFieldsObjectFieldContainsArtifactId()
+			Dim bulkImporter As MockBulkLoadFileImporter = New MockBulkLoadFileImporter(_args, _controller, 0, False, False, _guid, True, "S", True, New MockBulkImportManagerWebExceptions(True))
+
+			Dim FieldMap As New LoadFileFieldMap
+			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field1", 1, Relativity.FieldTypeHelper.FieldType.Object, 1, 0, 0, 0, True, Nothing), 0))
+			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field2", 2, Relativity.FieldTypeHelper.FieldType.Objects, 1, 0, 0, 0, True, Nothing), 0))
+			bulkImporter.FieldMap = FieldMap
+
+			Dim fields As kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo() =
+			 bulkImporter.GetMappedFields(1, New System.Collections.Generic.List(Of Integer)(New Integer() {1, 22}))
+
+			Assert.AreEqual(ImportBehaviorChoice.ObjectFieldContainsArtifactId, fields(0).ImportBehavior)
+			Assert.AreEqual(Nothing, fields(1).ImportBehavior)
+		End Sub
+
+		<Test()> Public Sub GetMappedFields_NoneObjectFieldsSelected_NoFieldsObjectFieldContainsArtifactId()
+			Dim bulkImporter As MockBulkLoadFileImporter = New MockBulkLoadFileImporter(_args, _controller, 0, False, False, _guid, True, "S", True, New MockBulkImportManagerWebExceptions(True))
+
+			Dim FieldMap As New LoadFileFieldMap
+			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field01", 1, Relativity.FieldTypeHelper.FieldType.Object, 1, 0, 0, 0, True, Nothing), 0))
+			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field02", 2, Relativity.FieldTypeHelper.FieldType.Objects, 1, 0, 0, 0, True, Nothing), 0))
+			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field03", 3, Relativity.FieldTypeHelper.FieldType.Boolean, 1, 0, 0, 0, True, Nothing), 0))
+			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field04", 4, Relativity.FieldTypeHelper.FieldType.Code, 1, 0, 0, 0, True, Nothing), 0))
+			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field05", 5, Relativity.FieldTypeHelper.FieldType.Currency, 1, 0, 0, 0, True, Nothing), 0))
+			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field06", 6, Relativity.FieldTypeHelper.FieldType.Date, 1, 0, 0, 0, True, Nothing), 0))
+			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field07", 7, Relativity.FieldTypeHelper.FieldType.Decimal, 1, 0, 0, 0, True, Nothing), 0))
+			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field08", 8, Relativity.FieldTypeHelper.FieldType.Empty, 1, 0, 0, 0, True, Nothing), 0))
+			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field09", 9, Relativity.FieldTypeHelper.FieldType.File, 1, 0, 0, 0, True, Nothing), 0))
+			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field10", 10, Relativity.FieldTypeHelper.FieldType.Integer, 1, 0, 0, 0, True, Nothing), 0))
+			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field11", 11, Relativity.FieldTypeHelper.FieldType.LayoutText, 1, 0, 0, 0, True, Nothing), 0))
+			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field12", 12, Relativity.FieldTypeHelper.FieldType.MultiCode, 1, 0, 0, 0, True, Nothing), 0))
+			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field13", 13, Relativity.FieldTypeHelper.FieldType.Text, 1, 0, 0, 0, True, Nothing), 0))
+			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field14", 14, Relativity.FieldTypeHelper.FieldType.User, 1, 0, 0, 0, True, Nothing), 0))
+			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field15", 15, Relativity.FieldTypeHelper.FieldType.Varchar, 1, 0, 0, 0, True, Nothing), 0))
+			bulkImporter.FieldMap = FieldMap
+
+			Dim fields As kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo() =
+			 bulkImporter.GetMappedFields(1, New System.Collections.Generic.List(Of Integer)(New Integer() {3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15}))
+
+			Assert.AreEqual(Nothing, fields(0).ImportBehavior)
+			Assert.AreEqual(Nothing, fields(1).ImportBehavior)
+			Assert.AreEqual(Nothing, fields(2).ImportBehavior)
+			Assert.AreEqual(Nothing, fields(3).ImportBehavior)
+			Assert.AreEqual(Nothing, fields(4).ImportBehavior)
+			Assert.AreEqual(Nothing, fields(5).ImportBehavior)
+			Assert.AreEqual(Nothing, fields(6).ImportBehavior)
+			Assert.AreEqual(Nothing, fields(7).ImportBehavior)
+			Assert.AreEqual(Nothing, fields(8).ImportBehavior)
+			Assert.AreEqual(Nothing, fields(9).ImportBehavior)
+			Assert.AreEqual(Nothing, fields(10).ImportBehavior)
+			Assert.AreEqual(Nothing, fields(11).ImportBehavior)
+			Assert.AreEqual(Nothing, fields(12).ImportBehavior)
+			Assert.AreEqual(Nothing, fields(13).ImportBehavior)
+			Assert.AreEqual(Nothing, fields(14).ImportBehavior)
+		End Sub
+
+		<Test()> Public Sub GetMappedFields_TwoObjectFieldsSelected_TwoFieldsObjectFieldContainsArtifactId()
+			Dim bulkImporter As MockBulkLoadFileImporter = New MockBulkLoadFileImporter(_args, _controller, 0, False, False, _guid, True, "S", True, New MockBulkImportManagerWebExceptions(True))
+
+			Dim FieldMap As New LoadFileFieldMap
+			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field01", 1, Relativity.FieldTypeHelper.FieldType.Object, 1, 0, 0, 0, True, Nothing), 0))
+			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field02", 2, Relativity.FieldTypeHelper.FieldType.Objects, 1, 0, 0, 0, True, Nothing), 0))
+			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field03", 3, Relativity.FieldTypeHelper.FieldType.Boolean, 1, 0, 0, 0, True, Nothing), 0))
+			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field04", 4, Relativity.FieldTypeHelper.FieldType.Code, 1, 0, 0, 0, True, Nothing), 0))
+			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field05", 5, Relativity.FieldTypeHelper.FieldType.Currency, 1, 0, 0, 0, True, Nothing), 0))
+			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field06", 6, Relativity.FieldTypeHelper.FieldType.Date, 1, 0, 0, 0, True, Nothing), 0))
+			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field07", 7, Relativity.FieldTypeHelper.FieldType.Decimal, 1, 0, 0, 0, True, Nothing), 0))
+			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field08", 8, Relativity.FieldTypeHelper.FieldType.Empty, 1, 0, 0, 0, True, Nothing), 0))
+			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field09", 9, Relativity.FieldTypeHelper.FieldType.File, 1, 0, 0, 0, True, Nothing), 0))
+			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field10", 10, Relativity.FieldTypeHelper.FieldType.Integer, 1, 0, 0, 0, True, Nothing), 0))
+			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field11", 11, Relativity.FieldTypeHelper.FieldType.LayoutText, 1, 0, 0, 0, True, Nothing), 0))
+			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field12", 12, Relativity.FieldTypeHelper.FieldType.MultiCode, 1, 0, 0, 0, True, Nothing), 0))
+			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field13", 13, Relativity.FieldTypeHelper.FieldType.Text, 1, 0, 0, 0, True, Nothing), 0))
+			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field14", 14, Relativity.FieldTypeHelper.FieldType.User, 1, 0, 0, 0, True, Nothing), 0))
+			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field15", 15, Relativity.FieldTypeHelper.FieldType.Varchar, 1, 0, 0, 0, True, Nothing), 0))
+			bulkImporter.FieldMap = FieldMap
+
+			Dim fields As kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo() =
+			 bulkImporter.GetMappedFields(1, New System.Collections.Generic.List(Of Integer)(New Integer() {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15}))
+
+			Assert.AreEqual(ImportBehaviorChoice.ObjectFieldContainsArtifactId, fields(0).ImportBehavior)
+			Assert.AreEqual(ImportBehaviorChoice.ObjectFieldContainsArtifactId, fields(1).ImportBehavior)
+			Assert.AreEqual(Nothing, fields(2).ImportBehavior)
+			Assert.AreEqual(Nothing, fields(3).ImportBehavior)
+			Assert.AreEqual(Nothing, fields(4).ImportBehavior)
+			Assert.AreEqual(Nothing, fields(5).ImportBehavior)
+			Assert.AreEqual(Nothing, fields(6).ImportBehavior)
+			Assert.AreEqual(Nothing, fields(7).ImportBehavior)
+			Assert.AreEqual(Nothing, fields(8).ImportBehavior)
+			Assert.AreEqual(Nothing, fields(9).ImportBehavior)
+			Assert.AreEqual(Nothing, fields(10).ImportBehavior)
+			Assert.AreEqual(Nothing, fields(11).ImportBehavior)
+			Assert.AreEqual(Nothing, fields(12).ImportBehavior)
+			Assert.AreEqual(Nothing, fields(13).ImportBehavior)
+			Assert.AreEqual(Nothing, fields(14).ImportBehavior)
+		End Sub
+#End Region
+
 	End Class
-End NameSpace
+End Namespace
