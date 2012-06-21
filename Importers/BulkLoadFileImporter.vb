@@ -77,7 +77,7 @@ Namespace kCura.WinEDDS
 #Region "Accessors"
 
 		Public Property DisableNativeValidation As Boolean = Config.DisableNativeValidation
-        Public Property DisableNativeLocationValidation As Boolean = Config.DisableNativeLocationValidation
+		Public Property DisableNativeLocationValidation As Boolean = Config.DisableNativeLocationValidation
 		Public Property DisableUserSecurityCheck As Boolean
 		Public Property AuditLevel As kCura.EDDS.WebAPI.BulkImportManagerBase.ImportAuditLevel = WinEDDS.Config.AuditLevel
 
@@ -926,11 +926,12 @@ Namespace kCura.WinEDDS
 				If Not item.DocumentField Is Nothing Then
 					Dim i As Integer = retval.Add(item.DocumentField.ToFieldInfo)
 					If Not ObjectFieldIdListContainsArtifactId Is Nothing Then
-						If ObjectFieldIdListContainsArtifactId.Contains(CType(retval(i), FieldInfo).ArtifactID) Then CType(retval(i), FieldInfo).ImportBehavior = ImportBehaviorChoice.ObjectFieldContainsArtifactId
-					AndAlso ObjectFieldIdListContainsArtifactId.Contains(CType(retval(i), FieldInfo).ArtifactID) Then
-						CType(retval(i), FieldInfo).ImportBehavior = ImportBehaviorChoice.ObjectFieldContainsArtifactId
-					End If
-					End If
+						If (CType(retval(i), FieldInfo).Type = FieldType.Object _
+							Or CType(retval(i), FieldInfo).Type = FieldType.Objects) _
+					 AndAlso ObjectFieldIdListContainsArtifactId.Contains(CType(retval(i), FieldInfo).ArtifactID) Then
+							CType(retval(i), FieldInfo).ImportBehavior = ImportBehaviorChoice.ObjectFieldContainsArtifactId
+						End If
+				End If
 				End If
 			Next
 			retval.Sort(New WebServiceFieldInfoNameComparer)
