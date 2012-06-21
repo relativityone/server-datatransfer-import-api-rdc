@@ -925,7 +925,9 @@ Namespace kCura.WinEDDS
 			For Each item As WinEDDS.LoadFileFieldMap.LoadFileFieldMapItem In _fieldMap
 				If Not item.DocumentField Is Nothing Then
 					Dim i As Integer = retval.Add(item.DocumentField.ToFieldInfo)
-					If ObjectFieldIdListContainsArtifactId.Contains(CType(retval(i), FieldInfo).ArtifactID) Then CType(retval(i), FieldInfo).ImportBehavior = ImportBehaviorChoice.ObjectFieldContainsArtifactId
+					If Not ObjectFieldIdListContainsArtifactId Is Nothing Then
+						If ObjectFieldIdListContainsArtifactId.Contains(CType(retval(i), FieldInfo).ArtifactID) Then CType(retval(i), FieldInfo).ImportBehavior = ImportBehaviorChoice.ObjectFieldContainsArtifactId
+					End If
 				End If
 			Next
 			retval.Sort(New WebServiceFieldInfoNameComparer)
@@ -1148,6 +1150,7 @@ Namespace kCura.WinEDDS
 			Else
 				keyField = record.IdentifierField
 			End If
+
 			If Not keyField Is Nothing AndAlso Not keyField.Value Is Nothing Then identityValue = keyField.Value.ToString
 			If identityValue Is Nothing OrElse identityValue = String.Empty Then Throw New IdentityValueNotSetException
 			If Not _processedDocumentIdentifiers(identityValue) Is Nothing Then Throw New IdentifierOverlapException(identityValue, _processedDocumentIdentifiers(identityValue))
@@ -1164,6 +1167,7 @@ Namespace kCura.WinEDDS
 					If item.DocumentField.FieldTypeID = Relativity.FieldTypeHelper.FieldType.File Then
 						Me.ManageFileField(record(item.DocumentField.FieldID))
 					Else
+
 						MyBase.SetFieldValue(record(item.DocumentField.FieldID), item.NativeFileColumnIndex, False, identityValue, 0, item.DocumentField.ImportBehavior)
 					End If
 				End If
