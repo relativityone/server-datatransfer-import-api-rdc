@@ -2,6 +2,8 @@ Imports System.Web.Services.Protocols
 Imports System.Security.Cryptography.X509Certificates
 Imports System.Net
 Imports System.Net.Security
+Imports kCura.EDDS.WinForm.Forms
+Imports kCura.Windows.Forms
 
 Namespace kCura.EDDS.WinForm
 	Public Class Application
@@ -1047,7 +1049,7 @@ Namespace kCura.EDDS.WinForm
 
 		Public Sub ChangeWebServiceURL()
 			CursorWait()
-			Dim frm As New SetWebServiceURL
+            Dim frm As New Forms.SetWebServiceURL
 			frm.Show()
 			CursorDefault()
 		End Sub
@@ -1622,8 +1624,8 @@ Namespace kCura.EDDS.WinForm
 				_loginForm.TopMost = False
 			End If
 
-			Dim aboutFrm As New AboutForm()
-			aboutFrm.ShowDialog()
+            Dim aboutFrm As New AboutForm()
+            aboutFrm.ShowDialog()
 
 			If Not _loginForm Is Nothing AndAlso Not _loginForm.IsDisposed Then
 				_loginForm.TopMost = True

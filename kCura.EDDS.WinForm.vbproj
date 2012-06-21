@@ -303,6 +303,7 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="App.Prod.config" />
+    <None Include="ClassDiagram1.cd" />
     <None Include="Controls\CaseFolderExplorer.xsx">
       <DependentUpon>CaseFolderExplorer.resx</DependentUpon>
     </None>
@@ -340,13 +341,13 @@
     <Compile Include="Controls\TextFieldPrecedencePicker.vb">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="Forms\AdvancedFileLocation.vb">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Forms\AboutForm.Designer.vb">
       <DependentUpon>AboutForm.vb</DependentUpon>
     </Compile>
     <Compile Include="Forms\AboutForm.vb">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\AdvancedFileLocation.vb">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\ExportFilterSelectForm.vb">
@@ -439,11 +440,11 @@
     <EmbeddedResource Include="Controls\TextFieldPrecedencePicker.resx">
       <DependentUpon>TextFieldPrecedencePicker.vb</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\AboutForm.resx">
-      <DependentUpon>AboutForm.vb</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Forms\AdvancedFileLocation.resx">
       <DependentUpon>AdvancedFileLocation.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\AboutForm.resx">
+      <DependentUpon>AboutForm.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\ExportFilterSelectForm.resx">
       <DependentUpon>ExportFilterSelectForm.vb</DependentUpon>

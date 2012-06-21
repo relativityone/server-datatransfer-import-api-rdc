@@ -1,5 +1,6 @@
 ﻿Imports System.Xml.Serialization
 Imports System.Xml
+Imports kCura.Windows.Forms
 
 Namespace kCura.EDDS.WinForm
 	Public Class ThreadExceptionHandler

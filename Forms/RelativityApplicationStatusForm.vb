@@ -3,7 +3,6 @@ Imports System.Globalization
 Imports System.Collections
 Imports System.Collections.Generic
 Imports kCura.EDDS.WebAPI
-Imports System.Xml
 
 Public Class RelativityApplicationStatusForm
 	Inherits System.Windows.Forms.Form
