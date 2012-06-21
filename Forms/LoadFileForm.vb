@@ -860,7 +860,7 @@ Namespace kCura.EDDS.WinForm
 				Me.Cursor = System.Windows.Forms.Cursors.Default
 				Return False
 			End If
-			Me.LoadFile.FieldMap = kCura.EDDS.WinForm.Utility.ExtractFieldMap(_fieldMap.FieldColumns, _fieldMap.LoadFileColumns, currentFields, Me.LoadFile.ArtifactTypeID)
+			Me.LoadFile.FieldMap = kCura.EDDS.WinForm.Utility.ExtractFieldMap(_fieldMap.FieldColumns, _fieldMap.LoadFileColumns, currentFields, Me.LoadFile.ArtifactTypeID, Me.LoadFile.ObjectFieldIdListContainsArtifactId)
 			'Dim groupIdentifier As DocumentField = _application.CurrentGroupIdentifierField
 			'If _identifiersDropDown.SelectedIndex > 0 Then
 			'	Dim columnname As String = CType(_identifiersDropDown.SelectedItem, String)
