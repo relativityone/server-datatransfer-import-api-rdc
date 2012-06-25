@@ -445,7 +445,7 @@ Namespace kCura.WinEDDS
 					If forPreview Then field.Value = field.Value.ToString.Trim
 
 				Case Relativity.FieldTypeHelper.FieldType.Objects
-					If (Me._settings.ObjectFieldIdListContainsArtifactId.Count > 0) AndAlso Me._settings.ObjectFieldIdListContainsArtifactId.Contains(field.ArtifactID) Then
+					If (Not Me._settings.ObjectFieldIdListContainsArtifactId Is Nothing) AndAlso Me._settings.ObjectFieldIdListContainsArtifactId.Contains(field.ArtifactID) Then
 						SetFieldValueObjectsByArtifactID(field, columnIndex, forPreview, identityValue)
 					Else
 						SetFieldValueObjectsByName(field, columnIndex, forPreview, identityValue)
