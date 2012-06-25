@@ -54,7 +54,7 @@ Namespace kCura.EDDS.WinForm
 					columnIndex = Int32.Parse(columnname.Substring(openParenIndex, closeParenIndex - openParenIndex)) - 1
 				End If
 
-				If (ObjectFieldIdList.Contains(docfield.FieldID)) Then
+				If (Not ObjectFieldIdList Is Nothing AndAlso ObjectFieldIdList.Contains(docfield.FieldID)) Then
 					docfield.ImportBehavior = EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice.ObjectFieldContainsArtifactId
 				End If
 				fieldMap.Add(New LoadFileFieldMap.LoadFileFieldMapItem(docfield, columnIndex))
