@@ -1,3 +1,5 @@
+Imports System.Collections.Generic
+
 Namespace kCura.WinEDDS
 	Public Class DynamicObjectSettingsFactory
 
@@ -12,6 +14,11 @@ Namespace kCura.WinEDDS
 
 		Public Sub New(ByVal credential As System.Net.NetworkCredential, ByVal caseArtifactID As Int32, ByVal artifactTypeID As Int32)
 			MyBase.New(credential)
+			Me.InitLoadFile(caseArtifactID, artifactTypeID)
+		End Sub
+
+		Public Sub New(ByVal credential As System.Net.ICredentials, ByVal cookieContainer As System.Net.CookieContainer, ByVal caseArtifactID As Int32, ByVal artifactTypeID As Int32)
+			MyBase.new(DirectCast(credential, System.Net.NetworkCredential), cookieContainer)
 			Me.InitLoadFile(caseArtifactID, artifactTypeID)
 		End Sub
 
@@ -47,6 +54,7 @@ Namespace kCura.WinEDDS
 			_loadFile.SelectedCasePath = _loadFile.CaseInfo.DocumentPath
 			_loadFile.SelectedIdentifierField = _docFields.IdentifierFields(0)
 			_loadFile.StartLineNumber = 0
+			_loadFile.ObjectFieldIdListContainsArtifactId = Nothing
 		End Sub
 
 
@@ -222,6 +230,12 @@ Namespace kCura.WinEDDS
 		Public WriteOnly Property StartLineNumber() As Int64
 			Set(value As Int64)
 				_loadFile.StartLineNumber = value
+			End Set
+		End Property
+
+		Public WriteOnly Property ObjectFieldIdListContainsArtifactId As IList(Of Int32)
+			Set(ByVal Value As IList(Of Int32))
+				_loadFile.ObjectFieldIdListContainsArtifactId = Value
 			End Set
 		End Property
 

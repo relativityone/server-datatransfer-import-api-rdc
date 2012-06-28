@@ -1,24 +1,48 @@
 Imports System.Configuration
+Imports System.Linq
+Imports System.Collections.Generic
+
 Namespace kCura.WinEDDS
 	Public Class Config
 
 #Region " ConfigSettings "
 
+		Private Shared _LoadLock As New System.Object
+
 		Private Shared _configDictionary As System.Collections.IDictionary
 		Public Shared ReadOnly Property ConfigSettings() As System.Collections.IDictionary
 			Get
+				' You may ask, why are there two identical if/then statements?
+				' If the config dictionary is already set, we want to return it.  And 99% of the time, the if/then will handle this, not needing a synclock.  The synclock would just slow things down.
+
+				' If the config dictionary is not set, we want to load it.  Previously it wasn't thread safe, so the synclock was added.
+
+				' However, it is possible that one thread could start this and get into the synclock, and another thread comes in before _configDictionary is set, and tries to enter the load process.
+				' This is why we want the second if/then.
+				' Next, we don't set _configDictionary until the temporary dictionary is fully formed.  It was possible for multiple threads to throw an error because _configDictionary had been created, 
+				' but hadn't had all its values added to it yet, thus code looking for a specific value threw a null reference exception.
+
+				' So here you go, this is a good example of how to make loading a static collection thread safe, and still keep some performance.  - slm - 5/24/2012
+
 				If _configDictionary Is Nothing Then
-					_configDictionary = DirectCast(System.Configuration.ConfigurationManager.GetSection("kCura.WinEDDS"), System.Collections.IDictionary)
-					If _configDictionary Is Nothing Then _configDictionary = New System.Collections.Hashtable
-					If Not _configDictionary.Contains("ImportBatchSize") Then _configDictionary.Add("ImportBatchSize", "1000")
-					If Not _configDictionary.Contains("DynamicBatchResizingOn") Then _configDictionary.Add("DynamicBatchResizingOn", "True")
-					If Not _configDictionary.Contains("MinimumBatchSize") Then _configDictionary.Add("MinimumBatchSize", "100")
-					If Not _configDictionary.Contains("WaitTimeBetweenRetryAttempts") Then _configDictionary.Add("WaitTimeBetweenRetryAttempts", "30")
-					If Not _configDictionary.Contains("ImportBatchMaxVolume") Then _configDictionary.Add("ImportBatchMaxVolume", "10485760") '10(2^20) - don't know what 10MB standard is
-					If Not _configDictionary.Contains("ExportBatchSize") Then _configDictionary.Add("ExportBatchSize", "1000")
-					If Not _configDictionary.Contains("EnableSingleModeImport") Then _configDictionary.Add("EnableSingleModeImport", "False")
-					If Not _configDictionary.Contains("CreateErrorForEmptyNativeFile") Then _configDictionary.Add("CreateErrorForEmptyNativeFile", "False")
-					If Not _configDictionary.Contains("AuditLevel") Then _configDictionary.Add("AuditLevel", "FullAudit")
+					SyncLock _LoadLock
+						If _configDictionary Is Nothing Then
+							Dim tempDict As System.Collections.IDictionary
+							tempDict = DirectCast(System.Configuration.ConfigurationManager.GetSection("kCura.WinEDDS"), System.Collections.IDictionary)
+							If tempDict Is Nothing Then tempDict = New System.Collections.Hashtable
+							If Not tempDict.Contains("ImportBatchSize") Then tempDict.Add("ImportBatchSize", "1000")
+							If Not tempDict.Contains("DynamicBatchResizingOn") Then tempDict.Add("DynamicBatchResizingOn", "True")
+							If Not tempDict.Contains("MinimumBatchSize") Then tempDict.Add("MinimumBatchSize", "100")
+							If Not tempDict.Contains("WaitTimeBetweenRetryAttempts") Then tempDict.Add("WaitTimeBetweenRetryAttempts", "30")
+							If Not tempDict.Contains("ImportBatchMaxVolume") Then tempDict.Add("ImportBatchMaxVolume", "10485760") '10(2^20) - don't know what 10MB standard is
+							If Not tempDict.Contains("ExportBatchSize") Then tempDict.Add("ExportBatchSize", "1000")
+							If Not tempDict.Contains("EnableSingleModeImport") Then tempDict.Add("EnableSingleModeImport", "False")
+							If Not tempDict.Contains("CreateErrorForEmptyNativeFile") Then tempDict.Add("CreateErrorForEmptyNativeFile", "False")
+							If Not tempDict.Contains("AuditLevel") Then tempDict.Add("AuditLevel", "FullAudit")
+
+							_configDictionary = tempDict
+						End If
+					End SyncLock
 				End If
 				Return _configDictionary
 			End Get
@@ -234,6 +258,20 @@ Namespace kCura.WinEDDS
 				Dim registryValue As String = "false"
 				If value Then registryValue = "true"
 				Config.SetRegistryKeyValue("ForceFolderPreview", registryValue)
+			End Set
+		End Property
+
+		Public Shared Property ObjectFieldIdListContainsArtifactId() As IList(Of Int32)
+			Get
+				Dim registryValue As String = Config.GetRegistryKeyValue("ObjectFieldIdListContainsArtifactId")
+				If String.IsNullOrEmpty(registryValue) Then
+					Config.SetRegistryKeyValue("ObjectFieldIdListContainsArtifactId", "")
+					Return New List(Of Int32)
+				End If
+				Return registryValue.Split(New String() {","}, StringSplitOptions.RemoveEmptyEntries).Select(Function(s As String) Int32.Parse(s)).ToArray
+			End Get
+			Set(ByVal value As IList(Of Int32))
+				Config.SetRegistryKeyValue("ObjectFieldIdListContainsArtifactId", String.Join(",", value.Select(Function(x) x.ToString()).ToArray))
 			End Set
 		End Property
 

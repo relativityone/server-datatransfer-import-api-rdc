@@ -3,6 +3,7 @@ Imports kCura.EDDS.WebAPI.BulkImportManagerBase
 
 Imports Relativity.MassImport
 Imports Microsoft.VisualBasic
+Imports System.Collections.Generic
 
 Namespace kCura.WinEDDS
 	Public Class BulkLoadFileImporter
@@ -327,7 +328,7 @@ Namespace kCura.WinEDDS
 			_bulkLoadFileFieldDelimiter = bulkLoadFileFieldDelimiter
 
 			_batchSizeHistoryList = New System.Collections.Generic.List(Of Int32)
-			_disableNativeLocationValidation = Config.DisableNativeLocationValidation
+			_DisableNativeLocationValidation = Config.DisableNativeLocationValidation
 		End Sub
 
 		Protected Overridable Sub CreateUploaders(ByVal args As LoadFile)
@@ -409,6 +410,10 @@ Namespace kCura.WinEDDS
 						Else
 							_timekeeper.MarkStart("ReadFile_GetLine")
 							_statistics.DocCount += 1
+							'The EventType.Count is used as an 'easy' way for the ImportAPI to eventually get a record count.
+							' It could be done in DataReaderClient in other ways, but those ways turned out to be pretty messy.
+							' -Phil S. 06/12/2012
+							WriteStatusLine(Windows.Process.EventType.Count, String.Empty)
 							line = _artifactReader.ReadArtifact
 							_timekeeper.MarkEnd("ReadFile_GetLine")
 							Dim lineStatus As Int32 = 0
@@ -875,7 +880,7 @@ Namespace kCura.WinEDDS
 			settings.CodeFileName = codeFileUploadKey
 			settings.DataFileName = nativeFileUploadKey
 			settings.ObjectFileName = objectFileUploadKey
-			settings.MappedFields = Me.GetMappedFields(_artifactTypeID)
+			settings.MappedFields = Me.GetMappedFields(_artifactTypeID, _settings.ObjectFieldIdListContainsArtifactId)
 			settings.KeyFieldArtifactID = _keyFieldID
 			Select Case _overwrite.ToLower
 				Case "strict"
@@ -915,11 +920,18 @@ Namespace kCura.WinEDDS
 			_outputObjectFileWriter.Close()
 		End Sub
 
-		Private Function GetMappedFields(ByVal artifactTypeID As Int32) As kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo()
+		Public Function GetMappedFields(ByVal artifactTypeID As Int32, ByVal ObjectFieldIdListContainsArtifactId As IList(Of Int32)) As kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo()
 			Dim retval As New System.Collections.ArrayList
 			For Each item As WinEDDS.LoadFileFieldMap.LoadFileFieldMapItem In _fieldMap
 				If Not item.DocumentField Is Nothing Then
-					retval.Add(item.DocumentField.ToFieldInfo)
+					Dim i As Integer = retval.Add(item.DocumentField.ToFieldInfo)
+					If Not ObjectFieldIdListContainsArtifactId Is Nothing Then
+						If (CType(retval(i), FieldInfo).Type = FieldType.Object _
+							Or CType(retval(i), FieldInfo).Type = FieldType.Objects) _
+					 AndAlso ObjectFieldIdListContainsArtifactId.Contains(CType(retval(i), FieldInfo).ArtifactID) Then
+							CType(retval(i), FieldInfo).ImportBehavior = ImportBehaviorChoice.ObjectFieldContainsArtifactId
+						End If
+				End If
 				End If
 			Next
 			retval.Sort(New WebServiceFieldInfoNameComparer)
@@ -1142,6 +1154,7 @@ Namespace kCura.WinEDDS
 			Else
 				keyField = record.IdentifierField
 			End If
+
 			If Not keyField Is Nothing AndAlso Not keyField.Value Is Nothing Then identityValue = keyField.Value.ToString
 			If identityValue Is Nothing OrElse identityValue = String.Empty Then Throw New IdentityValueNotSetException
 			If Not _processedDocumentIdentifiers(identityValue) Is Nothing Then Throw New IdentifierOverlapException(identityValue, _processedDocumentIdentifiers(identityValue))
@@ -1158,6 +1171,7 @@ Namespace kCura.WinEDDS
 					If item.DocumentField.FieldTypeID = Relativity.FieldTypeHelper.FieldType.File Then
 						Me.ManageFileField(record(item.DocumentField.FieldID))
 					Else
+
 						MyBase.SetFieldValue(record(item.DocumentField.FieldID), item.NativeFileColumnIndex, False, identityValue, 0, item.DocumentField.ImportBehavior)
 					End If
 				End If

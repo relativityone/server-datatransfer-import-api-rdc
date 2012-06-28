@@ -73,12 +73,14 @@ Namespace kCura.WinEDDS
 
 			If _disableNativeValidation.HasValue Then _loadFileImporter.DisableNativeValidation = _disableNativeValidation.Value
 			If _disableNativeLocationValidation.HasValue Then _loadFileImporter.DisableNativeLocationValidation = _disableNativeLocationValidation.Value
+
 			_loadFileImporter.AuditLevel = _auditLevel
 			_loadFileImporter.DisableUserSecurityCheck = _disableUserSecutityCheck
 
 			'_newlineCounter = New kCura.Utility.File.Instance.LineCounter
 			'_newlineCounter.Path = LoadFile.FilePath
 			Me.ProcessObserver.InputArgs = LoadFile.FilePath
+			
 			If (CType(_loadFileImporter.ReadFile(LoadFile.FilePath), Boolean)) AndAlso Not _hasRunPRocessComplete Then
 				If _loadFileImporter.HasErrors Then
 					Me.ProcessObserver.RaiseProcessCompleteEvent(False, System.Guid.NewGuid.ToString, True)
@@ -88,6 +90,7 @@ Namespace kCura.WinEDDS
 			Else
 				Me.ProcessObserver.RaiseStatusEvent("", "Import aborted")
 			End If
+			
 		End Sub
 
 		Private Sub AuditRun(ByVal success As Boolean, ByVal runID As String)
@@ -196,6 +199,8 @@ Namespace kCura.WinEDDS
 					Me.ProcessObserver.RaiseWarningEvent(e.CurrentRecordIndex.ToString, e.Message)
 				Case Windows.Process.EventType.ResetStartTime
 					_startTime = System.DateTime.Now
+				Case Windows.Process.EventType.Count
+					Me.ProcessObserver.RaiseCountEvent()
 			End Select
 			System.Threading.Monitor.Exit(Me.ProcessObserver)
 			'Me.ProcessObserver.RaiseProgressEvent(e.TotalLines, e.CurrentRecordIndex, 0, 0, _startTime, System.DateTime.Now)

@@ -272,7 +272,6 @@ Namespace kCura.WinEDDS
 					goodObjects.Add(objectString)
 				End If
 			Next
-
 			Dim objectDisplayNames As String() = DirectCast(goodObjects.ToArray(GetType(String)), String())
 			Dim nameIDPairs As New System.Collections.Hashtable
 			For Each objectName As String In objectDisplayNames
@@ -283,6 +282,35 @@ Namespace kCura.WinEDDS
 					' .... the heck
 				Else
 					nameIDPairs(objectName) = -1
+				End If
+			Next
+			Return nameIDPairs
+		End Function
+
+		Public Overridable Function GetObjectsByArtifactID(ByVal value As String(), ByVal column As Int32, ByVal field As Api.ArtifactField, ByVal associatedObjectTypeID As Int32) As System.Collections.Hashtable
+			Dim al As New System.Collections.ArrayList(value)
+			Dim goodObjects As New System.Collections.ArrayList
+			For Each objectString As String In al
+				objectString = objectString.Trim
+				If objectString <> String.Empty Then
+					'################################################ EXCEPTION TYPE #####################################
+					If goodObjects.Contains(objectString) Then Throw New DuplicateObjectReferenceException(Me.CurrentLineNumber, column, objectString)
+					'Not checking the length of the object because object names have no limit.
+					goodObjects.Add(objectString)
+				End If
+			Next
+
+			Dim objectArtifactIds As String() = DirectCast(goodObjects.ToArray(GetType(String)), String())
+			Dim nameIDPairs As New System.Collections.Hashtable
+
+			For Each objectArtifactId As String In objectArtifactIds
+				If objectArtifactId.Length > field.TextLength Then Throw New kCura.Utility.DelimitedFileImporter.InputStringExceedsFixedLengthException(Me.CurrentLineNumber, column, field.TextLength, field.DisplayName)
+				Dim artifactTextIdentifier As System.Data.DataSet = _objectManager.RetrieveTextIdentifierOfMappedObject(_caseArtifactID, CInt(objectArtifactId), associatedObjectTypeID)
+				If artifactTextIdentifier.Tables(0).Rows.Count > 0 Then
+					nameIDPairs(objectArtifactId) = artifactTextIdentifier.Tables(0).Rows(0)(0)
+					' .... the heck
+				Else
+					nameIDPairs(objectArtifactId) = String.Empty
 				End If
 			Next
 			Return nameIDPairs
@@ -417,45 +445,10 @@ Namespace kCura.WinEDDS
 					If forPreview Then field.Value = field.Value.ToString.Trim
 
 				Case Relativity.FieldTypeHelper.FieldType.Objects
-					Dim value As String() = Nothing
-					If Not field.Value Is Nothing Then value = DirectCast(field.Value, String())
-					If field.Value Is Nothing Then value = New System.String() {}
-
-					If value.Length = 0 Then
-						field.Value = String.Empty
+					If (Not Me._settings.ObjectFieldIdListContainsArtifactId Is Nothing) AndAlso Me._settings.ObjectFieldIdListContainsArtifactId.Contains(field.ArtifactID) Then
+						SetFieldValueObjectsByArtifactID(field, columnIndex, forPreview, identityValue)
 					Else
-						Dim objectValues As System.Collections.Hashtable = GetObjects(value, columnIndex, field, field.AssociatedObjectTypeID)
-						Dim newVal As String = String.Empty
-						Dim objName As String
-						If objectValues.Count > 0 Then
-							For Each objName In objectValues.Keys
-								'If forPreview And DirectCast(objectValues(objName), Int32) = -1 Then
-								'	objectValues(objName) = "[new object]"
-								'End If
-								'newVal &= ";" & objName
-								If forPreview And DirectCast(objectValues(objName), Int32) = -1 Then
-									newVal &= ";" & "[new object]"
-								Else
-									newVal &= ";" & objName
-								End If
-							Next
-						End If
-						newVal = newVal.TrimStart(";"c)
-						field.Value = newVal
-						If TypeOf Me Is BulkLoadFileImporter Then
-							If objectValues.Count = 0 Then
-								field.Value = ""
-							Else
-								field.Value = ChrW(11) & kCura.Utility.ArrayList.ArrayListToDelimitedString(New System.Collections.ArrayList(value), ChrW(11)) & ChrW(11)
-								Dim sb As New System.Text.StringBuilder
-								For Each objectValue As String In objectValues.Keys
-									DirectCast(Me, BulkLoadFileImporter).WriteObjectLineToTempFile(identityValue, objectValue, CType(objectValues(objectValue), Int32), field.AssociatedObjectTypeID, field.ArtifactID)
-									sb.Append("'" & objectValue & "'")
-									sb.Append(",")
-								Next
-								field.Value = sb.ToString.TrimEnd(","c)
-							End If
-						End If
+						SetFieldValueObjectsByName(field, columnIndex, forPreview, identityValue)
 					End If
 
 				Case Relativity.FieldTypeHelper.FieldType.Text
@@ -499,6 +492,89 @@ Namespace kCura.WinEDDS
 				Case Else
 					Throw New System.Exception("Unsupported Field Type '" & field.Type.ToString & "'")
 			End Select
+		End Sub
+
+		Private Sub SetFieldValueObjectsByName(ByVal field As Api.ArtifactField, ByVal columnIndex As Int32, ByVal forPreview As Boolean, ByVal identityValue As String)
+			Dim value As String() = Nothing
+			If Not field.Value Is Nothing Then value = DirectCast(field.Value, String())
+			If field.Value Is Nothing Then value = New System.String() {}
+
+			If value.Length = 0 Then
+				field.Value = String.Empty
+			Else
+				Dim objectValues As System.Collections.Hashtable = GetObjects(value, columnIndex, field, field.AssociatedObjectTypeID)
+				Dim newVal As String = String.Empty
+				Dim objName As String
+				If objectValues.Count > 0 Then
+					For Each objName In objectValues.Keys
+						'If forPreview And DirectCast(objectValues(objName), Int32) = -1 Then
+						'	objectValues(objName) = "[new object]"
+						'End If
+						'newVal &= ";" & objName
+						If forPreview And DirectCast(objectValues(objName), Int32) = -1 Then
+							newVal &= ";" & "[new object]"
+						Else
+							newVal &= ";" & objName
+						End If
+					Next
+				End If
+				newVal = newVal.TrimStart(";"c)
+				field.Value = newVal
+				If TypeOf Me Is BulkLoadFileImporter Then
+					If objectValues.Count = 0 Then
+						field.Value = ""
+					Else
+						field.Value = ChrW(11) & kCura.Utility.ArrayList.ArrayListToDelimitedString(New System.Collections.ArrayList(value), ChrW(11)) & ChrW(11)
+						Dim sb As New System.Text.StringBuilder
+						For Each objectValue As String In objectValues.Keys
+							DirectCast(Me, BulkLoadFileImporter).WriteObjectLineToTempFile(identityValue, objectValue, CType(objectValues(objectValue), Int32), field.AssociatedObjectTypeID, field.ArtifactID)
+							sb.Append("'" & objectValue & "'")
+							sb.Append(",")
+						Next
+						field.Value = sb.ToString.TrimEnd(","c)
+					End If
+				End If
+			End If
+		End Sub
+
+		Private Sub SetFieldValueObjectsByArtifactID(ByVal field As Api.ArtifactField, ByVal columnIndex As Int32, ByVal forPreview As Boolean, ByVal identityValue As String)
+			Dim value As String() = Nothing
+			If Not field.Value Is Nothing Then value = DirectCast(field.Value, String())
+			If field.Value Is Nothing Then value = New System.String() {}
+
+			If value.Length = 0 Then
+				field.Value = String.Empty
+			Else
+				Dim objectValues As System.Collections.Hashtable = GetObjectsByArtifactID(value, columnIndex, field, field.AssociatedObjectTypeID)
+
+				Dim newVal As String = String.Empty
+				Dim objArtifactID As String
+				If objectValues.Count > 0 Then
+					For Each objArtifactID In objectValues.Keys
+						If forPreview And String.IsNullOrEmpty(objectValues(objArtifactID).ToString()) Then
+							newVal &= ";" & "[new object]"
+						Else
+							newVal &= ";" & objArtifactID
+						End If
+					Next
+				End If
+				newVal = newVal.TrimStart(";"c)
+				field.Value = newVal
+				If TypeOf Me Is BulkLoadFileImporter Then
+					If objectValues.Count = 0 Then
+						field.Value = ""
+					Else
+						field.Value = ChrW(11) & kCura.Utility.ArrayList.ArrayListToDelimitedString(New System.Collections.ArrayList(value), ChrW(11)) & ChrW(11)
+						Dim sb As New System.Text.StringBuilder
+						For Each objectValue As String In objectValues.Keys
+							DirectCast(Me, BulkLoadFileImporter).WriteObjectLineToTempFile(identityValue, objectValues(objectValue).ToString(), CInt(objectValue), field.AssociatedObjectTypeID, field.ArtifactID)
+							sb.Append(objectValue)
+							sb.Append(",")
+						Next
+						field.Value = sb.ToString.TrimEnd(","c)
+					End If
+				End If
+			End If
 		End Sub
 
 		Private Function GetMaxExtractedTextLength(ByVal value As String) As Int32
