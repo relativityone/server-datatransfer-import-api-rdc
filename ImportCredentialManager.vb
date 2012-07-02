@@ -82,7 +82,7 @@ Friend Class ImportCredentialManager
 		End If
 
 		For Each ce As CredentialEntry In CredentialCache
-			If ce.UserName = UserName And ce.PassWord = Password Then
+			If ce.UserName = UserName And ce.PassWord = Password And ce.URL = WebServiceURL Then
 				Return ce
 			End If
 		Next
