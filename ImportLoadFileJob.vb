@@ -430,8 +430,17 @@ Namespace kCura.Relativity.DataReaderClient
 
 		Private Sub _observer_OnProcessFatalException(ByVal ex As Exception) Handles _observer.OnProcessFatalException
 			RaiseEvent OnMessage(New Status(String.Format("FatalException: {0}", ex.ToString)))
+			If Not ex.InnerException Is Nothing Then
+				RaiseFatalInnerException(ex)
+			End If
 			_jobReport.FatalException = ex
 			RaiseFatalException()
+		End Sub
+		Private Sub RaiseFatalInnerException(ByVal ex As Exception)
+			RaiseEvent OnMessage(New Status(String.Format("Inner Exception: {0}", ex.ToString())))
+			If Not ex.InnerException Is Nothing Then
+				RaiseFatalInnerException(ex.InnerException)
+			End If
 		End Sub
 
 		Private Sub _observer_OnProcessProgressEvent(ByVal evt As kCura.Windows.Process.ProcessProgressEvent) Handles _observer.OnProcessProgressEvent
