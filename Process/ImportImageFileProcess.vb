@@ -39,6 +39,7 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
+		Public Property MaximumErrorCount As Int32?
 
 		Protected Overrides Sub Execute()
 			_startTime = DateTime.Now
@@ -51,6 +52,13 @@ Namespace kCura.WinEDDS
 			If _disableImageLocationValidation.HasValue Then _imageFileImporter.DisableImageLocationValidation = _disableImageLocationValidation.Value
 			_imageFileImporter.DisableUserSecurityCheck = _disableUserSecurityCheck
 			_imageFileImporter.AuditLevel = _importAuditLevel
+
+			If MaximumErrorCount.HasValue AndAlso MaximumErrorCount.Value > 0 Then
+				'The '+1' is because the 'MaxNumberOfErrorsInGrid' is actually 1 more than the *actual* maximum, but
+				' we don't want to change BulkImageFileImporter's behavior.
+				' -Phil S. 07/10/2012
+				_imageFileImporter.MaxNumberOfErrorsInGrid = MaximumErrorCount.Value + 1
+			End If
 
 			_imageFileImporter.ReadFile(ImageLoadFile.FileName)
 			If Not _hasRunProcessComplete Then

@@ -59,7 +59,7 @@ Namespace kCura.WinEDDS
 		Private _errorMessageFileLocation As String = String.Empty
 		Private _errorLinesFileLocation As String = String.Empty
 
-		Public Const MaxNumberOfErrorsInGrid As Int32 = 1000
+		Public MaxNumberOfErrorsInGrid As Int32 = Config.DefaultMaximumErrorCount
 		Private _errorCount As Int32 = 0
 		Private _prePushErrorLineNumbersFileName As String = String.Empty
 		Private _processID As Guid
@@ -1265,9 +1265,9 @@ Namespace kCura.WinEDDS
 			End If
 
 			Dim errorMessageFileWriter As New System.IO.StreamWriter(_errorMessageFileLocation, True, System.Text.Encoding.Default)
-			If _errorCount < BulkLoadFileImporter.MaxNumberOfErrorsInGrid Then
+			If _errorCount < MaxNumberOfErrorsInGrid Then
 				RaiseEvent ReportErrorEvent(row)
-			ElseIf _errorCount = BulkLoadFileImporter.MaxNumberOfErrorsInGrid Then
+			ElseIf _errorCount = MaxNumberOfErrorsInGrid Then
 				Dim moretobefoundMessage As New System.Collections.Hashtable
 				moretobefoundMessage.Add("Message", "Maximum number of errors for display reached.  Export errors to view full list.")
 				RaiseEvent ReportErrorEvent(moretobefoundMessage)

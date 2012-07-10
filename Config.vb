@@ -191,6 +191,12 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
+		Public Shared ReadOnly Property DefaultMaximumErrorCount() As Int32
+			Get
+				Return 1000
+			End Get
+		End Property
+
 		Public Shared ReadOnly Property MinimumBatchSize() As Int32		'When AutoBatch is on. This is the lower ceiling up to which batch will decrease
 			Get
 				Return CType(ConfigSettings("MinimumBatchSize"), Int32)

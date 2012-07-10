@@ -43,6 +43,7 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
+		Public Property MaximumErrorCount As Int32?
 
 		''' <summary>
 		''' Gets or sets the delimiter to use to separate fields in the bulk
@@ -73,6 +74,12 @@ Namespace kCura.WinEDDS
 
 			If _disableNativeValidation.HasValue Then _loadFileImporter.DisableNativeValidation = _disableNativeValidation.Value
 			If _disableNativeLocationValidation.HasValue Then _loadFileImporter.DisableNativeLocationValidation = _disableNativeLocationValidation.Value
+			If MaximumErrorCount.HasValue AndAlso MaximumErrorCount.Value > 0 Then
+				'The '+1' is because the 'MaxNumberOfErrorsInGrid' is actually 1 more than the *actual* maximum, but
+				' we don't want to change BulkLoadFileImporter's behavior.
+				' -Phil S. 07/10/2012
+				_loadFileImporter.MaxNumberOfErrorsInGrid = MaximumErrorCount.Value + 1
+			End If
 
 			_loadFileImporter.AuditLevel = _auditLevel
 			_loadFileImporter.DisableUserSecurityCheck = _disableUserSecutityCheck

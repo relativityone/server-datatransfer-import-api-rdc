@@ -52,7 +52,7 @@ Namespace kCura.WinEDDS
 		Private _fileIdentifierLookup As System.Collections.Hashtable
 
 		Private _processID As Guid
-		Public Const MaxNumberOfErrorsInGrid As Int32 = 1000
+		Public Property MaxNumberOfErrorsInGrid As Int32 = Config.DefaultMaximumErrorCount
 		Private _totalValidated As Long
 		Private _totalProcessed As Long
 		Private _startLineNumber As Int64
