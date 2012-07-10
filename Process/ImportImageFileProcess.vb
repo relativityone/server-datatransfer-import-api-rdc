@@ -54,7 +54,8 @@ Namespace kCura.WinEDDS
 			_imageFileImporter.AuditLevel = _importAuditLevel
 
 			If MaximumErrorCount.HasValue AndAlso MaximumErrorCount.Value > 0 Then
-				'The '+1' is because the 'MaxNumberOfErrorsInGrid' is actually 1 more than the *actual* maximum, but
+				'The '+1' is because the 'MaxNumberOfErrorsInGrid' is actually 1 more (because the
+				' final error is simply 'Maximum # of errors' error) than the *actual* maximum, but
 				' we don't want to change BulkImageFileImporter's behavior.
 				' -Phil S. 07/10/2012
 				_imageFileImporter.MaxNumberOfErrorsInGrid = MaximumErrorCount.Value + 1
