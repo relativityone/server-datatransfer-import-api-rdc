@@ -111,6 +111,14 @@ Namespace kCura.Relativity.DataReaderClient
 			End If
 		End Sub
 
+		'The 'OnComplete' and 'OnFatalException' events are alternatives to OnMessage, OnError, and
+		' the OnProgress event. The latter 3 are difficult to parse, so the JobReport class was
+		' created to centralize all of the import information. If 'real-time' progress is desired,
+		' then OnComplete & OnFatalException are *not* the events to listen to--these are only raised
+		' at the end of an import. Furthermore, OnComplete does not indicate 100% success, but that
+		' all of the data was processed. OnFatalException is raised when the import 'bombed out'.
+		' -Phil S. 07/10/2012
+
 		Private Sub RaiseFatalException()
 			_jobReport.EndTime = DateTime.Now
 			RaiseEvent OnFatalException(_jobReport)
