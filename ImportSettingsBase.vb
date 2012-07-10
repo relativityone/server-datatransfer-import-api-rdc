@@ -71,6 +71,12 @@ Namespace kCura.Relativity.DataReaderClient
 		Public Property IdentityFieldId() As Int32
 
 		''' <summary>
+		''' The maximum number of errors allowed before receiving a 'Maximum number of errors for display reached' message.
+		''' </summary>
+		''' <remarks>The default value is 999.</remarks>
+		Public Property MaximumErrorCount As Int32?
+
+		''' <summary>
 		''' Sets whether native files are copied to the destination Relativity instance or whether they are used as links
 		''' </summary>
 		Public Property NativeFileCopyMode() As NativeFileCopyModeEnum

@@ -80,6 +80,7 @@ Namespace kCura.Relativity.DataReaderClient
 
 				If Settings.DisableImageTypeValidation.HasValue Then process.DisableImageTypeValidation = Settings.DisableImageTypeValidation.Value
 				If Settings.DisableImageLocationValidation.HasValue Then process.DisableImageLocationValidation = Settings.DisableImageLocationValidation.Value
+				process.MaximumErrorCount = Settings.MaximumErrorCount
 				process.DisableUserSecurityCheck = Settings.DisableUserSecurityCheck
 				process.AuditLevel = Settings.AuditLevel
 
@@ -214,9 +215,11 @@ Namespace kCura.Relativity.DataReaderClient
 		End Function
 
 		Private Sub ValidateRelativitySettings()
-
 			If Settings.CaseArtifactId <= 0 Then
 				Throw New ImportSettingsException("CaseArtifactId", "This must be the ID of an existing case.")
+			End If
+			If Settings.MaximumErrorCount.HasValue AndAlso Settings.MaximumErrorCount.Value < 1 Then
+				Throw New ImportSettingsException("MaximumErrorCount", "This must be greater than 0.")
 			End If
 		End Sub
 
