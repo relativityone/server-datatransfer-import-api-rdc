@@ -401,8 +401,8 @@ Namespace kCura.Relativity.DataReaderClient
 			If Settings.ArtifactTypeId <= 0 Then
 				Throw New ImportSettingsException("ArtifactTypeId", "This must be the ID of an existing artifact type.")
 			End If
-			If Settings.MaximumErrorCount.HasValue AndAlso Settings.MaximumErrorCount.Value < 1 Then
-				Throw New ImportSettingsException("MaximumErrorCount", "This must be greater than 0.")
+			If Settings.MaximumErrorCount.HasValue AndAlso (Settings.MaximumErrorCount.Value < 1 OrElse Settings.MaximumErrorCount.Value = Int32.MaxValue) Then
+				Throw New ImportSettingsException("MaximumErrorCount", "This must be greater than 0 and less than Int32.MaxValue.")
 			End If
 		End Sub
 #End Region

@@ -226,8 +226,8 @@ Namespace kCura.Relativity.DataReaderClient
 			If Settings.CaseArtifactId <= 0 Then
 				Throw New ImportSettingsException("CaseArtifactId", "This must be the ID of an existing case.")
 			End If
-			If Settings.MaximumErrorCount.HasValue AndAlso Settings.MaximumErrorCount.Value < 1 Then
-				Throw New ImportSettingsException("MaximumErrorCount", "This must be greater than 0.")
+			If Settings.MaximumErrorCount.HasValue AndAlso (Settings.MaximumErrorCount.Value < 1 OrElse Settings.MaximumErrorCount.Value = Int32.MaxValue) Then
+				Throw New ImportSettingsException("MaximumErrorCount", "This must be greater than 0 and less than Int32.MaxValue.")
 			End If
 		End Sub
 
