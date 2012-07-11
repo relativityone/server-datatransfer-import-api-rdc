@@ -74,7 +74,7 @@ Namespace kCura.WinEDDS
 
 			If _disableNativeValidation.HasValue Then _loadFileImporter.DisableNativeValidation = _disableNativeValidation.Value
 			If _disableNativeLocationValidation.HasValue Then _loadFileImporter.DisableNativeLocationValidation = _disableNativeLocationValidation.Value
-			If MaximumErrorCount.HasValue AndAlso MaximumErrorCount.Value > 0 Then
+			If MaximumErrorCount.HasValue AndAlso MaximumErrorCount.Value > 0 AndAlso MaximumErrorCount.Value < Int32.MaxValue Then
 				'The '+1' is because the 'MaxNumberOfErrorsInGrid' is actually 1 more (because the
 				' final error is simply 'Maximum # of errors' error) than the *actual* maximum, but
 				' we don't want to change BulkImageFileImporter's behavior.
