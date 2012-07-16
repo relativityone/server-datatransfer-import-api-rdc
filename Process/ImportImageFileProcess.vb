@@ -53,7 +53,7 @@ Namespace kCura.WinEDDS
 			_imageFileImporter.DisableUserSecurityCheck = _disableUserSecurityCheck
 			_imageFileImporter.AuditLevel = _importAuditLevel
 
-			If MaximumErrorCount.HasValue AndAlso MaximumErrorCount.Value > 0 Then
+			If MaximumErrorCount.HasValue AndAlso MaximumErrorCount.Value > 0 AndAlso MaximumErrorCount.Value < Int32.MaxValue Then
 				'The '+1' is because the 'MaxNumberOfErrorsInGrid' is actually 1 more (because the
 				' final error is simply 'Maximum # of errors' error) than the *actual* maximum, but
 				' we don't want to change BulkImageFileImporter's behavior.
