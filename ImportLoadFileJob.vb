@@ -401,8 +401,8 @@ Namespace kCura.Relativity.DataReaderClient
 			If Settings.ArtifactTypeId <= 0 Then
 				Throw New ImportSettingsException("ArtifactTypeId", "This must be the ID of an existing artifact type.")
 			End If
-			If Settings.MaximumErrorCount.HasValue AndAlso Settings.MaximumErrorCount.Value < 1 Then
-				Throw New ImportSettingsException("MaximumErrorCount", "This must be greater than 0.")
+			If Settings.MaximumErrorCount.HasValue AndAlso (Settings.MaximumErrorCount.Value < 1 OrElse Settings.MaximumErrorCount.Value = Int32.MaxValue) Then
+				Throw New ImportSettingsException("MaximumErrorCount", "This must be greater than 0 and less than Int32.MaxValue.")
 			End If
 		End Sub
 #End Region
@@ -444,8 +444,17 @@ Namespace kCura.Relativity.DataReaderClient
 
 		Private Sub _observer_OnProcessFatalException(ByVal ex As Exception) Handles _observer.OnProcessFatalException
 			RaiseEvent OnMessage(New Status(String.Format("FatalException: {0}", ex.ToString)))
+			If Not ex.InnerException Is Nothing Then
+				RaiseFatalInnerException(ex)
+			End If
 			_jobReport.FatalException = ex
 			RaiseFatalException()
+		End Sub
+		Private Sub RaiseFatalInnerException(ByVal ex As Exception)
+			RaiseEvent OnMessage(New Status(String.Format("Inner Exception: {0}", ex.ToString())))
+			If Not ex.InnerException Is Nothing Then
+				RaiseFatalInnerException(ex.InnerException)
+			End If
 		End Sub
 
 		Private Sub _observer_OnProcessProgressEvent(ByVal evt As kCura.Windows.Process.ProcessProgressEvent) Handles _observer.OnProcessProgressEvent
