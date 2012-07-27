@@ -1018,7 +1018,7 @@ Namespace kCura.WinEDDS
 									chosenEncoding = detectedEncoding
 								End If
 							Else
-								fileStream = New FileStream(filename, FileMode.Open, FileAccess.Read)
+								fileStream = New FileStream(field.ValueAsString, FileMode.Open, FileAccess.Read)
 							End If
 
 							Dim sr As New System.IO.StreamReader(fileStream, chosenEncoding)
