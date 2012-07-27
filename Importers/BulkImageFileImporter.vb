@@ -703,7 +703,12 @@ Namespace kCura.WinEDDS
 				Dim encodingList As New Generic.List(Of Int32)
 				For Each filename As String In textFileList
 					Dim chosenEncoding As System.Text.Encoding
-					Dim determinedEncodingStream As DeterminedEncodingStream = kCura.WinEDDS.Utility.DetectEncoding(filename, True)
+					'We pass in 'False' as the final parameter to DetectEncoding to have it skip the File.Exists check. This
+					' check can be very expensive when going across the network, so this is an attempt to improve performance.
+					' We're ok skipping this check, because a few lines earlier in GetImageForDocument that existence check
+					' is already made.
+					' -Phil S. 07/27/2012
+					Dim determinedEncodingStream As DeterminedEncodingStream = kCura.WinEDDS.Utility.DetectEncoding(filename, True, False)
 					Dim detectedEncoding As System.Text.Encoding = determinedEncodingStream.DeterminedEncoding
 					If detectedEncoding IsNot Nothing Then
 						chosenEncoding = detectedEncoding
@@ -717,7 +722,12 @@ Namespace kCura.WinEDDS
 				If _replaceFullText AndAlso textFileList.Count > 0 Then _bulkLoadFileWriter.Write("{0},", kCura.Utility.List.ToDelimitedString(encodingList, "|"))
 				For Each filename As String In textFileList
 					Dim chosenEncoding As System.Text.Encoding
-					Dim determinedEncodingStream As DeterminedEncodingStream = kCura.WinEDDS.Utility.DetectEncoding(filename, False)
+					'We pass in 'False' as the final parameter to DetectEncoding to have it skip the File.Exists check. This
+					' check can be very expensive when going across the network, so this is an attempt to improve performance.
+					' We're ok skipping this check, because a few lines earlier in GetImageForDocument that existence check
+					' is already made.
+					' -Phil S. 07/27/2012
+					Dim determinedEncodingStream As DeterminedEncodingStream = kCura.WinEDDS.Utility.DetectEncoding(filename, False, False)
 					Dim detectedEncoding As System.Text.Encoding = determinedEncodingStream.DeterminedEncoding
 					If detectedEncoding IsNot Nothing Then
 						chosenEncoding = detectedEncoding
