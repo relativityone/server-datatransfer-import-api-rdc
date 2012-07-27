@@ -458,7 +458,7 @@ Namespace kCura.WinEDDS
 							field.Value = String.Empty
 						ElseIf Not System.IO.File.Exists(value) Then
 							Throw New MissingFullTextFileException(Me.CurrentLineNumber, columnIndex)
-						ElseIf New System.IO.FileInfo(value).Length > GetMaxExtractedTextLength(value) Then
+						ElseIf New System.IO.FileInfo(value).Length > GetMaxExtractedTextLength(value, False) Then
 							Throw New ExtractedTextTooLargeException
 						Else
 							If forPreview Then
@@ -577,8 +577,8 @@ Namespace kCura.WinEDDS
 			End If
 		End Sub
 
-		Private Function GetMaxExtractedTextLength(ByVal value As String) As Int32
-			Dim determinedEncodingStream As DeterminedEncodingStream = kCura.WinEDDS.Utility.DetectEncoding(value, False)
+		Private Function GetMaxExtractedTextLength(ByVal value As String, ByVal performFileExistsCheck As Boolean) As Int32
+			Dim determinedEncodingStream As DeterminedEncodingStream = kCura.WinEDDS.Utility.DetectEncoding(value, False, performFileExistsCheck)
 			Dim detectedEncoding As System.Text.Encoding = determinedEncodingStream.DeterminedEncoding
 			Dim oneGigabyte As Int32 = Convert.ToInt32(Int32.MaxValue / 2)
 
@@ -592,6 +592,10 @@ Namespace kCura.WinEDDS
 				' Encoding is already UTF-16 (or comparable)
 				Return Int32.MaxValue
 			End If
+		End Function
+
+		Private Function GetMaxExtractedTextLength(ByVal value As String) As Int32
+			Return GetMaxExtractedTextLength(value, True)
 		End Function
 
 		Public Sub AddToCodeCountPreviewHashTable(ByVal fieldID As Int32, ByVal fieldName As String, ByVal fieldValue As String)
