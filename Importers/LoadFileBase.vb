@@ -460,6 +460,10 @@ Namespace kCura.WinEDDS
 						ElseIf Not System.IO.File.Exists(value) Then
 							Throw New MissingFullTextFileException(Me.CurrentLineNumber, columnIndex)
 						ElseIf New System.IO.FileInfo(value).Length > GetMaxExtractedTextLength(value, False) Then
+							'We pass 'False' to GetMaxExtractedTextLength to tell it not to perform the File.Exists check
+							' if the code path takes us to the DetectEncoding call. Checking for file existence over the
+							' network can be very expensive, so this is an attempt to improve import speeds.
+							' -Phil S. 07/27/2012
 							Throw New ExtractedTextTooLargeException
 						Else
 							If forPreview Then
@@ -581,6 +585,10 @@ Namespace kCura.WinEDDS
 		Private Function GetMaxExtractedTextLength(ByVal value As String, ByVal performFileExistsCheck As Boolean) As Int32
 			Dim detectedEncoding As System.Text.Encoding = _extractedTextFileEncoding
 
+			'This logic exists as an attempt to improve import speeds.  The DetectEncoding call first checks if the file
+			' exists, followed by a read of the first few bytes. The File.Exists check can be very expensive when going
+			' across the network for the file, so this override allows that check to be skipped.
+			' -Phil S. 07/27/2012
 			If Not SkipExtractedTextEncodingCheck Then
 				Dim determinedEncodingStream As DeterminedEncodingStream = kCura.WinEDDS.Utility.DetectEncoding(value, False, performFileExistsCheck)
 				detectedEncoding = determinedEncodingStream.DeterminedEncoding

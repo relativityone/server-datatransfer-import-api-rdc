@@ -1009,6 +1009,10 @@ Namespace kCura.WinEDDS
 							chosenEncoding = _extractedTextFileEncoding
 							Dim fileStream As Stream
 
+							'This logic exists as an attempt to improve import speeds.  The DetectEncoding call first checks if the file
+							' exists, followed by a read of the first few bytes. The File.Exists check can be very expensive when going
+							' across the network for the file, so this override allows that check to be skipped.
+							' -Phil S. 07/27/2012
 							If Not SkipExtractedTextEncodingCheck Then
 								Dim determinedEncodingStream As DeterminedEncodingStream = kCura.WinEDDS.Utility.DetectEncoding(field.ValueAsString, False)
 								fileStream = determinedEncodingStream.UnderlyingStream
