@@ -58,7 +58,7 @@ Namespace kCura.WinEDDS
 		Private _batchCounter As Int32 = 0
 		Private _errorMessageFileLocation As String = String.Empty
 		Private _errorLinesFileLocation As String = String.Empty
-
+		Public Property SkipExtractedTextEncodingCheck As Boolean
 		Public MaxNumberOfErrorsInGrid As Int32 = Config.DefaultMaximumErrorCount
 		Private _errorCount As Int32 = 0
 		Private _prePushErrorLineNumbersFileName As String = String.Empty
@@ -1006,22 +1006,34 @@ Namespace kCura.WinEDDS
 				Else
 					If field.Category = Relativity.FieldCategory.FullText AndAlso _fullTextColumnMapsToFileLocation Then
 						If Not field.ValueAsString = String.Empty Then
-							Dim determinedEncodingStream As DeterminedEncodingStream = kCura.WinEDDS.Utility.DetectEncoding(field.ValueAsString, False)
-							Dim detectedEncoding As System.Text.Encoding = determinedEncodingStream.DeterminedEncoding
-							If detectedEncoding IsNot Nothing Then
-								chosenEncoding = detectedEncoding
+							chosenEncoding = _extractedTextFileEncoding
+							Dim fileStream As Stream
+
+							If Not SkipExtractedTextEncodingCheck Then
+								Dim determinedEncodingStream As DeterminedEncodingStream = kCura.WinEDDS.Utility.DetectEncoding(field.ValueAsString, False)
+								fileStream = determinedEncodingStream.UnderlyingStream
+
+								Dim detectedEncoding As System.Text.Encoding = determinedEncodingStream.DeterminedEncoding
+								If detectedEncoding IsNot Nothing Then
+									chosenEncoding = detectedEncoding
+								End If
 							Else
-								chosenEncoding = _extractedTextFileEncoding
+								fileStream = New FileStream(filename, FileMode.Open, FileAccess.Read)
 							End If
-							Dim sr As New System.IO.StreamReader(determinedEncodingStream.UnderlyingStream, chosenEncoding)
+
+							Dim sr As New System.IO.StreamReader(fileStream, chosenEncoding)
 							Dim count As Int32 = 1
 							Do
 								Dim buff(1000000) As Char
 								count = sr.ReadBlock(buff, 0, 1000000)
 								If count > 0 Then _outputNativeFileWriter.Write(buff, 0, count)
 							Loop Until count = 0
+
 							sr.Close()
-							determinedEncodingStream.Close()
+							Try
+								fileStream.Close()
+							Catch
+							End Try
 						End If
 					ElseIf field.Type = Relativity.FieldTypeHelper.FieldType.Boolean Then
 						If field.ValueAsString <> String.Empty Then

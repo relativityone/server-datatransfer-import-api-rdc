@@ -45,6 +45,8 @@ Namespace kCura.WinEDDS
 
 		Public Property MaximumErrorCount As Int32?
 
+		Public Property SkipExtractedTextEncodingCheck As Boolean?
+
 		''' <summary>
 		''' Gets or sets the delimiter to use to separate fields in the bulk
 		''' file created in this process. Line delimiters will be this value plus a line feed.
@@ -80,6 +82,10 @@ Namespace kCura.WinEDDS
 				' we don't want to change BulkImageFileImporter's behavior.
 				' -Phil S. 07/10/2012
 				_loadFileImporter.MaxNumberOfErrorsInGrid = MaximumErrorCount.Value + 1
+			End If
+
+			If SkipExtractedTextEncodingCheck.HasValue AndAlso SkipExtractedTextEncodingCheck Then
+				_loadFileImporter.SkipExtractedTextEncodingCheck = True
 			End If
 
 			_loadFileImporter.AuditLevel = _auditLevel
