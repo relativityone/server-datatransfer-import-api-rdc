@@ -120,6 +120,11 @@ Namespace kCura.Relativity.DataReaderClient
 		Public Property SendEmailOnLoadCompletion() As Boolean
 
 		''' <summary>
+		''' If True, force the value of <see cref="ExtractedTextEncoding"/> to always be used.
+		''' </summary>
+		Public Property SkipExtractedTextEncodingCheck() As Boolean?
+
+		''' <summary>
 		''' URL of the web service to use
 		''' </summary>
 		Public Property WebServiceURL() As String

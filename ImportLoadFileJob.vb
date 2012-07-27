@@ -90,7 +90,7 @@ Namespace kCura.Relativity.DataReaderClient
 				process.MaximumErrorCount = Settings.MaximumErrorCount
 				process.DisableUserSecurityCheck = Settings.DisableUserSecurityCheck
 				process.AuditLevel = Settings.AuditLevel
-
+				process.SkipExtractedTextEncodingCheck = Settings.SkipExtractedTextEncodingCheck
 
 				RaiseEvent OnMessage(New Status("Updating settings"))
 				process.LoadFile = CreateLoadFile(Settings)
@@ -373,6 +373,9 @@ Namespace kCura.Relativity.DataReaderClient
 
 		Private Sub ValidateExtractedTextSettings()
 			If Settings.ExtractedTextFieldContainsFilePath Then
+				If Settings.SkipExtractedTextEncodingCheck.HasValue AndAlso Settings.SkipExtractedTextEncodingCheck AndAlso Settings.ExtractedTextEncoding Is Nothing Then
+					Throw New ImportSettingsConflictException("SkipExtractedTextEncodingCheck", "ExtractedTextEncoding", "ExtractedTextEncoding must be set if SkipExtractedTextEncodingCheck is enabled.")
+				End If
 				If Settings.ExtractedTextEncoding Is Nothing Then
 					Throw New ImportSettingsException("ExtractedTextEncoding", String.Empty)
 				End If
