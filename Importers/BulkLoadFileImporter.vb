@@ -58,7 +58,7 @@ Namespace kCura.WinEDDS
 		Private _batchCounter As Int32 = 0
 		Private _errorMessageFileLocation As String = String.Empty
 		Private _errorLinesFileLocation As String = String.Empty
-		Public Property SkipExtractedTextEncodingCheck As Boolean
+
 		Public MaxNumberOfErrorsInGrid As Int32 = Config.DefaultMaximumErrorCount
 		Private _errorCount As Int32 = 0
 		Private _prePushErrorLineNumbersFileName As String = String.Empty

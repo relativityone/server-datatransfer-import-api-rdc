@@ -48,6 +48,7 @@ Namespace kCura.WinEDDS
 		Private _codeValidator As CodeValidator.Base
 		Private _codesCreated As Int32 = 0
 		Protected WithEvents _artifactReader As Api.IArtifactReader
+		Public Property SkipExtractedTextEncodingCheck As Boolean
 #End Region
 
 #Region "Accessors"
@@ -578,8 +579,13 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Private Function GetMaxExtractedTextLength(ByVal value As String, ByVal performFileExistsCheck As Boolean) As Int32
-			Dim determinedEncodingStream As DeterminedEncodingStream = kCura.WinEDDS.Utility.DetectEncoding(value, False, performFileExistsCheck)
-			Dim detectedEncoding As System.Text.Encoding = determinedEncodingStream.DeterminedEncoding
+			Dim detectedEncoding As System.Text.Encoding = _extractedTextFileEncoding
+
+			If Not SkipExtractedTextEncodingCheck Then
+				Dim determinedEncodingStream As DeterminedEncodingStream = kCura.WinEDDS.Utility.DetectEncoding(value, False, performFileExistsCheck)
+				detectedEncoding = determinedEncodingStream.DeterminedEncoding
+			End If
+
 			Dim oneGigabyte As Int32 = Convert.ToInt32(Int32.MaxValue / 2)
 
 			If detectedEncoding Is Nothing Then
