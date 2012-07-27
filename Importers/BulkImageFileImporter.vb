@@ -64,6 +64,7 @@ Namespace kCura.WinEDDS
 		Private _timekeeper As New kCura.Utility.Timekeeper
 		Private _doRetryLogic As Boolean
 		Private _verboseErrorCollection As New ClientSideErrorCollection
+		Public Property SkipExtractedTextEncodingCheck As Boolean
 #End Region
 
 #Region "Accessors"
@@ -695,50 +696,59 @@ Namespace kCura.WinEDDS
 					Me.GetImageForDocument(BulkImageFileImporter.GetFileLocation(record), record.BatesNumber, documentId, i, offset, textFileList, i < lines.Count - 1, record.OriginalIndex.ToString, status, lines.Count, i = 0)
 				Next
 
-
-				Dim encodingsStringBuilder As New System.Text.StringBuilder()
 				If textFileList.Count = 0 AndAlso _replaceFullText Then
 					_bulkLoadFileWriter.Write(String.Format("{0},", -1))
 				End If
 				Dim encodingList As New Generic.List(Of Int32)
 				For Each filename As String In textFileList
-					Dim chosenEncoding As System.Text.Encoding
-					'We pass in 'False' as the final parameter to DetectEncoding to have it skip the File.Exists check. This
-					' check can be very expensive when going across the network, so this is an attempt to improve performance.
-					' We're ok skipping this check, because a few lines earlier in GetImageForDocument that existence check
-					' is already made.
-					' -Phil S. 07/27/2012
-					Dim determinedEncodingStream As DeterminedEncodingStream = kCura.WinEDDS.Utility.DetectEncoding(filename, True, False)
-					Dim detectedEncoding As System.Text.Encoding = determinedEncodingStream.DeterminedEncoding
-					If detectedEncoding IsNot Nothing Then
-						chosenEncoding = detectedEncoding
-					Else
-						chosenEncoding = _settings.FullTextEncoding
+					Dim chosenEncoding As System.Text.Encoding = _settings.FullTextEncoding
+
+					If Not SkipExtractedTextEncodingCheck Then
+						'We pass in 'False' as the final parameter to DetectEncoding to have it skip the File.Exists check. This
+						' check can be very expensive when going across the network, so this is an attempt to improve performance.
+						' We're ok skipping this check, because a few lines earlier in GetImageForDocument that existence check
+						' is already made.
+						' -Phil S. 07/27/2012
+						Dim determinedEncodingStream As DeterminedEncodingStream = kCura.WinEDDS.Utility.DetectEncoding(filename, True, False)
+						Dim detectedEncoding As System.Text.Encoding = determinedEncodingStream.DeterminedEncoding
+						If detectedEncoding IsNot Nothing Then
+							chosenEncoding = detectedEncoding
+						End If
 					End If
+					
 					If _replaceFullText Then
 						If Not encodingList.Contains(chosenEncoding.CodePage) Then encodingList.Add(chosenEncoding.CodePage)
 					End If
 				Next
 				If _replaceFullText AndAlso textFileList.Count > 0 Then _bulkLoadFileWriter.Write("{0},", kCura.Utility.List.ToDelimitedString(encodingList, "|"))
 				For Each filename As String In textFileList
-					Dim chosenEncoding As System.Text.Encoding
-					'We pass in 'False' as the final parameter to DetectEncoding to have it skip the File.Exists check. This
-					' check can be very expensive when going across the network, so this is an attempt to improve performance.
-					' We're ok skipping this check, because a few lines earlier in GetImageForDocument that existence check
-					' is already made.
-					' -Phil S. 07/27/2012
-					Dim determinedEncodingStream As DeterminedEncodingStream = kCura.WinEDDS.Utility.DetectEncoding(filename, False, False)
-					Dim detectedEncoding As System.Text.Encoding = determinedEncodingStream.DeterminedEncoding
-					If detectedEncoding IsNot Nothing Then
-						chosenEncoding = detectedEncoding
+					Dim chosenEncoding As System.Text.Encoding = _settings.FullTextEncoding
+					Dim fileStream As IO.Stream
+
+					If Not SkipExtractedTextEncodingCheck Then
+						'We pass in 'False' as the final parameter to DetectEncoding to have it skip the File.Exists check. This
+						' check can be very expensive when going across the network, so this is an attempt to improve performance.
+						' We're ok skipping this check, because a few lines earlier in GetImageForDocument that existence check
+						' is already made.
+						' -Phil S. 07/27/2012
+						Dim determinedEncodingStream As DeterminedEncodingStream = kCura.WinEDDS.Utility.DetectEncoding(filename, False, False)
+						fileStream = determinedEncodingStream.UnderlyingStream
+
+						Dim detectedEncoding As System.Text.Encoding = determinedEncodingStream.DeterminedEncoding
+						If detectedEncoding IsNot Nothing Then
+							chosenEncoding = detectedEncoding
+						End If
 					Else
-						chosenEncoding = _settings.FullTextEncoding
+						fileStream = New FileStream(filename, FileMode.Open, FileAccess.Read)
 					End If
 
-					With New System.IO.StreamReader(determinedEncodingStream.UnderlyingStream, chosenEncoding, True)
+					With New System.IO.StreamReader(fileStream, chosenEncoding, True)
 						_bulkLoadFileWriter.Write(.ReadToEnd)
 						.Close()
-						determinedEncodingStream.Close()
+						Try
+							fileStream.Close()
+						Catch
+						End Try
 					End With
 				Next
 

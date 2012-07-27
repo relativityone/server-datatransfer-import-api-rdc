@@ -41,6 +41,8 @@ Namespace kCura.WinEDDS
 
 		Public Property MaximumErrorCount As Int32?
 
+		Public Property SkipExtractedTextEncodingCheck As Boolean?
+
 		Protected Overrides Sub Execute()
 			_startTime = DateTime.Now
 			_warningCount = 0
@@ -59,6 +61,10 @@ Namespace kCura.WinEDDS
 				' we don't want to change BulkImageFileImporter's behavior.
 				' -Phil S. 07/10/2012
 				_imageFileImporter.MaxNumberOfErrorsInGrid = MaximumErrorCount.Value + 1
+			End If
+
+			If SkipExtractedTextEncodingCheck.HasValue AndAlso SkipExtractedTextEncodingCheck Then
+				_imageFileImporter.SkipExtractedTextEncodingCheck = True
 			End If
 
 			_imageFileImporter.ReadFile(ImageLoadFile.FileName)
