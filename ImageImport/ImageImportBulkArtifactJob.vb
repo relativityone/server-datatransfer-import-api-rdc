@@ -239,11 +239,13 @@ Namespace kCura.Relativity.DataReaderClient
 		End Sub
 
 		Private Sub ValidateExtractedTextSettings()
-			If Settings.ExtractedTextFieldContainsFilePath AndAlso Settings.ExtractedTextEncoding Is Nothing Then
-				Throw New ImportSettingsException("ExtractedTextEncoding")
-			End If
-			If Settings.SkipExtractedTextEncodingCheck.HasValue AndAlso Settings.SkipExtractedTextEncodingCheck AndAlso Settings.ExtractedTextEncoding Is Nothing Then
-				Throw New ImportSettingsConflictException("SkipExtractedTextEncodingCheck", "ExtractedTextEncoding", "ExtractedTextEncoding must be set if SkipExtractedTextEncodingCheck is enabled.")
+			If Settings.ExtractedTextFieldContainsFilePath Then
+				If Settings.SkipExtractedTextEncodingCheck.HasValue AndAlso Settings.SkipExtractedTextEncodingCheck AndAlso Settings.ExtractedTextEncoding Is Nothing Then
+					Throw New ImportSettingsConflictException("SkipExtractedTextEncodingCheck", "ExtractedTextEncoding", "ExtractedTextEncoding must be set if SkipExtractedTextEncodingCheck is enabled.")
+				End If
+				If Settings.ExtractedTextEncoding Is Nothing Then
+					Throw New ImportSettingsException("ExtractedTextEncoding", String.Empty)
+				End If
 			End If
 		End Sub
 
