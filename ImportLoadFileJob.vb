@@ -389,7 +389,7 @@ Namespace kCura.Relativity.DataReaderClient
 				End If
 			Else
 				If Settings.NativeFilePathSourceFieldName = String.Empty Then
-					Throw New ImportSettingsException("NativeFilePathSourceFieldName", "If NativeFileCopyMode is set, then NativeFilePathSourceFieldName must be set. Format: [Field] ([index]). Example: File (3). ")
+					Throw New ImportSettingsException("NativeFilePathSourceFieldName", "If NativeFileCopyMode is set, then NativeFilePathSourceFieldName must be set.")
 				Else
 					RaiseEvent OnMessage(New Status(String.Format("Importing native files using {0}", Settings.NativeFileCopyMode.ToString)))
 				End If
