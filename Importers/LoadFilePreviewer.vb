@@ -185,14 +185,6 @@ Namespace kCura.WinEDDS
                         lineContainsErrors = lineContainsErrors Or SetFieldValueOrErrorMessage(field, mapItem.NativeFileColumnIndex, identifierField.ValueAsString, codePageId, mapItem.DocumentField.ImportBehavior)
                         'dont add field if object type is not a document and the field is a file field
                         retval.Add(field)
-                        If mapItem.DocumentField.FieldID = _settings.IdentityFieldId AndAlso field.Value Is "" Then
-                            System.Diagnostics.Debug.WriteLine(mapItem.DocumentField.FieldName)
-                            System.Diagnostics.Debug.WriteLine(record(_settings.IdentityFieldId).ValueAsString)
-                            System.Diagnostics.Debug.WriteLine(field.Value)
-                            System.Diagnostics.Debug.WriteLine("FOUND IT")
-                            lineContainsErrors = True
-
-                        End If
 
                     End If
                 End If
