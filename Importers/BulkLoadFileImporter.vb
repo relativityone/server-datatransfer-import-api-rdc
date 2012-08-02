@@ -592,7 +592,8 @@ Namespace kCura.WinEDDS
 			_timekeeper.MarkStart("ManageDocument_Folder")
 			If _createFolderStructure Then
 				If _artifactTypeID = Relativity.ArtifactType.Document Then
-					parentFolderID = _folderCache.FolderID(Me.CleanDestinationFolderPath(record.FieldList(Relativity.FieldCategory.ParentArtifact)(0).Value.ToString))
+					Dim value As String = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(kCura.Utility.NullableTypesHelper.DBNullString(record.FieldList(Relativity.FieldCategory.ParentArtifact)(0).Value))
+					parentFolderID = _folderCache.FolderID(Me.CleanDestinationFolderPath(value))
 				Else
 					Dim textIdentifier As String = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(kCura.Utility.NullableTypesHelper.DBNullString(record.FieldList(Relativity.FieldCategory.ParentArtifact)(0).Value.ToString))
 					If textIdentifier = "" Then
