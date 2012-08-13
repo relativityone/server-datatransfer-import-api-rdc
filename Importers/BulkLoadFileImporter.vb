@@ -1,5 +1,6 @@
 Imports System.IO
 Imports kCura.EDDS.WebAPI.BulkImportManagerBase
+Imports Relativity
 
 Imports Relativity.MassImport
 Imports Microsoft.VisualBasic
@@ -927,12 +928,12 @@ Namespace kCura.WinEDDS
 				If Not item.DocumentField Is Nothing Then
 					Dim i As Integer = retval.Add(item.DocumentField.ToFieldInfo)
 					If Not ObjectFieldIdListContainsArtifactId Is Nothing Then
-						If (CType(retval(i), FieldInfo).Type = FieldType.Object _
-							Or CType(retval(i), FieldInfo).Type = FieldType.Objects) _
-					 AndAlso ObjectFieldIdListContainsArtifactId.Contains(CType(retval(i), FieldInfo).ArtifactID) Then
-							CType(retval(i), FieldInfo).ImportBehavior = ImportBehaviorChoice.ObjectFieldContainsArtifactId
+						If (CType(retval(i), kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo).Type = FieldType.Object _
+						 Or CType(retval(i), kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo).Type = FieldType.Objects) _
+						AndAlso ObjectFieldIdListContainsArtifactId.Contains(CType(retval(i), kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo).ArtifactID) Then
+							CType(retval(i), kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo).ImportBehavior = ImportBehaviorChoice.ObjectFieldContainsArtifactId
 						End If
-				End If
+					End If
 				End If
 			Next
 			retval.Sort(New WebServiceFieldInfoNameComparer)
@@ -1516,21 +1517,32 @@ Namespace kCura.WinEDDS
 					downloader = New FileDownloader(DirectCast(Me.BulkImportManager.Credentials, System.Net.NetworkCredential), _caseInfo.DocumentPath, _caseInfo.DownloadHandlerURL, Me.BulkImportManager.CookieContainer, kCura.WinEDDS.Service.Settings.AuthenticationToken)
 					AddHandler downloader.UploadStatusEvent, AddressOf _uploader_UploadStatusEvent
 					Dim errorsLocation As String = System.IO.Path.GetTempFileName
-					downloader.MoveTempFileToLocal(errorsLocation, .LogKey, _caseInfo)
-					sr = New kCura.Utility.GenericCsvReader(errorsLocation, True)
-					AddHandler sr.IoWarningEvent, AddressOf Me.IoWarningHandler
-					Dim line As String() = sr.ReadLine
-					While Not line Is Nothing
-						_errorCount += 1
-						Dim ht As New System.Collections.Hashtable
-						ht.Add("Message", line(1))
-						ht.Add("Identifier", line(2))
-						ht.Add("Line Number", Int32.Parse(line(0)))
-						RaiseReportError(ht, Int32.Parse(line(0)), line(2), "server")
-						RaiseEvent StatusMessage(New kCura.Windows.Process.StatusEventArgs(Windows.Process.EventType.Error, Int32.Parse(line(0)) - 1, _recordCount, "[Line " & line(0) & "]" & line(1), _currentStatisticsSnapshot))
-						line = sr.ReadLine
-					End While
-					RemoveHandler sr.IoWarningEvent, AddressOf Me.IoWarningHandler
+					sr = AttemptErrorFileDownload(downloader, errorsLocation, .LogKey, _caseInfo)
+
+					If sr Is Nothing Then
+						'If we're here and still have an empty response, we can at least notify
+						'the user that there was an error retrieving all errors.
+						' -Phil S. 08/13/2012
+						Const message As String = "There was an error while attempting to retrieve the errors from the server."
+
+						RaiseEvent FatalErrorEvent(message, New Exception(message), _runID)
+					Else
+						AddHandler sr.IoWarningEvent, AddressOf Me.IoWarningHandler
+						Dim line As String() = sr.ReadLine
+
+						While Not line Is Nothing
+							_errorCount += 1
+							Dim ht As New System.Collections.Hashtable
+							ht.Add("Message", line(1))
+							ht.Add("Identifier", line(2))
+							ht.Add("Line Number", Int32.Parse(line(0)))
+							RaiseReportError(ht, Int32.Parse(line(0)), line(2), "server")
+							RaiseEvent StatusMessage(New kCura.Windows.Process.StatusEventArgs(Windows.Process.EventType.Error, Int32.Parse(line(0)) - 1, _recordCount, "[Line " & line(0) & "]" & line(1), _currentStatisticsSnapshot))
+							line = sr.ReadLine
+						End While
+						RemoveHandler sr.IoWarningEvent, AddressOf Me.IoWarningHandler
+					End If
+
 					RemoveHandler downloader.UploadStatusEvent, AddressOf _uploader_UploadStatusEvent
 				End With
 			Catch ex As Exception
@@ -1543,6 +1555,33 @@ Namespace kCura.WinEDDS
 				Throw
 			End Try
 		End Sub
+
+		Private Function AttemptErrorFileDownload(ByVal downloader As FileDownloader, ByVal errorFileOutputPath As String, ByVal logKey As String, ByVal caseInfo As CaseInfo) As kCura.Utility.GenericCsvReader
+			Dim triesLeft As Integer = 3
+			Dim sr As kCura.Utility.GenericCsvReader = Nothing
+
+			While triesLeft > 0
+				downloader.MoveTempFileToLocal(errorFileOutputPath, logKey, caseInfo, False)
+				sr = New kCura.Utility.GenericCsvReader(errorFileOutputPath, True)
+				Dim firstChar As Int32 = sr.Peek()
+
+				If firstChar = -1 Then
+					'Try again--assuming an empty error file is invalid, try the download one more time. The motivation
+					' behind the retry is a rare SQL error that caused the DownloadHandler (used by the supplied instance
+					' of FileDownloader) to return an empty response.
+					' -Phil S. 08/13/2012
+					triesLeft -= 1
+					sr.Close()
+
+					sr = Nothing
+				Else
+					Exit While
+				End If
+			End While
+
+			downloader.RemoveRemoteTempFile(logKey, caseInfo)
+			Return sr
+		End Function
 
 		Private Sub _processController_ParentFormClosingEvent(ByVal processID As Guid) Handles _processController.ParentFormClosingEvent
 			If processID.ToString = _processID.ToString Then CleanupTempTables()
