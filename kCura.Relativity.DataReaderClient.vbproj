@@ -192,6 +192,7 @@
     <Compile Include="ImportSettingsException.vb" />
     <Compile Include="ImportLoadFileJob.vb" />
     <Compile Include="ImportSettingsBase.vb" />
+    <Compile Include="ImportCredentialException.vb" />
     <Compile Include="JobReport.vb" />
     <Compile Include="Settings.vb" />
     <Compile Include="SourceIDataReader.vb" />
