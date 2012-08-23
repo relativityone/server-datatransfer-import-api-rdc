@@ -40,6 +40,7 @@ Friend Class ImportCredentialManager
 
 		Dim retVal As SessionCredentials = Nothing
 		Dim ex As System.Exception = Nothing
+		Dim cachedCreds As Boolean = False
 
 		SyncLock _lockObject
 			' This section needs to be sync locked
@@ -48,6 +49,7 @@ Friend Class ImportCredentialManager
 			Dim foundCred As CredentialEntry = FindCredentials(UserName, Password)
 			If Not foundCred Is Nothing Then
 				retVal = foundCred.SessionCredentials
+				cachedCreds = True
 			Else
 
 				' 2. credential in cache not found, so actually log in and create credentials
@@ -67,10 +69,19 @@ Friend Class ImportCredentialManager
 				End Try
 				' add credentials to cache and return session credentials to caller
 				retVal = AddCredentials(UserName, Password, creds, cookieMonster).SessionCredentials()
+				cachedCreds = False
 			End If
 		End SyncLock
 		If Not ex Is Nothing Then
 			Throw ex
+		End If
+
+		If retVal.Credentials Is Nothing Then
+			If cachedCreds Then
+				Throw New ImportCredentialException("Invalid credentials found in cache", UserName, WebServiceURL)
+			Else
+				Throw New ImportCredentialException("Invalid credentials received from Login", UserName, WebServiceURL)
+			End If
 		End If
 
 		Return retVal
