@@ -49,6 +49,7 @@ Namespace kCura.WinEDDS
 		Private _codesCreated As Int32 = 0
 		Protected WithEvents _artifactReader As Api.IArtifactReader
 		Public Property SkipExtractedTextEncodingCheck As Boolean
+		Public Property DisableExtractedTextFileLocationValidation As Boolean
 #End Region
 
 #Region "Accessors"
@@ -455,15 +456,12 @@ Namespace kCura.WinEDDS
 				Case Relativity.FieldTypeHelper.FieldType.Text
 					If field.Category = Relativity.FieldCategory.FullText AndAlso _fullTextColumnMapsToFileLocation Then
 						Dim value As String = field.ValueAsString
+						Dim performExtractedTextFileLocationValidation As Boolean = Not DisableExtractedTextFileLocationValidation
 						If value = String.Empty Then
 							field.Value = String.Empty
-						ElseIf Not System.IO.File.Exists(value) Then
+						ElseIf (performExtractedTextFileLocationValidation AndAlso Not System.IO.File.Exists(value)) Then
 							Throw New MissingFullTextFileException(Me.CurrentLineNumber, columnIndex)
-						ElseIf New System.IO.FileInfo(value).Length > GetMaxExtractedTextLength(value, False) Then
-							'We pass 'False' to GetMaxExtractedTextLength to tell it not to perform the File.Exists check
-							' if the code path takes us to the DetectEncoding call. Checking for file existence over the
-							' network can be very expensive, so this is an attempt to improve import speeds.
-							' -Phil S. 07/27/2012
+						ElseIf (performExtractedTextFileLocationValidation AndAlso (New System.IO.FileInfo(value).Length > GetMaxExtractedTextLength(value, performExtractedTextFileLocationValidation))) Then
 							Throw New ExtractedTextTooLargeException
 						Else
 							If forPreview Then
