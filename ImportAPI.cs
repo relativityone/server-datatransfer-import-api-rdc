@@ -21,7 +21,6 @@ namespace kCura.Relativity.ImportAPI
 	/// </summary>
 	public  class ImportAPI
 	{
-
 		private String _userName;
 		private String _password;
 		private CaseManager _caseManager;
@@ -29,7 +28,6 @@ namespace kCura.Relativity.ImportAPI
 		private ICredentials _credentials;
 		private ObjectTypeManager _objectTypeManager;
 		private ProductionManager _productionManager;
-		private string _webServiceURL;
 
 		public CookieContainer CookieCache  { get { return _cookieMonster; } }
 		public ICredentials Credentials { get { return _credentials; } }
@@ -199,31 +197,13 @@ namespace kCura.Relativity.ImportAPI
 			return NewObjectImportJob(10);
 		}
 
-		public ImportBulkArtifactJob NewNativeDocumentImportJob(string token)
-		{
-			var importJob = new ImportBulkArtifactJob(_credentials, _cookieMonster, _userName, _password);
-			int? userId = null;
-
-			if (!string.IsNullOrEmpty(token))
-			{
-				var auditManager = new kCura.EDDS.WebAPI.AuditManagerBase.AuditManager();
-				auditManager.CookieContainer = _cookieMonster;
-				auditManager.Credentials = _credentials;
-				auditManager.Url = System.IO.Path.Combine(Config.ProgrammaticServiceURL, "AuditManager.asmx");
-				userId = auditManager.GetUserIdByGuid(token);
-			}
-
-			importJob.Settings.OnBehalfOfUserMasterId = userId;
-			return importJob;
-		}
-
 		/// <summary>
 		/// This will return a new instance of an ImportBulkArtifactJob, with the
 		/// instance's Settings.ArtifactTypeId property set to <paramref name="artifactTypeId"/>.
 		/// </summary>
 		/// <param name="artifactTypeId">The ArtifactTypeId of the objects to be imported.</param>
 		public ImportBulkArtifactJob NewObjectImportJob(int artifactTypeId) {
-			var returnJob = NewNativeDocumentImportJob(null);
+			var returnJob = new ImportBulkArtifactJob(_credentials, _cookieMonster, _userName, _password);
 
 			returnJob.Settings.ArtifactTypeId = artifactTypeId;
 
