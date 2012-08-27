@@ -81,7 +81,7 @@ Namespace kCura.Relativity.DataReaderClient
 
 				RaiseEvent OnMessage(New Status("Getting source data from database"))
 
-				Dim process As WinEDDS.ImportExtension.DataReaderImporterProcess = New WinEDDS.ImportExtension.DataReaderImporterProcess(SourceData.SourceData) With {.OnBehalfOfUserMasterId = Settings.OnBehalfOfUserMasterId}
+				Dim process As WinEDDS.ImportExtension.DataReaderImporterProcess = New WinEDDS.ImportExtension.DataReaderImporterProcess(SourceData.SourceData) With {.OnBehalfOfUserToken = Settings.OnBehalfOfUserToken}
 				_observer = process.ProcessObserver
 				_controller = process.ProcessController
 
