@@ -120,7 +120,8 @@ Namespace kCura.Relativity.DataReaderClient
 		Public Property SendEmailOnLoadCompletion() As Boolean
 
 		''' <summary>
-		''' If True, force the value of <see cref="ExtractedTextEncoding"/> to always be used.
+		''' If True, force the value of <see cref="ExtractedTextEncoding"/> to always be used. In other words, skip
+		''' reading the BOM and just use the value of <see cref="ExtractedTextEncoding"/>.
 		''' </summary>
 		Public Property SkipExtractedTextEncodingCheck() As Boolean?
 
