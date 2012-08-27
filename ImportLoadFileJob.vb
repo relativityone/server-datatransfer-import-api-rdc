@@ -91,6 +91,7 @@ Namespace kCura.Relativity.DataReaderClient
 				process.DisableUserSecurityCheck = Settings.DisableUserSecurityCheck
 				process.AuditLevel = Settings.AuditLevel
 				process.SkipExtractedTextEncodingCheck = Settings.SkipExtractedTextEncodingCheck
+				process.DisableExtractedTextFileLocationValidation = Settings.DisableExtractedTextFileLocationValidation
 
 				RaiseEvent OnMessage(New Status("Updating settings"))
 				process.LoadFile = CreateLoadFile(Settings)
