@@ -2,7 +2,7 @@
 using kCura.Relativity.DataReaderClient;
 using kCura.WinEDDS.Service;
 
-namespace kCura.Relativity.ImportAPI.Extension {
+namespace kCura.Relativity.ImportAPI {
 	public class ExtendedImportAPI : ImportAPI {
 		public ExtendedImportAPI(string UserName, string Password)
 			: base(UserName, Password) {
@@ -27,7 +27,7 @@ namespace kCura.Relativity.ImportAPI.Extension {
 			}
 		}
 
-		public ImportBulkArtifactJob NewNativeDocumentImportJobWithSpoofing(string token) {
+		public ImportBulkArtifactJob NewNativeDocumentImportJob(string token) {
 			var returnJob = NewNativeDocumentImportJob();
 
 			returnJob.Settings.OnBehalfOfUserToken = token;
