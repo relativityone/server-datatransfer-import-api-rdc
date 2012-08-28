@@ -120,16 +120,40 @@ Friend Class ImportCredentialManager
 
 	Public Class SessionCredentials
 		Public UserName As String
-		Public Credentials As ICredentials
 		Public CookieMonster As CookieContainer
+		Private _Credentials As ICredentials
+
+		Public Property Credentials As ICredentials
+			Get
+				Return _Credentials
+			End Get
+			Friend Set(value As ICredentials)
+				If value Is Nothing Then
+					Throw New System.Exception("Invalid property value.  Credentials cannot be null")
+				End If
+				_Credentials = value
+			End Set
+		End Property
 	End Class
 
 	Private Class CredentialEntry
 		Public UserName As String
 		Public PassWord As String
 		Public URL As String
-		Public Credentials As ICredentials
 		Public CookieMonster As CookieContainer
+		Private _Credentials As ICredentials
+
+		Public Property Credentials As ICredentials
+			Get
+				Return _Credentials
+			End Get
+			Friend Set(value As ICredentials)
+				If value Is Nothing Then
+					Throw New System.Exception("Invalid property value.  Credentials cannot be null")
+				End If
+				_Credentials = value
+			End Set
+		End Property
 
 		Public Function SessionCredentials() As SessionCredentials
 			Dim sc As New SessionCredentials()
