@@ -30,6 +30,11 @@ Namespace kCura.Relativity.DataReaderClient
 		Public Property DisableControlNumberCompatibilityMode() As Boolean
 
 		''' <summary>
+		''' If true, will not check to see if the specified extracted text file exists.
+		''' </summary>
+		Public Property DisableExtractedTextFileLocationValidation As Boolean
+
+		''' <summary>
 		''' Enables or disables native location validation for the current job
 		''' </summary>
 		''' <value>True: validation is disabled
