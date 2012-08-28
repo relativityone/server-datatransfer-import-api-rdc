@@ -70,7 +70,7 @@ Namespace kCura.Relativity.DataReaderClient
 		''' </summary>
 		Public Property NestedValueDelimiter() As Char
 
-		Public Property OnBehalfOfUserMasterId As Int32? = Nothing
+		Friend Property OnBehalfOfUserToken As String
 
 		'TODO: This shouldn't be used as a progress indicator in ImportBulkArtifactJob
 		' -Phil S. 10/04/11

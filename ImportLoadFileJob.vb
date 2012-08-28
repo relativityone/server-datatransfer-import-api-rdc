@@ -81,7 +81,7 @@ Namespace kCura.Relativity.DataReaderClient
 
 				RaiseEvent OnMessage(New Status("Getting source data from database"))
 
-				Dim process As WinEDDS.ImportExtension.DataReaderImporterProcess = New WinEDDS.ImportExtension.DataReaderImporterProcess(SourceData.SourceData) With {.OnBehalfOfUserMasterId = Settings.OnBehalfOfUserMasterId}
+				Dim process As WinEDDS.ImportExtension.DataReaderImporterProcess = New WinEDDS.ImportExtension.DataReaderImporterProcess(SourceData.SourceData) With {.OnBehalfOfUserToken = Settings.OnBehalfOfUserToken}
 				_observer = process.ProcessObserver
 				_controller = process.ProcessController
 
@@ -90,7 +90,7 @@ Namespace kCura.Relativity.DataReaderClient
 				process.MaximumErrorCount = Settings.MaximumErrorCount
 				process.DisableUserSecurityCheck = Settings.DisableUserSecurityCheck
 				process.AuditLevel = Settings.AuditLevel
-				process.SkipExtractedTextEncodingCheck = Settings.SkipExtractedTextEncodingCheck
+				process.SkipExtractedTextEncodingCheck = Settings.DisableExtractedTextEncodingCheck
 				process.DisableExtractedTextFileLocationValidation = Settings.DisableExtractedTextFileLocationValidation
 
 				RaiseEvent OnMessage(New Status("Updating settings"))
@@ -374,8 +374,8 @@ Namespace kCura.Relativity.DataReaderClient
 
 		Private Sub ValidateExtractedTextSettings()
 			If Settings.ExtractedTextFieldContainsFilePath Then
-				If Settings.SkipExtractedTextEncodingCheck.HasValue AndAlso Settings.SkipExtractedTextEncodingCheck AndAlso Settings.ExtractedTextEncoding Is Nothing Then
-					Throw New ImportSettingsConflictException("SkipExtractedTextEncodingCheck", "ExtractedTextEncoding", "ExtractedTextEncoding must be set if SkipExtractedTextEncodingCheck is enabled.")
+				If Settings.DisableExtractedTextEncodingCheck.HasValue AndAlso Settings.DisableExtractedTextEncodingCheck AndAlso Settings.ExtractedTextEncoding Is Nothing Then
+					Throw New ImportSettingsConflictException("DisableExtractedTextEncodingCheck", "ExtractedTextEncoding", "ExtractedTextEncoding must be set if DisableExtractedTextEncodingCheck is enabled.")
 				End If
 				If Settings.ExtractedTextEncoding Is Nothing Then
 					Throw New ImportSettingsException("ExtractedTextEncoding", String.Empty)

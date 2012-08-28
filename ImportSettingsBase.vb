@@ -48,6 +48,12 @@ Namespace kCura.Relativity.DataReaderClient
 		Public Property DestinationFolderArtifactID() As Int32
 
 		''' <summary>
+		''' If True, force the value of <see cref="ExtractedTextEncoding"/> to always be used. In other words, skip
+		''' reading the BOM and just use the value of <see cref="ExtractedTextEncoding"/>.
+		''' </summary>
+		Public Property DisableExtractedTextEncodingCheck() As Boolean?
+
+		''' <summary>
 		''' Enables or disables user permission checks per image
 		''' </summary>
 		''' <value>True: security checks are disabled
@@ -118,12 +124,6 @@ Namespace kCura.Relativity.DataReaderClient
 		''' '
 		''' </summary>
 		Public Property SendEmailOnLoadCompletion() As Boolean
-
-		''' <summary>
-		''' If True, force the value of <see cref="ExtractedTextEncoding"/> to always be used. In other words, skip
-		''' reading the BOM and just use the value of <see cref="ExtractedTextEncoding"/>.
-		''' </summary>
-		Public Property SkipExtractedTextEncodingCheck() As Boolean?
 
 		''' <summary>
 		''' URL of the web service to use
