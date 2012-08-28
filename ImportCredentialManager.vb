@@ -67,13 +67,20 @@ Friend Class ImportCredentialManager
 				Catch ex
 					' do nothing, it will be used later
 				End Try
+
 				' add credentials to cache and return session credentials to caller
-				retVal = AddCredentials(UserName, Password, creds, cookieMonster).SessionCredentials()
+				If Not creds Is Nothing Then
+					retVal = AddCredentials(UserName, Password, creds, cookieMonster).SessionCredentials()
+				End If
 				cachedCreds = False
 			End If
 		End SyncLock
 		If Not ex Is Nothing Then
 			Throw ex
+		End If
+
+		If retVal Is Nothing Then
+			Throw New System.Exception("Login failed")
 		End If
 
 		If retVal.Credentials Is Nothing Then
