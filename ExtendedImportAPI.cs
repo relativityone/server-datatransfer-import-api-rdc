@@ -16,12 +16,12 @@ namespace kCura.Relativity.ImportAPI {
 			: base(WebServiceURL) {
 		}
 
-		public void CleanUpAfterJobWithSpoofing(ImportBulkArtifactJob job) {
-			if (job != null && !String.IsNullOrWhiteSpace(job.Settings.OnBehalfOfUserToken)) {
+		public void CleanUpAfterJobWithSpoofing(string onBehalfOfUserToken) {
+			if (!String.IsNullOrWhiteSpace(onBehalfOfUserToken)) {
 				var am = new AuditManager(Credentials, CookieCache);
 
 				try {
-					am.DeleteAuditToken(job.Settings.OnBehalfOfUserToken);
+					am.DeleteAuditToken(onBehalfOfUserToken);
 				} catch {
 				}
 			}
