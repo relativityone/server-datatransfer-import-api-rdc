@@ -1427,7 +1427,6 @@ Namespace kCura.EDDS.WinForm
 		''' <remarks></remarks>
 		Friend Function DefaultCredentialsAreGood() As Boolean
 			Dim myHttpWebRequest As System.Net.HttpWebRequest
-			Dim myHttpWebResponse As System.Net.HttpWebResponse
 			Dim cred As System.Net.NetworkCredential
 			Dim relativityManager As kCura.WinEDDS.Service.RelativityManager
 
@@ -1435,7 +1434,6 @@ Namespace kCura.EDDS.WinForm
 			myHttpWebRequest = DirectCast(System.Net.WebRequest.Create(kCura.WinEDDS.Config.WebServiceURL & "\RelativityManager.asmx"), System.Net.HttpWebRequest)
 			myHttpWebRequest.Credentials = System.Net.CredentialCache.DefaultCredentials
 			Try
-				myHttpWebResponse = DirectCast(myHttpWebRequest.GetResponse(), System.Net.HttpWebResponse)
 				relativityManager = New kCura.WinEDDS.Service.RelativityManager(cred, _cookieContainer)
 				If relativityManager.ValidateSuccessfulLogin Then
 					CheckVersion(System.Net.CredentialCache.DefaultCredentials)
