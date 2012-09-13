@@ -1034,7 +1034,10 @@ Namespace kCura.WinEDDS
 							Dim buff(_COPY_TEXT_FILE_BUFFER_SIZE) As Char
 							Do
 								count = sr.ReadBlock(buff, 0, _COPY_TEXT_FILE_BUFFER_SIZE)
-								If count > 0 Then _outputNativeFileWriter.Write(buff, 0, count)
+								If count > 0 Then
+									_outputNativeFileWriter.Write(buff, 0, count)
+									_outputNativeFileWriter.Flush()
+								End If
 							Loop Until count = 0
 
 							sr.Close()
