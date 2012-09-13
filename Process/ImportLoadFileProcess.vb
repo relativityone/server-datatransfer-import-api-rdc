@@ -43,6 +43,8 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
+		Public Property DisableExtractedTextFileLocationValidation As Boolean
+
 		Public Property MaximumErrorCount As Int32?
 
 		Public Property SkipExtractedTextEncodingCheck As Boolean?
@@ -88,6 +90,7 @@ Namespace kCura.WinEDDS
 				_loadFileImporter.SkipExtractedTextEncodingCheck = True
 			End If
 
+			_loadFileImporter.DisableExtractedTextFileLocationValidation = DisableExtractedTextFileLocationValidation
 			_loadFileImporter.AuditLevel = _auditLevel
 			_loadFileImporter.DisableUserSecurityCheck = _disableUserSecutityCheck
 
