@@ -3,7 +3,8 @@ using kCura.Relativity.DataReaderClient;
 using kCura.WinEDDS.Service;
 
 namespace kCura.Relativity.ImportAPI {
-	public class ExtendedImportAPI : ImportAPI {
+	public class ExtendedImportAPI : ImportAPI, IExtendedImportAPI
+	{
 		public ExtendedImportAPI(string UserName, string Password)
 			: base(UserName, Password) {
 		}
