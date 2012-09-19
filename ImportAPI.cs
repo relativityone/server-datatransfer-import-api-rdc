@@ -19,7 +19,7 @@ namespace kCura.Relativity.ImportAPI
 	/// <summary>
 	/// The new face of the ImportAPI
 	/// </summary>
-	public  class ImportAPI
+	public  class ImportAPI : IImportAPI
 	{
 		private String _userName;
 		private String _password;

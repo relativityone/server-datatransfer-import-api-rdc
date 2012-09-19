@@ -112,6 +112,7 @@
     <Compile Include="Enumeration\FieldCategoryEnum.cs" />
     <Compile Include="Enumeration\FieldTypeEnum.cs" />
     <Compile Include="Enumeration\UploadTypeEnum.cs" />
+    <Compile Include="IImportAPI.cs" />
     <Compile Include="ImportAPI.cs" />
     <Compile Include="..\..\Version\AssemblyInfo.cs" />
     <Compile Include="Data\Workspace.cs" />
