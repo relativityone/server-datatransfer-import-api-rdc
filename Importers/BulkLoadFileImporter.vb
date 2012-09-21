@@ -70,6 +70,8 @@ Namespace kCura.WinEDDS
 		Private _unmappedRelationalFields As System.Collections.ArrayList
 
 		Private _bulkLoadFileFieldDelimiter As String
+
+		Private Const _COPY_TEXT_FILE_BUFFER_SIZE As Int32 = 40000
 #End Region
 
 #Region "Accessors"
@@ -992,9 +994,12 @@ Namespace kCura.WinEDDS
 							Dim sr As New System.IO.StreamReader(determinedEncodingStream.UnderlyingStream, chosenEncoding)
 							Dim count As Int32 = 1
 							Do
-								Dim buff(1000000) As Char
-								count = sr.ReadBlock(buff, 0, 1000000)
-								If count > 0 Then _outputNativeFileWriter.Write(buff, 0, count)
+								Dim buff(_COPY_TEXT_FILE_BUFFER_SIZE) As Char
+								count = sr.ReadBlock(buff, 0, _COPY_TEXT_FILE_BUFFER_SIZE)
+								If count > 0 Then
+									_outputNativeFileWriter.Write(buff, 0, count)
+									_outputNativeFileWriter.Flush()
+								End If
 							Loop Until count = 0
 							sr.Close()
 							determinedEncodingStream.Close()
