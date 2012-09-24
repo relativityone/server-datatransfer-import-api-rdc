@@ -1,3 +1,4 @@
+Imports System.Collections.Generic
 Imports kCura.WinEDDS.Api
 Imports kCura.WinEDDS
 Imports kCura.Utility
@@ -11,6 +12,7 @@ Namespace kCura.WinEDDS.ImportExtension
 		Private Const _KCURAMARKERFILENAME As String = "kcuramarkerfilename"
 
 		Private _reader As System.Data.IDataReader
+		Private ReadOnly _oiFileSettings As OIFileSettings
 		Private _loadFileSettings As kCura.WinEDDS.LoadFile
 		Protected _currentLineNumber As Long = 0
 		Private _size As Long = -1
@@ -22,7 +24,12 @@ Namespace kCura.WinEDDS.ImportExtension
 		Private _lastSourceIdentifier As String
 
 		Public Sub New(ByVal args As DataReaderReaderInitializationArgs, ByVal fieldMap As kCura.WinEDDS.LoadFile, ByVal reader As System.Data.IDataReader)
+			Me.New(args, fieldMap, reader, New OIFileSettings() With {.Mapped = False})
+		End Sub
+
+		Public Sub New(ByVal args As DataReaderReaderInitializationArgs, ByVal fieldMap As kCura.WinEDDS.LoadFile, ByVal reader As System.Data.IDataReader, oiFileSettings As OIFileSettings)
 			_reader = reader
+			_oiFileSettings = oiFileSettings
 			If _reader Is Nothing Then Throw New NullReferenceException("The reader being passed into this IDataReaderReader is null")
 			If _reader.IsClosed = True OrElse _reader.FieldCount = 0 Then Throw New ArgumentException("The reader being passed into this IDataReaderReader is empty")
 			_loadFileSettings = fieldMap
@@ -39,7 +46,9 @@ Namespace kCura.WinEDDS.ImportExtension
 			Else
 				_identifierFieldIndex = -1
 			End If
+
 		End Sub
+
 
 #Region " Artifact Reader Implementation "
 
@@ -150,19 +159,34 @@ Namespace kCura.WinEDDS.ImportExtension
 		End Function
 
 		Private Function ReadArtifactData() As kCura.WinEDDS.Api.ArtifactFieldCollection
-			Dim retval As New Api.ArtifactFieldCollection
-
-
+			Dim retval As Api.ArtifactFieldCollection
+			Dim oiFileType As String = ""
+			Dim oiFileId As Int32
+			If _oiFileSettings.Mapped Then
+				For i As Integer = 0 To _reader.FieldCount - 1
+					If (_reader.GetName(i) = _oiFileSettings.TypeColumnName) Then
+						oiFileType = _reader.GetValue(i).ToString()
+					ElseIf (_reader.GetName(i) = _oiFileSettings.IDColumnName) Then
+						Dim value As Int32 = -1
+						Dim readerValue As String = _reader.GetValue(i).ToString()
+						Int32.TryParse(readerValue, value)
+						oiFileId = value
+					End If
+				Next
+			End If
+			If (Not String.IsNullOrEmpty(oiFileType)) Then
+				retval = New NativeFileValidatedArtifactFieldCollection() With {.OixFileID = New FileIDData(oiFileId, oiFileType)}
+			Else
+				retval = New Api.ArtifactFieldCollection
+			End If
 			Dim folderStructureContainedInColumnWithoutIndex As String = nameWithoutIndex(_loadFileSettings.FolderStructureContainedInColumn)
-			Dim nativeFilePathColumnWithoutIndex As String = nameWithoutIndex(_loadFileSettings.NativeFilePathColumn)
 
 			' step 1 - save off the identifier for the current record
 			If _identifierFieldIndex > -1 Then
 				_lastSourceIdentifier = _reader.Item(_identifierFieldIndex).ToString()
 			End If
-
 			For i As Integer = 0 To _reader.FieldCount - 1
-				Dim field As Api.ArtifactField = _allFields(_reader.GetName(i).ToLower)
+				Dim field As Api.ArtifactField = _allFields(_reader.GetName(i).ToLower())
 				If Not field Is Nothing Then
 					If Not field.DisplayName = folderStructureContainedInColumnWithoutIndex Then
 						Dim thisCell As Api.ArtifactField = field.Copy
@@ -438,6 +462,12 @@ Namespace kCura.WinEDDS.ImportExtension
 
 #End Region
 
+	End Class
+
+	Public Class OIFileSettings
+		Public Property Mapped() As Boolean
+		Public Property IDColumnName() As String
+		Public Property TypeColumnName() As String
 	End Class
 End Namespace
 

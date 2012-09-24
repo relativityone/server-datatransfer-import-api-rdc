@@ -19,6 +19,10 @@ Namespace kCura.WinEDDS.ImportExtension
 		''' delimiter followed by a new line.</param>
 		Public Sub New(ByVal loadFile As kCura.WinEDDS.ImportExtension.DataReaderLoadFile, ByVal controller As kCura.Windows.Process.Controller, ByVal bulkLoadFileFieldDelimiter As String)
 			MyBase.New(loadFile, controller, 0, True, System.Guid.NewGuid, True, bulkLoadFileFieldDelimiter)
+			Me.OIFileIdColumnName = loadFile.OIFileIdColumnName
+			Me.OIFileIdMapped = loadFile.OIFileIdMapped
+			Me.OIFileTypeColumnName = loadFile.OIFileTypeColumnName
+
 		End Sub
 
 		Overrides Sub OnSettingsObjectCreate(settings As kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo)
@@ -35,6 +39,7 @@ Namespace kCura.WinEDDS.ImportExtension
 			For i As Integer = 0 To _sourceReader.FieldCount - 1
 				allFields.Add(_sourceReader.GetName(i).ToLower())
 			Next
+			Dim columnAliases As New Dictionary(Of String, String)
 
 			Dim columnIndex As Int32 = 0
 
@@ -45,9 +50,14 @@ Namespace kCura.WinEDDS.ImportExtension
 				collection.Add(New kCura.WinEDDS.Api.ArtifactField(field))
 
 				Try
-					If allFields.Contains(field.DisplayName.ToLower()) Then
+					Dim name As String = field.DisplayName.ToLower()
+					Dim columnName As String = name
+					If (columnAliases.ContainsKey(field.DisplayName)) Then
+						columnName = columnAliases(name)
+					End If
+					If (allFields.Contains(field.DisplayName.ToLower()) OrElse columnAliases.ContainsKey(field.DisplayName)) Then
 
-						Dim isValidItemName As Integer = _sourceReader.GetOrdinal(field.DisplayName)
+						Dim isValidItemName As Integer = _sourceReader.GetOrdinal(columnName)
 
 						'Do not add to field map if field.DisplayName is  _settings.FolderStructureContainedInColumn or _settings.NativeFilePathColumn
 						If _settings.FolderStructureContainedInColumn Is Nothing Then					'AndAlso _settings.NativeFilePathColumn Is Nothing Then
@@ -79,7 +89,8 @@ Namespace kCura.WinEDDS.ImportExtension
 				End Try
 				columnIndex = columnIndex + 1
 			Next
-			Dim retval As New DataReaderReader(New DataReaderReaderInitializationArgs(collection, _settings.ArtifactTypeID), _settings, _sourceReader)
+			Dim settings As New OIFileSettings() With {.IDColumnName = OIFileIdColumnName, .Mapped = OIFileIdMapped, .TypeColumnName = OIFileTypeColumnName}
+			Dim retval As New DataReaderReader(New DataReaderReaderInitializationArgs(collection, _settings.ArtifactTypeID), _settings, _sourceReader, settings)
 			Return retval
 		End Function
 

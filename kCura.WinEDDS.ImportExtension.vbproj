@@ -209,6 +209,7 @@
     <Compile Include="ImageImport\DataReaderImageImporter.vb" />
     <Compile Include="ImageImport\DataSource.vb" />
     <Compile Include="ImageImport\ImageDataTableReader.vb" />
+    <Compile Include="NativeFileValidatedArtifactFieldCollection.vb" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="My Project\" />
