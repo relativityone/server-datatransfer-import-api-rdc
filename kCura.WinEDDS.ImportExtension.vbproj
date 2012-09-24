@@ -152,6 +152,10 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\kCura\kCura.OI.FileID\kCura.OI.FileID.vbproj">
+      <Project>{CCEFD50F-0840-402D-AB16-C93F8E579B8B}</Project>
+      <Name>kCura.OI.FileID</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\kCura\kCura.Utility\kCura.Utility.vbproj">
       <Project>{E3450350-56E3-4FE9-A47A-4D24960BCBDB}</Project>
       <Name>kCura.Utility</Name>
