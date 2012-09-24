@@ -42,6 +42,9 @@ Namespace kCura.WinEDDS
 		Public Property MaximumErrorCount As Int32?
 
 		Public Property SkipExtractedTextEncodingCheck As Boolean?
+		Public Property OIFileIdMapped As Boolean?
+		Public Property OIFileIdColumnName As String
+		Public Property OIFileTypeColumnName As String
 
 		Protected Overrides Sub Execute()
 			_startTime = DateTime.Now
@@ -63,10 +66,10 @@ Namespace kCura.WinEDDS
 				_imageFileImporter.MaxNumberOfErrorsInGrid = MaximumErrorCount.Value + 1
 			End If
 
-			If SkipExtractedTextEncodingCheck.HasValue AndAlso SkipExtractedTextEncodingCheck Then
-				_imageFileImporter.SkipExtractedTextEncodingCheck = True
-			End If
-
+			_imageFileImporter.SkipExtractedTextEncodingCheck = SkipExtractedTextEncodingCheck.GetValueOrDefault(False)
+			_imageFileImporter.OIFileIdMapped = OIFileIdMapped.GetValueOrDefault(False)
+			_imageFileImporter.OIFileIdColumnName = OIFileIdColumnName
+			_imageFileImporter.OIFileTypeColumnName = OIFileTypeColumnName
 			_imageFileImporter.ReadFile(ImageLoadFile.FileName)
 			If Not _hasRunProcessComplete Then
 				Dim exportFilePath As String = ""

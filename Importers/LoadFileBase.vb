@@ -50,6 +50,10 @@ Namespace kCura.WinEDDS
 		Protected WithEvents _artifactReader As Api.IArtifactReader
 		Public Property SkipExtractedTextEncodingCheck As Boolean
 		Public Property DisableExtractedTextFileLocationValidation As Boolean
+		Public Property OIFileIdMapped As Boolean
+		Public Property OIFileIdColumnName As String
+		Public Property OIFileTypeColumnName As String
+
 #End Region
 
 #Region "Accessors"
@@ -118,6 +122,9 @@ Namespace kCura.WinEDDS
 
 		Protected Sub New(ByVal args As LoadFile, ByVal timezoneoffset As Int32, ByVal doRetryLogic As Boolean, ByVal autoDetect As Boolean)
 			_settings = args
+			OIFileIdColumnName = args.OIFileIdColumnName
+			OIFileIdMapped = args.OIFileIdMapped
+			OIFileTypeColumnName = args.OIFileTypeColumnName
 			_artifactReader = Me.GetArtifactReader
 			_docFields = args.FieldMap.DocumentFields
 			_filePathColumn = args.NativeFilePathColumn
@@ -145,6 +152,7 @@ Namespace kCura.WinEDDS
 			_previewCodeCount = args.PreviewCodeCount
 			_startLineNumber = args.StartLineNumber
 			_codeValidator = Me.GetSingleCodeValidator
+
 			MulticodeMatrix = New System.Collections.Hashtable
 			If _keyFieldID > 0 AndAlso args.OverwriteDestination.ToLower <> "strict" Then
 				_keyFieldID = -1

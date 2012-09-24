@@ -24,7 +24,7 @@ Namespace kCura.WinEDDS
 			MyBase.New(args, timeZoneOffset, doRetryLogic, True)
 			_selectedCaseArtifactID = args.CaseInfo.ArtifactID
 			_errorsOnly = errorsOnly
-            _processController = processController
+			_processController = processController
 
 		End Sub
 
@@ -126,11 +126,11 @@ Namespace kCura.WinEDDS
 						End If
 						Dim x As Api.ArtifactField() = CheckLine(record, formType)
 						'If Not x Is Nothing AndAlso Not (_firstLineContainsColumnNames AndAlso i = 0) Then fieldArrays.Add(x)
-                        If Not x Is Nothing Then fieldArrays.Add(x)
+						If Not x Is Nothing Then fieldArrays.Add(x)
 					Catch ex As ImporterExceptionBase
-                        fieldArrays.Add(ex)
-                    End Try
-                    i += 1
+						fieldArrays.Add(ex)
+					End Try
+					i += 1
 
 					If i Mod 100 = 0 Then ProcessProgress(_artifactReader.BytesProcessed, filesize, stepsize)
 				Else
@@ -180,15 +180,15 @@ Namespace kCura.WinEDDS
 								End If
 							Case Relativity.FieldCategory.Identifier
 								If Not _keyFieldID > 0 Then identifierField = field
-                        End Select
+						End Select
 
-                        lineContainsErrors = lineContainsErrors Or SetFieldValueOrErrorMessage(field, mapItem.NativeFileColumnIndex, identifierField.ValueAsString, codePageId, mapItem.DocumentField.ImportBehavior)
-                        'dont add field if object type is not a document and the field is a file field
-                        retval.Add(field)
+						lineContainsErrors = lineContainsErrors Or SetFieldValueOrErrorMessage(field, mapItem.NativeFileColumnIndex, identifierField.ValueAsString, codePageId, mapItem.DocumentField.ImportBehavior)
+						'dont add field if object type is not a document and the field is a file field
+						retval.Add(field)
 
-                    End If
-                End If
-            Next
+					End If
+				End If
+			Next
 
 			If Not identifierField Is Nothing AndAlso Not identifierField.Value Is Nothing Then
 				If _processedIdentifiers(identifierField.Value.ToString) Is Nothing Then
@@ -294,7 +294,7 @@ Namespace kCura.WinEDDS
 
 		Private Function SetFieldValueOrErrorMessage(ByVal field As Api.ArtifactField, ByVal column As Int32, ByVal identityValue As String, ByRef extractedTextCodePageId As Int32, ByVal importBehavior As EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice?) As Boolean
 			Try
-                SetFieldValue(field, column, True, identityValue, extractedTextCodePageId, importBehavior)
+				SetFieldValue(field, column, True, identityValue, extractedTextCodePageId, importBehavior)
 				Return TypeOf field.Value Is System.Exception
 			Catch ex As ImporterExceptionBase
 				field.Value = New Exceptions.ErrorMessage(ex.Message)

@@ -66,6 +66,9 @@ Namespace kCura.WinEDDS
 		Private _doRetryLogic As Boolean
 		Private _verboseErrorCollection As New ClientSideErrorCollection
 		Public Property SkipExtractedTextEncodingCheck As Boolean
+		Public Property OIFileIdMapped As Boolean
+		Public Property OIFileIdColumnName As String
+		Public Property OIFileTypeColumnName As String
 #End Region
 
 #Region "Accessors"

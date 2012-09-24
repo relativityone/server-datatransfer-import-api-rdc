@@ -33,6 +33,9 @@ Namespace kCura.WinEDDS
 		Public SendEmailOnLoadCompletion As Boolean
 		Public ForceFolderPreview As Boolean
 		Public ObjectFieldIdListContainsArtifactId As IList(Of Int32)
+		Public OIFileIdMapped As Boolean
+		Public OIFileIdColumnName As String
+		Public OIFileTypeColumnName As String
 		<NonSerialized()> Public ExtractedTextFileEncodingName As String
 		<NonSerialized()> Public CaseDefaultPath As String = ""
 		<NonSerialized()> Public Credentials As Net.NetworkCredential

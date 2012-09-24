@@ -152,5 +152,15 @@ Namespace kCura.WinEDDS
 			_lineStatus = lineStatus
 			_destinationVolume = destinationVolume
 		End Sub
+
+		Public Function GetFileType() As String
+			Dim type As String
+			If FileIdData Is Nothing Then
+				type = "Unknown format"
+			Else
+				type = FileIdData.FileType
+			End If
+			Return type
+		End Function
 	End Class
 End Namespace
