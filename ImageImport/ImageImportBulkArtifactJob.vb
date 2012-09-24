@@ -84,8 +84,9 @@ Namespace kCura.Relativity.DataReaderClient
 				process.DisableUserSecurityCheck = Settings.DisableUserSecurityCheck
 				process.AuditLevel = Settings.AuditLevel
 				process.SkipExtractedTextEncodingCheck = Settings.DisableExtractedTextEncodingCheck
-
-
+				process.OIFileIdMapped = Settings.OIFileIdMapped
+				process.OIFileIdColumnName = Settings.OIFileIdColumnName
+				process.OIFileTypeColumnName = Settings.OIFileTypeColumnName
 				RaiseEvent OnMessage(New Status("Updating settings"))
 				process.ImageLoadFile = Me.CreateLoadFile()
 
@@ -177,7 +178,6 @@ Namespace kCura.Relativity.DataReaderClient
 			tempLoadFile.SendEmailOnLoadCompletion = False
 			tempLoadFile.StartLineNumber = 0
 			tempLoadFile.BeginBatesFieldArtifactID = GetDefaultIdentifierFieldID(credential, Settings.CaseArtifactId)
-
 			Return tempLoadFile
 		End Function
 

@@ -141,5 +141,9 @@ Namespace kCura.Relativity.DataReaderClient
 		Public Property ObjectFieldIdListContainsArtifactId As IList(Of Int32)
 
 		'Public Property Credential As System.Net.NetworkCredential
+
+		Public Property OIFileIdMapped As Boolean
+		Public Property OIFileIdColumnName As String
+		Public Property OIFileTypeColumnName As String
 	End Class
 End Namespace

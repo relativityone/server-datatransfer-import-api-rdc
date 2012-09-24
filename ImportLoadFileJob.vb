@@ -92,7 +92,9 @@ Namespace kCura.Relativity.DataReaderClient
 				process.AuditLevel = Settings.AuditLevel
 				process.SkipExtractedTextEncodingCheck = Settings.DisableExtractedTextEncodingCheck
 				process.DisableExtractedTextFileLocationValidation = Settings.DisableExtractedTextFileLocationValidation
-
+				process.OIFileIdColumnName = Settings.OIFileIdColumnName
+				process.OIFileIdMapped = Settings.OIFileIdMapped
+				process.OIFileTypeColumnName = Settings.OIFileTypeColumnName
 				RaiseEvent OnMessage(New Status("Updating settings"))
 				process.LoadFile = CreateLoadFile(Settings)
 				process.BulkLoadFileFieldDelimiter = _bulkLoadFileFieldDelimiter
@@ -177,8 +179,9 @@ Namespace kCura.Relativity.DataReaderClient
 			tempLoadFile.QuoteDelimiter = loadFileTemp.QuoteDelimiter
 			tempLoadFile.RecordDelimiter = loadFileTemp.RecordDelimiter
 			tempLoadFile.SelectedCasePath = loadFileTemp.SelectedCasePath
-			'
-			'
+			tempLoadFile.OIFileIdColumnName = loadFileTemp.OIFileIdColumnName
+			tempLoadFile.OIFileIdMapped = loadFileTemp.OIFileIdMapped
+			tempLoadFile.OIFileTypeColumnName = loadFileTemp.OIFileTypeColumnName
 			'
 			Dim tempIDField As WinEDDS.DocumentField = SelectIdentifier(_docIDFieldCollection, Not clientSettings.DisableControlNumberCompatibilityMode, _controlNumberFieldName, clientSettings.SelectedIdentifierFieldName)
 			If tempIDField Is Nothing Then
