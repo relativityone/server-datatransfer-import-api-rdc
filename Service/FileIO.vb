@@ -88,13 +88,16 @@ Namespace kCura.WinEDDS.Service
 			Return Nothing
 		End Function
 
-		Private _bcpShareDictionary As New Dictionary(Of Int32, String)
+		Private Shared _bcpShareDictionary As New Dictionary(Of Int32, String)
 		Private Shared _syncedObject As New Object()
 		Public Shadows Function GetBcpSharePath(ByVal appID As Int32) As String
 			If (_bcpShareDictionary.ContainsKey(appID)) Then
 				Return _bcpShareDictionary(appID)
 			End If
 			SyncLock (_syncedObject)
+				If (_bcpShareDictionary.ContainsKey(appID)) Then
+					Return _bcpShareDictionary(appID)
+				End If
 				Dim tries As Int32 = 0
 				While tries < Config.MaxReloginTries
 					tries += 1
