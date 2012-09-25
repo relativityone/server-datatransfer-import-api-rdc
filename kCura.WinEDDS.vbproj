@@ -304,9 +304,11 @@
     <Compile Include="API\DataSourcePrepEventArgs.vb">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="API\FileIDData.vb" />
     <Compile Include="API\IArtifactReader.vb">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="API\IHasOixFileType.vb" />
     <Compile Include="API\IImageReader.vb" />
     <Compile Include="API\ImageRecord.vb" />
     <Compile Include="API\IoWarningEventArgs.vb">

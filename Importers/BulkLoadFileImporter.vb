@@ -1,4 +1,5 @@
 Imports System.IO
+Imports kCura.OI.FileID
 Imports kCura.EDDS.WebAPI.BulkImportManagerBase
 Imports Relativity
 
@@ -83,7 +84,6 @@ Namespace kCura.WinEDDS
 		Public Property DisableNativeLocationValidation As Boolean = Config.DisableNativeLocationValidation
 		Public Property DisableUserSecurityCheck As Boolean
 		Public Property AuditLevel As kCura.EDDS.WebAPI.BulkImportManagerBase.ImportAuditLevel = WinEDDS.Config.AuditLevel
-
 		Public ReadOnly Property BatchSizeHistoryList As System.Collections.Generic.List(Of Int32)
 			Get
 				Return _batchSizeHistoryList
@@ -562,7 +562,12 @@ Namespace kCura.WinEDDS
 						If Me.DisableNativeValidation Then
 							oixFileIdData = Nothing
 						Else
-							oixFileIdData = kCura.OI.FileID.Manager.Instance.GetFileIDDataByFilePath(filename)
+							Dim idDataExtractor As kCura.WinEDDS.Api.IHasOixFileType = TryCast(record, kCura.WinEDDS.Api.IHasOixFileType)
+							If idDataExtractor Is Nothing Then
+								oixFileIdData = kCura.OI.FileID.Manager.Instance.GetFileIDDataByFilePath(filename)
+							Else
+								oixFileIdData = idDataExtractor.GetFileIDData()
+							End If
 						End If
 
 						If _copyFileToRepository Then
@@ -1063,15 +1068,9 @@ Namespace kCura.WinEDDS
 			If _artifactTypeID = Relativity.ArtifactType.Document Then
 				If _filePathColumnIndex <> -1 AndAlso mdoc.UploadFile AndAlso mdoc.IndexFileInDB Then
 					Dim boolString As String = "0"
-					Dim fieldType As String = String.Empty
 					If Me.IsSupportedRelativityFileType(mdoc.FileIdData) Then boolString = "1"
 					_outputNativeFileWriter.Write(boolString & _bulkLoadFileFieldDelimiter)
-
-					If mdoc.FileIdData Is Nothing Then
-						fieldType = "Unknown format"
-					Else
-						fieldType = mdoc.FileIdData.FileType
-					End If
+					Dim fieldType As String = mdoc.GetFileType()
 
 					_outputNativeFileWriter.Write(fieldType & _bulkLoadFileFieldDelimiter)
 					_outputNativeFileWriter.Write("1" & _bulkLoadFileFieldDelimiter)

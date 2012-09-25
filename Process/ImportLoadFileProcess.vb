@@ -31,6 +31,10 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
+		Public Property OIFileIdMapped As Boolean
+		Public Property OIFileIdColumnName As String
+		Public Property OIFileTypeColumnName As String
+
 		Public WriteOnly Property DisableUserSecurityCheck As Boolean
 			Set(ByVal value As Boolean)
 				_disableUserSecutityCheck = value
@@ -93,6 +97,9 @@ Namespace kCura.WinEDDS
 			_loadFileImporter.DisableExtractedTextFileLocationValidation = DisableExtractedTextFileLocationValidation
 			_loadFileImporter.AuditLevel = _auditLevel
 			_loadFileImporter.DisableUserSecurityCheck = _disableUserSecutityCheck
+			_loadFileImporter.OIFileIdColumnName = OIFileIdColumnName
+			_loadFileImporter.OIFileIdMapped = OIFileIdMapped
+			_loadFileImporter.OIFileTypeColumnName = OIFileTypeColumnName
 
 			'_newlineCounter = New kCura.Utility.File.Instance.LineCounter
 			'_newlineCounter.Path = LoadFile.FilePath
