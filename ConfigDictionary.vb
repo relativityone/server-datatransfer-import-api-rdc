@@ -8,10 +8,6 @@ Namespace kCura.EDDS.WinForm
 			_application = kCura.EDDS.WinForm.Application.Instance
 		End Sub
 
-		Protected Overrides Sub SetHasMachineName()
-			_hasMachineName = False
-		End Sub
-
 		Protected Overrides Sub UpdateValues()
 			Dim configTable As System.Data.DataTable
 			Try
