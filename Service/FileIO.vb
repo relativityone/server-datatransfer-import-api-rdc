@@ -1,6 +1,17 @@
 Imports System.Collections.Generic
+Imports System.Runtime.Caching
 
 Namespace kCura.WinEDDS.Service
+
+	Public Class BCPCache
+		Inherits System.Runtime.Caching.MemoryCache
+
+		Public Sub New()
+			MyBase.New("BCPCache")
+		End Sub
+
+	End Class
+
 	Public Class FileIO
 		Inherits kCura.EDDS.WebAPI.FileIOBase.FileIO
 
@@ -88,44 +99,37 @@ Namespace kCura.WinEDDS.Service
 			Return Nothing
 		End Function
 
-		Private Shared _bcpShareDictionary As New Dictionary(Of Int32, String)
-		Private Shared _syncedObject As New Object()
 		Public Shadows Function GetBcpSharePath(ByVal appID As Int32) As String
-			If (_bcpShareDictionary.ContainsKey(appID)) Then
-				Return _bcpShareDictionary(appID)
+			If (BCPCache.Default.Contains(appID.ToString())) Then
+				Return BCPCache.Default.Get(appID.ToString()).ToString()
 			End If
-			SyncLock (_syncedObject)
-				If (_bcpShareDictionary.ContainsKey(appID)) Then
-					Return _bcpShareDictionary(appID)
-				End If
-				Dim tries As Int32 = 0
-				While tries < Config.MaxReloginTries
-					tries += 1
-					Try
-						Dim retval As String = MyBase.GetBcpSharePath(appID)
-						If String.IsNullOrEmpty(retval) Then
-							Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
+			If (BCPCache.Default.Contains(appID.ToString())) Then
+				Return BCPCache.Default.Get(appID.ToString()).ToString()
+			End If
+			Dim tries As Int32 = 0
+			While tries < Config.MaxReloginTries
+				tries += 1
+				Try
+					Dim retval As String = MyBase.GetBcpSharePath(appID)
+					If String.IsNullOrEmpty(retval) Then
+						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
+					Else
+						BCPCache.Default.Add(appID.ToString(), retval, New CacheItemPolicy() With {.AbsoluteExpiration = DateTimeOffset.UtcNow.AddSeconds(10)})
+						Return retval
+					End If
+				Catch ex As System.Exception
+					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
+						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
+					Else
+						If TypeOf ex Is System.Web.Services.Protocols.SoapException Then
+							Throw ParseExceptionForMoreInfo(ex)
 						Else
-							_bcpShareDictionary.Add(appID, retval)
-							Return retval
+							Throw ex
 						End If
-					Catch ex As System.Exception
-						If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-							Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
-						Else
-							If TypeOf ex Is System.Web.Services.Protocols.SoapException Then
-								Throw ParseExceptionForMoreInfo(ex)
-							Else
-								Throw ex
-							End If
-						End If
-					End Try
-				End While
-			End SyncLock
-
-
+					End If
+				End Try
+			End While
 			Throw New System.Exception("Unable to retrieve BCP share path from the server")
-			Return Nothing
 		End Function
 
 		Public Shared Function ParseExceptionForMoreInfo(ByVal ex As Exception) As System.Exception
@@ -228,7 +232,6 @@ Namespace kCura.WinEDDS.Service
 				Return MyBase.ToString + vbNewLine + MyBase.InnerException.ToString
 			End Function
 		End Class
-
 
 	End Class
 End Namespace
