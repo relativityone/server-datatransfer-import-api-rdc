@@ -3,18 +3,9 @@ Imports System.Runtime.Caching
 
 Namespace kCura.WinEDDS.Service
 
-	Public Class BCPCache
-		Inherits System.Runtime.Caching.MemoryCache
-
-		Public Sub New()
-			MyBase.New("BCPCache")
-		End Sub
-
-	End Class
-
 	Public Class FileIO
 		Inherits kCura.EDDS.WebAPI.FileIOBase.FileIO
-
+		Private Shared BCPCache As New MemoryCache("BCPCache")
 		Public Sub New(ByVal credentials As Net.ICredentials, ByVal cookieContainer As System.Net.CookieContainer)
 			MyBase.New()
 
@@ -100,22 +91,20 @@ Namespace kCura.WinEDDS.Service
 		End Function
 
 		Public Shadows Function GetBcpSharePath(ByVal appID As Int32) As String
-			If (BCPCache.Default.Contains(appID.ToString())) Then
-				Return BCPCache.Default.Get(appID.ToString()).ToString()
-			End If
-			If (BCPCache.Default.Contains(appID.ToString())) Then
-				Return BCPCache.Default.Get(appID.ToString()).ToString()
+			Dim cacheVal As Object = BCPCache.Get(appID.ToString())
+			If (cacheVal IsNot Nothing) Then
+				Return cacheVal.ToString()
 			End If
 			Dim tries As Int32 = 0
 			While tries < Config.MaxReloginTries
 				tries += 1
 				Try
-					Dim retval As String = MyBase.GetBcpSharePath(appID)
-					If String.IsNullOrEmpty(retval) Then
+					Dim retVal As String = MyBase.GetBcpSharePath(appID)
+					If String.IsNullOrEmpty(retVal) Then
 						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
 					Else
-						BCPCache.Default.Add(appID.ToString(), retval, New CacheItemPolicy() With {.AbsoluteExpiration = DateTimeOffset.UtcNow.AddSeconds(10)})
-						Return retval
+						BCPCache.Add(appID.ToString(), retVal, New CacheItemPolicy() With {.AbsoluteExpiration = DateTimeOffset.UtcNow.AddSeconds(60)})
+						Return retVal
 					End If
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
