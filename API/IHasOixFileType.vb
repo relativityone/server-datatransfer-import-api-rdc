@@ -4,6 +4,6 @@
 	End Interface
 
 	Public Interface IHasFileSize
-		Function GetFileSize() As Nullable(Of Long)
+		Function GetFileSize() As Long
 	End Interface
 End Namespace
