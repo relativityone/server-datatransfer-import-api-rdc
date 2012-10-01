@@ -145,5 +145,7 @@ Namespace kCura.Relativity.DataReaderClient
 		Public Property OIFileIdMapped As Boolean
 		Public Property OIFileIdColumnName As String
 		Public Property OIFileTypeColumnName As String
+		Public Property FileSizeMapped As Boolean
+		Public Property FileSizeColumn As String
 	End Class
 End Namespace
