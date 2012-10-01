@@ -295,8 +295,10 @@ Namespace kCura.WinEDDS
 
 			_overwrite = args.OverwriteDestination
 			If args.CopyFilesToDocumentRepository Then
-				_defaultDestinationFolderPath = args.SelectedCasePath & "EDDS" & args.CaseInfo.ArtifactID & "\"
-				If args.ArtifactTypeID <> Relativity.ArtifactType.Document Then
+        'DEFECT: SF#226211, repositories without trailing \ caused import to fail. Changed to use Path.Combine. -tmh
+        Dim lastHalfPath As String = "EDDS" & args.CaseInfo.ArtifactID
+        _defaultDestinationFolderPath = Path.Combine(args.SelectedCasePath, lastHalfPath)
+        If args.ArtifactTypeID <> Relativity.ArtifactType.Document Then
 					For Each item As LoadFileFieldMap.LoadFileFieldMapItem In args.FieldMap
 						If Not item.DocumentField Is Nothing AndAlso item.NativeFileColumnIndex > -1 AndAlso item.DocumentField.FieldTypeID = Relativity.FieldTypeHelper.FieldType.File Then
 							_defaultDestinationFolderPath &= "File" & item.DocumentField.FieldID & "\"
