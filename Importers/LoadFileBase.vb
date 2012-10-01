@@ -53,7 +53,8 @@ Namespace kCura.WinEDDS
 		Public Property OIFileIdMapped As Boolean
 		Public Property OIFileIdColumnName As String
 		Public Property OIFileTypeColumnName As String
-
+		Public Property FileSizeMapped() As Boolean
+		Public Property FileSizeColumn() As String
 #End Region
 
 #Region "Accessors"
@@ -125,6 +126,8 @@ Namespace kCura.WinEDDS
 			OIFileIdColumnName = args.OIFileIdColumnName
 			OIFileIdMapped = args.OIFileIdMapped
 			OIFileTypeColumnName = args.OIFileTypeColumnName
+			FileSizeMapped = args.FileSizeMapped
+			FileSizeColumn = args.FileSizeColumn
 			_artifactReader = Me.GetArtifactReader
 			_docFields = args.FieldMap.DocumentFields
 			_filePathColumn = args.NativeFilePathColumn

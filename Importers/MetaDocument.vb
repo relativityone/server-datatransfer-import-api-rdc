@@ -32,6 +32,8 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
+		Public Property Size() As Nullable(Of Long)
+
 		Public Property IdentityValue() As String
 			Get
 				Return _identityValue
@@ -136,7 +138,8 @@ Namespace kCura.WinEDDS
 		 ByVal record As Api.ArtifactFieldCollection, _
 		 ByVal oixFileData As OI.FileID.FileIDData, _
 		 ByVal lineStatus As Int32, _
-		 ByVal destinationVolume As String _
+		 ByVal destinationVolume As String, _
+		 Optional ByVal fileSize As Nullable(Of Long) = Nothing
 		 )
 			_fileGuid = fileGuid
 			_identityValue = identityValue
@@ -151,6 +154,7 @@ Namespace kCura.WinEDDS
 			_fileIdData = oixFileData
 			_lineStatus = lineStatus
 			_destinationVolume = destinationVolume
+			Size = fileSize
 		End Sub
 
 		Public Function GetFileType() As String

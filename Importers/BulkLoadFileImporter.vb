@@ -978,7 +978,12 @@ Namespace kCura.WinEDDS
 					_outputNativeFileWriter.Write(mdoc.FullFilePath & _bulkLoadFileFieldDelimiter)
 					_outputNativeFileWriter.Write(mdoc.FullFilePath & _bulkLoadFileFieldDelimiter)
 				End If
-				_outputNativeFileWriter.Write(Me.GetFileLength(mdoc.FullFilePath) & _bulkLoadFileFieldDelimiter)
+				If (mdoc.Size.HasValue) Then
+					_outputNativeFileWriter.Write(mdoc.Size & _bulkLoadFileFieldDelimiter)
+				Else
+					_outputNativeFileWriter.Write(Me.GetFileLength(mdoc.FullFilePath) & _bulkLoadFileFieldDelimiter)
+				End If
+
 			Else
 				_outputNativeFileWriter.Write(_bulkLoadFileFieldDelimiter)
 				_outputNativeFileWriter.Write(_bulkLoadFileFieldDelimiter)

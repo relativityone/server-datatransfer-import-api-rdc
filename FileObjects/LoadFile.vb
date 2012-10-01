@@ -36,6 +36,8 @@ Namespace kCura.WinEDDS
 		Public OIFileIdMapped As Boolean
 		Public OIFileIdColumnName As String
 		Public OIFileTypeColumnName As String
+		Public FileSizeMapped As Boolean
+		Public FileSizeColumn As String
 		<NonSerialized()> Public ExtractedTextFileEncodingName As String
 		<NonSerialized()> Public CaseDefaultPath As String = ""
 		<NonSerialized()> Public Credentials As Net.NetworkCredential
