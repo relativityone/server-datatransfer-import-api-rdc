@@ -35,6 +35,8 @@ Namespace kCura.WinEDDS.ImportExtension
 			LoadFile.OIFileIdColumnName = OIFileIdColumnName
 			LoadFile.OIFileIdMapped = OIFileIdMapped
 			LoadFile.OIFileTypeColumnName = OIFileTypeColumnName
+			LoadFile.FileSizeColumn = FileSizeColumn
+			LoadFile.FileSizeMapped = FileSizeMapped
 			Dim temp As DataReaderImporter = New DataReaderImporter(DirectCast(Me.LoadFile, kCura.WinEDDS.ImportExtension.DataReaderLoadFile), ProcessController, BulkLoadFileFieldDelimiter) With {.OnBehalfOfUserToken = Me.OnBehalfOfUserToken}
 			Dim dr As System.Data.IDataReader = temp.SourceData
 			'These settings need to have [columnName]([index])

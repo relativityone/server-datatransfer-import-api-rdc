@@ -12,7 +12,7 @@ Namespace kCura.WinEDDS.ImportExtension
 		Private Const _KCURAMARKERFILENAME As String = "kcuramarkerfilename"
 
 		Private _reader As System.Data.IDataReader
-		Private ReadOnly _oiFileSettings As OIFileSettings
+		Private ReadOnly _FileSettings As FileSettings
 		Private _loadFileSettings As kCura.WinEDDS.LoadFile
 		Protected _currentLineNumber As Long = 0
 		Private _size As Long = -1
@@ -24,12 +24,12 @@ Namespace kCura.WinEDDS.ImportExtension
 		Private _lastSourceIdentifier As String
 
 		Public Sub New(ByVal args As DataReaderReaderInitializationArgs, ByVal fieldMap As kCura.WinEDDS.LoadFile, ByVal reader As System.Data.IDataReader)
-			Me.New(args, fieldMap, reader, New OIFileSettings() With {.Mapped = False})
+			Me.New(args, fieldMap, reader, New FileSettings() With {.OIFileIdMapped = False, .FileSizeMapped = False})
 		End Sub
 
-		Public Sub New(ByVal args As DataReaderReaderInitializationArgs, ByVal fieldMap As kCura.WinEDDS.LoadFile, ByVal reader As System.Data.IDataReader, oiFileSettings As OIFileSettings)
+		Public Sub New(ByVal args As DataReaderReaderInitializationArgs, ByVal fieldMap As kCura.WinEDDS.LoadFile, ByVal reader As System.Data.IDataReader, fileSettings As FileSettings)
 			_reader = reader
-			_oiFileSettings = oiFileSettings
+			_FileSettings = FileSettings
 			If _reader Is Nothing Then Throw New NullReferenceException("The reader being passed into this IDataReaderReader is null")
 			If _reader.IsClosed = True OrElse _reader.FieldCount = 0 Then Throw New ArgumentException("The reader being passed into this IDataReaderReader is empty")
 			_loadFileSettings = fieldMap
@@ -162,11 +162,11 @@ Namespace kCura.WinEDDS.ImportExtension
 			Dim retval As Api.ArtifactFieldCollection
 			Dim oiFileType As String = ""
 			Dim oiFileId As Int32
-			If _oiFileSettings.Mapped Then
+			If _FileSettings.OIFileIdMapped Then
 				For i As Integer = 0 To _reader.FieldCount - 1
-					If (_reader.GetName(i) = _oiFileSettings.TypeColumnName) Then
+					If (_reader.GetName(i) = _FileSettings.TypeColumnName) Then
 						oiFileType = _reader.GetValue(i).ToString()
-					ElseIf (_reader.GetName(i) = _oiFileSettings.IDColumnName) Then
+					ElseIf (_reader.GetName(i) = _FileSettings.IDColumnName) Then
 						Dim value As Int32 = -1
 						Dim readerValue As String = _reader.GetValue(i).ToString()
 						Int32.TryParse(readerValue, value)
@@ -174,10 +174,31 @@ Namespace kCura.WinEDDS.ImportExtension
 					End If
 				Next
 			End If
+			Dim fileSize As Nullable(Of Long) = Nothing
+			If _FileSettings.FileSizeMapped Then
+				For i As Integer = 0 To _reader.FieldCount - 1
+					If (_reader.GetName(i) = _FileSettings.FileSizeColumn) Then
+						Dim value As Long = -1
+						Dim readerValue As String = _reader.GetValue(i).ToString()
+						Long.TryParse(readerValue, value)
+						fileSize = value
+						Exit For
+					End If
+				Next
+			End If
+			'TODO: Factory when I have time
 			If (Not String.IsNullOrEmpty(oiFileType)) Then
-				retval = New NativeFileValidatedArtifactFieldCollection() With {.OixFileID = New FileIDData(oiFileId, oiFileType)}
+				If (fileSize.HasValue) Then
+					retval = New NativeFilePopulatedArtifactFieldCollection() With {.OixFileID = New FileIDData(oiFileId, oiFileType), .FileSize = fileSize.GetValueOrDefault()}
+				Else
+					retval = New NativeFileValidatedArtifactFieldCollection() With {.OixFileID = New FileIDData(oiFileId, oiFileType)}
+				End If
 			Else
-				retval = New Api.ArtifactFieldCollection
+				If (fileSize.HasValue) Then
+					retval = New FileSizePopulatedArtifactFieldCollection() With {.FileSize = fileSize.GetValueOrDefault()}
+				Else
+					retval = New Api.ArtifactFieldCollection
+				End If
 			End If
 			Dim folderStructureContainedInColumnWithoutIndex As String = nameWithoutIndex(_loadFileSettings.FolderStructureContainedInColumn)
 
@@ -464,10 +485,12 @@ Namespace kCura.WinEDDS.ImportExtension
 
 	End Class
 
-	Public Class OIFileSettings
-		Public Property Mapped() As Boolean
+	Public Class FileSettings
+		Public Property OIFileIdMapped() As Boolean
 		Public Property IDColumnName() As String
 		Public Property TypeColumnName() As String
+		Public Property FileSizeMapped() As Boolean
+		Public Property FileSizeColumn() As String
 	End Class
 End Namespace
 

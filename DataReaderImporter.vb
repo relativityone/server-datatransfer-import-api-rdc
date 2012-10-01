@@ -22,7 +22,8 @@ Namespace kCura.WinEDDS.ImportExtension
 			Me.OIFileIdColumnName = loadFile.OIFileIdColumnName
 			Me.OIFileIdMapped = loadFile.OIFileIdMapped
 			Me.OIFileTypeColumnName = loadFile.OIFileTypeColumnName
-
+			Me.FileSizeMapped = loadFile.FileSizeMapped
+			Me.FileSizeColumn = loadFile.FileSizeColumn
 		End Sub
 
 		Overrides Sub OnSettingsObjectCreate(settings As kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo)
@@ -89,7 +90,7 @@ Namespace kCura.WinEDDS.ImportExtension
 				End Try
 				columnIndex = columnIndex + 1
 			Next
-			Dim settings As New OIFileSettings() With {.IDColumnName = OIFileIdColumnName, .Mapped = OIFileIdMapped, .TypeColumnName = OIFileTypeColumnName}
+			Dim settings As New FileSettings() With {.IDColumnName = OIFileIdColumnName, .OIFileIdMapped = OIFileIdMapped, .TypeColumnName = OIFileTypeColumnName, .FileSizeColumn = FileSizeColumn, .FileSizeMapped = FileSizeMapped}
 			Dim retval As New DataReaderReader(New DataReaderReaderInitializationArgs(collection, _settings.ArtifactTypeID), _settings, _sourceReader, settings)
 			Return retval
 		End Function
