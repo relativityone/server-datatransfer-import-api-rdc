@@ -1224,4 +1224,7 @@
     <None Include="Web References\kCura.EDDS.WebAPI.BulkImportManagerBase\BulkImportManager.disco" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.VisualBasic.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>copy "$(TargetDir)\kCura.WinEDDS.dll" "$(ProjectDir)"</PostBuildEvent>
+  </PropertyGroup>
 </Project>
