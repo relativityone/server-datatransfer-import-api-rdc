@@ -338,4 +338,7 @@
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.VisualBasic.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>copy "$(TargetDir)\kCura.Windows.Process.dll" "$(ProjectDir)"</PostBuildEvent>
+  </PropertyGroup>
 </Project>
