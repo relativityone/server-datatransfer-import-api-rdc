@@ -84,9 +84,6 @@ Namespace kCura.Relativity.DataReaderClient
 				process.DisableUserSecurityCheck = Settings.DisableUserSecurityCheck
 				process.AuditLevel = Settings.AuditLevel
 				process.SkipExtractedTextEncodingCheck = Settings.DisableExtractedTextEncodingCheck
-				process.OIFileIdMapped = False
-				process.OIFileIdColumnName = Settings.OIFileIdColumnName
-				process.OIFileTypeColumnName = Settings.OIFileTypeColumnName
 				RaiseEvent OnMessage(New Status("Updating settings"))
 				process.ImageLoadFile = Me.CreateLoadFile()
 

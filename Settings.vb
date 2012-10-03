@@ -78,6 +78,49 @@ Namespace kCura.Relativity.DataReaderClient
 		''' '
 		''' </summary>
 		Public Property RowCount() As Int32
+
+		''' <summary>
+		''' To skip file identification in the Import API, set this property to True.
+		''' </summary>
+		''' <value></value>
+		''' <returns></returns>
+		''' <remarks>If this value is True, both <see cref="OIFileIdColumnName">OIFileIdColumnName</see> and  <see cref="OIFileIdColumnName">OIFileTypeColumnName</see> must be set.</remarks>
+		Public Property OIFileIdMapped As Boolean
+
+		''' <summary>
+		''' Set this property to the value that indicates the column in the <see cref="SourceIDataReader.SourceData">SourceData</see> property which contains the OutsideInFileId.
+		''' To determine the file id, call kCura.OI.FileID.Manager.Instance.GetFileIDDataByFilePath(string filePath).  
+		''' </summary>
+		''' <value></value>
+		''' <returns></returns>
+		''' <remarks>To use this property, <see cref="OIFileIdMapped">OIFileIdMapped</see> must be set to True.</remarks>
+		Public Property OIFileIdColumnName As String
+
+		''' <summary>
+		''' Set this property to the value that indicates the column in the <see cref="SourceIDataReader.SourceData">SourceData</see> property which contains the OutsideInFileType.
+		''' To determine the file type, call kCura.OI.FileID.Manager.Instance.GetFileIDDataByFilePath(string filePath).
+		''' </summary>
+		''' <value></value>
+		''' <returns></returns>
+		''' <remarks>To use this property, <see cref="OIFileIdMapped">OIFileIdMapped</see> must be set to True.</remarks>
+		Public Property OIFileTypeColumnName As String
+
+
+		''' <summary>
+		''' To skip file size checking in the Import API, set this property to True.
+		''' </summary>
+		''' <value></value>
+		''' <returns></returns>
+		''' <remarks>If this value is True, <see cref="FileSizeColumn">OIFileIdColumnNameFileSizeColumn</see>  must be mapped.</remarks>
+		Public Property FileSizeMapped As Boolean
+
+		''' <summary>
+		''' Set this property to the value that indicates the column in the <see cref="SourceIDataReader.SourceData">SourceData</see> property which contains the FileSize.
+		''' </summary>
+		''' <value></value>
+		''' <returns></returns>
+		''' <remarks> To use this property, <see cref="FileSizeMapped">FileSizeMapped</see> must be set to True.</remarks>
+		Public Property FileSizeColumn As String
 #End Region
 
 	End Class
