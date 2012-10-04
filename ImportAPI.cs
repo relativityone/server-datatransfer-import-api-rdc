@@ -148,10 +148,17 @@ namespace kCura.Relativity.ImportAPI
 			var fields = fm.Query.RetrieveAllAsDocumentFieldCollection(workspaceArtifactID, artifactTypeID);
 
 			return (from DocumentField docfield in fields
-					select new Field
+					  select new Field
 							{
-								ArtifactID = docfield.FieldID, ArtifactTypeId = docfield.FieldTypeID, Name = docfield.FieldName, FieldLength = docfield.FieldLength, FieldTypeID = (FieldTypeEnum)Enum.ToObject(typeof(FieldTypeEnum),
-									docfield.FieldTypeID), AssociatedObjectTypeID = docfield.AssociatedObjectTypeID, UseUnicode = docfield.UseUnicode, FieldCategory = (FieldCategoryEnum)Enum.ToObject(typeof(FieldCategoryEnum), docfield.FieldCategoryID)
+								ArtifactID = docfield.FieldID, 
+								ArtifactTypeId = docfield.FieldTypeID, 
+								Name = docfield.FieldName,
+								FieldLength = docfield.FieldLength, 
+								FieldTypeID = (FieldTypeEnum)Enum.ToObject(typeof(FieldTypeEnum),docfield.FieldTypeID), 
+								AssociatedObjectTypeID = docfield.AssociatedObjectTypeID, 
+								UseUnicode = docfield.UseUnicode, 
+								FieldCategory = (FieldCategoryEnum)Enum.ToObject(typeof(FieldCategoryEnum), docfield.FieldCategoryID),
+								Guids = docfield.Guids
 							}).ToList();
 		}
 

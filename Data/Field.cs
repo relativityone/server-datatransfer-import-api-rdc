@@ -17,6 +17,8 @@ namespace kCura.Relativity.ImportAPI.Data
 		public int? FieldLength { get; internal set; }
 
 		public FieldCategoryEnum FieldCategory { get; internal set; }
-	}
 
+		public IEnumerable<Guid> Guids { get; internal set; }
+
+	}
 }
