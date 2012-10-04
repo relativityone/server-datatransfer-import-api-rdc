@@ -143,6 +143,7 @@ Namespace kCura.WinEDDS
 			Me.Value = info.GetString("_value")
 			Me.FieldCategoryID = info.GetInt32("_fieldCategoryID")
 			Me.FileColumnIndex = info.GetInt32("_fileColumnIndex")
+			Me.Guids = New List(Of Guid)
 		End Sub
 
 		Public Sub New(ByVal fieldName As String, ByVal fieldID As Int32, ByVal fieldTypeID As Int32, ByVal fieldCategoryID As Int32, ByVal codeTypeID As Nullable(Of Int32), ByVal fieldLength As Nullable(Of Int32), ByVal associatedObjectTypeID As Nullable(Of Int32), ByVal useUnicode As Boolean, ByVal importBehavior As kCura.EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice?)
