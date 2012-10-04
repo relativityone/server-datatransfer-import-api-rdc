@@ -43,6 +43,7 @@
 			Me._selectedTextFieldsTextBox.ReadOnly = True
 			Me._selectedTextFieldsTextBox.Size = New System.Drawing.Size(148, 20)
 			Me._selectedTextFieldsTextBox.TabIndex = 4
+			Me._selectedTextFieldsTextBox.TabStop = False
 			'
 			'TextFieldPrecedencePicker
 			'
