@@ -115,21 +115,31 @@ Namespace kCura.EDDS.WinForm
 					End While
 					kCura.WinEDDS.Config.WebServiceURL = webserviceurl
 				End If
-				If Not _application.DefaultCredentialsAreGood Then
+				Dim defaultCredentialResult As Application.CredentialCheckResult = _application.CheckDefaultCredentials()
+				If defaultCredentialResult = Application.CredentialCheckResult.AccessDisabled Then
+					Console.WriteLine(Application.ACCESS_DISABLED_MESSAGE)
+					Exit Sub
+				ElseIf Not defaultCredentialResult = Application.CredentialCheckResult.Success Then
 					Dim userName As String = ""
 					Dim password As String = ""
 					userName = GetValueFromCommandListByFlag(commandList, "u")
 					password = GetValueFromCommandListByFlag(commandList, "p")
 					If userName Is Nothing OrElse userName = "" Then Throw New UsernameException
 					If password Is Nothing OrElse password = "" Then Throw New PasswordException
-					Dim isValidLogin As Boolean = False
+					Dim loginResult As Application.CredentialCheckResult = Application.CredentialCheckResult.NotSet
 					Dim cred As New System.Net.NetworkCredential(userName, password)
 					Try
-						isValidLogin = _application.DoLogin(cred)
-					Catch
-						isValidLogin = False
+						loginResult = _application.DoLogin(cred)
+					Catch ex As Exception
+						loginResult = Application.CredentialCheckResult.Fail
 					End Try
-					If Not isValidLogin Then Throw New CredentialsException
+					If loginResult = Application.CredentialCheckResult.AccessDisabled Then
+						Console.WriteLine(Application.ACCESS_DISABLED_MESSAGE)
+						Exit Sub
+					ElseIf Not loginResult = Application.CredentialCheckResult.Success Then
+						Throw New CredentialsException
+					End If
+
 				End If
 				SetLoadType(GetValueFromCommandListByFlag(commandList, "m"))
 				SetCaseInfo(GetValueFromCommandListByFlag(commandList, "c"))

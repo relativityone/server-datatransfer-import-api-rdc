@@ -34,6 +34,9 @@ Namespace kCura.EDDS.WinForm
 		Public Event OnEvent(ByVal appEvent As AppEvent)
 		Public Event ChangeCursor(ByVal cursorStyle As System.Windows.Forms.Cursor)
 
+		Public Const ACCESS_DISABLED_MESSAGE As String = "Your Relativity account has been disabled.  Please contact your Relativity Administrator to activate your account."
+		Public Const RDC_ERROR_TITLE As String = "Relativity Desktop Client Error"
+
 		Private _processPool As kCura.Windows.Process.ProcessPool
 		Private _selectedCaseInfo As Relativity.CaseInfo
 		Private _selectedCaseFolderID As Int32
@@ -1419,13 +1422,27 @@ Namespace kCura.EDDS.WinForm
 
 #End Region
 
+		Public Enum CredentialCheckResult
+			NotSet = 0
+			Success = 1
+			Fail = 2
+			AccessDisabled = 3
+		End Enum
+
+		Private _lastCredentialCheckResult As CredentialCheckResult = CredentialCheckResult.NotSet
+		Public ReadOnly Property LastCredentialCheckResult As CredentialCheckResult
+			Get
+				Return _lastCredentialCheckResult
+			End Get
+		End Property
+
 #Region "Login"
 		''' <summary>
 		''' Try to log in using Windows Authentication
 		''' </summary>
 		''' <returns>true if successful, else false</returns>
 		''' <remarks></remarks>
-		Friend Function DefaultCredentialsAreGood() As Boolean
+		Friend Function CheckDefaultCredentials() As CredentialCheckResult
 			Dim myHttpWebRequest As System.Net.HttpWebRequest
 			Dim cred As System.Net.NetworkCredential
 			Dim relativityManager As kCura.WinEDDS.Service.RelativityManager
@@ -1439,13 +1456,19 @@ Namespace kCura.EDDS.WinForm
 					CheckVersion(System.Net.CredentialCache.DefaultCredentials)
 					_credential = cred
 					kCura.WinEDDS.Service.Settings.AuthenticationToken = New kCura.WinEDDS.Service.UserManager(cred, _cookieContainer).GenerateDistributedAuthenticationToken()
-					Return True
+					_lastCredentialCheckResult = CredentialCheckResult.Success
 				Else
-					Return False
+					_lastCredentialCheckResult = CredentialCheckResult.Fail
 				End If
 			Catch ex As System.Exception
-				Return False
+				If IsAccessDisabledException(ex) Then
+					_lastCredentialCheckResult = CredentialCheckResult.AccessDisabled
+				Else
+					_lastCredentialCheckResult = CredentialCheckResult.Fail
+				End If
 			End Try
+
+			Return _lastCredentialCheckResult
 		End Function
 
 		Private Sub _loginForm_OK_Click(ByVal cred As System.Net.NetworkCredential, ByVal openCaseSelector As Boolean) Handles _loginForm.OK_Click
@@ -1464,8 +1487,10 @@ Namespace kCura.EDDS.WinForm
 					kCura.WinEDDS.Service.Settings.AuthenticationToken = userManager.GenerateDistributedAuthenticationToken()
 					If openCaseSelector Then OpenCase()
 					_timeZoneOffset = 0															'New kCura.WinEDDS.Service.RelativityManager(cred, _cookieContainer).GetServerTimezoneOffset
+					_lastCredentialCheckResult = CredentialCheckResult.Success
 				Else
 					Me.ReLogin("Invalid login. Try again?")
+					_lastCredentialCheckResult = CredentialCheckResult.Fail
 				End If
 			Catch ex As System.Net.WebException
 				If Not ex.Message.IndexOf("The remote name could not be resolved") = -1 AndAlso ex.Source = "System" Then
@@ -1473,12 +1498,14 @@ Namespace kCura.EDDS.WinForm
 				ElseIf Not ex.Message.IndexOf("The request failed with HTTP status 401") = -1 AndAlso ex.Source = "System.Web.Services" Then
 					Me.ChangeWebServiceURL("The current Web Service URL was resolved but is not configured correctly. Try a new URL?")
 				End If
+				_lastCredentialCheckResult = CredentialCheckResult.Fail
 			Catch ex As System.Exception
 				Dim x As New ErrorDialog
 				If IsAccessDisabledException(ex) Then
 					x.Text = "Account Disabled"
 					x.InitializeSoapExceptionWithCustomMessage(DirectCast(ex, System.Web.Services.Protocols.SoapException), _
-						"Your Relativity account has been disabled.")
+					 ACCESS_DISABLED_MESSAGE)
+					_lastCredentialCheckResult = CredentialCheckResult.AccessDisabled
 				Else
 					If Not ex.Message.IndexOf("Invalid License.") = -1 Then
 						x.Text = "Invalid License."
@@ -1487,6 +1514,7 @@ Namespace kCura.EDDS.WinForm
 					Else
 						x.Text = "Unrecognized login error."
 					End If
+					_lastCredentialCheckResult = CredentialCheckResult.Fail
 					x.Initialize(ex, x.Text)
 				End If
 				If x.ShowDialog = DialogResult.OK Then
@@ -1513,17 +1541,26 @@ Namespace kCura.EDDS.WinForm
 			End If
 		End Function
 
-		Public Function DoLogin(ByVal cred As System.Net.NetworkCredential) As Boolean
+		Public Function DoLogin(ByVal cred As System.Net.NetworkCredential) As CredentialCheckResult
 			Dim userManager As New kCura.WinEDDS.Service.UserManager(cred, _cookieContainer)
 			CheckVersion(cred)
-			If userManager.Login(cred.UserName, cred.Password) Then
-				_credential = cred
-				kCura.WinEDDS.Service.Settings.AuthenticationToken = userManager.GenerateDistributedAuthenticationToken()
-				_timeZoneOffset = 0											 'New kCura.WinEDDS.Service.RelativityManager(cred, _cookieContainer).GetServerTimezoneOffset
-				Return True
-			Else
-				Return False
-			End If
+			Try
+				If userManager.Login(cred.UserName, cred.Password) Then
+					_credential = cred
+					kCura.WinEDDS.Service.Settings.AuthenticationToken = userManager.GenerateDistributedAuthenticationToken()
+					_timeZoneOffset = 0											 'New kCura.WinEDDS.Service.RelativityManager(cred, _cookieContainer).GetServerTimezoneOffset
+					_lastCredentialCheckResult = CredentialCheckResult.Success
+				Else
+					_lastCredentialCheckResult = CredentialCheckResult.Fail
+				End If
+			Catch ex As Exception
+				If IsAccessDisabledException(ex) Then
+					_lastCredentialCheckResult = CredentialCheckResult.AccessDisabled
+				Else
+					_lastCredentialCheckResult = CredentialCheckResult.Fail
+				End If
+			End Try
+			Return _lastCredentialCheckResult
 		End Function
 
 		Private Sub ReLogin(ByVal message As String)
@@ -1622,8 +1659,8 @@ Namespace kCura.EDDS.WinForm
 				_loginForm.TopMost = False
 			End If
 
-            Dim aboutFrm As New AboutForm()
-            aboutFrm.ShowDialog()
+			Dim aboutFrm As New AboutForm()
+			aboutFrm.ShowDialog()
 
 			If Not _loginForm Is Nothing AndAlso Not _loginForm.IsDisposed Then
 				_loginForm.TopMost = True
