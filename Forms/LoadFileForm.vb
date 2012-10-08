@@ -365,7 +365,7 @@ Namespace kCura.EDDS.WinForm
 			Me._startLineNumber.Maximum = New Decimal(New Integer() {268435455, 1042612833, 542101086, 0})
 			Me._startLineNumber.Name = "_startLineNumber"
 			Me._startLineNumber.Size = New System.Drawing.Size(148, 20)
-			Me._startLineNumber.TabIndex = 27
+			Me._startLineNumber.TabIndex = 4
 			'
 			'_startLineNumberLabel
 			'
@@ -382,7 +382,7 @@ Namespace kCura.EDDS.WinForm
 			Me._loadFileEncodingPicker.Name = "_loadFileEncodingPicker"
 			Me._loadFileEncodingPicker.SelectedEncoding = Nothing
 			Me._loadFileEncodingPicker.Size = New System.Drawing.Size(200, 21)
-			Me._loadFileEncodingPicker.TabIndex = 24
+			Me._loadFileEncodingPicker.TabIndex = 5
 			'
 			'Label8
 			'
@@ -399,7 +399,7 @@ Namespace kCura.EDDS.WinForm
 			Me.GroupBox20.Location = New System.Drawing.Point(8, 4)
 			Me.GroupBox20.Name = "GroupBox20"
 			Me.GroupBox20.Size = New System.Drawing.Size(720, 48)
-			Me.GroupBox20.TabIndex = 21
+			Me.GroupBox20.TabIndex = 2
 			Me.GroupBox20.TabStop = False
 			Me.GroupBox20.Text = "Load File"
 			'
@@ -430,7 +430,7 @@ Namespace kCura.EDDS.WinForm
 			Me._firstLineContainsColumnNames.Location = New System.Drawing.Point(12, 60)
 			Me._firstLineContainsColumnNames.Name = "_firstLineContainsColumnNames"
 			Me._firstLineContainsColumnNames.Size = New System.Drawing.Size(204, 20)
-			Me._firstLineContainsColumnNames.TabIndex = 20
+			Me._firstLineContainsColumnNames.TabIndex = 3
 			Me._firstLineContainsColumnNames.Text = "First line contains column names"
 			'
 			'GroupBox2
@@ -439,7 +439,7 @@ Namespace kCura.EDDS.WinForm
 			Me.GroupBox2.Location = New System.Drawing.Point(228, 56)
 			Me.GroupBox2.Name = "GroupBox2"
 			Me.GroupBox2.Size = New System.Drawing.Size(500, 364)
-			Me.GroupBox2.TabIndex = 19
+			Me.GroupBox2.TabIndex = 7
 			Me.GroupBox2.TabStop = False
 			Me.GroupBox2.Text = "File Column Headers"
 			'
@@ -570,7 +570,7 @@ Namespace kCura.EDDS.WinForm
 			Me.GroupBox3.Location = New System.Drawing.Point(4, 352)
 			Me.GroupBox3.Name = "GroupBox3"
 			Me.GroupBox3.Size = New System.Drawing.Size(234, 56)
-			Me.GroupBox3.TabIndex = 33
+			Me.GroupBox3.TabIndex = 11
 			Me.GroupBox3.TabStop = False
 			Me.GroupBox3.Text = "Overlay Identifier"
 			'
@@ -598,7 +598,7 @@ Namespace kCura.EDDS.WinForm
 			Me.GroupBox7.Location = New System.Drawing.Point(484, 288)
 			Me.GroupBox7.Name = "GroupBox7"
 			Me.GroupBox7.Size = New System.Drawing.Size(234, 104)
-			Me.GroupBox7.TabIndex = 32
+			Me.GroupBox7.TabIndex = 14
 			Me.GroupBox7.TabStop = False
 			Me.GroupBox7.Text = "Extracted Text"
 			'
@@ -608,7 +608,7 @@ Namespace kCura.EDDS.WinForm
 			Me._fullTextFileEncodingPicker.Name = "_fullTextFileEncodingPicker"
 			Me._fullTextFileEncodingPicker.SelectedEncoding = Nothing
 			Me._fullTextFileEncodingPicker.Size = New System.Drawing.Size(200, 21)
-			Me._fullTextFileEncodingPicker.TabIndex = 31
+			Me._fullTextFileEncodingPicker.TabIndex = 26
 			'
 			'Label9
 			'
@@ -623,7 +623,7 @@ Namespace kCura.EDDS.WinForm
 			Me._extractedTextValueContainsFileLocation.Location = New System.Drawing.Point(8, 16)
 			Me._extractedTextValueContainsFileLocation.Name = "_extractedTextValueContainsFileLocation"
 			Me._extractedTextValueContainsFileLocation.Size = New System.Drawing.Size(156, 21)
-			Me._extractedTextValueContainsFileLocation.TabIndex = 0
+			Me._extractedTextValueContainsFileLocation.TabIndex = 25
 			Me._extractedTextValueContainsFileLocation.Text = "Cell contains file location"
 			'
 			'GroupBox6
@@ -632,7 +632,7 @@ Namespace kCura.EDDS.WinForm
 			Me.GroupBox6.Location = New System.Drawing.Point(4, 288)
 			Me.GroupBox6.Name = "GroupBox6"
 			Me.GroupBox6.Size = New System.Drawing.Size(234, 56)
-			Me.GroupBox6.TabIndex = 31
+			Me.GroupBox6.TabIndex = 10
 			Me.GroupBox6.TabStop = False
 			Me.GroupBox6.Text = "Overwrite"
 			'
@@ -652,7 +652,7 @@ Namespace kCura.EDDS.WinForm
 			Me.GroupBox5.Location = New System.Drawing.Point(244, 288)
 			Me.GroupBox5.Name = "GroupBox5"
 			Me.GroupBox5.Size = New System.Drawing.Size(234, 72)
-			Me.GroupBox5.TabIndex = 30
+			Me.GroupBox5.TabIndex = 12
 			Me.GroupBox5.TabStop = False
 			Me.GroupBox5.Text = "Parent Info"
 			'
@@ -661,7 +661,7 @@ Namespace kCura.EDDS.WinForm
 			Me._buildFolderStructure.Location = New System.Drawing.Point(8, 20)
 			Me._buildFolderStructure.Name = "_buildFolderStructure"
 			Me._buildFolderStructure.Size = New System.Drawing.Size(160, 16)
-			Me._buildFolderStructure.TabIndex = 29
+			Me._buildFolderStructure.TabIndex = 20
 			Me._buildFolderStructure.Text = "Parent information column:"
 			'
 			'_destinationFolderPath
@@ -671,7 +671,7 @@ Namespace kCura.EDDS.WinForm
 			Me._destinationFolderPath.Location = New System.Drawing.Point(8, 40)
 			Me._destinationFolderPath.Name = "_destinationFolderPath"
 			Me._destinationFolderPath.Size = New System.Drawing.Size(220, 21)
-			Me._destinationFolderPath.TabIndex = 28
+			Me._destinationFolderPath.TabIndex = 21
 			'
 			'GroupBox4
 			'
@@ -682,7 +682,7 @@ Namespace kCura.EDDS.WinForm
 			Me.GroupBox4.Location = New System.Drawing.Point(244, 364)
 			Me.GroupBox4.Name = "GroupBox4"
 			Me.GroupBox4.Size = New System.Drawing.Size(234, 92)
-			Me.GroupBox4.TabIndex = 26
+			Me.GroupBox4.TabIndex = 13
 			Me.GroupBox4.TabStop = False
 			Me.GroupBox4.Text = "Native File Behavior"
 			'
@@ -691,7 +691,7 @@ Namespace kCura.EDDS.WinForm
 			Me._advancedButton.Location = New System.Drawing.Point(152, 16)
 			Me._advancedButton.Name = "_advancedButton"
 			Me._advancedButton.Size = New System.Drawing.Size(75, 23)
-			Me._advancedButton.TabIndex = 27
+			Me._advancedButton.TabIndex = 23
 			Me._advancedButton.Text = "Repository"
 			'
 			'_loadNativeFiles
@@ -860,7 +860,7 @@ Namespace kCura.EDDS.WinForm
 				Me.Cursor = System.Windows.Forms.Cursors.Default
 				Return False
 			End If
-			Me.LoadFile.FieldMap = kCura.EDDS.WinForm.Utility.ExtractFieldMap(_fieldMap.FieldColumns, _fieldMap.LoadFileColumns, currentFields, Me.LoadFile.ArtifactTypeID)
+			Me.LoadFile.FieldMap = kCura.EDDS.WinForm.Utility.ExtractFieldMap(_fieldMap.FieldColumns, _fieldMap.LoadFileColumns, currentFields, Me.LoadFile.ArtifactTypeID, Me.LoadFile.ObjectFieldIdListContainsArtifactId)
 			'Dim groupIdentifier As DocumentField = _application.CurrentGroupIdentifierField
 			'If _identifiersDropDown.SelectedIndex > 0 Then
 			'	Dim columnname As String = CType(_identifiersDropDown.SelectedItem, String)

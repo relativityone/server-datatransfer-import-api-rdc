@@ -180,27 +180,8 @@ Namespace kCura.EDDS.WinForm
 		Private Sub LoginForm_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles MyBase.Load
 			Me.Focus()
 			_loginTextBox.Focus()
-#If DEBUG Then
-			Dim machinesToAutoLogin As System.Collections.Generic.List(Of String) = kCura.Utility.DevelopmentHelper.AutoLogins
-			If machinesToAutoLogin.Contains(Environment.MachineName) Then
-				_autoLoginDelegate = New AutoLoginDelegateSub(AddressOf AutoLoginSub)
-				_timer = New System.Threading.Timer(New System.Threading.TimerCallback(AddressOf AutoLoginInvoker), Nothing, 100, 0)
-			End If
-#End If
 		End Sub
 
-#If DEBUG Then
-		Private Sub AutoLoginInvoker(ByVal nada As Object)
-			_timer.Dispose()
-			Me.BeginInvoke(_autoLoginDelegate)
-		End Sub
-
-		Private Sub AutoLoginSub()
-			_loginTextBox.Text = kCura.Utility.DevelopmentHelper.DefaultUserName
-			_passwordTextBox.Text = kCura.Utility.DevelopmentHelper.DefaultPassword
-			_okButton.PerformClick()
-		End Sub
-#End If
 
 	End Class
 End Namespace

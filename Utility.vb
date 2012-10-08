@@ -1,3 +1,5 @@
+Imports System.Collections.Generic
+
 Namespace kCura.EDDS.WinForm
 	Public Class Utility
 		Public Shared Sub InitializeCharacterDropDown(ByVal ddown As System.Windows.Forms.ListControl, ByVal selectedValue As Char)
@@ -29,7 +31,7 @@ Namespace kCura.EDDS.WinForm
 			Return docfields
 		End Function
 
-		Public Shared Function ExtractFieldMap(ByVal caseFields As kCura.Windows.Forms.TwoListBox, ByVal fileColumns As kCura.Windows.Forms.TwoListBox, ByVal docFieldList As DocumentFieldCollection, ByVal artifactTypeID As Int32) As LoadFileFieldMap
+		Public Shared Function ExtractFieldMap(ByVal caseFields As kCura.Windows.Forms.TwoListBox, ByVal fileColumns As kCura.Windows.Forms.TwoListBox, ByVal docFieldList As DocumentFieldCollection, ByVal artifactTypeID As Int32, ObjectFieldIdList As IList(Of Int32)) As LoadFileFieldMap
 			Dim selectedFields As System.Windows.Forms.ListBox.ObjectCollection = caseFields.RightListBoxItems
 			Dim selectedColumns As System.Windows.Forms.ListBox.ObjectCollection = fileColumns.LeftListBoxItems
 			Dim fieldMap As New kCura.WinEDDS.LoadFileFieldMap
@@ -50,6 +52,10 @@ Namespace kCura.EDDS.WinForm
 					Dim openParenIndex As Int32 = columnname.LastIndexOf("("c) + 1
 					Dim closeParenIndex As Int32 = columnname.LastIndexOf(")"c)
 					columnIndex = Int32.Parse(columnname.Substring(openParenIndex, closeParenIndex - openParenIndex)) - 1
+				End If
+
+				If (Not ObjectFieldIdList Is Nothing AndAlso ObjectFieldIdList.Contains(docfield.FieldID)) Then
+					docfield.ImportBehavior = EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice.ObjectFieldContainsArtifactId
 				End If
 				fieldMap.Add(New LoadFileFieldMap.LoadFileFieldMapItem(docfield, columnIndex))
 			Next

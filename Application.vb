@@ -2,6 +2,8 @@ Imports System.Web.Services.Protocols
 Imports System.Security.Cryptography.X509Certificates
 Imports System.Net
 Imports System.Net.Security
+Imports kCura.EDDS.WinForm.Forms
+Imports kCura.Windows.Forms
 
 Namespace kCura.EDDS.WinForm
 	Public Class Application
@@ -533,11 +535,8 @@ Namespace kCura.EDDS.WinForm
 			Dim errorRow As System.Data.DataRow = dt.NewRow
 			rowcount += 1
 			For Each column As System.Data.DataColumn In dt.Columns
-				If column.ColumnName = "Record Number" Then
-					errorRow(column.ColumnName) = rowcount.ToString
-				Else
-					errorRow(column.ColumnName) = "Row-wide error: " & err.Message
-				End If
+				Dim errorMessage As LoadFilePreviewColumnItem = New LoadFilePreviewColumnItem(New Exceptions.ErrorMessage(If((column.ColumnName = "Record Number"), rowcount.ToString, "Row-wide error: " & err.Message)))
+				errorRow(column.ColumnName) = errorMessage
 			Next
 			dt.Rows.Add(errorRow)
 		End Sub
@@ -572,6 +571,7 @@ Namespace kCura.EDDS.WinForm
 									dt.Columns.Add("Record Number")
 									For Each field In fields
 										dt.Columns.Add(field.DisplayName)
+										dt.Columns(field.DisplayName).DataType = GetType(LoadFilePreviewColumnItem)
 										If field.DisplayName.ToLower.Contains("extracted text") Then
 											'dt.Columns.Add("Extracted Text Encoding")
 										End If
@@ -606,7 +606,7 @@ Namespace kCura.EDDS.WinForm
 				Dim field As Api.ArtifactField
 				row.Add(counter.ToString())
 				For Each field In fields
-					row.Add(field.ValueAsString)
+					row.Add(New LoadFilePreviewColumnItem(field.Value))
 					If field.DisplayName.ToLower.Contains("extracted text") Then
 						'row.Add("...Encoding will go here...")
 					End If
@@ -1049,7 +1049,7 @@ Namespace kCura.EDDS.WinForm
 
 		Public Sub ChangeWebServiceURL()
 			CursorWait()
-			Dim frm As New SetWebServiceURL
+            Dim frm As New Forms.SetWebServiceURL
 			frm.Show()
 			CursorDefault()
 		End Sub
@@ -1420,9 +1420,13 @@ Namespace kCura.EDDS.WinForm
 #End Region
 
 #Region "Login"
+		''' <summary>
+		''' Try to log in using Windows Authentication
+		''' </summary>
+		''' <returns>true if successful, else false</returns>
+		''' <remarks></remarks>
 		Friend Function DefaultCredentialsAreGood() As Boolean
 			Dim myHttpWebRequest As System.Net.HttpWebRequest
-			Dim myHttpWebResponse As System.Net.HttpWebResponse
 			Dim cred As System.Net.NetworkCredential
 			Dim relativityManager As kCura.WinEDDS.Service.RelativityManager
 
@@ -1430,9 +1434,8 @@ Namespace kCura.EDDS.WinForm
 			myHttpWebRequest = DirectCast(System.Net.WebRequest.Create(kCura.WinEDDS.Config.WebServiceURL & "\RelativityManager.asmx"), System.Net.HttpWebRequest)
 			myHttpWebRequest.Credentials = System.Net.CredentialCache.DefaultCredentials
 			Try
-				myHttpWebResponse = DirectCast(myHttpWebRequest.GetResponse(), System.Net.HttpWebResponse)
 				relativityManager = New kCura.WinEDDS.Service.RelativityManager(cred, _cookieContainer)
-				If relativityManager.ValidateSuccesfulLogin Then
+				If relativityManager.ValidateSuccessfulLogin Then
 					CheckVersion(System.Net.CredentialCache.DefaultCredentials)
 					_credential = cred
 					kCura.WinEDDS.Service.Settings.AuthenticationToken = New kCura.WinEDDS.Service.UserManager(cred, _cookieContainer).GenerateDistributedAuthenticationToken()
@@ -1472,14 +1475,20 @@ Namespace kCura.EDDS.WinForm
 				End If
 			Catch ex As System.Exception
 				Dim x As New ErrorDialog
-				If Not ex.Message.IndexOf("Invalid License.") = -1 Then
-					x.Text = "Invalid License."
-				ElseIf (Not ex.Message.IndexOf("A library (dll)") = -1) OrElse (Not ex.Message.IndexOf("Relativity is temporarily unavailable.") = -1) Then
-					x.Text = "Invalid Assembly."
+				If IsAccessDisabledException(ex) Then
+					x.Text = "Account Disabled"
+					x.InitializeSoapExceptionWithCustomMessage(DirectCast(ex, System.Web.Services.Protocols.SoapException), _
+						"Your Relativity account has been disabled.")
 				Else
-					x.Text = "Unrecognized login error.  Try again?"
+					If Not ex.Message.IndexOf("Invalid License.") = -1 Then
+						x.Text = "Invalid License."
+					ElseIf (Not ex.Message.IndexOf("A library (dll)") = -1) OrElse (Not ex.Message.IndexOf("Relativity is temporarily unavailable.") = -1) Then
+						x.Text = "Invalid Assembly."
+					Else
+						x.Text = "Unrecognized login error."
+					End If
+					x.Initialize(ex, x.Text)
 				End If
-				x.Initialize(ex, x.Text)
 				If x.ShowDialog = DialogResult.OK Then
 					NewLogin()
 				Else
@@ -1487,6 +1496,22 @@ Namespace kCura.EDDS.WinForm
 				End If
 			End Try
 		End Sub
+
+		Public Function IsAccessDisabledException(ByVal ex As System.Exception) As Boolean
+			If TypeOf ex Is System.Web.Services.Protocols.SoapException Then
+				Dim soapEx As System.Web.Services.Protocols.SoapException = DirectCast(ex, System.Web.Services.Protocols.SoapException)
+				Dim exceptionType As String = String.Empty
+				Try
+					exceptionType = soapEx.Detail("ExceptionType").InnerText
+				Catch caughtEx As Exception
+					' Not a properly formatted SoapException
+					Return False
+				End Try
+				Return exceptionType = "Relativity.Core.Exception.RelativityAccessDisabledException"
+			Else
+				Return False
+			End If
+		End Function
 
 		Public Function DoLogin(ByVal cred As System.Net.NetworkCredential) As Boolean
 			Dim userManager As New kCura.WinEDDS.Service.UserManager(cred, _cookieContainer)
@@ -1597,8 +1622,8 @@ Namespace kCura.EDDS.WinForm
 				_loginForm.TopMost = False
 			End If
 
-			Dim aboutFrm As New AboutForm()
-			aboutFrm.ShowDialog()
+            Dim aboutFrm As New AboutForm()
+            aboutFrm.ShowDialog()
 
 			If Not _loginForm Is Nothing AndAlso Not _loginForm.IsDisposed Then
 				_loginForm.TopMost = True
