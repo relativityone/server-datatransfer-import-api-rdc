@@ -1,3 +1,5 @@
+Imports System.Web
+
 Namespace kCura.WinEDDS
 	''' <summary>
 	''' Container class for all export settings
@@ -68,7 +70,7 @@ Namespace kCura.WinEDDS
 				Return _loadFilesPrefix
 			End Get
 			Set(ByVal value As String)
-				_loadFilesPrefix = kCura.WinEDDS.Utility.GetFilesystemSafeName(value)
+				_loadFilesPrefix = HttpUtility.HtmlDecode(kCura.WinEDDS.Utility.GetFilesystemSafeName(value))
 			End Set
 		End Property
 
