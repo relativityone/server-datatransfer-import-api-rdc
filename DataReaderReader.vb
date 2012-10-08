@@ -2,6 +2,9 @@ Imports System.Collections.Generic
 Imports kCura.WinEDDS.Api
 Imports kCura.WinEDDS
 Imports kCura.Utility
+Imports System.Xml.Linq
+Imports System.Linq
+Imports System.Xml.XPath
 
 Namespace kCura.WinEDDS.ImportExtension
 	Public Class DataReaderReader
@@ -106,20 +109,10 @@ Namespace kCura.WinEDDS.ImportExtension
 			End Get
 		End Property
 
-		Private Function FormatMultiCodeValueToXml(ByVal multicodeValue As String) As String
-			'Convert x\y\z;a\b\c; to <root><item>x\y\z</item><item>a\b\c</item></root>
-			'; is based on _loadFileSettings.MultiRecordDelimiter
-			Dim retValue As String = String.Empty
-			Dim multiValue() As String = multicodeValue.Split(_loadFileSettings.MultiRecordDelimiter)
-			If multiValue.Length > 0 Then
-				For Each multiChoiceValue As String In multiValue
-					If Not multiChoiceValue = String.Empty Then
-						retValue &= String.Format("<item>{0}</item>", multiChoiceValue)
-					End If
-				Next
-				retValue = String.Format("<root>{0}</root>", retValue)
-			End If
-			Return retValue
+		Private Shared Function FormatMultiCodeValueToXml(ByVal multicodeValue As String, delimiter As Char) As XDocument
+			'Format to xml to verify we aren't going to break anything for audits.
+			Dim multiValue As List(Of String) = multicodeValue.Split(delimiter).ToList()
+			Return New XDocument(New XElement("root", From x As String In multiValue Select New XElement("item", x)))
 		End Function
 
 		Private Function DoesFilenameMarkerFieldExistInIDataReader() As Boolean
@@ -423,24 +416,24 @@ Namespace kCura.WinEDDS.ImportExtension
 					field.Value = kCura.Utility.NullableTypesHelper.DBNullConvertToNullable(Of Int32)(value)
 					'field.Value = kCura.Utility.NullableTypesHelper.ToNullableInt32(value)
 				Case Relativity.FieldTypeHelper.FieldType.MultiCode, Relativity.FieldTypeHelper.FieldType.Objects
-					field.Value = kCura.Utility.NullableTypesHelper.DBNullString(value)
-					Dim xml As String = value.ToString
-					If Not xml = String.Empty Then
-						xml = FormatMultiCodeValueToXml(xml)
-						Dim nodes As New System.Collections.ArrayList
-						Dim doc As New System.Xml.XmlDocument
-						doc.LoadXml(xml)
-						For Each node As System.Xml.XmlElement In doc.ChildNodes(0).ChildNodes
-							nodes.Add(node.InnerText)
-						Next
-						field.Value = DirectCast(nodes.ToArray(GetType(String)), String())
-					Else
-						field.Value = New String() {}
+					Dim dbNullValue As Object = kCura.Utility.NullableTypesHelper.DBNullString(value)
+					field.Value = dbNullValue
+					If (Not dbNullValue Is Nothing) Then
+						Dim stringValue As String = dbNullValue.ToString()
+						field.Value = GetListOfItemsFromString(stringValue, _loadFileSettings.MultiRecordDelimiter)
 					End If
 				Case Else
 					Throw New System.ArgumentException("Unsupported field type '" & field.Type.ToString & "'")
 			End Select
 		End Sub
+
+		Public Shared Function GetListOfItemsFromString(ByVal stringValue As String, delimiter As Char) As String()
+			If (String.IsNullOrEmpty(stringValue)) Then
+				Return New String() {}
+			End If
+			Dim xDoc As XDocument = FormatMultiCodeValueToXml(stringValue, delimiter)
+			Return xDoc.XPathSelectElements("//root/item").Select(Function(x As XElement) x.Value).ToArray()
+		End Function
 
 		Public ReadOnly Property SizeInBytes() As Long Implements kCura.WinEDDS.Api.IArtifactReader.SizeInBytes
 			Get
