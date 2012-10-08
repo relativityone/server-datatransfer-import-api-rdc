@@ -355,7 +355,7 @@ Namespace kCura.EDDS.WinForm
 		Private Sub OpenRepositoryMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles OpenRepositoryMenu.Click
 			If _application.LastCredentialCheckResult = Application.CredentialCheckResult.AccessDisabled Then
 				'The user could have changed the server, so we need to check default credentials again.
-				Dim defaultCredentialResult As Application.CredentialCheckResult = _application.CheckDefaultCredentials()
+				Dim defaultCredentialResult As Application.CredentialCheckResult = _application.AttemptWindowsAuthentication()
 				If defaultCredentialResult = Application.CredentialCheckResult.AccessDisabled Then
 					MessageBox.Show(Application.ACCESS_DISABLED_MESSAGE, Application.RDC_ERROR_TITLE)
 				ElseIf Not defaultCredentialResult = Application.CredentialCheckResult.Success Then
@@ -369,10 +369,6 @@ Namespace kCura.EDDS.WinForm
 				_application.OpenCase()
 			End If
 		End Sub
-
-		'Private Sub DisableOpenRepositoryMenu()
-		'	Me.OpenRepositoryMenu.Enabled = False
-		'End Sub
 
 		Private Sub ExitMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ExitMenu.Click
 			_application.ExitApplication()
@@ -411,7 +407,7 @@ Namespace kCura.EDDS.WinForm
 				_application.SetWebServiceURL()
 			End If
 
-			Dim defaultCredentialResult As Application.CredentialCheckResult = _application.CheckDefaultCredentials()
+			Dim defaultCredentialResult As Application.CredentialCheckResult = _application.AttemptWindowsAuthentication()
 			If defaultCredentialResult = Application.CredentialCheckResult.AccessDisabled Then
 				MessageBox.Show(Application.ACCESS_DISABLED_MESSAGE, Application.RDC_ERROR_TITLE)
 			ElseIf Not defaultCredentialResult = Application.CredentialCheckResult.Success Then

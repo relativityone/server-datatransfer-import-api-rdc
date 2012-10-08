@@ -1442,7 +1442,7 @@ Namespace kCura.EDDS.WinForm
 		''' </summary>
 		''' <returns>true if successful, else false</returns>
 		''' <remarks></remarks>
-		Friend Function CheckDefaultCredentials() As CredentialCheckResult
+		Friend Function AttemptWindowsAuthentication() As CredentialCheckResult
 			Dim myHttpWebRequest As System.Net.HttpWebRequest
 			Dim cred As System.Net.NetworkCredential
 			Dim relativityManager As kCura.WinEDDS.Service.RelativityManager

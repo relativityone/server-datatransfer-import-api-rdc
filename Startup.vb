@@ -115,7 +115,7 @@ Namespace kCura.EDDS.WinForm
 					End While
 					kCura.WinEDDS.Config.WebServiceURL = webserviceurl
 				End If
-				Dim defaultCredentialResult As Application.CredentialCheckResult = _application.CheckDefaultCredentials()
+				Dim defaultCredentialResult As Application.CredentialCheckResult = _application.AttemptWindowsAuthentication()
 				If defaultCredentialResult = Application.CredentialCheckResult.AccessDisabled Then
 					Console.WriteLine(Application.ACCESS_DISABLED_MESSAGE)
 					Exit Sub
