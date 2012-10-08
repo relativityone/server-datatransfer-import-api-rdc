@@ -1,3 +1,5 @@
+Imports System.Collections.Generic
+
 Namespace kCura.WinEDDS
 	<Serializable()> Public Class LoadFile
 		Implements System.Runtime.Serialization.ISerializable
@@ -30,6 +32,12 @@ Namespace kCura.WinEDDS
 		Public IdentityFieldId As Int32 = -1
 		Public SendEmailOnLoadCompletion As Boolean
 		Public ForceFolderPreview As Boolean
+		Public ObjectFieldIdListContainsArtifactId As IList(Of Int32)
+		Public OIFileIdMapped As Boolean
+		Public OIFileIdColumnName As String
+		Public OIFileTypeColumnName As String
+		Public FileSizeMapped As Boolean
+		Public FileSizeColumn As String
 		<NonSerialized()> Public ExtractedTextFileEncodingName As String
 		<NonSerialized()> Public CaseDefaultPath As String = ""
 		<NonSerialized()> Public Credentials As Net.NetworkCredential
@@ -89,6 +97,7 @@ Namespace kCura.WinEDDS
 			info.AddValue("IdentityFieldId", Me.IdentityFieldId, GetType(Int32))
 			info.AddValue("SendEmailOnLoadCompletion", Me.SendEmailOnLoadCompletion, GetType(Boolean))
 			info.AddValue("ForceFolderPreview", Me.ForceFolderPreview, GetType(Boolean))
+			info.AddValue("ObjectFieldIdListContainsArtifactId", Me.ObjectFieldIdListContainsArtifactId, GetType(IList(Of Int32)))
 			If Me.FullTextColumnContainsFileLocation Then
 				If Me.ExtractedTextFileEncoding Is Nothing Then
 					info.AddValue("ExtractedTextFileEncoding", -1, GetType(Int32))
@@ -192,6 +201,12 @@ Namespace kCura.WinEDDS
 				Catch
 					Me.ForceFolderPreview = kCura.WinEDDS.Config.ForceFolderPreview
 				End Try
+				Try
+					Me.ObjectFieldIdListContainsArtifactId = CType(info.GetValue("ObjectFieldIdListContainsArtifactId", GetType(IList(Of Int32))), Global.System.Collections.Generic.IList(Of Integer))
+				Catch
+					Me.ObjectFieldIdListContainsArtifactId = kCura.WinEDDS.Config.ObjectFieldIdListContainsArtifactId
+				End Try
+
 			End With
 		End Sub
 

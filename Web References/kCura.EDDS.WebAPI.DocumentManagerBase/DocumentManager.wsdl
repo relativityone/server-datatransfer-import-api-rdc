@@ -261,6 +261,7 @@
         <s:restriction base="s:string">
           <s:enumeration value="LeaveBlankValuesUnchanged" />
           <s:enumeration value="ReplaceBlankValuesWithIdentifier" />
+          <s:enumeration value="ObjectFieldContainsArtifactId" />
         </s:restriction>
       </s:simpleType>
       <s:complexType name="ObjectsFieldParameters">
@@ -328,6 +329,17 @@
             <s:element minOccurs="1" maxOccurs="1" name="CreateResult" type="s:int" />
           </s:sequence>
         </s:complexType>
+      </s:element>
+      <s:element name="Delete">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
+            <s:element minOccurs="0" maxOccurs="1" name="identifiers" type="tns:ArrayOfString" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="DeleteResponse">
+        <s:complexType />
       </s:element>
       <s:element name="Update">
         <s:complexType>
@@ -582,6 +594,12 @@
   <wsdl:message name="CreateSoapOut">
     <wsdl:part name="parameters" element="tns:CreateResponse" />
   </wsdl:message>
+  <wsdl:message name="DeleteSoapIn">
+    <wsdl:part name="parameters" element="tns:Delete" />
+  </wsdl:message>
+  <wsdl:message name="DeleteSoapOut">
+    <wsdl:part name="parameters" element="tns:DeleteResponse" />
+  </wsdl:message>
   <wsdl:message name="UpdateSoapIn">
     <wsdl:part name="parameters" element="tns:Update" />
   </wsdl:message>
@@ -681,6 +699,10 @@
       <wsdl:input message="tns:CreateSoapIn" />
       <wsdl:output message="tns:CreateSoapOut" />
     </wsdl:operation>
+    <wsdl:operation name="Delete">
+      <wsdl:input message="tns:DeleteSoapIn" />
+      <wsdl:output message="tns:DeleteSoapOut" />
+    </wsdl:operation>
     <wsdl:operation name="Update">
       <wsdl:input message="tns:UpdateSoapIn" />
       <wsdl:output message="tns:UpdateSoapOut" />
@@ -774,6 +796,15 @@
     </wsdl:operation>
     <wsdl:operation name="Create">
       <soap:operation soapAction="http://foley.com/EDDS/DocumentManager/Create" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Delete">
+      <soap:operation soapAction="http://foley.com/EDDS/DocumentManager/Delete" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -939,6 +970,15 @@
     </wsdl:operation>
     <wsdl:operation name="Create">
       <soap12:operation soapAction="http://foley.com/EDDS/DocumentManager/Create" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Delete">
+      <soap12:operation soapAction="http://foley.com/EDDS/DocumentManager/Delete" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>

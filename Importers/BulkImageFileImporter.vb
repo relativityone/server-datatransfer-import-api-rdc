@@ -3,6 +3,7 @@ Imports kCura.EDDS.WebAPI.BulkImportManagerBase
 Imports kCura.Utility.Extensions.CollectionExtension
 Imports kCura.WinEDDS.Service
 Imports kCura.Utility
+Imports Relativity
 
 Namespace kCura.WinEDDS
 	Public Class BulkImageFileImporter
@@ -52,7 +53,7 @@ Namespace kCura.WinEDDS
 		Private _fileIdentifierLookup As System.Collections.Hashtable
 
 		Private _processID As Guid
-		Public Const MaxNumberOfErrorsInGrid As Int32 = 1000
+		Public Property MaxNumberOfErrorsInGrid As Int32 = Config.DefaultMaximumErrorCount
 		Private _totalValidated As Long
 		Private _totalProcessed As Long
 		Private _startLineNumber As Int64
@@ -64,6 +65,10 @@ Namespace kCura.WinEDDS
 		Private _timekeeper As New kCura.Utility.Timekeeper
 		Private _doRetryLogic As Boolean
 		Private _verboseErrorCollection As New ClientSideErrorCollection
+		Public Property SkipExtractedTextEncodingCheck As Boolean
+		Public Property OIFileIdMapped As Boolean
+		Public Property OIFileIdColumnName As String
+		Public Property OIFileTypeColumnName As String
 #End Region
 
 #Region "Accessors"
@@ -71,7 +76,7 @@ Namespace kCura.WinEDDS
 		Public Property DisableImageTypeValidation As Boolean = Config.DisableImageTypeValidation
 		Public Property DisableImageLocationValidation As Boolean = Config.DisableImageLocationValidation
 		Public Property DisableUserSecurityCheck As Boolean
-		Public Property AuditLevel As ImportAuditLevel = Config.AuditLevel
+		Public Property AuditLevel As kCura.EDDS.WebAPI.BulkImportManagerBase.ImportAuditLevel = Config.AuditLevel
 
 		Public ReadOnly Property BatchSizeHistoryList As System.Collections.Generic.List(Of Int32)
 			Get
@@ -272,10 +277,10 @@ Namespace kCura.WinEDDS
 			End While
 			Return retval
 		End Function
-		
+
 		Private Function BulkImport(ByVal overwrite As OverwriteType, ByVal useBulk As Boolean) As MassImportResults
 			Dim retval As MassImportResults
-			Dim settings As ImageLoadInfo = Me.GetSettingsObject
+			Dim settings As kCura.EDDS.WebAPI.BulkImportManagerBase.ImageLoadInfo = Me.GetSettingsObject
 			settings.UseBulkDataImport = useBulk
 			settings.Overlay = overwrite
 
@@ -303,7 +308,7 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Private Function GetSettingsObject() As kCura.EDDS.WebAPI.BulkImportManagerBase.ImageLoadInfo
-			Dim settings As New ImageLoadInfo With {
+			Dim settings As New kCura.EDDS.WebAPI.BulkImportManagerBase.ImageLoadInfo With {
 			.RunID = _runId,
 			.DestinationFolderArtifactID = _folderID,
 			.BulkFileName = _uploadKey,
@@ -695,40 +700,59 @@ Namespace kCura.WinEDDS
 					Me.GetImageForDocument(BulkImageFileImporter.GetFileLocation(record), record.BatesNumber, documentId, i, offset, textFileList, i < lines.Count - 1, record.OriginalIndex.ToString, status, lines.Count, i = 0)
 				Next
 
-
-				Dim encodingsStringBuilder As New System.Text.StringBuilder()
 				If textFileList.Count = 0 AndAlso _replaceFullText Then
 					_bulkLoadFileWriter.Write(String.Format("{0},", -1))
 				End If
 				Dim encodingList As New Generic.List(Of Int32)
 				For Each filename As String In textFileList
-					Dim chosenEncoding As System.Text.Encoding
-					Dim determinedEncodingStream As DeterminedEncodingStream = kCura.WinEDDS.Utility.DetectEncoding(filename, True)
-					Dim detectedEncoding As System.Text.Encoding = determinedEncodingStream.DeterminedEncoding
-					If detectedEncoding IsNot Nothing Then
-						chosenEncoding = detectedEncoding
-					Else
-						chosenEncoding = _settings.FullTextEncoding
+					Dim chosenEncoding As System.Text.Encoding = _settings.FullTextEncoding
+
+					If Not SkipExtractedTextEncodingCheck Then
+						'We pass in 'False' as the final parameter to DetectEncoding to have it skip the File.Exists check. This
+						' check can be very expensive when going across the network, so this is an attempt to improve performance.
+						' We're ok skipping this check, because a few lines earlier in GetImageForDocument that existence check
+						' is already made.
+						' -Phil S. 07/27/2012
+						Dim determinedEncodingStream As DeterminedEncodingStream = kCura.WinEDDS.Utility.DetectEncoding(filename, True, False)
+						Dim detectedEncoding As System.Text.Encoding = determinedEncodingStream.DeterminedEncoding
+						If detectedEncoding IsNot Nothing Then
+							chosenEncoding = detectedEncoding
+						End If
 					End If
+
 					If _replaceFullText Then
 						If Not encodingList.Contains(chosenEncoding.CodePage) Then encodingList.Add(chosenEncoding.CodePage)
 					End If
 				Next
 				If _replaceFullText AndAlso textFileList.Count > 0 Then _bulkLoadFileWriter.Write("{0},", kCura.Utility.List.ToDelimitedString(encodingList, "|"))
 				For Each filename As String In textFileList
-					Dim chosenEncoding As System.Text.Encoding
-					Dim determinedEncodingStream As DeterminedEncodingStream = kCura.WinEDDS.Utility.DetectEncoding(filename, False)
-					Dim detectedEncoding As System.Text.Encoding = determinedEncodingStream.DeterminedEncoding
-					If detectedEncoding IsNot Nothing Then
-						chosenEncoding = detectedEncoding
+					Dim chosenEncoding As System.Text.Encoding = _settings.FullTextEncoding
+					Dim fileStream As IO.Stream
+
+					If Not SkipExtractedTextEncodingCheck Then
+						'We pass in 'False' as the final parameter to DetectEncoding to have it skip the File.Exists check. This
+						' check can be very expensive when going across the network, so this is an attempt to improve performance.
+						' We're ok skipping this check, because a few lines earlier in GetImageForDocument that existence check
+						' is already made.
+						' -Phil S. 07/27/2012
+						Dim determinedEncodingStream As DeterminedEncodingStream = kCura.WinEDDS.Utility.DetectEncoding(filename, False, False)
+						fileStream = determinedEncodingStream.UnderlyingStream
+
+						Dim detectedEncoding As System.Text.Encoding = determinedEncodingStream.DeterminedEncoding
+						If detectedEncoding IsNot Nothing Then
+							chosenEncoding = detectedEncoding
+						End If
 					Else
-						chosenEncoding = _settings.FullTextEncoding
+						fileStream = New FileStream(filename, FileMode.Open, FileAccess.Read)
 					End If
 
-					With New System.IO.StreamReader(determinedEncodingStream.UnderlyingStream, chosenEncoding, True)
+					With New System.IO.StreamReader(fileStream, chosenEncoding, True)
 						_bulkLoadFileWriter.Write(.ReadToEnd)
 						.Close()
-						determinedEncodingStream.Close()
+						Try
+							fileStream.Close()
+						Catch
+						End Try
 					End With
 				Next
 
@@ -977,45 +1001,54 @@ Namespace kCura.WinEDDS
 					Me.RaiseStatusEvent(Windows.Process.EventType.Status, "Retrieving errors from server", Me.CurrentLineNumber, Me.CurrentLineNumber)
 					Dim downloader As New FileDownloader(DirectCast(_bulkImportManager.Credentials, System.Net.NetworkCredential), _caseInfo.DocumentPath, _caseInfo.DownloadHandlerURL, _bulkImportManager.CookieContainer, kCura.WinEDDS.Service.Settings.AuthenticationToken)
 					Dim errorsLocation As String = System.IO.Path.GetTempFileName
-					downloader.MoveTempFileToLocal(errorsLocation, .LogKey, _caseInfo)
-					sr = New kCura.Utility.GenericCsvReader(errorsLocation, True)
-					AddHandler sr.IoWarningEvent, AddressOf Me.IoWarningHandler
-					Dim line As String() = sr.ReadLine
-					While Not line Is Nothing
-						_errorCount += 1
-						Dim originalIndex As Int64 = Int64.Parse(line(0))
-						Dim ht As New System.Collections.Hashtable
-						ht.Add("Line Number", Int32.Parse(line(0)))
-						ht.Add("DocumentID", line(1))
-						ht.Add("FileID", line(2))
-						Dim errorMessages As String = line(3)
-						If _verboseErrorCollection.ContainsLine(originalIndex) Then
-							Dim sb As New System.Text.StringBuilder
-							For Each message As String In _verboseErrorCollection(originalIndex)
-								sb.Append(Relativity.MassImport.ImportStatusHelper.ConvertToMessageLineInCell(message))
-							Next
-							errorMessages = sb.ToString.TrimEnd(ChrW(10))
-						End If
-						ht.Add("Message", errorMessages)
-						RaiseReportError(ht, Int32.Parse(line(0)), line(2), "server")
-						'TODO: track stats
-						RaiseEvent StatusMessage(New kCura.Windows.Process.StatusEventArgs(Windows.Process.EventType.Error, Int32.Parse(line(0)) - 1, _fileLineCount, "[Line " & line(0) & "]" & errorMessages, Nothing))
-						line = sr.ReadLine
-					End While
-					sr.Close()
-					Dim tmp As String = System.IO.Path.GetTempFileName
-					downloader.MoveTempFileToLocal(tmp, .OpticonKey, _caseInfo)
-					w = New System.IO.StreamWriter(_errorRowsFileLocation, True, System.Text.Encoding.Default)
-					r = New System.IO.StreamReader(tmp, System.Text.Encoding.Default)
-					Dim c As Int32 = r.Read
-					While Not c = -1
-						w.Write(ChrW(c))
-						c = r.Read
-					End While
-					w.Close()
-					r.Close()
-					kCura.Utility.File.Instance.Delete(tmp)
-					RemoveHandler sr.IoWarningEvent, AddressOf Me.IoWarningHandler
+					sr = AttemptErrorFileDownload(downloader, errorsLocation, .LogKey, _caseInfo)
+
+					If sr Is Nothing Then
+						'If we're here and still have an empty response, we can at least notify
+						'the user that there was an error retrieving all errors.
+						' -Phil S. 08/13/2012
+						Const message As String = "There was an error while attempting to retrieve the errors from the server."
+
+						RaiseEvent FatalErrorEvent(message, New Exception(message))
+					Else
+						AddHandler sr.IoWarningEvent, AddressOf Me.IoWarningHandler
+						Dim line As String() = sr.ReadLine
+						While Not line Is Nothing
+							_errorCount += 1
+							Dim originalIndex As Int64 = Int64.Parse(line(0))
+							Dim ht As New System.Collections.Hashtable
+							ht.Add("Line Number", Int32.Parse(line(0)))
+							ht.Add("DocumentID", line(1))
+							ht.Add("FileID", line(2))
+							Dim errorMessages As String = line(3)
+							If _verboseErrorCollection.ContainsLine(originalIndex) Then
+								Dim sb As New System.Text.StringBuilder
+								For Each message As String In _verboseErrorCollection(originalIndex)
+									sb.Append(Relativity.MassImport.ImportStatusHelper.ConvertToMessageLineInCell(message))
+								Next
+								errorMessages = sb.ToString.TrimEnd(ChrW(10))
+							End If
+							ht.Add("Message", errorMessages)
+							RaiseReportError(ht, Int32.Parse(line(0)), line(2), "server")
+							'TODO: track stats
+							RaiseEvent StatusMessage(New kCura.Windows.Process.StatusEventArgs(Windows.Process.EventType.Error, Int32.Parse(line(0)) - 1, _fileLineCount, "[Line " & line(0) & "]" & errorMessages, Nothing))
+							line = sr.ReadLine
+						End While
+						sr.Close()
+						Dim tmp As String = System.IO.Path.GetTempFileName
+						downloader.MoveTempFileToLocal(tmp, .OpticonKey, _caseInfo)
+						w = New System.IO.StreamWriter(_errorRowsFileLocation, True, System.Text.Encoding.Default)
+						r = New System.IO.StreamReader(tmp, System.Text.Encoding.Default)
+						Dim c As Int32 = r.Read
+						While Not c = -1
+							w.Write(ChrW(c))
+							c = r.Read
+						End While
+						w.Close()
+						r.Close()
+						kCura.Utility.File.Instance.Delete(tmp)
+						RemoveHandler sr.IoWarningEvent, AddressOf Me.IoWarningHandler
+					End If
 				End With
 			Catch ex As Exception
 				Try
@@ -1037,6 +1070,32 @@ Namespace kCura.WinEDDS
 			End Try
 		End Sub
 
+		Private Function AttemptErrorFileDownload(ByVal downloader As FileDownloader, ByVal errorFileOutputPath As String, ByVal logKey As String, ByVal caseInfo As CaseInfo) As kCura.Utility.GenericCsvReader
+			Dim triesLeft As Integer = 3
+			Dim sr As kCura.Utility.GenericCsvReader = Nothing
+
+			While triesLeft > 0
+				downloader.MoveTempFileToLocal(errorFileOutputPath, logKey, caseInfo, False)
+				sr = New kCura.Utility.GenericCsvReader(errorFileOutputPath, True)
+				Dim firstChar As Int32 = sr.Peek()
+
+				If firstChar = -1 Then
+					'Try again--assuming an empty error file is invalid, try the download one more time. The motivation
+					' behind the retry is a rare SQL error that caused the DownloadHandler (used by the supplied instance
+					' of FileDownloader) to return an empty response.
+					' -Phil S. 08/13/2012
+					triesLeft -= 1
+					sr.Close()
+
+					sr = Nothing
+				Else
+					Exit While
+				End If
+			End While
+
+			downloader.RemoveRemoteTempFile(logKey, caseInfo)
+			Return sr
+		End Function
 
 		Private Sub _processController_ExportServerErrorsEvent(ByVal exportLocation As String) Handles _processController.ExportServerErrorsEvent
 			Dim rootFileName As String = _filePath

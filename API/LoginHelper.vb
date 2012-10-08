@@ -4,7 +4,6 @@
 		Public Shared Function LoginWindowsAuth(ByVal cookieContainer As System.Net.CookieContainer) As System.Net.NetworkCredential
 			If cookieContainer Is Nothing Then Throw New ArgumentException("Cookie container not set")
 			Dim myHttpWebRequest As System.Net.HttpWebRequest
-			Dim myHttpWebResponse As System.Net.HttpWebResponse
 			Dim cred As System.Net.NetworkCredential
 			Dim relativityManager As kCura.WinEDDS.Service.RelativityManager
 
@@ -13,7 +12,6 @@
 			Dim requestURIString As String = kCura.WinEDDS.Config.WebServiceURL & "RelativityManager.asmx"
 			myHttpWebRequest = DirectCast(System.Net.WebRequest.Create(requestURIString), System.Net.HttpWebRequest)
 			myHttpWebRequest.Credentials = cred
-			myHttpWebResponse = DirectCast(myHttpWebRequest.GetResponse(), System.Net.HttpWebResponse)
 			relativityManager = New kCura.WinEDDS.Service.RelativityManager(cred, cookieContainer)
 
 			If relativityManager.ValidateSuccesfulLogin Then

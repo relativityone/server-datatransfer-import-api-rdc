@@ -39,6 +39,9 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
+		Public Property MaximumErrorCount As Int32?
+
+		Public Property SkipExtractedTextEncodingCheck As Boolean?
 
 		Protected Overrides Sub Execute()
 			_startTime = DateTime.Now
@@ -52,6 +55,15 @@ Namespace kCura.WinEDDS
 			_imageFileImporter.DisableUserSecurityCheck = _disableUserSecurityCheck
 			_imageFileImporter.AuditLevel = _importAuditLevel
 
+			If MaximumErrorCount.HasValue AndAlso MaximumErrorCount.Value > 0 AndAlso MaximumErrorCount.Value < Int32.MaxValue Then
+				'The '+1' is because the 'MaxNumberOfErrorsInGrid' is actually 1 more (because the
+				' final error is simply 'Maximum # of errors' error) than the *actual* maximum, but
+				' we don't want to change BulkImageFileImporter's behavior.
+				' -Phil S. 07/10/2012
+				_imageFileImporter.MaxNumberOfErrorsInGrid = MaximumErrorCount.Value + 1
+			End If
+
+			_imageFileImporter.SkipExtractedTextEncodingCheck = SkipExtractedTextEncodingCheck.GetValueOrDefault(False)
 			_imageFileImporter.ReadFile(ImageLoadFile.FileName)
 			If Not _hasRunProcessComplete Then
 				Dim exportFilePath As String = ""

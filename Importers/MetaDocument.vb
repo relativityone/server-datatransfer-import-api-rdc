@@ -1,3 +1,5 @@
+Imports kCura.WinEDDS.Api
+
 Namespace kCura.WinEDDS
 	Public Class MetaDocument
 		Private _fileGuid As String
@@ -152,5 +154,45 @@ Namespace kCura.WinEDDS
 			_lineStatus = lineStatus
 			_destinationVolume = destinationVolume
 		End Sub
+
+		Public Function GetFileType() As String
+			Dim type As String
+			If FileIdData Is Nothing Then
+				type = "Unknown format"
+			Else
+				type = FileIdData.FileType
+			End If
+			Return type
+		End Function
+	End Class
+
+	Public Class SizedMetaDocument
+		Inherits MetaDocument
+		Implements IHasFileSize
+
+		Private _size As Long
+
+		Public Sub New( _
+		 ByVal fileGuid As String, _
+		 ByVal identityValue As String, _
+		 ByVal indexFileInDB As Boolean, _
+		 ByVal filename As String, _
+		 ByVal fullFilePath As String, _
+		 ByVal uploadFile As Boolean, _
+		 ByVal lineNumber As Int32, _
+		 ByVal parentFolderID As Int32, _
+		 ByVal record As Api.ArtifactFieldCollection, _
+		 ByVal oixFileData As OI.FileID.FileIDData, _
+		 ByVal lineStatus As Int32, _
+		 ByVal destinationVolume As String, _
+		 ByVal size As Long _
+		 )
+			MyBase.New(fileGuid, identityValue, indexFileInDB, filename, fullFilePath, uploadFile, lineNumber, parentFolderID, record, oixFileData, lineStatus, destinationVolume)
+			_size = size
+		End Sub
+
+		Public Function GetFileSize() As Long Implements IHasFileSize.GetFileSize
+			Return _size
+		End Function
 	End Class
 End Namespace

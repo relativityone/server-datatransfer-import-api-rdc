@@ -50,10 +50,10 @@ Namespace kCura.WinEDDS
 		''' <param name="returnEncodingOnly"></param>
 		''' <returns>Returns System.Text.Encoding.UTF8, Unicode, or BigEndianUnicode if the BOM is found and Nothing otherwise.</returns>
 		''' <remarks></remarks>
-		Public Shared Function DetectEncoding(ByVal filename As String, ByVal returnEncodingOnly As Boolean) As DeterminedEncodingStream
+		Public Shared Function DetectEncoding(ByVal filename As String, ByVal returnEncodingOnly As Boolean, ByVal performFileExistsCheck As Boolean) As DeterminedEncodingStream
 			Dim enc As System.Text.Encoding = Nothing
 			Dim filein As System.IO.FileStream = Nothing
-			If System.IO.File.Exists(filename) Then
+			If Not performFileExistsCheck OrElse (performFileExistsCheck AndAlso System.IO.File.Exists(filename)) Then
 				filein = New System.IO.FileStream(filename, IO.FileMode.Open, IO.FileAccess.Read)
 				If (filein.CanSeek) Then
 					Dim bom(4) As Byte
@@ -91,6 +91,17 @@ Namespace kCura.WinEDDS
 			Else
 				Return New DeterminedEncodingStream(filein, enc)
 			End If
+		End Function
+
+		''' <summary>
+		''' Attempts to determine the encoding for a file by detecting the Byte Order Mark (BOM).
+		''' </summary>
+		''' <param name="filename"></param>
+		''' <param name="returnEncodingOnly"></param>
+		''' <returns>Returns System.Text.Encoding.UTF8, Unicode, or BigEndianUnicode if the BOM is found and Nothing otherwise.</returns>
+		''' <remarks></remarks>
+		Public Shared Function DetectEncoding(ByVal filename As String, ByVal returnEncodingOnly As Boolean) As DeterminedEncodingStream
+			Return DetectEncoding(filename, returnEncodingOnly, True)
 		End Function
 	End Class
 

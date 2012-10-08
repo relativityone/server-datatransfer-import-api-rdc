@@ -25,6 +25,29 @@
           </s:sequence>
         </s:complexType>
       </s:element>
+      <s:element name="RetrieveTextIdentifierOfMappedObject">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="artifactId" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="artifactTypeID" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="RetrieveTextIdentifierOfMappedObjectResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="RetrieveTextIdentifierOfMappedObjectResult">
+              <s:complexType>
+                <s:sequence>
+                  <s:element ref="s:schema" />
+                  <s:any />
+                </s:sequence>
+              </s:complexType>
+            </s:element>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
       <s:element name="RetrieveArtifactIdOfMappedParentObject">
         <s:complexType>
           <s:sequence>
@@ -85,6 +108,12 @@
   <wsdl:message name="RetrieveArtifactIdOfMappedObjectSoapOut">
     <wsdl:part name="parameters" element="tns:RetrieveArtifactIdOfMappedObjectResponse" />
   </wsdl:message>
+  <wsdl:message name="RetrieveTextIdentifierOfMappedObjectSoapIn">
+    <wsdl:part name="parameters" element="tns:RetrieveTextIdentifierOfMappedObject" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveTextIdentifierOfMappedObjectSoapOut">
+    <wsdl:part name="parameters" element="tns:RetrieveTextIdentifierOfMappedObjectResponse" />
+  </wsdl:message>
   <wsdl:message name="RetrieveArtifactIdOfMappedParentObjectSoapIn">
     <wsdl:part name="parameters" element="tns:RetrieveArtifactIdOfMappedParentObject" />
   </wsdl:message>
@@ -102,6 +131,10 @@
       <wsdl:input message="tns:RetrieveArtifactIdOfMappedObjectSoapIn" />
       <wsdl:output message="tns:RetrieveArtifactIdOfMappedObjectSoapOut" />
     </wsdl:operation>
+    <wsdl:operation name="RetrieveTextIdentifierOfMappedObject">
+      <wsdl:input message="tns:RetrieveTextIdentifierOfMappedObjectSoapIn" />
+      <wsdl:output message="tns:RetrieveTextIdentifierOfMappedObjectSoapOut" />
+    </wsdl:operation>
     <wsdl:operation name="RetrieveArtifactIdOfMappedParentObject">
       <wsdl:input message="tns:RetrieveArtifactIdOfMappedParentObjectSoapIn" />
       <wsdl:output message="tns:RetrieveArtifactIdOfMappedParentObjectSoapOut" />
@@ -115,6 +148,15 @@
     <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
     <wsdl:operation name="RetrieveArtifactIdOfMappedObject">
       <soap:operation soapAction="http://www.kCura.com/EDDS/ObjectManager/RetrieveArtifactIdOfMappedObject" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveTextIdentifierOfMappedObject">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/ObjectManager/RetrieveTextIdentifierOfMappedObject" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -145,6 +187,15 @@
     <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
     <wsdl:operation name="RetrieveArtifactIdOfMappedObject">
       <soap12:operation soapAction="http://www.kCura.com/EDDS/ObjectManager/RetrieveArtifactIdOfMappedObject" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveTextIdentifierOfMappedObject">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/ObjectManager/RetrieveTextIdentifierOfMappedObject" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>

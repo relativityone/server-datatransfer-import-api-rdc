@@ -1,3 +1,5 @@
+Imports System.Collections.Generic
+
 Namespace kCura.WinEDDS
 	Public Class DynamicObjectSettingsFactory
 
@@ -52,6 +54,7 @@ Namespace kCura.WinEDDS
 			_loadFile.SelectedCasePath = _loadFile.CaseInfo.DocumentPath
 			_loadFile.SelectedIdentifierField = _docFields.IdentifierFields(0)
 			_loadFile.StartLineNumber = 0
+			_loadFile.ObjectFieldIdListContainsArtifactId = Nothing
 		End Sub
 
 
@@ -227,6 +230,12 @@ Namespace kCura.WinEDDS
 		Public WriteOnly Property StartLineNumber() As Int64
 			Set(value As Int64)
 				_loadFile.StartLineNumber = value
+			End Set
+		End Property
+
+		Public WriteOnly Property ObjectFieldIdListContainsArtifactId As IList(Of Int32)
+			Set(ByVal Value As IList(Of Int32))
+				_loadFile.ObjectFieldIdListContainsArtifactId = Value
 			End Set
 		End Property
 

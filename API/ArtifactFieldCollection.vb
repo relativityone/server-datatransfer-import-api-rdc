@@ -1,41 +1,96 @@
 Namespace kCura.WinEDDS.Api
 	Public Class ArtifactFieldCollection
-		Implements ICollection
-		Private _orderedList As New System.Collections.ArrayList
+		Implements System.Collections.Generic.ICollection(Of ArtifactField)
+		Private _orderedList As New System.Collections.Generic.List(Of ArtifactField)
 		Private _idLookup As New System.Collections.Hashtable
 		Private _nameLookup As New System.Collections.Hashtable
 		Private _typeLookup As New System.Collections.Hashtable
 		Private _categoryLookup As New System.Collections.Hashtable
 		Private _identifierField As ArtifactField
 		Private _fileField As ArtifactField
+		Private _outOfOrder As Boolean = True
 
+
+		Private Sub EnsureSortTheList()
+			If _outOfOrder Then
+				_orderedList.Sort(New ArtifactFieldNameComparer)
+				_outOfOrder = False
+			End If
+		End Sub
 #Region " ICollection Virtual Method Implementation "
-
-		Public Sub CopyTo(ByVal array As System.Array, ByVal index As Integer) Implements System.Collections.ICollection.CopyTo
-			_orderedList.CopyTo(array, index)
+		Public Sub Add1(item As ArtifactField) Implements System.Collections.Generic.ICollection(Of ArtifactField).Add
+			Me.Add(item)
 		End Sub
 
-		Public ReadOnly Property Count() As Integer Implements System.Collections.ICollection.Count
+		Public Sub Clear() Implements System.Collections.Generic.ICollection(Of ArtifactField).Clear
+			_orderedList.Clear()
+			_idLookup.Clear()
+			_nameLookup.Clear()
+			_typeLookup.Clear()
+			_categoryLookup.Clear()
+		End Sub
+
+		Public Function Contains(item As ArtifactField) As Boolean Implements System.Collections.Generic.ICollection(Of ArtifactField).Contains
+			Return _orderedList.Contains(item)
+		End Function
+
+		Public Sub CopyTo(array() As ArtifactField, arrayIndex As Integer) Implements System.Collections.Generic.ICollection(Of ArtifactField).CopyTo
+			Me.EnsureSortTheList()
+			_orderedList.CopyTo(array, arrayIndex)
+		End Sub
+
+		Public ReadOnly Property Count As Integer Implements System.Collections.Generic.ICollection(Of ArtifactField).Count
 			Get
 				Return _orderedList.Count
 			End Get
 		End Property
 
-		Public ReadOnly Property IsSynchronized() As Boolean Implements System.Collections.ICollection.IsSynchronized
+		Public ReadOnly Property IsReadOnly As Boolean Implements System.Collections.Generic.ICollection(Of ArtifactField).IsReadOnly
 			Get
-				Return _orderedList.IsSynchronized
+				Return False
 			End Get
 		End Property
 
-		Public ReadOnly Property SyncRoot() As Object Implements System.Collections.ICollection.SyncRoot
-			Get
-				Return _orderedList.SyncRoot
-			End Get
-		End Property
+		Public Function Remove(item As ArtifactField) As Boolean Implements System.Collections.Generic.ICollection(Of ArtifactField).Remove
+			Dim retval As Boolean = _orderedList.Remove(item)
+			_outOfOrder = True
+			Return retval
+		End Function
 
-		Public Function GetEnumerator() As System.Collections.IEnumerator Implements System.Collections.IEnumerable.GetEnumerator
+		Public Function GetEnumerator() As System.Collections.Generic.IEnumerator(Of ArtifactField) Implements System.Collections.Generic.IEnumerable(Of ArtifactField).GetEnumerator
+			Me.EnsureSortTheList()
 			Return _orderedList.GetEnumerator
 		End Function
+
+		Public Function GetEnumerator1() As System.Collections.IEnumerator Implements System.Collections.IEnumerable.GetEnumerator
+			Me.EnsureSortTheList()
+			Return _orderedList.GetEnumerator
+		End Function
+		'Public Sub CopyTo(ByVal array As System.Array, ByVal index As Integer) Implements System.Collections.ICollection.CopyTo
+		'	_orderedList.CopyTo(array, index)
+		'End Sub
+
+		'Public ReadOnly Property Count() As Integer Implements System.Collections.ICollection.Count
+		'	Get
+		'		Return _orderedList.Count
+		'	End Get
+		'End Property
+
+		'Public ReadOnly Property IsSynchronized() As Boolean Implements System.Collections.ICollection.IsSynchronized
+		'	Get
+		'		Return _orderedList.IsSynchronized
+		'	End Get
+		'End Property
+
+		'Public ReadOnly Property SyncRoot() As Object Implements System.Collections.ICollection.SyncRoot
+		'	Get
+		'		Return _orderedList.SyncRoot
+		'	End Get
+		'End Property
+
+		'Public Function GetEnumerator() As System.Collections.IEnumerator Implements System.Collections.IEnumerable.GetEnumerator
+		'	Return _orderedList.GetEnumerator
+		'End Function
 
 #End Region
 
@@ -89,6 +144,7 @@ Namespace kCura.WinEDDS.Api
 
 		Public Sub Add(ByVal field As ArtifactField)
 			_orderedList.Add(field)
+			_outOfOrder = True
 			_idLookup.Add(field.ArtifactID, field)
 			_nameLookup.Add(field.DisplayName, field)
 			If field.Category = Relativity.FieldCategory.Identifier Then _identifierField = field
@@ -97,7 +153,6 @@ Namespace kCura.WinEDDS.Api
 			DirectCast(_categoryLookup(field.Category), System.Collections.ArrayList).Add(field)
 			If Not _typeLookup.ContainsKey(field.Type) Then _typeLookup.Add(field.Type, New System.Collections.ArrayList)
 			DirectCast(_typeLookup(field.Type), System.Collections.ArrayList).Add(field)
-			_orderedList.Sort(New ArtifactFieldNameComparer)
 		End Sub
 
 		Public Sub AddRange(ByVal fields As IEnumerable)
@@ -107,12 +162,14 @@ Namespace kCura.WinEDDS.Api
 		End Sub
 
 		Private Class ArtifactFieldNameComparer
-			Implements System.Collections.IComparer
-			Public Function Compare(ByVal x As Object, ByVal y As Object) As Integer Implements System.Collections.IComparer.Compare
-				Return System.String.Compare(DirectCast(x, ArtifactField).DisplayName, DirectCast(y, ArtifactField).DisplayName)
+			Implements System.Collections.Generic.IComparer(Of ArtifactField)
+
+			Public Function Compare1(x As ArtifactField, y As ArtifactField) As Integer Implements System.Collections.Generic.IComparer(Of ArtifactField).Compare
+				Return System.String.Compare(x.DisplayName, y.DisplayName)
 			End Function
 		End Class
 #End Region
+
 
 
 	End Class
