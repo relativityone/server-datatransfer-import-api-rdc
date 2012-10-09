@@ -1257,20 +1257,20 @@ Public Class ExportForm
 		Select Case Me.ExportFile.TypeOfExport
 			Case ExportFile.ExportType.AncestorSearch
 				_exportFile.ViewID = CType(_filters.SelectedValue, Int32)
-				_exportFile.LoadFilesPrefix = System.Security.SecurityElement.Escape(DirectCast(_filters.SelectedItem, System.Data.DataRowView)(_filters.DisplayMember).ToString)
+				_exportFile.LoadFilesPrefix = DirectCast(_filters.SelectedItem, System.Data.DataRowView)(_filters.DisplayMember).ToString
 			Case ExportFile.ExportType.ArtifactSearch
 				_exportFile.ArtifactID = CType(_filters.SelectedValue, Int32)
 				If Not _application.IsAssociatedSearchProviderAccessible(_exportFile.CaseArtifactID, _exportFile.ArtifactID) Then
 					Me.Cursor = System.Windows.Forms.Cursors.Default
 					Return Nothing
 				End If
-				_exportFile.LoadFilesPrefix = System.Security.SecurityElement.Escape(DirectCast(_filters.SelectedItem, System.Data.DataRowView)(_filters.DisplayMember).ToString)
+				_exportFile.LoadFilesPrefix = DirectCast(_filters.SelectedItem, System.Data.DataRowView)(_filters.DisplayMember).ToString
 			Case ExportFile.ExportType.ParentSearch
 				_exportFile.ViewID = CType(_filters.SelectedValue, Int32)
-				_exportFile.LoadFilesPrefix = System.Security.SecurityElement.Escape(DirectCast(_filters.SelectedItem, System.Data.DataRowView)(_filters.DisplayMember).ToString)
+				_exportFile.LoadFilesPrefix = DirectCast(_filters.SelectedItem, System.Data.DataRowView)(_filters.DisplayMember).ToString
 			Case ExportFile.ExportType.Production
 				_exportFile.ArtifactID = CType(_filters.SelectedValue, Int32)
-				_exportFile.LoadFilesPrefix = System.Security.SecurityElement.Escape(DirectCast(_filters.SelectedItem, System.Data.DataRowView)(_filters.DisplayMember).ToString)
+				_exportFile.LoadFilesPrefix = DirectCast(_filters.SelectedItem, System.Data.DataRowView)(_filters.DisplayMember).ToString
 				If _nativeFileNameSource.SelectedItem.ToString.ToLower = "identifier" Then
 					_exportFile.ExportNativesToFileNamedFrom = ExportNativeWithFilenameFrom.Identifier
 				Else
