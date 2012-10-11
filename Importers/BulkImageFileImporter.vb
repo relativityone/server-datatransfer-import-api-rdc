@@ -182,7 +182,8 @@ Namespace kCura.WinEDDS
 			Else
 				_repositoryPath = args.SelectedCasePath.TrimEnd("\"c) & suffix
 			End If
-			_textRepositoryPath = args.CaseDefaultPath & "EDDS" & args.CaseInfo.ArtifactID & "\"
+			Dim lastHalfPath As String = "EDDS" & args.CaseInfo.ArtifactID & "\"
+			_textRepositoryPath = Path.Combine(args.CaseDefaultPath, lastHalfPath)
 			InitializeUploaders(args)
 			_folderID = folderID
 			_productionArtifactID = args.ProductionArtifactID
