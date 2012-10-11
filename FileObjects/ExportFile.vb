@@ -460,7 +460,7 @@ Namespace kCura.WinEDDS
 
 		Public Sub GetObjectData(ByVal info As System.Runtime.Serialization.SerializationInfo, ByVal context As System.Runtime.Serialization.StreamingContext) Implements System.Runtime.Serialization.ISerializable.GetObjectData
 			info.AddValue("ArtifactID", Me.ArtifactID, GetType(Int32))
-			info.AddValue("LoadFilesPrefix", Me.LoadFilesPrefix, GetType(Int32))
+			info.AddValue("LoadFilesPrefix", System.Web.HttpUtility.HtmlEncode(Me.LoadFilesPrefix), GetType(String))
 			info.AddValue("NestedValueDelimiter", AscW(Me.NestedValueDelimiter), GetType(Int32))
 			info.AddValue("TypeOfExport", CInt(Me.TypeOfExport), GetType(Int32))
 			info.AddValue("FolderPath", Me.FolderPath, GetType(String))
@@ -496,11 +496,11 @@ Namespace kCura.WinEDDS
 			info.AddValue("SelectedViewFields", Me.SelectedViewFields, GetType(kCura.WinEDDS.ViewFieldInfo()))
 			info.AddValue("ObjectTypeName", Me.ObjectTypeName, GetType(String))
 		End Sub
-		'
-		Private Sub New(ByVal info As System.Runtime.Serialization.SerializationInfo, ByVal Context As System.Runtime.Serialization.StreamingContext)
+
+		Private Sub New(ByVal info As System.Runtime.Serialization.SerializationInfo, ByVal context As System.Runtime.Serialization.StreamingContext)
 			With info
 				Me.ArtifactID = info.GetInt32("ArtifactID")
-				Me.LoadFilesPrefix = info.GetString("LoadFilesPrefix")
+				Me.LoadFilesPrefix = System.Web.HttpUtility.HtmlDecode(info.GetString("LoadFilesPrefix"))
 				Me.NestedValueDelimiter = ChrW(info.GetInt32("NestedValueDelimiter"))
 				Me.TypeOfExport = CType(info.GetInt32("TypeOfExport"), kCura.WinEDDS.ExportFile.ExportType)
 				Me.FolderPath = info.GetString("FolderPath")
