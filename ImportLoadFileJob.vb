@@ -22,6 +22,7 @@ Namespace kCura.Relativity.DataReaderClient
 		Private _credentials As ICredentials
 		Private _cookieMonster As Net.CookieContainer
 
+
 #End Region
 
 #Region "Constructors"
@@ -93,13 +94,17 @@ Namespace kCura.Relativity.DataReaderClient
 				process.SkipExtractedTextEncodingCheck = Settings.DisableExtractedTextEncodingCheck
 				process.DisableExtractedTextFileLocationValidation = Settings.DisableExtractedTextFileLocationValidation
 				process.OIFileIdColumnName = Settings.OIFileIdColumnName
+				If (Not String.IsNullOrEmpty(Settings.BulkLoadFileFieldDelimiter)) Then
+					process.BulkLoadFileFieldDelimiter = Settings.BulkLoadFileFieldDelimiter
+				Else
+					process.BulkLoadFileFieldDelimiter = _bulkLoadFileFieldDelimiter
+				End If
 				process.OIFileIdMapped = Settings.OIFileIdMapped
 				process.OIFileTypeColumnName = Settings.OIFileTypeColumnName
 				process.FileSizeMapped = Settings.FileSizeMapped
 				process.FileSizeColumn = Settings.FileSizeColumn
 				RaiseEvent OnMessage(New Status("Updating settings"))
 				process.LoadFile = CreateLoadFile(Settings)
-				process.BulkLoadFileFieldDelimiter = _bulkLoadFileFieldDelimiter
 
 				RaiseEvent OnMessage(New Status("Executing"))
 				Try
