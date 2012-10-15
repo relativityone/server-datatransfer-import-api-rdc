@@ -160,18 +160,6 @@
           </s:sequence>
         </s:complexType>
       </s:element>
-      <s:element name="DataSet" nillable="true">
-        <s:complexType>
-          <s:sequence>
-            <s:element ref="s:schema" />
-            <s:any />
-          </s:sequence>
-        </s:complexType>
-      </s:element>
-      <s:element name="boolean" type="s:boolean" />
-      <s:element name="CaseInfo" nillable="true" type="tns:CaseInfo" />
-      <s:element name="string" nillable="true" type="s:string" />
-      <s:element name="ArrayOfString" nillable="true" type="tns:ArrayOfString" />
     </s:schema>
   </wsdl:types>
   <wsdl:message name="RetrieveAllSoapIn">
@@ -228,70 +216,6 @@
   <wsdl:message name="GetAllDocumentFolderPathsSoapOut">
     <wsdl:part name="parameters" element="tns:GetAllDocumentFolderPathsResponse" />
   </wsdl:message>
-  <wsdl:message name="RetrieveAllHttpGetIn" />
-  <wsdl:message name="RetrieveAllHttpGetOut">
-    <wsdl:part name="Body" element="tns:DataSet" />
-  </wsdl:message>
-  <wsdl:message name="DeleteHttpGetIn">
-    <wsdl:part name="caseContextArtifactID" type="s:string" />
-  </wsdl:message>
-  <wsdl:message name="DeleteHttpGetOut">
-    <wsdl:part name="Body" element="tns:boolean" />
-  </wsdl:message>
-  <wsdl:message name="ReadHttpGetIn">
-    <wsdl:part name="caseContextArtifactID" type="s:string" />
-  </wsdl:message>
-  <wsdl:message name="ReadHttpGetOut">
-    <wsdl:part name="Body" element="tns:CaseInfo" />
-  </wsdl:message>
-  <wsdl:message name="RetrieveCaseDownloadURIHttpGetIn">
-    <wsdl:part name="caseContextArtifactID" type="s:string" />
-  </wsdl:message>
-  <wsdl:message name="RetrieveCaseDownloadURIHttpGetOut">
-    <wsdl:part name="Body" element="tns:string" />
-  </wsdl:message>
-  <wsdl:message name="GetAllDocumentFolderPathsForCaseHttpGetIn">
-    <wsdl:part name="caseArtifactID" type="s:string" />
-  </wsdl:message>
-  <wsdl:message name="GetAllDocumentFolderPathsForCaseHttpGetOut">
-    <wsdl:part name="Body" element="tns:ArrayOfString" />
-  </wsdl:message>
-  <wsdl:message name="GetAllDocumentFolderPathsHttpGetIn" />
-  <wsdl:message name="GetAllDocumentFolderPathsHttpGetOut">
-    <wsdl:part name="Body" element="tns:ArrayOfString" />
-  </wsdl:message>
-  <wsdl:message name="RetrieveAllHttpPostIn" />
-  <wsdl:message name="RetrieveAllHttpPostOut">
-    <wsdl:part name="Body" element="tns:DataSet" />
-  </wsdl:message>
-  <wsdl:message name="DeleteHttpPostIn">
-    <wsdl:part name="caseContextArtifactID" type="s:string" />
-  </wsdl:message>
-  <wsdl:message name="DeleteHttpPostOut">
-    <wsdl:part name="Body" element="tns:boolean" />
-  </wsdl:message>
-  <wsdl:message name="ReadHttpPostIn">
-    <wsdl:part name="caseContextArtifactID" type="s:string" />
-  </wsdl:message>
-  <wsdl:message name="ReadHttpPostOut">
-    <wsdl:part name="Body" element="tns:CaseInfo" />
-  </wsdl:message>
-  <wsdl:message name="RetrieveCaseDownloadURIHttpPostIn">
-    <wsdl:part name="caseContextArtifactID" type="s:string" />
-  </wsdl:message>
-  <wsdl:message name="RetrieveCaseDownloadURIHttpPostOut">
-    <wsdl:part name="Body" element="tns:string" />
-  </wsdl:message>
-  <wsdl:message name="GetAllDocumentFolderPathsForCaseHttpPostIn">
-    <wsdl:part name="caseArtifactID" type="s:string" />
-  </wsdl:message>
-  <wsdl:message name="GetAllDocumentFolderPathsForCaseHttpPostOut">
-    <wsdl:part name="Body" element="tns:ArrayOfString" />
-  </wsdl:message>
-  <wsdl:message name="GetAllDocumentFolderPathsHttpPostIn" />
-  <wsdl:message name="GetAllDocumentFolderPathsHttpPostOut">
-    <wsdl:part name="Body" element="tns:ArrayOfString" />
-  </wsdl:message>
   <wsdl:portType name="CaseManagerSoap">
     <wsdl:operation name="RetrieveAll">
       <wsdl:input message="tns:RetrieveAllSoapIn" />
@@ -328,58 +252,6 @@
     <wsdl:operation name="GetAllDocumentFolderPaths">
       <wsdl:input message="tns:GetAllDocumentFolderPathsSoapIn" />
       <wsdl:output message="tns:GetAllDocumentFolderPathsSoapOut" />
-    </wsdl:operation>
-  </wsdl:portType>
-  <wsdl:portType name="CaseManagerHttpGet">
-    <wsdl:operation name="RetrieveAll">
-      <wsdl:input message="tns:RetrieveAllHttpGetIn" />
-      <wsdl:output message="tns:RetrieveAllHttpGetOut" />
-    </wsdl:operation>
-    <wsdl:operation name="Delete">
-      <wsdl:input message="tns:DeleteHttpGetIn" />
-      <wsdl:output message="tns:DeleteHttpGetOut" />
-    </wsdl:operation>
-    <wsdl:operation name="Read">
-      <wsdl:input message="tns:ReadHttpGetIn" />
-      <wsdl:output message="tns:ReadHttpGetOut" />
-    </wsdl:operation>
-    <wsdl:operation name="RetrieveCaseDownloadURI">
-      <wsdl:input message="tns:RetrieveCaseDownloadURIHttpGetIn" />
-      <wsdl:output message="tns:RetrieveCaseDownloadURIHttpGetOut" />
-    </wsdl:operation>
-    <wsdl:operation name="GetAllDocumentFolderPathsForCase">
-      <wsdl:input message="tns:GetAllDocumentFolderPathsForCaseHttpGetIn" />
-      <wsdl:output message="tns:GetAllDocumentFolderPathsForCaseHttpGetOut" />
-    </wsdl:operation>
-    <wsdl:operation name="GetAllDocumentFolderPaths">
-      <wsdl:input message="tns:GetAllDocumentFolderPathsHttpGetIn" />
-      <wsdl:output message="tns:GetAllDocumentFolderPathsHttpGetOut" />
-    </wsdl:operation>
-  </wsdl:portType>
-  <wsdl:portType name="CaseManagerHttpPost">
-    <wsdl:operation name="RetrieveAll">
-      <wsdl:input message="tns:RetrieveAllHttpPostIn" />
-      <wsdl:output message="tns:RetrieveAllHttpPostOut" />
-    </wsdl:operation>
-    <wsdl:operation name="Delete">
-      <wsdl:input message="tns:DeleteHttpPostIn" />
-      <wsdl:output message="tns:DeleteHttpPostOut" />
-    </wsdl:operation>
-    <wsdl:operation name="Read">
-      <wsdl:input message="tns:ReadHttpPostIn" />
-      <wsdl:output message="tns:ReadHttpPostOut" />
-    </wsdl:operation>
-    <wsdl:operation name="RetrieveCaseDownloadURI">
-      <wsdl:input message="tns:RetrieveCaseDownloadURIHttpPostIn" />
-      <wsdl:output message="tns:RetrieveCaseDownloadURIHttpPostOut" />
-    </wsdl:operation>
-    <wsdl:operation name="GetAllDocumentFolderPathsForCase">
-      <wsdl:input message="tns:GetAllDocumentFolderPathsForCaseHttpPostIn" />
-      <wsdl:output message="tns:GetAllDocumentFolderPathsForCaseHttpPostOut" />
-    </wsdl:operation>
-    <wsdl:operation name="GetAllDocumentFolderPaths">
-      <wsdl:input message="tns:GetAllDocumentFolderPathsHttpPostIn" />
-      <wsdl:output message="tns:GetAllDocumentFolderPathsHttpPostOut" />
     </wsdl:operation>
   </wsdl:portType>
   <wsdl:binding name="CaseManagerSoap" type="tns:CaseManagerSoap">
@@ -550,132 +422,12 @@
       </wsdl:output>
     </wsdl:operation>
   </wsdl:binding>
-  <wsdl:binding name="CaseManagerHttpGet" type="tns:CaseManagerHttpGet">
-    <http:binding verb="GET" />
-    <wsdl:operation name="RetrieveAll">
-      <http:operation location="/RetrieveAll" />
-      <wsdl:input>
-        <http:urlEncoded />
-      </wsdl:input>
-      <wsdl:output>
-        <mime:mimeXml part="Body" />
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="Delete">
-      <http:operation location="/Delete" />
-      <wsdl:input>
-        <http:urlEncoded />
-      </wsdl:input>
-      <wsdl:output>
-        <mime:mimeXml part="Body" />
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="Read">
-      <http:operation location="/Read" />
-      <wsdl:input>
-        <http:urlEncoded />
-      </wsdl:input>
-      <wsdl:output>
-        <mime:mimeXml part="Body" />
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="RetrieveCaseDownloadURI">
-      <http:operation location="/RetrieveCaseDownloadURI" />
-      <wsdl:input>
-        <http:urlEncoded />
-      </wsdl:input>
-      <wsdl:output>
-        <mime:mimeXml part="Body" />
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="GetAllDocumentFolderPathsForCase">
-      <http:operation location="/GetAllDocumentFolderPathsForCase" />
-      <wsdl:input>
-        <http:urlEncoded />
-      </wsdl:input>
-      <wsdl:output>
-        <mime:mimeXml part="Body" />
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="GetAllDocumentFolderPaths">
-      <http:operation location="/GetAllDocumentFolderPaths" />
-      <wsdl:input>
-        <http:urlEncoded />
-      </wsdl:input>
-      <wsdl:output>
-        <mime:mimeXml part="Body" />
-      </wsdl:output>
-    </wsdl:operation>
-  </wsdl:binding>
-  <wsdl:binding name="CaseManagerHttpPost" type="tns:CaseManagerHttpPost">
-    <http:binding verb="POST" />
-    <wsdl:operation name="RetrieveAll">
-      <http:operation location="/RetrieveAll" />
-      <wsdl:input>
-        <mime:content type="application/x-www-form-urlencoded" />
-      </wsdl:input>
-      <wsdl:output>
-        <mime:mimeXml part="Body" />
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="Delete">
-      <http:operation location="/Delete" />
-      <wsdl:input>
-        <mime:content type="application/x-www-form-urlencoded" />
-      </wsdl:input>
-      <wsdl:output>
-        <mime:mimeXml part="Body" />
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="Read">
-      <http:operation location="/Read" />
-      <wsdl:input>
-        <mime:content type="application/x-www-form-urlencoded" />
-      </wsdl:input>
-      <wsdl:output>
-        <mime:mimeXml part="Body" />
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="RetrieveCaseDownloadURI">
-      <http:operation location="/RetrieveCaseDownloadURI" />
-      <wsdl:input>
-        <mime:content type="application/x-www-form-urlencoded" />
-      </wsdl:input>
-      <wsdl:output>
-        <mime:mimeXml part="Body" />
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="GetAllDocumentFolderPathsForCase">
-      <http:operation location="/GetAllDocumentFolderPathsForCase" />
-      <wsdl:input>
-        <mime:content type="application/x-www-form-urlencoded" />
-      </wsdl:input>
-      <wsdl:output>
-        <mime:mimeXml part="Body" />
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="GetAllDocumentFolderPaths">
-      <http:operation location="/GetAllDocumentFolderPaths" />
-      <wsdl:input>
-        <mime:content type="application/x-www-form-urlencoded" />
-      </wsdl:input>
-      <wsdl:output>
-        <mime:mimeXml part="Body" />
-      </wsdl:output>
-    </wsdl:operation>
-  </wsdl:binding>
   <wsdl:service name="CaseManager">
     <wsdl:port name="CaseManagerSoap" binding="tns:CaseManagerSoap">
       <soap:address location="http://localhost/RelativityWebApi/CaseManager.asmx" />
     </wsdl:port>
     <wsdl:port name="CaseManagerSoap12" binding="tns:CaseManagerSoap12">
       <soap12:address location="http://localhost/RelativityWebApi/CaseManager.asmx" />
-    </wsdl:port>
-    <wsdl:port name="CaseManagerHttpGet" binding="tns:CaseManagerHttpGet">
-      <http:address location="http://localhost/RelativityWebApi/CaseManager.asmx" />
-    </wsdl:port>
-    <wsdl:port name="CaseManagerHttpPost" binding="tns:CaseManagerHttpPost">
-      <http:address location="http://localhost/RelativityWebApi/CaseManager.asmx" />
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>

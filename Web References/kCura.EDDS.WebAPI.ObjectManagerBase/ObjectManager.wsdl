@@ -100,14 +100,6 @@
       <s:element name="UpdateResponse">
         <s:complexType />
       </s:element>
-      <s:element name="DataSet" nillable="true">
-        <s:complexType>
-          <s:sequence>
-            <s:element ref="s:schema" />
-            <s:any />
-          </s:sequence>
-        </s:complexType>
-      </s:element>
     </s:schema>
   </wsdl:types>
   <wsdl:message name="RetrieveArtifactIdOfMappedObjectSoapIn">
@@ -134,54 +126,6 @@
   <wsdl:message name="UpdateSoapOut">
     <wsdl:part name="parameters" element="tns:UpdateResponse" />
   </wsdl:message>
-  <wsdl:message name="RetrieveArtifactIdOfMappedObjectHttpGetIn">
-    <wsdl:part name="caseContextArtifactID" type="s:string" />
-    <wsdl:part name="textIdentifier" type="s:string" />
-    <wsdl:part name="artifactTypeID" type="s:string" />
-  </wsdl:message>
-  <wsdl:message name="RetrieveArtifactIdOfMappedObjectHttpGetOut">
-    <wsdl:part name="Body" element="tns:DataSet" />
-  </wsdl:message>
-  <wsdl:message name="RetrieveTextIdentifierOfMappedObjectHttpGetIn">
-    <wsdl:part name="caseContextArtifactID" type="s:string" />
-    <wsdl:part name="artifactId" type="s:string" />
-    <wsdl:part name="artifactTypeID" type="s:string" />
-  </wsdl:message>
-  <wsdl:message name="RetrieveTextIdentifierOfMappedObjectHttpGetOut">
-    <wsdl:part name="Body" element="tns:DataSet" />
-  </wsdl:message>
-  <wsdl:message name="RetrieveArtifactIdOfMappedParentObjectHttpGetIn">
-    <wsdl:part name="caseContextArtifactID" type="s:string" />
-    <wsdl:part name="textIdentifier" type="s:string" />
-    <wsdl:part name="artifactTypeID" type="s:string" />
-  </wsdl:message>
-  <wsdl:message name="RetrieveArtifactIdOfMappedParentObjectHttpGetOut">
-    <wsdl:part name="Body" element="tns:DataSet" />
-  </wsdl:message>
-  <wsdl:message name="RetrieveArtifactIdOfMappedObjectHttpPostIn">
-    <wsdl:part name="caseContextArtifactID" type="s:string" />
-    <wsdl:part name="textIdentifier" type="s:string" />
-    <wsdl:part name="artifactTypeID" type="s:string" />
-  </wsdl:message>
-  <wsdl:message name="RetrieveArtifactIdOfMappedObjectHttpPostOut">
-    <wsdl:part name="Body" element="tns:DataSet" />
-  </wsdl:message>
-  <wsdl:message name="RetrieveTextIdentifierOfMappedObjectHttpPostIn">
-    <wsdl:part name="caseContextArtifactID" type="s:string" />
-    <wsdl:part name="artifactId" type="s:string" />
-    <wsdl:part name="artifactTypeID" type="s:string" />
-  </wsdl:message>
-  <wsdl:message name="RetrieveTextIdentifierOfMappedObjectHttpPostOut">
-    <wsdl:part name="Body" element="tns:DataSet" />
-  </wsdl:message>
-  <wsdl:message name="RetrieveArtifactIdOfMappedParentObjectHttpPostIn">
-    <wsdl:part name="caseContextArtifactID" type="s:string" />
-    <wsdl:part name="textIdentifier" type="s:string" />
-    <wsdl:part name="artifactTypeID" type="s:string" />
-  </wsdl:message>
-  <wsdl:message name="RetrieveArtifactIdOfMappedParentObjectHttpPostOut">
-    <wsdl:part name="Body" element="tns:DataSet" />
-  </wsdl:message>
   <wsdl:portType name="ObjectManagerSoap">
     <wsdl:operation name="RetrieveArtifactIdOfMappedObject">
       <wsdl:input message="tns:RetrieveArtifactIdOfMappedObjectSoapIn" />
@@ -198,34 +142,6 @@
     <wsdl:operation name="Update">
       <wsdl:input message="tns:UpdateSoapIn" />
       <wsdl:output message="tns:UpdateSoapOut" />
-    </wsdl:operation>
-  </wsdl:portType>
-  <wsdl:portType name="ObjectManagerHttpGet">
-    <wsdl:operation name="RetrieveArtifactIdOfMappedObject">
-      <wsdl:input message="tns:RetrieveArtifactIdOfMappedObjectHttpGetIn" />
-      <wsdl:output message="tns:RetrieveArtifactIdOfMappedObjectHttpGetOut" />
-    </wsdl:operation>
-    <wsdl:operation name="RetrieveTextIdentifierOfMappedObject">
-      <wsdl:input message="tns:RetrieveTextIdentifierOfMappedObjectHttpGetIn" />
-      <wsdl:output message="tns:RetrieveTextIdentifierOfMappedObjectHttpGetOut" />
-    </wsdl:operation>
-    <wsdl:operation name="RetrieveArtifactIdOfMappedParentObject">
-      <wsdl:input message="tns:RetrieveArtifactIdOfMappedParentObjectHttpGetIn" />
-      <wsdl:output message="tns:RetrieveArtifactIdOfMappedParentObjectHttpGetOut" />
-    </wsdl:operation>
-  </wsdl:portType>
-  <wsdl:portType name="ObjectManagerHttpPost">
-    <wsdl:operation name="RetrieveArtifactIdOfMappedObject">
-      <wsdl:input message="tns:RetrieveArtifactIdOfMappedObjectHttpPostIn" />
-      <wsdl:output message="tns:RetrieveArtifactIdOfMappedObjectHttpPostOut" />
-    </wsdl:operation>
-    <wsdl:operation name="RetrieveTextIdentifierOfMappedObject">
-      <wsdl:input message="tns:RetrieveTextIdentifierOfMappedObjectHttpPostIn" />
-      <wsdl:output message="tns:RetrieveTextIdentifierOfMappedObjectHttpPostOut" />
-    </wsdl:operation>
-    <wsdl:operation name="RetrieveArtifactIdOfMappedParentObject">
-      <wsdl:input message="tns:RetrieveArtifactIdOfMappedParentObjectHttpPostIn" />
-      <wsdl:output message="tns:RetrieveArtifactIdOfMappedParentObjectHttpPostOut" />
     </wsdl:operation>
   </wsdl:portType>
   <wsdl:binding name="ObjectManagerSoap" type="tns:ObjectManagerSoap">
@@ -306,78 +222,12 @@
       </wsdl:output>
     </wsdl:operation>
   </wsdl:binding>
-  <wsdl:binding name="ObjectManagerHttpGet" type="tns:ObjectManagerHttpGet">
-    <http:binding verb="GET" />
-    <wsdl:operation name="RetrieveArtifactIdOfMappedObject">
-      <http:operation location="/RetrieveArtifactIdOfMappedObject" />
-      <wsdl:input>
-        <http:urlEncoded />
-      </wsdl:input>
-      <wsdl:output>
-        <mime:mimeXml part="Body" />
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="RetrieveTextIdentifierOfMappedObject">
-      <http:operation location="/RetrieveTextIdentifierOfMappedObject" />
-      <wsdl:input>
-        <http:urlEncoded />
-      </wsdl:input>
-      <wsdl:output>
-        <mime:mimeXml part="Body" />
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="RetrieveArtifactIdOfMappedParentObject">
-      <http:operation location="/RetrieveArtifactIdOfMappedParentObject" />
-      <wsdl:input>
-        <http:urlEncoded />
-      </wsdl:input>
-      <wsdl:output>
-        <mime:mimeXml part="Body" />
-      </wsdl:output>
-    </wsdl:operation>
-  </wsdl:binding>
-  <wsdl:binding name="ObjectManagerHttpPost" type="tns:ObjectManagerHttpPost">
-    <http:binding verb="POST" />
-    <wsdl:operation name="RetrieveArtifactIdOfMappedObject">
-      <http:operation location="/RetrieveArtifactIdOfMappedObject" />
-      <wsdl:input>
-        <mime:content type="application/x-www-form-urlencoded" />
-      </wsdl:input>
-      <wsdl:output>
-        <mime:mimeXml part="Body" />
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="RetrieveTextIdentifierOfMappedObject">
-      <http:operation location="/RetrieveTextIdentifierOfMappedObject" />
-      <wsdl:input>
-        <mime:content type="application/x-www-form-urlencoded" />
-      </wsdl:input>
-      <wsdl:output>
-        <mime:mimeXml part="Body" />
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="RetrieveArtifactIdOfMappedParentObject">
-      <http:operation location="/RetrieveArtifactIdOfMappedParentObject" />
-      <wsdl:input>
-        <mime:content type="application/x-www-form-urlencoded" />
-      </wsdl:input>
-      <wsdl:output>
-        <mime:mimeXml part="Body" />
-      </wsdl:output>
-    </wsdl:operation>
-  </wsdl:binding>
   <wsdl:service name="ObjectManager">
     <wsdl:port name="ObjectManagerSoap" binding="tns:ObjectManagerSoap">
       <soap:address location="http://localhost/RelativityWebApi/ObjectManager.asmx" />
     </wsdl:port>
     <wsdl:port name="ObjectManagerSoap12" binding="tns:ObjectManagerSoap12">
       <soap12:address location="http://localhost/RelativityWebApi/ObjectManager.asmx" />
-    </wsdl:port>
-    <wsdl:port name="ObjectManagerHttpGet" binding="tns:ObjectManagerHttpGet">
-      <http:address location="http://localhost/RelativityWebApi/ObjectManager.asmx" />
-    </wsdl:port>
-    <wsdl:port name="ObjectManagerHttpPost" binding="tns:ObjectManagerHttpPost">
-      <http:address location="http://localhost/RelativityWebApi/ObjectManager.asmx" />
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>

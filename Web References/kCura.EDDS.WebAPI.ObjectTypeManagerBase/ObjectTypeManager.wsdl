@@ -45,14 +45,6 @@
           </s:sequence>
         </s:complexType>
       </s:element>
-      <s:element name="DataSet" nillable="true">
-        <s:complexType>
-          <s:sequence>
-            <s:element ref="s:schema" />
-            <s:any />
-          </s:sequence>
-        </s:complexType>
-      </s:element>
     </s:schema>
   </wsdl:types>
   <wsdl:message name="RetrieveAllUploadableSoapIn">
@@ -67,32 +59,6 @@
   <wsdl:message name="RetrieveParentArtifactTypeIDSoapOut">
     <wsdl:part name="parameters" element="tns:RetrieveParentArtifactTypeIDResponse" />
   </wsdl:message>
-  <wsdl:message name="RetrieveAllUploadableHttpGetIn">
-    <wsdl:part name="caseContextArtifactID" type="s:string" />
-  </wsdl:message>
-  <wsdl:message name="RetrieveAllUploadableHttpGetOut">
-    <wsdl:part name="Body" element="tns:DataSet" />
-  </wsdl:message>
-  <wsdl:message name="RetrieveParentArtifactTypeIDHttpGetIn">
-    <wsdl:part name="caseContextArtifactID" type="s:string" />
-    <wsdl:part name="artifactTypeID" type="s:string" />
-  </wsdl:message>
-  <wsdl:message name="RetrieveParentArtifactTypeIDHttpGetOut">
-    <wsdl:part name="Body" element="tns:DataSet" />
-  </wsdl:message>
-  <wsdl:message name="RetrieveAllUploadableHttpPostIn">
-    <wsdl:part name="caseContextArtifactID" type="s:string" />
-  </wsdl:message>
-  <wsdl:message name="RetrieveAllUploadableHttpPostOut">
-    <wsdl:part name="Body" element="tns:DataSet" />
-  </wsdl:message>
-  <wsdl:message name="RetrieveParentArtifactTypeIDHttpPostIn">
-    <wsdl:part name="caseContextArtifactID" type="s:string" />
-    <wsdl:part name="artifactTypeID" type="s:string" />
-  </wsdl:message>
-  <wsdl:message name="RetrieveParentArtifactTypeIDHttpPostOut">
-    <wsdl:part name="Body" element="tns:DataSet" />
-  </wsdl:message>
   <wsdl:portType name="ObjectTypeManagerSoap">
     <wsdl:operation name="RetrieveAllUploadable">
       <wsdl:input message="tns:RetrieveAllUploadableSoapIn" />
@@ -101,26 +67,6 @@
     <wsdl:operation name="RetrieveParentArtifactTypeID">
       <wsdl:input message="tns:RetrieveParentArtifactTypeIDSoapIn" />
       <wsdl:output message="tns:RetrieveParentArtifactTypeIDSoapOut" />
-    </wsdl:operation>
-  </wsdl:portType>
-  <wsdl:portType name="ObjectTypeManagerHttpGet">
-    <wsdl:operation name="RetrieveAllUploadable">
-      <wsdl:input message="tns:RetrieveAllUploadableHttpGetIn" />
-      <wsdl:output message="tns:RetrieveAllUploadableHttpGetOut" />
-    </wsdl:operation>
-    <wsdl:operation name="RetrieveParentArtifactTypeID">
-      <wsdl:input message="tns:RetrieveParentArtifactTypeIDHttpGetIn" />
-      <wsdl:output message="tns:RetrieveParentArtifactTypeIDHttpGetOut" />
-    </wsdl:operation>
-  </wsdl:portType>
-  <wsdl:portType name="ObjectTypeManagerHttpPost">
-    <wsdl:operation name="RetrieveAllUploadable">
-      <wsdl:input message="tns:RetrieveAllUploadableHttpPostIn" />
-      <wsdl:output message="tns:RetrieveAllUploadableHttpPostOut" />
-    </wsdl:operation>
-    <wsdl:operation name="RetrieveParentArtifactTypeID">
-      <wsdl:input message="tns:RetrieveParentArtifactTypeIDHttpPostIn" />
-      <wsdl:output message="tns:RetrieveParentArtifactTypeIDHttpPostOut" />
     </wsdl:operation>
   </wsdl:portType>
   <wsdl:binding name="ObjectTypeManagerSoap" type="tns:ObjectTypeManagerSoap">
@@ -165,60 +111,12 @@
       </wsdl:output>
     </wsdl:operation>
   </wsdl:binding>
-  <wsdl:binding name="ObjectTypeManagerHttpGet" type="tns:ObjectTypeManagerHttpGet">
-    <http:binding verb="GET" />
-    <wsdl:operation name="RetrieveAllUploadable">
-      <http:operation location="/RetrieveAllUploadable" />
-      <wsdl:input>
-        <http:urlEncoded />
-      </wsdl:input>
-      <wsdl:output>
-        <mime:mimeXml part="Body" />
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="RetrieveParentArtifactTypeID">
-      <http:operation location="/RetrieveParentArtifactTypeID" />
-      <wsdl:input>
-        <http:urlEncoded />
-      </wsdl:input>
-      <wsdl:output>
-        <mime:mimeXml part="Body" />
-      </wsdl:output>
-    </wsdl:operation>
-  </wsdl:binding>
-  <wsdl:binding name="ObjectTypeManagerHttpPost" type="tns:ObjectTypeManagerHttpPost">
-    <http:binding verb="POST" />
-    <wsdl:operation name="RetrieveAllUploadable">
-      <http:operation location="/RetrieveAllUploadable" />
-      <wsdl:input>
-        <mime:content type="application/x-www-form-urlencoded" />
-      </wsdl:input>
-      <wsdl:output>
-        <mime:mimeXml part="Body" />
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="RetrieveParentArtifactTypeID">
-      <http:operation location="/RetrieveParentArtifactTypeID" />
-      <wsdl:input>
-        <mime:content type="application/x-www-form-urlencoded" />
-      </wsdl:input>
-      <wsdl:output>
-        <mime:mimeXml part="Body" />
-      </wsdl:output>
-    </wsdl:operation>
-  </wsdl:binding>
   <wsdl:service name="ObjectTypeManager">
     <wsdl:port name="ObjectTypeManagerSoap" binding="tns:ObjectTypeManagerSoap">
       <soap:address location="http://localhost/RelativityWebApi/ObjectTypeManager.asmx" />
     </wsdl:port>
     <wsdl:port name="ObjectTypeManagerSoap12" binding="tns:ObjectTypeManagerSoap12">
       <soap12:address location="http://localhost/RelativityWebApi/ObjectTypeManager.asmx" />
-    </wsdl:port>
-    <wsdl:port name="ObjectTypeManagerHttpGet" binding="tns:ObjectTypeManagerHttpGet">
-      <http:address location="http://localhost/RelativityWebApi/ObjectTypeManager.asmx" />
-    </wsdl:port>
-    <wsdl:port name="ObjectTypeManagerHttpPost" binding="tns:ObjectTypeManagerHttpPost">
-      <http:address location="http://localhost/RelativityWebApi/ObjectTypeManager.asmx" />
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>

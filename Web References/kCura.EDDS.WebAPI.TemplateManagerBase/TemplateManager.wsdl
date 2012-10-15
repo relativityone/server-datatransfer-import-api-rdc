@@ -462,8 +462,6 @@
       <wsdl:output message="tns:GetAvailableFieldsForMappingSoapOut" />
     </wsdl:operation>
   </wsdl:portType>
-  <wsdl:portType name="TemplateManagerHttpGet" />
-  <wsdl:portType name="TemplateManagerHttpPost" />
   <wsdl:binding name="TemplateManagerSoap" type="tns:TemplateManagerSoap">
     <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
     <wsdl:operation name="GetAppMappingDataForWorkspace">
@@ -560,24 +558,12 @@
       </wsdl:output>
     </wsdl:operation>
   </wsdl:binding>
-  <wsdl:binding name="TemplateManagerHttpGet" type="tns:TemplateManagerHttpGet">
-    <http:binding verb="GET" />
-  </wsdl:binding>
-  <wsdl:binding name="TemplateManagerHttpPost" type="tns:TemplateManagerHttpPost">
-    <http:binding verb="POST" />
-  </wsdl:binding>
   <wsdl:service name="TemplateManager">
     <wsdl:port name="TemplateManagerSoap" binding="tns:TemplateManagerSoap">
       <soap:address location="http://localhost/RelativityWebApi/TemplateManager.asmx" />
     </wsdl:port>
     <wsdl:port name="TemplateManagerSoap12" binding="tns:TemplateManagerSoap12">
       <soap12:address location="http://localhost/RelativityWebApi/TemplateManager.asmx" />
-    </wsdl:port>
-    <wsdl:port name="TemplateManagerHttpGet" binding="tns:TemplateManagerHttpGet">
-      <http:address location="http://localhost/RelativityWebApi/TemplateManager.asmx" />
-    </wsdl:port>
-    <wsdl:port name="TemplateManagerHttpPost" binding="tns:TemplateManagerHttpPost">
-      <http:address location="http://localhost/RelativityWebApi/TemplateManager.asmx" />
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>
