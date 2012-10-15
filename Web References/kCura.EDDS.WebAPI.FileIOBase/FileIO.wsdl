@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<wsdl:definitions xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://www.kCura.com/EDDS/FileManager" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://www.kCura.com/EDDS/FileManager" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+<wsdl:definitions xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://www.kCura.com/EDDS/FileManager" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:s1="http://www.kCura.com/EDDS/FileManager/AbstractTypes" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://www.kCura.com/EDDS/FileManager" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
   <wsdl:types>
     <s:schema elementFormDefault="qualified" targetNamespace="http://www.kCura.com/EDDS/FileManager">
       <s:element name="BeginFill">
@@ -157,6 +157,24 @@
           </s:sequence>
         </s:complexType>
       </s:element>
+      <s:element name="IoResponse" nillable="true" type="tns:IoResponse" />
+      <s:element name="base64Binary" nillable="true" type="s:base64Binary" />
+      <s:element name="string" nillable="true" type="s:string" />
+      <s:element name="boolean" type="s:boolean" />
+      <s:element name="ArrayOfArrayOfString" nillable="true" type="tns:ArrayOfArrayOfString" />
+      <s:element name="int" type="s:int" />
+    </s:schema>
+    <s:schema targetNamespace="http://www.kCura.com/EDDS/FileManager/AbstractTypes">
+      <s:import namespace="http://schemas.xmlsoap.org/soap/encoding/" />
+      <s:complexType name="StringArray">
+        <s:complexContent mixed="false">
+          <s:restriction base="soapenc:Array">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="unbounded" name="String" type="s:string" />
+            </s:sequence>
+          </s:restriction>
+        </s:complexContent>
+      </s:complexType>
     </s:schema>
   </wsdl:types>
   <wsdl:message name="BeginFillSoapIn">
@@ -219,6 +237,132 @@
   <wsdl:message name="RepositoryVolumeMaxSoapOut">
     <wsdl:part name="parameters" element="tns:RepositoryVolumeMaxResponse" />
   </wsdl:message>
+  <wsdl:message name="BeginFillHttpGetIn">
+    <wsdl:part name="caseContextArtifactID" type="s:string" />
+    <wsdl:part name="b" type="s1:StringArray" />
+    <wsdl:part name="documentDirectory" type="s:string" />
+    <wsdl:part name="fileGuid" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="BeginFillHttpGetOut">
+    <wsdl:part name="Body" element="tns:IoResponse" />
+  </wsdl:message>
+  <wsdl:message name="FileFillHttpGetIn">
+    <wsdl:part name="caseContextArtifactID" type="s:string" />
+    <wsdl:part name="documentDirectory" type="s:string" />
+    <wsdl:part name="fileName" type="s:string" />
+    <wsdl:part name="b" type="s1:StringArray" />
+  </wsdl:message>
+  <wsdl:message name="FileFillHttpGetOut">
+    <wsdl:part name="Body" element="tns:IoResponse" />
+  </wsdl:message>
+  <wsdl:message name="RemoveFillHttpGetIn">
+    <wsdl:part name="caseContextArtifactID" type="s:string" />
+    <wsdl:part name="documentDirectory" type="s:string" />
+    <wsdl:part name="fileName" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="RemoveFillHttpGetOut" />
+  <wsdl:message name="RemoveTempFileHttpGetIn">
+    <wsdl:part name="caseContextArtifactID" type="s:string" />
+    <wsdl:part name="fileName" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="RemoveTempFileHttpGetOut" />
+  <wsdl:message name="ReadFileAsStringHttpGetIn">
+    <wsdl:part name="path" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="ReadFileAsStringHttpGetOut">
+    <wsdl:part name="Body" element="tns:base64Binary" />
+  </wsdl:message>
+  <wsdl:message name="GetBcpSharePathHttpGetIn">
+    <wsdl:part name="caseContextArtifactID" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="GetBcpSharePathHttpGetOut">
+    <wsdl:part name="Body" element="tns:string" />
+  </wsdl:message>
+  <wsdl:message name="ValidateBcpShareHttpGetIn">
+    <wsdl:part name="caseContextArtifactID" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="ValidateBcpShareHttpGetOut">
+    <wsdl:part name="Body" element="tns:boolean" />
+  </wsdl:message>
+  <wsdl:message name="GetBcpShareSpaceReportHttpGetIn">
+    <wsdl:part name="caseContextArtifactID" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="GetBcpShareSpaceReportHttpGetOut">
+    <wsdl:part name="Body" element="tns:ArrayOfArrayOfString" />
+  </wsdl:message>
+  <wsdl:message name="GetDefaultRepositorySpaceReportHttpGetIn">
+    <wsdl:part name="caseContextArtifactID" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="GetDefaultRepositorySpaceReportHttpGetOut">
+    <wsdl:part name="Body" element="tns:ArrayOfArrayOfString" />
+  </wsdl:message>
+  <wsdl:message name="RepositoryVolumeMaxHttpGetIn" />
+  <wsdl:message name="RepositoryVolumeMaxHttpGetOut">
+    <wsdl:part name="Body" element="tns:int" />
+  </wsdl:message>
+  <wsdl:message name="BeginFillHttpPostIn">
+    <wsdl:part name="caseContextArtifactID" type="s:string" />
+    <wsdl:part name="b" type="s1:StringArray" />
+    <wsdl:part name="documentDirectory" type="s:string" />
+    <wsdl:part name="fileGuid" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="BeginFillHttpPostOut">
+    <wsdl:part name="Body" element="tns:IoResponse" />
+  </wsdl:message>
+  <wsdl:message name="FileFillHttpPostIn">
+    <wsdl:part name="caseContextArtifactID" type="s:string" />
+    <wsdl:part name="documentDirectory" type="s:string" />
+    <wsdl:part name="fileName" type="s:string" />
+    <wsdl:part name="b" type="s1:StringArray" />
+  </wsdl:message>
+  <wsdl:message name="FileFillHttpPostOut">
+    <wsdl:part name="Body" element="tns:IoResponse" />
+  </wsdl:message>
+  <wsdl:message name="RemoveFillHttpPostIn">
+    <wsdl:part name="caseContextArtifactID" type="s:string" />
+    <wsdl:part name="documentDirectory" type="s:string" />
+    <wsdl:part name="fileName" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="RemoveFillHttpPostOut" />
+  <wsdl:message name="RemoveTempFileHttpPostIn">
+    <wsdl:part name="caseContextArtifactID" type="s:string" />
+    <wsdl:part name="fileName" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="RemoveTempFileHttpPostOut" />
+  <wsdl:message name="ReadFileAsStringHttpPostIn">
+    <wsdl:part name="path" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="ReadFileAsStringHttpPostOut">
+    <wsdl:part name="Body" element="tns:base64Binary" />
+  </wsdl:message>
+  <wsdl:message name="GetBcpSharePathHttpPostIn">
+    <wsdl:part name="caseContextArtifactID" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="GetBcpSharePathHttpPostOut">
+    <wsdl:part name="Body" element="tns:string" />
+  </wsdl:message>
+  <wsdl:message name="ValidateBcpShareHttpPostIn">
+    <wsdl:part name="caseContextArtifactID" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="ValidateBcpShareHttpPostOut">
+    <wsdl:part name="Body" element="tns:boolean" />
+  </wsdl:message>
+  <wsdl:message name="GetBcpShareSpaceReportHttpPostIn">
+    <wsdl:part name="caseContextArtifactID" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="GetBcpShareSpaceReportHttpPostOut">
+    <wsdl:part name="Body" element="tns:ArrayOfArrayOfString" />
+  </wsdl:message>
+  <wsdl:message name="GetDefaultRepositorySpaceReportHttpPostIn">
+    <wsdl:part name="caseContextArtifactID" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="GetDefaultRepositorySpaceReportHttpPostOut">
+    <wsdl:part name="Body" element="tns:ArrayOfArrayOfString" />
+  </wsdl:message>
+  <wsdl:message name="RepositoryVolumeMaxHttpPostIn" />
+  <wsdl:message name="RepositoryVolumeMaxHttpPostOut">
+    <wsdl:part name="Body" element="tns:int" />
+  </wsdl:message>
   <wsdl:portType name="FileIOSoap">
     <wsdl:operation name="BeginFill">
       <wsdl:input message="tns:BeginFillSoapIn" />
@@ -259,6 +403,90 @@
     <wsdl:operation name="RepositoryVolumeMax">
       <wsdl:input message="tns:RepositoryVolumeMaxSoapIn" />
       <wsdl:output message="tns:RepositoryVolumeMaxSoapOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:portType name="FileIOHttpGet">
+    <wsdl:operation name="BeginFill">
+      <wsdl:input message="tns:BeginFillHttpGetIn" />
+      <wsdl:output message="tns:BeginFillHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="FileFill">
+      <wsdl:input message="tns:FileFillHttpGetIn" />
+      <wsdl:output message="tns:FileFillHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="RemoveFill">
+      <wsdl:input message="tns:RemoveFillHttpGetIn" />
+      <wsdl:output message="tns:RemoveFillHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="RemoveTempFile">
+      <wsdl:input message="tns:RemoveTempFileHttpGetIn" />
+      <wsdl:output message="tns:RemoveTempFileHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ReadFileAsString">
+      <wsdl:input message="tns:ReadFileAsStringHttpGetIn" />
+      <wsdl:output message="tns:ReadFileAsStringHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetBcpSharePath">
+      <wsdl:input message="tns:GetBcpSharePathHttpGetIn" />
+      <wsdl:output message="tns:GetBcpSharePathHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ValidateBcpShare">
+      <wsdl:input message="tns:ValidateBcpShareHttpGetIn" />
+      <wsdl:output message="tns:ValidateBcpShareHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetBcpShareSpaceReport">
+      <wsdl:input message="tns:GetBcpShareSpaceReportHttpGetIn" />
+      <wsdl:output message="tns:GetBcpShareSpaceReportHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetDefaultRepositorySpaceReport">
+      <wsdl:input message="tns:GetDefaultRepositorySpaceReportHttpGetIn" />
+      <wsdl:output message="tns:GetDefaultRepositorySpaceReportHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="RepositoryVolumeMax">
+      <wsdl:input message="tns:RepositoryVolumeMaxHttpGetIn" />
+      <wsdl:output message="tns:RepositoryVolumeMaxHttpGetOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:portType name="FileIOHttpPost">
+    <wsdl:operation name="BeginFill">
+      <wsdl:input message="tns:BeginFillHttpPostIn" />
+      <wsdl:output message="tns:BeginFillHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="FileFill">
+      <wsdl:input message="tns:FileFillHttpPostIn" />
+      <wsdl:output message="tns:FileFillHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="RemoveFill">
+      <wsdl:input message="tns:RemoveFillHttpPostIn" />
+      <wsdl:output message="tns:RemoveFillHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="RemoveTempFile">
+      <wsdl:input message="tns:RemoveTempFileHttpPostIn" />
+      <wsdl:output message="tns:RemoveTempFileHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ReadFileAsString">
+      <wsdl:input message="tns:ReadFileAsStringHttpPostIn" />
+      <wsdl:output message="tns:ReadFileAsStringHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetBcpSharePath">
+      <wsdl:input message="tns:GetBcpSharePathHttpPostIn" />
+      <wsdl:output message="tns:GetBcpSharePathHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ValidateBcpShare">
+      <wsdl:input message="tns:ValidateBcpShareHttpPostIn" />
+      <wsdl:output message="tns:ValidateBcpShareHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetBcpShareSpaceReport">
+      <wsdl:input message="tns:GetBcpShareSpaceReportHttpPostIn" />
+      <wsdl:output message="tns:GetBcpShareSpaceReportHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetDefaultRepositorySpaceReport">
+      <wsdl:input message="tns:GetDefaultRepositorySpaceReportHttpPostIn" />
+      <wsdl:output message="tns:GetDefaultRepositorySpaceReportHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="RepositoryVolumeMax">
+      <wsdl:input message="tns:RepositoryVolumeMaxHttpPostIn" />
+      <wsdl:output message="tns:RepositoryVolumeMaxHttpPostOut" />
     </wsdl:operation>
   </wsdl:portType>
   <wsdl:binding name="FileIOSoap" type="tns:FileIOSoap">
@@ -447,12 +675,196 @@
       </wsdl:output>
     </wsdl:operation>
   </wsdl:binding>
+  <wsdl:binding name="FileIOHttpGet" type="tns:FileIOHttpGet">
+    <http:binding verb="GET" />
+    <wsdl:operation name="BeginFill">
+      <http:operation location="/BeginFill" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="FileFill">
+      <http:operation location="/FileFill" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RemoveFill">
+      <http:operation location="/RemoveFill" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output />
+    </wsdl:operation>
+    <wsdl:operation name="RemoveTempFile">
+      <http:operation location="/RemoveTempFile" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output />
+    </wsdl:operation>
+    <wsdl:operation name="ReadFileAsString">
+      <http:operation location="/ReadFileAsString" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetBcpSharePath">
+      <http:operation location="/GetBcpSharePath" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ValidateBcpShare">
+      <http:operation location="/ValidateBcpShare" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetBcpShareSpaceReport">
+      <http:operation location="/GetBcpShareSpaceReport" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetDefaultRepositorySpaceReport">
+      <http:operation location="/GetDefaultRepositorySpaceReport" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RepositoryVolumeMax">
+      <http:operation location="/RepositoryVolumeMax" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="FileIOHttpPost" type="tns:FileIOHttpPost">
+    <http:binding verb="POST" />
+    <wsdl:operation name="BeginFill">
+      <http:operation location="/BeginFill" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="FileFill">
+      <http:operation location="/FileFill" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RemoveFill">
+      <http:operation location="/RemoveFill" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output />
+    </wsdl:operation>
+    <wsdl:operation name="RemoveTempFile">
+      <http:operation location="/RemoveTempFile" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output />
+    </wsdl:operation>
+    <wsdl:operation name="ReadFileAsString">
+      <http:operation location="/ReadFileAsString" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetBcpSharePath">
+      <http:operation location="/GetBcpSharePath" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ValidateBcpShare">
+      <http:operation location="/ValidateBcpShare" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetBcpShareSpaceReport">
+      <http:operation location="/GetBcpShareSpaceReport" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetDefaultRepositorySpaceReport">
+      <http:operation location="/GetDefaultRepositorySpaceReport" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RepositoryVolumeMax">
+      <http:operation location="/RepositoryVolumeMax" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
   <wsdl:service name="FileIO">
     <wsdl:port name="FileIOSoap" binding="tns:FileIOSoap">
       <soap:address location="http://localhost/RelativityWebApi/FileIO.asmx" />
     </wsdl:port>
     <wsdl:port name="FileIOSoap12" binding="tns:FileIOSoap12">
       <soap12:address location="http://localhost/RelativityWebApi/FileIO.asmx" />
+    </wsdl:port>
+    <wsdl:port name="FileIOHttpGet" binding="tns:FileIOHttpGet">
+      <http:address location="http://localhost/RelativityWebApi/FileIO.asmx" />
+    </wsdl:port>
+    <wsdl:port name="FileIOHttpPost" binding="tns:FileIOHttpPost">
+      <http:address location="http://localhost/RelativityWebApi/FileIO.asmx" />
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>
