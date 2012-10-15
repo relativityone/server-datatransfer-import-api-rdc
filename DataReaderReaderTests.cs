@@ -31,7 +31,7 @@ namespace kCura.WinEDDS.ImportExtension.NUnit
 		[Test]
 		public void GetListOfItemsFromString_InvalidXML()
 		{
-			var itemsUnderTest = new List<string>() { "test1<>", "test2" };
+			var itemsUnderTest = new List<string>() { "weatherford.com??S\"Findley, Kari\" <kari.findley", "test2" };
 			//Arrange
 			var items = String.Join(";", itemsUnderTest);
 			//Act
