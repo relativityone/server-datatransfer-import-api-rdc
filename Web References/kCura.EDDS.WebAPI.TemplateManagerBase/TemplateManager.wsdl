@@ -110,6 +110,7 @@
           <s:element minOccurs="1" maxOccurs="1" name="TotalWorkspaces" type="s:int" />
           <s:element minOccurs="1" maxOccurs="1" name="WorkspaceID" type="s:int" />
           <s:element minOccurs="0" maxOccurs="1" name="WorkspaceName" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="ApplicationInstallID" type="s:int" />
         </s:sequence>
       </s:complexType>
       <s:complexType name="ArrayOfApplicationArtifact">
@@ -127,6 +128,7 @@
           <s:element minOccurs="0" maxOccurs="1" name="ParentArtifact" type="tns:ApplicationArtifact" />
           <s:element minOccurs="0" maxOccurs="1" name="ConflictArtifact" type="tns:ApplicationArtifact" />
           <s:element minOccurs="1" maxOccurs="1" name="Status" type="tns:StatusCode" />
+          <s:element minOccurs="1" maxOccurs="1" name="TimeStamp" type="s:dateTime" />
           <s:element minOccurs="0" maxOccurs="1" name="StatusMessage" type="s:string" />
           <s:element minOccurs="0" maxOccurs="1" name="StatusDetails" type="s:string" />
           <s:element minOccurs="0" maxOccurs="1" name="Applications" type="tns:ArrayOfApplication" />
@@ -146,6 +148,7 @@
           <s:enumeration value="Script" />
           <s:enumeration value="Instance" />
           <s:enumeration value="CustomPage" />
+          <s:enumeration value="AgentType" />
         </s:restriction>
       </s:simpleType>
       <s:simpleType name="StatusCode">
@@ -347,6 +350,7 @@
         <s:restriction base="s:string">
           <s:enumeration value="LeaveBlankValuesUnchanged" />
           <s:enumeration value="ReplaceBlankValuesWithIdentifier" />
+          <s:enumeration value="ObjectFieldContainsArtifactId" />
         </s:restriction>
       </s:simpleType>
       <s:complexType name="PaneElement">
@@ -458,6 +462,8 @@
       <wsdl:output message="tns:GetAvailableFieldsForMappingSoapOut" />
     </wsdl:operation>
   </wsdl:portType>
+  <wsdl:portType name="TemplateManagerHttpGet" />
+  <wsdl:portType name="TemplateManagerHttpPost" />
   <wsdl:binding name="TemplateManagerSoap" type="tns:TemplateManagerSoap">
     <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
     <wsdl:operation name="GetAppMappingDataForWorkspace">
@@ -554,12 +560,24 @@
       </wsdl:output>
     </wsdl:operation>
   </wsdl:binding>
+  <wsdl:binding name="TemplateManagerHttpGet" type="tns:TemplateManagerHttpGet">
+    <http:binding verb="GET" />
+  </wsdl:binding>
+  <wsdl:binding name="TemplateManagerHttpPost" type="tns:TemplateManagerHttpPost">
+    <http:binding verb="POST" />
+  </wsdl:binding>
   <wsdl:service name="TemplateManager">
     <wsdl:port name="TemplateManagerSoap" binding="tns:TemplateManagerSoap">
       <soap:address location="http://localhost/RelativityWebApi/TemplateManager.asmx" />
     </wsdl:port>
     <wsdl:port name="TemplateManagerSoap12" binding="tns:TemplateManagerSoap12">
       <soap12:address location="http://localhost/RelativityWebApi/TemplateManager.asmx" />
+    </wsdl:port>
+    <wsdl:port name="TemplateManagerHttpGet" binding="tns:TemplateManagerHttpGet">
+      <http:address location="http://localhost/RelativityWebApi/TemplateManager.asmx" />
+    </wsdl:port>
+    <wsdl:port name="TemplateManagerHttpPost" binding="tns:TemplateManagerHttpPost">
+      <http:address location="http://localhost/RelativityWebApi/TemplateManager.asmx" />
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>

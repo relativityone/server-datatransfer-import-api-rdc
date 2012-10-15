@@ -212,6 +212,16 @@
           </s:sequence>
         </s:complexType>
       </s:element>
+      <s:element name="DataSet" nillable="true">
+        <s:complexType>
+          <s:sequence>
+            <s:element ref="s:schema" />
+            <s:any />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ChoiceInfo" nillable="true" type="tns:ChoiceInfo" />
+      <s:element name="int" type="s:int" />
     </s:schema>
     <s:schema elementFormDefault="qualified" targetNamespace="http://microsoft.com/wsdl/types/">
       <s:simpleType name="guid">
@@ -269,6 +279,104 @@
   <wsdl:message name="GetChoiceLimitForUISoapOut">
     <wsdl:part name="parameters" element="tns:GetChoiceLimitForUIResponse" />
   </wsdl:message>
+  <wsdl:message name="RetrieveCodesAndTypesForCaseHttpGetIn">
+    <wsdl:part name="caseContextArtifactID" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveCodesAndTypesForCaseHttpGetOut">
+    <wsdl:part name="Body" element="tns:DataSet" />
+  </wsdl:message>
+  <wsdl:message name="GetAllForHierarchicalHttpGetIn">
+    <wsdl:part name="caseContextArtifactID" type="s:string" />
+    <wsdl:part name="codeTypeID" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="GetAllForHierarchicalHttpGetOut">
+    <wsdl:part name="Body" element="tns:DataSet" />
+  </wsdl:message>
+  <wsdl:message name="GetInitialChunkHttpGetIn">
+    <wsdl:part name="caseContextArtifactID" type="s:string" />
+    <wsdl:part name="codeTypeID" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="GetInitialChunkHttpGetOut">
+    <wsdl:part name="Body" element="tns:DataSet" />
+  </wsdl:message>
+  <wsdl:message name="GetLastChunkHttpGetIn">
+    <wsdl:part name="caseContextArtifactID" type="s:string" />
+    <wsdl:part name="codeTypeID" type="s:string" />
+    <wsdl:part name="lastCodeID" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="GetLastChunkHttpGetOut">
+    <wsdl:part name="Body" element="tns:DataSet" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveCodeByNameAndTypeIDHttpGetIn">
+    <wsdl:part name="caseContextArtifactID" type="s:string" />
+    <wsdl:part name="codeTypeID" type="s:string" />
+    <wsdl:part name="name" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveCodeByNameAndTypeIDHttpGetOut">
+    <wsdl:part name="Body" element="tns:ChoiceInfo" />
+  </wsdl:message>
+  <wsdl:message name="ReadIDHttpGetIn">
+    <wsdl:part name="caseContextArtifactID" type="s:string" />
+    <wsdl:part name="parentArtifactID" type="s:string" />
+    <wsdl:part name="codeTypeID" type="s:string" />
+    <wsdl:part name="name" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="ReadIDHttpGetOut">
+    <wsdl:part name="Body" element="tns:int" />
+  </wsdl:message>
+  <wsdl:message name="GetChoiceLimitForUIHttpGetIn" />
+  <wsdl:message name="GetChoiceLimitForUIHttpGetOut">
+    <wsdl:part name="Body" element="tns:int" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveCodesAndTypesForCaseHttpPostIn">
+    <wsdl:part name="caseContextArtifactID" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveCodesAndTypesForCaseHttpPostOut">
+    <wsdl:part name="Body" element="tns:DataSet" />
+  </wsdl:message>
+  <wsdl:message name="GetAllForHierarchicalHttpPostIn">
+    <wsdl:part name="caseContextArtifactID" type="s:string" />
+    <wsdl:part name="codeTypeID" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="GetAllForHierarchicalHttpPostOut">
+    <wsdl:part name="Body" element="tns:DataSet" />
+  </wsdl:message>
+  <wsdl:message name="GetInitialChunkHttpPostIn">
+    <wsdl:part name="caseContextArtifactID" type="s:string" />
+    <wsdl:part name="codeTypeID" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="GetInitialChunkHttpPostOut">
+    <wsdl:part name="Body" element="tns:DataSet" />
+  </wsdl:message>
+  <wsdl:message name="GetLastChunkHttpPostIn">
+    <wsdl:part name="caseContextArtifactID" type="s:string" />
+    <wsdl:part name="codeTypeID" type="s:string" />
+    <wsdl:part name="lastCodeID" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="GetLastChunkHttpPostOut">
+    <wsdl:part name="Body" element="tns:DataSet" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveCodeByNameAndTypeIDHttpPostIn">
+    <wsdl:part name="caseContextArtifactID" type="s:string" />
+    <wsdl:part name="codeTypeID" type="s:string" />
+    <wsdl:part name="name" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveCodeByNameAndTypeIDHttpPostOut">
+    <wsdl:part name="Body" element="tns:ChoiceInfo" />
+  </wsdl:message>
+  <wsdl:message name="ReadIDHttpPostIn">
+    <wsdl:part name="caseContextArtifactID" type="s:string" />
+    <wsdl:part name="parentArtifactID" type="s:string" />
+    <wsdl:part name="codeTypeID" type="s:string" />
+    <wsdl:part name="name" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="ReadIDHttpPostOut">
+    <wsdl:part name="Body" element="tns:int" />
+  </wsdl:message>
+  <wsdl:message name="GetChoiceLimitForUIHttpPostIn" />
+  <wsdl:message name="GetChoiceLimitForUIHttpPostOut">
+    <wsdl:part name="Body" element="tns:int" />
+  </wsdl:message>
   <wsdl:portType name="CodeManagerSoap">
     <wsdl:operation name="RetrieveCodesAndTypesForCase">
       <wsdl:input message="tns:RetrieveCodesAndTypesForCaseSoapIn" />
@@ -301,6 +409,66 @@
     <wsdl:operation name="GetChoiceLimitForUI">
       <wsdl:input message="tns:GetChoiceLimitForUISoapIn" />
       <wsdl:output message="tns:GetChoiceLimitForUISoapOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:portType name="CodeManagerHttpGet">
+    <wsdl:operation name="RetrieveCodesAndTypesForCase">
+      <wsdl:input message="tns:RetrieveCodesAndTypesForCaseHttpGetIn" />
+      <wsdl:output message="tns:RetrieveCodesAndTypesForCaseHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetAllForHierarchical">
+      <wsdl:input message="tns:GetAllForHierarchicalHttpGetIn" />
+      <wsdl:output message="tns:GetAllForHierarchicalHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetInitialChunk">
+      <wsdl:input message="tns:GetInitialChunkHttpGetIn" />
+      <wsdl:output message="tns:GetInitialChunkHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetLastChunk">
+      <wsdl:input message="tns:GetLastChunkHttpGetIn" />
+      <wsdl:output message="tns:GetLastChunkHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveCodeByNameAndTypeID">
+      <wsdl:input message="tns:RetrieveCodeByNameAndTypeIDHttpGetIn" />
+      <wsdl:output message="tns:RetrieveCodeByNameAndTypeIDHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ReadID">
+      <wsdl:input message="tns:ReadIDHttpGetIn" />
+      <wsdl:output message="tns:ReadIDHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetChoiceLimitForUI">
+      <wsdl:input message="tns:GetChoiceLimitForUIHttpGetIn" />
+      <wsdl:output message="tns:GetChoiceLimitForUIHttpGetOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:portType name="CodeManagerHttpPost">
+    <wsdl:operation name="RetrieveCodesAndTypesForCase">
+      <wsdl:input message="tns:RetrieveCodesAndTypesForCaseHttpPostIn" />
+      <wsdl:output message="tns:RetrieveCodesAndTypesForCaseHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetAllForHierarchical">
+      <wsdl:input message="tns:GetAllForHierarchicalHttpPostIn" />
+      <wsdl:output message="tns:GetAllForHierarchicalHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetInitialChunk">
+      <wsdl:input message="tns:GetInitialChunkHttpPostIn" />
+      <wsdl:output message="tns:GetInitialChunkHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetLastChunk">
+      <wsdl:input message="tns:GetLastChunkHttpPostIn" />
+      <wsdl:output message="tns:GetLastChunkHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveCodeByNameAndTypeID">
+      <wsdl:input message="tns:RetrieveCodeByNameAndTypeIDHttpPostIn" />
+      <wsdl:output message="tns:RetrieveCodeByNameAndTypeIDHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ReadID">
+      <wsdl:input message="tns:ReadIDHttpPostIn" />
+      <wsdl:output message="tns:ReadIDHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetChoiceLimitForUI">
+      <wsdl:input message="tns:GetChoiceLimitForUIHttpPostIn" />
+      <wsdl:output message="tns:GetChoiceLimitForUIHttpPostOut" />
     </wsdl:operation>
   </wsdl:portType>
   <wsdl:binding name="CodeManagerSoap" type="tns:CodeManagerSoap">
@@ -453,12 +621,150 @@
       </wsdl:output>
     </wsdl:operation>
   </wsdl:binding>
+  <wsdl:binding name="CodeManagerHttpGet" type="tns:CodeManagerHttpGet">
+    <http:binding verb="GET" />
+    <wsdl:operation name="RetrieveCodesAndTypesForCase">
+      <http:operation location="/RetrieveCodesAndTypesForCase" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetAllForHierarchical">
+      <http:operation location="/GetAllForHierarchical" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetInitialChunk">
+      <http:operation location="/GetInitialChunk" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetLastChunk">
+      <http:operation location="/GetLastChunk" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveCodeByNameAndTypeID">
+      <http:operation location="/RetrieveCodeByNameAndTypeID" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ReadID">
+      <http:operation location="/ReadID" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetChoiceLimitForUI">
+      <http:operation location="/GetChoiceLimitForUI" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="CodeManagerHttpPost" type="tns:CodeManagerHttpPost">
+    <http:binding verb="POST" />
+    <wsdl:operation name="RetrieveCodesAndTypesForCase">
+      <http:operation location="/RetrieveCodesAndTypesForCase" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetAllForHierarchical">
+      <http:operation location="/GetAllForHierarchical" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetInitialChunk">
+      <http:operation location="/GetInitialChunk" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetLastChunk">
+      <http:operation location="/GetLastChunk" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveCodeByNameAndTypeID">
+      <http:operation location="/RetrieveCodeByNameAndTypeID" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ReadID">
+      <http:operation location="/ReadID" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetChoiceLimitForUI">
+      <http:operation location="/GetChoiceLimitForUI" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
   <wsdl:service name="CodeManager">
     <wsdl:port name="CodeManagerSoap" binding="tns:CodeManagerSoap">
       <soap:address location="http://localhost/RelativityWebApi/CodeManager.asmx" />
     </wsdl:port>
     <wsdl:port name="CodeManagerSoap12" binding="tns:CodeManagerSoap12">
       <soap12:address location="http://localhost/RelativityWebApi/CodeManager.asmx" />
+    </wsdl:port>
+    <wsdl:port name="CodeManagerHttpGet" binding="tns:CodeManagerHttpGet">
+      <http:address location="http://localhost/RelativityWebApi/CodeManager.asmx" />
+    </wsdl:port>
+    <wsdl:port name="CodeManagerHttpPost" binding="tns:CodeManagerHttpPost">
+      <http:address location="http://localhost/RelativityWebApi/CodeManager.asmx" />
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>

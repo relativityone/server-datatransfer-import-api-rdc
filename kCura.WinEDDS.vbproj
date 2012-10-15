@@ -796,7 +796,9 @@
       <AutoGen>True</AutoGen>
     </Compile>
     <None Include="Web References\kCura.EDDS.WebAPI.AuditManagerBase\AuditManager.disco" />
-    <None Include="Web References\kCura.EDDS.WebAPI.AuditManagerBase\AuditManager.wsdl" />
+    <None Include="Web References\kCura.EDDS.WebAPI.AuditManagerBase\AuditManager.wsdl">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Web References\kCura.EDDS.WebAPI.AuditManagerBase\Reference.map">
       <Generator>MSDiscoCodeGenerator</Generator>
       <LastGenOutput>Reference.vb</LastGenOutput>
