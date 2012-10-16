@@ -677,6 +677,14 @@ Namespace kCura.WinEDDS
 
 #Region "WebService Calls"
 
+		Public Overrides Function LookupArtifactIDForName(objectName As String, associatedObjectTypeID As Integer) As Integer
+			Return -1
+		End Function
+
+		Public Overrides Function LookupNameForArtifactID(objectArtifactID As Integer, associatedObjectTypeID As Integer) As String
+			Return String.Empty
+		End Function
+
 		Private Sub ManageDocumentMetaData(ByVal metaDoc As MetaDocument)
 			_number += 1
 			Try

@@ -289,15 +289,24 @@ Namespace kCura.WinEDDS
 			Dim nameIDPairs As New System.Collections.Hashtable
 			For Each objectName As String In objectDisplayNames
 				If objectName.Length > field.TextLength Then Throw New kCura.Utility.DelimitedFileImporter.InputStringExceedsFixedLengthException(Me.CurrentLineNumber, column, field.TextLength, field.DisplayName)
-				Dim artifactID As System.Data.DataSet = _objectManager.RetrieveArtifactIdOfMappedObject(_caseArtifactID, objectName, associatedObjectTypeID)
-				If artifactID.Tables(0).Rows.Count > 0 Then
-					nameIDPairs(objectName) = CType(artifactID.Tables(0).Rows(0)(0), Int32)
-					' .... the heck
-				Else
-					nameIDPairs(objectName) = -1
-				End If
+				nameIDPairs(objectName) = Me.LookupArtifactIDForName(objectName, associatedObjectTypeID)
 			Next
 			Return nameIDPairs
+		End Function
+
+		Public Overridable Function LookupNameForArtifactID(objectArtifactID As Int32, associatedObjectTypeID As Int32) As String
+			Dim artifactTextIdentifier As System.Data.DataSet = _objectManager.RetrieveTextIdentifierOfMappedObject(_caseArtifactID, CInt(objectArtifactID), associatedObjectTypeID)
+			Dim retval As String = String.Empty
+			If artifactTextIdentifier.Tables(0).Rows.Count > 0 Then retval = DirectCast(artifactTextIdentifier.Tables(0).Rows(0)(0), String)
+			Return retval
+		End Function
+
+		Public Overridable Function LookupArtifactIDForName(objectName As String, associatedObjectTypeID As Int32) As Int32
+			Dim artifactID As System.Data.DataSet = _objectManager.RetrieveArtifactIdOfMappedObject(_caseArtifactID, objectName, associatedObjectTypeID)
+			Dim retval As Int32 = -1
+
+			If artifactID.Tables(0).Rows.Count > 0 Then retval = CInt(artifactID.Tables(0).Rows(0)(0))
+			Return retval
 		End Function
 
 		Public Overridable Function GetObjectsByArtifactID(ByVal value As String(), ByVal column As Int32, ByVal field As Api.ArtifactField, ByVal associatedObjectTypeID As Int32) As System.Collections.Hashtable
@@ -318,13 +327,7 @@ Namespace kCura.WinEDDS
 
 			For Each objectArtifactId As String In objectArtifactIds
 				If objectArtifactId.Length > field.TextLength Then Throw New kCura.Utility.DelimitedFileImporter.InputStringExceedsFixedLengthException(Me.CurrentLineNumber, column, field.TextLength, field.DisplayName)
-				Dim artifactTextIdentifier As System.Data.DataSet = _objectManager.RetrieveTextIdentifierOfMappedObject(_caseArtifactID, CInt(objectArtifactId), associatedObjectTypeID)
-				If artifactTextIdentifier.Tables(0).Rows.Count > 0 Then
-					nameIDPairs(objectArtifactId) = artifactTextIdentifier.Tables(0).Rows(0)(0)
-					' .... the heck
-				Else
-					nameIDPairs(objectArtifactId) = String.Empty
-				End If
+				nameIDPairs(objectArtifactId) = Me.LookupNameForArtifactID(CInt(objectArtifactId), associatedObjectTypeID)
 			Next
 			Return nameIDPairs
 		End Function
