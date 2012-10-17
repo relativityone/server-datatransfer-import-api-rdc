@@ -144,6 +144,7 @@
           <s:element minOccurs="1" maxOccurs="1" name="DisableUserSecurityCheck" type="s:boolean" />
           <s:element minOccurs="0" maxOccurs="1" name="OnBehalfOfUserToken" type="s:string" />
           <s:element minOccurs="1" maxOccurs="1" name="AuditLevel" type="tns:ImportAuditLevel" />
+          <s:element minOccurs="0" maxOccurs="1" name="BulkLoadFileFieldDelimiter" type="s:string" />
           <s:element minOccurs="1" maxOccurs="1" name="KeyFieldArtifactID" type="s:int" />
         </s:sequence>
       </s:complexType>

@@ -234,11 +234,7 @@
         </s:complexType>
       </s:element>
       <s:element name="DeleteAuditTokenResponse">
-        <s:complexType>
-          <s:sequence>
-            <s:element minOccurs="1" maxOccurs="1" name="DeleteAuditTokenResult" type="s:boolean" />
-          </s:sequence>
-        </s:complexType>
+        <s:complexType />
       </s:element>
       <s:element name="GetUserIdByGuid">
         <s:complexType>

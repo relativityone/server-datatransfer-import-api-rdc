@@ -103,6 +103,16 @@
           </s:sequence>
         </s:complexType>
       </s:element>
+      <s:element name="GetInstanceInformation">
+        <s:complexType />
+      </s:element>
+      <s:element name="GetInstanceInformationResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetInstanceInformationResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
     </s:schema>
   </wsdl:types>
   <wsdl:message name="RetrieveCurrencySymbolSoapIn">
@@ -159,6 +169,12 @@
   <wsdl:message name="ReceiveTextSoapOut">
     <wsdl:part name="parameters" element="tns:ReceiveTextResponse" />
   </wsdl:message>
+  <wsdl:message name="GetInstanceInformationSoapIn">
+    <wsdl:part name="parameters" element="tns:GetInstanceInformation" />
+  </wsdl:message>
+  <wsdl:message name="GetInstanceInformationSoapOut">
+    <wsdl:part name="parameters" element="tns:GetInstanceInformationResponse" />
+  </wsdl:message>
   <wsdl:portType name="RelativityManagerSoap">
     <wsdl:operation name="RetrieveCurrencySymbol">
       <wsdl:input message="tns:RetrieveCurrencySymbolSoapIn" />
@@ -195,6 +211,10 @@
     <wsdl:operation name="ReceiveText">
       <wsdl:input message="tns:ReceiveTextSoapIn" />
       <wsdl:output message="tns:ReceiveTextSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetInstanceInformation">
+      <wsdl:input message="tns:GetInstanceInformationSoapIn" />
+      <wsdl:output message="tns:GetInstanceInformationSoapOut" />
     </wsdl:operation>
   </wsdl:portType>
   <wsdl:binding name="RelativityManagerSoap" type="tns:RelativityManagerSoap">
@@ -280,6 +300,15 @@
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="GetInstanceInformation">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/RelativityManager/GetInstanceInformation" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
   </wsdl:binding>
   <wsdl:binding name="RelativityManagerSoap12" type="tns:RelativityManagerSoap">
     <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
@@ -357,6 +386,15 @@
     </wsdl:operation>
     <wsdl:operation name="ReceiveText">
       <soap12:operation soapAction="http://www.kCura.com/EDDS/RelativityManager/ReceiveText" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetInstanceInformation">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/RelativityManager/GetInstanceInformation" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>

@@ -907,6 +907,7 @@ Namespace kCura.WinEDDS
 			settings.ObjectFileName = objectFileUploadKey
 			settings.MappedFields = Me.GetMappedFields(_artifactTypeID, _settings.ObjectFieldIdListContainsArtifactId)
 			settings.KeyFieldArtifactID = _keyFieldID
+			settings.BulkLoadFileFieldDelimiter = _bulkLoadFileFieldDelimiter
 			Select Case _overwrite.ToLower
 				Case "strict"
 					settings.Overlay = EDDS.WebAPI.BulkImportManagerBase.OverwriteType.Overlay
