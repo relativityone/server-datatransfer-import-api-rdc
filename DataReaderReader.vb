@@ -410,7 +410,7 @@ Namespace kCura.WinEDDS.ImportExtension
 					field.Value = kCura.Utility.NullableTypesHelper.DBNullConvertToNullable(Of Int32)(value)
 					'field.Value = kCura.Utility.NullableTypesHelper.ToNullableInt32(value)
 				Case Relativity.FieldTypeHelper.FieldType.MultiCode, Relativity.FieldTypeHelper.FieldType.Objects
-					field.Value = LoadFileReader.GetObjectsFromString(value, _loadFileSettings.MultiRecordDelimiter)
+					field.Value = LoadFileReader.GetStringArrayFromDelimitedFieldValue(value, _loadFileSettings.MultiRecordDelimiter)
 				Case Else
 					Throw New System.ArgumentException("Unsupported field type '" & field.Type.ToString & "'")
 			End Select
