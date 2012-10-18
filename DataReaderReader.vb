@@ -109,12 +109,6 @@ Namespace kCura.WinEDDS.ImportExtension
 			End Get
 		End Property
 
-		Private Shared Function FormatMultiCodeValueToXml(ByVal multicodeValue As String, delimiter As Char) As XDocument
-			'Format to xml to verify we aren't going to break anything for audits.
-			Dim multiValue As List(Of String) = multicodeValue.Split(delimiter).ToList()
-			Return New XDocument(New XElement("root", From x As String In multiValue Select New XElement("item", x)))
-		End Function
-
 		Private Function DoesFilenameMarkerFieldExistInIDataReader() As Boolean
 			If Not _markerNameIsMapped.HasValue Then
 				Try
@@ -416,24 +410,12 @@ Namespace kCura.WinEDDS.ImportExtension
 					field.Value = kCura.Utility.NullableTypesHelper.DBNullConvertToNullable(Of Int32)(value)
 					'field.Value = kCura.Utility.NullableTypesHelper.ToNullableInt32(value)
 				Case Relativity.FieldTypeHelper.FieldType.MultiCode, Relativity.FieldTypeHelper.FieldType.Objects
-					Dim dbNullValue As Object = kCura.Utility.NullableTypesHelper.DBNullString(value)
-					field.Value = dbNullValue
-					If (Not dbNullValue Is Nothing) Then
-						Dim stringValue As String = dbNullValue.ToString()
-						field.Value = GetListOfItemsFromString(stringValue, _loadFileSettings.MultiRecordDelimiter)
-					End If
+					field.Value = LoadFileReader.GetObjectsFromString(value, _loadFileSettings.MultiRecordDelimiter)
 				Case Else
 					Throw New System.ArgumentException("Unsupported field type '" & field.Type.ToString & "'")
 			End Select
 		End Sub
 
-		Public Shared Function GetListOfItemsFromString(ByVal stringValue As String, delimiter As Char) As String()
-			If (String.IsNullOrEmpty(stringValue)) Then
-				Return New String() {}
-			End If
-			Dim xDoc As XDocument = FormatMultiCodeValueToXml(stringValue, delimiter)
-			Return xDoc.XPathSelectElements("//root/item").Select(Function(x As XElement) x.Value).ToArray()
-		End Function
 
 		Public ReadOnly Property SizeInBytes() As Long Implements kCura.WinEDDS.Api.IArtifactReader.SizeInBytes
 			Get
