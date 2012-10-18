@@ -124,7 +124,7 @@ Namespace kCura.WinEDDS
 						field.Value = value.Trim
 						If field.Value.ToString = String.Empty Then field.Value = Nothing
 					Case Relativity.FieldTypeHelper.FieldType.MultiCode, Relativity.FieldTypeHelper.FieldType.Objects
-						field.Value = GetObjectsFromString(value, _settings.MultiRecordDelimiter)
+						field.Value = LoadFileReader.GetStringArrayFromDelimitedFieldValue(value, _settings.MultiRecordDelimiter)
 					Case Relativity.FieldTypeHelper.FieldType.Varchar
 						field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(Me.GetNullableFixedString(value, column, field.TextLength, field.DisplayName))
 					Case Relativity.FieldTypeHelper.FieldType.Text
@@ -430,7 +430,7 @@ Namespace kCura.WinEDDS
 
 #End Region
 
-		Public Shared Function GetObjectsFromString(value As Object, delimiter As Char) As String()
+		Public Shared Function GetStringArrayFromDelimitedFieldValue(value As Object, delimiter As Char) As String()
 			Dim incomingValueAsString As String = kCura.Utility.NullableTypesHelper.DBNullString(value)
 			Dim retval As New List(Of String)
 			If (Not String.IsNullOrWhiteSpace(incomingValueAsString)) Then
