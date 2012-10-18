@@ -22,7 +22,7 @@ namespace kCura.WinEDDS.ImportExtension.NUnit
 			//Arrange
 			var items = String.Join(";", itemsUnderTest);
 			//Act
-			var retVal = DataReaderReader.GetListOfItemsFromString(items, ';').ToList();
+			var retVal = LoadFileReader.GetStringArrayFromDelimitedFieldValue(items, ';').ToList();
 			//Assert
 			Assert.AreEqual(2, itemsUnderTest.Intersect(retVal).Count());
 			Assert.AreEqual(2, retVal.Count);
@@ -35,7 +35,7 @@ namespace kCura.WinEDDS.ImportExtension.NUnit
 			//Arrange
 			var items = String.Join(";", itemsUnderTest);
 			//Act
-			var retVal = DataReaderReader.GetListOfItemsFromString(items, ';').ToList();
+			var retVal = LoadFileReader.GetStringArrayFromDelimitedFieldValue(items, ';').ToList();
 			//Assert
 			Assert.AreEqual(2, itemsUnderTest.Intersect(retVal).Count());
 			Assert.AreEqual(2, retVal.Count);
@@ -47,7 +47,7 @@ namespace kCura.WinEDDS.ImportExtension.NUnit
 			//Arrange
 			var items = String.Empty;
 			//Act
-			var retVal = DataReaderReader.GetListOfItemsFromString(items, ';').ToList();
+			var retVal = LoadFileReader.GetStringArrayFromDelimitedFieldValue(items, ';').ToList();
 			//Assert
 			Assert.AreEqual(0, retVal.Count);
 		}
