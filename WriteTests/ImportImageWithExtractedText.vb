@@ -42,7 +42,6 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 			ImportAPI.Settings.CopyFilesToDocumentRepository = True
 			ImportAPI.Settings.ForProduction = False
 			ImportAPI.Settings.IdentityFieldId = Helpers.CommonDefaults.IDENTITY_FIELD_ID
-			ImportAPI.Settings.OverlayIdentifierSourceFieldName = "Control Number"
 			ImportAPI.Settings.ExtractedTextFieldContainsFilePath = True
 			ImportAPI.Settings.ExtractedTextEncoding = System.Text.Encoding.UTF8
 			sql = String.Empty
