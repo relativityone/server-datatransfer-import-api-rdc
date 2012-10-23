@@ -19,7 +19,7 @@ namespace kCura.Relativity.ImportAPI {
 
 		public void CleanUpAfterJobWithSpoofing(string onBehalfOfUserToken) {
 			if (!String.IsNullOrWhiteSpace(onBehalfOfUserToken)) {
-				var am = new AuditManager(Credentials, CookieCache);
+				var am = new AuditManager(_credentials, _cookieMonster);
 
 				try {
 					am.DeleteAuditToken(onBehalfOfUserToken);
