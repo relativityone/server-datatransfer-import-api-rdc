@@ -8,8 +8,6 @@ namespace kCura.Relativity.ImportAPI
 {
 	public interface IImportAPI
 	{
-		CookieContainer CookieCache { get; }
-		ICredentials Credentials { get; }
 		IEnumerable<Workspace> Workspaces();
 		IEnumerable<ProductionSet> GetProductionSets(int workspaceArtifactID);
 		IEnumerable<Field> GetWorkspaceFields(int workspaceArtifactID, int artifactTypeID);
