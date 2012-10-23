@@ -88,14 +88,6 @@ Namespace kCura.Relativity.DataReaderClient
 		Public Property NativeFileCopyMode() As NativeFileCopyModeEnum
 
 		''' <summary>
-		''' Field name to identify matching records when overlaying records
-		''' TODO: What is this meant for? Not used anywhere. (Maybe SelectedIdentifierFieldName?)  
-		''' Marking as obsolete since it is not used, and no one knows the intention of it.
-		''' </summary>
-		<Obsolete()>
-		Public Property OverlayIdentifierSourceFieldName() As String
-
-		''' <summary>
 		''' Determines if records should be appended or overlayed
 		''' </summary>
 		Public Property OverwriteMode() As OverwriteModeEnum

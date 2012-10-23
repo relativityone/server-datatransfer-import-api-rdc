@@ -72,11 +72,10 @@ Namespace kCura.Relativity.DataReaderClient
 
 		Friend Property OnBehalfOfUserToken As String
 
-		'TODO: This shouldn't be used as a progress indicator in ImportBulkArtifactJob
-		' -Phil S. 10/04/11
 		''' <summary>
-		''' '
+		''' This property is not used, and will be unavailable in future releases.
 		''' </summary>
+		<Obsolete()>
 		Public Property RowCount() As Int32
 
 		''' <summary>
