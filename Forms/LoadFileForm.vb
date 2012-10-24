@@ -218,9 +218,9 @@ Namespace kCura.EDDS.WinForm
 			'GroupBox1
 			'
 			Me.GroupBox1.Controls.Add(Me._importDestinationText)
-			Me.GroupBox1.Location = New System.Drawing.Point(8, 4)
+			Me.GroupBox1.Location = New System.Drawing.Point(7, 4)
 			Me.GroupBox1.Name = "GroupBox1"
-			Me.GroupBox1.Size = New System.Drawing.Size(736, 40)
+			Me.GroupBox1.Size = New System.Drawing.Size(737, 40)
 			Me.GroupBox1.TabIndex = 8
 			Me.GroupBox1.TabStop = False
 			Me.GroupBox1.Text = "Import Destination"
@@ -232,7 +232,7 @@ Namespace kCura.EDDS.WinForm
 			Me._importDestinationText.Location = New System.Drawing.Point(8, 20)
 			Me._importDestinationText.Name = "_importDestinationText"
 			Me._importDestinationText.ReadOnly = True
-			Me._importDestinationText.Size = New System.Drawing.Size(716, 13)
+			Me._importDestinationText.Size = New System.Drawing.Size(717, 13)
 			Me._importDestinationText.TabIndex = 5
 			'
 			'MainMenu
@@ -337,10 +337,10 @@ Namespace kCura.EDDS.WinForm
 			'
 			Me.TabControl1.Controls.Add(Me._loadFileTab)
 			Me.TabControl1.Controls.Add(Me._fieldMapTab)
-			Me.TabControl1.Location = New System.Drawing.Point(4, 48)
+			Me.TabControl1.Location = New System.Drawing.Point(7, 48)
 			Me.TabControl1.Name = "TabControl1"
 			Me.TabControl1.SelectedIndex = 0
-			Me.TabControl1.Size = New System.Drawing.Size(736, 488)
+			Me.TabControl1.Size = New System.Drawing.Size(737, 488)
 			Me.TabControl1.TabIndex = 21
 			'
 			'_loadFileTab
@@ -726,7 +726,7 @@ Namespace kCura.EDDS.WinForm
 			Me.ClientSize = New System.Drawing.Size(754, 547)
 			Me.Controls.Add(Me.TabControl1)
 			Me.Controls.Add(Me.GroupBox1)
-			Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle
+			Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Sizable
 			Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
 			Me.MaximizeBox = False
 			Me.Menu = Me.MainMenu
@@ -1119,6 +1119,39 @@ Namespace kCura.EDDS.WinForm
 				Me.LoadFormControls(False)
 			End Set
 		End Property
+
+		'These member variables are populated with data needed to resize the controls
+		' Has the layout info been initialized?  If not, it needs to be set.  If so, we can use it.
+		Private _layoutInfoInitialized As Boolean = False
+		' The number of pixels to the right of the GroupBox control
+		Private _layoutGroupBoxRightMargin As Int32
+		' The difference between the width of the GroupBox and the width of the Text control within it
+		Private _layoutImportDestinationTextWidthDifference As Int32
+		' The bottom margin for the Tab control
+		Private _layoutTabBottomMargin As Int32
+		' The right margin for the Tab control
+		Private _layoutTabRightMargin As Int32
+
+		Private Sub OnForm_Layout(ByVal sender As Object, ByVal e As System.Windows.Forms.LayoutEventArgs) Handles MyBase.Layout
+			System.Diagnostics.Debug.WriteLine("OnForm_Layout occurred.  Width=" + Me.Width.ToString() + ", Height=" + Me.Height.ToString())
+
+			If Not _layoutInfoInitialized Then
+				_layoutGroupBoxRightMargin = Me.Width - (Me.GroupBox1.Location.X + Me.GroupBox1.Size.Width)
+				_layoutTabRightMargin = Me.Width - (Me.TabControl1.Location.X + Me.TabControl1.Size.Width)
+				_layoutTabBottomMargin = Me.Height - (Me.TabControl1.Location.Y + Me.TabControl1.Size.Height)
+				_layoutImportDestinationTextWidthDifference = Me.TabControl1.Size.Width - _importDestinationText.Width
+				_layoutInfoInitialized = True
+			Else
+				'Change GroupBox1 to have the appropriate right margin
+				Me.GroupBox1.Width = Me.Width - (Me.GroupBox1.Location.X + _layoutGroupBoxRightMargin)
+				'Change the width of the text within the groupbox
+				Me._importDestinationText.Width = Me.GroupBox1.Width - _layoutImportDestinationTextWidthDifference
+				'Change TabControl1 to have the appropriate right margin
+				Me.TabControl1.Width = Me.Width - (Me.TabControl1.Location.X + _layoutTabRightMargin)
+				'Change TabControl1 to have the appropriate bottom margin
+				Me.TabControl1.Height = Me.Height - (Me.TabControl1.Location.Y + _layoutTabBottomMargin)
+			End If
+		End Sub
 
 		Private Sub _browseButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _browseButton.Click
 			OpenFileDialog.ShowDialog()
