@@ -49,7 +49,8 @@ Namespace kCura.Windows.Forms
 		Friend WithEvents _moveRightSelectedItemUp As System.Windows.Forms.Button
 		Friend WithEvents _moveLeftSelectedItemDown As System.Windows.Forms.Button
 		Friend WithEvents _moveLeftSelectedItemUp As System.Windows.Forms.Button
-		<System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
+
+		Private Sub InitializeComponent()
 			Me._rightListBox = New kCura.Windows.Forms.ListBox(Me.RelativityHighlightColor)
 			Me._moveAllFieldsLeft = New System.Windows.Forms.Button
 			Me._moveFieldLeft = New System.Windows.Forms.Button
@@ -177,6 +178,11 @@ Namespace kCura.Windows.Forms
 		End Sub
 
 #End Region
+
+		Public Function CalcMarginBetweenControls() As Int32
+			Dim marginBetweenControls As Int32 = _moveAllFieldsLeft.Location.X - _leftListBox.Right
+			Return marginBetweenControls
+		End Function
 
 #Region " Properties "
 
