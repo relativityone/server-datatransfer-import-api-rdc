@@ -3,7 +3,6 @@ Namespace kCura.EDDS.WinForm
 		Inherits System.Windows.Forms.Form
 
 #Region " Windows Form Designer generated code "
-
 		Public Sub New()
 			MyBase.New()
 
@@ -28,25 +27,25 @@ Namespace kCura.EDDS.WinForm
 		Private Sub InitializeDocumentSpecificComponents()
 			If Me.LoadFile.ArtifactTypeID = 0 Then Me.LoadFile.ArtifactTypeID = _application.ArtifactTypeID
 			If Me.LoadFile.ArtifactTypeID = Relativity.ArtifactType.Document Then
-				Me.GroupBox4.Enabled = True
-				Me.GroupBox7.Enabled = True
-				Me.GroupBox5.Text = "Folder Info"
+				Me.GroupBoxNativeFileBehavior.Enabled = True
+				Me.GroupBoxExtractedText.Enabled = True
+				Me.GroupBoxFolderInfo.Text = "Folder Info"
 				Me._buildFolderStructure.Text = "Folder Information Column"
 				ParentArtifactTypeID = 8
 			Else
 				Dim parentQuery As New kCura.WinEDDS.Service.ObjectTypeManager(_application.Credential, _application.CookieContainer)
 				ParentArtifactTypeID = CType(parentQuery.RetrieveParentArtifactTypeID(_application.SelectedCaseInfo.ArtifactID, _
 				Me.LoadFile.ArtifactTypeID).Tables(0).Rows(0)("ParentArtifactTypeID"), Int32)
-				Me.GroupBox5.Enabled = False
+				Me.GroupBoxFolderInfo.Enabled = False
 				If Me.IsChildObject Then
-					Me.GroupBox5.Enabled = True
+					Me.GroupBoxFolderInfo.Enabled = True
 					_buildFolderStructure.Checked = True
 				End If
-				Me.GroupBox4.Enabled = False
+				Me.GroupBoxNativeFileBehavior.Enabled = False
 				If _application.HasFileField(Me.LoadFile.ArtifactTypeID, True) Then
-					Me.GroupBox4.Enabled = True
+					Me.GroupBoxNativeFileBehavior.Enabled = True
 				End If
-				Me.GroupBox7.Enabled = False
+				Me.GroupBoxExtractedText.Enabled = False
 			End If
 		End Sub
 
@@ -86,7 +85,7 @@ Namespace kCura.EDDS.WinForm
 		Friend WithEvents _loadNativeFiles As System.Windows.Forms.CheckBox
 		Friend WithEvents Label5 As System.Windows.Forms.Label
 		Friend WithEvents _nativeFilePathField As System.Windows.Forms.ComboBox
-		Friend WithEvents GroupBox4 As System.Windows.Forms.GroupBox
+		Friend WithEvents GroupBoxNativeFileBehavior As System.Windows.Forms.GroupBox
 		Friend WithEvents GroupBox23 As System.Windows.Forms.GroupBox
 		Friend WithEvents _multiRecordDelimiter As System.Windows.Forms.ComboBox
 		Friend WithEvents Label6 As System.Windows.Forms.Label
@@ -107,12 +106,12 @@ Namespace kCura.EDDS.WinForm
 		Friend WithEvents _fileMenuCloseItem As System.Windows.Forms.MenuItem
 		Friend WithEvents _destinationFolderPath As System.Windows.Forms.ComboBox
 		Friend WithEvents _buildFolderStructure As System.Windows.Forms.CheckBox
-		Friend WithEvents GroupBox5 As System.Windows.Forms.GroupBox
+		Friend WithEvents GroupBoxFolderInfo As System.Windows.Forms.GroupBox
 		Friend WithEvents MenuItem4 As System.Windows.Forms.MenuItem
 		Friend WithEvents _fileRefreshMenuItem As System.Windows.Forms.MenuItem
 		Friend WithEvents _overwriteDropdown As System.Windows.Forms.ComboBox
-		Friend WithEvents GroupBox6 As System.Windows.Forms.GroupBox
-		Friend WithEvents GroupBox7 As System.Windows.Forms.GroupBox
+		Friend WithEvents GroupBoxOverwrite As System.Windows.Forms.GroupBox
+		Friend WithEvents GroupBoxExtractedText As System.Windows.Forms.GroupBox
 		Friend WithEvents _extractedTextValueContainsFileLocation As System.Windows.Forms.CheckBox
 		Friend WithEvents Label8 As System.Windows.Forms.Label
 		Friend WithEvents _advancedButton As System.Windows.Forms.Button
@@ -124,7 +123,7 @@ Namespace kCura.EDDS.WinForm
 		Friend WithEvents _startLineNumberLabel As System.Windows.Forms.Label
 		Friend WithEvents _startLineNumber As System.Windows.Forms.NumericUpDown
 		Friend WithEvents _fieldMap As kCura.WinEDDS.UIControls.FieldMap
-		Friend WithEvents GroupBox3 As System.Windows.Forms.GroupBox
+		Friend WithEvents GroupBoxOverlayIdentifier As System.Windows.Forms.GroupBox
 		Friend WithEvents _overlayIdentifier As System.Windows.Forms.ComboBox
 		Friend WithEvents MenuItem5 As System.Windows.Forms.MenuItem
 		Friend WithEvents _importMenuSendEmailNotificationItem As System.Windows.Forms.MenuItem
@@ -177,19 +176,19 @@ Namespace kCura.EDDS.WinForm
 			Me.Label2 = New System.Windows.Forms.Label
 			Me._recordDelimiter = New System.Windows.Forms.ComboBox
 			Me._fieldMapTab = New System.Windows.Forms.TabPage
-			Me.GroupBox3 = New System.Windows.Forms.GroupBox
+			Me.GroupBoxOverlayIdentifier = New System.Windows.Forms.GroupBox
 			Me._overlayIdentifier = New System.Windows.Forms.ComboBox
 			Me._fieldMap = New kCura.WinEDDS.UIControls.FieldMap
-			Me.GroupBox7 = New System.Windows.Forms.GroupBox
+			Me.GroupBoxExtractedText = New System.Windows.Forms.GroupBox
 			Me._fullTextFileEncodingPicker = New kCura.EDDS.WinForm.EncodingPicker
 			Me.Label9 = New System.Windows.Forms.Label
 			Me._extractedTextValueContainsFileLocation = New System.Windows.Forms.CheckBox
-			Me.GroupBox6 = New System.Windows.Forms.GroupBox
+			Me.GroupBoxOverwrite = New System.Windows.Forms.GroupBox
 			Me._overwriteDropdown = New System.Windows.Forms.ComboBox
-			Me.GroupBox5 = New System.Windows.Forms.GroupBox
+			Me.GroupBoxFolderInfo = New System.Windows.Forms.GroupBox
 			Me._buildFolderStructure = New System.Windows.Forms.CheckBox
 			Me._destinationFolderPath = New System.Windows.Forms.ComboBox
-			Me.GroupBox4 = New System.Windows.Forms.GroupBox
+			Me.GroupBoxNativeFileBehavior = New System.Windows.Forms.GroupBox
 			Me._advancedButton = New System.Windows.Forms.Button
 			Me._loadNativeFiles = New System.Windows.Forms.CheckBox
 			Me._nativeFilePathField = New System.Windows.Forms.ComboBox
@@ -203,11 +202,11 @@ Namespace kCura.EDDS.WinForm
 			Me.GroupBox2.SuspendLayout()
 			Me.GroupBox23.SuspendLayout()
 			Me._fieldMapTab.SuspendLayout()
-			Me.GroupBox3.SuspendLayout()
-			Me.GroupBox7.SuspendLayout()
-			Me.GroupBox6.SuspendLayout()
-			Me.GroupBox5.SuspendLayout()
-			Me.GroupBox4.SuspendLayout()
+			Me.GroupBoxOverlayIdentifier.SuspendLayout()
+			Me.GroupBoxExtractedText.SuspendLayout()
+			Me.GroupBoxOverwrite.SuspendLayout()
+			Me.GroupBoxFolderInfo.SuspendLayout()
+			Me.GroupBoxNativeFileBehavior.SuspendLayout()
 			Me.SuspendLayout()
 			'
 			'OpenFileDialog
@@ -552,27 +551,27 @@ Namespace kCura.EDDS.WinForm
 			'
 			'_fieldMapTab
 			'
-			Me._fieldMapTab.Controls.Add(Me.GroupBox3)
+			Me._fieldMapTab.Controls.Add(Me.GroupBoxOverlayIdentifier)
 			Me._fieldMapTab.Controls.Add(Me._fieldMap)
-			Me._fieldMapTab.Controls.Add(Me.GroupBox7)
-			Me._fieldMapTab.Controls.Add(Me.GroupBox6)
-			Me._fieldMapTab.Controls.Add(Me.GroupBox5)
-			Me._fieldMapTab.Controls.Add(Me.GroupBox4)
+			Me._fieldMapTab.Controls.Add(Me.GroupBoxExtractedText)
+			Me._fieldMapTab.Controls.Add(Me.GroupBoxOverwrite)
+			Me._fieldMapTab.Controls.Add(Me.GroupBoxFolderInfo)
+			Me._fieldMapTab.Controls.Add(Me.GroupBoxNativeFileBehavior)
 			Me._fieldMapTab.Location = New System.Drawing.Point(4, 22)
 			Me._fieldMapTab.Name = "_fieldMapTab"
 			Me._fieldMapTab.Size = New System.Drawing.Size(728, 462)
 			Me._fieldMapTab.TabIndex = 1
 			Me._fieldMapTab.Text = "Field Map"
 			'
-			'GroupBox3
+			'GroupBoxOverlayIdentifier
 			'
-			Me.GroupBox3.Controls.Add(Me._overlayIdentifier)
-			Me.GroupBox3.Location = New System.Drawing.Point(4, 352)
-			Me.GroupBox3.Name = "GroupBox3"
-			Me.GroupBox3.Size = New System.Drawing.Size(234, 56)
-			Me.GroupBox3.TabIndex = 11
-			Me.GroupBox3.TabStop = False
-			Me.GroupBox3.Text = "Overlay Identifier"
+			Me.GroupBoxOverlayIdentifier.Controls.Add(Me._overlayIdentifier)
+			Me.GroupBoxOverlayIdentifier.Location = New System.Drawing.Point(4, 352)
+			Me.GroupBoxOverlayIdentifier.Name = "GroupBoxOverlayIdentifier"
+			Me.GroupBoxOverlayIdentifier.Size = New System.Drawing.Size(234, 56)
+			Me.GroupBoxOverlayIdentifier.TabIndex = 11
+			Me.GroupBoxOverlayIdentifier.TabStop = False
+			Me.GroupBoxOverlayIdentifier.Text = "Overlay Identifier"
 			'
 			'_overlayIdentifier
 			'
@@ -592,15 +591,15 @@ Namespace kCura.EDDS.WinForm
 			'
 			'GroupBox7
 			'
-			Me.GroupBox7.Controls.Add(Me._fullTextFileEncodingPicker)
-			Me.GroupBox7.Controls.Add(Me.Label9)
-			Me.GroupBox7.Controls.Add(Me._extractedTextValueContainsFileLocation)
-			Me.GroupBox7.Location = New System.Drawing.Point(484, 288)
-			Me.GroupBox7.Name = "GroupBox7"
-			Me.GroupBox7.Size = New System.Drawing.Size(234, 104)
-			Me.GroupBox7.TabIndex = 14
-			Me.GroupBox7.TabStop = False
-			Me.GroupBox7.Text = "Extracted Text"
+			Me.GroupBoxExtractedText.Controls.Add(Me._fullTextFileEncodingPicker)
+			Me.GroupBoxExtractedText.Controls.Add(Me.Label9)
+			Me.GroupBoxExtractedText.Controls.Add(Me._extractedTextValueContainsFileLocation)
+			Me.GroupBoxExtractedText.Location = New System.Drawing.Point(484, 288)
+			Me.GroupBoxExtractedText.Name = "GroupBox7"
+			Me.GroupBoxExtractedText.Size = New System.Drawing.Size(234, 104)
+			Me.GroupBoxExtractedText.TabIndex = 14
+			Me.GroupBoxExtractedText.TabStop = False
+			Me.GroupBoxExtractedText.Text = "Extracted Text"
 			'
 			'_fullTextFileEncodingPicker
 			'
@@ -626,15 +625,15 @@ Namespace kCura.EDDS.WinForm
 			Me._extractedTextValueContainsFileLocation.TabIndex = 25
 			Me._extractedTextValueContainsFileLocation.Text = "Cell contains file location"
 			'
-			'GroupBox6
+			'GroupBoxOverwrite
 			'
-			Me.GroupBox6.Controls.Add(Me._overwriteDropdown)
-			Me.GroupBox6.Location = New System.Drawing.Point(4, 288)
-			Me.GroupBox6.Name = "GroupBox6"
-			Me.GroupBox6.Size = New System.Drawing.Size(234, 56)
-			Me.GroupBox6.TabIndex = 10
-			Me.GroupBox6.TabStop = False
-			Me.GroupBox6.Text = "Overwrite"
+			Me.GroupBoxOverwrite.Controls.Add(Me._overwriteDropdown)
+			Me.GroupBoxOverwrite.Location = New System.Drawing.Point(4, 288)
+			Me.GroupBoxOverwrite.Name = "GroupBoxOverwrite"
+			Me.GroupBoxOverwrite.Size = New System.Drawing.Size(234, 56)
+			Me.GroupBoxOverwrite.TabIndex = 10
+			Me.GroupBoxOverwrite.TabStop = False
+			Me.GroupBoxOverwrite.Text = "Overwrite"
 			'
 			'_overwriteDropdown
 			'
@@ -645,16 +644,16 @@ Namespace kCura.EDDS.WinForm
 			Me._overwriteDropdown.Size = New System.Drawing.Size(220, 21)
 			Me._overwriteDropdown.TabIndex = 28
 			'
-			'GroupBox5
+			'GroupBoxFolderInfo
 			'
-			Me.GroupBox5.Controls.Add(Me._buildFolderStructure)
-			Me.GroupBox5.Controls.Add(Me._destinationFolderPath)
-			Me.GroupBox5.Location = New System.Drawing.Point(244, 288)
-			Me.GroupBox5.Name = "GroupBox5"
-			Me.GroupBox5.Size = New System.Drawing.Size(234, 72)
-			Me.GroupBox5.TabIndex = 12
-			Me.GroupBox5.TabStop = False
-			Me.GroupBox5.Text = "Parent Info"
+			Me.GroupBoxFolderInfo.Controls.Add(Me._buildFolderStructure)
+			Me.GroupBoxFolderInfo.Controls.Add(Me._destinationFolderPath)
+			Me.GroupBoxFolderInfo.Location = New System.Drawing.Point(244, 288)
+			Me.GroupBoxFolderInfo.Name = "GroupBoxFolderInfo"
+			Me.GroupBoxFolderInfo.Size = New System.Drawing.Size(234, 72)
+			Me.GroupBoxFolderInfo.TabIndex = 12
+			Me.GroupBoxFolderInfo.TabStop = False
+			Me.GroupBoxFolderInfo.Text = "Parent Info"
 			'
 			'_buildFolderStructure
 			'
@@ -673,18 +672,18 @@ Namespace kCura.EDDS.WinForm
 			Me._destinationFolderPath.Size = New System.Drawing.Size(220, 21)
 			Me._destinationFolderPath.TabIndex = 21
 			'
-			'GroupBox4
+			'GroupBoxNativeFileBehavior
 			'
-			Me.GroupBox4.Controls.Add(Me._advancedButton)
-			Me.GroupBox4.Controls.Add(Me._loadNativeFiles)
-			Me.GroupBox4.Controls.Add(Me._nativeFilePathField)
-			Me.GroupBox4.Controls.Add(Me.Label5)
-			Me.GroupBox4.Location = New System.Drawing.Point(244, 364)
-			Me.GroupBox4.Name = "GroupBox4"
-			Me.GroupBox4.Size = New System.Drawing.Size(234, 92)
-			Me.GroupBox4.TabIndex = 13
-			Me.GroupBox4.TabStop = False
-			Me.GroupBox4.Text = "Native File Behavior"
+			Me.GroupBoxNativeFileBehavior.Controls.Add(Me._advancedButton)
+			Me.GroupBoxNativeFileBehavior.Controls.Add(Me._loadNativeFiles)
+			Me.GroupBoxNativeFileBehavior.Controls.Add(Me._nativeFilePathField)
+			Me.GroupBoxNativeFileBehavior.Controls.Add(Me.Label5)
+			Me.GroupBoxNativeFileBehavior.Location = New System.Drawing.Point(244, 364)
+			Me.GroupBoxNativeFileBehavior.Name = "GroupBoxNativeFileBehavior"
+			Me.GroupBoxNativeFileBehavior.Size = New System.Drawing.Size(234, 92)
+			Me.GroupBoxNativeFileBehavior.TabIndex = 13
+			Me.GroupBoxNativeFileBehavior.TabStop = False
+			Me.GroupBoxNativeFileBehavior.Text = "Native File Behavior"
 			'
 			'_advancedButton
 			'
@@ -724,9 +723,9 @@ Namespace kCura.EDDS.WinForm
 			'
 			Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
 			Me.ClientSize = New System.Drawing.Size(754, 547)
+			Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Sizable
 			Me.Controls.Add(Me.TabControl1)
 			Me.Controls.Add(Me.GroupBox1)
-			Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Sizable
 			Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
 			Me.MaximizeBox = False
 			Me.Menu = Me.MainMenu
@@ -743,15 +742,14 @@ Namespace kCura.EDDS.WinForm
 			Me.GroupBox2.ResumeLayout(False)
 			Me.GroupBox23.ResumeLayout(False)
 			Me._fieldMapTab.ResumeLayout(False)
-			Me.GroupBox3.ResumeLayout(False)
-			Me.GroupBox7.ResumeLayout(False)
-			Me.GroupBox6.ResumeLayout(False)
-			Me.GroupBox5.ResumeLayout(False)
-			Me.GroupBox4.ResumeLayout(False)
+			Me.GroupBoxOverlayIdentifier.ResumeLayout(False)
+			Me.GroupBoxExtractedText.ResumeLayout(False)
+			Me.GroupBoxOverwrite.ResumeLayout(False)
+			Me.GroupBoxFolderInfo.ResumeLayout(False)
+			Me.GroupBoxNativeFileBehavior.ResumeLayout(False)
 			Me.ResumeLayout(False)
 
 		End Sub
-
 #End Region
 
 		Friend WithEvents _application As kCura.EDDS.WinForm.Application
@@ -1121,10 +1119,9 @@ Namespace kCura.EDDS.WinForm
 		End Property
 
 		'These member variables are populated with data needed to resize the controls
-		' Has the layout info been initialized?  If not, it needs to be set.  If so, we can use it.
-		Private _layoutInfoInitialized As Boolean = False
-		' The number of pixels to the right of the GroupBox control
-		Private _layoutGroupBoxRightMargin As Int32
+		
+		' The number of pixels to the right of the GroupBox control for Import Destination
+		Private _layoutGroupImportDestinationBoxRightMargin As Int32
 		' The difference between the width of the GroupBox and the width of the Text control within it
 		Private _layoutImportDestinationTextWidthDifference As Int32
 		' The bottom margin for the Tab control
@@ -1132,24 +1129,86 @@ Namespace kCura.EDDS.WinForm
 		' The right margin for the Tab control
 		Private _layoutTabRightMargin As Int32
 
-		Private Sub OnForm_Layout(ByVal sender As Object, ByVal e As System.Windows.Forms.LayoutEventArgs) Handles MyBase.Layout
-			System.Diagnostics.Debug.WriteLine("OnForm_Layout occurred.  Width=" + Me.Width.ToString() + ", Height=" + Me.Height.ToString())
+		' Distance from bottom of the FieldMap (list boxes control) to the bottom edge
+		Private _layoutDistanceFromFieldMapToBottomEdge As Int32
+		Private _layoutFieldMapRightMargin As Int32
 
-			If Not _layoutInfoInitialized Then
-				_layoutGroupBoxRightMargin = Me.Width - (Me.GroupBox1.Location.X + Me.GroupBox1.Size.Width)
-				_layoutTabRightMargin = Me.Width - (Me.TabControl1.Location.X + Me.TabControl1.Size.Width)
-				_layoutTabBottomMargin = Me.Height - (Me.TabControl1.Location.Y + Me.TabControl1.Size.Height)
-				_layoutImportDestinationTextWidthDifference = Me.TabControl1.Size.Width - _importDestinationText.Width
-				_layoutInfoInitialized = True
+		' Top of Field Map group boxes
+		Private _layoutDistanceFromTopOfFieldMapGroupBoxesToBottomEdge As Int32
+		Private _layoutDistanceFromTopOfOverlayIdentifierGroupBoxToBottomEdge As Int32
+		Private _layoutDistanceFromTopOfNativeFileBehaviorGroupBoxToBottomEdge As Int32
+		' Horizontal margin between group boxes
+		Private _layoutHorizontalMarginBetweenGroupBoxes As Int32
+		' Margin of group boxes from left & right side of screen
+		Private _layoutGroupBoxOutsideMargin As Int32
+
+		' Used to keep track of whether we need to calculate the layout values.  In addition to
+		' initial population, they may need to be populated later due to autoscaling.  Autoscaling
+		' will change the distance between concrols which we would not expect to change.  If this
+		' happens, the _layout info which contains the relative location of controls needs to be 
+		' updated.
+		Private _layoutReferenceDistance As Int32 = 0
+
+		Private Function CalcReferenceDistance() As Int32
+			Return GroupBoxNativeFileBehavior.Top - GroupBoxOverwrite.Top
+		End Function
+
+		Private Sub InitializeLayout()
+			_layoutGroupImportDestinationBoxRightMargin = Me.Width - Me.GroupBox1.Right
+			_layoutTabRightMargin = Me.Width - Me.TabControl1.Right
+			_layoutTabBottomMargin = Me.Height - Me.TabControl1.Bottom
+			_layoutImportDestinationTextWidthDifference = Me.TabControl1.Size.Width - _importDestinationText.Width
+
+			_layoutDistanceFromFieldMapToBottomEdge = _fieldMapTab.Height - _fieldMap.Bottom
+			_layoutFieldMapRightMargin = _fieldMapTab.Width - _fieldMap.Right
+			_layoutDistanceFromTopOfFieldMapGroupBoxesToBottomEdge = _fieldMapTab.Height - GroupBoxOverwrite.Location.Y
+			_layoutDistanceFromTopOfOverlayIdentifierGroupBoxToBottomEdge = _fieldMapTab.Height - GroupBoxOverlayIdentifier.Location.Y
+			_layoutDistanceFromTopOfNativeFileBehaviorGroupBoxToBottomEdge = _fieldMapTab.Height - GroupBoxNativeFileBehavior.Location.Y
+			_layoutHorizontalMarginBetweenGroupBoxes = GroupBoxFolderInfo.Location.X - GroupBoxOverwrite.Right
+			_layoutGroupBoxOutsideMargin = GroupBoxOverwrite.Location.X
+
+			_layoutReferenceDistance = CalcReferenceDistance()
+		End Sub
+
+		Private Sub OnForm_Layout(ByVal sender As Object, ByVal e As System.Windows.Forms.LayoutEventArgs) Handles MyBase.Layout
+			System.Diagnostics.Debug.WriteLine("LoadFileForm.OnForm_Layout occurred.  Width=" + Me.Width.ToString() + ", Height=" + Me.Height.ToString())
+
+			'The reference distance should remain constant even if the dialog box is resized
+			If _layoutReferenceDistance <> CalcReferenceDistance() Then
+				InitializeLayout()
 			Else
 				'Change GroupBox1 to have the appropriate right margin
-				Me.GroupBox1.Width = Me.Width - (Me.GroupBox1.Location.X + _layoutGroupBoxRightMargin)
+				Me.GroupBox1.Width = Me.Width - (Me.GroupBox1.Location.X + _layoutGroupImportDestinationBoxRightMargin)
 				'Change the width of the text within the groupbox
 				Me._importDestinationText.Width = Me.GroupBox1.Width - _layoutImportDestinationTextWidthDifference
 				'Change TabControl1 to have the appropriate right margin
 				Me.TabControl1.Width = Me.Width - (Me.TabControl1.Location.X + _layoutTabRightMargin)
 				'Change TabControl1 to have the appropriate bottom margin
 				Me.TabControl1.Height = Me.Height - (Me.TabControl1.Location.Y + _layoutTabBottomMargin)
+
+				'Change group boxes to be at an appropriate location and size.  Overwrite, FolderInfo, and ExtractedText
+				'are all at the same vertical location.
+				Dim topOfGroupBox As Int32 = _fieldMapTab.Height - _layoutDistanceFromTopOfFieldMapGroupBoxesToBottomEdge
+				Dim groupBoxWidth As Int32 = (_fieldMapTab.Width - _layoutGroupBoxOutsideMargin * 2 - _layoutHorizontalMarginBetweenGroupBoxes * 2) \ 3
+
+				Me.GroupBoxOverwrite.Location = New Point(GroupBoxOverwrite.Location.X, topOfGroupBox)
+				Me.GroupBoxOverwrite.Width = groupBoxWidth
+
+				Me.GroupBoxFolderInfo.Location = New Point(GroupBoxOverwrite.Right + _layoutHorizontalMarginBetweenGroupBoxes, topOfGroupBox)
+				Me.GroupBoxFolderInfo.Width = groupBoxWidth
+
+				Me.GroupBoxExtractedText.Location = New Point(GroupBoxFolderInfo.Right + _layoutHorizontalMarginBetweenGroupBoxes, topOfGroupBox)
+				Me.GroupBoxExtractedText.Width = groupBoxWidth
+
+				Me.GroupBoxOverlayIdentifier.Location = New Point(GroupBoxOverwrite.Location.X, _fieldMapTab.Height - _layoutDistanceFromTopOfOverlayIdentifierGroupBoxToBottomEdge)
+				Me.GroupBoxOverlayIdentifier.Width = groupBoxWidth
+
+				Me.GroupBoxNativeFileBehavior.Location = New Point(GroupBoxFolderInfo.Location.X, _fieldMapTab.Height - _layoutDistanceFromTopOfNativeFileBehaviorGroupBoxToBottomEdge)
+				Me.GroupBoxNativeFileBehavior.Width = groupBoxWidth
+
+				'Change the height of the fieldmap
+				_fieldMap.Height = _fieldMapTab.Height - _layoutDistanceFromFieldMapToBottomEdge - _fieldMap.Location.Y
+				_fieldMap.Width = _fieldMapTab.Width - _layoutFieldMapRightMargin - _fieldMap.Location.X
 			End If
 		End Sub
 
