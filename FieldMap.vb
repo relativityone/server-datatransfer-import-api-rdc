@@ -54,7 +54,7 @@ Namespace kCura.WinEDDS.UIControls
 			'
 			Me._fieldColumnsLabel.Name = "_fieldColumnsLabel"
 			Me._fieldColumnsLabel.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-			Me._fieldColumnsLabel.Location = New System.Drawing.Point(0, 8)
+			Me._fieldColumnsLabel.Location = New System.Drawing.Point(0, 4)
 			Me._fieldColumnsLabel.Size = New System.Drawing.Size(145, 16)
 			Me._fieldColumnsLabel.TabIndex = 4
 			Me._fieldColumnsLabel.Text = "Workspace Fields"
@@ -65,7 +65,7 @@ Namespace kCura.WinEDDS.UIControls
 			Me._loadFileColumnsLabel.Name = "_loadFileColumnsLabel"
 			Me._loadFileColumnsLabel.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me._loadFileColumnsLabel.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-			Me._loadFileColumnsLabel.Location = New System.Drawing.Point(566, 8)
+			Me._loadFileColumnsLabel.Location = New System.Drawing.Point(574, 4)
 			Me._loadFileColumnsLabel.Size = New System.Drawing.Size(140, 16)
 			Me._loadFileColumnsLabel.TabIndex = 7
 			Me._loadFileColumnsLabel.Text = "Load File Fields"
@@ -74,7 +74,7 @@ Namespace kCura.WinEDDS.UIControls
 			'_fieldColumns
 			'
 			Me._fieldColumns.Name = "_fieldColumns"
-			Me._fieldColumns.Location = New System.Drawing.Point(0, 24)
+			Me._fieldColumns.Location = New System.Drawing.Point(0, 20)
 			Me._fieldColumns.Size = New System.Drawing.Size(356, 264)
 			Me._fieldColumns.AlternateRowColors = True
 			Me._fieldColumns.KeepButtonsCentered = True
@@ -86,7 +86,7 @@ Namespace kCura.WinEDDS.UIControls
 			'_loadFileColumns
 			'
 			Me._loadFileColumns.Name = "_loadFileColumns"
-			Me._loadFileColumns.Location = New System.Drawing.Point(360, 24)
+			Me._loadFileColumns.Location = New System.Drawing.Point(360, 20)
 			Me._loadFileColumns.Size = New System.Drawing.Size(356, 264)
 			Me._loadFileColumns.AlternateRowColors = True
 			Me._loadFileColumns.KeepButtonsCentered = True
@@ -111,8 +111,6 @@ Namespace kCura.WinEDDS.UIControls
 #End Region
 
 		'These member variables are populated with data needed to resize the controls
-		' Has the layout info been initialized?  If not, it needs to be set.  If so, we can use it.
-		Private _layoutInfoInitialized As Boolean = False
 		' The difference between the bottom of the TwoListBox control and the bottom of the field map
 		Private _layoutTwoListBottomMargin As Int32
 		' The distance between the 2 TwoListBox controls.  In this case, the distance is slightly negative because they overlap a little
@@ -122,32 +120,50 @@ Namespace kCura.WinEDDS.UIControls
 		' The right margin for the LoadFileFields TwoListBox
 		Private _layoutLoadFileFieldsRightMargin As Int32
 
+		' Used to keep track of whether we need to calculate the layout values.  In addition to
+		' initial population, they may need to be populated later due to autoscaling.  Autoscaling
+		' will change the distance between concrols which we would not expect to change.  If this
+		' happens, the _layout info which contains the relative location of controls needs to be 
+		' updated.
+		Private _layoutReferenceDistance As Int32 = 0
+
+		Private Function CalcReferenceDistance() As Int32
+			Return _fieldColumnsLabel.Width
+		End Function
+
 		Private Sub OnControl_Layout(ByVal sender As Object, ByVal e As System.Windows.Forms.LayoutEventArgs) Handles MyBase.Layout
 			System.Diagnostics.Debug.WriteLine("LoadFileForm.OnForm_Layout occurred.  Width=" + Me.Width.ToString() + ", Height=" + Me.Height.ToString())
 
-			If Not _layoutInfoInitialized Then
-				_layoutTwoListBottomMargin = Me.Height - Me._fieldColumns.Bottom
-				_layoutTwoListSeparation = Me._loadFileColumns.Location.X - Me._fieldColumns.Right
-				_layoutWorkspaceFieldsLeftMargin = Me._fieldColumns.Location.X
-				_layoutLoadFileFieldsRightMargin = Me.Width - Me._loadFileColumns.Right
-
-				_layoutInfoInitialized = True
+			If _layoutReferenceDistance <> CalcReferenceDistance() Then
+				InitializeLayout()
 			Else
-				' No need to adjust _loadFileColumnsLabel because it is using anchoring
-
-				' Calculate the width of each TwoListBox
-				Dim widthOfTwoListBox As Int32 = (Me.Width - _layoutTwoListSeparation) \ 2
-				_fieldColumns.Width = widthOfTwoListBox
-				_loadFileColumns.Width = widthOfTwoListBox
-				'Calculate the height of each TwoListBox
-				Dim heightOfTwoListBox As Int32 = Me.Height - _fieldColumns.Top - _layoutTwoListBottomMargin
-				_fieldColumns.Height = heightOfTwoListBox
-				_loadFileColumns.Height = heightOfTwoListBox
-
-				_loadFileColumns.Location = New Point(_fieldColumns.Right + _layoutTwoListSeparation, _loadFileColumns.Top)
+				AdjustLayout()
 			End If
 		End Sub
 
+		Private Sub InitializeLayout()
+			_layoutTwoListBottomMargin = Me.Height - Me._fieldColumns.Bottom
+			_layoutTwoListSeparation = Me._loadFileColumns.Location.X - Me._fieldColumns.Right
+			_layoutWorkspaceFieldsLeftMargin = Me._fieldColumns.Location.X
+			_layoutLoadFileFieldsRightMargin = Me.Width - Me._loadFileColumns.Right
+
+			_layoutReferenceDistance = CalcReferenceDistance()
+		End Sub
+
+		Public Sub AdjustLayout()
+			' No need to adjust _loadFileColumnsLabel because it is using anchoring
+
+			' Calculate the width of each TwoListBox
+			Dim widthOfTwoListBox As Int32 = (Me.Width - _layoutTwoListSeparation) \ 2
+			_fieldColumns.Width = widthOfTwoListBox
+			_loadFileColumns.Width = widthOfTwoListBox
+			'Calculate the height of each TwoListBox
+			Dim heightOfTwoListBox As Int32 = Me.Height - _fieldColumns.Top - _layoutTwoListBottomMargin
+			_fieldColumns.Height = heightOfTwoListBox
+			_loadFileColumns.Height = heightOfTwoListBox
+
+			_loadFileColumns.Left = _fieldColumns.Right + _layoutTwoListSeparation
+		End Sub
 #Region "Properties"
 
 		Public Property FieldColumns() As kCura.Windows.Forms.TwoListBox
