@@ -179,10 +179,106 @@ Namespace kCura.Windows.Forms
 
 #End Region
 
-		Public Function CalcMarginBetweenControls() As Int32
-			Dim marginBetweenControls As Int32 = _moveAllFieldsLeft.Location.X - _leftListBox.Right
-			Return marginBetweenControls
+		'These member variables are populated with data needed to resize the controls
+		' The distance between controls
+		Private _layoutMarginBetweenControls As Int32
+
+		' The distance between the Left listbox and the Right listbox
+		Private _layoutDistanceBetweenListBoxes As Int32
+
+		' The margin between controls plus the up-down button width
+		Private _layoutMarginPlusUpDownButtonWidth As Int32
+
+		' The Margin between the bottom of the list box and the bottom of the control
+		Private _layoutBottomMargin As Int32
+
+		' Used to keep track of whether we need to calculate the layout values.  In addition to
+		' initial population, they may need to be populated later due to autoscaling.  Autoscaling
+		' will change the distance between concrols which we would not expect to change.  If this
+		' happens, the _layout info which contains the relative location of controls needs to be 
+		' updated.
+		Private _layoutReferenceDistance As Int32 = 0
+
+		Private Function CalcReferenceDistance() As Int32
+			Return _rightListBox.Left - _leftListBox.Right
 		End Function
+
+		Private Sub OnControl_Layout(ByVal sender As Object, ByVal e As System.Windows.Forms.LayoutEventArgs) Handles MyBase.Layout
+			System.Diagnostics.Debug.WriteLine("LoadFileForm.OnForm_Layout occurred.  Width=" + Me.Width.ToString() + ", Height=" + Me.Height.ToString())
+
+			If _layoutReferenceDistance <> CalcReferenceDistance() Then
+				InitializeLayout()
+			Else
+				AdjustLayout()
+			End If
+		End Sub
+
+		Public Sub InitializeLayout()
+			_layoutMarginBetweenControls = _moveAllFieldsLeft.Left - _leftListBox.Right
+			_layoutReferenceDistance = CalcReferenceDistance()
+
+			_layoutDistanceBetweenListBoxes = _rightListBox.Left - _leftListBox.Right
+
+			Dim margin As Int32 = _moveAllFieldsLeft.Left - _leftListBox.Right
+			Dim upDownButtonWidth As Int32
+			If (_moveRightSelectedItemUp.Visible) Then
+				upDownButtonWidth = _moveRightSelectedItemUp.Width
+			Else
+				upDownButtonWidth = _moveLeftSelectedItemUp.Width
+			End If
+			_layoutMarginPlusUpDownButtonWidth = margin + upDownButtonWidth
+
+			_layoutBottomMargin = Me.Height - _leftListBox.Height
+		End Sub
+		Public Sub AdjustLayout()
+			' No need to adjust _loadFileColumnsLabel because it is using anchoring
+
+			' Calculate the width of each TwoListBox
+			Dim numberOfUpDownButtons As Int32 = 0
+			If _moveLeftSelectedItemUp.Visible Then
+				numberOfUpDownButtons = numberOfUpDownButtons + 1
+			End If
+			If _moveRightSelectedItemUp.Visible Then
+				numberOfUpDownButtons = numberOfUpDownButtons + 1
+			End If
+			Dim widthOfListBox As Int32 = (Me.Width - _layoutDistanceBetweenListBoxes - _layoutMarginPlusUpDownButtonWidth * numberOfUpDownButtons) \ 2
+			_leftListBox.Width = widthOfListBox
+			_rightListBox.Width = widthOfListBox
+
+			'Calculate the height of each TwoListBox
+			Dim heightOfListBox As Int32 = Me.Height - _layoutBottomMargin
+			_leftListBox.Height = heightOfListBox
+			_rightListBox.Height = heightOfListBox
+
+			'Calculate the location of the left list box
+			Dim collapsibleWidth As Int32
+			If _moveLeftSelectedItemUp.Visible Then
+				collapsibleWidth = _layoutMarginPlusUpDownButtonWidth
+			Else
+				collapsibleWidth = 0
+			End If
+			_leftListBox.Left = collapsibleWidth
+
+			'Calculate the location of the left and right buttons
+			Dim leftSideForMoveLeftRightButtons As Int32 = _leftListBox.Right + _layoutMarginBetweenControls
+			_moveAllFieldsLeft.Left = leftSideForMoveLeftRightButtons
+			_moveFieldLeft.Left = leftSideForMoveLeftRightButtons
+			_moveFieldRight.Left = leftSideForMoveLeftRightButtons
+			_moveAllFieldsRight.Left = leftSideForMoveLeftRightButtons
+			
+			'Calculate the location of the RightListBox
+			Dim leftSideForRightListBox As Int32 = _moveAllFieldsLeft.Right + _layoutMarginBetweenControls
+			_rightListBox.Left = leftSideForRightListBox
+
+			'If visible, change the loction of the right updown button
+			If _moveRightSelectedItemUp.Visible Then
+				Dim leftSideOfUpDownButton As Int32 = Me.Width - _moveRightSelectedItemUp.Width
+				_moveRightSelectedItemUp.Left = leftSideOfUpDownButton
+				_moveRightSelectedItemDown.Left = leftSideOfUpDownButton
+
+				System.Diagnostics.Debug.Assert(_rightListBox.Right < _moveRightSelectedItemUp.Left)
+			End If
+		End Sub
 
 #Region " Properties "
 
@@ -195,30 +291,13 @@ Namespace kCura.Windows.Forms
 				Return _moveLeftSelectedItemDown.Visible
 			End Get
 			Set(ByVal value As Boolean)
-				_moveLeftSelectedItemDown.Visible = value
-				_moveLeftSelectedItemUp.Visible = value
-				If value = False Then
-					Dim pos As Int32 = -24
-					AdjustXPosition(_leftListBox, pos)
-					AdjustXPosition(_moveAllFieldsLeft, pos)
-					AdjustXPosition(_moveFieldLeft, pos)
-					AdjustXPosition(_moveFieldRight, pos)
-					AdjustXPosition(_moveAllFieldsRight, pos)
-					AdjustXPosition(_rightListBox, pos)
-					AdjustXPosition(_moveRightSelectedItemDown, pos)
-					AdjustXPosition(_moveRightSelectedItemUp, pos)
-				Else
-					Dim pos As Int32 = 24
-					If _leftListBox.Location.X <> 24 Then
-						AdjustXPosition(_leftListBox, pos)
-						AdjustXPosition(_moveAllFieldsLeft, pos)
-						AdjustXPosition(_moveFieldLeft, pos)
-						AdjustXPosition(_moveFieldRight, pos)
-						AdjustXPosition(_moveAllFieldsRight, pos)
-						AdjustXPosition(_rightListBox, pos)
-						AdjustXPosition(_moveRightSelectedItemUp, pos)
-						AdjustXPosition(_moveRightSelectedItemDown, pos)
-					End If
+				If _moveLeftSelectedItemDown.Visible <> value OrElse _moveLeftSelectedItemUp.Visible <> value Then
+					System.Diagnostics.Debug.WriteLine("Visible = " + _moveLeftSelectedItemDown.Visible.ToString())
+					System.Diagnostics.Debug.WriteLine("Setting value to " + value.ToString())
+					_moveLeftSelectedItemDown.Visible = value
+					System.Diagnostics.Debug.WriteLine("Visible = " + _moveLeftSelectedItemDown.Visible.ToString())
+					_moveLeftSelectedItemUp.Visible = value
+					'AdjustLayout()
 				End If
 			End Set
 		End Property
@@ -228,8 +307,11 @@ Namespace kCura.Windows.Forms
 				Return _moveRightSelectedItemDown.Visible
 			End Get
 			Set(ByVal value As Boolean)
-				_moveRightSelectedItemDown.Visible = value
-				_moveRightSelectedItemUp.Visible = value
+				If _moveRightSelectedItemDown.Visible <> value OrElse _moveRightSelectedItemUp.Visible <> value Then
+					_moveRightSelectedItemDown.Visible = value
+					_moveRightSelectedItemUp.Visible = value
+					'AdjustLayout()
+				End If
 			End Set
 		End Property
 
