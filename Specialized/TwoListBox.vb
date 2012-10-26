@@ -190,7 +190,7 @@ Namespace kCura.Windows.Forms
 		Private _layoutMarginPlusUpDownButtonWidth As Int32
 
 		' The Margin between the bottom of the list box and the bottom of the control
-		Private _layoutBottomMargin As Int32
+		'Private _layoutBottomMargin As Int32
 
 		' Used to keep track of whether we need to calculate the layout values.  In addition to
 		' initial population, they may need to be populated later due to autoscaling.  Autoscaling
@@ -227,13 +227,6 @@ Namespace kCura.Windows.Forms
 				upDownButtonWidth = _moveLeftSelectedItemUp.Width
 			End If
 			_layoutMarginPlusUpDownButtonWidth = margin + upDownButtonWidth
-
-			If (_leftListBox.Height > Me.Height) Then
-				_leftListBox.Height = Me.Height
-				_layoutBottomMargin = 0
-			Else
-				_layoutBottomMargin = Me.Height - _leftListBox.Height
-			End If
 		End Sub
 
 		Public Sub AdjustLayout()
@@ -252,7 +245,7 @@ Namespace kCura.Windows.Forms
 			_rightListBox.Width = widthOfListBox
 
 			'Calculate the height of each TwoListBox
-			Dim heightOfListBox As Int32 = Me.Height - _layoutBottomMargin
+			Dim heightOfListBox As Int32 = Me.Height
 			_leftListBox.Height = heightOfListBox
 			_rightListBox.Height = heightOfListBox
 
