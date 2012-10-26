@@ -71,7 +71,7 @@ Namespace kCura.Windows.Forms
 			Me._rightListBox.Location = New System.Drawing.Point(212, 0)
 			Me._rightListBox.Name = "_rightListBox"
 			Me._rightListBox.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended
-			Me._rightListBox.Size = New System.Drawing.Size(144, 277)
+			Me._rightListBox.Size = New System.Drawing.Size(144, 280)
 			Me._rightListBox.TabIndex = 16
 			'
 			'_moveAllFieldsLeft
@@ -118,7 +118,7 @@ Namespace kCura.Windows.Forms
 			Me._leftListBox.Location = New System.Drawing.Point(24, 0)
 			Me._leftListBox.Name = "_leftListBox"
 			Me._leftListBox.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended
-			Me._leftListBox.Size = New System.Drawing.Size(144, 277)
+			Me._leftListBox.Size = New System.Drawing.Size(144, 280)
 			Me._leftListBox.TabIndex = 11
 			'
 			'_moveRightSelectedItemDown
@@ -213,7 +213,7 @@ Namespace kCura.Windows.Forms
 			End If
 		End Sub
 
-		Public Sub InitializeLayout()
+		Private Sub InitializeLayout()
 			_layoutMarginBetweenControls = _moveAllFieldsLeft.Left - _leftListBox.Right
 			_layoutReferenceDistance = CalcReferenceDistance()
 
@@ -228,8 +228,14 @@ Namespace kCura.Windows.Forms
 			End If
 			_layoutMarginPlusUpDownButtonWidth = margin + upDownButtonWidth
 
-			_layoutBottomMargin = Me.Height - _leftListBox.Height
+			If (_leftListBox.Height > Me.Height) Then
+				_leftListBox.Height = Me.Height
+				_layoutBottomMargin = 0
+			Else
+				_layoutBottomMargin = Me.Height - _leftListBox.Height
+			End If
 		End Sub
+
 		Public Sub AdjustLayout()
 			' No need to adjust _loadFileColumnsLabel because it is using anchoring
 
@@ -270,7 +276,7 @@ Namespace kCura.Windows.Forms
 			Dim leftSideForRightListBox As Int32 = _moveAllFieldsLeft.Right + _layoutMarginBetweenControls
 			_rightListBox.Left = leftSideForRightListBox
 
-			'If visible, change the loction of the right updown button
+			'If visible, change the location of the right updown button
 			If _moveRightSelectedItemUp.Visible Then
 				Dim leftSideOfUpDownButton As Int32 = Me.Width - _moveRightSelectedItemUp.Width
 				_moveRightSelectedItemUp.Left = leftSideOfUpDownButton
