@@ -67,7 +67,7 @@ Namespace kCura.EDDS.WinForm
 		'Do not modify it using the code editor.
 		Friend WithEvents OpenFileDialog As System.Windows.Forms.OpenFileDialog
 		Friend WithEvents GroupBox1 As System.Windows.Forms.GroupBox
-		Friend WithEvents _importDestinationText As System.Windows.Forms.TextBox
+		Friend WithEvents _importDestinationText As System.Windows.Forms.Label
 		Friend WithEvents MainMenu As System.Windows.Forms.MainMenu
 		Friend WithEvents MenuItem1 As System.Windows.Forms.MenuItem
 		Friend WithEvents MenuItem2 As System.Windows.Forms.MenuItem
@@ -133,7 +133,7 @@ Namespace kCura.EDDS.WinForm
 			Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(LoadFileForm))
 			Me.OpenFileDialog = New System.Windows.Forms.OpenFileDialog
 			Me.GroupBox1 = New System.Windows.Forms.GroupBox
-			Me._importDestinationText = New System.Windows.Forms.TextBox
+			Me._importDestinationText = New System.Windows.Forms.Label
 			Me.MainMenu = New System.Windows.Forms.MainMenu(Me.components)
 			Me.MenuItem1 = New System.Windows.Forms.MenuItem
 			Me._fileLoadFieldMapMenuItem = New System.Windows.Forms.MenuItem
@@ -230,8 +230,7 @@ Namespace kCura.EDDS.WinForm
 			Me._importDestinationText.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
 			Me._importDestinationText.Location = New System.Drawing.Point(8, 20)
 			Me._importDestinationText.Name = "_importDestinationText"
-			Me._importDestinationText.ReadOnly = True
-			Me._importDestinationText.Size = New System.Drawing.Size(717, 13)
+			Me._importDestinationText.Size = New System.Drawing.Size(717, 18)
 			Me._importDestinationText.TabIndex = 5
 			'
 			'MainMenu
@@ -586,7 +585,7 @@ Namespace kCura.EDDS.WinForm
 			'
 			Me._fieldMap.Location = New System.Drawing.Point(4, 0)
 			Me._fieldMap.Name = "_fieldMap"
-			Me._fieldMap.Size = New System.Drawing.Size(732, 288)
+			Me._fieldMap.Size = New System.Drawing.Size(720, 288)
 			Me._fieldMap.TabIndex = 0
 			'
 			'GroupBoxExtractedText
@@ -747,6 +746,7 @@ Namespace kCura.EDDS.WinForm
 			Me.GroupBoxOverwrite.ResumeLayout(False)
 			Me.GroupBoxFolderInfo.ResumeLayout(False)
 			Me.GroupBoxNativeFileBehavior.ResumeLayout(False)
+			Me.MinimumSize = New System.Drawing.Size(762, 560)
 			Me.ResumeLayout(False)
 
 		End Sub
@@ -1153,6 +1153,15 @@ Namespace kCura.EDDS.WinForm
 			Return GroupBoxNativeFileBehavior.Top - GroupBoxOverwrite.Top
 		End Function
 
+		Private Sub OnForm_Layout(ByVal sender As Object, ByVal e As System.Windows.Forms.LayoutEventArgs) Handles MyBase.Layout
+			'The reference distance should remain constant even if the dialog box is resized
+			If _layoutReferenceDistance <> CalcReferenceDistance() Then
+				InitializeLayout()
+			Else
+				AdjustLayout()
+			End If
+		End Sub
+
 		Private Sub InitializeLayout()
 			_layoutGroupImportDestinationBoxRightMargin = Me.Width - Me.GroupBox1.Right
 			_layoutTabRightMargin = Me.Width - Me.TabControl1.Right
@@ -1170,46 +1179,39 @@ Namespace kCura.EDDS.WinForm
 			_layoutReferenceDistance = CalcReferenceDistance()
 		End Sub
 
-		Private Sub OnForm_Layout(ByVal sender As Object, ByVal e As System.Windows.Forms.LayoutEventArgs) Handles MyBase.Layout
-			System.Diagnostics.Debug.WriteLine("LoadFileForm.OnForm_Layout occurred.  Width=" + Me.Width.ToString() + ", Height=" + Me.Height.ToString())
+		Public Sub AdjustLayout()
+			'Change GroupBox1 to have the appropriate right margin
+			Me.GroupBox1.Width = Me.Width - (Me.GroupBox1.Location.X + _layoutGroupImportDestinationBoxRightMargin)
+			'Change the width of the text within the groupbox
+			Me._importDestinationText.Width = Me.GroupBox1.Width - _layoutImportDestinationTextWidthDifference
+			'Change TabControl1 to have the appropriate right margin
+			Me.TabControl1.Width = Me.Width - (Me.TabControl1.Location.X + _layoutTabRightMargin)
+			'Change TabControl1 to have the appropriate bottom margin
+			Me.TabControl1.Height = Me.Height - (Me.TabControl1.Location.Y + _layoutTabBottomMargin)
 
-			'The reference distance should remain constant even if the dialog box is resized
-			If _layoutReferenceDistance <> CalcReferenceDistance() Then
-				InitializeLayout()
-			Else
-				'Change GroupBox1 to have the appropriate right margin
-				Me.GroupBox1.Width = Me.Width - (Me.GroupBox1.Location.X + _layoutGroupImportDestinationBoxRightMargin)
-				'Change the width of the text within the groupbox
-				Me._importDestinationText.Width = Me.GroupBox1.Width - _layoutImportDestinationTextWidthDifference
-				'Change TabControl1 to have the appropriate right margin
-				Me.TabControl1.Width = Me.Width - (Me.TabControl1.Location.X + _layoutTabRightMargin)
-				'Change TabControl1 to have the appropriate bottom margin
-				Me.TabControl1.Height = Me.Height - (Me.TabControl1.Location.Y + _layoutTabBottomMargin)
+			'Change group boxes to be at an appropriate location and size.  Overwrite, FolderInfo, and ExtractedText
+			'are all at the same vertical location.
+			Dim topOfGroupBox As Int32 = _fieldMapTab.Height - _layoutDistanceFromTopOfFieldMapGroupBoxesToBottomEdge
+			Dim groupBoxWidth As Int32 = (_fieldMapTab.Width - _layoutGroupBoxOutsideMargin * 2 - _layoutHorizontalMarginBetweenGroupBoxes * 2) \ 3
 
-				'Change group boxes to be at an appropriate location and size.  Overwrite, FolderInfo, and ExtractedText
-				'are all at the same vertical location.
-				Dim topOfGroupBox As Int32 = _fieldMapTab.Height - _layoutDistanceFromTopOfFieldMapGroupBoxesToBottomEdge
-				Dim groupBoxWidth As Int32 = (_fieldMapTab.Width - _layoutGroupBoxOutsideMargin * 2 - _layoutHorizontalMarginBetweenGroupBoxes * 2) \ 3
+			Me.GroupBoxOverwrite.Location = New Point(GroupBoxOverwrite.Location.X, topOfGroupBox)
+			Me.GroupBoxOverwrite.Width = groupBoxWidth
 
-				Me.GroupBoxOverwrite.Location = New Point(GroupBoxOverwrite.Location.X, topOfGroupBox)
-				Me.GroupBoxOverwrite.Width = groupBoxWidth
+			Me.GroupBoxFolderInfo.Location = New Point(GroupBoxOverwrite.Right + _layoutHorizontalMarginBetweenGroupBoxes, topOfGroupBox)
+			Me.GroupBoxFolderInfo.Width = groupBoxWidth
 
-				Me.GroupBoxFolderInfo.Location = New Point(GroupBoxOverwrite.Right + _layoutHorizontalMarginBetweenGroupBoxes, topOfGroupBox)
-				Me.GroupBoxFolderInfo.Width = groupBoxWidth
+			Me.GroupBoxExtractedText.Location = New Point(GroupBoxFolderInfo.Right + _layoutHorizontalMarginBetweenGroupBoxes, topOfGroupBox)
+			Me.GroupBoxExtractedText.Width = groupBoxWidth
 
-				Me.GroupBoxExtractedText.Location = New Point(GroupBoxFolderInfo.Right + _layoutHorizontalMarginBetweenGroupBoxes, topOfGroupBox)
-				Me.GroupBoxExtractedText.Width = groupBoxWidth
+			Me.GroupBoxOverlayIdentifier.Location = New Point(GroupBoxOverwrite.Location.X, _fieldMapTab.Height - _layoutDistanceFromTopOfOverlayIdentifierGroupBoxToBottomEdge)
+			Me.GroupBoxOverlayIdentifier.Width = groupBoxWidth
 
-				Me.GroupBoxOverlayIdentifier.Location = New Point(GroupBoxOverwrite.Location.X, _fieldMapTab.Height - _layoutDistanceFromTopOfOverlayIdentifierGroupBoxToBottomEdge)
-				Me.GroupBoxOverlayIdentifier.Width = groupBoxWidth
+			Me.GroupBoxNativeFileBehavior.Location = New Point(GroupBoxFolderInfo.Location.X, _fieldMapTab.Height - _layoutDistanceFromTopOfNativeFileBehaviorGroupBoxToBottomEdge)
+			Me.GroupBoxNativeFileBehavior.Width = groupBoxWidth
 
-				Me.GroupBoxNativeFileBehavior.Location = New Point(GroupBoxFolderInfo.Location.X, _fieldMapTab.Height - _layoutDistanceFromTopOfNativeFileBehaviorGroupBoxToBottomEdge)
-				Me.GroupBoxNativeFileBehavior.Width = groupBoxWidth
-
-				'Change the height of the fieldmap
-				_fieldMap.Height = _fieldMapTab.Height - _layoutDistanceFromFieldMapToBottomEdge - _fieldMap.Location.Y
-				_fieldMap.Width = _fieldMapTab.Width - _layoutFieldMapRightMargin - _fieldMap.Location.X
-			End If
+			'Change the height of the fieldmap
+			_fieldMap.Height = _fieldMapTab.Height - _layoutDistanceFromFieldMapToBottomEdge - _fieldMap.Location.Y
+			_fieldMap.Width = _fieldMapTab.Width - _layoutFieldMapRightMargin - _fieldMap.Location.X
 		End Sub
 
 		Private Sub _browseButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _browseButton.Click
