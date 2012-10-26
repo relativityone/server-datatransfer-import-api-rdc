@@ -100,7 +100,7 @@ Public Class ExportForm
 	Public WithEvents _nestedValueDelimiter As System.Windows.Forms.ComboBox
 	Public WithEvents Label18 As System.Windows.Forms.Label
 	Public WithEvents _filters As System.Windows.Forms.ComboBox
-	Public WithEvents _columnSelecter As kCura.Windows.Forms.TwoListBox
+	Public WithEvents _columnSelector As kCura.Windows.Forms.TwoListBox
 	Public WithEvents _filtersBox As System.Windows.Forms.GroupBox
 	Public WithEvents _metadataGroup As System.Windows.Forms.GroupBox
 	Public WithEvents Label1 As System.Windows.Forms.Label
@@ -123,7 +123,8 @@ Public Class ExportForm
 	Public WithEvents _startExportAtDocumentNumber As System.Windows.Forms.NumericUpDown
 	Public WithEvents _saveExportSettingsDialog As System.Windows.Forms.SaveFileDialog
 	Public WithEvents _loadExportSettingsDialog As System.Windows.Forms.OpenFileDialog
-	<System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
+
+	Private Sub InitializeComponent()
 		Dim resources As System.Resources.ResourceManager = New System.Resources.ResourceManager(GetType(ExportForm))
 		Me.MainMenu1 = New System.Windows.Forms.MainMenu
 		Me.ExportMenu = New System.Windows.Forms.MenuItem
@@ -150,7 +151,7 @@ Public Class ExportForm
 		Me.Label24 = New System.Windows.Forms.Label
 		Me.Label18 = New System.Windows.Forms.Label
 		Me._filters = New System.Windows.Forms.ComboBox
-		Me._columnSelecter = New kCura.Windows.Forms.TwoListBox
+		Me._columnSelector = New kCura.Windows.Forms.TwoListBox
 		Me._destinationFileTabPage = New System.Windows.Forms.TabPage
 		Me.GroupBox6 = New System.Windows.Forms.GroupBox
 		Me._metadataGroup = New System.Windows.Forms.GroupBox
@@ -392,7 +393,7 @@ Public Class ExportForm
 		Me._filtersBox.Controls.Add(Me.Label24)
 		Me._filtersBox.Controls.Add(Me.Label18)
 		Me._filtersBox.Controls.Add(Me._filters)
-		Me._filtersBox.Controls.Add(Me._columnSelecter)
+		Me._filtersBox.Controls.Add(Me._columnSelector)
 		Me._filtersBox.Location = New System.Drawing.Point(4, 12)
 		Me._filtersBox.Name = "_filtersBox"
 		Me._filtersBox.Size = New System.Drawing.Size(560, 356)
@@ -441,14 +442,14 @@ Public Class ExportForm
 		'
 		'_columnSelecter
 		'
-		Me._columnSelecter.AlternateRowColors = True
-		Me._columnSelecter.KeepButtonsCentered = False
-		Me._columnSelecter.LeftOrderControlsVisible = False
-		Me._columnSelecter.Location = New System.Drawing.Point(12, 64)
-		Me._columnSelecter.Name = "_columnSelecter"
-		Me._columnSelecter.RightOrderControlVisible = True
-		Me._columnSelecter.Size = New System.Drawing.Size(360, 280)
-		Me._columnSelecter.TabIndex = 17
+		Me._columnSelector.Name = "_columnSelector"
+		Me._columnSelector.Location = New System.Drawing.Point(12, 64)
+		Me._columnSelector.Size = New System.Drawing.Size(360, 280)
+		Me._columnSelector.AlternateRowColors = True
+		Me._columnSelector.KeepButtonsCentered = False
+		Me._columnSelector.LeftOrderControlsVisible = False
+		Me._columnSelector.RightOrderControlVisible = True
+		Me._columnSelector.TabIndex = 17
 		'
 		'_destinationFileTabPage
 		'
@@ -1145,6 +1146,10 @@ Public Class ExportForm
 		End Set
 	End Property
 
+	Public Sub TweakLayout()
+		_columnSelector.LeftOrderControlsVisible = False
+	End Sub
+
 	Public ReadOnly Property ObjectTypeName() As String
 		Get
 			If _objectTypeName = "" Then
@@ -1191,7 +1196,7 @@ Public Class ExportForm
 		If _filters.SelectedItem Is Nothing Then
 			msg.AppendFormat("No {0} selected", Me.ExportTypeStringName.ToLower)
 		End If
-		If _exportNativeFiles.Checked OrElse _columnSelecter.RightListBoxItems.Count > 0 Then
+		If _exportNativeFiles.Checked OrElse _columnSelector.RightListBoxItems.Count > 0 Then
 			If CType(_nativeFileFormat.SelectedItem, String) = "Select..." Then
 				AppendErrorMessage(msg, "No metadata data file format selected")
 			End If
@@ -1303,7 +1308,7 @@ Public Class ExportForm
 		_exportFile.ImagePrecedence = Me.GetImagePrecedence
 		_exportFile.TypeOfImage = Me.GetSelectedImageType
 		Dim selectedViewFields As New System.Collections.ArrayList
-		For Each field As ViewFieldInfo In _columnSelecter.RightListBoxItems
+		For Each field As ViewFieldInfo In _columnSelector.RightListBoxItems
 			selectedViewFields.Add(field)
 		Next
 		_exportFile.SelectedViewFields = DirectCast(selectedViewFields.ToArray(GetType(ViewFieldInfo)), ViewFieldInfo())
@@ -1340,7 +1345,7 @@ Public Class ExportForm
 					_exportFile = newFile
 				End If
 
-				_columnSelecter.EnsureHorizontalScrollbars()
+				_columnSelector.EnsureHorizontalScrollbars()
 			End If
 		End If
 	End Sub
@@ -1428,10 +1433,10 @@ Public Class ExportForm
 		_exportMulticodeFieldsAsNested.Checked = ef.MulticodesAsNested
 
 		If ef.AllExportableFields IsNot Nothing Then
-			_columnSelecter.ClearSelection(kCura.Windows.Forms.ListBoxLocation.Left)
-			_columnSelecter.LeftListBoxItems.Clear()
+			_columnSelector.ClearSelection(kCura.Windows.Forms.ListBoxLocation.Left)
+			_columnSelector.LeftListBoxItems.Clear()
 			Array.Sort(ef.AllExportableFields)
-			_columnSelecter.LeftListBoxItems.AddRange(ef.AllExportableFields)
+			_columnSelector.LeftListBoxItems.AddRange(ef.AllExportableFields)
 		End If
 
 		If ef.SelectedViewFields IsNot Nothing Then
@@ -1439,24 +1444,24 @@ Public Class ExportForm
 
 
 			Dim itemsToRemoveFromLeftListBox As New System.Collections.Generic.List(Of kCura.WinEDDS.ViewFieldInfo)()
-			_columnSelecter.ClearSelection(kCura.Windows.Forms.ListBoxLocation.Right)
-			_columnSelecter.RightListBoxItems.Clear()
+			_columnSelector.ClearSelection(kCura.Windows.Forms.ListBoxLocation.Right)
+			_columnSelector.RightListBoxItems.Clear()
 			For Each viewFieldFromKwx As kCura.WinEDDS.ViewFieldInfo In ef.SelectedViewFields
-				For Each leftListBoxViewField As kCura.WinEDDS.ViewFieldInfo In _columnSelecter.LeftListBoxItems
+				For Each leftListBoxViewField As kCura.WinEDDS.ViewFieldInfo In _columnSelector.LeftListBoxItems
 					If leftListBoxViewField.DisplayName.Equals(viewFieldFromKwx.DisplayName, StringComparison.InvariantCulture) Then
 						itemsToRemoveFromLeftListBox.Add(leftListBoxViewField)
-						_columnSelecter.RightListBoxItems.Add(leftListBoxViewField)
+						_columnSelector.RightListBoxItems.Add(leftListBoxViewField)
 					End If
 				Next
 			Next
 
 
-			If _columnSelecter.RightListBoxItems.Count = 0 Then
+			If _columnSelector.RightListBoxItems.Count = 0 Then
 				_metadataGroup.Enabled = False
 			End If
 
 			For Each vfi As kCura.WinEDDS.ViewFieldInfo In itemsToRemoveFromLeftListBox
-				_columnSelecter.LeftListBoxItems.Remove(vfi)
+				_columnSelector.LeftListBoxItems.Remove(vfi)
 			Next
 		End If
 
@@ -1608,7 +1613,8 @@ Public Class ExportForm
 
 	Private Sub ExportProduction_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles MyBase.Load
 		HandleLoad(sender, e, kCura.EDDS.WinForm.Config.ExportVolumeDigitPadding, kCura.EDDS.WinForm.Config.ExportSubdirectoryDigitPadding)
-		_columnSelecter.EnsureHorizontalScrollbars()
+		_columnSelector.EnsureHorizontalScrollbars()
+		_columnSelector.LeftOrderControlsVisible = False
 	End Sub
 
 	Public Sub HandleLoad(ByVal sender As Object, ByVal e As System.EventArgs, ByVal volumeDigitPadding As Int32, ByVal exportSubdirectoryDigitPadding As Int32)
@@ -1706,7 +1712,7 @@ Public Class ExportForm
 	End Sub
 
 	Private Sub InitializeColumnSelecter()
-		_columnSelecter.ClearAll()
+		_columnSelector.ClearAll()
 		Dim defaultSelectedIds As New System.Collections.ArrayList
 		If Not _filters.SelectedItem Is Nothing Then defaultSelectedIds = DirectCast(Me.ExportFile.ArtifactAvfLookup(CType(_filters.SelectedValue, Int32)), ArrayList)
 		Dim leftListBoxItems As New System.Collections.ArrayList
@@ -1723,17 +1729,17 @@ Public Class ExportForm
 			For Each field As ViewFieldInfo In Me.ExportFile.AllExportableFields
 				If field.AvfId = defaultSelectedId Then
 					If Me.ExportFile.ArtifactTypeID = Relativity.ArtifactType.Document Then
-						_columnSelecter.RightListBoxItems.Add(New ViewFieldInfo(field))
+						_columnSelector.RightListBoxItems.Add(New ViewFieldInfo(field))
 						Exit For
 					ElseIf field.FieldType <> Relativity.FieldTypeHelper.FieldType.File Then
-						_columnSelecter.RightListBoxItems.Add(New ViewFieldInfo(field))
+						_columnSelector.RightListBoxItems.Add(New ViewFieldInfo(field))
 						Exit For
 					End If
 				End If
 			Next
 		Next
 		leftListBoxItems.Sort()
-		_columnSelecter.LeftListBoxItems.AddRange(leftListBoxItems.ToArray())
+		_columnSelector.LeftListBoxItems.AddRange(leftListBoxItems.ToArray())
 		Me.ManagePotentialTextFields()
 	End Sub
 
@@ -1745,7 +1751,7 @@ Public Class ExportForm
 
 	Private Sub _exportNativeFiles_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _exportNativeFiles.CheckedChanged
 		_useAbsolutePaths.Enabled = True
-		_metadataGroup.Enabled = _columnSelecter.RightListBoxItems.Count > 0 OrElse _exportNativeFiles.Checked
+		_metadataGroup.Enabled = _columnSelector.RightListBoxItems.Count > 0 OrElse _exportNativeFiles.Checked
 		_nativeFileFormat.Enabled = True
 
 	End Sub
@@ -1891,8 +1897,8 @@ Public Class ExportForm
 	End Function
 
 
-	Private Sub _columnSelecter_ItemsShifted() Handles _columnSelecter.ItemsShifted
-		_metadataGroup.Enabled = _columnSelecter.RightListBoxItems.Count > 0 OrElse _exportNativeFiles.Checked
+	Private Sub _columnSelecter_ItemsShifted() Handles _columnSelector.ItemsShifted
+		_metadataGroup.Enabled = _columnSelector.RightListBoxItems.Count > 0 OrElse _exportNativeFiles.Checked
 		Me.ManagePotentialTextFields()
 	End Sub
 
@@ -1910,11 +1916,11 @@ Public Class ExportForm
 	End Function
 
 	Private Function GetRightColumnTextFields() As List(Of ViewFieldInfo)
-		Return GetTextFields(_columnSelecter.RightListBoxItems.Cast(Of ViewFieldInfo)().ToList())
+		Return GetTextFields(_columnSelector.RightListBoxItems.Cast(Of ViewFieldInfo)().ToList())
 	End Function
 
 	Private Function GetLeftColumnTextFields() As List(Of ViewFieldInfo)
-		Return GetTextFields(_columnSelecter.LeftListBoxItems.Cast(Of ViewFieldInfo)().ToList())
+		Return GetTextFields(_columnSelector.LeftListBoxItems.Cast(Of ViewFieldInfo)().ToList())
 	End Function
 
 	Private Function GetTextFields(ByVal unfilteredList As List(Of ViewFieldInfo)) As List(Of ViewFieldInfo)
@@ -1927,7 +1933,7 @@ Public Class ExportForm
 
 	Private Sub RefreshRelativityInformation()
 		Dim selectedColumns As New System.Collections.ArrayList
-		For Each field As kCura.WinEDDS.ViewFieldInfo In _columnSelecter.RightListBoxItems
+		For Each field As kCura.WinEDDS.ViewFieldInfo In _columnSelector.RightListBoxItems
 			selectedColumns.Add(New kCura.WinEDDS.ViewFieldInfo(field))
 		Next
 		Dim selectedDataSource As Int32 = CInt(_filters.SelectedValue)
@@ -1977,24 +1983,24 @@ Public Class ExportForm
 			_textFieldPrecedencePicker.AllAvailableLongTextFields = allLongTextFields
 		End If
 		'TODO: this will send -1 index to OnDraw during refresh on exports. Known defect. In backlog
-		_columnSelecter.LeftListBoxItems.Clear()
-		_columnSelecter.RightListBoxItems.Clear()
+		_columnSelector.LeftListBoxItems.Clear()
+		_columnSelector.RightListBoxItems.Clear()
 		Dim al As New System.Collections.ArrayList(_exportFile.AllExportableFields)
 		al.Sort()
-		_columnSelecter.LeftListBoxItems.AddRange(al.ToArray())
+		_columnSelector.LeftListBoxItems.AddRange(al.ToArray())
 		For Each field As ViewFieldInfo In selectedColumns
 			Dim itemToShiftIndex As Int32 = -1
-			For i As Int32 = 0 To _columnSelecter.LeftListBoxItems.Count - 1
-				Dim item As ViewFieldInfo = DirectCast(_columnSelecter.LeftListBoxItems(i), ViewFieldInfo)
+			For i As Int32 = 0 To _columnSelector.LeftListBoxItems.Count - 1
+				Dim item As ViewFieldInfo = DirectCast(_columnSelector.LeftListBoxItems(i), ViewFieldInfo)
 				If item.AvfId = field.AvfId Then
 					itemToShiftIndex = i
 					Exit For
 				End If
 			Next
 			If itemToShiftIndex >= 0 Then
-				Dim item As ViewFieldInfo = DirectCast(_columnSelecter.LeftListBoxItems(itemToShiftIndex), ViewFieldInfo)
-				_columnSelecter.LeftListBoxItems.Remove(item)
-				_columnSelecter.RightListBoxItems.Add(item)
+				Dim item As ViewFieldInfo = DirectCast(_columnSelector.LeftListBoxItems(itemToShiftIndex), ViewFieldInfo)
+				_columnSelector.LeftListBoxItems.Remove(item)
+				_columnSelector.RightListBoxItems.Add(item)
 			End If
 		Next
 	End Sub

@@ -584,12 +584,12 @@ Namespace kCura.EDDS.WinForm
 			'
 			'_fieldMap
 			'
-			Me._fieldMap.Location = New System.Drawing.Point(4, -4)
+			Me._fieldMap.Location = New System.Drawing.Point(4, 0)
 			Me._fieldMap.Name = "_fieldMap"
-			Me._fieldMap.Size = New System.Drawing.Size(732, 292)
+			Me._fieldMap.Size = New System.Drawing.Size(732, 288)
 			Me._fieldMap.TabIndex = 0
 			'
-			'GroupBox7
+			'GroupBoxExtractedText
 			'
 			Me.GroupBoxExtractedText.Controls.Add(Me._fullTextFileEncodingPicker)
 			Me.GroupBoxExtractedText.Controls.Add(Me.Label9)
