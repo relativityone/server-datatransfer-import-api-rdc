@@ -1,5 +1,6 @@
 Imports System.Linq
 Imports System.Collections.Generic
+Imports kCura.Windows.Forms
 
 Public Class ExportForm
 	Inherits System.Windows.Forms.Form
@@ -98,7 +99,7 @@ Public Class ExportForm
 	Public WithEvents GroupBox6 As System.Windows.Forms.GroupBox
 	Public WithEvents _exportMulticodeFieldsAsNested As System.Windows.Forms.CheckBox
 	Public WithEvents _nestedValueDelimiter As System.Windows.Forms.ComboBox
-	Public WithEvents Label18 As System.Windows.Forms.Label
+	Public WithEvents LabelSelectedColumns As System.Windows.Forms.Label
 	Public WithEvents _filters As System.Windows.Forms.ComboBox
 	Public WithEvents _columnSelector As kCura.Windows.Forms.TwoListBox
 	Public WithEvents _filtersBox As System.Windows.Forms.GroupBox
@@ -119,7 +120,7 @@ Public Class ExportForm
 	Public WithEvents Label22 As System.Windows.Forms.Label
 	Public WithEvents _subdirectoryDigitPadding As System.Windows.Forms.NumericUpDown
 	Public WithEvents Label23 As System.Windows.Forms.Label
-	Public WithEvents Label24 As System.Windows.Forms.Label
+	Public WithEvents LabelStartAtRecordNumber As System.Windows.Forms.Label
 	Public WithEvents _startExportAtDocumentNumber As System.Windows.Forms.NumericUpDown
 	Public WithEvents _saveExportSettingsDialog As System.Windows.Forms.SaveFileDialog
 	Public WithEvents _loadExportSettingsDialog As System.Windows.Forms.OpenFileDialog
@@ -148,8 +149,8 @@ Public Class ExportForm
 		Me._dataSourceTabPage = New System.Windows.Forms.TabPage
 		Me._filtersBox = New System.Windows.Forms.GroupBox
 		Me._startExportAtDocumentNumber = New System.Windows.Forms.NumericUpDown
-		Me.Label24 = New System.Windows.Forms.Label
-		Me.Label18 = New System.Windows.Forms.Label
+		Me.LabelStartAtRecordNumber = New System.Windows.Forms.Label
+		Me.LabelSelectedColumns = New System.Windows.Forms.Label
 		Me._filters = New System.Windows.Forms.ComboBox
 		Me._columnSelector = New kCura.Windows.Forms.TwoListBox
 		Me._destinationFileTabPage = New System.Windows.Forms.TabPage
@@ -279,29 +280,31 @@ Public Class ExportForm
 		'
 		'_productionPrecedenceBox
 		'
+		Me._productionPrecedenceBox.Name = "_productionPrecedenceBox"
+		Me._productionPrecedenceBox.Text = "Production Precedence"
 		Me._productionPrecedenceBox.Controls.Add(Me._productionPrecedenceList)
 		Me._productionPrecedenceBox.Controls.Add(Me._pickPrecedenceButton)
-		Me._productionPrecedenceBox.Location = New System.Drawing.Point(568, 12)
-		Me._productionPrecedenceBox.Name = "_productionPrecedenceBox"
-		Me._productionPrecedenceBox.Size = New System.Drawing.Size(184, 356)
+		Me._productionPrecedenceBox.Location = New System.Drawing.Point(576, 6)
+		Me._productionPrecedenceBox.Size = New System.Drawing.Size(187, 416)
 		Me._productionPrecedenceBox.TabIndex = 16
 		Me._productionPrecedenceBox.TabStop = False
-		Me._productionPrecedenceBox.Text = "Production Precedence"
 		'
 		'_productionPrecedenceList
 		'
 		Me._productionPrecedenceList.Location = New System.Drawing.Point(8, 17)
 		Me._productionPrecedenceList.Name = "_productionPrecedenceList"
-		Me._productionPrecedenceList.Size = New System.Drawing.Size(140, 329)
+		Me._productionPrecedenceList.Size = New System.Drawing.Size(142, 390)
 		Me._productionPrecedenceList.TabIndex = 2
+		Me._productionPrecedenceList.IntegralHeight = False
 		'
 		'_pickPrecedenceButton
 		'
-		Me._pickPrecedenceButton.Location = New System.Drawing.Point(152, 328)
+		Me._pickPrecedenceButton.Location = New System.Drawing.Point(152, 387)
 		Me._pickPrecedenceButton.Name = "_pickPrecedenceButton"
 		Me._pickPrecedenceButton.Size = New System.Drawing.Size(24, 20)
 		Me._pickPrecedenceButton.TabIndex = 2
 		Me._pickPrecedenceButton.Text = "..."
+		Me._pickPrecedenceButton.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 		'
 		'Label5
 		'
@@ -390,46 +393,46 @@ Public Class ExportForm
 		'_filtersBox
 		'
 		Me._filtersBox.Controls.Add(Me._startExportAtDocumentNumber)
-		Me._filtersBox.Controls.Add(Me.Label24)
-		Me._filtersBox.Controls.Add(Me.Label18)
+		Me._filtersBox.Controls.Add(Me.LabelStartAtRecordNumber)
+		Me._filtersBox.Controls.Add(Me.LabelSelectedColumns)
 		Me._filtersBox.Controls.Add(Me._filters)
 		Me._filtersBox.Controls.Add(Me._columnSelector)
-		Me._filtersBox.Location = New System.Drawing.Point(4, 12)
+		Me._filtersBox.Location = New System.Drawing.Point(4, 6)
 		Me._filtersBox.Name = "_filtersBox"
-		Me._filtersBox.Size = New System.Drawing.Size(560, 356)
+		Me._filtersBox.Size = New System.Drawing.Size(568, 416)
 		Me._filtersBox.TabIndex = 10
 		Me._filtersBox.TabStop = False
 		Me._filtersBox.Text = "Export"
 		'
 		'_startExportAtDocumentNumber
 		'
-		Me._startExportAtDocumentNumber.Location = New System.Drawing.Point(404, 68)
+		Me._startExportAtDocumentNumber.Name = "_startExportAtDocumentNumber"
+		Me._startExportAtDocumentNumber.Location = New System.Drawing.Point(410, 64)
+		Me._startExportAtDocumentNumber.Size = New System.Drawing.Size(148, 20)
 		Me._startExportAtDocumentNumber.Maximum = New Decimal(New Integer() {10000000, 0, 0, 0})
 		Me._startExportAtDocumentNumber.Minimum = New Decimal(New Integer() {1, 0, 0, 0})
-		Me._startExportAtDocumentNumber.Name = "_startExportAtDocumentNumber"
-		Me._startExportAtDocumentNumber.Size = New System.Drawing.Size(148, 20)
 		Me._startExportAtDocumentNumber.TabIndex = 21
 		Me._startExportAtDocumentNumber.Value = New Decimal(New Integer() {1, 0, 0, 0})
 		'
-		'Label24
+		'LabelStartAtRecordNumber
 		'
-		Me.Label24.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-		Me.Label24.Location = New System.Drawing.Point(392, 48)
-		Me.Label24.Name = "Label24"
-		Me.Label24.Size = New System.Drawing.Size(160, 16)
-		Me.Label24.TabIndex = 20
-		Me.Label24.Text = "Start Export at Record #"
-		Me.Label24.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+		Me.LabelStartAtRecordNumber.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+		Me.LabelStartAtRecordNumber.Location = New System.Drawing.Point(397, 48)
+		Me.LabelStartAtRecordNumber.Name = "LabelStartAtRecordNumber"
+		Me.LabelStartAtRecordNumber.Size = New System.Drawing.Size(160, 16)
+		Me.LabelStartAtRecordNumber.TabIndex = 20
+		Me.LabelStartAtRecordNumber.Text = "Start Export at Record #"
+		Me.LabelStartAtRecordNumber.TextAlign = System.Drawing.ContentAlignment.MiddleRight
 		'
-		'Label18
+		'LabelSelectedColumns
 		'
-		Me.Label18.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-		Me.Label18.Location = New System.Drawing.Point(180, 48)
-		Me.Label18.Name = "Label18"
-		Me.Label18.Size = New System.Drawing.Size(160, 16)
-		Me.Label18.TabIndex = 19
-		Me.Label18.Text = "Selected Columns"
-		Me.Label18.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+		Me.LabelSelectedColumns.Text = "Selected Columns"
+		Me.LabelSelectedColumns.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+		Me.LabelSelectedColumns.Location = New System.Drawing.Point(193, 48)
+		Me.LabelSelectedColumns.Name = "LabelSelectedColumns"
+		Me.LabelSelectedColumns.Size = New System.Drawing.Size(160, 16)
+		Me.LabelSelectedColumns.TabIndex = 19
+		Me.LabelSelectedColumns.TextAlign = System.Drawing.ContentAlignment.MiddleRight
 		'
 		'_filters
 		'
@@ -437,14 +440,14 @@ Public Class ExportForm
 		Me._filters.ItemHeight = 13
 		Me._filters.Location = New System.Drawing.Point(8, 20)
 		Me._filters.Name = "_filters"
-		Me._filters.Size = New System.Drawing.Size(544, 21)
+		Me._filters.Size = New System.Drawing.Size(548, 21)
 		Me._filters.TabIndex = 1
 		'
-		'_columnSelecter
+		'_columnSelector
 		'
 		Me._columnSelector.Name = "_columnSelector"
 		Me._columnSelector.Location = New System.Drawing.Point(12, 64)
-		Me._columnSelector.Size = New System.Drawing.Size(360, 280)
+		Me._columnSelector.Size = New System.Drawing.Size(366, 343)
 		Me._columnSelector.AlternateRowColors = True
 		Me._columnSelector.KeepButtonsCentered = False
 		Me._columnSelector.LeftOrderControlsVisible = False
@@ -1083,8 +1086,10 @@ Public Class ExportForm
 		'ExportForm
 		'
 		Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
-		Me.FormBorderStyle = Windows.Forms.FormBorderStyle.FixedDialog
-		Me.MaximizeBox = False
+		Me.FormBorderStyle = Windows.Forms.FormBorderStyle.Sizable
+		Me.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Show
+		Me.MaximizeBox = True
+		Me.MinimumSize = New System.Drawing.Size(700, 400)
 		Me.BackColor = System.Drawing.SystemColors.Control
 		Me.ClientSize = New System.Drawing.Size(776, 453)
 		Me.Controls.Add(Me.TabControl1)
@@ -1118,6 +1123,91 @@ Public Class ExportForm
 
 	End Sub
 
+#End Region
+
+#Region "Resizing"
+	'These member variables are populated with data needed to resize the controls
+
+	' The initial size of the form
+	Private _layoutInitialSizeOfForm As Size
+	' This TwoListBox gets 2 additional pixels in width for every 3 pixels added through resizing.
+	' Also, it gets 1 for 1 vertical expansion.
+	Private _layoutInitialSizeOfColumnSelector As Size
+	' This ListBox gets 1 additional pixel in width for every 3 pixels added through resizing.
+	' Also, it gets 1 for 1 vertical expansion
+	Private _layoutInitialSizeOfProductionPrecedence As Size
+
+	' Used to keep track of whether we need to calculate the layout values.  In addition to
+	' initial population, they may need to be populated later due to autoscaling.  Autoscaling
+	' will change the distance between concrols which we would not expect to change.  If this
+	' happens, the _layout info which contains the relative location of controls needs to be 
+	' updated.
+	Private _layoutReferenceDistance As Int32 = 0
+
+	Private _layoutList As List(Of kCura.Windows.Forms.RelativeLayoutData)
+
+	Private Function CalcReferenceDistance() As Int32
+		Return _startExportAtDocumentNumber.Width
+	End Function
+
+	Private Sub OnForm_Layout(ByVal sender As Object, ByVal e As System.Windows.Forms.LayoutEventArgs) Handles MyBase.Layout
+		'The reference distance should remain constant even if the dialog box is resized
+		If _layoutReferenceDistance <> CalcReferenceDistance() Then
+			InitializeLayout()
+		Else
+			AdjustLayout()
+		End If
+	End Sub
+
+	Private Sub InitializeLayout()
+		If _layoutList Is Nothing Then
+			_layoutList = New List(Of RelativeLayoutData)
+
+			_layoutList.Add(New RelativeLayoutData(Me, LayoutPropertyType.Width, TabControl1, LayoutPropertyType.Width))
+			_layoutList.Add(New RelativeLayoutData(Me, LayoutPropertyType.Width, _dataSourceTabPage, LayoutPropertyType.Width))
+			_layoutList.Add(New RelativeLayoutData(Me, LayoutPropertyType.Height, TabControl1, LayoutPropertyType.Height))
+			_layoutList.Add(New RelativeLayoutData(Me, LayoutPropertyType.Height, _dataSourceTabPage, LayoutPropertyType.Height))
+			
+			_layoutList.Add(New RelativeLayoutData(_columnSelector, LayoutPropertyType.Width, _filtersBox, LayoutPropertyType.Width))
+			_layoutList.Add(New RelativeLayoutData(_columnSelector, LayoutPropertyType.Width, _filters, LayoutPropertyType.Width))
+			_layoutList.Add(New RelativeLayoutData(_columnSelector, LayoutPropertyType.Height, _filtersBox, LayoutPropertyType.Height))
+			_layoutList.Add(New RelativeLayoutData(_columnSelector, LayoutPropertyType.Right, Me.LabelSelectedColumns, LayoutPropertyType.Left))
+			_layoutList.Add(New RelativeLayoutData(_columnSelector, LayoutPropertyType.Right, Me.LabelStartAtRecordNumber, LayoutPropertyType.Left))
+			_layoutList.Add(New RelativeLayoutData(_columnSelector, LayoutPropertyType.Right, Me._startExportAtDocumentNumber, LayoutPropertyType.Left))
+
+			_layoutList.Add(New RelativeLayoutData(_filtersBox, LayoutPropertyType.Right, Me._productionPrecedenceBox, LayoutPropertyType.Left))
+
+			_layoutList.Add(New RelativeLayoutData(_productionPrecedenceList, LayoutPropertyType.Width, Me._productionPrecedenceBox, LayoutPropertyType.Width))
+			_layoutList.Add(New RelativeLayoutData(_productionPrecedenceList, LayoutPropertyType.Height, Me._productionPrecedenceBox, LayoutPropertyType.Height))
+		End If
+
+		_layoutInitialSizeOfForm = Me.Size
+		_layoutInitialSizeOfColumnSelector = _columnSelector.Size
+		_layoutInitialSizeOfProductionPrecedence = _productionPrecedenceList.Size
+
+		_layoutList.ForEach(Sub(x)
+													x.InitializeDifference()
+												End Sub)
+
+		_layoutReferenceDistance = CalcReferenceDistance()
+	End Sub
+
+	Public Sub AdjustLayout()
+		Dim totalDifferenceFromInitialHeight = Me.Height - _layoutInitialSizeOfForm.Height
+		Dim totalDifferenceFromInitialWidth = Me.Width - _layoutInitialSizeOfForm.Width
+
+		If totalDifferenceFromInitialHeight <> 0 OrElse totalDifferenceFromInitialWidth <> 0 Then
+			_columnSelector.Width = _layoutInitialSizeOfColumnSelector.Width + totalDifferenceFromInitialWidth * 2 \ 3
+			_columnSelector.Height = _layoutInitialSizeOfColumnSelector.Height + totalDifferenceFromInitialHeight
+			_productionPrecedenceList.Width = _layoutInitialSizeOfProductionPrecedence.Width + totalDifferenceFromInitialWidth \ 3
+			_productionPrecedenceList.Height = _layoutInitialSizeOfProductionPrecedence.Height + totalDifferenceFromInitialHeight
+			System.Diagnostics.Debug.Assert(_productionPrecedenceList.Height = _layoutInitialSizeOfProductionPrecedence.Height + totalDifferenceFromInitialHeight)
+
+			For Each x As RelativeLayoutData In _layoutList
+				x.AdjustRelativeControlBasedOnDifference()
+			Next
+		End If
+	End Sub
 #End Region
 
 	Private WithEvents _application As kCura.EDDS.WinForm.Application
@@ -1454,7 +1544,6 @@ Public Class ExportForm
 					End If
 				Next
 			Next
-
 
 			If _columnSelector.RightListBoxItems.Count = 0 Then
 				_metadataGroup.Enabled = False

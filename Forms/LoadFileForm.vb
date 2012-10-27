@@ -66,7 +66,7 @@ Namespace kCura.EDDS.WinForm
 		'It can be modified using the Windows Form Designer.  
 		'Do not modify it using the code editor.
 		Friend WithEvents OpenFileDialog As System.Windows.Forms.OpenFileDialog
-		Friend WithEvents GroupBox1 As System.Windows.Forms.GroupBox
+		Friend WithEvents GroupBoxImportDestination As System.Windows.Forms.GroupBox
 		Friend WithEvents _importDestinationText As System.Windows.Forms.Label
 		Friend WithEvents MainMenu As System.Windows.Forms.MainMenu
 		Friend WithEvents MenuItem1 As System.Windows.Forms.MenuItem
@@ -132,7 +132,7 @@ Namespace kCura.EDDS.WinForm
 			Me.components = New System.ComponentModel.Container
 			Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(LoadFileForm))
 			Me.OpenFileDialog = New System.Windows.Forms.OpenFileDialog
-			Me.GroupBox1 = New System.Windows.Forms.GroupBox
+			Me.GroupBoxImportDestination = New System.Windows.Forms.GroupBox
 			Me._importDestinationText = New System.Windows.Forms.Label
 			Me.MainMenu = New System.Windows.Forms.MainMenu(Me.components)
 			Me.MenuItem1 = New System.Windows.Forms.MenuItem
@@ -194,7 +194,7 @@ Namespace kCura.EDDS.WinForm
 			Me._nativeFilePathField = New System.Windows.Forms.ComboBox
 			Me.Label5 = New System.Windows.Forms.Label
 			Me.HelpProvider1 = New System.Windows.Forms.HelpProvider
-			Me.GroupBox1.SuspendLayout()
+			Me.GroupBoxImportDestination.SuspendLayout()
 			Me.TabControl1.SuspendLayout()
 			Me._loadFileTab.SuspendLayout()
 			CType(Me._startLineNumber, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -214,15 +214,16 @@ Namespace kCura.EDDS.WinForm
 			Me.OpenFileDialog.Filter = "All files (*.*)|*.*|CSV Files (*.csv)|*.csv|Text Files (*.txt)|*.txt|DAT Files|*." & _
 			 "dat"
 			'
-			'GroupBox1
+			'GroupBoxImportDestination
 			'
-			Me.GroupBox1.Controls.Add(Me._importDestinationText)
-			Me.GroupBox1.Location = New System.Drawing.Point(7, 4)
-			Me.GroupBox1.Name = "GroupBox1"
-			Me.GroupBox1.Size = New System.Drawing.Size(737, 40)
-			Me.GroupBox1.TabIndex = 8
-			Me.GroupBox1.TabStop = False
-			Me.GroupBox1.Text = "Import Destination"
+			Me.GroupBoxImportDestination.Controls.Add(Me._importDestinationText)
+			Me.GroupBoxImportDestination.Location = New System.Drawing.Point(7, 4)
+			Me.GroupBoxImportDestination.Name = "GroupBoxImportDestination"
+			Me.GroupBoxImportDestination.Size = New System.Drawing.Size(737, 40)
+			Me.GroupBoxImportDestination.TabIndex = 8
+			Me.GroupBoxImportDestination.TabStop = False
+			Me.GroupBoxImportDestination.Text = "Import Destination"
+			Me.GroupBoxImportDestination.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			'
 			'_importDestinationText
 			'
@@ -232,6 +233,7 @@ Namespace kCura.EDDS.WinForm
 			Me._importDestinationText.Name = "_importDestinationText"
 			Me._importDestinationText.Size = New System.Drawing.Size(717, 18)
 			Me._importDestinationText.TabIndex = 5
+			Me._importDestinationText.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			'
 			'MainMenu
 			'
@@ -338,7 +340,7 @@ Namespace kCura.EDDS.WinForm
 			Me.TabControl1.Location = New System.Drawing.Point(7, 48)
 			Me.TabControl1.Name = "TabControl1"
 			Me.TabControl1.SelectedIndex = 0
-			Me.TabControl1.Size = New System.Drawing.Size(737, 488)
+			Me.TabControl1.Size = New System.Drawing.Size(738, 488)
 			Me.TabControl1.TabIndex = 21
 			'
 			'_loadFileTab
@@ -723,16 +725,17 @@ Namespace kCura.EDDS.WinForm
 			Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
 			Me.ClientSize = New System.Drawing.Size(754, 547)
 			Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Sizable
+			Me.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Show
 			Me.Controls.Add(Me.TabControl1)
-			Me.Controls.Add(Me.GroupBox1)
+			Me.Controls.Add(Me.GroupBoxImportDestination)
 			Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
-			Me.MaximizeBox = False
+			Me.MaximizeBox = True
 			Me.Menu = Me.MainMenu
 			Me.Name = "LoadFileForm"
 			Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
 			Me.Text = "Relativity Desktop Client | Import Load File"
-			Me.GroupBox1.ResumeLayout(False)
-			Me.GroupBox1.PerformLayout()
+			Me.GroupBoxImportDestination.ResumeLayout(False)
+			Me.GroupBoxImportDestination.PerformLayout()
 			Me.TabControl1.ResumeLayout(False)
 			Me._loadFileTab.ResumeLayout(False)
 			CType(Me._startLineNumber, System.ComponentModel.ISupportInitialize).EndInit()
@@ -1118,8 +1121,9 @@ Namespace kCura.EDDS.WinForm
 			End Set
 		End Property
 
+#Region "Resizing"
 		'These member variables are populated with data needed to resize the controls
-		
+
 		' The number of pixels to the right of the GroupBox control for Import Destination
 		Private _layoutGroupImportDestinationBoxRightMargin As Int32
 		' The difference between the width of the GroupBox and the width of the Text control within it
@@ -1163,7 +1167,7 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 		Private Sub InitializeLayout()
-			_layoutGroupImportDestinationBoxRightMargin = Me.Width - Me.GroupBox1.Right
+			_layoutGroupImportDestinationBoxRightMargin = Me.Width - Me.GroupBoxImportDestination.Right
 			_layoutTabRightMargin = Me.Width - Me.TabControl1.Right
 			_layoutTabBottomMargin = Me.Height - Me.TabControl1.Bottom
 			_layoutImportDestinationTextWidthDifference = Me.TabControl1.Size.Width - _importDestinationText.Width
@@ -1181,9 +1185,9 @@ Namespace kCura.EDDS.WinForm
 
 		Public Sub AdjustLayout()
 			'Change GroupBox1 to have the appropriate right margin
-			Me.GroupBox1.Width = Me.Width - (Me.GroupBox1.Location.X + _layoutGroupImportDestinationBoxRightMargin)
+			'Me.GroupBoxImportDestination.Width = Me.Width - (Me.GroupBoxImportDestination.Location.X + _layoutGroupImportDestinationBoxRightMargin)
 			'Change the width of the text within the groupbox
-			Me._importDestinationText.Width = Me.GroupBox1.Width - _layoutImportDestinationTextWidthDifference
+			'Me._importDestinationText.Width = Me.GroupBoxImportDestination.Width - _layoutImportDestinationTextWidthDifference
 			'Change TabControl1 to have the appropriate right margin
 			Me.TabControl1.Width = Me.Width - (Me.TabControl1.Location.X + _layoutTabRightMargin)
 			'Change TabControl1 to have the appropriate bottom margin
@@ -1213,6 +1217,7 @@ Namespace kCura.EDDS.WinForm
 			_fieldMap.Height = _fieldMapTab.Height - _layoutDistanceFromFieldMapToBottomEdge - _fieldMap.Location.Y
 			_fieldMap.Width = _fieldMapTab.Width - _layoutFieldMapRightMargin - _fieldMap.Location.X
 		End Sub
+#End Region
 
 		Private Sub _browseButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _browseButton.Click
 			OpenFileDialog.ShowDialog()
