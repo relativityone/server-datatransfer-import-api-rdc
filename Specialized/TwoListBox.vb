@@ -73,6 +73,7 @@ Namespace kCura.Windows.Forms
 			Me._rightListBox.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended
 			Me._rightListBox.Size = New System.Drawing.Size(144, 280)
 			Me._rightListBox.TabIndex = 16
+			Me._rightListBox.IntegralHeight = False
 			'
 			'_moveAllFieldsLeft
 			'
@@ -120,6 +121,7 @@ Namespace kCura.Windows.Forms
 			Me._leftListBox.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended
 			Me._leftListBox.Size = New System.Drawing.Size(144, 280)
 			Me._leftListBox.TabIndex = 11
+			Me._leftListBox.IntegralHeight = False
 			'
 			'_moveRightSelectedItemDown
 			'
@@ -179,6 +181,7 @@ Namespace kCura.Windows.Forms
 
 #End Region
 
+#Region "Resizing"
 		'These member variables are populated with data needed to resize the controls
 		' The distance between controls
 		Private _layoutMarginBetweenControls As Int32
@@ -264,7 +267,7 @@ Namespace kCura.Windows.Forms
 			_moveFieldLeft.Left = leftSideForMoveLeftRightButtons
 			_moveFieldRight.Left = leftSideForMoveLeftRightButtons
 			_moveAllFieldsRight.Left = leftSideForMoveLeftRightButtons
-			
+
 			'Calculate the location of the RightListBox
 			Dim leftSideForRightListBox As Int32 = _moveAllFieldsLeft.Right + _layoutMarginBetweenControls
 			_rightListBox.Left = leftSideForRightListBox
@@ -278,6 +281,7 @@ Namespace kCura.Windows.Forms
 				System.Diagnostics.Debug.Assert(_rightListBox.Right < _moveRightSelectedItemUp.Left)
 			End If
 		End Sub
+#End Region
 
 #Region " Properties "
 
