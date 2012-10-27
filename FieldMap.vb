@@ -110,6 +110,7 @@ Namespace kCura.WinEDDS.UIControls
 
 #End Region
 
+#Region "Resizing"
 		'These member variables are populated with data needed to resize the controls
 		' The difference between the bottom of the TwoListBox control and the bottom of the field map
 		Private _layoutTwoListBottomMargin As Int32
@@ -164,6 +165,8 @@ Namespace kCura.WinEDDS.UIControls
 
 			_loadFileColumns.Left = _fieldColumns.Right + _layoutTwoListSeparation
 		End Sub
+#End Region
+
 #Region "Properties"
 
 		Public Property FieldColumns() As kCura.Windows.Forms.TwoListBox
