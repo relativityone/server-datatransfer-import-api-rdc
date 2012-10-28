@@ -1127,6 +1127,8 @@ Public Class ExportForm
 
 #Region "Resizing"
 	'These member variables are populated with data needed to resize the controls
+	'Avoid adjusting the layout if the size hasn't changed
+	Private _layoutLastFormSize As Size
 
 	' The initial size of the form
 	Private _layoutInitialSizeOfForm As Size
@@ -1144,7 +1146,8 @@ Public Class ExportForm
 	' updated.
 	Private _layoutReferenceDistance As Int32 = 0
 
-	Private _layoutList As List(Of kCura.Windows.Forms.RelativeLayoutData)
+	Private _layoutRatioList As List(Of kCura.Windows.Forms.RelativeLayoutData)
+	Private _layoutDifferenceList As List(Of kCura.Windows.Forms.RelativeLayoutData)
 
 	Private Function CalcReferenceDistance() As Int32
 		Return _startExportAtDocumentNumber.Width
@@ -1160,52 +1163,67 @@ Public Class ExportForm
 	End Sub
 
 	Private Sub InitializeLayout()
-		If _layoutList Is Nothing Then
-			_layoutList = New List(Of RelativeLayoutData)
+		_layoutLastFormSize = Me.Size
 
-			_layoutList.Add(New RelativeLayoutData(Me, LayoutPropertyType.Width, TabControl1, LayoutPropertyType.Width))
-			_layoutList.Add(New RelativeLayoutData(Me, LayoutPropertyType.Width, _dataSourceTabPage, LayoutPropertyType.Width))
-			_layoutList.Add(New RelativeLayoutData(Me, LayoutPropertyType.Height, TabControl1, LayoutPropertyType.Height))
-			_layoutList.Add(New RelativeLayoutData(Me, LayoutPropertyType.Height, _dataSourceTabPage, LayoutPropertyType.Height))
-			
-			_layoutList.Add(New RelativeLayoutData(_columnSelector, LayoutPropertyType.Width, _filtersBox, LayoutPropertyType.Width))
-			_layoutList.Add(New RelativeLayoutData(_columnSelector, LayoutPropertyType.Width, _filters, LayoutPropertyType.Width))
-			_layoutList.Add(New RelativeLayoutData(_columnSelector, LayoutPropertyType.Height, _filtersBox, LayoutPropertyType.Height))
-			_layoutList.Add(New RelativeLayoutData(_columnSelector, LayoutPropertyType.Right, Me.LabelSelectedColumns, LayoutPropertyType.Left))
-			_layoutList.Add(New RelativeLayoutData(_columnSelector, LayoutPropertyType.Right, Me.LabelStartAtRecordNumber, LayoutPropertyType.Left))
-			_layoutList.Add(New RelativeLayoutData(_columnSelector, LayoutPropertyType.Right, Me._startExportAtDocumentNumber, LayoutPropertyType.Left))
+		'Layout properties which are based on a ratio to another layout property.  These properties depend partly
+		'on the initial sizes of the elements, so we need to create the list anew
+		If _layoutRatioList Is Nothing Then
+			_layoutRatioList = New List(Of RelativeLayoutData)
 
-			_layoutList.Add(New RelativeLayoutData(_filtersBox, LayoutPropertyType.Right, Me._productionPrecedenceBox, LayoutPropertyType.Left))
-
-			_layoutList.Add(New RelativeLayoutData(_productionPrecedenceList, LayoutPropertyType.Width, Me._productionPrecedenceBox, LayoutPropertyType.Width))
-			_layoutList.Add(New RelativeLayoutData(_productionPrecedenceList, LayoutPropertyType.Height, Me._productionPrecedenceBox, LayoutPropertyType.Height))
+			'When the width of the dialog increases by 3 pixels, the column selector increases by 2 pixels.  The ratio is 2/3 = .666667
+			_layoutRatioList.Add(New RelativeLayoutData(Me, LayoutPropertyType.Width, _columnSelector, LayoutPropertyType.Width, 0.666667))
+			'When the width of the dialog increases by 2 pixels, the production listbox increases by 1 pixel.  The ratio is 1/3 = .333333
+			_layoutRatioList.Add(New RelativeLayoutData(Me, LayoutPropertyType.Width, _productionPrecedenceList, LayoutPropertyType.Width, 0.333333))
+			'The height of the column selector increases 1-for-1 with the height of the dialog (as an alternative, this could have been set as a difference)
+			_layoutRatioList.Add(New RelativeLayoutData(Me, LayoutPropertyType.Height, _columnSelector, LayoutPropertyType.Height, 1.0))
+			'The height of the column selector increases 1-for-1 with the height of the dialog (as an alternative, this could have been set as a difference)
+			_layoutRatioList.Add(New RelativeLayoutData(Me, LayoutPropertyType.Height, _productionPrecedenceList, LayoutPropertyType.Height, 1.0))
 		End If
 
-		_layoutInitialSizeOfForm = Me.Size
-		_layoutInitialSizeOfColumnSelector = _columnSelector.Size
-		_layoutInitialSizeOfProductionPrecedence = _productionPrecedenceList.Size
+		_layoutRatioList.ForEach(Sub(x)
+															 x.InitalizeRatioValues()
+														 End Sub)
 
-		_layoutList.ForEach(Sub(x)
-													x.InitializeDifference()
-												End Sub)
+		'Layout properties which are directly based on another layout property
+		If _layoutDifferenceList Is Nothing Then
+			_layoutDifferenceList = New List(Of RelativeLayoutData)
+
+			_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutPropertyType.Width, TabControl1, LayoutPropertyType.Width))
+			_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutPropertyType.Width, _dataSourceTabPage, LayoutPropertyType.Width))
+			_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutPropertyType.Height, TabControl1, LayoutPropertyType.Height))
+			_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutPropertyType.Height, _dataSourceTabPage, LayoutPropertyType.Height))
+
+			_layoutDifferenceList.Add(New RelativeLayoutData(_columnSelector, LayoutPropertyType.Width, _filtersBox, LayoutPropertyType.Width))
+			_layoutDifferenceList.Add(New RelativeLayoutData(_columnSelector, LayoutPropertyType.Width, _filters, LayoutPropertyType.Width))
+			_layoutDifferenceList.Add(New RelativeLayoutData(_columnSelector, LayoutPropertyType.Height, _filtersBox, LayoutPropertyType.Height))
+			_layoutDifferenceList.Add(New RelativeLayoutData(_columnSelector, LayoutPropertyType.Right, Me.LabelSelectedColumns, LayoutPropertyType.Left))
+			_layoutDifferenceList.Add(New RelativeLayoutData(_columnSelector, LayoutPropertyType.Right, Me.LabelStartAtRecordNumber, LayoutPropertyType.Left))
+			_layoutDifferenceList.Add(New RelativeLayoutData(_columnSelector, LayoutPropertyType.Right, Me._startExportAtDocumentNumber, LayoutPropertyType.Left))
+
+			_layoutDifferenceList.Add(New RelativeLayoutData(_filtersBox, LayoutPropertyType.Right, Me._productionPrecedenceBox, LayoutPropertyType.Left))
+
+			_layoutDifferenceList.Add(New RelativeLayoutData(_productionPrecedenceList, LayoutPropertyType.Width, Me._productionPrecedenceBox, LayoutPropertyType.Width))
+			_layoutDifferenceList.Add(New RelativeLayoutData(_productionPrecedenceList, LayoutPropertyType.Height, Me._productionPrecedenceBox, LayoutPropertyType.Height))
+		End If
+
+		_layoutDifferenceList.ForEach(Sub(x)
+																		x.InitializeDifference()
+																	End Sub)
 
 		_layoutReferenceDistance = CalcReferenceDistance()
 	End Sub
 
 	Public Sub AdjustLayout()
-		Dim totalDifferenceFromInitialHeight = Me.Height - _layoutInitialSizeOfForm.Height
-		Dim totalDifferenceFromInitialWidth = Me.Width - _layoutInitialSizeOfForm.Width
+		If Not _layoutLastFormSize.Equals(Me.Size) Then
+			For Each x As RelativeLayoutData In _layoutRatioList
+				x.AdjustRelativeControlBasedOnRatio()
+			Next
 
-		If totalDifferenceFromInitialHeight <> 0 OrElse totalDifferenceFromInitialWidth <> 0 Then
-			_columnSelector.Width = _layoutInitialSizeOfColumnSelector.Width + totalDifferenceFromInitialWidth * 2 \ 3
-			_columnSelector.Height = _layoutInitialSizeOfColumnSelector.Height + totalDifferenceFromInitialHeight
-			_productionPrecedenceList.Width = _layoutInitialSizeOfProductionPrecedence.Width + totalDifferenceFromInitialWidth \ 3
-			_productionPrecedenceList.Height = _layoutInitialSizeOfProductionPrecedence.Height + totalDifferenceFromInitialHeight
-			System.Diagnostics.Debug.Assert(_productionPrecedenceList.Height = _layoutInitialSizeOfProductionPrecedence.Height + totalDifferenceFromInitialHeight)
-
-			For Each x As RelativeLayoutData In _layoutList
+			For Each x As RelativeLayoutData In _layoutDifferenceList
 				x.AdjustRelativeControlBasedOnDifference()
 			Next
+
+			_layoutLastFormSize = Me.Size
 		End If
 	End Sub
 #End Region
