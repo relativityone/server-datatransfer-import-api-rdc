@@ -7,5 +7,10 @@
 		Right
 		Bottom
 	End Enum
+
+	Public Enum LayoutOperation
+		Difference
+		Ratio
+	End Enum
 End Namespace
 
