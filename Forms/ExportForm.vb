@@ -1130,15 +1130,6 @@ Public Class ExportForm
 	'Avoid adjusting the layout if the size hasn't changed
 	Private _layoutLastFormSize As Size
 
-	' The initial size of the form
-	Private _layoutInitialSizeOfForm As Size
-	' This TwoListBox gets 2 additional pixels in width for every 3 pixels added through resizing.
-	' Also, it gets 1 for 1 vertical expansion.
-	Private _layoutInitialSizeOfColumnSelector As Size
-	' This ListBox gets 1 additional pixel in width for every 3 pixels added through resizing.
-	' Also, it gets 1 for 1 vertical expansion
-	Private _layoutInitialSizeOfProductionPrecedence As Size
-
 	' Used to keep track of whether we need to calculate the layout values.  In addition to
 	' initial population, they may need to be populated later due to autoscaling.  Autoscaling
 	' will change the distance between concrols which we would not expect to change.  If this
