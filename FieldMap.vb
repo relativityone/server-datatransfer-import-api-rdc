@@ -1,5 +1,6 @@
 Imports kCura.Windows.Forms
 Imports System.Drawing
+Imports System.Collections.Generic
 
 Namespace kCura.WinEDDS.UIControls
 
@@ -102,7 +103,6 @@ Namespace kCura.WinEDDS.UIControls
 			Me.Controls.Add(Me._loadFileColumnsLabel)
 			Me.Controls.Add(Me._fieldColumnsLabel)
 			Me.Name = "FieldMap"
-			'Me.Size = New System.Drawing.Size(732, 292)
 			Me.Size = New System.Drawing.Size(716, 288)
 			Me.ResumeLayout(False)
 
@@ -112,14 +112,9 @@ Namespace kCura.WinEDDS.UIControls
 
 #Region "Resizing"
 		'These member variables are populated with data needed to resize the controls
-		' The difference between the bottom of the TwoListBox control and the bottom of the field map
-		Private _layoutTwoListBottomMargin As Int32
-		' The distance between the 2 TwoListBox controls.  In this case, the distance is slightly negative because they overlap a little
-		Private _layoutTwoListSeparation As Int32
-		' The left margin for the WorkspaceFields TwoListBox
-		Private _layoutWorkspaceFieldsLeftMargin As Int32
-		' The right margin for the LoadFileFields TwoListBox
-		Private _layoutLoadFileFieldsRightMargin As Int32
+
+		'Avoid adjusting the layout if the size hasn't changed
+		Private _layoutControlSize As Size
 
 		' Used to keep track of whether we need to calculate the layout values.  In addition to
 		' initial population, they may need to be populated later due to autoscaling.  Autoscaling
@@ -127,6 +122,9 @@ Namespace kCura.WinEDDS.UIControls
 		' happens, the _layout info which contains the relative location of controls needs to be 
 		' updated.
 		Private _layoutReferenceDistance As Int32 = 0
+
+		Private _layoutRatioList As List(Of RelativeLayoutData)
+		Private _layoutDifferenceList As List(Of RelativeLayoutData)
 
 		Private Function CalcReferenceDistance() As Int32
 			Return _fieldColumnsLabel.Width
@@ -143,27 +141,53 @@ Namespace kCura.WinEDDS.UIControls
 		End Sub
 
 		Private Sub InitializeLayout()
-			_layoutTwoListBottomMargin = Me.Height - Me._fieldColumns.Bottom
-			_layoutTwoListSeparation = Me._loadFileColumns.Location.X - Me._fieldColumns.Right
-			_layoutWorkspaceFieldsLeftMargin = Me._fieldColumns.Location.X
-			_layoutLoadFileFieldsRightMargin = Me.Width - Me._loadFileColumns.Right
+			_layoutControlSize = Me.Size
+
+			'Layout properties which are based on a ratio to another layout property. 
+			If _layoutRatioList Is Nothing Then
+				_layoutRatioList = New List(Of RelativeLayoutData)
+
+				'When the width of the dialog increases by 2 pixels, each groupbox increases by 1 pixel.  The ratio is 1/2 = .5
+				_layoutRatioList.Add(New RelativeLayoutData(Me, LayoutPropertyType.Width, _fieldColumns, LayoutPropertyType.Width, 0.5))
+				_layoutRatioList.Add(New RelativeLayoutData(Me, LayoutPropertyType.Width, _loadFileColumns, LayoutPropertyType.Width, 0.5))
+			End If
+
+			_layoutRatioList.ForEach(Sub(x)
+																 x.InitalizeRatioValues()
+															 End Sub)
+
+			'Layout properties which are directly based on another layout property
+			If _layoutDifferenceList Is Nothing Then
+				_layoutDifferenceList = New List(Of RelativeLayoutData)
+
+				_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutPropertyType.Height, _fieldColumns, LayoutPropertyType.Height))
+				_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutPropertyType.Height, _loadFileColumns, LayoutPropertyType.Height))
+
+				_layoutDifferenceList.Add(New RelativeLayoutData(_fieldColumns, LayoutPropertyType.Right, _loadFileColumns, LayoutPropertyType.Left))
+
+				' No need to adjust _loadFileColumnsLabel because it is using anchoring
+			End If
+
+			_layoutDifferenceList.ForEach(Sub(x)
+																			x.InitializeDifference()
+																		End Sub)
 
 			_layoutReferenceDistance = CalcReferenceDistance()
 		End Sub
 
 		Public Sub AdjustLayout()
-			' No need to adjust _loadFileColumnsLabel because it is using anchoring
+			
+			If Not _layoutControlSize.Equals(Me.Size) Then
+				For Each x As RelativeLayoutData In _layoutRatioList
+					x.AdjustRelativeControlBasedOnRatio()
+				Next
 
-			' Calculate the width of each TwoListBox
-			Dim widthOfTwoListBox As Int32 = (Me.Width - _layoutTwoListSeparation) \ 2
-			_fieldColumns.Width = widthOfTwoListBox
-			_loadFileColumns.Width = widthOfTwoListBox
-			'Calculate the height of each TwoListBox
-			Dim heightOfTwoListBox As Int32 = Me.Height - _fieldColumns.Top - _layoutTwoListBottomMargin
-			_fieldColumns.Height = heightOfTwoListBox
-			_loadFileColumns.Height = heightOfTwoListBox
+				For Each x As RelativeLayoutData In _layoutDifferenceList
+					x.AdjustRelativeControlBasedOnDifference()
+				Next
 
-			_loadFileColumns.Left = _fieldColumns.Right + _layoutTwoListSeparation
+				_layoutControlSize = Me.Size
+			End If
 		End Sub
 #End Region
 
