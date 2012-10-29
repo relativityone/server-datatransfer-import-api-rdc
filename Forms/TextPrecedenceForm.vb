@@ -123,6 +123,8 @@ Namespace kCura.EDDS.WinForm
 																		End Sub)
 
 			_layoutReferenceDistance = CalcReferenceDistance()
+
+			AdjustColumnLabel()
 		End Sub
 
 		Public Sub AdjustLayout()

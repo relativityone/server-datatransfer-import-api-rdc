@@ -41,6 +41,7 @@ Namespace kCura.EDDS.WinForm
 		Friend WithEvents _originalImages As System.Windows.Forms.RadioButton
 		Friend WithEvents _includeOriginals As System.Windows.Forms.CheckBox
 		Friend WithEvents _producedImages As System.Windows.Forms.RadioButton
+
 		<System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
 			Dim resources As System.Resources.ResourceManager = New System.Resources.ResourceManager(GetType(ProductionPrecedenceForm))
 			Me._okButton = New System.Windows.Forms.Button
@@ -89,8 +90,8 @@ Namespace kCura.EDDS.WinForm
 			'
 			'LabelSelectedProductions
 			'
-			Me.LabelSelectedProductions.Location = New System.Drawing.Point(180, 88)
 			Me.LabelSelectedProductions.Name = "LabelSelectedProductions"
+			Me.LabelSelectedProductions.Location = New System.Drawing.Point(180, 88)
 			Me.LabelSelectedProductions.Size = New System.Drawing.Size(144, 16)
 			Me.LabelSelectedProductions.TabIndex = 4
 			Me.LabelSelectedProductions.Text = "Selected Productions"
@@ -284,6 +285,8 @@ Namespace kCura.EDDS.WinForm
 																		End Sub)
 
 			_layoutReferenceDistance = CalcReferenceDistance()
+
+			AdjustColumnLabel()
 		End Sub
 
 		Public Sub AdjustLayout()

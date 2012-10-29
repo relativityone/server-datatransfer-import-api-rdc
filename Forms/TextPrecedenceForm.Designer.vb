@@ -50,20 +50,22 @@
 			'_longTextFields - must be defined in InitializeComponent, otherwise medium & high DPI don't work
 			'
 			Me._longTextFieldsTwoListBox = New kCura.Windows.Forms.TwoListBox()
+			Me._longTextFieldsTwoListBox.Name = "_longTextFields"
+			Me._longTextFieldsTwoListBox.Location = New System.Drawing.Point(8, 24)
+			Me._longTextFieldsTwoListBox.Size = New System.Drawing.Size(356, 276)
 			Me._longTextFieldsTwoListBox.AlternateRowColors = False
 			Me._longTextFieldsTwoListBox.KeepButtonsCentered = True
 			Me._longTextFieldsTwoListBox.LeftOrderControlsVisible = False
-			Me._longTextFieldsTwoListBox.Location = New System.Drawing.Point(8, 24)
-			Me._longTextFieldsTwoListBox.Name = "_longTextFields"
+
 			Me._longTextFieldsTwoListBox.RightOrderControlVisible = True
-			Me._longTextFieldsTwoListBox.Size = New System.Drawing.Size(356, 264)
+
 			Me._longTextFieldsTwoListBox.TabIndex = 2
 			'
 			'_availableTextFieldsLabel - must be defined in IntializeComponent, otherwise medium & high DPI don't work
 			'
 			Me._availableLongTextFieldsLabel = New System.Windows.Forms.Label
-			Me._availableLongTextFieldsLabel.Location = New System.Drawing.Point(8, 8)
 			Me._availableLongTextFieldsLabel.Name = "_availableLongTextFieldsLabel"
+			Me._availableLongTextFieldsLabel.Location = New System.Drawing.Point(8, 8)
 			Me._availableLongTextFieldsLabel.Size = New System.Drawing.Size(144, 16)
 			Me._availableLongTextFieldsLabel.TabIndex = 3
 			Me._availableLongTextFieldsLabel.Text = "Available Long Text Fields"
@@ -71,8 +73,8 @@
 			'_selectedLongTextFieldsLabel - must be defined in IntializeComponent, otherwise medium & high DPI don't work
 			'
 			Me._selectedLongTextFieldsLabel = New System.Windows.Forms.Label
-			Me._selectedLongTextFieldsLabel.Location = New System.Drawing.Point(184, 8)
 			Me._selectedLongTextFieldsLabel.Name = "_selectedLongTextFieldsLabel"
+			Me._selectedLongTextFieldsLabel.Location = New System.Drawing.Point(184, 8)
 			Me._selectedLongTextFieldsLabel.Size = New System.Drawing.Size(144, 16)
 			Me._selectedLongTextFieldsLabel.TabIndex = 4
 			Me._selectedLongTextFieldsLabel.Text = "Selected Long Text Fields"
