@@ -89,7 +89,7 @@ Namespace kCura.EDDS.WinForm
 			'
 			'LabelSelectedProductions
 			'
-			Me.LabelSelectedProductions.Location = New System.Drawing.Point(200, 88)
+			Me.LabelSelectedProductions.Location = New System.Drawing.Point(180, 88)
 			Me.LabelSelectedProductions.Name = "LabelSelectedProductions"
 			Me.LabelSelectedProductions.Size = New System.Drawing.Size(144, 16)
 			Me.LabelSelectedProductions.TabIndex = 4
@@ -142,7 +142,6 @@ Namespace kCura.EDDS.WinForm
 			Me.MinimumSize = New System.Drawing.Size(464, 370)
 			Me.MinimizeBox = False
 			Me.Name = "ProductionPrecedenceForm"
-			Me.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide
 			Me.Text = "Pick Production Precedence"
 			Me.ResumeLayout(False)
 
@@ -295,6 +294,19 @@ Namespace kCura.EDDS.WinForm
 
 				_layoutLastFormSize = Me.Size
 			End If
+
+			AdjustColumnLabel()
+		End Sub
+
+		Private Sub AdjustColumnLabel()
+			'Adjust the location of the label to be aligned with the left side of the Right ListBox
+
+			'Get the absolute position of the Right ListBox of the TwoListBox in screen coordinates
+			Dim absoluteListBoxLoc As Point = _productions.RightListBox.PointToScreen(New Point(0, 0))
+			'Convert to a location relative to the Views group (_filtersBox)
+			Dim relativeListBoxLoc As Point = Me.LabelSelectedProductions.Parent.PointToClient(absoluteListBoxLoc)
+			'Adjust the location of the label
+			Me.LabelSelectedProductions.Left = relativeListBoxLoc.X
 		End Sub
 #End Region
 	End Class

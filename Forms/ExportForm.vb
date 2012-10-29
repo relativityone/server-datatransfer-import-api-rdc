@@ -429,10 +429,10 @@ Public Class ExportForm
 		Me.LabelSelectedColumns.Name = "LabelSelectedColumns"
 		Me.LabelSelectedColumns.Text = "Selected Columns"
 		Me.LabelSelectedColumns.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-		Me.LabelSelectedColumns.Location = New System.Drawing.Point(183, 48)
+		Me.LabelSelectedColumns.Location = New System.Drawing.Point(200, 48)
 		Me.LabelSelectedColumns.Size = New System.Drawing.Size(160, 16)
 		Me.LabelSelectedColumns.TabIndex = 19
-		Me.LabelSelectedColumns.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+		Me.LabelSelectedColumns.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
 		'
 		'_filters
 		'
@@ -1097,6 +1097,7 @@ Public Class ExportForm
 		Me.Menu = Me.MainMenu1
 		Me.Name = "ExportForm"
 		Me.Text = "Relativity Desktop Client | Export "
+
 		Me._productionPrecedenceBox.ResumeLayout(False)
 		Me.GroupBox3.ResumeLayout(False)
 		Me.TabControl1.ResumeLayout(False)
@@ -1218,7 +1219,20 @@ Public Class ExportForm
 			Next
 
 			_layoutLastFormSize = Me.Size
+
+			AdjustColumnLabel()
 		End If
+	End Sub
+
+	Private Sub AdjustColumnLabel()
+		'Adjust the location of the label to be aligned with the left side of the Right ListBox
+
+		'Get the absolute position of the Right ListBox of the TwoListBox in screen coordinates
+		Dim absoluteListBoxLoc As Point = _columnSelector.RightListBox.PointToScreen(New Point(0, 0))
+		'Convert to a location relative to the Views group (_filtersBox)
+		Dim relativeListBoxLoc As Point = Me.LabelSelectedColumns.Parent.PointToClient(absoluteListBoxLoc)
+		'Adjust the location of the label
+		Me.LabelSelectedColumns.Left = relativeListBoxLoc.X
 	End Sub
 #End Region
 

@@ -737,6 +737,7 @@ Namespace kCura.EDDS.WinForm
 			Me.Name = "LoadFileForm"
 			Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
 			Me.Text = "Relativity Desktop Client | Import Load File"
+
 			Me.GroupBoxImportDestination.ResumeLayout(False)
 			Me.GroupBoxImportDestination.PerformLayout()
 			Me.TabControl1.ResumeLayout(False)
