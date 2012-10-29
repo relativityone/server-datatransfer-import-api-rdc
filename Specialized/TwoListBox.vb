@@ -48,6 +48,18 @@ Namespace kCura.Windows.Forms
 		Friend WithEvents _moveLeftSelectedItemDown As System.Windows.Forms.Button
 		Friend WithEvents _moveLeftSelectedItemUp As System.Windows.Forms.Button
 
+		Public ReadOnly Property LeftListBox() As kCura.Windows.Forms.ListBox
+			Get
+				Return _leftListBox
+			End Get
+		End Property
+
+		Public ReadOnly Property RightListBox() As kCura.Windows.Forms.ListBox
+			Get
+				Return _rightListBox
+			End Get
+		End Property
+
 		Private Sub InitializeComponent()
 			Me._rightListBox = New kCura.Windows.Forms.ListBox(Me.RelativityHighlightColor)
 			Me._moveAllFieldsLeft = New System.Windows.Forms.Button
@@ -173,6 +185,7 @@ Namespace kCura.Windows.Forms
 			Me.Controls.Add(Me._leftListBox)
 			Me.Name = "TwoListBox"
 			Me.Size = New System.Drawing.Size(380, 280)
+
 			Me.ResumeLayout(False)
 
 		End Sub
