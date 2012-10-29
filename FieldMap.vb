@@ -104,6 +104,7 @@ Namespace kCura.WinEDDS.UIControls
 			Me.Controls.Add(Me._fieldColumnsLabel)
 			Me.Name = "FieldMap"
 			Me.Size = New System.Drawing.Size(716, 288)
+
 			Me.ResumeLayout(False)
 
 		End Sub
