@@ -1,3 +1,6 @@
+Imports System.Collections.Generic
+Imports kCura.Windows.Forms
+
 Namespace kCura.EDDS.WinForm
 	Public Class LoadFileForm
 		Inherits System.Windows.Forms.Form
@@ -1124,27 +1127,8 @@ Namespace kCura.EDDS.WinForm
 #Region "Resizing"
 		'These member variables are populated with data needed to resize the controls
 
-		' The number of pixels to the right of the GroupBox control for Import Destination
-		Private _layoutGroupImportDestinationBoxRightMargin As Int32
-		' The difference between the width of the GroupBox and the width of the Text control within it
-		Private _layoutImportDestinationTextWidthDifference As Int32
-		' The bottom margin for the Tab control
-		Private _layoutTabBottomMargin As Int32
-		' The right margin for the Tab control
-		Private _layoutTabRightMargin As Int32
-
-		' Distance from bottom of the FieldMap (list boxes control) to the bottom edge
-		Private _layoutDistanceFromFieldMapToBottomEdge As Int32
-		Private _layoutFieldMapRightMargin As Int32
-
-		' Top of Field Map group boxes
-		Private _layoutDistanceFromTopOfFieldMapGroupBoxesToBottomEdge As Int32
-		Private _layoutDistanceFromTopOfOverlayIdentifierGroupBoxToBottomEdge As Int32
-		Private _layoutDistanceFromTopOfNativeFileBehaviorGroupBoxToBottomEdge As Int32
-		' Horizontal margin between group boxes
-		Private _layoutHorizontalMarginBetweenGroupBoxes As Int32
-		' Margin of group boxes from left & right side of screen
-		Private _layoutGroupBoxOutsideMargin As Int32
+		'Avoid adjusting the layout if the size hasn't changed
+		Private _layoutLastFormSize As Size
 
 		' Used to keep track of whether we need to calculate the layout values.  In addition to
 		' initial population, they may need to be populated later due to autoscaling.  Autoscaling
@@ -1152,6 +1136,9 @@ Namespace kCura.EDDS.WinForm
 		' happens, the _layout info which contains the relative location of controls needs to be 
 		' updated.
 		Private _layoutReferenceDistance As Int32 = 0
+
+		Private _layoutRatioList As List(Of RelativeLayoutData)
+		Private _layoutDifferenceList As List(Of RelativeLayoutData)
 
 		Private Function CalcReferenceDistance() As Int32
 			Return GroupBoxNativeFileBehavior.Top - GroupBoxOverwrite.Top
@@ -1167,55 +1154,68 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 		Private Sub InitializeLayout()
-			_layoutGroupImportDestinationBoxRightMargin = Me.Width - Me.GroupBoxImportDestination.Right
-			_layoutTabRightMargin = Me.Width - Me.TabControl1.Right
-			_layoutTabBottomMargin = Me.Height - Me.TabControl1.Bottom
-			_layoutImportDestinationTextWidthDifference = Me.TabControl1.Size.Width - _importDestinationText.Width
+			_layoutLastFormSize = Me.Size
 
-			_layoutDistanceFromFieldMapToBottomEdge = _fieldMapTab.Height - _fieldMap.Bottom
-			_layoutFieldMapRightMargin = _fieldMapTab.Width - _fieldMap.Right
-			_layoutDistanceFromTopOfFieldMapGroupBoxesToBottomEdge = _fieldMapTab.Height - GroupBoxOverwrite.Location.Y
-			_layoutDistanceFromTopOfOverlayIdentifierGroupBoxToBottomEdge = _fieldMapTab.Height - GroupBoxOverlayIdentifier.Location.Y
-			_layoutDistanceFromTopOfNativeFileBehaviorGroupBoxToBottomEdge = _fieldMapTab.Height - GroupBoxNativeFileBehavior.Location.Y
-			_layoutHorizontalMarginBetweenGroupBoxes = GroupBoxFolderInfo.Location.X - GroupBoxOverwrite.Right
-			_layoutGroupBoxOutsideMargin = GroupBoxOverwrite.Location.X
+			'Layout properties which are based on a ratio to another layout property. 
+			If _layoutRatioList Is Nothing Then
+				_layoutRatioList = New List(Of RelativeLayoutData)
+
+				'When the width of the dialog increases by 3 pixels, each groupbox increases by 1 pixel.  The ratio is 1/3 = .333333
+				_layoutRatioList.Add(New RelativeLayoutData(Me, LayoutPropertyType.Width, GroupBoxOverwrite, LayoutPropertyType.Width, 0.333333))
+				_layoutRatioList.Add(New RelativeLayoutData(Me, LayoutPropertyType.Width, GroupBoxOverlayIdentifier, LayoutPropertyType.Width, 0.333333))
+				_layoutRatioList.Add(New RelativeLayoutData(Me, LayoutPropertyType.Width, GroupBoxFolderInfo, LayoutPropertyType.Width, 0.333333))
+				_layoutRatioList.Add(New RelativeLayoutData(Me, LayoutPropertyType.Width, GroupBoxNativeFileBehavior, LayoutPropertyType.Width, 0.333333))
+				_layoutRatioList.Add(New RelativeLayoutData(Me, LayoutPropertyType.Width, GroupBoxExtractedText, LayoutPropertyType.Width, 0.333333))
+			End If
+
+			_layoutRatioList.ForEach(Sub(x)
+																 x.InitalizeRatioValues()
+															 End Sub)
+
+			'Layout properties which are directly based on another layout property
+			If _layoutDifferenceList Is Nothing Then
+				_layoutDifferenceList = New List(Of RelativeLayoutData)
+
+				_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutPropertyType.Width, _fieldMapTab, LayoutPropertyType.Width))
+				_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutPropertyType.Height, _fieldMapTab, LayoutPropertyType.Height))
+				_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutPropertyType.Width, _fieldMap, LayoutPropertyType.Width))
+				_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutPropertyType.Height, _fieldMap, LayoutPropertyType.Height))
+
+				_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutPropertyType.Width, TabControl1, LayoutPropertyType.Width))
+				_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutPropertyType.Width, _fieldMapTab, LayoutPropertyType.Width))
+				_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutPropertyType.Height, TabControl1, LayoutPropertyType.Height))
+				_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutPropertyType.Height, _fieldMapTab, LayoutPropertyType.Height))
+
+				_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutPropertyType.Height, GroupBoxOverwrite, LayoutPropertyType.Top))
+				_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutPropertyType.Height, GroupBoxOverlayIdentifier, LayoutPropertyType.Top))
+				_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutPropertyType.Height, GroupBoxFolderInfo, LayoutPropertyType.Top))
+				_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutPropertyType.Height, GroupBoxNativeFileBehavior, LayoutPropertyType.Top))
+				_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutPropertyType.Height, GroupBoxExtractedText, LayoutPropertyType.Top))
+
+				_layoutDifferenceList.Add(New RelativeLayoutData(GroupBoxOverwrite, LayoutPropertyType.Right, GroupBoxFolderInfo, LayoutPropertyType.Left))
+				_layoutDifferenceList.Add(New RelativeLayoutData(GroupBoxOverwrite, LayoutPropertyType.Right, GroupBoxNativeFileBehavior, LayoutPropertyType.Left))
+				_layoutDifferenceList.Add(New RelativeLayoutData(GroupBoxFolderInfo, LayoutPropertyType.Right, GroupBoxExtractedText, LayoutPropertyType.Left))
+			End If
+
+			_layoutDifferenceList.ForEach(Sub(x)
+																			x.InitializeDifference()
+																		End Sub)
 
 			_layoutReferenceDistance = CalcReferenceDistance()
 		End Sub
 
 		Public Sub AdjustLayout()
-			'Change GroupBox1 to have the appropriate right margin
-			'Me.GroupBoxImportDestination.Width = Me.Width - (Me.GroupBoxImportDestination.Location.X + _layoutGroupImportDestinationBoxRightMargin)
-			'Change the width of the text within the groupbox
-			'Me._importDestinationText.Width = Me.GroupBoxImportDestination.Width - _layoutImportDestinationTextWidthDifference
-			'Change TabControl1 to have the appropriate right margin
-			Me.TabControl1.Width = Me.Width - (Me.TabControl1.Location.X + _layoutTabRightMargin)
-			'Change TabControl1 to have the appropriate bottom margin
-			Me.TabControl1.Height = Me.Height - (Me.TabControl1.Location.Y + _layoutTabBottomMargin)
+			If Not _layoutLastFormSize.Equals(Me.Size) Then
+				For Each x As RelativeLayoutData In _layoutRatioList
+					x.AdjustRelativeControlBasedOnRatio()
+				Next
 
-			'Change group boxes to be at an appropriate location and size.  Overwrite, FolderInfo, and ExtractedText
-			'are all at the same vertical location.
-			Dim topOfGroupBox As Int32 = _fieldMapTab.Height - _layoutDistanceFromTopOfFieldMapGroupBoxesToBottomEdge
-			Dim groupBoxWidth As Int32 = (_fieldMapTab.Width - _layoutGroupBoxOutsideMargin * 2 - _layoutHorizontalMarginBetweenGroupBoxes * 2) \ 3
+				For Each x As RelativeLayoutData In _layoutDifferenceList
+					x.AdjustRelativeControlBasedOnDifference()
+				Next
 
-			Me.GroupBoxOverwrite.Location = New Point(GroupBoxOverwrite.Location.X, topOfGroupBox)
-			Me.GroupBoxOverwrite.Width = groupBoxWidth
-
-			Me.GroupBoxFolderInfo.Location = New Point(GroupBoxOverwrite.Right + _layoutHorizontalMarginBetweenGroupBoxes, topOfGroupBox)
-			Me.GroupBoxFolderInfo.Width = groupBoxWidth
-
-			Me.GroupBoxExtractedText.Location = New Point(GroupBoxFolderInfo.Right + _layoutHorizontalMarginBetweenGroupBoxes, topOfGroupBox)
-			Me.GroupBoxExtractedText.Width = groupBoxWidth
-
-			Me.GroupBoxOverlayIdentifier.Location = New Point(GroupBoxOverwrite.Location.X, _fieldMapTab.Height - _layoutDistanceFromTopOfOverlayIdentifierGroupBoxToBottomEdge)
-			Me.GroupBoxOverlayIdentifier.Width = groupBoxWidth
-
-			Me.GroupBoxNativeFileBehavior.Location = New Point(GroupBoxFolderInfo.Location.X, _fieldMapTab.Height - _layoutDistanceFromTopOfNativeFileBehaviorGroupBoxToBottomEdge)
-			Me.GroupBoxNativeFileBehavior.Width = groupBoxWidth
-
-			'Change the height of the fieldmap
-			_fieldMap.Height = _fieldMapTab.Height - _layoutDistanceFromFieldMapToBottomEdge - _fieldMap.Location.Y
-			_fieldMap.Width = _fieldMapTab.Width - _layoutFieldMapRightMargin - _fieldMap.Location.X
+				_layoutLastFormSize = Me.Size
+			End If
 		End Sub
 #End Region
 

@@ -416,20 +416,20 @@ Public Class ExportForm
 		'
 		'LabelStartAtRecordNumber
 		'
-		Me.LabelStartAtRecordNumber.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-		Me.LabelStartAtRecordNumber.Location = New System.Drawing.Point(397, 48)
 		Me.LabelStartAtRecordNumber.Name = "LabelStartAtRecordNumber"
+		Me.LabelStartAtRecordNumber.Text = "Start Export at Record #"
+		Me.LabelStartAtRecordNumber.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+		Me.LabelStartAtRecordNumber.Location = New System.Drawing.Point(395, 48)
 		Me.LabelStartAtRecordNumber.Size = New System.Drawing.Size(160, 16)
 		Me.LabelStartAtRecordNumber.TabIndex = 20
-		Me.LabelStartAtRecordNumber.Text = "Start Export at Record #"
 		Me.LabelStartAtRecordNumber.TextAlign = System.Drawing.ContentAlignment.MiddleRight
 		'
 		'LabelSelectedColumns
 		'
+		Me.LabelSelectedColumns.Name = "LabelSelectedColumns"
 		Me.LabelSelectedColumns.Text = "Selected Columns"
 		Me.LabelSelectedColumns.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-		Me.LabelSelectedColumns.Location = New System.Drawing.Point(193, 48)
-		Me.LabelSelectedColumns.Name = "LabelSelectedColumns"
+		Me.LabelSelectedColumns.Location = New System.Drawing.Point(183, 48)
 		Me.LabelSelectedColumns.Size = New System.Drawing.Size(160, 16)
 		Me.LabelSelectedColumns.TabIndex = 19
 		Me.LabelSelectedColumns.TextAlign = System.Drawing.ContentAlignment.MiddleRight
@@ -1127,6 +1127,7 @@ Public Class ExportForm
 
 #Region "Resizing"
 	'These member variables are populated with data needed to resize the controls
+
 	'Avoid adjusting the layout if the size hasn't changed
 	Private _layoutLastFormSize As Size
 
@@ -1137,8 +1138,8 @@ Public Class ExportForm
 	' updated.
 	Private _layoutReferenceDistance As Int32 = 0
 
-	Private _layoutRatioList As List(Of kCura.Windows.Forms.RelativeLayoutData)
-	Private _layoutDifferenceList As List(Of kCura.Windows.Forms.RelativeLayoutData)
+	Private _layoutRatioList As List(Of RelativeLayoutData)
+	Private _layoutDifferenceList As List(Of RelativeLayoutData)
 
 	Private Function CalcReferenceDistance() As Int32
 		Return _startExportAtDocumentNumber.Width
@@ -1156,8 +1157,7 @@ Public Class ExportForm
 	Private Sub InitializeLayout()
 		_layoutLastFormSize = Me.Size
 
-		'Layout properties which are based on a ratio to another layout property.  These properties depend partly
-		'on the initial sizes of the elements, so we need to create the list anew
+		'Layout properties which are based on a ratio to another layout property. 
 		If _layoutRatioList Is Nothing Then
 			_layoutRatioList = New List(Of RelativeLayoutData)
 
@@ -1175,9 +1175,12 @@ Public Class ExportForm
 															 x.InitalizeRatioValues()
 														 End Sub)
 
-		'Layout properties which are directly based on another layout property
+		'Layout properties which are directly based on another layout property.  These are all properties with a 1-1 ration
 		If _layoutDifferenceList Is Nothing Then
 			_layoutDifferenceList = New List(Of RelativeLayoutData)
+
+			_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutPropertyType.Height, _columnSelector, LayoutPropertyType.Height))
+			_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutPropertyType.Height, _productionPrecedenceList, LayoutPropertyType.Height))
 
 			_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutPropertyType.Width, TabControl1, LayoutPropertyType.Width))
 			_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutPropertyType.Width, _dataSourceTabPage, LayoutPropertyType.Width))
