@@ -84,6 +84,7 @@ Namespace kCura.Windows.Forms
 			Me._rightListBox.Size = New System.Drawing.Size(144, 280)
 			Me._rightListBox.TabIndex = 16
 			Me._rightListBox.IntegralHeight = False
+			Me._rightListBox.DrawMode = DrawMode.OwnerDrawVariable
 			'
 			'_moveAllFieldsLeft
 			'
@@ -132,11 +133,12 @@ Namespace kCura.Windows.Forms
 			Me._leftListBox.Size = New System.Drawing.Size(144, 280)
 			Me._leftListBox.TabIndex = 11
 			Me._leftListBox.IntegralHeight = False
+			Me._leftListBox.DrawMode = DrawMode.OwnerDrawVariable
 			'
 			'_moveRightSelectedItemDown
 			'
 			Me._moveRightSelectedItemDown.Font = New System.Drawing.Font("Wingdings", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(2, Byte))
-			Me._moveRightSelectedItemDown.Location = New System.Drawing.Point(360, 140)
+			Me._moveRightSelectedItemDown.Location = New System.Drawing.Point(360, 132)
 			Me._moveRightSelectedItemDown.Name = "_moveRightSelectedItemDown"
 			Me._moveRightSelectedItemDown.RightToLeft = System.Windows.Forms.RightToLeft.No
 			Me._moveRightSelectedItemDown.Size = New System.Drawing.Size(20, 24)
@@ -193,6 +195,24 @@ Namespace kCura.Windows.Forms
 #End Region
 
 #Region "Resizing"
+		'MeasureItem fixes issues in Large DPI mode
+		Private Sub LeftListBox_MeasureItem(sender As Object, e As System.Windows.Forms.MeasureItemEventArgs) Handles _leftListBox.MeasureItem
+			MeasureItemImpl(_leftListBox, e)
+		End Sub
+
+		'MeasureItem fixes issues in Large DPI mode
+		Private Sub RightListBox_MeasureItem(sender As Object, e As System.Windows.Forms.MeasureItemEventArgs) Handles _rightListBox.MeasureItem
+			MeasureItemImpl(_rightListBox, e)
+		End Sub
+
+		Private Sub MeasureItemImpl(parentListBox As ListBox, e As System.Windows.Forms.MeasureItemEventArgs)
+			Dim initialSize As Size = New Size(Me.Width, 1000)
+			Dim str As String = parentListBox.Items(e.Index).ToString()
+			Dim itemSize As SizeF = e.Graphics.MeasureString(str, _leftListBox.Font, initialSize)
+			e.ItemHeight = CInt(itemSize.Height)
+			e.ItemWidth = CInt(itemSize.Width)
+		End Sub
+
 		'These member variables are populated with data needed to resize the controls
 
 		'Avoid adjusting the layout if the size hasn't changed
@@ -264,10 +284,10 @@ Namespace kCura.Windows.Forms
 
 				_layoutDifferenceList.Add(New RelativeLayoutData(_moveFieldLeft, LayoutPropertyType.Right, _rightListBox, LayoutPropertyType.Left))
 
-				If _moveRightSelectedItemUp.Visible Then
-					_layoutDifferenceList.Add(New RelativeLayoutData(_rightListBox, LayoutPropertyType.Right, _moveRightSelectedItemUp, LayoutPropertyType.Left))
-					_layoutDifferenceList.Add(New RelativeLayoutData(_rightListBox, LayoutPropertyType.Right, _moveRightSelectedItemDown, LayoutPropertyType.Left))
-				End If
+				'If _moveRightSelectedItemUp.Visible Then
+				_layoutDifferenceList.Add(New RelativeLayoutData(_rightListBox, LayoutPropertyType.Right, _moveRightSelectedItemUp, LayoutPropertyType.Left))
+				_layoutDifferenceList.Add(New RelativeLayoutData(_rightListBox, LayoutPropertyType.Right, _moveRightSelectedItemDown, LayoutPropertyType.Left))
+				' End If
 			End If
 
 			_layoutDifferenceList.ForEach(Sub(x)

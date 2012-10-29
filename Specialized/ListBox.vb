@@ -65,7 +65,6 @@ Namespace kCura.Windows.Forms
 #End Region
 
 #Region " Owner draw support "
-
 		Protected Overrides Sub OnDrawItem(ByVal e As System.Windows.Forms.DrawItemEventArgs)
 			Dim newArgs As System.Windows.Forms.DrawItemEventArgs = e
 
