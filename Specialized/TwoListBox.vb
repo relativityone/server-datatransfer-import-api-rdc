@@ -261,9 +261,20 @@ Namespace kCura.Windows.Forms
 			If _layoutRatioList Is Nothing Then
 				_layoutRatioList = New List(Of RelativeLayoutData)
 
-				'When the width of the dialog increases by 2 pixels, each groupbox increases by 1 pixel.  The ratio is 1/2 = .5
+				'When the width of the control increases by 2 pixels, each groupbox increases by 1 pixel.  The ratio is 1/2 = .5
 				_layoutRatioList.Add(New RelativeLayoutData(Me, LayoutBasePropertyTypeForRatio.Width, _leftListBox, LayoutRelativePropertyTypeForRatio.Width, 0.5))
 				_layoutRatioList.Add(New RelativeLayoutData(Me, LayoutBasePropertyTypeForRatio.Width, _rightListBox, LayoutRelativePropertyTypeForRatio.Width, 0.5))
+
+				'When the height of the control increases by 2 pixels, move the top of the arrow buttons by 1 pixel, 
+				'so that they will continue to be vertically centered.  The ration is 1/2 = .5
+				_layoutRatioList.Add(New RelativeLayoutData(Me, LayoutBasePropertyTypeForRatio.Height, _moveAllFieldsLeft, LayoutRelativePropertyTypeForRatio.Top, 0.5))
+				_layoutRatioList.Add(New RelativeLayoutData(Me, LayoutBasePropertyTypeForRatio.Height, _moveAllFieldsRight, LayoutRelativePropertyTypeForRatio.Top, 0.5))
+				_layoutRatioList.Add(New RelativeLayoutData(Me, LayoutBasePropertyTypeForRatio.Height, _moveFieldLeft, LayoutRelativePropertyTypeForRatio.Top, 0.5))
+				_layoutRatioList.Add(New RelativeLayoutData(Me, LayoutBasePropertyTypeForRatio.Height, _moveFieldRight, LayoutRelativePropertyTypeForRatio.Top, 0.5))
+				_layoutRatioList.Add(New RelativeLayoutData(Me, LayoutBasePropertyTypeForRatio.Height, _moveLeftSelectedItemUp, LayoutRelativePropertyTypeForRatio.Top, 0.5))
+				_layoutRatioList.Add(New RelativeLayoutData(Me, LayoutBasePropertyTypeForRatio.Height, _moveLeftSelectedItemDown, LayoutRelativePropertyTypeForRatio.Top, 0.5))
+				_layoutRatioList.Add(New RelativeLayoutData(Me, LayoutBasePropertyTypeForRatio.Height, _moveRightSelectedItemUp, LayoutRelativePropertyTypeForRatio.Top, 0.5))
+				_layoutRatioList.Add(New RelativeLayoutData(Me, LayoutBasePropertyTypeForRatio.Height, _moveRightSelectedItemDown, LayoutRelativePropertyTypeForRatio.Top, 0.5))
 			End If
 
 			_layoutRatioList.ForEach(Sub(x)
@@ -284,10 +295,8 @@ Namespace kCura.Windows.Forms
 
 				_layoutDifferenceList.Add(New RelativeLayoutData(_moveFieldLeft, LayoutBasePropertyTypeForDifference.Right, _rightListBox, LayoutRelativePropertyTypeForDifference.Left))
 
-				'If _moveRightSelectedItemUp.Visible Then
 				_layoutDifferenceList.Add(New RelativeLayoutData(_rightListBox, LayoutBasePropertyTypeForDifference.Right, _moveRightSelectedItemUp, LayoutRelativePropertyTypeForDifference.Left))
 				_layoutDifferenceList.Add(New RelativeLayoutData(_rightListBox, LayoutBasePropertyTypeForDifference.Right, _moveRightSelectedItemDown, LayoutRelativePropertyTypeForDifference.Left))
-				' End If
 			End If
 
 			_layoutDifferenceList.ForEach(Sub(x)
