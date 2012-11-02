@@ -262,8 +262,8 @@ Namespace kCura.Windows.Forms
 				_layoutRatioList = New List(Of RelativeLayoutData)
 
 				'When the width of the dialog increases by 2 pixels, each groupbox increases by 1 pixel.  The ratio is 1/2 = .5
-				_layoutRatioList.Add(New RelativeLayoutData(Me, LayoutPropertyType.Width, _leftListBox, LayoutPropertyType.Width, 0.5))
-				_layoutRatioList.Add(New RelativeLayoutData(Me, LayoutPropertyType.Width, _rightListBox, LayoutPropertyType.Width, 0.5))
+				_layoutRatioList.Add(New RelativeLayoutData(Me, LayoutBasePropertyTypeForRatio.Width, _leftListBox, LayoutRelativePropertyTypeForRatio.Width, 0.5))
+				_layoutRatioList.Add(New RelativeLayoutData(Me, LayoutBasePropertyTypeForRatio.Width, _rightListBox, LayoutRelativePropertyTypeForRatio.Width, 0.5))
 			End If
 
 			_layoutRatioList.ForEach(Sub(x)
@@ -274,19 +274,19 @@ Namespace kCura.Windows.Forms
 			If _layoutDifferenceList Is Nothing Then
 				_layoutDifferenceList = New List(Of RelativeLayoutData)
 
-				_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutPropertyType.Height, _leftListBox, LayoutPropertyType.Height))
-				_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutPropertyType.Height, _rightListBox, LayoutPropertyType.Height))
+				_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutBasePropertyTypeForDifference.Height, _leftListBox, LayoutRelativePropertyTypeForDifference.Height))
+				_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutBasePropertyTypeForDifference.Height, _rightListBox, LayoutRelativePropertyTypeForDifference.Height))
 
-				_layoutDifferenceList.Add(New RelativeLayoutData(_leftListBox, LayoutPropertyType.Right, _moveAllFieldsLeft, LayoutPropertyType.Left))
-				_layoutDifferenceList.Add(New RelativeLayoutData(_leftListBox, LayoutPropertyType.Right, _moveAllFieldsRight, LayoutPropertyType.Left))
-				_layoutDifferenceList.Add(New RelativeLayoutData(_leftListBox, LayoutPropertyType.Right, _moveFieldLeft, LayoutPropertyType.Left))
-				_layoutDifferenceList.Add(New RelativeLayoutData(_leftListBox, LayoutPropertyType.Right, _moveFieldRight, LayoutPropertyType.Left))
+				_layoutDifferenceList.Add(New RelativeLayoutData(_leftListBox, LayoutBasePropertyTypeForDifference.Right, _moveAllFieldsLeft, LayoutRelativePropertyTypeForDifference.Left))
+				_layoutDifferenceList.Add(New RelativeLayoutData(_leftListBox, LayoutBasePropertyTypeForDifference.Right, _moveAllFieldsRight, LayoutRelativePropertyTypeForDifference.Left))
+				_layoutDifferenceList.Add(New RelativeLayoutData(_leftListBox, LayoutBasePropertyTypeForDifference.Right, _moveFieldLeft, LayoutRelativePropertyTypeForDifference.Left))
+				_layoutDifferenceList.Add(New RelativeLayoutData(_leftListBox, LayoutBasePropertyTypeForDifference.Right, _moveFieldRight, LayoutRelativePropertyTypeForDifference.Left))
 
-				_layoutDifferenceList.Add(New RelativeLayoutData(_moveFieldLeft, LayoutPropertyType.Right, _rightListBox, LayoutPropertyType.Left))
+				_layoutDifferenceList.Add(New RelativeLayoutData(_moveFieldLeft, LayoutBasePropertyTypeForDifference.Right, _rightListBox, LayoutRelativePropertyTypeForDifference.Left))
 
 				'If _moveRightSelectedItemUp.Visible Then
-				_layoutDifferenceList.Add(New RelativeLayoutData(_rightListBox, LayoutPropertyType.Right, _moveRightSelectedItemUp, LayoutPropertyType.Left))
-				_layoutDifferenceList.Add(New RelativeLayoutData(_rightListBox, LayoutPropertyType.Right, _moveRightSelectedItemDown, LayoutPropertyType.Left))
+				_layoutDifferenceList.Add(New RelativeLayoutData(_rightListBox, LayoutBasePropertyTypeForDifference.Right, _moveRightSelectedItemUp, LayoutRelativePropertyTypeForDifference.Left))
+				_layoutDifferenceList.Add(New RelativeLayoutData(_rightListBox, LayoutBasePropertyTypeForDifference.Right, _moveRightSelectedItemDown, LayoutRelativePropertyTypeForDifference.Left))
 				' End If
 			End If
 
