@@ -1163,13 +1163,13 @@ Public Class ExportForm
 			_layoutRatioList = New List(Of RelativeLayoutData)
 
 			'When the width of the dialog increases by 3 pixels, the column selector increases by 2 pixels.  The ratio is 2/3 = .666667
-			_layoutRatioList.Add(New RelativeLayoutData(Me, LayoutPropertyType.Width, _columnSelector, LayoutPropertyType.Width, 0.666667))
+			_layoutRatioList.Add(New RelativeLayoutData(Me, LayoutBasePropertyTypeForRatio.Width, _columnSelector, LayoutRelativePropertyTypeForRatio.Width, 0.666667))
 			'When the width of the dialog increases by 2 pixels, the production listbox increases by 1 pixel.  The ratio is 1/3 = .333333
-			_layoutRatioList.Add(New RelativeLayoutData(Me, LayoutPropertyType.Width, _productionPrecedenceList, LayoutPropertyType.Width, 0.333333))
+			_layoutRatioList.Add(New RelativeLayoutData(Me, LayoutBasePropertyTypeForRatio.Width, _productionPrecedenceList, LayoutRelativePropertyTypeForRatio.Width, 0.333333))
 			'The height of the column selector increases 1-for-1 with the height of the dialog (as an alternative, this could have been set as a difference)
-			_layoutRatioList.Add(New RelativeLayoutData(Me, LayoutPropertyType.Height, _columnSelector, LayoutPropertyType.Height, 1.0))
+			_layoutRatioList.Add(New RelativeLayoutData(Me, LayoutBasePropertyTypeForRatio.Height, _columnSelector, LayoutRelativePropertyTypeForRatio.Height, 1.0))
 			'The height of the column selector increases 1-for-1 with the height of the dialog (as an alternative, this could have been set as a difference)
-			_layoutRatioList.Add(New RelativeLayoutData(Me, LayoutPropertyType.Height, _productionPrecedenceList, LayoutPropertyType.Height, 1.0))
+			_layoutRatioList.Add(New RelativeLayoutData(Me, LayoutBasePropertyTypeForRatio.Height, _productionPrecedenceList, LayoutRelativePropertyTypeForRatio.Height, 1.0))
 		End If
 
 		_layoutRatioList.ForEach(Sub(x)
@@ -1180,25 +1180,25 @@ Public Class ExportForm
 		If _layoutDifferenceList Is Nothing Then
 			_layoutDifferenceList = New List(Of RelativeLayoutData)
 
-			_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutPropertyType.Height, _columnSelector, LayoutPropertyType.Height))
-			_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutPropertyType.Height, _productionPrecedenceList, LayoutPropertyType.Height))
+			_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutBasePropertyTypeForDifference.Height, _columnSelector, LayoutRelativePropertyTypeForDifference.Height))
+			_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutBasePropertyTypeForDifference.Height, _productionPrecedenceList, LayoutRelativePropertyTypeForDifference.Height))
 
-			_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutPropertyType.Width, TabControl1, LayoutPropertyType.Width))
-			_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutPropertyType.Width, _dataSourceTabPage, LayoutPropertyType.Width))
-			_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutPropertyType.Height, TabControl1, LayoutPropertyType.Height))
-			_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutPropertyType.Height, _dataSourceTabPage, LayoutPropertyType.Height))
+			_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutBasePropertyTypeForDifference.Width, TabControl1, LayoutRelativePropertyTypeForDifference.Width))
+			_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutBasePropertyTypeForDifference.Width, _dataSourceTabPage, LayoutRelativePropertyTypeForDifference.Width))
+			_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutBasePropertyTypeForDifference.Height, TabControl1, LayoutRelativePropertyTypeForDifference.Height))
+			_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutBasePropertyTypeForDifference.Height, _dataSourceTabPage, LayoutRelativePropertyTypeForDifference.Height))
 
-			_layoutDifferenceList.Add(New RelativeLayoutData(_columnSelector, LayoutPropertyType.Width, _filtersBox, LayoutPropertyType.Width))
-			_layoutDifferenceList.Add(New RelativeLayoutData(_columnSelector, LayoutPropertyType.Width, _filters, LayoutPropertyType.Width))
-			_layoutDifferenceList.Add(New RelativeLayoutData(_columnSelector, LayoutPropertyType.Height, _filtersBox, LayoutPropertyType.Height))
-			_layoutDifferenceList.Add(New RelativeLayoutData(_columnSelector, LayoutPropertyType.Right, Me.LabelSelectedColumns, LayoutPropertyType.Left))
-			_layoutDifferenceList.Add(New RelativeLayoutData(_columnSelector, LayoutPropertyType.Right, Me.LabelStartAtRecordNumber, LayoutPropertyType.Left))
-			_layoutDifferenceList.Add(New RelativeLayoutData(_columnSelector, LayoutPropertyType.Right, Me._startExportAtDocumentNumber, LayoutPropertyType.Left))
+			_layoutDifferenceList.Add(New RelativeLayoutData(_columnSelector, LayoutBasePropertyTypeForDifference.Width, _filtersBox, LayoutRelativePropertyTypeForDifference.Width))
+			_layoutDifferenceList.Add(New RelativeLayoutData(_columnSelector, LayoutBasePropertyTypeForDifference.Width, _filters, LayoutRelativePropertyTypeForDifference.Width))
+			_layoutDifferenceList.Add(New RelativeLayoutData(_columnSelector, LayoutBasePropertyTypeForDifference.Height, _filtersBox, LayoutRelativePropertyTypeForDifference.Height))
+			_layoutDifferenceList.Add(New RelativeLayoutData(_columnSelector, LayoutBasePropertyTypeForDifference.Right, Me.LabelSelectedColumns, LayoutRelativePropertyTypeForDifference.Left))
+			_layoutDifferenceList.Add(New RelativeLayoutData(_columnSelector, LayoutBasePropertyTypeForDifference.Right, Me.LabelStartAtRecordNumber, LayoutRelativePropertyTypeForDifference.Left))
+			_layoutDifferenceList.Add(New RelativeLayoutData(_columnSelector, LayoutBasePropertyTypeForDifference.Right, Me._startExportAtDocumentNumber, LayoutRelativePropertyTypeForDifference.Left))
 
-			_layoutDifferenceList.Add(New RelativeLayoutData(_filtersBox, LayoutPropertyType.Right, Me._productionPrecedenceBox, LayoutPropertyType.Left))
+			_layoutDifferenceList.Add(New RelativeLayoutData(_filtersBox, LayoutBasePropertyTypeForDifference.Right, Me._productionPrecedenceBox, LayoutRelativePropertyTypeForDifference.Left))
 
-			_layoutDifferenceList.Add(New RelativeLayoutData(_productionPrecedenceList, LayoutPropertyType.Width, Me._productionPrecedenceBox, LayoutPropertyType.Width))
-			_layoutDifferenceList.Add(New RelativeLayoutData(_productionPrecedenceList, LayoutPropertyType.Height, Me._productionPrecedenceBox, LayoutPropertyType.Height))
+			_layoutDifferenceList.Add(New RelativeLayoutData(_productionPrecedenceList, LayoutBasePropertyTypeForDifference.Width, Me._productionPrecedenceBox, LayoutRelativePropertyTypeForDifference.Width))
+			_layoutDifferenceList.Add(New RelativeLayoutData(_productionPrecedenceList, LayoutBasePropertyTypeForDifference.Height, Me._productionPrecedenceBox, LayoutRelativePropertyTypeForDifference.Height))
 		End If
 
 		_layoutDifferenceList.ForEach(Sub(x)

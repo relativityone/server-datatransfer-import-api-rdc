@@ -109,13 +109,13 @@ Namespace kCura.EDDS.WinForm
 			If _layoutDifferenceList Is Nothing Then
 				_layoutDifferenceList = New List(Of RelativeLayoutData)
 
-				_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutPropertyType.Height, _longTextFieldsTwoListBox, LayoutPropertyType.Height))
-				_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutPropertyType.Width, _longTextFieldsTwoListBox, LayoutPropertyType.Width))
+				_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutBasePropertyTypeForDifference.Height, _longTextFieldsTwoListBox, LayoutRelativePropertyTypeForDifference.Height))
+				_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutBasePropertyTypeForDifference.Width, _longTextFieldsTwoListBox, LayoutRelativePropertyTypeForDifference.Width))
 
-				_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutPropertyType.Width, _okButton, LayoutPropertyType.Left))
-				_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutPropertyType.Width, _cancelButton, LayoutPropertyType.Left))
-				_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutPropertyType.Height, _okButton, LayoutPropertyType.Top))
-				_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutPropertyType.Height, _cancelButton, LayoutPropertyType.Top))
+				_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutBasePropertyTypeForDifference.Width, _okButton, LayoutRelativePropertyTypeForDifference.Left))
+				_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutBasePropertyTypeForDifference.Width, _cancelButton, LayoutRelativePropertyTypeForDifference.Left))
+				_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutBasePropertyTypeForDifference.Height, _okButton, LayoutRelativePropertyTypeForDifference.Top))
+				_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutBasePropertyTypeForDifference.Height, _cancelButton, LayoutRelativePropertyTypeForDifference.Top))
 			End If
 
 			_layoutDifferenceList.ForEach(Sub(x)

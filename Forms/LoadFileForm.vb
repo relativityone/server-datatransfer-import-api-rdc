@@ -1162,11 +1162,11 @@ Namespace kCura.EDDS.WinForm
 				_layoutRatioList = New List(Of RelativeLayoutData)
 
 				'When the width of the dialog increases by 3 pixels, each groupbox increases by 1 pixel.  The ratio is 1/3 = .333333
-				_layoutRatioList.Add(New RelativeLayoutData(Me, LayoutPropertyType.Width, GroupBoxOverwrite, LayoutPropertyType.Width, 0.333333))
-				_layoutRatioList.Add(New RelativeLayoutData(Me, LayoutPropertyType.Width, GroupBoxOverlayIdentifier, LayoutPropertyType.Width, 0.333333))
-				_layoutRatioList.Add(New RelativeLayoutData(Me, LayoutPropertyType.Width, GroupBoxFolderInfo, LayoutPropertyType.Width, 0.333333))
-				_layoutRatioList.Add(New RelativeLayoutData(Me, LayoutPropertyType.Width, GroupBoxNativeFileBehavior, LayoutPropertyType.Width, 0.333333))
-				_layoutRatioList.Add(New RelativeLayoutData(Me, LayoutPropertyType.Width, GroupBoxExtractedText, LayoutPropertyType.Width, 0.333333))
+				_layoutRatioList.Add(New RelativeLayoutData(Me, LayoutBasePropertyTypeForRatio.Width, GroupBoxOverwrite, LayoutRelativePropertyTypeForRatio.Width, 0.333333))
+				_layoutRatioList.Add(New RelativeLayoutData(Me, LayoutBasePropertyTypeForRatio.Width, GroupBoxOverlayIdentifier, LayoutRelativePropertyTypeForRatio.Width, 0.333333))
+				_layoutRatioList.Add(New RelativeLayoutData(Me, LayoutBasePropertyTypeForRatio.Width, GroupBoxFolderInfo, LayoutRelativePropertyTypeForRatio.Width, 0.333333))
+				_layoutRatioList.Add(New RelativeLayoutData(Me, LayoutBasePropertyTypeForRatio.Width, GroupBoxNativeFileBehavior, LayoutRelativePropertyTypeForRatio.Width, 0.333333))
+				_layoutRatioList.Add(New RelativeLayoutData(Me, LayoutBasePropertyTypeForRatio.Width, GroupBoxExtractedText, LayoutRelativePropertyTypeForRatio.Width, 0.333333))
 			End If
 
 			_layoutRatioList.ForEach(Sub(x)
@@ -1177,25 +1177,25 @@ Namespace kCura.EDDS.WinForm
 			If _layoutDifferenceList Is Nothing Then
 				_layoutDifferenceList = New List(Of RelativeLayoutData)
 
-				_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutPropertyType.Width, _fieldMapTab, LayoutPropertyType.Width))
-				_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutPropertyType.Height, _fieldMapTab, LayoutPropertyType.Height))
-				_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutPropertyType.Width, _fieldMap, LayoutPropertyType.Width))
-				_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutPropertyType.Height, _fieldMap, LayoutPropertyType.Height))
+				_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutBasePropertyTypeForDifference.Width, _fieldMapTab, LayoutRelativePropertyTypeForDifference.Width))
+				_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutBasePropertyTypeForDifference.Height, _fieldMapTab, LayoutRelativePropertyTypeForDifference.Height))
+				_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutBasePropertyTypeForDifference.Width, _fieldMap, LayoutRelativePropertyTypeForDifference.Width))
+				_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutBasePropertyTypeForDifference.Height, _fieldMap, LayoutRelativePropertyTypeForDifference.Height))
 
-				_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutPropertyType.Width, TabControl1, LayoutPropertyType.Width))
-				_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutPropertyType.Width, _fieldMapTab, LayoutPropertyType.Width))
-				_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutPropertyType.Height, TabControl1, LayoutPropertyType.Height))
-				_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutPropertyType.Height, _fieldMapTab, LayoutPropertyType.Height))
+				_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutBasePropertyTypeForDifference.Width, TabControl1, LayoutRelativePropertyTypeForDifference.Width))
+				_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutBasePropertyTypeForDifference.Width, _fieldMapTab, LayoutRelativePropertyTypeForDifference.Width))
+				_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutBasePropertyTypeForDifference.Height, TabControl1, LayoutRelativePropertyTypeForDifference.Height))
+				_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutBasePropertyTypeForDifference.Height, _fieldMapTab, LayoutRelativePropertyTypeForDifference.Height))
 
-				_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutPropertyType.Height, GroupBoxOverwrite, LayoutPropertyType.Top))
-				_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutPropertyType.Height, GroupBoxOverlayIdentifier, LayoutPropertyType.Top))
-				_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutPropertyType.Height, GroupBoxFolderInfo, LayoutPropertyType.Top))
-				_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutPropertyType.Height, GroupBoxNativeFileBehavior, LayoutPropertyType.Top))
-				_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutPropertyType.Height, GroupBoxExtractedText, LayoutPropertyType.Top))
+				_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutBasePropertyTypeForDifference.Height, GroupBoxOverwrite, LayoutRelativePropertyTypeForDifference.Top))
+				_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutBasePropertyTypeForDifference.Height, GroupBoxOverlayIdentifier, LayoutRelativePropertyTypeForDifference.Top))
+				_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutBasePropertyTypeForDifference.Height, GroupBoxFolderInfo, LayoutRelativePropertyTypeForDifference.Top))
+				_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutBasePropertyTypeForDifference.Height, GroupBoxNativeFileBehavior, LayoutRelativePropertyTypeForDifference.Top))
+				_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutBasePropertyTypeForDifference.Height, GroupBoxExtractedText, LayoutRelativePropertyTypeForDifference.Top))
 
-				_layoutDifferenceList.Add(New RelativeLayoutData(GroupBoxOverwrite, LayoutPropertyType.Right, GroupBoxFolderInfo, LayoutPropertyType.Left))
-				_layoutDifferenceList.Add(New RelativeLayoutData(GroupBoxOverwrite, LayoutPropertyType.Right, GroupBoxNativeFileBehavior, LayoutPropertyType.Left))
-				_layoutDifferenceList.Add(New RelativeLayoutData(GroupBoxFolderInfo, LayoutPropertyType.Right, GroupBoxExtractedText, LayoutPropertyType.Left))
+				_layoutDifferenceList.Add(New RelativeLayoutData(GroupBoxOverwrite, LayoutBasePropertyTypeForDifference.Right, GroupBoxFolderInfo, LayoutRelativePropertyTypeForDifference.Left))
+				_layoutDifferenceList.Add(New RelativeLayoutData(GroupBoxOverwrite, LayoutBasePropertyTypeForDifference.Right, GroupBoxNativeFileBehavior, LayoutRelativePropertyTypeForDifference.Left))
+				_layoutDifferenceList.Add(New RelativeLayoutData(GroupBoxFolderInfo, LayoutBasePropertyTypeForDifference.Right, GroupBoxExtractedText, LayoutRelativePropertyTypeForDifference.Left))
 			End If
 
 			_layoutDifferenceList.ForEach(Sub(x)
