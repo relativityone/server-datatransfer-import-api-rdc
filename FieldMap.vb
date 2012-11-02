@@ -149,8 +149,8 @@ Namespace kCura.WinEDDS.UIControls
 				_layoutRatioList = New List(Of RelativeLayoutData)
 
 				'When the width of the dialog increases by 2 pixels, each groupbox increases by 1 pixel.  The ratio is 1/2 = .5
-				_layoutRatioList.Add(New RelativeLayoutData(Me, LayoutPropertyType.Width, _fieldColumns, LayoutPropertyType.Width, 0.5))
-				_layoutRatioList.Add(New RelativeLayoutData(Me, LayoutPropertyType.Width, _loadFileColumns, LayoutPropertyType.Width, 0.5))
+				_layoutRatioList.Add(New RelativeLayoutData(Me, LayoutBasePropertyTypeForRatio.Width, _fieldColumns, LayoutRelativePropertyTypeForRatio.Width, 0.5))
+				_layoutRatioList.Add(New RelativeLayoutData(Me, LayoutBasePropertyTypeForRatio.Width, _loadFileColumns, LayoutRelativePropertyTypeForRatio.Width, 0.5))
 			End If
 
 			_layoutRatioList.ForEach(Sub(x)
@@ -161,10 +161,10 @@ Namespace kCura.WinEDDS.UIControls
 			If _layoutDifferenceList Is Nothing Then
 				_layoutDifferenceList = New List(Of RelativeLayoutData)
 
-				_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutPropertyType.Height, _fieldColumns, LayoutPropertyType.Height))
-				_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutPropertyType.Height, _loadFileColumns, LayoutPropertyType.Height))
+				_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutBasePropertyTypeForDifference.Height, _fieldColumns, LayoutRelativePropertyTypeForDifference.Height))
+				_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutBasePropertyTypeForDifference.Height, _loadFileColumns, LayoutRelativePropertyTypeForDifference.Height))
 
-				_layoutDifferenceList.Add(New RelativeLayoutData(_fieldColumns, LayoutPropertyType.Right, _loadFileColumns, LayoutPropertyType.Left))
+				_layoutDifferenceList.Add(New RelativeLayoutData(_fieldColumns, LayoutBasePropertyTypeForDifference.Right, _loadFileColumns, LayoutRelativePropertyTypeForDifference.Left))
 
 				' No need to adjust _loadFileColumnsLabel because it is using anchoring
 			End If
