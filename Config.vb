@@ -11,6 +11,7 @@ Namespace kCura.WinEDDS
 					_configDictionary = DirectCast(System.Configuration.ConfigurationManager.GetSection("kCura.WinEDDS"), System.Collections.IDictionary)
 					If _configDictionary Is Nothing Then _configDictionary = New System.Collections.Hashtable
 					If Not _configDictionary.Contains("ImportBatchSize") Then _configDictionary.Add("ImportBatchSize", "1000")
+					If Not _configDictionary.Contains("WebAPIOperationTimeout") Then _configDictionary.Add("WebAPIOperationTimeout", "600000")
 					If Not _configDictionary.Contains("DynamicBatchResizingOn") Then _configDictionary.Add("DynamicBatchResizingOn", "True")
 					If Not _configDictionary.Contains("MinimumBatchSize") Then _configDictionary.Add("MinimumBatchSize", "100")
 					If Not _configDictionary.Contains("WaitTimeBetweenRetryAttempts") Then _configDictionary.Add("WaitTimeBetweenRetryAttempts", "30")
@@ -156,6 +157,16 @@ Namespace kCura.WinEDDS
 					Return CType(ConfigSettings("ImportBatchSize"), Int32)
 				Catch ex As Exception
 					Return 500
+				End Try
+			End Get
+		End Property
+
+		Public Shared ReadOnly Property WebAPIOperationTimeout() As Int32
+			Get
+				Try
+					Return CType(ConfigSettings("WebAPIOperationTimeout"), Int32)
+				Catch ex As Exception
+					Return 600000
 				End Try
 			End Get
 		End Property
