@@ -1091,7 +1091,7 @@ Public Class ExportForm
 		Me.MaximizeBox = True
 		Me.MinimumSize = New System.Drawing.Size(700, 400)
 		Me.BackColor = System.Drawing.SystemColors.Control
-		Me.ClientSize = New System.Drawing.Size(775, 451)
+		Me.ClientSize = New System.Drawing.Size(775, 452)
 		Me.Controls.Add(Me.TabControl1)
 		Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
 		Me.Menu = Me.MainMenu1

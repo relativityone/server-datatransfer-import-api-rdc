@@ -89,19 +89,19 @@ Namespace kCura.EDDS.WinForm
 		Friend WithEvents Label5 As System.Windows.Forms.Label
 		Friend WithEvents _nativeFilePathField As System.Windows.Forms.ComboBox
 		Friend WithEvents GroupBoxNativeFileBehavior As System.Windows.Forms.GroupBox
-		Friend WithEvents GroupBox23 As System.Windows.Forms.GroupBox
+		Friend WithEvents GroupBoxCharacters As System.Windows.Forms.GroupBox
 		Friend WithEvents _multiRecordDelimiter As System.Windows.Forms.ComboBox
-		Friend WithEvents Label6 As System.Windows.Forms.Label
-		Friend WithEvents Label4 As System.Windows.Forms.Label
+		Friend WithEvents LabelMultiValue As System.Windows.Forms.Label
+		Friend WithEvents LabelQuote As System.Windows.Forms.Label
 		Friend WithEvents _quoteDelimiter As System.Windows.Forms.ComboBox
-		Friend WithEvents Label3 As System.Windows.Forms.Label
+		Friend WithEvents LabelNewline As System.Windows.Forms.Label
 		Friend WithEvents _newLineDelimiter As System.Windows.Forms.ComboBox
-		Friend WithEvents Label2 As System.Windows.Forms.Label
+		Friend WithEvents LabelColumn As System.Windows.Forms.Label
 		Friend WithEvents _recordDelimiter As System.Windows.Forms.ComboBox
-		Friend WithEvents GroupBox2 As System.Windows.Forms.GroupBox
+		Friend WithEvents GroupBoxFileColumnHeaders As System.Windows.Forms.GroupBox
 		Friend WithEvents _fileColumnHeaders As System.Windows.Forms.ListBox
 		Friend WithEvents _firstLineContainsColumnNames As System.Windows.Forms.CheckBox
-		Friend WithEvents GroupBox20 As System.Windows.Forms.GroupBox
+		Friend WithEvents GroupBoxLoadFile As System.Windows.Forms.GroupBox
 		Friend WithEvents _browseButton As System.Windows.Forms.Button
 		Friend WithEvents _filePath As System.Windows.Forms.TextBox
 		Friend WithEvents HelpProvider1 As System.Windows.Forms.HelpProvider
@@ -116,13 +116,13 @@ Namespace kCura.EDDS.WinForm
 		Friend WithEvents GroupBoxOverwrite As System.Windows.Forms.GroupBox
 		Friend WithEvents GroupBoxExtractedText As System.Windows.Forms.GroupBox
 		Friend WithEvents _extractedTextValueContainsFileLocation As System.Windows.Forms.CheckBox
-		Friend WithEvents Label8 As System.Windows.Forms.Label
+		Friend WithEvents LabelFileEncoding As System.Windows.Forms.Label
 		Friend WithEvents _advancedButton As System.Windows.Forms.Button
 		Friend WithEvents Label9 As System.Windows.Forms.Label
 		Friend WithEvents _loadFileEncodingPicker As kCura.EDDS.WinForm.EncodingPicker
 		Friend WithEvents _fullTextFileEncodingPicker As kCura.EDDS.WinForm.EncodingPicker
 		Friend WithEvents _hierarchicalValueDelimiter As System.Windows.Forms.ComboBox
-		Friend WithEvents Label10 As System.Windows.Forms.Label
+		Friend WithEvents LabelNestedValue As System.Windows.Forms.Label
 		Friend WithEvents _startLineNumberLabel As System.Windows.Forms.Label
 		Friend WithEvents _startLineNumber As System.Windows.Forms.NumericUpDown
 		Friend WithEvents _fieldMap As kCura.WinEDDS.UIControls.FieldMap
@@ -160,23 +160,23 @@ Namespace kCura.EDDS.WinForm
 			Me._startLineNumber = New System.Windows.Forms.NumericUpDown
 			Me._startLineNumberLabel = New System.Windows.Forms.Label
 			Me._loadFileEncodingPicker = New kCura.EDDS.WinForm.EncodingPicker
-			Me.Label8 = New System.Windows.Forms.Label
-			Me.GroupBox20 = New System.Windows.Forms.GroupBox
+			Me.LabelFileEncoding = New System.Windows.Forms.Label
+			Me.GroupBoxLoadFile = New System.Windows.Forms.GroupBox
 			Me._browseButton = New System.Windows.Forms.Button
 			Me._filePath = New System.Windows.Forms.TextBox
 			Me._firstLineContainsColumnNames = New System.Windows.Forms.CheckBox
-			Me.GroupBox2 = New System.Windows.Forms.GroupBox
+			Me.GroupBoxFileColumnHeaders = New System.Windows.Forms.GroupBox
 			Me._fileColumnHeaders = New System.Windows.Forms.ListBox
-			Me.GroupBox23 = New System.Windows.Forms.GroupBox
+			Me.GroupBoxCharacters = New System.Windows.Forms.GroupBox
 			Me._hierarchicalValueDelimiter = New System.Windows.Forms.ComboBox
-			Me.Label10 = New System.Windows.Forms.Label
+			Me.LabelNestedValue = New System.Windows.Forms.Label
 			Me._multiRecordDelimiter = New System.Windows.Forms.ComboBox
-			Me.Label6 = New System.Windows.Forms.Label
-			Me.Label4 = New System.Windows.Forms.Label
+			Me.LabelMultiValue = New System.Windows.Forms.Label
+			Me.LabelQuote = New System.Windows.Forms.Label
 			Me._quoteDelimiter = New System.Windows.Forms.ComboBox
-			Me.Label3 = New System.Windows.Forms.Label
+			Me.LabelNewline = New System.Windows.Forms.Label
 			Me._newLineDelimiter = New System.Windows.Forms.ComboBox
-			Me.Label2 = New System.Windows.Forms.Label
+			Me.LabelColumn = New System.Windows.Forms.Label
 			Me._recordDelimiter = New System.Windows.Forms.ComboBox
 			Me._fieldMapTab = New System.Windows.Forms.TabPage
 			Me.GroupBoxOverlayIdentifier = New System.Windows.Forms.GroupBox
@@ -201,9 +201,9 @@ Namespace kCura.EDDS.WinForm
 			Me.TabControl1.SuspendLayout()
 			Me._loadFileTab.SuspendLayout()
 			CType(Me._startLineNumber, System.ComponentModel.ISupportInitialize).BeginInit()
-			Me.GroupBox20.SuspendLayout()
-			Me.GroupBox2.SuspendLayout()
-			Me.GroupBox23.SuspendLayout()
+			Me.GroupBoxLoadFile.SuspendLayout()
+			Me.GroupBoxFileColumnHeaders.SuspendLayout()
+			Me.GroupBoxCharacters.SuspendLayout()
 			Me._fieldMapTab.SuspendLayout()
 			Me.GroupBoxOverlayIdentifier.SuspendLayout()
 			Me.GroupBoxExtractedText.SuspendLayout()
@@ -351,11 +351,11 @@ Namespace kCura.EDDS.WinForm
 			Me._loadFileTab.Controls.Add(Me._startLineNumber)
 			Me._loadFileTab.Controls.Add(Me._startLineNumberLabel)
 			Me._loadFileTab.Controls.Add(Me._loadFileEncodingPicker)
-			Me._loadFileTab.Controls.Add(Me.Label8)
-			Me._loadFileTab.Controls.Add(Me.GroupBox20)
+			Me._loadFileTab.Controls.Add(Me.LabelFileEncoding)
+			Me._loadFileTab.Controls.Add(Me.GroupBoxLoadFile)
 			Me._loadFileTab.Controls.Add(Me._firstLineContainsColumnNames)
-			Me._loadFileTab.Controls.Add(Me.GroupBox2)
-			Me._loadFileTab.Controls.Add(Me.GroupBox23)
+			Me._loadFileTab.Controls.Add(Me.GroupBoxFileColumnHeaders)
+			Me._loadFileTab.Controls.Add(Me.GroupBoxCharacters)
 			Me._loadFileTab.Location = New System.Drawing.Point(4, 22)
 			Me._loadFileTab.Name = "_loadFileTab"
 			Me._loadFileTab.Size = New System.Drawing.Size(728, 462)
@@ -387,32 +387,34 @@ Namespace kCura.EDDS.WinForm
 			Me._loadFileEncodingPicker.Size = New System.Drawing.Size(200, 21)
 			Me._loadFileEncodingPicker.TabIndex = 5
 			'
-			'Label8
+			'LabelFileEncoding
 			'
-			Me.Label8.Location = New System.Drawing.Point(12, 108)
-			Me.Label8.Name = "Label8"
-			Me.Label8.Size = New System.Drawing.Size(200, 16)
-			Me.Label8.TabIndex = 23
-			Me.Label8.Text = "File Encoding"
+			Me.LabelFileEncoding.Location = New System.Drawing.Point(12, 111)
+			Me.LabelFileEncoding.Name = "LabelFileEncoding"
+			Me.LabelFileEncoding.Size = New System.Drawing.Size(200, 16)
+			Me.LabelFileEncoding.TabIndex = 23
+			Me.LabelFileEncoding.Text = "File Encoding"
 			'
-			'GroupBox20
+			'GroupBoxLoadFile
 			'
-			Me.GroupBox20.Controls.Add(Me._browseButton)
-			Me.GroupBox20.Controls.Add(Me._filePath)
-			Me.GroupBox20.Location = New System.Drawing.Point(8, 4)
-			Me.GroupBox20.Name = "GroupBox20"
-			Me.GroupBox20.Size = New System.Drawing.Size(720, 48)
-			Me.GroupBox20.TabIndex = 2
-			Me.GroupBox20.TabStop = False
-			Me.GroupBox20.Text = "Load File"
+			Me.GroupBoxLoadFile.Controls.Add(Me._browseButton)
+			Me.GroupBoxLoadFile.Controls.Add(Me._filePath)
+			Me.GroupBoxLoadFile.Location = New System.Drawing.Point(8, 4)
+			Me.GroupBoxLoadFile.Name = "GroupBoxLoadFile"
+			Me.GroupBoxLoadFile.Size = New System.Drawing.Size(718, 48)
+			Me.GroupBoxLoadFile.TabIndex = 2
+			Me.GroupBoxLoadFile.TabStop = False
+			Me.GroupBoxLoadFile.Text = "Load File"
+			Me.GroupBoxLoadFile.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			'
 			'_browseButton
 			'
-			Me._browseButton.Location = New System.Drawing.Point(688, 16)
+			Me._browseButton.Location = New System.Drawing.Point(684, 16)
 			Me._browseButton.Name = "_browseButton"
 			Me._browseButton.Size = New System.Drawing.Size(24, 20)
 			Me._browseButton.TabIndex = 4
 			Me._browseButton.Text = "..."
+			Me._browseButton.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			'
 			'_filePath
 			'
@@ -421,9 +423,10 @@ Namespace kCura.EDDS.WinForm
 			Me._filePath.ForeColor = System.Drawing.SystemColors.ControlDarkDark
 			Me._filePath.Location = New System.Drawing.Point(8, 16)
 			Me._filePath.Name = "_filePath"
-			Me._filePath.Size = New System.Drawing.Size(680, 20)
+			Me._filePath.Size = New System.Drawing.Size(676, 20)
 			Me._filePath.TabIndex = 2
 			Me._filePath.Text = "Select a file ..."
+			Me._filePath.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			'
 			'_firstLineContainsColumnNames
 			'
@@ -436,42 +439,43 @@ Namespace kCura.EDDS.WinForm
 			Me._firstLineContainsColumnNames.TabIndex = 3
 			Me._firstLineContainsColumnNames.Text = "First line contains column names"
 			'
-			'GroupBox2
+			'GroupBoxFileColumnHeaders
 			'
-			Me.GroupBox2.Controls.Add(Me._fileColumnHeaders)
-			Me.GroupBox2.Location = New System.Drawing.Point(228, 56)
-			Me.GroupBox2.Name = "GroupBox2"
-			Me.GroupBox2.Size = New System.Drawing.Size(500, 364)
-			Me.GroupBox2.TabIndex = 7
-			Me.GroupBox2.TabStop = False
-			Me.GroupBox2.Text = "File Column Headers"
+			Me.GroupBoxFileColumnHeaders.Controls.Add(Me._fileColumnHeaders)
+			Me.GroupBoxFileColumnHeaders.Location = New System.Drawing.Point(228, 56)
+			Me.GroupBoxFileColumnHeaders.Name = "GroupBoxFileColumnHeaders"
+			Me.GroupBoxFileColumnHeaders.Size = New System.Drawing.Size(500, 403)
+			Me.GroupBoxFileColumnHeaders.TabIndex = 7
+			Me.GroupBoxFileColumnHeaders.TabStop = False
+			Me.GroupBoxFileColumnHeaders.Text = "File Column Headers"
 			'
 			'_fileColumnHeaders
 			'
-			Me._fileColumnHeaders.Location = New System.Drawing.Point(12, 24)
+			Me._fileColumnHeaders.Location = New System.Drawing.Point(10, 18)
 			Me._fileColumnHeaders.Name = "_fileColumnHeaders"
 			Me._fileColumnHeaders.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended
-			Me._fileColumnHeaders.Size = New System.Drawing.Size(476, 329)
+			Me._fileColumnHeaders.Size = New System.Drawing.Size(480, 375)
 			Me._fileColumnHeaders.TabIndex = 17
+			Me._fileColumnHeaders.IntegralHeight = False
 			'
-			'GroupBox23
+			'GroupBoxCharacters
 			'
-			Me.GroupBox23.Controls.Add(Me._hierarchicalValueDelimiter)
-			Me.GroupBox23.Controls.Add(Me.Label10)
-			Me.GroupBox23.Controls.Add(Me._multiRecordDelimiter)
-			Me.GroupBox23.Controls.Add(Me.Label6)
-			Me.GroupBox23.Controls.Add(Me.Label4)
-			Me.GroupBox23.Controls.Add(Me._quoteDelimiter)
-			Me.GroupBox23.Controls.Add(Me.Label3)
-			Me.GroupBox23.Controls.Add(Me._newLineDelimiter)
-			Me.GroupBox23.Controls.Add(Me.Label2)
-			Me.GroupBox23.Controls.Add(Me._recordDelimiter)
-			Me.GroupBox23.Location = New System.Drawing.Point(12, 156)
-			Me.GroupBox23.Name = "GroupBox23"
-			Me.GroupBox23.Size = New System.Drawing.Size(200, 264)
-			Me.GroupBox23.TabIndex = 6
-			Me.GroupBox23.TabStop = False
-			Me.GroupBox23.Text = "Characters"
+			Me.GroupBoxCharacters.Controls.Add(Me._hierarchicalValueDelimiter)
+			Me.GroupBoxCharacters.Controls.Add(Me.LabelNestedValue)
+			Me.GroupBoxCharacters.Controls.Add(Me._multiRecordDelimiter)
+			Me.GroupBoxCharacters.Controls.Add(Me.LabelMultiValue)
+			Me.GroupBoxCharacters.Controls.Add(Me.LabelQuote)
+			Me.GroupBoxCharacters.Controls.Add(Me._quoteDelimiter)
+			Me.GroupBoxCharacters.Controls.Add(Me.LabelNewline)
+			Me.GroupBoxCharacters.Controls.Add(Me._newLineDelimiter)
+			Me.GroupBoxCharacters.Controls.Add(Me.LabelColumn)
+			Me.GroupBoxCharacters.Controls.Add(Me._recordDelimiter)
+			Me.GroupBoxCharacters.Location = New System.Drawing.Point(12, 156)
+			Me.GroupBoxCharacters.Name = "GroupBoxCharacters"
+			Me.GroupBoxCharacters.Size = New System.Drawing.Size(200, 303)
+			Me.GroupBoxCharacters.TabIndex = 6
+			Me.GroupBoxCharacters.TabStop = False
+			Me.GroupBoxCharacters.Text = "Characters"
 			'
 			'_hierarchicalValueDelimiter
 			'
@@ -481,13 +485,13 @@ Namespace kCura.EDDS.WinForm
 			Me._hierarchicalValueDelimiter.Size = New System.Drawing.Size(168, 21)
 			Me._hierarchicalValueDelimiter.TabIndex = 9
 			'
-			'Label10
+			'LabelNestedValue
 			'
-			Me.Label10.Location = New System.Drawing.Point(16, 212)
-			Me.Label10.Name = "Label10"
-			Me.Label10.Size = New System.Drawing.Size(160, 16)
-			Me.Label10.TabIndex = 8
-			Me.Label10.Text = "Nested Value "
+			Me.LabelNestedValue.Location = New System.Drawing.Point(16, 212)
+			Me.LabelNestedValue.Name = "LabelNestedValue"
+			Me.LabelNestedValue.Size = New System.Drawing.Size(160, 16)
+			Me.LabelNestedValue.TabIndex = 8
+			Me.LabelNestedValue.Text = "Nested Value "
 			'
 			'_multiRecordDelimiter
 			'
@@ -497,21 +501,21 @@ Namespace kCura.EDDS.WinForm
 			Me._multiRecordDelimiter.Size = New System.Drawing.Size(168, 21)
 			Me._multiRecordDelimiter.TabIndex = 7
 			'
-			'Label6
+			'LabelMultiValue
 			'
-			Me.Label6.Location = New System.Drawing.Point(16, 164)
-			Me.Label6.Name = "Label6"
-			Me.Label6.Size = New System.Drawing.Size(120, 16)
-			Me.Label6.TabIndex = 6
-			Me.Label6.Text = "Multi-Value "
+			Me.LabelMultiValue.Location = New System.Drawing.Point(16, 164)
+			Me.LabelMultiValue.Name = "LabelMultiValue"
+			Me.LabelMultiValue.Size = New System.Drawing.Size(120, 16)
+			Me.LabelMultiValue.TabIndex = 6
+			Me.LabelMultiValue.Text = "Multi-Value "
 			'
-			'Label4
+			'LabelQuote
 			'
-			Me.Label4.Location = New System.Drawing.Point(16, 68)
-			Me.Label4.Name = "Label4"
-			Me.Label4.Size = New System.Drawing.Size(100, 16)
-			Me.Label4.TabIndex = 5
-			Me.Label4.Text = "Quote"
+			Me.LabelQuote.Location = New System.Drawing.Point(16, 72)
+			Me.LabelQuote.Name = "LabelQuote"
+			Me.LabelQuote.Size = New System.Drawing.Size(100, 16)
+			Me.LabelQuote.TabIndex = 5
+			Me.LabelQuote.Text = "Quote"
 			'
 			'_quoteDelimiter
 			'
@@ -521,13 +525,13 @@ Namespace kCura.EDDS.WinForm
 			Me._quoteDelimiter.Size = New System.Drawing.Size(168, 21)
 			Me._quoteDelimiter.TabIndex = 2
 			'
-			'Label3
+			'LabelNewline
 			'
-			Me.Label3.Location = New System.Drawing.Point(16, 116)
-			Me.Label3.Name = "Label3"
-			Me.Label3.Size = New System.Drawing.Size(100, 16)
-			Me.Label3.TabIndex = 3
-			Me.Label3.Text = "Newline"
+			Me.LabelNewline.Location = New System.Drawing.Point(16, 116)
+			Me.LabelNewline.Name = "LabelNewline"
+			Me.LabelNewline.Size = New System.Drawing.Size(100, 16)
+			Me.LabelNewline.TabIndex = 3
+			Me.LabelNewline.Text = "Newline"
 			'
 			'_newLineDelimiter
 			'
@@ -537,13 +541,13 @@ Namespace kCura.EDDS.WinForm
 			Me._newLineDelimiter.Size = New System.Drawing.Size(168, 21)
 			Me._newLineDelimiter.TabIndex = 4
 			'
-			'Label2
+			'LabelColumn
 			'
-			Me.Label2.Location = New System.Drawing.Point(16, 20)
-			Me.Label2.Name = "Label2"
-			Me.Label2.Size = New System.Drawing.Size(100, 16)
-			Me.Label2.TabIndex = 1
-			Me.Label2.Text = "Column "
+			Me.LabelColumn.Location = New System.Drawing.Point(16, 20)
+			Me.LabelColumn.Name = "LabelColumn"
+			Me.LabelColumn.Size = New System.Drawing.Size(100, 16)
+			Me.LabelColumn.TabIndex = 1
+			Me.LabelColumn.Text = "Column"
 			'
 			'_recordDelimiter
 			'
@@ -743,10 +747,10 @@ Namespace kCura.EDDS.WinForm
 			Me.TabControl1.ResumeLayout(False)
 			Me._loadFileTab.ResumeLayout(False)
 			CType(Me._startLineNumber, System.ComponentModel.ISupportInitialize).EndInit()
-			Me.GroupBox20.ResumeLayout(False)
-			Me.GroupBox20.PerformLayout()
-			Me.GroupBox2.ResumeLayout(False)
-			Me.GroupBox23.ResumeLayout(False)
+			Me.GroupBoxLoadFile.ResumeLayout(False)
+			Me.GroupBoxLoadFile.PerformLayout()
+			Me.GroupBoxFileColumnHeaders.ResumeLayout(False)
+			Me.GroupBoxCharacters.ResumeLayout(False)
 			Me._fieldMapTab.ResumeLayout(False)
 			Me.GroupBoxOverlayIdentifier.ResumeLayout(False)
 			Me.GroupBoxExtractedText.ResumeLayout(False)
@@ -1193,6 +1197,12 @@ Namespace kCura.EDDS.WinForm
 				_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutBasePropertyTypeForDifference.Height, GroupBoxNativeFileBehavior, LayoutRelativePropertyTypeForDifference.Top))
 				_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutBasePropertyTypeForDifference.Height, GroupBoxExtractedText, LayoutRelativePropertyTypeForDifference.Top))
 
+				_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutBasePropertyTypeForDifference.Height, GroupBoxCharacters, LayoutRelativePropertyTypeForDifference.Height))
+				_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutBasePropertyTypeForDifference.Height, GroupBoxFileColumnHeaders, LayoutRelativePropertyTypeForDifference.Height))
+				_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutBasePropertyTypeForDifference.Width, GroupBoxFileColumnHeaders, LayoutRelativePropertyTypeForDifference.Width))
+				_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutBasePropertyTypeForDifference.Height, _fileColumnHeaders, LayoutRelativePropertyTypeForDifference.Height))
+				_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutBasePropertyTypeForDifference.Width, _fileColumnHeaders, LayoutRelativePropertyTypeForDifference.Width))
+
 				_layoutDifferenceList.Add(New RelativeLayoutData(GroupBoxOverwrite, LayoutBasePropertyTypeForDifference.Right, GroupBoxFolderInfo, LayoutRelativePropertyTypeForDifference.Left))
 				_layoutDifferenceList.Add(New RelativeLayoutData(GroupBoxOverwrite, LayoutBasePropertyTypeForDifference.Right, GroupBoxNativeFileBehavior, LayoutRelativePropertyTypeForDifference.Left))
 				_layoutDifferenceList.Add(New RelativeLayoutData(GroupBoxFolderInfo, LayoutBasePropertyTypeForDifference.Right, GroupBoxExtractedText, LayoutRelativePropertyTypeForDifference.Left))
@@ -1231,7 +1241,7 @@ Namespace kCura.EDDS.WinForm
 			Dim determinedEncoding As System.Text.Encoding = Nothing
 			If System.IO.File.Exists(LoadFile.FilePath) Then
 				_loadFileEncodingPicker.Enabled = True
-				Label8.Text = "File Encoding"
+				LabelFileEncoding.Text = "File Encoding"
 				determinedEncoding = kCura.WinEDDS.Utility.DetectEncoding(LoadFile.FilePath, True).DeterminedEncoding
 				columnHeaders = _application.GetColumnHeadersFromLoadFile(LoadFile, _firstLineContainsColumnNames.Checked)
 				If determinedEncoding IsNot Nothing Then
@@ -1242,7 +1252,7 @@ Namespace kCura.EDDS.WinForm
 
 					_loadFileEncodingPicker.SelectedEncoding = determinedEncoding
 					_loadFileEncodingPicker.Enabled = False
-					Label8.Text = "File Encoding - Auto Detected"
+					LabelFileEncoding.Text = "File Encoding - Auto Detected"
 				ElseIf _loadFileEncodingPicker.SelectedEncoding Is Nothing Then
 					_fileColumnHeaders.Items.Clear()
 					_fileColumnHeaders.Items.Add("The encoding of the selected load file could not be detected.  Please select the load file's encoding.")
