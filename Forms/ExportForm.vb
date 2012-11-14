@@ -42,84 +42,84 @@ Public Class ExportForm
 	Public WithEvents _pickPrecedenceButton As System.Windows.Forms.Button
 	Public WithEvents _productionPrecedenceBox As System.Windows.Forms.GroupBox
 	Public WithEvents _productionPrecedenceList As System.Windows.Forms.ListBox
-	Public WithEvents Label5 As System.Windows.Forms.Label
+	Public WithEvents LabelNamedAfter As System.Windows.Forms.Label
 	Public WithEvents _overwriteCheckBox As System.Windows.Forms.CheckBox
 	Public WithEvents _browseButton As System.Windows.Forms.Button
 	Public WithEvents _folderPath As System.Windows.Forms.TextBox
-	Public WithEvents _appendOriginalFilename As System.Windows.Forms.CheckBox
-	Public WithEvents GroupBox3 As System.Windows.Forms.GroupBox
-	Public WithEvents _nativeFileNameSource As System.Windows.Forms.ComboBox
+	Public WithEvents _appendOriginalFilenameCheckbox As System.Windows.Forms.CheckBox
+	Public WithEvents GroupBoxExportLocation As System.Windows.Forms.GroupBox
+	Public WithEvents _nativeFileNameSourceCombo As System.Windows.Forms.ComboBox
 	Public WithEvents TabControl1 As System.Windows.Forms.TabControl
 	Public WithEvents _dataSourceTabPage As System.Windows.Forms.TabPage
 	Public WithEvents _destinationFileTabPage As System.Windows.Forms.TabPage
-	Public WithEvents _loadFileCharacterInformation As System.Windows.Forms.GroupBox
+	Public WithEvents _groupBoxLoadFileCharacterInformation As System.Windows.Forms.GroupBox
 	Public WithEvents _multiRecordDelimiter As System.Windows.Forms.ComboBox
-	Public WithEvents Label6 As System.Windows.Forms.Label
-	Public WithEvents Label4 As System.Windows.Forms.Label
+	Public WithEvents LabelMultiValue As System.Windows.Forms.Label
+	Public WithEvents LabelQuote As System.Windows.Forms.Label
 	Public WithEvents _quoteDelimiter As System.Windows.Forms.ComboBox
-	Public WithEvents Label3 As System.Windows.Forms.Label
+	Public WithEvents LabelNewline As System.Windows.Forms.Label
 	Public WithEvents _newLineDelimiter As System.Windows.Forms.ComboBox
-	Public WithEvents Label2 As System.Windows.Forms.Label
+	Public WithEvents LabelColumn As System.Windows.Forms.Label
 	Public WithEvents _recordDelimiter As System.Windows.Forms.ComboBox
-	Public WithEvents GroupBox23 As System.Windows.Forms.GroupBox
+	Public WithEvents GroupBoxFilePath As System.Windows.Forms.GroupBox
 	Public WithEvents _imageTypeDropdown As System.Windows.Forms.ComboBox
 	Public WithEvents _prefixText As System.Windows.Forms.TextBox
 	Public WithEvents _usePrefix As System.Windows.Forms.RadioButton
 	Public WithEvents _useAbsolutePaths As System.Windows.Forms.RadioButton
 	Public WithEvents _useRelativePaths As System.Windows.Forms.RadioButton
 	Public WithEvents _imageFileFormat As System.Windows.Forms.ComboBox
-	Public WithEvents GroupBox1 As System.Windows.Forms.GroupBox
+	Public WithEvents GroupBoxPhysicalFileExport As System.Windows.Forms.GroupBox
 	Public WithEvents _copyFilesFromRepository As System.Windows.Forms.CheckBox
 	Public WithEvents _subDirectoryInformationGroupBox As System.Windows.Forms.GroupBox
 	Public WithEvents _subdirectoryTextPrefix As System.Windows.Forms.TextBox
-	Public WithEvents Label8 As System.Windows.Forms.Label
+	Public WithEvents LabelTextPrefix As System.Windows.Forms.Label
 	Public WithEvents _subDirectoryNativePrefix As System.Windows.Forms.TextBox
-	Public WithEvents Label13 As System.Windows.Forms.Label
+	Public WithEvents LabelNativePrefix As System.Windows.Forms.Label
 	Public WithEvents _subDirectoryMaxSize As System.Windows.Forms.NumericUpDown
 	Public WithEvents _subdirectoryStartNumber As System.Windows.Forms.NumericUpDown
-	Public WithEvents Label9 As System.Windows.Forms.Label
-	Public WithEvents Label10 As System.Windows.Forms.Label
-	Public WithEvents Label11 As System.Windows.Forms.Label
+	Public WithEvents LabelMaxFiles As System.Windows.Forms.Label
+	Public WithEvents LabelSubdirectoryStartNumber As System.Windows.Forms.Label
+	Public WithEvents LabelImagePrefix As System.Windows.Forms.Label
 	Public WithEvents _subdirectoryImagePrefix As System.Windows.Forms.TextBox
 	Public WithEvents _volumeInformationGroupBox As System.Windows.Forms.GroupBox
 	Public WithEvents _volumeMaxSize As System.Windows.Forms.NumericUpDown
 	Public WithEvents _volumeStartNumber As System.Windows.Forms.NumericUpDown
-	Public WithEvents Label14 As System.Windows.Forms.Label
-	Public WithEvents Label15 As System.Windows.Forms.Label
-	Public WithEvents Label16 As System.Windows.Forms.Label
+	Public WithEvents LabelMaxSizeMB As System.Windows.Forms.Label
+	Public WithEvents LabelVolumeStartNumber As System.Windows.Forms.Label
+	Public WithEvents LabelPrefix As System.Windows.Forms.Label
 	Public WithEvents _volumePrefix As System.Windows.Forms.TextBox
-	Public WithEvents Label12 As System.Windows.Forms.Label
-	Public WithEvents Label7 As System.Windows.Forms.Label
-	Public WithEvents GroupBox2 As System.Windows.Forms.GroupBox
+	Public WithEvents LabelImageDataFileFormat As System.Windows.Forms.Label
+	Public WithEvents LabelNestedValue As System.Windows.Forms.Label
+	Public WithEvents GroupBoxImage As System.Windows.Forms.GroupBox
 	Public WithEvents _exportImages As System.Windows.Forms.CheckBox
-	Public WithEvents Label17 As System.Windows.Forms.Label
-	Public WithEvents GroupBox4 As System.Windows.Forms.GroupBox
+	Public WithEvents LabelFileType As System.Windows.Forms.Label
+	Public WithEvents GroupBoxNative As System.Windows.Forms.GroupBox
 	Public WithEvents _exportNativeFiles As System.Windows.Forms.CheckBox
 	Public WithEvents _exportFullTextAsFile As System.Windows.Forms.CheckBox
-	Public WithEvents GroupBox6 As System.Windows.Forms.GroupBox
+	Public WithEvents GroupBoxTextAndNativeFileNames As System.Windows.Forms.GroupBox
 	Public WithEvents _exportMulticodeFieldsAsNested As System.Windows.Forms.CheckBox
 	Public WithEvents _nestedValueDelimiter As System.Windows.Forms.ComboBox
 	Public WithEvents LabelSelectedColumns As System.Windows.Forms.Label
 	Public WithEvents _filters As System.Windows.Forms.ComboBox
 	Public WithEvents _columnSelector As kCura.Windows.Forms.TwoListBox
 	Public WithEvents _filtersBox As System.Windows.Forms.GroupBox
-	Public WithEvents _metadataGroup As System.Windows.Forms.GroupBox
-	Public WithEvents Label1 As System.Windows.Forms.Label
+	Public WithEvents _metadataGroupBox As System.Windows.Forms.GroupBox
+	Public WithEvents LabelMetadataDataFileFormat As System.Windows.Forms.Label
 	Public WithEvents _nativeFileFormat As System.Windows.Forms.ComboBox
 	Public WithEvents _dataFileEncoding As kCura.EDDS.WinForm.EncodingPicker
-	Public WithEvents Label19 As System.Windows.Forms.Label
-	Public WithEvents Label20 As System.Windows.Forms.Label
+	Public WithEvents LabelDataFileEncoding As System.Windows.Forms.Label
+	Public WithEvents LabelTextFileEncoding As System.Windows.Forms.Label
 	Public WithEvents _textFileEncoding As kCura.EDDS.WinForm.EncodingPicker
 	Public WithEvents _textFieldPrecedencePicker As kCura.EDDS.WinForm.TextFieldPrecedencePicker
-	Public WithEvents Label21 As System.Windows.Forms.Label
+	Public WithEvents LabelTextPrecedence As System.Windows.Forms.Label
 	Public WithEvents RefreshMenu As System.Windows.Forms.MenuItem
 	Public WithEvents MenuItem3 As System.Windows.Forms.MenuItem
 	Public WithEvents SaveExportSettings As System.Windows.Forms.MenuItem
 	Public WithEvents LoadExportSettings As System.Windows.Forms.MenuItem
 	Public WithEvents _volumeDigitPadding As System.Windows.Forms.NumericUpDown
-	Public WithEvents Label22 As System.Windows.Forms.Label
+	Public WithEvents LabelVolumeNumberOfDigits As System.Windows.Forms.Label
 	Public WithEvents _subdirectoryDigitPadding As System.Windows.Forms.NumericUpDown
-	Public WithEvents Label23 As System.Windows.Forms.Label
+	Public WithEvents LabelSubdirectoryNumberOfDigits As System.Windows.Forms.Label
 	Public WithEvents LabelStartAtRecordNumber As System.Windows.Forms.Label
 	Public WithEvents _startExportAtDocumentNumber As System.Windows.Forms.NumericUpDown
 	Public WithEvents _saveExportSettingsDialog As System.Windows.Forms.SaveFileDialog
@@ -138,13 +138,13 @@ Public Class ExportForm
 		Me._productionPrecedenceBox = New System.Windows.Forms.GroupBox
 		Me._productionPrecedenceList = New System.Windows.Forms.ListBox
 		Me._pickPrecedenceButton = New System.Windows.Forms.Button
-		Me.Label5 = New System.Windows.Forms.Label
+		Me.LabelNamedAfter = New System.Windows.Forms.Label
 		Me._overwriteCheckBox = New System.Windows.Forms.CheckBox
 		Me._browseButton = New System.Windows.Forms.Button
 		Me._folderPath = New System.Windows.Forms.TextBox
-		Me._appendOriginalFilename = New System.Windows.Forms.CheckBox
-		Me.GroupBox3 = New System.Windows.Forms.GroupBox
-		Me._nativeFileNameSource = New System.Windows.Forms.ComboBox
+		Me._appendOriginalFilenameCheckbox = New System.Windows.Forms.CheckBox
+		Me.GroupBoxExportLocation = New System.Windows.Forms.GroupBox
+		Me._nativeFileNameSourceCombo = New System.Windows.Forms.ComboBox
 		Me.TabControl1 = New System.Windows.Forms.TabControl
 		Me._dataSourceTabPage = New System.Windows.Forms.TabPage
 		Me._filtersBox = New System.Windows.Forms.GroupBox
@@ -154,80 +154,80 @@ Public Class ExportForm
 		Me._filters = New System.Windows.Forms.ComboBox
 		Me._columnSelector = New kCura.Windows.Forms.TwoListBox
 		Me._destinationFileTabPage = New System.Windows.Forms.TabPage
-		Me.GroupBox6 = New System.Windows.Forms.GroupBox
-		Me._metadataGroup = New System.Windows.Forms.GroupBox
-		Me.Label21 = New System.Windows.Forms.Label
+		Me.GroupBoxTextAndNativeFileNames = New System.Windows.Forms.GroupBox
+		Me._metadataGroupBox = New System.Windows.Forms.GroupBox
+		Me.LabelTextPrecedence = New System.Windows.Forms.Label
 		Me._textFileEncoding = New kCura.EDDS.WinForm.EncodingPicker
 		Me._textFieldPrecedencePicker = New kCura.EDDS.WinForm.TextFieldPrecedencePicker
-		Me.Label20 = New System.Windows.Forms.Label
-		Me.Label19 = New System.Windows.Forms.Label
+		Me.LabelTextFileEncoding = New System.Windows.Forms.Label
+		Me.LabelDataFileEncoding = New System.Windows.Forms.Label
 		Me._dataFileEncoding = New kCura.EDDS.WinForm.EncodingPicker
-		Me.Label1 = New System.Windows.Forms.Label
+		Me.LabelMetadataDataFileFormat = New System.Windows.Forms.Label
 		Me._nativeFileFormat = New System.Windows.Forms.ComboBox
 		Me._exportMulticodeFieldsAsNested = New System.Windows.Forms.CheckBox
 		Me._exportFullTextAsFile = New System.Windows.Forms.CheckBox
-		Me.GroupBox4 = New System.Windows.Forms.GroupBox
+		Me.GroupBoxNative = New System.Windows.Forms.GroupBox
 		Me._exportNativeFiles = New System.Windows.Forms.CheckBox
-		Me.GroupBox2 = New System.Windows.Forms.GroupBox
-		Me.Label17 = New System.Windows.Forms.Label
+		Me.GroupBoxImage = New System.Windows.Forms.GroupBox
+		Me.LabelFileType = New System.Windows.Forms.Label
 		Me._exportImages = New System.Windows.Forms.CheckBox
 		Me._imageFileFormat = New System.Windows.Forms.ComboBox
-		Me.Label12 = New System.Windows.Forms.Label
+		Me.LabelImageDataFileFormat = New System.Windows.Forms.Label
 		Me._imageTypeDropdown = New System.Windows.Forms.ComboBox
-		Me.GroupBox1 = New System.Windows.Forms.GroupBox
+		Me.GroupBoxPhysicalFileExport = New System.Windows.Forms.GroupBox
 		Me._copyFilesFromRepository = New System.Windows.Forms.CheckBox
 		Me._subDirectoryInformationGroupBox = New System.Windows.Forms.GroupBox
 		Me._subdirectoryDigitPadding = New System.Windows.Forms.NumericUpDown
-		Me.Label23 = New System.Windows.Forms.Label
+		Me.LabelSubdirectoryNumberOfDigits = New System.Windows.Forms.Label
 		Me._subdirectoryTextPrefix = New System.Windows.Forms.TextBox
-		Me.Label8 = New System.Windows.Forms.Label
+		Me.LabelTextPrefix = New System.Windows.Forms.Label
 		Me._subDirectoryNativePrefix = New System.Windows.Forms.TextBox
-		Me.Label13 = New System.Windows.Forms.Label
+		Me.LabelNativePrefix = New System.Windows.Forms.Label
 		Me._subDirectoryMaxSize = New System.Windows.Forms.NumericUpDown
 		Me._subdirectoryStartNumber = New System.Windows.Forms.NumericUpDown
-		Me.Label9 = New System.Windows.Forms.Label
-		Me.Label10 = New System.Windows.Forms.Label
-		Me.Label11 = New System.Windows.Forms.Label
+		Me.LabelMaxFiles = New System.Windows.Forms.Label
+		Me.LabelSubdirectoryStartNumber = New System.Windows.Forms.Label
+		Me.LabelImagePrefix = New System.Windows.Forms.Label
 		Me._subdirectoryImagePrefix = New System.Windows.Forms.TextBox
 		Me._volumeInformationGroupBox = New System.Windows.Forms.GroupBox
 		Me._volumeDigitPadding = New System.Windows.Forms.NumericUpDown
-		Me.Label22 = New System.Windows.Forms.Label
+		Me.LabelVolumeNumberOfDigits = New System.Windows.Forms.Label
 		Me._volumeMaxSize = New System.Windows.Forms.NumericUpDown
 		Me._volumeStartNumber = New System.Windows.Forms.NumericUpDown
-		Me.Label14 = New System.Windows.Forms.Label
-		Me.Label15 = New System.Windows.Forms.Label
-		Me.Label16 = New System.Windows.Forms.Label
+		Me.LabelMaxSizeMB = New System.Windows.Forms.Label
+		Me.LabelVolumeStartNumber = New System.Windows.Forms.Label
+		Me.LabelPrefix = New System.Windows.Forms.Label
 		Me._volumePrefix = New System.Windows.Forms.TextBox
-		Me.GroupBox23 = New System.Windows.Forms.GroupBox
+		Me.GroupBoxFilePath = New System.Windows.Forms.GroupBox
 		Me._prefixText = New System.Windows.Forms.TextBox
 		Me._usePrefix = New System.Windows.Forms.RadioButton
 		Me._useAbsolutePaths = New System.Windows.Forms.RadioButton
 		Me._useRelativePaths = New System.Windows.Forms.RadioButton
-		Me._loadFileCharacterInformation = New System.Windows.Forms.GroupBox
-		Me.Label7 = New System.Windows.Forms.Label
+		Me._groupBoxLoadFileCharacterInformation = New System.Windows.Forms.GroupBox
+		Me.LabelNestedValue = New System.Windows.Forms.Label
 		Me._nestedValueDelimiter = New System.Windows.Forms.ComboBox
 		Me._multiRecordDelimiter = New System.Windows.Forms.ComboBox
-		Me.Label6 = New System.Windows.Forms.Label
-		Me.Label4 = New System.Windows.Forms.Label
+		Me.LabelMultiValue = New System.Windows.Forms.Label
+		Me.LabelQuote = New System.Windows.Forms.Label
 		Me._quoteDelimiter = New System.Windows.Forms.ComboBox
-		Me.Label3 = New System.Windows.Forms.Label
+		Me.LabelNewline = New System.Windows.Forms.Label
 		Me._newLineDelimiter = New System.Windows.Forms.ComboBox
-		Me.Label2 = New System.Windows.Forms.Label
+		Me.LabelColumn = New System.Windows.Forms.Label
 		Me._recordDelimiter = New System.Windows.Forms.ComboBox
 		Me._saveExportSettingsDialog = New System.Windows.Forms.SaveFileDialog
 		Me._loadExportSettingsDialog = New System.Windows.Forms.OpenFileDialog
 		Me._productionPrecedenceBox.SuspendLayout()
-		Me.GroupBox3.SuspendLayout()
+		Me.GroupBoxExportLocation.SuspendLayout()
 		Me.TabControl1.SuspendLayout()
 		Me._dataSourceTabPage.SuspendLayout()
 		Me._filtersBox.SuspendLayout()
 		CType(Me._startExportAtDocumentNumber, System.ComponentModel.ISupportInitialize).BeginInit()
 		Me._destinationFileTabPage.SuspendLayout()
-		Me.GroupBox6.SuspendLayout()
-		Me._metadataGroup.SuspendLayout()
-		Me.GroupBox4.SuspendLayout()
-		Me.GroupBox2.SuspendLayout()
-		Me.GroupBox1.SuspendLayout()
+		Me.GroupBoxTextAndNativeFileNames.SuspendLayout()
+		Me._metadataGroupBox.SuspendLayout()
+		Me.GroupBoxNative.SuspendLayout()
+		Me.GroupBoxImage.SuspendLayout()
+		Me.GroupBoxPhysicalFileExport.SuspendLayout()
 		Me._subDirectoryInformationGroupBox.SuspendLayout()
 		CType(Me._subdirectoryDigitPadding, System.ComponentModel.ISupportInitialize).BeginInit()
 		CType(Me._subDirectoryMaxSize, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -236,8 +236,8 @@ Public Class ExportForm
 		CType(Me._volumeDigitPadding, System.ComponentModel.ISupportInitialize).BeginInit()
 		CType(Me._volumeMaxSize, System.ComponentModel.ISupportInitialize).BeginInit()
 		CType(Me._volumeStartNumber, System.ComponentModel.ISupportInitialize).BeginInit()
-		Me.GroupBox23.SuspendLayout()
-		Me._loadFileCharacterInformation.SuspendLayout()
+		Me.GroupBoxFilePath.SuspendLayout()
+		Me._groupBoxLoadFileCharacterInformation.SuspendLayout()
 		Me.SuspendLayout()
 		'
 		'MainMenu1
@@ -306,32 +306,32 @@ Public Class ExportForm
 		Me._pickPrecedenceButton.Text = "..."
 		Me._pickPrecedenceButton.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 		'
-		'Label5
+		'LabelNamedAfter
 		'
-		Me.Label5.Location = New System.Drawing.Point(20, 18)
-		Me.Label5.Name = "Label5"
-		Me.Label5.Size = New System.Drawing.Size(96, 21)
-		Me.Label5.TabIndex = 18
-		Me.Label5.Text = "Named after:"
-		Me.Label5.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+		Me.LabelNamedAfter.Location = New System.Drawing.Point(20, 18)
+		Me.LabelNamedAfter.Name = "LabelNamedAfter"
+		Me.LabelNamedAfter.Size = New System.Drawing.Size(96, 21)
+		Me.LabelNamedAfter.TabIndex = 18
+		Me.LabelNamedAfter.Text = "Named after:"
+		Me.LabelNamedAfter.TextAlign = System.Drawing.ContentAlignment.MiddleRight
 		'
-		'_nativeFileNameSource
+		'_nativeFileNameSourceCombo
 		'
-		Me._nativeFileNameSource.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
-		Me._nativeFileNameSource.Items.AddRange(New Object() {"Select...", "Identifier", "Begin production number"})
-		Me._nativeFileNameSource.Location = New System.Drawing.Point(116, 18)
-		Me._nativeFileNameSource.Name = "_nativeFileNameSource"
-		Me._nativeFileNameSource.Size = New System.Drawing.Size(176, 21)
-		Me._nativeFileNameSource.TabIndex = 19
-		Me._nativeFileNameSource.Visible = False
+		Me._nativeFileNameSourceCombo.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+		Me._nativeFileNameSourceCombo.Items.AddRange(New Object() {"Select...", "Identifier", "Begin production number"})
+		Me._nativeFileNameSourceCombo.Location = New System.Drawing.Point(116, 18)
+		Me._nativeFileNameSourceCombo.Name = "_nativeFileNameSourceCombo"
+		Me._nativeFileNameSourceCombo.Size = New System.Drawing.Size(176, 21)
+		Me._nativeFileNameSourceCombo.TabIndex = 19
+		Me._nativeFileNameSourceCombo.Visible = False
 		'
-		'_appendOriginalFilename
+		'_appendOriginalFilenameCheckbox
 		'
-		Me._appendOriginalFilename.Location = New System.Drawing.Point(12, 44)
-		Me._appendOriginalFilename.Name = "_appendOriginalFilename"
-		Me._appendOriginalFilename.Size = New System.Drawing.Size(148, 16)
-		Me._appendOriginalFilename.TabIndex = 17
-		Me._appendOriginalFilename.Text = "Append original filename"
+		Me._appendOriginalFilenameCheckbox.Location = New System.Drawing.Point(12, 44)
+		Me._appendOriginalFilenameCheckbox.Name = "_appendOriginalFilenameCheckbox"
+		Me._appendOriginalFilenameCheckbox.Size = New System.Drawing.Size(148, 16)
+		Me._appendOriginalFilenameCheckbox.TabIndex = 17
+		Me._appendOriginalFilenameCheckbox.Text = "Append original filename"
 		'
 		'_overwriteButton
 		'
@@ -358,17 +358,17 @@ Public Class ExportForm
 		Me._folderPath.TabIndex = 5
 		Me._folderPath.Text = "Select a folder ..."
 		'
-		'GroupBox3
+		'GroupBoxExportLocation
 		'
-		Me.GroupBox3.Controls.Add(Me._overwriteCheckBox)
-		Me.GroupBox3.Controls.Add(Me._browseButton)
-		Me.GroupBox3.Controls.Add(Me._folderPath)
-		Me.GroupBox3.Location = New System.Drawing.Point(7, 4)
-		Me.GroupBox3.Name = "GroupBox3"
-		Me.GroupBox3.Size = New System.Drawing.Size(424, 72)
-		Me.GroupBox3.TabIndex = 11
-		Me.GroupBox3.TabStop = False
-		Me.GroupBox3.Text = "Export Location"
+		Me.GroupBoxExportLocation.Controls.Add(Me._overwriteCheckBox)
+		Me.GroupBoxExportLocation.Controls.Add(Me._browseButton)
+		Me.GroupBoxExportLocation.Controls.Add(Me._folderPath)
+		Me.GroupBoxExportLocation.Location = New System.Drawing.Point(7, 4)
+		Me.GroupBoxExportLocation.Name = "GroupBoxExportLocation"
+		Me.GroupBoxExportLocation.Size = New System.Drawing.Size(424, 72)
+		Me.GroupBoxExportLocation.TabIndex = 11
+		Me.GroupBoxExportLocation.TabStop = False
+		Me.GroupBoxExportLocation.Text = "Export Location"
 		'
 		'TabControl1
 		'
@@ -456,61 +456,61 @@ Public Class ExportForm
 		'
 		'_destinationFileTabPage
 		'
-		Me._destinationFileTabPage.Controls.Add(Me.GroupBox6)
-		Me._destinationFileTabPage.Controls.Add(Me._metadataGroup)
-		Me._destinationFileTabPage.Controls.Add(Me.GroupBox4)
-		Me._destinationFileTabPage.Controls.Add(Me.GroupBox2)
-		Me._destinationFileTabPage.Controls.Add(Me.GroupBox1)
+		Me._destinationFileTabPage.Controls.Add(Me.GroupBoxTextAndNativeFileNames)
+		Me._destinationFileTabPage.Controls.Add(Me._metadataGroupBox)
+		Me._destinationFileTabPage.Controls.Add(Me.GroupBoxNative)
+		Me._destinationFileTabPage.Controls.Add(Me.GroupBoxImage)
+		Me._destinationFileTabPage.Controls.Add(Me.GroupBoxPhysicalFileExport)
 		Me._destinationFileTabPage.Controls.Add(Me._subDirectoryInformationGroupBox)
 		Me._destinationFileTabPage.Controls.Add(Me._volumeInformationGroupBox)
-		Me._destinationFileTabPage.Controls.Add(Me.GroupBox23)
-		Me._destinationFileTabPage.Controls.Add(Me._loadFileCharacterInformation)
-		Me._destinationFileTabPage.Controls.Add(Me.GroupBox3)
+		Me._destinationFileTabPage.Controls.Add(Me.GroupBoxFilePath)
+		Me._destinationFileTabPage.Controls.Add(Me._groupBoxLoadFileCharacterInformation)
+		Me._destinationFileTabPage.Controls.Add(Me.GroupBoxExportLocation)
 		Me._destinationFileTabPage.Location = New System.Drawing.Point(3, 21)
 		Me._destinationFileTabPage.Name = "_destinationFileTabPage"
 		Me._destinationFileTabPage.Size = New System.Drawing.Size(766, 425)
 		Me._destinationFileTabPage.TabIndex = 1
 		Me._destinationFileTabPage.Text = "Destination Files"
 		'
-		'GroupBox6
+		'GroupBoxTextAndNativeFileNames
 		'
-		Me.GroupBox6.Controls.Add(Me._appendOriginalFilename)
-		Me.GroupBox6.Controls.Add(Me.Label5)
-		Me.GroupBox6.Controls.Add(Me._nativeFileNameSource)
-		Me.GroupBox6.Location = New System.Drawing.Point(435, 4)
-		Me.GroupBox6.Name = "GroupBox6"
-		Me.GroupBox6.Size = New System.Drawing.Size(324, 68)
-		Me.GroupBox6.TabIndex = 26
-		Me.GroupBox6.TabStop = False
-		Me.GroupBox6.Text = "Text and Native File Names"
+		Me.GroupBoxTextAndNativeFileNames.Controls.Add(Me._appendOriginalFilenameCheckbox)
+		Me.GroupBoxTextAndNativeFileNames.Controls.Add(Me.LabelNamedAfter)
+		Me.GroupBoxTextAndNativeFileNames.Controls.Add(Me._nativeFileNameSourceCombo)
+		Me.GroupBoxTextAndNativeFileNames.Location = New System.Drawing.Point(435, 4)
+		Me.GroupBoxTextAndNativeFileNames.Name = "GroupBoxTextAndNativeFileNames"
+		Me.GroupBoxTextAndNativeFileNames.Size = New System.Drawing.Size(324, 68)
+		Me.GroupBoxTextAndNativeFileNames.TabIndex = 26
+		Me.GroupBoxTextAndNativeFileNames.TabStop = False
+		Me.GroupBoxTextAndNativeFileNames.Text = "Text and Native File Names"
 		'
-		'_metadataGroup
+		'_metadataGroupBox
 		'
-		Me._metadataGroup.Controls.Add(Me.Label21)
-		Me._metadataGroup.Controls.Add(Me._textFieldPrecedencePicker)
-		Me._metadataGroup.Controls.Add(Me._textFileEncoding)
-		Me._metadataGroup.Controls.Add(Me.Label20)
-		Me._metadataGroup.Controls.Add(Me.Label19)
-		Me._metadataGroup.Controls.Add(Me._dataFileEncoding)
-		Me._metadataGroup.Controls.Add(Me.Label1)
-		Me._metadataGroup.Controls.Add(Me._nativeFileFormat)
-		Me._metadataGroup.Controls.Add(Me._exportMulticodeFieldsAsNested)
-		Me._metadataGroup.Controls.Add(Me._exportFullTextAsFile)
-		Me._metadataGroup.Location = New System.Drawing.Point(435, 236)
-		Me._metadataGroup.Name = "_metadataGroup"
-		Me._metadataGroup.Size = New System.Drawing.Size(324, 184)
-		Me._metadataGroup.TabIndex = 25
-		Me._metadataGroup.TabStop = False
-		Me._metadataGroup.Text = "Metadata"
+		Me._metadataGroupBox.Controls.Add(Me.LabelTextPrecedence)
+		Me._metadataGroupBox.Controls.Add(Me._textFieldPrecedencePicker)
+		Me._metadataGroupBox.Controls.Add(Me._textFileEncoding)
+		Me._metadataGroupBox.Controls.Add(Me.LabelTextFileEncoding)
+		Me._metadataGroupBox.Controls.Add(Me.LabelDataFileEncoding)
+		Me._metadataGroupBox.Controls.Add(Me._dataFileEncoding)
+		Me._metadataGroupBox.Controls.Add(Me.LabelMetadataDataFileFormat)
+		Me._metadataGroupBox.Controls.Add(Me._nativeFileFormat)
+		Me._metadataGroupBox.Controls.Add(Me._exportMulticodeFieldsAsNested)
+		Me._metadataGroupBox.Controls.Add(Me._exportFullTextAsFile)
+		Me._metadataGroupBox.Location = New System.Drawing.Point(435, 236)
+		Me._metadataGroupBox.Name = "_metadataGroupBox"
+		Me._metadataGroupBox.Size = New System.Drawing.Size(324, 184)
+		Me._metadataGroupBox.TabIndex = 25
+		Me._metadataGroupBox.TabStop = False
+		Me._metadataGroupBox.Text = "Metadata"
 		'
-		'Label21
+		'LabelTextPrecedence
 		'
-		Me.Label21.Location = New System.Drawing.Point(8, 125)
-		Me.Label21.Name = "Label21"
-		Me.Label21.Size = New System.Drawing.Size(107, 21)
-		Me.Label21.TabIndex = 21
-		Me.Label21.Text = "Text Precedence:"
-		Me.Label21.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+		Me.LabelTextPrecedence.Location = New System.Drawing.Point(8, 125)
+		Me.LabelTextPrecedence.Name = "LabelTextPrecedence"
+		Me.LabelTextPrecedence.Size = New System.Drawing.Size(107, 21)
+		Me.LabelTextPrecedence.TabIndex = 21
+		Me.LabelTextPrecedence.Text = "Text Precedence:"
+		Me.LabelTextPrecedence.TextAlign = System.Drawing.ContentAlignment.MiddleRight
 		'_textFieldPrecedencePicker
 		Me._textFieldPrecedencePicker.Location = New System.Drawing.Point(116, 125)
 		Me._textFieldPrecedencePicker.Name = "_textFieldPrecedencePicker"
@@ -524,23 +524,23 @@ Public Class ExportForm
 		Me._textFileEncoding.Size = New System.Drawing.Size(200, 21)
 		Me._textFileEncoding.TabIndex = 19
 		'
-		'Label20
+		'LabelTextFileEncoding
 		'
-		Me.Label20.Location = New System.Drawing.Point(12, 100)
-		Me.Label20.Name = "Label20"
-		Me.Label20.Size = New System.Drawing.Size(104, 21)
-		Me.Label20.TabIndex = 18
-		Me.Label20.Text = "Text File Encoding:"
-		Me.Label20.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+		Me.LabelTextFileEncoding.Location = New System.Drawing.Point(12, 100)
+		Me.LabelTextFileEncoding.Name = "LabelTextFileEncoding"
+		Me.LabelTextFileEncoding.Size = New System.Drawing.Size(104, 21)
+		Me.LabelTextFileEncoding.TabIndex = 18
+		Me.LabelTextFileEncoding.Text = "Text File Encoding:"
+		Me.LabelTextFileEncoding.TextAlign = System.Drawing.ContentAlignment.MiddleRight
 		'
-		'Label19
+		'LabelDataFileEncoding
 		'
-		Me.Label19.Location = New System.Drawing.Point(12, 48)
-		Me.Label19.Name = "Label19"
-		Me.Label19.Size = New System.Drawing.Size(104, 21)
-		Me.Label19.TabIndex = 17
-		Me.Label19.Text = "Data File Encoding:"
-		Me.Label19.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+		Me.LabelDataFileEncoding.Location = New System.Drawing.Point(12, 48)
+		Me.LabelDataFileEncoding.Name = "LabelDataFileEncoding"
+		Me.LabelDataFileEncoding.Size = New System.Drawing.Size(104, 21)
+		Me.LabelDataFileEncoding.TabIndex = 17
+		Me.LabelDataFileEncoding.Text = "Data File Encoding:"
+		Me.LabelDataFileEncoding.TextAlign = System.Drawing.ContentAlignment.MiddleRight
 		'
 		'_dataFileEncoding
 		'
@@ -549,14 +549,14 @@ Public Class ExportForm
 		Me._dataFileEncoding.Size = New System.Drawing.Size(200, 21)
 		Me._dataFileEncoding.TabIndex = 16
 		'
-		'Label1
+		'LabelMetadataDataFileFormat
 		'
-		Me.Label1.Location = New System.Drawing.Point(24, 20)
-		Me.Label1.Name = "Label1"
-		Me.Label1.Size = New System.Drawing.Size(92, 21)
-		Me.Label1.TabIndex = 15
-		Me.Label1.Text = "Data File Format:"
-		Me.Label1.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+		Me.LabelMetadataDataFileFormat.Location = New System.Drawing.Point(24, 20)
+		Me.LabelMetadataDataFileFormat.Name = "LabelMetadataDataFileFormat"
+		Me.LabelMetadataDataFileFormat.Size = New System.Drawing.Size(92, 21)
+		Me.LabelMetadataDataFileFormat.TabIndex = 15
+		Me.LabelMetadataDataFileFormat.Text = "Data File Format:"
+		Me.LabelMetadataDataFileFormat.TextAlign = System.Drawing.ContentAlignment.MiddleRight
 		'
 		'_nativeFileFormat
 		'
@@ -583,15 +583,15 @@ Public Class ExportForm
 		Me._exportFullTextAsFile.TabIndex = 7
 		Me._exportFullTextAsFile.Text = "Export Text Field as Files"
 		'
-		'GroupBox4
+		'GroupBoxNative
 		'
-		Me.GroupBox4.Controls.Add(Me._exportNativeFiles)
-		Me.GroupBox4.Location = New System.Drawing.Point(435, 184)
-		Me.GroupBox4.Name = "GroupBox4"
-		Me.GroupBox4.Size = New System.Drawing.Size(324, 48)
-		Me.GroupBox4.TabIndex = 24
-		Me.GroupBox4.TabStop = False
-		Me.GroupBox4.Text = "Native "
+		Me.GroupBoxNative.Controls.Add(Me._exportNativeFiles)
+		Me.GroupBoxNative.Location = New System.Drawing.Point(435, 184)
+		Me.GroupBoxNative.Name = "GroupBoxNative"
+		Me.GroupBoxNative.Size = New System.Drawing.Size(324, 48)
+		Me.GroupBoxNative.TabIndex = 24
+		Me.GroupBoxNative.TabStop = False
+		Me.GroupBoxNative.Text = "Native "
 		'
 		'_exportNativeFiles
 		'
@@ -603,28 +603,28 @@ Public Class ExportForm
 		Me._exportNativeFiles.TabIndex = 11
 		Me._exportNativeFiles.Text = "Export Native Files"
 		'
-		'GroupBox2
+		'GroupBoxImage
 		'
-		Me.GroupBox2.Controls.Add(Me.Label17)
-		Me.GroupBox2.Controls.Add(Me._exportImages)
-		Me.GroupBox2.Controls.Add(Me._imageFileFormat)
-		Me.GroupBox2.Controls.Add(Me.Label12)
-		Me.GroupBox2.Controls.Add(Me._imageTypeDropdown)
-		Me.GroupBox2.Location = New System.Drawing.Point(435, 76)
-		Me.GroupBox2.Name = "GroupBox2"
-		Me.GroupBox2.Size = New System.Drawing.Size(324, 104)
-		Me.GroupBox2.TabIndex = 23
-		Me.GroupBox2.TabStop = False
-		Me.GroupBox2.Text = "Image "
+		Me.GroupBoxImage.Controls.Add(Me.LabelFileType)
+		Me.GroupBoxImage.Controls.Add(Me._exportImages)
+		Me.GroupBoxImage.Controls.Add(Me._imageFileFormat)
+		Me.GroupBoxImage.Controls.Add(Me.LabelImageDataFileFormat)
+		Me.GroupBoxImage.Controls.Add(Me._imageTypeDropdown)
+		Me.GroupBoxImage.Location = New System.Drawing.Point(435, 76)
+		Me.GroupBoxImage.Name = "GroupBoxImage"
+		Me.GroupBoxImage.Size = New System.Drawing.Size(324, 104)
+		Me.GroupBoxImage.TabIndex = 23
+		Me.GroupBoxImage.TabStop = False
+		Me.GroupBoxImage.Text = "Image "
 		'
-		'Label17
+		'LabelFileType
 		'
-		Me.Label17.Location = New System.Drawing.Point(24, 76)
-		Me.Label17.Name = "Label17"
-		Me.Label17.Size = New System.Drawing.Size(92, 21)
-		Me.Label17.TabIndex = 19
-		Me.Label17.Text = "File Type:"
-		Me.Label17.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+		Me.LabelFileType.Location = New System.Drawing.Point(24, 76)
+		Me.LabelFileType.Name = "LabelFileType"
+		Me.LabelFileType.Size = New System.Drawing.Size(92, 21)
+		Me.LabelFileType.TabIndex = 19
+		Me.LabelFileType.Text = "File Type:"
+		Me.LabelFileType.TextAlign = System.Drawing.ContentAlignment.MiddleRight
 		'
 		'_exportImages
 		'
@@ -645,14 +645,14 @@ Public Class ExportForm
 		Me._imageFileFormat.Size = New System.Drawing.Size(176, 21)
 		Me._imageFileFormat.TabIndex = 11
 		'
-		'Label12
+		'LabelImageDataFileFormat
 		'
-		Me.Label12.Location = New System.Drawing.Point(24, 48)
-		Me.Label12.Name = "Label12"
-		Me.Label12.Size = New System.Drawing.Size(92, 21)
-		Me.Label12.TabIndex = 12
-		Me.Label12.Text = "Data File Format:"
-		Me.Label12.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+		Me.LabelImageDataFileFormat.Location = New System.Drawing.Point(24, 48)
+		Me.LabelImageDataFileFormat.Name = "LabelImageDataFileFormat"
+		Me.LabelImageDataFileFormat.Size = New System.Drawing.Size(92, 21)
+		Me.LabelImageDataFileFormat.TabIndex = 12
+		Me.LabelImageDataFileFormat.Text = "Data File Format:"
+		Me.LabelImageDataFileFormat.TextAlign = System.Drawing.ContentAlignment.MiddleRight
 		'
 		'_imageTypeDropdown
 		'
@@ -664,15 +664,15 @@ Public Class ExportForm
 		Me._imageTypeDropdown.Size = New System.Drawing.Size(176, 21)
 		Me._imageTypeDropdown.TabIndex = 17
 		'
-		'GroupBox1
+		'GroupBoxPhysicalFileExport
 		'
-		Me.GroupBox1.Controls.Add(Me._copyFilesFromRepository)
-		Me.GroupBox1.Location = New System.Drawing.Point(7, 84)
-		Me.GroupBox1.Name = "GroupBox1"
-		Me.GroupBox1.Size = New System.Drawing.Size(212, 48)
-		Me.GroupBox1.TabIndex = 22
-		Me.GroupBox1.TabStop = False
-		Me.GroupBox1.Text = "Physical File Export"
+		Me.GroupBoxPhysicalFileExport.Controls.Add(Me._copyFilesFromRepository)
+		Me.GroupBoxPhysicalFileExport.Location = New System.Drawing.Point(7, 84)
+		Me.GroupBoxPhysicalFileExport.Name = "GroupBoxPhysicalFileExport"
+		Me.GroupBoxPhysicalFileExport.Size = New System.Drawing.Size(212, 48)
+		Me.GroupBoxPhysicalFileExport.TabIndex = 22
+		Me.GroupBoxPhysicalFileExport.TabStop = False
+		Me.GroupBoxPhysicalFileExport.Text = "Physical File Export"
 		'
 		'_copyFilesFromRepository
 		'
@@ -687,16 +687,16 @@ Public Class ExportForm
 		'_subDirectoryInformationGroupBox
 		'
 		Me._subDirectoryInformationGroupBox.Controls.Add(Me._subdirectoryDigitPadding)
-		Me._subDirectoryInformationGroupBox.Controls.Add(Me.Label23)
+		Me._subDirectoryInformationGroupBox.Controls.Add(Me.LabelSubdirectoryNumberOfDigits)
 		Me._subDirectoryInformationGroupBox.Controls.Add(Me._subdirectoryTextPrefix)
-		Me._subDirectoryInformationGroupBox.Controls.Add(Me.Label8)
+		Me._subDirectoryInformationGroupBox.Controls.Add(Me.LabelTextPrefix)
 		Me._subDirectoryInformationGroupBox.Controls.Add(Me._subDirectoryNativePrefix)
-		Me._subDirectoryInformationGroupBox.Controls.Add(Me.Label13)
+		Me._subDirectoryInformationGroupBox.Controls.Add(Me.LabelNativePrefix)
 		Me._subDirectoryInformationGroupBox.Controls.Add(Me._subDirectoryMaxSize)
 		Me._subDirectoryInformationGroupBox.Controls.Add(Me._subdirectoryStartNumber)
-		Me._subDirectoryInformationGroupBox.Controls.Add(Me.Label9)
-		Me._subDirectoryInformationGroupBox.Controls.Add(Me.Label10)
-		Me._subDirectoryInformationGroupBox.Controls.Add(Me.Label11)
+		Me._subDirectoryInformationGroupBox.Controls.Add(Me.LabelMaxFiles)
+		Me._subDirectoryInformationGroupBox.Controls.Add(Me.LabelSubdirectoryStartNumber)
+		Me._subDirectoryInformationGroupBox.Controls.Add(Me.LabelImagePrefix)
 		Me._subDirectoryInformationGroupBox.Controls.Add(Me._subdirectoryImagePrefix)
 		Me._subDirectoryInformationGroupBox.Location = New System.Drawing.Point(7, 256)
 		Me._subDirectoryInformationGroupBox.Name = "_subDirectoryInformationGroupBox"
@@ -715,15 +715,15 @@ Public Class ExportForm
 		Me._subdirectoryDigitPadding.TabIndex = 24
 		Me._subdirectoryDigitPadding.Value = New Decimal(New Integer() {1, 0, 0, 0})
 		'
-		'Label23
+		'LabelSubdirectoryNumberOfDigits
 		'
-		Me.Label23.ImageAlign = System.Drawing.ContentAlignment.MiddleRight
-		Me.Label23.Location = New System.Drawing.Point(104, 104)
-		Me.Label23.Name = "Label23"
-		Me.Label23.Size = New System.Drawing.Size(56, 20)
-		Me.Label23.TabIndex = 23
-		Me.Label23.Text = "# of digits:"
-		Me.Label23.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+		Me.LabelSubdirectoryNumberOfDigits.ImageAlign = System.Drawing.ContentAlignment.MiddleRight
+		Me.LabelSubdirectoryNumberOfDigits.Location = New System.Drawing.Point(104, 104)
+		Me.LabelSubdirectoryNumberOfDigits.Name = "LabelSubdirectoryNumberOfDigits"
+		Me.LabelSubdirectoryNumberOfDigits.Size = New System.Drawing.Size(56, 20)
+		Me.LabelSubdirectoryNumberOfDigits.TabIndex = 23
+		Me.LabelSubdirectoryNumberOfDigits.Text = "# of digits:"
+		Me.LabelSubdirectoryNumberOfDigits.TextAlign = System.Drawing.ContentAlignment.MiddleRight
 		'
 		'_subdirectoryTextPrefix
 		'
@@ -734,15 +734,15 @@ Public Class ExportForm
 		Me._subdirectoryTextPrefix.TabIndex = 22
 		Me._subdirectoryTextPrefix.Text = "TEXT"
 		'
-		'Label8
+		'LabelTextPrefix
 		'
-		Me.Label8.ImageAlign = System.Drawing.ContentAlignment.MiddleRight
-		Me.Label8.Location = New System.Drawing.Point(36, 76)
-		Me.Label8.Name = "Label8"
-		Me.Label8.Size = New System.Drawing.Size(80, 20)
-		Me.Label8.TabIndex = 21
-		Me.Label8.Text = "Text Prefix: "
-		Me.Label8.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+		Me.LabelTextPrefix.ImageAlign = System.Drawing.ContentAlignment.MiddleRight
+		Me.LabelTextPrefix.Location = New System.Drawing.Point(36, 76)
+		Me.LabelTextPrefix.Name = "LabelTextPrefix"
+		Me.LabelTextPrefix.Size = New System.Drawing.Size(80, 20)
+		Me.LabelTextPrefix.TabIndex = 21
+		Me.LabelTextPrefix.Text = "Text Prefix: "
+		Me.LabelTextPrefix.TextAlign = System.Drawing.ContentAlignment.MiddleRight
 		'
 		'_subDirectoryNativePrefix
 		'
@@ -753,15 +753,15 @@ Public Class ExportForm
 		Me._subDirectoryNativePrefix.TabIndex = 20
 		Me._subDirectoryNativePrefix.Text = "NATIVE"
 		'
-		'Label13
+		'LabelNativePrefix
 		'
-		Me.Label13.ImageAlign = System.Drawing.ContentAlignment.MiddleRight
-		Me.Label13.Location = New System.Drawing.Point(44, 48)
-		Me.Label13.Name = "Label13"
-		Me.Label13.Size = New System.Drawing.Size(72, 20)
-		Me.Label13.TabIndex = 19
-		Me.Label13.Text = "Native Prefix: "
-		Me.Label13.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+		Me.LabelNativePrefix.ImageAlign = System.Drawing.ContentAlignment.MiddleRight
+		Me.LabelNativePrefix.Location = New System.Drawing.Point(44, 48)
+		Me.LabelNativePrefix.Name = "LabelNativePrefix"
+		Me.LabelNativePrefix.Size = New System.Drawing.Size(72, 20)
+		Me.LabelNativePrefix.TabIndex = 19
+		Me.LabelNativePrefix.Text = "Native Prefix: "
+		Me.LabelNativePrefix.TextAlign = System.Drawing.ContentAlignment.MiddleRight
 		'
 		'_subDirectoryMaxSize
 		'
@@ -781,35 +781,35 @@ Public Class ExportForm
 		Me._subdirectoryStartNumber.TabIndex = 16
 		Me._subdirectoryStartNumber.Value = New Decimal(New Integer() {1, 0, 0, 0})
 		'
-		'Label9
+		'LabelMaxFiles
 		'
-		Me.Label9.ImageAlign = System.Drawing.ContentAlignment.MiddleRight
-		Me.Label9.Location = New System.Drawing.Point(56, 132)
-		Me.Label9.Name = "Label9"
-		Me.Label9.Size = New System.Drawing.Size(60, 20)
-		Me.Label9.TabIndex = 15
-		Me.Label9.Text = "Max Files:"
-		Me.Label9.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+		Me.LabelMaxFiles.ImageAlign = System.Drawing.ContentAlignment.MiddleRight
+		Me.LabelMaxFiles.Location = New System.Drawing.Point(56, 132)
+		Me.LabelMaxFiles.Name = "LabelMaxFiles"
+		Me.LabelMaxFiles.Size = New System.Drawing.Size(60, 20)
+		Me.LabelMaxFiles.TabIndex = 15
+		Me.LabelMaxFiles.Text = "Max Files:"
+		Me.LabelMaxFiles.TextAlign = System.Drawing.ContentAlignment.MiddleRight
 		'
-		'Label10
+		'LabelSubdirectoryStartNumber
 		'
-		Me.Label10.ImageAlign = System.Drawing.ContentAlignment.MiddleRight
-		Me.Label10.Location = New System.Drawing.Point(8, 104)
-		Me.Label10.Name = "Label10"
-		Me.Label10.Size = New System.Drawing.Size(44, 20)
-		Me.Label10.TabIndex = 14
-		Me.Label10.Text = "Start #:"
-		Me.Label10.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+		Me.LabelSubdirectoryStartNumber.ImageAlign = System.Drawing.ContentAlignment.MiddleRight
+		Me.LabelSubdirectoryStartNumber.Location = New System.Drawing.Point(8, 104)
+		Me.LabelSubdirectoryStartNumber.Name = "LabelSubdirectoryStartNumber"
+		Me.LabelSubdirectoryStartNumber.Size = New System.Drawing.Size(44, 20)
+		Me.LabelSubdirectoryStartNumber.TabIndex = 14
+		Me.LabelSubdirectoryStartNumber.Text = "Start #:"
+		Me.LabelSubdirectoryStartNumber.TextAlign = System.Drawing.ContentAlignment.MiddleRight
 		'
-		'Label11
+		'LabelImagePrefix
 		'
-		Me.Label11.ImageAlign = System.Drawing.ContentAlignment.MiddleRight
-		Me.Label11.Location = New System.Drawing.Point(44, 20)
-		Me.Label11.Name = "Label11"
-		Me.Label11.Size = New System.Drawing.Size(72, 20)
-		Me.Label11.TabIndex = 13
-		Me.Label11.Text = "Image Prefix: "
-		Me.Label11.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+		Me.LabelImagePrefix.ImageAlign = System.Drawing.ContentAlignment.MiddleRight
+		Me.LabelImagePrefix.Location = New System.Drawing.Point(44, 20)
+		Me.LabelImagePrefix.Name = "LabelImagePrefix"
+		Me.LabelImagePrefix.Size = New System.Drawing.Size(72, 20)
+		Me.LabelImagePrefix.TabIndex = 13
+		Me.LabelImagePrefix.Text = "Image Prefix: "
+		Me.LabelImagePrefix.TextAlign = System.Drawing.ContentAlignment.MiddleRight
 		'
 		'_subdirectoryImagePrefix
 		'
@@ -823,12 +823,12 @@ Public Class ExportForm
 		'_volumeInformationGroupBox
 		'
 		Me._volumeInformationGroupBox.Controls.Add(Me._volumeDigitPadding)
-		Me._volumeInformationGroupBox.Controls.Add(Me.Label22)
+		Me._volumeInformationGroupBox.Controls.Add(Me.LabelVolumeNumberOfDigits)
 		Me._volumeInformationGroupBox.Controls.Add(Me._volumeMaxSize)
 		Me._volumeInformationGroupBox.Controls.Add(Me._volumeStartNumber)
-		Me._volumeInformationGroupBox.Controls.Add(Me.Label14)
-		Me._volumeInformationGroupBox.Controls.Add(Me.Label15)
-		Me._volumeInformationGroupBox.Controls.Add(Me.Label16)
+		Me._volumeInformationGroupBox.Controls.Add(Me.LabelMaxSizeMB)
+		Me._volumeInformationGroupBox.Controls.Add(Me.LabelVolumeStartNumber)
+		Me._volumeInformationGroupBox.Controls.Add(Me.LabelPrefix)
 		Me._volumeInformationGroupBox.Controls.Add(Me._volumePrefix)
 		Me._volumeInformationGroupBox.Location = New System.Drawing.Point(7, 140)
 		Me._volumeInformationGroupBox.Name = "_volumeInformationGroupBox"
@@ -847,15 +847,15 @@ Public Class ExportForm
 		Me._volumeDigitPadding.TabIndex = 13
 		Me._volumeDigitPadding.Value = New Decimal(New Integer() {1, 0, 0, 0})
 		'
-		'Label22
+		'LabelVolumeNumberOfDigits
 		'
-		Me.Label22.ImageAlign = System.Drawing.ContentAlignment.MiddleRight
-		Me.Label22.Location = New System.Drawing.Point(104, 48)
-		Me.Label22.Name = "Label22"
-		Me.Label22.Size = New System.Drawing.Size(56, 20)
-		Me.Label22.TabIndex = 12
-		Me.Label22.Text = "# of digits:"
-		Me.Label22.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+		Me.LabelVolumeNumberOfDigits.ImageAlign = System.Drawing.ContentAlignment.MiddleRight
+		Me.LabelVolumeNumberOfDigits.Location = New System.Drawing.Point(104, 48)
+		Me.LabelVolumeNumberOfDigits.Name = "LabelVolumeNumberOfDigits"
+		Me.LabelVolumeNumberOfDigits.Size = New System.Drawing.Size(56, 20)
+		Me.LabelVolumeNumberOfDigits.TabIndex = 12
+		Me.LabelVolumeNumberOfDigits.Text = "# of digits:"
+		Me.LabelVolumeNumberOfDigits.TextAlign = System.Drawing.ContentAlignment.MiddleRight
 		'
 		'_volumeMaxSize
 		'
@@ -875,35 +875,35 @@ Public Class ExportForm
 		Me._volumeStartNumber.TabIndex = 10
 		Me._volumeStartNumber.Value = New Decimal(New Integer() {1, 0, 0, 0})
 		'
-		'Label14
+		'LabelMaxSizeMB
 		'
-		Me.Label14.ImageAlign = System.Drawing.ContentAlignment.MiddleRight
-		Me.Label14.Location = New System.Drawing.Point(32, 76)
-		Me.Label14.Name = "Label14"
-		Me.Label14.Size = New System.Drawing.Size(82, 20)
-		Me.Label14.TabIndex = 9
-		Me.Label14.Text = "Max Size (MB):"
-		Me.Label14.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+		Me.LabelMaxSizeMB.ImageAlign = System.Drawing.ContentAlignment.MiddleRight
+		Me.LabelMaxSizeMB.Location = New System.Drawing.Point(32, 76)
+		Me.LabelMaxSizeMB.Name = "LabelMaxSizeMB"
+		Me.LabelMaxSizeMB.Size = New System.Drawing.Size(82, 20)
+		Me.LabelMaxSizeMB.TabIndex = 9
+		Me.LabelMaxSizeMB.Text = "Max Size (MB):"
+		Me.LabelMaxSizeMB.TextAlign = System.Drawing.ContentAlignment.MiddleRight
 		'
-		'Label15
+		'LabelVolumeStartNumber
 		'
-		Me.Label15.ImageAlign = System.Drawing.ContentAlignment.MiddleRight
-		Me.Label15.Location = New System.Drawing.Point(8, 48)
-		Me.Label15.Name = "Label15"
-		Me.Label15.Size = New System.Drawing.Size(44, 20)
-		Me.Label15.TabIndex = 8
-		Me.Label15.Text = "Start #:"
-		Me.Label15.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+		Me.LabelVolumeStartNumber.ImageAlign = System.Drawing.ContentAlignment.MiddleRight
+		Me.LabelVolumeStartNumber.Location = New System.Drawing.Point(8, 48)
+		Me.LabelVolumeStartNumber.Name = "LabelVolumeStartNumber"
+		Me.LabelVolumeStartNumber.Size = New System.Drawing.Size(44, 20)
+		Me.LabelVolumeStartNumber.TabIndex = 8
+		Me.LabelVolumeStartNumber.Text = "Start #:"
+		Me.LabelVolumeStartNumber.TextAlign = System.Drawing.ContentAlignment.MiddleRight
 		'
-		'Label16
+		'LabelPrefix
 		'
-		Me.Label16.ImageAlign = System.Drawing.ContentAlignment.MiddleRight
-		Me.Label16.Location = New System.Drawing.Point(76, 20)
-		Me.Label16.Name = "Label16"
-		Me.Label16.Size = New System.Drawing.Size(40, 20)
-		Me.Label16.TabIndex = 7
-		Me.Label16.Text = "Prefix: "
-		Me.Label16.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+		Me.LabelPrefix.ImageAlign = System.Drawing.ContentAlignment.MiddleRight
+		Me.LabelPrefix.Location = New System.Drawing.Point(76, 20)
+		Me.LabelPrefix.Name = "LabelPrefix"
+		Me.LabelPrefix.Size = New System.Drawing.Size(40, 20)
+		Me.LabelPrefix.TabIndex = 7
+		Me.LabelPrefix.Text = "Prefix: "
+		Me.LabelPrefix.TextAlign = System.Drawing.ContentAlignment.MiddleRight
 		'
 		'_volumePrefix
 		'
@@ -914,18 +914,18 @@ Public Class ExportForm
 		Me._volumePrefix.TabIndex = 6
 		Me._volumePrefix.Text = "VOL"
 		'
-		'GroupBox23
+		'GroupBoxFilePath
 		'
-		Me.GroupBox23.Controls.Add(Me._prefixText)
-		Me.GroupBox23.Controls.Add(Me._usePrefix)
-		Me.GroupBox23.Controls.Add(Me._useAbsolutePaths)
-		Me.GroupBox23.Controls.Add(Me._useRelativePaths)
-		Me.GroupBox23.Location = New System.Drawing.Point(223, 84)
-		Me.GroupBox23.Name = "GroupBox23"
-		Me.GroupBox23.Size = New System.Drawing.Size(208, 120)
-		Me.GroupBox23.TabIndex = 12
-		Me.GroupBox23.TabStop = False
-		Me.GroupBox23.Text = "File Path"
+		Me.GroupBoxFilePath.Controls.Add(Me._prefixText)
+		Me.GroupBoxFilePath.Controls.Add(Me._usePrefix)
+		Me.GroupBoxFilePath.Controls.Add(Me._useAbsolutePaths)
+		Me.GroupBoxFilePath.Controls.Add(Me._useRelativePaths)
+		Me.GroupBoxFilePath.Location = New System.Drawing.Point(223, 84)
+		Me.GroupBoxFilePath.Name = "GroupBoxFilePath"
+		Me.GroupBoxFilePath.Size = New System.Drawing.Size(208, 120)
+		Me.GroupBoxFilePath.TabIndex = 12
+		Me.GroupBoxFilePath.TabStop = False
+		Me.GroupBoxFilePath.Text = "File Path"
 		'
 		'_prefixText
 		'
@@ -962,33 +962,33 @@ Public Class ExportForm
 		Me._useRelativePaths.TabStop = True
 		Me._useRelativePaths.Text = "Use Relative Paths"
 		'
-		'_loadFileCharacterInformation
+		'_groupBoxLoadFileCharacterInformation
 		'
-		Me._loadFileCharacterInformation.Controls.Add(Me.Label7)
-		Me._loadFileCharacterInformation.Controls.Add(Me._nestedValueDelimiter)
-		Me._loadFileCharacterInformation.Controls.Add(Me._multiRecordDelimiter)
-		Me._loadFileCharacterInformation.Controls.Add(Me.Label6)
-		Me._loadFileCharacterInformation.Controls.Add(Me.Label4)
-		Me._loadFileCharacterInformation.Controls.Add(Me._quoteDelimiter)
-		Me._loadFileCharacterInformation.Controls.Add(Me.Label3)
-		Me._loadFileCharacterInformation.Controls.Add(Me._newLineDelimiter)
-		Me._loadFileCharacterInformation.Controls.Add(Me.Label2)
-		Me._loadFileCharacterInformation.Controls.Add(Me._recordDelimiter)
-		Me._loadFileCharacterInformation.Location = New System.Drawing.Point(223, 212)
-		Me._loadFileCharacterInformation.Name = "_loadFileCharacterInformation"
-		Me._loadFileCharacterInformation.Size = New System.Drawing.Size(208, 208)
-		Me._loadFileCharacterInformation.TabIndex = 15
-		Me._loadFileCharacterInformation.TabStop = False
-		Me._loadFileCharacterInformation.Text = "Load File Characters"
+		Me._groupBoxLoadFileCharacterInformation.Controls.Add(Me.LabelNestedValue)
+		Me._groupBoxLoadFileCharacterInformation.Controls.Add(Me._nestedValueDelimiter)
+		Me._groupBoxLoadFileCharacterInformation.Controls.Add(Me._multiRecordDelimiter)
+		Me._groupBoxLoadFileCharacterInformation.Controls.Add(Me.LabelMultiValue)
+		Me._groupBoxLoadFileCharacterInformation.Controls.Add(Me.LabelQuote)
+		Me._groupBoxLoadFileCharacterInformation.Controls.Add(Me._quoteDelimiter)
+		Me._groupBoxLoadFileCharacterInformation.Controls.Add(Me.LabelNewline)
+		Me._groupBoxLoadFileCharacterInformation.Controls.Add(Me._newLineDelimiter)
+		Me._groupBoxLoadFileCharacterInformation.Controls.Add(Me.LabelColumn)
+		Me._groupBoxLoadFileCharacterInformation.Controls.Add(Me._recordDelimiter)
+		Me._groupBoxLoadFileCharacterInformation.Location = New System.Drawing.Point(223, 212)
+		Me._groupBoxLoadFileCharacterInformation.Name = "_groupBoxLoadFileCharacterInformation"
+		Me._groupBoxLoadFileCharacterInformation.Size = New System.Drawing.Size(208, 208)
+		Me._groupBoxLoadFileCharacterInformation.TabIndex = 15
+		Me._groupBoxLoadFileCharacterInformation.TabStop = False
+		Me._groupBoxLoadFileCharacterInformation.Text = "Load File Characters"
 		'
-		'Label7
+		'LabelNestedValue
 		'
-		Me.Label7.Location = New System.Drawing.Point(8, 168)
-		Me.Label7.Name = "Label7"
-		Me.Label7.Size = New System.Drawing.Size(76, 21)
-		Me.Label7.TabIndex = 17
-		Me.Label7.Text = "Nested Value:"
-		Me.Label7.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+		Me.LabelNestedValue.Location = New System.Drawing.Point(8, 168)
+		Me.LabelNestedValue.Name = "LabelNestedValue"
+		Me.LabelNestedValue.Size = New System.Drawing.Size(76, 21)
+		Me.LabelNestedValue.TabIndex = 17
+		Me.LabelNestedValue.Text = "Nested Value:"
+		Me.LabelNestedValue.TextAlign = System.Drawing.ContentAlignment.MiddleRight
 		'
 		'_nestedValueDelimiter
 		'
@@ -1008,24 +1008,24 @@ Public Class ExportForm
 		Me._multiRecordDelimiter.Size = New System.Drawing.Size(116, 21)
 		Me._multiRecordDelimiter.TabIndex = 15
 		'
-		'Label6
+		'LabelMultiValue
 		'
-		Me.Label6.Location = New System.Drawing.Point(8, 132)
-		Me.Label6.Name = "Label6"
-		Me.Label6.Size = New System.Drawing.Size(76, 21)
-		Me.Label6.TabIndex = 14
-		Me.Label6.Text = "Multi-Value:"
-		Me.Label6.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+		Me.LabelMultiValue.Location = New System.Drawing.Point(8, 132)
+		Me.LabelMultiValue.Name = "LabelMultiValue"
+		Me.LabelMultiValue.Size = New System.Drawing.Size(76, 21)
+		Me.LabelMultiValue.TabIndex = 14
+		Me.LabelMultiValue.Text = "Multi-Value:"
+		Me.LabelMultiValue.TextAlign = System.Drawing.ContentAlignment.MiddleRight
 		'
-		'Label4
+		'LabelQuote
 		'
-		Me.Label4.ImageAlign = System.Drawing.ContentAlignment.MiddleRight
-		Me.Label4.Location = New System.Drawing.Point(8, 60)
-		Me.Label4.Name = "Label4"
-		Me.Label4.Size = New System.Drawing.Size(76, 21)
-		Me.Label4.TabIndex = 13
-		Me.Label4.Text = "Quote:"
-		Me.Label4.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+		Me.LabelQuote.ImageAlign = System.Drawing.ContentAlignment.MiddleRight
+		Me.LabelQuote.Location = New System.Drawing.Point(8, 60)
+		Me.LabelQuote.Name = "LabelQuote"
+		Me.LabelQuote.Size = New System.Drawing.Size(76, 21)
+		Me.LabelQuote.TabIndex = 13
+		Me.LabelQuote.Text = "Quote:"
+		Me.LabelQuote.TextAlign = System.Drawing.ContentAlignment.MiddleRight
 		'
 		'_quoteDelimiter
 		'
@@ -1036,14 +1036,14 @@ Public Class ExportForm
 		Me._quoteDelimiter.Size = New System.Drawing.Size(116, 21)
 		Me._quoteDelimiter.TabIndex = 12
 		'
-		'Label3
+		'LabelNewline
 		'
-		Me.Label3.Location = New System.Drawing.Point(8, 96)
-		Me.Label3.Name = "Label3"
-		Me.Label3.Size = New System.Drawing.Size(76, 21)
-		Me.Label3.TabIndex = 11
-		Me.Label3.Text = "Newline:"
-		Me.Label3.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+		Me.LabelNewline.Location = New System.Drawing.Point(8, 96)
+		Me.LabelNewline.Name = "LabelNewline"
+		Me.LabelNewline.Size = New System.Drawing.Size(76, 21)
+		Me.LabelNewline.TabIndex = 11
+		Me.LabelNewline.Text = "Newline:"
+		Me.LabelNewline.TextAlign = System.Drawing.ContentAlignment.MiddleRight
 		'
 		'_newLineDelimiter
 		'
@@ -1054,14 +1054,14 @@ Public Class ExportForm
 		Me._newLineDelimiter.Size = New System.Drawing.Size(116, 21)
 		Me._newLineDelimiter.TabIndex = 10
 		'
-		'Label2
+		'LabelColumn
 		'
-		Me.Label2.Location = New System.Drawing.Point(8, 24)
-		Me.Label2.Name = "Label2"
-		Me.Label2.Size = New System.Drawing.Size(76, 21)
-		Me.Label2.TabIndex = 9
-		Me.Label2.Text = "Column:"
-		Me.Label2.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+		Me.LabelColumn.Location = New System.Drawing.Point(8, 24)
+		Me.LabelColumn.Name = "LabelColumn"
+		Me.LabelColumn.Size = New System.Drawing.Size(76, 21)
+		Me.LabelColumn.TabIndex = 9
+		Me.LabelColumn.Text = "Column:"
+		Me.LabelColumn.TextAlign = System.Drawing.ContentAlignment.MiddleRight
 		'
 		'_recordDelimiter
 		'
@@ -1099,17 +1099,17 @@ Public Class ExportForm
 		Me.Text = "Relativity Desktop Client | Export "
 
 		Me._productionPrecedenceBox.ResumeLayout(False)
-		Me.GroupBox3.ResumeLayout(False)
+		Me.GroupBoxExportLocation.ResumeLayout(False)
 		Me.TabControl1.ResumeLayout(False)
 		Me._dataSourceTabPage.ResumeLayout(False)
 		Me._filtersBox.ResumeLayout(False)
 		CType(Me._startExportAtDocumentNumber, System.ComponentModel.ISupportInitialize).EndInit()
 		Me._destinationFileTabPage.ResumeLayout(False)
-		Me.GroupBox6.ResumeLayout(False)
-		Me._metadataGroup.ResumeLayout(False)
-		Me.GroupBox4.ResumeLayout(False)
-		Me.GroupBox2.ResumeLayout(False)
-		Me.GroupBox1.ResumeLayout(False)
+		Me.GroupBoxTextAndNativeFileNames.ResumeLayout(False)
+		Me._metadataGroupBox.ResumeLayout(False)
+		Me.GroupBoxNative.ResumeLayout(False)
+		Me.GroupBoxImage.ResumeLayout(False)
+		Me.GroupBoxPhysicalFileExport.ResumeLayout(False)
 		Me._subDirectoryInformationGroupBox.ResumeLayout(False)
 		CType(Me._subdirectoryDigitPadding, System.ComponentModel.ISupportInitialize).EndInit()
 		CType(Me._subDirectoryMaxSize, System.ComponentModel.ISupportInitialize).EndInit()
@@ -1118,8 +1118,8 @@ Public Class ExportForm
 		CType(Me._volumeDigitPadding, System.ComponentModel.ISupportInitialize).EndInit()
 		CType(Me._volumeMaxSize, System.ComponentModel.ISupportInitialize).EndInit()
 		CType(Me._volumeStartNumber, System.ComponentModel.ISupportInitialize).EndInit()
-		Me.GroupBox23.ResumeLayout(False)
-		Me._loadFileCharacterInformation.ResumeLayout(False)
+		Me.GroupBoxFilePath.ResumeLayout(False)
+		Me._groupBoxLoadFileCharacterInformation.ResumeLayout(False)
 		Me.ResumeLayout(False)
 
 	End Sub
@@ -1324,7 +1324,7 @@ Public Class ExportForm
 			End If
 		End If
 		If Me.ExportFile.TypeOfExport = ExportFile.ExportType.Production AndAlso _exportNativeFiles.Checked Then
-			If CType(_nativeFileNameSource.SelectedItem, String) = "Select..." Then
+			If CType(_nativeFileNameSourceCombo.SelectedItem, String) = "Select..." Then
 				AppendErrorMessage(msg, "No file name source selected")
 			End If
 		End If
@@ -1379,7 +1379,7 @@ Public Class ExportForm
 			Case ExportFile.ExportType.Production
 				_exportFile.ArtifactID = CType(_filters.SelectedValue, Int32)
 				_exportFile.LoadFilesPrefix = DirectCast(_filters.SelectedItem, System.Data.DataRowView)(_filters.DisplayMember).ToString
-				If _nativeFileNameSource.SelectedItem.ToString.ToLower = "identifier" Then
+				If _nativeFileNameSourceCombo.SelectedItem.ToString.ToLower = "identifier" Then
 					_exportFile.ExportNativesToFileNamedFrom = ExportNativeWithFilenameFrom.Identifier
 				Else
 					_exportFile.ExportNativesToFileNamedFrom = ExportNativeWithFilenameFrom.Production
@@ -1395,7 +1395,7 @@ Public Class ExportForm
 		_exportFile.MultiRecordDelimiter = ChrW(CType(_multiRecordDelimiter.SelectedValue, Int32))
 		_exportFile.NewlineDelimiter = ChrW(CType(_newLineDelimiter.SelectedValue, Int32))
 		_exportFile.NestedValueDelimiter = ChrW(CType(_nestedValueDelimiter.SelectedValue, Int32))
-		_exportFile.AppendOriginalFileName = _appendOriginalFilename.Checked
+		_exportFile.AppendOriginalFileName = _appendOriginalFilenameCheckbox.Checked
 
 		_exportFile.CookieContainer = _application.CookieContainer
 		_exportFile.FilePrefix = ""
@@ -1497,15 +1497,15 @@ Public Class ExportForm
 				_useRelativePaths.Checked = True
 		End Select
 		_recordDelimiter.SelectedValue = ef.RecordDelimiter
-		If _appendOriginalFilename.Checked <> ef.AppendOriginalFileName Then _appendOriginalFilename.Checked = ef.AppendOriginalFileName
+		If _appendOriginalFilenameCheckbox.Checked <> ef.AppendOriginalFileName Then _appendOriginalFilenameCheckbox.Checked = ef.AppendOriginalFileName
 
 		Select Case ef.ExportNativesToFileNamedFrom
 			Case kCura.WinEDDS.ExportNativeWithFilenameFrom.Identifier
-				_nativeFileNameSource.SelectedItem = "Identifier"
+				_nativeFileNameSourceCombo.SelectedItem = "Identifier"
 			Case kCura.WinEDDS.ExportNativeWithFilenameFrom.Production
-				_nativeFileNameSource.SelectedItem = "Begin production number"
+				_nativeFileNameSourceCombo.SelectedItem = "Begin production number"
 			Case kCura.WinEDDS.ExportNativeWithFilenameFrom.Select
-				_nativeFileNameSource.SelectedItem = "Select..."
+				_nativeFileNameSourceCombo.SelectedItem = "Select..."
 		End Select
 
 		If ef.LoadFileIsHtml Then
@@ -1570,7 +1570,7 @@ Public Class ExportForm
 			Next
 
 			If _columnSelector.RightListBoxItems.Count = 0 Then
-				_metadataGroup.Enabled = False
+				_metadataGroupBox.Enabled = False
 			End If
 
 			For Each vfi As kCura.WinEDDS.ViewFieldInfo In itemsToRemoveFromLeftListBox
@@ -1751,7 +1751,7 @@ Public Class ExportForm
 		_imageFileFormat.ValueMember = "Value"
 		_imageTypeDropdown.SelectedIndex = 0
 		_exportMulticodeFieldsAsNested.Checked = Me.ExportFile.MulticodesAsNested
-		Label5.Visible = False
+		LabelNamedAfter.Visible = False
 		Select Case Me.ExportFile.TypeOfExport
 			Case ExportFile.ExportType.ArtifactSearch
 				_filters.Text = "Searches"
@@ -1769,19 +1769,19 @@ Public Class ExportForm
 					Me.Text = String.Format("Relativity Desktop Client | Export {0} Objects", Me.ObjectTypeName)
 				End If
 			Case ExportFile.ExportType.Production
-				Label5.Visible = True
+				LabelNamedAfter.Visible = True
 				_filters.Text = "Productions"
 				_filtersBox.Text = "Productions"
-				_nativeFileNameSource.Visible = True
-				_nativeFileNameSource.SelectedIndex = 0
+				_nativeFileNameSourceCombo.Visible = True
+				_nativeFileNameSourceCombo.SelectedIndex = 0
 				Me.Text = "Relativity Desktop Client | Export Production Set"
 				_productionPrecedenceBox.Visible = False
 		End Select
 		If Not Me.ExportFile.ArtifactTypeID = Relativity.ArtifactType.Document Then
 			_productionPrecedenceBox.Visible = False
-			Label13.Text = "File Prefix"
-			GroupBox6.Text = "Text and File Names"
-			Label11.Visible = False
+			LabelNativePrefix.Text = "File Prefix"
+			GroupBoxTextAndNativeFileNames.Text = "Text and File Names"
+			LabelImagePrefix.Visible = False
 			_subdirectoryImagePrefix.Visible = False
 		End If
 
@@ -1815,14 +1815,14 @@ Public Class ExportForm
 		If Me.ExportFile.ArtifactTypeID = Relativity.ArtifactType.Document Then Exit Sub
 		_exportImages.Checked = False
 		_exportImages.Enabled = False
-		GroupBox2.Visible = False
+		GroupBoxImage.Visible = False
 		If Me.ExportFile.HasFileField Then
-			GroupBox4.Text = Me.ExportFile.FileField.FieldName
+			GroupBoxNative.Text = Me.ExportFile.FileField.FieldName
 			_exportNativeFiles.Text = String.Format("Export {0} Files", Me.ExportFile.FileField.FieldName)
 		Else
 			_exportNativeFiles.Checked = False
 			_exportNativeFiles.Enabled = False
-			GroupBox4.Visible = False
+			GroupBoxNative.Visible = False
 		End If
 	End Sub
 
@@ -1866,7 +1866,7 @@ Public Class ExportForm
 
 	Private Sub _exportNativeFiles_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _exportNativeFiles.CheckedChanged
 		_useAbsolutePaths.Enabled = True
-		_metadataGroup.Enabled = _columnSelector.RightListBoxItems.Count > 0 OrElse _exportNativeFiles.Checked
+		_metadataGroupBox.Enabled = _columnSelector.RightListBoxItems.Count > 0 OrElse _exportNativeFiles.Checked
 		_nativeFileFormat.Enabled = True
 
 	End Sub
@@ -2013,7 +2013,7 @@ Public Class ExportForm
 
 
 	Private Sub _columnSelecter_ItemsShifted() Handles _columnSelector.ItemsShifted
-		_metadataGroup.Enabled = _columnSelector.RightListBoxItems.Count > 0 OrElse _exportNativeFiles.Checked
+		_metadataGroupBox.Enabled = _columnSelector.RightListBoxItems.Count > 0 OrElse _exportNativeFiles.Checked
 		Me.ManagePotentialTextFields()
 	End Sub
 
