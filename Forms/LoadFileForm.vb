@@ -1142,7 +1142,7 @@ Namespace kCura.EDDS.WinForm
 		' updated.
 		Private _layoutReferenceDistance As Int32 = 0
 
-		Private _layoutRatioList As List(Of RelativeLayoutData)
+		'Private _layoutRatioList As List(Of RelativeLayoutData)
 		Private _layoutDifferenceList As List(Of RelativeLayoutData)
 
 		Private Function CalcReferenceDistance() As Int32
@@ -1162,20 +1162,20 @@ Namespace kCura.EDDS.WinForm
 			_layoutLastFormSize = Me.Size
 
 			'Layout properties which are based on a ratio to another layout property. 
-			If _layoutRatioList Is Nothing Then
-				_layoutRatioList = New List(Of RelativeLayoutData)
+			'If _layoutRatioList Is Nothing Then
+			'_layoutRatioList = New List(Of RelativeLayoutData)
 
-				'When the width of the dialog increases by 3 pixels, each groupbox increases by 1 pixel.  The ratio is 1/3 = .333333
-				_layoutRatioList.Add(New RelativeLayoutData(Me, LayoutBasePropertyTypeForRatio.Width, GroupBoxOverwrite, LayoutRelativePropertyTypeForRatio.Width, 0.333333))
-				_layoutRatioList.Add(New RelativeLayoutData(Me, LayoutBasePropertyTypeForRatio.Width, GroupBoxOverlayIdentifier, LayoutRelativePropertyTypeForRatio.Width, 0.333333))
-				_layoutRatioList.Add(New RelativeLayoutData(Me, LayoutBasePropertyTypeForRatio.Width, GroupBoxFolderInfo, LayoutRelativePropertyTypeForRatio.Width, 0.333333))
-				_layoutRatioList.Add(New RelativeLayoutData(Me, LayoutBasePropertyTypeForRatio.Width, GroupBoxNativeFileBehavior, LayoutRelativePropertyTypeForRatio.Width, 0.333333))
-				_layoutRatioList.Add(New RelativeLayoutData(Me, LayoutBasePropertyTypeForRatio.Width, GroupBoxExtractedText, LayoutRelativePropertyTypeForRatio.Width, 0.333333))
-			End If
+			'When the width of the dialog increases by 3 pixels, each groupbox increases by 1 pixel.  The ratio is 1/3 = .333333
+			'_layoutRatioList.Add(New RelativeLayoutData(Me, LayoutBasePropertyTypeForRatio.Width, GroupBoxOverwrite, LayoutRelativePropertyTypeForRatio.Width, 0.333333))
+			'_layoutRatioList.Add(New RelativeLayoutData(Me, LayoutBasePropertyTypeForRatio.Width, GroupBoxOverlayIdentifier, LayoutRelativePropertyTypeForRatio.Width, 0.333333))
+			'_layoutRatioList.Add(New RelativeLayoutData(Me, LayoutBasePropertyTypeForRatio.Width, GroupBoxFolderInfo, LayoutRelativePropertyTypeForRatio.Width, 0.333333))
+			'_layoutRatioList.Add(New RelativeLayoutData(Me, LayoutBasePropertyTypeForRatio.Width, GroupBoxNativeFileBehavior, LayoutRelativePropertyTypeForRatio.Width, 0.333333))
+			'_layoutRatioList.Add(New RelativeLayoutData(Me, LayoutBasePropertyTypeForRatio.Width, GroupBoxExtractedText, LayoutRelativePropertyTypeForRatio.Width, 0.333333))
+			'End If
 
-			_layoutRatioList.ForEach(Sub(x)
-																 x.InitalizeRatioValues()
-															 End Sub)
+			'_layoutRatioList.ForEach(Sub(x)
+			'x.InitalizeRatioValues()
+			'												 End Sub)
 
 			'Layout properties which are directly based on another layout property
 			If _layoutDifferenceList Is Nothing Then
@@ -1217,9 +1217,9 @@ Namespace kCura.EDDS.WinForm
 
 		Public Sub AdjustLayout()
 			If Not _layoutLastFormSize.Equals(Me.Size) Then
-				For Each x As RelativeLayoutData In _layoutRatioList
-					x.AdjustRelativeControlBasedOnRatio()
-				Next
+				'For Each x As RelativeLayoutData In _layoutRatioList
+				'x.AdjustRelativeControlBasedOnRatio()
+				'Next
 
 				For Each x As RelativeLayoutData In _layoutDifferenceList
 					x.AdjustRelativeControlBasedOnDifference()
