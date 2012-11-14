@@ -1051,32 +1051,32 @@ Namespace kCura.EDDS.WinForm.Tests
         <Test()> Public Sub LoadExportFile_AppendOriginalFileName_Checked_True()
             Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {.AppendOriginalFileName = True}
             _form.LoadExportFile(ef)
-            Assert.IsTrue(_form._appendOriginalFilename.Checked)
-        End Sub
+			Assert.IsTrue(_form._appendOriginalFilenameCheckbox.Checked)
+		End Sub
 
-        <Test()> Public Sub LoadExportFile_AppendOriginalFileName_Checked_False()
-            Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {.AppendOriginalFileName = False}
-            _form.LoadExportFile(ef)
-            Assert.IsFalse(_form._appendOriginalFilename.Checked)
-        End Sub
+		<Test()> Public Sub LoadExportFile_AppendOriginalFileName_Checked_False()
+			Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {.AppendOriginalFileName = False}
+			_form.LoadExportFile(ef)
+			Assert.IsFalse(_form._appendOriginalFilenameCheckbox.Checked)
+		End Sub
 
         <Test()> Public Sub LoadExportFile_NamedAfter_NotSelected()
             Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {.ExportNativesToFileNamedFrom = kCura.WinEDDS.ExportNativeWithFilenameFrom.Select}
             _form.LoadExportFile(ef)
-            Assert.AreEqual("Select...", _form._nativeFileNameSource.SelectedItem.ToString)
-        End Sub
+			Assert.AreEqual("Select...", _form._nativeFileNameSourceCombo.SelectedItem.ToString)
+		End Sub
 
-        <Test()> Public Sub LoadExportFile_NamedAfter_Identifier()
-            Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {.AppendOriginalFileName = False, .ExportNativesToFileNamedFrom = kCura.WinEDDS.ExportNativeWithFilenameFrom.Identifier}
-            _form.LoadExportFile(ef)
-            Assert.AreEqual("Identifier", _form._nativeFileNameSource.SelectedItem.ToString)
-        End Sub
+		<Test()> Public Sub LoadExportFile_NamedAfter_Identifier()
+			Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {.AppendOriginalFileName = False, .ExportNativesToFileNamedFrom = kCura.WinEDDS.ExportNativeWithFilenameFrom.Identifier}
+			_form.LoadExportFile(ef)
+			Assert.AreEqual("Identifier", _form._nativeFileNameSourceCombo.SelectedItem.ToString)
+		End Sub
 
-        <Test()> Public Sub LoadExportFile_NamedAfter_Production()
-            Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {.AppendOriginalFileName = False, .ExportNativesToFileNamedFrom = kCura.WinEDDS.ExportNativeWithFilenameFrom.Production}
-            _form.LoadExportFile(ef)
-            Assert.AreEqual("Begin production number", _form._nativeFileNameSource.SelectedItem.ToString)
-        End Sub
+		<Test()> Public Sub LoadExportFile_NamedAfter_Production()
+			Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {.AppendOriginalFileName = False, .ExportNativesToFileNamedFrom = kCura.WinEDDS.ExportNativeWithFilenameFrom.Production}
+			_form.LoadExportFile(ef)
+			Assert.AreEqual("Begin production number", _form._nativeFileNameSourceCombo.SelectedItem.ToString)
+		End Sub
 
 #End Region
 
@@ -1229,63 +1229,63 @@ Namespace kCura.EDDS.WinForm.Tests
             Assert.IsFalse(_form._exportNativeFiles.Checked)
             Assert.IsTrue(_form._useAbsolutePaths.Enabled)
             Assert.IsFalse(_form._nativeFileFormat.Enabled)
-            Assert.IsFalse(_form._metadataGroup.Enabled)
-        End Sub
+			Assert.IsFalse(_form._metadataGroupBox.Enabled)
+		End Sub
 
 
-        <Test()> Public Sub LoadExportFile_ExportNatives_False_RightListBoxItemsIsZero()
-            Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {.ExportNative = False, .SelectedViewFields = New kCura.WinEDDS.ViewFieldInfo() {}}
-            _form.LoadExportFile(ef)
-            Assert.IsFalse(_form._exportNativeFiles.Checked)
-            Assert.IsTrue(_form._useAbsolutePaths.Enabled)
-            Assert.IsFalse(_form._nativeFileFormat.Enabled)
-            Assert.IsFalse(_form._metadataGroup.Enabled)
-        End Sub
+		<Test()> Public Sub LoadExportFile_ExportNatives_False_RightListBoxItemsIsZero()
+			Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {.ExportNative = False, .SelectedViewFields = New kCura.WinEDDS.ViewFieldInfo() {}}
+			_form.LoadExportFile(ef)
+			Assert.IsFalse(_form._exportNativeFiles.Checked)
+			Assert.IsTrue(_form._useAbsolutePaths.Enabled)
+			Assert.IsFalse(_form._nativeFileFormat.Enabled)
+			Assert.IsFalse(_form._metadataGroupBox.Enabled)
+		End Sub
 
-        <Test()> Public Sub LoadExportFile_ExportNatives_False_RightListBoxItemsIs1()
-            Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document)
-            ef.ExportNative = False
-            ef.SelectedViewFields = {_queryFieldFactory.GetExtractedTextField()}
-            _form.LoadExportFile(ef)
-            Assert.IsFalse(_form._exportNativeFiles.Checked)
-            Assert.IsTrue(_form._useAbsolutePaths.Enabled)
-            Assert.IsFalse(_form._nativeFileFormat.Enabled)
-            Assert.IsFalse(_form._metadataGroup.Enabled)
-        End Sub
+		<Test()> Public Sub LoadExportFile_ExportNatives_False_RightListBoxItemsIs1()
+			Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document)
+			ef.ExportNative = False
+			ef.SelectedViewFields = {_queryFieldFactory.GetExtractedTextField()}
+			_form.LoadExportFile(ef)
+			Assert.IsFalse(_form._exportNativeFiles.Checked)
+			Assert.IsTrue(_form._useAbsolutePaths.Enabled)
+			Assert.IsFalse(_form._nativeFileFormat.Enabled)
+			Assert.IsFalse(_form._metadataGroupBox.Enabled)
+		End Sub
 
-        <Test()> Public Sub LoadExportFile_RightListBoxItemsIsZero_ExportNativesTrue_MetaDataDisabled()
-            Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document)
-            ef.ExportNative = True
-            ef.SelectedViewFields = New kCura.WinEDDS.ViewFieldInfo() {}
-            _form.LoadExportFile(ef)
-            Assert.IsFalse(_form._metadataGroup.Enabled)
-        End Sub
+		<Test()> Public Sub LoadExportFile_RightListBoxItemsIsZero_ExportNativesTrue_MetaDataDisabled()
+			Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document)
+			ef.ExportNative = True
+			ef.SelectedViewFields = New kCura.WinEDDS.ViewFieldInfo() {}
+			_form.LoadExportFile(ef)
+			Assert.IsFalse(_form._metadataGroupBox.Enabled)
+		End Sub
 
-        <Test()> Public Sub LoadExportFile_RightListBoxItemsIsZero_ExportNativesFalse_MetaDataDisabled()
-            Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document)
-            ef.ExportNative = False
-            ef.SelectedViewFields = New kCura.WinEDDS.ViewFieldInfo() {}
-            _form.LoadExportFile(ef)
-            Assert.IsFalse(_form._metadataGroup.Enabled)
-        End Sub
+		<Test()> Public Sub LoadExportFile_RightListBoxItemsIsZero_ExportNativesFalse_MetaDataDisabled()
+			Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document)
+			ef.ExportNative = False
+			ef.SelectedViewFields = New kCura.WinEDDS.ViewFieldInfo() {}
+			_form.LoadExportFile(ef)
+			Assert.IsFalse(_form._metadataGroupBox.Enabled)
+		End Sub
 
-        <Test()> Public Sub LoadExportFile_RightListBoxItemsIs1_ExportNativesTrue_MetaDataEnabled()
-            Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {
-             .AllExportableFields = _queryFieldFactory.GetAllDocumentFields(),
-             .ExportNative = True,
-             .SelectedViewFields = {_queryFieldFactory.GetExtractedTextField()}}
-            _form.LoadExportFile(ef)
-            Assert.IsTrue(_form._metadataGroup.Enabled)
-        End Sub
+		<Test()> Public Sub LoadExportFile_RightListBoxItemsIs1_ExportNativesTrue_MetaDataEnabled()
+			Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {
+			 .AllExportableFields = _queryFieldFactory.GetAllDocumentFields(),
+			 .ExportNative = True,
+			 .SelectedViewFields = {_queryFieldFactory.GetExtractedTextField()}}
+			_form.LoadExportFile(ef)
+			Assert.IsTrue(_form._metadataGroupBox.Enabled)
+		End Sub
 
-        <Test()> Public Sub LoadExportFile_RightListBoxItemsIs1_ExportNativesFalse_MetaDataDisabled()
-            Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {
-            .AllExportableFields = _queryFieldFactory.GetAllDocumentFields(),
-              .ExportNative = False,
-             .SelectedViewFields = {_queryFieldFactory.GetExtractedTextField()}}
-            _form.LoadExportFile(ef)
-            Assert.IsFalse(_form._metadataGroup.Enabled)
-        End Sub
+		<Test()> Public Sub LoadExportFile_RightListBoxItemsIs1_ExportNativesFalse_MetaDataDisabled()
+			Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {
+			.AllExportableFields = _queryFieldFactory.GetAllDocumentFields(),
+				.ExportNative = False,
+			 .SelectedViewFields = {_queryFieldFactory.GetExtractedTextField()}}
+			_form.LoadExportFile(ef)
+			Assert.IsFalse(_form._metadataGroupBox.Enabled)
+		End Sub
 
         <Test()> Public Sub LoadExportFile_ExportNatives_True()
             Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {.ExportNative = True}
