@@ -1,6 +1,11 @@
 Imports System.Net
 
 Namespace kCura.Relativity.DataReaderClient
+
+	''' <summary>
+	''' Provides the functionality required to load data for an import job, and to retrieve messages from the OnMessage event.
+	''' </summary>
+	''' <remarks></remarks>
 	Public Class ImportBulkArtifactJob
 		Implements IImportNotifier
 
@@ -56,6 +61,11 @@ Namespace kCura.Relativity.DataReaderClient
 #End Region
 
 #Region "Events"
+		''' <summary>
+		''' Occurs when a call is made to the Execute method. This event contains a status message.
+		''' </summary>
+		''' <param name="status"></param>
+		''' <remarks></remarks>
 		Public Event OnMessage(ByVal status As Status)
 		Public Event OnError(ByVal row As IDictionary)
 		Public Event OnComplete(ByVal jobReport As JobReport) Implements IImportNotifier.OnComplete
@@ -66,6 +76,11 @@ Namespace kCura.Relativity.DataReaderClient
 #End Region
 
 #Region "Public Routines"
+
+		''' <summary>
+		''' Executes the DataReaderClient, which operates as an iterator over a data source.
+		''' </summary>
+		''' <remarks></remarks>
 		Public Sub Execute()
 			_jobReport = New JobReport()
 			_jobReport.StartTime = DateTime.Now()
@@ -141,8 +156,7 @@ Namespace kCura.Relativity.DataReaderClient
 
 
 		''' <summary>
-		''' Exports the error log file from the import if any errors occurred.
-		''' If no errors occurred, no file is copied.
+		''' Exports the error log file for an import job. This file is written only when errors occur.
 		''' </summary>
 		''' <param name="filePathAndName">The folder path and file name to export the error file</param>
 		Public Sub ExportErrorReport(ByVal filePathAndName As String)
@@ -517,6 +531,12 @@ Namespace kCura.Relativity.DataReaderClient
 			End Set
 		End Property
 
+		''' <summary>
+		''' Represents an instance of the SourceIDataReader, which contains data for import. This property is required.
+		''' </summary>
+		''' <value></value>
+		''' <returns></returns>
+		''' <remarks>For standard imports, the SourceIDataReader requires a generic IDataReader object, and operates as an iterator over a DataTable instance that contains the data source.</remarks>
 		Public Property SourceData() As SourceIDataReader
 			Get
 				Return _nativeDataReader

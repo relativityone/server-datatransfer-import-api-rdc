@@ -2,10 +2,21 @@ Imports System.Net
 
 
 Namespace kCura.Relativity.DataReaderClient
+
+	''' <summary>
+	''' Provides the functionality required to load data for an import job, and to retrieve messages from the OnMessage event.
+	''' </summary>
+	''' <remarks></remarks>
 	Public Class ImageImportBulkArtifactJob
 		Implements IImportNotifier
 
 #Region " Public Events and Variables "
+
+		''' <summary>
+		''' Executes the DataReaderClient, which operates as an iterator over a data source.
+		''' </summary>
+		''' <param name="status"></param>
+		''' <remarks></remarks>
 		Public Event OnMessage(ByVal status As Status)
 		Public Event OnError(ByVal row As IDictionary)
 		Public Event OnComplete(ByVal jobReport As JobReport) Implements IImportNotifier.OnComplete
@@ -21,6 +32,12 @@ Namespace kCura.Relativity.DataReaderClient
 			End Set
 		End Property
 
+		''' <summary>
+		''' Represents an instance of the SourceIDataReader, which contains data for import. This property is required.
+		''' </summary>
+		''' <value></value>
+		''' <returns></returns>
+		''' <remarks>For standard imports, the SourceIDataReader requires a generic IDataReader object, and operates as an iterator over a DataTable instance that contains the data source.</remarks>
 		Public Property SourceData As ImageSourceIDataReader
 			Get
 				Return _sourceData
@@ -57,6 +74,10 @@ Namespace kCura.Relativity.DataReaderClient
 
 		End Sub
 
+		''' <summary>
+		''' Executes the DataReaderClient, which operates as an iterator over a data source.
+		''' </summary>
+		''' <remarks></remarks>
 		Public Sub Execute()
 			_jobReport = New JobReport()
 			_jobReport.StartTime = DateTime.Now()
@@ -319,8 +340,7 @@ Namespace kCura.Relativity.DataReaderClient
 #End Region
 
 		''' <summary>
-		''' ExportErrorReport
-		''' Export the CSV file containing any errors from the import
+		''' Exports the error log file for an import job. This file is written only when errors occur.
 		''' </summary>
 		''' <param name="filePathAndName">Specify a full path and filename which will contain the output.</param>
 		''' <remarks></remarks>

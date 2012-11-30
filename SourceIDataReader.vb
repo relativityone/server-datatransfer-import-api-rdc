@@ -4,8 +4,9 @@ Namespace kCura.Relativity.DataReaderClient
 		Private _sourceData As System.Data.IDataReader
 
 		''' <summary>
-		''' System.Data.IDataReader containing source data
+		''' Represents an instance of the SourceIDataReader, which contains data for import. This property is required.
 		''' </summary>
+		''' <remarks>For standard imports, the SourceIDataReader requires a generic IDataReader object, and operates as an iterator over a DataTable instance that contains the data source.</remarks>
 		Public Property SourceData() As System.Data.IDataReader
 			Get
 				Return _sourceData
