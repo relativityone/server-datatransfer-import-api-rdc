@@ -1,12 +1,12 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<?xml version='1.0' encoding='UTF-8'?>
+<Project DefaultTargets='Build' ToolsVersion='4.0' xmlns='http://schemas.microsoft.com/developer/msbuild/2003'>
   <PropertyGroup>
     <ProjectType>Local</ProjectType>
     <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{94BD2810-9FD8-4EEE-AA2B-590E4BCD4CC0}</ProjectGuid>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <Configuration Condition=' &apos;$(Configuration)&apos; == &apos;&apos; '>Debug</Configuration>
+    <Platform Condition=' &apos;$(Platform)&apos; == &apos;&apos; '>AnyCPU</Platform>
     <ApplicationIcon>
     </ApplicationIcon>
     <AssemblyKeyContainerName>
@@ -35,7 +35,7 @@
     </UpgradeBackupLocation>
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <TargetFrameworkProfile />
+    <TargetFrameworkProfile/>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -51,7 +51,7 @@
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+  <PropertyGroup Condition=' &apos;$(Configuration)|$(Platform)&apos; == &apos;Debug|AnyCPU&apos; '>
     <OutputPath>bin\</OutputPath>
     <DocumentationFile>kCura.Relativity.DataReaderClient.xml</DocumentationFile>
     <BaseAddress>285212672</BaseAddress>
@@ -73,7 +73,7 @@
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
     <WarningsAsErrors>41998,41999,42004,42016,42017,42018,42019,42020,42021,42022,42024,42025,42026,42029,42030,42031,42032,42036,42099,42104,42105,42106,42107,42108,42109,42353,42354,42355</WarningsAsErrors>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+  <PropertyGroup Condition=' &apos;$(Configuration)|$(Platform)&apos; == &apos;Release|AnyCPU&apos; '>
     <OutputPath>bin\</OutputPath>
     <DocumentationFile>kCura.Relativity.DataReaderClient.xml</DocumentationFile>
     <BaseAddress>285212672</BaseAddress>
@@ -95,7 +95,7 @@
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
     <WarningsAsErrors>41998,41999,42004,42016,42017,42018,42019,42020,42021,42022,42024,42025,42026,42029,42030,42031,42032,42036,42099,42104,42105,42106,42107,42108,42109,42353,42354,42355</WarningsAsErrors>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
+  <PropertyGroup Condition=' &apos;$(Configuration)|$(Platform)&apos; == &apos;Debug|x64&apos; '>
     <DebugSymbols>true</DebugSymbols>
     <DefineDebug>true</DefineDebug>
     <DefineTrace>true</DefineTrace>
@@ -111,7 +111,7 @@
     <WarningsAsErrors>41998,41999,42004,42016,42017,42018,42019,42020,42021,42022,42024,42025,42026,42029,42030,42031,42032,42036,42099,42104,42105,42106,42107,42108,42109,42353,42354,42355</WarningsAsErrors>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
+  <PropertyGroup Condition=' &apos;$(Configuration)|$(Platform)&apos; == &apos;Release|x64&apos; '>
     <DefineTrace>true</DefineTrace>
     <OutputPath>bin\x64\Release\</OutputPath>
     <BaseAddress>285212672</BaseAddress>
@@ -126,7 +126,7 @@
     <WarningsAsErrors>41998,41999,42004,42016,42017,42018,42019,42020,42021,42022,42024,42025,42026,42029,42030,42031,42032,42036,42099,42104,42105,42106,42107,42108,42109,42353,42354,42355</WarningsAsErrors>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+  <PropertyGroup Condition=' &apos;$(Configuration)|$(Platform)&apos; == &apos;Debug|x86&apos; '>
     <DebugSymbols>true</DebugSymbols>
     <DefineDebug>true</DefineDebug>
     <DefineTrace>true</DefineTrace>
@@ -142,7 +142,7 @@
     <WarningsAsErrors>41998,41999,42004,42016,42017,42018,42019,42020,42021,42022,42024,42025,42026,42029,42030,42031,42032,42036,42099,42104,42105,42106,42107,42108,42109,42353,42354,42355</WarningsAsErrors>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+  <PropertyGroup Condition=' &apos;$(Configuration)|$(Platform)&apos; == &apos;Release|x86&apos; '>
     <DefineTrace>true</DefineTrace>
     <OutputPath>bin\x86\Release\</OutputPath>
     <BaseAddress>285212672</BaseAddress>
@@ -157,7 +157,7 @@
     <WarningsAsErrors>41998,41999,42004,42016,42017,42018,42019,42020,42021,42022,42024,42025,42026,42029,42030,42031,42032,42036,42099,42104,42105,42106,42107,42108,42109,42353,42354,42355</WarningsAsErrors>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Documentation|AnyCPU'">
+  <PropertyGroup Condition='&apos;$(Configuration)|$(Platform)&apos; == &apos;Documentation|AnyCPU&apos;'>
     <DebugSymbols>true</DebugSymbols>
     <DefineDebug>true</DefineDebug>
     <DefineTrace>true</DefineTrace>
@@ -176,7 +176,7 @@
     <CodeAnalysisRuleSetDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\\Rule Sets</CodeAnalysisRuleSetDirectories>
     <CodeAnalysisRuleDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Documentation|x64'">
+  <PropertyGroup Condition='&apos;$(Configuration)|$(Platform)&apos; == &apos;Documentation|x64&apos;'>
     <DebugSymbols>true</DebugSymbols>
     <DefineDebug>true</DefineDebug>
     <DefineTrace>true</DefineTrace>
@@ -195,7 +195,7 @@
     <CodeAnalysisRuleSetDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\\Rule Sets</CodeAnalysisRuleSetDirectories>
     <CodeAnalysisRuleDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Documentation|x86'">
+  <PropertyGroup Condition='&apos;$(Configuration)|$(Platform)&apos; == &apos;Documentation|x86&apos;'>
     <DebugSymbols>true</DebugSymbols>
     <DefineDebug>true</DefineDebug>
     <DefineTrace>true</DefineTrace>
@@ -215,97 +215,97 @@
     <CodeAnalysisRuleDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System">
+    <Reference Include='System'>
       <Name>System</Name>
     </Reference>
-    <Reference Include="System.Data">
+    <Reference Include='System.Data'>
       <Name>System.Data</Name>
     </Reference>
-    <Reference Include="System.Web.Services" />
-    <Reference Include="System.Xml">
+    <Reference Include='System.Web.Services'/>
+    <Reference Include='System.Xml'>
       <Name>System.XML</Name>
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Import Include="Microsoft.VisualBasic" />
-    <Import Include="System" />
-    <Import Include="System.Collections" />
-    <Import Include="System.Data" />
-    <Import Include="System.Diagnostics" />
+    <Import Include='Microsoft.VisualBasic'/>
+    <Import Include='System'/>
+    <Import Include='System.Collections'/>
+    <Import Include='System.Data'/>
+    <Import Include='System.Diagnostics'/>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\Version\AssemblyInfo.vb">
+    <Compile Include='..\..\Version\AssemblyInfo.vb'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="AssemblyInfoLocal.vb" />
-    <Compile Include="ImportCredentialManager.vb" />
-    <Compile Include="Enum.vb">
+    <Compile Include='..\..\Version\AssemblyInfo.vb'/>
+    <Compile Include='ImportCredentialManager.vb'/>
+    <Compile Include='Enum.vb'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="IImportNotifier.vb" />
-    <Compile Include="ImageImport\ImageImportBulkArtifactJob.vb" />
-    <Compile Include="ImageImport\ImageSettings.vb" />
-    <Compile Include="ImageImport\ImageSourceIDataReader.vb" />
-    <Compile Include="ImportSettingsException.vb" />
-    <Compile Include="ImportLoadFileJob.vb" />
-    <Compile Include="ImportSettingsBase.vb" />
-    <Compile Include="ImportCredentialException.vb" />
-    <Compile Include="JobReport.vb" />
-    <Compile Include="Settings.vb" />
-    <Compile Include="SourceIDataReader.vb" />
-    <Compile Include="Status.vb">
+    <Compile Include='IImportNotifier.vb'/>
+    <Compile Include='ImageImport\ImageImportBulkArtifactJob.vb'/>
+    <Compile Include='ImageImport\ImageSettings.vb'/>
+    <Compile Include='ImageImport\ImageSourceIDataReader.vb'/>
+    <Compile Include='ImportSettingsException.vb'/>
+    <Compile Include='ImportLoadFileJob.vb'/>
+    <Compile Include='ImportSettingsBase.vb'/>
+    <Compile Include='ImportCredentialException.vb'/>
+    <Compile Include='JobReport.vb'/>
+    <Compile Include='Settings.vb'/>
+    <Compile Include='SourceIDataReader.vb'/>
+    <Compile Include='Status.vb'>
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+    <BootstrapperPackage Include='Microsoft.Net.Client.3.5'>
       <Visible>False</Visible>
       <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Net.Framework.2.0">
+    <BootstrapperPackage Include='Microsoft.Net.Framework.2.0'>
       <Visible>False</Visible>
       <ProductName>.NET Framework 2.0 %28x86%29</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Net.Framework.3.0">
+    <BootstrapperPackage Include='Microsoft.Net.Framework.3.0'>
       <Visible>False</Visible>
       <ProductName>.NET Framework 3.0 %28x86%29</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5">
+    <BootstrapperPackage Include='Microsoft.Net.Framework.3.5'>
       <Visible>False</Visible>
       <ProductName>.NET Framework 3.5</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+    <BootstrapperPackage Include='Microsoft.Net.Framework.3.5.SP1'>
       <Visible>False</Visible>
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="My Project\" />
+    <Folder Include='My Project\'/>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\kCura\kCura.Windows.Process\kCura.Windows.Process.vbproj">
+    <ProjectReference Include='..\..\kCura\kCura.Windows.Process\kCura.Windows.Process.vbproj'>
       <Project>{B092D1B2-909B-4EF0-9369-A81675C3FC18}</Project>
       <Name>kCura.Windows.Process</Name>
     </ProjectReference>
-    <ProjectReference Include="..\kCura.WinEDDS.ImportExtension\kCura.WinEDDS.ImportExtension.vbproj">
+    <ProjectReference Include='..\kCura.WinEDDS.ImportExtension\kCura.WinEDDS.ImportExtension.vbproj'>
       <Project>{86550F4B-BEF4-4458-9536-7B5C6F68B0E2}</Project>
       <Name>kCura.WinEDDS.ImportExtension</Name>
     </ProjectReference>
-    <ProjectReference Include="..\kCura.WinEDDS\kCura.WinEDDS.vbproj">
+    <ProjectReference Include='..\kCura.WinEDDS\kCura.WinEDDS.vbproj'>
       <Project>{F16A2219-5DAC-4F2B-89B0-6BD1243CBF8F}</Project>
       <Name>kCura.WinEDDS</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Relativity\Relativity.vbproj">
+    <ProjectReference Include='..\Relativity\Relativity.vbproj'>
       <Project>{044A6424-BC90-46CE-8805-0053A44AFCAB}</Project>
       <Name>Relativity</Name>
     </ProjectReference>
   </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.VisualBasic.targets" />
+  <Import Project='$(MSBuildBinPath)\Microsoft.VisualBasic.targets'/>
   <PropertyGroup>
     <PreBuildEvent>
     </PreBuildEvent>
