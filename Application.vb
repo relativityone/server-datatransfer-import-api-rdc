@@ -830,7 +830,7 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 		Public Sub NewSearchExport(ByVal selectedFolderId As Int32, ByVal caseInfo As Relativity.CaseInfo, ByVal typeOfExport As kCura.WinEDDS.ExportFile.ExportType)
-			Dim frm As New ExportForm
+			Dim frm As ExportForm = New ExportForm()
 			Dim exportFile As WinEDDS.ExportFile
 			Try
 				exportFile = Me.GetNewExportFileSettingsObject(selectedFolderId, caseInfo, typeOfExport, Me.ArtifactTypeID)
