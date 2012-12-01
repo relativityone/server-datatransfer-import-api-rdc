@@ -361,7 +361,6 @@
     <Compile Include="RichTextBox.vb">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Specialized\Class1.vb" />
     <Compile Include="Specialized\HighlightItemEventArgs.vb" />
     <Compile Include="Specialized\LayoutPropertyType.vb" />
     <Compile Include="Specialized\ListBox.vb">
