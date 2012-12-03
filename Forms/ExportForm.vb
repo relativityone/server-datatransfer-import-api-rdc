@@ -307,7 +307,7 @@ Public Class ExportForm
 		Me.Label5.Location = New System.Drawing.Point(20, 18)
 		Me.Label5.Name = "Label5"
 		Me.Label5.Size = New System.Drawing.Size(96, 21)
-		Me.Label5.TabIndex = 18
+		Me.Label5.TabIndex = 30
 		Me.Label5.Text = "Named after:"
 		Me.Label5.TextAlign = System.Drawing.ContentAlignment.MiddleRight
 		'
@@ -318,7 +318,7 @@ Public Class ExportForm
 		Me._nativeFileNameSource.Location = New System.Drawing.Point(116, 18)
 		Me._nativeFileNameSource.Name = "_nativeFileNameSource"
 		Me._nativeFileNameSource.Size = New System.Drawing.Size(176, 21)
-		Me._nativeFileNameSource.TabIndex = 19
+		Me._nativeFileNameSource.TabIndex = 30
 		Me._nativeFileNameSource.Visible = False
 		'
 		'_appendOriginalFilename
@@ -326,7 +326,7 @@ Public Class ExportForm
 		Me._appendOriginalFilename.Location = New System.Drawing.Point(12, 44)
 		Me._appendOriginalFilename.Name = "_appendOriginalFilename"
 		Me._appendOriginalFilename.Size = New System.Drawing.Size(148, 16)
-		Me._appendOriginalFilename.TabIndex = 17
+		Me._appendOriginalFilename.TabIndex = 31
 		Me._appendOriginalFilename.Text = "Append original filename"
 		'
 		'_overwriteButton
@@ -334,7 +334,7 @@ Public Class ExportForm
 		Me._overwriteCheckBox.Location = New System.Drawing.Point(8, 48)
 		Me._overwriteCheckBox.Name = "_overwriteButton"
 		Me._overwriteCheckBox.Size = New System.Drawing.Size(100, 16)
-		Me._overwriteCheckBox.TabIndex = 7
+		Me._overwriteCheckBox.TabIndex = 3
 		Me._overwriteCheckBox.Text = "Overwrite Files"
 		'
 		'_browseButton
@@ -342,7 +342,7 @@ Public Class ExportForm
 		Me._browseButton.Location = New System.Drawing.Point(388, 20)
 		Me._browseButton.Name = "_browseButton"
 		Me._browseButton.Size = New System.Drawing.Size(24, 20)
-		Me._browseButton.TabIndex = 6
+		Me._browseButton.TabIndex = 2
 		Me._browseButton.Text = "..."
 		'
 		'_folderPath
@@ -351,7 +351,7 @@ Public Class ExportForm
 		Me._folderPath.Location = New System.Drawing.Point(8, 20)
 		Me._folderPath.Name = "_folderPath"
 		Me._folderPath.Size = New System.Drawing.Size(380, 20)
-		Me._folderPath.TabIndex = 5
+		Me._folderPath.TabIndex = 1
 		Me._folderPath.Text = "Select a folder ..."
 		'
 		'GroupBox3
@@ -362,7 +362,7 @@ Public Class ExportForm
 		Me.GroupBox3.Location = New System.Drawing.Point(8, 4)
 		Me.GroupBox3.Name = "GroupBox3"
 		Me.GroupBox3.Size = New System.Drawing.Size(424, 72)
-		Me.GroupBox3.TabIndex = 11
+		Me.GroupBox3.TabIndex = 0
 		Me.GroupBox3.TabStop = False
 		Me.GroupBox3.Text = "Export Location"
 		'
@@ -476,7 +476,7 @@ Public Class ExportForm
 		Me.GroupBox6.Location = New System.Drawing.Point(436, 4)
 		Me.GroupBox6.Name = "GroupBox6"
 		Me.GroupBox6.Size = New System.Drawing.Size(324, 68)
-		Me.GroupBox6.TabIndex = 26
+		Me.GroupBox6.TabIndex = 29
 		Me.GroupBox6.TabStop = False
 		Me.GroupBox6.Text = "Text and Native File Names"
 		'
@@ -495,7 +495,7 @@ Public Class ExportForm
 		Me._metadataGroup.Location = New System.Drawing.Point(436, 236)
 		Me._metadataGroup.Name = "_metadataGroup"
 		Me._metadataGroup.Size = New System.Drawing.Size(324, 184)
-		Me._metadataGroup.TabIndex = 25
+		Me._metadataGroup.TabIndex = 39
 		Me._metadataGroup.TabStop = False
 		Me._metadataGroup.Text = "Metadata"
 		'
@@ -504,28 +504,28 @@ Public Class ExportForm
 		Me.Label21.Location = New System.Drawing.Point(8, 125)
 		Me.Label21.Name = "Label21"
 		Me.Label21.Size = New System.Drawing.Size(107, 21)
-		Me.Label21.TabIndex = 21
+		Me.Label21.TabIndex = 44
 		Me.Label21.Text = "Text Precedence:"
 		Me.Label21.TextAlign = System.Drawing.ContentAlignment.MiddleRight
 		'_textFieldPrecedencePicker
 		Me._textFieldPrecedencePicker.Location = New System.Drawing.Point(116, 125)
 		Me._textFieldPrecedencePicker.Name = "_textFieldPrecedencePicker"
 		Me._textFieldPrecedencePicker.Size = New System.Drawing.Size(175, 21)
-		Me._textFieldPrecedencePicker.TabIndex = 20
+		Me._textFieldPrecedencePicker.TabIndex = 44
 		'
 		'_textFileEncoding
 		'
 		Me._textFileEncoding.Location = New System.Drawing.Point(116, 100)
 		Me._textFileEncoding.Name = "_textFileEncoding"
 		Me._textFileEncoding.Size = New System.Drawing.Size(200, 21)
-		Me._textFileEncoding.TabIndex = 19
+		Me._textFileEncoding.TabIndex = 43
 		'
 		'Label20
 		'
 		Me.Label20.Location = New System.Drawing.Point(12, 100)
 		Me.Label20.Name = "Label20"
 		Me.Label20.Size = New System.Drawing.Size(104, 21)
-		Me.Label20.TabIndex = 18
+		Me.Label20.TabIndex = 43
 		Me.Label20.Text = "Text File Encoding:"
 		Me.Label20.TextAlign = System.Drawing.ContentAlignment.MiddleRight
 		'
@@ -534,7 +534,7 @@ Public Class ExportForm
 		Me.Label19.Location = New System.Drawing.Point(12, 48)
 		Me.Label19.Name = "Label19"
 		Me.Label19.Size = New System.Drawing.Size(104, 21)
-		Me.Label19.TabIndex = 17
+		Me.Label19.TabIndex = 41
 		Me.Label19.Text = "Data File Encoding:"
 		Me.Label19.TextAlign = System.Drawing.ContentAlignment.MiddleRight
 		'
@@ -543,14 +543,14 @@ Public Class ExportForm
 		Me._dataFileEncoding.Location = New System.Drawing.Point(116, 48)
 		Me._dataFileEncoding.Name = "_dataFileEncoding"
 		Me._dataFileEncoding.Size = New System.Drawing.Size(200, 21)
-		Me._dataFileEncoding.TabIndex = 16
+		Me._dataFileEncoding.TabIndex = 41
 		'
 		'Label1
 		'
 		Me.Label1.Location = New System.Drawing.Point(24, 20)
 		Me.Label1.Name = "Label1"
 		Me.Label1.Size = New System.Drawing.Size(92, 21)
-		Me.Label1.TabIndex = 15
+		Me.Label1.TabIndex = 40
 		Me.Label1.Text = "Data File Format:"
 		Me.Label1.TextAlign = System.Drawing.ContentAlignment.MiddleRight
 		'
@@ -561,14 +561,14 @@ Public Class ExportForm
 		Me._nativeFileFormat.Location = New System.Drawing.Point(116, 20)
 		Me._nativeFileFormat.Name = "_nativeFileFormat"
 		Me._nativeFileFormat.Size = New System.Drawing.Size(176, 21)
-		Me._nativeFileFormat.TabIndex = 14
+		Me._nativeFileFormat.TabIndex = 40
 		'
 		'_exportMulticodeFieldsAsNested
 		'
 		Me._exportMulticodeFieldsAsNested.Location = New System.Drawing.Point(12, 156)
 		Me._exportMulticodeFieldsAsNested.Name = "_exportMulticodeFieldsAsNested"
 		Me._exportMulticodeFieldsAsNested.Size = New System.Drawing.Size(228, 20)
-		Me._exportMulticodeFieldsAsNested.TabIndex = 8
+		Me._exportMulticodeFieldsAsNested.TabIndex = 45
 		Me._exportMulticodeFieldsAsNested.Text = "Export Multiple Choice Fields as Nested"
 		'
 		'_exportFullTextAsFile
@@ -576,7 +576,7 @@ Public Class ExportForm
 		Me._exportFullTextAsFile.Location = New System.Drawing.Point(12, 76)
 		Me._exportFullTextAsFile.Name = "_exportFullTextAsFile"
 		Me._exportFullTextAsFile.Size = New System.Drawing.Size(196, 20)
-		Me._exportFullTextAsFile.TabIndex = 7
+		Me._exportFullTextAsFile.TabIndex = 42
 		Me._exportFullTextAsFile.Text = "Export Text Field as Files"
 		'
 		'GroupBox4
@@ -585,7 +585,7 @@ Public Class ExportForm
 		Me.GroupBox4.Location = New System.Drawing.Point(436, 184)
 		Me.GroupBox4.Name = "GroupBox4"
 		Me.GroupBox4.Size = New System.Drawing.Size(324, 48)
-		Me.GroupBox4.TabIndex = 24
+		Me.GroupBox4.TabIndex = 36
 		Me.GroupBox4.TabStop = False
 		Me.GroupBox4.Text = "Native "
 		'
@@ -596,7 +596,7 @@ Public Class ExportForm
 		Me._exportNativeFiles.Location = New System.Drawing.Point(12, 20)
 		Me._exportNativeFiles.Name = "_exportNativeFiles"
 		Me._exportNativeFiles.Size = New System.Drawing.Size(300, 20)
-		Me._exportNativeFiles.TabIndex = 11
+		Me._exportNativeFiles.TabIndex = 37
 		Me._exportNativeFiles.Text = "Export Native Files"
 		'
 		'GroupBox2
@@ -609,7 +609,7 @@ Public Class ExportForm
 		Me.GroupBox2.Location = New System.Drawing.Point(436, 76)
 		Me.GroupBox2.Name = "GroupBox2"
 		Me.GroupBox2.Size = New System.Drawing.Size(324, 104)
-		Me.GroupBox2.TabIndex = 23
+		Me.GroupBox2.TabIndex = 32
 		Me.GroupBox2.TabStop = False
 		Me.GroupBox2.Text = "Image "
 		'
@@ -618,7 +618,7 @@ Public Class ExportForm
 		Me.Label17.Location = New System.Drawing.Point(24, 76)
 		Me.Label17.Name = "Label17"
 		Me.Label17.Size = New System.Drawing.Size(92, 21)
-		Me.Label17.TabIndex = 19
+		Me.Label17.TabIndex = 35
 		Me.Label17.Text = "File Type:"
 		Me.Label17.TextAlign = System.Drawing.ContentAlignment.MiddleRight
 		'
@@ -629,7 +629,7 @@ Public Class ExportForm
 		Me._exportImages.Location = New System.Drawing.Point(12, 20)
 		Me._exportImages.Name = "_exportImages"
 		Me._exportImages.Size = New System.Drawing.Size(96, 20)
-		Me._exportImages.TabIndex = 18
+		Me._exportImages.TabIndex = 33
 		Me._exportImages.Text = "Export Images"
 		'
 		'_imageFileFormat
@@ -639,14 +639,14 @@ Public Class ExportForm
 		Me._imageFileFormat.Location = New System.Drawing.Point(116, 48)
 		Me._imageFileFormat.Name = "_imageFileFormat"
 		Me._imageFileFormat.Size = New System.Drawing.Size(176, 21)
-		Me._imageFileFormat.TabIndex = 11
+		Me._imageFileFormat.TabIndex = 34
 		'
 		'Label12
 		'
 		Me.Label12.Location = New System.Drawing.Point(24, 48)
 		Me.Label12.Name = "Label12"
 		Me.Label12.Size = New System.Drawing.Size(92, 21)
-		Me.Label12.TabIndex = 12
+		Me.Label12.TabIndex = 34
 		Me.Label12.Text = "Data File Format:"
 		Me.Label12.TextAlign = System.Drawing.ContentAlignment.MiddleRight
 		'
@@ -658,7 +658,7 @@ Public Class ExportForm
 		Me._imageTypeDropdown.Location = New System.Drawing.Point(116, 76)
 		Me._imageTypeDropdown.Name = "_imageTypeDropdown"
 		Me._imageTypeDropdown.Size = New System.Drawing.Size(176, 21)
-		Me._imageTypeDropdown.TabIndex = 17
+		Me._imageTypeDropdown.TabIndex = 35
 		'
 		'GroupBox1
 		'
@@ -666,7 +666,7 @@ Public Class ExportForm
 		Me.GroupBox1.Location = New System.Drawing.Point(8, 84)
 		Me.GroupBox1.Name = "GroupBox1"
 		Me.GroupBox1.Size = New System.Drawing.Size(212, 48)
-		Me.GroupBox1.TabIndex = 22
+		Me.GroupBox1.TabIndex = 4
 		Me.GroupBox1.TabStop = False
 		Me.GroupBox1.Text = "Physical File Export"
 		'
@@ -677,7 +677,7 @@ Public Class ExportForm
 		Me._copyFilesFromRepository.Location = New System.Drawing.Point(12, 20)
 		Me._copyFilesFromRepository.Name = "_copyFilesFromRepository"
 		Me._copyFilesFromRepository.Size = New System.Drawing.Size(164, 16)
-		Me._copyFilesFromRepository.TabIndex = 0
+		Me._copyFilesFromRepository.TabIndex = 5
 		Me._copyFilesFromRepository.Text = "Copy Files From Repository"
 		'
 		'_subDirectoryInformationGroupBox
@@ -697,7 +697,7 @@ Public Class ExportForm
 		Me._subDirectoryInformationGroupBox.Location = New System.Drawing.Point(8, 256)
 		Me._subDirectoryInformationGroupBox.Name = "_subDirectoryInformationGroupBox"
 		Me._subDirectoryInformationGroupBox.Size = New System.Drawing.Size(212, 164)
-		Me._subDirectoryInformationGroupBox.TabIndex = 21
+		Me._subDirectoryInformationGroupBox.TabIndex = 11
 		Me._subDirectoryInformationGroupBox.TabStop = False
 		Me._subDirectoryInformationGroupBox.Text = "Subdirectory Information"
 		'
@@ -708,7 +708,7 @@ Public Class ExportForm
 		Me._subdirectoryDigitPadding.Minimum = New Decimal(New Integer() {1, 0, 0, 0})
 		Me._subdirectoryDigitPadding.Name = "_subdirectoryDigitPadding"
 		Me._subdirectoryDigitPadding.Size = New System.Drawing.Size(44, 20)
-		Me._subdirectoryDigitPadding.TabIndex = 24
+		Me._subdirectoryDigitPadding.TabIndex = 4
 		Me._subdirectoryDigitPadding.Value = New Decimal(New Integer() {1, 0, 0, 0})
 		'
 		'Label23
@@ -717,7 +717,7 @@ Public Class ExportForm
 		Me.Label23.Location = New System.Drawing.Point(104, 104)
 		Me.Label23.Name = "Label23"
 		Me.Label23.Size = New System.Drawing.Size(56, 20)
-		Me.Label23.TabIndex = 23
+		Me.Label23.TabIndex = 9
 		Me.Label23.Text = "# of digits:"
 		Me.Label23.TextAlign = System.Drawing.ContentAlignment.MiddleRight
 		'
@@ -727,7 +727,7 @@ Public Class ExportForm
 		Me._subdirectoryTextPrefix.Location = New System.Drawing.Point(116, 76)
 		Me._subdirectoryTextPrefix.Name = "_subdirectoryTextPrefix"
 		Me._subdirectoryTextPrefix.Size = New System.Drawing.Size(88, 20)
-		Me._subdirectoryTextPrefix.TabIndex = 22
+		Me._subdirectoryTextPrefix.TabIndex = 2
 		Me._subdirectoryTextPrefix.Text = "TEXT"
 		'
 		'Label8
@@ -736,7 +736,7 @@ Public Class ExportForm
 		Me.Label8.Location = New System.Drawing.Point(36, 76)
 		Me.Label8.Name = "Label8"
 		Me.Label8.Size = New System.Drawing.Size(80, 20)
-		Me.Label8.TabIndex = 21
+		Me.Label8.TabIndex = 14
 		Me.Label8.Text = "Text Prefix: "
 		Me.Label8.TextAlign = System.Drawing.ContentAlignment.MiddleRight
 		'
@@ -746,7 +746,7 @@ Public Class ExportForm
 		Me._subDirectoryNativePrefix.Location = New System.Drawing.Point(116, 48)
 		Me._subDirectoryNativePrefix.Name = "_subDirectoryNativePrefix"
 		Me._subDirectoryNativePrefix.Size = New System.Drawing.Size(88, 20)
-		Me._subDirectoryNativePrefix.TabIndex = 20
+		Me._subDirectoryNativePrefix.TabIndex = 1
 		Me._subDirectoryNativePrefix.Text = "NATIVE"
 		'
 		'Label13
@@ -755,7 +755,7 @@ Public Class ExportForm
 		Me.Label13.Location = New System.Drawing.Point(44, 48)
 		Me.Label13.Name = "Label13"
 		Me.Label13.Size = New System.Drawing.Size(72, 20)
-		Me.Label13.TabIndex = 19
+		Me.Label13.TabIndex = 13
 		Me.Label13.Text = "Native Prefix: "
 		Me.Label13.TextAlign = System.Drawing.ContentAlignment.MiddleRight
 		'
@@ -765,7 +765,7 @@ Public Class ExportForm
 		Me._subDirectoryMaxSize.Maximum = New Decimal(New Integer() {2000000, 0, 0, 0})
 		Me._subDirectoryMaxSize.Name = "_subDirectoryMaxSize"
 		Me._subDirectoryMaxSize.Size = New System.Drawing.Size(88, 20)
-		Me._subDirectoryMaxSize.TabIndex = 17
+		Me._subDirectoryMaxSize.TabIndex = 5
 		Me._subDirectoryMaxSize.Value = New Decimal(New Integer() {500, 0, 0, 0})
 		'
 		'_subdirectoryStartNumber
@@ -774,7 +774,7 @@ Public Class ExportForm
 		Me._subdirectoryStartNumber.Maximum = New Decimal(New Integer() {2000000, 0, 0, 0})
 		Me._subdirectoryStartNumber.Name = "_subdirectoryStartNumber"
 		Me._subdirectoryStartNumber.Size = New System.Drawing.Size(44, 20)
-		Me._subdirectoryStartNumber.TabIndex = 16
+		Me._subdirectoryStartNumber.TabIndex = 3
 		Me._subdirectoryStartNumber.Value = New Decimal(New Integer() {1, 0, 0, 0})
 		'
 		'Label9
@@ -783,7 +783,7 @@ Public Class ExportForm
 		Me.Label9.Location = New System.Drawing.Point(56, 132)
 		Me.Label9.Name = "Label9"
 		Me.Label9.Size = New System.Drawing.Size(60, 20)
-		Me.Label9.TabIndex = 15
+		Me.Label9.TabIndex = 17
 		Me.Label9.Text = "Max Files:"
 		Me.Label9.TextAlign = System.Drawing.ContentAlignment.MiddleRight
 		'
@@ -793,7 +793,7 @@ Public Class ExportForm
 		Me.Label10.Location = New System.Drawing.Point(8, 104)
 		Me.Label10.Name = "Label10"
 		Me.Label10.Size = New System.Drawing.Size(44, 20)
-		Me.Label10.TabIndex = 14
+		Me.Label10.TabIndex = 15
 		Me.Label10.Text = "Start #:"
 		Me.Label10.TextAlign = System.Drawing.ContentAlignment.MiddleRight
 		'
@@ -803,7 +803,7 @@ Public Class ExportForm
 		Me.Label11.Location = New System.Drawing.Point(44, 20)
 		Me.Label11.Name = "Label11"
 		Me.Label11.Size = New System.Drawing.Size(72, 20)
-		Me.Label11.TabIndex = 13
+		Me.Label11.TabIndex = 12
 		Me.Label11.Text = "Image Prefix: "
 		Me.Label11.TextAlign = System.Drawing.ContentAlignment.MiddleRight
 		'
@@ -813,7 +813,7 @@ Public Class ExportForm
 		Me._subdirectoryImagePrefix.Location = New System.Drawing.Point(116, 20)
 		Me._subdirectoryImagePrefix.Name = "_subdirectoryImagePrefix"
 		Me._subdirectoryImagePrefix.Size = New System.Drawing.Size(88, 20)
-		Me._subdirectoryImagePrefix.TabIndex = 12
+		Me._subdirectoryImagePrefix.TabIndex = 0
 		Me._subdirectoryImagePrefix.Text = "IMG"
 		'
 		'_volumeInformationGroupBox
@@ -829,7 +829,7 @@ Public Class ExportForm
 		Me._volumeInformationGroupBox.Location = New System.Drawing.Point(8, 140)
 		Me._volumeInformationGroupBox.Name = "_volumeInformationGroupBox"
 		Me._volumeInformationGroupBox.Size = New System.Drawing.Size(212, 108)
-		Me._volumeInformationGroupBox.TabIndex = 20
+		Me._volumeInformationGroupBox.TabIndex = 6
 		Me._volumeInformationGroupBox.TabStop = False
 		Me._volumeInformationGroupBox.Text = "Volume Information"
 		'
@@ -840,7 +840,7 @@ Public Class ExportForm
 		Me._volumeDigitPadding.Minimum = New Decimal(New Integer() {1, 0, 0, 0})
 		Me._volumeDigitPadding.Name = "_volumeDigitPadding"
 		Me._volumeDigitPadding.Size = New System.Drawing.Size(44, 20)
-		Me._volumeDigitPadding.TabIndex = 13
+		Me._volumeDigitPadding.TabIndex = 2
 		Me._volumeDigitPadding.Value = New Decimal(New Integer() {1, 0, 0, 0})
 		'
 		'Label22
@@ -849,7 +849,7 @@ Public Class ExportForm
 		Me.Label22.Location = New System.Drawing.Point(104, 48)
 		Me.Label22.Name = "Label22"
 		Me.Label22.Size = New System.Drawing.Size(56, 20)
-		Me.Label22.TabIndex = 12
+		Me.Label22.TabIndex = 16
 		Me.Label22.Text = "# of digits:"
 		Me.Label22.TextAlign = System.Drawing.ContentAlignment.MiddleRight
 		'
@@ -859,7 +859,7 @@ Public Class ExportForm
 		Me._volumeMaxSize.Maximum = New Decimal(New Integer() {2000000, 0, 0, 0})
 		Me._volumeMaxSize.Name = "_volumeMaxSize"
 		Me._volumeMaxSize.Size = New System.Drawing.Size(88, 20)
-		Me._volumeMaxSize.TabIndex = 11
+		Me._volumeMaxSize.TabIndex = 3
 		Me._volumeMaxSize.Value = New Decimal(New Integer() {650, 0, 0, 0})
 		'
 		'_volumeStartNumber
@@ -868,7 +868,7 @@ Public Class ExportForm
 		Me._volumeStartNumber.Maximum = New Decimal(New Integer() {2000000, 0, 0, 0})
 		Me._volumeStartNumber.Name = "_volumeStartNumber"
 		Me._volumeStartNumber.Size = New System.Drawing.Size(44, 20)
-		Me._volumeStartNumber.TabIndex = 10
+		Me._volumeStartNumber.TabIndex = 1
 		Me._volumeStartNumber.Value = New Decimal(New Integer() {1, 0, 0, 0})
 		'
 		'Label14
@@ -877,7 +877,7 @@ Public Class ExportForm
 		Me.Label14.Location = New System.Drawing.Point(32, 76)
 		Me.Label14.Name = "Label14"
 		Me.Label14.Size = New System.Drawing.Size(82, 20)
-		Me.Label14.TabIndex = 9
+		Me.Label14.TabIndex = 10
 		Me.Label14.Text = "Max Size (MB):"
 		Me.Label14.TextAlign = System.Drawing.ContentAlignment.MiddleRight
 		'
@@ -907,7 +907,7 @@ Public Class ExportForm
 		Me._volumePrefix.Location = New System.Drawing.Point(116, 20)
 		Me._volumePrefix.Name = "_volumePrefix"
 		Me._volumePrefix.Size = New System.Drawing.Size(88, 20)
-		Me._volumePrefix.TabIndex = 6
+		Me._volumePrefix.TabIndex = 0
 		Me._volumePrefix.Text = "VOL"
 		'
 		'GroupBox23
@@ -919,7 +919,7 @@ Public Class ExportForm
 		Me.GroupBox23.Location = New System.Drawing.Point(224, 84)
 		Me.GroupBox23.Name = "GroupBox23"
 		Me.GroupBox23.Size = New System.Drawing.Size(208, 120)
-		Me.GroupBox23.TabIndex = 12
+		Me.GroupBox23.TabIndex = 18
 		Me.GroupBox23.TabStop = False
 		Me.GroupBox23.Text = "File Path"
 		'
@@ -929,7 +929,7 @@ Public Class ExportForm
 		Me._prefixText.Location = New System.Drawing.Point(88, 80)
 		Me._prefixText.Name = "_prefixText"
 		Me._prefixText.Size = New System.Drawing.Size(112, 20)
-		Me._prefixText.TabIndex = 16
+		Me._prefixText.TabIndex = 22
 		Me._prefixText.Text = ""
 		'
 		'_usePrefix
@@ -937,7 +937,7 @@ Public Class ExportForm
 		Me._usePrefix.Location = New System.Drawing.Point(12, 84)
 		Me._usePrefix.Name = "_usePrefix"
 		Me._usePrefix.Size = New System.Drawing.Size(76, 16)
-		Me._usePrefix.TabIndex = 15
+		Me._usePrefix.TabIndex = 21
 		Me._usePrefix.Text = "Use Prefix"
 		'
 		'_useAbsolutePaths
@@ -945,7 +945,7 @@ Public Class ExportForm
 		Me._useAbsolutePaths.Location = New System.Drawing.Point(12, 52)
 		Me._useAbsolutePaths.Name = "_useAbsolutePaths"
 		Me._useAbsolutePaths.Size = New System.Drawing.Size(124, 16)
-		Me._useAbsolutePaths.TabIndex = 14
+		Me._useAbsolutePaths.TabIndex = 20
 		Me._useAbsolutePaths.Text = "Use Absolute Paths"
 		'
 		'_useRelativePaths
@@ -954,7 +954,7 @@ Public Class ExportForm
 		Me._useRelativePaths.Location = New System.Drawing.Point(12, 20)
 		Me._useRelativePaths.Name = "_useRelativePaths"
 		Me._useRelativePaths.Size = New System.Drawing.Size(124, 16)
-		Me._useRelativePaths.TabIndex = 13
+		Me._useRelativePaths.TabIndex = 19
 		Me._useRelativePaths.TabStop = True
 		Me._useRelativePaths.Text = "Use Relative Paths"
 		'
@@ -973,7 +973,7 @@ Public Class ExportForm
 		Me._loadFileCharacterInformation.Location = New System.Drawing.Point(224, 212)
 		Me._loadFileCharacterInformation.Name = "_loadFileCharacterInformation"
 		Me._loadFileCharacterInformation.Size = New System.Drawing.Size(208, 208)
-		Me._loadFileCharacterInformation.TabIndex = 15
+		Me._loadFileCharacterInformation.TabIndex = 23
 		Me._loadFileCharacterInformation.TabStop = False
 		Me._loadFileCharacterInformation.Text = "Load File Characters"
 		'
@@ -982,7 +982,7 @@ Public Class ExportForm
 		Me.Label7.Location = New System.Drawing.Point(8, 168)
 		Me.Label7.Name = "Label7"
 		Me.Label7.Size = New System.Drawing.Size(76, 21)
-		Me.Label7.TabIndex = 17
+		Me.Label7.TabIndex = 28
 		Me.Label7.Text = "Nested Value:"
 		Me.Label7.TextAlign = System.Drawing.ContentAlignment.MiddleRight
 		'
@@ -993,7 +993,7 @@ Public Class ExportForm
 		Me._nestedValueDelimiter.Location = New System.Drawing.Point(84, 168)
 		Me._nestedValueDelimiter.Name = "_nestedValueDelimiter"
 		Me._nestedValueDelimiter.Size = New System.Drawing.Size(116, 21)
-		Me._nestedValueDelimiter.TabIndex = 16
+		Me._nestedValueDelimiter.TabIndex = 28
 		'
 		'_multiRecordDelimiter
 		'
@@ -1002,14 +1002,14 @@ Public Class ExportForm
 		Me._multiRecordDelimiter.Location = New System.Drawing.Point(84, 132)
 		Me._multiRecordDelimiter.Name = "_multiRecordDelimiter"
 		Me._multiRecordDelimiter.Size = New System.Drawing.Size(116, 21)
-		Me._multiRecordDelimiter.TabIndex = 15
+		Me._multiRecordDelimiter.TabIndex = 27
 		'
 		'Label6
 		'
 		Me.Label6.Location = New System.Drawing.Point(8, 132)
 		Me.Label6.Name = "Label6"
 		Me.Label6.Size = New System.Drawing.Size(76, 21)
-		Me.Label6.TabIndex = 14
+		Me.Label6.TabIndex = 27
 		Me.Label6.Text = "Multi-Value:"
 		Me.Label6.TextAlign = System.Drawing.ContentAlignment.MiddleRight
 		'
@@ -1019,7 +1019,7 @@ Public Class ExportForm
 		Me.Label4.Location = New System.Drawing.Point(8, 60)
 		Me.Label4.Name = "Label4"
 		Me.Label4.Size = New System.Drawing.Size(76, 21)
-		Me.Label4.TabIndex = 13
+		Me.Label4.TabIndex = 25
 		Me.Label4.Text = "Quote:"
 		Me.Label4.TextAlign = System.Drawing.ContentAlignment.MiddleRight
 		'
@@ -1030,14 +1030,14 @@ Public Class ExportForm
 		Me._quoteDelimiter.Location = New System.Drawing.Point(84, 60)
 		Me._quoteDelimiter.Name = "_quoteDelimiter"
 		Me._quoteDelimiter.Size = New System.Drawing.Size(116, 21)
-		Me._quoteDelimiter.TabIndex = 12
+		Me._quoteDelimiter.TabIndex = 25
 		'
 		'Label3
 		'
 		Me.Label3.Location = New System.Drawing.Point(8, 96)
 		Me.Label3.Name = "Label3"
 		Me.Label3.Size = New System.Drawing.Size(76, 21)
-		Me.Label3.TabIndex = 11
+		Me.Label3.TabIndex = 26
 		Me.Label3.Text = "Newline:"
 		Me.Label3.TextAlign = System.Drawing.ContentAlignment.MiddleRight
 		'
@@ -1048,14 +1048,14 @@ Public Class ExportForm
 		Me._newLineDelimiter.Location = New System.Drawing.Point(84, 96)
 		Me._newLineDelimiter.Name = "_newLineDelimiter"
 		Me._newLineDelimiter.Size = New System.Drawing.Size(116, 21)
-		Me._newLineDelimiter.TabIndex = 10
+		Me._newLineDelimiter.TabIndex = 26
 		'
 		'Label2
 		'
 		Me.Label2.Location = New System.Drawing.Point(8, 24)
 		Me.Label2.Name = "Label2"
 		Me.Label2.Size = New System.Drawing.Size(76, 21)
-		Me.Label2.TabIndex = 9
+		Me.Label2.TabIndex = 24
 		Me.Label2.Text = "Column:"
 		Me.Label2.TextAlign = System.Drawing.ContentAlignment.MiddleRight
 		'
@@ -1066,7 +1066,7 @@ Public Class ExportForm
 		Me._recordDelimiter.Location = New System.Drawing.Point(84, 24)
 		Me._recordDelimiter.Name = "_recordDelimiter"
 		Me._recordDelimiter.Size = New System.Drawing.Size(116, 21)
-		Me._recordDelimiter.TabIndex = 8
+		Me._recordDelimiter.TabIndex = 24
 		'
 		'_saveExportSettingsDialog
 		'
