@@ -12,7 +12,7 @@ Namespace kCura.Relativity.DataReaderClient
 
 #Region "Properties"
 		''' <summary>
-		''' ArtifactTypeId of the destination Relativity dynamic object
+		''' Indicates the ArtifactTypeId of the destination object. This property is required.
 		''' </summary>
 		Public Property ArtifactTypeId() As Int32
 
@@ -30,24 +30,26 @@ Namespace kCura.Relativity.DataReaderClient
 		Public Property DisableControlNumberCompatibilityMode() As Boolean
 
 		''' <summary>
-		''' If true, will not check to see if the specified extracted text file exists.
+		''' Enables or disables validation of the extracted text file location. 
 		''' </summary>
+		''' <remarks>Set this property to True if you want validation disabled. If validation is disabled, and an extracted text file doesn't exist, the current job will fail. By default, this property is set to False, so validation is enabled.</remarks>
 		Public Property DisableExtractedTextFileLocationValidation As Boolean
 
 		''' <summary>
-		''' Enables or disables native location validation for the current job
+		''' Enables or disables the validation of the native file location for the current import job. 
 		''' </summary>
-		''' <value>True: validation is disabled
-		''' False: validation is enabled
-		''' Nothing: validation will use the pre-configured value</value>
+		''' <value>Set this property to True if you want validation disabled. By default, this property is set to False, so validation is enabled.</value>
 		Public Property DisableNativeLocationValidation As Boolean?
 
 		''' <summary>
-		''' Enables or disables native validation for the current job
+		''' Enables or disables validation of the native file type for the current job. 
 		''' </summary>
-		''' <value>True: validation is disabled
-		''' False: validation is enabled
-		''' Nothing: validation will use the pre-configured value</value>
+		''' <remarks>Set this property to True if you want validation disabled. By default, this property is set to False, so validation is enabled. 
+		''' Before disabling validation, you may want to confirm that your files are all supported types and that the native file paths in the load files are correct. 
+		''' Otherwise, you may encounter the following issues: When file type validation is disabled, you won't receive any warnings about unsupported file types, so these files may be imaged and result in errors. 
+		''' Disabled file type validation also causes the application to set the Relativity Native Types field to Unknown Format. 
+		''' When file location validation is disabled, the Import API may temporarily stop and then restart if the load file includes paths that do not contain files. 
+		''' The Import API will also stop when the load file doesn't include a path for a native file, but it will load any files prior to encountering this issue.</remarks>
 		Public Property DisableNativeValidation As Boolean?
 
 		''' <summary>
@@ -56,17 +58,17 @@ Namespace kCura.Relativity.DataReaderClient
 		Public Property FolderPathSourceFieldName() As String
 
 		''' <summary>
-		''' Delimiter to separate multiple values such as two different single-choice field values
+		''' Represents the delimiter used to separate multiple values, such as different single-choice field values.
 		''' </summary>
 		Public Property MultiValueDelimiter() As Char
 
 		''' <summary>
-		''' Field name that contains a full path and filename to native files
+		''' Indicates the name of the Field that contains the full path and filename for the native files.
 		''' </summary>
 		Public Property NativeFilePathSourceFieldName() As String
 
 		''' <summary>
-		''' Delimiter to separate nested values such as choices and child choices on a multi-choice field
+		''' Represents the delimiter used to separate nested values, such as choices or child choices on a multi-choice field.
 		''' </summary>
 		Public Property NestedValueDelimiter() As Char
 
@@ -79,7 +81,7 @@ Namespace kCura.Relativity.DataReaderClient
 		Public Property RowCount() As Int32
 
 		''' <summary>
-		''' To skip file identification in the Import API, set this property to True.
+		''' To skip file identification, set this property to True.
 		''' </summary>
 		''' <value></value>
 		''' <returns></returns>
@@ -87,34 +89,32 @@ Namespace kCura.Relativity.DataReaderClient
 		Public Property OIFileIdMapped As Boolean
 
 		''' <summary>
-		''' Set this property to the value that indicates the column in the <see cref="SourceIDataReader.SourceData">SourceData</see> property which contains the OutsideInFileId.
-		''' To determine the file id, call kCura.OI.FileID.Manager.Instance.GetFileIDDataByFilePath(string filePath).  
+		''' Indicates the column that contains the OutsideInFileId on the <see cref="SourceIDataReader.SourceData">SourceData</see> property. Used in conjunction with the <see cref="OIFileIdColumnName">OIFileIdMapped</see> and <see cref="OIFileIdColumnName">FileSizeMapped</see> properties.
 		''' </summary>
 		''' <value></value>
 		''' <returns></returns>
-		''' <remarks>To use this property, <see cref="OIFileIdMapped">OIFileIdMapped</see> must be set to True.</remarks>
+		''' <remarks>If <see cref="OIFileIdMapped">OIFileIdMapped</see> or <see cref="OIFileIdMapped">FileSizeMapped</see> is set to True, set this property to the value that indicates the <see cref="SourceIDataReader.SourceData">SourceData</see> column that contains the OutsideInFileId. To determine the file ID, call the kCura.OI.FileID.Manager.Instance.GetFileIDDataByFilePath() method.</remarks>
 		Public Property OIFileIdColumnName As String
 
 		''' <summary>
-		''' Set this property to the value that indicates the column in the <see cref="SourceIDataReader.SourceData">SourceData</see> property which contains the OutsideInFileType.
-		''' To determine the file type, call kCura.OI.FileID.Manager.Instance.GetFileIDDataByFilePath(string filePath).
+		''' Indicates the column that contains the OutsideInFileType on the <see cref="SourceIDataReader.SourceData">SourceData</see> property. Used in conjunction with the <see cref="OIFileIdColumnName">OIFileIdMapped</see> property.
 		''' </summary>
 		''' <value></value>
 		''' <returns></returns>
-		''' <remarks>To use this property, <see cref="OIFileIdMapped">OIFileIdMapped</see> must be set to True.</remarks>
+		''' <remarks>If the <see cref="OIFileIdMapped">OIFileIdMapped</see> property is to True, set this property to the value that indicates the <see cref="SourceIDataReader.SourceData">SourceData</see> column that contains the OutsideInFileType. To determine the file type, call the kCura.OI.FileID.Manager.Instance.GetFileIDDataByFilePath() method. </remarks>
 		Public Property OIFileTypeColumnName As String
 
 
 		''' <summary>
-		''' To skip file size checking in the Import API, set this property to True.
+		''' To skip file size checking, set this property to True.
 		''' </summary>
 		''' <value></value>
 		''' <returns></returns>
-		''' <remarks>If this value is True, <see cref="FileSizeColumn">OIFileIdColumnNameFileSizeColumn</see>  must be mapped.</remarks>
+		''' <remarks>If this value is True, <see cref="OIFileIdMapped">OIFileIdColumnName</see> and <see cref="OIFileIdMapped">FileSizeColumn</see> must be mapped.</remarks>
 		Public Property FileSizeMapped As Boolean
 
 		''' <summary>
-		''' Set this property to the value that indicates the column in the <see cref="SourceIDataReader.SourceData">SourceData</see> property which contains the FileSize.
+		''' Indicates the column that contains the FileSize on the <see cref="SourceIDataReader.SourceData">SourceData</see> property.
 		''' </summary>
 		''' <value></value>
 		''' <returns></returns>
