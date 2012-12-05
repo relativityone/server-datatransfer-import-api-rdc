@@ -49,7 +49,7 @@ Namespace kCura.EDDS.WinForm
 			'
 			Me.TextBox1.Location = New System.Drawing.Point(0, 0)
 			Me.TextBox1.Name = "TextBox1"
-			Me.TextBox1.Size = New System.Drawing.Size(292, 20)
+			Me.TextBox1.Size = New System.Drawing.Size(290, 20)
 			Me.TextBox1.TabIndex = 1
 			Me.TextBox1.Text = ""
 			Me.TextBox1.Anchor = CType(System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left _
@@ -59,14 +59,14 @@ Namespace kCura.EDDS.WinForm
 			'
 			Me.EncodingList.Location = New System.Drawing.Point(0, 28)
 			Me.EncodingList.Name = "EncodingList"
-			Me.EncodingList.Size = New System.Drawing.Size(292, 212)
+			Me.EncodingList.Size = New System.Drawing.Size(290, 212)
 			Me.EncodingList.TabIndex = 3
 			Me.EncodingList.Anchor = CType(System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left _
 			 Or System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right, System.Windows.Forms.AnchorStyles)
 			'
 			'Cancel
 			'
-			Me.Cancel.Location = New System.Drawing.Point(216, 244)
+			Me.Cancel.Location = New System.Drawing.Point(214, 244)
 			Me.Cancel.Name = "Cancel"
 			Me.Cancel.TabIndex = 6
 			Me.Cancel.Text = "Cancel"
@@ -74,7 +74,7 @@ Namespace kCura.EDDS.WinForm
 			'
 			'OK
 			'
-			Me.OK.Location = New System.Drawing.Point(136, 244)
+			Me.OK.Location = New System.Drawing.Point(134, 244)
 			Me.OK.Name = "OK"
 			Me.OK.TabIndex = 5
 			Me.OK.Text = "OK"
@@ -83,7 +83,8 @@ Namespace kCura.EDDS.WinForm
 			'EncodingForm
 			'
 			Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
-			Me.ClientSize = New System.Drawing.Size(292, 269)
+			Me.ClientSize = New System.Drawing.Size(290, 269)
+			Me.MinimumSize = New System.Drawing.Size(270, 269)
 			Me.Controls.Add(Me.Cancel)
 			Me.Controls.Add(Me.OK)
 			Me.Controls.Add(Me.EncodingList)
