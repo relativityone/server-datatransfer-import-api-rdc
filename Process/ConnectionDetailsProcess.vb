@@ -194,22 +194,24 @@ Namespace kCura.WinEDDS
 			Dim token As String = kCura.WinEDDS.Service.Settings.AuthenticationToken
 			Me.WriteStatus(downloadUrl)
 			Dim myReq As System.Net.HttpWebRequest = DirectCast(System.Net.WebRequest.Create(downloadUrl & "AccessDenied.aspx"), System.Net.HttpWebRequest)
-			Try
-				myReq.GetResponse()
-				Me.WriteStatus("URL validated")
-			Catch ex As System.Net.WebException
-				With DirectCast(ex.Response, System.Net.HttpWebResponse)
-					If .StatusCode = Net.HttpStatusCode.Forbidden AndAlso .StatusDescription = "kcuraaccessdeniedmarker" Then
-						Me.WriteStatus("URL validated")
-					Else
-						Me.WriteStatus("Cannot find URL")
-						Me.WriteStatus(ex.ToString)
-					End If
-				End With
-			Catch ex As System.Exception
-				Me.WriteStatus("Cannot find URL")
-				Me.WriteStatus(ex.ToString)
-			End Try
+      Try
+        'SF00204217: Set credentials to avoid http 401 when IIS is using Integrated Windows Authentication.
+        myReq.UseDefaultCredentials = True
+        myReq.GetResponse()
+        Me.WriteStatus("URL validated")
+      Catch ex As System.Net.WebException
+        With DirectCast(ex.Response, System.Net.HttpWebResponse)
+          If .StatusCode = Net.HttpStatusCode.Forbidden AndAlso .StatusDescription = "kcuraaccessdeniedmarker" Then
+            Me.WriteStatus("URL validated")
+          Else
+            Me.WriteStatus("Cannot find URL")
+            Me.WriteStatus(ex.ToString)
+          End If
+        End With
+      Catch ex As System.Exception
+        Me.WriteStatus("Cannot find URL")
+        Me.WriteStatus(ex.ToString)
+      End Try
 		End Sub
 
 		Private Function CheckBcp() As Boolean
