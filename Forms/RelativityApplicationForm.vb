@@ -3,11 +3,11 @@ Imports System.Xml.Linq
 Imports System.Collections.Generic
 Imports System.ComponentModel
 Imports System.Linq
-Imports Facet.Combinatorics
+Imports kCura.WinEDDS.Exceptions
 Imports Relativity.Applications.Serialization
 Imports Relativity.Applications.Serialization.Elements
 Imports kCura.EDDS.WinForm.Presentation.Controller
-Imports kCura.EDDS.WinForm.Data
+Imports kCura.EDDS.WebAPI.TemplateManagerBase
 
 Namespace kCura.EDDS.WinForm
 	Public Class RelativityApplicationForm
@@ -52,8 +52,9 @@ Namespace kCura.EDDS.WinForm
 		Friend WithEvents AppNotLoadedLabel As System.Windows.Forms.Label
 		Private _formState As FormUIState = FormUIState.General
 		Private _isAppAndCaseLoaded As Boolean = False
+		Dim _packageData As Byte()
 		Dim _app As RelativityApplicationElement
-		Dim _appMappingData As AppMappingData
+		Private _appMappingData As kCura.EDDS.WebAPI.TemplateManagerBase.AppMappingData
 		Friend WithEvents NoTargetFieldsQualifyLabel As System.Windows.Forms.Label
 		Friend WithEvents Label4 As System.Windows.Forms.Label
 		Friend WithEvents Label3 As System.Windows.Forms.Label
@@ -74,7 +75,7 @@ Namespace kCura.EDDS.WinForm
 
 			'Add any initialization after the InitializeComponent() call
 			OpenFileDialog = New OpenFileDialog
-			OpenFileDialog.Filter = "XML Files (*.xml)|*.xml"
+			OpenFileDialog.Filter = "Relativity Applications (*.xml;*.rap)|*.xml;*.rap"
 			OpenFileDialog.InitialDirectory = IO.Path.Combine(IO.Path.GetDirectoryName(System.Windows.Forms.Application.ExecutablePath), "Applications")
 			OpenFileDialog.CheckFileExists = True
 			OpenFileDialog.CheckPathExists = True
@@ -700,13 +701,22 @@ Namespace kCura.EDDS.WinForm
 
 			MapFieldsLink.Visible = True
 
-			Dim document As Xml.XmlDocument = LoadFileIntoXML(_filename)
+			Dim pkgData As Byte() = Nothing
+			Dim document As Xml.XmlDocument = Nothing
+			Try
+				pkgData = System.IO.File.ReadAllBytes(_filename)
+				Dim pkgHelper As New PackageHelper()
+				document = pkgHelper.ExtractApplicationXML(pkgData, _filename)
+			Catch ex As System.Exception
+				'Eat the exception.  This sucks, but it's what the existing code did.
+			End Try
 			If Not document Is Nothing AndAlso LoadApplicationNameFromNode(document.SelectSingleNode("/Application/Name")) Then
 				LoadApplicationVersionFromNode(document.SelectSingleNode("/Application/Version"))
 				LoadApplicationTree(document)
 				LoadMappingControls(document)
 				WarnOnInvalidFieldGuids(_app)
 				_document = document
+				_packageData = pkgData
 			Else
 				MsgBox("Unable to refresh the loaded Relativity Application template file.", MsgBoxStyle.Exclamation, "Relativity Desktop Client")
 			End If
@@ -750,12 +760,20 @@ Namespace kCura.EDDS.WinForm
 
 			'Do the import
 			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
-			_Application.ImportApplicationFile(_caseInfos, _document, New Int32() {}, resolveArtifactCaseList.ToArray())
+			_Application.ImportApplicationFile(_caseInfos, _packageData, New Int32() {}, resolveArtifactCaseList.ToArray())
 			Me.Cursor = System.Windows.Forms.Cursors.Default
 		End Sub
 
 		Private Sub OpenFileDialog_FileOk(ByVal sender As Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles OpenFileDialog.FileOk
-			Dim document As Xml.XmlDocument = LoadFileIntoXML(OpenFileDialog.FileName)
+			Dim pkgData As Byte() = Nothing
+			Dim document As Xml.XmlDocument = Nothing
+			Try
+				pkgData = System.IO.File.ReadAllBytes(OpenFileDialog.FileName)
+				Dim pkgHelper As New PackageHelper()
+				document = pkgHelper.ExtractApplicationXML(pkgData, OpenFileDialog.FileName)
+			Catch ex As System.Exception
+				'Eat the exception.  This sucks, but it's what the existing code did.
+			End Try
 
 			Dim ErrorMsg As Action(Of String) = Sub(msg As String)
 																						e.Cancel = True
@@ -763,9 +781,9 @@ Namespace kCura.EDDS.WinForm
 																					End Sub
 
 			If document Is Nothing Then
-				ErrorMsg("The file is not a valid XML file.")
+				ErrorMsg("The file is not a valid Relativity Application file.")
 			ElseIf Not LoadApplicationNameFromNode(document.SelectSingleNode("/Application/Name")) Then
-				ErrorMsg("The file is not a valid Relativity Application template file.")
+				ErrorMsg("The file is not a valid Relativity Application file.")
 			End If
 
 			If Not e.Cancel Then
@@ -779,6 +797,7 @@ Namespace kCura.EDDS.WinForm
 
 				_filename = OpenFileDialog.FileName
 				_document = document
+				_packageData = pkgData
 				_isAppAndCaseLoaded = True
 				SetFormState(FormUIState.General)
 				RefreshAllData()
@@ -904,6 +923,8 @@ Namespace kCura.EDDS.WinForm
 				PopulateChildren(objNode, "ObjectRules", "ObjectRule", item)
 				PopulateChildren(objNode, "EventHandlers", "ActiveSync", item)
 			Next
+
+			'External Tabs
 			Dim externalTabsNode = ArtifactsTreeView.Nodes.Add("External Tabs")
 			externalTabsNode.NodeFont = boldfont
 			For Each item As XElement In doc...<ExternalTab>
@@ -919,6 +940,14 @@ Namespace kCura.EDDS.WinForm
 					scriptsNode.Nodes.Add(scriptItem.<Name>.Value)
 				End If
 			Next
+
+			'Custom Pages
+			Dim customPagesNode = ArtifactsTreeView.Nodes.Add("Custom Pages")
+			customPagesNode.NodeFont = boldfont
+			For Each item As XElement In doc...<CustomPage>
+				customPagesNode.Nodes.Add(item.<Name>.Value)
+			Next
+
 			ArtifactsTreeView.EndUpdate()
 		End Sub
 
@@ -974,8 +1003,9 @@ Namespace kCura.EDDS.WinForm
 
 		Private Function LoadFileIntoXML(ByVal filePath As String) As Xml.XmlDocument
 			Try
-				Dim document As New Xml.XmlDocument
-				document.Load(filePath)
+				Dim pkgData As Byte() = System.IO.File.ReadAllBytes(filePath)
+				Dim pkgHelper As New PackageHelper()
+				Dim document As Xml.XmlDocument = pkgHelper.ExtractApplicationXML(pkgData, filePath)
 				Return document
 			Catch ex As Exception
 			End Try
@@ -1125,10 +1155,20 @@ Namespace kCura.EDDS.WinForm
 			End If
 
 			_app = ApplicationElement.Deserialize(Of RelativityApplicationElement)(xml)
-			Dim factory As New AppMappingDataFactory()
-			_appMappingData = factory.CreateMappingData(_app)
-			Dim mapCandidateFinder As IMappingCandidateFinder = New MappingCandidateFinder(Me.Credentials, Me.CookieContainer, Me.CaseInfos(0).ArtifactID)
-			mapCandidateFinder.PopulateMappingCandidates(xml, _appMappingData)
+
+			Dim fieldMappingHelper As New Service.TemplateManager(Me.Credentials, Me.CookieContainer)
+			Dim installationParams As New kCura.EDDS.WebAPI.TemplateManagerBase.ApplicationInstallationParameters()
+			installationParams.CaseId = Me.CaseInfos(0).ArtifactID
+
+			'Use the Empty class as a placeholder for the bindinglists in the mapping control
+			_appMappingData = fieldMappingHelper.GetAppMappingDataForWorkspace(xml, installationParams)
+			For Each appObj In _appMappingData.AppObjects
+				For Each appField In appObj.AppFields
+					If appField.MappedTargetField Is Nothing Then
+						appField.MappedTargetField = TargetField.Empty
+					End If
+				Next
+			Next
 			_mapController = New FieldMapFourPickerController(_appMappingData)
 
 			'Databinding

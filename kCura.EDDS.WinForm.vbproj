@@ -214,10 +214,6 @@
     <OptionInfer>On</OptionInfer>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\kCura\kCura.Resources\kCura.Resources.vbproj">
-      <Project>{8DF36335-205C-4349-9D32-5999EC85A601}</Project>
-      <Name>kCura.Resources</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Relativity.Applications.Serialization\Relativity.Applications.Serialization.vbproj">
       <Project>{E621897E-45AF-4FBD-ADA4-EEE787E5233F}</Project>
       <Name>Relativity.Applications.Serialization</Name>
@@ -229,9 +225,6 @@
     <Reference Include="AutoMapper, Version=1.1.0.188, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Vendor\AutoMapper\1.1RTW\AutoMapper.dll</HintPath>
-    </Reference>
-    <Reference Include="Facet.Combinatorics">
-      <HintPath>..\..\Vendor\Combinatorics\Facet.Combinatorics.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualBasic">
       <Name>Microsoft.VisualBasic</Name>
@@ -341,13 +334,12 @@
     <Compile Include="Controls\EncodingPicker.vb">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Data\AppField.vb" />
-    <Compile Include="Data\AppMappingData.vb" />
-    <Compile Include="Data\AppMappingDataFactory.vb" />
-    <Compile Include="Data\AppObject.vb" />
-    <Compile Include="Data\IMappingCandidateFinder.vb" />
-    <Compile Include="Data\MappingCandidateFinder.vb" />
-    <Compile Include="Data\TargetField.vb" />
+    <Compile Include="Controls\TextFieldPrecedencePicker.Designer.vb">
+      <DependentUpon>TextFieldPrecedencePicker.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\TextFieldPrecedencePicker.vb">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="Forms\AboutForm.Designer.vb">
       <DependentUpon>AboutForm.vb</DependentUpon>
     </Compile>
@@ -411,6 +403,12 @@
     <Compile Include="Forms\TextDisplayForm.vb">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Forms\TextPrecedenceForm.Designer.vb">
+      <DependentUpon>TextPrecedenceForm.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\TextPrecedenceForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="My Project\Resources.Designer.vb">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -437,6 +435,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\EncodingPicker.resx">
       <DependentUpon>EncodingPicker.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\TextFieldPrecedencePicker.resx">
+      <DependentUpon>TextFieldPrecedencePicker.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\AboutForm.resx">
       <DependentUpon>AboutForm.vb</DependentUpon>
@@ -496,6 +497,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\TextDisplayForm.resx">
       <DependentUpon>TextDisplayForm.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\TextPrecedenceForm.resx">
+      <DependentUpon>TextPrecedenceForm.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="My Project\Resources.resx">
       <CustomToolNamespace>My.Resources</CustomToolNamespace>

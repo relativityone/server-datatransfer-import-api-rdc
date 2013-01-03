@@ -173,12 +173,9 @@ Namespace kCura.EDDS.WinForm
 #Region " Run Import "
 
 		Private Sub RunApplicationImport()
-			Dim template As New Xml.XmlDocument
-			Dim stream As System.IO.FileStream = System.IO.File.Open(_loadFilePath, System.IO.FileMode.Open, System.IO.FileAccess.Read)
-			template.Load(stream)
-			stream.Close()
-
-			Dim importer As New kCura.WinEDDS.ApplicationDeploymentProcess(New Int32() {}, Nothing, template, _application.Credential, _application.CookieContainer, New Relativity.CaseInfo() {SelectedCaseInfo})
+			Dim packageData As Byte()
+			packageData = System.IO.File.ReadAllBytes(_loadFilePath)
+			Dim importer As New kCura.WinEDDS.ApplicationDeploymentProcess(New Int32() {}, Nothing, packageData, _application.Credential, _application.CookieContainer, New Relativity.CaseInfo() {SelectedCaseInfo})
 			Dim executor As New kCura.EDDS.WinForm.CommandLineProcessRunner(importer.ProcessObserver, importer.ProcessController, ErrorLoadFileLocation, ErrorReportFileLocation)
 			_application.StartProcess(importer)
 		End Sub
@@ -540,7 +537,7 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 		Private Sub GetHelpPage()
-			Console.WriteLine(kCura.Resources.Helper.RetrieveDataFromResource("StringConstants", "HelpPage"))
+			Console.WriteLine(kCura.Utility.Resources.Helper.RetrieveDataFromResource("StringConstants", "HelpPage"))
 		End Sub
 
 		Private Sub GetEncodingList()
