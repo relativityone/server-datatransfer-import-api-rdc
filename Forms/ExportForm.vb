@@ -1215,9 +1215,29 @@ Public Class ExportForm
 				AppendErrorMessage(msg, "No image file type selected")
 			End If
 		End If
-		If Me.ExportFile.TypeOfExport = ExportFile.ExportType.Production AndAlso _exportNativeFiles.Checked Then
-			If CType(_nativeFileNameSource.SelectedItem, String) = "Select..." Then
-				AppendErrorMessage(msg, "No file name source selected")
+		If Me.ExportFile.TypeOfExport = ExportFile.ExportType.Production Then
+			If _exportNativeFiles.Checked Then
+				If CType(_nativeFileNameSource.SelectedItem, String) = "Select..." Then
+					AppendErrorMessage(msg, "No file name source selected")
+				End If
+			End If
+			Dim batesFound As Boolean = False
+			Dim defaultSelectedIds As New System.Collections.ArrayList
+			If _filters.SelectedItem IsNot Nothing Then defaultSelectedIds = DirectCast(Me.ExportFile.ArtifactAvfLookup(CType(_filters.SelectedValue, Int32)), ArrayList)
+
+			For Each id As Integer In defaultSelectedIds
+				batesFound = False
+				For Each item As kCura.WinEDDS.ViewFieldInfo In _columnSelecter.RightListBoxItems
+					If id = item.AvfId Then
+						batesFound = True
+						Exit For
+					End If
+				Next
+				If Not batesFound Then Exit For
+			Next
+
+			If Not batesFound Then
+				AppendErrorMessage(msg, "Bates fields are not selected columns")
 			End If
 		End If
 		If _dataFileEncoding.SelectedEncoding Is Nothing Then
@@ -1457,6 +1477,27 @@ Public Class ExportForm
 					If leftListBoxViewField.DisplayName.Equals(viewFieldFromKwx.DisplayName, StringComparison.InvariantCulture) Then
 						itemsToRemoveFromLeftListBox.Add(leftListBoxViewField)
 						_columnSelecter.RightListBoxItems.Add(leftListBoxViewField)
+					End If
+				Next
+			Next
+
+			Dim defaultSelectedIds As New System.Collections.ArrayList
+			If Not _filters.SelectedItem Is Nothing Then defaultSelectedIds = DirectCast(Me.ExportFile.ArtifactAvfLookup(CType(_filters.SelectedValue, Int32)), ArrayList)
+
+			For Each defaultSelectedId As Int32 In defaultSelectedIds
+				For Each field As ViewFieldInfo In ef.AllExportableFields
+					If field.AvfId = defaultSelectedId Then
+						Dim avfNumber = field.AvfId
+						Dim found As Boolean = ef.SelectedViewFields.Any(Function(addedItem) avfNumber = addedItem.AvfId)
+						If Not found Then
+							If Me.ExportFile.ArtifactTypeID = Relativity.ArtifactType.Document Then
+								_columnSelecter.RightListBoxItems.Add(New ViewFieldInfo(field))
+								Exit For
+							ElseIf field.FieldType <> Relativity.FieldTypeHelper.FieldType.File Then
+								_columnSelecter.RightListBoxItems.Add(New ViewFieldInfo(field))
+								Exit For
+							End If
+						End If
 					End If
 				Next
 			Next
