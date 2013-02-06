@@ -271,7 +271,7 @@ Namespace kCura.WinEDDS
 				_timekeeper.MarkEnd("Exporter_GetImagesForDocumentBlock")
 			End If
 			Dim beginBatesColumnIndex As Int32 = -1
-			If Me.ExportNativesToFileNamedFrom = ExportNativeWithFilenameFrom.Production Then
+			If Me.ExportNativesToFileNamedFrom = ExportNativeWithFilenameFrom.Production AndAlso _volumeManager.OrdinalLookup.ContainsKey(_beginBatesColumn) Then
 				beginBatesColumnIndex = _volumeManager.OrdinalLookup(_beginBatesColumn)
 			End If
 			Dim identifierColumnName As String = Relativity.SqlNameHelper.GetSqlFriendlyName(Me.Settings.IdentifierColumnName)
@@ -280,7 +280,7 @@ Namespace kCura.WinEDDS
 				Dim artifact As New Exporters.ObjectExportInfo
 				Dim record As Object() = DirectCast(records(i), Object())
 				Dim nativeRow As System.Data.DataRowView = GetNativeRow(natives, documentArtifactIDs(i))
-				If Me.ExportNativesToFileNamedFrom = ExportNativeWithFilenameFrom.Production Then
+				If Me.ExportNativesToFileNamedFrom = ExportNativeWithFilenameFrom.Production AndAlso beginBatesColumnIndex <> -1 Then
 					artifact.ProductionBeginBates = record(beginBatesColumnIndex).ToString
 				End If
 				artifact.IdentifierValue = record(identifierColumnIndex).ToString
