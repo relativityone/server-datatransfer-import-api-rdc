@@ -1604,6 +1604,8 @@ Public Class ExportForm
 		'PDF
 		If Not _copyFilesFromRepository.Checked Then Return ExportFile.ImageType.SinglePage
 		Select Case _imageTypeDropdown.SelectedIndex
+			Case 0
+				Return kCura.WinEDDS.ExportFile.ImageType.Select
 			Case 1
 				Return ExportFile.ImageType.SinglePage
 			Case 2
@@ -1615,7 +1617,7 @@ Public Class ExportForm
 	End Function
 
 	Private Sub SetSelectedImageType(ByVal imageType As ExportFile.ImageType?)
-		If Not imageType.HasValue Then
+		If Not imageType.HasValue OrElse imageType.Value = kCura.WinEDDS.ExportFile.ImageType.Select Then
 			_imageTypeDropdown.SelectedIndex = 0
 		ElseIf imageType.Value = kCura.WinEDDS.ExportFile.ImageType.SinglePage Then
 			_imageTypeDropdown.SelectedIndex = 1
