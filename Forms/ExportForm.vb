@@ -1480,28 +1480,29 @@ Public Class ExportForm
 					End If
 				Next
 			Next
+			
+			If ef.AllExportableFields IsNot Nothing Then
+				Dim defaultSelectedIds As New System.Collections.ArrayList
+				If Not _filters.SelectedItem Is Nothing Then defaultSelectedIds = DirectCast(Me.ExportFile.ArtifactAvfLookup(CType(_filters.SelectedValue, Int32)), ArrayList)
 
-			Dim defaultSelectedIds As New System.Collections.ArrayList
-			If Not _filters.SelectedItem Is Nothing Then defaultSelectedIds = DirectCast(Me.ExportFile.ArtifactAvfLookup(CType(_filters.SelectedValue, Int32)), ArrayList)
-
-			For Each defaultSelectedId As Int32 In defaultSelectedIds
-				For Each field As ViewFieldInfo In ef.AllExportableFields
-					If field.AvfId = defaultSelectedId Then
-						Dim avfNumber = field.AvfId
-						Dim found As Boolean = ef.SelectedViewFields.Any(Function(addedItem) avfNumber = addedItem.AvfId)
-						If Not found Then
-							If Me.ExportFile.ArtifactTypeID = Relativity.ArtifactType.Document Then
-								_columnSelecter.RightListBoxItems.Add(New ViewFieldInfo(field))
-								Exit For
-							ElseIf field.FieldType <> Relativity.FieldTypeHelper.FieldType.File Then
-								_columnSelecter.RightListBoxItems.Add(New ViewFieldInfo(field))
-								Exit For
+				For Each defaultSelectedId As Int32 In defaultSelectedIds
+					For Each field As ViewFieldInfo In ef.AllExportableFields
+						If field.AvfId = defaultSelectedId Then
+							Dim avfNumber = field.AvfId
+							Dim found As Boolean = ef.SelectedViewFields.Any(Function(addedItem) avfNumber = addedItem.AvfId)
+							If Not found Then
+								If Me.ExportFile.ArtifactTypeID = Relativity.ArtifactType.Document Then
+									_columnSelecter.RightListBoxItems.Add(New ViewFieldInfo(field))
+									Exit For
+								ElseIf field.FieldType <> Relativity.FieldTypeHelper.FieldType.File Then
+									_columnSelecter.RightListBoxItems.Add(New ViewFieldInfo(field))
+									Exit For
+								End If
 							End If
 						End If
-					End If
+					Next
 				Next
-			Next
-
+			End If
 
 			If _columnSelecter.RightListBoxItems.Count = 0 Then
 				_metadataGroup.Enabled = False
