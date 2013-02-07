@@ -137,9 +137,9 @@ Namespace kCura.WinEDDS.NUnit
 				max = System.Math.Max(max.Value, CInt(e))
 				count += 1
 			Next
-			Assert.AreEqual(3, count)
+			Assert.AreEqual(4, count)
 			Assert.AreEqual(2, max, "All image types should be tested")
-			Assert.AreEqual(0, min, "All image types should be tested")
+			Assert.AreEqual(-1, min, "All image types should be tested")
 
 		End Sub
 #End Region
