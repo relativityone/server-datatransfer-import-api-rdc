@@ -1,5 +1,6 @@
 ﻿Imports System.Collections.Generic
 Imports System.Linq
+Imports kCura.Windows.Forms
 
 Namespace kCura.EDDS.WinForm
 	Public Class TextPrecedenceForm
@@ -23,38 +24,7 @@ Namespace kCura.EDDS.WinForm
 
 		End Sub
 
-
-
 		Private Sub TextPrecedenceForm_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
-			'Doing this here so designer works at least for some elements
-			Me._longTextFieldsTwoListBox = New kCura.Windows.Forms.TwoListBox()
-			Me._longTextFieldsTwoListBox.AlternateRowColors = False
-			Me._longTextFieldsTwoListBox.KeepButtonsCentered = True
-			Me._longTextFieldsTwoListBox.LeftOrderControlsVisible = False
-			Me._longTextFieldsTwoListBox.Location = New System.Drawing.Point(8, 24)
-			Me._longTextFieldsTwoListBox.Name = "_longTextFields"
-			Me._longTextFieldsTwoListBox.RightOrderControlVisible = True
-			Me._longTextFieldsTwoListBox.Size = New System.Drawing.Size(360, 280)
-			Me._longTextFieldsTwoListBox.TabIndex = 2
-
-			Me._availableLongTextFieldsLabel = New System.Windows.Forms.Label
-			Me._availableLongTextFieldsLabel.Location = New System.Drawing.Point(8, 8)
-			Me._availableLongTextFieldsLabel.Name = "_availableLongTextFieldsLabel"
-			Me._availableLongTextFieldsLabel.Size = New System.Drawing.Size(144, 16)
-			Me._availableLongTextFieldsLabel.TabIndex = 3
-			Me._availableLongTextFieldsLabel.Text = "Available Long Text Fields"
-
-			Me._selectedLongTextFieldsLabel = New System.Windows.Forms.Label
-			Me._selectedLongTextFieldsLabel.Location = New System.Drawing.Point(196, 8)
-			Me._selectedLongTextFieldsLabel.Name = "_selectedLongTextFieldsLabel"
-			Me._selectedLongTextFieldsLabel.Size = New System.Drawing.Size(144, 16)
-			Me._selectedLongTextFieldsLabel.TabIndex = 4
-			Me._selectedLongTextFieldsLabel.Text = "Selected Long Text Fields"
-
-			Me.Controls.Add(Me._longTextFieldsTwoListBox)
-			Me.Controls.Add(Me._availableLongTextFieldsLabel)
-			Me.Controls.Add(Me._selectedLongTextFieldsLabel)
-
 
 			For Each field As ViewFieldInfo In _listOfAllLongTextFields
 				_longTextFieldsTwoListBox.LeftListBoxItems.Add(field)
@@ -104,5 +74,81 @@ Namespace kCura.EDDS.WinForm
 			End Get
 		End Property
 
+#Region "Resizing"
+		'These member variables are populated with data needed to resize the controls
+
+		'Avoid adjusting the layout if the size hasn't changed
+		Private _layoutLastFormSize As Size
+
+		' Used to keep track of whether we need to calculate the layout values.  In addition to
+		' initial population, they may need to be populated later due to autoscaling.  Autoscaling
+		' will change the distance between concrols which we would not expect to change.  If this
+		' happens, the _layout info which contains the relative location of controls needs to be 
+		' updated.
+		Private _layoutReferenceDistance As Int32 = 0
+
+		Private _layoutDifferenceList As List(Of RelativeLayoutData)
+
+		Private Function CalcReferenceDistance() As Int32
+			Return _availableLongTextFieldsLabel.Width
+		End Function
+
+		Private Sub OnForm_Layout(ByVal sender As Object, ByVal e As System.Windows.Forms.LayoutEventArgs) Handles MyBase.Layout
+			'The reference distance should remain constant even if the dialog box is resized
+			If _layoutReferenceDistance <> CalcReferenceDistance() Then
+				InitializeLayout()
+			Else
+				AdjustLayout()
+			End If
+		End Sub
+
+		Private Sub InitializeLayout()
+			_layoutLastFormSize = Me.Size
+
+			'Layout properties which are directly based on another layout property.  These are all properties with a 1-1 ration
+			If _layoutDifferenceList Is Nothing Then
+				_layoutDifferenceList = New List(Of RelativeLayoutData)
+
+				_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutBasePropertyTypeForDifference.Height, _longTextFieldsTwoListBox, LayoutRelativePropertyTypeForDifference.Height))
+				_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutBasePropertyTypeForDifference.Width, _longTextFieldsTwoListBox, LayoutRelativePropertyTypeForDifference.Width))
+
+				_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutBasePropertyTypeForDifference.Width, _okButton, LayoutRelativePropertyTypeForDifference.Left))
+				_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutBasePropertyTypeForDifference.Width, _cancelButton, LayoutRelativePropertyTypeForDifference.Left))
+				_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutBasePropertyTypeForDifference.Height, _okButton, LayoutRelativePropertyTypeForDifference.Top))
+				_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutBasePropertyTypeForDifference.Height, _cancelButton, LayoutRelativePropertyTypeForDifference.Top))
+			End If
+
+			_layoutDifferenceList.ForEach(Sub(x)
+																			x.InitializeDifference()
+																		End Sub)
+
+			_layoutReferenceDistance = CalcReferenceDistance()
+
+			AdjustColumnLabel()
+		End Sub
+
+		Public Sub AdjustLayout()
+			If Not _layoutLastFormSize.Equals(Me.Size) Then
+				For Each x As RelativeLayoutData In _layoutDifferenceList
+					x.AdjustRelativeControlBasedOnDifference()
+				Next
+
+				_layoutLastFormSize = Me.Size
+
+				AdjustColumnLabel()
+			End If
+		End Sub
+
+		Private Sub AdjustColumnLabel()
+			'Adjust the location of the label to be aligned with the left side of the Right ListBox
+
+			'Get the absolute position of the Right ListBox of the TwoListBox in screen coordinates
+			Dim absoluteListBoxLoc As Point = _longTextFieldsTwoListBox.RightListBox.PointToScreen(New Point(0, 0))
+			'Convert to a location relative to its parent (the form)
+			Dim relativeListBoxLoc As Point = Me._selectedLongTextFieldsLabel.Parent.PointToClient(absoluteListBoxLoc)
+			'Adjust the location of the label
+			Me._selectedLongTextFieldsLabel.Left = relativeListBoxLoc.X
+		End Sub
+#End Region
 	End Class
 End Namespace
