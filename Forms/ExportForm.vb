@@ -1325,7 +1325,7 @@ Public Class ExportForm
 		End If
 		If Me.ExportFile.TypeOfExport = ExportFile.ExportType.Production Then
 			If _exportNativeFiles.Checked Then
-				If CType(_nativeFileNameSource.SelectedItem, String) = "Select..." Then
+				If CType(_nativeFileNameSourceCombo.SelectedItem, String) = "Select..." Then
 					AppendErrorMessage(msg, "No file name source selected")
 				End If
 			End If
@@ -1335,7 +1335,7 @@ Public Class ExportForm
 
 			For Each id As Integer In defaultSelectedIds
 				batesFound = False
-				For Each item As kCura.WinEDDS.ViewFieldInfo In _columnSelecter.RightListBoxItems
+				For Each item As kCura.WinEDDS.ViewFieldInfo In _columnSelector.RightListBoxItems
 					If id = item.AvfId Then
 						batesFound = True
 						Exit For
@@ -1602,10 +1602,10 @@ Public Class ExportForm
 							Dim found As Boolean = ef.SelectedViewFields.Any(Function(addedItem) avfNumber = addedItem.AvfId)
 							If Not found Then
 								If Me.ExportFile.ArtifactTypeID = Relativity.ArtifactType.Document Then
-									_columnSelecter.RightListBoxItems.Add(New ViewFieldInfo(field))
+										_columnSelector.RightListBoxItems.Add(New ViewFieldInfo(field))
 									Exit For
 								ElseIf field.FieldType <> Relativity.FieldTypeHelper.FieldType.File Then
-									_columnSelecter.RightListBoxItems.Add(New ViewFieldInfo(field))
+										_columnSelector.RightListBoxItems.Add(New ViewFieldInfo(field))
 									Exit For
 								End If
 							End If
