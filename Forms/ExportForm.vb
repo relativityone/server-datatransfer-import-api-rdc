@@ -1323,9 +1323,29 @@ Public Class ExportForm
 				AppendErrorMessage(msg, "No image file type selected")
 			End If
 		End If
-		If Me.ExportFile.TypeOfExport = ExportFile.ExportType.Production AndAlso _exportNativeFiles.Checked Then
-			If CType(_nativeFileNameSourceCombo.SelectedItem, String) = "Select..." Then
-				AppendErrorMessage(msg, "No file name source selected")
+		If Me.ExportFile.TypeOfExport = ExportFile.ExportType.Production Then
+			If _exportNativeFiles.Checked Then
+				If CType(_nativeFileNameSourceCombo.SelectedItem, String) = "Select..." Then
+					AppendErrorMessage(msg, "No file name source selected")
+				End If
+			End If
+			Dim batesFound As Boolean = False
+			Dim defaultSelectedIds As New System.Collections.ArrayList
+			If _filters.SelectedItem IsNot Nothing Then defaultSelectedIds = DirectCast(Me.ExportFile.ArtifactAvfLookup(CType(_filters.SelectedValue, Int32)), ArrayList)
+
+			For Each id As Integer In defaultSelectedIds
+				batesFound = False
+				For Each item As kCura.WinEDDS.ViewFieldInfo In _columnSelector.RightListBoxItems
+					If id = item.AvfId Then
+						batesFound = True
+						Exit For
+					End If
+				Next
+				If Not batesFound Then Exit For
+			Next
+
+			If Not batesFound Then
+				AppendErrorMessage(msg, "Bates fields are not selected columns")
 			End If
 		End If
 		If _dataFileEncoding.SelectedEncoding Is Nothing Then
@@ -1568,9 +1588,31 @@ Public Class ExportForm
 					End If
 				Next
 			Next
-
+			
+			If ef.AllExportableFields IsNot Nothing Then
+				Dim defaultSelectedIds As New System.Collections.ArrayList
 			If _columnSelector.RightListBoxItems.Count = 0 Then
 				_metadataGroupBox.Enabled = False
+				If Not _filters.SelectedItem Is Nothing Then defaultSelectedIds = DirectCast(Me.ExportFile.ArtifactAvfLookup(CType(_filters.SelectedValue, Int32)), ArrayList)
+
+				For Each defaultSelectedId As Int32 In defaultSelectedIds
+					For Each field As ViewFieldInfo In ef.AllExportableFields
+						If field.AvfId = defaultSelectedId Then
+							Dim avfNumber = field.AvfId
+							Dim found As Boolean = ef.SelectedViewFields.Any(Function(addedItem) avfNumber = addedItem.AvfId)
+							If Not found Then
+								If Me.ExportFile.ArtifactTypeID = Relativity.ArtifactType.Document Then
+										_columnSelector.RightListBoxItems.Add(New ViewFieldInfo(field))
+									Exit For
+								ElseIf field.FieldType <> Relativity.FieldTypeHelper.FieldType.File Then
+										_columnSelector.RightListBoxItems.Add(New ViewFieldInfo(field))
+									Exit For
+								End If
+							End If
+						End If
+					Next
+				Next
+			End If
 			End If
 
 			For Each vfi As kCura.WinEDDS.ViewFieldInfo In itemsToRemoveFromLeftListBox
@@ -1669,6 +1711,8 @@ Public Class ExportForm
 		'PDF
 		If Not _copyFilesFromRepository.Checked Then Return ExportFile.ImageType.SinglePage
 		Select Case _imageTypeDropdown.SelectedIndex
+			Case 0
+				Return kCura.WinEDDS.ExportFile.ImageType.Select
 			Case 1
 				Return ExportFile.ImageType.SinglePage
 			Case 2
@@ -1680,7 +1724,7 @@ Public Class ExportForm
 	End Function
 
 	Private Sub SetSelectedImageType(ByVal imageType As ExportFile.ImageType?)
-		If Not imageType.HasValue Then
+		If Not imageType.HasValue OrElse imageType.Value = kCura.WinEDDS.ExportFile.ImageType.Select Then
 			_imageTypeDropdown.SelectedIndex = 0
 		ElseIf imageType.Value = kCura.WinEDDS.ExportFile.ImageType.SinglePage Then
 			_imageTypeDropdown.SelectedIndex = 1
