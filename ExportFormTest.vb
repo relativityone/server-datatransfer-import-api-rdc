@@ -1253,14 +1253,6 @@ Namespace kCura.EDDS.WinForm.Tests
 			Assert.IsFalse(_form._metadataGroupBox.Enabled)
 		End Sub
 
-		Public Sub LoadExportFile_RightListBoxItemsIsZero_ExportNativesTrue_MetaDataDisabled()
-			Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document)
-			ef.ExportNative = True
-			ef.SelectedViewFields = New kCura.WinEDDS.ViewFieldInfo() {}
-			_form.LoadExportFile(ef)
-			Assert.IsFalse(_form._metadataGroupBox.Enabled)
-		End Sub
-
 		<Test()> Public Sub LoadExportFile_RightListBoxItemsIsZero_ExportNativesFalse_MetaDataDisabled()
 			Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document)
 			ef.ExportNative = False
