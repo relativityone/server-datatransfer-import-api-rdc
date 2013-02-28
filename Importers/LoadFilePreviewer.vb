@@ -25,6 +25,7 @@ Namespace kCura.WinEDDS
 			_selectedCaseArtifactID = args.CaseInfo.ArtifactID
 			_errorsOnly = errorsOnly
 			_processController = processController
+
 		End Sub
 
 #End Region
@@ -130,6 +131,7 @@ Namespace kCura.WinEDDS
 						fieldArrays.Add(ex)
 					End Try
 					i += 1
+
 					If i Mod 100 = 0 Then ProcessProgress(_artifactReader.BytesProcessed, filesize, stepsize)
 				Else
 					earlyexit = True
@@ -179,9 +181,11 @@ Namespace kCura.WinEDDS
 							Case Relativity.FieldCategory.Identifier
 								If Not _keyFieldID > 0 Then identifierField = field
 						End Select
+
 						lineContainsErrors = lineContainsErrors Or SetFieldValueOrErrorMessage(field, mapItem.NativeFileColumnIndex, identifierField.ValueAsString, codePageId, mapItem.DocumentField.ImportBehavior)
 						'dont add field if object type is not a document and the field is a file field
 						retval.Add(field)
+
 					End If
 				End If
 			Next
@@ -191,7 +195,7 @@ Namespace kCura.WinEDDS
 					_processedIdentifiers(identifierField.Value.ToString) = Me.CurrentLineNumber.ToString
 				Else
 					'Throw New IdentifierOverlapException(identifierField.Value, _processedIdentifiers(identifierField.Value))
-					identifierField.Value = String.Format("Error: The identifier '{0}' has been previously proccessed on line {1}.", identifierField.Value.ToString, _processedIdentifiers(identifierField.Value.ToString))
+					identifierField.Value = New Exceptions.ErrorMessage(String.Format("Error: The identifier '{0}' has been previously proccessed on line {1}.", identifierField.Value.ToString, _processedIdentifiers(identifierField.Value.ToString)))
 					lineContainsErrors = True
 				End If
 			End If
@@ -218,7 +222,7 @@ Namespace kCura.WinEDDS
 				If filePath = "" Then
 					record.FileField.Value = "No File Specified."
 				ElseIf Not System.IO.File.Exists(existsFilePath) Then
-					record.FileField.Value = String.Format("Error: file '{0}' does not exist", filePath)
+					record.FileField.Value = New Exceptions.ErrorMessage(String.Format("Error: file '{0}' does not exist", filePath))
 					lineContainsErrors = True
 				Else
 					record.FileField.Value = filePath
@@ -230,12 +234,12 @@ Namespace kCura.WinEDDS
 				Dim field As Api.ArtifactField = record.FieldList(Relativity.FieldCategory.ParentArtifact)(0)
 				If _artifactTypeID <> Relativity.ArtifactType.Document Then
 					If field.ValueAsString = String.Empty Then
-						field.Value = New ParentObjectReferenceRequiredException(Me.CurrentLineNumber, -1).Message
+						field.Value = New Exceptions.ErrorMessage(New ParentObjectReferenceRequiredException(Me.CurrentLineNumber, -1).Message)
 						lineContainsErrors = True
 					Else
 						Dim parentObjectTable As System.Data.DataTable = _objectManager.RetrieveArtifactIdOfMappedParentObject(_caseArtifactID, field.ValueAsString, _artifactTypeID).Tables(0)
 						If parentObjectTable.Rows.Count > 1 Then
-							field.Value = New DuplicateObjectReferenceException(Me.CurrentLineNumber, -1, "Parent Info").Message
+							field.Value = New Exceptions.ErrorMessage(New DuplicateObjectReferenceException(Me.CurrentLineNumber, -1, "Parent Info").Message)
 							lineContainsErrors = True
 						End If
 					End If
@@ -293,7 +297,7 @@ Namespace kCura.WinEDDS
 				SetFieldValue(field, column, True, identityValue, extractedTextCodePageId, importBehavior)
 				Return TypeOf field.Value Is System.Exception
 			Catch ex As ImporterExceptionBase
-				field.Value = ex.Message
+				field.Value = New Exceptions.ErrorMessage(ex.Message)
 				Return True
 			End Try
 		End Function

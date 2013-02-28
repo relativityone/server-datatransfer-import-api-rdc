@@ -142,8 +142,9 @@
           <s:element minOccurs="0" maxOccurs="1" name="CodeFileName" type="s:string" />
           <s:element minOccurs="0" maxOccurs="1" name="ObjectFileName" type="s:string" />
           <s:element minOccurs="1" maxOccurs="1" name="DisableUserSecurityCheck" type="s:boolean" />
-          <s:element minOccurs="1" maxOccurs="1" name="OnBehalfOfMasterUserId" nillable="true" type="s:int" />
+          <s:element minOccurs="0" maxOccurs="1" name="OnBehalfOfUserToken" type="s:string" />
           <s:element minOccurs="1" maxOccurs="1" name="AuditLevel" type="tns:ImportAuditLevel" />
+          <s:element minOccurs="0" maxOccurs="1" name="BulkLoadFileFieldDelimiter" type="s:string" />
           <s:element minOccurs="1" maxOccurs="1" name="KeyFieldArtifactID" type="s:int" />
         </s:sequence>
       </s:complexType>
@@ -222,6 +223,7 @@
         <s:restriction base="s:string">
           <s:enumeration value="LeaveBlankValuesUnchanged" />
           <s:enumeration value="ReplaceBlankValuesWithIdentifier" />
+          <s:enumeration value="ObjectFieldContainsArtifactId" />
         </s:restriction>
       </s:simpleType>
       <s:element name="BulkImportNativeResponse">

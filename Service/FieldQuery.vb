@@ -1,3 +1,4 @@
+Imports System.Collections.Generic
 Imports kCura.Utility.NullableTypesHelper
 Namespace kCura.WinEDDS.Service
 	Public Class FieldQuery
@@ -37,6 +38,14 @@ Namespace kCura.WinEDDS.Service
 				 unmappableFields.Contains(dv(i)("DisplayName").ToString) _
 				) Then
 					If Not (CType(dv(i)("FieldCategoryID"), Relativity.FieldCategory) = Relativity.FieldCategory.FullText AndAlso artifactTypeID <> Relativity.ArtifactType.Document) Then
+						Dim guidsString As String = dv(i)("ArtifactGuids").ToString()
+						Dim guids As New List(Of Guid)
+						If (Not String.IsNullOrEmpty(guidsString)) Then
+							Dim guidStringArray As String() = guidsString.Split(CChar(";"))
+							For Each guidString As String In guidStringArray
+								guids.Add(New Guid(guidString.Trim()))
+							Next
+						End If
 						With field
 							.ArtifactID = CType(dv(i)("ArtifactID"), Int32)
 							.ArtifactViewFieldID = CType(dv(i)("ArtifactViewFieldID"), Int32)
@@ -55,6 +64,7 @@ Namespace kCura.WinEDDS.Service
 							.AllowHtml = CType(dv(i)("AllowHTML"), Boolean)
 							.AssociativeArtifactTypeID = kCura.Utility.NullableTypesHelper.DBNullConvertToNullable(Of Int32)(dv(i)("AssociativeArtifactTypeID"))
 							.ImportBehavior = Me.ConvertImportBehaviorEnum(kCura.Utility.NullableTypesHelper.DBNullConvertToNullable(Of Int32)(dv(i)("ImportBehavior")))
+							.Guids = guids.ToArray()
 						End With
 						If field.FieldType = EDDS.WebAPI.DocumentManagerBase.FieldType.Object OrElse field.FieldType = EDDS.WebAPI.DocumentManagerBase.FieldType.Objects OrElse field.FieldCategory = EDDS.WebAPI.DocumentManagerBase.FieldCategory.MultiReflected OrElse field.FieldCategory = EDDS.WebAPI.DocumentManagerBase.FieldCategory.Reflected Then
 							If field.AssociativeArtifactTypeID.HasValue AndAlso Relativity.ArtifactTypeHelper.IsDynamic(field.AssociativeArtifactTypeID.Value) Then fields.Add(field)
@@ -77,8 +87,8 @@ Namespace kCura.WinEDDS.Service
 		Public Function RetrieveAllAsDocumentFieldCollection(ByVal caseContextArtifactID As Int32, ByVal artifactTypeID As Int32) As DocumentFieldCollection
 			Dim retval As New DocumentFieldCollection
 			For Each fieldDTO As kCura.EDDS.WebAPI.DocumentManagerBase.Field In Me.RetrieveAllAsArray(caseContextArtifactID, artifactTypeID)
-				With fieldDTO
-					retval.Add(New DocumentField(.DisplayName, .ArtifactID, .FieldTypeID, .FieldCategoryID, .CodeTypeID, .MaxLength, .AssociativeArtifactTypeID, .UseUnicodeEncoding, .ImportBehavior))
+				With (fieldDTO)
+					retval.Add(New DocumentField(.DisplayName, .ArtifactID, .FieldTypeID, .FieldCategoryID, .CodeTypeID, .MaxLength, .AssociativeArtifactTypeID, .UseUnicodeEncoding, .ImportBehavior, .Guids))
 				End With
 			Next
 			Return retval

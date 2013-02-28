@@ -138,6 +138,7 @@
         <s:restriction base="s:string">
           <s:enumeration value="LeaveBlankValuesUnchanged" />
           <s:enumeration value="ReplaceBlankValuesWithIdentifier" />
+          <s:enumeration value="ObjectFieldContainsArtifactId" />
         </s:restriction>
       </s:simpleType>
       <s:complexType name="ObjectsFieldParameters">

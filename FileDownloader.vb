@@ -142,10 +142,22 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Public Function MoveTempFileToLocal(ByVal localFilePath As String, ByVal remoteFileGuid As String, ByVal caseInfo As Relativity.CaseInfo) As Boolean
+			Return MoveTempFileToLocal(localFilePath, remoteFileGuid, caseInfo, True)
+		End Function
+
+		Public Function MoveTempFileToLocal(ByVal localFilePath As String, ByVal remoteFileGuid As String, ByVal caseInfo As Relativity.CaseInfo, ByVal removeRemoteTempFile As Boolean) As Boolean
 			Dim retval As Boolean = Me.DownloadTempFile(localFilePath, remoteFileGuid, caseInfo.ArtifactID.ToString)
-			_gateway.RemoveTempFile(caseInfo.ArtifactID, remoteFileGuid)
+
+			If removeRemoteTempFile Then
+				_gateway.RemoveTempFile(caseInfo.ArtifactID, remoteFileGuid)
+			End If
+
 			Return retval
 		End Function
+
+		Public Sub RemoveRemoteTempFile(ByVal remoteFileGuid As String, ByVal caseInfo As Relativity.CaseInfo)
+			_gateway.RemoveTempFile(caseInfo.ArtifactID, remoteFileGuid)
+		End Sub
 
 		Public Shared TotalWebTime As Long = 0
 

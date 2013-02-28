@@ -181,6 +181,7 @@ Namespace kCura.WinEDDS
 
 				'Get the line
 				lineToParse = Me.GetLine()
+
 				If onFirstLine Then
 					onFirstLine = False
 					'Skip first line if needed
@@ -193,13 +194,15 @@ Namespace kCura.WinEDDS
 				If checkFolders Then AddFolder(lineToParse.GetValue(folderColumnIndex).ToString)
 				If checkChoices Then
 					For Each choiceColumnIdx As Int32 In _choicesTable.Keys
-						Dim choiceVal As String = lineToParse.GetValue(choiceColumnIdx).ToString
-						'Choices can be imported as -delimited strings for multi-choices, need to look at each choice
-						For Each choiceSet As String In choiceVal.Split(New Char() {";"c})
-							For Each choiceItem As String In choiceSet.Split(New Char() {"\"c})
-								_choicesTable(choiceColumnIdx)(choiceItem) = True
+						If lineToParse IsNot Nothing AndAlso lineToParse.Count >= choiceColumnIdx Then
+							Dim choiceVal As String = lineToParse.GetValue(choiceColumnIdx).ToString
+							For Each choiceSet As String In choiceVal.Split(New Char() {";"c})
+								For Each choiceItem As String In choiceSet.Split(New Char() {"\"c})
+									_choicesTable(choiceColumnIdx)(choiceItem) = True
+								Next
 							Next
-						Next
+						End If
+						'Choices can be imported as -delimited strings for multi-choices, need to look at each choice
 					Next
 				End If
 

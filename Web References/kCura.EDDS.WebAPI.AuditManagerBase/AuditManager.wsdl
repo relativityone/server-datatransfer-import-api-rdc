@@ -226,6 +226,16 @@
           </s:sequence>
         </s:complexType>
       </s:element>
+      <s:element name="DeleteAuditToken">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="token" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="DeleteAuditTokenResponse">
+        <s:complexType />
+      </s:element>
       <s:element name="GetUserIdByGuid">
         <s:complexType>
           <s:sequence>
@@ -271,6 +281,12 @@
   <wsdl:message name="AuditExportSoapOut">
     <wsdl:part name="parameters" element="tns:AuditExportResponse" />
   </wsdl:message>
+  <wsdl:message name="DeleteAuditTokenSoapIn">
+    <wsdl:part name="parameters" element="tns:DeleteAuditToken" />
+  </wsdl:message>
+  <wsdl:message name="DeleteAuditTokenSoapOut">
+    <wsdl:part name="parameters" element="tns:DeleteAuditTokenResponse" />
+  </wsdl:message>
   <wsdl:message name="GetUserIdByGuidSoapIn">
     <wsdl:part name="parameters" element="tns:GetUserIdByGuid" />
   </wsdl:message>
@@ -293,6 +309,10 @@
     <wsdl:operation name="AuditExport">
       <wsdl:input message="tns:AuditExportSoapIn" />
       <wsdl:output message="tns:AuditExportSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="DeleteAuditToken">
+      <wsdl:input message="tns:DeleteAuditTokenSoapIn" />
+      <wsdl:output message="tns:DeleteAuditTokenSoapOut" />
     </wsdl:operation>
     <wsdl:operation name="GetUserIdByGuid">
       <wsdl:input message="tns:GetUserIdByGuidSoapIn" />
@@ -330,6 +350,15 @@
     </wsdl:operation>
     <wsdl:operation name="AuditExport">
       <soap:operation soapAction="http://www.kCura.com/EDDS/AuditManager/AuditExport" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="DeleteAuditToken">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/AuditManager/DeleteAuditToken" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -378,6 +407,15 @@
     </wsdl:operation>
     <wsdl:operation name="AuditExport">
       <soap12:operation soapAction="http://www.kCura.com/EDDS/AuditManager/AuditExport" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="DeleteAuditToken">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/AuditManager/DeleteAuditToken" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>

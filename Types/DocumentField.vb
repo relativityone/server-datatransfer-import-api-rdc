@@ -1,4 +1,6 @@
 Imports System.Runtime.Serialization
+Imports System.Collections.Generic
+
 Namespace kCura.WinEDDS
 	<Serializable()> Public Class DocumentField
 		Implements ISerializable
@@ -128,6 +130,8 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
+		Public Property Guids() As List(Of Guid)
+
 #End Region
 
 #Region "Constructors"
@@ -139,19 +143,29 @@ Namespace kCura.WinEDDS
 			Me.Value = info.GetString("_value")
 			Me.FieldCategoryID = info.GetInt32("_fieldCategoryID")
 			Me.FileColumnIndex = info.GetInt32("_fileColumnIndex")
+			Me.Guids = New List(Of Guid)
 		End Sub
 
 		Public Sub New(ByVal fieldName As String, ByVal fieldID As Int32, ByVal fieldTypeID As Int32, ByVal fieldCategoryID As Int32, ByVal codeTypeID As Nullable(Of Int32), ByVal fieldLength As Nullable(Of Int32), ByVal associatedObjectTypeID As Nullable(Of Int32), ByVal useUnicode As Boolean, ByVal importBehavior As kCura.EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice?)
+			Me.New(fieldName, fieldID, fieldTypeID, fieldCategoryID, codeTypeID, fieldLength, associatedObjectTypeID, useUnicode, importBehavior, New List(Of Guid))
+		End Sub
+
+		Public Sub New(ByVal fieldName As String, ByVal fieldID As Int32, ByVal fieldTypeID As Int32, ByVal fieldCategoryID As Int32, ByVal codeTypeID As Nullable(Of Int32), ByVal fieldLength As Nullable(Of Int32), ByVal associatedObjectTypeID As Nullable(Of Int32), ByVal useUnicode As Boolean, ByVal importBehavior As kCura.EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice?, guids As IEnumerable(Of Guid))
 			MyBase.New()
-			_FieldName = fieldName
-			_FieldID = fieldID
-			_FieldTypeID = fieldTypeID
-			_FieldCategoryID = fieldCategoryID
-			_CodeTypeID = codeTypeID
-			_FieldLength = fieldLength
+			_fieldName = fieldName
+			_fieldID = fieldID
+			_fieldTypeID = fieldTypeID
+			_fieldCategoryID = fieldCategoryID
+			_codeTypeID = codeTypeID
+			_fieldLength = fieldLength
 			_associatedObjectTypeID = associatedObjectTypeID
 			_useUnicode = useUnicode
 			_importBehavior = importBehavior
+			If (Not guids Is Nothing) Then
+				Me.Guids = guids.ToList()
+			Else
+				Me.Guids = New List(Of Guid)
+			End If
 		End Sub
 
 		Public Sub New(ByVal docField As DocumentField)

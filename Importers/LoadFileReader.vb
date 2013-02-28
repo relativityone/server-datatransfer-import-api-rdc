@@ -1,3 +1,4 @@
+Imports System.Collections.Generic
 Imports Relativity.MassImport
 Imports kCura.WinEDDS.Api
 Imports kCura.Utility
@@ -123,11 +124,7 @@ Namespace kCura.WinEDDS
 						field.Value = value.Trim
 						If field.Value.ToString = String.Empty Then field.Value = Nothing
 					Case Relativity.FieldTypeHelper.FieldType.MultiCode, Relativity.FieldTypeHelper.FieldType.Objects
-						Dim al As New System.Collections.ArrayList
-						For Each item As String In value.Split(_settings.MultiRecordDelimiter)
-							If Not item.Trim = String.Empty Then al.Add(item.Trim)
-						Next
-						field.Value = DirectCast(al.ToArray(GetType(String)), String())
+						field.Value = LoadFileReader.GetStringArrayFromDelimitedFieldValue(value, _settings.MultiRecordDelimiter)
 					Case Relativity.FieldTypeHelper.FieldType.Varchar
 						field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(Me.GetNullableFixedString(value, column, field.TextLength, field.DisplayName))
 					Case Relativity.FieldTypeHelper.FieldType.Text
@@ -432,6 +429,15 @@ Namespace kCura.WinEDDS
 #Region "Helpers"
 
 #End Region
+
+		Public Shared Function GetStringArrayFromDelimitedFieldValue(value As Object, delimiter As Char) As String()
+			Dim incomingValueAsString As String = kCura.Utility.NullableTypesHelper.DBNullString(value)
+			Dim retval As New List(Of String)
+			If (Not String.IsNullOrWhiteSpace(incomingValueAsString)) Then
+				retval.AddRange(From item In incomingValueAsString.Split(delimiter) Where Not item.Trim = String.Empty Select item.Trim)
+			End If
+			Return retval.ToArray()
+		End Function
 
 	End Class
 

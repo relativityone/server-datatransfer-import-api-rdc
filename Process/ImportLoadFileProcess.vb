@@ -31,6 +31,11 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
+		Public Property OIFileIdMapped As Boolean
+		Public Property OIFileIdColumnName As String
+		Public Property OIFileTypeColumnName As String
+		Public Property FileSizeMapped As Boolean
+		Public Property FileSizeColumn As String
 		Public WriteOnly Property DisableUserSecurityCheck As Boolean
 			Set(ByVal value As Boolean)
 				_disableUserSecutityCheck = value
@@ -43,6 +48,11 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
+		Public Property DisableExtractedTextFileLocationValidation As Boolean
+
+		Public Property MaximumErrorCount As Int32?
+
+		Public Property SkipExtractedTextEncodingCheck As Boolean?
 
 		''' <summary>
 		''' Gets or sets the delimiter to use to separate fields in the bulk
@@ -73,12 +83,30 @@ Namespace kCura.WinEDDS
 
 			If _disableNativeValidation.HasValue Then _loadFileImporter.DisableNativeValidation = _disableNativeValidation.Value
 			If _disableNativeLocationValidation.HasValue Then _loadFileImporter.DisableNativeLocationValidation = _disableNativeLocationValidation.Value
+			If MaximumErrorCount.HasValue AndAlso MaximumErrorCount.Value > 0 AndAlso MaximumErrorCount.Value < Int32.MaxValue Then
+				'The '+1' is because the 'MaxNumberOfErrorsInGrid' is actually 1 more (because the
+				' final error is simply 'Maximum # of errors' error) than the *actual* maximum, but
+				' we don't want to change BulkImageFileImporter's behavior.
+				' -Phil S. 07/10/2012
+				_loadFileImporter.MaxNumberOfErrorsInGrid = MaximumErrorCount.Value + 1
+			End If
+
+			If SkipExtractedTextEncodingCheck.HasValue AndAlso SkipExtractedTextEncodingCheck Then
+				_loadFileImporter.SkipExtractedTextEncodingCheck = True
+			End If
+
+			_loadFileImporter.DisableExtractedTextFileLocationValidation = DisableExtractedTextFileLocationValidation
 			_loadFileImporter.AuditLevel = _auditLevel
 			_loadFileImporter.DisableUserSecurityCheck = _disableUserSecutityCheck
-
+			_loadFileImporter.OIFileIdColumnName = OIFileIdColumnName
+			_loadFileImporter.OIFileIdMapped = OIFileIdMapped
+			_loadFileImporter.OIFileTypeColumnName = OIFileTypeColumnName
+			_loadFileImporter.FileSizeColumn = FileSizeColumn
+			_loadFileImporter.FileSizeMapped = FileSizeMapped
 			'_newlineCounter = New kCura.Utility.File.Instance.LineCounter
 			'_newlineCounter.Path = LoadFile.FilePath
 			Me.ProcessObserver.InputArgs = LoadFile.FilePath
+			
 			If (CType(_loadFileImporter.ReadFile(LoadFile.FilePath), Boolean)) AndAlso Not _hasRunPRocessComplete Then
 				If _loadFileImporter.HasErrors Then
 					Me.ProcessObserver.RaiseProcessCompleteEvent(False, System.Guid.NewGuid.ToString, True)
@@ -88,6 +116,7 @@ Namespace kCura.WinEDDS
 			Else
 				Me.ProcessObserver.RaiseStatusEvent("", "Import aborted")
 			End If
+			
 		End Sub
 
 		Private Sub AuditRun(ByVal success As Boolean, ByVal runID As String)
