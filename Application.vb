@@ -1308,7 +1308,7 @@ Namespace kCura.EDDS.WinForm
 				serializer.Serialize(sw.BaseStream, fileObject)
 				sw.Close()
 			Catch ex As System.Exception
-				MsgBox("Save Falied", MsgBoxStyle.Critical)
+				MsgBox("Save Failed" + vbCrLf + ex.Message, MsgBoxStyle.Critical)
 				Try
 					sw.Close()
 				Catch
