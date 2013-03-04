@@ -224,6 +224,7 @@ Namespace kCura.WinEDDS
 					Next
 					ExportChunk(DirectCast(artifactIDs.ToArray(GetType(Int32)), Int32()), records)
 					artifactIDs.Clear()
+					records = Nothing
 					fileCount = 0
 				End If
 				If _halt Then Exit While
