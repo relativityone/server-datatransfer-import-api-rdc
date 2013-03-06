@@ -986,6 +986,7 @@ Namespace kCura.EDDS.WinForm
 			_nativeFilePathField.Items.Clear()
 			_destinationFolderPath.Items.Clear()
 			_loadNativeFiles.Checked = LoadFile.LoadNativeFiles
+			_firstLineContainsColumnNames.Checked = LoadFile.FirstLineContainsHeaders
 			_extractedTextValueContainsFileLocation.Checked = LoadFile.FullTextColumnContainsFileLocation
 			_fullTextFileEncodingPicker.Enabled = _extractedTextValueContainsFileLocation.Checked
 			_overwriteDropdown.SelectedItem = Me.GetOverwriteDropdownItem(LoadFile.OverwriteDestination)
