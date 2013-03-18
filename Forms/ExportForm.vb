@@ -2083,7 +2083,7 @@ Public Class ExportForm
 	End Function
 
 	Private Function GetTextFields(ByVal unfilteredList As List(Of ViewFieldInfo)) As List(Of ViewFieldInfo)
-		Return (From field In unfilteredList Where field.FieldType = Relativity.FieldTypeHelper.FieldType.Text Select field).ToList()
+		Return (From field In unfilteredList Where field.FieldType = Relativity.FieldTypeHelper.FieldType.Text OrElse field.FieldType = Relativity.FieldTypeHelper.FieldType.OffTableText Select field).ToList()
 	End Function
 
 	Private Sub RefreshMenu_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles RefreshMenu.Click
