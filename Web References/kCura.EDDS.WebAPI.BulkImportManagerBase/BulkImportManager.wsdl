@@ -217,6 +217,7 @@
           <s:enumeration value="User" />
           <s:enumeration value="LayoutText" />
           <s:enumeration value="Objects" />
+          <s:enumeration value="OffTableText" />
         </s:restriction>
       </s:simpleType>
       <s:simpleType name="ImportBehaviorChoice">
