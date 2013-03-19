@@ -1090,7 +1090,7 @@ Namespace kCura.WinEDDS
 				Dim field As WinEDDS.ViewFieldInfo = DirectCast(_parent.Columns(count), WinEDDS.ViewFieldInfo)
 				columnName = field.AvfColumnName
 				Dim val As Object = record(_ordinalLookup(columnName))
-				If field.FieldType = Relativity.FieldTypeHelper.FieldType.Text Then
+				If field.FieldType = Relativity.FieldTypeHelper.FieldType.Text OrElse field.FieldType = Relativity.FieldTypeHelper.FieldType.OffTableText Then
 					If Me.Settings.LoadFileIsHtml Then
 						extractedTextByteCount += Me.ManageLongText(val, field, fullTextTempFile, doc, "<td>", "</td>")
 					Else

@@ -127,7 +127,7 @@ Namespace kCura.WinEDDS
 						field.Value = LoadFileReader.GetStringArrayFromDelimitedFieldValue(value, _settings.MultiRecordDelimiter)
 					Case Relativity.FieldTypeHelper.FieldType.Varchar
 						field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(Me.GetNullableFixedString(value, column, field.TextLength, field.DisplayName))
-					Case Relativity.FieldTypeHelper.FieldType.Text
+					Case Relativity.FieldTypeHelper.FieldType.Text, Relativity.FieldTypeHelper.FieldType.OffTableText
 						If _settings.FullTextColumnContainsFileLocation Then
 							field.Value = value
 						Else

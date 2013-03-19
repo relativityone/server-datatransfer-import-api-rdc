@@ -149,6 +149,7 @@
           <s:enumeration value="Instance" />
           <s:enumeration value="CustomPage" />
           <s:enumeration value="AgentType" />
+          <s:enumeration value="InstallEventHandler" />
         </s:restriction>
       </s:simpleType>
       <s:simpleType name="StatusCode">

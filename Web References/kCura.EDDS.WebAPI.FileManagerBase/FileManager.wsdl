@@ -279,6 +279,21 @@
           </s:sequence>
         </s:complexType>
       </s:element>
+      <s:element name="GetBatesByImageGuid">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
+            <s:element minOccurs="0" maxOccurs="1" name="guid" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetBatesByImageGuidResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetBatesByImageGuidResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
       <s:element name="GetFileByGuid">
         <s:complexType>
           <s:sequence>
@@ -414,6 +429,12 @@
   <wsdl:message name="RetrieveNativesFileSizeSoapOut">
     <wsdl:part name="parameters" element="tns:RetrieveNativesFileSizeResponse" />
   </wsdl:message>
+  <wsdl:message name="GetBatesByImageGuidSoapIn">
+    <wsdl:part name="parameters" element="tns:GetBatesByImageGuid" />
+  </wsdl:message>
+  <wsdl:message name="GetBatesByImageGuidSoapOut">
+    <wsdl:part name="parameters" element="tns:GetBatesByImageGuidResponse" />
+  </wsdl:message>
   <wsdl:message name="GetFileByGuidSoapIn">
     <wsdl:part name="parameters" element="tns:GetFileByGuid" />
   </wsdl:message>
@@ -492,6 +513,10 @@
     <wsdl:operation name="RetrieveNativesFileSize">
       <wsdl:input message="tns:RetrieveNativesFileSizeSoapIn" />
       <wsdl:output message="tns:RetrieveNativesFileSizeSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetBatesByImageGuid">
+      <wsdl:input message="tns:GetBatesByImageGuidSoapIn" />
+      <wsdl:output message="tns:GetBatesByImageGuidSoapOut" />
     </wsdl:operation>
     <wsdl:operation name="GetFileByGuid">
       <wsdl:input message="tns:GetFileByGuidSoapIn" />
@@ -636,6 +661,15 @@
     </wsdl:operation>
     <wsdl:operation name="RetrieveNativesFileSize">
       <soap:operation soapAction="http://www.kCura.com/EDDS/FileManager/RetrieveNativesFileSize" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetBatesByImageGuid">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/FileManager/GetBatesByImageGuid" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -801,6 +835,15 @@
     </wsdl:operation>
     <wsdl:operation name="RetrieveNativesFileSize">
       <soap12:operation soapAction="http://www.kCura.com/EDDS/FileManager/RetrieveNativesFileSize" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetBatesByImageGuid">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/FileManager/GetBatesByImageGuid" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
