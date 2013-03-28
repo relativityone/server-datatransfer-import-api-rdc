@@ -1007,7 +1007,7 @@ Namespace kCura.WinEDDS
 			Dim destination As System.IO.TextWriter = Nothing
 			Dim downloadedFileExists As Boolean = Not String.IsNullOrEmpty(downloadedTextFilePath) AndAlso System.IO.File.Exists(downloadedTextFilePath)
 			If textValue = Relativity.Constants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN Then
-				If Me.Settings.SelectedTextFields(0).AvfId = textField.AvfId AndAlso downloadedFileExists Then
+				If Me.Settings.SelectedTextFields IsNot Nothing AndAlso Me.Settings.SelectedTextFields(0).AvfId = textField.AvfId AndAlso downloadedFileExists Then
 					source = Me.GetLongTextStream(downloadedTextFilePath, textField)
 				Else
 					source = Me.GetLongTextStream(artifact, textField)
