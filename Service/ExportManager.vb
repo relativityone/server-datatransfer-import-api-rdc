@@ -77,6 +77,9 @@
 					Dim retval As Object() = MyBase.RetrieveResultsBlock(appID, runId, artifactTypeID, avfIds, chunkSize, displayMulticodesAsNested, multiValueDelimiter, nestedValueDelimiter, textPrecedenceAvfIds)
 					If Not retval Is Nothing Then
 						For Each row As Object() In retval
+							If row Is Nothing Then
+								Throw New System.Exception("Invalid (null) row retrieved from server")
+							End If
 							For i As Int32 = 0 To row.Length - 1
 								If TypeOf row(i) Is Byte() Then row(i) = System.Text.Encoding.Unicode.GetString(DirectCast(row(i), Byte()))
 							Next
