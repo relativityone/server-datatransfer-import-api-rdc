@@ -1378,7 +1378,6 @@ Public Class ExportForm
 		Dim d As DocumentFieldCollection = _application.CurrentFields(_exportFile.ArtifactTypeID, True)
 		Dim retval As Boolean = True
 		_exportFile.ObjectTypeName = _application.GetObjectTypeName(_exportFile.ArtifactTypeID)
-
 		If validateForm AndAlso Not Me.IsValid(abstractExportForm) Then Return False
 		If Not _application.IsConnected(_exportFile.CaseArtifactID, 10) Then Return False
 		_exportFile.FolderPath = _folderPath.Text
@@ -1446,7 +1445,7 @@ Public Class ExportForm
 			selectedViewFields.Add(field)
 		Next
 		_exportFile.SelectedViewFields = DirectCast(selectedViewFields.ToArray(GetType(ViewFieldInfo)), ViewFieldInfo())
-		If _textFieldPrecedencePicker.SelectedFields.Count > 0 Then
+		If Me.GetRightColumnTextFields.Count > 0 AndAlso _textFieldPrecedencePicker.SelectedFields.Count > 0 Then
 			_exportFile.SelectedTextFields = _textFieldPrecedencePicker.SelectedFields.ToArray()
 			_exportFile.ExportFullText = True
 		Else
@@ -1840,8 +1839,6 @@ Public Class ExportForm
 		Me.InitializeColumnSelecter()
 		Me.InitializeFileControls()
 
-		Dim selectedTextFields As List(Of ViewFieldInfo) = Me.GetRightColumnTextFields
-		_textFieldPrecedencePicker.SelectDefaultTextField(If(selectedTextFields.Count > 0, selectedTextFields.First(), Nothing))
 	End Sub
 
 	Private Sub _searchList_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _filters.SelectedIndexChanged
@@ -1850,8 +1847,7 @@ Public Class ExportForm
 			Dim textFields As List(Of ViewFieldInfo) = GetAllLongTextFields()
 			textFields.Sort()
 			_textFieldPrecedencePicker.AllAvailableLongTextFields = textFields
-			Dim selectedTextFields As List(Of ViewFieldInfo) = Me.GetRightColumnTextFields
-			_textFieldPrecedencePicker.SelectDefaultTextField(If(selectedTextFields.Count > 0, selectedTextFields.First(), Nothing))
+			_textFieldPrecedencePicker.SelectDefaultTextField(Nothing)
 		End If
 	End Sub
 
