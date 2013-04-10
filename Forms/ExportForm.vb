@@ -1355,6 +1355,11 @@ Public Class ExportForm
 			If _textFileEncoding.SelectedEncoding Is Nothing Then
 				AppendErrorMessage(msg, "No encoding selected for text field files.")
 			End If
+			If _textFieldPrecedencePicker.SelectedFields IsNot Nothing Then
+				If _textFieldPrecedencePicker.SelectedFields.Count = 0 Then
+					AppendErrorMessage(msg, "When exporting text field as files is selected, you must set text precedence.")
+				End If
+			End If
 		End If
 		If Me.CreateVolume Then
 			If Not _subdirectoryImagePrefix.Text.Trim <> "" Then AppendErrorMessage(msg, "Subdirectory Image Prefix cannot be blank.")
