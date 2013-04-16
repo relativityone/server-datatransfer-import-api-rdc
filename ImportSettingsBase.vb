@@ -44,7 +44,7 @@ Namespace kCura.Relativity.DataReaderClient
 		End Property
 
 		''' <summary>
-		''' Indicates the Import Destination folder, under which documents and objects, as well as folders containing documents or objects, are built.
+		''' '
 		''' </summary>
 		Public Property DestinationFolderArtifactID() As Int32
 
