@@ -1450,7 +1450,7 @@ Public Class ExportForm
 			selectedViewFields.Add(field)
 		Next
 		_exportFile.SelectedViewFields = DirectCast(selectedViewFields.ToArray(GetType(ViewFieldInfo)), ViewFieldInfo())
-		If Me.GetRightColumnTextFields.Count > 0 AndAlso _textFieldPrecedencePicker.SelectedFields.Count > 0 Then
+		If _textFieldPrecedencePicker.SelectedFields.Count > 0 Then
 			_exportFile.SelectedTextFields = _textFieldPrecedencePicker.SelectedFields.ToArray()
 			_exportFile.ExportFullText = True
 		Else
