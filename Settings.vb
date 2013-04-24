@@ -53,7 +53,7 @@ Namespace kCura.Relativity.DataReaderClient
 		Public Property DisableNativeValidation As Boolean?
 
 		''' <summary>
-		''' Field name that contains ???
+		''' Indicates the name of a metadata field used to build the folder structure for the workspace.  All folders are built under the Import Destination folder, indicated by the DestinationFolderArtifactID.
 		''' </summary>
 		Public Property FolderPathSourceFieldName() As String
 
