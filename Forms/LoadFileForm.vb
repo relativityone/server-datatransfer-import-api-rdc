@@ -1005,7 +1005,7 @@ Namespace kCura.EDDS.WinForm
 			End If
 			RefreshNativeFilePathFieldAndFileColumnHeaders()
 			If Not Me.EnsureConnection() Then Exit Sub
-			Dim caseFields As String() = _application.GetNonFileCaseFields(LoadFile.CaseInfo.ArtifactID, Me.LoadFile.ArtifactTypeID, True)
+			Dim caseFields As String() = _application.GetNonFileCaseFields(LoadFile.CaseInfo.ArtifactID, _application.ArtifactTypeID, True)
 			If loadFileObjectUpdatedFromFile Then
 				Dim columnHeaders As String()
 				If System.IO.File.Exists(Me.LoadFile.FilePath) Then
