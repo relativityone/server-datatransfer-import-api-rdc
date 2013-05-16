@@ -1210,8 +1210,6 @@ Public Class ExportForm
 					AppendErrorMessage(msg, "No file name source selected")
 				End If
 			End If
-			Dim defaultSelectedIds As New System.Collections.ArrayList
-			If _filters.SelectedItem IsNot Nothing Then defaultSelectedIds = DirectCast(Me.ExportFile.ArtifactAvfLookup(CType(_filters.SelectedValue, Int32)), ArrayList)
 		End If
 		If _dataFileEncoding.SelectedEncoding Is Nothing Then
 			AppendErrorMessage(msg, "No encoding selected for metadata file.")
