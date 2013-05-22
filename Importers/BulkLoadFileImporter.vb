@@ -1082,10 +1082,6 @@ Namespace kCura.WinEDDS
 									_outputNativeFileWriter.Write("0")
 								End If
 							End If
-					ElseIf field.Type = Relativity.FieldTypeHelper.FieldType.Decimal OrElse
-					 field.Type = Relativity.FieldTypeHelper.FieldType.Currency Then
-						Dim d As String = CDec(field.Value).ToString(System.Globalization.CultureInfo.InvariantCulture)
-						_outputNativeFileWriter.Write(d)
 						Else
 							_outputNativeFileWriter.Write(field.Value)
 						End If
