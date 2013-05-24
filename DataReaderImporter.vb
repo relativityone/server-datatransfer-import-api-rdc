@@ -6,6 +6,17 @@ Namespace kCura.WinEDDS.ImportExtension
 
 		Private _sourceReader As System.Data.IDataReader
 		Public Property OnBehalfOfUserToken As String
+
+		Private _temporaryLocalDirectory As String
+		Public Property TemporaryLocalDirectory As String
+			Get
+				Return _temporaryLocalDirectory
+			End Get
+			Set(value As String)
+				_temporaryLocalDirectory = value
+			End Set
+		End Property
+
 		''' <summary>
 		''' Constructs a new importer that loads the provided <paramref name="loadFile" />
 		''' and responds to events fired on the provided <paramref name="controller" />.
@@ -18,18 +29,53 @@ Namespace kCura.WinEDDS.ImportExtension
 		''' was used to create the bulk load file. Line delimiters are a field
 		''' delimiter followed by a new line.</param>
 		Public Sub New(ByVal loadFile As kCura.WinEDDS.ImportExtension.DataReaderLoadFile, ByVal controller As kCura.Windows.Process.Controller, ByVal bulkLoadFileFieldDelimiter As String)
-			MyBase.New(loadFile, controller, 0, True, System.Guid.NewGuid, True, bulkLoadFileFieldDelimiter)
+			Me.New(loadFile, controller, bulkLoadFileFieldDelimiter, Nothing, InitializeArtifactReader:=True)
+		End Sub
+
+		''' <summary>
+		''' Constructs a new importer that loads the provided <paramref name="loadFile" />
+		''' and responds to events fired on the provided <paramref name="controller" />.
+		''' </summary>
+		''' <param name="loadFile">Information about the data to load into the
+		''' importer</param>
+		''' <param name="controller">A controller that can send events to
+		''' the process that is importing</param>
+		''' <param name="bulkLoadFileFieldDelimiter">The field delimiter that
+		''' was used to create the bulk load file. Line delimiters are a field
+		''' delimiter followed by a new line.</param>
+		''' <param name="temporaryLocalDirectory">This directory is used if kcuramarkerfilename is a field in the table.  
+		''' Files are copied to this location and their names are changed before being imported to Relativity</param>
+		''' <param name="initializeArtifactReader">If True, the ArtifactReader is created and initialized within the constructor.
+		''' If False, you should initialize the artifact reader later by calling Initialize().</param>
+		Public Sub New(loadFile As kCura.WinEDDS.ImportExtension.DataReaderLoadFile, controller As kCura.Windows.Process.Controller, bulkLoadFileFieldDelimiter As String, temporaryLocalDirectory As String, initializeArtifactReader As Boolean)
+			MyBase.New(loadFile, controller, 0, True, True, System.Guid.NewGuid, True, bulkLoadFileFieldDelimiter, initializeArtifactReader)
+
 			Me.OIFileIdColumnName = loadFile.OIFileIdColumnName
 			Me.OIFileIdMapped = loadFile.OIFileIdMapped
 			Me.OIFileTypeColumnName = loadFile.OIFileTypeColumnName
 			Me.FileSizeMapped = loadFile.FileSizeMapped
 			Me.FileSizeColumn = loadFile.FileSizeColumn
+
+			If temporaryLocalDirectory IsNot Nothing Then
+				Me.TemporaryLocalDirectory = temporaryLocalDirectory
+			End If
+		End Sub
+
+		Public Overridable Sub Initialize()
+			If _artifactReader Is Nothing Then
+				Me.InitializeArtifactReader()
+			End If
 		End Sub
 
 		Overrides Sub OnSettingsObjectCreate(settings As kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo)
 			settings.OnBehalfOfUserToken = Me.OnBehalfOfUserToken
 		End Sub
 
+		''' <summary>
+		''' This method has the side effect of populating various properties for _settings
+		''' </summary>
+		''' <returns></returns>
+		''' <remarks></remarks>
 		Protected Overrides Function GetArtifactReader() As kCura.WinEDDS.Api.IArtifactReader
 			Dim collection As New kCura.WinEDDS.Api.ArtifactFieldCollection
 			Dim thisSettings As kCura.WinEDDS.ImportExtension.DataReaderLoadFile = DirectCast(_settings, kCura.WinEDDS.ImportExtension.DataReaderLoadFile)
@@ -91,7 +137,8 @@ Namespace kCura.WinEDDS.ImportExtension
 				columnIndex = columnIndex + 1
 			Next
 			Dim settings As New FileSettings() With {.IDColumnName = OIFileIdColumnName, .OIFileIdMapped = OIFileIdMapped, .TypeColumnName = OIFileTypeColumnName, .FileSizeColumn = FileSizeColumn, .FileSizeMapped = FileSizeMapped}
-			Dim retval As New DataReaderReader(New DataReaderReaderInitializationArgs(collection, _settings.ArtifactTypeID), _settings, _sourceReader, settings)
+			Dim initalizationArgs As New DataReaderReaderInitializationArgs(collection, _settings.ArtifactTypeID) With {.TemporaryLocalDirectory = TemporaryLocalDirectory}
+			Dim retval As New DataReaderReader(initalizationArgs, _settings, _sourceReader, settings)
 			Return retval
 		End Function
 
