@@ -605,6 +605,16 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
                 Me.auditLevelField = value
             End Set
         End Property
+        
+        '''<remarks/>
+        Public Property OverlayArtifactID() As Integer
+            Get
+                Return Me.overlayArtifactIDField
+            End Get
+            Set
+                Me.overlayArtifactIDField = value
+            End Set
+        End Property
     End Class
     
     '''<remarks/>
