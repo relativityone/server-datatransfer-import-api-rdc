@@ -49,6 +49,7 @@ Namespace kCura.WinEDDS
 		Private _outputCodeFileWriter As System.IO.StreamWriter
 		Private _outputObjectFileWriter As System.IO.StreamWriter
 		Private _caseInfo As Relativity.CaseInfo
+		Private _overlayArtifactID As Int32
 
 		Private _runID As String = System.Guid.NewGuid.ToString.Replace("-", "_")
 		Private _uploadKey As String
@@ -342,6 +343,7 @@ Namespace kCura.WinEDDS
 			_settings = args
 			_processID = processID
 			_startLineNumber = args.StartLineNumber
+			_overlayArtifactID = args.IdentityFieldId
 
 			If String.IsNullOrEmpty(bulkLoadFileFieldDelimiter) Then
 				Throw New ArgumentNullException("bulkLoadFileFieldDelimiter")
@@ -778,7 +780,7 @@ Namespace kCura.WinEDDS
 		Private Function GetSettingsObject() As kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo
 			Dim retval As kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo = Nothing
 			If _artifactTypeID = Relativity.ArtifactType.Document Then
-				retval = New kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo With {.DisableUserSecurityCheck = Me.DisableUserSecurityCheck, .AuditLevel = Me.AuditLevel}
+				retval = New kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo With {.DisableUserSecurityCheck = Me.DisableUserSecurityCheck, .AuditLevel = Me.AuditLevel, .OverlayArtifactID = _overlayArtifactID}
 			Else
 				Dim settings As New kCura.EDDS.WebAPI.BulkImportManagerBase.ObjectLoadInfo With {.DisableUserSecurityCheck = Me.DisableUserSecurityCheck, .AuditLevel = Me.AuditLevel}
 				settings.ArtifactTypeID = _artifactTypeID
