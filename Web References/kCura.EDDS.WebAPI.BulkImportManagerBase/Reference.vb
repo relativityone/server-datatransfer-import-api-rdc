@@ -504,6 +504,8 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
         
         Private auditLevelField As ImportAuditLevel
         
+        Private overlayArtifactIDField As Integer
+        
         '''<remarks/>
         Public Property DisableUserSecurityCheck() As Boolean
             Get
@@ -959,6 +961,8 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
         
         Private bulkLoadFileFieldDelimiterField As String
         
+        Private overlayArtifactIDField As Integer
+        
         Private keyFieldArtifactIDField As Integer
         
         '''<remarks/>
@@ -1098,6 +1102,16 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
             End Get
             Set
                 Me.bulkLoadFileFieldDelimiterField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property OverlayArtifactID() As Integer
+            Get
+                Return Me.overlayArtifactIDField
+            End Get
+            Set
+                Me.overlayArtifactIDField = value
             End Set
         End Property
         
