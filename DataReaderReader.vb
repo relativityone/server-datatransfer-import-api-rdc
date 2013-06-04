@@ -242,9 +242,9 @@ Namespace kCura.WinEDDS.ImportExtension
 									Try
 										'If _KCURAMARKERFILENAME is a column in the table, use it for the filename.  If not, use original filename.
 										Dim tempString As String = _reader.Item(_KCURAMARKERFILENAME).ToString
-										newLocation = _tempLocalDirectory & _reader.Item(_KCURAMARKERFILENAME).ToString
+										newLocation = System.IO.Path.Combine(_tempLocalDirectory, _reader.Item(_KCURAMARKERFILENAME).ToString())
 									Catch ex As Exception
-										newLocation = _tempLocalDirectory & System.IO.Path.GetFileName(field.ValueAsString)
+										newLocation = System.IO.Path.Combine(_tempLocalDirectory, System.IO.Path.GetFileName(field.ValueAsString))
 									End Try
 									If System.IO.File.Exists(newLocation) Then
 										'Import API file access denied when importing read only files

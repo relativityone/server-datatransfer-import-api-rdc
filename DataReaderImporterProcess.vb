@@ -53,7 +53,7 @@ Namespace kCura.WinEDDS.ImportExtension
 		Dim _temporaryLocalDirectory As String = Nothing
 
 		Protected Overrides Sub Execute()
-			_temporaryLocalDirectory = System.IO.Path.GetTempPath() & "FlexMigrationFiles-" & System.Guid.NewGuid().ToString()
+			_temporaryLocalDirectory = System.IO.Path.GetTempPath() & "FlexMigrationFiles-" & System.Guid.NewGuid().ToString() & System.IO.Path.DirectorySeparatorChar
 			MyBase.Execute()
 			If System.IO.Directory.Exists(_temporaryLocalDirectory) Then System.IO.Directory.Delete(_temporaryLocalDirectory, True)
 		End Sub
