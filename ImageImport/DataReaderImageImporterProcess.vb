@@ -27,8 +27,6 @@ Namespace kCura.WinEDDS.ImportExtension
 
 		Protected Overrides Sub Execute()
 			MyBase.Execute()
-			Dim tempdir As String = System.IO.Path.GetTempPath & "FlexMigrationFiles\"
-			If System.IO.Directory.Exists(tempdir) Then System.IO.Directory.Delete(tempdir, True)
 		End Sub
 
 	End Class
