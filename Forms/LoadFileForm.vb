@@ -1530,13 +1530,17 @@ Namespace kCura.EDDS.WinForm
 
 		Private Function FullTextColumnIsMapped() As Boolean
 			Try
-				Dim ftfname As String = _application.CurrentFields(10).FullText.FieldName
-				Dim field As String
-				For Each field In _fieldMap.FieldColumns.RightListBoxItems
-					If field.ToLower = ftfname.ToLower Then
-						Return True
-					End If
-				Next
+				Dim docFieldObj As DocumentField = _application.CurrentFields(10).FullText
+				'If the LoadFile form is being used to load an object instead of a document, then FullText will be Nothing.
+				If docFieldObj IsNot Nothing Then
+					Dim ftfname As String = docFieldObj.FieldName
+					Dim field As String
+					For Each field In _fieldMap.FieldColumns.RightListBoxItems
+						If field.ToLower = ftfname.ToLower Then
+							Return True
+						End If
+					Next
+				End If
 				Return False
 			Catch
 				Return False
