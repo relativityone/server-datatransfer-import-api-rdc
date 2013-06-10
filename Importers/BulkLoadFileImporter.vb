@@ -715,13 +715,13 @@ Namespace kCura.WinEDDS
 			_timekeeper.MarkEnd("ManageDocumentMetadata_ProgressEvent")
 		End Sub
 
-		Protected Function BulkImport(ByVal settings As kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo, ByVal includeExtractedTextEncoding As Boolean, ByVal rootFolderID As Int32) As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults
+		Protected Function BulkImport(ByVal settings As kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo, ByVal includeExtractedTextEncoding As Boolean) As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults
 			If BatchSizeHistoryList.Count = 0 Then BatchSizeHistoryList.Add(ImportBatchSize)
 			Dim tries As Int32 = NumberOfRetries()
 			Dim retval As New kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults
 			While tries > 0
 				Try
-					retval = BatchBulkImport(settings, includeExtractedTextEncoding, rootFolderID)
+					retval = BatchBulkImport(settings, includeExtractedTextEncoding)
 					Exit While
 				Catch ex As Exception
 					tries -= 1
@@ -735,12 +735,12 @@ Namespace kCura.WinEDDS
 			Return retval
 		End Function
 
-		Private Function BatchBulkImport(ByVal settings As kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo, ByVal includeExtractedTextEncoding As Boolean, ByVal rootFolderID As Int32) As MassImportResults
+		Private Function BatchBulkImport(ByVal settings As kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo, ByVal includeExtractedTextEncoding As Boolean) As MassImportResults
 			Dim retval As MassImportResults
 			If TypeOf settings Is kCura.EDDS.WebAPI.BulkImportManagerBase.ObjectLoadInfo Then
 				retval = Me.BulkImportManager.BulkImportObjects(_caseInfo.ArtifactID, DirectCast(settings, kCura.EDDS.WebAPI.BulkImportManagerBase.ObjectLoadInfo), _copyFileToRepository)
 			Else
-				retval = Me.BulkImportManager.BulkImportNative(_caseInfo.ArtifactID, settings, _copyFileToRepository, includeExtractedTextEncoding, rootFolderID)
+				retval = Me.BulkImportManager.BulkImportNative(_caseInfo.ArtifactID, settings, _copyFileToRepository, includeExtractedTextEncoding)
 			End If
 			Return retval
 		End Function
@@ -930,7 +930,7 @@ Namespace kCura.WinEDDS
 			_statistics.MetadataBytes += (Me.GetFileLength(_outputCodeFilePath) + Me.GetFileLength(outputNativePath) + Me.GetFileLength(_outputObjectFilePath))
 			start = System.DateTime.Now.Ticks
 
-			Dim runResults As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults = Me.BulkImport(settings, _fullTextColumnMapsToFileLocation, _folderID)
+			Dim runResults As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults = Me.BulkImport(settings, _fullTextColumnMapsToFileLocation)
 
 			_statistics.ProcessRunResults(runResults)
 			'_runID = runResults.RunID
