@@ -3,6 +3,7 @@ Namespace kCura.WinEDDS.ImportExtension
 
 		Private _allFields As kCura.WinEDDS.Api.ArtifactFieldCollection
 		Private _artifactTypeID As Int32
+		Private _temporaryLocalDirectory As String
 
 		Public ReadOnly Property AllFields() As kCura.WinEDDS.Api.ArtifactFieldCollection
 			Get
@@ -14,6 +15,15 @@ Namespace kCura.WinEDDS.ImportExtension
 			Get
 				Return _artifactTypeID
 			End Get
+		End Property
+
+		Public Property TemporaryLocalDirectory As String
+			Get
+				Return _temporaryLocalDirectory
+			End Get
+			Set(value As String)
+				_temporaryLocalDirectory = value
+			End Set
 		End Property
 
 		Public Sub New(ByVal allFields As kCura.WinEDDS.Api.ArtifactFieldCollection, ByVal artifactTypeID As Int32)

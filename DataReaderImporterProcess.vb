@@ -37,19 +37,25 @@ Namespace kCura.WinEDDS.ImportExtension
 			LoadFile.OIFileTypeColumnName = OIFileTypeColumnName
 			LoadFile.FileSizeColumn = FileSizeColumn
 			LoadFile.FileSizeMapped = FileSizeMapped
-			Dim temp As DataReaderImporter = New DataReaderImporter(DirectCast(Me.LoadFile, kCura.WinEDDS.ImportExtension.DataReaderLoadFile), ProcessController, BulkLoadFileFieldDelimiter) With {.OnBehalfOfUserToken = Me.OnBehalfOfUserToken}
-			Dim dr As System.Data.IDataReader = temp.SourceData
+
+			'Avoid initializing the Artifact Reader in the constructor because it calls back to a virtual method (GetArtifactReader).  
+			Dim importer As DataReaderImporter = New DataReaderImporter(DirectCast(Me.LoadFile, kCura.WinEDDS.ImportExtension.DataReaderLoadFile), ProcessController, BulkLoadFileFieldDelimiter, _temporaryLocalDirectory, initializeArtifactReader:=False) With {.OnBehalfOfUserToken = Me.OnBehalfOfUserToken}
+			importer.Initialize()
+
+			Dim dr As System.Data.IDataReader = importer.SourceData
 			'These settings need to have [columnName]([index])
 			LoadFile.FolderStructureContainedInColumn = AddColumnIndexToName(dr, LoadFile.FolderStructureContainedInColumn)
 			LoadFile.NativeFilePathColumn = AddColumnIndexToName(dr, LoadFile.NativeFilePathColumn)
-			temp.DestinationFolder = AddColumnIndexToName(dr, temp.DestinationFolder)
-			Return DirectCast(temp, kCura.WinEDDS.BulkLoadFileImporter)
+			importer.DestinationFolder = AddColumnIndexToName(dr, importer.DestinationFolder)
+			Return DirectCast(importer, kCura.WinEDDS.BulkLoadFileImporter)
 		End Function
 
+		Dim _temporaryLocalDirectory As String = Nothing
+
 		Protected Overrides Sub Execute()
+			_temporaryLocalDirectory = System.IO.Path.GetTempPath() & "FlexMigrationFiles-" & System.Guid.NewGuid().ToString() & System.IO.Path.DirectorySeparatorChar
 			MyBase.Execute()
-			Dim tempdir As String = System.IO.Path.GetTempPath & "FlexMigrationFiles\"
-			If System.IO.Directory.Exists(tempdir) Then System.IO.Directory.Delete(tempdir, True)
+			If System.IO.Directory.Exists(_temporaryLocalDirectory) Then System.IO.Directory.Delete(_temporaryLocalDirectory, True)
 		End Sub
 
 	End Class

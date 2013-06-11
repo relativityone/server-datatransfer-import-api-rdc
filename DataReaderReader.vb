@@ -37,7 +37,11 @@ Namespace kCura.WinEDDS.ImportExtension
 			If _reader.IsClosed = True OrElse _reader.FieldCount = 0 Then Throw New ArgumentException("The reader being passed into this IDataReaderReader is empty")
 			_loadFileSettings = fieldMap
 			_allFields = args.AllFields
-			_tempLocalDirectory = System.IO.Path.GetTempPath + "FlexMigrationFiles\"
+			If args.TemporaryLocalDirectory Is Nothing Then
+				_tempLocalDirectory = System.IO.Path.GetTempPath + "FlexMigrationFiles\"
+			Else
+				_tempLocalDirectory = args.TemporaryLocalDirectory
+			End If
 
 			If Not fieldMap Is Nothing Then
 				For i As Integer = 0 To reader.FieldCount - 1
@@ -49,9 +53,16 @@ Namespace kCura.WinEDDS.ImportExtension
 			Else
 				_identifierFieldIndex = -1
 			End If
-
 		End Sub
 
+		Public Property TemporaryLocalDirectory As String
+			Get
+				Return _tempLocalDirectory
+			End Get
+			Set(value As String)
+				_tempLocalDirectory = value
+			End Set
+		End Property
 
 #Region " Artifact Reader Implementation "
 
@@ -231,12 +242,12 @@ Namespace kCura.WinEDDS.ImportExtension
 									Try
 										'If _KCURAMARKERFILENAME is a column in the table, use it for the filename.  If not, use original filename.
 										Dim tempString As String = _reader.Item(_KCURAMARKERFILENAME).ToString
-										newLocation = _tempLocalDirectory & _reader.Item(_KCURAMARKERFILENAME).ToString
+										newLocation = System.IO.Path.Combine(_tempLocalDirectory, _reader.Item(_KCURAMARKERFILENAME).ToString())
 									Catch ex As Exception
-										newLocation = _tempLocalDirectory & System.IO.Path.GetFileName(field.ValueAsString)
+										newLocation = System.IO.Path.Combine(_tempLocalDirectory, System.IO.Path.GetFileName(field.ValueAsString))
 									End Try
 									If System.IO.File.Exists(newLocation) Then
-										kCura.Utility.File.Instance.Delete(newLocation)
+										'Import API file access denied when importing read only files
 										Try
 											kCura.Utility.File.Instance.Delete(newLocation)
 										Catch ex As Exception
