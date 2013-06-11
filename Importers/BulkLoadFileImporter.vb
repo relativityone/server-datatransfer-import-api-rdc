@@ -49,6 +49,7 @@ Namespace kCura.WinEDDS
 		Private _outputCodeFileWriter As System.IO.StreamWriter
 		Private _outputObjectFileWriter As System.IO.StreamWriter
 		Private _caseInfo As Relativity.CaseInfo
+		Private _overlayArtifactID As Int32
 
 		Private _runID As String = System.Guid.NewGuid.ToString.Replace("-", "_")
 		Private _uploadKey As String
@@ -274,7 +275,7 @@ Namespace kCura.WinEDDS
 		''' <exception cref="ArgumentNullException">Thrown if <paramref name="bulkLoadFileFieldDelimiter"/>
 		''' is <c>null</c> or <c>String.Empty</c>.</exception>
 		Public Sub New(ByVal args As LoadFile, ByVal processController As kCura.Windows.Process.Controller, ByVal timeZoneOffset As Int32, ByVal initializeUploaders As Boolean, ByVal processID As Guid, ByVal doRetryLogic As Boolean, ByVal bulkLoadFileFieldDelimiter As String)
-			Me.New(args, processController, timeZoneOffset, True, initializeUploaders, processID, doRetryLogic, bulkLoadFileFieldDelimiter)
+			Me.New(args, processController, timeZoneOffset, True, initializeUploaders, processID, doRetryLogic, bulkLoadFileFieldDelimiter, InitializeArtifactReader:=True)
 		End Sub
 
 		''' <summary>
@@ -291,16 +292,33 @@ Namespace kCura.WinEDDS
 		''' <exception cref="ArgumentNullException">Thrown if <paramref name="bulkLoadFileFieldDelimiter"/>
 		''' is <c>null</c> or <c>String.Empty</c>.</exception>
 		Public Sub New(ByVal args As LoadFile, ByVal processController As kCura.Windows.Process.Controller, ByVal timeZoneOffset As Int32, ByVal autoDetect As Boolean, ByVal initializeUploaders As Boolean, ByVal processID As Guid, ByVal doRetryLogic As Boolean, ByVal bulkLoadFileFieldDelimiter As String)
-			MyBase.New(args, timeZoneOffset, doRetryLogic, autoDetect)
+			Me.New(args, processController, timeZoneOffset, autoDetect, initializeUploaders, processID, doRetryLogic, bulkLoadFileFieldDelimiter, InitializeArtifactReader:=True)
+		End Sub
+
+		''' <summary>
+		''' Constructs a new importer that will prepare a bulk load file from a provided file.
+		''' </summary>
+		''' <param name="args">Information about the file being loaded</param>
+		''' <param name="processController">The process that is running</param>
+		''' <param name="timeZoneOffset">The running context's time zone offset from UTC</param>
+		''' <param name="initializeUploaders">Sets whether or not the uploaders should be initialized
+		''' for use</param>
+		''' <param name="processID">The identifier of the process running</param>
+		''' <param name="bulkLoadFileFieldDelimiter">Sets the field delimiter to use when writing
+		''' out the bulk load file. Line delimiters will be this value plus a line feed.</param>
+		''' <exception cref="ArgumentNullException">Thrown if <paramref name="bulkLoadFileFieldDelimiter"/>
+		''' is <c>null</c> or <c>String.Empty</c>.</exception>
+		Public Sub New(args As LoadFile, processController As kCura.Windows.Process.Controller, timeZoneOffset As Int32, autoDetect As Boolean, initializeUploaders As Boolean, processID As Guid, doRetryLogic As Boolean, bulkLoadFileFieldDelimiter As String, initializeArtifactReader As Boolean)
+			MyBase.New(args, timeZoneOffset, doRetryLogic, autoDetect, initializeArtifactReader)
 
 			' get an instance of the specific type of artifact reader so we can get the fieldmapped event
 
 			_overwrite = args.OverwriteDestination
 			If args.CopyFilesToDocumentRepository Then
-        'DEFECT: SF#226211, repositories without trailing \ caused import to fail. Changed to use Path.Combine. -tmh
+				'DEFECT: SF#226211, repositories without trailing \ caused import to fail. Changed to use Path.Combine. -tmh
 				Dim lastHalfPath As String = "EDDS" & args.CaseInfo.ArtifactID & "\"
-        _defaultDestinationFolderPath = Path.Combine(args.SelectedCasePath, lastHalfPath)
-        If args.ArtifactTypeID <> Relativity.ArtifactType.Document Then
+				_defaultDestinationFolderPath = Path.Combine(args.SelectedCasePath, lastHalfPath)
+				If args.ArtifactTypeID <> Relativity.ArtifactType.Document Then
 					For Each item As LoadFileFieldMap.LoadFileFieldMapItem In args.FieldMap
 						If Not item.DocumentField Is Nothing AndAlso item.NativeFileColumnIndex > -1 AndAlso item.DocumentField.FieldTypeID = Relativity.FieldTypeHelper.FieldType.File Then
 							_defaultDestinationFolderPath &= "File" & item.DocumentField.FieldID & "\"
@@ -325,6 +343,7 @@ Namespace kCura.WinEDDS
 			_settings = args
 			_processID = processID
 			_startLineNumber = args.StartLineNumber
+			_overlayArtifactID = args.IdentityFieldId
 
 			If String.IsNullOrEmpty(bulkLoadFileFieldDelimiter) Then
 				Throw New ArgumentNullException("bulkLoadFileFieldDelimiter")
@@ -761,7 +780,7 @@ Namespace kCura.WinEDDS
 		Private Function GetSettingsObject() As kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo
 			Dim retval As kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo = Nothing
 			If _artifactTypeID = Relativity.ArtifactType.Document Then
-				retval = New kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo With {.DisableUserSecurityCheck = Me.DisableUserSecurityCheck, .AuditLevel = Me.AuditLevel}
+				retval = New kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo With {.DisableUserSecurityCheck = Me.DisableUserSecurityCheck, .AuditLevel = Me.AuditLevel, .OverlayArtifactID = _overlayArtifactID}
 			Else
 				Dim settings As New kCura.EDDS.WebAPI.BulkImportManagerBase.ObjectLoadInfo With {.DisableUserSecurityCheck = Me.DisableUserSecurityCheck, .AuditLevel = Me.AuditLevel}
 				settings.ArtifactTypeID = _artifactTypeID
@@ -1082,6 +1101,10 @@ Namespace kCura.WinEDDS
 									_outputNativeFileWriter.Write("0")
 								End If
 							End If
+					ElseIf field.Type = Relativity.FieldTypeHelper.FieldType.Decimal OrElse
+					 field.Type = Relativity.FieldTypeHelper.FieldType.Currency Then
+						Dim d As String = CDec(field.Value).ToString(System.Globalization.CultureInfo.InvariantCulture)
+						_outputNativeFileWriter.Write(d)
 						Else
 							_outputNativeFileWriter.Write(field.Value)
 						End If
