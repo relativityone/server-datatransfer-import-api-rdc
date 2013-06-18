@@ -1,5 +1,8 @@
 ﻿Namespace kCura.Relativity.DataReaderClient
 
+	''' <summary>
+	''' Describes events that the import process can raise.
+	''' </summary>
 	Public Interface IImportNotifier
 		''' <summary>
 		''' Occurs when all the data for an import job has been processed.  Raised at the end of an import.

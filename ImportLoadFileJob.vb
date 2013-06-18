@@ -294,6 +294,11 @@ Namespace kCura.Relativity.DataReaderClient
 			Return returnField
 		End Function
 
+		''' <summary>
+		''' Validates Relativity, delimiter, native file, and extracted text settings.
+		''' </summary>
+		''' <returns></returns>
+		''' <remarks></remarks>
 		Protected Function IsSettingsValid() As Boolean
 
 
@@ -400,6 +405,10 @@ Namespace kCura.Relativity.DataReaderClient
 #End Region
 
 #Region "Private Routines"
+		''' <summary>
+		''' Cleans up and frees resources.
+		''' </summary>
+		''' <remarks></remarks>
 		Protected Overrides Sub Finalize()
 			MyBase.Finalize()
 		End Sub

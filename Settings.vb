@@ -1,4 +1,8 @@
 Namespace kCura.Relativity.DataReaderClient
+
+	''' <summary>
+	'''  Provides settings to manage the import process.
+	''' </summary>
 	Public Class Settings
 		Inherits ImportSettingsBase
 
