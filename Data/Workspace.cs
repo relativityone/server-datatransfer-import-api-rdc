@@ -28,7 +28,7 @@ namespace kCura.Relativity.ImportAPI.Data
 
 		// Not sure of the difference between this and the RootArtifactID???
 		/// <summary>
-		/// Indicates the root folder containing the workspace's documents.
+		/// Indicates the root folder of the workspace.
 		/// </summary>
 		public int RootFolderID { get; internal set; }
 
@@ -42,9 +42,9 @@ namespace kCura.Relativity.ImportAPI.Data
 		/// </summary>
 		public String DownloadHandlerURL { get; internal set; }
 
-		// no idea???
+		// not sure???
 		/// <summary>
-		/// 
+		/// Indicates the path to the workspace's documents.
 		/// </summary>
 		public String DocumentPath { get; internal set; }
 

@@ -95,7 +95,6 @@ namespace kCura.Relativity.ImportAPI
 		/// <summary>
 		/// Returns a collection of all workspaces that are available for the logged in user.
 		/// </summary>
-		/// <returns></returns>
 		public IEnumerable<Workspace> Workspaces()
 		{
 			var cm = GetCaseManager();
@@ -115,7 +114,6 @@ namespace kCura.Relativity.ImportAPI
 		/// Returns all production sets eligible for import.
 		/// </summary>
 		/// <param name="workspaceArtifactID">The artifact ID of the workspace holding the production sets.</param>
-		/// <returns></returns>
 		public IEnumerable<ProductionSet> GetProductionSets(int workspaceArtifactID)
 		{
 			var prodMan = GetProductionManager();
@@ -133,11 +131,42 @@ namespace kCura.Relativity.ImportAPI
 		/// </summary>
 		/// <param name="workspaceArtifactID">The artifact ID of the workspace holding the fields and artifact type.</param>
 		/// <param name="artifactTypeID">The ID of the artiface type with the applied fields.</param>
-		/// <returns></returns>
+		/// <remarks>
+		/// <list type="bullet">
+		///		<listheader>
+		///			<description>The returned collection excludes those fields with one of the following FieldCategories:</description>
+		///		</listheader>
+		///		<item>
+		///			<description>FieldCategory.AutoCreate</description>
+		///		</item>
+		///		<item>
+		///			<description>FieldCategory.Batch</description>
+		///		</item>
+		///		<item>
+		///			<description>FieldCategory.FileInfo</description>
+		///		</item>
+		///		<item>
+		///			<description>FieldCategory.FileSize</description>
+		///		</item>
+		///		<item>
+		///			<description>FieldCategory.MarkupSetMarker</description>
+		///		</item>
+		///		<item>
+		///			<description>FieldCategory.MultiReflected</description>
+		///		</item>
+		///		<item>
+		///			<description>FieldCategory.ProductionMarker</description>
+		///		</item>
+		///		<item>
+		///			<description>FieldCategory.Reflected</description>
+		///		</item>
+		/// </list>
+		/// 
+		/// </remarks>
 		public IEnumerable<Field> GetWorkspaceFields(int workspaceArtifactID, int artifactTypeID)
 		{
 			var fm = new WinEDDS.Service.FieldManager(_credentials, _cookieMonster);
-			//This returned collection contains fields excluding those with one of the following FieldCategorys:
+			//This returned collection contains fields excluding those with one of the following FieldCategories:
 			// FieldCategory.AutoCreate
 			// FieldCategory.Batch
 			// FieldCategory.FileInfo
@@ -169,7 +198,6 @@ namespace kCura.Relativity.ImportAPI
 		/// The returned object can be used to import a set of images.
 		/// Setting the username and password property for the job will not be required, as the credentials will be pre-populated using this method.
 		/// </summary>
-		/// <returns></returns>
 		public ImageImportBulkArtifactJob NewImageImportJob()
 		{
 			return new ImageImportBulkArtifactJob(_credentials, _cookieMonster, _userName, _password);
@@ -199,7 +227,6 @@ namespace kCura.Relativity.ImportAPI
 		/// The returned object can be used to import a set of native documents.
 		/// Setting the username and password property for the job is not required, because the credentials are pre-populated.
 		/// </summary>
-		/// <returns></returns>
 		public ImportBulkArtifactJob NewNativeDocumentImportJob()
 		{
 			return NewObjectImportJob(10);
@@ -223,7 +250,6 @@ namespace kCura.Relativity.ImportAPI
 		/// the workspace specified by <paramref name="caseArtifactID"/>.
 		/// </summary>
 		/// <param name="caseArtifactID">The artifact ID of the destination workspace.</param>
-		/// <returns></returns>
 		public UploadTypeEnum GetFileUploadMode(int caseArtifactID)
 		{
 			var cm = GetCaseManager();
@@ -236,7 +262,6 @@ namespace kCura.Relativity.ImportAPI
 		/// Returns all uploadable artifact types associated with a given case.
 		/// </summary>
 		/// <param name="caseArtifactID">The artifact ID of the case containing the artifact types.</param>
-		/// <returns></returns>
 		public IEnumerable<ArtifactType> GetUploadableArtifactTypes(int caseArtifactID)
 		{
 			var om = GetObjectTypeManager();
