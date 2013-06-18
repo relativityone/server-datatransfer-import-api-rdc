@@ -3,7 +3,7 @@ Imports System.Net
 Namespace kCura.Relativity.DataReaderClient
 
 	''' <summary>
-	''' Provides the functionality required to load data for an import job, and to retrieve messages from the OnMessage event.
+	''' Provides the functionality required to load data for an import job and to retrieve messages from the OnMessage event.
 	''' </summary>
 	''' <remarks></remarks>
 	Public Class ImportBulkArtifactJob
@@ -32,7 +32,7 @@ Namespace kCura.Relativity.DataReaderClient
 
 #Region "Constructors"
 		''' <summary>
-		''' Creates a new job that can bulk insert a large amount of artifacts.
+		''' Creates a new job to import artifacts in bulk.
 		''' </summary>
 		Public Sub New()
 			_controlNumberFieldName = "control number"
@@ -64,12 +64,29 @@ Namespace kCura.Relativity.DataReaderClient
 		''' <summary>
 		''' Occurs when a call is made to the Execute method. This event contains a status message.
 		''' </summary>
-		''' <param name="status"></param>
+		''' <param name="status">The status message.</param>
 		''' <remarks></remarks>
 		Public Event OnMessage(ByVal status As Status)
+		''' <summary>
+		''' Occurs when an error is found.
+		''' </summary>
+		''' <param name="row">The IDictionary containing the error.</param>
 		Public Event OnError(ByVal row As IDictionary)
+		''' <summary>
+		''' Occurs when all the data for an import job has been processed.  Raised at the end of an import.
+		''' </summary>
+		''' <param name="jobReport">The JobReport describing the completed import job.</param>
+		''' <remarks>Does not guarantee successful or error-free completion.</remarks>
 		Public Event OnComplete(ByVal jobReport As JobReport) Implements IImportNotifier.OnComplete
+		''' <summary>
+		''' Occurs when an import job suffers a fatal exception and aborts.  Raised at the end of an import.
+		''' </summary>
+		''' <param name="jobReport">The JobReport describing the failed import job.</param>
 		Public Event OnFatalException(ByVal jobReport As JobReport) Implements IImportNotifier.OnFatalException
+		''' <summary>
+		''' Occurs when a record has been processed.
+		''' </summary>
+		''' <param name="completedRow">The processed record.</param>
 		Public Event OnProgress(ByVal completedRow As Long) Implements IImportNotifier.OnProgress
 
 
@@ -520,8 +537,11 @@ Namespace kCura.Relativity.DataReaderClient
 			End Set
 		End Property
 
-		'TODO: Because these were public fields before (vs properties), no exception was thrown
-		' if value = Nothing; for compatibility that is the case here
+		'TODO: Because these were public fields before (vs properties), no exception was thrown if value = Nothing;
+		' for compatibility, that is still the case here
+		''' <summary>
+		''' Gets or sets the current settings for the import job.
+		''' </summary>
 		Public Property Settings() As Settings
 			Get
 				Return CType(_nativeSettings, Settings)
@@ -536,7 +556,7 @@ Namespace kCura.Relativity.DataReaderClient
 		''' </summary>
 		''' <value></value>
 		''' <returns></returns>
-		''' <remarks>For standard imports, the SourceIDataReader requires a generic IDataReader object, and operates as an iterator over a DataTable instance that contains the data source.</remarks>
+		''' <remarks>For standard imports, the SourceIDataReader requires a generic IDataReader object and operates as an iterator over a DataTable instance that contains the data source.</remarks>
 		Public Property SourceData() As SourceIDataReader
 			Get
 				Return _nativeDataReader

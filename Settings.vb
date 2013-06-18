@@ -23,16 +23,16 @@ Namespace kCura.Relativity.DataReaderClient
 		Public Property BulkLoadFileFieldDelimiter() As String
 
 		''' <summary>
-		''' If true, tries to use "Control Number" for the SelectedIdentifierField and
-		''' ignores SelectedIdentifierField. If false and SelectedIdentifierField is not
-		''' set, will use the default identifier field.
+		''' If True, tries to use "Control Number" for the SelectedIdentifierField and
+		''' ignores SelectedIdentifierField. If False and SelectedIdentifierField is not
+		''' set, uses the default identifier field.
 		''' </summary>
 		Public Property DisableControlNumberCompatibilityMode() As Boolean
 
 		''' <summary>
 		''' Enables or disables validation of the extracted text file location. 
 		''' </summary>
-		''' <remarks>Set this property to True if you want validation disabled. If validation is disabled, and an extracted text file doesn't exist, the current job will fail. By default, this property is set to False, so validation is enabled.</remarks>
+		''' <remarks>Set this property to True if you want validation disabled. If validation is disabled and an extracted text file doesn't exist, the current job will fail. By default, this property is set to False, so validation is enabled.</remarks>
 		Public Property DisableExtractedTextFileLocationValidation As Boolean
 
 		''' <summary>
@@ -75,7 +75,7 @@ Namespace kCura.Relativity.DataReaderClient
 		Friend Property OnBehalfOfUserToken As String
 
 		''' <summary>
-		''' This property is not used, and will be unavailable in future releases.
+		''' This property is not used and will be unavailable in future releases.
 		''' </summary>
 		<Obsolete()>
 		Public Property RowCount() As Int32
@@ -89,28 +89,33 @@ Namespace kCura.Relativity.DataReaderClient
 		Public Property OIFileIdMapped As Boolean
 
 		''' <summary>
-		''' Indicates the column that contains the OutsideInFileId on the <see cref="SourceIDataReader.SourceData">SourceData</see> property. Used in conjunction with the <see cref="OIFileIdColumnName">OIFileIdMapped</see> and <see cref="OIFileIdColumnName">FileSizeMapped</see> properties.
+		''' Indicates the column that contains the OutsideInFileId on the <see cref="SourceIDataReader.SourceData">SourceData</see> property. Used in conjunction with the 
+		'''		<see cref="OIFileIdColumnName">OIFileIdMapped</see> and <see cref="OIFileIdColumnName">FileSizeMapped</see> properties.
 		''' </summary>
 		''' <value></value>
 		''' <returns></returns>
-		''' <remarks>If <see cref="OIFileIdMapped">OIFileIdMapped</see> or <see cref="OIFileIdMapped">FileSizeMapped</see> is set to True, set this property to the value that indicates the <see cref="SourceIDataReader.SourceData">SourceData</see> column that contains the OutsideInFileId. To determine the file ID, call the kCura.OI.FileID.Manager.Instance.GetFileIDDataByFilePath() method.</remarks>
+		''' <remarks>If <see cref="OIFileIdMapped">OIFileIdMapped</see> or <see cref="OIFileIdMapped">FileSizeMapped</see> is set to True, set this property to the value that indicates the 
+		'''		<see cref="SourceIDataReader.SourceData">SourceData</see> column that contains the OutsideInFileId. To determine the file ID, call the 
+		'''		kCura.OI.FileID.Manager.Instance.GetFileIDDataByFilePath() method.</remarks>
 		Public Property OIFileIdColumnName As String
 
 		''' <summary>
-		''' Indicates the column that contains the OutsideInFileType on the <see cref="SourceIDataReader.SourceData">SourceData</see> property. Used in conjunction with the <see cref="OIFileIdColumnName">OIFileIdMapped</see> property.
+		''' Indicates the column that contains the OutsideInFileType on the <see cref="SourceIDataReader.SourceData">SourceData</see> property. Used in conjunction with the 
+		'''		<see cref="OIFileIdColumnName">OIFileIdMapped</see> property.
 		''' </summary>
 		''' <value></value>
 		''' <returns></returns>
-		''' <remarks>If the <see cref="OIFileIdMapped">OIFileIdMapped</see> property is to True, set this property to the value that indicates the <see cref="SourceIDataReader.SourceData">SourceData</see> column that contains the OutsideInFileType. To determine the file type, call the kCura.OI.FileID.Manager.Instance.GetFileIDDataByFilePath() method. </remarks>
+		''' <remarks>If the <see cref="OIFileIdMapped">OIFileIdMapped</see> property is to True, set this property to the value that indicates the 
+		'''		<see cref="SourceIDataReader.SourceData">SourceData</see> column that contains the OutsideInFileType. To determine the file type, call the 
+		'''		kCura.OI.FileID.Manager.Instance.GetFileIDDataByFilePath() method. </remarks>
 		Public Property OIFileTypeColumnName As String
-
 
 		''' <summary>
 		''' To skip file size checking, set this property to True.
 		''' </summary>
 		''' <value></value>
 		''' <returns></returns>
-		''' <remarks>If this value is True, <see cref="OIFileIdMapped">OIFileIdColumnName</see> and <see cref="OIFileIdMapped">FileSizeColumn</see> must be mapped.</remarks>
+		''' <remarks>If this value is True, <see cref="OIFileIdColumnName">OIFileIdColumnName</see> and <see cref="FileSizeColumn">FileSizeColumn</see> must be mapped.</remarks>
 		Public Property FileSizeMapped As Boolean
 
 		''' <summary>
