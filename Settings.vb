@@ -21,22 +21,28 @@ Namespace kCura.Relativity.DataReaderClient
 		Public Property ArtifactTypeId() As Int32
 
 		''' <summary>
-		''' Field delimiter to use when writing out the bulk load file. Line
-		''' delimiters will be this value plus a line feed.
+		''' Field delimiter to use when writing out the bulk load file.
 		''' </summary>
+		''' <remarks>
+		''' Line delimiters will be this value plus a line feed.
+		''' </remarks>
 		Public Property BulkLoadFileFieldDelimiter() As String
 
 		''' <summary>
+		''' Enables or disables the use of "Control Number" to override the SelectedIdentifierField.
+		''' </summary>
+		''' <remarks>
 		''' If True, tries to use "Control Number" for the SelectedIdentifierField and
 		''' ignores SelectedIdentifierField. If False and SelectedIdentifierField is not
 		''' set, uses the default identifier field.
-		''' </summary>
+		''' </remarks>
 		Public Property DisableControlNumberCompatibilityMode() As Boolean
 
 		''' <summary>
 		''' Enables or disables validation of the extracted text file location. 
 		''' </summary>
-		''' <remarks>Set this property to True if you want validation disabled. If validation is disabled and an extracted text file doesn't exist, the current job will fail. By default, this property is set to False, so validation is enabled.</remarks>
+		''' <remarks>Set this property to True if you want validation disabled. If validation is disabled and an extracted text file doesn't exist, the current job will fail.
+		''' By default, this property is set to False, so validation is enabled.</remarks>
 		Public Property DisableExtractedTextFileLocationValidation As Boolean
 
 		''' <summary>
@@ -57,8 +63,11 @@ Namespace kCura.Relativity.DataReaderClient
 		Public Property DisableNativeValidation As Boolean?
 
 		''' <summary>
-		''' Indicates the name of a metadata field used to build the folder structure for the workspace.  All folders are built under the Import Destination folder, indicated by the DestinationFolderArtifactID.
+		''' Indicates the name of a metadata field used to build the folder structure for the workspace.
 		''' </summary>
+		''' <remarks>
+		''' All folders are built under the Import Destination folder, indicated by the DestinationFolderArtifactID.
+		''' </remarks>
 		Public Property FolderPathSourceFieldName() As String
 
 		''' <summary>

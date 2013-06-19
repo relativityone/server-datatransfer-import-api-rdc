@@ -3,9 +3,8 @@ Imports System.Net
 Namespace kCura.Relativity.DataReaderClient
 
 	''' <summary>
-	''' Provides the functionality required to load data for an import job and to retrieve messages from the OnMessage event.
+	''' Provides the functionality for adding large numbers of artifacts to workspaces, setting import parameters, loading data, and retrieving messages from the OnMessage event.
 	''' </summary>
-	''' <remarks></remarks>
 	Public Class ImportBulkArtifactJob
 		Implements IImportNotifier
 
