@@ -15,9 +15,11 @@ using kCura.Relativity.DataReaderClient;
 namespace kCura.Relativity.ImportAPI
 {
 	/// <summary>
-	/// Provides methods for obtaining data on the current status of workspaces and cases.
-	/// Also provides methods that create jobs for importing images and native documents.
+	/// Provides methods for developing custom import utilities for documents, images, production sets, and Dynamic Objects.
 	/// </summary>
+	/// <remarks>
+	/// Also provides methods for retrieving workspaces, fields, and other objects.
+	/// </remarks>
 	public  class ImportAPI : IImportAPI
 	{
 		private String _userName;
@@ -35,10 +37,14 @@ namespace kCura.Relativity.ImportAPI
 		private ProductionManager _productionManager;
 
 		/// <summary>
-		/// Creates an instance of ImportAPI.  Username and Password are required (unless using Windows Authentication) and will be validated.
+		/// Creates an instance of ImportAPI.
 		/// </summary>
-		/// <param name="UserName">Username for the account you're logging in with</param>
-		/// <param name="Password">Password associated with the username</param>
+		/// <remarks>
+		/// User name and password are required (unless using Windows Authentication) and will be validated.
+		/// The ImportAPI tries to resolve the server name by reading the WebServiceURL key from the local app.config file.  If this fails, it checks the Windows Registry for the location set by the Relativity Desktop Client.
+		/// </remarks>
+		/// <param name="UserName">User name for the account you're logging in with.</param>
+		/// <param name="Password">Password associated with the user name.</param>
 		public ImportAPI(String UserName, String Password)
 		{
 			PerformLogin(UserName, Password, string.Empty );
@@ -71,22 +77,27 @@ namespace kCura.Relativity.ImportAPI
 
 
 		/// <summary>
-		/// Creates an instance of ImportAPI.  Username and password are required (unless using Windows Authentication) and will be validated
-		/// against the Relativity WebAPI instance located at <paramref name="WebServiceURL"/>.
+		/// Creates an instance of ImportAPI.
 		/// </summary>
-		/// <param name="UserName">Username for the account you're logging in with</param>
-		/// <param name="Password">Password for the user</param>
-		/// <param name="WebServiceURL">Location of the Relativity WebAPI instance</param>
+		/// <remarks>
+		/// User name and password are required (unless using Windows Authentication) and will be validated
+		/// against the Relativity WebAPI instance located at <paramref name="WebServiceURL"/>.
+		/// </remarks>
+		/// <param name="UserName">User name for the account you're logging in with.</param>
+		/// <param name="Password">Password for the user name.</param>
+		/// <param name="WebServiceURL">Location of the Relativity WebAPI instance.</param>
 		public ImportAPI(String UserName, String Password, String WebServiceURL)
 		{
 			PerformLogin(UserName, Password, WebServiceURL );
 		}
 
 		/// <summary>
-		/// Creates an instance of ImportAPI. This is for the use of WinAuth, and the user will be validated
-		/// against the Relativity WebAPI instance located at <paramref name="WebServiceURL"/>.
+		/// Creates an instance of ImportAPI with WinAuth.
 		/// </summary>
-		/// <param name="WebServiceURL">Location of the Relativity WebAPI instance</param>
+		/// <remarks>
+		/// The user will be validated against the Relativity WebAPI instance located at <paramref name="WebServiceURL"/>.
+		/// </remarks>
+		/// <param name="WebServiceURL">Location of the Relativity WebAPI instance.</param>
 		public ImportAPI(String WebServiceURL)
 		{
 			this.PerformLogin(null, null, WebServiceURL );
@@ -194,23 +205,28 @@ namespace kCura.Relativity.ImportAPI
 		}
 
 		/// <summary>
-		/// Returns a new instance of an ImageImportBulkArtifactJob.
-		/// The returned object can be used to import a set of images.
-		/// Setting the username and password property for the job will not be required, as the credentials will be pre-populated using this method.
+		/// Creates an ImageImportBulkArtifactJob with which to import a set of images.
 		/// </summary>
+		/// <returns>
+		/// Returns a new instance of an ImageImportBulkArtifactJob.
+		/// </returns>
+		/// <remarks>
+		/// Setting the user name and password property for the job is not required, because the credentials are pre-populated.
+		/// </remarks>
 		public ImageImportBulkArtifactJob NewImageImportJob()
 		{
 			return new ImageImportBulkArtifactJob(_credentials, _cookieMonster, _userName, _password);
 		}
 
 		/// <summary>
-		/// Returns a new instance of an ImageImportBulkArtifactJob.
-		/// The returned object can be used to import a set of production images.
-		/// Setting the username and password property for the job is not required, because the credentials are pre-populated.
+		/// Creates an ImageImportBulkArtifactJob with which to import a set of images into the given production set.
 		/// </summary>
+		/// <remarks>
+		/// Setting the user name and password property for the job is not required, because the credentials are pre-populated.
+		/// </remarks>
 		/// <param name="productionArtifactID">Artifact ID of the production set to hold the imported images.</param>
-		/// <returns>The returned ImageImportBulkArtifactJob object is identical to one returned
-		/// from NewImageImportJob(), with two changes. The Settings.ForProduction is already set to true,
+		/// <returns>Returns a new instance of an ImageImportBulkArtifactJob. It is identical to one returned
+		/// from NewImageImportJob(), with two changes: Settings.ForProduction is set to true,
 		/// and Settings.ProductionArtifactID = <paramref name="productionArtifactID"/>.
 		/// </returns>
 		public ImageImportBulkArtifactJob NewProductionImportJob(int productionArtifactID)
@@ -223,19 +239,25 @@ namespace kCura.Relativity.ImportAPI
 		}
 
 		/// <summary>
-		/// Returns a new instance of an ImportBulkArtifactJob.
-		/// The returned object can be used to import a set of native documents.
-		/// Setting the username and password property for the job is not required, because the credentials are pre-populated.
+		/// Creates an ImportBulkArtifactJob to be used to import a set of native documents.
 		/// </summary>
+		/// <returns>
+		/// Returns a new instance of an ImportBulkArtifactJob with Settings.ArtifactTypeId set to Document.
+		/// </returns>
+		/// <remarks>
+		/// Setting the user name and password property for the job is not required, because the credentials are pre-populated.
+		/// </remarks>
 		public ImportBulkArtifactJob NewNativeDocumentImportJob()
 		{
 			return NewObjectImportJob(10);
 		}
 
 		/// <summary>
-		/// Returns a new instance of an ImportBulkArtifactJob with the
-		/// instance's Settings.ArtifactTypeId property set to <paramref name="artifactTypeId"/>.
+		/// Creates an ImportBulkArtifactJob with which to import a set of artifacts of the given type.
 		/// </summary>
+		/// <returns>
+		/// Returns a new instance of an ImportBulkArtifactJob with the Settings.ArtifactTypeId property set to <paramref name="artifactTypeId"/>.
+		/// </returns>
 		/// <param name="artifactTypeId">The artifact type ID of the objects to be imported.</param>
 		public ImportBulkArtifactJob NewObjectImportJob(int artifactTypeId) {
 			var returnJob = new ImportBulkArtifactJob(_credentials, _cookieMonster, _userName, _password);
