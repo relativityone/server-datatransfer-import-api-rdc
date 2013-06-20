@@ -22,7 +22,7 @@ Namespace kCura.WinEDDS
 		Protected _multiValueSeparator As Char()
 		Protected _allCodes As kCura.Data.DataView
 		Protected _allCodeTypes As kCura.Data.DataView
-		Protected _folderID As Int32
+		Protected _folderID As Int32 'The destination folder id
 		Protected _caseSystemID As Int32
 		Protected _caseArtifactID As Int32
 		Protected _timeZoneOffset As Int32
