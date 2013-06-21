@@ -477,7 +477,7 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
     End Class
     
     '''<remarks/>
-    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.17929"),  _
+    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.18034"),  _
      System.SerializableAttribute(),  _
      System.Diagnostics.DebuggerStepThroughAttribute(),  _
      System.ComponentModel.DesignerCategoryAttribute("code"),  _
@@ -503,6 +503,8 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
         Private destinationFolderArtifactIDField As Integer
         
         Private auditLevelField As ImportAuditLevel
+        
+        Private overlayArtifactIDField As Integer
         
         '''<remarks/>
         Public Property DisableUserSecurityCheck() As Boolean
@@ -603,10 +605,20 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
                 Me.auditLevelField = value
             End Set
         End Property
+        
+        '''<remarks/>
+        Public Property OverlayArtifactID() As Integer
+            Get
+                Return Me.overlayArtifactIDField
+            End Get
+            Set
+                Me.overlayArtifactIDField = value
+            End Set
+        End Property
     End Class
     
     '''<remarks/>
-    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.17929"),  _
+    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.18034"),  _
      System.SerializableAttribute(),  _
      System.Xml.Serialization.XmlTypeAttribute([Namespace]:="http://www.kCura.com/EDDS/BulkImportManager")>  _
     Public Enum OverwriteType
@@ -622,7 +634,7 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
     End Enum
     
     '''<remarks/>
-    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.17929"),  _
+    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.18034"),  _
      System.SerializableAttribute(),  _
      System.Xml.Serialization.XmlTypeAttribute([Namespace]:="http://www.kCura.com/EDDS/BulkImportManager")>  _
     Public Enum ImportAuditLevel
@@ -639,7 +651,7 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
     
     '''<remarks/>
     <System.Xml.Serialization.XmlIncludeAttribute(GetType(FieldInfo)),  _
-     System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.17929"),  _
+     System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.18034"),  _
      System.SerializableAttribute(),  _
      System.Diagnostics.DebuggerStepThroughAttribute(),  _
      System.ComponentModel.DesignerCategoryAttribute("code"),  _
@@ -720,7 +732,7 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
     End Class
     
     '''<remarks/>
-    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.17929"),  _
+    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.18034"),  _
      System.SerializableAttribute(),  _
      System.Xml.Serialization.XmlTypeAttribute([Namespace]:="http://www.kCura.com/EDDS/BulkImportManager")>  _
     Public Enum FieldCategory
@@ -775,7 +787,7 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
     End Enum
     
     '''<remarks/>
-    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.17929"),  _
+    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.18034"),  _
      System.SerializableAttribute(),  _
      System.Xml.Serialization.XmlTypeAttribute([Namespace]:="http://www.kCura.com/EDDS/BulkImportManager")>  _
     Public Enum FieldType
@@ -830,7 +842,7 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
     End Enum
     
     '''<remarks/>
-    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.17929"),  _
+    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.18034"),  _
      System.SerializableAttribute(),  _
      System.Diagnostics.DebuggerStepThroughAttribute(),  _
      System.ComponentModel.DesignerCategoryAttribute("code"),  _
@@ -877,7 +889,7 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
     End Class
     
     '''<remarks/>
-    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.17929"),  _
+    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.18034"),  _
      System.SerializableAttribute(),  _
      System.Xml.Serialization.XmlTypeAttribute([Namespace]:="http://www.kCura.com/EDDS/BulkImportManager")>  _
     Public Enum ImportBehaviorChoice
@@ -893,7 +905,7 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
     End Enum
     
     '''<remarks/>
-    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.17929"),  _
+    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.18034"),  _
      System.SerializableAttribute(),  _
      System.Diagnostics.DebuggerStepThroughAttribute(),  _
      System.ComponentModel.DesignerCategoryAttribute("code"),  _
@@ -927,7 +939,7 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
     
     '''<remarks/>
     <System.Xml.Serialization.XmlIncludeAttribute(GetType(ObjectLoadInfo)),  _
-     System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.17929"),  _
+     System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.18034"),  _
      System.SerializableAttribute(),  _
      System.Diagnostics.DebuggerStepThroughAttribute(),  _
      System.ComponentModel.DesignerCategoryAttribute("code"),  _
@@ -962,7 +974,11 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
         
         Private bulkLoadFileFieldDelimiterField As String
         
+        Private overlayArtifactIDField As Integer
+        
         Private keyFieldArtifactIDField As Integer
+        
+        Private rootFolderIDField As Integer
         
         '''<remarks/>
         Public Property Range() As LoadRange
@@ -1105,6 +1121,16 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
         End Property
         
         '''<remarks/>
+        Public Property OverlayArtifactID() As Integer
+            Get
+                Return Me.overlayArtifactIDField
+            End Get
+            Set
+                Me.overlayArtifactIDField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
         Public Property KeyFieldArtifactID() As Integer
             Get
                 Return Me.keyFieldArtifactIDField
@@ -1113,10 +1139,20 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
                 Me.keyFieldArtifactIDField = value
             End Set
         End Property
+        
+        '''<remarks/>
+        Public Property RootFolderID() As Integer
+            Get
+                Return Me.rootFolderIDField
+            End Get
+            Set
+                Me.rootFolderIDField = value
+            End Set
+        End Property
     End Class
     
     '''<remarks/>
-    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.17929"),  _
+    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.18034"),  _
      System.SerializableAttribute(),  _
      System.Diagnostics.DebuggerStepThroughAttribute(),  _
      System.ComponentModel.DesignerCategoryAttribute("code"),  _
@@ -1138,7 +1174,7 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
     End Class
     
     '''<remarks/>
-    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.17929"),  _
+    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.18034"),  _
      System.SerializableAttribute(),  _
      System.Diagnostics.DebuggerStepThroughAttribute(),  _
      System.ComponentModel.DesignerCategoryAttribute("code"),  _
@@ -1171,7 +1207,7 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
     End Class
     
     '''<remarks/>
-    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.17929"),  _
+    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.18034"),  _
      System.SerializableAttribute(),  _
      System.Diagnostics.DebuggerStepThroughAttribute(),  _
      System.ComponentModel.DesignerCategoryAttribute("code"),  _
@@ -1241,7 +1277,7 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
     End Class
     
     '''<remarks/>
-    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.17929"),  _
+    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.18034"),  _
      System.SerializableAttribute(),  _
      System.Diagnostics.DebuggerStepThroughAttribute(),  _
      System.ComponentModel.DesignerCategoryAttribute("code"),  _

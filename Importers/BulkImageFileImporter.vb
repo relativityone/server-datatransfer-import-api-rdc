@@ -38,6 +38,7 @@ Namespace kCura.WinEDDS
 		Private _repositoryPath As String
 		Private _textRepositoryPath As String
 		Private _caseInfo As Relativity.CaseInfo
+		Private _overlayArtifactID As Int32
 
 		Private WithEvents _processController As kCura.Windows.Process.Controller
 		Protected _keyFieldDto As kCura.EDDS.WebAPI.FieldManagerBase.Field
@@ -199,6 +200,7 @@ Namespace kCura.WinEDDS
 			_settings = args
 			_processID = processID
 			_startLineNumber = args.StartLineNumber
+			_overlayArtifactID = args.IdentityFieldId
 
 			_batchSizeHistoryList = New System.Collections.Generic.List(Of Int32)
 		End Sub
@@ -317,7 +319,8 @@ Namespace kCura.WinEDDS
 			.Repository = _repositoryPath,
 			.UploadFullText = _replaceFullText,
 			.DisableUserSecurityCheck = Me.DisableUserSecurityCheck,
-			.AuditLevel = Me.AuditLevel
+			.AuditLevel = Me.AuditLevel,
+			.OverlayArtifactID = _overlayArtifactID
 			}
 			Return settings
 		End Function

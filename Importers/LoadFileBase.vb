@@ -22,7 +22,7 @@ Namespace kCura.WinEDDS
 		Protected _multiValueSeparator As Char()
 		Protected _allCodes As kCura.Data.DataView
 		Protected _allCodeTypes As kCura.Data.DataView
-		Protected _folderID As Int32
+		Protected _folderID As Int32 'The destination folder id
 		Protected _caseSystemID As Int32
 		Protected _caseArtifactID As Int32
 		Protected _timeZoneOffset As Int32
@@ -122,27 +122,40 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Protected Sub New(ByVal args As LoadFile, ByVal timezoneoffset As Int32, ByVal doRetryLogic As Boolean, ByVal autoDetect As Boolean)
+			Me.New(args, timezoneoffset, doRetryLogic, autoDetect, initializeArtifactReader:=True)
+		End Sub
+
+		Protected Sub New(args As LoadFile, timezoneoffset As Int32, doRetryLogic As Boolean, autoDetect As Boolean, initializeArtifactReader As Boolean)
 			_settings = args
 			OIFileIdColumnName = args.OIFileIdColumnName
 			OIFileIdMapped = args.OIFileIdMapped
 			OIFileTypeColumnName = args.OIFileTypeColumnName
 			FileSizeMapped = args.FileSizeMapped
 			FileSizeColumn = args.FileSizeColumn
-			_artifactReader = Me.GetArtifactReader
+
+			_timeZoneOffset = timezoneoffset
+			_autoDetect = autoDetect
+
+			InitializeManagers(args)
+
+			If initializeArtifactReader Then
+				Me.InitializeArtifactReader()
+			End If
+		End Sub
+
+		Protected Sub InitializeArtifactReader()
+			Dim args As LoadFile = _settings
+			_artifactReader = Me.GetArtifactReader()
 			_docFields = args.FieldMap.DocumentFields
 			_filePathColumn = args.NativeFilePathColumn
 			_firstLineContainsColumnNames = args.FirstLineContainsHeaders
 			_fieldMap = args.FieldMap
-
-			InitializeManagers(args)
 
 			_keyFieldID = args.IdentityFieldId
 			_multiValueSeparator = args.MultiRecordDelimiter.ToString.ToCharArray
 			_folderID = args.DestinationFolderID
 			_caseSystemID = args.CaseInfo.RootArtifactID
 			_caseArtifactID = args.CaseInfo.ArtifactID
-			_timeZoneOffset = timezoneoffset
-			_autoDetect = autoDetect
 			_uploadFiles = args.LoadNativeFiles
 			_createFolderStructure = args.CreateFolderStructure
 			_destinationFolder = args.FolderStructureContainedInColumn
@@ -154,7 +167,7 @@ Namespace kCura.WinEDDS
 			_hierarchicalMultiValueFieldDelmiter = args.HierarchicalValueDelimiter
 			_previewCodeCount = args.PreviewCodeCount
 			_startLineNumber = args.StartLineNumber
-			_codeValidator = Me.GetSingleCodeValidator
+			_codeValidator = Me.GetSingleCodeValidator()
 
 			MulticodeMatrix = New System.Collections.Hashtable
 			If _keyFieldID > 0 AndAlso args.OverwriteDestination.ToLower <> "strict" Then
