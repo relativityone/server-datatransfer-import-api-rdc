@@ -1329,24 +1329,6 @@ Public Class ExportForm
 					AppendErrorMessage(msg, "No file name source selected")
 				End If
 			End If
-			Dim batesFound As Boolean = False
-			Dim defaultSelectedIds As New System.Collections.ArrayList
-			If _filters.SelectedItem IsNot Nothing Then defaultSelectedIds = DirectCast(Me.ExportFile.ArtifactAvfLookup(CType(_filters.SelectedValue, Int32)), ArrayList)
-
-			For Each id As Integer In defaultSelectedIds
-				batesFound = False
-				For Each item As kCura.WinEDDS.ViewFieldInfo In _columnSelector.RightListBoxItems
-					If id = item.AvfId Then
-						batesFound = True
-						Exit For
-					End If
-				Next
-				If Not batesFound Then Exit For
-			Next
-
-			If Not batesFound Then
-				AppendErrorMessage(msg, "Bates fields are not selected columns")
-			End If
 		End If
 		If _dataFileEncoding.SelectedEncoding Is Nothing Then
 			AppendErrorMessage(msg, "No encoding selected for metadata file.")
