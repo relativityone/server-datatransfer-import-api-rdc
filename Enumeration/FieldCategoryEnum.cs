@@ -65,7 +65,7 @@ namespace kCura.Relativity.ImportAPI.Enumeration
 		MarkupSetMarker = 12,
 		// Whatever this means ???
 		/// <summary>
-		/// The field holds some sort of system.
+		/// The field holds a nonspecific system.
 		/// </summary>
 		GenericSystem = 13,
 		// Whatever this means ???

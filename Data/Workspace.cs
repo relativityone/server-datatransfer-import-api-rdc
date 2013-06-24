@@ -42,7 +42,6 @@ namespace kCura.Relativity.ImportAPI.Data
 		/// </summary>
 		public String DownloadHandlerURL { get; internal set; }
 
-		// not sure???
 		/// <summary>
 		/// Indicates the path to the workspace's documents.
 		/// </summary>

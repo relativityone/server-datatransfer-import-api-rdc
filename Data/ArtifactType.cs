@@ -6,7 +6,7 @@ using System.Text;
 namespace kCura.Relativity.ImportAPI.Data
 {
 	/// <summary>
-	/// Represents an artifact type, which uniquelly describes a category of artifact.
+	/// Represents an artifact type, which uniquely describes a category of artifact.
 	/// </summary>
     public class ArtifactType
     {

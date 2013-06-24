@@ -51,11 +51,11 @@ namespace kCura.Relativity.ImportAPI.Enumeration
 		/// </summary>
 		MultiCode = 8,
 		/// <summary>
-		/// The field holds a file. Not in use in Relativity.
+		/// The field holds a file. Not used by Relativity.
 		/// </summary>
 		File = 9,
 		/// <summary>
-		/// The field holds an object. Not in use in Relativity.
+		/// The field holds an object. Not used by Relativity.
 		/// </summary>
 		Object = 10,
 		/// <summary>

@@ -20,14 +20,14 @@ namespace kCura.Relativity.ImportAPI
 		/// <summary>
 		/// Returns all production sets belonging to the workspace.
 		/// </summary>
-		/// <param name="workspaceArtifactID">The artifact ID of the workspace.</param>
+		/// <param name="workspaceArtifactID">The ArtifactID of the workspace.</param>
 		IEnumerable<ProductionSet> GetProductionSets(int workspaceArtifactID);
 
 		/// <summary>
 		/// Returns all fields related to the given artifact type in the given workspace.
 		/// </summary>
-		/// <param name="workspaceArtifactID">The ID of the workspace holding the artifact type.</param>
-		/// <param name="artifactTypeID">The ID of the artifact type related to the fields.</param>
+		/// <param name="workspaceArtifactID">The ID of the workspace holding the fields.</param>
+		/// <param name="artifactTypeID">The ID of the ArtifactType.</param>
 		IEnumerable<Field> GetWorkspaceFields(int workspaceArtifactID, int artifactTypeID);
 
 		/// <summary>
@@ -52,7 +52,7 @@ namespace kCura.Relativity.ImportAPI
 		/// <summary>
 		/// Creates a new job to import objects in bulk.
 		/// </summary>
-		/// <param name="artifactTypeId">The ID of the artifact type that will be imported.</param>
+		/// <param name="artifactTypeId">The ID of the type of Artifacts that will be imported.</param>
 		/// <returns>Returns a new ImportBulkArtifactJob.</returns>
 		ImportBulkArtifactJob NewObjectImportJob(int artifactTypeId);
 
@@ -65,7 +65,7 @@ namespace kCura.Relativity.ImportAPI
 		/// <summary>
 		/// Returns a collection of the artifact types it is possible to upload.
 		/// </summary>
-		/// <param name="caseArtifactID">The ID of the case that will hold the artifacts.</param>
+		/// <param name="caseArtifactID">The ID of the case to which Artifacts of the returned ArtifactType can be uploaded.</param>
 		IEnumerable<ArtifactType> GetUploadableArtifactTypes(int caseArtifactID);
 	}
 }
