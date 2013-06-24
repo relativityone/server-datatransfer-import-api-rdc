@@ -75,7 +75,7 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
-		Public Shared ReadOnly Property WaitBeforeReconnect() As Int32		'Millisecodns
+		Public Shared ReadOnly Property WaitBeforeReconnect() As Int32		'Milliseconds
 			Get
 				Return 2000
 			End Get
