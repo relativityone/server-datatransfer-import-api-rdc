@@ -35,7 +35,7 @@ namespace kCura.Relativity.ImportAPI.Enumeration
 		/// </summary>
 		Text = 5,
 		/// <summary>
-		/// The field represents a list from which one item can be selected.
+		/// The field represents a single value selected from a list.
 		/// </summary>
 		Code = 5,
 		/// <summary>
@@ -43,19 +43,19 @@ namespace kCura.Relativity.ImportAPI.Enumeration
 		/// </summary>
 		Decimal = 6,
 		/// <summary>
-		/// The field represents a type of currency.
+		/// The field represents an amount of currency.
 		/// </summary>
 		Currency = 7,
 		/// <summary>
-		/// The field represents a list from which multiple items can be selected.
+		/// The field represents a number of values selected from a list.
 		/// </summary>
 		MultiCode = 8,
 		/// <summary>
-		/// The field holds a file. Not used by Relativity.
+		/// The field holds a file.
 		/// </summary>
 		File = 9,
 		/// <summary>
-		/// The field holds an object. Not used by Relativity.
+		/// The field holds an object.
 		/// </summary>
 		Object = 10,
 		/// <summary>
@@ -67,7 +67,7 @@ namespace kCura.Relativity.ImportAPI.Enumeration
 		/// </summary>
 		LayoutText = 12,
 		/// <summary>
-		/// The field holds a list of objects.
+		/// The field is a multiple object field; it defines a relationship between multiple objects.
 		/// </summary>
 		Objects = 13
 

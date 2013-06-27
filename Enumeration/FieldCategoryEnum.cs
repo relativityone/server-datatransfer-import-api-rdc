@@ -22,7 +22,7 @@ namespace kCura.Relativity.ImportAPI.Enumeration
 		/// The field identifies something, such as a page.
 		/// </summary>
 		Identifier = 2,
-		// Whatever this means ???
+		// Only used internally.  This field's information actually exists on a single object field.
 		/// <summary>
 		/// The field is reflected.
 		/// </summary>
@@ -68,7 +68,7 @@ namespace kCura.Relativity.ImportAPI.Enumeration
 		/// The field holds a nonspecific system.
 		/// </summary>
 		GenericSystem = 13,
-		// Whatever this means ???
+		// Only used internally.  This field's information actually exists on multiple object fields.
 		/// <summary>
 		/// The field is multireflected.
 		/// </summary>

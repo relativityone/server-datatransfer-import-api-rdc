@@ -43,7 +43,7 @@ namespace kCura.Relativity.ImportAPI
 		/// User name and password are required (unless using Windows Authentication) and will be validated.
 		/// The ImportAPI tries to resolve the server name by reading the WebServiceURL key from the local app.config file.  If this fails, it checks the Windows Registry for the location set by the Relativity Desktop Client.
 		/// </remarks>
-		/// <param name="UserName">User name for the account you're logging in with.</param>
+		/// <param name="UserName">User name with which you're logging in.</param>
 		/// <param name="Password">Password associated with the user name.</param>
 		public ImportAPI(String UserName, String Password)
 		{
@@ -83,7 +83,7 @@ namespace kCura.Relativity.ImportAPI
 		/// User name and password are required (unless using Windows Authentication) and will be validated
 		/// against the Relativity WebAPI instance located at <paramref name="WebServiceURL"/>.
 		/// </remarks>
-		/// <param name="UserName">User name for the account you're logging in with.</param>
+		/// <param name="UserName">User name with which you're logging in.</param>
 		/// <param name="Password">Password for the user name.</param>
 		/// <param name="WebServiceURL">Location of the Relativity WebAPI instance.</param>
 		public ImportAPI(String UserName, String Password, String WebServiceURL)
@@ -255,10 +255,10 @@ namespace kCura.Relativity.ImportAPI
 		/// <summary>
 		/// Creates an ImportBulkArtifactJob with which to import a set of artifacts of the given type.
 		/// </summary>
+		/// <param name="artifactTypeId">The artifact type ID of the objects to be imported.</param>
 		/// <returns>
 		/// Returns a new instance of an ImportBulkArtifactJob with the Settings.ArtifactTypeId property set to <paramref name="artifactTypeId"/>.
 		/// </returns>
-		/// <param name="artifactTypeId">The artifact type ID of the objects to be imported.</param>
 		public ImportBulkArtifactJob NewObjectImportJob(int artifactTypeId) {
 			var returnJob = new ImportBulkArtifactJob(_credentials, _cookieMonster, _userName, _password);
 

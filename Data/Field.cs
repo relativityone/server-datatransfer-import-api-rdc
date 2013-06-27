@@ -37,7 +37,7 @@ namespace kCura.Relativity.ImportAPI.Data
 		public FieldCategoryEnum FieldCategory { get; internal set; }
 
 		/// <summary>
-		/// Provides a list of GUIDs used to identify an artifact.
+		/// Provides a list of GUIDs used to identify an Artifact.
 		/// </summary>
 		public IEnumerable<Guid> Guids { get; internal set; }
 

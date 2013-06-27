@@ -38,7 +38,7 @@ namespace kCura.Relativity.ImportAPI.Data
 		public int RootArtifactID { get; internal set; }
 
 		/// <summary>
-		/// Indicates a string that identifies default URL for code used in downloading files for users.
+		/// Represents the default URL used when downloading files.
 		/// </summary>
 		public String DownloadHandlerURL { get; internal set; }
 
