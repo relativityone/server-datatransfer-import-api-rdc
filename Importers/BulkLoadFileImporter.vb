@@ -1140,14 +1140,13 @@ Namespace kCura.WinEDDS
 			End If
 			If chosenEncoding IsNot Nothing Then
 				_outputNativeFileWriter.Write(String.Format("{0}", chosenEncoding.CodePage))
+				_outputNativeFileWriter.Write(_bulkLoadFileFieldDelimiter)
 			ElseIf _fullTextColumnMapsToFileLocation Then
 				_outputNativeFileWriter.Write(String.Format("{0}", ""))
-			End If
-			If _artifactTypeID = Relativity.ArtifactType.Document Then
-				'Last column is the folder path (ONLY IF THIS IS A DOCUMENT LOAD... adding this to object imports will break them)
 				_outputNativeFileWriter.Write(_bulkLoadFileFieldDelimiter)
-				_outputNativeFileWriter.Write(mdoc.FolderPath & _bulkLoadFileFieldDelimiter)
 			End If
+			'Last column is the folder path
+			_outputNativeFileWriter.Write(mdoc.FolderPath & _bulkLoadFileFieldDelimiter)
 			_outputNativeFileWriter.Write(vbCrLf)
 		End Sub
 
