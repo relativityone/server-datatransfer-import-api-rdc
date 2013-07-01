@@ -45,7 +45,7 @@ Namespace kCura.WinEDDS.NUnit
 		End Sub
 
 		Public Function TryBulkImport(ByVal settings As NativeLoadInfo) As MassImportResults
-			Return BulkImport(settings, True, -1)
+			Return BulkImport(settings, True)
 		End Function
 
 		Protected Overrides ReadOnly Property BulkImportManager As kCura.WinEDDS.Service.BulkImportManager
