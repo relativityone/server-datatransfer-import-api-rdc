@@ -789,6 +789,10 @@ Namespace kCura.WinEDDS
 			Dim retval As kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo = Nothing
 			If _artifactTypeID = Relativity.ArtifactType.Document Then
 				retval = New kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo With {.DisableUserSecurityCheck = Me.DisableUserSecurityCheck, .AuditLevel = Me.AuditLevel, .OverlayArtifactID = _overlayArtifactID}
+				If retval.RootFolderID = 0 Then
+					' 0 is the default value on the settings object which signifies an old client. -1 signifies unset, sent by a new client.
+					retval.RootFolderID = -1
+				End If
 			Else
 				Dim settings As New kCura.EDDS.WebAPI.BulkImportManagerBase.ObjectLoadInfo With {.DisableUserSecurityCheck = Me.DisableUserSecurityCheck, .AuditLevel = Me.AuditLevel}
 				settings.ArtifactTypeID = _artifactTypeID
