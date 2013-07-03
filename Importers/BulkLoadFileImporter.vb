@@ -19,7 +19,6 @@ Namespace kCura.WinEDDS
 		Private _pathIsSet As Boolean = False
 		Private _selectedIdentifier As DocumentField
 		Private _docFieldCollection As DocumentFieldCollection
-		Private _parentFolderDTO As kCura.EDDS.WebAPI.FolderManagerBase.Folder
 		Protected _auditManager As kCura.WinEDDS.Service.AuditManager
 
 		Private _recordCount As Int64 = -1
@@ -38,7 +37,6 @@ Namespace kCura.WinEDDS
 		Private _minimumBatchSize As Int32?
 		Private _batchSizeHistoryList As System.Collections.Generic.List(Of Int32)
 		Private _destinationFolderColumnIndex As Int32 = -1
-		Private _folderCache As FolderCache
 		Private _fullTextField As kCura.EDDS.WebAPI.DocumentManagerBase.Field
 		Private _defaultDestinationFolderPath As String = String.Empty
 		Private _defaultTextFolderPath As String = String.Empty
@@ -77,6 +75,7 @@ Namespace kCura.WinEDDS
 		Private _bulkLoadFileFieldDelimiter As String
 
 		Private Const _COPY_TEXT_FILE_BUFFER_SIZE As Int32 = 40000
+		Private Const _UNKNOWN_PARENT_FOLDER_ID As Int32 = -9
 #End Region
 
 #Region "Accessors"
@@ -335,7 +334,7 @@ Namespace kCura.WinEDDS
 			_selectedIdentifier = args.SelectedIdentifierField
 			_copyFileToRepository = args.CopyFilesToDocumentRepository
 			_docFieldCollection = New DocumentFieldCollection(args.FieldMap.DocumentFields)
-			If autoDetect Then _parentFolderDTO = _folderManager.Read(args.CaseInfo.ArtifactID, args.CaseInfo.RootFolderID)
+			'If autoDetect Then _parentFolderDTO = _folderManager.Read(args.CaseInfo.ArtifactID, args.CaseInfo.RootFolderID)
 			_processController = processController
 			_continue = True
 			_firstTimeThrough = True
@@ -516,7 +515,6 @@ Namespace kCura.WinEDDS
 
 		Private Sub InitializeFolderManagement()
 			If _createFolderStructure Then
-				If _artifactTypeID = 10 Then _folderCache = New FolderCache(_folderManager, _folderID, _caseArtifactID)
 				Dim openParenIndex As Int32 = _destinationFolder.LastIndexOf("("c) + 1
 				Dim closeParenIndex As Int32 = _destinationFolder.LastIndexOf(")"c)
 				_destinationFolderColumnIndex = Int32.Parse(_destinationFolder.Substring(openParenIndex, closeParenIndex - openParenIndex)) - 1
@@ -620,11 +618,20 @@ Namespace kCura.WinEDDS
 			_timekeeper.MarkEnd("ManageDocument_Filesystem")
 
 			_timekeeper.MarkStart("ManageDocument_Folder")
+			Dim folderPath As String = String.Empty
 			If _createFolderStructure Then
 				If _artifactTypeID = Relativity.ArtifactType.Document Then
 					Dim value As String = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(kCura.Utility.NullableTypesHelper.DBNullString(record.FieldList(Relativity.FieldCategory.ParentArtifact)(0).Value))
-					parentFolderID = _folderCache.FolderID(Me.CleanDestinationFolderPath(value))
+					Dim cleanFolderPath As String = Me.CleanDestinationFolderPath(value)
+					If (String.IsNullOrWhiteSpace(cleanFolderPath)) Then
+						parentFolderID = _folderID
+					Else
+						folderPath = cleanFolderPath
+						'We're creating the structure on the server side, so it'll get a number then
+						parentFolderID = _UNKNOWN_PARENT_FOLDER_ID
+					End If
 				Else
+					'TODO: If we are going to do this for more than documents, fix this as well...
 					Dim textIdentifier As String = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(kCura.Utility.NullableTypesHelper.DBNullString(record.FieldList(Relativity.FieldCategory.ParentArtifact)(0).Value.ToString))
 					If textIdentifier = "" Then
 						If _overwrite.ToLower = "strict" OrElse _overwrite.ToLower = "append" Then
@@ -644,6 +651,7 @@ Namespace kCura.WinEDDS
 					End If
 				End If
 			Else
+				'If we're not creating the structure, all documents go in the root folder (aka _folderId)
 				If _artifactTypeID = Relativity.ArtifactType.Document OrElse Me.ParentArtifactTypeID = Relativity.ArtifactType.Case Then
 					parentFolderID = _folderID
 				Else
@@ -663,9 +671,9 @@ Namespace kCura.WinEDDS
 			Dim doc As MetaDocument
 			Dim fileSizeExtractor As kCura.WinEDDS.Api.IHasFileSize = TryCast(record, kCura.WinEDDS.Api.IHasFileSize)
 			If fileSizeExtractor Is Nothing Then
-				doc = New MetaDocument(fileGuid, identityValue, fileExists AndAlso uploadFile AndAlso (fileGuid <> String.Empty OrElse Not _copyFileToRepository), filename, fullFilePath, uploadFile, CurrentLineNumber, parentFolderID, record, oixFileIdData, lineStatus, destinationVolume)
+				doc = New MetaDocument(fileGuid, identityValue, fileExists AndAlso uploadFile AndAlso (fileGuid <> String.Empty OrElse Not _copyFileToRepository), filename, fullFilePath, uploadFile, CurrentLineNumber, parentFolderID, record, oixFileIdData, lineStatus, destinationVolume, folderPath)
 			Else
-				doc = New SizedMetaDocument(fileGuid, identityValue, fileExists AndAlso uploadFile AndAlso (fileGuid <> String.Empty OrElse Not _copyFileToRepository), filename, fullFilePath, uploadFile, CurrentLineNumber, parentFolderID, record, oixFileIdData, lineStatus, destinationVolume, fileSizeExtractor.GetFileSize())
+				doc = New SizedMetaDocument(fileGuid, identityValue, fileExists AndAlso uploadFile AndAlso (fileGuid <> String.Empty OrElse Not _copyFileToRepository), filename, fullFilePath, uploadFile, CurrentLineNumber, parentFolderID, record, oixFileIdData, lineStatus, destinationVolume, fileSizeExtractor.GetFileSize(), folderPath)
 			End If
 			'_docsToProcess.Push(metadoc)
 			_timekeeper.MarkStart("ManageDocument_ManageDocumentMetadata")
@@ -1021,119 +1029,121 @@ Namespace kCura.WinEDDS
 					_outputNativeFileWriter.Write(fileSizeExtractor.GetFileSize() & _bulkLoadFileFieldDelimiter)
 				End If
 
-				Else
+			Else
+				_outputNativeFileWriter.Write(_bulkLoadFileFieldDelimiter)
+				_outputNativeFileWriter.Write(_bulkLoadFileFieldDelimiter)
+				_outputNativeFileWriter.Write(_bulkLoadFileFieldDelimiter)
+				_outputNativeFileWriter.Write(_bulkLoadFileFieldDelimiter)
+				_outputNativeFileWriter.Write("0" & _bulkLoadFileFieldDelimiter)
+			End If
+			_outputNativeFileWriter.Write(mdoc.ParentFolderID & _bulkLoadFileFieldDelimiter)
+			For Each field As Api.ArtifactField In mdoc.Record
+				If field.Type = Relativity.FieldTypeHelper.FieldType.MultiCode OrElse field.Type = Relativity.FieldTypeHelper.FieldType.Code Then
+					_outputNativeFileWriter.Write(field.Value)
 					_outputNativeFileWriter.Write(_bulkLoadFileFieldDelimiter)
-					_outputNativeFileWriter.Write(_bulkLoadFileFieldDelimiter)
-					_outputNativeFileWriter.Write(_bulkLoadFileFieldDelimiter)
-					_outputNativeFileWriter.Write(_bulkLoadFileFieldDelimiter)
-					_outputNativeFileWriter.Write("0" & _bulkLoadFileFieldDelimiter)
-				End If
-				_outputNativeFileWriter.Write(mdoc.ParentFolderID & _bulkLoadFileFieldDelimiter)
-				For Each field As Api.ArtifactField In mdoc.Record
-					If field.Type = Relativity.FieldTypeHelper.FieldType.MultiCode OrElse field.Type = Relativity.FieldTypeHelper.FieldType.Code Then
-						_outputNativeFileWriter.Write(field.Value)
+				ElseIf field.Type = Relativity.FieldTypeHelper.FieldType.File AndAlso _artifactTypeID <> Relativity.ArtifactType.Document Then
+					Dim fileFieldValues() As String = System.Web.HttpUtility.UrlDecode(field.ValueAsString).Split(Chr(11))
+					If fileFieldValues.Length > 1 Then
+						_outputNativeFileWriter.Write(fileFieldValues(0))
 						_outputNativeFileWriter.Write(_bulkLoadFileFieldDelimiter)
-					ElseIf field.Type = Relativity.FieldTypeHelper.FieldType.File AndAlso _artifactTypeID <> Relativity.ArtifactType.Document Then
-						Dim fileFieldValues() As String = System.Web.HttpUtility.UrlDecode(field.ValueAsString).Split(Chr(11))
-						If fileFieldValues.Length > 1 Then
-							_outputNativeFileWriter.Write(fileFieldValues(0))
-							_outputNativeFileWriter.Write(_bulkLoadFileFieldDelimiter)
-							_outputNativeFileWriter.Write(fileFieldValues(1))
-							_outputNativeFileWriter.Write(_bulkLoadFileFieldDelimiter)
-							_outputNativeFileWriter.Write(fileFieldValues(2))
-							_outputNativeFileWriter.Write(_bulkLoadFileFieldDelimiter)
-						Else
-							_outputNativeFileWriter.Write("")
-							_outputNativeFileWriter.Write(_bulkLoadFileFieldDelimiter)
-							_outputNativeFileWriter.Write("")
-							_outputNativeFileWriter.Write(_bulkLoadFileFieldDelimiter)
-							_outputNativeFileWriter.Write("")
-							_outputNativeFileWriter.Write(_bulkLoadFileFieldDelimiter)
-						End If
-					ElseIf field.Type = Relativity.FieldTypeHelper.FieldType.File AndAlso _artifactTypeID = Relativity.ArtifactType.Document Then
-						'do nothing
-					ElseIf field.Category = Relativity.FieldCategory.ParentArtifact Then
-						'do nothing
+						_outputNativeFileWriter.Write(fileFieldValues(1))
+						_outputNativeFileWriter.Write(_bulkLoadFileFieldDelimiter)
+						_outputNativeFileWriter.Write(fileFieldValues(2))
+						_outputNativeFileWriter.Write(_bulkLoadFileFieldDelimiter)
 					Else
-						If field.Category = Relativity.FieldCategory.FullText AndAlso _fullTextColumnMapsToFileLocation Then
-							If Not field.ValueAsString = String.Empty Then
-								chosenEncoding = _extractedTextFileEncoding
-								Dim fileStream As Stream
+						_outputNativeFileWriter.Write("")
+						_outputNativeFileWriter.Write(_bulkLoadFileFieldDelimiter)
+						_outputNativeFileWriter.Write("")
+						_outputNativeFileWriter.Write(_bulkLoadFileFieldDelimiter)
+						_outputNativeFileWriter.Write("")
+						_outputNativeFileWriter.Write(_bulkLoadFileFieldDelimiter)
+					End If
+				ElseIf field.Type = Relativity.FieldTypeHelper.FieldType.File AndAlso _artifactTypeID = Relativity.ArtifactType.Document Then
+					'do nothing
+				ElseIf field.Category = Relativity.FieldCategory.ParentArtifact Then
+					'do nothing
+				Else
+					If field.Category = Relativity.FieldCategory.FullText AndAlso _fullTextColumnMapsToFileLocation Then
+						If Not field.ValueAsString = String.Empty Then
+							chosenEncoding = _extractedTextFileEncoding
+							Dim fileStream As Stream
 
-								'This logic exists as an attempt to improve import speeds.  The DetectEncoding call first checks if the file
-								' exists, followed by a read of the first few bytes. The File.Exists check can be very expensive when going
-								' across the network for the file, so this override allows that check to be skipped.
-								' -Phil S. 07/27/2012
-								If Not SkipExtractedTextEncodingCheck Then
-									Dim determinedEncodingStream As DeterminedEncodingStream = kCura.WinEDDS.Utility.DetectEncoding(field.ValueAsString, False)
-									fileStream = determinedEncodingStream.UnderlyingStream
+							'This logic exists as an attempt to improve import speeds.  The DetectEncoding call first checks if the file
+							' exists, followed by a read of the first few bytes. The File.Exists check can be very expensive when going
+							' across the network for the file, so this override allows that check to be skipped.
+							' -Phil S. 07/27/2012
+							If Not SkipExtractedTextEncodingCheck Then
+								Dim determinedEncodingStream As DeterminedEncodingStream = kCura.WinEDDS.Utility.DetectEncoding(field.ValueAsString, False)
+								fileStream = determinedEncodingStream.UnderlyingStream
 
-									Dim detectedEncoding As System.Text.Encoding = determinedEncodingStream.DeterminedEncoding
-									If detectedEncoding IsNot Nothing Then
-										chosenEncoding = detectedEncoding
-									End If
-								Else
-									fileStream = New FileStream(field.ValueAsString, FileMode.Open, FileAccess.Read)
+								Dim detectedEncoding As System.Text.Encoding = determinedEncodingStream.DeterminedEncoding
+								If detectedEncoding IsNot Nothing Then
+									chosenEncoding = detectedEncoding
 								End If
-
-								Dim sr As New System.IO.StreamReader(fileStream, chosenEncoding)
-								Dim count As Int32 = 1
-								Dim buff(_COPY_TEXT_FILE_BUFFER_SIZE) As Char
-								Do
-									count = sr.ReadBlock(buff, 0, _COPY_TEXT_FILE_BUFFER_SIZE)
-									If count > 0 Then
-										_outputNativeFileWriter.Write(buff, 0, count)
-										_outputNativeFileWriter.Flush()
-									End If
-								Loop Until count = 0
-
-								sr.Close()
-								Try
-									fileStream.Close()
-								Catch
-								End Try
+							Else
+								fileStream = New FileStream(field.ValueAsString, FileMode.Open, FileAccess.Read)
 							End If
-						ElseIf field.Type = Relativity.FieldTypeHelper.FieldType.Boolean Then
-							If field.ValueAsString <> String.Empty Then
-								If Boolean.Parse(field.ValueAsString) Then
-									_outputNativeFileWriter.Write("1")
-								Else
-									_outputNativeFileWriter.Write("0")
+
+							Dim sr As New System.IO.StreamReader(fileStream, chosenEncoding)
+							Dim count As Int32 = 1
+							Dim buff(_COPY_TEXT_FILE_BUFFER_SIZE) As Char
+							Do
+								count = sr.ReadBlock(buff, 0, _COPY_TEXT_FILE_BUFFER_SIZE)
+								If count > 0 Then
+									_outputNativeFileWriter.Write(buff, 0, count)
+									_outputNativeFileWriter.Flush()
 								End If
+							Loop Until count = 0
+
+							sr.Close()
+							Try
+								fileStream.Close()
+							Catch
+							End Try
+						End If
+					ElseIf field.Type = Relativity.FieldTypeHelper.FieldType.Boolean Then
+						If field.ValueAsString <> String.Empty Then
+							If Boolean.Parse(field.ValueAsString) Then
+								_outputNativeFileWriter.Write("1")
+							Else
+								_outputNativeFileWriter.Write("0")
 							End If
+						End If
 					ElseIf field.Type = Relativity.FieldTypeHelper.FieldType.Decimal OrElse
 					 field.Type = Relativity.FieldTypeHelper.FieldType.Currency Then
 						Dim d As String = CDec(field.Value).ToString(System.Globalization.CultureInfo.InvariantCulture)
 						_outputNativeFileWriter.Write(d)
-						Else
-							_outputNativeFileWriter.Write(field.Value)
-						End If
-						_outputNativeFileWriter.Write(_bulkLoadFileFieldDelimiter)
-					End If
-				Next
-				If _artifactTypeID = Relativity.ArtifactType.Document Then
-					If _filePathColumnIndex <> -1 AndAlso mdoc.UploadFile AndAlso mdoc.IndexFileInDB Then
-						Dim boolString As String = "0"
-						If Me.IsSupportedRelativityFileType(mdoc.FileIdData) Then boolString = "1"
-						_outputNativeFileWriter.Write(boolString & _bulkLoadFileFieldDelimiter)
-						Dim fieldType As String = mdoc.GetFileType()
-
-						_outputNativeFileWriter.Write(fieldType & _bulkLoadFileFieldDelimiter)
-						_outputNativeFileWriter.Write("1" & _bulkLoadFileFieldDelimiter)
 					Else
-						_outputNativeFileWriter.Write("0" & _bulkLoadFileFieldDelimiter)
-						_outputNativeFileWriter.Write(_bulkLoadFileFieldDelimiter)
-						_outputNativeFileWriter.Write("0" & _bulkLoadFileFieldDelimiter)
+						_outputNativeFileWriter.Write(field.Value)
 					End If
-				End If
-				If chosenEncoding IsNot Nothing Then
-					_outputNativeFileWriter.Write(String.Format("{0}", chosenEncoding.CodePage))
-					_outputNativeFileWriter.Write(_bulkLoadFileFieldDelimiter)
-				ElseIf _fullTextColumnMapsToFileLocation Then
-					_outputNativeFileWriter.Write(String.Format("{0}", ""))
 					_outputNativeFileWriter.Write(_bulkLoadFileFieldDelimiter)
 				End If
-				_outputNativeFileWriter.Write(vbCrLf)
+			Next
+			If _artifactTypeID = Relativity.ArtifactType.Document Then
+				If _filePathColumnIndex <> -1 AndAlso mdoc.UploadFile AndAlso mdoc.IndexFileInDB Then
+					Dim boolString As String = "0"
+					If Me.IsSupportedRelativityFileType(mdoc.FileIdData) Then boolString = "1"
+					_outputNativeFileWriter.Write(boolString & _bulkLoadFileFieldDelimiter)
+					Dim fieldType As String = mdoc.GetFileType()
+
+					_outputNativeFileWriter.Write(fieldType & _bulkLoadFileFieldDelimiter)
+					_outputNativeFileWriter.Write("1" & _bulkLoadFileFieldDelimiter)
+				Else
+					_outputNativeFileWriter.Write("0" & _bulkLoadFileFieldDelimiter)
+					_outputNativeFileWriter.Write(_bulkLoadFileFieldDelimiter)
+					_outputNativeFileWriter.Write("0" & _bulkLoadFileFieldDelimiter)
+				End If
+			End If
+			If chosenEncoding IsNot Nothing Then
+				_outputNativeFileWriter.Write(String.Format("{0}", chosenEncoding.CodePage))
+				_outputNativeFileWriter.Write(_bulkLoadFileFieldDelimiter)
+			ElseIf _fullTextColumnMapsToFileLocation Then
+				_outputNativeFileWriter.Write(String.Format("{0}", ""))
+				_outputNativeFileWriter.Write(_bulkLoadFileFieldDelimiter)
+			End If
+			'Last column is the folder path
+			_outputNativeFileWriter.Write(mdoc.FolderPath & _bulkLoadFileFieldDelimiter)
+			_outputNativeFileWriter.Write(vbCrLf)
 		End Sub
 
 		Private Function GetIsSupportedRelativityFileTypeField() As kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo
