@@ -41,7 +41,7 @@ Namespace kCura.WinEDDS.NUnit
 			Return retval
 		End Function
 
-		Protected Overrides Function InvokeBulkImportNative(ByVal appID As Integer, ByVal settings As EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo, ByVal inRepository As Boolean, ByVal includeExtractedTextEncoding As Boolean) As EDDS.WebAPI.BulkImportManagerBase.MassImportResults
+		Protected Overrides Function InvokeBulkImportNative(ByVal appID As Integer, ByVal settings As EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo, ByVal inRepository As Boolean, ByVal includeExtractedTextEncoding As Boolean, ByVal rootFolderID As Int32) As EDDS.WebAPI.BulkImportManagerBase.MassImportResults
 			Dim retval As New EDDS.WebAPI.BulkImportManagerBase.MassImportResults
 			If AlwaysThrow OrElse settings.Range IsNot Nothing Then Throw Me.ErrorMessage
 			If settings.Range IsNot Nothing AndAlso settings.Range.Count > MaxBatch Then Throw Me.ErrorMessage
