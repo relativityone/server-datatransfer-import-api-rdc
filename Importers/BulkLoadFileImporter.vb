@@ -690,18 +690,13 @@ Namespace kCura.WinEDDS
 				path = path.Replace("\\", "\")
 			End While
 			path = path.Replace(":", "_")
-
 			If Not path.Length = 0 Then
 				If path.Chars(0) <> "\"c Then
 					path = "\" & path
 				End If
 			End If
 			path = path.TrimEnd(New Char() {"\"c})
-
-			' On the RelativityWebAPI side of the coin, we're joining over the ExtendedFolder View FullPath, in which folders are delimited ' \ '
-			path = path.Replace("\", " \ ")
-
-			If path = "" Then path = " \ "
+			If path = "" Then path = "\"
 			Return path
 		End Function
 
