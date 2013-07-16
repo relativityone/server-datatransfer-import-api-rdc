@@ -63,7 +63,7 @@ Namespace kCura.WinEDDS.NUnit.Service
 		 <ExpectedException(GetType(WinEDDS.Service.BulkImportManager.BulkImportSqlException))>
 		Public Sub Native_Import_Failure_Throws_Exception()
 			Dim manager As New MockBulkImportManager(True)
-			manager.BulkImportNative(0, Nothing, False, False, -1)
+			manager.BulkImportNative(0, Nothing, False, False)
 		End Sub
 
 		<Test()>
@@ -93,7 +93,7 @@ Namespace kCura.WinEDDS.NUnit.Service
 		 <ExpectedException(GetType(WinEDDS.Service.BulkImportManager.BulkImportSqlTimeoutException))>
 		Public Sub Native_Import_Timeout_Throws_Timeout_Exception()
 			Dim manager As New MockBulkImportManager(TimeoutMessage)
-			manager.BulkImportNative(0, Nothing, False, False, -1)
+			manager.BulkImportNative(0, Nothing, False, False)
 		End Sub
 
 		<Test()>
@@ -119,7 +119,7 @@ Namespace kCura.WinEDDS.NUnit.Service
 
 		<Test()> Public Sub Native_Import_Worked_No_Exception()
 			Dim manager As New MockBulkImportManager(False)
-			Dim retval As EDDS.WebAPI.BulkImportManagerBase.MassImportResults = manager.BulkImportNative(0, Nothing, False, False, -1)
+			Dim retval As EDDS.WebAPI.BulkImportManagerBase.MassImportResults = manager.BulkImportNative(0, Nothing, False, False)
 			Assert.AreEqual(Nothing, retval.ExceptionDetail)
 		End Sub
 
@@ -167,7 +167,7 @@ Namespace kCura.WinEDDS.NUnit.Service
 				Return retval
 			End Function
 
-			Protected Overrides Function InvokeBulkImportNative(ByVal appID As Integer, ByVal settings As EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo, ByVal inRepository As Boolean, ByVal includeExtractedTextEncoding As Boolean, ByVal rootFolderID As Int32) As EDDS.WebAPI.BulkImportManagerBase.MassImportResults
+			Protected Overrides Function InvokeBulkImportNative(ByVal appID As Integer, ByVal settings As EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo, ByVal inRepository As Boolean, ByVal includeExtractedTextEncoding As Boolean) As EDDS.WebAPI.BulkImportManagerBase.MassImportResults
 				Dim retval As New EDDS.WebAPI.BulkImportManagerBase.MassImportResults
 				retval.ExceptionDetail = Me.ErrorMessage
 				Return retval
