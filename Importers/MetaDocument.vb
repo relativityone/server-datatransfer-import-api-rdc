@@ -126,8 +126,6 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
-		Public Property FolderPath() As String
-
 		Public Sub New( _
 		 ByVal fileGuid As String, _
 		 ByVal identityValue As String, _
@@ -140,8 +138,7 @@ Namespace kCura.WinEDDS
 		 ByVal record As Api.ArtifactFieldCollection, _
 		 ByVal oixFileData As OI.FileID.FileIDData, _
 		 ByVal lineStatus As Int32, _
-		 ByVal destinationVolume As String,
-		 ByVal folderPath As String
+		 ByVal destinationVolume As String _
 		 )
 			_fileGuid = fileGuid
 			_identityValue = identityValue
@@ -156,7 +153,6 @@ Namespace kCura.WinEDDS
 			_fileIdData = oixFileData
 			_lineStatus = lineStatus
 			_destinationVolume = destinationVolume
-			Me.FolderPath = folderPath
 		End Sub
 
 		Public Function GetFileType() As String
@@ -189,10 +185,9 @@ Namespace kCura.WinEDDS
 		 ByVal oixFileData As OI.FileID.FileIDData, _
 		 ByVal lineStatus As Int32, _
 		 ByVal destinationVolume As String, _
-		 ByVal size As Long,
-		 ByVal folderPath As String
+		 ByVal size As Long _
 		 )
-			MyBase.New(fileGuid, identityValue, indexFileInDB, filename, fullFilePath, uploadFile, lineNumber, parentFolderID, record, oixFileData, lineStatus, destinationVolume, folderPath)
+			MyBase.New(fileGuid, identityValue, indexFileInDB, filename, fullFilePath, uploadFile, lineNumber, parentFolderID, record, oixFileData, lineStatus, destinationVolume)
 			_size = size
 		End Sub
 
