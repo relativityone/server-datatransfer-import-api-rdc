@@ -23,6 +23,7 @@
           <s:element minOccurs="1" maxOccurs="1" name="KeyFieldArtifactID" type="s:int" />
           <s:element minOccurs="1" maxOccurs="1" name="DestinationFolderArtifactID" type="s:int" />
           <s:element minOccurs="1" maxOccurs="1" name="AuditLevel" type="tns:ImportAuditLevel" />
+          <s:element minOccurs="1" maxOccurs="1" name="OverlayArtifactID" type="s:int" />
         </s:sequence>
       </s:complexType>
       <s:simpleType name="OverwriteType">

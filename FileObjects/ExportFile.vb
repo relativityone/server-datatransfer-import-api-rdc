@@ -585,9 +585,10 @@ Namespace kCura.WinEDDS
 		End Enum
 
 		Public Enum ImageType
-			SinglePage
-			MultiPageTiff
-			Pdf
+			[Select] = -1
+			SinglePage = 0
+			MultiPageTiff = 1
+			Pdf = 2
 		End Enum
 		Public Class ImageTypeParser
 			Public Function Parse(ByVal s As String) As ImageType?

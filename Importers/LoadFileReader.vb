@@ -261,10 +261,12 @@ Namespace kCura.WinEDDS
 
 		Public Sub Close1() Implements Api.IArtifactReader.Close
 			Me.Close()
-			Try
-				_errorLogWriter.Close()
-			Catch ex As System.Exception
-			End Try
+			If _errorLogWriter IsNot Nothing Then
+				Try
+					_errorLogWriter.Close()
+				Catch ex As System.Exception
+				End Try
+			End If
 		End Sub
 
 		Public ReadOnly Property CurrentLineNumber1() As Integer Implements Api.IArtifactReader.CurrentLineNumber

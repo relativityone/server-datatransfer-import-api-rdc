@@ -1,4 +1,6 @@
 'Imports kCura.EDDS.DynamicFields
+Imports System.IO
+Imports kCura.WinEDDS.Api
 Imports kCura.Utility
 
 Namespace kCura.WinEDDS
@@ -19,6 +21,7 @@ Namespace kCura.WinEDDS
 #End Region
 
 #Region "Constructors"
+
 
 		Public Sub New(ByVal args As LoadFile, ByVal timeZoneOffset As Int32, ByVal errorsOnly As Boolean, ByVal doRetryLogic As Boolean, Optional ByVal processController As kCura.Windows.Process.Controller = Nothing)
 			MyBase.New(args, timeZoneOffset, doRetryLogic, True)
@@ -95,6 +98,7 @@ Namespace kCura.WinEDDS
 
 		Public Function ReadFile(ByVal path As String, ByVal formType As Int32) As Object
 			Dim earlyexit As Boolean = False
+
 			_relationalDocumentFields = _fieldQuery.RetrieveAllAsDocumentFieldCollection(_selectedCaseArtifactID, _artifactTypeID).GetFieldsByCategory(Relativity.FieldCategory.Relational)
 			Dim filesize As Int64 = _artifactReader.SizeInBytes
 			Dim stepsize As Int64 = CType(filesize / 100, Int64)
@@ -144,6 +148,7 @@ Namespace kCura.WinEDDS
 				ProcessComplete(filesize, filesize, stepsize)
 			End If
 			_artifactReader.Close()
+
 			Return fieldArrays
 		End Function
 
@@ -156,8 +161,10 @@ Namespace kCura.WinEDDS
 			Dim unmappedRelationalNoBlankFields As New System.Collections.Specialized.HybridDictionary
 			Dim mappedRelationalNoBlankFields As New System.Collections.Specialized.HybridDictionary
 			For Each relationalField As DocumentField In _relationalDocumentFields
-				If relationalField.ImportBehavior = EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice.ReplaceBlankValuesWithIdentifier Then
-					unmappedRelationalNoBlankFields.Add(relationalField.FieldID, New Api.ArtifactField(relationalField))
+				If relationalField.ImportBehavior.HasValue Then
+					If relationalField.ImportBehavior = EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice.ReplaceBlankValuesWithIdentifier Then
+						unmappedRelationalNoBlankFields.Add(relationalField.FieldID, New Api.ArtifactField(relationalField))
+					End If
 				End If
 			Next
 			If _keyFieldID > 0 Then
@@ -179,7 +186,9 @@ Namespace kCura.WinEDDS
 									mappedRelationalNoBlankFields.Add(field.ArtifactID, field)
 								End If
 							Case Relativity.FieldCategory.Identifier
-								If Not _keyFieldID > 0 Then identifierField = field
+								If Not _keyFieldID > 0 Then
+									identifierField = field
+								End If
 						End Select
 
 						lineContainsErrors = lineContainsErrors Or SetFieldValueOrErrorMessage(field, mapItem.NativeFileColumnIndex, identifierField.ValueAsString, codePageId, mapItem.DocumentField.ImportBehavior)
@@ -200,12 +209,17 @@ Namespace kCura.WinEDDS
 				End If
 			End If
 
-			If Not identifierField Is Nothing And _artifactTypeID = Relativity.ArtifactType.Document Then
-				For Each field As Api.ArtifactField In unmappedRelationalNoBlankFields.Values
-					field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(Me.GetNullableFixedString(record.IdentifierField.ValueAsString, -1, field.TextLength, field.DisplayName))
-					lineContainsErrors = lineContainsErrors Or SetFieldValueOrErrorMessage(field, -1, identifierField.ValueAsString, -1, Nothing)
-					retval.Add(field)
-				Next
+			' only do this if we are NOT in Overlay mode
+			If _settings.OverwriteDestination.ToLower() <> "strict" Then
+				If Not identifierField Is Nothing And _artifactTypeID = Relativity.ArtifactType.Document Then
+					For Each field As Api.ArtifactField In unmappedRelationalNoBlankFields.Values
+						If record.IdentifierField IsNot Nothing Then
+							field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(Me.GetNullableFixedString(record.IdentifierField.ValueAsString, -1, field.TextLength, field.DisplayName))
+						End If
+						lineContainsErrors = lineContainsErrors Or SetFieldValueOrErrorMessage(field, -1, identifierField.ValueAsString, -1, Nothing)
+						retval.Add(field)
+					Next
+				End If
 			End If
 
 			If _uploadFiles Then
@@ -260,14 +274,18 @@ Namespace kCura.WinEDDS
 			End If
 
 			If _errorsOnly Then
+
 				If lineContainsErrors Then
+
 					Return DirectCast(retval.ToArray(GetType(Api.ArtifactField)), Api.ArtifactField())
 				Else
 					Return Nothing
 				End If
 			Else
+
 				Return DirectCast(retval.ToArray(GetType(Api.ArtifactField)), Api.ArtifactField())
 			End If
+
 		End Function
 
 		Private Sub SetNativeFileCheckColumnName(ByVal fields As System.Collections.ArrayList)
@@ -319,6 +337,7 @@ Namespace kCura.WinEDDS
 		Protected Overrides Function GetArtifactReader() As Api.IArtifactReader
 			Return New LoadFileReader(_settings, True)
 		End Function
+
 	End Class
 End Namespace
 
