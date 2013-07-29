@@ -168,12 +168,6 @@ Namespace kCura.Relativity.DataReaderClient
 		Private Function CreateLoadFile(ByVal clientSettings As Settings) As kCura.WinEDDS.ImportExtension.DataReaderLoadFile
 			Dim loadFileTemp As WinEDDS.LoadFile = MapInputToSettingsFactory(clientSettings).ToLoadFile
 
-			' If IdentityFieldId is greater than zero, it has been explicitly set, 
-			' otherwise allow LoadFile its defaulting as it already does
-			If (clientSettings.OverwriteMode = OverwriteModeEnum.Overlay) AndAlso (clientSettings.IdentityFieldId > 0) Then
-				loadFileTemp.IdentityFieldId = clientSettings.IdentityFieldId
-			End If
-
 			Dim tempLoadFile As New WinEDDS.ImportExtension.DataReaderLoadFile
 			tempLoadFile.DataReader = SourceData.SourceData
 
