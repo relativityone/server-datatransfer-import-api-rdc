@@ -67,11 +67,13 @@ Namespace kCura.Relativity.DataReaderClient
 		Public Property DestinationFolderArtifactID() As Int32
 
 		''' <summary>
-		''' Enables or disables encoding checks for each file. To use the <see cref="ExtractedTextEncoding"/> setting for all extracted text files during import, set this property to True.
+		''' Enables or disables encoding checks for each file.
 		''' </summary>
 		''' <value></value>
 		''' <returns></returns>
-		''' <remarks>You can improve import performance by enabling this property since it bypasses the process of directly detecting the encoding for each file. The default value is False, which indicates that the API will try to determine the encoding of the extracted text file. 
+		''' <remarks>
+		''' To use the <see cref="ExtractedTextEncoding"/> setting for all extracted text files during import, set this property to True.
+		''' You can improve import performance by enabling this property, because it bypasses the process of directly detecting the encoding for each file. The default value is False, which indicates that the API will try to determine the encoding of the extracted text file. 
 		''' Use this setting only when you are importing files that all have the same encoding. To avoid unexpected results, don't enable DisableExtractedTextEncodingCheck when you are running an import that uses several different encodings.</remarks>
 		Public Property DisableExtractedTextEncodingCheck() As Boolean?
 

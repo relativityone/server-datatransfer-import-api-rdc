@@ -366,7 +366,7 @@ Namespace kCura.Relativity.DataReaderClient
 		''' <summary>
 		''' Exports the error log file for an import job. This file is written only when errors occur.
 		''' </summary>
-		''' <param name="filePathAndName">Specify a full path and a filename to contain the output.</param>
+		''' <param name="filePathAndName">Specifies a full path and a filename to contain the output.</param>
 		''' <remarks></remarks>
 		Public Sub ExportErrorReport(ByVal filePathAndName As String)
 			_controller.ExportErrorReport(filePathAndName)
