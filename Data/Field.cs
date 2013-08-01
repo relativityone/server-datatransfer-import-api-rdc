@@ -7,7 +7,7 @@ using kCura.Relativity.ImportAPI.Enumeration;
 namespace kCura.Relativity.ImportAPI.Data
 {
 	/// <summary>
-	/// Represents a field, which is used to store document metadata and coding selections made by a reviewer.
+	/// Represents a field, which is used to store data for documents and RDOs.
 	/// </summary>
 	public class Field : Artifact
 	{
@@ -17,7 +17,7 @@ namespace kCura.Relativity.ImportAPI.Data
 		public int? AssociatedObjectTypeID { get; internal set; }
 
 		/// <summary>
-		/// Indicates whether foreign language characters are used.
+		/// Indicates whether foreign language characters can be used.
 		/// </summary>
 		public bool UseUnicode { get; internal set; }
 
