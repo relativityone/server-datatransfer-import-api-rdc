@@ -66,7 +66,7 @@ Namespace kCura.Relativity.DataReaderClient
 		''' Indicates the name of a metadata field used to build the folder structure for the workspace.
 		''' </summary>
 		''' <remarks>
-		''' All folders are built under the Import Destination folder, indicated by the DestinationFolderArtifactID.  If a folder matching the entered string already exists, the documents will be added to it; otherwise, the folder(s) (including nested folders) will be created.
+		''' All folders are built under the Import Destination folder, indicated by the DestinationFolderArtifactID.  If a folder matching the entered string already exists, the documents will be added to it; otherwise, the folder(s) (including nested folders) will be created and the documents will be imported into the new folder(s).
 		''' </remarks>
 		Public Property FolderPathSourceFieldName() As String
 
