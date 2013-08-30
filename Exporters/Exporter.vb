@@ -170,7 +170,7 @@ Namespace kCura.WinEDDS
 					exportInitializationArgs = Me.ExportManager.InitializeSearchExport(_exportFile.CaseInfo.ArtifactID, Me.Settings.ArtifactID, allAvfIds.ToArray, Me.Settings.StartAtDocumentNumber + 1)
 
 				Case ExportFile.ExportType.ParentSearch
-					typeOfExportDisplayString = "folder"
+                    typeOfExportDisplayString = "folder"
 					exportInitializationArgs = Me.ExportManager.InitializeFolderExport(Me.Settings.CaseArtifactID, Me.Settings.ViewID, Me.Settings.ArtifactID, False, allAvfIds.ToArray, Me.Settings.StartAtDocumentNumber + 1, Me.Settings.ArtifactTypeID)
 
 				Case ExportFile.ExportType.AncestorSearch

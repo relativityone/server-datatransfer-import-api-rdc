@@ -271,11 +271,11 @@ Namespace kCura.WinEDDS
 					Exit While
 				Catch ex As Exception
 					tries -= 1
-					If tries = 0 OrElse ExceptionIsTimeoutRelated(ex) OrElse _continue = False OrElse ex.GetType = GetType(Service.BulkImportManager.BulkImportSqlException) OrElse ex.GetType = GetType(Relativity.InsufficientPermissionsForImportException) Then
-						Throw
-					Else
-						Me.RaiseWarningAndPause(ex, kCura.Utility.Config.Settings.IoErrorWaitTimeInSeconds)
-					End If
+                    If tries = 0 OrElse ExceptionIsTimeoutRelated(ex) OrElse _continue = False OrElse ex.GetType = GetType(Service.BulkImportManager.BulkImportSqlException) OrElse ex.GetType = GetType(MassImport.InsufficientPermissionsForImportException) Then
+                        Throw
+                    Else
+                        Me.RaiseWarningAndPause(ex, kCura.Utility.Config.Settings.IoErrorWaitTimeInSeconds)
+                    End If
 				End Try
 			End While
 			Return retval
