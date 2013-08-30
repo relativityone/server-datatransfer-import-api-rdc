@@ -385,11 +385,14 @@ Namespace kCura.EDDS.WinForm
 					UpdateUserName(_application.LoggedInUser)
 				Case appEvent.AppEventType.ExitApplication
 					Me.Close()
-				Case appEvent.AppEventType.CaseFolderSelected
-					ImportMenu.Enabled = True
-					ExportMenu.Enabled = True
-					'UpdateStatus("Case Folder Load: " + _application.SelectedCaseInfo.RootFolderID.ToString)
-			End Select
+                Case appEvent.AppEventType.WorkspaceFolderSelected
+
+                    'disable import and export menus if no permission
+                    ImportMenu.Enabled = _application.UserHasImportPermission
+                    ExportMenu.Enabled = _application.UserHasExportPermission
+
+                    'UpdateStatus("Case Folder Load: " + _application.SelectedCaseInfo.RootFolderID.ToString)
+            End Select
 		End Sub
 
 		Private Sub UpdateStatus(ByVal text As String)
