@@ -28,6 +28,25 @@ Namespace kCura.EDDS.WinForm
 			End Get
 		End Property
 
+		Private ReadOnly Property MultiObjectMultiChoiceCache As DocumentFieldCollection
+			Get
+				If _multiObjectMultiChoiceCache Is Nothing Then
+					Dim container As DocumentFieldCollection = _application.CurrentNonFileFields(_application.ArtifactTypeID, False)
+					_multiObjectMultiChoiceCache = New DocumentFieldCollection()
+					For Each docInfo As DocumentField In container
+						If docInfo.FieldTypeID = Relativity.FieldTypeHelper.FieldType.MultiCode OrElse docInfo.FieldTypeID = Relativity.FieldTypeHelper.FieldType.Objects Then
+							_multiObjectMultiChoiceCache.Add(docInfo)
+						End If
+					Next					
+				End If
+				Return _multiObjectMultiChoiceCache
+			End Get
+		End Property
+
+
+		Private _multiObjectMultiChoiceCache As DocumentFieldCollection = Nothing
+
+
 		Private Sub InitializeDocumentSpecificComponents()
 			If Me.LoadFile.ArtifactTypeID = 0 Then Me.LoadFile.ArtifactTypeID = _application.ArtifactTypeID
 			If Me.LoadFile.ArtifactTypeID = Relativity.ArtifactType.Document Then
@@ -828,7 +847,7 @@ Namespace kCura.EDDS.WinForm
 			End Select
 		End Function
 
-		Private Function GetOverlayBehavior() As LoadFile.FieldOverlayBehavior
+		Private Function GetOverlayBehavior() As LoadFile.FieldOverlayBehavior?
 			If _overlayBehavior.SelectedItem Is Nothing Then Return Nothing
 			Select Case _overlayBehavior.SelectedItem.ToString.ToLower
 				Case "select..."
@@ -874,22 +893,13 @@ Namespace kCura.EDDS.WinForm
 			msg.Append(" - ").Append(errorText).Append(vbNewLine)
 		End Sub
 
-		Private Function AreThereMultiObjectFieldsSelected() As Boolean
-
-			'Dim selectedColumns As New System.Collections.ArrayList
-			'For Each field As kCura.WinEDDS.ViewFieldInfo In Me._fieldMap.FieldColumns.RightListBoxItems
-			'	selectedColumns.Add(New kCura.WinEDDS.ViewFieldInfo(field))
-			'Next
-
-			'For Each viewFieldInfo As ViewFieldInfo In selectedColumns
-			'	If viewFieldInfo.FieldType = Relativity.FieldTypeHelper.FieldType.MultiCode OrElse viewFieldInfo.FieldType = Relativity.FieldTypeHelper.FieldType.Objects Then
-			'		Return True
-			'	End If
-			'Next
-			'Return False
-
-			Return True
-
+		Private Function AreThereMultiChoiceMultiObjectFieldsSelected() As Boolean
+			For Each fieldName As String In Me._fieldMap.FieldColumns.RightListBoxItems
+				If MultiObjectMultiChoiceCache.Exists(fieldName) Then
+					Return True
+				End If
+			Next
+			Return False
 		End Function
 
 
@@ -936,7 +946,7 @@ Namespace kCura.EDDS.WinForm
 					Me.AppendErrorMessage(msg, "No text file encoding selected for extracted text")
 				End If
 
-				If AreThereMultiObjectFieldsSelected() AndAlso _overlayBehavior.SelectedText.ToLower.Equals("select...") Then
+				If AreThereMultiChoiceMultiObjectFieldsSelected() AndAlso Not GetOverlayBehavior.HasValue Then
 					Me.AppendErrorMessage(msg, "No multi-select field overlay behavior has been selected")
 				End If
 
@@ -1096,6 +1106,7 @@ Namespace kCura.EDDS.WinForm
 			RefreshNativeFilePathFieldAndFileColumnHeaders()
 			If Not Me.EnsureConnection() Then Exit Sub
 			Dim caseFields As String() = _application.GetNonFileCaseFields(LoadFile.CaseInfo.ArtifactID, _application.ArtifactTypeID, True)
+
 			If loadFileObjectUpdatedFromFile Then
 				Dim columnHeaders As String()
 				If System.IO.File.Exists(Me.LoadFile.FilePath) Then
@@ -1570,11 +1581,16 @@ Namespace kCura.EDDS.WinForm
 			ActionMenuEnabled = ReadyToRun
 			_extractedTextValueContainsFileLocation.Enabled = Me.FullTextColumnIsMapped
 			_fullTextFileEncodingPicker.Enabled = _extractedTextValueContainsFileLocation.Enabled And _extractedTextValueContainsFileLocation.Checked
-			_overlayBehavior.Enabled = AreThereMultiObjectFieldsSelected()
-			'TODO: set back to default... put this above behavior in a sub
+			_overlayBehavior.Enabled = AreThereMultiChoiceMultiObjectFieldsSelected()
+			If Not _overlayBehavior.Enabled Then
+				ResetOverlayBehaviorColumn()
+			End If
 		End Sub
 		Private Sub _LoadFileColumns_ItemsShifted() Handles _fieldMap.LoadFileColumnsItemsShifted
 			ActionMenuEnabled = ReadyToRun
+		End Sub
+		Private Sub ResetOverlayBehaviorColumn()
+			_overlayBehavior.SelectedItem = GetOverlayBehaviorDropdownItem(Nothing)
 		End Sub
 
 		Private Property ActionMenuEnabled() As Boolean
