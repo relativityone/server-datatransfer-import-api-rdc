@@ -939,6 +939,7 @@ Namespace kCura.WinEDDS
 			settings.MappedFields = Me.GetMappedFields(_artifactTypeID, _settings.ObjectFieldIdListContainsArtifactId)
 			settings.KeyFieldArtifactID = _keyFieldID
 			settings.BulkLoadFileFieldDelimiter = _bulkLoadFileFieldDelimiter
+			settings.OverlayBehavior = Me.GetMassImportOverlayBehavior(_settings.OverlayBehavior)
 			Select Case _overwrite.ToLower
 				Case "strict"
 					settings.Overlay = EDDS.WebAPI.BulkImportManagerBase.OverwriteType.Overlay
@@ -965,6 +966,10 @@ Namespace kCura.WinEDDS
 			Return Nothing
 		End Function
 
+		Protected Function GetMassImportOverlayBehavior(ByVal inputOverlayType As LoadFile.FieldOverlayBehavior) As kCura.EDDS.WebAPI.BulkImportManagerBase.OverlayBehavior
+			Return CType([Enum].Parse(GetType(kCura.EDDS.WebAPI.BulkImportManagerBase.OverlayBehavior), inputOverlayType.ToString), EDDS.WebAPI.BulkImportManagerBase.OverlayBehavior)
+		End Function
+		
 		Private Sub OpenFileWriters()
 			_outputNativeFileWriter = New System.IO.StreamWriter(_outputNativeFilePath, False, System.Text.Encoding.Unicode)
 			_outputCodeFileWriter = New System.IO.StreamWriter(_outputCodeFilePath, False, System.Text.Encoding.Unicode)
