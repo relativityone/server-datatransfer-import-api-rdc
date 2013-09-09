@@ -37,6 +37,8 @@ Namespace kCura.WinEDDS
 		Public OIFileTypeColumnName As String
 		Public FileSizeMapped As Boolean
 		Public FileSizeColumn As String
+		Public OverlayBehavior As FieldOverlayBehavior
+
 		<NonSerialized()> Public ObjectFieldIdListContainsArtifactId As IList(Of Int32)
 		<NonSerialized()> Public ExtractedTextFileEncodingName As String
 		<NonSerialized()> Public CaseDefaultPath As String = ""
@@ -46,6 +48,12 @@ Namespace kCura.WinEDDS
 		<NonSerialized()> Public SelectedCasePath As String = ""
 		<NonSerialized()> Public CopyFilesToDocumentRepository As Boolean = True
 		'<NonSerialized()> Public Identity As Relativity.Core.EDDSIdentity
+		
+		Public Enum FieldOverlayBehavior
+			UseRelativityDefaults = 0
+			MergeAll = 1
+			ReplaceAll = 2
+		End Enum
 
 		Public Property CookieContainer() As System.Net.CookieContainer
 			Get
