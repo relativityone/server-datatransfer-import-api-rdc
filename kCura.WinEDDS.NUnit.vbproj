@@ -227,6 +227,7 @@
     <Compile Include="BulkLoadFileImporterTests.vb" />
     <Compile Include="DataReaderReaderFixture.vb" />
     <Compile Include="Exceptions\FieldValueImportExceptionFixture.vb" />
+    <Compile Include="KWE_Save_Load\DocImportTests.vb" />
     <Compile Include="MockForLoweBatchSizeBulkImageFileImporter.vb" />
     <Compile Include="ExportNativeWithFilenameFrom.vb" />
     <Compile Include="ExportFileSerializer.part.vb" />
