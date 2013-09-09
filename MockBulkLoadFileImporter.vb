@@ -44,7 +44,7 @@ Namespace kCura.WinEDDS.NUnit
 			Me.ImportBatchVolume = 1000000
 		End Sub
 
-		Public Function ConvertOverlayBehaviorEnum(ByVal inputOverlayType As LoadFile.FieldOverlayBehavior) As kCura.EDDS.WebAPI.BulkImportManagerBase.OverlayBehavior
+		Public Function ConvertOverlayBehaviorEnum(ByVal inputOverlayType As LoadFile.FieldOverlayBehavior?) As kCura.EDDS.WebAPI.BulkImportManagerBase.OverlayBehavior
 			Return MyBase.GetMassImportOverlayBehavior(inputOverlayType)
 		End Function
 
