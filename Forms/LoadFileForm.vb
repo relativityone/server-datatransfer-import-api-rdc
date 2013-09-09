@@ -829,10 +829,10 @@ Namespace kCura.EDDS.WinForm
 		End Function
 
 		Private Function GetOverlayBehavior() As LoadFile.FieldOverlayBehavior
-			If _overwriteDropdown.SelectedItem Is Nothing Then Return LoadFile.FieldOverlayBehavior.UseRelativityDefaults
+			If _overwriteDropdown.SelectedItem Is Nothing Then Return Nothing
 			Select Case _overwriteDropdown.SelectedItem.ToString.ToLower
 				Case "select..."
-					Return LoadFile.FieldOverlayBehavior.UseRelativityDefaults
+					Return Nothing
 				Case "use relativity field settings"
 					Return LoadFile.FieldOverlayBehavior.UseRelativityDefaults
 				Case "merge values"
@@ -844,7 +844,8 @@ Namespace kCura.EDDS.WinForm
 			End Select
 		End Function
 
-		Private Function GetOverlayBehaviorDropdownItem(ByVal behavior As LoadFile.FieldOverlayBehavior) As String			
+		Private Function GetOverlayBehaviorDropdownItem(ByVal behavior As LoadFile.FieldOverlayBehavior?) As String
+			If behavior Is Nothing Then Return "Select..."
 			Select Case behavior
 				Case LoadFile.FieldOverlayBehavior.UseRelativityDefaults
 					Return "Use Relativity Field Settings"
