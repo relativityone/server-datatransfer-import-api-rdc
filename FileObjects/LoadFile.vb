@@ -37,7 +37,7 @@ Namespace kCura.WinEDDS
 		Public OIFileTypeColumnName As String
 		Public FileSizeMapped As Boolean
 		Public FileSizeColumn As String
-		Public OverlayBehavior As FieldOverlayBehavior
+		Public OverlayBehavior As FieldOverlayBehavior?
 
 		<NonSerialized()> Public ObjectFieldIdListContainsArtifactId As IList(Of Int32)
 		<NonSerialized()> Public ExtractedTextFileEncodingName As String
@@ -73,6 +73,7 @@ Namespace kCura.WinEDDS
 			Me.HierarchicalValueDelimiter = "\"c
 			Me.FirstLineContainsHeaders = True
 			Me.FieldMap = New LoadFileFieldMap
+			Me.OverlayBehavior = Nothing
 		End Sub
 
 		Public Sub GetObjectData(ByVal info As System.Runtime.Serialization.SerializationInfo, ByVal context As System.Runtime.Serialization.StreamingContext) Implements System.Runtime.Serialization.ISerializable.GetObjectData
@@ -81,6 +82,12 @@ Namespace kCura.WinEDDS
 			info.AddValue("FirstLineContainsHeaders", Me.FirstLineContainsHeaders, GetType(Boolean))
 			info.AddValue("LoadNativeFiles", Me.LoadNativeFiles, GetType(Boolean))
 			info.AddValue("ExtractFullTextFromNativeFile", Me.ExtractFullTextFromNativeFile, GetType(Boolean))
+
+			If Me.OverlayBehavior Is Nothing OrElse Not Me.OverlayBehavior.HasValue Then
+				info.AddValue("OverlayBehavior", Nothing, GetType(Integer))
+			Else
+				info.AddValue("OverlayBehavior", Me.OverlayBehavior, GetType(Integer))
+			End If
 
 			info.AddValue("RecordDelimiter", AscW(Me.RecordDelimiter), GetType(Integer))
 			info.AddValue("QuoteDelimiter", AscW(Me.QuoteDelimiter), GetType(Integer))
@@ -205,6 +212,12 @@ Namespace kCura.WinEDDS
 					Me.ForceFolderPreview = info.GetBoolean("ForceFolderPreview")
 				Catch
 					Me.ForceFolderPreview = kCura.WinEDDS.Config.ForceFolderPreview
+				End Try
+
+				Try
+					Me.OverlayBehavior = New Nullable(Of FieldOverlayBehavior)(CType(info.GetInt32("OverlayBehavior"), FieldOverlayBehavior))
+				Catch
+					Me.OverlayBehavior = Nothing
 				End Try
 
 			End With
