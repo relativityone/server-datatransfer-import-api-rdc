@@ -829,8 +829,8 @@ Namespace kCura.EDDS.WinForm
 		End Function
 
 		Private Function GetOverlayBehavior() As LoadFile.FieldOverlayBehavior
-			If _overwriteDropdown.SelectedItem Is Nothing Then Return Nothing
-			Select Case _overwriteDropdown.SelectedItem.ToString.ToLower
+			If _overlayBehavior.SelectedItem Is Nothing Then Return Nothing
+			Select Case _overlayBehavior.SelectedItem.ToString.ToLower
 				Case "select..."
 					Return Nothing
 				Case "use relativity field settings"
@@ -840,7 +840,7 @@ Namespace kCura.EDDS.WinForm
 				Case "replace values"
 					Return LoadFile.FieldOverlayBehavior.ReplaceAll
 				Case Else
-					Throw New IndexOutOfRangeException("'" & _overwriteDropdown.SelectedItem.ToString.ToLower & "' isn't a valid option.")
+					Throw New IndexOutOfRangeException("'" & _overlayBehavior.SelectedItem.ToString.ToLower & "' isn't a valid option.")
 			End Select
 		End Function
 
@@ -875,18 +875,21 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 		Private Function AreThereMultiObjectFieldsSelected() As Boolean
-			'Dim viewFieldInfos As List(Of ViewFieldInfo) = Me._fieldMap.FieldColumns.RightListBoxItems.Cast(Of ViewFieldInfo).ToList()
 
-			'For Each viewFieldInfo As ViewFieldInfo In viewFieldInfos
+			'Dim selectedColumns As New System.Collections.ArrayList
+			'For Each field As kCura.WinEDDS.ViewFieldInfo In Me._fieldMap.FieldColumns.RightListBoxItems
+			'	selectedColumns.Add(New kCura.WinEDDS.ViewFieldInfo(field))
+			'Next
+
+			'For Each viewFieldInfo As ViewFieldInfo In selectedColumns
 			'	If viewFieldInfo.FieldType = Relativity.FieldTypeHelper.FieldType.MultiCode OrElse viewFieldInfo.FieldType = Relativity.FieldTypeHelper.FieldType.Objects Then
 			'		Return True
-
 			'	End If
 			'Next
 			'Return False
 
-
 			Return True
+
 		End Function
 
 
@@ -933,7 +936,7 @@ Namespace kCura.EDDS.WinForm
 					Me.AppendErrorMessage(msg, "No text file encoding selected for extracted text")
 				End If
 
-				If AreThereMultiObjectFieldsSelected() AndAlso _overlayBehavior.SelectedValue.Equals("-1") Then
+				If AreThereMultiObjectFieldsSelected() AndAlso _overlayBehavior.SelectedText.ToLower.Equals("select...") Then
 					Me.AppendErrorMessage(msg, "No multi-select field overlay behavior has been selected")
 				End If
 
