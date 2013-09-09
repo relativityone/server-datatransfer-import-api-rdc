@@ -966,8 +966,12 @@ Namespace kCura.WinEDDS
 			Return Nothing
 		End Function
 
-		Protected Function GetMassImportOverlayBehavior(ByVal inputOverlayType As LoadFile.FieldOverlayBehavior) As kCura.EDDS.WebAPI.BulkImportManagerBase.OverlayBehavior
-			Return CType([Enum].Parse(GetType(kCura.EDDS.WebAPI.BulkImportManagerBase.OverlayBehavior), inputOverlayType.ToString), EDDS.WebAPI.BulkImportManagerBase.OverlayBehavior)
+		Protected Function GetMassImportOverlayBehavior(ByVal inputOverlayType As LoadFile.FieldOverlayBehavior?) As kCura.EDDS.WebAPI.BulkImportManagerBase.OverlayBehavior
+			If Not inputOverlayType.HasValue Then
+				Return EDDS.WebAPI.BulkImportManagerBase.OverlayBehavior.UseRelativityDefaults
+			Else
+				Return CType([Enum].Parse(GetType(kCura.EDDS.WebAPI.BulkImportManagerBase.OverlayBehavior), inputOverlayType.ToString), EDDS.WebAPI.BulkImportManagerBase.OverlayBehavior)
+			End If
 		End Function
 
 		Private Sub OpenFileWriters()
