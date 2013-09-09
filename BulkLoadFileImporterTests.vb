@@ -293,5 +293,24 @@ Namespace kCura.WinEDDS.NUnit
 		End Sub
 #End Region
 
+#Region " GetMassImportOverlayType "
+
+		<Test>
+		<TestCaseSource("OverlayTypeSource")>
+		Public Sub Test1(ByVal inputOverlayType As LoadFile.FieldOverlayBehavior, expectedOverlayType As kCura.EDDS.WebAPI.BulkImportManagerBase.OverlayBehavior)
+			Dim bulkImporter As MockBulkLoadFileImporter = New MockBulkLoadFileImporter(_args, _controller, 0, False, False, _guid, True, "S", True, New MockBulkImportManagerWebExceptions(True))
+			Assert.AreEqual(bulkImporter.ConvertOverlayBehaviorEnum(inputOverlayType), expectedOverlayType)
+		End Sub
+
+		Public Shared Function OverlayTypeSource() As TestCaseData()
+			Dim retval(2) As TestCaseData
+			retval(0) = New TestCaseData(LoadFile.FieldOverlayBehavior.UseRelativityDefaults, kCura.EDDS.WebAPI.BulkImportManagerBase.OverlayBehavior.UseRelativityDefaults)
+			retval(1) = New TestCaseData(LoadFile.FieldOverlayBehavior.ReplaceAll, kCura.EDDS.WebAPI.BulkImportManagerBase.OverlayBehavior.ReplaceAll)
+			retval(2) = New TestCaseData(LoadFile.FieldOverlayBehavior.MergeAll, kCura.EDDS.WebAPI.BulkImportManagerBase.OverlayBehavior.MergeAll)
+			Return retval
+		End Function
+
+#End Region
+
 	End Class
 End Namespace
