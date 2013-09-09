@@ -969,7 +969,7 @@ Namespace kCura.WinEDDS
 		Protected Function GetMassImportOverlayBehavior(ByVal inputOverlayType As LoadFile.FieldOverlayBehavior) As kCura.EDDS.WebAPI.BulkImportManagerBase.OverlayBehavior
 			Return CType([Enum].Parse(GetType(kCura.EDDS.WebAPI.BulkImportManagerBase.OverlayBehavior), inputOverlayType.ToString), EDDS.WebAPI.BulkImportManagerBase.OverlayBehavior)
 		End Function
-		
+
 		Private Sub OpenFileWriters()
 			_outputNativeFileWriter = New System.IO.StreamWriter(_outputNativeFilePath, False, System.Text.Encoding.Unicode)
 			_outputCodeFileWriter = New System.IO.StreamWriter(_outputCodeFilePath, False, System.Text.Encoding.Unicode)
