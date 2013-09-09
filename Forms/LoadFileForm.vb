@@ -1,5 +1,6 @@
 Imports System.Collections.Generic
 Imports kCura.Windows.Forms
+Imports System.Linq
 
 Namespace kCura.EDDS.WinForm
 	Public Class LoadFileForm
@@ -609,7 +610,7 @@ Namespace kCura.EDDS.WinForm
 			'_overlayBehavior
 			'
 			Me._overlayBehavior.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
-			Me._overwriteDropdown.Items.AddRange(New Object() {"Select...", "Merge Values", "Replace Values", "Use Relativity Field Settings"})
+			Me._overlayBehavior.Items.AddRange(New Object() {"Select...", "Merge Values", "Replace Values", "Use Relativity Field Settings"})
 			Me._overlayBehavior.Enabled = False
 			Me._overlayBehavior.Location = New System.Drawing.Point(8, 24)
 			Me._overlayBehavior.Name = "_overlayBehavior"
@@ -827,34 +828,32 @@ Namespace kCura.EDDS.WinForm
 			End Select
 		End Function
 
-		Private Function GetOverlayBehavior() As String
-			If _overwriteDropdown.SelectedItem Is Nothing Then Return "None"
+		Private Function GetOverlayBehavior() As LoadFile.FieldOverlayBehavior
+			If _overwriteDropdown.SelectedItem Is Nothing Then Return LoadFile.FieldOverlayBehavior.UseRelativityDefaults
 			Select Case _overwriteDropdown.SelectedItem.ToString.ToLower
 				Case "select..."
-					Return "None"
+					Return LoadFile.FieldOverlayBehavior.UseRelativityDefaults
 				Case "use relativity field settings"
-					Return "Default"
+					Return LoadFile.FieldOverlayBehavior.UseRelativityDefaults
 				Case "merge values"
-					Return "Merge"
+					Return LoadFile.FieldOverlayBehavior.MergeAll
 				Case "replace values"
-					Return "Replace"
+					Return LoadFile.FieldOverlayBehavior.ReplaceAll
 				Case Else
 					Throw New IndexOutOfRangeException("'" & _overwriteDropdown.SelectedItem.ToString.ToLower & "' isn't a valid option.")
 			End Select
 		End Function
 
-		Private Function GetOverlayBehaviorDropdownItem(ByVal input As String) As String
-			Select Case input.ToLower
-				Case "none"
-					Return "Select..."
-				Case "default"
+		Private Function GetOverlayBehaviorDropdownItem(ByVal behavior As LoadFile.FieldOverlayBehavior) As String			
+			Select Case behavior
+				Case LoadFile.FieldOverlayBehavior.UseRelativityDefaults
 					Return "Use Relativity Field Settings"
-				Case "merge"
+				Case LoadFile.FieldOverlayBehavior.MergeAll
 					Return "Merge Values"
-				Case "replace"
+				Case LoadFile.FieldOverlayBehavior.ReplaceAll
 					Return "Replace Values"
 				Case Else
-					Throw New IndexOutOfRangeException("'" & input.ToLower & "' isn't a valid option.")
+					Throw New IndexOutOfRangeException("'" & behavior.ToString() & "' isn't a valid option.")
 			End Select
 		End Function
 
@@ -873,6 +872,22 @@ Namespace kCura.EDDS.WinForm
 		Private Sub AppendErrorMessage(ByVal msg As System.Text.StringBuilder, ByVal errorText As String)
 			msg.Append(" - ").Append(errorText).Append(vbNewLine)
 		End Sub
+
+		Private Function AreThereMultiObjectFieldsSelected() As Boolean
+			'Dim viewFieldInfos As List(Of ViewFieldInfo) = Me._fieldMap.FieldColumns.RightListBoxItems.Cast(Of ViewFieldInfo).ToList()
+
+			'For Each viewFieldInfo As ViewFieldInfo In viewFieldInfos
+			'	If viewFieldInfo.FieldType = Relativity.FieldTypeHelper.FieldType.MultiCode OrElse viewFieldInfo.FieldType = Relativity.FieldTypeHelper.FieldType.Objects Then
+			'		Return True
+
+			'	End If
+			'Next
+			'Return False
+
+
+			Return True
+		End Function
+
 
 		Private Function PopulateLoadFileObject(ByVal doFormValidation As Boolean) As Boolean
 			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
@@ -898,6 +913,9 @@ Namespace kCura.EDDS.WinForm
 				If _fieldMap.LoadFileColumns.LeftListBoxItems.Count = 0 Then
 					Me.AppendErrorMessage(msg, "No fields mapped")
 				End If
+
+
+
 				Try
 					If _filePath.Text.Trim = "" OrElse _filePath.Text.Trim.ToLower = "select file to load..." Then
 						Me.AppendErrorMessage(msg, "No load file selected")
@@ -913,6 +931,11 @@ Namespace kCura.EDDS.WinForm
 				If _extractedTextValueContainsFileLocation.Checked AndAlso _fullTextFileEncodingPicker.SelectedEncoding Is Nothing Then
 					Me.AppendErrorMessage(msg, "No text file encoding selected for extracted text")
 				End If
+
+				If AreThereMultiObjectFieldsSelected() AndAlso _overlayBehavior.SelectedValue.Equals("-1") Then
+					Me.AppendErrorMessage(msg, "No multi-select field overlay behavior has been selected")
+				End If
+
 				If msg.ToString.Trim <> String.Empty Then
 					msg.Insert(0, "The following issues need to be addressed before continuing:" & vbNewLine & vbNewLine)
 					MsgBox(msg.ToString, MsgBoxStyle.Exclamation, "Warning")
@@ -970,6 +993,11 @@ Namespace kCura.EDDS.WinForm
 			'Else
 			'	LoadFile.GroupIdentifierColumn = Nothing
 			'End If
+			If _overlayBehavior.SelectedItem Is Nothing Then
+				LoadFile.OverlayBehavior = LoadFile.FieldOverlayBehavior.UseRelativityDefaults
+			Else
+				LoadFile.OverlayBehavior = Me.GetOverlayBehavior
+			End If
 
 			If _loadNativeFiles.Checked Then
 				If Not _nativeFilePathField.SelectedItem Is Nothing Then
@@ -1087,6 +1115,8 @@ Namespace kCura.EDDS.WinForm
 			End If
 			'_identifiersDropDown.Items.AddRange(_application.IdentiferFieldDropdownPopulator)
 			_overwriteDropdown.SelectedItem = Me.GetOverwriteDropdownItem(LoadFile.OverwriteDestination)
+			_overlayBehavior.SelectedItem = Me.GetOverlayBehaviorDropdownItem(LoadFile.OverlayBehavior)
+
 			_overlayIdentifier.Items.Clear()
 			_overlayIdentifier.Items.AddRange(Me.GetSuitableKeyFields)
 			_importMenuSendEmailNotificationItem.Checked = Me.LoadFile.SendEmailOnLoadCompletion
@@ -1167,6 +1197,8 @@ Namespace kCura.EDDS.WinForm
 			_startLineNumber.Value = CType(LoadFile.StartLineNumber, Decimal)
 			ActionMenuEnabled = ReadyToRun
 			Me.Cursor = System.Windows.Forms.Cursors.Default
+
+
 		End Sub
 
 		Public Property LoadFile() As kCura.WinEDDS.LoadFile
@@ -1534,10 +1566,9 @@ Namespace kCura.EDDS.WinForm
 			ActionMenuEnabled = ReadyToRun
 			_extractedTextValueContainsFileLocation.Enabled = Me.FullTextColumnIsMapped
 			_fullTextFileEncodingPicker.Enabled = _extractedTextValueContainsFileLocation.Enabled And _extractedTextValueContainsFileLocation.Checked
+			_overlayBehavior.Enabled = AreThereMultiObjectFieldsSelected()
+			'TODO: set back to default... put this above behavior in a sub
 		End Sub
-
-
-
 		Private Sub _LoadFileColumns_ItemsShifted() Handles _fieldMap.LoadFileColumnsItemsShifted
 			ActionMenuEnabled = ReadyToRun
 		End Sub
