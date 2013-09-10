@@ -893,7 +893,10 @@ Namespace kCura.EDDS.WinForm
 			msg.Append(" - ").Append(errorText).Append(vbNewLine)
 		End Sub
 
-		Private Function AreThereMultiChoiceMultiObjectFieldsSelected() As Boolean
+		Private Function IsOverlayBehaviorEnabled() As Boolean
+			If GetOverwrite.ToLower = "none" Then
+				Return False
+			End If
 			For Each fieldName As String In Me._fieldMap.FieldColumns.RightListBoxItems
 				If MultiObjectMultiChoiceCache.Exists(fieldName) Then
 					Return True
@@ -946,7 +949,7 @@ Namespace kCura.EDDS.WinForm
 					Me.AppendErrorMessage(msg, "No text file encoding selected for extracted text")
 				End If
 
-				If AreThereMultiChoiceMultiObjectFieldsSelected() AndAlso Not GetOverlayBehavior.HasValue Then
+				If _overlayBehavior.Enabled AndAlso Not GetOverlayBehavior.HasValue Then
 					Me.AppendErrorMessage(msg, "No multi-select field overlay behavior has been selected")
 				End If
 
@@ -1002,14 +1005,8 @@ Namespace kCura.EDDS.WinForm
 				LoadFile.FilePath = _filePath.Text
 			End If
 			LoadFile.SelectedIdentifierField = _application.GetDocumentFieldFromName(_application.GetCaseIdentifierFields(Me.LoadFile.ArtifactTypeID)(0))
-			'If Not _identifiersDropDown.SelectedItem Is Nothing Then
-			'	LoadFile.GroupIdentifierColumn = _identifiersDropDown.SelectedItem.ToString
-			'Else
-			'	LoadFile.GroupIdentifierColumn = Nothing
-			'End If
-			If _overlayBehavior.SelectedItem Is Nothing Then
-				LoadFile.OverlayBehavior = LoadFile.FieldOverlayBehavior.UseRelativityDefaults
-			Else
+		
+			If _overlayBehavior.Enabled Then
 				LoadFile.OverlayBehavior = Me.GetOverlayBehavior
 			End If
 
@@ -1536,7 +1533,9 @@ Namespace kCura.EDDS.WinForm
 				End Select
 			End If
 			ActionMenuEnabled = ReadyToRun
-			'_identifiersDropDown.Enabled = _overWrite.Checked
+
+			_overlayBehavior.Enabled = IsOverlayBehaviorEnabled()
+
 		End Sub
 
 		Private Sub PreviewMenuFile_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles PreviewMenuFile.Click
@@ -1581,16 +1580,10 @@ Namespace kCura.EDDS.WinForm
 			ActionMenuEnabled = ReadyToRun
 			_extractedTextValueContainsFileLocation.Enabled = Me.FullTextColumnIsMapped
 			_fullTextFileEncodingPicker.Enabled = _extractedTextValueContainsFileLocation.Enabled And _extractedTextValueContainsFileLocation.Checked
-			_overlayBehavior.Enabled = AreThereMultiChoiceMultiObjectFieldsSelected()
-			If Not _overlayBehavior.Enabled Then
-				ResetOverlayBehaviorColumn()
-			End If
+			_overlayBehavior.Enabled = IsOverlayBehaviorEnabled()
 		End Sub
 		Private Sub _LoadFileColumns_ItemsShifted() Handles _fieldMap.LoadFileColumnsItemsShifted
 			ActionMenuEnabled = ReadyToRun
-		End Sub
-		Private Sub ResetOverlayBehaviorColumn()
-			_overlayBehavior.SelectedItem = GetOverlayBehaviorDropdownItem(Nothing)
 		End Sub
 
 		Private Property ActionMenuEnabled() As Boolean
