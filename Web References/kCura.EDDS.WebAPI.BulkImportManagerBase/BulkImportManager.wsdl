@@ -186,7 +186,6 @@
       </s:complexType>
       <s:simpleType name="FieldCategory">
         <s:restriction base="s:string">
-          <s:enumeration value="Empty" />
           <s:enumeration value="Generic" />
           <s:enumeration value="FullText" />
           <s:enumeration value="Identifier" />

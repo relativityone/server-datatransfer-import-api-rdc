@@ -738,9 +738,6 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
     Public Enum FieldCategory
         
         '''<remarks/>
-        Empty
-        
-        '''<remarks/>
         Generic
         
         '''<remarks/>
@@ -1136,14 +1133,14 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
         End Property
         
         '''<remarks/>
-		Public Property OverlayBehavior() As OverlayBehavior?
-			Get
-				Return Me.overlayBehaviorField
-			End Get
-			Set(value As OverlayBehavior?)
-				Me.overlayBehaviorField = Value
-			End Set
-		End Property
+        Public Property OverlayBehavior() As OverlayBehavior
+            Get
+                Return Me.overlayBehaviorField
+            End Get
+            Set
+                Me.overlayBehaviorField = value
+            End Set
+        End Property
         
         '''<remarks/>
         Public Property KeyFieldArtifactID() As Integer
