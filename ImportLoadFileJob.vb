@@ -225,6 +225,7 @@ Namespace kCura.Relativity.DataReaderClient
 			tempLoadFile.SourceFileEncoding = loadFileTemp.SourceFileEncoding
 			tempLoadFile.StartLineNumber = loadFileTemp.StartLineNumber
 			tempLoadFile.ObjectFieldIdListContainsArtifactId = loadFileTemp.ObjectFieldIdListContainsArtifactId
+			tempLoadFile.OverlayBehavior = loadFileTemp.OverlayBehavior
 
 			Return tempLoadFile
 		End Function
@@ -324,6 +325,8 @@ Namespace kCura.Relativity.DataReaderClient
 					Case OverwriteModeEnum.Overlay
 						.OverwriteDestination = WinEDDS.SettingsFactoryBase.OverwriteType.Overlay
 				End Select
+
+				.OverlayBehavior = clientSettings.OverlayBehavior
 
 				.MultiRecordDelimiter = CType(clientSettings.MultiValueDelimiter, Char)
 				.HierarchicalValueDelimiter = CType(clientSettings.NestedValueDelimiter, Char)
