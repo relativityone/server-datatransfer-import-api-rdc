@@ -142,6 +142,17 @@ Namespace kCura.Relativity.DataReaderClient
 
 		'Public Property Credential As System.Net.NetworkCredential
 
+		''' <summary>
+		''' Indicates the method for overlay imports with multiple choice and multiple object fields.
+		''' </summary>
+		''' <value>This property can be set to one of the following values:
+		''' UseRelativityDefaults: each field will be imported based on its overlay behavior settings in Relativity.
+		''' MergeAll: new imported values will be added to all imported fields.
+		''' ReplaceAll: all the imported fields previous values will all be overwritten with the imported values.</value>
+		''' <returns></returns>
+		''' <remarks></remarks>
+		Public Property OverlayBehavior As kCura.EDDS.WebAPI.BulkImportManagerBase.OverlayBehavior = EDDS.WebAPI.BulkImportManagerBase.OverlayBehavior.UseRelativityDefaults
+
 
 	End Class
 End Namespace
