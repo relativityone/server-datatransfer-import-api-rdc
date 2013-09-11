@@ -1008,6 +1008,8 @@ Namespace kCura.EDDS.WinForm
 		
 			If _overlayBehavior.Enabled Then
 				LoadFile.OverlayBehavior = Me.GetOverlayBehavior
+			Else
+				LoadFile.OverlayBehavior = Nothing
 			End If
 
 			If _loadNativeFiles.Checked Then
