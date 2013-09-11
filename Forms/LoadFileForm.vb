@@ -1074,6 +1074,7 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 		Public Sub LoadFormControls(ByVal loadFileObjectUpdatedFromFile As Boolean)
+			_multiObjectMultiChoiceCache = Nothing
 			If Me.LoadFile.ArtifactTypeID = 0 Then Me.LoadFile.ArtifactTypeID = _application.ArtifactTypeID
 			Me.Text = String.Format("Relativity Desktop Client | Import {0} Load File", _application.GetObjectTypeName(Me.LoadFile.ArtifactTypeID))
 			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
