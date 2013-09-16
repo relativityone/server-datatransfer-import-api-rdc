@@ -1,4 +1,8 @@
 Namespace kCura.Relativity.DataReaderClient
+
+	''' <summary>
+	''' Represents a status message provided to an OnMessage event.
+	''' </summary>
 	Public Class Status
 
 #Region " Private Variables "
@@ -12,6 +16,9 @@ Namespace kCura.Relativity.DataReaderClient
 
 #Region " Public Properties "
 
+		''' <summary>
+		''' Gets or sets the status message.
+		''' </summary>
 		Public Property Message() As String
 			Get
 				Return _Message
@@ -25,10 +32,17 @@ Namespace kCura.Relativity.DataReaderClient
 
 #Region " Constructors "
 
+		''' <summary>
+		''' Creates an empty Status without a message.
+		''' </summary>
 		Public Sub New()
 
 		End Sub
 
+		''' <summary>
+		''' Creates a Status with the given message.
+		''' </summary>
+		''' <param name="messageString">The message provided to the Status.</param>
 		Public Sub New(ByVal messageString As String)
 			Message = messageString
 		End Sub
