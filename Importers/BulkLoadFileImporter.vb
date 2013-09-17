@@ -745,11 +745,11 @@ Namespace kCura.WinEDDS
                     Exit While
                 Catch ex As Exception
                     tries -= 1
-                    If tries = 0 OrElse ExceptionIsTimeoutRelated(ex) OrElse _continue = False OrElse ex.GetType = GetType(Service.BulkImportManager.BulkImportSqlException) OrElse ex.GetType = GetType(InsufficientPermissionsForImportException) Then
-                        Throw
-                    Else
-                        Me.RaiseWarningAndPause(ex, kCura.Utility.Config.Settings.IoErrorWaitTimeInSeconds)
-                    End If
+					If tries = 0 OrElse ExceptionIsTimeoutRelated(ex) OrElse _continue = False OrElse ex.GetType = GetType(Service.BulkImportManager.BulkImportSqlException) Then 'TODO: fix: OrElse ex.GetType = GetType(InsufficientPermissionsForImportException) Then
+						Throw
+					Else
+						Me.RaiseWarningAndPause(ex, kCura.Utility.Config.Settings.IoErrorWaitTimeInSeconds)
+					End If
                 End Try
             End While
             Return retval
@@ -940,6 +940,7 @@ Namespace kCura.WinEDDS
             settings.MappedFields = Me.GetMappedFields(_artifactTypeID, _settings.ObjectFieldIdListContainsArtifactId)
             settings.KeyFieldArtifactID = _keyFieldID
             settings.BulkLoadFileFieldDelimiter = _bulkLoadFileFieldDelimiter
+			settings.OverlayBehavior = Me.GetMassImportOverlayBehavior(_settings.OverlayBehavior)
             Select Case _overwrite.ToLower
                 Case "strict"
                     settings.Overlay = EDDS.WebAPI.BulkImportManagerBase.OverwriteType.Overlay
@@ -964,6 +965,19 @@ Namespace kCura.WinEDDS
             _statisticsLastUpdated = System.DateTime.Now
             Me.ManageErrors(_artifactTypeID)
             Return Nothing
+		End Function
+
+		Protected Function GetMassImportOverlayBehavior(ByVal inputOverlayType As LoadFile.FieldOverlayBehavior?) As kCura.EDDS.WebAPI.BulkImportManagerBase.OverlayBehavior
+			Select Case inputOverlayType
+				Case LoadFile.FieldOverlayBehavior.MergeAll
+					Return EDDS.WebAPI.BulkImportManagerBase.OverlayBehavior.MergeAll
+
+				Case LoadFile.FieldOverlayBehavior.ReplaceAll
+					Return EDDS.WebAPI.BulkImportManagerBase.OverlayBehavior.ReplaceAll
+
+				Case Else
+					Return EDDS.WebAPI.BulkImportManagerBase.OverlayBehavior.UseRelativityDefaults
+			End Select
         End Function
 
         Private Sub OpenFileWriters()

@@ -781,9 +781,6 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
     Public Enum FieldCategory
         
         '''<remarks/>
-        Empty
-        
-        '''<remarks/>
         Generic
         
         '''<remarks/>
@@ -1022,6 +1019,8 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
         
         Private overlayArtifactIDField As Integer
         
+        Private overlayBehaviorField As OverlayBehavior
+        
         Private keyFieldArtifactIDField As Integer
         
         Private rootFolderIDField As Integer
@@ -1177,6 +1176,16 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
         End Property
         
         '''<remarks/>
+        Public Property OverlayBehavior() As OverlayBehavior
+            Get
+                Return Me.overlayBehaviorField
+            End Get
+            Set
+                Me.overlayBehaviorField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
         Public Property KeyFieldArtifactID() As Integer
             Get
                 Return Me.keyFieldArtifactIDField
@@ -1196,6 +1205,22 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
             End Set
         End Property
     End Class
+    
+    '''<remarks/>
+    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.18060"),  _
+     System.SerializableAttribute(),  _
+     System.Xml.Serialization.XmlTypeAttribute([Namespace]:="http://www.kCura.com/EDDS/BulkImportManager")>  _
+    Public Enum OverlayBehavior
+        
+        '''<remarks/>
+        UseRelativityDefaults
+        
+        '''<remarks/>
+        MergeAll
+        
+        '''<remarks/>
+        ReplaceAll
+    End Enum
     
     '''<remarks/>
     <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.18060"),  _

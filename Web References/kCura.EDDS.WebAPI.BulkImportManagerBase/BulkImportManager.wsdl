@@ -147,6 +147,7 @@
           <s:element minOccurs="1" maxOccurs="1" name="AuditLevel" type="tns:ImportAuditLevel" />
           <s:element minOccurs="0" maxOccurs="1" name="BulkLoadFileFieldDelimiter" type="s:string" />
           <s:element minOccurs="1" maxOccurs="1" name="OverlayArtifactID" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="OverlayBehavior" type="tns:OverlayBehavior" />
           <s:element minOccurs="1" maxOccurs="1" name="KeyFieldArtifactID" type="s:int" />
           <s:element minOccurs="1" maxOccurs="1" name="RootFolderID" type="s:int" />
         </s:sequence>
@@ -185,7 +186,6 @@
       </s:complexType>
       <s:simpleType name="FieldCategory">
         <s:restriction base="s:string">
-          <s:enumeration value="Empty" />
           <s:enumeration value="Generic" />
           <s:enumeration value="FullText" />
           <s:enumeration value="Identifier" />
@@ -229,6 +229,13 @@
           <s:enumeration value="LeaveBlankValuesUnchanged" />
           <s:enumeration value="ReplaceBlankValuesWithIdentifier" />
           <s:enumeration value="ObjectFieldContainsArtifactId" />
+        </s:restriction>
+      </s:simpleType>
+      <s:simpleType name="OverlayBehavior">
+        <s:restriction base="s:string">
+          <s:enumeration value="UseRelativityDefaults" />
+          <s:enumeration value="MergeAll" />
+          <s:enumeration value="ReplaceAll" />
         </s:restriction>
       </s:simpleType>
       <s:element name="BulkImportNativeResponse">

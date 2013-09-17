@@ -22,7 +22,7 @@ Namespace kCura.WinEDDS.Service
                 If results.ExceptionDetail.ExceptionMessage IsNot Nothing AndAlso results.ExceptionDetail.ExceptionMessage.Contains("Timeout expired") Then
                     Throw New BulkImportSqlTimeoutException(results.ExceptionDetail)
                 ElseIf results.ExceptionDetail.ExceptionMessage IsNot Nothing AndAlso results.ExceptionDetail.ExceptionMessage.Contains("##InsufficientPermissionsForImportException##") Then
-                    Throw New InsufficientPermissionsForImportException(results.ExceptionDetail.ExceptionMessage.Replace("##InsufficientPermissionsForImportException##", ""))
+					Throw New Exception(results.ExceptionDetail.ExceptionMessage.Replace("##InsufficientPermissionsForImportException##", "")) 'TODO: InsufficientPermissionsForImportException
                 Else
                     Throw New BulkImportSqlException(results.ExceptionDetail)
                 End If

@@ -178,6 +178,19 @@ Namespace kCura.WinEDDS
 					Case Else
 						retval.Overwrite = EDDS.WebAPI.AuditManagerBase.OverwriteType.Both
 				End Select
+
+				If LoadFile.OverlayBehavior.HasValue Then
+					Select Case LoadFile.OverlayBehavior.Value
+						Case WinEDDS.LoadFile.FieldOverlayBehavior.MergeAll
+							retval.OverlayBehavior = EDDS.WebAPI.AuditManagerBase.OverlayBehavior.MergeAll
+						Case WinEDDS.LoadFile.FieldOverlayBehavior.ReplaceAll
+							retval.OverlayBehavior = EDDS.WebAPI.AuditManagerBase.OverlayBehavior.ReplaceAll
+						Case Else
+							retval.OverlayBehavior = EDDS.WebAPI.AuditManagerBase.OverlayBehavior.UseRelativityDefaults
+					End Select
+				End If
+
+
 				If LoadFile.CopyFilesToDocumentRepository Then
 					Select Case _loadFileImporter.UploadConnection
 						Case FileUploader.Type.Direct
@@ -185,7 +198,7 @@ Namespace kCura.WinEDDS
 						Case FileUploader.Type.Web
 							retval.RepositoryConnection = EDDS.WebAPI.AuditManagerBase.RepositoryConnectionType.Web
 					End Select
-					retval.TotalFileSize = _loadFileImporter.Statistics.FileBytes
+					retval.TotalFileSize = _loadFileImporter.Statistics.FileBytes					
 				End If
 				retval.RunTimeInMilliseconds = CType(System.DateTime.Now.Subtract(_startTime).TotalMilliseconds, Int32)
 				retval.StartLine = CType(System.Math.Min(LoadFile.StartLineNumber, Int32.MaxValue), Int32)
