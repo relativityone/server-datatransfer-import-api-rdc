@@ -1,5 +1,6 @@
 Imports System.Collections.Generic
 Imports kCura.Windows.Forms
+Imports System.Linq
 
 Namespace kCura.EDDS.WinForm
 	Public Class LoadFileForm
@@ -26,6 +27,25 @@ Namespace kCura.EDDS.WinForm
 				Return ParentArtifactTypeID <> 8
 			End Get
 		End Property
+
+		Private ReadOnly Property MultiObjectMultiChoiceCache As DocumentFieldCollection
+			Get
+				If _multiObjectMultiChoiceCache Is Nothing Then
+					Dim container As DocumentFieldCollection = _application.CurrentNonFileFields(_application.ArtifactTypeID, False)
+					_multiObjectMultiChoiceCache = New DocumentFieldCollection()
+					For Each docInfo As DocumentField In container
+						If docInfo.FieldTypeID = Relativity.FieldTypeHelper.FieldType.MultiCode OrElse docInfo.FieldTypeID = Relativity.FieldTypeHelper.FieldType.Objects Then
+							_multiObjectMultiChoiceCache.Add(docInfo)
+						End If
+					Next					
+				End If
+				Return _multiObjectMultiChoiceCache
+			End Get
+		End Property
+
+
+		Private _multiObjectMultiChoiceCache As DocumentFieldCollection = Nothing
+
 
 		Private Sub InitializeDocumentSpecificComponents()
 			If Me.LoadFile.ArtifactTypeID = 0 Then Me.LoadFile.ArtifactTypeID = _application.ArtifactTypeID
@@ -130,6 +150,8 @@ Namespace kCura.EDDS.WinForm
 		Friend WithEvents _overlayIdentifier As System.Windows.Forms.ComboBox
 		Friend WithEvents MenuItem5 As System.Windows.Forms.MenuItem
 		Friend WithEvents _importMenuSendEmailNotificationItem As System.Windows.Forms.MenuItem
+		Friend WithEvents GroupBoxOverlayBehavior As System.Windows.Forms.GroupBox
+		Friend WithEvents _overlayBehavior As System.Windows.Forms.ComboBox
 
 		<System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
 			Me.components = New System.ComponentModel.Container
@@ -181,6 +203,8 @@ Namespace kCura.EDDS.WinForm
 			Me._fieldMapTab = New System.Windows.Forms.TabPage
 			Me.GroupBoxOverlayIdentifier = New System.Windows.Forms.GroupBox
 			Me._overlayIdentifier = New System.Windows.Forms.ComboBox
+			Me.GroupBoxOverlayBehavior = New System.Windows.Forms.GroupBox
+			Me._overlayBehavior = New System.Windows.Forms.ComboBox
 			Me._fieldMap = New kCura.WinEDDS.UIControls.FieldMap
 			Me.GroupBoxExtractedText = New System.Windows.Forms.GroupBox
 			Me._fullTextFileEncodingPicker = New kCura.EDDS.WinForm.EncodingPicker
@@ -206,6 +230,7 @@ Namespace kCura.EDDS.WinForm
 			Me.GroupBoxCharacters.SuspendLayout()
 			Me._fieldMapTab.SuspendLayout()
 			Me.GroupBoxOverlayIdentifier.SuspendLayout()
+			Me.GroupBoxOverlayBehavior.SuspendLayout()
 			Me.GroupBoxExtractedText.SuspendLayout()
 			Me.GroupBoxOverwrite.SuspendLayout()
 			Me.GroupBoxFolderInfo.SuspendLayout()
@@ -343,7 +368,7 @@ Namespace kCura.EDDS.WinForm
 			Me.TabControl1.Location = New System.Drawing.Point(7, 48)
 			Me.TabControl1.Name = "TabControl1"
 			Me.TabControl1.SelectedIndex = 0
-			Me.TabControl1.Size = New System.Drawing.Size(738, 488)
+			Me.TabControl1.Size = New System.Drawing.Size(738, 526)
 			Me.TabControl1.TabIndex = 21
 			'
 			'_loadFileTab
@@ -358,7 +383,7 @@ Namespace kCura.EDDS.WinForm
 			Me._loadFileTab.Controls.Add(Me.GroupBoxCharacters)
 			Me._loadFileTab.Location = New System.Drawing.Point(4, 22)
 			Me._loadFileTab.Name = "_loadFileTab"
-			Me._loadFileTab.Size = New System.Drawing.Size(728, 462)
+			Me._loadFileTab.Size = New System.Drawing.Size(728, 526)
 			Me._loadFileTab.TabIndex = 0
 			Me._loadFileTab.Text = "Load File"
 			'
@@ -560,6 +585,7 @@ Namespace kCura.EDDS.WinForm
 			'_fieldMapTab
 			'
 			Me._fieldMapTab.Controls.Add(Me.GroupBoxOverlayIdentifier)
+			Me._fieldMapTab.Controls.Add(Me.GroupBoxOverlayBehavior)
 			Me._fieldMapTab.Controls.Add(Me._fieldMap)
 			Me._fieldMapTab.Controls.Add(Me.GroupBoxExtractedText)
 			Me._fieldMapTab.Controls.Add(Me.GroupBoxOverwrite)
@@ -567,7 +593,7 @@ Namespace kCura.EDDS.WinForm
 			Me._fieldMapTab.Controls.Add(Me.GroupBoxNativeFileBehavior)
 			Me._fieldMapTab.Location = New System.Drawing.Point(4, 22)
 			Me._fieldMapTab.Name = "_fieldMapTab"
-			Me._fieldMapTab.Size = New System.Drawing.Size(728, 462)
+			Me._fieldMapTab.Size = New System.Drawing.Size(728, 526)
 			Me._fieldMapTab.TabIndex = 1
 			Me._fieldMapTab.Text = "Field Map"
 			'
@@ -589,6 +615,26 @@ Namespace kCura.EDDS.WinForm
 			Me._overlayIdentifier.Name = "_overlayIdentifier"
 			Me._overlayIdentifier.Size = New System.Drawing.Size(220, 21)
 			Me._overlayIdentifier.TabIndex = 28
+
+			'GroupBoxOverlayBehavior
+			'
+			Me.GroupBoxOverlayBehavior.Controls.Add(Me._overlayBehavior)
+			Me.GroupBoxOverlayBehavior.Location = New System.Drawing.Point(4, 416)
+			Me.GroupBoxOverlayBehavior.Name = "GroupBoxOverlayBehavior"
+			Me.GroupBoxOverlayBehavior.Size = New System.Drawing.Size(234, 56)
+			Me.GroupBoxOverlayBehavior.TabIndex = 12
+			Me.GroupBoxOverlayBehavior.TabStop = False
+			Me.GroupBoxOverlayBehavior.Text = "Multi-Select Field Overlay Behavior"
+			'
+			'_overlayBehavior
+			'
+			Me._overlayBehavior.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+			Me._overlayBehavior.Items.AddRange(New Object() {"Select...", "Merge Values", "Replace Values", "Use Relativity Field Settings"})
+			Me._overlayBehavior.Enabled = False
+			Me._overlayBehavior.Location = New System.Drawing.Point(8, 24)
+			Me._overlayBehavior.Name = "_overlayBehavior"
+			Me._overlayBehavior.Size = New System.Drawing.Size(220, 21)
+			Me._overlayBehavior.TabIndex = 29
 			'
 			'_fieldMap
 			'
@@ -753,11 +799,12 @@ Namespace kCura.EDDS.WinForm
 			Me.GroupBoxCharacters.ResumeLayout(False)
 			Me._fieldMapTab.ResumeLayout(False)
 			Me.GroupBoxOverlayIdentifier.ResumeLayout(False)
+			Me.GroupBoxOverlayBehavior.ResumeLayout(False)
 			Me.GroupBoxExtractedText.ResumeLayout(False)
 			Me.GroupBoxOverwrite.ResumeLayout(False)
 			Me.GroupBoxFolderInfo.ResumeLayout(False)
 			Me.GroupBoxNativeFileBehavior.ResumeLayout(False)
-			Me.MinimumSize = New System.Drawing.Size(762, 560)
+			Me.MinimumSize = New System.Drawing.Size(762, 624)
 			Me.ResumeLayout(False)
 
 		End Sub
@@ -800,6 +847,36 @@ Namespace kCura.EDDS.WinForm
 			End Select
 		End Function
 
+		Private Function GetOverlayBehavior() As LoadFile.FieldOverlayBehavior?
+			If _overlayBehavior.SelectedItem Is Nothing Then Return Nothing
+			Select Case _overlayBehavior.SelectedItem.ToString.ToLower
+				Case "select..."
+					Return Nothing
+				Case "use relativity field settings"
+					Return LoadFile.FieldOverlayBehavior.UseRelativityDefaults
+				Case "merge values"
+					Return LoadFile.FieldOverlayBehavior.MergeAll
+				Case "replace values"
+					Return LoadFile.FieldOverlayBehavior.ReplaceAll
+				Case Else
+					Throw New IndexOutOfRangeException("'" & _overlayBehavior.SelectedItem.ToString.ToLower & "' isn't a valid option.")
+			End Select
+		End Function
+
+		Private Function GetOverlayBehaviorDropdownItem(ByVal behavior As LoadFile.FieldOverlayBehavior?) As String
+			If behavior Is Nothing Then Return "Select..."
+			Select Case behavior
+				Case LoadFile.FieldOverlayBehavior.UseRelativityDefaults
+					Return "Use Relativity Field Settings"
+				Case LoadFile.FieldOverlayBehavior.MergeAll
+					Return "Merge Values"
+				Case LoadFile.FieldOverlayBehavior.ReplaceAll
+					Return "Replace Values"
+				Case Else
+					Throw New IndexOutOfRangeException("'" & behavior.ToString() & "' isn't a valid option.")
+			End Select
+		End Function
+
 		Private Function GetSuitableKeyFields() As DocumentField()
 			Dim retval As New System.Collections.ArrayList
 			For Each field As DocumentField In _application.CurrentFields(Me.LoadFile.ArtifactTypeID, True)
@@ -815,6 +892,19 @@ Namespace kCura.EDDS.WinForm
 		Private Sub AppendErrorMessage(ByVal msg As System.Text.StringBuilder, ByVal errorText As String)
 			msg.Append(" - ").Append(errorText).Append(vbNewLine)
 		End Sub
+
+		Private Function IsOverlayBehaviorEnabled() As Boolean
+			If GetOverwrite.ToLower = "none" Then
+				Return False
+			End If
+			For Each fieldName As String In Me._fieldMap.FieldColumns.RightListBoxItems
+				If MultiObjectMultiChoiceCache.Exists(fieldName) Then
+					Return True
+				End If
+			Next
+			Return False
+		End Function
+
 
 		Private Function PopulateLoadFileObject(ByVal doFormValidation As Boolean) As Boolean
 			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
@@ -840,6 +930,9 @@ Namespace kCura.EDDS.WinForm
 				If _fieldMap.LoadFileColumns.LeftListBoxItems.Count = 0 Then
 					Me.AppendErrorMessage(msg, "No fields mapped")
 				End If
+
+
+
 				Try
 					If _filePath.Text.Trim = "" OrElse _filePath.Text.Trim.ToLower = "select file to load..." Then
 						Me.AppendErrorMessage(msg, "No load file selected")
@@ -855,6 +948,11 @@ Namespace kCura.EDDS.WinForm
 				If _extractedTextValueContainsFileLocation.Checked AndAlso _fullTextFileEncodingPicker.SelectedEncoding Is Nothing Then
 					Me.AppendErrorMessage(msg, "No text file encoding selected for extracted text")
 				End If
+
+				If _overlayBehavior.Enabled AndAlso Not GetOverlayBehavior.HasValue Then
+					Me.AppendErrorMessage(msg, "No multi-select field overlay behavior has been selected")
+				End If
+
 				If msg.ToString.Trim <> String.Empty Then
 					msg.Insert(0, "The following issues need to be addressed before continuing:" & vbNewLine & vbNewLine)
 					MsgBox(msg.ToString, MsgBoxStyle.Exclamation, "Warning")
@@ -907,11 +1005,12 @@ Namespace kCura.EDDS.WinForm
 				LoadFile.FilePath = _filePath.Text
 			End If
 			LoadFile.SelectedIdentifierField = _application.GetDocumentFieldFromName(_application.GetCaseIdentifierFields(Me.LoadFile.ArtifactTypeID)(0))
-			'If Not _identifiersDropDown.SelectedItem Is Nothing Then
-			'	LoadFile.GroupIdentifierColumn = _identifiersDropDown.SelectedItem.ToString
-			'Else
-			'	LoadFile.GroupIdentifierColumn = Nothing
-			'End If
+		
+			If _overlayBehavior.Enabled Then
+				LoadFile.OverlayBehavior = Me.GetOverlayBehavior
+			Else
+				LoadFile.OverlayBehavior = Nothing
+			End If
 
 			If _loadNativeFiles.Checked Then
 				If Not _nativeFilePathField.SelectedItem Is Nothing Then
@@ -977,6 +1076,7 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 		Public Sub LoadFormControls(ByVal loadFileObjectUpdatedFromFile As Boolean)
+			_multiObjectMultiChoiceCache = Nothing
 			If Me.LoadFile.ArtifactTypeID = 0 Then Me.LoadFile.ArtifactTypeID = _application.ArtifactTypeID
 			Me.Text = String.Format("Relativity Desktop Client | Import {0} Load File", _application.GetObjectTypeName(Me.LoadFile.ArtifactTypeID))
 			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
@@ -1006,6 +1106,7 @@ Namespace kCura.EDDS.WinForm
 			RefreshNativeFilePathFieldAndFileColumnHeaders()
 			If Not Me.EnsureConnection() Then Exit Sub
 			Dim caseFields As String() = _application.GetNonFileCaseFields(LoadFile.CaseInfo.ArtifactID, _application.ArtifactTypeID, True)
+
 			If loadFileObjectUpdatedFromFile Then
 				Dim columnHeaders As String()
 				If System.IO.File.Exists(Me.LoadFile.FilePath) Then
@@ -1029,6 +1130,9 @@ Namespace kCura.EDDS.WinForm
 			End If
 			'_identifiersDropDown.Items.AddRange(_application.IdentiferFieldDropdownPopulator)
 			_overwriteDropdown.SelectedItem = Me.GetOverwriteDropdownItem(LoadFile.OverwriteDestination)
+			_overlayBehavior.SelectedItem = Me.GetOverlayBehaviorDropdownItem(LoadFile.OverlayBehavior)
+			_overlayBehavior.Enabled = IsOverlayBehaviorEnabled()
+
 			_overlayIdentifier.Items.Clear()
 			_overlayIdentifier.Items.AddRange(Me.GetSuitableKeyFields)
 			_importMenuSendEmailNotificationItem.Checked = Me.LoadFile.SendEmailOnLoadCompletion
@@ -1109,6 +1213,8 @@ Namespace kCura.EDDS.WinForm
 			_startLineNumber.Value = CType(LoadFile.StartLineNumber, Decimal)
 			ActionMenuEnabled = ReadyToRun
 			Me.Cursor = System.Windows.Forms.Cursors.Default
+
+
 		End Sub
 
 		Public Property LoadFile() As kCura.WinEDDS.LoadFile
@@ -1177,6 +1283,7 @@ Namespace kCura.EDDS.WinForm
 
 				_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutBasePropertyTypeForDifference.Height, GroupBoxOverwrite, LayoutRelativePropertyTypeForDifference.Top))
 				_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutBasePropertyTypeForDifference.Height, GroupBoxOverlayIdentifier, LayoutRelativePropertyTypeForDifference.Top))
+				_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutBasePropertyTypeForDifference.Height, GroupBoxOverlayBehavior, LayoutRelativePropertyTypeForDifference.Top))
 				_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutBasePropertyTypeForDifference.Height, GroupBoxFolderInfo, LayoutRelativePropertyTypeForDifference.Top))
 				_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutBasePropertyTypeForDifference.Height, GroupBoxNativeFileBehavior, LayoutRelativePropertyTypeForDifference.Top))
 				_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutBasePropertyTypeForDifference.Height, GroupBoxExtractedText, LayoutRelativePropertyTypeForDifference.Top))
@@ -1430,7 +1537,9 @@ Namespace kCura.EDDS.WinForm
 				End Select
 			End If
 			ActionMenuEnabled = ReadyToRun
-			'_identifiersDropDown.Enabled = _overWrite.Checked
+
+			_overlayBehavior.Enabled = IsOverlayBehaviorEnabled()
+
 		End Sub
 
 		Private Sub PreviewMenuFile_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles PreviewMenuFile.Click
@@ -1475,10 +1584,8 @@ Namespace kCura.EDDS.WinForm
 			ActionMenuEnabled = ReadyToRun
 			_extractedTextValueContainsFileLocation.Enabled = Me.FullTextColumnIsMapped
 			_fullTextFileEncodingPicker.Enabled = _extractedTextValueContainsFileLocation.Enabled And _extractedTextValueContainsFileLocation.Checked
+			_overlayBehavior.Enabled = IsOverlayBehaviorEnabled()
 		End Sub
-
-
-
 		Private Sub _LoadFileColumns_ItemsShifted() Handles _fieldMap.LoadFileColumnsItemsShifted
 			ActionMenuEnabled = ReadyToRun
 		End Sub
