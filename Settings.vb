@@ -138,6 +138,7 @@ Namespace kCura.Relativity.DataReaderClient
 		''' <returns></returns>
 		''' <remarks> To use this property, <see cref="FileSizeMapped">FileSizeMapped</see> must be set to True.</remarks>
 		Public Property FileSizeColumn As String
+
 #End Region
 
 	End Class
