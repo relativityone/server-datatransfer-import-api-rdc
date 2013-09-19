@@ -629,7 +629,7 @@ Namespace kCura.EDDS.WinForm
 			'_overlayBehavior
 			'
 			Me._overlayBehavior.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
-			Me._overlayBehavior.Items.AddRange(New Object() {"Select...", "Merge Values", "Replace Values", "Use Relativity Field Settings"})
+			Me._overlayBehavior.Items.AddRange(New Object() {"Select...", "Merge Values", "Replace Values", "Use Field Settings"})
 			Me._overlayBehavior.Enabled = False
 			Me._overlayBehavior.Location = New System.Drawing.Point(8, 24)
 			Me._overlayBehavior.Name = "_overlayBehavior"
@@ -852,7 +852,7 @@ Namespace kCura.EDDS.WinForm
 			Select Case _overlayBehavior.SelectedItem.ToString.ToLower
 				Case "select..."
 					Return Nothing
-				Case "use relativity field settings"
+				Case "use field settings"
 					Return LoadFile.FieldOverlayBehavior.UseRelativityDefaults
 				Case "merge values"
 					Return LoadFile.FieldOverlayBehavior.MergeAll
@@ -867,7 +867,7 @@ Namespace kCura.EDDS.WinForm
 			If behavior Is Nothing Then Return "Select..."
 			Select Case behavior
 				Case LoadFile.FieldOverlayBehavior.UseRelativityDefaults
-					Return "Use Relativity Field Settings"
+					Return "Use Field Settings"
 				Case LoadFile.FieldOverlayBehavior.MergeAll
 					Return "Merge Values"
 				Case LoadFile.FieldOverlayBehavior.ReplaceAll
