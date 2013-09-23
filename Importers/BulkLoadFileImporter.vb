@@ -1154,14 +1154,18 @@ Namespace kCura.WinEDDS
 					_outputNativeFileWriter.Write("0" & _bulkLoadFileFieldDelimiter)
 				End If
 			End If
+
+			'_fullTextColumnMapsToFileLocation and chosenEncoding indicate that extracted text is being mapped
+			'In that case, we need a field (it can be empty but it needs the field delimiter) for the extracted text encoding
 			If chosenEncoding IsNot Nothing Then
-				_outputNativeFileWriter.Write(String.Format("{0}", chosenEncoding.CodePage))
+				_outputNativeFileWriter.Write(chosenEncoding.CodePage.ToString() & _bulkLoadFileFieldDelimiter)
 			ElseIf _fullTextColumnMapsToFileLocation Then
-				_outputNativeFileWriter.Write(String.Format("{0}", ""))
+				_outputNativeFileWriter.Write(_bulkLoadFileFieldDelimiter)
 			End If
+
+			'for documents only, we need a field to contain the folder path, so that WebAPI can create the folder (if needed)
 			If _artifactTypeID = Relativity.ArtifactType.Document Then
 				'Last column is the folder path (ONLY IF THIS IS A DOCUMENT LOAD... adding this to object imports will break them)
-				_outputNativeFileWriter.Write(_bulkLoadFileFieldDelimiter)
 				_outputNativeFileWriter.Write(mdoc.FolderPath & _bulkLoadFileFieldDelimiter)
 			End If
 			_outputNativeFileWriter.Write(vbCrLf)
