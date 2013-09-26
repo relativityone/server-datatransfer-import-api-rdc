@@ -276,7 +276,9 @@ Namespace kCura.WinEDDS
 		End Property
 
 		Public Sub Halt() Implements Api.IArtifactReader.Halt
-			_loadFilePreProcessor.StopCounting()
+			If _loadFilePreProcessor IsNot Nothing Then
+				_loadFilePreProcessor.StopCounting()
+			End If
 		End Sub
 
 		Public ReadOnly Property SizeInBytes() As Long Implements Api.IArtifactReader.SizeInBytes
