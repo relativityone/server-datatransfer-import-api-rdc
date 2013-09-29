@@ -19,6 +19,7 @@ Namespace kCura.WinEDDS
 		Private _pathIsSet As Boolean = False
 		Private _selectedIdentifier As DocumentField
 		Private _docFieldCollection As DocumentFieldCollection
+		Private _parentFolderDTO As kCura.EDDS.WebAPI.FolderManagerBase.Folder
 		Protected _auditManager As kCura.WinEDDS.Service.AuditManager
 
 		Private _recordCount As Int64 = -1
@@ -37,6 +38,7 @@ Namespace kCura.WinEDDS
 		Private _minimumBatchSize As Int32?
 		Private _batchSizeHistoryList As System.Collections.Generic.List(Of Int32)
 		Private _destinationFolderColumnIndex As Int32 = -1
+		Private _folderCache As FolderCache
 		Private _fullTextField As kCura.EDDS.WebAPI.DocumentManagerBase.Field
 		Private _defaultDestinationFolderPath As String = String.Empty
 		Private _defaultTextFolderPath As String = String.Empty
@@ -334,7 +336,10 @@ Namespace kCura.WinEDDS
 			_selectedIdentifier = args.SelectedIdentifierField
 			_copyFileToRepository = args.CopyFilesToDocumentRepository
 			_docFieldCollection = New DocumentFieldCollection(args.FieldMap.DocumentFields)
-			'If autoDetect Then _parentFolderDTO = _folderManager.Read(args.CaseInfo.ArtifactID, args.CaseInfo.RootFolderID)
+			If Not kCura.WinEDDS.Config.CreateFoldersInWebAPI Then
+				'Client side folder creation (added back for Dominus# 1127879)
+				If autoDetect Then _parentFolderDTO = _folderManager.Read(args.CaseInfo.ArtifactID, args.CaseInfo.RootFolderID)
+			End If
 			_processController = processController
 			_continue = True
 			_firstTimeThrough = True
@@ -515,6 +520,10 @@ Namespace kCura.WinEDDS
 
 		Private Sub InitializeFolderManagement()
 			If _createFolderStructure Then
+				If Not kCura.WinEDDS.Config.CreateFoldersInWebAPI Then
+					'Client side folder creation (added back for Dominus# 1127879)
+					If _artifactTypeID = 10 Then _folderCache = New FolderCache(_folderManager, _folderID, _caseArtifactID)
+				End If
 				Dim openParenIndex As Int32 = _destinationFolder.LastIndexOf("("c) + 1
 				Dim closeParenIndex As Int32 = _destinationFolder.LastIndexOf(")"c)
 				_destinationFolderColumnIndex = Int32.Parse(_destinationFolder.Substring(openParenIndex, closeParenIndex - openParenIndex)) - 1
@@ -622,13 +631,19 @@ Namespace kCura.WinEDDS
 			If _createFolderStructure Then
 				If _artifactTypeID = Relativity.ArtifactType.Document Then
 					Dim value As String = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(kCura.Utility.NullableTypesHelper.DBNullString(record.FieldList(Relativity.FieldCategory.ParentArtifact)(0).Value))
-					Dim cleanFolderPath As String = Me.CleanDestinationFolderPath(value)
-					If (String.IsNullOrWhiteSpace(cleanFolderPath)) Then
-						parentFolderID = _folderID
+					If kCura.WinEDDS.Config.CreateFoldersInWebAPI Then
+						'Server side folder creation
+						Dim cleanFolderPath As String = Me.CleanDestinationFolderPath(value)
+						If (String.IsNullOrWhiteSpace(cleanFolderPath)) Then
+							parentFolderID = _folderID
+						Else
+							folderPath = cleanFolderPath
+							'We're creating the structure on the server side, so it'll get a number then
+							parentFolderID = _UNKNOWN_PARENT_FOLDER_ID
+						End If
 					Else
-						folderPath = cleanFolderPath
-						'We're creating the structure on the server side, so it'll get a number then
-						parentFolderID = _UNKNOWN_PARENT_FOLDER_ID
+						'Client side folder creation (added back for Dominus# 1127879)
+						parentFolderID = _folderCache.FolderID(Me.CleanDestinationFolderPath(value))
 					End If
 				Else
 					'TODO: If we are going to do this for more than documents, fix this as well...
@@ -788,10 +803,18 @@ Namespace kCura.WinEDDS
 		Private Function GetSettingsObject() As kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo
 			Dim retval As kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo = Nothing
 			If _artifactTypeID = Relativity.ArtifactType.Document Then
-				retval = New kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo With {.DisableUserSecurityCheck = Me.DisableUserSecurityCheck, .AuditLevel = Me.AuditLevel, .OverlayArtifactID = _overlayArtifactID, .RootFolderID = Me._folderID}
-				If retval.RootFolderID = 0 Then
-					' 0 is the default value on the settings object which signifies an old client. -1 signifies unset, sent by a new client.
-					retval.RootFolderID = -1
+				retval = New kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo With {.DisableUserSecurityCheck = Me.DisableUserSecurityCheck, .AuditLevel = Me.AuditLevel, .OverlayArtifactID = _overlayArtifactID}
+				If kCura.WinEDDS.Config.CreateFoldersInWebAPI Then
+					'Server side folder creation
+					retval.RootFolderID = _folderID
+					If retval.RootFolderID = 0 Then
+						' -1 signifies unset, sent by a client using server-side folder creation (in the WebAPI)
+						retval.RootFolderID = -1
+					End If
+				Else
+					'Client side folder creation (added back for Dominus# 1127879)
+					' 0 is the default value on the settings object which signifies client-side folder creation
+					retval.RootFolderID = 0
 				End If
 			Else
 				Dim settings As New kCura.EDDS.WebAPI.BulkImportManagerBase.ObjectLoadInfo With {.DisableUserSecurityCheck = Me.DisableUserSecurityCheck, .AuditLevel = Me.AuditLevel}
@@ -1149,10 +1172,18 @@ Namespace kCura.WinEDDS
 				_outputNativeFileWriter.Write(_bulkLoadFileFieldDelimiter)
 			End If
 
-			'for documents only, we need a field to contain the folder path, so that WebAPI can create the folder (if needed)
-			If _artifactTypeID = Relativity.ArtifactType.Document Then
-				'Last column is the folder path (ONLY IF THIS IS A DOCUMENT LOAD... adding this to object imports will break them)
-				_outputNativeFileWriter.Write(mdoc.FolderPath & _bulkLoadFileFieldDelimiter)
+			If kCura.WinEDDS.Config.CreateFoldersInWebAPI Then
+				'Server side folder creation
+
+				'For documents only, we need a field to contain the folder path, so that WebAPI can create the folder (if needed)
+				'If we are using client-side folder creation, the folder path will be an empty string, but we still need to 
+				'add it so that the number of fields set by the client equals the number of fields that the server expects to find.
+				'If we are using client-side folder creation, this folder path field will not be used by the server because of the 
+				'settings object -- NativeFileInfo.RootFolderID will be 0.
+				If _artifactTypeID = Relativity.ArtifactType.Document Then
+					'Last column is the folder path (ONLY IF THIS IS A DOCUMENT LOAD... adding this to object imports will break them)
+					_outputNativeFileWriter.Write(mdoc.FolderPath & _bulkLoadFileFieldDelimiter)
+				End If
 			End If
 			_outputNativeFileWriter.Write(vbCrLf)
 		End Sub
