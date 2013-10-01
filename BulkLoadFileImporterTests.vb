@@ -1,4 +1,4 @@
-Imports kCura.EDDS.WebAPI.BulkImportManagerBase
+﻿Imports kCura.EDDS.WebAPI.BulkImportManagerBase
 Imports NUnit.Framework
 Imports kCura.Windows.Process
 Imports kCura.WinEDDS.LoadFileFieldMap
@@ -310,6 +310,23 @@ Namespace kCura.WinEDDS.NUnit
 			retval(3) = New TestCaseData(Nothing, kCura.EDDS.WebAPI.BulkImportManagerBase.OverlayBehavior.UseRelativityDefaults)
 			Return retval
 		End Function
+
+#End Region
+
+#Region " CleanDestinationFolderPath "
+
+		<Test>
+		<TestCase("\", "")>
+		<TestCase("\", "\\")>
+		<TestCase("\ႝ", "\ႝ\")>
+		<TestCase("\aaa\bbb\cc", "aaa\\bbb\\cc")>
+		<TestCase("\aaa\bbb\cc", "aaa\\\\\\\\\\bbb\\cc")>
+		<TestCase("\SourceCode\Mainline\EDDS\kCura.WinEDDS\Importers", ".\SourceCode\Mainline\EDDS\kCura.WinEDDS\Importers")>
+		Public Sub CleanDestinationFolderPath(ByVal expected As String, ByVal input As String)
+			Dim bulkImporter As MockBulkLoadFileImporter = New MockBulkLoadFileImporter(_args, _controller, 0, False, False, _guid, True, "S", True, New MockBulkImportManagerSqlExceptions(True))
+			Dim actual As String = bulkImporter.CleanFolderPath(input)
+			Assert.AreEqual(expected, actual)
+		End Sub
 
 #End Region
 
