@@ -682,11 +682,11 @@ Namespace kCura.WinEDDS
 			Return identityValue
 		End Function
 
-		Private Function CleanDestinationFolderPath(ByVal path As String) As String
-			While path.IndexOf(".\") <> -1
+		Protected Function CleanDestinationFolderPath(ByVal path As String) As String
+			While path.Contains(".\")
 				path = path.Replace(".\", "\")
 			End While
-			While path.IndexOf("\\") <> -1
+			While path.Contains("\\")
 				path = path.Replace("\\", "\")
 			End While
 			path = path.Replace(":", "_")
