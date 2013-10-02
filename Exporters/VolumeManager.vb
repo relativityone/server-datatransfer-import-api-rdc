@@ -148,6 +148,8 @@ Namespace kCura.WinEDDS
 					Case MsgBoxResult.Cancel
 						parent.Shutdown()
 						Exit Sub
+					Case Else
+						If Not parent.ExportManager.HasExportPermissions(_settings.CaseArtifactID) Then Throw New Service.ExportManager.InsufficientPermissionsForExportException("Export permissions revoked!  Please contact your system administrator to re-instate export permissions.")
 				End Select
 			End If
 			_subdirectoryLabelPaddingWidth = settings.SubdirectoryDigitPadding

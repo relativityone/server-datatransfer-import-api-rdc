@@ -63,6 +63,9 @@
 			Return retval
 		End Function
 
+		Public Shadows Function HasExportPermissions(appID As Int32) As Boolean
+			Return MakeCallAttemptReLogin(Function() MyBase.HasExportPermissions(appID))
+		End Function
 
 		Private Sub UnpackHandledException(ByVal ex As System.Exception)
 			Dim soapEx As System.Web.Services.Protocols.SoapException = TryCast(ex, System.Web.Services.Protocols.SoapException)
@@ -80,6 +83,9 @@
 		Public Class InsufficientPermissionsForExportException
 			Inherits System.Exception
 
+			Public Sub New(message As String)
+				MyBase.New(message)
+			End Sub
 			Public Sub New(message As String, ex As System.Exception)
 				MyBase.New(message, ex)
 			End Sub
