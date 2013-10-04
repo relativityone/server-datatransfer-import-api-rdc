@@ -40,7 +40,7 @@ Namespace kCura.WinEDDS
 							If Not tempDict.Contains("EnableSingleModeImport") Then tempDict.Add("EnableSingleModeImport", "False")
 							If Not tempDict.Contains("CreateErrorForEmptyNativeFile") Then tempDict.Add("CreateErrorForEmptyNativeFile", "False")
 							If Not tempDict.Contains("AuditLevel") Then tempDict.Add("AuditLevel", "FullAudit")
-							If Not tempDict.Contains("CreateFoldersInWebAPI") Then tempDict.Add("CreateFoldersInWebAPI", "True")
+							If Not tempDict.Contains("CreateFoldersInWebAPI") Then tempDict.Add("CreateFoldersInWebAPI", "False")
 
 							_configDictionary = tempDict
 						End If
@@ -200,7 +200,7 @@ Namespace kCura.WinEDDS
 		''' <summary>
 		''' If True, Folders which are created in Append mode are created in the WebAPI.
 		''' If False, Folders which are created in Append mode are created in RDC/ImportAPI.
-		''' If the value is not set in the config file, True is returned.
+		''' If the value is not set in the config file, False is returned.
 		''' </summary>
 		''' <value></value>
 		''' <returns></returns>
@@ -210,7 +210,7 @@ Namespace kCura.WinEDDS
 				Try
 					Return CType(ConfigSettings("CreateFoldersInWebAPI"), Boolean)
 				Catch ex As Exception
-					Return True
+					Return False
 				End Try
 			End Get
 		End Property
