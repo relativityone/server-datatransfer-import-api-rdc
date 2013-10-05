@@ -40,6 +40,7 @@ Namespace kCura.WinEDDS
 							If Not tempDict.Contains("EnableSingleModeImport") Then tempDict.Add("EnableSingleModeImport", "False")
 							If Not tempDict.Contains("CreateErrorForEmptyNativeFile") Then tempDict.Add("CreateErrorForEmptyNativeFile", "False")
 							If Not tempDict.Contains("AuditLevel") Then tempDict.Add("AuditLevel", "FullAudit")
+							If Not tempDict.Contains("CreateFoldersInWebAPI") Then tempDict.Add("CreateFoldersInWebAPI", "False")
 
 							_configDictionary = tempDict
 						End If
@@ -192,6 +193,24 @@ Namespace kCura.WinEDDS
 					Return CType(ConfigSettings("WebAPIOperationTimeout"), Int32)
 				Catch ex As Exception
 					Return 600000
+				End Try
+			End Get
+		End Property
+
+		''' <summary>
+		''' If True, Folders which are created in Append mode are created in the WebAPI.
+		''' If False, Folders which are created in Append mode are created in RDC/ImportAPI.
+		''' If the value is not set in the config file, False is returned.
+		''' </summary>
+		''' <value></value>
+		''' <returns></returns>
+		''' <remarks>This property is part of the fix for Dominus# 1127879</remarks>
+		Public Shared ReadOnly Property CreateFoldersInWebAPI() As Boolean
+			Get
+				Try
+					Return CType(ConfigSettings("CreateFoldersInWebAPI"), Boolean)
+				Catch ex As Exception
+					Return False
 				End Try
 			End Get
 		End Property
