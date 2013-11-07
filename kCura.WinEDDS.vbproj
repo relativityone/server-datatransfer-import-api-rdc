@@ -56,7 +56,7 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <OutputPath>bin\</OutputPath>
-    <DocumentationFile>kCura.WinEDDS.xml</DocumentationFile>
+    <DocumentationFile>bin\kCura.WinEDDS.xml</DocumentationFile>
     <BaseAddress>285212672</BaseAddress>
     <ConfigurationOverrideFile>
     </ConfigurationOverrideFile>
@@ -79,7 +79,7 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <OutputPath>bin\</OutputPath>
-    <DocumentationFile>kCura.WinEDDS.xml</DocumentationFile>
+    <DocumentationFile>bin\kCura.WinEDDS.xml</DocumentationFile>
     <BaseAddress>285212672</BaseAddress>
     <ConfigurationOverrideFile>
     </ConfigurationOverrideFile>
@@ -103,7 +103,7 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Integrate|AnyCPU' ">
     <OutputPath>bin\</OutputPath>
-    <DocumentationFile>kCura.WinEDDS.xml</DocumentationFile>
+    <DocumentationFile>bin\kCura.WinEDDS.xml</DocumentationFile>
     <BaseAddress>285212672</BaseAddress>
     <ConfigurationOverrideFile>
     </ConfigurationOverrideFile>
@@ -128,9 +128,9 @@
     <DebugSymbols>true</DebugSymbols>
     <DefineDebug>true</DefineDebug>
     <DefineTrace>true</DefineTrace>
-    <OutputPath>bin\</OutputPath>
+    <OutputPath>bin\x86\</OutputPath>
     <BaseAddress>285212672</BaseAddress>
-    <DocumentationFile>kCura.WinEDDS.xml</DocumentationFile>
+    <DocumentationFile>bin\x86\kCura.WinEDDS.xml</DocumentationFile>
     <WarningLevel>1</WarningLevel>
     <NoWarn>
     </NoWarn>
@@ -143,9 +143,9 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <DefineTrace>true</DefineTrace>
-    <OutputPath>bin\</OutputPath>
+    <OutputPath>bin\x86\</OutputPath>
     <BaseAddress>285212672</BaseAddress>
-    <DocumentationFile>kCura.WinEDDS.xml</DocumentationFile>
+    <DocumentationFile>bin\x86\kCura.WinEDDS.xml</DocumentationFile>
     <Optimize>true</Optimize>
     <WarningLevel>1</WarningLevel>
     <NoWarn>
@@ -162,9 +162,9 @@
     <DebugSymbols>true</DebugSymbols>
     <DefineDebug>true</DefineDebug>
     <DefineTrace>true</DefineTrace>
-    <OutputPath>bin\</OutputPath>
+    <OutputPath>bin\x86\</OutputPath>
     <BaseAddress>285212672</BaseAddress>
-    <DocumentationFile>kCura.WinEDDS.xml</DocumentationFile>
+    <DocumentationFile>bin\x86\kCura.WinEDDS.xml</DocumentationFile>
     <WarningLevel>1</WarningLevel>
     <NoWarn>
     </NoWarn>
@@ -179,9 +179,9 @@
     <DebugSymbols>true</DebugSymbols>
     <DefineDebug>true</DefineDebug>
     <DefineTrace>true</DefineTrace>
-    <OutputPath>bin\</OutputPath>
+    <OutputPath>bin\x64\</OutputPath>
     <BaseAddress>285212672</BaseAddress>
-    <DocumentationFile>kCura.WinEDDS.xml</DocumentationFile>
+    <DocumentationFile>bin\x64\kCura.WinEDDS.xml</DocumentationFile>
     <WarningLevel>1</WarningLevel>
     <NoWarn>
     </NoWarn>
@@ -194,9 +194,9 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
     <DefineTrace>true</DefineTrace>
-    <OutputPath>bin\</OutputPath>
+    <OutputPath>bin\x64\</OutputPath>
     <BaseAddress>285212672</BaseAddress>
-    <DocumentationFile>kCura.WinEDDS.xml</DocumentationFile>
+    <DocumentationFile>bin\x64\kCura.WinEDDS.xml</DocumentationFile>
     <Optimize>true</Optimize>
     <WarningLevel>1</WarningLevel>
     <NoWarn>
@@ -213,9 +213,9 @@
     <DebugSymbols>true</DebugSymbols>
     <DefineDebug>true</DefineDebug>
     <DefineTrace>true</DefineTrace>
-    <OutputPath>bin\</OutputPath>
+    <OutputPath>bin\x64\</OutputPath>
     <BaseAddress>285212672</BaseAddress>
-    <DocumentationFile>kCura.WinEDDS.xml</DocumentationFile>
+    <DocumentationFile>bin\x64\kCura.WinEDDS.xml</DocumentationFile>
     <WarningLevel>1</WarningLevel>
     <NoWarn>
     </NoWarn>
@@ -233,9 +233,9 @@
     <DebugSymbols>true</DebugSymbols>
     <DefineDebug>true</DefineDebug>
     <DefineTrace>true</DefineTrace>
-    <OutputPath>bin\Documentation\</OutputPath>
+    <OutputPath>bin\</OutputPath>
     <BaseAddress>285212672</BaseAddress>
-    <DocumentationFile>kCura.WinEDDS.xml</DocumentationFile>
+    <DocumentationFile>bin\kCura.WinEDDS.xml</DocumentationFile>
     <WarningLevel>1</WarningLevel>
     <DebugType>full</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -254,14 +254,14 @@
     <DebugSymbols>true</DebugSymbols>
     <DefineDebug>true</DefineDebug>
     <DefineTrace>true</DefineTrace>
-    <OutputPath>bin\x86\Documentation\</OutputPath>
+    <OutputPath>bin\x86\</OutputPath>
     <BaseAddress>285212672</BaseAddress>
-    <DocumentationFile>kCura.WinEDDS.xml</DocumentationFile>
+    <DocumentationFile>bin\x86\kCura.WinEDDS.xml</DocumentationFile>
     <WarningLevel>1</WarningLevel>
     <DebugType>full</DebugType>
     <PlatformTarget>x86</PlatformTarget>
     <WarningsAsErrors>41998,41999,42004,42016,42017,42018,42019,42020,42021,42022,42024,42025,42026,42029,42030,42031,42032,42036,42099,42104,42105,42106,42107,42108,42109,42353,42354,42355</WarningsAsErrors>
-    <CodeAnalysisLogFile>bin\kCura.WinEDDS.dll.CodeAnalysisLog.xml</CodeAnalysisLogFile>
+    <CodeAnalysisLogFile>bin\x86\kCura.WinEDDS.dll.CodeAnalysisLog.xml</CodeAnalysisLogFile>
     <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
     <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.vb</CodeAnalysisModuleSuppressionsFile>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
@@ -275,14 +275,14 @@
     <DebugSymbols>true</DebugSymbols>
     <DefineDebug>true</DefineDebug>
     <DefineTrace>true</DefineTrace>
-    <OutputPath>bin\x64\Documentation\</OutputPath>
+    <OutputPath>bin\x64\</OutputPath>
     <BaseAddress>285212672</BaseAddress>
-    <DocumentationFile>kCura.WinEDDS.xml</DocumentationFile>
+    <DocumentationFile>bin\x64\kCura.WinEDDS.xml</DocumentationFile>
     <WarningLevel>1</WarningLevel>
     <DebugType>full</DebugType>
     <PlatformTarget>x64</PlatformTarget>
     <WarningsAsErrors>41998,41999,42004,42016,42017,42018,42019,42020,42021,42022,42024,42025,42026,42029,42030,42031,42032,42036,42099,42104,42105,42106,42107,42108,42109,42353,42354,42355</WarningsAsErrors>
-    <CodeAnalysisLogFile>bin\kCura.WinEDDS.dll.CodeAnalysisLog.xml</CodeAnalysisLogFile>
+    <CodeAnalysisLogFile>bin\x64\kCura.WinEDDS.dll.CodeAnalysisLog.xml</CodeAnalysisLogFile>
     <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
     <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.vb</CodeAnalysisModuleSuppressionsFile>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
@@ -297,10 +297,10 @@
       <Project>{E621897E-45AF-4FBD-ADA4-EEE787E5233F}</Project>
       <Name>Relativity.Applications.Serialization</Name>
     </ProjectReference>
-	<ProjectReference Include="..\Relativity\Relativity.vbproj">
-	  <Project>{044A6424-BC90-46CE-8805-0053A44AFCAB}</Project>
-	  <Name>Relativity</Name>
-	</ProjectReference>
+    <ProjectReference Include="..\Relativity\Relativity.vbproj">
+      <Project>{044A6424-BC90-46CE-8805-0053A44AFCAB}</Project>
+      <Name>Relativity</Name>
+    </ProjectReference>
     <Reference Include="FreeImageNET, Version=3.15.1.0, Culture=neutral, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Vendor\FreeImage\3.151\FreeImage\Wrapper\FreeImage.NET\cs\Deploy\x64\FreeImageNET.dll</HintPath>
@@ -334,10 +334,10 @@
     <Reference Include="System.Xml">
       <Name>System.XML</Name>
     </Reference>
-	<ProjectReference Include="..\..\kCura\kCura.Data\kCura.Data.vbproj">
-	  <Project>{6C4D3211-85B6-4A83-9356-7C7F0C319C75}</Project>
-	  <Name>kCura.Data</Name>
-	</ProjectReference>
+    <ProjectReference Include="..\..\kCura\kCura.Data\kCura.Data.vbproj">
+      <Project>{6C4D3211-85B6-4A83-9356-7C7F0C319C75}</Project>
+      <Name>kCura.Data</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\kCura\kCura.ImageValidator\kCura.ImageValidator.vbproj">
       <Project>{C2FD8BF7-723A-4D40-A201-CD7458678A70}</Project>
       <Name>kCura.ImageValidator</Name>
@@ -1238,7 +1238,4 @@
     <None Include="Web References\kCura.EDDS.WebAPI.BulkImportManagerBase\BulkImportManager.disco" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.VisualBasic.targets" />
-  <PropertyGroup>
-    <PostBuildEvent>copy "$(TargetDir)\kCura.WinEDDS.dll" "$(ProjectDir)"</PostBuildEvent>
-  </PropertyGroup>
 </Project>
