@@ -1744,6 +1744,7 @@ Namespace kCura.EDDS.WinForm
 		End Function
 
 		Private Sub _fileRefreshMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _fileRefreshMenuItem.Click
+			_multiObjectMultiChoiceCache = Nothing
 			Dim caseFields As String() = _application.GetNonFileCaseFields(LoadFile.CaseInfo.ArtifactID, Me.LoadFile.ArtifactTypeID, True)			'_application.GetCaseFields(LoadFile.CaseInfo.ArtifactID, _application.ArtifactTypeID, True)
 			If caseFields Is Nothing Then Exit Sub
 			Me.MarkIdentifierField(caseFields)
