@@ -1497,6 +1497,8 @@ Namespace kCura.EDDS.WinForm
 					Me.ChangeWebServiceURL("The current Web Service URL could not be resolved. Try a new URL?")
 				ElseIf Not ex.Message.IndexOf("The request failed with HTTP status 401") = -1 AndAlso ex.Source = "System.Web.Services" Then
 					Me.ChangeWebServiceURL("The current Web Service URL was resolved but is not configured correctly. Try a new URL?")
+				ElseIf Not ex.Message.IndexOf("The request failed with HTTP status 404") = -1 AndAlso ex.Source = "System.Web.Services" Then
+					Me.ChangeWebServiceURL("The current Web Service URL was not found. Try a new URL?")
 				End If
 				_lastCredentialCheckResult = CredentialCheckResult.Fail
 			Catch ex As System.Exception
