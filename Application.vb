@@ -1477,6 +1477,25 @@ Namespace kCura.EDDS.WinForm
 			Dim relativityManager As New kCura.WinEDDS.Service.RelativityManager(cred, _cookieContainer)
 			Try
 				CheckVersion(cred)
+			Catch ex As System.Net.WebException
+				If Not ex.Message.IndexOf("The remote name could not be resolved") = -1 AndAlso ex.Source = "System" Then
+					Me.ChangeWebServiceURL("The current Relativity WebAPI URL could not be resolved. Try a new URL?")
+				ElseIf Not ex.Message.IndexOf("The request failed with HTTP status 401") = -1 AndAlso ex.Source = "System.Web.Services" Then
+					Me.ChangeWebServiceURL("The current Relativity WebAPI URL was resolved but is not configured correctly. Try a new URL?")
+				ElseIf Not ex.Message.IndexOf("The request failed with HTTP status 404") = -1 AndAlso ex.Source = "System.Web.Services" Then
+					Me.ChangeWebServiceURL("The current Relativity WebAPI URL was not found. Try a new URL?")
+				Else
+					Me.ChangeWebServiceURL("An error occurred while validating the Relativity WebAPI URL.  Check the URL and try again?")
+				End If
+				_lastCredentialCheckResult = CredentialCheckResult.Fail
+				Return
+			Catch ex As System.Exception
+				Me.ChangeWebServiceURL("An error occurred while validating the Relativity WebAPI URL.  Check the URL and try again?")
+				_lastCredentialCheckResult = CredentialCheckResult.Fail
+				Return
+			End Try
+
+			Try
 				If userManager.Login(cred.UserName, cred.Password) Then
 
 					Dim locale As New System.Globalization.CultureInfo(System.Globalization.CultureInfo.CurrentCulture.LCID, True)
@@ -1492,15 +1511,6 @@ Namespace kCura.EDDS.WinForm
 					Me.ReLogin("Invalid login. Try again?")
 					_lastCredentialCheckResult = CredentialCheckResult.Fail
 				End If
-			Catch ex As System.Net.WebException
-				If Not ex.Message.IndexOf("The remote name could not be resolved") = -1 AndAlso ex.Source = "System" Then
-					Me.ChangeWebServiceURL("The current Web Service URL could not be resolved. Try a new URL?")
-				ElseIf Not ex.Message.IndexOf("The request failed with HTTP status 401") = -1 AndAlso ex.Source = "System.Web.Services" Then
-					Me.ChangeWebServiceURL("The current Web Service URL was resolved but is not configured correctly. Try a new URL?")
-				ElseIf Not ex.Message.IndexOf("The request failed with HTTP status 404") = -1 AndAlso ex.Source = "System.Web.Services" Then
-					Me.ChangeWebServiceURL("The current Web Service URL was not found. Try a new URL?")
-				End If
-				_lastCredentialCheckResult = CredentialCheckResult.Fail
 			Catch ex As System.Exception
 				Dim x As New ErrorDialog
 				If IsAccessDisabledException(ex) Then
@@ -1591,6 +1601,8 @@ Namespace kCura.EDDS.WinForm
 				Else
 					ExitApplication()
 				End If
+			Else
+				ExitApplication()
 			End If
 		End Sub
 
