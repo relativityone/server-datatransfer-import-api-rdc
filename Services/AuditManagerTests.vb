@@ -7,7 +7,8 @@ Imports kCura.WinEDDS.NUnit
 
 Namespace kCura.WinEDDS.NUnit.Services
 
-	<TestFixture()> Public Class AuditManagerTests
+	'<TestFixture()>
+	Public Class AuditManagerTests
 
 #Region " Members "
 		Dim _testObj As AuditManager = Nothing

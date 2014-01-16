@@ -6,7 +6,8 @@ Imports kCura.WinEDDS
 Imports kCura.WinEDDS.NUnit
 
 Namespace kCura.WinEDDS.NUnit.Services
-	<TestFixture()> Public Class FieldQueryTests
+	'<TestFixture()>
+	Public Class FieldQueryTests
 
 #Region " Members "
 		Dim _testObj As kCura.WinEDDS.Service.FieldQuery = Nothing
