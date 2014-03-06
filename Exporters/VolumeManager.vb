@@ -268,19 +268,19 @@ Namespace kCura.WinEDDS
 #End Region
 
 		Public Function ExportArtifact(ByVal artifact As Exporters.ObjectExportInfo) As Int64
-			Dim tries As Int32 = kCura.Utility.Config.Settings.IoErrorNumberOfRetries
+			Dim tries As Int32 = kCura.Utility.Config.IOErrorNumberOfRetries
 			While tries > 0 And Not Me.Halt
 				tries -= 1
 				Try
-					Return Me.ExportArtifact(artifact, tries < (kCura.Utility.Config.Settings.IoErrorNumberOfRetries - 1))
+					Return Me.ExportArtifact(artifact, tries < (kCura.Utility.Config.IOErrorNumberOfRetries - 1))
 					Exit While
 				Catch ex As kCura.WinEDDS.Exceptions.ExportBaseException
 					If tries = 0 Then Throw
 					_parent.WriteWarning(String.Format("Error writing data file(s) for document {0}", artifact.IdentifierValue))
 					_parent.WriteWarning(String.Format("Actual error: {0}", ex.ToString))
-					If tries <> kCura.Utility.Config.Settings.IoErrorNumberOfRetries - 1 Then
-						_parent.WriteWarning(String.Format("Waiting {0} seconds to retry", kCura.Utility.Config.Settings.IoErrorWaitTimeInSeconds))
-						System.Threading.Thread.CurrentThread.Join(kCura.Utility.Config.Settings.IoErrorWaitTimeInSeconds * 1000)
+					If tries <> kCura.Utility.Config.IOErrorNumberOfRetries - 1 Then
+						_parent.WriteWarning(String.Format("Waiting {0} seconds to retry", kCura.Utility.Config.IOErrorWaitTimeInSeconds))
+						System.Threading.Thread.CurrentThread.Join(kCura.Utility.Config.IOErrorWaitTimeInSeconds * 1000)
 					Else
 						_parent.WriteWarning("Retrying now")
 					End If
@@ -395,6 +395,7 @@ Namespace kCura.WinEDDS
 			If Me.Settings.SelectedTextFields.Count = 0 Then Return False
 			Return (From f In Me.Settings.SelectedTextFields Where f IsNot Nothing).Any
 		End Function
+
 		Private Function ExportArtifact(ByVal artifact As Exporters.ObjectExportInfo, ByVal isRetryAttempt As Boolean) As Int64
 			If isRetryAttempt Then Me.ReInitializeAllStreams()
 			Dim totalFileSize As Int64 = 0
@@ -846,6 +847,7 @@ Namespace kCura.WinEDDS
 					Return c.ToString
 			End Select
 		End Function
+
 		Private Sub CreateImageLogEntry(ByVal batesNumber As String, ByVal copyFile As String, ByVal pathToImage As String, ByVal pageNumber As Int32, ByVal fullTextReader As System.IO.StreamReader, ByVal expectingTextForPage As Boolean, ByVal pageOffset As Long, ByVal numberOfImages As Int32)
 			Try
 				Select Case _settings.LogFileFormat

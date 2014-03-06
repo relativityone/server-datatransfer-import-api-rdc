@@ -103,7 +103,7 @@ Namespace kCura.WinEDDS
 
 		Protected Overridable ReadOnly Property NumberOfRetries() As Int32
 			Get
-				Return kCura.Utility.Config.Settings.IoErrorNumberOfRetries
+				Return kCura.Utility.Config.IOErrorNumberOfRetries
 			End Get
 		End Property
 
@@ -762,7 +762,7 @@ Namespace kCura.WinEDDS
 					If tries = 0 OrElse ExceptionIsTimeoutRelated(ex) OrElse _continue = False OrElse ex.GetType = GetType(Service.BulkImportManager.BulkImportSqlException) OrElse ex.GetType = GetType(Relativity.InsufficientPermissionsForImportException) Then
 						Throw
 					Else
-						Me.RaiseWarningAndPause(ex, kCura.Utility.Config.Settings.IoErrorWaitTimeInSeconds)
+						Me.RaiseWarningAndPause(ex, kCura.Utility.Config.IOErrorWaitTimeInSeconds)
 					End If
 				End Try
 			End While
