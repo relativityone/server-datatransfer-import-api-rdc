@@ -32,6 +32,7 @@ Namespace kCura.WinEDDS
 							If tempDict Is Nothing Then tempDict = New System.Collections.Hashtable
 							If Not tempDict.Contains("ImportBatchSize") Then tempDict.Add("ImportBatchSize", "1000")
 							If Not tempDict.Contains("WebAPIOperationTimeout") Then tempDict.Add("WebAPIOperationTimeout", "600000")
+							If Not tempDict.Contains("CreateErrorForInvalidDate") Then tempDict.Add("CreateErrorForInvalidDate", "True")
 							If Not tempDict.Contains("DynamicBatchResizingOn") Then tempDict.Add("DynamicBatchResizingOn", "True")
 							If Not tempDict.Contains("MinimumBatchSize") Then tempDict.Add("MinimumBatchSize", "100")
 							If Not tempDict.Contains("WaitTimeBetweenRetryAttempts") Then tempDict.Add("WaitTimeBetweenRetryAttempts", "30")
@@ -196,6 +197,7 @@ Namespace kCura.WinEDDS
 				End Try
 			End Get
 		End Property
+
 
 		''' <summary>
 		''' If True, Folders which are created in Append mode are created in the WebAPI.
