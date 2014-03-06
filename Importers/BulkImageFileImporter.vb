@@ -159,7 +159,7 @@ Namespace kCura.WinEDDS
 
 		Protected Overridable ReadOnly Property NumberOfRetries() As Int32
 			Get
-				Return kCura.Utility.Config.Settings.IoErrorNumberOfRetries
+				Return kCura.Utility.Config.IOErrorNumberOfRetries
 			End Get
 		End Property
 
@@ -263,7 +263,7 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Public Function RunBulkImport(ByVal overwrite As kCura.EDDS.WebAPI.BulkImportManagerBase.OverwriteType, ByVal useBulk As Boolean) As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults
-			Dim tries As Int32 = kCura.Utility.Config.Settings.IoErrorNumberOfRetries
+			Dim tries As Int32 = kCura.Utility.Config.IOErrorNumberOfRetries
 			Dim retval As New kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults
 			While tries > 0
 				Try
@@ -274,7 +274,7 @@ Namespace kCura.WinEDDS
 					If tries = 0 OrElse ExceptionIsTimeoutRelated(ex) OrElse _continue = False OrElse ex.GetType = GetType(Service.BulkImportManager.BulkImportSqlException) OrElse ex.GetType = GetType(Service.BulkImportManager.InsufficientPermissionsForImportException) Then
 						Throw
 					Else
-						Me.RaiseWarningAndPause(ex, kCura.Utility.Config.Settings.IoErrorWaitTimeInSeconds)
+						Me.RaiseWarningAndPause(ex, kCura.Utility.Config.IOErrorWaitTimeInSeconds)
 					End If
 				End Try
 			End While
