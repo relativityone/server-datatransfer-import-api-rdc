@@ -35,7 +35,6 @@ Namespace kCura.WinEDDS
 							If Not tempDict.Contains("CreateErrorForInvalidDate") Then tempDict.Add("CreateErrorForInvalidDate", "True")
 							If Not tempDict.Contains("DynamicBatchResizingOn") Then tempDict.Add("DynamicBatchResizingOn", "True")
 							If Not tempDict.Contains("MinimumBatchSize") Then tempDict.Add("MinimumBatchSize", "100")
-							If Not tempDict.Contains("WaitTimeBetweenRetryAttempts") Then tempDict.Add("WaitTimeBetweenRetryAttempts", "30")
 							If Not tempDict.Contains("ImportBatchMaxVolume") Then tempDict.Add("ImportBatchMaxVolume", "10485760") '10(2^20) - don't know what 10MB standard is
 							If Not tempDict.Contains("ExportBatchSize") Then tempDict.Add("ExportBatchSize", "1000")
 							If Not tempDict.Contains("EnableSingleModeImport") Then tempDict.Add("EnableSingleModeImport", "False")
@@ -232,12 +231,6 @@ Namespace kCura.WinEDDS
 		Public Shared ReadOnly Property MinimumBatchSize() As Int32		'When AutoBatch is on. This is the lower ceiling up to which batch will decrease
 			Get
 				Return CType(ConfigSettings("MinimumBatchSize"), Int32)
-			End Get
-		End Property
-
-		Public Shared ReadOnly Property WaitTimeBetweenRetryAttempts() As Int32
-			Get
-				Return CType(ConfigSettings("WaitTimeBetweenRetryAttempts"), Int32)
 			End Get
 		End Property
 

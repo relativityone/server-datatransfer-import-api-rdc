@@ -107,6 +107,12 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
+		Protected Overridable ReadOnly Property WaitTimeBetweenRetryAttempts() As Int32
+			Get
+				Return kCura.Utility.Config.IOErrorWaitTimeInSeconds
+			End Get
+		End Property
+
 		Public ReadOnly Property AllFields(ByVal artifactTypeID As Int32) As kCura.EDDS.WebAPI.DocumentManagerBase.Field()
 			Get
 				If _allFields Is Nothing Then
@@ -751,7 +757,7 @@ Namespace kCura.WinEDDS
 
 		Protected Function BulkImport(ByVal settings As kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo, ByVal includeExtractedTextEncoding As Boolean) As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults
 			If BatchSizeHistoryList.Count = 0 Then BatchSizeHistoryList.Add(ImportBatchSize)
-			Dim tries As Int32 = NumberOfRetries()
+			Dim tries As Int32 = NumberOfRetries
 			Dim retval As New kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults
 			While tries > 0
 				Try
@@ -762,7 +768,7 @@ Namespace kCura.WinEDDS
 					If tries = 0 OrElse ExceptionIsTimeoutRelated(ex) OrElse _continue = False OrElse ex.GetType = GetType(Service.BulkImportManager.BulkImportSqlException) OrElse ex.GetType = GetType(Service.BulkImportManager.InsufficientPermissionsForImportException) Then
 						Throw
 					Else
-						Me.RaiseWarningAndPause(ex, kCura.Utility.Config.IOErrorWaitTimeInSeconds)
+						Me.RaiseWarningAndPause(ex, WaitTimeBetweenRetryAttempts)
 					End If
 				End Try
 			End While
@@ -839,7 +845,7 @@ Namespace kCura.WinEDDS
 				If BatchResizeEnabled AndAlso ExceptionIsTimeoutRelated(ex) AndAlso _continue Then
 					Dim originalBatchSize As Int32 = Me.ImportBatchSize
 					LowerBatchLimits()
-					Me.RaiseWarningAndPause(ex, kCura.WinEDDS.Config.WaitTimeBetweenRetryAttempts)
+					Me.RaiseWarningAndPause(ex, WaitTimeBetweenRetryAttempts)
 					If Not _continue Then Throw 'after the pause
 					Me.LowerBatchSizeAndRetry(outputNativePath, originalBatchSize)
 				Else
@@ -888,9 +894,9 @@ Namespace kCura.WinEDDS
 					recordsProcessed += i
 					charactersSuccessfullyProcessed += charactersProcessed
 				Catch ex As Exception
-					If tries < NumberOfRetries() AndAlso BatchResizeEnabled AndAlso ExceptionIsTimeoutRelated(ex) AndAlso _continue Then
+					If tries < NumberOfRetries AndAlso BatchResizeEnabled AndAlso ExceptionIsTimeoutRelated(ex) AndAlso _continue Then
 						LowerBatchLimits()
-						Me.RaiseWarningAndPause(ex, kCura.WinEDDS.Config.WaitTimeBetweenRetryAttempts)
+						Me.RaiseWarningAndPause(ex, WaitTimeBetweenRetryAttempts)
 						If Not _continue Then Throw 'after the pause
 						tries += 1
 						hasReachedEof = False

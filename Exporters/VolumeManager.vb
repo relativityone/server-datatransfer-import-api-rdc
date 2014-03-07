@@ -120,6 +120,18 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
+		Protected Overridable ReadOnly Property NumberOfRetries() As Int32
+			Get
+				Return kCura.Utility.Config.IOErrorNumberOfRetries
+			End Get
+		End Property
+
+		Protected Overridable ReadOnly Property WaitTimeBetweenRetryAttempts() As Int32
+			Get
+				Return kCura.Utility.Config.IOErrorWaitTimeInSeconds
+			End Get
+		End Property
+
 #End Region
 
 #Region "Constructors"
@@ -271,7 +283,7 @@ Namespace kCura.WinEDDS
 
 		Public Function ExportArtifact(ByVal artifact As Exporters.ObjectExportInfo) As Int64
 			Dim tries As Int32 = 0
-			Dim maxTries As Int32 = kCura.Utility.Config.IOErrorNumberOfRetries + 1
+			Dim maxTries As Int32 = NumberOfRetries + 1
 			While tries < maxTries And Not Me.Halt
 				tries += 1
 				Try
@@ -282,8 +294,8 @@ Namespace kCura.WinEDDS
 					_parent.WriteWarning(String.Format("Error writing data file(s) for document {0}", artifact.IdentifierValue))
 					_parent.WriteWarning(String.Format("Actual error: {0}", ex.ToString))
 					If tries > 1 Then
-						_parent.WriteWarning(String.Format("Waiting {0} seconds to retry", kCura.Utility.Config.IOErrorWaitTimeInSeconds))
-						System.Threading.Thread.CurrentThread.Join(kCura.Utility.Config.IOErrorWaitTimeInSeconds * 1000)
+						_parent.WriteWarning(String.Format("Waiting {0} seconds to retry", WaitTimeBetweenRetryAttempts))
+						System.Threading.Thread.CurrentThread.Join(WaitTimeBetweenRetryAttempts * 1000)
 					Else
 						_parent.WriteWarning("Retrying now")
 					End If
@@ -465,7 +477,7 @@ Namespace kCura.WinEDDS
 				If Not Me.TextPrecedenceIsSet Then
 					tempLocalIproFullTextFilePath = System.IO.Path.GetTempFileName
 					Dim tries As Int32 = 0
-					Dim maxTries As Int32 = kCura.Utility.Config.IOErrorNumberOfRetries + 1
+					Dim maxTries As Int32 = NumberOfRetries + 1
 					Dim start As Int64 = System.DateTime.Now.Ticks
 					Dim val As String = artifact.Metadata(Me.OrdinalLookup("ExtractedText")).ToString
 					If val <> Relativity.Constants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN Then
@@ -482,7 +494,7 @@ Namespace kCura.WinEDDS
 								If tries = 1 Then
 									_parent.WriteStatusLine(Windows.Process.EventType.Warning, "Second attempt to download full text for document " & artifact.IdentifierValue, True)
 								ElseIf tries < maxTries Then
-									Dim waitTime As Int32 = kCura.Utility.Config.IOErrorWaitTimeInSeconds
+									Dim waitTime As Int32 = WaitTimeBetweenRetryAttempts
 									_parent.WriteStatusLine(Windows.Process.EventType.Warning, "Additional attempt to download full text for document " & artifact.IdentifierValue & " failed - retrying in " & waitTime.ToString() & " seconds", True)
 									System.Threading.Thread.CurrentThread.Join(waitTime * 1000)
 								Else
@@ -617,7 +629,7 @@ Namespace kCura.WinEDDS
 		Private Function DownloadTextFieldAsFile(ByVal artifact As WinEDDS.Exporters.ObjectExportInfo, ByVal field As WinEDDS.ViewFieldInfo) As String
 			Dim tempLocalFullTextFilePath As String = System.IO.Path.GetTempFileName
 			Dim tries As Int32 = 0
-			Dim maxTries As Int32 = kCura.Utility.Config.IOErrorNumberOfRetries + 1
+			Dim maxTries As Int32 = NumberOfRetries + 1
 			Dim start As Int64 = System.DateTime.Now.Ticks
 			While tries < maxTries AndAlso Not Me.Halt
 				tries += 1
@@ -633,7 +645,7 @@ Namespace kCura.WinEDDS
 					If tries = 1 Then
 						_parent.WriteStatusLine(Windows.Process.EventType.Warning, "Second attempt to download full text for document " & artifact.IdentifierValue, True)
 					ElseIf tries < maxTries Then
-						Dim waitTime As Int32 = kCura.Utility.Config.IOErrorWaitTimeInSeconds
+						Dim waitTime As Int32 = WaitTimeBetweenRetryAttempts
 						_parent.WriteStatusLine(Windows.Process.EventType.Warning, "Additional attempt to download full text for document " & artifact.IdentifierValue & " failed - retrying in " & waitTime.ToString() & " seconds", True)
 						System.Threading.Thread.CurrentThread.Join(waitTime * 1000)
 					Else
@@ -798,7 +810,7 @@ Namespace kCura.WinEDDS
 				End If
 			End If
 			Dim tries As Int32 = 0
-			Dim maxTries As Int32 = kCura.Utility.Config.IOErrorNumberOfRetries + 1
+			Dim maxTries As Int32 = NumberOfRetries + 1
 			While tries < maxTries AndAlso Not Me.Halt
 				tries += 1
 				Try
@@ -809,7 +821,7 @@ Namespace kCura.WinEDDS
 					If tries = 1 Then
 						_parent.WriteStatusLine(Windows.Process.EventType.Warning, "Second attempt to download image " & image.BatesNumber & " - exact error: " & ex.ToString, True)
 					ElseIf tries < maxTries Then
-						Dim waitTime As Int32 = kCura.Utility.Config.IOErrorWaitTimeInSeconds
+						Dim waitTime As Int32 = WaitTimeBetweenRetryAttempts
 						_parent.WriteStatusLine(Windows.Process.EventType.Warning, "Additional attempt to download image " & image.BatesNumber & " failed - retrying in " & waitTime.ToString() & " seconds - exact error: " & ex.ToString, True)
 						System.Threading.Thread.CurrentThread.Join(waitTime * 1000)
 					Else
@@ -960,7 +972,7 @@ Namespace kCura.WinEDDS
 				End If
 			End If
 			Dim tries As Int32 = 0
-			Dim maxTries As Int32 = kCura.Utility.Config.IOErrorNumberOfRetries + 1
+			Dim maxTries As Int32 = NumberOfRetries + 1
 			While tries < maxTries AndAlso Not Me.Halt
 				tries += 1
 				Try
@@ -974,7 +986,7 @@ Namespace kCura.WinEDDS
 					If tries = 1 Then
 						_parent.WriteStatusLine(Windows.Process.EventType.Warning, "Second attempt to download native for document " & artifact.IdentifierValue, True)
 					ElseIf tries < maxTries Then
-						Dim waitTime As Int32 = kCura.Utility.Config.IOErrorWaitTimeInSeconds
+						Dim waitTime As Int32 = WaitTimeBetweenRetryAttempts
 						_parent.WriteStatusLine(Windows.Process.EventType.Warning, "Additional attempt to download native for document " & artifact.IdentifierValue & " failed - retrying in " & waitTime.ToString() & " seconds", True)
 						System.Threading.Thread.CurrentThread.Join(waitTime * 1000)
 					Else
