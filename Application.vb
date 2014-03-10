@@ -1686,7 +1686,7 @@ Namespace kCura.EDDS.WinForm
 				_loginForm.TopMost = False
 			End If
 
-			Process.Start(System.IO.Path.Combine(System.Windows.Forms.Application.StartupPath, "documents\RelativityDesktopClientGuide.pdf"))
+			Process.Start("http://kcura.com/relativity/Portals/0/Documents/8.0%20Documentation%20Help%20Site/index.htm#Features/Relativity%20Desktop%20Client/Relativity%20Desktop%20Client.htm")
 
 			If Not _loginForm Is Nothing AndAlso Not _loginForm.IsDisposed Then
 				_loginForm.TopMost = True
