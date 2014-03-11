@@ -6,7 +6,8 @@ Imports kCura.WinEDDS
 Imports kCura.WinEDDS.NUnit
 
 Namespace kCura.WinEDDS.NUnit.Services
-	<TestFixture()> Public Class ObjectTypeManagerTests
+	'<TestFixture()>
+	Public Class ObjectTypeManagerTests
 
 #Region " Members "
 		Dim _testObj As kCura.WinEDDS.Service.ObjectTypeManager = Nothing

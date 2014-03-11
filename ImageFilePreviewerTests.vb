@@ -3,7 +3,8 @@ Imports kCura.Windows.Process
 
 Namespace kCura.WinEDDS.NUnit
 
-<TestFixture()> Public Class ImageFilePreviewerTests
+	'<TestFixture()> 
+	Public Class ImageFilePreviewerTests
 
 #Region " Members "
 		Dim _args As ImageLoadFile
