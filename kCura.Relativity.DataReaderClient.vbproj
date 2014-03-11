@@ -318,7 +318,5 @@
   <PropertyGroup>
     <PreBuildEvent>
     </PreBuildEvent>
-    <PostBuildEvent>copy "$(TargetDir)\kCura.Relativity.DataReaderClient.xml" "$(ProjectDir)"
-copy "$(TargetDir)\kCura.Relativity.DataReaderClient.dll" "$(ProjectDir)"</PostBuildEvent>
   </PropertyGroup>
 </Project>
