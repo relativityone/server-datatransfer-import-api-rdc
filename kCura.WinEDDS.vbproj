@@ -297,10 +297,10 @@
       <Project>{E621897E-45AF-4FBD-ADA4-EEE787E5233F}</Project>
       <Name>Relativity.Applications.Serialization</Name>
     </ProjectReference>
-	<ProjectReference Include="..\Relativity\Relativity.vbproj">
-	  <Project>{044A6424-BC90-46CE-8805-0053A44AFCAB}</Project>
-	  <Name>Relativity</Name>
-	</ProjectReference>
+    <ProjectReference Include="..\Relativity\Relativity.vbproj">
+      <Project>{044A6424-BC90-46CE-8805-0053A44AFCAB}</Project>
+      <Name>Relativity</Name>
+    </ProjectReference>
     <Reference Include="FreeImageNET, Version=3.15.1.0, Culture=neutral, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Vendor\FreeImage\3.151\FreeImage\Wrapper\FreeImage.NET\cs\Deploy\x64\FreeImageNET.dll</HintPath>
@@ -334,10 +334,10 @@
     <Reference Include="System.Xml">
       <Name>System.XML</Name>
     </Reference>
-	<ProjectReference Include="..\..\kCura\kCura.Data\kCura.Data.vbproj">
-	  <Project>{6C4D3211-85B6-4A83-9356-7C7F0C319C75}</Project>
-	  <Name>kCura.Data</Name>
-	</ProjectReference>
+    <ProjectReference Include="..\..\kCura\kCura.Data\kCura.Data.vbproj">
+      <Project>{6C4D3211-85B6-4A83-9356-7C7F0C319C75}</Project>
+      <Name>kCura.Data</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\kCura\kCura.ImageValidator\kCura.ImageValidator.vbproj">
       <Project>{C2FD8BF7-723A-4D40-A201-CD7458678A70}</Project>
       <Name>kCura.ImageValidator</Name>
@@ -1238,7 +1238,4 @@
     <None Include="Web References\kCura.EDDS.WebAPI.BulkImportManagerBase\BulkImportManager.disco" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.VisualBasic.targets" />
-  <PropertyGroup>
-    <PostBuildEvent></PostBuildEvent>
-  </PropertyGroup>
 </Project>
