@@ -192,9 +192,9 @@
       <Name>kCura.WinEDDS</Name>
     </ProjectReference>
     <ProjectReference Include="..\Relativity\Relativity.vbproj">
-	  <Project>{044A6424-BC90-46CE-8805-0053A44AFCAB}</Project>
-	  <Name>Relativity</Name>
-	</ProjectReference>
+      <Project>{044A6424-BC90-46CE-8805-0053A44AFCAB}</Project>
+      <Name>Relativity</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
