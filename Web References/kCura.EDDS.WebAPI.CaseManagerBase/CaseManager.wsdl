@@ -19,6 +19,23 @@
           </s:sequence>
         </s:complexType>
       </s:element>
+      <s:element name="RetrieveAllEnabled">
+        <s:complexType />
+      </s:element>
+      <s:element name="RetrieveAllEnabledResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="RetrieveAllEnabledResult">
+              <s:complexType>
+                <s:sequence>
+                  <s:element ref="s:schema" />
+                  <s:any />
+                </s:sequence>
+              </s:complexType>
+            </s:element>
+          </s:sequence>
+        </s:complexType>
+      </s:element>	  
       <s:element name="Create">
         <s:complexType>
           <s:sequence>

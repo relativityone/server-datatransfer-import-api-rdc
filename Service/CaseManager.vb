@@ -40,7 +40,7 @@ Namespace kCura.WinEDDS.Service
 				tries += 1
 				Try
 					If kCura.WinEDDS.Config.UsesWebAPI Then
-						Return MyBase.RetrieveAll()
+						Return MyBase.RetrieveAllEnabled()
 					Else
 						'Return _caseManager.RetrieveAll(_identity).ToDataSet()
 					End If
