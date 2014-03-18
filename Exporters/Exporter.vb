@@ -131,12 +131,14 @@ Namespace kCura.WinEDDS
 			Next
 			Return False
 		End Function
+
 		Private Function ExtractedTextField() As ViewFieldInfo
 			For Each v As ViewFieldInfo In Me.Settings.AllExportableFields
 				If v.Category = Relativity.FieldCategory.FullText Then Return v
 			Next
 			Throw New System.Exception("Full text field somehow not in all fields")
 		End Function
+
 		Private Function Search() As Boolean
 			Dim typeOfExportDisplayString As String = ""
 			Dim fileCount As Int32 = 0
@@ -347,6 +349,7 @@ Namespace kCura.WinEDDS
 			End If
 			Return retval
 		End Function
+
 		Private Function GetProduction(ByVal productionArtifactId As String) As kCura.EDDS.WebAPI.ProductionManagerBase.Production
 			Dim id As Int32 = CInt(productionArtifactId)
 			If Not _productionLookup.ContainsKey(id) Then

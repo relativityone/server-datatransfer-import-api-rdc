@@ -32,9 +32,9 @@ Namespace kCura.WinEDDS
 							If tempDict Is Nothing Then tempDict = New System.Collections.Hashtable
 							If Not tempDict.Contains("ImportBatchSize") Then tempDict.Add("ImportBatchSize", "1000")
 							If Not tempDict.Contains("WebAPIOperationTimeout") Then tempDict.Add("WebAPIOperationTimeout", "600000")
+							If Not tempDict.Contains("CreateErrorForInvalidDate") Then tempDict.Add("CreateErrorForInvalidDate", "True")
 							If Not tempDict.Contains("DynamicBatchResizingOn") Then tempDict.Add("DynamicBatchResizingOn", "True")
 							If Not tempDict.Contains("MinimumBatchSize") Then tempDict.Add("MinimumBatchSize", "100")
-							If Not tempDict.Contains("WaitTimeBetweenRetryAttempts") Then tempDict.Add("WaitTimeBetweenRetryAttempts", "30")
 							If Not tempDict.Contains("ImportBatchMaxVolume") Then tempDict.Add("ImportBatchMaxVolume", "10485760") '10(2^20) - don't know what 10MB standard is
 							If Not tempDict.Contains("ExportBatchSize") Then tempDict.Add("ExportBatchSize", "1000")
 							If Not tempDict.Contains("EnableSingleModeImport") Then tempDict.Add("EnableSingleModeImport", "False")
@@ -197,6 +197,7 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
+
 		''' <summary>
 		''' If True, Folders which are created in Append mode are created in the WebAPI.
 		''' If False, Folders which are created in Append mode are created in RDC/ImportAPI.
@@ -230,12 +231,6 @@ Namespace kCura.WinEDDS
 		Public Shared ReadOnly Property MinimumBatchSize() As Int32		'When AutoBatch is on. This is the lower ceiling up to which batch will decrease
 			Get
 				Return CType(ConfigSettings("MinimumBatchSize"), Int32)
-			End Get
-		End Property
-
-		Public Shared ReadOnly Property WaitTimeBetweenRetryAttempts() As Int32
-			Get
-				Return CType(ConfigSettings("WaitTimeBetweenRetryAttempts"), Int32)
 			End Get
 		End Property
 
