@@ -1420,8 +1420,9 @@ Namespace kCura.EDDS.WinForm
 		''' <summary>
 		''' Try to log in using Windows Authentication
 		''' </summary>
-		''' <returns>true if successful, else false</returns>
-		''' <remarks></remarks>
+		''' <returns>
+		''' true if successful, else false
+		''' </returns>
 		Friend Function AttemptWindowsAuthentication() As CredentialCheckResult
 			Dim myHttpWebRequest As System.Net.HttpWebRequest
 			Dim cred As System.Net.NetworkCredential
