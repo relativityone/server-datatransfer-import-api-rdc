@@ -136,7 +136,6 @@ Namespace kCura.WinEDDS.NUnit.Service
 		''' <summary>
 		''' Mock BulkImportManager for testing when the webservice throws bulk SQL Exceptions
 		''' </summary>
-		''' <remarks></remarks>
 		Public Class MockBulkImportManager
 			Inherits kCura.WinEDDS.Service.BulkImportManager
 

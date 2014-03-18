@@ -4,7 +4,6 @@ Namespace kCura.WinEDDS.NUnit
 	''' <summary>
 	''' Mock BulkImportManager for testing when SQL throws timeout Exceptions
 	''' </summary>
-	''' <remarks></remarks>
 	Public Class MockBulkImportManagerSqlExceptions
 		Inherits kCura.WinEDDS.Service.BulkImportManager
 

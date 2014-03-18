@@ -4,7 +4,6 @@ Namespace kCura.WinEDDS.NUnit
 	''' <summary>
 	''' Inheriting the BulkLoadFileImporter to override its BulkImportManager property (the part we want to throw timeout exceptions)
 	''' </summary>
-	''' <remarks></remarks>
 	Public Class MockBulkImageFileImporter
 		Inherits kCura.WinEDDS.BulkImageFileImporter
 
