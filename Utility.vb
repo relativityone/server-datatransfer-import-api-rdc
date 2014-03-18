@@ -46,10 +46,12 @@ Namespace kCura.WinEDDS
 		''' <summary>
 		''' Attempts to determine the encoding for a file by detecting the Byte Order Mark (BOM).
 		''' </summary>
-		''' <param name="filename"></param>
-		''' <param name="returnEncodingOnly"></param>
-		''' <returns>Returns System.Text.Encoding.UTF8, Unicode, or BigEndianUnicode if the BOM is found and Nothing otherwise.</returns>
-		''' <remarks></remarks>
+		''' <param name="filename">The filename.</param>
+		''' <param name="returnEncodingOnly">if set to <c>true</c> [return encoding only].</param>
+		''' <param name="performFileExistsCheck">if set to <c>true</c> [perform file exists check].</param>
+		''' <returns>
+		''' Returns System.Text.Encoding.UTF8, Unicode, or BigEndianUnicode if the BOM is found and Nothing otherwise.
+		''' </returns>
 		Public Shared Function DetectEncoding(ByVal filename As String, ByVal returnEncodingOnly As Boolean, ByVal performFileExistsCheck As Boolean) As DeterminedEncodingStream
 			Dim enc As System.Text.Encoding = Nothing
 			Dim filein As System.IO.FileStream = Nothing
@@ -96,10 +98,11 @@ Namespace kCura.WinEDDS
 		''' <summary>
 		''' Attempts to determine the encoding for a file by detecting the Byte Order Mark (BOM).
 		''' </summary>
-		''' <param name="filename"></param>
-		''' <param name="returnEncodingOnly"></param>
-		''' <returns>Returns System.Text.Encoding.UTF8, Unicode, or BigEndianUnicode if the BOM is found and Nothing otherwise.</returns>
-		''' <remarks></remarks>
+		''' <param name="filename">The filename.</param>
+		''' <param name="returnEncodingOnly">if set to <c>true</c> [return encoding only].</param>
+		''' <returns>
+		''' Returns System.Text.Encoding.UTF8, Unicode, or BigEndianUnicode if the BOM is found and Nothing otherwise.
+		''' </returns>
 		Public Shared Function DetectEncoding(ByVal filename As String, ByVal returnEncodingOnly As Boolean) As DeterminedEncodingStream
 			Return DetectEncoding(filename, returnEncodingOnly, True)
 		End Function
