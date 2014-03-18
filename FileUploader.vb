@@ -16,6 +16,7 @@ Namespace kCura.WinEDDS
 		Private _repositoryPathManager As Relativity.RepositoryPathManager
 		Private _sortIntoVolumes As Boolean = False
 		Private _doRetry As Boolean = True
+
 		Public Property DoRetry() As Boolean
 			Get
 				Return _doRetry
@@ -28,6 +29,18 @@ Namespace kCura.WinEDDS
 		Public ReadOnly Property CurrentDestinationDirectory() As String
 			Get
 				Return _repositoryPathManager.CurrentDestinationDirectory
+			End Get
+		End Property
+
+		Protected Overridable ReadOnly Property NumberOfRetries() As Int32
+			Get
+				Return kCura.Utility.Config.IOErrorNumberOfRetries
+			End Get
+		End Property
+
+		Protected Overridable ReadOnly Property WaitTimeBetweenRetryAttempts() As Int32
+			Get
+				Return kCura.Utility.Config.IOErrorWaitTimeInSeconds
 			End Get
 		End Property
 
@@ -137,8 +150,8 @@ Namespace kCura.WinEDDS
 					If tries = 1 AndAlso Not Config.EnableSingleModeImport Then
 						RaiseEvent UploadWarningEvent("Retrying bulk upload")
 					Else
-						RaiseEvent UploadWarningEvent("Retrying bulk upload in " & kCura.Utility.Config.Settings.IoErrorWaitTimeInSeconds & " seconds")
-						System.Threading.Thread.CurrentThread.Join(1000 * kCura.Utility.Config.Settings.IoErrorWaitTimeInSeconds)
+						RaiseEvent UploadWarningEvent("Retrying bulk upload in " & WaitTimeBetweenRetryAttempts & " seconds")
+						System.Threading.Thread.CurrentThread.Join(1000 * WaitTimeBetweenRetryAttempts)
 					End If
 				End Try
 			End While
@@ -189,18 +202,18 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Public Function UploadFile(ByVal filePath As String, ByVal contextArtifactID As Int32, ByVal newFileName As String, ByVal internalUse As Boolean) As String
-			Dim tries As Int32 = kCura.Utility.Config.Settings.IoErrorNumberOfRetries
-			While tries > 0 And (DoRetry OrElse tries = kCura.Utility.Config.Settings.IoErrorNumberOfRetries)
+			Dim tries As Int32 = NumberOfRetries
+			While tries > 0 And (DoRetry OrElse tries = NumberOfRetries)
 				Try
 					If Me.UploaderType = Type.Web Then
 						Me.UploaderType = Type.Web
 						Return Me.WebUploadFile(New System.IO.FileStream(filePath, IO.FileMode.Open, IO.FileAccess.Read), contextArtifactID, newFileName)
 					Else
-						Return Me.DirectUploadFile(filePath, contextArtifactID, newFileName, internalUse, tries < kCura.Utility.Config.Settings.IoErrorNumberOfRetries)
+						Return Me.DirectUploadFile(filePath, contextArtifactID, newFileName, internalUse, tries < NumberOfRetries)
 					End If
 				Catch ex As System.Exception
 					tries -= 1
-					Dim wait As Int32 = kCura.Utility.Config.Settings.IoErrorWaitTimeInSeconds
+					Dim wait As Int32 = WaitTimeBetweenRetryAttempts
 					If Me.IsWarningException(ex) AndAlso tries > 0 Then
 						'RaiseEvent UploadWarningEvent(Me.UploaderType.ToString & " upload failed: " & ex.Message & " - Retrying in 30 seconds. " & tries & " tries left.")
 

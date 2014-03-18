@@ -120,6 +120,18 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
+		Protected Overridable ReadOnly Property NumberOfRetries() As Int32
+			Get
+				Return kCura.Utility.Config.IOErrorNumberOfRetries
+			End Get
+		End Property
+
+		Protected Overridable ReadOnly Property WaitTimeBetweenRetryAttempts() As Int32
+			Get
+				Return kCura.Utility.Config.IOErrorWaitTimeInSeconds
+			End Get
+		End Property
+
 #End Region
 
 #Region "Constructors"
@@ -270,19 +282,20 @@ Namespace kCura.WinEDDS
 #End Region
 
 		Public Function ExportArtifact(ByVal artifact As Exporters.ObjectExportInfo) As Int64
-			Dim tries As Int32 = kCura.Utility.Config.Settings.IoErrorNumberOfRetries
-			While tries > 0 And Not Me.Halt
-				tries -= 1
+			Dim tries As Int32 = 0
+			Dim maxTries As Int32 = NumberOfRetries + 1
+			While tries < maxTries And Not Me.Halt
+				tries += 1
 				Try
-					Return Me.ExportArtifact(artifact, tries < (kCura.Utility.Config.Settings.IoErrorNumberOfRetries - 1))
+					Return Me.ExportArtifact(artifact, tries > 1)
 					Exit While
 				Catch ex As kCura.WinEDDS.Exceptions.ExportBaseException
-					If tries = 0 Then Throw
+					If tries = maxTries Then Throw
 					_parent.WriteWarning(String.Format("Error writing data file(s) for document {0}", artifact.IdentifierValue))
 					_parent.WriteWarning(String.Format("Actual error: {0}", ex.ToString))
-					If tries <> kCura.Utility.Config.Settings.IoErrorNumberOfRetries - 1 Then
-						_parent.WriteWarning(String.Format("Waiting {0} seconds to retry", kCura.Utility.Config.Settings.IoErrorWaitTimeInSeconds))
-						System.Threading.Thread.CurrentThread.Join(kCura.Utility.Config.Settings.IoErrorWaitTimeInSeconds * 1000)
+					If tries > 1 Then
+						_parent.WriteWarning(String.Format("Waiting {0} seconds to retry", WaitTimeBetweenRetryAttempts))
+						System.Threading.Thread.CurrentThread.Join(WaitTimeBetweenRetryAttempts * 1000)
 					Else
 						_parent.WriteWarning("Retrying now")
 					End If
@@ -397,6 +410,7 @@ Namespace kCura.WinEDDS
 			If Me.Settings.SelectedTextFields.Count = 0 Then Return False
 			Return (From f In Me.Settings.SelectedTextFields Where f IsNot Nothing).Any
 		End Function
+
 		Private Function ExportArtifact(ByVal artifact As Exporters.ObjectExportInfo, ByVal isRetryAttempt As Boolean) As Int64
 			If isRetryAttempt Then Me.ReInitializeAllStreams()
 			Dim totalFileSize As Int64 = 0
@@ -462,7 +476,8 @@ Namespace kCura.WinEDDS
 			If Me.Settings.LogFileFormat = LoadFileType.FileFormat.IPRO_FullText AndAlso Me.Settings.ExportImages Then
 				If Not Me.TextPrecedenceIsSet Then
 					tempLocalIproFullTextFilePath = System.IO.Path.GetTempFileName
-					Dim tries As Int32 = 20
+					Dim tries As Int32 = 0
+					Dim maxTries As Int32 = NumberOfRetries + 1
 					Dim start As Int64 = System.DateTime.Now.Ticks
 					Dim val As String = artifact.Metadata(Me.OrdinalLookup("ExtractedText")).ToString
 					If val <> Relativity.Constants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN Then
@@ -470,17 +485,18 @@ Namespace kCura.WinEDDS
 						sw.Write(val)
 						sw.Close()
 					Else
-						While tries > 0 AndAlso Not Me.Halt
-							tries -= 1
+						While tries < maxTries AndAlso Not Me.Halt
+							tries += 1
 							Try
 								_downloadManager.DownloadFullTextFile(tempLocalIproFullTextFilePath, artifact.ArtifactID, _settings.CaseInfo.ArtifactID.ToString)
 								Exit While
 							Catch ex As System.Exception
-								If tries = 19 Then
+								If tries = 1 Then
 									_parent.WriteStatusLine(Windows.Process.EventType.Warning, "Second attempt to download full text for document " & artifact.IdentifierValue, True)
-								ElseIf tries > 0 Then
-									_parent.WriteStatusLine(Windows.Process.EventType.Warning, "Additional attempt to download full text for document " & artifact.IdentifierValue & " failed - retrying in 30 seconds", True)
-									System.Threading.Thread.CurrentThread.Join(30000)
+								ElseIf tries < maxTries Then
+									Dim waitTime As Int32 = WaitTimeBetweenRetryAttempts
+									_parent.WriteStatusLine(Windows.Process.EventType.Warning, "Additional attempt to download full text for document " & artifact.IdentifierValue & " failed - retrying in " & waitTime.ToString() & " seconds", True)
+									System.Threading.Thread.CurrentThread.Join(waitTime * 1000)
 								Else
 									Throw
 								End If
@@ -612,10 +628,11 @@ Namespace kCura.WinEDDS
 		End Function
 		Private Function DownloadTextFieldAsFile(ByVal artifact As WinEDDS.Exporters.ObjectExportInfo, ByVal field As WinEDDS.ViewFieldInfo) As String
 			Dim tempLocalFullTextFilePath As String = System.IO.Path.GetTempFileName
-			Dim tries As Int32 = 20
+			Dim tries As Int32 = 0
+			Dim maxTries As Int32 = NumberOfRetries + 1
 			Dim start As Int64 = System.DateTime.Now.Ticks
-			While tries > 0 AndAlso Not Me.Halt
-				tries -= 1
+			While tries < maxTries AndAlso Not Me.Halt
+				tries += 1
 				Try
 					If Me.Settings.ArtifactTypeID = Relativity.ArtifactType.Document AndAlso field.Category = Relativity.FieldCategory.FullText AndAlso Not TypeOf field Is CoalescedTextViewField Then
 						_downloadManager.DownloadFullTextFile(tempLocalFullTextFilePath, artifact.ArtifactID, _settings.CaseInfo.ArtifactID.ToString)
@@ -625,11 +642,12 @@ Namespace kCura.WinEDDS
 					End If
 					Exit While
 				Catch ex As System.Exception
-					If tries = 19 Then
+					If tries = 1 Then
 						_parent.WriteStatusLine(Windows.Process.EventType.Warning, "Second attempt to download full text for document " & artifact.IdentifierValue, True)
-					ElseIf tries > 0 Then
-						_parent.WriteStatusLine(Windows.Process.EventType.Warning, "Additional attempt to download full text for document " & artifact.IdentifierValue & " failed - retrying in 30 seconds", True)
-						System.Threading.Thread.CurrentThread.Join(30000)
+					ElseIf tries < maxTries Then
+						Dim waitTime As Int32 = WaitTimeBetweenRetryAttempts
+						_parent.WriteStatusLine(Windows.Process.EventType.Warning, "Additional attempt to download full text for document " & artifact.IdentifierValue & " failed - retrying in " & waitTime.ToString() & " seconds", True)
+						System.Threading.Thread.CurrentThread.Join(waitTime * 1000)
 					Else
 						Throw
 					End If
@@ -791,19 +809,21 @@ Namespace kCura.WinEDDS
 					Return 0
 				End If
 			End If
-			Dim tries As Int32 = 20
-			While tries > 0 AndAlso Not Me.Halt
-				tries -= 1
+			Dim tries As Int32 = 0
+			Dim maxTries As Int32 = NumberOfRetries + 1
+			While tries < maxTries AndAlso Not Me.Halt
+				tries += 1
 				Try
 					_downloadManager.DownloadFileForDocument(tempFile, image.FileGuid, image.SourceLocation, image.ArtifactID, _settings.CaseArtifactID.ToString)
 					image.TempLocation = tempFile
 					Exit While
 				Catch ex As System.Exception
-					If tries = 19 Then
+					If tries = 1 Then
 						_parent.WriteStatusLine(Windows.Process.EventType.Warning, "Second attempt to download image " & image.BatesNumber & " - exact error: " & ex.ToString, True)
-					ElseIf tries > 0 Then
-						_parent.WriteStatusLine(Windows.Process.EventType.Warning, "Additional attempt to download image " & image.BatesNumber & " failed - retrying in 30 seconds - exact error: " & ex.ToString, True)
-						System.Threading.Thread.CurrentThread.Join(30000)
+					ElseIf tries < maxTries Then
+						Dim waitTime As Int32 = WaitTimeBetweenRetryAttempts
+						_parent.WriteStatusLine(Windows.Process.EventType.Warning, "Additional attempt to download image " & image.BatesNumber & " failed - retrying in " & waitTime.ToString() & " seconds - exact error: " & ex.ToString, True)
+						System.Threading.Thread.CurrentThread.Join(waitTime * 1000)
 					Else
 						Throw
 					End If
@@ -848,6 +868,7 @@ Namespace kCura.WinEDDS
 					Return c.ToString
 			End Select
 		End Function
+
 		Private Sub CreateImageLogEntry(ByVal batesNumber As String, ByVal copyFile As String, ByVal pathToImage As String, ByVal pageNumber As Int32, ByVal fullTextReader As System.IO.StreamReader, ByVal expectingTextForPage As Boolean, ByVal pageOffset As Long, ByVal numberOfImages As Int32)
 			Try
 				Select Case _settings.LogFileFormat
@@ -950,9 +971,10 @@ Namespace kCura.WinEDDS
 					Return kCura.Utility.File.Instance.Length(tempFile)
 				End If
 			End If
-			Dim tries As Int32 = 20
-			While tries > 0 AndAlso Not Me.Halt
-				tries -= 1
+			Dim tries As Int32 = 0
+			Dim maxTries As Int32 = NumberOfRetries + 1
+			While tries < maxTries AndAlso Not Me.Halt
+				tries += 1
 				Try
 					If Me.Settings.ArtifactTypeID = Relativity.ArtifactType.Document Then
 						_downloadManager.DownloadFileForDocument(tempFile, artifact.NativeFileGuid, artifact.NativeSourceLocation, artifact.ArtifactID, _settings.CaseArtifactID.ToString)
@@ -961,11 +983,12 @@ Namespace kCura.WinEDDS
 					End If
 					Exit While
 				Catch ex As System.Exception
-					If tries = 19 Then
+					If tries = 1 Then
 						_parent.WriteStatusLine(Windows.Process.EventType.Warning, "Second attempt to download native for document " & artifact.IdentifierValue, True)
-					ElseIf tries > 0 Then
-						_parent.WriteStatusLine(Windows.Process.EventType.Warning, "Additional attempt to download native for document " & artifact.IdentifierValue & " failed - retrying in 30 seconds", True)
-						System.Threading.Thread.CurrentThread.Join(30000)
+					ElseIf tries < maxTries Then
+						Dim waitTime As Int32 = WaitTimeBetweenRetryAttempts
+						_parent.WriteStatusLine(Windows.Process.EventType.Warning, "Additional attempt to download native for document " & artifact.IdentifierValue & " failed - retrying in " & waitTime.ToString() & " seconds", True)
+						System.Threading.Thread.CurrentThread.Join(waitTime * 1000)
 					Else
 						Throw
 					End If
