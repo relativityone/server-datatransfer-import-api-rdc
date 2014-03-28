@@ -279,7 +279,6 @@ Namespace kCura.WinEDDS
 		''' Returns the number of data records that have been read so far.  If the file has a header row, this count is one less than the current line count.
 		''' </summary>
 		''' <returns></returns>
-		''' <remarks></remarks>
 		Private Function RecordCount() As Int32
 			If _settings.FirstLineContainsHeaders Then
 				Return Me.CurrentLineNumber - 1
@@ -292,7 +291,6 @@ Namespace kCura.WinEDDS
 		''' Gets the number of folders counted so far.
 		''' </summary>
 		''' <returns></returns>
-		''' <remarks></remarks>
 		Private Function GetFolderCount() As Int32
 			Return _folders.Count
 		End Function

@@ -1421,8 +1421,9 @@ Namespace kCura.WinEDDS
 		''' This preps it for being written as a field in a CSV file
 		''' </summary>
 		''' <param name="fieldValue">The string to convert to CSV format</param>
-		''' <returns>the converted data</returns>
-		''' <remarks></remarks>
+		''' <returns>
+		''' the converted data
+		''' </returns>
 		Private Function CSVFormat(ByVal fieldValue As String) As String
 			Return ControlChars.Quote + fieldValue.Replace(ControlChars.Quote, ControlChars.Quote + ControlChars.Quote) + ControlChars.Quote
 		End Function
