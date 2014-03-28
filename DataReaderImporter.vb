@@ -75,7 +75,6 @@ Namespace kCura.WinEDDS.ImportExtension
 		''' This method has the side effect of populating various properties for _settings
 		''' </summary>
 		''' <returns></returns>
-		''' <remarks></remarks>
 		Protected Overrides Function GetArtifactReader() As kCura.WinEDDS.Api.IArtifactReader
 			Dim collection As New kCura.WinEDDS.Api.ArtifactFieldCollection
 			Dim thisSettings As kCura.WinEDDS.ImportExtension.DataReaderLoadFile = DirectCast(_settings, kCura.WinEDDS.ImportExtension.DataReaderLoadFile)
