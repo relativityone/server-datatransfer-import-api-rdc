@@ -64,7 +64,6 @@ Namespace kCura.Relativity.DataReaderClient
 		''' Occurs when a call is made to the Execute method. This event contains a status message.
 		''' </summary>
 		''' <param name="status">The status message.</param>
-		''' <remarks></remarks>
 		Public Event OnMessage(ByVal status As Status)
 		''' <summary>
 		''' Occurs when an error is found.
@@ -74,8 +73,9 @@ Namespace kCura.Relativity.DataReaderClient
 		''' <summary>
 		''' Occurs when all the data for an import job has been processed.  Raised at the end of an import.
 		''' </summary>
-		''' <param name="jobReport">The JobReport describing the completed import job.</param>
-		''' <remarks>Does not guarantee successful or error-free completion.</remarks>
+		''' <param name="jobReport">The JobReport describing the completed import job.</param><remarks>
+		''' Does not guarantee successful or error-free completion.
+		''' </remarks>
 		Public Event OnComplete(ByVal jobReport As JobReport) Implements IImportNotifier.OnComplete
 		''' <summary>
 		''' Occurs when an import job suffers a fatal exception and aborts.  Raised at the end of an import.
@@ -96,7 +96,6 @@ Namespace kCura.Relativity.DataReaderClient
 		''' <summary>
 		''' Executes the DataReaderClient, which operates as an iterator over a data source.
 		''' </summary>
-		''' <remarks></remarks>
 		Public Sub Execute()
 			_jobReport = New JobReport()
 			_jobReport.StartTime = DateTime.Now()
@@ -304,7 +303,6 @@ Namespace kCura.Relativity.DataReaderClient
 		''' Validates Relativity, delimiter, native file, and extracted text settings.
 		''' </summary>
 		''' <returns></returns>
-		''' <remarks></remarks>
 		Protected Function IsSettingsValid() As Boolean
 
 
@@ -416,7 +414,6 @@ Namespace kCura.Relativity.DataReaderClient
 		''' <summary>
 		''' Cleans up and frees resources.
 		''' </summary>
-		''' <remarks></remarks>
 		Protected Overrides Sub Finalize()
 			MyBase.Finalize()
 		End Sub
