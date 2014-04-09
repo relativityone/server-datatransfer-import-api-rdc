@@ -726,11 +726,11 @@ Namespace kCura.WinEDDS
 #Region "WebService Calls"
 
 		Public Overrides Function LookupArtifactIDForName(objectName As String, associatedObjectTypeID As Integer) As Integer
-			Return -1
+			Return If(associatedObjectTypeID = Relativity.ArtifactType.Document, MyBase.LookupArtifactIDForName(objectName, associatedObjectTypeID), -1)
 		End Function
 
 		Public Overrides Function LookupNameForArtifactID(objectArtifactID As Integer, associatedObjectTypeID As Integer) As String
-			Return String.Empty
+			Return If(associatedObjectTypeID = Relativity.ArtifactType.Document, MyBase.LookupNameForArtifactID(objectArtifactID, associatedObjectTypeID), String.Empty)
 		End Function
 
 		Private Sub ManageDocumentMetaData(ByVal metaDoc As MetaDocument)
