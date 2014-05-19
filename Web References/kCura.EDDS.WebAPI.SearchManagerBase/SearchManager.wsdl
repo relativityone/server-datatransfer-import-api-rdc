@@ -110,28 +110,6 @@
           </s:sequence>
         </s:complexType>
       </s:element>
-      <s:element name="RetrieveFullTextExistenceForSearch">
-        <s:complexType>
-          <s:sequence>
-            <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
-            <s:element minOccurs="0" maxOccurs="1" name="documentArtifactIDs" type="tns:ArrayOfInt" />
-          </s:sequence>
-        </s:complexType>
-      </s:element>
-      <s:element name="RetrieveFullTextExistenceForSearchResponse">
-        <s:complexType>
-          <s:sequence>
-            <s:element minOccurs="0" maxOccurs="1" name="RetrieveFullTextExistenceForSearchResult">
-              <s:complexType>
-                <s:sequence>
-                  <s:element ref="s:schema" />
-                  <s:any />
-                </s:sequence>
-              </s:complexType>
-            </s:element>
-          </s:sequence>
-        </s:complexType>
-      </s:element>
       <s:element name="IsExtractedTextUnicode">
         <s:complexType>
           <s:sequence>
@@ -359,12 +337,6 @@
   <wsdl:message name="RetrieveNativesForProductionSoapOut">
     <wsdl:part name="parameters" element="tns:RetrieveNativesForProductionResponse" />
   </wsdl:message>
-  <wsdl:message name="RetrieveFullTextExistenceForSearchSoapIn">
-    <wsdl:part name="parameters" element="tns:RetrieveFullTextExistenceForSearch" />
-  </wsdl:message>
-  <wsdl:message name="RetrieveFullTextExistenceForSearchSoapOut">
-    <wsdl:part name="parameters" element="tns:RetrieveFullTextExistenceForSearchResponse" />
-  </wsdl:message>
   <wsdl:message name="IsExtractedTextUnicodeSoapIn">
     <wsdl:part name="parameters" element="tns:IsExtractedTextUnicode" />
   </wsdl:message>
@@ -439,10 +411,6 @@
     <wsdl:operation name="RetrieveNativesForProduction">
       <wsdl:input message="tns:RetrieveNativesForProductionSoapIn" />
       <wsdl:output message="tns:RetrieveNativesForProductionSoapOut" />
-    </wsdl:operation>
-    <wsdl:operation name="RetrieveFullTextExistenceForSearch">
-      <wsdl:input message="tns:RetrieveFullTextExistenceForSearchSoapIn" />
-      <wsdl:output message="tns:RetrieveFullTextExistenceForSearchSoapOut" />
     </wsdl:operation>
     <wsdl:operation name="IsExtractedTextUnicode">
       <wsdl:input message="tns:IsExtractedTextUnicodeSoapIn" />
@@ -521,15 +489,6 @@
     </wsdl:operation>
     <wsdl:operation name="RetrieveNativesForProduction">
       <soap:operation soapAction="http://www.kCura.com/EDDS/SearchManager/RetrieveNativesForProduction" style="document" />
-      <wsdl:input>
-        <soap:body use="literal" />
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="RetrieveFullTextExistenceForSearch">
-      <soap:operation soapAction="http://www.kCura.com/EDDS/SearchManager/RetrieveFullTextExistenceForSearch" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -659,15 +618,6 @@
     </wsdl:operation>
     <wsdl:operation name="RetrieveNativesForProduction">
       <soap12:operation soapAction="http://www.kCura.com/EDDS/SearchManager/RetrieveNativesForProduction" style="document" />
-      <wsdl:input>
-        <soap12:body use="literal" />
-      </wsdl:input>
-      <wsdl:output>
-        <soap12:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="RetrieveFullTextExistenceForSearch">
-      <soap12:operation soapAction="http://www.kCura.com/EDDS/SearchManager/RetrieveFullTextExistenceForSearch" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
