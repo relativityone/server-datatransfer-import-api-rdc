@@ -252,6 +252,7 @@ Namespace kCura.EDDS.WinForm
 			Me.ExtractedTextGroupBox.Size = New System.Drawing.Size(556, 78)
 			Me.ExtractedTextGroupBox.TabIndex = 9
 			Me.ExtractedTextGroupBox.TabStop = False
+			'BigData_ET_#
 			Me.ExtractedTextGroupBox.Text = "ExtractedText"
 			'
 			'_encodingPicker
