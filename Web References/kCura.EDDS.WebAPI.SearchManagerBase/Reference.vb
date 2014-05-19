@@ -42,8 +42,6 @@ Namespace kCura.EDDS.WebAPI.SearchManagerBase
         
         Private RetrieveNativesForProductionOperationCompleted As System.Threading.SendOrPostCallback
         
-        Private RetrieveFullTextExistenceForSearchOperationCompleted As System.Threading.SendOrPostCallback
-        
         Private IsExtractedTextUnicodeOperationCompleted As System.Threading.SendOrPostCallback
         
         Private RetrieveImagesForSearchOperationCompleted As System.Threading.SendOrPostCallback
@@ -114,9 +112,6 @@ Namespace kCura.EDDS.WebAPI.SearchManagerBase
         
         '''<remarks/>
         Public Event RetrieveNativesForProductionCompleted As RetrieveNativesForProductionCompletedEventHandler
-        
-        '''<remarks/>
-        Public Event RetrieveFullTextExistenceForSearchCompleted As RetrieveFullTextExistenceForSearchCompletedEventHandler
         
         '''<remarks/>
         Public Event IsExtractedTextUnicodeCompleted As IsExtractedTextUnicodeCompletedEventHandler
@@ -332,44 +327,6 @@ Namespace kCura.EDDS.WebAPI.SearchManagerBase
             If (Not (Me.RetrieveNativesForProductionCompletedEvent) Is Nothing) Then
                 Dim invokeArgs As System.Web.Services.Protocols.InvokeCompletedEventArgs = CType(arg,System.Web.Services.Protocols.InvokeCompletedEventArgs)
                 RaiseEvent RetrieveNativesForProductionCompleted(Me, New RetrieveNativesForProductionCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState))
-            End If
-        End Sub
-        
-        '''<remarks/>
-        <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/SearchManager/RetrieveFullTextExistenceForSearch", RequestNamespace:="http://www.kCura.com/EDDS/SearchManager", ResponseNamespace:="http://www.kCura.com/EDDS/SearchManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
-        Public Function RetrieveFullTextExistenceForSearch(ByVal caseContextArtifactID As Integer, ByVal documentArtifactIDs() As Integer) As System.Data.DataSet
-            Dim results() As Object = Me.Invoke("RetrieveFullTextExistenceForSearch", New Object() {caseContextArtifactID, documentArtifactIDs})
-            Return CType(results(0),System.Data.DataSet)
-        End Function
-        
-        '''<remarks/>
-        Public Function BeginRetrieveFullTextExistenceForSearch(ByVal caseContextArtifactID As Integer, ByVal documentArtifactIDs() As Integer, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
-            Return Me.BeginInvoke("RetrieveFullTextExistenceForSearch", New Object() {caseContextArtifactID, documentArtifactIDs}, callback, asyncState)
-        End Function
-        
-        '''<remarks/>
-        Public Function EndRetrieveFullTextExistenceForSearch(ByVal asyncResult As System.IAsyncResult) As System.Data.DataSet
-            Dim results() As Object = Me.EndInvoke(asyncResult)
-            Return CType(results(0),System.Data.DataSet)
-        End Function
-        
-        '''<remarks/>
-        Public Overloads Sub RetrieveFullTextExistenceForSearchAsync(ByVal caseContextArtifactID As Integer, ByVal documentArtifactIDs() As Integer)
-            Me.RetrieveFullTextExistenceForSearchAsync(caseContextArtifactID, documentArtifactIDs, Nothing)
-        End Sub
-        
-        '''<remarks/>
-        Public Overloads Sub RetrieveFullTextExistenceForSearchAsync(ByVal caseContextArtifactID As Integer, ByVal documentArtifactIDs() As Integer, ByVal userState As Object)
-            If (Me.RetrieveFullTextExistenceForSearchOperationCompleted Is Nothing) Then
-                Me.RetrieveFullTextExistenceForSearchOperationCompleted = AddressOf Me.OnRetrieveFullTextExistenceForSearchOperationCompleted
-            End If
-            Me.InvokeAsync("RetrieveFullTextExistenceForSearch", New Object() {caseContextArtifactID, documentArtifactIDs}, Me.RetrieveFullTextExistenceForSearchOperationCompleted, userState)
-        End Sub
-        
-        Private Sub OnRetrieveFullTextExistenceForSearchOperationCompleted(ByVal arg As Object)
-            If (Not (Me.RetrieveFullTextExistenceForSearchCompletedEvent) Is Nothing) Then
-                Dim invokeArgs As System.Web.Services.Protocols.InvokeCompletedEventArgs = CType(arg,System.Web.Services.Protocols.InvokeCompletedEventArgs)
-                RaiseEvent RetrieveFullTextExistenceForSearchCompleted(Me, New RetrieveFullTextExistenceForSearchCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState))
             End If
         End Sub
         
@@ -853,33 +810,6 @@ Namespace kCura.EDDS.WebAPI.SearchManagerBase
      System.Diagnostics.DebuggerStepThroughAttribute(),  _
      System.ComponentModel.DesignerCategoryAttribute("code")>  _
     Partial Public Class RetrieveNativesForProductionCompletedEventArgs
-        Inherits System.ComponentModel.AsyncCompletedEventArgs
-        
-        Private results() As Object
-        
-        Friend Sub New(ByVal results() As Object, ByVal exception As System.Exception, ByVal cancelled As Boolean, ByVal userState As Object)
-            MyBase.New(exception, cancelled, userState)
-            Me.results = results
-        End Sub
-        
-        '''<remarks/>
-        Public ReadOnly Property Result() As System.Data.DataSet
-            Get
-                Me.RaiseExceptionIfNecessary
-                Return CType(Me.results(0),System.Data.DataSet)
-            End Get
-        End Property
-    End Class
-    
-    '''<remarks/>
-    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.0.30319.17929")>  _
-    Public Delegate Sub RetrieveFullTextExistenceForSearchCompletedEventHandler(ByVal sender As Object, ByVal e As RetrieveFullTextExistenceForSearchCompletedEventArgs)
-    
-    '''<remarks/>
-    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.0.30319.17929"),  _
-     System.Diagnostics.DebuggerStepThroughAttribute(),  _
-     System.ComponentModel.DesignerCategoryAttribute("code")>  _
-    Partial Public Class RetrieveFullTextExistenceForSearchCompletedEventArgs
         Inherits System.ComponentModel.AsyncCompletedEventArgs
         
         Private results() As Object
