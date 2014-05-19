@@ -523,6 +523,7 @@ Namespace kCura.WinEDDS
 
 		Private Function ShowField(ByVal fieldName As String) As Boolean
 			Select Case fieldName
+				'BigData_ET_#
 				Case "ExtractedText"
 					_fieldCollectionHasExtractedText = True
 					Return False

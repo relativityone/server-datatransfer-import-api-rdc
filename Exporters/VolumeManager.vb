@@ -479,6 +479,7 @@ Namespace kCura.WinEDDS
 					Dim tries As Int32 = 0
 					Dim maxTries As Int32 = NumberOfRetries + 1
 					Dim start As Int64 = System.DateTime.Now.Ticks
+					'BigData_ET_#
 					Dim val As String = artifact.Metadata(Me.OrdinalLookup("ExtractedText")).ToString
 					If val <> Relativity.Constants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN Then
 						Dim sw As New System.IO.StreamWriter(tempLocalIproFullTextFilePath, False, System.Text.Encoding.Unicode)
