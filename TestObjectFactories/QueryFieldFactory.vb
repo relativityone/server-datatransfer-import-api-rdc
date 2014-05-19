@@ -112,6 +112,7 @@
 		End Function
 
 		Public Function GetExtractedTextField() As kCura.WinEDDS.ViewFieldInfo
+			'BigData_ET_#
 			Return Me.GenerateQueryField(6, 1000187, Relativity.FieldCategory.FullText, Relativity.FieldTypeHelper.FieldType.Text, 10, "Document", -1, False, "Extracted Text", "ExtractedText", "Extracted Text", "", -1, True, "", -1, "", "Extracted Text", -1, -1, "", -1, -1, "", False, "MainTable", "Document", "", "", "")
 		End Function
 
