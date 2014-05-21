@@ -42,8 +42,6 @@ Namespace kCura.EDDS.WebAPI.SearchManagerBase
         
         Private RetrieveNativesForProductionOperationCompleted As System.Threading.SendOrPostCallback
         
-        Private IsExtractedTextUnicodeOperationCompleted As System.Threading.SendOrPostCallback
-        
         Private RetrieveImagesForSearchOperationCompleted As System.Threading.SendOrPostCallback
         
         Private RetrieveImagesByProductionArtifactIDForProductionExportByDocumentSetOperationCompleted As System.Threading.SendOrPostCallback
@@ -112,9 +110,6 @@ Namespace kCura.EDDS.WebAPI.SearchManagerBase
         
         '''<remarks/>
         Public Event RetrieveNativesForProductionCompleted As RetrieveNativesForProductionCompletedEventHandler
-        
-        '''<remarks/>
-        Public Event IsExtractedTextUnicodeCompleted As IsExtractedTextUnicodeCompletedEventHandler
         
         '''<remarks/>
         Public Event RetrieveImagesForSearchCompleted As RetrieveImagesForSearchCompletedEventHandler
@@ -327,44 +322,6 @@ Namespace kCura.EDDS.WebAPI.SearchManagerBase
             If (Not (Me.RetrieveNativesForProductionCompletedEvent) Is Nothing) Then
                 Dim invokeArgs As System.Web.Services.Protocols.InvokeCompletedEventArgs = CType(arg,System.Web.Services.Protocols.InvokeCompletedEventArgs)
                 RaiseEvent RetrieveNativesForProductionCompleted(Me, New RetrieveNativesForProductionCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState))
-            End If
-        End Sub
-        
-        '''<remarks/>
-        <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/SearchManager/IsExtractedTextUnicode", RequestNamespace:="http://www.kCura.com/EDDS/SearchManager", ResponseNamespace:="http://www.kCura.com/EDDS/SearchManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
-        Public Function IsExtractedTextUnicode(ByVal caseContextArtifactID As Integer) As Boolean
-            Dim results() As Object = Me.Invoke("IsExtractedTextUnicode", New Object() {caseContextArtifactID})
-            Return CType(results(0),Boolean)
-        End Function
-        
-        '''<remarks/>
-        Public Function BeginIsExtractedTextUnicode(ByVal caseContextArtifactID As Integer, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
-            Return Me.BeginInvoke("IsExtractedTextUnicode", New Object() {caseContextArtifactID}, callback, asyncState)
-        End Function
-        
-        '''<remarks/>
-        Public Function EndIsExtractedTextUnicode(ByVal asyncResult As System.IAsyncResult) As Boolean
-            Dim results() As Object = Me.EndInvoke(asyncResult)
-            Return CType(results(0),Boolean)
-        End Function
-        
-        '''<remarks/>
-        Public Overloads Sub IsExtractedTextUnicodeAsync(ByVal caseContextArtifactID As Integer)
-            Me.IsExtractedTextUnicodeAsync(caseContextArtifactID, Nothing)
-        End Sub
-        
-        '''<remarks/>
-        Public Overloads Sub IsExtractedTextUnicodeAsync(ByVal caseContextArtifactID As Integer, ByVal userState As Object)
-            If (Me.IsExtractedTextUnicodeOperationCompleted Is Nothing) Then
-                Me.IsExtractedTextUnicodeOperationCompleted = AddressOf Me.OnIsExtractedTextUnicodeOperationCompleted
-            End If
-            Me.InvokeAsync("IsExtractedTextUnicode", New Object() {caseContextArtifactID}, Me.IsExtractedTextUnicodeOperationCompleted, userState)
-        End Sub
-        
-        Private Sub OnIsExtractedTextUnicodeOperationCompleted(ByVal arg As Object)
-            If (Not (Me.IsExtractedTextUnicodeCompletedEvent) Is Nothing) Then
-                Dim invokeArgs As System.Web.Services.Protocols.InvokeCompletedEventArgs = CType(arg,System.Web.Services.Protocols.InvokeCompletedEventArgs)
-                RaiseEvent IsExtractedTextUnicodeCompleted(Me, New IsExtractedTextUnicodeCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState))
             End If
         End Sub
         
@@ -824,33 +781,6 @@ Namespace kCura.EDDS.WebAPI.SearchManagerBase
             Get
                 Me.RaiseExceptionIfNecessary
                 Return CType(Me.results(0),System.Data.DataSet)
-            End Get
-        End Property
-    End Class
-    
-    '''<remarks/>
-    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.0.30319.17929")>  _
-    Public Delegate Sub IsExtractedTextUnicodeCompletedEventHandler(ByVal sender As Object, ByVal e As IsExtractedTextUnicodeCompletedEventArgs)
-    
-    '''<remarks/>
-    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.0.30319.17929"),  _
-     System.Diagnostics.DebuggerStepThroughAttribute(),  _
-     System.ComponentModel.DesignerCategoryAttribute("code")>  _
-    Partial Public Class IsExtractedTextUnicodeCompletedEventArgs
-        Inherits System.ComponentModel.AsyncCompletedEventArgs
-        
-        Private results() As Object
-        
-        Friend Sub New(ByVal results() As Object, ByVal exception As System.Exception, ByVal cancelled As Boolean, ByVal userState As Object)
-            MyBase.New(exception, cancelled, userState)
-            Me.results = results
-        End Sub
-        
-        '''<remarks/>
-        Public ReadOnly Property Result() As Boolean
-            Get
-                Me.RaiseExceptionIfNecessary
-                Return CType(Me.results(0),Boolean)
             End Get
         End Property
     End Class

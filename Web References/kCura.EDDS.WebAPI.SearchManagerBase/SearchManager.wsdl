@@ -110,20 +110,6 @@
           </s:sequence>
         </s:complexType>
       </s:element>
-      <s:element name="IsExtractedTextUnicode">
-        <s:complexType>
-          <s:sequence>
-            <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
-          </s:sequence>
-        </s:complexType>
-      </s:element>
-      <s:element name="IsExtractedTextUnicodeResponse">
-        <s:complexType>
-          <s:sequence>
-            <s:element minOccurs="1" maxOccurs="1" name="IsExtractedTextUnicodeResult" type="s:boolean" />
-          </s:sequence>
-        </s:complexType>
-      </s:element>
       <s:element name="RetrieveImagesForSearch">
         <s:complexType>
           <s:sequence>
@@ -337,12 +323,6 @@
   <wsdl:message name="RetrieveNativesForProductionSoapOut">
     <wsdl:part name="parameters" element="tns:RetrieveNativesForProductionResponse" />
   </wsdl:message>
-  <wsdl:message name="IsExtractedTextUnicodeSoapIn">
-    <wsdl:part name="parameters" element="tns:IsExtractedTextUnicode" />
-  </wsdl:message>
-  <wsdl:message name="IsExtractedTextUnicodeSoapOut">
-    <wsdl:part name="parameters" element="tns:IsExtractedTextUnicodeResponse" />
-  </wsdl:message>
   <wsdl:message name="RetrieveImagesForSearchSoapIn">
     <wsdl:part name="parameters" element="tns:RetrieveImagesForSearch" />
   </wsdl:message>
@@ -411,10 +391,6 @@
     <wsdl:operation name="RetrieveNativesForProduction">
       <wsdl:input message="tns:RetrieveNativesForProductionSoapIn" />
       <wsdl:output message="tns:RetrieveNativesForProductionSoapOut" />
-    </wsdl:operation>
-    <wsdl:operation name="IsExtractedTextUnicode">
-      <wsdl:input message="tns:IsExtractedTextUnicodeSoapIn" />
-      <wsdl:output message="tns:IsExtractedTextUnicodeSoapOut" />
     </wsdl:operation>
     <wsdl:operation name="RetrieveImagesForSearch">
       <wsdl:input message="tns:RetrieveImagesForSearchSoapIn" />
@@ -489,15 +465,6 @@
     </wsdl:operation>
     <wsdl:operation name="RetrieveNativesForProduction">
       <soap:operation soapAction="http://www.kCura.com/EDDS/SearchManager/RetrieveNativesForProduction" style="document" />
-      <wsdl:input>
-        <soap:body use="literal" />
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="IsExtractedTextUnicode">
-      <soap:operation soapAction="http://www.kCura.com/EDDS/SearchManager/IsExtractedTextUnicode" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -618,15 +585,6 @@
     </wsdl:operation>
     <wsdl:operation name="RetrieveNativesForProduction">
       <soap12:operation soapAction="http://www.kCura.com/EDDS/SearchManager/RetrieveNativesForProduction" style="document" />
-      <wsdl:input>
-        <soap12:body use="literal" />
-      </wsdl:input>
-      <wsdl:output>
-        <soap12:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="IsExtractedTextUnicode">
-      <soap12:operation soapAction="http://www.kCura.com/EDDS/SearchManager/IsExtractedTextUnicode" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>

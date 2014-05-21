@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<wsdl:definitions xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://www.kCura.com/EDDS/FieldManager" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:s1="http://microsoft.com/wsdl/types/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://www.kCura.com/EDDS/FieldManager" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+<wsdl:definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://www.kCura.com/EDDS/FieldManager" xmlns:s1="http://microsoft.com/wsdl/types/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://www.kCura.com/EDDS/FieldManager" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
   <wsdl:types>
     <s:schema elementFormDefault="qualified" targetNamespace="http://www.kCura.com/EDDS/FieldManager">
       <s:import namespace="http://microsoft.com/wsdl/types/" />
@@ -56,6 +56,7 @@
               <s:element minOccurs="1" maxOccurs="1" name="IsSortable" type="s:boolean" />
               <s:element minOccurs="0" maxOccurs="1" name="FriendlyName" type="s:string" />
               <s:element minOccurs="1" maxOccurs="1" name="ImportBehavior" nillable="true" type="tns:ImportBehaviorChoice" />
+              <s:element minOccurs="1" maxOccurs="1" name="OverlayBehavior" nillable="true" type="s:boolean" />
               <s:element minOccurs="1" maxOccurs="1" name="RelationalIndexViewArtifactID" nillable="true" type="s:int" />
               <s:element minOccurs="0" maxOccurs="1" name="ObjectsFieldArgs" type="tns:ObjectsFieldParameters" />
               <s:element minOccurs="1" maxOccurs="1" name="AllowGroupBy" type="s:boolean" />
@@ -148,6 +149,7 @@
           <s:element minOccurs="0" maxOccurs="1" name="FieldSchemaColumnName" type="s:string" />
           <s:element minOccurs="0" maxOccurs="1" name="SiblingFieldSchemaColumnName" type="s:string" />
           <s:element minOccurs="0" maxOccurs="1" name="RelationalTableSchemaName" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="CreateForeignKeys" type="s:boolean" />
         </s:sequence>
       </s:complexType>
       <s:complexType name="KeyboardShortcut">
