@@ -13,11 +13,9 @@ Namespace kCura.WinEDDS
 		Private _auditManager As kCura.WinEDDS.Service.AuditManager
 		Private _exportFile As kCura.WinEDDS.ExportFile
 		Private _columns As System.Collections.ArrayList
-		Private _sourceDirectory As String
 		Private _documentManager As kCura.WinEDDS.Service.DocumentManager
 		Public DocumentsExported As Int32
 		Public TotalExportArtifactCount As Int32
-		Private _fullTextDownloader As kCura.WinEDDS.FullTextManager
 		Private WithEvents _processController As kCura.Windows.Process.Controller
 		Private WithEvents _downloadHandler As FileDownloader
 		Private _halt As Boolean
@@ -27,10 +25,8 @@ Namespace kCura.WinEDDS
 		Private _beginBatesColumn As String = ""
 		Private _timekeeper As New kCura.Utility.Timekeeper
 		Private _productionArtifactIDs As Int32()
-		Private _isEssentialCount As Int32
 		Private _lastStatusMessageTs As Long = System.DateTime.Now.Ticks
 		Private _lastDocumentsExportedCountReported As Int32 = 0
-		Private _fieldCollectionHasExtractedText As Boolean = False
 		Private _statistics As New kCura.WinEDDS.ExportStatistics
 		Private _lastStatisticsSnapshot As IDictionary
 		Private _start As System.DateTime
@@ -195,7 +191,6 @@ Namespace kCura.WinEDDS
 			_statistics.MetadataTime += System.Math.Max(System.DateTime.Now.Ticks - startTicks, 1)
 			RaiseEvent FileTransferModeChangeEvent(_downloadHandler.UploaderType.ToString)
 			_volumeManager = New VolumeManager(Me.Settings, Me.Settings.FolderPath, Me.Settings.Overwrite, Me.TotalExportArtifactCount, Me, _downloadHandler, _timekeeper, exportInitializationArgs.ColumnNames, _statistics)
-			_fullTextDownloader = New kCura.WinEDDS.FullTextManager(Me.Settings.Credential, _sourceDirectory, Me.Settings.CookieContainer)
 			Me.WriteStatusLine(kCura.Windows.Process.EventType.Status, "Created search log file.", True)
 			_volumeManager.ColumnHeaderString = columnHeaderString
 			Me.WriteUpdate("Data retrieved. Beginning " & typeOfExportDisplayString & " export...")
@@ -437,15 +432,6 @@ Namespace kCura.WinEDDS
 			Return retval
 		End Function
 
-		Private Function DocumentHasExtractedText(ByVal dv As System.Data.DataView, ByVal documentArtifactID As Int32) As Boolean
-			dv.RowFilter = "ArtifactID = " & documentArtifactID
-			Try
-				Return CType(dv(0)("HasExtractedText"), Boolean)
-			Catch ex As System.Exception
-				Return False
-			End Try
-		End Function
-
 		Private Function GetNativeRow(ByVal dv As System.Data.DataView, ByVal artifactID As Int32) As System.Data.DataRowView
 			If Not Me.Settings.ExportNative Then Return Nothing
 			If Me.Settings.ArtifactTypeID = 10 Then
@@ -461,7 +447,6 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Private Function LoadColumns() As String
-			'Dim table As System.Data.DataTable
 			Dim retString As New System.Text.StringBuilder
 			If _exportFile.LoadFileIsHtml Then
 				retString.Append("<html><head><title>" & System.Web.HttpUtility.HtmlEncode(_exportFile.CaseInfo.Name) & "</title>")
@@ -502,49 +487,19 @@ Namespace kCura.WinEDDS
 					If i < _columns.Count - 1 Then retString.Append(Me.Settings.RecordDelimiter)
 				End If
 			Next
-			If _fieldCollectionHasExtractedText AndAlso Not Me.Settings.ExportFullText Then
-				Me.Settings.ExportFullText = True
-				Me.Settings.ExportFullTextAsFile = False
-			End If
 
 			If Not Me.Settings.LoadFileIsHtml Then retString = New System.Text.StringBuilder(retString.ToString.TrimEnd(Me.Settings.RecordDelimiter))
 			If _exportFile.LoadFileIsHtml Then
 				If Me.Settings.ExportImages AndAlso Me.Settings.ArtifactTypeID = Relativity.ArtifactType.Document Then retString.Append("<th>Image Files</th>")
 				If Me.Settings.ExportNative Then retString.Append("<th>Native Files</th>")
-				'If Me.Settings.ExportFullText Then retString.Append("<th>Extracted Text</th>")
 				retString.Append(vbNewLine & "</tr>" & vbNewLine)
 			Else
 				If Me.Settings.ExportNative Then retString.AppendFormat("{2}{0}{1}{0}", Me.Settings.QuoteDelimiter, "FILE_PATH", Me.Settings.RecordDelimiter)
-				'If Me.Settings.ExportFullText Then retString.AppendFormat("{2}{0}{1}{0}", Me.Settings.QuoteDelimiter, "Extracted Text", Me.Settings.RecordDelimiter)
 			End If
 			retString.Append(System.Environment.NewLine)
 			Return retString.ToString
 		End Function
-
-		Private Function ShowField(ByVal fieldName As String) As Boolean
-			Select Case fieldName
-				'BigData_ET_#
-				Case "ExtractedText"
-					_fieldCollectionHasExtractedText = True
-					Return False
-				Case "Edit", "FileIcon", "AccessControlListIsInherited"
-					Return False
-				Case Else
-					Return True
-			End Select
-		End Function
-
-		Private Function GetDocumentsString(ByVal documentTable As System.Data.DataTable) As String
-			Dim artifactIDs As New System.Text.StringBuilder
-			Dim row As System.Data.DataRow
-
-			For Each row In documentTable.Rows
-				artifactIDs.AppendFormat(",{0}", CType(row("ArtifactID"), Int32))
-			Next
-			artifactIDs.Remove(0, 1)
-			Return artifactIDs.ToString
-		End Function
-
+		
 		Private Function RetrieveImagesForDocuments(ByVal documentArtifactIDs As Int32(), ByVal productionOrderList As Pair()) As System.Data.DataTable
 			Select Case Me.Settings.TypeOfExport
 				Case ExportFile.ExportType.Production
