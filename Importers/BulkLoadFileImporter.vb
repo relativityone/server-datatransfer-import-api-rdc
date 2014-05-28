@@ -704,6 +704,7 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Protected Function CleanDestinationFolderPath(ByVal path As String) As String
+			path = path.Trim()
 			While path.Contains(".\")
 				path = path.Replace(".\", "\")
 			End While
@@ -717,7 +718,9 @@ Namespace kCura.WinEDDS
 				End If
 			End If
 			path = path.TrimEnd(New Char() {"\"c})
-			If path = "" Then path = "\"
+			If String.IsNullOrWhiteSpace(path) Then
+				path = "\"
+			End If
 			Return path
 		End Function
 
