@@ -1638,7 +1638,7 @@ Namespace kCura.WinEDDS
 			Dim sr As kCura.Utility.GenericCsvReader = Nothing
 			Dim downloader As FileDownloader = Nothing
 			Try
-				With Me.BulkImportManager.GenerateNativeErrorFiles(_caseInfo.ArtifactID, _runID, artifactTypeID, True, _keyFieldID)
+				With Me.BulkImportManager.GenerateNonImageErrorFiles(_caseInfo.ArtifactID, _runID, artifactTypeID, True, _keyFieldID)
 					Me.WriteStatusLine(Windows.Process.EventType.Status, "Retrieving errors from server")
 					downloader = New FileDownloader(DirectCast(Me.BulkImportManager.Credentials, System.Net.NetworkCredential), _caseInfo.DocumentPath, _caseInfo.DownloadHandlerURL, Me.BulkImportManager.CookieContainer, kCura.WinEDDS.Service.Settings.AuthenticationToken)
 					AddHandler downloader.UploadStatusEvent, AddressOf _uploader_UploadStatusEvent
