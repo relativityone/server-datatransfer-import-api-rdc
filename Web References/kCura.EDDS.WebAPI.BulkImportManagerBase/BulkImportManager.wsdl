@@ -146,6 +146,7 @@
           <s:element minOccurs="0" maxOccurs="1" name="OnBehalfOfUserToken" type="s:string" />
           <s:element minOccurs="1" maxOccurs="1" name="AuditLevel" type="tns:ImportAuditLevel" />
           <s:element minOccurs="0" maxOccurs="1" name="BulkLoadFileFieldDelimiter" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="OverlayArtifactID" type="s:int" />
           <s:element minOccurs="1" maxOccurs="1" name="KeyFieldArtifactID" type="s:int" />
           <s:element minOccurs="1" maxOccurs="1" name="RootFolderID" type="s:int" />
         </s:sequence>
@@ -260,7 +261,7 @@
           </s:sequence>
         </s:complexType>
       </s:element>
-      <s:element name="GenerateNativeErrorFiles">
+      <s:element name="GenerateNonImageErrorFiles">
         <s:complexType>
           <s:sequence>
             <s:element minOccurs="1" maxOccurs="1" name="appID" type="s:int" />
@@ -271,10 +272,10 @@
           </s:sequence>
         </s:complexType>
       </s:element>
-      <s:element name="GenerateNativeErrorFilesResponse">
+      <s:element name="GenerateNonImageErrorFilesResponse">
         <s:complexType>
           <s:sequence>
-            <s:element minOccurs="0" maxOccurs="1" name="GenerateNativeErrorFilesResult" type="tns:ErrorFileKey" />
+            <s:element minOccurs="0" maxOccurs="1" name="GenerateNonImageErrorFilesResult" type="tns:ErrorFileKey" />
           </s:sequence>
         </s:complexType>
       </s:element>
@@ -308,6 +309,9 @@
           </s:sequence>
         </s:complexType>
       </s:element>
+      <s:element name="ErrorFileKey" nillable="true" type="tns:ErrorFileKey" />
+      <s:element name="boolean" type="s:boolean" />
+      <s:element name="anyType" nillable="true" />
     </s:schema>
   </wsdl:types>
   <wsdl:message name="BulkImportImageSoapIn">
@@ -346,11 +350,11 @@
   <wsdl:message name="BulkImportObjectsSoapOut">
     <wsdl:part name="parameters" element="tns:BulkImportObjectsResponse" />
   </wsdl:message>
-  <wsdl:message name="GenerateNativeErrorFilesSoapIn">
-    <wsdl:part name="parameters" element="tns:GenerateNativeErrorFiles" />
+  <wsdl:message name="GenerateNonImageErrorFilesSoapIn">
+    <wsdl:part name="parameters" element="tns:GenerateNonImageErrorFiles" />
   </wsdl:message>
-  <wsdl:message name="GenerateNativeErrorFilesSoapOut">
-    <wsdl:part name="parameters" element="tns:GenerateNativeErrorFilesResponse" />
+  <wsdl:message name="GenerateNonImageErrorFilesSoapOut">
+    <wsdl:part name="parameters" element="tns:GenerateNonImageErrorFilesResponse" />
   </wsdl:message>
   <wsdl:message name="NativeRunHasErrorsSoapIn">
     <wsdl:part name="parameters" element="tns:NativeRunHasErrors" />
@@ -363,6 +367,86 @@
   </wsdl:message>
   <wsdl:message name="DisposeTempTablesSoapOut">
     <wsdl:part name="parameters" element="tns:DisposeTempTablesResponse" />
+  </wsdl:message>
+  <wsdl:message name="GenerateImageErrorFilesHttpGetIn">
+    <wsdl:part name="appID" type="s:string" />
+    <wsdl:part name="importKey" type="s:string" />
+    <wsdl:part name="writeHeader" type="s:string" />
+    <wsdl:part name="keyFieldID" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="GenerateImageErrorFilesHttpGetOut">
+    <wsdl:part name="Body" element="tns:ErrorFileKey" />
+  </wsdl:message>
+  <wsdl:message name="ImageRunHasErrorsHttpGetIn">
+    <wsdl:part name="appID" type="s:string" />
+    <wsdl:part name="runId" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="ImageRunHasErrorsHttpGetOut">
+    <wsdl:part name="Body" element="tns:boolean" />
+  </wsdl:message>
+  <wsdl:message name="GenerateNonImageErrorFilesHttpGetIn">
+    <wsdl:part name="appID" type="s:string" />
+    <wsdl:part name="runID" type="s:string" />
+    <wsdl:part name="artifactTypeID" type="s:string" />
+    <wsdl:part name="writeHeader" type="s:string" />
+    <wsdl:part name="keyFieldID" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="GenerateNonImageErrorFilesHttpGetOut">
+    <wsdl:part name="Body" element="tns:ErrorFileKey" />
+  </wsdl:message>
+  <wsdl:message name="NativeRunHasErrorsHttpGetIn">
+    <wsdl:part name="appID" type="s:string" />
+    <wsdl:part name="runId" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="NativeRunHasErrorsHttpGetOut">
+    <wsdl:part name="Body" element="tns:boolean" />
+  </wsdl:message>
+  <wsdl:message name="DisposeTempTablesHttpGetIn">
+    <wsdl:part name="appID" type="s:string" />
+    <wsdl:part name="runId" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="DisposeTempTablesHttpGetOut">
+    <wsdl:part name="Body" element="tns:anyType" />
+  </wsdl:message>
+  <wsdl:message name="GenerateImageErrorFilesHttpPostIn">
+    <wsdl:part name="appID" type="s:string" />
+    <wsdl:part name="importKey" type="s:string" />
+    <wsdl:part name="writeHeader" type="s:string" />
+    <wsdl:part name="keyFieldID" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="GenerateImageErrorFilesHttpPostOut">
+    <wsdl:part name="Body" element="tns:ErrorFileKey" />
+  </wsdl:message>
+  <wsdl:message name="ImageRunHasErrorsHttpPostIn">
+    <wsdl:part name="appID" type="s:string" />
+    <wsdl:part name="runId" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="ImageRunHasErrorsHttpPostOut">
+    <wsdl:part name="Body" element="tns:boolean" />
+  </wsdl:message>
+  <wsdl:message name="GenerateNonImageErrorFilesHttpPostIn">
+    <wsdl:part name="appID" type="s:string" />
+    <wsdl:part name="runID" type="s:string" />
+    <wsdl:part name="artifactTypeID" type="s:string" />
+    <wsdl:part name="writeHeader" type="s:string" />
+    <wsdl:part name="keyFieldID" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="GenerateNonImageErrorFilesHttpPostOut">
+    <wsdl:part name="Body" element="tns:ErrorFileKey" />
+  </wsdl:message>
+  <wsdl:message name="NativeRunHasErrorsHttpPostIn">
+    <wsdl:part name="appID" type="s:string" />
+    <wsdl:part name="runId" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="NativeRunHasErrorsHttpPostOut">
+    <wsdl:part name="Body" element="tns:boolean" />
+  </wsdl:message>
+  <wsdl:message name="DisposeTempTablesHttpPostIn">
+    <wsdl:part name="appID" type="s:string" />
+    <wsdl:part name="runId" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="DisposeTempTablesHttpPostOut">
+    <wsdl:part name="Body" element="tns:anyType" />
   </wsdl:message>
   <wsdl:portType name="BulkImportManagerSoap">
     <wsdl:operation name="BulkImportImage">
@@ -389,9 +473,9 @@
       <wsdl:input message="tns:BulkImportObjectsSoapIn" />
       <wsdl:output message="tns:BulkImportObjectsSoapOut" />
     </wsdl:operation>
-    <wsdl:operation name="GenerateNativeErrorFiles">
-      <wsdl:input message="tns:GenerateNativeErrorFilesSoapIn" />
-      <wsdl:output message="tns:GenerateNativeErrorFilesSoapOut" />
+    <wsdl:operation name="GenerateNonImageErrorFiles">
+      <wsdl:input message="tns:GenerateNonImageErrorFilesSoapIn" />
+      <wsdl:output message="tns:GenerateNonImageErrorFilesSoapOut" />
     </wsdl:operation>
     <wsdl:operation name="NativeRunHasErrors">
       <wsdl:input message="tns:NativeRunHasErrorsSoapIn" />
@@ -400,6 +484,50 @@
     <wsdl:operation name="DisposeTempTables">
       <wsdl:input message="tns:DisposeTempTablesSoapIn" />
       <wsdl:output message="tns:DisposeTempTablesSoapOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:portType name="BulkImportManagerHttpGet">
+    <wsdl:operation name="GenerateImageErrorFiles">
+      <wsdl:input message="tns:GenerateImageErrorFilesHttpGetIn" />
+      <wsdl:output message="tns:GenerateImageErrorFilesHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ImageRunHasErrors">
+      <wsdl:input message="tns:ImageRunHasErrorsHttpGetIn" />
+      <wsdl:output message="tns:ImageRunHasErrorsHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GenerateNonImageErrorFiles">
+      <wsdl:input message="tns:GenerateNonImageErrorFilesHttpGetIn" />
+      <wsdl:output message="tns:GenerateNonImageErrorFilesHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="NativeRunHasErrors">
+      <wsdl:input message="tns:NativeRunHasErrorsHttpGetIn" />
+      <wsdl:output message="tns:NativeRunHasErrorsHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="DisposeTempTables">
+      <wsdl:input message="tns:DisposeTempTablesHttpGetIn" />
+      <wsdl:output message="tns:DisposeTempTablesHttpGetOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:portType name="BulkImportManagerHttpPost">
+    <wsdl:operation name="GenerateImageErrorFiles">
+      <wsdl:input message="tns:GenerateImageErrorFilesHttpPostIn" />
+      <wsdl:output message="tns:GenerateImageErrorFilesHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ImageRunHasErrors">
+      <wsdl:input message="tns:ImageRunHasErrorsHttpPostIn" />
+      <wsdl:output message="tns:ImageRunHasErrorsHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GenerateNonImageErrorFiles">
+      <wsdl:input message="tns:GenerateNonImageErrorFilesHttpPostIn" />
+      <wsdl:output message="tns:GenerateNonImageErrorFilesHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="NativeRunHasErrors">
+      <wsdl:input message="tns:NativeRunHasErrorsHttpPostIn" />
+      <wsdl:output message="tns:NativeRunHasErrorsHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="DisposeTempTables">
+      <wsdl:input message="tns:DisposeTempTablesHttpPostIn" />
+      <wsdl:output message="tns:DisposeTempTablesHttpPostOut" />
     </wsdl:operation>
   </wsdl:portType>
   <wsdl:binding name="BulkImportManagerSoap" type="tns:BulkImportManagerSoap">
@@ -458,8 +586,8 @@
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="GenerateNativeErrorFiles">
-      <soap:operation soapAction="http://www.kCura.com/EDDS/BulkImportManager/GenerateNativeErrorFiles" style="document" />
+    <wsdl:operation name="GenerateNonImageErrorFiles">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/BulkImportManager/GenerateNonImageErrorFiles" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -542,8 +670,8 @@
         <soap12:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="GenerateNativeErrorFiles">
-      <soap12:operation soapAction="http://www.kCura.com/EDDS/BulkImportManager/GenerateNativeErrorFiles" style="document" />
+    <wsdl:operation name="GenerateNonImageErrorFiles">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/BulkImportManager/GenerateNonImageErrorFiles" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
@@ -570,12 +698,114 @@
       </wsdl:output>
     </wsdl:operation>
   </wsdl:binding>
+  <wsdl:binding name="BulkImportManagerHttpGet" type="tns:BulkImportManagerHttpGet">
+    <http:binding verb="GET" />
+    <wsdl:operation name="GenerateImageErrorFiles">
+      <http:operation location="/GenerateImageErrorFiles" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ImageRunHasErrors">
+      <http:operation location="/ImageRunHasErrors" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GenerateNonImageErrorFiles">
+      <http:operation location="/GenerateNonImageErrorFiles" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="NativeRunHasErrors">
+      <http:operation location="/NativeRunHasErrors" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="DisposeTempTables">
+      <http:operation location="/DisposeTempTables" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="BulkImportManagerHttpPost" type="tns:BulkImportManagerHttpPost">
+    <http:binding verb="POST" />
+    <wsdl:operation name="GenerateImageErrorFiles">
+      <http:operation location="/GenerateImageErrorFiles" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ImageRunHasErrors">
+      <http:operation location="/ImageRunHasErrors" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GenerateNonImageErrorFiles">
+      <http:operation location="/GenerateNonImageErrorFiles" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="NativeRunHasErrors">
+      <http:operation location="/NativeRunHasErrors" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="DisposeTempTables">
+      <http:operation location="/DisposeTempTables" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
   <wsdl:service name="BulkImportManager">
     <wsdl:port name="BulkImportManagerSoap" binding="tns:BulkImportManagerSoap">
       <soap:address location="http://localhost/RelativityWebApi/BulkImportManager.asmx" />
     </wsdl:port>
     <wsdl:port name="BulkImportManagerSoap12" binding="tns:BulkImportManagerSoap12">
       <soap12:address location="http://localhost/RelativityWebApi/BulkImportManager.asmx" />
+    </wsdl:port>
+    <wsdl:port name="BulkImportManagerHttpGet" binding="tns:BulkImportManagerHttpGet">
+      <http:address location="http://localhost/RelativityWebApi/BulkImportManager.asmx" />
+    </wsdl:port>
+    <wsdl:port name="BulkImportManagerHttpPost" binding="tns:BulkImportManagerHttpPost">
+      <http:address location="http://localhost/RelativityWebApi/BulkImportManager.asmx" />
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>
