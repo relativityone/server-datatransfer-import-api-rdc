@@ -280,7 +280,7 @@ Namespace kCura.WinEDDS.ImportExtension
 			If _loadFileSettings.CreateFolderStructure AndAlso Not _loadFileSettings.FolderStructureContainedInColumn Is Nothing AndAlso Not _loadFileSettings.FolderStructureContainedInColumn = String.Empty Then
 				Dim parentIndex As Int32 = Int32.Parse(_loadFileSettings.FolderStructureContainedInColumn.Substring(_loadFileSettings.FolderStructureContainedInColumn.LastIndexOf("(")).Trim("()".ToCharArray))
 				Dim displayName As String = _reader.GetName(parentIndex - 1)
-				Dim field As New Api.ArtifactField(displayName, -2, Relativity.FieldTypeHelper.FieldType.Object, Relativity.FieldCategory.ParentArtifact, New Nullable(Of Int32)(Nothing), New Nullable(Of Int32)(255), New Nullable(Of Int32)(Nothing))
+				Dim field As New Api.ArtifactField(displayName, -2, Relativity.FieldTypeHelper.FieldType.Object, Relativity.FieldCategory.ParentArtifact, New Nullable(Of Int32)(Nothing), New Nullable(Of Int32)(255), New Nullable(Of Int32)(Nothing), Relativity.FieldInfo.StorageLocationChoice.SQL)
 				SetFieldValueInvoker(parentIndex - 1, field, displayName)
 				retval.Add(field)
 			End If
