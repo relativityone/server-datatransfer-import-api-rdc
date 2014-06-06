@@ -107,7 +107,7 @@ Namespace kCura.WinEDDS.ImportExtension
 
 						'Do not add to field map if field.DisplayName is  _settings.FolderStructureContainedInColumn or _settings.NativeFilePathColumn
 						If _settings.FolderStructureContainedInColumn Is Nothing Then					'AndAlso _settings.NativeFilePathColumn Is Nothing Then
-							_settings.FieldMap.Add(New kCura.WinEDDS.LoadFileFieldMap.LoadFileFieldMapItem(New kCura.WinEDDS.DocumentField(field.DisplayName, field.ArtifactID, field.FieldTypeID, field.FieldCategoryID, field.CodeTypeID, field.MaxLength, field.AssociativeArtifactTypeID, field.UseUnicodeEncoding, field.ImportBehavior), columnIndex))
+							_settings.FieldMap.Add(New kCura.WinEDDS.LoadFileFieldMap.LoadFileFieldMapItem(New kCura.WinEDDS.DocumentField(field.DisplayName, field.ArtifactID, field.FieldTypeID, field.FieldCategoryID, field.CodeTypeID, field.MaxLength, field.AssociativeArtifactTypeID, field.UseUnicodeEncoding, field.ImportBehavior, field.StorageLocation), columnIndex))
 						Else
 							Dim s_FolderStructureContainedInColumn As String
 							Dim s_NativeFilePathColumn As String
@@ -125,7 +125,7 @@ Namespace kCura.WinEDDS.ImportExtension
 							End If
 
 							If Not field.DisplayName = s_FolderStructureContainedInColumn Then						'then AndAlso Not field.DisplayName = s_NativeFilePathColumn Then
-								_settings.FieldMap.Add(New kCura.WinEDDS.LoadFileFieldMap.LoadFileFieldMapItem(New kCura.WinEDDS.DocumentField(field.DisplayName, field.ArtifactID, field.FieldTypeID, field.FieldCategoryID, field.CodeTypeID, field.MaxLength, field.AssociativeArtifactTypeID, field.UseUnicodeEncoding, field.ImportBehavior), columnIndex))
+								_settings.FieldMap.Add(New kCura.WinEDDS.LoadFileFieldMap.LoadFileFieldMapItem(New kCura.WinEDDS.DocumentField(field.DisplayName, field.ArtifactID, field.FieldTypeID, field.FieldCategoryID, field.CodeTypeID, field.MaxLength, field.AssociativeArtifactTypeID, field.UseUnicodeEncoding, field.ImportBehavior, field.StorageLocation), columnIndex))
 							End If
 						End If
 
