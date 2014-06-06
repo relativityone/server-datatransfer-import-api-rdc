@@ -64,7 +64,7 @@ Namespace kCura.WinEDDS.Service
 							.AllowHtml = CType(dv(i)("AllowHTML"), Boolean)
 							.AssociativeArtifactTypeID = kCura.Utility.NullableTypesHelper.DBNullConvertToNullable(Of Int32)(dv(i)("AssociativeArtifactTypeID"))
 							.ImportBehavior = Me.ConvertImportBehaviorEnum(kCura.Utility.NullableTypesHelper.DBNullConvertToNullable(Of Int32)(dv(i)("ImportBehavior")))
-							.StorageLocation = ConvertStorageLocationEnum(CInt(dv(i)("ImportBehavior")))
+							.StorageLocation = ConvertStorageLocationEnum(CInt(dv(i)("StorageLocation")))
 							.Guids = guids.ToArray()
 						End With
 						If field.FieldType = EDDS.WebAPI.DocumentManagerBase.FieldType.Object OrElse field.FieldType = EDDS.WebAPI.DocumentManagerBase.FieldType.Objects OrElse field.FieldCategory = EDDS.WebAPI.DocumentManagerBase.FieldCategory.MultiReflected OrElse field.FieldCategory = EDDS.WebAPI.DocumentManagerBase.FieldCategory.Reflected Then
@@ -94,7 +94,7 @@ Namespace kCura.WinEDDS.Service
 			Dim retval As New DocumentFieldCollection
 			For Each fieldDTO As kCura.EDDS.WebAPI.DocumentManagerBase.Field In Me.RetrieveAllAsArray(caseContextArtifactID, artifactTypeID)
 				With (fieldDTO)
-					retval.Add(New DocumentField(.DisplayName, .ArtifactID, .FieldTypeID, .FieldCategoryID, .CodeTypeID, .MaxLength, .AssociativeArtifactTypeID, .UseUnicodeEncoding, .ImportBehavior, .Guids))
+					retval.Add(New DocumentField(.DisplayName, .ArtifactID, .FieldTypeID, .FieldCategoryID, .CodeTypeID, .MaxLength, .AssociativeArtifactTypeID, .UseUnicodeEncoding, .ImportBehavior, .Guids, .StorageLocation))
 				End With
 			Next
 			Return retval

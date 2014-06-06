@@ -49,6 +49,16 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
+		<NonSerialized()> Private _storageLocation As kCura.EDDS.WebAPI.DocumentManagerBase.StorageLocationChoice
+		Public Property StorageLocation() As kCura.EDDS.WebAPI.DocumentManagerBase.StorageLocationChoice
+			Get
+				Return _storageLocation
+			End Get
+			Set(ByVal value As kCura.EDDS.WebAPI.DocumentManagerBase.StorageLocationChoice)
+				_storageLocation = value
+			End Set
+		End Property
+
 		Public Property FieldName() As String
 			Get
 				Return _fieldName
@@ -146,11 +156,11 @@ Namespace kCura.WinEDDS
 			Me.Guids = New List(Of Guid)
 		End Sub
 
-		Public Sub New(ByVal fieldName As String, ByVal fieldID As Int32, ByVal fieldTypeID As Int32, ByVal fieldCategoryID As Int32, ByVal codeTypeID As Nullable(Of Int32), ByVal fieldLength As Nullable(Of Int32), ByVal associatedObjectTypeID As Nullable(Of Int32), ByVal useUnicode As Boolean, ByVal importBehavior As kCura.EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice?)
-			Me.New(fieldName, fieldID, fieldTypeID, fieldCategoryID, codeTypeID, fieldLength, associatedObjectTypeID, useUnicode, importBehavior, New List(Of Guid))
+		Public Sub New(ByVal fieldName As String, ByVal fieldID As Int32, ByVal fieldTypeID As Int32, ByVal fieldCategoryID As Int32, ByVal codeTypeID As Nullable(Of Int32), ByVal fieldLength As Nullable(Of Int32), ByVal associatedObjectTypeID As Nullable(Of Int32), ByVal useUnicode As Boolean, ByVal importBehavior As kCura.EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice?, ByVal storageLocation As kCura.EDDS.WebAPI.DocumentManagerBase.StorageLocationChoice)
+			Me.New(fieldName, fieldID, fieldTypeID, fieldCategoryID, codeTypeID, fieldLength, associatedObjectTypeID, useUnicode, importBehavior, New List(Of Guid), storageLocation)
 		End Sub
 
-		Public Sub New(ByVal fieldName As String, ByVal fieldID As Int32, ByVal fieldTypeID As Int32, ByVal fieldCategoryID As Int32, ByVal codeTypeID As Nullable(Of Int32), ByVal fieldLength As Nullable(Of Int32), ByVal associatedObjectTypeID As Nullable(Of Int32), ByVal useUnicode As Boolean, ByVal importBehavior As kCura.EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice?, guids As IEnumerable(Of Guid))
+		Public Sub New(ByVal fieldName As String, ByVal fieldID As Int32, ByVal fieldTypeID As Int32, ByVal fieldCategoryID As Int32, ByVal codeTypeID As Nullable(Of Int32), ByVal fieldLength As Nullable(Of Int32), ByVal associatedObjectTypeID As Nullable(Of Int32), ByVal useUnicode As Boolean, ByVal importBehavior As kCura.EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice?, guids As IEnumerable(Of Guid), ByVal storageLocation As kCura.EDDS.WebAPI.DocumentManagerBase.StorageLocationChoice)
 			MyBase.New()
 			_fieldName = fieldName
 			_fieldID = fieldID
@@ -161,6 +171,7 @@ Namespace kCura.WinEDDS
 			_associatedObjectTypeID = associatedObjectTypeID
 			_useUnicode = useUnicode
 			_importBehavior = importBehavior
+			_storageLocation = storageLocation
 			If (Not guids Is Nothing) Then
 				Me.Guids = guids.ToList()
 			Else
@@ -169,7 +180,7 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Public Sub New(ByVal docField As DocumentField)
-			Me.New(docField.FieldName, docField.FieldID, docField.FieldTypeID, docField.FieldCategoryID, docField.CodeTypeID, docField.FieldLength, docField.AssociatedObjectTypeID, docField.UseUnicode, docField.ImportBehavior)
+			Me.New(docField.FieldName, docField.FieldID, docField.FieldTypeID, docField.FieldCategoryID, docField.CodeTypeID, docField.FieldLength, docField.AssociatedObjectTypeID, docField.UseUnicode, docField.ImportBehavior, docField.StorageLocation)
 		End Sub
 
 #End Region

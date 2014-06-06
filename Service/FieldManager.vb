@@ -29,7 +29,7 @@ Namespace kCura.WinEDDS.Service
 
 #Region " Translations "
 		Public Shared Function DTOtoDocumentField(ByVal dto As kCura.EDDS.WebAPI.DocumentManagerBase.Field) As DocumentField
-			Dim retval As New DocumentField(dto.DisplayName, dto.ArtifactID, dto.FieldTypeID, dto.FieldCategoryID, dto.CodeTypeID, dto.MaxLength, dto.AssociativeArtifactTypeID, dto.UseUnicodeEncoding, dto.ImportBehavior)
+			Dim retval As New DocumentField(dto.DisplayName, dto.ArtifactID, dto.FieldTypeID, dto.FieldCategoryID, dto.CodeTypeID, dto.MaxLength, dto.AssociativeArtifactTypeID, dto.UseUnicodeEncoding, dto.ImportBehavior, dto.StorageLocation)
 			If retval.FieldCategoryID = Relativity.FieldCategory.FullText Then
 				retval.Value = System.Text.ASCIIEncoding.ASCII.GetString(DirectCast(dto.Value, Byte()))
 			ElseIf retval.FieldTypeID = Relativity.FieldTypeHelper.FieldType.Code OrElse retval.FieldTypeID = Relativity.FieldTypeHelper.FieldType.MultiCode Then
