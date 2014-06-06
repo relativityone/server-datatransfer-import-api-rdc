@@ -64,6 +64,7 @@ Namespace kCura.WinEDDS.Service
 							.AllowHtml = CType(dv(i)("AllowHTML"), Boolean)
 							.AssociativeArtifactTypeID = kCura.Utility.NullableTypesHelper.DBNullConvertToNullable(Of Int32)(dv(i)("AssociativeArtifactTypeID"))
 							.ImportBehavior = Me.ConvertImportBehaviorEnum(kCura.Utility.NullableTypesHelper.DBNullConvertToNullable(Of Int32)(dv(i)("ImportBehavior")))
+							.StorageLocation = ConvertStorageLocationEnum(CInt(dv(i)("ImportBehavior")))
 							.Guids = guids.ToArray()
 						End With
 						If field.FieldType = EDDS.WebAPI.DocumentManagerBase.FieldType.Object OrElse field.FieldType = EDDS.WebAPI.DocumentManagerBase.FieldType.Objects OrElse field.FieldCategory = EDDS.WebAPI.DocumentManagerBase.FieldCategory.MultiReflected OrElse field.FieldCategory = EDDS.WebAPI.DocumentManagerBase.FieldCategory.Reflected Then
@@ -82,6 +83,11 @@ Namespace kCura.WinEDDS.Service
 			If Not input.HasValue Then Return Nothing
 			Dim ibc As Relativity.FieldInfo.ImportBehaviorChoice = CType(input, Relativity.FieldInfo.ImportBehaviorChoice)
 			Return CType(System.Enum.Parse(GetType(kCura.EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice), ibc.ToString), kCura.EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice)
+		End Function
+
+		Private Function ConvertStorageLocationEnum(ByVal input As Int32) As kCura.EDDS.WebAPI.DocumentManagerBase.StorageLocationChoice
+			Dim ibc As Relativity.FieldInfo.StorageLocationChoice = CType(input, Relativity.FieldInfo.StorageLocationChoice)
+			Return CType(System.Enum.Parse(GetType(kCura.EDDS.WebAPI.DocumentManagerBase.StorageLocationChoice), ibc.ToString), kCura.EDDS.WebAPI.DocumentManagerBase.StorageLocationChoice)
 		End Function
 
 		Public Function RetrieveAllAsDocumentFieldCollection(ByVal caseContextArtifactID As Int32, ByVal artifactTypeID As Int32) As DocumentFieldCollection
