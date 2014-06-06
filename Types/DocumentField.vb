@@ -203,6 +203,7 @@ Namespace kCura.WinEDDS
 			retval.Type = Me.ConvertFieldTypeEnum(Me.FieldTypeID)
 			retval.IsUnicodeEnabled = Me.UseUnicode
 			retval.ImportBehavior = Me.ConvertImportBehaviorEnum(Me.ImportBehavior)
+			retval.StorageLocation = Me.ConvertStorageLocationEnum(Me.StorageLocation)
 			Return retval
 		End Function
 
@@ -210,6 +211,10 @@ Namespace kCura.WinEDDS
 		Private Function ConvertFieldTypeEnum(ByVal fieldtypeID As Int32) As kCura.EDDS.WebAPI.BulkImportManagerBase.FieldType
 			Dim ft As Relativity.FieldTypeHelper.FieldType = CType(fieldtypeID, Relativity.FieldTypeHelper.FieldType)
 			Return CType(System.Enum.Parse(GetType(kCura.EDDS.WebAPI.BulkImportManagerBase.FieldType), ft.ToString), kCura.EDDS.WebAPI.BulkImportManagerBase.FieldType)
+		End Function
+
+		Private Function ConvertStorageLocationEnum(ByVal storageLocation As kCura.EDDS.WebAPI.DocumentManagerBase.StorageLocationChoice) As kCura.EDDS.WebAPI.BulkImportManagerBase.StorageLocationChoice
+			Return CType(System.Enum.Parse(GetType(kCura.EDDS.WebAPI.DocumentManagerBase.StorageLocationChoice), storageLocation.ToString), kCura.EDDS.WebAPI.BulkImportManagerBase.StorageLocationChoice)
 		End Function
 
 		Private Function ConvertImportBehaviorEnum(ByVal importBehavior As kCura.EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice?) As kCura.EDDS.WebAPI.BulkImportManagerBase.ImportBehaviorChoice?

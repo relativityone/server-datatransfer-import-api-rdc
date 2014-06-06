@@ -28,7 +28,7 @@ Namespace kCura.WinEDDS.Api
 				Return _value.ToString
 			End Get
 		End Property
-		Public Sub New(ByVal displayName As String, ByVal artifactID As Int32, ByVal fieldTypeID As FieldTypeHelper.FieldType, ByVal fieldCategoryID As FieldCategory, ByVal codeTypeID As Nullable(Of Int32), ByVal textLength As Nullable(Of Int32), ByVal associatedObjectTypeID As Nullable(Of Int32))
+		Public Sub New(ByVal displayName As String, ByVal artifactID As Int32, ByVal fieldTypeID As FieldTypeHelper.FieldType, ByVal fieldCategoryID As FieldCategory, ByVal codeTypeID As Nullable(Of Int32), ByVal textLength As Nullable(Of Int32), ByVal associatedObjectTypeID As Nullable(Of Int32), ByVal storageLocation As FieldInfo.StorageLocationChoice)
 			MyBase.New()
 			Me.DisplayName = displayName
 			Me.ArtifactID = artifactID
@@ -37,10 +37,11 @@ Namespace kCura.WinEDDS.Api
 			If Not codeTypeID Is Nothing Then Me.CodeTypeID = codeTypeID.Value
 			If Not textLength Is Nothing Then Me.TextLength = textLength.Value
 			If Not associatedObjectTypeID Is Nothing Then Me.AssociatedObjectTypeID = associatedObjectTypeID.Value
+			Me.StorageLocation = storageLocation
 		End Sub
 
 		Public Function Copy() As Api.ArtifactField
-			Return New Api.ArtifactField(Me.DisplayName, Me.ArtifactID, Me.Type, Me.Category, New Nullable(Of Int32)(Me.CodeTypeID), New Nullable(Of Int32)(Me.TextLength), New Nullable(Of Int32)(Me.AssociatedObjectTypeID))
+			Return New Api.ArtifactField(Me.DisplayName, Me.ArtifactID, Me.Type, Me.Category, New Nullable(Of Int32)(Me.CodeTypeID), New Nullable(Of Int32)(Me.TextLength), New Nullable(Of Int32)(Me.AssociatedObjectTypeID), Me.StorageLocation)
 		End Function
 
 		Public Sub New(ByVal field As DocumentField)
@@ -51,6 +52,7 @@ Namespace kCura.WinEDDS.Api
 			If Not field.FieldLength Is Nothing Then Me.TextLength = field.FieldLength.Value
 			If Not field.AssociatedObjectTypeID Is Nothing Then Me.AssociatedObjectTypeID = field.AssociatedObjectTypeID.Value
 			Me.Type = CType(field.FieldTypeID, Relativity.FieldTypeHelper.FieldType)
+			Me.StorageLocation = CType(System.Enum.Parse(GetType(kCura.EDDS.WebAPI.DocumentManagerBase.StorageLocationChoice), field.StorageLocation.ToString), FieldInfo.StorageLocationChoice)
 		End Sub
 
 		Public Sub New(ByVal field As kCura.EDDS.WebAPI.DocumentManagerBase.Field)
@@ -61,6 +63,7 @@ Namespace kCura.WinEDDS.Api
 			If Not field.MaxLength Is Nothing Then Me.TextLength = field.MaxLength.Value
 			If Not field.AssociativeArtifactTypeID Is Nothing Then Me.AssociatedObjectTypeID = field.AssociativeArtifactTypeID.Value
 			Me.Type = CType(field.FieldTypeID, Relativity.FieldTypeHelper.FieldType)
+			Me.StorageLocation = CType(System.Enum.Parse(GetType(kCura.EDDS.WebAPI.DocumentManagerBase.StorageLocationChoice), field.StorageLocation.ToString), FieldInfo.StorageLocationChoice)
 		End Sub
 	End Class
 End Namespace

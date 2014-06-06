@@ -1088,7 +1088,9 @@ Namespace kCura.WinEDDS
 			End If
 			_outputNativeFileWriter.Write(mdoc.ParentFolderID & _bulkLoadFileFieldDelimiter)
 			For Each field As Api.ArtifactField In mdoc.Record
-				If field.Type = Relativity.FieldTypeHelper.FieldType.MultiCode OrElse field.Type = Relativity.FieldTypeHelper.FieldType.Code Then
+				If field.StorageLocation <> Relativity.FieldInfo.StorageLocationChoice.SQL Then
+					'do nothing
+				ElseIf field.Type = Relativity.FieldTypeHelper.FieldType.MultiCode OrElse field.Type = Relativity.FieldTypeHelper.FieldType.Code Then
 					_outputNativeFileWriter.Write(field.Value)
 					_outputNativeFileWriter.Write(_bulkLoadFileFieldDelimiter)
 				ElseIf field.Type = Relativity.FieldTypeHelper.FieldType.File AndAlso _artifactTypeID <> Relativity.ArtifactType.Document Then
