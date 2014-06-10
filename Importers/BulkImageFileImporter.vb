@@ -10,7 +10,6 @@ Namespace kCura.WinEDDS
 		Inherits kCura.Utility.RobustIoReporter
 
 #Region "Members"
-		Dim _start As System.DateTime
 		Private _imageReader As kCura.WinEDDS.Api.IImageReader
 		Protected _fieldQuery As kCura.WinEDDS.Service.FieldQuery
 		Private WithEvents _fileUploader As kCura.WinEDDS.FileUploader
@@ -21,14 +20,9 @@ Namespace kCura.WinEDDS
 		Private _productionArtifactID As Int32
 		Private _overwrite As String
 		Private _filePath As String
-		Private _selectedIdentifierField As String
 		Private _fileLineCount As Int64
 		Private _continue As Boolean
-		Private _overwriteOK As Boolean
 		Private _replaceFullText As Boolean
-		Private _order As Int32
-		Private _csvwriter As System.Text.StringBuilder
-		Private _nextLine As String()
 		Private _importBatchSize As Int32?
 		Private _importBatchVolume As Int32?
 		Private _minimumBatchSize As Int32?
@@ -36,14 +30,12 @@ Namespace kCura.WinEDDS
 		Private _autoNumberImages As Boolean
 		Private _copyFilesToRepository As Boolean
 		Private _repositoryPath As String
-		Private _textRepositoryPath As String
 		Private _caseInfo As Relativity.CaseInfo
 		Private _overlayArtifactID As Int32
 
 		Private WithEvents _processController As kCura.Windows.Process.Controller
 		Protected _keyFieldDto As kCura.EDDS.WebAPI.FieldManagerBase.Field
 		Private _bulkLoadFileWriter As System.IO.StreamWriter
-		Private _sourceTextEncoding As System.Text.Encoding = System.Text.Encoding.Default
 		Private _uploadKey As String = ""
 		Private _runId As String = ""
 		Private _settings As ImageLoadFile
@@ -58,7 +50,6 @@ Namespace kCura.WinEDDS
 		Private _totalValidated As Long
 		Private _totalProcessed As Long
 		Private _startLineNumber As Int64
-		Private _doRetry As Boolean = True
 
 		Private _statistics As New kCura.WinEDDS.Statistics
 		Private _currentStatisticsSnapshot As IDictionary
@@ -190,14 +181,13 @@ Namespace kCura.WinEDDS
 				_repositoryPath = args.SelectedCasePath.TrimEnd("\"c) & suffix
 			End If
 			Dim lastHalfPath As String = "EDDS" & args.CaseInfo.ArtifactID & "\"
-			_textRepositoryPath = Path.Combine(args.CaseDefaultPath, lastHalfPath)
+			'_textRepositoryPath = Path.Combine(args.CaseDefaultPath, lastHalfPath)
 			InitializeUploaders(args)
 			_folderID = folderID
 			_productionArtifactID = args.ProductionArtifactID
 			InitializeDTOs(args)
 			_overwrite = args.Overwrite
 			_replaceFullText = args.ReplaceFullText
-			_selectedIdentifierField = args.ControlKeyField
 			_processController = controller
 			_copyFilesToRepository = args.CopyFilesToDocumentRepository
 			_continue = True
@@ -235,16 +225,6 @@ Namespace kCura.WinEDDS
 			_productionManager = New kCura.WinEDDS.Service.ProductionManager(args.Credential, args.CookieContainer)
 			_bulkImportManager = New kCura.WinEDDS.Service.BulkImportManager(args.Credential, args.CookieContainer)
 		End Sub
-
-#End Region
-
-#Region "Enumerations"
-
-		Private Enum Columns
-			BatesNumber = 0
-			FileLocation = 2
-			MultiPageIndicator = 3
-		End Enum
 
 #End Region
 
@@ -436,10 +416,7 @@ Namespace kCura.WinEDDS
 				Next
 			End If
 		End Sub
-
-
-
-
+		
 		Public Function PushImageBatch(ByVal bulkLoadFilePath As String) As Object
 			If _batchCount = 0 Then Return Nothing
 			_batchCount = 0
@@ -488,16 +465,6 @@ Namespace kCura.WinEDDS
 			Return New OpticonFileReader(_folderID, _settings, Nothing, Nothing, _doRetryLogic)
 		End Function
 
-		Private Function MergeResults(ByVal originalResult As MassImportResults, ByVal newResult As MassImportResults) As MassImportResults
-			originalResult.ArtifactsCreated += newResult.ArtifactsCreated
-			originalResult.ArtifactsUpdated += newResult.ArtifactsUpdated
-			originalResult.FilesProcessed += newResult.FilesProcessed
-			If newResult.ExceptionDetail IsNot Nothing Then
-				originalResult.ExceptionDetail = newResult.ExceptionDetail
-			End If
-			Return originalResult
-		End Function
-
 		Private Function ExceptionIsTimeoutRelated(ByVal ex As Exception) As Boolean
 			If ex.GetType = GetType(Service.BulkImportManager.BulkImportSqlTimeoutException) Then
 				Return True
@@ -514,7 +481,6 @@ Namespace kCura.WinEDDS
 
 		Public Function ReadFile(ByVal path As String) As Object
 			_timekeeper.MarkStart("TOTAL")
-			_start = System.DateTime.Now
 			Dim bulkLoadFilePath As String = System.IO.Path.GetTempFileName
 			_fileIdentifierLookup = New System.Collections.Hashtable
 			_totalProcessed = 0
@@ -522,7 +488,6 @@ Namespace kCura.WinEDDS
 			_bulkLoadFileWriter = New System.IO.StreamWriter(bulkLoadFilePath, False, System.Text.Encoding.Unicode)
 			Try
 				_timekeeper.MarkStart("ReadFile_Init")
-				Dim documentIdentifier As String = String.Empty
 				_filePath = path
 				_imageReader = Me.GetImageReader
 				_imageReader.Initialize()
@@ -656,15 +621,6 @@ Namespace kCura.WinEDDS
 				Throw
 			End Try
 			'check to make sure image is good
-		End Function
-
-		Private Function IsNumber(ByVal value As String) As Boolean
-			Try
-				Dim x As Int32 = CType(value, Int32)
-			Catch ex As Exception
-				Return False
-			End Try
-			Return True
 		End Function
 
 		'Private Sub LogErrorInFile(ByVal lines As System.Collections.ArrayList)
