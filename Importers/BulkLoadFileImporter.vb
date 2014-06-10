@@ -19,7 +19,6 @@ Namespace kCura.WinEDDS
 		Protected _auditManager As kCura.WinEDDS.Service.AuditManager
 
 		Private _recordCount As Int64 = -1
-		Private _extractFullTextFromNative As Boolean
 		Private _allFields As kCura.EDDS.WebAPI.DocumentManagerBase.Field()
 		Private _fieldsForCreate As kCura.EDDS.WebAPI.DocumentManagerBase.Field()
 		Protected _continue As Boolean
@@ -35,7 +34,6 @@ Namespace kCura.WinEDDS
 		Private _destinationFolderColumnIndex As Int32 = -1
 		Private _folderCache As FolderCache
 		Private _defaultDestinationFolderPath As String = String.Empty
-		Private _defaultTextFolderPath As String = String.Empty
 		Private _copyFileToRepository As Boolean
 		Private _oixFileLookup As System.Collections.Specialized.HybridDictionary
 		Private _fieldArtifactIds As Int32()
@@ -319,12 +317,9 @@ Namespace kCura.WinEDDS
 					Next
 				End If
 			End If
-			_defaultTextFolderPath = args.CaseDefaultPath & "EDDS" & args.CaseInfo.ArtifactID & "\"
 			If initializeUploaders Then
 				CreateUploaders(args)
-				'_textUploader = New kCura.WinEDDS.FileUploader(args.Credentials, args.CaseInfo.ArtifactID, _defaultTextFolderPath, args.CookieContainer, False)
 			End If
-			_extractFullTextFromNative = args.ExtractFullTextFromNativeFile
 			_copyFileToRepository = args.CopyFilesToDocumentRepository
 			If Not kCura.WinEDDS.Config.CreateFoldersInWebAPI Then
 				'Client side folder creation (added back for Dominus# 1127879)
@@ -724,7 +719,7 @@ Namespace kCura.WinEDDS
 			_number += 1
 			Try
 				_timekeeper.MarkStart("ManageDocumentMetadata_ManageDocumentLine")
-				ManageDocumentLine(metaDoc, _extractFullTextFromNative)
+				ManageDocumentLine(metaDoc)
 				_timekeeper.MarkEnd("ManageDocumentMetadata_ManageDocumentLine")
 				_batchCounter += 1
 				_timekeeper.MarkStart("ManageDocumentMetadata_WserviceCall")
@@ -1041,15 +1036,11 @@ Namespace kCura.WinEDDS
 			Return DirectCast(retval.ToArray(GetType(kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo)), kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo())
 		End Function
 
-		Private Sub ManageDocumentLine(ByVal mdoc As MetaDocument, ByVal extractText As Boolean)
-			ManageDocumentLine(mdoc.IdentityValue, mdoc.FileGuid <> String.Empty AndAlso extractText, mdoc.Filename, mdoc.FileGuid, mdoc)
-		End Sub
-
-		Private Sub ManageDocumentLine(ByVal identityValue As String, ByVal extractText As Boolean, ByVal filename As String, ByVal fileguid As String, ByVal mdoc As MetaDocument)
+		Private Sub ManageDocumentLine(ByVal mdoc As MetaDocument)
 			Dim chosenEncoding As System.Text.Encoding = Nothing
 
 			_outputNativeFileWriter.Write("0" & _bulkLoadFileFieldDelimiter) 'kCura_Import_ID
-			_outputNativeFileWriter.Write(mdoc.LineStatus.ToString & _bulkLoadFileFieldDelimiter) 'kCura_Import_Status
+			_outputNativeFileWriter.Write(mdoc.LineStatus.ToString & _bulkLoadFileFieldDelimiter)	'kCura_Import_Status
 			_outputNativeFileWriter.Write("0" & _bulkLoadFileFieldDelimiter) 'kCura_Import_IsNew
 			_outputNativeFileWriter.Write("0" & _bulkLoadFileFieldDelimiter) 'ArtifactID
 			_outputNativeFileWriter.Write(mdoc.LineNumber & _bulkLoadFileFieldDelimiter) 'kCura_Import_OriginalLineNumber
@@ -1057,14 +1048,14 @@ Namespace kCura.WinEDDS
 
 			'data grid metadata values
 			_outputDataGridFileWriter.Write(mdoc.LineNumber & _bulkLoadFileFieldDelimiter) 'datagrid line number
-			_outputDataGridFileWriter.Write(mdoc.Record.IdentifierField.ValueAsString & _bulkLoadFileFieldDelimiter) 'datagrid identifier field
+			_outputDataGridFileWriter.Write(mdoc.IdentityValue & _bulkLoadFileFieldDelimiter)	'datagrid identity mapping
 
 
 			If mdoc.UploadFile And mdoc.IndexFileInDB Then
-				_outputNativeFileWriter.Write(fileguid & _bulkLoadFileFieldDelimiter) 'kCura_Import_FileGuid
-				_outputNativeFileWriter.Write(filename & _bulkLoadFileFieldDelimiter) 'kCura_Import_FileName
+				_outputNativeFileWriter.Write(mdoc.FileGuid & _bulkLoadFileFieldDelimiter)	'kCura_Import_FileGuid
+				_outputNativeFileWriter.Write(mdoc.Filename & _bulkLoadFileFieldDelimiter)	'kCura_Import_FileName
 				If _settings.CopyFilesToDocumentRepository Then
-					_outputNativeFileWriter.Write(_defaultDestinationFolderPath & mdoc.DestinationVolume & "\" & fileguid & _bulkLoadFileFieldDelimiter) 'kCura_Import_Location
+					_outputNativeFileWriter.Write(_defaultDestinationFolderPath & mdoc.DestinationVolume & "\" & mdoc.FileGuid & _bulkLoadFileFieldDelimiter)	'kCura_Import_Location
 					_outputNativeFileWriter.Write(mdoc.FullFilePath & _bulkLoadFileFieldDelimiter) 'kCura_Import_OriginalFileLocation
 				Else
 					_outputNativeFileWriter.Write(mdoc.FullFilePath & _bulkLoadFileFieldDelimiter) 'kCura_Import_Location
