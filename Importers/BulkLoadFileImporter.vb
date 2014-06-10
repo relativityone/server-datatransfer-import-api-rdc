@@ -1054,6 +1054,12 @@ Namespace kCura.WinEDDS
 			_outputNativeFileWriter.Write("0" & _bulkLoadFileFieldDelimiter) 'ArtifactID
 			_outputNativeFileWriter.Write(mdoc.LineNumber & _bulkLoadFileFieldDelimiter) 'kCura_Import_OriginalLineNumber
 
+
+			'data grid metadata values
+			_outputDataGridFileWriter.Write(mdoc.LineNumber & _bulkLoadFileFieldDelimiter) 'datagrid line number
+			_outputDataGridFileWriter.Write(mdoc.Record.IdentifierField.ValueAsString & _bulkLoadFileFieldDelimiter) 'datagrid identifier field
+
+
 			If mdoc.UploadFile And mdoc.IndexFileInDB Then
 				_outputNativeFileWriter.Write(fileguid & _bulkLoadFileFieldDelimiter) 'kCura_Import_FileGuid
 				_outputNativeFileWriter.Write(filename & _bulkLoadFileFieldDelimiter) 'kCura_Import_FileName
@@ -1131,6 +1137,7 @@ Namespace kCura.WinEDDS
 				End If
 			End If
 			_outputNativeFileWriter.Write(vbCrLf)
+			_outputDataGridFileWriter.Write(vbCrLf)
 		End Sub
 
 		Private Sub WriteDocumentField(ByRef chosenEncoding As System.Text.Encoding, field As Api.ArtifactField, ByVal outputWriter As System.IO.StreamWriter, ByVal fileBasedfullTextColumn As Boolean, ByVal delimiter As String, ByVal artifactTypeID As Int32, ByVal extractedTextEncoding As System.Text.Encoding)
