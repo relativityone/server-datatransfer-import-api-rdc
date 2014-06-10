@@ -19,7 +19,6 @@ Namespace kCura.WinEDDS
 		Protected _auditManager As kCura.WinEDDS.Service.AuditManager
 
 		Private _recordCount As Int64 = -1
-		Private _extractFullTextFromNative As Boolean
 		Private _allFields As kCura.EDDS.WebAPI.DocumentManagerBase.Field()
 		Private _fieldsForCreate As kCura.EDDS.WebAPI.DocumentManagerBase.Field()
 		Protected _continue As Boolean
@@ -27,7 +26,6 @@ Namespace kCura.WinEDDS
 		Protected WithEvents _processController As kCura.Windows.Process.Controller
 		Protected _offset As Int32 = 0
 		Protected _firstTimeThrough As Boolean
-		Private _number As Int64 = 0
 		Private _importBatchSize As Int32?
 		Private _importBatchVolume As Int32?
 		Private _minimumBatchSize As Int32?
@@ -35,7 +33,6 @@ Namespace kCura.WinEDDS
 		Private _destinationFolderColumnIndex As Int32 = -1
 		Private _folderCache As FolderCache
 		Private _defaultDestinationFolderPath As String = String.Empty
-		Private _defaultTextFolderPath As String = String.Empty
 		Private _copyFileToRepository As Boolean
 		Private _oixFileLookup As System.Collections.Specialized.HybridDictionary
 		Private _fieldArtifactIds As Int32()
@@ -66,7 +63,6 @@ Namespace kCura.WinEDDS
 		Private _timekeeper As New kCura.Utility.Timekeeper
 		Private _currentStatisticsSnapshot As IDictionary
 		Private _statisticsLastUpdated As System.DateTime = System.DateTime.Now
-		Private _start As System.DateTime
 		Private _unmappedRelationalFields As System.Collections.ArrayList
 
 		Private _bulkLoadFileFieldDelimiter As String
@@ -319,12 +315,9 @@ Namespace kCura.WinEDDS
 					Next
 				End If
 			End If
-			_defaultTextFolderPath = args.CaseDefaultPath & "EDDS" & args.CaseInfo.ArtifactID & "\"
 			If initializeUploaders Then
 				CreateUploaders(args)
-				'_textUploader = New kCura.WinEDDS.FileUploader(args.Credentials, args.CaseInfo.ArtifactID, _defaultTextFolderPath, args.CookieContainer, False)
 			End If
-			_extractFullTextFromNative = args.ExtractFullTextFromNativeFile
 			_copyFileToRepository = args.CopyFilesToDocumentRepository
 			If Not kCura.WinEDDS.Config.CreateFoldersInWebAPI Then
 				'Client side folder creation (added back for Dominus# 1127879)
@@ -382,16 +375,6 @@ Namespace kCura.WinEDDS
 			_outputObjectFileWriter.WriteLine(String.Format("{1}{0}{2}{0}{3}{0}{4}{0}{5}{0}", _bulkLoadFileFieldDelimiter, ownerIdentifier, objectName, artifactID, objectTypeArtifactID, fieldID))
 		End Sub
 
-		Private Function MergeResults(ByVal originalResult As MassImportResults, ByVal newResult As MassImportResults) As MassImportResults
-			originalResult.ArtifactsCreated += newResult.ArtifactsCreated
-			originalResult.ArtifactsUpdated += newResult.ArtifactsUpdated
-			originalResult.FilesProcessed += newResult.FilesProcessed
-			If newResult.ExceptionDetail IsNot Nothing Then
-				originalResult.ExceptionDetail = newResult.ExceptionDetail
-			End If
-			Return originalResult
-		End Function
-
 #End Region
 
 #Region "Main"
@@ -399,7 +382,6 @@ Namespace kCura.WinEDDS
 		Public Function ReadFile(ByVal path As String) As Object
 			Dim line As Api.ArtifactFieldCollection
 			_filePath = path
-			_start = System.DateTime.Now
 			_timekeeper.MarkStart("TOTAL")
 			Try
 				RaiseEvent StartFileImport()
@@ -537,9 +519,7 @@ Namespace kCura.WinEDDS
 			Dim fileGuid As String = String.Empty
 			Dim uploadFile As Boolean = record.FieldList(Relativity.FieldTypeHelper.FieldType.File).Length > 0 AndAlso Not record.FieldList(Relativity.FieldTypeHelper.FieldType.File)(0).Value Is Nothing
 			Dim fileExists As Boolean
-			Dim fieldCollection As New DocumentFieldCollection
 			Dim identityValue As String = String.Empty
-			Dim markUploadStart As DateTime = DateTime.Now
 			Dim parentFolderID As Int32
 			Dim fullFilePath As String = ""
 			Dim oixFileIdData As OI.FileID.FileIDData = Nothing
@@ -680,7 +660,6 @@ Namespace kCura.WinEDDS
 			Else
 				doc = New SizedMetaDocument(fileGuid, identityValue, fileExists AndAlso uploadFile AndAlso (fileGuid <> String.Empty OrElse Not _copyFileToRepository), filename, fullFilePath, uploadFile, CurrentLineNumber, parentFolderID, record, oixFileIdData, lineStatus, destinationVolume, fileSizeExtractor.GetFileSize(), folderPath)
 			End If
-			'_docsToProcess.Push(metadoc)
 			_timekeeper.MarkStart("ManageDocument_ManageDocumentMetadata")
 			ManageDocumentMetaData(doc)
 			_timekeeper.MarkEnd("ManageDocument_ManageDocumentMetadata")
@@ -721,10 +700,9 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Private Sub ManageDocumentMetaData(ByVal metaDoc As MetaDocument)
-			_number += 1
 			Try
 				_timekeeper.MarkStart("ManageDocumentMetadata_ManageDocumentLine")
-				ManageDocumentLine(metaDoc, _extractFullTextFromNative)
+				ManageDocumentLine(metaDoc)
 				_timekeeper.MarkEnd("ManageDocumentMetadata_ManageDocumentLine")
 				_batchCounter += 1
 				_timekeeper.MarkStart("ManageDocumentMetadata_WserviceCall")
@@ -978,7 +956,6 @@ Namespace kCura.WinEDDS
 			Dim runResults As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults = Me.BulkImport(settings, _fullTextColumnMapsToFileLocation)
 
 			_statistics.ProcessRunResults(runResults)
-			'_runID = runResults.RunID
 			_statistics.SqlTime += (System.DateTime.Now.Ticks - start)
 
 			_currentStatisticsSnapshot = _statistics.ToDictionary
@@ -1041,11 +1018,7 @@ Namespace kCura.WinEDDS
 			Return DirectCast(retval.ToArray(GetType(kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo)), kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo())
 		End Function
 
-		Private Sub ManageDocumentLine(ByVal mdoc As MetaDocument, ByVal extractText As Boolean)
-			ManageDocumentLine(mdoc.IdentityValue, mdoc.FileGuid <> String.Empty AndAlso extractText, mdoc.Filename, mdoc.FileGuid, mdoc)
-		End Sub
-
-		Private Sub ManageDocumentLine(ByVal identityValue As String, ByVal extractText As Boolean, ByVal filename As String, ByVal fileguid As String, ByVal mdoc As MetaDocument)
+		Private Sub ManageDocumentLine(ByVal mdoc As MetaDocument)
 			Dim chosenEncoding As System.Text.Encoding = Nothing
 
 			_outputNativeFileWriter.Write("0" & _bulkLoadFileFieldDelimiter) 'kCura_Import_ID
@@ -1057,14 +1030,14 @@ Namespace kCura.WinEDDS
 
 			'data grid metadata values
 			_outputDataGridFileWriter.Write(mdoc.LineNumber & _bulkLoadFileFieldDelimiter) 'datagrid line number
-			_outputDataGridFileWriter.Write(mdoc.Record.IdentifierField.ValueAsString & _bulkLoadFileFieldDelimiter) 'datagrid identifier field
+			_outputDataGridFileWriter.Write(mdoc.IdentityValue & _bulkLoadFileFieldDelimiter)	'datagrid identity mapping
 
 
 			If mdoc.UploadFile And mdoc.IndexFileInDB Then
-				_outputNativeFileWriter.Write(fileguid & _bulkLoadFileFieldDelimiter)	'kCura_Import_FileGuid
-				_outputNativeFileWriter.Write(filename & _bulkLoadFileFieldDelimiter)	'kCura_Import_FileName
+				_outputNativeFileWriter.Write(mdoc.FileGuid & _bulkLoadFileFieldDelimiter)	'kCura_Import_FileGuid
+				_outputNativeFileWriter.Write(mdoc.Filename & _bulkLoadFileFieldDelimiter)	'kCura_Import_FileName
 				If _settings.CopyFilesToDocumentRepository Then
-					_outputNativeFileWriter.Write(_defaultDestinationFolderPath & mdoc.DestinationVolume & "\" & fileguid & _bulkLoadFileFieldDelimiter) 'kCura_Import_Location
+					_outputNativeFileWriter.Write(_defaultDestinationFolderPath & mdoc.DestinationVolume & "\" & mdoc.FileGuid & _bulkLoadFileFieldDelimiter)	'kCura_Import_Location
 					_outputNativeFileWriter.Write(mdoc.FullFilePath & _bulkLoadFileFieldDelimiter) 'kCura_Import_OriginalFileLocation
 				Else
 					_outputNativeFileWriter.Write(mdoc.FullFilePath & _bulkLoadFileFieldDelimiter) 'kCura_Import_Location
@@ -1557,7 +1530,6 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Private Sub _processController_ExportErrorFileEvent(ByVal exportLocation As String) Handles _processController.ExportErrorFileEvent
-			'_errorLinesFileLocation()
 			If _errorMessageFileLocation Is Nothing OrElse _errorMessageFileLocation = "" Then Exit Sub
 			If _errorLinesFileLocation Is Nothing OrElse _errorLinesFileLocation = "" OrElse Not System.IO.File.Exists(_errorLinesFileLocation) Then
 				_errorLinesFileLocation = _artifactReader.ManageErrorRecords(_errorMessageFileLocation, _prePushErrorLineNumbersFileName)
@@ -1628,10 +1600,6 @@ Namespace kCura.WinEDDS
 				MyBase.New(String.Format("File upload failed.  Either the access to the path is denied or there is no disk space available."))
 			End Sub
 		End Class
-
-#End Region
-
-#Region "Preprocessing"
 
 #End Region
 

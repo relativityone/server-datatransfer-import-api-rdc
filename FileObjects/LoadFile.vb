@@ -8,7 +8,6 @@ Namespace kCura.WinEDDS
 		Public FilePath As String
 		Public FirstLineContainsHeaders As Boolean
 		Public LoadNativeFiles As Boolean
-		Public ExtractFullTextFromNativeFile As Boolean
 		Public RecordDelimiter As Char
 		Public QuoteDelimiter As Char
 		Public NewlineDelimiter As Char
@@ -81,7 +80,6 @@ Namespace kCura.WinEDDS
 			info.AddValue("FilePath", Me.FilePath, GetType(String))
 			info.AddValue("FirstLineContainsHeaders", Me.FirstLineContainsHeaders, GetType(Boolean))
 			info.AddValue("LoadNativeFiles", Me.LoadNativeFiles, GetType(Boolean))
-			info.AddValue("ExtractFullTextFromNativeFile", Me.ExtractFullTextFromNativeFile, GetType(Boolean))
 
 			If Me.OverlayBehavior Is Nothing OrElse Not Me.OverlayBehavior.HasValue Then
 				info.AddValue("OverlayBehavior", Nothing, GetType(Integer))
@@ -134,7 +132,6 @@ Namespace kCura.WinEDDS
 				Me.NativeFilePathColumn = info.GetString("NativeFilePathColumn")
 				Me.FirstLineContainsHeaders = info.GetBoolean("FirstLineContainsHeaders")
 				Me.LoadNativeFiles = info.GetBoolean("LoadNativeFiles")
-				Me.ExtractFullTextFromNativeFile = info.GetBoolean("ExtractFullTextFromNativeFile")
 				Me.OverwriteDestination = info.GetString("OverwriteDestination")
 
 				Me.RecordDelimiter = ChrW(info.GetInt32("RecordDelimiter"))
