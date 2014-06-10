@@ -1049,7 +1049,7 @@ Namespace kCura.WinEDDS
 			Dim chosenEncoding As System.Text.Encoding = Nothing
 
 			_outputNativeFileWriter.Write("0" & _bulkLoadFileFieldDelimiter) 'kCura_Import_ID
-			_outputNativeFileWriter.Write(mdoc.LineStatus.ToString & _bulkLoadFileFieldDelimiter) 'kCura_Import_Status
+			_outputNativeFileWriter.Write(mdoc.LineStatus.ToString & _bulkLoadFileFieldDelimiter)	'kCura_Import_Status
 			_outputNativeFileWriter.Write("0" & _bulkLoadFileFieldDelimiter) 'kCura_Import_IsNew
 			_outputNativeFileWriter.Write("0" & _bulkLoadFileFieldDelimiter) 'ArtifactID
 			_outputNativeFileWriter.Write(mdoc.LineNumber & _bulkLoadFileFieldDelimiter) 'kCura_Import_OriginalLineNumber
@@ -1061,8 +1061,8 @@ Namespace kCura.WinEDDS
 
 
 			If mdoc.UploadFile And mdoc.IndexFileInDB Then
-				_outputNativeFileWriter.Write(fileguid & _bulkLoadFileFieldDelimiter) 'kCura_Import_FileGuid
-				_outputNativeFileWriter.Write(filename & _bulkLoadFileFieldDelimiter) 'kCura_Import_FileName
+				_outputNativeFileWriter.Write(fileguid & _bulkLoadFileFieldDelimiter)	'kCura_Import_FileGuid
+				_outputNativeFileWriter.Write(filename & _bulkLoadFileFieldDelimiter)	'kCura_Import_FileName
 				If _settings.CopyFilesToDocumentRepository Then
 					_outputNativeFileWriter.Write(_defaultDestinationFolderPath & mdoc.DestinationVolume & "\" & fileguid & _bulkLoadFileFieldDelimiter) 'kCura_Import_Location
 					_outputNativeFileWriter.Write(mdoc.FullFilePath & _bulkLoadFileFieldDelimiter) 'kCura_Import_OriginalFileLocation
