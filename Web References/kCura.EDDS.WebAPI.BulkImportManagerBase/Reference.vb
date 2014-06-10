@@ -713,6 +713,8 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
         
         Private codeTypeIDField As Integer
         
+        Private storageLocationField As StorageLocationChoice
+        
         '''<remarks/>
         Public Property ArtifactID() As Integer
             Get
@@ -770,6 +772,16 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
             End Get
             Set
                 Me.codeTypeIDField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property StorageLocation() As StorageLocationChoice
+            Get
+                Return Me.storageLocationField
+            End Get
+            Set
+                Me.storageLocationField = value
             End Set
         End Property
     End Class
@@ -887,6 +899,19 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
     '''<remarks/>
     <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.18060"),  _
      System.SerializableAttribute(),  _
+     System.Xml.Serialization.XmlTypeAttribute([Namespace]:="http://www.kCura.com/EDDS/BulkImportManager")>  _
+    Public Enum StorageLocationChoice
+        
+        '''<remarks/>
+        SQL
+        
+        '''<remarks/>
+        DataGrid
+    End Enum
+    
+    '''<remarks/>
+    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.18060"),  _
+     System.SerializableAttribute(),  _
      System.Diagnostics.DebuggerStepThroughAttribute(),  _
      System.ComponentModel.DesignerCategoryAttribute("code"),  _
      System.Xml.Serialization.XmlTypeAttribute([Namespace]:="http://www.kCura.com/EDDS/BulkImportManager")>  _
@@ -898,8 +923,6 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
         Private isUnicodeEnabledField As Boolean
         
         Private importBehaviorField As System.Nullable(Of ImportBehaviorChoice)
-        
-        Private storageLocationField As StorageLocationChoice
         
         '''<remarks/>
         Public Property FormatString() As String
@@ -931,16 +954,6 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
                 Me.importBehaviorField = value
             End Set
         End Property
-        
-        '''<remarks/>
-        Public Property StorageLocation() As StorageLocationChoice
-            Get
-                Return Me.storageLocationField
-            End Get
-            Set
-                Me.storageLocationField = value
-            End Set
-        End Property
     End Class
     
     '''<remarks/>
@@ -957,19 +970,6 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
         
         '''<remarks/>
         ObjectFieldContainsArtifactId
-    End Enum
-    
-    '''<remarks/>
-    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.18060"),  _
-     System.SerializableAttribute(),  _
-     System.Xml.Serialization.XmlTypeAttribute([Namespace]:="http://www.kCura.com/EDDS/BulkImportManager")>  _
-    Public Enum StorageLocationChoice
-        
-        '''<remarks/>
-        SQL
-        
-        '''<remarks/>
-        DataGrid
     End Enum
     
     '''<remarks/>
@@ -1033,6 +1033,8 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
         Private codeFileNameField As String
         
         Private objectFileNameField As String
+        
+        Private dataGridFileNameField As String
         
         Private disableUserSecurityCheckField As Boolean
         
@@ -1147,6 +1149,16 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
             End Get
             Set
                 Me.objectFileNameField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property DataGridFileName() As String
+            Get
+                Return Me.dataGridFileNameField
+            End Get
+            Set
+                Me.dataGridFileNameField = value
             End Set
         End Property
         

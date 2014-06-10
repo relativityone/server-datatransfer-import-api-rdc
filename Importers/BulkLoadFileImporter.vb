@@ -956,6 +956,7 @@ Namespace kCura.WinEDDS
 			settings.CodeFileName = codeFileUploadKey
 			settings.DataFileName = nativeFileUploadKey
 			settings.ObjectFileName = objectFileUploadKey
+			settings.DataGridFileName = dataGridFileUploadKey
 			settings.MappedFields = Me.GetMappedFields(_artifactTypeID, _settings.ObjectFieldIdListContainsArtifactId)
 			settings.KeyFieldArtifactID = _keyFieldID
 			settings.BulkLoadFileFieldDelimiter = _bulkLoadFileFieldDelimiter
@@ -1082,10 +1083,10 @@ Namespace kCura.WinEDDS
 				Select Case field.StorageLocation
 
 					Case Relativity.FieldInfo.StorageLocationChoice.SQL
-						Dim fieldEncoding As System.Text.Encoding = WriteDocumentField(field, _outputNativeFileWriter, _fullTextColumnMapsToFileLocation, _bulkLoadFileFieldDelimiter, _artifactTypeID, _extractedTextFileEncoding)
-						If fieldEncoding IsNot Nothing Then chosenEncoding = fieldEncoding
+						WriteDocumentField(chosenEncoding, field, _outputNativeFileWriter, _fullTextColumnMapsToFileLocation, _bulkLoadFileFieldDelimiter, _artifactTypeID, _extractedTextFileEncoding)
 
 					Case Relativity.FieldInfo.StorageLocationChoice.DataGrid
+
 						'write to datagrid file
 				End Select
 			Next
@@ -1130,8 +1131,7 @@ Namespace kCura.WinEDDS
 			_outputNativeFileWriter.Write(vbCrLf)
 		End Sub
 
-		Private Function WriteDocumentField(field As Api.ArtifactField, ByVal outputWriter As System.IO.StreamWriter, ByVal fileBasedfullTextColumn As Boolean, ByVal delimiter As String, ByVal artifactTypeID As Int32, ByVal extractedTextEncoding As System.Text.Encoding) As System.Text.Encoding
-			Dim chosenEncoding As System.Text.Encoding = Nothing
+		Private Sub WriteDocumentField(ByRef chosenEncoding As System.Text.Encoding, field As Api.ArtifactField, ByVal outputWriter As System.IO.StreamWriter, ByVal fileBasedfullTextColumn As Boolean, ByVal delimiter As String, ByVal artifactTypeID As Int32, ByVal extractedTextEncoding As System.Text.Encoding)
 			If field.Type = Relativity.FieldTypeHelper.FieldType.MultiCode OrElse field.Type = Relativity.FieldTypeHelper.FieldType.Code Then
 				outputWriter.Write(field.Value)
 				outputWriter.Write(delimiter)
@@ -1170,7 +1170,7 @@ Namespace kCura.WinEDDS
 							Dim determinedEncodingStream As DeterminedEncodingStream = kCura.WinEDDS.Utility.DetectEncoding(field.ValueAsString, False)
 							fileStream = determinedEncodingStream.UnderlyingStream
 
-							Dim detectedEncoding As System.Text.Encoding = determinedEncodingStream.DeterminedEncoding
+							Dim detectedEncoding As System.Text.Encoding = DeterminedEncodingStream.DeterminedEncoding
 							If detectedEncoding IsNot Nothing Then
 								chosenEncoding = detectedEncoding
 							End If
@@ -1178,7 +1178,7 @@ Namespace kCura.WinEDDS
 							fileStream = New FileStream(field.ValueAsString, FileMode.Open, FileAccess.Read)
 						End If
 
-						Dim sr As New System.IO.StreamReader(fileStream, chosenEncoding)
+						Dim sr As New System.IO.StreamReader(FileStream, chosenEncoding)
 						Dim count As Int32 = 1
 						Dim buff(_COPY_TEXT_FILE_BUFFER_SIZE) As Char
 						Do
@@ -1214,8 +1214,7 @@ Namespace kCura.WinEDDS
 				End If
 				outputWriter.Write(delimiter)
 			End If
-			Return chosenEncoding
-		End Function
+		End Sub
 
 		Private Function GetIsSupportedRelativityFileTypeField() As kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo
 			For Each field As kCura.EDDS.WebAPI.DocumentManagerBase.Field In _allFields
