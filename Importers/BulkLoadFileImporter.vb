@@ -800,7 +800,7 @@ Namespace kCura.WinEDDS
 			'Do Nothing
 		End Sub
 
-		Private Function TryPushNativeBatch(Optional ByVal lastRun As Boolean = False) As Object
+		Private Sub TryPushNativeBatch(Optional ByVal lastRun As Boolean = False)
 			CloseFileWriters()
 			Dim outputNativePath As String = _outputNativeFilePath
 			Try
@@ -818,14 +818,11 @@ Namespace kCura.WinEDDS
 			End Try
 			DeleteFiles()
 			If Not lastRun Then OpenFileWriters()
-			Return Nothing
-		End Function
+		End Sub
 
-		Private Sub LowerBatchSizeAndRetry(ByVal outputNativePath As String, ByVal totalRecords As Int32)
-
-			Dim nativeTempLocation As String = System.IO.Path.GetTempFileName
-			Dim objectTempLocation As String = System.IO.Path.GetTempFileName
-			Dim codeTempLocation As String = System.IO.Path.GetTempFileName
+		Private Sub LowerBatchSizeAndRetry(ByVal oldNativeFilePath As String, ByVal totalRecords As Int32)
+			'NOTE: we are not cutting a new/smaller data grid bulk file because it will be chunked as it is loaded into the data grid
+			Dim newNativeFilePath As String = System.IO.Path.GetTempFileName
 			Dim limit As String = _bulkLoadFileFieldDelimiter & vbCrLf
 			Dim last As New System.Collections.Generic.Queue(Of Char)
 			Dim recordsProcessed As Int32 = 0
@@ -835,7 +832,7 @@ Namespace kCura.WinEDDS
 			While totalRecords > recordsProcessed AndAlso Not hasReachedEof AndAlso _continue
 				Dim i As Int32 = 0
 				Dim charactersProcessed As Int64 = 0
-				Using sr As New System.IO.StreamReader(outputNativePath, System.Text.Encoding.Unicode), sw As New System.IO.StreamWriter(nativeTempLocation, False, System.Text.Encoding.Unicode)
+				Using sr As New System.IO.StreamReader(oldNativeFilePath, System.Text.Encoding.Unicode), sw As New System.IO.StreamWriter(newNativeFilePath, False, System.Text.Encoding.Unicode)
 					Me.AdvanceStream(sr, charactersSuccessfullyProcessed)
 					While (i < Me.ImportBatchSize AndAlso Not hasReachedEof)
 						Dim c As Char = ChrW(sr.Read)
@@ -854,7 +851,7 @@ Namespace kCura.WinEDDS
 				Try
 					_batchCounter = i
 					Me.WriteWarning("Processing sub-batch of size " & Me.ImportBatchSize & ".  " & recordsProcessed & " of " & totalRecords & " in the original batch processed")
-					Me.PushNativeBatch(nativeTempLocation)
+					Me.PushNativeBatch(newNativeFilePath)
 					recordsProcessed += i
 					charactersSuccessfullyProcessed += charactersProcessed
 				Catch ex As Exception
@@ -865,16 +862,12 @@ Namespace kCura.WinEDDS
 						tries += 1
 						hasReachedEof = False
 					Else
-						kCura.Utility.File.Instance.Delete(nativeTempLocation)
-						kCura.Utility.File.Instance.Delete(objectTempLocation)
-						kCura.Utility.File.Instance.Delete(codeTempLocation)
+						kCura.Utility.File.Instance.Delete(newNativeFilePath)
 						Throw
 					End If
 				End Try
 			End While
-			kCura.Utility.File.Instance.Delete(nativeTempLocation)
-			kCura.Utility.File.Instance.Delete(objectTempLocation)
-			kCura.Utility.File.Instance.Delete(codeTempLocation)
+			kCura.Utility.File.Instance.Delete(newNativeFilePath)
 		End Sub
 
 		Private Sub AdvanceStream(ByVal sr As System.IO.StreamReader, ByVal count As Int64)
@@ -886,27 +879,29 @@ Namespace kCura.WinEDDS
 			End If
 		End Sub
 
-		Private Function PushNativeBatch(ByVal outputNativePath As String) As Object
+		Private Sub PushNativeBatch(ByVal outputNativePath As String)
 			Dim start As Int64 = System.DateTime.Now.Ticks
-			If _batchCounter = 0 Then Return Nothing
+			If _batchCounter = 0 Then Exit Sub
 			_batchCounter = 0
 			Dim settings As kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo = Me.GetSettingsObject
 			settings.UseBulkDataImport = True
 			_bcpuploader.DoRetry = True
+
 			Dim uploadBcp As FileUploadReturnArgs = _bcpuploader.UploadBcpFile(_caseInfo.ArtifactID, outputNativePath)
-			If uploadBcp Is Nothing Then Return Nothing
-			Dim nativeFileUploadKey As String = uploadBcp.Value
+			If uploadBcp Is Nothing Then Exit Sub
 
 			Dim codebcp As FileUploadReturnArgs = _bcpuploader.UploadBcpFile(_caseInfo.ArtifactID, _outputCodeFilePath)
-			If codebcp Is Nothing Then Return Nothing
-			Dim codeFileUploadKey As String = codebcp.Value
+			If codebcp Is Nothing Then Exit Sub
 
 			Dim objectbcp As FileUploadReturnArgs = _bcpuploader.UploadBcpFile(_caseInfo.ArtifactID, _outputObjectFilePath)
-			If objectbcp Is Nothing Then Return Nothing
-			Dim objectFileUploadKey As String = objectbcp.Value
+			If objectbcp Is Nothing Then Exit Sub
 
 			Dim datagridbcp As FileUploadReturnArgs = _bcpuploader.UploadBcpFile(_caseInfo.ArtifactID, _outputDataGridFilePath)
-			If datagridbcp Is Nothing Then Return Nothing
+			If datagridbcp Is Nothing Then Exit Sub
+
+			Dim nativeFileUploadKey As String = uploadBcp.Value
+			Dim codeFileUploadKey As String = codebcp.Value
+			Dim objectFileUploadKey As String = objectbcp.Value
 			Dim dataGridFileUploadKey As String = datagridbcp.Value
 
 			If _artifactTypeID = Relativity.ArtifactType.Document Then
@@ -961,8 +956,7 @@ Namespace kCura.WinEDDS
 			_currentStatisticsSnapshot = _statistics.ToDictionary
 			_statisticsLastUpdated = System.DateTime.Now
 			Me.ManageErrors(_artifactTypeID)
-			Return Nothing
-		End Function
+		End Sub
 
 		Protected Function GetMassImportOverlayBehavior(ByVal inputOverlayType As LoadFile.FieldOverlayBehavior?) As kCura.EDDS.WebAPI.BulkImportManagerBase.OverlayBehavior
 			Select Case inputOverlayType
@@ -1152,7 +1146,7 @@ Namespace kCura.WinEDDS
 							Dim determinedEncodingStream As DeterminedEncodingStream = kCura.WinEDDS.Utility.DetectEncoding(field.ValueAsString, False)
 							fileStream = determinedEncodingStream.UnderlyingStream
 
-							Dim detectedEncoding As System.Text.Encoding = DeterminedEncodingStream.DeterminedEncoding
+							Dim detectedEncoding As System.Text.Encoding = determinedEncodingStream.DeterminedEncoding
 							If detectedEncoding IsNot Nothing Then
 								chosenEncoding = detectedEncoding
 							End If
@@ -1160,7 +1154,7 @@ Namespace kCura.WinEDDS
 							fileStream = New FileStream(field.ValueAsString, FileMode.Open, FileAccess.Read)
 						End If
 
-						Dim sr As New System.IO.StreamReader(FileStream, chosenEncoding)
+						Dim sr As New System.IO.StreamReader(fileStream, chosenEncoding)
 						Dim count As Int32 = 1
 						Dim buff(_COPY_TEXT_FILE_BUFFER_SIZE) As Char
 						Do
