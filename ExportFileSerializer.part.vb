@@ -307,6 +307,7 @@ Namespace kCura.WinEDDS.NUnit
 						<_relationalTableName href="#ref-17"/>
 						<_relationalTableColumnName href="#ref-17"/>
 						<_relationalTableColumnName2 href="#ref-17"/>
+						<_storageLocation>0</_storageLocation>
 						<ViewFieldInfo_x002B__fieldArtifactId>6</ViewFieldInfo_x002B__fieldArtifactId>
 						<ViewFieldInfo_x002B__avfId>1000187</ViewFieldInfo_x002B__avfId>
 						<ViewFieldInfo_x002B__category>FullText</ViewFieldInfo_x002B__category>
@@ -337,6 +338,7 @@ Namespace kCura.WinEDDS.NUnit
 						<ViewFieldInfo_x002B__relationalTableName href="#ref-17"/>
 						<ViewFieldInfo_x002B__relationalTableColumnName href="#ref-17"/>
 						<ViewFieldInfo_x002B__relationalTableColumnName2 href="#ref-17"/>
+						<ViewFieldInfo_x002B__storageLocation>0</ViewFieldInfo_x002B__storageLocation>
 					</a1:ViewFieldInfo>
 					<SOAP-ENC:Array id="ref-9" SOAP-ENC:arrayType="a1:Pair[2]" xmlns:a1="http://schemas.microsoft.com/clr/nsassem/kCura.WinEDDS/kCura.WinEDDS%2C%20Version%3D7.2.0.0%2C%20Culture%3Dneutral%2C%20PublicKeyToken%3Dnull">
 						<item href="#ref-19"/>
@@ -447,6 +449,7 @@ Namespace kCura.WinEDDS.NUnit
 					 <_relationalTableName href="#ref-22"/>
 					 <_relationalTableColumnName href="#ref-22"/>
 					 <_relationalTableColumnName2 href="#ref-22"/>
+					 <_storageLocation>0</_storageLocation>
 					 <ViewFieldInfo_x002B__fieldArtifactId>6</ViewFieldInfo_x002B__fieldArtifactId>
 					 <ViewFieldInfo_x002B__avfId>1000187</ViewFieldInfo_x002B__avfId>
 					 <ViewFieldInfo_x002B__category>FullText</ViewFieldInfo_x002B__category>
@@ -477,6 +480,7 @@ Namespace kCura.WinEDDS.NUnit
 					 <ViewFieldInfo_x002B__relationalTableName href="#ref-22"/>
 					 <ViewFieldInfo_x002B__relationalTableColumnName href="#ref-22"/>
 					 <ViewFieldInfo_x002B__relationalTableColumnName2 href="#ref-22"/>
+					 <ViewFieldInfo_x002B__storageLocation>0</ViewFieldInfo_x002B__storageLocation>
 				 </a1:ViewFieldInfo>
 				 <a1:Pair id="ref-17" xmlns:a1="http://schemas.microsoft.com/clr/nsassem/kCura.WinEDDS/kCura.WinEDDS%2C%20Version%3D7.4.0.0%2C%20Culture%3Dneutral%2C%20PublicKeyToken%3Dnull">
 					 <Value id="ref-24">1</Value>
