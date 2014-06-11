@@ -35,7 +35,7 @@ Public Class MockForLoweBatchSizeBulkImageFileImporter
 		End Sub
 
 		Public Sub MockLowerBatchSizeAndRetry(ByVal numberOfRecords As Int32)
-			MyBase.LowerBatchSizeAndRetry("", numberOfRecords)
+			MyBase.LowerBatchSizeAndRetry("", "", numberOfRecords)
 		End Sub
 
 		Protected Overrides Function CreateStreamWriter(ByVal tmpLocation As String) As System.IO.TextWriter
@@ -55,7 +55,7 @@ Public Class MockForLoweBatchSizeBulkImageFileImporter
 			End Set
 		End Property
 
-		Protected Overrides Function DoLogicAndPushImageBatch(ByVal totalRecords As Integer, ByVal recordsProcessed As Integer, ByVal tmpLocation As String, ByRef charactersSuccessfullyProcessed As Long, ByVal i As Integer, ByVal charactersProcessed As Long) As Integer
+		Protected Overrides Function DoLogicAndPushImageBatch(ByVal totalRecords As Integer, ByVal recordsProcessed As Integer, ByVal bulkLocation As String, ByVal dataGridLocation As String, ByRef charactersSuccessfullyProcessed As Long, ByVal i As Integer, ByVal charactersProcessed As Long) As Integer
 			Return 100
 		End Function
 
