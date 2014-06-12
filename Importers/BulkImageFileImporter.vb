@@ -762,7 +762,7 @@ Namespace kCura.WinEDDS
 
 				_bulkLoadFileWriter.Write(Relativity.Constants.ENDLINETERMSTRING)
 				If _replaceFullText AndAlso Not _fullTextStorageIsInSql Then
-					_dataGridFileWriter.WriteLine(Relativity.Constants.ENDLINETERMSTRING)
+					_dataGridFileWriter.Write(Relativity.Constants.ENDLINETERMSTRING)
 				End If
 			Catch ex As Exception
 				Throw
