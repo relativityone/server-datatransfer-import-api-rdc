@@ -336,6 +336,8 @@ Namespace kCura.WinEDDS
 					Throw
 				End If
 			End Try
+			
+			DeleteFiles(bulkLoadFilePath, dataGridFilePath)
 			If Not isFinal Then
 				Try
 					_bulkLoadFileWriter = New System.IO.StreamWriter(bulkLoadFilePath, False, System.Text.Encoding.Unicode)
@@ -410,6 +412,11 @@ Namespace kCura.WinEDDS
 			Return recordsProcessed
 		End Function
 
+		Private Sub DeleteFiles(ByVal bulkFilePath As String, ByVal datagridFilePath As String)
+			kCura.Utility.File.Instance.Delete(bulkFilePath)
+			kCura.Utility.File.Instance.Delete(datagridFilePath)
+		End Sub
+
 		Protected Overridable Function CreateStreamWriter(ByVal tmpLocation As String) As System.IO.TextWriter
 			Return New System.IO.StreamWriter(tmpLocation, False, System.Text.Encoding.Unicode)
 		End Function
@@ -435,8 +442,8 @@ Namespace kCura.WinEDDS
 
 			Dim validateBcp As FileUploadReturnArgs = _bcpuploader.UploadBcpFile(_caseInfo.ArtifactID, bulkLoadFilePath)
 			If validateBcp Is Nothing Then Exit Sub
-
-			Dim validateDataGridBcp As FileUploadReturnArgs = _bcpuploader.UploadBcpFile(_caseInfo.ArtifactID, dataGridFilePath)
+			
+			Dim validateDataGridBcp As FileUploadReturnArgs =  _bcpuploader.UploadBcpFile(_caseInfo.ArtifactID, dataGridFilePath)
 			If validateDataGridBcp Is Nothing Then Exit Sub
 
 			_statistics.MetadataTime += System.Math.Max((System.DateTime.Now.Ticks - start), 1)
@@ -510,6 +517,8 @@ Namespace kCura.WinEDDS
 			_fileIdentifierLookup = New System.Collections.Hashtable
 			_totalProcessed = 0
 			_totalValidated = 0
+
+			DeleteFiles(bulkLoadFilePath, dataGridFilePath)
 			_bulkLoadFileWriter = New System.IO.StreamWriter(bulkLoadFilePath, False, System.Text.Encoding.Unicode)
 			_dataGridFileWriter = New System.IO.StreamWriter(dataGridFilePath, False, System.Text.Encoding.Unicode)
 			Try
@@ -606,7 +615,7 @@ Namespace kCura.WinEDDS
 			RaiseFatalError(ex)
 		End Sub
 
-		Public Sub ProcessDocument(ByVal al As System.Collections.Generic.List(Of Api.ImageRecord), ByVal status As Int32)
+		Private Sub ProcessDocument(ByVal al As System.Collections.Generic.List(Of Api.ImageRecord), ByVal status As Int32)
 			Try
 				GetImagesForDocument(al, status)
 				_statistics.DocCount += 1
