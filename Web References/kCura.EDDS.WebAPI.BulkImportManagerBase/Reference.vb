@@ -541,6 +541,8 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
         
         Private bulkFileNameField As String
         
+        Private dataGridFileNameField As String
+        
         Private keyFieldArtifactIDField As Integer
         
         Private destinationFolderArtifactIDField As Integer
@@ -616,6 +618,16 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
             End Get
             Set
                 Me.bulkFileNameField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property DataGridFileName() As String
+            Get
+                Return Me.dataGridFileNameField
+            End Get
+            Set
+                Me.dataGridFileNameField = value
             End Set
         End Property
         

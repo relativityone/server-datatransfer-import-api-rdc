@@ -10,7 +10,6 @@ Namespace kCura.WinEDDS
 		Inherits kCura.Utility.RobustIoReporter
 
 #Region "Members"
-		Dim _start As System.DateTime
 		Private _imageReader As kCura.WinEDDS.Api.IImageReader
 		Protected _fieldQuery As kCura.WinEDDS.Service.FieldQuery
 		Private WithEvents _fileUploader As kCura.WinEDDS.FileUploader
@@ -21,14 +20,9 @@ Namespace kCura.WinEDDS
 		Private _productionArtifactID As Int32
 		Private _overwrite As String
 		Private _filePath As String
-		Private _selectedIdentifierField As String
 		Private _fileLineCount As Int64
 		Private _continue As Boolean
-		Private _overwriteOK As Boolean
 		Private _replaceFullText As Boolean
-		Private _order As Int32
-		Private _csvwriter As System.Text.StringBuilder
-		Private _nextLine As String()
 		Private _importBatchSize As Int32?
 		Private _importBatchVolume As Int32?
 		Private _minimumBatchSize As Int32?
@@ -36,15 +30,16 @@ Namespace kCura.WinEDDS
 		Private _autoNumberImages As Boolean
 		Private _copyFilesToRepository As Boolean
 		Private _repositoryPath As String
-		Private _textRepositoryPath As String
 		Private _caseInfo As Relativity.CaseInfo
 		Private _overlayArtifactID As Int32
 
 		Private WithEvents _processController As kCura.Windows.Process.Controller
 		Protected _keyFieldDto As kCura.EDDS.WebAPI.FieldManagerBase.Field
+		Protected _fullTextStorageIsInSql As Boolean = True
 		Private _bulkLoadFileWriter As System.IO.StreamWriter
-		Private _sourceTextEncoding As System.Text.Encoding = System.Text.Encoding.Default
+		Private _dataGridFileWriter As System.IO.StreamWriter
 		Private _uploadKey As String = ""
+		Private _uploadDataGridKey As String = ""
 		Private _runId As String = ""
 		Private _settings As ImageLoadFile
 		Private _batchCount As Int32 = 0
@@ -58,7 +53,6 @@ Namespace kCura.WinEDDS
 		Private _totalValidated As Long
 		Private _totalProcessed As Long
 		Private _startLineNumber As Int64
-		Private _doRetry As Boolean = True
 
 		Private _statistics As New kCura.WinEDDS.Statistics
 		Private _currentStatisticsSnapshot As IDictionary
@@ -190,14 +184,13 @@ Namespace kCura.WinEDDS
 				_repositoryPath = args.SelectedCasePath.TrimEnd("\"c) & suffix
 			End If
 			Dim lastHalfPath As String = "EDDS" & args.CaseInfo.ArtifactID & "\"
-			_textRepositoryPath = Path.Combine(args.CaseDefaultPath, lastHalfPath)
+			'_textRepositoryPath = Path.Combine(args.CaseDefaultPath, lastHalfPath)
 			InitializeUploaders(args)
 			_folderID = folderID
 			_productionArtifactID = args.ProductionArtifactID
 			InitializeDTOs(args)
 			_overwrite = args.Overwrite
 			_replaceFullText = args.ReplaceFullText
-			_selectedIdentifierField = args.ControlKeyField
 			_processController = controller
 			_copyFilesToRepository = args.CopyFilesToDocumentRepository
 			_continue = True
@@ -209,6 +202,10 @@ Namespace kCura.WinEDDS
 			_overlayArtifactID = args.IdentityFieldId
 
 			_batchSizeHistoryList = New System.Collections.Generic.List(Of Int32)
+
+			If args.ReplaceFullText Then
+				_fullTextStorageIsInSql = (_fieldQuery.RetrieveAllAsDocumentFieldCollection(args.CaseInfo.ArtifactID, Relativity.ArtifactType.Document).FullText.StorageLocation = EDDS.WebAPI.DocumentManagerBase.StorageLocationChoice.SQL)
+			End If
 		End Sub
 
 		Protected Overridable Sub InitializeUploaders(ByVal args As ImageLoadFile)
@@ -238,30 +235,20 @@ Namespace kCura.WinEDDS
 
 #End Region
 
-#Region "Enumerations"
-
-		Private Enum Columns
-			BatesNumber = 0
-			FileLocation = 2
-			MultiPageIndicator = 3
-		End Enum
-
-#End Region
-
 #Region "Main"
 
 		Public Sub ReadFile()
 			Me.ReadFile(_filePath)
 		End Sub
 
-		Private Sub ProcessList(ByVal al As System.Collections.Generic.List(Of Api.ImageRecord), ByRef status As Int32, ByVal bulkLoadFilePath As String)
+		Private Sub ProcessList(ByVal al As System.Collections.Generic.List(Of Api.ImageRecord), ByRef status As Int32, ByVal bulkLoadFilePath As String, ByVal dataGridFilePath As String)
 			Try
 				If al.Count = 0 Then Exit Sub
 				Me.ProcessDocument(al, status)
 				al.Clear()
 				status = 0
-				If _bulkLoadFileWriter.BaseStream.Length > ImportBatchVolume OrElse _batchCount > ImportBatchSize - 1 Then
-					Me.TryPushImageBatch(bulkLoadFilePath, False)
+				If (_bulkLoadFileWriter.BaseStream.Length + _dataGridFileWriter.BaseStream.Length > ImportBatchVolume) OrElse _batchCount > ImportBatchSize - 1 Then
+					Me.TryPushImageBatch(bulkLoadFilePath, dataGridFilePath, False)
 				End If
 			Catch ex As Exception
 				Throw
@@ -321,6 +308,7 @@ Namespace kCura.WinEDDS
 			.RunID = _runId,
 			.DestinationFolderArtifactID = _folderID,
 			.BulkFileName = _uploadKey,
+			.DataGridFileName = _uploadDataGridKey,
 			.KeyFieldArtifactID = _keyFieldDto.ArtifactID,
 			.Repository = _repositoryPath,
 			.UploadFullText = _replaceFullText,
@@ -331,47 +319,51 @@ Namespace kCura.WinEDDS
 			Return settings
 		End Function
 
-		Private Function TryPushImageBatch(ByVal bulkLoadFilePath As String, ByVal isFinal As Boolean) As Object
+		Private Sub TryPushImageBatch(ByVal bulkLoadFilePath As String, ByVal dataGridFilePath As String, ByVal isFinal As Boolean)
 			_bulkLoadFileWriter.Close()
+			_dataGridFileWriter.Close()
 			_fileIdentifierLookup.Clear()
 			Try
-				PushImageBatch(bulkLoadFilePath)
+				PushImageBatch(bulkLoadFilePath, dataGridFilePath)
 			Catch ex As Exception
 				If BatchResizeEnabled AndAlso ExceptionIsTimeoutRelated(ex) AndAlso _continue Then
 					Dim originalBatchSize As Int32 = Me.ImportBatchSize
 					LowerBatchLimits()
 					Me.RaiseWarningAndPause(ex, WaitTimeBetweenRetryAttempts)
 					If Not _continue Then Throw 'after the pause
-					Me.LowerBatchSizeAndRetry(bulkLoadFilePath, originalBatchSize)
+					Me.LowerBatchSizeAndRetry(bulkLoadFilePath, dataGridFilePath, originalBatchSize)
 				Else
 					Throw
 				End If
 			End Try
+			
+			DeleteFiles(bulkLoadFilePath, dataGridFilePath)
 			If Not isFinal Then
 				Try
 					_bulkLoadFileWriter = New System.IO.StreamWriter(bulkLoadFilePath, False, System.Text.Encoding.Unicode)
+					_dataGridFileWriter = New System.IO.StreamWriter(dataGridFilePath, False, System.Text.Encoding.Unicode)
 				Catch
 					_bulkLoadFileWriter = New System.IO.StreamWriter(bulkLoadFilePath, False, System.Text.Encoding.Unicode)
+					_dataGridFileWriter = New System.IO.StreamWriter(dataGridFilePath, False, System.Text.Encoding.Unicode)
 				End Try
 			End If
 			_currentStatisticsSnapshot = _statistics.ToDictionary
 			_snapshotLastModifiedOn = System.DateTime.Now
-			Return Nothing
-		End Function
+		End Sub
 
-		Protected Sub LowerBatchSizeAndRetry(ByVal outputPath As String, ByVal totalRecords As Int32)
-			Dim tmpLocation As String = System.IO.Path.GetTempFileName
+		Protected Sub LowerBatchSizeAndRetry(ByVal oldBulkLoadFilePath As String, ByVal dataGridFilePath As String, ByVal totalRecords As Int32)
+			'NOTE: we are not cutting a new/smaller data grid bulk file because it will be chunked as it is loaded into the data grid
+			Dim newBulkLoadFilePath As String = System.IO.Path.GetTempFileName
 			Dim limit As String = Relativity.Constants.ENDLINETERMSTRING
 			Dim last As New System.Collections.Generic.Queue(Of Char)
 			Dim recordsProcessed As Int32 = 0
 			Dim charactersSuccessfullyProcessed As Int64 = 0
 			Dim hasReachedEof As Boolean = False
 			Dim tries As Int32 = 1 'already starts at 1 retry
-			Dim lastBatchSize As Int32 = 0
 			While totalRecords > recordsProcessed AndAlso Not hasReachedEof AndAlso _continue
 				Dim i As Int32 = 0
 				Dim charactersProcessed As Int64 = 0
-				Using sr As TextReader = CreateStreamReader(outputPath), sw As TextWriter = CreateStreamWriter(tmpLocation)
+				Using sr As TextReader = CreateStreamReader(oldBulkLoadFilePath), sw As TextWriter = CreateStreamWriter(newBulkLoadFilePath)
 					Me.AdvanceStream(sr, charactersSuccessfullyProcessed)
 					Dim tempBatchSize As Int32 = Me.ImportBatchSize
 					While (Not hasReachedEof AndAlso i < tempBatchSize)
@@ -392,7 +384,7 @@ Namespace kCura.WinEDDS
 					sw.Flush()
 				End Using
 				Try
-					recordsProcessed = DoLogicAndPushImageBatch(totalRecords, recordsProcessed, tmpLocation, charactersSuccessfullyProcessed, i, charactersProcessed)
+					recordsProcessed = DoLogicAndPushImageBatch(totalRecords, recordsProcessed, newBulkLoadFilePath, dataGridFilePath, charactersSuccessfullyProcessed, i, charactersProcessed)
 				Catch ex As Exception
 					If tries < NumberOfRetries AndAlso BatchResizeEnabled AndAlso ExceptionIsTimeoutRelated(ex) AndAlso _continue Then
 						LowerBatchLimits()
@@ -402,23 +394,28 @@ Namespace kCura.WinEDDS
 						tries += 1
 						hasReachedEof = False
 					Else
-						kCura.Utility.File.Instance.Delete(tmpLocation)
+						kCura.Utility.File.Instance.Delete(newBulkLoadFilePath)
 						Throw
 					End If
 				End Try
 			End While
-			kCura.Utility.File.Instance.Delete(tmpLocation)
+			kCura.Utility.File.Instance.Delete(newBulkLoadFilePath)
 		End Sub
 
-		Protected Overridable Function DoLogicAndPushImageBatch(ByVal totalRecords As Integer, ByVal recordsProcessed As Integer, ByVal tmpLocation As String, ByRef charactersSuccessfullyProcessed As Long, ByVal i As Integer, ByVal charactersProcessed As Long) As Integer
+		Protected Overridable Function DoLogicAndPushImageBatch(ByVal totalRecords As Integer, ByVal recordsProcessed As Integer, ByVal bulkLocation As String, ByVal dataGridLocation As String, ByRef charactersSuccessfullyProcessed As Long, ByVal i As Integer, ByVal charactersProcessed As Long) As Integer
 			_batchCount = i
 			RaiseStatusEvent(kCura.Windows.Process.EventType.Warning, "Begin processing sub-batch of size " & i & ".", CType((_totalValidated + _totalProcessed) / 2, Int64), Me.CurrentLineNumber)
-			Me.PushImageBatch(tmpLocation)
+			Me.PushImageBatch(bulkLocation, dataGridLocation)
 			RaiseStatusEvent(kCura.Windows.Process.EventType.Warning, "End processing sub-batch of size " & i & ".  " & recordsProcessed & " of " & totalRecords & " in the original batch processed", CType((_totalValidated + _totalProcessed) / 2, Int64), Me.CurrentLineNumber)
 			recordsProcessed += i
 			charactersSuccessfullyProcessed += charactersProcessed
 			Return recordsProcessed
 		End Function
+
+		Private Sub DeleteFiles(ByVal bulkFilePath As String, ByVal datagridFilePath As String)
+			kCura.Utility.File.Instance.Delete(bulkFilePath)
+			kCura.Utility.File.Instance.Delete(datagridFilePath)
+		End Sub
 
 		Protected Overridable Function CreateStreamWriter(ByVal tmpLocation As String) As System.IO.TextWriter
 			Return New System.IO.StreamWriter(tmpLocation, False, System.Text.Encoding.Unicode)
@@ -436,19 +433,24 @@ Namespace kCura.WinEDDS
 				Next
 			End If
 		End Sub
-
-
-
-
-		Public Function PushImageBatch(ByVal bulkLoadFilePath As String) As Object
-			If _batchCount = 0 Then Return Nothing
+		
+		Public Sub PushImageBatch(ByVal bulkLoadFilePath As String, ByVal dataGridFilePath As String)
+			If _batchCount = 0 Then Exit Sub
 			_batchCount = 0
-			_statistics.MetadataBytes += Me.GetFileLength(bulkLoadFilePath)
+			_statistics.MetadataBytes += (Me.GetFileLength(bulkLoadFilePath) + Me.GetFileLength(dataGridFilePath))
 			Dim start As Int64 = System.DateTime.Now.Ticks
+
 			Dim validateBcp As FileUploadReturnArgs = _bcpuploader.UploadBcpFile(_caseInfo.ArtifactID, bulkLoadFilePath)
-			If validateBcp Is Nothing Then Return Nothing
+			If validateBcp Is Nothing Then Exit Sub
+			
+			Dim validateDataGridBcp As FileUploadReturnArgs =  _bcpuploader.UploadBcpFile(_caseInfo.ArtifactID, dataGridFilePath)
+			If validateDataGridBcp Is Nothing Then Exit Sub
+
 			_statistics.MetadataTime += System.Math.Max((System.DateTime.Now.Ticks - start), 1)
+
 			_uploadKey = validateBcp.Value
+			_uploadDataGridKey = validateDataGridBcp.Value
+
 			Dim overwrite As kCura.EDDS.WebAPI.BulkImportManagerBase.OverwriteType
 			Select Case _overwrite.ToLower
 				Case "none"
@@ -458,7 +460,7 @@ Namespace kCura.WinEDDS
 				Case Else
 					overwrite = EDDS.WebAPI.BulkImportManagerBase.OverwriteType.Both
 			End Select
-			If validateBcp.Type = FileUploadReturnArgs.FileUploadReturnType.ValidUploadKey Then
+			If validateBcp.Type = FileUploadReturnArgs.FileUploadReturnType.ValidUploadKey AndAlso validateDataGridBcp.Type = FileUploadReturnArgs.FileUploadReturnType.ValidUploadKey Then
 				start = System.DateTime.Now.Ticks
 				Dim runResults As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults = Me.RunBulkImport(overwrite, True)
 				_statistics.ProcessRunResults(runResults)
@@ -468,8 +470,11 @@ Namespace kCura.WinEDDS
 				RaiseEvent UploadModeChangeEvent(_fileUploader.UploaderType.ToString, _bcpuploader.IsBulkEnabled)
 				start = System.DateTime.Now.Ticks
 				Dim oldDestinationFolderPath As String = System.String.Copy(_bcpuploader.DestinationFolderPath)
+
 				_bcpuploader.DestinationFolderPath = _caseInfo.DocumentPath.TrimEnd("\"c) & "\" & "EDDS" & _caseInfo.ArtifactID & "\"
 				_uploadKey = _bcpuploader.UploadFile(bulkLoadFilePath, _caseInfo.ArtifactID)
+				_uploadDataGridKey = _bcpuploader.UploadFile(dataGridFilePath, _caseInfo.ArtifactID)
+
 				_statistics.MetadataTime += System.Math.Max(System.DateTime.Now.Ticks - start, 1)
 				_bcpuploader.DestinationFolderPath = oldDestinationFolderPath
 				start = System.DateTime.Now.Ticks
@@ -478,24 +483,17 @@ Namespace kCura.WinEDDS
 				_runId = runResults.RunID
 				_statistics.SqlTime += System.Math.Max(System.DateTime.Now.Ticks - start, 1)
 			Else
-				Throw New kCura.WinEDDS.LoadFileBase.BcpPathAccessException(validateBcp.Value)
+				If validateBcp.Type <> FileUploadReturnArgs.FileUploadReturnType.ValidUploadKey Then
+					Throw New kCura.WinEDDS.LoadFileBase.BcpPathAccessException(validateBcp.Value)
+				Else
+					Throw New kCura.WinEDDS.LoadFileBase.BcpPathAccessException(validateDataGridBcp.Value)
+				End If
 			End If
 			ManageErrors()
-			Return Nothing
-		End Function
+		End Sub
 
 		Public Overridable Function GetImageReader() As kCura.WinEDDS.Api.IImageReader
 			Return New OpticonFileReader(_folderID, _settings, Nothing, Nothing, _doRetryLogic)
-		End Function
-
-		Private Function MergeResults(ByVal originalResult As MassImportResults, ByVal newResult As MassImportResults) As MassImportResults
-			originalResult.ArtifactsCreated += newResult.ArtifactsCreated
-			originalResult.ArtifactsUpdated += newResult.ArtifactsUpdated
-			originalResult.FilesProcessed += newResult.FilesProcessed
-			If newResult.ExceptionDetail IsNot Nothing Then
-				originalResult.ExceptionDetail = newResult.ExceptionDetail
-			End If
-			Return originalResult
 		End Function
 
 		Private Function ExceptionIsTimeoutRelated(ByVal ex As Exception) As Boolean
@@ -512,17 +510,19 @@ Namespace kCura.WinEDDS
 			_imageReader.AdvanceRecord()
 		End Sub
 
-		Public Function ReadFile(ByVal path As String) As Object
+		Public Sub ReadFile(ByVal path As String)
 			_timekeeper.MarkStart("TOTAL")
-			_start = System.DateTime.Now
 			Dim bulkLoadFilePath As String = System.IO.Path.GetTempFileName
+			Dim dataGridFilePath As String = System.IO.Path.GetTempFileName
 			_fileIdentifierLookup = New System.Collections.Hashtable
 			_totalProcessed = 0
 			_totalValidated = 0
+
+			DeleteFiles(bulkLoadFilePath, dataGridFilePath)
 			_bulkLoadFileWriter = New System.IO.StreamWriter(bulkLoadFilePath, False, System.Text.Encoding.Unicode)
+			_dataGridFileWriter = New System.IO.StreamWriter(dataGridFilePath, False, System.Text.Encoding.Unicode)
 			Try
 				_timekeeper.MarkStart("ReadFile_Init")
-				Dim documentIdentifier As String = String.Empty
 				_filePath = path
 				_imageReader = Me.GetImageReader
 				_imageReader.Initialize()
@@ -534,11 +534,18 @@ Namespace kCura.WinEDDS
 
 				_timekeeper.MarkStart("ReadFile_Main")
 				Dim validateBcp As FileUploadReturnArgs = _bcpuploader.ValidateBcpPath(_caseInfo.ArtifactID, bulkLoadFilePath)
-				If validateBcp.Type = FileUploadReturnArgs.FileUploadReturnType.UploadError And Not Config.EnableSingleModeImport Then
-					Throw New kCura.WinEDDS.LoadFileBase.BcpPathAccessException(validateBcp.Value)
+				Dim validateDataGridBcp As FileUploadReturnArgs = _bcpuploader.ValidateBcpPath(_caseInfo.ArtifactID, dataGridFilePath)
+
+				If (validateBcp.Type = FileUploadReturnArgs.FileUploadReturnType.UploadError OrElse validateDataGridBcp.Type = FileUploadReturnArgs.FileUploadReturnType.UploadError) And Not Config.EnableSingleModeImport Then
+					If validateBcp.Type = FileUploadReturnArgs.FileUploadReturnType.UploadError Then
+						Throw New kCura.WinEDDS.LoadFileBase.BcpPathAccessException(validateBcp.Value)
+					Else
+						Throw New kCura.WinEDDS.LoadFileBase.BcpPathAccessException(validateDataGridBcp.Value)
+					End If
 				Else
 					RaiseEvent UploadModeChangeEvent(_fileUploader.UploaderType.ToString, _bcpuploader.IsBulkEnabled)
 				End If
+
 				Me.Statistics.BatchSize = Me.ImportBatchSize
 				While Me.[Continue]
 					If _productionArtifactID <> 0 Then _productionManager.DoPreImportProcessing(_caseInfo.ArtifactID, _productionArtifactID)
@@ -552,12 +559,12 @@ Namespace kCura.WinEDDS
 						Dim record As Api.ImageRecord = _imageReader.GetImageRecord
 						record.OriginalIndex = _imageReader.CurrentRecordNumber
 						If (record.IsNewDoc) Then
-							Me.ProcessList(al, status, bulkLoadFilePath)
+							Me.ProcessList(al, status, bulkLoadFilePath, dataGridFilePath)
 						End If
 						status = status Or Me.ProcessImageLine(record)
 						al.Add(record)
 						If Not Me.[Continue] Then
-							Me.ProcessList(al, status, bulkLoadFilePath)
+							Me.ProcessList(al, status, bulkLoadFilePath, dataGridFilePath)
 							Exit While
 						End If
 					End If
@@ -565,7 +572,7 @@ Namespace kCura.WinEDDS
 				_timekeeper.MarkEnd("ReadFile_Main")
 
 				_timekeeper.MarkStart("ReadFile_Cleanup")
-				Me.TryPushImageBatch(bulkLoadFilePath, True)
+				Me.TryPushImageBatch(bulkLoadFilePath, dataGridFilePath, True)
 				Me.CompleteSuccess()
 				CleanupTempTables()
 				_timekeeper.MarkEnd("ReadFile_Cleanup")
@@ -574,8 +581,7 @@ Namespace kCura.WinEDDS
 			Catch ex As System.Exception
 				Me.CompleteError(ex)
 			End Try
-			Return Nothing
-		End Function
+		End Sub
 
 		Public Event EndRun(ByVal success As Boolean, ByVal runID As String)
 
@@ -609,7 +615,7 @@ Namespace kCura.WinEDDS
 			RaiseFatalError(ex)
 		End Sub
 
-		Public Sub ProcessDocument(ByVal al As System.Collections.Generic.List(Of Api.ImageRecord), ByVal status As Int32)
+		Private Sub ProcessDocument(ByVal al As System.Collections.Generic.List(Of Api.ImageRecord), ByVal status As Int32)
 			Try
 				GetImagesForDocument(al, status)
 				_statistics.DocCount += 1
@@ -658,15 +664,6 @@ Namespace kCura.WinEDDS
 			'check to make sure image is good
 		End Function
 
-		Private Function IsNumber(ByVal value As String) As Boolean
-			Try
-				Dim x As Int32 = CType(value, Int32)
-			Catch ex As Exception
-				Return False
-			End Try
-			Return True
-		End Function
-
 		'Private Sub LogErrorInFile(ByVal lines As System.Collections.ArrayList)
 		'	If lines Is Nothing Then Exit Sub
 		'	If _errorLogFileName = "" Then
@@ -688,7 +685,7 @@ Namespace kCura.WinEDDS
 		End Function
 
 
-		Private Function GetImagesForDocument(ByVal lines As System.Collections.Generic.List(Of Api.ImageRecord), ByVal status As Int32) As String()
+		Private Sub GetImagesForDocument(ByVal lines As System.Collections.Generic.List(Of Api.ImageRecord), ByVal status As Int32)
 			Try
 				Me.AutoNumberImages(lines)
 				Dim hasFileIdentifierProblem As Boolean = False
@@ -710,68 +707,91 @@ Namespace kCura.WinEDDS
 					Me.GetImageForDocument(BulkImageFileImporter.GetFileLocation(record), record.BatesNumber, documentId, i, offset, textFileList, i < lines.Count - 1, record.OriginalIndex.ToString, status, lines.Count, i = 0)
 				Next
 
-				If textFileList.Count = 0 AndAlso _replaceFullText Then
-					_bulkLoadFileWriter.Write(String.Format("{0},", -1))
+				Dim lastDivider As String = If(_fullTextStorageIsInSql, ",", String.Empty)
+
+				If _replaceFullText Then
+					If Not _fullTextStorageIsInSql Then
+						'datagrid metadata
+						_dataGridFileWriter.Write(documentId & ",")
+					End If
+
+					If textFileList.Count = 0 Then
+						'no extracted text encodings, write "-1"
+						_bulkLoadFileWriter.Write(String.Format("{0}{1}", -1, lastDivider))
+					ElseIf textFileList.Count > 0 Then
+						_bulkLoadFileWriter.Write("{0}{1}", kCura.Utility.List.ToDelimitedString(Me.GetextractedTextEncodings(textFileList), "|"), lastDivider)
+					End If
+
+
+					Dim fullTextWriter As System.IO.StreamWriter = If(_fullTextStorageIsInSql, _bulkLoadFileWriter, _dataGridFileWriter)
+					For Each filename As String In textFileList
+						Dim chosenEncoding As System.Text.Encoding = _settings.FullTextEncoding
+						Dim fileStream As IO.Stream
+
+						If Not SkipExtractedTextEncodingCheck Then
+							'We pass in 'False' as the final parameter to DetectEncoding to have it skip the File.Exists check. This
+							' check can be very expensive when going across the network, so this is an attempt to improve performance.
+							' We're ok skipping this check, because a few lines earlier in GetImageForDocument that existence check
+							' is already made.
+							' -Phil S. 07/27/2012
+							Dim determinedEncodingStream As DeterminedEncodingStream = kCura.WinEDDS.Utility.DetectEncoding(filename, False, False)
+							fileStream = determinedEncodingStream.UnderlyingStream
+
+							Dim detectedEncoding As System.Text.Encoding = determinedEncodingStream.DeterminedEncoding
+							If detectedEncoding IsNot Nothing Then
+								chosenEncoding = detectedEncoding
+							End If
+						Else
+							fileStream = New FileStream(filename, FileMode.Open, FileAccess.Read)
+						End If
+
+						With New System.IO.StreamReader(fileStream, chosenEncoding, True)
+							fullTextWriter.Write(.ReadToEnd)
+							.Close()
+							Try
+								fileStream.Close()
+							Catch
+							End Try
+						End With
+					Next
+				Else
+					'no extracted text encodings, write "-1"
+					_bulkLoadFileWriter.Write(String.Format("{0}{1}", -1, lastDivider))
 				End If
-				Dim encodingList As New Generic.List(Of Int32)
-				For Each filename As String In textFileList
-					Dim chosenEncoding As System.Text.Encoding = _settings.FullTextEncoding
 
-					If Not SkipExtractedTextEncodingCheck Then
-						'We pass in 'False' as the final parameter to DetectEncoding to have it skip the File.Exists check. This
-						' check can be very expensive when going across the network, so this is an attempt to improve performance.
-						' We're ok skipping this check, because a few lines earlier in GetImageForDocument that existence check
-						' is already made.
-						' -Phil S. 07/27/2012
-						Dim determinedEncodingStream As DeterminedEncodingStream = kCura.WinEDDS.Utility.DetectEncoding(filename, True, False)
-						Dim detectedEncoding As System.Text.Encoding = determinedEncodingStream.DeterminedEncoding
-						If detectedEncoding IsNot Nothing Then
-							chosenEncoding = detectedEncoding
-						End If
-					End If
-
-					If _replaceFullText Then
-						If Not encodingList.Contains(chosenEncoding.CodePage) Then encodingList.Add(chosenEncoding.CodePage)
-					End If
-				Next
-				If _replaceFullText AndAlso textFileList.Count > 0 Then _bulkLoadFileWriter.Write("{0},", kCura.Utility.List.ToDelimitedString(encodingList, "|"))
-				For Each filename As String In textFileList
-					Dim chosenEncoding As System.Text.Encoding = _settings.FullTextEncoding
-					Dim fileStream As IO.Stream
-
-					If Not SkipExtractedTextEncodingCheck Then
-						'We pass in 'False' as the final parameter to DetectEncoding to have it skip the File.Exists check. This
-						' check can be very expensive when going across the network, so this is an attempt to improve performance.
-						' We're ok skipping this check, because a few lines earlier in GetImageForDocument that existence check
-						' is already made.
-						' -Phil S. 07/27/2012
-						Dim determinedEncodingStream As DeterminedEncodingStream = kCura.WinEDDS.Utility.DetectEncoding(filename, False, False)
-						fileStream = determinedEncodingStream.UnderlyingStream
-
-						Dim detectedEncoding As System.Text.Encoding = determinedEncodingStream.DeterminedEncoding
-						If detectedEncoding IsNot Nothing Then
-							chosenEncoding = detectedEncoding
-						End If
-					Else
-						fileStream = New FileStream(filename, FileMode.Open, FileAccess.Read)
-					End If
-
-					With New System.IO.StreamReader(fileStream, chosenEncoding, True)
-						_bulkLoadFileWriter.Write(.ReadToEnd)
-						.Close()
-						Try
-							fileStream.Close()
-						Catch
-						End Try
-					End With
-				Next
 
 				_bulkLoadFileWriter.Write(Relativity.Constants.ENDLINETERMSTRING)
+				If _replaceFullText AndAlso Not _fullTextStorageIsInSql Then
+					_dataGridFileWriter.Write(Relativity.Constants.ENDLINETERMSTRING)
+				End If
 			Catch ex As Exception
 				Throw
 			End Try
-			Return Nothing
+		End Sub
+
+		Private Function GetextractedTextEncodings(ByVal textFileList As System.Collections.ArrayList) As Generic.List(Of Int32)
+			Dim encodingList As New Generic.List(Of Int32)
+			For Each filename As String In textFileList
+				Dim chosenEncoding As System.Text.Encoding = _settings.FullTextEncoding
+
+				If Not SkipExtractedTextEncodingCheck Then
+					'We pass in 'False' as the final parameter to DetectEncoding to have it skip the File.Exists check. This
+					' check can be very expensive when going across the network, so this is an attempt to improve performance.
+					' We're ok skipping this check, because a few lines earlier in GetImageForDocument that existence check
+					' is already made.
+					' -Phil S. 07/27/2012
+					Dim determinedEncodingStream As DeterminedEncodingStream = kCura.WinEDDS.Utility.DetectEncoding(filename, True, False)
+					Dim detectedEncoding As System.Text.Encoding = determinedEncodingStream.DeterminedEncoding
+					If detectedEncoding IsNot Nothing Then
+						chosenEncoding = detectedEncoding
+					End If
+				End If
+
+				If Not encodingList.Contains(chosenEncoding.CodePage) Then encodingList.Add(chosenEncoding.CodePage)
+			Next
+			Return encodingList
 		End Function
+
 
 		Private Sub AutoNumberImages(ByVal lines As System.Collections.Generic.List(Of Api.ImageRecord))
 			If Not _autoNumberImages OrElse lines.Count <= 1 Then Exit Sub
@@ -827,8 +847,8 @@ Namespace kCura.WinEDDS
 				End If
 				_bulkLoadFileWriter.Write(If(isStartRecord, "1,", "0,"))
 				_bulkLoadFileWriter.Write(status & ",")
-				_bulkLoadFileWriter.Write("0,")
-				_bulkLoadFileWriter.Write("0,")
+				_bulkLoadFileWriter.Write("0,") 'IsNew
+				_bulkLoadFileWriter.Write("0,") 'ArtifactID
 				_bulkLoadFileWriter.Write(originalLineNumber & ",")
 				_bulkLoadFileWriter.Write(documentIdentifier & ",")
 				_bulkLoadFileWriter.Write(batesNumber & ",")
