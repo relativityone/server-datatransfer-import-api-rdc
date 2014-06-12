@@ -1021,12 +1021,6 @@ Namespace kCura.WinEDDS
 			_outputNativeFileWriter.Write("0" & _bulkLoadFileFieldDelimiter) 'ArtifactID
 			_outputNativeFileWriter.Write(mdoc.LineNumber & _bulkLoadFileFieldDelimiter) 'kCura_Import_OriginalLineNumber
 
-
-			'data grid metadata values
-			_outputDataGridFileWriter.Write(mdoc.LineNumber & _bulkLoadFileFieldDelimiter) 'datagrid line number
-			_outputDataGridFileWriter.Write(mdoc.IdentityValue & _bulkLoadFileFieldDelimiter)	'datagrid identity mapping
-
-
 			If mdoc.UploadFile And mdoc.IndexFileInDB Then
 				_outputNativeFileWriter.Write(mdoc.FileGuid & _bulkLoadFileFieldDelimiter)	'kCura_Import_FileGuid
 				_outputNativeFileWriter.Write(mdoc.Filename & _bulkLoadFileFieldDelimiter)	'kCura_Import_FileName
@@ -1053,6 +1047,8 @@ Namespace kCura.WinEDDS
 			End If
 			_outputNativeFileWriter.Write(mdoc.ParentFolderID & _bulkLoadFileFieldDelimiter) 'kCura_Import_ParentFolderID
 
+			Dim foundDataGridField As Boolean = False
+
 			For Each field As Api.ArtifactField In mdoc.Record
 				Select Case field.StorageLocation
 
@@ -1060,6 +1056,12 @@ Namespace kCura.WinEDDS
 						WriteDocumentField(chosenEncoding, field, _outputNativeFileWriter, _fullTextColumnMapsToFileLocation, _bulkLoadFileFieldDelimiter, _artifactTypeID, _extractedTextFileEncoding)
 
 					Case Relativity.FieldInfo.StorageLocationChoice.DataGrid
+						If Not foundDataGridField Then
+							'write the data grid identity field as the first column, but only when we have data grid fields
+							_outputDataGridFileWriter.Write(mdoc.IdentityValue & _bulkLoadFileFieldDelimiter)
+							foundDataGridField = True
+						End If
+
 						'TODO: do we want to set/update the "chosenEncoding" property if the extracted text is going to the data grid?
 						WriteDocumentField(chosenEncoding, field, _outputDataGridFileWriter, _fullTextColumnMapsToFileLocation, _bulkLoadFileFieldDelimiter, _artifactTypeID, _extractedTextFileEncoding)
 
