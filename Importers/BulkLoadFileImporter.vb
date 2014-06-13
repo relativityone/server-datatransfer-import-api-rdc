@@ -1106,7 +1106,9 @@ Namespace kCura.WinEDDS
 				End If
 			End If
 			_outputNativeFileWriter.Write(vbCrLf)
-			_outputDataGridFileWriter.Write(vbCrLf)
+			If foundDataGridField Then
+				_outputDataGridFileWriter.Write(vbCrLf)
+			End If
 		End Sub
 
 		Private Sub WriteDocumentField(ByRef chosenEncoding As System.Text.Encoding, field As Api.ArtifactField, ByVal outputWriter As System.IO.StreamWriter, ByVal fileBasedfullTextColumn As Boolean, ByVal delimiter As String, ByVal artifactTypeID As Int32, ByVal extractedTextEncoding As System.Text.Encoding)
