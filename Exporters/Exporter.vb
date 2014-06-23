@@ -81,6 +81,18 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
+		Protected Overridable ReadOnly Property NumberOfRetries() As Int32
+			Get
+				Return kCura.Utility.Config.ExportErrorNumberOfRetries
+			End Get
+		End Property
+
+		Protected Overridable ReadOnly Property WaitTimeBetweenRetryAttempts() As Int32
+			Get
+				Return kCura.Utility.Config.ExportErrorWaitTimeInSeconds
+			End Get
+		End Property
+
 #End Region
 
 		Public Event ShutdownEvent()
@@ -140,6 +152,9 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Private Function Search() As Boolean
+			Dim tries As Int32 = 0
+			Dim maxTries As Int32 = NumberOfRetries + 1
+
 			Dim typeOfExportDisplayString As String = ""
 			Dim fileCount As Int32 = 0
 			Dim errorOutputFilePath As String = _exportFile.FolderPath & "\" & _exportFile.LoadFilesPrefix & "_img_errors.txt"
@@ -153,35 +168,110 @@ Namespace kCura.WinEDDS
 				If Not TypeOf _columns(i) Is CoalescedTextViewField Then allAvfIds.Add(Me.Settings.SelectedViewFields(i).AvfId)
 			Next
 			Dim production As kCura.EDDS.WebAPI.ProductionManagerBase.Production = Nothing
+
 			If Me.Settings.TypeOfExport = ExportFile.ExportType.Production Then
-				production = _productionManager.Read(Me.Settings.CaseArtifactID, Me.Settings.ArtifactID)
+
+				tries = 0
+				While tries < maxTries
+					tries += 1
+					Try
+						production = _productionManager.Read(Me.Settings.CaseArtifactID, Me.Settings.ArtifactID)
+						Exit While
+					Catch ex As System.Exception
+						If tries < maxTries AndAlso Not (TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("Need To Re Login") <> -1) Then
+							Me.WriteStatusLine(kCura.Windows.Process.EventType.Status, "Error occurred, attempting retry number " & tries & ", in " & WaitTimeBetweenRetryAttempts & " seconds...", True)
+							System.Threading.Thread.CurrentThread.Join(WaitTimeBetweenRetryAttempts * 1000)
+						Else
+							Throw
+						End If
+					End Try
+				End While
+
 				_productionExportProduction = production
 				With _fieldManager.Read(Me.Settings.CaseArtifactID, production.BeginBatesFieldArtifactID)
 					_beginBatesColumn = Relativity.SqlNameHelper.GetSqlFriendlyName(.DisplayName)
 					If Not allAvfIds.Contains(.ArtifactViewFieldID) Then allAvfIds.Add(.ArtifactViewFieldID)
 				End With
 			End If
+
 			If Me.Settings.ExportImages AndAlso Me.Settings.LogFileFormat = LoadFileType.FileFormat.IPRO_FullText Then
 				If Not Me.IsExtractedTextSelected Then
 					allAvfIds.Add(Me.ExtractedTextField.AvfId)
 				End If
 			End If
+			tries = 0
 			Select Case Me.Settings.TypeOfExport
 				Case ExportFile.ExportType.ArtifactSearch
 					typeOfExportDisplayString = "search"
-					exportInitializationArgs = Me.ExportManager.InitializeSearchExport(_exportFile.CaseInfo.ArtifactID, Me.Settings.ArtifactID, allAvfIds.ToArray, Me.Settings.StartAtDocumentNumber + 1)
+					While tries < maxTries
+						tries += 1
+						Try
+							exportInitializationArgs = Me.ExportManager.InitializeSearchExport(_exportFile.CaseInfo.ArtifactID, Me.Settings.ArtifactID, allAvfIds.ToArray, Me.Settings.StartAtDocumentNumber + 1)
+							Exit While
+						Catch ex As System.Exception
+							If tries < maxTries AndAlso Not (TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("Need To Re Login") <> -1) Then
+								Me.WriteStatusLine(kCura.Windows.Process.EventType.Status, "Error occurred, attempting retry number " & tries & ", in " & WaitTimeBetweenRetryAttempts & " seconds...", True)
+								System.Threading.Thread.CurrentThread.Join(WaitTimeBetweenRetryAttempts * 1000)
+							Else
+								Throw
+							End If
+						End Try
+					End While
 
 				Case ExportFile.ExportType.ParentSearch
 					typeOfExportDisplayString = "folder"
-					exportInitializationArgs = Me.ExportManager.InitializeFolderExport(Me.Settings.CaseArtifactID, Me.Settings.ViewID, Me.Settings.ArtifactID, False, allAvfIds.ToArray, Me.Settings.StartAtDocumentNumber + 1, Me.Settings.ArtifactTypeID)
+					
+					While tries < maxTries
+						tries += 1
+						Try
+							exportInitializationArgs = Me.ExportManager.InitializeFolderExport(Me.Settings.CaseArtifactID, Me.Settings.ViewID, Me.Settings.ArtifactID, False, allAvfIds.ToArray, Me.Settings.StartAtDocumentNumber + 1, Me.Settings.ArtifactTypeID)
+							Exit While
+						Catch ex As System.Exception
+							If tries < maxTries AndAlso Not (TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("Need To Re Login") <> -1) Then
+								Me.WriteStatusLine(kCura.Windows.Process.EventType.Status, "Error occurred, attempting retry number " & tries & ", in " & WaitTimeBetweenRetryAttempts & " seconds...", True)
+								System.Threading.Thread.CurrentThread.Join(WaitTimeBetweenRetryAttempts * 1000)
+							Else
+								Throw
+							End If
+						End Try
+					End While
 
 				Case ExportFile.ExportType.AncestorSearch
 					typeOfExportDisplayString = "folder and subfolder"
-					exportInitializationArgs = Me.ExportManager.InitializeFolderExport(Me.Settings.CaseArtifactID, Me.Settings.ViewID, Me.Settings.ArtifactID, True, allAvfIds.ToArray, Me.Settings.StartAtDocumentNumber + 1, Me.Settings.ArtifactTypeID)
+
+					While tries < maxTries
+						tries += 1
+						Try
+							exportInitializationArgs = Me.ExportManager.InitializeFolderExport(Me.Settings.CaseArtifactID, Me.Settings.ViewID, Me.Settings.ArtifactID, True, allAvfIds.ToArray, Me.Settings.StartAtDocumentNumber + 1, Me.Settings.ArtifactTypeID)
+							Exit While
+						Catch ex As System.Exception
+							If tries < maxTries AndAlso Not (TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("Need To Re Login") <> -1) Then
+								Me.WriteStatusLine(kCura.Windows.Process.EventType.Status, "Error occurred, attempting retry number " & tries & ", in " & WaitTimeBetweenRetryAttempts & " seconds...", True)
+								System.Threading.Thread.CurrentThread.Join(WaitTimeBetweenRetryAttempts * 1000)
+							Else
+								Throw
+							End If
+						End Try
+					End While
 
 				Case ExportFile.ExportType.Production
 					typeOfExportDisplayString = "production"
-					exportInitializationArgs = Me.ExportManager.InitializeProductionExport(_exportFile.CaseInfo.ArtifactID, Me.Settings.ArtifactID, allAvfIds.ToArray, Me.Settings.StartAtDocumentNumber + 1)
+
+					While tries < maxTries
+						tries += 1
+						Try
+							exportInitializationArgs = Me.ExportManager.InitializeProductionExport(_exportFile.CaseInfo.ArtifactID, Me.Settings.ArtifactID, allAvfIds.ToArray, Me.Settings.StartAtDocumentNumber + 1)
+							Exit While
+						Catch ex As System.Exception
+							If tries < maxTries AndAlso Not (TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("Need To Re Login") <> -1) Then
+								Me.WriteStatusLine(kCura.Windows.Process.EventType.Status, "Error occurred, attempting retry number " & tries & ", in " & WaitTimeBetweenRetryAttempts & " seconds...", True)
+								System.Threading.Thread.CurrentThread.Join(WaitTimeBetweenRetryAttempts * 1000)
+							Else
+								Throw
+							End If
+						End Try
+					End While
+
 			End Select
 			Me.TotalExportArtifactCount = CType(exportInitializationArgs.RowCount, Int32)
 			If Me.TotalExportArtifactCount - 1 < Me.Settings.StartAtDocumentNumber Then
@@ -200,7 +290,7 @@ Namespace kCura.WinEDDS
 			_volumeManager.ColumnHeaderString = columnHeaderString
 			Me.WriteUpdate("Data retrieved. Beginning " & typeOfExportDisplayString & " export...")
 
-			Dim records As Object()
+			Dim records As Object() = Nothing
 			Dim start, finish, realStart As Int32
 			Dim lastRecordCount As Int32 = -1
 			While lastRecordCount <> 0
@@ -210,7 +300,23 @@ Namespace kCura.WinEDDS
 				startTicks = System.DateTime.Now.Ticks
 				Dim textPrecedenceAvfIds As Int32() = Nothing
 				If Not Me.Settings.SelectedTextFields Is Nothing AndAlso Me.Settings.SelectedTextFields.Count > 0 Then textPrecedenceAvfIds = Me.Settings.SelectedTextFields.Select(Of Int32)(Function(f As ViewFieldInfo) f.AvfId).ToArray
-				records = Me.ExportManager.RetrieveResultsBlock(Me.Settings.CaseInfo.ArtifactID, exportInitializationArgs.RunId, Me.Settings.ArtifactTypeID, allAvfIds.ToArray, Config.ExportBatchSize, Me.Settings.MulticodesAsNested, Me.Settings.MultiRecordDelimiter, Me.Settings.NestedValueDelimiter, textPrecedenceAvfIds)
+
+				tries = 0
+				While tries < maxTries
+					tries += 1
+					Try
+						records = Me.ExportManager.RetrieveResultsBlock(Me.Settings.CaseInfo.ArtifactID, exportInitializationArgs.RunId, Me.Settings.ArtifactTypeID, allAvfIds.ToArray, Config.ExportBatchSize, Me.Settings.MulticodesAsNested, Me.Settings.MultiRecordDelimiter, Me.Settings.NestedValueDelimiter, textPrecedenceAvfIds)
+						Exit While
+					Catch ex As System.Exception
+						If tries < maxTries AndAlso Not (TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("Need To Re Login") <> -1) Then
+							Me.WriteStatusLine(kCura.Windows.Process.EventType.Status, "Error occurred, attempting retry number " & tries & ", in " & WaitTimeBetweenRetryAttempts & " seconds...", True)
+							System.Threading.Thread.CurrentThread.Join(WaitTimeBetweenRetryAttempts * 1000)
+						Else
+							Throw
+						End If
+					End Try
+				End While
+
 				If records Is Nothing Then Exit While
 				If Me.Settings.TypeOfExport = ExportFile.ExportType.Production AndAlso production IsNot Nothing AndAlso production.DocumentsHaveRedactions Then
 					WriteStatusLineWithoutDocCount(kCura.Windows.Process.EventType.Warning, "Please Note - Documents in this production were produced with redactions applied.  Ensure that you have exported text that was generated via OCR of the redacted documents.", True)
@@ -242,6 +348,9 @@ Namespace kCura.WinEDDS
 #Region "Private Helper Functions"
 
 		Private Sub ExportChunk(ByVal documentArtifactIDs As Int32(), ByVal records As Object())
+			Dim tries As Int32 = 0
+			Dim maxTries As Int32 = NumberOfRetries + 1
+
 			Dim natives As New System.Data.DataView
 			Dim images As New System.Data.DataView
 			Dim productionImages As New System.Data.DataView
@@ -252,11 +361,54 @@ Namespace kCura.WinEDDS
 			If Me.Settings.ExportNative Then
 				start = System.DateTime.Now.Ticks
 				If Me.Settings.TypeOfExport = ExportFile.ExportType.Production Then
-					natives.Table = _searchManager.RetrieveNativesForProduction(Me.Settings.CaseArtifactID, productionArtifactID, kCura.Utility.Array.IntArrayToCSV(documentArtifactIDs)).Tables(0)
+					tries = 0
+					While tries < maxTries
+						tries += 1
+						Try
+							natives.Table = _searchManager.RetrieveNativesForProduction(Me.Settings.CaseArtifactID, productionArtifactID, kCura.Utility.Array.IntArrayToCSV(documentArtifactIDs)).Tables(0)
+							Exit While
+						Catch ex As System.Exception
+							If tries < maxTries AndAlso Not (TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("Need To Re Login") <> -1) Then
+								Me.WriteStatusLine(kCura.Windows.Process.EventType.Status, "Error occurred, attempting retry number " & tries & ", in " & WaitTimeBetweenRetryAttempts & " seconds...", True)
+								System.Threading.Thread.CurrentThread.Join(WaitTimeBetweenRetryAttempts * 1000)
+							Else
+								Throw
+							End If
+						End Try
+					End While
 				ElseIf Me.Settings.ArtifactTypeID = Relativity.ArtifactType.Document Then
-					natives.Table = _searchManager.RetrieveNativesForSearch(Me.Settings.CaseArtifactID, kCura.Utility.Array.IntArrayToCSV(documentArtifactIDs)).Tables(0)
+					tries = 0
+					While tries < maxTries
+						tries += 1
+						Try
+							natives.Table = _searchManager.RetrieveNativesForSearch(Me.Settings.CaseArtifactID, kCura.Utility.Array.IntArrayToCSV(documentArtifactIDs)).Tables(0)
+							Exit While
+						Catch ex As System.Exception
+							If tries < maxTries AndAlso Not (TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("Need To Re Login") <> -1) Then
+								Me.WriteStatusLine(kCura.Windows.Process.EventType.Status, "Error occurred, attempting retry number " & tries & ", in " & WaitTimeBetweenRetryAttempts & " seconds...", True)
+								System.Threading.Thread.CurrentThread.Join(WaitTimeBetweenRetryAttempts * 1000)
+							Else
+								Throw
+							End If
+						End Try
+					End While
 				Else
-					Dim dt As System.Data.DataTable = _searchManager.RetrieveFilesForDynamicObjects(Me.Settings.CaseArtifactID, Me.Settings.FileField.FieldID, documentArtifactIDs).Tables(0)
+					Dim dt As System.Data.DataTable = Nothing
+					tries = 0
+					While tries < maxTries
+						tries += 1
+						Try
+							dt = _searchManager.RetrieveFilesForDynamicObjects(Me.Settings.CaseArtifactID, Me.Settings.FileField.FieldID, documentArtifactIDs).Tables(0)
+							Exit While
+						Catch ex As System.Exception
+							If tries < maxTries AndAlso Not (TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("Need To Re Login") <> -1) Then
+								Me.WriteStatusLine(kCura.Windows.Process.EventType.Status, "Error occurred, attempting retry number " & tries & ", in " & WaitTimeBetweenRetryAttempts & " seconds...", True)
+								System.Threading.Thread.CurrentThread.Join(WaitTimeBetweenRetryAttempts * 1000)
+							Else
+								Throw
+							End If
+						End Try
+					End While
 					If dt Is Nothing Then
 						natives = Nothing
 					Else
@@ -268,8 +420,39 @@ Namespace kCura.WinEDDS
 			If Me.Settings.ExportImages Then
 				_timekeeper.MarkStart("Exporter_GetImagesForDocumentBlock")
 				start = System.DateTime.Now.Ticks
-				images.Table = Me.RetrieveImagesForDocuments(documentArtifactIDs, Me.Settings.ImagePrecedence)
-				productionImages.Table = Me.RetrieveProductionImagesForDocuments(documentArtifactIDs, Me.Settings.ImagePrecedence)
+
+				tries = 0
+				While tries < maxTries
+					tries += 1
+					Try
+						images.Table = Me.RetrieveImagesForDocuments(documentArtifactIDs, Me.Settings.ImagePrecedence)
+						Exit While
+					Catch ex As System.Exception
+						If tries < maxTries AndAlso Not (TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("Need To Re Login") <> -1) Then
+							Me.WriteStatusLine(kCura.Windows.Process.EventType.Status, "Error occurred, attempting retry number " & tries & ", in " & WaitTimeBetweenRetryAttempts & " seconds...", True)
+							System.Threading.Thread.CurrentThread.Join(WaitTimeBetweenRetryAttempts * 1000)
+						Else
+							Throw
+						End If
+					End Try
+				End While
+
+				tries = 0
+				While tries < maxTries
+					tries += 1
+					Try
+						productionImages.Table = Me.RetrieveProductionImagesForDocuments(documentArtifactIDs, Me.Settings.ImagePrecedence)
+						Exit While
+					Catch ex As System.Exception
+						If tries < maxTries AndAlso Not (TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("Need To Re Login") <> -1) Then
+							Me.WriteStatusLine(kCura.Windows.Process.EventType.Status, "Error occurred, attempting retry number " & tries & ", in " & WaitTimeBetweenRetryAttempts & " seconds...", True)
+							System.Threading.Thread.CurrentThread.Join(WaitTimeBetweenRetryAttempts * 1000)
+						Else
+							Throw
+						End If
+					End Try
+				End While
+
 				_statistics.MetadataTime += System.Math.Max(System.DateTime.Now.Ticks - start, 1)
 				_timekeeper.MarkEnd("Exporter_GetImagesForDocumentBlock")
 			End If
@@ -310,7 +493,23 @@ Namespace kCura.WinEDDS
 				End If
 				artifact.ArtifactID = documentArtifactIDs(i)
 				artifact.Metadata = DirectCast(records(i), Object())
-				_fileCount += _volumeManager.ExportArtifact(artifact)
+
+				tries = 0
+				While tries < maxTries
+					tries += 1
+					Try
+						_fileCount += _volumeManager.ExportArtifact(artifact)
+						Exit While
+					Catch ex As System.Exception
+						If tries < maxTries AndAlso Not (TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("Need To Re Login") <> -1) Then
+							Me.WriteStatusLine(kCura.Windows.Process.EventType.Status, "Error occurred, attempting retry number " & tries & ", in " & WaitTimeBetweenRetryAttempts & " seconds...", True)
+							System.Threading.Thread.CurrentThread.Join(WaitTimeBetweenRetryAttempts * 1000)
+						Else
+							Throw
+						End If
+					End Try
+				End While
+
 				_lastStatisticsSnapshot = _statistics.ToDictionary
 				Me.WriteUpdate("Exported document " & i + 1, i = documentArtifactIDs.Length - 1)
 				If _halt Then Exit Sub
