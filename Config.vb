@@ -195,7 +195,12 @@ Namespace kCura.WinEDDS
 				End Try
 			End Get
 		End Property
-
+		
+		Public Shared ReadOnly Property MaximumDataGridRecordSizeInBytes() As Int64
+			Get
+				Return CType(ConfigSettings("MaximumDataGridRecordSizeInBytes"), Int64)
+			End Get
+		End Property
 
 		''' <summary>
 		''' If True, Folders which are created in Append mode are created in the WebAPI.

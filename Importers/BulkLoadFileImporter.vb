@@ -95,6 +95,12 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
+		Protected Overridable ReadOnly Property MaxDataGridRecordSize As Int64
+			Get
+				Return Config.MaximumDataGridRecordSizeInBytes
+			End Get
+		End Property
+
 		Public ReadOnly Property AllFields(ByVal artifactTypeID As Int32) As kCura.EDDS.WebAPI.DocumentManagerBase.Field()
 			Get
 				If _allFields Is Nothing Then
@@ -1161,19 +1167,27 @@ Namespace kCura.WinEDDS
 						Dim sr As New System.IO.StreamReader(fileStream, chosenEncoding)
 						Dim count As Int32 = 1
 						Dim buff(_COPY_TEXT_FILE_BUFFER_SIZE) As Char
+						Dim totalFieldByteCount As Int64 = 0
 						Do
 							count = sr.ReadBlock(buff, 0, _COPY_TEXT_FILE_BUFFER_SIZE)
 							If count > 0 Then
+								If field.StorageLocation = Relativity.FieldInfo.StorageLocationChoice.DataGrid Then
+									totalFieldByteCount += chosenEncoding.GetByteCount(buff)
+								End If
 								outputWriter.Write(buff, 0, count)
 								outputWriter.Flush()
 							End If
-						Loop Until count = 0
+						Loop Until (count = 0 OrElse totalFieldByteCount > Me.MaxDataGridRecordSize)
 
 						sr.Close()
 						Try
 							fileStream.Close()
 						Catch
 						End Try
+
+						If totalFieldByteCount > Me.MaxDataGridRecordSize Then
+							Throw New DataGridExceededMaximumSizeException(field.DisplayName)
+						End If
 					End If
 				ElseIf field.Type = Relativity.FieldTypeHelper.FieldType.Boolean Then
 					If field.ValueAsString <> String.Empty Then
@@ -1190,6 +1204,9 @@ Namespace kCura.WinEDDS
 						outputWriter.Write(d)
 					End If
 				Else
+					If field.Type = Relativity.FieldTypeHelper.FieldType.Text AndAlso field.StorageLocation = Relativity.FieldInfo.StorageLocationChoice.DataGrid AndAlso System.Text.Encoding.UTF8.GetByteCount(field.ValueAsString) > Me.MaxDataGridRecordSize Then
+						Throw New DataGridExceededMaximumSizeException(field.DisplayName)
+					End If
 					outputWriter.Write(field.Value)
 				End If
 				outputWriter.Write(delimiter)
