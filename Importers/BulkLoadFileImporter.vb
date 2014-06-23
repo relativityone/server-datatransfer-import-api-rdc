@@ -97,7 +97,7 @@ Namespace kCura.WinEDDS
 
 		Protected Overridable ReadOnly Property MaxDataGridRecordSize As Int64
 			Get
-				Return Config.MaximumDataGridRecordSizeInBytes
+				Return kCura.Utility.Config.MaximumDataGridRecordSizeInBytes
 			End Get
 		End Property
 
