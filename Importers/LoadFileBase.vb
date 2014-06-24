@@ -778,12 +778,8 @@ Namespace kCura.WinEDDS
 
 		Public Class DataGridExceededMaximumSizeException
 			Inherits kCura.Utility.ImporterExceptionBase
-			Public Sub New()
-				MyBase.New("The maximum size threshold for Data Grid full text field has been exceeded.")
-			End Sub
-
 			Public Sub New(ByVal fieldName As String)
-				MyBase.New(String.Format("The maximum size threshold for Data Grid text field '{0}' has been exceeded.", fieldName))
+				MyBase.New(String.Format("The Data Grid field '{0}' contains more data than the maximum threshold.", fieldName))
 			End Sub
 		End Class
 
