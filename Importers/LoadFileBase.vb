@@ -674,8 +674,6 @@ Namespace kCura.WinEDDS
 			End If
 		End Function
 
-
-
 #Region "Exceptions"
 
 		Public Class ExtractedTextTooLargeException
@@ -773,13 +771,6 @@ Namespace kCura.WinEDDS
 			Inherits kCura.Utility.ImporterExceptionBase
 			Public Sub New(ByVal row As Int32, ByVal column As Int32, ByVal codeName As String)
 				MyBase.New(row, column, String.Format("Code value '{0}' specified twice for this record", codeName))
-			End Sub
-		End Class
-
-		Public Class DataGridExceededMaximumSizeException
-			Inherits kCura.Utility.ImporterExceptionBase
-			Public Sub New(ByVal fieldName As String)
-				MyBase.New(String.Format("The Data Grid field '{0}' contains more data than the maximum threshold.", fieldName))
 			End Sub
 		End Class
 

@@ -766,7 +766,7 @@ Namespace kCura.WinEDDS
 						End With
 
 						If totalFieldByteCount > Me.MaxDataGridRecordSize Then
-							Throw New LoadFileBase.DataGridExceededMaximumSizeException("Extracted Text")
+							'TODO: raise error or warning?
 						End If
 					Next
 				Else

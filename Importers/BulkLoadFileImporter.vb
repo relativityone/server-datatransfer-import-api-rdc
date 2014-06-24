@@ -1186,7 +1186,7 @@ Namespace kCura.WinEDDS
 						End Try
 
 						If totalFieldByteCount > Me.MaxDataGridRecordSize Then
-							Throw New DataGridExceededMaximumSizeException(field.DisplayName)
+							'TODO: raise error or warning?
 						End If
 					End If
 				ElseIf field.Type = Relativity.FieldTypeHelper.FieldType.Boolean Then
@@ -1205,7 +1205,7 @@ Namespace kCura.WinEDDS
 					End If
 				Else
 					If field.Type = Relativity.FieldTypeHelper.FieldType.Text AndAlso field.StorageLocation = Relativity.FieldInfo.StorageLocationChoice.DataGrid AndAlso System.Text.Encoding.UTF8.GetByteCount(field.ValueAsString) > Me.MaxDataGridRecordSize Then
-						Throw New DataGridExceededMaximumSizeException(field.DisplayName)
+						'TODO: raise error or warning?
 					End If
 					outputWriter.Write(field.Value)
 				End If
