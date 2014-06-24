@@ -169,12 +169,6 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
-		Protected Overridable ReadOnly Property MaxDataGridRecordSize As Int64
-			Get
-				Return kCura.Utility.Config.MaximumDataGridRecordSizeInBytes
-			End Get
-		End Property
-
 #End Region
 
 #Region "Constructors"

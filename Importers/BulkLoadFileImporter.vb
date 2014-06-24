@@ -95,12 +95,6 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
-		Protected Overridable ReadOnly Property MaxDataGridRecordSize As Int64
-			Get
-				Return kCura.Utility.Config.MaximumDataGridRecordSizeInBytes
-			End Get
-		End Property
-
 		Public ReadOnly Property AllFields(ByVal artifactTypeID As Int32) As kCura.EDDS.WebAPI.DocumentManagerBase.Field()
 			Get
 				If _allFields Is Nothing Then
