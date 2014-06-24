@@ -413,7 +413,7 @@ Namespace kCura.WinEDDS
 			If isRetryAttempt Then Me.ReInitializeAllStreams()
 			Dim totalFileSize As Int64 = 0
 			Dim loadFileBytes As Int64 = 0
-			Dim extracteTextFileSizeForVolume As Int64 = 0
+			Dim extractedTextFileSizeForVolume As Int64 = 0
 			Dim image As Exporters.ImageExportInfo = Nothing
 			Dim imageSuccess As Boolean = True
 			Dim nativeSuccess As Boolean = True
@@ -464,7 +464,7 @@ Namespace kCura.WinEDDS
 				If Me.Settings.ExportFullTextAsFile Then
 					If Not artifact.HasCountedTextFile Then
 						totalFileSize += len
-						extracteTextFileSizeForVolume += len
+						extractedTextFileSizeForVolume += len
 					End If
 					artifact.HasCountedTextFile = True
 				End If
@@ -603,7 +603,7 @@ Namespace kCura.WinEDDS
 			End If
 			_totalExtractedTextFileLength += extractedTextFileLength
 			_statistics.MetadataBytes = loadFileBytes + _totalExtractedTextFileLength
-			_statistics.FileBytes += totalFileSize - extracteTextFileSizeForVolume
+			_statistics.FileBytes += totalFileSize - extractedTextFileSizeForVolume
 			If Not _errorWriter Is Nothing Then _errorWriterPosition = _errorWriter.BaseStream.Position
 			Dim deletor As New TempTextFileDeletor(New String() {tempLocalIproFullTextFilePath, tempLocalFullTextFilePath})
 			Dim t As New System.Threading.Thread(AddressOf deletor.DeleteFiles)
@@ -1023,15 +1023,22 @@ Namespace kCura.WinEDDS
 
 		Private Function ManageLongText(ByVal sourceValue As Object, ByVal textField As ViewFieldInfo, ByRef downloadedTextFilePath As String, ByVal artifact As Exporters.ObjectExportInfo, ByVal startBound As String, ByVal endBound As String) As Long
 			_nativeFileWriter.Write(startBound)
-			If TypeOf sourceValue Is Byte() Then sourceValue = System.Text.Encoding.Unicode.GetString(DirectCast(sourceValue, Byte()))
+			If TypeOf sourceValue Is Byte() Then
+				sourceValue = System.Text.Encoding.Unicode.GetString(DirectCast(sourceValue, Byte()))
+			End If
 			If sourceValue Is Nothing Then sourceValue = String.Empty
 			Dim textValue As String = sourceValue.ToString
 			Dim source As System.IO.TextReader
 			Dim destination As System.IO.TextWriter = Nothing
 			Dim downloadedFileExists As Boolean = Not String.IsNullOrEmpty(downloadedTextFilePath) AndAlso System.IO.File.Exists(downloadedTextFilePath)
 			If textValue = Relativity.Constants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN Then
-				If Me.Settings.SelectedTextFields IsNot Nothing AndAlso Me.Settings.SelectedTextFields(0).AvfId = textField.AvfId AndAlso downloadedFileExists Then
-					source = Me.GetLongTextStream(downloadedTextFilePath, textField)
+				If Me.Settings.SelectedTextFields IsNot Nothing AndAlso TypeOf textField Is CoalescedTextViewField AndAlso downloadedFileExists Then
+					If Settings.SelectedTextFields.Count = 1 Then
+						source = Me.GetLongTextStream(downloadedTextFilePath, textField)
+					Else
+						Dim precedenceField As ViewFieldInfo = GetFieldForLongTextPrecedenceDownload(textField, artifact)
+						source = Me.GetLongTextStream(downloadedTextFilePath, precedenceField)
+					End If
 				Else
 					source = Me.GetLongTextStream(artifact, textField)
 				End If
