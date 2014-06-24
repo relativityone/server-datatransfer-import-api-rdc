@@ -23,12 +23,6 @@ Namespace kCura.WinEDDS.NUnit
 			End Get
 		End Property
 
-		Protected Overrides ReadOnly Property MaxDataGridRecordSize As Int64
-			Get
-				Return 104857600
-			End Get
-		End Property
-
 		Public PauseCalled As Int32 = 0
 
 		Public Sub New(ByVal args As ImageLoadFile, ByVal processController As kCura.Windows.Process.Controller, ByVal processID As Guid, ByVal doRetryLogic As Boolean, ByVal throwsException As Boolean, ByVal bulkManager As kCura.WinEDDS.Service.BulkImportManager)
