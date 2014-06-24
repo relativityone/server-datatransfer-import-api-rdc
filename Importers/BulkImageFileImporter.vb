@@ -730,7 +730,6 @@ Namespace kCura.WinEDDS
 
 
 					Dim fullTextWriter As System.IO.StreamWriter = If(_fullTextStorageIsInSql, _bulkLoadFileWriter, _dataGridFileWriter)
-					Dim totalFieldByteCount As Int64 = 0
 					For Each filename As String In textFileList
 						Dim chosenEncoding As System.Text.Encoding = _settings.FullTextEncoding
 						Dim fileStream As IO.Stream
@@ -753,21 +752,13 @@ Namespace kCura.WinEDDS
 						End If
 
 						With New System.IO.StreamReader(fileStream, chosenEncoding, True)
-							Dim fileContents As String = .ReadToEnd
-							If Not _fullTextStorageIsInSql Then
-								totalFieldByteCount += chosenEncoding.GetByteCount(fileContents)
-							End If
-							fullTextWriter.Write(fileContents)
+							fullTextWriter.Write(.ReadToEnd)
 							.Close()
 							Try
 								fileStream.Close()
 							Catch
 							End Try
 						End With
-
-						If totalFieldByteCount > Me.MaxDataGridRecordSize Then
-							'TODO: raise error or warning?
-						End If
 					Next
 				Else
 					'no extracted text encodings, write "-1"

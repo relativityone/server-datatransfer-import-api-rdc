@@ -1167,27 +1167,19 @@ Namespace kCura.WinEDDS
 						Dim sr As New System.IO.StreamReader(fileStream, chosenEncoding)
 						Dim count As Int32 = 1
 						Dim buff(_COPY_TEXT_FILE_BUFFER_SIZE) As Char
-						Dim totalFieldByteCount As Int64 = 0
 						Do
 							count = sr.ReadBlock(buff, 0, _COPY_TEXT_FILE_BUFFER_SIZE)
 							If count > 0 Then
-								If field.StorageLocation = Relativity.FieldInfo.StorageLocationChoice.DataGrid Then
-									totalFieldByteCount += chosenEncoding.GetByteCount(buff)
-								End If
 								outputWriter.Write(buff, 0, count)
 								outputWriter.Flush()
 							End If
-						Loop Until (count = 0 OrElse totalFieldByteCount > Me.MaxDataGridRecordSize)
+						Loop Until count = 0
 
 						sr.Close()
 						Try
 							fileStream.Close()
 						Catch
 						End Try
-
-						If totalFieldByteCount > Me.MaxDataGridRecordSize Then
-							'TODO: raise error or warning?
-						End If
 					End If
 				ElseIf field.Type = Relativity.FieldTypeHelper.FieldType.Boolean Then
 					If field.ValueAsString <> String.Empty Then
@@ -1204,9 +1196,6 @@ Namespace kCura.WinEDDS
 						outputWriter.Write(d)
 					End If
 				Else
-					If field.Type = Relativity.FieldTypeHelper.FieldType.Text AndAlso field.StorageLocation = Relativity.FieldInfo.StorageLocationChoice.DataGrid AndAlso System.Text.Encoding.UTF8.GetByteCount(field.ValueAsString) > Me.MaxDataGridRecordSize Then
-						'TODO: raise error or warning?
-					End If
 					outputWriter.Write(field.Value)
 				End If
 				outputWriter.Write(delimiter)
