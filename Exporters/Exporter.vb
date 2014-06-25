@@ -156,7 +156,6 @@ Namespace kCura.WinEDDS
 			Dim maxTries As Int32 = NumberOfRetries + 1
 
 			Dim typeOfExportDisplayString As String = ""
-			Dim fileCount As Int32 = 0
 			Dim errorOutputFilePath As String = _exportFile.FolderPath & "\" & _exportFile.LoadFilesPrefix & "_img_errors.txt"
 			If System.IO.File.Exists(errorOutputFilePath) AndAlso _exportFile.Overwrite Then kCura.Utility.File.Instance.Delete(errorOutputFilePath)
 			Me.WriteUpdate("Retrieving export data from the server...")
@@ -165,7 +164,9 @@ Namespace kCura.WinEDDS
 			Dim columnHeaderString As String = Me.LoadColumns
 			Dim allAvfIds As New System.Collections.Generic.List(Of Int32)
 			For i As Int32 = 0 To _columns.Count - 1
-				If Not TypeOf _columns(i) Is CoalescedTextViewField Then allAvfIds.Add(Me.Settings.SelectedViewFields(i).AvfId)
+				If Not TypeOf _columns(i) Is CoalescedTextViewField Then
+					allAvfIds.Add(Me.Settings.SelectedViewFields(i).AvfId)
+				End If
 			Next
 			Dim production As kCura.EDDS.WebAPI.ProductionManagerBase.Production = Nothing
 
@@ -333,7 +334,6 @@ Namespace kCura.WinEDDS
 					ExportChunk(DirectCast(artifactIDs.ToArray(GetType(Int32)), Int32()), records)
 					artifactIDs.Clear()
 					records = Nothing
-					fileCount = 0
 				End If
 				If _halt Then Exit While
 			End While
@@ -659,6 +659,16 @@ Namespace kCura.WinEDDS
 			End If
 		End Function
 
+		''' <summary>
+		''' Sets the member variable _columns to contain an array of each Field which will be exported.
+		''' _columns is an array of ViewFieldInfo, but for the "Text Precedence" column, the array item is
+		''' a CoalescedTextViewField (a subclass of ViewFieldInfo).
+		''' </summary>
+		''' <returns>A string containing the contents of the export file header.  For example, if _exportFile.LoadFile is false,
+		''' and the fields selected to export are (Control Number and ArtifactID), along with the Text Precendence which includes
+		''' Extracted Text, then the following string would be returned: ""Control Number","Artifact ID","Text Precedence" "
+		''' </returns>
+		''' <remarks></remarks>
 		Private Function LoadColumns() As String
 			'Dim table As System.Data.DataTable
 			Dim retString As New System.Text.StringBuilder
@@ -710,11 +720,9 @@ Namespace kCura.WinEDDS
 			If _exportFile.LoadFileIsHtml Then
 				If Me.Settings.ExportImages AndAlso Me.Settings.ArtifactTypeID = Relativity.ArtifactType.Document Then retString.Append("<th>Image Files</th>")
 				If Me.Settings.ExportNative Then retString.Append("<th>Native Files</th>")
-				'If Me.Settings.ExportFullText Then retString.Append("<th>Extracted Text</th>")
 				retString.Append(vbNewLine & "</tr>" & vbNewLine)
 			Else
 				If Me.Settings.ExportNative Then retString.AppendFormat("{2}{0}{1}{0}", Me.Settings.QuoteDelimiter, "FILE_PATH", Me.Settings.RecordDelimiter)
-				'If Me.Settings.ExportFullText Then retString.AppendFormat("{2}{0}{1}{0}", Me.Settings.QuoteDelimiter, "Extracted Text", Me.Settings.RecordDelimiter)
 			End If
 			retString.Append(System.Environment.NewLine)
 			Return retString.ToString
