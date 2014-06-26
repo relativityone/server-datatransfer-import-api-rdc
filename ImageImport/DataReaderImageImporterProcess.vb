@@ -21,7 +21,7 @@ Namespace kCura.WinEDDS.ImportExtension
 					ImageLoadFile.Overwrite = "both"
 			End Select
 
-			Return New DataReaderImageImporter(ImageLoadFile.DestinationFolderID, ImageLoadFile, New kCura.Windows.Process.Controller, System.Guid.NewGuid, _sourceData)
+			Return New DataReaderImageImporter(ImageLoadFile.DestinationFolderID, ImageLoadFile, Me.ProcessController, System.Guid.NewGuid, _sourceData)
 
 		End Function
 
