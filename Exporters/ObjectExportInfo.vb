@@ -19,15 +19,6 @@ Namespace kCura.WinEDDS.Exporters
 		Private _fileID As Int32 = 0
 		Private _metadata As Object()
 
-		'Public Property DataRow() As System.Data.DataRow
-		'	Get
-		'		Return _dataRow
-		'	End Get
-		'	Set(ByVal value As System.Data.DataRow)
-		'		_dataRow = value
-		'	End Set
-		'End Property
-
 		Public Property Metadata() As Object()
 			Get
 				Return _metadata
