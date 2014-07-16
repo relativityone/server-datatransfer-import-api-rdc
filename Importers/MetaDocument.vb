@@ -13,7 +13,7 @@ Namespace kCura.WinEDDS
 
 		Private _record As Api.ArtifactFieldCollection
 		Private _fileIdData As OI.FileID.FileIDData
-		Private _lineStatus As Int32
+		Private _lineStatus As Int64
 		Private _destinationVolume As String
 
 		Public Property DestinationVolume() As String
@@ -117,11 +117,11 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
-		Public Property LineStatus() As Int32
+		Public Property LineStatus() As Int64
 			Get
 				Return _lineStatus
 			End Get
-			Set(ByVal value As Int32)
+			Set(ByVal value As Int64)
 				_lineStatus = value
 			End Set
 		End Property
@@ -139,7 +139,7 @@ Namespace kCura.WinEDDS
 		 ByVal parentFolderID As Int32, _
 		 ByVal record As Api.ArtifactFieldCollection, _
 		 ByVal oixFileData As OI.FileID.FileIDData, _
-		 ByVal lineStatus As Int32, _
+		 ByVal lineStatus As Int64, _
 		 ByVal destinationVolume As String,
 		 ByVal folderPath As String
 		 )
@@ -187,7 +187,7 @@ Namespace kCura.WinEDDS
 		 ByVal parentFolderID As Int32, _
 		 ByVal record As Api.ArtifactFieldCollection, _
 		 ByVal oixFileData As OI.FileID.FileIDData, _
-		 ByVal lineStatus As Int32, _
+		 ByVal lineStatus As Int64, _
 		 ByVal destinationVolume As String, _
 		 ByVal size As Long,
 		 ByVal folderPath As String

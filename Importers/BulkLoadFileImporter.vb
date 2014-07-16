@@ -514,7 +514,7 @@ Namespace kCura.WinEDDS
 			_fieldArtifactIds = DirectCast(fieldIdList.ToArray(GetType(Int32)), Int32())
 		End Sub
 
-		Private Function ManageDocument(ByVal record As Api.ArtifactFieldCollection, ByVal lineStatus As Int32) As String
+		Private Function ManageDocument(ByVal record As Api.ArtifactFieldCollection, ByVal lineStatus As Int64) As String
 			Dim filename As String = Nothing
 			Dim fileGuid As String = String.Empty
 			Dim uploadFile As Boolean = record.FieldList(Relativity.FieldTypeHelper.FieldType.File).Length > 0 AndAlso Not record.FieldList(Relativity.FieldTypeHelper.FieldType.File)(0).Value Is Nothing

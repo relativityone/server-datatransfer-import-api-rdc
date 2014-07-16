@@ -241,7 +241,7 @@ Namespace kCura.WinEDDS
 			Me.ReadFile(_filePath)
 		End Sub
 
-		Private Sub ProcessList(ByVal al As System.Collections.Generic.List(Of Api.ImageRecord), ByRef status As Int32, ByVal bulkLoadFilePath As String, ByVal dataGridFilePath As String)
+		Private Sub ProcessList(ByVal al As System.Collections.Generic.List(Of Api.ImageRecord), ByRef status As Int64, ByVal bulkLoadFilePath As String, ByVal dataGridFilePath As String)
 			Try
 				If al.Count = 0 Then Exit Sub
 				Me.ProcessDocument(al, status)
@@ -529,7 +529,7 @@ Namespace kCura.WinEDDS
 				_fileLineCount = _imageReader.CountRecords
 				RaiseStatusEvent(kCura.Windows.Process.EventType.Progress, "Begin Image Upload", 0, 0)
 				Dim al As New System.Collections.Generic.List(Of Api.ImageRecord)
-				Dim status As Int32 = 0
+				Dim status As Int64 = 0
 				_timekeeper.MarkEnd("ReadFile_Init")
 
 				_timekeeper.MarkStart("ReadFile_Main")
@@ -615,7 +615,7 @@ Namespace kCura.WinEDDS
 			RaiseFatalError(ex)
 		End Sub
 
-		Private Sub ProcessDocument(ByVal al As System.Collections.Generic.List(Of Api.ImageRecord), ByVal status As Int32)
+		Private Sub ProcessDocument(ByVal al As System.Collections.Generic.List(Of Api.ImageRecord), ByVal status As Int64)
 			Try
 				GetImagesForDocument(al, status)
 				_statistics.DocCount += 1
@@ -685,7 +685,7 @@ Namespace kCura.WinEDDS
 		End Function
 
 
-		Private Sub GetImagesForDocument(ByVal lines As System.Collections.Generic.List(Of Api.ImageRecord), ByVal status As Int32)
+		Private Sub GetImagesForDocument(ByVal lines As System.Collections.Generic.List(Of Api.ImageRecord), ByVal status As Int64)
 			Try
 				Me.AutoNumberImages(lines)
 				Dim hasFileIdentifierProblem As Boolean = False
@@ -807,7 +807,7 @@ Namespace kCura.WinEDDS
 		End Sub
 
 
-		Private Sub GetImageForDocument(ByVal imageFileName As String, ByVal batesNumber As String, ByVal documentIdentifier As String, ByVal order As Int32, ByRef offset As Int64, ByVal fullTextFiles As System.Collections.ArrayList, ByVal writeLineTermination As Boolean, ByVal originalLineNumber As String, ByVal status As Int32, ByVal totalForDocument As Int32, ByVal isStartRecord As Boolean)
+		Private Sub GetImageForDocument(ByVal imageFileName As String, ByVal batesNumber As String, ByVal documentIdentifier As String, ByVal order As Int32, ByRef offset As Int64, ByVal fullTextFiles As System.Collections.ArrayList, ByVal writeLineTermination As Boolean, ByVal originalLineNumber As String, ByVal status As Int64, ByVal totalForDocument As Int32, ByVal isStartRecord As Boolean)
 			Try
 				_totalProcessed += 1
 				Dim filename As String = imageFileName.Substring(imageFileName.LastIndexOf("\") + 1)
@@ -847,8 +847,8 @@ Namespace kCura.WinEDDS
 				End If
 				_bulkLoadFileWriter.Write(If(isStartRecord, "1,", "0,"))
 				_bulkLoadFileWriter.Write(status & ",")
-				_bulkLoadFileWriter.Write("0,") 'IsNew
-				_bulkLoadFileWriter.Write("0,") 'ArtifactID
+				_bulkLoadFileWriter.Write("0,")	'IsNew
+				_bulkLoadFileWriter.Write("0,")	'ArtifactID
 				_bulkLoadFileWriter.Write(originalLineNumber & ",")
 				_bulkLoadFileWriter.Write(documentIdentifier & ",")
 				_bulkLoadFileWriter.Write(batesNumber & ",")
