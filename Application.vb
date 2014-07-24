@@ -1037,7 +1037,7 @@ Namespace kCura.EDDS.WinForm
 			CursorDefault()
 		End Sub
 
-		Public Sub NewLogin(Optional ByVal openCaseSelector As Boolean = True)
+		Public Function NewLogin(Optional ByVal openCaseSelector As Boolean = True) As Form
 			CursorWait()
 			If Not _loginForm Is Nothing Then
 				If Not _loginForm.IsDisposed Then
@@ -1048,7 +1048,8 @@ Namespace kCura.EDDS.WinForm
 			_loginForm.OpenCaseSelector = openCaseSelector
 			_loginForm.Show()
 			CursorDefault()
-		End Sub
+			Return _loginForm
+		End Function
 #End Region
 
 #Region "Process Management"
