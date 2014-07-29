@@ -1,6 +1,5 @@
 Imports System.Windows.Forms
 Imports System.Drawing
-Imports System.Collections.Generic
 
 ' TODO : Change namespace of this control
 Namespace kCura.Windows.Forms
@@ -19,6 +18,9 @@ Namespace kCura.Windows.Forms
 
 			'This call is required by the Windows Form Designer.
 			InitializeComponent()
+
+			'Add any initialization after the InitializeComponent() call
+
 		End Sub
 
 		'UserControl overrides dispose to clean up the component list.
@@ -47,20 +49,7 @@ Namespace kCura.Windows.Forms
 		Friend WithEvents _moveRightSelectedItemUp As System.Windows.Forms.Button
 		Friend WithEvents _moveLeftSelectedItemDown As System.Windows.Forms.Button
 		Friend WithEvents _moveLeftSelectedItemUp As System.Windows.Forms.Button
-
-		Public ReadOnly Property LeftListBox() As kCura.Windows.Forms.ListBox
-			Get
-				Return _leftListBox
-			End Get
-		End Property
-
-		Public ReadOnly Property RightListBox() As kCura.Windows.Forms.ListBox
-			Get
-				Return _rightListBox
-			End Get
-		End Property
-
-		Private Sub InitializeComponent()
+		<System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
 			Me._rightListBox = New kCura.Windows.Forms.ListBox(Me.RelativityHighlightColor)
 			Me._moveAllFieldsLeft = New System.Windows.Forms.Button
 			Me._moveFieldLeft = New System.Windows.Forms.Button
@@ -81,10 +70,8 @@ Namespace kCura.Windows.Forms
 			Me._rightListBox.Location = New System.Drawing.Point(212, 0)
 			Me._rightListBox.Name = "_rightListBox"
 			Me._rightListBox.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended
-			Me._rightListBox.Size = New System.Drawing.Size(144, 280)
+			Me._rightListBox.Size = New System.Drawing.Size(144, 277)
 			Me._rightListBox.TabIndex = 16
-			Me._rightListBox.IntegralHeight = False
-			Me._rightListBox.DrawMode = DrawMode.OwnerDrawVariable
 			'
 			'_moveAllFieldsLeft
 			'
@@ -130,15 +117,13 @@ Namespace kCura.Windows.Forms
 			Me._leftListBox.Location = New System.Drawing.Point(24, 0)
 			Me._leftListBox.Name = "_leftListBox"
 			Me._leftListBox.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended
-			Me._leftListBox.Size = New System.Drawing.Size(144, 280)
+			Me._leftListBox.Size = New System.Drawing.Size(144, 277)
 			Me._leftListBox.TabIndex = 11
-			Me._leftListBox.IntegralHeight = False
-			Me._leftListBox.DrawMode = DrawMode.OwnerDrawVariable
 			'
 			'_moveRightSelectedItemDown
 			'
 			Me._moveRightSelectedItemDown.Font = New System.Drawing.Font("Wingdings", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(2, Byte))
-			Me._moveRightSelectedItemDown.Location = New System.Drawing.Point(360, 132)
+			Me._moveRightSelectedItemDown.Location = New System.Drawing.Point(360, 140)
 			Me._moveRightSelectedItemDown.Name = "_moveRightSelectedItemDown"
 			Me._moveRightSelectedItemDown.RightToLeft = System.Windows.Forms.RightToLeft.No
 			Me._moveRightSelectedItemDown.Size = New System.Drawing.Size(20, 24)
@@ -187,138 +172,10 @@ Namespace kCura.Windows.Forms
 			Me.Controls.Add(Me._leftListBox)
 			Me.Name = "TwoListBox"
 			Me.Size = New System.Drawing.Size(380, 280)
-
 			Me.ResumeLayout(False)
 
 		End Sub
 
-#End Region
-
-#Region "Resizing"
-		'MeasureItem fixes issues in Large DPI mode
-		Private Sub LeftListBox_MeasureItem(sender As Object, e As System.Windows.Forms.MeasureItemEventArgs) Handles _leftListBox.MeasureItem
-			MeasureItemImpl(_leftListBox, e)
-		End Sub
-
-		'MeasureItem fixes issues in Large DPI mode
-		Private Sub RightListBox_MeasureItem(sender As Object, e As System.Windows.Forms.MeasureItemEventArgs) Handles _rightListBox.MeasureItem
-			MeasureItemImpl(_rightListBox, e)
-		End Sub
-
-		Private Sub MeasureItemImpl(parentListBox As ListBox, e As System.Windows.Forms.MeasureItemEventArgs)
-			Dim initialSize As Size = New Size(Me.Width, 1000)
-			Dim str As String = parentListBox.Items(e.Index).ToString()
-			Dim itemSize As SizeF = e.Graphics.MeasureString(str, _leftListBox.Font, initialSize)
-			e.ItemHeight = CInt(itemSize.Height)
-			e.ItemWidth = CInt(itemSize.Width)
-		End Sub
-
-		'These member variables are populated with data needed to resize the controls
-
-		'Avoid adjusting the layout if the size hasn't changed
-		Private _layoutControlSize As Size
-
-		' The margin between controls plus the up-down button width
-		' We need to know so we can adjust the control locations if the left buttons 
-		' are changed to not-visible
-		Private _layoutMarginPlusUpDownButtonWidth As Int32
-
-		' Used to keep track of whether we need to calculate the layout values.  In addition to
-		' initial population, they may need to be populated later due to autoscaling.  Autoscaling
-		' will change the distance between concrols which we would not expect to change.  If this
-		' happens, the _layout info which contains the relative location of controls needs to be 
-		' updated.
-		Private _layoutReferenceDistance As Int32 = 0
-
-		Private _layoutRatioList As List(Of RelativeLayoutData)
-		Private _layoutDifferenceList As List(Of RelativeLayoutData)
-
-		Private Function CalcReferenceDistance() As Int32
-			Return _rightListBox.Left - _leftListBox.Right
-		End Function
-
-		Private Sub OnControl_Layout(ByVal sender As Object, ByVal e As System.Windows.Forms.LayoutEventArgs) Handles MyBase.Layout
-			If _layoutReferenceDistance <> CalcReferenceDistance() Then
-				InitializeLayout()
-			Else
-				AdjustLayout()
-			End If
-		End Sub
-
-		Private Sub InitializeLayout()
-			Dim margin As Int32 = _moveAllFieldsLeft.Left - _leftListBox.Right
-			Dim upDownButtonWidth As Int32
-			If (_moveRightSelectedItemUp.Visible) Then
-				upDownButtonWidth = _moveRightSelectedItemUp.Width
-			Else
-				upDownButtonWidth = _moveLeftSelectedItemUp.Width
-			End If
-			_layoutMarginPlusUpDownButtonWidth = margin + upDownButtonWidth
-
-			_layoutControlSize = Me.Size
-
-			'Layout properties which are based on a ratio to another layout property. 
-			If _layoutRatioList Is Nothing Then
-				_layoutRatioList = New List(Of RelativeLayoutData)
-
-				'When the width of the control increases by 2 pixels, each groupbox increases by 1 pixel.  The ratio is 1/2 = .5
-				_layoutRatioList.Add(New RelativeLayoutData(Me, LayoutBasePropertyTypeForRatio.Width, _leftListBox, LayoutRelativePropertyTypeForRatio.Width, 0.5))
-				_layoutRatioList.Add(New RelativeLayoutData(Me, LayoutBasePropertyTypeForRatio.Width, _rightListBox, LayoutRelativePropertyTypeForRatio.Width, 0.5))
-
-				'When the height of the control increases by 2 pixels, move the top of the arrow buttons by 1 pixel, 
-				'so that they will continue to be vertically centered.  The ration is 1/2 = .5
-				_layoutRatioList.Add(New RelativeLayoutData(Me, LayoutBasePropertyTypeForRatio.Height, _moveAllFieldsLeft, LayoutRelativePropertyTypeForRatio.Top, 0.5))
-				_layoutRatioList.Add(New RelativeLayoutData(Me, LayoutBasePropertyTypeForRatio.Height, _moveAllFieldsRight, LayoutRelativePropertyTypeForRatio.Top, 0.5))
-				_layoutRatioList.Add(New RelativeLayoutData(Me, LayoutBasePropertyTypeForRatio.Height, _moveFieldLeft, LayoutRelativePropertyTypeForRatio.Top, 0.5))
-				_layoutRatioList.Add(New RelativeLayoutData(Me, LayoutBasePropertyTypeForRatio.Height, _moveFieldRight, LayoutRelativePropertyTypeForRatio.Top, 0.5))
-				_layoutRatioList.Add(New RelativeLayoutData(Me, LayoutBasePropertyTypeForRatio.Height, _moveLeftSelectedItemUp, LayoutRelativePropertyTypeForRatio.Top, 0.5))
-				_layoutRatioList.Add(New RelativeLayoutData(Me, LayoutBasePropertyTypeForRatio.Height, _moveLeftSelectedItemDown, LayoutRelativePropertyTypeForRatio.Top, 0.5))
-				_layoutRatioList.Add(New RelativeLayoutData(Me, LayoutBasePropertyTypeForRatio.Height, _moveRightSelectedItemUp, LayoutRelativePropertyTypeForRatio.Top, 0.5))
-				_layoutRatioList.Add(New RelativeLayoutData(Me, LayoutBasePropertyTypeForRatio.Height, _moveRightSelectedItemDown, LayoutRelativePropertyTypeForRatio.Top, 0.5))
-			End If
-
-			_layoutRatioList.ForEach(Sub(x)
-																 x.InitalizeRatioValues()
-															 End Sub)
-
-			'Layout properties which are directly based on another layout property
-			If _layoutDifferenceList Is Nothing Then
-				_layoutDifferenceList = New List(Of RelativeLayoutData)
-
-				_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutBasePropertyTypeForDifference.Height, _leftListBox, LayoutRelativePropertyTypeForDifference.Height))
-				_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutBasePropertyTypeForDifference.Height, _rightListBox, LayoutRelativePropertyTypeForDifference.Height))
-
-				_layoutDifferenceList.Add(New RelativeLayoutData(_leftListBox, LayoutBasePropertyTypeForDifference.Right, _moveAllFieldsLeft, LayoutRelativePropertyTypeForDifference.Left))
-				_layoutDifferenceList.Add(New RelativeLayoutData(_leftListBox, LayoutBasePropertyTypeForDifference.Right, _moveAllFieldsRight, LayoutRelativePropertyTypeForDifference.Left))
-				_layoutDifferenceList.Add(New RelativeLayoutData(_leftListBox, LayoutBasePropertyTypeForDifference.Right, _moveFieldLeft, LayoutRelativePropertyTypeForDifference.Left))
-				_layoutDifferenceList.Add(New RelativeLayoutData(_leftListBox, LayoutBasePropertyTypeForDifference.Right, _moveFieldRight, LayoutRelativePropertyTypeForDifference.Left))
-
-				_layoutDifferenceList.Add(New RelativeLayoutData(_moveFieldLeft, LayoutBasePropertyTypeForDifference.Right, _rightListBox, LayoutRelativePropertyTypeForDifference.Left))
-
-				_layoutDifferenceList.Add(New RelativeLayoutData(_rightListBox, LayoutBasePropertyTypeForDifference.Right, _moveRightSelectedItemUp, LayoutRelativePropertyTypeForDifference.Left))
-				_layoutDifferenceList.Add(New RelativeLayoutData(_rightListBox, LayoutBasePropertyTypeForDifference.Right, _moveRightSelectedItemDown, LayoutRelativePropertyTypeForDifference.Left))
-			End If
-
-			_layoutDifferenceList.ForEach(Sub(x)
-																			x.InitializeDifference()
-																		End Sub)
-
-			_layoutReferenceDistance = CalcReferenceDistance()
-		End Sub
-
-		Public Sub AdjustLayout()
-			If Not _layoutControlSize.Equals(Me.Size) Then
-				For Each x As RelativeLayoutData In _layoutRatioList
-					x.AdjustRelativeControlBasedOnRatio()
-				Next
-
-				For Each x As RelativeLayoutData In _layoutDifferenceList
-					x.AdjustRelativeControlBasedOnDifference()
-				Next
-
-				_layoutControlSize = Me.Size
-			End If
-		End Sub
 #End Region
 
 #Region " Properties "
@@ -332,51 +189,41 @@ Namespace kCura.Windows.Forms
 				Return _moveLeftSelectedItemDown.Visible
 			End Get
 			Set(ByVal value As Boolean)
-				If _moveLeftSelectedItemDown.Visible <> value OrElse _moveLeftSelectedItemUp.Visible <> value Then
-					Me.SuspendLayout()
-					'System.Diagnostics.Debug.WriteLine("Visible = " + _moveLeftSelectedItemDown.Visible.ToString())
-					'System.Diagnostics.Debug.WriteLine("Setting value to " + value.ToString())
-					_moveLeftSelectedItemDown.Visible = value
-					'System.Diagnostics.Debug.WriteLine("Visible = " + _moveLeftSelectedItemDown.Visible.ToString())
-					_moveLeftSelectedItemUp.Visible = value
-
-					'Visible
-					If _moveLeftSelectedItemDown.Visible And _leftListBox.Left = 0 Then
-						MoveControlsHorizontally(Me._layoutMarginPlusUpDownButtonWidth)
-					ElseIf (Not _moveLeftSelectedItemDown.Visible) And _leftListBox.Left > 0 Then
-						MoveControlsHorizontally(-_leftListBox.Left)
+				_moveLeftSelectedItemDown.Visible = value
+				_moveLeftSelectedItemUp.Visible = value
+				If value = False Then
+					Dim pos As Int32 = -24
+					AdjustXPosition(_leftListBox, pos)
+					AdjustXPosition(_moveAllFieldsLeft, pos)
+					AdjustXPosition(_moveFieldLeft, pos)
+					AdjustXPosition(_moveFieldRight, pos)
+					AdjustXPosition(_moveAllFieldsRight, pos)
+					AdjustXPosition(_rightListBox, pos)
+					AdjustXPosition(_moveRightSelectedItemDown, pos)
+					AdjustXPosition(_moveRightSelectedItemUp, pos)
+				Else
+					Dim pos As Int32 = 24
+					If _leftListBox.Location.X <> 24 Then
+						AdjustXPosition(_leftListBox, pos)
+						AdjustXPosition(_moveAllFieldsLeft, pos)
+						AdjustXPosition(_moveFieldLeft, pos)
+						AdjustXPosition(_moveFieldRight, pos)
+						AdjustXPosition(_moveAllFieldsRight, pos)
+						AdjustXPosition(_rightListBox, pos)
+						AdjustXPosition(_moveRightSelectedItemUp, pos)
+						AdjustXPosition(_moveRightSelectedItemDown, pos)
 					End If
-					Me.ResumeLayout()
-
-					'Recalculate all the distances
-					InitializeLayout()
 				End If
 			End Set
 		End Property
-
-		Private Sub MoveControlsHorizontally(distance As Int32)
-			_leftListBox.Left = _leftListBox.Left + distance
-			_rightListBox.Left = _rightListBox.Left + distance
-
-			_moveAllFieldsLeft.Left = _moveAllFieldsLeft.Left + distance
-			_moveAllFieldsRight.Left = _moveAllFieldsRight.Left + distance
-			_moveFieldLeft.Left = _moveFieldLeft.Left + distance
-			_moveFieldRight.Left = _moveFieldRight.Left + distance
-
-			_moveRightSelectedItemDown.Left = _moveRightSelectedItemDown.Left + distance
-			_moveRightSelectedItemUp.Left = _moveRightSelectedItemUp.Left + distance
-		End Sub
 
 		Public Property RightOrderControlVisible() As Boolean
 			Get
 				Return _moveRightSelectedItemDown.Visible
 			End Get
 			Set(ByVal value As Boolean)
-				If _moveRightSelectedItemDown.Visible <> value OrElse _moveRightSelectedItemUp.Visible <> value Then
-					_moveRightSelectedItemDown.Visible = value
-					_moveRightSelectedItemUp.Visible = value
-					InitializeLayout()
-				End If
+				_moveRightSelectedItemDown.Visible = value
+				_moveRightSelectedItemUp.Visible = value
 			End Set
 		End Property
 
