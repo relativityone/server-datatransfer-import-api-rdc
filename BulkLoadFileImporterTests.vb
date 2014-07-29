@@ -1,4 +1,4 @@
-﻿Imports kCura.EDDS.WebAPI.BulkImportManagerBase
+Imports kCura.EDDS.WebAPI.BulkImportManagerBase
 Imports NUnit.Framework
 Imports kCura.Windows.Process
 Imports kCura.WinEDDS.LoadFileFieldMap
@@ -291,43 +291,6 @@ Namespace kCura.WinEDDS.NUnit
 			Assert.AreEqual(Nothing, fields(13).ImportBehavior)
 			Assert.AreEqual(Nothing, fields(14).ImportBehavior)
 		End Sub
-#End Region
-
-#Region " GetMassImportOverlayType "
-
-		<Test>
-		<TestCaseSource("OverlayTypeSource")>
-		Public Sub GetMassImportOverlayBehavior(ByVal inputOverlayType As LoadFile.FieldOverlayBehavior, expectedOverlayType As kCura.EDDS.WebAPI.BulkImportManagerBase.OverlayBehavior)
-			Dim bulkImporter As MockBulkLoadFileImporter = New MockBulkLoadFileImporter(_args, _controller, 0, False, False, _guid, True, "S", True, New MockBulkImportManagerWebExceptions(True))
-			Assert.AreEqual(bulkImporter.ConvertOverlayBehaviorEnum(inputOverlayType), expectedOverlayType)
-		End Sub
-
-		Public Shared Function OverlayTypeSource() As TestCaseData()
-			Dim retval(3) As TestCaseData
-			retval(0) = New TestCaseData(LoadFile.FieldOverlayBehavior.UseRelativityDefaults, kCura.EDDS.WebAPI.BulkImportManagerBase.OverlayBehavior.UseRelativityDefaults)
-			retval(1) = New TestCaseData(LoadFile.FieldOverlayBehavior.ReplaceAll, kCura.EDDS.WebAPI.BulkImportManagerBase.OverlayBehavior.ReplaceAll)
-			retval(2) = New TestCaseData(LoadFile.FieldOverlayBehavior.MergeAll, kCura.EDDS.WebAPI.BulkImportManagerBase.OverlayBehavior.MergeAll)
-			retval(3) = New TestCaseData(Nothing, kCura.EDDS.WebAPI.BulkImportManagerBase.OverlayBehavior.UseRelativityDefaults)
-			Return retval
-		End Function
-
-#End Region
-
-#Region " CleanDestinationFolderPath "
-
-		<Test>
-		<TestCase("\", "")>
-		<TestCase("\", "\\")>
-		<TestCase("\ႝ", "\ႝ\")>
-		<TestCase("\aaa\bbb\cc", "aaa\\bbb\\cc")>
-		<TestCase("\aaa\bbb\cc", "aaa\\\\\\\\\\bbb\\cc")>
-		<TestCase("\SourceCode\Mainline\EDDS\kCura.WinEDDS\Importers", ".\SourceCode\Mainline\EDDS\kCura.WinEDDS\Importers")>
-		Public Sub CleanDestinationFolderPath(ByVal expected As String, ByVal input As String)
-			Dim bulkImporter As MockBulkLoadFileImporter = New MockBulkLoadFileImporter(_args, _controller, 0, False, False, _guid, True, "S", True, New MockBulkImportManagerSqlExceptions(True))
-			Dim actual As String = bulkImporter.CleanFolderPath(input)
-			Assert.AreEqual(expected, actual)
-		End Sub
-
 #End Region
 
 	End Class
