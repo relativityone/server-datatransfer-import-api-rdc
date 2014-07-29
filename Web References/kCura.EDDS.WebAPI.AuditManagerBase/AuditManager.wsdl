@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<wsdl:definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://www.kCura.com/EDDS/AuditManager" xmlns:s1="http://microsoft.com/wsdl/types/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://www.kCura.com/EDDS/AuditManager" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+<wsdl:definitions xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://www.kCura.com/EDDS/AuditManager" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:s1="http://microsoft.com/wsdl/types/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://www.kCura.com/EDDS/AuditManager" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
   <wsdl:types>
     <s:schema elementFormDefault="qualified" targetNamespace="http://www.kCura.com/EDDS/AuditManager">
       <s:import namespace="http://microsoft.com/wsdl/types/" />
@@ -62,7 +62,6 @@
           <s:element minOccurs="1" maxOccurs="1" name="NumberOfWarnings" type="s:long" />
           <s:element minOccurs="1" maxOccurs="1" name="RunTimeInMilliseconds" type="s:int" />
           <s:element minOccurs="1" maxOccurs="1" name="SendNotification" type="s:boolean" />
-          <s:element minOccurs="1" maxOccurs="1" name="OverlayBehavior" nillable="true" type="tns:OverlayBehavior" />
         </s:sequence>
       </s:complexType>
       <s:complexType name="ArrayOfInt">
@@ -81,13 +80,6 @@
           <s:enumeration value="Append" />
           <s:enumeration value="Overlay" />
           <s:enumeration value="Both" />
-        </s:restriction>
-      </s:simpleType>
-      <s:simpleType name="OverlayBehavior">
-        <s:restriction base="s:string">
-          <s:enumeration value="UseRelativityDefaults" />
-          <s:enumeration value="MergeAll" />
-          <s:enumeration value="ReplaceAll" />
         </s:restriction>
       </s:simpleType>
       <s:element name="AuditImageImportResponse">

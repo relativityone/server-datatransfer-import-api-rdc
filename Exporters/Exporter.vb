@@ -220,7 +220,7 @@ Namespace kCura.WinEDDS
 					End While
 
 				Case ExportFile.ExportType.ParentSearch
-                    typeOfExportDisplayString = "folder"
+					typeOfExportDisplayString = "folder"
 					
 					While tries < maxTries
 						tries += 1
@@ -688,7 +688,7 @@ Namespace kCura.WinEDDS
 			_columns = New System.Collections.ArrayList(Me.Settings.SelectedViewFields)
 			If Not Me.Settings.SelectedTextFields Is Nothing AndAlso Me.Settings.SelectedTextFields.Count > 0 Then
 				Dim longTextSelectedViewFields As New List(Of ViewFieldInfo)()
-				longTextSelectedViewFields.AddRange(Me.Settings.SelectedViewFields.Where(Function(f As ViewFieldInfo) f.FieldType = Relativity.FieldTypeHelper.FieldType.Text OrElse f.FieldType = Relativity.FieldTypeHelper.FieldType.OffTableText))
+				longTextSelectedViewFields.AddRange(Me.Settings.SelectedViewFields.Where(Function(f As ViewFieldInfo) f.FieldType = Relativity.FieldTypeHelper.FieldType.Text))
 				If (Me.Settings.SelectedTextFields.Count = 1) AndAlso longTextSelectedViewFields.Exists(Function(f As ViewFieldInfo) f.Equals(Me.Settings.SelectedTextFields.First)) Then
 					Dim selectedViewFieldToRemove As ViewFieldInfo = longTextSelectedViewFields.Find(Function(f As ViewFieldInfo) f.Equals(Me.Settings.SelectedTextFields.First))
 					If selectedViewFieldToRemove IsNot Nothing Then

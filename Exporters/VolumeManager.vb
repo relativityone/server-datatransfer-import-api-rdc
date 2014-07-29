@@ -160,8 +160,6 @@ Namespace kCura.WinEDDS
 					Case MsgBoxResult.Cancel
 						parent.Shutdown()
 						Exit Sub
-					Case Else
-						If Not parent.ExportManager.HasExportPermissions(_settings.CaseArtifactID) Then Throw New Service.ExportManager.InsufficientPermissionsForExportException("Export permissions revoked!  Please contact your system administrator to re-instate export permissions.")
 				End Select
 			End If
 			_subdirectoryLabelPaddingWidth = settings.SubdirectoryDigitPadding
@@ -1122,7 +1120,7 @@ Namespace kCura.WinEDDS
 				Dim field As WinEDDS.ViewFieldInfo = DirectCast(_parent.Columns(count), WinEDDS.ViewFieldInfo)
 				columnName = field.AvfColumnName
 				Dim val As Object = record(_ordinalLookup(columnName))
-				If field.FieldType = Relativity.FieldTypeHelper.FieldType.Text OrElse field.FieldType = Relativity.FieldTypeHelper.FieldType.OffTableText Then
+				If field.FieldType = Relativity.FieldTypeHelper.FieldType.Text Then
 					If Me.Settings.LoadFileIsHtml Then
 						extractedTextByteCount += Me.ManageLongText(val, field, fullTextTempFile, doc, "<td>", "</td>")
 					Else

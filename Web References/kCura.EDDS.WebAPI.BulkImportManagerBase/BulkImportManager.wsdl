@@ -147,7 +147,6 @@
           <s:element minOccurs="1" maxOccurs="1" name="AuditLevel" type="tns:ImportAuditLevel" />
           <s:element minOccurs="0" maxOccurs="1" name="BulkLoadFileFieldDelimiter" type="s:string" />
           <s:element minOccurs="1" maxOccurs="1" name="OverlayArtifactID" type="s:int" />
-          <s:element minOccurs="1" maxOccurs="1" name="OverlayBehavior" type="tns:OverlayBehavior" />
           <s:element minOccurs="1" maxOccurs="1" name="KeyFieldArtifactID" type="s:int" />
           <s:element minOccurs="1" maxOccurs="1" name="RootFolderID" type="s:int" />
         </s:sequence>
@@ -221,7 +220,6 @@
           <s:enumeration value="User" />
           <s:enumeration value="LayoutText" />
           <s:enumeration value="Objects" />
-          <s:enumeration value="OffTableText" />
         </s:restriction>
       </s:simpleType>
       <s:simpleType name="ImportBehaviorChoice">
@@ -229,13 +227,6 @@
           <s:enumeration value="LeaveBlankValuesUnchanged" />
           <s:enumeration value="ReplaceBlankValuesWithIdentifier" />
           <s:enumeration value="ObjectFieldContainsArtifactId" />
-        </s:restriction>
-      </s:simpleType>
-      <s:simpleType name="OverlayBehavior">
-        <s:restriction base="s:string">
-          <s:enumeration value="UseRelativityDefaults" />
-          <s:enumeration value="MergeAll" />
-          <s:enumeration value="ReplaceAll" />
         </s:restriction>
       </s:simpleType>
       <s:element name="BulkImportNativeResponse">
@@ -321,20 +312,6 @@
       <s:element name="ErrorFileKey" nillable="true" type="tns:ErrorFileKey" />
       <s:element name="boolean" type="s:boolean" />
       <s:element name="anyType" nillable="true" />
-      <s:element name="HasImportPermissions">
-        <s:complexType>
-          <s:sequence>
-            <s:element minOccurs="1" maxOccurs="1" name="appID" type="s:int" />
-          </s:sequence>
-        </s:complexType>
-      </s:element>
-      <s:element name="HasImportPermissionsResponse">
-        <s:complexType>
-          <s:sequence>
-            <s:element minOccurs="1" maxOccurs="1" name="HasImportPermissionsResult" type="s:boolean" />
-          </s:sequence>
-        </s:complexType>
-      </s:element>
     </s:schema>
   </wsdl:types>
   <wsdl:message name="BulkImportImageSoapIn">
@@ -390,12 +367,6 @@
   </wsdl:message>
   <wsdl:message name="DisposeTempTablesSoapOut">
     <wsdl:part name="parameters" element="tns:DisposeTempTablesResponse" />
-  </wsdl:message>
-  <wsdl:message name="HasImportPermissionsSoapIn">
-    <wsdl:part name="parameters" element="tns:HasImportPermissions" />
-  </wsdl:message>
-  <wsdl:message name="HasImportPermissionsSoapOut">
-    <wsdl:part name="parameters" element="tns:HasImportPermissionsResponse" />
   </wsdl:message>
   <wsdl:message name="GenerateImageErrorFilesHttpGetIn">
     <wsdl:part name="appID" type="s:string" />
@@ -513,10 +484,6 @@
     <wsdl:operation name="DisposeTempTables">
       <wsdl:input message="tns:DisposeTempTablesSoapIn" />
       <wsdl:output message="tns:DisposeTempTablesSoapOut" />
-    </wsdl:operation>
-    <wsdl:operation name="HasImportPermissions">
-      <wsdl:input message="tns:HasImportPermissionsSoapIn" />
-      <wsdl:output message="tns:HasImportPermissionsSoapOut" />
     </wsdl:operation>
   </wsdl:portType>
   <wsdl:portType name="BulkImportManagerHttpGet">
@@ -646,15 +613,6 @@
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="HasImportPermissions">
-      <soap:operation soapAction="http://www.kCura.com/EDDS/BulkImportManager/HasImportPermissions" style="document" />
-      <wsdl:input>
-        <soap:body use="literal" />
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
   </wsdl:binding>
   <wsdl:binding name="BulkImportManagerSoap12" type="tns:BulkImportManagerSoap">
     <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
@@ -732,15 +690,6 @@
     </wsdl:operation>
     <wsdl:operation name="DisposeTempTables">
       <soap12:operation soapAction="http://www.kCura.com/EDDS/BulkImportManager/DisposeTempTables" style="document" />
-      <wsdl:input>
-        <soap12:body use="literal" />
-      </wsdl:input>
-      <wsdl:output>
-        <soap12:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="HasImportPermissions">
-      <soap12:operation soapAction="http://www.kCura.com/EDDS/BulkImportManager/HasImportPermissions" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>

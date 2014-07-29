@@ -480,7 +480,7 @@ Namespace kCura.WinEDDS
 						SetFieldValueObjectsByName(field, columnIndex, forPreview, identityValue)
 					End If
 
-				Case Relativity.FieldTypeHelper.FieldType.Text, Relativity.FieldTypeHelper.FieldType.OffTableText
+				Case Relativity.FieldTypeHelper.FieldType.Text
 					If field.Category = Relativity.FieldCategory.FullText AndAlso _fullTextColumnMapsToFileLocation Then
 						Dim value As String = field.ValueAsString
 						Dim performExtractedTextFileLocationValidation As Boolean = Not DisableExtractedTextFileLocationValidation

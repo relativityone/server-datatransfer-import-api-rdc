@@ -1,6 +1,5 @@
 ﻿Imports System.Collections.Generic
 Imports System.Linq
-Imports System.Windows.Forms
 
 Namespace kCura.WinEDDS
 	Public Class LoadFilePreProcessor
@@ -108,13 +107,9 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Private Function NeedToCheckChoices() As Boolean
-			Dim hasChoicesInFieldMap As Boolean = False
-			If (_fieldMap.Count > 0) Then
-				'Look for any choice fields in the _fieldMap
-				hasChoicesInFieldMap = _fieldMap.ToArray().Where(Function(item) item.DocumentField IsNot Nothing AndAlso (item.NativeFileColumnIndex <> -1 AndAlso item.DocumentField.FieldTypeID = Relativity.FieldTypeHelper.FieldType.Code Or item.DocumentField.FieldTypeID = Relativity.FieldTypeHelper.FieldType.MultiCode)).Any()
-			End If
-
-			Return hasChoicesInFieldMap
+			Return Me._fieldMap.ToArray() _
+			 .Where(Function(item) item.DocumentField.FieldTypeID = Relativity.FieldTypeHelper.FieldType.Code Or item.DocumentField.FieldTypeID = Relativity.FieldTypeHelper.FieldType.MultiCode) _
+			 .Count() > 0	 'Look for any choice fields in the _fieldMap
 		End Function
 
 		Public Sub CountLines()
@@ -166,8 +161,8 @@ Namespace kCura.WinEDDS
 			'Prepare the choice count columns
 			_choicesTable.Clear()
 			For Each item As LoadFileFieldMap.LoadFileFieldMapItem In _fieldMap.ToArray() _
-			 .Where(Function(mitem) mitem.DocumentField.FieldTypeID = Relativity.FieldTypeHelper.FieldType.Code Or mitem.DocumentField.FieldTypeID = Relativity.FieldTypeHelper.FieldType.MultiCode) _
-				.Where(Function(mitem) mitem.NativeFileColumnIndex <> -1)
+			 .Where(Function(mitem) mitem.DocumentField.FieldTypeID = Relativity.FieldTypeHelper.FieldType.Code Or mitem.DocumentField.FieldTypeID = Relativity.FieldTypeHelper.FieldType.MultiCode)
+
 				_choicesTable(item.NativeFileColumnIndex) = New Dictionary(Of String, Boolean)
 			Next
 
