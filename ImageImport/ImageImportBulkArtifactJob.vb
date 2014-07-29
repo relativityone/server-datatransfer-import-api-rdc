@@ -4,7 +4,7 @@ Imports System.Net
 Namespace kCura.Relativity.DataReaderClient
 
 	''' <summary>
-	''' Provides the functionality required to load data for an import job and to retrieve messages from the OnMessage event.
+	''' Provides the functionality required to load data for an import job, and to retrieve messages from the OnMessage event.
 	''' </summary>
 	''' <remarks></remarks>
 	Public Class ImageImportBulkArtifactJob
@@ -13,36 +13,16 @@ Namespace kCura.Relativity.DataReaderClient
 #Region " Public Events and Variables "
 
 		''' <summary>
-		''' Occurs when a status message needs to be presented to the user.
+		''' Executes the DataReaderClient, which operates as an iterator over a data source.
 		''' </summary>
-		''' <param name="status">The message.</param>
+		''' <param name="status"></param>
 		''' <remarks></remarks>
 		Public Event OnMessage(ByVal status As Status)
-		''' <summary>
-		''' Occurs when an error is found.
-		''' </summary>
-		''' <param name="row">The IDictionary containing the error.</param>
 		Public Event OnError(ByVal row As IDictionary)
-		''' <summary>
-		''' Occurs when all the data for an import job has been processed.  Raised at the end of an import.
-		''' </summary>
-		''' <param name="jobReport">The JobReport describing the completed import job.</param>
-		''' <remarks>Does not guarantee successful or error-free completion.</remarks>
 		Public Event OnComplete(ByVal jobReport As JobReport) Implements IImportNotifier.OnComplete
-		''' <summary>
-		''' Occurs when an import job suffers a fatal exception and aborts.  Raised at the end of an import.
-		''' </summary>
-		''' <param name="jobReport">The JobReport describing the failed import job.</param>
 		Public Event OnFatalException(ByVal jobReport As JobReport) Implements IImportNotifier.OnFatalException
-		''' <summary>
-		''' Occurs when a record has been processed.
-		''' </summary>
-		''' <param name="completedRow">The processed record.</param>
 		Public Event OnProgress(ByVal completedRow As Long) Implements IImportNotifier.OnProgress
 
-		''' <summary>
-		''' Gets or sets the current options for imaging files.
-		''' </summary>
 		Public Property Settings As ImageSettings
 			Get
 				Return _settings
@@ -57,7 +37,7 @@ Namespace kCura.Relativity.DataReaderClient
 		''' </summary>
 		''' <value></value>
 		''' <returns></returns>
-		''' <remarks>For standard imports, the SourceIDataReader requires a generic IDataReader object and operates as an iterator over a DataTable instance that contains the data source.</remarks>
+		''' <remarks>For standard imports, the SourceIDataReader requires a generic IDataReader object, and operates as an iterator over a DataTable instance that contains the data source.</remarks>
 		Public Property SourceData As ImageSourceIDataReader
 			Get
 				Return _sourceData
@@ -79,10 +59,6 @@ Namespace kCura.Relativity.DataReaderClient
 #End Region
 
 #Region " Public Methods "
-
-		''' <summary>
-		''' Creates new job to import images in bulk.
-		''' </summary>
 		Public Sub New()
 			_settings = New ImageSettings
 			_sourceData = New ImageSourceIDataReader
@@ -366,7 +342,7 @@ Namespace kCura.Relativity.DataReaderClient
 		''' <summary>
 		''' Exports the error log file for an import job. This file is written only when errors occur.
 		''' </summary>
-		''' <param name="filePathAndName">Specifies a full path and a filename to contain the output.</param>
+		''' <param name="filePathAndName">Specify a full path and filename which will contain the output.</param>
 		''' <remarks></remarks>
 		Public Sub ExportErrorReport(ByVal filePathAndName As String)
 			_controller.ExportErrorReport(filePathAndName)

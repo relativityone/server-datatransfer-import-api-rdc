@@ -1,8 +1,4 @@
 Namespace kCura.Relativity.DataReaderClient
-
-	''' <summary>
-	''' Provides settings for imaging files.
-	''' </summary>
 	Public Class ImageSettings
 		Inherits ImportSettingsBase
 
@@ -32,13 +28,13 @@ Namespace kCura.Relativity.DataReaderClient
 		Public Property ArtifactTypeId() As Int32
 
 		''' <summary>
-		''' Determines whether a page number is automatically appended to a page-level identifier. 
+		''' Determines whether a page number is appended to a page-level identifier. 
 		''' </summary>
 		''' <remarks>When this property is set to True, a new incremental number (such as 01, 02) is added to the page-level identifier, creating a unique page number.</remarks>
 		Public Property AutoNumberImages() As Boolean
 
 		''' <summary>
-		''' Defines a column name in the source DataTable, which maps to a field used as a unique identifier.
+		''' Defines a column name in the source DataTable, which maps to a Field used as a unique identifier in Relativity.
 		''' </summary>
 		''' <remarks>This unique identifier may be called Bates Number or Control Number in a database.</remarks>
 		Public Property BatesNumberField() As String
@@ -55,7 +51,7 @@ Namespace kCura.Relativity.DataReaderClient
 		End Property
 
 		''' <summary>
-		''' Gets or sets the initial integer to be used in Bates Numbering.
+		''' '
 		''' </summary>
 		Public Property BeginBatesFieldArtifactID() As Int32
 
@@ -72,7 +68,7 @@ Namespace kCura.Relativity.DataReaderClient
 		Public Property DisableImageTypeValidation As Boolean?
 
 		''' <summary>
-		''' Name of the field in the data source corresponding to the DocumentIdentifier field.
+		''' Name of the field in the data source corresponding to the DocumentIdentifier field
 		''' </summary>
 		Public Property DocumentIdentifierField() As String
 			Get
@@ -90,8 +86,7 @@ Namespace kCura.Relativity.DataReaderClient
 		''' <summary>
 		''' Indicates the column name in the source DataTable that maps to the FileLocation field in Relativity. 
 		''' </summary>
-		''' <remarks>In the data set, this field value should contain a fully-qualified file location path and file name, such as C:\images\image1.jpg or \\servername\images\image1.jpg.
-		''' The Import API doesn't support multi-page TIFFs.</remarks>
+		''' <remarks>In the data set, this Field value should contain a fully-qualified file location path and file name, such as C:\images\image1.jpg, or \\servername\images\image1.jpg. The Import API doesn't support multi-page TIFFs.</remarks>
 		Public Property FileLocationField() As String
 			Get
 				If _fileLocationField Is Nothing Then
@@ -117,15 +112,14 @@ Namespace kCura.Relativity.DataReaderClient
 		Public Property ForProduction() As Boolean
 
 		''' <summary>
-		''' Field name that contains the full path to and filename of an image file.
+		''' Field name that contains a full path and filename to image files
 		''' </summary>
 		Public Property ImageFilePathSourceFieldName() As String
 
 		''' <summary>
 		''' Indicates a valid ArtifactID for a production set. Used in conjunction with the ForProduction property.
 		''' </summary>
-		''' <remarks>If you want to load images into a specific production, set this property to the ArtifactID of a production set, and set the ForProduction property to True.
-		''' Use the GetProductionSets method to return a list of ArtifactIDs for available production sets. </remarks>
+		''' <remarks>If you want to load images into a specific production, set this property to the ArtifactID of a production set, and set the ForProduction property to True. Use the GetProductionSets method to return a list of ArtifactIDs for available production sets. </remarks>
 		Public Property ProductionArtifactID() As Int32
 #End Region
 
