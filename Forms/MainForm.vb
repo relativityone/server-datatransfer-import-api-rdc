@@ -381,20 +381,13 @@ Namespace kCura.EDDS.WinForm
 					UpdateStatus("Workspace Loaded - File Transfer Mode: " & _application.GetConnectionStatus)
 					PopulateObjectTypeDropDown()
 					_optionsMenuCheckConnectivityItem.Enabled = True
-					ImportMenu.Enabled = _application.UserHasImportPermission
-					ExportMenu.Enabled = _application.UserHasExportPermission
-					ImportMenu.Visible = _application.UserHasImportPermission
-					ExportMenu.Visible = _application.UserHasExportPermission
 				Case appEvent.AppEventType.LogOn
 					UpdateUserName(_application.LoggedInUser)
 				Case appEvent.AppEventType.ExitApplication
 					Me.Close()
-				Case appEvent.AppEventType.WorkspaceFolderSelected
-					'disable import and export menus if no permission
-					ImportMenu.Enabled = _application.UserHasImportPermission
-					ExportMenu.Enabled = _application.UserHasExportPermission
-					ImportMenu.Visible = _application.UserHasImportPermission
-					ExportMenu.Visible = _application.UserHasExportPermission
+				Case appEvent.AppEventType.CaseFolderSelected
+					ImportMenu.Enabled = True
+					ExportMenu.Enabled = True
 					'UpdateStatus("Case Folder Load: " + _application.SelectedCaseInfo.RootFolderID.ToString)
 			End Select
 		End Sub

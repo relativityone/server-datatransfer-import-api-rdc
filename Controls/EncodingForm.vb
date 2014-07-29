@@ -1,6 +1,3 @@
-Imports System.Collections.Generic
-Imports kCura.Windows.Forms
-
 Namespace kCura.EDDS.WinForm
 	Public Class EncodingForm
 		Inherits System.Windows.Forms.Form
@@ -37,7 +34,6 @@ Namespace kCura.EDDS.WinForm
 		Friend WithEvents EncodingList As System.Windows.Forms.ListBox
 		Friend WithEvents Cancel As System.Windows.Forms.Button
 		Friend WithEvents OK As System.Windows.Forms.Button
-
 		<System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
 			Me.TextBox1 = New System.Windows.Forms.TextBox
 			Me.EncodingList = New System.Windows.Forms.ListBox
@@ -49,42 +45,35 @@ Namespace kCura.EDDS.WinForm
 			'
 			Me.TextBox1.Location = New System.Drawing.Point(0, 0)
 			Me.TextBox1.Name = "TextBox1"
-			Me.TextBox1.Size = New System.Drawing.Size(290, 20)
+			Me.TextBox1.Size = New System.Drawing.Size(292, 20)
 			Me.TextBox1.TabIndex = 1
 			Me.TextBox1.Text = ""
-			Me.TextBox1.Anchor = CType(System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left _
-			 Or System.Windows.Forms.AnchorStyles.Right, System.Windows.Forms.AnchorStyles)
 			'
 			'EncodingList
 			'
 			Me.EncodingList.Location = New System.Drawing.Point(0, 28)
 			Me.EncodingList.Name = "EncodingList"
-			Me.EncodingList.Size = New System.Drawing.Size(290, 212)
+			Me.EncodingList.Size = New System.Drawing.Size(292, 212)
 			Me.EncodingList.TabIndex = 3
-			Me.EncodingList.Anchor = CType(System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left _
-			 Or System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right, System.Windows.Forms.AnchorStyles)
 			'
 			'Cancel
 			'
-			Me.Cancel.Location = New System.Drawing.Point(214, 244)
+			Me.Cancel.Location = New System.Drawing.Point(216, 244)
 			Me.Cancel.Name = "Cancel"
 			Me.Cancel.TabIndex = 6
 			Me.Cancel.Text = "Cancel"
-			Me.Cancel.Anchor = CType(System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right, System.Windows.Forms.AnchorStyles)
 			'
 			'OK
 			'
-			Me.OK.Location = New System.Drawing.Point(134, 244)
+			Me.OK.Location = New System.Drawing.Point(136, 244)
 			Me.OK.Name = "OK"
 			Me.OK.TabIndex = 5
 			Me.OK.Text = "OK"
-			Me.OK.Anchor = CType(System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right, System.Windows.Forms.AnchorStyles)
 			'
 			'EncodingForm
 			'
 			Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
-			Me.ClientSize = New System.Drawing.Size(290, 269)
-			Me.MinimumSize = New System.Drawing.Size(270, 269)
+			Me.ClientSize = New System.Drawing.Size(292, 269)
 			Me.Controls.Add(Me.Cancel)
 			Me.Controls.Add(Me.OK)
 			Me.Controls.Add(Me.EncodingList)
@@ -137,66 +126,6 @@ Namespace kCura.EDDS.WinForm
 				Me.Close()
 			End If
 		End Sub
-
-		'#Region "Resizing"
-		'		'These member variables are populated with data needed to resize the controls
-
-		'		'Avoid adjusting the layout if the size hasn't changed
-		'		Private _layoutControlSize As Size
-
-		'		' Used to keep track of whether we need to calculate the layout values.  In addition to
-		'		' initial population, they may need to be populated later due to autoscaling.  Autoscaling
-		'		' will change the distance between concrols which we would not expect to change.  If this
-		'		' happens, the _layout info which contains the relative location of controls needs to be 
-		'		' updated.
-		'		Private _layoutReferenceDistance As Int32 = 0
-
-		'		Private _layoutDifferenceList As List(Of kCura.Windows.Forms.RelativeLayoutData)
-
-		'		Private Function CalcReferenceDistance() As Int32
-		'			Return Me.AutoScaleBaseSize.Width * Me.AutoScaleBaseSize.Height
-		'		End Function
-
-		'		Private Sub OnControl_Layout(ByVal sender As Object, ByVal e As System.Windows.Forms.LayoutEventArgs) Handles MyBase.Layout
-		'			If _layoutReferenceDistance <> CalcReferenceDistance() Then
-		'				InitializeLayout()
-		'			Else
-		'				AdjustLayout()
-		'			End If
-		'		End Sub
-
-		'		Private Sub InitializeLayout()
-		'			'Layout properties which are directly based on another layout property
-		'			If _layoutDifferenceList Is Nothing Then
-		'				_layoutDifferenceList = New List(Of RelativeLayoutData)
-
-		'				_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutPropertyType.Height, EncodingList, LayoutPropertyType.Height))
-		'				_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutPropertyType.Width, EncodingList, LayoutPropertyType.Width))
-		'				_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutPropertyType.Width, EncodingList, LayoutPropertyType.Width))
-
-		'				_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutPropertyType.Width, Me.OK, LayoutPropertyType.Left))
-		'				_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutPropertyType.Height, Me.OK, LayoutPropertyType.Top))
-		'				_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutPropertyType.Width, Me.Cancel, LayoutPropertyType.Left))
-		'				_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutPropertyType.Height, Me.Cancel, LayoutPropertyType.Top))
-		'			End If
-
-		'			_layoutDifferenceList.ForEach(Sub(x)
-		'																			x.InitializeDifference()
-		'																		End Sub)
-
-		'			_layoutReferenceDistance = CalcReferenceDistance()
-		'		End Sub
-
-		'		Public Sub AdjustLayout()
-		'			If Not _layoutControlSize.Equals(Me.Size) Then
-		'				For Each x As RelativeLayoutData In _layoutDifferenceList
-		'					x.AdjustRelativeControlBasedOnDifference()
-		'				Next
-
-		'				_layoutControlSize = Me.Size
-		'			End If
-		'		End Sub
-		'#End Region
 
 
 	End Class

@@ -1,6 +1,3 @@
-Imports System.Collections.Generic
-Imports kCura.Windows.Forms
-
 Namespace kCura.EDDS.WinForm
 	Public Class ProductionPrecedenceForm
 		Inherits System.Windows.Forms.Form
@@ -33,22 +30,21 @@ Namespace kCura.EDDS.WinForm
 		'NOTE: The following procedure is required by the Windows Form Designer
 		'It can be modified using the Windows Form Designer.  
 		'Do not modify it using the code editor.
-		Friend WithEvents LabelAvailableProductions As System.Windows.Forms.Label
-		Friend WithEvents LabelSelectedProductions As System.Windows.Forms.Label
+		Friend WithEvents Label1 As System.Windows.Forms.Label
+		Friend WithEvents Label2 As System.Windows.Forms.Label
 		Friend WithEvents _productions As kCura.Windows.Forms.TwoListBox
 		Friend WithEvents _okButton As System.Windows.Forms.Button
 		Friend WithEvents _cancelButton As System.Windows.Forms.Button
 		Friend WithEvents _originalImages As System.Windows.Forms.RadioButton
 		Friend WithEvents _includeOriginals As System.Windows.Forms.CheckBox
 		Friend WithEvents _producedImages As System.Windows.Forms.RadioButton
-
 		<System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
 			Dim resources As System.Resources.ResourceManager = New System.Resources.ResourceManager(GetType(ProductionPrecedenceForm))
 			Me._okButton = New System.Windows.Forms.Button
 			Me._cancelButton = New System.Windows.Forms.Button
 			Me._productions = New kCura.Windows.Forms.TwoListBox
-			Me.LabelAvailableProductions = New System.Windows.Forms.Label
-			Me.LabelSelectedProductions = New System.Windows.Forms.Label
+			Me.Label1 = New System.Windows.Forms.Label
+			Me.Label2 = New System.Windows.Forms.Label
 			Me._originalImages = New System.Windows.Forms.RadioButton
 			Me._producedImages = New System.Windows.Forms.RadioButton
 			Me._includeOriginals = New System.Windows.Forms.CheckBox
@@ -80,21 +76,21 @@ Namespace kCura.EDDS.WinForm
 			Me._productions.Size = New System.Drawing.Size(360, 280)
 			Me._productions.TabIndex = 2
 			'
-			'LabelAvailableProductions
+			'Label1
 			'
-			Me.LabelAvailableProductions.Location = New System.Drawing.Point(8, 88)
-			Me.LabelAvailableProductions.Name = "LabelAvailableProductions"
-			Me.LabelAvailableProductions.Size = New System.Drawing.Size(144, 16)
-			Me.LabelAvailableProductions.TabIndex = 3
-			Me.LabelAvailableProductions.Text = "Available Productions"
+			Me.Label1.Location = New System.Drawing.Point(8, 88)
+			Me.Label1.Name = "Label1"
+			Me.Label1.Size = New System.Drawing.Size(144, 16)
+			Me.Label1.TabIndex = 3
+			Me.Label1.Text = "Available Productions"
 			'
-			'LabelSelectedProductions
+			'Label2
 			'
-			Me.LabelSelectedProductions.Name = "LabelSelectedProductions"
-			Me.LabelSelectedProductions.Location = New System.Drawing.Point(180, 88)
-			Me.LabelSelectedProductions.Size = New System.Drawing.Size(144, 16)
-			Me.LabelSelectedProductions.TabIndex = 4
-			Me.LabelSelectedProductions.Text = "Selected Productions"
+			Me.Label2.Location = New System.Drawing.Point(196, 88)
+			Me.Label2.Name = "Label2"
+			Me.Label2.Size = New System.Drawing.Size(144, 16)
+			Me.Label2.TabIndex = 4
+			Me.Label2.Text = "Selected Productions"
 			'
 			'_originalImages
 			'
@@ -131,18 +127,18 @@ Namespace kCura.EDDS.WinForm
 			Me.Controls.Add(Me._includeOriginals)
 			Me.Controls.Add(Me._producedImages)
 			Me.Controls.Add(Me._originalImages)
-			Me.Controls.Add(Me.LabelSelectedProductions)
-			Me.Controls.Add(Me.LabelAvailableProductions)
+			Me.Controls.Add(Me.Label2)
+			Me.Controls.Add(Me.Label1)
 			Me.Controls.Add(Me._productions)
 			Me.Controls.Add(Me._cancelButton)
 			Me.Controls.Add(Me._okButton)
 			Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
-			Me.MaximizeBox = True
-			Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Sizable
-			Me.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Show
-			Me.MinimumSize = New System.Drawing.Size(464, 370)
+			Me.MaximizeBox = False
+			Me.MaximumSize = New System.Drawing.Size(464, 420)
 			Me.MinimizeBox = False
+			Me.MinimumSize = New System.Drawing.Size(464, 420)
 			Me.Name = "ProductionPrecedenceForm"
+			Me.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide
 			Me.Text = "Pick Production Precedence"
 			Me.ResumeLayout(False)
 
@@ -233,85 +229,6 @@ Namespace kCura.EDDS.WinForm
 				_includeOriginals.Enabled = True
 			End If
 		End Sub
-
-#Region "Resizing"
-		'These member variables are populated with data needed to resize the controls
-
-		'Avoid adjusting the layout if the size hasn't changed
-		Private _layoutLastFormSize As Size
-
-		' Used to keep track of whether we need to calculate the layout values.  In addition to
-		' initial population, they may need to be populated later due to autoscaling.  Autoscaling
-		' will change the distance between concrols which we would not expect to change.  If this
-		' happens, the _layout info which contains the relative location of controls needs to be 
-		' updated.
-		Private _layoutReferenceDistance As Int32 = 0
-
-		Private _layoutDifferenceList As List(Of RelativeLayoutData)
-
-		Private Function CalcReferenceDistance() As Int32
-			Return LabelSelectedProductions.Width
-		End Function
-
-		Private Sub OnForm_Layout(ByVal sender As Object, ByVal e As System.Windows.Forms.LayoutEventArgs) Handles MyBase.Layout
-			'The reference distance should remain constant even if the dialog box is resized
-			If _layoutReferenceDistance <> CalcReferenceDistance() Then
-				InitializeLayout()
-			Else
-				AdjustLayout()
-			End If
-		End Sub
-
-		Private Sub InitializeLayout()
-			_layoutLastFormSize = Me.Size
-
-			'Layout properties which are directly based on another layout property
-			If _layoutDifferenceList Is Nothing Then
-				_layoutDifferenceList = New List(Of RelativeLayoutData)
-
-				_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutBasePropertyTypeForDifference.Width, _productions, LayoutRelativePropertyTypeForDifference.Width))
-				_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutBasePropertyTypeForDifference.Height, _productions, LayoutRelativePropertyTypeForDifference.Height))
-
-				_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutBasePropertyTypeForDifference.Width, _okButton, LayoutRelativePropertyTypeForDifference.Left))
-				_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutBasePropertyTypeForDifference.Height, _okButton, LayoutRelativePropertyTypeForDifference.Top))
-				_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutBasePropertyTypeForDifference.Width, _cancelButton, LayoutRelativePropertyTypeForDifference.Left))
-				_layoutDifferenceList.Add(New RelativeLayoutData(Me, LayoutBasePropertyTypeForDifference.Height, _cancelButton, LayoutRelativePropertyTypeForDifference.Top))
-
-				_layoutDifferenceList.Add(New RelativeLayoutData(_productions, LayoutBasePropertyTypeForDifference.Right, LabelSelectedProductions, LayoutRelativePropertyTypeForDifference.Left))
-			End If
-
-			_layoutDifferenceList.ForEach(Sub(x)
-																			x.InitializeDifference()
-																		End Sub)
-
-			_layoutReferenceDistance = CalcReferenceDistance()
-
-			AdjustColumnLabel()
-		End Sub
-
-		Public Sub AdjustLayout()
-			If Not _layoutLastFormSize.Equals(Me.Size) Then
-				For Each x As RelativeLayoutData In _layoutDifferenceList
-					x.AdjustRelativeControlBasedOnDifference()
-				Next
-
-				_layoutLastFormSize = Me.Size
-			End If
-
-			AdjustColumnLabel()
-		End Sub
-
-		Private Sub AdjustColumnLabel()
-			'Adjust the location of the label to be aligned with the left side of the Right ListBox
-
-			'Get the absolute position of the Right ListBox of the TwoListBox in screen coordinates
-			Dim absoluteListBoxLoc As Point = _productions.RightListBox.PointToScreen(New Point(0, 0))
-			'Convert to a location relative to the Views group (_filtersBox)
-			Dim relativeListBoxLoc As Point = Me.LabelSelectedProductions.Parent.PointToClient(absoluteListBoxLoc)
-			'Adjust the location of the label
-			Me.LabelSelectedProductions.Left = relativeListBoxLoc.X
-		End Sub
-#End Region
 	End Class
 
 End Namespace

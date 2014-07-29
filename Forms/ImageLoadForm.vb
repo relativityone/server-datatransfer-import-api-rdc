@@ -382,8 +382,8 @@ Namespace kCura.EDDS.WinForm
 			'ImageLoad
 			'
 			Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
-			Me.ClientSize = New System.Drawing.Size(571, 443)
-			Me.MinimumSize = New System.Drawing.Size(579, 493)
+			Me.ClientSize = New System.Drawing.Size(571, 405)
+			Me.MinimumSize = New System.Drawing.Size(579, 455)
 			Me.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Show
 			Me.Controls.Add(Me.GroupBox6)
 			Me.Controls.Add(Me.GroupBox5)

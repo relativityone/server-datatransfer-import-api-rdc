@@ -177,12 +177,6 @@ Namespace kCura.EDDS.WinForm
         Private _contextMenuTreeNode As System.Windows.Forms.TreeNode
 
         Private Sub LoadCase(ByVal caseInfo As Relativity.CaseInfo)
-            'check import/export permissions for the case
-            _application.LoadWorkspacePermissions()
-
-            ' sets the availability of import/export menu based on the permissions set for logged in user
-            Import.Enabled = _application.UserHasImportPermission
-            Export.Enabled = _application.UserHasExportPermission
 
             _treeView.Nodes.Clear()
 
