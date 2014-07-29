@@ -12,39 +12,28 @@ using kCura.WinEDDS;
 using kCura.WinEDDS.Service;
 using kCura.Relativity.DataReaderClient;
 
+
+
 namespace kCura.Relativity.ImportAPI
 {
 	/// <summary>
-	/// Provides methods for developing custom import utilities for documents, images, production sets, and Dynamic Objects.
+	/// The new face of the ImportAPI
 	/// </summary>
-	/// <remarks>
-	/// Also provides methods for retrieving workspaces, fields, and other objects.
-	/// </remarks>
 	public  class ImportAPI : IImportAPI
 	{
 		private String _userName;
 		private String _password;
 		private CaseManager _caseManager;
-		/// <summary>
-		/// Holds cookies for the current session.
-		/// </summary>
 		protected CookieContainer _cookieMonster;
-		/// <summary>
-		/// Holds credentials for the logged-in user.
-		/// </summary>
 		protected ICredentials _credentials;
 		private ObjectTypeManager _objectTypeManager;
 		private ProductionManager _productionManager;
 
 		/// <summary>
-		/// Creates an instance of ImportAPI.
+		/// Create an instance of ImportAPI.  Username and Password are required (unless using windows auth), and will be validated.
 		/// </summary>
-		/// <remarks>
-		/// User name and password are required (unless using Windows Authentication) and will be validated.
-		/// The ImportAPI tries to resolve the server name by reading the WebServiceURL key from the local app.config file.  If this fails, it checks the Windows Registry for the location set by the Relativity Desktop Client.
-		/// </remarks>
-		/// <param name="UserName">User name with which you're logging in.</param>
-		/// <param name="Password">Password associated with the user name.</param>
+		/// <param name="UserName">UserName to log in</param>
+		/// <param name="Password">Password for the user</param>
 		public ImportAPI(String UserName, String Password)
 		{
 			PerformLogin(UserName, Password, string.Empty );
@@ -77,35 +66,31 @@ namespace kCura.Relativity.ImportAPI
 
 
 		/// <summary>
-		/// Creates an instance of ImportAPI.
-		/// </summary>
-		/// <remarks>
-		/// User name and password are required (unless using Windows Authentication) and will be validated
+		/// Create an instance of ImportAPI.  Username and Password are required (unless using windows auth), and will be validated
 		/// against the Relativity WebAPI instance located at <paramref name="WebServiceURL"/>.
-		/// </remarks>
-		/// <param name="UserName">User name with which you're logging in.</param>
-		/// <param name="Password">Password for the user name.</param>
-		/// <param name="WebServiceURL">Location of the Relativity WebAPI instance.</param>
+		/// </summary>
+		/// <param name="UserName">UserName to log in</param>
+		/// <param name="Password">Password for the user</param>
+		/// <param name="WebServiceURL"></param>
 		public ImportAPI(String UserName, String Password, String WebServiceURL)
 		{
 			PerformLogin(UserName, Password, WebServiceURL );
 		}
 
 		/// <summary>
-		/// Creates an instance of ImportAPI with WinAuth.
+		/// Create an instance of ImportAPI. This is for the use of WinAuth and the user will be validated
+		/// against the Relativity WebAPI instance located at <paramref name="WebServiceURL"/>.
 		/// </summary>
-		/// <remarks>
-		/// The user will be validated against the Relativity WebAPI instance located at <paramref name="WebServiceURL"/>.
-		/// </remarks>
-		/// <param name="WebServiceURL">Location of the Relativity WebAPI instance.</param>
+		/// <param name="WebServiceURL"></param>
 		public ImportAPI(String WebServiceURL)
 		{
 			this.PerformLogin(null, null, WebServiceURL );
 		}
 
 		/// <summary>
-		/// Returns a collection of all workspaces that are available for the logged in user.
+		/// Workspaces - returns a collection of available workspaces for the logged in user
 		/// </summary>
+		/// <returns></returns>
 		public IEnumerable<Workspace> Workspaces()
 		{
 			var cm = GetCaseManager();
@@ -122,9 +107,10 @@ namespace kCura.Relativity.ImportAPI
 		}
 
 		/// <summary>
-		/// Returns all production sets eligible for import.
+		/// Given a workspace artifact ID, return all production sets eligble for import
 		/// </summary>
-		/// <param name="workspaceArtifactID">The artifact ID of the workspace holding the production sets.</param>
+		/// <param name="workspaceArtifactID"></param>
+		/// <returns></returns>
 		public IEnumerable<ProductionSet> GetProductionSets(int workspaceArtifactID)
 		{
 			var prodMan = GetProductionManager();
@@ -138,46 +124,15 @@ namespace kCura.Relativity.ImportAPI
 		}
 
 		/// <summary>
-		/// Returns all fields that apply to a given artifact type.
+		/// Given a workspace artifact ID, and an artifact type ID, the fields that apply to that artifact type will be returned.
 		/// </summary>
-		/// <param name="workspaceArtifactID">The artifact ID of the workspace holding the fields and artifact type.</param>
-		/// <param name="artifactTypeID">The ID of the artiface type with the applied fields.</param>
-		/// <remarks>
-		/// <list type="bullet">
-		///		<listheader>
-		///			<description>The returned collection excludes those fields with one of the following FieldCategories:</description>
-		///		</listheader>
-		///		<item>
-		///			<description>FieldCategory.AutoCreate</description>
-		///		</item>
-		///		<item>
-		///			<description>FieldCategory.Batch</description>
-		///		</item>
-		///		<item>
-		///			<description>FieldCategory.FileInfo</description>
-		///		</item>
-		///		<item>
-		///			<description>FieldCategory.FileSize</description>
-		///		</item>
-		///		<item>
-		///			<description>FieldCategory.MarkupSetMarker</description>
-		///		</item>
-		///		<item>
-		///			<description>FieldCategory.MultiReflected</description>
-		///		</item>
-		///		<item>
-		///			<description>FieldCategory.ProductionMarker</description>
-		///		</item>
-		///		<item>
-		///			<description>FieldCategory.Reflected</description>
-		///		</item>
-		/// </list>
-		/// 
-		/// </remarks>
+		/// <param name="workspaceArtifactID"></param>
+		/// <param name="artifactTypeID"></param>
+		/// <returns></returns>
 		public IEnumerable<Field> GetWorkspaceFields(int workspaceArtifactID, int artifactTypeID)
 		{
 			var fm = new WinEDDS.Service.FieldManager(_credentials, _cookieMonster);
-			//This returned collection contains fields excluding those with one of the following FieldCategories:
+			//This returned collection contains fields excluding those with one of the following FieldCategory's
 			// FieldCategory.AutoCreate
 			// FieldCategory.Batch
 			// FieldCategory.FileInfo
@@ -204,30 +159,27 @@ namespace kCura.Relativity.ImportAPI
 							}).ToList();
 		}
 
+
 		/// <summary>
-		/// Creates an ImageImportBulkArtifactJob with which to import a set of images.
+		/// This method will return a new instance of an ImageImportBulkArtifactJob.
+		/// The returned object can be used to import a set of images.
+		/// Setting the username and password property for the job will not be required, as the credentials will be pre-populated using this method.
 		/// </summary>
-		/// <returns>
-		/// Returns a new instance of an ImageImportBulkArtifactJob.
-		/// </returns>
-		/// <remarks>
-		/// Setting the user name and password property for the job is not required, because the credentials are pre-populated.
-		/// </remarks>
+		/// <returns></returns>
 		public ImageImportBulkArtifactJob NewImageImportJob()
 		{
 			return new ImageImportBulkArtifactJob(_credentials, _cookieMonster, _userName, _password);
 		}
 
 		/// <summary>
-		/// Creates an ImageImportBulkArtifactJob with which to import a set of images into the given production set.
+		/// This method will return a new instance of an ImageImportBulkArtifactJob.
+		/// The returned object can be used to import a set of production images.
+		/// Setting the username and password property for the job will not be required, as the credentials will be pre-populated using this method.
 		/// </summary>
-		/// <remarks>
-		/// Setting the user name and password property for the job is not required, because the credentials are pre-populated.
-		/// </remarks>
-		/// <param name="productionArtifactID">Artifact ID of the production set to hold the imported images.</param>
-		/// <returns>Returns a new instance of an ImageImportBulkArtifactJob. It is identical to one returned
-		/// from NewImageImportJob(), with two changes: Settings.ForProduction is set to true,
-		/// and Settings.ProductionArtifactID = <paramref name="productionArtifactID"/>.
+		/// <param name="productionArtifactID">Artifact ID of the production set to import to.</param>
+		/// <returns>The returned ImageImportBulkArtifactJob object is identical to one returned
+		/// from NewImageImportJob(), with 2 changes. The Settings.ForProduction is already set to true,
+		/// along with the Settings.ProductionArtifactID = <paramref name="productionArtifactID"/>.
 		/// </returns>
 		public ImageImportBulkArtifactJob NewProductionImportJob(int productionArtifactID)
 		{
@@ -239,26 +191,21 @@ namespace kCura.Relativity.ImportAPI
 		}
 
 		/// <summary>
-		/// Creates an ImportBulkArtifactJob to be used to import a set of native documents.
+		/// This method will return a new instance of an ImportBulkArtifactJob.
+		/// The returned object can be used to import a set of native documents.
+		/// Setting the username and password property for the job will not be required, as the credentials will be pre-populated using this method.
 		/// </summary>
-		/// <returns>
-		/// Returns a new instance of an ImportBulkArtifactJob with Settings.ArtifactTypeId set to Document.
-		/// </returns>
-		/// <remarks>
-		/// Setting the user name and password property for the job is not required, because the credentials are pre-populated.
-		/// </remarks>
+		/// <returns></returns>
 		public ImportBulkArtifactJob NewNativeDocumentImportJob()
 		{
 			return NewObjectImportJob(10);
 		}
 
 		/// <summary>
-		/// Creates an ImportBulkArtifactJob with which to import a set of artifacts of the given type.
+		/// This will return a new instance of an ImportBulkArtifactJob, with the
+		/// instance's Settings.ArtifactTypeId property set to <paramref name="artifactTypeId"/>.
 		/// </summary>
-		/// <param name="artifactTypeId">The artifact type ID of the objects to be imported.</param>
-		/// <returns>
-		/// Returns a new instance of an ImportBulkArtifactJob with the Settings.ArtifactTypeId property set to <paramref name="artifactTypeId"/>.
-		/// </returns>
+		/// <param name="artifactTypeId">The ArtifactTypeId of the objects to be imported.</param>
 		public ImportBulkArtifactJob NewObjectImportJob(int artifactTypeId) {
 			var returnJob = new ImportBulkArtifactJob(_credentials, _cookieMonster, _userName, _password);
 
@@ -268,10 +215,11 @@ namespace kCura.Relativity.ImportAPI
 		}
 
 		/// <summary>
-		/// Returns the UploadMode that will be used to upload files to
+		/// This method returns the UploadMode that will be used to upload files to
 		/// the workspace specified by <paramref name="caseArtifactID"/>.
 		/// </summary>
-		/// <param name="caseArtifactID">The artifact ID of the destination workspace.</param>
+		/// <param name="caseArtifactID">The Artifact ID of the destination workspace.</param>
+		/// <returns></returns>
 		public UploadTypeEnum GetFileUploadMode(int caseArtifactID)
 		{
 			var cm = GetCaseManager();
@@ -280,10 +228,6 @@ namespace kCura.Relativity.ImportAPI
 			return GetFileUploadMode(caseArtifactID, caseInfo.DocumentPath);
 		}
 
-		/// <summary>
-		/// Returns all uploadable artifact types associated with a given case.
-		/// </summary>
-		/// <param name="caseArtifactID">The artifact ID of the case containing the artifact types.</param>
 		public IEnumerable<ArtifactType> GetUploadableArtifactTypes(int caseArtifactID)
 		{
 			var om = GetObjectTypeManager();
