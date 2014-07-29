@@ -402,7 +402,7 @@ Namespace kCura.WinEDDS.ImportExtension
 					field.Value = kCura.Utility.NullableTypesHelper.DBNullConvertToNullable(Of Boolean)(value)
 				Case Relativity.FieldTypeHelper.FieldType.Code
 					field.Value = kCura.Utility.NullableTypesHelper.DBNullString(value)
-				Case Relativity.FieldTypeHelper.FieldType.Text, Relativity.FieldTypeHelper.FieldType.OffTableText
+				Case Relativity.FieldTypeHelper.FieldType.Text
 					field.Value = kCura.Utility.NullableTypesHelper.DBNullString(value)
 				Case Relativity.FieldTypeHelper.FieldType.User
 					field.Value = kCura.Utility.NullableTypesHelper.DBNullString(value)
