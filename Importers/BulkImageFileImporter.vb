@@ -759,7 +759,7 @@ Namespace kCura.WinEDDS
 					_bulkLoadFileWriter.Write(String.Format("{0}{1}", -1, lastDivider))
 				End If
 
-
+				_bulkLoadFileWriter.Write(",") 'kCura_DataGrid_Exception
 				_bulkLoadFileWriter.Write(Relativity.Constants.ENDLINETERMSTRING)
 				If _replaceFullText AndAlso Not _fullTextStorageIsInSql Then
 					_dataGridFileWriter.Write(Relativity.Constants.ENDLINETERMSTRING)

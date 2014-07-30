@@ -1105,6 +1105,7 @@ Namespace kCura.WinEDDS
 					_outputNativeFileWriter.Write(mdoc.FolderPath & _bulkLoadFileFieldDelimiter)
 				End If
 			End If
+			_outputNativeFileWriter.Write(_bulkLoadFileFieldDelimiter) 'kCura_DataGrid_Exception
 			_outputNativeFileWriter.Write(vbCrLf)
 			If foundDataGridField Then
 				_outputDataGridFileWriter.Write(vbCrLf)
