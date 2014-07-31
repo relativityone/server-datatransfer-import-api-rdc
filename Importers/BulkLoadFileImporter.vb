@@ -131,7 +131,7 @@ Namespace kCura.WinEDDS
 			Get
 				If _fieldsForCreate Is Nothing Then
 					Dim fieldsForCreate As New System.Collections.ArrayList
-					For Each field As kCura.EDDS.WebAPI.DocumentManagerBase.Field In Me.AllFields(10)
+					For Each field As kCura.EDDS.WebAPI.DocumentManagerBase.Field In Me.AllFields(Relativity.ArtifactType.Document)
 						If System.Array.IndexOf(_fieldArtifactIds, field.ArtifactID) <> -1 Then
 							fieldsForCreate.Add(field)
 						End If
@@ -154,7 +154,7 @@ Namespace kCura.WinEDDS
 
 		Public ReadOnly Property FullTextField() As kCura.EDDS.WebAPI.DocumentManagerBase.Field
 			Get
-				For Each field As kCura.EDDS.WebAPI.DocumentManagerBase.Field In Me.AllFields(10)
+				For Each field As kCura.EDDS.WebAPI.DocumentManagerBase.Field In Me.AllFields(Relativity.ArtifactType.Document)
 					If field.FieldCategory = EDDS.WebAPI.DocumentManagerBase.FieldCategory.FullText Then
 						Return field
 					End If
@@ -528,7 +528,7 @@ Namespace kCura.WinEDDS
 			If _createFolderStructure Then
 				If Not kCura.WinEDDS.Config.CreateFoldersInWebAPI Then
 					'Client side folder creation (added back for Dominus# 1127879)
-					If _artifactTypeID = 10 Then _folderCache = New FolderCache(_folderManager, _folderID, _caseArtifactID)
+					If _artifactTypeID = Relativity.ArtifactType.Document Then _folderCache = New FolderCache(_folderManager, _folderID, _caseArtifactID)
 				End If
 				Dim openParenIndex As Int32 = _destinationFolder.LastIndexOf("("c) + 1
 				Dim closeParenIndex As Int32 = _destinationFolder.LastIndexOf(")"c)
