@@ -479,9 +479,6 @@
     <Compile Include="Utility.vb">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="WinEDDSGateway.vb">
-      <SubType>Code</SubType>
-    </Compile>
     <EmbeddedResource Include="Controls\CaseFolderExplorer.resx">
       <DependentUpon>CaseFolderExplorer.vb</DependentUpon>
     </EmbeddedResource>
