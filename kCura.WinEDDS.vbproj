@@ -524,9 +524,6 @@
     <Compile Include="Process\ExportStatistics.vb">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Process\GenericImportProcess.vb">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Process\ImportFileDirectoryProcess.vb">
       <SubType>Code</SubType>
     </Compile>
