@@ -282,25 +282,36 @@ Namespace kCura.EDDS.WinForm
 		End Function
 
 		Public Function GetCaseFields(ByVal caseID As Int32, ByVal artifactTypeID As Int32, Optional ByVal refresh As Boolean = False) As String()
-			Dim retval As DocumentFieldCollection = CurrentFields(artifactTypeID, refresh)
-			If Not retval Is Nothing Then
-				Return CurrentFields(artifactTypeID, refresh).Names()
-			Else
-				Return Nothing
+			Dim retval As String() = Nothing
+			Dim fields As DocumentFieldCollection = CurrentFields(artifactTypeID, refresh)
+			If Not fields Is Nothing Then
+				retval = fields.Names()
 			End If
+			Return retval
 		End Function
 
 		Public Function GetNonFileCaseFields(ByVal caseID As Int32, ByVal artifactTypeID As Int32, Optional ByVal refresh As Boolean = False) As String()
-			Dim retval As DocumentFieldCollection = CurrentNonFileFields(artifactTypeID, refresh)
-			If Not retval Is Nothing Then
-				Return CurrentNonFileFields(artifactTypeID, refresh).Names()
-			Else
-				Return Nothing
+			Dim retval As String() = Nothing
+			Dim fields As DocumentFieldCollection = CurrentNonFileFields(artifactTypeID, refresh)
+			If Not fields Is Nothing Then
+				retval = fields.Names()
 			End If
+			Return retval
 		End Function
 
-		Friend Function IsConnected(ByVal caseID As Int32, ByVal artifactTypeID As Int32) As Boolean
-			Return Not Me.GetCaseFields(caseID, artifactTypeID, True) Is Nothing
+		Friend Function IsConnected() As Boolean
+			Dim retval = False
+			Try
+				Dim userManager As New kCura.WinEDDS.Service.UserManager(Credential, _cookieContainer)
+				retval = userManager.LoggedIn()
+			Catch ex As System.Exception
+				If ex.Message.IndexOf("Need To Re Login") <> -1 Then
+					NewLogin(False)
+				Else
+					Throw
+				End If
+			End Try
+			Return retval
 		End Function
 
 		Public Function GetSelectedIdentifier(ByVal selectedField As DocumentField) As String
@@ -724,23 +735,23 @@ Namespace kCura.EDDS.WinForm
 			End If
 		End Sub
 
-		Private Function EnsureConnection() As Boolean
+		Friend Function EnsureConnection() As Boolean
+			Dim retval = False
 			If Not Me.SelectedCaseInfo Is Nothing Then
-				Dim casefields As String() = Nothing
-				Dim [continue] As Boolean = True
 				Try
-					casefields = Me.GetCaseFields(Me.SelectedCaseInfo.ArtifactID, 10, True)
-					Return Not casefields Is Nothing
+					Dim userManager As New kCura.WinEDDS.Service.UserManager(Credential, _cookieContainer)
+					retval = userManager.LoggedIn()
 				Catch ex As System.Exception
 					If ex.Message.IndexOf("Need To Re Login") <> -1 Then
-						Return False
+						retval = False
 					Else
 						Throw
 					End If
 				End Try
 			Else
-				Return True
+				retval = True
 			End If
+			Return retval
 		End Function
 
 		Public Sub RefreshCaseFolders()
@@ -801,7 +812,7 @@ Namespace kCura.EDDS.WinForm
 
 #Region "Form Initializers"
 		Public Sub NewLoadFile(ByVal destinationArtifactID As Int32, ByVal caseInfo As Relativity.CaseInfo)
-			If Not Me.IsConnected(caseInfo.ArtifactID, Me.ArtifactTypeID) Then
+			If Not Me.IsConnected() Then
 				CursorDefault()
 				Exit Sub
 			End If
@@ -905,7 +916,7 @@ Namespace kCura.EDDS.WinForm
 
 		Public Sub NewApplicationFile(ByVal caseInfo As Relativity.CaseInfo)
 			CursorWait()
-			If Not Me.IsConnected(caseInfo.ArtifactID, Me.ArtifactTypeID) Then
+			If Not Me.IsConnected() Then
 				CursorDefault()
 				Exit Sub
 			End If
@@ -930,18 +941,9 @@ Namespace kCura.EDDS.WinForm
 			Return searchExportDataSet.Tables(0)
 		End Function
 
-		Public Sub NewOutlookImport(ByVal destinationArtifactID As Int32, ByVal caseInfo As Relativity.CaseInfo)
-			Dim importerAssembly As System.Reflection.Assembly
-			importerAssembly = System.Reflection.Assembly.LoadFrom(kCura.WinEDDS.Config.OutlookImporterLocation)
-			Dim hostImporterGateway As kCura.EDDS.Import.ImporterGatewayBase
-			hostImporterGateway = CType(importerAssembly.CreateInstance("kCura.EDDS.Import.Outlook.ImporterGateway"), kCura.EDDS.Import.ImporterGatewayBase)
-			Dim frm As Form = hostImporterGateway.GetSettingsForm(New Import.CaseInfo(caseInfo.ArtifactID, caseInfo.RootArtifactID), destinationArtifactID, New WinEDDSGateway)
-			frm.Show()
-		End Sub
-
 		Public Sub NewImageFile(ByVal destinationArtifactID As Int32, ByVal caseinfo As Relativity.CaseInfo)
 			CursorWait()
-			If Not Me.IsConnected(caseinfo.ArtifactID, Me.ArtifactTypeID) Then
+			If Not Me.IsConnected() Then
 				CursorDefault()
 				Exit Sub
 			End If
@@ -969,7 +971,7 @@ Namespace kCura.EDDS.WinForm
 
 		Public Sub NewProductionFile(ByVal destinationArtifactID As Int32, ByVal caseinfo As Relativity.CaseInfo)
 			CursorWait()
-			If Not Me.IsConnected(caseinfo.ArtifactID, ArtifactTypeID) Then
+			If Not Me.IsConnected() Then
 				CursorDefault()
 				Exit Sub
 			End If
@@ -999,7 +1001,7 @@ Namespace kCura.EDDS.WinForm
 
 		Public Sub NewDirectoryImport(ByVal destinationArtifactID As Int32, ByVal caseInfo As Relativity.CaseInfo)
 			CursorWait()
-			If Not Me.IsConnected(caseInfo.ArtifactID, ArtifactTypeID) Then
+			If Not Me.IsConnected() Then
 				CursorDefault()
 				Exit Sub
 			End If
@@ -1014,7 +1016,7 @@ Namespace kCura.EDDS.WinForm
 
 		Public Sub NewEnronImport(ByVal destinationArtifactID As Int32, ByVal caseInfo As Relativity.CaseInfo)
 			CursorWait()
-			If Not Me.IsConnected(caseInfo.ArtifactID, ArtifactTypeID) Then
+			If Not Me.IsConnected() Then
 				CursorDefault()
 				Exit Sub
 			End If
@@ -1074,7 +1076,7 @@ Namespace kCura.EDDS.WinForm
 #Region "Process Management"
 		Public Function QueryConnectivity() As Guid
 			CursorWait()
-			If Not Me.IsConnected(Me.SelectedCaseInfo.ArtifactID, 10) Then
+			If Not Me.IsConnected() Then
 				CursorDefault()
 				Exit Function
 			End If
@@ -1089,7 +1091,7 @@ Namespace kCura.EDDS.WinForm
 
 		Public Function PreviewLoadFile(ByVal loadFileToPreview As LoadFile, ByVal errorsOnly As Boolean, ByVal formType As Int32) As Guid
 			CursorWait()
-			If Not Me.IsConnected(loadFileToPreview.CaseInfo.ArtifactID, ArtifactTypeID) Then
+			If Not Me.IsConnected() Then
 				CursorDefault()
 				Exit Function
 			End If
@@ -1127,7 +1129,7 @@ Namespace kCura.EDDS.WinForm
 
 		Public Function ImportDirectory(ByVal importFileDirectorySettings As ImportFileDirectorySettings) As Guid
 			CursorWait()
-			If Not Me.IsConnected(importFileDirectorySettings.CaseInfo.ArtifactID, ArtifactTypeID) Then
+			If Not Me.IsConnected() Then
 				CursorDefault()
 				Exit Function
 			End If
@@ -1142,26 +1144,10 @@ Namespace kCura.EDDS.WinForm
 			Return _processPool.StartProcess(importer)
 		End Function
 
-		Public Function ImportGeneric(ByVal settings As Object) As Guid
-			CursorWait()
-			If Not Me.IsConnected(_selectedCaseInfo.ArtifactID, ArtifactTypeID) Then
-				CursorDefault()
-				Exit Function
-			End If
-			Dim frm As New kCura.Windows.Process.ProgressForm
-			Dim importer As New kCura.WinEDDS.GenericImportProcess(New WinEDDSGateway)
-			importer.Settings = settings
-			frm.ProcessObserver = importer.ProcessObserver
-			frm.Text = "Import Generic Progress ..."
-			frm.Show()
-			CursorDefault()
-			Return _processPool.StartProcess(importer)
-		End Function
-
 		Public Function ImportLoadFile(ByVal loadFile As LoadFile) As Guid
 			CursorWait()
 			'Dim folderManager As New kCura.WinEDDS.Service.FolderManager(Credential, _cookieContainer, _identity)
-			If Not Me.IsConnected(_selectedCaseInfo.ArtifactID, ArtifactTypeID) Then
+			If Not Me.IsConnected() Then
 				CursorDefault()
 				Exit Function
 			End If
@@ -1195,7 +1181,7 @@ Namespace kCura.EDDS.WinForm
 		Public Sub PreviewImageFile(ByVal loadfile As ImageLoadFile)
 			CursorWait()
 			'Dim folderManager As New kCura.WinEDDS.Service.FolderManager(Credential, _cookieContainer, _identity)
-			If Not Me.IsConnected(_selectedCaseInfo.ArtifactID, ArtifactTypeID) Then
+			If Not Me.IsConnected() Then
 				CursorDefault()
 				Exit Sub
 			End If
@@ -1214,7 +1200,7 @@ Namespace kCura.EDDS.WinForm
 
 		Public Sub ImportImageFile(ByVal ImageLoadFile As ImageLoadFile)
 			CursorWait()
-			If Not Me.IsConnected(_selectedCaseInfo.ArtifactID, ArtifactTypeID) Then
+			If Not Me.IsConnected() Then
 				CursorDefault()
 				Exit Sub
 			End If
@@ -1234,7 +1220,7 @@ Namespace kCura.EDDS.WinForm
 
 		Public Function StartSearch(ByVal exportFile As ExportFile) As Guid
 			CursorWait()
-			If Not Me.IsConnected(_selectedCaseInfo.ArtifactID, ArtifactTypeID) Then
+			If Not Me.IsConnected() Then
 				CursorDefault()
 				Exit Function
 			End If
@@ -1274,7 +1260,7 @@ Namespace kCura.EDDS.WinForm
 
 		Public Sub ImportApplicationFile(ByVal caseInfos As Generic.IEnumerable(Of Relativity.CaseInfo), packageData As Byte(), ByVal appsToOverride As Int32(), ByVal resolveArtifacts()() As kCura.EDDS.WebAPI.TemplateManagerBase.ResolveArtifact)
 			CursorWait()
-			If Not Me.IsConnected(Me.SelectedCaseInfo.ArtifactID, 10) Then
+			If Not Me.IsConnected() Then
 				CursorDefault()
 				Exit Sub
 			End If

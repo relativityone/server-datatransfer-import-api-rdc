@@ -1530,7 +1530,7 @@ Namespace kCura.EDDS.WinForm
 
 		Private Function FullTextColumnIsMapped() As Boolean
 			Try
-				Dim docFieldObj As DocumentField = _application.CurrentFields(10).FullText
+				Dim docFieldObj As DocumentField = _application.CurrentFields(Relativity.ArtifactType.Document).FullText
 				'If the LoadFile form is being used to load an object instead of a document, then FullText will be Nothing.
 				If docFieldObj IsNot Nothing Then
 					Dim ftfname As String = docFieldObj.FieldName
@@ -1599,22 +1599,13 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 		Private Function EnsureConnection() As Boolean
+			Dim retval As Boolean = False
 			If Not _loadFile Is Nothing AndAlso Not _loadFile.CaseInfo Is Nothing Then
-				Dim casefields As String() = Nothing
-				Dim [continue] As Boolean = True
-				Try
-					casefields = _application.GetCaseFields(_loadFile.CaseInfo.ArtifactID, 10, True)
-					Return Not casefields Is Nothing
-				Catch ex As System.Exception
-					If ex.Message.IndexOf("Need To Re Login") <> -1 Then
-						Return False
-					Else
-						Throw
-					End If
-				End Try
+				retval = _application.EnsureConnection()
 			Else
-				Return True
+				retval = True
 			End If
+			Return retval
 		End Function
 
 		Private Sub _advancedButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _advancedButton.Click
