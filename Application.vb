@@ -914,23 +914,6 @@ Namespace kCura.EDDS.WinForm
 			Return exportFile
 		End Function
 
-		Public Sub NewApplicationFile(ByVal caseInfo As Relativity.CaseInfo)
-			CursorWait()
-			If Not Me.IsConnected() Then
-				CursorDefault()
-				Exit Sub
-			End If
-			Dim applicationForm As New RelativityApplicationForm
-			applicationForm.Application = Me
-			Dim list As New Generic.List(Of Relativity.CaseInfo)
-			list.Add(caseInfo)
-			applicationForm.CaseInfos = list
-			applicationForm.CookieContainer = Me.CookieContainer
-			applicationForm.Credentials = Me.Credential
-			applicationForm.Show()
-			CursorDefault()
-		End Sub
-
 		Friend Function GetSearchExportDataSource(ByVal searchManager As kCura.WinEDDS.Service.SearchManager, ByVal caseArtifactID As Int32, ByVal isArtifactSearch As Boolean, ByVal artifactType As Int32) As System.Data.DataTable
 			Dim searchExportDataSet As System.Data.DataSet
 			If isArtifactSearch Then
@@ -1054,7 +1037,7 @@ Namespace kCura.EDDS.WinForm
 
 		Public Sub ChangeWebServiceURL()
 			CursorWait()
-            Dim frm As New Forms.SetWebServiceURL
+			Dim frm As New Forms.SetWebServiceURL
 			frm.Show()
 			CursorDefault()
 		End Sub
@@ -1255,21 +1238,6 @@ Namespace kCura.EDDS.WinForm
 		Public Sub DeleteThread(ByVal processID As Guid)
 			CursorWait()
 			_processPool.RemoveProcess(processID)
-			CursorDefault()
-		End Sub
-
-		Public Sub ImportApplicationFile(ByVal caseInfos As Generic.IEnumerable(Of Relativity.CaseInfo), packageData As Byte(), ByVal appsToOverride As Int32(), ByVal resolveArtifacts()() As kCura.EDDS.WebAPI.TemplateManagerBase.ResolveArtifact)
-			CursorWait()
-			If Not Me.IsConnected() Then
-				CursorDefault()
-				Exit Sub
-			End If
-			Dim applicationDeploymentProcess As New kCura.WinEDDS.ApplicationDeploymentProcess(appsToOverride, resolveArtifacts, packageData, Me.Credential, Me.CookieContainer, caseInfos)
-			'todo: kfm
-			Dim form As New RelativityApplicationStatusForm(packageData, Me.Credential, Me.CookieContainer, caseInfos)
-			form.observer = applicationDeploymentProcess.ProcessObserver
-			form.Show()
-			_processPool.StartProcess(applicationDeploymentProcess)
 			CursorDefault()
 		End Sub
 #End Region
