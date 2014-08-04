@@ -349,6 +349,7 @@ Namespace kCura.EDDS.WinForm
 
 #End Region
 
+		Private loginForm As Form = Nothing
 		Friend WithEvents _application As kCura.EDDS.WinForm.Application
 		Public Const MAX_LENGTH_OF_OBJECT_NAME_BEFORE_TRUNCATION As Int32 = 25
 
@@ -407,6 +408,12 @@ Namespace kCura.EDDS.WinForm
 			LoggedInUserPanel.Text = text
 		End Sub
 
+		Private Sub MainForm_Activated(sender As Object, e As EventArgs) Handles Me.Activated
+			If Not loginForm Is Nothing Then
+				loginForm.Focus()
+			End If
+		End Sub
+
 		Private Sub MainForm_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles MyBase.Load
 			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
 			_application.TemporaryForceFolderPreview = kCura.WinEDDS.Config.ForceFolderPreview
@@ -418,7 +425,7 @@ Namespace kCura.EDDS.WinForm
 			If defaultCredentialResult = Application.CredentialCheckResult.AccessDisabled Then
 				MessageBox.Show(Application.ACCESS_DISABLED_MESSAGE, Application.RDC_ERROR_TITLE)
 			ElseIf Not defaultCredentialResult = Application.CredentialCheckResult.Success Then
-				_application.NewLogin()
+				loginForm = _application.NewLogin()
 			Else
 				_application.LogOn()
 				_application.OpenCase()
