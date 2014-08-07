@@ -350,6 +350,7 @@ Namespace kCura.EDDS.WinForm
 #End Region
 
 		Private loginForm As Form = Nothing
+		Private firstTime As Boolean = True
 		Friend WithEvents _application As kCura.EDDS.WinForm.Application
 		Public Const MAX_LENGTH_OF_OBJECT_NAME_BEFORE_TRUNCATION As Int32 = 25
 
@@ -409,9 +410,10 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 		Private Sub MainForm_Activated(sender As Object, e As EventArgs) Handles Me.Activated
-			If Not loginForm Is Nothing Then
+			If Not loginForm Is Nothing AndAlso firstTime Then
 				loginForm.Focus()
 			End If
+			firstTime = False
 		End Sub
 
 		Private Sub MainForm_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles MyBase.Load
