@@ -80,7 +80,6 @@ Namespace kCura.WinEDDS.ImportExtension
 			Dim collection As New kCura.WinEDDS.Api.ArtifactFieldCollection
 			Dim thisSettings As kCura.WinEDDS.ImportExtension.DataReaderLoadFile = DirectCast(_settings, kCura.WinEDDS.ImportExtension.DataReaderLoadFile)
 			_sourceReader = thisSettings.DataReader
-			Dim s As New kCura.WinEDDS.Service.FieldQuery(_settings.Credentials, _settings.CookieContainer)
 
 			Dim allFields As List(Of [String]) = New List(Of [String])()
 			For i As Integer = 0 To _sourceReader.FieldCount - 1
@@ -90,7 +89,7 @@ Namespace kCura.WinEDDS.ImportExtension
 
 			Dim columnIndex As Int32 = 0
 
-			For Each field As kCura.EDDS.WebAPI.DocumentManagerBase.Field In s.RetrieveAllAsArray(_settings.CaseInfo.ArtifactID, _settings.ArtifactTypeID, True)
+			For Each field As kCura.EDDS.WebAPI.DocumentManagerBase.Field In Me.AllFields(_settings.ArtifactTypeID)
 				field.Value = Nothing
 				field.FieldCategory = CType(field.FieldCategoryID, kCura.EDDS.WebAPI.DocumentManagerBase.FieldCategory)
 				field.DisplayName = field.DisplayName.ToLower
