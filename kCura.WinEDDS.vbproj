@@ -533,6 +533,7 @@
     <Compile Include="Process\ExportStatistics.vb">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Process\GenericImportProcess.vb" />
     <Compile Include="Process\ImportImageFileProcess.vb">
       <SubType>Code</SubType>
     </Compile>
