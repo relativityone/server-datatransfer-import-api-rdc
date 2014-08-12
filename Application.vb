@@ -46,7 +46,7 @@ Namespace kCura.EDDS.WinForm
 		Private _timeZoneOffset As Int32
 		Private WithEvents _loginForm As LoginForm
 		Private Shared _cache As New Hashtable
-        Private _documentRepositoryList As String()
+		Private _documentRepositoryList As String()
 		Private _totalFolders As New System.Collections.Specialized.HybridDictionary
 #End Region
 
@@ -158,7 +158,7 @@ Namespace kCura.EDDS.WinForm
 			End Get
 		End Property
 
-		
+
 
 		Friend ReadOnly Property Credential() As System.Net.NetworkCredential
 			Get
@@ -176,17 +176,17 @@ Namespace kCura.EDDS.WinForm
 		Public Property CookieContainer() As System.Net.CookieContainer
 
 		Public Property ArtifactTypeID() As Int32
-			
-        Public Property UserHasImportPermission() As Boolean
 
-        Public Property UserHasExportPermission() As Boolean
+		Public Property UserHasImportPermission() As Boolean
+
+		Public Property UserHasExportPermission() As Boolean
 
 #End Region
 
 
-        
 
-        
+
+
 
 #Region "Event Throwers"
 		Public Sub LogOn()
@@ -416,7 +416,7 @@ Namespace kCura.EDDS.WinForm
 		Public Sub SelectCaseFolder(ByVal folderInfo As FolderInfo)
 			_selectedCaseFolderID = folderInfo.ArtifactID
 			_selectedCaseFolderPath = folderInfo.Path
-            RaiseEvent OnEvent(New AppEvent(AppEvent.AppEventType.WorkspaceFolderSelected))
+			RaiseEvent OnEvent(New AppEvent(AppEvent.AppEventType.WorkspaceFolderSelected))
 		End Sub
 
 		Public Sub OpenCase()
@@ -476,307 +476,307 @@ Namespace kCura.EDDS.WinForm
 #End Region
 
 #Region "Utility"
-        Public Function AllUploadableArtifactTypes() As System.Data.DataTable
-            Return New kCura.WinEDDS.Service.ObjectTypeManager(Me.Credential, Me.CookieContainer).RetrieveAllUploadable(Me.SelectedCaseInfo.ArtifactID).Tables(0)
-        End Function
+		Public Function AllUploadableArtifactTypes() As System.Data.DataTable
+			Return New kCura.WinEDDS.Service.ObjectTypeManager(Me.Credential, Me.CookieContainer).RetrieveAllUploadable(Me.SelectedCaseInfo.ArtifactID).Tables(0)
+		End Function
 
-        Public Function HasFileField(ByVal artifactTypeID As Int32, Optional ByVal refresh As Boolean = False) As Boolean
-            Dim retval As Boolean = False
-            Dim docFieldCollection As DocumentFieldCollection = CurrentFields(artifactTypeID, refresh)
-            Dim allFields As ICollection = docFieldCollection.AllFields
-            For Each field As DocumentField In allFields
-                If field.FieldTypeID = Relativity.FieldTypeHelper.FieldType.File Then
-                    retval = True
-                End If
-            Next
-            Return retval
-        End Function
+		Public Function HasFileField(ByVal artifactTypeID As Int32, Optional ByVal refresh As Boolean = False) As Boolean
+			Dim retval As Boolean = False
+			Dim docFieldCollection As DocumentFieldCollection = CurrentFields(artifactTypeID, refresh)
+			Dim allFields As ICollection = docFieldCollection.AllFields
+			For Each field As DocumentField In allFields
+				If field.FieldTypeID = Relativity.FieldTypeHelper.FieldType.File Then
+					retval = True
+				End If
+			Next
+			Return retval
+		End Function
 
-        Public Function GetObjectTypeName(ByVal artifactTypeID As Int32) As String
-            Dim objectTypeManager As New kCura.WinEDDS.Service.ObjectTypeManager(Me.Credential, Me.CookieContainer)
-            Dim uploadableObjectTypes As System.Data.DataRowCollection = objectTypeManager.RetrieveAllUploadable(Me.SelectedCaseInfo.ArtifactID).Tables(0).Rows
-            For Each objectType As System.Data.DataRow In uploadableObjectTypes
-                With New kCura.WinEDDS.ObjectTypeListItem(CType(objectType("DescriptorArtifactTypeID"), Int32), CType(objectType("Name"), String), CType(objectType("HasAddPermission"), Boolean))
-                    If .Value = artifactTypeID Then Return .Display
-                End With
-            Next
-            Return String.Empty
-        End Function
+		Public Function GetObjectTypeName(ByVal artifactTypeID As Int32) As String
+			Dim objectTypeManager As New kCura.WinEDDS.Service.ObjectTypeManager(Me.Credential, Me.CookieContainer)
+			Dim uploadableObjectTypes As System.Data.DataRowCollection = objectTypeManager.RetrieveAllUploadable(Me.SelectedCaseInfo.ArtifactID).Tables(0).Rows
+			For Each objectType As System.Data.DataRow In uploadableObjectTypes
+				With New kCura.WinEDDS.ObjectTypeListItem(CType(objectType("DescriptorArtifactTypeID"), Int32), CType(objectType("Name"), String), CType(objectType("HasAddPermission"), Boolean))
+					If .Value = artifactTypeID Then Return .Display
+				End With
+			Next
+			Return String.Empty
+		End Function
 
-        Public Function GetColumnHeadersFromLoadFile(ByVal loadfile As kCura.WinEDDS.LoadFile, ByVal firstLineContainsColumnHeaders As Boolean) As String()
-            loadfile.CookieContainer = Me.CookieContainer
-            Dim parser As New kCura.WinEDDS.BulkLoadFileImporter(loadfile, Nothing, _timeZoneOffset, False, Nothing, False, Config.BulkLoadFileFieldDelimiter)
-            Return parser.GetColumnNames(loadfile)
-        End Function
+		Public Function GetColumnHeadersFromLoadFile(ByVal loadfile As kCura.WinEDDS.LoadFile, ByVal firstLineContainsColumnHeaders As Boolean) As String()
+			loadfile.CookieContainer = Me.CookieContainer
+			Dim parser As New kCura.WinEDDS.BulkLoadFileImporter(loadfile, Nothing, _timeZoneOffset, False, Nothing, False, Config.BulkLoadFileFieldDelimiter)
+			Return parser.GetColumnNames(loadfile)
+		End Function
 
-        Public Function GetCaseFolderPath(ByVal caseFolderArtifactID As Int32) As String
-            Return "\" & _selectedCaseInfo.Name & _selectedCaseFolderPath
-        End Function
+		Public Function GetCaseFolderPath(ByVal caseFolderArtifactID As Int32) As String
+			Return "\" & _selectedCaseInfo.Name & _selectedCaseFolderPath
+		End Function
 
-        'Worker function for PreviewLoadFile
-        Private Sub ManageRowWideError(ByVal dt As System.Data.DataTable, ByVal err As System.Exception, ByRef rowcount As Int32)
-            Dim errorRow As System.Data.DataRow = dt.NewRow
-            rowcount += 1
-            For Each column As System.Data.DataColumn In dt.Columns
-                Dim errorMessage As LoadFilePreviewColumnItem = New LoadFilePreviewColumnItem(New Exceptions.ErrorMessage(If((column.ColumnName = "Record Number"), rowcount.ToString, "Row-wide error: " & err.Message)))
-                errorRow(column.ColumnName) = errorMessage
-            Next
-            dt.Rows.Add(errorRow)
-        End Sub
+		'Worker function for PreviewLoadFile
+		Private Sub ManageRowWideError(ByVal dt As System.Data.DataTable, ByVal err As System.Exception, ByRef rowcount As Int32)
+			Dim errorRow As System.Data.DataRow = dt.NewRow
+			rowcount += 1
+			For Each column As System.Data.DataColumn In dt.Columns
+				Dim errorMessage As LoadFilePreviewColumnItem = New LoadFilePreviewColumnItem(New Exceptions.ErrorMessage(If((column.ColumnName = "Record Number"), rowcount.ToString, "Row-wide error: " & err.Message)))
+				errorRow(column.ColumnName) = errorMessage
+			Next
+			dt.Rows.Add(errorRow)
+		End Sub
 
-        Public Function BuildLoadFileDataSource(ByVal al As ArrayList) As DataTable
-            Try
-                Me.GetCaseFields(_selectedCaseInfo.ArtifactID, Me.ArtifactTypeID, True)
-                Dim item As Object
-                Dim field As Api.ArtifactField
-                Dim fields As Api.ArtifactField()
-                Dim firstTimeThrough As Boolean = True
-                Dim row As ArrayList
-                Dim dt As New DataTable
-                Dim errorQueue As New System.Collections.ArrayList
-                Dim i As Int32 = 0
-                If al.Count = 0 Then
-                    dt.Columns.Add("  ")
-                    dt.Rows.Add(New String() {"No errors"})
-                Else
-                    For Each item In al
-                        If Not item Is Nothing Then
-                            If TypeOf item Is System.Exception Then
-                                If dt.Columns.Count = 0 Then
-                                    errorQueue.Add(item)
-                                Else
-                                    Me.ManageRowWideError(dt, DirectCast(item, System.Exception), i)
-                                End If
-                            Else
-                                row = New ArrayList
-                                fields = DirectCast(item, Api.ArtifactField())
-                                If firstTimeThrough Then
-                                    dt.Columns.Add("Record Number")
-                                    For Each field In fields
-                                        dt.Columns.Add(field.DisplayName)
-                                        dt.Columns(field.DisplayName).DataType = GetType(LoadFilePreviewColumnItem)
-                                        If field.DisplayName.ToLower.Contains("extracted text") Then
-                                            'dt.Columns.Add("Extracted Text Encoding")
-                                        End If
-                                    Next
-                                    firstTimeThrough = False
-                                    For Each err As System.Exception In errorQueue
-                                        Me.ManageRowWideError(dt, err, i)
-                                    Next
-                                    errorQueue.Clear()
-                                End If
-                                AddRow(dt, row, fields, i)
-                            End If
-                        End If
-                    Next
-                    If errorQueue.Count > 0 Then
-                        dt.Columns.Add(" ")
-                        For Each err As System.Exception In errorQueue
-                            Me.ManageRowWideError(dt, err, i)
-                        Next
-                    End If
-                End If
-                Return dt
-            Catch ex As System.Exception
-                kCura.EDDS.WinForm.Utility.ThrowExceptionToGUI(ex)
-            End Try
-            Return Nothing
-        End Function
+		Public Function BuildLoadFileDataSource(ByVal al As ArrayList) As DataTable
+			Try
+				Me.GetCaseFields(_selectedCaseInfo.ArtifactID, Me.ArtifactTypeID, True)
+				Dim item As Object
+				Dim field As Api.ArtifactField
+				Dim fields As Api.ArtifactField()
+				Dim firstTimeThrough As Boolean = True
+				Dim row As ArrayList
+				Dim dt As New DataTable
+				Dim errorQueue As New System.Collections.ArrayList
+				Dim i As Int32 = 0
+				If al.Count = 0 Then
+					dt.Columns.Add("  ")
+					dt.Rows.Add(New String() {"No errors"})
+				Else
+					For Each item In al
+						If Not item Is Nothing Then
+							If TypeOf item Is System.Exception Then
+								If dt.Columns.Count = 0 Then
+									errorQueue.Add(item)
+								Else
+									Me.ManageRowWideError(dt, DirectCast(item, System.Exception), i)
+								End If
+							Else
+								row = New ArrayList
+								fields = DirectCast(item, Api.ArtifactField())
+								If firstTimeThrough Then
+									dt.Columns.Add("Record Number")
+									For Each field In fields
+										dt.Columns.Add(field.DisplayName)
+										dt.Columns(field.DisplayName).DataType = GetType(LoadFilePreviewColumnItem)
+										If field.DisplayName.ToLower.Contains("extracted text") Then
+											'dt.Columns.Add("Extracted Text Encoding")
+										End If
+									Next
+									firstTimeThrough = False
+									For Each err As System.Exception In errorQueue
+										Me.ManageRowWideError(dt, err, i)
+									Next
+									errorQueue.Clear()
+								End If
+								AddRow(dt, row, fields, i)
+							End If
+						End If
+					Next
+					If errorQueue.Count > 0 Then
+						dt.Columns.Add(" ")
+						For Each err As System.Exception In errorQueue
+							Me.ManageRowWideError(dt, err, i)
+						Next
+					End If
+				End If
+				Return dt
+			Catch ex As System.Exception
+				kCura.EDDS.WinForm.Utility.ThrowExceptionToGUI(ex)
+			End Try
+			Return Nothing
+		End Function
 
-        Private Sub AddRow(ByVal dt As DataTable, ByVal row As System.Collections.ArrayList, ByVal fields As Api.ArtifactField(), ByRef counter As Int32)
-            Try
-                counter += 1
-                Dim field As Api.ArtifactField
-                row.Add(counter.ToString())
-                For Each field In fields
-                    row.Add(New LoadFilePreviewColumnItem(field.Value))
-                    If field.DisplayName.ToLower.Contains("extracted text") Then
-                        'row.Add("...Encoding will go here...")
-                    End If
-                Next
-                dt.Rows.Add(row.ToArray)
-            Catch x As System.Exception
-                Throw
-            End Try
-        End Sub
+		Private Sub AddRow(ByVal dt As DataTable, ByVal row As System.Collections.ArrayList, ByVal fields As Api.ArtifactField(), ByRef counter As Int32)
+			Try
+				counter += 1
+				Dim field As Api.ArtifactField
+				row.Add(counter.ToString())
+				For Each field In fields
+					row.Add(New LoadFilePreviewColumnItem(field.Value))
+					If field.DisplayName.ToLower.Contains("extracted text") Then
+						'row.Add("...Encoding will go here...")
+					End If
+				Next
+				dt.Rows.Add(row.ToArray)
+			Catch x As System.Exception
+				Throw
+			End Try
+		End Sub
 
-        'Worker function for Previewing choice and folder counts
-        Public Function BuildFoldersAndCodesDataSource(ByVal al As ArrayList, ByVal previewCodeCount As System.Collections.Specialized.HybridDictionary) As DataTable
-            Try
-                Dim dt As New DataTable
-                Dim folderCount As Int32 = GetFolderCount(al)
-                Dim codeFieldColumnIndexes As ArrayList = GetCodeFieldColumnIndexes(DirectCast(al(0), System.Array))
+		'Worker function for Previewing choice and folder counts
+		Public Function BuildFoldersAndCodesDataSource(ByVal al As ArrayList, ByVal previewCodeCount As System.Collections.Specialized.HybridDictionary) As DataTable
+			Try
+				Dim dt As New DataTable
+				Dim folderCount As Int32 = GetFolderCount(al)
+				Dim codeFieldColumnIndexes As ArrayList = GetCodeFieldColumnIndexes(DirectCast(al(0), System.Array))
 
-                'setup columns
-                dt.Columns.Add("Field Name")
-                dt.Columns.Add("Count")
+				'setup columns
+				dt.Columns.Add("Field Name")
+				dt.Columns.Add("Count")
 
-                'setup folder row
-                Dim folderRow As New System.Collections.ArrayList
-                folderRow.Add("Folders")
-                If folderCount <> -1 Then
-                    folderRow.Add(folderCount.ToString)
-                Else
-                    folderRow.Add("0")
-                End If
-                dt.Rows.Add(folderRow.ToArray)
+				'setup folder row
+				Dim folderRow As New System.Collections.ArrayList
+				folderRow.Add("Folders")
+				If folderCount <> -1 Then
+					folderRow.Add(folderCount.ToString)
+				Else
+					folderRow.Add("0")
+				End If
+				dt.Rows.Add(folderRow.ToArray)
 
-                'insert spacer
-                Dim blankRow As New System.Collections.ArrayList
-                blankRow.Add("")
-                blankRow.Add("")
-                dt.Rows.Add(blankRow.ToArray)
+				'insert spacer
+				Dim blankRow As New System.Collections.ArrayList
+				blankRow.Add("")
+				blankRow.Add("")
+				dt.Rows.Add(blankRow.ToArray)
 
-                'setup choice rows
-                If codeFieldColumnIndexes.Count = 0 Then
-                    dt.Columns.Add("     ")
-                    dt.Rows.Add(New String() {"No choice fields have been mapped"})
-                Else
-                    For Each key As String In previewCodeCount.Keys
-                        Dim row As New System.Collections.ArrayList
-                        row.Add(key.Split("_".ToCharArray, 2)(1))
-                        Dim currentFieldHashTable As System.Collections.Specialized.HybridDictionary = DirectCast(previewCodeCount(key), System.Collections.Specialized.HybridDictionary)
-                        row.Add(currentFieldHashTable.Count)
-                        dt.Rows.Add(row.ToArray)
-                        currentFieldHashTable.Clear()
-                    Next
-                End If
+				'setup choice rows
+				If codeFieldColumnIndexes.Count = 0 Then
+					dt.Columns.Add("     ")
+					dt.Rows.Add(New String() {"No choice fields have been mapped"})
+				Else
+					For Each key As String In previewCodeCount.Keys
+						Dim row As New System.Collections.ArrayList
+						row.Add(key.Split("_".ToCharArray, 2)(1))
+						Dim currentFieldHashTable As System.Collections.Specialized.HybridDictionary = DirectCast(previewCodeCount(key), System.Collections.Specialized.HybridDictionary)
+						row.Add(currentFieldHashTable.Count)
+						dt.Rows.Add(row.ToArray)
+						currentFieldHashTable.Clear()
+					Next
+				End If
 
-                Return dt
-            Catch ex As Exception
-                kCura.EDDS.WinForm.Utility.ThrowExceptionToGUI(ex)
-            End Try
-            Return Nothing
-        End Function
+				Return dt
+			Catch ex As Exception
+				kCura.EDDS.WinForm.Utility.ThrowExceptionToGUI(ex)
+			End Try
+			Return Nothing
+		End Function
 
-        Public Function GetFolderCount(ByVal al As ArrayList) As Int32
-            _totalFolders.Clear()
-            Dim fieldValue As String
-            Dim item As Object
-            Dim fields As Api.ArtifactField()
-            Dim folderColumnIndex As Int32 = GetFolderColumnIndex(DirectCast(al(0), System.Array))
+		Public Function GetFolderCount(ByVal al As ArrayList) As Int32
+			_totalFolders.Clear()
+			Dim fieldValue As String
+			Dim item As Object
+			Dim fields As Api.ArtifactField()
+			Dim folderColumnIndex As Int32 = GetFolderColumnIndex(DirectCast(al(0), System.Array))
 
-            If folderColumnIndex <> -1 Then
-                For Each item In al
-                    If Not item Is Nothing Then
-                        fields = DirectCast(item, Api.ArtifactField())
-                        If folderColumnIndex <> -1 Then
-                            fieldValue = fields(folderColumnIndex).ValueAsString
-                            AddFoldersToTotalFolders(fieldValue)
-                        End If
-                    End If
-                Next
-                Return _totalFolders.Count
-            End If
-            Return -1
-        End Function
+			If folderColumnIndex <> -1 Then
+				For Each item In al
+					If Not item Is Nothing Then
+						fields = DirectCast(item, Api.ArtifactField())
+						If folderColumnIndex <> -1 Then
+							fieldValue = fields(folderColumnIndex).ValueAsString
+							AddFoldersToTotalFolders(fieldValue)
+						End If
+					End If
+				Next
+				Return _totalFolders.Count
+			End If
+			Return -1
+		End Function
 
-        Private Function GetFolderColumnIndex(ByVal firstRow As Array) As Int32
-            Dim folderColumnIndex As Int32 = -1
-            Dim currentIndex As Int32 = 0
-            For Each field As Api.ArtifactField In firstRow
-                If field.ArtifactID = -2 And field.DisplayName = "Parent Folder Identifier" Then folderColumnIndex = currentIndex
-                currentIndex += 1
-            Next
-            Return folderColumnIndex
-        End Function
+		Private Function GetFolderColumnIndex(ByVal firstRow As Array) As Int32
+			Dim folderColumnIndex As Int32 = -1
+			Dim currentIndex As Int32 = 0
+			For Each field As Api.ArtifactField In firstRow
+				If field.ArtifactID = -2 And field.DisplayName = "Parent Folder Identifier" Then folderColumnIndex = currentIndex
+				currentIndex += 1
+			Next
+			Return folderColumnIndex
+		End Function
 
-        Private Function GetCodeFieldColumnIndexes(ByVal firstRow As Array) As ArrayList
-            Dim codeFieldColumnIndexes As New ArrayList
-            Dim currentIndex As Int32 = 0
-            For Each field As Api.ArtifactField In firstRow
-                If field.Type = Relativity.FieldTypeHelper.FieldType.Code OrElse field.Type = Relativity.FieldTypeHelper.FieldType.MultiCode Then
-                    codeFieldColumnIndexes.Add(currentIndex)
-                End If
-                currentIndex += 1
-            Next
-            Return codeFieldColumnIndexes
-        End Function
+		Private Function GetCodeFieldColumnIndexes(ByVal firstRow As Array) As ArrayList
+			Dim codeFieldColumnIndexes As New ArrayList
+			Dim currentIndex As Int32 = 0
+			For Each field As Api.ArtifactField In firstRow
+				If field.Type = Relativity.FieldTypeHelper.FieldType.Code OrElse field.Type = Relativity.FieldTypeHelper.FieldType.MultiCode Then
+					codeFieldColumnIndexes.Add(currentIndex)
+				End If
+				currentIndex += 1
+			Next
+			Return codeFieldColumnIndexes
+		End Function
 
-        Private Sub AddFoldersToTotalFolders(ByVal folderPath As String)
-            If folderPath <> String.Empty AndAlso folderPath <> "\" Then
-                If folderPath.LastIndexOf("\"c) < 1 Then
-                    If Not _totalFolders.Contains(folderPath) Then _totalFolders.Add(folderPath, String.Empty)
-                Else
-                    If Not _totalFolders.Contains(folderPath) Then _totalFolders.Add(folderPath, String.Empty)
-                    AddFoldersToTotalFolders(folderPath.Substring(0, folderPath.LastIndexOf("\"c)))
-                End If
-            End If
-        End Sub
+		Private Sub AddFoldersToTotalFolders(ByVal folderPath As String)
+			If folderPath <> String.Empty AndAlso folderPath <> "\" Then
+				If folderPath.LastIndexOf("\"c) < 1 Then
+					If Not _totalFolders.Contains(folderPath) Then _totalFolders.Add(folderPath, String.Empty)
+				Else
+					If Not _totalFolders.Contains(folderPath) Then _totalFolders.Add(folderPath, String.Empty)
+					AddFoldersToTotalFolders(folderPath.Substring(0, folderPath.LastIndexOf("\"c)))
+				End If
+			End If
+		End Sub
 
-        Private Function EnsureConnection() As Boolean
-            If Not Me.SelectedCaseInfo Is Nothing Then
-                Dim casefields As String() = Nothing
-                Dim [continue] As Boolean = True
-                Try
-                    casefields = Me.GetCaseFields(Me.SelectedCaseInfo.ArtifactID, 10, True)
-                    Return Not casefields Is Nothing
-                Catch ex As System.Exception
-                    If ex.Message.IndexOf("Need To Re Login") <> -1 Then
-                        Return False
-                    Else
-                        Throw
-                    End If
-                End Try
-            Else
-                Return True
-            End If
-        End Function
+		Private Function EnsureConnection() As Boolean
+			If Not Me.SelectedCaseInfo Is Nothing Then
+				Dim casefields As String() = Nothing
+				Dim [continue] As Boolean = True
+				Try
+					casefields = Me.GetCaseFields(Me.SelectedCaseInfo.ArtifactID, 10, True)
+					Return Not casefields Is Nothing
+				Catch ex As System.Exception
+					If ex.Message.IndexOf("Need To Re Login") <> -1 Then
+						Return False
+					Else
+						Throw
+					End If
+				End Try
+			Else
+				Return True
+			End If
+		End Function
 
-        Public Sub RefreshCaseFolders()
-            If Me.EnsureConnection Then
-                RaiseEvent OnEvent(New kCura.WinEDDS.LoadCaseEvent(SelectedCaseInfo))
-            End If
-        End Sub
+		Public Sub RefreshCaseFolders()
+			If Me.EnsureConnection Then
+				RaiseEvent OnEvent(New kCura.WinEDDS.LoadCaseEvent(SelectedCaseInfo))
+			End If
+		End Sub
 
-        Public Function CheckFieldMap(ByVal loadFile As LoadFile) As Boolean
-            Dim unmapped As String()
-            Dim fmi As LoadFileFieldMap.LoadFileFieldMapItem
-            Dim fieldsNotColumnsMapped As Boolean
-            Dim values As New ArrayList
-            For Each fmi In loadFile.FieldMap
-                If fmi.DocumentField Is Nothing AndAlso fmi.NativeFileColumnIndex <> -1 Then
-                    values.Add("Column " & fmi.NativeFileColumnIndex + 1)
-                    fieldsNotColumnsMapped = False
-                ElseIf Not fmi.DocumentField Is Nothing AndAlso fmi.NativeFileColumnIndex = -1 Then
-                    values.Add(fmi.DocumentField.FieldName)
-                    fieldsNotColumnsMapped = True
-                End If
-            Next
-            If values.Count > 0 Then
-                unmapped = DirectCast(values.ToArray(GetType(String)), String())
-                Dim sb As New System.Text.StringBuilder
-                Dim nl As String = System.Environment.NewLine
-                If fieldsNotColumnsMapped Then
-                    sb.Append("The following fields are unmapped:" & nl)
-                Else
-                    sb.Append("The following file columns are unmapped:" & nl)
-                End If
-                Dim s As String
-                For Each s In unmapped
-                    sb.Append(" - " & s & nl)
-                Next
-                sb.Append("If you continue, any existing values in them will be wiped out in any records that are overwritten." & System.Environment.NewLine)
-                sb.Append("Do you wish to continue?")
-                If MsgBox(sb.ToString, MsgBoxStyle.YesNo, "Warning") = MsgBoxResult.No Then
-                    Return False
-                Else
-                    Return True
-                End If
-            Else
-                Return True
-            End If
-        End Function
+		Public Function CheckFieldMap(ByVal loadFile As LoadFile) As Boolean
+			Dim unmapped As String()
+			Dim fmi As LoadFileFieldMap.LoadFileFieldMapItem
+			Dim fieldsNotColumnsMapped As Boolean
+			Dim values As New ArrayList
+			For Each fmi In loadFile.FieldMap
+				If fmi.DocumentField Is Nothing AndAlso fmi.NativeFileColumnIndex <> -1 Then
+					values.Add("Column " & fmi.NativeFileColumnIndex + 1)
+					fieldsNotColumnsMapped = False
+				ElseIf Not fmi.DocumentField Is Nothing AndAlso fmi.NativeFileColumnIndex = -1 Then
+					values.Add(fmi.DocumentField.FieldName)
+					fieldsNotColumnsMapped = True
+				End If
+			Next
+			If values.Count > 0 Then
+				unmapped = DirectCast(values.ToArray(GetType(String)), String())
+				Dim sb As New System.Text.StringBuilder
+				Dim nl As String = System.Environment.NewLine
+				If fieldsNotColumnsMapped Then
+					sb.Append("The following fields are unmapped:" & nl)
+				Else
+					sb.Append("The following file columns are unmapped:" & nl)
+				End If
+				Dim s As String
+				For Each s In unmapped
+					sb.Append(" - " & s & nl)
+				Next
+				sb.Append("If you continue, any existing values in them will be wiped out in any records that are overwritten." & System.Environment.NewLine)
+				sb.Append("Do you wish to continue?")
+				If MsgBox(sb.ToString, MsgBoxStyle.YesNo, "Warning") = MsgBoxResult.No Then
+					Return False
+				Else
+					Return True
+				End If
+			Else
+				Return True
+			End If
+		End Function
 
-        Public Sub SetWorkingDirectory(ByVal filePath As String)
-            Dim directory As String
-            If Not filePath.LastIndexOf("\") = filePath.Length - 1 Then
-                directory = filePath.Substring(0, filePath.LastIndexOf("\") + 1)
-            Else
-                directory = String.Copy(filePath)
-            End If
-            System.IO.Directory.SetCurrentDirectory(directory)
-        End Sub
+		Public Sub SetWorkingDirectory(ByVal filePath As String)
+			Dim directory As String
+			If Not filePath.LastIndexOf("\") = filePath.Length - 1 Then
+				directory = filePath.Substring(0, filePath.LastIndexOf("\") + 1)
+			Else
+				directory = String.Copy(filePath)
+			End If
+			System.IO.Directory.SetCurrentDirectory(directory)
+		End Sub
 #End Region
 
 #Region "Form Initializers"
@@ -910,15 +910,6 @@ Namespace kCura.EDDS.WinForm
 			Return searchExportDataSet.Tables(0)
 		End Function
 
-		Public Sub NewOutlookImport(ByVal destinationArtifactID As Int32, ByVal caseInfo As Relativity.CaseInfo)
-			Dim importerAssembly As System.Reflection.Assembly
-			importerAssembly = System.Reflection.Assembly.LoadFrom(kCura.WinEDDS.Config.OutlookImporterLocation)
-			Dim hostImporterGateway As kCura.EDDS.Import.ImporterGatewayBase
-			hostImporterGateway = CType(importerAssembly.CreateInstance("kCura.EDDS.Import.Outlook.ImporterGateway"), kCura.EDDS.Import.ImporterGatewayBase)
-			Dim frm As Form = hostImporterGateway.GetSettingsForm(New Import.CaseInfo(caseInfo.ArtifactID, caseInfo.RootArtifactID), destinationArtifactID, New WinEDDSGateway)
-			frm.Show()
-		End Sub
-
 		Public Sub NewImageFile(ByVal destinationArtifactID As Int32, ByVal caseinfo As Relativity.CaseInfo)
 			CursorWait()
 			If Not Me.IsConnected(caseinfo.ArtifactID, Me.ArtifactTypeID) Then
@@ -977,37 +968,6 @@ Namespace kCura.EDDS.WinForm
 			CursorDefault()
 		End Sub
 
-		Public Sub NewDirectoryImport(ByVal destinationArtifactID As Int32, ByVal caseInfo As Relativity.CaseInfo)
-			CursorWait()
-			If Not Me.IsConnected(caseInfo.ArtifactID, ArtifactTypeID) Then
-				CursorDefault()
-				Exit Sub
-			End If
-			Dim frm As New ImportFileSystemForm
-			Dim importFileDirectorySettings As New ImportFileDirectorySettings
-			importFileDirectorySettings.DestinationFolderID = destinationArtifactID
-			importFileDirectorySettings.CaseInfo = caseInfo
-			frm.ImportFileDirectorySettings = importFileDirectorySettings
-			frm.Show()
-			CursorDefault()
-		End Sub
-
-		Public Sub NewEnronImport(ByVal destinationArtifactID As Int32, ByVal caseInfo As Relativity.CaseInfo)
-			CursorWait()
-			If Not Me.IsConnected(caseInfo.ArtifactID, ArtifactTypeID) Then
-				CursorDefault()
-				Exit Sub
-			End If
-			Dim frm As New ImportFileSystemForm
-			Dim importFileDirectorySettings As New ImportFileDirectorySettings
-			importFileDirectorySettings.EnronImport = True
-			importFileDirectorySettings.DestinationFolderID = destinationArtifactID
-			importFileDirectorySettings.CaseInfo = caseInfo
-			frm.ImportFileDirectorySettings = importFileDirectorySettings
-			frm.Show()
-			CursorDefault()
-		End Sub
-
 		Public Sub NewOptions()
 			CursorWait()
 			Dim frm As New OptionsForm
@@ -1032,7 +992,7 @@ Namespace kCura.EDDS.WinForm
 
 		Public Sub ChangeWebServiceURL()
 			CursorWait()
-            Dim frm As New Forms.SetWebServiceURL
+			Dim frm As New Forms.SetWebServiceURL
 			frm.Show()
 			CursorDefault()
 		End Sub
@@ -1104,39 +1064,6 @@ Namespace kCura.EDDS.WinForm
 
 		Public Function StartProcess(ByVal process As Windows.Process.IRunable) As System.Guid
 			Return _processPool.StartProcess(process)
-		End Function
-
-		Public Function ImportDirectory(ByVal importFileDirectorySettings As ImportFileDirectorySettings) As Guid
-			CursorWait()
-			If Not Me.IsConnected(importFileDirectorySettings.CaseInfo.ArtifactID, ArtifactTypeID) Then
-				CursorDefault()
-				Exit Function
-			End If
-			Dim frm As New kCura.Windows.Process.ProgressForm
-			Dim importer As New kCura.WinEDDS.ImportFileDirectoryProcess(Credential, CookieContainer)
-			'Dim importer As New kCura.WinEDDS.ImportFileDirectoryProcess(Credential, CookieContainer, Me.Identity)
-			importer.ImportFileDirectorySettings = importFileDirectorySettings
-			frm.ProcessObserver = importer.ProcessObserver
-			frm.Text = "Import File Directory Progress ..."
-			frm.Show()
-			CursorDefault()
-			Return _processPool.StartProcess(importer)
-		End Function
-
-		Public Function ImportGeneric(ByVal settings As Object) As Guid
-			CursorWait()
-			If Not Me.IsConnected(_selectedCaseInfo.ArtifactID, ArtifactTypeID) Then
-				CursorDefault()
-				Exit Function
-			End If
-			Dim frm As New kCura.Windows.Process.ProgressForm
-			Dim importer As New kCura.WinEDDS.GenericImportProcess(New WinEDDSGateway)
-			importer.Settings = settings
-			frm.ProcessObserver = importer.ProcessObserver
-			frm.Text = "Import Generic Progress ..."
-			frm.Show()
-			CursorDefault()
-			Return _processPool.StartProcess(importer)
 		End Function
 
 		Public Function ImportLoadFile(ByVal loadFile As LoadFile) As Guid
@@ -1453,13 +1380,13 @@ Namespace kCura.EDDS.WinForm
 			Return _lastCredentialCheckResult
 		End Function
 
-        ''' <summary>
-        ''' Loads the workspace permissions into UserHasExportPermission and UserHasImportPermission.
-        ''' </summary>
-        Public Sub LoadWorkspacePermissions()
-            UserHasExportPermission = New kCura.WinEDDS.Service.ExportManager(Credential, CookieContainer).HasExportPermissions(SelectedCaseInfo.ArtifactID)
-            UserHasImportPermission = New kCura.WinEDDS.Service.BulkImportManager(Credential, CookieContainer).HasImportPermissions(SelectedCaseInfo.ArtifactID)
-        End Sub
+		''' <summary>
+		''' Loads the workspace permissions into UserHasExportPermission and UserHasImportPermission.
+		''' </summary>
+		Public Sub LoadWorkspacePermissions()
+			UserHasExportPermission = New kCura.WinEDDS.Service.ExportManager(Credential, CookieContainer).HasExportPermissions(SelectedCaseInfo.ArtifactID)
+			UserHasImportPermission = New kCura.WinEDDS.Service.BulkImportManager(Credential, CookieContainer).HasImportPermissions(SelectedCaseInfo.ArtifactID)
+		End Sub
 
 		Private Sub _loginForm_OK_Click(ByVal cred As System.Net.NetworkCredential, ByVal openCaseSelector As Boolean) Handles _loginForm.OK_Click
 			_loginForm.Close()

@@ -45,8 +45,6 @@ Namespace kCura.EDDS.WinForm
 		Friend WithEvents ImportMenu As System.Windows.Forms.MenuItem
 		Friend WithEvents ToolsImportLoadFileMenu As System.Windows.Forms.MenuItem
 		Friend WithEvents ExportMenu As System.Windows.Forms.MenuItem
-		Friend WithEvents ToolsImportFileDirectoryMenu As System.Windows.Forms.MenuItem
-		Friend WithEvents ToolsImportOutlookMenu As System.Windows.Forms.MenuItem
 		Friend WithEvents _toolsMenu As System.Windows.Forms.MenuItem
 		Friend WithEvents _toolsMenuSettingsItem As System.Windows.Forms.MenuItem
 		Friend WithEvents ToolsExportProductionMenu As System.Windows.Forms.MenuItem
@@ -75,8 +73,6 @@ Namespace kCura.EDDS.WinForm
 			Me.ToolsImportImageFileMenu = New System.Windows.Forms.MenuItem()
 			Me.ToolsImportLoadFileMenu = New System.Windows.Forms.MenuItem()
 			Me.ToolsImportProductionFileMenu = New System.Windows.Forms.MenuItem()
-			Me.ToolsImportFileDirectoryMenu = New System.Windows.Forms.MenuItem()
-			Me.ToolsImportOutlookMenu = New System.Windows.Forms.MenuItem()
 			Me.ExportMenu = New System.Windows.Forms.MenuItem()
 			Me.ToolsExportProductionMenu = New System.Windows.Forms.MenuItem()
 			Me.ToolsExportSearchMenu = New System.Windows.Forms.MenuItem()
@@ -154,7 +150,7 @@ Namespace kCura.EDDS.WinForm
 			Me.ImportMenu.Enabled = False
 			Me.EnhancedMenuProvider.SetImageIndex(Me.ImportMenu, -1)
 			Me.ImportMenu.Index = 0
-			Me.ImportMenu.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.ToolsImportImageFileMenu, Me.ToolsImportLoadFileMenu, Me.ToolsImportProductionFileMenu, Me.ToolsImportFileDirectoryMenu, Me.ToolsImportOutlookMenu})
+			Me.ImportMenu.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.ToolsImportImageFileMenu, Me.ToolsImportLoadFileMenu, Me.ToolsImportProductionFileMenu})
 			Me.ImportMenu.OwnerDraw = True
 			Me.ImportMenu.Text = "&Import"
 			'
@@ -181,22 +177,6 @@ Namespace kCura.EDDS.WinForm
 			Me.ToolsImportProductionFileMenu.OwnerDraw = True
 			Me.ToolsImportProductionFileMenu.Shortcut = System.Windows.Forms.Shortcut.CtrlP
 			Me.ToolsImportProductionFileMenu.Text = "Production Load File..."
-			'
-			'ToolsImportFileDirectoryMenu
-			'
-			Me.EnhancedMenuProvider.SetImageIndex(Me.ToolsImportFileDirectoryMenu, -1)
-			Me.ToolsImportFileDirectoryMenu.Index = 3
-			Me.ToolsImportFileDirectoryMenu.OwnerDraw = True
-			Me.ToolsImportFileDirectoryMenu.Text = "&File Directory..."
-			Me.ToolsImportFileDirectoryMenu.Visible = False
-			'
-			'ToolsImportOutlookMenu
-			'
-			Me.EnhancedMenuProvider.SetImageIndex(Me.ToolsImportOutlookMenu, -1)
-			Me.ToolsImportOutlookMenu.Index = 4
-			Me.ToolsImportOutlookMenu.OwnerDraw = True
-			Me.ToolsImportOutlookMenu.Text = "&Outlook..."
-			Me.ToolsImportOutlookMenu.Visible = False
 			'
 			'ExportMenu
 			'
@@ -457,18 +437,6 @@ Namespace kCura.EDDS.WinForm
 		Private Sub ToolsImportLoadFileMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ToolsImportLoadFileMenu.Click
 			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
 			_application.NewLoadFile(_application.SelectedCaseFolderID, _application.SelectedCaseInfo)
-			Me.Cursor = System.Windows.Forms.Cursors.Default
-		End Sub
-
-		Private Sub ToolsImportFileDirectoryMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ToolsImportFileDirectoryMenu.Click
-			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
-			_application.NewDirectoryImport(_application.SelectedCaseFolderID, _application.SelectedCaseInfo)
-			Me.Cursor = System.Windows.Forms.Cursors.Default
-		End Sub
-
-		Private Sub ToolsImportOutlookMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ToolsImportOutlookMenu.Click
-			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
-			_application.NewOutlookImport(_application.SelectedCaseFolderID, _application.SelectedCaseInfo)
 			Me.Cursor = System.Windows.Forms.Cursors.Default
 		End Sub
 
