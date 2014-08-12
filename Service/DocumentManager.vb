@@ -32,18 +32,6 @@ Namespace kCura.WinEDDS.Service
 			Return doc
 		End Function
 
-#Region " Translations "
-
-		Private Function GetWebAPIFullTextBuilder(ByVal eddsftb As Relativity.FullTextBuilder) As kCura.EDDS.WebAPI.DocumentManagerBase.FullTextBuilderDTO
-			Dim wapiftb As New kCura.EDDS.WebAPI.DocumentManagerBase.FullTextBuilderDTO
-			wapiftb.Pages = DirectCast(eddsftb.Pages.ToArray(GetType(Int32)), Int32())
-			wapiftb.FullText = System.Text.Encoding.Unicode.GetBytes(eddsftb.FullTextString)
-			wapiftb.FilePointer = eddsftb.FilePointer
-			Return wapiftb
-		End Function
-
-#End Region
-
 #Region " Shadow Functions "
 		Public Shadows Function GetAllDocumentsForCase(ByVal caseID As Int32) As System.Data.DataSet
 			Dim tries As Int32 = 0
@@ -55,23 +43,6 @@ Namespace kCura.WinEDDS.Service
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso _
 					 ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso _
 					 tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
-					Else
-						Throw
-					End If
-				End Try
-			End While
-			Return Nothing
-		End Function
-
-		Public Shadows Function CreateEmptyDocument(ByVal caseContextArtifactID As Int32, ByVal parentFolderID As Int32, ByVal identifierValue As Byte(), ByVal identifierColumn As String, ByVal fullTextBuilder As Relativity.FullTextBuilder) As Int32
-			Dim tries As Int32 = 0
-			While tries < Config.MaxReloginTries
-				Try
-					tries += 1
-					Return MyBase.CreateEmptyDocument(caseContextArtifactID, parentFolderID, identifierValue, identifierColumn, GetWebAPIFullTextBuilder(fullTextBuilder))
-				Catch ex As System.Exception
-					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
 						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
 					Else
 						Throw
@@ -121,23 +92,6 @@ Namespace kCura.WinEDDS.Service
 				Try
 					tries += 1
 					Return MyBase.Update(caseContextArtifactID, document, files)
-				Catch ex As System.Exception
-					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
-					Else
-						Throw
-					End If
-				End Try
-			End While
-			Return Nothing
-		End Function
-
-		Public Shadows Function AddFullTextToDocument(ByVal caseContextArtifactID As Int32, ByVal documentArtifactID As Int32, ByVal fullTextBuilder As Relativity.FullTextBuilder) As Boolean
-			Dim tries As Int32 = 0
-			While tries < Config.MaxReloginTries
-				tries += 1
-				Try
-					Return MyBase.AddFullTextToDocument(caseContextArtifactID, documentArtifactID, GetWebAPIFullTextBuilder(fullTextBuilder))
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
 						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)

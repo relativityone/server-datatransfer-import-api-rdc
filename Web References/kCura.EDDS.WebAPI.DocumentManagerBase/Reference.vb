@@ -38,8 +38,6 @@ Namespace kCura.EDDS.WebAPI.DocumentManagerBase
         
         Private NewFileDTOOperationCompleted As System.Threading.SendOrPostCallback
         
-        Private CreateEmptyDocumentOperationCompleted As System.Threading.SendOrPostCallback
-        
         Private ReadOperationCompleted As System.Threading.SendOrPostCallback
         
         Private CreateOperationCompleted As System.Threading.SendOrPostCallback
@@ -47,8 +45,6 @@ Namespace kCura.EDDS.WebAPI.DocumentManagerBase
         Private DeleteOperationCompleted As System.Threading.SendOrPostCallback
         
         Private UpdateOperationCompleted As System.Threading.SendOrPostCallback
-        
-        Private AddFullTextToDocumentOperationCompleted As System.Threading.SendOrPostCallback
         
         Private GetDocumentArtifactIDFromIdentifierOperationCompleted As System.Threading.SendOrPostCallback
         
@@ -117,9 +113,6 @@ Namespace kCura.EDDS.WebAPI.DocumentManagerBase
         Public Event NewFileDTOCompleted As NewFileDTOCompletedEventHandler
         
         '''<remarks/>
-        Public Event CreateEmptyDocumentCompleted As CreateEmptyDocumentCompletedEventHandler
-        
-        '''<remarks/>
         Public Event ReadCompleted As ReadCompletedEventHandler
         
         '''<remarks/>
@@ -130,9 +123,6 @@ Namespace kCura.EDDS.WebAPI.DocumentManagerBase
         
         '''<remarks/>
         Public Event UpdateCompleted As UpdateCompletedEventHandler
-        
-        '''<remarks/>
-        Public Event AddFullTextToDocumentCompleted As AddFullTextToDocumentCompletedEventHandler
         
         '''<remarks/>
         Public Event GetDocumentArtifactIDFromIdentifierCompleted As GetDocumentArtifactIDFromIdentifierCompletedEventHandler
@@ -240,44 +230,6 @@ Namespace kCura.EDDS.WebAPI.DocumentManagerBase
             If (Not (Me.NewFileDTOCompletedEvent) Is Nothing) Then
                 Dim invokeArgs As System.Web.Services.Protocols.InvokeCompletedEventArgs = CType(arg,System.Web.Services.Protocols.InvokeCompletedEventArgs)
                 RaiseEvent NewFileDTOCompleted(Me, New NewFileDTOCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState))
-            End If
-        End Sub
-        
-        '''<remarks/>
-        <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://foley.com/EDDS/DocumentManager/CreateEmptyDocument", RequestNamespace:="http://foley.com/EDDS/DocumentManager", ResponseNamespace:="http://foley.com/EDDS/DocumentManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
-        Public Function CreateEmptyDocument(ByVal caseContextArtifactID As Integer, ByVal parentFolderID As Integer, <System.Xml.Serialization.XmlElementAttribute(DataType:="base64Binary")> ByVal identifierValue() As Byte, ByVal identifierColumn As String, ByVal fullTextBuilder As FullTextBuilderDTO) As Integer
-            Dim results() As Object = Me.Invoke("CreateEmptyDocument", New Object() {caseContextArtifactID, parentFolderID, identifierValue, identifierColumn, fullTextBuilder})
-            Return CType(results(0),Integer)
-        End Function
-        
-        '''<remarks/>
-        Public Function BeginCreateEmptyDocument(ByVal caseContextArtifactID As Integer, ByVal parentFolderID As Integer, ByVal identifierValue() As Byte, ByVal identifierColumn As String, ByVal fullTextBuilder As FullTextBuilderDTO, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
-            Return Me.BeginInvoke("CreateEmptyDocument", New Object() {caseContextArtifactID, parentFolderID, identifierValue, identifierColumn, fullTextBuilder}, callback, asyncState)
-        End Function
-        
-        '''<remarks/>
-        Public Function EndCreateEmptyDocument(ByVal asyncResult As System.IAsyncResult) As Integer
-            Dim results() As Object = Me.EndInvoke(asyncResult)
-            Return CType(results(0),Integer)
-        End Function
-        
-        '''<remarks/>
-        Public Overloads Sub CreateEmptyDocumentAsync(ByVal caseContextArtifactID As Integer, ByVal parentFolderID As Integer, ByVal identifierValue() As Byte, ByVal identifierColumn As String, ByVal fullTextBuilder As FullTextBuilderDTO)
-            Me.CreateEmptyDocumentAsync(caseContextArtifactID, parentFolderID, identifierValue, identifierColumn, fullTextBuilder, Nothing)
-        End Sub
-        
-        '''<remarks/>
-        Public Overloads Sub CreateEmptyDocumentAsync(ByVal caseContextArtifactID As Integer, ByVal parentFolderID As Integer, ByVal identifierValue() As Byte, ByVal identifierColumn As String, ByVal fullTextBuilder As FullTextBuilderDTO, ByVal userState As Object)
-            If (Me.CreateEmptyDocumentOperationCompleted Is Nothing) Then
-                Me.CreateEmptyDocumentOperationCompleted = AddressOf Me.OnCreateEmptyDocumentOperationCompleted
-            End If
-            Me.InvokeAsync("CreateEmptyDocument", New Object() {caseContextArtifactID, parentFolderID, identifierValue, identifierColumn, fullTextBuilder}, Me.CreateEmptyDocumentOperationCompleted, userState)
-        End Sub
-        
-        Private Sub OnCreateEmptyDocumentOperationCompleted(ByVal arg As Object)
-            If (Not (Me.CreateEmptyDocumentCompletedEvent) Is Nothing) Then
-                Dim invokeArgs As System.Web.Services.Protocols.InvokeCompletedEventArgs = CType(arg,System.Web.Services.Protocols.InvokeCompletedEventArgs)
-                RaiseEvent CreateEmptyDocumentCompleted(Me, New CreateEmptyDocumentCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState))
             End If
         End Sub
         
@@ -428,44 +380,6 @@ Namespace kCura.EDDS.WebAPI.DocumentManagerBase
             If (Not (Me.UpdateCompletedEvent) Is Nothing) Then
                 Dim invokeArgs As System.Web.Services.Protocols.InvokeCompletedEventArgs = CType(arg,System.Web.Services.Protocols.InvokeCompletedEventArgs)
                 RaiseEvent UpdateCompleted(Me, New UpdateCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState))
-            End If
-        End Sub
-        
-        '''<remarks/>
-        <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://foley.com/EDDS/DocumentManager/AddFullTextToDocument", RequestNamespace:="http://foley.com/EDDS/DocumentManager", ResponseNamespace:="http://foley.com/EDDS/DocumentManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
-        Public Function AddFullTextToDocument(ByVal caseContextArtifactID As Integer, ByVal documentArtifactID As Integer, ByVal fullTextBuilder As FullTextBuilderDTO) As Boolean
-            Dim results() As Object = Me.Invoke("AddFullTextToDocument", New Object() {caseContextArtifactID, documentArtifactID, fullTextBuilder})
-            Return CType(results(0),Boolean)
-        End Function
-        
-        '''<remarks/>
-        Public Function BeginAddFullTextToDocument(ByVal caseContextArtifactID As Integer, ByVal documentArtifactID As Integer, ByVal fullTextBuilder As FullTextBuilderDTO, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
-            Return Me.BeginInvoke("AddFullTextToDocument", New Object() {caseContextArtifactID, documentArtifactID, fullTextBuilder}, callback, asyncState)
-        End Function
-        
-        '''<remarks/>
-        Public Function EndAddFullTextToDocument(ByVal asyncResult As System.IAsyncResult) As Boolean
-            Dim results() As Object = Me.EndInvoke(asyncResult)
-            Return CType(results(0),Boolean)
-        End Function
-        
-        '''<remarks/>
-        Public Overloads Sub AddFullTextToDocumentAsync(ByVal caseContextArtifactID As Integer, ByVal documentArtifactID As Integer, ByVal fullTextBuilder As FullTextBuilderDTO)
-            Me.AddFullTextToDocumentAsync(caseContextArtifactID, documentArtifactID, fullTextBuilder, Nothing)
-        End Sub
-        
-        '''<remarks/>
-        Public Overloads Sub AddFullTextToDocumentAsync(ByVal caseContextArtifactID As Integer, ByVal documentArtifactID As Integer, ByVal fullTextBuilder As FullTextBuilderDTO, ByVal userState As Object)
-            If (Me.AddFullTextToDocumentOperationCompleted Is Nothing) Then
-                Me.AddFullTextToDocumentOperationCompleted = AddressOf Me.OnAddFullTextToDocumentOperationCompleted
-            End If
-            Me.InvokeAsync("AddFullTextToDocument", New Object() {caseContextArtifactID, documentArtifactID, fullTextBuilder}, Me.AddFullTextToDocumentOperationCompleted, userState)
-        End Sub
-        
-        Private Sub OnAddFullTextToDocumentOperationCompleted(ByVal arg As Object)
-            If (Not (Me.AddFullTextToDocumentCompletedEvent) Is Nothing) Then
-                Dim invokeArgs As System.Web.Services.Protocols.InvokeCompletedEventArgs = CType(arg,System.Web.Services.Protocols.InvokeCompletedEventArgs)
-                RaiseEvent AddFullTextToDocumentCompleted(Me, New AddFullTextToDocumentCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState))
             End If
         End Sub
         
@@ -3047,52 +2961,6 @@ Namespace kCura.EDDS.WebAPI.DocumentManagerBase
     End Class
     
     '''<remarks/>
-    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.18060"),  _
-     System.SerializableAttribute(),  _
-     System.Diagnostics.DebuggerStepThroughAttribute(),  _
-     System.ComponentModel.DesignerCategoryAttribute("code"),  _
-     System.Xml.Serialization.XmlTypeAttribute([Namespace]:="http://foley.com/EDDS/DocumentManager")>  _
-    Partial Public Class FullTextBuilderDTO
-        
-        Private filePointerField As String
-        
-        Private fullTextField() As Byte
-        
-        Private pagesField() As Integer
-        
-        '''<remarks/>
-        Public Property FilePointer() As String
-            Get
-                Return Me.filePointerField
-            End Get
-            Set
-                Me.filePointerField = value
-            End Set
-        End Property
-        
-        '''<remarks/>
-        <System.Xml.Serialization.XmlElementAttribute(DataType:="base64Binary")>  _
-        Public Property FullText() As Byte()
-            Get
-                Return Me.fullTextField
-            End Get
-            Set
-                Me.fullTextField = value
-            End Set
-        End Property
-        
-        '''<remarks/>
-        Public Property Pages() As Integer()
-            Get
-                Return Me.pagesField
-            End Get
-            Set
-                Me.pagesField = value
-            End Set
-        End Property
-    End Class
-    
-    '''<remarks/>
     <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.0.30319.17929")>  _
     Public Delegate Sub GetAllDocumentsForCaseCompletedEventHandler(ByVal sender As Object, ByVal e As GetAllDocumentsForCaseCompletedEventArgs)
     
@@ -3142,33 +3010,6 @@ Namespace kCura.EDDS.WebAPI.DocumentManagerBase
             Get
                 Me.RaiseExceptionIfNecessary
                 Return CType(Me.results(0),File)
-            End Get
-        End Property
-    End Class
-    
-    '''<remarks/>
-    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.0.30319.17929")>  _
-    Public Delegate Sub CreateEmptyDocumentCompletedEventHandler(ByVal sender As Object, ByVal e As CreateEmptyDocumentCompletedEventArgs)
-    
-    '''<remarks/>
-    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.0.30319.17929"),  _
-     System.Diagnostics.DebuggerStepThroughAttribute(),  _
-     System.ComponentModel.DesignerCategoryAttribute("code")>  _
-    Partial Public Class CreateEmptyDocumentCompletedEventArgs
-        Inherits System.ComponentModel.AsyncCompletedEventArgs
-        
-        Private results() As Object
-        
-        Friend Sub New(ByVal results() As Object, ByVal exception As System.Exception, ByVal cancelled As Boolean, ByVal userState As Object)
-            MyBase.New(exception, cancelled, userState)
-            Me.results = results
-        End Sub
-        
-        '''<remarks/>
-        Public ReadOnly Property Result() As Integer
-            Get
-                Me.RaiseExceptionIfNecessary
-                Return CType(Me.results(0),Integer)
             End Get
         End Property
     End Class
@@ -3254,33 +3095,6 @@ Namespace kCura.EDDS.WebAPI.DocumentManagerBase
             Get
                 Me.RaiseExceptionIfNecessary
                 Return CType(Me.results(0),Integer)
-            End Get
-        End Property
-    End Class
-    
-    '''<remarks/>
-    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.0.30319.17929")>  _
-    Public Delegate Sub AddFullTextToDocumentCompletedEventHandler(ByVal sender As Object, ByVal e As AddFullTextToDocumentCompletedEventArgs)
-    
-    '''<remarks/>
-    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.0.30319.17929"),  _
-     System.Diagnostics.DebuggerStepThroughAttribute(),  _
-     System.ComponentModel.DesignerCategoryAttribute("code")>  _
-    Partial Public Class AddFullTextToDocumentCompletedEventArgs
-        Inherits System.ComponentModel.AsyncCompletedEventArgs
-        
-        Private results() As Object
-        
-        Friend Sub New(ByVal results() As Object, ByVal exception As System.Exception, ByVal cancelled As Boolean, ByVal userState As Object)
-            MyBase.New(exception, cancelled, userState)
-            Me.results = results
-        End Sub
-        
-        '''<remarks/>
-        Public ReadOnly Property Result() As Boolean
-            Get
-                Me.RaiseExceptionIfNecessary
-                Return CType(Me.results(0),Boolean)
             End Get
         End Property
     End Class

@@ -59,12 +59,6 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
-		Public Shared ReadOnly Property OutlookImporterLocation() As String
-			Get
-				Return ""		 'CType(ConfigSettings("OutlookImporterLocation"), String)
-			End Get
-		End Property
-
 #End Region
 
 #Region " Constants "

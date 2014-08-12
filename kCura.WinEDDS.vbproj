@@ -490,9 +490,6 @@
     <Compile Include="Importers\CodeValidator\SinglePreviewer.vb">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Importers\FileDirectoryImporter.vb">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Importers\FolderCache.vb">
       <SubType>Code</SubType>
     </Compile>
@@ -534,15 +531,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Process\ExportStatistics.vb">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Process\GenericImportProcess.vb">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Process\ImportFileDirectoryProcess.vb">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Process\ImportFileDirectorySettings.vb">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Process\ImportImageFileProcess.vb">
