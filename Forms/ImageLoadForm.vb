@@ -459,7 +459,7 @@ Namespace kCura.EDDS.WinForm
 			ImageLoadFile.FullTextEncoding = _encodingPicker.SelectedEncoding
 			ImageLoadFile.Overwrite = Me.GetOverwrite
 			ImageLoadFile.DestinationFolderID = _imageLoadFile.DestinationFolderID
-			ImageLoadFile.ControlKeyField = _application.GetCaseIdentifierFields(10)(0)
+			ImageLoadFile.ControlKeyField = _application.GetCaseIdentifierFields(Relativity.ArtifactType.Document)(0)
 			ImageLoadFile.AutoNumberImages = _autoNumberingOn.Checked
 			If ImageLoadFile.ForProduction Then
 				ImageLoadFile.ProductionArtifactID = CType(_productionDropdown.SelectedValue, Int32)
@@ -473,7 +473,7 @@ Namespace kCura.EDDS.WinForm
 				End If
 				Me.ImageLoadFile.ReplaceFullText = _replaceFullText.Checked
 			End If
-			If Me.ImageLoadFile.IdentityFieldId = -1 Then Me.ImageLoadFile.IdentityFieldId = _application.CurrentFields(10).IdentifierFields(0).FieldID
+			If Me.ImageLoadFile.IdentityFieldId = -1 Then Me.ImageLoadFile.IdentityFieldId = _application.CurrentFields(Relativity.ArtifactType.Document).IdentifierFields(0).FieldID
 			Me.ImageLoadFile.CaseDefaultPath = _application.SelectedCaseInfo.DocumentPath
 			Me.ImageLoadFile.SendEmailOnLoadCompletion = _importMenuSendEmailNotificationItem.Checked
 			ImageLoadFile.StartLineNumber = CType(_startLineNumber.Value, Int64)
@@ -636,22 +636,13 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 		Private Function EnsureConnection() As Boolean
+			Dim retval As Boolean = False
 			If Not _imageLoadFile Is Nothing AndAlso Not _imageLoadFile.CaseInfo Is Nothing Then
-				Dim casefields As String() = Nothing
-				Dim [continue] As Boolean = True
-				Try
-					casefields = _application.GetCaseFields(_imageLoadFile.CaseInfo.ArtifactID, 10, True)
-					Return Not casefields Is Nothing
-				Catch ex As System.Exception
-					If ex.Message.IndexOf("Need To Re Login") <> -1 Then
-						Return False
-					Else
-						Throw
-					End If
-				End Try
+				retval = _application.EnsureConnection()
 			Else
-				Return True
+				retval = True
 			End If
+			Return retval
 		End Function
 
 		Private Sub _importMenuCheckErrorsItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _importMenuCheckErrorsItem.Click
