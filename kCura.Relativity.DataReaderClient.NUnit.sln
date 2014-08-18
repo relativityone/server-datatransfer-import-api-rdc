@@ -1,13 +1,11 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
 Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "kCura.Relativity.DataReaderClient.NUnit", "kCura.Relativity.DataReaderClient.NUnit.vbproj", "{CCB5EB08-0DF3-433D-887B-47DF3D312736}"
 EndProject
 Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "kCura.Data", "..\..\kCura\kCura.Data\kCura.Data.vbproj", "{6C4D3211-85B6-4A83-9356-7C7F0C319C75}"
 EndProject
 Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "kCura.Utility", "..\..\kCura\kCura.Utility\kCura.Utility.vbproj", "{E3450350-56E3-4FE9-A47A-4D24960BCBDB}"
-EndProject
-Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "kCura.EDDS.Import", "..\kCura.EDDS.Import\kCura.EDDS.Import.vbproj", "{94940707-AFFE-47EB-BD70-5ADE8F7C8A36}"
 EndProject
 Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "kCura.ImageValidator", "..\..\kCura\kCura.ImageValidator\kCura.ImageValidator.vbproj", "{C2FD8BF7-723A-4D40-A201-CD7458678A70}"
 EndProject
@@ -102,28 +100,6 @@ Global
 		{E3450350-56E3-4FE9-A47A-4D24960BCBDB}.Search|x64.ActiveCfg = Release|x64
 		{E3450350-56E3-4FE9-A47A-4D24960BCBDB}.Search|x64.Build.0 = Release|x64
 		{E3450350-56E3-4FE9-A47A-4D24960BCBDB}.Search|x86.ActiveCfg = Release|x64
-		{94940707-AFFE-47EB-BD70-5ADE8F7C8A36}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{94940707-AFFE-47EB-BD70-5ADE8F7C8A36}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{94940707-AFFE-47EB-BD70-5ADE8F7C8A36}.Debug|x64.ActiveCfg = Debug|x64
-		{94940707-AFFE-47EB-BD70-5ADE8F7C8A36}.Debug|x64.Build.0 = Debug|x64
-		{94940707-AFFE-47EB-BD70-5ADE8F7C8A36}.Debug|x86.ActiveCfg = Debug|x86
-		{94940707-AFFE-47EB-BD70-5ADE8F7C8A36}.Debug|x86.Build.0 = Debug|x86
-		{94940707-AFFE-47EB-BD70-5ADE8F7C8A36}.Integrate|Any CPU.ActiveCfg = Integrate|Any CPU
-		{94940707-AFFE-47EB-BD70-5ADE8F7C8A36}.Integrate|Any CPU.Build.0 = Integrate|Any CPU
-		{94940707-AFFE-47EB-BD70-5ADE8F7C8A36}.Integrate|x64.ActiveCfg = Integrate|x64
-		{94940707-AFFE-47EB-BD70-5ADE8F7C8A36}.Integrate|x64.Build.0 = Integrate|x64
-		{94940707-AFFE-47EB-BD70-5ADE8F7C8A36}.Integrate|x86.ActiveCfg = Integrate|x86
-		{94940707-AFFE-47EB-BD70-5ADE8F7C8A36}.Integrate|x86.Build.0 = Integrate|x86
-		{94940707-AFFE-47EB-BD70-5ADE8F7C8A36}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{94940707-AFFE-47EB-BD70-5ADE8F7C8A36}.Release|Any CPU.Build.0 = Release|Any CPU
-		{94940707-AFFE-47EB-BD70-5ADE8F7C8A36}.Release|x64.ActiveCfg = Release|x64
-		{94940707-AFFE-47EB-BD70-5ADE8F7C8A36}.Release|x64.Build.0 = Release|x64
-		{94940707-AFFE-47EB-BD70-5ADE8F7C8A36}.Release|x86.ActiveCfg = Release|x86
-		{94940707-AFFE-47EB-BD70-5ADE8F7C8A36}.Release|x86.Build.0 = Release|x86
-		{94940707-AFFE-47EB-BD70-5ADE8F7C8A36}.Search|Any CPU.ActiveCfg = Integrate|x64
-		{94940707-AFFE-47EB-BD70-5ADE8F7C8A36}.Search|x64.ActiveCfg = Integrate|x64
-		{94940707-AFFE-47EB-BD70-5ADE8F7C8A36}.Search|x64.Build.0 = Integrate|x64
-		{94940707-AFFE-47EB-BD70-5ADE8F7C8A36}.Search|x86.ActiveCfg = Integrate|x64
 		{C2FD8BF7-723A-4D40-A201-CD7458678A70}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C2FD8BF7-723A-4D40-A201-CD7458678A70}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C2FD8BF7-723A-4D40-A201-CD7458678A70}.Debug|x64.ActiveCfg = Debug|x64

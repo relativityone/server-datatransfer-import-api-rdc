@@ -223,10 +223,6 @@
       <Project>{B092D1B2-909B-4EF0-9369-A81675C3FC18}</Project>
       <Name>kCura.Windows.Process</Name>
     </ProjectReference>
-    <ProjectReference Include="..\kCura.EDDS.Import\kCura.EDDS.Import.vbproj">
-      <Project>{94940707-AFFE-47EB-BD70-5ADE8F7C8A36}</Project>
-      <Name>kCura.EDDS.Import</Name>
-    </ProjectReference>
     <ProjectReference Include="..\kCura.Relativity.DataReader\kCura.Relativity.DataReaderClient.vbproj">
       <Project>{94BD2810-9FD8-4EEE-AA2B-590E4BCD4CC0}</Project>
       <Name>kCura.Relativity.DataReaderClient</Name>
