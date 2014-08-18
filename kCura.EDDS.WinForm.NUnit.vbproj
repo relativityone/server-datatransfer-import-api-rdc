@@ -251,10 +251,6 @@
       <Project>{B092D1B2-909B-4EF0-9369-A81675C3FC18}</Project>
       <Name>kCura.Windows.Process</Name>
     </ProjectReference>
-    <ProjectReference Include="..\kCura.EDDS.Import\kCura.EDDS.Import.vbproj">
-      <Project>{94940707-AFFE-47EB-BD70-5ADE8F7C8A36}</Project>
-      <Name>kCura.EDDS.Import</Name>
-    </ProjectReference>
     <ProjectReference Include="..\kCura.EDDS.WinForm\kCura.EDDS.WinForm.vbproj">
       <Project>{CDEB4462-2D7B-4244-8640-11BC743CD002}</Project>
       <Name>kCura.EDDS.WinForm</Name>
