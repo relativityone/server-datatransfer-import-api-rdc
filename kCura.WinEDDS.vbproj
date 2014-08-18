@@ -354,10 +354,6 @@
       <Project>{B092D1B2-909B-4EF0-9369-A81675C3FC18}</Project>
       <Name>kCura.Windows.Process</Name>
     </ProjectReference>
-    <ProjectReference Include="..\kCura.EDDS.Import\kCura.EDDS.Import.vbproj">
-      <Project>{94940707-AFFE-47EB-BD70-5ADE8F7C8A36}</Project>
-      <Name>kCura.EDDS.Import</Name>
-    </ProjectReference>
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
@@ -533,7 +529,6 @@
     <Compile Include="Process\ExportStatistics.vb">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Process\GenericImportProcess.vb" />
     <Compile Include="Process\ImportImageFileProcess.vb">
       <SubType>Code</SubType>
     </Compile>
