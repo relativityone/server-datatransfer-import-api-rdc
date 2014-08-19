@@ -355,27 +355,6 @@
           <s:element minOccurs="0" maxOccurs="unbounded" name="string" nillable="true" type="s:string" />
         </s:sequence>
       </s:complexType>
-      <s:element name="Create">
-        <s:complexType>
-          <s:sequence>
-            <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
-            <s:element minOccurs="0" maxOccurs="1" name="docDTO" type="tns:Document" />
-            <s:element minOccurs="0" maxOccurs="1" name="files" type="tns:ArrayOfFile" />
-          </s:sequence>
-        </s:complexType>
-      </s:element>
-      <s:complexType name="ArrayOfFile">
-        <s:sequence>
-          <s:element minOccurs="0" maxOccurs="unbounded" name="File" nillable="true" type="tns:File" />
-        </s:sequence>
-      </s:complexType>
-      <s:element name="CreateResponse">
-        <s:complexType>
-          <s:sequence>
-            <s:element minOccurs="1" maxOccurs="1" name="CreateResult" type="s:int" />
-          </s:sequence>
-        </s:complexType>
-      </s:element>
       <s:element name="Delete">
         <s:complexType>
           <s:sequence>
@@ -396,6 +375,11 @@
           </s:sequence>
         </s:complexType>
       </s:element>
+      <s:complexType name="ArrayOfFile">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="File" nillable="true" type="tns:File" />
+        </s:sequence>
+      </s:complexType>
       <s:element name="UpdateResponse">
         <s:complexType>
           <s:sequence>
@@ -612,12 +596,6 @@
   <wsdl:message name="ReadSoapOut">
     <wsdl:part name="parameters" element="tns:ReadResponse" />
   </wsdl:message>
-  <wsdl:message name="CreateSoapIn">
-    <wsdl:part name="parameters" element="tns:Create" />
-  </wsdl:message>
-  <wsdl:message name="CreateSoapOut">
-    <wsdl:part name="parameters" element="tns:CreateResponse" />
-  </wsdl:message>
   <wsdl:message name="DeleteSoapIn">
     <wsdl:part name="parameters" element="tns:Delete" />
   </wsdl:message>
@@ -709,10 +687,6 @@
       <wsdl:input message="tns:ReadSoapIn" />
       <wsdl:output message="tns:ReadSoapOut" />
     </wsdl:operation>
-    <wsdl:operation name="Create">
-      <wsdl:input message="tns:CreateSoapIn" />
-      <wsdl:output message="tns:CreateSoapOut" />
-    </wsdl:operation>
     <wsdl:operation name="Delete">
       <wsdl:input message="tns:DeleteSoapIn" />
       <wsdl:output message="tns:DeleteSoapOut" />
@@ -788,15 +762,6 @@
     </wsdl:operation>
     <wsdl:operation name="Read">
       <soap:operation soapAction="http://foley.com/EDDS/DocumentManager/Read" style="document" />
-      <wsdl:input>
-        <soap:body use="literal" />
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="Create">
-      <soap:operation soapAction="http://foley.com/EDDS/DocumentManager/Create" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -944,15 +909,6 @@
     </wsdl:operation>
     <wsdl:operation name="Read">
       <soap12:operation soapAction="http://foley.com/EDDS/DocumentManager/Read" style="document" />
-      <wsdl:input>
-        <soap12:body use="literal" />
-      </wsdl:input>
-      <wsdl:output>
-        <soap12:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="Create">
-      <soap12:operation soapAction="http://foley.com/EDDS/DocumentManager/Create" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>

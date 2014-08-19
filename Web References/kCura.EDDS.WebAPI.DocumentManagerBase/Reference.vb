@@ -40,8 +40,6 @@ Namespace kCura.EDDS.WebAPI.DocumentManagerBase
         
         Private ReadOperationCompleted As System.Threading.SendOrPostCallback
         
-        Private CreateOperationCompleted As System.Threading.SendOrPostCallback
-        
         Private DeleteOperationCompleted As System.Threading.SendOrPostCallback
         
         Private UpdateOperationCompleted As System.Threading.SendOrPostCallback
@@ -114,9 +112,6 @@ Namespace kCura.EDDS.WebAPI.DocumentManagerBase
         
         '''<remarks/>
         Public Event ReadCompleted As ReadCompletedEventHandler
-        
-        '''<remarks/>
-        Public Event CreateCompleted As CreateCompletedEventHandler
         
         '''<remarks/>
         Public Event DeleteCompleted As DeleteCompletedEventHandler
@@ -268,44 +263,6 @@ Namespace kCura.EDDS.WebAPI.DocumentManagerBase
             If (Not (Me.ReadCompletedEvent) Is Nothing) Then
                 Dim invokeArgs As System.Web.Services.Protocols.InvokeCompletedEventArgs = CType(arg,System.Web.Services.Protocols.InvokeCompletedEventArgs)
                 RaiseEvent ReadCompleted(Me, New ReadCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState))
-            End If
-        End Sub
-        
-        '''<remarks/>
-        <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://foley.com/EDDS/DocumentManager/Create", RequestNamespace:="http://foley.com/EDDS/DocumentManager", ResponseNamespace:="http://foley.com/EDDS/DocumentManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
-        Public Function Create(ByVal caseContextArtifactID As Integer, ByVal docDTO As Document, ByVal files() As File) As Integer
-            Dim results() As Object = Me.Invoke("Create", New Object() {caseContextArtifactID, docDTO, files})
-            Return CType(results(0),Integer)
-        End Function
-        
-        '''<remarks/>
-        Public Function BeginCreate(ByVal caseContextArtifactID As Integer, ByVal docDTO As Document, ByVal files() As File, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
-            Return Me.BeginInvoke("Create", New Object() {caseContextArtifactID, docDTO, files}, callback, asyncState)
-        End Function
-        
-        '''<remarks/>
-        Public Function EndCreate(ByVal asyncResult As System.IAsyncResult) As Integer
-            Dim results() As Object = Me.EndInvoke(asyncResult)
-            Return CType(results(0),Integer)
-        End Function
-        
-        '''<remarks/>
-        Public Overloads Sub CreateAsync(ByVal caseContextArtifactID As Integer, ByVal docDTO As Document, ByVal files() As File)
-            Me.CreateAsync(caseContextArtifactID, docDTO, files, Nothing)
-        End Sub
-        
-        '''<remarks/>
-        Public Overloads Sub CreateAsync(ByVal caseContextArtifactID As Integer, ByVal docDTO As Document, ByVal files() As File, ByVal userState As Object)
-            If (Me.CreateOperationCompleted Is Nothing) Then
-                Me.CreateOperationCompleted = AddressOf Me.OnCreateOperationCompleted
-            End If
-            Me.InvokeAsync("Create", New Object() {caseContextArtifactID, docDTO, files}, Me.CreateOperationCompleted, userState)
-        End Sub
-        
-        Private Sub OnCreateOperationCompleted(ByVal arg As Object)
-            If (Not (Me.CreateCompletedEvent) Is Nothing) Then
-                Dim invokeArgs As System.Web.Services.Protocols.InvokeCompletedEventArgs = CType(arg,System.Web.Services.Protocols.InvokeCompletedEventArgs)
-                RaiseEvent CreateCompleted(Me, New CreateCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState))
             End If
         End Sub
         
@@ -3037,33 +2994,6 @@ Namespace kCura.EDDS.WebAPI.DocumentManagerBase
             Get
                 Me.RaiseExceptionIfNecessary
                 Return CType(Me.results(0),Document)
-            End Get
-        End Property
-    End Class
-    
-    '''<remarks/>
-    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.0.30319.17929")>  _
-    Public Delegate Sub CreateCompletedEventHandler(ByVal sender As Object, ByVal e As CreateCompletedEventArgs)
-    
-    '''<remarks/>
-    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.0.30319.17929"),  _
-     System.Diagnostics.DebuggerStepThroughAttribute(),  _
-     System.ComponentModel.DesignerCategoryAttribute("code")>  _
-    Partial Public Class CreateCompletedEventArgs
-        Inherits System.ComponentModel.AsyncCompletedEventArgs
-        
-        Private results() As Object
-        
-        Friend Sub New(ByVal results() As Object, ByVal exception As System.Exception, ByVal cancelled As Boolean, ByVal userState As Object)
-            MyBase.New(exception, cancelled, userState)
-            Me.results = results
-        End Sub
-        
-        '''<remarks/>
-        Public ReadOnly Property Result() As Integer
-            Get
-                Me.RaiseExceptionIfNecessary
-                Return CType(Me.results(0),Integer)
             End Get
         End Property
     End Class
