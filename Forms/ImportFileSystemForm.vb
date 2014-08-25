@@ -356,8 +356,7 @@ Namespace kCura.EDDS.WinForm
 
 			_caseFields.LeftListBoxItems.Clear()
 			Dim caseField As String
-			'TODO: WINFLEX - ArtifactTypeID
-			For Each caseField In _application.GetCaseFields(_importFileDirectorySettings.CaseInfo.ArtifactID, 10)
+			For Each caseField In _application.GetCaseFields(_importFileDirectorySettings.CaseInfo.ArtifactID, Relativity.ArtifactType.Document)
 				_caseFields.LeftListBoxItems.Add(caseField)
 			Next
 

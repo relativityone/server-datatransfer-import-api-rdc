@@ -419,15 +419,6 @@
     <Compile Include="Forms\ExportFilterSelectForm.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\RelativityApplicationStatusForm.Designer.vb">
-      <DependentUpon>RelativityApplicationStatusForm.vb</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\RelativityApplicationStatusForm.vb">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\RelativityApplicationForm.vb">
-      <SubType>Form</SubType>
-    </Compile>
     <Compile Include="Forms\CaseSelectForm.vb">
       <SubType>Form</SubType>
     </Compile>
@@ -491,9 +482,6 @@
     <Compile Include="Utility.vb">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="WinEDDSGateway.vb">
-      <SubType>Code</SubType>
-    </Compile>
     <EmbeddedResource Include="Controls\CaseFolderExplorer.resx">
       <DependentUpon>CaseFolderExplorer.vb</DependentUpon>
     </EmbeddedResource>
@@ -514,12 +502,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\ExportFilterSelectForm.resx">
       <DependentUpon>ExportFilterSelectForm.vb</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\RelativityApplicationStatusForm.resx">
-      <DependentUpon>RelativityApplicationStatusForm.vb</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\RelativityApplicationForm.resx">
-      <DependentUpon>RelativityApplicationForm.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\CaseSelectForm.resx">
       <DependentUpon>CaseSelectForm.vb</DependentUpon>
