@@ -145,6 +145,7 @@ Namespace kCura.WinEDDS
 
 		Protected Sub InitializeArtifactReader()
 			Dim args As LoadFile = _settings
+			_caseArtifactID = args.CaseInfo.ArtifactID
 			_artifactReader = Me.GetArtifactReader()
 			_docFields = args.FieldMap.DocumentFields
 			_filePathColumn = args.NativeFilePathColumn
@@ -155,7 +156,6 @@ Namespace kCura.WinEDDS
 			_multiValueSeparator = args.MultiRecordDelimiter.ToString.ToCharArray
 			_folderID = args.DestinationFolderID
 			_caseSystemID = args.CaseInfo.RootArtifactID
-			_caseArtifactID = args.CaseInfo.ArtifactID
 			_uploadFiles = args.LoadNativeFiles
 			_createFolderStructure = args.CreateFolderStructure
 			_destinationFolder = args.FolderStructureContainedInColumn
