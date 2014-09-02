@@ -466,12 +466,6 @@ Namespace kCura.EDDS.WinForm
 			Me.Cursor = System.Windows.Forms.Cursors.Default
 		End Sub
 
-		Private Sub ToolsImportOutlookMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ToolsImportOutlookMenu.Click
-			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
-			_application.NewOutlookImport(_application.SelectedCaseFolderID, _application.SelectedCaseInfo)
-			Me.Cursor = System.Windows.Forms.Cursors.Default
-		End Sub
-
 		Private Sub ToolsExportProductionMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ToolsExportProductionMenu.Click
 			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
 			_application.NewProductionExport(_application.SelectedCaseInfo)

@@ -1366,7 +1366,7 @@ Public Class ExportForm
 		Dim retval As Boolean = True
 		_exportFile.ObjectTypeName = _application.GetObjectTypeName(_exportFile.ArtifactTypeID)
 		If validateForm AndAlso Not Me.IsValid(abstractExportForm) Then Return False
-		If Not _application.IsConnected(_exportFile.CaseArtifactID, 10) Then Return False
+		If Not _application.IsConnected() Then Return False
 		_exportFile.FolderPath = _folderPath.Text
 		Select Case Me.ExportFile.TypeOfExport
 			Case ExportFile.ExportType.AncestorSearch
