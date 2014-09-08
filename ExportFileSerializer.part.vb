@@ -492,5 +492,258 @@ Namespace kCura.WinEDDS.NUnit
 				 </a1:Pair>
 			 </SOAP-ENV:Body>
 		 </SOAP-ENV:Envelope>.ToString
+
+		Public Shared Pre_9_0_NoStorageLocation As String =
+			<SOAP-ENV:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/" xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:clr="http://schemas.microsoft.com/soap/encoding/clr/1.0" SOAP-ENV:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
+				<SOAP-ENV:Body>
+					<a1:ExportFile id="ref-1" xmlns:a1="http://schemas.microsoft.com/clr/nsassem/kCura.WinEDDS/kCura.WinEDDS%2C%20Version%3D7.5.0.0%2C%20Culture%3Dneutral%2C%20PublicKeyToken%3Dnull">
+						<ArtifactID>1037946</ArtifactID>
+						<LoadFilesPrefix>ALLDOCS</LoadFilesPrefix>
+						<NestedValueDelimiter>92</NestedValueDelimiter>
+						<TypeOfExport>1</TypeOfExport>
+						<FolderPath id="ref-3">C:\Users\kstachowiak\Desktop\Case</FolderPath>
+						<ViewID>0</ViewID>
+						<Overwrite>true</Overwrite>
+						<RecordDelimiter>20</RecordDelimiter>
+						<QuoteDelimiter>254</QuoteDelimiter>
+						<NewlineDelimiter>174</NewlineDelimiter>
+						<MultiRecordDelimiter>59</MultiRecordDelimiter>
+						<ExportFullText>false</ExportFullText>
+						<ExportFullTextAsFile>true</ExportFullTextAsFile>
+						<ExportNative>false</ExportNative>
+						<LogFileFormat id="ref-4">-1</LogFileFormat>
+						<RenameFilesToIdentifier>true</RenameFilesToIdentifier>
+						<IdentifierColumnName id="ref-5">Doc ID Beg</IdentifierColumnName>
+						<LoadFileExtension id="ref-6">html</LoadFileExtension>
+						<ExportImages>false</ExportImages>
+						<ExportNativesToFileNamedFrom>0</ExportNativesToFileNamedFrom>
+						<FilePrefix id="ref-7"></FilePrefix>
+						<TypeOfExportedFilePath>0</TypeOfExportedFilePath>
+						<TypeOfImage id="ref-8">0</TypeOfImage>
+						<AppendOriginalFileName>false</AppendOriginalFileName>
+						<LoadFileIsHtml>true</LoadFileIsHtml>
+						<MulticodesAsNested>true</MulticodesAsNested>
+						<LoadFileEncoding>1252</LoadFileEncoding>
+						<TextFileEncoding>1252</TextFileEncoding>
+						<VolumeDigitPadding>2</VolumeDigitPadding>
+						<SubdirectoryDigitPadding>3</SubdirectoryDigitPadding>
+						<StartAtDocumentNumber>0</StartAtDocumentNumber>
+						<VolumeInfo href="#ref-9"/>
+						<SelectedTextFields xsi:null="1"/>
+						<ImagePrecedence href="#ref-10"/>
+						<SelectedViewFields href="#ref-11"/>
+						<ObjectTypeName id="ref-12">Document</ObjectTypeName>
+					</a1:ExportFile>
+					<a2:VolumeInfo id="ref-9" xmlns:a2="http://schemas.microsoft.com/clr/nsassem/kCura.WinEDDS.Exporters/kCura.WinEDDS%2C%20Version%3D7.5.0.0%2C%20Culture%3Dneutral%2C%20PublicKeyToken%3Dnull">
+						<CopyFilesFromRepository>true</CopyFilesFromRepository>
+						<SubdirectoryMaxSize>500</SubdirectoryMaxSize>
+						<SubdirectoryStartNumber>1</SubdirectoryStartNumber>
+						<SubdirectoryFullTextPrefix id="ref-13">TEXT</SubdirectoryFullTextPrefix>
+						<SubdirectoryNativePrefix id="ref-14">NATIVE</SubdirectoryNativePrefix>
+						<SubdirectoryImagePrefix id="ref-15">IMG</SubdirectoryImagePrefix>
+						<VolumeMaxSize>650</VolumeMaxSize>
+						<VolumeStartNumber>1</VolumeStartNumber>
+						<VolumePrefix id="ref-16">VOL</VolumePrefix>
+					</a2:VolumeInfo>
+					<SOAP-ENC:Array id="ref-10" SOAP-ENC:arrayType="a1:Pair[1]" xmlns:a1="http://schemas.microsoft.com/clr/nsassem/kCura.WinEDDS/kCura.WinEDDS%2C%20Version%3D7.5.0.0%2C%20Culture%3Dneutral%2C%20PublicKeyToken%3Dnull">
+						<item href="#ref-17"/>
+					</SOAP-ENC:Array>
+					<SOAP-ENC:Array id="ref-11" SOAP-ENC:arrayType="a1:ViewFieldInfo[3]" xmlns:a1="http://schemas.microsoft.com/clr/nsassem/kCura.WinEDDS/kCura.WinEDDS%2C%20Version%3D7.5.0.0%2C%20Culture%3Dneutral%2C%20PublicKeyToken%3Dnull">
+						<item href="#ref-18"/>
+						<item href="#ref-19"/>
+						<item href="#ref-20"/>
+					</SOAP-ENC:Array>
+					<a1:Pair id="ref-17" xmlns:a1="http://schemas.microsoft.com/clr/nsassem/kCura.WinEDDS/kCura.WinEDDS%2C%20Version%3D7.5.0.0%2C%20Culture%3Dneutral%2C%20PublicKeyToken%3Dnull">
+						<Value id="ref-21">-1</Value>
+						<Display id="ref-22">Original</Display>
+					</a1:Pair>
+					<a1:ViewFieldInfo id="ref-18" xmlns:a1="http://schemas.microsoft.com/clr/nsassem/kCura.WinEDDS/kCura.WinEDDS%2C%20Version%3D7.5.0.0%2C%20Culture%3Dneutral%2C%20PublicKeyToken%3Dnull">
+						<_fieldArtifactId>1003667</_fieldArtifactId>
+						<_avfId>1000186</_avfId>
+						<_category>Identifier</_category>
+						<_connectorFieldCategory>-1</_connectorFieldCategory>
+						<_displayName id="ref-24">Doc ID Beg</_displayName>
+						<_avfColumnName id="ref-25">DocIDBeg</_avfColumnName>
+						<_avfHeaderName id="ref-26">Doc ID Beg</_avfHeaderName>
+						<_allowFieldName href="#ref-7"/>
+						<_columnSource>MainTable</_columnSource>
+						<_dataSource id="ref-27">Document</_dataSource>
+						<_sourceFieldName id="ref-28">Doc ID Beg</_sourceFieldName>
+						<_sourceFieldArtifactTypeID>-1</_sourceFieldArtifactTypeID>
+						<_sourceFieldArtifactID>-1</_sourceFieldArtifactID>
+						<_connectorFieldArtifactID>-1</_connectorFieldArtifactID>
+						<_sourceFieldArtifactTypeTableName href="#ref-7"/>
+						<_connectorFieldName href="#ref-7"/>
+						<_fieldType>Varchar</_fieldType>
+						<_isLinked>true</_isLinked>
+						<_fieldCodeTypeID>-1</_fieldCodeTypeID>
+						<_artifactTypeID>10</_artifactTypeID>
+						<_artifactTypeTableName id="ref-29">Document</_artifactTypeTableName>
+						<_fieldIsArtifactBaseField>false</_fieldIsArtifactBaseField>
+						<_formatString href="#ref-7"/>
+						<_isUnicodeEnabled>false</_isUnicodeEnabled>
+						<_parentFileFieldArtifactID>-1</_parentFileFieldArtifactID>
+						<_parentFileFieldDisplayName href="#ref-7"/>
+						<_associativeArtifactTypeID>-1</_associativeArtifactTypeID>
+						<_relationalTableName href="#ref-7"/>
+						<_relationalTableColumnName href="#ref-7"/>
+						<_relationalTableColumnName2 href="#ref-7"/>
+						<ViewFieldInfo_x002B__fieldArtifactId>1003667</ViewFieldInfo_x002B__fieldArtifactId>
+						<ViewFieldInfo_x002B__avfId>1000186</ViewFieldInfo_x002B__avfId>
+						<ViewFieldInfo_x002B__category>Identifier</ViewFieldInfo_x002B__category>
+						<ViewFieldInfo_x002B__connectorFieldCategory>-1</ViewFieldInfo_x002B__connectorFieldCategory>
+						<ViewFieldInfo_x002B__displayName href="#ref-24"/>
+						<ViewFieldInfo_x002B__avfColumnName href="#ref-25"/>
+						<ViewFieldInfo_x002B__avfHeaderName href="#ref-26"/>
+						<ViewFieldInfo_x002B__allowFieldName href="#ref-7"/>
+						<ViewFieldInfo_x002B__columnSource>MainTable</ViewFieldInfo_x002B__columnSource>
+						<ViewFieldInfo_x002B__dataSource href="#ref-27"/>
+						<ViewFieldInfo_x002B__sourceFieldName href="#ref-28"/>
+						<ViewFieldInfo_x002B__sourceFieldArtifactTypeID>-1</ViewFieldInfo_x002B__sourceFieldArtifactTypeID>
+						<ViewFieldInfo_x002B__sourceFieldArtifactID>-1</ViewFieldInfo_x002B__sourceFieldArtifactID>
+						<ViewFieldInfo_x002B__connectorFieldArtifactID>-1</ViewFieldInfo_x002B__connectorFieldArtifactID>
+						<ViewFieldInfo_x002B__sourceFieldArtifactTypeTableName href="#ref-7"/>
+						<ViewFieldInfo_x002B__connectorFieldName href="#ref-7"/>
+						<ViewFieldInfo_x002B__fieldType>Varchar</ViewFieldInfo_x002B__fieldType>
+						<ViewFieldInfo_x002B__isLinked>true</ViewFieldInfo_x002B__isLinked>
+						<ViewFieldInfo_x002B__fieldCodeTypeID>-1</ViewFieldInfo_x002B__fieldCodeTypeID>
+						<ViewFieldInfo_x002B__artifactTypeID>10</ViewFieldInfo_x002B__artifactTypeID>
+						<ViewFieldInfo_x002B__artifactTypeTableName href="#ref-29"/>
+						<ViewFieldInfo_x002B__fieldIsArtifactBaseField>false</ViewFieldInfo_x002B__fieldIsArtifactBaseField>
+						<ViewFieldInfo_x002B__formatString href="#ref-7"/>
+						<ViewFieldInfo_x002B__isUnicodeEnabled>false</ViewFieldInfo_x002B__isUnicodeEnabled>
+						<ViewFieldInfo_x002B__parentFileFieldArtifactID>-1</ViewFieldInfo_x002B__parentFileFieldArtifactID>
+						<ViewFieldInfo_x002B__parentFileFieldDisplayName href="#ref-7"/>
+						<ViewFieldInfo_x002B__associativeArtifactTypeID>-1</ViewFieldInfo_x002B__associativeArtifactTypeID>
+						<ViewFieldInfo_x002B__relationalTableName href="#ref-7"/>
+						<ViewFieldInfo_x002B__relationalTableColumnName href="#ref-7"/>
+						<ViewFieldInfo_x002B__relationalTableColumnName2 href="#ref-7"/>
+					</a1:ViewFieldInfo>
+					<a1:ViewFieldInfo id="ref-19" xmlns:a1="http://schemas.microsoft.com/clr/nsassem/kCura.WinEDDS/kCura.WinEDDS%2C%20Version%3D7.5.0.0%2C%20Culture%3Dneutral%2C%20PublicKeyToken%3Dnull">
+						<_fieldArtifactId>1035348</_fieldArtifactId>
+						<_avfId>1000548</_avfId>
+						<_category>Generic</_category>
+						<_connectorFieldCategory>-1</_connectorFieldCategory>
+						<_displayName id="ref-30">Comments</_displayName>
+						<_avfColumnName id="ref-31">Comments</_avfColumnName>
+						<_avfHeaderName id="ref-32">Comments</_avfHeaderName>
+						<_allowFieldName href="#ref-7"/>
+						<_columnSource>MainTable</_columnSource>
+						<_dataSource id="ref-33">Document</_dataSource>
+						<_sourceFieldName id="ref-34">Comments</_sourceFieldName>
+						<_sourceFieldArtifactTypeID>-1</_sourceFieldArtifactTypeID>
+						<_sourceFieldArtifactID>-1</_sourceFieldArtifactID>
+						<_connectorFieldArtifactID>-1</_connectorFieldArtifactID>
+						<_sourceFieldArtifactTypeTableName href="#ref-7"/>
+						<_connectorFieldName href="#ref-7"/>
+						<_fieldType>Text</_fieldType>
+						<_isLinked>false</_isLinked>
+						<_fieldCodeTypeID>-1</_fieldCodeTypeID>
+						<_artifactTypeID>10</_artifactTypeID>
+						<_artifactTypeTableName id="ref-35">Document</_artifactTypeTableName>
+						<_fieldIsArtifactBaseField>false</_fieldIsArtifactBaseField>
+						<_formatString href="#ref-7"/>
+						<_isUnicodeEnabled>false</_isUnicodeEnabled>
+						<_parentFileFieldArtifactID>-1</_parentFileFieldArtifactID>
+						<_parentFileFieldDisplayName href="#ref-7"/>
+						<_associativeArtifactTypeID>-1</_associativeArtifactTypeID>
+						<_relationalTableName href="#ref-7"/>
+						<_relationalTableColumnName href="#ref-7"/>
+						<_relationalTableColumnName2 href="#ref-7"/>
+						<ViewFieldInfo_x002B__fieldArtifactId>1035348</ViewFieldInfo_x002B__fieldArtifactId>
+						<ViewFieldInfo_x002B__avfId>1000548</ViewFieldInfo_x002B__avfId>
+						<ViewFieldInfo_x002B__category>Generic</ViewFieldInfo_x002B__category>
+						<ViewFieldInfo_x002B__connectorFieldCategory>-1</ViewFieldInfo_x002B__connectorFieldCategory>
+						<ViewFieldInfo_x002B__displayName href="#ref-30"/>
+						<ViewFieldInfo_x002B__avfColumnName href="#ref-31"/>
+						<ViewFieldInfo_x002B__avfHeaderName href="#ref-32"/>
+						<ViewFieldInfo_x002B__allowFieldName href="#ref-7"/>
+						<ViewFieldInfo_x002B__columnSource>MainTable</ViewFieldInfo_x002B__columnSource>
+						<ViewFieldInfo_x002B__dataSource href="#ref-33"/>
+						<ViewFieldInfo_x002B__sourceFieldName href="#ref-34"/>
+						<ViewFieldInfo_x002B__sourceFieldArtifactTypeID>-1</ViewFieldInfo_x002B__sourceFieldArtifactTypeID>
+						<ViewFieldInfo_x002B__sourceFieldArtifactID>-1</ViewFieldInfo_x002B__sourceFieldArtifactID>
+						<ViewFieldInfo_x002B__connectorFieldArtifactID>-1</ViewFieldInfo_x002B__connectorFieldArtifactID>
+						<ViewFieldInfo_x002B__sourceFieldArtifactTypeTableName href="#ref-7"/>
+						<ViewFieldInfo_x002B__connectorFieldName href="#ref-7"/>
+						<ViewFieldInfo_x002B__fieldType>Text</ViewFieldInfo_x002B__fieldType>
+						<ViewFieldInfo_x002B__isLinked>false</ViewFieldInfo_x002B__isLinked>
+						<ViewFieldInfo_x002B__fieldCodeTypeID>-1</ViewFieldInfo_x002B__fieldCodeTypeID>
+						<ViewFieldInfo_x002B__artifactTypeID>10</ViewFieldInfo_x002B__artifactTypeID>
+						<ViewFieldInfo_x002B__artifactTypeTableName href="#ref-35"/>
+						<ViewFieldInfo_x002B__fieldIsArtifactBaseField>false</ViewFieldInfo_x002B__fieldIsArtifactBaseField>
+						<ViewFieldInfo_x002B__formatString href="#ref-7"/>
+						<ViewFieldInfo_x002B__isUnicodeEnabled>false</ViewFieldInfo_x002B__isUnicodeEnabled>
+						<ViewFieldInfo_x002B__parentFileFieldArtifactID>-1</ViewFieldInfo_x002B__parentFileFieldArtifactID>
+						<ViewFieldInfo_x002B__parentFileFieldDisplayName href="#ref-7"/>
+						<ViewFieldInfo_x002B__associativeArtifactTypeID>-1</ViewFieldInfo_x002B__associativeArtifactTypeID>
+						<ViewFieldInfo_x002B__relationalTableName href="#ref-7"/>
+						<ViewFieldInfo_x002B__relationalTableColumnName href="#ref-7"/>
+						<ViewFieldInfo_x002B__relationalTableColumnName2 href="#ref-7"/>
+					</a1:ViewFieldInfo>
+					<a1:ViewFieldInfo id="ref-20" xmlns:a1="http://schemas.microsoft.com/clr/nsassem/kCura.WinEDDS/kCura.WinEDDS%2C%20Version%3D7.5.0.0%2C%20Culture%3Dneutral%2C%20PublicKeyToken%3Dnull">
+						<_fieldArtifactId>1003668</_fieldArtifactId>
+						<_avfId>1000187</_avfId>
+						<_category>FullText</_category>
+						<_connectorFieldCategory>-1</_connectorFieldCategory>
+						<_displayName id="ref-36">Extracted Text</_displayName>
+						<_avfColumnName id="ref-37">ExtractedText</_avfColumnName>
+						<_avfHeaderName id="ref-38">Extracted Text</_avfHeaderName>
+						<_allowFieldName href="#ref-7"/>
+						<_columnSource>MainTable</_columnSource>
+						<_dataSource id="ref-39">Document</_dataSource>
+						<_sourceFieldName id="ref-40">Extracted Text</_sourceFieldName>
+						<_sourceFieldArtifactTypeID>-1</_sourceFieldArtifactTypeID>
+						<_sourceFieldArtifactID>-1</_sourceFieldArtifactID>
+						<_connectorFieldArtifactID>-1</_connectorFieldArtifactID>
+						<_sourceFieldArtifactTypeTableName href="#ref-7"/>
+						<_connectorFieldName href="#ref-7"/>
+						<_fieldType>Text</_fieldType>
+						<_isLinked>false</_isLinked>
+						<_fieldCodeTypeID>-1</_fieldCodeTypeID>
+						<_artifactTypeID>10</_artifactTypeID>
+						<_artifactTypeTableName id="ref-41">Document</_artifactTypeTableName>
+						<_fieldIsArtifactBaseField>false</_fieldIsArtifactBaseField>
+						<_formatString href="#ref-7"/>
+						<_isUnicodeEnabled>false</_isUnicodeEnabled>
+						<_parentFileFieldArtifactID>-1</_parentFileFieldArtifactID>
+						<_parentFileFieldDisplayName href="#ref-7"/>
+						<_associativeArtifactTypeID>-1</_associativeArtifactTypeID>
+						<_relationalTableName href="#ref-7"/>
+						<_relationalTableColumnName href="#ref-7"/>
+						<_relationalTableColumnName2 href="#ref-7"/>
+						<ViewFieldInfo_x002B__fieldArtifactId>1003668</ViewFieldInfo_x002B__fieldArtifactId>
+						<ViewFieldInfo_x002B__avfId>1000187</ViewFieldInfo_x002B__avfId>
+						<ViewFieldInfo_x002B__category>FullText</ViewFieldInfo_x002B__category>
+						<ViewFieldInfo_x002B__connectorFieldCategory>-1</ViewFieldInfo_x002B__connectorFieldCategory>
+						<ViewFieldInfo_x002B__displayName href="#ref-36"/>
+						<ViewFieldInfo_x002B__avfColumnName href="#ref-37"/>
+						<ViewFieldInfo_x002B__avfHeaderName href="#ref-38"/>
+						<ViewFieldInfo_x002B__allowFieldName href="#ref-7"/>
+						<ViewFieldInfo_x002B__columnSource>MainTable</ViewFieldInfo_x002B__columnSource>
+						<ViewFieldInfo_x002B__dataSource href="#ref-39"/>
+						<ViewFieldInfo_x002B__sourceFieldName href="#ref-40"/>
+						<ViewFieldInfo_x002B__sourceFieldArtifactTypeID>-1</ViewFieldInfo_x002B__sourceFieldArtifactTypeID>
+						<ViewFieldInfo_x002B__sourceFieldArtifactID>-1</ViewFieldInfo_x002B__sourceFieldArtifactID>
+						<ViewFieldInfo_x002B__connectorFieldArtifactID>-1</ViewFieldInfo_x002B__connectorFieldArtifactID>
+						<ViewFieldInfo_x002B__sourceFieldArtifactTypeTableName href="#ref-7"/>
+						<ViewFieldInfo_x002B__connectorFieldName href="#ref-7"/>
+						<ViewFieldInfo_x002B__fieldType>Text</ViewFieldInfo_x002B__fieldType>
+						<ViewFieldInfo_x002B__isLinked>false</ViewFieldInfo_x002B__isLinked>
+						<ViewFieldInfo_x002B__fieldCodeTypeID>-1</ViewFieldInfo_x002B__fieldCodeTypeID>
+						<ViewFieldInfo_x002B__artifactTypeID>10</ViewFieldInfo_x002B__artifactTypeID>
+						<ViewFieldInfo_x002B__artifactTypeTableName href="#ref-41"/>
+						<ViewFieldInfo_x002B__fieldIsArtifactBaseField>false</ViewFieldInfo_x002B__fieldIsArtifactBaseField>
+						<ViewFieldInfo_x002B__formatString href="#ref-7"/>
+						<ViewFieldInfo_x002B__isUnicodeEnabled>false</ViewFieldInfo_x002B__isUnicodeEnabled>
+						<ViewFieldInfo_x002B__parentFileFieldArtifactID>-1</ViewFieldInfo_x002B__parentFileFieldArtifactID>
+						<ViewFieldInfo_x002B__parentFileFieldDisplayName href="#ref-7"/>
+						<ViewFieldInfo_x002B__associativeArtifactTypeID>-1</ViewFieldInfo_x002B__associativeArtifactTypeID>
+						<ViewFieldInfo_x002B__relationalTableName href="#ref-7"/>
+						<ViewFieldInfo_x002B__relationalTableColumnName href="#ref-7"/>
+						<ViewFieldInfo_x002B__relationalTableColumnName2 href="#ref-7"/>
+					</a1:ViewFieldInfo>
+				</SOAP-ENV:Body>
+			</SOAP-ENV:Envelope>.ToString
 	End Class
 End Namespace
