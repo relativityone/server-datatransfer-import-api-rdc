@@ -349,6 +349,8 @@ Namespace kCura.EDDS.WinForm
 
 #End Region
 
+		Private loginForm As Form = Nothing
+		Private firstTime As Boolean = True
 		Friend WithEvents _application As kCura.EDDS.WinForm.Application
 		Public Const MAX_LENGTH_OF_OBJECT_NAME_BEFORE_TRUNCATION As Int32 = 25
 
@@ -381,13 +383,20 @@ Namespace kCura.EDDS.WinForm
 					UpdateStatus("Workspace Loaded - File Transfer Mode: " & _application.GetConnectionStatus)
 					PopulateObjectTypeDropDown()
 					_optionsMenuCheckConnectivityItem.Enabled = True
+					ImportMenu.Enabled = _application.UserHasImportPermission
+					ExportMenu.Enabled = _application.UserHasExportPermission
+					ImportMenu.Visible = _application.UserHasImportPermission
+					ExportMenu.Visible = _application.UserHasExportPermission
 				Case appEvent.AppEventType.LogOn
 					UpdateUserName(_application.LoggedInUser)
 				Case appEvent.AppEventType.ExitApplication
 					Me.Close()
-				Case appEvent.AppEventType.CaseFolderSelected
-					ImportMenu.Enabled = True
-					ExportMenu.Enabled = True
+				Case appEvent.AppEventType.WorkspaceFolderSelected
+					'disable import and export menus if no permission
+					ImportMenu.Enabled = _application.UserHasImportPermission
+					ExportMenu.Enabled = _application.UserHasExportPermission
+					ImportMenu.Visible = _application.UserHasImportPermission
+					ExportMenu.Visible = _application.UserHasExportPermission
 					'UpdateStatus("Case Folder Load: " + _application.SelectedCaseInfo.RootFolderID.ToString)
 			End Select
 		End Sub
@@ -398,6 +407,13 @@ Namespace kCura.EDDS.WinForm
 
 		Private Sub UpdateUserName(ByVal text As String)
 			LoggedInUserPanel.Text = text
+		End Sub
+
+		Private Sub MainForm_Activated(sender As Object, e As EventArgs) Handles Me.Activated
+			If Not loginForm Is Nothing AndAlso firstTime Then
+				loginForm.Focus()
+			End If
+			firstTime = False
 		End Sub
 
 		Private Sub MainForm_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles MyBase.Load
@@ -411,7 +427,7 @@ Namespace kCura.EDDS.WinForm
 			If defaultCredentialResult = Application.CredentialCheckResult.AccessDisabled Then
 				MessageBox.Show(Application.ACCESS_DISABLED_MESSAGE, Application.RDC_ERROR_TITLE)
 			ElseIf Not defaultCredentialResult = Application.CredentialCheckResult.Success Then
-				_application.NewLogin()
+				loginForm = _application.NewLogin()
 			Else
 				_application.LogOn()
 				_application.OpenCase()

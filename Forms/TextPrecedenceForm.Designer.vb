@@ -47,25 +47,62 @@
 			Me._cancelButton.Text = "Cancel"
 			Me._cancelButton.UseVisualStyleBackColor = True
 			'
+			'_longTextFields - must be defined in InitializeComponent, otherwise medium & high DPI don't work
+			'
+			Me._longTextFieldsTwoListBox = New kCura.Windows.Forms.TwoListBox()
+			Me._longTextFieldsTwoListBox.Name = "_longTextFields"
+			Me._longTextFieldsTwoListBox.Location = New System.Drawing.Point(8, 24)
+			Me._longTextFieldsTwoListBox.Size = New System.Drawing.Size(356, 276)
+			Me._longTextFieldsTwoListBox.AlternateRowColors = False
+			Me._longTextFieldsTwoListBox.KeepButtonsCentered = True
+			Me._longTextFieldsTwoListBox.LeftOrderControlsVisible = False
+
+			Me._longTextFieldsTwoListBox.RightOrderControlVisible = True
+
+			Me._longTextFieldsTwoListBox.TabIndex = 2
+			'
+			'_availableTextFieldsLabel - must be defined in IntializeComponent, otherwise medium & high DPI don't work
+			'
+			Me._availableLongTextFieldsLabel = New System.Windows.Forms.Label
+			Me._availableLongTextFieldsLabel.Name = "_availableLongTextFieldsLabel"
+			Me._availableLongTextFieldsLabel.Location = New System.Drawing.Point(8, 8)
+			Me._availableLongTextFieldsLabel.Size = New System.Drawing.Size(144, 16)
+			Me._availableLongTextFieldsLabel.TabIndex = 3
+			Me._availableLongTextFieldsLabel.Text = "Available Long Text Fields"
+			'
+			'_selectedLongTextFieldsLabel - must be defined in IntializeComponent, otherwise medium & high DPI don't work
+			'
+			Me._selectedLongTextFieldsLabel = New System.Windows.Forms.Label
+			Me._selectedLongTextFieldsLabel.Name = "_selectedLongTextFieldsLabel"
+			Me._selectedLongTextFieldsLabel.Location = New System.Drawing.Point(184, 8)
+			Me._selectedLongTextFieldsLabel.Size = New System.Drawing.Size(144, 16)
+			Me._selectedLongTextFieldsLabel.TabIndex = 4
+			Me._selectedLongTextFieldsLabel.Text = "Selected Long Text Fields"
+
+			Me.Controls.Add(Me._longTextFieldsTwoListBox)
+			Me.Controls.Add(Me._availableLongTextFieldsLabel)
+			Me.Controls.Add(Me._selectedLongTextFieldsLabel)
+
 			'TextPrecedenceForm
 			'
-			Me.AcceptButton = Me._okButton
 			Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
-			Me.CancelButton = Me._cancelButton
 			Me.ClientSize = New System.Drawing.Size(456, 313)
+			Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Sizable
+			Me.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Show
+			Me.AcceptButton = Me._okButton
+			Me.CancelButton = Me._cancelButton
 			Me.Controls.Add(Me._cancelButton)
 			Me.Controls.Add(Me._okButton)
 			Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
-			Me.MaximizeBox = False
-			Me.MaximumSize = New System.Drawing.Size(464, 340)
 			Me.MinimizeBox = False
 			Me.MinimumSize = New System.Drawing.Size(464, 340)
 			Me.Name = "TextPrecedenceForm"
-			Me.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide
 			Me.Text = "Pick Text Precedence"
+
 			Me.ResumeLayout(False)
 
 		End Sub
+
 		Friend WithEvents _okButton As System.Windows.Forms.Button
 		Friend WithEvents _cancelButton As System.Windows.Forms.Button
 

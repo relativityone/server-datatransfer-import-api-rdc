@@ -111,7 +111,7 @@ Namespace kCura.EDDS.WinForm
 			'GroupBox3
 			'
 			Me.GroupBox3.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-			  Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+				Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me.GroupBox3.Controls.Add(Me._browseButton)
 			Me.GroupBox3.Controls.Add(Me._filePath)
 			Me.GroupBox3.Controls.Add(Me._startLineNumberLabel)
@@ -163,7 +163,7 @@ Namespace kCura.EDDS.WinForm
 			'_openFileDialog
 			'
 			Me._openFileDialog.Filter = "Opticon Files (*.opt)|*.opt|Log Files (*.log)|*.log|Text Files (*.txt)|*.txt|All " & _
-			  "files (*.*)|*.*"
+				"files (*.*)|*.*"
 			'
 			'_overwriteDropdown
 			'
@@ -251,7 +251,7 @@ Namespace kCura.EDDS.WinForm
 			Me.ExtractedTextGroupBox.Name = "ExtractedTextGroupBox"
 			Me.ExtractedTextGroupBox.Size = New System.Drawing.Size(556, 78)
 			Me.ExtractedTextGroupBox.TabIndex = 9
-			Me.ExtractedTextGroupBox.TabStop = False
+			Me.ExtractedTextGroupBox.TabStop = False			
 			Me.ExtractedTextGroupBox.Text = "ExtractedText"
 			'
 			'_encodingPicker
@@ -329,7 +329,7 @@ Namespace kCura.EDDS.WinForm
 			'GroupBox6
 			'
 			Me.GroupBox6.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-			  Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+				Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me.GroupBox6.Controls.Add(Me._productionLabel)
 			Me.GroupBox6.Controls.Add(Me._productionDropdown)
 			Me.GroupBox6.Controls.Add(Me.Label2)
@@ -382,8 +382,8 @@ Namespace kCura.EDDS.WinForm
 			'ImageLoad
 			'
 			Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
-			Me.ClientSize = New System.Drawing.Size(571, 405)
-			Me.MinimumSize = New System.Drawing.Size(579, 455)
+			Me.ClientSize = New System.Drawing.Size(571, 443)
+			Me.MinimumSize = New System.Drawing.Size(579, 493)
 			Me.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Show
 			Me.Controls.Add(Me.GroupBox6)
 			Me.Controls.Add(Me.GroupBox5)
