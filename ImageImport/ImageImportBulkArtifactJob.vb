@@ -4,25 +4,51 @@ Imports System.Net
 Namespace kCura.Relativity.DataReaderClient
 
 	''' <summary>
-	''' Provides the functionality required to load data for an import job, and to retrieve messages from the OnMessage event.
+	''' Provides the functionality required to load data for an import job and to retrieve messages from the OnMessage event.
 	''' </summary>
-	''' <remarks></remarks>
 	Public Class ImageImportBulkArtifactJob
 		Implements IImportNotifier
 
 #Region " Public Events and Variables "
 
 		''' <summary>
-		''' Executes the DataReaderClient, which operates as an iterator over a data source.
+		''' Occurs when a status message needs to be presented to the user.
 		''' </summary>
-		''' <param name="status"></param>
-		''' <remarks></remarks>
+		''' <param name="status">The message.</param>
 		Public Event OnMessage(ByVal status As Status)
+
+		''' <summary>
+		''' Occurs when an error is found.
+		''' </summary>
+		''' <param name="row">The IDictionary containing the error.</param>
 		Public Event OnError(ByVal row As IDictionary)
+
+		''' <summary>
+		''' Occurs when all the data for an import job has been processed.  Raised at the end of an import.
+		''' </summary>
+		''' <param name="jobReport">The JobReport describing the completed import job.</param><remarks>
+		''' Does not guarantee successful or error-free completion.
+		''' </remarks>
 		Public Event OnComplete(ByVal jobReport As JobReport) Implements IImportNotifier.OnComplete
+
+		''' <summary>
+		''' Occurs when an import job suffers a fatal exception and aborts.  Raised at the end of an import.
+		''' </summary>
+		''' <param name="jobReport">The JobReport describing the failed import job.</param>
 		Public Event OnFatalException(ByVal jobReport As JobReport) Implements IImportNotifier.OnFatalException
+
+		''' <summary>
+		''' Occurs when a record has been processed.
+		''' </summary>
+		''' <param name="completedRow">The processed record.</param>
 		Public Event OnProgress(ByVal completedRow As Long) Implements IImportNotifier.OnProgress
 
+		''' <summary>
+		''' Gets or sets the current options for imaging files.
+		''' </summary>
+		''' <value>
+		''' The settings.
+		''' </value>
 		Public Property Settings As ImageSettings
 			Get
 				Return _settings
@@ -35,9 +61,12 @@ Namespace kCura.Relativity.DataReaderClient
 		''' <summary>
 		''' Represents an instance of the SourceIDataReader, which contains data for import. This property is required.
 		''' </summary>
-		''' <value></value>
-		''' <returns></returns>
-		''' <remarks>For standard imports, the SourceIDataReader requires a generic IDataReader object, and operates as an iterator over a DataTable instance that contains the data source.</remarks>
+		''' <value>
+		''' The source data.
+		''' </value>
+		''' <returns></returns><remarks>
+		''' For standard imports, the SourceIDataReader requires a generic IDataReader object and operates as an iterator over a DataTable instance that contains the data source.
+		''' </remarks>
 		Public Property SourceData As ImageSourceIDataReader
 			Get
 				Return _sourceData
@@ -59,12 +88,23 @@ Namespace kCura.Relativity.DataReaderClient
 #End Region
 
 #Region " Public Methods "
+
+		''' <summary>
+		''' Creates new job to import images in bulk.
+		''' </summary>
 		Public Sub New()
 			_settings = New ImageSettings
 			_sourceData = New ImageSourceIDataReader
 			_cookieMonster = New Net.CookieContainer()
 		End Sub
 
+		''' <summary>
+		''' Initializes a new instance of the <see cref="ImageImportBulkArtifactJob"/> class.
+		''' </summary>
+		''' <param name="credentials">The credentials.</param>
+		''' <param name="cookieMonster">The cookie monster.</param>
+		''' <param name="relativityUserName">Name of the relativity user.</param>
+		''' <param name="password">The password.</param>
 		Friend Sub New(ByVal credentials As ICredentials, ByVal cookieMonster As Net.CookieContainer, ByVal relativityUserName As String, ByVal password As String)
 			Me.New()
 			_credentials = credentials
@@ -77,7 +117,6 @@ Namespace kCura.Relativity.DataReaderClient
 		''' <summary>
 		''' Executes the DataReaderClient, which operates as an iterator over a data source.
 		''' </summary>
-		''' <remarks></remarks>
 		Public Sub Execute()
 			_jobReport = New JobReport()
 			_jobReport.StartTime = DateTime.Now()
@@ -342,8 +381,7 @@ Namespace kCura.Relativity.DataReaderClient
 		''' <summary>
 		''' Exports the error log file for an import job. This file is written only when errors occur.
 		''' </summary>
-		''' <param name="filePathAndName">Specify a full path and filename which will contain the output.</param>
-		''' <remarks></remarks>
+		''' <param name="filePathAndName">Specifies a full path and a filename to contain the output.</param>
 		Public Sub ExportErrorReport(ByVal filePathAndName As String)
 			_controller.ExportErrorReport(filePathAndName)
 		End Sub

@@ -3,9 +3,8 @@ Imports System.Net
 Namespace kCura.Relativity.DataReaderClient
 
 	''' <summary>
-	''' Provides the functionality required to load data for an import job, and to retrieve messages from the OnMessage event.
+	''' Provides the functionality for importing Artifacts into a workspace, setting import parameters, loading data, and retrieving messages from the OnMessage event.
 	''' </summary>
-	''' <remarks></remarks>
 	Public Class ImportBulkArtifactJob
 		Implements IImportNotifier
 
@@ -32,7 +31,7 @@ Namespace kCura.Relativity.DataReaderClient
 
 #Region "Constructors"
 		''' <summary>
-		''' Creates a new job that can bulk insert a large amount of artifacts.
+		''' Creates a new job to import Artifacts in bulk.
 		''' </summary>
 		Public Sub New()
 			_controlNumberFieldName = "control number"
@@ -64,12 +63,29 @@ Namespace kCura.Relativity.DataReaderClient
 		''' <summary>
 		''' Occurs when a call is made to the Execute method. This event contains a status message.
 		''' </summary>
-		''' <param name="status"></param>
-		''' <remarks></remarks>
+		''' <param name="status">The status message.</param>
 		Public Event OnMessage(ByVal status As Status)
+		''' <summary>
+		''' Occurs when an error is found.
+		''' </summary>
+		''' <param name="row">The IDictionary containing the error.</param>
 		Public Event OnError(ByVal row As IDictionary)
+		''' <summary>
+		''' Occurs when all the data for an import job has been processed.  Raised at the end of an import.
+		''' </summary>
+		''' <param name="jobReport">The JobReport describing the completed import job.</param><remarks>
+		''' Does not guarantee successful or error-free completion.
+		''' </remarks>
 		Public Event OnComplete(ByVal jobReport As JobReport) Implements IImportNotifier.OnComplete
+		''' <summary>
+		''' Occurs when an import job suffers a fatal exception and aborts.  Raised at the end of an import.
+		''' </summary>
+		''' <param name="jobReport">The JobReport describing the failed import job.</param>
 		Public Event OnFatalException(ByVal jobReport As JobReport) Implements IImportNotifier.OnFatalException
+		''' <summary>
+		''' Occurs when a record has been processed.
+		''' </summary>
+		''' <param name="completedRow">The processed record.</param>
 		Public Event OnProgress(ByVal completedRow As Long) Implements IImportNotifier.OnProgress
 
 
@@ -80,7 +96,6 @@ Namespace kCura.Relativity.DataReaderClient
 		''' <summary>
 		''' Executes the DataReaderClient, which operates as an iterator over a data source.
 		''' </summary>
-		''' <remarks></remarks>
 		Public Sub Execute()
 			_jobReport = New JobReport()
 			_jobReport.StartTime = DateTime.Now()
@@ -188,7 +203,6 @@ Namespace kCura.Relativity.DataReaderClient
 			tempLoadFile.DestinationFolderID = loadFileTemp.DestinationFolderID
 			tempLoadFile.ExtractedTextFileEncoding = loadFileTemp.ExtractedTextFileEncoding
 			tempLoadFile.ExtractedTextFileEncodingName = loadFileTemp.ExtractedTextFileEncodingName
-			tempLoadFile.ExtractFullTextFromNativeFile = loadFileTemp.ExtractFullTextFromNativeFile
 			tempLoadFile.FieldMap = loadFileTemp.FieldMap
 			tempLoadFile.FilePath = loadFileTemp.FilePath
 			tempLoadFile.FirstLineContainsHeaders = loadFileTemp.FirstLineContainsHeaders
@@ -225,6 +239,7 @@ Namespace kCura.Relativity.DataReaderClient
 			tempLoadFile.SourceFileEncoding = loadFileTemp.SourceFileEncoding
 			tempLoadFile.StartLineNumber = loadFileTemp.StartLineNumber
 			tempLoadFile.ObjectFieldIdListContainsArtifactId = loadFileTemp.ObjectFieldIdListContainsArtifactId
+			tempLoadFile.OverlayBehavior = loadFileTemp.OverlayBehavior
 
 			Return tempLoadFile
 		End Function
@@ -283,6 +298,10 @@ Namespace kCura.Relativity.DataReaderClient
 			Return returnField
 		End Function
 
+		''' <summary>
+		''' Validates Relativity, delimiter, native file, and extracted text settings.
+		''' </summary>
+		''' <returns></returns>
 		Protected Function IsSettingsValid() As Boolean
 
 
@@ -324,6 +343,8 @@ Namespace kCura.Relativity.DataReaderClient
 					Case OverwriteModeEnum.Overlay
 						.OverwriteDestination = WinEDDS.SettingsFactoryBase.OverwriteType.Overlay
 				End Select
+
+				.OverlayBehavior = clientSettings.OverlayBehavior
 
 				.MultiRecordDelimiter = CType(clientSettings.MultiValueDelimiter, Char)
 				.HierarchicalValueDelimiter = CType(clientSettings.NestedValueDelimiter, Char)
@@ -389,6 +410,9 @@ Namespace kCura.Relativity.DataReaderClient
 #End Region
 
 #Region "Private Routines"
+		''' <summary>
+		''' Cleans up and frees resources.
+		''' </summary>
 		Protected Overrides Sub Finalize()
 			MyBase.Finalize()
 		End Sub
@@ -526,8 +550,11 @@ Namespace kCura.Relativity.DataReaderClient
 			End Set
 		End Property
 
-		'TODO: Because these were public fields before (vs properties), no exception was thrown
-		' if value = Nothing; for compatibility that is the case here
+		'TODO: Because these were public fields before (vs properties), no exception was thrown if value = Nothing;
+		' for compatibility, that is still the case here
+		''' <summary>
+		''' Gets or sets the current settings for the import job.
+		''' </summary>
 		Public Property Settings() As Settings
 			Get
 				Return CType(_nativeSettings, Settings)
@@ -542,7 +569,7 @@ Namespace kCura.Relativity.DataReaderClient
 		''' </summary>
 		''' <value></value>
 		''' <returns></returns>
-		''' <remarks>For standard imports, the SourceIDataReader requires a generic IDataReader object, and operates as an iterator over a DataTable instance that contains the data source.</remarks>
+		''' <remarks>For standard imports, the SourceIDataReader requires a generic IDataReader object and operates as an iterator over a DataTable instance that contains the data source.</remarks>
 		Public Property SourceData() As SourceIDataReader
 			Get
 				Return _nativeDataReader
