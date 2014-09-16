@@ -145,99 +145,99 @@ Namespace kCura.EDDS.WinForm.Tests
              .AllExportableFields = _queryFieldFactory.GetAllDocumentFields,
              .TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.Production}
             _form.LoadExportFile(ef)
-            Assert.AreEqual(_queryFieldFactory.GetAllDocumentFields.Count, _form._columnSelecter.LeftListBoxItems.Count)
-        End Sub
+			Assert.AreEqual(_queryFieldFactory.GetAllDocumentFields.Count, _form._columnSelector.LeftListBoxItems.Count)
+		End Sub
 
-        <Test()> Public Sub LoadExportFile_Production_AllExportableFields_OneFieldSelected()
-            Dim selectedField As kCura.WinEDDS.ViewFieldInfo = _queryFieldFactory.GetAllDocumentFields(3)
-            Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {
-             .AllExportableFields = _queryFieldFactory.GetAllDocumentFields,
-             .SelectedViewFields = New WinEDDS.ViewFieldInfo() {selectedField},
-             .TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.Production}
-            _form.LoadExportFile(ef)
-            For Each avf As kCura.WinEDDS.ViewFieldInfo In _form._columnSelecter.RightListBoxItems
-                If selectedField.DisplayName.Equals(avf.DisplayName, StringComparison.InvariantCulture) Then
+		<Test()> Public Sub LoadExportFile_Production_AllExportableFields_OneFieldSelected()
+			Dim selectedField As kCura.WinEDDS.ViewFieldInfo = _queryFieldFactory.GetAllDocumentFields(3)
+			Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {
+			 .AllExportableFields = _queryFieldFactory.GetAllDocumentFields,
+			 .SelectedViewFields = New WinEDDS.ViewFieldInfo() {selectedField},
+			 .TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.Production}
+			_form.LoadExportFile(ef)
+			For Each avf As kCura.WinEDDS.ViewFieldInfo In _form._columnSelector.RightListBoxItems
+				If selectedField.DisplayName.Equals(avf.DisplayName, StringComparison.InvariantCulture) Then
 
-                End If
-            Next
-            Assert.AreEqual(_queryFieldFactory.GetAllDocumentFields().Count - 1, _form._columnSelecter.LeftListBoxItems.Count)
-            Assert.IsTrue(DoesFieldExistsInListBox(selectedField, _form._columnSelecter.RightListBoxItems))
-        End Sub
+				End If
+			Next
+			Assert.AreEqual(_queryFieldFactory.GetAllDocumentFields().Count - 1, _form._columnSelector.LeftListBoxItems.Count)
+			Assert.IsTrue(DoesFieldExistsInListBox(selectedField, _form._columnSelector.RightListBoxItems))
+		End Sub
 
-        <Test()> Public Sub LoadExportFile_Production_AllExportableFields_TwoFieldSelected()
-            Dim selectedField1 As kCura.WinEDDS.ViewFieldInfo = _queryFieldFactory.GetAllDocumentFields(3)
-            Dim selectedField2 As kCura.WinEDDS.ViewFieldInfo = _queryFieldFactory.GetAllDocumentFields(2)
-            Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {
-             .AllExportableFields = _queryFieldFactory.GetAllDocumentFields,
-             .SelectedViewFields = New WinEDDS.ViewFieldInfo() {selectedField1, selectedField2},
-             .TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.Production}
-            _form.LoadExportFile(ef)
-            Assert.AreEqual(_queryFieldFactory.GetAllDocumentFields().Count - 2, _form._columnSelecter.LeftListBoxItems.Count)
-            Assert.IsTrue(DoesFieldExistsInListBox(selectedField1, _form._columnSelecter.RightListBoxItems))
-            Assert.IsTrue(DoesFieldExistsInListBox(selectedField2, _form._columnSelecter.RightListBoxItems))
-            Assert.AreEqual(_queryFieldFactory.GetAllDocumentFields().Count - 2, _form._columnSelecter.LeftListBoxItems.Count)
-        End Sub
+		<Test()> Public Sub LoadExportFile_Production_AllExportableFields_TwoFieldSelected()
+			Dim selectedField1 As kCura.WinEDDS.ViewFieldInfo = _queryFieldFactory.GetAllDocumentFields(3)
+			Dim selectedField2 As kCura.WinEDDS.ViewFieldInfo = _queryFieldFactory.GetAllDocumentFields(2)
+			Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {
+			 .AllExportableFields = _queryFieldFactory.GetAllDocumentFields,
+			 .SelectedViewFields = New WinEDDS.ViewFieldInfo() {selectedField1, selectedField2},
+			 .TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.Production}
+			_form.LoadExportFile(ef)
+			Assert.AreEqual(_queryFieldFactory.GetAllDocumentFields().Count - 2, _form._columnSelector.LeftListBoxItems.Count)
+			Assert.IsTrue(DoesFieldExistsInListBox(selectedField1, _form._columnSelector.RightListBoxItems))
+			Assert.IsTrue(DoesFieldExistsInListBox(selectedField2, _form._columnSelector.RightListBoxItems))
+			Assert.AreEqual(_queryFieldFactory.GetAllDocumentFields().Count - 2, _form._columnSelector.LeftListBoxItems.Count)
+		End Sub
 
-        <Test()> Public Sub LoadExportFile_Production_AllExportableFields_OneFieldSelected_OneFieldPrePopulated()
-            SetupOneFieldSelected(kCura.WinEDDS.ExportFile.ExportType.Production)
-            Dim selectedField As kCura.WinEDDS.ViewFieldInfo = _queryFieldFactory.GetAllDocumentFields(0)
-            Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {
-             .AllExportableFields = _queryFieldFactory.GetAllDocumentFields,
-             .SelectedViewFields = New WinEDDS.ViewFieldInfo() {selectedField},
-             .TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.Production}
-            _form.LoadExportFile(ef)
-            Assert.IsTrue(DoesFieldExistsInListBox(selectedField, _form._columnSelecter.RightListBoxItems))
-            Assert.AreEqual(_queryFieldFactory.GetAllDocumentFields().Count - 1, _form._columnSelecter.LeftListBoxItems.Count)
-            Assert.AreEqual(1, _form._columnSelecter.RightListBoxItems.Count)
-        End Sub
+		<Test()> Public Sub LoadExportFile_Production_AllExportableFields_OneFieldSelected_OneFieldPrePopulated()
+			SetupOneFieldSelected(kCura.WinEDDS.ExportFile.ExportType.Production)
+			Dim selectedField As kCura.WinEDDS.ViewFieldInfo = _queryFieldFactory.GetAllDocumentFields(0)
+			Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {
+			 .AllExportableFields = _queryFieldFactory.GetAllDocumentFields,
+			 .SelectedViewFields = New WinEDDS.ViewFieldInfo() {selectedField},
+			 .TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.Production}
+			_form.LoadExportFile(ef)
+			Assert.IsTrue(DoesFieldExistsInListBox(selectedField, _form._columnSelector.RightListBoxItems))
+			Assert.AreEqual(_queryFieldFactory.GetAllDocumentFields().Count - 1, _form._columnSelector.LeftListBoxItems.Count)
+			Assert.AreEqual(1, _form._columnSelector.RightListBoxItems.Count)
+		End Sub
 
-        <Test()> Public Sub LoadExportFile_Production_AllExportableFields_ZeroFieldsSelected_OneFieldPrePopulated()
-            SetupOneFieldSelected(kCura.WinEDDS.ExportFile.ExportType.Production)
-            Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {
-             .AllExportableFields = _queryFieldFactory.GetAllDocumentFields,
-             .SelectedViewFields = New WinEDDS.ViewFieldInfo() {},
-             .TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.Production}
-            _form.LoadExportFile(ef)
-            Assert.AreEqual(_queryFieldFactory.GetAllDocumentFields().Count, _form._columnSelecter.LeftListBoxItems.Count)
-            Assert.AreEqual(0, _form._columnSelecter.RightListBoxItems.Count)
-        End Sub
+		<Test()> Public Sub LoadExportFile_Production_AllExportableFields_ZeroFieldsSelected_OneFieldPrePopulated()
+			SetupOneFieldSelected(kCura.WinEDDS.ExportFile.ExportType.Production)
+			Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {
+			 .AllExportableFields = _queryFieldFactory.GetAllDocumentFields,
+			 .SelectedViewFields = New WinEDDS.ViewFieldInfo() {},
+			 .TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.Production}
+			_form.LoadExportFile(ef)
+			Assert.AreEqual(_queryFieldFactory.GetAllDocumentFields().Count, _form._columnSelector.LeftListBoxItems.Count)
+			Assert.AreEqual(0, _form._columnSelector.RightListBoxItems.Count)
+		End Sub
 
-        <Test()> Public Sub LoadExportFile_Production_AllExportableFields_TwoFieldSelected_OneFieldIsNoLongerAvaialble()
-            Dim selectedField1 As kCura.WinEDDS.ViewFieldInfo = _queryFieldFactory.GetAllDocumentFields(3)
-            Dim selectedField2 As kCura.WinEDDS.ViewFieldInfo = _queryFieldFactory.GetAllDocumentFields(2)
-            Dim selectedField3 As kCura.WinEDDS.ViewFieldInfo = _queryFieldFactory.GetAllDocumentFields(4)
-            Dim fields As New List(Of kCura.WinEDDS.ViewFieldInfo)()
-            fields.Add(selectedField1)
-            fields.Add(selectedField3)
-            Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {
-             .AllExportableFields = fields.ToArray(),
-             .SelectedViewFields = New WinEDDS.ViewFieldInfo() {selectedField1, selectedField2, selectedField3},
-             .TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.Production}
-            _form.LoadExportFile(ef)
-            Assert.IsTrue(DoesFieldExistsInListBox(selectedField1, _form._columnSelecter.RightListBoxItems))
-            Assert.IsFalse(_form._columnSelecter.RightListBoxItems.Contains(selectedField2))
-            Assert.IsFalse(_form._columnSelecter.LeftListBoxItems.Contains(selectedField2))
-            Assert.AreEqual(0, _form._columnSelecter.LeftListBoxItems.Count)
-        End Sub
+		<Test()> Public Sub LoadExportFile_Production_AllExportableFields_TwoFieldSelected_OneFieldIsNoLongerAvaialble()
+			Dim selectedField1 As kCura.WinEDDS.ViewFieldInfo = _queryFieldFactory.GetAllDocumentFields(3)
+			Dim selectedField2 As kCura.WinEDDS.ViewFieldInfo = _queryFieldFactory.GetAllDocumentFields(2)
+			Dim selectedField3 As kCura.WinEDDS.ViewFieldInfo = _queryFieldFactory.GetAllDocumentFields(4)
+			Dim fields As New List(Of kCura.WinEDDS.ViewFieldInfo)()
+			fields.Add(selectedField1)
+			fields.Add(selectedField3)
+			Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {
+			 .AllExportableFields = fields.ToArray(),
+			 .SelectedViewFields = New WinEDDS.ViewFieldInfo() {selectedField1, selectedField2, selectedField3},
+			 .TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.Production}
+			_form.LoadExportFile(ef)
+			Assert.IsTrue(DoesFieldExistsInListBox(selectedField1, _form._columnSelector.RightListBoxItems))
+			Assert.IsFalse(_form._columnSelector.RightListBoxItems.Contains(selectedField2))
+			Assert.IsFalse(_form._columnSelector.LeftListBoxItems.Contains(selectedField2))
+			Assert.AreEqual(0, _form._columnSelector.LeftListBoxItems.Count)
+		End Sub
 
-        <Test()> Public Sub LoadExportFile_Production_StartExportAtDocumentNumber_Is15()
-            Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {
-             .StartAtDocumentNumber = 15,
-             .TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.Production}
-            _form.LoadExportFile(ef)
-            Assert.AreEqual(16, _form._startExportAtDocumentNumber.Value)
-        End Sub
+		<Test()> Public Sub LoadExportFile_Production_StartExportAtDocumentNumber_Is15()
+			Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {
+			 .StartAtDocumentNumber = 15,
+			 .TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.Production}
+			_form.LoadExportFile(ef)
+			Assert.AreEqual(16, _form._startExportAtDocumentNumber.Value)
+		End Sub
 
-        <Test()> Public Sub LoadExportFile_Production_StartExportAtDocumentNumber_Is1_When_PreLoadedAs5()
-            Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {
-             .StartAtDocumentNumber = 0,
-             .TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.Production}
-            Dim numericUpDown As NumericUpDown = New System.Windows.Forms.NumericUpDown()
-            numericUpDown.Value = 5D
-            _form._startExportAtDocumentNumber = numericUpDown
-            _form.LoadExportFile(ef)
-            Assert.AreEqual(1, _form._startExportAtDocumentNumber.Value)
-        End Sub
+		<Test()> Public Sub LoadExportFile_Production_StartExportAtDocumentNumber_Is1_When_PreLoadedAs5()
+			Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {
+			 .StartAtDocumentNumber = 0,
+			 .TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.Production}
+			Dim numericUpDown As NumericUpDown = New System.Windows.Forms.NumericUpDown()
+			numericUpDown.Value = 5D
+			_form._startExportAtDocumentNumber = numericUpDown
+			_form.LoadExportFile(ef)
+			Assert.AreEqual(1, _form._startExportAtDocumentNumber.Value)
+		End Sub
 
 
 
@@ -249,415 +249,415 @@ Namespace kCura.EDDS.WinForm.Tests
 
 #Region "Saved Search Section"
 
-        <Test()> Public Sub LoadExportFile_SavedSearch_NotSelected()
-            SetUpForTypeOfExport(kCura.WinEDDS.ExportFile.ExportType.ArtifactSearch)
-            Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {
-            .TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.ArtifactSearch}
-            _form.LoadExportFile(ef)
-            Assert.AreEqual(_filtersDataTable.Rows(0), DirectCast(_form._filters.SelectedItem, System.Data.DataRowView).Row)
-        End Sub
+		<Test()> Public Sub LoadExportFile_SavedSearch_NotSelected()
+			SetUpForTypeOfExport(kCura.WinEDDS.ExportFile.ExportType.ArtifactSearch)
+			Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {
+			.TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.ArtifactSearch}
+			_form.LoadExportFile(ef)
+			Assert.AreEqual(_filtersDataTable.Rows(0), DirectCast(_form._filters.SelectedItem, System.Data.DataRowView).Row)
+		End Sub
 
-        <Test()> Public Sub LoadExportFile_Folder_Into_SavedSearchExport_DefaultSavedSearch()
-            SetUpForTypeOfExport(kCura.WinEDDS.ExportFile.ExportType.ArtifactSearch)
-            Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {
-            .TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.ParentSearch,
-            .ViewID = 45646}
-            _form.LoadExportFile(ef)
-            Assert.AreEqual(123, _form._filters.SelectedValue)
-            Assert.AreEqual(_filtersDataTable.Rows(0), DirectCast(_form._filters.SelectedItem, System.Data.DataRowView).Row)
-        End Sub
+		<Test()> Public Sub LoadExportFile_Folder_Into_SavedSearchExport_DefaultSavedSearch()
+			SetUpForTypeOfExport(kCura.WinEDDS.ExportFile.ExportType.ArtifactSearch)
+			Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {
+			.TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.ParentSearch,
+			.ViewID = 45646}
+			_form.LoadExportFile(ef)
+			Assert.AreEqual(123, _form._filters.SelectedValue)
+			Assert.AreEqual(_filtersDataTable.Rows(0), DirectCast(_form._filters.SelectedItem, System.Data.DataRowView).Row)
+		End Sub
 
-        <Test()> Public Sub LoadExportFile_Production_Into_SavedSearchExport_DefaultSavedSearch()
-            SetUpForTypeOfExport(kCura.WinEDDS.ExportFile.ExportType.ArtifactSearch)
-            Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {
-            .TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.Production,
-            .ArtifactID = 4654897}
-            _form.LoadExportFile(ef)
-            Assert.AreEqual(123, _form._filters.SelectedValue)
-            Assert.AreEqual(_filtersDataTable.Rows(0), DirectCast(_form._filters.SelectedItem, System.Data.DataRowView).Row)
-        End Sub
+		<Test()> Public Sub LoadExportFile_Production_Into_SavedSearchExport_DefaultSavedSearch()
+			SetUpForTypeOfExport(kCura.WinEDDS.ExportFile.ExportType.ArtifactSearch)
+			Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {
+			.TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.Production,
+			.ArtifactID = 4654897}
+			_form.LoadExportFile(ef)
+			Assert.AreEqual(123, _form._filters.SelectedValue)
+			Assert.AreEqual(_filtersDataTable.Rows(0), DirectCast(_form._filters.SelectedItem, System.Data.DataRowView).Row)
+		End Sub
 
-        <Test()> Public Sub LoadExportFile_FolderAndSubfolder_Into_SavedSearchExport_DefaultSavedSearch()
-            SetUpForTypeOfExport(kCura.WinEDDS.ExportFile.ExportType.ArtifactSearch)
-            Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {
-            .TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.AncestorSearch,
-            .ViewID = 4654897}
-            _form.LoadExportFile(ef)
-            Assert.AreEqual(123, _form._filters.SelectedValue)
-            Assert.AreEqual(_filtersDataTable.Rows(0), DirectCast(_form._filters.SelectedItem, System.Data.DataRowView).Row)
-        End Sub
+		<Test()> Public Sub LoadExportFile_FolderAndSubfolder_Into_SavedSearchExport_DefaultSavedSearch()
+			SetUpForTypeOfExport(kCura.WinEDDS.ExportFile.ExportType.ArtifactSearch)
+			Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {
+			.TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.AncestorSearch,
+			.ViewID = 4654897}
+			_form.LoadExportFile(ef)
+			Assert.AreEqual(123, _form._filters.SelectedValue)
+			Assert.AreEqual(_filtersDataTable.Rows(0), DirectCast(_form._filters.SelectedItem, System.Data.DataRowView).Row)
+		End Sub
 
-        <Test()> Public Sub LoadExportFile_SavedSearchSelected_SavedSavedSearchNoLongerExists()
-            SetUpForTypeOfExport(kCura.WinEDDS.ExportFile.ExportType.ArtifactSearch)
-            Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {
-            .TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.ArtifactSearch,
-            .ArtifactID = 1234567}
-            _form.LoadExportFile(ef)
-            Assert.AreEqual(_filtersDataTable.Rows(0), DirectCast(_form._filters.SelectedItem, System.Data.DataRowView).Row)
-        End Sub
+		<Test()> Public Sub LoadExportFile_SavedSearchSelected_SavedSavedSearchNoLongerExists()
+			SetUpForTypeOfExport(kCura.WinEDDS.ExportFile.ExportType.ArtifactSearch)
+			Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {
+			.TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.ArtifactSearch,
+			.ArtifactID = 1234567}
+			_form.LoadExportFile(ef)
+			Assert.AreEqual(_filtersDataTable.Rows(0), DirectCast(_form._filters.SelectedItem, System.Data.DataRowView).Row)
+		End Sub
 
-        <Test()> Public Sub LoadExportFile_SavedSearch_AllExportableFieldsShowUp()
-            SetUpForTypeOfExport(kCura.WinEDDS.ExportFile.ExportType.ArtifactSearch)
-            Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {
-            .AllExportableFields = _queryFieldFactory.GetAllDocumentFields,
-            .TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.ArtifactSearch}
-            _form.LoadExportFile(ef)
-            Assert.AreEqual(_queryFieldFactory.GetAllDocumentFields.Count, _form._columnSelecter.LeftListBoxItems.Count)
-        End Sub
+		<Test()> Public Sub LoadExportFile_SavedSearch_AllExportableFieldsShowUp()
+			SetUpForTypeOfExport(kCura.WinEDDS.ExportFile.ExportType.ArtifactSearch)
+			Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {
+			.AllExportableFields = _queryFieldFactory.GetAllDocumentFields,
+			.TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.ArtifactSearch}
+			_form.LoadExportFile(ef)
+			Assert.AreEqual(_queryFieldFactory.GetAllDocumentFields.Count, _form._columnSelector.LeftListBoxItems.Count)
+		End Sub
 
-        <Test()> Public Sub LoadExportFile_SavedSearch_AllExportableFields_OneFieldSelected()
-            SetUpForTypeOfExport(kCura.WinEDDS.ExportFile.ExportType.ArtifactSearch)
-            Dim selectedField As kCura.WinEDDS.ViewFieldInfo = _queryFieldFactory.GetAllDocumentFields(3)
-            Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {
-             .AllExportableFields = _queryFieldFactory.GetAllDocumentFields,
-             .SelectedViewFields = New WinEDDS.ViewFieldInfo() {selectedField},
-             .TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.ArtifactSearch}
-            _form.LoadExportFile(ef)
-            Assert.IsTrue(DoesFieldExistsInListBox(selectedField, _form._columnSelecter.RightListBoxItems))
-            Assert.AreEqual(_queryFieldFactory.GetAllDocumentFields().Count - 1, _form._columnSelecter.LeftListBoxItems.Count)
-        End Sub
+		<Test()> Public Sub LoadExportFile_SavedSearch_AllExportableFields_OneFieldSelected()
+			SetUpForTypeOfExport(kCura.WinEDDS.ExportFile.ExportType.ArtifactSearch)
+			Dim selectedField As kCura.WinEDDS.ViewFieldInfo = _queryFieldFactory.GetAllDocumentFields(3)
+			Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {
+			 .AllExportableFields = _queryFieldFactory.GetAllDocumentFields,
+			 .SelectedViewFields = New WinEDDS.ViewFieldInfo() {selectedField},
+			 .TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.ArtifactSearch}
+			_form.LoadExportFile(ef)
+			Assert.IsTrue(DoesFieldExistsInListBox(selectedField, _form._columnSelector.RightListBoxItems))
+			Assert.AreEqual(_queryFieldFactory.GetAllDocumentFields().Count - 1, _form._columnSelector.LeftListBoxItems.Count)
+		End Sub
 
-        <Test()> Public Sub LoadExportFile_SavedSearch_AllExportableFields_TwoFieldSelected()
-            SetUpForTypeOfExport(kCura.WinEDDS.ExportFile.ExportType.ArtifactSearch)
-            Dim selectedField1 As kCura.WinEDDS.ViewFieldInfo = _queryFieldFactory.GetAllDocumentFields(3)
-            Dim selectedField2 As kCura.WinEDDS.ViewFieldInfo = _queryFieldFactory.GetAllDocumentFields(2)
-            Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {
-             .AllExportableFields = _queryFieldFactory.GetAllDocumentFields,
-             .SelectedViewFields = New WinEDDS.ViewFieldInfo() {selectedField1, selectedField2},
-             .TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.ArtifactSearch}
-            _form.LoadExportFile(ef)
-            Assert.IsTrue(DoesFieldExistsInListBox(selectedField1, _form._columnSelecter.RightListBoxItems))
-            Assert.IsTrue(DoesFieldExistsInListBox(selectedField2, _form._columnSelecter.RightListBoxItems))
-            Assert.AreEqual(_queryFieldFactory.GetAllDocumentFields().Count - 2, _form._columnSelecter.LeftListBoxItems.Count)
-        End Sub
+		<Test()> Public Sub LoadExportFile_SavedSearch_AllExportableFields_TwoFieldSelected()
+			SetUpForTypeOfExport(kCura.WinEDDS.ExportFile.ExportType.ArtifactSearch)
+			Dim selectedField1 As kCura.WinEDDS.ViewFieldInfo = _queryFieldFactory.GetAllDocumentFields(3)
+			Dim selectedField2 As kCura.WinEDDS.ViewFieldInfo = _queryFieldFactory.GetAllDocumentFields(2)
+			Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {
+			 .AllExportableFields = _queryFieldFactory.GetAllDocumentFields,
+			 .SelectedViewFields = New WinEDDS.ViewFieldInfo() {selectedField1, selectedField2},
+			 .TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.ArtifactSearch}
+			_form.LoadExportFile(ef)
+			Assert.IsTrue(DoesFieldExistsInListBox(selectedField1, _form._columnSelector.RightListBoxItems))
+			Assert.IsTrue(DoesFieldExistsInListBox(selectedField2, _form._columnSelector.RightListBoxItems))
+			Assert.AreEqual(_queryFieldFactory.GetAllDocumentFields().Count - 2, _form._columnSelector.LeftListBoxItems.Count)
+		End Sub
 
-        <Test()> Public Sub LoadExportFile_SavedSearch_AllExportableFields_OneFieldSelected_OneFieldPrePopulated()
-            SetupOneFieldSelected(kCura.WinEDDS.ExportFile.ExportType.ArtifactSearch)
-            Dim selectedField As kCura.WinEDDS.ViewFieldInfo = _queryFieldFactory.GetAllDocumentFields(0)
-            Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {
-             .AllExportableFields = _queryFieldFactory.GetAllDocumentFields,
-             .SelectedViewFields = New WinEDDS.ViewFieldInfo() {selectedField},
-             .TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.ArtifactSearch}
-            _form.LoadExportFile(ef)
-            Assert.IsTrue(DoesFieldExistsInListBox(selectedField, _form._columnSelecter.RightListBoxItems))
-            Assert.AreEqual(_queryFieldFactory.GetAllDocumentFields().Count - 1, _form._columnSelecter.LeftListBoxItems.Count)
-            Assert.AreEqual(1, _form._columnSelecter.RightListBoxItems.Count)
-        End Sub
+		<Test()> Public Sub LoadExportFile_SavedSearch_AllExportableFields_OneFieldSelected_OneFieldPrePopulated()
+			SetupOneFieldSelected(kCura.WinEDDS.ExportFile.ExportType.ArtifactSearch)
+			Dim selectedField As kCura.WinEDDS.ViewFieldInfo = _queryFieldFactory.GetAllDocumentFields(0)
+			Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {
+			 .AllExportableFields = _queryFieldFactory.GetAllDocumentFields,
+			 .SelectedViewFields = New WinEDDS.ViewFieldInfo() {selectedField},
+			 .TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.ArtifactSearch}
+			_form.LoadExportFile(ef)
+			Assert.IsTrue(DoesFieldExistsInListBox(selectedField, _form._columnSelector.RightListBoxItems))
+			Assert.AreEqual(_queryFieldFactory.GetAllDocumentFields().Count - 1, _form._columnSelector.LeftListBoxItems.Count)
+			Assert.AreEqual(1, _form._columnSelector.RightListBoxItems.Count)
+		End Sub
 
-        <Test()> Public Sub LoadExportFile_SavedSearch_AllExportableFields_ZeroFieldsSelected_OneFieldPrePopulated()
-            SetupOneFieldSelected(kCura.WinEDDS.ExportFile.ExportType.ArtifactSearch)
-            Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {
-             .AllExportableFields = _queryFieldFactory.GetAllDocumentFields,
-             .SelectedViewFields = New WinEDDS.ViewFieldInfo() {},
-             .TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.ArtifactSearch}
-            _form.LoadExportFile(ef)
-            Assert.AreEqual(_queryFieldFactory.GetAllDocumentFields().Count, _form._columnSelecter.LeftListBoxItems.Count)
-            Assert.AreEqual(0, _form._columnSelecter.RightListBoxItems.Count)
-        End Sub
+		<Test()> Public Sub LoadExportFile_SavedSearch_AllExportableFields_ZeroFieldsSelected_OneFieldPrePopulated()
+			SetupOneFieldSelected(kCura.WinEDDS.ExportFile.ExportType.ArtifactSearch)
+			Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {
+			 .AllExportableFields = _queryFieldFactory.GetAllDocumentFields,
+			 .SelectedViewFields = New WinEDDS.ViewFieldInfo() {},
+			 .TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.ArtifactSearch}
+			_form.LoadExportFile(ef)
+			Assert.AreEqual(_queryFieldFactory.GetAllDocumentFields().Count, _form._columnSelector.LeftListBoxItems.Count)
+			Assert.AreEqual(0, _form._columnSelector.RightListBoxItems.Count)
+		End Sub
 
-        <Test()> Public Sub LoadExportFile_SavedSearch_AllExportableFields_TwoFieldSelected_OneFieldIsNoLongerAvaialble()
-            SetUpForTypeOfExport(kCura.WinEDDS.ExportFile.ExportType.ArtifactSearch)
-            Dim selectedField1 As kCura.WinEDDS.ViewFieldInfo = _queryFieldFactory.GetAllDocumentFields(3)
-            Dim selectedField2 As kCura.WinEDDS.ViewFieldInfo = _queryFieldFactory.GetAllDocumentFields(2)
-            Dim selectedField3 As kCura.WinEDDS.ViewFieldInfo = _queryFieldFactory.GetAllDocumentFields(4)
-            Dim fields As New List(Of kCura.WinEDDS.ViewFieldInfo)()
-            fields.Add(selectedField1)
-            fields.Add(selectedField3)
-            Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {
-             .AllExportableFields = fields.ToArray(),
-             .SelectedViewFields = New WinEDDS.ViewFieldInfo() {selectedField1, selectedField2, selectedField3},
-             .TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.ArtifactSearch}
-            _form.LoadExportFile(ef)
-            Assert.IsTrue(DoesFieldExistsInListBox(selectedField1, _form._columnSelecter.RightListBoxItems))
-            Assert.IsFalse(_form._columnSelecter.RightListBoxItems.Contains(selectedField2))
-            Assert.IsFalse(_form._columnSelecter.LeftListBoxItems.Contains(selectedField2))
-            Assert.AreEqual(0, _form._columnSelecter.LeftListBoxItems.Count)
-        End Sub
+		<Test()> Public Sub LoadExportFile_SavedSearch_AllExportableFields_TwoFieldSelected_OneFieldIsNoLongerAvaialble()
+			SetUpForTypeOfExport(kCura.WinEDDS.ExportFile.ExportType.ArtifactSearch)
+			Dim selectedField1 As kCura.WinEDDS.ViewFieldInfo = _queryFieldFactory.GetAllDocumentFields(3)
+			Dim selectedField2 As kCura.WinEDDS.ViewFieldInfo = _queryFieldFactory.GetAllDocumentFields(2)
+			Dim selectedField3 As kCura.WinEDDS.ViewFieldInfo = _queryFieldFactory.GetAllDocumentFields(4)
+			Dim fields As New List(Of kCura.WinEDDS.ViewFieldInfo)()
+			fields.Add(selectedField1)
+			fields.Add(selectedField3)
+			Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {
+			 .AllExportableFields = fields.ToArray(),
+			 .SelectedViewFields = New WinEDDS.ViewFieldInfo() {selectedField1, selectedField2, selectedField3},
+			 .TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.ArtifactSearch}
+			_form.LoadExportFile(ef)
+			Assert.IsTrue(DoesFieldExistsInListBox(selectedField1, _form._columnSelector.RightListBoxItems))
+			Assert.IsFalse(_form._columnSelector.RightListBoxItems.Contains(selectedField2))
+			Assert.IsFalse(_form._columnSelector.LeftListBoxItems.Contains(selectedField2))
+			Assert.AreEqual(0, _form._columnSelector.LeftListBoxItems.Count)
+		End Sub
 
-        <Test()> Public Sub LoadExportFile_SavedSearch_StartExportAtDocumentNumber_Is15()
-            SetUpForTypeOfExport(kCura.WinEDDS.ExportFile.ExportType.ArtifactSearch)
-            Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {
-            .StartAtDocumentNumber = 15,
-            .TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.ArtifactSearch}
-            _form.LoadExportFile(ef)
-            Assert.AreEqual(16, _form._startExportAtDocumentNumber.Value)
-        End Sub
+		<Test()> Public Sub LoadExportFile_SavedSearch_StartExportAtDocumentNumber_Is15()
+			SetUpForTypeOfExport(kCura.WinEDDS.ExportFile.ExportType.ArtifactSearch)
+			Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {
+			.StartAtDocumentNumber = 15,
+			.TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.ArtifactSearch}
+			_form.LoadExportFile(ef)
+			Assert.AreEqual(16, _form._startExportAtDocumentNumber.Value)
+		End Sub
 
 #End Region
 
 #Region "Folder Section"
 
-        <Test()> Public Sub LoadExportFile_Folder_NotSelected()
-            SetUpForTypeOfExport(kCura.WinEDDS.ExportFile.ExportType.ParentSearch)
-            Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {
-            .TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.ParentSearch}
-            _form.LoadExportFile(ef)
-            Assert.AreEqual(_filtersDataTable.Rows(0), DirectCast(_form._filters.SelectedItem, System.Data.DataRowView).Row)
-        End Sub
+		<Test()> Public Sub LoadExportFile_Folder_NotSelected()
+			SetUpForTypeOfExport(kCura.WinEDDS.ExportFile.ExportType.ParentSearch)
+			Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {
+			.TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.ParentSearch}
+			_form.LoadExportFile(ef)
+			Assert.AreEqual(_filtersDataTable.Rows(0), DirectCast(_form._filters.SelectedItem, System.Data.DataRowView).Row)
+		End Sub
 
-        <Test()> Public Sub LoadExportFile_SavedSearch_Into_FolderExport_DefaultFolder()
-            SetUpForTypeOfExport(kCura.WinEDDS.ExportFile.ExportType.ParentSearch)
-            Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {
-            .TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.ArtifactSearch,
-            .ArtifactID = 45646}
-            _form.LoadExportFile(ef)
-            Assert.AreEqual(123, _form._filters.SelectedValue)
-            Assert.AreEqual(_filtersDataTable.Rows(0), DirectCast(_form._filters.SelectedItem, System.Data.DataRowView).Row)
-        End Sub
+		<Test()> Public Sub LoadExportFile_SavedSearch_Into_FolderExport_DefaultFolder()
+			SetUpForTypeOfExport(kCura.WinEDDS.ExportFile.ExportType.ParentSearch)
+			Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {
+			.TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.ArtifactSearch,
+			.ArtifactID = 45646}
+			_form.LoadExportFile(ef)
+			Assert.AreEqual(123, _form._filters.SelectedValue)
+			Assert.AreEqual(_filtersDataTable.Rows(0), DirectCast(_form._filters.SelectedItem, System.Data.DataRowView).Row)
+		End Sub
 
-        <Test()> Public Sub LoadExportFile_Production_Into_FolderExport_DefaultFolder()
-            SetUpForTypeOfExport(kCura.WinEDDS.ExportFile.ExportType.ParentSearch)
-            Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {
-            .TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.Production,
-            .ArtifactID = 4654897}
-            _form.LoadExportFile(ef)
-            Assert.AreEqual(123, _form._filters.SelectedValue)
-            Assert.AreEqual(_filtersDataTable.Rows(0), DirectCast(_form._filters.SelectedItem, System.Data.DataRowView).Row)
-        End Sub
+		<Test()> Public Sub LoadExportFile_Production_Into_FolderExport_DefaultFolder()
+			SetUpForTypeOfExport(kCura.WinEDDS.ExportFile.ExportType.ParentSearch)
+			Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {
+			.TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.Production,
+			.ArtifactID = 4654897}
+			_form.LoadExportFile(ef)
+			Assert.AreEqual(123, _form._filters.SelectedValue)
+			Assert.AreEqual(_filtersDataTable.Rows(0), DirectCast(_form._filters.SelectedItem, System.Data.DataRowView).Row)
+		End Sub
 
-        <Test()> Public Sub LoadExportFile_FolderAndSubfolder_Into_FolderExport_DefaultFolder()
-            SetUpForTypeOfExport(kCura.WinEDDS.ExportFile.ExportType.ParentSearch)
-            Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {
-            .TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.AncestorSearch,
-            .ViewID = 4654897}
-            _form.LoadExportFile(ef)
-            Assert.AreEqual(123, _form._filters.SelectedValue)
-            Assert.AreEqual(_filtersDataTable.Rows(0), DirectCast(_form._filters.SelectedItem, System.Data.DataRowView).Row)
-        End Sub
+		<Test()> Public Sub LoadExportFile_FolderAndSubfolder_Into_FolderExport_DefaultFolder()
+			SetUpForTypeOfExport(kCura.WinEDDS.ExportFile.ExportType.ParentSearch)
+			Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {
+			.TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.AncestorSearch,
+			.ViewID = 4654897}
+			_form.LoadExportFile(ef)
+			Assert.AreEqual(123, _form._filters.SelectedValue)
+			Assert.AreEqual(_filtersDataTable.Rows(0), DirectCast(_form._filters.SelectedItem, System.Data.DataRowView).Row)
+		End Sub
 
-        <Test()> Public Sub LoadExportFile_FolderSelected_SavedFolderNoLongerExists()
-            SetUpForTypeOfExport(kCura.WinEDDS.ExportFile.ExportType.ParentSearch)
-            Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {
-            .TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.ParentSearch,
-            .ViewID = 1234567}
-            _form.LoadExportFile(ef)
-            Assert.AreEqual(_filtersDataTable.Rows(0), DirectCast(_form._filters.SelectedItem, System.Data.DataRowView).Row)
-        End Sub
+		<Test()> Public Sub LoadExportFile_FolderSelected_SavedFolderNoLongerExists()
+			SetUpForTypeOfExport(kCura.WinEDDS.ExportFile.ExportType.ParentSearch)
+			Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {
+			.TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.ParentSearch,
+			.ViewID = 1234567}
+			_form.LoadExportFile(ef)
+			Assert.AreEqual(_filtersDataTable.Rows(0), DirectCast(_form._filters.SelectedItem, System.Data.DataRowView).Row)
+		End Sub
 
-        <Test()> Public Sub LoadExportFile_Folder_AllExportableFieldsShowUp()
-            SetUpForTypeOfExport(kCura.WinEDDS.ExportFile.ExportType.ParentSearch)
-            Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {
-            .AllExportableFields = _queryFieldFactory.GetAllDocumentFields,
-            .TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.ParentSearch}
-            _form.LoadExportFile(ef)
-            Assert.AreEqual(_queryFieldFactory.GetAllDocumentFields.Count, _form._columnSelecter.LeftListBoxItems.Count)
-        End Sub
+		<Test()> Public Sub LoadExportFile_Folder_AllExportableFieldsShowUp()
+			SetUpForTypeOfExport(kCura.WinEDDS.ExportFile.ExportType.ParentSearch)
+			Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {
+			.AllExportableFields = _queryFieldFactory.GetAllDocumentFields,
+			.TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.ParentSearch}
+			_form.LoadExportFile(ef)
+			Assert.AreEqual(_queryFieldFactory.GetAllDocumentFields.Count, _form._columnSelector.LeftListBoxItems.Count)
+		End Sub
 
-        <Test()> Public Sub LoadExportFile_Folder_AllExportableFields_OneFieldSelected()
-            SetUpForTypeOfExport(kCura.WinEDDS.ExportFile.ExportType.ParentSearch)
-            Dim selectedField As kCura.WinEDDS.ViewFieldInfo = _queryFieldFactory.GetAllDocumentFields(3)
-            Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {
-             .AllExportableFields = _queryFieldFactory.GetAllDocumentFields,
-             .SelectedViewFields = New WinEDDS.ViewFieldInfo() {selectedField},
-             .TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.ParentSearch}
-            _form.LoadExportFile(ef)
-            Assert.IsTrue(DoesFieldExistsInListBox(selectedField, _form._columnSelecter.RightListBoxItems))
-            Assert.AreEqual(_queryFieldFactory.GetAllDocumentFields().Count - 1, _form._columnSelecter.LeftListBoxItems.Count)
-        End Sub
+		<Test()> Public Sub LoadExportFile_Folder_AllExportableFields_OneFieldSelected()
+			SetUpForTypeOfExport(kCura.WinEDDS.ExportFile.ExportType.ParentSearch)
+			Dim selectedField As kCura.WinEDDS.ViewFieldInfo = _queryFieldFactory.GetAllDocumentFields(3)
+			Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {
+			 .AllExportableFields = _queryFieldFactory.GetAllDocumentFields,
+			 .SelectedViewFields = New WinEDDS.ViewFieldInfo() {selectedField},
+			 .TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.ParentSearch}
+			_form.LoadExportFile(ef)
+			Assert.IsTrue(DoesFieldExistsInListBox(selectedField, _form._columnSelector.RightListBoxItems))
+			Assert.AreEqual(_queryFieldFactory.GetAllDocumentFields().Count - 1, _form._columnSelector.LeftListBoxItems.Count)
+		End Sub
 
-        <Test()> Public Sub LoadExportFile_Folder_AllExportableFields_TwoFieldSelected()
-            SetUpForTypeOfExport(kCura.WinEDDS.ExportFile.ExportType.ParentSearch)
-            Dim selectedField1 As kCura.WinEDDS.ViewFieldInfo = _queryFieldFactory.GetAllDocumentFields(3)
-            Dim selectedField2 As kCura.WinEDDS.ViewFieldInfo = _queryFieldFactory.GetAllDocumentFields(2)
-            Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {
-             .AllExportableFields = _queryFieldFactory.GetAllDocumentFields,
-             .SelectedViewFields = New WinEDDS.ViewFieldInfo() {selectedField1, selectedField2},
-             .TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.ParentSearch}
-            _form.LoadExportFile(ef)
-            Assert.IsTrue(DoesFieldExistsInListBox(selectedField1, _form._columnSelecter.RightListBoxItems))
-            Assert.IsTrue(DoesFieldExistsInListBox(selectedField2, _form._columnSelecter.RightListBoxItems))
-            Assert.AreEqual(_queryFieldFactory.GetAllDocumentFields().Count - 2, _form._columnSelecter.LeftListBoxItems.Count)
-        End Sub
+		<Test()> Public Sub LoadExportFile_Folder_AllExportableFields_TwoFieldSelected()
+			SetUpForTypeOfExport(kCura.WinEDDS.ExportFile.ExportType.ParentSearch)
+			Dim selectedField1 As kCura.WinEDDS.ViewFieldInfo = _queryFieldFactory.GetAllDocumentFields(3)
+			Dim selectedField2 As kCura.WinEDDS.ViewFieldInfo = _queryFieldFactory.GetAllDocumentFields(2)
+			Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {
+			 .AllExportableFields = _queryFieldFactory.GetAllDocumentFields,
+			 .SelectedViewFields = New WinEDDS.ViewFieldInfo() {selectedField1, selectedField2},
+			 .TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.ParentSearch}
+			_form.LoadExportFile(ef)
+			Assert.IsTrue(DoesFieldExistsInListBox(selectedField1, _form._columnSelector.RightListBoxItems))
+			Assert.IsTrue(DoesFieldExistsInListBox(selectedField2, _form._columnSelector.RightListBoxItems))
+			Assert.AreEqual(_queryFieldFactory.GetAllDocumentFields().Count - 2, _form._columnSelector.LeftListBoxItems.Count)
+		End Sub
 
-        <Test()> Public Sub LoadExportFile_Folder_AllExportableFields_OneFieldSelected_OneFieldPrePopulated()
-            SetupOneFieldSelected(kCura.WinEDDS.ExportFile.ExportType.ParentSearch)
-            Dim selectedField As kCura.WinEDDS.ViewFieldInfo = _queryFieldFactory.GetAllDocumentFields(0)
-            Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {
-             .AllExportableFields = _queryFieldFactory.GetAllDocumentFields,
-             .SelectedViewFields = New WinEDDS.ViewFieldInfo() {selectedField},
-             .TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.ParentSearch}
-            _form.LoadExportFile(ef)
-            Assert.IsTrue(DoesFieldExistsInListBox(selectedField, _form._columnSelecter.RightListBoxItems))
-            Assert.AreEqual(_queryFieldFactory.GetAllDocumentFields().Count - 1, _form._columnSelecter.LeftListBoxItems.Count)
-            Assert.AreEqual(1, _form._columnSelecter.RightListBoxItems.Count)
-        End Sub
+		<Test()> Public Sub LoadExportFile_Folder_AllExportableFields_OneFieldSelected_OneFieldPrePopulated()
+			SetupOneFieldSelected(kCura.WinEDDS.ExportFile.ExportType.ParentSearch)
+			Dim selectedField As kCura.WinEDDS.ViewFieldInfo = _queryFieldFactory.GetAllDocumentFields(0)
+			Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {
+			 .AllExportableFields = _queryFieldFactory.GetAllDocumentFields,
+			 .SelectedViewFields = New WinEDDS.ViewFieldInfo() {selectedField},
+			 .TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.ParentSearch}
+			_form.LoadExportFile(ef)
+			Assert.IsTrue(DoesFieldExistsInListBox(selectedField, _form._columnSelector.RightListBoxItems))
+			Assert.AreEqual(_queryFieldFactory.GetAllDocumentFields().Count - 1, _form._columnSelector.LeftListBoxItems.Count)
+			Assert.AreEqual(1, _form._columnSelector.RightListBoxItems.Count)
+		End Sub
 
-        <Test()> Public Sub LoadExportFile_Folder_AllExportableFields_ZeroFieldsSelected_OneFieldPrePopulated()
-            SetupOneFieldSelected(kCura.WinEDDS.ExportFile.ExportType.ParentSearch)
-            Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {
-             .AllExportableFields = _queryFieldFactory.GetAllDocumentFields,
-             .SelectedViewFields = New WinEDDS.ViewFieldInfo() {},
-             .TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.ParentSearch}
-            _form.LoadExportFile(ef)
-            Assert.AreEqual(_queryFieldFactory.GetAllDocumentFields().Count, _form._columnSelecter.LeftListBoxItems.Count)
-            Assert.AreEqual(0, _form._columnSelecter.RightListBoxItems.Count)
-        End Sub
+		<Test()> Public Sub LoadExportFile_Folder_AllExportableFields_ZeroFieldsSelected_OneFieldPrePopulated()
+			SetupOneFieldSelected(kCura.WinEDDS.ExportFile.ExportType.ParentSearch)
+			Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {
+			 .AllExportableFields = _queryFieldFactory.GetAllDocumentFields,
+			 .SelectedViewFields = New WinEDDS.ViewFieldInfo() {},
+			 .TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.ParentSearch}
+			_form.LoadExportFile(ef)
+			Assert.AreEqual(_queryFieldFactory.GetAllDocumentFields().Count, _form._columnSelector.LeftListBoxItems.Count)
+			Assert.AreEqual(0, _form._columnSelector.RightListBoxItems.Count)
+		End Sub
 
-        <Test()> Public Sub LoadExportFile_Folder_AllExportableFields_TwoFieldSelected_OneFieldIsNoLongerAvaialble()
-            SetUpForTypeOfExport(kCura.WinEDDS.ExportFile.ExportType.ParentSearch)
-            Dim selectedField1 As kCura.WinEDDS.ViewFieldInfo = _queryFieldFactory.GetAllDocumentFields(3)
-            Dim selectedField2 As kCura.WinEDDS.ViewFieldInfo = _queryFieldFactory.GetAllDocumentFields(2)
-            Dim selectedField3 As kCura.WinEDDS.ViewFieldInfo = _queryFieldFactory.GetAllDocumentFields(4)
-            Dim fields As New List(Of kCura.WinEDDS.ViewFieldInfo)()
-            fields.Add(selectedField1)
-            fields.Add(selectedField3)
-            Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {
-             .AllExportableFields = fields.ToArray(),
-             .SelectedViewFields = New WinEDDS.ViewFieldInfo() {selectedField1, selectedField2, selectedField3},
-             .TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.ParentSearch}
-            _form.LoadExportFile(ef)
-            Assert.IsTrue(DoesFieldExistsInListBox(selectedField1, _form._columnSelecter.RightListBoxItems))
-            Assert.IsFalse(_form._columnSelecter.RightListBoxItems.Contains(selectedField2))
-            Assert.IsFalse(_form._columnSelecter.LeftListBoxItems.Contains(selectedField2))
-            Assert.AreEqual(0, _form._columnSelecter.LeftListBoxItems.Count)
-        End Sub
+		<Test()> Public Sub LoadExportFile_Folder_AllExportableFields_TwoFieldSelected_OneFieldIsNoLongerAvaialble()
+			SetUpForTypeOfExport(kCura.WinEDDS.ExportFile.ExportType.ParentSearch)
+			Dim selectedField1 As kCura.WinEDDS.ViewFieldInfo = _queryFieldFactory.GetAllDocumentFields(3)
+			Dim selectedField2 As kCura.WinEDDS.ViewFieldInfo = _queryFieldFactory.GetAllDocumentFields(2)
+			Dim selectedField3 As kCura.WinEDDS.ViewFieldInfo = _queryFieldFactory.GetAllDocumentFields(4)
+			Dim fields As New List(Of kCura.WinEDDS.ViewFieldInfo)()
+			fields.Add(selectedField1)
+			fields.Add(selectedField3)
+			Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {
+			 .AllExportableFields = fields.ToArray(),
+			 .SelectedViewFields = New WinEDDS.ViewFieldInfo() {selectedField1, selectedField2, selectedField3},
+			 .TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.ParentSearch}
+			_form.LoadExportFile(ef)
+			Assert.IsTrue(DoesFieldExistsInListBox(selectedField1, _form._columnSelector.RightListBoxItems))
+			Assert.IsFalse(_form._columnSelector.RightListBoxItems.Contains(selectedField2))
+			Assert.IsFalse(_form._columnSelector.LeftListBoxItems.Contains(selectedField2))
+			Assert.AreEqual(0, _form._columnSelector.LeftListBoxItems.Count)
+		End Sub
 
-        <Test()> Public Sub LoadExportFile_Folder_StartExportAtDocumentNumber_Is15()
-            SetUpForTypeOfExport(kCura.WinEDDS.ExportFile.ExportType.ParentSearch)
-            Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {
-            .StartAtDocumentNumber = 15,
-            .TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.ParentSearch}
-            _form.LoadExportFile(ef)
-            Assert.AreEqual(16, _form._startExportAtDocumentNumber.Value)
-        End Sub
+		<Test()> Public Sub LoadExportFile_Folder_StartExportAtDocumentNumber_Is15()
+			SetUpForTypeOfExport(kCura.WinEDDS.ExportFile.ExportType.ParentSearch)
+			Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {
+			.StartAtDocumentNumber = 15,
+			.TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.ParentSearch}
+			_form.LoadExportFile(ef)
+			Assert.AreEqual(16, _form._startExportAtDocumentNumber.Value)
+		End Sub
 
 #End Region
 
 #Region "FolderAndSubFolder Section"
 
-        <Test()> Public Sub LoadExportFile_FolderAndSubFolder_NotSelected()
-            SetUpForTypeOfExport(kCura.WinEDDS.ExportFile.ExportType.AncestorSearch)
-            Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {
-            .TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.AncestorSearch}
-            _form.LoadExportFile(ef)
-            Assert.AreEqual(_filtersDataTable.Rows(0), DirectCast(_form._filters.SelectedItem, System.Data.DataRowView).Row)
-        End Sub
+		<Test()> Public Sub LoadExportFile_FolderAndSubFolder_NotSelected()
+			SetUpForTypeOfExport(kCura.WinEDDS.ExportFile.ExportType.AncestorSearch)
+			Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {
+			.TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.AncestorSearch}
+			_form.LoadExportFile(ef)
+			Assert.AreEqual(_filtersDataTable.Rows(0), DirectCast(_form._filters.SelectedItem, System.Data.DataRowView).Row)
+		End Sub
 
-        <Test()> Public Sub LoadExportFile_SavedSearch_Into_FolderAndSubFolderExport_DefaultFolderAndSubFolder()
-            SetUpForTypeOfExport(kCura.WinEDDS.ExportFile.ExportType.AncestorSearch)
-            Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {
-            .TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.ArtifactSearch,
-            .ArtifactID = 45646}
-            _form.LoadExportFile(ef)
-            Assert.AreEqual(123, _form._filters.SelectedValue)
-            Assert.AreEqual(_filtersDataTable.Rows(0), DirectCast(_form._filters.SelectedItem, System.Data.DataRowView).Row)
-        End Sub
+		<Test()> Public Sub LoadExportFile_SavedSearch_Into_FolderAndSubFolderExport_DefaultFolderAndSubFolder()
+			SetUpForTypeOfExport(kCura.WinEDDS.ExportFile.ExportType.AncestorSearch)
+			Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {
+			.TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.ArtifactSearch,
+			.ArtifactID = 45646}
+			_form.LoadExportFile(ef)
+			Assert.AreEqual(123, _form._filters.SelectedValue)
+			Assert.AreEqual(_filtersDataTable.Rows(0), DirectCast(_form._filters.SelectedItem, System.Data.DataRowView).Row)
+		End Sub
 
-        <Test()> Public Sub LoadExportFile_Production_Into_FolderAndSubFolderExport_DefaultFolderAndSubFolder()
-            SetUpForTypeOfExport(kCura.WinEDDS.ExportFile.ExportType.AncestorSearch)
-            Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {
-            .TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.Production,
-            .ArtifactID = 4654897}
-            _form.LoadExportFile(ef)
-            Assert.AreEqual(123, _form._filters.SelectedValue)
-            Assert.AreEqual(_filtersDataTable.Rows(0), DirectCast(_form._filters.SelectedItem, System.Data.DataRowView).Row)
-        End Sub
+		<Test()> Public Sub LoadExportFile_Production_Into_FolderAndSubFolderExport_DefaultFolderAndSubFolder()
+			SetUpForTypeOfExport(kCura.WinEDDS.ExportFile.ExportType.AncestorSearch)
+			Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {
+			.TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.Production,
+			.ArtifactID = 4654897}
+			_form.LoadExportFile(ef)
+			Assert.AreEqual(123, _form._filters.SelectedValue)
+			Assert.AreEqual(_filtersDataTable.Rows(0), DirectCast(_form._filters.SelectedItem, System.Data.DataRowView).Row)
+		End Sub
 
-        <Test()> Public Sub LoadExportFile_Folder_Into_FolderAndSubFolderExport_DefaultFolderAndSubFolder()
-            SetUpForTypeOfExport(kCura.WinEDDS.ExportFile.ExportType.AncestorSearch)
-            Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {
-            .TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.ParentSearch,
-            .ViewID = 4654897}
-            _form.LoadExportFile(ef)
-            Assert.AreEqual(123, _form._filters.SelectedValue)
-            Assert.AreEqual(_filtersDataTable.Rows(0), DirectCast(_form._filters.SelectedItem, System.Data.DataRowView).Row)
-        End Sub
+		<Test()> Public Sub LoadExportFile_Folder_Into_FolderAndSubFolderExport_DefaultFolderAndSubFolder()
+			SetUpForTypeOfExport(kCura.WinEDDS.ExportFile.ExportType.AncestorSearch)
+			Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {
+			.TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.ParentSearch,
+			.ViewID = 4654897}
+			_form.LoadExportFile(ef)
+			Assert.AreEqual(123, _form._filters.SelectedValue)
+			Assert.AreEqual(_filtersDataTable.Rows(0), DirectCast(_form._filters.SelectedItem, System.Data.DataRowView).Row)
+		End Sub
 
-        <Test()> Public Sub LoadExportFile_FolderAndSubFolderSelected_SavedFolderAndSubFolderNoLongerExists()
-            SetUpForTypeOfExport(kCura.WinEDDS.ExportFile.ExportType.AncestorSearch)
-            Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {
-            .TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.AncestorSearch,
-            .ViewID = 1234567}
-            _form.LoadExportFile(ef)
-            Assert.AreEqual(_filtersDataTable.Rows(0), DirectCast(_form._filters.SelectedItem, System.Data.DataRowView).Row)
-        End Sub
+		<Test()> Public Sub LoadExportFile_FolderAndSubFolderSelected_SavedFolderAndSubFolderNoLongerExists()
+			SetUpForTypeOfExport(kCura.WinEDDS.ExportFile.ExportType.AncestorSearch)
+			Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {
+			.TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.AncestorSearch,
+			.ViewID = 1234567}
+			_form.LoadExportFile(ef)
+			Assert.AreEqual(_filtersDataTable.Rows(0), DirectCast(_form._filters.SelectedItem, System.Data.DataRowView).Row)
+		End Sub
 
-        <Test()> Public Sub LoadExportFile_FolderAndSubFolder_AllExportableFieldsShowUp()
-            SetUpForTypeOfExport(kCura.WinEDDS.ExportFile.ExportType.AncestorSearch)
-            Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {
-            .AllExportableFields = _queryFieldFactory.GetAllDocumentFields,
-            .TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.AncestorSearch}
-            _form.LoadExportFile(ef)
-            Assert.AreEqual(_queryFieldFactory.GetAllDocumentFields.Count, _form._columnSelecter.LeftListBoxItems.Count)
-        End Sub
+		<Test()> Public Sub LoadExportFile_FolderAndSubFolder_AllExportableFieldsShowUp()
+			SetUpForTypeOfExport(kCura.WinEDDS.ExportFile.ExportType.AncestorSearch)
+			Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {
+			.AllExportableFields = _queryFieldFactory.GetAllDocumentFields,
+			.TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.AncestorSearch}
+			_form.LoadExportFile(ef)
+			Assert.AreEqual(_queryFieldFactory.GetAllDocumentFields.Count, _form._columnSelector.LeftListBoxItems.Count)
+		End Sub
 
-        <Test()> Public Sub LoadExportFile_FolderAndSubFolder_AllExportableFields_OneFieldSelected()
-            SetUpForTypeOfExport(kCura.WinEDDS.ExportFile.ExportType.AncestorSearch)
-            Dim selectedField As kCura.WinEDDS.ViewFieldInfo = _queryFieldFactory.GetAllDocumentFields(3)
-            Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {
-             .AllExportableFields = _queryFieldFactory.GetAllDocumentFields,
-             .SelectedViewFields = New WinEDDS.ViewFieldInfo() {selectedField},
-             .TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.AncestorSearch}
-            _form.LoadExportFile(ef)
-            Assert.IsTrue(DoesFieldExistsInListBox(selectedField, _form._columnSelecter.RightListBoxItems))
-            Assert.AreEqual(_queryFieldFactory.GetAllDocumentFields().Count - 1, _form._columnSelecter.LeftListBoxItems.Count)
-        End Sub
+		<Test()> Public Sub LoadExportFile_FolderAndSubFolder_AllExportableFields_OneFieldSelected()
+			SetUpForTypeOfExport(kCura.WinEDDS.ExportFile.ExportType.AncestorSearch)
+			Dim selectedField As kCura.WinEDDS.ViewFieldInfo = _queryFieldFactory.GetAllDocumentFields(3)
+			Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {
+			 .AllExportableFields = _queryFieldFactory.GetAllDocumentFields,
+			 .SelectedViewFields = New WinEDDS.ViewFieldInfo() {selectedField},
+			 .TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.AncestorSearch}
+			_form.LoadExportFile(ef)
+			Assert.IsTrue(DoesFieldExistsInListBox(selectedField, _form._columnSelector.RightListBoxItems))
+			Assert.AreEqual(_queryFieldFactory.GetAllDocumentFields().Count - 1, _form._columnSelector.LeftListBoxItems.Count)
+		End Sub
 
-        <Test()> Public Sub LoadExportFile_FolderAndSubFolder_AllExportableFields_TwoFieldSelected()
-            SetUpForTypeOfExport(kCura.WinEDDS.ExportFile.ExportType.AncestorSearch)
-            Dim selectedField1 As kCura.WinEDDS.ViewFieldInfo = _queryFieldFactory.GetAllDocumentFields(3)
-            Dim selectedField2 As kCura.WinEDDS.ViewFieldInfo = _queryFieldFactory.GetAllDocumentFields(2)
-            Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {
-             .AllExportableFields = _queryFieldFactory.GetAllDocumentFields,
-             .SelectedViewFields = New WinEDDS.ViewFieldInfo() {selectedField1, selectedField2},
-             .TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.AncestorSearch}
-            _form.LoadExportFile(ef)
-            Assert.IsTrue(DoesFieldExistsInListBox(selectedField1, _form._columnSelecter.RightListBoxItems))
-            Assert.IsTrue(DoesFieldExistsInListBox(selectedField2, _form._columnSelecter.RightListBoxItems))
-            Assert.AreEqual(_queryFieldFactory.GetAllDocumentFields().Count - 2, _form._columnSelecter.LeftListBoxItems.Count)
-        End Sub
+		<Test()> Public Sub LoadExportFile_FolderAndSubFolder_AllExportableFields_TwoFieldSelected()
+			SetUpForTypeOfExport(kCura.WinEDDS.ExportFile.ExportType.AncestorSearch)
+			Dim selectedField1 As kCura.WinEDDS.ViewFieldInfo = _queryFieldFactory.GetAllDocumentFields(3)
+			Dim selectedField2 As kCura.WinEDDS.ViewFieldInfo = _queryFieldFactory.GetAllDocumentFields(2)
+			Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {
+			 .AllExportableFields = _queryFieldFactory.GetAllDocumentFields,
+			 .SelectedViewFields = New WinEDDS.ViewFieldInfo() {selectedField1, selectedField2},
+			 .TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.AncestorSearch}
+			_form.LoadExportFile(ef)
+			Assert.IsTrue(DoesFieldExistsInListBox(selectedField1, _form._columnSelector.RightListBoxItems))
+			Assert.IsTrue(DoesFieldExistsInListBox(selectedField2, _form._columnSelector.RightListBoxItems))
+			Assert.AreEqual(_queryFieldFactory.GetAllDocumentFields().Count - 2, _form._columnSelector.LeftListBoxItems.Count)
+		End Sub
 
-        <Test()> Public Sub LoadExportFile_FolderAndSubFolder_AllExportableFields_OneFieldSelected_OneFieldPrePopulated()
-            SetupOneFieldSelected(kCura.WinEDDS.ExportFile.ExportType.AncestorSearch)
-            Dim selectedField As kCura.WinEDDS.ViewFieldInfo = _queryFieldFactory.GetAllDocumentFields(0)
-            Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {
-             .AllExportableFields = _queryFieldFactory.GetAllDocumentFields,
-             .SelectedViewFields = New WinEDDS.ViewFieldInfo() {selectedField},
-             .TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.AncestorSearch}
-            _form.LoadExportFile(ef)
-            Assert.IsTrue(DoesFieldExistsInListBox(selectedField, _form._columnSelecter.RightListBoxItems))
-            Assert.AreEqual(_queryFieldFactory.GetAllDocumentFields().Count - 1, _form._columnSelecter.LeftListBoxItems.Count)
-            Assert.AreEqual(1, _form._columnSelecter.RightListBoxItems.Count)
-        End Sub
+		<Test()> Public Sub LoadExportFile_FolderAndSubFolder_AllExportableFields_OneFieldSelected_OneFieldPrePopulated()
+			SetupOneFieldSelected(kCura.WinEDDS.ExportFile.ExportType.AncestorSearch)
+			Dim selectedField As kCura.WinEDDS.ViewFieldInfo = _queryFieldFactory.GetAllDocumentFields(0)
+			Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {
+			 .AllExportableFields = _queryFieldFactory.GetAllDocumentFields,
+			 .SelectedViewFields = New WinEDDS.ViewFieldInfo() {selectedField},
+			 .TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.AncestorSearch}
+			_form.LoadExportFile(ef)
+			Assert.IsTrue(DoesFieldExistsInListBox(selectedField, _form._columnSelector.RightListBoxItems))
+			Assert.AreEqual(_queryFieldFactory.GetAllDocumentFields().Count - 1, _form._columnSelector.LeftListBoxItems.Count)
+			Assert.AreEqual(1, _form._columnSelector.RightListBoxItems.Count)
+		End Sub
 
-        <Test()> Public Sub LoadExportFile_FolderAndSubFolder_AllExportableFields_ZeroFieldsSelected_OneFieldPrePopulated()
-            SetupOneFieldSelected(kCura.WinEDDS.ExportFile.ExportType.AncestorSearch)
-            Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {
-             .AllExportableFields = _queryFieldFactory.GetAllDocumentFields,
-             .SelectedViewFields = New WinEDDS.ViewFieldInfo() {},
-             .TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.AncestorSearch}
-            _form.LoadExportFile(ef)
-            Assert.AreEqual(_queryFieldFactory.GetAllDocumentFields().Count, _form._columnSelecter.LeftListBoxItems.Count)
-            Assert.AreEqual(0, _form._columnSelecter.RightListBoxItems.Count)
-        End Sub
+		<Test()> Public Sub LoadExportFile_FolderAndSubFolder_AllExportableFields_ZeroFieldsSelected_OneFieldPrePopulated()
+			SetupOneFieldSelected(kCura.WinEDDS.ExportFile.ExportType.AncestorSearch)
+			Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {
+			 .AllExportableFields = _queryFieldFactory.GetAllDocumentFields,
+			 .SelectedViewFields = New WinEDDS.ViewFieldInfo() {},
+			 .TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.AncestorSearch}
+			_form.LoadExportFile(ef)
+			Assert.AreEqual(_queryFieldFactory.GetAllDocumentFields().Count, _form._columnSelector.LeftListBoxItems.Count)
+			Assert.AreEqual(0, _form._columnSelector.RightListBoxItems.Count)
+		End Sub
 
-        <Test()> Public Sub LoadExportFile_FolderAndSubFolder_AllExportableFields_TwoFieldSelected_OneFieldIsNoLongerAvaialble()
-            SetUpForTypeOfExport(kCura.WinEDDS.ExportFile.ExportType.AncestorSearch)
-            Dim selectedField1 As kCura.WinEDDS.ViewFieldInfo = _queryFieldFactory.GetAllDocumentFields(3)
-            Dim selectedField2 As kCura.WinEDDS.ViewFieldInfo = _queryFieldFactory.GetAllDocumentFields(2)
-            Dim selectedField3 As kCura.WinEDDS.ViewFieldInfo = _queryFieldFactory.GetAllDocumentFields(4)
-            Dim fields As New List(Of kCura.WinEDDS.ViewFieldInfo)()
-            fields.Add(selectedField1)
-            fields.Add(selectedField3)
-            Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {
-             .AllExportableFields = fields.ToArray(),
-             .SelectedViewFields = New WinEDDS.ViewFieldInfo() {selectedField1, selectedField2, selectedField3},
-             .TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.AncestorSearch}
-            _form.LoadExportFile(ef)
-            Assert.IsTrue(DoesFieldExistsInListBox(selectedField1, _form._columnSelecter.RightListBoxItems))
-            Assert.IsFalse(_form._columnSelecter.RightListBoxItems.Contains(selectedField2))
-            Assert.IsFalse(_form._columnSelecter.LeftListBoxItems.Contains(selectedField2))
-            Assert.AreEqual(0, _form._columnSelecter.LeftListBoxItems.Count)
-        End Sub
+		<Test()> Public Sub LoadExportFile_FolderAndSubFolder_AllExportableFields_TwoFieldSelected_OneFieldIsNoLongerAvaialble()
+			SetUpForTypeOfExport(kCura.WinEDDS.ExportFile.ExportType.AncestorSearch)
+			Dim selectedField1 As kCura.WinEDDS.ViewFieldInfo = _queryFieldFactory.GetAllDocumentFields(3)
+			Dim selectedField2 As kCura.WinEDDS.ViewFieldInfo = _queryFieldFactory.GetAllDocumentFields(2)
+			Dim selectedField3 As kCura.WinEDDS.ViewFieldInfo = _queryFieldFactory.GetAllDocumentFields(4)
+			Dim fields As New List(Of kCura.WinEDDS.ViewFieldInfo)()
+			fields.Add(selectedField1)
+			fields.Add(selectedField3)
+			Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {
+			 .AllExportableFields = fields.ToArray(),
+			 .SelectedViewFields = New WinEDDS.ViewFieldInfo() {selectedField1, selectedField2, selectedField3},
+			 .TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.AncestorSearch}
+			_form.LoadExportFile(ef)
+			Assert.IsTrue(DoesFieldExistsInListBox(selectedField1, _form._columnSelector.RightListBoxItems))
+			Assert.IsFalse(_form._columnSelector.RightListBoxItems.Contains(selectedField2))
+			Assert.IsFalse(_form._columnSelector.LeftListBoxItems.Contains(selectedField2))
+			Assert.AreEqual(0, _form._columnSelector.LeftListBoxItems.Count)
+		End Sub
 
-        <Test()> Public Sub LoadExportFile_FolderAndSubFolder_StartExportAtDocumentNumber_Is15()
-            SetUpForTypeOfExport(kCura.WinEDDS.ExportFile.ExportType.AncestorSearch)
-            Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {
-            .StartAtDocumentNumber = 15,
-            .TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.AncestorSearch}
-            _form.LoadExportFile(ef)
-            Assert.AreEqual(16, _form._startExportAtDocumentNumber.Value)
-        End Sub
+		<Test()> Public Sub LoadExportFile_FolderAndSubFolder_StartExportAtDocumentNumber_Is15()
+			SetUpForTypeOfExport(kCura.WinEDDS.ExportFile.ExportType.AncestorSearch)
+			Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {
+			.StartAtDocumentNumber = 15,
+			.TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.AncestorSearch}
+			_form.LoadExportFile(ef)
+			Assert.AreEqual(16, _form._startExportAtDocumentNumber.Value)
+		End Sub
 
 #End Region
 
@@ -1051,32 +1051,32 @@ Namespace kCura.EDDS.WinForm.Tests
         <Test()> Public Sub LoadExportFile_AppendOriginalFileName_Checked_True()
             Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {.AppendOriginalFileName = True}
             _form.LoadExportFile(ef)
-            Assert.IsTrue(_form._appendOriginalFilename.Checked)
-        End Sub
+			Assert.IsTrue(_form._appendOriginalFilenameCheckbox.Checked)
+		End Sub
 
-        <Test()> Public Sub LoadExportFile_AppendOriginalFileName_Checked_False()
-            Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {.AppendOriginalFileName = False}
-            _form.LoadExportFile(ef)
-            Assert.IsFalse(_form._appendOriginalFilename.Checked)
-        End Sub
+		<Test()> Public Sub LoadExportFile_AppendOriginalFileName_Checked_False()
+			Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {.AppendOriginalFileName = False}
+			_form.LoadExportFile(ef)
+			Assert.IsFalse(_form._appendOriginalFilenameCheckbox.Checked)
+		End Sub
 
         <Test()> Public Sub LoadExportFile_NamedAfter_NotSelected()
             Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {.ExportNativesToFileNamedFrom = kCura.WinEDDS.ExportNativeWithFilenameFrom.Select}
             _form.LoadExportFile(ef)
-            Assert.AreEqual("Select...", _form._nativeFileNameSource.SelectedItem.ToString)
-        End Sub
+			Assert.AreEqual("Select...", _form._nativeFileNameSourceCombo.SelectedItem.ToString)
+		End Sub
 
-        <Test()> Public Sub LoadExportFile_NamedAfter_Identifier()
-            Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {.AppendOriginalFileName = False, .ExportNativesToFileNamedFrom = kCura.WinEDDS.ExportNativeWithFilenameFrom.Identifier}
-            _form.LoadExportFile(ef)
-            Assert.AreEqual("Identifier", _form._nativeFileNameSource.SelectedItem.ToString)
-        End Sub
+		<Test()> Public Sub LoadExportFile_NamedAfter_Identifier()
+			Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {.AppendOriginalFileName = False, .ExportNativesToFileNamedFrom = kCura.WinEDDS.ExportNativeWithFilenameFrom.Identifier}
+			_form.LoadExportFile(ef)
+			Assert.AreEqual("Identifier", _form._nativeFileNameSourceCombo.SelectedItem.ToString)
+		End Sub
 
-        <Test()> Public Sub LoadExportFile_NamedAfter_Production()
-            Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {.AppendOriginalFileName = False, .ExportNativesToFileNamedFrom = kCura.WinEDDS.ExportNativeWithFilenameFrom.Production}
-            _form.LoadExportFile(ef)
-            Assert.AreEqual("Begin production number", _form._nativeFileNameSource.SelectedItem.ToString)
-        End Sub
+		<Test()> Public Sub LoadExportFile_NamedAfter_Production()
+			Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {.AppendOriginalFileName = False, .ExportNativesToFileNamedFrom = kCura.WinEDDS.ExportNativeWithFilenameFrom.Production}
+			_form.LoadExportFile(ef)
+			Assert.AreEqual("Begin production number", _form._nativeFileNameSourceCombo.SelectedItem.ToString)
+		End Sub
 
 #End Region
 
@@ -1229,63 +1229,55 @@ Namespace kCura.EDDS.WinForm.Tests
             Assert.IsFalse(_form._exportNativeFiles.Checked)
             Assert.IsTrue(_form._useAbsolutePaths.Enabled)
             Assert.IsFalse(_form._nativeFileFormat.Enabled)
-            Assert.IsFalse(_form._metadataGroup.Enabled)
-        End Sub
+			Assert.IsFalse(_form._metadataGroupBox.Enabled)
+		End Sub
 
 
-        <Test()> Public Sub LoadExportFile_ExportNatives_False_RightListBoxItemsIsZero()
-            Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {.ExportNative = False, .SelectedViewFields = New kCura.WinEDDS.ViewFieldInfo() {}}
-            _form.LoadExportFile(ef)
-            Assert.IsFalse(_form._exportNativeFiles.Checked)
-            Assert.IsTrue(_form._useAbsolutePaths.Enabled)
-            Assert.IsFalse(_form._nativeFileFormat.Enabled)
-            Assert.IsFalse(_form._metadataGroup.Enabled)
-        End Sub
+		<Test()> Public Sub LoadExportFile_ExportNatives_False_RightListBoxItemsIsZero()
+			Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {.ExportNative = False, .SelectedViewFields = New kCura.WinEDDS.ViewFieldInfo() {}}
+			_form.LoadExportFile(ef)
+			Assert.IsFalse(_form._exportNativeFiles.Checked)
+			Assert.IsTrue(_form._useAbsolutePaths.Enabled)
+			Assert.IsFalse(_form._nativeFileFormat.Enabled)
+			Assert.IsFalse(_form._metadataGroupBox.Enabled)
+		End Sub
 
-        <Test()> Public Sub LoadExportFile_ExportNatives_False_RightListBoxItemsIs1()
-            Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document)
-            ef.ExportNative = False
-            ef.SelectedViewFields = {_queryFieldFactory.GetExtractedTextField()}
-            _form.LoadExportFile(ef)
-            Assert.IsFalse(_form._exportNativeFiles.Checked)
-            Assert.IsTrue(_form._useAbsolutePaths.Enabled)
-            Assert.IsFalse(_form._nativeFileFormat.Enabled)
-            Assert.IsFalse(_form._metadataGroup.Enabled)
-        End Sub
+		<Test()> Public Sub LoadExportFile_ExportNatives_False_RightListBoxItemsIs1()
+			Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document)
+			ef.ExportNative = False
+			ef.SelectedViewFields = {_queryFieldFactory.GetExtractedTextField()}
+			_form.LoadExportFile(ef)
+			Assert.IsFalse(_form._exportNativeFiles.Checked)
+			Assert.IsTrue(_form._useAbsolutePaths.Enabled)
+			Assert.IsFalse(_form._nativeFileFormat.Enabled)
+			Assert.IsFalse(_form._metadataGroupBox.Enabled)
+		End Sub
 
-        <Test()> Public Sub LoadExportFile_RightListBoxItemsIsZero_ExportNativesTrue_MetaDataDisabled()
-            Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document)
-            ef.ExportNative = True
-            ef.SelectedViewFields = New kCura.WinEDDS.ViewFieldInfo() {}
-            _form.LoadExportFile(ef)
-            Assert.IsFalse(_form._metadataGroup.Enabled)
-        End Sub
+		<Test()> Public Sub LoadExportFile_RightListBoxItemsIsZero_ExportNativesFalse_MetaDataDisabled()
+			Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document)
+			ef.ExportNative = False
+			ef.SelectedViewFields = New kCura.WinEDDS.ViewFieldInfo() {}
+			_form.LoadExportFile(ef)
+			Assert.IsFalse(_form._metadataGroupBox.Enabled)
+		End Sub
 
-        <Test()> Public Sub LoadExportFile_RightListBoxItemsIsZero_ExportNativesFalse_MetaDataDisabled()
-            Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document)
-            ef.ExportNative = False
-            ef.SelectedViewFields = New kCura.WinEDDS.ViewFieldInfo() {}
-            _form.LoadExportFile(ef)
-            Assert.IsFalse(_form._metadataGroup.Enabled)
-        End Sub
+		<Test()> Public Sub LoadExportFile_RightListBoxItemsIs1_ExportNativesTrue_MetaDataEnabled()
+			Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {
+			 .AllExportableFields = _queryFieldFactory.GetAllDocumentFields(),
+			 .ExportNative = True,
+			 .SelectedViewFields = {_queryFieldFactory.GetExtractedTextField()}}
+			_form.LoadExportFile(ef)
+			Assert.IsTrue(_form._metadataGroupBox.Enabled)
+		End Sub
 
-        <Test()> Public Sub LoadExportFile_RightListBoxItemsIs1_ExportNativesTrue_MetaDataEnabled()
-            Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {
-             .AllExportableFields = _queryFieldFactory.GetAllDocumentFields(),
-             .ExportNative = True,
-             .SelectedViewFields = {_queryFieldFactory.GetExtractedTextField()}}
-            _form.LoadExportFile(ef)
-            Assert.IsTrue(_form._metadataGroup.Enabled)
-        End Sub
-
-        <Test()> Public Sub LoadExportFile_RightListBoxItemsIs1_ExportNativesFalse_MetaDataDisabled()
-            Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {
-            .AllExportableFields = _queryFieldFactory.GetAllDocumentFields(),
-              .ExportNative = False,
-             .SelectedViewFields = {_queryFieldFactory.GetExtractedTextField()}}
-            _form.LoadExportFile(ef)
-            Assert.IsFalse(_form._metadataGroup.Enabled)
-        End Sub
+		<Test()> Public Sub LoadExportFile_RightListBoxItemsIs1_ExportNativesFalse_MetaDataDisabled()
+			Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {
+			.AllExportableFields = _queryFieldFactory.GetAllDocumentFields(),
+				.ExportNative = False,
+			 .SelectedViewFields = {_queryFieldFactory.GetExtractedTextField()}}
+			_form.LoadExportFile(ef)
+			Assert.IsFalse(_form._metadataGroupBox.Enabled)
+		End Sub
 
         <Test()> Public Sub LoadExportFile_ExportNatives_True()
             Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {.ExportNative = True}
