@@ -22,15 +22,29 @@ Namespace kCura.WinEDDS.Service
 			Return wr
 		End Function
 
-#Region " Shadow Functions "
-		Public Shadows Function BeginFill(ByVal caseContextArtifactID As Int32, ByVal b() As Byte, ByVal documentDirectory As String, ByVal fileGuid As String) As kCura.EDDS.WebAPI.FileIOBase.IoResponse
+#Region " ExecutionWrappers "
+
+		Private Function IsRetryableException(ex As System.Exception) As Boolean
+			Dim retval As Boolean = False
+
+			If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 Then
+				retval = True
+
+			ElseIf ex.Message = "The server committed a protocol violation. Section=ResponseStatusLine" Then
+				'HACK: this fixes a symptom, not the cause.  I haven't yet been able to prevent the error from being thrown, as a debug stop on the server side doesn't actually halt the protocol violation from being thrown.
+				retval = True
+			End If
+			Return retval
+		End Function
+
+		Private Function ExecuteWithRetry(Of T)(f As Func(Of T)) As T
 			Dim tries As Int32 = 0
 			While tries < Config.MaxReloginTries
 				tries += 1
 				Try
-					Return MyBase.BeginFill(caseContextArtifactID, b, documentDirectory, fileGuid)
+					Return f()
 				Catch ex As System.Exception
-					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
+					If IsRetryableException(ex) AndAlso tries < Config.MaxReloginTries Then
 						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
 					Else
 						Throw
@@ -38,56 +52,52 @@ Namespace kCura.WinEDDS.Service
 				End Try
 			End While
 			Return Nothing
+		End Function
+
+		Private Sub ExecuteWithRetry(f As Action)
+			ExecuteWithRetry(Function()
+														f()
+														Return True
+													End Function)
+		End Sub
+
+#End Region
+
+#Region " Shadow Functions "
+		Public Shadows Function BeginFill(ByVal caseContextArtifactID As Int32, ByVal b() As Byte, ByVal documentDirectory As String, ByVal fileGuid As String) As kCura.EDDS.WebAPI.FileIOBase.IoResponse
+			Return ExecuteWithRetry(Function() MyBase.BeginFill(caseContextArtifactID, b, documentDirectory, fileGuid))
 		End Function
 
 		Public Shadows Function FileFill(ByVal caseContextArtifactID As Int32, ByVal documentDirectory As String, ByVal fileName As String, ByVal b() As Byte, ByVal contextArtifactID As Int32) As kCura.EDDS.WebAPI.FileIOBase.IoResponse
-			Dim tries As Int32 = 0
-			While tries < Config.MaxReloginTries
-				tries += 1
-				Try
-					Return MyBase.FileFill(caseContextArtifactID, documentDirectory, fileName, b)
-				Catch ex As System.Exception
-					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
-					Else
-						Throw
-					End If
-				End Try
-			End While
-			Return Nothing
+			Return ExecuteWithRetry(Function() MyBase.FileFill(caseContextArtifactID, documentDirectory, fileName, b))
 		End Function
 
 		Public Shadows Sub RemoveFill(ByVal caseContextArtifactID As Int32, ByVal documentDirectory As String, ByVal fileName As String)
-			Dim tries As Int32 = 0
-			While tries < Config.MaxReloginTries
-				tries += 1
-				Try
-					MyBase.RemoveFill(caseContextArtifactID, documentDirectory, fileName)
-				Catch ex As System.Exception
-					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
-					Else
-						Throw
-					End If
-				End Try
-			End While
+			ExecuteWithRetry(Sub() MyBase.RemoveFill(caseContextArtifactID, documentDirectory, fileName))
+		End Sub
+
+		Public Shadows Sub RemoveTempFile(ByVal caseContextArtifactID As Integer, ByVal fileName As String)
+			ExecuteWithRetry(Sub() MyBase.RemoveTempFile(caseContextArtifactID, fileName))
 		End Sub
 
 		Public Shadows Function ReadFileAsString(ByVal path As String) As Byte()
-			Dim tries As Int32 = 0
-			While tries < Config.MaxReloginTries
-				tries += 1
-				Try
-					Return MyBase.ReadFileAsString(path)
-				Catch ex As System.Exception
-					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
-					Else
-						Throw
-					End If
-				End Try
-			End While
-			Return Nothing
+			Return ExecuteWithRetry(Function() MyBase.ReadFileAsString(path))
+		End Function
+
+		Public Shadows Function ValidateBcpShare(ByVal appID As Int32) As Boolean
+			Return ExecuteWithRetry(Function() MyBase.ValidateBcpShare(appID))
+		End Function
+
+		Public Shadows Function GetBcpShareSpaceReport(ByVal appID As Int32) As String()()
+			Return ExecuteWithRetry(Function() MyBase.GetBcpShareSpaceReport(appID))
+		End Function
+
+		Public Shadows Function GetDefaultRepositorySpaceReport(ByVal appID As Int32) As String()()
+			Return ExecuteWithRetry(Function() MyBase.GetDefaultRepositorySpaceReport(appID))
+		End Function
+
+		Public Shadows Function RepositoryVolumeMax() As Int32
+			Return ExecuteWithRetry(Function() MyBase.RepositoryVolumeMax())
 		End Function
 
 		Public Shadows Function GetBcpSharePath(ByVal appID As Int32) As String
@@ -141,73 +151,7 @@ Namespace kCura.WinEDDS.Service
 
 		End Function
 
-		Public Shadows Function ValidateBcpShare(ByVal appID As Int32) As Boolean
-			Dim tries As Int32 = 0
-			While tries < Config.MaxReloginTries
-				tries += 1
-				Try
-					If kCura.WinEDDS.Config.UsesWebAPI Then Return MyBase.ValidateBcpShare(appID)
-				Catch ex As System.Exception
-					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
-					Else
-						Throw
-					End If
-				End Try
-			End While
-			Return Nothing
-		End Function
 
-		Public Shadows Function GetBcpShareSpaceReport(ByVal appID As Int32) As String()()
-			Dim tries As Int32 = 0
-			While tries < Config.MaxReloginTries
-				tries += 1
-				Try
-					If kCura.WinEDDS.Config.UsesWebAPI Then Return MyBase.GetBcpShareSpaceReport(appID)
-				Catch ex As System.Exception
-					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
-					Else
-						Throw
-					End If
-				End Try
-			End While
-			Return Nothing
-		End Function
-
-		Public Shadows Function GetDefaultRepositorySpaceReport(ByVal appID As Int32) As String()()
-			Dim tries As Int32 = 0
-			While tries < Config.MaxReloginTries
-				tries += 1
-				Try
-					If kCura.WinEDDS.Config.UsesWebAPI Then Return MyBase.GetDefaultRepositorySpaceReport(appID)
-				Catch ex As System.Exception
-					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
-					Else
-						Throw
-					End If
-				End Try
-			End While
-			Return Nothing
-		End Function
-
-		Public Shadows Function RepositoryVolumeMax() As Int32
-			Dim tries As Int32 = 0
-			While tries < Config.MaxReloginTries
-				tries += 1
-				Try
-					Return MyBase.RepositoryVolumeMax
-				Catch ex As System.Exception
-					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
-					Else
-						Throw
-					End If
-				End Try
-			End While
-			Return Nothing
-		End Function
 #End Region
 
 		Public Class CustomException
