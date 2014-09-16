@@ -2,7 +2,6 @@
 	''' <summary>
 	''' Used to describe which side a ListBox control is on
 	''' </summary>
-	''' <remarks></remarks>
 	Public Enum ListBoxLocation
 		''' <summary>
 		''' A ListBox on the left side
