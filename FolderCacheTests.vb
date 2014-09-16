@@ -5,7 +5,8 @@ Imports kCura.WinEDDS.Service
 'Todo: this tests need cleaning and functionality
 Namespace kCura.WinEDDS.NUnit
 
-	<TestFixture()> Public Class FolderCacheTests
+	'<TestFixture()> 
+	Public Class FolderCacheTests
 
 #Region " Members "
 		Private _mockRepo As MockRepository = Nothing

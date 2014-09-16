@@ -4,7 +4,6 @@ Namespace kCura.WinEDDS.NUnit
 	''' <summary>
 	''' Inheriting the BulkLoadFileImporter to override its BulkImportManager property (the part we want to throw timeout exceptions)
 	''' </summary>
-	''' <remarks></remarks>
 	Public Class MockBulkLoadFileImporter
 		Inherits kCura.WinEDDS.BulkLoadFileImporter
 
@@ -43,6 +42,14 @@ Namespace kCura.WinEDDS.NUnit
 			Me.ImportBatchSize = 500
 			Me.ImportBatchVolume = 1000000
 		End Sub
+
+		Public Function CleanFolderPath(ByVal path As String) As String
+			Return MyBase.CleanDestinationFolderPath(path)
+		End Function
+
+		Public Function ConvertOverlayBehaviorEnum(ByVal inputOverlayType As LoadFile.FieldOverlayBehavior?) As kCura.EDDS.WebAPI.BulkImportManagerBase.OverlayBehavior
+			Return MyBase.GetMassImportOverlayBehavior(inputOverlayType)
+		End Function
 
 		Public Function TryBulkImport(ByVal settings As NativeLoadInfo) As MassImportResults
 			Return BulkImport(settings, True)

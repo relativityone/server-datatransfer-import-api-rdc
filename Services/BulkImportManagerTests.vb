@@ -6,7 +6,8 @@ Imports kCura.WinEDDS
 Imports kCura.WinEDDS.NUnit
 
 Namespace kCura.WinEDDS.NUnit.Services
-	<TestFixture()> Public Class BulkImportManagerTests
+	'<TestFixture()>
+	Public Class BulkImportManagerTests
 
 #Region " Members "
 		Dim _testObj As kCura.WinEDDS.Service.BulkImportManager = Nothing

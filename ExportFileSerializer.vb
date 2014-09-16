@@ -158,6 +158,12 @@ Namespace kCura.WinEDDS.NUnit
 		End Sub
 
 		<Category("SeparateDomain")>
+<Test()> Public Sub DeserializeExportFile_Pre_9_0_NoStorageLocation()
+			Dim test As kCura.WinEDDS.ExportFile = _serializer.DeserializeExportFile(XDocument.Parse(Pre_9_0_NoStorageLocation))
+			Assert.Pass()
+		End Sub
+
+		<Category("SeparateDomain")>
 		<Test()> Public Sub DeserializeExportFile_EverythingSet_7_2()
 			Dim test As kCura.WinEDDS.ExportFile = _serializer.DeserializeExportFile(XDocument.Parse(EverythingSet_7_2))
 			Compare(test)
@@ -177,8 +183,10 @@ Namespace kCura.WinEDDS.NUnit
 			Assert.IsNull(info.VolumePrefix)
 
 			Assert.IsNotNull(test.SelectedTextFields)
+			'BigData_ET_#
 			Assert.AreEqual("ExtractedText", test.SelectedTextFields(0).AvfColumnName)
 			Assert.AreEqual(1000187, test.SelectedTextFields(0).AvfId)
+			'BigData_ET_#
 			Assert.AreEqual("Extracted Text", test.SelectedTextFields(0).DisplayName)
 			Assert.AreEqual("1", test.ImagePrecedence(0).Value)
 			Assert.AreEqual("2", test.ImagePrecedence(1).Value)

@@ -46,7 +46,7 @@ Public Class DataReaderReaderFixture
 		Dim _testReader As New StubDataReaderReader(New DataReaderReaderInitializationArgs(Nothing, 0), Nothing, _stubReader)
 
 		' integer
-		Dim field As New Api.ArtifactField("Test", 1, Relativity.FieldTypeHelper.FieldType.Integer, 0, 0, 20, 0)
+		Dim field As New Api.ArtifactField("Test", 1, Relativity.FieldTypeHelper.FieldType.Integer, 0, 0, 20, 0, FieldInfo.StorageLocationChoice.SQL)
 		_testReader.SetFieldValueTest(field, "12345")
 		Assert.True(field.Value.Equals(12345))
 
@@ -135,7 +135,7 @@ Public Class DataReaderReaderFixture
 		Dim rdr As New StubDataReaderReader(New DataReaderReaderInitializationArgs(Nothing, 0), Nothing, _stubReader)
 
 		Dim displayName As String = "theNameIsInteresting"
-		Dim field As New Api.ArtifactField(displayName, 1, FieldTypeHelper.FieldType.Integer, 0, 0, 20, 0)
+		Dim field As New Api.ArtifactField(displayName, 1, FieldTypeHelper.FieldType.Integer, 0, 0, 20, 0, FieldInfo.StorageLocationChoice.SQL)
 
 		Dim lineNum As Long = 1313
 

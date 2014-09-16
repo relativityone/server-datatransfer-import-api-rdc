@@ -2,7 +2,6 @@ Namespace kCura.WinEDDS.NUnit
 	''' <summary>
 	''' Mock BulkImportManager for testing when the webservice throws timeout Exceptions
 	''' </summary>
-	''' <remarks></remarks>
 	Public Class MockBulkImportManagerWebExceptions
 		Inherits kCura.WinEDDS.Service.BulkImportManager
 
