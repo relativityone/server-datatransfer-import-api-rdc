@@ -50,6 +50,8 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
         
         Private DisposeTempTablesOperationCompleted As System.Threading.SendOrPostCallback
         
+        Private HasImportPermissionsOperationCompleted As System.Threading.SendOrPostCallback
+        
         Private useDefaultCredentialsSetExplicitly As Boolean
         
         '''<remarks/>
@@ -114,6 +116,9 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
         
         '''<remarks/>
         Public Event DisposeTempTablesCompleted As DisposeTempTablesCompletedEventHandler
+        
+        '''<remarks/>
+        Public Event HasImportPermissionsCompleted As HasImportPermissionsCompletedEventHandler
         
         '''<remarks/>
         <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/BulkImportManager/BulkImportImage", RequestNamespace:="http://www.kCura.com/EDDS/BulkImportManager", ResponseNamespace:="http://www.kCura.com/EDDS/BulkImportManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
@@ -458,6 +463,44 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
         End Sub
         
         '''<remarks/>
+        <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/BulkImportManager/HasImportPermissions", RequestNamespace:="http://www.kCura.com/EDDS/BulkImportManager", ResponseNamespace:="http://www.kCura.com/EDDS/BulkImportManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
+        Public Function HasImportPermissions(ByVal appID As Integer) As Boolean
+            Dim results() As Object = Me.Invoke("HasImportPermissions", New Object() {appID})
+            Return CType(results(0),Boolean)
+        End Function
+        
+        '''<remarks/>
+        Public Function BeginHasImportPermissions(ByVal appID As Integer, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("HasImportPermissions", New Object() {appID}, callback, asyncState)
+        End Function
+        
+        '''<remarks/>
+        Public Function EndHasImportPermissions(ByVal asyncResult As System.IAsyncResult) As Boolean
+            Dim results() As Object = Me.EndInvoke(asyncResult)
+            Return CType(results(0),Boolean)
+        End Function
+        
+        '''<remarks/>
+        Public Overloads Sub HasImportPermissionsAsync(ByVal appID As Integer)
+            Me.HasImportPermissionsAsync(appID, Nothing)
+        End Sub
+        
+        '''<remarks/>
+        Public Overloads Sub HasImportPermissionsAsync(ByVal appID As Integer, ByVal userState As Object)
+            If (Me.HasImportPermissionsOperationCompleted Is Nothing) Then
+                Me.HasImportPermissionsOperationCompleted = AddressOf Me.OnHasImportPermissionsOperationCompleted
+            End If
+            Me.InvokeAsync("HasImportPermissions", New Object() {appID}, Me.HasImportPermissionsOperationCompleted, userState)
+        End Sub
+        
+        Private Sub OnHasImportPermissionsOperationCompleted(ByVal arg As Object)
+            If (Not (Me.HasImportPermissionsCompletedEvent) Is Nothing) Then
+                Dim invokeArgs As System.Web.Services.Protocols.InvokeCompletedEventArgs = CType(arg,System.Web.Services.Protocols.InvokeCompletedEventArgs)
+                RaiseEvent HasImportPermissionsCompleted(Me, New HasImportPermissionsCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState))
+            End If
+        End Sub
+        
+        '''<remarks/>
         Public Shadows Sub CancelAsync(ByVal userState As Object)
             MyBase.CancelAsync(userState)
         End Sub
@@ -497,6 +540,8 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
         Private uploadFullTextField As Boolean
         
         Private bulkFileNameField As String
+        
+        Private dataGridFileNameField As String
         
         Private keyFieldArtifactIDField As Integer
         
@@ -573,6 +618,16 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
             End Get
             Set
                 Me.bulkFileNameField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property DataGridFileName() As String
+            Get
+                Return Me.dataGridFileNameField
+            End Get
+            Set
+                Me.dataGridFileNameField = value
             End Set
         End Property
         
@@ -670,6 +725,8 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
         
         Private codeTypeIDField As Integer
         
+        Private storageLocationField As StorageLocationChoice
+        
         '''<remarks/>
         Public Property ArtifactID() As Integer
             Get
@@ -727,6 +784,16 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
             End Get
             Set
                 Me.codeTypeIDField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property StorageLocation() As StorageLocationChoice
+            Get
+                Return Me.storageLocationField
+            End Get
+            Set
+                Me.storageLocationField = value
             End Set
         End Property
     End Class
@@ -836,6 +903,22 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
         
         '''<remarks/>
         Objects
+        
+        '''<remarks/>
+        OffTableText
+    End Enum
+    
+    '''<remarks/>
+    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.18060"),  _
+     System.SerializableAttribute(),  _
+     System.Xml.Serialization.XmlTypeAttribute([Namespace]:="http://www.kCura.com/EDDS/BulkImportManager")>  _
+    Public Enum StorageLocationChoice
+        
+        '''<remarks/>
+        SQL
+        
+        '''<remarks/>
+        DataGrid
     End Enum
     
     '''<remarks/>
@@ -963,6 +1046,8 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
         
         Private objectFileNameField As String
         
+        Private dataGridFileNameField As String
+        
         Private disableUserSecurityCheckField As Boolean
         
         Private onBehalfOfUserTokenField As String
@@ -972,6 +1057,8 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
         Private bulkLoadFileFieldDelimiterField As String
         
         Private overlayArtifactIDField As Integer
+        
+        Private overlayBehaviorField As OverlayBehavior
         
         Private keyFieldArtifactIDField As Integer
         
@@ -1078,6 +1165,16 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
         End Property
         
         '''<remarks/>
+        Public Property DataGridFileName() As String
+            Get
+                Return Me.dataGridFileNameField
+            End Get
+            Set
+                Me.dataGridFileNameField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
         Public Property DisableUserSecurityCheck() As Boolean
             Get
                 Return Me.disableUserSecurityCheckField
@@ -1128,6 +1225,16 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
         End Property
         
         '''<remarks/>
+        Public Property OverlayBehavior() As OverlayBehavior
+            Get
+                Return Me.overlayBehaviorField
+            End Get
+            Set
+                Me.overlayBehaviorField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
         Public Property KeyFieldArtifactID() As Integer
             Get
                 Return Me.keyFieldArtifactIDField
@@ -1147,6 +1254,22 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
             End Set
         End Property
     End Class
+    
+    '''<remarks/>
+    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.18060"),  _
+     System.SerializableAttribute(),  _
+     System.Xml.Serialization.XmlTypeAttribute([Namespace]:="http://www.kCura.com/EDDS/BulkImportManager")>  _
+    Public Enum OverlayBehavior
+        
+        '''<remarks/>
+        UseRelativityDefaults
+        
+        '''<remarks/>
+        MergeAll
+        
+        '''<remarks/>
+        ReplaceAll
+    End Enum
     
     '''<remarks/>
     <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.18060"),  _
@@ -1581,6 +1704,33 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
             Get
                 Me.RaiseExceptionIfNecessary
                 Return CType(Me.results(0),Object)
+            End Get
+        End Property
+    End Class
+    
+    '''<remarks/>
+    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.0.30319.17929")>  _
+    Public Delegate Sub HasImportPermissionsCompletedEventHandler(ByVal sender As Object, ByVal e As HasImportPermissionsCompletedEventArgs)
+    
+    '''<remarks/>
+    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.0.30319.17929"),  _
+     System.Diagnostics.DebuggerStepThroughAttribute(),  _
+     System.ComponentModel.DesignerCategoryAttribute("code")>  _
+    Partial Public Class HasImportPermissionsCompletedEventArgs
+        Inherits System.ComponentModel.AsyncCompletedEventArgs
+        
+        Private results() As Object
+        
+        Friend Sub New(ByVal results() As Object, ByVal exception As System.Exception, ByVal cancelled As Boolean, ByVal userState As Object)
+            MyBase.New(exception, cancelled, userState)
+            Me.results = results
+        End Sub
+        
+        '''<remarks/>
+        Public ReadOnly Property Result() As Boolean
+            Get
+                Me.RaiseExceptionIfNecessary
+                Return CType(Me.results(0),Boolean)
             End Get
         End Property
     End Class

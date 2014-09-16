@@ -69,7 +69,7 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
-		Public Shared ReadOnly Property WaitBeforeReconnect() As Int32		'Millisecodns
+		Public Shared ReadOnly Property WaitBeforeReconnect() As Int32		'Milliseconds
 			Get
 				Return 2000
 			End Get
@@ -189,7 +189,6 @@ Namespace kCura.WinEDDS
 				End Try
 			End Get
 		End Property
-
 
 		''' <summary>
 		''' If True, Folders which are created in Append mode are created in the WebAPI.

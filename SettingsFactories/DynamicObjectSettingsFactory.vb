@@ -35,7 +35,6 @@ Namespace kCura.WinEDDS
 			_loadFile.Credentials = Me.Credential
 			_loadFile.ExtractedTextFileEncoding = System.Text.Encoding.Default
 			_loadFile.ExtractedTextFileEncodingName = Relativity.SqlNameHelper.GetSqlFriendlyName(_loadFile.ExtractedTextFileEncoding.EncodingName).ToLower
-			_loadFile.ExtractFullTextFromNativeFile = False
 			_loadFile.FieldMap = New kCura.WinEDDS.LoadFileFieldMap
 			_loadFile.FirstLineContainsHeaders = True
 			_loadFile.FolderStructureContainedInColumn = Nothing
@@ -188,6 +187,21 @@ Namespace kCura.WinEDDS
 		Public WriteOnly Property QuoteProxy() As Char
 			Set(ByVal value As Char)
 				_loadFile.QuoteDelimiter = value
+			End Set
+		End Property
+
+		Public WriteOnly Property OverlayBehavior() As kCura.EDDS.WebAPI.BulkImportManagerBase.OverlayBehavior
+			Set(ByVal value As kCura.EDDS.WebAPI.BulkImportManagerBase.OverlayBehavior)
+				Select Case value
+					Case EDDS.WebAPI.BulkImportManagerBase.OverlayBehavior.UseRelativityDefaults
+						_loadFile.OverlayBehavior = LoadFile.FieldOverlayBehavior.UseRelativityDefaults
+
+					Case EDDS.WebAPI.BulkImportManagerBase.OverlayBehavior.MergeAll
+						_loadFile.OverlayBehavior = LoadFile.FieldOverlayBehavior.MergeAll
+
+					Case EDDS.WebAPI.BulkImportManagerBase.OverlayBehavior.ReplaceAll
+						_loadFile.OverlayBehavior = LoadFile.FieldOverlayBehavior.ReplaceAll
+				End Select
 			End Set
 		End Property
 

@@ -160,6 +160,8 @@ Namespace kCura.WinEDDS
 					Case MsgBoxResult.Cancel
 						parent.Shutdown()
 						Exit Sub
+					Case Else
+						If Not parent.ExportManager.HasExportPermissions(_settings.CaseArtifactID) Then Throw New Service.ExportManager.InsufficientPermissionsForExportException("Export permissions revoked!  Please contact your system administrator to re-instate export permissions.")
 				End Select
 			End If
 			_subdirectoryLabelPaddingWidth = settings.SubdirectoryDigitPadding
@@ -477,6 +479,7 @@ Namespace kCura.WinEDDS
 					Dim tries As Int32 = 0
 					Dim maxTries As Int32 = NumberOfRetries + 1
 					Dim start As Int64 = System.DateTime.Now.Ticks
+					'BigData_ET_1037768
 					Dim val As String = artifact.Metadata(Me.OrdinalLookup("ExtractedText")).ToString
 					If val <> Relativity.Constants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN Then
 						Dim sw As New System.IO.StreamWriter(tempLocalIproFullTextFilePath, False, System.Text.Encoding.Unicode)
@@ -1120,7 +1123,7 @@ Namespace kCura.WinEDDS
 				Dim field As WinEDDS.ViewFieldInfo = DirectCast(_parent.Columns(count), WinEDDS.ViewFieldInfo)
 				columnName = field.AvfColumnName
 				Dim val As Object = record(_ordinalLookup(columnName))
-				If field.FieldType = Relativity.FieldTypeHelper.FieldType.Text Then
+				If field.FieldType = Relativity.FieldTypeHelper.FieldType.Text OrElse field.FieldType = Relativity.FieldTypeHelper.FieldType.OffTableText Then
 					If Me.Settings.LoadFileIsHtml Then
 						extractedTextByteCount += Me.ManageLongText(val, field, fullTextTempFile, doc, "<td>", "</td>")
 					Else

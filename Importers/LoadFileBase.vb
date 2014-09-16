@@ -480,7 +480,7 @@ Namespace kCura.WinEDDS
 						SetFieldValueObjectsByName(field, columnIndex, forPreview, identityValue)
 					End If
 
-				Case Relativity.FieldTypeHelper.FieldType.Text
+				Case Relativity.FieldTypeHelper.FieldType.Text, Relativity.FieldTypeHelper.FieldType.OffTableText
 					If field.Category = Relativity.FieldCategory.FullText AndAlso _fullTextColumnMapsToFileLocation Then
 						Dim value As String = field.ValueAsString
 						Dim performExtractedTextFileLocationValidation As Boolean = Not DisableExtractedTextFileLocationValidation
@@ -633,10 +633,6 @@ Namespace kCura.WinEDDS
 			End If
 		End Function
 
-		Private Function GetMaxExtractedTextLength(ByVal value As String) As Int32
-			Return GetMaxExtractedTextLength(value, True)
-		End Function
-
 		Public Sub AddToCodeCountPreviewHashTable(ByVal fieldID As Int32, ByVal fieldName As String, ByVal fieldValue As String)
 			Dim fieldKeyID As String = String.Format("{0}_{1}", fieldID, fieldName)
 			If _previewCodeCount.Contains(fieldKeyID) Then
@@ -677,8 +673,6 @@ Namespace kCura.WinEDDS
 				Return kCura.Utility.NullableTypesHelper.DBNullString(value)
 			End If
 		End Function
-
-
 
 #Region "Exceptions"
 

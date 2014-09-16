@@ -8,7 +8,6 @@ Namespace kCura.WinEDDS
 	''' <summary>
 	''' Helper class designed to extract the XML application file from a RAP file
 	''' </summary>
-	''' <remarks></remarks>
 	Public Class PackageHelper
 
 		Public Function ExtractApplicationXML(packageData As Byte(), filepath As String) As XmlDocument

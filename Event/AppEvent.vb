@@ -7,7 +7,7 @@ Namespace kCura.WinEDDS
 			LoadCase = 0
 			ExitApplication = 1
 			LogOn = 2
-			CaseFolderSelected = 3
+            WorkspaceFolderSelected = 3
 			NewFolder = 4
 		End Enum
 

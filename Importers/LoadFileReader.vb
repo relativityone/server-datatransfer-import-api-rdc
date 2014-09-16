@@ -127,7 +127,7 @@ Namespace kCura.WinEDDS
 						field.Value = LoadFileReader.GetStringArrayFromDelimitedFieldValue(value, _settings.MultiRecordDelimiter)
 					Case Relativity.FieldTypeHelper.FieldType.Varchar
 						field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(Me.GetNullableFixedString(value, column, field.TextLength, field.DisplayName))
-					Case Relativity.FieldTypeHelper.FieldType.Text
+					Case Relativity.FieldTypeHelper.FieldType.Text, Relativity.FieldTypeHelper.FieldType.OffTableText
 						If _settings.FullTextColumnContainsFileLocation Then
 							field.Value = value
 						Else
@@ -407,13 +407,13 @@ Namespace kCura.WinEDDS
 			Next
 			If _settings.LoadNativeFiles AndAlso Not _settings.NativeFilePathColumn Is Nothing AndAlso Not _settings.NativeFilePathColumn = String.Empty AndAlso collection.FileField Is Nothing Then
 				Dim nativeFileIndex As Int32 = Int32.Parse(_settings.NativeFilePathColumn.Substring(_settings.NativeFilePathColumn.LastIndexOf("(")).Trim("()".ToCharArray))
-				Dim field As New Api.ArtifactField(New DocumentField("File", -1, Relativity.FieldTypeHelper.FieldType.File, Relativity.FieldCategory.FileInfo, Nothing, Nothing, Nothing, True, EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice.LeaveBlankValuesUnchanged))
+				Dim field As New Api.ArtifactField(New DocumentField("File", -1, Relativity.FieldTypeHelper.FieldType.File, Relativity.FieldCategory.FileInfo, Nothing, Nothing, Nothing, True, EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice.LeaveBlankValuesUnchanged, EDDS.WebAPI.DocumentManagerBase.StorageLocationChoice.SQL))
 				field.Value = line(nativeFileIndex - 1)
 				collection.Add(field)
 			End If
 			If _settings.CreateFolderStructure AndAlso Not _settings.FolderStructureContainedInColumn Is Nothing AndAlso Not _settings.FolderStructureContainedInColumn = String.Empty Then
 				Dim parentIndex As Int32 = Int32.Parse(_settings.FolderStructureContainedInColumn.Substring(_settings.FolderStructureContainedInColumn.LastIndexOf("(")).Trim("()".ToCharArray))
-				Dim field As New Api.ArtifactField(New DocumentField("Parent", -2, Relativity.FieldTypeHelper.FieldType.Object, Relativity.FieldCategory.ParentArtifact, Nothing, Nothing, Nothing, True, EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice.LeaveBlankValuesUnchanged))
+				Dim field As New Api.ArtifactField(New DocumentField("Parent", -2, Relativity.FieldTypeHelper.FieldType.Object, Relativity.FieldCategory.ParentArtifact, Nothing, Nothing, Nothing, True, EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice.LeaveBlankValuesUnchanged, EDDS.WebAPI.DocumentManagerBase.StorageLocationChoice.SQL))
 				field.Value = line(parentIndex - 1)
 				collection.Add(field)
 			End If

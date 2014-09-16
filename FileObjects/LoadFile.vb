@@ -8,7 +8,6 @@ Namespace kCura.WinEDDS
 		Public FilePath As String
 		Public FirstLineContainsHeaders As Boolean
 		Public LoadNativeFiles As Boolean
-		Public ExtractFullTextFromNativeFile As Boolean
 		Public RecordDelimiter As Char
 		Public QuoteDelimiter As Char
 		Public NewlineDelimiter As Char
@@ -37,6 +36,8 @@ Namespace kCura.WinEDDS
 		Public OIFileTypeColumnName As String
 		Public FileSizeMapped As Boolean
 		Public FileSizeColumn As String
+		Public OverlayBehavior As FieldOverlayBehavior?
+
 		<NonSerialized()> Public ObjectFieldIdListContainsArtifactId As IList(Of Int32)
 		<NonSerialized()> Public ExtractedTextFileEncodingName As String
 		<NonSerialized()> Public CaseDefaultPath As String = ""
@@ -46,6 +47,12 @@ Namespace kCura.WinEDDS
 		<NonSerialized()> Public SelectedCasePath As String = ""
 		<NonSerialized()> Public CopyFilesToDocumentRepository As Boolean = True
 		'<NonSerialized()> Public Identity As Relativity.Core.EDDSIdentity
+		
+		Public Enum FieldOverlayBehavior
+			UseRelativityDefaults = 0
+			MergeAll = 1
+			ReplaceAll = 2
+		End Enum
 
 		Public Property CookieContainer() As System.Net.CookieContainer
 			Get
@@ -65,6 +72,7 @@ Namespace kCura.WinEDDS
 			Me.HierarchicalValueDelimiter = "\"c
 			Me.FirstLineContainsHeaders = True
 			Me.FieldMap = New LoadFileFieldMap
+			Me.OverlayBehavior = Nothing
 		End Sub
 
 		Public Sub GetObjectData(ByVal info As System.Runtime.Serialization.SerializationInfo, ByVal context As System.Runtime.Serialization.StreamingContext) Implements System.Runtime.Serialization.ISerializable.GetObjectData
@@ -72,7 +80,12 @@ Namespace kCura.WinEDDS
 			info.AddValue("FilePath", Me.FilePath, GetType(String))
 			info.AddValue("FirstLineContainsHeaders", Me.FirstLineContainsHeaders, GetType(Boolean))
 			info.AddValue("LoadNativeFiles", Me.LoadNativeFiles, GetType(Boolean))
-			info.AddValue("ExtractFullTextFromNativeFile", Me.ExtractFullTextFromNativeFile, GetType(Boolean))
+
+			If Me.OverlayBehavior Is Nothing OrElse Not Me.OverlayBehavior.HasValue Then
+				info.AddValue("OverlayBehavior", Nothing, GetType(Integer))
+			Else
+				info.AddValue("OverlayBehavior", Me.OverlayBehavior, GetType(Integer))
+			End If
 
 			info.AddValue("RecordDelimiter", AscW(Me.RecordDelimiter), GetType(Integer))
 			info.AddValue("QuoteDelimiter", AscW(Me.QuoteDelimiter), GetType(Integer))
@@ -119,7 +132,6 @@ Namespace kCura.WinEDDS
 				Me.NativeFilePathColumn = info.GetString("NativeFilePathColumn")
 				Me.FirstLineContainsHeaders = info.GetBoolean("FirstLineContainsHeaders")
 				Me.LoadNativeFiles = info.GetBoolean("LoadNativeFiles")
-				Me.ExtractFullTextFromNativeFile = info.GetBoolean("ExtractFullTextFromNativeFile")
 				Me.OverwriteDestination = info.GetString("OverwriteDestination")
 
 				Me.RecordDelimiter = ChrW(info.GetInt32("RecordDelimiter"))
@@ -197,6 +209,12 @@ Namespace kCura.WinEDDS
 					Me.ForceFolderPreview = info.GetBoolean("ForceFolderPreview")
 				Catch
 					Me.ForceFolderPreview = kCura.WinEDDS.Config.ForceFolderPreview
+				End Try
+
+				Try
+					Me.OverlayBehavior = New Nullable(Of FieldOverlayBehavior)(CType(info.GetInt32("OverlayBehavior"), FieldOverlayBehavior))
+				Catch
+					Me.OverlayBehavior = Nothing
 				End Try
 
 			End With
