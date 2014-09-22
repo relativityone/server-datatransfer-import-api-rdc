@@ -49,13 +49,13 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
-		<NonSerialized()> Private _storageLocation As kCura.EDDS.WebAPI.DocumentManagerBase.StorageLocationChoice
-		Public Property StorageLocation() As kCura.EDDS.WebAPI.DocumentManagerBase.StorageLocationChoice
+		<NonSerialized()> Private _enableDataGrid As Boolean
+		Public Property EnableDataGrid() As Boolean
 			Get
-				Return _storageLocation
+				Return _enableDataGrid
 			End Get
-			Set(ByVal value As kCura.EDDS.WebAPI.DocumentManagerBase.StorageLocationChoice)
-				_storageLocation = value
+			Set(ByVal value As Boolean)
+				_enableDataGrid = value
 			End Set
 		End Property
 
@@ -156,11 +156,11 @@ Namespace kCura.WinEDDS
 			Me.Guids = New List(Of Guid)
 		End Sub
 
-		Public Sub New(ByVal fieldName As String, ByVal fieldID As Int32, ByVal fieldTypeID As Int32, ByVal fieldCategoryID As Int32, ByVal codeTypeID As Nullable(Of Int32), ByVal fieldLength As Nullable(Of Int32), ByVal associatedObjectTypeID As Nullable(Of Int32), ByVal useUnicode As Boolean, ByVal importBehavior As kCura.EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice?, ByVal storageLocation As kCura.EDDS.WebAPI.DocumentManagerBase.StorageLocationChoice)
-			Me.New(fieldName, fieldID, fieldTypeID, fieldCategoryID, codeTypeID, fieldLength, associatedObjectTypeID, useUnicode, importBehavior, New List(Of Guid), storageLocation)
+		Public Sub New(ByVal fieldName As String, ByVal fieldID As Int32, ByVal fieldTypeID As Int32, ByVal fieldCategoryID As Int32, ByVal codeTypeID As Nullable(Of Int32), ByVal fieldLength As Nullable(Of Int32), ByVal associatedObjectTypeID As Nullable(Of Int32), ByVal useUnicode As Boolean, ByVal importBehavior As kCura.EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice?, ByVal enableDataGrid As Boolean)
+			Me.New(fieldName, fieldID, fieldTypeID, fieldCategoryID, codeTypeID, fieldLength, associatedObjectTypeID, useUnicode, importBehavior, New List(Of Guid), enableDataGrid)
 		End Sub
 
-		Public Sub New(ByVal fieldName As String, ByVal fieldID As Int32, ByVal fieldTypeID As Int32, ByVal fieldCategoryID As Int32, ByVal codeTypeID As Nullable(Of Int32), ByVal fieldLength As Nullable(Of Int32), ByVal associatedObjectTypeID As Nullable(Of Int32), ByVal useUnicode As Boolean, ByVal importBehavior As kCura.EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice?, guids As IEnumerable(Of Guid), ByVal storageLocation As kCura.EDDS.WebAPI.DocumentManagerBase.StorageLocationChoice)
+		Public Sub New(ByVal fieldName As String, ByVal fieldID As Int32, ByVal fieldTypeID As Int32, ByVal fieldCategoryID As Int32, ByVal codeTypeID As Nullable(Of Int32), ByVal fieldLength As Nullable(Of Int32), ByVal associatedObjectTypeID As Nullable(Of Int32), ByVal useUnicode As Boolean, ByVal importBehavior As kCura.EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice?, guids As IEnumerable(Of Guid), ByVal enableDataGrid As Boolean)
 			MyBase.New()
 			_fieldName = fieldName
 			_fieldID = fieldID
@@ -171,7 +171,7 @@ Namespace kCura.WinEDDS
 			_associatedObjectTypeID = associatedObjectTypeID
 			_useUnicode = useUnicode
 			_importBehavior = importBehavior
-			_storageLocation = storageLocation
+			_enableDataGrid = enableDataGrid
 			If (Not guids Is Nothing) Then
 				Me.Guids = guids.ToList()
 			Else
@@ -180,7 +180,7 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Public Sub New(ByVal docField As DocumentField)
-			Me.New(docField.FieldName, docField.FieldID, docField.FieldTypeID, docField.FieldCategoryID, docField.CodeTypeID, docField.FieldLength, docField.AssociatedObjectTypeID, docField.UseUnicode, docField.ImportBehavior, docField.StorageLocation)
+			Me.New(docField.FieldName, docField.FieldID, docField.FieldTypeID, docField.FieldCategoryID, docField.CodeTypeID, docField.FieldLength, docField.AssociatedObjectTypeID, docField.UseUnicode, docField.ImportBehavior, docField.EnableDataGrid)
 		End Sub
 
 #End Region
@@ -203,7 +203,7 @@ Namespace kCura.WinEDDS
 			retval.Type = Me.ConvertFieldTypeEnum(Me.FieldTypeID)
 			retval.IsUnicodeEnabled = Me.UseUnicode
 			retval.ImportBehavior = Me.ConvertImportBehaviorEnum(Me.ImportBehavior)
-			retval.StorageLocation = Me.ConvertStorageLocationEnum(Me.StorageLocation)
+			retval.EnableDataGrid = Me.EnableDataGrid
 			Return retval
 		End Function
 
@@ -211,10 +211,6 @@ Namespace kCura.WinEDDS
 		Private Function ConvertFieldTypeEnum(ByVal fieldtypeID As Int32) As kCura.EDDS.WebAPI.BulkImportManagerBase.FieldType
 			Dim ft As Relativity.FieldTypeHelper.FieldType = CType(fieldtypeID, Relativity.FieldTypeHelper.FieldType)
 			Return CType(System.Enum.Parse(GetType(kCura.EDDS.WebAPI.BulkImportManagerBase.FieldType), ft.ToString), kCura.EDDS.WebAPI.BulkImportManagerBase.FieldType)
-		End Function
-
-		Private Function ConvertStorageLocationEnum(ByVal storageLocation As kCura.EDDS.WebAPI.DocumentManagerBase.StorageLocationChoice) As kCura.EDDS.WebAPI.BulkImportManagerBase.StorageLocationChoice
-			Return CType(System.Enum.Parse(GetType(kCura.EDDS.WebAPI.DocumentManagerBase.StorageLocationChoice), storageLocation.ToString), kCura.EDDS.WebAPI.BulkImportManagerBase.StorageLocationChoice)
 		End Function
 
 		Private Function ConvertImportBehaviorEnum(ByVal importBehavior As kCura.EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice?) As kCura.EDDS.WebAPI.BulkImportManagerBase.ImportBehaviorChoice?

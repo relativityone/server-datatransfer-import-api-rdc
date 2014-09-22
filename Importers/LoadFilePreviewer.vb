@@ -264,7 +264,7 @@ Namespace kCura.WinEDDS
 				retval.Add(field)
 			End If
 			If _settings.FullTextColumnContainsFileLocation AndAlso formType = 1 Then
-				Dim field As New Api.ArtifactField(extractedTextEncodingFieldName, -500, 0, 0, Nothing, Nothing, Nothing, Relativity.FieldInfo.StorageLocationChoice.SQL)
+				Dim field As New Api.ArtifactField(extractedTextEncodingFieldName, -500, 0, 0, Nothing, Nothing, Nothing, False)
 				If codePageId > 0 Then
 					field.Value = System.Text.Encoding.GetEncoding(codePageId).EncodingName
 				Else

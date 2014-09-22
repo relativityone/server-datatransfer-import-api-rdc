@@ -204,7 +204,7 @@ Namespace kCura.WinEDDS
 			_batchSizeHistoryList = New System.Collections.Generic.List(Of Int32)
 
 			If args.ReplaceFullText Then
-				_fullTextStorageIsInSql = (_fieldQuery.RetrieveAllAsDocumentFieldCollection(args.CaseInfo.ArtifactID, Relativity.ArtifactType.Document).FullText.StorageLocation = EDDS.WebAPI.DocumentManagerBase.StorageLocationChoice.SQL)
+				_fullTextStorageIsInSql = (_fieldQuery.RetrieveAllAsDocumentFieldCollection(args.CaseInfo.ArtifactID, Relativity.ArtifactType.Document).FullText.EnableDataGrid = False)
 			End If
 		End Sub
 

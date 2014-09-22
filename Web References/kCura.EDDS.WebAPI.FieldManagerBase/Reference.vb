@@ -266,7 +266,7 @@ Namespace kCura.EDDS.WebAPI.FieldManagerBase
         
         Private importBehaviorField As System.Nullable(Of ImportBehaviorChoice)
         
-        Private storageLocationField As StorageLocationChoice
+        Private enableDataGridField As Boolean
         
         Private overlayBehaviorField As System.Nullable(Of Boolean)
         
@@ -708,12 +708,12 @@ Namespace kCura.EDDS.WebAPI.FieldManagerBase
         End Property
         
         '''<remarks/>
-        Public Property StorageLocation() As StorageLocationChoice
+        Public Property EnableDataGrid() As Boolean
             Get
-                Return Me.storageLocationField
+                Return Me.enableDataGridField
             End Get
             Set
-                Me.storageLocationField = value
+                Me.enableDataGridField = value
             End Set
         End Property
         
@@ -1402,19 +1402,6 @@ Namespace kCura.EDDS.WebAPI.FieldManagerBase
         
         '''<remarks/>
         ObjectFieldContainsArtifactId
-    End Enum
-    
-    '''<remarks/>
-    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.18060"),  _
-     System.SerializableAttribute(),  _
-     System.Xml.Serialization.XmlTypeAttribute([Namespace]:="http://www.kCura.com/EDDS/FieldManager")>  _
-    Public Enum StorageLocationChoice
-        
-        '''<remarks/>
-        SQL
-        
-        '''<remarks/>
-        DataGrid
     End Enum
     
     '''<remarks/>

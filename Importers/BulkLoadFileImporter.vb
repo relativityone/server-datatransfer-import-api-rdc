@@ -1050,12 +1050,12 @@ Namespace kCura.WinEDDS
 			Dim foundDataGridField As Boolean = False
 
 			For Each field As Api.ArtifactField In mdoc.Record
-				Select Case field.StorageLocation
+				Select Case field.EnableDataGrid
 
-					Case Relativity.FieldInfo.StorageLocationChoice.SQL
+					Case False
 						WriteDocumentField(chosenEncoding, field, _outputNativeFileWriter, _fullTextColumnMapsToFileLocation, _bulkLoadFileFieldDelimiter, _artifactTypeID, _extractedTextFileEncoding)
 
-					Case Relativity.FieldInfo.StorageLocationChoice.DataGrid
+					Case True
 						If Not foundDataGridField Then
 							'write the data grid identity field as the first column, but only when we have data grid fields
 							_outputDataGridFileWriter.Write(mdoc.IdentityValue & _bulkLoadFileFieldDelimiter)
@@ -1242,7 +1242,7 @@ Namespace kCura.WinEDDS
 			If Not input.MaxLength Is Nothing Then retval.TextLength = input.MaxLength.Value
 			retval.IsUnicodeEnabled = input.UseUnicodeEncoding
 			retval.Type = Me.ConvertFieldTypeEnum(input.FieldTypeID)
-			retval.StorageLocation = ConvertStorageLocationEnum(input.StorageLocation)
+			retval.EnableDataGrid = input.EnableDataGrid
 			Return retval
 		End Function
 
@@ -1251,9 +1251,6 @@ Namespace kCura.WinEDDS
 			Return CType(System.Enum.Parse(GetType(kCura.EDDS.WebAPI.BulkImportManagerBase.FieldType), ft.ToString), kCura.EDDS.WebAPI.BulkImportManagerBase.FieldType)
 		End Function
 
-		Private Function ConvertStorageLocationEnum(ByVal storageLocation As kCura.EDDS.WebAPI.DocumentManagerBase.StorageLocationChoice) As kCura.EDDS.WebAPI.BulkImportManagerBase.StorageLocationChoice
-			Return CType(System.Enum.Parse(GetType(kCura.EDDS.WebAPI.DocumentManagerBase.StorageLocationChoice), storageLocation.ToString), kCura.EDDS.WebAPI.BulkImportManagerBase.StorageLocationChoice)
-		End Function
 
 		Private Function IsSupportedRelativityFileType(ByVal fileData As OI.FileID.FileIDData) As Boolean
 			If fileData Is Nothing Then
