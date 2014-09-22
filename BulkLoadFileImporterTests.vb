@@ -154,8 +154,8 @@ Namespace kCura.WinEDDS.NUnit
 			Dim bulkImporter As MockBulkLoadFileImporter = New MockBulkLoadFileImporter(_args, _controller, 0, False, False, _guid, True, "S", True, New MockBulkImportManagerWebExceptions(True))
 
 			Dim FieldMap As New LoadFileFieldMap
-			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field1", 1, Relativity.FieldTypeHelper.FieldType.Object, 1, 0, 0, 0, True, Nothing, EDDS.WebAPI.DocumentManagerBase.StorageLocationChoice.SQL), 0))
-			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field2", 2, Relativity.FieldTypeHelper.FieldType.Objects, 1, 0, 0, 0, True, Nothing, EDDS.WebAPI.DocumentManagerBase.StorageLocationChoice.SQL), 0))
+			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field1", 1, Relativity.FieldTypeHelper.FieldType.Object, 1, 0, 0, 0, True, Nothing, False), 0))
+			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field2", 2, Relativity.FieldTypeHelper.FieldType.Objects, 1, 0, 0, 0, True, Nothing, False), 0))
 			bulkImporter.FieldMap = FieldMap
 
 			Dim fields As kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo() =
@@ -169,8 +169,8 @@ Namespace kCura.WinEDDS.NUnit
 			Dim bulkImporter As MockBulkLoadFileImporter = New MockBulkLoadFileImporter(_args, _controller, 0, False, False, _guid, True, "S", True, New MockBulkImportManagerWebExceptions(True))
 
 			Dim FieldMap As New LoadFileFieldMap
-			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field1", 1, Relativity.FieldTypeHelper.FieldType.Object, 1, 0, 0, 0, True, Nothing, EDDS.WebAPI.DocumentManagerBase.StorageLocationChoice.SQL), 0))
-			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field2", 2, Relativity.FieldTypeHelper.FieldType.Objects, 1, 0, 0, 0, True, Nothing, EDDS.WebAPI.DocumentManagerBase.StorageLocationChoice.SQL), 0))
+			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field1", 1, Relativity.FieldTypeHelper.FieldType.Object, 1, 0, 0, 0, True, Nothing, False), 0))
+			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field2", 2, Relativity.FieldTypeHelper.FieldType.Objects, 1, 0, 0, 0, True, Nothing, False), 0))
 			bulkImporter.FieldMap = FieldMap
 
 			Dim fields As kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo() =
@@ -184,8 +184,8 @@ Namespace kCura.WinEDDS.NUnit
 			Dim bulkImporter As MockBulkLoadFileImporter = New MockBulkLoadFileImporter(_args, _controller, 0, False, False, _guid, True, "S", True, New MockBulkImportManagerWebExceptions(True))
 
 			Dim FieldMap As New LoadFileFieldMap
-			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field1", 1, Relativity.FieldTypeHelper.FieldType.Object, 1, 0, 0, 0, True, Nothing, EDDS.WebAPI.DocumentManagerBase.StorageLocationChoice.SQL), 0))
-			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field2", 2, Relativity.FieldTypeHelper.FieldType.Objects, 1, 0, 0, 0, True, Nothing, EDDS.WebAPI.DocumentManagerBase.StorageLocationChoice.SQL), 0))
+			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field1", 1, Relativity.FieldTypeHelper.FieldType.Object, 1, 0, 0, 0, True, Nothing, False), 0))
+			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field2", 2, Relativity.FieldTypeHelper.FieldType.Objects, 1, 0, 0, 0, True, Nothing, False), 0))
 			bulkImporter.FieldMap = FieldMap
 
 			Dim fields As kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo() =
@@ -199,8 +199,8 @@ Namespace kCura.WinEDDS.NUnit
 			Dim bulkImporter As MockBulkLoadFileImporter = New MockBulkLoadFileImporter(_args, _controller, 0, False, False, _guid, True, "S", True, New MockBulkImportManagerWebExceptions(True))
 
 			Dim FieldMap As New LoadFileFieldMap
-			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field1", 1, Relativity.FieldTypeHelper.FieldType.Object, 1, 0, 0, 0, True, Nothing, EDDS.WebAPI.DocumentManagerBase.StorageLocationChoice.SQL), 0))
-			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field2", 2, Relativity.FieldTypeHelper.FieldType.Objects, 1, 0, 0, 0, True, Nothing, EDDS.WebAPI.DocumentManagerBase.StorageLocationChoice.SQL), 0))
+			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field1", 1, Relativity.FieldTypeHelper.FieldType.Object, 1, 0, 0, 0, True, Nothing, False), 0))
+			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field2", 2, Relativity.FieldTypeHelper.FieldType.Objects, 1, 0, 0, 0, True, Nothing, False), 0))
 			bulkImporter.FieldMap = FieldMap
 
 			Dim fields As kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo() =
@@ -214,21 +214,21 @@ Namespace kCura.WinEDDS.NUnit
 			Dim bulkImporter As MockBulkLoadFileImporter = New MockBulkLoadFileImporter(_args, _controller, 0, False, False, _guid, True, "S", True, New MockBulkImportManagerWebExceptions(True))
 
 			Dim FieldMap As New LoadFileFieldMap
-			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field01", 1, Relativity.FieldTypeHelper.FieldType.Object, 1, 0, 0, 0, True, Nothing, EDDS.WebAPI.DocumentManagerBase.StorageLocationChoice.SQL), 0))
-			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field02", 2, Relativity.FieldTypeHelper.FieldType.Objects, 1, 0, 0, 0, True, Nothing, EDDS.WebAPI.DocumentManagerBase.StorageLocationChoice.SQL), 0))
-			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field03", 3, Relativity.FieldTypeHelper.FieldType.Boolean, 1, 0, 0, 0, True, Nothing, EDDS.WebAPI.DocumentManagerBase.StorageLocationChoice.SQL), 0))
-			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field04", 4, Relativity.FieldTypeHelper.FieldType.Code, 1, 0, 0, 0, True, Nothing, EDDS.WebAPI.DocumentManagerBase.StorageLocationChoice.SQL), 0))
-			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field05", 5, Relativity.FieldTypeHelper.FieldType.Currency, 1, 0, 0, 0, True, Nothing, EDDS.WebAPI.DocumentManagerBase.StorageLocationChoice.SQL), 0))
-			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field06", 6, Relativity.FieldTypeHelper.FieldType.Date, 1, 0, 0, 0, True, Nothing, EDDS.WebAPI.DocumentManagerBase.StorageLocationChoice.SQL), 0))
-			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field07", 7, Relativity.FieldTypeHelper.FieldType.Decimal, 1, 0, 0, 0, True, Nothing, EDDS.WebAPI.DocumentManagerBase.StorageLocationChoice.SQL), 0))
-			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field08", 8, Relativity.FieldTypeHelper.FieldType.Empty, 1, 0, 0, 0, True, Nothing, EDDS.WebAPI.DocumentManagerBase.StorageLocationChoice.SQL), 0))
-			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field09", 9, Relativity.FieldTypeHelper.FieldType.File, 1, 0, 0, 0, True, Nothing, EDDS.WebAPI.DocumentManagerBase.StorageLocationChoice.SQL), 0))
-			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field10", 10, Relativity.FieldTypeHelper.FieldType.Integer, 1, 0, 0, 0, True, Nothing, EDDS.WebAPI.DocumentManagerBase.StorageLocationChoice.SQL), 0))
-			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field11", 11, Relativity.FieldTypeHelper.FieldType.LayoutText, 1, 0, 0, 0, True, Nothing, EDDS.WebAPI.DocumentManagerBase.StorageLocationChoice.SQL), 0))
-			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field12", 12, Relativity.FieldTypeHelper.FieldType.MultiCode, 1, 0, 0, 0, True, Nothing, EDDS.WebAPI.DocumentManagerBase.StorageLocationChoice.SQL), 0))
-			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field13", 13, Relativity.FieldTypeHelper.FieldType.Text, 1, 0, 0, 0, True, Nothing, EDDS.WebAPI.DocumentManagerBase.StorageLocationChoice.SQL), 0))
-			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field14", 14, Relativity.FieldTypeHelper.FieldType.User, 1, 0, 0, 0, True, Nothing, EDDS.WebAPI.DocumentManagerBase.StorageLocationChoice.SQL), 0))
-			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field15", 15, Relativity.FieldTypeHelper.FieldType.Varchar, 1, 0, 0, 0, True, Nothing, EDDS.WebAPI.DocumentManagerBase.StorageLocationChoice.SQL), 0))
+			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field01", 1, Relativity.FieldTypeHelper.FieldType.Object, 1, 0, 0, 0, True, Nothing, False), 0))
+			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field02", 2, Relativity.FieldTypeHelper.FieldType.Objects, 1, 0, 0, 0, True, Nothing, False), 0))
+			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field03", 3, Relativity.FieldTypeHelper.FieldType.Boolean, 1, 0, 0, 0, True, Nothing, False), 0))
+			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field04", 4, Relativity.FieldTypeHelper.FieldType.Code, 1, 0, 0, 0, True, Nothing, False), 0))
+			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field05", 5, Relativity.FieldTypeHelper.FieldType.Currency, 1, 0, 0, 0, True, Nothing, False), 0))
+			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field06", 6, Relativity.FieldTypeHelper.FieldType.Date, 1, 0, 0, 0, True, Nothing, False), 0))
+			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field07", 7, Relativity.FieldTypeHelper.FieldType.Decimal, 1, 0, 0, 0, True, Nothing, False), 0))
+			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field08", 8, Relativity.FieldTypeHelper.FieldType.Empty, 1, 0, 0, 0, True, Nothing, False), 0))
+			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field09", 9, Relativity.FieldTypeHelper.FieldType.File, 1, 0, 0, 0, True, Nothing, False), 0))
+			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field10", 10, Relativity.FieldTypeHelper.FieldType.Integer, 1, 0, 0, 0, True, Nothing, False), 0))
+			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field11", 11, Relativity.FieldTypeHelper.FieldType.LayoutText, 1, 0, 0, 0, True, Nothing, False), 0))
+			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field12", 12, Relativity.FieldTypeHelper.FieldType.MultiCode, 1, 0, 0, 0, True, Nothing, False), 0))
+			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field13", 13, Relativity.FieldTypeHelper.FieldType.Text, 1, 0, 0, 0, True, Nothing, False), 0))
+			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field14", 14, Relativity.FieldTypeHelper.FieldType.User, 1, 0, 0, 0, True, Nothing, False), 0))
+			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field15", 15, Relativity.FieldTypeHelper.FieldType.Varchar, 1, 0, 0, 0, True, Nothing, False), 0))
 			bulkImporter.FieldMap = FieldMap
 
 			Dim fields As kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo() =
@@ -255,21 +255,21 @@ Namespace kCura.WinEDDS.NUnit
 			Dim bulkImporter As MockBulkLoadFileImporter = New MockBulkLoadFileImporter(_args, _controller, 0, False, False, _guid, True, "S", True, New MockBulkImportManagerWebExceptions(True))
 
 			Dim FieldMap As New LoadFileFieldMap
-			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field01", 1, Relativity.FieldTypeHelper.FieldType.Object, 1, 0, 0, 0, True, Nothing, EDDS.WebAPI.DocumentManagerBase.StorageLocationChoice.SQL), 0))
-			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field02", 2, Relativity.FieldTypeHelper.FieldType.Objects, 1, 0, 0, 0, True, Nothing, EDDS.WebAPI.DocumentManagerBase.StorageLocationChoice.SQL), 0))
-			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field03", 3, Relativity.FieldTypeHelper.FieldType.Boolean, 1, 0, 0, 0, True, Nothing, EDDS.WebAPI.DocumentManagerBase.StorageLocationChoice.SQL), 0))
-			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field04", 4, Relativity.FieldTypeHelper.FieldType.Code, 1, 0, 0, 0, True, Nothing, EDDS.WebAPI.DocumentManagerBase.StorageLocationChoice.SQL), 0))
-			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field05", 5, Relativity.FieldTypeHelper.FieldType.Currency, 1, 0, 0, 0, True, Nothing, EDDS.WebAPI.DocumentManagerBase.StorageLocationChoice.SQL), 0))
-			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field06", 6, Relativity.FieldTypeHelper.FieldType.Date, 1, 0, 0, 0, True, Nothing, EDDS.WebAPI.DocumentManagerBase.StorageLocationChoice.SQL), 0))
-			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field07", 7, Relativity.FieldTypeHelper.FieldType.Decimal, 1, 0, 0, 0, True, Nothing, EDDS.WebAPI.DocumentManagerBase.StorageLocationChoice.SQL), 0))
-			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field08", 8, Relativity.FieldTypeHelper.FieldType.Empty, 1, 0, 0, 0, True, Nothing, EDDS.WebAPI.DocumentManagerBase.StorageLocationChoice.SQL), 0))
-			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field09", 9, Relativity.FieldTypeHelper.FieldType.File, 1, 0, 0, 0, True, Nothing, EDDS.WebAPI.DocumentManagerBase.StorageLocationChoice.SQL), 0))
-			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field10", 10, Relativity.FieldTypeHelper.FieldType.Integer, 1, 0, 0, 0, True, Nothing, EDDS.WebAPI.DocumentManagerBase.StorageLocationChoice.SQL), 0))
-			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field11", 11, Relativity.FieldTypeHelper.FieldType.LayoutText, 1, 0, 0, 0, True, Nothing, EDDS.WebAPI.DocumentManagerBase.StorageLocationChoice.SQL), 0))
-			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field12", 12, Relativity.FieldTypeHelper.FieldType.MultiCode, 1, 0, 0, 0, True, Nothing, EDDS.WebAPI.DocumentManagerBase.StorageLocationChoice.SQL), 0))
-			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field13", 13, Relativity.FieldTypeHelper.FieldType.Text, 1, 0, 0, 0, True, Nothing, EDDS.WebAPI.DocumentManagerBase.StorageLocationChoice.SQL), 0))
-			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field14", 14, Relativity.FieldTypeHelper.FieldType.User, 1, 0, 0, 0, True, Nothing, EDDS.WebAPI.DocumentManagerBase.StorageLocationChoice.SQL), 0))
-			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field15", 15, Relativity.FieldTypeHelper.FieldType.Varchar, 1, 0, 0, 0, True, Nothing, EDDS.WebAPI.DocumentManagerBase.StorageLocationChoice.SQL), 0))
+			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field01", 1, Relativity.FieldTypeHelper.FieldType.Object, 1, 0, 0, 0, True, Nothing, False), 0))
+			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field02", 2, Relativity.FieldTypeHelper.FieldType.Objects, 1, 0, 0, 0, True, Nothing, False), 0))
+			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field03", 3, Relativity.FieldTypeHelper.FieldType.Boolean, 1, 0, 0, 0, True, Nothing, False), 0))
+			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field04", 4, Relativity.FieldTypeHelper.FieldType.Code, 1, 0, 0, 0, True, Nothing, False), 0))
+			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field05", 5, Relativity.FieldTypeHelper.FieldType.Currency, 1, 0, 0, 0, True, Nothing, False), 0))
+			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field06", 6, Relativity.FieldTypeHelper.FieldType.Date, 1, 0, 0, 0, True, Nothing, False), 0))
+			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field07", 7, Relativity.FieldTypeHelper.FieldType.Decimal, 1, 0, 0, 0, True, Nothing, False), 0))
+			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field08", 8, Relativity.FieldTypeHelper.FieldType.Empty, 1, 0, 0, 0, True, Nothing, False), 0))
+			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field09", 9, Relativity.FieldTypeHelper.FieldType.File, 1, 0, 0, 0, True, Nothing, False), 0))
+			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field10", 10, Relativity.FieldTypeHelper.FieldType.Integer, 1, 0, 0, 0, True, Nothing, False), 0))
+			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field11", 11, Relativity.FieldTypeHelper.FieldType.LayoutText, 1, 0, 0, 0, True, Nothing, False), 0))
+			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field12", 12, Relativity.FieldTypeHelper.FieldType.MultiCode, 1, 0, 0, 0, True, Nothing, False), 0))
+			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field13", 13, Relativity.FieldTypeHelper.FieldType.Text, 1, 0, 0, 0, True, Nothing, False), 0))
+			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field14", 14, Relativity.FieldTypeHelper.FieldType.User, 1, 0, 0, 0, True, Nothing, False), 0))
+			FieldMap.Add(New LoadFileFieldMapItem(New DocumentField("Field15", 15, Relativity.FieldTypeHelper.FieldType.Varchar, 1, 0, 0, 0, True, Nothing, False), 0))
 			bulkImporter.FieldMap = FieldMap
 
 			Dim fields As kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo() =
