@@ -758,8 +758,7 @@ Namespace kCura.WinEDDS
 					'no extracted text encodings, write "-1"
 					_bulkLoadFileWriter.Write(String.Format("{0}{1}", -1, lastDivider))
 				End If
-
-				_bulkLoadFileWriter.Write(",") 'kCura_DataGrid_Exception
+				
 				_bulkLoadFileWriter.Write(Relativity.Constants.ENDLINETERMSTRING)
 				If _replaceFullText AndAlso Not _fullTextStorageIsInSql Then
 					_dataGridFileWriter.Write(Relativity.Constants.ENDLINETERMSTRING)
@@ -859,6 +858,7 @@ Namespace kCura.WinEDDS
 				_bulkLoadFileWriter.Write(fileSize & ",")
 				_bulkLoadFileWriter.Write(fileLocation & ",")
 				_bulkLoadFileWriter.Write(imageFileName & ",")
+				_bulkLoadFileWriter.Write(",") 'kCura_Import_DataGridException
 				If _replaceFullText AndAlso writeLineTermination Then
 					_bulkLoadFileWriter.Write("-1,")
 				End If
