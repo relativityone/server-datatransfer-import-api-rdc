@@ -123,6 +123,10 @@ Namespace kCura.WinEDDS
 			Else
 				Me.ReadFileSimple(_settings.FilePath)
 			End If
+			Try
+				Me.Reader.Close()
+			Catch
+			End Try
 		End Sub
 
 		Public Function ReadFileSimple(ByVal path As String) As Object
