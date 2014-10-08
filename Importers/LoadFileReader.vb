@@ -90,8 +90,6 @@ Namespace kCura.WinEDDS
 					End If
 				Next
 			End If
-
-			'Reader = New System.IO.StreamReader(args.FilePath, args.SourceFileEncoding)
 		End Sub
 
 #End Region
