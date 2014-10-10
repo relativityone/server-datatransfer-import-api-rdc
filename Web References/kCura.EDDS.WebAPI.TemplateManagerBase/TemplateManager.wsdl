@@ -1,0 +1,570 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://www.kCura.com/EDDS/TemplateManager" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:s1="http://microsoft.com/wsdl/types/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://www.kCura.com/EDDS/TemplateManager" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <s:schema elementFormDefault="qualified" targetNamespace="http://www.kCura.com/EDDS/TemplateManager">
+      <s:import namespace="http://microsoft.com/wsdl/types/" />
+      <s:element name="GetAppMappingDataForWorkspace">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="template">
+              <s:complexType mixed="true">
+                <s:sequence>
+                  <s:any />
+                </s:sequence>
+              </s:complexType>
+            </s:element>
+            <s:element minOccurs="0" maxOccurs="1" name="installationParameters" type="tns:ApplicationInstallationParameters" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="ApplicationInstallationParameters">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="CaseId" type="s:int" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="GetAppMappingDataForWorkspaceResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetAppMappingDataForWorkspaceResult" type="tns:AppMappingData" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="AppMappingData">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="AppObjects" type="tns:ArrayOfAppObject" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="ArrayOfAppObject">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="AppObject" nillable="true" type="tns:AppObject" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="AppObject">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="ObjectName" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="ObjectGuid" type="s1:guid" />
+          <s:element minOccurs="0" maxOccurs="1" name="AppFields" type="tns:ArrayOfAppField" />
+          <s:element minOccurs="1" maxOccurs="1" name="QualifiesForMapping" type="s:boolean" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="ArrayOfAppField">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="AppField" nillable="true" type="tns:AppField" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="AppField">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="MyName" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="FieldGuids" type="tns:ArrayOfGuid" />
+          <s:element minOccurs="0" maxOccurs="1" name="MappingCandidates" type="tns:ArrayOfTargetField" />
+          <s:element minOccurs="0" maxOccurs="1" name="MappedTargetField" type="tns:TargetField" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="ArrayOfGuid">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="guid" type="s1:guid" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="ArrayOfTargetField">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="TargetField" nillable="true" type="tns:TargetField" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="TargetField">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="MyName" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="FieldGuids" type="tns:ArrayOfGuid" />
+          <s:element minOccurs="1" maxOccurs="1" name="ArtifactID" type="s:int" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="InstallTemplate">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="appsToOverride" type="tns:ArrayOfInt" />
+            <s:element minOccurs="0" maxOccurs="1" name="packageData" type="s:base64Binary" />
+            <s:element minOccurs="0" maxOccurs="1" name="installationParameters" type="tns:ApplicationInstallationParameters" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="ArrayOfInt">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="int" type="s:int" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="InstallTemplateResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="InstallTemplateResult" type="tns:ApplicationInstallationResult" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="ApplicationInstallationResult">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="ApplicationArtifactID" type="s:int" />
+          <s:element minOccurs="0" maxOccurs="1" name="Message" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Details" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="NewApplicationArtifacts" type="tns:ArrayOfApplicationArtifact" />
+          <s:element minOccurs="1" maxOccurs="1" name="Success" type="s:boolean" />
+          <s:element minOccurs="0" maxOccurs="1" name="UpdatedApplicationArtifacts" type="tns:ArrayOfApplicationArtifact" />
+          <s:element minOccurs="0" maxOccurs="1" name="StatusApplicationArtifacts" type="tns:ArrayOfApplicationArtifact" />
+          <s:element minOccurs="1" maxOccurs="1" name="TotalWorkspaces" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="WorkspaceID" type="s:int" />
+          <s:element minOccurs="0" maxOccurs="1" name="WorkspaceName" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="ApplicationInstallID" type="s:int" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="ArrayOfApplicationArtifact">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="ApplicationArtifact" nillable="true" type="tns:ApplicationArtifact" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="ApplicationArtifact">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="WorkspaceId" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="ArtifactId" type="s:int" />
+          <s:element minOccurs="0" maxOccurs="1" name="Guids" type="tns:ArrayOfGuid" />
+          <s:element minOccurs="0" maxOccurs="1" name="Name" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="Type" type="tns:ApplicationArtifactType" />
+          <s:element minOccurs="0" maxOccurs="1" name="ParentArtifact" type="tns:ApplicationArtifact" />
+          <s:element minOccurs="0" maxOccurs="1" name="ConflictArtifact" type="tns:ApplicationArtifact" />
+          <s:element minOccurs="1" maxOccurs="1" name="Status" type="tns:StatusCode" />
+          <s:element minOccurs="1" maxOccurs="1" name="TimeStamp" type="s:dateTime" />
+          <s:element minOccurs="0" maxOccurs="1" name="StatusMessage" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="StatusDetails" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Applications" type="tns:ArrayOfApplication" />
+          <s:element minOccurs="1" maxOccurs="1" name="IsMappable" type="s:boolean" />
+        </s:sequence>
+      </s:complexType>
+      <s:simpleType name="ApplicationArtifactType">
+        <s:restriction base="s:string">
+          <s:enumeration value="Code" />
+          <s:enumeration value="Field" />
+          <s:enumeration value="Layout" />
+          <s:enumeration value="Object" />
+          <s:enumeration value="Rule" />
+          <s:enumeration value="Sync" />
+          <s:enumeration value="Tab" />
+          <s:enumeration value="View" />
+          <s:enumeration value="Script" />
+          <s:enumeration value="Instance" />
+          <s:enumeration value="CustomPage" />
+          <s:enumeration value="AgentType" />
+          <s:enumeration value="InstallEventHandler" />
+        </s:restriction>
+      </s:simpleType>
+      <s:simpleType name="StatusCode">
+        <s:restriction base="s:string">
+          <s:enumeration value="UnknownError" />
+          <s:enumeration value="Created" />
+          <s:enumeration value="Updated" />
+          <s:enumeration value="NameConflict" />
+          <s:enumeration value="FriendlyNameConflict" />
+          <s:enumeration value="SharedByLockedApp" />
+          <s:enumeration value="MultipleFileField" />
+          <s:enumeration value="RenameConflict" />
+          <s:enumeration value="RenameFriendlyNameConflict" />
+          <s:enumeration value="Renamed" />
+          <s:enumeration value="Mapped" />
+          <s:enumeration value="NotUpdated" />
+        </s:restriction>
+      </s:simpleType>
+      <s:complexType name="ArrayOfApplication">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="Application" nillable="true" type="tns:Application" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="Application">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:ApplicationBase" />
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="ApplicationBase">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="Guid" type="s1:guid" />
+          <s:element minOccurs="1" maxOccurs="1" name="ID" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="InDevelopment" type="s:boolean" />
+          <s:element minOccurs="0" maxOccurs="1" name="Name" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Version" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="ResolveConflicts">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="appsToOverride" type="tns:ArrayOfInt" />
+            <s:element minOccurs="0" maxOccurs="1" name="resolveArtifacts" type="tns:ArrayOfResolveArtifact" />
+            <s:element minOccurs="0" maxOccurs="1" name="installationParameters" type="tns:ApplicationInstallationParameters" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="ArrayOfResolveArtifact">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="ResolveArtifact" nillable="true" type="tns:ResolveArtifact" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="ResolveArtifact">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="ArtifactID" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="ArtifactTypeID" type="tns:ApplicationArtifactType" />
+          <s:element minOccurs="0" maxOccurs="1" name="Fields" type="tns:ArrayOfFieldKVP" />
+          <s:element minOccurs="1" maxOccurs="1" name="Action" type="tns:ResolveAction" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="ArrayOfFieldKVP">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="FieldKVP" nillable="true" type="tns:FieldKVP" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="FieldKVP">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="Key" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Value" />
+        </s:sequence>
+      </s:complexType>
+      <s:simpleType name="ResolveAction">
+        <s:restriction base="s:string">
+          <s:enumeration value="Update" />
+        </s:restriction>
+      </s:simpleType>
+      <s:element name="ResolveConflictsResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="ResolveConflictsResult" type="tns:ApplicationInstallationResult" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetAvailableObjectsForMapping">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="workspaceID" type="s:int" />
+            <s:element minOccurs="0" maxOccurs="1" name="objectGuids" type="tns:ArrayOfGuid" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="ObjectGuidToName">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="ObjectGuid" type="s1:guid" />
+          <s:element minOccurs="0" maxOccurs="1" name="ObjectName" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="ArrayOfObjectGuidToName">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="ObjectGuidToName" nillable="true" type="tns:ObjectGuidToName" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="GetAvailableObjectsForMappingResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetAvailableObjectsForMappingResult" type="tns:ArrayOfObjectGuidToName" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetAvailableFieldsForMapping">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="workspaceID" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="objectGuid" type="s1:guid" />
+            <s:element minOccurs="0" maxOccurs="1" name="fieldElements" type="tns:ArrayOfFieldElement" />
+            <s:element minOccurs="0" maxOccurs="1" name="artifactTypeToGuidsMap" type="tns:ArrayOfArtifactTypeIDToObjectGuids" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="ArrayOfFieldElement">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="FieldElement" nillable="true" type="tns:FieldElement" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="FieldElement">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="AllowHTML" type="s:boolean" />
+          <s:element minOccurs="1" maxOccurs="1" name="ArtifactId" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="ArtifactViewFieldId" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="AssociativeArtifactTypeId" nillable="true" type="s:int" />
+          <s:element minOccurs="0" maxOccurs="1" name="Codes" type="tns:ArrayOfCodeElement" />
+          <s:element minOccurs="1" maxOccurs="1" name="CodeTypeId" nillable="true" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="ConnectorFieldArtifactId" nillable="true" type="s:int" />
+          <s:element minOccurs="0" maxOccurs="1" name="DisplayName" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="DisplayValueFalse" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="DisplayValueTrue" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="FieldArtifactTypeId" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="FieldCategoryId" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="FieldTypeId" type="s:int" />
+          <s:element minOccurs="0" maxOccurs="1" name="FilterType" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="FormatString" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="FriendlyName" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="unbounded" name="Guids" type="s1:guid" />
+          <s:element minOccurs="1" maxOccurs="1" name="Guid" type="s1:guid" />
+          <s:element minOccurs="1" maxOccurs="1" name="ImportBehavior" nillable="true" type="tns:ImportBehaviorChoice" />
+          <s:element minOccurs="1" maxOccurs="1" name="IsAdditionalFileField" type="s:boolean" />
+          <s:element minOccurs="1" maxOccurs="1" name="IsArtifactBaseField" type="s:boolean" />
+          <s:element minOccurs="1" maxOccurs="1" name="IsAvailableInChoiceTree" type="s:boolean" />
+          <s:element minOccurs="1" maxOccurs="1" name="IsAvailableToAssociativeObjects" type="s:boolean" />
+          <s:element minOccurs="1" maxOccurs="1" name="IsEditable" type="s:boolean" />
+          <s:element minOccurs="1" maxOccurs="1" name="IsGroupByEnabled" type="s:boolean" />
+          <s:element minOccurs="1" maxOccurs="1" name="IsIndexEnabled" type="s:boolean" />
+          <s:element minOccurs="1" maxOccurs="1" name="IsLinked" type="s:boolean" />
+          <s:element minOccurs="1" maxOccurs="1" name="IsRemovable" type="s:boolean" />
+          <s:element minOccurs="1" maxOccurs="1" name="IsRequired" type="s:boolean" />
+          <s:element minOccurs="1" maxOccurs="1" name="IsSortable" type="s:boolean" />
+          <s:element minOccurs="1" maxOccurs="1" name="IsVisible" type="s:boolean" />
+          <s:element minOccurs="0" maxOccurs="1" name="Keywords" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="LinkType" type="s:boolean" />
+          <s:element minOccurs="1" maxOccurs="1" name="MaxLength" nillable="true" type="s:int" />
+          <s:element minOccurs="0" maxOccurs="1" name="Notes" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Pane" type="tns:PaneElement" />
+          <s:element minOccurs="1" maxOccurs="1" name="RelationalIndexViewArtifactID" nillable="true" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="SourceFieldArtifactId" nillable="true" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="UseUnicodeEncoding" type="s:boolean" />
+          <s:element minOccurs="0" maxOccurs="1" name="Width" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="Wrapping" type="s:boolean" />
+          <s:element minOccurs="1" maxOccurs="1" name="AllowPivot" type="s:boolean" />
+          <s:element minOccurs="1" maxOccurs="1" name="AllowGroupBy" type="s:boolean" />
+          <s:element minOccurs="1" maxOccurs="1" name="AvailableInViewer" type="s:boolean" />
+          <s:element minOccurs="1" maxOccurs="1" name="PopupPickerView" nillable="true" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="FieldTreeView" nillable="true" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="SiblingFieldArtifactID" nillable="true" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="AutoAddChoices" nillable="true" type="s:boolean" />
+          <s:element minOccurs="0" maxOccurs="1" name="ApplicationVersion" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="ArrayOfCodeElement">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="Code" nillable="true" type="tns:CodeElement" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="CodeElement">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="ArtifactId" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="Guid" type="s1:guid" />
+          <s:element minOccurs="1" maxOccurs="1" name="IsActive" type="s:boolean" />
+          <s:element minOccurs="0" maxOccurs="1" name="Keywords" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Name" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Notes" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="OIHiliteStyleID" nillable="true" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="Order" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="ParentArtifactId" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="ParentIsCode" type="s:boolean" />
+          <s:element minOccurs="1" maxOccurs="1" name="UpdateInSearchEngine" type="s:boolean" />
+          <s:element minOccurs="0" maxOccurs="1" name="ApplicationVersion" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+      <s:simpleType name="ImportBehaviorChoice">
+        <s:restriction base="s:string">
+          <s:enumeration value="LeaveBlankValuesUnchanged" />
+          <s:enumeration value="ReplaceBlankValuesWithIdentifier" />
+          <s:enumeration value="ObjectFieldContainsArtifactId" />
+        </s:restriction>
+      </s:simpleType>
+      <s:complexType name="PaneElement">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="FieldId" type="s:int" />
+          <s:element minOccurs="0" maxOccurs="1" name="HeaderText" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="ImageFileData" type="s:base64Binary" />
+          <s:element minOccurs="0" maxOccurs="1" name="ImageFileName" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="Order" type="s:int" />
+          <s:element minOccurs="0" maxOccurs="1" name="Src" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Type" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="ViewId" type="s:int" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="ArrayOfArtifactTypeIDToObjectGuids">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="ArtifactTypeIDToObjectGuids" nillable="true" type="tns:ArtifactTypeIDToObjectGuids" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="ArtifactTypeIDToObjectGuids">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="ArtifactTypeID" type="s:int" />
+          <s:element minOccurs="0" maxOccurs="1" name="ObjectGuids" type="tns:ArrayOfGuid1" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="ArrayOfGuid1">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="ObjectGuid" type="s1:guid" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="ObjectValidationResult">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="ObjectName" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="ObjectGuid" type="s1:guid" />
+          <s:element minOccurs="0" maxOccurs="unbounded" name="FieldToFieldsMaps" type="tns:FieldToFieldsMap" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="FieldToFieldsMap">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="FieldGuid" type="s1:guid" />
+          <s:element minOccurs="0" maxOccurs="unbounded" name="Fields" type="tns:FieldElement" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="GetAvailableFieldsForMappingResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetAvailableFieldsForMappingResult" type="tns:ObjectValidationResult" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+    </s:schema>
+    <s:schema elementFormDefault="qualified" targetNamespace="http://microsoft.com/wsdl/types/">
+      <s:simpleType name="guid">
+        <s:restriction base="s:string">
+          <s:pattern value="[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}" />
+        </s:restriction>
+      </s:simpleType>
+    </s:schema>
+  </wsdl:types>
+  <wsdl:message name="GetAppMappingDataForWorkspaceSoapIn">
+    <wsdl:part name="parameters" element="tns:GetAppMappingDataForWorkspace" />
+  </wsdl:message>
+  <wsdl:message name="GetAppMappingDataForWorkspaceSoapOut">
+    <wsdl:part name="parameters" element="tns:GetAppMappingDataForWorkspaceResponse" />
+  </wsdl:message>
+  <wsdl:message name="InstallTemplateSoapIn">
+    <wsdl:part name="parameters" element="tns:InstallTemplate" />
+  </wsdl:message>
+  <wsdl:message name="InstallTemplateSoapOut">
+    <wsdl:part name="parameters" element="tns:InstallTemplateResponse" />
+  </wsdl:message>
+  <wsdl:message name="ResolveConflictsSoapIn">
+    <wsdl:part name="parameters" element="tns:ResolveConflicts" />
+  </wsdl:message>
+  <wsdl:message name="ResolveConflictsSoapOut">
+    <wsdl:part name="parameters" element="tns:ResolveConflictsResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetAvailableObjectsForMappingSoapIn">
+    <wsdl:part name="parameters" element="tns:GetAvailableObjectsForMapping" />
+  </wsdl:message>
+  <wsdl:message name="GetAvailableObjectsForMappingSoapOut">
+    <wsdl:part name="parameters" element="tns:GetAvailableObjectsForMappingResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetAvailableFieldsForMappingSoapIn">
+    <wsdl:part name="parameters" element="tns:GetAvailableFieldsForMapping" />
+  </wsdl:message>
+  <wsdl:message name="GetAvailableFieldsForMappingSoapOut">
+    <wsdl:part name="parameters" element="tns:GetAvailableFieldsForMappingResponse" />
+  </wsdl:message>
+  <wsdl:portType name="TemplateManagerSoap">
+    <wsdl:operation name="GetAppMappingDataForWorkspace">
+      <wsdl:input message="tns:GetAppMappingDataForWorkspaceSoapIn" />
+      <wsdl:output message="tns:GetAppMappingDataForWorkspaceSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="InstallTemplate">
+      <wsdl:input message="tns:InstallTemplateSoapIn" />
+      <wsdl:output message="tns:InstallTemplateSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ResolveConflicts">
+      <wsdl:input message="tns:ResolveConflictsSoapIn" />
+      <wsdl:output message="tns:ResolveConflictsSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetAvailableObjectsForMapping">
+      <wsdl:input message="tns:GetAvailableObjectsForMappingSoapIn" />
+      <wsdl:output message="tns:GetAvailableObjectsForMappingSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetAvailableFieldsForMapping">
+      <wsdl:input message="tns:GetAvailableFieldsForMappingSoapIn" />
+      <wsdl:output message="tns:GetAvailableFieldsForMappingSoapOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="TemplateManagerSoap" type="tns:TemplateManagerSoap">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="GetAppMappingDataForWorkspace">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/TemplateManager/GetAppMappingDataForWorkspace" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="InstallTemplate">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/TemplateManager/InstallTemplate" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ResolveConflicts">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/TemplateManager/ResolveConflicts" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetAvailableObjectsForMapping">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/TemplateManager/GetAvailableObjectsForMapping" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetAvailableFieldsForMapping">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/TemplateManager/GetAvailableFieldsForMapping" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="TemplateManagerSoap12" type="tns:TemplateManagerSoap">
+    <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="GetAppMappingDataForWorkspace">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/TemplateManager/GetAppMappingDataForWorkspace" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="InstallTemplate">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/TemplateManager/InstallTemplate" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ResolveConflicts">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/TemplateManager/ResolveConflicts" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetAvailableObjectsForMapping">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/TemplateManager/GetAvailableObjectsForMapping" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetAvailableFieldsForMapping">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/TemplateManager/GetAvailableFieldsForMapping" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="TemplateManager">
+    <wsdl:port name="TemplateManagerSoap" binding="tns:TemplateManagerSoap">
+      <soap:address location="http://localhost/RelativityWebApi/TemplateManager.asmx" />
+    </wsdl:port>
+    <wsdl:port name="TemplateManagerSoap12" binding="tns:TemplateManagerSoap12">
+      <soap12:address location="http://localhost/RelativityWebApi/TemplateManager.asmx" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>
