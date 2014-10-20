@@ -816,6 +816,8 @@ Namespace kCura.EDDS.WebAPI.DocumentManagerBase
         
         Private clearExistingField As Boolean
         
+        Private detailsField As String
+        
         '''<remarks/>
         Public Property FileID() As Integer
             Get
@@ -974,6 +976,16 @@ Namespace kCura.EDDS.WebAPI.DocumentManagerBase
             End Get
             Set
                 Me.clearExistingField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property Details() As String
+            Get
+                Return Me.detailsField
+            End Get
+            Set
+                Me.detailsField = value
             End Set
         End Property
     End Class
@@ -1534,7 +1546,7 @@ Namespace kCura.EDDS.WebAPI.DocumentManagerBase
         
         Private fieldsField() As Field
         
-        Private documentAgentFlagsField As DocumentAgentFlags
+        Private dataGridRecordMappingField As DataGridRecordMapping
         
         Private hasImagesField As Boolean
         
@@ -1561,12 +1573,12 @@ Namespace kCura.EDDS.WebAPI.DocumentManagerBase
         End Property
         
         '''<remarks/>
-        Public Property DocumentAgentFlags() As DocumentAgentFlags
+        Public Property DataGridRecordMapping() As DataGridRecordMapping
             Get
-                Return Me.documentAgentFlagsField
+                Return Me.dataGridRecordMappingField
             End Get
             Set
-                Me.documentAgentFlagsField = value
+                Me.dataGridRecordMappingField = value
             End Set
         End Property
         
@@ -2877,29 +2889,29 @@ Namespace kCura.EDDS.WebAPI.DocumentManagerBase
      System.Diagnostics.DebuggerStepThroughAttribute(),  _
      System.ComponentModel.DesignerCategoryAttribute("code"),  _
      System.Xml.Serialization.XmlTypeAttribute([Namespace]:="http://foley.com/EDDS/DocumentManager")>  _
-    Partial Public Class DocumentAgentFlags
+    Partial Public Class DataGridRecordMapping
         
-        Private updateFullTextField As Boolean
+        Private dataGridIDField As System.Guid
         
-        Private indexStatusField As Integer
+        Private dataGridInstanceIDField As System.Guid
         
         '''<remarks/>
-        Public Property UpdateFullText() As Boolean
+        Public Property DataGridID() As System.Guid
             Get
-                Return Me.updateFullTextField
+                Return Me.dataGridIDField
             End Get
             Set
-                Me.updateFullTextField = value
+                Me.dataGridIDField = value
             End Set
         End Property
         
         '''<remarks/>
-        Public Property IndexStatus() As Integer
+        Public Property DataGridInstanceID() As System.Guid
             Get
-                Return Me.indexStatusField
+                Return Me.dataGridInstanceIDField
             End Get
             Set
-                Me.indexStatusField = value
+                Me.dataGridInstanceIDField = value
             End Set
         End Property
     End Class
