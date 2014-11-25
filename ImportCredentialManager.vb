@@ -65,7 +65,7 @@ Friend Class ImportCredentialManager
 						creds = kCura.WinEDDS.Api.LoginHelper.LoginUsernamePassword(UserName.Trim(), Password.Trim(), cookieMonster)
 					End If
 				Catch ex
-					' do nothing, it will be used later
+					Throw New System.Exception("Unknown failure during authentication", ex)
 				End Try
 
 				' add credentials to cache and return session credentials to caller
@@ -75,9 +75,6 @@ Friend Class ImportCredentialManager
 				cachedCreds = False
 			End If
 		End SyncLock
-		If Not ex Is Nothing Then
-			Throw ex
-		End If
 
 		If retVal Is Nothing Then
 			Throw New System.Exception("Login failed")
