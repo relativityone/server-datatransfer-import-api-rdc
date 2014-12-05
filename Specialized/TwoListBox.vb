@@ -195,11 +195,12 @@ Namespace kCura.Windows.Forms
 #End Region
 
 #Region "Resizing"
+
 		'MeasureItem fixes issues in Large DPI mode
 		Private Sub LeftListBox_MeasureItem(sender As Object, e As System.Windows.Forms.MeasureItemEventArgs) Handles _leftListBox.MeasureItem
 			MeasureItemImpl(_leftListBox, e)
 		End Sub
-
+		
 		'MeasureItem fixes issues in Large DPI mode
 		Private Sub RightListBox_MeasureItem(sender As Object, e As System.Windows.Forms.MeasureItemEventArgs) Handles _rightListBox.MeasureItem
 			MeasureItemImpl(_rightListBox, e)
@@ -278,8 +279,8 @@ Namespace kCura.Windows.Forms
 			End If
 
 			_layoutRatioList.ForEach(Sub(x)
-																 x.InitalizeRatioValues()
-															 End Sub)
+																		x.InitalizeRatioValues()
+																	End Sub)
 
 			'Layout properties which are directly based on another layout property
 			If _layoutDifferenceList Is Nothing Then
@@ -300,8 +301,8 @@ Namespace kCura.Windows.Forms
 			End If
 
 			_layoutDifferenceList.ForEach(Sub(x)
-																			x.InitializeDifference()
-																		End Sub)
+																				 x.InitializeDifference()
+																			 End Sub)
 
 			_layoutReferenceDistance = CalcReferenceDistance()
 		End Sub
@@ -529,6 +530,20 @@ Namespace kCura.Windows.Forms
 		Private Sub _rightListBox_Scrolled(ByVal sender As Object, ByVal e As ScrollEventArgs) Handles _rightListBox.Scrolled
 			If e.ScrollOrientation = ScrollOrientation.HorizontalScroll Then
 				_rightListBox.Invalidate()
+			End If
+		End Sub
+
+		Private Sub _leftListBox_KeyPress(sender As Object, e As KeyPressEventArgs) Handles _leftListBox.KeyPress
+			If e.KeyChar.Equals(Microsoft.VisualBasic.ControlChars.Cr) OrElse e.KeyChar.Equals(Microsoft.VisualBasic.ControlChars.Lf) Then
+				ShiftSelectedItems(_leftListBox, _rightListBox)
+				EnsureHorizontalScrollbars()
+			End If
+		End Sub
+
+		Private Sub _rightListBox_KeyPress(sender As Object, e As KeyPressEventArgs) Handles _rightListBox.KeyPress
+			If e.KeyChar.Equals(Microsoft.VisualBasic.ControlChars.Cr) OrElse e.KeyChar.Equals(Microsoft.VisualBasic.ControlChars.Lf) Then
+				ShiftSelectedItems(_rightListBox, _leftListBox)
+				EnsureHorizontalScrollbars()
 			End If
 		End Sub
 
