@@ -200,7 +200,8 @@ namespace kCura.Relativity.ImportAPI
 								AssociatedObjectTypeID = docfield.AssociatedObjectTypeID, 
 								UseUnicode = docfield.UseUnicode, 
 								FieldCategory = (FieldCategoryEnum)Enum.ToObject(typeof(FieldCategoryEnum), docfield.FieldCategoryID),
-								Guids = docfield.Guids
+								Guids = docfield.Guids,
+								DataGridEnabled = docfield.EnableDataGrid
 							}).ToList();
 		}
 
