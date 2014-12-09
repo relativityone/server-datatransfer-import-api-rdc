@@ -44,6 +44,6 @@ namespace kCura.Relativity.ImportAPI.Data
 		/// <summary>
 		/// Inidicates if the field should be written to Data Grid
 		/// </summary>
-		public bool DataGridEnabled { get; internal set; }
+		public bool EnableDataGrid { get; internal set; }
 	}
 }
