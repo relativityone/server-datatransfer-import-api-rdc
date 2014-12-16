@@ -80,6 +80,10 @@ Namespace kCura.WinEDDS.ImportExtension
 			Dim thisSettings As kCura.WinEDDS.ImportExtension.DataReaderLoadFile = DirectCast(_settings, kCura.WinEDDS.ImportExtension.DataReaderLoadFile)
 			_sourceReader = thisSettings.DataReader
 
+			' If a data grid id column is set, we want to link data
+			' grid records even if there are no mapped data grid fields
+			LinkDataGridRecords = Not String.IsNullOrEmpty(thisSettings.DataGridIDColumn)
+
 			Dim allFields As List(Of [String]) = New List(Of [String])()
 			For i As Integer = 0 To _sourceReader.FieldCount - 1
 				allFields.Add(_sourceReader.GetName(i).ToLower())
