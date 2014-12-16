@@ -209,6 +209,7 @@ Namespace kCura.Relativity.DataReaderClient
 			tempLoadFile.FolderStructureContainedInColumn = loadFileTemp.FolderStructureContainedInColumn
 			tempLoadFile.FullTextColumnContainsFileLocation = loadFileTemp.FullTextColumnContainsFileLocation
 			tempLoadFile.GroupIdentifierColumn = loadFileTemp.GroupIdentifierColumn
+			tempLoadFile.DataGridIDColumn = loadFileTemp.DataGridIDColumn
 			tempLoadFile.HierarchicalValueDelimiter = loadFileTemp.HierarchicalValueDelimiter
 			tempLoadFile.IdentityFieldId = loadFileTemp.IdentityFieldId
 			tempLoadFile.LoadNativeFiles = loadFileTemp.LoadNativeFiles
@@ -403,6 +404,8 @@ Namespace kCura.Relativity.DataReaderClient
 					.StartLineNumber = clientSettings.StartRecordNumber
 				End If
 				.ObjectFieldIdListContainsArtifactId = clientSettings.ObjectFieldIdListContainsArtifactId
+
+				.DataGridIDColumn = clientSettings.DataGridIDColumnName
 			End With
 
 			Return dosf_settings
