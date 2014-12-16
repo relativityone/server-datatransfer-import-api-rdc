@@ -67,6 +67,8 @@ Namespace kCura.WinEDDS
 
 		Private _bulkLoadFileFieldDelimiter As String
 
+		Protected Property LinkDataGridRecords As Boolean
+
 		Private Const _COPY_TEXT_FILE_BUFFER_SIZE As Int32 = 40000
 		Private Const _UNKNOWN_PARENT_FOLDER_ID As Int32 = -9
 #End Region
@@ -799,6 +801,9 @@ Namespace kCura.WinEDDS
 				settings.ArtifactTypeID = _artifactTypeID
 				retval = settings
 			End If
+
+			retval.LinkDataGridRecords = LinkDataGridRecords
+
 			OnSettingsObjectCreate(retval)
 			Return retval
 		End Function
