@@ -71,6 +71,8 @@ Namespace kCura.WinEDDS
 
 		Private Const _COPY_TEXT_FILE_BUFFER_SIZE As Int32 = 40000
 		Private Const _UNKNOWN_PARENT_FOLDER_ID As Int32 = -9
+
+		Public Const DATA_GRID_ID_FIELD_NAME As String = "DataGridID"
 #End Region
 
 #Region "Accessors"
@@ -657,7 +659,7 @@ Namespace kCura.WinEDDS
 			End If
 
 			Dim dataGridID As String = Nothing
-			Dim dataGridIDField As kCura.WinEDDS.Api.ArtifactField = record.FieldList(Relativity.FieldTypeHelper.FieldType.Varchar).FirstOrDefault(Function(x) x.DisplayName = "DataGridID")
+			Dim dataGridIDField As kCura.WinEDDS.Api.ArtifactField = record.FieldList(Relativity.FieldTypeHelper.FieldType.Varchar).FirstOrDefault(Function(x) x.DisplayName = DATA_GRID_ID_FIELD_NAME)
 			If (dataGridIDField IsNot Nothing) Then
 				dataGridID = dataGridIDField.ValueAsString
 			End If
@@ -1075,7 +1077,7 @@ Namespace kCura.WinEDDS
 
 					Case True
 						If Not foundDataGridField Then
-							'write the data grid identity field as the first column and the data grid instance id as the second column, but only when we have data grid fields
+							'write the data grid identity field as the first column and an empty data grid id as the second column, but only when we have data grid fields
 							_outputDataGridFileWriter.Write(mdoc.IdentityValue & _bulkLoadFileFieldDelimiter & String.Empty & _bulkLoadFileFieldDelimiter)
 							foundDataGridField = True
 						End If
@@ -1156,7 +1158,8 @@ Namespace kCura.WinEDDS
 			ElseIf field.Category = Relativity.FieldCategory.ParentArtifact Then
 				'do nothing
 			ElseIf field.ArtifactID <= 0 Then
-				'do nothing
+				' do nothing, this is a catch-all for all "virtual fields" that are added to pass information
+				' from the load file to the file writers that shouldn't be imported as actual object field values
 			Else
 				If field.Category = Relativity.FieldCategory.FullText AndAlso fileBasedfullTextColumn Then
 					If Not field.ValueAsString = String.Empty Then
