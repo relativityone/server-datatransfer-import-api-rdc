@@ -128,6 +128,13 @@ Namespace kCura.WinEDDS
 
 		Public Property FolderPath() As String
 
+		''' <summary>
+		''' Gets or sets the identifier for the record currently stored in
+		''' the data grid for this document. If <c>Nothing</c>, then a record
+		''' has not been created in DataGrid.
+		''' </summary>
+		Public Property DataGridID As String
+
 		Public Sub New( _
 		 ByVal fileGuid As String, _
 		 ByVal identityValue As String, _
@@ -141,7 +148,8 @@ Namespace kCura.WinEDDS
 		 ByVal oixFileData As OI.FileID.FileIDData, _
 		 ByVal lineStatus As Int64, _
 		 ByVal destinationVolume As String,
-		 ByVal folderPath As String
+		 ByVal folderPath As String,
+		 ByVal dataGridID As String
 		 )
 			_fileGuid = fileGuid
 			_identityValue = identityValue
@@ -157,6 +165,7 @@ Namespace kCura.WinEDDS
 			_lineStatus = lineStatus
 			_destinationVolume = destinationVolume
 			Me.FolderPath = folderPath
+			Me.DataGridID = dataGridID
 		End Sub
 
 		Public Function GetFileType() As String
@@ -190,9 +199,10 @@ Namespace kCura.WinEDDS
 		 ByVal lineStatus As Int64, _
 		 ByVal destinationVolume As String, _
 		 ByVal size As Long,
-		 ByVal folderPath As String
+		 ByVal folderPath As String,
+		 ByVal dataGridID As String
 		 )
-			MyBase.New(fileGuid, identityValue, indexFileInDB, filename, fullFilePath, uploadFile, lineNumber, parentFolderID, record, oixFileData, lineStatus, destinationVolume, folderPath)
+			MyBase.New(fileGuid, identityValue, indexFileInDB, filename, fullFilePath, uploadFile, lineNumber, parentFolderID, record, oixFileData, lineStatus, destinationVolume, folderPath, dataGridID)
 			_size = size
 		End Sub
 

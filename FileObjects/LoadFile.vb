@@ -17,6 +17,7 @@ Namespace kCura.WinEDDS
 		Public FieldMap As kCura.WinEDDS.LoadFileFieldMap
 		Public NativeFilePathColumn As String
 		Public GroupIdentifierColumn As String
+		Public DataGridIDColumn As String
 		Public SelectedIdentifierField As kCura.WinEDDS.DocumentField
 
 		Public CreateFolderStructure As Boolean
@@ -99,6 +100,7 @@ Namespace kCura.WinEDDS
 			info.AddValue("CreateFolderStructure", Me.CreateFolderStructure, GetType(Boolean))
 			info.AddValue("FullTextColumnContainsFileLocation", Me.FullTextColumnContainsFileLocation, GetType(Boolean))
 			info.AddValue("GroupIdentifierColumn", Me.GroupIdentifierColumn, GetType(String))
+			info.AddValue("DataGridIDColumn", Me.DataGridIDColumn, GetType(String))
 			info.AddValue("HierarchicalValueDelimiter", AscW(Me.HierarchicalValueDelimiter), GetType(Integer))
 			If Me.SourceFileEncoding Is Nothing Then
 				info.AddValue("SourceFileEncoding", -1, GetType(Int32))
@@ -145,6 +147,13 @@ Namespace kCura.WinEDDS
 				Catch
 					Me.GroupIdentifierColumn = ""
 				End Try
+
+				Try
+					Me.DataGridIDColumn = DirectCast(info.GetValue("DataGridIDColumn", GetType(String)), String)
+				Catch
+					Me.DataGridIDColumn = ""
+				End Try
+
 				Me.FieldMap = DirectCast(info.GetValue("FieldMap", GetType(kCura.WinEDDS.LoadFileFieldMap)), LoadFileFieldMap)
 
 				Me.FolderStructureContainedInColumn = info.GetString("FolderStructureContainedInColumn")

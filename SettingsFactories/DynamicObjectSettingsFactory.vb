@@ -40,6 +40,7 @@ Namespace kCura.WinEDDS
 			_loadFile.FolderStructureContainedInColumn = Nothing
 			_loadFile.FullTextColumnContainsFileLocation = False
 			_loadFile.GroupIdentifierColumn = ""
+			_loadFile.DataGridIDColumn = ""
 			_loadFile.HierarchicalValueDelimiter = "\"c
 			_loadFile.LoadNativeFiles = False
 			_loadFile.MultiRecordDelimiter = ";"c
@@ -250,6 +251,12 @@ Namespace kCura.WinEDDS
 		Public WriteOnly Property ObjectFieldIdListContainsArtifactId As IList(Of Int32)
 			Set(ByVal Value As IList(Of Int32))
 				_loadFile.ObjectFieldIdListContainsArtifactId = Value
+			End Set
+		End Property
+
+		Public WriteOnly Property DataGridIDColumn() As String
+			Set(ByVal Value As String)
+				_loadFile.DataGridIDColumn = Value
 			End Set
 		End Property
 

@@ -82,7 +82,7 @@ Namespace kCura.WinEDDS
 				Return _batchSizeHistoryList
 			End Get
 		End Property
-		
+
 		Protected Overridable ReadOnly Property NumberOfRetries() As Int32
 			Get
 				Return kCura.Utility.Config.IOErrorNumberOfRetries
@@ -653,12 +653,19 @@ Namespace kCura.WinEDDS
 				'lineStatus += ImportStatus.IdentifierOverlap				'	
 				Throw New IdentifierOverlapException(identityValue, _processedDocumentIdentifiers(identityValue))
 			End If
+
+			Dim dataGridID As String = Nothing
+			Dim dataGridIDField As kCura.WinEDDS.Api.ArtifactField = record.FieldList(Relativity.FieldTypeHelper.FieldType.Varchar).FirstOrDefault(Function(x) x.DisplayName = "DataGridID")
+			If (dataGridIDField IsNot Nothing) Then
+				dataGridID = dataGridIDField.ValueAsString
+			End If
+
 			Dim doc As MetaDocument
 			Dim fileSizeExtractor As kCura.WinEDDS.Api.IHasFileSize = TryCast(record, kCura.WinEDDS.Api.IHasFileSize)
 			If fileSizeExtractor Is Nothing Then
-				doc = New MetaDocument(fileGuid, identityValue, fileExists AndAlso uploadFile AndAlso (fileGuid <> String.Empty OrElse Not _copyFileToRepository), filename, fullFilePath, uploadFile, CurrentLineNumber, parentFolderID, record, oixFileIdData, lineStatus, destinationVolume, folderPath)
+				doc = New MetaDocument(fileGuid, identityValue, fileExists AndAlso uploadFile AndAlso (fileGuid <> String.Empty OrElse Not _copyFileToRepository), filename, fullFilePath, uploadFile, CurrentLineNumber, parentFolderID, record, oixFileIdData, lineStatus, destinationVolume, folderPath, dataGridID)
 			Else
-				doc = New SizedMetaDocument(fileGuid, identityValue, fileExists AndAlso uploadFile AndAlso (fileGuid <> String.Empty OrElse Not _copyFileToRepository), filename, fullFilePath, uploadFile, CurrentLineNumber, parentFolderID, record, oixFileIdData, lineStatus, destinationVolume, fileSizeExtractor.GetFileSize(), folderPath)
+				doc = New SizedMetaDocument(fileGuid, identityValue, fileExists AndAlso uploadFile AndAlso (fileGuid <> String.Empty OrElse Not _copyFileToRepository), filename, fullFilePath, uploadFile, CurrentLineNumber, parentFolderID, record, oixFileIdData, lineStatus, destinationVolume, fileSizeExtractor.GetFileSize(), folderPath, dataGridID)
 			End If
 			_timekeeper.MarkStart("ManageDocument_ManageDocumentMetadata")
 			ManageDocumentMetaData(doc)
@@ -1049,6 +1056,12 @@ Namespace kCura.WinEDDS
 
 			Dim foundDataGridField As Boolean = False
 
+			' If we're mapping, always write out to the data grid file writer
+			If (Not String.IsNullOrEmpty(mdoc.DataGridID)) Then
+				_outputDataGridFileWriter.Write(mdoc.IdentityValue & _bulkLoadFileFieldDelimiter & mdoc.DataGridID & _bulkLoadFileFieldDelimiter)
+				foundDataGridField = True
+			End If
+
 			For Each field As Api.ArtifactField In mdoc.Record
 				Select Case field.EnableDataGrid
 
@@ -1057,8 +1070,8 @@ Namespace kCura.WinEDDS
 
 					Case True
 						If Not foundDataGridField Then
-							'write the data grid identity field as the first column, but only when we have data grid fields
-							_outputDataGridFileWriter.Write(mdoc.IdentityValue & _bulkLoadFileFieldDelimiter)
+							'write the data grid identity field as the first column and the data grid instance id as the second column, but only when we have data grid fields
+							_outputDataGridFileWriter.Write(mdoc.IdentityValue & _bulkLoadFileFieldDelimiter & String.Empty & _bulkLoadFileFieldDelimiter)
 							foundDataGridField = True
 						End If
 
@@ -1136,6 +1149,8 @@ Namespace kCura.WinEDDS
 			ElseIf field.Type = Relativity.FieldTypeHelper.FieldType.File AndAlso artifactTypeID = Relativity.ArtifactType.Document Then
 				'do nothing
 			ElseIf field.Category = Relativity.FieldCategory.ParentArtifact Then
+				'do nothing
+			ElseIf field.ArtifactID <= 0 Then
 				'do nothing
 			Else
 				If field.Category = Relativity.FieldCategory.FullText AndAlso fileBasedfullTextColumn Then

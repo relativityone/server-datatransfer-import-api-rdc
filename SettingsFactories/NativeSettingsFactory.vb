@@ -30,6 +30,7 @@ Namespace kCura.WinEDDS
 			_loadFile.FolderStructureContainedInColumn = Nothing
 			_loadFile.FullTextColumnContainsFileLocation = False
 			_loadFile.GroupIdentifierColumn = ""
+			_loadFile.DataGridIDColumn = ""
 			_loadFile.HierarchicalValueDelimiter = "\"c
 			_loadFile.LoadNativeFiles = False
 			_loadFile.MultiRecordDelimiter = ";"c

@@ -711,8 +711,8 @@ Namespace kCura.WinEDDS
 
 				If _replaceFullText Then
 					If Not _fullTextStorageIsInSql Then
-						'datagrid metadata
-						_dataGridFileWriter.Write(documentId & ",")
+						'datagrid metadata including a blank data grid id
+						_dataGridFileWriter.Write(documentId & "," & String.Empty & ",")
 					End If
 
 					If textFileList.Count = 0 Then
