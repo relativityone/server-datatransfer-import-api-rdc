@@ -226,6 +226,14 @@ Namespace kCura.WinEDDS.ImportExtension
 				End If
 			End If
 
+			If Not _loadFileSettings.DataGridIDColumn Is Nothing AndAlso Not _loadFileSettings.DataGridIDColumn = String.Empty Then
+				Dim dataGridIndex As Int32 = Int32.Parse(_loadFileSettings.DataGridIDColumn.Substring(_loadFileSettings.DataGridIDColumn.LastIndexOf("(")).Trim("()".ToCharArray))
+				Dim displayName As String = _reader.GetName(dataGridIndex - 1)
+				Dim field As New Api.ArtifactField(New kCura.EDDS.WebAPI.DocumentManagerBase.Field() With {.ArtifactID = -3, .DisplayName = "DataGridID"})
+				SetFieldValueInvoker(dataGridIndex - 1, field, displayName)
+				retval.Add(field)
+			End If
+
 			If _loadFileSettings.CopyFilesToDocumentRepository = True Then
 				If Not System.IO.Directory.Exists(_tempLocalDirectory) Then System.IO.Directory.CreateDirectory(_tempLocalDirectory)
 

@@ -46,6 +46,7 @@ Namespace kCura.WinEDDS.ImportExtension
 			'These settings need to have [columnName]([index])
 			LoadFile.FolderStructureContainedInColumn = AddColumnIndexToName(dr, LoadFile.FolderStructureContainedInColumn)
 			LoadFile.NativeFilePathColumn = AddColumnIndexToName(dr, LoadFile.NativeFilePathColumn)
+			LoadFile.DataGridIDColumn = AddColumnIndexToName(dr, LoadFile.DataGridIDColumn)
 			importer.DestinationFolder = AddColumnIndexToName(dr, importer.DestinationFolder)
 			Return DirectCast(importer, kCura.WinEDDS.BulkLoadFileImporter)
 		End Function
