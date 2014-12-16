@@ -229,7 +229,7 @@ Namespace kCura.WinEDDS.ImportExtension
 			If Not _loadFileSettings.DataGridIDColumn Is Nothing AndAlso Not _loadFileSettings.DataGridIDColumn = String.Empty Then
 				Dim dataGridIndex As Int32 = Int32.Parse(_loadFileSettings.DataGridIDColumn.Substring(_loadFileSettings.DataGridIDColumn.LastIndexOf("(")).Trim("()".ToCharArray))
 				Dim displayName As String = _reader.GetName(dataGridIndex - 1)
-				Dim field As New Api.ArtifactField(New kCura.EDDS.WebAPI.DocumentManagerBase.Field() With {.ArtifactID = -3, .DisplayName = "DataGridID"})
+				Dim field As New Api.ArtifactField(New kCura.EDDS.WebAPI.DocumentManagerBase.Field() With {.ArtifactID = -3, .DisplayName = BulkLoadFileImporter.DATA_GRID_ID_FIELD_NAME})
 				SetFieldValueInvoker(dataGridIndex - 1, field, displayName)
 				retval.Add(field)
 			End If
