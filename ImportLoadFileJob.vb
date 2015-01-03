@@ -26,6 +26,7 @@ Namespace kCura.Relativity.DataReaderClient
 		Private _credentials As ICredentials
 		Private _cookieMonster As Net.CookieContainer
 
+		Private Const _DOCUMENT_ARTIFACT_TYPE_ID As Int32 = 10 'TODO: make a reference to Relativity so we don't have to do this
 
 #End Region
 
@@ -185,7 +186,7 @@ Namespace kCura.Relativity.DataReaderClient
 
 			' If IdentityFieldId is greater than zero, it has been explicitly set, 
 			' otherwise allow LoadFile its defaulting as it already does
-			If (clientSettings.OverwriteMode = OverwriteModeEnum.Overlay) AndAlso (clientSettings.IdentityFieldId > 0) Then
+			If AllowNonIdentifierKeyField(clientSettings) Then
 				loadFileTemp.IdentityFieldId = clientSettings.IdentityFieldId
 			End If
 
@@ -242,6 +243,14 @@ Namespace kCura.Relativity.DataReaderClient
 			tempLoadFile.OverlayBehavior = loadFileTemp.OverlayBehavior
 
 			Return tempLoadFile
+		End Function
+
+		Private Function AllowNonIdentifierKeyField(clientSettings As Settings) As Boolean
+			Dim retval As Boolean = (clientSettings.IdentityFieldId > 0)
+			If clientSettings.ArtifactTypeId = _DOCUMENT_ARTIFACT_TYPE_ID Then
+				retval = retval AndAlso (clientSettings.OverwriteMode = OverwriteModeEnum.Overlay)
+			End If
+			Return retval
 		End Function
 
 		''' <summary>
