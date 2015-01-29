@@ -27,6 +27,7 @@ Namespace kCura.WinEDDS.Service
 				c.RootArtifactID = .RootArtifactID
 				c.RootFolderID = .RootFolderID
 				c.StatusCodeArtifactID = .StatusCodeArtifactID
+				c.EnableDataGrid = .EnableDataGrid
 				c.DocumentPath = .DocumentPath
 				c.DownloadHandlerURL = .DownloadHandlerURL
 			End With
