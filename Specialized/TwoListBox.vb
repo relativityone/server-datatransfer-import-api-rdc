@@ -442,13 +442,13 @@ Namespace kCura.Windows.Forms
 
 		Private Sub EnsureHorizontalScrollbarForBox(ByVal box As kCura.Windows.Forms.ListBox)
 			If _AlternateRowColors Then
-				Dim g As System.Drawing.Graphics = Me.CreateGraphics
-				box.HorizontalExtent = 0
-				For i As Int32 = 0 To box.Items.Count - 1
-					box.HorizontalExtent = System.Math.Max(CInt(box.HorizontalExtent), CInt(g.MeasureString(box.Items(i).ToString, box.Font, 0).Width + 20))
-				Next
+				Using g As System.Drawing.Graphics = Me.CreateGraphics()
+					box.HorizontalExtent = 0
+					For i As Int32 = 0 To box.Items.Count - 1
+						box.HorizontalExtent = System.Math.Max(CInt(box.HorizontalExtent), CInt(g.MeasureString(box.Items(i).ToString, box.Font, 0).Width + 20))
+					Next
 
-				g.Dispose()
+				End Using
 			End If
 
 			If box.Items.Count >= 0 Then
