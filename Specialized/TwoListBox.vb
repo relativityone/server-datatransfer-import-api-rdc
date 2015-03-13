@@ -61,12 +61,12 @@ Namespace kCura.Windows.Forms
 		End Property
 
 		Private Sub InitializeComponent()
-			Me._rightListBox = New kCura.Windows.Forms.ListBox(Me.RelativityHighlightColor)
+			Me._rightListBox = New kCura.Windows.Forms.ListBox()
 			Me._moveAllFieldsLeft = New System.Windows.Forms.Button
 			Me._moveFieldLeft = New System.Windows.Forms.Button
 			Me._moveFieldRight = New System.Windows.Forms.Button
 			Me._moveAllFieldsRight = New System.Windows.Forms.Button
-			Me._leftListBox = New kCura.Windows.Forms.ListBox(Me.RelativityHighlightColor)
+			Me._leftListBox = New kCura.Windows.Forms.ListBox()
 			Me._moveRightSelectedItemDown = New System.Windows.Forms.Button
 			Me._moveRightSelectedItemUp = New System.Windows.Forms.Button
 			Me._moveLeftSelectedItemDown = New System.Windows.Forms.Button
@@ -406,11 +406,11 @@ Namespace kCura.Windows.Forms
 			End Get
 		End Property
 
-		Public ReadOnly Property RelativityHighlightColor() As System.Drawing.Color
-			Get
-				Return System.Drawing.Color.FromArgb(229, 142, 26)
-			End Get
-		End Property
+		'Public ReadOnly Property RelativityHighlightColor() As System.Drawing.Color
+		'	Get
+		'		Return System.Drawing.Color.FromArgb(229, 142, 26)
+		'	End Get
+		'End Property
 
 #End Region
 

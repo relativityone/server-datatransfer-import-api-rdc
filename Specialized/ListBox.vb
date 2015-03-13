@@ -25,6 +25,10 @@ Namespace kCura.Windows.Forms
 
 #End Region
 
+		Public Sub New()
+			Me.New(System.Drawing.Color.FromArgb(229, 142, 26))
+		End Sub
+
 		Public Sub New(ByVal relativityHighlightColor As System.Drawing.Color)
 			HighlightIndex = -1
 			_relativityHighlightColor = relativityHighlightColor
