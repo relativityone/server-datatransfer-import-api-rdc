@@ -22,6 +22,11 @@ Namespace kCura.EDDS.WinForm
 		Friend WithEvents _importMenuForceFolderPreviewItem As System.Windows.Forms.MenuItem
 
 		Private ParentArtifactTypeID As Int32
+		Friend WithEvents MenuItem7 As System.Windows.Forms.MenuItem
+		Friend WithEvents ViewFieldMapMenuItem As System.Windows.Forms.MenuItem
+		Public WithEvents FieldMapMenuBar As System.Windows.Forms.MenuItem
+		Public WithEvents MenuItem4 As System.Windows.Forms.MenuItem
+		Public WithEvents _fileRefreshMenuItem As System.Windows.Forms.MenuItem
 		Private ReadOnly Property IsChildObject() As Boolean
 			Get
 				Return ParentArtifactTypeID <> 8
@@ -37,7 +42,7 @@ Namespace kCura.EDDS.WinForm
 						If docInfo.FieldTypeID = Relativity.FieldTypeHelper.FieldType.MultiCode OrElse docInfo.FieldTypeID = Relativity.FieldTypeHelper.FieldType.Objects Then
 							_multiObjectMultiChoiceCache.Add(docInfo)
 						End If
-					Next					
+					Next
 				End If
 				Return _multiObjectMultiChoiceCache
 			End Get
@@ -88,139 +93,138 @@ Namespace kCura.EDDS.WinForm
 		'NOTE: The following procedure is required by the Windows Form Designer
 		'It can be modified using the Windows Form Designer.  
 		'Do not modify it using the code editor.
-		Friend WithEvents OpenFileDialog As System.Windows.Forms.OpenFileDialog
-		Friend WithEvents GroupBoxImportDestination As System.Windows.Forms.GroupBox
-		Friend WithEvents _importDestinationText As System.Windows.Forms.Label
-		Friend WithEvents MainMenu As System.Windows.Forms.MainMenu
-		Friend WithEvents MenuItem1 As System.Windows.Forms.MenuItem
-		Friend WithEvents MenuItem2 As System.Windows.Forms.MenuItem
-		Friend WithEvents PreviewMenuFile As System.Windows.Forms.MenuItem
-		Friend WithEvents ImportFileMenu As System.Windows.Forms.MenuItem
-		Friend WithEvents _fileSaveFieldMapMenuItem As System.Windows.Forms.MenuItem
-		Friend WithEvents _saveFieldMapDialog As System.Windows.Forms.SaveFileDialog
-		Friend WithEvents _fileLoadFieldMapMenuItem As System.Windows.Forms.MenuItem
-		Friend WithEvents _loadFieldMapDialog As System.Windows.Forms.OpenFileDialog
-		Friend WithEvents _importMenuPreviewErrorsItem As System.Windows.Forms.MenuItem
-		Friend WithEvents _importMenuPreviewFoldersAndCodesItem As System.Windows.Forms.MenuItem
-		Friend WithEvents TabControl1 As System.Windows.Forms.TabControl
-		Friend WithEvents _loadFileTab As System.Windows.Forms.TabPage
-		Friend WithEvents _fieldMapTab As System.Windows.Forms.TabPage
-		Friend WithEvents _loadNativeFiles As System.Windows.Forms.CheckBox
-		Friend WithEvents Label5 As System.Windows.Forms.Label
-		Friend WithEvents _nativeFilePathField As System.Windows.Forms.ComboBox
-		Friend WithEvents GroupBoxNativeFileBehavior As System.Windows.Forms.GroupBox
-		Friend WithEvents GroupBoxCharacters As System.Windows.Forms.GroupBox
-		Friend WithEvents _multiRecordDelimiter As System.Windows.Forms.ComboBox
-		Friend WithEvents LabelMultiValue As System.Windows.Forms.Label
-		Friend WithEvents LabelQuote As System.Windows.Forms.Label
-		Friend WithEvents _quoteDelimiter As System.Windows.Forms.ComboBox
-		Friend WithEvents LabelNewline As System.Windows.Forms.Label
-		Friend WithEvents _newLineDelimiter As System.Windows.Forms.ComboBox
-		Friend WithEvents LabelColumn As System.Windows.Forms.Label
-		Friend WithEvents _recordDelimiter As System.Windows.Forms.ComboBox
-		Friend WithEvents GroupBoxFileColumnHeaders As System.Windows.Forms.GroupBox
-		Friend WithEvents _fileColumnHeaders As System.Windows.Forms.ListBox
-		Friend WithEvents _firstLineContainsColumnNames As System.Windows.Forms.CheckBox
-		Friend WithEvents GroupBoxLoadFile As System.Windows.Forms.GroupBox
-		Friend WithEvents _browseButton As System.Windows.Forms.Button
-		Friend WithEvents _filePath As System.Windows.Forms.TextBox
-		Friend WithEvents HelpProvider1 As System.Windows.Forms.HelpProvider
-		Friend WithEvents MenuItem3 As System.Windows.Forms.MenuItem
-		Friend WithEvents _fileMenuCloseItem As System.Windows.Forms.MenuItem
-		Friend WithEvents _destinationFolderPath As System.Windows.Forms.ComboBox
-		Friend WithEvents _buildFolderStructure As System.Windows.Forms.CheckBox
-		Friend WithEvents GroupBoxFolderInfo As System.Windows.Forms.GroupBox
-		Friend WithEvents MenuItem4 As System.Windows.Forms.MenuItem
-		Friend WithEvents _fileRefreshMenuItem As System.Windows.Forms.MenuItem
-		Friend WithEvents _overwriteDropdown As System.Windows.Forms.ComboBox
-		Friend WithEvents GroupBoxOverwrite As System.Windows.Forms.GroupBox
-		Friend WithEvents GroupBoxExtractedText As System.Windows.Forms.GroupBox
-		Friend WithEvents _extractedTextValueContainsFileLocation As System.Windows.Forms.CheckBox
-		Friend WithEvents LabelFileEncoding As System.Windows.Forms.Label
-		Friend WithEvents _advancedButton As System.Windows.Forms.Button
-		Friend WithEvents Label9 As System.Windows.Forms.Label
-		Friend WithEvents _loadFileEncodingPicker As kCura.EDDS.WinForm.EncodingPicker
-		Friend WithEvents _fullTextFileEncodingPicker As kCura.EDDS.WinForm.EncodingPicker
-		Friend WithEvents _hierarchicalValueDelimiter As System.Windows.Forms.ComboBox
-		Friend WithEvents LabelNestedValue As System.Windows.Forms.Label
-		Friend WithEvents _startLineNumberLabel As System.Windows.Forms.Label
-		Friend WithEvents _startLineNumber As System.Windows.Forms.NumericUpDown
-		Friend WithEvents _fieldMap As kCura.WinEDDS.UIControls.FieldMap
-		Friend WithEvents GroupBoxOverlayIdentifier As System.Windows.Forms.GroupBox
-		Friend WithEvents _overlayIdentifier As System.Windows.Forms.ComboBox
-		Friend WithEvents MenuItem5 As System.Windows.Forms.MenuItem
-		Friend WithEvents _importMenuSendEmailNotificationItem As System.Windows.Forms.MenuItem
-		Friend WithEvents GroupBoxOverlayBehavior As System.Windows.Forms.GroupBox
-		Friend WithEvents _overlayBehavior As System.Windows.Forms.ComboBox
+		Public WithEvents OpenFileDialog As System.Windows.Forms.OpenFileDialog
+		Public WithEvents GroupBoxImportDestination As System.Windows.Forms.GroupBox
+		Public WithEvents _importDestinationText As System.Windows.Forms.Label
+		Public WithEvents MainMenu As System.Windows.Forms.MainMenu
+		Public WithEvents MenuItem1 As System.Windows.Forms.MenuItem
+		Public WithEvents MenuItem2 As System.Windows.Forms.MenuItem
+		Public WithEvents PreviewMenuFile As System.Windows.Forms.MenuItem
+		Public WithEvents ImportFileMenu As System.Windows.Forms.MenuItem
+		Public WithEvents _fileSaveFieldMapMenuItem As System.Windows.Forms.MenuItem
+		Public WithEvents _saveFieldMapDialog As System.Windows.Forms.SaveFileDialog
+		Public WithEvents _fileLoadFieldMapMenuItem As System.Windows.Forms.MenuItem
+		Public WithEvents _loadFieldMapDialog As System.Windows.Forms.OpenFileDialog
+		Public WithEvents _importMenuPreviewErrorsItem As System.Windows.Forms.MenuItem
+		Public WithEvents _importMenuPreviewFoldersAndCodesItem As System.Windows.Forms.MenuItem
+		Public WithEvents TabControl1 As System.Windows.Forms.TabControl
+		Public WithEvents _loadFileTab As System.Windows.Forms.TabPage
+		Public WithEvents _fieldMapTab As System.Windows.Forms.TabPage
+		Public WithEvents _loadNativeFiles As System.Windows.Forms.CheckBox
+		Public WithEvents Label5 As System.Windows.Forms.Label
+		Public WithEvents _nativeFilePathField As System.Windows.Forms.ComboBox
+		Public WithEvents GroupBoxNativeFileBehavior As System.Windows.Forms.GroupBox
+		Public WithEvents GroupBoxCharacters As System.Windows.Forms.GroupBox
+		Public WithEvents _multiRecordDelimiter As System.Windows.Forms.ComboBox
+		Public WithEvents LabelMultiValue As System.Windows.Forms.Label
+		Public WithEvents LabelQuote As System.Windows.Forms.Label
+		Public WithEvents _quoteDelimiter As System.Windows.Forms.ComboBox
+		Public WithEvents LabelNewline As System.Windows.Forms.Label
+		Public WithEvents _newLineDelimiter As System.Windows.Forms.ComboBox
+		Public WithEvents LabelColumn As System.Windows.Forms.Label
+		Public WithEvents _recordDelimiter As System.Windows.Forms.ComboBox
+		Public WithEvents GroupBoxFileColumnHeaders As System.Windows.Forms.GroupBox
+		Public WithEvents _fileColumnHeaders As System.Windows.Forms.ListBox
+		Public WithEvents _firstLineContainsColumnNames As System.Windows.Forms.CheckBox
+		Public WithEvents GroupBoxLoadFile As System.Windows.Forms.GroupBox
+		Public WithEvents _browseButton As System.Windows.Forms.Button
+		Public WithEvents _filePath As System.Windows.Forms.TextBox
+		Public WithEvents HelpProvider1 As System.Windows.Forms.HelpProvider
+		Public WithEvents _fileMenuCloseItem As System.Windows.Forms.MenuItem
+		Public WithEvents _destinationFolderPath As System.Windows.Forms.ComboBox
+		Public WithEvents _buildFolderStructure As System.Windows.Forms.CheckBox
+		Public WithEvents GroupBoxFolderInfo As System.Windows.Forms.GroupBox
+		Public WithEvents _overwriteDropdown As System.Windows.Forms.ComboBox
+		Public WithEvents GroupBoxOverwrite As System.Windows.Forms.GroupBox
+		Public WithEvents GroupBoxExtractedText As System.Windows.Forms.GroupBox
+		Public WithEvents _extractedTextValueContainsFileLocation As System.Windows.Forms.CheckBox
+		Public WithEvents LabelFileEncoding As System.Windows.Forms.Label
+		Public WithEvents _advancedButton As System.Windows.Forms.Button
+		Public WithEvents Label9 As System.Windows.Forms.Label
+		Public WithEvents _loadFileEncodingPicker As kCura.EDDS.WinForm.EncodingPicker
+		Public WithEvents _fullTextFileEncodingPicker As kCura.EDDS.WinForm.EncodingPicker
+		Public WithEvents _hierarchicalValueDelimiter As System.Windows.Forms.ComboBox
+		Public WithEvents LabelNestedValue As System.Windows.Forms.Label
+		Public WithEvents _startLineNumberLabel As System.Windows.Forms.Label
+		Public WithEvents _startLineNumber As System.Windows.Forms.NumericUpDown
+		Public WithEvents _fieldMap As kCura.WinEDDS.UIControls.FieldMap
+		Public WithEvents GroupBoxOverlayIdentifier As System.Windows.Forms.GroupBox
+		Public WithEvents _overlayIdentifier As System.Windows.Forms.ComboBox
+		Public WithEvents MenuItem5 As System.Windows.Forms.MenuItem
+		Public WithEvents _importMenuSendEmailNotificationItem As System.Windows.Forms.MenuItem
+		Public WithEvents GroupBoxOverlayBehavior As System.Windows.Forms.GroupBox
+		Public WithEvents _overlayBehavior As System.Windows.Forms.ComboBox
 
 		<System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
-			Me.components = New System.ComponentModel.Container
+			Me.components = New System.ComponentModel.Container()
 			Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(LoadFileForm))
-			Me.OpenFileDialog = New System.Windows.Forms.OpenFileDialog
-			Me.GroupBoxImportDestination = New System.Windows.Forms.GroupBox
-			Me._importDestinationText = New System.Windows.Forms.Label
+			Me.OpenFileDialog = New System.Windows.Forms.OpenFileDialog()
+			Me.GroupBoxImportDestination = New System.Windows.Forms.GroupBox()
+			Me._importDestinationText = New System.Windows.Forms.Label()
 			Me.MainMenu = New System.Windows.Forms.MainMenu(Me.components)
-			Me.MenuItem1 = New System.Windows.Forms.MenuItem
-			Me._fileLoadFieldMapMenuItem = New System.Windows.Forms.MenuItem
-			Me._fileSaveFieldMapMenuItem = New System.Windows.Forms.MenuItem
-			Me.MenuItem3 = New System.Windows.Forms.MenuItem
-			Me._fileMenuCloseItem = New System.Windows.Forms.MenuItem
-			Me.MenuItem4 = New System.Windows.Forms.MenuItem
-			Me._fileRefreshMenuItem = New System.Windows.Forms.MenuItem
-			Me.MenuItem2 = New System.Windows.Forms.MenuItem
-			Me.PreviewMenuFile = New System.Windows.Forms.MenuItem
-			Me._importMenuPreviewErrorsItem = New System.Windows.Forms.MenuItem
-			Me._importMenuPreviewFoldersAndCodesItem = New System.Windows.Forms.MenuItem
-			Me.ImportFileMenu = New System.Windows.Forms.MenuItem
-			Me.MenuItem5 = New System.Windows.Forms.MenuItem
-			Me._importMenuSendEmailNotificationItem = New System.Windows.Forms.MenuItem
-			Me._importMenuForceFolderPreviewItem = New System.Windows.Forms.MenuItem
-			Me._saveFieldMapDialog = New System.Windows.Forms.SaveFileDialog
-			Me._loadFieldMapDialog = New System.Windows.Forms.OpenFileDialog
-			Me.TabControl1 = New System.Windows.Forms.TabControl
-			Me._loadFileTab = New System.Windows.Forms.TabPage
-			Me._startLineNumber = New System.Windows.Forms.NumericUpDown
-			Me._startLineNumberLabel = New System.Windows.Forms.Label
-			Me._loadFileEncodingPicker = New kCura.EDDS.WinForm.EncodingPicker
-			Me.LabelFileEncoding = New System.Windows.Forms.Label
-			Me.GroupBoxLoadFile = New System.Windows.Forms.GroupBox
-			Me._browseButton = New System.Windows.Forms.Button
-			Me._filePath = New System.Windows.Forms.TextBox
-			Me._firstLineContainsColumnNames = New System.Windows.Forms.CheckBox
-			Me.GroupBoxFileColumnHeaders = New System.Windows.Forms.GroupBox
-			Me._fileColumnHeaders = New System.Windows.Forms.ListBox
-			Me.GroupBoxCharacters = New System.Windows.Forms.GroupBox
-			Me._hierarchicalValueDelimiter = New System.Windows.Forms.ComboBox
-			Me.LabelNestedValue = New System.Windows.Forms.Label
-			Me._multiRecordDelimiter = New System.Windows.Forms.ComboBox
-			Me.LabelMultiValue = New System.Windows.Forms.Label
-			Me.LabelQuote = New System.Windows.Forms.Label
-			Me._quoteDelimiter = New System.Windows.Forms.ComboBox
-			Me.LabelNewline = New System.Windows.Forms.Label
-			Me._newLineDelimiter = New System.Windows.Forms.ComboBox
-			Me.LabelColumn = New System.Windows.Forms.Label
-			Me._recordDelimiter = New System.Windows.Forms.ComboBox
-			Me._fieldMapTab = New System.Windows.Forms.TabPage
-			Me.GroupBoxOverlayIdentifier = New System.Windows.Forms.GroupBox
-			Me._overlayIdentifier = New System.Windows.Forms.ComboBox
-			Me.GroupBoxOverlayBehavior = New System.Windows.Forms.GroupBox
-			Me._overlayBehavior = New System.Windows.Forms.ComboBox
-			Me._fieldMap = New kCura.WinEDDS.UIControls.FieldMap
-			Me.GroupBoxExtractedText = New System.Windows.Forms.GroupBox
-			Me._fullTextFileEncodingPicker = New kCura.EDDS.WinForm.EncodingPicker
-			Me.Label9 = New System.Windows.Forms.Label
-			Me._extractedTextValueContainsFileLocation = New System.Windows.Forms.CheckBox
-			Me.GroupBoxOverwrite = New System.Windows.Forms.GroupBox
-			Me._overwriteDropdown = New System.Windows.Forms.ComboBox
-			Me.GroupBoxFolderInfo = New System.Windows.Forms.GroupBox
-			Me._buildFolderStructure = New System.Windows.Forms.CheckBox
-			Me._destinationFolderPath = New System.Windows.Forms.ComboBox
-			Me.GroupBoxNativeFileBehavior = New System.Windows.Forms.GroupBox
-			Me._advancedButton = New System.Windows.Forms.Button
-			Me._loadNativeFiles = New System.Windows.Forms.CheckBox
-			Me._nativeFilePathField = New System.Windows.Forms.ComboBox
-			Me.Label5 = New System.Windows.Forms.Label
-			Me.HelpProvider1 = New System.Windows.Forms.HelpProvider
+			Me.MenuItem1 = New System.Windows.Forms.MenuItem()
+			Me._fileLoadFieldMapMenuItem = New System.Windows.Forms.MenuItem()
+			Me._fileSaveFieldMapMenuItem = New System.Windows.Forms.MenuItem()
+			Me.MenuItem7 = New System.Windows.Forms.MenuItem()
+			Me.ViewFieldMapMenuItem = New System.Windows.Forms.MenuItem()
+			Me.FieldMapMenuBar = New System.Windows.Forms.MenuItem()
+			Me._fileMenuCloseItem = New System.Windows.Forms.MenuItem()
+			Me.MenuItem4 = New System.Windows.Forms.MenuItem()
+			Me._fileRefreshMenuItem = New System.Windows.Forms.MenuItem()
+			Me.MenuItem2 = New System.Windows.Forms.MenuItem()
+			Me.PreviewMenuFile = New System.Windows.Forms.MenuItem()
+			Me._importMenuPreviewErrorsItem = New System.Windows.Forms.MenuItem()
+			Me._importMenuPreviewFoldersAndCodesItem = New System.Windows.Forms.MenuItem()
+			Me.ImportFileMenu = New System.Windows.Forms.MenuItem()
+			Me.MenuItem5 = New System.Windows.Forms.MenuItem()
+			Me._importMenuSendEmailNotificationItem = New System.Windows.Forms.MenuItem()
+			Me._importMenuForceFolderPreviewItem = New System.Windows.Forms.MenuItem()
+			Me._saveFieldMapDialog = New System.Windows.Forms.SaveFileDialog()
+			Me._loadFieldMapDialog = New System.Windows.Forms.OpenFileDialog()
+			Me.TabControl1 = New System.Windows.Forms.TabControl()
+			Me._loadFileTab = New System.Windows.Forms.TabPage()
+			Me._startLineNumber = New System.Windows.Forms.NumericUpDown()
+			Me._startLineNumberLabel = New System.Windows.Forms.Label()
+			Me.LabelFileEncoding = New System.Windows.Forms.Label()
+			Me.GroupBoxLoadFile = New System.Windows.Forms.GroupBox()
+			Me._browseButton = New System.Windows.Forms.Button()
+			Me._filePath = New System.Windows.Forms.TextBox()
+			Me._firstLineContainsColumnNames = New System.Windows.Forms.CheckBox()
+			Me.GroupBoxFileColumnHeaders = New System.Windows.Forms.GroupBox()
+			Me._fileColumnHeaders = New System.Windows.Forms.ListBox()
+			Me.GroupBoxCharacters = New System.Windows.Forms.GroupBox()
+			Me._hierarchicalValueDelimiter = New System.Windows.Forms.ComboBox()
+			Me.LabelNestedValue = New System.Windows.Forms.Label()
+			Me._multiRecordDelimiter = New System.Windows.Forms.ComboBox()
+			Me.LabelMultiValue = New System.Windows.Forms.Label()
+			Me.LabelQuote = New System.Windows.Forms.Label()
+			Me._quoteDelimiter = New System.Windows.Forms.ComboBox()
+			Me.LabelNewline = New System.Windows.Forms.Label()
+			Me._newLineDelimiter = New System.Windows.Forms.ComboBox()
+			Me.LabelColumn = New System.Windows.Forms.Label()
+			Me._recordDelimiter = New System.Windows.Forms.ComboBox()
+			Me._fieldMapTab = New System.Windows.Forms.TabPage()
+			Me.GroupBoxOverlayIdentifier = New System.Windows.Forms.GroupBox()
+			Me._overlayIdentifier = New System.Windows.Forms.ComboBox()
+			Me.GroupBoxOverlayBehavior = New System.Windows.Forms.GroupBox()
+			Me._overlayBehavior = New System.Windows.Forms.ComboBox()
+			Me._fieldMap = New kCura.WinEDDS.UIControls.FieldMap()
+			Me.GroupBoxExtractedText = New System.Windows.Forms.GroupBox()
+			Me.Label9 = New System.Windows.Forms.Label()
+			Me._extractedTextValueContainsFileLocation = New System.Windows.Forms.CheckBox()
+			Me.GroupBoxOverwrite = New System.Windows.Forms.GroupBox()
+			Me._overwriteDropdown = New System.Windows.Forms.ComboBox()
+			Me.GroupBoxFolderInfo = New System.Windows.Forms.GroupBox()
+			Me._buildFolderStructure = New System.Windows.Forms.CheckBox()
+			Me._destinationFolderPath = New System.Windows.Forms.ComboBox()
+			Me.GroupBoxNativeFileBehavior = New System.Windows.Forms.GroupBox()
+			Me._advancedButton = New System.Windows.Forms.Button()
+			Me._loadNativeFiles = New System.Windows.Forms.CheckBox()
+			Me._nativeFilePathField = New System.Windows.Forms.ComboBox()
+			Me.Label5 = New System.Windows.Forms.Label()
+			Me.HelpProvider1 = New System.Windows.Forms.HelpProvider()
+			Me._loadFileEncodingPicker = New kCura.EDDS.WinForm.EncodingPicker()
+			Me._fullTextFileEncodingPicker = New kCura.EDDS.WinForm.EncodingPicker()
 			Me.GroupBoxImportDestination.SuspendLayout()
 			Me.TabControl1.SuspendLayout()
 			Me._loadFileTab.SuspendLayout()
@@ -240,10 +244,12 @@ Namespace kCura.EDDS.WinForm
 			'OpenFileDialog
 			'
 			Me.OpenFileDialog.Filter = "All files (*.*)|*.*|CSV Files (*.csv)|*.csv|Text Files (*.txt)|*.txt|DAT Files|*." & _
-			 "dat"
+			"dat"
 			'
 			'GroupBoxImportDestination
 			'
+			Me.GroupBoxImportDestination.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
+							Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me.GroupBoxImportDestination.Controls.Add(Me._importDestinationText)
 			Me.GroupBoxImportDestination.Location = New System.Drawing.Point(7, 4)
 			Me.GroupBoxImportDestination.Name = "GroupBoxImportDestination"
@@ -251,17 +257,16 @@ Namespace kCura.EDDS.WinForm
 			Me.GroupBoxImportDestination.TabIndex = 8
 			Me.GroupBoxImportDestination.TabStop = False
 			Me.GroupBoxImportDestination.Text = "Import Destination"
-			Me.GroupBoxImportDestination.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			'
 			'_importDestinationText
 			'
-			Me._importDestinationText.BorderStyle = System.Windows.Forms.BorderStyle.None
+			Me._importDestinationText.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
+							Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me._importDestinationText.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
 			Me._importDestinationText.Location = New System.Drawing.Point(8, 20)
 			Me._importDestinationText.Name = "_importDestinationText"
 			Me._importDestinationText.Size = New System.Drawing.Size(717, 18)
 			Me._importDestinationText.TabIndex = 5
-			Me._importDestinationText.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			'
 			'MainMenu
 			'
@@ -270,40 +275,50 @@ Namespace kCura.EDDS.WinForm
 			'MenuItem1
 			'
 			Me.MenuItem1.Index = 0
-			Me.MenuItem1.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me._fileLoadFieldMapMenuItem, Me._fileSaveFieldMapMenuItem, Me.MenuItem3, Me._fileMenuCloseItem, Me.MenuItem4, Me._fileRefreshMenuItem})
+			Me.MenuItem1.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me._fileLoadFieldMapMenuItem, Me._fileSaveFieldMapMenuItem, Me.MenuItem7, Me.ViewFieldMapMenuItem, Me.FieldMapMenuBar, Me._fileMenuCloseItem, Me.MenuItem4, Me._fileRefreshMenuItem})
 			Me.MenuItem1.Text = "&File"
 			'
 			'_fileLoadFieldMapMenuItem
 			'
 			Me._fileLoadFieldMapMenuItem.Index = 0
 			Me._fileLoadFieldMapMenuItem.Shortcut = System.Windows.Forms.Shortcut.CtrlO
-			Me._fileLoadFieldMapMenuItem.Text = "Load Field Map"
+			Me._fileLoadFieldMapMenuItem.Text = "Load Import Settings (kwe)"
 			'
 			'_fileSaveFieldMapMenuItem
 			'
 			Me._fileSaveFieldMapMenuItem.Index = 1
 			Me._fileSaveFieldMapMenuItem.Shortcut = System.Windows.Forms.Shortcut.CtrlS
-			Me._fileSaveFieldMapMenuItem.Text = "Save Field Map"
+			Me._fileSaveFieldMapMenuItem.Text = "Save Import Settings (kwe)"
 			'
-			'MenuItem3
+			'MenuItem7
 			'
-			Me.MenuItem3.Index = 2
-			Me.MenuItem3.Text = "-"
+			Me.MenuItem7.Index = 2
+			Me.MenuItem7.Text = "-"
+			'
+			'ViewFieldMapMenuItem
+			'
+			Me.ViewFieldMapMenuItem.Index = 3
+			Me.ViewFieldMapMenuItem.Text = "View/Save Field Map"
+			'
+			'FieldMapMenuBar
+			'
+			Me.FieldMapMenuBar.Index = 4
+			Me.FieldMapMenuBar.Text = "-"
 			'
 			'_fileMenuCloseItem
 			'
-			Me._fileMenuCloseItem.Index = 3
+			Me._fileMenuCloseItem.Index = 5
 			Me._fileMenuCloseItem.Shortcut = System.Windows.Forms.Shortcut.CtrlW
 			Me._fileMenuCloseItem.Text = "Close"
 			'
 			'MenuItem4
 			'
-			Me.MenuItem4.Index = 4
+			Me.MenuItem4.Index = 6
 			Me.MenuItem4.Text = "-"
 			'
 			'_fileRefreshMenuItem
 			'
-			Me._fileRefreshMenuItem.Index = 5
+			Me._fileRefreshMenuItem.Index = 7
 			Me._fileRefreshMenuItem.Shortcut = System.Windows.Forms.Shortcut.F5
 			Me._fileRefreshMenuItem.Text = "Refresh"
 			'
@@ -383,7 +398,7 @@ Namespace kCura.EDDS.WinForm
 			Me._loadFileTab.Controls.Add(Me.GroupBoxCharacters)
 			Me._loadFileTab.Location = New System.Drawing.Point(4, 22)
 			Me._loadFileTab.Name = "_loadFileTab"
-			Me._loadFileTab.Size = New System.Drawing.Size(728, 526)
+			Me._loadFileTab.Size = New System.Drawing.Size(730, 500)
 			Me._loadFileTab.TabIndex = 0
 			Me._loadFileTab.Text = "Load File"
 			'
@@ -404,14 +419,6 @@ Namespace kCura.EDDS.WinForm
 			Me._startLineNumberLabel.Text = "Start Line"
 			Me._startLineNumberLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
 			'
-			'_loadFileEncodingPicker
-			'
-			Me._loadFileEncodingPicker.Location = New System.Drawing.Point(12, 127)
-			Me._loadFileEncodingPicker.Name = "_loadFileEncodingPicker"
-			Me._loadFileEncodingPicker.SelectedEncoding = Nothing
-			Me._loadFileEncodingPicker.Size = New System.Drawing.Size(200, 21)
-			Me._loadFileEncodingPicker.TabIndex = 5
-			'
 			'LabelFileEncoding
 			'
 			Me.LabelFileEncoding.Location = New System.Drawing.Point(12, 111)
@@ -422,36 +429,38 @@ Namespace kCura.EDDS.WinForm
 			'
 			'GroupBoxLoadFile
 			'
+			Me.GroupBoxLoadFile.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
+							Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me.GroupBoxLoadFile.Controls.Add(Me._browseButton)
 			Me.GroupBoxLoadFile.Controls.Add(Me._filePath)
 			Me.GroupBoxLoadFile.Location = New System.Drawing.Point(8, 4)
 			Me.GroupBoxLoadFile.Name = "GroupBoxLoadFile"
-			Me.GroupBoxLoadFile.Size = New System.Drawing.Size(718, 48)
+			Me.GroupBoxLoadFile.Size = New System.Drawing.Size(720, 48)
 			Me.GroupBoxLoadFile.TabIndex = 2
 			Me.GroupBoxLoadFile.TabStop = False
 			Me.GroupBoxLoadFile.Text = "Load File"
-			Me.GroupBoxLoadFile.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			'
 			'_browseButton
 			'
-			Me._browseButton.Location = New System.Drawing.Point(684, 16)
+			Me._browseButton.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+			Me._browseButton.Location = New System.Drawing.Point(686, 16)
 			Me._browseButton.Name = "_browseButton"
 			Me._browseButton.Size = New System.Drawing.Size(24, 20)
 			Me._browseButton.TabIndex = 4
 			Me._browseButton.Text = "..."
-			Me._browseButton.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			'
 			'_filePath
 			'
+			Me._filePath.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
+							Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me._filePath.BackColor = System.Drawing.SystemColors.ControlLightLight
 			Me._filePath.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
 			Me._filePath.ForeColor = System.Drawing.SystemColors.ControlDarkDark
 			Me._filePath.Location = New System.Drawing.Point(8, 16)
 			Me._filePath.Name = "_filePath"
-			Me._filePath.Size = New System.Drawing.Size(676, 20)
+			Me._filePath.Size = New System.Drawing.Size(678, 20)
 			Me._filePath.TabIndex = 2
 			Me._filePath.Text = "Select a file ..."
-			Me._filePath.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			'
 			'_firstLineContainsColumnNames
 			'
@@ -476,12 +485,12 @@ Namespace kCura.EDDS.WinForm
 			'
 			'_fileColumnHeaders
 			'
+			Me._fileColumnHeaders.IntegralHeight = False
 			Me._fileColumnHeaders.Location = New System.Drawing.Point(10, 18)
 			Me._fileColumnHeaders.Name = "_fileColumnHeaders"
 			Me._fileColumnHeaders.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended
 			Me._fileColumnHeaders.Size = New System.Drawing.Size(480, 375)
 			Me._fileColumnHeaders.TabIndex = 17
-			Me._fileColumnHeaders.IntegralHeight = False
 			'
 			'GroupBoxCharacters
 			'
@@ -593,7 +602,7 @@ Namespace kCura.EDDS.WinForm
 			Me._fieldMapTab.Controls.Add(Me.GroupBoxNativeFileBehavior)
 			Me._fieldMapTab.Location = New System.Drawing.Point(4, 22)
 			Me._fieldMapTab.Name = "_fieldMapTab"
-			Me._fieldMapTab.Size = New System.Drawing.Size(728, 526)
+			Me._fieldMapTab.Size = New System.Drawing.Size(730, 500)
 			Me._fieldMapTab.TabIndex = 1
 			Me._fieldMapTab.Text = "Field Map"
 			'
@@ -615,7 +624,7 @@ Namespace kCura.EDDS.WinForm
 			Me._overlayIdentifier.Name = "_overlayIdentifier"
 			Me._overlayIdentifier.Size = New System.Drawing.Size(220, 21)
 			Me._overlayIdentifier.TabIndex = 28
-
+			'
 			'GroupBoxOverlayBehavior
 			'
 			Me.GroupBoxOverlayBehavior.Controls.Add(Me._overlayBehavior)
@@ -629,8 +638,8 @@ Namespace kCura.EDDS.WinForm
 			'_overlayBehavior
 			'
 			Me._overlayBehavior.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
-			Me._overlayBehavior.Items.AddRange(New Object() {"Select...", "Merge Values", "Replace Values", "Use Field Settings"})
 			Me._overlayBehavior.Enabled = False
+			Me._overlayBehavior.Items.AddRange(New Object() {"Select...", "Merge Values", "Replace Values", "Use Field Settings"})
 			Me._overlayBehavior.Location = New System.Drawing.Point(8, 24)
 			Me._overlayBehavior.Name = "_overlayBehavior"
 			Me._overlayBehavior.Size = New System.Drawing.Size(220, 21)
@@ -640,6 +649,7 @@ Namespace kCura.EDDS.WinForm
 			'
 			Me._fieldMap.Location = New System.Drawing.Point(4, 0)
 			Me._fieldMap.Name = "_fieldMap"
+			Me.HelpProvider1.SetShowHelp(Me._fieldMap, True)
 			Me._fieldMap.Size = New System.Drawing.Size(720, 288)
 			Me._fieldMap.TabIndex = 0
 			'
@@ -649,19 +659,11 @@ Namespace kCura.EDDS.WinForm
 			Me.GroupBoxExtractedText.Controls.Add(Me.Label9)
 			Me.GroupBoxExtractedText.Controls.Add(Me._extractedTextValueContainsFileLocation)
 			Me.GroupBoxExtractedText.Location = New System.Drawing.Point(484, 288)
-			Me.GroupBoxExtractedText.Name = "GroupBox7"
+			Me.GroupBoxExtractedText.Name = "GroupBoxExtractedText"
 			Me.GroupBoxExtractedText.Size = New System.Drawing.Size(234, 104)
 			Me.GroupBoxExtractedText.TabIndex = 14
 			Me.GroupBoxExtractedText.TabStop = False
 			Me.GroupBoxExtractedText.Text = "Extracted Text"
-			'
-			'_fullTextFileEncodingPicker
-			'
-			Me._fullTextFileEncodingPicker.Location = New System.Drawing.Point(12, 68)
-			Me._fullTextFileEncodingPicker.Name = "_fullTextFileEncodingPicker"
-			Me._fullTextFileEncodingPicker.SelectedEncoding = Nothing
-			Me._fullTextFileEncodingPicker.Size = New System.Drawing.Size(200, 21)
-			Me._fullTextFileEncodingPicker.TabIndex = 26
 			'
 			'Label9
 			'
@@ -773,23 +775,36 @@ Namespace kCura.EDDS.WinForm
 			Me.Label5.Text = "Native file paths contained in column:"
 			Me.Label5.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
 			'
+			'_loadFileEncodingPicker
+			'
+			Me._loadFileEncodingPicker.Location = New System.Drawing.Point(12, 127)
+			Me._loadFileEncodingPicker.Name = "_loadFileEncodingPicker"
+			Me._loadFileEncodingPicker.SelectedEncoding = Nothing
+			Me._loadFileEncodingPicker.Size = New System.Drawing.Size(200, 21)
+			Me._loadFileEncodingPicker.TabIndex = 5
+			'
+			'_fullTextFileEncodingPicker
+			'
+			Me._fullTextFileEncodingPicker.Location = New System.Drawing.Point(12, 68)
+			Me._fullTextFileEncodingPicker.Name = "_fullTextFileEncodingPicker"
+			Me._fullTextFileEncodingPicker.SelectedEncoding = Nothing
+			Me._fullTextFileEncodingPicker.Size = New System.Drawing.Size(200, 21)
+			Me._fullTextFileEncodingPicker.TabIndex = 26
+			'
 			'LoadFileForm
 			'
 			Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
-			Me.ClientSize = New System.Drawing.Size(754, 547)
-			Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Sizable
-			Me.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Show
+			Me.ClientSize = New System.Drawing.Size(754, 597)
 			Me.Controls.Add(Me.TabControl1)
 			Me.Controls.Add(Me.GroupBoxImportDestination)
 			Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
-			Me.MaximizeBox = True
 			Me.Menu = Me.MainMenu
+			Me.MinimumSize = New System.Drawing.Size(762, 624)
 			Me.Name = "LoadFileForm"
+			Me.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Show
 			Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
 			Me.Text = "Relativity Desktop Client | Import Load File"
-
 			Me.GroupBoxImportDestination.ResumeLayout(False)
-			Me.GroupBoxImportDestination.PerformLayout()
 			Me.TabControl1.ResumeLayout(False)
 			Me._loadFileTab.ResumeLayout(False)
 			CType(Me._startLineNumber, System.ComponentModel.ISupportInitialize).EndInit()
@@ -804,7 +819,6 @@ Namespace kCura.EDDS.WinForm
 			Me.GroupBoxOverwrite.ResumeLayout(False)
 			Me.GroupBoxFolderInfo.ResumeLayout(False)
 			Me.GroupBoxNativeFileBehavior.ResumeLayout(False)
-			Me.MinimumSize = New System.Drawing.Size(762, 624)
 			Me.ResumeLayout(False)
 
 		End Sub
@@ -1005,7 +1019,7 @@ Namespace kCura.EDDS.WinForm
 				LoadFile.FilePath = _filePath.Text
 			End If
 			LoadFile.SelectedIdentifierField = _application.GetDocumentFieldFromName(_application.GetCaseIdentifierFields(Me.LoadFile.ArtifactTypeID)(0))
-		
+
 			If _overlayBehavior.Enabled Then
 				LoadFile.OverlayBehavior = Me.GetOverlayBehavior
 			Else
@@ -1300,8 +1314,8 @@ Namespace kCura.EDDS.WinForm
 			End If
 
 			_layoutDifferenceList.ForEach(Sub(x)
-																			x.InitializeDifference()
-																		End Sub)
+																				 x.InitializeDifference()
+																			 End Sub)
 
 			_layoutReferenceDistance = CalcReferenceDistance()
 		End Sub
@@ -1372,20 +1386,14 @@ Namespace kCura.EDDS.WinForm
 				_fileColumnHeaders.Items.Clear()
 				_nativeFilePathField.Items.Clear()
 				_destinationFolderPath.Items.Clear()
-				'_identifiersDropDown.Items.Clear()
 				_fieldMap.LoadFileColumns.ClearAll()
 				PopulateLoadFileDelimiters()
-				'columnHeaders = _application.GetColumnHeadersFromLoadFile(LoadFile, _firstLineContainsColumnNames.Checked)
 				System.Array.Sort(columnHeaders)
-				'_filePath.Text = LoadFile.FilePath\
 				_fieldMap.LoadFileColumns.RightListBoxItems.AddRange(columnHeaders)
 				_fileColumnHeaders.Items.AddRange(columnHeaders)
 				_nativeFilePathField.Items.AddRange(columnHeaders)
 				_destinationFolderPath.Items.AddRange(columnHeaders)
 				Dim identifiersDropdownRange As New System.Collections.ArrayList
-				'_identifiersDropDown.Items.Add("< none >")
-				'_identifiersDropDown.Items.AddRange(columnHeaders)
-				'_identifiersDropDown.SelectedIndex = 0
 				If LoadFile.LoadNativeFiles AndAlso System.IO.File.Exists(LoadFile.FilePath) Then
 					_nativeFilePathField.SelectedItem = LoadFile.NativeFilePathColumn
 				End If
@@ -1456,6 +1464,10 @@ Namespace kCura.EDDS.WinForm
 			If LoadFile.ArtifactTypeID <> Relativity.ArtifactType.Document Then
 				_importMenuForceFolderPreviewItem.Checked = False
 				_importMenuForceFolderPreviewItem.Enabled = False
+			End If
+			If Not kCura.WinEDDS.Config.AllowViewFieldMapFunctionality Then
+				ViewFieldMapMenuItem.Visible = False
+				FieldMapMenuBar.Visible = False
 			End If
 		End Sub
 
@@ -1836,6 +1848,28 @@ Namespace kCura.EDDS.WinForm
 
 		Private Sub _importMenuForceFolderPreviewItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _importMenuForceFolderPreviewItem.Click
 			_importMenuForceFolderPreviewItem.Checked = Not _importMenuForceFolderPreviewItem.Checked
+		End Sub
+
+		Private Sub ViewFieldMapMenuItem_Click(sender As Object, e As EventArgs) Handles ViewFieldMapMenuItem.Click
+			Dim count As Int32 = Math.Min(_fieldMap.FieldColumns.RightListBoxItems.Count, _fieldMap.LoadFileColumns.LeftListBoxItems.Count)
+			Dim drv As New DataTable
+			If count > 0 Then
+				drv.Columns.Add("Destination Field")
+				drv.Columns.Add("Source File Column")
+				Dim thisSelectedColumn, thisSelectedField As String
+				For i As Int32 = 0 To count - 1
+					thisSelectedColumn = _fieldMap.LoadFileColumns.LeftListBoxItems(i).ToString()
+					thisSelectedField = _fieldMap.FieldColumns.RightListBoxItems(i).ToString()
+					drv.Rows.Add({thisSelectedField, thisSelectedColumn})
+				Next
+			Else
+				drv.Columns.Add(" ")
+				drv.Rows.Add({"No fields successfully mapped"})
+			End If
+			Dim x As New FieldMapForm
+			Dim dgv As DataGridView = x.FieldMapGrid
+			dgv.DataSource = drv
+			x.ShowDialog()
 		End Sub
 	End Class
 End Namespace
