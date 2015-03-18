@@ -1054,7 +1054,7 @@ Namespace kCura.EDDS.WinForm.Tests
 			Assert.IsTrue(_form._appendOriginalFilenameCheckbox.Checked)
 		End Sub
 
-		<Test()> Public Sub LoadExportFile_AppendOriginalFileName_Checked_False()
+		<Test()> <Ignore("Running longer than 5 seconds")> Public Sub LoadExportFile_AppendOriginalFileName_Checked_False()
 			Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {.AppendOriginalFileName = False}
 			_form.LoadExportFile(ef)
 			Assert.IsFalse(_form._appendOriginalFilenameCheckbox.Checked)
