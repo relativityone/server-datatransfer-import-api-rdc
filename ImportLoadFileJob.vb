@@ -366,22 +366,15 @@ Namespace kCura.Relativity.DataReaderClient
 					.LoadNativeFiles = False
 				End If
 
-				If Not clientSettings.ParentObjectIdSourceFieldName = String.Empty AndAlso Not clientSettings.FolderPathSourceFieldName = String.Empty Then
-					If Not clientSettings.ParentObjectIdSourceFieldName = clientSettings.FolderPathSourceFieldName Then
-						Throw New Exception("Only set one of ParentObjectIdSourceFieldName and FolderPathSourceFieldName")
-					End If
+				If Not String.IsNullOrWhiteSpace(clientSettings.ParentObjectIdSourceFieldName) AndAlso Not String.IsNullOrWhiteSpace(clientSettings.FolderPathSourceFieldName) _
+				AndAlso Not clientSettings.ParentObjectIdSourceFieldName = clientSettings.FolderPathSourceFieldName Then
+					Throw New Exception("Only set one of ParentObjectIdSourceFieldName and FolderPathSourceFieldName")
 				End If
 
-				'TODO: EVIL!!!!!!! These following 2 If-Else-EndIf blocks are identical.
-				' -Phil S. 10/04/11
-				If Not clientSettings.ParentObjectIdSourceFieldName = String.Empty Then
+				If Not String.IsNullOrWhiteSpace(clientSettings.ParentObjectIdSourceFieldName) Then
 					.ParentInfoContainedInColumn = clientSettings.ParentObjectIdSourceFieldName
 					.CreateFolderStructure = True
-				Else
-					.CreateFolderStructure = False
-				End If
-
-				If Not clientSettings.FolderPathSourceFieldName = String.Empty Then
+				ElseIf Not String.IsNullOrWhiteSpace(clientSettings.FolderPathSourceFieldName) Then
 					.ParentInfoContainedInColumn = clientSettings.FolderPathSourceFieldName
 					.CreateFolderStructure = True
 				Else
@@ -394,7 +387,7 @@ Namespace kCura.Relativity.DataReaderClient
 					Case NativeFileCopyModeEnum.SetFileLinks, Nothing
 						.CopyFilesToDocumentRepository = False
 					Case Else
-						Throw New Exception("ERROR with  NativeFileCopyMode")
+						Throw New Exception("ERROR with NativeFileCopyMode")
 				End Select
 
 				.FullTextColumnContainsFileLocation = clientSettings.ExtractedTextFieldContainsFilePath
