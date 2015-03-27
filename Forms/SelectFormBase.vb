@@ -52,7 +52,7 @@ Namespace kCura.EDDS.WinForm
 			Me.OKButton.Location = New System.Drawing.Point(128, 256)
 			Me.OKButton.Name = "OKButton"
 			Me.OKButton.Size = New System.Drawing.Size(75, 23)
-			Me.OKButton.TabIndex = 3
+			Me.OKButton.TabIndex = 2
 			Me.OKButton.Text = "OK"
 			'
 			'CancelBtn
@@ -67,8 +67,8 @@ Namespace kCura.EDDS.WinForm
 			'ItemListView
 			'
 			Me.ItemListView.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-						Or System.Windows.Forms.AnchorStyles.Left) _
-						Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+							Or System.Windows.Forms.AnchorStyles.Left) _
+							Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me.ItemListView.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
 			Me.ItemListView.Columns.AddRange(New System.Windows.Forms.ColumnHeader() {Me.NameColumnHeader})
 			Me.ItemListView.Location = New System.Drawing.Point(4, 28)
@@ -76,7 +76,7 @@ Namespace kCura.EDDS.WinForm
 			Me.ItemListView.Name = "ItemListView"
 			Me.ItemListView.Size = New System.Drawing.Size(280, 224)
 			Me.ItemListView.Sorting = System.Windows.Forms.SortOrder.Ascending
-			Me.ItemListView.TabIndex = 6
+			Me.ItemListView.TabIndex = 1
 			Me.ItemListView.UseCompatibleStateImageBehavior = False
 			Me.ItemListView.View = System.Windows.Forms.View.Details
 			'
@@ -87,11 +87,11 @@ Namespace kCura.EDDS.WinForm
 			'SearchQuery
 			'
 			Me.SearchQuery.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-						Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+							Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me.SearchQuery.Location = New System.Drawing.Point(4, 4)
 			Me.SearchQuery.Name = "SearchQuery"
 			Me.SearchQuery.Size = New System.Drawing.Size(280, 20)
-			Me.SearchQuery.TabIndex = 7
+			Me.SearchQuery.TabIndex = 0
 			'
 			'SelectFormBase
 			'
