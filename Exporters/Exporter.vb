@@ -33,8 +33,8 @@ Namespace kCura.WinEDDS
 		Private _warningCount As Int32 = 0
 		Private _errorCount As Int32 = 0
 		Private _fileCount As Int64 = 0
-		Private _productionExportProduction As kCura.EDDS.WebAPI.ProductionManagerBase.Production
-		Private _productionLookup As New System.Collections.Generic.Dictionary(Of Int32, kCura.EDDS.WebAPI.ProductionManagerBase.Production)
+		Private _productionExportProduction As kCura.EDDS.WebAPI.ProductionManagerBase.ProductionInfo
+		Private _productionLookup As New System.Collections.Generic.Dictionary(Of Int32, kCura.EDDS.WebAPI.ProductionManagerBase.ProductionInfo)
 
 #End Region
 
@@ -164,7 +164,7 @@ Namespace kCura.WinEDDS
 					allAvfIds.Add(Me.Settings.SelectedViewFields(i).AvfId)
 				End If
 			Next
-			Dim production As kCura.EDDS.WebAPI.ProductionManagerBase.Production = Nothing
+			Dim production As kCura.EDDS.WebAPI.ProductionManagerBase.ProductionInfo = Nothing
 
 			If Me.Settings.TypeOfExport = ExportFile.ExportType.Production Then
 
@@ -216,8 +216,8 @@ Namespace kCura.WinEDDS
 					End While
 
 				Case ExportFile.ExportType.ParentSearch
-                    typeOfExportDisplayString = "folder"
-					
+					typeOfExportDisplayString = "folder"
+
 					While tries < maxTries
 						tries += 1
 						Try
@@ -544,7 +544,7 @@ Namespace kCura.WinEDDS
 			Return retval
 		End Function
 
-		Private Function GetProduction(ByVal productionArtifactId As String) As kCura.EDDS.WebAPI.ProductionManagerBase.Production
+		Private Function GetProduction(ByVal productionArtifactId As String) As kCura.EDDS.WebAPI.ProductionManagerBase.ProductionInfo
 			Dim id As Int32 = CInt(productionArtifactId)
 			If Not _productionLookup.ContainsKey(id) Then
 				_productionLookup.Add(id, _productionManager.Read(Me.Settings.CaseArtifactID, id))
@@ -552,7 +552,7 @@ Namespace kCura.WinEDDS
 			Return _productionLookup(id)
 		End Function
 
-		Private Function IsDocNumberOnlyProduction(ByVal production As kCura.EDDS.WebAPI.ProductionManagerBase.Production) As Boolean
+		Private Function IsDocNumberOnlyProduction(ByVal production As kCura.EDDS.WebAPI.ProductionManagerBase.ProductionInfo) As Boolean
 			Return Not production Is Nothing AndAlso production.BatesNumbering = False AndAlso production.UseDocumentLevelNumbering AndAlso Not production.IncludeImageLevelNumberingForDocumentLevelNumbering
 		End Function
 
@@ -708,7 +708,7 @@ Namespace kCura.WinEDDS
 			retString.Append(System.Environment.NewLine)
 			Return retString.ToString
 		End Function
-		
+
 		Private Function RetrieveImagesForDocuments(ByVal documentArtifactIDs As Int32(), ByVal productionOrderList As Pair()) As System.Data.DataTable
 			Select Case Me.Settings.TypeOfExport
 				Case ExportFile.ExportType.Production

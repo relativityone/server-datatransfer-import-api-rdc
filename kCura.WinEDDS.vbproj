@@ -901,7 +901,7 @@
       <Generator>MSDiscoCodeGenerator</Generator>
       <LastGenOutput>Reference.vb</LastGenOutput>
     </None>
-    <None Include="Web References\kCura.EDDS.WebAPI.ProductionManagerBase\Production.datasource">
+    <None Include="Web References\kCura.EDDS.WebAPI.ProductionManagerBase\ProductionInfo.datasource">
       <DependentUpon>Reference.map</DependentUpon>
     </None>
     <None Include="Web References\kCura.EDDS.WebAPI.ProductionManagerBase\ProductionManager.disco" />
