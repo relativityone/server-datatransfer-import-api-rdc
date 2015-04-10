@@ -547,8 +547,8 @@ Namespace kCura.WinEDDS
 				End If
 
 				Me.Statistics.BatchSize = Me.ImportBatchSize
+				If _productionArtifactID <> 0 Then _productionManager.DoPreImportProcessing(_caseInfo.ArtifactID, _productionArtifactID)
 				While Me.[Continue]
-					If _productionArtifactID <> 0 Then _productionManager.DoPreImportProcessing(_caseInfo.ArtifactID, _productionArtifactID)
 					If Me.CurrentLineNumber < _startLineNumber Then
 						Me.AdvanceRecord()
 					Else
