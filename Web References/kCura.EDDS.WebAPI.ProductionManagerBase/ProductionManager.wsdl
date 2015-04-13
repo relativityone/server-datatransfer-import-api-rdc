@@ -113,47 +113,20 @@
           </s:sequence>
         </s:complexType>
       </s:element>
-      <s:element name="AddDocumentToProduction">
+      <s:element name="MigrationJobExists">
         <s:complexType>
           <s:sequence>
             <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
             <s:element minOccurs="1" maxOccurs="1" name="productionArtifactID" type="s:int" />
-            <s:element minOccurs="1" maxOccurs="1" name="documentArtifactID" type="s:int" />
           </s:sequence>
         </s:complexType>
       </s:element>
-      <s:element name="AddDocumentToProductionResponse">
+      <s:element name="MigrationJobExistsResponse">
         <s:complexType>
           <s:sequence>
-            <s:element minOccurs="1" maxOccurs="1" name="AddDocumentToProductionResult" type="s:boolean" />
+            <s:element minOccurs="1" maxOccurs="1" name="MigrationJobExistsResult" type="s:boolean" />
           </s:sequence>
         </s:complexType>
-      </s:element>
-      <s:element name="CreateProductionDocumentFiles">
-        <s:complexType>
-          <s:sequence>
-            <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
-            <s:element minOccurs="0" maxOccurs="1" name="productionDocumentFiles" type="tns:ArrayOfProductionDocumentFileInfoBase" />
-            <s:element minOccurs="1" maxOccurs="1" name="productionArtifactID" type="s:int" />
-            <s:element minOccurs="1" maxOccurs="1" name="documentArtifactID" type="s:int" />
-          </s:sequence>
-        </s:complexType>
-      </s:element>
-      <s:complexType name="ArrayOfProductionDocumentFileInfoBase">
-        <s:sequence>
-          <s:element minOccurs="0" maxOccurs="unbounded" name="ProductionDocumentFileInfoBase" nillable="true" type="tns:ProductionDocumentFileInfoBase" />
-        </s:sequence>
-      </s:complexType>
-      <s:complexType name="ProductionDocumentFileInfoBase">
-        <s:sequence>
-          <s:element minOccurs="0" maxOccurs="1" name="SourceGuid" type="s:string" />
-          <s:element minOccurs="0" maxOccurs="1" name="ImageGuid" type="s:string" />
-          <s:element minOccurs="0" maxOccurs="1" name="BatesNumber" type="s:string" />
-          <s:element minOccurs="1" maxOccurs="1" name="ImageSize" type="s:long" />
-        </s:sequence>
-      </s:complexType>
-      <s:element name="CreateProductionDocumentFilesResponse">
-        <s:complexType />
       </s:element>
     </s:schema>
   </wsdl:types>
@@ -193,17 +166,11 @@
   <wsdl:message name="RetrieveProducedWithSecuritySoapOut">
     <wsdl:part name="parameters" element="tns:RetrieveProducedWithSecurityResponse" />
   </wsdl:message>
-  <wsdl:message name="AddDocumentToProductionSoapIn">
-    <wsdl:part name="parameters" element="tns:AddDocumentToProduction" />
+  <wsdl:message name="MigrationJobExistsSoapIn">
+    <wsdl:part name="parameters" element="tns:MigrationJobExists" />
   </wsdl:message>
-  <wsdl:message name="AddDocumentToProductionSoapOut">
-    <wsdl:part name="parameters" element="tns:AddDocumentToProductionResponse" />
-  </wsdl:message>
-  <wsdl:message name="CreateProductionDocumentFilesSoapIn">
-    <wsdl:part name="parameters" element="tns:CreateProductionDocumentFiles" />
-  </wsdl:message>
-  <wsdl:message name="CreateProductionDocumentFilesSoapOut">
-    <wsdl:part name="parameters" element="tns:CreateProductionDocumentFilesResponse" />
+  <wsdl:message name="MigrationJobExistsSoapOut">
+    <wsdl:part name="parameters" element="tns:MigrationJobExistsResponse" />
   </wsdl:message>
   <wsdl:portType name="ProductionManagerSoap">
     <wsdl:operation name="RetrieveProducedByContextArtifactID">
@@ -230,13 +197,9 @@
       <wsdl:input message="tns:RetrieveProducedWithSecuritySoapIn" />
       <wsdl:output message="tns:RetrieveProducedWithSecuritySoapOut" />
     </wsdl:operation>
-    <wsdl:operation name="AddDocumentToProduction">
-      <wsdl:input message="tns:AddDocumentToProductionSoapIn" />
-      <wsdl:output message="tns:AddDocumentToProductionSoapOut" />
-    </wsdl:operation>
-    <wsdl:operation name="CreateProductionDocumentFiles">
-      <wsdl:input message="tns:CreateProductionDocumentFilesSoapIn" />
-      <wsdl:output message="tns:CreateProductionDocumentFilesSoapOut" />
+    <wsdl:operation name="MigrationJobExists">
+      <wsdl:input message="tns:MigrationJobExistsSoapIn" />
+      <wsdl:output message="tns:MigrationJobExistsSoapOut" />
     </wsdl:operation>
   </wsdl:portType>
   <wsdl:binding name="ProductionManagerSoap" type="tns:ProductionManagerSoap">
@@ -295,17 +258,8 @@
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="AddDocumentToProduction">
-      <soap:operation soapAction="http://www.kCura.com/EDDS/ProductionManager/AddDocumentToProduction" style="document" />
-      <wsdl:input>
-        <soap:body use="literal" />
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="CreateProductionDocumentFiles">
-      <soap:operation soapAction="http://www.kCura.com/EDDS/ProductionManager/CreateProductionDocumentFiles" style="document" />
+    <wsdl:operation name="MigrationJobExists">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/ProductionManager/MigrationJobExists" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -370,17 +324,8 @@
         <soap12:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="AddDocumentToProduction">
-      <soap12:operation soapAction="http://www.kCura.com/EDDS/ProductionManager/AddDocumentToProduction" style="document" />
-      <wsdl:input>
-        <soap12:body use="literal" />
-      </wsdl:input>
-      <wsdl:output>
-        <soap12:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="CreateProductionDocumentFiles">
-      <soap12:operation soapAction="http://www.kCura.com/EDDS/ProductionManager/CreateProductionDocumentFiles" style="document" />
+    <wsdl:operation name="MigrationJobExists">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/ProductionManager/MigrationJobExists" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>

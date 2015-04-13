@@ -44,9 +44,7 @@ Namespace kCura.EDDS.WebAPI.ProductionManagerBase
         
         Private RetrieveProducedWithSecurityOperationCompleted As System.Threading.SendOrPostCallback
         
-        Private AddDocumentToProductionOperationCompleted As System.Threading.SendOrPostCallback
-        
-        Private CreateProductionDocumentFilesOperationCompleted As System.Threading.SendOrPostCallback
+        Private MigrationJobExistsOperationCompleted As System.Threading.SendOrPostCallback
         
         Private useDefaultCredentialsSetExplicitly As Boolean
         
@@ -105,10 +103,7 @@ Namespace kCura.EDDS.WebAPI.ProductionManagerBase
         Public Event RetrieveProducedWithSecurityCompleted As RetrieveProducedWithSecurityCompletedEventHandler
         
         '''<remarks/>
-        Public Event AddDocumentToProductionCompleted As AddDocumentToProductionCompletedEventHandler
-        
-        '''<remarks/>
-        Public Event CreateProductionDocumentFilesCompleted As CreateProductionDocumentFilesCompletedEventHandler
+        Public Event MigrationJobExistsCompleted As MigrationJobExistsCompletedEventHandler
         
         '''<remarks/>
         <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/ProductionManager/RetrieveProducedByContextArtifactID", RequestNamespace:="http://www.kCura.com/EDDS/ProductionManager", ResponseNamespace:="http://www.kCura.com/EDDS/ProductionManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
@@ -336,76 +331,40 @@ Namespace kCura.EDDS.WebAPI.ProductionManagerBase
         End Sub
         
         '''<remarks/>
-        <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/ProductionManager/AddDocumentToProduction", RequestNamespace:="http://www.kCura.com/EDDS/ProductionManager", ResponseNamespace:="http://www.kCura.com/EDDS/ProductionManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
-        Public Function AddDocumentToProduction(ByVal caseContextArtifactID As Integer, ByVal productionArtifactID As Integer, ByVal documentArtifactID As Integer) As Boolean
-            Dim results() As Object = Me.Invoke("AddDocumentToProduction", New Object() {caseContextArtifactID, productionArtifactID, documentArtifactID})
+        <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/ProductionManager/MigrationJobExists", RequestNamespace:="http://www.kCura.com/EDDS/ProductionManager", ResponseNamespace:="http://www.kCura.com/EDDS/ProductionManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
+        Public Function MigrationJobExists(ByVal caseContextArtifactID As Integer, ByVal productionArtifactID As Integer) As Boolean
+            Dim results() As Object = Me.Invoke("MigrationJobExists", New Object() {caseContextArtifactID, productionArtifactID})
             Return CType(results(0),Boolean)
         End Function
         
         '''<remarks/>
-        Public Function BeginAddDocumentToProduction(ByVal caseContextArtifactID As Integer, ByVal productionArtifactID As Integer, ByVal documentArtifactID As Integer, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
-            Return Me.BeginInvoke("AddDocumentToProduction", New Object() {caseContextArtifactID, productionArtifactID, documentArtifactID}, callback, asyncState)
+        Public Function BeginMigrationJobExists(ByVal caseContextArtifactID As Integer, ByVal productionArtifactID As Integer, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("MigrationJobExists", New Object() {caseContextArtifactID, productionArtifactID}, callback, asyncState)
         End Function
         
         '''<remarks/>
-        Public Function EndAddDocumentToProduction(ByVal asyncResult As System.IAsyncResult) As Boolean
+        Public Function EndMigrationJobExists(ByVal asyncResult As System.IAsyncResult) As Boolean
             Dim results() As Object = Me.EndInvoke(asyncResult)
             Return CType(results(0),Boolean)
         End Function
         
         '''<remarks/>
-        Public Overloads Sub AddDocumentToProductionAsync(ByVal caseContextArtifactID As Integer, ByVal productionArtifactID As Integer, ByVal documentArtifactID As Integer)
-            Me.AddDocumentToProductionAsync(caseContextArtifactID, productionArtifactID, documentArtifactID, Nothing)
+        Public Overloads Sub MigrationJobExistsAsync(ByVal caseContextArtifactID As Integer, ByVal productionArtifactID As Integer)
+            Me.MigrationJobExistsAsync(caseContextArtifactID, productionArtifactID, Nothing)
         End Sub
         
         '''<remarks/>
-        Public Overloads Sub AddDocumentToProductionAsync(ByVal caseContextArtifactID As Integer, ByVal productionArtifactID As Integer, ByVal documentArtifactID As Integer, ByVal userState As Object)
-            If (Me.AddDocumentToProductionOperationCompleted Is Nothing) Then
-                Me.AddDocumentToProductionOperationCompleted = AddressOf Me.OnAddDocumentToProductionOperationCompleted
+        Public Overloads Sub MigrationJobExistsAsync(ByVal caseContextArtifactID As Integer, ByVal productionArtifactID As Integer, ByVal userState As Object)
+            If (Me.MigrationJobExistsOperationCompleted Is Nothing) Then
+                Me.MigrationJobExistsOperationCompleted = AddressOf Me.OnMigrationJobExistsOperationCompleted
             End If
-            Me.InvokeAsync("AddDocumentToProduction", New Object() {caseContextArtifactID, productionArtifactID, documentArtifactID}, Me.AddDocumentToProductionOperationCompleted, userState)
+            Me.InvokeAsync("MigrationJobExists", New Object() {caseContextArtifactID, productionArtifactID}, Me.MigrationJobExistsOperationCompleted, userState)
         End Sub
         
-        Private Sub OnAddDocumentToProductionOperationCompleted(ByVal arg As Object)
-            If (Not (Me.AddDocumentToProductionCompletedEvent) Is Nothing) Then
+        Private Sub OnMigrationJobExistsOperationCompleted(ByVal arg As Object)
+            If (Not (Me.MigrationJobExistsCompletedEvent) Is Nothing) Then
                 Dim invokeArgs As System.Web.Services.Protocols.InvokeCompletedEventArgs = CType(arg,System.Web.Services.Protocols.InvokeCompletedEventArgs)
-                RaiseEvent AddDocumentToProductionCompleted(Me, New AddDocumentToProductionCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState))
-            End If
-        End Sub
-        
-        '''<remarks/>
-        <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/ProductionManager/CreateProductionDocumentFiles", RequestNamespace:="http://www.kCura.com/EDDS/ProductionManager", ResponseNamespace:="http://www.kCura.com/EDDS/ProductionManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
-        Public Sub CreateProductionDocumentFiles(ByVal caseContextArtifactID As Integer, ByVal productionDocumentFiles() As ProductionDocumentFileInfoBase, ByVal productionArtifactID As Integer, ByVal documentArtifactID As Integer)
-            Me.Invoke("CreateProductionDocumentFiles", New Object() {caseContextArtifactID, productionDocumentFiles, productionArtifactID, documentArtifactID})
-        End Sub
-        
-        '''<remarks/>
-        Public Function BeginCreateProductionDocumentFiles(ByVal caseContextArtifactID As Integer, ByVal productionDocumentFiles() As ProductionDocumentFileInfoBase, ByVal productionArtifactID As Integer, ByVal documentArtifactID As Integer, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
-            Return Me.BeginInvoke("CreateProductionDocumentFiles", New Object() {caseContextArtifactID, productionDocumentFiles, productionArtifactID, documentArtifactID}, callback, asyncState)
-        End Function
-        
-        '''<remarks/>
-        Public Sub EndCreateProductionDocumentFiles(ByVal asyncResult As System.IAsyncResult)
-            Me.EndInvoke(asyncResult)
-        End Sub
-        
-        '''<remarks/>
-        Public Overloads Sub CreateProductionDocumentFilesAsync(ByVal caseContextArtifactID As Integer, ByVal productionDocumentFiles() As ProductionDocumentFileInfoBase, ByVal productionArtifactID As Integer, ByVal documentArtifactID As Integer)
-            Me.CreateProductionDocumentFilesAsync(caseContextArtifactID, productionDocumentFiles, productionArtifactID, documentArtifactID, Nothing)
-        End Sub
-        
-        '''<remarks/>
-        Public Overloads Sub CreateProductionDocumentFilesAsync(ByVal caseContextArtifactID As Integer, ByVal productionDocumentFiles() As ProductionDocumentFileInfoBase, ByVal productionArtifactID As Integer, ByVal documentArtifactID As Integer, ByVal userState As Object)
-            If (Me.CreateProductionDocumentFilesOperationCompleted Is Nothing) Then
-                Me.CreateProductionDocumentFilesOperationCompleted = AddressOf Me.OnCreateProductionDocumentFilesOperationCompleted
-            End If
-            Me.InvokeAsync("CreateProductionDocumentFiles", New Object() {caseContextArtifactID, productionDocumentFiles, productionArtifactID, documentArtifactID}, Me.CreateProductionDocumentFilesOperationCompleted, userState)
-        End Sub
-        
-        Private Sub OnCreateProductionDocumentFilesOperationCompleted(ByVal arg As Object)
-            If (Not (Me.CreateProductionDocumentFilesCompletedEvent) Is Nothing) Then
-                Dim invokeArgs As System.Web.Services.Protocols.InvokeCompletedEventArgs = CType(arg,System.Web.Services.Protocols.InvokeCompletedEventArgs)
-                RaiseEvent CreateProductionDocumentFilesCompleted(Me, New System.ComponentModel.AsyncCompletedEventArgs(invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState))
+                RaiseEvent MigrationJobExistsCompleted(Me, New MigrationJobExistsCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState))
             End If
         End Sub
         
@@ -518,63 +477,6 @@ Namespace kCura.EDDS.WebAPI.ProductionManagerBase
             End Get
             Set
                 Me.useDocumentLevelNumberingField = value
-            End Set
-        End Property
-    End Class
-    
-    '''<remarks/>
-    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.34234"),  _
-     System.SerializableAttribute(),  _
-     System.Diagnostics.DebuggerStepThroughAttribute(),  _
-     System.ComponentModel.DesignerCategoryAttribute("code"),  _
-     System.Xml.Serialization.XmlTypeAttribute([Namespace]:="http://www.kCura.com/EDDS/ProductionManager")>  _
-    Partial Public Class ProductionDocumentFileInfoBase
-        
-        Private sourceGuidField As String
-        
-        Private imageGuidField As String
-        
-        Private batesNumberField As String
-        
-        Private imageSizeField As Long
-        
-        '''<remarks/>
-        Public Property SourceGuid() As String
-            Get
-                Return Me.sourceGuidField
-            End Get
-            Set
-                Me.sourceGuidField = value
-            End Set
-        End Property
-        
-        '''<remarks/>
-        Public Property ImageGuid() As String
-            Get
-                Return Me.imageGuidField
-            End Get
-            Set
-                Me.imageGuidField = value
-            End Set
-        End Property
-        
-        '''<remarks/>
-        Public Property BatesNumber() As String
-            Get
-                Return Me.batesNumberField
-            End Get
-            Set
-                Me.batesNumberField = value
-            End Set
-        End Property
-        
-        '''<remarks/>
-        Public Property ImageSize() As Long
-            Get
-                Return Me.imageSizeField
-            End Get
-            Set
-                Me.imageSizeField = value
             End Set
         End Property
     End Class
@@ -697,13 +599,13 @@ Namespace kCura.EDDS.WebAPI.ProductionManagerBase
     
     '''<remarks/>
     <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.0.30319.34209")>  _
-    Public Delegate Sub AddDocumentToProductionCompletedEventHandler(ByVal sender As Object, ByVal e As AddDocumentToProductionCompletedEventArgs)
+    Public Delegate Sub MigrationJobExistsCompletedEventHandler(ByVal sender As Object, ByVal e As MigrationJobExistsCompletedEventArgs)
     
     '''<remarks/>
     <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.0.30319.34209"),  _
      System.Diagnostics.DebuggerStepThroughAttribute(),  _
      System.ComponentModel.DesignerCategoryAttribute("code")>  _
-    Partial Public Class AddDocumentToProductionCompletedEventArgs
+    Partial Public Class MigrationJobExistsCompletedEventArgs
         Inherits System.ComponentModel.AsyncCompletedEventArgs
         
         Private results() As Object
@@ -721,8 +623,4 @@ Namespace kCura.EDDS.WebAPI.ProductionManagerBase
             End Get
         End Property
     End Class
-    
-    '''<remarks/>
-    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.0.30319.34209")>  _
-    Public Delegate Sub CreateProductionDocumentFilesCompletedEventHandler(ByVal sender As Object, ByVal e As System.ComponentModel.AsyncCompletedEventArgs)
 End Namespace
