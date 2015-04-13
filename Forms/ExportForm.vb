@@ -1324,10 +1324,14 @@ Public Class ExportForm
 			End If
 		End If
 		If Me.ExportFile.TypeOfExport = ExportFile.ExportType.Production Then
+			Dim _productionManager As New kCura.WinEDDS.Service.ProductionManager(_application.Credential, _application.CookieContainer)
 			If _exportNativeFiles.Checked Then
 				If CType(_nativeFileNameSourceCombo.SelectedItem, String) = "Select..." Then
 					AppendErrorMessage(msg, "No file name source selected")
 				End If
+			End If
+			If _productionManager.MigrationJobExists(_application.SelectedCaseInfo.ArtifactID, CType(_filters.SelectedValue, Int32)) Then
+				AppendErrorMessage(msg, "This production has not yet been migrated.")
 			End If
 		End If
 		If _dataFileEncoding.SelectedEncoding Is Nothing Then
