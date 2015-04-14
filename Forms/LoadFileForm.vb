@@ -27,6 +27,7 @@ Namespace kCura.EDDS.WinForm
 		Public WithEvents FieldMapMenuBar As System.Windows.Forms.MenuItem
 		Public WithEvents MenuItem4 As System.Windows.Forms.MenuItem
 		Public WithEvents _fileRefreshMenuItem As System.Windows.Forms.MenuItem
+		Public WithEvents ViewFieldMapButton As System.Windows.Forms.Button
 		Private ReadOnly Property IsChildObject() As Boolean
 			Get
 				Return ParentArtifactTypeID <> 8
@@ -223,6 +224,7 @@ Namespace kCura.EDDS.WinForm
 			Me._nativeFilePathField = New System.Windows.Forms.ComboBox()
 			Me.Label5 = New System.Windows.Forms.Label()
 			Me.HelpProvider1 = New System.Windows.Forms.HelpProvider()
+			Me.ViewFieldMapButton = New System.Windows.Forms.Button()
 			Me._loadFileEncodingPicker = New kCura.EDDS.WinForm.EncodingPicker()
 			Me._fullTextFileEncodingPicker = New kCura.EDDS.WinForm.EncodingPicker()
 			Me.GroupBoxImportDestination.SuspendLayout()
@@ -383,7 +385,7 @@ Namespace kCura.EDDS.WinForm
 			Me.TabControl1.Location = New System.Drawing.Point(7, 48)
 			Me.TabControl1.Name = "TabControl1"
 			Me.TabControl1.SelectedIndex = 0
-			Me.TabControl1.Size = New System.Drawing.Size(738, 526)
+			Me.TabControl1.Size = New System.Drawing.Size(738, 546)
 			Me.TabControl1.TabIndex = 21
 			'
 			'_loadFileTab
@@ -398,7 +400,7 @@ Namespace kCura.EDDS.WinForm
 			Me._loadFileTab.Controls.Add(Me.GroupBoxCharacters)
 			Me._loadFileTab.Location = New System.Drawing.Point(4, 22)
 			Me._loadFileTab.Name = "_loadFileTab"
-			Me._loadFileTab.Size = New System.Drawing.Size(730, 500)
+			Me._loadFileTab.Size = New System.Drawing.Size(730, 520)
 			Me._loadFileTab.TabIndex = 0
 			Me._loadFileTab.Text = "Load File"
 			'
@@ -593,6 +595,7 @@ Namespace kCura.EDDS.WinForm
 			'
 			'_fieldMapTab
 			'
+			Me._fieldMapTab.Controls.Add(Me.ViewFieldMapButton)
 			Me._fieldMapTab.Controls.Add(Me.GroupBoxOverlayIdentifier)
 			Me._fieldMapTab.Controls.Add(Me.GroupBoxOverlayBehavior)
 			Me._fieldMapTab.Controls.Add(Me._fieldMap)
@@ -602,14 +605,14 @@ Namespace kCura.EDDS.WinForm
 			Me._fieldMapTab.Controls.Add(Me.GroupBoxNativeFileBehavior)
 			Me._fieldMapTab.Location = New System.Drawing.Point(4, 22)
 			Me._fieldMapTab.Name = "_fieldMapTab"
-			Me._fieldMapTab.Size = New System.Drawing.Size(730, 500)
+			Me._fieldMapTab.Size = New System.Drawing.Size(730, 520)
 			Me._fieldMapTab.TabIndex = 1
 			Me._fieldMapTab.Text = "Field Map"
 			'
 			'GroupBoxOverlayIdentifier
 			'
 			Me.GroupBoxOverlayIdentifier.Controls.Add(Me._overlayIdentifier)
-			Me.GroupBoxOverlayIdentifier.Location = New System.Drawing.Point(4, 352)
+			Me.GroupBoxOverlayIdentifier.Location = New System.Drawing.Point(4, 385)
 			Me.GroupBoxOverlayIdentifier.Name = "GroupBoxOverlayIdentifier"
 			Me.GroupBoxOverlayIdentifier.Size = New System.Drawing.Size(234, 56)
 			Me.GroupBoxOverlayIdentifier.TabIndex = 11
@@ -628,7 +631,7 @@ Namespace kCura.EDDS.WinForm
 			'GroupBoxOverlayBehavior
 			'
 			Me.GroupBoxOverlayBehavior.Controls.Add(Me._overlayBehavior)
-			Me.GroupBoxOverlayBehavior.Location = New System.Drawing.Point(4, 416)
+			Me.GroupBoxOverlayBehavior.Location = New System.Drawing.Point(4, 449)
 			Me.GroupBoxOverlayBehavior.Name = "GroupBoxOverlayBehavior"
 			Me.GroupBoxOverlayBehavior.Size = New System.Drawing.Size(234, 56)
 			Me.GroupBoxOverlayBehavior.TabIndex = 12
@@ -658,7 +661,7 @@ Namespace kCura.EDDS.WinForm
 			Me.GroupBoxExtractedText.Controls.Add(Me._fullTextFileEncodingPicker)
 			Me.GroupBoxExtractedText.Controls.Add(Me.Label9)
 			Me.GroupBoxExtractedText.Controls.Add(Me._extractedTextValueContainsFileLocation)
-			Me.GroupBoxExtractedText.Location = New System.Drawing.Point(484, 288)
+			Me.GroupBoxExtractedText.Location = New System.Drawing.Point(484, 321)
 			Me.GroupBoxExtractedText.Name = "GroupBoxExtractedText"
 			Me.GroupBoxExtractedText.Size = New System.Drawing.Size(234, 104)
 			Me.GroupBoxExtractedText.TabIndex = 14
@@ -684,7 +687,7 @@ Namespace kCura.EDDS.WinForm
 			'GroupBoxOverwrite
 			'
 			Me.GroupBoxOverwrite.Controls.Add(Me._overwriteDropdown)
-			Me.GroupBoxOverwrite.Location = New System.Drawing.Point(4, 288)
+			Me.GroupBoxOverwrite.Location = New System.Drawing.Point(4, 321)
 			Me.GroupBoxOverwrite.Name = "GroupBoxOverwrite"
 			Me.GroupBoxOverwrite.Size = New System.Drawing.Size(234, 56)
 			Me.GroupBoxOverwrite.TabIndex = 10
@@ -704,7 +707,7 @@ Namespace kCura.EDDS.WinForm
 			'
 			Me.GroupBoxFolderInfo.Controls.Add(Me._buildFolderStructure)
 			Me.GroupBoxFolderInfo.Controls.Add(Me._destinationFolderPath)
-			Me.GroupBoxFolderInfo.Location = New System.Drawing.Point(244, 288)
+			Me.GroupBoxFolderInfo.Location = New System.Drawing.Point(244, 321)
 			Me.GroupBoxFolderInfo.Name = "GroupBoxFolderInfo"
 			Me.GroupBoxFolderInfo.Size = New System.Drawing.Size(234, 72)
 			Me.GroupBoxFolderInfo.TabIndex = 12
@@ -734,7 +737,7 @@ Namespace kCura.EDDS.WinForm
 			Me.GroupBoxNativeFileBehavior.Controls.Add(Me._loadNativeFiles)
 			Me.GroupBoxNativeFileBehavior.Controls.Add(Me._nativeFilePathField)
 			Me.GroupBoxNativeFileBehavior.Controls.Add(Me.Label5)
-			Me.GroupBoxNativeFileBehavior.Location = New System.Drawing.Point(244, 364)
+			Me.GroupBoxNativeFileBehavior.Location = New System.Drawing.Point(244, 397)
 			Me.GroupBoxNativeFileBehavior.Name = "GroupBoxNativeFileBehavior"
 			Me.GroupBoxNativeFileBehavior.Size = New System.Drawing.Size(234, 92)
 			Me.GroupBoxNativeFileBehavior.TabIndex = 13
@@ -775,6 +778,15 @@ Namespace kCura.EDDS.WinForm
 			Me.Label5.Text = "Native file paths contained in column:"
 			Me.Label5.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
 			'
+			'Button1
+			'
+			Me.ViewFieldMapButton.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
+			Me.ViewFieldMapButton.Location = New System.Drawing.Point(4, 287)
+			Me.ViewFieldMapButton.Name = "Button1"
+			Me.ViewFieldMapButton.Size = New System.Drawing.Size(118, 21)
+			Me.ViewFieldMapButton.TabIndex = 24
+			Me.ViewFieldMapButton.Text = "View/Save Field Map"
+			'
 			'_loadFileEncodingPicker
 			'
 			Me._loadFileEncodingPicker.Location = New System.Drawing.Point(12, 127)
@@ -794,12 +806,12 @@ Namespace kCura.EDDS.WinForm
 			'LoadFileForm
 			'
 			Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
-			Me.ClientSize = New System.Drawing.Size(754, 597)
+			Me.ClientSize = New System.Drawing.Size(754, 619)
 			Me.Controls.Add(Me.TabControl1)
 			Me.Controls.Add(Me.GroupBoxImportDestination)
 			Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
 			Me.Menu = Me.MainMenu
-			Me.MinimumSize = New System.Drawing.Size(762, 624)
+			Me.MinimumSize = New System.Drawing.Size(762, 646)
 			Me.Name = "LoadFileForm"
 			Me.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Show
 			Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
@@ -1313,9 +1325,7 @@ Namespace kCura.EDDS.WinForm
 				_layoutDifferenceList.Add(New RelativeLayoutData(GroupBoxFolderInfo, LayoutBasePropertyTypeForDifference.Right, GroupBoxExtractedText, LayoutRelativePropertyTypeForDifference.Left))
 			End If
 
-			_layoutDifferenceList.ForEach(Sub(x)
-																				 x.InitializeDifference()
-																			 End Sub)
+			_layoutDifferenceList.ForEach(Sub(x) x.InitializeDifference())
 
 			_layoutReferenceDistance = CalcReferenceDistance()
 		End Sub
@@ -1850,7 +1860,7 @@ Namespace kCura.EDDS.WinForm
 			_importMenuForceFolderPreviewItem.Checked = Not _importMenuForceFolderPreviewItem.Checked
 		End Sub
 
-		Private Sub ViewFieldMapMenuItem_Click(sender As Object, e As EventArgs) Handles ViewFieldMapMenuItem.Click
+		Private Sub ViewFieldMapMenuItem_Click(sender As Object, e As EventArgs) Handles ViewFieldMapMenuItem.Click, ViewFieldMapButton.Click
 			Dim count As Int32 = Math.Min(_fieldMap.FieldColumns.RightListBoxItems.Count, _fieldMap.LoadFileColumns.LeftListBoxItems.Count)
 			Dim drv As New DataTable
 			If count > 0 Then
