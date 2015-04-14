@@ -18,64 +18,6 @@ Namespace kCura.WinEDDS.Service
 			Return wr
 		End Function
 
-#Region " Translations "
-		'Public Function DTOToWebAPIProduction(ByVal productionDTO As Relativity.Core.DTO.Production) As kCura.EDDS.WebAPI.ProductionManagerBase.Production
-		'	Dim production As New kCura.EDDS.WebAPI.ProductionManagerBase.Production
-
-		'	production.AccessControlListID = productionDTO.AccessControlListID
-		'	production.AccessControlListIsInherited = productionDTO.AccessControlListIsInherited
-		'	production.ArtifactID = productionDTO.ArtifactID
-		'	production.ArtifactTypeID = productionDTO.ArtifactTypeID
-		'	production.ContainerID = productionDTO.ContainerID
-		'	production.CreatedBy = productionDTO.CreatedBy
-		'	production.CreatedOn = productionDTO.CreatedOn
-		'	production.DeleteFlag = productionDTO.DeleteFlag
-		'	production.Keywords = productionDTO.Keywords
-		'	production.LastModifiedBy = productionDTO.LastModifiedBy
-		'	production.LastModifiedOn = productionDTO.LastModifiedOn
-		'	production.Notes = productionDTO.Notes
-		'	production.ParentArtifactID = productionDTO.ParentArtifactID
-		'	production.TextIdentifier = productionDTO.TextIdentifier
-		'	production.BatesFormat = productionDTO.BatesFormat
-		'	production.BatesPrefix = productionDTO.BatesPrefix
-		'	production.BatesStartNumber = productionDTO.BatesStartNumber
-		'	production.BatesSuffix = productionDTO.BatesSuffix
-		'	production.BeginBatesFieldArtifactID = productionDTO.BeginBatesFieldArtifactID
-		'	production.BurnAnnotations = productionDTO.BurnAnnotations
-		'	production.CenterFooterFieldArtifactID = productionDTO.CenterFooterFieldArtifactID
-		'	production.CenterFooterFreeText = productionDTO.CenterFooterFreeText
-		'	production.CenterFooterTypeCodeArtifactID = productionDTO.CenterFooterTypeCodeArtifactID
-		'	production.CenterHeaderFieldArtifactID = productionDTO.CenterHeaderFieldArtifactID
-		'	production.CenterHeaderFreeText = productionDTO.CenterHeaderFreeText
-		'	production.CenterHeaderTypeCodeArtifactID = productionDTO.CenterHeaderTypeCodeArtifactID
-		'	production.DateProduced = productionDTO.DateProduced
-		'	production.EndBatesFieldArtifactID = productionDTO.EndBatesFieldArtifactID
-		'	production.FontSize = productionDTO.FontSize
-		'	production.ImageShrinkPercent = productionDTO.ImageShrinkPercent
-		'	production.LeftFooterFieldArtifactID = productionDTO.LeftFooterFieldArtifactID
-		'	production.LeftFooterFreeText = productionDTO.LeftFooterFreeText
-		'	production.LeftFooterTypeCodeArtifactID = productionDTO.LeftFooterTypeCodeArtifactID
-		'	production.LeftHeaderFieldArtifactID = productionDTO.LeftHeaderFieldArtifactID
-		'	production.LeftHeaderFreeText = productionDTO.LeftHeaderFreeText
-		'	production.LeftHeaderTypeCodeArtifactID = productionDTO.LeftHeaderTypeCodeArtifactID
-		'	production.Name = productionDTO.Name
-		'	production.RightFooterFieldArtifactID = productionDTO.RightFooterFieldArtifactID
-		'	production.RightFooterFreeText = productionDTO.RightFooterFreeText
-		'	production.RightFooterTypeCodeArtifactID = production.RightFooterTypeCodeArtifactID
-		'	production.RightHeaderFieldArtifactID = productionDTO.RightHeaderFieldArtifactID
-		'	production.RightHeaderFreeText = productionDTO.RightHeaderFreeText
-		'	production.RightHeaderTypeCodeArtifactID = productionDTO.RightHeaderTypeCodeArtifactID
-		'	production.StatusCodeArtifactID = productionDTO.StatusCodeArtifactID
-		'	production.SubdirectoryMaxFiles = productionDTO.SubdirectoryMaxFiles
-		'	production.SubdirectoryPrefix = productionDTO.SubdirectoryPrefix
-		'	production.SubdirectoryStartNumber = productionDTO.SubdirectoryStartNumber
-		'	production.VolumeMaxSize = productionDTO.VolumeMaxSize
-		'	production.VolumePrefix = productionDTO.VolumePrefix
-		'	production.VolumeStartNumber = productionDTO.VolumeStartNumber
-		'	Return production
-		'End Function
-#End Region
-
 #Region " Shadow Functions "
 		Public Shadows Function RetrieveProducedByContextArtifactID(ByVal caseContextArtifactID As Int32) As System.Data.DataSet
 			Dim tries As Int32 = 0
