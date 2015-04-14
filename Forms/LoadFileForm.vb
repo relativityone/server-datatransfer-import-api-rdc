@@ -1475,10 +1475,6 @@ Namespace kCura.EDDS.WinForm
 				_importMenuForceFolderPreviewItem.Checked = False
 				_importMenuForceFolderPreviewItem.Enabled = False
 			End If
-			If Not kCura.WinEDDS.Config.AllowViewFieldMapFunctionality Then
-				ViewFieldMapMenuItem.Visible = False
-				FieldMapMenuBar.Visible = False
-			End If
 		End Sub
 
 		Private Sub LoadFileForm_Closing(ByVal sender As Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles MyBase.Closing
