@@ -40,7 +40,6 @@ Namespace kCura.WinEDDS
 							If Not tempDict.Contains("CreateErrorForEmptyNativeFile") Then tempDict.Add("CreateErrorForEmptyNativeFile", "False")
 							If Not tempDict.Contains("AuditLevel") Then tempDict.Add("AuditLevel", "FullAudit")
 							If Not tempDict.Contains("CreateFoldersInWebAPI") Then tempDict.Add("CreateFoldersInWebAPI", "True")
-							If Not tempDict.Contains("AllowViewFieldMapFunctionality") Then tempDict.Add("AllowViewFieldMapFunctionality", "False")
 
 							_configDictionary = tempDict
 						End If
@@ -105,12 +104,6 @@ Namespace kCura.WinEDDS
 					sb.Append("The upload process has NO access to the SQL share on the appropriate case database.  This is a slower method of import. If the process is using single mode, contact your Relativity Database Administrator to see if a SQL share can be opened for the desired case.")
 				End If
 				Return sb.ToString
-			End Get
-		End Property
-
-		Public Shared ReadOnly Property AllowViewFieldMapFunctionality As Boolean
-			Get
-				Return CBool(ConfigSettings("AllowViewFieldMapFunctionality"))
 			End Get
 		End Property
 
