@@ -1581,8 +1581,9 @@ Namespace kCura.EDDS.WinForm
 			If Not _loginForm Is Nothing AndAlso Not _loginForm.IsDisposed Then
 				_loginForm.TopMost = False
 			End If
-
-			Process.Start("http://help.kcura.com/9.0/#Relativity/Relativity_Desktop_Client/Relativity_Desktop_Client.htm")
+			Dim v As System.Version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version
+			Dim majMin As String = String.Format("{0}.{1}", v.Major, v.Minor)
+			Process.Start("https://help.kcura.com/" & majMin & "/#Relativity/Relativity_Desktop_Client/Relativity_Desktop_Client.htm")
 
 			If Not _loginForm Is Nothing AndAlso Not _loginForm.IsDisposed Then
 				_loginForm.TopMost = True
