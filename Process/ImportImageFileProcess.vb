@@ -100,9 +100,9 @@ Namespace kCura.WinEDDS
 				retval.OverlayIdentifierFieldArtifactID = ImageLoadFile.IdentityFieldId
 				If ImageLoadFile.ProductionArtifactID > 0 Then retval.OverlayIdentifierFieldArtifactID = ImageLoadFile.BeginBatesFieldArtifactID
 				Select Case ImageLoadFile.Overwrite.ToLower
-					Case "none", "append"
+					Case "none"
 						retval.Overwrite = EDDS.WebAPI.AuditManagerBase.OverwriteType.Append
-					Case "strict", "overlay"
+					Case "strict"
 						retval.Overwrite = EDDS.WebAPI.AuditManagerBase.OverwriteType.Overlay
 					Case Else
 						retval.Overwrite = EDDS.WebAPI.AuditManagerBase.OverwriteType.Both
