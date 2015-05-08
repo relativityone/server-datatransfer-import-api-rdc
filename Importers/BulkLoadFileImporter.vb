@@ -1695,7 +1695,7 @@ Namespace kCura.WinEDDS
 
 			While triesLeft > 0
 				downloader.MoveTempFileToLocal(errorFileOutputPath, logKey, caseInfo, False)
-				sr = New kCura.Utility.GenericCsvReader(errorFileOutputPath, True)
+				sr = New kCura.Utility.GenericCsvReader(errorFileOutputPath, System.Text.Encoding.UTF8, True)
 				Dim firstChar As Int32 = sr.Peek()
 
 				If firstChar = -1 Then
