@@ -455,14 +455,15 @@ Namespace kCura.WinEDDS
 				WriteEndImport("Finish")
 				_artifactReader.Close()
 				_timekeeper.MarkEnd("ReadFile_OtherFinalization")
-				_timekeeper.MarkStart("ReadFile_CleanupTempTables")
-				Me.CleanupTempTables()
-				_timekeeper.MarkEnd("ReadFile_CleanupTempTables")
 				_timekeeper.MarkEnd("TOTAL")
 				_timekeeper.GenerateCsvReportItemsAsRows("_winedds", "C:\")
 				Return True
 			Catch ex As System.Exception
 				WriteFatalError(Me.CurrentLineNumber, ex)
+			Finally
+				_timekeeper.MarkStart("ReadFile_CleanupTempTables")
+				CleanupTempTables()
+				_timekeeper.MarkEnd("ReadFile_CleanupTempTables")
 			End Try
 			Return Nothing
 		End Function
