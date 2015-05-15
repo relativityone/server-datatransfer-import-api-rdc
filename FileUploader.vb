@@ -243,7 +243,7 @@ Namespace kCura.WinEDDS
 			Dim destinationDirectory As String = _repositoryPathManager.GetNextDestinationDirectory(_destinationFolderPath)
 			If Not _sortIntoVolumes Then destinationDirectory = _destinationFolderPath
 			If Not System.IO.Directory.Exists(destinationDirectory) Then System.IO.Directory.CreateDirectory(destinationDirectory)
-			System.IO.File.Copy(filePath, destinationDirectory & newFileName, overwrite)
+			System.IO.File.Copy(filePath, System.IO.Path.Combine(destinationDirectory, newFileName), overwrite)
 			Return newFileName
 		End Function
 
