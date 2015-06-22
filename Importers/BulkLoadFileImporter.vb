@@ -78,7 +78,7 @@ Namespace kCura.WinEDDS
 #Region "Accessors"
 
 		Public Property DisableNativeValidation As Boolean = Config.DisableNativeValidation
-		Public Property DisableNativeLocationValidation As Boolean = Config.DisableNativeLocationValidation
+		Public Shadows DisableNativeLocationValidation As Boolean = Config.DisableNativeLocationValidation
 		Public Property DisableUserSecurityCheck As Boolean
 		Public Property AuditLevel As kCura.EDDS.WebAPI.BulkImportManagerBase.ImportAuditLevel = WinEDDS.Config.AuditLevel
 		Public ReadOnly Property BatchSizeHistoryList As System.Collections.Generic.List(Of Int32)
@@ -343,7 +343,7 @@ Namespace kCura.WinEDDS
 			_bulkLoadFileFieldDelimiter = bulkLoadFileFieldDelimiter
 
 			_batchSizeHistoryList = New System.Collections.Generic.List(Of Int32)
-			_DisableNativeLocationValidation = Config.DisableNativeLocationValidation
+			_disableNativeLocationValidation = Config.DisableNativeLocationValidation
 		End Sub
 
 		Protected Overridable Sub CreateUploaders(ByVal args As LoadFile)
