@@ -958,6 +958,7 @@ Namespace kCura.WinEDDS
 					settings.Overlay = EDDS.WebAPI.BulkImportManagerBase.OverwriteType.Both
 			End Select
 			settings.UploadFiles = _filePathColumnIndex <> -1 AndAlso _settings.LoadNativeFiles
+			settings.BulkReadFullTextDirectlyFromFilePath = Me.BulkReadFullTextDirectlyFromFilePath
 
 			_statistics.MetadataTime += System.Math.Max((System.DateTime.Now.Ticks - start), 1)
 			_statistics.MetadataBytes += (Me.GetFileLength(_outputCodeFilePath) + Me.GetFileLength(outputNativePath) + Me.GetFileLength(_outputObjectFilePath) + Me.GetFileLength(_outputDataGridFilePath))
@@ -1167,38 +1168,60 @@ Namespace kCura.WinEDDS
 						chosenEncoding = extractedTextEncoding
 						Dim fileStream As Stream
 
-						'This logic exists as an attempt to improve import speeds.  The DetectEncoding call first checks if the file
-						' exists, followed by a read of the first few bytes. The File.Exists check can be very expensive when going
-						' across the network for the file, so this override allows that check to be skipped.
-						' -Phil S. 07/27/2012
-						If Not SkipExtractedTextEncodingCheck Then
-							Dim determinedEncodingStream As DeterminedEncodingStream = kCura.WinEDDS.Utility.DetectEncoding(field.ValueAsString, False)
-							fileStream = determinedEncodingStream.UnderlyingStream
+						If Me.BulkReadFullTextDirectlyFromFilePath Then
+							If Not SkipExtractedTextEncodingCheck Then
+								Dim determinedEncodingStream As DeterminedEncodingStream = kCura.WinEDDS.Utility.DetectEncoding(field.ValueAsString, False)
+								fileStream = determinedEncodingStream.UnderlyingStream
 
-							Dim detectedEncoding As System.Text.Encoding = determinedEncodingStream.DeterminedEncoding
-							If detectedEncoding IsNot Nothing Then
-								chosenEncoding = detectedEncoding
+								Dim detectedEncoding As System.Text.Encoding = determinedEncodingStream.DeterminedEncoding
+								If Not Text.Encoding.Unicode.Equals(detectedEncoding) Then
+									WriteWarning("The extracted text file's encoding was not detected to be UTF-16. The imported data may be incorrectly encoded.")
+								End If
+								If detectedEncoding IsNot Nothing Then
+									chosenEncoding = detectedEncoding
+								End If
+								Try
+									fileStream.Close()
+								Catch
+								End Try
 							End If
+							outputWriter.Write(field.Value)
 						Else
-							fileStream = New FileStream(field.ValueAsString, FileMode.Open, FileAccess.Read)
-						End If
 
-						Dim sr As New System.IO.StreamReader(fileStream, chosenEncoding)
-						Dim count As Int32 = 1
-						Dim buff(_COPY_TEXT_FILE_BUFFER_SIZE) As Char
-						Do
-							count = sr.ReadBlock(buff, 0, _COPY_TEXT_FILE_BUFFER_SIZE)
-							If count > 0 Then
-								outputWriter.Write(buff, 0, count)
-								outputWriter.Flush()
+							'This logic exists as an attempt to improve import speeds.  The DetectEncoding call first checks if the file
+							' exists, followed by a read of the first few bytes. The File.Exists check can be very expensive when going
+							' across the network for the file, so this override allows that check to be skipped.
+							' -Phil S. 07/27/2012
+							If Not SkipExtractedTextEncodingCheck Then
+								Dim determinedEncodingStream As DeterminedEncodingStream = kCura.WinEDDS.Utility.DetectEncoding(field.ValueAsString, False)
+								fileStream = determinedEncodingStream.UnderlyingStream
+
+								Dim detectedEncoding As System.Text.Encoding = determinedEncodingStream.DeterminedEncoding
+								If detectedEncoding IsNot Nothing Then
+									chosenEncoding = detectedEncoding
+								End If
+							Else
+								fileStream = New FileStream(field.ValueAsString, FileMode.Open, FileAccess.Read)
 							End If
-						Loop Until count = 0
 
-						sr.Close()
-						Try
-							fileStream.Close()
-						Catch
-						End Try
+							Dim sr As New System.IO.StreamReader(fileStream, chosenEncoding)
+							Dim count As Int32 = 1
+							Dim buff(_COPY_TEXT_FILE_BUFFER_SIZE) As Char
+							Do
+								count = sr.ReadBlock(buff, 0, _COPY_TEXT_FILE_BUFFER_SIZE)
+								If count > 0 Then
+									outputWriter.Write(buff, 0, count)
+									outputWriter.Flush()
+								End If
+							Loop Until count = 0
+
+							sr.Close()
+
+							Try
+								fileStream.Close()
+							Catch
+							End Try
+						End If
 					End If
 				ElseIf field.Type = Relativity.FieldTypeHelper.FieldType.Boolean Then
 					If field.ValueAsString <> String.Empty Then
