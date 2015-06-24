@@ -54,7 +54,7 @@ Namespace kCura.WinEDDS
 
 		Public Property SkipExtractedTextEncodingCheck As Boolean?
 
-		Public Property BulkReadFullTextDirectlyFromFilePath As Boolean?
+		Public Property TextInSqlAccessibleFileShareLocation As Boolean
 
 		''' <summary>
 		''' Gets or sets the delimiter to use to separate fields in the bulk
@@ -105,11 +105,11 @@ Namespace kCura.WinEDDS
 			_loadFileImporter.OIFileTypeColumnName = OIFileTypeColumnName
 			_loadFileImporter.FileSizeColumn = FileSizeColumn
 			_loadFileImporter.FileSizeMapped = FileSizeMapped
-			_loadFileImporter.BulkReadFullTextDirectlyFromFilePath = Me.BulkReadFullTextDirectlyFromFilePath.GetValueOrDefault(False)
+			_loadFileImporter.TextInSqlAccessibleFileShareLocation = Me.TextInSqlAccessibleFileShareLocation
 			'_newlineCounter = New kCura.Utility.File.Instance.LineCounter
 			'_newlineCounter.Path = LoadFile.FilePath
 			Me.ProcessObserver.InputArgs = LoadFile.FilePath
-			
+
 			If (CType(_loadFileImporter.ReadFile(LoadFile.FilePath), Boolean)) AndAlso Not _hasRunPRocessComplete Then
 				If _loadFileImporter.HasErrors Then
 					Me.ProcessObserver.RaiseProcessCompleteEvent(False, System.Guid.NewGuid.ToString, True)
@@ -119,7 +119,7 @@ Namespace kCura.WinEDDS
 			Else
 				Me.ProcessObserver.RaiseStatusEvent("", "Import aborted")
 			End If
-			
+
 		End Sub
 
 		Private Sub AuditRun(ByVal success As Boolean, ByVal runID As String)
