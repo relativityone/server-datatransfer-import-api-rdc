@@ -107,8 +107,10 @@ Namespace kCura.Relativity.DataReaderClient
 		''' </summary>
 		''' <value></value>
 		''' <returns></returns>
-		''' <remarks>All Extracted Text files must be encoded as Unicode (UTF-16) when set to True. This setting will only be used when <see cref="ExtractedTextFieldContainsFilePath"/> is also set to True.</remarks>
-		Public Property BulkReadFullTextDirectlyFromFilePath() As Boolean?
+		''' <remarks>All Extracted Text files must exactly match the encoding of the Extracted Text field when this is set to True. 
+		''' If extracted text is unicode enabled, the files need to be UTF-16 encoded,  otherwise they need to be ANSI.
+		''' This setting will only be used when <see cref="ExtractedTextFieldContainsFilePath"/> is also set to True.</remarks>
+		Public Property TextInSqlAccessibleFileShareLocation() As Boolean
 
 		''' <summary>
 		''' Represents a key field that is set only on Overwrite mode.
