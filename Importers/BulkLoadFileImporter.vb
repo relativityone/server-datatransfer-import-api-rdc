@@ -78,7 +78,7 @@ Namespace kCura.WinEDDS
 #Region "Accessors"
 
 		Public Property DisableNativeValidation As Boolean = Config.DisableNativeValidation
-		Public Property DisableNativeLocationValidation As Boolean = Config.DisableNativeLocationValidation
+		Public Shadows DisableNativeLocationValidation As Boolean = Config.DisableNativeLocationValidation
 		Public Property DisableUserSecurityCheck As Boolean
 		Public Property AuditLevel As kCura.EDDS.WebAPI.BulkImportManagerBase.ImportAuditLevel = WinEDDS.Config.AuditLevel
 		Public ReadOnly Property BatchSizeHistoryList As System.Collections.Generic.List(Of Int32)
@@ -343,7 +343,7 @@ Namespace kCura.WinEDDS
 			_bulkLoadFileFieldDelimiter = bulkLoadFileFieldDelimiter
 
 			_batchSizeHistoryList = New System.Collections.Generic.List(Of Int32)
-			_DisableNativeLocationValidation = Config.DisableNativeLocationValidation
+			_disableNativeLocationValidation = Config.DisableNativeLocationValidation
 		End Sub
 
 		Protected Overridable Sub CreateUploaders(ByVal args As LoadFile)
@@ -455,14 +455,15 @@ Namespace kCura.WinEDDS
 				WriteEndImport("Finish")
 				_artifactReader.Close()
 				_timekeeper.MarkEnd("ReadFile_OtherFinalization")
-				_timekeeper.MarkStart("ReadFile_CleanupTempTables")
-				Me.CleanupTempTables()
-				_timekeeper.MarkEnd("ReadFile_CleanupTempTables")
 				_timekeeper.MarkEnd("TOTAL")
 				_timekeeper.GenerateCsvReportItemsAsRows("_winedds", "C:\")
 				Return True
 			Catch ex As System.Exception
 				WriteFatalError(Me.CurrentLineNumber, ex)
+			Finally
+				_timekeeper.MarkStart("ReadFile_CleanupTempTables")
+				CleanupTempTables()
+				_timekeeper.MarkEnd("ReadFile_CleanupTempTables")
 			End Try
 			Return Nothing
 		End Function

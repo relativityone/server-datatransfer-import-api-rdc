@@ -570,16 +570,18 @@ Namespace kCura.WinEDDS
 					End If
 				End While
 				_timekeeper.MarkEnd("ReadFile_Main")
-
 				_timekeeper.MarkStart("ReadFile_Cleanup")
 				Me.TryPushImageBatch(bulkLoadFilePath, dataGridFilePath, True)
 				Me.CompleteSuccess()
-				CleanupTempTables()
 				_timekeeper.MarkEnd("ReadFile_Cleanup")
 				_timekeeper.MarkEnd("TOTAL")
 				_timekeeper.GenerateCsvReportItemsAsRows("_winedds_image", "C:\")
 			Catch ex As System.Exception
 				Me.CompleteError(ex)
+			Finally
+				_timekeeper.MarkStart("ReadFile_CleanupTempTables")
+				CleanupTempTables()
+				_timekeeper.MarkEnd("ReadFile_CleanupTempTables")
 			End Try
 		End Sub
 
