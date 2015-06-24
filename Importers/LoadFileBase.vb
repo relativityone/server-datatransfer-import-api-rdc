@@ -49,6 +49,7 @@ Namespace kCura.WinEDDS
 		Private _codesCreated As Int32 = 0
 		Protected WithEvents _artifactReader As Api.IArtifactReader
 		Public Property SkipExtractedTextEncodingCheck As Boolean
+		Public Property BulkReadFullTextDirectlyFromFilePath As Boolean
 		Public Property DisableExtractedTextFileLocationValidation As Boolean
 		Public Property OIFileIdMapped As Boolean
 		Public Property OIFileIdColumnName As String
