@@ -1049,7 +1049,7 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
         
         Private linkDataGridRecordsField As Boolean
         
-        Private bulkReadFullTextDirectlyFromFilePathField As Boolean
+        Private textInSqlAccessibleFileShareLocationField As Boolean
         
         Private keyFieldArtifactIDField As Integer
         
@@ -1236,12 +1236,12 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
         End Property
         
         '''<remarks/>
-        Public Property BulkReadFullTextDirectlyFromFilePath() As Boolean
+        Public Property TextInSqlAccessibleFileShareLocation() As Boolean
             Get
-                Return Me.bulkReadFullTextDirectlyFromFilePathField
+                Return Me.textInSqlAccessibleFileShareLocationField
             End Get
             Set
-                Me.bulkReadFullTextDirectlyFromFilePathField = value
+                Me.textInSqlAccessibleFileShareLocationField = value
             End Set
         End Property
         

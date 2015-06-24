@@ -138,9 +138,9 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
-		Public ReadOnly Property FullTextField() As kCura.EDDS.WebAPI.DocumentManagerBase.Field
+		Public ReadOnly Property FullTextField(ByVal artifactTypeID As Int32) As kCura.EDDS.WebAPI.DocumentManagerBase.Field
 			Get
-				For Each field As kCura.EDDS.WebAPI.DocumentManagerBase.Field In Me.AllFields(Relativity.ArtifactType.Document)
+				For Each field As kCura.EDDS.WebAPI.DocumentManagerBase.Field In Me.AllFields(artifactTypeID)
 					If field.FieldCategory = EDDS.WebAPI.DocumentManagerBase.FieldCategory.FullText Then
 						Return field
 					End If
@@ -957,7 +957,7 @@ Namespace kCura.WinEDDS
 					settings.Overlay = EDDS.WebAPI.BulkImportManagerBase.OverwriteType.Both
 			End Select
 			settings.UploadFiles = _filePathColumnIndex <> -1 AndAlso _settings.LoadNativeFiles
-			settings.BulkReadFullTextDirectlyFromFilePath = Me.BulkReadFullTextDirectlyFromFilePath
+			settings.TextInSqlAccessibleFileShareLocation = Me.TextInSqlAccessibleFileShareLocation
 
 			_statistics.MetadataTime += System.Math.Max((System.DateTime.Now.Ticks - start), 1)
 			_statistics.MetadataBytes += (Me.GetFileLength(_outputCodeFilePath) + Me.GetFileLength(outputNativePath) + Me.GetFileLength(_outputObjectFilePath) + Me.GetFileLength(_outputDataGridFilePath))
@@ -1167,14 +1167,16 @@ Namespace kCura.WinEDDS
 						chosenEncoding = extractedTextEncoding
 						Dim fileStream As Stream
 
-						If Me.BulkReadFullTextDirectlyFromFilePath Then
+						If Me.TextInSqlAccessibleFileShareLocation Then
 							If Not SkipExtractedTextEncodingCheck Then
 								Dim determinedEncodingStream As DeterminedEncodingStream = kCura.WinEDDS.Utility.DetectEncoding(field.ValueAsString, False)
 								fileStream = determinedEncodingStream.UnderlyingStream
 
+								Dim textField As kCura.EDDS.WebAPI.DocumentManagerBase.Field = Me.FullTextField(_settings.ArtifactTypeID)
+								Dim expectedEncoding As System.Text.Encoding = If(textField IsNot Nothing AndAlso textField.UseUnicodeEncoding, System.Text.Encoding.Unicode, Nothing)
 								Dim detectedEncoding As System.Text.Encoding = determinedEncodingStream.DeterminedEncoding
-								If Not Text.Encoding.Unicode.Equals(detectedEncoding) Then
-									WriteWarning("The extracted text file's encoding was not detected to be UTF-16. The imported data may be incorrectly encoded.")
+								If Not System.Text.Encoding.Equals(expectedEncoding, detectedEncoding) Then
+									WriteWarning("The extracted text file's encoding was not detected to be the same as the extracted text field. The imported data may be incorrectly encoded.")
 								End If
 								If detectedEncoding IsNot Nothing Then
 									chosenEncoding = detectedEncoding
