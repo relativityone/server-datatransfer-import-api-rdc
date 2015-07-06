@@ -34,17 +34,23 @@ Namespace kCura.EDDS.WebAPI.CodeManagerBase
         Inherits System.Web.Services.Protocols.SoapHttpClientProtocol
         
         Private RetrieveCodesAndTypesForCaseOperationCompleted As System.Threading.SendOrPostCallback
-        
-        Private CreateOperationCompleted As System.Threading.SendOrPostCallback
-        
+
+		Private CreateEncodedOperationCompleted As System.Threading.SendOrPostCallback
+
+		Private CreateOperationCompleted As System.Threading.SendOrPostCallback
+
         Private GetAllForHierarchicalOperationCompleted As System.Threading.SendOrPostCallback
         
         Private GetInitialChunkOperationCompleted As System.Threading.SendOrPostCallback
         
-        Private GetLastChunkOperationCompleted As System.Threading.SendOrPostCallback
+		Private GetLastChunkOperationCompleted As System.Threading.SendOrPostCallback
+
+		Private RetrieveCodeByNameAndTypeIDEncodedOperationCompleted As System.Threading.SendOrPostCallback
         
         Private RetrieveCodeByNameAndTypeIDOperationCompleted As System.Threading.SendOrPostCallback
-        
+
+		Private ReadIDEncodedOperationCompleted As System.Threading.SendOrPostCallback
+
         Private ReadIDOperationCompleted As System.Threading.SendOrPostCallback
         
         Private GetChoiceLimitForUIOperationCompleted As System.Threading.SendOrPostCallback
@@ -88,10 +94,13 @@ Namespace kCura.EDDS.WebAPI.CodeManagerBase
         End Property
         
         '''<remarks/>
-        Public Event RetrieveCodesAndTypesForCaseCompleted As RetrieveCodesAndTypesForCaseCompletedEventHandler
+		Public Event RetrieveCodesAndTypesForCaseCompleted As RetrieveCodesAndTypesForCaseCompletedEventHandler
+
+		'''<remarks/>
+		Public Event CreateEncodedCompleted As CreateEncodedCompletedEventHandler
         
         '''<remarks/>
-        Public Event CreateCompleted As CreateCompletedEventHandler
+		Public Event CreateCompleted As CreateCompletedEventHandler
         
         '''<remarks/>
         Public Event GetAllForHierarchicalCompleted As GetAllForHierarchicalCompletedEventHandler
@@ -100,11 +109,17 @@ Namespace kCura.EDDS.WebAPI.CodeManagerBase
         Public Event GetInitialChunkCompleted As GetInitialChunkCompletedEventHandler
         
         '''<remarks/>
-        Public Event GetLastChunkCompleted As GetLastChunkCompletedEventHandler
+		Public Event GetLastChunkCompleted As GetLastChunkCompletedEventHandler
+
+		'''<remarks/>
+		Public Event RetrieveCodeByNameAndTypeIDEncodedCompleted As RetrieveCodeByNameAndTypeIDEncodedCompletedEventHandler
         
         '''<remarks/>
         Public Event RetrieveCodeByNameAndTypeIDCompleted As RetrieveCodeByNameAndTypeIDCompletedEventHandler
-        
+
+		'''<remarks/>
+		Public Event ReadIDEncodedCompleted As ReadIDEncodedCompletedEventHandler
+
         '''<remarks/>
         Public Event ReadIDCompleted As ReadIDCompletedEventHandler
         
@@ -147,8 +162,46 @@ Namespace kCura.EDDS.WebAPI.CodeManagerBase
                 Dim invokeArgs As System.Web.Services.Protocols.InvokeCompletedEventArgs = CType(arg,System.Web.Services.Protocols.InvokeCompletedEventArgs)
                 RaiseEvent RetrieveCodesAndTypesForCaseCompleted(Me, New RetrieveCodesAndTypesForCaseCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState))
             End If
-        End Sub
-        
+		End Sub
+
+		'''<remarks/>
+		<System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/CodeManager/CreateEncoded", RequestNamespace:="http://www.kCura.com/EDDS/CodeManager", ResponseNamespace:="http://www.kCura.com/EDDS/CodeManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)> _
+		Public Function CreateEncoded(ByVal caseContextArtifactID As Integer, ByVal codeDTO As Code) As Object
+			Dim results() As Object = Me.Invoke("CreateEncoded", New Object() {caseContextArtifactID, codeDTO})
+			Return CType(results(0), Object)
+		End Function
+
+		'''<remarks/>
+		Public Function BeginCreateEncoded(ByVal caseContextArtifactID As Integer, ByVal codeDTO As Code, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+			Return Me.BeginInvoke("CreateEncoded", New Object() {caseContextArtifactID, codeDTO}, callback, asyncState)
+		End Function
+
+		'''<remarks/>
+		Public Function EndCreateEncoded(ByVal asyncResult As System.IAsyncResult) As Object
+			Dim results() As Object = Me.EndInvoke(asyncResult)
+			Return CType(results(0), Object)
+		End Function
+
+		'''<remarks/>
+		Public Overloads Sub CreateEncodedAsync(ByVal caseContextArtifactID As Integer, ByVal codeDTO As Code)
+			Me.CreateEncodedAsync(caseContextArtifactID, codeDTO, Nothing)
+		End Sub
+
+		'''<remarks/>
+		Public Overloads Sub CreateEncodedAsync(ByVal caseContextArtifactID As Integer, ByVal codeDTO As Code, ByVal userState As Object)
+			If (Me.CreateEncodedOperationCompleted Is Nothing) Then
+				Me.CreateEncodedOperationCompleted = AddressOf Me.OnCreateEncodedOperationCompleted
+			End If
+			Me.InvokeAsync("CreateEncoded", New Object() {caseContextArtifactID, codeDTO}, Me.CreateEncodedOperationCompleted, userState)
+		End Sub
+
+		Private Sub OnCreateEncodedOperationCompleted(ByVal arg As Object)
+			If (Not (Me.CreateEncodedCompletedEvent) Is Nothing) Then
+				Dim invokeArgs As System.Web.Services.Protocols.InvokeCompletedEventArgs = CType(arg, System.Web.Services.Protocols.InvokeCompletedEventArgs)
+				RaiseEvent CreateEncodedCompleted(Me, New CreateEncodedCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState))
+			End If
+		End Sub
+
         '''<remarks/>
         <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/CodeManager/Create", RequestNamespace:="http://www.kCura.com/EDDS/CodeManager", ResponseNamespace:="http://www.kCura.com/EDDS/CodeManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
         Public Function Create(ByVal caseContextArtifactID As Integer, ByVal codeDTO As Code) As Object
@@ -300,7 +353,45 @@ Namespace kCura.EDDS.WebAPI.CodeManagerBase
                 RaiseEvent GetLastChunkCompleted(Me, New GetLastChunkCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState))
             End If
         End Sub
-        
+
+		'''<remarks/>
+		<System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/CodeManager/RetrieveCodeByNameAndTypeIDEncoded", RequestNamespace:="http://www.kCura.com/EDDS/CodeManager", ResponseNamespace:="http://www.kCura.com/EDDS/CodeManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)> _
+		Public Function RetrieveCodeByNameAndTypeIDEncoded(ByVal caseContextArtifactID As Integer, ByVal codeTypeID As Integer, ByVal name As String) As ChoiceInfo
+			Dim results() As Object = Me.Invoke("RetrieveCodeByNameAndTypeIDEncoded", New Object() {caseContextArtifactID, codeTypeID, name})
+			Return CType(results(0), ChoiceInfo)
+		End Function
+
+		'''<remarks/>
+		Public Function BeginRetrieveCodeByNameAndTypeIDEncoded(ByVal caseContextArtifactID As Integer, ByVal codeTypeID As Integer, ByVal name As String, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+			Return Me.BeginInvoke("RetrieveCodeByNameAndTypeIDEncoded", New Object() {caseContextArtifactID, codeTypeID, name}, callback, asyncState)
+		End Function
+
+		'''<remarks/>
+		Public Function EndRetrieveCodeByNameAndTypeIDEncoded(ByVal asyncResult As System.IAsyncResult) As ChoiceInfo
+			Dim results() As Object = Me.EndInvoke(asyncResult)
+			Return CType(results(0), ChoiceInfo)
+		End Function
+
+		'''<remarks/>
+		Public Overloads Sub RetrieveCodeByNameAndTypeIDEncodedAsync(ByVal caseContextArtifactID As Integer, ByVal codeTypeID As Integer, ByVal name As String)
+			Me.RetrieveCodeByNameAndTypeIDEncodedAsync(caseContextArtifactID, codeTypeID, name, Nothing)
+		End Sub
+
+		'''<remarks/>
+		Public Overloads Sub RetrieveCodeByNameAndTypeIDEncodedAsync(ByVal caseContextArtifactID As Integer, ByVal codeTypeID As Integer, ByVal name As String, ByVal userState As Object)
+			If (Me.RetrieveCodeByNameAndTypeIDEncodedOperationCompleted Is Nothing) Then
+				Me.RetrieveCodeByNameAndTypeIDEncodedOperationCompleted = AddressOf Me.OnRetrieveCodeByNameAndTypeIDEncodedOperationCompleted
+			End If
+			Me.InvokeAsync("RetrieveCodeByNameAndTypeIDEncoded", New Object() {caseContextArtifactID, codeTypeID, name}, Me.RetrieveCodeByNameAndTypeIDEncodedOperationCompleted, userState)
+		End Sub
+
+		Private Sub OnRetrieveCodeByNameAndTypeIDEncodedOperationCompleted(ByVal arg As Object)
+			If (Not (Me.RetrieveCodeByNameAndTypeIDEncodedCompletedEvent) Is Nothing) Then
+				Dim invokeArgs As System.Web.Services.Protocols.InvokeCompletedEventArgs = CType(arg, System.Web.Services.Protocols.InvokeCompletedEventArgs)
+				RaiseEvent RetrieveCodeByNameAndTypeIDEncodedCompleted(Me, New RetrieveCodeByNameAndTypeIDEncodedCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState))
+			End If
+		End Sub
+
         '''<remarks/>
         <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/CodeManager/RetrieveCodeByNameAndTypeID", RequestNamespace:="http://www.kCura.com/EDDS/CodeManager", ResponseNamespace:="http://www.kCura.com/EDDS/CodeManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
         Public Function RetrieveCodeByNameAndTypeID(ByVal caseContextArtifactID As Integer, ByVal codeTypeID As Integer, ByVal name As String) As ChoiceInfo
@@ -338,7 +429,45 @@ Namespace kCura.EDDS.WebAPI.CodeManagerBase
                 RaiseEvent RetrieveCodeByNameAndTypeIDCompleted(Me, New RetrieveCodeByNameAndTypeIDCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState))
             End If
         End Sub
-        
+
+		'''<remarks/>
+		<System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/CodeManager/ReadIDEncoded", RequestNamespace:="http://www.kCura.com/EDDS/CodeManager", ResponseNamespace:="http://www.kCura.com/EDDS/CodeManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)> _
+		Public Function ReadIDEncoded(ByVal caseContextArtifactID As Integer, ByVal parentArtifactID As Integer, ByVal codeTypeID As Integer, ByVal name As String) As Integer
+			Dim results() As Object = Me.Invoke("ReadIDEncoded", New Object() {caseContextArtifactID, parentArtifactID, codeTypeID, name})
+			Return CType(results(0), Integer)
+		End Function
+
+		'''<remarks/>
+		Public Function BeginReadIDEncoded(ByVal caseContextArtifactID As Integer, ByVal parentArtifactID As Integer, ByVal codeTypeID As Integer, ByVal name As String, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+			Return Me.BeginInvoke("ReadIDEncoded", New Object() {caseContextArtifactID, parentArtifactID, codeTypeID, name}, callback, asyncState)
+		End Function
+
+		'''<remarks/>
+		Public Function EndReadIDEncoded(ByVal asyncResult As System.IAsyncResult) As Integer
+			Dim results() As Object = Me.EndInvoke(asyncResult)
+			Return CType(results(0), Integer)
+		End Function
+
+		'''<remarks/>
+		Public Overloads Sub ReadIDEncodedAsync(ByVal caseContextArtifactID As Integer, ByVal parentArtifactID As Integer, ByVal codeTypeID As Integer, ByVal name As String)
+			Me.ReadIDAsync(caseContextArtifactID, parentArtifactID, codeTypeID, name, Nothing)
+		End Sub
+
+		'''<remarks/>
+		Public Overloads Sub ReadIDEncodedAsync(ByVal caseContextArtifactID As Integer, ByVal parentArtifactID As Integer, ByVal codeTypeID As Integer, ByVal name As String, ByVal userState As Object)
+			If (Me.ReadIDEncodedOperationCompleted Is Nothing) Then
+				Me.ReadIDEncodedOperationCompleted = AddressOf Me.OnReadIDEncodedOperationCompleted
+			End If
+			Me.InvokeAsync("ReadIDEncoded", New Object() {caseContextArtifactID, parentArtifactID, codeTypeID, name}, Me.ReadIDEncodedOperationCompleted, userState)
+		End Sub
+
+		Private Sub OnReadIDEncodedOperationCompleted(ByVal arg As Object)
+			If (Not (Me.ReadIDEncodedCompletedEvent) Is Nothing) Then
+				Dim invokeArgs As System.Web.Services.Protocols.InvokeCompletedEventArgs = CType(arg, System.Web.Services.Protocols.InvokeCompletedEventArgs)
+				RaiseEvent ReadIDEncodedCompleted(Me, New ReadIDEncodedCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState))
+			End If
+		End Sub
+
         '''<remarks/>
         <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/CodeManager/ReadID", RequestNamespace:="http://www.kCura.com/EDDS/CodeManager", ResponseNamespace:="http://www.kCura.com/EDDS/CodeManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
         Public Function ReadID(ByVal caseContextArtifactID As Integer, ByVal parentArtifactID As Integer, ByVal codeTypeID As Integer, ByVal name As String) As Integer
@@ -897,7 +1026,34 @@ Namespace kCura.EDDS.WebAPI.CodeManagerBase
             End Get
         End Property
     End Class
-    
+
+	'''<remarks/>
+	<System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.0.30319.17929")> _
+	Public Delegate Sub CreateEncodedCompletedEventHandler(ByVal sender As Object, ByVal e As CreateEncodedCompletedEventArgs)
+
+	'''<remarks/>
+	<System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.0.30319.17929"), _
+	 System.Diagnostics.DebuggerStepThroughAttribute(), _
+	 System.ComponentModel.DesignerCategoryAttribute("code")> _
+	Partial Public Class CreateEncodedCompletedEventArgs
+		Inherits System.ComponentModel.AsyncCompletedEventArgs
+
+		Private results() As Object
+
+		Friend Sub New(ByVal results() As Object, ByVal exception As System.Exception, ByVal cancelled As Boolean, ByVal userState As Object)
+			MyBase.New(exception, cancelled, userState)
+			Me.results = results
+		End Sub
+
+		'''<remarks/>
+		Public ReadOnly Property Result() As Object
+			Get
+				Me.RaiseExceptionIfNecessary()
+				Return CType(Me.results(0), Object)
+			End Get
+		End Property
+	End Class
+
     '''<remarks/>
     <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.0.30319.17929")>  _
     Public Delegate Sub CreateCompletedEventHandler(ByVal sender As Object, ByVal e As CreateCompletedEventArgs)
@@ -1005,7 +1161,34 @@ Namespace kCura.EDDS.WebAPI.CodeManagerBase
             End Get
         End Property
     End Class
-    
+
+	'''<remarks/>
+	<System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.0.30319.17929")> _
+	Public Delegate Sub RetrieveCodeByNameAndTypeIDEncodedCompletedEventHandler(ByVal sender As Object, ByVal e As RetrieveCodeByNameAndTypeIDEncodedCompletedEventArgs)
+
+	'''<remarks/>
+	<System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.0.30319.17929"), _
+	 System.Diagnostics.DebuggerStepThroughAttribute(), _
+	 System.ComponentModel.DesignerCategoryAttribute("code")> _
+	Partial Public Class RetrieveCodeByNameAndTypeIDEncodedCompletedEventArgs
+		Inherits System.ComponentModel.AsyncCompletedEventArgs
+
+		Private results() As Object
+
+		Friend Sub New(ByVal results() As Object, ByVal exception As System.Exception, ByVal cancelled As Boolean, ByVal userState As Object)
+			MyBase.New(exception, cancelled, userState)
+			Me.results = results
+		End Sub
+
+		'''<remarks/>
+		Public ReadOnly Property Result() As ChoiceInfo
+			Get
+				Me.RaiseExceptionIfNecessary()
+				Return CType(Me.results(0), ChoiceInfo)
+			End Get
+		End Property
+	End Class
+
     '''<remarks/>
     <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.0.30319.17929")>  _
     Public Delegate Sub RetrieveCodeByNameAndTypeIDCompletedEventHandler(ByVal sender As Object, ByVal e As RetrieveCodeByNameAndTypeIDCompletedEventArgs)
@@ -1032,7 +1215,34 @@ Namespace kCura.EDDS.WebAPI.CodeManagerBase
             End Get
         End Property
     End Class
-    
+
+	'''<remarks/>
+	<System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.0.30319.17929")> _
+	Public Delegate Sub ReadIDEncodedCompletedEventHandler(ByVal sender As Object, ByVal e As ReadIDEncodedCompletedEventArgs)
+
+	'''<remarks/>
+	<System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.0.30319.17929"), _
+	 System.Diagnostics.DebuggerStepThroughAttribute(), _
+	 System.ComponentModel.DesignerCategoryAttribute("code")> _
+	Partial Public Class ReadIDEncodedCompletedEventArgs
+		Inherits System.ComponentModel.AsyncCompletedEventArgs
+
+		Private results() As Object
+
+		Friend Sub New(ByVal results() As Object, ByVal exception As System.Exception, ByVal cancelled As Boolean, ByVal userState As Object)
+			MyBase.New(exception, cancelled, userState)
+			Me.results = results
+		End Sub
+
+		'''<remarks/>
+		Public ReadOnly Property Result() As Integer
+			Get
+				Me.RaiseExceptionIfNecessary()
+				Return CType(Me.results(0), Integer)
+			End Get
+		End Property
+	End Class
+
     '''<remarks/>
     <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.0.30319.17929")>  _
     Public Delegate Sub ReadIDCompletedEventHandler(ByVal sender As Object, ByVal e As ReadIDCompletedEventArgs)

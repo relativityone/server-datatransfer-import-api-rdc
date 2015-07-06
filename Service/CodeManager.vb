@@ -1,3 +1,5 @@
+Imports System.Web
+
 Namespace kCura.WinEDDS.Service
 	Public Class CodeManager
 		Inherits kCura.EDDS.WebAPI.CodeManagerBase.CodeManager
@@ -59,7 +61,8 @@ Namespace kCura.WinEDDS.Service
 			While tries < Config.MaxReloginTries
 				tries += 1
 				Try
-					Return MyBase.Create(caseContextArtifactID, code)
+					code.Name = HttpServerUtility.UrlTokenEncode(System.Text.Encoding.UTF8.GetBytes(code.Name))
+					Return MyBase.CreateEncoded(caseContextArtifactID, code)
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
 						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
@@ -76,7 +79,7 @@ Namespace kCura.WinEDDS.Service
 			While tries < Config.MaxReloginTries
 				tries += 1
 				Try
-					Return MyBase.ReadID(caseContextArtifactID, parentArtifactID, codeTypeID, name)
+					Return MyBase.ReadIDEncoded(caseContextArtifactID, parentArtifactID, codeTypeID, HttpServerUtility.UrlTokenEncode(System.Text.Encoding.UTF8.GetBytes(name)))
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
 						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
@@ -147,7 +150,7 @@ Namespace kCura.WinEDDS.Service
 			While tries < Config.MaxReloginTries
 				tries += 1
 				Try
-					Return Convert(MyBase.RetrieveCodeByNameAndTypeID(caseContextArtifactID, codeTypeID, name))
+					Return Convert(MyBase.RetrieveCodeByNameAndTypeIDEncoded(caseContextArtifactID, codeTypeID, HttpServerUtility.UrlTokenEncode(System.Text.Encoding.UTF8.GetBytes(name))))
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
 						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
