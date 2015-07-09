@@ -1,3 +1,5 @@
+Imports System.Web
+
 Namespace kCura.WinEDDS.Service
 	Public Class CodeManager
 		Inherits kCura.EDDS.WebAPI.CodeManagerBase.CodeManager
@@ -56,13 +58,27 @@ Namespace kCura.WinEDDS.Service
 
 		Public Shadows Function Create(ByVal caseContextArtifactID As Int32, ByVal code As kCura.EDDS.WebAPI.CodeManagerBase.Code) As Object
 			Dim tries As Int32 = 0
+			Dim encode As Boolean = True
+			Dim name As String = code.Name
+			Dim nameEncoded As String = HttpServerUtility.UrlTokenEncode(System.Text.Encoding.UTF8.GetBytes(code.Name))
 			While tries < Config.MaxReloginTries
 				tries += 1
 				Try
-					Return MyBase.Create(caseContextArtifactID, code)
+					If encode Then
+						code.Name = nameEncoded
+						Return MyBase.CreateEncoded(caseContextArtifactID, code)
+					Else
+						code.Name = name
+						Return MyBase.Create(caseContextArtifactID, code)
+					End If
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
 						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
+					ElseIf TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.Message.IndexOf("Server did not recognize the value of HTTP Header") <> -1 AndAlso encode Then
+						'DAM202: This error only occurs if the RDC is newer than the RelativityWebAPI and the new method (CreateEncoded) does not exist in the WebAPI.
+						'We do not want to use a relogin try when this error occurs.
+						tries -= 1
+						encode = False
 					Else
 						Throw
 					End If
@@ -73,13 +89,21 @@ Namespace kCura.WinEDDS.Service
 
 		Public Shadows Function ReadID(ByVal caseContextArtifactID As Int32, ByVal parentArtifactID As Int32, ByVal codeTypeID As Int32, ByVal name As String) As Int32
 			Dim tries As Int32 = 0
+			Dim encode As Boolean = True
 			While tries < Config.MaxReloginTries
 				tries += 1
 				Try
-					Return MyBase.ReadID(caseContextArtifactID, parentArtifactID, codeTypeID, name)
+					If encode Then
+						Return MyBase.ReadIDEncoded(caseContextArtifactID, parentArtifactID, codeTypeID, HttpServerUtility.UrlTokenEncode(System.Text.Encoding.UTF8.GetBytes(name)))
+					Else
+						Return MyBase.ReadID(caseContextArtifactID, parentArtifactID, codeTypeID, name)
+					End If
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
 						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
+					ElseIf TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.Message.IndexOf("Server did not recognize the value of HTTP Header") <> -1 AndAlso encode Then
+						tries -= 1
+						encode = False
 					Else
 						Throw
 					End If
@@ -144,13 +168,21 @@ Namespace kCura.WinEDDS.Service
 
 		Public Shadows Function RetrieveCodeByNameAndTypeID(ByVal caseContextArtifactID As Int32, ByVal codeTypeID As Int32, ByVal name As String) As Relativity.ChoiceInfo
 			Dim tries As Int32 = 0
+			Dim encode As Boolean = True
 			While tries < Config.MaxReloginTries
 				tries += 1
 				Try
-					Return Convert(MyBase.RetrieveCodeByNameAndTypeID(caseContextArtifactID, codeTypeID, name))
+					If encode Then
+						Return Convert(MyBase.RetrieveCodeByNameAndTypeIDEncoded(caseContextArtifactID, codeTypeID, HttpServerUtility.UrlTokenEncode(System.Text.Encoding.UTF8.GetBytes(name))))
+					Else
+						Return Convert(MyBase.RetrieveCodeByNameAndTypeID(caseContextArtifactID, codeTypeID, name))
+					End If
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
 						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
+					ElseIf TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.Message.IndexOf("Server did not recognize the value of HTTP Header") <> -1 AndAlso encode Then
+						tries -= 1
+						encode = False
 					Else
 						Throw
 					End If
