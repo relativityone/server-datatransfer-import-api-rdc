@@ -103,14 +103,14 @@ Namespace kCura.Relativity.DataReaderClient
 		Public Property ExtractedTextFieldContainsFilePath() As Boolean
 
 		''' <summary>
-		''' Indicates whether the Extracted Text field data will be loaded into SQL directly from its file path, rather than as part of a bulk load file.
+		''' Indicates whether the Extracted Text field data will be loaded directly from its file path, rather than as part of a bulk load file.
 		''' </summary>
 		''' <value></value>
 		''' <returns></returns>
 		''' <remarks>All Extracted Text files must exactly match the encoding of the Extracted Text field when this is set to True. 
 		''' If extracted text is unicode enabled, the files need to be UTF-16 encoded,  otherwise they need to be ANSI.
 		''' This setting will only be used when <see cref="ExtractedTextFieldContainsFilePath"/> is also set to True.</remarks>
-		Public Property TextInSqlAccessibleFileShareLocation() As Boolean
+		Public Property LoadImportedFullTextFromServer() As Boolean
 
 		''' <summary>
 		''' Represents a key field that is set only on Overwrite mode.
