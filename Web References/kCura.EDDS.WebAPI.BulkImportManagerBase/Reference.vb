@@ -1049,7 +1049,7 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
         
         Private linkDataGridRecordsField As Boolean
         
-        Private textInSqlAccessibleFileShareLocationField As Boolean
+        Private loadImportedFullTextFromServerField As Boolean
         
         Private keyFieldArtifactIDField As Integer
         
@@ -1236,12 +1236,12 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
         End Property
         
         '''<remarks/>
-        Public Property TextInSqlAccessibleFileShareLocation() As Boolean
+        Public Property LoadImportedFullTextFromServer() As Boolean
             Get
-                Return Me.textInSqlAccessibleFileShareLocationField
+                Return Me.loadImportedFullTextFromServerField
             End Get
             Set
-                Me.textInSqlAccessibleFileShareLocationField = value
+                Me.loadImportedFullTextFromServerField = value
             End Set
         End Property
         

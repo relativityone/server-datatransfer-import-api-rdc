@@ -958,7 +958,7 @@ Namespace kCura.WinEDDS
 					settings.Overlay = EDDS.WebAPI.BulkImportManagerBase.OverwriteType.Both
 			End Select
 			settings.UploadFiles = _filePathColumnIndex <> -1 AndAlso _settings.LoadNativeFiles
-			settings.TextInSqlAccessibleFileShareLocation = Me.TextInSqlAccessibleFileShareLocation
+			settings.LoadImportedFullTextFromServer = Me.LoadImportedFullTextFromServer
 
 			_statistics.MetadataTime += System.Math.Max((System.DateTime.Now.Ticks - start), 1)
 			_statistics.MetadataBytes += (Me.GetFileLength(_outputCodeFilePath) + Me.GetFileLength(outputNativePath) + Me.GetFileLength(_outputObjectFilePath) + Me.GetFileLength(_outputDataGridFilePath))
@@ -1168,7 +1168,7 @@ Namespace kCura.WinEDDS
 						chosenEncoding = extractedTextEncoding
 						Dim fileStream As Stream
 
-						If Me.TextInSqlAccessibleFileShareLocation Then
+						If Me.LoadImportedFullTextFromServer Then
 							If Not SkipExtractedTextEncodingCheck Then
 								Dim determinedEncodingStream As DeterminedEncodingStream = kCura.WinEDDS.Utility.DetectEncoding(field.ValueAsString, False)
 								fileStream = determinedEncodingStream.UnderlyingStream

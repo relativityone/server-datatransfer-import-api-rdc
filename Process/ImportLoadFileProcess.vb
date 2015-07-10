@@ -54,7 +54,7 @@ Namespace kCura.WinEDDS
 
 		Public Property SkipExtractedTextEncodingCheck As Boolean?
 
-		Public Property TextInSqlAccessibleFileShareLocation As Boolean
+		Public Property LoadImportedFullTextFromServer As Boolean
 
 		''' <summary>
 		''' Gets or sets the delimiter to use to separate fields in the bulk
@@ -105,7 +105,7 @@ Namespace kCura.WinEDDS
 			_loadFileImporter.OIFileTypeColumnName = OIFileTypeColumnName
 			_loadFileImporter.FileSizeColumn = FileSizeColumn
 			_loadFileImporter.FileSizeMapped = FileSizeMapped
-			_loadFileImporter.TextInSqlAccessibleFileShareLocation = Me.TextInSqlAccessibleFileShareLocation
+			_loadFileImporter.LoadImportedFullTextFromServer = Me.LoadImportedFullTextFromServer
 			'_newlineCounter = New kCura.Utility.File.Instance.LineCounter
 			'_newlineCounter.Path = LoadFile.FilePath
 			Me.ProcessObserver.InputArgs = LoadFile.FilePath
