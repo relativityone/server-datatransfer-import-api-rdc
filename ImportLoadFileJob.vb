@@ -123,7 +123,7 @@ Namespace kCura.Relativity.DataReaderClient
 				process.DisableUserSecurityCheck = Settings.DisableUserSecurityCheck
 				process.AuditLevel = Settings.AuditLevel
 				process.SkipExtractedTextEncodingCheck = Settings.DisableExtractedTextEncodingCheck
-				process.TextInSqlAccessibleFileShareLocation = Settings.TextInSqlAccessibleFileShareLocation
+				process.LoadImportedFullTextFromServer = Settings.LoadImportedFullTextFromServer
 				process.DisableExtractedTextFileLocationValidation = Settings.DisableExtractedTextFileLocationValidation
 				process.OIFileIdColumnName = Settings.OIFileIdColumnName
 				If (Not String.IsNullOrEmpty(Settings.BulkLoadFileFieldDelimiter)) Then
