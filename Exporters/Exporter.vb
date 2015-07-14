@@ -1,5 +1,8 @@
 Imports System.IO
 Imports System.Collections.Generic
+Imports System.Configuration
+Imports kCura.EDDS.WebAPI.ExportManagerBase
+Imports System.Web.Services.Protocols
 
 Namespace kCura.WinEDDS
 	Public Class Exporter
@@ -200,74 +203,19 @@ Namespace kCura.WinEDDS
 			Select Case Me.Settings.TypeOfExport
 				Case ExportFile.ExportType.ArtifactSearch
 					typeOfExportDisplayString = "search"
-					While tries < maxTries
-						tries += 1
-						Try
-							exportInitializationArgs = Me.ExportManager.InitializeSearchExport(_exportFile.CaseInfo.ArtifactID, Me.Settings.ArtifactID, allAvfIds.ToArray, Me.Settings.StartAtDocumentNumber + 1)
-							Exit While
-						Catch ex As System.Exception
-							If tries < maxTries AndAlso Not (TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("Need To Re Login") <> -1) Then
-								Me.WriteStatusLine(kCura.Windows.Process.EventType.Status, "Error occurred, attempting retry number " & tries & ", in " & WaitTimeBetweenRetryAttempts & " seconds...", True)
-								System.Threading.Thread.CurrentThread.Join(WaitTimeBetweenRetryAttempts * 1000)
-							Else
-								Throw
-							End If
-						End Try
-					End While
+					exportInitializationArgs = CallServerWithRetry(Function() Me.ExportManager.InitializeSearchExport(_exportFile.CaseInfo.ArtifactID, Me.Settings.ArtifactID, allAvfIds.ToArray, Me.Settings.StartAtDocumentNumber + 1), maxTries)					
 
 				Case ExportFile.ExportType.ParentSearch
 					typeOfExportDisplayString = "folder"
-
-					While tries < maxTries
-						tries += 1
-						Try
-							exportInitializationArgs = Me.ExportManager.InitializeFolderExport(Me.Settings.CaseArtifactID, Me.Settings.ViewID, Me.Settings.ArtifactID, False, allAvfIds.ToArray, Me.Settings.StartAtDocumentNumber + 1, Me.Settings.ArtifactTypeID)
-							Exit While
-						Catch ex As System.Exception
-							If tries < maxTries AndAlso Not (TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("Need To Re Login") <> -1) Then
-								Me.WriteStatusLine(kCura.Windows.Process.EventType.Status, "Error occurred, attempting retry number " & tries & ", in " & WaitTimeBetweenRetryAttempts & " seconds...", True)
-								System.Threading.Thread.CurrentThread.Join(WaitTimeBetweenRetryAttempts * 1000)
-							Else
-								Throw
-							End If
-						End Try
-					End While
-
+					exportInitializationArgs = CallServerWithRetry(Function() Me.ExportManager.InitializeFolderExport(Me.Settings.CaseArtifactID, Me.Settings.ViewID, Me.Settings.ArtifactID, False, allAvfIds.ToArray, Me.Settings.StartAtDocumentNumber + 1, Me.Settings.ArtifactTypeID), maxTries)
+					
 				Case ExportFile.ExportType.AncestorSearch
 					typeOfExportDisplayString = "folder and subfolder"
-
-					While tries < maxTries
-						tries += 1
-						Try
-							exportInitializationArgs = Me.ExportManager.InitializeFolderExport(Me.Settings.CaseArtifactID, Me.Settings.ViewID, Me.Settings.ArtifactID, True, allAvfIds.ToArray, Me.Settings.StartAtDocumentNumber + 1, Me.Settings.ArtifactTypeID)
-							Exit While
-						Catch ex As System.Exception
-							If tries < maxTries AndAlso Not (TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("Need To Re Login") <> -1) Then
-								Me.WriteStatusLine(kCura.Windows.Process.EventType.Status, "Error occurred, attempting retry number " & tries & ", in " & WaitTimeBetweenRetryAttempts & " seconds...", True)
-								System.Threading.Thread.CurrentThread.Join(WaitTimeBetweenRetryAttempts * 1000)
-							Else
-								Throw
-							End If
-						End Try
-					End While
+					exportInitializationArgs = CallServerWithRetry(Function() Me.ExportManager.InitializeFolderExport(Me.Settings.CaseArtifactID, Me.Settings.ViewID, Me.Settings.ArtifactID, True, allAvfIds.ToArray, Me.Settings.StartAtDocumentNumber + 1, Me.Settings.ArtifactTypeID), maxTries)
 
 				Case ExportFile.ExportType.Production
 					typeOfExportDisplayString = "production"
-
-					While tries < maxTries
-						tries += 1
-						Try
-							exportInitializationArgs = Me.ExportManager.InitializeProductionExport(_exportFile.CaseInfo.ArtifactID, Me.Settings.ArtifactID, allAvfIds.ToArray, Me.Settings.StartAtDocumentNumber + 1)
-							Exit While
-						Catch ex As System.Exception
-							If tries < maxTries AndAlso Not (TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("Need To Re Login") <> -1) Then
-								Me.WriteStatusLine(kCura.Windows.Process.EventType.Status, "Error occurred, attempting retry number " & tries & ", in " & WaitTimeBetweenRetryAttempts & " seconds...", True)
-								System.Threading.Thread.CurrentThread.Join(WaitTimeBetweenRetryAttempts * 1000)
-							Else
-								Throw
-							End If
-						End Try
-					End While
+					exportInitializationArgs = CallServerWithRetry(Function() Me.ExportManager.InitializeProductionExport(_exportFile.CaseInfo.ArtifactID, Me.Settings.ArtifactID, allAvfIds.ToArray, Me.Settings.StartAtDocumentNumber + 1), maxTries)					
 
 			End Select
 			Me.TotalExportArtifactCount = CType(exportInitializationArgs.RowCount, Int32)
@@ -296,22 +244,9 @@ Namespace kCura.WinEDDS
 				startTicks = System.DateTime.Now.Ticks
 				Dim textPrecedenceAvfIds As Int32() = Nothing
 				If Not Me.Settings.SelectedTextFields Is Nothing AndAlso Me.Settings.SelectedTextFields.Count > 0 Then textPrecedenceAvfIds = Me.Settings.SelectedTextFields.Select(Of Int32)(Function(f As ViewFieldInfo) f.AvfId).ToArray
+				
 
-				tries = 0
-				While tries < maxTries
-					tries += 1
-					Try
-						records = Me.ExportManager.RetrieveResultsBlock(Me.Settings.CaseInfo.ArtifactID, exportInitializationArgs.RunId, Me.Settings.ArtifactTypeID, allAvfIds.ToArray, Config.ExportBatchSize, Me.Settings.MulticodesAsNested, Me.Settings.MultiRecordDelimiter, Me.Settings.NestedValueDelimiter, textPrecedenceAvfIds)
-						Exit While
-					Catch ex As System.Exception
-						If tries < maxTries AndAlso Not (TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("Need To Re Login") <> -1) Then
-							Me.WriteStatusLine(kCura.Windows.Process.EventType.Status, "Error occurred, attempting retry number " & tries & ", in " & WaitTimeBetweenRetryAttempts & " seconds...", True)
-							System.Threading.Thread.CurrentThread.Join(WaitTimeBetweenRetryAttempts * 1000)
-						Else
-							Throw
-						End If
-					End Try
-				End While
+				records = CallServerWithRetry(Function() Me.ExportManager.RetrieveResultsBlock(Me.Settings.CaseInfo.ArtifactID, exportInitializationArgs.RunId, Me.Settings.ArtifactTypeID, allAvfIds.ToArray, Config.ExportBatchSize, Me.Settings.MulticodesAsNested, Me.Settings.MultiRecordDelimiter,Me.Settings.NestedValueDelimiter,  textPrecedenceAvfIds), maxTries)
 
 				If records Is Nothing Then Exit While
 				If Me.Settings.TypeOfExport = ExportFile.ExportType.Production AndAlso production IsNot Nothing AndAlso production.DocumentsHaveRedactions Then
@@ -338,6 +273,30 @@ Namespace kCura.WinEDDS
 			_volumeManager.Finish()
 			Me.AuditRun(True)
 			Return Nothing
+		End Function
+
+		Private Function CallServerWithRetry(Of T)(f As Func(Of T), Byval maxTries As Int32) As T
+			Dim tries As Integer
+			Dim records As T
+
+			tries = 0
+			While tries < maxTries
+				tries += 1
+				Try
+					records = f() 
+					Exit While
+				Catch ex As System.Exception
+					If TypeOf(ex) Is System.InvalidOperationException AndAlso ex.Message.Contains("empty response") Then
+						Throw New Exception("Communication with the WebAPI server has failed, possibly because values for MaximumLongTextSizeForExportInCell and/or MaximumTextVolumeForExportChunk are too large.  Please lower them and try again.", ex)
+					ElseIf tries < maxTries AndAlso Not (TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("Need To Re Login") <> -1) Then
+						Me.WriteStatusLine(kCura.Windows.Process.EventType.Status, "Error occurred, attempting retry number " & tries & ", in " & WaitTimeBetweenRetryAttempts & " seconds...", True)
+						System.Threading.Thread.CurrentThread.Join(WaitTimeBetweenRetryAttempts * 1000)
+					Else
+						Throw
+					End If
+				End Try
+			End While
+			Return records
 		End Function
 
 #Region "Private Helper Functions"
