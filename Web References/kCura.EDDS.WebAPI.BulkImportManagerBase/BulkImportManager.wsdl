@@ -151,6 +151,7 @@
           <s:element minOccurs="1" maxOccurs="1" name="OverlayArtifactID" type="s:int" />
           <s:element minOccurs="1" maxOccurs="1" name="OverlayBehavior" type="tns:OverlayBehavior" />
           <s:element minOccurs="1" maxOccurs="1" name="LinkDataGridRecords" type="s:boolean" />
+          <s:element minOccurs="1" maxOccurs="1" name="LoadImportedFullTextFromServer" type="s:boolean" />
           <s:element minOccurs="1" maxOccurs="1" name="KeyFieldArtifactID" type="s:int" />
           <s:element minOccurs="1" maxOccurs="1" name="RootFolderID" type="s:int" />
         </s:sequence>

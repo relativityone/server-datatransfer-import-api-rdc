@@ -54,6 +54,8 @@ Namespace kCura.WinEDDS
 
 		Public Property SkipExtractedTextEncodingCheck As Boolean?
 
+		Public Property LoadImportedFullTextFromServer As Boolean
+
 		''' <summary>
 		''' Gets or sets the delimiter to use to separate fields in the bulk
 		''' file created in this process. Line delimiters will be this value plus a line feed.
@@ -103,10 +105,11 @@ Namespace kCura.WinEDDS
 			_loadFileImporter.OIFileTypeColumnName = OIFileTypeColumnName
 			_loadFileImporter.FileSizeColumn = FileSizeColumn
 			_loadFileImporter.FileSizeMapped = FileSizeMapped
+			_loadFileImporter.LoadImportedFullTextFromServer = Me.LoadImportedFullTextFromServer
 			'_newlineCounter = New kCura.Utility.File.Instance.LineCounter
 			'_newlineCounter.Path = LoadFile.FilePath
 			Me.ProcessObserver.InputArgs = LoadFile.FilePath
-			
+
 			If (CType(_loadFileImporter.ReadFile(LoadFile.FilePath), Boolean)) AndAlso Not _hasRunPRocessComplete Then
 				If _loadFileImporter.HasErrors Then
 					Me.ProcessObserver.RaiseProcessCompleteEvent(False, System.Guid.NewGuid.ToString, True)
@@ -116,7 +119,7 @@ Namespace kCura.WinEDDS
 			Else
 				Me.ProcessObserver.RaiseStatusEvent("", "Import aborted")
 			End If
-			
+
 		End Sub
 
 		Private Sub AuditRun(ByVal success As Boolean, ByVal runID As String)
