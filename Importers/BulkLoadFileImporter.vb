@@ -74,7 +74,7 @@ Namespace kCura.WinEDDS
 		Private Const _UNKNOWN_PARENT_FOLDER_ID As Int32 = -9
 		Public Const DATA_GRID_ID_FIELD_NAME As String = "DataGridID"
 		Private Const LENGTH_OF_FOLDER_ALLOWED As Integer = 255
-		Private Const ERROR_MESSAGE_FOLDER_NAME_TOO_LONG As String = "The file cannot be published because the folder name is too long. Contact an administrator."
+		Private Const ERROR_MESSAGE_FOLDER_NAME_TOO_LONG As String = "Error occurred when importing the document. The folder name is longer than 255 characters."
 #End Region
 
 #Region "Accessors"
