@@ -37,19 +37,20 @@ Namespace kCura.WinEDDS
 		Private _copyFileToRepository As Boolean
 		Private _oixFileLookup As System.Collections.Specialized.HybridDictionary
 		Private _fieldArtifactIds As Int32()
-		Private _outputNativeFileWriter As System.IO.StreamWriter
+		Private _outputFileWriter As kCura.WinEDDS.OutputFileWriter = New kCura.WinEDDS.OutputFileWriter()
+		'Private _outputNativeFileWriter As System.IO.StreamWriter
 		Private _outputCodeFileWriter As System.IO.StreamWriter
 		Private _outputObjectFileWriter As System.IO.StreamWriter
-		Private _outputDataGridFileWriter As System.IO.StreamWriter
+		'Private _outputDataGridFileWriter As System.IO.StreamWriter
 		Private _caseInfo As Relativity.CaseInfo
 		Private _overlayArtifactID As Int32
 
 		Private _runID As String = System.Guid.NewGuid.ToString.Replace("-", "_")
 
-		Private _outputNativeFilePath As String = System.IO.Path.GetTempFileName
+		'Private _outputNativeFilePath As String = System.IO.Path.GetTempFileName
 		Private _outputCodeFilePath As String = System.IO.Path.GetTempFileName
 		Private _outputObjectFilePath As String = System.IO.Path.GetTempFileName
-		Private _outputDataGridFilePath As String = System.IO.Path.GetTempFileName
+		'Private _outputDataGridFilePath As String = System.IO.Path.GetTempFileName
 		Private _filePath As String
 		Private _batchCounter As Int32 = 0
 		Private _errorMessageFileLocation As String = String.Empty
@@ -392,7 +393,7 @@ Namespace kCura.WinEDDS
 			Try
 				RaiseEvent StartFileImport()
 				_timekeeper.MarkStart("ReadFile_InitializeMembers")
-				Dim validateBcp As FileUploadReturnArgs = _bcpuploader.ValidateBcpPath(_caseInfo.ArtifactID, _outputNativeFilePath)
+				Dim validateBcp As FileUploadReturnArgs = _bcpuploader.ValidateBcpPath(_caseInfo.ArtifactID, _outputFileWriter.OutputNativeFilePath)
 				If validateBcp.Type = FileUploadReturnArgs.FileUploadReturnType.UploadError And Not Config.EnableSingleModeImport Then
 					Throw New BcpPathAccessException(validateBcp.Value)
 				Else
@@ -493,10 +494,10 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Private Sub DeleteFiles()
-			kCura.Utility.File.Instance.Delete(_outputNativeFilePath)
+			kCura.Utility.File.Instance.Delete(_outputFileWriter.OutputNativeFilePath)
 			kCura.Utility.File.Instance.Delete(_outputCodeFilePath)
 			kCura.Utility.File.Instance.Delete(_outputObjectFilePath)
-			kCura.Utility.File.Instance.Delete(_outputDataGridFilePath)
+			kCura.Utility.File.Instance.Delete(_outputFileWriter.OutputDataGridFilePath)
 		End Sub
 
 		Private Sub InitializeFolderManagement()
@@ -735,7 +736,7 @@ Namespace kCura.WinEDDS
 				_timekeeper.MarkEnd("ManageDocumentMetadata_ManageDocumentLine")
 				_batchCounter += 1
 				_timekeeper.MarkStart("ManageDocumentMetadata_WserviceCall")
-				If _outputNativeFileWriter.BaseStream.Length > ImportBatchVolume OrElse _batchCounter > ImportBatchSize - 1 Then
+				If _outputFileWriter.OutputNativeFileWriter.BaseStream.Length > ImportBatchVolume OrElse _batchCounter > ImportBatchSize - 1 Then
 					Me.TryPushNativeBatch()
 				End If
 				_timekeeper.MarkEnd("ManageDocumentMetadata_WserviceCall")
@@ -834,7 +835,7 @@ Namespace kCura.WinEDDS
 
 		Private Sub TryPushNativeBatch(Optional ByVal lastRun As Boolean = False)
 			CloseFileWriters()
-			Dim outputNativePath As String = _outputNativeFilePath
+			Dim outputNativePath As String = _outputFileWriter.OutputNativeFilePath
 			Try
 				PushNativeBatch(outputNativePath)
 			Catch ex As Exception
@@ -928,7 +929,7 @@ Namespace kCura.WinEDDS
 			Dim objectbcp As FileUploadReturnArgs = _bcpuploader.UploadBcpFile(_caseInfo.ArtifactID, _outputObjectFilePath)
 			If objectbcp Is Nothing Then Exit Sub
 
-			Dim datagridbcp As FileUploadReturnArgs = _bcpuploader.UploadBcpFile(_caseInfo.ArtifactID, _outputDataGridFilePath)
+			Dim datagridbcp As FileUploadReturnArgs = _bcpuploader.UploadBcpFile(_caseInfo.ArtifactID, _outputFileWriter.OutputDataGridFilePath)
 			If datagridbcp Is Nothing Then Exit Sub
 
 			Dim nativeFileUploadKey As String = uploadBcp.Value
@@ -950,7 +951,7 @@ Namespace kCura.WinEDDS
 					nativeFileUploadKey = _bcpuploader.UploadFile(outputNativePath, _caseInfo.ArtifactID)
 					codeFileUploadKey = _bcpuploader.UploadFile(_outputCodeFilePath, _caseInfo.ArtifactID)
 					objectFileUploadKey = _bcpuploader.UploadFile(_outputObjectFilePath, _caseInfo.ArtifactID)
-					dataGridFileUploadKey = _bcpuploader.UploadFile(_outputDataGridFilePath, _caseInfo.ArtifactID)
+					dataGridFileUploadKey = _bcpuploader.UploadFile(_outputFileWriter.OutputDataGridFilePath, _caseInfo.ArtifactID)
 					settings.UseBulkDataImport = False
 				Else
 					Throw New BcpPathAccessException(uploadBcp.Value)
@@ -978,7 +979,7 @@ Namespace kCura.WinEDDS
 			settings.LoadImportedFullTextFromServer = Me.LoadImportedFullTextFromServer
 
 			_statistics.MetadataTime += System.Math.Max((System.DateTime.Now.Ticks - start), 1)
-			_statistics.MetadataBytes += (Me.GetFileLength(_outputCodeFilePath) + Me.GetFileLength(outputNativePath) + Me.GetFileLength(_outputObjectFilePath) + Me.GetFileLength(_outputDataGridFilePath))
+			_statistics.MetadataBytes += (Me.GetFileLength(_outputCodeFilePath) + Me.GetFileLength(outputNativePath) + Me.GetFileLength(_outputObjectFilePath) + Me.GetFileLength(_outputFileWriter.OutputDataGridFilePath))
 			start = System.DateTime.Now.Ticks
 
 			Dim runResults As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults = Me.BulkImport(settings, _fullTextColumnMapsToFileLocation)
@@ -1005,17 +1006,15 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Private Sub OpenFileWriters()
-			_outputNativeFileWriter = New System.IO.StreamWriter(_outputNativeFilePath, False, System.Text.Encoding.Unicode)
+			_outputFileWriter.Open()
 			_outputCodeFileWriter = New System.IO.StreamWriter(_outputCodeFilePath, False, System.Text.Encoding.Unicode)
 			_outputObjectFileWriter = New System.IO.StreamWriter(_outputObjectFilePath, False, System.Text.Encoding.Unicode)
-			_outputDataGridFileWriter = New System.IO.StreamWriter(_outputDataGridFilePath, False, System.Text.Encoding.Unicode)
 		End Sub
 
 		Private Sub CloseFileWriters()
-			_outputNativeFileWriter.Close()
+			_outputFileWriter.Close()
 			_outputCodeFileWriter.Close()
 			_outputObjectFileWriter.Close()
-			_outputDataGridFileWriter.Close()
 		End Sub
 
 		Public Function GetMappedFields(ByVal artifactTypeID As Int32, ByVal ObjectFieldIdListContainsArtifactId As IList(Of Int32)) As kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo()
@@ -1048,49 +1047,45 @@ Namespace kCura.WinEDDS
 		Private Sub ManageDocumentLine(ByVal mdoc As MetaDocument)
 			Dim chosenEncoding As System.Text.Encoding = Nothing
 
-			'save output file positions in case we have to rollback the writes
-			_outputNativeFileWriter.Flush()
-			_outputDataGridFileWriter.Flush()
-			Dim currentNativeFileWriterPos As Long = _outputNativeFileWriter.BaseStream.Length
-			Dim currentDataGridFileWriterPos As Long = _outputDataGridFileWriter.BaseStream.Length
+			_outputFileWriter.MarkRollbackPosition()
 
-			_outputNativeFileWriter.Write("0" & _bulkLoadFileFieldDelimiter) 'kCura_Import_ID
-			_outputNativeFileWriter.Write(mdoc.LineStatus.ToString & _bulkLoadFileFieldDelimiter)	'kCura_Import_Status
-			_outputNativeFileWriter.Write("0" & _bulkLoadFileFieldDelimiter) 'kCura_Import_IsNew
-			_outputNativeFileWriter.Write("0" & _bulkLoadFileFieldDelimiter) 'ArtifactID
-			_outputNativeFileWriter.Write(mdoc.LineNumber & _bulkLoadFileFieldDelimiter) 'kCura_Import_OriginalLineNumber
+			_outputFileWriter.OutputNativeFileWriter.Write("0" & _bulkLoadFileFieldDelimiter) 'kCura_Import_ID
+			_outputFileWriter.OutputNativeFileWriter.Write(mdoc.LineStatus.ToString & _bulkLoadFileFieldDelimiter)	'kCura_Import_Status
+			_outputFileWriter.OutputNativeFileWriter.Write("0" & _bulkLoadFileFieldDelimiter) 'kCura_Import_IsNew
+			_outputFileWriter.OutputNativeFileWriter.Write("0" & _bulkLoadFileFieldDelimiter) 'ArtifactID
+			_outputFileWriter.OutputNativeFileWriter.Write(mdoc.LineNumber & _bulkLoadFileFieldDelimiter) 'kCura_Import_OriginalLineNumber
 
 			If mdoc.UploadFile And mdoc.IndexFileInDB Then
-				_outputNativeFileWriter.Write(mdoc.FileGuid & _bulkLoadFileFieldDelimiter)	'kCura_Import_FileGuid
-				_outputNativeFileWriter.Write(mdoc.Filename & _bulkLoadFileFieldDelimiter)	'kCura_Import_FileName
+				_outputFileWriter.OutputNativeFileWriter.Write(mdoc.FileGuid & _bulkLoadFileFieldDelimiter)	'kCura_Import_FileGuid
+				_outputFileWriter.OutputNativeFileWriter.Write(mdoc.Filename & _bulkLoadFileFieldDelimiter)	'kCura_Import_FileName
 				If _settings.CopyFilesToDocumentRepository Then
-					_outputNativeFileWriter.Write(_defaultDestinationFolderPath & mdoc.DestinationVolume & "\" & mdoc.FileGuid & _bulkLoadFileFieldDelimiter)	'kCura_Import_Location
-					_outputNativeFileWriter.Write(mdoc.FullFilePath & _bulkLoadFileFieldDelimiter) 'kCura_Import_OriginalFileLocation
+					_outputFileWriter.OutputNativeFileWriter.Write(_defaultDestinationFolderPath & mdoc.DestinationVolume & "\" & mdoc.FileGuid & _bulkLoadFileFieldDelimiter)	'kCura_Import_Location
+					_outputFileWriter.OutputNativeFileWriter.Write(mdoc.FullFilePath & _bulkLoadFileFieldDelimiter)	'kCura_Import_OriginalFileLocation
 				Else
-					_outputNativeFileWriter.Write(mdoc.FullFilePath & _bulkLoadFileFieldDelimiter) 'kCura_Import_Location
-					_outputNativeFileWriter.Write(mdoc.FullFilePath & _bulkLoadFileFieldDelimiter) 'kCura_Import_OriginalFileLocation
+					_outputFileWriter.OutputNativeFileWriter.Write(mdoc.FullFilePath & _bulkLoadFileFieldDelimiter)	'kCura_Import_Location
+					_outputFileWriter.OutputNativeFileWriter.Write(mdoc.FullFilePath & _bulkLoadFileFieldDelimiter)	'kCura_Import_OriginalFileLocation
 				End If
 				Dim fileSizeExtractor As kCura.WinEDDS.Api.IHasFileSize = TryCast(mdoc, kCura.WinEDDS.Api.IHasFileSize)
 				If (fileSizeExtractor Is Nothing) Then
-					_outputNativeFileWriter.Write(Me.GetFileLength(mdoc.FullFilePath) & _bulkLoadFileFieldDelimiter) 'kCura_Import_FileSize
+					_outputFileWriter.OutputNativeFileWriter.Write(Me.GetFileLength(mdoc.FullFilePath) & _bulkLoadFileFieldDelimiter) 'kCura_Import_FileSize
 				Else
-					_outputNativeFileWriter.Write(fileSizeExtractor.GetFileSize() & _bulkLoadFileFieldDelimiter) 'kCura_Import_FileSize
+					_outputFileWriter.OutputNativeFileWriter.Write(fileSizeExtractor.GetFileSize() & _bulkLoadFileFieldDelimiter) 'kCura_Import_FileSize
 				End If
 
 			Else
-				_outputNativeFileWriter.Write(_bulkLoadFileFieldDelimiter) 'kCura_Import_FileGuid
-				_outputNativeFileWriter.Write(_bulkLoadFileFieldDelimiter) 'kCura_Import_FileName
-				_outputNativeFileWriter.Write(_bulkLoadFileFieldDelimiter) 'kCura_Import_Location
-				_outputNativeFileWriter.Write(_bulkLoadFileFieldDelimiter) 'kCura_Import_OriginalFileLocation
-				_outputNativeFileWriter.Write("0" & _bulkLoadFileFieldDelimiter) 'kCura_Import_FileSize
+				_outputFileWriter.OutputNativeFileWriter.Write(_bulkLoadFileFieldDelimiter)	'kCura_Import_FileGuid
+				_outputFileWriter.OutputNativeFileWriter.Write(_bulkLoadFileFieldDelimiter)	'kCura_Import_FileName
+				_outputFileWriter.OutputNativeFileWriter.Write(_bulkLoadFileFieldDelimiter)	'kCura_Import_Location
+				_outputFileWriter.OutputNativeFileWriter.Write(_bulkLoadFileFieldDelimiter)	'kCura_Import_OriginalFileLocation
+				_outputFileWriter.OutputNativeFileWriter.Write("0" & _bulkLoadFileFieldDelimiter) 'kCura_Import_FileSize
 			End If
-			_outputNativeFileWriter.Write(mdoc.ParentFolderID & _bulkLoadFileFieldDelimiter) 'kCura_Import_ParentFolderID
+			_outputFileWriter.OutputNativeFileWriter.Write(mdoc.ParentFolderID & _bulkLoadFileFieldDelimiter) 'kCura_Import_ParentFolderID
 
 			Dim foundDataGridField As Boolean = False
 
 			' If we're mapping, always write out to the data grid file writer
 			If (Not String.IsNullOrEmpty(mdoc.DataGridID)) Then
-				_outputDataGridFileWriter.Write(mdoc.IdentityValue & _bulkLoadFileFieldDelimiter & mdoc.DataGridID & _bulkLoadFileFieldDelimiter)
+				_outputFileWriter.OutputDataGridFileWriter.Write(mdoc.IdentityValue & _bulkLoadFileFieldDelimiter & mdoc.DataGridID & _bulkLoadFileFieldDelimiter)
 				foundDataGridField = True
 			End If
 
@@ -1099,24 +1094,24 @@ Namespace kCura.WinEDDS
 					Select Case field.EnableDataGrid
 
 						Case False
-							WriteDocumentField(chosenEncoding, field, _outputNativeFileWriter, _fullTextColumnMapsToFileLocation, _bulkLoadFileFieldDelimiter, _artifactTypeID, _extractedTextFileEncoding)
+							WriteDocumentField(chosenEncoding, field, _outputFileWriter.OutputNativeFileWriter, _fullTextColumnMapsToFileLocation, _bulkLoadFileFieldDelimiter, _artifactTypeID, _extractedTextFileEncoding)
 
 						Case True
 							If Not foundDataGridField Then
 								'write the data grid identity field as the first column and an empty data grid id as the second column, but only when we have data grid fields
-								_outputDataGridFileWriter.Write(mdoc.IdentityValue & _bulkLoadFileFieldDelimiter & String.Empty & _bulkLoadFileFieldDelimiter)
+								_outputFileWriter.OutputDataGridFileWriter.Write(mdoc.IdentityValue & _bulkLoadFileFieldDelimiter & String.Empty & _bulkLoadFileFieldDelimiter)
 								foundDataGridField = True
 							End If
 
 							'TODO: do we want to set/update the "chosenEncoding" property if the extracted text is going to the data grid?
-							WriteDocumentField(chosenEncoding, field, _outputDataGridFileWriter, _fullTextColumnMapsToFileLocation, _bulkLoadFileFieldDelimiter, _artifactTypeID, _extractedTextFileEncoding)
+							WriteDocumentField(chosenEncoding, field, _outputFileWriter.OutputDataGridFileWriter, _fullTextColumnMapsToFileLocation, _bulkLoadFileFieldDelimiter, _artifactTypeID, _extractedTextFileEncoding)
 
 					End Select
 				Catch ex As ExtractedTextFileNotFoundException
-					RollbackDocumentLineWrites(currentNativeFileWriterPos, currentDataGridFileWriterPos)
+					_outputFileWriter.RollbackDocumentLineWrites()
 					Throw
 				Catch ex As ExtractedTextTooLargeException
-					RollbackDocumentLineWrites(currentNativeFileWriterPos, currentDataGridFileWriterPos)
+					_outputFileWriter.RollbackDocumentLineWrites()
 					Throw
 				End Try
 			Next
@@ -1125,24 +1120,24 @@ Namespace kCura.WinEDDS
 				If _filePathColumnIndex <> -1 AndAlso mdoc.UploadFile AndAlso mdoc.IndexFileInDB Then
 					Dim boolString As String = "0"
 					If Me.IsSupportedRelativityFileType(mdoc.FileIdData) Then boolString = "1"
-					_outputNativeFileWriter.Write(boolString & _bulkLoadFileFieldDelimiter)
+					_outputFileWriter.OutputNativeFileWriter.Write(boolString & _bulkLoadFileFieldDelimiter)
 					Dim fieldType As String = mdoc.GetFileType()
 
-					_outputNativeFileWriter.Write(fieldType & _bulkLoadFileFieldDelimiter)
-					_outputNativeFileWriter.Write("1" & _bulkLoadFileFieldDelimiter)
+					_outputFileWriter.OutputNativeFileWriter.Write(fieldType & _bulkLoadFileFieldDelimiter)
+					_outputFileWriter.OutputNativeFileWriter.Write("1" & _bulkLoadFileFieldDelimiter)
 				Else
-					_outputNativeFileWriter.Write("0" & _bulkLoadFileFieldDelimiter)
-					_outputNativeFileWriter.Write(_bulkLoadFileFieldDelimiter)
-					_outputNativeFileWriter.Write("0" & _bulkLoadFileFieldDelimiter)
+					_outputFileWriter.OutputNativeFileWriter.Write("0" & _bulkLoadFileFieldDelimiter)
+					_outputFileWriter.OutputNativeFileWriter.Write(_bulkLoadFileFieldDelimiter)
+					_outputFileWriter.OutputNativeFileWriter.Write("0" & _bulkLoadFileFieldDelimiter)
 				End If
 			End If
 
 			'_fullTextColumnMapsToFileLocation and chosenEncoding indicate that extracted text is being mapped
 			'In that case, we need a field (it can be empty but it needs the field delimiter) for the extracted text encoding
 			If chosenEncoding IsNot Nothing Then
-				_outputNativeFileWriter.Write(chosenEncoding.CodePage.ToString() & _bulkLoadFileFieldDelimiter)
+				_outputFileWriter.OutputNativeFileWriter.Write(chosenEncoding.CodePage.ToString() & _bulkLoadFileFieldDelimiter)
 			ElseIf _fullTextColumnMapsToFileLocation Then
-				_outputNativeFileWriter.Write(_bulkLoadFileFieldDelimiter)
+				_outputFileWriter.OutputNativeFileWriter.Write(_bulkLoadFileFieldDelimiter)
 			End If
 
 			If kCura.WinEDDS.Config.CreateFoldersInWebAPI Then
@@ -1155,13 +1150,13 @@ Namespace kCura.WinEDDS
 				'settings object -- NativeFileInfo.RootFolderID will be 0.
 				If _artifactTypeID = Relativity.ArtifactType.Document Then
 					'Last column is the folder path (ONLY IF THIS IS A DOCUMENT LOAD... adding this to object imports will break them)
-					_outputNativeFileWriter.Write(mdoc.FolderPath & _bulkLoadFileFieldDelimiter)
+					_outputFileWriter.OutputNativeFileWriter.Write(mdoc.FolderPath & _bulkLoadFileFieldDelimiter)
 				End If
 			End If
-			_outputNativeFileWriter.Write(_bulkLoadFileFieldDelimiter) 'kCura_DataGrid_Exception
-			_outputNativeFileWriter.Write(vbCrLf)
+			_outputFileWriter.OutputNativeFileWriter.Write(_bulkLoadFileFieldDelimiter)	'kCura_DataGrid_Exception
+			_outputFileWriter.OutputNativeFileWriter.Write(vbCrLf)
 			If foundDataGridField Then
-				_outputDataGridFileWriter.Write(vbCrLf)
+				_outputFileWriter.OutputDataGridFileWriter.Write(vbCrLf)
 			End If
 		End Sub
 
@@ -1286,22 +1281,6 @@ Namespace kCura.WinEDDS
 			End If
 		End Sub
 
-		Private Sub RollbackDocumentLineWrites(currentNativeFileWriterPos As Long, currentDataGridFileWriterPos As Long)
-			_outputNativeFileWriter.Close()
-			_outputDataGridFileWriter.Close()
-
-			Dim fs As New FileStream(_outputNativeFilePath, FileMode.Open, FileAccess.ReadWrite)
-			fs.SetLength(currentNativeFileWriterPos)
-			fs.Close()
-
-			fs = New FileStream(_outputDataGridFilePath, FileMode.Open, FileAccess.ReadWrite)
-			fs.SetLength(currentDataGridFileWriterPos)
-			fs.Close()
-
-			_outputNativeFileWriter = New System.IO.StreamWriter(_outputNativeFilePath, True, System.Text.Encoding.Unicode)
-			_outputDataGridFileWriter = New System.IO.StreamWriter(_outputDataGridFilePath, True, System.Text.Encoding.Unicode)
-		End Sub
-
 		Private Function GetIsSupportedRelativityFileTypeField() As kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo
 			For Each field As kCura.EDDS.WebAPI.DocumentManagerBase.Field In _allFields
 				If field.DisplayName.ToLower = "supported by viewer" Then
@@ -1379,10 +1358,10 @@ Namespace kCura.WinEDDS
 #Region "Field Preparation"
 
 		Private Function PrepareFieldCollectionAndExtractIdentityValue(ByVal record As Api.ArtifactFieldCollection) As String
-			System.Threading.Monitor.Enter(_outputNativeFileWriter)
+			System.Threading.Monitor.Enter(_outputFileWriter.OutputNativeFileWriter)
 			System.Threading.Monitor.Enter(_outputCodeFileWriter)
 			System.Threading.Monitor.Enter(_outputObjectFileWriter)
-			System.Threading.Monitor.Enter(_outputDataGridFileWriter)
+			System.Threading.Monitor.Enter(_outputFileWriter.OutputDataGridFileWriter)
 			Dim item As LoadFileFieldMap.LoadFileFieldMapItem
 			Dim identityValue As String = String.Empty
 			Dim keyField As Api.ArtifactField
@@ -1421,7 +1400,7 @@ Namespace kCura.WinEDDS
 				End If
 			Next
 			_firstTimeThrough = False
-			System.Threading.Monitor.Exit(_outputNativeFileWriter)
+			System.Threading.Monitor.Exit(_outputFileWriter.OutputNativeFileWriter)
 			System.Threading.Monitor.Exit(_outputCodeFileWriter)
 			Return identityValue
 		End Function

@@ -621,7 +621,7 @@ Namespace kCura.WinEDDS
 			End If
 		End Sub
 
-		Protected Function GetMaxExtractedTextLength(ByVal encoding As System.Text.Encoding) As Int32
+		Public Function GetMaxExtractedTextLength(ByVal encoding As System.Text.Encoding) As Int32
 			Dim oneGigabyte As Int32 = Convert.ToInt32(Int32.MaxValue / 2)
 
 			If encoding Is Nothing Then
