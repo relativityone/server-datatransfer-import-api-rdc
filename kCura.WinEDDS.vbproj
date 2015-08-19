@@ -53,6 +53,7 @@
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
     <TargetFrameworkProfile />
+	<Injections>EnableInjections</Injections>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <OutputPath>bin\</OutputPath>
@@ -60,8 +61,7 @@
     <BaseAddress>285212672</BaseAddress>
     <ConfigurationOverrideFile>
     </ConfigurationOverrideFile>
-    <DefineConstants>
-    </DefineConstants>
+    <DefineConstants>$(Injections)</DefineConstants>
     <DefineDebug>true</DefineDebug>
     <DefineTrace>true</DefineTrace>
     <DebugSymbols>true</DebugSymbols>
@@ -83,8 +83,7 @@
     <BaseAddress>285212672</BaseAddress>
     <ConfigurationOverrideFile>
     </ConfigurationOverrideFile>
-    <DefineConstants>
-    </DefineConstants>
+    <DefineConstants>$(Injections)</DefineConstants>
     <DefineDebug>false</DefineDebug>
     <DefineTrace>true</DefineTrace>
     <DebugSymbols>false</DebugSymbols>
@@ -107,8 +106,7 @@
     <BaseAddress>285212672</BaseAddress>
     <ConfigurationOverrideFile>
     </ConfigurationOverrideFile>
-    <DefineConstants>
-    </DefineConstants>
+    <DefineConstants>$(Injections)</DefineConstants>
     <DefineDebug>true</DefineDebug>
     <DefineTrace>true</DefineTrace>
     <DebugSymbols>true</DebugSymbols>
@@ -128,6 +126,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DefineDebug>true</DefineDebug>
     <DefineTrace>true</DefineTrace>
+	<DefineConstants>$(Injections)</DefineConstants>
     <OutputPath>bin\x86\</OutputPath>
     <BaseAddress>285212672</BaseAddress>
     <DocumentationFile>bin\x86\kCura.WinEDDS.xml</DocumentationFile>
@@ -143,6 +142,7 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <DefineTrace>true</DefineTrace>
+	<DefineConstants>$(Injections)</DefineConstants>
     <OutputPath>bin\x86\</OutputPath>
     <BaseAddress>285212672</BaseAddress>
     <DocumentationFile>bin\x86\kCura.WinEDDS.xml</DocumentationFile>
@@ -162,6 +162,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DefineDebug>true</DefineDebug>
     <DefineTrace>true</DefineTrace>
+	<DefineConstants>$(Injections)</DefineConstants>
     <OutputPath>bin\x86\</OutputPath>
     <BaseAddress>285212672</BaseAddress>
     <DocumentationFile>bin\x86\kCura.WinEDDS.xml</DocumentationFile>
@@ -179,6 +180,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DefineDebug>true</DefineDebug>
     <DefineTrace>true</DefineTrace>
+	<DefineConstants>$(Injections)</DefineConstants>
     <OutputPath>bin\x64\</OutputPath>
     <BaseAddress>285212672</BaseAddress>
     <DocumentationFile>bin\x64\kCura.WinEDDS.xml</DocumentationFile>
@@ -194,6 +196,7 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
     <DefineTrace>true</DefineTrace>
+	<DefineConstants>$(Injections)</DefineConstants>
     <OutputPath>bin\x64\</OutputPath>
     <BaseAddress>285212672</BaseAddress>
     <DocumentationFile>bin\x64\kCura.WinEDDS.xml</DocumentationFile>
@@ -213,6 +216,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DefineDebug>true</DefineDebug>
     <DefineTrace>true</DefineTrace>
+	<DefineConstants>$(Injections)</DefineConstants>
     <OutputPath>bin\x64\</OutputPath>
     <BaseAddress>285212672</BaseAddress>
     <DocumentationFile>bin\x64\kCura.WinEDDS.xml</DocumentationFile>
@@ -233,6 +237,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DefineDebug>true</DefineDebug>
     <DefineTrace>true</DefineTrace>
+	<DefineConstants>$(Injections)</DefineConstants>
     <OutputPath>bin\</OutputPath>
     <BaseAddress>285212672</BaseAddress>
     <DocumentationFile>bin\kCura.WinEDDS.xml</DocumentationFile>
@@ -254,6 +259,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DefineDebug>true</DefineDebug>
     <DefineTrace>true</DefineTrace>
+	<DefineConstants>$(Injections)</DefineConstants>
     <OutputPath>bin\x86\</OutputPath>
     <BaseAddress>285212672</BaseAddress>
     <DocumentationFile>bin\x86\kCura.WinEDDS.xml</DocumentationFile>
@@ -275,6 +281,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DefineDebug>true</DefineDebug>
     <DefineTrace>true</DefineTrace>
+	<DefineConstants>$(Injections)</DefineConstants>
     <OutputPath>bin\x64\</OutputPath>
     <BaseAddress>285212672</BaseAddress>
     <DocumentationFile>bin\x64\kCura.WinEDDS.xml</DocumentationFile>
