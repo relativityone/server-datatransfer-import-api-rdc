@@ -1,4 +1,5 @@
 Imports System.IO
+Imports System.Diagnostics
 Imports kCura.OI.FileID
 Imports kCura.EDDS.WebAPI.BulkImportManagerBase
 Imports Relativity
@@ -71,8 +72,9 @@ Namespace kCura.WinEDDS
 
 		Private Const _COPY_TEXT_FILE_BUFFER_SIZE As Int32 = 40000
 		Private Const _UNKNOWN_PARENT_FOLDER_ID As Int32 = -9
-
 		Public Const DATA_GRID_ID_FIELD_NAME As String = "DataGridID"
+		Private Const LENGTH_OF_FOLDER_ALLOWED As Integer = 255
+		Private Const ERROR_MESSAGE_FOLDER_NAME_TOO_LONG As String = "The file cannot be published because the folder name is too long. Contact an administrator."
 #End Region
 
 #Region "Accessors"
@@ -440,6 +442,8 @@ Namespace kCura.WinEDDS
 						Else
 							WriteError(Me.CurrentLineNumber, ex.Message)
 						End If
+					Catch ex As System.IO.PathTooLongException
+						WriteError(Me.CurrentLineNumber, ERROR_MESSAGE_FOLDER_NAME_TOO_LONG)
 					Catch ex As kCura.Utility.ImporterExceptionBase
 						WriteError(Me.CurrentLineNumber, ex.Message)
 					Catch ex As System.IO.FileNotFoundException
@@ -611,6 +615,8 @@ Namespace kCura.WinEDDS
 						Dim cleanFolderPath As String = Me.CleanDestinationFolderPath(value)
 						If (String.IsNullOrWhiteSpace(cleanFolderPath)) Then
 							parentFolderID = _folderID
+						ElseIf cleanFolderPath.Length > LENGTH_OF_FOLDER_ALLOWED Then
+							Throw New PathTooLongException("The folder has a name which is too long. This exception will be caught and handled.")
 						Else
 							folderPath = cleanFolderPath
 							'We're creating the structure on the server side, so it'll get a number then
