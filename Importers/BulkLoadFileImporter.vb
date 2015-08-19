@@ -613,9 +613,10 @@ Namespace kCura.WinEDDS
 					If kCura.WinEDDS.Config.CreateFoldersInWebAPI Then
 						'Server side folder creation
 						Dim cleanFolderPath As String = Me.CleanDestinationFolderPath(value)
+						Dim nameOfInnerRelativityFolder As String = Me.GetInnerRelativityFolderPath(cleanFolderPath)
 						If (String.IsNullOrWhiteSpace(cleanFolderPath)) Then
 							parentFolderID = _folderID
-						ElseIf cleanFolderPath.Length > LENGTH_OF_FOLDER_ALLOWED Then
+						ElseIf nameOfInnerRelativityFolder.Length > LENGTH_OF_FOLDER_ALLOWED Then
 							Throw New PathTooLongException("Error occurred when importing the document. The folder name is longer than 255 characters.")
 						Else
 							folderPath = cleanFolderPath
@@ -703,6 +704,14 @@ Namespace kCura.WinEDDS
 				path = "\"
 			End If
 			Return path
+		End Function
+
+		Private Function GetInnerRelativityFolderPath(ByVal cleanFolderPath As String) As String
+			If (String.IsNullOrEmpty(cleanFolderPath) OrElse Not cleanFolderPath.Contains("\")) Then
+				Return cleanFolderPath
+			Else
+				Return cleanFolderPath.Split("\"(0)).Last
+			End If
 		End Function
 
 #End Region
