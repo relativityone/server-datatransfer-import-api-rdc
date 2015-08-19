@@ -1037,6 +1037,12 @@ Namespace kCura.WinEDDS
 		Private Sub ManageDocumentLine(ByVal mdoc As MetaDocument)
 			Dim chosenEncoding As System.Text.Encoding = Nothing
 
+			'save output file positions in case we have to rollback the writes
+			_outputNativeFileWriter.Flush()
+			_outputDataGridFileWriter.Flush()
+			Dim currentNativeFileWriterPos As Long = _outputNativeFileWriter.BaseStream.Length
+			Dim currentDataGridFileWriterPos As Long = _outputDataGridFileWriter.BaseStream.Length
+
 			_outputNativeFileWriter.Write("0" & _bulkLoadFileFieldDelimiter) 'kCura_Import_ID
 			_outputNativeFileWriter.Write(mdoc.LineStatus.ToString & _bulkLoadFileFieldDelimiter)	'kCura_Import_Status
 			_outputNativeFileWriter.Write("0" & _bulkLoadFileFieldDelimiter) 'kCura_Import_IsNew
@@ -1078,22 +1084,41 @@ Namespace kCura.WinEDDS
 			End If
 
 			For Each field As Api.ArtifactField In mdoc.Record
-				Select Case field.EnableDataGrid
+				Try
+					Select Case field.EnableDataGrid
 
-					Case False
-						WriteDocumentField(chosenEncoding, field, _outputNativeFileWriter, _fullTextColumnMapsToFileLocation, _bulkLoadFileFieldDelimiter, _artifactTypeID, _extractedTextFileEncoding)
+						Case False
+							WriteDocumentField(chosenEncoding, field, _outputNativeFileWriter, _fullTextColumnMapsToFileLocation, _bulkLoadFileFieldDelimiter, _artifactTypeID, _extractedTextFileEncoding)
 
-					Case True
-						If Not foundDataGridField Then
-							'write the data grid identity field as the first column and an empty data grid id as the second column, but only when we have data grid fields
-							_outputDataGridFileWriter.Write(mdoc.IdentityValue & _bulkLoadFileFieldDelimiter & String.Empty & _bulkLoadFileFieldDelimiter)
-							foundDataGridField = True
-						End If
+						Case True
+							If Not foundDataGridField Then
+								'write the data grid identity field as the first column and an empty data grid id as the second column, but only when we have data grid fields
+								_outputDataGridFileWriter.Write(mdoc.IdentityValue & _bulkLoadFileFieldDelimiter & String.Empty & _bulkLoadFileFieldDelimiter)
+								foundDataGridField = True
+							End If
 
-						'TODO: do we want to set/update the "chosenEncoding" property if the extracted text is going to the data grid?
-						WriteDocumentField(chosenEncoding, field, _outputDataGridFileWriter, _fullTextColumnMapsToFileLocation, _bulkLoadFileFieldDelimiter, _artifactTypeID, _extractedTextFileEncoding)
+							'TODO: do we want to set/update the "chosenEncoding" property if the extracted text is going to the data grid?
+							WriteDocumentField(chosenEncoding, field, _outputDataGridFileWriter, _fullTextColumnMapsToFileLocation, _bulkLoadFileFieldDelimiter, _artifactTypeID, _extractedTextFileEncoding)
 
-				End Select
+					End Select
+				Catch ex As ExtractedTextFileNotFoundException
+					'rollback writing other meta data fields if extracted text file is missing
+					_outputNativeFileWriter.Close()
+					_outputDataGridFileWriter.Close()
+
+					Dim fs As New FileStream(_outputNativeFilePath, FileMode.Open, FileAccess.ReadWrite)
+					fs.SetLength(currentNativeFileWriterPos)
+					fs.Close()
+
+					fs = New FileStream(_outputDataGridFilePath, FileMode.Open, FileAccess.ReadWrite)
+					fs.SetLength(currentDataGridFileWriterPos)
+					fs.Close()
+
+					_outputNativeFileWriter = New System.IO.StreamWriter(_outputNativeFilePath, True, System.Text.Encoding.Unicode)
+					_outputDataGridFileWriter = New System.IO.StreamWriter(_outputDataGridFilePath, True, System.Text.Encoding.Unicode)
+
+					Throw ex
+				End Try
 			Next
 
 			If _artifactTypeID = Relativity.ArtifactType.Document Then
@@ -1170,67 +1195,70 @@ Namespace kCura.WinEDDS
 				' from the load file to the file writers that shouldn't be imported as actual object field values
 			Else
 				If field.Category = Relativity.FieldCategory.FullText AndAlso fileBasedfullTextColumn Then
-					If Not field.ValueAsString = String.Empty Then
-						chosenEncoding = extractedTextEncoding
-						Dim fileStream As Stream
+					Try
+						If Not field.ValueAsString = String.Empty Then
+							chosenEncoding = extractedTextEncoding
+							Dim fileStream As Stream
 
-						If Me.LoadImportedFullTextFromServer Then
-							If Not SkipExtractedTextEncodingCheck Then
-								Dim determinedEncodingStream As DeterminedEncodingStream = kCura.WinEDDS.Utility.DetectEncoding(field.ValueAsString, False)
-								fileStream = determinedEncodingStream.UnderlyingStream
+							If Me.LoadImportedFullTextFromServer Then
+								If Not SkipExtractedTextEncodingCheck Then
+									Dim determinedEncodingStream As DeterminedEncodingStream = kCura.WinEDDS.Utility.DetectEncoding(field.ValueAsString, False)
+									fileStream = determinedEncodingStream.UnderlyingStream
 
-								Dim textField As kCura.EDDS.WebAPI.DocumentManagerBase.Field = Me.FullTextField(_settings.ArtifactTypeID)
-								Dim expectedEncoding As System.Text.Encoding = If(textField IsNot Nothing AndAlso textField.UseUnicodeEncoding, System.Text.Encoding.Unicode, Nothing)
-								Dim detectedEncoding As System.Text.Encoding = determinedEncodingStream.DeterminedEncoding
-								If Not System.Text.Encoding.Equals(expectedEncoding, detectedEncoding) Then
-									WriteWarning("The extracted text file's encoding was not detected to be the same as the extracted text field. The imported data may be incorrectly encoded.")
+									Dim textField As kCura.EDDS.WebAPI.DocumentManagerBase.Field = Me.FullTextField(_settings.ArtifactTypeID)
+									Dim expectedEncoding As System.Text.Encoding = If(textField IsNot Nothing AndAlso textField.UseUnicodeEncoding, System.Text.Encoding.Unicode, Nothing)
+									Dim detectedEncoding As System.Text.Encoding = determinedEncodingStream.DeterminedEncoding
+									If Not System.Text.Encoding.Equals(expectedEncoding, detectedEncoding) Then
+										WriteWarning("The extracted text file's encoding was not detected to be the same as the extracted text field. The imported data may be incorrectly encoded.")
+									End If
+									If detectedEncoding IsNot Nothing Then
+										chosenEncoding = detectedEncoding
+									End If
+									Try
+										fileStream.Close()
+									Catch
+									End Try
 								End If
-								If detectedEncoding IsNot Nothing Then
-									chosenEncoding = detectedEncoding
+								outputWriter.Write(field.Value)
+							Else
+								'This logic exists as an attempt to improve import speeds.  The DetectEncoding call first checks if the file
+								' exists, followed by a read of the first few bytes. The File.Exists check can be very expensive when going
+								' across the network for the file, so this override allows that check to be skipped.
+								' -Phil S. 07/27/2012
+								If Not SkipExtractedTextEncodingCheck Then
+									Dim determinedEncodingStream As DeterminedEncodingStream = kCura.WinEDDS.Utility.DetectEncoding(field.ValueAsString, False)
+									fileStream = determinedEncodingStream.UnderlyingStream
+
+									Dim detectedEncoding As System.Text.Encoding = determinedEncodingStream.DeterminedEncoding
+									If detectedEncoding IsNot Nothing Then
+										chosenEncoding = detectedEncoding
+									End If
+								Else
+									fileStream = New FileStream(field.ValueAsString, FileMode.Open, FileAccess.Read)
 								End If
+
+								Dim sr As New System.IO.StreamReader(fileStream, chosenEncoding)
+								Dim count As Int32 = 1
+								Dim buff(_COPY_TEXT_FILE_BUFFER_SIZE) As Char
+								Do
+									count = sr.ReadBlock(buff, 0, _COPY_TEXT_FILE_BUFFER_SIZE)
+									If count > 0 Then
+										outputWriter.Write(buff, 0, count)
+										outputWriter.Flush()
+									End If
+								Loop Until count = 0
+
+								sr.Close()
+
 								Try
 									fileStream.Close()
 								Catch
 								End Try
 							End If
-							outputWriter.Write(field.Value)
-						Else
-
-							'This logic exists as an attempt to improve import speeds.  The DetectEncoding call first checks if the file
-							' exists, followed by a read of the first few bytes. The File.Exists check can be very expensive when going
-							' across the network for the file, so this override allows that check to be skipped.
-							' -Phil S. 07/27/2012
-							If Not SkipExtractedTextEncodingCheck Then
-								Dim determinedEncodingStream As DeterminedEncodingStream = kCura.WinEDDS.Utility.DetectEncoding(field.ValueAsString, False)
-								fileStream = determinedEncodingStream.UnderlyingStream
-
-								Dim detectedEncoding As System.Text.Encoding = determinedEncodingStream.DeterminedEncoding
-								If detectedEncoding IsNot Nothing Then
-									chosenEncoding = detectedEncoding
-								End If
-							Else
-								fileStream = New FileStream(field.ValueAsString, FileMode.Open, FileAccess.Read)
-							End If
-
-							Dim sr As New System.IO.StreamReader(fileStream, chosenEncoding)
-							Dim count As Int32 = 1
-							Dim buff(_COPY_TEXT_FILE_BUFFER_SIZE) As Char
-							Do
-								count = sr.ReadBlock(buff, 0, _COPY_TEXT_FILE_BUFFER_SIZE)
-								If count > 0 Then
-									outputWriter.Write(buff, 0, count)
-									outputWriter.Flush()
-								End If
-							Loop Until count = 0
-
-							sr.Close()
-
-							Try
-								fileStream.Close()
-							Catch
-							End Try
 						End If
-					End If
+					Catch ex As System.IO.FileNotFoundException
+						Throw New ExtractedTextFileNotFoundException()
+					End Try
 				ElseIf field.Type = Relativity.FieldTypeHelper.FieldType.Boolean Then
 					If field.ValueAsString <> String.Empty Then
 						If Boolean.Parse(field.ValueAsString) Then
@@ -1649,6 +1677,13 @@ Namespace kCura.WinEDDS
 			Inherits kCura.Utility.ImporterExceptionBase
 			Public Sub New()
 				MyBase.New(String.Format("File upload failed.  Either the access to the path is denied or there is no disk space available."))
+			End Sub
+		End Class
+
+		Public Class ExtractedTextFileNotFoundException
+			Inherits kCura.Utility.ImporterExceptionBase
+			Public Sub New()
+				MyBase.New("Error occurred when importing the document. Extracted text is missing.")
 			End Sub
 		End Class
 
