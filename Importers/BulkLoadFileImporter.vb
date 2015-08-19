@@ -1113,22 +1113,11 @@ Namespace kCura.WinEDDS
 
 					End Select
 				Catch ex As ExtractedTextFileNotFoundException
-					'rollback writing other meta data fields if extracted text file is missing
-					_outputNativeFileWriter.Close()
-					_outputDataGridFileWriter.Close()
-
-					Dim fs As New FileStream(_outputNativeFilePath, FileMode.Open, FileAccess.ReadWrite)
-					fs.SetLength(currentNativeFileWriterPos)
-					fs.Close()
-
-					fs = New FileStream(_outputDataGridFilePath, FileMode.Open, FileAccess.ReadWrite)
-					fs.SetLength(currentDataGridFileWriterPos)
-					fs.Close()
-
-					_outputNativeFileWriter = New System.IO.StreamWriter(_outputNativeFilePath, True, System.Text.Encoding.Unicode)
-					_outputDataGridFileWriter = New System.IO.StreamWriter(_outputDataGridFilePath, True, System.Text.Encoding.Unicode)
-
-					Throw ex
+					RollbackDocumentLineWrites(currentNativeFileWriterPos, currentDataGridFileWriterPos)
+					Throw
+				Catch ex As ExtractedTextTooLargeException
+					RollbackDocumentLineWrites(currentNativeFileWriterPos, currentDataGridFileWriterPos)
+					Throw
 				End Try
 			Next
 
@@ -1211,6 +1200,12 @@ Namespace kCura.WinEDDS
 							chosenEncoding = extractedTextEncoding
 							Dim fileStream As Stream
 
+							Dim fileInfo As System.IO.FileInfo = New System.IO.FileInfo(field.ValueAsString)
+							Dim fileSize As Long = FileInfo.Length
+							If fileSize > GetMaxExtractedTextLength(chosenEncoding) Then
+								Throw New ExtractedTextTooLargeException
+							End If
+
 							If Me.LoadImportedFullTextFromServer Then
 								If Not SkipExtractedTextEncodingCheck Then
 									Dim determinedEncodingStream As DeterminedEncodingStream = kCura.WinEDDS.Utility.DetectEncoding(field.ValueAsString, False)
@@ -1289,6 +1284,22 @@ Namespace kCura.WinEDDS
 				End If
 				outputWriter.Write(delimiter)
 			End If
+		End Sub
+
+		Private Sub RollbackDocumentLineWrites(currentNativeFileWriterPos As Long, currentDataGridFileWriterPos As Long)
+			_outputNativeFileWriter.Close()
+			_outputDataGridFileWriter.Close()
+
+			Dim fs As New FileStream(_outputNativeFilePath, FileMode.Open, FileAccess.ReadWrite)
+			fs.SetLength(currentNativeFileWriterPos)
+			fs.Close()
+
+			fs = New FileStream(_outputDataGridFilePath, FileMode.Open, FileAccess.ReadWrite)
+			fs.SetLength(currentDataGridFileWriterPos)
+			fs.Close()
+
+			_outputNativeFileWriter = New System.IO.StreamWriter(_outputNativeFilePath, True, System.Text.Encoding.Unicode)
+			_outputDataGridFileWriter = New System.IO.StreamWriter(_outputDataGridFilePath, True, System.Text.Encoding.Unicode)
 		End Sub
 
 		Private Function GetIsSupportedRelativityFileTypeField() As kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo
@@ -1695,6 +1706,13 @@ Namespace kCura.WinEDDS
 			Inherits kCura.Utility.ImporterExceptionBase
 			Public Sub New()
 				MyBase.New("Error occurred when importing the document. Extracted text is missing.")
+			End Sub
+		End Class
+
+		Public Shadows Class ExtractedTextTooLargeException
+			Inherits kCura.Utility.ImporterExceptionBase
+			Public Sub New()
+				MyBase.New("Error occurred when importing the document. Extracted text is greater than 2 GB.")
 			End Sub
 		End Class
 
