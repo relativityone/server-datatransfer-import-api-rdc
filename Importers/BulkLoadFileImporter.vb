@@ -38,19 +38,15 @@ Namespace kCura.WinEDDS
 		Private _oixFileLookup As System.Collections.Specialized.HybridDictionary
 		Private _fieldArtifactIds As Int32()
 		Private _outputFileWriter As kCura.WinEDDS.OutputFileWriter = New kCura.WinEDDS.OutputFileWriter()
-		'Private _outputNativeFileWriter As System.IO.StreamWriter
 		Private _outputCodeFileWriter As System.IO.StreamWriter
 		Private _outputObjectFileWriter As System.IO.StreamWriter
-		'Private _outputDataGridFileWriter As System.IO.StreamWriter
 		Private _caseInfo As Relativity.CaseInfo
 		Private _overlayArtifactID As Int32
 
 		Private _runID As String = System.Guid.NewGuid.ToString.Replace("-", "_")
 
-		'Private _outputNativeFilePath As String = System.IO.Path.GetTempFileName
 		Private _outputCodeFilePath As String = System.IO.Path.GetTempFileName
 		Private _outputObjectFilePath As String = System.IO.Path.GetTempFileName
-		'Private _outputDataGridFilePath As String = System.IO.Path.GetTempFileName
 		Private _filePath As String
 		Private _batchCounter As Int32 = 0
 		Private _errorMessageFileLocation As String = String.Empty
