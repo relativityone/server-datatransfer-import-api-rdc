@@ -616,7 +616,7 @@ Namespace kCura.WinEDDS
 						If (String.IsNullOrWhiteSpace(cleanFolderPath)) Then
 							parentFolderID = _folderID
 						ElseIf cleanFolderPath.Length > LENGTH_OF_FOLDER_ALLOWED Then
-							Throw New PathTooLongException("The folder has a name which is too long. This exception will be caught and handled.")
+							Throw New PathTooLongException("Error occurred when importing the document. The folder name is longer than 255 characters.")
 						Else
 							folderPath = cleanFolderPath
 							'We're creating the structure on the server side, so it'll get a number then
