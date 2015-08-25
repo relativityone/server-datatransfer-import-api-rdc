@@ -330,5 +330,27 @@ Namespace kCura.WinEDDS.NUnit
 
 #End Region
 
+#Region "GetMaxExtractedTextLength"
+		<Test()>
+		Public Sub GetMaxExtractedTextLength_Return_Correct_Value_Nothing()
+			Dim bulkImporter As MockBulkLoadFileImporter = New MockBulkLoadFileImporter(_args, _controller, 0, False, False, _guid, True, "S", True, New MockBulkImportManagerSqlExceptions(True))
+			Dim encoding As System.Text.Encoding = Nothing
+			Assert.AreEqual(1073741824, bulkImporter.GetMaxExtractedTextLength(encoding))
+		End Sub
+
+		<Test()>
+		Public Sub GetMaxExtractedTextLength_Return_Correct_Value_UTF8()
+			Dim bulkImporter As MockBulkLoadFileImporter = New MockBulkLoadFileImporter(_args, _controller, 0, False, False, _guid, True, "S", True, New MockBulkImportManagerSqlExceptions(True))
+			Dim encoding As System.Text.Encoding = System.Text.Encoding.UTF8
+			Assert.AreEqual(1073741824, bulkImporter.GetMaxExtractedTextLength(encoding))
+		End Sub
+
+		<Test()>
+		Public Sub GetMaxExtractedTextLength_Return_Correct_Value_Other()
+			Dim bulkImporter As MockBulkLoadFileImporter = New MockBulkLoadFileImporter(_args, _controller, 0, False, False, _guid, True, "S", True, New MockBulkImportManagerSqlExceptions(True))
+			Dim encoding As System.Text.Encoding = System.Text.Encoding.UTF32
+			Assert.AreEqual(2147483647, bulkImporter.GetMaxExtractedTextLength(encoding))
+		End Sub
+#End Region
 	End Class
 End Namespace
