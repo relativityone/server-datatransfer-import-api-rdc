@@ -27,7 +27,7 @@ Public Class AboutForm
         sb.Append(String.Format("Relativity Desktop Client {0} {1}", bitness, nl))
         sb.Append("Version " & System.Reflection.Assembly.GetExecutingAssembly.GetName.Version.ToString & nl)
         sb.Append(Relativity.Constants.LICENSE_AGREEMENT_TEXT & nl)
-        sb.Append("Copyright © " & System.DateTime.Now.Year & " kCura Corporation")
+        sb.Append("Copyright © " & System.DateTime.Now.Year & " kCura LLC")
         Me.MainTextLabel.Text = sb.ToString()
 
         CopyrightTextBox.Text = My.Resources.CopyrightInfo
