@@ -40,17 +40,12 @@ Namespace kCura.WinEDDS.Service
 			If Not x Is Nothing Then Throw x
 		End Sub
 
-
-#Region " Shadow Methods "
-
-		Private Function ExecuteImport(f As Func(Of kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults)) As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults
+		Private Function ReLoginWrapper(Of T)(f As Func(Of T)) As T
 			Dim tries As Int32 = 0
 			While tries < Config.MaxReloginTries
 				tries += 1
 				Try
-					Dim retval As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults = f()
-					Me.CheckResultsForException(retval)
-					Return retval
+					Return f()
 				Catch ex As System.Exception
 					UnpackException(ex)
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
@@ -61,79 +56,63 @@ Namespace kCura.WinEDDS.Service
 				End Try
 			End While
 			Return Nothing
-
 		End Function
 
+		Private Function ExecuteImport(f As Func(Of kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults)) As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults
+			Dim retval As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults = f()
+			Me.CheckResultsForException(retval)
+			Return retval
+		End Function
+
+		Private Function GenerateErrorFileKey(f As Func(Of kCura.EDDS.WebAPI.BulkImportManagerBase.ErrorFileKey)) As Relativity.MassImport.ErrorFileKey
+			Dim retval As New Relativity.MassImport.ErrorFileKey
+			With f()
+				retval.LogKey = .LogKey
+				retval.OpticonKey = .OpticonKey
+			End With
+			Return retval
+		End Function
+
+#Region " Shadow Methods "
+
 		Public Shadows Function BulkImportImage(ByVal appID As Int32, ByVal settings As kCura.EDDS.WebAPI.BulkImportManagerBase.ImageLoadInfo, ByVal inRepository As Boolean) As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults
-			Return ExecuteImport(Function() Me.InvokeBulkImportImage(appID, settings, inRepository))
+			Return ReLoginWrapper(Of kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults)(Function() ExecuteImport(Function() Me.InvokeBulkImportImage(appID, settings, inRepository)))
 		End Function
 
 		Public Shadows Function BulkImportProductionImage(ByVal appID As Int32, ByVal settings As kCura.EDDS.WebAPI.BulkImportManagerBase.ImageLoadInfo, ByVal productionKeyFieldArtifactID As Int32, ByVal inRepository As Boolean) As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults
-			Return ExecuteImport(Function() Me.InvokeBulkImportProductionImage(appID, settings, productionKeyFieldArtifactID, inRepository))
+			Return ReLoginWrapper(Of kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults)(Function() ExecuteImport(Function() Me.InvokeBulkImportProductionImage(appID, settings, productionKeyFieldArtifactID, inRepository)))
 		End Function
 
 		Public Shadows Function BulkImportNative(ByVal appID As Int32, ByVal settings As kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo, ByVal inRepository As Boolean, ByVal includeExtractedTextEncoding As Boolean) As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults
-			Return ExecuteImport(Function() Me.InvokeBulkImportNative(appID, settings, inRepository, includeExtractedTextEncoding))
+			Return ReLoginWrapper(Of kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults)(Function() ExecuteImport(Function() Me.InvokeBulkImportNative(appID, settings, inRepository, includeExtractedTextEncoding)))
 		End Function
 
 		Public Shadows Function BulkImportObjects(ByVal appID As Int32, ByVal settings As kCura.EDDS.WebAPI.BulkImportManagerBase.ObjectLoadInfo, ByVal inRepository As Boolean) As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults
-			Return ExecuteImport(Function() Me.InvokeBulkImportObjects(appID, settings, inRepository))
+			Return ReLoginWrapper(Of kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults)(Function() ExecuteImport(Function() Me.InvokeBulkImportObjects(appID, settings, inRepository)))
 		End Function
 
 		Public Shadows Function GenerateImageErrorFiles(ByVal appID As Int32, ByVal importKey As String, ByVal writeHeader As Boolean, ByVal keyFieldId As Int32) As Relativity.MassImport.ErrorFileKey
-			Dim tries As Int32 = 0
-			While tries < Config.MaxReloginTries
-				tries += 1
-				Try
-					Dim retval As New Relativity.MassImport.ErrorFileKey
-					With MyBase.GenerateImageErrorFiles(appID, importKey, writeHeader, keyFieldId)
-						retval.LogKey = .LogKey
-						retval.OpticonKey = .OpticonKey
-					End With
-					Return retval
-				Catch ex As System.Exception
-					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
-					Else
-						Throw
-					End If
-				End Try
-			End While
-			Return Nothing
+			Return ReLoginWrapper(Of Relativity.MassImport.ErrorFileKey)(Function() GenerateErrorFileKey(Function() MyBase.GenerateImageErrorFiles(appID, importKey, writeHeader, keyFieldId)))
+		End Function
+
+		Public Shadows Function GenerateNonImageErrorFiles(ByVal appID As Integer, ByVal runID As String, ByVal artifactTypeID As Integer, ByVal writeHeader As Boolean, ByVal keyFieldID As Integer) As Relativity.MassImport.ErrorFileKey
+			Return ReLoginWrapper(Of Relativity.MassImport.ErrorFileKey)(Function() GenerateErrorFileKey(Function() MyBase.GenerateNonImageErrorFiles(appID, runID, artifactTypeID, writeHeader, keyFieldID)))
+		End Function
+
+		Public Shadows Function NativeRunHasErrors(ByVal appID As Integer, ByVal runId As String) As Boolean
+			Return ReLoginWrapper(Of Boolean)(Function() MyBase.NativeRunHasErrors(appID, runId))
 		End Function
 
 		Public Shadows Function ImageRunHasErrors(ByVal appID As Int32, ByVal runId As String) As Boolean
-			Dim tries As Int32 = 0
-			While tries < Config.MaxReloginTries
-				tries += 1
-				Try
-					Return MyBase.ImageRunHasErrors(appID, runId)
-				Catch ex As System.Exception
-					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
-					Else
-						Throw
-					End If
-				End Try
-			End While
-			Return Nothing
+			Return ReLoginWrapper(Of Boolean)(Function() MyBase.ImageRunHasErrors(appID, runId))
 		End Function
 
 		Public Shadows Function DisposeTempTables(ByVal appID As Int32, ByVal runId As String) As Object
-			Dim tries As Int32 = 0
-			While tries < Config.MaxReloginTries
-				tries += 1
-				Try
-					Return MyBase.DisposeTempTables(appID, runId)
-				Catch ex As System.Exception
-					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
-					Else
-						Throw
-					End If
-				End Try
-			End While
-			Return Nothing
+			Return ReLoginWrapper(Of Object)(Function() MyBase.DisposeTempTables(appID, runId))
+		End Function
+
+		Public Shadows Function HasImportPermissions(ByVal appID As Integer) As Boolean
+			Return ReLoginWrapper(Of Boolean)(Function() MyBase.HasImportPermissions(appID))
 		End Function
 
 #End Region
