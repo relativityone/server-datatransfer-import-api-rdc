@@ -13,6 +13,10 @@ Namespace kCura.WinEDDS.Service
 
 #Region " Shadow Methods "
 		Public Shadows Function Login(ByVal emailAddress As String, ByVal password As String) As Boolean
+			Return RetryOnReLoginException(Of Boolean)(Function() Me.LoginInternal(emailAddress, password))
+		End Function
+
+		Private Function LoginInternal(ByVal emailAddress As String, ByVal password As String) As Boolean
 			If kCura.WinEDDS.Config.UsesWebAPI Then
 				Try
 					'ClearCookiesBeforeLogin call MUST be made before Login web method is called
@@ -21,29 +25,29 @@ Namespace kCura.WinEDDS.Service
 				Catch ex As System.Exception
 					Throw
 				End Try
+			Else
+				Return Nothing
 			End If
-			Return Nothing
 		End Function
 
 		Public Shadows Function RetrieveAllAssignableInCase(ByVal caseContextArtifactID As Int32) As System.Data.DataSet
-			Dim tries As Int32 = 0
-			While tries < Config.MaxReloginTries
-				tries += 1
-				Try
-					If kCura.WinEDDS.Config.UsesWebAPI Then
-						Return MyBase.RetrieveAllAssignableInCase(caseContextArtifactID)
-					Else
-						'Return Relativity.Core.Service.FileQuery.RetrieveFullTextFilesForDocuments(_identity, artifactID, documentArtifactIDs).ToDataSet()
-					End If
-				Catch ex As System.Exception
-					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
-					Else
-						Throw
-					End If
-				End Try
-			End While
-			Return Nothing
+			Return RetryOnReLoginException(Of System.Data.DataSet)(Function() Me.RetrieveAllAssignableInCaseInternal(caseContextArtifactID))
+		End Function
+
+		Private Function RetrieveAllAssignableInCaseInternal(ByVal caseContextArtifactID As Int32) As System.Data.DataSet
+			If kCura.WinEDDS.Config.UsesWebAPI Then
+				Return MyBase.RetrieveAllAssignableInCase(caseContextArtifactID)
+			Else
+				Return Nothing
+			End If
+		End Function
+
+		Public Shadows Function GenerateAuthenticationToken() As String
+			Return RetryOnReLoginException(Of String)(Function() MyBase.GenerateAuthenticationToken())
+		End Function
+
+		Public Shadows Function GenerateDistributedAuthenticationToken() As String
+			Return RetryOnReLoginException(Of String)(Function() MyBase.GenerateDistributedAuthenticationToken())
 		End Function
 
 #End Region
