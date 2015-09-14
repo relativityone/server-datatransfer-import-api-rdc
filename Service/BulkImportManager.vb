@@ -30,14 +30,14 @@ Namespace kCura.WinEDDS.Service
 		Private Sub UnpackException(ByVal ex As System.Exception)
 			Dim soapEx As System.Web.Services.Protocols.SoapException = TryCast(ex, System.Web.Services.Protocols.SoapException)
 			If soapEx Is Nothing Then Return
-			Dim x As System.Exception = Nothing
+			Dim permissionException As System.Exception = Nothing
 			Try
 				If soapEx.Detail.SelectNodes("ExceptionType").Item(0).InnerText = "Relativity.Core.Exception.InsufficientAccessControlListPermissions" Then
-					x = New InsufficientPermissionsForImportException(soapEx.Detail.SelectNodes("ExceptionMessage")(0).InnerText)
+					permissionException = New InsufficientPermissionsForImportException(soapEx.Detail.SelectNodes("ExceptionMessage")(0).InnerText)
 				End If
 			Catch
 			End Try
-			If Not x Is Nothing Then Throw x
+			If Not permissionException Is Nothing Then Throw permissionException
 		End Sub
 
 		Private Function ReLoginWrapper(Of T)(f As Func(Of T)) As T
@@ -47,7 +47,6 @@ Namespace kCura.WinEDDS.Service
 				Try
 					Return f()
 				Catch ex As System.Exception
-					UnpackException(ex)
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
 						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
 					Else
@@ -59,9 +58,14 @@ Namespace kCura.WinEDDS.Service
 		End Function
 
 		Private Function ExecuteImport(f As Func(Of kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults)) As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults
-			Dim retval As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults = f()
-			Me.CheckResultsForException(retval)
-			Return retval
+			Try
+				Dim retval As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults = f()
+				Me.CheckResultsForException(retval)
+				Return retval
+			Catch ex As Exception
+				UnpackException(ex)
+				Throw
+			End Try
 		End Function
 
 		Private Function GenerateErrorFileKey(f As Func(Of kCura.EDDS.WebAPI.BulkImportManagerBase.ErrorFileKey)) As Relativity.MassImport.ErrorFileKey
