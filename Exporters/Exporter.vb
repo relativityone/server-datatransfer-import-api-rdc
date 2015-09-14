@@ -235,11 +235,10 @@ Namespace kCura.WinEDDS
 			Me.WriteUpdate("Data retrieved. Beginning " & typeOfExportDisplayString & " export...")
 
 			Dim records As Object() = Nothing
-			Dim start, finish, realStart As Int32
+			Dim start, realStart As Int32
 			Dim lastRecordCount As Int32 = -1
 			While lastRecordCount <> 0
 				realStart = start + Me.Settings.StartAtDocumentNumber
-				finish = Math.Min(Me.TotalExportArtifactCount - 1 + Me.Settings.StartAtDocumentNumber, realStart + Config.ExportBatchSize - 1)
 				_timekeeper.MarkStart("Exporter_GetDocumentBlock")
 				startTicks = System.DateTime.Now.Ticks
 				Dim textPrecedenceAvfIds As Int32() = Nothing
@@ -475,6 +474,11 @@ Namespace kCura.WinEDDS
 			If Not Me.Settings.ExportImages Then Return retval
 			imagesView.RowFilter = "DocumentArtifactID = " & documentArtifactID.ToString
 			Dim i As Int32 = 0
+			'DAS034 There is at least one case where all production images for a document will end up with the same filename.
+			'This happens when the production uses Existing production numbering, and the base production used Document numbering.
+			'This case cannot be detected using current available information about the Production that we get from WebAPI.
+			'To be on the safe side, keep track of the first image filename, and if another image has the same filename, add i + 1 onto it.
+			Dim firstImageFileName As String = Nothing
 			If imagesView.Count > 0 Then
 				Dim drv As System.Data.DataRowView
 				For Each drv In imagesView
@@ -490,7 +494,12 @@ Namespace kCura.WinEDDS
 						filenameExtension = "." & image.FileName.Substring(image.FileName.LastIndexOf(".") + 1)
 					End If
 					Dim filename As String = image.BatesNumber
-					If IsDocNumberOnlyProduction(_productionExportProduction) AndAlso i > 0 Then
+					If i = 0 Then
+						firstImageFileName = filename
+					End If
+					If (i > 0) AndAlso
+						(IsDocNumberOnlyProduction(_productionExportProduction) OrElse
+						 filename.Equals(firstImageFileName, StringComparison.OrdinalIgnoreCase)) Then
 						filename &= "_" & (i + 1).ToString
 					End If
 					image.FileName = filename & filenameExtension
