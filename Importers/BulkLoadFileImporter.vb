@@ -382,6 +382,12 @@ Namespace kCura.WinEDDS
 
 #Region "Main"
 
+		''' <summary>
+		''' Loads all the documents in a load file
+		''' </summary>
+		''' <param name="path">The load file which contains information about the document being loaded</param>
+		''' <returns>True indicates success.  False or Nothing indicates failure.</returns>
+		''' <remarks></remarks>
 		Public Function ReadFile(ByVal path As String) As Object
 			Dim line As Api.ArtifactFieldCollection
 			_filePath = path

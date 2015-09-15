@@ -11,7 +11,7 @@ Namespace kCura.WinEDDS
 		Private _warningCount As Int32
 		Private _timeZoneOffset As Int32
 		Private WithEvents _newlineCounter As kCura.Utility.File.LineCounter
-		Private _hasRunPRocessComplete As Boolean = False
+		Private _hasRunProcessComplete As Boolean = False
 		Private _uploadModeText As String = Nothing
 
 		Private _disableUserSecutityCheck As Boolean
@@ -110,7 +110,7 @@ Namespace kCura.WinEDDS
 			'_newlineCounter.Path = LoadFile.FilePath
 			Me.ProcessObserver.InputArgs = LoadFile.FilePath
 
-			If (CType(_loadFileImporter.ReadFile(LoadFile.FilePath), Boolean)) AndAlso Not _hasRunPRocessComplete Then
+			If (CType(_loadFileImporter.ReadFile(LoadFile.FilePath), Boolean)) AndAlso Not _hasRunProcessComplete Then
 				If _loadFileImporter.HasErrors Then
 					Me.ProcessObserver.RaiseProcessCompleteEvent(False, System.Guid.NewGuid.ToString, True)
 				Else
@@ -201,7 +201,7 @@ Namespace kCura.WinEDDS
 						Case FileUploader.Type.Web
 							retval.RepositoryConnection = EDDS.WebAPI.AuditManagerBase.RepositoryConnectionType.Web
 					End Select
-					retval.TotalFileSize = _loadFileImporter.Statistics.FileBytes					
+					retval.TotalFileSize = _loadFileImporter.Statistics.FileBytes
 				End If
 				retval.RunTimeInMilliseconds = CType(System.DateTime.Now.Subtract(_startTime).TotalMilliseconds, Int32)
 				retval.StartLine = CType(System.Math.Min(LoadFile.StartLineNumber, Int32.MaxValue), Int32)
@@ -253,7 +253,7 @@ Namespace kCura.WinEDDS
 			Me.ProcessObserver.RaiseFatalExceptionEvent(ex)
 			'TODO: _loadFileImporter.ErrorLogFileName
 			Me.ProcessObserver.RaiseProcessCompleteEvent(False, "", True)
-			_hasRunPRocessComplete = True
+			_hasRunProcessComplete = True
 			System.Threading.Monitor.Exit(Me.ProcessObserver)
 			Me.AuditRun(False, runID)
 		End Sub
