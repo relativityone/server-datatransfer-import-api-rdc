@@ -144,6 +144,8 @@ Namespace kCura.WinEDDS
 					Else
 						Throw New System.Exception(args.Value)
 					End If
+				Catch ex As kCura.WinEDDS.Service.BulkImportManager.InsufficientPermissionsForImportException
+					Throw
 				Catch ex As System.Exception
 					RaiseEvent UploadWarningEvent("Error accessing BCP Path, could be caused by network connectivity issues: " & ex.ToString)
 					If Config.EnableSingleModeImport AndAlso tries < 19 Then
@@ -173,6 +175,8 @@ Namespace kCura.WinEDDS
 				If upload Then retVal = Me.UploadFile(localFilePath, appID, True)
 				_destinationFolderPath = oldDestinationFolderPath
 				Return New FileUploadReturnArgs(FileUploadReturnArgs.FileUploadReturnType.ValidUploadKey, retVal)
+			Catch ex As kCura.WinEDDS.Service.BulkImportManager.InsufficientPermissionsForImportException
+				Throw
 			Catch ex As Exception
 				If ex.ToString.ToLower.IndexOf("nobcpdirectoryexception") <> -1 Then
 					_isBulkEnabled = False
