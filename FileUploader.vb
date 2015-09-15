@@ -72,7 +72,11 @@ Namespace kCura.WinEDDS
 				End If
 				System.IO.File.Create(destFolderPath & dummyText).Close()
 				System.IO.File.Delete(destFolderPath & dummyText)
-				Me.UploaderType = Type.Direct
+				If Config.ForceWebUpload Then
+					Me.UploaderType = Type.Web
+				Else
+					Me.UploaderType = Type.Direct
+				End If
 			Catch ex As System.Exception
 				Me.UploaderType = Type.Web
 			End Try
