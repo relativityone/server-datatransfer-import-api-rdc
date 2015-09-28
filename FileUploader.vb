@@ -72,7 +72,11 @@ Namespace kCura.WinEDDS
 				End If
 				System.IO.File.Create(destFolderPath & dummyText).Close()
 				System.IO.File.Delete(destFolderPath & dummyText)
-				Me.UploaderType = Type.Direct
+				If Config.ForceWebUpload Then
+					Me.UploaderType = Type.Web
+				Else
+					Me.UploaderType = Type.Direct
+				End If
 			Catch ex As System.Exception
 				Me.UploaderType = Type.Web
 			End Try
@@ -140,6 +144,8 @@ Namespace kCura.WinEDDS
 					Else
 						Throw New System.Exception(args.Value)
 					End If
+				Catch ex As kCura.WinEDDS.Service.BulkImportManager.InsufficientPermissionsForImportException
+					Throw
 				Catch ex As System.Exception
 					RaiseEvent UploadWarningEvent("Error accessing BCP Path, could be caused by network connectivity issues: " & ex.ToString)
 					If Config.EnableSingleModeImport AndAlso tries < 19 Then
@@ -169,6 +175,8 @@ Namespace kCura.WinEDDS
 				If upload Then retVal = Me.UploadFile(localFilePath, appID, True)
 				_destinationFolderPath = oldDestinationFolderPath
 				Return New FileUploadReturnArgs(FileUploadReturnArgs.FileUploadReturnType.ValidUploadKey, retVal)
+			Catch ex As kCura.WinEDDS.Service.BulkImportManager.InsufficientPermissionsForImportException
+				Throw
 			Catch ex As Exception
 				If ex.ToString.ToLower.IndexOf("nobcpdirectoryexception") <> -1 Then
 					_isBulkEnabled = False
@@ -211,12 +219,14 @@ Namespace kCura.WinEDDS
 					Else
 						Return Me.DirectUploadFile(filePath, contextArtifactID, newFileName, internalUse, tries < NumberOfRetries)
 					End If
+				Catch ex As kCura.WinEDDS.Service.BulkImportManager.InsufficientPermissionsForImportException
+					Throw
+				Catch ex As System.ArgumentException
+					Throw
 				Catch ex As System.Exception
 					tries -= 1
 					Dim wait As Int32 = WaitTimeBetweenRetryAttempts
 					If Me.IsWarningException(ex) AndAlso tries > 0 Then
-						'RaiseEvent UploadWarningEvent(Me.UploaderType.ToString & " upload failed: " & ex.Message & " - Retrying in 30 seconds. " & tries & " tries left.")
-
 						RaiseEvent UploadWarningEvent(String.Format("{0} upload failed: {1} - Retrying in {2} seconds.  {3} tries left.", Me.UploaderType.ToString, ex.Message, wait, tries))
 						System.Threading.Thread.CurrentThread.Join(wait * 1000)
 					Else
@@ -326,6 +336,8 @@ Namespace kCura.WinEDDS
 			End Try
 			Return fileGuid
 		End Function
+
+
 
 		Private Function GetStatusCode(ByVal ex As System.Exception) As Int32
 			If Not TypeOf ex Is System.Net.WebException Then Return -1

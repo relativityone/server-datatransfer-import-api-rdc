@@ -1,4 +1,3 @@
-Imports System.Collections.Generic
 Imports System.Runtime.Caching
 
 Namespace kCura.WinEDDS.Service
@@ -47,11 +46,40 @@ Namespace kCura.WinEDDS.Service
 					If IsRetryableException(ex) AndAlso tries < Config.MaxReloginTries Then
 						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
 					Else
+						Dim relativityException As System.Exception = ConvertExpectedSoapExceptionToRelativityException(ex)
+						If relativityException IsNot Nothing Then
+							Throw relativityException
+						End If
+
 						Throw
 					End If
 				End Try
 			End While
 			Return Nothing
+		End Function
+
+		''' <summary>
+		''' Convert a SoapException to a normal typed exception which we could specify in a catch clause or test by Type.
+		''' </summary>
+		''' <param name="ex"></param>
+		''' <returns></returns>
+		''' <remarks>For example, if the user does not have permissions, the Soap exception is converted to a Relativity.Core.Exception.InsufficientAccessControlListPermissions.
+		''' This method is expected to test for exceptions which we intentionally throw from WebAPI FileIO due to error conditions.</remarks>
+		Public Function ConvertExpectedSoapExceptionToRelativityException(ex As System.Exception) As System.Exception
+			Dim soapEx As System.Web.Services.Protocols.SoapException = TryCast(ex, System.Web.Services.Protocols.SoapException)
+			If soapEx Is Nothing Then Return Nothing
+
+			Dim relativityException As System.Exception = Nothing
+			Try
+				If soapEx.Detail.SelectNodes("ExceptionType").Item(0).InnerText = "Relativity.Core.Exception.InsufficientAccessControlListPermissions" Then
+					relativityException = New kCura.WinEDDS.Service.BulkImportManager.InsufficientPermissionsForImportException(soapEx.Detail.SelectNodes("ExceptionMessage")(0).InnerText)
+				ElseIf soapEx.Detail.SelectNodes("ExceptionType").Item(0).InnerText = "System.ArgumentException" Then
+					relativityException = New System.ArgumentException(soapEx.Detail.SelectNodes("ExceptionMessage")(0).InnerText)
+				End If
+			Catch
+			End Try
+
+			Return relativityException
 		End Function
 
 		Private Sub ExecuteWithRetry(f As Action)
@@ -80,9 +108,10 @@ Namespace kCura.WinEDDS.Service
 			ExecuteWithRetry(Sub() MyBase.RemoveTempFile(caseContextArtifactID, fileName))
 		End Sub
 
-		Public Shadows Function ReadFileAsString(ByVal path As String) As Byte()
-			Return ExecuteWithRetry(Function() MyBase.ReadFileAsString(path))
-		End Function
+		'I am commenting this method out for now because I don't think it's being used, but I'm not certain. -- Jean Libera
+		'Public Shadows Function ReadFileAsString(ByVal path As String) As Byte()
+		'	Return ExecuteWithRetry(Function() MyBase.ReadFileAsString(path))
+		'End Function
 
 		Public Shadows Function ValidateBcpShare(ByVal appID As Int32) As Boolean
 			Return ExecuteWithRetry(Function() MyBase.ValidateBcpShare(appID))

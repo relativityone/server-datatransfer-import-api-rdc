@@ -40,7 +40,7 @@ Namespace kCura.WinEDDS
 							If Not tempDict.Contains("CreateErrorForEmptyNativeFile") Then tempDict.Add("CreateErrorForEmptyNativeFile", "False")
 							If Not tempDict.Contains("AuditLevel") Then tempDict.Add("AuditLevel", "FullAudit")
 							If Not tempDict.Contains("CreateFoldersInWebAPI") Then tempDict.Add("CreateFoldersInWebAPI", "True")
-
+							If Not tempDict.Contains("ForceWebUpload") Then tempDict.Add("ForceWebUpload", "False")
 							_configDictionary = tempDict
 						End If
 					End SyncLock
@@ -265,6 +265,13 @@ Namespace kCura.WinEDDS
 		Public Shared ReadOnly Property AuditLevel() As kCura.EDDS.WebAPI.BulkImportManagerBase.ImportAuditLevel
 			Get
 				Return DirectCast([Enum].Parse(GetType(kCura.EDDS.WebAPI.BulkImportManagerBase.ImportAuditLevel), CStr(ConfigSettings("AuditLevel"))), kCura.EDDS.WebAPI.BulkImportManagerBase.ImportAuditLevel)
+			End Get
+		End Property
+
+		'This hidden configuration setting makes it easier to test WebUpload.  Testing is important.
+		Public Shared ReadOnly Property ForceWebUpload() As Boolean
+			Get
+				Return CType(ConfigSettings("ForceWebUpload"), Boolean)
 			End Get
 		End Property
 
