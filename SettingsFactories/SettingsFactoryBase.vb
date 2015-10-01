@@ -78,7 +78,7 @@ Namespace kCura.WinEDDS
 
 			_credential = credential
 
-			ServicePointManager.ServerCertificateValidationCallback = AddressOf kCura.Utility.CertificateValidation.CertificateValidationCallBack
+			ServicePointManager.ServerCertificateValidationCallback = Function(sender As Object, certificate As X509Certificate, chain As X509Chain, sslPolicyErrors As SslPolicyErrors) True
 
 			_cookieContainer = cookieContainer
 
