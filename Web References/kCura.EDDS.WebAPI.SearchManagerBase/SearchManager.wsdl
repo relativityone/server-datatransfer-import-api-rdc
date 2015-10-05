@@ -223,28 +223,6 @@
           </s:sequence>
         </s:complexType>
       </s:element>
-      <s:element name="RetrieveSearchFieldsForProduction">
-        <s:complexType>
-          <s:sequence>
-            <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
-            <s:element minOccurs="1" maxOccurs="1" name="productionArtifactID" type="s:int" />
-          </s:sequence>
-        </s:complexType>
-      </s:element>
-      <s:element name="RetrieveSearchFieldsForProductionResponse">
-        <s:complexType>
-          <s:sequence>
-            <s:element minOccurs="0" maxOccurs="1" name="RetrieveSearchFieldsForProductionResult">
-              <s:complexType>
-                <s:sequence>
-                  <s:element ref="s:schema" />
-                  <s:any />
-                </s:sequence>
-              </s:complexType>
-            </s:element>
-          </s:sequence>
-        </s:complexType>
-      </s:element>
       <s:element name="RetrieveDefaultViewFieldsForIdList">
         <s:complexType>
           <s:sequence>
@@ -353,12 +331,6 @@
   <wsdl:message name="RetrieveSearchFieldsSoapOut">
     <wsdl:part name="parameters" element="tns:RetrieveSearchFieldsResponse" />
   </wsdl:message>
-  <wsdl:message name="RetrieveSearchFieldsForProductionSoapIn">
-    <wsdl:part name="parameters" element="tns:RetrieveSearchFieldsForProduction" />
-  </wsdl:message>
-  <wsdl:message name="RetrieveSearchFieldsForProductionSoapOut">
-    <wsdl:part name="parameters" element="tns:RetrieveSearchFieldsForProductionResponse" />
-  </wsdl:message>
   <wsdl:message name="RetrieveDefaultViewFieldsForIdListSoapIn">
     <wsdl:part name="parameters" element="tns:RetrieveDefaultViewFieldsForIdList" />
   </wsdl:message>
@@ -411,10 +383,6 @@
     <wsdl:operation name="RetrieveSearchFields">
       <wsdl:input message="tns:RetrieveSearchFieldsSoapIn" />
       <wsdl:output message="tns:RetrieveSearchFieldsSoapOut" />
-    </wsdl:operation>
-    <wsdl:operation name="RetrieveSearchFieldsForProduction">
-      <wsdl:input message="tns:RetrieveSearchFieldsForProductionSoapIn" />
-      <wsdl:output message="tns:RetrieveSearchFieldsForProductionSoapOut" />
     </wsdl:operation>
     <wsdl:operation name="RetrieveDefaultViewFieldsForIdList">
       <wsdl:input message="tns:RetrieveDefaultViewFieldsForIdListSoapIn" />
@@ -510,15 +478,6 @@
     </wsdl:operation>
     <wsdl:operation name="RetrieveSearchFields">
       <soap:operation soapAction="http://www.kCura.com/EDDS/SearchManager/RetrieveSearchFields" style="document" />
-      <wsdl:input>
-        <soap:body use="literal" />
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="RetrieveSearchFieldsForProduction">
-      <soap:operation soapAction="http://www.kCura.com/EDDS/SearchManager/RetrieveSearchFieldsForProduction" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -630,15 +589,6 @@
     </wsdl:operation>
     <wsdl:operation name="RetrieveSearchFields">
       <soap12:operation soapAction="http://www.kCura.com/EDDS/SearchManager/RetrieveSearchFields" style="document" />
-      <wsdl:input>
-        <soap12:body use="literal" />
-      </wsdl:input>
-      <wsdl:output>
-        <soap12:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="RetrieveSearchFieldsForProduction">
-      <soap12:operation soapAction="http://www.kCura.com/EDDS/SearchManager/RetrieveSearchFieldsForProduction" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
