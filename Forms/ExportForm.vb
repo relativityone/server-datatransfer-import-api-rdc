@@ -1324,14 +1324,10 @@ Public Class ExportForm
 			End If
 		End If
 		If Me.ExportFile.TypeOfExport = ExportFile.ExportType.Production Then
-			Dim productionManager As New kCura.WinEDDS.Service.ProductionManager(_application.Credential, _application.CookieContainer)
 			If _exportNativeFiles.Checked Then
 				If CType(_nativeFileNameSourceCombo.SelectedItem, String) = "Select..." Then
 					AppendErrorMessage(msg, "No file name source selected")
 				End If
-			End If
-			If productionManager.MigrationJobExists(_application.SelectedCaseInfo.ArtifactID, CType(_filters.SelectedValue, Int32)) Then
-				AppendErrorMessage(msg, "This production has not yet been migrated.")
 			End If
 		End If
 		If _dataFileEncoding.SelectedEncoding Is Nothing Then
@@ -1646,18 +1642,6 @@ Public Class ExportForm
 
 	End Sub
 
-	Private Function FindArtifactIDByName(ByVal dropDown As ComboBox, ByVal name As String) As Int32?
-		Dim retVal As Int32?
-		For i As Int32 = 0 To dropDown.Items.Count - 1
-			Dim dropDownRow As DataRow = DirectCast(dropDown.Items(i), System.Data.DataRowView).Row
-			If CStr(dropDownRow("Name")).Equals(name, StringComparison.InvariantCulture) Then
-				retVal = CInt(dropDownRow("ArtifactID"))
-				Exit For
-			End If
-		Next
-		Return retVal
-	End Function
-
 	Private Sub RunMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles RunMenu.Click
 		Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
 		Try
@@ -1862,6 +1846,9 @@ Public Class ExportForm
 		Dim defaultSelectedIds As New System.Collections.ArrayList
 		If Not _filters.SelectedItem Is Nothing Then defaultSelectedIds = DirectCast(Me.ExportFile.ArtifactAvfLookup(CType(_filters.SelectedValue, Int32)), ArrayList)
 		Dim leftListBoxItems As New System.Collections.ArrayList
+		If defaultSelectedIds Is Nothing Then
+			defaultSelectedIds = New ArrayList()
+		End If
 		For Each field As ViewFieldInfo In Me.ExportFile.AllExportableFields
 			If Not defaultSelectedIds.Contains(field.AvfId) Then
 				If Me.ExportFile.ArtifactTypeID = Relativity.ArtifactType.Document Then
