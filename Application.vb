@@ -15,7 +15,7 @@ Namespace kCura.EDDS.WinForm
 			_processPool = New kCura.Windows.Process.ProcessPool
 			Dim currentZone As System.TimeZone = System.TimeZone.CurrentTimeZone
 
-			ServicePointManager.ServerCertificateValidationCallback = AddressOf kCura.Utility.CertificateValidation.CertificateValidationCallBack
+			ServicePointManager.ServerCertificateValidationCallback = Function(sender As Object, certificate As X509Certificate, chain As X509Chain, sslPolicyErrors As SslPolicyErrors) True
 
 			_cookieContainer = New System.Net.CookieContainer
 		End Sub
