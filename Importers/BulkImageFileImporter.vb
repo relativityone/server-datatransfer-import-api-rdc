@@ -589,7 +589,7 @@ Namespace kCura.WinEDDS
 
 		Private Sub CompleteSuccess()
 			If Not _imageReader Is Nothing Then _imageReader.Close()
-			If _productionArtifactID <> 0 AndAlso _errorCount = 0 Then _productionManager.DoPostImportProcessing(_fileUploader.CaseArtifactID, _productionArtifactID)
+			If _productionArtifactID <> 0 Then _productionManager.DoPostImportProcessing(_fileUploader.CaseArtifactID, _productionArtifactID)
 			Try
 				RaiseEvent EndRun(True, _runId)
 			Catch
