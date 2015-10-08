@@ -188,10 +188,16 @@ Namespace kCura.WinEDDS
 				End While
 
 				_productionExportProduction = production
-'				With _fieldManager.Read(Me.Settings.CaseArtifactID, production.BeginBatesFieldArtifactID)
-'					_beginBatesColumn = Relativity.SqlNameHelper.GetSqlFriendlyName(.DisplayName)
-'					If Not allAvfIds.Contains(.ArtifactViewFieldID) Then allAvfIds.Add(.ArtifactViewFieldID)
-'				End With
+
+				' TODO figure out how to get the field id by guid within the desktop client
+				Dim beginBatesFieldId As Integer = 1038918 ' New ArtifactGuid(Me.ServiceContext.ChicagoContext.DBContext, {Relativity.Production.Constants.ProductionInformationGuids.BEGIN_BATES}.ToList()).ArtifactID
+				Dim endBatesFieldId As Integer = 1038920 ' New ArtifactGuid(Me.ServiceContext.ChicagoContext.DBContext, {Relativity.Production.Constants.ProductionInformationGuids.END_BATES}.ToList()).ArtifactID
+
+				Dim beginBatesField As kCura.EDDS.WebAPI.FieldManagerBase.Field = _fieldManager.Read(Me.Settings.CaseArtifactID, beginBatesFieldId)
+				Dim endBatesField As kCura.EDDS.WebAPI.FieldManagerBase.Field = _fieldManager.Read(Me.Settings.CaseArtifactID, endBatesFieldId)
+
+				allAvfIds.Add(beginBatesField.ArtifactViewFieldID)
+'				allAvfIds.Add(endBatesField.ArtifactViewFieldID)
 			End If
 
 			If Me.Settings.ExportImages AndAlso Me.Settings.LogFileFormat = LoadFileType.FileFormat.IPRO_FullText Then
@@ -273,6 +279,7 @@ Namespace kCura.WinEDDS
 			Me.AuditRun(True)
 			Return Nothing
 		End Function
+
 
 		Private Function CallServerWithRetry(Of T)(f As Func(Of T), Byval maxTries As Int32) As T
 			Dim tries As Integer
