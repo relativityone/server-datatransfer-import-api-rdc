@@ -171,23 +171,23 @@ Namespace kCura.WinEDDS.Service
 			End While
 			Return Nothing
 		End Function
-'
-'		Public Shadows Function RetrieveSearchFieldsForProduction(ByVal caseContextArtifactID As Int32, ByVal productionArtifactID As Int32) As System.Data.DataSet
-'			Dim tries As Int32 = 0
-'			While tries < Config.MaxReloginTries
-'				tries += 1
-'				Try
-'					Return MyBase.RetrieveSearchFieldsForProduction(caseContextArtifactID, productionArtifactID)
-'				Catch ex As System.Exception
-'					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-'						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
-'					Else
-'						Throw
-'					End If
-'				End Try
-'			End While
-'			Return Nothing
-'		End Function
+
+		Public Shadows Function RetrieveSearchFieldsForProduction(ByVal caseContextArtifactID As Int32, ByVal productionArtifactID As Int32) As System.Data.DataSet
+			Dim tries As Int32 = 0
+			While tries < Config.MaxReloginTries
+				tries += 1
+				Try
+					Return MyBase.RetrieveSearchFieldsForProduction(caseContextArtifactID, productionArtifactID)
+				Catch ex As System.Exception
+					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
+						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
+					Else
+						Throw
+					End If
+				End Try
+			End While
+			Return Nothing
+		End Function
 
 		Public Shadows Function RetrieveDefaultViewFieldsForIdList(ByVal caseContextArtifactID As Int32, ByVal artifactTypeID As Int32, ByVal artifactIdList As Int32(), ByVal isProductionList As Boolean) As System.Collections.Specialized.HybridDictionary
 			Dim tries As Int32 = 0

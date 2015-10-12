@@ -52,6 +52,8 @@ Namespace kCura.EDDS.WebAPI.SearchManagerBase
         
         Private RetrieveSearchFieldsOperationCompleted As System.Threading.SendOrPostCallback
         
+        Private RetrieveSearchFieldsForProductionOperationCompleted As System.Threading.SendOrPostCallback
+        
         Private RetrieveDefaultViewFieldsForIdListOperationCompleted As System.Threading.SendOrPostCallback
         
         Private RetrieveAllExportableViewFieldsOperationCompleted As System.Threading.SendOrPostCallback
@@ -123,6 +125,9 @@ Namespace kCura.EDDS.WebAPI.SearchManagerBase
         
         '''<remarks/>
         Public Event RetrieveSearchFieldsCompleted As RetrieveSearchFieldsCompletedEventHandler
+        
+        '''<remarks/>
+        Public Event RetrieveSearchFieldsForProductionCompleted As RetrieveSearchFieldsForProductionCompletedEventHandler
         
         '''<remarks/>
         Public Event RetrieveDefaultViewFieldsForIdListCompleted As RetrieveDefaultViewFieldsForIdListCompletedEventHandler
@@ -513,6 +518,44 @@ Namespace kCura.EDDS.WebAPI.SearchManagerBase
         End Sub
         
         '''<remarks/>
+        <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/SearchManager/RetrieveSearchFieldsForProduction", RequestNamespace:="http://www.kCura.com/EDDS/SearchManager", ResponseNamespace:="http://www.kCura.com/EDDS/SearchManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
+        Public Function RetrieveSearchFieldsForProduction(ByVal caseContextArtifactID As Integer, ByVal productionArtifactID As Integer) As System.Data.DataSet
+            Dim results() As Object = Me.Invoke("RetrieveSearchFieldsForProduction", New Object() {caseContextArtifactID, productionArtifactID})
+            Return CType(results(0),System.Data.DataSet)
+        End Function
+        
+        '''<remarks/>
+        Public Function BeginRetrieveSearchFieldsForProduction(ByVal caseContextArtifactID As Integer, ByVal productionArtifactID As Integer, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("RetrieveSearchFieldsForProduction", New Object() {caseContextArtifactID, productionArtifactID}, callback, asyncState)
+        End Function
+        
+        '''<remarks/>
+        Public Function EndRetrieveSearchFieldsForProduction(ByVal asyncResult As System.IAsyncResult) As System.Data.DataSet
+            Dim results() As Object = Me.EndInvoke(asyncResult)
+            Return CType(results(0),System.Data.DataSet)
+        End Function
+        
+        '''<remarks/>
+        Public Overloads Sub RetrieveSearchFieldsForProductionAsync(ByVal caseContextArtifactID As Integer, ByVal productionArtifactID As Integer)
+            Me.RetrieveSearchFieldsForProductionAsync(caseContextArtifactID, productionArtifactID, Nothing)
+        End Sub
+        
+        '''<remarks/>
+        Public Overloads Sub RetrieveSearchFieldsForProductionAsync(ByVal caseContextArtifactID As Integer, ByVal productionArtifactID As Integer, ByVal userState As Object)
+            If (Me.RetrieveSearchFieldsForProductionOperationCompleted Is Nothing) Then
+                Me.RetrieveSearchFieldsForProductionOperationCompleted = AddressOf Me.OnRetrieveSearchFieldsForProductionOperationCompleted
+            End If
+            Me.InvokeAsync("RetrieveSearchFieldsForProduction", New Object() {caseContextArtifactID, productionArtifactID}, Me.RetrieveSearchFieldsForProductionOperationCompleted, userState)
+        End Sub
+        
+        Private Sub OnRetrieveSearchFieldsForProductionOperationCompleted(ByVal arg As Object)
+            If (Not (Me.RetrieveSearchFieldsForProductionCompletedEvent) Is Nothing) Then
+                Dim invokeArgs As System.Web.Services.Protocols.InvokeCompletedEventArgs = CType(arg,System.Web.Services.Protocols.InvokeCompletedEventArgs)
+                RaiseEvent RetrieveSearchFieldsForProductionCompleted(Me, New RetrieveSearchFieldsForProductionCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState))
+            End If
+        End Sub
+        
+        '''<remarks/>
         <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/SearchManager/RetrieveDefaultViewFieldsForIdList", RequestNamespace:="http://www.kCura.com/EDDS/SearchManager", ResponseNamespace:="http://www.kCura.com/EDDS/SearchManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
         Public Function RetrieveDefaultViewFieldsForIdList(ByVal caseContextArtifactID As Integer, ByVal artifactTypeID As Integer, ByVal artifactIdList() As Integer, ByVal isProductionList As Boolean) As System.Data.DataSet
             Dim results() As Object = Me.Invoke("RetrieveDefaultViewFieldsForIdList", New Object() {caseContextArtifactID, artifactTypeID, artifactIdList, isProductionList})
@@ -859,6 +902,33 @@ Namespace kCura.EDDS.WebAPI.SearchManagerBase
      System.Diagnostics.DebuggerStepThroughAttribute(),  _
      System.ComponentModel.DesignerCategoryAttribute("code")>  _
     Partial Public Class RetrieveSearchFieldsCompletedEventArgs
+        Inherits System.ComponentModel.AsyncCompletedEventArgs
+        
+        Private results() As Object
+        
+        Friend Sub New(ByVal results() As Object, ByVal exception As System.Exception, ByVal cancelled As Boolean, ByVal userState As Object)
+            MyBase.New(exception, cancelled, userState)
+            Me.results = results
+        End Sub
+        
+        '''<remarks/>
+        Public ReadOnly Property Result() As System.Data.DataSet
+            Get
+                Me.RaiseExceptionIfNecessary
+                Return CType(Me.results(0),System.Data.DataSet)
+            End Get
+        End Property
+    End Class
+    
+    '''<remarks/>
+    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.0.30319.34209")>  _
+    Public Delegate Sub RetrieveSearchFieldsForProductionCompletedEventHandler(ByVal sender As Object, ByVal e As RetrieveSearchFieldsForProductionCompletedEventArgs)
+    
+    '''<remarks/>
+    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.0.30319.34209"),  _
+     System.Diagnostics.DebuggerStepThroughAttribute(),  _
+     System.ComponentModel.DesignerCategoryAttribute("code")>  _
+    Partial Public Class RetrieveSearchFieldsForProductionCompletedEventArgs
         Inherits System.ComponentModel.AsyncCompletedEventArgs
         
         Private results() As Object

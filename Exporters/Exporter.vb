@@ -187,6 +187,8 @@ Namespace kCura.WinEDDS
 					End Try
 				End While
 
+				allAvfIds.Add(1001443)
+
 				_productionExportProduction = production
 			End If
 
