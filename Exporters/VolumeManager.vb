@@ -1202,30 +1202,35 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Private Function GetMultivalueString(ByVal input As String, ByVal field As ViewFieldInfo) As String
-			Dim xr As New System.Xml.XmlTextReader(New System.IO.StringReader("<objects>" & input & "</objects>"))
-			Dim firstTimeThrough As Boolean = True
-			Dim sb As New System.Text.StringBuilder
-			While xr.Read
-				If xr.Name = "object" And xr.IsStartElement Then
-					xr.Read()
-					If firstTimeThrough Then
-						firstTimeThrough = False
-					Else
-						sb.Append(Me.Settings.MultiRecordDelimiter)
+			Dim retVal As String = input
+			If input.Contains("<objects>") Then
+				Dim xr As New System.Xml.XmlTextReader(New System.IO.StringReader("<objects>" & input & "</objects>"))
+				Dim firstTimeThrough As Boolean = True
+				Dim sb As New System.Text.StringBuilder
+				While xr.Read
+					If xr.Name = "object" And xr.IsStartElement Then
+						xr.Read()
+						If firstTimeThrough Then
+							firstTimeThrough = False
+						Else
+							sb.Append(Me.Settings.MultiRecordDelimiter)
+						End If
+						Dim cleanval As String = xr.Value.Trim
+						Select Case field.FieldType
+							Case Relativity.FieldTypeHelper.FieldType.Code, Relativity.FieldTypeHelper.FieldType.MultiCode
+								cleanval = Me.GetCodeValueString(cleanval)
+							Case Relativity.FieldTypeHelper.FieldType.Date
+								cleanval = Me.ToExportableDateString(cleanval, field.FormatString)
+						End Select
+						'If isCodeOrMulticodeField Then cleanval = Me.GetCodeValueString(cleanval)
+						sb.Append(cleanval)
 					End If
-					Dim cleanval As String = xr.Value.Trim
-					Select Case field.FieldType
-						Case Relativity.FieldTypeHelper.FieldType.Code, Relativity.FieldTypeHelper.FieldType.MultiCode
-							cleanval = Me.GetCodeValueString(cleanval)
-						Case Relativity.FieldTypeHelper.FieldType.Date
-							cleanval = Me.ToExportableDateString(cleanval, field.FormatString)
-					End Select
-					'If isCodeOrMulticodeField Then cleanval = Me.GetCodeValueString(cleanval)
-					sb.Append(cleanval)
-				End If
-			End While
-			xr.Close()
-			Return sb.ToString
+				End While
+				xr.Close()
+				retVal = sb.ToString
+			End If
+			Return retVal
+
 		End Function
 
 		Public Sub UpdateVolume()

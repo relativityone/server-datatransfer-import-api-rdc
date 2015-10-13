@@ -63,6 +63,21 @@
 			Return retval
 		End Function
 
+		Public Shadows Function RetrieveResultsBlockForProduction(ByVal appID As Int32, ByVal runId As Guid, ByVal artifactTypeID As Int32, ByVal avfIds As Int32(), ByVal chunkSize As Int32, ByVal displayMulticodesAsNested As Boolean, ByVal multiValueDelimiter As Char, ByVal nestedValueDelimiter As Char, ByVal textPrecedenceAvfIds As Int32(), ByVal productionId As Int32) As Object()
+			Dim retval As Object() = MakeCallAttemptReLogin(Function() MyBase.RetrieveResultsBlockForProduction(appID, runId, artifactTypeID, avfIds, chunkSize, displayMulticodesAsNested, multiValueDelimiter, nestedValueDelimiter, textPrecedenceAvfIds, productionId))
+			If Not retval Is Nothing Then
+				For Each row As Object() In retval
+					If row Is Nothing Then
+						Throw New System.Exception("Invalid (null) row retrieved from server")
+					End If
+					For i As Int32 = 0 To row.Length - 1
+						If TypeOf row(i) Is Byte() Then row(i) = System.Text.Encoding.Unicode.GetString(DirectCast(row(i), Byte()))
+					Next
+				Next
+			End If
+			Return retval
+		End Function
+
 		Public Shadows Function HasExportPermissions(appID As Int32) As Boolean
 			Return MakeCallAttemptReLogin(Function() MyBase.HasExportPermissions(appID))
 		End Function
