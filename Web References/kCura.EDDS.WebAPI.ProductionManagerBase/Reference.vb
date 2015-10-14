@@ -397,11 +397,9 @@ Namespace kCura.EDDS.WebAPI.ProductionManagerBase
         
         Private batesNumberingField As Boolean
         
-        Private beginBatesFieldArtifactIDField As Integer
+        Private beginBatesReflectedFieldIdField As Integer
         
         Private documentsHaveRedactionsField As Boolean
-        
-        Private endBatesFieldArtifactIDField As System.Nullable(Of Integer)
         
         Private includeImageLevelNumberingForDocumentLevelNumberingField As Boolean
         
@@ -420,12 +418,12 @@ Namespace kCura.EDDS.WebAPI.ProductionManagerBase
         End Property
         
         '''<remarks/>
-        Public Property BeginBatesFieldArtifactID() As Integer
+        Public Property BeginBatesReflectedFieldId() As Integer
             Get
-                Return Me.beginBatesFieldArtifactIDField
+                Return Me.beginBatesReflectedFieldIdField
             End Get
             Set
-                Me.beginBatesFieldArtifactIDField = value
+                Me.beginBatesReflectedFieldIdField = value
             End Set
         End Property
         
@@ -436,17 +434,6 @@ Namespace kCura.EDDS.WebAPI.ProductionManagerBase
             End Get
             Set
                 Me.documentsHaveRedactionsField = value
-            End Set
-        End Property
-        
-        '''<remarks/>
-        <System.Xml.Serialization.XmlElementAttribute(IsNullable:=true)>  _
-        Public Property EndBatesFieldArtifactID() As System.Nullable(Of Integer)
-            Get
-                Return Me.endBatesFieldArtifactIDField
-            End Get
-            Set
-                Me.endBatesFieldArtifactIDField = value
             End Set
         End Property
         
