@@ -1444,6 +1444,8 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 		Private Sub CertificatePromptForm_Allow_Click() Handles _certificatePromptForm.AllowUntrustedCertificates
+			'' The magical line that allows untrusted certificates
+			ServicePointManager.ServerCertificateValidationCallback = Function(sender As Object, certificate As X509Certificate, chain As X509Chain, sslPolicyErrors As SslPolicyErrors) True
 			AttemptLogin(_certificatePromptForm)
 		End Sub
 
