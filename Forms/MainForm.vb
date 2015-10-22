@@ -405,22 +405,12 @@ Namespace kCura.EDDS.WinForm
 			End If
 
 			'' Certificate check
-			If (Not _application.CertificateTrusted()) Then
+			If (_application.CertificateTrusted()) Then
 				loginForm = _application.AttemptLogin(Me)
 			Else
 				_application.CertificateCheckPrompt()
 			End If
-			
 
-			'If defaultCredentialResult = Application.CredentialCheckResult.AccessDisabled Then
-			'	MessageBox.Show(Application.ACCESS_DISABLED_MESSAGE, Application.RDC_ERROR_TITLE)
-			'ElseIf Not defaultCredentialResult = Application.CredentialCheckResult.Success Then
-			'	loginForm = _application.NewLogin()
-			'Else
-			'	_application.LogOn()
-			'	_application.OpenCase()
-			'	kCura.Windows.Forms.EnhancedMenuProvider.Hook(Me)
-			'End If
 			Me.Cursor = System.Windows.Forms.Cursors.Default
 		End Sub
 

@@ -1375,7 +1375,12 @@ Namespace kCura.EDDS.WinForm
 		End Property
 
 #Region "Login"
-
+		''' <summary>
+		''' Attempt to establish a trusted and authenticated connection to Relativity
+		''' </summary>
+		''' <param name="callingForm">The calling form to be Hooked (what is hooked?)</param>
+		''' <returns>A fresh LoginForm</returns>
+		''' <remarks></remarks>
 		Friend Function AttemptLogin(ByVal callingForm As Form) As Form
 			Dim defaultCredentialResult As Application.CredentialCheckResult = AttemptWindowsAuthentication()
 			Dim newLoginForm As Form = New LoginForm()
@@ -1436,6 +1441,10 @@ Namespace kCura.EDDS.WinForm
 		Public Sub LoadWorkspacePermissions()
 			UserHasExportPermission = New kCura.WinEDDS.Service.ExportManager(Credential, CookieContainer).HasExportPermissions(SelectedCaseInfo.ArtifactID)
 			UserHasImportPermission = New kCura.WinEDDS.Service.BulkImportManager(Credential, CookieContainer).HasImportPermissions(SelectedCaseInfo.ArtifactID)
+		End Sub
+
+		Private Sub CertificatePromptForm_Allow_Click() Handles _certificatePromptForm.AllowUntrustedCertificates
+			AttemptLogin(_certificatePromptForm)
 		End Sub
 
 		Private Sub _loginForm_OK_Click(ByVal cred As System.Net.NetworkCredential, ByVal openCaseSelector As Boolean) Handles _loginForm.OK_Click
