@@ -16,14 +16,14 @@
     <MyType>Windows</MyType>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <TargetFrameworkProfile />
-	<Injections>EnableInjections</Injections>
+    <Injections>EnableInjections</Injections>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <DefineDebug>true</DefineDebug>
     <DefineTrace>true</DefineTrace>
-	<DefineConstants>$(Injections)</DefineConstants>
+    <DefineConstants>$(Injections)</DefineConstants>
     <OutputPath>bin\</OutputPath>
     <DocumentationFile>bin\kCura.EDDS.WinForm.NUnit.xml</DocumentationFile>
     <NoWarn>
@@ -36,7 +36,7 @@
     <DebugType>pdbonly</DebugType>
     <DefineDebug>false</DefineDebug>
     <DefineTrace>true</DefineTrace>
-	<DefineConstants>$(Injections)</DefineConstants>
+    <DefineConstants>$(Injections)</DefineConstants>
     <Optimize>true</Optimize>
     <OutputPath>bin\</OutputPath>
     <DocumentationFile>bin\kCura.EDDS.WinForm.NUnit.xml</DocumentationFile>
@@ -62,7 +62,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DefineDebug>true</DefineDebug>
     <DefineTrace>true</DefineTrace>
-	<DefineConstants>$(Injections)</DefineConstants>
+    <DefineConstants>$(Injections)</DefineConstants>
     <OutputPath>bin\x64\</OutputPath>
     <DocumentationFile>bin\x64\kCura.EDDS.WinForm.NUnit.xml</DocumentationFile>
     <NoWarn>
@@ -81,7 +81,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
     <DefineTrace>true</DefineTrace>
-	<DefineConstants>$(Injections)</DefineConstants>
+    <DefineConstants>$(Injections)</DefineConstants>
     <OutputPath>bin\x64\</OutputPath>
     <DocumentationFile>bin\x64\kCura.EDDS.WinForm.NUnit.xml</DocumentationFile>
     <Optimize>true</Optimize>
@@ -103,7 +103,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DefineDebug>true</DefineDebug>
     <DefineTrace>true</DefineTrace>
-	<DefineConstants>$(Injections)</DefineConstants>
+    <DefineConstants>$(Injections)</DefineConstants>
     <OutputPath>bin\x86\</OutputPath>
     <DocumentationFile>bin\x86\kCura.EDDS.WinForm.NUnit.xml</DocumentationFile>
     <DebugType>full</DebugType>
@@ -120,7 +120,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
     <DefineTrace>true</DefineTrace>
-	<DefineConstants>$(Injections)</DefineConstants>
+    <DefineConstants>$(Injections)</DefineConstants>
     <OutputPath>bin\x86\</OutputPath>
     <DocumentationFile>bin\x86\kCura.EDDS.WinForm.NUnit.xml</DocumentationFile>
     <Optimize>true</Optimize>
@@ -140,7 +140,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DefineDebug>true</DefineDebug>
     <DefineTrace>true</DefineTrace>
-	<DefineConstants>$(Injections)</DefineConstants>
+    <DefineConstants>$(Injections)</DefineConstants>
     <OutputPath>bin\</OutputPath>
     <DocumentationFile>bin\kCura.EDDS.WinForm.NUnit.xml</DocumentationFile>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
@@ -159,7 +159,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DefineDebug>true</DefineDebug>
     <DefineTrace>true</DefineTrace>
-	<DefineConstants>$(Injections)</DefineConstants>
+    <DefineConstants>$(Injections)</DefineConstants>
     <OutputPath>bin\x64\</OutputPath>
     <DocumentationFile>bin\x64\kCura.EDDS.WinForm.NUnit.xml</DocumentationFile>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
@@ -178,7 +178,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DefineDebug>true</DefineDebug>
     <DefineTrace>true</DefineTrace>
-	<DefineConstants>$(Injections)</DefineConstants>
+    <DefineConstants>$(Injections)</DefineConstants>
     <OutputPath>bin\x86\</OutputPath>
     <DocumentationFile>bin\x86\kCura.EDDS.WinForm.NUnit.xml</DocumentationFile>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
