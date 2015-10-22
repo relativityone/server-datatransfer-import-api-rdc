@@ -329,6 +329,7 @@ Namespace kCura.EDDS.WinForm
 
 #End Region
 
+		Private promptForm As CertificatePromptForm
 		Private loginForm As Form = Nothing
 		Private firstTime As Boolean = True
 		Friend WithEvents _application As kCura.EDDS.WinForm.Application
@@ -403,16 +404,23 @@ Namespace kCura.EDDS.WinForm
 				_application.SetWebServiceURL()
 			End If
 
-			Dim defaultCredentialResult As Application.CredentialCheckResult = _application.AttemptWindowsAuthentication()
-			If defaultCredentialResult = Application.CredentialCheckResult.AccessDisabled Then
-				MessageBox.Show(Application.ACCESS_DISABLED_MESSAGE, Application.RDC_ERROR_TITLE)
-			ElseIf Not defaultCredentialResult = Application.CredentialCheckResult.Success Then
-				loginForm = _application.NewLogin()
+			'' Certificate check
+			If (Not _application.CertificateTrusted()) Then
+				loginForm = _application.AttemptLogin(Me)
 			Else
-				_application.LogOn()
-				_application.OpenCase()
-				kCura.Windows.Forms.EnhancedMenuProvider.Hook(Me)
+				_application.CertificateCheckPrompt()
 			End If
+			
+
+			'If defaultCredentialResult = Application.CredentialCheckResult.AccessDisabled Then
+			'	MessageBox.Show(Application.ACCESS_DISABLED_MESSAGE, Application.RDC_ERROR_TITLE)
+			'ElseIf Not defaultCredentialResult = Application.CredentialCheckResult.Success Then
+			'	loginForm = _application.NewLogin()
+			'Else
+			'	_application.LogOn()
+			'	_application.OpenCase()
+			'	kCura.Windows.Forms.EnhancedMenuProvider.Hook(Me)
+			'End If
 			Me.Cursor = System.Windows.Forms.Cursors.Default
 		End Sub
 
