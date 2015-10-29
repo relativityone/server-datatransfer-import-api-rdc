@@ -51,7 +51,6 @@ Partial Class CertificatePromptForm
 		'AllowButton
 		'
 		Me.AllowButton.Cursor = System.Windows.Forms.Cursors.Default
-		Me.AllowButton.Enabled = False
 		Me.AllowButton.Location = New System.Drawing.Point(12, 51)
 		Me.AllowButton.Name = "AllowButton"
 		Me.AllowButton.Size = New System.Drawing.Size(162, 23)
