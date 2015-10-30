@@ -33,10 +33,12 @@ Namespace kCura.EDDS.WinForm
 #Region "Members"
 		Public Event OnEvent(ByVal appEvent As AppEvent)
 		Public Event ChangeCursor(ByVal cursorStyle As System.Windows.Forms.Cursor)
+		Public Event ReCheckCertificate()
 
 		Public Const ACCESS_DISABLED_MESSAGE As String = "Your Relativity account has been disabled.  Please contact your Relativity Administrator to activate your account."
 		Public Const RDC_ERROR_TITLE As String = "Relativity Desktop Client Error"
 
+		Private _caseSelected As Boolean = True
 		Private _processPool As kCura.Windows.Process.ProcessPool
 		Private _selectedCaseInfo As Relativity.CaseInfo
 		Private _selectedCaseFolderID As Int32
@@ -46,6 +48,7 @@ Namespace kCura.EDDS.WinForm
 		Private _timeZoneOffset As Int32
 		Private WithEvents _loginForm As LoginForm
 		Private WithEvents _certificatePromptForm As CertificatePromptForm
+		Private WithEvents _optionsForm As OptionsForm
 		Private Shared _cache As New Hashtable
 		Private _documentRepositoryList As String()
 		Private _totalFolders As New System.Collections.Specialized.HybridDictionary
@@ -207,9 +210,10 @@ Namespace kCura.EDDS.WinForm
 		Public Sub UpdateWebServiceURL(ByVal relogin As Boolean)
 			If Not Me.TemporaryWebServiceURL Is Nothing AndAlso Not Me.TemporaryWebServiceURL = String.Empty AndAlso Not Me.TemporaryWebServiceURL.Equals(kCura.WinEDDS.Config.WebServiceURL) Then
 				kCura.WinEDDS.Config.WebServiceURL = Me.TemporaryWebServiceURL
-				If relogin Then
-					Me.NewLogin(True)
-				End If
+				_caseSelected = False
+				'' Turn off our trust of bad certificates! This needs to happen here (references need to be added to add it to MainForm - bad practice).
+				ServicePointManager.ServerCertificateValidationCallback = Function(sender As Object, certificate As X509Certificate, chain As X509Chain, sslPolicyErrors As SslPolicyErrors) sslPolicyErrors.Equals(sslPolicyErrors.None)
+				RaiseEvent ReCheckCertificate()
 			End If
 		End Sub
 
@@ -428,7 +432,9 @@ Namespace kCura.EDDS.WinForm
 		Public Sub SelectCaseFolder(ByVal folderInfo As FolderInfo)
 			_selectedCaseFolderID = folderInfo.ArtifactID
 			_selectedCaseFolderPath = folderInfo.Path
+			_caseSelected = True
 			RaiseEvent OnEvent(New AppEvent(AppEvent.AppEventType.WorkspaceFolderSelected))
+			_caseSelected = True
 		End Sub
 
 		Public Sub OpenCase()
@@ -476,12 +482,12 @@ Namespace kCura.EDDS.WinForm
 
 #Region "Security Methods"
 		''' <summary>
-		''' Checks that the https certificate is trusted for this connection
+		''' Checks that the https certificate is trusted for this connection. Throws an exception if anything but trust failure happens
 		''' </summary>
 		''' <returns>True if the certificate is trusted. False otherwise.</returns>
 		''' <remarks></remarks>
 		Public Function CertificateTrusted() As Boolean
-			Dim isCertificateTrusted As Boolean
+			Dim isCertificateTrusted As Boolean = True
 
 			Dim myHttpWebRequest As HttpWebRequest
 			Dim cred As NetworkCredential
@@ -492,9 +498,8 @@ Namespace kCura.EDDS.WinForm
 			myHttpWebRequest.Credentials = CredentialCache.DefaultCredentials
 			Try
 				relativityManager = New Service.RelativityManager(cred, _CookieContainer)
-				If relativityManager.ValidateSuccessfulLogin Then
-					isCertificateTrusted = True
-				End If
+				'' Only if this line bombs do we say the cert is untrusted
+				relativityManager.ValidateSuccessfulLogin()
 			Catch ex As WebException
 				If (ex.Status = WebExceptionStatus.TrustFailure) Then
 					isCertificateTrusted = False
@@ -996,12 +1001,22 @@ Namespace kCura.EDDS.WinForm
 
 		Public Sub NewOptions()
 			CursorWait()
-			Dim frm As New OptionsForm
 
-			If Not _loginForm Is Nothing AndAlso _loginForm.Visible Then
-				frm.Show(_loginForm)
-			Else
-				frm.Show()
+			If (Not _optionsForm Is Nothing AndAlso Not _optionsForm.Visible) Then
+				_optionsForm = Nothing
+			End If
+
+			If (_optionsForm Is Nothing) Then
+				_optionsForm = New OptionsForm
+
+				If Not _loginForm Is Nothing AndAlso _loginForm.Visible Then
+					_optionsForm.Show(_loginForm)
+				ElseIf Not _certificatePromptForm Is Nothing AndAlso _certificatePromptForm.Visible Then
+					_certificatePromptForm.Close()
+					_optionsForm.Show()
+				Else
+					_optionsForm.Show()
+				End If
 			End If
 
 			CursorDefault()
@@ -1376,9 +1391,9 @@ Namespace kCura.EDDS.WinForm
 
 #Region "Login"
 		''' <summary>
-		''' Attempt to establish a trusted and authenticated connection to Relativity
+		''' Attempt to establish a trusted and authenticated connection to Relativity. Success = Case List, Failure = Login Prompt
 		''' </summary>
-		''' <param name="callingForm">The calling form to be Hooked (what is hooked?)</param>
+		''' <param name="callingForm">The calling form to be Hooked (what is hooked?) by the Enhance Menu Provider</param>
 		''' <returns>A fresh LoginForm</returns>
 		''' <remarks></remarks>
 		Friend Function AttemptLogin(ByVal callingForm As Form) As Form
@@ -1392,7 +1407,9 @@ Namespace kCura.EDDS.WinForm
 					newLoginForm = NewLogin()
 				Case Application.CredentialCheckResult.Success
 					LogOn()
-					OpenCase()
+					If (Not _caseSelected) Then
+						OpenCase()
+					End If
 					EnhancedMenuProvider.Hook(callingForm)
 			End Select
 
@@ -1441,6 +1458,11 @@ Namespace kCura.EDDS.WinForm
 		Public Sub LoadWorkspacePermissions()
 			UserHasExportPermission = New kCura.WinEDDS.Service.ExportManager(Credential, CookieContainer).HasExportPermissions(SelectedCaseInfo.ArtifactID)
 			UserHasImportPermission = New kCura.WinEDDS.Service.BulkImportManager(Credential, CookieContainer).HasImportPermissions(SelectedCaseInfo.ArtifactID)
+		End Sub
+
+		Private Sub CertificatePromptForm_Deny_Click() Handles _certificatePromptForm.DenyUntrustedCertificates
+			'' The user does not trust the certificate. Prompt them for a new server by showing the settings dialog
+			NewOptions()
 		End Sub
 
 		Private Sub CertificatePromptForm_Allow_Click() Handles _certificatePromptForm.AllowUntrustedCertificates

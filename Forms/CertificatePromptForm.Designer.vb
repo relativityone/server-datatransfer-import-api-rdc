@@ -30,11 +30,11 @@ Partial Class CertificatePromptForm
 		'
 		'CloseButton
 		'
-		Me.CloseButton.Location = New System.Drawing.Point(188, 51)
+		Me.CloseButton.Location = New System.Drawing.Point(146, 51)
 		Me.CloseButton.Name = "CloseButton"
-		Me.CloseButton.Size = New System.Drawing.Size(75, 23)
+		Me.CloseButton.Size = New System.Drawing.Size(125, 23)
 		Me.CloseButton.TabIndex = 0
-		Me.CloseButton.Text = "Close RDC"
+		Me.CloseButton.Text = "Deny"
 		Me.CloseButton.UseVisualStyleBackColor = True
 		'
 		'BadCertLabel
@@ -46,23 +46,23 @@ Partial Class CertificatePromptForm
 		Me.BadCertLabel.TabIndex = 2
 		Me.BadCertLabel.Text = "The certificate used by this server is untrusted. " & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Contact a System Administrato" & _
 	"r for more information."
-		Me.BadCertLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
+		Me.BadCertLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
 		'
 		'AllowButton
 		'
 		Me.AllowButton.Cursor = System.Windows.Forms.Cursors.Default
-		Me.AllowButton.Location = New System.Drawing.Point(12, 51)
+		Me.AllowButton.Location = New System.Drawing.Point(15, 51)
 		Me.AllowButton.Name = "AllowButton"
-		Me.AllowButton.Size = New System.Drawing.Size(162, 23)
+		Me.AllowButton.Size = New System.Drawing.Size(125, 23)
 		Me.AllowButton.TabIndex = 3
-		Me.AllowButton.Text = "Allow Untrusted Certificate"
+		Me.AllowButton.Text = "Allow "
 		Me.AllowButton.UseVisualStyleBackColor = True
 		'
 		'CertificatePromptForm
 		'
 		Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
 		Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-		Me.ClientSize = New System.Drawing.Size(276, 86)
+		Me.ClientSize = New System.Drawing.Size(284, 86)
 		Me.Controls.Add(Me.AllowButton)
 		Me.Controls.Add(Me.BadCertLabel)
 		Me.Controls.Add(Me.CloseButton)
