@@ -108,11 +108,6 @@ Namespace kCura.WinEDDS.Service
 			ExecuteWithRetry(Sub() MyBase.RemoveTempFile(caseContextArtifactID, fileName))
 		End Sub
 
-		'I am commenting this method out for now because I don't think it's being used, but I'm not certain. -- Jean Libera
-		'Public Shadows Function ReadFileAsString(ByVal path As String) As Byte()
-		'	Return ExecuteWithRetry(Function() MyBase.ReadFileAsString(path))
-		'End Function
-
 		Public Shadows Function ValidateBcpShare(ByVal appID As Int32) As Boolean
 			Return ExecuteWithRetry(Function() MyBase.ValidateBcpShare(appID))
 		End Function

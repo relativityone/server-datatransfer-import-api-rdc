@@ -473,9 +473,6 @@
     <Compile Include="FileUploader.vb">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="FullTextManager.vb">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Importers\BulkImageFileImporter.vb">
       <SubType>Code</SubType>
     </Compile>
