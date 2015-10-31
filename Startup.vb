@@ -1,3 +1,6 @@
+Imports kCura.EDDS.WebAPI.RelativityManagerBase
+Imports RelativityManager = kCura.WinEDDS.Service.RelativityManager
+
 Namespace kCura.EDDS.WinForm
 
 	Public Module Startup
@@ -54,11 +57,15 @@ Namespace kCura.EDDS.WinForm
 			AddHandler System.Windows.Forms.Application.ThreadException, AddressOf handler.Application_ThreadException
 
 			Dim args As String() = System.Environment.GetCommandLineArgs
+
 			If args.Length = 1 Then
 				CloseConsole()
-				Dim frm As New kCura.EDDS.WinForm.MainForm
-				frm.Show()
-				frm.Refresh()
+				Dim mainForm As New kCura.EDDS.WinForm.MainForm
+				''Dim promptForm As CertificatePromptForm
+
+
+				mainForm.Show()
+				mainForm.Refresh()
 				System.Windows.Forms.Application.Run()
 			Else
 				RunInConsoleMode()

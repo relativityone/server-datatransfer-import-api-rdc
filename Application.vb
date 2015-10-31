@@ -15,9 +15,9 @@ Namespace kCura.EDDS.WinForm
 			_processPool = New kCura.Windows.Process.ProcessPool
 			Dim currentZone As System.TimeZone = System.TimeZone.CurrentTimeZone
 
-			ServicePointManager.ServerCertificateValidationCallback = Function(sender As Object, certificate As X509Certificate, chain As X509Chain, sslPolicyErrors As SslPolicyErrors) True
+			''ServicePointManager.ServerCertificateValidationCallback = Function(sender As Object, certificate As X509Certificate, chain As X509Chain, sslPolicyErrors As SslPolicyErrors) True
 
-			_cookieContainer = New System.Net.CookieContainer
+			_CookieContainer = New System.Net.CookieContainer
 		End Sub
 
 		Public Shared ReadOnly Property Instance() As Application
@@ -33,10 +33,12 @@ Namespace kCura.EDDS.WinForm
 #Region "Members"
 		Public Event OnEvent(ByVal appEvent As AppEvent)
 		Public Event ChangeCursor(ByVal cursorStyle As System.Windows.Forms.Cursor)
+		Public Event ReCheckCertificate()
 
 		Public Const ACCESS_DISABLED_MESSAGE As String = "Your Relativity account has been disabled.  Please contact your Relativity Administrator to activate your account."
 		Public Const RDC_ERROR_TITLE As String = "Relativity Desktop Client Error"
 
+		Private _caseSelected As Boolean = True
 		Private _processPool As kCura.Windows.Process.ProcessPool
 		Private _selectedCaseInfo As Relativity.CaseInfo
 		Private _selectedCaseFolderID As Int32
@@ -45,6 +47,8 @@ Namespace kCura.EDDS.WinForm
 		Private _selectedCaseFolderPath As String
 		Private _timeZoneOffset As Int32
 		Private WithEvents _loginForm As LoginForm
+		Private WithEvents _certificatePromptForm As CertificatePromptForm
+		Private WithEvents _optionsForm As OptionsForm
 		Private Shared _cache As New Hashtable
 		Private _documentRepositoryList As String()
 		Private _totalFolders As New System.Collections.Specialized.HybridDictionary
@@ -68,7 +72,7 @@ Namespace kCura.EDDS.WinForm
 		End Property
 
 		Public Sub RefreshSelectedCaseInfo(Optional ByVal caseInfo As Relativity.CaseInfo = Nothing)
-			Dim caseManager As New kCura.WinEDDS.Service.CaseManager(Me.Credential, _cookieContainer)
+			Dim caseManager As New kCura.WinEDDS.Service.CaseManager(Me.Credential, _CookieContainer)
 			If caseInfo Is Nothing Then
 				_selectedCaseInfo = caseManager.Read(_selectedCaseInfo.ArtifactID)
 			Else
@@ -107,7 +111,7 @@ Namespace kCura.EDDS.WinForm
 				Try
 					If _fields Is Nothing OrElse refresh Then
 						_fields = New DocumentFieldCollection
-						Dim fieldManager As New kCura.WinEDDS.Service.FieldQuery(Credential, _cookieContainer)
+						Dim fieldManager As New kCura.WinEDDS.Service.FieldQuery(Credential, _CookieContainer)
 						Dim fields() As kCura.EDDS.WebAPI.DocumentManagerBase.Field
 						fields = fieldManager.RetrieveAllAsArray(SelectedCaseInfo.ArtifactID, artifactTypeID)
 						Dim i As Int32
@@ -134,7 +138,7 @@ Namespace kCura.EDDS.WinForm
 				Try
 					If _fields Is Nothing OrElse refresh Then
 						_fields = New DocumentFieldCollection
-						Dim fieldManager As New kCura.WinEDDS.Service.FieldQuery(Credential, _cookieContainer)
+						Dim fieldManager As New kCura.WinEDDS.Service.FieldQuery(Credential, _CookieContainer)
 						Dim fields() As kCura.EDDS.WebAPI.DocumentManagerBase.Field
 						fields = fieldManager.RetrieveAllAsArray(SelectedCaseInfo.ArtifactID, artifactTypeID)
 						Dim i As Int32
@@ -206,9 +210,10 @@ Namespace kCura.EDDS.WinForm
 		Public Sub UpdateWebServiceURL(ByVal relogin As Boolean)
 			If Not Me.TemporaryWebServiceURL Is Nothing AndAlso Not Me.TemporaryWebServiceURL = String.Empty AndAlso Not Me.TemporaryWebServiceURL.Equals(kCura.WinEDDS.Config.WebServiceURL) Then
 				kCura.WinEDDS.Config.WebServiceURL = Me.TemporaryWebServiceURL
-				If relogin Then
-					Me.NewLogin(True)
-				End If
+				_caseSelected = False
+				'' Turn off our trust of bad certificates! This needs to happen here (references need to be added to add it to MainForm - bad practice).
+				ServicePointManager.ServerCertificateValidationCallback = Function(sender As Object, certificate As X509Certificate, chain As X509Chain, sslPolicyErrors As SslPolicyErrors) sslPolicyErrors.Equals(sslPolicyErrors.None)
+				RaiseEvent ReCheckCertificate()
 			End If
 		End Sub
 
@@ -255,7 +260,7 @@ Namespace kCura.EDDS.WinForm
 		Friend Function IsConnected() As Boolean
 			Dim retval = False
 			Try
-				Dim userManager As New kCura.WinEDDS.Service.UserManager(Credential, _cookieContainer)
+				Dim userManager As New kCura.WinEDDS.Service.UserManager(Credential, _CookieContainer)
 				retval = userManager.LoggedIn()
 			Catch ex As System.Exception
 				If ex.Message.IndexOf("Need To Re Login") <> -1 Then
@@ -311,7 +316,7 @@ Namespace kCura.EDDS.WinForm
 				MsgBox("The key field [" & fieldName & "] is unmapped.  Please map it to continue", MsgBoxStyle.Critical, "Relativity Desktop Client")
 				Return isIdentifierMapped
 			End If
-			If Not forPreview AndAlso Not New kCura.WinEDDS.Service.FieldQuery(Credential, _cookieContainer).IsFieldIndexed(Me.SelectedCaseInfo.ArtifactID, loadFile.IdentityFieldId) Then
+			If Not forPreview AndAlso Not New kCura.WinEDDS.Service.FieldQuery(Credential, _CookieContainer).IsFieldIndexed(Me.SelectedCaseInfo.ArtifactID, loadFile.IdentityFieldId) Then
 				Return MsgBox("There is no SQL index on the selected Overlay Identifier field.  " & vbNewLine & "Performing a load on an un-indexed SQL field will be drastically slower, " & vbNewLine & "and may negatively impact Relativity performance for all users." & vbNewLine & "Contact your SQL Administrator to have an index applied to the selected Overlay Identifier field.", MsgBoxStyle.OkCancel, "Relativity Desktop Client") = MsgBoxResult.Ok
 			Else
 				Return True
@@ -340,7 +345,7 @@ Namespace kCura.EDDS.WinForm
 			Else
 				id = imageArgs.IdentityFieldId
 			End If
-			If Not forPreview AndAlso Not New kCura.WinEDDS.Service.FieldQuery(Credential, _cookieContainer).IsFieldIndexed(Me.SelectedCaseInfo.ArtifactID, id) Then
+			If Not forPreview AndAlso Not New kCura.WinEDDS.Service.FieldQuery(Credential, _CookieContainer).IsFieldIndexed(Me.SelectedCaseInfo.ArtifactID, id) Then
 				Return MsgBox("There is no SQL index on the selected Overlay Identifier field.  " & vbNewLine & "Performing a load on an un-indexed SQL field will be drastically slower, " & vbNewLine & "and may negatively impact Relativity performance for all users." & vbNewLine & "Contact your SQL Administrator to have an index applied to the selected Overlay Identifier field.", MsgBoxStyle.OkCancel) = MsgBoxResult.Ok
 			Else
 				Return True
@@ -353,7 +358,7 @@ Namespace kCura.EDDS.WinForm
 			Dim name As String = InputBox("Enter Folder Name", "Relativity Review")
 			If name <> String.Empty Then
 				Try
-					Dim folderManager As New kCura.WinEDDS.Service.FolderManager(Me.Credential, _cookieContainer)
+					Dim folderManager As New kCura.WinEDDS.Service.FolderManager(Me.Credential, _CookieContainer)
 					Dim folderID As Int32 = folderManager.Create(Me.SelectedCaseInfo.ArtifactID, parentFolderID, name)
 					RaiseEvent OnEvent(New NewFolderEvent(parentFolderID, folderID, name))
 				Catch ex As System.Exception
@@ -383,7 +388,7 @@ Namespace kCura.EDDS.WinForm
 
 		Public Function GetCaseFolders(ByVal caseID As Int32) As System.Data.DataSet
 			Try
-				Dim folderManager As New kCura.WinEDDS.Service.FolderManager(Credential, _cookieContainer)
+				Dim folderManager As New kCura.WinEDDS.Service.FolderManager(Credential, _CookieContainer)
 				Dim retval As System.Data.DataSet = folderManager.RetrieveIntitialChunk(caseID)
 				Dim dt As System.Data.DataTable = retval.Tables(0)
 				Dim addOn As System.Data.DataTable
@@ -411,7 +416,7 @@ Namespace kCura.EDDS.WinForm
 		Public Function GetCases() As System.Data.DataSet
 			_fields = Nothing
 			Try
-				Dim csMgr As New kCura.WinEDDS.Service.CaseManager(Credential, _cookieContainer)
+				Dim csMgr As New kCura.WinEDDS.Service.CaseManager(Credential, _CookieContainer)
 				_documentRepositoryList = csMgr.GetAllDocumentFolderPaths()
 				Return csMgr.RetrieveAll()
 			Catch ex As System.Exception
@@ -427,7 +432,9 @@ Namespace kCura.EDDS.WinForm
 		Public Sub SelectCaseFolder(ByVal folderInfo As FolderInfo)
 			_selectedCaseFolderID = folderInfo.ArtifactID
 			_selectedCaseFolderPath = folderInfo.Path
+			_caseSelected = True
 			RaiseEvent OnEvent(New AppEvent(AppEvent.AppEventType.WorkspaceFolderSelected))
+			_caseSelected = True
 		End Sub
 
 		Public Sub OpenCase()
@@ -474,6 +481,36 @@ Namespace kCura.EDDS.WinForm
 #End Region
 
 #Region "Security Methods"
+		''' <summary>
+		''' Checks that the https certificate is trusted for this connection. Throws an exception if anything but trust failure happens
+		''' </summary>
+		''' <returns>True if the certificate is trusted. False otherwise.</returns>
+		''' <remarks></remarks>
+		Public Function CertificateTrusted() As Boolean
+			Dim isCertificateTrusted As Boolean = True
+
+			Dim myHttpWebRequest As HttpWebRequest
+			Dim cred As NetworkCredential
+			Dim relativityManager As Service.RelativityManager
+
+			cred = DirectCast(CredentialCache.DefaultCredentials, NetworkCredential)
+			myHttpWebRequest = DirectCast(WebRequest.Create(kCura.WinEDDS.Config.WebServiceURL & "\RelativityManager.asmx"), HttpWebRequest)
+			myHttpWebRequest.Credentials = CredentialCache.DefaultCredentials
+			Try
+				relativityManager = New Service.RelativityManager(cred, _CookieContainer)
+				'' Only if this line bombs do we say the cert is untrusted
+				relativityManager.ValidateSuccessfulLogin()
+			Catch ex As WebException
+				If (ex.Status = WebExceptionStatus.TrustFailure) Then
+					isCertificateTrusted = False
+				Else
+					Throw ex
+				End If
+			End Try
+
+			Return isCertificateTrusted
+		End Function
+
 		Public Function IsAssociatedSearchProviderAccessible(ByVal caseContextArtifactID As Int32, ByVal searchArtifactID As Int32) As Boolean
 			Dim searchManager As New kCura.WinEDDS.Service.SearchManager(Me.Credential, Me.CookieContainer)
 			Dim values As Boolean() = searchManager.IsAssociatedSearchProviderAccessible(caseContextArtifactID, searchArtifactID)
@@ -719,7 +756,7 @@ Namespace kCura.EDDS.WinForm
 			Dim retval = False
 			If Not Me.SelectedCaseInfo Is Nothing Then
 				Try
-					Dim userManager As New kCura.WinEDDS.Service.UserManager(Credential, _cookieContainer)
+					Dim userManager As New kCura.WinEDDS.Service.UserManager(Credential, _CookieContainer)
 					retval = userManager.LoggedIn()
 				Catch ex As System.Exception
 					If ex.Message.IndexOf("Need To Re Login") <> -1 Then
@@ -854,15 +891,15 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 		Public Function GetListOfProductionsForCase(ByVal caseInfo As Relativity.CaseInfo) As System.Data.DataTable
-			Dim productionManager As New kCura.WinEDDS.Service.ProductionManager(Me.Credential, _cookieContainer)
+			Dim productionManager As New kCura.WinEDDS.Service.ProductionManager(Me.Credential, _CookieContainer)
 			Return productionManager.RetrieveProducedByContextArtifactID(caseInfo.ArtifactID).Tables(0)
 		End Function
 
 
 		Public Function GetNewExportFileSettingsObject(ByVal selectedFolderId As Int32, ByVal caseInfo As Relativity.CaseInfo, ByVal typeOfExport As kCura.WinEDDS.ExportFile.ExportType, ByVal artifactTypeID As Int32) As WinEDDS.ExportFile
 			Dim exportFile As New WinEDDS.ExportFile(artifactTypeID)
-			Dim searchManager As New kCura.WinEDDS.Service.SearchManager(Me.Credential, _cookieContainer)
-			Dim productionManager As New kCura.WinEDDS.Service.ProductionManager(Me.Credential, _cookieContainer)
+			Dim searchManager As New kCura.WinEDDS.Service.SearchManager(Me.Credential, _CookieContainer)
+			Dim productionManager As New kCura.WinEDDS.Service.ProductionManager(Me.Credential, _CookieContainer)
 			exportFile.ArtifactID = selectedFolderId
 			exportFile.CaseInfo = caseInfo
 			exportFile.Credential = Me.Credential
@@ -949,7 +986,7 @@ Namespace kCura.EDDS.WinForm
 				imageFile.SelectedCasePath = caseinfo.DocumentPath
 				imageFile.FullTextEncoding = System.Text.Encoding.Default
 				imageFile.CopyFilesToDocumentRepository = Config.CopyFilesToRepository
-				Dim productionManager As New kCura.WinEDDS.Service.ProductionManager(Me.Credential, _cookieContainer)
+				Dim productionManager As New kCura.WinEDDS.Service.ProductionManager(Me.Credential, _CookieContainer)
 				imageFile.ProductionTable = productionManager.RetrieveImportEligibleByContextArtifactID(caseinfo.ArtifactID).Tables(0)
 				imageFile.SendEmailOnLoadCompletion = Config.SendNotificationOnImportCompletionByDefault
 				frm.ImageLoadFile = imageFile
@@ -964,12 +1001,22 @@ Namespace kCura.EDDS.WinForm
 
 		Public Sub NewOptions()
 			CursorWait()
-			Dim frm As New OptionsForm
 
-			If Not _loginForm Is Nothing AndAlso _loginForm.Visible Then
-				frm.Show(_loginForm)
-			Else
-				frm.Show()
+			If (Not _optionsForm Is Nothing AndAlso Not _optionsForm.Visible) Then
+				_optionsForm = Nothing
+			End If
+
+			If (_optionsForm Is Nothing) Then
+				_optionsForm = New OptionsForm
+
+				If Not _loginForm Is Nothing AndAlso _loginForm.Visible Then
+					_optionsForm.Show(_loginForm)
+				ElseIf Not _certificatePromptForm Is Nothing AndAlso _certificatePromptForm.Visible Then
+					_certificatePromptForm.Close()
+					_optionsForm.Show()
+				Else
+					_optionsForm.Show()
+				End If
 			End If
 
 			CursorDefault()
@@ -988,6 +1035,25 @@ Namespace kCura.EDDS.WinForm
 			CursorWait()
 			Dim frm As New Forms.SetWebServiceURL
 			frm.Show()
+			CursorDefault()
+		End Sub
+
+		''' <summary>
+		''' Prompts the user to Allow or Deny the untrusted connection.
+		''' </summary>;
+		''' <remarks></remarks>
+		Public Sub CertificateCheckPrompt()
+			CursorWait()
+			'' Mimicing NewLogin for now.. url specific logic here?
+			If Not _certificatePromptForm Is Nothing Then
+				If Not _certificatePromptForm.IsDisposed Then
+					_certificatePromptForm.Close()
+				End If
+			End If
+
+			_certificatePromptForm = New CertificatePromptForm
+			_certificatePromptForm.Show()
+
 			CursorDefault()
 		End Sub
 
@@ -1067,7 +1133,7 @@ Namespace kCura.EDDS.WinForm
 				CursorDefault()
 				Exit Function
 			End If
-			Dim folderManager As New kCura.WinEDDS.Service.FolderManager(Credential, _cookieContainer)
+			Dim folderManager As New kCura.WinEDDS.Service.FolderManager(Credential, _CookieContainer)
 			If folderManager.Exists(SelectedCaseInfo.ArtifactID, SelectedCaseInfo.RootFolderID) Then
 				If CheckFieldMap(loadFile) Then
 					Dim frm As New kCura.Windows.Process.ProgressForm
@@ -1325,6 +1391,33 @@ Namespace kCura.EDDS.WinForm
 
 #Region "Login"
 		''' <summary>
+		''' Attempt to establish a trusted and authenticated connection to Relativity. Success = Case List, Failure = Login Prompt
+		''' </summary>
+		''' <param name="callingForm">The calling form to be Hooked (what is hooked?) by the Enhance Menu Provider</param>
+		''' <returns>A fresh LoginForm</returns>
+		''' <remarks></remarks>
+		Friend Function AttemptLogin(ByVal callingForm As Form) As Form
+			Dim defaultCredentialResult As Application.CredentialCheckResult = AttemptWindowsAuthentication()
+			Dim newLoginForm As Form = New LoginForm()
+
+			Select Case (defaultCredentialResult)
+				Case Application.CredentialCheckResult.AccessDisabled
+					MessageBox.Show(Application.ACCESS_DISABLED_MESSAGE, Application.RDC_ERROR_TITLE)
+				Case Application.CredentialCheckResult.Fail
+					newLoginForm = NewLogin()
+				Case Application.CredentialCheckResult.Success
+					LogOn()
+					If (Not _caseSelected) Then
+						OpenCase()
+					End If
+					EnhancedMenuProvider.Hook(callingForm)
+			End Select
+
+			Return newLoginForm
+		End Function
+
+
+		''' <summary>
 		''' Try to log in using Windows Authentication
 		''' </summary>
 		''' <returns>
@@ -1339,11 +1432,11 @@ Namespace kCura.EDDS.WinForm
 			myHttpWebRequest = DirectCast(System.Net.WebRequest.Create(kCura.WinEDDS.Config.WebServiceURL & "\RelativityManager.asmx"), System.Net.HttpWebRequest)
 			myHttpWebRequest.Credentials = System.Net.CredentialCache.DefaultCredentials
 			Try
-				relativityManager = New kCura.WinEDDS.Service.RelativityManager(cred, _cookieContainer)
+				relativityManager = New kCura.WinEDDS.Service.RelativityManager(cred, _CookieContainer)
 				If relativityManager.ValidateSuccessfulLogin Then
 					CheckVersion(System.Net.CredentialCache.DefaultCredentials)
 					_credential = cred
-					kCura.WinEDDS.Service.Settings.AuthenticationToken = New kCura.WinEDDS.Service.UserManager(cred, _cookieContainer).GenerateDistributedAuthenticationToken()
+					kCura.WinEDDS.Service.Settings.AuthenticationToken = New kCura.WinEDDS.Service.UserManager(cred, _CookieContainer).GenerateDistributedAuthenticationToken()
 					_lastCredentialCheckResult = CredentialCheckResult.Success
 				Else
 					_lastCredentialCheckResult = CredentialCheckResult.Fail
@@ -1367,10 +1460,21 @@ Namespace kCura.EDDS.WinForm
 			UserHasImportPermission = New kCura.WinEDDS.Service.BulkImportManager(Credential, CookieContainer).HasImportPermissions(SelectedCaseInfo.ArtifactID)
 		End Sub
 
+		Private Sub CertificatePromptForm_Deny_Click() Handles _certificatePromptForm.DenyUntrustedCertificates
+			'' The user does not trust the certificate. Prompt them for a new server by showing the settings dialog
+			NewOptions()
+		End Sub
+
+		Private Sub CertificatePromptForm_Allow_Click() Handles _certificatePromptForm.AllowUntrustedCertificates
+			'' The magical line that allows untrusted certificates
+			ServicePointManager.ServerCertificateValidationCallback = Function(sender As Object, certificate As X509Certificate, chain As X509Chain, sslPolicyErrors As SslPolicyErrors) True
+			AttemptLogin(_certificatePromptForm)
+		End Sub
+
 		Private Sub _loginForm_OK_Click(ByVal cred As System.Net.NetworkCredential, ByVal openCaseSelector As Boolean) Handles _loginForm.OK_Click
 			_loginForm.Close()
-			Dim userManager As New kCura.WinEDDS.Service.UserManager(cred, _cookieContainer)
-			Dim relativityManager As New kCura.WinEDDS.Service.RelativityManager(cred, _cookieContainer)
+			Dim userManager As New kCura.WinEDDS.Service.UserManager(cred, _CookieContainer)
+			Dim relativityManager As New kCura.WinEDDS.Service.RelativityManager(cred, _CookieContainer)
 			Try
 				CheckVersion(cred)
 			Catch ex As System.Net.WebException
@@ -1450,7 +1554,7 @@ Namespace kCura.EDDS.WinForm
 		End Function
 
 		Public Function DoLogin(ByVal cred As System.Net.NetworkCredential) As CredentialCheckResult
-			Dim userManager As New kCura.WinEDDS.Service.UserManager(cred, _cookieContainer)
+			Dim userManager As New kCura.WinEDDS.Service.UserManager(cred, _CookieContainer)
 			CheckVersion(cred)
 			Try
 				If userManager.Login(cred.UserName, cred.Password) Then
@@ -1480,7 +1584,7 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 		Private Sub Reconnect()
-			Dim userManager As New kCura.WinEDDS.Service.UserManager(_credential, _cookieContainer)
+			Dim userManager As New kCura.WinEDDS.Service.UserManager(_credential, _CookieContainer)
 			If userManager.Login(_credential.UserName, _credential.Password) Then
 				_credential = _credential
 				kCura.WinEDDS.Service.Settings.AuthenticationToken = userManager.GenerateDistributedAuthenticationToken()
@@ -1503,7 +1607,7 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 		Private Sub CheckVersion(ByVal credential As Net.ICredentials)
-			Dim relativityManager As New kCura.WinEDDS.Service.RelativityManager(DirectCast(credential, System.Net.NetworkCredential), _cookieContainer)
+			Dim relativityManager As New kCura.WinEDDS.Service.RelativityManager(DirectCast(credential, System.Net.NetworkCredential), _CookieContainer)
 			Dim winVersionString As String = System.Reflection.Assembly.GetExecutingAssembly.FullName.Split(","c)(1).Split("="c)(1)
 			Dim winRelativityVersion As String() = winVersionString.Split("."c)
 			Dim relVersionString As String = relativityManager.RetrieveRelativityVersion
@@ -1543,7 +1647,7 @@ Namespace kCura.EDDS.WinForm
 			Dim productionManager As kCura.WinEDDS.Service.ProductionManager
 			Dim dt As System.Data.DataTable
 			Try
-				productionManager = New kCura.WinEDDS.Service.ProductionManager(Me.Credential, _cookieContainer)
+				productionManager = New kCura.WinEDDS.Service.ProductionManager(Me.Credential, _CookieContainer)
 				dt = productionManager.RetrieveProducedByContextArtifactID(caseInfo.ArtifactID).Tables(0)
 			Catch ex As System.Exception
 				If ex.Message.IndexOf("Need To Re Login") <> -1 Then

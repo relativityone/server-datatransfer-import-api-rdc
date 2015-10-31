@@ -1,3 +1,4 @@
+
 Namespace kCura.EDDS.WinForm
 	Public Class MainForm
 		Inherits System.Windows.Forms.Form
@@ -329,7 +330,8 @@ Namespace kCura.EDDS.WinForm
 
 #End Region
 
-		Private loginForm As Form = Nothing
+		Private _loginForm As Form = Nothing
+		'' Private WithEvents _optionsForm As OptionsForm = Nothing
 		Private firstTime As Boolean = True
 		Friend WithEvents _application As kCura.EDDS.WinForm.Application
 		Public Const MAX_LENGTH_OF_OBJECT_NAME_BEFORE_TRUNCATION As Int32 = 25
@@ -390,8 +392,8 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 		Private Sub MainForm_Activated(sender As Object, e As EventArgs) Handles Me.Activated
-			If Not loginForm Is Nothing AndAlso firstTime Then
-				loginForm.Focus()
+			If Not _loginForm Is Nothing AndAlso firstTime Then
+				_loginForm.Focus()
 			End If
 			firstTime = False
 		End Sub
@@ -403,17 +405,22 @@ Namespace kCura.EDDS.WinForm
 				_application.SetWebServiceURL()
 			End If
 
-			Dim defaultCredentialResult As Application.CredentialCheckResult = _application.AttemptWindowsAuthentication()
-			If defaultCredentialResult = Application.CredentialCheckResult.AccessDisabled Then
-				MessageBox.Show(Application.ACCESS_DISABLED_MESSAGE, Application.RDC_ERROR_TITLE)
-			ElseIf Not defaultCredentialResult = Application.CredentialCheckResult.Success Then
-				loginForm = _application.NewLogin()
-			Else
-				_application.LogOn()
-				_application.OpenCase()
-				kCura.Windows.Forms.EnhancedMenuProvider.Hook(Me)
-			End If
+			'' Can't do this in Application.vb without refactoring AttemptLogin (which needs this form as a parameter)
+			CheckCertificate()
+
 			Me.Cursor = System.Windows.Forms.Cursors.Default
+		End Sub
+
+		Public Sub CheckCertificate()
+			If (_application.CertificateTrusted()) Then
+				_loginForm = _application.AttemptLogin(Me)
+			Else
+				_application.CertificateCheckPrompt()
+			End If
+		End Sub
+
+		Private Sub WebServiceURLChanged() Handles _application.ReCheckCertificate
+			CheckCertificate()
 		End Sub
 
 		Private Sub MainForm_Closing(ByVal sender As Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles MyBase.Closing
