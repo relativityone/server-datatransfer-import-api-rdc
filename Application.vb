@@ -504,7 +504,7 @@ Namespace kCura.EDDS.WinForm
 				If (ex.Status = WebExceptionStatus.TrustFailure) Then
 					isCertificateTrusted = False
 				Else
-					Throw ex
+					Throw New Exception("There is a problem with your Relativity Web API url")
 				End If
 			End Try
 
