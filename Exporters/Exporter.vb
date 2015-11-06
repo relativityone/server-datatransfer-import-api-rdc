@@ -477,23 +477,23 @@ Namespace kCura.WinEDDS
 		Private Function PrepareImagesForProduction(ByVal imagesView As System.Data.DataView, ByVal documentArtifactID As Int32, ByVal batesBase As String, ByVal artifact As Exporters.ObjectExportInfo) As System.Collections.ArrayList
 			Dim retval As New System.Collections.ArrayList
 			If Not Me.Settings.ExportImages Then Return retval
-			imagesView.RowFilter = "DocumentArtifactID = " & documentArtifactID.ToString
+			Dim matchingRows As DataRow() = imagesView.Table.Select("DocumentArtifactID = " & documentArtifactID.ToString)
 			Dim i As Int32 = 0
 			'DAS034 There is at least one case where all production images for a document will end up with the same filename.
 			'This happens when the production uses Existing production numbering, and the base production used Document numbering.
 			'This case cannot be detected using current available information about the Production that we get from WebAPI.
 			'To be on the safe side, keep track of the first image filename, and if another image has the same filename, add i + 1 onto it.
 			Dim firstImageFileName As String = Nothing
-			If imagesView.Count > 0 Then
-				Dim drv As System.Data.DataRowView
-				For Each drv In imagesView
+			If matchingRows.Count > 0 Then
+				Dim dr As System.Data.DataRow
+				For Each dr In matchingRows
 					Dim image As New Exporters.ImageExportInfo
-					image.FileName = drv("ImageFileName").ToString
-					image.FileGuid = drv("ImageGuid").ToString
+					image.FileName = dr("ImageFileName").ToString
+					image.FileGuid = dr("ImageGuid").ToString
 					image.ArtifactID = documentArtifactID
-					image.PageOffset = kCura.Utility.NullableTypesHelper.DBNullConvertToNullable(Of Int32)(drv("ByteRange"))
-					image.BatesNumber = drv("BatesNumber").ToString
-					image.SourceLocation = drv("Location").ToString
+					image.PageOffset = kCura.Utility.NullableTypesHelper.DBNullConvertToNullable(Of Int32)(dr("ByteRange"))
+					image.BatesNumber = dr("BatesNumber").ToString
+					image.SourceLocation = dr("Location").ToString
 					Dim filenameExtension As String = ""
 					If image.FileName.IndexOf(".") <> -1 Then
 						filenameExtension = "." & image.FileName.Substring(image.FileName.LastIndexOf(".") + 1)
@@ -532,7 +532,10 @@ Namespace kCura.WinEDDS
 		Private Function PrepareImages(ByVal imagesView As System.Data.DataView, ByVal productionImagesView As System.Data.DataView, ByVal documentArtifactID As Int32, ByVal batesBase As String, ByVal artifact As Exporters.ObjectExportInfo, ByVal productionOrderList As Pair()) As System.Collections.ArrayList
 			Dim retval As New System.Collections.ArrayList
 			If Not Me.Settings.ExportImages Then Return retval
-			If Me.Settings.TypeOfExport = ExportFile.ExportType.Production Then Return Me.PrepareImagesForProduction(productionImagesView, documentArtifactID, batesBase, artifact)
+			If Me.Settings.TypeOfExport = ExportFile.ExportType.Production Then
+				productionImagesView.Sort = "DocumentArtifactID ASC"
+				Return Me.PrepareImagesForProduction(productionImagesView, documentArtifactID, batesBase, artifact)
+			End If
 			Dim item As Pair
 			For Each item In productionOrderList
 				If item.Value = "-1" Then
