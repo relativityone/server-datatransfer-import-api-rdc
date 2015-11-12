@@ -426,6 +426,7 @@ Namespace kCura.EDDS.WinForm
 		Private Sub MainForm_Closing(ByVal sender As Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles MyBase.Closing
 			_application.UpdateForceFolderPreview()
 			_application.UpdateWebServiceURL(False)
+			_application.Logout()
 			kCura.Windows.Forms.EnhancedMenuProvider.Unhook()
 		End Sub
 
