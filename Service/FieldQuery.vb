@@ -97,88 +97,23 @@ Namespace kCura.WinEDDS.Service
 
 #Region " Shadow Functions "
 		Public Shadows Function RetrieveDisplayFieldNameByFieldCategoryID(ByVal caseContextArtifactID As Int32, ByVal fieldCategoryID As Int32) As String
-			Dim tries As Int32 = 0
-			While tries < Config.MaxReloginTries
-				tries += 1
-				Try
-					Return MyBase.RetrieveDisplayFieldNameByFieldCategoryID(caseContextArtifactID, fieldCategoryID)
-				Catch ex As System.Exception
-					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
-					Else
-						Throw
-					End If
-				End Try
-			End While
-			Return Nothing
+			Return RetryOnReLoginException(Function() MyBase.RetrieveDisplayFieldNameByFieldCategoryID(caseContextArtifactID, fieldCategoryID))
 		End Function
 
 		Public Shadows Function RetrieveAllMappable(ByVal caseContextArtifactID As Int32, ByVal artifactTypeID As Int32) As System.Data.DataSet
-			Dim tries As Int32 = 0
-			While tries < Config.MaxReloginTries
-				tries += 1
-				Try
-					Return MyBase.RetrieveAllMappable(caseContextArtifactID, artifactTypeID)
-				Catch ex As System.Exception
-					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
-					Else
-						Throw
-					End If
-				End Try
-			End While
-			Return Nothing
+			Return RetryOnReLoginException(Function() MyBase.RetrieveAllMappable(caseContextArtifactID, artifactTypeID))
 		End Function
 
 		Public Shadows Function RetrieveAll(ByVal caseContextArtifactID As Int32) As System.Data.DataSet
-			Dim tries As Int32 = 0
-			While tries < Config.MaxReloginTries
-				tries += 1
-				Try
-					Return MyBase.RetrieveAll(caseContextArtifactID)
-				Catch ex As System.Exception
-					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
-					Else
-						Throw
-					End If
-				End Try
-			End While
-			Return Nothing
+			Return RetryOnReLoginException(Function() MyBase.RetrieveAll(caseContextArtifactID))
 		End Function
 
 		Public Shadows Function RetrievePotentialBeginBatesFields(ByVal caseContextArtifactID As Int32) As System.Data.DataSet
-			Dim tries As Int32 = 0
-			While tries < Config.MaxReloginTries
-				tries += 1
-				Try
-					Return MyBase.RetrievePotentialBeginBatesFields(caseContextArtifactID)
-				Catch ex As System.Exception
-					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
-					Else
-						Throw
-					End If
-				End Try
-			End While
-			Return Nothing
+			Return RetryOnReLoginException(Function() MyBase.RetrievePotentialBeginBatesFields(caseContextArtifactID))
 		End Function
 
 		Public Shadows Function IsFieldIndexed(ByVal caseContextArtifactID As Int32, ByVal fieldArtifactID As Int32) As Boolean
-			Dim tries As Int32 = 0
-			While tries < Config.MaxReloginTries
-				tries += 1
-				Try
-					Return MyBase.IsFieldIndexed(caseContextArtifactID, fieldArtifactID)
-				Catch ex As System.Exception
-					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
-					Else
-						Throw
-					End If
-				End Try
-			End While
-			Return Nothing
+			Return RetryOnReLoginException(Function() MyBase.IsFieldIndexed(caseContextArtifactID, fieldArtifactID))
 		End Function
 
 #End Region

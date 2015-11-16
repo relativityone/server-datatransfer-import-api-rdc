@@ -36,20 +36,7 @@ Namespace kCura.WinEDDS.Service
 
 #Region " Shadow Functions "
 		Public Shadows Function RetrieveCodesAndTypesForCase(ByVal caseContextArtifactID As Int32) As System.Data.DataSet
-			Dim tries As Int32 = 0
-			While tries < Config.MaxReloginTries
-				tries += 1
-				Try
-					Return MyBase.RetrieveCodesAndTypesForCase(caseContextArtifactID)
-				Catch ex As System.Exception
-					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
-					Else
-						Throw
-					End If
-				End Try
-			End While
-			Return Nothing
+			Return RetryOnReLoginException(Function() MyBase.RetrieveCodesAndTypesForCase(caseContextArtifactID))
 		End Function
 
 		Public Shadows Function Create(ByVal caseContextArtifactID As Int32, ByVal code As kCura.EDDS.WebAPI.CodeManagerBase.Code) As Object
@@ -111,37 +98,11 @@ Namespace kCura.WinEDDS.Service
 #End Region
 
 		Public Shadows Function GetInitialChunk(ByVal caseContextArtifactID As Integer, ByVal codeTypeID As Integer) As System.Data.DataSet
-			Dim tries As Int32 = 0
-			While tries < Config.MaxReloginTries
-				tries += 1
-				Try
-					Return MyBase.GetInitialChunk(caseContextArtifactID, codeTypeID)
-				Catch ex As System.Exception
-					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
-					Else
-						Throw
-					End If
-				End Try
-			End While
-			Return Nothing
+			Return RetryOnReLoginException(Function() MyBase.GetInitialChunk(caseContextArtifactID, codeTypeID))
 		End Function
 
 		Public Shadows Function GetLastChunk(ByVal caseContextArtifactID As Integer, ByVal codeTypeID As Integer, ByVal lastCodeID As Integer) As System.Data.DataSet
-			Dim tries As Int32 = 0
-			While tries < Config.MaxReloginTries
-				tries += 1
-				Try
-					Return MyBase.GetLastChunk(caseContextArtifactID, codeTypeID, lastCodeID)
-				Catch ex As System.Exception
-					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
-					Else
-						Throw
-					End If
-				End Try
-			End While
-			Return Nothing
+			Return RetryOnReLoginException(Function() MyBase.GetLastChunk(caseContextArtifactID, codeTypeID, lastCodeID))
 		End Function
 
 		Public Function RetrieveAllCodesOfType(ByVal caseContextArtifactID As Int32, ByVal codeTypeID As Int32) As Relativity.ChoiceInfo()
@@ -188,20 +149,7 @@ Namespace kCura.WinEDDS.Service
 		End Function
 
 		Public Shadows Function GetChoiceLimitForUI() As Int32
-			Dim tries As Int32 = 0
-			While tries < Config.MaxReloginTries
-				tries += 1
-				Try
-					Return MyBase.GetChoiceLimitForUI()
-				Catch ex As System.Exception
-					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
-					Else
-						Throw
-					End If
-				End Try
-			End While
-			Return 0
+			Return RetryOnReLoginException(Function() MyBase.GetChoiceLimitForUI())
 		End Function
 
 		Public Shared Function Convert(ByVal webserviceChoiceInfo As kCura.EDDS.WebAPI.CodeManagerBase.ChoiceInfo) As Relativity.ChoiceInfo

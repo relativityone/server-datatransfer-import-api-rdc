@@ -13,7 +13,7 @@ Namespace kCura.WinEDDS.Service
 
 #Region " Shadow Methods "
 		Public Shadows Function Login(ByVal emailAddress As String, ByVal password As String) As Boolean
-			Return RetryOnReLoginException(Of Boolean)(Function() Me.LoginInternal(emailAddress, password))
+			Return RetryOnReLoginException(Function() Me.LoginInternal(emailAddress, password))
 		End Function
 
 		Private Function LoginInternal(ByVal emailAddress As String, ByVal password As String) As Boolean
@@ -27,7 +27,7 @@ Namespace kCura.WinEDDS.Service
 		End Function
 
 		Public Shadows Function RetrieveAllAssignableInCase(ByVal caseContextArtifactID As Int32) As System.Data.DataSet
-			Return RetryOnReLoginException(Of System.Data.DataSet)(Function() Me.RetrieveAllAssignableInCaseInternal(caseContextArtifactID))
+			Return RetryOnReLoginException(Function() Me.RetrieveAllAssignableInCaseInternal(caseContextArtifactID))
 		End Function
 
 		Private Function RetrieveAllAssignableInCaseInternal(ByVal caseContextArtifactID As Int32) As System.Data.DataSet
@@ -35,11 +35,11 @@ Namespace kCura.WinEDDS.Service
 		End Function
 
 		Public Shadows Function GenerateAuthenticationToken() As String
-			Return RetryOnReLoginException(Of String)(Function() MyBase.GenerateAuthenticationToken())
+			Return RetryOnReLoginException(Function() MyBase.GenerateAuthenticationToken())
 		End Function
 
 		Public Shadows Function GenerateDistributedAuthenticationToken() As String
-			Return RetryOnReLoginException(Of String)(Function() MyBase.GenerateDistributedAuthenticationToken())
+			Return RetryOnReLoginException(Function() MyBase.GenerateDistributedAuthenticationToken())
 		End Function
 
 #End Region

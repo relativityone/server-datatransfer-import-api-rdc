@@ -24,74 +24,20 @@ Namespace kCura.WinEDDS.Service
 #Region " Shadow Implementations "
 
 		Public Shadows Function RetrieveArtifactIdOfMappedObject(ByVal caseContextArtifactID As Int32, ByVal textIdentifier As String, ByVal artifactTypeID As Int32) As System.Data.DataSet
-			Dim tries As Int32 = 0
-			While tries < Config.MaxReloginTries
-				tries += 1
-				Try
-					Return MyBase.RetrieveArtifactIdOfMappedObject(caseContextArtifactID, textIdentifier, artifactTypeID)
-				Catch ex As System.Exception
-					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
-					Else
-						Throw
-					End If
-				End Try
-			End While
-			Return Nothing
+			Return RetryOnReLoginException(Function() MyBase.RetrieveArtifactIdOfMappedObject(caseContextArtifactID, textIdentifier, artifactTypeID))
 		End Function
 
 		Public Shadows Function RetrieveTextIdentifierOfMappedObject(ByVal caseContextArtifactID As Int32, ByVal artifactId As Int32, ByVal artifactTypeID As Int32) As System.Data.DataSet
-			Dim tries As Int32 = 0
-			While tries < Config.MaxReloginTries
-				tries += 1
-				Try
-					Return MyBase.RetrieveTextIdentifierOfMappedObject(caseContextArtifactID, artifactId, artifactTypeID)
-				Catch ex As System.Exception
-					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
-					Else
-						Throw
-					End If
-				End Try
-			End While
-			Return Nothing
+			Return RetryOnReLoginException(Function() MyBase.RetrieveTextIdentifierOfMappedObject(caseContextArtifactID, artifactId, artifactTypeID))
 		End Function
 
 		Public Shadows Function RetrieveArtifactIdOfMappedParentObject(ByVal caseContextArtifactID As Int32, ByVal textIdentifier As String, ByVal artifactTypeID As Int32) As System.Data.DataSet
-			Dim tries As Int32 = 0
-			While tries < Config.MaxReloginTries
-				tries += 1
-				Try
-					Return MyBase.RetrieveArtifactIdOfMappedParentObject(caseContextArtifactID, textIdentifier, artifactTypeID)
-				Catch ex As System.Exception
-					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
-					Else
-						Throw
-					End If
-				End Try
-			End While
-			Return Nothing
+			Return RetryOnReLoginException(Function() MyBase.RetrieveArtifactIdOfMappedParentObject(caseContextArtifactID, textIdentifier, artifactTypeID))
 		End Function
 
-
 		Public Shadows Sub Update(appArtifactID As Int32, artifact As kCura.EDDS.WebAPI.ObjectManagerBase.SimplifiedMaskDto)
-			Dim tries As Int32 = 0
-			While tries < Config.MaxReloginTries
-				tries += 1
-				Try
-					MyBase.Update(appArtifactID, artifact)
-					Return
-				Catch ex As System.Exception
-					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
-					Else
-						Throw
-					End If
-				End Try
-			End While
+			RetryOnReLoginException(Sub() MyBase.Update(appArtifactID, artifact))
 		End Sub
-
 
 #End Region
 
