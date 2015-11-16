@@ -108,11 +108,7 @@ Namespace kCura.WinEDDS.Service
 			While tries < Config.MaxReloginTries
 				Try
 					tries += 1
-					If kCura.WinEDDS.Config.UsesWebAPI Then
-						Return MyBase.ReadFromIdentifier(caseContextArtifactID, fieldDisplayName, identifier, fieldArtifactIds)
-					Else
-						'Return Me.DTOToWebAPIDocument(_documentManager.ExternalReadFromIdentifier(caseID, fieldDisplayName, identifier, _identity))
-					End If
+					Return MyBase.ReadFromIdentifier(caseContextArtifactID, fieldDisplayName, identifier, fieldArtifactIds)
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
 						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
@@ -165,11 +161,7 @@ Namespace kCura.WinEDDS.Service
 			While tries < Config.MaxReloginTries
 				Try
 					tries += 1
-					If kCura.WinEDDS.Config.UsesWebAPI Then
-						Return MyBase.GetDocumentDirectoryByCaseArtifactID(caseArtifactID)
-					Else
-						'Return Relativity.Core.DocumentHelper.GetDocumentDirectoryByCaseArtifactID(caseArtifactID)
-					End If
+					Return MyBase.GetDocumentDirectoryByCaseArtifactID(caseArtifactID)
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
 						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
@@ -187,11 +179,7 @@ Namespace kCura.WinEDDS.Service
 			While tries < Config.MaxReloginTries
 				Try
 					tries += 1
-					If kCura.WinEDDS.Config.UsesWebAPI Then
-						Return MyBase.GetPrintImageGuids(caseContextArtifactID, artifactID, orderedProductionIDList)
-					Else
-						'Return _documentManager.GetPrintImageGuids(artifactID, orderedProductionIDList, _identity)
-					End If
+					Return MyBase.GetPrintImageGuids(caseContextArtifactID, artifactID, orderedProductionIDList)
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
 						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)

@@ -57,11 +57,7 @@ Namespace kCura.WinEDDS.Service
 			While tries < Config.MaxReloginTries
 				tries += 1
 				Try
-					If kCura.WinEDDS.Config.UsesWebAPI Then
-						Return MyBase.Create(caseContextArtifactID, field)
-					Else
-						'Return _fieldManager.ExternalCreate(Me.WebAPIFieldtoDTO(field), _identity)
-					End If
+					Return MyBase.Create(caseContextArtifactID, field)
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
 						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
@@ -78,11 +74,7 @@ Namespace kCura.WinEDDS.Service
 			While tries < Config.MaxReloginTries
 				tries += 1
 				Try
-					If kCura.WinEDDS.Config.UsesWebAPI Then
-						Return MyBase.Read(caseContextArtifactID, fieldArtifactID)
-					Else
-						'Return Me.DTOtoFieldWebAPIField(_fieldManager.Read(fieldArtifactID, _identity))
-					End If
+					Return MyBase.Read(caseContextArtifactID, fieldArtifactID)
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
 						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)

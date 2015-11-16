@@ -127,11 +127,7 @@ Namespace kCura.WinEDDS.Service
 			While tries < Config.MaxReloginTries
 				tries += 1
 				Try
-					If kCura.WinEDDS.Config.UsesWebAPI Then
-						Return MyBase.RetrieveByProductionArtifactIDForProduction(caseContextArtifactID, productionArtifactID)
-					Else
-						'Return Relativity.Core.Service.FileQuery.RetrieveByProductionArtifactIDForProduction(productionArtifactID, _identity).ToDataSet()
-					End If
+					Return MyBase.RetrieveByProductionArtifactIDForProduction(caseContextArtifactID, productionArtifactID)
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
 						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
@@ -148,11 +144,7 @@ Namespace kCura.WinEDDS.Service
 			While tries < Config.MaxReloginTries
 				tries += 1
 				Try
-					If kCura.WinEDDS.Config.UsesWebAPI Then
-						Return MyBase.RetrieveFileGuidsByDocumentArtifactIDAndProductionArtifactID(caseContextArtifactID, documentArtifactID, productionArtifactID)
-					Else
-						'Return Relativity.Core.Service.FileQuery.RetrieveFileGuidsByProductionArtifactID(productionArtifactID, documentArtifactID, _identity)
-					End If
+					Return MyBase.RetrieveFileGuidsByDocumentArtifactIDAndProductionArtifactID(caseContextArtifactID, documentArtifactID, productionArtifactID)
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
 						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
@@ -169,11 +161,7 @@ Namespace kCura.WinEDDS.Service
 			While tries < Config.MaxReloginTries
 				tries += 1
 				Try
-					If kCura.WinEDDS.Config.UsesWebAPI Then
-						Return MyBase.ReturnFileGuidsForOriginalImages(caseContextArtifactID, documentArtifactID)
-					Else
-						'Return Relativity.Core.Service.FileQuery.ReturnFileGuidsForOriginalImages(_identity, documentArtifactID)
-					End If
+					Return MyBase.ReturnFileGuidsForOriginalImages(caseContextArtifactID, documentArtifactID)
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
 						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
@@ -190,11 +178,7 @@ Namespace kCura.WinEDDS.Service
 			While tries < Config.MaxReloginTries
 				tries += 1
 				Try
-					If kCura.WinEDDS.Config.UsesWebAPI Then
-						Return MyBase.Create(caseContextArtifactID, file)
-					Else
-						'Return _fileManager.Create(Me.FileWebAPIFiletoDTO(file), _identity)
-					End If
+					Return MyBase.Create(caseContextArtifactID, file)
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
 						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
@@ -211,12 +195,8 @@ Namespace kCura.WinEDDS.Service
 			While tries < Config.MaxReloginTries
 				tries += 1
 				Try
-					If kCura.WinEDDS.Config.UsesWebAPI Then
-						MyBase.CreateImages(caseContextArtifactID, files, documentArtifactID)
-						Exit Sub
-					Else
-						'_fileManager.ExternalCreateImages(WebAPIFileInfostoFileInfos(files), documentArtifactID, contextArtifactID, _identity)
-					End If
+					MyBase.CreateImages(caseContextArtifactID, files, documentArtifactID)
+					Exit Sub
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
 						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
@@ -232,12 +212,8 @@ Namespace kCura.WinEDDS.Service
 			While tries < Config.MaxReloginTries
 				tries += 1
 				Try
-					If kCura.WinEDDS.Config.UsesWebAPI Then
-						MyBase.CreateProductionImages(caseContextArtifactID, files, documentArtifactID)
-						Exit Sub
-					Else
-						'_fileManager.ExternalCreateImages(WebAPIFileInfostoFileInfos(files), documentArtifactID, contextArtifactID, _identity)
-					End If
+					MyBase.CreateProductionImages(caseContextArtifactID, files, documentArtifactID)
+					Exit Sub
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
 						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
@@ -263,11 +239,8 @@ Namespace kCura.WinEDDS.Service
 			While tries < Config.MaxReloginTries
 				tries += 1
 				Try
-					If kCura.WinEDDS.Config.UsesWebAPI Then
-						MyBase.CreateNatives(caseContextArtifactID, files, documentArtifactIDs)
-					Else
-						'_fileManager.ExternalCreateNatives(WebAPIFileInfostoFileInfos(files), documentArtifactIDs, _identity)
-					End If
+					MyBase.CreateNatives(caseContextArtifactID, files, documentArtifactIDs)
+					'TODO: is this supposed to exit after it succeeds once? KS 11/16/15
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
 						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
@@ -283,11 +256,7 @@ Namespace kCura.WinEDDS.Service
 			While tries < Config.MaxReloginTries
 				Try
 					tries += 1
-					If kCura.WinEDDS.Config.UsesWebAPI Then
-						Return MyBase.GetRotation(caseContextArtifactID, guid)
-					Else
-						'Return New Relativity.Core.Service.FileManager().Read(guid, artifactID, _identity).Rotation
-					End If
+					Return MyBase.GetRotation(caseContextArtifactID, guid)
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
 						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
@@ -304,12 +273,8 @@ Namespace kCura.WinEDDS.Service
 			While tries < Config.MaxReloginTries
 				tries += 1
 				Try
-					If kCura.WinEDDS.Config.UsesWebAPI Then
-						MyBase.SetRotation(caseContextArtifactID, guid, rotation)
-						Exit Sub
-					Else
-						'_fileManager.ExternalSetRotation(artifactID, guid, rotation, _identity)
-					End If
+					MyBase.SetRotation(caseContextArtifactID, guid, rotation)
+					Exit Sub
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
 						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
@@ -325,11 +290,7 @@ Namespace kCura.WinEDDS.Service
 			While tries < Config.MaxReloginTries
 				tries += 1
 				Try
-					If kCura.WinEDDS.Config.UsesWebAPI Then
-						Return MyBase.GetFullTextGuidsByDocumentArtifactIdAndType(caseContextArtifactID, documentArtifactID, TypeId)
-					Else
-						'Return _fileManager.ExternalGetFullTextGuidsByDocumentArtifactIdAndType(documentArtifactID, TypeId, _identity)
-					End If
+					Return MyBase.GetFullTextGuidsByDocumentArtifactIdAndType(caseContextArtifactID, documentArtifactID, TypeId)
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
 						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
@@ -346,11 +307,7 @@ Namespace kCura.WinEDDS.Service
 			While tries < Config.MaxReloginTries
 				tries += 1
 				Try
-					If kCura.WinEDDS.Config.UsesWebAPI Then
-						Return MyBase.RetrieveNativesFileSize(caseContextArtifactID, guid)
-					Else
-						'Return _fileManager.ExternalRetrieveNativeFileSize(sourceDirectory, guid, _identity)
-					End If
+					Return MyBase.RetrieveNativesFileSize(caseContextArtifactID, guid)
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
 						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)

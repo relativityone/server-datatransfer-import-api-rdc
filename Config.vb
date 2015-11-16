@@ -51,16 +51,6 @@ Namespace kCura.WinEDDS
 
 #End Region
 
-#Region " Unused or shouldn't be used "
-
-		Public Shared ReadOnly Property UsesWebAPI() As Boolean
-			Get
-				Return True				'Return CType(ConfigSettings("UsesWebAPI"), Boolean)
-			End Get
-		End Property
-
-#End Region
-
 #Region " Constants "
 
 		Public Shared ReadOnly Property MaxReloginTries() As Int32
