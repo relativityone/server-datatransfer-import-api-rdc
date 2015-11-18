@@ -1633,6 +1633,17 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 #End Region
 
+#Region "Logout"
+		Public Sub Logout()
+			Try
+				Dim userManager As New kCura.WinEDDS.Service.UserManager(_credential, _CookieContainer)
+				userManager.Logout()
+			Catch ex As Exception
+
+			End Try
+		End Sub
+#End Region
+
 #Region "System Configuration"
 		Public Function GetDisplayAssemblyVersion() As String
 			Return System.Reflection.Assembly.GetExecutingAssembly.GetName.Version.ToString

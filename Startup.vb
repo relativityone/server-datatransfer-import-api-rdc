@@ -60,9 +60,7 @@ Namespace kCura.EDDS.WinForm
 
 			If args.Length = 1 Then
 				CloseConsole()
-				Dim mainForm As New kCura.EDDS.WinForm.MainForm
-				''Dim promptForm As CertificatePromptForm
-
+				Dim mainForm As New kCura.EDDS.WinForm.MainForm()
 
 				mainForm.Show()
 				mainForm.Refresh()
@@ -171,6 +169,8 @@ Namespace kCura.EDDS.WinForm
 					Case LoadMode.Application
 						RunApplicationImport()
 				End Select
+
+				_application.Logout()
 			Catch ex As RdcBaseException
 				Console.WriteLine("--------------------------")
 				Console.WriteLine("ERROR: " & ex.Message)
