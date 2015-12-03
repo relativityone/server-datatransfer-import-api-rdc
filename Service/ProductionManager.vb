@@ -20,144 +20,31 @@ Namespace kCura.WinEDDS.Service
 
 #Region " Shadow Functions "
 		Public Shadows Function RetrieveProducedByContextArtifactID(ByVal caseContextArtifactID As Int32) As System.Data.DataSet
-			Dim tries As Int32 = 0
-			While tries < Config.MaxReloginTries
-				tries += 1
-				Try
-					If kCura.WinEDDS.Config.UsesWebAPI Then
-						Return MyBase.RetrieveProducedByContextArtifactID(caseContextArtifactID)
-					Else
-						'Return _productionManager.ExternalRetrieveProducedByContextArtifactID(contextArtifactID, _identity)
-					End If
-				Catch ex As System.Exception
-					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
-					Else
-						Throw
-					End If
-				End Try
-			End While
-			Return Nothing
+			Return RetryOnReLoginException(Function() MyBase.RetrieveProducedByContextArtifactID(caseContextArtifactID))
 		End Function
 
 		Public Shadows Function RetrieveImportEligibleByContextArtifactID(ByVal caseContextArtifactID As Int32) As System.Data.DataSet
-			Dim tries As Int32 = 0
-			While tries < Config.MaxReloginTries
-				tries += 1
-				Try
-					If kCura.WinEDDS.Config.UsesWebAPI Then
-						Return MyBase.RetrieveImportEligibleByContextArtifactID(caseContextArtifactID)
-					Else
-						'Return _productionManager.RetrieveImportEligibleByContextArtifactID(contextArtifactID, _identity)
-					End If
-				Catch ex As System.Exception
-					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
-					Else
-						Throw
-					End If
-				End Try
-			End While
-			Return Nothing
+			Return RetryOnReLoginException(Function() MyBase.RetrieveImportEligibleByContextArtifactID(caseContextArtifactID))
 		End Function
 
 		Public Shadows Function Read(ByVal caseContextArtifactID As Int32, ByVal productionArtifactID As Int32) As kCura.EDDS.WebAPI.ProductionManagerBase.ProductionInfo
-			Dim tries As Int32 = 0
-			While tries < Config.MaxReloginTries
-				tries += 1
-				Try
-					If kCura.WinEDDS.Config.UsesWebAPI Then
-						Return MyBase.Read(caseContextArtifactID, productionArtifactID)
-					Else
-						'Return Me.DTOToWebAPIProduction(_productionManager.Read(productionArtifactID, _identity))
-					End If
-				Catch ex As System.Exception
-					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("Need To Re Login") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
-					Else
-						Throw
-					End If
-				End Try
-			End While
-			Return Nothing
+			Return RetryOnReLoginException(Function() MyBase.Read(caseContextArtifactID, productionArtifactID))
 		End Function
 
 		Public Shadows Function RetrieveProducedWithSecurity(ByVal contextArtifactID As Int32) As System.Data.DataSet
-			Dim tries As Int32 = 0
-			While tries < Config.MaxReloginTries
-				tries += 1
-				Try
-					If kCura.WinEDDS.Config.UsesWebAPI Then
-						Return MyBase.RetrieveProducedByContextArtifactID(contextArtifactID)
-					Else
-						'Return _productionManager.ExternalRetrieveProducedWithSecurity(contextArtifactID, _identity)
-					End If
-				Catch ex As System.Exception
-					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
-					Else
-						Throw
-					End If
-				End Try
-			End While
-			Return Nothing
+			Return RetryOnReLoginException(Function() MyBase.RetrieveProducedByContextArtifactID(contextArtifactID))
 		End Function
 
 		Public Shadows Sub DoPostImportProcessing(ByVal contextArtifactID As Int32, ByVal productionArtifactID As Int32)
-			Dim tries As Int32 = 0
-			While tries < Config.MaxReloginTries
-				tries += 1
-				Try
-					If kCura.WinEDDS.Config.UsesWebAPI Then
-						MyBase.DoPostImportProcessing(contextArtifactID, productionArtifactID)
-						Exit Sub
-					End If
-				Catch ex As System.Exception
-					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
-					Else
-						Throw
-					End If
-				End Try
-			End While
+			RetryOnReLoginException(Sub() MyBase.DoPostImportProcessing(contextArtifactID, productionArtifactID))
 		End Sub
 
 		Public Shadows Sub DoPreImportProcessing(ByVal contextArtifactID As Int32, ByVal productionArtifactID As Int32)
-			Dim tries As Int32 = 0
-			While tries < Config.MaxReloginTries
-				tries += 1
-				Try
-					If kCura.WinEDDS.Config.UsesWebAPI Then
-						MyBase.DoPreImportProcessing(contextArtifactID, productionArtifactID)
-						Exit Sub
-					End If
-				Catch ex As System.Exception
-					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
-					Else
-						Throw
-					End If
-				End Try
-			End While
+			RetryOnReLoginException(Sub() MyBase.DoPreImportProcessing(contextArtifactID, productionArtifactID))
 		End Sub
 
 		Public Shadows Function MigrationJobExists(ByVal contextArtifactID As Int32, ByVal productionArtifactID As Int32) As Boolean
-			Dim tries As Int32 = 0
-			While tries < Config.MaxReloginTries
-				tries += 1
-				Try
-					If kCura.WinEDDS.Config.UsesWebAPI Then
-						Return MyBase.MigrationJobExists(contextArtifactID, productionArtifactID)
-					End If
-				Catch ex As System.Exception
-					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
-					Else
-						Throw
-					End If
-				End Try
-			End While
-			Return False
+			Return RetryOnReLoginException(Function() MyBase.MigrationJobExists(contextArtifactID, productionArtifactID))
 		End Function
 #End Region
 

@@ -11,7 +11,6 @@
 
 		Public Sub New(ByVal credentials As Net.ICredentials, ByVal cookieContainer As System.Net.CookieContainer)
 			MyBase.New()
-
 			Me.Credentials = credentials
 			Me.CookieContainer = cookieContainer
 			Me.Url = String.Format("{0}ExportManager.asmx", kCura.WinEDDS.Config.WebServiceURL)
@@ -19,21 +18,15 @@
 		End Sub
 
 		Private Function MakeCallAttemptReLogin(Of T)(f As Func(Of T)) As T
-			Dim tries As Int32 = 0
-			While tries < Config.MaxReloginTries
-				tries += 1
-				Try
-					Return f()
-				Catch ex As System.Exception
-					UnpackHandledException(ex)
-					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
-					Else
+			Return RetryOnReLoginException(Of T)(
+				Function()
+					Try
+						Return f()
+					Catch ex As System.Exception
+						UnpackHandledException(ex)
 						Throw
-					End If
-				End Try
-			End While
-			Return Nothing
+					End Try
+				End Function)
 		End Function
 
 		Public Shadows Function InitializeFolderExport(ByVal appID As Int32, ByVal viewArtifactID As Int32, ByVal parentArtifactID As Int32, ByVal includeSubFolders As Boolean, ByVal avfIds As Int32(), ByVal startAtRecord As Int32, ByVal artifactTypeID As Int32) As kCura.EDDS.WebAPI.ExportManagerBase.InitializationResults

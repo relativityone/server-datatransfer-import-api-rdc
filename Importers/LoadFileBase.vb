@@ -1,3 +1,5 @@
+Imports kCura.Utility.Extensions.Enumerable
+
 Namespace kCura.WinEDDS
 	Public MustInherit Class LoadFileBase
 		Inherits kCura.Utility.RobustIoReporter
@@ -441,7 +443,7 @@ Namespace kCura.WinEDDS
 								field.Value = String.Empty
 							Else
 								'field.Value = ChrW(11) & oldval.Trim(_multiValueSeparator).Replace(_multiValueSeparator, ChrW(11)) & ChrW(11)
-								field.Value = ChrW(11) & kCura.Utility.ArrayList.ArrayListToDelimitedString(New System.Collections.ArrayList(value), ChrW(11)) & ChrW(11)
+								field.Value = ChrW(11) & value.ToDelimitedString(ChrW(11)) & ChrW(11)
 								For Each codeValue As Nullable(Of Int32) In codeValues
 									If Not codeValue Is Nothing Then
 										DirectCast(Me, BulkLoadFileImporter).WriteCodeLineToTempFile(identityValue, codeValue.Value, field.CodeTypeID)
@@ -568,7 +570,7 @@ Namespace kCura.WinEDDS
 					If objectValues.Count = 0 Then
 						field.Value = ""
 					Else
-						field.Value = ChrW(11) & kCura.Utility.ArrayList.ArrayListToDelimitedString(New System.Collections.ArrayList(value), ChrW(11)) & ChrW(11)
+						field.Value = ChrW(11) & value.ToDelimitedString(ChrW(11)) & ChrW(11)
 						Dim sb As New System.Text.StringBuilder
 						For Each objectValue As String In objectValues.Keys
 							DirectCast(Me, BulkLoadFileImporter).WriteObjectLineToTempFile(identityValue, objectValue, CType(objectValues(objectValue), Int32), field.AssociatedObjectTypeID, field.ArtifactID)
@@ -608,7 +610,7 @@ Namespace kCura.WinEDDS
 					If objectValues.Count = 0 Then
 						field.Value = ""
 					Else
-						field.Value = ChrW(11) & kCura.Utility.ArrayList.ArrayListToDelimitedString(New System.Collections.ArrayList(value), ChrW(11)) & ChrW(11)
+						field.Value = ChrW(11) & value.ToDelimitedString(ChrW(11)) & ChrW(11)
 						Dim sb As New System.Text.StringBuilder
 						For Each objectValue As String In objectValues.Keys
 							DirectCast(Me, BulkLoadFileImporter).WriteObjectLineToTempFile(identityValue, objectValues(objectValue).ToString(), CInt(objectValue), field.AssociatedObjectTypeID, field.ArtifactID)

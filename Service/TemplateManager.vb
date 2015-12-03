@@ -18,20 +18,7 @@ Namespace kCura.WinEDDS.Service
 #Region " Shadow Methods "
 
 		Public Shadows Function InstallTemplate(ByVal appsToOverride As Int32(), packageData As Byte(), ByVal installationParameters As kCura.EDDS.WebAPI.TemplateManagerBase.ApplicationInstallationParameters) As kCura.EDDS.WebAPI.TemplateManagerBase.ApplicationInstallationResult
-			Dim tries As Int32 = 0
-			While tries < Config.MaxReloginTries
-				tries += 1
-				Try
-					Return MyBase.InstallTemplate(appsToOverride, packageData, installationParameters)
-				Catch ex As System.Exception
-					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
-					Else
-						Throw
-					End If
-				End Try
-			End While
-			Return Nothing
+			Return RetryOnReLoginException(Function() MyBase.InstallTemplate(appsToOverride, packageData, installationParameters))
 		End Function
 
 #End Region

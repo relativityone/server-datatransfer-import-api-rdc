@@ -53,45 +53,11 @@ Namespace kCura.WinEDDS.Service
 
 #Region " Shadow Functions "
 		Public Shadows Function Create(ByVal caseContextArtifactID As Int32, ByVal field As kCura.EDDS.WebAPI.FieldManagerBase.Field) As Int32
-			Dim tries As Int32 = 0
-			While tries < Config.MaxReloginTries
-				tries += 1
-				Try
-					If kCura.WinEDDS.Config.UsesWebAPI Then
-						Return MyBase.Create(caseContextArtifactID, field)
-					Else
-						'Return _fieldManager.ExternalCreate(Me.WebAPIFieldtoDTO(field), _identity)
-					End If
-				Catch ex As System.Exception
-					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
-					Else
-						Throw
-					End If
-				End Try
-			End While
-			Return Nothing
+			Return RetryOnReLoginException(Function() MyBase.Create(caseContextArtifactID, field))
 		End Function
 
 		Public Shadows Function Read(ByVal caseContextArtifactID As Int32, ByVal fieldArtifactID As Int32) As kCura.EDDS.WebAPI.FieldManagerBase.Field
-			Dim tries As Int32 = 0
-			While tries < Config.MaxReloginTries
-				tries += 1
-				Try
-					If kCura.WinEDDS.Config.UsesWebAPI Then
-						Return MyBase.Read(caseContextArtifactID, fieldArtifactID)
-					Else
-						'Return Me.DTOtoFieldWebAPIField(_fieldManager.Read(fieldArtifactID, _identity))
-					End If
-				Catch ex As System.Exception
-					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
-					Else
-						Throw
-					End If
-				End Try
-			End While
-			Return Nothing
+			Return RetryOnReLoginException(Function() MyBase.Read(caseContextArtifactID, fieldArtifactID))
 		End Function
 #End Region
 
