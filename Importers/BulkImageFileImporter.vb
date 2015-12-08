@@ -212,6 +212,7 @@ Namespace kCura.WinEDDS
 		Protected Overridable Sub InitializeUploaders(ByVal args As ImageLoadFile)
 			_fileUploader = New kCura.WinEDDS.FileUploader(args.Credential, args.CaseInfo.ArtifactID, _repositoryPath, args.CookieContainer)
 			_bcpuploader = New kCura.WinEDDS.FileUploader(args.Credential, args.CaseInfo.ArtifactID, _repositoryPath, args.CookieContainer, False)
+			_bcpuploader.SetUploaderTypeForBcp()
 		End Sub
 
 		Protected Overridable Sub InitializeDTOs(ByVal args As ImageLoadFile)

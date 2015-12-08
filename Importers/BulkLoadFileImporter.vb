@@ -348,6 +348,7 @@ Namespace kCura.WinEDDS
 		Protected Overridable Sub CreateUploaders(ByVal args As LoadFile)
 			_uploader = New kCura.WinEDDS.FileUploader(args.Credentials, args.CaseInfo.ArtifactID, _defaultDestinationFolderPath, args.CookieContainer)
 			_bcpuploader = New kCura.WinEDDS.FileUploader(args.Credentials, args.CaseInfo.ArtifactID, _defaultDestinationFolderPath, args.CookieContainer, False)
+			_bcpuploader.SetUploaderTypeForBcp()
 		End Sub
 
 #End Region

@@ -62,20 +62,27 @@ Namespace kCura.WinEDDS
 			RaiseEvent UploadModeChangeEvent(Me.UploaderType.ToString(), _isBulkEnabled)
 		End Sub
 
+		Public Function SetUploaderTypeForBcp() As FileUploader
+			_destinationFolderPath = _gateway.GetBcpSharePath(_caseArtifactID)
+			SetType(_destinationFolderPath)
+			Return Me
+		End Function
+
+
 		Private Sub SetType(ByVal destFolderPath As String)
 			Try
-				Dim dummyText As String = System.Guid.NewGuid().ToString().Replace("-", String.Empty).Substring(0, 5)
-				'If the destination folder path is empty, we only need to test file Read/Write permissions
-				If Not String.IsNullOrEmpty(destFolderPath) Then
-					If Not System.IO.Directory.Exists(destFolderPath) Then
-						System.IO.Directory.CreateDirectory(destFolderPath)
-					End If
-				End If
-				System.IO.File.Create(destFolderPath & dummyText).Close()
-				System.IO.File.Delete(destFolderPath & dummyText)
 				If Config.ForceWebUpload Then
 					Me.UploaderType = Type.Web
 				Else
+					Dim dummyText As String = System.Guid.NewGuid().ToString().Replace("-", String.Empty).Substring(0, 5)
+					'If the destination folder path is empty, we only need to test file Read/Write permissions
+					If Not String.IsNullOrEmpty(destFolderPath) Then
+						If Not System.IO.Directory.Exists(destFolderPath) Then
+							System.IO.Directory.CreateDirectory(destFolderPath)
+						End If
+					End If
+					System.IO.File.Create(destFolderPath & dummyText).Close()
+					System.IO.File.Delete(destFolderPath & dummyText)
 					Me.UploaderType = Type.Direct
 				End If
 			Catch ex As System.Exception
