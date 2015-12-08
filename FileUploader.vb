@@ -59,6 +59,7 @@ Namespace kCura.WinEDDS
 			_repositoryPathManager = New Relativity.RepositoryPathManager(_gateway.RepositoryVolumeMax)
 			_sortIntoVolumes = sortIntoVolumes
 			SetType(_destinationFolderPath)
+			RaiseEvent UploadModeChangeEvent(Me.UploaderType.ToString(), _isBulkEnabled)
 		End Sub
 
 		Private Sub SetType(ByVal destFolderPath As String)

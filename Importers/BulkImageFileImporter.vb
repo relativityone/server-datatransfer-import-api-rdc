@@ -1,4 +1,5 @@
 Imports System.IO
+Imports System.Collections.Generic
 Imports kCura.EDDS.WebAPI.BulkImportManagerBase
 Imports kCura.Utility.Extensions.CollectionExtension
 Imports kCura.WinEDDS.Service
@@ -436,6 +437,7 @@ Namespace kCura.WinEDDS
 		
 		Public Sub PushImageBatch(ByVal bulkLoadFilePath As String, ByVal dataGridFilePath As String)
 			If _batchCount = 0 Then Exit Sub
+			PublishUploadModeEvent()
 			_batchCount = 0
 			_statistics.MetadataBytes += (Me.GetFileLength(bulkLoadFilePath) + Me.GetFileLength(dataGridFilePath))
 			Dim start As Int64 = System.DateTime.Now.Ticks
@@ -467,7 +469,7 @@ Namespace kCura.WinEDDS
 				_runId = runResults.RunID
 				_statistics.SqlTime += System.Math.Max(System.DateTime.Now.Ticks - start, 1)
 			ElseIf Config.EnableSingleModeImport Then
-				RaiseEvent UploadModeChangeEvent(_fileUploader.UploaderType.ToString, _bcpuploader.IsBulkEnabled)
+				PublishUploadModeEvent()
 				start = System.DateTime.Now.Ticks
 				Dim oldDestinationFolderPath As String = System.String.Copy(_bcpuploader.DestinationFolderPath)
 
@@ -489,6 +491,7 @@ Namespace kCura.WinEDDS
 					Throw New kCura.WinEDDS.LoadFileBase.BcpPathAccessException(validateDataGridBcp.Value)
 				End If
 			End If
+			PublishUploadModeEvent()
 			ManageErrors()
 		End Sub
 
@@ -543,7 +546,7 @@ Namespace kCura.WinEDDS
 						Throw New kCura.WinEDDS.LoadFileBase.BcpPathAccessException(validateDataGridBcp.Value)
 					End If
 				Else
-					RaiseEvent UploadModeChangeEvent(_fileUploader.UploaderType.ToString, _bcpuploader.IsBulkEnabled)
+					PublishUploadModeEvent()
 				End If
 
 				Me.Statistics.BatchSize = Me.ImportBatchSize
@@ -880,6 +883,28 @@ Namespace kCura.WinEDDS
 		Public Event ReportErrorEvent(ByVal row As System.Collections.IDictionary)
 		Public Event UploadModeChangeEvent(ByVal mode As String, ByVal isBulkEnabled As Boolean)
 
+		Private Sub PublishUploadModeEvent()
+			Dim retval As New List(Of String)
+			Dim isBulkEnabled As Boolean = True
+			If Not _bcpuploader Is Nothing Then
+				retval.Add("Metadata: " & _bcpuploader.UploaderType.ToString())
+				isBulkEnabled = _bcpuploader.IsBulkEnabled
+			End If
+			If _settings.CopyFilesToDocumentRepository Then
+				If Not _fileUploader Is Nothing Then
+					retval.Add("Files: " & _fileUploader.UploaderType.ToString())
+				End If
+			Else
+				retval.Add("Files: not copied")
+			End If
+			If retval.Any() Then
+				Dim uploadStatus As String = String.Join(" - ", retval.ToArray())
+				RaiseEvent UploadModeChangeEvent(uploadStatus, isBulkEnabled)
+			End If
+		End Sub
+
+
+
 		Private Sub RaiseFatalError(ByVal ex As System.Exception)
 			RaiseEvent FatalErrorEvent("Error processing line: " + CurrentLineNumber.ToString, ex)
 		End Sub
@@ -925,17 +950,12 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Private Sub _uploader_UploadModeChangeEvent(ByVal mode As String, ByVal isBulkEnabled As Boolean) Handles _fileUploader.UploadModeChangeEvent
-			RaiseEvent UploadModeChangeEvent(mode, _bcpuploader.IsBulkEnabled)
+			PublishUploadModeEvent()
 		End Sub
 
 		Private Sub _bcpuploader_UploadModeChangeEvent(ByVal mode As String, ByVal isBulkEnabled As Boolean) Handles _bcpuploader.UploadModeChangeEvent
-			RaiseEvent UploadModeChangeEvent(_fileUploader.UploaderType.ToString, isBulkEnabled)
+			PublishUploadModeEvent()
 		End Sub
-
-
-
-
-
 
 #End Region
 

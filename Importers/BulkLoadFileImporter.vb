@@ -382,6 +382,26 @@ Namespace kCura.WinEDDS
 
 #Region "Main"
 
+		Private Sub PublishUploadModeEvent()
+			Dim retval As New List(Of String)
+			Dim isBulkEnabled As Boolean = True
+			If Not _bcpuploader Is Nothing Then
+				retval.Add("Metadata: " & _bcpuploader.UploaderType.ToString())
+				isBulkEnabled = _bcpuploader.IsBulkEnabled
+			End If
+			If _settings.CopyFilesToDocumentRepository AndAlso _settings.NativeFilePathColumn IsNot Nothing Then
+				If Not _uploader Is Nothing Then
+					retval.Add("Files: " & _uploader.UploaderType.ToString())
+				End If
+			Else
+				retval.Add("Files: not copied")
+			End If
+			If retval.Any() Then
+				Dim uploadStatus As String = String.Join(" - ", retval.ToArray())
+				RaiseEvent UploadModeChangeEvent(uploadStatus, isBulkEnabled)
+			End If
+		End Sub
+
 		''' <summary>
 		''' Loads all the documents in a load file
 		''' </summary>
@@ -399,7 +419,7 @@ Namespace kCura.WinEDDS
 				If validateBcp.Type = FileUploadReturnArgs.FileUploadReturnType.UploadError And Not Config.EnableSingleModeImport Then
 					Throw New BcpPathAccessException(validateBcp.Value)
 				Else
-					RaiseEvent UploadModeChangeEvent(_uploader.UploaderType.ToString, _bcpuploader.IsBulkEnabled)
+					PublishUploadModeEvent()
 				End If
 				If Not InitializeMembers(path) Then
 					Return False
@@ -839,7 +859,9 @@ Namespace kCura.WinEDDS
 			CloseFileWriters()
 			Dim outputNativePath As String = _outputFileWriter.OutputNativeFilePath
 			Try
+				PublishUploadModeEvent()
 				PushNativeBatch(outputNativePath)
+				PublishUploadModeEvent()
 			Catch ex As Exception
 				If BatchResizeEnabled AndAlso ExceptionIsTimeoutRelated(ex) AndAlso _continue Then
 					Dim originalBatchSize As Int32 = Me.ImportBatchSize
@@ -947,7 +969,7 @@ Namespace kCura.WinEDDS
 			End If
 			If uploadBcp.Type = FileUploadReturnArgs.FileUploadReturnType.UploadError Then
 				If Config.EnableSingleModeImport Then
-					RaiseEvent UploadModeChangeEvent(_uploader.UploaderType.ToString, _bcpuploader.IsBulkEnabled)
+					PublishUploadModeEvent()
 					_uploader.DestinationFolderPath = settings.Repository
 					_bcpuploader.DestinationFolderPath = settings.Repository
 					nativeFileUploadKey = _bcpuploader.UploadFile(outputNativePath, _caseInfo.ArtifactID)
@@ -1545,11 +1567,11 @@ Namespace kCura.WinEDDS
 #Region "Event Handlers"
 
 		Private Sub _uploader_UploadModeChangeEvent(ByVal mode As String, ByVal isBulkEnabled As Boolean) Handles _uploader.UploadModeChangeEvent
-			RaiseEvent UploadModeChangeEvent(mode, _bcpuploader.IsBulkEnabled)
+			PublishUploadModeEvent()
 		End Sub
 
 		Private Sub _bcpuploader_UploadModeChangeEvent(ByVal mode As String, ByVal isBulkEnabled As Boolean) Handles _bcpuploader.UploadModeChangeEvent
-			RaiseEvent UploadModeChangeEvent(_uploader.UploaderType.ToString, isBulkEnabled)
+			PublishUploadModeEvent()
 		End Sub
 
 		Private Sub _processController_HaltProcessEvent(ByVal processID As System.Guid) Handles _processController.HaltProcessEvent
