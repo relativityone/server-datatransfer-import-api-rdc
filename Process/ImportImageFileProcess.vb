@@ -163,15 +163,9 @@ Namespace kCura.WinEDDS
 
 		Private Sub _loadFileImporter_UploadModeChangeEvent(ByVal mode As String, ByVal isBulkEnabled As Boolean) Handles _imageFileImporter.UploadModeChangeEvent
 			If _uploadModeText Is Nothing Then
-				Dim sb As New System.Text.StringBuilder
 				_uploadModeText = Config.FileTransferModeExplanationText(True)
 			End If
-			Dim statusBarMessage As String = "File Transfer Mode: " & mode
-			If isBulkEnabled Then
-				statusBarMessage &= " - SQL Insert Mode: " & "Bulk"
-			Else
-				statusBarMessage &= " - SQL Insert Mode: " & "Single"
-			End If
+			Dim statusBarMessage As String = String.Format("{0} - SQL Insert Mode: {1}", mode, If(isBulkEnabled, "Bulk", "Single"))
 			Me.ProcessObserver.RaiseStatusBarEvent(statusBarMessage, _uploadModeText)
 		End Sub
 
