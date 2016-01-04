@@ -437,7 +437,7 @@ Namespace kCura.WinEDDS
 		End Sub
 		
 		Public Sub PushImageBatch(ByVal bulkLoadFilePath As String, ByVal dataGridFilePath As String)
-			If _batchCount = 0 Then Exit Sub
+			If _batchCount = 0 Then Return
 			PublishUploadModeEvent()
 			_batchCount = 0
 			_statistics.MetadataBytes += (Me.GetFileLength(bulkLoadFilePath) + Me.GetFileLength(dataGridFilePath))
