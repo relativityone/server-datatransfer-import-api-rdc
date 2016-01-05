@@ -292,6 +292,10 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <ProjectReference Include="..\kCura.EDDS.ScriptsConsole\kCura.EDDS.ScriptsConsole.csproj">
+      <Project>{60980656-be5c-4a52-9e47-6385bf150b7d}</Project>
+      <Name>kCura.EDDS.ScriptsConsole</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Relativity.Applications.Serialization\Relativity.Applications.Serialization.vbproj">
       <Project>{E621897E-45AF-4FBD-ADA4-EEE787E5233F}</Project>
       <Name>Relativity.Applications.Serialization</Name>
