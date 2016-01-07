@@ -296,6 +296,10 @@
       <Project>{60980656-be5c-4a52-9e47-6385bf150b7d}</Project>
       <Name>kCura.EDDS.ScriptsConsole</Name>
     </ProjectReference>
+    <ProjectReference Include="..\LoginIS\LoginIS.csproj">
+      <Project>{5e145599-66a3-4f72-9d1a-03f1ef40cce4}</Project>
+      <Name>LoginIS</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Relativity.Applications.Serialization\Relativity.Applications.Serialization.vbproj">
       <Project>{E621897E-45AF-4FBD-ADA4-EEE787E5233F}</Project>
       <Name>Relativity.Applications.Serialization</Name>
@@ -304,10 +308,16 @@
       <Project>{044A6424-BC90-46CE-8805-0053A44AFCAB}</Project>
       <Name>Relativity</Name>
     </ProjectReference>
+    <Reference Include="IdentityModel.Net45, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\IdentityServer3.Samples-master\source\Clients\WpfClient\bin\Debug\IdentityModel.Net45.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.VisualBasic">
       <Name>Microsoft.VisualBasic</Name>
     </Reference>
     <Reference Include="Microsoft.VisualBasic.PowerPacks.Vs, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
     <Reference Include="System">
       <Name>System</Name>
     </Reference>
@@ -326,6 +336,7 @@
     <Reference Include="System.Windows.Forms">
       <Name>System.Windows.Forms</Name>
     </Reference>
+    <Reference Include="System.Xaml" />
     <Reference Include="System.Xml">
       <Name>System.XML</Name>
     </Reference>
@@ -360,6 +371,7 @@
       <Name>kCura.WinEDDS</Name>
     </ProjectReference>
     <Reference Include="System.Xml.Linq" />
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
     <Import Include="kCura.WinEDDS" />
