@@ -11,18 +11,18 @@ Namespace kCura.WinEDDS
 			AppendOverlay
 		End Enum
 
-		Private _credential As System.Net.NetworkCredential
+        Private _credential As Net.NetworkCredential
 		Private _cookieContainer As System.Net.CookieContainer
 		Private _caseManager As kCura.WinEDDS.Service.CaseManager
 		Private _folderManager As kCura.WinEDDS.Service.FolderManager
 		Private _fieldManager As kCura.WinEDDS.Service.FieldManager
 		Private _productionManager As kCura.WinEDDS.Service.ProductionManager
 
-		Protected ReadOnly Property Credential() As System.Net.NetworkCredential
-			Get
-				Return _credential
-			End Get
-		End Property
+        Protected ReadOnly Property Credential() As Net.NetworkCredential
+            Get
+                Return _credential
+            End Get
+        End Property
 
 		Protected ReadOnly Property CookieContainer() As System.Net.CookieContainer
 			Get
