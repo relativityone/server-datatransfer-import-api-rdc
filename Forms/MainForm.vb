@@ -2,7 +2,7 @@
 Imports System.Configuration
 Imports System.Security.AccessControl
 Imports kCura.EDDS.ScriptsConsole
-Imports IdentityModel.Client
+
 
 Namespace kCura.EDDS.WinForm
     Public Class MainForm
