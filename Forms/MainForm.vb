@@ -2,7 +2,7 @@
 Imports System.Configuration
 Imports System.Security.AccessControl
 Imports kCura.EDDS.ScriptsConsole
-
+Imports IdentityModel.Client
 
 Namespace kCura.EDDS.WinForm
     Public Class MainForm
@@ -64,11 +64,11 @@ Namespace kCura.EDDS.WinForm
         Friend WithEvents ToolsImportProductionFileMenu As System.Windows.Forms.MenuItem
         Friend WithEvents _objectTypeDropDown As System.Windows.Forms.ComboBox
         Friend WithEvents _optionsMenuCheckConnectivityItem As System.Windows.Forms.MenuItem
+        Friend WithEvents ScriptConsoleMenu As System.Windows.Forms.MenuItem
         Friend WithEvents RelativityScripts As System.Windows.Forms.MenuItem
         Friend WithEvents CreateNewScript As System.Windows.Forms.MenuItem
         Friend WithEvents CreateNewAdminScript As System.Windows.Forms.MenuItem
         Friend WithEvents ScriptList As System.Windows.Forms.MenuItem
-        Friend WithEvents AdminScriptList As System.Windows.Forms.MenuItem
         Friend WithEvents _exportObjectsMenuItem As System.Windows.Forms.MenuItem
         <System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
             Me.components = New System.ComponentModel.Container()
@@ -90,11 +90,6 @@ Namespace kCura.EDDS.WinForm
             Me._exportFoldersMenuItem = New System.Windows.Forms.MenuItem()
             Me._exportFoldersAndSubfoldersMenuItem = New System.Windows.Forms.MenuItem()
             Me._exportObjectsMenuItem = New System.Windows.Forms.MenuItem()
-            Me.RelativityScripts = New System.Windows.Forms.MenuItem()
-            Me.CreateNewScript = New System.Windows.Forms.MenuItem()
-            Me.CreateNewAdminScript = New System.Windows.Forms.MenuItem()
-            Me.ScriptList = New System.Windows.Forms.MenuItem()
-            Me.AdminScriptList = New System.Windows.Forms.MenuItem()
             Me._toolsMenu = New System.Windows.Forms.MenuItem()
             Me._toolsMenuSettingsItem = New System.Windows.Forms.MenuItem()
             Me._optionsMenuCheckConnectivityItem = New System.Windows.Forms.MenuItem()
@@ -106,6 +101,11 @@ Namespace kCura.EDDS.WinForm
             Me.LoggedInUserPanel = New System.Windows.Forms.StatusBarPanel()
             Me._objectTypeDropDown = New System.Windows.Forms.ComboBox()
             Me.EnhancedMenuProvider = New kCura.Windows.Forms.EnhancedMenuProvider(Me.components)
+            Me.ScriptConsoleMenu = New System.Windows.Forms.MenuItem()
+            Me.RelativityScripts = New System.Windows.Forms.MenuItem()
+            Me.CreateNewScript = New System.Windows.Forms.MenuItem()
+            Me.CreateNewAdminScript = New System.Windows.Forms.MenuItem()
+            Me.ScriptList = New System.Windows.Forms.MenuItem()
             Me._caseFolderExplorer = New kCura.EDDS.WinForm.CaseFolderExplorer()
             CType(Me.AppStatusPanel, System.ComponentModel.ISupportInitialize).BeginInit()
             CType(Me.LoggedInUserPanel, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -119,7 +119,7 @@ Namespace kCura.EDDS.WinForm
             '
             Me.EnhancedMenuProvider.SetImageIndex(Me.MenuItem1, -1)
             Me.MenuItem1.Index = 0
-            Me.MenuItem1.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.OpenRepositoryMenu, Me.MenuItem3, Me.ExitMenu, Me._fileMenuRefresh})
+            Me.MenuItem1.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.OpenRepositoryMenu, Me.ScriptConsoleMenu, Me.MenuItem3, Me.ExitMenu, Me._fileMenuRefresh})
             Me.MenuItem1.OwnerDraw = True
             Me.MenuItem1.Text = "&File"
             '
@@ -133,14 +133,14 @@ Namespace kCura.EDDS.WinForm
             'MenuItem3
             '
             Me.EnhancedMenuProvider.SetImageIndex(Me.MenuItem3, -1)
-            Me.MenuItem3.Index = 1
+            Me.MenuItem3.Index = 2
             Me.MenuItem3.OwnerDraw = True
             Me.MenuItem3.Text = "-"
             '
             'ExitMenu
             '
             Me.EnhancedMenuProvider.SetImageIndex(Me.ExitMenu, -1)
-            Me.ExitMenu.Index = 2
+            Me.ExitMenu.Index = 3
             Me.ExitMenu.OwnerDraw = True
             Me.ExitMenu.Text = "&Exit"
             '
@@ -148,7 +148,7 @@ Namespace kCura.EDDS.WinForm
             '
             Me._fileMenuRefresh.Enabled = False
             Me.EnhancedMenuProvider.SetImageIndex(Me._fileMenuRefresh, -1)
-            Me._fileMenuRefresh.Index = 3
+            Me._fileMenuRefresh.Index = 4
             Me._fileMenuRefresh.OwnerDraw = True
             Me._fileMenuRefresh.Shortcut = System.Windows.Forms.Shortcut.F5
             Me._fileMenuRefresh.Text = "Refresh"
@@ -239,42 +239,6 @@ Namespace kCura.EDDS.WinForm
             Me._exportObjectsMenuItem.Text = "Objects"
             Me._exportObjectsMenuItem.Visible = False
             '
-            'RelativityScripts
-            '
-            Me.EnhancedMenuProvider.SetImageIndex(Me.RelativityScripts, -1)
-            Me.RelativityScripts.Index = 2
-            Me.RelativityScripts.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.CreateNewScript, Me.CreateNewAdminScript, Me.ScriptList, Me.AdminScriptList})
-            Me.RelativityScripts.OwnerDraw = True
-            Me.RelativityScripts.Text = "&Relativity Scripts"
-            '
-            'CreateNewScript
-            '
-            Me.EnhancedMenuProvider.SetImageIndex(Me.CreateNewScript, -1)
-            Me.CreateNewScript.Index = 0
-            Me.CreateNewScript.OwnerDraw = True
-            Me.CreateNewScript.Text = "Create New Script"
-            '
-            'CreateNewAdminScript
-            '
-            Me.EnhancedMenuProvider.SetImageIndex(Me.CreateNewAdminScript, -1)
-            Me.CreateNewAdminScript.Index = 1
-            Me.CreateNewAdminScript.OwnerDraw = True
-            Me.CreateNewAdminScript.Text = "Create New Admin Script"
-            '
-            'ScriptList
-            '
-            Me.EnhancedMenuProvider.SetImageIndex(Me.ScriptList, -1)
-            Me.ScriptList.Index = 2
-            Me.ScriptList.OwnerDraw = True
-            Me.ScriptList.Text = "Script List"
-            '
-            'AdminScriptList
-            '
-            Me.EnhancedMenuProvider.SetImageIndex(Me.AdminScriptList, -1)
-            Me.AdminScriptList.Index = 3
-            Me.AdminScriptList.OwnerDraw = True
-            Me.AdminScriptList.Text = "Admin Script List"
-            '
             '_toolsMenu
             '
             Me.EnhancedMenuProvider.SetImageIndex(Me._toolsMenu, -1)
@@ -350,6 +314,42 @@ Namespace kCura.EDDS.WinForm
             Me._objectTypeDropDown.Name = "_objectTypeDropDown"
             Me._objectTypeDropDown.Size = New System.Drawing.Size(332, 21)
             Me._objectTypeDropDown.TabIndex = 7
+            '
+            'ScriptConsoleMenu
+            '
+            Me.EnhancedMenuProvider.SetImageIndex(Me.ScriptConsoleMenu, -1)
+            Me.ScriptConsoleMenu.Index = 1
+            Me.ScriptConsoleMenu.OwnerDraw = True
+            Me.ScriptConsoleMenu.Text = "Open Relativity Script Console"
+            '
+            'RelativityScripts
+            '
+            Me.EnhancedMenuProvider.SetImageIndex(Me.RelativityScripts, -1)
+            Me.RelativityScripts.Index = 0
+            Me.RelativityScripts.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.CreateNewScript, Me.CreateNewAdminScript, Me.ScriptList})
+            Me.RelativityScripts.OwnerDraw = True
+            Me.RelativityScripts.Text = "&Relativity Scripts"
+            '
+            'CreateNewScript
+            '
+            Me.EnhancedMenuProvider.SetImageIndex(Me.CreateNewScript, -1)
+            Me.CreateNewScript.Index = 1
+            Me.CreateNewScript.OwnerDraw = True
+            Me.CreateNewScript.Text = "Create New Script"
+            '
+            'CreateNewAdminScript
+            '
+            Me.EnhancedMenuProvider.SetImageIndex(Me.CreateNewAdminScript, -1)
+            Me.CreateNewAdminScript.Index = 1
+            Me.CreateNewAdminScript.OwnerDraw = True
+            Me.CreateNewAdminScript.Text = "Create New Admin Script"
+            '
+            'ScriptList
+            '
+            Me.EnhancedMenuProvider.SetImageIndex(Me.ScriptList, -1)
+            Me.ScriptList.Index = 1
+            Me.ScriptList.OwnerDraw = True
+            Me.ScriptList.Text = "Script List"
             '
             '_caseFolderExplorer
             '
@@ -452,7 +452,6 @@ Namespace kCura.EDDS.WinForm
                 firstLogIn = False
             End If
             firstTime = False
-            Me.Focus()
         End Sub
 
         Private Sub MainForm_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles MyBase.Load
@@ -618,6 +617,13 @@ Namespace kCura.EDDS.WinForm
             _application.QueryConnectivity()
         End Sub
 
+        Private Sub OpenScriptConsoleMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ScriptConsoleMenu.Click
+            If _application.LastCredentialCheckResult = Application.CredentialCheckResult.Success Then
+                Dim scriptConsole As New WorkspaceListForm
+                scriptConsole.Show()
+            End If
+        End Sub
+
         Private Sub CreateNewScript_Click(ByVal sender As System.Object, ByVal e As EventArgs) Handles CreateNewScript.Click
             ' TODO: check for create permissions?
             If _application.LastCredentialCheckResult = Application.CredentialCheckResult.Success Then
@@ -636,13 +642,6 @@ Namespace kCura.EDDS.WinForm
             ' TODO: check for permissions?
             If _application.LastCredentialCheckResult = Application.CredentialCheckResult.Success Then
                 Dim scriptList = New ScriptsListForm(_application.SelectedCaseInfo.ArtifactID.ToString())
-                scriptList.Show()
-            End If
-        End Sub
-        Private Sub AdminScriptList_Click(ByVal sender As System.Object, ByVale As EventArgs) Handles AdminScriptList.Click
-            ' TODO: check for permissions?
-            If _application.LastCredentialCheckResult = Application.CredentialCheckResult.Success Then
-                Dim scriptList = New ScriptsListForm("-1") ' passing in Admin Workspace
                 scriptList.Show()
             End If
         End Sub

@@ -5,6 +5,7 @@ Imports System.Net.Security
 Imports kCura.EDDS.ScriptsConsole
 Imports kCura.EDDS.WinForm.Forms
 Imports kCura.Windows.Forms
+Imports IdentityModel.Client
 
 Namespace kCura.EDDS.WinForm
     Public Class Application
