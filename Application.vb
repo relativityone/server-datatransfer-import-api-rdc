@@ -5,7 +5,6 @@ Imports System.Net.Security
 Imports kCura.EDDS.ScriptsConsole
 Imports kCura.EDDS.WinForm.Forms
 Imports kCura.Windows.Forms
-Imports IdentityModel.Client
 
 Namespace kCura.EDDS.WinForm
     Public Class Application
@@ -1510,7 +1509,9 @@ Namespace kCura.EDDS.WinForm
                     System.Threading.Thread.CurrentThread.CurrentCulture = locale
 
                     kCura.WinEDDS.Service.Settings.AuthenticationToken = userManager.GenerateDistributedAuthenticationToken()
-                    If _loginForm.OpenCaseSelector Then OpenCase()
+                    If _loginForm.OpenCaseSelector Then
+                        OpenCase()
+                    End If
                     _timeZoneOffset = 0
                     _lastCredentialCheckResult = CredentialCheckResult.Success
                 Else
