@@ -399,10 +399,12 @@ Namespace kCura.EDDS.WinForm
                 Else
                     _application.LogOn()
                     _application.OpenCase()
+                    OpenLogin._permissionManager.SetPermissions(_application.SelectedCaseInfo.ArtifactID.ToString())
                     kCura.Windows.Forms.EnhancedMenuProvider.Hook(Me)
                 End If
             Else
                 _application.OpenCase()
+                OpenLogin._permissionManager.SetPermissions(_application.SelectedCaseInfo.ArtifactID.ToString())
             End If
         End Sub
 

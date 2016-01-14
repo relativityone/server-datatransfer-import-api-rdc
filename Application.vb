@@ -1415,6 +1415,7 @@ Namespace kCura.EDDS.WinForm
                     LogOn()
                     If (Not _caseSelected) Then
                         OpenCase()
+                        OpenLogin._permissionManager.SetPermissions(SelectedCaseInfo.ArtifactID.ToString())
                     End If
                     EnhancedMenuProvider.Hook(callingForm)
             End Select
@@ -1511,6 +1512,7 @@ Namespace kCura.EDDS.WinForm
                     kCura.WinEDDS.Service.Settings.AuthenticationToken = userManager.GenerateDistributedAuthenticationToken()
                     If _loginForm.OpenCaseSelector Then
                         OpenCase()
+                        OpenLogin._permissionManager.SetPermissions(SelectedCaseInfo.ArtifactID.ToString())
                     End If
                     _timeZoneOffset = 0
                     _lastCredentialCheckResult = CredentialCheckResult.Success
