@@ -246,6 +246,7 @@ Namespace kCura.EDDS.WinForm
             Me.RelativityScripts.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.CreateNewScript, Me.CreateNewAdminScript, Me.ScriptList, Me.AdminScriptList})
             Me.RelativityScripts.OwnerDraw = True
             Me.RelativityScripts.Text = "&Relativity Scripts"
+            Me.RelativityScripts.Visible = False
             '
             'CreateNewScript
             '
@@ -253,6 +254,7 @@ Namespace kCura.EDDS.WinForm
             Me.CreateNewScript.Index = 0
             Me.CreateNewScript.OwnerDraw = True
             Me.CreateNewScript.Text = "Create New Script"
+            Me.CreateNewScript.Visible = False
             '
             'CreateNewAdminScript
             '
@@ -260,6 +262,7 @@ Namespace kCura.EDDS.WinForm
             Me.CreateNewAdminScript.Index = 1
             Me.CreateNewAdminScript.OwnerDraw = True
             Me.CreateNewAdminScript.Text = "Create New Admin Script"
+            Me.CreateNewAdminScript.Visible = False
             '
             'ScriptList
             '
@@ -267,6 +270,7 @@ Namespace kCura.EDDS.WinForm
             Me.ScriptList.Index = 2
             Me.ScriptList.OwnerDraw = True
             Me.ScriptList.Text = "Script List"
+            Me.ScriptList.Visible = False
             '
             'AdminScriptList
             '
@@ -274,6 +278,7 @@ Namespace kCura.EDDS.WinForm
             Me.AdminScriptList.Index = 3
             Me.AdminScriptList.OwnerDraw = True
             Me.AdminScriptList.Text = "Admin Script List"
+            Me.AdminScriptList.Visible = False
             '
             '_toolsMenu
             '
@@ -400,11 +405,21 @@ Namespace kCura.EDDS.WinForm
                     _application.LogOn()
                     _application.OpenCase()
                     OpenLogin._permissionManager.SetPermissions(_application.SelectedCaseInfo.ArtifactID.ToString())
+                    RelativityScripts.Visible = (ScriptsConsoleHelper.AddScript Or ScriptsConsoleHelper.AddAdminScript Or ScriptsConsoleHelper.ViewScript Or ScriptsConsoleHelper.ViewAdminScript)
+                    CreateNewScript.Visible = ScriptsConsoleHelper.AddScript
+                    CreateNewAdminScript.Visible = ScriptsConsoleHelper.AddAdminScript
+                    ScriptList.Visible = ScriptsConsoleHelper.ViewScript
+                    AdminScriptList.Visible = ScriptsConsoleHelper.ViewAdminScript
                     kCura.Windows.Forms.EnhancedMenuProvider.Hook(Me)
                 End If
             Else
                 _application.OpenCase()
                 OpenLogin._permissionManager.SetPermissions(_application.SelectedCaseInfo.ArtifactID.ToString())
+                RelativityScripts.Visible = (ScriptsConsoleHelper.AddScript Or ScriptsConsoleHelper.AddAdminScript Or ScriptsConsoleHelper.ViewScript Or ScriptsConsoleHelper.ViewAdminScript)
+                CreateNewScript.Visible = ScriptsConsoleHelper.AddScript
+                CreateNewAdminScript.Visible = ScriptsConsoleHelper.AddAdminScript
+                ScriptList.Visible = ScriptsConsoleHelper.ViewScript
+                AdminScriptList.Visible = ScriptsConsoleHelper.ViewAdminScript
             End If
         End Sub
 
@@ -434,6 +449,12 @@ Namespace kCura.EDDS.WinForm
                     ImportMenu.Visible = _application.UserHasImportPermission
                     ExportMenu.Visible = _application.UserHasExportPermission
                     'UpdateStatus("Case Folder Load: " + _application.SelectedCaseInfo.RootFolderID.ToString)
+                Case appEvent.AppEventType.PermissionsSet
+                    RelativityScripts.Visible = (ScriptsConsoleHelper.AddScript Or ScriptsConsoleHelper.AddAdminScript Or ScriptsConsoleHelper.ViewScript Or ScriptsConsoleHelper.ViewAdminScript)
+                    CreateNewScript.Visible = ScriptsConsoleHelper.AddScript
+                    CreateNewAdminScript.Visible = ScriptsConsoleHelper.AddAdminScript
+                    ScriptList.Visible = ScriptsConsoleHelper.ViewScript
+                    AdminScriptList.Visible = ScriptsConsoleHelper.ViewAdminScript
             End Select
         End Sub
 
