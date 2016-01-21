@@ -171,7 +171,7 @@ Namespace kCura.EDDS.WinForm
                 '_credential = New NetworkCredential(LoginIS.LoginWebView.Username, LoginIS.LoginWebView.Password)
                 'End If
                 If _credential Is Nothing Then
-                    _credential = New NetworkCredential(LoginIS.LoginWebView.Username, LoginIS.LoginWebView.Password)
+                    _credential = LoginIS.LoginWebView.Credential
                     'NewLogin()
                 End If
                 Return _credential
@@ -1480,7 +1480,7 @@ Namespace kCura.EDDS.WinForm
         End Sub
 
         Public Sub LoginForm_DoneLoggingIn()
-            _credential = New NetworkCredential(LoginIS.LoginWebView.Username, LoginIS.LoginWebView.Password)
+            _credential = LoginIS.LoginWebView.Credential
 
             Dim userManager As New kCura.WinEDDS.Service.UserManager(_credential, _CookieContainer)
             Dim relativityManager As New kCura.WinEDDS.Service.RelativityManager(_credential, _CookieContainer)
