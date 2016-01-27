@@ -292,6 +292,10 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\kCura\kCura\kCura.vbproj">
+      <Project>{5babf001-c424-4ae1-8716-3b48646e8da1}</Project>
+      <Name>kCura</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Relativity.Applications.Serialization\Relativity.Applications.Serialization.vbproj">
       <Project>{E621897E-45AF-4FBD-ADA4-EEE787E5233F}</Project>
       <Name>Relativity.Applications.Serialization</Name>
@@ -329,14 +333,6 @@
       <Name>kCura.CommandLine</Name>
       <Project>{4E99F9A8-34DF-462D-B078-EAB253BA2CAA}</Project>
       <Package>{F184B08F-C81C-45F6-A57F-5ABD9991F28F}</Package>
-    </ProjectReference>
-    <ProjectReference Include="..\..\kCura\kCura.Config\kCura.Config.vbproj">
-      <Project>{4705D839-6569-4489-9ED2-2A791AC27965}</Project>
-      <Name>kCura.Config</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\kCura\kCura.Utility\kCura.Utility.vbproj">
-      <Project>{E3450350-56E3-4FE9-A47A-4D24960BCBDB}</Project>
-      <Name>kCura.Utility</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\kCura\kCura.Windows.Forms\kCura.Windows.Forms.vbproj">
       <Project>{0DABBD47-5A46-429F-9D90-C95A58611E0A}</Project>
