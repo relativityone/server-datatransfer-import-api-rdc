@@ -300,6 +300,10 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\kCura\kCura\kCura.vbproj">
+      <Project>{5babf001-c424-4ae1-8716-3b48646e8da1}</Project>
+      <Name>kCura</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Relativity.Applications.Serialization\Relativity.Applications.Serialization.vbproj">
       <Project>{E621897E-45AF-4FBD-ADA4-EEE787E5233F}</Project>
       <Name>Relativity.Applications.Serialization</Name>
@@ -352,10 +356,6 @@
     <ProjectReference Include="..\..\kCura\kCura.OI.FileID\kCura.OI.FileID.vbproj">
       <Project>{CCEFD50F-0840-402D-AB16-C93F8E579B8B}</Project>
       <Name>kCura.OI.FileID</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\kCura\kCura.Utility\kCura.Utility.vbproj">
-      <Project>{E3450350-56E3-4FE9-A47A-4D24960BCBDB}</Project>
-      <Name>kCura.Utility</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\kCura\kCura.Windows.Process\kCura.Windows.Process.vbproj">
       <Project>{B092D1B2-909B-4EF0-9369-A81675C3FC18}</Project>
