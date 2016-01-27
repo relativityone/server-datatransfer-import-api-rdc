@@ -13,7 +13,7 @@
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
-	<Injections>EnableInjections</Injections>
+    <Injections>EnableInjections</Injections>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -129,13 +129,13 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\kCura\kCura.Utility\kCura.Utility.vbproj">
-      <Project>{E3450350-56E3-4FE9-A47A-4D24960BCBDB}</Project>
-      <Name>kCura.Utility</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\kCura\kCura.Windows.Process\kCura.Windows.Process.vbproj">
       <Project>{B092D1B2-909B-4EF0-9369-A81675C3FC18}</Project>
       <Name>kCura.Windows.Process</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\kCura\kCura\kCura.vbproj">
+      <Project>{5babf001-c424-4ae1-8716-3b48646e8da1}</Project>
+      <Name>kCura</Name>
     </ProjectReference>
     <ProjectReference Include="..\kCura.WinEDDS.ImportExtension\kCura.WinEDDS.ImportExtension.vbproj">
       <Project>{86550F4B-BEF4-4458-9536-7B5C6F68B0E2}</Project>
