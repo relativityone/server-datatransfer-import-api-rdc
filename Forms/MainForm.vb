@@ -404,7 +404,6 @@ Namespace kCura.EDDS.WinForm
                 Else
                     _application.LogOn()
                     _application.OpenCase()
-                    OpenLogin._permissionManager.SetPermissions(_application.SelectedCaseInfo.ArtifactID.ToString())
                     RelativityScripts.Visible = (ScriptsConsoleHelper.AddScript Or ScriptsConsoleHelper.AddAdminScript Or ScriptsConsoleHelper.ViewScript Or ScriptsConsoleHelper.ViewAdminScript)
                     CreateNewScript.Visible = ScriptsConsoleHelper.AddScript
                     CreateNewAdminScript.Visible = ScriptsConsoleHelper.AddAdminScript
@@ -414,7 +413,6 @@ Namespace kCura.EDDS.WinForm
                 End If
             Else
                 _application.OpenCase()
-                OpenLogin._permissionManager.SetPermissions(_application.SelectedCaseInfo.ArtifactID.ToString())
                 RelativityScripts.Visible = (ScriptsConsoleHelper.AddScript Or ScriptsConsoleHelper.AddAdminScript Or ScriptsConsoleHelper.ViewScript Or ScriptsConsoleHelper.ViewAdminScript)
                 CreateNewScript.Visible = ScriptsConsoleHelper.AddScript
                 CreateNewAdminScript.Visible = ScriptsConsoleHelper.AddAdminScript

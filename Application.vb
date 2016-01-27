@@ -445,6 +445,7 @@ Namespace kCura.EDDS.WinForm
                 If Not caseInfo Is Nothing Then
                     _selectedCaseInfo = caseInfo
                     Me.RefreshSelectedCaseInfo()
+                    OpenLogin._permissionManager.SetPermissions(_selectedCaseInfo.ArtifactID.ToString())
                     RaiseEvent OnEvent(New LoadCaseEvent(caseInfo))
                 End If
             Catch MrSoapy As SoapException
@@ -1412,7 +1413,6 @@ Namespace kCura.EDDS.WinForm
                     LogOn()
                     If (Not _caseSelected) Then
                         OpenCase()
-                        OpenLogin._permissionManager.SetPermissions(SelectedCaseInfo.ArtifactID.ToString())
                         RaiseEvent OnEvent(New AppEvent(AppEvent.AppEventType.PermissionsSet))
                     End If
                     EnhancedMenuProvider.Hook(callingForm)
@@ -1512,7 +1512,6 @@ Namespace kCura.EDDS.WinForm
                         kCura.WinEDDS.Service.Settings.AuthenticationToken = userManager.GenerateDistributedAuthenticationToken()
                         If _loginForm.OpenCaseSelector Then
                             OpenCase()
-                            OpenLogin._permissionManager.SetPermissions(SelectedCaseInfo.ArtifactID.ToString())
                             RaiseEvent OnEvent(New AppEvent(AppEvent.AppEventType.PermissionsSet))
                         End If
                         _timeZoneOffset = 0
