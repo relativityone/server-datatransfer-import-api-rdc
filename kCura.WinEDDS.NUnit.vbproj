@@ -19,7 +19,7 @@
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
-    <Injections>EnableInjections</Injections>
+	<Injections>EnableInjections</Injections>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <PlatformTarget>x86</PlatformTarget>
@@ -27,7 +27,7 @@
     <DebugType>full</DebugType>
     <DefineDebug>true</DefineDebug>
     <DefineTrace>true</DefineTrace>
-    <DefineConstants>$(Injections)</DefineConstants>
+	<DefineConstants>$(Injections)</DefineConstants>
     <OutputPath>bin\x86\</OutputPath>
     <DocumentationFile>bin\x86\kCura.WinEDDS.NUnit.xml</DocumentationFile>
     <NoWarn>
@@ -41,7 +41,7 @@
     <DebugType>pdbonly</DebugType>
     <DefineDebug>false</DefineDebug>
     <DefineTrace>true</DefineTrace>
-    <DefineConstants>$(Injections)</DefineConstants>
+	<DefineConstants>$(Injections)</DefineConstants>
     <Optimize>true</Optimize>
     <OutputPath>bin\x86\</OutputPath>
     <DocumentationFile>bin\x86\kCura.WinEDDS.NUnit.xml</DocumentationFile>
@@ -67,7 +67,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DefineDebug>true</DefineDebug>
     <DefineTrace>true</DefineTrace>
-    <DefineConstants>$(Injections)</DefineConstants>
+	<DefineConstants>$(Injections)</DefineConstants>
     <OutputPath>bin\x64\</OutputPath>
     <DocumentationFile>bin\x64\kCura.WinEDDS.NUnit.xml</DocumentationFile>
     <DebugType>full</DebugType>
@@ -86,7 +86,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
     <DefineTrace>true</DefineTrace>
-    <DefineConstants>$(Injections)</DefineConstants>
+	<DefineConstants>$(Injections)</DefineConstants>
     <OutputPath>bin\x64\</OutputPath>
     <DocumentationFile>bin\x64\kCura.WinEDDS.NUnit.xml</DocumentationFile>
     <Optimize>true</Optimize>
@@ -108,7 +108,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DefineDebug>true</DefineDebug>
     <DefineTrace>true</DefineTrace>
-    <DefineConstants>$(Injections)</DefineConstants>
+	<DefineConstants>$(Injections)</DefineConstants>
     <OutputPath>bin\</OutputPath>
     <DocumentationFile>bin\kCura.WinEDDS.NUnit.xml</DocumentationFile>
     <DebugType>full</DebugType>
@@ -125,7 +125,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
     <DefineTrace>true</DefineTrace>
-    <DefineConstants>$(Injections)</DefineConstants>
+	<DefineConstants>$(Injections)</DefineConstants>
     <OutputPath>bin\</OutputPath>
     <DocumentationFile>bin\kCura.WinEDDS.NUnit.xml</DocumentationFile>
     <Optimize>true</Optimize>
@@ -147,7 +147,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DefineDebug>true</DefineDebug>
     <DefineTrace>true</DefineTrace>
-    <DefineConstants>$(Injections)</DefineConstants>
+	<DefineConstants>$(Injections)</DefineConstants>
     <OutputPath>bin\x86\</OutputPath>
     <DocumentationFile>bin\x86\kCura.WinEDDS.NUnit.xml</DocumentationFile>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
@@ -166,7 +166,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DefineDebug>true</DefineDebug>
     <DefineTrace>true</DefineTrace>
-    <DefineConstants>$(Injections)</DefineConstants>
+	<DefineConstants>$(Injections)</DefineConstants>
     <OutputPath>bin\x64\</OutputPath>
     <DocumentationFile>bin\x64\kCura.WinEDDS.NUnit.xml</DocumentationFile>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
@@ -185,7 +185,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DefineDebug>true</DefineDebug>
     <DefineTrace>true</DefineTrace>
-    <DefineConstants>$(Injections)</DefineConstants>
+	<DefineConstants>$(Injections)</DefineConstants>
     <OutputPath>bin\</OutputPath>
     <DocumentationFile>bin\kCura.WinEDDS.NUnit.xml</DocumentationFile>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
@@ -279,6 +279,10 @@
       <Project>{4E99F9A8-34DF-462D-B078-EAB253BA2CAA}</Project>
       <Name>kCura.CommandLine</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\kCura\kCura.Config\kCura.Config.vbproj">
+      <Project>{4705D839-6569-4489-9ED2-2A791AC27965}</Project>
+      <Name>kCura.Config</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\kCura\kCura.Data.RowDataGateway\kCura.Data.RowDataGateway.vbproj">
       <Project>{DF390E60-B113-442C-9985-6D3E7ECB451D}</Project>
       <Name>kCura.Data.RowDataGateway</Name>
@@ -295,6 +299,10 @@
       <Project>{CCEFD50F-0840-402D-AB16-C93F8E579B8B}</Project>
       <Name>kCura.OI.FileID</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\kCura\kCura.Utility\kCura.Utility.vbproj">
+      <Project>{E3450350-56E3-4FE9-A47A-4D24960BCBDB}</Project>
+      <Name>kCura.Utility</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\kCura\kCura.Windows.Forms\kCura.Windows.Forms.vbproj">
       <Project>{0DABBD47-5A46-429F-9D90-C95A58611E0A}</Project>
       <Name>kCura.Windows.Forms</Name>
@@ -302,10 +310,6 @@
     <ProjectReference Include="..\..\kCura\kCura.Windows.Process\kCura.Windows.Process.vbproj">
       <Project>{B092D1B2-909B-4EF0-9369-A81675C3FC18}</Project>
       <Name>kCura.Windows.Process</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\kCura\kCura\kCura.vbproj">
-      <Project>{5babf001-c424-4ae1-8716-3b48646e8da1}</Project>
-      <Name>kCura</Name>
     </ProjectReference>
     <ProjectReference Include="..\kCura.EDDS.WinForm\kCura.EDDS.WinForm.vbproj">
       <Project>{CDEB4462-2D7B-4244-8640-11BC743CD002}</Project>
