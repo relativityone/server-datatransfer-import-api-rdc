@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectType>Local</ProjectType>
@@ -50,7 +50,7 @@
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
     <TargetFrameworkProfile />
-    <Injections>EnableInjections</Injections>
+	<Injections>EnableInjections</Injections>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <OutputPath>bin\</OutputPath>
@@ -98,7 +98,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DefineDebug>true</DefineDebug>
     <DefineTrace>true</DefineTrace>
-    <DefineConstants>$(Injections)</DefineConstants>
+	<DefineConstants>$(Injections)</DefineConstants>
     <OutputPath>bin\x64\</OutputPath>
     <BaseAddress>285212672</BaseAddress>
     <DocumentationFile>bin\x64\kCura.WinEDDS.ImportExtension.xml</DocumentationFile>
@@ -113,7 +113,7 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
     <DefineTrace>true</DefineTrace>
-    <DefineConstants>$(Injections)</DefineConstants>
+	<DefineConstants>$(Injections)</DefineConstants>
     <OutputPath>bin\x64\</OutputPath>
     <BaseAddress>285212672</BaseAddress>
     <DocumentationFile>bin\x64\kCura.WinEDDS.ImportExtension.xml</DocumentationFile>
@@ -131,7 +131,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DefineDebug>true</DefineDebug>
     <DefineTrace>true</DefineTrace>
-    <DefineConstants>$(Injections)</DefineConstants>
+	<DefineConstants>$(Injections)</DefineConstants>
     <OutputPath>bin\x86\</OutputPath>
     <BaseAddress>285212672</BaseAddress>
     <DocumentationFile>bin\x86\kCura.WinEDDS.ImportExtension.xml</DocumentationFile>
@@ -146,7 +146,7 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <DefineTrace>true</DefineTrace>
-    <DefineConstants>$(Injections)</DefineConstants>
+	<DefineConstants>$(Injections)</DefineConstants>
     <OutputPath>bin\x86\</OutputPath>
     <BaseAddress>285212672</BaseAddress>
     <DocumentationFile>bin\x86\kCura.WinEDDS.ImportExtension.xml</DocumentationFile>
@@ -164,7 +164,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DefineDebug>true</DefineDebug>
     <DefineTrace>true</DefineTrace>
-    <DefineConstants>$(Injections)</DefineConstants>
+	<DefineConstants>$(Injections)</DefineConstants>
     <OutputPath>bin\</OutputPath>
     <BaseAddress>285212672</BaseAddress>
     <DocumentationFile>bin\kCura.WinEDDS.ImportExtension.xml</DocumentationFile>
@@ -186,7 +186,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DefineDebug>true</DefineDebug>
     <DefineTrace>true</DefineTrace>
-    <DefineConstants>$(Injections)</DefineConstants>
+	<DefineConstants>$(Injections)</DefineConstants>
     <OutputPath>bin\x64\</OutputPath>
     <BaseAddress>285212672</BaseAddress>
     <DocumentationFile>bin\x64\kCura.WinEDDS.ImportExtension.xml</DocumentationFile>
@@ -208,7 +208,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DefineDebug>true</DefineDebug>
     <DefineTrace>true</DefineTrace>
-    <DefineConstants>$(Injections)</DefineConstants>
+	<DefineConstants>$(Injections)</DefineConstants>
     <OutputPath>bin\x86\</OutputPath>
     <BaseAddress>285212672</BaseAddress>
     <DocumentationFile>bin\x86\kCura.WinEDDS.ImportExtension.xml</DocumentationFile>
@@ -231,9 +231,9 @@
       <Project>{CCEFD50F-0840-402D-AB16-C93F8E579B8B}</Project>
       <Name>kCura.OI.FileID</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\kCura\kCura\kCura.vbproj">
-      <Project>{5babf001-c424-4ae1-8716-3b48646e8da1}</Project>
-      <Name>kCura</Name>
+    <ProjectReference Include="..\..\kCura\kCura.Utility\kCura.Utility.vbproj">
+      <Project>{E3450350-56E3-4FE9-A47A-4D24960BCBDB}</Project>
+      <Name>kCura.Utility</Name>
     </ProjectReference>
     <ProjectReference Include="..\Relativity\Relativity.vbproj">
       <Project>{044A6424-BC90-46CE-8805-0053A44AFCAB}</Project>
