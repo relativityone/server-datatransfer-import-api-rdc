@@ -176,8 +176,10 @@ Namespace kCura.WinEDDS
 			Dim oldDestinationFolderPath As String = String.Copy(_destinationFolderPath)
 			Try
 				_destinationFolderPath = _gateway.GetBcpSharePath(appID)
-				If Not System.IO.Directory.Exists(_destinationFolderPath) Then
-					System.IO.Directory.CreateDirectory(_destinationFolderPath)
+				If Me.UploaderType = Type.Direct Then
+					If Not System.IO.Directory.Exists(_destinationFolderPath) Then
+						System.IO.Directory.CreateDirectory(_destinationFolderPath)
+					End If
 				End If
 				Dim retVal As String = ""
 				If upload Then retVal = Me.UploadFile(localFilePath, appID, True)
@@ -194,7 +196,7 @@ Namespace kCura.WinEDDS
 				Else
 					Try
 						If _destinationFolderPath = oldDestinationFolderPath Then
-							_isBulkEnabled = False
+							'_isBulkEnabled = False
 							Me.UploaderType = _type
 							Return New FileUploadReturnArgs(FileUploadReturnArgs.FileUploadReturnType.Warning, "Invalid BCP Path Specified.")
 						End If
