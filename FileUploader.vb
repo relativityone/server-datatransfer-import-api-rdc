@@ -59,22 +59,30 @@ Namespace kCura.WinEDDS
 			_repositoryPathManager = New Relativity.RepositoryPathManager(_gateway.RepositoryVolumeMax)
 			_sortIntoVolumes = sortIntoVolumes
 			SetType(_destinationFolderPath)
+			RaiseEvent UploadModeChangeEvent(Me.UploaderType.ToString(), _isBulkEnabled)
 		End Sub
+
+		Public Function SetUploaderTypeForBcp() As FileUploader
+			_destinationFolderPath = _gateway.GetBcpSharePath(_caseArtifactID)
+			SetType(_destinationFolderPath)
+			Return Me
+		End Function
+
 
 		Private Sub SetType(ByVal destFolderPath As String)
 			Try
-				Dim dummyText As String = System.Guid.NewGuid().ToString().Replace("-", String.Empty).Substring(0, 5)
-				'If the destination folder path is empty, we only need to test file Read/Write permissions
-				If Not String.IsNullOrEmpty(destFolderPath) Then
-					If Not System.IO.Directory.Exists(destFolderPath) Then
-						System.IO.Directory.CreateDirectory(destFolderPath)
-					End If
-				End If
-				System.IO.File.Create(destFolderPath & dummyText).Close()
-				System.IO.File.Delete(destFolderPath & dummyText)
 				If Config.ForceWebUpload Then
 					Me.UploaderType = Type.Web
 				Else
+					Dim dummyText As String = System.Guid.NewGuid().ToString().Replace("-", String.Empty).Substring(0, 5)
+					'If the destination folder path is empty, we only need to test file Read/Write permissions
+					If Not String.IsNullOrEmpty(destFolderPath) Then
+						If Not System.IO.Directory.Exists(destFolderPath) Then
+							System.IO.Directory.CreateDirectory(destFolderPath)
+						End If
+					End If
+					System.IO.File.Create(destFolderPath & dummyText).Close()
+					System.IO.File.Delete(destFolderPath & dummyText)
 					Me.UploaderType = Type.Direct
 				End If
 			Catch ex As System.Exception
@@ -168,8 +176,10 @@ Namespace kCura.WinEDDS
 			Dim oldDestinationFolderPath As String = String.Copy(_destinationFolderPath)
 			Try
 				_destinationFolderPath = _gateway.GetBcpSharePath(appID)
-				If Not System.IO.Directory.Exists(_destinationFolderPath) Then
-					System.IO.Directory.CreateDirectory(_destinationFolderPath)
+				If Me.UploaderType = Type.Direct Then
+					If Not System.IO.Directory.Exists(_destinationFolderPath) Then
+						System.IO.Directory.CreateDirectory(_destinationFolderPath)
+					End If
 				End If
 				Dim retVal As String = ""
 				If upload Then retVal = Me.UploadFile(localFilePath, appID, True)
@@ -186,7 +196,7 @@ Namespace kCura.WinEDDS
 				Else
 					Try
 						If _destinationFolderPath = oldDestinationFolderPath Then
-							_isBulkEnabled = False
+							'_isBulkEnabled = False
 							Me.UploaderType = _type
 							Return New FileUploadReturnArgs(FileUploadReturnArgs.FileUploadReturnType.Warning, "Invalid BCP Path Specified.")
 						End If
