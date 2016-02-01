@@ -445,7 +445,7 @@ Namespace kCura.EDDS.WinForm
                 If Not caseInfo Is Nothing Then
                     _selectedCaseInfo = caseInfo
                     Me.RefreshSelectedCaseInfo()
-                    OpenLogin._permissionManager.SetPermissions(_selectedCaseInfo.ArtifactID.ToString())
+                    OpenLogin.PermissionManager.SetPermissions(_selectedCaseInfo.ArtifactID.ToString())
                     RaiseEvent OnEvent(New LoadCaseEvent(caseInfo))
                 End If
             Catch MrSoapy As SoapException
