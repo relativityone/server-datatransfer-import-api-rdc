@@ -16,7 +16,7 @@ Namespace kCura.EDDS.WinForm
 			Dim currentZone As System.TimeZone = System.TimeZone.CurrentTimeZone
 
 			ServicePointManager.ServerCertificateValidationCallback = Function(sender As Object, certificate As X509Certificate, chain As X509Chain, sslPolicyErrors As SslPolicyErrors) True
-
+			System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 Or SecurityProtocolType.Tls11 Or SecurityProtocolType.Tls Or SecurityProtocolType.Ssl3
 			_cookieContainer = New System.Net.CookieContainer
 		End Sub
 
