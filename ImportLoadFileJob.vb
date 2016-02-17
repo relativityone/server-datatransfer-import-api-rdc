@@ -540,7 +540,7 @@ Namespace kCura.Relativity.DataReaderClient
 		''' Gets or sets the field delimiter to use when writing
 		''' out the bulk load file. Line delimiters will be this value plus a line feed.
 		''' </summary>
-		''' <exception cref="ArgumentNullException">Thrown if <paramref name="bulkLoadFileFieldDelimiter"/>
+		''' <exception cref="ArgumentNullException">Thrown if value
 		''' is <c>null</c> or <c>String.Empty</c>.</exception>
 		<Obsolete("TODO: Use the Settings class version instead")>
 		Public Property BulkLoadFileFieldDelimiter() As String
