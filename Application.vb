@@ -1471,7 +1471,7 @@ Namespace kCura.EDDS.WinForm
 			Return _lastCredentialCheckResult
 		End Function
 
-		Private Sub ReLogin(ByVal message As String)
+		Public Sub ReLogin(ByVal message As String)
 			If MsgBox(message, MsgBoxStyle.YesNo, "Relativity Desktop Client") = MsgBoxResult.Yes Then
 				NewLogin()
 			Else
