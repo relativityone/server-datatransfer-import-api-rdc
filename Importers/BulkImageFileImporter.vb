@@ -17,6 +17,7 @@ Namespace kCura.WinEDDS
 		Private WithEvents _bcpuploader As kCura.WinEDDS.FileUploader
 		Protected _productionManager As kCura.WinEDDS.Service.ProductionManager
 		Protected _bulkImportManager As kCura.WinEDDS.Service.BulkImportManager
+		Protected _doumentManager As kCura.WinEDDS.Service.DocumentManager
 		Private _folderID As Int32
 		Private _productionArtifactID As Int32
 		Private _overwrite As String
@@ -233,6 +234,7 @@ Namespace kCura.WinEDDS
 			_fieldQuery = New kCura.WinEDDS.Service.FieldQuery(args.Credential, args.CookieContainer)
 			_productionManager = New kCura.WinEDDS.Service.ProductionManager(args.Credential, args.CookieContainer)
 			_bulkImportManager = New kCura.WinEDDS.Service.BulkImportManager(args.Credential, args.CookieContainer)
+			_doumentManager = New kCura.WinEDDS.Service.DocumentManager(args.Credential, args.CookieContainer)
 		End Sub
 
 #End Region
@@ -521,7 +523,6 @@ Namespace kCura.WinEDDS
 			_fileIdentifierLookup = New System.Collections.Hashtable
 			_totalProcessed = 0
 			_totalValidated = 0
-			'TODO: same check as the other place
 			DeleteFiles(bulkLoadFilePath, dataGridFilePath)
 			_bulkLoadFileWriter = New System.IO.StreamWriter(bulkLoadFilePath, False, System.Text.Encoding.Unicode)
 			_dataGridFileWriter = New System.IO.StreamWriter(dataGridFilePath, False, System.Text.Encoding.Unicode)
@@ -531,6 +532,15 @@ Namespace kCura.WinEDDS
 				_imageReader = Me.GetImageReader
 				_imageReader.Initialize()
 				_fileLineCount = _imageReader.CountRecords
+				If (_overwrite.ToLower() <> "strict") Then
+					Dim currentDocCount As Int32 = _documentManager.RetrieveDocumentCount(_caseInfo.ArtifactID)
+					Dim docLimit As Int32 = _documentManager.RetrieveDocumentLimit(_caseInfo.ArtifactID)
+					Dim countAfterJob As Long = currentDocCount + _fileLineCount
+					If (docLimit <> 0 And countAfterJob > docLimit) Then
+						RaiseEvent FatalErrorEvent("Running this job will put you over the doc limit!", New Exception("Running this job will put you over the doc limit!"), _runId)
+					End If
+				End If
+
 				RaiseStatusEvent(kCura.Windows.Process.EventType.Progress, "Begin Image Upload", 0, 0)
 				Dim al As New System.Collections.Generic.List(Of Api.ImageRecord)
 				Dim status As Int64 = 0
