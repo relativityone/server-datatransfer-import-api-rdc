@@ -17,7 +17,7 @@ Namespace kCura.WinEDDS
 		Private WithEvents _bcpuploader As kCura.WinEDDS.FileUploader
 		Protected _productionManager As kCura.WinEDDS.Service.ProductionManager
 		Protected _bulkImportManager As kCura.WinEDDS.Service.BulkImportManager
-		Protected _doumentManager As kCura.WinEDDS.Service.DocumentManager
+		Protected _documentManager As kCura.WinEDDS.Service.DocumentManager
 		Private _folderID As Int32
 		Private _productionArtifactID As Int32
 		Private _overwrite As String
@@ -234,7 +234,7 @@ Namespace kCura.WinEDDS
 			_fieldQuery = New kCura.WinEDDS.Service.FieldQuery(args.Credential, args.CookieContainer)
 			_productionManager = New kCura.WinEDDS.Service.ProductionManager(args.Credential, args.CookieContainer)
 			_bulkImportManager = New kCura.WinEDDS.Service.BulkImportManager(args.Credential, args.CookieContainer)
-			_doumentManager = New kCura.WinEDDS.Service.DocumentManager(args.Credential, args.CookieContainer)
+			_documentManager = New kCura.WinEDDS.Service.DocumentManager(args.Credential, args.CookieContainer)
 		End Sub
 
 #End Region
@@ -537,7 +537,7 @@ Namespace kCura.WinEDDS
 					Dim docLimit As Int32 = _documentManager.RetrieveDocumentLimit(_caseInfo.ArtifactID)
 					Dim countAfterJob As Long = currentDocCount + _fileLineCount
 					If (docLimit <> 0 And countAfterJob > docLimit) Then
-						RaiseEvent FatalErrorEvent("Running this job will put you over the doc limit!", New Exception("Running this job will put you over the doc limit!"), _runId)
+						RaiseEvent FatalErrorEvent("Running this job will put you over the doc limit!", New Exception("Running this job will put you over the doc limit!"))
 					End If
 				End If
 
