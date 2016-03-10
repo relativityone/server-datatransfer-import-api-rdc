@@ -439,7 +439,7 @@ Namespace kCura.WinEDDS
 					Dim countAfterJob As Long = currentDocCount + (_recordCount - (fileLineStart - 1))
 					If (docLimit <> 0 And countAfterJob > docLimit) Then
 						Dim errorMessage As String = String.Format("Running this job will put you {0} documents over the document limit of {1}. Please reduce the size of this job.", countAfterJob - docLimit, docLimit)
-						RaiseEvent FatalErrorEvent(errorMessage, New Exception(errorMessage), _runID)
+						Throw New Exception(errorMessage)
 						Return False
 					End If
 				End If
