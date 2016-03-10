@@ -428,19 +428,22 @@ Namespace kCura.WinEDDS
 				If Not InitializeMembers(path) Then
 					Return False
 				End If
+				_processedDocumentIdentifiers = New Collections.Specialized.NameValueCollection
+				_timekeeper.MarkEnd("ReadFile_InitializeMembers")
 
-				If (_overwrite.ToLower() <> "strict") Then
+				If (_overwrite.ToLower() = "none") Then
 					Dim currentDocCount As Int32 = _documentManager.RetrieveDocumentCount(_caseInfo.ArtifactID)
 					Dim docLimit As Int32 = _documentManager.RetrieveDocumentLimit(_caseInfo.ArtifactID)
-					Dim countAfterJob As Long = currentDocCount + _recordCount
+					Dim fileLineStart As Long = _startLineNumber
+					If _startLineNumber = 0 Then fileLineStart = 1
+					Dim countAfterJob As Long = currentDocCount + (_recordCount - (fileLineStart - 1))
 					If (docLimit <> 0 And countAfterJob > docLimit) Then
-						RaiseEvent FatalErrorEvent("Running this job will put you over the doc limit!", New Exception("Running this job will put you over the doc limit!"), _runID)
+						Dim errorMessage As String = String.Format("Running this job will put you {0} documents over the document limit of {1}. Please reduce the size of this job.", countAfterJob - docLimit, docLimit)
+						RaiseEvent FatalErrorEvent(errorMessage, New Exception(errorMessage), _runID)
 						Return False
 					End If
 				End If
 
-				_processedDocumentIdentifiers = New Collections.Specialized.NameValueCollection
-				_timekeeper.MarkEnd("ReadFile_InitializeMembers")
 				_timekeeper.MarkStart("ReadFile_ProcessDocuments")
 				_columnHeaders = _artifactReader.GetColumnNames(_settings)
 				If _firstLineContainsColumnNames Then _offset = -1
