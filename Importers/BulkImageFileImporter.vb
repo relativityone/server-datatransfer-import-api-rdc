@@ -18,6 +18,7 @@ Namespace kCura.WinEDDS
 		Protected _productionManager As kCura.WinEDDS.Service.ProductionManager
 		Protected _bulkImportManager As kCura.WinEDDS.Service.BulkImportManager
 		Protected _documentManager As kCura.WinEDDS.Service.DocumentManager
+		Protected _relativityManager As kCura.WinEDDS.Service.RelativityManager
 		Private _folderID As Int32
 		Private _productionArtifactID As Int32
 		Private _overwrite As String
@@ -235,6 +236,7 @@ Namespace kCura.WinEDDS
 			_productionManager = New kCura.WinEDDS.Service.ProductionManager(args.Credential, args.CookieContainer)
 			_bulkImportManager = New kCura.WinEDDS.Service.BulkImportManager(args.Credential, args.CookieContainer)
 			_documentManager = New kCura.WinEDDS.Service.DocumentManager(args.Credential, args.CookieContainer)
+			_relativityManager = New kCura.WinEDDS.Service.RelativityManager(args.Credential, args.CookieContainer)
 		End Sub
 
 #End Region
@@ -532,12 +534,19 @@ Namespace kCura.WinEDDS
 				_imageReader = Me.GetImageReader
 				_imageReader.Initialize()
 				_fileLineCount = _imageReader.CountRecords
-				If (_overwrite.ToLower() <> "strict") Then
-					Dim currentDocCount As Int32 = _documentManager.RetrieveDocumentCount(_caseInfo.ArtifactID)
-					Dim docLimit As Int32 = _documentManager.RetrieveDocumentLimit(_caseInfo.ArtifactID)
-					Dim countAfterJob As Long = currentDocCount + _fileLineCount
-					If (docLimit <> 0 And countAfterJob > docLimit) Then
-						RaiseEvent FatalErrorEvent("Running this job will put you over the doc limit!", New Exception("Running this job will put you over the doc limit!"))
+
+
+				If (_relativityManager.IsCoffeeInstance()) Then
+					If (_overwrite.ToLower() = "none") Then
+						Dim currentDocCount As Int32 = _documentManager.RetrieveDocumentCount(_caseInfo.ArtifactID)
+						Dim docLimit As Int32 = _documentManager.RetrieveDocumentLimit(_caseInfo.ArtifactID)
+						Dim fileLineStart As Long = _startLineNumber
+						If _startLineNumber = 0 Then fileLineStart = 1
+						Dim countAfterJob As Long = currentDocCount + (_fileLineCount - (fileLineStart - 1))
+						If (docLimit <> 0 And countAfterJob > docLimit) Then
+							Dim errorMessage As String = String.Format("Running this job will put you {0} documents over the document limit of {1}. Please reduce the size of this job.", countAfterJob - docLimit, docLimit)
+							Throw New Exception(errorMessage)
+						End If
 					End If
 				End If
 

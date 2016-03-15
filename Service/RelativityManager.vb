@@ -45,6 +45,23 @@ Namespace kCura.WinEDDS.Service
 			Return Nothing
 		End Function
 
+		Public Shadows Function IsCoffeeInstance() As Boolean
+			Dim tries As Int32 = 0
+			While tries < Config.MaxReloginTries
+				tries += 1
+				Try
+					Return MyBase.IsCoffeeInstance()
+				Catch ex As System.Exception
+					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
+						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
+					Else
+						Throw
+					End If
+				End Try
+			End While
+			Return Nothing
+		End Function
+
 		Public Shadows Function RetrieveRdcConfiguration() As System.Data.DataSet
 			Dim tries As Int32 = 0
 			While tries < Config.MaxReloginTries
