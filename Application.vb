@@ -418,6 +418,30 @@ Namespace kCura.EDDS.WinForm
 			Try
 				Dim csMgr As New kCura.WinEDDS.Service.CaseManager(Credential, _CookieContainer)
 				_documentRepositoryList = csMgr.GetAllDocumentFolderPaths()
+				Dim dataset As System.Data.DataSet = csMgr.RetrieveAll()
+
+#If EnableInjections Then
+				Dim dt As System.Data.DataTable = dataset.Tables(0)
+				If dt.Rows.Count > 0 Then
+					Dim numberOfMockWorkspacesToAdd As Int32? = Config.NumberOfFakeWorkspacesToAdd
+					If numberOfMockWorkspacesToAdd.HasValue AndAlso numberOfMockWorkspacesToAdd.Value > 0 Then
+						Dim rows As System.Data.DataRow() = dt.Select()
+						Dim maxID As Int32 = 0
+						For Each row As System.Data.DataRow In rows
+							maxID = Math.Max(CInt(row("ArtifactID")), maxID)
+						Next
+						Dim sampleRow As Object() = rows(0).ItemArray()
+						For i As Int32 = 1 To numberOfMockWorkspacesToAdd.Value
+							maxID += 1
+							sampleRow(0) = maxID
+							sampleRow(1) = "Workspace " & maxID.ToString().PadLeft(20, "0"c)
+							dt.Rows.Add(sampleRow)
+						Next
+					End If
+				End If
+#End If
+
+				Return dataset
 				Return csMgr.RetrieveAll()
 			Catch ex As System.Exception
 				If ex.Message.IndexOf("Need To Re Login") <> -1 Then
@@ -1575,7 +1599,7 @@ Namespace kCura.EDDS.WinForm
 			Return _lastCredentialCheckResult
 		End Function
 
-		Private Sub ReLogin(ByVal message As String)
+		Public Sub ReLogin(ByVal message As String)
 			If MsgBox(message, MsgBoxStyle.YesNo, "Relativity Desktop Client") = MsgBoxResult.Yes Then
 				NewLogin()
 			Else

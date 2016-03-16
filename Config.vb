@@ -80,5 +80,31 @@ Namespace kCura.EDDS.WinForm
 			End Get
 		End Property
 
+#If EnableInjections Then
+
+		Private Shared _config As IDictionary
+		''' <summary>
+		''' For testing purposes only: this value, if populated, will be used to pad out the workspace list in the CaseSelectForm so that functional testing can happen with a large number of workspaces w/o actually creating a large number of workspaces in an instance.
+		''' </summary>
+		Public Shared ReadOnly Property NumberOfFakeWorkspacesToAdd As Int32?
+			Get
+				Dim retval As Int32?
+				Try
+					If _config Is Nothing Then
+						_config = DirectCast(System.Configuration.ConfigurationManager.GetSection("kCura.WinEDDS"), IDictionary)
+					End If
+					retval = CInt(_config("NumberOfFakeWorkspacesToAdd"))
+				Catch
+					_config = New System.Collections.Generic.Dictionary(Of String, Int32)
+					_config.Add("NumberOfFakeWorkspacesToAdd", 0)
+					retval = 0
+				End Try
+				Return retval
+			End Get
+		End Property
+
+#End If
+
+
 	End Class
 End Namespace
