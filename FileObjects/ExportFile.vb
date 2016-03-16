@@ -22,7 +22,7 @@ Namespace kCura.WinEDDS
 		Protected _newlineDelimiter As Char
 		Protected _multiRecordDelimiter As Char
 		Protected _nestedValueDelimiter As Char
-        Protected _credential As Net.NetworkCredential
+		Protected _credential As Net.NetworkCredential
 		Protected _cookieContainer As System.Net.CookieContainer
 		Protected _exportFullText As Boolean
 		Protected _exportFullTextAsFile As Boolean
@@ -204,14 +204,14 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
-        <ReadFromExisting()> Public Property Credential() As Net.NetworkCredential
-            Get
-                Return _credential
-            End Get
-            Set(ByVal value As Net.NetworkCredential)
-                _credential = value
-            End Set
-        End Property
+		<ReadFromExisting()> Public Property Credential() As Net.NetworkCredential
+			Get
+				Return _credential
+			End Get
+			Set(ByVal value As Net.NetworkCredential)
+				_credential = value
+			End Set
+		End Property
 
 		<ReadFromExisting()> Public Property CookieContainer() As System.Net.CookieContainer
 			Get
