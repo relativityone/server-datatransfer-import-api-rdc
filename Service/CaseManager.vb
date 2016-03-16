@@ -47,7 +47,7 @@ Namespace kCura.WinEDDS.Service
 					End If
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
+						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries, False)
 					Else
 						Throw
 					End If
@@ -63,8 +63,12 @@ Namespace kCura.WinEDDS.Service
 				Try
 					Return ConvertToCaseInfo(MyBase.Read(caseArtifactID))
 				Catch ex As System.Exception
-					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
+					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 Then
+						If tries < Config.MaxReloginTries Then
+							Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries, False)
+						Else
+							Throw ex
+						End If
 					Else
 						Throw
 					End If
