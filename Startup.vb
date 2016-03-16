@@ -64,8 +64,7 @@ Namespace kCura.EDDS.WinForm
 
 				mainForm.Show()
 				mainForm.Refresh()
-                System.Windows.Forms.Application.Run()
-
+				System.Windows.Forms.Application.Run()
 			Else
 				RunInConsoleMode()
 			End If

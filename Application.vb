@@ -2,7 +2,6 @@ Imports System.Web.Services.Protocols
 Imports System.Security.Cryptography.X509Certificates
 Imports System.Net
 Imports System.Net.Security
-Imports kCura.EDDS.ScriptsConsole
 Imports kCura.EDDS.WinForm.Forms
 Imports kCura.Windows.Forms
 
@@ -43,17 +42,16 @@ Namespace kCura.EDDS.WinForm
 		Private _processPool As kCura.Windows.Process.ProcessPool
 		Private _selectedCaseInfo As Relativity.CaseInfo
 		Private _selectedCaseFolderID As Int32
-		Private _credential As Net.NetworkCredential
+		Private _credential As System.Net.NetworkCredential
 		Private _fields As kCura.WinEDDS.DocumentFieldCollection
 		Private _selectedCaseFolderPath As String
 		Private _timeZoneOffset As Int32
-		Private WithEvents _loginForm As OpenLogin
+		Private WithEvents _loginForm As LoginForm
 		Private WithEvents _certificatePromptForm As CertificatePromptForm
 		Private WithEvents _optionsForm As OptionsForm
 		Private Shared _cache As New Hashtable
 		Private _documentRepositoryList As String()
 		Private _totalFolders As New System.Collections.Specialized.HybridDictionary
-		Private _activatedOnce As Boolean = False
 #End Region
 
 #Region "Properties"
@@ -166,10 +164,10 @@ Namespace kCura.EDDS.WinForm
 
 
 
-		Friend ReadOnly Property Credential() As Net.NetworkCredential
+		Friend ReadOnly Property Credential() As System.Net.NetworkCredential
 			Get
 				If _credential Is Nothing Then
-					_credential = LoginIS.LoginWebView.Credential
+					NewLogin()
 				End If
 				Return _credential
 			End Get
@@ -469,7 +467,6 @@ Namespace kCura.EDDS.WinForm
 				If Not caseInfo Is Nothing Then
 					_selectedCaseInfo = caseInfo
 					Me.RefreshSelectedCaseInfo()
-					OpenLogin.PermissionManager.SetPermissions(_selectedCaseInfo.ArtifactID.ToString())
 					RaiseEvent OnEvent(New LoadCaseEvent(caseInfo))
 				End If
 			Catch MrSoapy As SoapException
@@ -1091,10 +1088,9 @@ Namespace kCura.EDDS.WinForm
 					_loginForm.Close()
 				End If
 			End If
-			_loginForm = New OpenLogin()
+			_loginForm = New LoginForm
 			_loginForm.OpenCaseSelector = openCaseSelector
 			_loginForm.Show()
-			_loginForm.Visible = False
 			CursorDefault()
 			Return _loginForm
 		End Function
@@ -1426,7 +1422,7 @@ Namespace kCura.EDDS.WinForm
 		''' <remarks></remarks>
 		Friend Function AttemptLogin(ByVal callingForm As Form) As Form
 			Dim defaultCredentialResult As Application.CredentialCheckResult = AttemptWindowsAuthentication()
-			Dim newLoginForm As Form = New OpenLogin()
+			Dim newLoginForm As Form = New LoginForm()
 
 			Select Case (defaultCredentialResult)
 				Case Application.CredentialCheckResult.AccessDisabled
@@ -1437,12 +1433,11 @@ Namespace kCura.EDDS.WinForm
 					LogOn()
 					If (Not _caseSelected) Then
 						OpenCase()
-						RaiseEvent OnEvent(New AppEvent(AppEvent.AppEventType.PermissionsSet))
 					End If
 					EnhancedMenuProvider.Hook(callingForm)
 			End Select
-			Return newLoginForm
 
+			Return newLoginForm
 		End Function
 
 
@@ -1500,142 +1495,71 @@ Namespace kCura.EDDS.WinForm
 			AttemptLogin(_certificatePromptForm)
 		End Sub
 
-		Public Sub LoginForm_DoneLoggingIn()
-			If (Not _activatedOnce) Then
-				_activatedOnce = True
-				_credential = LoginIS.LoginWebView.Credential
-
-				Dim userManager As New kCura.WinEDDS.Service.UserManager(_credential, _CookieContainer)
-				Dim relativityManager As New kCura.WinEDDS.Service.RelativityManager(_credential, _CookieContainer)
-				Try
-					CheckVersion(_credential)
-				Catch ex As System.Net.WebException
-					If Not ex.Message.IndexOf("The remote name could not be resolved") = -1 AndAlso ex.Source = "System" Then
-						Me.ChangeWebServiceURL("The current Relativity WebAPI URL could not be resolved. Try a new URL?")
-					ElseIf Not ex.Message.IndexOf("The request failed with HTTP status 401") = -1 AndAlso ex.Source = "System.Web.Services" Then
-						Me.ChangeWebServiceURL("The current Relativity WebAPI URL was resolved but is not configured correctly. Try a new URL?")
-					ElseIf Not ex.Message.IndexOf("The request failed with HTTP status 404") = -1 AndAlso ex.Source = "System.Web.Services" Then
-						Me.ChangeWebServiceURL("The current Relativity WebAPI URL was not found. Try a new URL?")
-					Else
-						Me.ChangeWebServiceURL("An error occurred while validating the Relativity WebAPI URL.  Check the URL and try again?")
-					End If
-					_lastCredentialCheckResult = CredentialCheckResult.Fail
-					Return
-				Catch ex As System.Exception
+		Private Sub _loginForm_OK_Click(ByVal cred As System.Net.NetworkCredential, ByVal openCaseSelector As Boolean) Handles _loginForm.OK_Click
+			_loginForm.Close()
+			Dim userManager As New kCura.WinEDDS.Service.UserManager(cred, _CookieContainer)
+			Dim relativityManager As New kCura.WinEDDS.Service.RelativityManager(cred, _CookieContainer)
+			Try
+				CheckVersion(cred)
+			Catch ex As System.Net.WebException
+				If Not ex.Message.IndexOf("The remote name could not be resolved") = -1 AndAlso ex.Source = "System" Then
+					Me.ChangeWebServiceURL("The current Relativity WebAPI URL could not be resolved. Try a new URL?")
+				ElseIf Not ex.Message.IndexOf("The request failed with HTTP status 401") = -1 AndAlso ex.Source = "System.Web.Services" Then
+					Me.ChangeWebServiceURL("The current Relativity WebAPI URL was resolved but is not configured correctly. Try a new URL?")
+				ElseIf Not ex.Message.IndexOf("The request failed with HTTP status 404") = -1 AndAlso ex.Source = "System.Web.Services" Then
+					Me.ChangeWebServiceURL("The current Relativity WebAPI URL was not found. Try a new URL?")
+				Else
 					Me.ChangeWebServiceURL("An error occurred while validating the Relativity WebAPI URL.  Check the URL and try again?")
+				End If
+				_lastCredentialCheckResult = CredentialCheckResult.Fail
+				Return
+			Catch ex As System.Exception
+				Me.ChangeWebServiceURL("An error occurred while validating the Relativity WebAPI URL.  Check the URL and try again?")
+				_lastCredentialCheckResult = CredentialCheckResult.Fail
+				Return
+			End Try
+
+			Try
+				If userManager.Login(cred.UserName, cred.Password) Then
+
+					Dim locale As New System.Globalization.CultureInfo(System.Globalization.CultureInfo.CurrentCulture.LCID, True)
+					locale.NumberFormat.CurrencySymbol = relativityManager.RetrieveCurrencySymbol
+					System.Threading.Thread.CurrentThread.CurrentCulture = locale
+
+					_credential = cred
+					kCura.WinEDDS.Service.Settings.AuthenticationToken = userManager.GenerateDistributedAuthenticationToken()
+					If openCaseSelector Then OpenCase()
+					_timeZoneOffset = 0															'New kCura.WinEDDS.Service.RelativityManager(cred, _cookieContainer).GetServerTimezoneOffset
+					_lastCredentialCheckResult = CredentialCheckResult.Success
+				Else
+					Me.ReLogin("Invalid login. Try again?")
 					_lastCredentialCheckResult = CredentialCheckResult.Fail
-					Return
-				End Try
-
-				Try
-					If userManager.Login(_credential.UserName, _credential.Password) Then
-						Dim locale As New System.Globalization.CultureInfo(System.Globalization.CultureInfo.CurrentCulture.LCID, True)
-						locale.NumberFormat.CurrencySymbol = relativityManager.RetrieveCurrencySymbol
-						System.Threading.Thread.CurrentThread.CurrentCulture = locale
-
-						kCura.WinEDDS.Service.Settings.AuthenticationToken = userManager.GenerateDistributedAuthenticationToken()
-						If _loginForm.OpenCaseSelector Then
-							OpenCase()
-							RaiseEvent OnEvent(New AppEvent(AppEvent.AppEventType.PermissionsSet))
-						End If
-						_timeZoneOffset = 0
-						_lastCredentialCheckResult = CredentialCheckResult.Success
+				End If
+			Catch ex As System.Exception
+				Dim x As New ErrorDialog
+				If IsAccessDisabledException(ex) Then
+					x.Text = "Account Disabled"
+					x.InitializeSoapExceptionWithCustomMessage(DirectCast(ex, System.Web.Services.Protocols.SoapException), _
+					 ACCESS_DISABLED_MESSAGE)
+					_lastCredentialCheckResult = CredentialCheckResult.AccessDisabled
+				Else
+					If Not ex.Message.IndexOf("Invalid License.") = -1 Then
+						x.Text = "Invalid License."
+					ElseIf (Not ex.Message.IndexOf("A library (dll)") = -1) OrElse (Not ex.Message.IndexOf("Relativity is temporarily unavailable.") = -1) Then
+						x.Text = "Invalid Assembly."
 					Else
-						Me.ReLogin("Invalid login. Try again?")
-						_lastCredentialCheckResult = CredentialCheckResult.Fail
+						x.Text = "Unrecognized login error."
 					End If
-				Catch ex As System.Exception
-					Dim x As New ErrorDialog
-					If IsAccessDisabledException(ex) Then
-						x.Text = "Account Disabled"
-						x.InitializeSoapExceptionWithCustomMessage(DirectCast(ex, System.Web.Services.Protocols.SoapException), _
-						 ACCESS_DISABLED_MESSAGE)
-						_lastCredentialCheckResult = CredentialCheckResult.AccessDisabled
-					Else
-						If Not ex.Message.IndexOf("Invalid License.") = -1 Then
-							x.Text = "Invalid License."
-						ElseIf (Not ex.Message.IndexOf("A library (dll)") = -1) OrElse (Not ex.Message.IndexOf("Relativity is temporarily unavailable.") = -1) Then
-							x.Text = "Invalid Assembly."
-						Else
-							x.Text = "Unrecognized login error."
-						End If
-						_lastCredentialCheckResult = CredentialCheckResult.Fail
-						x.Initialize(ex, x.Text)
-					End If
-					If x.ShowDialog = DialogResult.OK Then
-						NewLogin()
-					Else
-						ExitApplication()
-					End If
-				End Try
-			End If
+					_lastCredentialCheckResult = CredentialCheckResult.Fail
+					x.Initialize(ex, x.Text)
+				End If
+				If x.ShowDialog = DialogResult.OK Then
+					NewLogin()
+				Else
+					ExitApplication()
+				End If
+			End Try
 		End Sub
-
-		'Private Sub _loginForm_OK_Click(ByVal cred As System.Net.NetworkCredential, ByVal openCaseSelector As Boolean) Handles _loginForm.OK_Click
-		'    _loginForm.Close()
-		'    Dim userManager As New kCura.WinEDDS.Service.UserManager(cred, _CookieContainer)
-		'    Dim relativityManager As New kCura.WinEDDS.Service.RelativityManager(cred, _CookieContainer)
-		'    Try
-		'        CheckVersion(cred)
-		'    Catch ex As System.Net.WebException
-		'        If Not ex.Message.IndexOf("The remote name could not be resolved") = -1 AndAlso ex.Source = "System" Then
-		'            Me.ChangeWebServiceURL("The current Relativity WebAPI URL could not be resolved. Try a new URL?")
-		'        ElseIf Not ex.Message.IndexOf("The request failed with HTTP status 401") = -1 AndAlso ex.Source = "System.Web.Services" Then
-		'            Me.ChangeWebServiceURL("The current Relativity WebAPI URL was resolved but is not configured correctly. Try a new URL?")
-		'        ElseIf Not ex.Message.IndexOf("The request failed with HTTP status 404") = -1 AndAlso ex.Source = "System.Web.Services" Then
-		'            Me.ChangeWebServiceURL("The current Relativity WebAPI URL was not found. Try a new URL?")
-		'        Else
-		'            Me.ChangeWebServiceURL("An error occurred while validating the Relativity WebAPI URL.  Check the URL and try again?")
-		'        End If
-		'        _lastCredentialCheckResult = CredentialCheckResult.Fail
-		'        Return
-		'    Catch ex As System.Exception
-		'        Me.ChangeWebServiceURL("An error occurred while validating the Relativity WebAPI URL.  Check the URL and try again?")
-		'        _lastCredentialCheckResult = CredentialCheckResult.Fail
-		'        Return
-		'    End Try
-
-		'    Try
-		'        If userManager.Login(cred.UserName, cred.Password) Then
-
-		'            Dim locale As New System.Globalization.CultureInfo(System.Globalization.CultureInfo.CurrentCulture.LCID, True)
-		'            locale.NumberFormat.CurrencySymbol = relativityManager.RetrieveCurrencySymbol
-		'            System.Threading.Thread.CurrentThread.CurrentCulture = locale
-
-		'            _credential = cred
-		'            kCura.WinEDDS.Service.Settings.AuthenticationToken = userManager.GenerateDistributedAuthenticationToken()
-		'            If openCaseSelector Then OpenCase()
-		'            _timeZoneOffset = 0                                                         'New kCura.WinEDDS.Service.RelativityManager(cred, _cookieContainer).GetServerTimezoneOffset
-		'            _lastCredentialCheckResult = CredentialCheckResult.Success
-		'        Else
-		'            Me.ReLogin("Invalid login. Try again?")
-		'            _lastCredentialCheckResult = CredentialCheckResult.Fail
-		'        End If
-		'    Catch ex As System.Exception
-		'        Dim x As New ErrorDialog
-		'        If IsAccessDisabledException(ex) Then
-		'            x.Text = "Account Disabled"
-		'            x.InitializeSoapExceptionWithCustomMessage(DirectCast(ex, System.Web.Services.Protocols.SoapException), _
-		'             ACCESS_DISABLED_MESSAGE)
-		'            _lastCredentialCheckResult = CredentialCheckResult.AccessDisabled
-		'        Else
-		'            If Not ex.Message.IndexOf("Invalid License.") = -1 Then
-		'                x.Text = "Invalid License."
-		'            ElseIf (Not ex.Message.IndexOf("A library (dll)") = -1) OrElse (Not ex.Message.IndexOf("Relativity is temporarily unavailable.") = -1) Then
-		'                x.Text = "Invalid Assembly."
-		'            Else
-		'                x.Text = "Unrecognized login error."
-		'            End If
-		'            _lastCredentialCheckResult = CredentialCheckResult.Fail
-		'            x.Initialize(ex, x.Text)
-		'        End If
-		'        If x.ShowDialog = DialogResult.OK Then
-		'            NewLogin()
-		'        Else
-		'            ExitApplication()
-		'        End If
-		'    End Try
-		'End Sub
 
 		Public Function IsAccessDisabledException(ByVal ex As System.Exception) As Boolean
 			If TypeOf ex Is System.Web.Services.Protocols.SoapException Then
@@ -1660,7 +1584,7 @@ Namespace kCura.EDDS.WinForm
 				If userManager.Login(cred.UserName, cred.Password) Then
 					_credential = cred
 					kCura.WinEDDS.Service.Settings.AuthenticationToken = userManager.GenerateDistributedAuthenticationToken()
-					_timeZoneOffset = 0																					 'New kCura.WinEDDS.Service.RelativityManager(cred, _cookieContainer).GetServerTimezoneOffset
+					_timeZoneOffset = 0											 'New kCura.WinEDDS.Service.RelativityManager(cred, _cookieContainer).GetServerTimezoneOffset
 					_lastCredentialCheckResult = CredentialCheckResult.Success
 				Else
 					_lastCredentialCheckResult = CredentialCheckResult.Fail

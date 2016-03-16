@@ -1,6 +1,4 @@
 
-Imports System.Configuration
-
 Namespace kCura.EDDS.WinForm.Forms
     Public Class SetWebServiceURL
         Inherits System.Windows.Forms.Form
