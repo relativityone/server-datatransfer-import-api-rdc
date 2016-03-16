@@ -6,7 +6,11 @@ Namespace kCura.EDDS.WinForm
 	Public Class ThreadExceptionHandler
 		Public Sub Application_ThreadException(ByVal sender As System.Object, ByVal e As Threading.ThreadExceptionEventArgs)
 			Try
-				ShowErrorDialog(e.Exception)
+				If TypeOf e.Exception Is System.Web.Services.Protocols.SoapException AndAlso e.Exception.ToString.IndexOf("NeedToReLoginException") <> -1 Then
+					kCura.EDDS.WinForm.Application.Instance.ReLogin("Invalid login. Try again?")
+				Else
+					ShowErrorDialog(e.Exception)
+				End If
 			Catch ex As System.Exception
 				' Fatal error, terminate program
 				Try
