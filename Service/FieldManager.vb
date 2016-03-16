@@ -33,7 +33,7 @@ Namespace kCura.WinEDDS.Service
 			If retval.FieldCategoryID = Relativity.FieldCategory.FullText Then
 				retval.Value = System.Text.ASCIIEncoding.ASCII.GetString(DirectCast(dto.Value, Byte()))
 			ElseIf retval.FieldTypeID = Relativity.FieldTypeHelper.FieldType.Code OrElse retval.FieldTypeID = Relativity.FieldTypeHelper.FieldType.MultiCode Then
-				retval.Value = kCura.Utility.Array.IntArrayToCSV(DirectCast(dto.Value, Int32())).Replace(",", ";")
+				retval.Value = kCura.Utility.Array.ToCsv(DirectCast(dto.Value, Int32())).Replace(",", ";")
 			Else
 				retval.Value = dto.Value.ToString
 			End If
