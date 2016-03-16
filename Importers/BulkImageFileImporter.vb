@@ -1,7 +1,7 @@
 Imports System.IO
 Imports System.Collections.Generic
 Imports kCura.EDDS.WebAPI.BulkImportManagerBase
-Imports kCura.Utility.Extensions.CollectionExtension
+Imports kCura.Utility.Extensions.Enumerable
 Imports kCura.WinEDDS.Service
 Imports kCura.Utility
 Imports Relativity
@@ -744,7 +744,7 @@ Namespace kCura.WinEDDS
 						'no extracted text encodings, write "-1"
 						_bulkLoadFileWriter.Write(String.Format("{0}{1}", -1, lastDivider))
 					ElseIf textFileList.Count > 0 Then
-						_bulkLoadFileWriter.Write("{0}{1}", kCura.Utility.List.ToDelimitedString(Me.GetextractedTextEncodings(textFileList), "|"), lastDivider)
+						_bulkLoadFileWriter.Write("{0}{1}", Me.GetextractedTextEncodings(textFileList).ToDelimitedString("|"), lastDivider)
 					End If
 
 
