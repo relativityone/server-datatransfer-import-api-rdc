@@ -135,17 +135,17 @@ Namespace kCura.EDDS.WinForm
 
 		Friend WithEvents _application As kCura.EDDS.WinForm.Application
 
-        Private _credential As Net.NetworkCredential
+		Private _credential As System.Net.NetworkCredential
 		Private _openCaseSelector As Boolean = True
 
-        Public Property Credential() As Net.NetworkCredential
-            Get
-                Return _credential
-            End Get
-            Set(ByVal value As Net.NetworkCredential)
-                _credential = value
-            End Set
-        End Property
+		Public Property Credential() As System.Net.NetworkCredential
+			Get
+				Return _credential
+			End Get
+			Set(ByVal value As System.Net.NetworkCredential)
+				_credential = value
+			End Set
+		End Property
 
 		Public Property OpenCaseSelector() As Boolean
 			Get
