@@ -438,8 +438,8 @@ Namespace kCura.WinEDDS
 						Dim currentDocCount As Int32 = _documentManager.RetrieveDocumentCount(_caseInfo.ArtifactID)
 						Dim docLimit As Int32 = _documentManager.RetrieveDocumentLimit(_caseInfo.ArtifactID)
 						Dim fileLineStart As Long = _startLineNumber
-						If _startLineNumber = 0 Then fileLineStart = 1
-						Dim countAfterJob As Long = currentDocCount + (_recordCount - (fileLineStart - 1))
+                        If _startLineNumber <= 0 Then fileLineStart = 1
+                        Dim countAfterJob As Long = currentDocCount + (_recordCount - (fileLineStart - 1))
 						If (docLimit <> 0 And countAfterJob > docLimit) Then
 							Dim errorMessage As String = String.Format("Running this job will put you {0} documents over the document limit of {1}. Please reduce the size of this job.", countAfterJob - docLimit, docLimit)
 							Throw New Exception(errorMessage)
