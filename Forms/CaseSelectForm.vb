@@ -1,3 +1,6 @@
+Imports System.Linq
+Imports System.Collections.Generic
+
 Namespace kCura.EDDS.WinForm
 	Public Class CaseSelectForm
 		Inherits kCura.EDDS.WinForm.SelectFormBase
@@ -13,6 +16,8 @@ Namespace kCura.EDDS.WinForm
 
 #End Region
 		Private _cases As System.Data.DataSet
+		Private _debounce As New System.Windows.Forms.Timer With {.Interval = 200}
+
 		Private Sub ItemSelectForm_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
 			_cases = Application.GetCases
 			Me.Text = "Relativity Desktop Client | Select Workspace"
@@ -40,26 +45,48 @@ Namespace kCura.EDDS.WinForm
 			Me.Close()
 		End Sub
 
-		Protected Overrides Sub LoadItems(ByVal searchText As String)
+		Private _searchText As String = String.Empty
+
+		Private Function ConvertToListItem(caseTableRow As System.Data.DataRow) As System.Windows.Forms.ListViewItem
+			Dim listItem As New System.Windows.Forms.ListViewItem With
+			{
+				.Text = CType(caseTableRow.Item("Name"), String),
+				.Tag = New Relativity.CaseInfo(caseTableRow)
+			}
+			Return listItem
+		End Function
+
+		Private Sub DoLoadItems(myObject As Object, ByVal myEventArgs As EventArgs)
 			Me.Cursor = Cursors.WaitCursor
-			ItemListView.Items.Clear()
-			If _cases Is Nothing Then
-				Me.Cursor = Cursors.Default
-				Me.Close()
-				Exit Sub
-			End If
-			Dim dt As DataTable = _cases.Tables(0)
-			Dim row As DataRow
-			For Each row In dt.Rows
-				If String.IsNullOrEmpty(searchText.Trim) OrElse CType(row.Item("Name"), String).ToLower.IndexOf(searchText.Trim.ToLower) <> -1 Then
-					Dim listItem As New System.Windows.Forms.ListViewItem
-					listItem.Text = CType(row.Item("Name"), String)
-					listItem.Tag = New Relativity.CaseInfo(row)
-					ItemListView.Items.Add(listItem)
+			Try
+				_debounce.Stop()
+				Dim searchText As String = _searchText
+				ItemListView.Items.Clear()
+				Dim rows As IEnumerable(Of DataRow) = _cases.Tables(0).Select()
+				If Not String.IsNullOrWhiteSpace(searchText) Then
+					rows = rows.Where(Function(r) CType(r.Item("Name"), String).ToLower.IndexOf(searchText.Trim.ToLower) <> -1)
 				End If
-			Next
-			NameColumnHeader.Width = ItemListView.Width - 6
-			Me.Cursor = Cursors.Default
+				Dim items As IEnumerable(Of System.Windows.Forms.ListViewItem) = rows.Select(AddressOf ConvertToListItem)
+				Dim itemArray As System.Windows.Forms.ListViewItem() = items.ToArray()
+				ItemListView.Items.AddRange(itemArray)
+				NameColumnHeader.Width = ItemListView.Width - 6
+			Catch
+				Throw
+			Finally
+				Me.Cursor = Cursors.Default
+			End Try
+		End Sub
+
+		Protected Overrides Sub LoadItems(ByVal searchText As String)
+			_debounce.Stop()
+			If _cases Is Nothing Then
+				Me.Close()
+				Return
+			End If
+			RemoveHandler _debounce.Tick, AddressOf DoLoadItems
+			_searchText = searchText
+			AddHandler _debounce.Tick, AddressOf DoLoadItems
+			_debounce.Start()
 		End Sub
 
 	End Class
