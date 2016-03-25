@@ -44,7 +44,7 @@ Namespace kCura.EDDS.WebAPI.RelativityManagerBase
         
         Private IsImportEmailNotificationEnabledOperationCompleted As System.Threading.SendOrPostCallback
         
-        Private IsCoffeeInstanceOperationCompleted As System.Threading.SendOrPostCallback
+        Private IsCloudInstanceOperationCompleted As System.Threading.SendOrPostCallback
         
         Private RetrieveRdcConfigurationOperationCompleted As System.Threading.SendOrPostCallback
         
@@ -113,7 +113,7 @@ Namespace kCura.EDDS.WebAPI.RelativityManagerBase
         Public Event IsImportEmailNotificationEnabledCompleted As IsImportEmailNotificationEnabledCompletedEventHandler
         
         '''<remarks/>
-        Public Event IsCoffeeInstanceCompleted As IsCoffeeInstanceCompletedEventHandler
+        Public Event IsCloudInstanceCompleted As IsCloudInstanceCompletedEventHandler
         
         '''<remarks/>
         Public Event RetrieveRdcConfigurationCompleted As RetrieveRdcConfigurationCompletedEventHandler
@@ -359,40 +359,40 @@ Namespace kCura.EDDS.WebAPI.RelativityManagerBase
         End Sub
         
         '''<remarks/>
-        <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/RelativityManager/IsCoffeeInstance", RequestNamespace:="http://www.kCura.com/EDDS/RelativityManager", ResponseNamespace:="http://www.kCura.com/EDDS/RelativityManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
-        Public Function IsCoffeeInstance() As Boolean
-            Dim results() As Object = Me.Invoke("IsCoffeeInstance", New Object(-1) {})
+        <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/RelativityManager/IsCloudInstance", RequestNamespace:="http://www.kCura.com/EDDS/RelativityManager", ResponseNamespace:="http://www.kCura.com/EDDS/RelativityManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
+        Public Function IsCloudInstance() As Boolean
+            Dim results() As Object = Me.Invoke("IsCloudInstance", New Object(-1) {})
             Return CType(results(0),Boolean)
         End Function
         
         '''<remarks/>
-        Public Function BeginIsCoffeeInstance(ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
-            Return Me.BeginInvoke("IsCoffeeInstance", New Object(-1) {}, callback, asyncState)
+        Public Function BeginIsCloudInstance(ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("IsCloudInstance", New Object(-1) {}, callback, asyncState)
         End Function
         
         '''<remarks/>
-        Public Function EndIsCoffeeInstance(ByVal asyncResult As System.IAsyncResult) As Boolean
+        Public Function EndIsCloudInstance(ByVal asyncResult As System.IAsyncResult) As Boolean
             Dim results() As Object = Me.EndInvoke(asyncResult)
             Return CType(results(0),Boolean)
         End Function
         
         '''<remarks/>
-        Public Overloads Sub IsCoffeeInstanceAsync()
-            Me.IsCoffeeInstanceAsync(Nothing)
+        Public Overloads Sub IsCloudInstanceAsync()
+            Me.IsCloudInstanceAsync(Nothing)
         End Sub
         
         '''<remarks/>
-        Public Overloads Sub IsCoffeeInstanceAsync(ByVal userState As Object)
-            If (Me.IsCoffeeInstanceOperationCompleted Is Nothing) Then
-                Me.IsCoffeeInstanceOperationCompleted = AddressOf Me.OnIsCoffeeInstanceOperationCompleted
+        Public Overloads Sub IsCloudInstanceAsync(ByVal userState As Object)
+            If (Me.IsCloudInstanceOperationCompleted Is Nothing) Then
+                Me.IsCloudInstanceOperationCompleted = AddressOf Me.OnIsCloudInstanceOperationCompleted
             End If
-            Me.InvokeAsync("IsCoffeeInstance", New Object(-1) {}, Me.IsCoffeeInstanceOperationCompleted, userState)
+            Me.InvokeAsync("IsCloudInstance", New Object(-1) {}, Me.IsCloudInstanceOperationCompleted, userState)
         End Sub
         
-        Private Sub OnIsCoffeeInstanceOperationCompleted(ByVal arg As Object)
-            If (Not (Me.IsCoffeeInstanceCompletedEvent) Is Nothing) Then
+        Private Sub OnIsCloudInstanceOperationCompleted(ByVal arg As Object)
+            If (Not (Me.IsCloudInstanceCompletedEvent) Is Nothing) Then
                 Dim invokeArgs As System.Web.Services.Protocols.InvokeCompletedEventArgs = CType(arg,System.Web.Services.Protocols.InvokeCompletedEventArgs)
-                RaiseEvent IsCoffeeInstanceCompleted(Me, New IsCoffeeInstanceCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState))
+                RaiseEvent IsCloudInstanceCompleted(Me, New IsCloudInstanceCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState))
             End If
         End Sub
         
@@ -769,13 +769,13 @@ Namespace kCura.EDDS.WebAPI.RelativityManagerBase
     
     '''<remarks/>
     <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.81.0")>  _
-    Public Delegate Sub IsCoffeeInstanceCompletedEventHandler(ByVal sender As Object, ByVal e As IsCoffeeInstanceCompletedEventArgs)
+    Public Delegate Sub IsCloudInstanceCompletedEventHandler(ByVal sender As Object, ByVal e As IsCloudInstanceCompletedEventArgs)
     
     '''<remarks/>
     <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.81.0"),  _
      System.Diagnostics.DebuggerStepThroughAttribute(),  _
      System.ComponentModel.DesignerCategoryAttribute("code")>  _
-    Partial Public Class IsCoffeeInstanceCompletedEventArgs
+    Partial Public Class IsCloudInstanceCompletedEventArgs
         Inherits System.ComponentModel.AsyncCompletedEventArgs
         
         Private results() As Object
