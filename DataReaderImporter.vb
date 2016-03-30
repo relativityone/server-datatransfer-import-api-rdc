@@ -29,7 +29,7 @@ Namespace kCura.WinEDDS.ImportExtension
 		''' was used to create the bulk load file. Line delimiters are a field
 		''' delimiter followed by a new line.</param>
 		Public Sub New(ByVal loadFile As kCura.WinEDDS.ImportExtension.DataReaderLoadFile, ByVal controller As kCura.Windows.Process.Controller, ByVal bulkLoadFileFieldDelimiter As String)
-			Me.New(loadFile, controller, bulkLoadFileFieldDelimiter, Nothing, InitializeArtifactReader:=True)
+			Me.New(loadFile, controller, bulkLoadFileFieldDelimiter, Nothing, initializeArtifactReader:=True)
 		End Sub
 
 		''' <summary>
@@ -55,7 +55,7 @@ Namespace kCura.WinEDDS.ImportExtension
 			Me.OIFileTypeColumnName = loadFile.OIFileTypeColumnName
 			Me.FileSizeMapped = loadFile.FileSizeMapped
 			Me.FileSizeColumn = loadFile.FileSizeColumn
-
+			Me.FileNameColumn = loadFile.FileNameColumn
 			If temporaryLocalDirectory IsNot Nothing Then
 				Me.TemporaryLocalDirectory = temporaryLocalDirectory
 			End If
@@ -138,7 +138,7 @@ Namespace kCura.WinEDDS.ImportExtension
 				End Try
 				columnIndex = columnIndex + 1
 			Next
-			Dim settings As New FileSettings() With {.IDColumnName = OIFileIdColumnName, .OIFileIdMapped = OIFileIdMapped, .TypeColumnName = OIFileTypeColumnName, .FileSizeColumn = FileSizeColumn, .FileSizeMapped = FileSizeMapped}
+			Dim settings As New FileSettings() With {.IDColumnName = OIFileIdColumnName, .OIFileIdMapped = OIFileIdMapped, .TypeColumnName = OIFileTypeColumnName, .FileSizeColumn = FileSizeColumn, .FileSizeMapped = FileSizeMapped, .FileNameColumn = FileNameColumn}
 			Dim initalizationArgs As New DataReaderReaderInitializationArgs(collection, _settings.ArtifactTypeID) With {.TemporaryLocalDirectory = TemporaryLocalDirectory}
 			Dim retval As New DataReaderReader(initalizationArgs, _settings, _sourceReader, settings)
 			Return retval

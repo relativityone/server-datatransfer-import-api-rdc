@@ -27,12 +27,12 @@ Namespace kCura.WinEDDS.ImportExtension
 		Private _lastSourceIdentifier As String
 
 		Public Sub New(ByVal args As DataReaderReaderInitializationArgs, ByVal fieldMap As kCura.WinEDDS.LoadFile, ByVal reader As System.Data.IDataReader)
-			Me.New(args, fieldMap, reader, New FileSettings() With {.OIFileIdMapped = False, .FileSizeMapped = False})
+			Me.New(args, fieldMap, reader, New FileSettings() With {.OIFileIdMapped = False, .FileSizeMapped = False, .FileNameColumn = Nothing})
 		End Sub
 
 		Public Sub New(ByVal args As DataReaderReaderInitializationArgs, ByVal fieldMap As kCura.WinEDDS.LoadFile, ByVal reader As System.Data.IDataReader, fileSettings As FileSettings)
 			_reader = reader
-			_FileSettings = FileSettings
+			_FileSettings = fileSettings
 			If _reader Is Nothing Then Throw New NullReferenceException("The reader being passed into this IDataReaderReader is null")
 			If _reader.IsClosed = True OrElse _reader.FieldCount = 0 Then Throw New ArgumentException("The reader being passed into this IDataReaderReader is empty")
 			_loadFileSettings = fieldMap
@@ -184,20 +184,28 @@ Namespace kCura.WinEDDS.ImportExtension
 					End If
 				Next
 			End If
-			'TODO: Factory when I have time
-			If (Not String.IsNullOrEmpty(oiFileType)) Then
-				If (fileSize.HasValue) Then
-					retval = New NativeFilePopulatedArtifactFieldCollection() With {.OixFileID = New FileIDData(oiFileId, oiFileType), .FileSize = fileSize.GetValueOrDefault()}
-				Else
-					retval = New NativeFileValidatedArtifactFieldCollection() With {.OixFileID = New FileIDData(oiFileId, oiFileType)}
-				End If
-			Else
-				If (fileSize.HasValue) Then
-					retval = New FileSizePopulatedArtifactFieldCollection() With {.FileSize = fileSize.GetValueOrDefault()}
-				Else
-					retval = New Api.ArtifactFieldCollection
-				End If
+			Dim fileName As String = Nothing
+			If (Not String.IsNullOrEmpty(_FileSettings.FileNameColumn)) Then
+				For i As Integer = 0 To _reader.FieldCount - 1
+					If (_reader.GetName(i) = _FileSettings.FileNameColumn) Then
+						fileName = _reader.GetValue(i).ToString()
+						Exit For
+					End If
+				Next
 			End If
+			Dim idDataSet As FileIDData = Nothing
+			Dim fileSizeSet As Long? = Nothing
+			Dim fileNameSet As String = Nothing
+			If (Not String.IsNullOrEmpty(oiFileType)) Then
+				idDataSet = New FileIDData(oiFileId, oiFileType)
+			End If
+			If (fileSize.HasValue) Then
+				fileSizeSet = fileSize
+			End If
+			If (Not String.IsNullOrEmpty(fileName)) Then
+				fileNameSet = fileName
+			End If
+			retval = InjectableArtifactFieldCollection.CreateFieldCollection(fileNameSet, idDataSet, fileSizeSet)
 			Dim folderStructureContainedInColumnWithoutIndex As String = nameWithoutIndex(_loadFileSettings.FolderStructureContainedInColumn)
 
 			' step 1 - save off the identifier for the current record
@@ -485,6 +493,7 @@ Namespace kCura.WinEDDS.ImportExtension
 		Public Property TypeColumnName() As String
 		Public Property FileSizeMapped() As Boolean
 		Public Property FileSizeColumn() As String
+		Public Property FileNameColumn As String
 	End Class
 End Namespace
 
