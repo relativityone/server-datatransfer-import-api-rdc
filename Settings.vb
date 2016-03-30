@@ -139,6 +139,13 @@ Namespace kCura.Relativity.DataReaderClient
 		''' <remarks> To use this property, <see cref="FileSizeMapped">FileSizeMapped</see> must be set to True.</remarks>
 		Public Property FileSizeColumn As String
 
+		''' <summary>
+		''' Indicates the column that contains the name of the file on the <see cref="SourceIDataReader.SourceData">SourceData</see> property.
+		''' </summary>
+		''' <returns></returns>
+		Public Property FileNameColumn As String
+
+
 #End Region
 
 	End Class
