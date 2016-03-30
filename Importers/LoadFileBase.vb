@@ -58,6 +58,7 @@ Namespace kCura.WinEDDS
 		Public Property OIFileTypeColumnName As String
 		Public Property FileSizeMapped() As Boolean
 		Public Property FileSizeColumn() As String
+		Public Property FileNameColumn As String
 #End Region
 
 #Region "Accessors"
@@ -135,7 +136,7 @@ Namespace kCura.WinEDDS
 			OIFileTypeColumnName = args.OIFileTypeColumnName
 			FileSizeMapped = args.FileSizeMapped
 			FileSizeColumn = args.FileSizeColumn
-
+			FileNameColumn = args.FileNameColumn
 			_timeZoneOffset = timezoneoffset
 			_autoDetect = autoDetect
 

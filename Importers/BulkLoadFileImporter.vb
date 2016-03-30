@@ -271,7 +271,7 @@ Namespace kCura.WinEDDS
 		''' <exception cref="ArgumentNullException">Thrown if <paramref name="bulkLoadFileFieldDelimiter"/>
 		''' is <c>null</c> or <c>String.Empty</c>.</exception>
 		Public Sub New(ByVal args As LoadFile, ByVal processController As kCura.Windows.Process.Controller, ByVal timeZoneOffset As Int32, ByVal initializeUploaders As Boolean, ByVal processID As Guid, ByVal doRetryLogic As Boolean, ByVal bulkLoadFileFieldDelimiter As String)
-			Me.New(args, processController, timeZoneOffset, True, initializeUploaders, processID, doRetryLogic, bulkLoadFileFieldDelimiter, InitializeArtifactReader:=True)
+			Me.New(args, processController, timeZoneOffset, True, initializeUploaders, processID, doRetryLogic, bulkLoadFileFieldDelimiter, initializeArtifactReader:=True)
 		End Sub
 
 		''' <summary>
@@ -288,7 +288,7 @@ Namespace kCura.WinEDDS
 		''' <exception cref="ArgumentNullException">Thrown if <paramref name="bulkLoadFileFieldDelimiter"/>
 		''' is <c>null</c> or <c>String.Empty</c>.</exception>
 		Public Sub New(ByVal args As LoadFile, ByVal processController As kCura.Windows.Process.Controller, ByVal timeZoneOffset As Int32, ByVal autoDetect As Boolean, ByVal initializeUploaders As Boolean, ByVal processID As Guid, ByVal doRetryLogic As Boolean, ByVal bulkLoadFileFieldDelimiter As String)
-			Me.New(args, processController, timeZoneOffset, autoDetect, initializeUploaders, processID, doRetryLogic, bulkLoadFileFieldDelimiter, InitializeArtifactReader:=True)
+			Me.New(args, processController, timeZoneOffset, autoDetect, initializeUploaders, processID, doRetryLogic, bulkLoadFileFieldDelimiter, initializeArtifactReader:=True)
 		End Sub
 
 		''' <summary>
@@ -580,6 +580,8 @@ Namespace kCura.WinEDDS
 			Dim fullFilePath As String = ""
 			Dim oixFileIdData As OI.FileID.FileIDData = Nothing
 			Dim destinationVolume As String = Nothing
+			Dim injectableContainer As Api.IInjectableFieldCollection = TryCast(record, kCura.WinEDDS.Api.IInjectableFieldCollection)
+
 			_timekeeper.MarkStart("ManageDocument_Filesystem")
 			If uploadFile AndAlso _artifactTypeID = Relativity.ArtifactType.Document Then
 				filename = record.FieldList(Relativity.FieldTypeHelper.FieldType.File)(0).Value.ToString
@@ -616,7 +618,10 @@ Namespace kCura.WinEDDS
 						If Me.DisableNativeValidation Then
 							oixFileIdData = Nothing
 						Else
-							Dim idDataExtractor As kCura.WinEDDS.Api.IHasOixFileType = TryCast(record, kCura.WinEDDS.Api.IHasOixFileType)
+							Dim idDataExtractor As kCura.WinEDDS.Api.IHasOixFileType = Nothing
+							If (Not injectableContainer Is Nothing) Then
+								idDataExtractor = injectableContainer.FileIdData
+							End If
 							If idDataExtractor Is Nothing Then
 								oixFileIdData = kCura.OI.FileID.Manager.Instance.GetFileIDDataByFilePath(filename)
 							Else
@@ -639,7 +644,12 @@ Namespace kCura.WinEDDS
 							fileGuid = System.Guid.NewGuid.ToString
 						End If
 						fullFilePath = filename
-						filename = filename.Substring(filename.LastIndexOf("\") + 1)
+						If (injectableContainer IsNot Nothing And injectableContainer.HasFileName()) Then
+							filename = injectableContainer.FileName.GetFileName()
+						Else
+							filename = filename.Substring(filename.LastIndexOf("\") + 1)
+						End If
+
 						WriteStatusLine(Windows.Process.EventType.Status, String.Format("End upload file. ({0}ms)", DateTime.op_Subtraction(DateTime.Now, now).Milliseconds))
 					Catch ex As System.IO.FileNotFoundException
 						If Me.DisableNativeLocationValidation Then
@@ -682,7 +692,7 @@ Namespace kCura.WinEDDS
 						End If
 						Throw New ParentObjectReferenceRequiredException(Me.CurrentLineNumber, _destinationFolderColumnIndex)
 					Else
-						Dim parentObjectTable As System.Data.DataTable = _objectManager.RetrieveArtifactIdOfMappedParentObject(_caseArtifactID, _
+						Dim parentObjectTable As System.Data.DataTable = _objectManager.RetrieveArtifactIdOfMappedParentObject(_caseArtifactID,
 						textIdentifier, _artifactTypeID).Tables(0)
 						If parentObjectTable.Rows.Count > 1 Then
 							Throw New DuplicateObjectReferenceException(Me.CurrentLineNumber, _destinationFolderColumnIndex, "Parent Info")
@@ -719,7 +729,10 @@ Namespace kCura.WinEDDS
 			End If
 
 			Dim doc As MetaDocument
-			Dim fileSizeExtractor As kCura.WinEDDS.Api.IHasFileSize = TryCast(record, kCura.WinEDDS.Api.IHasFileSize)
+			Dim fileSizeExtractor As kCura.WinEDDS.Api.IHasFileSize = Nothing
+			If (Not injectableContainer Is Nothing) Then
+				fileSizeExtractor = injectableContainer.FileSize
+			End If
 			If fileSizeExtractor Is Nothing Then
 				doc = New MetaDocument(fileGuid, identityValue, fileExists AndAlso uploadFile AndAlso (fileGuid <> String.Empty OrElse Not _copyFileToRepository), filename, fullFilePath, uploadFile, CurrentLineNumber, parentFolderID, record, oixFileIdData, lineStatus, destinationVolume, folderPath, dataGridID)
 			Else
@@ -1098,20 +1111,20 @@ Namespace kCura.WinEDDS
 			_outputFileWriter.MarkRollbackPosition()
 
 			_outputFileWriter.OutputNativeFileWriter.Write("0" & _bulkLoadFileFieldDelimiter) 'kCura_Import_ID
-			_outputFileWriter.OutputNativeFileWriter.Write(mdoc.LineStatus.ToString & _bulkLoadFileFieldDelimiter)	'kCura_Import_Status
+			_outputFileWriter.OutputNativeFileWriter.Write(mdoc.LineStatus.ToString & _bulkLoadFileFieldDelimiter)   'kCura_Import_Status
 			_outputFileWriter.OutputNativeFileWriter.Write("0" & _bulkLoadFileFieldDelimiter) 'kCura_Import_IsNew
 			_outputFileWriter.OutputNativeFileWriter.Write("0" & _bulkLoadFileFieldDelimiter) 'ArtifactID
 			_outputFileWriter.OutputNativeFileWriter.Write(mdoc.LineNumber & _bulkLoadFileFieldDelimiter) 'kCura_Import_OriginalLineNumber
 
 			If mdoc.UploadFile And mdoc.IndexFileInDB Then
-				_outputFileWriter.OutputNativeFileWriter.Write(mdoc.FileGuid & _bulkLoadFileFieldDelimiter)	'kCura_Import_FileGuid
-				_outputFileWriter.OutputNativeFileWriter.Write(mdoc.Filename & _bulkLoadFileFieldDelimiter)	'kCura_Import_FileName
+				_outputFileWriter.OutputNativeFileWriter.Write(mdoc.FileGuid & _bulkLoadFileFieldDelimiter)  'kCura_Import_FileGuid
+				_outputFileWriter.OutputNativeFileWriter.Write(mdoc.Filename & _bulkLoadFileFieldDelimiter)  'kCura_Import_FileName
 				If _settings.CopyFilesToDocumentRepository Then
-					_outputFileWriter.OutputNativeFileWriter.Write(_defaultDestinationFolderPath & mdoc.DestinationVolume & "\" & mdoc.FileGuid & _bulkLoadFileFieldDelimiter)	'kCura_Import_Location
-					_outputFileWriter.OutputNativeFileWriter.Write(mdoc.FullFilePath & _bulkLoadFileFieldDelimiter)	'kCura_Import_OriginalFileLocation
+					_outputFileWriter.OutputNativeFileWriter.Write(_defaultDestinationFolderPath & mdoc.DestinationVolume & "\" & mdoc.FileGuid & _bulkLoadFileFieldDelimiter)  'kCura_Import_Location
+					_outputFileWriter.OutputNativeFileWriter.Write(mdoc.FullFilePath & _bulkLoadFileFieldDelimiter) 'kCura_Import_OriginalFileLocation
 				Else
-					_outputFileWriter.OutputNativeFileWriter.Write(mdoc.FullFilePath & _bulkLoadFileFieldDelimiter)	'kCura_Import_Location
-					_outputFileWriter.OutputNativeFileWriter.Write(mdoc.FullFilePath & _bulkLoadFileFieldDelimiter)	'kCura_Import_OriginalFileLocation
+					_outputFileWriter.OutputNativeFileWriter.Write(mdoc.FullFilePath & _bulkLoadFileFieldDelimiter) 'kCura_Import_Location
+					_outputFileWriter.OutputNativeFileWriter.Write(mdoc.FullFilePath & _bulkLoadFileFieldDelimiter) 'kCura_Import_OriginalFileLocation
 				End If
 				Dim fileSizeExtractor As kCura.WinEDDS.Api.IHasFileSize = TryCast(mdoc, kCura.WinEDDS.Api.IHasFileSize)
 				If (fileSizeExtractor Is Nothing) Then
@@ -1121,10 +1134,10 @@ Namespace kCura.WinEDDS
 				End If
 
 			Else
-				_outputFileWriter.OutputNativeFileWriter.Write(_bulkLoadFileFieldDelimiter)	'kCura_Import_FileGuid
-				_outputFileWriter.OutputNativeFileWriter.Write(_bulkLoadFileFieldDelimiter)	'kCura_Import_FileName
-				_outputFileWriter.OutputNativeFileWriter.Write(_bulkLoadFileFieldDelimiter)	'kCura_Import_Location
-				_outputFileWriter.OutputNativeFileWriter.Write(_bulkLoadFileFieldDelimiter)	'kCura_Import_OriginalFileLocation
+				_outputFileWriter.OutputNativeFileWriter.Write(_bulkLoadFileFieldDelimiter)   'kCura_Import_FileGuid
+				_outputFileWriter.OutputNativeFileWriter.Write(_bulkLoadFileFieldDelimiter)   'kCura_Import_FileName
+				_outputFileWriter.OutputNativeFileWriter.Write(_bulkLoadFileFieldDelimiter)   'kCura_Import_Location
+				_outputFileWriter.OutputNativeFileWriter.Write(_bulkLoadFileFieldDelimiter)   'kCura_Import_OriginalFileLocation
 				_outputFileWriter.OutputNativeFileWriter.Write("0" & _bulkLoadFileFieldDelimiter) 'kCura_Import_FileSize
 			End If
 			_outputFileWriter.OutputNativeFileWriter.Write(mdoc.ParentFolderID & _bulkLoadFileFieldDelimiter) 'kCura_Import_ParentFolderID
@@ -1201,7 +1214,7 @@ Namespace kCura.WinEDDS
 					_outputFileWriter.OutputNativeFileWriter.Write(mdoc.FolderPath & _bulkLoadFileFieldDelimiter)
 				End If
 			End If
-			_outputFileWriter.OutputNativeFileWriter.Write(_bulkLoadFileFieldDelimiter)	'kCura_DataGrid_Exception
+			_outputFileWriter.OutputNativeFileWriter.Write(_bulkLoadFileFieldDelimiter)   'kCura_DataGrid_Exception
 			_outputFileWriter.OutputNativeFileWriter.Write(vbCrLf)
 			If foundDataGridField Then
 				_outputFileWriter.OutputDataGridFileWriter.Write(vbCrLf)
