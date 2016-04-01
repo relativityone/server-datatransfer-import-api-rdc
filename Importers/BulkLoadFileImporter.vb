@@ -571,7 +571,7 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Private Function ManageDocument(ByVal record As Api.ArtifactFieldCollection, ByVal lineStatus As Int64) As String
-			Dim filename As String = Nothing
+			Dim filename As String = String.Empty
 			Dim fileGuid As String = String.Empty
 			Dim uploadFile As Boolean = record.FieldList(Relativity.FieldTypeHelper.FieldType.File).Length > 0 AndAlso Not record.FieldList(Relativity.FieldTypeHelper.FieldType.File)(0).Value Is Nothing
 			Dim fileExists As Boolean
@@ -619,10 +619,10 @@ Namespace kCura.WinEDDS
 							oixFileIdData = Nothing
 						Else
 							Dim idDataExtractor As kCura.WinEDDS.Api.IHasOixFileType = Nothing
-							If (Not injectableContainer Is Nothing) Then
+							If (injectableContainer IsNot Nothing) Then
 								idDataExtractor = injectableContainer.FileIdData
 							End If
-							If idDataExtractor Is Nothing Then
+							If (idDataExtractor Is Nothing) Then
 								oixFileIdData = kCura.OI.FileID.Manager.Instance.GetFileIDDataByFilePath(filename)
 							Else
 								oixFileIdData = idDataExtractor.GetFileIDData()
@@ -644,10 +644,10 @@ Namespace kCura.WinEDDS
 							fileGuid = System.Guid.NewGuid.ToString
 						End If
 						fullFilePath = filename
-						If (injectableContainer IsNot Nothing And injectableContainer.HasFileName()) Then
+						If (injectableContainer Is Nothing) Then
+							filename = Path.GetFileName(filename)
+						ElseIf (injectableContainer.HasFileName()) Then
 							filename = injectableContainer.FileName.GetFileName()
-						Else
-							filename = filename.Substring(filename.LastIndexOf("\") + 1)
 						End If
 
 						WriteStatusLine(Windows.Process.EventType.Status, String.Format("End upload file. ({0}ms)", DateTime.op_Subtraction(DateTime.Now, now).Milliseconds))
