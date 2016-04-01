@@ -644,10 +644,10 @@ Namespace kCura.WinEDDS
 							fileGuid = System.Guid.NewGuid.ToString
 						End If
 						fullFilePath = filename
-						If (injectableContainer IsNot Nothing And injectableContainer.HasFileName()) Then
-							filename = injectableContainer.FileName.GetFileName()
-						Else
-							filename = filename.Substring(filename.LastIndexOf("\") + 1)
+                        If (Not injectableContainer Is Nothing AndAlso injectableContainer.HasFileName()) Then
+                            filename = injectableContainer.FileName.GetFileName()
+                        Else
+                            filename = filename.Substring(filename.LastIndexOf("\") + 1)
 						End If
 
 						WriteStatusLine(Windows.Process.EventType.Status, String.Format("End upload file. ({0}ms)", DateTime.op_Subtraction(DateTime.Now, now).Milliseconds))
