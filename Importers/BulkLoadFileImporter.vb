@@ -577,10 +577,12 @@ Namespace kCura.WinEDDS
 			Dim fileExists As Boolean
 			Dim identityValue As String = String.Empty
 			Dim parentFolderID As Int32
-			Dim fullFilePath As String = ""
+			Dim fullFilePath As String = String.Empty
 			Dim oixFileIdData As OI.FileID.FileIDData = Nothing
 			Dim destinationVolume As String = Nothing
 			Dim injectableContainer As Api.IInjectableFieldCollection = TryCast(record, kCura.WinEDDS.Api.IInjectableFieldCollection)
+
+			Dim injectableContainerIsNothing As Boolean = injectableContainer Is Nothing
 
 			_timekeeper.MarkStart("ManageDocument_Filesystem")
 			If uploadFile AndAlso _artifactTypeID = Relativity.ArtifactType.Document Then
@@ -619,7 +621,7 @@ Namespace kCura.WinEDDS
 							oixFileIdData = Nothing
 						Else
 							Dim idDataExtractor As kCura.WinEDDS.Api.IHasOixFileType = Nothing
-							If (injectableContainer IsNot Nothing) Then
+							If (Not injectableContainerIsNothing) Then
 								idDataExtractor = injectableContainer.FileIdData
 							End If
 							If (idDataExtractor Is Nothing) Then
@@ -644,9 +646,9 @@ Namespace kCura.WinEDDS
 							fileGuid = System.Guid.NewGuid.ToString
 						End If
 						fullFilePath = filename
-                        If (injectableContainer Is Nothing) Then
+                        If (injectableContainerIsNothing) Then
                             filename = Path.GetFileName(filename)
-                        ElseIf (injectableContainer IsNot Nothing AndAlso injectableContainer.HasFileName()) Then
+                        ElseIf (injectableContainer.HasFileName()) Then
                             filename = injectableContainer.FileName.GetFileName()
 						End If
 
@@ -730,7 +732,7 @@ Namespace kCura.WinEDDS
 
 			Dim doc As MetaDocument
 			Dim fileSizeExtractor As kCura.WinEDDS.Api.IHasFileSize = Nothing
-			If (Not injectableContainer Is Nothing) Then
+			If (Not injectableContainerIsNothing) Then
 				fileSizeExtractor = injectableContainer.FileSize
 			End If
 			If fileSizeExtractor Is Nothing Then
