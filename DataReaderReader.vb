@@ -32,7 +32,12 @@ Namespace kCura.WinEDDS.ImportExtension
 
 		Public Sub New(ByVal args As DataReaderReaderInitializationArgs, ByVal fieldMap As kCura.WinEDDS.LoadFile, ByVal reader As System.Data.IDataReader, fileSettings As FileSettings)
 			_reader = reader
+
+			If (fileSettings Is Nothing) Then
+				fileSettings = New FileSettings() With {.FileNameColumn = Nothing, .FileSizeColumn = Nothing, .FileSizeMapped = False, .IDColumnName = Nothing, .OIFileIdMapped = False, .TypeColumnName = Nothing}
+			End If
 			_FileSettings = fileSettings
+
 			If _reader Is Nothing Then Throw New NullReferenceException("The reader being passed into this IDataReaderReader is null")
 			If _reader.IsClosed = True OrElse _reader.FieldCount = 0 Then Throw New ArgumentException("The reader being passed into this IDataReaderReader is empty")
 			_loadFileSettings = fieldMap
@@ -184,15 +189,20 @@ Namespace kCura.WinEDDS.ImportExtension
 					End If
 				Next
 			End If
+
 			Dim fileName As String = Nothing
 			If (Not String.IsNullOrEmpty(_FileSettings.FileNameColumn)) Then
 				For i As Integer = 0 To _reader.FieldCount - 1
 					If (_reader.GetName(i) = _FileSettings.FileNameColumn) Then
-						fileName = _reader.GetValue(i).ToString()
+						Dim fileNameValue As Object = _reader.GetValue(i)
+						If (fileNameValue IsNot Nothing) Then
+							fileName = fileNameValue.ToString()
+						End If
 						Exit For
 					End If
 				Next
 			End If
+
 			Dim idDataSet As FileIDData = Nothing
 			Dim fileSizeSet As Long? = Nothing
 			Dim fileNameSet As String = Nothing
