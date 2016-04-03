@@ -26,6 +26,11 @@ Namespace kCura.WinEDDS.ImportExtension
 		Private _identifierFieldIndex As Integer
 		Private _lastSourceIdentifier As String
 
+		Private _fileSettingsFileNameColumnIndex As Integer
+		Private _fileSettingsFileSizeColumnIndex As Integer
+		Private _fileSettingsTypeColumnNameIndex As Integer
+		Private _fileSettingsIDColumnNameIndex As Integer
+
 		Public Sub New(ByVal args As DataReaderReaderInitializationArgs, ByVal fieldMap As kCura.WinEDDS.LoadFile, ByVal reader As System.Data.IDataReader)
 			Me.New(args, fieldMap, reader, New FileSettings() With {.OIFileIdMapped = False, .FileSizeMapped = False, .FileNameColumn = Nothing})
 		End Sub
@@ -58,6 +63,11 @@ Namespace kCura.WinEDDS.ImportExtension
 			Else
 				_identifierFieldIndex = -1
 			End If
+
+			_fileSettingsFileNameColumnIndex = -1
+			_fileSettingsFileSizeColumnIndex = -1
+			_fileSettingsTypeColumnNameIndex = -1
+			_fileSettingsIDColumnNameIndex = -1
 		End Sub
 
 		Public Property TemporaryLocalDirectory As String
@@ -163,44 +173,79 @@ Namespace kCura.WinEDDS.ImportExtension
 
 		Private Function ReadArtifactData() As kCura.WinEDDS.Api.ArtifactFieldCollection
 			Dim retval As Api.ArtifactFieldCollection
+
 			Dim oiFileType As String = ""
 			Dim oiFileId As Int32
 			If _FileSettings.OIFileIdMapped Then
-				For i As Integer = 0 To _reader.FieldCount - 1
-					If (_reader.GetName(i) = _FileSettings.TypeColumnName) Then
-						oiFileType = _reader.GetValue(i).ToString()
-					ElseIf (_reader.GetName(i) = _FileSettings.IDColumnName) Then
+				If (_fileSettingsTypeColumnNameIndex = -1 Or _fileSettingsIDColumnNameIndex = -1) Then
+					For i As Integer = 0 To _reader.FieldCount - 1
+						If (_reader.GetName(i) = _FileSettings.TypeColumnName) Then
+							oiFileType = _reader.GetValue(i).ToString()
+							_fileSettingsTypeColumnNameIndex = i
+						ElseIf (_reader.GetName(i) = _FileSettings.IDColumnName) Then
+							Dim value As Int32 = -1
+							Dim readerValue As String = _reader.GetValue(i).ToString()
+							Int32.TryParse(readerValue, value)
+							oiFileId = value
+							_fileSettingsIDColumnNameIndex = i
+						End If
+					Next
+				Else
+					If (_reader.GetName(_fileSettingsTypeColumnNameIndex) = _FileSettings.TypeColumnName) Then
+						oiFileType = _reader.GetValue(_fileSettingsTypeColumnNameIndex).ToString()
+					ElseIf (_reader.GetName(_fileSettingsIDColumnNameIndex) = _FileSettings.IDColumnName) Then
 						Dim value As Int32 = -1
-						Dim readerValue As String = _reader.GetValue(i).ToString()
+						Dim readerValue As String = _reader.GetValue(_fileSettingsIDColumnNameIndex).ToString()
 						Int32.TryParse(readerValue, value)
 						oiFileId = value
 					End If
-				Next
+				End If
 			End If
+
 			Dim fileSize As Nullable(Of Long) = Nothing
 			If _FileSettings.FileSizeMapped Then
-				For i As Integer = 0 To _reader.FieldCount - 1
-					If (_reader.GetName(i) = _FileSettings.FileSizeColumn) Then
+				If _fileSettingsFileSizeColumnIndex = -1 Then
+					For i As Integer = 0 To _reader.FieldCount - 1
+						If (_reader.GetName(i) = _FileSettings.FileSizeColumn) Then
+							Dim value As Long = -1
+							Dim readerValue As String = _reader.GetValue(i).ToString()
+							Long.TryParse(readerValue, value)
+							fileSize = value
+							_fileSettingsFileSizeColumnIndex = i
+							Exit For
+						End If
+					Next
+				Else
+					If (_reader.GetName(_fileSettingsFileSizeColumnIndex) = _FileSettings.FileSizeColumn) Then
 						Dim value As Long = -1
-						Dim readerValue As String = _reader.GetValue(i).ToString()
+						Dim readerValue As String = _reader.GetValue(_fileSettingsFileSizeColumnIndex).ToString()
 						Long.TryParse(readerValue, value)
 						fileSize = value
-						Exit For
 					End If
-				Next
+				End If
 			End If
 
 			Dim fileName As String = Nothing
 			If (Not String.IsNullOrEmpty(_FileSettings.FileNameColumn)) Then
-				For i As Integer = 0 To _reader.FieldCount - 1
-					If (_reader.GetName(i) = _FileSettings.FileNameColumn) Then
-						Dim fileNameValue As Object = _reader.GetValue(i)
+				If _fileSettingsFileNameColumnIndex = -1 Then
+					For i As Integer = 0 To _reader.FieldCount - 1
+						If (_reader.GetName(i) = _FileSettings.FileNameColumn) Then
+							Dim fileNameValue As Object = _reader.GetValue(i)
+							If (fileNameValue IsNot Nothing) Then
+								fileName = fileNameValue.ToString()
+							End If
+							_fileSettingsFileNameColumnIndex = i
+							Exit For
+						End If
+					Next
+				Else
+					If (_reader.GetName(_fileSettingsFileNameColumnIndex) = _FileSettings.FileNameColumn) Then
+						Dim fileNameValue As Object = _reader.GetValue(_fileSettingsFileNameColumnIndex)
 						If (fileNameValue IsNot Nothing) Then
 							fileName = fileNameValue.ToString()
 						End If
-						Exit For
 					End If
-				Next
+				End If
 			End If
 
 			Dim idDataSet As FileIDData = Nothing
