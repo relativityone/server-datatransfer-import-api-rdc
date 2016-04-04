@@ -67,6 +67,7 @@ Namespace kCura.WinEDDS
 		Public Property OIFileIdMapped As Boolean
 		Public Property OIFileIdColumnName As String
 		Public Property OIFileTypeColumnName As String
+		Public Property FileNameColumn As String
 #End Region
 
 #Region "Accessors"
@@ -439,7 +440,7 @@ Namespace kCura.WinEDDS
 				Next
 			End If
 		End Sub
-		
+
 		Public Sub PushImageBatch(ByVal bulkLoadFilePath As String, ByVal dataGridFilePath As String)
 			If _batchCount = 0 Then Return
 			PublishUploadModeEvent()
@@ -449,8 +450,8 @@ Namespace kCura.WinEDDS
 
 			Dim validateBcp As FileUploadReturnArgs = _bcpuploader.UploadBcpFile(_caseInfo.ArtifactID, bulkLoadFilePath)
 			If validateBcp Is Nothing Then Exit Sub
-			
-			Dim validateDataGridBcp As FileUploadReturnArgs =  _bcpuploader.UploadBcpFile(_caseInfo.ArtifactID, dataGridFilePath)
+
+			Dim validateDataGridBcp As FileUploadReturnArgs = _bcpuploader.UploadBcpFile(_caseInfo.ArtifactID, dataGridFilePath)
 			If validateDataGridBcp Is Nothing Then Exit Sub
 
 			_statistics.MetadataTime += System.Math.Max((System.DateTime.Now.Ticks - start), 1)

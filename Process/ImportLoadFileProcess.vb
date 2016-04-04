@@ -36,6 +36,7 @@ Namespace kCura.WinEDDS
 		Public Property OIFileTypeColumnName As String
 		Public Property FileSizeMapped As Boolean
 		Public Property FileSizeColumn As String
+		Public Property FileNameColumn As String
 		Public WriteOnly Property DisableUserSecurityCheck As Boolean
 			Set(ByVal value As Boolean)
 				_disableUserSecutityCheck = value
@@ -105,6 +106,7 @@ Namespace kCura.WinEDDS
 			_loadFileImporter.OIFileTypeColumnName = OIFileTypeColumnName
 			_loadFileImporter.FileSizeColumn = FileSizeColumn
 			_loadFileImporter.FileSizeMapped = FileSizeMapped
+			_loadFileImporter.FileNameColumn = FileNameColumn
 			_loadFileImporter.LoadImportedFullTextFromServer = Me.LoadImportedFullTextFromServer
 			'_newlineCounter = New kCura.Utility.File.Instance.LineCounter
 			'_newlineCounter.Path = LoadFile.FilePath
