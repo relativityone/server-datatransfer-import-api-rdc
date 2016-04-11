@@ -1203,7 +1203,7 @@ Namespace kCura.WinEDDS
 
 		Private Function GetMultivalueString(ByVal input As String, ByVal field As ViewFieldInfo) As String
 			Dim retVal As String = input
-			If input.Contains("<objects>") Then
+			If input.Contains("<object>") Then
 				Dim xr As New System.Xml.XmlTextReader(New System.IO.StringReader("<objects>" & input & "</objects>"))
 				Dim firstTimeThrough As Boolean = True
 				Dim sb As New System.Text.StringBuilder
